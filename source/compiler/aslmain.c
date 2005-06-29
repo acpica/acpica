@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslmain - compiler main and utilities
- *              $Revision: 1.30 $
+ *              $Revision: 1.31 $
  *
  *****************************************************************************/
 
@@ -214,7 +214,6 @@ main (
     char                **argv)
 {
     UINT32              j;
-    UINT32              DebugLevel = AcpiDbgLevel;
     BOOLEAN             BadCommandLine = FALSE;
     int                 Status;
 

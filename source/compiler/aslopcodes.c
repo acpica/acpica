@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslopcode - AML opcode generation
- *              $Revision: 1.23 $
+ *              $Revision: 1.24 $
  *
  *****************************************************************************/
 
@@ -258,7 +258,7 @@ OpcDoUnicode (
     UINT32                      Length;
     UINT32                      Count;
     UINT32                      i;
-    UINT8                       *AsciiString;
+    char                        *AsciiString;
     UINT16                      *UnicodeString;
     ASL_PARSE_NODE              *BufferLengthNode;
 
@@ -377,7 +377,7 @@ OpcGenerateAmlOpcode (
     UINT16                  Index = Node->ParseOpcode;
 
 
-    Index = Node->ParseOpcode - ASL_PARSE_OPCODE_BASE;
+    Index = (UINT16) (Node->ParseOpcode - ASL_PARSE_OPCODE_BASE);
 
 
     Node->AmlOpcode  = AslKeywordMapping[Index].AmlOpcode;

@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslutils -- compiler utilities
- *              $Revision: 1.25 $
+ *              $Revision: 1.28 $
  *
  *****************************************************************************/
 
@@ -122,7 +122,13 @@
 #define _COMPONENT          ACPI_COMPILER
         MODULE_NAME         ("aslutils")
 
+#ifdef _USE_BERKELEY_YACC
+extern const char * const       AslCompilername[];
+static const char * const       *yytname = &AslCompilername[255];
+#else
 extern const char * const       yytname[];
+#endif
+
 
 
 /*******************************************************************************
@@ -178,15 +184,15 @@ UtHexCharToValue (
 {
     if (hc <= 0x39)
     {
-        return (hc - 0x30);
+        return ((UINT8) (hc - 0x30));
     }
 
     if (hc <= 0x46)
     {
-        return (hc - 0x37);
+        return ((UINT8) (hc - 0x37));
     }
 
-    return (hc - 0x57);
+    return ((UINT8) (hc - 0x57));
 }
 
 
@@ -330,20 +336,20 @@ UtGetOpName (
 
 void
 UtDisplaySummary (
-    FILE                    *Where)
+    UINT32                  FileId)
 {
 
 
-    fprintf (Where, "Compilation complete. %d Errors %d Warnings\n",
+    FlPrintFile (FileId, "Compilation complete. %d Errors %d Warnings\n",
                 Gbl_ExceptionCount[ASL_ERROR],
                 Gbl_ExceptionCount[ASL_WARNING]);
 
-    fprintf (Where, "ASL Input: %s - %d lines, %d bytes, %d keywords\n",
+    FlPrintFile (FileId, "ASL Input: %s - %d lines, %d bytes, %d keywords\n",
                 Gbl_InputFilename, Gbl_CurrentLineNumber, Gbl_InputByteCount, TotalKeywords);
 
     if ((Gbl_ExceptionCount[ASL_ERROR] == 0) || (Gbl_IgnoreErrors))
     {
-        fprintf (Where, "AML Output: %s - %d bytes %d named objects %d executable opcodes\n\n",
+        FlPrintFile (FileId, "AML Output: %s - %d bytes %d named objects %d executable opcodes\n\n",
                     Gbl_OutputFilename, Gbl_TableLength, TotalNamedObjects, TotalExecutableOpcodes);
     }
 }

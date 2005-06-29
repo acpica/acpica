@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslerror - Error handling and statistics
- *              $Revision: 1.40 $
+ *              $Revision: 1.41 $
  *
  *****************************************************************************/
 
@@ -257,6 +257,11 @@ AeAddToErrorLog (
  *
  * DESCRIPTION: Print the contents of an error node.
  *
+ * NOTE:        We don't use the FlxxxFile I/O functions here because on error
+ *              they abort the compiler and call this function!  Since we
+ *              are reporting errors here, we ignore most output errors and 
+ *              just try to get out as much as we can.
+ *
  ******************************************************************************/
 
 void
@@ -271,32 +276,38 @@ AePrintException (
     char                    *ExtraMessage;
     UINT32                  SourceColumn;
     UINT32                  ErrorColumn;
+    FILE                    *OutputFile;
+    FILE                    *SourceFile;
+
+
+    OutputFile = Gbl_Files[FileId].Handle;
+    SourceFile = Gbl_Files[ASL_FILE_SOURCE_OUTPUT].Handle;
 
 
     /* Print filename and line number if present and valid */
 
     if (Enode->Filename)
     {
-        FlPrintFile (FileId, "%6s", Enode->Filename);
+        fprintf (OutputFile, "%6s", Enode->Filename);
 
         if (Enode->LineNumber)
         {
-            FlPrintFile (FileId, "%6d: ", Enode->LineNumber);
+            fprintf (OutputFile, "%6d: ", Enode->LineNumber);
 
             /*
              * Seek to the offset in the combined source file, read the source
              * line, and write it to the output.
              */
-            FlSeekFile (ASL_FILE_SOURCE_OUTPUT, Enode->LogicalByteOffset);
+            fseek (OutputFile, Enode->LogicalByteOffset, SEEK_SET);
 
-            Actual = fread (&SourceByte, 1, 1, Gbl_Files[ASL_FILE_SOURCE_OUTPUT].Handle);
+            Actual = fread (&SourceByte, 1, 1, SourceFile);
             while (Actual && SourceByte && (SourceByte != '\n'))
             {
-                FlWriteFile (FileId, &SourceByte, 1);
-                Actual = fread (&SourceByte, 1, 1, Gbl_Files[ASL_FILE_SOURCE_OUTPUT].Handle);
+                Actual = fwrite (&SourceByte, 1, 1, OutputFile);
+                Actual = fread (&SourceByte, 1, 1, SourceFile);
             }
 
-            FlPrintFile (FileId, "\n");
+            fprintf (OutputFile, "\n");
         }
     }
 
@@ -305,14 +316,14 @@ AePrintException (
 
     if (Enode->MessageId == 0)
     {
-        FlPrintFile (FileId, "%s\n", Enode->Message);
+        fprintf (OutputFile, "%s\n", Enode->Message);
     }
 
     /* Decode the message ID */
 
     else
     {
-        FlPrintFile (FileId, "%s %04.4d -",
+        fprintf (OutputFile, "%s %04.4d -",
                     AslErrorLevel[Enode->Level],
                     Enode->MessageId + ((Enode->Level+1) * 1000));
 
@@ -338,21 +349,21 @@ AePrintException (
             {
                 if ((MsgLength + ErrorColumn) < (SourceColumn - 1))
                 {
-                    FlPrintFile (FileId, "%*s%s",
+                    fprintf (OutputFile, "%*s%s",
                         (SourceColumn - 1) - ErrorColumn,
                         MainMessage, " ^ ");
                 }
 
                 else
                 {
-                    FlPrintFile (FileId, "%*s %s",
+                    fprintf (OutputFile, "%*s %s",
                         (SourceColumn - ErrorColumn) + 1, "^",
                         MainMessage);
                 }
             }
             else
             {
-                FlPrintFile (FileId, " ^ %s   %s\n\n",
+                fprintf (OutputFile, " ^ %s   %s\n\n",
                             MainMessage,
                             ExtraMessage);
             }
@@ -361,15 +372,15 @@ AePrintException (
 
             if (ExtraMessage)
             {
-                FlPrintFile (FileId, " (%s)", ExtraMessage);
+                fprintf (OutputFile, " (%s)", ExtraMessage);
             }
 
-            FlPrintFile (FileId, "\n\n");
+            fprintf (OutputFile, "\n\n");
         }
 
         else
         {
-            FlPrintFile (FileId, " %s %s\n\n",
+            fprintf (OutputFile, " %s %s\n\n",
                         MainMessage,
                         ExtraMessage);
         }

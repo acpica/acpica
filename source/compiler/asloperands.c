@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslopcode - AML opcode generation
- *              $Revision: 1.13 $
+ *              $Revision: 1.15 $
  *
  *****************************************************************************/
 
@@ -184,7 +184,9 @@ OpnDoMethod (
 
     /* Put the bits in their proper places */
 
-    MethodFlags = (NumArgs & 0x7) | ((Serialized & 0x1) << 3) | ((Concurrency & 0xF) << 4);
+    MethodFlags = (UINT8) ((NumArgs & 0x7) | 
+                          ((Serialized & 0x1) << 3) | 
+                          ((Concurrency & 0xF) << 4));
 
     /* Use the last node for the combined flags byte */
 
@@ -244,7 +246,9 @@ OpnDoFieldCommon (
 
     /* Generate the flags byte */
 
-    FieldFlags = (AccessType & 0x0F) | ((LockRule & 0x01) << 4) | ((UpdateRule & 0x03) << 5);
+    FieldFlags = (UINT8) ((AccessType & 0x0F) | 
+                         ((LockRule & 0x01) << 4) | 
+                         ((UpdateRule & 0x03) << 5));
 
     /* Use the previous node to be the FieldFlags node */
 
@@ -800,11 +804,11 @@ OpnAttachNameToNode (
         break;
 
 
-    case AML_BIT_FIELD_OP:
-    case AML_BYTE_FIELD_OP:
-    case AML_WORD_FIELD_OP:
-    case AML_DWORD_FIELD_OP:
-    case AML_QWORD_FIELD_OP:
+    case AML_CREATE_BIT_FIELD_OP:
+    case AML_CREATE_BYTE_FIELD_OP:
+    case AML_CREATE_WORD_FIELD_OP:
+    case AML_CREATE_DWORD_FIELD_OP:
+    case AML_CREATE_QWORD_FIELD_OP:
 
         Child = UtGetArg (PsNode, 2);
         break;
@@ -818,7 +822,7 @@ OpnAttachNameToNode (
 
     case AML_BANK_FIELD_OP:
     case AML_INDEX_FIELD_OP:
-    case AML_DEF_FIELD_OP:
+    case AML_FIELD_OP:
 
         return;
         break;

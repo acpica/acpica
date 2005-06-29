@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asllisting - Listing file generation
- *              $Revision: 1.18 $
+ *              $Revision: 1.19 $
  *
  *****************************************************************************/
 
@@ -345,7 +345,6 @@ LsWriteListingHexBytes (
     UINT32                  Length)
 {
     UINT32                  i;
-    UINT8                   *CharBuffer = (UINT8 *) Buffer;
 
 
     /* Are we in listing mode? */
@@ -471,7 +470,6 @@ LsWriteOneSourceLine (void)
 void
 LsFinishSourceListing (void)
 {
-    UINT32              Actual = 1;
 
 
     if (!Gbl_ListingFlag)

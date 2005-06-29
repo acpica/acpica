@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslfiles - file I/O suppoert
- *              $Revision: 1.17 $
+ *              $Revision: 1.18 $
  *
  *****************************************************************************/
 
@@ -122,6 +122,19 @@
         MODULE_NAME         ("aslfiles")
 
 
+/*******************************************************************************
+ *
+ * FUNCTION:    AslAbort
+ *
+ * PARAMETERS:  None
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Dump the error log and abort the compiler.  Used for serious
+ *              I/O errors
+ *
+ ******************************************************************************/
+
 void
 AslAbort (void)
 {
@@ -138,6 +151,7 @@ AslAbort (void)
     exit (1);
 }
 
+
 /*******************************************************************************
  *
  * FUNCTION:    FlOpenLocalFile
@@ -147,8 +161,8 @@ AslAbort (void)
  *
  * RETURN:      File descriptor
  *
- * DESCRIPTION: Build a complete pathname for the input filename and open or
- *              create the file.
+ * DESCRIPTION: Build a complete pathname for the input filename and open
+ *              the file.
  *
  ******************************************************************************/
 
@@ -171,12 +185,13 @@ FlOpenLocalFile (
  *
  * FUNCTION:    FlFileError
  *
- * PARAMETERS:  LocalName           - Single filename (not a pathname)
- *              Mode                - Open mode for fopen
+ * PARAMETERS:  FileId              - Index into file info array
+ *              ErrorId             - Index into error message array
  *
  * RETURN:      None
  *
- * DESCRIPTION: 
+ * DESCRIPTION: Decode errno to an error message and add the entire error
+ *              to the error log.
  *
  ******************************************************************************/
 
@@ -197,12 +212,14 @@ FlFileError (
  *
  * FUNCTION:    FlOpenFile
  *
- * PARAMETERS:  LocalName           - Single filename (not a pathname)
+ * PARAMETERS:  FileId              - Index into file info array
+ *              Filename            - file pathname to open
  *              Mode                - Open mode for fopen
  *
  * RETURN:      None
  *
- * DESCRIPTION: 
+ * DESCRIPTION: Open a file.  
+ *              NOTE: Aborts compiler on any error.
  *
  ******************************************************************************/
 
@@ -235,12 +252,14 @@ FlOpenFile (
  *
  * FUNCTION:    FlReadFile
  *
- * PARAMETERS:  LocalName           - Single filename (not a pathname)
- *              Mode                - Open mode for fopen
+ * PARAMETERS:  FileId              - Index into file info array
+ *              Buffer              - Where to place the data
+ *              Length              - Amount to read
  *
- * RETURN:      None
+ * RETURN:      Status.  AE_ERROR indicated EOF.
  *
- * DESCRIPTION: 
+ * DESCRIPTION: Read data from an open file.  
+ *              NOTE: Aborts compiler on any error.
  *
  ******************************************************************************/
 
@@ -277,19 +296,21 @@ FlReadFile (
  *
  * FUNCTION:    FlWriteFile
  *
- * PARAMETERS:  LocalName           - Single filename (not a pathname)
- *              Mode                - Open mode for fopen
+ * PARAMETERS:  FileId              - Index into file info array
+ *              Buffer              - Data to write
+ *              Length              - Amount of data to write
  *
- * RETURN:      None
+ * RETURN:      Status
  *
- * DESCRIPTION: 
+ * DESCRIPTION: Write data to an open file.
+ *              NOTE: Aborts compiler on any error.
  *
  ******************************************************************************/
 
 ACPI_STATUS
 FlWriteFile (
     UINT32                  FileId,
-    void                    *Buffer,
+    char                    *Buffer,
     UINT32                  Length)
 {
     UINT32                  Actual;
@@ -312,12 +333,14 @@ FlWriteFile (
  *
  * FUNCTION:    FlPrintFile
  *
- * PARAMETERS:  LocalName           - Single filename (not a pathname)
- *              Mode                - Open mode for fopen
+ * PARAMETERS:  FileId              - Index into file info array
+ *              Format              - Printf format string
+ *              ...                 - Printf arguments
  *
  * RETURN:      None
  *
- * DESCRIPTION: 
+ * DESCRIPTION: Formatted write to an open file.
+ *              NOTE: Aborts compiler on any error.
  *
  ******************************************************************************/
 
@@ -347,12 +370,13 @@ FlPrintFile (
  *
  * FUNCTION:    FlSeekFile
  *
- * PARAMETERS:  LocalName           - Single filename (not a pathname)
- *              Mode                - Open mode for fopen
+ * PARAMETERS:  FileId              - Index into file info array
+ *              Offset              - Absolute byte offset in file
  *
- * RETURN:      None
+ * RETURN:      Status
  *
- * DESCRIPTION: 
+ * DESCRIPTION: Seek to absolute offset
+ *              NOTE: Aborts compiler on any error.
  *
  ******************************************************************************/
 
@@ -379,12 +403,12 @@ FlSeekFile (
  *
  * FUNCTION:    FlCloseFile
  *
- * PARAMETERS:  LocalName           - Single filename (not a pathname)
- *              Mode                - Open mode for fopen
+ * PARAMETERS:  FileId              - Index into file info array
  *
- * RETURN:      None
+ * RETURN:      Status
  *
- * DESCRIPTION: 
+ * DESCRIPTION: Close an open file.  Does not abort on error, simply logs
+ *              the problem.
  *
  ******************************************************************************/
 
@@ -595,12 +619,12 @@ FlOpenAmlOutputFile (
 
     /* Output filename usually comes from the ASL itself */
 
-    if (!Gbl_Files[ASL_FILE_AML_OUTPUT].Filename)
+    Filename = Gbl_Files[ASL_FILE_AML_OUTPUT].Filename;
+    if (!Filename)
     {
         /* Create the output AML filename */
 
         Filename = FlGenerateFilename (FilenamePrefix, FILE_SUFFIX_AML_CODE);
-
         if (!Filename)
         {
             AslCommonError (ASL_ERROR, ASL_MSG_OUTPUT_FILENAME, 0, 0, 0, 0, NULL, NULL);
