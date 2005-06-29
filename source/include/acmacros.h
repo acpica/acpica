@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acmacros.h - C macros for the entire subsystem.
- *       $Revision: 1.89 $
+ *       $Revision: 1.92 $
  *
  *****************************************************************************/
 
@@ -320,7 +320,7 @@
 
 #define ROUND_UP_TO(value,boundary)     (((value) + ((boundary)-1)) / (boundary))
 
-/* 
+/*
  * Bitmask creation
  * Bit positions start at zero.
  * MASK_BITS_ABOVE creates a mask starting AT the position and above
@@ -328,7 +328,6 @@
  */
 #define MASK_BITS_ABOVE(position)       (~(((UINT32)(-1)) << ((UINT32) (position))))
 #define MASK_BITS_BELOW(position)       (((UINT32)(-1)) << ((UINT32) (position)))
-
 
 
 /* Macros for GAS addressing */
@@ -460,31 +459,31 @@
 
 #ifdef ACPI_DEBUG
 
-#define REPORT_INFO(fp)                 {_ReportInfo(_THIS_MODULE,__LINE__,_COMPONENT); \
+#define REPORT_INFO(fp)                 {AcpiUtReportInfo(_THIS_MODULE,__LINE__,_COMPONENT); \
                                             AcpiOsPrintf PARAM_LIST(fp);}
-#define REPORT_ERROR(fp)                {_ReportError(_THIS_MODULE,__LINE__,_COMPONENT); \
+#define REPORT_ERROR(fp)                {AcpiUtReportError(_THIS_MODULE,__LINE__,_COMPONENT); \
                                             AcpiOsPrintf PARAM_LIST(fp);}
-#define REPORT_WARNING(fp)              {_ReportWarning(_THIS_MODULE,__LINE__,_COMPONENT); \
+#define REPORT_WARNING(fp)              {AcpiUtReportWarning(_THIS_MODULE,__LINE__,_COMPONENT); \
                                             AcpiOsPrintf PARAM_LIST(fp);}
 
 #else
 
-#define REPORT_INFO(fp)                 {_ReportInfo("ACPI",__LINE__,_COMPONENT); \
+#define REPORT_INFO(fp)                 {AcpiUtReportInfo("ACPI",__LINE__,_COMPONENT); \
                                             AcpiOsPrintf PARAM_LIST(fp);}
-#define REPORT_ERROR(fp)                {_ReportError("ACPI",__LINE__,_COMPONENT); \
+#define REPORT_ERROR(fp)                {AcpiUtReportError("ACPI",__LINE__,_COMPONENT); \
                                             AcpiOsPrintf PARAM_LIST(fp);}
-#define REPORT_WARNING(fp)              {_ReportWarning("ACPI",__LINE__,_COMPONENT); \
+#define REPORT_WARNING(fp)              {AcpiUtReportWarning("ACPI",__LINE__,_COMPONENT); \
                                             AcpiOsPrintf PARAM_LIST(fp);}
 
 #endif
 
 /* Error reporting.  These versions pass thru the module and line# */
 
-#define _REPORT_INFO(a,b,c,fp)          {_ReportInfo(a,b,c); \
+#define _REPORT_INFO(a,b,c,fp)          {AcpiUtReportInfo(a,b,c); \
                                             AcpiOsPrintf PARAM_LIST(fp);}
-#define _REPORT_ERROR(a,b,c,fp)         {_ReportError(a,b,c); \
+#define _REPORT_ERROR(a,b,c,fp)         {AcpiUtReportError(a,b,c); \
                                             AcpiOsPrintf PARAM_LIST(fp);}
-#define _REPORT_WARNING(a,b,c,fp)       {_ReportWarning(a,b,c); \
+#define _REPORT_WARNING(a,b,c,fp)       {AcpiUtReportWarning(a,b,c); \
                                             AcpiOsPrintf PARAM_LIST(fp);}
 
 /* Buffer dump macros */
@@ -518,6 +517,9 @@
                                         AcpiUtTraceU32(__LINE__,&_Dbg,(UINT32)b)
 #define FUNCTION_TRACE_STR(a,b)         PROC_NAME(a)\
                                         AcpiUtTraceStr(__LINE__,&_Dbg,(NATIVE_CHAR *)b)
+
+#define FUNCTION_ENTRY                  AcpiUtTrackStackPtr
+
 /*
  * Function exit tracing.
  * WARNING: These macros include a return statement.  This is usually considered
@@ -573,8 +575,8 @@
  *    2) Debug error level or trace level for the print statement is enabled
  */
 
-#define ACPI_DEBUG_PRINT(pl)            AcpiUtDebugPrint2 PARAM_LIST(pl)
-#define ACPI_DEBUG_PRINT_RAW(pl)        AcpiUtDebugPrintRaw2 PARAM_LIST(pl)
+#define ACPI_DEBUG_PRINT(pl)            AcpiUtDebugPrint PARAM_LIST(pl)
+#define ACPI_DEBUG_PRINT_RAW(pl)        AcpiUtDebugPrintRaw PARAM_LIST(pl)
 
 
 #else
@@ -599,6 +601,7 @@
 #define FUNCTION_EXIT
 #define FUNCTION_STATUS_EXIT(s)
 #define FUNCTION_VALUE_EXIT(s)
+#define FUNCTION_ENTRY
 #define DUMP_STACK_ENTRY(a)
 #define DUMP_OPERANDS(a,b,c,d,e)
 #define DUMP_ENTRY(a,b)
@@ -640,19 +643,15 @@
 
 
 #ifdef ACPI_DEBUG
-
 /*
  * 1) Set name to blanks
  * 2) Copy the object name
  */
-
 #define ADD_OBJECT_NAME(a,b)            MEMSET (a->Common.Name, ' ', sizeof (a->Common.Name));\
                                         STRNCPY (a->Common.Name, AcpiGbl_NsTypeNames[b], sizeof (a->Common.Name))
-
 #else
 
 #define ADD_OBJECT_NAME(a,b)
-
 #endif
 
 
@@ -681,5 +680,7 @@
 
 #endif /* ACPI_DBG_TRACK_ALLOCATIONS */
 
+
+#define ACPI_GET_STACK_POINTER          _asm {mov eax, ebx}
 
 #endif /* ACMACROS_H */

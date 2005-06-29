@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: aclocal.h - Internal data types used across the ACPI subsystem
- *       $Revision: 1.129 $
+ *       $Revision: 1.130 $
  *
  *****************************************************************************/
 
@@ -122,7 +122,6 @@
 
 typedef void*                           ACPI_MUTEX;
 typedef UINT32                          ACPI_MUTEX_HANDLE;
-
 
 
 #define ACPI_MEMORY_MODE                0x01
@@ -646,7 +645,6 @@ ACPI_STATUS (*ACPI_PARSE_UPWARDS) (
 #define AML_CREATE          0x4000
 
 
-
 /*
  * AML opcode, name, and argument layout
  */
@@ -934,7 +932,6 @@ typedef struct
 } ACPI_DEVICE_ID;
 
 
-
 /*****************************************************************************
  *
  * Miscellaneous
@@ -959,7 +956,6 @@ typedef struct dbmethodinfo
     NATIVE_CHAR             Pathname[128];
 
 } DB_METHOD_INFO;
-
 
 
 /*****************************************************************************
@@ -1008,7 +1004,6 @@ typedef struct AcpiDebugMemBlock
 } ACPI_DEBUG_MEM_BLOCK;
 
 
-
 #define ACPI_MEM_LIST_GLOBAL            0
 #define ACPI_MEM_LIST_NSNODE            1
 
@@ -1043,7 +1038,6 @@ typedef struct
 #endif
 
 } ACPI_MEMORY_LIST;
-
 
 
 #endif /* __ACLOCAL_H__ */
