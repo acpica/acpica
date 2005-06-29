@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acglobal.h - Declarations for global variables
- *       $Revision: 1.98 $
+ *       $Revision: 1.99 $
  *
  *****************************************************************************/
 
@@ -291,14 +291,8 @@ ACPI_EXTERN ALLOCATION_INFO            *AcpiGbl_TailAllocPtr;
 ACPI_EXTERN ACPI_WALK_LIST             *AcpiGbl_CurrentWalkList;
 
 /*
- * Handle to the last method found - used during pass1 of load
- */
-ACPI_EXTERN ACPI_HANDLE                 AcpiGbl_LastMethod;
-
-/*
  * Table of Address Space handlers
  */
-
 ACPI_EXTERN ACPI_ADDRESS_SPACE_INFO     AcpiGbl_AddressSpaces[ACPI_NUM_ADDRESS_SPACES];
 
 
