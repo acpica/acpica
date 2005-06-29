@@ -3,7 +3,7 @@
  * Module Name: rscreate - AcpiRsCreateResourceList
  *                         AcpiRsCreatePciRoutingTable
  *                         AcpiRsCreateByteStream
- *              $Revision: 1.27 $
+ *              $Revision: 1.29 $
  *
  ******************************************************************************/
 
@@ -124,7 +124,7 @@
 #include "amlcode.h"
 #include "acnamesp.h"
 
-#define _COMPONENT          RESOURCE_MANAGER
+#define _COMPONENT          ACPI_RESOURCES
         MODULE_NAME         ("rscreate")
 
 
@@ -281,6 +281,11 @@ AcpiRsCreatePciRoutingTable (
 
     Status = AcpiRsCalculatePciRoutingTableLength(PackageObject,
                                                   &BufferSizeNeeded);
+
+    if (!ACPI_SUCCESS(Status))
+    {
+        return_ACPI_STATUS (Status);
+    }
 
     DEBUG_PRINT (VERBOSE_INFO,
         ("RsCreatePciRoutingTable: BufferSizeNeeded = %X\n",
