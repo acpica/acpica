@@ -125,7 +125,7 @@
 #include "debugger.h"
 #include "tables.h"
 
-#ifdef ACPI_DEBUG
+#ifdef ENABLE_DEBUGGER
 
 #define _COMPONENT          DEBUGGER
         MODULE_NAME         ("dbhistry");
@@ -284,5 +284,5 @@ AcpiDbGetFromHistory (
 }
 
 
-#endif
+#endif /* ENABLE_DEBUGGER */
 

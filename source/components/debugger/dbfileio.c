@@ -116,14 +116,14 @@
 
 
 #include "acpi.h"
-#include "acapi.h"
+#include "acxface.h"
 #include "debugger.h"
 #include "namesp.h"
 #include "parser.h"
 #include "events.h"
 #include "tables.h"
 
-#ifdef ACPI_DEBUG
+#ifdef ENABLE_DEBUGGER
 
 #define _COMPONENT          DEBUGGER
         MODULE_NAME         ("dbfileio");
@@ -389,5 +389,5 @@ AcpiDbLoadAcpiTable (
 }
 
 
-#endif  /* ACPI_DEBUG */
+#endif  /* ENABLE_DEBUGGER */
 

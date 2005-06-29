@@ -124,11 +124,54 @@
 #include "interp.h"
 #include "debugger.h"
 
-#ifdef ACPI_DEBUG
+
+#ifdef ENABLE_DEBUGGER
+
 
 #define _COMPONENT          DEBUGGER
         MODULE_NAME         ("dbdisply");
 
+
+/******************************************************************************
+ *
+ * FUNCTION:    AcpiDbGetPointer
+ *
+ * PARAMETERS:  Target          - Pointer to string to be converted
+ *
+ * RETURN:      Converted pointer
+ *
+ * DESCRIPTION: Convert an ascii pointer value to a real value
+ *
+ *****************************************************************************/
+
+void *
+AcpiDbGetPointer (
+    void                    *Target)
+{
+    void                    *ObjPtr;
+
+
+#ifdef _IA16
+#include <stdio.h>
+
+    /* Have to handle 16-bit pointers of the form segment:offset */
+
+    if (!sscanf (Target, "%p", &ObjPtr))
+    {
+        AcpiOsdPrintf ("Invalid pointer: %s\n", Target);
+        return;
+    }
+
+#else
+
+    /* Simple flat pointer */
+
+    ObjPtr = (void *) STRTOUL (Target, NULL, 16);
+
+#endif
+
+    return ObjPtr;
+}
 
 
 /******************************************************************************
@@ -220,21 +263,7 @@ AcpiDbDecodeAndDisplayObject (
 
     if ((Target[0] >= 0x30) && (Target[0] <= 0x39))
     {
-
-#ifdef _IA16
-#include <stdio.h>
-        if (!sscanf (Target, "%p", &ObjPtr))
-        {
-            AcpiOsdPrintf ("Invalid pointer: %s\n", Target);
-            return;
-        }
-
-#else
-        ObjPtr = (void *) STRTOUL (Target, NULL, 16);
-
-#endif
-
-
+        ObjPtr = AcpiDbGetPointer (Target);
         if (!AcpiOsdReadable (ObjPtr, 16))
         {
             AcpiOsdPrintf ("Address %p is invalid in this address space\n", ObjPtr);
@@ -854,9 +883,5 @@ AcpiDbDisplayArgumentObject (
     AcpiDbDisplayInternalObject (ObjDesc);
 }
 
+#endif /* ENABLE_DEBUGGER */
 
-
-
-
-
-#endif /* ACPI_DEBUG */

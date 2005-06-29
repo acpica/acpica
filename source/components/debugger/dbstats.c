@@ -119,7 +119,7 @@
 #include "amlcode.h"
 #include "parser.h"
 
-#ifdef ACPI_DEBUG
+#ifdef ENABLE_DEBUGGER
 
 #define _COMPONENT          DEBUGGER
         MODULE_NAME         ("dbstats");
@@ -163,7 +163,7 @@ UINT32                      NumEvents = 0;
 
 UINT32                      SizeOfParseTree;
 UINT32                      SizeOfMethodTrees;
-UINT32                      SizeOfNTEs;
+UINT32                      SizeOfNameTableEntries;
 UINT32                      SizeOfAcpiObjects;
 
 
@@ -257,7 +257,7 @@ AcpiDbDisplayStatistics (
         AcpiOsdPrintf ("\nDynamic Memory Estimates:\n\n");
         AcpiOsdPrintf ("Parse Tree without Methods:.% 7ld\n", SizeOfParseTree);
         AcpiOsdPrintf ("Control Method Parse Trees:.% 7ld (If parsed simultaneously)\n", SizeOfMethodTrees);
-        AcpiOsdPrintf ("Named Object NTEs:..........% 7ld (%d objects)\n", SizeOfNTEs, NumNamedObjects);
+        AcpiOsdPrintf ("Named Object NTEs:..........% 7ld (%d objects)\n", SizeOfNameTableEntries, NumNamedObjects);
         AcpiOsdPrintf ("Named Internal Objects......% 7ld\n", SizeOfAcpiObjects);
         AcpiOsdPrintf ("State Cache size............% 7ld\n", AcpiGbl_GenericStateCacheDepth * sizeof (ACPI_GENERIC_STATE));
         AcpiOsdPrintf ("Parse Cache size............% 7ld\n", AcpiGbl_ParseCacheDepth * sizeof (ACPI_GENERIC_OP));
@@ -398,11 +398,11 @@ AcpiDbGenerateStatistics (
 
 
 
-    SizeOfParseTree     = (NumGrammarElements - NumMethodElements) * (UINT32) sizeof (ACPI_GENERIC_OP);
-    SizeOfMethodTrees   = NumMethodElements * (UINT32) sizeof (ACPI_GENERIC_OP);
-    SizeOfNTEs          = NumNamedObjects * (UINT32) sizeof (NAME_TABLE_ENTRY);
-    SizeOfAcpiObjects   = NumNamedObjects * (UINT32) sizeof (ACPI_OBJECT_INTERNAL);
+    SizeOfParseTree             = (NumGrammarElements - NumMethodElements) * (UINT32) sizeof (ACPI_GENERIC_OP);
+    SizeOfMethodTrees           = NumMethodElements * (UINT32) sizeof (ACPI_GENERIC_OP);
+    SizeOfNameTableEntries      = NumNamedObjects * (UINT32) sizeof (NAME_TABLE_ENTRY);
+    SizeOfAcpiObjects           = NumNamedObjects * (UINT32) sizeof (ACPI_OBJECT_INTERNAL);
 
 }
 
-#endif /* ACPI_DEBUG  */
+#endif /* ENABLE_DEBUGGER  */

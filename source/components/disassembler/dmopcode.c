@@ -121,7 +121,7 @@
 #include "debugger.h"
 
 
-#ifdef ACPI_DEBUG
+#ifdef ENABLE_DEBUGGER
 
 #define _COMPONENT          DEBUGGER
         MODULE_NAME         ("dbdisasm");
@@ -819,5 +819,5 @@ AcpiDbDisplayOpcode (
 }
 
 
-#endif  /* ACPI_DEBUG */
+#endif  /* ENABLE_DEBUGGER */
 

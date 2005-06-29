@@ -125,7 +125,7 @@
 #include "debugger.h"
 #include "tables.h"
 
-#ifdef ACPI_DEBUG
+#ifdef ENABLE_DEBUGGER
 
 #define _COMPONENT          DEBUGGER
         MODULE_NAME         ("dbcmds");
@@ -881,4 +881,4 @@ AcpiDbSetScope (
     AcpiOsdPrintf ("New scope: %s\n", ScopeBuf);
 }
 
-#endif
+#endif /* ENABLE_DEBUGGER */

@@ -125,7 +125,7 @@
 #include "debugger.h"
 #include "tables.h"
 
-#ifdef ACPI_DEBUG
+#ifdef ENABLE_DEBUGGER
 
 #define _COMPONENT          DEBUGGER
         MODULE_NAME         ("dbexec");
@@ -172,7 +172,7 @@ AcpiDbExecuteMethod (
     UINT32                  i;
 
 
-    if (OutputToFile && !DebugLevel)
+    if (OutputToFile && !AcpiDbgLevel)
     {
         AcpiOsdPrintf ("Warning: debug output is not enabled!\n");
     }
@@ -477,6 +477,7 @@ AcpiDbCreateExecutionThreads (
 }
 
 
-#endif
+#endif /* ENABLE_DEBUGGER */
+
 
 

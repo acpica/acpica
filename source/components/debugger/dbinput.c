@@ -116,7 +116,7 @@
 
 
 #include "acpi.h"
-#include "acapi.h"
+#include "acxface.h"
 #include "amlcode.h"
 #include "parser.h"
 #include "tables.h"
@@ -125,7 +125,7 @@
 #include "debugger.h"
 
 
-#ifdef ACPI_DEBUG
+#ifdef ENABLE_DEBUGGER
 
 #define _COMPONENT          DEBUGGER
         MODULE_NAME         ("dbinput");
@@ -813,7 +813,7 @@ AcpiDbCommandDispatch (
 
         if (!OutputToFile)
         {
-            DebugLevel = DEBUG_DEFAULT;
+            AcpiDbgLevel = DEBUG_DEFAULT;
         }
 
         /* Shutdown */
@@ -977,5 +977,5 @@ AcpiDbUserCommands (
 
 
 
-#endif  /* ACPI_DEBUG */
+#endif  /* ENABLE_DEBUGGER */
 

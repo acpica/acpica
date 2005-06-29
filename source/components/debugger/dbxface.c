@@ -1,6 +1,6 @@
 /******************************************************************************
  *
- * Module Name: dbapi - AML Debugger external interfaces
+ * Module Name: dbxface - AML Debugger external interfaces
  *
  *****************************************************************************/
 
@@ -124,10 +124,10 @@
 #include "debugger.h"
 
 
-#ifdef ACPI_DEBUG
+#ifdef ENABLE_DEBUGGER
 
 #define _COMPONENT          DEBUGGER
-        MODULE_NAME         ("dbcmds");
+        MODULE_NAME         ("dbxface");
 
 
 /******************************************************************************
@@ -207,12 +207,12 @@ AcpiDbSingleStep (
      * Under certain debug conditions, display this opcode and its operands
      */
 
-    if ((OutputToFile)                  ||
+    if ((OutputToFile)                      ||
         (AcpiGbl_CmSingleStep)              ||
-        (DebugLevel & TRACE_PARSE))
+        (AcpiDbgLevel & TRACE_PARSE))
     {
         if ((OutputToFile)                  ||
-            (DebugLevel & TRACE_PARSE))
+            (AcpiDbgLevel & TRACE_PARSE))
         {
             AcpiOsdPrintf ("\n[AmlDebug] Next AML Opcode to execute:\n");
         }
@@ -223,8 +223,8 @@ AcpiDbSingleStep (
          * we don't want the extraneous debug output)
          */
 
-        OriginalDebugLevel = DebugLevel;
-        DebugLevel &= ~(TRACE_PARSE | TRACE_FUNCTIONS);
+        OriginalDebugLevel = AcpiDbgLevel;
+        AcpiDbgLevel &= ~(TRACE_PARSE | TRACE_FUNCTIONS);
         Next = Op->Next;
         Op->Next = NULL;
 
@@ -236,7 +236,7 @@ AcpiDbSingleStep (
 
         Op->Next = Next;
         AcpiOsdPrintf ("\n");
-        DebugLevel = OriginalDebugLevel;
+        AcpiDbgLevel = OriginalDebugLevel;
    }
 
 
@@ -396,4 +396,4 @@ AcpiDbInitialize (void)
 }
 
 
-#endif /* ACPI_DEBUG */
+#endif /* ENABLE_DEBUGGER */

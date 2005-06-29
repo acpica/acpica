@@ -124,7 +124,7 @@
 #include "debugger.h"
 
 
-#ifdef ACPI_DEBUG
+#ifdef ENABLE_DEBUGGER
 
 #define _COMPONENT          DEBUGGER
         MODULE_NAME         ("dbutils");
@@ -153,12 +153,12 @@ AcpiDbSetOutputDestination (
     {
         if (OutputToFile)
         {
-            DebugLevel = AcpiGbl_DbDebugLevel;
+            AcpiDbgLevel = AcpiGbl_DbDebugLevel;
         }
     }
     else
     {
-        DebugLevel = AcpiGbl_DbConsoleDebugLevel;
+        AcpiDbgLevel = AcpiGbl_DbConsoleDebugLevel;
     }
 }
 
@@ -181,7 +181,7 @@ AcpiDbDumpBuffer (
 
     AcpiOsdPrintf ("\nLocation 0x%X:\n", Address);
 
-    DebugLevel |= TRACE_TABLES;
+    AcpiDbgLevel |= TRACE_TABLES;
     AcpiCmDumpBuffer ((char *) Address, 64, DB_BYTE_DISPLAY, ACPI_UINT32_MAX);
 }
 
@@ -443,6 +443,6 @@ AcpiDbLocalNsLookup (
 
 
 
-#endif /* ACPI_DEBUG */
+#endif /* ENABLE_DEBUGGER */
 
 
