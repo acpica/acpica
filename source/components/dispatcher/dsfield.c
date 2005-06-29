@@ -144,7 +144,8 @@
 ACPI_STATUS
 PsxCreateField (
     ACPI_GENERIC_OP         *Op,
-    ACPI_HANDLE             Region)
+    ACPI_HANDLE             Region,
+    ACPI_WALK_STATE         *WalkState)
 {
     ACPI_STATUS             Status = AE_AML_ERROR;
     ACPI_GENERIC_OP         *Arg;
@@ -187,8 +188,8 @@ PsxCreateField (
             *(UINT32 *) Buffer = (((ACPI_NAMED_OP *)Arg)->Name);
             Buffer[4] = 0;
 
-            Status = NsLookup (Gbl_CurrentScope->Scope, Buffer, INTERNAL_TYPE_DefField, IMODE_LoadPass1, 
-                                        NS_NO_UPSEARCH, &Entry);
+            Status = NsLookup (WalkState->ScopeInfo, Buffer, INTERNAL_TYPE_DefField, IMODE_LoadPass1, 
+                                        NS_NO_UPSEARCH | NS_DONT_OPEN_SCOPE, NULL, &Entry);
             if (ACPI_FAILURE (Status))
             {
                 break;
@@ -227,7 +228,8 @@ PsxCreateField (
 ACPI_STATUS
 PsxCreateBankField (
     ACPI_GENERIC_OP         *Op,
-    ACPI_HANDLE             Region)
+    ACPI_HANDLE             Region,
+    ACPI_WALK_STATE         *WalkState)
 {
     ACPI_STATUS             Status = AE_AML_ERROR;
     ACPI_GENERIC_OP         *Arg;
@@ -246,8 +248,8 @@ PsxCreateBankField (
 
     Arg = Op->Value.Arg;
 
-    Status = NsLookup (Gbl_CurrentScope->Scope, Arg->Value.String, INTERNAL_TYPE_BankFieldDefn, IMODE_LoadPass1, 
-                                NS_NO_UPSEARCH, &BankReg);
+    Status = NsLookup (WalkState->ScopeInfo, Arg->Value.String, INTERNAL_TYPE_BankFieldDefn, IMODE_LoadPass1, 
+                                NS_NO_UPSEARCH | NS_DONT_OPEN_SCOPE, NULL, &BankReg);
     if (ACPI_FAILURE (Status))
     {
         return_ACPI_STATUS (Status);
@@ -288,8 +290,8 @@ PsxCreateBankField (
             *(UINT32 *) Buffer = (((ACPI_NAMED_OP *)Arg)->Name);
             Buffer[4] = 0;
 
-            Status = NsLookup (Gbl_CurrentScope->Scope, Buffer, INTERNAL_TYPE_DefField, IMODE_LoadPass1, 
-                                        NS_NO_UPSEARCH, &Entry);
+            Status = NsLookup (WalkState->ScopeInfo, Buffer, INTERNAL_TYPE_DefField, IMODE_LoadPass1, 
+                                        NS_NO_UPSEARCH | NS_DONT_OPEN_SCOPE, NULL, &Entry);
             if (ACPI_FAILURE (Status))
             {
                 break;
@@ -329,7 +331,8 @@ PsxCreateBankField (
 ACPI_STATUS
 PsxCreateIndexField (
     ACPI_GENERIC_OP         *Op,
-    ACPI_HANDLE             Region)
+    ACPI_HANDLE             Region,
+    ACPI_WALK_STATE         *WalkState)
 {
     ACPI_STATUS             Status;
     ACPI_GENERIC_OP         *Arg;
@@ -350,8 +353,8 @@ PsxCreateIndexField (
     *(UINT32 *) Buffer = (((ACPI_NAMED_OP *)Op)->Name);
     Buffer[4] = 0;
 
-    Status = NsLookup (Gbl_CurrentScope->Scope, Buffer, ACPI_TYPE_Any, IMODE_LoadPass1, 
-                                NS_NO_UPSEARCH, &IndexReg);
+    Status = NsLookup (WalkState->ScopeInfo, Buffer, ACPI_TYPE_Any, IMODE_LoadPass1, 
+                                NS_NO_UPSEARCH | NS_DONT_OPEN_SCOPE, NULL, &IndexReg);
     if (ACPI_FAILURE (Status))
     {
         return_ACPI_STATUS (Status);
@@ -361,8 +364,8 @@ PsxCreateIndexField (
 
     Arg = Op->Value.Arg;
 
-    Status = NsLookup (Gbl_CurrentScope->Scope, Arg->Value.String, INTERNAL_TYPE_IndexFieldDefn, IMODE_LoadPass1, 
-                                NS_NO_UPSEARCH, &DataReg);
+    Status = NsLookup (WalkState->ScopeInfo, Arg->Value.String, INTERNAL_TYPE_IndexFieldDefn, IMODE_LoadPass1, 
+                                NS_NO_UPSEARCH | NS_DONT_OPEN_SCOPE, NULL, &DataReg);
     if (ACPI_FAILURE (Status))
     {
         return_ACPI_STATUS (Status);
@@ -399,8 +402,8 @@ PsxCreateIndexField (
             *(UINT32 *) Buffer = (((ACPI_NAMED_OP *)Arg)->Name);
             Buffer[4] = 0;
 
-            Status = NsLookup (Gbl_CurrentScope->Scope, Buffer, INTERNAL_TYPE_IndexField, IMODE_LoadPass1, 
-                                        NS_NO_UPSEARCH, &Entry);
+            Status = NsLookup (WalkState->ScopeInfo, Buffer, INTERNAL_TYPE_IndexField, IMODE_LoadPass1, 
+                                        NS_NO_UPSEARCH | NS_DONT_OPEN_SCOPE, NULL, &Entry);
             if (ACPI_FAILURE (Status))
             {
                 break;

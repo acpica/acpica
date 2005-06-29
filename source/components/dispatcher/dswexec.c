@@ -122,6 +122,7 @@
 #include <parser.h>
 #include <interp.h>
 #include <namesp.h>
+#include <debugger.h>
 
 
 #define _COMPONENT          PARSER
@@ -157,6 +158,11 @@ PsxExecBeginOp (
 
     FUNCTION_TRACE_PTR ("PsxExecBeginOp", Op);
 
+
+    if (Op == WalkState->Origin)
+    {
+        return_ACPI_STATUS (AE_OK);
+    }
     
     /*
      * If the previous opcode was a conditional, this opcode
@@ -174,14 +180,36 @@ PsxExecBeginOp (
         WalkState->ControlState->PredicateOp    = Op;         /* Save start of predicate */
     }
 
+/*
+    if (Op->Opcode != AML_MethodOp)
+    {
+        return_ACPI_STATUS (AE_OK);
+    }
+    
+*/
 
     OpInfo = PsGetOpcodeInfo (Op->Opcode);
 
-    switch (OpInfo->Type)
+    switch (OpInfo->Flags & OP_INFO_TYPE)
     {
     case OPTYPE_CONTROL:
 
         Status = PsxExecBeginControlOp (WalkState, Op);
+        break;
+
+    case OPTYPE_NAMED_OBJECT:
+
+        if (WalkState->Origin->Opcode == AML_MethodOp)
+        {
+            /*
+             * Found a named object declaration during method execution;  we must enter
+             * this object into the namespace.
+             *
+             * TBD: make this a temporary namespace object
+             */
+
+            Status = PsxLoad2BeginOp (WalkState, Op);
+        }
         break;
 
     default:
@@ -236,13 +264,13 @@ PsxExecEndOp (
     OpInfo = PsGetOpcodeInfo (Op->Opcode);
     if (!OpInfo)
     {
-        DEBUG_PRINT (ACPI_ERROR, ("EndOp: Unknown opcode. Op=%X\n",
+        DEBUG_PRINT (ACPI_ERROR, ("ExecEndOp: Unknown opcode. Op=%X\n",
                         Op));
 
         return_ACPI_STATUS (AE_NOT_IMPLEMENTED);
     }
 
-    Optype = OpInfo->Type;
+    Optype = (UINT8) (OpInfo->Flags & OP_INFO_TYPE);
     FirstArg = Op->Value.Arg;
 
     /* Init the walk state */
@@ -251,20 +279,26 @@ PsxExecEndOp (
     WalkState->ReturnDesc = NULL;
 
 
+    /* Call debugger for single step support (DEBUG build only) */
+
+    DEBUG_EXEC (Status = DbSingleStep (WalkState, Op, Optype));
+    DEBUG_EXEC (if (Status != AE_OK) {return_ACPI_STATUS (Status);});
+
+
     /* Decode the opcode */
 
     switch (Optype)
     {
     case OPTYPE_UNDEFINED:
 
-        DEBUG_PRINT (ACPI_ERROR, ("EndOp: Undefined opcode type Op=%X\n",
+        DEBUG_PRINT (ACPI_ERROR, ("ExecEndOp: Undefined opcode type Op=%X\n",
                         Op));
         return_ACPI_STATUS (AE_NOT_IMPLEMENTED);
         break;
 
 
     case OPTYPE_BOGUS:
-        DEBUG_PRINT (ACPI_ERROR, ("EndOp: Ignoring bogus opcode=%X type Op=%X\n",
+        DEBUG_PRINT (TRACE_PARSE, ("ExecEndOp: Internal opcode=%X type Op=%X\n",
                         Opcode, Op));
         break;
 
@@ -438,13 +472,13 @@ PsxExecEndOp (
 
     case OPTYPE_METHOD_CALL: 
 
-        DEBUG_PRINT (TRACE_PARSE, ("EndOp: Method invocation, Op=%X\n", Op));
+        DEBUG_PRINT (TRACE_PARSE, ("ExecEndOp: Method invocation, Op=%X\n", Op));
 
         /*
-         * (AML_METHODCALL) Op->Value->Arg->ResultObj contains the method NTE pointer
+         * (AML_METHODCALL) Op->Value->Arg->NameTableEntry contains the method NTE pointer
          */
         NextOp = FirstArg;          /* NextOp points to the op that holds the method name */
-        Entry = NextOp->ResultObj;
+        Entry = NextOp->NameTableEntry;
 
         NextOp = NextOp->Next;      /* NextOp points to first argument op */
 
@@ -471,13 +505,14 @@ PsxExecEndOp (
         }
 
         /* Open new scope on the scope stack */
-
+/*
         Status = NsScopeStackPushEntry (Entry);
         if (ACPI_FAILURE (Status))
         {
-            DEBUG_PRINT (ACPI_ERROR, ("EndOp: Could not push Scope Stack\n"));
+            DEBUG_PRINT (ACPI_ERROR, ("ExecEndOp: Could not push Scope Stack\n"));
             break;
         }
+*/
 
         /* Tell the walk loop to preempt this running method and execute the new method */
 
@@ -491,7 +526,7 @@ PsxExecEndOp (
 
     case OPTYPE_RECONFIGURATION:
 
-        DEBUG_PRINT (ACPI_ERROR, ("EndOp: Unimplemented reconfig opcode=%X Op=%X\n",
+        DEBUG_PRINT (ACPI_ERROR, ("ExecEndOp: Unimplemented reconfig opcode=%X Op=%X\n",
                         Op->Opcode, Op));
 
         Status = AE_NOT_IMPLEMENTED;
@@ -500,11 +535,18 @@ PsxExecEndOp (
 
     case OPTYPE_NAMED_OBJECT:
 
+
+        if ((WalkState->Origin->Opcode == AML_MethodOp) &&
+            (WalkState->Origin != Op))
+        {
+            PsxLoad2EndOp (WalkState, Op);
+        }
+
         switch (Op->Opcode)
         {
         case AML_RegionOp:
 
-            DEBUG_PRINT (TRACE_EXEC, ("EndOp: Executing OpRegion Address/Length Op=%X\n",
+            DEBUG_PRINT (TRACE_EXEC, ("ExecEndOp: Executing OpRegion Address/Length Op=%X\n",
                             Op));
 
             Status = PsxEvalRegionOperands (WalkState, Op);
@@ -520,20 +562,31 @@ PsxExecEndOp (
             break;
 
 
-        default:
-            DEBUG_PRINT (TRACE_EXEC, ("EndOp: Unimplemented Named object, opcode= Op=%X\n",
-                            Op->Opcode, Op));
+        case AML_AliasOp:
 
+            /* Alias creation was already handled by call to psxload above */
+
+            break;
+
+
+        default:
             /* TBD: Nothing to do here at this time */
 
             Status = AE_OK;
             break;
         }
+        
+        break;
 
     default:
 
+        DEBUG_PRINT (ACPI_ERROR, ("ExecEndOp: Unimplemented opcode, type=%X Opcode=%X Op=%X\n",
+                        Optype, Op->Opcode, Op));
+
+        Status = AE_NOT_IMPLEMENTED;
         break;
     }
+
 
 
     /*
@@ -546,25 +599,53 @@ PsxExecEndOp (
     {
         /* Completed the predicate, the result must be a number */
 
+        WalkState->ControlState->Exec = 0;
 
 /* TBD: REDO now that we have the resultobj mechanism */
 
-        Status = PsxResultStackPop (&ObjDesc, WalkState);
-        if (ACPI_FAILURE (Status))
+        if (ResultObj)
         {
-            goto Cleanup;
+            Status = PsxResultStackPop (&ObjDesc, WalkState);
+            if (ACPI_FAILURE (Status))
+            {
+                goto Cleanup;
+            }
         }
 
-        if ((!ObjDesc) ||
-            (ObjDesc->Common.Type != ACPI_TYPE_Number))
+        else
         {
-            DEBUG_PRINT (ACPI_ERROR, ("EndOp: Bad predicate ObjDesc=%X State=%X\n",
+            Status = PsxCreateOperand (WalkState, Op);
+            if (ACPI_FAILURE (Status))
+            {
+                goto Cleanup;
+            }
+
+            Status = AmlGetRvalue (&WalkState->Operands [0]);
+            if (ACPI_FAILURE (Status))
+            {
+                goto Cleanup;
+            }
+
+            ObjDesc = WalkState->Operands [0];
+        }
+
+        if (!ObjDesc)
+        {
+            DEBUG_PRINT (ACPI_ERROR, ("ExecEndOp: No predicate ObjDesc=%X State=%X\n",
                             ObjDesc, WalkState));
 
-            Status = AE_AML_ERROR;
+            Status = AE_AML_NO_OPERAND;
             goto Cleanup;
         }
 
+        if (ObjDesc->Common.Type != ACPI_TYPE_Number)
+        {
+            DEBUG_PRINT (ACPI_ERROR, ("ExecEndOp: Bad predicate ObjDesc=%X State=%X\n",
+                            ObjDesc, WalkState));
+
+            Status = AE_AML_OPERAND_TYPE;
+            goto Cleanup;
+        }
         /* Save the result of the predicate evaluation on the control stack */
 
         if (ObjDesc->Number.Value)
@@ -579,8 +660,12 @@ PsxExecEndOp (
             Status = AE_FALSE;
         }
 
-        DEBUG_PRINT (TRACE_EXEC, ("EndOp: Completed a predicate eval=%X Op=%X\n",
+        DEBUG_PRINT (TRACE_EXEC, ("ExecEndOp: Completed a predicate eval=%X Op=%X\n",
                         WalkState->ControlState->Predicate, Op));
+
+         /* Break to debugger to display result */
+
+        DEBUG_EXEC (DbDisplayResultObject (ObjDesc));
 
         /* Delete the predicate result object (we know that we don't need it anymore) and cleanup the stack */
 
@@ -597,6 +682,10 @@ Cleanup:
 
     if (ResultObj)
     {
+        /* Break to debugger to display result */
+
+        DEBUG_EXEC (DbDisplayResultObject (ResultObj));
+
         /* Delete the result op IFF:
          * Parent will not use the result -- such as any non-nested type2 op in a method (parent will be method)
          */

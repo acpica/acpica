@@ -155,6 +155,8 @@ PsxInitOneObject (
     void                    **ReturnValue)
 {
     ACPI_OBJECT_TYPE        Type;
+    ACPI_STATUS             Status;
+    ACPI_OBJECT_INTERNAL    *ObjDesc;
 
 
     Type = NsGetType (ObjHandle);
@@ -172,9 +174,30 @@ PsxInitOneObject (
 
     case ACPI_TYPE_Method:
 
-        PsxParseMethod (ObjHandle);
-
         ((INIT_WALK_INFO *) Context)->MethodCount++;
+
+        /* Always parse methods to detect errors, we may delete the parse tree below */
+
+        Status = PsxParseMethod (ObjHandle);
+
+        /* TBD: what do we do with an error? */
+
+        if (ACPI_FAILURE (Status))
+        {
+            DEBUG_PRINT (ACPI_ERROR, ("PsxInitOneObject: Method %p [%4.4s] parse failed! %x\n", 
+                                        ObjHandle, ((NAME_TABLE_ENTRY *)ObjHandle)->Name, Status));
+            break;
+        }
+
+        /* Keep the parse tree only if we are parsing all methods at init time (versus just-in-time) */
+
+        if (Gbl_WhenToParseMethods != METHOD_PARSE_AT_INIT)
+        {
+            ObjDesc = ((NAME_TABLE_ENTRY *)ObjHandle)->Object; 
+            PsDeleteParseTree (ObjDesc->Method.ParserOp);
+            ObjDesc->Method.ParserOp = NULL;
+        }
+
         break;
 
     default:
@@ -234,6 +257,174 @@ PsxInitializeObjects (void)
 }
 
 
+/*****************************************************************************
+ *
+ * FUNCTION:    PsxInitObjectFromOp
+ *
+ * PARAMETERS:  Op              - Parser op used to init the internal object
+ *              Opcode          - AML opcode associated with the object
+ *              ObjDesc         - Namespace object to be initialized
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Initialize a namespace object from a parser Op and its 
+ *              associated arguments.  The namespace object is a more compact
+ *              representation of the Op and its arguments.
+ *
+ ****************************************************************************/
+
+ACPI_STATUS
+PsxInitObjectFromOp (
+    ACPI_WALK_STATE         *WalkState,
+    ACPI_GENERIC_OP         *Op,
+    UINT16                  Opcode,
+    ACPI_OBJECT_INTERNAL    *ObjDesc)
+{
+    ACPI_STATUS             Status;
+    ACPI_GENERIC_OP         *Arg;
+    ACPI_BYTELIST_OP        *ByteList;
+    ACPI_OBJECT_INTERNAL    *ArgDesc;
+    ACPI_OP_INFO            *OpInfo;
+
+
+
+    OpInfo = PsGetOpcodeInfo (Opcode);
+    if (!OpInfo)
+    {
+        /* Unknown opcode */
+
+        return AE_TYPE;
+    }
+
+
+
+    /* Get and prepare the first argument */
+
+    switch (ObjDesc->Common.Type)
+    {
+    case ACPI_TYPE_Buffer:
+
+        /* First arg is a number */
+
+        PsxCreateOperand (WalkState, Op->Value.Arg);
+        ArgDesc = WalkState->Operands [WalkState->NumOperands - 1];
+        PsxObjStackPop (1, WalkState);
+
+        /* Resolve the object (could be an arg or local) */
+
+        Status = AmlGetRvalue (&ArgDesc);
+        if (ACPI_FAILURE (Status))
+        {
+            CmDeleteInternalObject (ArgDesc);
+            return Status;
+        }
+
+        /* We are expecting a number */
+
+        if (ArgDesc->Common.Type != ACPI_TYPE_Number)
+        {
+            DEBUG_PRINT (ACPI_ERROR, ("InitObject: Expecting number, got obj: %p type %X\n",
+                            ArgDesc, ArgDesc->Common.Type));
+            CmDeleteInternalObject (ArgDesc);
+            return AE_TYPE;
+        }
+ 
+        /* Get the value, delete the internal object */
+
+        ObjDesc->Buffer.Length = ArgDesc->Number.Value;
+        CmDeleteInternalObject (ArgDesc);
+
+        /* Allocate the buffer */
+
+        ObjDesc->Buffer.Pointer = CmCallocate (ObjDesc->Buffer.Length);
+        if (!ObjDesc->Buffer.Pointer)
+        {
+            return AE_NO_MEMORY;
+        }
+
+        /* Second arg is the buffer data (optional) */
+        /* ByteList can be either individual bytes or a string initializer! */
+
+        Arg = Op->Value.Arg;        /* skip first arg */
+        ByteList = (ACPI_BYTELIST_OP *) Arg->Next;
+        if (ByteList)
+        {
+            if (ByteList->Opcode != AML_BYTELIST)
+            {
+                DEBUG_PRINT (ACPI_ERROR, ("InitObject: Expecting bytelist, got: %x\n",
+                                ByteList));
+                return AE_TYPE;
+            }
+
+            MEMCPY (ObjDesc->Buffer.Pointer, ByteList->Data, ObjDesc->Buffer.Length);
+        }
+
+        break;
+
+
+    case ACPI_TYPE_Number:
+        ObjDesc->Number.Value = Op->Value.Integer;
+        break;
+
+
+    case ACPI_TYPE_String:
+        ObjDesc->String.Pointer = Op->Value.String;
+        ObjDesc->String.Length = STRLEN (Op->Value.String);
+        break;
+
+
+    case ACPI_TYPE_Method:
+        break;
+
+
+    case INTERNAL_TYPE_Lvalue:
+
+        switch (OpInfo->Flags & OP_INFO_TYPE)
+        {
+        case OPTYPE_LOCAL_VARIABLE:
+
+            /* Split the opcode into a base opcode + offset */
+
+            ObjDesc->Lvalue.OpCode = AML_LocalOp;
+            ObjDesc->Lvalue.Offset = Opcode - AML_LocalOp;
+            break;
+
+        case OPTYPE_METHOD_ARGUMENT:
+
+            /* Split the opcode into a base opcode + offset */
+
+            ObjDesc->Lvalue.OpCode = AML_ArgOp;
+            ObjDesc->Lvalue.Offset = Opcode - AML_ArgOp;
+            break;
+
+        default: /* Constants, Literals, etc.. */
+
+            if (Op->Opcode == AML_NAMEPATH)
+            {
+                /* Nte was saved in Op */
+
+                ObjDesc->Lvalue.Nte = Op->NameTableEntry;
+            }
+
+            ObjDesc->Lvalue.OpCode = Opcode;
+            break;
+        }
+
+        break;
+
+
+    default:
+
+        DEBUG_PRINT (ACPI_ERROR, ("InitObject: Unimplemented data type: %x\n",
+                        ObjDesc->Common.Type));
+
+        break;
+    }
+
+    return AE_OK;
+}
+
+
 
 /*****************************************************************************
  *
@@ -251,6 +442,7 @@ PsxInitializeObjects (void)
 
 ACPI_STATUS
 PsxBuildInternalSimpleObj (
+    ACPI_WALK_STATE         *WalkState,
     ACPI_GENERIC_OP         *Op,
     ACPI_OBJECT_INTERNAL    **ObjDescPtr)
 {
@@ -262,7 +454,38 @@ PsxBuildInternalSimpleObj (
     FUNCTION_TRACE ("PsxBuildInternalSimpleObj");
 
 
-    Type = PsxMapOpcodeToDataType (Op->Opcode, NULL);
+    if (Op->Opcode == AML_NAMEPATH)
+    {
+        /*
+         * This is an object reference.  If The name was previously looked up in the NS,
+         * it is stored in this op.  Otherwise, go ahead and look it up now
+         */
+
+        if (!Op->NameTableEntry)
+        {
+            Status = NsLookup (WalkState->ScopeInfo, Op->Value.String, ACPI_TYPE_Any, IMODE_Execute, 
+                                        NS_SEARCH_PARENT | NS_DONT_OPEN_SCOPE, NULL, &((NAME_TABLE_ENTRY *) Op->NameTableEntry));
+            if (ACPI_FAILURE (Status))
+            {
+                return_ACPI_STATUS (Status);
+            }
+        }
+
+        /*
+         * The reference will be an Lvalue
+         * TBD: unless we really need a separate type of INTERNAL_TYPE_reference
+         * TBD: change PsxMapOpcodeToDataType to handle this case 
+         */
+        Type = INTERNAL_TYPE_Lvalue;
+    }
+
+    else
+    {
+        Type = PsxMapOpcodeToDataType (Op->Opcode, NULL);
+    }
+
+
+    /* Create and init the internal ACPI object */
 
     ObjDesc = CmCreateInternalObject (Type);
     if (!ObjDesc)
@@ -270,10 +493,10 @@ PsxBuildInternalSimpleObj (
         return_ACPI_STATUS (AE_NO_MEMORY);
     }
 
-    Status = PsxInitObjectFromOp (Op, Op->Opcode, ObjDesc);
+    Status = PsxInitObjectFromOp (WalkState, Op, Op->Opcode, ObjDesc);
     if (ACPI_FAILURE (Status))
     {
-        CmFree (ObjDesc);
+        CmDeleteInternalObject (ObjDesc);
         return_ACPI_STATUS (Status);
     }
 
@@ -299,6 +522,7 @@ PsxBuildInternalSimpleObj (
 
 ACPI_STATUS
 PsxBuildInternalPackageObj (
+    ACPI_WALK_STATE         *WalkState,
     ACPI_GENERIC_OP         *Op,
     ACPI_OBJECT_INTERNAL    **ObjDescPtr)
 {
@@ -349,12 +573,12 @@ PsxBuildInternalPackageObj (
     {
         if (Arg->Opcode == AML_PackageOp)
         {
-            Status = PsxBuildInternalPackageObj (Arg, ObjDesc->Package.NextElement);
+            Status = PsxBuildInternalPackageObj (WalkState, Arg, ObjDesc->Package.NextElement);
         }
         
         else
         {
-            Status = PsxBuildInternalSimpleObj (Arg, ObjDesc->Package.NextElement);
+            Status = PsxBuildInternalSimpleObj (WalkState, Arg, ObjDesc->Package.NextElement);
         }
 
         ObjDesc->Package.NextElement++;
@@ -381,6 +605,7 @@ PsxBuildInternalPackageObj (
 
 ACPI_STATUS
 PsxBuildInternalObject (
+    ACPI_WALK_STATE         *WalkState,
     ACPI_GENERIC_OP         *Op,
     ACPI_OBJECT_INTERNAL    **ObjDescPtr)
 {
@@ -389,18 +614,85 @@ PsxBuildInternalObject (
 
     if (Op->Opcode == AML_PackageOp)
     {
-        Status = PsxBuildInternalPackageObj (Op, ObjDescPtr);
+        Status = PsxBuildInternalPackageObj (WalkState, Op, ObjDescPtr);
     }
     
     else
     {
-        Status = PsxBuildInternalSimpleObj (Op, ObjDescPtr);
+        Status = PsxBuildInternalSimpleObj (WalkState, Op, ObjDescPtr);
     }
 
     return (Status);
 }
 
 
+
+/*****************************************************************************
+ *
+ * FUNCTION:    PsxCreateNamedObject
+ *
+ * PARAMETERS:  Op              - Parser object to be translated
+ *              ObjDescPtr      - Where the ACPI internal object is returned
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: 
+ *
+ ****************************************************************************/
+
+ACPI_STATUS
+PsxCreateNamedObject (
+    ACPI_WALK_STATE         *WalkState,
+    NAME_TABLE_ENTRY        *Entry,
+    ACPI_GENERIC_OP         *Op)
+{
+    ACPI_STATUS             Status;
+    ACPI_OBJECT_INTERNAL    *ObjDesc;
+
+
+
+    FUNCTION_TRACE_PTR ("PsxCreateNamedObject", Op);
+
+
+    if (!Op->Value.Arg)
+    {
+        /* No arguments, there is nothing to do */
+
+        return_ACPI_STATUS (AE_OK);
+    }
+
+
+    /* Build an internal object for the argument(s) */
+
+    Status = PsxBuildInternalObject (WalkState, Op->Value.Arg, &ObjDesc);
+    if (ACPI_FAILURE (Status))
+    {
+        goto Cleanup;
+    }
+
+
+    /* Re-type the object according to it's argument */
+
+    Entry->Type = ObjDesc->Common.Type;
+    
+    /* Init obj */
+
+    Status = NsAttachObject ((ACPI_HANDLE) Entry, ObjDesc, (UINT8) Entry->Type);
+    if (ACPI_FAILURE (Status))
+    {
+        goto Cleanup;
+    }
+
+    return_ACPI_STATUS (Status);
+
+
+
+Cleanup:
+
+    CmDeleteInternalObject (ObjDesc);
+
+    return_ACPI_STATUS (Status);
+}
 
 
 

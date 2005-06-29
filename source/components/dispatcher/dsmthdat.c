@@ -127,6 +127,8 @@
         MODULE_NAME         ("psxmargs");
 
 
+#define NAMEOF_LOCAL_NTE    "__L0"
+#define NAMEOF_ARG_NTE      "__A0"
 
 /*****************************************************************************
  * 
@@ -185,6 +187,9 @@ PsxMthStackInit (
 
     /*
      * WalkState fields are initialized to zero by the CmCallocate().
+     *
+     * An NTE is assigned to each argument and local so that RefOf() can return
+     * a pointer to the NTE.
      */
 
     /* Init the method arguments */
@@ -193,16 +198,16 @@ PsxMthStackInit (
     {
         WalkState->Arguments[i].DataType        = DESC_TYPE_NTE;
         WalkState->Arguments[i].Type            = INTERNAL_TYPE_MethodArgument;
-        WalkState->Arguments[i].Name            = *((UINT32 *) "__A0") | (i << 24);
+        WalkState->Arguments[i].Name            = *((UINT32 *) NAMEOF_ARG_NTE) | (i << 24);
     }
 
-    /* Init the method arguments */
+    /* Init the method locals */
 
-    for (i = 0; i < MTH_NUM_ARGS; i++)
+    for (i = 0; i < MTH_NUM_LOCALS; i++)
     {
         WalkState->LocalVariables[i].DataType   = DESC_TYPE_NTE;
         WalkState->LocalVariables[i].Type       = INTERNAL_TYPE_MethodLocalVar;
-        WalkState->LocalVariables[i].Name       = *((UINT32 *) "__L0") | (i << 24);
+        WalkState->LocalVariables[i].Name       = *((UINT32 *) NAMEOF_LOCAL_NTE) | (i << 24);
     }
 
 
@@ -240,7 +245,8 @@ PsxMthStackPush (
  *
  * RETURN:      Status
  *
- * DESCRIPTION: Pop the method stack (once)
+ * DESCRIPTION: Delete method locals and arguments.  Arguments are only
+ *              deleted if this method was called from another method.
  *
  ****************************************************************************/
 
@@ -276,13 +282,17 @@ PsxMthStackDeleteArgs (
         if (Object)
         {
             CmUpdateObjectReference (Object, REF_DECREMENT);   /* Removed from Stack */
-            CmDeleteInternalObject (Object);
+            if (Object->Common.ReferenceCount <= 1)
+            {
+                /* Delete the object since it has no owner  */
+
+                CmDeleteInternalObject (Object);
+            }
         }
     }
 
     return_ACPI_STATUS (AE_OK);
 }
-
 
 
 /*****************************************************************************
@@ -324,9 +334,9 @@ PsxMthStackInitArgs (
         {
             /*
              * A valid parameter.
-             * define Params[Pindex++] argument object descriptor   
+             * Set the current method argument to the Params[Pindex++] argument object descriptor   
              */
-            Status = PsxMthStackSetValue (MTH_TYPE_ARG, Mindex, Params[Pindex], NULL);
+            Status = PsxMthStackSetValue (MTH_TYPE_ARG, Mindex, Params[Pindex]);
             if (ACPI_FAILURE (Status))
             {
                 break;
@@ -456,9 +466,12 @@ PsxMthStackSetEntry (
         return_ACPI_STATUS (Status);
     }
 
-    /* Install the object into the stack entry */
+    /* Increment ref count so object can't be deleted while installed */
 
     CmUpdateObjectReference (Object, REF_INCREMENT);
+    
+    /* Install the object into the stack entry */
+
     *Entry = Object;
 
     return_ACPI_STATUS (AE_OK);
@@ -600,7 +613,7 @@ ACPI_STATUS
 PsxMthStackGetValue (
     UINT32                  Type,
     UINT32                  Index, 
-    ACPI_OBJECT_INTERNAL    *DestDesc)
+    ACPI_OBJECT_INTERNAL    **DestDesc)
 {
     ACPI_STATUS             Status;
     ACPI_OBJECT_INTERNAL    **Entry;
@@ -648,35 +661,25 @@ PsxMthStackGetValue (
         case MTH_TYPE_ARG:
             DEBUG_PRINT (ACPI_ERROR, ("PsxMthStackGetValue: Uninitialized Arg[%d] at entry %X\n",
                             Index, Entry));
+            return_ACPI_STATUS (AE_AML_UNINITIALIZED_ARG);
             break;
 
         case MTH_TYPE_LOCAL:
             DEBUG_PRINT (ACPI_ERROR, ("PsxMthStackGetValue: Uninitialized Local[%d] at entry %X\n",
                             Index, Entry));
+            return_ACPI_STATUS (AE_AML_UNINITIALIZED_LOCAL);
             break;
         }
-
-        return_ACPI_STATUS (AE_AML_ERROR);
     }
 
 
     /* 
      * Index points to initialized and valid object stack value.
-     * Copy the object to the descriptor supplied by the caller.
+     * Return an additional reference to the object
      */
 
-    Status = CmCopyInternalObject (Object, DestDesc);
-    if (ACPI_FAILURE (Status))
-    {
-        return_ACPI_STATUS (Status);
-    }
-
-    if (ACPI_TYPE_Buffer == DestDesc->Common.Type)
-    {
-        /* Assign a new sequence number to track buffer usage */
-    
-        DestDesc->Buffer.Sequence = AmlBufSeq ();
-    }
+    *DestDesc = Object;
+    CmUpdateObjectReference (Object, REF_INCREMENT);
 
     return_ACPI_STATUS (AE_OK);
 }
@@ -721,11 +724,18 @@ PsxMthStackDeleteValue (
 
     Object = *Entry;
 
+    /* Always clear the entry */
+
+    *Entry = NULL;
+
     /* 
      * Undefine the Arg or Local by setting its descriptor pointer to NULL.
      * If it is currently defined, delete the old descriptor first.
+     *
+     * Locals/Args can contain both ACPI_OBJECT_INTERNALs and NAME_TABLE_ENTRYs
      */
-    if (Object)
+    if ((Object) &&
+        (VALID_DESCRIPTOR_TYPE (Object, DESC_TYPE_ACPI_OBJ)))
     {
         /*
          * There is a valid object in this slot, go ahead and delete
@@ -741,17 +751,20 @@ PsxMthStackDeleteValue (
              *
              * TBD: Is this still necessary??
              */
-            Object->Buffer.Sequence ^= 0x80000000UL;
+            Object->Buffer.Sequence ^= 0x80000000;
         }
 
-        CmUpdateObjectReference (Object, REF_DECREMENT);   /* Removed from Stack */
+
+        /* 
+         * Decrement the reference count by one to balance the increment when the 
+         * object was put on the stack.  Then we can attempt to delete it.
+         */
+
+        CmUpdateObjectReference (Object, REF_DECREMENT);
         CmDeleteInternalObject (Object);
     }
 
 
-    /* Always clear the entry */
-
-    *Entry = NULL;
     return_ACPI_STATUS (AE_OK);
 }
 
@@ -771,9 +784,9 @@ PsxMthStackDeleteValue (
  *
  * RETURN:      Status
  *
- * DESCRIPTION: Store a value in an Arg or Local.  The SrcDesc is _copied_
- *              into the supplied dest descriptor, or a new one is allocated.
- *              The SrcDesc is _not_ directly entered onto the stack.
+ * DESCRIPTION: Store a value in an Arg or Local.  The SrcDesc is installed
+ *              as the new value for the Arg or Local and the reference count
+ *              is incremented.
  *
  ****************************************************************************/
 
@@ -781,17 +794,15 @@ ACPI_STATUS
 PsxMthStackSetValue (
     UINT32                  Type,
     UINT32                  Index, 
-    ACPI_OBJECT_INTERNAL    *SrcDesc, 
-    ACPI_OBJECT_INTERNAL    *DestDesc)
+    ACPI_OBJECT_INTERNAL    *SrcDesc) 
 {
     ACPI_STATUS             Status;
     ACPI_OBJECT_INTERNAL    **Entry;
-    ACPI_OBJECT_INTERNAL    *NewDesc = NULL;
 
 
     FUNCTION_TRACE ("PsxMthStackSetValue");
-    DEBUG_PRINT (TRACE_EXEC, ("PsxMthStackSetValue: Type=%d Idx=%d Src=%p Dst=%p\n",
-                    Type, Index, SrcDesc, DestDesc));
+    DEBUG_PRINT (TRACE_EXEC, ("PsxMthStackSetValue: Type=%d Idx=%d Obj=%p\n",
+                    Type, Index, SrcDesc));
 
 
     /* Parameter validation */
@@ -799,21 +810,6 @@ PsxMthStackSetValue (
     if (!SrcDesc)
     {
         return_ACPI_STATUS (AE_BAD_PARAMETER);
-    }
-
-    /* If no destination provided, allocate one */
-
-    if (!DestDesc)
-    {
-        DestDesc = CmCreateInternalObject (SrcDesc->Common.Type);
-        if (!DestDesc)
-        {
-            /* Allocation failure  */
-
-            return_ACPI_STATUS (AE_NO_MEMORY);
-        }
-
-        NewDesc = DestDesc;
     }
 
 
@@ -825,37 +821,67 @@ PsxMthStackSetValue (
         goto Cleanup;
     }
 
-    /* If there is an object already in this stack slot, delete it */
+    if (*Entry == SrcDesc)
+    {
+        DEBUG_PRINT (TRACE_EXEC, ("PsxMthStackSetValue: Obj=%p already installed!\n",
+                        SrcDesc));
+        goto Cleanup;
+    }
+
+
+    /*
+     * If there is an object already in this slot, we either have to delete it, or if
+     * this is an argument and there is an object reference stored there, we have to do
+     * an indirect store!
+     */
 
     if (*Entry)
     {
+        /*
+         * Check for an indirect store if an argument contains an object reference (stored as an NTE).
+         * We don't allow this automatic dereferencing for locals, since a store to a local should overwrite
+         * anything there, including an object reference.
+         *
+         * If both Arg0 and Local0 contain RefOf (Local4):
+         *
+         * Store (1, Arg0)                  - Causes indirect store to local4
+         * Store (1, Local0)                - Stores 1 in local0, overwriting the reference to local4
+         * Store (1, DeRefof (Local0))      - Causes indirect store to local4
+         *
+         * Weird, but true.
+         */
+
+        if ((Type == MTH_TYPE_ARG) &&
+            (VALID_DESCRIPTOR_TYPE (*Entry, DESC_TYPE_NTE)))
+        {
+            DEBUG_PRINT (TRACE_EXEC, ("PsxMthStackSetValue: Arg (%p) is an ObjRef(NTE), storing in %p\n",
+                            SrcDesc, *Entry));
+
+            /* Detach an existing object from the NTE */
+
+            NsDetachObject (*Entry);
+
+            /* Store this object into the NTE (do the indirect store) */
+
+            Status = NsAttachObject (*Entry, SrcDesc, SrcDesc->Common.Type);
+            return_ACPI_STATUS (Status);
+        }
+
+
+        /* Otherwise, just delete the existing object before storing the new one */
+
         PsxMthStackDeleteValue (Type, Index);
     }
 
 
     /* 
-     * Copy the ObjStack descriptor (*SrcDesc) into the descriptor for the
+     * Install the ObjStack descriptor (*SrcDesc) into the descriptor for the
      * Arg or Local.
+     * Install the new object in the stack entry
+     * (increments the object reference count by one)
      */
 
-    Status = CmCopyInternalObject (SrcDesc, DestDesc);
-    if (ACPI_FAILURE (Status))
-    {
-        goto Cleanup;
-    }
-
-    if (ACPI_TYPE_Buffer == DestDesc->Common.Type)
-    {
-
-        /* Assign a new sequence number to track buffers */
-
-        DestDesc->Buffer.Sequence = AmlBufSeq ();
-    }
-
-
-    /* Install the new object in the stack entry */
-
-    Status = PsxMthStackSetEntry (Type, Index, DestDesc);
+    Status = PsxMthStackSetEntry (Type, Index, SrcDesc);
     if (ACPI_FAILURE (Status))
     {
         goto Cleanup;
@@ -869,10 +895,6 @@ PsxMthStackSetValue (
     /* Error exit */
 
 Cleanup:
-    if (NewDesc)
-    {
-        CmDeleteInternalObject (NewDesc);   /* Allocated because DestDesc was null */
-    }
 
     return_ACPI_STATUS (Status);
 }

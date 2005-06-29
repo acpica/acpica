@@ -153,10 +153,11 @@ PsxParseMethod (
     ACPI_OBJECT_INTERNAL    *ObjDesc;
     ACPI_GENERIC_OP         *Op;
     NAME_TABLE_ENTRY        *Entry;
-    INIT_WALK_INFO          Info;
 
 
-    DEBUG_PRINT (TRACE_PARSE, ("PsParseMethod: [%4.4s] Nte=%p\n", 
+    FUNCTION_TRACE ("PsxParseMethod");
+
+    DEBUG_PRINT (ACPI_INFO, ("PsxParseMethod: **** Parsing [%4.4s] **** Nte=%p\n", 
                     &((NAME_TABLE_ENTRY *)ObjHandle)->Name, ObjHandle));
 
 
@@ -165,69 +166,59 @@ PsxParseMethod (
     Entry = (NAME_TABLE_ENTRY *) ObjHandle;
     ObjDesc = Entry->Object;
 
+    /* Create a mutex for the method if there is a concurrency limit */
+
+    if ((ObjDesc->Method.Concurrency != INFINITE_CONCURRENCY) &&
+        (!ObjDesc->Method.Semaphore))
+    {
+        Status = OsdCreateSemaphore (ObjDesc->Method.Concurrency, &ObjDesc->Method.Semaphore);
+        if (ACPI_FAILURE (Status))
+        {
+            return_ACPI_STATUS (Status);
+        }
+    }
+
     /* Allocate a new parser op to be the root of the parsed method tree */
 
     Op = PsAllocOp (AML_MethodOp);
     if (!Op)
     {
-        return AE_NO_MEMORY;
+        return_ACPI_STATUS (AE_NO_MEMORY);
     }
 
     /* Init new op with the method name and pointer back to the NTE */
 
     PsSetName (Op, Entry->Name);
-    Op->ResultObj = Entry;
+    Op->NameTableEntry = Entry;
 
-    /* Open a new scope */
-
-    Status = NsScopeStackPush (Entry->Scope, ACPI_TYPE_Method);
-    if (ACPI_FAILURE (Status))
-    {
-        return Status;
-    }
 
     /* Parse the method, creating a parse tree */
 
     Status = PsParseAml (Op, ObjDesc->Method.Pcode, ObjDesc->Method.PcodeLength);
     if (ACPI_FAILURE (Status))
     {
-        return Status;
+        return_ACPI_STATUS (Status);
     }
 
-    /* 
-     * Walk the method parse tree to enter any named objects declared within the
-     * method into the namespace.  Don't include the method op in the walk, start with
-     * first arg.
-     */
-    PsWalkParsedAml (PsGetArg (Op, 0), Op, NULL, NULL, PsxLoadBeginMethodOp, PsxLoadEndOp);
 
+	/*
+	 * Make a first pass walk to add newly declared items to the namespace.
+	 * (The first pass only adds the names, it does not evaluate them)
+	 * The second pass occurs during the actual execution of the method
+	 * so that operands are evaluated dynamically.
+	 */
 
-    /*
-     * Now walk the namespace under the method to initialize any objects that have been declared
-     */
-
-
-    DEBUG_PRINT (TRACE_PARSE, ("PsParseMethod: [%4.4s] Nte=%p About to Walk new NS \n", 
-                    &((NAME_TABLE_ENTRY *)ObjHandle)->Name, ObjHandle));
-BREAKPOINT3;
-    Info.MethodCount = 0;
-    Info.OpRegionCount = 0;
-    Status = AcpiWalkNamespace (ACPI_TYPE_Any, Entry, ACPI_INT32_MAX, PsxInitOneObject, 
-                                &Info, NULL);
-
-    if (Info.MethodCount > 0)
-    {
-        DEBUG_PRINT (ACPI_ERROR, ("PsxParseMethod:  Found a method declared within a method! Nte=%p\n", Entry));
-    }
-
-    NsScopeStackPop (ACPI_TYPE_Any);
-
+    PsWalkParsedAml (PsGetChild (Op), Op, ObjDesc, Entry->Scope, NULL, NULL,
+                        PsxLoad1BeginOp, PsxLoad1EndOp);
 
     /* Install the parsed tree in the method object */
 
     ObjDesc->Method.ParserOp = Op;
 
-    return Status;
+    DEBUG_PRINT (ACPI_INFO, ("PsxParseMethod: **** [%4.4s] Parsed **** Nte=%p Op=%p\n", 
+                    &((NAME_TABLE_ENTRY *)ObjHandle)->Name, ObjHandle, Op));
+
+    return_ACPI_STATUS (Status);
 }
 
 
@@ -253,7 +244,10 @@ PsxCallControlMethod (
     ACPI_STATUS             Status;
     ACPI_DEFERRED_OP        *Method;
     NAME_TABLE_ENTRY        *MethodNte;
+    ACPI_OBJECT_INTERNAL    *ObjDesc;
     ACPI_WALK_STATE         *NextWalkState;
+    UINT32                  NumArgs;
+    UINT32                  i;
 
 
     FUNCTION_TRACE_PTR ("PsxCallControlMethod", ThisWalkState);
@@ -262,36 +256,60 @@ PsxCallControlMethod (
                         ThisWalkState->PrevOp, ThisWalkState));
     BREAKPOINT3;
 
-    /* Move this code to the ParseAml procedure? */
+
+    /* TBD: Move this code to the ParseAml procedure? */
 
     /*
      * PrevOp points to the METHOD_CALL Op.
      * Get the NTE entry (in the METHOD_CALL->NAME Op) and the corresponding METHOD Op
      */
 
-    MethodNte = (ThisWalkState->PrevOp->Value.Arg)->ResultObj;
-    Method = ((ACPI_OBJECT_INTERNAL *) MethodNte->Object)->Method.ParserOp;
-    if (!Method)
+    MethodNte   = (ThisWalkState->PrevOp->Value.Arg)->NameTableEntry;
+    ObjDesc  = NsGetAttachedObject (MethodNte);
+
+    /*
+     * If the method isn't parsed yet (no parse tree), we must parse it.
+     */
+    if (!ObjDesc->Method.ParserOp)
     {
         DEBUG_PRINT (TRACE_PARSE, ("PsxCall, parsing control method\n"));
 
-        DEBUG_PRINT (ACPI_ERROR, ("PsxCall, Method not parsed!!! \n"));
-
-        /* Method has not been parsed! */
-        /* TBD: Parse method */
+        Status = PsxParseMethod (MethodNte);
+        if (ACPI_FAILURE (Status))
+        {
+            return_ACPI_STATUS (Status);
+        }
     }
 
-    /* Save the Op for when this walk is restarted */
+    /* Get the parse tree and parameter count */
 
-    ThisWalkState->PrevOp = Op;
+    Method      = ObjDesc->Method.ParserOp;
+    NumArgs     = ObjDesc->Method.ParamCount;
+
+    /* Save the (current) Op for when this walk is restarted */
+
+    ThisWalkState->MethodCallOp = ThisWalkState->PrevOp;
+    ThisWalkState->PrevOp       = Op;
 
     /* Create a new state for the preempting walk */
 
-    NextWalkState = PsCreateWalkState ((ACPI_GENERIC_OP *) Method, WalkList);
+    NextWalkState = PsCreateWalkState ((ACPI_GENERIC_OP *) Method, ObjDesc, WalkList);
     if (!NextWalkState)
     {
         return_ACPI_STATUS (AE_NO_MEMORY);
     }
+
+
+    /* Open a new scope */
+
+    Status = NsScopeStackPush (MethodNte->Scope, ACPI_TYPE_Method, NextWalkState);
+    if (ACPI_FAILURE (Status))
+    {
+        return_ACPI_STATUS (Status);
+    }
+
+
+    /* TBD: Do the operands always start at index 0? */
 
     /* 
      * Initialize the arguments for the method.  The resolved arguments were put 
@@ -306,13 +324,34 @@ PsxCallControlMethod (
 
     /* Delete the operands on the previous walkstate operand stack (they were copied to new objects) */
 
-    PsxObjStackDeleteAll (ThisWalkState);
+    for (i = 0; i < NumArgs; i++)
+    {
+        CmDeleteInternalObject (ThisWalkState->Operands [i]);
+    }
+
+    /* Clear the operand stack */
+
+    ThisWalkState->NumOperands = 0;
 
     /* The next op will be the beginning of the method */
 
     NextWalkState->NextOp = (ACPI_GENERIC_OP *) Method;
 
+    /* 
+     * If there is a concurrency limit on this method, we need to obtain a unit
+     * from the method semaphore.  This releases the interpreter if we block
+     */
 
+    if (ObjDesc->Method.Semaphore)
+    {
+        Status = OsLocalWaitSemaphore (ObjDesc->Method.Semaphore, WAIT_FOREVER);
+        if (ACPI_FAILURE (Status))
+        {
+            return_ACPI_STATUS (Status);
+        }
+    }
+
+ 
     DEBUG_PRINT (TRACE_PARSE, ("PsxCall, starting nested execution, newstate=%p\n", NextWalkState));
     BREAKPOINT3;
 
@@ -338,28 +377,24 @@ PsxRestartControlMethod (
     ACPI_WALK_STATE         *WalkState,
     ACPI_OBJECT_INTERNAL    *ReturnDesc)
 {
-    ACPI_GENERIC_OP         *MethodCallOp = NULL;
-
 
     FUNCTION_TRACE_PTR ("PsxRestartControlMethod", WalkState);
 
 
-    /* Get the return value (if any) from the previous method.  NULL if no return value */
+    if (ReturnDesc)
+    {
+        /* Get the return value (if any) from the previous method.  NULL if no return value */
 
-    PsxResultStackPush (ReturnDesc, WalkState);
+        PsxResultStackPush (ReturnDesc, WalkState);
+
+        /* Delete the return value if it will not be used by the calling method */
+
+        PsxDeleteResultIfNotUsed (WalkState->MethodCallOp, ReturnDesc, WalkState);
+    }
 
     DEBUG_PRINT (TRACE_PARSE, ("PsxRestart: Method=%p Return=%p State=%p\n", 
-                        MethodCallOp, ReturnDesc, WalkState));
+                        WalkState->MethodCallOp, ReturnDesc, WalkState));
 
-
-    /*
-     * Currently, the only way a method can be preempted is by the nested execution
-     * of another method.  Therefore, we can safely pop the scope stack here
-     * because we know that a nested control method just finished.
-     */
-    /* Pop scope stack */
-    
-    NsScopeStackPop (ACPI_TYPE_Any);
 
     return_ACPI_STATUS (AE_OK);
 }
