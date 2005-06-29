@@ -1,10 +1,11 @@
 
-/******************************************************************************
+/*******************************************************************************
  *
  * Module Name: hwregs - Read/write access functions for the various ACPI
  *                       control and status registers.
+ *              $Revision: 1.72 $
  *
- *****************************************************************************/
+ ******************************************************************************/
 
 /******************************************************************************
  *
@@ -118,20 +119,20 @@
 #define __HWREGS_C__
 
 #include "acpi.h"
-#include "hardware.h"
-#include "namesp.h"
+#include "achware.h"
+#include "acnamesp.h"
 
 #define _COMPONENT          HARDWARE
-        MODULE_NAME         ("hwregs");
+        MODULE_NAME         ("hwregs")
 
 
 /* This matches the #defines in actypes.h. */
 
-ACPI_STRING SleepStateTable[] = {"\\_S0_","\\_S1_","\\_S2_","\\_S3_",
+NATIVE_CHAR *SleepStateTable[] = {"\\_S0_","\\_S1_","\\_S2_","\\_S3_",
                                  "\\_S4_","\\_S4B","\\_S5_"};
 
 
-/******************************************************************************
+/*******************************************************************************
  *
  * FUNCTION:    AcpiHwGetBitShift
  *
@@ -144,11 +145,11 @@ ACPI_STRING SleepStateTable[] = {"\\_S0_","\\_S1_","\\_S2_","\\_S3_",
  *
  ******************************************************************************/
 
-INT32
+UINT32
 AcpiHwGetBitShift (
     UINT32                  Mask)
 {
-    INT32                   Shift;
+    UINT32                  Shift;
 
 
     FUNCTION_TRACE ("HwGetBitShift");
@@ -161,7 +162,7 @@ AcpiHwGetBitShift (
 }
 
 
-/******************************************************************************
+/*******************************************************************************
  *
  * FUNCTION:    AcpiHwClearAcpiStatus
  *
@@ -184,38 +185,38 @@ AcpiHwClearAcpiStatus (void)
 
 
     DEBUG_PRINT (TRACE_IO, ("About to write %04X to %04X\n",
-                    ALL_FIXED_STS_BITS, (UINT16) AcpiGbl_FACP->Pm1aEvtBlk));
+                    ALL_FIXED_STS_BITS, (UINT16) AcpiGbl_FADT->Pm1aEvtBlk));
 
 
     AcpiCmAcquireMutex (ACPI_MTX_HARDWARE);
 
-    AcpiOsOut16 (AcpiGbl_FACP->Pm1aEvtBlk, (UINT16) ALL_FIXED_STS_BITS);
+    AcpiOsOut16 (AcpiGbl_FADT->Pm1aEvtBlk, (UINT16) ALL_FIXED_STS_BITS);
 
-    if (AcpiGbl_FACP->Pm1bEvtBlk)
+    if (AcpiGbl_FADT->Pm1bEvtBlk)
     {
-        AcpiOsOut16 ((UINT16) AcpiGbl_FACP->Pm1bEvtBlk,
+        AcpiOsOut16 ((UINT16) AcpiGbl_FADT->Pm1bEvtBlk,
                         (UINT16) ALL_FIXED_STS_BITS);
     }
 
     /* now clear the GPE Bits */
 
-    if (AcpiGbl_FACP->Gpe0BlkLen)
+    if (AcpiGbl_FADT->Gpe0BlkLen)
     {
-        GpeLength = (UINT16) DIV_2 (AcpiGbl_FACP->Gpe0BlkLen);
+        GpeLength = (UINT16) DIV_2 (AcpiGbl_FADT->Gpe0BlkLen);
 
         for (Index = 0; Index < GpeLength; Index++)
         {
-            AcpiOsOut8 ((AcpiGbl_FACP->Gpe0Blk + Index), (UINT8) 0xff);
+            AcpiOsOut8 ((AcpiGbl_FADT->Gpe0Blk + Index), (UINT8) 0xff);
         }
     }
 
-    if (AcpiGbl_FACP->Gpe1BlkLen)
+    if (AcpiGbl_FADT->Gpe1BlkLen)
     {
-        GpeLength = (UINT16) DIV_2 (AcpiGbl_FACP->Gpe1BlkLen);
+        GpeLength = (UINT16) DIV_2 (AcpiGbl_FADT->Gpe1BlkLen);
 
         for (Index = 0; Index < GpeLength; Index++)
         {
-            AcpiOsOut8 ((AcpiGbl_FACP->Gpe1Blk + Index), (UINT8) 0xff);
+            AcpiOsOut8 ((AcpiGbl_FADT->Gpe1Blk + Index), (UINT8) 0xff);
         }
     }
 
@@ -224,7 +225,7 @@ AcpiHwClearAcpiStatus (void)
 }
 
 
-/****************************************************************************
+/*******************************************************************************
  *
  * FUNCTION:    AcpiHwObtainSleepTypeRegisterData
  *
@@ -237,8 +238,7 @@ AcpiHwClearAcpiStatus (void)
  * DESCRIPTION: AcpiHwObtainSleepTypeRegisterData() obtains the SLP_TYP and
  *              SLP_TYPb values for the sleep state requested.
  *
-
- ***************************************************************************/
+ ******************************************************************************/
 
 ACPI_STATUS
 AcpiHwObtainSleepTypeRegisterData (
@@ -247,7 +247,7 @@ AcpiHwObtainSleepTypeRegisterData (
     UINT8                   *Slp_TypB)
 {
     ACPI_STATUS             Status = AE_OK;
-    ACPI_OBJECT_INTERNAL    *ObjDesc;
+    ACPI_OPERAND_OBJECT     *ObjDesc;
 
 
     FUNCTION_TRACE ("HwObtainSleepTypeRegisterData");
@@ -268,49 +268,69 @@ AcpiHwObtainSleepTypeRegisterData (
      */
 
     Status = AcpiNsEvaluateByName (SleepStateTable[SleepState], NULL, &ObjDesc);
-    if (AE_OK == Status)
+    if (ACPI_FAILURE (Status))
     {
-        if (ObjDesc)
-        {
-            /*
-             *  We got something, now ensure it is correct.  The object must
-             *  be a package and must have at least 2 numeric values as the
-             *  two elements
-             */
-
-            if ((ObjDesc->Common.Type != ACPI_TYPE_PACKAGE) ||
-                ((ObjDesc->Package.Elements[0])->Common.Type !=
-                    ACPI_TYPE_NUMBER) ||
-                ((ObjDesc->Package.Elements[1])->Common.Type !=
-                    ACPI_TYPE_NUMBER))
-            {
-                /* Invalid _Sx_ package type or value  */
-
-                REPORT_ERROR ("Object type returned from interpreter differs
-                                from expected value");
-                Status = AE_ERROR;
-            }
-            else
-            {
-                /*
-                 *  Valid _Sx_ package size, type, and value
-                 */
-                *Slp_TypA =
-                    (UINT8) (ObjDesc->Package.Elements[0])->Number.Value;
-
-                *Slp_TypB =
-                    (UINT8) (ObjDesc->Package.Elements[1])->Number.Value;
-            }
-
-            AcpiCmRemoveReference (ObjDesc);
-        }
+        return_ACPI_STATUS (Status);
     }
+
+    if (!ObjDesc)
+    {
+        REPORT_ERROR (("Missing Sleep State object\n"));
+        return_ACPI_STATUS (AE_NOT_EXIST);
+    }
+
+    /*
+     *  We got something, now ensure it is correct.  The object must
+     *  be a package and must have at least 2 numeric values as the
+     *  two elements
+     */
+
+    Status = AcpiCmResolvePackageReferences(ObjDesc);
+
+    if (ObjDesc->Package.Count < 2)
+    {
+        /* Must have at least two elements */
+
+        REPORT_ERROR (("Sleep State package does not have at least two elements\n"));
+        Status = AE_ERROR;
+    }
+
+    else if (((ObjDesc->Package.Elements[0])->Common.Type !=
+                ACPI_TYPE_NUMBER) ||
+             ((ObjDesc->Package.Elements[1])->Common.Type !=
+                ACPI_TYPE_NUMBER))
+    {
+        /* Must have two  */
+
+        REPORT_ERROR (("Sleep State package elements are not both of type Number\n"));
+        Status = AE_ERROR;
+    }
+
+    else
+    {
+        /*
+         *  Valid _Sx_ package size, type, and value
+         */
+        *Slp_TypA = (UINT8) (ObjDesc->Package.Elements[0])->Number.Value;
+
+        *Slp_TypB = (UINT8) (ObjDesc->Package.Elements[1])->Number.Value;
+    }
+
+
+    if (ACPI_FAILURE (Status))
+    {
+        DEBUG_PRINT (ACPI_ERROR,
+            ("SleepTypeRegisterData: Bad Sleep object %p type %X\n",
+            ObjDesc, ObjDesc->Common.Type));
+    }
+
+    AcpiCmRemoveReference (ObjDesc);
 
     return_ACPI_STATUS (Status);
 }
 
 
-/******************************************************************************
+/*******************************************************************************
  *
  * FUNCTION:    AcpiHwRegisterAccess
  *
@@ -348,7 +368,7 @@ AcpiHwRegisterAccess (
         va_list         marker;
 
         va_start (marker, RegisterId);
-        Value = va_arg (marker, INT32);
+        Value = va_arg (marker, UINT32);
         va_end (marker);
     }
 
@@ -375,15 +395,15 @@ AcpiHwRegisterAccess (
             }
 
 
-            RegisterValue = (UINT32) AcpiOsIn16 (AcpiGbl_FACP->Pm1aEvtBlk);
+            RegisterValue = (UINT32) AcpiOsIn16 (AcpiGbl_FADT->Pm1aEvtBlk);
             DEBUG_PRINT (TRACE_IO, ("PM1a status: Read 0x%X from 0x%X\n",
-                            RegisterValue, AcpiGbl_FACP->Pm1aEvtBlk));
+                            RegisterValue, AcpiGbl_FADT->Pm1aEvtBlk));
 
-            if (AcpiGbl_FACP->Pm1bEvtBlk)
+            if (AcpiGbl_FADT->Pm1bEvtBlk)
             {
-                RegisterValue |= (UINT32) AcpiOsIn16 (AcpiGbl_FACP->Pm1bEvtBlk);
+                RegisterValue |= (UINT32) AcpiOsIn16 (AcpiGbl_FADT->Pm1bEvtBlk);
                 DEBUG_PRINT (TRACE_IO, ("PM1b status: Read 0x%X from 0x%X\n",
-                                RegisterValue, AcpiGbl_FACP->Pm1bEvtBlk));
+                                RegisterValue, AcpiGbl_FADT->Pm1bEvtBlk));
             }
 
             switch (RegisterId)
@@ -437,14 +457,14 @@ AcpiHwRegisterAccess (
                 if (Value)
                 {
                     DEBUG_PRINT (TRACE_IO,
-                        ("About to write %04X to %04X\n", Value,
-                        AcpiGbl_FACP->Pm1aEvtBlk));
+                        ("About to write 0x%X to 0x%X\n", Value,
+                        AcpiGbl_FADT->Pm1aEvtBlk));
 
-                    AcpiOsOut16 (AcpiGbl_FACP->Pm1aEvtBlk, (UINT16) Value);
+                    AcpiOsOut16 (AcpiGbl_FADT->Pm1aEvtBlk, (UINT16) Value);
 
-                    if (AcpiGbl_FACP->Pm1bEvtBlk)
+                    if (AcpiGbl_FADT->Pm1bEvtBlk)
                     {
-                        AcpiOsOut16 (AcpiGbl_FACP->Pm1bEvtBlk, (UINT16) Value);
+                        AcpiOsOut16 (AcpiGbl_FADT->Pm1bEvtBlk, (UINT16) Value);
                     }
 
                     RegisterValue = 0;
@@ -466,21 +486,21 @@ AcpiHwRegisterAccess (
                 AcpiCmAcquireMutex (ACPI_MTX_HARDWARE);
             }
 
-            RegisterValue = (UINT32) AcpiOsIn16 (AcpiGbl_FACP->Pm1aEvtBlk +
-                            DIV_2 (AcpiGbl_FACP->Pm1EvtLen));
+            RegisterValue = (UINT32) AcpiOsIn16 (AcpiGbl_FADT->Pm1aEvtBlk +
+                            DIV_2 (AcpiGbl_FADT->Pm1EvtLen));
 
             DEBUG_PRINT (TRACE_IO, ("PM1a enable: Read 0x%X from 0x%X\n",
-                            RegisterValue, (AcpiGbl_FACP->Pm1aEvtBlk +
-                            DIV_2 (AcpiGbl_FACP->Pm1EvtLen))));
+                            RegisterValue, (AcpiGbl_FADT->Pm1aEvtBlk +
+                            DIV_2 (AcpiGbl_FADT->Pm1EvtLen))));
 
-            if (AcpiGbl_FACP->Pm1bEvtBlk)
+            if (AcpiGbl_FADT->Pm1bEvtBlk)
             {
-                RegisterValue |= (UINT32) AcpiOsIn16 (AcpiGbl_FACP->Pm1bEvtBlk +
-                                    DIV_2 (AcpiGbl_FACP->Pm1EvtLen));
+                RegisterValue |= (UINT32) AcpiOsIn16 (AcpiGbl_FADT->Pm1bEvtBlk +
+                                    DIV_2 (AcpiGbl_FADT->Pm1EvtLen));
 
                 DEBUG_PRINT (TRACE_IO, ("PM1b enable: Read 0x%X from 0x%X\n",
-                                RegisterValue, (AcpiGbl_FACP->Pm1bEvtBlk +
-                                DIV_2 (AcpiGbl_FACP->Pm1EvtLen))));
+                                RegisterValue, (AcpiGbl_FADT->Pm1bEvtBlk +
+                                DIV_2 (AcpiGbl_FADT->Pm1EvtLen))));
             }
 
             switch (RegisterId)
@@ -519,17 +539,17 @@ AcpiHwRegisterAccess (
 
                 DEBUG_PRINT (TRACE_IO,
                     ("About to write %04X to %04X\n", RegisterValue,
-                    (AcpiGbl_FACP->Pm1aEvtBlk +
-                    DIV_2 (AcpiGbl_FACP->Pm1EvtLen))));
+                    (AcpiGbl_FADT->Pm1aEvtBlk +
+                    DIV_2 (AcpiGbl_FADT->Pm1EvtLen))));
 
-                AcpiOsOut16 ((AcpiGbl_FACP->Pm1aEvtBlk +
-                            DIV_2 (AcpiGbl_FACP->Pm1EvtLen)),
+                AcpiOsOut16 ((AcpiGbl_FADT->Pm1aEvtBlk +
+                            DIV_2 (AcpiGbl_FADT->Pm1EvtLen)),
                             (UINT16) RegisterValue);
 
-                if (AcpiGbl_FACP->Pm1bEvtBlk)
+                if (AcpiGbl_FADT->Pm1bEvtBlk)
                 {
-                    AcpiOsOut16 ((AcpiGbl_FACP->Pm1bEvtBlk +
-                                DIV_2 (AcpiGbl_FACP->Pm1EvtLen)),
+                    AcpiOsOut16 ((AcpiGbl_FADT->Pm1bEvtBlk +
+                                DIV_2 (AcpiGbl_FADT->Pm1EvtLen)),
                                 (UINT16) RegisterValue);
                 }
             }
@@ -559,16 +579,16 @@ AcpiHwRegisterAccess (
              * for A may be different than the value for B
              */
 
-            RegisterValue = (UINT32) AcpiOsIn16 (AcpiGbl_FACP->Pm1aCntBlk);
+            RegisterValue = (UINT32) AcpiOsIn16 (AcpiGbl_FADT->Pm1aCntBlk);
             DEBUG_PRINT (TRACE_IO, ("PM1a control: Read 0x%X from 0x%X\n",
-                            RegisterValue, AcpiGbl_FACP->Pm1aCntBlk));
+                            RegisterValue, AcpiGbl_FADT->Pm1aCntBlk));
         }
 
-        if (AcpiGbl_FACP->Pm1bCntBlk && RegisterId != (INT32) SLP_TYPE_A)
+        if (AcpiGbl_FADT->Pm1bCntBlk && RegisterId != (UINT32) SLP_TYPE_A)
         {
-            RegisterValue |= (UINT32) AcpiOsIn16 (AcpiGbl_FACP->Pm1bCntBlk);
+            RegisterValue |= (UINT32) AcpiOsIn16 (AcpiGbl_FADT->Pm1bCntBlk);
             DEBUG_PRINT (TRACE_IO, ("PM1b control: Read 0x%X from 0x%X\n",
-                            RegisterValue, AcpiGbl_FACP->Pm1bCntBlk));
+                            RegisterValue, AcpiGbl_FADT->Pm1bCntBlk));
         }
 
         switch (RegisterId)
@@ -620,7 +640,7 @@ AcpiHwRegisterAccess (
                     disable();  /* disable interrupts */
                 }
 
-                AcpiOsOut16 (AcpiGbl_FACP->Pm1aCntBlk, (UINT16) RegisterValue);
+                AcpiOsOut16 (AcpiGbl_FADT->Pm1aCntBlk, (UINT16) RegisterValue);
 
                 if (Mask == SLP_EN_MASK)
                 {
@@ -633,9 +653,9 @@ AcpiHwRegisterAccess (
                 }
             }
 
-            if (AcpiGbl_FACP->Pm1bCntBlk && RegisterId != (INT32) SLP_TYPE_A)
+            if (AcpiGbl_FADT->Pm1bCntBlk && RegisterId != (UINT32) SLP_TYPE_A)
             {
-                AcpiOsOut16 (AcpiGbl_FACP->Pm1bCntBlk, (UINT16) RegisterValue);
+                AcpiOsOut16 (AcpiGbl_FADT->Pm1bCntBlk, (UINT16) RegisterValue);
             }
         }
 
@@ -653,9 +673,9 @@ AcpiHwRegisterAccess (
             AcpiCmAcquireMutex (ACPI_MTX_HARDWARE);
         }
 
-        RegisterValue = (UINT32) AcpiOsIn16 (AcpiGbl_FACP->Pm2CntBlk);
+        RegisterValue = (UINT32) AcpiOsIn16 (AcpiGbl_FADT->Pm2CntBlk);
         DEBUG_PRINT (TRACE_IO, ("PM2 control: Read 0x%X from 0x%X\n",
-                        RegisterValue, AcpiGbl_FACP->Pm2CntBlk));
+                        RegisterValue, AcpiGbl_FADT->Pm2CntBlk));
 
         switch (RegisterId)
         {
@@ -677,9 +697,9 @@ AcpiHwRegisterAccess (
 
             DEBUG_PRINT (TRACE_IO,
                 ("About to write %04X to %04X\n", RegisterValue,
-                AcpiGbl_FACP->Pm2CntBlk));
+                AcpiGbl_FADT->Pm2CntBlk));
 
-            AcpiOsOut16 (AcpiGbl_FACP->Pm2CntBlk, (UINT16) RegisterValue);
+            AcpiOsOut16 (AcpiGbl_FADT->Pm2CntBlk, (UINT16) RegisterValue);
         }
 
         if (ACPI_MTX_LOCK == UseLock)
@@ -691,25 +711,25 @@ AcpiHwRegisterAccess (
 
     case PM_TIMER:
 
-        RegisterValue = AcpiOsIn32 (AcpiGbl_FACP->PmTmrBlk);
+        RegisterValue = AcpiOsIn32 (AcpiGbl_FADT->PmTmrBlk);
         DEBUG_PRINT (TRACE_IO, ("PM_TIMER: Read 0x%X from 0x%X\n",
-                        RegisterValue, AcpiGbl_FACP->PmTmrBlk));
+                        RegisterValue, AcpiGbl_FADT->PmTmrBlk));
 
-        Mask = 0xFFFFFFFF;
+        Mask = ACPI_UINT32_MAX;
         break;
 
 
     case GPE1_EN_BLOCK:
 
-        GpeReg = (AcpiGbl_FACP->Gpe1Blk + AcpiGbl_FACP->Gpe1Base) +
-                    (GpeReg + (DIV_2 (AcpiGbl_FACP->Gpe1BlkLen)));
+        GpeReg = (AcpiGbl_FADT->Gpe1Blk + AcpiGbl_FADT->Gpe1Base) +
+                    (GpeReg + (DIV_2 (AcpiGbl_FADT->Gpe1BlkLen)));
 
 
     case GPE1_STS_BLOCK:
 
         if (!GpeReg)
         {
-            GpeReg = (AcpiGbl_FACP->Gpe1Blk + AcpiGbl_FACP->Gpe1Base);
+            GpeReg = (AcpiGbl_FADT->Gpe1Blk + AcpiGbl_FADT->Gpe1Base);
         }
 
 
@@ -717,7 +737,7 @@ AcpiHwRegisterAccess (
 
         if (!GpeReg)
         {
-            GpeReg = AcpiGbl_FACP->Gpe0Blk + DIV_2 (AcpiGbl_FACP->Gpe0BlkLen);
+            GpeReg = AcpiGbl_FADT->Gpe0Blk + DIV_2 (AcpiGbl_FADT->Gpe0BlkLen);
         }
 
 
@@ -725,7 +745,7 @@ AcpiHwRegisterAccess (
 
         if (!GpeReg)
         {
-            GpeReg = AcpiGbl_FACP->Gpe0Blk;
+            GpeReg = AcpiGbl_FADT->Gpe0Blk;
         }
 
         /* Determine the bit to be accessed */
@@ -733,13 +753,17 @@ AcpiHwRegisterAccess (
         Mask = (((UINT32) RegisterId) & BIT_IN_REGISTER_MASK);
         Mask = 1 << (Mask-1);
 
-        /* The base address of the GPE 0 Register Block */
-        /* Plus 1/2 the length of the GPE 0 Register Block */
-        /* The enable register is the register following the Status Register */
-        /* and each register is defined as 1/2 of the total Register Block */
+        /*
+         * The base address of the GPE 0 Register Block
+         * Plus 1/2 the length of the GPE 0 Register Block
+         * The enable register is the register following the Status Register
+         * and each register is defined as 1/2 of the total Register Block
+         */
 
-        /* This sets the bit within EnableBit that needs to be written to */
-        /* the register indicated in Mask to a 1, all others are 0 */
+        /*
+         * This sets the bit within EnableBit that needs to be written to
+         * the register indicated in Mask to a 1, all others are 0
+         */
 
         if (Mask > LOW_BYTE)
         {
