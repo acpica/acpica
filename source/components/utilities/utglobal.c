@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: utglobal - Global variables for the ACPI subsystem
- *              $Revision: 1.174 $
+ *              $Revision: 1.175 $
  *
  *****************************************************************************/
 
@@ -224,9 +224,9 @@ Unknown:
 /* Debug switch - level and trace mask */
 
 #ifdef ACPI_DEBUG_OUTPUT
-UINT32                      AcpiDbgLevel = DEBUG_DEFAULT;
+UINT32                      AcpiDbgLevel = ACPI_DEBUG_DEFAULT;
 #else
-UINT32                      AcpiDbgLevel = NORMAL_DEFAULT;
+UINT32                      AcpiDbgLevel = ACPI_NORMAL_DEFAULT;
 #endif
 
 /* Debug switch - layer (component) mask */
