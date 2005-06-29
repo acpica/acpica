@@ -1,24 +1,24 @@
-# Microsoft Developer Studio Project File - Name="AcpiSubsystem" - Package Owner=<4>
+# Microsoft Developer Studio Project File - Name="AcpiSubsystem64" - Package Owner=<4>
 # Microsoft Developer Studio Generated Build File, Format Version 6.00
 # ** DO NOT EDIT **
 
 # TARGTYPE "Win32 (x86) Static Library" 0x0104
 
-CFG=AcpiSubsystem - Win32 Debug
+CFG=AcpiSubsystem64 - Win32 Debug
 !MESSAGE This is not a valid makefile. To build this project using NMAKE,
 !MESSAGE use the Export Makefile command and run
 !MESSAGE 
-!MESSAGE NMAKE /f "AcpiSubsystem.mak".
+!MESSAGE NMAKE /f "AcpiSubsystem64.mak".
 !MESSAGE 
 !MESSAGE You can specify a configuration when running NMAKE
 !MESSAGE by defining the macro CFG on the command line. For example:
 !MESSAGE 
-!MESSAGE NMAKE /f "AcpiSubsystem.mak" CFG="AcpiSubsystem - Win32 Debug"
+!MESSAGE NMAKE /f "AcpiSubsystem64.mak" CFG="AcpiSubsystem64 - Win32 Debug"
 !MESSAGE 
 !MESSAGE Possible choices for configuration are:
 !MESSAGE 
-!MESSAGE "AcpiSubsystem - Win32 Release" (based on "Win32 (x86) Static Library")
-!MESSAGE "AcpiSubsystem - Win32 Debug" (based on "Win32 (x86) Static Library")
+!MESSAGE "AcpiSubsystem64 - Win32 Release" (based on "Win32 (x86) Static Library")
+!MESSAGE "AcpiSubsystem64 - Win32 Debug" (based on "Win32 (x86) Static Library")
 !MESSAGE 
 
 # Begin Project
@@ -28,7 +28,7 @@ CFG=AcpiSubsystem - Win32 Debug
 CPP=xicl6.exe
 RSC=rc.exe
 
-!IF  "$(CFG)" == "AcpiSubsystem - Win32 Release"
+!IF  "$(CFG)" == "AcpiSubsystem64 - Win32 Release"
 
 # PROP BASE Use_MFC 0
 # PROP BASE Use_Debug_Libraries 0
@@ -37,12 +37,12 @@ RSC=rc.exe
 # PROP BASE Target_Dir ""
 # PROP Use_MFC 0
 # PROP Use_Debug_Libraries 0
-# PROP Output_Dir "\Acpi\Generate\msvc\AcpiSubsystem\NoDebug"
-# PROP Intermediate_Dir "\Acpi\Generate\msvc\AcpiSubsystem\NoDebug"
+# PROP Output_Dir "\Acpi\Generate\msvc\AcpiSubsystem64\NoDebug"
+# PROP Intermediate_Dir "\Acpi\Generate\msvc\AcpiSubsystem64\NoDebug"
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_MBCS" /D "_LIB" /YX /FD /c
-# ADD CPP /nologo /Gz /MT /Za /W4 /GX /O1 /I "..\..\source\Include" /D "NDEBUG" /D "ACPILIB_GEN" /D "DRIVER" /D "_WINDOWS" /D PROCESSOR_ARCHITECTURE=x86 /D "WIN32" /FR /FD /c
-# SUBTRACT CPP /YX
+# ADD CPP /Gz /MT /Za /W4 /Gm /GX /Zi /O1 /I "..\..\source\Include" /D "NDEBUG" /D "ACPILIB_GEN" /D "DRIVER" /D "_WINDOWS" /D PROCESSOR_ARCHITECTURE=x86 /D "WIN64" /D "_IA64" /FR /FD /c
+# SUBTRACT CPP /nologo /YX
 # ADD BASE RSC /l 0x409 /d "NDEBUG"
 # ADD RSC /l 0x409 /d "NDEBUG"
 BSC32=bscmake.exe
@@ -50,16 +50,17 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LIB32=xilink6.exe -lib
 # ADD BASE LIB32 /nologo
-# ADD LIB32 /nologo /out:"bin\acpica.lib"
+# ADD LIB32 /out:"bin\acpica64.lib" /machine:IA64
+# SUBTRACT LIB32 /nologo
 # Begin Special Build Tool
 SOURCE="$(InputPath)"
 PreLink_Desc=Checking existence of acpi/libraries directory
 PreLink_Cmds=if NOT EXIST ..\..\libraries mkdir ..\..\libraries
 PostBuild_Desc=Copy library to acpi/libraries
-PostBuild_Cmds=copy bin\acpica.lib ..\..\libraries\acpica.lib	dir ..\..\libraries\acpica.lib
+PostBuild_Cmds=copy bin\acpica64.lib ..\..\libraries\acpica64.lib	dir ..\..\libraries\acpica64.lib
 # End Special Build Tool
 
-!ELSEIF  "$(CFG)" == "AcpiSubsystem - Win32 Debug"
+!ELSEIF  "$(CFG)" == "AcpiSubsystem64 - Win32 Debug"
 
 # PROP BASE Use_MFC 0
 # PROP BASE Use_Debug_Libraries 1
@@ -68,11 +69,12 @@ PostBuild_Cmds=copy bin\acpica.lib ..\..\libraries\acpica.lib	dir ..\..\librarie
 # PROP BASE Target_Dir ""
 # PROP Use_MFC 0
 # PROP Use_Debug_Libraries 1
-# PROP Output_Dir "\Acpi\Generate\msvc\AcpiSubsystem\Debug"
-# PROP Intermediate_Dir "\Acpi\Generate\msvc\AcpiSubsystem\Debug"
+# PROP Output_Dir "\Acpi\Generate\msvc\AcpiSubsystem64\Debug"
+# PROP Intermediate_Dir "\Acpi\Generate\msvc\AcpiSubsystem64\Debug"
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_MBCS" /D "_LIB" /YX /FD /GZ /c
-# ADD CPP /nologo /Gz /MT /Za /W4 /GX /Z7 /Oa /Og /Os /Oy /I "..\..\source\Include" /D "ACPI_DEBUG" /D "_DEBUG" /D "_WINDOWS" /D PROCESSOR_ARCHITECTURE=x86 /D "WIN32" /D "ENABLE_DEBUGGER" /FR /FD /c
+# ADD CPP /Gz /MT /Za /W4 /Gm /GX /Zi /Oa /Og /Os /Oy /I "..\..\source\Include" /D "ACPI_DEBUG" /D "_DEBUG" /D "ENABLE_DEBUGGER" /D "_WINDOWS" /D PROCESSOR_ARCHITECTURE=x86 /D "WIN64" /D "_IA64" /FR /FD /c
+# SUBTRACT CPP /nologo
 # ADD BASE RSC /l 0x409 /d "_DEBUG"
 # ADD RSC /l 0x409
 BSC32=bscmake.exe
@@ -80,21 +82,22 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LIB32=xilink6.exe -lib
 # ADD BASE LIB32 /nologo
-# ADD LIB32 /nologo /out:"bin\acpica_dbg.lib"
+# ADD LIB32 /out:"bin\acpica_dbg64.lib" /machine:IA64
+# SUBTRACT LIB32 /nologo
 # Begin Special Build Tool
 SOURCE="$(InputPath)"
 PreLink_Desc=Checking existence of acpi/libraries directory
 PreLink_Cmds=if NOT EXIST ..\..\libraries mkdir ..\..\libraries
 PostBuild_Desc=Copy library to acpi/libraries
-PostBuild_Cmds=copy bin\acpica_dbg.lib ..\..\libraries\acpica_dbg.lib	dir ..\..\libraries\acpica_dbg.lib
+PostBuild_Cmds=copy bin\acpica_dbg64.lib ..\..\libraries\acpica_dbg64.lib	dir ..\..\libraries\acpica_dbg64.lib
 # End Special Build Tool
 
 !ENDIF 
 
 # Begin Target
 
-# Name "AcpiSubsystem - Win32 Release"
-# Name "AcpiSubsystem - Win32 Debug"
+# Name "AcpiSubsystem64 - Win32 Release"
+# Name "AcpiSubsystem64 - Win32 Debug"
 # Begin Group "Source Files"
 
 # PROP Default_Filter "cpp;c;cxx;rc;def;r;odl;idl;hpj;bat"
@@ -104,51 +107,62 @@ PostBuild_Cmds=copy bin\acpica_dbg.lib ..\..\libraries\acpica_dbg.lib	dir ..\..\
 # Begin Source File
 
 SOURCE=..\..\source\components\utilities\utalloc.c
+# ADD CPP /nologo
 # End Source File
 # Begin Source File
 
 SOURCE=..\..\source\components\utilities\utclib.c
+# ADD CPP /nologo
 # End Source File
 # Begin Source File
 
 SOURCE=..\..\source\components\utilities\utcopy.c
+# ADD CPP /nologo
 # End Source File
 # Begin Source File
 
 SOURCE=..\..\source\components\utilities\utdebug.c
+# ADD CPP /nologo
 # End Source File
 # Begin Source File
 
 SOURCE=..\..\source\components\utilities\utdelete.c
+# ADD CPP /nologo
 # End Source File
 # Begin Source File
 
 SOURCE=..\..\source\components\utilities\uteval.c
+# ADD CPP /nologo
 # End Source File
 # Begin Source File
 
 SOURCE=..\..\source\components\utilities\utglobal.c
+# ADD CPP /nologo
 # End Source File
 # Begin Source File
 
 SOURCE=..\..\source\components\utilities\utinit.c
+# ADD CPP /nologo
 # End Source File
 # Begin Source File
 
 SOURCE=..\..\source\components\utilities\utmath.c
-# ADD CPP /Ze
+# ADD CPP /nologo /Ze
 # End Source File
 # Begin Source File
 
 SOURCE=..\..\source\components\utilities\utmisc.c
+# ADD CPP /nologo
 # End Source File
 # Begin Source File
 
 SOURCE=..\..\source\components\utilities\utobject.c
+# ADD CPP /nologo
 # End Source File
 # Begin Source File
 
 SOURCE=..\..\source\components\utilities\utxface.c
+# ADD CPP /nologo
 # End Source File
 # End Group
 # Begin Group "Events"
@@ -703,7 +717,7 @@ SOURCE=..\..\source\Include\amlcode.h
 # End Group
 # Begin Source File
 
-SOURCE=.\AcpiSubsystem.plg
+SOURCE=.\AcpiSubsystem64.plg
 # End Source File
 # End Target
 # End Project
