@@ -1,6 +1,7 @@
 /******************************************************************************
  *
  * Module Name: adisasm - Application-level disassembler routines
+ *              $Revision: 1.45 $
  *
  *****************************************************************************/
 
@@ -185,6 +186,8 @@ AcpiDsMethodDataInitArgs (
 
 #define FILE_SUFFIX_DISASSEMBLY     "dsl"
 
+char *
+AfGenerateFilename (char *TableId);
 
 
 /*******************************************************************************
@@ -313,6 +316,16 @@ AdAmlDisassemble (
                 AcpiFormatException (Status));
             return Status;
         }
+
+        if (!AcpiGbl_DbOpt_disasm)
+        {
+            return AE_OK;
+        }
+
+#if ACPI_MACHINE_WIDTH == 16
+        AcpiOsPrintf ("\nDisassembly of DSDT\n");
+        Filename = AfGenerateFilename (AcpiGbl_DSDT->OemTableId);
+#endif
     }
 
     if (OutToFile)
@@ -340,7 +353,7 @@ AdAmlDisassemble (
     {
         AcpiOsPrintf ("Could not parse ACPI tables, %s\n", 
             AcpiFormatException (Status));
-        return Status;
+        goto Cleanup;
     }
 
     /* Optional displays */
@@ -351,6 +364,7 @@ AdAmlDisassemble (
         fprintf (stderr, "Disassembly completed, written to \"%s\"\n", OutFilename);
     }
 
+Cleanup:
     if (OutToFile)
     {
         fclose (File);
@@ -738,15 +752,13 @@ AdGetTables (
     {
 #if ACPI_MACHINE_WIDTH == 16
 #include "16bit.h"
-        fprintf (stderr, "Scanning for DSDT\n");
+        fprintf (stderr, "Scanning memory for ACPI tables\n");
 
         Status = AfFindDsdt (&DsdtPtr, &DsdtLength);
 
         if (ACPI_SUCCESS (Status))
         {
-            printf ("About to dump DSDT\n");
             AfDumpTables ();
-            printf ("Dumped DSDT\n");
         }
 #else
         fprintf (stderr, "Must supply filename for ACPI tables, cannot scan memory\n");
