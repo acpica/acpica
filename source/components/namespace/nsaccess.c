@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: nsaccess - Top-level functions for accessing ACPI namespace
- *              $Revision: 1.148 $
+ *              $Revision: 1.149 $
  *
  ******************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -173,7 +173,7 @@ AcpiNsRootInitialize (void)
 
     /* Enter the pre-defined names in the name table */
 
-    ACPI_DEBUG_PRINT ((ACPI_DB_INFO, 
+    ACPI_DEBUG_PRINT ((ACPI_DB_INFO,
         "Entering predefined entries into namespace\n"));
 
     for (InitVal = AcpiGbl_PreDefinedNames; InitVal->Name; InitVal++)
@@ -361,7 +361,7 @@ AcpiNsLookup (
     if ((!ScopeInfo) ||
         (!ScopeInfo->Scope.Node))
     {
-        ACPI_DEBUG_PRINT ((ACPI_DB_NAMES, 
+        ACPI_DEBUG_PRINT ((ACPI_DB_NAMES,
             "Null scope prefix, using root node (%p)\n",
             AcpiGbl_RootNode));
 
@@ -396,7 +396,7 @@ AcpiNsLookup (
         TypeToCheckFor = Type;
     }
 
-    /* 
+    /*
      * Begin examination of the actual pathname
      */
     if (!Pathname)
@@ -416,7 +416,7 @@ AcpiNsLookup (
          *
          * Check for scope prefixes:
          *
-         * As represented in the AML stream, a namepath consists of an 
+         * As represented in the AML stream, a namepath consists of an
          * optional scope prefix followed by a name segment part.
          *
          * If present, the scope prefix is either a Root Prefix (in
@@ -441,7 +441,7 @@ AcpiNsLookup (
         {
             /* Pathname is relative to current scope, start there */
 
-            ACPI_DEBUG_PRINT ((ACPI_DB_NAMES, 
+            ACPI_DEBUG_PRINT ((ACPI_DB_NAMES,
                 "Searching relative to pfx scope [%p]\n",
                 PrefixNode));
 
@@ -452,9 +452,9 @@ AcpiNsLookup (
             ThisNode = PrefixNode;
             while (*Pathname == AML_PARENT_PREFIX)
             {
-                /* 
-                 * Point past this prefix to the name segment 
-                 * part or the next Parent Prefix 
+                /*
+                 * Point past this prefix to the name segment
+                 * part or the next Parent Prefix
                  */
                 Pathname++;
 
@@ -482,13 +482,13 @@ AcpiNsLookup (
          *      number of segments and the segments themselves.
          *  - A single 4-byte name segment
          *
-         * Examine the name prefix opcode, if any, to determine the number of 
+         * Examine the name prefix opcode, if any, to determine the number of
          * segments.
          */
         switch (*Pathname)
         {
         case 0:
-            /* 
+            /*
              * Null name after a root or parent prefixes. We already
              * have the correct target node and there are no name segments.
              */
@@ -524,7 +524,7 @@ AcpiNsLookup (
 
         default:
             /*
-             * Not a Null name, no Dual or Multi prefix, hence there is 
+             * Not a Null name, no Dual or Multi prefix, hence there is
              * only one name segment and Pathname is already pointing to it.
              */
             NumSegments = 1;
@@ -538,7 +538,7 @@ AcpiNsLookup (
     }
 
     /*
-     * Search namespace for each segment of the name.  Loop through and 
+     * Search namespace for each segment of the name.  Loop through and
      * verify/add each name segment.
      */
     CurrentNode = ThisNode;
@@ -546,7 +546,7 @@ AcpiNsLookup (
     {
         /*
          * Search for the current name segment under the current
-         * named object.  The Type is significant only at the last name 
+         * named object.  The Type is significant only at the last name
          * segment.  (We don't care about the types along the path, only
          * the type of the final target object.)
          */
@@ -564,7 +564,7 @@ AcpiNsLookup (
 
         /* Try to find the ACPI name */
 
-        Status = AcpiNsSearchAndEnter (SimpleName, WalkState, CurrentNode, 
+        Status = AcpiNsSearchAndEnter (SimpleName, WalkState, CurrentNode,
                         InterpreterMode, ThisSearchType, LocalFlags, &ThisNode);
         if (ACPI_FAILURE (Status))
         {
@@ -633,7 +633,7 @@ AcpiNsLookup (
     if (!(Flags & NS_DONT_OPEN_SCOPE) && (WalkState))
     {
         /*
-         * If entry is a type which opens a scope, push the new scope on the 
+         * If entry is a type which opens a scope, push the new scope on the
          * scope stack.
          */
         if (AcpiNsOpensScope (TypeToCheckFor))
@@ -644,7 +644,7 @@ AcpiNsLookup (
                 return_ACPI_STATUS (Status);
             }
 
-            ACPI_DEBUG_PRINT ((ACPI_DB_INFO, 
+            ACPI_DEBUG_PRINT ((ACPI_DB_INFO,
                 "Setting global scope to %p\n", ThisNode));
         }
     }

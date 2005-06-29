@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: nsnames - Name manipulation and search
- *              $Revision: 1.61 $
+ *              $Revision: 1.69 $
  *
  ******************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -128,92 +128,122 @@
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiNsGetTablePathname
+ * FUNCTION:    AcpiNsBuildExternalPath
  *
- * PARAMETERS:  Node        - Scope whose name is needed
+ * PARAMETERS:  Node            - NS node whose pathname is needed
+ *              Size            - Size of the pathname
+ *              *NameBuffer     - Where to return the pathname
+ *
+ * RETURN:      Places the pathname into the NameBuffer, in external format
+ *              (name segments separated by path separators)
+ *
+ * DESCRIPTION: Generate a full pathaname
+ *
+ ******************************************************************************/
+
+void
+AcpiNsBuildExternalPath (
+    ACPI_NAMESPACE_NODE     *Node,
+    ACPI_SIZE               Size,
+    NATIVE_CHAR             *NameBuffer)
+{
+    UINT32                  Index;
+    ACPI_NAMESPACE_NODE     *ParentNode;
+
+
+    PROC_NAME ("NsBuildExternalPath");
+
+
+    /* Special case for root */
+
+    Index = Size - 1;
+    if (Index < ACPI_NAME_SIZE)
+    {
+        NameBuffer[0] = AML_ROOT_PREFIX;
+        NameBuffer[1] = 0;
+        return;
+    }
+
+    /* Store terminator byte, then build name backwards */
+
+    ParentNode = Node;
+    NameBuffer[Index] = 0;
+
+    while ((Index > ACPI_NAME_SIZE) && (ParentNode != AcpiGbl_RootNode))
+    {
+        Index -= ACPI_NAME_SIZE;
+
+        /* Put the name into the buffer */
+
+        MOVE_UNALIGNED32_TO_32 ((NameBuffer + Index), &ParentNode->Name);
+        ParentNode = AcpiNsGetParentNode (ParentNode);
+
+        /* Prefix name with the path separator */
+
+        Index--;
+        NameBuffer[Index] = PATH_SEPARATOR;
+    }
+
+    /* Overwrite final separator with the root prefix character */
+
+    NameBuffer[Index] = AML_ROOT_PREFIX;
+
+    if (Index != 0)
+    {
+        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
+            "Could not construct pathname; index=%X, size=%X, Path=%s\n",
+            Index, Size, &NameBuffer[Size]));
+    }
+
+    return;
+}
+
+
+#ifdef ACPI_DEBUG
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiNsGetExternalPathname
+ *
+ * PARAMETERS:  Node            - NS node whose pathname is needed
  *
  * RETURN:      Pointer to storage containing the fully qualified name of
- *              the scope, in Label format (all segments strung together
- *              with no separators)
+ *              the node, In external format (name segments separated by path
+ *              separators.)
  *
  * DESCRIPTION: Used for debug printing in AcpiNsSearchTable().
  *
  ******************************************************************************/
 
 NATIVE_CHAR *
-AcpiNsGetTablePathname (
+AcpiNsGetExternalPathname (
     ACPI_NAMESPACE_NODE     *Node)
 {
     NATIVE_CHAR             *NameBuffer;
-    UINT32                  Size;
-    ACPI_NAME               Name;
-    ACPI_NAMESPACE_NODE     *ChildNode;
-    ACPI_NAMESPACE_NODE     *ParentNode;
+    ACPI_SIZE               Size;
 
 
-    FUNCTION_TRACE_PTR ("AcpiNsGetTablePathname", Node);
-
-
-    if (!AcpiGbl_RootNode || !Node)
-    {
-        /*
-         * If the name space has not been initialized,
-         * this function should not have been called.
-         */
-        return_PTR (NULL);
-    }
-
-    ChildNode = Node->Child;
+    FUNCTION_TRACE_PTR ("NsGetExternalPathname", Node);
 
 
     /* Calculate required buffer size based on depth below root */
 
-    Size = 1;
-    ParentNode = ChildNode;
-    while (ParentNode)
-    {
-        ParentNode = AcpiNsGetParentObject (ParentNode);
-        if (ParentNode)
-        {
-            Size += ACPI_NAME_SIZE;
-        }
-    }
-
+    Size = AcpiNsGetPathnameLength (Node);
 
     /* Allocate a buffer to be returned to caller */
 
-    NameBuffer = ACPI_MEM_CALLOCATE (Size + 1);
+    NameBuffer = ACPI_MEM_CALLOCATE (Size);
     if (!NameBuffer)
     {
         REPORT_ERROR (("NsGetTablePathname: allocation failure\n"));
         return_PTR (NULL);
     }
 
+    /* Build the path in the allocated buffer */
 
-    /* Store terminator byte, then build name backwards */
-
-    NameBuffer[Size] = '\0';
-    while ((Size > ACPI_NAME_SIZE) &&
-        AcpiNsGetParentObject (ChildNode))
-    {
-        Size -= ACPI_NAME_SIZE;
-        Name = AcpiNsFindParentName (ChildNode);
-
-        /* Put the name into the buffer */
-
-        MOVE_UNALIGNED32_TO_32 ((NameBuffer + Size), &Name);
-        ChildNode = AcpiNsGetParentObject (ChildNode);
-    }
-
-    NameBuffer[--Size] = AML_ROOT_PREFIX;
-
-    if (Size != 0)
-    {
-        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Bad pointer returned; size=%X\n", Size));
-    }
-
+    AcpiNsBuildExternalPath (Node, Size, NameBuffer);
     return_PTR (NameBuffer);
 }
+#endif
 
 
 /*******************************************************************************
@@ -228,29 +258,28 @@ AcpiNsGetTablePathname (
  *
  ******************************************************************************/
 
-UINT32
+ACPI_SIZE
 AcpiNsGetPathnameLength (
     ACPI_NAMESPACE_NODE     *Node)
 {
-    UINT32                  Size;
+    ACPI_SIZE               Size;
     ACPI_NAMESPACE_NODE     *NextNode;
+
+
+    FUNCTION_ENTRY ();
+
 
     /*
      * Compute length of pathname as 5 * number of name segments.
      * Go back up the parent tree to the root
      */
-    for (Size = 0, NextNode = Node;
-          AcpiNsGetParentObject (NextNode);
-          NextNode = AcpiNsGetParentObject (NextNode))
+    Size = 0;
+    NextNode = Node;
+
+    while (NextNode != AcpiGbl_RootNode)
     {
         Size += PATH_SEGMENT_LENGTH;
-    }
-
-    /* Special case for size still 0 - no parent for "special" nodes */
-
-    if (!Size)
-    {
-        Size = PATH_SEGMENT_LENGTH;
+        NextNode = AcpiNsGetParentNode (NextNode);
     }
 
     return (Size + 1);
@@ -277,15 +306,14 @@ AcpiNsGetPathnameLength (
 ACPI_STATUS
 AcpiNsHandleToPathname (
     ACPI_HANDLE             TargetHandle,
-    UINT32                  *BufSize,
+    ACPI_SIZE               *BufSize,
     NATIVE_CHAR             *UserBuffer)
 {
     ACPI_STATUS             Status = AE_OK;
     ACPI_NAMESPACE_NODE     *Node;
-    UINT32                  PathLength;
-    UINT32                  UserBufSize;
-    ACPI_NAME               Name;
-    UINT32                  Size;
+    ACPI_SIZE               UserBufSize;
+    ACPI_SIZE               Size;
+
 
     FUNCTION_TRACE_PTR ("NsHandleToPathname", TargetHandle);
 
@@ -296,65 +324,38 @@ AcpiNsHandleToPathname (
          * If the name space has not been initialized,
          * this function should not have been called.
          */
-
         return_ACPI_STATUS (AE_NO_NAMESPACE);
     }
 
-    Node = AcpiNsConvertHandleToEntry (TargetHandle);
+    Node = AcpiNsMapHandleToNode (TargetHandle);
     if (!Node)
     {
         return_ACPI_STATUS (AE_BAD_PARAMETER);
     }
 
-
     /* Set return length to the required path length */
 
-    PathLength = AcpiNsGetPathnameLength (Node);
-    Size = PathLength - 1;
+    Size = AcpiNsGetPathnameLength (Node);
+
+    /* Always return the required/used size */
 
     UserBufSize = *BufSize;
-    *BufSize = PathLength;
+    *BufSize = Size;
 
     /* Check if the user buffer is sufficiently large */
 
-    if (PathLength > UserBufSize)
+    if (Size > UserBufSize)
     {
         Status = AE_BUFFER_OVERFLOW;
         goto Exit;
     }
 
-    /* Store null terminator */
+    /* Build the path in the user buffer */
 
-    UserBuffer[Size] = 0;
-    Size -= ACPI_NAME_SIZE;
+    AcpiNsBuildExternalPath (Node, Size, UserBuffer);
 
-    /* Put the original ACPI name at the end of the path */
 
-    MOVE_UNALIGNED32_TO_32 ((UserBuffer + Size),
-                            &Node->Name);
-
-    UserBuffer[--Size] = PATH_SEPARATOR;
-
-    /* Build name backwards, putting "." between segments */
-
-    while ((Size > ACPI_NAME_SIZE) && Node)
-    {
-        Size -= ACPI_NAME_SIZE;
-        Name = AcpiNsFindParentName (Node);
-        MOVE_UNALIGNED32_TO_32 ((UserBuffer + Size), &Name);
-
-        UserBuffer[--Size] = PATH_SEPARATOR;
-        Node = AcpiNsGetParentObject (Node);
-    }
-
-    /*
-     * Overlay the "." preceding the first segment with
-     * the root name "\"
-     */
-
-    UserBuffer[Size] = '\\';
-
-    ACPI_DEBUG_PRINT ((ACPI_DB_EXEC, "Len=%X, %s \n", PathLength, UserBuffer));
+    ACPI_DEBUG_PRINT ((ACPI_DB_EXEC, "%s [%X] \n", UserBuffer, Size));
 
 Exit:
     return_ACPI_STATUS (Status);

@@ -2,7 +2,7 @@
  *
  * Module Name: nsxfname - Public interfaces to the ACPI subsystem
  *                         ACPI Namespace oriented interfaces
- *              $Revision: 1.78 $
+ *              $Revision: 1.84 $
  *
  *****************************************************************************/
 
@@ -10,7 +10,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -159,6 +159,11 @@ AcpiGetHandle (
     ACPI_NAMESPACE_NODE     *PrefixNode = NULL;
 
 
+    FUNCTION_ENTRY ();
+
+
+    /* Parameter Validation */
+
     if (!RetHandle || !Pathname)
     {
         return (AE_BAD_PARAMETER);
@@ -170,7 +175,7 @@ AcpiGetHandle (
     {
         AcpiUtAcquireMutex (ACPI_MTX_NAMESPACE);
 
-        PrefixNode = AcpiNsConvertHandleToEntry (Parent);
+        PrefixNode = AcpiNsMapHandleToNode (Parent);
         if (!PrefixNode)
         {
             AcpiUtReleaseMutex (ACPI_MTX_NAMESPACE);
@@ -191,7 +196,7 @@ AcpiGetHandle (
     /*
      *  Find the Node and convert to a handle
      */
-    Status = AcpiNsGetNode (Pathname, PrefixNode, &Node);
+    Status = AcpiNsGetNodeByPath (Pathname, PrefixNode, NS_NO_UPSEARCH, &Node);
 
     *RetHandle = NULL;
     if (ACPI_SUCCESS (Status))
@@ -205,7 +210,7 @@ AcpiGetHandle (
 
 /****************************************************************************
  *
- * FUNCTION:    AcpiGetPathname
+ * FUNCTION:    AcpiGetName
  *
  * PARAMETERS:  Handle          - Handle to be converted to a pathname
  *              NameType        - Full pathname or single segment
@@ -257,9 +262,8 @@ AcpiGetName (
      * Wants the single segment ACPI name.
      * Validate handle and convert to an Node
      */
-
     AcpiUtAcquireMutex (ACPI_MTX_NAMESPACE);
-    Node = AcpiNsConvertHandleToEntry (Handle);
+    Node = AcpiNsMapHandleToNode (Handle);
     if (!Node)
     {
         Status = AE_BAD_PARAMETER;
@@ -327,7 +331,7 @@ AcpiGetObjectInfo (
 
     AcpiUtAcquireMutex (ACPI_MTX_NAMESPACE);
 
-    Node = AcpiNsConvertHandleToEntry (Handle);
+    Node = AcpiNsMapHandleToNode (Handle);
     if (!Node)
     {
         AcpiUtReleaseMutex (ACPI_MTX_NAMESPACE);
@@ -355,7 +359,6 @@ AcpiGetObjectInfo (
      * not be present.  The Info->Valid bits are used
      * to indicate which methods ran successfully.
      */
-
     Info->Valid = 0;
 
     /* Execute the _HID method and save the result */
@@ -382,7 +385,6 @@ AcpiGetObjectInfo (
      * Execute the _STA method and save the result
      * _STA is not always present
      */
-
     Status = AcpiUtExecute_STA (Node, &DeviceStatus);
     if (ACPI_SUCCESS (Status))
     {
@@ -394,7 +396,6 @@ AcpiGetObjectInfo (
      * Execute the _ADR method and save result if successful
      * _ADR is not always present
      */
-
     Status = AcpiUtEvaluateNumericObject (METHOD_NAME__ADR,
                                             Node, &Address);
 

@@ -2,7 +2,7 @@
  *
  * Module Name: nsobject - Utilities for objects attached to namespace
  *                         table entries
- *              $Revision: 1.76 $
+ *              $Revision: 1.77 $
  *
  ******************************************************************************/
 
@@ -10,7 +10,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -259,7 +259,7 @@ AcpiNsAttachObject (
     }
 
 
-    /* 
+    /*
      * Handle objects with multiple descriptors - walk
      * to the end of the descriptor list
      */
@@ -408,11 +408,11 @@ AcpiNsGetSecondaryObject (
  *
  * FUNCTION:    AcpiNsAttachData
  *
- * PARAMETERS:  
+ * PARAMETERS:
  *
  * RETURN:      Status
  *
- * DESCRIPTION: 
+ * DESCRIPTION:
  *
  ******************************************************************************/
 
@@ -425,7 +425,6 @@ AcpiNsAttachData (
     ACPI_OPERAND_OBJECT     *PrevObjDesc;
     ACPI_OPERAND_OBJECT     *ObjDesc;
     ACPI_OPERAND_OBJECT     *DataDesc;
-
 
 
     /* */
@@ -475,11 +474,11 @@ AcpiNsAttachData (
  *
  * FUNCTION:    AcpiNsDetachData
  *
- * PARAMETERS:  
+ * PARAMETERS:
  *
  * RETURN:      Status
  *
- * DESCRIPTION: 
+ * DESCRIPTION:
  *
  ******************************************************************************/
 
@@ -520,16 +519,15 @@ AcpiNsDetachData (
 }
 
 
-
 /*******************************************************************************
  *
  * FUNCTION:    AcpiNsGetAttachedData
  *
- * PARAMETERS:  
+ * PARAMETERS:
  *
  * RETURN:      Status
  *
- * DESCRIPTION: 
+ * DESCRIPTION:
  *
  ******************************************************************************/
 
@@ -557,6 +555,5 @@ AcpiNsGetAttachedData (
 
     return (AE_NOT_FOUND);
 }
-
 
 

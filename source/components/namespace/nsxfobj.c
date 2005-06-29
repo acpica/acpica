@@ -2,7 +2,7 @@
  *
  * Module Name: nsxfobj - Public interfaces to the ACPI subsystem
  *                         ACPI Object oriented interfaces
- *              $Revision: 1.102 $
+ *              $Revision: 1.103 $
  *
  ******************************************************************************/
 
@@ -10,7 +10,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -273,10 +273,10 @@ AcpiEvaluateObject (
             {
                 /*
                  * If we received a NS Node as a return object, this means that
-                 * the object we are evaluating has nothing interesting to 
-                 * return (such as a mutex, etc.)  We return an error because 
-                 * these types are essentially unsupported by this interface.  
-                 * We don't check up front because this makes it easier to add 
+                 * the object we are evaluating has nothing interesting to
+                 * return (such as a mutex, etc.)  We return an error because
+                 * these types are essentially unsupported by this interface.
+                 * We don't check up front because this makes it easier to add
                  * support for various types at a later date if necessary.
                  */
                 Status = AE_TYPE;
@@ -622,7 +622,7 @@ AcpiWalkNamespace (
      * must be allowed to make Acpi calls itself.
      */
     AcpiUtAcquireMutex (ACPI_MTX_NAMESPACE);
-    Status = AcpiNsWalkNamespace (Type, StartObject, MaxDepth, NS_WALK_UNLOCK, 
+    Status = AcpiNsWalkNamespace (Type, StartObject, MaxDepth, NS_WALK_UNLOCK,
                     UserFunction, Context, ReturnValue);
 
     AcpiUtReleaseMutex (ACPI_MTX_NAMESPACE);
@@ -803,11 +803,11 @@ AcpiGetDevices (
  *
  * FUNCTION:    AcpiAttachData
  *
- * PARAMETERS:  
+ * PARAMETERS:
  *
  * RETURN:      Status
  *
- * DESCRIPTION: 
+ * DESCRIPTION:
  *
  ******************************************************************************/
 
@@ -854,11 +854,11 @@ UnlockAndExit:
  *
  * FUNCTION:    AcpiDetachData
  *
- * PARAMETERS:  
+ * PARAMETERS:
  *
  * RETURN:      Status
  *
- * DESCRIPTION: 
+ * DESCRIPTION:
  *
  ******************************************************************************/
 
@@ -903,11 +903,11 @@ UnlockAndExit:
  *
  * FUNCTION:    AcpiGetData
  *
- * PARAMETERS:  
+ * PARAMETERS:
  *
  * RETURN:      Status
  *
- * DESCRIPTION: 
+ * DESCRIPTION:
  *
  ******************************************************************************/
 
@@ -948,6 +948,5 @@ UnlockAndExit:
     AcpiUtReleaseMutex (ACPI_MTX_NAMESPACE);
     return (Status);
 }
-
 
 

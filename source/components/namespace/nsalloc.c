@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: nsalloc - Namespace allocation and deletion utilities
- *              $Revision: 1.68 $
+ *              $Revision: 1.69 $
  *
  ******************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -239,7 +239,7 @@ AcpiNsDeleteNode (
  *              its peers.
  *
  *              Note: Current namespace lookup is linear search, so the nodes
- *              are not linked in any particular order. 
+ *              are not linked in any particular order.
  *
  ******************************************************************************/
 
@@ -616,7 +616,7 @@ AcpiNsDeleteNamespaceByOwner (
      */
     while (Level > 0)
     {
-        /* 
+        /*
          * Get the next child of this parent node. When ChildNode is NULL,
          * the first child of the parent is returned
          */

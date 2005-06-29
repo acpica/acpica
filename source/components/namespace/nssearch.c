@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: nssearch - Namespace search
- *              $Revision: 1.80 $
+ *              $Revision: 1.81 $
  *
  ******************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -325,9 +325,9 @@ AcpiNsSearchParentTree (
      */
     while (ParentNode)
     {
-        /* 
+        /*
          * Search parent scope.  Use TYPE_ANY because we don't care about the
-         * object type at this point, we only care about the existence of 
+         * object type at this point, we only care about the existence of
          * the actual name we are searching for.  Typechecking comes later.
          */
         Status = AcpiNsSearchNode (TargetName, ParentNode,
