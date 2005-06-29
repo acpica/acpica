@@ -246,30 +246,30 @@ OsdSleepUsec (
 
 UINT8
 OsdIn8 (
-    UINT16                  InPort);
+    ACPI_IO_ADDRESS         InPort);
 
 
 UINT16
 OsdIn16 (
-    UINT16                  InPort);
+    ACPI_IO_ADDRESS         InPort);
 
 UINT32
 OsdIn32 (
-    UINT16                  InPort);
+    ACPI_IO_ADDRESS         InPort);
 
 void
 OsdOut8 (
-    UINT16                  OutPort, 
+    ACPI_IO_ADDRESS         OutPort, 
     UINT8                   Value);
 
 void
 OsdOut16 (
-    UINT16                  OutPort, 
+    ACPI_IO_ADDRESS         OutPort, 
     UINT16                  Value);
 
 void
 OsdOut32 (
-    UINT16                  OutPort, 
+    ACPI_IO_ADDRESS         OutPort, 
     UINT32                  Value);
 
 
