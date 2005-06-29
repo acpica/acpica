@@ -1072,7 +1072,7 @@ AcpiRemoveAddressSpaceHandler (
 ACPI_STATUS
 AcpiInstallGpeHandler (
     UINT32                  GpeNumber,
-    ACPI_EVENT_TRIGGER_TYPE Type,
+    UINT32                  Type,
     GPE_HANDLER             Handler,
     void                    *Context)
 {
