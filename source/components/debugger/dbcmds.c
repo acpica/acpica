@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dbcmds - debug commands and output routines
- *              $Revision: 1.75 $
+ *              $Revision: 1.76 $
  *
  ******************************************************************************/
 
@@ -1046,6 +1046,7 @@ AcpiDbDisplayResources (
 
 
     AcpiDbSetOutputDestination (DB_REDIRECTABLE_OUTPUT);
+    AcpiDbgLevel |= ACPI_LV_RESOURCES;
 
     /* Convert string to object pointer */
 
