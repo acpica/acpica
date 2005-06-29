@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asllisting - Listing file generation
- *              $Revision: 1.21 $
+ *              $Revision: 1.23 $
  *
  *****************************************************************************/
 
@@ -200,7 +200,7 @@ LsPopNode (void)
     if ((!Lnode) ||
         (!Lnode->Next))
     {
-        AslError (ASL_ERROR, ASL_MSG_INTERNAL, NULL, "Could not pop empty listing stack");
+        AslError (ASL_ERROR, ASL_MSG_COMPILER_INTERNAL, NULL, "Could not pop empty listing stack");
         return Gbl_ListingNode;
     }
 
@@ -565,7 +565,7 @@ void
 LsWriteNodeToListing (
     ASL_PARSE_NODE          *Node)
 {
-    ACPI_OPCODE_INFO        *OpInfo;
+    const ACPI_OPCODE_INFO  *OpInfo;
     UINT8                   Optype;
 
 
