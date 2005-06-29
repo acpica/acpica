@@ -2,7 +2,7 @@
  *
  * Module Name: nsxfobj - Public interfaces to the ACPI subsystem
  *                         ACPI Object oriented interfaces
- *              $Revision: 1.96 $
+ *              $Revision: 1.97 $
  *
  ******************************************************************************/
 
@@ -134,7 +134,7 @@
  *
  * PARAMETERS:  Handle              - Object handle (optional)
  *              *Pathname           - Object pathname (optional)
- *              **ExternalParams    - List of parameters to pass to method, 
+ *              **ExternalParams    - List of parameters to pass to method,
  *                                    terminated by NULL.  May be NULL
  *                                    if no parameters are being passed.
  *              *ReturnBuffer       - Where to put method's return value (if
@@ -641,8 +641,8 @@ AcpiWalkNamespace (
      * must be allowed to make Acpi calls itself.
      */
     AcpiUtAcquireMutex (ACPI_MTX_NAMESPACE);
-    Status = AcpiNsWalkNamespace ((ACPI_OBJECT_TYPE8) Type, StartObject, 
-                    MaxDepth, NS_WALK_UNLOCK, UserFunction, Context, 
+    Status = AcpiNsWalkNamespace ((ACPI_OBJECT_TYPE8) Type, StartObject,
+                    MaxDepth, NS_WALK_UNLOCK, UserFunction, Context,
                     ReturnValue);
 
     AcpiUtReleaseMutex (ACPI_MTX_NAMESPACE);
@@ -724,24 +724,24 @@ AcpiNsGetDeviceCallback (
 
         if (STRNCMP (Hid.Buffer, Info->Hid, sizeof (Hid.Buffer)) != 0)
         {
-	    Status = AcpiUtExecute_CID (Node, &Cid);
-	    if (Status == AE_NOT_FOUND)
-	    {
-	        return (AE_OK);
-	    }
+            Status = AcpiUtExecute_CID (Node, &Cid);
+            if (Status == AE_NOT_FOUND)
+            {
+                return (AE_OK);
+            }
 
-	    else if (ACPI_FAILURE (Status))
-	    {
-	        return (AE_CTRL_DEPTH);
-	    }
+            else if (ACPI_FAILURE (Status))
+            {
+                return (AE_CTRL_DEPTH);
+            }
 
-	    /* TBD: Handle CID packages */
+            /* TBD: Handle CID packages */
 
-	    if (STRNCMP (Cid.Buffer, Info->Hid, sizeof (Cid.Buffer)) != 0)
-	    {
-	        return (AE_OK);
-	    }
-	}
+            if (STRNCMP (Cid.Buffer, Info->Hid, sizeof (Cid.Buffer)) != 0)
+            {
+                return (AE_OK);
+            }
+        }
     }
 
     Info->UserFunction (ObjHandle, NestingLevel, Info->Context, ReturnValue);
