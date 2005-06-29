@@ -55,6 +55,31 @@ $(InputDir)\$(InputPath).aml
 
 
 
+Compiler Generation From Source
+
+Generation of the ASL compiler from source code requires these items:
+
+
+Required Tools
+1) The Flex (or Lex) lexical analyzer generator.
+2) The Bison (or Yacc) parser generator.
+3) An ANSI C compiler.
+
+
+Required Source Code.
+
+There are three major source code components that are required to 
+generate the compiler:
+
+1) The ASL compiler source.
+2) The ACPI CA Core Subsystem source.  In particular, the Namespace Manager
+     component is used to create an internal ACPI namespace and symbol table,
+     and the AML Interpreter is used to evaluate constant expressions.
+3) The Common source for all ACPI components.
+
+
+
+
 
 
 
