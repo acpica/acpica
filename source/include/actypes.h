@@ -167,6 +167,7 @@ typedef int                 ACPI_PTRDIFF;
 typedef unsigned int        ACPI_SIZE;
 
 
+
 /* 
  * Local datatypes 
  */
@@ -184,6 +185,19 @@ typedef void*               ACPI_HANDLE;    /* Actually a ptr to an NTE */
 
 #define ACPI_ROOT_OBJECT    (ACPI_HANDLE)(-1)
 #define ACPI_ROOT_SCOPE     (ACPI_HANDLE)(-2)
+
+
+/*
+ * Sleep state constants
+ */
+#define S0					(UINT8) 0
+#define S1					(UINT8) 1
+#define S2					(UINT8) 2
+#define S3					(UINT8) 3
+#define S4					(UINT8) 4
+#define S4BIOS				(UINT8) 5
+#define S5					(UINT8) 6
+#define ACPI_S_STATES_MAX	S5
 
 
 /*
@@ -469,6 +483,7 @@ typedef struct
 #define BIT0(x)             ((((x) & 0x01) > 0) ? 1 : 0)
 #define BIT1(x)             ((((x) & 0x02) > 0) ? 1 : 0)
 #define BIT2(x)             ((((x) & 0x04) > 0) ? 1 : 0)
+
 #define BIT3(x)             ((((x) & 0x08) > 0) ? 1 : 0)
 #define BIT4(x)             ((((x) & 0x10) > 0) ? 1 : 0)
 #define BIT5(x)             ((((x) & 0x20) > 0) ? 1 : 0)
