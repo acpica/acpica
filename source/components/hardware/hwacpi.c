@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: hwacpi - ACPI Hardware Initialization/Mode Interface
- *              $Revision: 1.63 $
+ *              $Revision: 1.64 $
  *
  *****************************************************************************/
 
@@ -289,6 +289,16 @@ AcpiHwGetMode (void)
 
 
     ACPI_FUNCTION_TRACE ("HwGetMode");
+
+
+    /*
+     * ACPI 2.0 clarified that if SMI_CMD in FADT is zero,
+     * system does not support mode transition.
+     */
+    if (!AcpiGbl_FADT->SmiCmd)
+    {
+        return_VALUE (ACPI_SYS_MODE_ACPI);
+    }
 
     Status = AcpiGetRegister (ACPI_BITREG_SCI_ENABLE, &Value, ACPI_MTX_LOCK);
     if (ACPI_FAILURE (Status))
