@@ -197,6 +197,7 @@ enum AmlDebuggerCommands
     CMD_SET,
     CMD_STATS,
     CMD_STOP,
+    CMD_TABLES,
     CMD_TERMINATE,
     CMD_TREE,
     CMD_UNLOAD 
@@ -244,6 +245,7 @@ COMMAND_INFO                Commands[] =
     "SET",          3,
     "STATS",        0,
     "STOP",         0,
+    "TABLES",       0,
     "TERMINATE",    0,
     "TREE",         0,
     "UNLOAD",       0,
@@ -286,6 +288,7 @@ DbDisplayHelp (void)
     OsdPrintf ("Prefix [<NamePath>]                 Set or Get current execution prefix\n");
     OsdPrintf ("Quit or Exit                        Exit this command\n");
     OsdPrintf ("Stats                               Display namespace and memory statistics\n");
+    OsdPrintf ("Tables                              Display info about loaded ACPI tables\n");
     OsdPrintf ("Terminate                           Delete namespace and all internal objects\n");
     OsdPrintf ("Unload                              Unload an ACPI table\n");
     OsdPrintf ("! <CommandNumber>                   Execute command from history buffer\n");
@@ -419,7 +422,14 @@ DbGetLine (
         This = Next;
     }
 
-    
+  
+    /* Uppercase the actual command */
+
+    if (Args[0])
+    {
+        STRUPR (Args[0]);
+    }
+
     Count = i;
     if (Count)
         Count--;  /* Number of args only */
@@ -688,6 +698,10 @@ DbCommandDispatch (
         return (AE_AML_ERROR);
         break;
 
+    case CMD_TABLES:
+        DbDisplayTableInfo (Args[1]);
+        break;
+
     case CMD_TERMINATE:
         CmSubsystemShutdown ();
 
@@ -698,6 +712,10 @@ DbCommandDispatch (
 
     case CMD_TREE:
         DbDisplayCallingTree ();
+        break;
+
+    case CMD_UNLOAD:
+        DbUnloadAcpiTable (Args[1], Args[2]);
         break;
 
     case CMD_EXIT:
