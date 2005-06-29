@@ -1,11 +1,11 @@
 
-//
-// Common stuff that may move later
-//
+/*
+/ Common stuff that may move later
+/*
 
 #include <stdio.h>
 #include <stdarg.h>
-//include <varargs.h>
+/*include <varargs.h>*/
 
 #pragma pack(1)
 #include <bu.h>
@@ -23,7 +23,7 @@ int         __iAcpiLibInitStatus = 0;
 selector    sFlatSeg;
 
 
-// Debug switch
+/* Debug switchi */
 
 int DebugLevel = 0x7FFFFFFF;
 
@@ -105,13 +105,13 @@ void vDumpBuf(BYTE *pbBuffer, size_t sCount, int iFlags, LogHandle hLogFile,
     unsigned char           BufChar;
 
 
-    //
-    // Nasty little dump buffer routine!
-    //
+    /*
+     Nasty little dump buffer routine!
+    */
     while (i <= sCount)
     {
 
-        // Print 16 hex chars
+        /* Print 16 hex chars */
 
         for (j = 0; j < 16; j++)
         {
@@ -121,8 +121,9 @@ void vDumpBuf(BYTE *pbBuffer, size_t sCount, int iFlags, LogHandle hLogFile,
             OsdPrintf (NULL, "%02X ", pbBuffer[i + j]);
         }
 
-        // Print the ASCII equivalent characters
-        // But watch out for the bad unprintable ones...
+        /* Print the ASCII equivalent characters
+           But watch out for the bad unprintable ones...
+         */
 
         for (j = 0; j < 16; j++)
         {
@@ -140,7 +141,7 @@ void vDumpBuf(BYTE *pbBuffer, size_t sCount, int iFlags, LogHandle hLogFile,
                 
         }
 
-        // Done with that line.
+        /* Done with that line. */
 
         OsdPrintf (NULL, "\n");
         i += 16;
@@ -210,13 +211,13 @@ iIncIndent (void)
 LogHandle
 GetMasterLogHandle (void)
 {
-//  return NO_LOG_HANDLE;
+/*  return NO_LOG_HANDLE; */
 
-    return 1; // stdout;
+    return 1; /* stdout; */
 }
 
 
-// Pointer stuff, must get rid of this eventually
+/* Pointer stuff, must get rid of this eventually
 
 size_t sPtrOffset (void *pvPtr)
 {
@@ -256,7 +257,7 @@ ebds (void)
     return 0;
 }
 
-// Interrupt handlers
+/* Interrupt handlers */
 
 DWORD
 wInstallInterruptHandler (
