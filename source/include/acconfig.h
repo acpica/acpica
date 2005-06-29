@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acconfig.h - Global configuration constants
- *       $Revision: 1.50 $
+ *       $Revision: 1.52 $
  *
  *****************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, 2000, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -144,7 +144,7 @@
 
 /* Version string */
 
-#define ACPI_CA_VERSION             __DATE__
+#define ACPI_CA_VERSION             0x20010126
 
 
 /* Maximum objects in the various object caches */
@@ -215,7 +215,7 @@
 
 /* Maximum length of resulting string when converting from a buffer */
 
-#define ACPI_MAX_STRING_CONVERSION  200 
+#define ACPI_MAX_STRING_CONVERSION  200
 
 /*
  * Operand Stack (in WALK_STATE), Must be large enough to contain MTH_MAX_ARG
