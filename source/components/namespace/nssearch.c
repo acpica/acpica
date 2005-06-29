@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: nssearch - Namespace search
- *              $Revision: 1.64 $
+ *              $Revision: 1.67 $
  *
  ******************************************************************************/
 
@@ -122,7 +122,7 @@
 #include "acnamesp.h"
 
 
-#define _COMPONENT          NAMESPACE
+#define _COMPONENT          ACPI_NAMESPACE
         MODULE_NAME         ("nssearch")
 
 
@@ -131,9 +131,9 @@
  * FUNCTION:    AcpiNsSearchNode
  *
  * PARAMETERS:  *TargetName         - Ascii ACPI name to search for
- *              *Node           - Starting table where search will begin
+ *              *Node               - Starting table where search will begin
  *              Type                - Object type to match
- *              **ReturnNode    - Where the matched Named obj is returned
+ *              **ReturnNode        - Where the matched Named obj is returned
  *
  * RETURN:      Status
  *
@@ -169,7 +169,7 @@ AcpiNsSearchNode (
     if (TRACE_NAMES & AcpiDbgLevel)
     {
         NATIVE_CHAR         *ScopeName;
-        
+
         ScopeName = AcpiNsGetTablePathname (Node);
         if (ScopeName)
         {
@@ -199,29 +199,24 @@ AcpiNsSearchNode (
         if (NextNode->Name == TargetName)
         {
             /*
-             * Found matching entry.  Capture type if
-             * appropriate before returning the entry.
+             * Found matching entry.  Capture the type if appropriate, before
+             * returning the entry.
+             *
+             * The DefFieldDefn and BankFieldDefn cases are actually looking up
+             * the Region in which the field will be defined
              */
 
-            /*
-             * The DefFieldDefn and BankFieldDefn cases
-             * are actually looking up the Region in which
-             * the field will be defined
-             */
-
-            if ((INTERNAL_TYPE_DEF_FIELD_DEFN == Type) ||
+            if ((INTERNAL_TYPE_FIELD_DEFN == Type) ||
                 (INTERNAL_TYPE_BANK_FIELD_DEFN == Type))
             {
                 Type = ACPI_TYPE_REGION;
             }
 
             /*
-             * Scope, DefAny, and IndexFieldDefn are bogus
-             * "types" which do not actually have anything
-             * to do with the type of the name being looked
-             * up.  For any other value of Type, if the type
-             * stored in the entry is Any (i.e. unknown),
-             * save the actual type.
+             * Scope, DefAny, and IndexFieldDefn are bogus "types" which do not
+             * actually have anything to do with the type of the name being
+             * looked up.  For any other value of Type, if the type stored in
+             * the entry is Any (i.e. unknown), save the actual type.
              */
 
             if (Type != INTERNAL_TYPE_SCOPE &&
@@ -274,9 +269,9 @@ AcpiNsSearchNode (
  * FUNCTION:    AcpiNsSearchParentTree
  *
  * PARAMETERS:  *TargetName         - Ascii ACPI name to search for
- *              *Node           - Starting table where search will begin
+ *              *Node               - Starting table where search will begin
  *              Type                - Object type to match
- *              **ReturnNode    - Where the matched Named Obj is returned
+ *              **ReturnNode        - Where the matched Named Obj is returned
  *
  * RETURN:      Status
  *
@@ -380,12 +375,12 @@ AcpiNsSearchParentTree (
  *
  * PARAMETERS:  TargetName          - Ascii ACPI name to search for (4 chars)
  *              WalkState           - Current state of the walk
- *              *Node           - Starting table where search will begin
+ *              *Node               - Starting table where search will begin
  *              InterpreterMode     - Add names only in MODE_LoadPassX.
  *                                    Otherwise,search only.
  *              Type                - Object type to match
  *              Flags               - Flags describing the search restrictions
- *              **ReturnNode    - Where the Node is returned
+ *              **ReturnNode        - Where the Node is returned
  *
  * RETURN:      Status
  *
@@ -450,8 +445,8 @@ AcpiNsSearchAndEnter (
     if (Status != AE_NOT_FOUND)
     {
         /*
-         * If we found it AND the request specifies that a
-         * find is an error, return the error
+         * If we found it AND the request specifies that a find is an error,
+         * return the error
          */
         if ((Status == AE_OK) &&
             (Flags & NS_ERROR_IF_FOUND))
