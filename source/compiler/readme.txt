@@ -19,12 +19,13 @@ window.
 5) Enter the following into the fields:
 
    Command:             C:\Acpi\iasl.exe
-   Arguments:           -e $(FilePath)
-   Initial Directory    $(FileDir)
+   Arguments:           -e "$(FilePath)"
+   Initial Directory    "$(FileDir)"
    Use Output Window    <Check this option>
 
    "Command" must be the path to wherever you copied the compiler.
    "-e" instructs the compiler to produce messages appropriate for VC.
+   Quotes around FilePath and FileDir enable spaces in filenames.
 
 6) Select "Close".
 
