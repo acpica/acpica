@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acevents.h - Event subcomponent prototypes and defines
- *       $Revision: 1.82 $
+ *       $Revision: 1.83 $
  *
  *****************************************************************************/
 
@@ -164,14 +164,6 @@ ACPI_STATUS
 AcpiEvInitGlobalLockHandler (
     void);
 
-ACPI_GPE_REGISTER_INFO *
-AcpiEvGetGpeRegisterInfo (
-    UINT32                  GpeNumber);
-
-ACPI_GPE_NUMBER_INFO *
-AcpiEvGetGpeNumberInfo (
-    UINT32                  GpeNumber);
-
 UINT32
 AcpiEvGetGpeNumberIndex (
     UINT32                  GpeNumber);
@@ -190,17 +182,17 @@ AcpiEvNotifyDispatch (
  * Evgpe - GPE handling and dispatch
  */
 
+ACPI_GPE_EVENT_INFO *
+AcpiEvGetGpeEventInfo (
+    UINT32                  GpeNumber);
+
 ACPI_STATUS
 AcpiEvGpeInitialize (
     void);
 
-ACPI_STATUS
-AcpiEvInitGpeControlMethods (
-    void);
-
 UINT32
 AcpiEvGpeDispatch (
-    UINT32                  GpeNumber);
+    ACPI_GPE_EVENT_INFO     *GpeEventInfo);
 
 UINT32
 AcpiEvGpeDetect (
