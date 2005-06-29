@@ -295,11 +295,41 @@ DbSingleStep (
     /* Go into the command loop and await next user command */
     
     Gbl_MethodExecuting = TRUE;
-    Status = AE_TRUE;
-    while (Status == AE_TRUE)
+    Status = AE_CTRL_TRUE;
+    while (Status == AE_CTRL_TRUE)
     {
-        CmReleaseMutex (MTX_DEBUG_COMMAND);
-        CmAcquireMutex (MTX_DEBUGGER);
+        if (Gbl_DebuggerConfiguration == DEBUGGER_MULTI_THREADED)
+        {
+            /* Handshake with the front-end that gets user command lines */
+
+            CmReleaseMutex (MTX_DEBUG_COMMAND);
+            CmAcquireMutex (MTX_DEBUGGER);
+        }
+
+        else
+        {
+            /* Single threaded, we must get a command line ourselves */
+
+            /* Force output to console until a command is entered */
+
+            DbSetOutputDestination (DB_CONSOLE_OUTPUT);
+
+            /* Different prompt if method is executing */
+
+            if (!Gbl_MethodExecuting)
+            {
+                OsdPrintf ("%1c ", DB_COMMAND_PROMPT);
+            }
+            else
+            {
+                OsdPrintf ("%1c ", DB_EXECUTE_PROMPT);
+            }
+
+            /* Get the user input line */
+
+            OsdGetLine (LineBuf);
+        }
+
         Status = DbCommandDispatch (LineBuf, WalkState, Op);
     }
 
@@ -337,11 +367,13 @@ DbInitialize (void)
     ScopeBuf [0] = '\\';
     ScopeBuf [1] =  0;
 
-    CmAcquireMutex (MTX_DEBUG_COMMAND);
-    CmAcquireMutex (MTX_DEBUGGER);
+    if (Gbl_DebuggerConfiguration & DEBUGGER_MULTI_THREADED)
+    {
+        CmAcquireMutex (MTX_DEBUG_COMMAND);
+        CmAcquireMutex (MTX_DEBUGGER);
 
-    OsdQueueForExecution (0, DbExecuteThread, NULL);
-
+        OsdQueueForExecution (0, DbExecuteThread, NULL);
+    }
 
 	if (!opt_verbose)
 	{
