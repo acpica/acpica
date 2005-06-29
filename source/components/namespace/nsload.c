@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: nsload - namespace loading/expanding/contracting procedures
- *              $Revision: 1.54 $
+ *              $Revision: 1.56 $
  *
  *****************************************************************************/
 
@@ -117,12 +117,10 @@
 #define __NSLOAD_C__
 
 #include "acpi.h"
-#include "acinterp.h"
 #include "acnamesp.h"
 #include "amlcode.h"
 #include "acparser.h"
 #include "acdispat.h"
-#include "acdebug.h"
 
 
 #define _COMPONENT          ACPI_NAMESPACE
@@ -172,8 +170,8 @@ AcpiNsLoadNamespace (
 
     /* Ignore exceptions from these */
 
-    AcpiNsLoadTableByType (ACPI_TABLE_SSDT);
-    AcpiNsLoadTableByType (ACPI_TABLE_PSDT);
+    (void) AcpiNsLoadTableByType (ACPI_TABLE_SSDT);
+    (void) AcpiNsLoadTableByType (ACPI_TABLE_PSDT);
 
     ACPI_DEBUG_PRINT_RAW ((ACPI_DB_OK,
         "ACPI Namespace successfully loaded at root %p\n",
@@ -181,6 +179,7 @@ AcpiNsLoadNamespace (
 
     return_ACPI_STATUS (Status);
 }
+
 
 
 /*******************************************************************************
@@ -211,13 +210,12 @@ AcpiNsOneCompleteParse (
 
     /* Create and init a Root Node */
 
-    ParseRoot = AcpiPsAllocOp (AML_SCOPE_OP);
+    ParseRoot = AcpiPsCreateScopeOp ();
     if (!ParseRoot)
     {
         return_ACPI_STATUS (AE_NO_MEMORY);
     }
 
-    ParseRoot->Named.Name = ACPI_ROOT_NAME;
 
     /* Create and initialize a new walk state */
 
@@ -615,7 +613,11 @@ AcpiNsDeleteSubtree (
             AcpiNsDeleteChildren (ChildHandle);
 
             ChildHandle = ParentHandle;
-            AcpiGetParent (ParentHandle, &ParentHandle);
+            Status = AcpiGetParent (ParentHandle, &ParentHandle);
+            if (ACPI_FAILURE (Status))
+            {
+                return_ACPI_STATUS (Status);
+            }
         }
     }
 
