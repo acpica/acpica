@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: aclinux.h - OS specific defines, etc.
- *       $Revision: 1.10 $
+ *       $Revision: 1.12 $
  *
  *****************************************************************************/
 
@@ -119,7 +119,7 @@
 
 #define ACPI_OS_NAME                "Linux"
 
-#undef ACPI_USE_SYSTEM_CLIBRARY
+#define ACPI_USE_SYSTEM_CLIBRARY
 
 #ifdef __KERNEL__
 
@@ -130,6 +130,8 @@
 #include <asm/system.h>
 #include <asm/atomic.h>
 #include <asm/div64.h>
+
+#define strtoul simple_strtoul
 
 #else
 
