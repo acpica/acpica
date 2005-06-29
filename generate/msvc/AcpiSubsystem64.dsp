@@ -73,7 +73,7 @@ PostBuild_Cmds=copy bin\acpica64.lib ..\..\libraries\acpica64.lib	dir ..\..\libr
 # PROP Intermediate_Dir "\Acpi\Generate\msvc\AcpiSubsystem64\Debug"
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_MBCS" /D "_LIB" /YX /FD /GZ /c
-# ADD CPP /Gz /MT /Za /W4 /Gm /GX /Zi /Oa /Og /Os /Oy /I "..\..\source\Include" /D "ACPI_DEBUG" /D "_DEBUG" /D "ENABLE_DEBUGGER" /D "_WINDOWS" /D PROCESSOR_ARCHITECTURE=x86 /D "WIN64" /D "_IA64" /FR /FD /c
+# ADD CPP /Gz /MT /Za /W4 /Gm /GX /Zi /Oa /Og /Os /Oy /I "..\..\source\Include" /D "ACPI_DEBUG" /D "_DEBUG" /D "ENABLE_DEBUGGER" /D "ACPI_DISASSEMBLER" /D "_WINDOWS" /D PROCESSOR_ARCHITECTURE=x86 /D "WIN64" /D "_IA64" /FR /FD /c
 # SUBTRACT CPP /nologo
 # ADD BASE RSC /l 0x409 /d "_DEBUG"
 # ADD RSC /l 0x409
@@ -439,7 +439,15 @@ SOURCE=..\..\source\components\tables\tbget.c
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\source\COMPONENTS\tables\tbgetall.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\source\components\tables\tbinstal.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\COMPONENTS\tables\tbrsdt.c
 # End Source File
 # Begin Source File
 
@@ -504,6 +512,10 @@ SOURCE=..\..\source\components\interpreter\debugger\dbdisasm.c
 # Begin Source File
 
 SOURCE=..\..\source\components\interpreter\debugger\dbdisply.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\COMPONENTS\INTERPRETER\DEBUGGER\dbdswalk.c
 # End Source File
 # Begin Source File
 
@@ -697,10 +709,6 @@ SOURCE=..\..\source\Include\actbl1.h
 # Begin Source File
 
 SOURCE=..\..\source\Include\actbl2.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\source\Include\actbl71.h
 # End Source File
 # Begin Source File
 
