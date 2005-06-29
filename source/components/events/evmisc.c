@@ -2,7 +2,7 @@
  *
  * Module Name: evmisc - ACPI device notification handler dispatch
  *                       and ACPI Global Lock support
- *              $Revision: 1.15 $
+ *              $Revision: 1.17 $
  *
  *****************************************************************************/
 
@@ -311,7 +311,7 @@ AcpiEvGlobalLockHandler (
      * take another interrupt when it becomes free.
      */
 
-    GlobalLock = &AcpiGbl_FACS->GlobalLock;
+    GlobalLock = AcpiGbl_FACS->GlobalLock;
     ACPI_ACQUIRE_GLOBAL_LOCK (GlobalLock, Acquired);
     if (Acquired)
     {
@@ -398,7 +398,7 @@ AcpiEvAcquireGlobalLock(void)
 
     /* We must acquire the actual hardware lock */
 
-    GlobalLock = &AcpiGbl_FACS->GlobalLock;
+    GlobalLock = AcpiGbl_FACS->GlobalLock;
     ACPI_ACQUIRE_GLOBAL_LOCK (GlobalLock, Acquired);
     if (Acquired)
     {
@@ -467,7 +467,7 @@ AcpiEvReleaseGlobalLock (void)
          * release
          */
 
-        GlobalLock = &AcpiGbl_FACS->GlobalLock;
+        GlobalLock = AcpiGbl_FACS->GlobalLock;
         ACPI_RELEASE_GLOBAL_LOCK (GlobalLock, Pending);
         AcpiGbl_GlobalLockAcquired = FALSE;
 
@@ -477,7 +477,7 @@ AcpiEvReleaseGlobalLock (void)
          */
         if (Pending)
         {
-            AcpiHwRegisterAccess (ACPI_WRITE, ACPI_MTX_LOCK,
+            AcpiHwRegisterWrite (ACPI_MTX_LOCK,
                                     PM1_CONTROL | GBL_RLS, 1);
         }
     }
