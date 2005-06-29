@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acexcep.h - Exception codes returned by the ACPI subsystem
- *       $Revision: 1.62 $
+ *       $Revision: 1.63 $
  *
  *****************************************************************************/
 
@@ -193,8 +193,9 @@
 #define AE_BAD_CHECKSUM                 (ACPI_STATUS) (0x0003 | AE_CODE_ACPI_TABLES)
 #define AE_BAD_VALUE                    (ACPI_STATUS) (0x0004 | AE_CODE_ACPI_TABLES)
 #define AE_TABLE_NOT_SUPPORTED          (ACPI_STATUS) (0x0005 | AE_CODE_ACPI_TABLES)
+#define AE_INVALID_TABLE_LENGTH         (ACPI_STATUS) (0x0006 | AE_CODE_ACPI_TABLES)
 
-#define AE_CODE_TBL_MAX                 0x0005
+#define AE_CODE_TBL_MAX                 0x0006
 
 
 /*
@@ -309,7 +310,8 @@ NATIVE_CHAR const   *AcpiGbl_ExceptionNames_Tbl[] =
     "AE_BAD_HEADER",
     "AE_BAD_CHECKSUM",
     "AE_BAD_VALUE",
-    "AE_TABLE_NOT_SUPPORTED"
+    "AE_TABLE_NOT_SUPPORTED",
+    "AE_INVALID_TABLE_LENGTH"
 };
 
 NATIVE_CHAR const   *AcpiGbl_ExceptionNames_Aml[] =
