@@ -238,14 +238,28 @@ AcpiOsTableOverride (
     ACPI_TABLE_HEADER       *ExistingTable,
     ACPI_TABLE_HEADER       **NewTable)
 {
+
     if (!ExistingTable || !NewTable)
     {
         return (AE_BAD_PARAMETER);
     }
 
-    /* TODO: Add table-getting code here */
     *NewTable = NULL;
-    return (AE_NO_ACPI_TABLES);
+
+#ifdef _ACPI_EXEC_APP
+
+    /* This code exercises the table override mechanism in the core */
+
+    if (!ACPI_STRNCMP (ExistingTable->Signature, DSDT_SIG, ACPI_NAME_SIZE))
+    {
+        /* override DSDT with itself */
+
+        *NewTable = AcpiGbl_DbTablePtr;
+    }
+    return (AE_OK);
+#else
+    return AE_NO_ACPI_TABLES;
+#endif
 }
 
 
