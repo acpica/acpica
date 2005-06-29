@@ -381,7 +381,7 @@ AcpiRemoveFixedEventHandler (
  *
  * PARAMETERS:  GpeNumber       - The GPE number.  The numbering scheme is 
  *                                bank 0 first, then bank 1.
- *              Handler         - Addres of the handler
+ *              Handler         - Address of the handler
  *              Context         - Value passed to the handler on each GPE
  *
  * RETURN:      Status
