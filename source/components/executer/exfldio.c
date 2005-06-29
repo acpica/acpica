@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: exfldio - Aml Field I/O
- *              $Revision: 1.56 $
+ *              $Revision: 1.57 $
  *
  *****************************************************************************/
 
@@ -885,7 +885,7 @@ AcpiExInsertIntoField (
 
         /* TBD: Need a better error code */
 
-        return_ACPI_STATUS (AE_BUFFER_OVERFLOW)
+        return_ACPI_STATUS (AE_BUFFER_OVERFLOW);
     }
 
     /* Convert byte count to datum count, round up if necessary */
