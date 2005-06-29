@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exstore - AML Interpreter object store support
- *              $Revision: 1.150 $
+ *              $Revision: 1.151 $
  *
  *****************************************************************************/
 
@@ -137,7 +137,7 @@
  * PARAMETERS:  *SourceDesc         - Value to be stored
  *              *DestDesc           - Where to store it.  Must be an NS node
  *                                    or an ACPI_OPERAND_OBJECT of type
- *                                    Reference; 
+ *                                    Reference;
  *
  * RETURN:      Status
  *
