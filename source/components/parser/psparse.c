@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: psparse - Parser top level AML parse routines
- *              $Revision: 1.125 $
+ *              $Revision: 1.126 $
  *
  *****************************************************************************/
 
@@ -135,7 +135,7 @@
         ACPI_MODULE_NAME    ("psparse")
 
 
-UINT32                      AcpiGbl_Depth = 0;
+static UINT32               AcpiGbl_Depth = 0;
 
 
 /*******************************************************************************
@@ -1305,7 +1305,14 @@ AcpiPsParseAml (
          */
         if ((WalkState->ParseFlags & ACPI_PARSE_MODE_MASK) == ACPI_PARSE_EXECUTE)
         {
-            AcpiDsTerminateControlMethod (WalkState);
+            Status = AcpiDsTerminateControlMethod (WalkState);
+            if (ACPI_FAILURE (Status))
+            {
+                ACPI_REPORT_ERROR (("Could not terminate control method properly\n"));
+                Status = AE_OK;
+
+                /* Ignore error and continue */
+            }
         }
 
         /* Delete this walk state and all linked control states */
@@ -1329,8 +1336,11 @@ AcpiPsParseAml (
                  * If the method return value is not used by the parent,
                  * The object is deleted
                  */
-                AcpiDsRestartControlMethod (WalkState, PreviousWalkState->ReturnDesc);
-                WalkState->WalkType |= ACPI_WALK_METHOD_RESTART;
+                Status = AcpiDsRestartControlMethod (WalkState, PreviousWalkState->ReturnDesc);
+                if (ACPI_SUCCESS (Status))
+                {
+                    WalkState->WalkType |= ACPI_WALK_METHOD_RESTART;
+                }
             }
             else
             {
@@ -1366,7 +1376,7 @@ AcpiPsParseAml (
     /* Normal exit */
 
     AcpiExReleaseAllMutexes (Thread);
-    AcpiUtDeleteGenericState ((ACPI_GENERIC_STATE *) Thread);
+    AcpiUtDeleteGenericState (ACPI_CAST_PTR (ACPI_GENERIC_STATE, Thread));
     AcpiGbl_CurrentWalkList = PrevWalkList;
     return_ACPI_STATUS (Status);
 }
