@@ -130,8 +130,10 @@ volatile UINT32         	EventCount[NUM_EVENTS];
  *
  ******************************************************************************/
 
-/* TBD - is this needed?
-#pragma check_stack (off)   stack probes MUST be off for any function call in a BU ISR */
+/* TBD - is this needed?  i think it's old dos code...
+stack probes MUST be off for any function call in a BU ISR
+#pragma check_stack (off)
+*/
 
 static INT32
 FixedEventHandler (
@@ -144,15 +146,14 @@ FixedEventHandler (
 	EventCount[Event]++;
 #endif
 
-	/* If there's no handler installed for the event, disable it.
-	   Note: this will never happen, but why not check... */
+	/* If we got here there must be a handler installed for the
+       event.  But check, just in case. */
 	if (NULL == FixedEventHandlers[Event])
 	{
 		DEBUG_PRINT (TRACE_INTERRUPTS,
-			("Disabling unhandled fixed event %08x.\n", Event));
+			("Unhandled fixed event %08x!!!\n", Event));
 
-        /* AcpiDisableFixedEvent (Event);*/
-		return INTERRUPT_NOT_HANDLED;
+        return INTERRUPT_NOT_HANDLED;
 	}
 	
 	return (FixedEventHandlers[Event]) ();
@@ -266,6 +267,7 @@ SciHandler (void)
     	StatusRegister |= (UINT32) OsdIn16 ((UINT16) FACP->Pm1bEvtBlk);
     }
         
+    /* This really isn't necessary.
     EnableRegister = (UINT32)
     	OsdIn16 ((UINT16) (FACP->Pm1aEvtBlk + FACP->Pm1EvtLen / 2));
     
@@ -274,36 +276,35 @@ SciHandler (void)
         EnableRegister |= (UINT32)
         	OsdIn16 ((UINT16) (FACP->Pm1bEvtBlk + FACP->Pm1EvtLen / 2));
     }
+    */
         
     DEBUG_PRINT (TRACE_INTERRUPTS,
     	("Enable: %08x\tStatus: %08x\n", EnableRegister, StatusRegister));
 
 	/* If the SCI was a fixed event, invoke the handler with the event type. */
     
-    if ((EnableRegister & 1) && (StatusRegister & 1))
+    if (StatusRegister & 1)
     {
         /* power management timer roll over */
-        InterruptHandled = FixedEventHandler (PMTIMER_EVENT);
+        InterruptHandled &= FixedEventHandler (PMTIMER_EVENT);
     }
 
-    if ((EnableRegister & 32) && (StatusRegister & 32))
+    if (StatusRegister & 32)
     {
         /* global event */
-        InterruptHandled = FixedEventHandler (GLOBAL_EVENT);
+        InterruptHandled &= FixedEventHandler (GLOBAL_EVENT);
     }
 
-    if ((EnableRegister & 256) && (StatusRegister & 256))
+    if (StatusRegister & 256)
     {
         /* power button event */
-        InterruptHandled = FixedEventHandler (POWER_BUTTON_EVENT);
-        // InterruptHandled = PwrbtnEventHandler ();
+        InterruptHandled &= FixedEventHandler (POWER_BUTTON_EVENT);
     }
 
-    if ((EnableRegister & 512) && (StatusRegister & 512))
+    if (StatusRegister & 512)
     {
         /* sleep button event */
-        InterruptHandled = FixedEventHandler (SLEEP_BUTTON_EVENT);
-        // InterruptHandled = SlpbtnEventHandler ();
+        InterruptHandled &= FixedEventHandler (SLEEP_BUTTON_EVENT);
     }
    
     /* Check for a general purpose event handler */
@@ -314,7 +315,7 @@ SciHandler (void)
 
     for (Index = 0; Index < GpeLength && InterruptHandled == FALSE; Index++)
     {
-    	InterruptHandled = GpeEventHandler (Index, FACP->Gpe0Blk, GpeLength);
+    	InterruptHandled &= GpeEventHandler (Index, FACP->Gpe0Blk, GpeLength);
     }
 
     /* 
@@ -326,14 +327,15 @@ SciHandler (void)
 
     for (Index = 0; Index < GpeLength && InterruptHandled == FALSE; Index++)
     {
-	    InterruptHandled = GpeEventHandler (Index, FACP->Gpe1Blk, GpeLength);
+	    InterruptHandled &= GpeEventHandler (Index, FACP->Gpe1Blk, GpeLength);
     }
     
-    return INTERRUPT_HANDLED;
-    // return InterruptHandled;
+    return InterruptHandled;
 }
 
-/* Change: is this needed? #pragma check_stack () */
+/* TBD: is this needed?
+#pragma check_stack ()
+*/
 
 /******************************************************************************
  *
@@ -362,6 +364,7 @@ InstallSciHandler (void)
                             &SciHandle);
     }
 
+    FUNCTION_EXIT;
     return Except;
 }
 
@@ -421,7 +424,8 @@ UninstallSciHandler (void)
         OsdRemoveInterruptHandler (SciHandle);
         SciHandle = 0;
     }
-
+    
+    FUNCTION_EXIT;
     return AE_OK;
 }
 
@@ -451,14 +455,21 @@ SciCount (UINT32 Event)
        * Elements correspond to counts for TMR, NOT_USED, GBL, 
        * PWR_BTN, SLP_BTN, RTC, and GENERAL respectively. 
        */
+    INT32 Count;
+    
     FUNCTION_TRACE ("SciCount");
     
     if (Event >= NUM_EVENTS)
     {
-    	return -1;	
+    	Count = -1;	
+    }
+    else
+    {
+        Count = EventCount[Event];
     }
     
-    return EventCount[Event];
+    FUNCTION_EXIT;
+    return Count;
 }
 
 #endif
@@ -490,6 +501,7 @@ AcpiEnable ()
     {
         /*	ACPI tables are not available	*/
         DEBUG_PRINT (ACPI_WARN, ("No ACPI tables present!\n"));
+		FUNCTION_EXIT;
 		return AE_NO_ACPI_TABLES;
     }
 
@@ -505,6 +517,7 @@ AcpiEnable ()
 		/* TBD:	verify input file specified	*/
 
         DEBUG_PRINT (ACPI_WARN, ("Only legacy mode supported!\n"));
+		FUNCTION_EXIT;;
 		return AE_ERROR;
 	}
 
@@ -514,6 +527,7 @@ AcpiEnable ()
     {   
     	/* Unable to install SCI handler	*/
         DEBUG_PRINT (ACPI_FATAL, ("Unable to install System Control Interrupt Handler"));
+		FUNCTION_EXIT;;
 		return AE_ERROR;
 	}
 
@@ -527,6 +541,7 @@ AcpiEnable ()
 		{	
 			/*	Unable to transition to ACPI Mode	*/
 			DEBUG_PRINT (ACPI_FATAL, ("Could not transition to ACPI mode.\n"));
+			FUNCTION_EXIT;;
 			return AE_ERROR;	
 		}
 		else
@@ -535,6 +550,7 @@ AcpiEnable ()
         }
     }
 
+    FUNCTION_EXIT;
     return AE_OK;
 
 }
@@ -610,6 +626,9 @@ RestoreAcpiState (void)
             AcpiSetMode (OriginalMode);
         }
     }
+    
+    FUNCTION_EXIT;
+    return;
 }
 
 
@@ -630,6 +649,8 @@ RestoreAcpiState (void)
 ACPI_STATUS     
 AcpiDisable ()
 {
+    UINT32 Except;
+
     FUNCTION_TRACE ("AcpiDisable");
 
     /* Restore original mode   */
@@ -637,14 +658,20 @@ AcpiDisable ()
     if (AE_OK != AcpiSetMode (OriginalMode))
     {
         DEBUG_PRINT (ACPI_ERROR, ("Unable to transition to original mode"));
-        return AE_ERROR;    
+        Except = AE_ERROR;    
+    }
+    else
+    {
+        /* Unload the SCI interrupt handler  */
+
+    	UninstallSciHandler ();
+        RestoreAcpiState ();
+        AcpiLocalCleanup ();
+        
+        Except = AE_OK;
+        
     }
 
-    /* Unload the SCI interrupt handler  */
-
-	UninstallSciHandler ();
-    RestoreAcpiState ();
-    AcpiLocalCleanup ();
-
-    return AE_OK;
+	FUNCTION_EXIT;
+    return Except;
 }

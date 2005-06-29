@@ -131,13 +131,15 @@ AcpiEnableFixedEvent (
 	/* Sanity check the parameters. */
     if (Event >= NUM_EVENTS)
     {
+    	FUNCTION_EXIT;
     	return AE_BAD_PARAMETER;
     }
     
    	/* Don't allow two handlers. */
    	if (NULL != FixedEventHandlers[Event])
    	{
-   		return AE_ERROR;
+   		FUNCTION_EXIT;
+    	return AE_ERROR;
    	}
     
     /* Install the handler before enabling the event - just in case... */
@@ -147,11 +149,13 @@ AcpiEnableFixedEvent (
     {
     	DEBUG_PRINT (ACPI_WARN, ("Could not write to fixed event enable register.\n"));
     	FixedEventHandlers[Event] = NULL;
+    	FUNCTION_EXIT;
     	return AE_ERROR;
     }
 
    	DEBUG_PRINT (ACPI_INFO, ("Enabled fixed event %d.  Handler: %x\n", Event, Handler));    
     
+    FUNCTION_EXIT;
     return AE_OK;
 }
 
@@ -178,6 +182,7 @@ AcpiDisableFixedEvent (
     /* Sanity check the parameters. */
     if (Event >= NUM_EVENTS)
     {
+    	FUNCTION_EXIT;
     	return AE_BAD_PARAMETER;
     }
     
@@ -185,12 +190,14 @@ AcpiDisableFixedEvent (
     if (0 != AcpiRegisterIO (ACPI_WRITE, Event + TMR_EN, 0))
     {
     	DEBUG_PRINT (ACPI_WARN, ("Could not write to fixed event enable register.\n"));
+    	FUNCTION_EXIT;
     	return AE_ERROR;
     }
 
    	FixedEventHandlers[Event] = NULL;    
    	DEBUG_PRINT (ACPI_INFO, ("Disabled fixed event %d.\n", Event));    
     
+    FUNCTION_EXIT;
     return AE_OK;
 }
 
@@ -198,7 +205,7 @@ AcpiDisableFixedEvent (
 /*
 ACPI_STATUS
 AcpiEnableGpe (UINT32 Event,
-	FIXED_EVENT_HANDLER Handler)
+	GP_EVENT_HANDLER Handler)
 {
     UINT16          Register;
     INT32           RetVal = AE_OK;
