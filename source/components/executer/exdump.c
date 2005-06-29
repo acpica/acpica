@@ -473,7 +473,7 @@ AmlDumpOperand (
          * If the address and length have not been evaluated,
          * don't print them.
          */
-        if (0 == EntryDesc->Region.DataValid)
+        if (!(EntryDesc->Region.RegionFlags & REGION_AGRUMENT_DATA_VALID))
         {
             DEBUG_PRINT_RAW (ACPI_INFO, ("\n"));
         }
@@ -860,7 +860,7 @@ AmlDumpObjectDescriptor (
 
 		OsdPrintf ("%20s : %s\n",   "Type", "Region");
 	    OsdPrintf ("%20s : 0x%X\n", "SpaceId", ObjDesc->Region.SpaceId);
-	    OsdPrintf ("%20s : 0x%X\n", "DataValid", ObjDesc->Region.DataValid);
+	    OsdPrintf ("%20s : 0x%X\n", "RegionFlags", ObjDesc->Region.RegionFlags);
 	    OsdPrintf ("%20s : 0x%X\n", "Address", ObjDesc->Region.Address);
 	    OsdPrintf ("%20s : 0x%X\n", "Length", ObjDesc->Region.Length);
 	    OsdPrintf ("%20s : 0x%p\n", "Method", ObjDesc->Region.Method);
@@ -943,6 +943,7 @@ AmlDumpObjectDescriptor (
 	    OsdPrintf ("%20s : 0x%p\n", "Context", ObjDesc->AddrHandler.Context);
 		break;
 
+
 	case INTERNAL_TYPE_Notify:
 
 		OsdPrintf ("%20s : %s\n",   "Type", "Notify Handler");
@@ -952,8 +953,15 @@ AmlDumpObjectDescriptor (
 		break;
 
 
-    case INTERNAL_TYPE_Alias:
 	case INTERNAL_TYPE_DefField:
+
+	    OsdPrintf ("%20s : 0x%p\n", "Offset", ObjDesc->Field.Offset);
+	    OsdPrintf ("%20s : 0x%p\n", "Length", ObjDesc->Field.Length);
+	    OsdPrintf ("%20s : 0x%p\n", "Container", ObjDesc->Field.Container);
+		break;
+
+
+    case INTERNAL_TYPE_Alias:
 	case INTERNAL_TYPE_DefFieldDefn:
 	case INTERNAL_TYPE_BankFieldDefn:
 	case INTERNAL_TYPE_IndexFieldDefn:
@@ -963,14 +971,14 @@ AmlDumpObjectDescriptor (
 	case INTERNAL_TYPE_Scope:
 	case INTERNAL_TYPE_DefAny:
 
-		OsdPrintf ("*** Structure display not implemented for type %d! ***\n",
+		OsdPrintf ("*** Structure display not implemented for type 0x%X! ***\n",
         	ObjDesc->Common.Type);
 		break;
 
 
 	default:
 
-		OsdPrintf ("*** Cannot display unknown type %d! ***\n", ObjDesc->Common.Type);
+		OsdPrintf ("*** Cannot display unknown type 0x%X! ***\n", ObjDesc->Common.Type);
 		break;
 	}
 
