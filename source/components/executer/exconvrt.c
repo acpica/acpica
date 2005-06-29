@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: amconvrt - Object conversion routines
- *              $Revision: 1.3 $
+ *              $Revision: 1.6 $
  *
  *****************************************************************************/
 
@@ -126,138 +126,8 @@
 #include "acdispat.h"
 
 
-#define _COMPONENT          INTERPRETER
+#define _COMPONENT          ACPI_EXECUTER
         MODULE_NAME         ("amconvrt")
-
-
-/*******************************************************************************
- *
- * FUNCTION:    AcpiAmlConvertToTargetType
- *
- * PARAMETERS:  *ObjDesc        - Object to be converted.
- *              WalkState       - Current method state
- *
- * RETURN:      Status
- *
- * DESCRIPTION: 
- *
- ******************************************************************************/
-
-ACPI_STATUS
-AcpiAmlConvertToTargetType (
-    OBJECT_TYPE_INTERNAL    DestinationType,
-    ACPI_OPERAND_OBJECT     **ObjDesc,
-    ACPI_WALK_STATE         *WalkState)
-{
-    ACPI_STATUS             Status = AE_OK;
-
-
-    FUNCTION_TRACE ("AmlConvertToTargetType");
-
-
-    /*
-     * If required by the target,
-     * perform implicit conversion on the source before we store it.
-     */
-
-    switch (GET_CURRENT_ARG_TYPE (WalkState->OpInfo->RuntimeArgs))
-    {
-    case ARGI_SIMPLE_TARGET:
-    case ARGI_FIXED_TARGET:
-    case ARGI_INTEGER_REF:      /* Handles Increment, Decrement cases */
-
-        switch (DestinationType)
-        {
-        case INTERNAL_TYPE_DEF_FIELD:
-            /*
-             * Named field can always handle conversions
-             */
-            break;
-
-        default:
-            /* No conversion allowed for these types */
-
-            if (DestinationType != (*ObjDesc)->Common.Type)
-            {
-                DEBUG_PRINT (ACPI_ERROR,
-                    ("AmlConvertToTargetType: Target does not allow conversion of type %s to %s\n",
-                    AcpiCmGetTypeName ((*ObjDesc)->Common.Type),
-                    AcpiCmGetTypeName (DestinationType)));
-                Status = AE_TYPE;
-            }
-        }
-        break;
-
-
-    case ARGI_TARGETREF:
-
-        switch (DestinationType)
-        {
-        case ACPI_TYPE_INTEGER:
-        case ACPI_TYPE_FIELD_UNIT:
-        case INTERNAL_TYPE_BANK_FIELD:
-        case INTERNAL_TYPE_INDEX_FIELD:
-            /*
-             * These types require an Integer operand.  We can convert
-             * a Buffer or a String to an Integer if necessary.
-             */
-            Status = AcpiAmlConvertToInteger (ObjDesc, WalkState);
-            break;
-
-
-        case ACPI_TYPE_STRING:
-
-            /* 
-             * The operand must be a String.  We can convert an 
-             * Integer or Buffer if necessary
-             */
-            Status = AcpiAmlConvertToString (ObjDesc, WalkState);
-            break;
-
-
-        case ACPI_TYPE_BUFFER:
-
-            /* 
-             * The operand must be a String.  We can convert an 
-             * Integer or Buffer if necessary
-             */
-            Status = AcpiAmlConvertToBuffer (ObjDesc, WalkState);
-            break;
-        }
-        break;
-
-
-    case ARGI_REFERENCE:
-        /*
-         * CreateXxxxField cases - we are storing the field object into the name
-         */
-        break;
-
-
-    default:
-        DEBUG_PRINT (ACPI_ERROR,
-            ("AmlConvertToTargetType: Unknown Target type ID 0x%X Op %s DestType %s\n", 
-            GET_CURRENT_ARG_TYPE (WalkState->OpInfo->RuntimeArgs), 
-            WalkState->OpInfo->Name,
-            AcpiCmGetTypeName (DestinationType)));
-
-        Status = AE_AML_INTERNAL;
-    }
-
-
-    /*
-     * Source-to-Target conversion semantics:
-     *
-     * If conversion to the target type cannot be performed, then simply 
-     * overwrite the target with the new object and type.
-     */
-    if (Status == AE_TYPE)
-    {
-        Status = AE_OK;
-    }
-
-    return_ACPI_STATUS (Status);
-}
 
 
 /*******************************************************************************
@@ -649,5 +519,142 @@ AcpiAmlConvertToString (
 
     return (AE_OK);
 }
+
+
+
+
+
+
+#ifdef ACPI_ENABLE_IMPLICIT_CONVERSION
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiAmlConvertToTargetType
+ *
+ * PARAMETERS:  *ObjDesc        - Object to be converted.
+ *              WalkState       - Current method state
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION:
+ *
+ ******************************************************************************/
+
+ACPI_STATUS
+AcpiAmlConvertToTargetType (
+    OBJECT_TYPE_INTERNAL    DestinationType,
+    ACPI_OPERAND_OBJECT     **ObjDesc,
+    ACPI_WALK_STATE         *WalkState)
+{
+    ACPI_STATUS             Status = AE_OK;
+
+
+    FUNCTION_TRACE ("AmlConvertToTargetType");
+
+
+    /*
+     * If required by the target,
+     * perform implicit conversion on the source before we store it.
+     */
+
+    switch (GET_CURRENT_ARG_TYPE (WalkState->OpInfo->RuntimeArgs))
+    {
+    case ARGI_SIMPLE_TARGET:
+    case ARGI_FIXED_TARGET:
+    case ARGI_INTEGER_REF:      /* Handles Increment, Decrement cases */
+
+        switch (DestinationType)
+        {
+        case INTERNAL_TYPE_DEF_FIELD:
+            /*
+             * Named field can always handle conversions
+             */
+            break;
+
+        default:
+            /* No conversion allowed for these types */
+
+            if (DestinationType != (*ObjDesc)->Common.Type)
+            {
+                DEBUG_PRINT (ACPI_ERROR,
+                    ("AmlConvertToTargetType: Target does not allow conversion of type %s to %s\n",
+                    AcpiCmGetTypeName ((*ObjDesc)->Common.Type),
+                    AcpiCmGetTypeName (DestinationType)));
+                Status = AE_TYPE;
+            }
+        }
+        break;
+
+
+    case ARGI_TARGETREF:
+
+        switch (DestinationType)
+        {
+        case ACPI_TYPE_INTEGER:
+        case ACPI_TYPE_FIELD_UNIT:
+        case INTERNAL_TYPE_BANK_FIELD:
+        case INTERNAL_TYPE_INDEX_FIELD:
+            /*
+             * These types require an Integer operand.  We can convert
+             * a Buffer or a String to an Integer if necessary.
+             */
+            Status = AcpiAmlConvertToInteger (ObjDesc, WalkState);
+            break;
+
+
+        case ACPI_TYPE_STRING:
+
+            /*
+             * The operand must be a String.  We can convert an
+             * Integer or Buffer if necessary
+             */
+            Status = AcpiAmlConvertToString (ObjDesc, WalkState);
+            break;
+
+
+        case ACPI_TYPE_BUFFER:
+
+            /*
+             * The operand must be a String.  We can convert an
+             * Integer or Buffer if necessary
+             */
+            Status = AcpiAmlConvertToBuffer (ObjDesc, WalkState);
+            break;
+        }
+        break;
+
+
+    case ARGI_REFERENCE:
+        /*
+         * CreateXxxxField cases - we are storing the field object into the name
+         */
+        break;
+
+
+    default:
+        DEBUG_PRINT (ACPI_ERROR,
+            ("AmlConvertToTargetType: Unknown Target type ID 0x%X Op %s DestType %s\n",
+            GET_CURRENT_ARG_TYPE (WalkState->OpInfo->RuntimeArgs),
+            WalkState->OpInfo->Name,
+            AcpiCmGetTypeName (DestinationType)));
+
+        Status = AE_AML_INTERNAL;
+    }
+
+
+    /*
+     * Source-to-Target conversion semantics:
+     *
+     * If conversion to the target type cannot be performed, then simply
+     * overwrite the target with the new object and type.
+     */
+    if (Status == AE_TYPE)
+    {
+        Status = AE_OK;
+    }
+
+    return_ACPI_STATUS (Status);
+}
+#endif
 
 
