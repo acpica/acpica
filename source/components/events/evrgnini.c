@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: evrgnini- ACPI AddressSpace (OpRegion) init
- *              $Revision: 1.41 $
+ *              $Revision: 1.42 $
  *
  *****************************************************************************/
 
@@ -156,7 +156,7 @@ AcpiEvSystemMemoryRegionSetup (
     {
         if (*RegionContext)
         {
-            AcpiUtFree (*RegionContext);
+            ACPI_MEM_FREE (*RegionContext);
             *RegionContext = NULL;
         }
         return_ACPI_STATUS (AE_OK);
@@ -165,7 +165,7 @@ AcpiEvSystemMemoryRegionSetup (
 
     /* Activate.  Create a new context */
 
-    *RegionContext = AcpiUtCallocate (sizeof (ACPI_MEM_SPACE_CONTEXT));
+    *RegionContext = ACPI_MEM_CALLOCATE (sizeof (ACPI_MEM_SPACE_CONTEXT));
     if (!(*RegionContext))
     {
         return_ACPI_STATUS (AE_NO_MEMORY);
@@ -239,7 +239,7 @@ AcpiEvPciConfigRegionSetup (
 {
     ACPI_STATUS             Status = AE_OK;
     ACPI_INTEGER            Temp;
-    ACPI_PCI_SPACE_CONTEXT  *PciContext = *RegionContext;
+    ACPI_PCI_ID             *PciId = *RegionContext;
     ACPI_OPERAND_OBJECT     *HandlerObj;
     ACPI_NAMESPACE_NODE     *Node;
     ACPI_OPERAND_OBJECT     *RegionObj = (ACPI_OPERAND_OBJECT  *) Handle;
@@ -263,9 +263,9 @@ AcpiEvPciConfigRegionSetup (
 
     if (Function == ACPI_REGION_DEACTIVATE)
     {
-        if (PciContext)
+        if (PciId)
         {
-            AcpiUtFree (PciContext);
+            ACPI_MEM_FREE (PciId);
             *RegionContext = NULL;
         }
 
@@ -275,8 +275,8 @@ AcpiEvPciConfigRegionSetup (
 
     /* Create a new context */
 
-    PciContext = AcpiUtCallocate (sizeof (ACPI_PCI_SPACE_CONTEXT));
-    if (!PciContext)
+    PciId = ACPI_MEM_CALLOCATE (sizeof (ACPI_PCI_ID));
+    if (!PciId)
     {
         return_ACPI_STATUS (AE_NO_MEMORY);
     }
@@ -304,8 +304,8 @@ AcpiEvPciConfigRegionSetup (
      */
     if (ACPI_SUCCESS (Status))
     {
-        PciContext->Device = LOWORD (Temp);
-        PciContext->Function = HIWORD (Temp);
+        PciId->Device = LOWORD (Temp);
+        PciId->Function = HIWORD (Temp);
     }
 
     /*
@@ -349,20 +349,25 @@ AcpiEvPciConfigRegionSetup (
         Node = HandlerObj->AddrHandler.Node;
     }
 
+    /*
+     * The PCI segment number comes from the _SEG method
+     */
     Status = AcpiUtEvaluateNumericObject (METHOD_NAME__SEG, Node, &Temp);
     if (ACPI_SUCCESS (Status))
     {
-        PciContext->Segment = LOWORD (Temp);
+        PciId->Segment = LOWORD (Temp);
     }
 
+    /*
+     * The PCI bus number comes from the _BBN method 
+     */
     Status = AcpiUtEvaluateNumericObject (METHOD_NAME__BBN, Node, &Temp);
     if (ACPI_SUCCESS (Status))
     {
-        PciContext->Bus = LOWORD (Temp);
+        PciId->Bus = LOWORD (Temp);
     }
 
-    *RegionContext = PciContext;
-
+    *RegionContext = PciId;
     return_ACPI_STATUS (AE_OK);
 }
 
