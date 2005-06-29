@@ -132,7 +132,9 @@
 #define OSD_PRIORITY_GPE    OSD_PRIORITY_HIGH
 
 
-/* Types specific to the OS-dependent layer interfaces */
+/* 
+ * Types specific to the OS-dependent layer interfaces 
+ */
 
 typedef
 UINT32 (*OSD_HANDLER) (
@@ -142,9 +144,11 @@ typedef
 void (*OSD_EXECUTION_CALLBACK) (
     void                    *Context);
 
+
 /*
- * Initialization and shutdown.  (Optional)
+ * Initialization and shutdown primitives  (Optional)
  */
+
 ACPI_STATUS
 OsdInitialize (
 	void);
@@ -154,7 +158,7 @@ OsdTerminate (
 	void);
 
 /*
- * Synchronization primitived
+ * Synchronization primitives
  */
  
 ACPI_STATUS
@@ -326,6 +330,15 @@ OsdWritePciCfgDword (
 
 
 /*
+ * Miscellaneous
+ */
+
+ACPI_STATUS
+OsdBreakpoint (
+    char                    *Message);
+
+
+/*
  * Debug print routines 
  */
 
@@ -338,7 +351,6 @@ INT32
 OsdVprintf (
     const char              *Format, 
     va_list                 Args);
-
 
 
 /*
