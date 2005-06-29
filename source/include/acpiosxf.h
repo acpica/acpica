@@ -1,9 +1,9 @@
 
 /******************************************************************************
  *
- * Name: acpiosd.h - All interfaces to the OS-dependent layer.  These
- *                   interfaces must be implemented by the OS-dependent
- *                   front-end to the ACPI subsystem.
+ * Name: acpiosxf.h - All interfaces to the OS-dependent layer.  These
+ *                    interfaces must be implemented by the OS-dependent
+ *                    front-end to the ACPI subsystem.
  *
  *****************************************************************************/
 
@@ -12,8 +12,8 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, Intel Corp.  All rights
- * reserved.
+ * Some or all of this work - Copyright (c) 1999, 2000, Intel Corp.
+ * All rights reserved.
  *
  * 2. License
  *
