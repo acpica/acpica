@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: accommon.h -- prototypes for the common (subsystem-wide) procedures
- *       $Revision: 1.76 $
+ *       $Revision: 1.77 $
  *
  *****************************************************************************/
 
@@ -153,7 +153,7 @@ ACPI_STATUS
 AcpiCmSubsystemShutdown (
     void);
 
-void
+ACPI_STATUS
 AcpiCmValidateFacp (
     void);
 
@@ -410,22 +410,19 @@ void
 _ReportInfo (
     NATIVE_CHAR             *ModuleName,
     UINT32                  LineNumber,
-    UINT32                  ComponentId,
-    NATIVE_CHAR             *Message);
+    UINT32                  ComponentId);
 
 void
 _ReportError (
     NATIVE_CHAR             *ModuleName,
     UINT32                  LineNumber,
-    UINT32                  ComponentId,
-    NATIVE_CHAR             *Message);
+    UINT32                  ComponentId);
 
 void
 _ReportWarning (
     NATIVE_CHAR             *ModuleName,
     UINT32                  LineNumber,
-    UINT32                  ComponentId,
-    NATIVE_CHAR             *Message);
+    UINT32                  ComponentId);
 
 void
 AcpiCmDumpBuffer (
