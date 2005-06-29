@@ -1,7 +1,7 @@
-
 /******************************************************************************
  *
  * Module Name: cmeval - Object evaluation
+ *              $Revision: 1.16 $
  *
  *****************************************************************************/
 
@@ -122,14 +122,15 @@
 
 
 #define _COMPONENT          MISCELLANEOUS
-        MODULE_NAME         ("cmeval");
+        MODULE_NAME         ("cmeval")
 
 
 /****************************************************************************
  *
  * FUNCTION:    AcpiCmEvaluateNumericObject
  *
- * PARAMETERS:  AcpiDevice          - NTE for the device
+ * PARAMETERS:  *ObjectName         - Object name to be evaluated
+ *              DeviceNode          - Node for the device
  *              *Address            - Where the value is returned
  *
  * RETURN:      Status
@@ -144,10 +145,10 @@
 ACPI_STATUS
 AcpiCmEvaluateNumericObject (
     NATIVE_CHAR             *ObjectName,
-    ACPI_NAMED_OBJECT       *AcpiDevice,
+    ACPI_NAMESPACE_NODE     *DeviceNode,
     UINT32                  *Address)
 {
-    ACPI_OBJECT_INTERNAL    *ObjDesc;
+    ACPI_OPERAND_OBJECT     *ObjDesc;
     ACPI_STATUS             Status;
 
 
@@ -156,20 +157,20 @@ AcpiCmEvaluateNumericObject (
 
     /* Execute the method */
 
-    Status = AcpiNsEvaluateRelative (AcpiDevice, ObjectName, NULL, &ObjDesc);
+    Status = AcpiNsEvaluateRelative (DeviceNode, ObjectName, NULL, &ObjDesc);
     if (ACPI_FAILURE (Status))
     {
         if (Status == AE_NOT_FOUND)
         {
             DEBUG_PRINT (ACPI_INFO,
                 ("%s on %4.4s was not found\n", ObjectName,
-                &((ACPI_NAMED_OBJECT*) AcpiDevice)->Name));
+                &DeviceNode->Name));
         }
         else
         {
             DEBUG_PRINT (ACPI_ERROR,
                 ("%s on %4.4s failed with status %4.4x\n", ObjectName,
-                &((ACPI_NAMED_OBJECT*) AcpiDevice)->Name, 
+                &DeviceNode->Name,
                 AcpiCmFormatException (Status)));
         }
 
@@ -216,7 +217,7 @@ AcpiCmEvaluateNumericObject (
  *
  * FUNCTION:    AcpiCmExecute_HID
  *
- * PARAMETERS:  AcpiDevice          - NTE for the device
+ * PARAMETERS:  DeviceNode          - Node for the device
  *              *Hid                - Where the HID is returned
  *
  * RETURN:      Status
@@ -230,10 +231,10 @@ AcpiCmEvaluateNumericObject (
 
 ACPI_STATUS
 AcpiCmExecute_HID (
-    ACPI_NAMED_OBJECT       *AcpiDevice,
+    ACPI_NAMESPACE_NODE     *DeviceNode,
     DEVICE_ID               *Hid)
 {
-    ACPI_OBJECT_INTERNAL    *ObjDesc;
+    ACPI_OPERAND_OBJECT     *ObjDesc;
     ACPI_STATUS             Status;
 
 
@@ -242,7 +243,7 @@ AcpiCmExecute_HID (
 
     /* Execute the method */
 
-    Status = AcpiNsEvaluateRelative (AcpiDevice,
+    Status = AcpiNsEvaluateRelative (DeviceNode,
                                      METHOD_NAME__HID, NULL, &ObjDesc);
     if (ACPI_FAILURE (Status))
     {
@@ -250,14 +251,14 @@ AcpiCmExecute_HID (
         {
             DEBUG_PRINT (ACPI_INFO,
                 ("_HID on %4.4s was not found\n",
-                &((ACPI_NAMED_OBJECT*) AcpiDevice)->Name));
+                &DeviceNode->Name));
         }
 
         else
         {
             DEBUG_PRINT (ACPI_ERROR,
                 ("_HID on %4.4s failed with status %4.4x\n",
-                &((ACPI_NAMED_OBJECT*) AcpiDevice)->Name, 
+                &DeviceNode->Name,
                 AcpiCmFormatException (Status)));
         }
 
@@ -318,7 +319,7 @@ AcpiCmExecute_HID (
  *
  * FUNCTION:    AcpiCmExecute_UID
  *
- * PARAMETERS:  AcpiDevice          - NTE for the device
+ * PARAMETERS:  DeviceNode          - Node for the device
  *              *Uid                - Where the UID is returned
  *
  * RETURN:      Status
@@ -332,16 +333,16 @@ AcpiCmExecute_HID (
 
 ACPI_STATUS
 AcpiCmExecute_UID (
-    ACPI_NAMED_OBJECT       *AcpiDevice,
+    ACPI_NAMESPACE_NODE     *DeviceNode,
     DEVICE_ID               *Uid)
 {
-    ACPI_OBJECT_INTERNAL    *ObjDesc;
+    ACPI_OPERAND_OBJECT     *ObjDesc;
     ACPI_STATUS             Status;
 
 
     /* Execute the method */
 
-    Status = AcpiNsEvaluateRelative (AcpiDevice,
+    Status = AcpiNsEvaluateRelative (DeviceNode,
                                      METHOD_NAME__UID, NULL, &ObjDesc);
     if (ACPI_FAILURE (Status))
     {
@@ -349,14 +350,14 @@ AcpiCmExecute_UID (
         {
             DEBUG_PRINT (ACPI_INFO,
                 ("_UID on %4.4s was not found\n",
-                &((ACPI_NAMED_OBJECT*) AcpiDevice)->Name));
+                &DeviceNode->Name));
         }
 
         else
         {
             DEBUG_PRINT (ACPI_ERROR,
                 ("_UID on %4.4s failed with status %4.4x\n",
-                &((ACPI_NAMED_OBJECT*) AcpiDevice)->Name,
+                &DeviceNode->Name,
                 AcpiCmFormatException (Status)));
         }
 
@@ -367,7 +368,7 @@ AcpiCmExecute_UID (
 
     if (!ObjDesc)
     {
-        DEBUG_PRINT (ACPI_ERROR, ("No object was returned from _ADR\n"));
+        DEBUG_PRINT (ACPI_ERROR, ("No object was returned from _UID\n"));
         return (AE_TYPE);
     }
 
@@ -415,7 +416,7 @@ AcpiCmExecute_UID (
  *
  * FUNCTION:    AcpiCmExecute_STA
  *
- * PARAMETERS:  AcpiDevice          - NTE for the device
+ * PARAMETERS:  DeviceNode          - Node for the device
  *              *Flags              - Where the status flags are returned
  *
  * RETURN:      Status
@@ -429,70 +430,66 @@ AcpiCmExecute_UID (
 
 ACPI_STATUS
 AcpiCmExecute_STA (
-    ACPI_NAMED_OBJECT       *AcpiDevice,
+    ACPI_NAMESPACE_NODE     *DeviceNode,
     UINT32                  *Flags)
 {
-    ACPI_OBJECT_INTERNAL    *ObjDesc;
+    ACPI_OPERAND_OBJECT     *ObjDesc;
     ACPI_STATUS             Status;
 
 
     FUNCTION_TRACE ("CmExecute_STA");
 
-
     /* Execute the method */
 
-    Status = AcpiNsEvaluateRelative (AcpiDevice,
+    Status = AcpiNsEvaluateRelative (DeviceNode,
                                      METHOD_NAME__STA, NULL, &ObjDesc);
-    if (ACPI_FAILURE (Status))
+    if (AE_NOT_FOUND == Status)
     {
-        if (Status == AE_NOT_FOUND)
+        DEBUG_PRINT (ACPI_INFO,
+            ("_STA on %4.4s was not found, assuming present.\n",
+            &DeviceNode->Name));
+        
+        *Flags = 0x0F;
+	Status = AE_OK;
+    }
+    else if (ACPI_FAILURE (Status))
+    {
+        DEBUG_PRINT (ACPI_ERROR,
+            ("_STA on %4.4s failed with status %s\n",
+            &DeviceNode->Name,
+            AcpiCmFormatException (Status)));
+    }
+    else /* success */
+    {
+        /* Did we get a return object? */
+
+        if (!ObjDesc)
         {
-            DEBUG_PRINT (ACPI_INFO,
-                ("_STA on %4.4s was not found\n",
-                &((ACPI_NAMED_OBJECT*) AcpiDevice)->Name));
+	    DEBUG_PRINT (ACPI_ERROR, ("No object was returned from _STA\n"));
+	    return_ACPI_STATUS (AE_TYPE);
+        }
+
+        /* Is the return object of the correct type? */
+
+        if (ObjDesc->Common.Type != ACPI_TYPE_NUMBER)
+        {
+	    Status = AE_TYPE;
+	    DEBUG_PRINT (ACPI_ERROR,
+	        ("Type returned from _STA was not a number: %d \n",
+	        ObjDesc->Common.Type));
         }
 
         else
         {
-            DEBUG_PRINT (ACPI_ERROR,
-                ("_STA on %4.4s failed with status %4.4x\n",
-                &((ACPI_NAMED_OBJECT*) AcpiDevice)->Name, 
-                AcpiCmFormatException (Status)));
+	    /* Extract the status flags */
+
+	    *Flags = ObjDesc->Number.Value;
         }
 
-        return_ACPI_STATUS (Status);
+        /* On exit, we must delete the return object */
+
+        AcpiCmRemoveReference (ObjDesc);
     }
-
-
-    /* Did we get a return object? */
-
-    if (!ObjDesc)
-    {
-        DEBUG_PRINT (ACPI_ERROR, ("No object was returned from _STA\n"));
-        return_ACPI_STATUS (AE_TYPE);
-    }
-
-    /* Is the return object of the correct type? */
-
-    if (ObjDesc->Common.Type != ACPI_TYPE_NUMBER)
-    {
-        Status = AE_TYPE;
-        DEBUG_PRINT (ACPI_ERROR,
-            ("Type returned from _STA was not a number: %d \n",
-            ObjDesc->Common.Type));
-    }
-
-    else
-    {
-        /* Extract the status flags */
-
-        *Flags = ObjDesc->Number.Value;
-    }
-
-
-    /* On exit, we must delete the return object */
-
-    AcpiCmRemoveReference (ObjDesc);
 
     return_ACPI_STATUS (Status);
 }
