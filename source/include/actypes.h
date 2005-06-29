@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: actypes.h - Common data types for the entire ACPI subsystem
- *       $Revision: 1.275 $
+ *       $Revision: 1.276 $
  *
  *****************************************************************************/
 
@@ -1314,6 +1314,7 @@ typedef struct acpi_resource_address64
     UINT64                      MaxAddressRange;
     UINT64                      AddressTranslationOffset;
     UINT64                      AddressLength;
+    UINT64                      TypeSpecificAttributes;
     ACPI_RESOURCE_SOURCE        ResourceSource;
 
 } ACPI_RESOURCE_ADDRESS64;
