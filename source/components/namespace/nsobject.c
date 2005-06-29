@@ -2,7 +2,7 @@
  *
  * Module Name: nsobject - Utilities for objects attached to namespace
  *                         table entries
- *              $Revision: 1.61 $
+ *              $Revision: 1.63 $
  *
  ******************************************************************************/
 
@@ -254,7 +254,6 @@ AcpiNsAttachObject (
     {
         ObjDesc = (ACPI_OPERAND_OBJECT  *) Object;
 
-
         /* If a valid type (non-ANY) was given, just use it */
 
         if (ACPI_TYPE_ANY != Type)
@@ -262,13 +261,9 @@ AcpiNsAttachObject (
             ObjType = Type;
         }
 
-
         /*
          * Type is TYPE_Any, we must try to determinte the
-         * actual type of the object
-         */
-
-        /*
+         * actual type of the object.
          * Check if value points into the AML code
          */
         else if (AcpiTbSystemTablePointer (Object))
@@ -303,11 +298,11 @@ AcpiNsAttachObject (
 
                 /* Otherwise, fall through and set the type to Integer */
 
-            case AML_ZERO_OP: 
-            case AML_ONES_OP: 
+            case AML_ZERO_OP:
+            case AML_ONES_OP:
             case AML_ONE_OP:
-            case AML_BYTE_OP: 
-            case AML_WORD_OP: 
+            case AML_BYTE_OP:
+            case AML_WORD_OP:
             case AML_DWORD_OP:
             case AML_QWORD_OP:
 
@@ -446,6 +441,7 @@ AcpiNsDetachObject (
 
 
     FUNCTION_TRACE ("NsDetachObject");
+
 
     ObjDesc = Node->Object;
     if (!ObjDesc)
