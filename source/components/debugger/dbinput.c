@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dbinput - user front-end to the AML debugger
- *              $Revision: 1.101 $
+ *              $Revision: 1.103 $
  *
  ******************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2004, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2005, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -679,10 +679,6 @@ AcpiDbCommandDispatch (
         }
 
         Status = AcpiDbCommandDispatch (CommandLine, WalkState, Op);
-        if (ACPI_SUCCESS (Status))
-        {
-            Status = AE_CTRL_TRUE;
-        }
         return (Status);
 
     case CMD_HISTORY_LAST:
@@ -693,10 +689,6 @@ AcpiDbCommandDispatch (
         }
 
         Status = AcpiDbCommandDispatch (CommandLine, WalkState, Op);
-        if (ACPI_SUCCESS (Status))
-        {
-            Status = AE_CTRL_TRUE;
-        }
         return (Status);
 
     case CMD_INFORMATION:
@@ -741,10 +733,6 @@ AcpiDbCommandDispatch (
 
     case CMD_LOAD:
         Status = AcpiDbGetTableFromFile (AcpiGbl_DbArgs[1], NULL);
-        if (ACPI_FAILURE (Status))
-        {
-            return (Status);
-        }
         break;
 
     case CMD_LOCKS:
@@ -869,6 +857,10 @@ AcpiDbCommandDispatch (
         return (AE_CTRL_TRUE);
     }
 
+    if (ACPI_SUCCESS (Status))
+    {
+        Status = AE_CTRL_TRUE;
+    }
 
     /* Add all commands that come here to the history buffer */
 
