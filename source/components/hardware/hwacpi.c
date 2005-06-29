@@ -151,7 +151,7 @@ AcpiHwSetMode (
     {
         /* BIOS should have disabled ALL fixed and GP events */
 
-        AcpiOsdOut8 (Acpi_GblFACP->SmiCmd, Acpi_GblFACP->AcpiEnable);
+        AcpiOsdOut8 (AcpiGbl_FACP->SmiCmd, AcpiGbl_FACP->AcpiEnable);
         DEBUG_PRINT (ACPI_INFO, ("Attempting to enable ACPI mode\n"));
     }
 
@@ -162,7 +162,7 @@ AcpiHwSetMode (
          * enable bits to default
          */
 
-        AcpiOsdOut8 (Acpi_GblFACP->SmiCmd, Acpi_GblFACP->AcpiDisable);
+        AcpiOsdOut8 (AcpiGbl_FACP->SmiCmd, AcpiGbl_FACP->AcpiDisable);
         DEBUG_PRINT (ACPI_INFO, ("Attempting to enable Legacy (non-ACPI) mode\n"));
     }
 
@@ -197,7 +197,7 @@ AcpiHwGetMode (void)
     FUNCTION_TRACE ("HwGetMode");
 
 
-    if (AcpiHwRegisterIO (ACPI_READ, MTX_LOCK, (INT32)SCI_EN))
+    if (AcpiHwRegisterAccess (ACPI_READ, MTX_LOCK, (INT32)SCI_EN))
     {
         return_VALUE (SYS_MODE_ACPI);
     }
@@ -227,7 +227,7 @@ AcpiHwGetModeCapabilities (void)
     FUNCTION_TRACE ("HwGetModeCapabilities");
 
 
-    if (!(Acpi_GblSystemFlags & SYS_MODES_MASK))
+    if (!(AcpiGbl_SystemFlags & SYS_MODES_MASK))
     {
         if (AcpiHwGetMode () == SYS_MODE_LEGACY)
         {
@@ -238,7 +238,7 @@ AcpiHwGetModeCapabilities (void)
              * modes
              */
 
-            Acpi_GblSystemFlags |= (SYS_MODE_ACPI | SYS_MODE_LEGACY);
+            AcpiGbl_SystemFlags |= (SYS_MODE_ACPI | SYS_MODE_LEGACY);
         }
 
         else
@@ -254,7 +254,7 @@ AcpiHwGetModeCapabilities (void)
             {
                 /* Now in SYS_MODE_LEGACY, so both are supported */
 
-                Acpi_GblSystemFlags |= (SYS_MODE_ACPI | SYS_MODE_LEGACY);
+                AcpiGbl_SystemFlags |= (SYS_MODE_ACPI | SYS_MODE_LEGACY);
                 AcpiHwSetMode (SYS_MODE_ACPI);
             }
 
@@ -262,10 +262,10 @@ AcpiHwGetModeCapabilities (void)
             {
                 /* Still in SYS_MODE_ACPI so this must be an ACPI only system */
 
-                Acpi_GblSystemFlags |= SYS_MODE_ACPI;
+                AcpiGbl_SystemFlags |= SYS_MODE_ACPI;
             }
         }
     }
 
-    return_VALUE (Acpi_GblSystemFlags & SYS_MODES_MASK);
+    return_VALUE (AcpiGbl_SystemFlags & SYS_MODES_MASK);
 }

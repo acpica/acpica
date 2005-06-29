@@ -148,7 +148,7 @@ AcpiHwEnableGpe (
     /*
      * Translate GPE number to index into global registers array.
      */
-    RegisterIndex = Acpi_GblGpeValid[GpeNumber];
+    RegisterIndex = AcpiGbl_GpeValid[GpeNumber];
 
     /*
      * Figure out the bit offset for this GPE within the target register.
@@ -159,8 +159,8 @@ AcpiHwEnableGpe (
      * Read the current value of the register, set the appropriate bit
      * to enable the GPE, and write out the new register.
      */
-    InByte = AcpiOsdIn8 (Acpi_GblGpeRegisters[RegisterIndex].EnableAddr);
-    AcpiOsdOut8 (Acpi_GblGpeRegisters[RegisterIndex].EnableAddr, (UINT8)(InByte | BitMask));
+    InByte = AcpiOsdIn8 (AcpiGbl_GpeRegisters[RegisterIndex].EnableAddr);
+    AcpiOsdOut8 (AcpiGbl_GpeRegisters[RegisterIndex].EnableAddr, (UINT8)(InByte | BitMask));
 }
 
 
@@ -187,7 +187,7 @@ AcpiHwDisableGpe (
     /*
      * Translate GPE number to index into global registers array.
      */
-    RegisterIndex = Acpi_GblGpeValid[GpeNumber];
+    RegisterIndex = AcpiGbl_GpeValid[GpeNumber];
 
     /*
      * Figure out the bit offset for this GPE within the target register.
@@ -198,8 +198,8 @@ AcpiHwDisableGpe (
      * Read the current value of the register, clear the appropriate bit,
      * and write out the new register value to disable the GPE.
      */
-    InByte = AcpiOsdIn8 (Acpi_GblGpeRegisters[RegisterIndex].EnableAddr);
-    AcpiOsdOut8 (Acpi_GblGpeRegisters[RegisterIndex].EnableAddr, (UINT8)(InByte & ~BitMask));
+    InByte = AcpiOsdIn8 (AcpiGbl_GpeRegisters[RegisterIndex].EnableAddr);
+    AcpiOsdOut8 (AcpiGbl_GpeRegisters[RegisterIndex].EnableAddr, (UINT8)(InByte & ~BitMask));
 }
 
 
@@ -225,7 +225,7 @@ AcpiHwClearGpe (
     /*
      * Translate GPE number to index into global registers array.
      */
-    RegisterIndex = Acpi_GblGpeValid[GpeNumber];
+    RegisterIndex = AcpiGbl_GpeValid[GpeNumber];
 
     /*
      * Figure out the bit offset for this GPE within the target register.
@@ -236,7 +236,7 @@ AcpiHwClearGpe (
      * Write a one to the appropriate bit in the status register to
      * clear this GPE.
      */
-    AcpiOsdOut8 (Acpi_GblGpeRegisters[RegisterIndex].StatusAddr, BitMask);
+    AcpiOsdOut8 (AcpiGbl_GpeRegisters[RegisterIndex].StatusAddr, BitMask);
 }
 
 
@@ -271,7 +271,7 @@ AcpiHwGetGpeStatus (
     /*
      * Translate GPE number to index into global registers array.
      */
-    RegisterIndex = Acpi_GblGpeValid[GpeNumber];
+    RegisterIndex = AcpiGbl_GpeValid[GpeNumber];
 
     /*
      * Figure out the bit offset for this GPE within the target register.
@@ -281,7 +281,7 @@ AcpiHwGetGpeStatus (
     /*
      * Enabled?:
      */
-    InByte = AcpiOsdIn8 (Acpi_GblGpeRegisters[RegisterIndex].EnableAddr);
+    InByte = AcpiOsdIn8 (AcpiGbl_GpeRegisters[RegisterIndex].EnableAddr);
 
     if (BitMask & InByte)
     {
@@ -291,7 +291,7 @@ AcpiHwGetGpeStatus (
     /*
      * Set?
      */
-    InByte = AcpiOsdIn8 (Acpi_GblGpeRegisters[RegisterIndex].StatusAddr);
+    InByte = AcpiOsdIn8 (AcpiGbl_GpeRegisters[RegisterIndex].StatusAddr);
 
     if (BitMask & InByte)
     {
