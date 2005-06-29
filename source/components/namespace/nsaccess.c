@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: nsaccess - Top-level functions for accessing ACPI namespace
- *              $Revision: 1.151 $
+ *              $Revision: 1.152 $
  *
  ******************************************************************************/
 
@@ -220,7 +220,7 @@ AcpiNsRootInitialize (void)
             case ACPI_TYPE_INTEGER:
 
                 ObjDesc->Integer.Value =
-                        (ACPI_INTEGER) STRTOUL (InitVal->Val, NULL, 10);
+                        (ACPI_INTEGER) ACPI_STRTOUL (InitVal->Val, NULL, 10);
                 break;
 
 
@@ -229,7 +229,7 @@ AcpiNsRootInitialize (void)
                 /*
                  * Build an object around the static string
                  */
-                ObjDesc->String.Length = STRLEN (InitVal->Val);
+                ObjDesc->String.Length = ACPI_STRLEN (InitVal->Val);
                 ObjDesc->String.Pointer = InitVal->Val;
                 ObjDesc->Common.Flags |= AOPOBJ_STATIC_POINTER;
                 break;
@@ -238,9 +238,9 @@ AcpiNsRootInitialize (void)
             case ACPI_TYPE_MUTEX:
 
                 ObjDesc->Mutex.SyncLevel =
-                            (UINT16) STRTOUL (InitVal->Val, NULL, 10);
+                            (UINT16) ACPI_STRTOUL (InitVal->Val, NULL, 10);
 
-                if (STRCMP (InitVal->Name, "_GL_") == 0)
+                if (ACPI_STRCMP (InitVal->Name, "_GL_") == 0)
                 {
                     /*
                      * Create a counting semaphore for the
