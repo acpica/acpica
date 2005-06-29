@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: psparse - Parser top level AML parse routines
- *              $Revision: 1.70 $
+ *              $Revision: 1.73 $
  *
  *****************************************************************************/
 
@@ -9,8 +9,8 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, Intel Corp.  All rights
- * reserved.
+ * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
+ * All rights reserved.
  *
  * 2. License
  *
@@ -381,9 +381,9 @@ AcpiPsCompleteThisOp (
                 break;
 
             case OPTYPE_NAMED_OBJECT:   /* Scope, method, etc. */
-                
-                /* 
-                 * These opcodes contain TermArg operands.  The current          
+
+                /*
+                 * These opcodes contain TermArg operands.  The current
                  * op must be replace by a placeholder return op
                  */
 
@@ -658,13 +658,18 @@ AcpiPsParseLoop (
                  */
 
                 Status = AcpiDsGetPredicateValue (WalkState, NULL, TRUE);
-                if (Status == AE_AML_NO_OPERAND)
+                if (ACPI_FAILURE (Status))
                 {
-                    DEBUG_PRINT (ACPI_ERROR,
-                        ("PsParseLoop: Invoked method did not return a value, %s\n",
-                        AcpiCmFormatException (Status)));
+                    if (Status == AE_AML_NO_RETURN_VALUE)
+                    {
+                        DEBUG_PRINT (ACPI_ERROR,
+                            ("PsParseLoop: Invoked method did not return a value, %s\n",
+                            AcpiCmFormatException (Status)));
 
+                    }
+                    return_ACPI_STATUS (Status);
                 }
+
                 Status = AcpiPsNextParseState (WalkState, Op, Status);
             }
 
@@ -800,8 +805,8 @@ AcpiPsParseLoop (
                          * because we don't have enough info in the first pass
                          * to parse it correctly (i.e., there may be method
                          * calls within the TermArg elements of the body.
-                         * 
-                         * However, we must continue parsing because 
+                         *
+                         * However, we must continue parsing because
                          * the opregion is not a standalone package --
                          * we don't know where the end is at this point.
                          *
@@ -833,7 +838,7 @@ AcpiPsParseLoop (
                     (Op->Opcode == AML_DWORD_FIELD_OP))
                  {
                     /*
-                     * Backup to beginning of CreateXXXfield declaration 
+                     * Backup to beginning of CreateXXXfield declaration
                      * BodyLength is unknown until we parse the body
                      */
                     DeferredOp = (ACPI_PARSE2_OBJECT *) Op;
