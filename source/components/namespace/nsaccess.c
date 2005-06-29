@@ -127,7 +127,7 @@
         MODULE_NAME         ("nsaccess");
 
 
-/****************************************************************************
+/******************************************************************************
  *
  * FUNCTION:    AcpiNsRootCreateScope
  *
@@ -139,7 +139,7 @@
  *
  * MUTEX:       Expects namespace to be locked
  *
- ***************************************************************************/
+ ******************************************************************************/
 
 ACPI_STATUS
 AcpiNsRootCreateScope (
@@ -174,7 +174,7 @@ AcpiNsRootCreateScope (
 }
 
 
-/****************************************************************************
+/*******************************************************************************
  *
  * FUNCTION:    AcpiNsRootInitialize
  *
@@ -186,7 +186,7 @@ AcpiNsRootCreateScope (
  *
  * MUTEX:       Locks namespace for entire execution
  *
- ***************************************************************************/
+ ******************************************************************************/
 
 ACPI_STATUS
 AcpiNsRootInitialize (void)
@@ -248,9 +248,8 @@ AcpiNsRootInitialize (void)
              * descriptor for it.
              */
 
-            ObjDesc =
-                AcpiCmCreateInternalObject (
-                    (OBJECT_TYPE_INTERNAL) InitVal->Type);
+            ObjDesc = AcpiCmCreateInternalObject (
+                            (OBJECT_TYPE_INTERNAL) InitVal->Type);
 
             if (!ObjDesc)
             {
@@ -270,23 +269,22 @@ AcpiNsRootInitialize (void)
             case ACPI_TYPE_NUMBER:
 
                 ObjDesc->Number.Value =
-                    (UINT32) STRTOUL (InitVal->Val, NULL, 10);
+                        (UINT32) STRTOUL (InitVal->Val, NULL, 10);
                 break;
 
 
             case ACPI_TYPE_STRING:
 
                 ObjDesc->String.Length =
-                                (UINT16) STRLEN (InitVal->Val);
+                        (UINT16) STRLEN (InitVal->Val);
 
                 /*
                  * Allocate a buffer for the string.  All
                  * String.Pointers must be allocated buffers!
                  * (makes deletion simpler)
                  */
-                ObjDesc->String.Pointer =
-                    AcpiCmAllocate ((ACPI_SIZE)
-                                (ObjDesc->String.Length + 1));
+                ObjDesc->String.Pointer = AcpiCmAllocate (
+                                                (ObjDesc->String.Length + 1));
 
                 if (!ObjDesc->String.Pointer)
                 {
@@ -298,15 +296,14 @@ AcpiNsRootInitialize (void)
                     goto UnlockAndExit;
                 }
 
-                STRCPY ((char *) ObjDesc->String.Pointer,
-                        InitVal->Val);
+                STRCPY ((char *) ObjDesc->String.Pointer, InitVal->Val);
                 break;
 
 
             case ACPI_TYPE_MUTEX:
 
                 ObjDesc->Mutex.SyncLevel =
-                    (UINT16) STRTOUL (InitVal->Val, NULL, 10);
+                        (UINT16) STRTOUL (InitVal->Val, NULL, 10);
 
                 if (STRCMP (InitVal->Name, "_GL_") == 0)
                 {
@@ -314,9 +311,8 @@ AcpiNsRootInitialize (void)
                      * Create a counting semaphore for the
                      * global lock
                      */
-                    Status =
-                        AcpiOsCreateSemaphore (ACPI_NO_UNIT_LIMIT,
-                                    1, &ObjDesc->Mutex.Semaphore);
+                    Status = AcpiOsCreateSemaphore (ACPI_NO_UNIT_LIMIT,
+                                            1, &ObjDesc->Mutex.Semaphore);
 
                     if (ACPI_FAILURE (Status))
                     {
@@ -327,8 +323,7 @@ AcpiNsRootInitialize (void)
                      * global lock, save it
                      */
 
-                    AcpiGbl_GlobalLockSemaphore =
-                                        ObjDesc->Mutex.Semaphore;
+                    AcpiGbl_GlobalLockSemaphore = ObjDesc->Mutex.Semaphore;
                 }
 
                 else
@@ -372,7 +367,7 @@ UnlockAndExit:
 }
 
 
-/****************************************************************************
+/*******************************************************************************
  *
  * FUNCTION:    AcpiNsLookup
  *
@@ -390,7 +385,7 @@ UnlockAndExit:
  *
  * MUTEX:       Assumes namespace is locked.
  *
- ***************************************************************************/
+ ******************************************************************************/
 
 ACPI_STATUS
 AcpiNsLookup (
@@ -504,7 +499,8 @@ AcpiNsLookup (
         NumSegments = 0;
         ThisEntry = AcpiGbl_RootObject;
 
-        DEBUG_PRINT (TRACE_NAMES, ("NsLookup: Null Pathname (Zero segments),  Flags=%x\n", Flags));
+        DEBUG_PRINT (TRACE_NAMES, 
+            ("NsLookup: Null Pathname (Zero segments),  Flags=%x\n", Flags));
     }
 
     else
@@ -533,7 +529,9 @@ AcpiNsLookup (
             /* Pathname is fully qualified, look in root name table */
 
             TableToSearch = AcpiGbl_RootObject->ChildTable;
+
             /* point to segment part */
+
             Pathname++;
 
             DEBUG_PRINT (TRACE_NAMES,
@@ -566,7 +564,6 @@ AcpiNsLookup (
 
             while (*Pathname == AML_PARENT_PREFIX)
             {
-
                 /* Point to segment part or next ParentPrefix */
 
                 Pathname++;
@@ -596,7 +593,9 @@ AcpiNsLookup (
         if (*Pathname == AML_DUAL_NAME_PREFIX)
         {
             NumSegments = 2;
+
             /* point to first segment */
+
             Pathname++;
 
             DEBUG_PRINT (TRACE_NAMES,
@@ -606,7 +605,9 @@ AcpiNsLookup (
         else if (*Pathname == AML_MULTI_NAME_PREFIX_OP)
         {
             NumSegments = (INT32)* (UINT8 *) ++Pathname;
+
             /* point to first segment */
+
             Pathname++;
 
             DEBUG_PRINT (TRACE_NAMES,
@@ -797,7 +798,9 @@ AcpiNsLookup (
         }
 
         TableToSearch = ThisEntry->ChildTable;
+
         /* point to next name segment */
+
         Pathname += ACPI_NAME_SIZE;
     }
 

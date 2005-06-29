@@ -144,7 +144,7 @@ AcpiNsAllocateNameTable (
     UINT32                  NumEntries)
 {
     ACPI_NAME_TABLE         *NameTable = NULL;
-    ACPI_SIZE               AllocSize;
+    UINT32                  AllocSize;
 
 
     FUNCTION_TRACE ("NsAllocateNameTable");
