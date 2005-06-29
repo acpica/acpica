@@ -153,23 +153,72 @@ AcpiNsParseTable (
     FUNCTION_TRACE ("NsParseTable");
 
 
-    /* Create the root object */
+    /* 
+     * AML Parse, pass 1 
+     *
+     * In this pass, we load most of the namespace.  Control methods
+     * are not parsed until later.  A parse tree is not created.  Instead,
+     * each Parser Op subtree is deleted when it is finished.  This saves
+     * a great deal of memory, and allows a small cache of parse objects
+     * to service the entire parse.  The second pass of the parse then
+     * performs another complete parse of the AML..
+     */
+
+    /* Create and init a root object */
 
     AcpiGbl_ParsedNamespaceRoot = AcpiPsAllocOp (AML_SCOPE_OP);
     if (!AcpiGbl_ParsedNamespaceRoot)
     {
         return_ACPI_STATUS (AE_NO_MEMORY);
     }
-
-    /* Initialize the root object */
-
     ((ACPI_NAMED_OP *) AcpiGbl_ParsedNamespaceRoot)->Name = ACPI_ROOT_NAME;
 
     /* Pass 1:  Parse everything except control method bodies */
 
+    DEBUG_PRINT (TRACE_PARSE,
+        ("NsParseTable: *PARSE* 1st pass parse\n"));
     Status = AcpiPsParseAml (AcpiGbl_ParsedNamespaceRoot,
                             TableDesc->AmlPointer,
-                            TableDesc->AmlLength, 0);
+                            TableDesc->AmlLength, PARSE_DELETE_TREE,
+                            AcpiDsLoad1BeginOp,
+                            AcpiDsLoad1EndOp);
+
+    if (ACPI_FAILURE (Status))
+    {
+        return_ACPI_STATUS (Status);
+    }
+
+    AcpiPsDeleteParseTree (AcpiGbl_ParsedNamespaceRoot);
+
+
+    /* 
+     * AML Parse, pass 2 
+     *
+     * In this pass, we resolve forward references and other things
+     * that could not be completed during the first pass.
+     * Another complete parse of the AML is performed, but the 
+     * overhead of this is compensated for by the fact that the
+     * parse objects are all cached.
+     */
+
+    /* Create and init a root object */
+
+    AcpiGbl_ParsedNamespaceRoot = AcpiPsAllocOp (AML_SCOPE_OP);
+    if (!AcpiGbl_ParsedNamespaceRoot)
+    {
+        return_ACPI_STATUS (AE_NO_MEMORY);
+    }
+    ((ACPI_NAMED_OP *) AcpiGbl_ParsedNamespaceRoot)->Name = ACPI_ROOT_NAME;
+
+    /* Pass 2: Resolve forward references */
+
+    DEBUG_PRINT (TRACE_PARSE,
+        ("NsParseTable: *PARSE* 2nd pass parse\n"));
+    Status = AcpiPsParseAml (AcpiGbl_ParsedNamespaceRoot,
+                            TableDesc->AmlPointer,
+                            TableDesc->AmlLength, PARSE_DELETE_TREE,
+                            AcpiDsLoad2BeginOp,
+                            AcpiDsLoad2EndOp);
 
     if (ACPI_FAILURE (Status))
     {
@@ -177,30 +226,12 @@ AcpiNsParseTable (
     }
 
 
-#ifndef PARSER_ONLY
-    DEBUG_PRINT (TRACE_PARSE,
-        ("NsParseTable: Building Internal Namespace\n"));
-
-    Status = AcpiPsWalkParsedAml (AcpiPsGetChild (AcpiGbl_ParsedNamespaceRoot),
-                                AcpiGbl_ParsedNamespaceRoot, NULL,
-                                Scope, NULL, NULL,
-                                TableDesc->TableId,
-                                AcpiDsLoad2BeginOp,
-                                AcpiDsLoad2EndOp);
-
-
-    /*
-     * Now that the internal namespace has been constructed, we can delete the
-     * parsed namespace, since it is no longer needed
-     */
-
-    DEBUG_PRINT (TRACE_PARSE, ("NsParseTable: Deleting Parsed Namespace\n"));
+/* TBD: [Restructure] must generate stats on the fly, can't walk the tree */
 
     DEBUG_EXEC (AcpiDbGenerateStatistics (AcpiGbl_ParsedNamespaceRoot, 0));
 
     AcpiPsDeleteParseTree (AcpiGbl_ParsedNamespaceRoot);
     AcpiGbl_ParsedNamespaceRoot = NULL;
-#endif
 
 
     return_ACPI_STATUS (Status);
