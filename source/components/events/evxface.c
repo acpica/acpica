@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: evxface - External interfaces for ACPI events
- *              $Revision: 1.90 $
+ *              $Revision: 1.92 $
  *
  *****************************************************************************/
 
@@ -179,8 +179,8 @@ AcpiInstallFixedEventHandler (
     AcpiGbl_FixedEventHandlers[Event].Handler = Handler;
     AcpiGbl_FixedEventHandlers[Event].Context = Context;
 
-    if (1 != AcpiHwRegisterAccess (ACPI_WRITE,
-                                   ACPI_MTX_LOCK, Event + TMR_EN, 1))
+    AcpiHwRegisterWrite (ACPI_MTX_LOCK, Event + TMR_EN, 1);
+    if (1 != AcpiHwRegisterRead (ACPI_MTX_LOCK, Event + TMR_EN))
     {
         DEBUG_PRINT (ACPI_WARN,
             ("Could not write to fixed event enable register.\n"));
@@ -239,8 +239,8 @@ AcpiRemoveFixedEventHandler (
 
     /* Disable the event before removing the handler - just in case... */
 
-    if (0 != AcpiHwRegisterAccess (ACPI_WRITE,
-                                   ACPI_MTX_LOCK, Event + TMR_EN, 0))
+    AcpiHwRegisterWrite (ACPI_MTX_LOCK, Event + TMR_EN, 0);
+    if (0 != AcpiHwRegisterRead (ACPI_MTX_LOCK, Event + TMR_EN))
     {
         DEBUG_PRINT (ACPI_WARN,
             ("Could not write to fixed event enable register.\n"));
@@ -702,8 +702,7 @@ Cleanup:
  ******************************************************************************/
 ACPI_STATUS
 AcpiAcquireGlobalLock (
-    UINT32                  Timeout,
-    UINT32                  *OutHandle)
+    void)
 {
     ACPI_STATUS             Status;
 
@@ -718,7 +717,6 @@ AcpiAcquireGlobalLock (
     Status = AcpiEvAcquireGlobalLock ();
     AcpiAmlExitInterpreter ();
 
-    *OutHandle = 0;
     return (Status);
 }
 
@@ -737,12 +735,8 @@ AcpiAcquireGlobalLock (
 
 ACPI_STATUS
 AcpiReleaseGlobalLock (
-    UINT32                  Handle)
+    void)
 {
-
-
-    /* TBD: [Restructure] Validate handle */
-
     AcpiEvReleaseGlobalLock ();
     return (AE_OK);
 }
