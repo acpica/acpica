@@ -148,10 +148,10 @@ NsAttachObject (
     ACPI_HANDLE             Object, 
     UINT8                   Type)
 {
-    NAME_TABLE_ENTRY        *ThisEntry;
+    NAME_TABLE_ENTRY        *ThisEntry = NULL;
     ACPI_OBJECT_INTERNAL    *ObjDesc;
     ACPI_OBJECT_INTERNAL    *PreviousObjDesc;
-    ACPI_OBJECT_TYPE        ObjType;
+    ACPI_OBJECT_TYPE        ObjType = NULL;
 
 
     FUNCTION_TRACE ("NsAttachObject");
