@@ -707,12 +707,12 @@ DbDisplayObjects (
     char                    *DisplayCountArg)
 {
     UINT32                  DisplayCount;
-    UINT32                  Type;
+    ACPI_OBJECT_TYPE        Type;
 
     
     STRUPR (ObjTypeArg);
     Type = DbMatchArgument (ObjTypeArg, DbObjectTypes);
-    if (Type == (UINT32) -1)
+    if (Type == ACPI_TYPE_NotFound)
     {
         OsdPrintf ("Invalid or unsupported argument\n");
         return AE_OK;
@@ -735,7 +735,7 @@ DbDisplayObjects (
     DbSetOutputDestination (DB_REDIRECTABLE_OUTPUT);
 
     AcpiWalkNamespace (Type, ACPI_ROOT_OBJECT, ACPI_UINT32_MAX,
-                        DbWalkForSpecificObjects, (void *) Type, NULL);
+                        DbWalkForSpecificObjects, (void *) &Type, NULL);
 
     DbSetOutputDestination (DB_CONSOLE_OUTPUT);
     return AE_OK;
