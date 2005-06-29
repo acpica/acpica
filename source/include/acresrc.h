@@ -22,6 +22,7 @@
  * copy of the source code appearing in this file ("Covered Code") an
  * irrevocable, perpetual, worldwide license under Intel's copyrights in the
  * base code distributed originally by Intel ("Original Intel Code") to copy,
+
  * make derivatives, distribute, use and display any portion of the Covered
  * Code in any form, with the right to sublicense such rights; and
  *
@@ -162,6 +163,12 @@ RsCreateByteStream (
 /* 
  *  Function prototypes called from RsCreate* APIs
  */
+ 
+void
+RsDumpResourceList (
+	RESOURCE  *	Resource
+	);
+
 
 UINT32
 RsGetByteStreamStart (
@@ -337,6 +344,7 @@ RsMemory32RangeResource (
     UINT32      * BytesConsumed,
     UINT8      ** OutputBuffer,
     UINT32      * StructureSize
+
     );
 
 ACPI_STATUS
