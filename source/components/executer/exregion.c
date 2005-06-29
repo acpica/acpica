@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exregion - ACPI default OpRegion (address space) handlers
- *              $Revision: 1.81 $
+ *              $Revision: 1.83 $
  *
  *****************************************************************************/
 
@@ -10,7 +10,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2003, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -158,7 +158,7 @@ AcpiExSystemMemorySpaceHandler (
     ACPI_MEM_SPACE_CONTEXT  *MemInfo = RegionContext;
     UINT32                  Length;
     ACPI_SIZE               WindowSize;
-#ifndef _HW_ALIGNMENT_SUPPORT
+#ifndef ACPI_MISALIGNED_TRANSFERS
     UINT32                  Remainder;
 #endif
 
@@ -192,7 +192,7 @@ AcpiExSystemMemorySpaceHandler (
     }
 
 
-#ifndef _HW_ALIGNMENT_SUPPORT
+#ifndef ACPI_MISALIGNED_TRANSFERS
     /*
      * Hardware does not support non-aligned data transfers, we must verify
      * the request.
