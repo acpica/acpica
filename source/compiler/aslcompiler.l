@@ -3,7 +3,7 @@
 /******************************************************************************
  *
  * Module Name: aslcompiler.l - Flex input file
- *              $Revision: 1.68 $
+ *              $Revision: 1.69 $
  *
  *****************************************************************************/
 
@@ -279,6 +279,7 @@ NamePathTail                [.]{NameSeg}
 "SizeOf"                    { count (3); return (PARSEOP_SIZEOF); }
 "Store"                     { count (3); return (PARSEOP_STORE); }
 "Subtract"                  { count (3); return (PARSEOP_SUBTRACT); }
+"Timer"                     { count (3); return (PARSEOP_TIMER); }
 "ToBCD"                     { count (3); return (PARSEOP_TOBCD); }
 "ToBuffer"                  { count (3); return (PARSEOP_TOBUFFER); }
 "ToDecimalString"           { count (3); return (PARSEOP_TODECIMALSTRING); }
