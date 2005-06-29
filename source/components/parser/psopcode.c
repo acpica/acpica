@@ -1,8 +1,7 @@
-
 /******************************************************************************
  *
  * Module Name: psopcode - Parser opcode information table
- *              $Revision: 1.18 $
+ *              $Revision: 1.23 $
  *
  *****************************************************************************/
 
@@ -122,17 +121,14 @@
 
 
 #define _COMPONENT          PARSER
-        MODULE_NAME         ("psopcode");
+        MODULE_NAME         ("psopcode")
 
-
-UINT8 AcpiGbl_AmlShortOpInfoIndex[];
-UINT8 AcpiGbl_AmlLongOpInfoIndex[];
 
 #define _UNK                        0x6B
 /*
  * Reserved ASCII characters.  Do not use any of these for
  * internal opcodes, since they are used to differentiate
- * name strings from AML opcodes 
+ * name strings from AML opcodes
  */
 #define _ASC                        0x6C
 #define _NAM                        0x6C
@@ -145,117 +141,6 @@ UINT8 AcpiGbl_AmlLongOpInfoIndex[];
 #define NUM_INTERNAL_OPCODE         MAX_INTERNAL_OPCODE + 1
 
 
-/*******************************************************************************
- *
- * FUNCTION:    AcpiPsGetOpcodeInfo
- *
- * PARAMETERS:  Opcode              - The AML opcode
- *
- * RETURN:      A pointer to the info about the opcode.  NULL if the opcode was
- *              not found in the table.
- *
- * DESCRIPTION: Find AML opcode description based on the opcode.
- *              NOTE: This procedure must ALWAYS return a valid pointer!
- *
- ******************************************************************************/
-
-ACPI_OP_INFO *
-AcpiPsGetOpcodeInfo (
-    UINT16                  Opcode)
-{
-    ACPI_OP_INFO            *OpInfo;
-    UINT8                   UpperOpcode;
-    UINT8                   LowerOpcode;
-
-
-    /* Split the 16-bit opcode into separate bytes */
-
-    UpperOpcode = (UINT8) (Opcode >> 8);
-    LowerOpcode = (UINT8) Opcode;
-
-    /* Default is "unknown opcode" */
-
-    OpInfo = &AcpiGbl_AmlOpInfo [_UNK];
-
-
-    /*
-     * Detect normal 8-bit opcode or extended 16-bit opcode
-     */
-
-    switch (UpperOpcode)
-    {
-    case 0:
-
-        /* Simple (8-bit) opcode: 0-255, can't index beyond table  */
-
-        OpInfo = &AcpiGbl_AmlOpInfo [AcpiGbl_AmlShortOpInfoIndex [LowerOpcode]];
-        break;
-
-
-    case AML_EXTOP:
-
-        /* Extended (16-bit, prefix+opcode) opcode */
-
-        if (LowerOpcode <= MAX_EXTENDED_OPCODE)
-        {
-            OpInfo = &AcpiGbl_AmlOpInfo [AcpiGbl_AmlLongOpInfoIndex [LowerOpcode]];
-        }
-        break;
-
-
-    case AML_LNOT_OP:
-
-        /* This case is for the bogus opcodes LNOTEQUAL, LLESSEQUAL, LGREATEREQUAL */
-        /* TBD: [Investigate] remove this case? */
-
-        DEBUG_PRINT (ACPI_ERROR, ("PsGetOpcodeInfo: Bad multi-byte opcode=%X\n",
-                Opcode));
-
-        break;
-
-
-    default:
-
-        DEBUG_PRINT (ACPI_ERROR, ("PsGetOpcodeInfo: Unknown extended opcode=%X\n",
-                Opcode));
-
-        break;
-    }
-
-
-    /* Get the Op info pointer for this opcode */
-
-    return (OpInfo);
-}
-
-
-/*******************************************************************************
- *
- * FUNCTION:    AcpiPsGetOpcodeName
- *
- * PARAMETERS:  Opcode              - The AML opcode
- *
- * RETURN:      A pointer to the name of the opcode (ASCII String)
- *              Note: Never returns NULL.
- *
- * DESCRIPTION: Translate an opcode into a human-readable string
- *
- ******************************************************************************/
-
-NATIVE_CHAR *
-AcpiPsGetOpcodeName (
-    UINT16                  Opcode)
-{
-    ACPI_OP_INFO             *Op;
-
-
-    Op = AcpiPsGetOpcodeInfo (Opcode);
-
-    /* Always guaranteed to return a valid pointer */
-
-    DEBUG_ONLY_MEMBERS (return Op->Name);
-    return ("AE_NOT_CONFIGURED");
-}
 
 
 /*******************************************************************************
@@ -486,7 +371,7 @@ AcpiPsGetOpcodeName (
 #define ARGI_REVISION_OP                ARG_NONE
 #define ARGI_DEBUG_OP                   ARG_NONE
 #define ARGI_FATAL_OP                   ARGI_LIST3 (ARGI_NUMBER,     ARGI_NUMBER,        ARGI_NUMBER)
-#define ARGI_REGION_OP                  ARGI_INVALID_OPCODE
+#define ARGI_REGION_OP                  ARGI_LIST2 (ARGI_NUMBER,     ARGI_NUMBER)
 #define ARGI_DEF_FIELD_OP               ARGI_INVALID_OPCODE
 #define ARGI_DEVICE_OP                  ARGI_INVALID_OPCODE
 #define ARGI_PROCESSOR_OP               ARGI_INVALID_OPCODE
@@ -511,7 +396,7 @@ AcpiPsGetOpcodeName (
  */
 
 
-ACPI_OP_INFO        AcpiGbl_AmlOpInfo[] =
+static ACPI_OPCODE_INFO    AmlOpInfo[] =
 {
 /* Index          Opcode                                   Type                   Class                 Has Arguments?   Name                 Parser Args             Interpreter Args */
 
@@ -638,7 +523,7 @@ ACPI_OP_INFO        AcpiGbl_AmlOpInfo[] =
  * index into the table above
  */
 
-UINT8 AcpiGbl_AmlShortOpInfoIndex[256] =
+static UINT8 AmlShortOpInfoIndex[256] =
 {
 /*              0     1     2     3     4     5     6     7  */
 /* 0x00 */    0x00, 0x01, _UNK, _UNK, _UNK, _UNK, 0x02, _UNK,
@@ -676,31 +561,146 @@ UINT8 AcpiGbl_AmlShortOpInfoIndex[256] =
 };
 
 
-UINT8 AcpiGbl_AmlLongOpInfoIndex[NUM_EXTENDED_OPCODE] =
+static UINT8 AmlLongOpInfoIndex[NUM_EXTENDED_OPCODE] =
 {
 /*              0     1     2     3     4     5     6     7  */
 /* 0x00 */    _UNK, 0x46, 0x47, _UNK, _UNK, _UNK, _UNK, _UNK,
-/* 0x08 */    _UNK, _UNK, _UNK, _UNK, _UNK, _UNK, _UNK, _UNK, 
+/* 0x08 */    _UNK, _UNK, _UNK, _UNK, _UNK, _UNK, _UNK, _UNK,
 /* 0x10 */    _UNK, _UNK, 0x48, 0x49, _UNK, _UNK, _UNK, _UNK,
-/* 0x18 */    _UNK, _UNK, _UNK, _UNK, _UNK, _UNK, _UNK, _UNK, 
+/* 0x18 */    _UNK, _UNK, _UNK, _UNK, _UNK, _UNK, _UNK, _UNK,
 /* 0x20 */    0x4a, 0x4b, 0x4c, 0x4d, 0x4e, 0x4f, 0x50, 0x51,
 /* 0x28 */    0x52, 0x53, 0x54, _UNK, _UNK, _UNK, _UNK, _UNK,
 /* 0x30 */    0x55, 0x56, 0x57, _UNK, _UNK, _UNK, _UNK, _UNK,
-/* 0x38 */    _UNK, _UNK, _UNK, _UNK, _UNK, _UNK, _UNK, _UNK, 
-/* 0x40 */    _UNK, _UNK, _UNK, _UNK, _UNK, _UNK, _UNK, _UNK, 
-/* 0x48 */    _UNK, _UNK, _UNK, _UNK, _UNK, _UNK, _UNK, _UNK, 
-/* 0x50 */    _UNK, _UNK, _UNK, _UNK, _UNK, _UNK, _UNK, _UNK, 
-/* 0x58 */    _UNK, _UNK, _UNK, _UNK, _UNK, _UNK, _UNK, _UNK, 
-/* 0x60 */    _UNK, _UNK, _UNK, _UNK, _UNK, _UNK, _UNK, _UNK, 
-/* 0x68 */    _UNK, _UNK, _UNK, _UNK, _UNK, _UNK, _UNK, _UNK, 
-/* 0x70 */    _UNK, _UNK, _UNK, _UNK, _UNK, _UNK, _UNK, _UNK, 
-/* 0x78 */    _UNK, _UNK, _UNK, _UNK, _UNK, _UNK, _UNK, _UNK, 
+/* 0x38 */    _UNK, _UNK, _UNK, _UNK, _UNK, _UNK, _UNK, _UNK,
+/* 0x40 */    _UNK, _UNK, _UNK, _UNK, _UNK, _UNK, _UNK, _UNK,
+/* 0x48 */    _UNK, _UNK, _UNK, _UNK, _UNK, _UNK, _UNK, _UNK,
+/* 0x50 */    _UNK, _UNK, _UNK, _UNK, _UNK, _UNK, _UNK, _UNK,
+/* 0x58 */    _UNK, _UNK, _UNK, _UNK, _UNK, _UNK, _UNK, _UNK,
+/* 0x60 */    _UNK, _UNK, _UNK, _UNK, _UNK, _UNK, _UNK, _UNK,
+/* 0x68 */    _UNK, _UNK, _UNK, _UNK, _UNK, _UNK, _UNK, _UNK,
+/* 0x70 */    _UNK, _UNK, _UNK, _UNK, _UNK, _UNK, _UNK, _UNK,
+/* 0x78 */    _UNK, _UNK, _UNK, _UNK, _UNK, _UNK, _UNK, _UNK,
 /* 0x80 */    0x58, 0x59, 0x5a, 0x5b, 0x5c, 0x5d, 0x5e, 0x5f,
 };
 
 
 /*              0     1     2     3     4     5     6     7  */
-/* 0x00 */    
+/* 0x00 */
 
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiPsGetOpcodeInfo
+ *
+ * PARAMETERS:  Opcode              - The AML opcode
+ *
+ * RETURN:      A pointer to the info about the opcode.  NULL if the opcode was
+ *              not found in the table.
+ *
+ * DESCRIPTION: Find AML opcode description based on the opcode.
+ *              NOTE: This procedure must ALWAYS return a valid pointer!
+ *
+ ******************************************************************************/
+
+ACPI_OPCODE_INFO *
+AcpiPsGetOpcodeInfo (
+    UINT16                  Opcode)
+{
+    ACPI_OPCODE_INFO        *OpInfo;
+    UINT8                   UpperOpcode;
+    UINT8                   LowerOpcode;
+
+
+    /* Split the 16-bit opcode into separate bytes */
+
+    UpperOpcode = (UINT8) (Opcode >> 8);
+    LowerOpcode = (UINT8) Opcode;
+
+    /* Default is "unknown opcode" */
+
+    OpInfo = &AmlOpInfo [_UNK];
+
+
+    /*
+     * Detect normal 8-bit opcode or extended 16-bit opcode
+     */
+
+    switch (UpperOpcode)
+    {
+    case 0:
+
+        /* Simple (8-bit) opcode: 0-255, can't index beyond table  */
+
+        OpInfo = &AmlOpInfo [AmlShortOpInfoIndex [LowerOpcode]];
+        break;
+
+
+    case AML_EXTOP:
+
+        /* Extended (16-bit, prefix+opcode) opcode */
+
+        if (LowerOpcode <= MAX_EXTENDED_OPCODE)
+        {
+            OpInfo = &AmlOpInfo [AmlLongOpInfoIndex [LowerOpcode]];
+        }
+        break;
+
+
+    case AML_LNOT_OP:
+
+        /* This case is for the bogus opcodes LNOTEQUAL, LLESSEQUAL, LGREATEREQUAL */
+        /* TBD: [Investigate] remove this case? */
+
+        DEBUG_PRINT (ACPI_ERROR, ("PsGetOpcodeInfo: Bad multi-byte opcode=%X\n",
+                Opcode));
+
+        break;
+
+
+    default:
+
+        DEBUG_PRINT (ACPI_ERROR, ("PsGetOpcodeInfo: Unknown extended opcode=%X\n",
+                Opcode));
+
+        break;
+    }
+
+
+    /* Get the Op info pointer for this opcode */
+
+    return (OpInfo);
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiPsGetOpcodeName
+ *
+ * PARAMETERS:  Opcode              - The AML opcode
+ *
+ * RETURN:      A pointer to the name of the opcode (ASCII String)
+ *              Note: Never returns NULL.
+ *
+ * DESCRIPTION: Translate an opcode into a human-readable string
+ *
+ ******************************************************************************/
+
+NATIVE_CHAR *
+AcpiPsGetOpcodeName (
+    UINT16                  Opcode)
+{
+    ACPI_OPCODE_INFO             *Op;
+
+
+    Op = AcpiPsGetOpcodeInfo (Opcode);
+
+    /* Always guaranteed to return a valid pointer */
+
+#ifdef ACPI_DEBUG
+    return (Op->Name);
+#else
+    return ("AE_NOT_CONFIGURED");
+#endif
+}
 
 

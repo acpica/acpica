@@ -1,8 +1,7 @@
-
 /******************************************************************************
  *
  * Module Name: pstree - Parser op tree manipulation/traversal/search
- *              $Revision: 1.21 $
+ *              $Revision: 1.25 $
  *
  *****************************************************************************/
 
@@ -123,7 +122,7 @@
 #include "amlcode.h"
 
 #define _COMPONENT          PARSER
-        MODULE_NAME         ("pstree");
+        MODULE_NAME         ("pstree")
 
 
 /*******************************************************************************
@@ -139,13 +138,13 @@
  *
  ******************************************************************************/
 
-ACPI_GENERIC_OP *
+ACPI_PARSE_OBJECT *
 AcpiPsGetArg (
-    ACPI_GENERIC_OP         *Op,
+    ACPI_PARSE_OBJECT       *Op,
     UINT32                  Argn)
 {
-    ACPI_GENERIC_OP         *Arg = NULL;
-    ACPI_OP_INFO            *OpInfo;
+    ACPI_PARSE_OBJECT       *Arg = NULL;
+    ACPI_OPCODE_INFO        *OpInfo;
 
 
     /* Get the info structure for this opcode */
@@ -195,11 +194,11 @@ AcpiPsGetArg (
 
 void
 AcpiPsAppendArg (
-    ACPI_GENERIC_OP         *Op,
-    ACPI_GENERIC_OP         *Arg)
+    ACPI_PARSE_OBJECT       *Op,
+    ACPI_PARSE_OBJECT       *Arg)
 {
-    ACPI_GENERIC_OP         *PrevArg;
-    ACPI_OP_INFO            *OpInfo;
+    ACPI_PARSE_OBJECT       *PrevArg;
+    ACPI_OPCODE_INFO        *OpInfo;
 
 
     if (!Op)
@@ -271,11 +270,11 @@ AcpiPsAppendArg (
  *
  ******************************************************************************/
 
-ACPI_GENERIC_OP *
+ACPI_PARSE_OBJECT *
 AcpiPsGetChild (
-    ACPI_GENERIC_OP         *Op)
+    ACPI_PARSE_OBJECT       *Op)
 {
-    ACPI_GENERIC_OP         *Child = NULL;
+    ACPI_PARSE_OBJECT       *Child = NULL;
 
 
     switch (Op->Opcode)
@@ -334,14 +333,14 @@ AcpiPsGetChild (
  *
  ******************************************************************************/
 
-ACPI_GENERIC_OP *
+ACPI_PARSE_OBJECT *
 AcpiPsGetDepthNext (
-    ACPI_GENERIC_OP         *Origin,
-    ACPI_GENERIC_OP         *Op)
+    ACPI_PARSE_OBJECT       *Origin,
+    ACPI_PARSE_OBJECT       *Op)
 {
-    ACPI_GENERIC_OP         *Next = NULL;
-    ACPI_GENERIC_OP         *Parent;
-    ACPI_GENERIC_OP         *Arg;
+    ACPI_PARSE_OBJECT       *Next = NULL;
+    ACPI_PARSE_OBJECT       *Parent;
+    ACPI_PARSE_OBJECT       *Arg;
 
 
     if (!Op)
@@ -395,125 +394,6 @@ AcpiPsGetDepthNext (
     }
 
     return (Next);
-}
-
-
-/*******************************************************************************
- *
- * FUNCTION:    AcpiPsFetchPrefix
- *
- * PARAMETERS:  Scope           - Op to fetch prefix for
- *              Path            - A namestring containing the prefix
- *              io              - Direction flag
- *
- * RETURN:      Op referenced by the prefix
- *
- * DESCRIPTION: Fetch and handle path prefix ('\\' or '^')
- *
- ******************************************************************************/
-
-ACPI_GENERIC_OP *
-AcpiPsFetchPrefix (
-    ACPI_GENERIC_OP         *Scope,
-    NATIVE_CHAR             **Path,
-    UINT32                  io)
-{
-    UINT32                  prefix = io ? GET8 (*Path):**Path;
-
-
-    switch (prefix)
-    {
-    case '\\':
-    case '/':
-
-        /* go to the root */
-
-        *Path += 1;
-        while (Scope->Parent)
-        {
-            Scope = Scope->Parent;
-        }
-        break;
-
-
-    case '^':
-
-        /* go up one level */
-
-        *Path += 1;
-        Scope = Scope->Parent;
-        break;
-    }
-
-    if (Scope && !Scope->Parent)
-    {
-        /* searching from the root, start with its children */
-
-        Scope = AcpiPsGetChild (Scope);
-    }
-
-    return (Scope);
-}
-
-
-/*******************************************************************************
- *
- * FUNCTION:    AcpiPsFetchName
- *
- * PARAMETERS:  Path            - A string containing the name segment
- *              io              - Direction flag
- *
- * RETURN:      The 4-INT8 ASCII ACPI Name as a UINT32
- *
- * DESCRIPTION: Fetch ACPI name segment (dot-delimited)
- *
- ******************************************************************************/
-
-UINT32
-AcpiPsFetchName (
-    NATIVE_CHAR             **Path,
-    UINT32                  io)
-{
-    UINT32                  Name = 0;
-    NATIVE_CHAR             *nm;
-    UINT32                  i;
-    NATIVE_CHAR             ch;
-
-
-    if (io)
-    {
-        /* Get the name from the path pointer */
-
-        MOVE_UNALIGNED32_TO_32 (&Name, *Path);
-        *Path += 4;
-    }
-
-    else
-    {
-        if (**Path == '.')
-        {
-            *Path += 1;
-        }
-
-        nm = (NATIVE_CHAR *) &Name;
-        for (i = 0; i < 4; i++)
-        {
-            ch = **Path;
-            if (ch && ch != '.')
-            {
-                *nm = ch;
-                *Path += 1;
-            }
-
-            else
-            {
-                *nm = '_';
-            }
-            nm++;
-        }
-    }
-
-    return (Name);
 }
 
 
