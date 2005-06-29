@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acutils.h -- prototypes for the common (subsystem-wide) procedures
- *       $Revision: 1.120 $
+ *       $Revision: 1.121 $
  *
  *****************************************************************************/
 
@@ -708,6 +708,14 @@ ACPI_STATUS
 AcpiUtResolvePackageReferences (
     ACPI_OPERAND_OBJECT     *ObjDesc);
 
+UINT8 *
+AcpiUtGetResourceEndTag (
+    ACPI_OPERAND_OBJECT     *ObjDesc);
+
+UINT8
+AcpiUtGenerateChecksum (
+    UINT8                   *Buffer,
+    UINT32                  Length);
 
 #ifdef ACPI_DEBUG
 void
