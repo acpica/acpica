@@ -127,6 +127,74 @@
 
 
 
+/*****************************************************************************
+ * 
+ * FUNCTION:    NsIsInSystemTable
+ *
+ * PARAMETERS:  *Where              - Pointer to be examined
+ *
+ * RETURN:      TRUE if Where is within the AML stream
+ *              FALSE otherwise
+ *
+ ****************************************************************************/
+
+BOOLEAN
+NsIsInSystemTable (
+    void                    *Where)
+{
+    UINT32                  i;
+    ACPI_TABLE_DESC         *TableDesc;
+    ACPI_TABLE_HEADER       *Table;
+
+
+    FUNCTION_TRACE ("NsIsInSystemTable");
+
+
+    /* Ignore null pointer */
+
+    if (!Where)
+    {
+        return_VALUE (FALSE);
+    }
+
+
+    /* Check for a pointer within the DSDT */
+
+    if (IS_IN_ACPI_TABLE (Where, Gbl_DSDT))
+    {
+        return_VALUE (TRUE);
+    }
+
+
+    /* Check each of the loaded SSDTs (if any)*/
+
+    TableDesc = &Gbl_AcpiTables[TABLE_SSDT];
+
+    for (i = 0; i < Gbl_AcpiTables[TABLE_SSDT].Count; i++)
+    {
+        Table = TableDesc->Pointer;
+
+
+//        if ((Where >= (void *) (Table + 1)) &&
+//            (Where < (void *) (Table + Table->Length)))
+
+
+        if (IS_IN_ACPI_TABLE (Where, Table))
+        {
+            return_VALUE (TRUE);
+        }
+
+        TableDesc = TableDesc->Next;
+    }
+
+
+    /* TBD: Need to check the PSDTs? */
+
+
+    return_VALUE (FALSE);
+}
+
+
 /****************************************************************************
  *
  * FUNCTION:    NsAllocateNameTable
@@ -201,7 +269,7 @@ NsDeleteNamespace (void)
 
     /* Begin deletion walk at the root object */
 
-    ParentHandle    = RootObject;
+    ParentHandle    = Gbl_RootObject;
     ChildHandle     = 0;
     Level           = 1;
 
@@ -218,7 +286,7 @@ NsDeleteNamespace (void)
         {
             /* Found an object - delete the object within the Value field */
 
-            NsDeleteValue (ChildHandle);
+            NsDetachObject (ChildHandle);
 
             /* Check if this object has any children */
 
@@ -264,82 +332,9 @@ NsDeleteNamespace (void)
 
 
     REPORT_SUCCESS ("Entire namespace and objects deleted");
-    RootObject->Scope = NULL;
+    Gbl_RootObject->Scope = NULL;
 
     return_ACPI_STATUS (AE_OK); 
-}
-
-
-/****************************************************************************
- *
- * FUNCTION:    NsDeleteValue
- *
- * PARAMETERS:  Object           - An object whose Value will be deleted
- *
- * RETURN:      None.
- *
- * DESCRIPTION: Delete the Value associated with a namespace object.  If the
- *              Value is an allocated object, it is freed.  Otherwise, the
- *              field is simply cleared.
- *
- ***************************************************************************/
-
-void
-NsDeleteValue (
-    ACPI_HANDLE             Object)
-{
-    NAME_TABLE_ENTRY        *Entry = Object;
-    ACPI_OBJECT_INTERNAL    *ObjDesc;
-
-    
-    FUNCTION_TRACE ("NsDeleteValue");
-
-    ObjDesc = Entry->Value;
-    if (!ObjDesc)
-    {
-        return_VOID;
-    }
-
-    /* Found a valid value */
-
-    DEBUG_PRINT (ACPI_INFO, ("NsDeleteValue: Object=%p Value=%p Name %4.4s\n", 
-                            Entry, ObjDesc, &Entry->Name));
-
-    /* Not every value is an object allocated via CmCallocate, must check */
-
-    if (!AmlIsInPCodeBlock ((UINT8 *)    ObjDesc)) /*&&
-        !IS_NS_HANDLE                   (ObjDesc))*/
-    {
-
-        switch (Entry->Type)
-        {
-        case TYPE_Lvalue:
-        case TYPE_String:
-        case TYPE_Buffer:
-            /* 
-             * Object was allocated, and there may be some sub objects that must be deleted.
-             * We don't expect a package object to be in a value field, just delete
-             * the simple object.
-             */
-
-            CmDeleteInternalSimpleObject (ObjDesc);
-            break;
-
-        default:
-
-            /*
-             * Everything else, just delete the thing.
-             */
-            CmFree (ObjDesc);
-            break;
-        }
-    }
-
-    /* Clear the entry in all cases */
-
-    Entry->Value = NULL;
-    
-    return_VOID;
 }
 
 
@@ -458,7 +453,7 @@ NsDeleteAcpiTable (
 
     /* Free the table */
 
-    NsFreeAcpiTable (&AcpiTables[Type]);
+    NsFreeAcpiTable (&Gbl_AcpiTables[Type]);
 
 
     /* Clear the appropriate "typed" global table pointer */
@@ -466,39 +461,37 @@ NsDeleteAcpiTable (
     switch (Type)
     {
     case TABLE_RSDP:
-        RSDP = NULL;
+        Gbl_RSDP = NULL;
         break;
 
     case TABLE_APIC:
-        APIC = NULL;
+        Gbl_APIC = NULL;
         break;
 
     case TABLE_DSDT:
-        DSDT = NULL;
+        Gbl_DSDT = NULL;
         break;
 
     case TABLE_FACP:
-        FACP = NULL;
+        Gbl_FACP = NULL;
         break;
 
     case TABLE_FACS:
-        FACS = NULL;
+        Gbl_FACS = NULL;
         break;
 
     case TABLE_PSDT:
-        PSDT = NULL;
         break;
 
     case TABLE_RSDT:
-        RSDT = NULL;
+        Gbl_RSDT = NULL;
         break;
 
     case TABLE_SSDT:
-        SSDT = NULL;
         break;
 
-    case TABLE_SBDT:
-        SBDT = NULL;
+    case TABLE_SBST:
+        Gbl_SBST = NULL;
 
     default:
         break;
@@ -522,42 +515,154 @@ NsDeleteAcpiTable (
 
 void
 NsFreeAcpiTable (
-    ACPI_TABLE_INFO         *TableInfo)
+    ACPI_TABLE_DESC         *ListHead)
 {
+    ACPI_TABLE_DESC         *TableDesc;
+    UINT32                  Count;
+    UINT32                  i;
+
+
 	FUNCTION_TRACE ("NsFreeAcpiTable");
 
 
-    if (TableInfo->Pointer)
+    /* Get the head of the list */
+
+    TableDesc   = ListHead;
+    Count       = ListHead->Count;
+
+    /*
+     * Walk the entire list, deleting both the allocated tables
+     * and the table descriptors
+     */
+
+    for (i = 0; i < Count; i++)
     {
-        /* Valid table, determine type of memory */
-
-        switch (TableInfo->Allocation)
+        if (TableDesc->Pointer)
         {
+            /* Valid table, determine type of memory */
 
-        case ACPI_MEM_NOT_ALLOCATED:
+            switch (TableDesc->Allocation)
+            {
 
-            break;
+            case ACPI_MEM_NOT_ALLOCATED:
 
-
-        case ACPI_MEM_ALLOCATED:
-
-            CmFree (TableInfo->Pointer);
-            break;
+                break;
 
 
-        case ACPI_MEM_MAPPED:
+            case ACPI_MEM_ALLOCATED:
 
-            OsdUnMapMemory (TableInfo->Pointer, TableInfo->Length);
-            break;
+                CmFree (TableDesc->Pointer);
+                break;
+
+
+            case ACPI_MEM_MAPPED:
+
+                OsdUnMapMemory (TableDesc->Pointer, TableDesc->Length);
+                break;
+            }
+        }
+
+        /* Move to the next, delete the current descriptor */
+
+        TableDesc = TableDesc->Next;
+        if (i > 0)
+        {
+            CmFree (TableDesc->Prev);
         }
     }
 
-    /* Clear the table entry */
 
-    TableInfo->Pointer    = NULL;
-    TableInfo->Allocation = ACPI_MEM_NOT_ALLOCATED;
-    TableInfo->Length     = 0;
+
+    /* Clear the list head */
+
+    ListHead->Prev      = ListHead;
+    ListHead->Next      = ListHead;
+    ListHead->Pointer   = NULL;
+    ListHead->Length    = 0;
+    ListHead->Count     = 0;
 
     return_VOID;
 }
 
+
+/****************************************************************************
+ *
+ * FUNCTION:    NsInstallAcpiTable
+ *
+ * PARAMETERS:  TableType           - The type of the table
+ *              TableInfo           - A table info struct
+ *
+ * RETURN:      None.
+ *
+ * DESCRIPTION: Install a table into the global data structs.
+ *
+ ***************************************************************************/
+
+ACPI_STATUS
+NsInstallAcpiTable (
+    ACPI_TABLE_TYPE         TableType,
+    ACPI_TABLE_DESC         *TableInfo)
+{
+    ACPI_TABLE_DESC         *ListHead;
+    ACPI_TABLE_DESC         *TableDesc;
+
+
+    FUNCTION_TRACE ("NsInstallAcpiTable");
+
+
+    ListHead    = &Gbl_AcpiTables[TableType];
+    TableDesc   = ListHead;
+   
+    if (Gbl_AcpiTableFlags[TableType] == ACPI_TABLE_SINGLE)
+    {
+        if (ListHead->Pointer)
+        {
+            NsFreeAcpiTable (ListHead);
+        }
+
+        TableDesc->Count = 1;
+    }
+
+
+    else 
+    {
+        if (ListHead->Pointer)
+        {
+            TableDesc = CmCallocate (sizeof (ACPI_TABLE_DESC));
+            if (!TableDesc)
+            {
+                return_ACPI_STATUS (AE_NO_MEMORY);
+            }
+
+            ListHead->Count++;
+
+            /* Update original previous */
+
+            ListHead->Prev->Next = TableDesc;
+
+            /* Update new entry */
+
+            TableDesc->Prev = ListHead->Prev;
+            TableDesc->Next = (ACPI_TABLE_DESC *) ListHead;
+
+            /* Update list head */
+
+            ListHead->Prev = TableDesc;
+        }
+
+        else
+        {
+            TableDesc->Count = 1;
+        }
+    }
+
+
+    /* Common initialization of the table descriptor */
+
+    TableDesc->Pointer      = TableInfo->Pointer;
+    TableDesc->Length       = TableInfo->Length;
+    TableDesc->Allocation   = TableInfo->Allocation;
+
+
+    return_ACPI_STATUS (AE_OK);
+}

@@ -173,7 +173,6 @@ AcpiEvaluateObject (
 
 
     FUNCTION_TRACE ("AcpiEvaluateObject");
-    DEBUG_MEMSTAT;
 
 
     /* 
@@ -209,6 +208,7 @@ AcpiEvaluateObject (
         for (i = 0; i < Count; i++)
         {
             ParamPtr[i] = &ObjectPtr[i];
+            ObjectPtr[i].Common.Flags = AO_STATIC_ALLOCATION;
         }
         ParamPtr[Count] = NULL;                 
 
@@ -360,13 +360,14 @@ Cleanup:
             }
 
 
-            /* Now delete the internal return object */
-            /* Only the package type has internal objects that require deletion */
+            /*
+             * Delete the internal return object.  Not the object itself, but
+             * any subobjects that are contained therein.
+             */
 
-            if (ReturnPtr->Type == TYPE_Package)
-            {
-                CmDeleteInternalPackageObject (ReturnPtr);
-            }
+            ReturnPtr->Common.Flags = AO_STATIC_ALLOCATION;
+            CmDeleteInternalObject (ReturnPtr);
+
         }
 
         else
@@ -377,7 +378,6 @@ Cleanup:
         }
     }
 
-    DEBUG_MEMSTAT;
     return_ACPI_STATUS (Status);
 }
 
@@ -669,7 +669,7 @@ AcpiWalkNamespace (
 
     if (StartObject == ACPI_ROOT_OBJECT)
     {
-        StartObject = RootObject;
+        StartObject = Gbl_RootObject;
     }
 
     /* Init return value, if any */
@@ -775,7 +775,7 @@ AcpiGetObject (
     }
 
 
-    *RetHandle = RootObject->Scope;
+    *RetHandle = Gbl_RootObject->Scope;
     return AE_OK;
 }
 

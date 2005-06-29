@@ -157,15 +157,15 @@ NsSetup (void)
      * that NsSetup() has already been called; just return.
      */
 
-    if (RootObject->Scope)
+    if (Gbl_RootObject->Scope)
     {
         return_ACPI_STATUS (AE_OK);
     }
 
     /* Allocate a root scope table */
 
-    RootObject->Scope = NsAllocateNameTable (NS_TABLE_SIZE);
-    if (!RootObject->Scope)
+    Gbl_RootObject->Scope = NsAllocateNameTable (NS_TABLE_SIZE);
+    if (!Gbl_RootObject->Scope)
     {
         /*  root name table allocation failure  */
 
@@ -177,21 +177,21 @@ NsSetup (void)
      * Init the root scope first entry -- since it is the exemplar of 
      * the scope (Some fields are duplicated to new entries!) 
      */
-    NsInitializeTable (RootObject->Scope, NULL, RootObject);
+    NsInitializeTable (Gbl_RootObject->Scope, NULL, Gbl_RootObject);
 
     /* Push the root name table on the scope stack */
     
-    ScopeStack[0].Scope = RootObject->Scope;
-    ScopeStack[0].Type = TYPE_Any;
-    CurrentScope = &ScopeStack[0];
+    Gbl_ScopeStack[0].Scope = Gbl_RootObject->Scope;
+    Gbl_ScopeStack[0].Type = TYPE_Any;
+    Gbl_CurrentScope = &Gbl_ScopeStack[0];
 
     /* Enter the pre-defined names in the name table */
     
     DEBUG_PRINT (ACPI_INFO, ("Entering predefined name table into namespace\n"));
 
-    for (InitVal = PreDefinedNames; InitVal->Name; InitVal++)
+    for (InitVal = Gbl_PreDefinedNames; InitVal->Name; InitVal++)
     {
-        Status = NsLookup (CurrentScope->Scope, InitVal->Name, InitVal->Type, 
+        Status = NsLookup (Gbl_CurrentScope->Scope, InitVal->Name, InitVal->Type, 
                                     IMODE_LoadPass2, NS_NO_UPSEARCH, &NewEntry);
 
         /* 
@@ -311,7 +311,7 @@ NsLookup (
     }
 
     *RetEntry = ENTRY_NOT_FOUND;
-    if (!RootObject->Scope)
+    if (!Gbl_RootObject->Scope)
     {
         /* 
          * If the name space has not been initialized:
@@ -354,7 +354,7 @@ NsLookup (
 
         NullNamePath = TRUE;
         NumSegments = 0;
-        ThisEntry = RootObject;
+        ThisEntry = Gbl_RootObject;
 
         DEBUG_PRINT (TRACE_NAMES, ("NsLookup: Null Name (Zero segments),  Flags=%x\n"));
     }
@@ -382,7 +382,7 @@ NsLookup (
         {
             /* Name is fully qualified, look in root name table */
         
-            EntryToSearch = RootObject->Scope;
+            EntryToSearch = Gbl_RootObject->Scope;
             Name++;                 /* point to segment part */
 
             DEBUG_PRINT (TRACE_NAMES, ("NsLookup: Searching from root [%p]\n", 

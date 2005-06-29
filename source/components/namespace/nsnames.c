@@ -156,7 +156,7 @@ NsNameOfScope (
     FUNCTION_TRACE ("NsNameOfScope");
 
 
-    if (!RootObject->Scope || !EntryToSearch)
+    if (!Gbl_RootObject->Scope || !EntryToSearch)
     {
         /* 
          * If the name space has not been initialized,
@@ -219,15 +219,19 @@ NsNameOfScope (
 char *
 NsNameOfCurrentScope (void)
 {
+    char                    *ScopeName;
+
+
     FUNCTION_TRACE ("NsNameOfCurrentScope");
 
 
-    if (CurrentScope && CurrentScope->Scope)
+    if (Gbl_CurrentScope && Gbl_CurrentScope->Scope)
     {
-        return_VALUE (NsNameOfScope (CurrentScope->Scope));
+        ScopeName = NsNameOfScope (Gbl_CurrentScope->Scope);
+        return_VALUE (ScopeName);
     }
     
-    REPORT_ERROR ("Current scope pointer trashed");
+    REPORT_ERROR ("Current scope pointer is invalid");
 
     return_VALUE (NULL);
 }
@@ -263,7 +267,7 @@ NsHandleToPathname (
     FUNCTION_TRACE ("NsHandleToPathname");
 
 
-    if (!RootObject->Scope || !TargetHandle)
+    if (!Gbl_RootObject->Scope || !TargetHandle)
     {
         /* 
          * If the name space has not been initialized,
@@ -519,7 +523,7 @@ NsFindNames (
     FUNCTION_TRACE ("NsFindNames");
 
 
-    if (!RootObject->Scope)
+    if (!Gbl_RootObject->Scope)
     {
         /* 
          * If the name space has not been initialized,
@@ -532,7 +536,7 @@ NsFindNames (
     {
         /* base is root */
 
-        StartHandle = RootObject;
+        StartHandle = Gbl_RootObject;
     }
     
     else if (((NAME_TABLE_ENTRY *) StartHandle)->Scope)

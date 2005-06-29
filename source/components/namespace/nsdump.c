@@ -207,12 +207,24 @@ NsDumpOneObject (
     NAME_TABLE_ENTRY        *Appendage = NULL;
     NAME_TABLE_ENTRY        *ThisEntry = (NAME_TABLE_ENTRY *) ObjHandle;
     ACPI_SIZE               Size = 0;
-
+    UINT8                   *Value;
+    UINT32                  DbLevel = (UINT32) Context;
 
     LevelTmp    = Level;
     Type        = ThisEntry->Type;
     WhichBit    = 1;
 
+
+    if (!(DebugLevel & DbLevel))
+    {
+        return NULL;
+    }
+    
+    if (!ObjHandle)
+    {
+        DEBUG_PRINT (ACPI_INFO, ("Null object handle\n"));
+        return NULL;
+    }
 
     /* Indent the object according to the level */
 
@@ -286,28 +298,26 @@ NsDumpOneObject (
      */
 
     DEBUG_PRINT_RAW (TRACE_TABLES,
-                ("%4.4s [%s] ", &ThisEntry->Name, NsTypeNames[Type]));
+                ("%4.4s [%s] ", &ThisEntry->Name, Gbl_NsTypeNames[Type]));
 
-    DEBUG_PRINT_RAW (TRACE_TABLES, ("%p S:%p PE:%p N:%p",
+    DEBUG_PRINT_RAW (TRACE_TABLES, ("%p S:%p O:%p",
                 ThisEntry,
                 ThisEntry->Scope, 
-                ThisEntry->ParentEntry,
-                ThisEntry->NextEntry));
+                ThisEntry->Object));
 
 
-    if (TYPE_Method == Type && ThisEntry->Value)
+    if (TYPE_Method == Type && ThisEntry->Object)
     {
         /* name is a Method and its AML offset/length are set */
         
-        DEBUG_PRINT_RAW (TRACE_TABLES, (" @%04x(%04lx)\n",
-                    ((METHOD_INFO *) ThisEntry->Value)->Offset,
-                    ((METHOD_INFO *) ThisEntry->Value)->Length));                
+        DEBUG_PRINT_RAW (TRACE_TABLES, (" @%p-%X\n",
+                    ((ACPI_OBJECT_INTERNAL *) ThisEntry->Object)->Method.Pcode,
+                    ((ACPI_OBJECT_INTERNAL *) ThisEntry->Object)->Method.PcodeLength));                
     }
     
     else
     {
-        UINT8           *Value = ThisEntry->Value;
-
+        Value = ThisEntry->Object;
 
         /* name is not a Method, or the AML offset/length are not set */
         
@@ -373,7 +383,8 @@ NsDumpObjects (
     ACPI_HANDLE             StartHandle)
 {
 
-    AcpiWalkNamespace (Type, StartHandle, MaxDepth, NsDumpOneObject, NULL, NULL);
+    AcpiWalkNamespace (Type, StartHandle, MaxDepth, NsDumpOneObject, 
+                        (void *) TRACE_TABLES, NULL);
 }
 
 
@@ -475,7 +486,7 @@ NsDumpTables (
     FUNCTION_TRACE ("NsDumpTables");
 
 
-    if (!RootObject->Scope)
+    if (!Gbl_RootObject->Scope)
     {      
         /* 
          * If the name space has not been initialized,
@@ -489,7 +500,7 @@ NsDumpTables (
     {
         /*  entire namespace    */
 
-        SearchHandle = RootObject;
+        SearchHandle = Gbl_RootObject;
         DEBUG_PRINT (TRACE_TABLES, ("\\\n"));
     }
 
@@ -504,6 +515,7 @@ NsDumpTables (
  * FUNCTION:    NsDumpEntry    
  *
  * PARAMETERS:  Handle              - Entry to be dumped
+ *              DebugLevel          - Output level
  *
  * DESCRIPTION: Dump a single nte
  *
@@ -511,13 +523,14 @@ NsDumpTables (
 
 void
 NsDumpEntry (
-    ACPI_HANDLE             Handle)
+    ACPI_HANDLE             Handle,
+    UINT32                  DebugLevel)
 {
 
-    FUNCTION_TRACE ("NsDumpEntry");
+    FUNCTION_TRACE_PTR ("NsDumpEntry", Handle);
 
 
-    NsDumpOneObject (Handle, 1, NULL);
+    NsDumpOneObject (Handle, 1, (void *) DebugLevel);
     
     DEBUG_PRINT (TRACE_EXEC, ("leave NsDumpEntry %p\n", Handle));
     return_VOID;

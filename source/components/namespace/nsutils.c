@@ -196,61 +196,6 @@ NsGetType (
 
 /****************************************************************************
  *
- * FUNCTION:    NsGetValue
- *
- * PARAMETERS:  Handle              - Handle of nte to be examined
- *
- * RETURN:      Value field from nte whose handle is passed
- *
- ***************************************************************************/
-
-void *
-NsGetValue (
-    ACPI_HANDLE             handle)
-{
-    FUNCTION_TRACE ("NsGetValue");
-
-
-    if (!handle)
-    {
-        /* handle invalid */
-
-        REPORT_WARNING ("NsGetValue: Null handle");
-        return_VALUE (NULL);
-    }
-
-    return (((NAME_TABLE_ENTRY *) handle)->Value);
-}
-
-
-/*****************************************************************************
- *
- * FUNCTION:    IsNsValue
- *
- * PARAMETERS:  *ObjDesc            - An object descriptor
- *
- * RETURN:      TRUE if the passed descriptor is the value of a Name in
- *              the name space, else FALSE
- *
- ****************************************************************************/
-
-INT32
-IsNsValue (
-    ACPI_OBJECT_INTERNAL    *ObjDesc)
-{
-    ACPI_HANDLE             RetHandle;
-
-
-    FUNCTION_TRACE ("IsNsValue");
-
-    RetHandle = NsFindValue (ObjDesc, NS_ALL, ACPI_INT_MAX);
-
-    return_VALUE ((RetHandle != (ACPI_HANDLE) 0));
-}
-
-
-/****************************************************************************
- *
  * FUNCTION:    NsLocal
  *
  * PARAMETERS:  Type            - A namespace object type
@@ -275,7 +220,7 @@ NsLocal (
         return_VALUE (0);
     }
 
-    return_VALUE (NsProperties[Type] & LOCAL);
+    return_VALUE (Gbl_NsProperties[Type] & LOCAL);
 }
 
 
@@ -436,12 +381,12 @@ NsConvertHandleToEntry (
 
     if (Handle == ACPI_ROOT_OBJECT)
     {
-        return RootObject;
+        return Gbl_RootObject;
     }
 
     if (Handle == ACPI_ROOT_SCOPE)
     {
-        return (NAME_TABLE_ENTRY *) RootObject->Scope;
+        return (NAME_TABLE_ENTRY *) Gbl_RootObject->Scope;
     }
 
 
