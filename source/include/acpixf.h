@@ -119,7 +119,7 @@
  */
 
 typedef struct {
-    UNIT32      Length;         // Length in bytes of the buffer;
+    UINT32      Length;         // Length in bytes of the buffer;
     char        *BufferPtr;     // pointer to buffer
 } APIBuffer;
 
