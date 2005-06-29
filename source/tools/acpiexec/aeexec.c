@@ -1,5 +1,5 @@
 /******************************************************************************
- * 
+ *
  * Module Name: aeexec - Top level parse and execute routines
  *
  *****************************************************************************/
@@ -37,9 +37,9 @@
  * The above copyright and patent license is granted only if the following
  * conditions are met:
  *
- * 3. Conditions 
+ * 3. Conditions
  *
- * 3.1. Redistribution of Source with Rights to Further Distribute Source.  
+ * 3.1. Redistribution of Source with Rights to Further Distribute Source.
  * Redistribution of source code of any substantial portion of the Covered
  * Code or modification with rights to further distribute source must include
  * the above Copyright Notice, the above License, this list of Conditions,
@@ -47,11 +47,11 @@
  * Licensee must cause all Covered Code to which Licensee contributes to
  * contain a file documenting the changes Licensee made to create that Covered
  * Code and the date of any change.  Licensee must include in that file the
- * documentation of any changes made by any predecessor Licensee.  Licensee 
+ * documentation of any changes made by any predecessor Licensee.  Licensee
  * must include a prominent statement that the modification is derived,
  * directly or indirectly, from Original Intel Code.
  *
- * 3.2. Redistribution of Source with no Rights to Further Distribute Source.  
+ * 3.2. Redistribution of Source with no Rights to Further Distribute Source.
  * Redistribution of source code of any substantial portion of the Covered
  * Code or modification without rights to further distribute source must
  * include the following Disclaimer and Export Compliance provision in the
@@ -85,7 +85,7 @@
  * INSTALLATION, TRAINING OR OTHER SERVICES.  INTEL WILL NOT PROVIDE ANY
  * UPDATES, ENHANCEMENTS OR EXTENSIONS.  INTEL SPECIFICALLY DISCLAIMS ANY
  * IMPLIED WARRANTIES OF MERCHANTABILITY, NONINFRINGEMENT AND FITNESS FOR A
- * PARTICULAR PURPOSE. 
+ * PARTICULAR PURPOSE.
  *
  * 4.2. IN NO EVENT SHALL INTEL HAVE ANY LIABILITY TO LICENSEE, ITS LICENSEES
  * OR ANY OTHER THIRD PARTY, FOR ANY LOST PROFITS, LOST DATA, LOSS OF USE OR
@@ -130,7 +130,7 @@
 
 
 
-ACPI_GENERIC_OP             *Acpi_GblParsedNamespaceRoot;
+ACPI_GENERIC_OP             *AcpiGbl_ParsedNamespaceRoot;
 ACPI_GENERIC_OP             *root;
 UINT8                       *AmlPtr;
 UINT32                      AcpiAmlLength;
@@ -141,7 +141,7 @@ DEBUG_REGIONS	            Regions;
 
 
 /******************************************************************************
- * 
+ *
  * FUNCTION:    RegionHandler
  *
  * PARAMETERS:  Standard region handler parameters
@@ -153,7 +153,7 @@ DEBUG_REGIONS	            Regions;
  *
  *****************************************************************************/
 
-ACPI_STATUS 
+ACPI_STATUS
 RegionHandler (
     UINT32                      Function,
     UINT32                      Address,
@@ -260,7 +260,7 @@ RegionHandler (
      *
      * NOTE: RegionElement->Length is in bytes, therefore it is multiplied by
      *  the bitwidth of a byte.
-	 */ 
+	 */
     if ((Address + BitWidth) > (RegionElement->Address + (RegionElement->Length * 8)))
     {
         return AE_BUFFER_OVERFLOW;
@@ -270,7 +270,7 @@ RegionHandler (
      * Get BufferValue to point to the "address" in the buffer
      */
     BufferValue = ((UINT8 *)RegionElement->Buffer + (Address - RegionElement->Address));
-    
+
     /*
      * Calculate the size of the memory copy
      */
@@ -309,7 +309,7 @@ RegionHandler (
 
 
 /******************************************************************************
- * 
+ *
  * FUNCTION:    RegionInit
  *
  * PARAMETERS:  None
@@ -331,26 +331,26 @@ RegionInit (
      * Real simple, set the ReturnContext to the RegionHandle
      */
     *ReturnContext = RegionHandle;
-    
+
     return AE_OK;
 }
 
 
 /******************************************************************************
- * 
- * FUNCTION:    NotifyHandler 
+ *
+ * FUNCTION:    NotifyHandler
  *
  * PARAMETERS:  Standard notify handler parameters
  *
  * RETURN:      Status
  *
  * DESCRIPTION: System notify handler for AcpiExec utility.  Used by the ASL
- *              test suite(s) to communicate errors and other information to  
+ *              test suite(s) to communicate errors and other information to
  *              this utility via the Notify() operator.
  *
  *****************************************************************************/
 
-void 
+void
 NotifyHandler (
     ACPI_HANDLE                 Device,
     UINT32                      Value,
@@ -384,7 +384,7 @@ NotifyHandler (
             AcpiOsdPrintf ("**** Method Error: An operand was overwritten\n");
         }
         break;
-    
+
 
     default:
         printf ("**** Received a notify, value 0x%X\n", Value);
@@ -399,7 +399,7 @@ NotifyHandler (
 
 
 /******************************************************************************
- * 
+ *
  * FUNCTION:    AeInstallHandlers
  *
  * PARAMETERS:  None
@@ -427,12 +427,12 @@ AeInstallHandlers (void)
 
     for (i = 0; i < 3; i++)
     {
-        Status = AcpiRemoveAddressSpaceHandler (Acpi_GblRootObject, i, RegionHandler);
+        Status = AcpiRemoveAddressSpaceHandler (AcpiGbl_RootObject, i, RegionHandler);
 
-        /* Install handler at the root object. 
+        /* Install handler at the root object.
          * TBD: all default handlers should be installed here!
          */
-        Status = AcpiInstallAddressSpaceHandler (Acpi_GblRootObject, i, RegionHandler, RegionInit, NULL);
+        Status = AcpiInstallAddressSpaceHandler (AcpiGbl_RootObject, i, RegionHandler, RegionInit, NULL);
         if (ACPI_FAILURE (Status))
         {
             printf ("Could not install an OpRegion handler\n");
@@ -440,7 +440,7 @@ AeInstallHandlers (void)
     }
 
 	/*
-	 * Initialize the global Region Handler space 
+	 * Initialize the global Region Handler space
 	 * MCW 3/23/00
 	 */
 	Regions.NumberOfRegions = 0;
@@ -451,7 +451,7 @@ AeInstallHandlers (void)
 
 
 /******************************************************************************
- * 
+ *
  * FUNCTION:    AdSecondPassParse
  *
  * PARAMETERS:  Root            - Root of the parse tree
@@ -485,7 +485,7 @@ AdSecondPassParse (
             Method = (ACPI_DEFERRED_OP *) Op;
             Status = AcpiPsParseAml (Op, Method->Body, Method->BodyLength, 0);
 
-          
+
             BaseAmlOffset = (Method->Value.Arg)->AmlOffset + 1;
             StartOp = (Method->Value.Arg)->Next;
             SearchOp = StartOp;
@@ -520,7 +520,7 @@ AdSecondPassParse (
 
 
 /******************************************************************************
- * 
+ *
  * FUNCTION:    AdGetTables
  *
  * PARAMETERS:  Filename        - Optional filename

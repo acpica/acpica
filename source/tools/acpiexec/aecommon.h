@@ -1,5 +1,5 @@
 /******************************************************************************
- * 
+ *
  * Module Name: aecommon - common include for the AcpiExec utility
  *
  *****************************************************************************/
@@ -37,9 +37,9 @@
  * The above copyright and patent license is granted only if the following
  * conditions are met:
  *
- * 3. Conditions 
+ * 3. Conditions
  *
- * 3.1. Redistribution of Source with Rights to Further Distribute Source.  
+ * 3.1. Redistribution of Source with Rights to Further Distribute Source.
  * Redistribution of source code of any substantial portion of the Covered
  * Code or modification with rights to further distribute source must include
  * the above Copyright Notice, the above License, this list of Conditions,
@@ -47,11 +47,11 @@
  * Licensee must cause all Covered Code to which Licensee contributes to
  * contain a file documenting the changes Licensee made to create that Covered
  * Code and the date of any change.  Licensee must include in that file the
- * documentation of any changes made by any predecessor Licensee.  Licensee 
+ * documentation of any changes made by any predecessor Licensee.  Licensee
  * must include a prominent statement that the modification is derived,
  * directly or indirectly, from Original Intel Code.
  *
- * 3.2. Redistribution of Source with no Rights to Further Distribute Source.  
+ * 3.2. Redistribution of Source with no Rights to Further Distribute Source.
  * Redistribution of source code of any substantial portion of the Covered
  * Code or modification without rights to further distribute source must
  * include the following Disclaimer and Export Compliance provision in the
@@ -85,7 +85,7 @@
  * INSTALLATION, TRAINING OR OTHER SERVICES.  INTEL WILL NOT PROVIDE ANY
  * UPDATES, ENHANCEMENTS OR EXTENSIONS.  INTEL SPECIFICALLY DISCLAIMS ANY
  * IMPLIED WARRANTIES OF MERCHANTABILITY, NONINFRINGEMENT AND FITNESS FOR A
- * PARTICULAR PURPOSE. 
+ * PARTICULAR PURPOSE.
  *
  * 4.2. IN NO EVENT SHALL INTEL HAVE ANY LIABILITY TO LICENSEE, ITS LICENSEES
  * OR ANY OTHER THIRD PARTY, FOR ANY LOST PROFITS, LOST DATA, LOSS OF USE OR
@@ -172,15 +172,15 @@ typedef union ptr_ovl
         UINT16              offset;
         UINT16              base;
     } ovl;
-    
+
 } PTR_OVL;
-   
+
 
  
 #define GET_SEGMENT(ptr)                ((UINT16)(_segment)(ptr))
-#define GET_OFFSET(ptr)                 ((UINT16)(UINT32) (ptr))   
+#define GET_OFFSET(ptr)                 ((UINT16)(UINT32) (ptr))
 #define GET_PHYSICAL_ADDRESS(ptr)       (((((UINT32)GET_SEGMENT(ptr)) << 4)) + GET_OFFSET(ptr))
-#define PTR_OVL_BUILD_PTR(p,b,o)        {p.ovl.base=b;p.ovl.offset=o;}  
+#define PTR_OVL_BUILD_PTR(p,b,o)        {p.ovl.base=b;p.ovl.offset=o;}
 
 
 #define PARAM_LIST(pl)                  pl
@@ -190,10 +190,10 @@ typedef union ptr_ovl
 #define OSD_PRINT(lvl,fp)               TEST_OUTPUT_LEVEL(lvl) {\
                                             AcpiOsdPrintf PARAM_LIST(fp);}
 
-int 
+int
 getopt (
-    int                     argc, 
-    char                    **argv, 
+    int                     argc,
+    char                    **argv,
     char                    *opts);
 
 
@@ -235,7 +235,7 @@ AeDisplayAllMethods (
 
 ACPI_STATUS
 AdFindDsdt(
-    UINT8                   **DsdtPtr, 
+    UINT8                   **DsdtPtr,
     UINT32                  *DsdtLength);
 
 void
