@@ -3,7 +3,7 @@
 /******************************************************************************
  *
  * Module Name: aslglobal.h - Global variable definitions
- *              $Revision: 1.12 $
+ *              $Revision: 1.13 $
  *
  *****************************************************************************/
 
@@ -200,6 +200,10 @@ EXTERN UINT32                   INIT_GLOBAL (Gbl_NsLookupCount, 0);
 EXTERN UINT32                   INIT_GLOBAL (TotalKeywords, 0);
 EXTERN UINT32                   INIT_GLOBAL (TotalNamedObjects, 0);
 EXTERN UINT32                   INIT_GLOBAL (TotalExecutableOpcodes, 0);
+EXTERN UINT32                   INIT_GLOBAL (TotalParseNodes, 0);
+EXTERN UINT32                   INIT_GLOBAL (TotalMethods, 0);
+EXTERN UINT32                   INIT_GLOBAL (TotalAllocations, 0);
+EXTERN UINT32                   INIT_GLOBAL (TotalAllocated, 0);
 
 
 /* Misc */
@@ -208,6 +212,9 @@ EXTERN ASL_PARSE_NODE           INIT_GLOBAL (*RootNode, NULL);
 EXTERN UINT32                   INIT_GLOBAL (Gbl_TableLength, 0);
 EXTERN UINT32                   INIT_GLOBAL (Gbl_SourceLine, 0);
 EXTERN ASL_LISTING_NODE         INIT_GLOBAL (*Gbl_ListingNode, NULL);
+EXTERN ASL_PARSE_NODE           INIT_GLOBAL (*Gbl_NodeCacheNext, NULL);
+EXTERN ASL_PARSE_NODE           INIT_GLOBAL (*Gbl_NodeCacheLast, NULL);
+
 
 
 EXTERN UINT32                   INIT_GLOBAL (Gbl_CurrentHexColumn, 0);
