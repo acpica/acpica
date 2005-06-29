@@ -152,7 +152,7 @@ AcpiEvaluateObject (
     if ((Pathname) && (Pathname[0] == '\\'))
     {
         Status = NsEvaluateByName (Pathname, ReturnObject, Params);
-        FUNCTION_EXIT;
+        FUNCTION_STATUS_EXIT (Status);
         return Status;
     }
 
@@ -166,11 +166,13 @@ AcpiEvaluateObject (
         {
             DEBUG_PRINT (ACPI_ERROR, ("AcpiEvaluateObject: Both Handle and Pathname are NULL\n"));
         }
+
         else
         {
             DEBUG_PRINT (ACPI_ERROR, ("AcpiEvaluateObject: Handle is NULL and Pathname is relative\n"));
         }
-        FUNCTION_EXIT;
+
+        FUNCTION_STATUS_EXIT (AE_BAD_PARAMETER);
         return AE_BAD_PARAMETER;
     }
     /*
@@ -181,7 +183,7 @@ AcpiEvaluateObject (
     if (!(ObjEntry = NsConvertHandleToEntry (Handle)))
     {
         DEBUG_PRINT (ACPI_ERROR, ("AcpiEvaluateObject: Bad Handle\n"));
-        FUNCTION_EXIT;
+        FUNCTION_STATUS_EXIT (AE_BAD_PARAMETER);
         return AE_BAD_PARAMETER;
     }
 
@@ -200,7 +202,7 @@ AcpiEvaluateObject (
         Status = NsEvaluateRelative (ObjEntry, Pathname, ReturnObject, Params);
     }
 
-    FUNCTION_EXIT;
+    FUNCTION_STATUS_EXIT (Status);
     return Status;
 }
 
@@ -566,13 +568,13 @@ AcpiWalkNamespace (
 
     if (OUTRANGE (Type, NsTypeNames))
     {
-        FUNCTION_EXIT;
+        FUNCTION_STATUS_EXIT (AE_BAD_PARAMETER);
         return AE_BAD_PARAMETER;
     }
 
     if ((!MaxDepth) || (!UserFunction))
     {
-        FUNCTION_EXIT;
+        FUNCTION_STATUS_EXIT (AE_BAD_PARAMETER);
         return AE_BAD_PARAMETER;
     }
 
@@ -581,7 +583,7 @@ AcpiWalkNamespace (
 
     if (ACPI_FAILURE (AcpiGetScope (StartHandle, &Scope)))
     {
-        FUNCTION_EXIT;
+        FUNCTION_STATUS_EXIT (AE_BAD_PARAMETER);
         return AE_BAD_PARAMETER;
     }
 
@@ -610,7 +612,7 @@ AcpiWalkNamespace (
                 if (ReturnValue)
                     *ReturnValue = UserReturnVal;
 
-                FUNCTION_EXIT;
+                FUNCTION_STATUS_EXIT (AE_OK);
                 return AE_OK;
             }
 
@@ -643,7 +645,7 @@ AcpiWalkNamespace (
         }
     }
 
-    FUNCTION_EXIT;
+    FUNCTION_STATUS_EXIT (AE_OK);
     return AE_OK; /* Complete walk, not terminated by user function */
 }
 
@@ -782,7 +784,7 @@ AcpiSetFirmwareWakingVector (
 {
     FUNCTION_TRACE ("AcpiSetFirmwareWakingVector");
     
-    FUNCTION_EXIT;
+    FUNCTION_STATUS_EXIT (AE_OK);
     return (AE_OK);
 }
 
@@ -808,7 +810,7 @@ AcpiGetFirmwareWakingVector (
     FUNCTION_TRACE ("AcpiGetFirmwareWakingVector");
 
     
-    FUNCTION_EXIT;
+    FUNCTION_STATUS_EXIT (AE_OK);
     return (AE_OK);
 }
 
