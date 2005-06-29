@@ -224,7 +224,7 @@ SetMethodValue (INT32 Index, OBJECT_DESCRIPTOR *ObjDesc, OBJECT_DESCRIPTOR *ObjD
     FUNCTION_TRACE ("SetMethodValue");
 
 
-    DEBUG_PRINT (TRACE_EXEC, ("Index=%d, ObjDesc=%p, ObjDesc2=%p\n",
+    DEBUG_PRINT (TRACE_EXEC, ("SetMethodValue: Index=%d, ObjDesc=%p, ObjDesc2=%p\n",
                     Index, ObjDesc, ObjDesc2));
 
     if (OUTRANGE (MethodStackTop, MethodStack) ||
