@@ -1,10 +1,10 @@
-
-/******************************************************************************
+/*******************************************************************************
  *
  * Module Name: nsobject - Utilities for objects attached to namespace
- *                          table entries
+ *                         table entries
+ *              $Revision: 1.47 $
  *
- *****************************************************************************/
+ ******************************************************************************/
 
 /******************************************************************************
  *
@@ -120,20 +120,20 @@
 
 #include "acpi.h"
 #include "amlcode.h"
-#include "namesp.h"
-#include "interp.h"
-#include "tables.h"
+#include "acnamesp.h"
+#include "acinterp.h"
+#include "actables.h"
 
 
 #define _COMPONENT          NAMESPACE
-        MODULE_NAME         ("nsobject");
+        MODULE_NAME         ("nsobject")
 
 
-/****************************************************************************
+/*******************************************************************************
  *
  * FUNCTION:    AcpiNsAttachObject
  *
- * PARAMETERS:  Handle              - Handle of nte
+ * PARAMETERS:  Node            - Parent Node
  *              Object              - Object to be attached
  *              Type                - Type of object, or ACPI_TYPE_ANY if not
  *                                      known
@@ -144,17 +144,16 @@
  *
  * MUTEX:       Assumes namespace is locked
  *
- ***************************************************************************/
+ ******************************************************************************/
 
 ACPI_STATUS
 AcpiNsAttachObject (
-    ACPI_HANDLE             Handle,
-    ACPI_HANDLE             Object,
+    ACPI_NAMESPACE_NODE     *Node,
+    ACPI_OPERAND_OBJECT     *Object,
     OBJECT_TYPE_INTERNAL    Type)
 {
-    ACPI_NAMED_OBJECT       *ThisEntry = (ACPI_NAMED_OBJECT*) Handle;
-    ACPI_OBJECT_INTERNAL    *ObjDesc;
-    ACPI_OBJECT_INTERNAL    *PreviousObjDesc;
+    ACPI_OPERAND_OBJECT     *ObjDesc;
+    ACPI_OPERAND_OBJECT     *PreviousObjDesc;
     OBJECT_TYPE_INTERNAL    ObjType = ACPI_TYPE_ANY;
     UINT8                   Flags;
     UINT16                  Opcode;
@@ -167,19 +166,19 @@ AcpiNsAttachObject (
      * Parameter validation
      */
 
-    if (!AcpiGbl_RootObject->ChildTable)
+    if (!AcpiGbl_RootNode)
     {
         /* Name space not initialized  */
 
-        REPORT_ERROR ("NsAttachObject: Name space not initialized");
+        REPORT_ERROR (("NsAttachObject: Namespace not initialized\n"));
         return_ACPI_STATUS (AE_NO_NAMESPACE);
     }
 
-    if (!Handle)
+    if (!Node)
     {
         /* Invalid handle */
 
-        REPORT_ERROR ("NsAttachObject: Null name handle");
+        REPORT_ERROR (("NsAttachObject: Null NamedObj handle\n"));
         return_ACPI_STATUS (AE_BAD_PARAMETER);
     }
 
@@ -187,35 +186,34 @@ AcpiNsAttachObject (
     {
         /* Null object */
 
-        REPORT_ERROR ("NsAttachObject: Null object, but type"
-                        "not ACPI_TYPE_ANY");
+        REPORT_ERROR (("NsAttachObject: Null object, but type not ACPI_TYPE_ANY\n"));
         return_ACPI_STATUS (AE_BAD_PARAMETER);
     }
 
-    if (!VALID_DESCRIPTOR_TYPE (Handle, ACPI_DESC_TYPE_NAMED))
+    if (!VALID_DESCRIPTOR_TYPE (Node, ACPI_DESC_TYPE_NAMED))
     {
         /* Not a name handle */
 
-        REPORT_ERROR ("NsAttachObject: Invalid handle");
+        REPORT_ERROR (("NsAttachObject: Invalid handle\n"));
         return_ACPI_STATUS (AE_BAD_PARAMETER);
     }
 
     /* Check if this object is already attached */
 
-    if (ThisEntry->Object == Object)
+    if (Node->Object == Object)
     {
         DEBUG_PRINT (TRACE_EXEC,
-            ("NsAttachObject: Obj %p already installed in NTE %p\n",
-            Object, Handle));
+            ("NsAttachObject: Obj %p already installed in NameObj %p\n",
+            Object, Node));
 
         return_ACPI_STATUS (AE_OK);
     }
 
 
-    /* Get the current flags field of the NTE */
+    /* Get the current flags field of the Node */
 
-    Flags = ThisEntry->Flags;
-    Flags &= ~NTE_AML_ATTACHMENT;
+    Flags = Node->Flags;
+    Flags &= ~ANOBJ_AML_ATTACHMENT;
 
 
     /* If null object, we will just install it */
@@ -227,28 +225,28 @@ AcpiNsAttachObject (
     }
 
     /*
-     * If the object is an NTE with an attached object,
+     * If the object is an Node with an attached object,
      * we will use that (attached) object
      */
 
     else if (VALID_DESCRIPTOR_TYPE (Object, ACPI_DESC_TYPE_NAMED) &&
-            ((ACPI_NAMED_OBJECT*) Object)->Object)
+            ((ACPI_NAMESPACE_NODE *) Object)->Object)
     {
         /*
          * Value passed is a name handle and that name has a
          * non-null value.  Use that name's value and type.
          */
 
-        ObjDesc = ((ACPI_NAMED_OBJECT*) Object)->Object;
-        ObjType = ((ACPI_NAMED_OBJECT*) Object)->Type;
+        ObjDesc = ((ACPI_NAMESPACE_NODE *) Object)->Object;
+        ObjType = ((ACPI_NAMESPACE_NODE *) Object)->Type;
 
         /*
          * Copy appropriate flags
          */
 
-        if (((ACPI_NAMED_OBJECT*) Object)->Flags & NTE_AML_ATTACHMENT)
+        if (((ACPI_NAMESPACE_NODE *) Object)->Flags & ANOBJ_AML_ATTACHMENT)
         {
-            Flags |= NTE_AML_ATTACHMENT;
+            Flags |= ANOBJ_AML_ATTACHMENT;
         }
     }
 
@@ -260,7 +258,7 @@ AcpiNsAttachObject (
 
     else
     {
-        ObjDesc = (ACPI_OBJECT_INTERNAL *) Object;
+        ObjDesc = (ACPI_OPERAND_OBJECT  *) Object;
 
 
         /* If a valid type (non-ANY) was given, just use it */
@@ -283,10 +281,10 @@ AcpiNsAttachObject (
         {
             /*
              * Object points into the AML stream.
-             * Set a flag bit in the NTE to indicate this
+             * Set a flag bit in the Node to indicate this
              */
 
-            Flags |= NTE_AML_ATTACHMENT;
+            Flags |= ANOBJ_AML_ATTACHMENT;
 
             /*
              * The next byte (perhaps the next two bytes)
@@ -366,7 +364,7 @@ AcpiNsAttachObject (
 
             if (GetDebugLevel () > 0)
             {
-                DUMP_PATHNAME (Handle,
+                DUMP_PATHNAME (Node,
                     "NsAttachObject confused: setting bogus type for  ",
                     ACPI_INFO, _COMPONENT);
 
@@ -397,8 +395,8 @@ AcpiNsAttachObject (
 
 
     DEBUG_PRINT (TRACE_EXEC,
-        ("NsAttachObject: Installing obj %p into NTE %p\n",
-        ObjDesc, Handle));
+        ("NsAttachObject: Installing obj %p into NameObj %p [%4.4s]\n",
+        ObjDesc, Node, &Node->Name));
 
 
     /*
@@ -410,13 +408,13 @@ AcpiNsAttachObject (
 
     /* Save the existing object (if any) for deletion later */
 
-    PreviousObjDesc = ThisEntry->Object;
+    PreviousObjDesc = Node->Object;
 
     /* Install the object and set the type, flags */
 
-    ThisEntry->Object   = ObjDesc;
-    ThisEntry->Type     = (UINT8) ObjType;
-    ThisEntry->Flags    = Flags;
+    Node->Object   = ObjDesc;
+    Node->Type     = (UINT8) ObjType;
+    Node->Flags    |= Flags;
 
 
     /*
@@ -425,9 +423,12 @@ AcpiNsAttachObject (
 
     if (PreviousObjDesc)
     {
-        /* One for the attach to the NTE */
+        /* One for the attach to the Node */
+
         AcpiCmRemoveReference (PreviousObjDesc);
+
         /* Now delete */
+
         AcpiCmRemoveReference (PreviousObjDesc);
     }
 
@@ -435,103 +436,11 @@ AcpiNsAttachObject (
 }
 
 
-/****************************************************************************
- *
- * FUNCTION:    AcpiNsAttachMethod
- *
- * PARAMETERS:  Handle              - Handle of nte to be set
- *              Offset              - Value to be set
- *              Length              - Length associated with value
- *
- * DESCRIPTION: Record the given offset and p-code length of the method
- *              whose handle is passed
- *
- * MUTEX:       Assumes namespace is locked
- *
- ***************************************************************************/
-
-ACPI_STATUS
-AcpiNsAttachMethod (
-    ACPI_HANDLE             Handle,
-    UINT8                   *PcodeAddr,
-    UINT32                  PcodeLength)
-{
-    ACPI_OBJECT_INTERNAL    *ObjDesc;
-    ACPI_OBJECT_INTERNAL    *PreviousObjDesc;
-    ACPI_NAMED_OBJECT       *ThisEntry = (ACPI_NAMED_OBJECT*) Handle;
-
-
-    FUNCTION_TRACE ("NsAttachMethod");
-
-
-    /* Parameter validation */
-
-    if (!AcpiGbl_RootObject->ChildTable)
-    {
-        /* Name space uninitialized */
-
-        REPORT_ERROR ("NsAttachMethod: name space uninitialized");
-        return_ACPI_STATUS (AE_NO_NAMESPACE);
-    }
-
-    if (!Handle)
-    {
-        /* Null name handle */
-
-        REPORT_ERROR ("NsAttachMethod: null name handle");
-        return_ACPI_STATUS (AE_BAD_PARAMETER);
-    }
-
-
-    /* Allocate a method descriptor */
-
-    ObjDesc = AcpiCmCreateInternalObject (ACPI_TYPE_METHOD);
-    if (!ObjDesc)
-    {
-        /* Method allocation failure  */
-
-        REPORT_ERROR ("NsAttachMethod: allocation failure");
-        return_ACPI_STATUS (AE_NO_MEMORY);
-    }
-
-    /* Init the method info */
-
-    ObjDesc->Method.Pcode       = PcodeAddr;
-    ObjDesc->Method.PcodeLength = PcodeLength;
-
-    /* Update reference count and install */
-
-    AcpiCmAddReference (ObjDesc);
-
-    PreviousObjDesc = ThisEntry->Object;
-    ThisEntry->Object = ObjDesc;
-
-
-    /*
-     * Delete an existing object.  Don't try to re-use in case it is shared
-     */
-    if (PreviousObjDesc)
-    {
-        DEBUG_PRINT (ACPI_INFO,
-            ("NsAttachMethod: ***Old: %p Obj %p Pcode %p Len 0x%X\n",
-            Handle, PreviousObjDesc, PreviousObjDesc->Method.Pcode, PreviousObjDesc->Method.PcodeLength));
-
-        AcpiCmRemoveReference (PreviousObjDesc);
-    }
-
-    DEBUG_PRINT (ACPI_INFO,
-        ("NsAttachMethod: %p Obj %p Pcode %p Len 0x%X\n",
-        Handle, ObjDesc, ObjDesc->Method.Pcode, ObjDesc->Method.PcodeLength));
-
-    return_ACPI_STATUS (AE_OK);
-}
-
-
-/****************************************************************************
+/*******************************************************************************
  *
  * FUNCTION:    AcpiNsDetachObject
  *
- * PARAMETERS:  Object           - An object whose Value will be deleted
+ * PARAMETERS:  Node           - An object whose Value will be deleted
  *
  * RETURN:      None.
  *
@@ -539,19 +448,18 @@ AcpiNsAttachMethod (
  *              Value is an allocated object, it is freed.  Otherwise, the
  *              field is simply cleared.
  *
- ***************************************************************************/
+ ******************************************************************************/
 
 void
 AcpiNsDetachObject (
-    ACPI_HANDLE             Object)
+    ACPI_NAMESPACE_NODE     *Node)
 {
-    ACPI_NAMED_OBJECT       *Entry = Object;
-    ACPI_OBJECT_INTERNAL    *ObjDesc;
+    ACPI_OPERAND_OBJECT     *ObjDesc;
 
 
     FUNCTION_TRACE ("NsDetachObject");
 
-    ObjDesc = Entry->Object;
+    ObjDesc = Node->Object;
     if (!ObjDesc)
     {
         return_VOID;
@@ -559,13 +467,13 @@ AcpiNsDetachObject (
 
     /* Clear the entry in all cases */
 
-    Entry->Object = NULL;
+    Node->Object = NULL;
 
     /* Found a valid value */
 
     DEBUG_PRINT (ACPI_INFO,
         ("NsDetachObject: Object=%p Value=%p Name %4.4s\n",
-        Entry, ObjDesc, &Entry->Name));
+        Node, ObjDesc, &Node->Name));
 
     /*
      * Not every value is an object allocated via AcpiCmCallocate,
@@ -583,16 +491,16 @@ AcpiNsDetachObject (
 }
 
 
-/****************************************************************************
+/*******************************************************************************
  *
  * FUNCTION:    AcpiNsGetAttachedObject
  *
- * PARAMETERS:  Handle              - Handle of nte to be examined
+ * PARAMETERS:  Handle              - Parent Node to be examined
  *
- * RETURN:      Current value of the object field from nte whose handle is
- *              passed
+ * RETURN:      Current value of the object field from the Node whose
+ *              handle is passed
  *
- ***************************************************************************/
+ ******************************************************************************/
 
 void *
 AcpiNsGetAttachedObject (
@@ -605,143 +513,11 @@ AcpiNsGetAttachedObject (
     {
         /* handle invalid */
 
-        REPORT_WARNING ("NsGetAttachedObject: Null handle");
+        DEBUG_PRINT (ACPI_WARN, ("NsGetAttachedObject: Null handle\n"));
         return_PTR (NULL);
     }
 
-    return_PTR (((ACPI_NAMED_OBJECT*) Handle)->Object);
-}
-
-
-/****************************************************************************
- *
- * FUNCTION:    AcpiNsCompareObject
- *
- * PARAMETERS:  ObjHandle           - A namespace entry
- *              Level               - Current nesting level
- *              ObjDesc             - The value to be compared
- *
- * DESCRIPTION: A UserFunction called by AcpiNsWalkNamespace().  It performs
- *              a comparison for AcpiNsFindAttachedObject().  The comparison is against
- *              the value in the value field of the ObjHandle (an NTE).
- *              If a match is found, the handle is returned, which aborts
- *              AcpiNsWalkNamespace.
- *
- ***************************************************************************/
-
-ACPI_STATUS
-AcpiNsCompareObject (
-    ACPI_HANDLE             ObjHandle,
-    UINT32                  Level,
-    void                    *ObjDesc,
-    void                    **ReturnValue)
-{
-
-    if (((ACPI_NAMED_OBJECT*) ObjHandle)->Object == ObjDesc)
-    {
-        DEBUG_PRINT (ACPI_INFO,
-            ("NsCompareObject: match found, Obj %x Val %x\n",
-            ObjHandle, ((ACPI_NAMED_OBJECT*) ObjHandle)->Object));
-
-        if (ReturnValue)
-        {
-            *ReturnValue = ObjHandle;
-        }
-
-         /* Stop the walk */
-        return AE_CTRL_TERMINATE;
-    }
-
-    /* Not found, continue the walk */
-    return AE_OK;
-}
-
-
-/****************************************************************************
- *
- * FUNCTION:    AcpiNsFindAttachedObject
- *
- * PARAMETERS:  *ObjDesc            - Value to be found in ptrVal field.
- *              StartHandle         - Root of subtree to be searched, or
- *                                    NS_ALL to search the entire namespace
- *              MaxDepth            - Maximum depth of search.  Use INT_MAX
- *                                    for an effectively unlimited depth.
- *
- * DESCRIPTION: Traverse the name space until finding a name whose Value field
- *              matches the ObjDesc parameter, and return a handle to that
- *              name, or (ACPI_HANDLE)0 if none exists.
- *              if StartHandle is NS_ALL (null) search from the root,
- *              else it is a handle whose children are to be searched.
- *
- ***************************************************************************/
-
-ACPI_HANDLE
-AcpiNsFindAttachedObject (
-    ACPI_OBJECT_INTERNAL    *ObjDesc,
-    ACPI_HANDLE             StartHandle,
-    INT32                   MaxDepth)
-{
-    ACPI_HANDLE             RetObject;
-    ACPI_STATUS             Status;
-
-
-    FUNCTION_TRACE ("NsFindAttachedObject");
-
-
-    /* Parameter validation */
-
-    if (!ObjDesc)
-    {
-        return_PTR (NULL);
-    }
-
-    if (0 == MaxDepth)
-    {
-        return_PTR (NULL);
-    }
-
-    if (!AcpiGbl_RootObject->ChildTable)
-    {
-        /*
-         * If the name space has not been initialized,
-         * there surely are no matching values.
-         */
-        return_PTR (NULL);
-    }
-
-    if (NS_ALL == StartHandle)
-    {
-        StartHandle = AcpiGbl_RootObject;
-    }
-
-    else
-    {
-        /*
-         * If base is not the root and has no children,
-         * there is nothing to search.
-         */
-        return_PTR (NULL);
-    }
-
-
-    /*
-     * Walk namespace until a match is found.
-     * Either the matching object is returned, or NULL in case
-     * of no match.
-     */
-    Status = AcpiNsWalkNamespace (ACPI_TYPE_ANY, StartHandle,
-                                    MaxDepth, NS_WALK_NO_UNLOCK,
-                                    AcpiNsCompareObject,
-                                    ObjDesc, &RetObject);
-
-    if (ACPI_FAILURE (Status))
-    {
-        DEBUG_PRINT (ACPI_ERROR,
-            ("NsFindAttachedObject: WalkNamespace failed! %x\n", Status));
-        RetObject = NULL;
-    }
-
-    return_PTR (RetObject);
+    return_PTR (((ACPI_NAMESPACE_NODE *) Handle)->Object);
 }
 
 
