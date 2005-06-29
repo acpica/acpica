@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: nsalloc - Namespace allocation and deletion utilities
- *              $Revision: 1.65 $
+ *              $Revision: 1.66 $
  *
  ******************************************************************************/
 
@@ -478,11 +478,6 @@ AcpiNsDeleteNamespaceSubtree (
         if (ChildNode)
         {
             /* Found a child node - detach any attached object */
-
-            if (ChildNode->Name == 'NGIS')
-            {
-                AcpiOsPrintf ("found SIGN\n");
-            }
 
             AcpiNsDetachObject (ChildNode);
 
