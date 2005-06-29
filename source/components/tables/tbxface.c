@@ -118,11 +118,9 @@
 #define __TBAPI_C__
 
 #include <acpi.h>
-#include <acobject.h>
+#include <namesp.h>
 #include <interp.h>
 #include <tables.h>
-#include <methods.h>
-#include <pnp.h>
 
 
 #define _COMPONENT          TABLE_MANAGER
@@ -228,7 +226,7 @@ AcpiLoadTable (
     Status = TbInstallTable (NULL, &TableInfo);
     if (ACPI_FAILURE (Status))
     {
-        /* TBD: must free table allocated by TbGetTable */
+        /* TBD: [Errors] must free table allocated by TbGetTable */
     }
 
     return_ACPI_STATUS (Status);

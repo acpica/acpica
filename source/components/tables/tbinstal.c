@@ -264,7 +264,7 @@ TbRecognizeTable (
     if (TableType != TABLE_FACS)
     {
         /* But don't abort if the checksum is wrong */
-        /* TBD: make this a configuration option? */
+        /* TBD: [Future] make this a configuration option? */
 
         TbVerifyTableChecksum (TableHeader);
     }
