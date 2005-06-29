@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: amregion - ACPI default OpRegion (address space) handlers
- *              $Revision: 1.38 $
+ *              $Revision: 1.39 $
  *
  *****************************************************************************/
 
@@ -151,7 +151,7 @@
 ACPI_STATUS
 AcpiAmlSystemMemorySpaceHandler (
     UINT32                  Function,
-    ACPI_INTEGER            Address,
+    UINT64                  Address,
     UINT32                  BitWidth,
     UINT32                  *Value,
     void                    *HandlerContext,
@@ -240,7 +240,7 @@ AcpiAmlSystemMemorySpaceHandler (
     /* TBD: should these pointers go to 64-bit in all cases ? */
 
     LogicalAddrPtr = MemInfo->MappedLogicalAddress +
-                    ((UINT8 *) (UINT32) Address - MemInfo->MappedPhysicalAddress);
+                    (Address - MemInfo->MappedPhysicalAddress);
 
     /* Perform the memory read or write */
 
@@ -324,7 +324,7 @@ AcpiAmlSystemMemorySpaceHandler (
 ACPI_STATUS
 AcpiAmlSystemIoSpaceHandler (
     UINT32                  Function,
-    ACPI_INTEGER            Address,
+    UINT64                  Address,
     UINT32                  BitWidth,
     UINT32                  *Value,
     void                    *HandlerContext,
@@ -432,7 +432,7 @@ AcpiAmlSystemIoSpaceHandler (
 ACPI_STATUS
 AcpiAmlPciConfigSpaceHandler (
     UINT32                  Function,
-    ACPI_INTEGER            Address,
+    UINT64                  Address,
     UINT32                  BitWidth,
     UINT32                  *Value,
     void                    *HandlerContext,
