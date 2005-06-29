@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: psscope - Parser scope stack management routines
- *              $Revision: 1.31 $
+ *              $Revision: 1.34 $
  *
  *****************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -265,7 +265,7 @@ AcpiPsPushScope (
     {
         /* single argument */
 
-        Scope->ParseScope.ArgEnd = ACPI_MAX_AML;
+        Scope->ParseScope.ArgEnd = ACPI_TO_POINTER (ACPI_MAX_PTR);
     }
 
     return_ACPI_STATUS (AE_OK);
