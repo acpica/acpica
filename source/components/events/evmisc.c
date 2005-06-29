@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: evmisc - Miscellaneous event manager support functions
- *              $Revision: 1.81 $
+ *              $Revision: 1.82 $
  *
  *****************************************************************************/
 
@@ -123,6 +123,21 @@
         ACPI_MODULE_NAME    ("evmisc")
 
 
+#ifdef ACPI_DEBUG_OUTPUT
+static const char        *AcpiNotifyValueNames[] =
+{
+    "Bus Check",
+    "Device Check",
+    "Device Wake",
+    "Eject request",
+    "Device Check Light",
+    "Frequency Mismatch",
+    "Bus Mode Mismatch",
+    "Power Fault"
+};
+#endif
+
+
 /*******************************************************************************
  *
  * FUNCTION:    AcpiEvIsNotifyObject
@@ -172,20 +187,6 @@ AcpiEvIsNotifyObject (
  *
  ******************************************************************************/
 
-#ifdef ACPI_DEBUG_OUTPUT
-static const char        *AcpiNotifyValueNames[] =
-{
-    "Bus Check",
-    "Device Check",
-    "Device Wake",
-    "Eject request",
-    "Device Check Light",
-    "Frequency Mismatch",
-    "Bus Mode Mismatch",
-    "Power Fault"
-};
-#endif
-
 ACPI_STATUS
 AcpiEvQueueNotifyRequest (
     ACPI_NAMESPACE_NODE     *Node,
@@ -202,9 +203,10 @@ AcpiEvQueueNotifyRequest (
 
     /*
      * For value 3 (Ejection Request), some device method may need to be run.
-     * For value 2 (Device Wake) if _PRW exists, the _PS0 method may need to be run.
+     * For value 2 (Device Wake) if _PRW exists, the _PS0 method may need
+     *   to be run.
      * For value 0x80 (Status Change) on the power button or sleep button,
-     * initiate soft-off or sleep operation?
+     *   initiate soft-off or sleep operation?
      */
     ACPI_DEBUG_PRINT ((ACPI_DB_INFO,
         "Dispatching Notify(%X) on node %p\n", NotifyValue, Node));
@@ -295,7 +297,7 @@ AcpiEvQueueNotifyRequest (
  *
  * FUNCTION:    AcpiEvNotifyDispatch
  *
- * PARAMETERS:  Context         - To be passsed to the notify handler
+ * PARAMETERS:  Context         - To be passed to the notify handler
  *
  * RETURN:      None.
  *
@@ -479,7 +481,7 @@ AcpiEvInitGlobalLockHandler (
 
     AcpiGbl_GlobalLockPresent = TRUE;
     Status = AcpiInstallFixedEventHandler (ACPI_EVENT_GLOBAL,
-                                            AcpiEvGlobalLockHandler, NULL);
+                AcpiEvGlobalLockHandler, NULL);
 
     /*
      * If the global lock does not exist on this platform, the attempt
@@ -585,7 +587,8 @@ AcpiEvAcquireGlobalLock (
  ******************************************************************************/
 
 ACPI_STATUS
-AcpiEvReleaseGlobalLock (void)
+AcpiEvReleaseGlobalLock (
+    void)
 {
     BOOLEAN                 Pending = FALSE;
     ACPI_STATUS             Status = AE_OK;
@@ -624,7 +627,8 @@ AcpiEvReleaseGlobalLock (void)
      */
     if (Pending)
     {
-        Status = AcpiSetRegister (ACPI_BITREG_GLOBAL_LOCK_RELEASE, 1, ACPI_MTX_LOCK);
+        Status = AcpiSetRegister (ACPI_BITREG_GLOBAL_LOCK_RELEASE,
+                    1, ACPI_MTX_LOCK);
     }
 
     return_ACPI_STATUS (Status);

@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: evevent - Fixed Event handling and dispatch
- *              $Revision: 1.115 $
+ *              $Revision: 1.116 $
  *
  *****************************************************************************/
 
@@ -129,7 +129,7 @@
  *
  * RETURN:      Status
  *
- * DESCRIPTION: Initialize global data structures for events.
+ * DESCRIPTION: Initialize global data structures for ACPI events (Fixed, GPE)
  *
  ******************************************************************************/
 
@@ -152,9 +152,9 @@ AcpiEvInitializeEvents (
     }
 
     /*
-     * Initialize the Fixed and General Purpose Events. This is
-     * done prior to enabling SCIs to prevent interrupts from
-     * occurring before handers are installed.
+     * Initialize the Fixed and General Purpose Events. This is done prior to
+     * enabling SCIs to prevent interrupts from occurring before the handlers are
+     * installed.
      */
     Status = AcpiEvFixedEventInitialize ();
     if (ACPI_FAILURE (Status))
@@ -282,7 +282,7 @@ AcpiEvFixedEventInitialize (
  *
  * RETURN:      INTERRUPT_HANDLED or INTERRUPT_NOT_HANDLED
  *
- * DESCRIPTION: Checks the PM status register for fixed events
+ * DESCRIPTION: Checks the PM status register for active fixed events
  *
  ******************************************************************************/
 

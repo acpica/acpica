@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: evregion - ACPI AddressSpace (OpRegion) handler dispatch
- *              $Revision: 1.154 $
+ *              $Revision: 1.155 $
  *
  *****************************************************************************/
 
@@ -260,8 +260,8 @@ AcpiEvInitializeOpRegions (
  *
  * FUNCTION:    AcpiEvExecuteRegMethod
  *
- * PARAMETERS:  RegionObj           - Object structure
- *              Function            - Passed to _REG:  On (1) or Off (0)
+ * PARAMETERS:  RegionObj           - Region object
+ *              Function            - Passed to _REG: On (1) or Off (0)
  *
  * RETURN:      Status
  *

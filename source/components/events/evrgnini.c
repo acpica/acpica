@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: evrgnini- ACPI AddressSpace (OpRegion) init
- *              $Revision: 1.69 $
+ *              $Revision: 1.76 $
  *
  *****************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2003, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2005, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -129,14 +129,14 @@
  *
  * FUNCTION:    AcpiEvSystemMemoryRegionSetup
  *
- * PARAMETERS:  RegionObj           - Region we are interested in
+ * PARAMETERS:  Handle              - Region we are interested in
  *              Function            - Start or stop
  *              HandlerContext      - Address space handler context
  *              RegionContext       - Region specific context
  *
  * RETURN:      Status
  *
- * DESCRIPTION: Do any prep work for region handling, a nop for now
+ * DESCRIPTION: Setup a SystemMemory operation region
  *
  ******************************************************************************/
 
@@ -186,14 +186,14 @@ AcpiEvSystemMemoryRegionSetup (
  *
  * FUNCTION:    AcpiEvIoSpaceRegionSetup
  *
- * PARAMETERS:  RegionObj           - Region we are interested in
+ * PARAMETERS:  Handle              - Region we are interested in
  *              Function            - Start or stop
  *              HandlerContext      - Address space handler context
  *              RegionContext       - Region specific context
  *
  * RETURN:      Status
  *
- * DESCRIPTION: Do any prep work for region handling
+ * DESCRIPTION: Setup a IO operation region
  *
  ******************************************************************************/
 
@@ -224,14 +224,14 @@ AcpiEvIoSpaceRegionSetup (
  *
  * FUNCTION:    AcpiEvPciConfigRegionSetup
  *
- * PARAMETERS:  RegionObj           - Region we are interested in
+ * PARAMETERS:  Handle              - Region we are interested in
  *              Function            - Start or stop
  *              HandlerContext      - Address space handler context
  *              RegionContext       - Region specific context
  *
  * RETURN:      Status
  *
- * DESCRIPTION: Do any prep work for region handling
+ * DESCRIPTION: Setup a PCI_Config operation region
  *
  * MUTEX:       Assumes namespace is not locked
  *
@@ -257,7 +257,7 @@ AcpiEvPciConfigRegionSetup (
     ACPI_FUNCTION_TRACE ("EvPciConfigRegionSetup");
 
 
-    HandlerObj = RegionObj->Region.AddressSpace;
+    HandlerObj = RegionObj->Region.Handler;
     if (!HandlerObj)
     {
         /*
@@ -329,7 +329,7 @@ AcpiEvPciConfigRegionSetup (
                         {
                             ACPI_REPORT_ERROR ((
                                 "Could not install PciConfig handler for Root Bridge %4.4s, %s\n",
-                                PciRootNode->Name.Ascii, AcpiFormatException (Status)));
+                                AcpiUtGetNodeName (PciRootNode), AcpiFormatException (Status)));
                         }
                     }
                     break;
@@ -413,14 +413,14 @@ AcpiEvPciConfigRegionSetup (
  *
  * FUNCTION:    AcpiEvPciBarRegionSetup
  *
- * PARAMETERS:  RegionObj           - Region we are interested in
+ * PARAMETERS:  Handle              - Region we are interested in
  *              Function            - Start or stop
  *              HandlerContext      - Address space handler context
  *              RegionContext       - Region specific context
  *
  * RETURN:      Status
  *
- * DESCRIPTION: Do any prep work for region handling
+ * DESCRIPTION: Setup a PciBAR operation region
  *
  * MUTEX:       Assumes namespace is not locked
  *
@@ -444,14 +444,14 @@ AcpiEvPciBarRegionSetup (
  *
  * FUNCTION:    AcpiEvCmosRegionSetup
  *
- * PARAMETERS:  RegionObj           - Region we are interested in
+ * PARAMETERS:  Handle              - Region we are interested in
  *              Function            - Start or stop
  *              HandlerContext      - Address space handler context
  *              RegionContext       - Region specific context
  *
  * RETURN:      Status
  *
- * DESCRIPTION: Do any prep work for region handling
+ * DESCRIPTION: Setup a CMOS operation region
  *
  * MUTEX:       Assumes namespace is not locked
  *
@@ -475,14 +475,14 @@ AcpiEvCmosRegionSetup (
  *
  * FUNCTION:    AcpiEvDefaultRegionSetup
  *
- * PARAMETERS:  RegionObj           - Region we are interested in
+ * PARAMETERS:  Handle              - Region we are interested in
  *              Function            - Start or stop
  *              HandlerContext      - Address space handler context
  *              RegionContext       - Region specific context
  *
  * RETURN:      Status
  *
- * DESCRIPTION: Do any prep work for region handling
+ * DESCRIPTION: Default region initialization
  *
  ******************************************************************************/
 
@@ -570,7 +570,7 @@ AcpiEvInitializeRegion (
 
     /* Setup defaults */
 
-    RegionObj->Region.AddressSpace = NULL;
+    RegionObj->Region.Handler = NULL;
     RegionObj2->Extra.Method_REG = NULL;
     RegionObj->Common.Flags &= ~(AOPOBJ_SETUP_COMPLETE);
     RegionObj->Common.Flags |= AOPOBJ_OBJECT_INITIALIZED;
@@ -607,17 +607,17 @@ AcpiEvInitializeRegion (
             {
             case ACPI_TYPE_DEVICE:
 
-                HandlerObj = ObjDesc->Device.AddressSpace;
+                HandlerObj = ObjDesc->Device.Handler;
                 break;
 
             case ACPI_TYPE_PROCESSOR:
 
-                HandlerObj = ObjDesc->Processor.AddressSpace;
+                HandlerObj = ObjDesc->Processor.Handler;
                 break;
 
             case ACPI_TYPE_THERMAL:
 
-                HandlerObj = ObjDesc->ThermalZone.AddressSpace;
+                HandlerObj = ObjDesc->ThermalZone.Handler;
                 break;
 
             default:
@@ -639,6 +639,30 @@ AcpiEvInitializeRegion (
 
                     Status = AcpiEvAttachRegion (HandlerObj, RegionObj,
                                 AcpiNsLocked);
+
+                    /*
+                     * Tell all users that this region is usable by running the _REG
+                     * method
+                     */
+                    if (AcpiNsLocked)
+                    {
+                        Status = AcpiUtReleaseMutex (ACPI_MTX_NAMESPACE);
+                        if (ACPI_FAILURE (Status))
+                        {
+                            return_ACPI_STATUS (Status);
+                        }
+                    }
+
+                    Status = AcpiEvExecuteRegMethod (RegionObj, 1);
+
+                    if (AcpiNsLocked)
+                    {
+                        Status = AcpiUtAcquireMutex (ACPI_MTX_NAMESPACE);
+                        if (ACPI_FAILURE (Status))
+                        {
+                            return_ACPI_STATUS (Status);
+                        }
+                    }
 
                     return_ACPI_STATUS (AE_OK);
                 }

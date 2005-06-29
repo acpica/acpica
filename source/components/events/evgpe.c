@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: evgpe - General Purpose Event handling and dispatch
- *              $Revision: 1.47 $
+ *              $Revision: 1.48 $
  *
  *****************************************************************************/
 
@@ -685,7 +685,7 @@ AcpiEvAsynchExecuteGpeMethod (
  *
  * FUNCTION:    AcpiEvGpeDispatch
  *
- * PARAMETERS:  GpeEventInfo    - info for this GPE
+ * PARAMETERS:  GpeEventInfo    - Info for this GPE
  *              GpeNumber       - Number relative to the parent GPE block
  *
  * RETURN:      INTERRUPT_HANDLED or INTERRUPT_NOT_HANDLED
@@ -827,7 +827,6 @@ AcpiEvGpeDispatch (
 
 
 #ifdef ACPI_GPE_NOTIFY_CHECK
-
 /*******************************************************************************
  * TBD: NOT USED, PROTOTYPE ONLY AND WILL PROBABLY BE REMOVED
  *

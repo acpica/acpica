@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: evgpeblk - GPE block creation and initialization.
- *              $Revision: 1.41 $
+ *              $Revision: 1.42 $
  *
  *****************************************************************************/
 
@@ -1202,8 +1202,9 @@ AcpiEvGpeInitialize (
 
         /* Install GPE Block 0 */
 
-        Status = AcpiEvCreateGpeBlock (AcpiGbl_FadtGpeDevice, &AcpiGbl_FADT->XGpe0Blk,
-                    RegisterCount0, 0, AcpiGbl_FADT->SciInt, &AcpiGbl_GpeFadtBlocks[0]);
+        Status = AcpiEvCreateGpeBlock (AcpiGbl_FadtGpeDevice,
+                    &AcpiGbl_FADT->XGpe0Blk, RegisterCount0, 0,
+                    AcpiGbl_FADT->SciInt, &AcpiGbl_GpeFadtBlocks[0]);
 
         if (ACPI_FAILURE (Status))
         {
@@ -1239,8 +1240,9 @@ AcpiEvGpeInitialize (
         {
             /* Install GPE Block 1 */
 
-            Status = AcpiEvCreateGpeBlock (AcpiGbl_FadtGpeDevice, &AcpiGbl_FADT->XGpe1Blk,
-                        RegisterCount1, AcpiGbl_FADT->Gpe1Base,
+            Status = AcpiEvCreateGpeBlock (AcpiGbl_FadtGpeDevice,
+                        &AcpiGbl_FADT->XGpe1Blk, RegisterCount1,
+                        AcpiGbl_FADT->Gpe1Base,
                         AcpiGbl_FADT->SciInt, &AcpiGbl_GpeFadtBlocks[1]);
 
             if (ACPI_FAILURE (Status))
@@ -1255,7 +1257,7 @@ AcpiEvGpeInitialize (
              * space. However, GPE0 always starts at GPE number zero.
              */
             GpeNumberMax = AcpiGbl_FADT->Gpe1Base +
-                                ((RegisterCount1 * ACPI_GPE_REGISTER_WIDTH) - 1);
+                            ((RegisterCount1 * ACPI_GPE_REGISTER_WIDTH) - 1);
         }
     }
 
