@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: utalloc - local cache and memory allocation routines
- *              $Revision: 1.100 $
+ *              $Revision: 1.101 $
  *
  *****************************************************************************/
 
@@ -169,6 +169,7 @@ AcpiUtReleaseToCache (
         /* Mark the object as cached */
 
         MEMSET (Object, 0xCA, CacheInfo->ObjectSize);
+        ((ACPI_OPERAND_OBJECT *) Object)->Common.DataType = ACPI_CACHED_OBJECT;
 
         /* Put the object at the head of the cache list */
 
@@ -598,7 +599,7 @@ AcpiUtDumpCurrentAllocations (
     Element = AcpiGbl_MemoryLists[0].ListHead;
     if (Element == NULL)
     {
-        ACPI_DEBUG_PRINT ((ACPI_DB_ALLOCATIONS,
+        ACPI_DEBUG_PRINT ((ACPI_DB_OK,
                 "No outstanding allocations.\n"));
         return_VOID;
     }
@@ -609,7 +610,7 @@ AcpiUtDumpCurrentAllocations (
      */
     AcpiUtAcquireMutex (ACPI_MTX_MEMORY);
 
-    ACPI_DEBUG_PRINT ((ACPI_DB_ALLOCATIONS,
+    ACPI_DEBUG_PRINT ((ACPI_DB_OK,
         "Outstanding allocations:\n"));
 
     for (i = 1; ; i++)  /* Just a counter */
@@ -617,41 +618,84 @@ AcpiUtDumpCurrentAllocations (
         if ((Element->Component & Component) &&
             ((Module == NULL) || (0 == STRCMP (Module, Element->Module))))
         {
-            ACPI_DEBUG_PRINT ((ACPI_DB_ALLOCATIONS,
-                        "%p Len %04lX %9.9s-%ld",
-                        &Element->UserSpace, Element->Size, Element->Module,
-                        Element->Line));
-
-            /* Most of the elements will be internal objects. */
-
-            switch (((ACPI_OPERAND_OBJECT  *)
-                (&Element->UserSpace))->Common.DataType)
+            if (((ACPI_OPERAND_OBJECT  *)(&Element->UserSpace))->Common.Type != ACPI_CACHED_OBJECT)
             {
-            case ACPI_DESC_TYPE_INTERNAL:
-                ACPI_DEBUG_PRINT_RAW ((ACPI_DB_ALLOCATIONS,
-                        " ObjType %s",
-                        AcpiUtGetTypeName (((ACPI_OPERAND_OBJECT  *)(&Element->UserSpace))->Common.Type)));
-                break;
+                ACPI_DEBUG_PRINT_RAW ((ACPI_DB_OK,
+                            "%p Len %04lX %9.9s-%ld",
+                            &Element->UserSpace, Element->Size, Element->Module,
+                            Element->Line));
 
-            case ACPI_DESC_TYPE_PARSER:
-                ACPI_DEBUG_PRINT_RAW ((ACPI_DB_ALLOCATIONS,
-                        " ParseObj Opcode %04X",
-                        ((ACPI_PARSE_OBJECT *)(&Element->UserSpace))->Opcode));
-                break;
+                /* Most of the elements will be internal objects. */
 
-            case ACPI_DESC_TYPE_NAMED:
-                ACPI_DEBUG_PRINT_RAW ((ACPI_DB_ALLOCATIONS,
-                        " Node %4.4s",
-                        &((ACPI_NAMESPACE_NODE *)(&Element->UserSpace))->Name));
-                break;
+                switch (((ACPI_OPERAND_OBJECT  *)
+                    (&Element->UserSpace))->Common.DataType)
+                {
+                case ACPI_DESC_TYPE_INTERNAL:
+                    ACPI_DEBUG_PRINT_RAW ((ACPI_DB_OK,
+                            " ObjType %s",
+                            AcpiUtGetTypeName (((ACPI_OPERAND_OBJECT  *)(&Element->UserSpace))->Common.Type)));
+                    break;
 
-            case ACPI_DESC_TYPE_STATE:
-                ACPI_DEBUG_PRINT_RAW ((ACPI_DB_ALLOCATIONS,
-                        " StateObj"));
-                break;
+                case ACPI_DESC_TYPE_PARSER:
+                    ACPI_DEBUG_PRINT_RAW ((ACPI_DB_OK,
+                            " ParseObj Opcode %04X",
+                            ((ACPI_PARSE_OBJECT *)(&Element->UserSpace))->Opcode));
+                    break;
+
+                case ACPI_DESC_TYPE_NAMED:
+                    ACPI_DEBUG_PRINT_RAW ((ACPI_DB_OK,
+                            " Node %4.4s",
+                            &((ACPI_NAMESPACE_NODE *)(&Element->UserSpace))->Name));
+                    break;
+
+                case ACPI_DESC_TYPE_STATE:
+                    ACPI_DEBUG_PRINT_RAW ((ACPI_DB_OK,
+                            " Untyped StateObj"));
+                    break;
+
+                case ACPI_DESC_TYPE_STATE_UPDATE:
+                    ACPI_DEBUG_PRINT_RAW ((ACPI_DB_OK,
+                            " UPDATE StateObj"));
+                    break;
+
+                case ACPI_DESC_TYPE_STATE_PACKAGE:
+                    ACPI_DEBUG_PRINT_RAW ((ACPI_DB_OK,
+                            " PACKAGE StateObj"));
+                    break;
+
+                case ACPI_DESC_TYPE_STATE_CONTROL:
+                    ACPI_DEBUG_PRINT_RAW ((ACPI_DB_OK,
+                            " CONTROL StateObj"));
+                    break;
+
+                case ACPI_DESC_TYPE_STATE_RPSCOPE:
+                    ACPI_DEBUG_PRINT_RAW ((ACPI_DB_OK,
+                            " ROOT-PARSE-SCOPE StateObj"));
+                    break;
+
+                case ACPI_DESC_TYPE_STATE_PSCOPE:
+                    ACPI_DEBUG_PRINT_RAW ((ACPI_DB_OK,
+                            " PARSE-SCOPE StateObj"));
+                    break;
+
+                case ACPI_DESC_TYPE_STATE_WSCOPE:
+                    ACPI_DEBUG_PRINT_RAW ((ACPI_DB_OK,
+                            " WALK-SCOPE StateObj"));
+                    break;
+
+                case ACPI_DESC_TYPE_STATE_RESULT:
+                    ACPI_DEBUG_PRINT_RAW ((ACPI_DB_OK,
+                            " RESULT StateObj"));
+                    break;
+
+                case ACPI_DESC_TYPE_STATE_NOTIFY:
+                    ACPI_DEBUG_PRINT_RAW ((ACPI_DB_OK,
+                            " NOTIFY StateObj"));
+                    break;
+                }
+
+                ACPI_DEBUG_PRINT_RAW ((ACPI_DB_OK, "\n"));
             }
-
-            ACPI_DEBUG_PRINT_RAW ((ACPI_DB_ALLOCATIONS, "\n"));
         }
 
         if (Element->Next == NULL)
@@ -664,7 +708,7 @@ AcpiUtDumpCurrentAllocations (
 
     AcpiUtReleaseMutex (ACPI_MTX_MEMORY);
 
-    ACPI_DEBUG_PRINT ((ACPI_DB_ALLOCATIONS,
+    ACPI_DEBUG_PRINT ((ACPI_DB_OK,
         "Total number of unfreed allocations = %d(%X)\n", i,i));
 
 
