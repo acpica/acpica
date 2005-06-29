@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslerror - Error handling and statistics
- *              $Revision: 1.21 $
+ *              $Revision: 1.22 $
  *
  *****************************************************************************/
 
@@ -233,8 +233,8 @@ AePrintException (
     ASL_ERROR_MSG           *Enode)
 {
 
-    /* TBD: Need to handle include filenames! */
 
+    /* Pring filename and line number if present and valid */
 
     if (Enode->Filename)
     {
@@ -243,18 +243,19 @@ AePrintException (
 
         if (Enode->LineNumber)
         {
-            sprintf (StringBuffer, "%d",
-                        Enode->LineNumber);
-
-            fprintf (Where, "%5s: ", StringBuffer);
+            fprintf (Where, "%5d: ", Enode->LineNumber);
         }
     }
+
+    /* NULL message ID, just print the raw message */
 
     if (Enode->MessageId == 0)
     {
         fprintf (Where, "%s\n",
                     Enode->Message);
     }
+
+    /* Decode the message ID */
 
     else
     {

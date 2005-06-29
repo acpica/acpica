@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asllisting - Listing file generation
- *              $Revision: 1.7 $
+ *              $Revision: 1.8 $
  *
  *****************************************************************************/
 
@@ -213,18 +213,26 @@ LsCheckException (
     UINT32                  LineNumber)
 {
 
+
     if ((!Gbl_NextError) ||
         (LineNumber < Gbl_NextError->LogicalLineNumber ))
     {
         return;
     }
 
-    fprintf (Gbl_ListingOutputFile, "\n[****AslException****]\n");
+    /* Handle multiple errors per line */
 
-    AePrintException (Gbl_ListingOutputFile, Gbl_NextError);
+    while (Gbl_NextError && 
+          (LineNumber >= Gbl_NextError->LogicalLineNumber))
+    {
+        fprintf (Gbl_ListingOutputFile, "\n[****AslException****]\n");
+
+        AePrintException (Gbl_ListingOutputFile, Gbl_NextError);
+
+        Gbl_NextError = Gbl_NextError->Next;
+    }
+
     fprintf (Gbl_ListingOutputFile, "\n");
-
-    Gbl_NextError = Gbl_NextError->Next;
 }
 
 
@@ -326,7 +334,7 @@ LsWriteListingHexBytes (
         {
             if (Gbl_HasIncludeFiles)
             {
-                fprintf (Gbl_ListingOutputFile, "%*s", 17, " ");
+                fprintf (Gbl_ListingOutputFile, "%*s", 10, " ");
             }
 
             fprintf (Gbl_ListingOutputFile, "%8.8X....", Gbl_CurrentAmlOffset);
@@ -369,11 +377,8 @@ LsWriteOneSourceLine (void)
 
     if (Gbl_HasIncludeFiles)
     {
-        sprintf (StringBuffer, "%s(%d)",
+        fprintf (Gbl_ListingOutputFile, "%12s %5d....", 
                     Gbl_ListingNode->Filename, Gbl_ListingNode->LineNumber);
-
-        fprintf (Gbl_ListingOutputFile, "%-20s", StringBuffer);
-        fprintf (Gbl_ListingOutputFile, "%5d....", Gbl_SourceLine);
     }
     else
     {
