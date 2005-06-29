@@ -120,6 +120,8 @@
 #include <acpi.h>
 #include <events.h>
 #include <hardware.h>
+#include <interpreter.h>
+#include <amlcode.h>
 
 
 #define _THIS_MODULE        "cmapi.c"
@@ -150,6 +152,15 @@ AcpiInitialize (void)
     /* Initialize all globals used by the subsystem */
 
     CmInitGlobals ();
+
+
+    /* Install the default OpRegion handlers */
+
+    AcpiInstallAddressSpaceHandler (REGION_SystemMemory, AmlSystemMemorySpaceHandler, NULL);
+    AcpiInstallAddressSpaceHandler (REGION_SystemIO, AmlSystemIoSpaceHandler, NULL);
+    AcpiInstallAddressSpaceHandler (REGION_PCIConfig, AmlPciConfigSpaceHandler, NULL);
+    AcpiInstallAddressSpaceHandler (REGION_EmbeddedControl, AmlEmbeddedControllerSpaceHandler, NULL);
+    AcpiInstallAddressSpaceHandler (REGION_SMBus, AmlSmBusSpaceHandler, NULL);
 
 
     FUNCTION_STATUS_EXIT (AE_OK);
