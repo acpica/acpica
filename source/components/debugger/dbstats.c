@@ -244,17 +244,14 @@ DbDisplayStatistics (void)
  ****************************************************************************/
 
 void
-DbGenerateStatistics (void)
+DbGenerateStatistics (
+    ACPI_GENERIC_OP         *Root,
+    BOOLEAN                 IsMethod)
 {
     ACPI_GENERIC_OP         *Op;
-    ACPI_GENERIC_OP         *Root;
-    ACPI_DEFERRED_OP        *Method;
-    ACPI_GENERIC_OP         *SearchOp;
-    ACPI_GENERIC_OP         *StartOp;
 
 
 
-    Root = Gbl_ParsedNamespaceRoot;
     Op = PsGetChild (Root);
 
     while (Op)
@@ -263,18 +260,7 @@ DbGenerateStatistics (void)
         {
         case AML_MethodOp:
             NumMethods++;
-            Method = (ACPI_DEFERRED_OP *) Op;
-
-            StartOp = (Method->Value.Arg)->Next;
-            SearchOp = StartOp;
-
-            while (SearchOp)
-            {
-                NumMethodElements++;
-                SearchOp = PsGetDepthNext (StartOp, SearchOp);
-            }
             break;
-
 
         case AML_NameOp:
             NumNames++;
@@ -328,6 +314,11 @@ DbGenerateStatistics (void)
         if (PsIsNamedOp (Op->Opcode))
         {
             NumNamedObjects++;
+        }
+
+        if (IsMethod)
+        {
+            NumMethodElements++;
         }
 
         NumGrammarElements++;
