@@ -150,6 +150,7 @@ AmlExecute (
     ACPI_OBJECT_INTERNAL    **Params)
 {
     ACPI_STATUS             Status;
+    void                    *StackTopEntry;
 
 
     FUNCTION_TRACE ("AmlExecute");
@@ -177,6 +178,8 @@ AmlExecute (
     }
 
 
+    StackTopEntry = AmlObjStackGetValue (STACK_TOP);
+
     /* This is where we really execute the method */
 
     while ((Status = AmlDoCode (IMODE_Execute)) == AE_OK)
@@ -188,24 +191,41 @@ AmlExecute (
      * or with Status == AE_PENDING at end of AML block (end of Method code)
      */
 
-    if (AE_PENDING == Status)
+    if (AE_RETURN_VALUE == Status)
     {
-        Status = AmlPkgPopExec ();            /* package stack -- inverse of AmlPrepExec() */
+        DEBUG_PRINT (ACPI_INFO, ("Method returned: \n"));
+        DUMP_STACK_ENTRY (AmlObjStackGetValue (STACK_TOP));
+        DEBUG_PRINT (ACPI_INFO, (" at stack level %d\n", AmlObjStackLevel()));
     }
 
     else
     {
-        if (AE_RETURN_VALUE == Status)
+        /*
+         * TBD:
+         * Check if there is an extraneous object left on the stack.  This can happen from 
+         * the execution of an numeric operator.  It is not clear who should delete the result
+         * object if it is not to be returned.  Needs more investigation.
+         */
+
+        if (StackTopEntry != AmlObjStackGetValue (STACK_TOP))
         {
-            DEBUG_PRINT (ACPI_INFO, ("Method returned: \n"));
-            DUMP_STACK_ENTRY (AmlObjStackGetValue (STACK_TOP));
-            DEBUG_PRINT (ACPI_INFO, (" at stack level %d\n", AmlObjStackLevel()));
+            DEBUG_PRINT (ACPI_INFO, ("AmlExecute: *** Deleting internal return value %p\n"));
+            AmlObjStackDeleteValue (STACK_TOP);
         }
 
-        AmlPkgPopExec ();            /* package stack -- inverse of AmlPrepExec() */
+        /* Map PENDING (normal exit, no return value) to OK */
+
+        if (AE_PENDING == Status)
+        {
+            Status = AE_OK;
+        }
     }
 
-    AmlMthStackPop ();         /* pop our frame off method stack */
+
+    /* Stack cleanup */
+
+    AmlPkgPopExec ();       /* pop package stack -- inverse of AmlPrepExec() */
+    AmlMthStackPop ();      /* pop our frame off method stack */
 
 
     if (AmlObjStackLevel())
