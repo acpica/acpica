@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acutils.h -- prototypes for the common (subsystem-wide) procedures
- *       $Revision: 1.105 $
+ *       $Revision: 1.106 $
  *
  *****************************************************************************/
 
@@ -700,9 +700,24 @@ AcpiUtDisplayInitPathname (
 
 
 /*
- * Memory allocation functions and related macros.
- * Macros that expand to include filename and line number
+ * Utalloc - memory allocation and object caching
  */
+
+void *
+AcpiUtAcquireFromCache (
+    UINT32                  ListId);
+
+void
+AcpiUtReleaseToCache (
+    UINT32                  ListId,
+    void                    *Object);
+
+void
+AcpiUtDeleteGenericCache (
+    UINT32                  ListId);
+
+
+/* Debug Memory allocation functions */
 
 void *
 AcpiUtAllocate (
