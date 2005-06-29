@@ -838,7 +838,7 @@ typedef struct
     UINT32          Address;
     UINT32          Pin;
     UINT32          SourceIndex;
-    UINT8           Source[4];
+    UINT8           Source[1];
 } PRT_ENTRY;
 
 typedef struct _prt_tag
