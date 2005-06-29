@@ -332,7 +332,8 @@ typedef struct /* METHOD */
     UINT8                   Fill1;
     UINT32                  PcodeLength;
     UINT32                  TableLength;
-    UINT32                  Reserved4;
+    ACPI_OWNER_ID           OwningId;
+    UINT16                  Reserved4;
 
     UINT8                   *Pcode;
     UINT8                   *AcpiTable;

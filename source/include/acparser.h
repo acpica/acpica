@@ -1,7 +1,6 @@
 /******************************************************************************
- *
- * Module Name: acparser.h - AML Parser subcomponent prototypes and defines
- *       $Revision: 1.72 $
+ * 
+ * Module Name: parser.h - AML Parser subcomponent prototypes and defines
  *
  *****************************************************************************/
 
@@ -9,8 +8,8 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2005, Intel Corp.
- * All rights reserved.
+ * Some or all of this work - Copyright (c) 1999, Intel Corp.  All rights
+ * reserved.
  *
  * 2. License
  *
@@ -38,9 +37,9 @@
  * The above copyright and patent license is granted only if the following
  * conditions are met:
  *
- * 3. Conditions
+ * 3. Conditions 
  *
- * 3.1. Redistribution of Source with Rights to Further Distribute Source.
+ * 3.1. Redistribution of Source with Rights to Further Distribute Source.  
  * Redistribution of source code of any substantial portion of the Covered
  * Code or modification with rights to further distribute source must include
  * the above Copyright Notice, the above License, this list of Conditions,
@@ -48,11 +47,11 @@
  * Licensee must cause all Covered Code to which Licensee contributes to
  * contain a file documenting the changes Licensee made to create that Covered
  * Code and the date of any change.  Licensee must include in that file the
- * documentation of any changes made by any predecessor Licensee.  Licensee
+ * documentation of any changes made by any predecessor Licensee.  Licensee 
  * must include a prominent statement that the modification is derived,
  * directly or indirectly, from Original Intel Code.
  *
- * 3.2. Redistribution of Source with no Rights to Further Distribute Source.
+ * 3.2. Redistribution of Source with no Rights to Further Distribute Source.  
  * Redistribution of source code of any substantial portion of the Covered
  * Code or modification without rights to further distribute source must
  * include the following Disclaimer and Export Compliance provision in the
@@ -86,7 +85,7 @@
  * INSTALLATION, TRAINING OR OTHER SERVICES.  INTEL WILL NOT PROVIDE ANY
  * UPDATES, ENHANCEMENTS OR EXTENSIONS.  INTEL SPECIFICALLY DISCLAIMS ANY
  * IMPLIED WARRANTIES OF MERCHANTABILITY, NONINFRINGEMENT AND FITNESS FOR A
- * PARTICULAR PURPOSE.
+ * PARTICULAR PURPOSE. 
  *
  * 4.2. IN NO EVENT SHALL INTEL HAVE ANY LIABILITY TO LICENSEE, ITS LICENSEES
  * OR ANY OTHER THIRD PARTY, FOR ANY LOST PROFITS, LOST DATA, LOSS OF USE OR
@@ -115,304 +114,297 @@
  *****************************************************************************/
 
 
-#ifndef __ACPARSER_H__
-#define __ACPARSER_H__
+#ifndef _PARSER_H_
+#define _PARSER_H_
 
 
-#define OP_HAS_RETURN_VALUE             1
+
+
+#define OP_HAS_RETURN_VALUE         1
 
 /* variable # arguments */
 
-#define ACPI_VAR_ARGS                   ACPI_UINT32_MAX
+#define ACPI_VAR_ARGS               ACPI_UINT32_MAX
+
+/* maximum virtual address */
+
+#define ACPI_MAX_AML                ((UINT8 *)(~0UL))
 
 
-#define ACPI_PARSE_DELETE_TREE          0x0001
-#define ACPI_PARSE_NO_TREE_DELETE       0x0000
-#define ACPI_PARSE_TREE_MASK            0x0001
+/* psapi - Parser external interfaces */
 
-#define ACPI_PARSE_LOAD_PASS1           0x0010
-#define ACPI_PARSE_LOAD_PASS2           0x0020
-#define ACPI_PARSE_EXECUTE              0x0030
-#define ACPI_PARSE_MODE_MASK            0x0030
+ACPI_STATUS
+PsxLoadTable (
+    UINT8                   *PcodeAddr, 
+    INT32                   PcodeLength);
 
-#define ACPI_PARSE_DEFERRED_OP          0x0100
+ACPI_STATUS
+PsxExecute (
+    NAME_TABLE_ENTRY        *MethodEntry,
+    ACPI_OBJECT_INTERNAL    **Params,
+    ACPI_OBJECT_INTERNAL    **ReturnObjDesc);
+
+
+
+
+BOOLEAN
+PsIsNamespaceObjectOp (
+    UINT16                  Opcode);
+BOOLEAN
+PsIsNamespaceOp (
+    UINT16                  Opcode);
 
 
 /******************************************************************************
- *
+ * 
  * Parser interfaces
  *
  *****************************************************************************/
 
 
-/*
- * psxface - Parser external interfaces
- */
-ACPI_STATUS
-AcpiPsxLoadTable (
-    UINT8                   *PcodeAddr,
-    UINT32                  PcodeLength);
 
-ACPI_STATUS
-AcpiPsxExecute (
-    ACPI_PARAMETER_INFO     *Info);
+/* psargs - Parse AML opcode arguments */
 
-/*
- * psargs - Parse AML opcode arguments
- */
 UINT8 *
-AcpiPsGetNextPackageEnd (
+PsGetNextPackageEnd (
     ACPI_PARSE_STATE        *ParserState);
 
 char *
-AcpiPsGetNextNamestring (
+PsGetNextNamestring (
     ACPI_PARSE_STATE        *ParserState);
 
 void
-AcpiPsGetNextSimpleArg (
+PsGetNextSimpleArg (
     ACPI_PARSE_STATE        *ParserState,
-    UINT32                  ArgType,
-    ACPI_PARSE_OBJECT       *Arg);
+    INT32                   ArgType,        /* type of argument */
+    ACPI_GENERIC_OP         *Arg);           /* (OUT) argument data */
 
-ACPI_STATUS
-AcpiPsGetNextNamepath (
-    ACPI_WALK_STATE         *WalkState,
+void
+PsGetNextNamepath (
     ACPI_PARSE_STATE        *ParserState,
-    ACPI_PARSE_OBJECT       *Arg,
+    ACPI_GENERIC_OP         *Arg,
+    UINT32                  *ArgCount,
     BOOLEAN                 MethodCall);
 
-ACPI_STATUS
-AcpiPsGetNextArg (
-    ACPI_WALK_STATE         *WalkState,
-    ACPI_PARSE_STATE        *ParserState,
-    UINT32                  ArgType,
-    ACPI_PARSE_OBJECT       **ReturnArg);
-
-static UINT32
-AcpiPsGetNextPackageLength (
+ACPI_GENERIC_OP *
+PsGetNextField (
     ACPI_PARSE_STATE        *ParserState);
 
-static ACPI_PARSE_OBJECT *
-AcpiPsGetNextField (
-    ACPI_PARSE_STATE        *ParserState);
+ACPI_GENERIC_OP *
+PsGetNextArg (
+    ACPI_PARSE_STATE        *ParserState, 
+    INT32                   ArgType, 
+    UINT32                  *ArgCount);
 
 
-/*
- * psfind
- */
-ACPI_PARSE_OBJECT *
-AcpiPsFindName (
-    ACPI_PARSE_OBJECT       *Scope,
-    UINT32                  Name,
-    UINT32                  Opcode);
+/* psopcode - AML Opcode information */
 
-ACPI_PARSE_OBJECT*
-AcpiPsGetParent (
-    ACPI_PARSE_OBJECT       *Op);
-
-
-/*
- * psopcode - AML Opcode information
- */
-const ACPI_OPCODE_INFO *
-AcpiPsGetOpcodeInfo (
+ACPI_OP_INFO *
+PsGetOpcodeInfo (
     UINT16                  Opcode);
 
 char *
-AcpiPsGetOpcodeName (
+PsGetOpcodeName (
     UINT16                  Opcode);
 
 
-/*
- * psparse - top level parsing routines
- */
-ACPI_STATUS
-AcpiPsParseAml (
-    ACPI_WALK_STATE         *WalkState);
+/* psparse - top level parsing routines */
 
-UINT32
-AcpiPsGetOpcodeSize (
-    UINT32                  Opcode);
+void
+PsDeleteParseTree (
+    ACPI_GENERIC_OP         *root);
+
+ACPI_STATUS
+PsParseLoop (
+    ACPI_PARSE_STATE        *ParserState);
+
+
+ACPI_STATUS
+PsParseAml (
+    ACPI_GENERIC_OP         *StartScope,
+    UINT8                   *Aml, 
+    UINT32                  AmlSize);
+
+ACPI_STATUS
+PsParseTable (
+    UINT8                   *aml, 
+    INT32                   amlSize,
+    INTERPRETER_CALLBACK    DescendingCallback,
+    INTERPRETER_CALLBACK    AscendingCallback,
+    ACPI_GENERIC_OP         **RootObject);
 
 UINT16
-AcpiPsPeekOpcode (
+PsPeekOpcode (
     ACPI_PARSE_STATE        *state);
 
-static void
-AcpiPsCompleteThisOp (
-    ACPI_WALK_STATE         *WalkState,
-    ACPI_PARSE_OBJECT       *Op);
-
-static ACPI_STATUS
-AcpiPsNextParseState (
-    ACPI_WALK_STATE         *WalkState,
-    ACPI_PARSE_OBJECT       *Op,
-    ACPI_STATUS             CallbackStatus);
-
-static ACPI_STATUS
-AcpiPsParseLoop (
-    ACPI_WALK_STATE         *WalkState);
 
 
-/*
- * psscope - Scope stack management routines
- */
+/* psscope - Scope stack management routines */
+
+
 ACPI_STATUS
-AcpiPsInitScope (
+PsInitScope (
     ACPI_PARSE_STATE        *ParserState,
-    ACPI_PARSE_OBJECT       *Root);
+    ACPI_GENERIC_OP         *Root);
 
-ACPI_PARSE_OBJECT *
-AcpiPsGetParentScope (
+ACPI_GENERIC_OP *
+PsGetParentScope (
     ACPI_PARSE_STATE        *state);
 
 BOOLEAN
-AcpiPsHasCompletedScope (
+PsHasCompletedScope (
     ACPI_PARSE_STATE        *ParserState);
 
 void
-AcpiPsPopScope (
+PsPopScope (
     ACPI_PARSE_STATE        *ParserState,
-    ACPI_PARSE_OBJECT       **Op,
-    UINT32                  *ArgList,
-    UINT32                  *ArgCount);
+    ACPI_GENERIC_OP         **Op,
+    UINT32                  *ArgList);
 
 ACPI_STATUS
-AcpiPsPushScope (
+PsPushScope (
     ACPI_PARSE_STATE        *ParserState,
-    ACPI_PARSE_OBJECT       *Op,
+    ACPI_GENERIC_OP         *Op, 
     UINT32                  RemainingArgs,
     UINT32                  ArgCount);
 
 void
-AcpiPsCleanupScope (
+PsCleanupScope (
     ACPI_PARSE_STATE        *state);
 
 
-/*
- * pstree - parse tree manipulation routines
- */
-void
-AcpiPsAppendArg(
-    ACPI_PARSE_OBJECT       *op,
-    ACPI_PARSE_OBJECT       *arg);
+/* pstree - parse tree manipulation routines */
 
-ACPI_PARSE_OBJECT*
-AcpiPsFind (
-    ACPI_PARSE_OBJECT       *Scope,
+void 
+PsAppendArg(
+    ACPI_GENERIC_OP         *op, 
+    ACPI_GENERIC_OP         *arg);
+
+ACPI_GENERIC_OP*
+PsFind (
+    ACPI_GENERIC_OP         *Scope, 
     char                    *Path,
     UINT16                  Opcode,
     UINT32                  Create);
 
-ACPI_PARSE_OBJECT *
-AcpiPsGetArg(
-    ACPI_PARSE_OBJECT       *op,
+ACPI_GENERIC_OP *
+PsGetArg(
+    ACPI_GENERIC_OP         *op, 
     UINT32                   argn);
 
-ACPI_PARSE_OBJECT *
-AcpiPsGetDepthNext (
-    ACPI_PARSE_OBJECT       *Origin,
-    ACPI_PARSE_OBJECT       *Op);
+ACPI_GENERIC_OP *
+PsGetChild (
+    ACPI_GENERIC_OP         *op);
 
-#ifdef ACPI_OBSOLETE_FUNCTIONS
-ACPI_PARSE_OBJECT *
-AcpiPsGetChild (
-    ACPI_PARSE_OBJECT       *op);
-#endif
+ACPI_GENERIC_OP *
+PsGetDepthNext (
+    ACPI_GENERIC_OP         *Origin, 
+    ACPI_GENERIC_OP         *Op);
 
 
-/*
- * pswalk - parse tree walk routines
- */
+
+/* pswalk - parse tree walk routines */
+
 ACPI_STATUS
-AcpiPsWalkParsedAml (
-    ACPI_PARSE_OBJECT       *StartOp,
-    ACPI_PARSE_OBJECT       *EndOp,
-    ACPI_OPERAND_OBJECT     *MthDesc,
-    ACPI_NAMESPACE_NODE     *StartNode,
-    ACPI_OPERAND_OBJECT     **Params,
-    ACPI_OPERAND_OBJECT     **CallerReturnDesc,
+PsWalkParsedAml (
+    ACPI_GENERIC_OP         *StartOp,
+    ACPI_GENERIC_OP         *EndOp,
+    ACPI_OBJECT_INTERNAL    *MthDesc,
+	NAME_TABLE_ENTRY		*StartScope,
+    ACPI_OBJECT_INTERNAL    **Params,
+    ACPI_OBJECT_INTERNAL    **CallerReturnDesc,
     ACPI_OWNER_ID           OwnerId,
-    ACPI_PARSE_DOWNWARDS    DescendingCallback,
-    ACPI_PARSE_UPWARDS      AscendingCallback);
+    INTERPRETER_CALLBACK    DescendingCallback,
+    INTERPRETER_CALLBACK    AscendingCallback);
 
 ACPI_STATUS
-AcpiPsGetNextWalkOp (
+PsGetNextWalkOp (
     ACPI_WALK_STATE         *WalkState,
-    ACPI_PARSE_OBJECT       *Op,
-    ACPI_PARSE_UPWARDS      AscendingCallback);
-
-ACPI_STATUS
-AcpiPsDeleteCompletedOp (
-    ACPI_WALK_STATE         *WalkState);
-
-void
-AcpiPsDeleteParseTree (
-    ACPI_PARSE_OBJECT       *root);
+    ACPI_GENERIC_OP         *Op,
+    INTERPRETER_CALLBACK    AscendingCallback);
 
 
-/*
- * psutils - parser utilities
- */
-ACPI_PARSE_OBJECT *
-AcpiPsCreateScopeOp (
-    void);
+
+/* psutils - parser utilities */
 
 void
-AcpiPsInitOp (
-    ACPI_PARSE_OBJECT       *op,
+PsInitOp (
+    ACPI_GENERIC_OP         *op,
     UINT16                  opcode);
 
-ACPI_PARSE_OBJECT *
-AcpiPsAllocOp (
+ACPI_GENERIC_OP * 
+PsAllocOp (
     UINT16                  opcode);
 
-void
-AcpiPsFreeOp (
-    ACPI_PARSE_OBJECT       *Op);
+BOOLEAN
+PsIsLeadingChar (
+    INT32                   c);
 
 BOOLEAN
-AcpiPsIsLeadingChar (
-    UINT32                  c);
+PsIsPrefixChar (
+    INT32                   c);
 
 BOOLEAN
-AcpiPsIsPrefixChar (
-    UINT32                  c);
+PsIsNamedOp (
+    UINT16                  opcode);
+
+BOOLEAN
+PsIsNamedObjectOp (
+    UINT16                  opcode);
+
+BOOLEAN
+PsIsDeferredOp (
+    UINT16                  opcode);
+
+BOOLEAN
+PsIsBytelistOp(
+    UINT16                  opcode);
+
+BOOLEAN
+PsIsFieldOp(
+    UINT16                  opcode);
+
+ACPI_NAMED_OP*
+PsToNamedOp(
+    ACPI_GENERIC_OP         *op);
+
+ACPI_DEFERRED_OP *
+PsToDeferredOp (
+    ACPI_GENERIC_OP         *Op);
+
+ACPI_BYTELIST_OP*
+PsToBytelistOp(
+    ACPI_GENERIC_OP         *op);
 
 UINT32
-AcpiPsGetName(
-    ACPI_PARSE_OBJECT       *op);
+PsGetName(
+    ACPI_GENERIC_OP         *op);
 
 void
-AcpiPsSetName(
-    ACPI_PARSE_OBJECT       *op,
+PsSetName(
+    ACPI_GENERIC_OP         *op, 
     UINT32                  name);
 
-#ifdef ACPI_ENABLE_OBJECT_CACHE
-void
-AcpiPsDeleteParseCache (
-    void);
-#endif
 
+/* psdump - display parser tree */
 
-/*
- * psdump - display parser tree
- */
-UINT32
-AcpiPsSprintPath (
+INT32
+PsSprintPath (
     char                    *BufferStart,
     UINT32                  BufferSize,
-    ACPI_PARSE_OBJECT       *Op);
+    ACPI_GENERIC_OP         *Op);
 
-UINT32
-AcpiPsSprintOp (
-    char                    *BufferStart,
-    UINT32                  BufferSize,
-    ACPI_PARSE_OBJECT       *Op);
+INT32
+PsSprintOp (
+    char                    *BufferStart, 
+    UINT32                  BufferSize, 
+    ACPI_GENERIC_OP         *Op);
 
-void
-AcpiPsShow (
-    ACPI_PARSE_OBJECT       *op);
+void 
+PsShow (
+    ACPI_GENERIC_OP         *op);
 
 
-#endif /* __ACPARSER_H__ */
+
+
+#endif /* _PARSER_H_ */
