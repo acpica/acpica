@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exregion - ACPI default OpRegion (address space) handlers
- *              $Revision: 1.68 $
+ *              $Revision: 1.71 $
  *
  *****************************************************************************/
 
@@ -10,7 +10,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -127,7 +127,7 @@
 
 
 #define _COMPONENT          ACPI_EXECUTER
-        MODULE_NAME         ("exregion")
+        ACPI_MODULE_NAME    ("exregion")
 
 
 /*******************************************************************************
@@ -163,7 +163,7 @@ AcpiExSystemMemorySpaceHandler (
     UINT32                  Length;
 
 
-    FUNCTION_TRACE ("ExSystemMemorySpaceHandler");
+    ACPI_FUNCTION_TRACE ("ExSystemMemorySpaceHandler");
 
 
     /* Validate and translate the bit width */
@@ -241,7 +241,7 @@ AcpiExSystemMemorySpaceHandler (
 
     ACPI_DEBUG_PRINT ((ACPI_DB_INFO,
         "SystemMemory %d (%d width) Address=%8.8X%8.8X\n", Function, BitWidth,
-        HIDWORD (Address), LODWORD (Address)));
+        ACPI_HIDWORD (Address), ACPI_LODWORD (Address)));
 
    /* Perform the memory read or write */
 
@@ -249,6 +249,7 @@ AcpiExSystemMemorySpaceHandler (
     {
     case ACPI_READ:
 
+        *Value = 0;
         switch (BitWidth)
         {
         case 8:
@@ -256,15 +257,15 @@ AcpiExSystemMemorySpaceHandler (
             break;
 
         case 16:
-            MOVE_UNALIGNED16_TO_32 (Value, LogicalAddrPtr);
+            ACPI_MOVE_UNALIGNED16_TO_16 (Value, LogicalAddrPtr);
             break;
 
         case 32:
-            MOVE_UNALIGNED32_TO_32 (Value, LogicalAddrPtr);
+            ACPI_MOVE_UNALIGNED32_TO_32 (Value, LogicalAddrPtr);
             break;
 
         case 64:
-            MOVE_UNALIGNED64_TO_64 (Value, LogicalAddrPtr);
+            ACPI_MOVE_UNALIGNED64_TO_64 (Value, LogicalAddrPtr);
             break;
         }
         break;
@@ -278,15 +279,15 @@ AcpiExSystemMemorySpaceHandler (
             break;
 
         case 16:
-            MOVE_UNALIGNED16_TO_16 (LogicalAddrPtr, Value);
+            ACPI_MOVE_UNALIGNED16_TO_16 (LogicalAddrPtr, Value);
             break;
 
         case 32:
-            MOVE_UNALIGNED32_TO_32 (LogicalAddrPtr, Value);
+            ACPI_MOVE_UNALIGNED32_TO_32 (LogicalAddrPtr, Value);
             break;
 
         case 64:
-            MOVE_UNALIGNED64_TO_64 (LogicalAddrPtr, Value);
+            ACPI_MOVE_UNALIGNED64_TO_64 (LogicalAddrPtr, Value);
             break;
         }
         break;
@@ -330,12 +331,12 @@ AcpiExSystemIoSpaceHandler (
     ACPI_STATUS             Status = AE_OK;
 
 
-    FUNCTION_TRACE ("ExSystemIoSpaceHandler");
+    ACPI_FUNCTION_TRACE ("ExSystemIoSpaceHandler");
 
 
     ACPI_DEBUG_PRINT ((ACPI_DB_INFO,
         "SystemIO %d (%d width) Address=%8.8X%8.8X\n", Function, BitWidth,
-        HIDWORD (Address), LODWORD (Address)));
+        ACPI_HIDWORD (Address), ACPI_LODWORD (Address)));
 
     /* Decode the function parameter */
 
@@ -393,7 +394,7 @@ AcpiExPciConfigSpaceHandler (
     UINT16                  PciRegister;
 
 
-    FUNCTION_TRACE ("ExPciConfigSpaceHandler");
+    ACPI_FUNCTION_TRACE ("ExPciConfigSpaceHandler");
 
 
     /*
@@ -469,7 +470,7 @@ AcpiExCmosSpaceHandler (
     ACPI_STATUS             Status = AE_OK;
 
 
-    FUNCTION_TRACE ("ExCmosSpaceHandler");
+    ACPI_FUNCTION_TRACE ("ExCmosSpaceHandler");
 
 
     return_ACPI_STATUS (Status);
@@ -506,7 +507,7 @@ AcpiExPciBarSpaceHandler (
     ACPI_STATUS             Status = AE_OK;
 
 
-    FUNCTION_TRACE ("ExPciBarSpaceHandler");
+    ACPI_FUNCTION_TRACE ("ExPciBarSpaceHandler");
 
 
     return_ACPI_STATUS (Status);
@@ -541,12 +542,12 @@ AcpiExDataTableSpaceHandler (
     void                    *RegionContext)
 {
     ACPI_STATUS             Status = AE_OK;
-    UINT32                  ByteWidth = DIV_8 (BitWidth);
+    UINT32                  ByteWidth = ACPI_DIV_8 (BitWidth);
     UINT32                  i;
     char                    *LogicalAddrPtr;
 
 
-    FUNCTION_TRACE ("ExDataTableSpaceHandler");
+    ACPI_FUNCTION_TRACE ("ExDataTableSpaceHandler");
 
 
     LogicalAddrPtr = ACPI_PHYSADDR_TO_PTR (Address);
