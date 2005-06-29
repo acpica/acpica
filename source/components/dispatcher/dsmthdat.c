@@ -127,23 +127,6 @@
         MODULE_NAME         ("psxmargs");
 
 
-/*****************************************************************************
- * 
- * FUNCTION:    PsxMthStackLevel
- *
- * PARAMETERS:  None.
- *
- * RETURN:      The current value of MethodStackTop
- *
- ****************************************************************************/
-
-INT32
-PsxMthStackLevel (void)
-{
-
-    return 1;
-}
-
 
 /*****************************************************************************
  * 
@@ -173,6 +156,59 @@ PsxIsMethodValue (
 
     return_VALUE (FALSE);
 }
+
+
+
+/*****************************************************************************
+ * 
+ * FUNCTION:    PsxMthStackInit
+ *
+ * PARAMETERS:  *ObjDesc 
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Initialize the data structures that hold the method's arguments
+ *              and locals.  The data struct is an array of NTEs for each.
+ *              This allows RefOf and DeRefOf to work properly for these special
+ *              data types.
+ *
+ ****************************************************************************/
+
+ACPI_STATUS
+PsxMthStackInit (
+    ACPI_WALK_STATE         *WalkState)
+{
+    UINT32                  i;
+
+
+    FUNCTION_TRACE ("PsxMthStackInit");
+
+    /*
+     * WalkState fields are initialized to zero by the CmCallocate().
+     */
+
+    /* Init the method arguments */
+
+    for (i = 0; i < MTH_NUM_ARGS; i++)
+    {
+        WalkState->Arguments[i].DataType        = DESC_TYPE_NTE;
+        WalkState->Arguments[i].Type            = INTERNAL_TYPE_MethodArgument;
+        WalkState->Arguments[i].Name            = *((UINT32 *) "__A0") | (i << 24);
+    }
+
+    /* Init the method arguments */
+
+    for (i = 0; i < MTH_NUM_ARGS; i++)
+    {
+        WalkState->LocalVariables[i].DataType   = DESC_TYPE_NTE;
+        WalkState->LocalVariables[i].Type       = INTERNAL_TYPE_MethodLocalVar;
+        WalkState->LocalVariables[i].Name       = *((UINT32 *) "__L0") | (i << 24);
+    }
+
+
+    return_ACPI_STATUS (AE_OK);
+}
+
 
 
 /*****************************************************************************
@@ -221,8 +257,8 @@ PsxMthStackDeleteArgs (
 
     for (Index = 0; Index < MTH_NUM_LOCALS; Index++)
     {
-        Object = WalkState->LocalVariables[Index];
-        WalkState->LocalVariables[Index] = NULL;
+        Object = WalkState->LocalVariables[Index].Object;
+        WalkState->LocalVariables[Index].Object = NULL;
 
         if (Object)
 
@@ -234,8 +270,8 @@ PsxMthStackDeleteArgs (
 
     for (Index = 0; Index < MTH_NUM_ARGS; Index++)
     {
-        Object = WalkState->Arguments[Index];
-        WalkState->Arguments[Index] = NULL;
+        Object = WalkState->Arguments[Index].Object;
+        WalkState->Arguments[Index].Object = NULL;
 
         if (Object)
         {
@@ -357,7 +393,7 @@ PsxMthStackGetEntry (
             return_ACPI_STATUS (AE_BAD_PARAMETER);
         }
         
-        *Entry = &WalkState->LocalVariables[Index];
+        *Entry = (ACPI_OBJECT_INTERNAL **) &WalkState->LocalVariables[Index].Object;
         break;
 
 
@@ -370,7 +406,7 @@ PsxMthStackGetEntry (
             return_ACPI_STATUS (AE_BAD_PARAMETER);
         }
         
-        *Entry = &WalkState->Arguments[Index];
+        *Entry = (ACPI_OBJECT_INTERNAL **) &WalkState->Arguments[Index].Object;
         break;
 
 
@@ -474,6 +510,72 @@ PsxMthStackGetType (
     }
 
     return_VALUE (Object->Common.Type);
+}
+
+
+/*****************************************************************************
+ * 
+ * FUNCTION:    PsxMthStackGetNte
+ *
+ * PARAMETERS:  Type                - Either MTH_TYPE_LOCAL or MTH_TYPE_ARG
+ *              Index               - Which localVar or argument whose type to get
+ *
+ * RETURN:      Get the NTE associated with a local or arg.
+ *
+ ****************************************************************************/
+
+NAME_TABLE_ENTRY *
+PsxMthStackGetNte (
+    UINT32                  Type,
+    UINT32                  Index)
+{
+    NAME_TABLE_ENTRY        *Entry = NULL;
+    ACPI_WALK_STATE         *WalkState;
+
+
+    FUNCTION_TRACE ("PsxMthStackGetNte");
+
+
+    WalkState = PsGetCurrentWalkState (Gbl_CurrentWalkList);
+
+
+    switch (Type)
+    {
+
+    case MTH_TYPE_LOCAL:
+
+        if (Index > MTH_MAX_LOCAL)
+        {
+            DEBUG_PRINT (ACPI_ERROR, ("PsxMthStackGetEntry: LocalVar index %d is invalid (max %d)\n",
+                                    Index, MTH_MAX_LOCAL));
+            return_VALUE (Entry);
+        }
+        
+        Entry =  &WalkState->LocalVariables[Index];
+        break;
+
+
+    case MTH_TYPE_ARG:
+
+        if (Index > MTH_MAX_ARG)
+        {
+            DEBUG_PRINT (ACPI_ERROR, ("PsxMthStackGetEntry: Argument index %d is invalid (max %d)\n",
+                                    Index, MTH_MAX_ARG));
+            return_VALUE (Entry);
+        }
+        
+        Entry = &WalkState->Arguments[Index];
+        break;
+
+
+    default:
+        DEBUG_PRINT (ACPI_ERROR, ("PsxMthStackGetEntry: Stack type %d is invalid\n",
+                                Type));
+        break;
+    }
+
+
+    return_VALUE (Entry);
 }
 
 
