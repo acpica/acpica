@@ -167,6 +167,11 @@ NsEnter (
     OpMode              iLE,
     NAME_TABLE_ENTRY    **RetEntry);
 
+
+/*
+ * Namespace modification - nsmodify
+ */
+
 ACPI_STATUS
 NsUnloadNamespace (
     NsHandle            Handle);
