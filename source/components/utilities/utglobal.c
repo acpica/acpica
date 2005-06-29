@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: cmglobal - Global variables for the ACPI subsystem
- *              $Revision: 1.119 $
+ *              $Revision: 1.121 $
  *
  *****************************************************************************/
 
@@ -349,18 +349,18 @@ static NATIVE_CHAR          *AcpiGbl_NsTypeNames[] =    /* printable names of AC
     /* 11 */ "Power",
     /* 12 */ "Processor",
     /* 13 */ "Thermal",
-    /* 14 */ "BufferFld",
+    /* 14 */ "BuffField",
     /* 15 */ "DdbHandle",
     /* 16 */ "DebugObj",
-    /* 17 */ "DefField",
-    /* 18 */ "BnkField",
-    /* 19 */ "IdxField",
+    /* 17 */ "RegnField",
+    /* 18 */ "BankField",
+    /* 19 */ "IndxField",
     /* 20 */ "Reference",
     /* 21 */ "Alias",
     /* 22 */ "Notify",
     /* 23 */ "AddrHndlr",
     /* 24 */ "Resource",
-    /* 25 */ "DefFldDfn",
+    /* 25 */ "RgnFldDfn",
     /* 26 */ "BnkFldDfn",
     /* 27 */ "IdxFldDfn",
     /* 28 */ "If",
@@ -697,7 +697,7 @@ AcpiCmInitGlobals (
     for (i = 0; i < NUM_MTX; i++)
     {
         AcpiGbl_AcpiMutexInfo[i].Mutex      = NULL;
-        AcpiGbl_AcpiMutexInfo[i].Locked     = FALSE;
+        AcpiGbl_AcpiMutexInfo[i].OwnerId    = ACPI_MUTEX_NOT_ACQUIRED;
         AcpiGbl_AcpiMutexInfo[i].UseCount   = 0;
     }
 
