@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslrestype2 - Long (type2) resource templates and descriptors
- *              $Revision: 1.28 $
+ *              $Revision: 1.29 $
  *
  *****************************************************************************/
 
@@ -1529,6 +1529,12 @@ RsDoGeneralRegisterDescriptor (
                                 CurrentByteOffset + ASL_RESDESC_OFFSET (Grg.Address));
             break;
 
+        case 4: /* Access Size (ACPI 3.0) */
+
+            Descriptor->Grg.AccessSize = (UINT8) InitializerOp->Asl.Value.Integer;
+            RsCreateByteField (InitializerOp, ASL_RESNAME_ACCESSSIZE,
+                                CurrentByteOffset + ASL_RESDESC_OFFSET (Grg.AccessSize));
+            break;
 
         default:
 
