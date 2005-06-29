@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: psparse - Parser top level AML parse routines
- *              $Revision: 1.69 $
+ *              $Revision: 1.70 $
  *
  *****************************************************************************/
 
@@ -1227,7 +1227,6 @@ AcpiPsParseAml (
     ACPI_WALK_LIST          *PrevWalkList = AcpiGbl_CurrentWalkList;
     ACPI_OPERAND_OBJECT     *ReturnDesc;
     ACPI_OPERAND_OBJECT     *MthDesc = NULL;
-    ACPI_NAMESPACE_NODE     *StartNode;
 
 
     FUNCTION_TRACE ("PsParseAml");
@@ -1276,21 +1275,17 @@ AcpiPsParseAml (
 
     if (MethodNode)
     {
-        StartNode               = MethodNode;
         ParserState->StartNode  = MethodNode;
         WalkState->WalkType     = WALK_METHOD;
 
-        if (StartNode)
+        /* Push start scope on scope stack and make it current  */
+
+        Status = AcpiDsScopeStackPush (MethodNode, ACPI_TYPE_METHOD, WalkState);
+        if (ACPI_FAILURE (Status))
         {
-            /* Push start scope on scope stack and make it current  */
-
-            Status = AcpiDsScopeStackPush (StartNode, ACPI_TYPE_METHOD, WalkState);
-            if (ACPI_FAILURE (Status))
-            {
-                return_ACPI_STATUS (Status);
-            }
-
+            return_ACPI_STATUS (Status);
         }
+
         /* Init arguments if this is a control method */
         /* TBD: [Restructure] add walkstate as a param */
 
@@ -1302,6 +1297,8 @@ AcpiPsParseAml (
         /* Setup the current scope */
 
         Node = ParserState->StartOp->Node;
+        ParserState->StartNode = Node;
+
         if (Node)
         {
             /* Push start scope on scope stack and make it current  */
