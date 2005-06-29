@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acenv.h - Generation environment specific items
- *       $Revision: 1.109 $
+ *       $Revision: 1.111 $
  *
  *****************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2004, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2005, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -130,6 +130,7 @@
 #define ACPI_DISASSEMBLER
 #define ACPI_NO_METHOD_EXECUTION
 #define ACPI_USE_SYSTEM_CLIBRARY
+#define ACPI_ENABLE_OBJECT_CACHE
 #endif
 
 #ifdef _ACPI_EXEC_APP
@@ -140,6 +141,7 @@
 #define ACPI_DEBUGGER
 #define ACPI_DISASSEMBLER
 #define ACPI_USE_SYSTEM_CLIBRARY
+#define ACPI_ENABLE_OBJECT_CACHE
 #endif
 
 #ifdef _ACPI_ASL_COMPILER
@@ -148,6 +150,7 @@
 #define ACPI_DISASSEMBLER
 #define ACPI_CONSTANT_EVAL_ONLY
 #define ACPI_USE_SYSTEM_CLIBRARY
+#define ACPI_ENABLE_OBJECT_CACHE
 #endif
 
 /*
