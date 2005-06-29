@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: nsaccess - Top-level functions for accessing ACPI namespace
- *              $Revision: 1.115 $
+ *              $Revision: 1.117 $
  *
  ******************************************************************************/
 
@@ -9,8 +9,8 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, Intel Corp.  All rights
- * reserved.
+ * Some or all of this work - Copyright (c) 1999, 2000, Intel Corp.
+ * All rights reserved.
  *
  * 2. License
  *
@@ -322,14 +322,14 @@ UnlockAndExit:
  *
  * FUNCTION:    AcpiNsLookup
  *
- * PARAMETERS:  PrefixNode  - Search scope if name is not fully qualified
+ * PARAMETERS:  PrefixNode      - Search scope if name is not fully qualified
  *              Pathname        - Search pathname, in internal format
  *                                (as represented in the AML stream)
  *              Type            - Type associated with name
  *              InterpreterMode - IMODE_LOAD_PASS2 => add name if not found
  *              Flags           - Flags describing the search restrictions
  *              WalkState       - Current state of the walk
- *              ReturnNode  - Where the Node is placed (if found
+ *              ReturnNode      - Where the Node is placed (if found
  *                                or created successfully)
  *
  * RETURN:      Status
