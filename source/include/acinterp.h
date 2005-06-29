@@ -305,9 +305,10 @@ ACPI_STATUS
 AmlPrepDefFieldValue (
     NAME_TABLE_ENTRY        *ThisEntry,
     ACPI_HANDLE             Region, 
-    UINT8                   FldFlg, 
-    INT32                   FldPos, 
-    INT32                   FldLen);
+    UINT8                   FieldFlags,
+    UINT8                   FieldAttribute,
+    UINT32                  FieldPosition, 
+    UINT32                  FieldLength);
 
 ACPI_STATUS
 AmlPrepBankFieldValue (
@@ -315,18 +316,20 @@ AmlPrepBankFieldValue (
     ACPI_HANDLE             Region, 
     ACPI_HANDLE             BankReg, 
     UINT32                  BankVal,
-    UINT8                   FldFlg, 
-    INT32                   FldPos, 
-    INT32                   FldLen);
+    UINT8                   FieldFlags, 
+    UINT8                   FieldAttribute,
+    UINT32                  FieldPosition, 
+    UINT32                  FieldLength);
 
 ACPI_STATUS
-AmlPrepIndexFieldValue(
+AmlPrepIndexFieldValue (
     NAME_TABLE_ENTRY        *ThisEntry,
     ACPI_HANDLE             IndexReg, 
     ACPI_HANDLE             DataReg,
-    UINT8                   FldFlg, 
-    INT32                   FldPos, 
-    INT32                   FldLen);
+    UINT8                   FieldFlags, 
+    UINT8                   FieldAttribute,
+    UINT32                  FieldPosition, 
+    UINT32                  FieldLength);
 
 ACPI_STATUS
 AmlPrepOperands (
