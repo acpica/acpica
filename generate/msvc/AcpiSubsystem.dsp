@@ -157,29 +157,11 @@ SOURCE=..\..\Subsystem\Common\cmglobal.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\Subsystem\Event\evapi.c
-
-!IF  "$(CFG)" == "Subsystem - Win32 Release"
-
-!ELSEIF  "$(CFG)" == "Subsystem - Win32 Debug"
-
-# ADD CPP /W3 /Z7
-
-!ENDIF 
-
+SOURCE=..\..\Subsystem\Events\evapi.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\Subsystem\Event\evsci.c
-
-!IF  "$(CFG)" == "Subsystem - Win32 Release"
-
-!ELSEIF  "$(CFG)" == "Subsystem - Win32 Debug"
-
-# ADD CPP /W3 /Z7
-
-!ENDIF 
-
+SOURCE=..\..\Subsystem\Events\evsci.c
 # End Source File
 # Begin Source File
 
@@ -585,6 +567,10 @@ SOURCE=..\..\Subsystem\Include\events.h
 # Begin Source File
 
 SOURCE=..\..\Subsystem\Include\excep.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\Subsystem\Include\globals.h
 # End Source File
 # Begin Source File
 
