@@ -100,6 +100,7 @@
 #include <acpi.h>
 #include <namespace.h>
 #include <interpreter.h>
+#include <amlcode.h>
 
 
 #define _THIS_MODULE        "nsutils.c"
@@ -318,77 +319,99 @@ NsLocal (
  *
  * FUNCTION:    NsInternalizeName
  *
- * PARAMETERS:  *DottedName             - external representation of name
+ * PARAMETERS:  *DottedName             - External representation of name
+ *              **Converted Name        - Where to return the resulting
+ *                                        internal represention of the name
  *
- * RETURN:      Internal representation of name
+ * RETURN:      Status
  *
  * DESCRIPTION: Convert an external representation (e.g. "\_PR_.CPU0")
  *              to internal form (e.g. 5c 2f 02 5f 50 52 5f 43 50 55 30)
  *
  ****************************************************************************/
 
-char *
+ACPI_STATUS
 NsInternalizeName (
-    char                    *DottedName)
+    char                    *DottedName,
+    char                    **ConvertedName)
 {
     char                    *Result = NULL;
-    static char             *IN = NULL;
-    static ACPI_SIZE        INsize = 0;
+    char                    *InternalName;
     ACPI_SIZE               i;
+    BOOLEAN                 FullyQualified = FALSE;
 
-
-    /* TBD: remove static variables above !! */
 
     FUNCTION_TRACE ("NsInternalizeName");
 
 
-    if (DottedName)
+    if (!DottedName || !ConvertedName)
     {
-        i = strlen (DottedName++) / 5;
-
-        /* 
-         * Required length is 4 bytes per segment, plus 1 each for RootPrefix,
-         * MultiNamePrefixOp, segment count, trailing null (which is not really
-         * needed, but no there's harm in putting it there)
-         */
-
-        if (INsize < 4 * i + 4)
-        {
-            if (IN)
-            {
-                OsdFree (IN);
-            }
-            else
-            {   /* Buffer Tracking */
-
-                RegisterStaticBlockPtr(&IN);
-            }
-
-            INsize = 4 * i + 4;
-            IN = LocalCallocate (INsize);
-        }
-
-        if (IN)
-        {
-            strcpy (IN, "\\/");
-            for (IN[2] = i, Result = &IN[3]; i; i--)
-            {
-                strncpy (Result, DottedName, 4);
-                Result += 4;
-                DottedName += 5;
-            }
-
-            if (Result)
-            {
-                *Result = '\0';
-            }
-        }
+        FUNCTION_EXIT;
+        return AE_BAD_PARAMETER;
     }
 
-    DEBUG_PRINT (TRACE_EXEC,("NsInternalizeName: returning %p=>\"%s\"\n", IN, IN ? IN : ""));     
+
+    /* 
+     * For the internal name, the required length is 4 bytes per segment, 
+     * plus 1 each for RootPrefix, MultiNamePrefixOp, segment count, trailing null 
+     * (which is not really needed, but no there's harm in putting it there)
+     *
+     * strlen() + 1 covers the first NameSeg, which has no path separator
+     */
+
+    if (DottedName[0] == '\\')
+    {
+        FullyQualified = TRUE;
+        DottedName++;
+    }
+
+    i = (strlen (DottedName) + 1) / PATH_SEGMENT_LENGTH;    /* i = number of NameSegs in the path */
+
+    InternalName = LocalCallocate ((ACPI_NAME_SIZE * i) + 4);
+    if (!InternalName)
+    {
+        FUNCTION_EXIT;
+        return AE_NO_MEMORY;
+    }
+
+
+    /* Setup the correct prefixes, counts, and pointers */
+
+    if (FullyQualified)
+    {
+        InternalName[0] = '\\';
+        InternalName[1] = AML_MultiNamePrefixOp;
+        InternalName[2] = i;
+        Result = &InternalName[3];
+    }
+    else
+    {
+        InternalName[0] = AML_MultiNamePrefixOp;
+        InternalName[1] = i;
+        Result = &InternalName[2];
+    }
+
+
+    /* Build the name (minus path separators) */
+
+    for (; i; i--)
+    {
+        strncpy (Result, DottedName, ACPI_NAME_SIZE);
+        Result += ACPI_NAME_SIZE;
+        DottedName += PATH_SEGMENT_LENGTH;
+    }
+
     
+    /* Return the completed name */
+
+    *Result = '\0';                     /* Terminate the string! */
+    *ConvertedName = InternalName;
+
+
+    DEBUG_PRINT (TRACE_EXEC,("NsInternalizeName: returning [%p] \"%s\"\n", 
+                                InternalName, InternalName));     
     FUNCTION_EXIT;
-    return IN;
+    return AE_OK;
 }
 
 
