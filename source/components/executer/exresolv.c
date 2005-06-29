@@ -407,6 +407,12 @@ AmlGetRvalueFromObject (
             break;
 
 
+        case AML_DebugOp:
+
+            /* Just leave it be */
+            break;
+
+
         default:
 
             DEBUG_PRINT (ACPI_ERROR, ("AmlGetRvalueFromObject: Unknown Lvalue subtype %02x\n",
