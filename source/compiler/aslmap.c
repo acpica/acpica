@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslmap - parser to AML opcode mapping table
- *              $Revision: 1.33 $
+ *              $Revision: 1.36 $
  *
  *****************************************************************************/
 
@@ -554,7 +554,7 @@ ASL_MAPPING_ENTRY AslKeywordMapping [] =
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiAmlValidateObjectType
+ * FUNCTION:    AcpiExValidateObjectType
  *
  * PARAMETERS:  Type            Object type to validate
  *
@@ -563,7 +563,7 @@ ASL_MAPPING_ENTRY AslKeywordMapping [] =
  ******************************************************************************/
 
 BOOLEAN
-AcpiAmlValidateObjectType (
+AcpiExValidateObjectType (
     ACPI_OBJECT_TYPE        Type)
 {
 
@@ -607,8 +607,7 @@ AcpiDsMapOpcodeToDataType (
     {
         /* Unknown opcode */
 
-        DEBUG_PRINT (ACPI_ERROR,
-            ("MapOpcode: Unknown AML opcode: %x\n",
+        DEBUG_PRINT (ACPI_ERROR, ("MapOpcode: Unknown AML opcode: %x\n",
             Opcode));
 
         return (DataType);
@@ -683,8 +682,9 @@ AcpiDsMapOpcodeToDataType (
     case OPTYPE_DYADIC2:
     case OPTYPE_DYADIC2R:
     case OPTYPE_DYADIC2S:
-    case OPTYPE_INDEX:
-    case OPTYPE_MATCH:
+    case OPTYPE_TRIADIC:
+    case OPTYPE_QUADRADIC:
+    case OPTYPE_HEXADIC:
     case OPTYPE_RETURN:
 
         Flags = OP_HAS_RETURN_VALUE;
