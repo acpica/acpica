@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acglobal.h - Declarations for global variables
- *       $Revision: 1.152 $
+ *       $Revision: 1.153 $
  *
  *****************************************************************************/
 
@@ -265,6 +265,7 @@ ACPI_EXTERN BOOLEAN                     AcpiGbl_StepToNextCall;
 ACPI_EXTERN BOOLEAN                     AcpiGbl_AcpiHardwarePresent;
 ACPI_EXTERN BOOLEAN                     AcpiGbl_GlobalLockPresent;
 ACPI_EXTERN BOOLEAN                     AcpiGbl_EventsInitialized;
+ACPI_EXTERN BOOLEAN                     AcpiGbl_SystemAwakeAndRunning;
 
 extern BOOLEAN                          AcpiGbl_Shutdown;
 extern UINT32                           AcpiGbl_StartupFlags;
