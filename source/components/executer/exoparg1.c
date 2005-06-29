@@ -528,7 +528,7 @@ AmlExecMonadic2 (
 
     case AML_LNotOp:
 
-        ObjDesc->Number.Value = (!ObjDesc->Number.Value) - (UINT32) 1;
+        ObjDesc->Number.Value = !ObjDesc->Number.Value;
         break;
 
 
