@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: amprep - ACPI AML (p-code) execution - field prep utilities
- *              $Revision: 1.81 $
+ *              $Revision: 1.82 $
  *
  *****************************************************************************/
 
@@ -207,7 +207,7 @@ AcpiAmlDecodeFieldAccessType (
  * FUNCTION:    AcpiAmlPrepCommonFieldObject
  *
  * PARAMETERS:  ObjDesc             - The field object
- *              FieldFlags          - Access, LockRule, or UpdateRule.
+ *              FieldFlags          - Access, LockRule, and UpdateRule.
  *                                    The format of a FieldFlag is described
  *                                    in the ACPI specification
  *              FieldPosition       - Field position
@@ -224,7 +224,6 @@ ACPI_STATUS
 AcpiAmlPrepCommonFieldObject (
     ACPI_OPERAND_OBJECT     *ObjDesc,
     UINT8                   FieldFlags,
-    UINT8                   FieldAttribute,
     UINT32                  FieldPosition,
     UINT32                  FieldLength)
 {
@@ -242,15 +241,15 @@ AcpiAmlPrepCommonFieldObject (
 
     /* Demultiplex the FieldFlags byte */
 
-    ObjDesc->CommonField.Access         = (UINT8) ((FieldFlags & ACCESS_TYPE_MASK)
+    ObjDesc->CommonField.Access     = (UINT8) ((FieldFlags & ACCESS_TYPE_MASK)
                                                     >> ACCESS_TYPE_SHIFT);
-    ObjDesc->CommonField.LockRule       = (UINT8) ((FieldFlags & LOCK_RULE_MASK)
+    ObjDesc->CommonField.LockRule   = (UINT8) ((FieldFlags & LOCK_RULE_MASK)
                                                     >> LOCK_RULE_SHIFT);
-    ObjDesc->CommonField.UpdateRule     = (UINT8) ((FieldFlags & UPDATE_RULE_MASK)
+    ObjDesc->CommonField.UpdateRule = (UINT8) ((FieldFlags & UPDATE_RULE_MASK)
                                                     >> UPDATE_RULE_SHIFT);
     /* Other misc fields */
 
-    ObjDesc->CommonField.BitLength      = (UINT16) FieldLength;
+    ObjDesc->CommonField.BitLength  = (UINT16) FieldLength;
 
     /* Decode the access type so we can compute offsets */
 
@@ -261,7 +260,7 @@ AcpiAmlPrepCommonFieldObject (
         return_ACPI_STATUS (AE_AML_OPERAND_VALUE);
     }
 
-    /* Access granularity based fields */
+    /* Setup granularity-based fields */
 
     ObjDesc->CommonField.Granularity    = (UINT8) Granularity;
 
@@ -274,8 +273,8 @@ AcpiAmlPrepCommonFieldObject (
         Granularity = 8;
     }
 
-    ObjDesc->CommonField.BitOffset      = (UINT8) (FieldPosition % Granularity);
-    ObjDesc->CommonField.Offset         = (UINT32) FieldPosition / Granularity;
+    ObjDesc->CommonField.BitOffset  = (UINT8) (FieldPosition % Granularity);
+    ObjDesc->CommonField.ByteOffset = FieldPosition / Granularity;
 
 
     return_ACPI_STATUS (AE_OK);
@@ -286,11 +285,9 @@ AcpiAmlPrepCommonFieldObject (
  *
  * FUNCTION:    AcpiAmlPrepRegionFieldValue
  *
- * PARAMETERS:  Node            - Owning Node
- *              RegionNode              - Region in which field is being defined
- *              FieldFlags          - Access, LockRule, or UpdateRule.
- *                                    The format of a FieldFlag is described
- *                                    in the ACPI specification
+ * PARAMETERS:  Node                - Owning Node
+ *              RegionNode          - Region in which field is being defined
+ *              FieldFlags          - Access, LockRule, and UpdateRule.
  *              FieldPosition       - Field position
  *              FieldLength         - Field length
  *
@@ -306,7 +303,6 @@ AcpiAmlPrepRegionFieldValue (
     ACPI_NAMESPACE_NODE     *Node,
     ACPI_HANDLE             RegionNode,
     UINT8                   FieldFlags,
-    UINT8                   FieldAttribute,
     UINT32                  FieldPosition,
     UINT32                  FieldLength)
 {
@@ -353,7 +349,7 @@ AcpiAmlPrepRegionFieldValue (
 
     /* Initialize areas of the object that are common to all fields */
 
-    Status = AcpiAmlPrepCommonFieldObject (ObjDesc, FieldFlags, FieldAttribute,
+    Status = AcpiAmlPrepCommonFieldObject (ObjDesc, FieldFlags,
                                             FieldPosition, FieldLength);
     if (ACPI_FAILURE (Status))
     {
@@ -373,7 +369,7 @@ AcpiAmlPrepRegionFieldValue (
 
     DEBUG_PRINT (ACPI_INFO,
         ("AmlPrepRegionFieldValue: Bitoff=%X Off=%X Gran=%X Region %p\n",
-        ObjDesc->Field.BitOffset, ObjDesc->Field.Offset,
+        ObjDesc->Field.BitOffset, ObjDesc->Field.ByteOffset,
         ObjDesc->Field.Granularity, ObjDesc->Field.RegionObj));
 
     DEBUG_PRINT (ACPI_INFO,
@@ -399,7 +395,7 @@ AcpiAmlPrepRegionFieldValue (
  *              RegionNode          - Region in which field is being defined
  *              BankRegisterNode    - Bank selection register node
  *              BankVal             - Value to store in selection register
- *              FieldFlags          - Access, LockRule, or UpdateRule
+ *              FieldFlags          - Access, LockRule, and UpdateRule
  *              FieldPosition       - Field position
  *              FieldLength         - Field length
  *
@@ -417,7 +413,6 @@ AcpiAmlPrepBankFieldValue (
     ACPI_NAMESPACE_NODE     *BankRegisterNode,
     UINT32                  BankVal,
     UINT8                   FieldFlags,
-    UINT8                   FieldAttribute,
     UINT32                  FieldPosition,
     UINT32                  FieldLength)
 {
@@ -463,7 +458,7 @@ AcpiAmlPrepBankFieldValue (
 
     /* Initialize areas of the object that are common to all fields */
 
-    Status = AcpiAmlPrepCommonFieldObject (ObjDesc, FieldFlags, FieldAttribute,
+    Status = AcpiAmlPrepCommonFieldObject (ObjDesc, FieldFlags,
                                             FieldPosition, FieldLength);
     if (ACPI_FAILURE (Status))
     {
@@ -472,11 +467,11 @@ AcpiAmlPrepBankFieldValue (
 
     /* Initialize areas of the object that are specific to this field type */
 
-    ObjDesc->BankField.Value            = BankVal;
-    ObjDesc->BankField.RegionObj        = AcpiNsGetAttachedObject (RegionNode);
-    ObjDesc->BankField.BankRegisterObj  = AcpiNsGetAttachedObject (BankRegisterNode);
+    ObjDesc->BankField.Value           = BankVal;
+    ObjDesc->BankField.RegionObj       = AcpiNsGetAttachedObject (RegionNode);
+    ObjDesc->BankField.BankRegisterObj = AcpiNsGetAttachedObject (BankRegisterNode);
 
-    /* An additional reference for the region and bankregister objects */
+    /* An additional reference for the attached objects */
 
     AcpiCmAddReference (ObjDesc->BankField.RegionObj);
     AcpiCmAddReference (ObjDesc->BankField.BankRegisterObj);
@@ -485,7 +480,7 @@ AcpiAmlPrepBankFieldValue (
 
     DEBUG_PRINT (ACPI_INFO,
         ("AmlPrepBankFieldValue: BitOff=%X Off=%X Gran=%X Region %p BankReg %p\n",
-        ObjDesc->BankField.BitOffset, ObjDesc->BankField.Offset,
+        ObjDesc->BankField.BitOffset, ObjDesc->BankField.ByteOffset,
         ObjDesc->Field.Granularity, ObjDesc->BankField.RegionObj,
         ObjDesc->BankField.BankRegisterObj));
 
@@ -508,10 +503,10 @@ AcpiAmlPrepBankFieldValue (
  *
  * FUNCTION:    AcpiAmlPrepIndexFieldValue
  *
- * PARAMETERS:  Node            - Owning Node
+ * PARAMETERS:  Node                - Owning Node
  *              IndexReg            - Index register
  *              DataReg             - Data register
- *              FieldFlags          - Access, LockRule, or UpdateRule
+ *              FieldFlags          - Access, LockRule, and UpdateRule
  *              FieldPosition       - Field position
  *              FieldLength         - Field length
  *
@@ -528,7 +523,6 @@ AcpiAmlPrepIndexFieldValue (
     ACPI_NAMESPACE_NODE     *IndexReg,
     ACPI_NAMESPACE_NODE     *DataReg,
     UINT8                   FieldFlags,
-    UINT8                   FieldAttribute,
     UINT32                  FieldPosition,
     UINT32                  FieldLength)
 {
@@ -557,7 +551,7 @@ AcpiAmlPrepIndexFieldValue (
 
     /* Initialize areas of the object that are common to all fields */
 
-    Status = AcpiAmlPrepCommonFieldObject (ObjDesc, FieldFlags, FieldAttribute,
+    Status = AcpiAmlPrepCommonFieldObject (ObjDesc, FieldFlags,
                                             FieldPosition, FieldLength);
     if (ACPI_FAILURE (Status))
     {
@@ -566,16 +560,21 @@ AcpiAmlPrepIndexFieldValue (
 
     /* Initialize areas of the object that are specific to this field type */
 
-    ObjDesc->IndexField.DataObj     = AcpiNsGetAttachedObject (DataReg);
-    ObjDesc->IndexField.IndexObj    = AcpiNsGetAttachedObject (IndexReg);
-    ObjDesc->IndexField.Value       = (UINT32) (FieldPosition /
-                                                ObjDesc->Field.Granularity);
+    ObjDesc->IndexField.DataObj  = AcpiNsGetAttachedObject (DataReg);
+    ObjDesc->IndexField.IndexObj = AcpiNsGetAttachedObject (IndexReg);
+    ObjDesc->IndexField.Value    = (UINT32) (FieldPosition /
+                                            ObjDesc->Field.Granularity);
+
+    /* An additional reference for the attached objects */
+
+    AcpiCmAddReference (ObjDesc->IndexField.DataObj);
+    AcpiCmAddReference (ObjDesc->IndexField.IndexObj);
 
     /* Debug info */
 
     DEBUG_PRINT (ACPI_INFO,
         ("AmlPrepIndexFieldValue: bitoff=%X off=%X gran=%X Index %p Data %p\n",
-        ObjDesc->IndexField.BitOffset, ObjDesc->IndexField.Offset,
+        ObjDesc->IndexField.BitOffset, ObjDesc->IndexField.ByteOffset,
         ObjDesc->Field.Granularity, ObjDesc->IndexField.IndexObj,
         ObjDesc->IndexField.DataObj));
 
