@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acmacros.h - C macros for the entire subsystem.
- *       $Revision: 1.75 $
+ *       $Revision: 1.76 $
  *
  *****************************************************************************/
 
@@ -302,9 +302,6 @@
 #define MASK_BITS_ABOVE(position)       (~(((UINT32)(-1)) << ((UINT32) (position))))
 #define MASK_BITS_BELOW(position)       (((UINT32)(-1)) << ((UINT32) (position)))
 
-#ifdef DEBUG_ASSERT
-#undef DEBUG_ASSERT
-#endif
 
 
 /* Macros for GAS addressing */
@@ -568,16 +565,6 @@
 #define DEBUG_PRINT_RAW(lvl,fp)         TEST_DEBUG_SWITCH(lvl) {\
                                             DebugPrintRaw PARAM_LIST(fp);}
 
-
-/* Assert macros */
-
-#define ACPI_ASSERT(exp)                if(!(exp)) \
-                                            AcpiOsDbgAssert(#exp, __FILE__, __LINE__, "Failed Assertion")
-
-#define DEBUG_ASSERT(msg, exp)          if(!(exp)) \
-                                            AcpiOsDbgAssert(#exp, __FILE__, __LINE__, msg)
-
-
 #else
 /*
  * This is the non-debug case -- make everything go away,
@@ -616,8 +603,6 @@
 #define return_VALUE(s)                 return(s)
 #define return_PTR(s)                   return(s)
 
-#define ACPI_ASSERT(exp)
-#define DEBUG_ASSERT(msg, exp)
 
 /* Memory allocation */
 
