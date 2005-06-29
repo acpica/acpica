@@ -122,7 +122,10 @@
 /*
  * Data types - Fixed across all compilation models
  *
- * BOOLEAN      Logical Boolean. 1 byte value containing a 0 for FALSE or a 1 for TRUE.  Other values are undefined.
+ * BOOLEAN      Logical Boolean.
+ *              1 byte value containing a 0 for FALSE or a 1 for TRUE.
+ *              Other values are undefined.
+ *
  * INT8         8-bit  (1 byte) signed value
  * UINT8        8-bit  (1 byte) unsigned value
  * INT16        16-bit (2 byte) signed value
@@ -136,14 +139,17 @@
  * UCHAR        Character. 1 byte unsigned value.
  */
 
+#ifdef __ia64__
+#define _IA64
+#endif
+
 #ifdef _IA64
 /*
  * 64-bit type definitions
  */
-typedef char                            INT8;
 typedef unsigned char                   UINT8;
+typedef unsigned char                   BOOLEAN;
 typedef unsigned char                   UCHAR;
-typedef short                           INT16;
 typedef unsigned short                  UINT16;
 typedef int                             INT32;
 typedef unsigned int                    UINT32;
@@ -165,10 +171,9 @@ typedef UINT64                          ACPI_IO_ADDRESS;
 /*
  * 16-bit type definitions
  */
-typedef char                            INT8;
 typedef unsigned char                   UINT8;
+typedef unsigned char                   BOOLEAN;
 typedef unsigned char                   UCHAR;
-typedef int                             INT16;
 typedef unsigned int                    UINT16;
 typedef long                            INT32;
 typedef unsigned long                   UINT32;
@@ -187,10 +192,9 @@ typedef UINT32                          ACPI_IO_ADDRESS;
 /*
  * 32-bit type definitions (default)
  */
-typedef char                            INT8;
 typedef unsigned char                   UINT8;
+typedef unsigned char                   BOOLEAN;
 typedef unsigned char                   UCHAR;
-typedef short                           INT16;
 typedef unsigned short                  UINT16;
 typedef int                             INT32;
 typedef unsigned int                    UINT32;
@@ -204,18 +208,15 @@ typedef UINT32                          ACPI_IO_ADDRESS;
 #define ALIGNED_ADDRESS_BOUNDARY        0x00000004
 #define _HW_ALIGNMENT_SUPPORT
 
-
 #endif
-
-
 
 /*
  * Miscellaneous common types
  */
 
-typedef UINT8                           BOOLEAN;
 typedef UINT32                          UINT32_BIT;
-typedef NATIVE_INT                      ACPI_PTRDIFF;
+typedef NATIVE_UINT                     ACPI_PTRDIFF;
+typedef char                            NATIVE_CHAR;                
 
 
 /*
@@ -223,21 +224,16 @@ typedef NATIVE_INT                      ACPI_PTRDIFF;
  */
 
 #define ACPI_UCHAR_MAX                  (UCHAR)  0xFF
-#define ACPI_INT32_MAX                  (INT32)  0x7FFFFFFF
 #define ACPI_UINT32_MAX                 (UINT32) 0xFFFFFFFF
 
 
-#ifdef DEFINE_ALTERNATE_TYPES
 /*
  * Types used only in translated source
  */
-typedef INT8                            s8;
-typedef INT16                           s16;
 typedef INT32                           s32;
 typedef UINT8                           u8;
 typedef UINT16                          u16;
 typedef UINT32                          u32;
-#endif
 
 /*! [End] no source code translation !*/
 
@@ -313,10 +309,12 @@ typedef UINT32                          ACPI_TABLE_TYPE;
 
 /*
  * Types associated with names.  The first group of
- * values correspond to the definition of the ACPI ObjectType operator (See the ACPI Spec).
- * Therefore, only add to the first group if the spec changes!
+ * values correspond to the definition of the ACPI
+ * ObjectType operator (See the ACPI Spec).  Therefore,
+ * only add to the first group if the spec changes!
  *
- * Types must be kept in sync with the AcpiNsProperties and AcpiNsTypeNames arrays
+ * Types must be kept in sync with the AcpiNsProperties
+ * and AcpiNsTypeNames arrays
  */
 
 typedef UINT32                          ACPI_OBJECT_TYPE;
@@ -465,7 +463,7 @@ typedef union AcpiObj
     {
         ACPI_OBJECT_TYPE            Type;
         UINT32                      Length;     /* # of bytes in string, excluding trailing null */
-        INT8                        *Pointer;   /* points to the string value */
+        NATIVE_CHAR                 *Pointer;   /* points to the string value */
     } String;
 
     struct
@@ -680,13 +678,11 @@ ACPI_STATUS (*WALK_CALLBACK) (
 
 
 #define ACPI_COMMON_OBJ_INFO \
-    ACPI_OBJECT_TYPE            Type;           /* ACPI object type */\
-    ACPI_NAME                   Name;           /* ACPI object Name */\
-    /*\
-     *  TBD: [Restructure] Do we want or need these next two??\
-     */\
-    ACPI_HANDLE                 Parent;         /* Parent object */\
-    ACPI_HANDLE                 Children;       /* Linked list of children */\
+    ACPI_OBJECT_TYPE            Type;           /* ACPI object type */ \
+    ACPI_NAME                   Name;           /* ACPI object Name */ \
+    /*  TBD: [Restructure] Do we want or need these next two??*/ \
+    ACPI_HANDLE                 Parent;         /* Parent object */ \
+    ACPI_HANDLE                 Children;       /* Linked list of children */ \
     UINT32                      Valid           /* ?????    */
 
 typedef struct
@@ -702,8 +698,8 @@ typedef struct
     /*
      *  TBD: [Restructure]: a HID or a _UID can return either a number or a string
      */
-    INT8                        HardwareId [9];     /*  _HID value if any */
-    INT8                        UniqueId[9];        /*  _UID value if any */
+    NATIVE_CHAR                 HardwareId [9];     /*  _HID value if any */
+    NATIVE_CHAR                 UniqueId[9];        /*  _UID value if any */
     UINT32                      Address;            /*  _ADR value if any */
     UINT32                      CurrentStatus;      /*  _STA value */
 } ACPI_DEVICE_INFO;
@@ -721,8 +717,8 @@ typedef struct
 
 typedef struct
 {
-    INT8                        *MappedPhysicalAddress;
-    INT8                        *MappedLogicalAddress;
+    UINT8                       *MappedPhysicalAddress;
+    UINT8                       *MappedLogicalAddress;
     UINT32                      MappedLength;
 } MEM_HANDLER_CONTEXT;
 
