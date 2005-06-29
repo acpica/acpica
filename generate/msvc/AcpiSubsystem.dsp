@@ -623,6 +623,10 @@ SOURCE=..\..\Subsystem\Include\enumerate.h
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\Subsystem\Include\environment.h
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\Subsystem\Include\events.h
 # End Source File
 # Begin Source File
