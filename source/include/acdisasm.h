@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acdisasm.h - AML disassembler
- *       $Revision: 1.17 $
+ *       $Revision: 1.20 $
  *
  *****************************************************************************/
 
@@ -164,6 +164,7 @@ typedef struct acpi_op_walk_info
 {
     UINT32                  Level;
     UINT32                  BitOffset;
+    ACPI_WALK_STATE         *WalkState;
 
 } ACPI_OP_WALK_INFO;
 
@@ -177,40 +178,16 @@ ACPI_STATUS (*ASL_WALK_CALLBACK) (
 /*
  * dmwalk
  */
-
 void
 AcpiDmDisassemble (
     ACPI_WALK_STATE         *WalkState,
     ACPI_PARSE_OBJECT       *Origin,
     UINT32                  NumOpcodes);
 
-static ACPI_STATUS
-AcpiDmDescendingOp (
-    ACPI_PARSE_OBJECT       *Op,
-    UINT32                  Level,
-    void                    *Context);
-
-static ACPI_STATUS
-AcpiDmAscendingOp (
-    ACPI_PARSE_OBJECT       *Op,
-    UINT32                  Level,
-    void                    *Context);
-
-static void
-AcpiDmWalkParseTree (
-    ACPI_PARSE_OBJECT       *Op,
-    ASL_WALK_CALLBACK       DescendingCallback,
-    ASL_WALK_CALLBACK       AscendingCallback,
-    void                    *Context);
-
-static UINT32
-AcpiDmBlockType (
-    ACPI_PARSE_OBJECT       *Op);
 
 /*
  * dmopcode
  */
-
 void
 AcpiDmDisassembleOneOp (
     ACPI_WALK_STATE         *WalkState,
@@ -220,10 +197,6 @@ AcpiDmDisassembleOneOp (
 void
 AcpiDmDecodeInternalObject (
     ACPI_OPERAND_OBJECT     *ObjDesc);
-
-UINT32
-AcpiDmBlockType (
-    ACPI_PARSE_OBJECT       *Op);
 
 UINT32
 AcpiDmListType (
@@ -257,19 +230,10 @@ void
 AcpiDmCommaIfFieldMember (
     ACPI_PARSE_OBJECT       *Op);
 
-static void
-AcpiDmMatchKeyword (
-    ACPI_PARSE_OBJECT       *Op);
 
 /*
  * dmnames
  */
-
-void
-AcpiDmValidateName (
-    char                    *Name,
-    ACPI_PARSE_OBJECT       *Op);
-
 UINT32
 AcpiDmDumpName (
     char                    *Name);
@@ -283,17 +247,10 @@ void
 AcpiDmNamestring (
     char                    *Name);
 
-#ifdef ACPI_OBSOLETE_FUNCTIONS
-void
-AcpiDmDisplayPath (
-    ACPI_PARSE_OBJECT       *Op);
-#endif
-
 
 /*
  * dmobject
  */
-
 void
 AcpiDmDisplayInternalObject (
     ACPI_OPERAND_OBJECT     *ObjDesc,
@@ -313,15 +270,10 @@ AcpiDmDumpMethodInfo (
     ACPI_WALK_STATE         *WalkState,
     ACPI_PARSE_OBJECT       *Op);
 
-static void
-AcpiDmDecodeNode (
-    ACPI_NAMESPACE_NODE     *Node);
-
 
 /*
  * dmbuffer
  */
-
 void
 AcpiDmDisasmByteList (
     UINT32                  Level,
@@ -349,15 +301,10 @@ BOOLEAN
 AcpiDmIsStringBuffer (
     ACPI_PARSE_OBJECT       *Op);
 
-static void
-AcpiDmUnicode (
-    ACPI_PARSE_OBJECT       *Op);
-
 
 /*
  * dmresrc
  */
-
 void
 AcpiDmResourceDescriptor (
     ACPI_OP_WALK_INFO       *Info,
@@ -380,10 +327,10 @@ void
 AcpiDmDecodeAttribute (
     UINT8                   Attribute);
 
+
 /*
  * dmresrcl
  */
-
 void
 AcpiDmWordDescriptor (
     ASL_WORD_ADDRESS_DESC   *Resource,
@@ -444,31 +391,10 @@ AcpiDmVendorLargeDescriptor (
     UINT32                  Length,
     UINT32                  Level);
 
-static void
-AcpiDmSpaceFlags (
-        UINT8               Flags);
-
-static void
-AcpiDmIoFlags (
-        UINT8               Flags);
-
-static void
-AcpiDmIoFlags2 (
-        UINT8               SpecificFlags);
-
-static void
-AcpiDmMemoryFlags (
-    UINT8                   Flags,
-    UINT8                   SpecificFlags);
-
-static void
-AcpiDmMemoryFlags2 (
-    UINT8                   SpecificFlags);
 
 /*
  * dmresrcs
  */
-
 void
 AcpiDmIrqDescriptor (
     ASL_IRQ_FORMAT_DESC     *Resource,
@@ -515,7 +441,6 @@ AcpiDmVendorSmallDescriptor (
 /*
  * dmutils
  */
-
 void
 AcpiDmAddToExternalList (
     char                    *Path);
