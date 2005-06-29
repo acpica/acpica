@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: nssearch - Namespace search
- *              $Revision: 1.56 $
+ *              $Revision: 1.63 $
  *
  ******************************************************************************/
 
@@ -9,8 +9,8 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, Intel Corp.  All rights
- * reserved.
+ * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
+ * All rights reserved.
  *
  * 2. License
  *
@@ -126,15 +126,14 @@
         MODULE_NAME         ("nssearch")
 
 
-
 /*******************************************************************************
  *
- * FUNCTION:    AcpiNsSearchNameTable
+ * FUNCTION:    AcpiNsSearchNode
  *
  * PARAMETERS:  *TargetName         - Ascii ACPI name to search for
- *              *NameDesc           - Starting table where search will begin
+ *              *Node           - Starting table where search will begin
  *              Type                - Object type to match
- *              **ReturnNameDesc    - Where the matched Named obj is returned
+ *              **ReturnNode    - Where the matched Named obj is returned
  *
  * RETURN:      Status
  *
@@ -148,30 +147,30 @@
  *      All namespace searching is linear in this implementation, but
  *      could be easily modified to support any improved search
  *      algorithm.  However, the linear search was chosen for simplicity
- *      and because the trees are small and the other interpreter 
+ *      and because the trees are small and the other interpreter
  *      execution overhead is relatively high.
  *
  ******************************************************************************/
 
 ACPI_STATUS
-AcpiNsSearchNameTable (
+AcpiNsSearchNode (
     UINT32                  TargetName,
-    ACPI_NAMED_OBJECT       *NameDesc,
+    ACPI_NAMESPACE_NODE     *Node,
     OBJECT_TYPE_INTERNAL    Type,
-    ACPI_NAMED_OBJECT       **ReturnNameDesc)
+    ACPI_NAMESPACE_NODE     **ReturnNode)
 {
-    ACPI_NAMED_OBJECT       *NextDesc;
+    ACPI_NAMESPACE_NODE     *NextNode;
 
 
-    FUNCTION_TRACE ("NsSearchNameTable");
+    FUNCTION_TRACE ("NsSearchNode");
 
     {
-        DEBUG_EXEC (NATIVE_CHAR *ScopeName = AcpiNsGetTablePathname (NameDesc));
+        DEBUG_EXEC (NATIVE_CHAR *ScopeName = AcpiNsGetTablePathname (Node));
         DEBUG_PRINT (TRACE_NAMES,
-            ("NsSearchNameTable: Searching %s [%p]\n",
-            ScopeName, NameDesc));
+            ("NsSearchNode: Searching %s [%p]\n",
+            ScopeName, Node));
         DEBUG_PRINT (TRACE_NAMES,
-            ("NsSearchNameTable: For %4.4s (type 0x%X)\n",
+            ("NsSearchNode: For %4.4s (type %X)\n",
             &TargetName, Type));
         DEBUG_EXEC (AcpiCmFree (ScopeName));
     }
@@ -182,12 +181,12 @@ AcpiNsSearchNameTable (
      * for the name among the children of this object
      */
 
-    NextDesc = NameDesc->Child;
-    while (NextDesc)
+    NextNode = Node->Child;
+    while (NextNode)
     {
         /* Check for match against the name */
 
-        if (NextDesc->Name == TargetName)
+        if (NextNode->Name == TargetName)
         {
             /*
              * Found matching entry.  Capture type if
@@ -218,26 +217,26 @@ AcpiNsSearchNameTable (
             if (Type != INTERNAL_TYPE_SCOPE &&
                 Type != INTERNAL_TYPE_DEF_ANY &&
                 Type != INTERNAL_TYPE_INDEX_FIELD_DEFN &&
-                NextDesc->Type == ACPI_TYPE_ANY)
+                NextNode->Type == ACPI_TYPE_ANY)
             {
-                NextDesc->Type = (UINT8) Type;
+                NextNode->Type = (UINT8) Type;
             }
 
             DEBUG_PRINT (TRACE_NAMES,
-                ("NsSearchNameTable: Name %4.4s (actual type 0x%X) found at %p\n",
-                &TargetName, NextDesc->Type, NextDesc));
+                ("NsSearchNode: Name %4.4s (actual type %X) found at %p\n",
+                &TargetName, NextNode->Type, NextNode));
 
-            *ReturnNameDesc = NextDesc;
+            *ReturnNode = NextNode;
             return_ACPI_STATUS (AE_OK);
         }
 
 
-        /* 
-         * The last entry in the list points back to the parent, 
+        /*
+         * The last entry in the list points back to the parent,
          * so a flag is used to indicate the end-of-list
          */
-        if (NextDesc->Flags & ANOBJ_END_OF_PEER_LIST)
-        {   
+        if (NextNode->Flags & ANOBJ_END_OF_PEER_LIST)
+        {
             /* Searched entire list, we are done */
 
             break;
@@ -245,16 +244,15 @@ AcpiNsSearchNameTable (
 
         /* Didn't match name, move on to the next peer object */
 
-        NextDesc = NextDesc->Peer;
+        NextNode = NextNode->Peer;
     }
-
 
 
     /* Searched entire table, not found */
 
     DEBUG_PRINT (TRACE_NAMES,
-        ("NsSearchNameTable: Name %4.4s (type 0x%X) not found at %p\n",
-        &TargetName, Type, NextDesc));
+        ("NsSearchNode: Name %4.4s (type %X) not found at %p\n",
+        &TargetName, Type, NextNode));
 
 
     return_ACPI_STATUS (AE_NOT_FOUND);
@@ -266,9 +264,9 @@ AcpiNsSearchNameTable (
  * FUNCTION:    AcpiNsSearchParentTree
  *
  * PARAMETERS:  *TargetName         - Ascii ACPI name to search for
- *              *NameDesc           - Starting table where search will begin
+ *              *Node           - Starting table where search will begin
  *              Type                - Object type to match
- *              **ReturnNameDesc    - Where the matched Named Obj is returned
+ *              **ReturnNode    - Where the matched Named Obj is returned
  *
  * RETURN:      Status
  *
@@ -286,30 +284,30 @@ AcpiNsSearchNameTable (
  *
  ******************************************************************************/
 
-ACPI_STATUS
+static ACPI_STATUS
 AcpiNsSearchParentTree (
     UINT32                  TargetName,
-    ACPI_NAMED_OBJECT       *NameDesc,
+    ACPI_NAMESPACE_NODE     *Node,
     OBJECT_TYPE_INTERNAL    Type,
-    ACPI_NAMED_OBJECT       **ReturnNameDesc)
+    ACPI_NAMESPACE_NODE     **ReturnNode)
 {
     ACPI_STATUS             Status;
-    ACPI_NAMED_OBJECT       *ParentDesc;
+    ACPI_NAMESPACE_NODE     *ParentNode;
 
 
     FUNCTION_TRACE ("NsSearchParentTree");
 
 
-    ParentDesc = AcpiNsGetParentObject (NameDesc);
+    ParentNode = AcpiNsGetParentObject (Node);
 
     /*
-     * If there is no parent (at the root) or type is "local", we won't be 
+     * If there is no parent (at the root) or type is "local", we won't be
      * searching the parent tree.
      */
     if ((AcpiNsLocal (Type))    ||
-        (!ParentDesc))
+        (!ParentNode))
     {
-        if (!ParentDesc)
+        if (!ParentNode)
         {
             DEBUG_PRINT (TRACE_NAMES,
                 ("NsSearchParentTree: [%4.4s] has no parent\n",
@@ -319,7 +317,7 @@ AcpiNsSearchParentTree (
         if (AcpiNsLocal (Type))
         {
             DEBUG_PRINT (TRACE_NAMES,
-                ("NsSearchParentTree: [%4.4s] (type 0x%X) is local (no search)\n",
+                ("NsSearchParentTree: [%4.4s] (type %X) is local (no search)\n",
                 &TargetName, Type));
         }
 
@@ -338,13 +336,13 @@ AcpiNsSearchParentTree (
      * the root
      */
 
-    while (ParentDesc)
+    while (ParentNode)
     {
         /* Search parent scope */
         /* TBD: [Investigate] Why ACPI_TYPE_ANY? */
 
-        Status = AcpiNsSearchNameTable (TargetName, ParentDesc,
-                                        ACPI_TYPE_ANY, ReturnNameDesc);
+        Status = AcpiNsSearchNode (TargetName, ParentNode,
+                                        ACPI_TYPE_ANY, ReturnNode);
 
         if (ACPI_SUCCESS (Status))
         {
@@ -356,7 +354,7 @@ AcpiNsSearchParentTree (
          * (until we reach the root)
          */
 
-        ParentDesc = AcpiNsGetParentObject (ParentDesc);
+        ParentNode = AcpiNsGetParentObject (ParentNode);
     }
 
 
@@ -366,19 +364,18 @@ AcpiNsSearchParentTree (
 }
 
 
-
 /*******************************************************************************
  *
  * FUNCTION:    AcpiNsSearchAndEnter
  *
  * PARAMETERS:  TargetName          - Ascii ACPI name to search for (4 chars)
  *              WalkState           - Current state of the walk
- *              *NameDesc           - Starting table where search will begin
- *              InterpreterMode     - Add names only in MODE_LoadPassX.  
+ *              *Node           - Starting table where search will begin
+ *              InterpreterMode     - Add names only in MODE_LoadPassX.
  *                                    Otherwise,search only.
  *              Type                - Object type to match
  *              Flags               - Flags describing the search restrictions
- *              **ReturnNameDesc    - Where the Named Object is returned
+ *              **ReturnNode    - Where the Node is returned
  *
  * RETURN:      Status
  *
@@ -396,14 +393,14 @@ ACPI_STATUS
 AcpiNsSearchAndEnter (
     UINT32                  TargetName,
     ACPI_WALK_STATE         *WalkState,
-    ACPI_NAMED_OBJECT       *NameDesc,
+    ACPI_NAMESPACE_NODE     *Node,
     OPERATING_MODE          InterpreterMode,
     OBJECT_TYPE_INTERNAL    Type,
     UINT32                  Flags,
-    ACPI_NAMED_OBJECT       **ReturnNameDesc)
+    ACPI_NAMESPACE_NODE     **ReturnNode)
 {
     ACPI_STATUS             Status;
-    ACPI_NAMED_OBJECT       *NewDesc;
+    ACPI_NAMESPACE_NODE     *NewNode;
 
 
     FUNCTION_TRACE ("NsSearchAndEnter");
@@ -411,13 +408,13 @@ AcpiNsSearchAndEnter (
 
     /* Parameter validation */
 
-    if (!NameDesc || !TargetName || !ReturnNameDesc)
+    if (!Node || !TargetName || !ReturnNode)
     {
         DEBUG_PRINT (ACPI_ERROR,
             ("NsSearchAndEnter: Null param:  Table %p Name %p Return %p\n",
-            NameDesc, TargetName, ReturnNameDesc));
+            Node, TargetName, ReturnNode));
 
-        REPORT_ERROR ("NsSearchAndEnter: bad (null)parameter");
+        REPORT_ERROR (("NsSearchAndEnter: bad (null) parameter\n"));
         return_ACPI_STATUS (AE_BAD_PARAMETER);
     }
 
@@ -430,18 +427,28 @@ AcpiNsSearchAndEnter (
             ("NsSearchAndEnter:  *** Bad character in name: %08lx *** \n",
             TargetName));
 
-        REPORT_ERROR ("NsSearchAndEnter: Bad character in ACPI Name");
+        REPORT_ERROR (("NsSearchAndEnter: Bad character in ACPI Name\n"));
         return_ACPI_STATUS (AE_BAD_CHARACTER);
     }
 
 
     /* Try to find the name in the table specified by the caller */
 
-    *ReturnNameDesc = ENTRY_NOT_FOUND;
-    Status = AcpiNsSearchNameTable (TargetName, NameDesc,
-                                    Type, ReturnNameDesc);
+    *ReturnNode = ENTRY_NOT_FOUND;
+    Status = AcpiNsSearchNode (TargetName, Node,
+                                    Type, ReturnNode);
     if (Status != AE_NOT_FOUND)
     {
+        /*
+         * If we found it AND the request specifies that a
+         * find is an error, return the error
+         */
+        if ((Status == AE_OK) &&
+            (Flags & NS_ERROR_IF_FOUND))
+        {
+            Status = AE_EXIST;
+        }
+
         /*
          * Either found it or there was an error
          * -- finished either way
@@ -468,8 +475,8 @@ AcpiNsSearchAndEnter (
          * to ACPI specification
          */
 
-        Status = AcpiNsSearchParentTree (TargetName, NameDesc,
-                                            Type, ReturnNameDesc);
+        Status = AcpiNsSearchParentTree (TargetName, Node,
+                                            Type, ReturnNode);
         if (ACPI_SUCCESS (Status))
         {
             return_ACPI_STATUS (Status);
@@ -484,7 +491,7 @@ AcpiNsSearchAndEnter (
     {
         DEBUG_PRINT (TRACE_NAMES,
             ("NsSearchAndEnter: %4.4s Not found in %p [Not adding]\n",
-            &TargetName, NameDesc));
+            &TargetName, Node));
 
         return_ACPI_STATUS (AE_NOT_FOUND);
     }
@@ -492,16 +499,16 @@ AcpiNsSearchAndEnter (
 
     /* Create the new named object */
 
-    NewDesc = AcpiNsCreateNamedObject (TargetName);
-    if (!NewDesc)
+    NewNode = AcpiNsCreateNode (TargetName);
+    if (!NewNode)
     {
         return_ACPI_STATUS (AE_NO_MEMORY);
     }
 
     /* Install the new object into the parent's list of children */
 
-    AcpiNsInstallNamedObject (WalkState, NameDesc, NewDesc, Type);
-    *ReturnNameDesc = NewDesc;
+    AcpiNsInstallNode (WalkState, Node, NewNode, Type);
+    *ReturnNode = NewNode;
 
     return_ACPI_STATUS (AE_OK);
 }

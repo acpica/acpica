@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: nsaccess - Top-level functions for accessing ACPI namespace
- *              $Revision: 1.118 $
+ *              $Revision: 1.119 $
  *
  ******************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, 2000, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -225,9 +225,9 @@ AcpiNsRootInitialize (void)
             switch (InitVal->Type)
             {
 
-            case ACPI_TYPE_NUMBER:
+            case ACPI_TYPE_INTEGER:
 
-                ObjDesc->Number.Value =
+                ObjDesc->Integer.Value =
                         (ACPI_INTEGER) STRTOUL (InitVal->Val, NULL, 10);
                 break;
 

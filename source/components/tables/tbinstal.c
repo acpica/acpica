@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: tbinstal - ACPI table installation and removal
- *              $Revision: 1.28 $
+ *              $Revision: 1.36 $
  *
  *****************************************************************************/
 
@@ -9,8 +9,8 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, Intel Corp.  All rights
- * reserved.
+ * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
+ * All rights reserved.
  *
  * 2. License
  *
@@ -275,7 +275,7 @@ AcpiTbRecognizeTable (
     if (Status == AE_SUPPORT)
     {
         DEBUG_PRINT (ACPI_INFO,
-            ("Unsupported table %s (Type %d) was found and discarded\n",
+            ("Unsupported table %s (Type %X) was found and discarded\n",
             AcpiGbl_AcpiTableData[TableType].Name, TableType));
     }
 
@@ -430,7 +430,7 @@ AcpiTbDeleteAcpiTables (void)
      * Memory can either be mapped or allocated
      */
 
-    for (Type = 0; Type < ACPI_TABLE_MAX; Type++)
+    for (Type = 0; Type < NUM_ACPI_TABLES; Type++)
     {
         AcpiTbDeleteAcpiTable (Type);
     }
@@ -479,35 +479,24 @@ AcpiTbDeleteAcpiTable (
         AcpiGbl_RSDP = NULL;
         break;
 
-    case ACPI_TABLE_APIC:
-        AcpiGbl_APIC = NULL;
-        break;
-
     case ACPI_TABLE_DSDT:
         AcpiGbl_DSDT = NULL;
         break;
 
-    case ACPI_TABLE_FACP:
-        AcpiGbl_FACP = NULL;
+    case ACPI_TABLE_FADT:
+        AcpiGbl_FADT = NULL;
         break;
 
     case ACPI_TABLE_FACS:
         AcpiGbl_FACS = NULL;
         break;
 
-    case ACPI_TABLE_PSDT:
-        break;
-
-    case ACPI_TABLE_RSDT:
-        AcpiGbl_RSDT = NULL;
+    case ACPI_TABLE_XSDT:
+        AcpiGbl_XSDT = NULL;
         break;
 
     case ACPI_TABLE_SSDT:
-        break;
-
-    case ACPI_TABLE_SBST:
-        AcpiGbl_SBST = NULL;
-
+    case ACPI_TABLE_PSDT:
     default:
         break;
     }
@@ -555,7 +544,7 @@ AcpiTbFreeAcpiTablesOfType (
 
     for (i = 0; i < Count; i++)
     {
-        TableDesc = AcpiTbDeleteSingleTable (TableDesc);
+        TableDesc = AcpiTbUninstallTable (TableDesc);
     }
 
     return_VOID;
@@ -570,6 +559,55 @@ AcpiTbFreeAcpiTablesOfType (
  *
  * RETURN:      None.
  *
+ * DESCRIPTION: Low-level free for a single ACPI table.  Handles cases where
+ *              the table was allocated a buffer or was mapped.
+ *
+ ******************************************************************************/
+
+void
+AcpiTbDeleteSingleTable (
+    ACPI_TABLE_DESC         *TableDesc)
+{
+
+    if (!TableDesc)
+    {
+        return;
+    }
+
+    if (TableDesc->Pointer)
+    {
+        /* Valid table, determine type of memory allocation */
+
+        switch (TableDesc->Allocation)
+        {
+
+        case ACPI_MEM_NOT_ALLOCATED:
+            break;
+
+
+        case ACPI_MEM_ALLOCATED:
+
+            AcpiCmFree (TableDesc->BasePointer);
+            break;
+
+
+        case ACPI_MEM_MAPPED:
+
+            AcpiOsUnmapMemory (TableDesc->BasePointer, TableDesc->Length);
+            break;
+        }
+    }
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiTbUninstallTable
+ *
+ * PARAMETERS:  TableInfo           - A table info struct
+ *
+ * RETURN:      None.
+ *
  * DESCRIPTION: Free the memory associated with an internal ACPI table that
  *              is either installed or has never been installed.
  *              Table mutex should be locked.
@@ -577,7 +615,7 @@ AcpiTbFreeAcpiTablesOfType (
  ******************************************************************************/
 
 ACPI_TABLE_DESC *
-AcpiTbDeleteSingleTable (
+AcpiTbUninstallTable (
     ACPI_TABLE_DESC         *TableDesc)
 {
     ACPI_TABLE_DESC         *NextDesc;
@@ -607,34 +645,10 @@ AcpiTbDeleteSingleTable (
 
     /* Free the memory allocated for the table itself */
 
-    if (TableDesc->Pointer)
-    {
-        /* Valid table, determine type of memory allocation */
-
-        switch (TableDesc->Allocation)
-        {
-
-        case ACPI_MEM_NOT_ALLOCATED:
-
-            break;
-
-
-        case ACPI_MEM_ALLOCATED:
-
-            AcpiCmFree (TableDesc->BasePointer);
-            break;
-
-
-        case ACPI_MEM_MAPPED:
-
-            AcpiOsUnmapMemory (TableDesc->BasePointer, TableDesc->Length);
-            break;
-        }
-    }
+    AcpiTbDeleteSingleTable (TableDesc);
 
 
     /* Free the table descriptor (Don't delete the list head, tho) */
-
 
     if ((TableDesc->Prev) == (TableDesc->Next))
     {
@@ -660,7 +674,5 @@ AcpiTbDeleteSingleTable (
 
     return_PTR (NextDesc);
 }
-
-
 
 
