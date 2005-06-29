@@ -442,7 +442,7 @@ OsResetEvent (
 
     /* We are going to simply delete the existing semaphore and create a new one! */
 
-    Status = OsdCreateSemaphore (1, &TempSemaphore);
+    Status = OsdCreateSemaphore (0, &TempSemaphore);
     if (ACPI_SUCCESS (Status))
     {
         OsdDeleteSemaphore (ObjDesc->Mutex.Semaphore);
