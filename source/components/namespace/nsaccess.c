@@ -362,11 +362,11 @@ AcpiNsLookup (
     NAME_TABLE_ENTRY        *ThisEntry = NULL;
     NAME_TABLE_ENTRY        *ScopeToPush = NULL;
     UINT32                  NumSegments;
-    UINT32                  i;
     ACPI_NAME               SimpleName;
     BOOLEAN                 NullNamePath = FALSE;
     OBJECT_TYPE_INTERNAL    TypeToCheckFor;
     OBJECT_TYPE_INTERNAL    ThisSearchType;
+    DEBUG_EXEC              (UINT32 i)
 
 
     FUNCTION_TRACE ("NsLookup");
@@ -617,14 +617,26 @@ AcpiNsLookup (
             return_ACPI_STATUS (Status);
         }
 
-        if (NumSegments         == 0  &&                            /* If last segment                  */
-            TypeToCheckFor      != ACPI_TYPE_ANY &&                 /* and looking for a specific type  */
-            TypeToCheckFor      != INTERNAL_TYPE_DEF_ANY &&         /* which is not a local type        */
-            TypeToCheckFor      != INTERNAL_TYPE_SCOPE &&           /*   "   "   "  "   "     "         */
-            TypeToCheckFor      != INTERNAL_TYPE_INDEX_FIELD_DEFN && /*  "   "   "  "   "     "         */
-            ThisEntry->Type     != ACPI_TYPE_ANY &&                 /* and type of entry is known       */
-            ThisEntry->Type     != TypeToCheckFor)                  /* and entry does not match request */
-        {                                                           /* complain.                        */
+
+        /*
+         * If 1) last segment (NumSegments == 0)
+         *    2) and looking for a specific type (Not checking for TYPE_ANY)
+         *    3) which is not a local type (TYPE_DEF_ANY)
+         *    4) which is not a local type (TYPE_SCOPE)
+         *    5) which is not a local type (TYPE_INDEX_FIELD_DEFN)
+         *    6) and type of entry is known (not TYPE_ANY)
+         *    7) and entry does not match request
+         *
+         * Then we have a type mismatch.  Just warn and ignore it. 
+         */
+        if ((NumSegments         == 0)                                &&
+            (TypeToCheckFor      != ACPI_TYPE_ANY)                    &&
+            (TypeToCheckFor      != INTERNAL_TYPE_DEF_ANY)            &&
+            (TypeToCheckFor      != INTERNAL_TYPE_SCOPE)              &&
+            (TypeToCheckFor      != INTERNAL_TYPE_INDEX_FIELD_DEFN)   &&
+            (ThisEntry->Type     != ACPI_TYPE_ANY)                    &&
+            (ThisEntry->Type     != TypeToCheckFor)) 
+        {
             /* Complain about type mismatch */
 
             REPORT_WARNING ("Type mismatch");
