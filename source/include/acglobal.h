@@ -251,7 +251,8 @@ ACPI_EXTERN ACPI_OBJECT_NotifyHandler   Gbl_SysNotify;
 
 ACPI_EXTERN UINT32                      Gbl_NsLookupCount;
 ACPI_EXTERN UINT32                      Gbl_PsFindCount;
-ACPI_EXTERN UINT16                      Gbl_TbNextTableId;
+ACPI_EXTERN UINT16                      Gbl_NextTableOwnerId;
+ACPI_EXTERN UINT16                      Gbl_NextMethodOwnerId;
 
 /*****************************************************************************
  * 
