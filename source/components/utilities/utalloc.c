@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: utalloc - local memory allocation routines
- *              $Revision: 1.92 $
+ *              $Revision: 1.93 $
  *
  *****************************************************************************/
 
@@ -126,12 +126,12 @@
         MODULE_NAME         ("utalloc")
 
 
-#ifdef ACPI_DEBUG_TRACK_ALLOCATIONS
+#ifdef ACPI_DBG_TRACK_ALLOCATIONS
 
 
 /*
  * This module is used for tracking memory leaks in the subsystem, and it
- * gets compiled out when the ACPI_DEBUG_TRACK_ALLOCATIONS is not set.
+ * gets compiled out when the ACPI_DBG_TRACK_ALLOCATIONS is not set.
  *
  * Each memory allocation is tracked via a doubly linked list.  Each
  * element contains the caller's component, module name, function name, and
@@ -784,5 +784,5 @@ AcpiUtFree (
     return_VOID;
 }
 
-#endif  /* #ifdef ACPI_DEBUG_TRACK_ALLOCATIONS */
+#endif  /* #ifdef ACPI_DBG_TRACK_ALLOCATIONS */
 
