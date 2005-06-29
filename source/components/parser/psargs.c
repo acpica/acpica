@@ -375,8 +375,8 @@ PsGetNextNamepath (
 
                     PsInitOp (Arg, AML_METHODCALL);
 
-                    Name->Value.Name    = Path;
-                    Name->ResultObj     = MethodOp;          /* Point METHODCALL/NAME to the METHOD NTE */
+                    Name->Value.Name        = Path;
+                    Name->NameTableEntry    = MethodOp;          /* Point METHODCALL/NAME to the METHOD NTE */
                     PsAppendArg (Arg, Name);
                     
                     *ArgCount = Count->Value.Integer & METHOD_FLAGS_ARG_COUNT;
@@ -390,17 +390,30 @@ PsGetNextNamepath (
 #ifndef PARSER_ONLY
     else
     {
+        /*
+         * The full parse tree has already been deleted -- therefore, we are parsing
+         * a control method.  We can lookup the name in the namespace instead of
+         * the parse tree!
+         */
+
         ACPI_STATUS             Status;
         NAME_TABLE_ENTRY        *Method = NULL;
         NAME_TABLE_ENTRY        *Nte;
+        SCOPE_STACK             ScopeInfo;
 
 
         /* 
          * Lookup the name in the internal namespace
          */
 
-        Status = NsLookup (Gbl_CurrentScope->Scope, Path, ACPI_TYPE_Any, IMODE_LoadPass2, /* MUST BE PASS2 to perform upsearch */ 
-                                NS_SEARCH_PARENT | NS_DONT_OPEN_SCOPE, &Nte);
+        Nte = ParserState->StartOp->NameTableEntry;
+        if (Nte)
+        {
+            ScopeInfo.Scope = Nte->Scope;
+        }
+
+        Status = NsLookup (&ScopeInfo, Path, ACPI_TYPE_Any, IMODE_LoadPass2, /* MUST BE PASS2 to perform upsearch */ 
+                                NS_SEARCH_PARENT | NS_DONT_OPEN_SCOPE, NULL, &Nte);
         if (ACPI_SUCCESS (Status))
         {
             if (Nte->Type == ACPI_TYPE_Method)
@@ -415,8 +428,8 @@ PsGetNextNamepath (
 
                     PsInitOp (Arg, AML_METHODCALL);
 
-                    Name->Value.Name    = Path;
-                    Name->ResultObj     = Method;           /* Point METHODCALL/NAME to the METHOD NTE */
+                    Name->Value.Name        = Path;
+                    Name->NameTableEntry    = Method;           /* Point METHODCALL/NAME to the METHOD NTE */
                     PsAppendArg (Arg, Name);
 
                     *ArgCount = ((ACPI_OBJECT_INTERNAL *) Method->Object)->Method.ParamCount;
