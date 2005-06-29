@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: evregion - ACPI AddressSpace (OpRegion) handler dispatch
- *              $Revision: 1.147 $
+ *              $Revision: 1.148 $
  *
  *****************************************************************************/
 
@@ -329,7 +329,7 @@ AcpiEvAddressSpaceDispatch (
     HandlerDesc = RegionObj->Region.Handler;
     if (!HandlerDesc)
     {
-        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, 
+        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
             "No handler for Region [%4.4s] (%p) [%s]\n",
             AcpiUtGetNodeName (RegionObj->Region.Node),
             RegionObj, AcpiUtGetRegionName (RegionObj->Region.SpaceId)));
@@ -630,7 +630,7 @@ AcpiEvAttachRegion (
     ACPI_DEBUG_PRINT ((ACPI_DB_OPREGION,
         "Adding Region [%4.4s] %p to address handler %p [%s]\n",
         AcpiUtGetNodeName (RegionObj->Region.Node),
-        RegionObj, HandlerObj, 
+        RegionObj, HandlerObj,
         AcpiUtGetRegionName (RegionObj->Region.SpaceId)));
 
     /* Link this region to the front of the handler's list */
