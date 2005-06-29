@@ -129,13 +129,14 @@
 
 /*******************************************************************************
  *
- * FUNCTION:    
+ * FUNCTION:    PsxResultStackClear
  *
- * PARAMETERS:  WalkState       - State to push
+ * PARAMETERS:  WalkState           - Current Walk state
  *
  * RETURN:      Status
  *
- * DESCRIPTION: 
+ * DESCRIPTION: Reset this walk's result stack pointers to zero, thus setting
+ *              the stack to zero.
  *
  ******************************************************************************/
 
@@ -153,13 +154,14 @@ PsxResultStackClear (
 
 /*******************************************************************************
  *
- * FUNCTION:    
+ * FUNCTION:    PsxResultStackPush
  *
- * PARAMETERS:  WalkState       - State to push
+ * PARAMETERS:  Object              - Object to push
+ *              WalkState           - Current Walk state
  *
  * RETURN:      Status
  *
- * DESCRIPTION: 
+ * DESCRIPTION: Push an object onto this walk's result stack
  *
  ******************************************************************************/
 
@@ -189,13 +191,15 @@ PsxResultStackPush (
 
 /*******************************************************************************
  *
- * FUNCTION:    
+ * FUNCTION:    PsxResultStackPop
  *
- * PARAMETERS:  WalkState       - State to push
+ * PARAMETERS:  Object              - Where to return the popped object
+ *              WalkState           - Current Walk state
  *
  * RETURN:      Status
  *
- * DESCRIPTION: 
+ * DESCRIPTION: Pop an object off the bottom of this walk's result stack.  In
+ *              other words, this is a FIFO.
  *
  ******************************************************************************/
 
@@ -206,6 +210,8 @@ PsxResultStackPop (
 {
 
 
+    /* Check for stack underflow */
+
     if ((WalkState->NumResults == 0) ||
         (WalkState->CurrentResult >= WalkState->NumResults))
     {
@@ -214,12 +220,18 @@ PsxResultStackPop (
         return AE_STACK_UNDERFLOW;
     }
 
+    /* Get an object from the bottom of the stack, move up stack pointer */
+
     *Object = WalkState->Results [WalkState->CurrentResult];
     WalkState->Results [WalkState->CurrentResult] = NULL;
     WalkState->CurrentResult++;
 
+    /* If the lower stack pointer now equals the upper stack pointer, the stack is empty */
+
     if (WalkState->CurrentResult == WalkState->NumResults)
     {
+        /* Reset the stack pointers */
+
         WalkState->CurrentResult = 0;
         WalkState->NumResults = 0;
 
@@ -233,18 +245,17 @@ PsxResultStackPop (
     return AE_OK;
 }
 
-   
-
 
 /*******************************************************************************
  *
  * FUNCTION:    PsxObjStackDeleteAll
  *
- * PARAMETERS:  WalkState       - State to push
+ * PARAMETERS:  WalkState           - Current Walk state
  *
  * RETURN:      Status
  *
- * DESCRIPTION: 
+ * DESCRIPTION: Clear the object stack by deleting all objects that are on it.
+ *              Should be used with great care, if at all!
  *
  ******************************************************************************/
 
@@ -257,6 +268,8 @@ PsxObjStackDeleteAll (
 
     FUNCTION_TRACE_PTR ("PsxObjStackDeleteAll", WalkState);
 
+
+    /* The stack size is configurable, but fixed */
 
     for (i = 0; i < OBJ_NUM_OPERANDS; i++)
     {
@@ -275,11 +288,12 @@ PsxObjStackDeleteAll (
  *
  * FUNCTION:    PsxObjStackPush
  *
- * PARAMETERS:  WalkState       - State to push
+ * PARAMETERS:  Object              - Object to push
+ *              WalkState           - Current Walk state
  *
  * RETURN:      Status
  *
- * DESCRIPTION: 
+ * DESCRIPTION: Push an object onto this walk's object/operand stack
  *
  ******************************************************************************/
 
@@ -290,12 +304,16 @@ PsxObjStackPush (
 {
 
 
+    /* Check for stack overflow */
+
     if (WalkState->NumOperands >= OBJ_NUM_OPERANDS)
     {
         DEBUG_PRINT (ACPI_ERROR, ("PsxObjStackPush: overflow! Obj=%p State=%p #Ops=%X\n", 
                         Object, WalkState, WalkState->NumOperands));
         return AE_STACK_OVERFLOW;
     }
+
+    /* Put the object onto the stack */
 
     WalkState->Operands [WalkState->NumOperands] = Object;
     WalkState->NumOperands++;
@@ -311,11 +329,13 @@ PsxObjStackPush (
  *
  * FUNCTION:    PsxObjStackPop 
  *
- * PARAMETERS:  WalkState       - State to push
+ * PARAMETERS:  PopCount            - Number of objects/entries to pop
+ *              WalkState           - Current Walk state
  *
  * RETURN:      Status
  *
- * DESCRIPTION: 
+ * DESCRIPTION: Pop this walk's object stack.  Objects on the stack are NOT
+ *              deleted by this routine.
  *
  ******************************************************************************/
 
@@ -327,14 +347,19 @@ PsxObjStackPop (
     UINT32                  i;
 
 
+
     for (i = 0; i < PopCount; i++)
     {
+        /* Check for stack underflow */
+
         if (WalkState->NumOperands == 0)
         {
             DEBUG_PRINT (ACPI_ERROR, ("PsxObjStackPop: Underflow! Count=%X State=%p #Ops=%X\n", 
                             PopCount, WalkState, WalkState->NumOperands));
             return AE_STACK_UNDERFLOW;
         }
+
+        /* Just set the stack entry to null */
 
         WalkState->NumOperands--;
         WalkState->Operands [WalkState->NumOperands] = NULL;
@@ -349,13 +374,68 @@ PsxObjStackPop (
     
 /*******************************************************************************
  *
- * FUNCTION:    PsxObjStackGetValue 
+ * FUNCTION:    PsxObjStackPopAndDelete
  *
- * PARAMETERS:  WalkState       - State to push
+ * PARAMETERS:  PopCount            - Number of objects/entries to pop
+ *              WalkState           - Current Walk state
  *
  * RETURN:      Status
  *
- * DESCRIPTION: 
+ * DESCRIPTION: Pop this walk's object stack and delete each object that is
+ *              popped off.
+ *
+ ******************************************************************************/
+
+ACPI_STATUS
+PsxObjStackPopAndDelete (
+    UINT32                  PopCount,
+    ACPI_WALK_STATE         *WalkState)
+{
+    UINT32                  i;
+    ACPI_OBJECT_INTERNAL    *ObjDesc;
+
+
+    for (i = 0; i < PopCount; i++)
+    {
+        /* Check for stack underflow */
+
+        if (WalkState->NumOperands == 0)
+        {
+            DEBUG_PRINT (ACPI_ERROR, ("PsxObjStackPop: Underflow! Count=%X State=%p #Ops=%X\n", 
+                            PopCount, WalkState, WalkState->NumOperands));
+            return AE_STACK_UNDERFLOW;
+        }
+
+        /* Pop the stack and delete an object if present in this stack entry */
+
+        WalkState->NumOperands--;
+        ObjDesc = WalkState->Operands [WalkState->NumOperands];
+        if (ObjDesc)
+        {
+            CmDeleteInternalObject (WalkState->Operands [WalkState->NumOperands]);
+            WalkState->Operands [WalkState->NumOperands] = NULL;
+        }
+    }
+
+    DEBUG_PRINT (TRACE_EXEC, ("PsxObjStackPop: Count=%X State=%p #Ops=%X\n", 
+                    PopCount, WalkState, WalkState->NumOperands));
+
+    return AE_OK;
+}
+
+    
+/*******************************************************************************
+ *
+ * FUNCTION:    PsxObjStackGetValue 
+ *
+ * PARAMETERS:  Index               - Stack index whose value is desired.  Based
+ *                                    on the top of the stack (index=0 == top)
+ *              WalkState           - Current Walk state
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Retrieve an object from this walk's object stack.  Index must
+ *              be within the range of the current stack pointer.
  *
  ******************************************************************************/
 
@@ -368,15 +448,20 @@ PsxObjStackGetValue (
     FUNCTION_TRACE_PTR ("PsxObjStackGetValue", WalkState);
 
 
+    /* Can't do it if the stack is empty */
+
     if (WalkState->NumOperands == 0)
     {
         return_VALUE (NULL);
     }
 
+    /* or if the index is past the top of the stack */
+
     if (Index > (WalkState->NumOperands - (UINT32) 1))
     {
         return_VALUE (NULL);
     }
+
 
     return_VALUE (WalkState->Operands [(WalkState->NumOperands - 1) - Index]);
 }
