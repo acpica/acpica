@@ -108,13 +108,32 @@
  * It may be necessary to tailor these include files to the target 
  * generation environment.
  *
+ *
+ * Functions and constants used from each header:
+ *
+ * stdio.h:     sprintf
+ *
+ * string.h:    memcpy
+ *              memset
+ *              strcat
+ *              strcmp
+ *              strcpy
+ *              strlen
+ *              strncmp
+ *              strncat
+ *              strncpy 
+ *
+ * stdlib.h:    strtoul
+ *
+ * stdarg.h:    va_list
+ *              va_start
+ *              va_end
+ *
  */
-#include <stddef.h>
+
 #include <stdio.h>
-#include <limits.h>
 #include <string.h>
 #include <stdarg.h>
 #include <stdlib.h>
-
 
 #endif /* __ENVIRONMENT_H__ */
