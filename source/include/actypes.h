@@ -153,6 +153,9 @@ typedef UINT64                          NATIVE_UINT;
 typedef INT64                           NATIVE_INT;
 
 typedef NATIVE_UINT                     ACPI_TBLPTR;
+typedef UINT64                          ACPI_IO_ADDRESS;
+
+#define ALIGNED_ADDRESS_BOUNDARY        (void *) 0x00000008
 
 
 #elif _IA16
@@ -171,6 +174,9 @@ typedef UINT16                          NATIVE_UINT;
 typedef INT16                           NATIVE_INT;
 
 typedef UINT32                          ACPI_TBLPTR;
+typedef UINT32                          ACPI_IO_ADDRESS;
+
+#define ALIGNED_ADDRESS_BOUNDARY        (void *) 0x00000002
 
  
 #else
@@ -189,6 +195,9 @@ typedef UINT32                          NATIVE_UINT;
 typedef INT32                           NATIVE_INT;
 
 typedef NATIVE_UINT                     ACPI_TBLPTR;
+typedef UINT32                          ACPI_IO_ADDRESS;
+
+#define ALIGNED_ADDRESS_BOUNDARY        (void *) 0x00000004
 
 #endif
 
@@ -202,7 +211,6 @@ typedef UINT8                           BOOLEAN;
 typedef UINT32                          UINT32_BIT;
 typedef NATIVE_INT                      ACPI_PTRDIFF;
 typedef NATIVE_UINT                     ACPI_SIZE;
-typedef NATIVE_UINT                     ACPI_IO_ADDRESS;
 
 
 /*
@@ -237,7 +245,6 @@ typedef NATIVE_UINT                     ACPI_IO_ADDRESS;
 /* 
  * Local datatypes 
  */
-
 
 typedef UINT32                          ACPI_STATUS;    /* All ACPI Exceptions */
 typedef UINT32                          ACPI_NAME;      /* 4-char ACPI name */
@@ -293,7 +300,7 @@ typedef UINT32                          ACPI_TABLE_TYPE;
  * Types must be kept in sync with the NsProperties and NsTypeNames arrays
  */
 
-typedef UINT32                          ACPI_OBJECT_TYPE;
+typedef UINT8                           ACPI_OBJECT_TYPE;
 
 #define ACPI_TYPE_Any                   (ACPI_OBJECT_TYPE) 0  /* 0x00  */
 #define ACPI_TYPE_Number                (ACPI_OBJECT_TYPE) 1  /* 0x01  Byte/Word/Dword/Zero/One/Ones */
@@ -343,7 +350,7 @@ typedef UINT32                          ACPI_OBJECT_TYPE;
 #define INTERNAL_TYPE_MAX               41
 
 #define INTERNAL_TYPE_Invalid           (ACPI_OBJECT_TYPE) 42
-
+#define ACPI_TYPE_NotFound              (ACPI_OBJECT_TYPE) 0xFF
 
 /* 
  * Event Types:
@@ -703,6 +710,13 @@ typedef struct
     UINT32                      MappedLength;
 
 } MEM_HANDLER_CONTEXT;
+
+
+/*
+ * C-state handler
+ */
+
+typedef ACPI_STATUS (*ACPI_C_STATE_HANDLER) (ACPI_IO_ADDRESS, UINT32*);
 
 
 
