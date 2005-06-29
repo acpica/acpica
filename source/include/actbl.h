@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: actbl.h - Table data structures defined in ACPI specification
- *       $Revision: 1.62 $
+ *       $Revision: 1.63 $
  *
  *****************************************************************************/
 
@@ -323,7 +323,7 @@ typedef struct madt_address_override
 {
     APIC_HEADER_DEF
     UINT16                  Reserved;               /* Reserved - must be zero */
-    UINT32                  Address;                /* APIC physical address */
+    UINT64                  Address;                /* APIC physical address */
 
 } MADT_ADDRESS_OVERRIDE;
 
