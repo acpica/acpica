@@ -27,7 +27,7 @@
  * Code in any form, with the right to sublicense such rights; and
  *
  * 2.3. Intel grants Licensee a non-exclusive and non-transferable patent
- * license (without the right to sublicense), under only those claims of Intel
+ * license (with the right to sublicense), under only those claims of Intel
  * patents that are infringed by the Original Intel Code, to make, use, sell,
  * offer to sell, and import the Covered Code and derivative works thereof
  * solely to the minimum extent necessary to exercise the above copyright
@@ -154,8 +154,10 @@
 #define AE_SHARE            (ACPI_STATUS) 0x001A
 #define AE_LIMIT            (ACPI_STATUS) 0x001B
 #define AE_TIME             (ACPI_STATUS) 0x001C
-#define AE_UNKNOWN_STATUS   (ACPI_STATUS) 0x001D
-#define ACPI_MAX_STATUS     (ACPI_STATUS) 0x001D
+#define AE_TERMINATE        (ACPI_STATUS) 0x001D
+#define AE_DEPTH            (ACPI_STATUS) 0x001E
+#define AE_UNKNOWN_STATUS   (ACPI_STATUS) 0x001F
+#define ACPI_MAX_STATUS     (ACPI_STATUS) 0x001F
 
 
 
