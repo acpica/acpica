@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dmnames - AML disassembler, names, namestrings, pathnames
- *              $Revision: 1.2 $
+ *              $Revision: 1.1 $
  *
  ******************************************************************************/
 
@@ -126,49 +126,6 @@
 
 #define _COMPONENT          ACPI_DEBUGGER
         ACPI_MODULE_NAME    ("dmnames")
-
-
-/*******************************************************************************
- *
- * FUNCTION:    AcpiDmValidateName
- *
- * PARAMETERS:  Name            - 4 character ACPI name
- *
- * RETURN:      None
- *
- * DESCRIPTION: Lookup the name
- *
- ******************************************************************************/
-
-void
-AcpiDmValidateName (
-    char                    *Name,
-    ACPI_PARSE_OBJECT       *Op)
-{
-#ifdef PARSER_ONLY
-    ACPI_PARSE_OBJECT       *TargetOp;
-
-
-    if ((!Name) ||
-        (!Op->Common.Parent))
-    {
-        return;
-    }
-
-    TargetOp = AcpiPsFind (Op, Name, 0, 0);
-    if (!TargetOp)
-    {
-        /*
-         * Didn't find the name in the parse tree.  This may be
-         * a problem, or it may simply be one of the predefined names
-         * (such as _OS_).  Rather than worry about looking up all
-         * the predefined names, just display the name as given
-         */
-        AcpiOsPrintf (" /**** Name not found or not accessible from this scope ****/ ");
-    }
-#endif
-
-}
 
 
 /*******************************************************************************

@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dmresrcs.c - "Small" Resource Descriptor disassembly
- *              $Revision: 1.3 $
+ *              $Revision: 1.1 $
  *
  ******************************************************************************/
 
@@ -121,7 +121,7 @@
 
 #ifdef ACPI_DISASSEMBLER
 
-#define _COMPONENT          ACPI_CA_DEBUGGER
+#define _COMPONENT          ACPI_DEBUGGER
         ACPI_MODULE_NAME    ("dbresrcs")
 
 
@@ -217,10 +217,10 @@ AcpiDmIoDescriptor (
     AcpiDmIndent (Level);
     AcpiOsPrintf ("IO (%s, 0x%4.4X, 0x%4.4X, 0x%2.2X, 0x%2.2X)\n",
         AcpiGbl_IoDecode [(Resource->Information & 1)],
-        (UINT32) Resource->AddressMin,
-        (UINT32) Resource->AddressMax,
-        (UINT32) Resource->Alignment,
-        (UINT32) Resource->Length);
+        Resource->AddressMin,
+        Resource->AddressMax,
+        Resource->Alignment,
+        Resource->Length);
 }
 
 
@@ -247,8 +247,8 @@ AcpiDmFixedIoDescriptor (
 
     AcpiDmIndent (Level);
     AcpiOsPrintf ("FixedIO (0x%4.4X, 0x%2.2X)\n",
-        (UINT32) Resource->BaseAddress,
-        (UINT32) Resource->Length);
+        Resource->BaseAddress,
+        Resource->Length);
 }
 
 
@@ -278,8 +278,8 @@ AcpiDmStartDependentDescriptor (
     if (Length & 1)
     {
         AcpiOsPrintf ("StartDependentFn (0x%2.2X, 0x%2.2X)\n",
-            (UINT32) Resource->Flags & 3,
-            (UINT32) (Resource->Flags >> 2) & 3);
+            Resource->Flags & 3,
+            (Resource->Flags >> 2) & 3);
     }
     else
     {

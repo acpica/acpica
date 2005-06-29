@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dmresrc.c - Resource Descriptor disassembly
- *              $Revision: 1.6 $
+ *              $Revision: 1.1 $
  *
  ******************************************************************************/
 
@@ -121,7 +121,7 @@
 
 #ifdef ACPI_DISASSEMBLER
 
-#define _COMPONENT          ACPI_CA_DEBUGGER
+#define _COMPONENT          ACPI_DEBUGGER
         ACPI_MODULE_NAME    ("dbresrc")
 
 
@@ -195,7 +195,7 @@ AcpiDmResourceDescriptor (
     UINT8                   *ByteData,
     UINT32                  ByteCount)
 {
-    ACPI_NATIVE_UINT        CurrentByteOffset;
+    UINT32                  CurrentByteOffset;
     UINT8                   CurrentByte;
     UINT8                   DescriptorId;
     UINT32                  Length;
@@ -224,7 +224,7 @@ AcpiDmResourceDescriptor (
             CurrentByteOffset += 1;
         }
 
-        CurrentByteOffset += (ACPI_NATIVE_UINT) Length;
+        CurrentByteOffset += Length;
 
         /* Determine type of resource */
 
@@ -294,21 +294,11 @@ AcpiDmResourceDescriptor (
             {
                 /*
                  * Close an open StartDependentDescriptor.  This indicates a missing
-                 * EndDependentDescriptor.
+                 * EndDependentDescriptor and we fix it here.
                  */
                 Level--;
                 DependentFns = FALSE;
-                AcpiDmIndent (Level);
-                AcpiOsPrintf ("}\n");
-                AcpiDmIndent (Level);
-
-                AcpiOsPrintf ("/*** Missing EndDependentFunctions descriptor */");
-
-                /*
-                 * We could fix the problem, but then the ASL would not match the AML
-                 * So, we don't do this:
-                 * AcpiDmEndDependentDescriptor (DescriptorBody, Length, Level);
-                 */
+                AcpiDmEndDependentDescriptor (DescriptorBody, Length, Level);
             }
             return;
 
@@ -391,7 +381,7 @@ AcpiDmResourceDescriptor (
  *
  * PARAMETERS:  Op          - Buffer Op to be examined
  *
- * RETURN:      TRUE if this Buffer Op contains a valid resource
+ * RETURN:      TRUE if this Buffer Op contains a valid resource 
  *              descriptor.
  *
  * DESCRIPTION: Walk a byte list to determine if it consists of a valid set
@@ -406,7 +396,7 @@ AcpiDmIsResourceDescriptor (
     UINT8                   *ByteData;
     UINT32                  ByteCount;
     ACPI_PARSE_OBJECT       *NextOp;
-    ACPI_NATIVE_UINT        CurrentByteOffset;
+    UINT32                  CurrentByteOffset;
     UINT8                   CurrentByte;
     UINT8                   DescriptorId;
     UINT32                  Length;
@@ -441,7 +431,7 @@ AcpiDmIsResourceDescriptor (
     }
 
     /*
-     * Walk the byte list.  Abort on any invalid descriptor ID or
+     * Walk the byte list.  Abort on any invalid descriptor ID or 
      * or length
      */
     for (CurrentByteOffset = 0; CurrentByteOffset < ByteCount; )
@@ -463,7 +453,7 @@ AcpiDmIsResourceDescriptor (
             CurrentByteOffset += 1;
         }
 
-        CurrentByteOffset += (ACPI_NATIVE_UINT) Length;
+        CurrentByteOffset += Length;
 
         /* Determine type of resource */
 
