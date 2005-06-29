@@ -141,7 +141,7 @@ ACPI_EXTERN ROOT_SYSTEM_DESCRIPTOR_POINTER      * RSDP;
 ACPI_EXTERN ROOT_SYSTEM_DESCRIPTION_TABLE       * RSDT;
 ACPI_EXTERN FIRMWARE_ACPI_CONTROL_STRUCTURE     * FACS;
 ACPI_EXTERN FIXED_ACPI_DESCRIPTION_TABLE        * FACP;
-ACPI_EXTERN APIC_TABLE                          * MAPIC;
+ACPI_EXTERN APIC_TABLE                          * APIC;
 ACPI_EXTERN ACPI_TABLE_HEADER                   * DSDT;
 ACPI_EXTERN ACPI_TABLE_HEADER                   * PSDT;
 
@@ -186,6 +186,14 @@ extern UINT32                   NestingLevel;
 extern UINT32                   DebugLevel;
 extern UINT32                   DebugLayer;
 
+/* Tracing of memory management */
+
+ACPI_EXTERN UINT32              Allocations;
+ACPI_EXTERN UINT32              Deallocations;
+ACPI_EXTERN UINT32              Allocs;
+ACPI_EXTERN UINT32              Callocs;
+ACPI_EXTERN UINT32              Maps;
+ACPI_EXTERN UINT32              Unmaps;
 
 
 /*****************************************************************************
