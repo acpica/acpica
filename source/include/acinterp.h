@@ -561,12 +561,6 @@ NsType
 GetMethodValTyp (
     INT32               Index);
 
-void 
-SetWhy (
-    char                *Function, 
-    char                *Case, 
-    char                *Description);
-
 void
 AmlAppendBlockOwner (
     void                *Owner);
@@ -577,8 +571,6 @@ ShowHexValue (
     UINT8               *AmlPtr, 
     OpMode              LoadExecMode, 
     INT32               LeadSpace);
-
-
 
 UINT8 *
 ConsumeAMLByte (
