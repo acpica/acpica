@@ -3,7 +3,7 @@
 /******************************************************************************
  *
  * Module Name: aslcompiler.y - Bison input file (ASL grammar and actions)
- *              $Revision: 1.16 $
+ *              $Revision: 1.19 $
  *
  *****************************************************************************/
 
@@ -155,7 +155,7 @@ AslLocalAllocate (unsigned int Size);
  * are disabled.
  */
 
-#define YYFLAG              0
+#define YYFLAG              -32768
 
 
 %}
@@ -310,6 +310,7 @@ AslLocalAllocate (unsigned int Size);
 %token <i> MEMTYPE_PREFETCHABLE
 %token <i> MEMTYPE_WRITECOMBINING
 %token <i> METHOD
+%token <i> METHODCALL
 %token <i> MID
 %token <i> MINTYPE_FIXED
 %token <i> MINTYPE_NOTFIXED
@@ -840,8 +841,8 @@ NameSpaceModifier
     ;
 
 UserTerm
-    : NameString '(' 
-        ArgList ')'             {$$ = TgLinkChildNode ($1,$3)}
+    : NameString '('            {TgUpdateNode (METHODCALL, $1)}
+        ArgList ')'             {$$ = TgLinkChildNode ($1,$4)}
     ;
 
 ArgList
@@ -1023,7 +1024,7 @@ IncludeCStyleTerm
 
 ExternalTerm
     : EXTERNAL '('
-        String ','
+        NameString ','
         ObjectTypeKeyword
         ')'                     {$$ = TgCreateNode (EXTERNAL,2,$3,$5)}
     ;
@@ -2188,9 +2189,9 @@ ResourceTemplateTerm
     ;
 
 UnicodeTerm
-    : UNICODE '('
+    : UNICODE '('               {$$ = TgCreateLeafNode (UNICODE)}
         StringData
-        ')'                     {$$ = TgUpdateNode (UNICODE, $3)}
+        ')'                     {$$ = TgLinkChildren ($<n>3,2,0,$4)}
     ;
 
 ResourceMacroList
@@ -2483,10 +2484,12 @@ WordIOTerm
 NameString
     : NameSeg                   {}
     | NAMESTRING                {$$ = TgCreateValuedLeafNode (NAMESTRING, AslCompilerlval.s)}
+    | error                     {$$ = NULL}
     ;
 
 NameSeg 
     : NAMESEG                   {$$ = TgCreateValuedLeafNode (NAMESEG, AslCompilerlval.s)}
+    | error                     {$$ = NULL}
     ;
 
 

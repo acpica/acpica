@@ -3,7 +3,7 @@
 /******************************************************************************
  *
  * Module Name: aslcompiler.l - Flex input file
- *              $Revision: 1.12 $
+ *              $Revision: 1.15 $
  *
  *****************************************************************************/
 
@@ -183,6 +183,7 @@ NamePathTail        [.]{NameSeg}
 
 "Include"                   { copy(); count (1); return (INCLUDE); }
 "#include"                  { copy(); count (1); return (INCLUDE_CSTYLE); }
+"External"                  { copy(); count (1); return (EXTERNAL); }
 
 
 "Ones"                      { copy(); count (1); return (ONES); }
@@ -499,12 +500,25 @@ typedef struct asl_file_node
 ASL_FILE_NODE               *InputStack = NULL;
 
 
+
+/*******************************************************************************
+ *
+ * FUNCTION:    
+ *
+ * PARAMETERS:  
+ *
+ * RETURN:      
+ *
+ * DESCRIPTION: 
+ *
+ ******************************************************************************/
+
 void
 copy (void)
 {
 
 
-    if (Gbl_SourceOutputFlag)
+    if (Gbl_SourceOutputFile)
     {
        fwrite (yytext, strlen(yytext), 1, Gbl_SourceOutputFile);
     }
@@ -515,7 +529,7 @@ void
 copy_one (int c)
 {
 
-    if (Gbl_SourceOutputFlag)
+    if (Gbl_SourceOutputFile)
     {
        fwrite (&c, 1, 1, Gbl_SourceOutputFile);
     }

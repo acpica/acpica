@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslanalyze.c - check for semantic errors
- *              $Revision: 1.8 $
+ *              $Revision: 1.9 $
  *
  *****************************************************************************/
 
@@ -388,9 +388,6 @@ AnSemanticAnalysisWalkBegin (
     char                        ArgName[] = "Arg0";
 
 
-    UtPrintFormattedName (Node->ParseOpcode, Level);
-    DbgPrint ("DOWN\n");
-
 
     switch (Node->ParseOpcode)
     {
@@ -406,7 +403,6 @@ AnSemanticAnalysisWalkBegin (
         Next = Next->Peer;
         MethodInfo->NumArguments = (Next->Value.Integer8 & 0x07);
 
-        DbgPrint ("Method obj %p pushed\n", MethodInfo);
 
         break;
 
@@ -420,26 +416,16 @@ AnSemanticAnalysisWalkBegin (
     case LOCAL6:
     case LOCAL7:
         RegisterNumber = (Node->AmlOpcode & 0x000F);
-        DbgPrint ("Found Local%d ", RegisterNumber);
 
         if (Node->Flags & NODE_IS_TARGET)
         {
-            DbgPrint ("[IS a target]\n");
-            if (!MethodInfo->LocalInitialized[RegisterNumber])
-            {
-                DbgPrint ("First init of this local\n");
-            }
             MethodInfo->LocalInitialized[RegisterNumber] = TRUE;
 
         }
-        else
+        else if (!MethodInfo->LocalInitialized[RegisterNumber])
         {
-            DbgPrint ("[Is NOT a target]\n");
-            if (!MethodInfo->LocalInitialized[RegisterNumber])
-            {
-                LocalName[strlen (LocalName) -1] = RegisterNumber + 0x30;
-                AslError (ASL_ERROR, ASL_MSG_LOCAL_INIT, Node, LocalName);
-            }
+            LocalName[strlen (LocalName) -1] = RegisterNumber + 0x30;
+            AslError (ASL_ERROR, ASL_MSG_LOCAL_INIT, Node, LocalName);
         }
         break;
 
@@ -452,20 +438,11 @@ AnSemanticAnalysisWalkBegin (
     case ARG5:
     case ARG6:
         RegisterNumber = (Node->AmlOpcode & 0x000F) - 8;
-        DbgPrint ("Found Arg%d ", RegisterNumber);
 
         if (RegisterNumber >= MethodInfo->NumArguments)
         {
             ArgName[strlen (ArgName) -1] = RegisterNumber + 0x30;
             AslError (ASL_ERROR, ASL_MSG_ARG_INVALID, Node, ArgName);
-        }
-        if (Node->Flags & NODE_IS_TARGET)
-        {
-            DbgPrint ("[IS a target]\n");
-        }
-        else
-        {
-            DbgPrint ("[Is NOT a target]\n");
         }
         break;
         
@@ -559,10 +536,6 @@ AnSemanticAnalysisWalkEnd (
 
 
 
-    UtPrintFormattedName (Node->ParseOpcode, Level);
-    DbgPrint ("UP\n");
-
-
     switch (Node->ParseOpcode)
     {
     case METHOD:
@@ -607,8 +580,6 @@ AnSemanticAnalysisWalkEnd (
          * and correct number of arguments
          */
         AnCheckForReservedMethod (Node, MethodInfo);
-
-        DbgPrint ("Method obj %p popped\n", MethodInfo);
         free (MethodInfo);
 
         break;
@@ -651,9 +622,6 @@ AnSemanticAnalysisWalkEnd (
         break;
 
     }
-
-
-
 }
 
 

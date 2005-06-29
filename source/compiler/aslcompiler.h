@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslcompiler.h - common include file
- *              $Revision: 1.21 $
+ *              $Revision: 1.24 $
  *
  *****************************************************************************/
 
@@ -133,12 +133,12 @@
 
 #include "acpi.h"
 
-#define CompilerVersion                         "X204"
+#define CompilerVersion                         "X205"
+#define CompilerCreatorRevision                 0x00020205  /* Acpi 2.0, Version# */
 
 #define CompilerId                              "ACPI Component Architecture ASL Compiler"
 #define CompilerName                            "iasl"
 #define CompilerCreatorId                       "IASL"
-#define CompilerCreatorRevision                 0x00020203
 
 
 
@@ -244,9 +244,10 @@ typedef struct asl_parse_node
     union asl_node_value    Value;
     char                    *ExternalName;
     char                    *Namepath;
-    UINT32                  StartLineNumber;
     UINT32                  LineNumber;
     UINT32                  LogicalLineNumber;
+    UINT32                  EndLine;
+    UINT32                  EndLogicalLine;
     UINT16                  AmlOpcode;
     UINT16                  ParseOpcode;
     UINT32                  AmlLength;
@@ -379,7 +380,8 @@ EXTERN UINT32                   INIT_GLOBAL (Gbl_SourceLine, 0);
 
 typedef enum 
 {
-    ASL_MSG_MEMORY_ALLOCATION = 0,
+    ASL_MSG_NULL = 0,
+    ASL_MSG_MEMORY_ALLOCATION,
     ASL_MSG_INPUT_FILE_OPEN,
     ASL_MSG_OUTPUT_FILENAME,
     ASL_MSG_OUTPUT_FILE_OPEN,
@@ -412,6 +414,9 @@ void
 AslCompilerSignon (
     FILE                    *Where);
 
+void
+AslCompilerFileHeader (
+    FILE                    *Where);
 
 void
 AslDoSourceOutputFile (
@@ -452,7 +457,7 @@ AslError (
     ASL_PARSE_NODE          *Node,
     char                    *ExtraMessage);
 
-void
+ASL_ERROR_MSG *
 AslCommonError (
     UINT8                   Level,
     UINT8                   MessageId,
@@ -470,7 +475,30 @@ AePrintErrorLog (
     FILE                    *Where);
 
 
+/* asllisting */
 
+void
+LsWriteListingHexBytes (
+    char                    *Buffer,
+    UINT32                  Length);
+
+void
+LsWriteNodeToListing (
+    ASL_PARSE_NODE          *Node);
+
+void
+LsFlushListingBuffer (void);
+
+void
+LsFinishSourceListing (void);
+
+void
+LsDoHexOutput (void);
+
+
+
+void
+CgGenerateAmlOutput (void);
 
 UINT32
 CgSetOptimalIntegerSize (
@@ -619,7 +647,7 @@ AnSemanticAnalysisWalkEnd (
     void                        *Context);
 
 
-/* Files */
+/* aslfiles */
 
 #define FlOpenIncludeFile(a)        _FlOpenIncludeFile ((ASL_PARSE_NODE *)(a))
 
@@ -639,9 +667,13 @@ ACPI_STATUS
 FlOpenMiscOutputFiles (
     char                    *InputFilename);
 
-void
-FlDoHexOutput (void);
 
+void
+FlCloseListingFile (void);
+void
+FlCloseSourceOutputFile (void);
+void
+FlCloseHexOutputFile (void);
 
 /* Load */
 

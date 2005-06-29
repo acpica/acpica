@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslcodegen - AML code generation
- *              $Revision: 1.12 $
+ *              $Revision: 1.15 $
  *
  *****************************************************************************/
 
@@ -123,12 +123,6 @@
 #include "acparser.h"
 
 
-UINT32          HexColumn = 0;
-UINT32          AmlOffset = 0;
-UINT32          Gbl_CurrentLine = 0;
-UINT8           Gbl_AmlBuffer[16];
-
-
 
 /*******************************************************************************
  *
@@ -143,140 +137,30 @@ UINT8           Gbl_AmlBuffer[16];
  ******************************************************************************/
 
 void
-CgCheckException (
-    UINT32                  LineNumber)
+CgGenerateAmlOutput (void)
 {
 
-    if ((!AslGbl_NextError) || 
-        (LineNumber < AslGbl_NextError->LogicalLineNumber ))
+
+    DbgPrint ("\nWriting AML\n\n");
+
+    if (Gbl_SourceOutputFlag || Gbl_ListingFlag)
     {
-        return;
-    }
- 
-    fprintf (Gbl_ListingFile, "[****AslException****] ");
-
-    AePrintException (Gbl_ListingFile, AslGbl_NextError);
-    AslGbl_NextError = AslGbl_NextError->Next;
-    fprintf (Gbl_ListingFile, "\n");
-
-}
-
-
-/*******************************************************************************
- *
- * FUNCTION:    
- *
- * PARAMETERS:  
- *
- * RETURN:      
- *
- * DESCRIPTION: 
- *
- ******************************************************************************/
-
-void
-CgFlushListingBuffer (void)
-{
-    UINT32                  i;
-    UINT8                   BufChar;
-
-
-    for (i = 0; i < HexColumn; i++)
-    {
-        fwrite (&hex[Gbl_AmlBuffer[i] >> 4], 1, 1, Gbl_ListingFile);
-        fwrite (&hex[Gbl_AmlBuffer[i] & 0xF], 1, 1, Gbl_ListingFile);
-        fprintf (Gbl_ListingFile, " ");
+        fseek (Gbl_SourceOutputFile, 0, SEEK_SET);
     }
 
-    fprintf (Gbl_ListingFile, "    %*s", ((16 - HexColumn) * 3) + 1, " ");
-    for (i = 0; i < HexColumn; i++)
-    {
-        BufChar = Gbl_AmlBuffer[i];
-        if ((BufChar > 0x1F && BufChar < 0x2E) ||
-            (BufChar > 0x2F && BufChar < 0x61) ||
-            (BufChar > 0x60 && BufChar < 0x7F))
-        {
-            fprintf (Gbl_ListingFile, "%c", BufChar);
-        }
-        else
-        {
-            fprintf (Gbl_ListingFile, ".");
-        }
-    }
+    Gbl_SourceLine = 0;
+    AslGbl_NextError = AslGbl_ErrorLog;
 
+    TgWalkParseTree (ASL_WALK_VISIT_DOWNWARD, CgAmlWriteWalk, NULL, NULL);
 
-    HexColumn = 0;
-}
-
-
-/*******************************************************************************
- *
- * FUNCTION:    
- *
- * PARAMETERS:  
- *
- * RETURN:      
- *
- * DESCRIPTION: 
- *
- ******************************************************************************/
-
-
-void
-CgWriteListingHexBytes (
-    char                    *Buffer,
-    UINT32                  Length)
-{
-    UINT32                  i;
-    UINT8                   *CharBuffer = (UINT8 *) Buffer;
-
-    
-    for (i = 0; i < Length; i++)
-    {
-        if (HexColumn == 0)
-        {
-            fprintf (Gbl_ListingFile, "%8.8X:....", AmlOffset);
-        }
-
-        Gbl_AmlBuffer[HexColumn] = Buffer[i];
-
-        HexColumn++;
-        AmlOffset++;
-
-        if (HexColumn >= 16)
-        {
-            CgFlushListingBuffer ();
-            fwrite ("\n", 1, 1, Gbl_ListingFile);
-        }
-    }
-
-}
-
-
-/*******************************************************************************
- *
- * FUNCTION:    
- *
- * PARAMETERS:  
- *
- * RETURN:      
- *
- * DESCRIPTION: 
- *
- ******************************************************************************/
-
-void
-CgLocalWriteAmlData (
-    void                    *Buffer,
-    UINT32                  Length)
-{
-
-    fwrite ((char *) Buffer, Length, 1, Gbl_OutputAmlFile);
 
     if (Gbl_ListingFlag)
     {
-        CgWriteListingHexBytes (Buffer, Length);
+        LsFinishSourceListing ();
+        fprintf (Gbl_ListingFile, "\n\nTable header with final checksum:\n\n");
     }
+
+    CgCloseTable ();
 }
 
 
@@ -299,27 +183,24 @@ CgAmlWriteWalk (
     UINT32                  Level,
     void                    *Context)
 {
-    ACPI_OPCODE_INFO        *OpInfo;
-    UINT8                   Optype;
-    char                    FileByte;
-    ASL_PARSE_NODE          *Next;
-    UINT32                  i;
 
 
+    DbgPrint ("%5.5d [%d]", Node->LogicalLineNumber, Level);
     UtPrintFormattedName (Node->ParseOpcode, Level);
 
 	if (Node->ParseOpcode == NAMESEG ||
-		Node->ParseOpcode == NAMESTRING)
+		Node->ParseOpcode == NAMESTRING ||
+        Node->ParseOpcode == METHODCALL)
 	{
-		DbgPrint ("%4.4s      ", Node->Value.String);
+		DbgPrint ("%10.32s      ", Node->ExternalName);
 	}
 
 	else
 	{
-		DbgPrint ("          ");
+		DbgPrint ("                ");
 	}
 
-    DbgPrint ("Value-%08X ParseOp-0x%04X AmlOp-%04X OpLen-%01X PByts-%01X Len-%04X SubLen-%04X ParentSubLen-%04X Node-%08X Chld-%08X Paren-%08X\n",
+    DbgPrint ("Val-%08X POp-%04X AOp-%04X OpLen-%01X PByts-%01X Len-%04X SubLen-%04X PSubLen-%04X Node-%08X Chld-%08X Paren-%08X\n",
                 Node->Value.Integer32,
                 Node->ParseOpcode,
                 Node->AmlOpcode,
@@ -333,111 +214,40 @@ CgAmlWriteWalk (
 				Node->Parent);
 
 
-    OpInfo = AcpiPsGetOpcodeInfo (Node->AmlOpcode);
-    Optype = (UINT8) ACPI_GET_OP_CLASS (OpInfo);
 
-    if (Gbl_ListingFlag)
-    {
-        switch (Node->ParseOpcode)
-        {
-        case DEFINITIONBLOCK:
-            CgFlushListingBuffer ();
-//            fprintf (Gbl_ListingFile, "NodeName %8s, Line %d\n", Node->ParseOpName, Node->LineNumber);
-
-            Next = Node->Child;
-            for (i = 0; i < 6; i++)
-            {
-                Gbl_CurrentLine = Next->LogicalLineNumber;
-//                fprintf (Gbl_ListingFile, "ChildName %8s, Line %d\n", Next->ParseOpName, Next->LineNumber);
-                Next = Next->Peer;
-            }
-
-            if (Gbl_SourceLine < Gbl_CurrentLine)
-                fprintf (Gbl_ListingFile, "\n\n");
-
-            while (Gbl_SourceLine < Gbl_CurrentLine)
-            {
-                Gbl_SourceLine++;
-                fprintf (Gbl_ListingFile, "%5d....", Gbl_SourceLine);
-
-                while (fread (&FileByte, 1, 1, Gbl_SourceOutputFile))
-                {
-                    fwrite (&FileByte, 1, 1, Gbl_ListingFile);
-                    if (FileByte == '\n')
-                        break;
-                }
-            }
-
-            fprintf (Gbl_ListingFile, "\n");
-            CgCheckException (Gbl_CurrentLine);
-            goto DoWriteNode;
-            break;
-        }
-
-
-        switch (Optype)
-        {
-        case OPTYPE_BOGUS:
-        case OPTYPE_CONSTANT:           /* argument type only */
-        case OPTYPE_LITERAL:            /* argument type only */
-        case OPTYPE_DATA_TERM:          /* argument type only */
-        case OPTYPE_LOCAL_VARIABLE:     /* argument type only */
-        case OPTYPE_METHOD_ARGUMENT:    /* argument type only */
-
-//            fprintf (Gbl_ListingFile, "NodeName %8s, Line %d\n", Node->ParseOpName, Node->LineNumber);
-            if (Node->LogicalLineNumber > Gbl_CurrentLine)
-            {
-                Gbl_CurrentLine = Node->LogicalLineNumber;
-                //CgCheckException (Gbl_CurrentLine);
-            }
-            break;
-
-        case OPTYPE_UNDEFINED:
-        default:
-
-            CgFlushListingBuffer ();
-//            fprintf (Gbl_ListingFile, "NodeName %8s, Line %d\n", Node->ParseOpName, Node->LineNumber);
-
-            if (Node->Child)
-            {
-                Gbl_CurrentLine = Node->Child->LogicalLineNumber;
-//                fprintf (Gbl_ListingFile, "ChildName %8s, Line %d\n", Node->Child->ParseOpName, Node->Child->LineNumber);
-            }
-
-            if (Gbl_SourceLine < Gbl_CurrentLine)
-                fprintf (Gbl_ListingFile, "\n\n");
-
-            while (Gbl_SourceLine < Gbl_CurrentLine)
-            {
-                Gbl_SourceLine++;
-                fprintf (Gbl_ListingFile, "%5d....", Gbl_SourceLine);
-
-                while (fread (&FileByte, 1, 1, Gbl_SourceOutputFile))
-                {
-                    fwrite (&FileByte, 1, 1, Gbl_ListingFile);
-                    if (FileByte == '\n')
-                        break;
-                }
-            }
-
-            fprintf (Gbl_ListingFile, "\n");
-            CgCheckException (Gbl_CurrentLine);
-            break;
-        }
-    }
-
-
-DoWriteNode:
+    LsWriteNodeToListing (Node);
 
     CgWriteNode (Node);
-
-
-//    if (Gbl_ListingFlag)
-//        fwrite ("\n", 1, 1, Gbl_ListingFile);
 
 }
 
 
+/*******************************************************************************
+ *
+ * FUNCTION:    
+ *
+ * PARAMETERS:  
+ *
+ * RETURN:      
+ *
+ * DESCRIPTION: 
+ *
+ ******************************************************************************/
+
+void
+CgLocalWriteAmlData (
+    void                    *Buffer,
+    UINT32                  Length)
+{
+
+    /* Write the raw data to the AML file */
+
+    fwrite ((char *) Buffer, Length, 1, Gbl_OutputAmlFile);
+
+    /* Write the hex bytes to the listing file (if requested) */
+
+    LsWriteListingHexBytes (Buffer, Length);
+}
 
 
 
@@ -776,6 +586,7 @@ CgWriteNode (
 
     case NAMESEG:
     case NAMESTRING:
+    case METHODCALL:
         CgLocalWriteAmlData (Node->Value.String, Node->AmlLength);
         break;
 
