@@ -8,7 +8,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -126,7 +126,7 @@ extern UINT8                    *DsdtPtr;
 extern UINT32                   AcpiDsdtLength;
 extern int                      optind;
 extern char                     *optarg;
-extern UINT8                    *AmlPtr;
+extern UINT8                    *AmlStart;
 extern UINT32                   AmlLength;
 extern FILE                     *AcpiGbl_DebugFile;
 
@@ -186,6 +186,13 @@ getopt (
     char                    **argv,
     char                    *opts);
 
+ACPI_STATUS
+AeBuildLocalTables (
+    void);
+
+ACPI_STATUS
+AeInstallTables (
+    void);
 
 void
 AeDumpNamespace (
@@ -233,12 +240,6 @@ AdDumpTables (void);
 
 ACPI_STATUS
 AeInstallHandlers (void);
-
-int
-FlatMove (
-    UINT32                  Dest,
-    UINT32                  Src,
-    UINT32                  Size);
 
 ACPI_STATUS
 AdGetTables (

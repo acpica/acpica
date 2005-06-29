@@ -221,7 +221,7 @@ AcpiOsWritable (
  *
  *****************************************************************************/
 
-void
+void ACPI_INTERNAL_VAR_XFACE
 AcpiOsPrintf (
     const char              *Fmt,
     ...)
