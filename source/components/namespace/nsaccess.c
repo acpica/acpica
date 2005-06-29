@@ -319,22 +319,9 @@ NsLookup (
         }
     }
 
-    if (!Name)
-    {
-        /* Invalid parameter */
-
-        FUNCTION_STATUS_EXIT (AE_BAD_PARAMETER);
-        return AE_BAD_PARAMETER;
-    }
-
-    DEBUG_PRINT (TRACE_NAMES,
-                    ("NsLookup: Name: [%4.4s] - %02x %02x %02x %02x %02x %02x  Flags=%x\n",
-                    Name, Name[0], Name[1], Name[2], Name[3], Name[4], Name[5], Flags));
-
-    CheckTrash ("enter NsLookup");
 
     /* DefFieldDefn and BankFieldDefn define fields in a Region */
-    
+
     if (TYPE_DefFieldDefn == Type || TYPE_BankFieldDefn == Type)
     {
         TypeToCheckFor = TYPE_Region;
@@ -344,98 +331,114 @@ NsLookup (
         TypeToCheckFor = Type;
     }
 
-    /* 
-     * Check for prefixes.  As represented in the AML stream, a Name consists
-     * of an optional scope prefix followed by a segment part.
-     *
-     * If present, the scope prefix is either a RootPrefix (in which case the
-     * name is fully qualified), or zero or more ParentPrefixes (in which case
-     * the name's scope is relative to the current scope).
-     *
-     * The segment part consists of:
-     *  + a single 4-byte name segment, or
-     *  + a DualNamePrefix followed by two 4-byte name segments, or
-     *  + a MultiNamePrefixOp, followed by a byte indicating the number of
-     *    segments and the segments themselves.
-     */
 
-    if (*Name == AML_RootPrefix)
-    {
-        /* Name is fully qualified, look in root name table */
-        
-        EntryToSearch = RootObject->Scope;
-        Name++;                 /* point to segment part */
+    /* Examine the name pointer */
 
-        DEBUG_PRINT (TRACE_NAMES, ("NsLookup: Searching from root [%p]\n", 
-                                    EntryToSearch));
-    }
-    
-    else
-    {
-        /* Name is relative to current scope, start there */
-        
-        EntryToSearch = PrefixScope;
-
-        DEBUG_PRINT (TRACE_NAMES, ("NsLookup: Searching relative to pfx scope [%p]\n",
-                                    PrefixScope));
-
-        /* Handle up-prefix (carat).  More than one prefix is supported */
-
-        while (*Name == AML_ParentPrefix)
-        {
-            
-            /* Point to segment part or next ParentPrefix */
-
-            Name++;     
-
-            /*  Backup to the parent's scope  */
-            
-            EntryToSearch = EntryToSearch->ParentScope;
-            if (!EntryToSearch)
-            {
-                /* Current scope has no parent scope */
-                
-                REPORT_ERROR ("NsLookup: Too many parent prefixes or scope has no parent");
-                CheckTrash ("leave NsLookup NOTFOUND 1");
-
-                FUNCTION_STATUS_EXIT (AE_NOT_FOUND);
-                return AE_NOT_FOUND;
-            }
-        }
-    }
-
-    if (*Name == AML_DualNamePrefix)
-    {
-        DEBUG_PRINT (TRACE_NAMES, ("NsLookup: Dual Name \n"));
-
-        NumSegments = 2;
-        Name++;                             /* point to first segment */
-    }
-    
-    else if (*Name == AML_MultiNamePrefixOp)
-    {
-        DEBUG_PRINT (TRACE_NAMES, ("NsLookup: Multi Name %d \n", Name[1]));
-        
-        NumSegments = (INT32)* (UINT8 *) ++Name;
-        Name++;                             /* point to first segment */
-    }
-
-    else if (!Name)
+    if (!Name)
     {
         /*  8-12-98 ASL Grammar Update supports null NamePath   */
 
         NullNamePath = TRUE;
         NumSegments = 0;
         ThisEntry = RootObject;
+
+        DEBUG_PRINT (TRACE_NAMES, ("NsLookup: Null Name (Zero segments),  Flags=%x\n"));
     }
 
     else
     {
         /* 
-         * No Dual or Multi prefix, hence there is only one
-         * segment and Name is already pointing to it.
+         * Valid name pointer (Internal name format)
+         *
+         * Check for prefixes.  As represented in the AML stream, a Name consists
+         * of an optional scope prefix followed by a segment part.
+         *
+         * If present, the scope prefix is either a RootPrefix (in which case the
+         * name is fully qualified), or zero or more ParentPrefixes (in which case
+         * the name's scope is relative to the current scope).
+         *
+         * The segment part consists of either:
+         *  - A single 4-byte name segment, or
+         *  - A DualNamePrefix followed by two 4-byte name segments, or
+         *  - A MultiNamePrefixOp, followed by a byte indicating the number of
+         *    segments and the segments themselves.
          */
-        NumSegments = 1;
+
+        if (*Name == AML_RootPrefix)
+        {
+            /* Name is fully qualified, look in root name table */
+        
+            EntryToSearch = RootObject->Scope;
+            Name++;                 /* point to segment part */
+
+            DEBUG_PRINT (TRACE_NAMES, ("NsLookup: Searching from root [%p]\n", 
+                                        EntryToSearch));
+        }
+    
+        else
+        {
+            /* Name is relative to current scope, start there */
+        
+            EntryToSearch = PrefixScope;
+
+            DEBUG_PRINT (TRACE_NAMES, ("NsLookup: Searching relative to pfx scope [%p]\n",
+                                        PrefixScope));
+
+            /* Handle up-prefix (carat).  More than one prefix is supported */
+
+            while (*Name == AML_ParentPrefix)
+            {
+            
+                /* Point to segment part or next ParentPrefix */
+
+                Name++;     
+
+                /*  Backup to the parent's scope  */
+            
+                EntryToSearch = EntryToSearch->ParentScope;
+                if (!EntryToSearch)
+                {
+                    /* Current scope has no parent scope */
+                
+                    REPORT_ERROR ("NsLookup: Too many parent prefixes or scope has no parent");
+
+                    FUNCTION_STATUS_EXIT (AE_NOT_FOUND);
+                    return AE_NOT_FOUND;
+                }
+            }
+        }
+
+
+        /* Examine the name prefix opcode, if any, to determine the number of segments */
+
+        if (*Name == AML_DualNamePrefix)
+        {
+            DEBUG_PRINT (TRACE_NAMES, ("NsLookup: Dual Name (2 segments)\n"));
+
+            NumSegments = 2;
+            Name++;                             /* point to first segment */
+        }
+    
+        else if (*Name == AML_MultiNamePrefixOp)
+        {
+            DEBUG_PRINT (TRACE_NAMES, ("NsLookup: Multi Name (%d Segments) \n", Name[1]));
+        
+            NumSegments = (INT32)* (UINT8 *) ++Name;
+            Name++;                             /* point to first segment */
+        }
+
+        else
+        {
+            /* 
+             * No Dual or Multi prefix, hence there is only one
+             * segment and Name is already pointing to it.
+             */
+            DEBUG_PRINT (TRACE_NAMES, ("NsLookup: Simple Name (1 segment)\n"));
+            NumSegments = 1;
+        }
+
+        DEBUG_PRINT (TRACE_NAMES, ("NsLookup: [%s] Segments=%d Flags=%x\n",
+                                    Name, NumSegments, Flags));
     }
 
 
@@ -444,8 +447,6 @@ NsLookup (
      * Loop through and verify/add each name segment.
      */
 
-    DEBUG_PRINT (TRACE_NAMES, ("NsLookup: %d NameSegs to find\n", NumSegments));
-
     while (NumSegments-- && EntryToSearch)
     {
         /* 
@@ -453,12 +454,8 @@ NsLookup (
          * Type is significant only at the last level.
          */
 
-        CheckTrash ("before NsSearchTable");
-        
         Status = NsSearchAndEnter (Name, EntryToSearch, LoadMode,
                                     NumSegments == 0 ? Type : TYPE_Any, Flags, &ThisEntry);
-        CheckTrash ("after NsSearchTable");
-
         if (Status != AE_OK)
         {
             if (Status == AE_NOT_FOUND)
@@ -474,8 +471,6 @@ NsLookup (
                 {
                     DEBUG_PRINT (TRACE_NAMES, ("NsLookup: Name not found in this scope\n"));
                 }
-
-                CheckTrash ("leave NsLookup NOTFOUND 2");
             }
 
             FUNCTION_STATUS_EXIT (Status);
@@ -543,7 +538,7 @@ NsLookup (
                 }
 
                 REPORT_ERROR ("Name not found");
-                CheckTrash ("leave NsLookup NOTFOUND 3");
+
                 FUNCTION_STATUS_EXIT (AE_NOT_FOUND);
                 return AE_NOT_FOUND;
             }
@@ -563,6 +558,7 @@ NsLookup (
         Name += ACPI_NAME_SIZE;                 /* point to next name segment */
     }
 
+
     /* 
      * If entry is a type which opens a scope,
      * push the new scope on the scope stack.
@@ -572,15 +568,16 @@ NsLookup (
     {
         /*  8-12-98 ASL Grammar Update supports null NamePath   */
 
-        if (NullNamePath)   
+        if (NullNamePath)
+        {
             ScopeToPush = ThisEntry;
+        }
         else
+        {
             ScopeToPush = ThisEntry->Scope;
+        }
 
-
-        CheckTrash ("before NsPushCurrentScope");
         NsPushCurrentScope (ScopeToPush, Type);
-        CheckTrash ("after  NsPushCurrentScope");
     }
 
     *RetEntry = ThisEntry;
