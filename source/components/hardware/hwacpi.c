@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: hwacpi - ACPI Hardware Initialization/Mode Interface
- *              $Revision: 1.56 $
+ *              $Revision: 1.57 $
  *
  *****************************************************************************/
 
@@ -229,7 +229,7 @@ AcpiHwSetMode (
     Retry = 3000;
     while (Retry)
     {
-        Status = AE_NO HARDWARE_RESPONSE;
+        Status = AE_NO_HARDWARE_RESPONSE;
 
         if (AcpiHwGetMode() == Mode) {
             ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "Mode %X successfully enabled\n", Mode));
