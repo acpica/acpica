@@ -245,7 +245,7 @@ main (
 
     /* Init ACPI and start debugger thread */
 
-    AcpiInitializeSubsystem (NULL);
+    AcpiInitializeSubsystem ();
 
 
     /* Standalone filename is the only argument */
@@ -254,18 +254,15 @@ main (
     {
         opt_tables = TRUE;
         Filename = argv[optind];
+
+
         Status = AcpiDbLoadAcpiTable (Filename);
         if (ACPI_FAILURE (Status))
         {
+            printf ("**** Could not load input table, %s\n", AcpiCmFormatException (Status));
             goto enterloop;
         }
 
-
-        if (ACPI_FAILURE (Status))
-        {
-            printf ("**** Could not load namespace, %s\n", AcpiCmFormatException (Status));
-            goto enterloop;
-        }
 
         /* Need a fake FADT so that the hardware component is happy */
 
@@ -279,6 +276,8 @@ main (
         LocalFADT.PmTmLen       = 8;
 
         AcpiGbl_FACP = &LocalFADT;
+
+
 
         /* TBD:
          * Need a way to call this after the "LOAD" command
@@ -304,16 +303,6 @@ main (
             goto enterloop;
         }
 
-
-        LocalFADT.Gpe0Blk       = 0x70;
-        LocalFADT.Gpe0BlkLen    = 8;
-        LocalFADT.Pm1EvtLen     = 4;
-        LocalFADT.Pm1CntLen     = 4;
-        LocalFADT.Pm1aEvtBlk    = 0x80;
-        LocalFADT.Pm1aCntBlk    = 0x90;
-        LocalFADT.PmTmrBlk      = 0xA0;
-        LocalFADT.PmTmLen       = 8;
-        AcpiGbl_FACP = &LocalFADT;
        
         /* TBD:
          * Need a way to call this after the "LOAD" command
