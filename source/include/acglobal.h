@@ -239,6 +239,7 @@ ACPI_EXTERN BOOLEAN                     Gbl_Shutdown;
 ACPI_EXTERN BOOLEAN                     Gbl_MethodExecuting;
 ACPI_EXTERN BOOLEAN                     Gbl_StepToNextCall;
 ACPI_EXTERN ACPI_WALK_STATE            *Gbl_BreakpointWalk;
+ACPI_EXTERN BOOLEAN                     Gbl_DbTerminateThreads;
 
 extern      UINT32                      Gbl_SystemFlags;
 extern      UINT32                      Gbl_StartupFlags;
