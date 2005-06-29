@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: utobject - ACPI object create/delete/size/cache routines
- *              $Revision: 1.70 $
+ *              $Revision: 1.73 $
  *
  *****************************************************************************/
 
@@ -313,7 +313,7 @@ AcpiUtAllocateObjectDescDbg (
     ACPI_SET_DESCRIPTOR_TYPE (Object, ACPI_DESC_TYPE_OPERAND);
 
     ACPI_DEBUG_PRINT ((ACPI_DB_ALLOCATIONS, "%p Size %X\n",
-            Object, sizeof (ACPI_OPERAND_OBJECT)));
+            Object, (UINT32) sizeof (ACPI_OPERAND_OBJECT)));
 
     return_PTR (Object);
 }
@@ -441,13 +441,13 @@ AcpiUtGetSimpleObjectSize (
 
     case ACPI_TYPE_STRING:
 
-        Length += InternalObject->String.Length + 1;
+        Length += (ACPI_SIZE) InternalObject->String.Length + 1;
         break;
 
 
     case ACPI_TYPE_BUFFER:
 
-        Length += InternalObject->Buffer.Length;
+        Length += (ACPI_SIZE) InternalObject->Buffer.Length;
         break;
 
 
@@ -627,7 +627,7 @@ AcpiUtGetPackageObjectSize (
      * Round up to the next machine word.
      */
     Info.Length += ACPI_ROUND_UP_TO_NATIVE_WORD (sizeof (ACPI_OBJECT)) *
-                    Info.NumPackages;
+                    (ACPI_SIZE) Info.NumPackages;
 
     /* Return the total package length */
 

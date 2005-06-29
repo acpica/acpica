@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: utmisc - common utility procedures
- *              $Revision: 1.74 $
+ *              $Revision: 1.75 $
  *
  ******************************************************************************/
 
@@ -335,7 +335,6 @@ AcpiUtStrtoul64 (
     ACPI_INTEGER            *RetInteger)
 {
     UINT32                  Index;
-    UINT32                  Sign;
     ACPI_INTEGER            ReturnValue = 0;
     ACPI_STATUS             Status = AE_OK;
     ACPI_INTEGER            Dividend;
@@ -366,25 +365,6 @@ AcpiUtStrtoul64 (
     while (ACPI_IS_SPACE (*String) || *String == '\t')
     {
         ++String;
-    }
-
-    /*
-     * The buffer may contain an optional plus or minus sign.
-     * If it does, then skip over it but remember what is was:
-     */
-    if (*String == '-')
-    {
-        Sign = NEGATIVE;
-        ++String;
-    }
-    else if (*String == '+')
-    {
-        ++String;
-        Sign = POSITIVE;
-    }
-    else
-    {
-        Sign = POSITIVE;
     }
 
     /*
@@ -465,15 +445,6 @@ AcpiUtStrtoul64 (
         ReturnValue *= Base;
         ReturnValue += Index;
         ++String;
-    }
-
-
-    /*
-     * If a minus sign was present, then "the conversion is negated":
-     */
-    if (Sign == NEGATIVE)
-    {
-        ReturnValue = (ACPI_UINT32_MAX - ReturnValue) + 1;
     }
 
     *RetInteger = ReturnValue;
