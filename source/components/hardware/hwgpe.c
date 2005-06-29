@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: hwgpe - Low level GPE enable/disable/clear functions
- *              $Revision: 1.58 $
+ *              $Revision: 1.59 $
  *
  *****************************************************************************/
 
@@ -130,7 +130,8 @@
  *
  * RETURN:      Status
  *
- * DESCRIPTION: Enable a single GPE.
+ * DESCRIPTION: Enable a single GPE.  Note: The bit for this GPE must already
+ *              be set in the parent register EnableForRun mask.
  *
  ******************************************************************************/
 
@@ -153,57 +154,12 @@ AcpiHwEnableGpe (
         return (AE_NOT_EXIST);
     }
 
-    /* Set the GPE bit for the runtime enable register */
-
-    GpeRegisterInfo->EnableForRun |= GpeEventInfo->RegisterBit;
-    GpeEventInfo->Flags |= ACPI_GPE_TYPE_RUNTIME;
-
     /* Write GPE enable register with the new GPE bit enabled */
 
     Status = AcpiHwLowLevelWrite (8, GpeRegisterInfo->EnableForRun,
                     &GpeRegisterInfo->EnableAddress);
 
     return (Status);
-}
-
-
-/******************************************************************************
- *
- * FUNCTION:    AcpiHwEnableGpeForWakeup
- *
- * PARAMETERS:  GpeEventInfo        - Info block for the GPE to be enabled
- *
- * RETURN:      None
- *
- * DESCRIPTION: Keep track of which GPEs the OS has requested not be
- *              disabled when going to sleep.
- *
- ******************************************************************************/
-
-void
-AcpiHwEnableGpeForWakeup (
-    ACPI_GPE_EVENT_INFO     *GpeEventInfo)
-{
-    ACPI_GPE_REGISTER_INFO  *GpeRegisterInfo;
-
-
-    ACPI_FUNCTION_ENTRY ();
-
-
-    /* Get the info block for the entire GPE register */
-
-    GpeRegisterInfo = GpeEventInfo->RegisterInfo;
-    if (!GpeRegisterInfo)
-    {
-        return;
-    }
-
-    /*
-     * Set bits so we will enable this GPE when sleeping (and disable
-     * it upon wake)
-     */
-    GpeRegisterInfo->EnableForWake |= GpeEventInfo->RegisterBit;
-    GpeEventInfo->Flags |= (ACPI_GPE_TYPE_WAKE | ACPI_GPE_WAKE_ENABLED);
 }
 
 
@@ -238,63 +194,13 @@ AcpiHwDisableGpe (
         return (AE_NOT_EXIST);
     }
 
-    /* Clear the GPE bit for the runtime enable register */
-
-    GpeRegisterInfo->EnableForRun &= ~GpeEventInfo->RegisterBit;
-    GpeEventInfo->Flags &= ~ACPI_GPE_TYPE_RUNTIME;
-
     /* Write the GPE enable register with this GPE bit cleared */
 
     Status = AcpiHwLowLevelWrite (8, GpeRegisterInfo->EnableForRun,
                     &GpeRegisterInfo->EnableAddress);
-    if (ACPI_FAILURE (Status))
-    {
-        return (Status);
-    }
-
-    /* Make sure this GPE is disabled for wake, also */
-
-    AcpiHwDisableGpeForWakeup (GpeEventInfo);
-    return (AE_OK);
+    return (Status);
 }
 
-
-/******************************************************************************
- *
- * FUNCTION:    AcpiHwDisableGpeForWakeup
- *
- * PARAMETERS:  GpeEventInfo        - Info block for the GPE to be disabled
- *
- * RETURN:      None
- *
- * DESCRIPTION: Keep track of which GPEs the OS has requested not be
- *              disabled when going to sleep.
- *
- ******************************************************************************/
-
-void
-AcpiHwDisableGpeForWakeup (
-    ACPI_GPE_EVENT_INFO     *GpeEventInfo)
-{
-    ACPI_GPE_REGISTER_INFO  *GpeRegisterInfo;
-
-
-    ACPI_FUNCTION_ENTRY ();
-
-
-    /* Get the info block for the entire GPE register */
-
-    GpeRegisterInfo = GpeEventInfo->RegisterInfo;
-    if (!GpeRegisterInfo)
-    {
-        return;
-    }
-
-    /* Clear bits so that we will disable this when sleeping */
-
-    GpeRegisterInfo->EnableForWake &= ~GpeEventInfo->RegisterBit;
-    GpeEventInfo->Flags &= ~ACPI_GPE_WAKE_ENABLED;
-}
 
 
 /******************************************************************************
@@ -511,10 +417,17 @@ AcpiHwEnableRuntimeGpeBlock (
     ACPI_STATUS             Status;
 
 
+    /* NOTE: assumes that all GPEs are currently disabled */
+
     /* Examine each GPE Register within the block */
 
     for (i = 0; i < GpeBlock->RegisterCount; i++)
     {
+        if (!GpeBlock->RegisterInfo[i].EnableForRun)
+        {
+            continue;
+        }
+
         /* Enable all "runtime" GPEs in this register */
 
         Status = AcpiHwLowLevelWrite (8, GpeBlock->RegisterInfo[i].EnableForRun,
