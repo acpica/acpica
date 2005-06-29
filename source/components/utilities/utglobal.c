@@ -448,13 +448,61 @@ INT8 *
 AcpiCmFormatException (
     ACPI_STATUS             Status)
 {
+    INT8                    *Exception = "UNKNOWN_STATUS";
+    ACPI_STATUS             SubStatus;
 
-    if (Status > ACPI_MAX_STATUS)
+
+    SubStatus = (Status & ~AE_CODE_MASK);
+
+
+    switch (Status & AE_CODE_MASK)
     {
-        return ("UNKNOWN_STATUS");
+    case AE_CODE_ENVIRONMENTAL:
+
+        if (SubStatus <= AE_CODE_ENV_MAX)
+        {
+            Exception = AcpiGbl_ExceptionNames_Env [SubStatus];
+        }
+        break;
+
+    case AE_CODE_PROGRAMMER:
+
+        if (SubStatus <= AE_CODE_PGM_MAX)
+        {
+            Exception = AcpiGbl_ExceptionNames_Pgm [SubStatus -1];
+        }
+        break;
+
+    case AE_CODE_ACPI_TABLES:
+
+        if (SubStatus <= AE_CODE_TBL_MAX)
+        {
+            Exception = AcpiGbl_ExceptionNames_Tbl [SubStatus -1];
+        }
+        break;
+
+    case AE_CODE_AML:
+
+        if (SubStatus <= AE_CODE_AML_MAX)
+        {
+            Exception = AcpiGbl_ExceptionNames_Aml [SubStatus -1];
+        }
+        break;
+
+    case AE_CODE_CONTROL:
+
+        if (SubStatus <= AE_CODE_CTRL_MAX)
+        {
+            Exception = AcpiGbl_ExceptionNames_Ctrl [SubStatus -1];
+        }
+        break;
+
+    default:
+        break;
     }
 
-    return (AcpiGbl_ExceptionNames [Status]);
+
+    return (Exception);
 }
 
 
