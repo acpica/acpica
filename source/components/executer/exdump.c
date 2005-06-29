@@ -134,6 +134,8 @@ cleanup:
  *
  *****************************************************************************/
 
+#define MAX_AML_DUMP        1024
+
 void
 DumpCode (OpMode LoadExecMode)
 {
@@ -152,11 +154,22 @@ DumpCode (OpMode LoadExecMode)
         return;
     }
 
-    DEBUG_PRINT (TRACE_TABLES, ("Hex dump of remainder of AML package:\n"));
+    /* Make sure there's really something to dump */
+
+    Code = ConsumeAMLByte (1);
+    if (!Code)
+    {
+        return;
+    }
+
+    /* Only now can we print the header */
+
+    DEBUG_PRINT (TRACE_TABLES, ("Hex dump of remainder (up to %d bytes) of AML package:\n",
+                    MAX_AML_DUMP));
 
     /* dump the package, but not too much of it */
 
-    while ((Code = ConsumeAMLByte (1)) && (j < 1024))
+    do
     {
         OsdPrintf (NULL, "%02X ", *Code);
         LineBuf[i] = *Code;
@@ -183,7 +196,8 @@ DumpCode (OpMode LoadExecMode)
             OsdPrintf (NULL, "\n");
             i = 0;
         }
-    }
+
+    } while ((Code = ConsumeAMLByte (1)) && (j < MAX_AML_DUMP));
 
     OsdPrintf (NULL, "\n");
 }
