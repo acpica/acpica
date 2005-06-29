@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: tbxfroot - Find the root ACPI table (RSDT)
- *              $Revision: 1.78 $
+ *              $Revision: 1.79 $
  *
  *****************************************************************************/
 
@@ -488,25 +488,26 @@ AcpiTbScanMemoryForRsdp (
     UINT8                   *StartAddress,
     UINT32                  Length)
 {
-    UINT32                  Offset;
     UINT8                   *MemRover;
+    UINT8                   *EndAddress;
     UINT8                   Checksum;
 
 
     ACPI_FUNCTION_TRACE ("TbScanMemoryForRsdp");
 
 
+    EndAddress = StartAddress + Length;
+
     /* Search from given start address for the requested length */
 
-    for (Offset = 0, MemRover = StartAddress;
-         Offset < Length;
-         Offset += ACPI_RSDP_SCAN_STEP, MemRover += ACPI_RSDP_SCAN_STEP)
+    for (MemRover = StartAddress; MemRover < EndAddress;
+         MemRover += ACPI_RSDP_SCAN_STEP)
     {
         /* The signature and checksum must both be correct */
 
         if (ACPI_STRNCMP ((char *) MemRover, RSDP_SIG, sizeof (RSDP_SIG)-1) != 0)
         {
-            /* No signature match */
+            /* No signature match, keep looking */
 
             continue;
         }
