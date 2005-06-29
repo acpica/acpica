@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Name: hwsleep.c - ACPI Hardware Sleep/Wake Interface
- *              $Revision: 1.60 $
+ *              $Revision: 1.61 $
  *
  *****************************************************************************/
 
@@ -544,7 +544,7 @@ AcpiLeaveSleepState (
 
         /* Get current value of PM1A control */
 
-        Status = AcpiHwRegisterRead (ACPI_MTX_DO_NOT_LOCK, 
+        Status = AcpiHwRegisterRead (ACPI_MTX_DO_NOT_LOCK,
                     ACPI_REGISTER_PM1_CONTROL, &PM1AControl);
         if (ACPI_SUCCESS (Status))
         {
@@ -561,9 +561,9 @@ AcpiLeaveSleepState (
 
             /* Just ignore any errors */
 
-            (void) AcpiHwRegisterWrite (ACPI_MTX_DO_NOT_LOCK, 
+            (void) AcpiHwRegisterWrite (ACPI_MTX_DO_NOT_LOCK,
                             ACPI_REGISTER_PM1A_CONTROL, PM1AControl);
-            (void) AcpiHwRegisterWrite (ACPI_MTX_DO_NOT_LOCK, 
+            (void) AcpiHwRegisterWrite (ACPI_MTX_DO_NOT_LOCK,
                             ACPI_REGISTER_PM1B_CONTROL, PM1BControl);
         }
     }
