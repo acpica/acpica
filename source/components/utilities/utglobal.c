@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: utglobal - Global variables for the ACPI subsystem
- *              $Revision: 1.161 $
+ *              $Revision: 1.163 $
  *
  *****************************************************************************/
 
@@ -527,40 +527,6 @@ AcpiUtGetEventName (
 }
 
 
-#if defined(ACPI_DEBUG) || defined(ENABLE_DEBUGGER)
-
-/*
- * Strings and procedures used for debug only
- *
- */
-
-
-/*****************************************************************************
- *
- * FUNCTION:    AcpiUtGetMutexName
- *
- * PARAMETERS:  None.
- *
- * RETURN:      Status
- *
- * DESCRIPTION: Translate a mutex ID into a name string (Debug only)
- *
- ****************************************************************************/
-
-NATIVE_CHAR *
-AcpiUtGetMutexName (
-    UINT32                  MutexId)
-{
-
-    if (MutexId > MAX_MTX)
-    {
-        return ("Invalid Mutex ID");
-    }
-
-    return (AcpiGbl_MutexNames[MutexId]);
-}
-
-
 /*****************************************************************************
  *
  * FUNCTION:    AcpiUtGetTypeName
@@ -638,6 +604,54 @@ AcpiUtGetTypeName (
     }
 
     return ((NATIVE_CHAR *) AcpiGbl_NsTypeNames[Type]);
+}
+
+
+NATIVE_CHAR *
+AcpiUtGetObjectTypeName (
+    ACPI_OPERAND_OBJECT     *ObjDesc)
+{
+
+    if (!ObjDesc)
+    {
+        return ("[NULL Object Descriptor]");
+    }
+
+    return (AcpiUtGetTypeName (ACPI_GET_OBJECT_TYPE (ObjDesc)));
+}
+
+
+#if defined(ACPI_DEBUG) || defined(ENABLE_DEBUGGER)
+
+/*
+ * Strings and procedures used for debug only
+ *
+ */
+
+
+/*****************************************************************************
+ *
+ * FUNCTION:    AcpiUtGetMutexName
+ *
+ * PARAMETERS:  None.
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Translate a mutex ID into a name string (Debug only)
+ *
+ ****************************************************************************/
+
+NATIVE_CHAR *
+AcpiUtGetMutexName (
+    UINT32                  MutexId)
+{
+
+    if (MutexId > MAX_MTX)
+    {
+        return ("Invalid Mutex ID");
+    }
+
+    return (AcpiGbl_MutexNames[MutexId]);
 }
 
 
