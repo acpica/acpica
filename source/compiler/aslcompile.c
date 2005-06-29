@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslcompile - top level compile module
- *              $Revision: 1.1 $
+ *              $Revision: 1.2 $
  *
  *****************************************************************************/
 
@@ -302,6 +302,7 @@ CmDoCompile (void)
     CgGenerateAmlOutput ();
 
 
+    AePrintErrorLog (stdout);
     if (Gbl_DebugFlag)
     {
         /* Print error summary to the debug file */

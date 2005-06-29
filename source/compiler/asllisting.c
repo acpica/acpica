@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asllisting - Listing file generation
- *              $Revision: 1.3 $
+ *              $Revision: 1.5 $
  *
  *****************************************************************************/
 
@@ -232,12 +232,12 @@ LsCheckException (
         return;
     }
  
-    fprintf (Gbl_ListingFile, "[****AslException****]\n");
+    fprintf (Gbl_ListingFile, "\n[****AslException****]\n");
 
     AePrintException (Gbl_ListingFile, AslGbl_NextError);
-    AslGbl_NextError = AslGbl_NextError->Next;
     fprintf (Gbl_ListingFile, "\n");
 
+    AslGbl_NextError = AslGbl_NextError->Next;
 }
 
 
@@ -401,12 +401,16 @@ LsWriteOneSourceLine (void)
 
         if (FileByte == '\n')
         {
+            /* 
+             * Check if an error occurred on this source line during the compile.
+             * If so, we print the error message after the source line.
+             */
+            LsCheckException (Gbl_SourceLine);
             return (1);
         }
     }
 
     return (0);
-
 }
 
 
@@ -469,11 +473,6 @@ LsWriteSourceLines (
 
     LsFlushListingBuffer ();
 
-    if (Gbl_SourceLine < Gbl_CurrentLine)
-    {
-//        fprintf (Gbl_ListingFile, "\n");
-    }
-
     /*
      * Read lines and write them as long as we are not caught up 
      */
@@ -491,11 +490,6 @@ LsWriteSourceLines (
 
         fprintf (Gbl_ListingFile, "\n");
     }
-
-
-    /* Check if an error occurred on this line during the compile */
-
-    LsCheckException (Gbl_CurrentLine);
 }
 
 
