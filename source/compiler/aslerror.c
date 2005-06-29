@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslerror - Error handling and statistics
- *              $Revision: 1.43 $
+ *              $Revision: 1.44 $
  *
  *****************************************************************************/
 
@@ -323,7 +323,7 @@ AePrintException (
 
     else
     {
-        fprintf (OutputFile, "%s %04.4d -",
+        fprintf (OutputFile, "%s %4.4d -",
                     AslErrorLevel[Enode->Level],
                     Enode->MessageId + ((Enode->Level+1) * 1000));
 
