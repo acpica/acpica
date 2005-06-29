@@ -132,6 +132,7 @@ typedef UINT32              IO_ADDRESS;             /* Only for clarity in decla
 #define RSDT_SIG            "RSDT"                  /* Root System Description Table */
 #define SSDT_SIG            "SSDT"                  /* Secondary System Description Table */
 #define SBST_SIG            "SBST"                  /* Smart Battery Specification Table */
+#define BOOT_SIG            "BOOT"                  /* Boot table */
 
 
 #define GL_OWNED            0x02                    /* Ownership of global lock is bit 1 */
@@ -339,14 +340,4 @@ typedef struct AcpiTableDesc
 } ACPI_TABLE_DESC;
 
 
-/* 
- * Macro to check if a pointer is within an ACPI table.
- * Parameter (a) is the pointer to check.  Parameter (b) must be defined 
- * as a pointer to an ACPI_TABLE_HEADER.  (b+1) then points past the header,
- * and ((UINT8 *)b+b->Length) points one byte past the end of the table.
- */
-
-#define IS_IN_ACPI_TABLE(a,b)   (((UINT8 *)(a) >= (UINT8 *)(b + 1)) &&\
-                                 ((UINT8 *)(a) < ((UINT8 *)b + b->Length)))
-
-#endif /* __ACPITYPE_H__ */
+#endif /* __ACPITABLES_H__ */
