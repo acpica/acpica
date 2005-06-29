@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: evregion - ACPI AddressSpace (OpRegion) handler dispatch
- *              $Revision: 1.116 $
+ *              $Revision: 1.117 $
  *
  *****************************************************************************/
 
@@ -324,7 +324,7 @@ AcpiEvAddressSpaceDispatch (
      * It may be the case that the region has never been initialized
      * Some types of regions require special init code
      */
-    if (!(RegionObj->Region.Flags & AOPOBJ_INITIALIZED))
+    if (!(RegionObj->Region.Flags & AOPOBJ_SETUP_COMPLETE))
     {
         /*
          * This region has not been initialized yet, do it
@@ -364,7 +364,7 @@ AcpiEvAddressSpaceDispatch (
             return_ACPI_STATUS (Status);
         }
 
-        RegionObj->Region.Flags |= AOPOBJ_INITIALIZED;
+        RegionObj->Region.Flags |= AOPOBJ_SETUP_COMPLETE;
 
         /*
          *  Save the returned context for use in all accesses to
@@ -518,7 +518,7 @@ AcpiEvDisassociateRegionFromHandler(
                     AcpiUtGetRegionName (RegionObj->Region.SpaceId)));
             }
 
-            RegionObj->Region.Flags &= ~(AOPOBJ_INITIALIZED);
+            RegionObj->Region.Flags &= ~(AOPOBJ_SETUP_COMPLETE);
 
             /*
              *  Remove handler reference in the region
@@ -587,18 +587,19 @@ AcpiEvAssociateRegionAndHandler (
 
 
     /*
-     *  Link this region to the front of the handler's list
+     * Link this region to the front of the handler's list
      */
     RegionObj->Region.Next = HandlerObj->AddrHandler.RegionList;
     HandlerObj->AddrHandler.RegionList = RegionObj;
 
     /*
-     *  set the region's handler
+     * Set the region's handler
      */
     RegionObj->Region.AddrHandler = HandlerObj;
 
     /*
-     *  Last thing, tell all users that this region is usable
+     * Tell all users that this region is usable by running the _REG
+     * method
      */
     if (AcpiNsIsLocked)
     {
@@ -624,8 +625,8 @@ AcpiEvAssociateRegionAndHandler (
  *              Level               - Nesting level of the handle
  *              Context             - Passed into AcpiNsWalkNamespace
  *
- * DESCRIPTION: This routine checks to see if the object is a Region if it
- *              is then the address handler is installed in it.
+ * DESCRIPTION: This routine installs an address handler into objects that are
+ *              of type Region.
  *
  *              If the Object is a Device, and the device has a handler of
  *              the same type then the search is terminated in that branch.
