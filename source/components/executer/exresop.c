@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exresop - AML Interpreter operand/object resolution
- *              $Revision: 1.77 $
+ *              $Revision: 1.79 $
  *
  *****************************************************************************/
 
@@ -220,6 +220,7 @@ AcpiExResolveOperands (
     const ACPI_OPCODE_INFO  *OpInfo;
     UINT32                  ThisArgType;
     ACPI_OBJECT_TYPE        TypeNeeded;
+    UINT16                  TargetOp = 0;
 
 
     ACPI_FUNCTION_TRACE_U32 ("ExResolveOperands", Opcode);
@@ -271,7 +272,7 @@ AcpiExResolveOperands (
         {
         case ACPI_DESC_TYPE_NAMED:
 
-            /* Node */
+            /* Namespace Node */
 
             ObjectType = ((ACPI_NAMESPACE_NODE *) ObjDesc)->Type;
             break;
@@ -296,9 +297,8 @@ AcpiExResolveOperands (
 
             if (ObjectType == (UINT8) ACPI_TYPE_LOCAL_REFERENCE)
             {
-                /*
-                 * Decode the Reference
-                 */
+                /* Decode the Reference */
+
                 OpInfo = AcpiPsGetOpcodeInfo (Opcode);
                 if (OpInfo->Class == AML_CLASS_UNKNOWN)
                 {
@@ -308,13 +308,15 @@ AcpiExResolveOperands (
                 switch (ObjDesc->Reference.Opcode)
                 {
                 case AML_DEBUG_OP:
+                    TargetOp = AML_DEBUG_OP;
+
                 case AML_NAME_OP:
                 case AML_INDEX_OP:
                 case AML_REF_OF_OP:
                 case AML_ARG_OP:
                 case AML_LOCAL_OP:
-                case AML_LOAD_OP:           /* DdbHandle from LOAD_OP or LOAD_TABLE_OP */
-                case AML_INT_NAMEPATH_OP:   /* Reference to a named object */
+                case AML_LOAD_OP: /* DdbHandle from LOAD_OP or LOAD_TABLE_OP */
+                case AML_INT_NAMEPATH_OP: /* Reference to a named object */
 
                     ACPI_DEBUG_ONLY_MEMBERS (ACPI_DEBUG_PRINT ((ACPI_DB_EXEC,
                         "Operand is a Reference, RefOpcode [%s]\n",
@@ -344,10 +346,8 @@ AcpiExResolveOperands (
             return_ACPI_STATUS (AE_AML_OPERAND_TYPE);
         }
 
+        /* Get one argument type, point to the next */
 
-        /*
-         * Get one argument type, point to the next
-         */
         ThisArgType = GET_CURRENT_ARG_TYPE (ArgTypes);
         INCREMENT_ARG_LIST (ArgTypes);
 
@@ -363,26 +363,31 @@ AcpiExResolveOperands (
                 (ACPI_GET_OBJECT_TYPE (ObjDesc) == ACPI_TYPE_STRING))
             {
                 /*
-                 * String found - the string references a named object and must be
-                 * resolved to a node
+                 * String found - the string references a named object and
+                 * must be resolved to a node
                  */
                 goto NextOperand;
             }
 
-            /* Else not a string - fall through to the normal Reference case below */
+            /*
+             * Else not a string - fall through to the normal Reference
+             * case below
+             */
             /*lint -fallthrough */
 
         case ARGI_REFERENCE:            /* References: */
         case ARGI_INTEGER_REF:
         case ARGI_OBJECT_REF:
         case ARGI_DEVICE_REF:
-        case ARGI_TARGETREF:            /* Allows implicit conversion rules before store */
-        case ARGI_FIXED_TARGET:         /* No implicit conversion before store to target */
-        case ARGI_SIMPLE_TARGET:        /* Name, Local, or Arg - no implicit conversion  */
+        case ARGI_TARGETREF:     /* Allows implicit conversion rules before store */
+        case ARGI_FIXED_TARGET:  /* No implicit conversion before store to target */
+        case ARGI_SIMPLE_TARGET: /* Name, Local, or Arg - no implicit conversion  */
 
-            /* Need an operand of type ACPI_TYPE_LOCAL_REFERENCE */
-
-            if (ACPI_GET_DESCRIPTOR_TYPE (ObjDesc) == ACPI_DESC_TYPE_NAMED) /* Node (name) ptr OK as-is */
+            /*
+             * Need an operand of type ACPI_TYPE_LOCAL_REFERENCE
+             * A Namespace Node is OK as-is
+             */
+            if (ACPI_GET_DESCRIPTOR_TYPE (ObjDesc) == ACPI_DESC_TYPE_NAMED)
             {
                 goto NextOperand;
             }
@@ -487,7 +492,7 @@ AcpiExResolveOperands (
         /*
          * The more complex cases allow multiple resolved object types
          */
-        case ARGI_INTEGER:   /* Number */
+        case ARGI_INTEGER:
 
             /*
              * Need an operand of type ACPI_TYPE_INTEGER,
@@ -669,7 +674,7 @@ AcpiExResolveOperands (
 
         case ARGI_REGION_OR_FIELD:
 
-            /* Need an operand of type ACPI_TYPE_REGION or a FIELD in a region */
+            /* Need an operand of type REGION or a FIELD in a region */
 
             switch (ACPI_GET_OBJECT_TYPE (ObjDesc))
             {
@@ -723,6 +728,11 @@ AcpiExResolveOperands (
                     break;
                 }
 
+                if (TargetOp == AML_DEBUG_OP)
+                {
+                    break;
+                }
+
                 ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
                     "Needed Integer/Buffer/String/Package/Ref/Ddb], found [%s] %p\n",
                     AcpiUtGetObjectTypeName (ObjDesc), ObjDesc));
@@ -763,8 +773,7 @@ NextOperand:
         {
             StackPtr--;
         }
-
-    }   /* while (*Types) */
+    }
 
     return_ACPI_STATUS (Status);
 }
