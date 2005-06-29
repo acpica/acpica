@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: utobject - ACPI object create/delete/size/cache routines
- *              $Revision: 1.80 $
+ *              $Revision: 1.92 $
  *
  *****************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2005, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -148,7 +148,7 @@
 
 ACPI_OPERAND_OBJECT  *
 AcpiUtCreateInternalObjectDbg (
-    NATIVE_CHAR             *ModuleName,
+    char                    *ModuleName,
     UINT32                  LineNumber,
     UINT32                  ComponentId,
     ACPI_OBJECT_TYPE        Type)
@@ -226,30 +226,34 @@ AcpiUtCreateBufferObject (
     ACPI_SIZE               BufferSize)
 {
     ACPI_OPERAND_OBJECT     *BufferDesc;
-    UINT8                   *Buffer;
+    UINT8                   *Buffer = NULL;
 
 
     ACPI_FUNCTION_TRACE_U32 ("UtCreateBufferObject", BufferSize);
 
 
-    /*
-     * Create a new Buffer object
-     */
+    /* Create a new Buffer object */
+
     BufferDesc = AcpiUtCreateInternalObject (ACPI_TYPE_BUFFER);
     if (!BufferDesc)
     {
         return_PTR (NULL);
     }
 
-    /* Allocate the actual buffer */
+    /* Create an actual buffer only if size > 0 */
 
-    Buffer = ACPI_MEM_CALLOCATE (BufferSize);
-    if (!Buffer)
+    if (BufferSize > 0)
     {
-        ACPI_REPORT_ERROR (("CreateBuffer: could not allocate size %X\n",
-            (UINT32) BufferSize));
-        AcpiUtRemoveReference (BufferDesc);
-        return_PTR (NULL);
+        /* Allocate the actual buffer */
+
+        Buffer = ACPI_MEM_CALLOCATE (BufferSize);
+        if (!Buffer)
+        {
+            ACPI_REPORT_ERROR (("CreateBuffer: could not allocate size %X\n",
+                (UINT32) BufferSize));
+            AcpiUtRemoveReference (BufferDesc);
+            return_PTR (NULL);
+        }
     }
 
     /* Complete buffer object initialization */
@@ -261,6 +265,63 @@ AcpiUtCreateBufferObject (
     /* Return the new buffer descriptor */
 
     return_PTR (BufferDesc);
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiUtCreateStringObject
+ *
+ * PARAMETERS:  StringSize             - Size of string to be created.  Does not
+ *                                       include NULL terminator, this is added
+ *                                       automatically.
+ *
+ * RETURN:      Pointer to a new String object
+ *
+ * DESCRIPTION: Create a fully initialized string object
+ *
+ ******************************************************************************/
+
+ACPI_OPERAND_OBJECT *
+AcpiUtCreateStringObject (
+    ACPI_SIZE               StringSize)
+{
+    ACPI_OPERAND_OBJECT     *StringDesc;
+    char                    *String;
+
+
+    ACPI_FUNCTION_TRACE_U32 ("UtCreateStringObject", StringSize);
+
+
+    /* Create a new String object */
+
+    StringDesc = AcpiUtCreateInternalObject (ACPI_TYPE_STRING);
+    if (!StringDesc)
+    {
+        return_PTR (NULL);
+    }
+
+    /*
+     * Allocate the actual string buffer -- (Size + 1) for NULL terminator.
+     * NOTE: Zero-length strings are NULL terminated
+     */
+    String = ACPI_MEM_CALLOCATE (StringSize + 1);
+    if (!String)
+    {
+        ACPI_REPORT_ERROR (("CreateString: could not allocate size %X\n",
+            (UINT32) StringSize));
+        AcpiUtRemoveReference (StringDesc);
+        return_PTR (NULL);
+    }
+
+    /* Complete string object initialization */
+
+    StringDesc->String.Pointer = String;
+    StringDesc->String.Length = (UINT32) StringSize;
+
+    /* Return the new string descriptor */
+
+    return_PTR (StringDesc);
 }
 
 
@@ -300,29 +361,10 @@ AcpiUtValidInternalObject (
 
         return (TRUE);
 
-    case ACPI_DESC_TYPE_NAMED:
-
-        ACPI_DEBUG_PRINT ((ACPI_DB_INFO,
-            "**** Obj %p is a named obj, not ACPI obj\n", Object));
-        break;
-
-    case ACPI_DESC_TYPE_PARSER:
-
-        ACPI_DEBUG_PRINT ((ACPI_DB_INFO,
-            "**** Obj %p is a parser obj, not ACPI obj\n", Object));
-        break;
-
-    case ACPI_DESC_TYPE_CACHED:
-
-        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
-            "**** Obj %p has already been released to internal cache\n", Object));
-        break;
-
     default:
-
-        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
-            "**** Obj %p has unknown descriptor type %X\n", Object,
-            ACPI_GET_DESCRIPTOR_TYPE (Object)));
+        ACPI_DEBUG_PRINT ((ACPI_DB_INFO,
+                "%p is not not an ACPI operand obj [%s]\n",
+                Object, AcpiUtGetDescriptorName (Object)));
         break;
     }
 
@@ -347,7 +389,7 @@ AcpiUtValidInternalObject (
 
 void *
 AcpiUtAllocateObjectDescDbg (
-    NATIVE_CHAR             *ModuleName,
+    char                    *ModuleName,
     UINT32                  LineNumber,
     UINT32                  ComponentId)
 {
@@ -401,7 +443,8 @@ AcpiUtDeleteObjectDesc (
     if (ACPI_GET_DESCRIPTOR_TYPE (Object) != ACPI_DESC_TYPE_OPERAND)
     {
         ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
-            "Obj %p is not an ACPI object\n", Object));
+                "%p is not an ACPI Operand object [%s]\n", Object,
+                AcpiUtGetDescriptorName (Object)));
         return_VOID;
     }
 
@@ -411,6 +454,7 @@ AcpiUtDeleteObjectDesc (
 }
 
 
+#ifdef ACPI_ENABLE_OBJECT_CACHE
 /*******************************************************************************
  *
  * FUNCTION:    AcpiUtDeleteObjectCache
@@ -434,6 +478,7 @@ AcpiUtDeleteObjectCache (
     AcpiUtDeleteGenericCache (ACPI_MEM_LIST_OPERAND);
     return_VOID;
 }
+#endif
 
 
 /*******************************************************************************
