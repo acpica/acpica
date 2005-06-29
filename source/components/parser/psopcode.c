@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: psopcode - Parser/Interpreter opcode information table
- *              $Revision: 1.57 $
+ *              $Revision: 1.58 $
  *
  *****************************************************************************/
 
@@ -780,8 +780,6 @@ AcpiPsGetOpcodeInfo (
         /* Simple (8-bit) opcode: 0-255, can't index beyond table  */
 
         return (&AcpiGbl_AmlOpInfo [AcpiGbl_ShortOpIndex [(UINT8) Opcode]]);
-        break;
-
 
     case AML_EXTOP:
 
@@ -790,8 +788,9 @@ AcpiPsGetOpcodeInfo (
         if (((UINT8) Opcode) <= MAX_EXTENDED_OPCODE)
         {
             return (&AcpiGbl_AmlOpInfo [AcpiGbl_LongOpIndex [(UINT8) Opcode]]);
-            break;
         }
+
+        /* Else fall through to error case below */
 
     default:
 
