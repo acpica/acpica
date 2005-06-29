@@ -1,301 +1,150 @@
-/******************************************************************************
- *
- * Name: acevents.h - Event subcomponent prototypes and defines
- *       $Revision: 1.56 $
- *
- *****************************************************************************/
-
-/******************************************************************************
- *
- * 1. Copyright Notice
- *
- * Some or all of this work - Copyright (c) 1999, Intel Corp.  All rights
- * reserved.
- *
- * 2. License
- *
- * 2.1. This is your license from Intel Corp. under its intellectual property
- * rights.  You may have additional license terms from the party that provided
- * you this software, covering your right to use that party's intellectual
- * property rights.
- *
- * 2.2. Intel grants, free of charge, to any person ("Licensee") obtaining a
- * copy of the source code appearing in this file ("Covered Code") an
- * irrevocable, perpetual, worldwide license under Intel's copyrights in the
- * base code distributed originally by Intel ("Original Intel Code") to copy,
- * make derivatives, distribute, use and display any portion of the Covered
- * Code in any form, with the right to sublicense such rights; and
- *
- * 2.3. Intel grants Licensee a non-exclusive and non-transferable patent
- * license (with the right to sublicense), under only those claims of Intel
- * patents that are infringed by the Original Intel Code, to make, use, sell,
- * offer to sell, and import the Covered Code and derivative works thereof
- * solely to the minimum extent necessary to exercise the above copyright
- * license, and in no event shall the patent license extend to any additions
- * to or modifications of the Original Intel Code.  No other license or right
- * is granted directly or by implication, estoppel or otherwise;
- *
- * The above copyright and patent license is granted only if the following
- * conditions are met:
- *
- * 3. Conditions
- *
- * 3.1. Redistribution of Source with Rights to Further Distribute Source.
- * Redistribution of source code of any substantial portion of the Covered
- * Code or modification with rights to further distribute source must include
- * the above Copyright Notice, the above License, this list of Conditions,
- * and the following Disclaimer and Export Compliance provision.  In addition,
- * Licensee must cause all Covered Code to which Licensee contributes to
- * contain a file documenting the changes Licensee made to create that Covered
- * Code and the date of any change.  Licensee must include in that file the
- * documentation of any changes made by any predecessor Licensee.  Licensee
- * must include a prominent statement that the modification is derived,
- * directly or indirectly, from Original Intel Code.
- *
- * 3.2. Redistribution of Source with no Rights to Further Distribute Source.
- * Redistribution of source code of any substantial portion of the Covered
- * Code or modification without rights to further distribute source must
- * include the following Disclaimer and Export Compliance provision in the
- * documentation and/or other materials provided with distribution.  In
- * addition, Licensee may not authorize further sublicense of source of any
- * portion of the Covered Code, and must include terms to the effect that the
- * license from Licensee to its licensee is limited to the intellectual
- * property embodied in the software Licensee provides to its licensee, and
- * not to intellectual property embodied in modifications its licensee may
- * make.
- *
- * 3.3. Redistribution of Executable. Redistribution in executable form of any
- * substantial portion of the Covered Code or modification must reproduce the
- * above Copyright Notice, and the following Disclaimer and Export Compliance
- * provision in the documentation and/or other materials provided with the
- * distribution.
- *
- * 3.4. Intel retains all right, title, and interest in and to the Original
- * Intel Code.
- *
- * 3.5. Neither the name Intel nor any other trademark owned or controlled by
- * Intel shall be used in advertising or otherwise to promote the sale, use or
- * other dealings in products derived from or relating to the Covered Code
- * without prior written authorization from Intel.
- *
- * 4. Disclaimer and Export Compliance
- *
- * 4.1. INTEL MAKES NO WARRANTY OF ANY KIND REGARDING ANY SOFTWARE PROVIDED
- * HERE.  ANY SOFTWARE ORIGINATING FROM INTEL OR DERIVED FROM INTEL SOFTWARE
- * IS PROVIDED "AS IS," AND INTEL WILL NOT PROVIDE ANY SUPPORT,  ASSISTANCE,
- * INSTALLATION, TRAINING OR OTHER SERVICES.  INTEL WILL NOT PROVIDE ANY
- * UPDATES, ENHANCEMENTS OR EXTENSIONS.  INTEL SPECIFICALLY DISCLAIMS ANY
- * IMPLIED WARRANTIES OF MERCHANTABILITY, NONINFRINGEMENT AND FITNESS FOR A
- * PARTICULAR PURPOSE.
- *
- * 4.2. IN NO EVENT SHALL INTEL HAVE ANY LIABILITY TO LICENSEE, ITS LICENSEES
- * OR ANY OTHER THIRD PARTY, FOR ANY LOST PROFITS, LOST DATA, LOSS OF USE OR
- * COSTS OF PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES, OR FOR ANY INDIRECT,
- * SPECIAL OR CONSEQUENTIAL DAMAGES ARISING OUT OF THIS AGREEMENT, UNDER ANY
- * CAUSE OF ACTION OR THEORY OF LIABILITY, AND IRRESPECTIVE OF WHETHER INTEL
- * HAS ADVANCE NOTICE OF THE POSSIBILITY OF SUCH DAMAGES.  THESE LIMITATIONS
- * SHALL APPLY NOTWITHSTANDING THE FAILURE OF THE ESSENTIAL PURPOSE OF ANY
- * LIMITED REMEDY.
- *
- * 4.3. Licensee shall not export, either directly or indirectly, any of this
- * software or system incorporating such software without first obtaining any
- * required license or other approval from the U. S. Department of Commerce or
- * any other agency or department of the United States Government.  In the
- * event Licensee exports any such software from the United States or
- * re-exports any such software from a foreign destination, Licensee shall
- * ensure that the distribution and export/re-export of the software is in
- * compliance with all laws, regulations, orders, or other restrictions of the
- * U.S. Export Administration Regulations. Licensee agrees that neither it nor
- * any of its subsidiaries will export/re-export any technical data, process,
- * software, or service, directly or indirectly, to any country for which the
- * United States government or any agency thereof requires an export license,
- * other governmental approval, or letter of assurance, without first obtaining
- * such license, approval or letter.
- *
- *****************************************************************************/
-
-#ifndef __ACEVENTS_H__
-#define __ACEVENTS_H__
-
-
 /*
- * AcpiEvfixed - Fixed event handling
- */
+  __________________________________________________________________________
+ |
+ |
+ |           Copyright (C) Intel Corporation 1994-1998
+ |
+ | All rights reserved. No part of this program or publication may be
+ | reproduced, transmitted, transcribed, stored in a retrieval system, or
+ | translated into any language or computer language, in any form or by any
+ | means, electronic, mechanical, magnetic, optical, chemical, manual, or
+ | otherwise, without the prior written permission of Intel Corporation.
+ |__________________________________________________________________________
+ |
+ | FILENAME: scilast.h -  System Control Interrupt configuration and
+ |                                  legacy to ACPI mode state transition functions
+ |__________________________________________________________________________
+ |
+ | $Revision: 1.1 $
+ | $Date: 2005/06/29 19:31:07 $
+ | $Log: acevents.h,v $
+ | Revision 1.1  2005/06/29 19:31:07  aystarik
+ |
+ |
+ | 
+ | date	99.02.12.17.57.00;	author rmosgrov;	state Exp;
+ |
+ * 
+ * 1     2/12/99 9:57a Rmosgrov
+ * 
+ * 1     2/12/99 9:54a Rmosgrov
+ * 
+ * 3     1/13/99 2:49p Grsmith1
+ * First BeOS build.
+ * 
+ * 2     1/11/99 4:08p Grsmith1
+ * Detabified.
+ * 
+ * 1     1/11/99 2:08p Rmoore1
+ * Event Handling
+// 
+//    Rev 1.2   14 Aug 1998 17:46:16   jkreinem
+// Added iVerifyAcpiTablesPresent() function and NO_ACPI_TABLES_MASK
+// error code.
+// 
+//    Rev 1.1   13 Aug 1998 17:27:34   jkreinem
+// Added SAVE_NOT_VALID definition for interrupt configuration.
+// 
+//    Rev 1.0   12 Aug 1998 15:54:32   jkreinem
+// Initial revision.
+ |__________________________________________________________________________
 
-ACPI_STATUS
-AcpiEvFixedEventInitialize (
-    void);
+*/
 
-UINT32
-AcpiEvFixedEventDetect (
-    void);
-
-UINT32
-AcpiEvFixedEventDispatch (
-    UINT32                  AcpiEvent);
-
-
-/*
- * AcpiEvglock - Global Lock support
- */
-
-ACPI_STATUS
-AcpiEvAcquireGlobalLock(
-    void);
-
-void
-AcpiEvReleaseGlobalLock(
-    void);
-
-ACPI_STATUS
-AcpiEvInitGlobalLockHandler (
-    void);
-
-
-/*
- * AcpiEvgpe - GPE handling and dispatch
- */
-
-ACPI_STATUS
-AcpiEvGpeInitialize (
-    void);
-
-ACPI_STATUS
-AcpiEvInitGpeControlMethods (
-    void);
-
-UINT32
-AcpiEvGpeDispatch (
-    UINT32                  GpeNumber);
-
-UINT32
-AcpiEvGpeDetect (
-    void);
-
-
-/*
- * AcpiEvnotify - Device Notify handling and dispatch
- */
-
-void
-AcpiEvNotifyDispatch (
-    ACPI_HANDLE             Device,
-    UINT32                  NotifyValue);
+#ifndef __SCILAST_H__
+#define __SCILAST_H__
 
 
-/*
- * AcpiEvregion - Address Space handling
- */
+/*  iInstallSCIHandlerXferToACPI() iFlags bitmask options   */
+#define ACPI_TABLES_REQUIRED                1
+#define HW_OVERRIDE_SUPPORTED           2
+#define PROGRAM_SCI_LEVEL_SENSITIVITY   4
+#define DISABLE_KNOWN_EVENTS                8
 
-ACPI_STATUS
-AcpiEvInstallDefaultAddressSpaceHandlers (
-    void);
+/*  iErrorMask mask bits    */
+#define NO_ACPI_TABLES_MASK         1
+#define NO_ACPI_TRANSITION_MASK     2
+#define SCI_LEVEL_INT_MASK          4
+#define NO_SCI_HANDLER_MASK         8
+#define NO_LEGACY_TRANSITION_MASK   0x10
 
-ACPI_STATUS
-AcpiEvAddressSpaceDispatch (
-    ACPI_OPERAND_OBJECT    *RegionObj,
-    UINT32                  Function,
-    UINT32                  Address,
-    UINT32                  BitWidth,
-    UINT32                  *Value);
+#define SAVE_NOT_VALID      -1
 
-
-ACPI_STATUS
-AcpiEvAddrHandlerHelper (
-    ACPI_HANDLE             ObjHandle,
-    UINT32                  Level,
-    void                    *Context,
-    void                    **ReturnValue);
-
-void
-AcpiEvDisassociateRegionFromHandler(
-    ACPI_OPERAND_OBJECT    *RegionObj);
-
-
-ACPI_STATUS
-AcpiEvAssociateRegionAndHandler (
-    ACPI_OPERAND_OBJECT     *HandlerObj,
-    ACPI_OPERAND_OBJECT     *RegionObj,
-    BOOLEAN                 AcpiNsIsLocked);
-
-
-/*
- * AcpiEvregini - Region initialization and setup
- */
-
-ACPI_STATUS
-AcpiEvSystemMemoryRegionSetup (
-    ACPI_HANDLE             Handle,
-    UINT32                  Function,
-    void                    *HandlerContext,
-    void                    **RegionContext);
-
-ACPI_STATUS
-AcpiEvIoSpaceRegionSetup (
-    ACPI_HANDLE             Handle,
-    UINT32                  Function,
-    void                    *HandlerContext,
-    void                    **RegionContext);
-
-ACPI_STATUS
-AcpiEvPciConfigRegionSetup (
-    ACPI_HANDLE             Handle,
-    UINT32                  Function,
-    void                    *HandlerContext,
-    void                    **RegionContext);
-
-ACPI_STATUS
-AcpiEvDefaultRegionSetup (
-    ACPI_HANDLE             Handle,
-    UINT32                  Function,
-    void                    *HandlerContext,
-    void                    **RegionContext);
-
-ACPI_STATUS
-AcpiEvInitializeRegion (
-    ACPI_OPERAND_OBJECT     *RegionObj,
-    BOOLEAN                 AcpiNsLocked);
-
-
-/*
- * Evsci - SCI (System Control Interrupt) handling/dispatch
- */
-
-UINT32
-AcpiEvInstallSciHandler (
-    void);
-
-ACPI_STATUS
-AcpiEvRemoveSciHandler (
-    void);
-
-UINT32
-AcpiEvInitializeSCI (
-    UINT32                  ProgramSCI);
-
-void
-AcpiEvRestoreAcpiState (
-    void);
-
-void
-AcpiEvTerminate (
-    void);
-
-
-/* Debug support */
-
-#ifdef ACPI_DEBUG
-
-UINT32
-AcpiEvSciCount (
-    UINT32                  AcpiEvent);
-
-#define DEBUG_INCREMENT_EVENT_COUNT(a)   AcpiGbl_EventCount[a]++;
-
+#ifdef __SCILAST_C__
+int iEdgeLevelSave=SAVE_NOT_VALID, iIrqEnableSave=SAVE_NOT_VALID;
+int iOriginalMode=SAVE_NOT_VALID;           /*  original ACPI/legacy mode   */
 #else
-
-#define DEBUG_INCREMENT_EVENT_COUNT(a)
+extern  int iEdgeLevelSave, iIrqEnableSave; /*  original SCI config */
+extern  int iOriginalMode;  /*  stores the original ACPI/legacy mode    */
 #endif
 
 
-#endif  /* __ACEVENTS_H__  */
+/**************************************************************************
+ *  FUNCTION:       int iInitializeSCI
+ *
+ *  PARAMETERS:
+ *      iProgramSCI --  TRUE if SCI can be reprogrammed to level sensitivity
+ *                          FALSE if current SCI sensitivity must be preserved
+ *
+ *  RETURN:         0 if successful; non-zero if failure encountered
+ *
+ *  DESCRIPTION:    iInitializeSCI() ensures that the system control
+ *                      interrupt (SCI) is properly configured.
+ *                      If successful, return 0. Otherwise, return non-zero.
+ *************************************************************************/
+int iInitializeSCI (int iProgramSCI);
+
+
+/**************************************************************************
+ *  FUNCTION:       int iVerifyAcpiTablesPresent
+ *
+ *  PARAMETERS:
+ *      pcTestName  --  pointer to test name string for log messages
+ *
+ *  RETURN:
+ *      0               if tables are present
+ *      non-zero        if ACPI tables can NOT be located
+ *
+ *  DESCRIPTION:    iVerifyAcpiTablesPresent() ensures that the current
+ *                      environment contains ACPI (namespace) tables from
+ *                      either the BIOS or from an input file.
+ *                      Return 0 if tables are present; non-zero otherwise.
+ *************************************************************************/
+int iVerifyAcpiTablesPresent (char *pcTestName);
+
+
+/**************************************************************************
+ *  FUNCTION:       int iInstallSCIHandlerXferToACPI
+ *
+ *  PARAMETERS:
+ *      pcTestName  --  pointer to test name string for log messages
+ *      iFlags      --  flag bitmask (logical OR) to specify:
+ *                          ACPI_TABLES_REQUIRED, HW_OVERRIDE_SUPPORTED,
+ *                          PROGRAM_SCI_LEVEL_SENSITIVITY, DISABLE_KNOWN_EVENTS
+ *
+ *  RETURN:         0 if successful; non-zero if failure encountered
+ *
+ *  DESCRIPTION:    iInstallSCIHandlerXferToACPI() ensures that the system
+ *                      control interrupt (SCI) is properly configured, disables
+ *                      SCI event sources, installs the SCI handler, and
+ *                      transfers the system into ACPI mode.
+ *                      If successful, return 0. Otherwise, return non-zero.
+ *************************************************************************/
+int iInstallSCIHandlerXferToACPI (char *pcTestName, int iFlags);
+
+
+/**************************************************************************
+ *  FUNCTION:       int iUninstallSCIHandlerXferToLegacy
+ *
+ *  PARAMETERS:     none
+ *
+ *  RETURN:         0 if successful; non-zero if failure encountered
+ *
+ *  DESCRIPTION:    iUninstallSCIHandlerXferToLegacy() returns the system
+ *                      to original ACPI/legacy mode, unloads the SCI handler,
+ *                      and restores the SCI to its original configuration.
+ *                      If successful, return 0. Otherwise, return non-zero.
+ *************************************************************************/
+int iUninstallSCIHandlerXferToLegacy ();
+
+#endif  /*  __SCILAST_H__   */
