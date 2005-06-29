@@ -313,7 +313,7 @@ PsWalkParsedAml (
 	NAME_TABLE_ENTRY		*StartScope,
     ACPI_OBJECT_INTERNAL    **Params,
     ACPI_OBJECT_INTERNAL    **CallerReturnDesc,
-    ACPI_TABLE_DESC         *TableDesc,
+    ACPI_OWNER_ID           OwnerId,
     INTERPRETER_CALLBACK    DescendingCallback,
     INTERPRETER_CALLBACK    AscendingCallback);
 
@@ -335,6 +335,14 @@ PsInitOp (
 ACPI_GENERIC_OP * 
 PsAllocOp (
     UINT16                  opcode);
+
+void
+PsFreeOp (
+    ACPI_GENERIC_OP         *Op);
+
+void
+PsDeleteParseCache (
+    void);
 
 BOOLEAN
 PsIsLeadingChar (
