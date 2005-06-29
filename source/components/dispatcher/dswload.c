@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dswload - Dispatcher namespace load callbacks
- *              $Revision: 1.85 $
+ *              $Revision: 1.87 $
  *
  *****************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2003, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2004, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -124,6 +124,9 @@
 #include "acnamesp.h"
 #include "acevents.h"
 
+#ifdef _ACPI_ASL_COMPILER
+#include "acdisasm.h"
+#endif
 
 #define _COMPONENT          ACPI_DISPATCHER
         ACPI_MODULE_NAME    ("dswload")
@@ -261,7 +264,19 @@ AcpiDsLoad1BeginOp (
                         ACPI_IMODE_EXECUTE, ACPI_NS_SEARCH_PARENT, WalkState, &(Node));
         if (ACPI_FAILURE (Status))
         {
+#ifdef _ACPI_ASL_COMPILER
+            if (Status == AE_NOT_FOUND)
+            {
+                AcpiDmAddToExternalList (Path);
+                Status = AE_OK;
+            }
+            else
+            {
+                ACPI_REPORT_NSERROR (Path, Status);
+            }
+#else
             ACPI_REPORT_NSERROR (Path, Status);
+#endif
             return (Status);
         }
 
@@ -637,7 +652,18 @@ AcpiDsLoad2BeginOp (
                         ACPI_IMODE_EXECUTE, ACPI_NS_SEARCH_PARENT, WalkState, &(Node));
         if (ACPI_FAILURE (Status))
         {
+#ifdef _ACPI_ASL_COMPILER
+            if (Status == AE_NOT_FOUND)
+            {
+                Status = AE_OK;
+            }
+            else
+            {
+                ACPI_REPORT_NSERROR (BufferPtr, Status);
+            }
+#else
             ACPI_REPORT_NSERROR (BufferPtr, Status);
+#endif
             return_ACPI_STATUS (Status);
         }
         /*
