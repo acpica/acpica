@@ -592,6 +592,7 @@ INT32
 AmlGoodChar (
     INT32                   c);
 
+ACPI_STATUS
 AmlDoSeg (
     char                    *NameString,
     OPERATING_MODE          LoadExecMode);
