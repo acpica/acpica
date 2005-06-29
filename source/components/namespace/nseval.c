@@ -2,7 +2,7 @@
  *
  * Module Name: nseval - Object evaluation interfaces -- includes control
  *                       method lookup and execution.
- *              $Revision: 1.96 $
+ *              $Revision: 1.97 $
  *
  ******************************************************************************/
 
@@ -511,9 +511,17 @@ AcpiNsExecuteControlMethod (
     AcpiUtReleaseMutex (ACPI_MTX_NAMESPACE);
 
     /*
-     * Execute the method via the interpreter
+     * Execute the method via the interpreter.  The interpreter is locked
+     * here before calling into the AML parser
      */
-    Status = AcpiExExecuteMethod (MethodNode, Params, ReturnObjDesc);
+    Status = AcpiExEnterInterpreter ();
+    if (ACPI_FAILURE (Status))
+    {
+        return_ACPI_STATUS (Status);
+    }
+
+    Status = AcpiPsxExecute (MethodNode, Params, ReturnObjDesc);
+    AcpiExExitInterpreter ();
 
     return_ACPI_STATUS (Status);
 }
