@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acenv.h - Generation environment specific items
- *       $Revision: 1.91 $
+ *       $Revision: 1.92 $
  *
  *****************************************************************************/
 
@@ -142,7 +142,7 @@
 #ifdef _ACPI_ASL_COMPILER
 #define ACPI_DEBUG
 #define ACPI_APPLICATION
-#define ENABLE_DEBUGGER
+/* #define ENABLE_DEBUGGER */
 #define ACPI_USE_SYSTEM_CLIBRARY
 #endif
 
