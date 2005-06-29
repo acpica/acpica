@@ -267,6 +267,11 @@ extern char                     *FENames[];
 ACPI_EXTERN ACPI_HANDLE         LastMethod;
 
 
+/*
+ * Table of Address Space handlers
+ */
+
+ACPI_EXTERN ADDRESS_SPACE_INFO  AddressSpaces[ACPI_NUM_ADDRESS_SPACES];
 
 
 /*****************************************************************************
