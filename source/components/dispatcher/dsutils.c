@@ -283,7 +283,7 @@ DsCreateOperand (
     ACPI_STATUS             Status = AE_OK;
     char                    *NameString;
     UINT32                  NameLength;
-    ACPI_OBJECT_TYPE        DataType; 
+    OBJECT_TYPE_INTERNAL    DataType; 
     ACPI_OBJECT_INTERNAL    *ObjDesc;
     ACPI_GENERIC_OP         *ParentOp;
     UINT16                  Opcode;
@@ -572,8 +572,7 @@ DsResolveOperands (
     
     /*
      * TBD: Note from previous parser:
-     *
-     * TBD: RefOf problem with AmlResolveToValue() conversion.
+     *   RefOf problem with AmlResolveToValue() conversion.
      */
 
     for (i = 0; i < WalkState->NumOperands; i++)
@@ -604,12 +603,12 @@ DsResolveOperands (
  *
  ****************************************************************************/
 
-ACPI_OBJECT_TYPE
+OBJECT_TYPE_INTERNAL
 DsMapOpcodeToDataType (
     UINT16                  Opcode,
     UINT32                  *OutFlags)
 {
-    ACPI_OBJECT_TYPE        DataType = INTERNAL_TYPE_Invalid;
+    OBJECT_TYPE_INTERNAL    DataType = INTERNAL_TYPE_Invalid;
     ACPI_OP_INFO            *OpInfo;
     UINT32                  Flags = 0;
 
@@ -743,11 +742,11 @@ DsMapOpcodeToDataType (
  *
  ****************************************************************************/
 
-ACPI_OBJECT_TYPE 
+OBJECT_TYPE_INTERNAL 
 DsMapNamedOpcodeToDataType (
     UINT16                  Opcode)
 {
-    ACPI_OBJECT_TYPE        DataType; 
+    OBJECT_TYPE_INTERNAL    DataType; 
 
 
     /* Decode Opcode */

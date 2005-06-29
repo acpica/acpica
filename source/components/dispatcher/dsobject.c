@@ -155,7 +155,7 @@ DsInitOneObject (
     void                    *Context,
     void                    **ReturnValue)
 {
-    ACPI_OBJECT_TYPE        Type;
+    OBJECT_TYPE_INTERNAL    Type;
     ACPI_STATUS             Status;
     ACPI_OBJECT_INTERNAL    *ObjDesc;
     INIT_WALK_INFO          *Info = (INIT_WALK_INFO *) Context;
@@ -471,7 +471,7 @@ DsBuildInternalSimpleObj (
     ACPI_OBJECT_INTERNAL    **ObjDescPtr)
 {
     ACPI_OBJECT_INTERNAL    *ObjDesc;
-    ACPI_OBJECT_TYPE        Type;
+    OBJECT_TYPE_INTERNAL    Type;
     ACPI_STATUS             Status;
 
 
@@ -498,7 +498,7 @@ DsBuildInternalSimpleObj (
         /*
          * The reference will be a Reference
          * TBD: unless we really need a separate type of INTERNAL_TYPE_reference
-         * TBD: change DsMapOpcodeToDataType to handle this case 
+         *      change DsMapOpcodeToDataType to handle this case 
          */
         Type = INTERNAL_TYPE_Reference;
     }
