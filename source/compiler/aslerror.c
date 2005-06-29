@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslerror - Error handling and statistics
- *              $Revision: 1.62 $
+ *              $Revision: 1.64 $
  *
  *****************************************************************************/
 
@@ -180,7 +180,8 @@ char                        *AslMessages [] = {
     "Opcode is not implemented in compiler AML code generator",
     "No enclosing While statement",
     "Invalid Escape Sequence",
-    "Invalid Hex/Octal Escape - Non-ASCII or NULL"
+    "Invalid Hex/Octal Escape - Non-ASCII or NULL",
+    "Invalid Table Signature"
 };
 
 
@@ -465,7 +466,7 @@ AslCommonError (
 
         /* Keep a copy of the extra message */
 
-        STRCPY (MessageBuffer, ExtraMessage);
+        ACPI_STRCPY (MessageBuffer, ExtraMessage);
     }
 
     /*

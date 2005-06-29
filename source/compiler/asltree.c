@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asltree - parse tree management
- *              $Revision: 1.40 $
+ *              $Revision: 1.42 $
  *
  *****************************************************************************/
 
@@ -249,15 +249,15 @@ TrUpdateNode (
      */
     switch (ParseOpcode)
     {
-    case BYTECONST:
+    case PARSEOP_BYTECONST:
         Node = UtCheckIntegerRange (Node, 0x00, ACPI_UINT8_MAX);
         break;
 
-    case WORDCONST:
+    case PARSEOP_WORDCONST:
         Node = UtCheckIntegerRange (Node, 0x00, ACPI_UINT16_MAX);
         break;
 
-    case DWORDCONST:
+    case PARSEOP_DWORDCONST:
         Node = UtCheckIntegerRange (Node, 0x00, ACPI_UINT32_MAX);
         break;
     }
@@ -383,33 +383,34 @@ TrCreateValuedLeafNode (
     Node = TrAllocateNode (ParseOpcode);
 
     DbgPrint (ASL_PARSE_OUTPUT,
-        "\nCreateValuedLeafNode  Line %d NewNode %p  Op %s  Value %lX  ",
-        Node->LineNumber, Node, UtGetOpName(ParseOpcode), Value);
+        "\nCreateValuedLeafNode  Line %d NewNode %p  Op %s  Value %8.8X%8.8X  ",
+        Node->LineNumber, Node, UtGetOpName(ParseOpcode), 
+        ACPI_HIDWORD (Value), ACPI_LODWORD (Value));
     Node->Value.Integer = Value;
 
     switch (ParseOpcode)
     {
-    case STRING_LITERAL:
+    case PARSEOP_STRING_LITERAL:
         DbgPrint (ASL_PARSE_OUTPUT, "STRING->%s", Value);
         break;
 
-    case NAMESEG:
+    case PARSEOP_NAMESEG:
         DbgPrint (ASL_PARSE_OUTPUT, "NAMESEG->%s", Value);
         break;
 
-    case NAMESTRING:
+    case PARSEOP_NAMESTRING:
         DbgPrint (ASL_PARSE_OUTPUT, "NAMESTRING->%s", Value);
         break;
 
-    case EISAID:
+    case PARSEOP_EISAID:
         DbgPrint (ASL_PARSE_OUTPUT, "EISAID->%s", Value);
         break;
 
-    case METHOD:
+    case PARSEOP_METHOD:
         DbgPrint (ASL_PARSE_OUTPUT, "METHOD");
         break;
 
-    case INTEGER:
+    case PARSEOP_INTEGER:
         DbgPrint (ASL_PARSE_OUTPUT, "INTEGER");
         break;
 
@@ -467,15 +468,15 @@ TrCreateNode (
 
     switch (ParseOpcode)
     {
-    case DEFINITIONBLOCK:
+    case PARSEOP_DEFINITIONBLOCK:
         DbgPrint (ASL_PARSE_OUTPUT, "DEFINITION_BLOCK (Tree Completed)->");
         break;
 
-    case OPERATIONREGION:
+    case PARSEOP_OPERATIONREGION:
         DbgPrint (ASL_PARSE_OUTPUT, "OPREGION->");
         break;
 
-    case OR:
+    case PARSEOP_OR:
         DbgPrint (ASL_PARSE_OUTPUT, "OR->");
         break;
     }
@@ -499,7 +500,7 @@ TrCreateNode (
          */
         if (!Child)
         {
-            Child = TrAllocateNode (DEFAULT_ARG);
+            Child = TrAllocateNode (PARSEOP_DEFAULT_ARG);
         }
 
         /* Link first child to parent */
@@ -581,15 +582,15 @@ TrLinkChildren (
 
     switch (Node->ParseOpcode)
     {
-    case DEFINITIONBLOCK:
+    case PARSEOP_DEFINITIONBLOCK:
         DbgPrint (ASL_PARSE_OUTPUT, "DEFINITION_BLOCK (Tree Completed)->");
         break;
 
-    case OPERATIONREGION:
+    case PARSEOP_OPERATIONREGION:
         DbgPrint (ASL_PARSE_OUTPUT, "OPREGION->");
         break;
 
-    case OR:
+    case PARSEOP_OR:
         DbgPrint (ASL_PARSE_OUTPUT, "OR->");
         break;
     }
@@ -618,7 +619,7 @@ TrLinkChildren (
          */
         if (!Child)
         {
-            Child = TrAllocateNode (DEFAULT_ARG);
+            Child = TrAllocateNode (PARSEOP_DEFAULT_ARG);
         }
 
         /* Link first child to parent */
@@ -778,7 +779,7 @@ TrLinkPeerNodes (
         Next = va_arg (ap, ASL_PARSE_NODE *);
         if (!Next)
         {
-            Next = TrAllocateNode (DEFAULT_ARG);
+            Next = TrAllocateNode (PARSEOP_DEFAULT_ARG);
         }
 
         /* link new node to the current node */

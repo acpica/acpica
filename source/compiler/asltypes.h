@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asltypes.h - compiler data types and struct definitions
- *              $Revision: 1.28 $
+ *              $Revision: 1.34 $
  *
  *****************************************************************************/
 
@@ -170,6 +170,8 @@ typedef struct asl_parse_node
     UINT32                      AcpiBtype;
     UINT32                      AmlLength;
     UINT32                      AmlSubtreeLength;
+    UINT32                      FinalAmlLength;
+    UINT32                      FinalAmlOffset;
     UINT8                       AmlOpcodeLength;
     UINT8                       AmlPkgLenBytes;
     UINT16                      Flags;
@@ -277,13 +279,15 @@ typedef enum
     ASL_FILE_LISTING_OUTPUT,
     ASL_FILE_HEX_OUTPUT,
     ASL_FILE_NAMESPACE_OUTPUT,
-    ASL_FILE_DEBUG_OUTPUT
+    ASL_FILE_DEBUG_OUTPUT,
+    ASL_FILE_ASM_SOURCE_OUTPUT,
+    ASL_FILE_C_SOURCE_OUTPUT
 
 } ASL_FILE_TYPES;
 
 
-#define ASL_MAX_FILE            8
-#define ASL_NUM_FILES           (ASL_MAX_FILE + 1)
+#define ASL_MAX_FILE_TYPE       10
+#define ASL_NUM_FILES           (ASL_MAX_FILE_TYPE + 1)
 
 
 /* An entry in the exception list, one for each error/warning */
@@ -397,7 +401,9 @@ typedef enum
     ASL_MSG_BITS_TO_BYTES,
     ASL_MSG_AML_NOT_IMPLEMENTED,
     ASL_MSG_NO_WHILE,
-    ASL_MSG_INVALID_ESCAPE
+    ASL_MSG_INVALID_ESCAPE,
+    ASL_MSG_INVALID_STRING,
+    ASL_MSG_TABLE_SIGNATURE
 
 } ASL_MESSAGE_IDS;
 

@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslrestype1 - Short (type1) resource templates and descriptors
- *              $Revision: 1.18 $
+ *              $Revision: 1.19 $
  *
  *****************************************************************************/
 
@@ -195,7 +195,7 @@ RsDoDmaDescriptor (
 
             /* All DMA channel bytes are handled here, after the flags and name */
 
-            if (InitializerNode->ParseOpcode != DEFAULT_ARG)
+            if (InitializerNode->ParseOpcode != PARSEOP_DEFAULT_ARG)
             {
                 DmaChannelMask |= (1 << InitializerNode->Value.Integer8);
             }
@@ -475,7 +475,7 @@ RsDoIrqDescriptor (
 
             /* All IRQ bytes are handled here, after the flags and name */
 
-            if (InitializerNode->ParseOpcode != DEFAULT_ARG)
+            if (InitializerNode->ParseOpcode != PARSEOP_DEFAULT_ARG)
             {
                 IrqMask |= (1 << InitializerNode->Value.Integer8);
             }
@@ -547,7 +547,7 @@ RsDoIrqNoFlagsDescriptor (
 
             /* IRQ bytes are handled here, after the flags and name */
 
-            if (InitializerNode->ParseOpcode != DEFAULT_ARG)
+            if (InitializerNode->ParseOpcode != PARSEOP_DEFAULT_ARG)
             {
                 IrqMask |= (1 << InitializerNode->Value.Integer8);
             }

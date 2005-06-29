@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asltransform - Parse tree transforms
- *              $Revision: 1.10 $
+ *              $Revision: 1.12 $
  *
  *****************************************************************************/
 
@@ -322,15 +322,15 @@ TrTransformSubtree (
 
     switch (Node->ParseOpcode)
     {
-    case DEFINITIONBLOCK:
+    case PARSEOP_DEFINITIONBLOCK:
         TrDoDefinitionBlock (Node);
         break;
 
-    case ELSEIF:
+    case PARSEOP_ELSEIF:
         TrDoElseif (Node);
         break;
 
-    case SWITCH:
+    case PARSEOP_SWITCH:
         TrDoSwitch (Node);
         break;
     }
@@ -390,11 +390,11 @@ TrDoElseif (
 
     /* Change the ELSEIF into an ELSE */
 
-    TrAmlInitNode (Node, ELSE);
+    TrAmlInitNode (Node, PARSEOP_ELSE);
 
     /* Create a new IF node */
 
-    IfNode              = TrCreateLeafNode (IF);
+    IfNode              = TrCreateLeafNode (PARSEOP_IF);
     IfNode->Parent      = Node;
     TrAmlInitLineNumbers (IfNode, Node);
 
@@ -454,13 +454,13 @@ TrDoSwitch (
         Next = Peer;
         Peer = Next->Peer;
 
-        if (Next->ParseOpcode == CASE)
+        if (Next->ParseOpcode == PARSEOP_CASE)
         {
             if (Case)
             {
                 /* Add an ELSE to complete the previous CASE */
 
-                NewNode             = TrCreateLeafNode (ELSE);
+                NewNode             = TrCreateLeafNode (PARSEOP_ELSE);
                 NewNode->Parent     = Conditional->Parent;
                 TrAmlInitLineNumbers (NewNode, NewNode->Parent);
 
@@ -480,14 +480,14 @@ TrDoSwitch (
              * Case->Child is the case value
              * Case->Child->Peer is the beginning of the case block
              */
-            NewNode = TrCreateValuedLeafNode (NAMESTRING,
+            NewNode = TrCreateValuedLeafNode (PARSEOP_NAMESTRING,
                             ACPI_TO_INTEGER (PredicateValuePath));
 
             Predicate = Case->Child;
             Predicate->Peer = NewNode;
             TrAmlInitLineNumbers (NewNode, Predicate);
 
-            NewNode2            = TrCreateLeafNode (LEQUAL);
+            NewNode2            = TrCreateLeafNode (PARSEOP_LEQUAL);
             NewNode2->Parent    = Conditional;
             NewNode2->Child     = Predicate;
             TrAmlInitLineNumbers (NewNode2, Conditional);
@@ -502,7 +502,7 @@ TrDoSwitch (
             /* Reinitialize the CASE node to an IF node */
 
             Conditional->Child = Predicate;
-            TrAmlInitNode (Conditional, IF);
+            TrAmlInitNode (Conditional, PARSEOP_IF);
 
             /*
              * The first CASE(IF) is not nested under an ELSE.
@@ -527,7 +527,7 @@ TrDoSwitch (
                 Conditional->Peer        = NULL;
             }
         }
-        else if (Next->ParseOpcode == DEFAULT)
+        else if (Next->ParseOpcode == PARSEOP_DEFAULT)
         {
             if (Default)
             {
@@ -541,7 +541,8 @@ TrDoSwitch (
         else
         {
             /* Unkown peer opcode */
-            printf ("Unknown switch opcode\n");
+            printf ("Unknown parse opcode for switch statement: %s (%d)\n", 
+                        Next->ParseOpName, Next->ParseOpcode);
         }
     }
 
@@ -554,7 +555,7 @@ TrDoSwitch (
         {
             /* Add an ELSE first */
 
-            TrAmlInitNode (Default, ELSE);
+            TrAmlInitNode (Default, PARSEOP_ELSE);
             Default->Parent = Conditional->Parent;
         }
         else
@@ -568,13 +569,13 @@ TrDoSwitch (
     /*
      * Add a NAME node for the temp integer
      */
-    NewNode             = TrCreateLeafNode (NAME);
+    NewNode             = TrCreateLeafNode (PARSEOP_NAME);
     NewNode->Parent     = Gbl_FirstLevelInsertionNode->Parent;
 
-    NewNode2            = TrCreateValuedLeafNode (NAMESTRING,
+    NewNode2            = TrCreateValuedLeafNode (PARSEOP_NAMESTRING,
                                 ACPI_TO_INTEGER (PredicateValueName));
     NewNode->Child      = NewNode2;
-    NewNode2->Peer      = TrCreateValuedLeafNode (INTEGER, 0);
+    NewNode2->Peer      = TrCreateValuedLeafNode (PARSEOP_INTEGER, 0);
 
     TrAmlSetSubtreeParent (NewNode2, NewNode);
 
@@ -588,12 +589,12 @@ TrDoSwitch (
     /*
      * Change the SWITCH node to a STORE (predicate value, _Txx)
      */
-    TrAmlInitNode (StartNode, STORE);
+    TrAmlInitNode (StartNode, PARSEOP_STORE);
 
     Predicate               = StartNode->Child;
     Predicate->Child        = NULL;
 
-    NewNode                 = TrCreateValuedLeafNode (NAMESTRING,
+    NewNode                 = TrCreateValuedLeafNode (PARSEOP_NAMESTRING,
                                     ACPI_TO_INTEGER (PredicateValuePath));
     NewNode->Parent         = StartNode;
     Predicate->Peer         = NewNode;

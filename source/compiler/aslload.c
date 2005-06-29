@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dswload - Dispatcher namespace load callbacks
- *              $Revision: 1.43 $
+ *              $Revision: 1.44 $
  *
  *****************************************************************************/
 
@@ -406,7 +406,7 @@ LdNamespace1Begin (
 
     /* Map the raw opcode into an internal object type */
 
-    if (PsNode->ParseOpcode == NAME)
+    if (PsNode->ParseOpcode == PARSEOP_NAME)
     {
         Arg = PsNode->Child;    /* Get the NameSeg/NameString node */
         Arg = Arg->Peer;        /* First peer is the object to be associated with the name */
@@ -421,7 +421,7 @@ LdNamespace1Begin (
             ObjectType++;
         }
     }
-    else if (PsNode->ParseOpcode == EXTERNAL)
+    else if (PsNode->ParseOpcode == PARSEOP_EXTERNAL)
     {
         /*
          * "External" simply enters a name and type into the namespace.
@@ -433,7 +433,7 @@ LdNamespace1Begin (
         ActualObjectType = PsNode->Child->Peer->Value.Integer8;
         ObjectType = ACPI_TYPE_ANY;
     }
-    else if ((PsNode->ParseOpcode == DEFAULT_ARG) &&
+    else if ((PsNode->ParseOpcode == PARSEOP_DEFAULT_ARG) &&
              (PsNode->Flags == NODE_IS_RESOURCE_DESC))
     {
         Status = LdLoadResourceElements (PsNode, WalkState);
@@ -446,7 +446,7 @@ LdNamespace1Begin (
 
     ACPI_DEBUG_PRINT ((ACPI_DB_DISPATCH, "LdNamespace1Begin: Type=%x\n", ObjectType));
 
-    if (PsNode->ParseOpcode != SCOPE)
+    if (PsNode->ParseOpcode != PARSEOP_SCOPE)
     {
         Flags |= ACPI_NS_ERROR_IF_FOUND;
     }
@@ -487,7 +487,7 @@ LdNamespace1Begin (
         NsNode->OwnerId = ASL_EXTERNAL_METHOD;
     }
 
-    if (PsNode->ParseOpcode == METHOD)
+    if (PsNode->ParseOpcode == PARSEOP_METHOD)
     {
         /*
          * Get the method argument count from "Extra" and store
@@ -535,7 +535,7 @@ LdNamespace1End (
 
     /* Get the type to determine if we should pop the scope */
 
-    if ((PsNode->ParseOpcode == DEFAULT_ARG) &&
+    if ((PsNode->ParseOpcode == PARSEOP_DEFAULT_ARG) &&
         (PsNode->Flags == NODE_IS_RESOURCE_DESC))
     {
         /* TBD: Merge into AcpiDsMapNamedOpcodeToDataType */

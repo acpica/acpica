@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslresource - Resource templates and descriptors
- *              $Revision: 1.22 $
+ *              $Revision: 1.23 $
  *
  *****************************************************************************/
 
@@ -247,7 +247,7 @@ RsSetFlagBits (
     UINT8                   Default)
 {
 
-    if (Node->ParseOpcode == DEFAULT_ARG)
+    if (Node->ParseOpcode == PARSEOP_DEFAULT_ARG)
     {
         /* Use the default bit */
 
@@ -283,7 +283,7 @@ RsCompleteNodeAndGetNext (
 
     /* Mark this node unused */
 
-    Node->ParseOpcode = DEFAULT_ARG;
+    Node->ParseOpcode = PARSEOP_DEFAULT_ARG;
 
     /* Move on to the next peer node in the initializer list */
 
@@ -317,91 +317,91 @@ RsDoOneResourceDescriptor (
 
     switch (DescriptorTypeNode->ParseOpcode)
     {
-    case DMA:
+    case PARSEOP_DMA:
         Rnode = RsDoDmaDescriptor (DescriptorTypeNode, CurrentByteOffset);
         break;
 
-    case DWORDIO:
+    case PARSEOP_DWORDIO:
         Rnode = RsDoDwordIoDescriptor (DescriptorTypeNode, CurrentByteOffset);
         break;
 
-    case DWORDMEMORY:
+    case PARSEOP_DWORDMEMORY:
         Rnode = RsDoDwordMemoryDescriptor (DescriptorTypeNode, CurrentByteOffset);
         break;
 
-    case ENDDEPENDENTFN:
+    case PARSEOP_ENDDEPENDENTFN:
         Rnode = RsDoEndDependentDescriptor (DescriptorTypeNode, CurrentByteOffset);
         break;
 
-    case FIXEDIO:
+    case PARSEOP_FIXEDIO:
         Rnode = RsDoFixedIoDescriptor (DescriptorTypeNode, CurrentByteOffset);
         break;
 
-    case INTERRUPT:
+    case PARSEOP_INTERRUPT:
         Rnode = RsDoInterruptDescriptor (DescriptorTypeNode, CurrentByteOffset);
         break;
 
-    case IO:
+    case PARSEOP_IO:
         Rnode = RsDoIoDescriptor (DescriptorTypeNode, CurrentByteOffset);
         break;
 
-    case IRQ:
+    case PARSEOP_IRQ:
         Rnode = RsDoIrqDescriptor (DescriptorTypeNode, CurrentByteOffset);
         break;
 
-    case IRQNOFLAGS:
+    case PARSEOP_IRQNOFLAGS:
         Rnode = RsDoIrqNoFlagsDescriptor (DescriptorTypeNode, CurrentByteOffset);
         break;
 
-    case MEMORY24:
+    case PARSEOP_MEMORY24:
         Rnode = RsDoMemory24Descriptor (DescriptorTypeNode, CurrentByteOffset);
         break;
 
-    case MEMORY32:
+    case PARSEOP_MEMORY32:
         Rnode = RsDoMemory32Descriptor (DescriptorTypeNode, CurrentByteOffset);
         break;
 
-    case MEMORY32FIXED:
+    case PARSEOP_MEMORY32FIXED:
         Rnode = RsDoMemory32FixedDescriptor (DescriptorTypeNode, CurrentByteOffset);
         break;
 
-    case QWORDIO:
+    case PARSEOP_QWORDIO:
         Rnode = RsDoQwordIoDescriptor (DescriptorTypeNode, CurrentByteOffset);
         break;
 
-    case QWORDMEMORY:
+    case PARSEOP_QWORDMEMORY:
         Rnode = RsDoQwordMemoryDescriptor (DescriptorTypeNode, CurrentByteOffset);
         break;
 
-    case REGISTER:
+    case PARSEOP_REGISTER:
         Rnode = RsDoGeneralRegisterDescriptor (DescriptorTypeNode, CurrentByteOffset);
         break;
 
-    case STARTDEPENDENTFN:
+    case PARSEOP_STARTDEPENDENTFN:
         Rnode = RsDoStartDependentDescriptor (DescriptorTypeNode, CurrentByteOffset);
         break;
 
-    case STARTDEPENDENTFN_NOPRI:
+    case PARSEOP_STARTDEPENDENTFN_NOPRI:
         Rnode = RsDoStartDependentNoPriDescriptor (DescriptorTypeNode, CurrentByteOffset);
         break;
 
-    case VENDORLONG:
+    case PARSEOP_VENDORLONG:
         Rnode = RsDoVendorLargeDescriptor (DescriptorTypeNode, CurrentByteOffset);
         break;
 
-    case VENDORSHORT:
+    case PARSEOP_VENDORSHORT:
         Rnode = RsDoVendorSmallDescriptor (DescriptorTypeNode, CurrentByteOffset);
         break;
 
-    case WORDBUSNUMBER:
+    case PARSEOP_WORDBUSNUMBER:
         Rnode = RsDoWordBusNumberDescriptor (DescriptorTypeNode, CurrentByteOffset);
         break;
 
-    case WORDIO:
+    case PARSEOP_WORDIO:
         Rnode = RsDoWordIoDescriptor (DescriptorTypeNode, CurrentByteOffset);
         break;
 
-    case DEFAULT_ARG:
+    case PARSEOP_DEFAULT_ARG:
         /* Just ignore any of these, they are used as fillers/placeholders */
         break;
 
@@ -416,7 +416,7 @@ RsDoOneResourceDescriptor (
      * This allows the resource to be installed in the namespace so that
      * references to the descriptor can be resolved.
      */
-    DescriptorTypeNode->ParseOpcode = DEFAULT_ARG;
+    DescriptorTypeNode->ParseOpcode = PARSEOP_DEFAULT_ARG;
     DescriptorTypeNode->Flags = NODE_IS_RESOURCE_DESC;
 
     return (Rnode);
@@ -554,16 +554,16 @@ RsDoResourceTemplate (
      * First Child      -> BufferLength
      * Second Child     -> Descriptor Buffer (raw byte data)
      */
-    Node->ParseOpcode               = BUFFER;
+    Node->ParseOpcode               = PARSEOP_BUFFER;
     Node->AmlOpcode                 = AML_BUFFER_OP;
     Node->Flags                     = NODE_AML_PACKAGE;
 
-    BufferLengthNode->ParseOpcode   = INTEGER;
+    BufferLengthNode->ParseOpcode   = PARSEOP_INTEGER;
     BufferLengthNode->Value.Integer = CurrentByteOffset;
 
     OpcSetOptimalIntegerSize (BufferLengthNode);
 
-    BufferNode->ParseOpcode         = RAW_DATA;
+    BufferNode->ParseOpcode         = PARSEOP_RAW_DATA;
     BufferNode->AmlOpcode           = AML_RAW_DATA_CHAIN;
     BufferNode->AmlOpcodeLength     = 0;
     BufferNode->AmlLength           = CurrentByteOffset;

@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: asllookup- Namespace lookup
- *              $Revision: 1.51 $
+ *              $Revision: 1.53 $
  *
  *****************************************************************************/
 
@@ -163,7 +163,7 @@ LsDoOneNamespaceObject (
 
     if (Pnode)
     {
-        if (Pnode->ParseOpcode == NAME)
+        if (Pnode->ParseOpcode == PARSEOP_NAME)
         {
             Pnode = Pnode->Child;
         }
@@ -172,8 +172,8 @@ LsDoOneNamespaceObject (
         {
         case ACPI_TYPE_INTEGER:
 
-            if ((Pnode->ParseOpcode == NAMESEG)  ||
-                (Pnode->ParseOpcode == NAMESTRING))
+            if ((Pnode->ParseOpcode == PARSEOP_NAMESEG)  ||
+                (Pnode->ParseOpcode == PARSEOP_NAMESTRING))
             {
                 Pnode = Pnode->Peer;
             }
@@ -192,8 +192,8 @@ LsDoOneNamespaceObject (
 
 
         case ACPI_TYPE_STRING:
-            if ((Pnode->ParseOpcode == NAMESEG)  ||
-                (Pnode->ParseOpcode == NAMESTRING))
+            if ((Pnode->ParseOpcode == PARSEOP_NAMESEG)  ||
+                (Pnode->ParseOpcode == PARSEOP_NAMESTRING))
             {
                 Pnode = Pnode->Peer;
             }
@@ -204,8 +204,8 @@ LsDoOneNamespaceObject (
 
 
         case INTERNAL_TYPE_REGION_FIELD:
-            if ((Pnode->ParseOpcode == NAMESEG)  ||
-                (Pnode->ParseOpcode == NAMESTRING))
+            if ((Pnode->ParseOpcode == PARSEOP_NAMESEG)  ||
+                (Pnode->ParseOpcode == PARSEOP_NAMESTRING))
             {
                 Pnode = Pnode->Child;
             }
@@ -283,7 +283,7 @@ LsCompareOneNamespaceObject (
 
     /* Simply check the name */
 
-    if (*((UINT32 *) (Context)) == Node->Name)
+    if (*((UINT32 *) (Context)) == Node->Name.Integer)
     {
         /* Abort walk if we found one instance */
 
@@ -423,9 +423,9 @@ LkNamespaceLocateBegin (
     OpInfo = AcpiPsGetOpcodeInfo (PsNode->AmlOpcode);
 
     if ((!(OpInfo->Flags & AML_NAMED)) &&
-        (PsNode->ParseOpcode != NAMESTRING) &&
-        (PsNode->ParseOpcode != NAMESEG)    &&
-        (PsNode->ParseOpcode != METHODCALL))
+        (PsNode->ParseOpcode != PARSEOP_NAMESTRING) &&
+        (PsNode->ParseOpcode != PARSEOP_NAMESEG)    &&
+        (PsNode->ParseOpcode != PARSEOP_METHODCALL))
     {
         return (AE_OK);
     }
@@ -562,7 +562,7 @@ LkNamespaceLocateBegin (
 
         /* Now convert this node to an integer whose value is the field offset */
 
-        PsNode->ParseOpcode     = INTEGER;
+        PsNode->ParseOpcode     = PARSEOP_INTEGER;
         PsNode->Value.Integer   = (UINT64) Temp;
         PsNode->Flags           |= NODE_IS_RESOURCE_FIELD;
 
@@ -572,12 +572,12 @@ LkNamespaceLocateBegin (
 
     /* 2) Check for a method invocation */
 
-    else if ((((PsNode->ParseOpcode == NAMESTRING) || (PsNode->ParseOpcode == NAMESEG)) &&
+    else if ((((PsNode->ParseOpcode == PARSEOP_NAMESTRING) || (PsNode->ParseOpcode == PARSEOP_NAMESEG)) &&
         (NsNode->Type == ACPI_TYPE_METHOD) &&
         (PsNode->Parent) &&
-        (PsNode->Parent->ParseOpcode != METHOD))   ||
+        (PsNode->Parent->ParseOpcode != PARSEOP_METHOD))   ||
 
-        (PsNode->ParseOpcode == METHODCALL))
+        (PsNode->ParseOpcode == PARSEOP_METHODCALL))
     {
         /*
          * There are two types of method invocation:
@@ -598,7 +598,7 @@ LkNamespaceLocateBegin (
          * Count the number of arguments, each appears as a child
          * under the parent node
          */
-        PsNode->ParseOpcode = METHODCALL;
+        PsNode->ParseOpcode = PARSEOP_METHODCALL;
         PassedArgs          = 0;
         Next                = PsNode->Child;
 
@@ -667,8 +667,8 @@ LkNamespaceLocateBegin (
      * 3) Check for an ASL Field definition
      */
     else if ((PsNode->Parent) &&
-            ((PsNode->Parent->ParseOpcode == FIELD)     ||
-             (PsNode->Parent->ParseOpcode == BANKFIELD)))
+            ((PsNode->Parent->ParseOpcode == PARSEOP_FIELD)     ||
+             (PsNode->Parent->ParseOpcode == PARSEOP_BANKFIELD)))
     {
         /*
          * Offset checking for fields.  If the parent operation region has a

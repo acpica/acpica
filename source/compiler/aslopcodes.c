@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslopcode - AML opcode generation
- *              $Revision: 1.35 $
+ *              $Revision: 1.36 $
  *
  *****************************************************************************/
 
@@ -224,17 +224,17 @@ OpcDoAccessAs (
     /* First child is the access type */
 
     Next->AmlOpcode = AML_RAW_DATA_BYTE;
-    Next->ParseOpcode = RAW_DATA;
+    Next->ParseOpcode = PARSEOP_RAW_DATA;
 
     /* Second child is the optional access attribute */
 
     Next = Next->Peer;
-    if (Next->ParseOpcode == DEFAULT_ARG)
+    if (Next->ParseOpcode == PARSEOP_DEFAULT_ARG)
     {
         Next->Value.Integer = 0;
     }
     Next->AmlOpcode = AML_RAW_DATA_BYTE;
-    Next->ParseOpcode = RAW_DATA;
+    Next->ParseOpcode = PARSEOP_RAW_DATA;
 }
 
 
@@ -287,7 +287,7 @@ OpcDoUnicode (
      * Just set the buffer size node to be the buffer length, regardless
      * of whether it was previously an integer or a default_arg placeholder
      */
-    BufferLengthNode->ParseOpcode   = INTEGER;
+    BufferLengthNode->ParseOpcode   = PARSEOP_INTEGER;
     BufferLengthNode->AmlOpcode     = AML_DWORD_OP;
     BufferLengthNode->Value.Integer = Length;
 
@@ -296,7 +296,7 @@ OpcDoUnicode (
     InitializerNode->Value.Pointer  = UnicodeString;
     InitializerNode->AmlOpcode      = AML_RAW_DATA_BUFFER;
     InitializerNode->AmlLength      = Length;
-    InitializerNode->ParseOpcode    = RAW_DATA;
+    InitializerNode->ParseOpcode    = PARSEOP_RAW_DATA;
 }
 
 
@@ -347,7 +347,7 @@ OpcDoEisaId (
 
     /* Node is now an integer */
 
-    Node->ParseOpcode = INTEGER;
+    Node->ParseOpcode = PARSEOP_INTEGER;
     OpcSetOptimalIntegerSize (Node);
 }
 
@@ -389,52 +389,52 @@ OpcGenerateAmlOpcode (
 
     switch (Node->ParseOpcode)
     {
-    case INTEGER:
+    case PARSEOP_INTEGER:
         /*
          * Set the opcode based on the size of the integer
          */
         OpcSetOptimalIntegerSize (Node);
         break;
 
-    case OFFSET:
+    case PARSEOP_OFFSET:
 
         Node->AmlOpcodeLength = 1;
         break;
 
-    case ACCESSAS:
+    case PARSEOP_ACCESSAS:
 
         OpcDoAccessAs (Node);
         break;
 
-    case EISAID:
+    case PARSEOP_EISAID:
 
         OpcDoEisaId (Node);
         break;
 
-    case UNICODE:
+    case PARSEOP_UNICODE:
 
         OpcDoUnicode (Node);
         break;
 
-    case INCLUDE:
+    case PARSEOP_INCLUDE:
 
-        Node->Child->ParseOpcode = DEFAULT_ARG;
+        Node->Child->ParseOpcode = PARSEOP_DEFAULT_ARG;
         Gbl_HasIncludeFiles = TRUE;
         break;
 
-    case EXTERNAL:
+    case PARSEOP_EXTERNAL:
 
-        Node->Child->ParseOpcode = DEFAULT_ARG;
-        Node->Child->Peer->ParseOpcode = DEFAULT_ARG;
+        Node->Child->ParseOpcode = PARSEOP_DEFAULT_ARG;
+        Node->Child->Peer->ParseOpcode = PARSEOP_DEFAULT_ARG;
         break;
 
-    case PACKAGE:
+    case PARSEOP_PACKAGE:
         /*
          * The variable-length package has a different opcode
          */
-        if ((Node->Child->ParseOpcode != DEFAULT_ARG) &&
-            (Node->Child->ParseOpcode != INTEGER)     &&
-            (Node->Child->ParseOpcode != BYTECONST))
+        if ((Node->Child->ParseOpcode != PARSEOP_DEFAULT_ARG) &&
+            (Node->Child->ParseOpcode != PARSEOP_INTEGER)     &&
+            (Node->Child->ParseOpcode != PARSEOP_BYTECONST))
         {
             Node->AmlOpcode = AML_VAR_PACKAGE_OP;
         }

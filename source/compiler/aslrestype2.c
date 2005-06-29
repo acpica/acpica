@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslrestype2 - Long (type2) resource templates and descriptors
- *              $Revision: 1.15 $
+ *              $Revision: 1.17 $
  *
  *****************************************************************************/
 
@@ -145,7 +145,7 @@ RsGetStringDataLength (
 
     while (InitializerNode)
     {
-        if (InitializerNode->ParseOpcode == STRING_LITERAL)
+        if (InitializerNode->ParseOpcode == PARSEOP_STRING_LITERAL)
         {
             return (strlen (InitializerNode->Value.String) + 1);
         }
@@ -277,7 +277,7 @@ RsDoDwordIoDescriptor (
 
         case 10: /* ResSourceIndex [Optional Field - BYTE] */
 
-            if (InitializerNode->ParseOpcode != DEFAULT_ARG)
+            if (InitializerNode->ParseOpcode != PARSEOP_DEFAULT_ARG)
             {
                 Descriptor->Das.OptionalFields[0] = InitializerNode->Value.Integer8;
                 OptionIndex++;
@@ -287,7 +287,7 @@ RsDoDwordIoDescriptor (
 
         case 11: /* ResSource [Optional Field - STRING] */
 
-            if ((InitializerNode->ParseOpcode != DEFAULT_ARG) &&
+            if ((InitializerNode->ParseOpcode != PARSEOP_DEFAULT_ARG) &&
                 (InitializerNode->Value.Pointer))
             {
                 if (StringLength)
@@ -458,7 +458,7 @@ RsDoDwordMemoryDescriptor (
 
         case 11: /* ResSourceIndex [Optional Field - BYTE] */
 
-            if (InitializerNode->ParseOpcode != DEFAULT_ARG)
+            if (InitializerNode->ParseOpcode != PARSEOP_DEFAULT_ARG)
             {
                 Descriptor->Das.OptionalFields[0] = InitializerNode->Value.Integer8;
                 OptionIndex++;
@@ -468,7 +468,7 @@ RsDoDwordMemoryDescriptor (
 
         case 12: /* ResSource [Optional Field - STRING] */
 
-            if ((InitializerNode->ParseOpcode != DEFAULT_ARG) &&
+            if ((InitializerNode->ParseOpcode != PARSEOP_DEFAULT_ARG) &&
                 (InitializerNode->Value.Pointer))
             {
                 if (StringLength)
@@ -632,7 +632,7 @@ RsDoQwordIoDescriptor (
 
         case 10: /* ResSourceIndex [Optional Field - BYTE] */
 
-            if (InitializerNode->ParseOpcode != DEFAULT_ARG)
+            if (InitializerNode->ParseOpcode != PARSEOP_DEFAULT_ARG)
             {
                 Descriptor->Qas.OptionalFields[0] = InitializerNode->Value.Integer8;
                 OptionIndex++;
@@ -642,7 +642,7 @@ RsDoQwordIoDescriptor (
 
         case 11: /* ResSource [Optional Field - STRING] */
 
-            if ((InitializerNode->ParseOpcode != DEFAULT_ARG) &&
+            if ((InitializerNode->ParseOpcode != PARSEOP_DEFAULT_ARG) &&
                 (InitializerNode->Value.Pointer))
             {
                 if (StringLength)
@@ -812,7 +812,7 @@ RsDoQwordMemoryDescriptor (
 
         case 11: /* ResSourceIndex [Optional Field - BYTE] */
 
-            if (InitializerNode->ParseOpcode != DEFAULT_ARG)
+            if (InitializerNode->ParseOpcode != PARSEOP_DEFAULT_ARG)
             {
                 Descriptor->Qas.OptionalFields[0] = InitializerNode->Value.Integer8;
                 OptionIndex++;
@@ -822,7 +822,7 @@ RsDoQwordMemoryDescriptor (
 
         case 12: /* ResSource [Optional Field - STRING] */
 
-            if ((InitializerNode->ParseOpcode != DEFAULT_ARG) &&
+            if ((InitializerNode->ParseOpcode != PARSEOP_DEFAULT_ARG) &&
                 (InitializerNode->Value.Pointer))
             {
                 if (StringLength)
@@ -987,7 +987,7 @@ RsDoWordIoDescriptor (
 
         case 10: /* ResSourceIndex [Optional Field - BYTE] */
 
-            if (InitializerNode->ParseOpcode != DEFAULT_ARG)
+            if (InitializerNode->ParseOpcode != PARSEOP_DEFAULT_ARG)
             {
                 Descriptor->Was.OptionalFields[0] = InitializerNode->Value.Integer8;
                 OptionIndex++;
@@ -997,7 +997,7 @@ RsDoWordIoDescriptor (
 
         case 11: /* ResSource [Optional Field - STRING] */
 
-            if ((InitializerNode->ParseOpcode != DEFAULT_ARG) &&
+            if ((InitializerNode->ParseOpcode != PARSEOP_DEFAULT_ARG) &&
                 (InitializerNode->Value.Pointer))
             {
                 if (StringLength)
@@ -1154,7 +1154,7 @@ RsDoWordBusNumberDescriptor (
 
         case 9: /* ResSourceIndex [Optional Field - BYTE] */
 
-            if (InitializerNode->ParseOpcode != DEFAULT_ARG)
+            if (InitializerNode->ParseOpcode != PARSEOP_DEFAULT_ARG)
             {
                 Descriptor->Was.OptionalFields[0] = InitializerNode->Value.Integer8;
                 OptionIndex++;
@@ -1164,7 +1164,7 @@ RsDoWordBusNumberDescriptor (
 
         case 10: /* ResSource [Optional Field - STRING] */
 
-            if ((InitializerNode->ParseOpcode != DEFAULT_ARG) &&
+            if ((InitializerNode->ParseOpcode != PARSEOP_DEFAULT_ARG) &&
                 (InitializerNode->Value.Pointer))
             {
                 if (StringLength)
@@ -1296,7 +1296,7 @@ RsDoInterruptDescriptor (
 
         case 4: /* ResSourceIndex [Optional Field - BYTE] */
 
-            if (InitializerNode->ParseOpcode != DEFAULT_ARG)
+            if (InitializerNode->ParseOpcode != PARSEOP_DEFAULT_ARG)
             {
                 HasResSourceIndex = TRUE;
                 ResSourceIndex = InitializerNode->Value.Integer8;
@@ -1305,7 +1305,7 @@ RsDoInterruptDescriptor (
 
         case 5: /* ResSource [Optional Field - STRING] */
 
-            if ((InitializerNode->ParseOpcode != DEFAULT_ARG) &&
+            if ((InitializerNode->ParseOpcode != PARSEOP_DEFAULT_ARG) &&
                 (InitializerNode->Value.Pointer))
             {
                 if (StringLength)
@@ -1485,7 +1485,7 @@ RsDoGeneralRegisterDescriptor (
 
         case 3: /* Register Address */
 
-            Descriptor->Grg.Address = InitializerNode->Value.Integer8;
+            Descriptor->Grg.Address = InitializerNode->Value.Integer64;
             RsCreateByteField (InitializerNode, ASL_RESNAME_ADDRESS,
                                 CurrentByteOffset + ASL_RESDESC_OFFSET (Grg.Address));
             break;

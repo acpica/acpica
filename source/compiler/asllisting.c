@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asllisting - Listing file generation
- *              $Revision: 1.34 $
+ *              $Revision: 1.38 $
  *
  *****************************************************************************/
 
@@ -611,7 +611,7 @@ LsWriteOneSourceLine (
              * Check if an error occurred on this source line during the compile.
              * If so, we print the error message after the source line.
              */
-            LsCheckException (FileId, Gbl_SourceLine);
+            LsCheckException (Gbl_SourceLine, FileId);
             return (1);
         }
     }
@@ -779,11 +779,11 @@ LsWriteNodeToListing (
     {
         switch (Node->ParseOpcode)
         {
-        case DEFINITIONBLOCK:
-        case METHODCALL:
-        case INCLUDE:
-        case INCLUDE_END:
-        case DEFAULT_ARG:
+        case PARSEOP_DEFINITIONBLOCK:
+        case PARSEOP_METHODCALL:
+        case PARSEOP_INCLUDE:
+        case PARSEOP_INCLUDE_END:
+        case PARSEOP_DEFAULT_ARG:
 
             break;
 
@@ -816,27 +816,32 @@ LsWriteNodeToListing (
 
     switch (Node->ParseOpcode)
     {
-    case DEFINITIONBLOCK:
+    case PARSEOP_DEFINITIONBLOCK:
 
         LsWriteSourceLines (Node->EndLine, Node->EndLogicalLine, FileId);
+
+        /* Use the table Signature and TableId to build a unique name */
+
         if (FileId == ASL_FILE_ASM_SOURCE_OUTPUT)
         {
-            FlPrintFile (FileId, "AmlHeader  \\\n");
+            FlPrintFile (FileId, "%s_%s_Header \\\n", 
+                Gbl_TableSignature, Gbl_TableId);
         }
         if (FileId == ASL_FILE_C_SOURCE_OUTPUT)
         {
-            FlPrintFile (FileId, "    unsigned char    AmlHeader [] = \n    {\n");
+            FlPrintFile (FileId, "    unsigned char    %s_%s_Header [] = \n    {\n",
+                Gbl_TableSignature, Gbl_TableId);
         }
         return;
 
 
-    case METHODCALL:
+    case PARSEOP_METHODCALL:
 
         LsWriteSourceLines (Node->LineNumber, Node->LogicalLineNumber, FileId);
         return;
 
 
-    case INCLUDE:
+    case PARSEOP_INCLUDE:
 
         /*
          * Flush everything up to and including the include source line
@@ -850,7 +855,7 @@ LsWriteNodeToListing (
         return;
 
 
-    case INCLUDE_END:
+    case PARSEOP_INCLUDE_END:
 
         /*
          * Flush out the rest of the include file
@@ -864,7 +869,7 @@ LsWriteNodeToListing (
         return;
 
 
-    case DEFAULT_ARG:
+    case PARSEOP_DEFAULT_ARG:
         return;
     }
 
@@ -928,11 +933,13 @@ LsWriteNodeToListing (
 
                         if (FileId == ASL_FILE_ASM_SOURCE_OUTPUT)
                         {
-                            FlPrintFile (FileId, "Aml_%s  \\\n", &Pathname[1]);
+                            FlPrintFile (FileId, "%s_%s_%s  \\\n", 
+                                Gbl_TableSignature, Gbl_TableId, &Pathname[1]);
                         }
                         if (FileId == ASL_FILE_C_SOURCE_OUTPUT)
                         {
-                            FlPrintFile (FileId, "    unsigned char    Aml_%s [] = \n    {\n", &Pathname[1]);
+                            FlPrintFile (FileId, "    unsigned char    %s_%s_%s [] = \n    {\n", 
+                                Gbl_TableSignature, Gbl_TableId, &Pathname[1]);
                         }
                     }
                     ACPI_MEM_FREE (Pathname);
