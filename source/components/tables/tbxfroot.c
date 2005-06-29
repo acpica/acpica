@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: tbxfroot - Find the root ACPI table (RSDT)
- *              $Revision: 1.28 $
+ *              $Revision: 1.29 $
  *
  *****************************************************************************/
 
@@ -153,7 +153,7 @@ AcpiFindRootPointer (
     Status = AcpiTbFindRsdp (&TableInfo);
     if (ACPI_FAILURE (Status))
     {
-        REPORT_WARNING (("RSDP structure not found\n"));
+        DEBUG_PRINT (ACPI_ERROR, ("RSDP structure not found\n"));
         return_ACPI_STATUS (AE_NO_ACPI_TABLES);
     }
 
