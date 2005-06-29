@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: psxface - Parser external interfaces
- *              $Revision: 1.54 $
+ *              $Revision: 1.55 $
  *
  *****************************************************************************/
 
@@ -292,7 +292,7 @@ AcpiPsxExecute (
     if (ACPI_FAILURE (Status))
     {
         REPORT_ERROR (("Method execution failed, %s\n", AcpiFormatException (Status)));
-        DUMP_PATHNAME (MethodNode, "Method pathname and nodeq: ",
+        DUMP_PATHNAME (MethodNode, "Method pathname: ",
             ACPI_LV_ERROR, _COMPONENT);
     }
 
