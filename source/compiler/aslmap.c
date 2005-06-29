@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslmap - parser to AML opcode mapping table
- *              $Revision: 1.48 $
+ *              $Revision: 1.49 $
  *
  *****************************************************************************/
 
@@ -335,17 +335,17 @@ const ASL_MAPPING_ENTRY     AslKeywordMapping [] =
 {
 
 /* ACCESSAS */                  OP_TABLE_ENTRY (AML_INT_ACCESSFIELD_OP,     0,                  0,                  0),
-/* ACCESSATTRIB_BLOCK */        OP_TABLE_ENTRY (AML_BYTE_OP,                0,                  0,                  0), /* Obsolete */
-/* ACCESSATTRIB_BYTE */         OP_TABLE_ENTRY (AML_BYTE_OP,                ACCESS_BYTE_ACC,    0,                  0),
-/* ACCESSATTRIB_CALL */         OP_TABLE_ENTRY (AML_BYTE_OP,                ACCESS_BYTE_ACC,    0,                  0),
-/* ACCESSATTRIB_QUICK */        OP_TABLE_ENTRY (AML_BYTE_OP,                ACCESS_BYTE_ACC,    0,                  0),
-/* ACCESSATTRIB_SND_RCV */      OP_TABLE_ENTRY (AML_BYTE_OP,                ACCESS_BYTE_ACC,    0,                  0),
-/* ACCESSATTRIB_WORD */         OP_TABLE_ENTRY (AML_BYTE_OP,                ACCESS_BYTE_ACC,    0,                  0),
+/* ACCESSATTRIB_BLOCK */        OP_TABLE_ENTRY (AML_BYTE_OP,                ATTRIB_SMB_BLOCK,   0,                  0),
+/* ACCESSATTRIB_BYTE */         OP_TABLE_ENTRY (AML_BYTE_OP,                ATTRIB_SMB_BYTE,    0,                  0),
+/* ACCESSATTRIB_CALL */         OP_TABLE_ENTRY (AML_BYTE_OP,                ATTRIB_SMB_CALL,    0,                  0),
+/* ACCESSATTRIB_QUICK */        OP_TABLE_ENTRY (AML_BYTE_OP,                ATTRIB_SMB_QUICK,   0,                  0),
+/* ACCESSATTRIB_SND_RCV */      OP_TABLE_ENTRY (AML_BYTE_OP,                ATTRIB_SMB_SEND_RCV,0,                  0),
+/* ACCESSATTRIB_WORD */         OP_TABLE_ENTRY (AML_BYTE_OP,                ATTRIB_SMB_WORD,    0,                  0),
 /* ACCESSTYPE_ANY */            OP_TABLE_ENTRY (AML_BYTE_OP,                ACCESS_ANY_ACC,     0,                  0),
-/* ACCESSTYPE_BUF */            OP_TABLE_ENTRY (AML_BYTE_OP,                ACCESS_ANY_ACC,     0,                  0),
+/* ACCESSTYPE_BUF */            OP_TABLE_ENTRY (AML_BYTE_OP,                ACCESS_BUFFER_ACC,  0,                  0),
 /* ACCESSTYPE_BYTE */           OP_TABLE_ENTRY (AML_BYTE_OP,                ACCESS_BYTE_ACC,    0,                  0),
 /* ACCESSTYPE_DWORD */          OP_TABLE_ENTRY (AML_BYTE_OP,                ACCESS_DWORD_ACC,   0,                  0),
-/* ACCESSTYPE_QWORD */          OP_TABLE_ENTRY (AML_BYTE_OP,                ACCESS_DWORD_ACC,   0,                  0),
+/* ACCESSTYPE_QWORD */          OP_TABLE_ENTRY (AML_BYTE_OP,                ACCESS_QWORD_ACC,   0,                  0),
 /* ACCESSTYPE_WORD */           OP_TABLE_ENTRY (AML_BYTE_OP,                ACCESS_WORD_ACC,    0,                  0),
 /* ACQUIRE */                   OP_TABLE_ENTRY (AML_ACQUIRE_OP,             0,                  0,                  ACPI_BTYPE_INTEGER),
 /* ADD */                       OP_TABLE_ENTRY (AML_ADD_OP,                 0,                  0,                  ACPI_BTYPE_INTEGER),
