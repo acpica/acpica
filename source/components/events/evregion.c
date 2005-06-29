@@ -301,8 +301,8 @@ EvAddressSpaceDispatch (
      * TBD: This needs to be done differently. We should add an ACPI_OBJECT_INTERNAL
      *      to the handler calls.
 	 */
-    Context = Obj;
-	// Context = HandlerDesc->AddrHandler.Context;
+    // Context = Obj;
+	Context = HandlerDesc->AddrHandler.Context;
     
 	Flags   = HandlerDesc->AddrHandler.Hflags;
 
