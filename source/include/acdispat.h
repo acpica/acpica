@@ -240,6 +240,13 @@ AcpiDsLoad2EndOp (
 
 
 ACPI_STATUS
+AcpiDsMethodDataGetEntry (
+    UINT32                  Type,
+    UINT32                  Index,
+    ACPI_WALK_STATE         *WalkState,
+    ACPI_OBJECT_INTERNAL    ***Entry);
+
+ACPI_STATUS
 AcpiDsMethodDataDeleteAll (
     ACPI_WALK_STATE         *WalkState);
 
@@ -250,37 +257,50 @@ AcpiDsIsMethodValue (
 OBJECT_TYPE_INTERNAL
 AcpiDsMethodDataGetType (
     UINT32                  Type,
-    UINT32                  Index);
+    UINT32                  Index,
+    ACPI_WALK_STATE         *WalkState);
 
 ACPI_STATUS
 AcpiDsMethodDataGetValue (
     UINT32                  Type,
     UINT32                  Index,
-    ACPI_OBJECT_INTERNAL    **ObjDesc);
+    ACPI_WALK_STATE         *WalkState,
+    ACPI_OBJECT_INTERNAL    **DestDesc);
 
 ACPI_STATUS
 AcpiDsMethodDataSetValue (
     UINT32                  Type,
     UINT32                  Index,
-    ACPI_OBJECT_INTERNAL    *ObjDesc);
+    ACPI_OBJECT_INTERNAL    *SrcDesc,
+    ACPI_WALK_STATE         *WalkState);
 
 ACPI_STATUS
 AcpiDsMethodDataDeleteValue (
     UINT32                  Type,
-    UINT32                  Index);
+    UINT32                  Index,
+    ACPI_WALK_STATE         *WalkState);
 
 ACPI_STATUS
 AcpiDsMethodDataInitArgs (
     ACPI_OBJECT_INTERNAL    **Params,
-    UINT32                  ParamCount);
+    UINT32                  MaxParamCount,
+    ACPI_WALK_STATE         *WalkState);
 
 ACPI_NAMED_OBJECT*
 AcpiDsMethodDataGetNte (
     UINT32                  Type,
-    UINT32                  Index);
+    UINT32                  Index,
+    ACPI_WALK_STATE         *WalkState);
 
 ACPI_STATUS
 AcpiDsMethodDataInit (
+    ACPI_WALK_STATE         *WalkState);
+
+ACPI_STATUS
+AcpiDsMethodDataSetEntry (
+    UINT32                  Type,
+    UINT32                  Index,
+    ACPI_OBJECT_INTERNAL    *Object,
     ACPI_WALK_STATE         *WalkState);
 
 
@@ -342,7 +362,7 @@ AcpiDsInitObjectFromOp (
     ACPI_WALK_STATE         *WalkState,
     ACPI_GENERIC_OP         *Op,
     UINT16                  Opcode,
-    ACPI_OBJECT_INTERNAL    *ObjDesc);
+    ACPI_OBJECT_INTERNAL    **ObjDesc);
 
 ACPI_STATUS
 AcpiDsCreateNamedObject (
@@ -364,6 +384,10 @@ AcpiDsInitializeRegion (
 
 
 /* dsutils - Parser/Interpreter interface utility routines */
+
+BOOLEAN
+AcpiDsIsResultUsed (
+    ACPI_GENERIC_OP         *Op);
 
 void
 AcpiDsDeleteResultIfNotUsed (
