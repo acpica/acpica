@@ -173,22 +173,13 @@ InitAcpiLibGlobals (void)
 
     OutOfMemory             = FALSE;
 
-    /* Interpreter */
-
-    BufSeq                  = 0;
-    NamedObjectErr          = FALSE;
 
     /* Hardware oriented */
 
-    RestoreAcpiChipset      = TRUE;
-    Pm1EnableRegisterSave   = 0;
     Gpe0EnableRegisterSave  = NULL;
     Gpe1EnableRegisterSave  = NULL;
-    EdgeLevelSave           = SAVE_NOT_VALID;
-    IrqEnableSave           = SAVE_NOT_VALID;
-    OriginalMode            = SAVE_NOT_VALID;   /*  original ACPI/legacy mode   */
-
-
+    OriginalMode            = -1;   /*  original ACPI/legacy mode   */
+    SciHandle				= 0;
 
     AcpiHook                = 0;
     AcpiLibInitStatus       = 0;
