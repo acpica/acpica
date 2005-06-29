@@ -1,7 +1,8 @@
 
 /******************************************************************************
- * 
- * Module Name: ieprep - ACPI AML (p-code) execution - field prep utilities
+ *
+ * Module Name: amprep - ACPI AML (p-code) execution - field prep utilities
+ *              $Revision: 1.69 $
  *
  *****************************************************************************/
 
@@ -38,9 +39,9 @@
  * The above copyright and patent license is granted only if the following
  * conditions are met:
  *
- * 3. Conditions 
+ * 3. Conditions
  *
- * 3.1. Redistribution of Source with Rights to Further Distribute Source.  
+ * 3.1. Redistribution of Source with Rights to Further Distribute Source.
  * Redistribution of source code of any substantial portion of the Covered
  * Code or modification with rights to further distribute source must include
  * the above Copyright Notice, the above License, this list of Conditions,
@@ -48,11 +49,11 @@
  * Licensee must cause all Covered Code to which Licensee contributes to
  * contain a file documenting the changes Licensee made to create that Covered
  * Code and the date of any change.  Licensee must include in that file the
- * documentation of any changes made by any predecessor Licensee.  Licensee 
+ * documentation of any changes made by any predecessor Licensee.  Licensee
  * must include a prominent statement that the modification is derived,
  * directly or indirectly, from Original Intel Code.
  *
- * 3.2. Redistribution of Source with no Rights to Further Distribute Source.  
+ * 3.2. Redistribution of Source with no Rights to Further Distribute Source.
  * Redistribution of source code of any substantial portion of the Covered
  * Code or modification without rights to further distribute source must
  * include the following Disclaimer and Export Compliance provision in the
@@ -86,7 +87,7 @@
  * INSTALLATION, TRAINING OR OTHER SERVICES.  INTEL WILL NOT PROVIDE ANY
  * UPDATES, ENHANCEMENTS OR EXTENSIONS.  INTEL SPECIFICALLY DISCLAIMS ANY
  * IMPLIED WARRANTIES OF MERCHANTABILITY, NONINFRINGEMENT AND FITNESS FOR A
- * PARTICULAR PURPOSE. 
+ * PARTICULAR PURPOSE.
  *
  * 4.2. IN NO EVENT SHALL INTEL HAVE ANY LIABILITY TO LICENSEE, ITS LICENSEES
  * OR ANY OTHER THIRD PARTY, FOR ANY LOST PROFITS, LOST DATA, LOSS OF USE OR
@@ -114,356 +115,22 @@
  *
  *****************************************************************************/
 
-#define __IEPREP_C__
+#define __AMPREP_C__
 
-#include <acpi.h>
-#include <interp.h>
-#include <amlcode.h>
-#include <namesp.h>
+#include "acpi.h"
+#include "acinterp.h"
+#include "amlcode.h"
+#include "acnamesp.h"
+#include "acparser.h"
 
 
 #define _COMPONENT          INTERPRETER
-        MODULE_NAME         ("ieprep");
+        MODULE_NAME         ("amprep")
 
 
-
-/*****************************************************************************
- * 
- * FUNCTION:    AmlPrepOperands
+/*******************************************************************************
  *
- * PARAMETERS:  *Types              - String giving operand types needed,
- *                                    each a single char, as per below.
- *
- * RETURN:      Status
- *
- * DESCRIPTION: Convert stack entries to required types
- *
- *      Each character in Types represents one required operand
- *      and indicates the required Type:
- *
- *          l => Lvalue, also accepts a name table entry which is an 
- *                  ACPI_HANDLE instead of an (ACPI_OBJECT_INTERNAL *))
- *
- *          n => Number             (Must be ACPI_OBJECT_INTERNAL)
- *          s => String or Buffer   (Must be ACPI_OBJECT_INTERNAL)
- *          b => Buffer             (Must be ACPI_OBJECT_INTERNAL)
- *          i => If                 (Must be ACPI_OBJECT_INTERNAL)
- *          p => Package            (Must be ACPI_OBJECT_INTERNAL)
- *
- *      The corresponding stack entry will be converted to the
- *      required type if possible, else return AE_AML_ERROR.
- *
- ****************************************************************************/
-
-ACPI_STATUS
-AmlPrepOperands (
-    char                    *Types,
-    ACPI_OBJECT_INTERNAL    **StackPtr)
-{
-    ACPI_OBJECT_INTERNAL    *ObjDesc;
-    ACPI_STATUS             Status = AE_OK;
-    UINT8                   ObjectType;
-    ACPI_HANDLE             TempHandle;
-    char                    *ObjectTypeName = NULL;
-
-
-    FUNCTION_TRACE_PTR ("AmlPrepOperands", StackPtr);
-
-    DEBUG_PRINT (TRACE_EXEC, ("AmlPrepOperands: NumOperands=%d Types=%s \n", 
-                        STRLEN (Types), Types));
-
-    /* 
-     * Ensure room on stack for AmlGetRvalue() to operate
-     * without clobbering top existing entry.
-     */
-/*
-OBSOLETE!
-
-    Status = AmlObjStackPush ();
-    if (AE_OK != Status)
-    {
-        return_ACPI_STATUS (Status);
-    }
-*/
-
-
-    /* 
-     * Normal exit is with *Types == '\0' at end of string.
-     * Function will return AE_AML_ERROR from within the loop upon
-     * finding an entry which is not, and cannot be converted
-     * to, the required type; if stack underflows; or upon
-     * finding a NULL stack entry (which "should never happen").
-     */
-
-    while (*Types)
-    {
-        if (!StackPtr || !*StackPtr)
-        {
-            DEBUG_PRINT (ACPI_ERROR, ("AmlPrepOperands: Internal error - null stack entry at %X\n", StackPtr));
-            Status = AE_AML_ERROR;
-            goto Cleanup;
-        }
-
-        /* Extract useful items */
-
-        ObjDesc = *StackPtr;
-
-        /* Decode the descriptor type */
-
-        if (VALID_DESCRIPTOR_TYPE (ObjDesc, DESC_TYPE_NTE))
-        {
-            /* NTE */
-
-            ObjectType = ((NAME_TABLE_ENTRY *) ObjDesc)->Type;
-            DEBUG_EXEC (ObjectTypeName = "[NTE]");
-        }
-
-        else if (VALID_DESCRIPTOR_TYPE (ObjDesc, DESC_TYPE_ACPI_OBJ))
-        {
-            /* ACPI internal object */
-
-            ObjectType = ObjDesc->Common.Type;
-
-            /* Check for bad ACPI_OBJECT_TYPE */
-
-            if (!AmlValidateObjectType (ObjectType))
-            {
-                DEBUG_PRINT (ACPI_ERROR, ("AmlPrepOperands: Bad operand object type [0x%x]\n", ObjectType));
-                DEBUG_EXEC (ObjectTypeName = "***Bad object type***");
-            }
-        
-            else if (ObjectType == (UINT8) INTERNAL_TYPE_Lvalue)
-            {
-                /*
-                 * Decode the Lvalue 
-                 */
-
-                switch (ObjDesc->Lvalue.OpCode)
-                {
-                case AML_ZeroOp:
-                    DEBUG_PRINT (ACPI_INFO, ("Lvalue Opcode: Zero\n"));
-                    DEBUG_EXEC (ObjectTypeName = "Lvalue Zero");
-                    break;
-            
-                case AML_OneOp:
-                    DEBUG_PRINT (ACPI_INFO, ("Lvalue Opcode: One\n"));
-                    DEBUG_EXEC (ObjectTypeName = "Lvalue One");
-                    break;
-            
-                case AML_OnesOp:
-                    DEBUG_PRINT (ACPI_INFO, ("Lvalue Opcode: Ones\n"));
-                    DEBUG_EXEC (ObjectTypeName = "Lvalue Ones");
-                    break;
-            
-                case Debug1:
-                    DEBUG_PRINT (ACPI_INFO, ("Lvalue Opcode: Debug1\n"));
-                    DEBUG_EXEC (ObjectTypeName = "Lvalue Debug1");
-                    break;
-            
-                case AML_NameOp:
-                    DEBUG_PRINT (ACPI_INFO, ("Lvalue Opcode: Name\n"));
-                    DEBUG_EXEC (ObjectTypeName = "Lvalue Name");
-                    break;
-           
-                case AML_IndexOp:
-                    DEBUG_PRINT (ACPI_INFO, ("Lvalue Opcode: Index %p\n", ObjDesc->Lvalue.Object));
-                    DEBUG_EXEC (ObjectTypeName = "Lvalue Index");
-                    break;
-            
-                case AML_Arg0: case AML_Arg1: case AML_Arg2: case AML_Arg3:
-                case AML_Arg4: case AML_Arg5: case AML_Arg6:
-                    DEBUG_PRINT (ACPI_INFO, ("Lvalue Opcode: Arg%d\n", ObjDesc->Lvalue.OpCode - AML_Arg0));
-                    DEBUG_EXEC (ObjectTypeName = "Lvalue Argument");
-                    break;
-            
-                case AML_Local0: case AML_Local1: case AML_Local2: case AML_Local3:
-                case AML_Local4: case AML_Local5: case AML_Local6: case AML_Local7:
-                    DEBUG_PRINT (ACPI_INFO, ("Lvalue Opcode: Local%d\n", ObjDesc->Lvalue.OpCode - AML_Local0));
-                    DEBUG_EXEC (ObjectTypeName = "Lvalue Local");
-                    break;
-            
-                default:
-                    DEBUG_PRINT (ACPI_INFO, ("Lvalue Opcode: Unknown [%02x]\n", ObjDesc->Lvalue.OpCode));
-                    DEBUG_EXEC (ObjectTypeName = "Lvalue [Unknown]");
-                    break;
-                }
-            }
-        
-            else
-            {
-                DEBUG_EXEC (ObjectTypeName = Gbl_NsTypeNames[ObjectType]);
-            }
-        }
-
-        
-        else
-        {
-            /* Invalid descriptor */
-
-            DEBUG_PRINT (ACPI_ERROR, ("Bad descriptor type: %x\n", ObjDesc->Common.DataType));
-
-            Status = AE_TYPE;
-            goto Cleanup;
-        }
-
-        /*
-         * Decode a character from the type string
-         */
-
-        switch (*Types++)
-        {
-
-        case 'l':   /* Lvalue */
-
-            /* Need an operand of type INTERNAL_TYPE_Lvalue */
-
-            if (VALID_DESCRIPTOR_TYPE (ObjDesc, DESC_TYPE_NTE))             /* direct name ptr OK as-is */
-            {
-                break;
-            }
-
-            if (INTERNAL_TYPE_Lvalue != ObjectType)
-            {
-                DEBUG_PRINT (ACPI_WARN, ("AmlPrepOperands: Needed Lvalue, found %s\n",
-                            ObjectTypeName));
-                Status = AE_TYPE;
-                goto Cleanup;
-            }
-
-            if (AML_NameOp == ObjDesc->Lvalue.OpCode)
-            {
-                /* Convert an indirect name ptr to direct name ptr and put it on the stack */
-                
-                TempHandle = ObjDesc->Lvalue.Object;
-                CmDeleteInternalObject (ObjDesc);
-                (*StackPtr) = TempHandle;
-            }
-            break;
-
-
-        case 'n':   /* Number */
-
-            /* Need an operand of type ACPI_TYPE_Number */
-
-            if ((Status = AmlGetRvalue (StackPtr)) != AE_OK)
-            {
-                goto Cleanup;
-            }
-
-            if (ACPI_TYPE_Number != (*StackPtr)->Common.Type)
-            {
-                DEBUG_PRINT (ACPI_WARN, ("AmlPrepOperands: Needed Number, found %s\n",
-                            ObjectTypeName));
-                Status = AE_TYPE;
-                goto Cleanup;
-            }
-            break;
-
-
-        case 's':   /* String */
-
-            /* Need an operand of type ACPI_TYPE_String or ACPI_TYPE_Buffer */
-
-            if ((Status = AmlGetRvalue (StackPtr)) != AE_OK)
-            {
-                goto Cleanup;
-            }
-
-            if ((ACPI_TYPE_String != (*StackPtr)->Common.Type) &&
-                (ACPI_TYPE_Buffer != (*StackPtr)->Common.Type))
-            {
-                DEBUG_PRINT (ACPI_WARN, ("AmlPrepOperands: Needed String or Buffer, found %s\n",
-                            ObjectTypeName));
-                Status = AE_TYPE;
-                goto Cleanup;
-            }
-            break;
-
-
-        case 'b':   /* Buffer */
-
-            /* Need an operand of type ACPI_TYPE_Buffer */
-
-            if ((Status = AmlGetRvalue(StackPtr)) != AE_OK)
-            {
-                goto Cleanup;
-            }
-
-            if (ACPI_TYPE_Buffer != (*StackPtr)->Common.Type)
-            {
-                DEBUG_PRINT (ACPI_WARN, ("AmlPrepOperands: Needed Buffer, found %s\n",
-                            ObjectTypeName));
-                Status = AE_TYPE;
-                goto Cleanup;
-            }
-            break;
-
-
-        case 'i':   /* If */
-
-            /* Need an operand of type INTERNAL_TYPE_If */
-
-            if (INTERNAL_TYPE_If != (*StackPtr)->Common.Type)
-            {
-                DEBUG_PRINT (ACPI_WARN, ("AmlPrepOperands: Needed If, found %s\n",
-                            ObjectTypeName));
-                Status = AE_TYPE;
-                goto Cleanup;
-            }
-            break;
-
-
-        case 'p':   /* Package */
-
-            /* Need an operand of type ACPI_TYPE_Package */
-
-            if ((Status = AmlGetRvalue (StackPtr)) != AE_OK)
-            {
-                goto Cleanup;
-            }
-
-            if (ACPI_TYPE_Package != (*StackPtr)->Common.Type)
-            {
-                DEBUG_PRINT (ACPI_WARN, ("AmlPrepOperands: Needed Package, found %s\n",
-                            ObjectTypeName));
-                Status = AE_TYPE;
-                goto Cleanup;
-            }
-            break;
-
-
-        /* Unknown abbreviation passed in */
-
-        default:
-            DEBUG_PRINT (ACPI_ERROR, ("AmlPrepOperands: Internal error - Unknown type flag %02x\n",
-                        *--Types));
-            Status = AE_BAD_PARAMETER;
-            goto Cleanup;
-
-        }   /* switch (*Types++) */
-
-
-        /* 
-         * If more operands needed, decrement StackPtr to point
-         * to next operand on stack (after checking for underflow).
-         */
-        if (*Types)
-        {
-            StackPtr--;
-        }
-
-    }   /* while (*Types) */
-
-
-Cleanup:
-
-  return_ACPI_STATUS (Status);
-}
-
-
-/*****************************************************************************
- * 
- * FUNCTION:    AmlDecodeFieldAccessType
+ * FUNCTION:    AcpiAmlDecodeFieldAccessType
  *
  * PARAMETERS:  Access          - Encoded field access bits
  *
@@ -471,425 +138,443 @@ Cleanup:
  *
  * DESCRIPTION: Decode the AccessType bits of a field definition.
  *
- ****************************************************************************/
+ ******************************************************************************/
 
-UINT32
-AmlDecodeFieldAccessType (
+static UINT32
+AcpiAmlDecodeFieldAccessType (
     UINT32                  Access)
 {
- 
+
     switch (Access)
     {
-    case ACCESS_AnyAcc:
-        return 8;
+    case ACCESS_ANY_ACC:
+        return (8);
         break;
 
-    case ACCESS_ByteAcc:
-        return 8;
+    case ACCESS_BYTE_ACC:
+        return (8);
         break;
 
-    case ACCESS_WordAcc:
-        return 16;
+    case ACCESS_WORD_ACC:
+        return (16);
         break;
 
-    case ACCESS_DWordAcc:
-        return 32;
+    case ACCESS_DWORD_ACC:
+        return (32);
         break;
 
     default:
         /* Invalid field access type */
 
-        DEBUG_PRINT (ACPI_ERROR, ("AmlDecodeFieldAccessType: Unknown field access type %x\n",
-                        Access));
-        return 0;
+        DEBUG_PRINT (ACPI_ERROR,
+            ("AmlDecodeFieldAccessType: Unknown field access type %x\n",
+            Access));
+        return (0);
     }
 }
 
 
-/*****************************************************************************
- * 
- * FUNCTION:    AmlPrepDefFieldValue
+/*******************************************************************************
  *
- * PARAMETERS:  Region              - Region in which field is being defined
- *              FldFlg              - Access, LockRule, or UpdateRule.
+ * FUNCTION:    AcpiAmlPrepCommonFieldObjec
+ *
+ * PARAMETERS:  ObjDesc             - The field object
+ *              FieldFlags          - Access, LockRule, or UpdateRule.
  *                                    The format of a FieldFlag is described
- *                                    in the ACPI specification and in <aml.h>
- *              FldPos              - Field position
- *              FldLen              - Field length
+ *                                    in the ACPI specification
+ *              FieldPosition       - Field position
+ *              FieldLength         - Field length
  *
  * RETURN:      Status
  *
- * DESCRIPTION: Construct an ACPI_OBJECT_INTERNAL of type DefField and connect
- *              it to the nte whose handle is at the object stack top.
+ * DESCRIPTION: Initialize the areas of the field object that are common
+ *              to the various types of fields.
  *
- ****************************************************************************/
+ ******************************************************************************/
+
+static ACPI_STATUS
+AcpiAmlPrepCommonFieldObject (
+    ACPI_OPERAND_OBJECT     *ObjDesc,
+    UINT8                   FieldFlags,
+    UINT8                   FieldAttribute,
+    UINT32                  FieldPosition,
+    UINT32                  FieldLength)
+{
+    UINT32                  Granularity;
+
+
+    FUNCTION_TRACE ("AmlPrepCommonFieldObject");
+
+
+    /*
+     * Note: the structure being initialized is the
+     * ACPI_COMMON_FIELD_INFO;  Therefore, we can just use the Field union to
+     * access this common area.  No structure fields outside of the common area
+     * are initialized by this procedure.
+     */
+
+    /* Decode the FieldFlags */
+
+    ObjDesc->Field.Access           = (UINT8) ((FieldFlags & ACCESS_TYPE_MASK)
+                                                    >> ACCESS_TYPE_SHIFT);
+    ObjDesc->Field.LockRule         = (UINT8) ((FieldFlags & LOCK_RULE_MASK)
+                                                    >> LOCK_RULE_SHIFT);
+    ObjDesc->Field.UpdateRule       = (UINT8) ((FieldFlags & UPDATE_RULE_MASK)
+                                                    >> UPDATE_RULE_SHIFT);
+
+    /* Other misc fields */
+
+    ObjDesc->Field.Length           = (UINT16) FieldLength;
+    ObjDesc->Field.AccessAttribute  = FieldAttribute;
+
+    /* Decode the access type so we can compute offsets */
+
+    Granularity = AcpiAmlDecodeFieldAccessType (ObjDesc->Field.Access);
+    if (!Granularity)
+    {
+        return_ACPI_STATUS (AE_AML_OPERAND_VALUE);
+    }
+
+    /* Access granularity based fields */
+
+    ObjDesc->Field.Granularity      = (UINT8) Granularity;
+    ObjDesc->Field.BitOffset        = (UINT8) (FieldPosition % Granularity);
+    ObjDesc->Field.Offset           = (UINT32) FieldPosition / Granularity;
+
+
+    return_ACPI_STATUS (AE_OK);
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiAmlPrepDefFieldValue
+ *
+ * PARAMETERS:  Node            - Owning Node
+ *              Region              - Region in which field is being defined
+ *              FieldFlags          - Access, LockRule, or UpdateRule.
+ *                                    The format of a FieldFlag is described
+ *                                    in the ACPI specification
+ *              FieldPosition       - Field position
+ *              FieldLength         - Field length
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Construct an ACPI_OPERAND_OBJECT  of type DefField and
+ *              connect it to the parent Node.
+ *
+ ******************************************************************************/
 
 ACPI_STATUS
-AmlPrepDefFieldValue (
-    NAME_TABLE_ENTRY        *ThisEntry,
-    ACPI_HANDLE             Region, 
-    UINT8                   FldFlg, 
-    INT32                   FldPos, 
-    INT32                   FldLen)
+AcpiAmlPrepDefFieldValue (
+    ACPI_NAMESPACE_NODE     *Node,
+    ACPI_HANDLE             Region,
+    UINT8                   FieldFlags,
+    UINT8                   FieldAttribute,
+    UINT32                  FieldPosition,
+    UINT32                  FieldLength)
 {
-    ACPI_OBJECT_INTERNAL    *ObjDesc = NULL;
-    INT32                   Type;
-    UINT32                  Granularity;
+    ACPI_OPERAND_OBJECT     *ObjDesc;
+    UINT32                  Type;
+    ACPI_STATUS             Status;
 
 
     FUNCTION_TRACE ("AmlPrepDefFieldValue");
 
 
+    /* Parameter validation */
+
     if (!Region)
     {
         DEBUG_PRINT (ACPI_ERROR, ("AmlPrepDefFieldValue: null Region\n"));
-        return_ACPI_STATUS (AE_AML_ERROR);
+        return_ACPI_STATUS (AE_AML_NO_OPERAND);
     }
 
-    /* Region typecheck */
-
-    if (ACPI_TYPE_Region != (Type = NsGetType (Region)))
+    Type = AcpiNsGetType (Region);
+    if (Type != ACPI_TYPE_REGION)
     {
-        DEBUG_PRINT (ACPI_ERROR, ("AmlPrepDefFieldValue: Needed Region, found %d %s\n",
-                    Type, Gbl_NsTypeNames[Type]));
-        return_ACPI_STATUS (AE_AML_ERROR);
+        DEBUG_PRINT (ACPI_ERROR,
+            ("AmlPrepDefFieldValue: Needed Region, found type %X %s\n",
+            Type, AcpiCmGetTypeName (Type)));
+        return_ACPI_STATUS (AE_AML_OPERAND_TYPE);
     }
 
     /* Allocate a new object */
 
-    ObjDesc = CmCreateInternalObject (INTERNAL_TYPE_DefField);
+    ObjDesc = AcpiCmCreateInternalObject (INTERNAL_TYPE_DEF_FIELD);
     if (!ObjDesc)
-    {   
-        /* Unable to allocate new object descriptor    */
-
+    {
         return_ACPI_STATUS (AE_NO_MEMORY);
     }
 
 
     /* ObjDesc and Region valid */
 
-    DUMP_OPERANDS ((ACPI_OBJECT_INTERNAL **) &ThisEntry, IMODE_Execute, "AmlPrepDefFieldValue", 1, "case DefField");
-    DUMP_OPERANDS ((ACPI_OBJECT_INTERNAL **) &Region, IMODE_Execute, "AmlPrepDefFieldValue", 1, "case DefField");
+    DUMP_OPERANDS ((ACPI_OPERAND_OBJECT  **) &Node, IMODE_EXECUTE,
+                    "AmlPrepDefFieldValue", 1, "case DefField");
+    DUMP_OPERANDS ((ACPI_OPERAND_OBJECT  **) &Region, IMODE_EXECUTE,
+                    "AmlPrepDefFieldValue", 1, "case DefField");
 
-    if (INTERNAL_TYPE_DefField != ObjDesc->Field.Type)
+    /* Initialize areas of the object that are common to all fields */
+
+    Status = AcpiAmlPrepCommonFieldObject (ObjDesc, FieldFlags, FieldAttribute,
+                                            FieldPosition, FieldLength);
+    if (ACPI_FAILURE (Status))
     {
-        /* 
-         * The C implementation has done something which is technically legal
-         * but unexpected:  the Type field which was defined as a UINT8 did
-         * not map to the same structure offset as the one which was defined
-         * as a WORD_BIT -- see comments in the definition of the FieldUnit
-         * variant of ACPI_OBJECT_INTERNAL
-         *
-         * Log some evidence to facilitate porting the code.
-         */
-        ObjDesc->Field.Type = 0x005a;
-        DEBUG_PRINT (ACPI_ERROR, (
-                "AmlPrepDefFieldValue: **** Internal Failure %p %02x %02x %02x %02x\n",
-                ObjDesc, ((UINT8 *) ObjDesc)[0], ((UINT8 *) ObjDesc)[1], ((UINT8 *) ObjDesc)[2],
-                ((UINT8 *) ObjDesc)[3]));
-
-        CmDeleteInternalObject (ObjDesc);
-        ObjDesc = NULL;
-        return_ACPI_STATUS (AE_AML_ERROR);
+        return_ACPI_STATUS (Status);
     }
 
-    /* ObjDesc, Region, and ObjDesc->Field.Type valid    */
+    /* Initialize areas of the object that are specific to this field type */
 
-    ObjDesc->Field.Length       = (UINT16) FldLen;
-    ObjDesc->Field.UpdateRule   = (FldFlg & UPDATE_RULE_MASK) >> UPDATE_RULE_SHIFT;
-    ObjDesc->Field.LockRule     = (FldFlg & LOCK_RULE_MASK) >> LOCK_RULE_SHIFT;
-    ObjDesc->Field.Access       = (FldFlg & ACCESS_TYPE_MASK) >> ACCESS_TYPE_SHIFT;
-
-    /* Decode the access type so we can compute offsets */
-
-    Granularity = AmlDecodeFieldAccessType (ObjDesc->Field.Access);
-    if (!Granularity)
-    {
-        return_ACPI_STATUS (AE_AML_ERROR);
-    }
-
-    /* Compute field offset and bit offset within the minimum read/write data unit */
-
-    ObjDesc->Field.Granularity  = Granularity;
-    ObjDesc->Field.BitOffset    = (UINT16) FldPos % Granularity;
-    ObjDesc->Field.Offset       = (UINT32) FldPos / Granularity;
-    ObjDesc->Field.Container    = NsGetAttachedObject (Region);
+    ObjDesc->Field.Container = AcpiNsGetAttachedObject (Region);
 
     /* An additional reference for the container */
 
-    CmUpdateObjectReference (ObjDesc->Field.Container, REF_INCREMENT);
+    AcpiCmAddReference (ObjDesc->Field.Container);
 
 
-    /* Debug output only */
+    /* Debug info */
 
-    DEBUG_PRINT (ACPI_INFO, ("AmlPrepDefFieldValue: bitoff=%X off=%X gran=%X\n",
-        ObjDesc->Field.BitOffset, ObjDesc->Field.Offset, Granularity));
+    DEBUG_PRINT (ACPI_INFO,
+        ("AmlPrepDefFieldValue: bitoff=%X off=%X gran=%X\n",
+        ObjDesc->Field.BitOffset, ObjDesc->Field.Offset,
+        ObjDesc->Field.Granularity));
 
-    DEBUG_PRINT (ACPI_INFO, ("AmlPrepDefFieldValue: set nte %p (%4.4s) val = %p\n",
-                    ThisEntry, &(ThisEntry->Name), ObjDesc));
+    DEBUG_PRINT (ACPI_INFO,
+        ("AmlPrepDefFieldValue: set NamedObj %p (%4.4s) val = %p\n",
+        Node, &(Node->Name), ObjDesc));
 
     DUMP_STACK_ENTRY (ObjDesc);
     DUMP_ENTRY (Region, ACPI_INFO);
     DEBUG_PRINT (ACPI_INFO, ("\t%p \n", ObjDesc->Field.Container));
-
     if (ObjDesc->Field.Container)
     {
         DUMP_STACK_ENTRY (ObjDesc->Field.Container);
     }
-
     DEBUG_PRINT (ACPI_INFO,
-                ("============================================================\n"));
+        ("============================================================\n"));
 
-    /* 
-     * Store the constructed descriptor (ObjDesc) into the nte whose
-     * handle is on TOS, preserving the current type of that nte.
+    /*
+     * Store the constructed descriptor (ObjDesc) into the NamedObj whose
+     * handle is on TOS, preserving the current type of that NamedObj.
      */
-    NsAttachObject ((ACPI_HANDLE) ThisEntry, ObjDesc,
-                    (UINT8) NsGetType ((ACPI_HANDLE) ThisEntry));
+    Status = AcpiNsAttachObject ((ACPI_HANDLE) Node, ObjDesc,
+                    (UINT8) AcpiNsGetType ((ACPI_HANDLE) Node));
 
-    return_ACPI_STATUS (AE_OK);
+    return_ACPI_STATUS (Status);
 }
 
 
-/*****************************************************************************
- * 
- * FUNCTION:    AmlPrepBankFieldValue
+/*******************************************************************************
  *
- * PARAMETERS:  Region              - Region in which field is being defined
+ * FUNCTION:    AcpiAmlPrepBankFieldValue
+ *
+ * PARAMETERS:  Node            - Owning Node
+ *              Region              - Region in which field is being defined
  *              BankReg             - Bank selection register
  *              BankVal             - Value to store in selection register
- *              FldFlg              - Access, LockRule, or UpdateRule
- *              FldPos              - Field position
- *              FldLen              - Field length
+ *              FieldFlags          - Access, LockRule, or UpdateRule
+ *              FieldPosition       - Field position
+ *              FieldLength         - Field length
  *
  * RETURN:      Status
  *
- * DESCRIPTION: Construct an ACPI_OBJECT_INTERNAL of type BankField and connect
- *              it to the nte whose handle is at the object stack top
+ * DESCRIPTION: Construct an ACPI_OPERAND_OBJECT  of type BankField and
+ *              connect it to the parent Node.
  *
- ****************************************************************************/
+ ******************************************************************************/
 
 ACPI_STATUS
-AmlPrepBankFieldValue (
-    NAME_TABLE_ENTRY        *ThisEntry,
-    ACPI_HANDLE             Region, 
-    ACPI_HANDLE             BankReg, 
+AcpiAmlPrepBankFieldValue (
+    ACPI_NAMESPACE_NODE     *Node,
+    ACPI_HANDLE             Region,
+    ACPI_HANDLE             BankReg,
     UINT32                  BankVal,
-    UINT8                   FldFlg, 
-    INT32                   FldPos, 
-    INT32                   FldLen)
+    UINT8                   FieldFlags,
+    UINT8                   FieldAttribute,
+    UINT32                  FieldPosition,
+    UINT32                  FieldLength)
 {
-    ACPI_OBJECT_INTERNAL    *ObjDesc = NULL;
-    INT32                   Type;
-    UINT32                  Granularity;
+    ACPI_OPERAND_OBJECT     *ObjDesc;
+    UINT32                  Type;
+    ACPI_STATUS             Status;
 
 
     FUNCTION_TRACE ("AmlPrepBankFieldValue");
 
 
+    /* Parameter validation */
+
     if (!Region)
     {
         DEBUG_PRINT (ACPI_ERROR, ("AmlPrepBankFieldValue: null Region\n"));
-        return_ACPI_STATUS (AE_AML_ERROR);
+        return_ACPI_STATUS (AE_AML_NO_OPERAND);
     }
 
-    if (Region != (ACPI_HANDLE) (Type = NsGetType (Region)))
+    Type = AcpiNsGetType (Region);
+    if (Type != ACPI_TYPE_REGION)
     {
-        DEBUG_PRINT (ACPI_ERROR, ("AmlPrepBankFieldValue: Needed Region, found %d %s\n",
-                        Type, Gbl_NsTypeNames[Type]));
-        return_ACPI_STATUS (AE_AML_ERROR);
+        DEBUG_PRINT (ACPI_ERROR,
+            ("AmlPrepBankFieldValue: Needed Region, found type %X %s\n",
+            Type, AcpiCmGetTypeName (Type)));
+        return_ACPI_STATUS (AE_AML_OPERAND_TYPE);
     }
 
     /* Allocate a new object */
 
-    ObjDesc = CmCreateInternalObject (INTERNAL_TYPE_BankField);
+    ObjDesc = AcpiCmCreateInternalObject (INTERNAL_TYPE_BANK_FIELD);
     if (!ObjDesc)
-    {   
-        /* Unable to allocate new object descriptor    */
-        
+    {
         return_ACPI_STATUS (AE_NO_MEMORY);
     }
 
     /*  ObjDesc and Region valid    */
 
-    DUMP_OPERANDS ((ACPI_OBJECT_INTERNAL **) &ThisEntry, IMODE_Execute, "AmlPrepBankFieldValue", 2, "case BankField");
-    DUMP_OPERANDS ((ACPI_OBJECT_INTERNAL **) &Region, IMODE_Execute, "AmlPrepBankFieldValue", 2, "case BankField");
+    DUMP_OPERANDS ((ACPI_OPERAND_OBJECT  **) &Node, IMODE_EXECUTE,
+                    "AmlPrepBankFieldValue", 1, "case BankField");
+    DUMP_OPERANDS ((ACPI_OPERAND_OBJECT  **) &Region, IMODE_EXECUTE,
+                    "AmlPrepBankFieldValue", 1, "case BankField");
 
-    if (INTERNAL_TYPE_BankField != ObjDesc->BankField.Type)
+    /* Initialize areas of the object that are common to all fields */
+
+    Status = AcpiAmlPrepCommonFieldObject (ObjDesc, FieldFlags, FieldAttribute,
+                                            FieldPosition, FieldLength);
+    if (ACPI_FAILURE (Status))
     {
-        /* See comments in AmlPrepDefFieldValue() re: unexpected C behavior */
-
-        ObjDesc->BankField.Type = 0x005a;
-        DEBUG_PRINT (ACPI_ERROR, (
-                "AmlPrepBankFieldValue: internal failure %p %02x %02x %02x %02x\n",
-                ObjDesc, ((UINT8 *) ObjDesc)[0], ((UINT8 *) ObjDesc)[1], ((UINT8 *) ObjDesc)[2],
-                ((UINT8 *) ObjDesc)[3]));
-
-        CmDeleteInternalObject (ObjDesc);
-
-        return_ACPI_STATUS (AE_AML_ERROR);
+        return_ACPI_STATUS (Status);
     }
 
-    /*  ObjDesc, Region, and ObjDesc->BankField.ValTyp valid    */
+    /* Initialize areas of the object that are specific to this field type */
 
-    ObjDesc->BankField.Access       = (FldFlg & ACCESS_TYPE_MASK) >> ACCESS_TYPE_SHIFT;
-    ObjDesc->BankField.LockRule     = (FldFlg & LOCK_RULE_MASK) >> LOCK_RULE_SHIFT;
-    ObjDesc->BankField.UpdateRule   = (FldFlg & UPDATE_RULE_MASK) >> UPDATE_RULE_SHIFT;
-    ObjDesc->BankField.Length       = (UINT16) FldLen;
-
-    /* Decode the access type so we can compute offsets */
-
-    Granularity = AmlDecodeFieldAccessType (ObjDesc->Field.Access);
-    if (!Granularity)
-    {
-        return_ACPI_STATUS (AE_AML_ERROR);
-    }
-
-    ObjDesc->Field.Granularity      = Granularity;
-    ObjDesc->BankField.BitOffset    = (UINT16) FldPos % Granularity;
-    ObjDesc->BankField.Offset       = (UINT32) FldPos / Granularity;
     ObjDesc->BankField.Value        = BankVal;
-    ObjDesc->BankField.Container    = NsGetAttachedObject (Region);
-    ObjDesc->BankField.BankSelect   = NsGetAttachedObject (BankReg);
+    ObjDesc->BankField.Container    = AcpiNsGetAttachedObject (Region);
+    ObjDesc->BankField.BankSelect   = AcpiNsGetAttachedObject (BankReg);
 
     /* An additional reference for the container and bank select */
-    /* TBD: is "BankSelect" ever a real internal object?? */
+    /* TBD: [Restructure] is "BankSelect" ever a real internal object?? */
 
-    CmUpdateObjectReference (ObjDesc->BankField.Container, REF_INCREMENT);
-    CmUpdateObjectReference (ObjDesc->BankField.BankSelect, REF_INCREMENT);
+    AcpiCmAddReference (ObjDesc->BankField.Container);
+    AcpiCmAddReference (ObjDesc->BankField.BankSelect);
 
-    DEBUG_PRINT (ACPI_INFO, ("AmlPrepBankFieldValue: bitoff=%X off=%X gran=%X\n",
-        ObjDesc->BankField.BitOffset, ObjDesc->BankField.Offset, Granularity));
+    /* Debug info */
 
-    DEBUG_PRINT (ACPI_INFO, ("AmlPrepBankFieldValue: set nte %p (%4.4s) val = %p\n",
-                    ThisEntry, &(ThisEntry->Name), ObjDesc));
-    
+    DEBUG_PRINT (ACPI_INFO,
+        ("AmlPrepBankFieldValue: bitoff=%X off=%X gran=%X\n",
+        ObjDesc->BankField.BitOffset, ObjDesc->BankField.Offset,
+        ObjDesc->Field.Granularity));
+
+    DEBUG_PRINT (ACPI_INFO,
+        ("AmlPrepBankFieldValue: set NamedObj %p (%4.4s) val = %p\n",
+        Node, &(Node->Name), ObjDesc));
+
     DUMP_STACK_ENTRY (ObjDesc);
     DUMP_ENTRY (Region, ACPI_INFO);
     DUMP_ENTRY (BankReg, ACPI_INFO);
-
     DEBUG_PRINT (ACPI_INFO,
-                ("============================================================\n"));
+        ("============================================================\n"));
 
-    /* 
-     * Store the constructed descriptor (ObjDesc) into the nte whose
-     * handle is on TOS, preserving the current type of that nte.
+    /*
+     * Store the constructed descriptor (ObjDesc) into the NamedObj whose
+     * handle is on TOS, preserving the current type of that NamedObj.
      */
-    NsAttachObject ((ACPI_HANDLE) ThisEntry, ObjDesc,
-                    (UINT8) NsGetType ((ACPI_HANDLE) ThisEntry));
+    Status = AcpiNsAttachObject ((ACPI_HANDLE) Node, ObjDesc,
+                (UINT8) AcpiNsGetType ((ACPI_HANDLE) Node));
 
-
-    return_ACPI_STATUS (AE_OK);
+    return_ACPI_STATUS (Status);
 }
 
 
-/*****************************************************************************
- * 
- * FUNCTION:    AmlPrepIndexFieldValue
+/*******************************************************************************
  *
- * PARAMETERS:  IndexReg            - Index register
+ * FUNCTION:    AcpiAmlPrepIndexFieldValue
+ *
+ * PARAMETERS:  Node            - Owning Node
+ *              IndexReg            - Index register
  *              DataReg             - Data register
- *              FldFlg              - Access, LockRule, or UpdateRule
- *              FldPos              - Field position
- *              FldLen              - Field length
+ *              FieldFlags          - Access, LockRule, or UpdateRule
+ *              FieldPosition       - Field position
+ *              FieldLength         - Field length
  *
  * RETURN:      Status
  *
- * DESCRIPTION: Construct an ACPI_OBJECT_INTERNAL of type IndexField and connect
- *              it to the nte whose handle is at the object stack top
+ * DESCRIPTION: Construct an ACPI_OPERAND_OBJECT  of type IndexField and
+ *              connect it to the parent Node.
  *
- ****************************************************************************/
+ ******************************************************************************/
 
 ACPI_STATUS
-AmlPrepIndexFieldValue (
-    NAME_TABLE_ENTRY        *ThisEntry,
-    ACPI_HANDLE             IndexReg, 
+AcpiAmlPrepIndexFieldValue (
+    ACPI_NAMESPACE_NODE     *Node,
+    ACPI_HANDLE             IndexReg,
     ACPI_HANDLE             DataReg,
-    UINT8                   FldFlg, 
-    INT32                   FldPos, 
-    INT32                   FldLen)
+    UINT8                   FieldFlags,
+    UINT8                   FieldAttribute,
+    UINT32                  FieldPosition,
+    UINT32                  FieldLength)
 {
-    ACPI_OBJECT_INTERNAL    *ObjDesc = NULL;
-    UINT32                  Granularity;
+    ACPI_OPERAND_OBJECT     *ObjDesc;
+    ACPI_STATUS             Status;
 
 
     FUNCTION_TRACE ("AmlPrepIndexFieldValue");
 
 
+    /* Parameter validation */
+
     if (!IndexReg || !DataReg)
     {
         DEBUG_PRINT (ACPI_ERROR, ("AmlPrepIndexFieldValue: null handle\n"));
-        return_ACPI_STATUS (AE_AML_ERROR);
+        return_ACPI_STATUS (AE_AML_NO_OPERAND);
     }
 
     /* Allocate a new object descriptor */
 
-    ObjDesc = CmCreateInternalObject (INTERNAL_TYPE_IndexField);
+    ObjDesc = AcpiCmCreateInternalObject (INTERNAL_TYPE_INDEX_FIELD);
     if (!ObjDesc)
-    {   
-        /* Unable to allocate new object descriptor    */
-        
+    {
         return_ACPI_STATUS (AE_NO_MEMORY);
     }
 
-    /* ObjDesc, IndexRegion, and DataReg valid  */
+    /* Initialize areas of the object that are common to all fields */
 
-    if (INTERNAL_TYPE_IndexField != ObjDesc->IndexField.Type)
+    Status = AcpiAmlPrepCommonFieldObject (ObjDesc, FieldFlags, FieldAttribute,
+                                            FieldPosition, FieldLength);
+    if (ACPI_FAILURE (Status))
     {
-        /* See comments in AmlPrepDefFieldValue() re unexpected C behavior */
-    
-        ObjDesc->IndexField.Type = 0x005a;
-        DEBUG_PRINT (ACPI_ERROR, (
-                "AmlPrepIndexFieldValue: internal failure %p %02x %02x %02x %02x\n",
-                ObjDesc, ((UINT8 *) ObjDesc)[0], ((UINT8 *) ObjDesc)[1], ((UINT8 *) ObjDesc)[2],
-                ((UINT8 *) ObjDesc)[3]));
-
-        CmDeleteInternalObject (ObjDesc);
-        return_ACPI_STATUS (AE_AML_ERROR);
+        return_ACPI_STATUS (Status);
     }
 
+    /* Initialize areas of the object that are specific to this field type */
 
-    /*  ObjDesc, IndexRegion, and DataReg, and ObjDesc->IndexField.ValTyp valid */
-
-    ObjDesc->IndexField.Access      = (FldFlg & ACCESS_TYPE_MASK) >> ACCESS_TYPE_SHIFT;
-    ObjDesc->IndexField.LockRule    = (FldFlg & LOCK_RULE_MASK) >> LOCK_RULE_SHIFT;
-    ObjDesc->IndexField.UpdateRule  = (FldFlg & UPDATE_RULE_MASK) >> UPDATE_RULE_SHIFT;
-    ObjDesc->IndexField.Length      = (UINT16) FldLen;
-
-    /* Decode the access type so we can compute offsets */
-
-    Granularity = AmlDecodeFieldAccessType (ObjDesc->Field.Access);
-    if (!Granularity)
-    {
-        return_ACPI_STATUS (AE_AML_ERROR);
-    }
-
-    ObjDesc->Field.Granularity      = Granularity;
-    ObjDesc->IndexField.BitOffset   = (UINT16) FldPos % Granularity;
-    ObjDesc->IndexField.Value       = (UINT32) FldPos / Granularity;
+    ObjDesc->IndexField.Value       = (UINT32) (FieldPosition /
+                                                ObjDesc->Field.Granularity);
     ObjDesc->IndexField.Index       = IndexReg;
     ObjDesc->IndexField.Data        = DataReg;
 
-    DEBUG_PRINT (ACPI_INFO, ("AmlPrepIndexFieldValue: bitoff=%X off=%X gran=%X\n",
-        ObjDesc->IndexField.BitOffset, ObjDesc->IndexField.Offset, Granularity));
+    /* Debug info */
 
-    DEBUG_PRINT (ACPI_INFO, ("AmlPrepIndexFieldValue: set nte %p (%4.4s) val = %p\n",
-                    ThisEntry, &(ThisEntry->Name), ObjDesc));
+    DEBUG_PRINT (ACPI_INFO,
+        ("AmlPrepIndexFieldValue: bitoff=%X off=%X gran=%X\n",
+        ObjDesc->IndexField.BitOffset, ObjDesc->IndexField.Offset,
+        ObjDesc->Field.Granularity));
+
+    DEBUG_PRINT (ACPI_INFO,
+        ("AmlPrepIndexFieldValue: set NamedObj %p (%4.4s) val = %p\n",
+        Node, &(Node->Name), ObjDesc));
 
     DUMP_STACK_ENTRY (ObjDesc);
     DUMP_ENTRY (IndexReg, ACPI_INFO);
     DUMP_ENTRY (DataReg, ACPI_INFO);
-
     DEBUG_PRINT (ACPI_INFO,
-                ("============================================================\n"));
+        ("============================================================\n"));
 
-    /* 
-     * Store the constructed descriptor (ObjDesc) into the nte whose
-     * handle is on TOS, preserving the current type of that nte.
+    /*
+     * Store the constructed descriptor (ObjDesc) into the NamedObj whose
+     * handle is on TOS, preserving the current type of that NamedObj.
      */
-    NsAttachObject ((ACPI_HANDLE) ThisEntry, ObjDesc,
-                    (UINT8) NsGetType ((ACPI_HANDLE) ThisEntry));
+    Status = AcpiNsAttachObject ((ACPI_HANDLE) Node, ObjDesc,
+                (UINT8) AcpiNsGetType ((ACPI_HANDLE) Node));
 
-    return_ACPI_STATUS (AE_OK);
+    return_ACPI_STATUS (Status);
 }
 

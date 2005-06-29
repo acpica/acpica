@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: amstorob - AML Interpreter object store support, store to object
- *              $Revision: 1.20 $
+ *              $Revision: 1.18 $
  *
  *****************************************************************************/
 
@@ -10,8 +10,8 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
- * All rights reserved.
+ * Some or all of this work - Copyright (c) 1999, Intel Corp.  All rights
+ * reserved.
  *
  * 2. License
  *
@@ -190,7 +190,7 @@ AcpiAmlStoreObjectToObject (
     {
         /* Type of Name's existing value */
 
-    case ACPI_TYPE_INTEGER:
+    case ACPI_TYPE_NUMBER:
 
         /*
          *  These cases all require only number values or values that
@@ -199,14 +199,14 @@ AcpiAmlStoreObjectToObject (
          *  If value is not a Number, try to resolve it to one.
          */
 
-        if (ValDesc->Common.Type != ACPI_TYPE_INTEGER)
+        if (ValDesc->Common.Type != ACPI_TYPE_NUMBER)
         {
             /*
              *  Initially not a number, convert
              */
             Status = AcpiAmlResolveToValue (&ValDesc, WalkState);
             if (ACPI_SUCCESS (Status) &&
-                (ValDesc->Common.Type != ACPI_TYPE_INTEGER))
+                (ValDesc->Common.Type != ACPI_TYPE_NUMBER))
             {
                 /*
                  *  Conversion successful but still not a number
@@ -231,7 +231,7 @@ AcpiAmlStoreObjectToObject (
          *  If value is not a valid type, try to resolve it to one.
          */
 
-        if ((ValDesc->Common.Type != ACPI_TYPE_INTEGER) &&
+        if ((ValDesc->Common.Type != ACPI_TYPE_NUMBER) &&
             (ValDesc->Common.Type != ACPI_TYPE_BUFFER) &&
             (ValDesc->Common.Type != ACPI_TYPE_STRING))
         {
@@ -240,7 +240,7 @@ AcpiAmlStoreObjectToObject (
              */
             Status = AcpiAmlResolveToValue (&ValDesc, WalkState);
             if (ACPI_SUCCESS (Status) &&
-                (ValDesc->Common.Type != ACPI_TYPE_INTEGER) &&
+                (ValDesc->Common.Type != ACPI_TYPE_NUMBER) &&
                 (ValDesc->Common.Type != ACPI_TYPE_BUFFER) &&
                 (ValDesc->Common.Type != ACPI_TYPE_STRING))
             {
@@ -289,9 +289,9 @@ AcpiAmlStoreObjectToObject (
 
         switch (ValDesc->Common.Type)
         {
-        case ACPI_TYPE_INTEGER:
-            Buffer = (UINT8 *) &ValDesc->Integer.Value;
-            Length = sizeof (ValDesc->Integer.Value);
+        case ACPI_TYPE_NUMBER:
+            Buffer = (UINT8 *) &ValDesc->Number.Value;
+            Length = sizeof (ValDesc->Number.Value);
             break;
 
         case ACPI_TYPE_BUFFER:
@@ -356,9 +356,9 @@ AcpiAmlStoreObjectToObject (
 
         switch (ValDesc->Common.Type)
         {
-        case ACPI_TYPE_INTEGER:
-            Buffer = (UINT8 *) &ValDesc->Integer.Value;
-            Length = sizeof (ValDesc->Integer.Value);
+        case ACPI_TYPE_NUMBER:
+            Buffer = (UINT8 *) &ValDesc->Number.Value;
+            Length = sizeof (ValDesc->Number.Value);
             break;
 
         case ACPI_TYPE_BUFFER:
@@ -413,9 +413,9 @@ AcpiAmlStoreObjectToObject (
         }
         break;
 
-    case ACPI_TYPE_INTEGER:
+    case ACPI_TYPE_NUMBER:
 
-        DestDesc->Integer.Value = ValDesc->Integer.Value;
+        DestDesc->Number.Value = ValDesc->Number.Value;
 
         /* Truncate value if we are executing from a 32-bit ACPI table */
 
