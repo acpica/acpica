@@ -3,7 +3,7 @@
 /******************************************************************************
  *
  * Module Name: aslcompiler.y - Bison input file (ASL grammar and actions)
- *              $Revision: 1.86 $
+ *              $Revision: 1.87 $
  *
  *****************************************************************************/
 
@@ -611,6 +611,7 @@ AslLocalAllocate (unsigned int Size);
 %type <n> XOrTerm
 
 %type <n> OptionalTermArg
+%type <n> OptionalReturnArg
 %type <n> OptionalListString
 
 
@@ -1527,9 +1528,9 @@ ResetTerm
 
 ReturnTerm
     : PARSEOP_RETURN '('			{$$ = TrCreateLeafNode (PARSEOP_RETURN);}
-        OptionalTermArg
+        OptionalReturnArg
         ')'                         {$$ = TrLinkChildren ($<n>3,1,$4);}
-    | PARSEOP_RETURN 				{$$ = TrLinkChildren (TrCreateLeafNode (PARSEOP_RETURN),0);}
+    | PARSEOP_RETURN 				{$$ = TrLinkChildren (TrCreateLeafNode (PARSEOP_RETURN),1,TrCreateLeafNode (PARSEOP_ZERO));}
     | PARSEOP_RETURN '('
         error ')'                   {$$ = AslDoError(); yyclearin;}
     ;
@@ -3094,6 +3095,11 @@ OptionalStringData
 
 OptionalTermArg
     :                               {$$ = NULL;}
+    | TermArg                       {$$ = $1;}
+    ;
+
+OptionalReturnArg
+    :                               {$$ = TrCreateLeafNode (PARSEOP_ZERO);}       /* Placeholder is a ZeroOp object */
     | TermArg                       {$$ = $1;}
     ;
 
