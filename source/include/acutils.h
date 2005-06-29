@@ -130,7 +130,7 @@
 
 void 
 CmInitGlobals (
-    void);
+    ACPI_INIT_DATA *InitData);
 
 void
 CmTerminate (
