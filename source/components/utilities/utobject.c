@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: utobject - ACPI object create/delete/size/cache routines
- *              $Revision: 1.78 $
+ *              $Revision: 1.79 $
  *
  *****************************************************************************/
 
@@ -246,8 +246,8 @@ AcpiUtCreateBufferObject (
     Buffer = ACPI_MEM_CALLOCATE (BufferSize);
     if (!Buffer)
     {
-        ACPI_REPORT_ERROR
-            (("CreateBuffer: could not allocate size %X\n", BufferSize));
+        ACPI_REPORT_ERROR (("CreateBuffer: could not allocate size %X\n", 
+            (UINT32) BufferSize));
         AcpiUtRemoveReference (BufferDesc);
         return_PTR (NULL);
     }
