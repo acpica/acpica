@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exregion - ACPI default OpRegion (address space) handlers
- *              $Revision: 1.80 $
+ *              $Revision: 1.78 $
  *
  *****************************************************************************/
 
@@ -225,7 +225,7 @@ AcpiExSystemMemorySpaceHandler (
                                 MemInfo->MappedLength);
         }
 
-        /*
+        /* 
          * Don't attempt to map memory beyond the end of the region, and
          * constrain the maximum mapping size to something reasonable.
          */
@@ -234,15 +234,15 @@ AcpiExSystemMemorySpaceHandler (
         {
             WindowSize = SYSMEM_REGION_WINDOW_SIZE;
         }
-
+     
         /* Create a new mapping starting at the address given */
 
         Status = AcpiOsMapMemory (Address, WindowSize,
                                     (void **) &MemInfo->MappedLogicalAddress);
         if (ACPI_FAILURE (Status))
         {
-            ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Could not map memory at %8.8X%8.8X, size %X\n",
-                ACPI_HIDWORD (Address), ACPI_LODWORD (Address), (UINT32) WindowSize));
+            ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Could not map memory at %X, size %X\n",
+                Address, (UINT32) WindowSize));
             MemInfo->MappedLength = 0;
             return_ACPI_STATUS (Status);
         }
@@ -264,7 +264,7 @@ AcpiExSystemMemorySpaceHandler (
         "SystemMemory %d (%d width) Address=%8.8X%8.8X\n", Function, BitWidth,
         ACPI_HIDWORD (Address), ACPI_LODWORD (Address)));
 
-   /*
+   /* 
     * Perform the memory read or write
     *
     * Note: For machines that do not support non-aligned transfers, the target
@@ -323,7 +323,7 @@ AcpiExSystemMemorySpaceHandler (
             *(UINT64 *) LogicalAddrPtr = (UINT64) *Value;
             break;
 #endif
-
+        
         default:
             /* BitWidth was already validated */
             break;

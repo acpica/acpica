@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exoparg3 - AML execution - opcodes with 3 arguments
- *              $Revision: 1.12 $
+ *              $Revision: 1.13 $
  *
  *****************************************************************************/
 
@@ -240,8 +240,8 @@ AcpiExOpcode_3A_1T_1R (
     ACPI_OPERAND_OBJECT     *ReturnDesc = NULL;
     char                    *Buffer;
     ACPI_STATUS             Status = AE_OK;
-    UINT32                  Index;
-    UINT32                  Length;
+    NATIVE_UINT             Index;
+    ACPI_SIZE               Length;
 
 
     ACPI_FUNCTION_TRACE_STR ("ExOpcode_3A_1T_1R", AcpiPsGetOpcodeName (WalkState->Opcode));
@@ -264,8 +264,8 @@ AcpiExOpcode_3A_1T_1R (
 
         /* Get the Integer values from the objects */
 
-        Index = (UINT32) Operand[1]->Integer.Value;
-        Length = (UINT32) Operand[2]->Integer.Value;
+        Index = (NATIVE_UINT) Operand[1]->Integer.Value;
+        Length = (ACPI_SIZE) Operand[2]->Integer.Value;
 
         /*
          * If the index is beyond the length of the String/Buffer, or if the
@@ -279,7 +279,7 @@ AcpiExOpcode_3A_1T_1R (
             if ((Index + Length) >
                 Operand[0]->String.Length)
             {
-                Length = Operand[0]->String.Length - Index;
+                Length = (ACPI_SIZE) Operand[0]->String.Length - Index;
             }
 
             /* Allocate a new buffer for the String/Buffer */
@@ -299,7 +299,7 @@ AcpiExOpcode_3A_1T_1R (
             /* Set the length of the new String/Buffer */
 
             ReturnDesc->String.Pointer = Buffer;
-            ReturnDesc->String.Length = Length;
+            ReturnDesc->String.Length = (UINT32) Length;
         }
         break;
 
