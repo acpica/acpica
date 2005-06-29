@@ -163,6 +163,7 @@ PsDeleteCompletedOp (
 }
 
 
+#ifndef RING3_APPLICATION
 /*******************************************************************************
  *
  * FUNCTION:    PsDeleteParseTree
@@ -204,7 +205,7 @@ PsDeleteParseTree (
         PsGetNextWalkOp (&WalkState, WalkState.NextOp, PsDeleteCompletedOp);
     }
 }
-
+#endif
 
 /*******************************************************************************
  *
@@ -724,6 +725,7 @@ PsParseTable (
         return_ACPI_STATUS (Status);
     }
 
+#ifndef RING3_APPLICATION
 
     DEBUG_PRINT (TRACE_PARSE, ("PsParseTable: Building Internal Namespace\n"));
 BREAKPOINT3;
@@ -742,6 +744,7 @@ BREAKPOINT3;
 
     PsDeleteParseTree (Gbl_ParsedNamespaceRoot);
     Gbl_ParsedNamespaceRoot = NULL;
+#endif
 
     if (RootObject)
         *RootObject = Gbl_ParsedNamespaceRoot;
