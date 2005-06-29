@@ -127,6 +127,71 @@
 
 
 
+/*****************************************************************************
+ * 
+ * FUNCTION:    NsIsInSystemTable
+ *
+ * PARAMETERS:  *Where              - Pointer to be examined
+ *
+ * RETURN:      TRUE if Where is within the AML stream
+ *              FALSE otherwise
+ *
+ ****************************************************************************/
+
+BOOLEAN
+NsIsInSystemTable (
+    void                    *Where)
+{
+    UINT32                  i;
+    ACPI_TABLE_DESC         *TableDesc;
+    ACPI_TABLE_HEADER       *Table;
+
+
+    FUNCTION_TRACE ("NsIsInSystemTable");
+
+
+    /* Ignore null pointer */
+
+    if (!Where)
+    {
+        return_VALUE (FALSE);
+    }
+
+
+    /* Check for a pointer within the DSDT */
+
+    if ((Where >= (void *) (DSDT + 1)) &&
+        (Where <= (void *) (DSDT + DSDT->Length)))
+    {
+        return_VALUE (TRUE);
+    }
+
+
+    /* Check each of the loaded SSDTs (if any)*/
+
+    TableDesc = &AcpiTables[TABLE_SSDT];
+
+    for (i = 0; i < AcpiTables[TABLE_SSDT].Count; i++)
+    {
+        Table = TableDesc->Pointer;
+
+        if ((Where >= (void *) (Table + 1)) &&
+            (Where <= (void *) (Table + Table->Length)))
+        {
+            return_VALUE (TRUE);
+        }
+
+        TableDesc = TableDesc->Next;
+    }
+
+
+    /* TBD: Need to check the PSDTs? */
+
+
+    return_VALUE (FALSE);
+}
+
+
 /****************************************************************************
  *
  * FUNCTION:    NsAllocateNameTable
@@ -422,8 +487,8 @@ NsDeleteAcpiTable (
     case TABLE_SSDT:
         break;
 
-    case TABLE_SBDT:
-        SBDT = NULL;
+    case TABLE_SBST:
+        SBST = NULL;
 
     default:
         break;
