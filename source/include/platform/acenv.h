@@ -160,7 +160,7 @@
  * Environment-specific configuration
  */
 
-#ifdef _LINUXxxx
+#ifdef _LINUX
 
 #include <linux/config.h>
 #include <linux/string.h>
@@ -357,6 +357,10 @@ typedef char *va_list;
 
 #ifdef __GNUC__
 
+#ifdef __ia64__
+#define _IA64
+#endif
+
 #define ACPI_ASM_MACROS
 #define causeinterrupt(level)
 #define BREAKPOINT3
@@ -375,28 +379,32 @@ typedef char *va_list;
  *  Immediate values in the assembly are preceded by "$" as in "$0x1"
  *  The final asm parameter is the non-output registers altered by the operation
  */
-#define ACPI_ACQUIRE_GLOBAL_LOCK(GLptr, Acq)           \
-  asm("1: movl              (%1),%%eax;"    \
-         "movl              %%eax,%%edx;"   \
-         "andl              %2,%%edx;"      \
-         "btsl              $0x1,%%edx;"    \
-         "adcl              $0x0,%%edx;"    \
-         "lock; cmpxchgl    %%edx,(%1);"    \
-         "jnz               1b;"            \
-                                            \
-         "cmpb              $0x3,%%dl;"     \
-         "sbbl              %%eax,%%eax"    \
-         :"=a"(Acq):"c"(GLptr),"i"(~1L):"cx","dx")
+#define ACPI_ACQUIRE_GLOBAL_LOCK(GLptr, Acq) \
+    do { \
+        int dummy; \
+        asm("1:     movl (%1),%%eax;" \
+            "movl   %%eax,%%edx;" \
+            "andl   %2,%%edx;" \
+            "btsl   $0x1,%%edx;" \
+            "adcl   $0x0,%%edx;" \
+            "lock;  cmpxchgl %%edx,(%1);" \
+            "jnz    1b;" \
+            "cmpb   $0x3,%%dl;" \
+            "sbbl   %%eax,%%eax" \
+            :"=a"(Acq),"=c"(dummy):"c"(GLptr),"i"(~1L):"dx"); \
+    } while(0)
 
-#define ACPI_RELEASE_GLOBAL_LOCK(GLptr, Acq)           \
-  asm("1: movl              (%1),%%eax;"    \
-         "movl              %%eax,%%edx;"   \
-         "andl              %2,%%edx;"      \
-         "lock; cmpxchgl    %%edx,(%1);"    \
-         "jnz               1b;"            \
-                                            \
-         "andl              $0x1,%%eax"     \
-         :"=a"(Acq):"c"(GLptr),"i"(~3L):"cx","dx")
+#define ACPI_RELEASE_GLOBAL_LOCK(GLptr, Acq) \
+    do { \
+        int dummy; \
+        asm("1:     movl (%1),%%eax;" \
+            "movl   %%eax,%%edx;" \
+            "andl   %2,%%edx;" \
+            "lock;  cmpxchgl %%edx,(%1);" \
+            "jnz    1b;" \
+            "andl   $0x1,%%eax" \
+            :"=a"(Acq),"=c"(dummy):"c"(GLptr),"i"(~3L):"dx"); \
+    } while(0)
 /*! [End] no source code translation !*/
 
 #endif /* __GNUC__ */
