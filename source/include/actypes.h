@@ -360,9 +360,17 @@ typedef struct
 typedef struct
 {
     nte             *PreviousEntry;
-    nte             *NameTbl;
+    nte             *NameTable;
     UINT32          Position;
     BOOLEAN         TableFull;
 } NS_SEARCH_DATA;
+
+
+typedef struct
+{
+    char            *Name;
+    NsType          Type;
+    char            *Val;
+} PREDEFINED_NAMES;
 
 #endif /* DATATYPES_H */
