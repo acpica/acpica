@@ -379,6 +379,10 @@ BOOLEAN
 PsIsFieldOp(
     UINT16                  opcode);
 
+BOOLEAN
+PsIsCreateFieldOp (
+    UINT16                  Opcode);
+
 ACPI_NAMED_OP*
 PsToNamedOp(
     ACPI_GENERIC_OP         *op);
