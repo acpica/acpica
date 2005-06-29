@@ -505,11 +505,6 @@ EvAddressSpaceDispatch (
     /* 
      *  Invoke the handler.
      */
-    /*
-     * MCW - TBD: This is not right, but I want to get it going quickly
-     */ 
-    // HandlerDesc->AddrHandler.Context = RegionObj;
-
     Status = Handler (Function, Address, BitWidth, Value, HandlerDesc->AddrHandler.Context);
 
 	if (ACPI_FAILURE (Status))
