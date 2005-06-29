@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: utmisc - common utility procedures
- *              $Revision: 1.48 $
+ *              $Revision: 1.51 $
  *
  ******************************************************************************/
 
@@ -153,6 +153,9 @@ AcpiUtValidAcpiName (
     UINT32                  i;
 
 
+    FUNCTION_ENTRY ();
+
+
     for (i = 0; i < ACPI_NAME_SIZE; i++)
     {
         if (!((NamePtr[i] == '_') ||
@@ -162,7 +165,6 @@ AcpiUtValidAcpiName (
             return (FALSE);
         }
     }
-
 
     return (TRUE);
 }
@@ -185,10 +187,13 @@ AcpiUtValidAcpiCharacter (
     NATIVE_CHAR             Character)
 {
 
+    FUNCTION_ENTRY ();
+
     return ((BOOLEAN)   ((Character == '_') ||
                         (Character >= 'A' && Character <= 'Z') ||
                         (Character >= '0' && Character <= '9')));
 }
+
 
 /*******************************************************************************
  *
@@ -207,6 +212,9 @@ AcpiUtStrupr (
     NATIVE_CHAR             *SrcString)
 {
     NATIVE_CHAR             *String;
+
+
+    FUNCTION_ENTRY ();
 
 
     /* Walk entire string, uppercasing the letters */
@@ -576,6 +584,9 @@ AcpiUtCreateUpdateStateAndPush (
     ACPI_GENERIC_STATE       *State;
 
 
+    FUNCTION_ENTRY ();
+
+
     /* Ignore null objects; these are expected */
 
     if (!Object)
@@ -619,6 +630,9 @@ AcpiUtCreatePkgStateAndPush (
     ACPI_GENERIC_STATE       *State;
 
 
+    FUNCTION_ENTRY ();
+
+
     State = AcpiUtCreatePkgState (InternalObject, ExternalObject, Index);
     if (!State)
     {
@@ -650,6 +664,7 @@ AcpiUtPushGenericState (
     ACPI_GENERIC_STATE      *State)
 {
     FUNCTION_TRACE ("UtPushGenericState");
+
 
     /* Push the state object onto the front of the list (stack) */
 
@@ -715,6 +730,9 @@ AcpiUtCreateGenericState (void)
     ACPI_GENERIC_STATE      *State;
 
 
+    FUNCTION_ENTRY ();
+
+
     State = AcpiUtAcquireFromCache (ACPI_MEM_LIST_STATE);
 
     /* Initialize */
@@ -765,6 +783,7 @@ AcpiUtCreateUpdateState (
 
     /* Init fields specific to the update struct */
 
+    State->Common.DataType = ACPI_DESC_TYPE_STATE_UPDATE;
     State->Update.Object = Object;
     State->Update.Value  = Action;
 
@@ -782,9 +801,7 @@ AcpiUtCreateUpdateState (
  *
  * RETURN:      Status
  *
- * DESCRIPTION: Create an "Update State" - a flavor of the generic state used
- *              to update reference counts and delete complex objects such
- *              as packages.
+ * DESCRIPTION: Create a "Package State"
  *
  ******************************************************************************/
 
@@ -810,6 +827,7 @@ AcpiUtCreatePkgState (
 
     /* Init fields specific to the update struct */
 
+    State->Common.DataType  = ACPI_DESC_TYPE_STATE_PACKAGE;
     State->Pkg.SourceObject = (ACPI_OPERAND_OBJECT *) InternalObject;
     State->Pkg.DestObject   = ExternalObject;
     State->Pkg.Index        = Index;
@@ -841,6 +859,7 @@ AcpiUtCreateControlState (
 
     FUNCTION_TRACE ("UtCreateControlState");
 
+
     /* Create the generic state object */
 
     State = AcpiUtCreateGenericState ();
@@ -852,7 +871,8 @@ AcpiUtCreateControlState (
 
     /* Init fields specific to the control struct */
 
-    State->Common.State = CONTROL_CONDITIONAL_EXECUTING;
+    State->Common.DataType  = ACPI_DESC_TYPE_STATE_CONTROL;
+    State->Common.State     = CONTROL_CONDITIONAL_EXECUTING;
 
     return_PTR (State);
 }
@@ -1149,7 +1169,6 @@ AcpiUtWalkPackageTree (
     /* We should never get here */
 
     return (AE_AML_INTERNAL);
-
 }
 
 
