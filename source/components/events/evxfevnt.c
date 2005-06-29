@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: evxfevnt - External Interfaces, ACPI event disable/enable
- *              $Revision: 1.46 $
+ *              $Revision: 1.47 $
  *
  *****************************************************************************/
 
@@ -249,37 +249,17 @@ AcpiEnableEvent (
     FUNCTION_TRACE ("AcpiEnableEvent");
 
 
-    /* The Type must be either Fixed AcpiEvent or GPE */
+    /* The Type must be either Fixed Event or GPE */
 
     switch (Type)
     {
     case ACPI_EVENT_FIXED:
 
-        /* Decode the Fixed AcpiEvent */
+        /* Decode the Fixed Event */
 
-        switch (Event)
+        RegisterId = AcpiEvGetFixedEnableRegisterId (Event);
+        if (!RegisterId)
         {
-        case ACPI_EVENT_PMTIMER:
-            RegisterId = TMR_EN;
-            break;
-
-        case ACPI_EVENT_GLOBAL:
-            RegisterId = GBL_EN;
-            break;
-
-        case ACPI_EVENT_POWER_BUTTON:
-            RegisterId = PWRBTN_EN;
-            break;
-
-        case ACPI_EVENT_SLEEP_BUTTON:
-            RegisterId = SLPBTN_EN;
-            break;
-
-        case ACPI_EVENT_RTC:
-            RegisterId = RTC_EN;
-            break;
-
-        default:
             return_ACPI_STATUS (AE_BAD_PARAMETER);
         }
 
@@ -358,37 +338,17 @@ AcpiDisableEvent (
     FUNCTION_TRACE ("AcpiDisableEvent");
 
 
-    /* The Type must be either Fixed AcpiEvent or GPE */
+    /* The Type must be either Fixed Event or GPE */
 
     switch (Type)
     {
     case ACPI_EVENT_FIXED:
 
-        /* Decode the Fixed AcpiEvent */
+        /* Decode the Fixed Event */
 
-        switch (Event)
+        RegisterId = AcpiEvGetFixedEnableRegisterId (Event);
+        if (!RegisterId)
         {
-        case ACPI_EVENT_PMTIMER:
-            RegisterId = TMR_EN;
-            break;
-
-        case ACPI_EVENT_GLOBAL:
-            RegisterId = GBL_EN;
-            break;
-
-        case ACPI_EVENT_POWER_BUTTON:
-            RegisterId = PWRBTN_EN;
-            break;
-
-        case ACPI_EVENT_SLEEP_BUTTON:
-            RegisterId = SLPBTN_EN;
-            break;
-
-        case ACPI_EVENT_RTC:
-            RegisterId = RTC_EN;
-            break;
-
-        default:
             return_ACPI_STATUS (AE_BAD_PARAMETER);
         }
 
@@ -463,37 +423,17 @@ AcpiClearEvent (
     FUNCTION_TRACE ("AcpiClearEvent");
 
 
-    /* The Type must be either Fixed AcpiEvent or GPE */
+    /* The Type must be either Fixed Event or GPE */
 
     switch (Type)
     {
     case ACPI_EVENT_FIXED:
 
-        /* Decode the Fixed AcpiEvent */
+        /* Decode the Fixed Event */
 
-        switch (Event)
+        RegisterId = AcpiEvGetFixedStatusRegisterId (Event);
+        if (!RegisterId)
         {
-        case ACPI_EVENT_PMTIMER:
-            RegisterId = TMR_STS;
-            break;
-
-        case ACPI_EVENT_GLOBAL:
-            RegisterId = GBL_STS;
-            break;
-
-        case ACPI_EVENT_POWER_BUTTON:
-            RegisterId = PWRBTN_STS;
-            break;
-
-        case ACPI_EVENT_SLEEP_BUTTON:
-            RegisterId = SLPBTN_STS;
-            break;
-
-        case ACPI_EVENT_RTC:
-            RegisterId = RTC_STS;
-            break;
-
-        default:
             return_ACPI_STATUS (AE_BAD_PARAMETER);
         }
 
@@ -562,37 +502,17 @@ AcpiGetEventStatus (
     }
 
 
-    /* The Type must be either Fixed AcpiEvent or GPE */
+    /* The Type must be either Fixed Event or GPE */
 
     switch (Type)
     {
     case ACPI_EVENT_FIXED:
 
-        /* Decode the Fixed AcpiEvent */
+        /* Decode the Fixed Event */
 
-        switch (Event)
+        RegisterId = AcpiEvGetFixedStatusRegisterId (Event);
+        if (!RegisterId)
         {
-        case ACPI_EVENT_PMTIMER:
-            RegisterId = TMR_STS;
-            break;
-
-        case ACPI_EVENT_GLOBAL:
-            RegisterId = GBL_STS;
-            break;
-
-        case ACPI_EVENT_POWER_BUTTON:
-            RegisterId = PWRBTN_STS;
-            break;
-
-        case ACPI_EVENT_SLEEP_BUTTON:
-            RegisterId = SLPBTN_STS;
-            break;
-
-        case ACPI_EVENT_RTC:
-            RegisterId = RTC_STS;
-            break;
-
-        default:
             return_ACPI_STATUS (AE_BAD_PARAMETER);
         }
 
