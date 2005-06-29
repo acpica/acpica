@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: acparser.h - AML Parser subcomponent prototypes and defines
- *       $Revision: 1.52 $
+ *       $Revision: 1.53 $
  *
  *****************************************************************************/
 
@@ -328,12 +328,6 @@ AcpiPsGetNextWalkOp (
 
 
 /* psutils - parser utilities */
-
-
-ACPI_PARSE_STATE *
-AcpiPsCreateState (
-    UINT8                   *Aml,
-    UINT32                  AmlSize);
 
 void
 AcpiPsInitOp (
