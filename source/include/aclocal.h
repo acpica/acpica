@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: aclocal.h - Internal data types used across the ACPI subsystem
- *       $Revision: 1.92 $
+ *       $Revision: 1.93 $
  *
  *****************************************************************************/
 
@@ -493,6 +493,22 @@ typedef struct acpi_pscope_state
 } ACPI_PSCOPE_STATE;
 
 
+/*
+ * Result values - used to accumulate the results of nested
+ * AML arguments
+ */
+typedef struct acpi_result_values
+{
+    ACPI_STATE_COMMON
+    union acpi_operand_obj  *ObjDesc [OBJ_NUM_OPERANDS];
+    UINT8                   NumResults;
+    UINT8                   LastInsert;
+
+} ACPI_RESULT_VALUES;
+
+
+/* Generic state is union of structs above */
+
 typedef union acpi_gen_state
 {
     ACPI_COMMON_STATE       Common;
@@ -500,6 +516,7 @@ typedef union acpi_gen_state
     ACPI_UPDATE_STATE       Update;
     ACPI_SCOPE_STATE        Scope;
     ACPI_PSCOPE_STATE       ParseScope;
+    ACPI_RESULT_VALUES      Results;
 
 } ACPI_GENERIC_STATE;
 
@@ -647,7 +664,6 @@ typedef struct acpi_walk_state
     BOOLEAN                 LastPredicate;                      /* Result of last predicate */
     UINT8                   NextOpInfo;                         /* Info about NextOp */
     UINT8                   NumOperands;                        /* Stack pointer for Operands[] array */
-    UINT8                   NumResults;                         /* Stack pointer for Results[] array */
     UINT8                   CurrentResult;                      /* */
 
     struct acpi_walk_state  *Next;                              /* Next WalkState in list */
@@ -658,6 +674,7 @@ typedef struct acpi_walk_state
     ACPI_PARSE_OBJECT       *NextOp;                            /* next op to be processed */
 
 
+    ACPI_GENERIC_STATE      *Results;                           /* Stack of accumulated results */
     ACPI_GENERIC_STATE      *ControlState;                      /* List of control states (nested IFs) */
     ACPI_GENERIC_STATE      *ScopeInfo;                         /* Stack of nested scopes */
     ACPI_PARSE_STATE        *ParserState;                       /* Current state of parser */
@@ -671,7 +688,6 @@ typedef struct acpi_walk_state
     ACPI_PARSE_OBJECT       *MethodCallOp;                      /* MethodCall Op if running a method */
     struct acpi_node        *MethodCallNode;                    /* Called method Node*/
     union acpi_operand_obj  *Operands[OBJ_NUM_OPERANDS];        /* Operands passed to the interpreter */
-    union acpi_operand_obj  *Results[OBJ_NUM_OPERANDS];         /* Accumulated results */
     struct acpi_node        Arguments[MTH_NUM_ARGS];            /* Control method arguments */
     struct acpi_node        LocalVariables[MTH_NUM_LOCALS];     /* Control method locals */
     UINT32                  ParseFlags;
