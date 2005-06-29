@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acenv.h - Generation environment specific items
- *       $Revision: 1.114 $
+ *       $Revision: 1.115 $
  *
  *****************************************************************************/
 
@@ -130,7 +130,7 @@
 #define ACPI_DISASSEMBLER
 #define ACPI_NO_METHOD_EXECUTION
 #define ACPI_USE_SYSTEM_CLIBRARY
-#define ACPI_ENABLE_OBJECT_CACHE
+#define ACPI_USE_LOCAL_CACHE
 #endif
 
 #ifdef _ACPI_EXEC_APP
@@ -141,7 +141,7 @@
 #define ACPI_DEBUGGER
 #define ACPI_DISASSEMBLER
 #define ACPI_USE_SYSTEM_CLIBRARY
-#define ACPI_ENABLE_OBJECT_CACHE
+#define ACPI_USE_LOCAL_CACHE
 #endif
 
 #ifdef _ACPI_ASL_COMPILER
@@ -150,7 +150,13 @@
 #define ACPI_DISASSEMBLER
 #define ACPI_CONSTANT_EVAL_ONLY
 #define ACPI_USE_SYSTEM_CLIBRARY
-#define ACPI_ENABLE_OBJECT_CACHE
+#define ACPI_USE_LOCAL_CACHE
+#endif
+
+#ifdef ACPI_BIN_APP
+#define ACPI_APPLICATION
+#define ACPI_USE_SYSTEM_CLIBRARY
+#define ACPI_USE_LOCAL_CACHE
 #endif
 
 /*
