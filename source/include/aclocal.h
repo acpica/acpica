@@ -216,7 +216,7 @@ typedef UINT16                  ACPI_OWNER_ID;
 #define FIRST_METHOD_ID         0x0000
 #define FIRST_TABLE_ID          0x8000
 
-/* TBD: get rid of the need for this! */
+/* TBD: [Restructure] get rid of the need for this! */
 
 #define TABLE_ID_DSDT           (ACPI_OWNER_ID) 0xD1D1
 
@@ -712,7 +712,7 @@ typedef struct InitWalkInfo
 } INIT_WALK_INFO;
 
 
-/* TBD: Merge with struct above */
+/* TBD: [Restructure] Merge with struct above */
 
 typedef struct AcpiWalkInfo
 {
