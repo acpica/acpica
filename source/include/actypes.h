@@ -266,7 +266,7 @@ typedef UINT32                          u32;
  */
 
 typedef UINT32                          ACPI_STATUS;    /* All ACPI Exceptions */
-typedef UINT32                          ACPI_NAME;      /* 4-char ACPI name */
+typedef UINT32                          ACPI_NAME;      /* 4-INT8 ACPI name */
 typedef char*                           ACPI_STRING;    /* Null terminated ASCII string */
 typedef void*                           ACPI_HANDLE;    /* Actually a ptr to an NTE */
 
@@ -465,7 +465,7 @@ typedef union AcpiObj
     {
         ACPI_OBJECT_TYPE            Type;
         UINT32                      Length;     /* # of bytes in string, excluding trailing null */
-        char                        *Pointer;   /* points to the string value */
+        INT8                        *Pointer;   /* points to the string value */
     } String;
 
     struct
@@ -641,7 +641,8 @@ ACPI_STATUS (*ADDRESS_SPACE_HANDLER) (
     UINT32                      Address,
     UINT32                      BitWidth,
     UINT32                      *Value,
-    void                        *Context);
+    void                        *HandlerContext,
+    void                        *RegionContext);
 
 #define ACPI_DEFAULT_HANDLER            ((ADDRESS_SPACE_HANDLER) NULL)
 
@@ -651,7 +652,7 @@ ACPI_STATUS (*ADDRESS_SPACE_SETUP) (
     ACPI_HANDLE                 RegionHandle,
     UINT32                      Function,
     void                        *HandlerContext,
-    void                        **ReturnContext);
+    void                        *RegionContext);
 
 #define ACPI_REGION_ACTIVATE    0
 #define ACPI_REGION_DEACTIVATE  1
@@ -701,8 +702,8 @@ typedef struct
     /*
      *  TBD: [Restructure]: a HID or a _UID can return either a number or a string
      */
-    char                        HardwareId [9];     /*  _HID value if any */
-    char                        UniqueId[9];        /*  _UID value if any */
+    INT8                        HardwareId [9];     /*  _HID value if any */
+    INT8                        UniqueId[9];        /*  _UID value if any */
     UINT32                      Address;            /*  _ADR value if any */
     UINT32                      CurrentStatus;      /*  _STA value */
 } ACPI_DEVICE_INFO;
@@ -712,7 +713,6 @@ typedef struct
 
 typedef struct
 {
-    void                        *HandlerContext;
     UINT32                      Seg;
     UINT32                      Bus;
     UINT32                      DevFunc;
@@ -721,11 +721,9 @@ typedef struct
 
 typedef struct
 {
-    void                        *HandlerContext;
-    char                        *MappedPhysicalAddress;
-    char                        *MappedLogicalAddress;
+    INT8                        *MappedPhysicalAddress;
+    INT8                        *MappedLogicalAddress;
     UINT32                      MappedLength;
-
 } MEM_HANDLER_CONTEXT;
 
 
