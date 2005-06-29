@@ -495,9 +495,14 @@ CmInitStaticObject (
 #define CmAddElementToAllocList(a,b,c,d,e,f)
 #define CmDeleteElementFromAllocList(a,b,c,d)
 #define CmDumpCurrentAllocations(a,b)
+#define CmDumpAllocationInfo()
 
 #else
 
+void
+CmDumpAllocationInfo (
+	void);
+	
 void
 CmDumpCurrentAllocations (
 	UINT32					Component,
