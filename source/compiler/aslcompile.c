@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslcompile - top level compile module
- *              $Revision: 1.65 $
+ *              $Revision: 1.66 $
  *
  *****************************************************************************/
 
@@ -117,7 +117,6 @@
 
 #include <stdio.h>
 #include "aslcompiler.h"
-#include "acnamesp.h"
 
 #define _COMPONENT          ACPI_COMPILER
         ACPI_MODULE_NAME    ("aslcompile")
@@ -280,11 +279,10 @@ AslCompilerFileHeader (
 void
 CmFlushSourceCode (void)
 {
-    ACPI_STATUS             Status;
     char                    Buffer;
 
 
-    while (Status = FlReadFile (ASL_FILE_INPUT, &Buffer, 1) != AE_ERROR)
+    while (FlReadFile (ASL_FILE_INPUT, &Buffer, 1) != AE_ERROR)
     {
         InsertLineBuffer ((int) Buffer);
     }
