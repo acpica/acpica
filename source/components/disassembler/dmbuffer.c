@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dmbuffer - AML disassembler, buffer and string support
- *              $Revision: 1.5 $
+ *              $Revision: 1.8 $
  *
  ******************************************************************************/
 
@@ -123,7 +123,7 @@
 
 #ifdef ACPI_DISASSEMBLER
 
-#define _COMPONENT          ACPI_DEBUGGER
+#define _COMPONENT          ACPI_CA_DEBUGGER
         ACPI_MODULE_NAME    ("dmbuffer")
 
 
@@ -221,7 +221,7 @@ AcpiDmByteList (
     case ACPI_DASM_STRING:
 
         AcpiDmIndent (Info->Level);
-        AcpiDmString ((char *) ByteData);
+        AcpiUtPrintString ((char *) ByteData, ACPI_UINT8_MAX);
         AcpiOsPrintf ("\n");
         break;
 
@@ -382,96 +382,6 @@ AcpiDmIsStringBuffer (
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiDmString
- *
- * PARAMETERS:  String          - Null terminated ASCII string
- *
- * RETURN:      None
- *
- * DESCRIPTION: Dump an ASCII string with support for ACPI-defined escape
- *              sequences.
- *
- ******************************************************************************/
-
-void
-AcpiDmString (
-    char                    *String)
-{
-    UINT32                  i;
-
-
-    if (!String)
-    {
-        AcpiOsPrintf ("<\"NULL STRING PTR\">");
-        return;
-    }
-
-    AcpiOsPrintf ("\"");
-    for (i = 0; String[i]; i++)
-    {
-        /* Escape sequences */
-
-        switch (String[i])
-        {
-        case 0x07:
-            AcpiOsPrintf ("\\a");        /* BELL */
-            break;
-
-        case 0x08:
-            AcpiOsPrintf ("\\b");       /* BACKSPACE */
-            break;
-
-        case 0x0C:
-            AcpiOsPrintf ("\\f");       /* FORMFEED */
-            break;
-
-        case 0x0A:
-            AcpiOsPrintf ("\\n");       /* LINEFEED */
-            break;
-
-        case 0x0D:
-            AcpiOsPrintf ("\\r");       /* CARRIAGE RETURN*/
-            break;
-
-        case 0x09:
-            AcpiOsPrintf ("\\t");       /* HORIZONTAL TAB */
-            break;
-
-        case 0x0B:
-            AcpiOsPrintf ("\\v");       /* VERTICAL TAB */
-            break;
-
-        case '\'':                      /* Single Quote */
-        case '\"':                      /* Double Quote */
-        case '\\':                      /* Backslash */
-            AcpiOsPrintf ("\\%c", (int) String[i]);
-            break;
-
-        default:
-
-            /* Check for printable character or hex escape */
-
-            if (ACPI_IS_PRINT (String[i]))
-            {
-                /* This is a normal character */
-
-                AcpiOsPrintf ("%c", (int) String[i]);
-            }
-            else
-            {
-                /* All others will be Hex escapes */
-
-                AcpiOsPrintf ("\\x%2.2X", (INT32) String[i]);
-            }
-            break;
-        }
-    }
-    AcpiOsPrintf ("\"");
-}
-
-
-/*******************************************************************************
- *
  * FUNCTION:    AcpiDmUnicode
  *
  * PARAMETERS:  Op              - Byte List op containing Unicode string
@@ -513,7 +423,7 @@ AcpiDmUnicode (
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiIsEisaId 
+ * FUNCTION:    AcpiIsEisaId
  *
  * PARAMETERS:  Op              - Op to be examined
  *
@@ -541,7 +451,7 @@ AcpiIsEisaId (
     {
         return;
     }
-    
+
     /* We are looking for _HID */
 
     if (ACPI_STRNCMP ((char *) &Name, "_HID", 4))
@@ -587,7 +497,7 @@ AcpiIsEisaId (
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiDmEisaId 
+ * FUNCTION:    AcpiDmEisaId
  *
  * PARAMETERS:  EncodedId       - Raw encoded EISA ID.
  *
