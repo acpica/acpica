@@ -143,7 +143,7 @@ CmDeleteOperand (
     ACPI_OBJECT_INTERNAL    **Operand)
 {
 
-    CmDeleteInternalObject (*Operand);
+    CmRemoveReference (*Operand);
 
     /* Clear the stack slot to prevent multiple deletions */
 
@@ -376,7 +376,7 @@ CmUpdateObjectReference (
         break;
 
 
-    case INTERNAL_TYPE_Lvalue:
+    case INTERNAL_TYPE_Reference:
 
         break;
     }
@@ -596,14 +596,14 @@ CmDeleteInternalObj (
         break;
 
 
-    case INTERNAL_TYPE_Lvalue:
+    case INTERNAL_TYPE_Reference:
         
-        if ((Object->Lvalue.Object) &&
-           (!VALID_DESCRIPTOR_TYPE (Object->Lvalue.Object, DESC_TYPE_NTE)))
+        if ((Object->Reference.Object) &&
+           (!VALID_DESCRIPTOR_TYPE (Object->Reference.Object, DESC_TYPE_NTE)))
         {   
-            DEBUG_PRINT (ACPI_INFO, ("CmDeleteInternalObj: ***** Lvalue: %p\n", 
-                                    Object->Lvalue.Object));
-            CmDeleteInternalObj (Object->Lvalue.Object);
+            DEBUG_PRINT (ACPI_INFO, ("CmDeleteInternalObj: ***** Reference: %p\n", 
+                                    Object->Reference.Object));
+            CmDeleteInternalObj (Object->Reference.Object);
         }
         break;
 
@@ -660,7 +660,7 @@ CmDeleteInternalObj (
 
 /******************************************************************************
  *
- * FUNCTION:    CmDeleteInternalObject
+ * FUNCTION:    CmRemoveReference
  *
  * PARAMETERS:  *Object        - Pointer to the list to be deleted
  * 
@@ -671,11 +671,11 @@ CmDeleteInternalObj (
  ******************************************************************************/
 
 void
-CmDeleteInternalObject (
+CmRemoveReference (
     ACPI_OBJECT_INTERNAL    *Object)
 {
 
-    FUNCTION_TRACE_PTR ("CmDeleteInternalObject", Object);
+    FUNCTION_TRACE_PTR ("CmRemoveReference", Object);
 
 
     /*
@@ -685,25 +685,25 @@ CmDeleteInternalObject (
 
     if (!Object)
     {
-        DEBUG_PRINT (ACPI_INFO, ("CmDeleteInternalObject: **** Null Object Ptr\n"));
+        DEBUG_PRINT (ACPI_INFO, ("CmRemoveReference: **** Null Object Ptr\n"));
         return_VOID;
     }
 
     if (TbSystemTablePointer (Object))
     {
-        DEBUG_PRINT (ACPI_INFO, ("CmDeleteInternalObject: **** Object %p is Pcode Ptr\n",
+        DEBUG_PRINT (ACPI_INFO, ("CmRemoveReference: **** Object %p is Pcode Ptr\n",
                         Object));
         return_VOID;
     }
 
     if (VALID_DESCRIPTOR_TYPE (Object, DESC_TYPE_NTE))
     {
-        DEBUG_PRINT (ACPI_INFO, ("CmDeleteInternalObject: **** Object %p is NS handle\n",
+        DEBUG_PRINT (ACPI_INFO, ("CmRemoveReference: **** Object %p is NS handle\n",
                         Object));
         return_VOID;
     }
 
-    DEBUG_PRINT (ACPI_INFO, ("CmDeleteInternalObject: Obj %p Refs=%X\n", 
+    DEBUG_PRINT (ACPI_INFO, ("CmRemoveReference: Obj %p Refs=%X\n", 
                             Object, Object->Common.ReferenceCount));
 
     /*
