@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: evxface - External interfaces for ACPI events
- *              $Revision: 1.93 $
+ *              $Revision: 1.96 $
  *
  *****************************************************************************/
 
@@ -179,16 +179,11 @@ AcpiInstallFixedEventHandler (
     AcpiGbl_FixedEventHandlers[Event].Handler = Handler;
     AcpiGbl_FixedEventHandlers[Event].Context = Context;
 
-    AcpiHwRegisterWrite (ACPI_MTX_LOCK, Event + TMR_EN, 1);
+    Status = AcpiEnableEvent(Event, ACPI_EVENT_FIXED);
 
-#ifndef ACPI_APPLICATION
-
-    /* Make sure that what we wrote can be read back */
-
-    if (1 != AcpiHwRegisterRead (ACPI_MTX_LOCK, Event + TMR_EN))
+    if (!ACPI_SUCCESS(Status))
     {
-        DEBUG_PRINT (ACPI_WARN,
-            ("Could not write to fixed event enable register.\n"));
+        DEBUG_PRINT (ACPI_WARN, ("Could not enable fixed event.\n"));
 
         /* Remove the handler */
 
@@ -198,7 +193,6 @@ AcpiInstallFixedEventHandler (
         Status = AE_ERROR;
         goto Cleanup;
     }
-#endif
 
     DEBUG_PRINT (ACPI_INFO,
         ("Enabled fixed event %d.  Handler: %x\n", Event, Handler));
@@ -245,21 +239,17 @@ AcpiRemoveFixedEventHandler (
 
     /* Disable the event before removing the handler - just in case... */
 
-    AcpiHwRegisterWrite (ACPI_MTX_LOCK, Event + TMR_EN, 0);
+    Status = AcpiDisableEvent(Event, ACPI_EVENT_FIXED);
 
-#ifndef ACPI_APPLICATION
-
-    /* Make sure that what we wrote can be read back */
-
-    if (0 != AcpiHwRegisterRead (ACPI_MTX_LOCK, Event + TMR_EN))
+    if (!ACPI_SUCCESS(Status))
     {
         DEBUG_PRINT (ACPI_WARN,
             ("Could not write to fixed event enable register.\n"));
+
         Status = AE_ERROR;
         AcpiCmReleaseMutex (ACPI_MTX_EVENTS);
         return_ACPI_STATUS (Status);
     }
-#endif
 
     /* Remove the handler */
 
