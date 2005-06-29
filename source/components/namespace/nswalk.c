@@ -2,6 +2,7 @@
 /******************************************************************************
  *
  * Module Name: nswalk - Functions for walking the APCI namespace
+ *              $Revision: 1.14 $
  *
  *****************************************************************************/
 
@@ -118,8 +119,8 @@
 #define __NSWALK_C__
 
 #include "acpi.h"
-#include "interp.h"
-#include "namesp.h"
+#include "acinterp.h"
+#include "acnamesp.h"
 
 
 #define _COMPONENT          NAMESPACE
@@ -130,19 +131,20 @@
  *
  * FUNCTION:    AcpiGetNextObject
  *
- * PARAMETERS:  Type            - Type of object to be searched for
- *              Parent          - Parent object whose children we are getting
- *              LastChild       - Previous child that was found.
- *                                The NEXT child will be returned
- *              RetHandle       - Where handle to the next object is placed
+ * PARAMETERS:  Type                - Type of object to be searched for
+ *              Parent              - Parent object whose children we are 
+ *                                      getting
+ *              LastChild           - Previous child that was found.
+ *                                    The NEXT child will be returned
  *
- * RETURN:      Status
+ * RETURN:      ACPI_NAMED_OBJECT   - Pointer to the NEXT child or NULL if
+ *                                      none is found.
  *
- * DESCRIPTION: Return the next peer object within the namespace.  If Handle is
- *              valid, Scope is ignored.  Otherwise, the first object within
- *              Scope is returned.
+ * DESCRIPTION: Return the next peer object within the namespace.  If Handle 
+ *              is valid, Scope is ignored.  Otherwise, the first object 
+ *              within Scope is returned.
  *
- ******************************************************************************/
+ ****************************************************************************/
 
 ACPI_NAMED_OBJECT*
 AcpiNsGetNextObject (
@@ -181,7 +183,7 @@ AcpiNsGetNextObject (
         if ((!ThisEntry) ||
             (!ThisEntry->Name))
         {
-            return NULL;
+            return (NULL);
         }
 
         return (ThisEntry);
@@ -207,7 +209,7 @@ AcpiNsGetNextObject (
 
     /* Not found */
 
-    return NULL;
+    return (NULL);
 }
 
 

@@ -2,6 +2,7 @@
 /******************************************************************************
  *
  * Module Name: nssearch - Namespace search
+ *              $Revision: 1.54 $
  *
  *****************************************************************************/
 
@@ -118,8 +119,8 @@
 
 #include "acpi.h"
 #include "amlcode.h"
-#include "interp.h"
-#include "namesp.h"
+#include "acinterp.h"
+#include "acnamesp.h"
 
 
 #define _COMPONENT          NAMESPACE
@@ -128,7 +129,7 @@
 
 /****************************************************************************
  *
- * FUNCTION:    AcpiNsSearchOneScope
+ * FUNCTION:    AcpiNsSearchNameTable
  *
  * PARAMETERS:  *EntryName          - Ascii ACPI name to search for
  *              *NameTable          - Starting table where search will begin
@@ -144,7 +145,7 @@
  ***************************************************************************/
 
 ACPI_STATUS
-AcpiNsSearchOneScope (
+AcpiNsSearchNameTable (
     UINT32                  EntryName,
     ACPI_NAME_TABLE         *NameTable,
     OBJECT_TYPE_INTERNAL    Type,
@@ -160,15 +161,15 @@ AcpiNsSearchOneScope (
     UINT32                  EmptySlotPosition = 0;
 
 
-    FUNCTION_TRACE ("NsSearchOneScope");
+    FUNCTION_TRACE ("NsSearchNameTable");
 
     {
-        DEBUG_EXEC (char *ScopeName = AcpiNsNameOfScope (NameTable));
+        DEBUG_EXEC (NATIVE_CHAR *ScopeName = AcpiNsGetTablePathname (NameTable));
         DEBUG_PRINT (TRACE_NAMES,
-            ("NsSearchOneScope: Searching %s [%p]\n",
+            ("NsSearchNameTable: Searching %s [%p]\n",
             ScopeName, NameTable));
         DEBUG_PRINT (TRACE_NAMES,
-            ("NsSearchOneScope: For %4.4s (type 0x%X)\n",
+            ("NsSearchNameTable: For %4.4s (type 0x%X)\n",
             &EntryName, Type));
         DEBUG_EXEC (AcpiCmFree (ScopeName));
     }
@@ -266,7 +267,7 @@ AcpiNsSearchOneScope (
                 }
 
                 DEBUG_PRINT (TRACE_NAMES,
-                    ("NsSearchOneScope: Name %4.4s (actual type 0x%X) found at %p\n",
+                    ("NsSearchNameTable: Name %4.4s (actual type 0x%X) found at %p\n",
                     &EntryName, Entries[Position].Type, &Entries[Position]));
 
                 *RetEntry = &Entries[Position];
@@ -291,7 +292,7 @@ AcpiNsSearchOneScope (
         ThisTable = ThisTable->NextTable;
 
         DEBUG_PRINT (TRACE_EXEC,
-            ("NsSearchOneScope: Search appendage Entries=%p\n", Entries));
+            ("NsSearchNameTable: Search appendage Entries=%p\n", Entries));
         Position = 0;
     }
 
@@ -299,7 +300,7 @@ AcpiNsSearchOneScope (
     /* Searched entire table, not found */
 
     DEBUG_PRINT (TRACE_NAMES,
-        ("NsSearchOneScope: Name %4.4s (type 0x%X) not found at %p\n",
+        ("NsSearchNameTable: Name %4.4s (type 0x%X) not found at %p\n",
         &EntryName, Type, &Entries[Position]));
 
 
@@ -352,7 +353,6 @@ AcpiNsSearchOneScope (
  *
  ***************************************************************************/
 
-
 ACPI_STATUS
 AcpiNsSearchParentTree (
     UINT32                  EntryName,
@@ -393,12 +393,12 @@ AcpiNsSearchParentTree (
             /* Search parent scope */
             /* TBD: [Investigate] Why ACPI_TYPE_ANY? */
 
-            Status = AcpiNsSearchOneScope (EntryName,
+            Status = AcpiNsSearchNameTable (EntryName,
                                             ParentEntry->ChildTable,
                                             ACPI_TYPE_ANY,
                                             RetEntry, NULL);
 
-            if (Status == AE_OK)
+            if (ACPI_SUCCESS (Status))
             {
                 return_ACPI_STATUS (Status);
             }
@@ -552,12 +552,11 @@ AcpiNsInitializeTable (
  *
  * FUNCTION:    AcpiNsInitializeEntry
  *
- * PARAMETERS:  NameTable       - The containing table for the new NTE
+ * PARAMETERS:  WalkState       - Current state of the walk
+ *              NameTable       - The containing table for the new NTE
  *              Position        - Position (index) of the new NTE in the table
  *              EntryName       - ACPI name of the new entry
  *              Type            - ACPI object type of the new entry
- *              PreviousEntry   - Link back to the previous entry (can span
- *                                multiple tables)
  *
  * RETURN:      None
  *
@@ -664,10 +663,12 @@ AcpiNsInitializeEntry (
  * FUNCTION:    AcpiNsSearchAndEnter
  *
  * PARAMETERS:  EntryName           - Ascii ACPI name to search for (4 chars)
+ *              WalkState           - Current state of the walk
  *              *NameTable          - Starting table where search will begin
  *              InterpreterMode     - Add names only in MODE_LoadPassX.  Otherwise,
  *                                    search only.
  *              Type                - Object type to match
+ *              Flags               - Flags describing the search restrictions
  *              **RetEntry          - Where the matched NTE is returned
  *
  * RETURN:      Status
@@ -706,7 +707,11 @@ AcpiNsSearchAndEnter (
 
     if (!NameTable || !EntryName || !RetEntry)
     {
-        REPORT_ERROR ("NsSearchAndEnter: bad parameter");
+        DEBUG_PRINT (ACPI_ERROR,
+            ("NsSearchAndEnter: Null param:  Table %p Name %p Return %p\n",
+            NameTable, EntryName, RetEntry));
+
+        REPORT_ERROR ("NsSearchAndEnter: bad (null)parameter");
         return_ACPI_STATUS (AE_BAD_PARAMETER);
     }
 
@@ -716,9 +721,10 @@ AcpiNsSearchAndEnter (
     if (!AcpiCmValidAcpiName (EntryName))
     {
         DEBUG_PRINT (ACPI_ERROR,
-            ("NsSearchAndEnter:  *** Bad char in name: %08lx *** \n",
+            ("NsSearchAndEnter:  *** Bad character in name: %08lx *** \n",
             EntryName));
 
+        REPORT_ERROR ("NsSearchAndEnter: Bad character in Entry Name");
         return_ACPI_STATUS (AE_BAD_CHARACTER);
     }
 
@@ -726,7 +732,7 @@ AcpiNsSearchAndEnter (
     /* Try to find the name in the table specified by the caller */
 
     *RetEntry = ENTRY_NOT_FOUND;
-    Status = AcpiNsSearchOneScope (EntryName, NameTable,
+    Status = AcpiNsSearchNameTable (EntryName, NameTable,
                                     Type, RetEntry, &SearchInfo);
     if (Status != AE_NOT_FOUND)
     {
@@ -760,7 +766,7 @@ AcpiNsSearchAndEnter (
         Status = AcpiNsSearchParentTree (EntryName, NameTable,
                                             Type, RetEntry);
 
-        if (Status == AE_OK)
+        if (ACPI_SUCCESS (Status))
         {
             return_ACPI_STATUS (Status);
         }
@@ -797,7 +803,7 @@ AcpiNsSearchAndEnter (
     if (SearchInfo.TableFull)
     {
         Status = AcpiNsCreateAndLinkNewTable (NameTable);
-        if (Status != AE_OK)
+        if (ACPI_FAILURE (Status))
         {
             return_ACPI_STATUS (Status);
         }

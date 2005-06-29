@@ -2,6 +2,7 @@
  *
  * Module Name: nsxfname - Public interfaces to the ACPI subsystem
  *                         ACPI Namespace oriented interfaces
+ *              $Revision: 1.59 $
  *
  *****************************************************************************/
 
@@ -117,12 +118,12 @@
 #define __NSXFNAME_C__
 
 #include "acpi.h"
-#include "interp.h"
-#include "namesp.h"
+#include "acinterp.h"
+#include "acnamesp.h"
 #include "amlcode.h"
-#include "parser.h"
-#include "dispatch.h"
-#include "events.h"
+#include "acparser.h"
+#include "acdispat.h"
+#include "acevents.h"
 
 
 #define _COMPONENT          NAMESPACE
@@ -164,12 +165,10 @@ AcpiLoadNamespace (
     /* Init the hardware */
 
     /*
-     * TBD: [Restructure] Should this should be moved elsewhere,
-     * like AcpiEnable! ??
+     * With the advent of a 3-pass parser, we need to be
+     *  prepared to execute on initialized HW before the
+     *  namespace has completed its load.
      */
-
-    /* we need to be able to call this interface repeatedly! */
-    /* Does H/W require init before loading the namespace? */
 
     Status = AcpiCmHardwareInitialize ();
     if (ACPI_FAILURE (Status))
@@ -241,7 +240,7 @@ AcpiGetHandle (
 
     if (!RetHandle || !Pathname)
     {
-        return AE_BAD_PARAMETER;
+        return (AE_BAD_PARAMETER);
     }
 
     if (Parent)
@@ -252,7 +251,7 @@ AcpiGetHandle (
         if (!ThisEntry)
         {
             AcpiCmReleaseMutex (ACPI_MTX_NAMESPACE);
-            return AE_BAD_PARAMETER;
+            return (AE_BAD_PARAMETER);
         }
 
         Scope = ThisEntry->ChildTable;
@@ -265,7 +264,7 @@ AcpiGetHandle (
     if (STRCMP (Pathname, NS_ROOT_PATH) == 0)
     {
         *RetHandle = AcpiNsConvertEntryToHandle (AcpiGbl_RootObject);
-        return AE_OK;
+        return (AE_OK);
     }
 
     /*
@@ -274,7 +273,11 @@ AcpiGetHandle (
     ThisEntry = NULL;
     Status = AcpiNsGetNamedObject (Pathname, Scope, &ThisEntry);
 
-   *RetHandle = AcpiNsConvertEntryToHandle (ThisEntry);
+    *RetHandle = NULL;
+    if(ACPI_SUCCESS(Status))
+    {
+        *RetHandle = AcpiNsConvertEntryToHandle (ThisEntry);
+    }
 
     return (Status);
 }
@@ -310,7 +313,7 @@ AcpiGetName (
 
     if (!RetPathPtr || (NameType > ACPI_NAME_TYPE_MAX))
     {
-        return AE_BAD_PARAMETER;
+        return (AE_BAD_PARAMETER);
     }
 
     /* Allow length to be zero and ignore the pointer */
@@ -318,7 +321,7 @@ AcpiGetName (
     if ((RetPathPtr->Length) &&
        (!RetPathPtr->Pointer))
     {
-        return AE_BAD_PARAMETER;
+        return (AE_BAD_PARAMETER);
     }
 
     if (NameType == ACPI_FULL_PATHNAME)
@@ -327,7 +330,7 @@ AcpiGetName (
 
         Status = AcpiNsHandleToPathname (Handle, &RetPathPtr->Length,
                                         RetPathPtr->Pointer);
-        return Status;
+        return (Status);
     }
 
     /*
@@ -354,16 +357,16 @@ AcpiGetName (
 
     /* Just copy the ACPI name from the NTE and zero terminate it */
 
-    STRNCPY (RetPathPtr->Pointer, (char *) &ObjEntry->Name,
+    STRNCPY (RetPathPtr->Pointer, (UINT8 *) &ObjEntry->Name,
                 ACPI_NAME_SIZE);
-    ((char *) RetPathPtr->Pointer) [ACPI_NAME_SIZE] = 0;
+    ((NATIVE_CHAR *) RetPathPtr->Pointer) [ACPI_NAME_SIZE] = 0;
     Status = AE_OK;
 
 
 UnlockAndExit:
 
     AcpiCmReleaseMutex (ACPI_MTX_NAMESPACE);
-    return Status;
+    return (Status);
 }
 
 
@@ -398,7 +401,7 @@ AcpiGetObjectInfo (
 
     if (!Device || !Info)
     {
-        return AE_BAD_PARAMETER;
+        return (AE_BAD_PARAMETER);
     }
 
     AcpiCmAcquireMutex (ACPI_MTX_NAMESPACE);
@@ -407,7 +410,7 @@ AcpiGetObjectInfo (
     if (!DeviceEntry)
     {
         AcpiCmReleaseMutex (ACPI_MTX_NAMESPACE);
-        return AE_BAD_PARAMETER;
+        return (AE_BAD_PARAMETER);
     }
 
     Info->Type      = DeviceEntry->Type;
@@ -422,7 +425,7 @@ AcpiGetObjectInfo (
      */
     if (Info->Type != ACPI_TYPE_DEVICE)
     {
-        return AE_OK;
+        return (AE_OK);
     }
 
 
@@ -490,6 +493,6 @@ AcpiGetObjectInfo (
         Info->Valid |= ACPI_VALID_ADR;
     }
 
-    return AE_OK;
+    return (AE_OK);
 }
 

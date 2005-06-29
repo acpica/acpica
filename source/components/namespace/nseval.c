@@ -3,6 +3,7 @@
  *
  * Module Name: nseval - Object evaluation interfaces -- includes control
  *                       method lookup and execution.
+ *              $Revision: 1.69 $
  *
  *****************************************************************************/
 
@@ -154,14 +155,14 @@
 ACPI_STATUS
 AcpiNsEvaluateRelative (
     ACPI_NAMED_OBJECT       *Handle,
-    INT8                    *Pathname,
+    NATIVE_CHAR             *Pathname,
     ACPI_OBJECT_INTERNAL    **Params,
     ACPI_OBJECT_INTERNAL    **ReturnObject)
 {
     ACPI_NAMED_OBJECT       *RelObjEntry;
     ACPI_STATUS             Status;
     ACPI_NAMED_OBJECT       *ObjEntry = NULL;
-    INT8                    *InternalPath = NULL;
+    NATIVE_CHAR             *InternalPath = NULL;
     ACPI_GENERIC_STATE      ScopeInfo;
 
 
@@ -261,13 +262,13 @@ Cleanup:
 
 ACPI_STATUS
 AcpiNsEvaluateByName (
-    INT8                    *Pathname,
+    NATIVE_CHAR             *Pathname,
     ACPI_OBJECT_INTERNAL    **Params,
     ACPI_OBJECT_INTERNAL    **ReturnObject)
 {
     ACPI_STATUS             Status;
     ACPI_NAMED_OBJECT       *ObjEntry = NULL;
-    INT8                    *InternalPath = NULL;
+    NATIVE_CHAR             *InternalPath = NULL;
 
 
     FUNCTION_TRACE ("NsEvaluateByName");
