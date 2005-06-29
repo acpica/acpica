@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: rscreate - Create resource lists/tables
- *              $Revision: 1.39 $
+ *              $Revision: 1.40 $
  *
  ******************************************************************************/
 
@@ -227,6 +227,9 @@ AcpiRsCreateResourceList (
  * DESCRIPTION: Takes the ACPI_OPERAND_OBJECT  package and creates a
  *              linked list of PCI interrupt descriptions
  *
+ * NOTE: It is the caller's responsibility to ensure that the start of the
+ * output buffer is aligned properly (if necessary).
+ *
  ******************************************************************************/
 
 ACPI_STATUS
@@ -249,9 +252,10 @@ AcpiRsCreatePciRoutingTable (
 
     FUNCTION_TRACE ("RsCreatePciRoutingTable");
 
+    /* Params already validated, so we don't re-validate here */
 
     /*
-     * Params already validated, so we don't re-validate here
+     * Get the required buffer length
      */
     Status = AcpiRsCalculatePciRoutingTableLength (PackageObject,
                 &BufferSizeNeeded);
@@ -284,9 +288,6 @@ AcpiRsCreatePciRoutingTable (
     TopObjectList    = PackageObject->Package.Elements;
     NumberOfElements = PackageObject->Package.Count;
     UserPrt          = (PCI_ROUTING_TABLE *) Buffer;
-
-
-    Buffer = ROUND_PTR_UP_TO_8 (Buffer, UINT8);
 
     for (Index = 0; Index < NumberOfElements; Index++)
     {
