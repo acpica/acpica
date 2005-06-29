@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: exdump - Interpreter debug output routines
- *              $Revision: 1.150 $
+ *              $Revision: 1.151 $
  *
  *****************************************************************************/
 
@@ -131,100 +131,6 @@
  */
 
 #if defined(ACPI_DEBUG) || defined(ENABLE_DEBUGGER)
-
-/*****************************************************************************
- *
- * FUNCTION:    AcpiExShowHexValue
- *
- * PARAMETERS:  ByteCount           - Number of bytes to print (1, 2, or 4)
- *              *AmlStart             - Address in AML stream of bytes to print
- *              InterpreterMode     - Current running mode (load1/Load2/Exec)
- *              LeadSpace           - # of spaces to print ahead of value
- *                                    0 => none ahead but one behind
- *
- * DESCRIPTION: Print ByteCount byte(s) starting at AmlStart as a single
- *              value, in hex.  If ByteCount > 1 or the value printed is > 9, also
- *              print in decimal.
- *
- ****************************************************************************/
-
-void
-AcpiExShowHexValue (
-    UINT32                  ByteCount,
-    UINT8                   *AmlStart,
-    UINT32                  LeadSpace)
-{
-    ACPI_INTEGER            Value;                  /*  Value retrieved from AML stream */
-    UINT32                  ShowDecimalValue;
-    UINT32                  Length;                 /*  Length of printed field */
-    UINT8                   *CurrentAmlPtr = NULL;  /*  Pointer to current byte of AML value    */
-
-
-    ACPI_FUNCTION_TRACE ("ExShowHexValue");
-
-
-    if (!((ACPI_LV_LOAD & AcpiDbgLevel) && (_COMPONENT & AcpiDbgLayer)))
-    {
-        return;
-    }
-
-    if (!AmlStart)
-    {
-        ACPI_REPORT_ERROR (("ExShowHexValue: null pointer\n"));
-        return;
-    }
-
-    /*
-     * AML numbers are always stored little-endian,
-     * even if the processor is big-endian.
-     */
-    for (CurrentAmlPtr = AmlStart + ByteCount,
-            Value = 0;
-            CurrentAmlPtr > AmlStart; )
-    {
-        Value = (Value << 8) + (UINT32)* --CurrentAmlPtr;
-    }
-
-    Length = LeadSpace * ByteCount + 2;
-    if (ByteCount > 1)
-    {
-        Length += (ByteCount - 1);
-    }
-
-    ShowDecimalValue = (ByteCount > 1 || Value > 9);
-    if (ShowDecimalValue)
-    {
-        Length += 3 + AcpiExDigitsNeeded (Value, 10);
-    }
-
-    for (Length = LeadSpace; Length; --Length )
-    {
-        AcpiOsPrintf (" ");
-    }
-
-    while (ByteCount--)
-    {
-        AcpiOsPrintf ("%02x", *AmlStart++);
-        if (ByteCount)
-        {
-            AcpiOsPrintf (" ");
-        }
-    }
-
-    if (ShowDecimalValue)
-    {
-        AcpiOsPrintf (" [%d]", Value);
-    }
-
-    if (0 == LeadSpace)
-    {
-        AcpiOsPrintf (" ");
-    }
-
-    AcpiOsPrintf ("\n");
-    return_VOID;
-}
-
 
 /*****************************************************************************
  *
