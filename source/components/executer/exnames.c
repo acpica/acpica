@@ -101,7 +101,6 @@
 #include <interpreter.h>
 #include <amlcode.h>
 #include <namespace.h>
-#include <string.h>
 
 #define _THIS_MODULE        "isnames.c"
 #define _COMPONENT          INTERPRETER
@@ -250,20 +249,16 @@ AmlAllocateNameString (INT32 PrefixCount, INT32 NumNameSegs)
 
     /*  Terminate string following prefixes. AmlDoSeg() will append the segment(s) */
 
-    *TempPtr = 0;
 
-    if (LstFileHandle != NO_LOG_HANDLE)
-    {
-        DEBUG_PRINT (TRACE_NAMES, ("AmlAllocateNameString: "));
+    DEBUG_PRINT (TRACE_NAMES, ("AmlAllocateNameString: "));
         
-        for (TempPtr = NameString; *TempPtr; ++TempPtr)
-        {
-            DEBUG_PRINT_RAW (TRACE_NAMES, ("%02x ", *TempPtr));
-        }
-
-        DEBUG_PRINT_RAW (TRACE_NAMES, (" %s\n", NameString));
+    *TempPtr = 0;
+    for (TempPtr = NameString; *TempPtr; ++TempPtr)
+    {
+        DEBUG_PRINT_RAW (TRACE_NAMES, ("%02x ", *TempPtr));
     }
 
+    DEBUG_PRINT_RAW (TRACE_NAMES, (" %s\n", NameString));
 
     FUNCTION_EXIT;
 }
@@ -353,7 +348,7 @@ AmlDecodePackageLength (INT32 LastPkgLen)
  ****************************************************************************/
 
 ACPI_STATUS
-AmlDoSeg (OpMode LoadExecMode)
+AmlDoSeg (OPERATING_MODE LoadExecMode)
 {
     ACPI_STATUS     Status = AE_OK;
     INT32           Index;
@@ -398,11 +393,6 @@ AmlDoSeg (OpMode LoadExecMode)
             if (NameStringSize)
             {
                 strcat (NameString, CharBuf);
-            }
-
-            if (fAsmFile && MODE_Load1 != LoadExecMode)
-            {
-                OsdPrintf (fAsmFile, " \"%s\",", CharBuf);
             }
 
             DEBUG_PRINT (TRACE_NAMES, ("AmlDoSeg: %s \n", CharBuf));
@@ -462,12 +452,13 @@ AmlDoSeg (OpMode LoadExecMode)
  ****************************************************************************/
 
 ACPI_STATUS
-AmlDoName (NsType DataType, OpMode LoadExecMode)
+AmlDoName (ACPI_OBJECT_TYPE DataType, OPERATING_MODE LoadExecMode)
 {
     ACPI_STATUS     Status = AE_OK;
     INT32           NumSegments;
     INT32           PrefixCount = 0;
     UINT8           Prefix = 0;
+    ACPI_HANDLE     handle;
 
 
     FUNCTION_TRACE ("AmlDoName");
@@ -504,11 +495,6 @@ BREAKPOINT3;
              * see comment in AmlAllocateNameString()
              */
             PrefixCount = -1;
-            if (fAsmFile && MODE_Load1 != LoadExecMode)
-            {
-                OsdPrintf (fAsmFile, " \"%c\",", AML_RootPrefix);
-            }
-
             break;
 
         case AML_ParentPrefix:
@@ -518,11 +504,6 @@ BREAKPOINT3;
                 DEBUG_PRINT (TRACE_LOAD, ("ParentPrefix: %x\n", Prefix));
 
                 ++PrefixCount;
-                if (fAsmFile && MODE_Load1 != LoadExecMode)
-                {
-                    OsdPrintf (fAsmFile, " \"%c\",", AML_ParentPrefix);
-                }
-
             } while (AmlPeekOp () == AML_ParentPrefix);
             
             break;
@@ -538,11 +519,6 @@ BREAKPOINT3;
         case AML_DualNamePrefix:
             AmlConsumeStreamBytes (1, &Prefix);
             DEBUG_PRINT (TRACE_LOAD, ("DualNamePrefix: %x\n", Prefix));
-
-            if (fAsmFile && MODE_Load1 != LoadExecMode)
-            {
-                OsdPrintf (fAsmFile, " \"%c\",", AML_DualNamePrefix);
-            }
 
             AmlAllocateNameString (PrefixCount, 2);
 
@@ -560,11 +536,6 @@ BREAKPOINT3;
         case AML_MultiNamePrefixOp:
             AmlConsumeStreamBytes (1, &Prefix);
             DEBUG_PRINT (TRACE_LOAD, ("MultiNamePrefix: %x\n", Prefix));
-
-            if (fAsmFile && MODE_Load1 != LoadExecMode)
-            {
-                OsdPrintf (fAsmFile, " \"%c\",", AML_MultiNamePrefixOp);
-            }
 
             NumSegments = AmlPeek ();                      /* fetch count of segments */
 
@@ -604,14 +575,6 @@ BREAKPOINT3;
             }
 
             AmlConsumeStreamBytes (1, NULL);    /*  consume NULL byte   */
-            
-            if (fAsmFile && (MODE_Load1 != LoadExecMode))
-            {
-                /* This is probably not the right thing to do!! */
-
-                OsdWrite (" \"00\",", 1, 4, fAsmFile);
-            }
-
             AmlAllocateNameString (PrefixCount, 0);
             break;
 
@@ -628,12 +591,11 @@ BREAKPOINT3;
 
     if (AE_OK == Status)
     {
-        NsHandle        handle;
-
         /* All prefixes have been handled, and the name is in NameString */
 
-        DeleteObject ((OBJECT_DESCRIPTOR **) &ObjStack[ObjStackTop]);
-        Status = NsEnter (NameString, DataType, LoadExecMode, &ObjStack[ObjStackTop]);
+        LocalDeleteObject ((ACPI_OBJECT **) &ObjStack[ObjStackTop]);
+        Status = NsEnter (NameString, DataType, LoadExecMode, 
+                            (NAME_TABLE_ENTRY **) &ObjStack[ObjStackTop]);
 
         /* Help view ObjStack during debugging */
 
@@ -666,7 +628,7 @@ BREAKPOINT3;
                  * The arg count is in the MethodFlags, which is the first
                  * byte of the Method's AML.
                  */
-                meth        *MethodPtr = (meth *) NsGetValue (ObjStack[ObjStackTop]);
+                METHOD_INFO     *MethodPtr = (METHOD_INFO *) NsGetValue (ObjStack[ObjStackTop]);
 
                 if (MethodPtr)
                 {   
@@ -713,7 +675,7 @@ BREAKPOINT3;
                                      */
                                     if (MODE_Exec == LoadExecMode)
                                     {
-                                        Status = AmlGetRvalue ((OBJECT_DESCRIPTOR **)
+                                        Status = AmlGetRvalue ((ACPI_OBJECT **)
                                             &ObjStack[ObjStackTop]);
                                     }
 
@@ -730,12 +692,12 @@ BREAKPOINT3;
                             /* execution mode  */
                             /* Mark end of arg list */
 
-                            DeleteObject ((OBJECT_DESCRIPTOR **) &ObjStack[ObjStackTop]);
+                            LocalDeleteObject ((ACPI_OBJECT **) &ObjStack[ObjStackTop]);
                             ObjStack[ObjStackTop] = NULL;
 
                             /* Establish Method's scope as current */
 
-                            NsPushMethodScope ((NsHandle) ObjStack[StackBeforeArgs]);
+                            NsPushMethodScope ((ACPI_HANDLE) ObjStack[StackBeforeArgs]);
 
                             DEBUG_PRINT (TRACE_LOAD,
                                         ("Calling %4.4s, StackBeforeArgs %d  ObjStackTop %d\n",
@@ -746,7 +708,7 @@ BREAKPOINT3;
                             
                             Status = AmlExecuteMethod (
                                         MethodPtr->Offset + 1, MethodPtr->Length - 1,
-                                        (OBJECT_DESCRIPTOR **)&ObjStack[StackBeforeArgs + 1]);
+                                        (ACPI_OBJECT **)&ObjStack[StackBeforeArgs + 1]);
 
                             DEBUG_PRINT (TRACE_LOAD,
                                     ("AmlExec Status=%s, StackBeforeArgs %d  ObjStackTop %d\n",
@@ -758,7 +720,7 @@ BREAKPOINT3;
 
                                 if (StackBeforeArgs < ObjStackTop)
                                 {
-                                    DeleteObject ((OBJECT_DESCRIPTOR **) &ObjStack[StackBeforeArgs]);
+                                    LocalDeleteObject ((ACPI_OBJECT **) &ObjStack[StackBeforeArgs]);
                                     ObjStack[StackBeforeArgs] = ObjStack[ObjStackTop--];
                                 }
 
@@ -775,7 +737,7 @@ BREAKPOINT3;
                         
                         while (ObjStackTop > StackBeforeArgs)
                         {
-                            DeleteObject ((OBJECT_DESCRIPTOR **) &ObjStack[ObjStackTop]);
+                            LocalDeleteObject ((ACPI_OBJECT **) &ObjStack[ObjStackTop]);
 
                             /* Zero out the slot and move on */
 

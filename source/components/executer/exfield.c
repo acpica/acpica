@@ -136,9 +136,9 @@
  ****************************************************************************/
 
 ACPI_STATUS
-AmlSetupField (OBJECT_DESCRIPTOR *ObjDesc, OBJECT_DESCRIPTOR *RgnDesc, INT32 FieldBitWidth)
+AmlSetupField (ACPI_OBJECT *ObjDesc, ACPI_OBJECT *RgnDesc, INT32 FieldBitWidth)
 {
-    OBJECT_DESCRIPTOR   *ObjValDesc = NULL;
+    ACPI_OBJECT         *ObjValDesc = NULL;
     ACPI_STATUS         Status = AE_OK;
     INT32               FieldByteWidth;
 
@@ -203,7 +203,7 @@ AmlSetupField (OBJECT_DESCRIPTOR *ObjDesc, OBJECT_DESCRIPTOR *RgnDesc, INT32 Fie
                 /* Evaluate the Address opcode */
 
                 if ((Status = AmlDoOpCode (MODE_Exec)) == AE_OK && 
-                    (Status = AmlGetRvalue ((OBJECT_DESCRIPTOR **) &ObjStack[ObjStackTop]))
+                    (Status = AmlGetRvalue ((ACPI_OBJECT **) &ObjStack[ObjStackTop]))
                                 == AE_OK)
                 {
                     /* Capture the address */
@@ -232,7 +232,7 @@ AmlSetupField (OBJECT_DESCRIPTOR *ObjDesc, OBJECT_DESCRIPTOR *RgnDesc, INT32 Fie
                     /* Evaluate the Length opcode */
 
                     if ((Status = AmlDoOpCode (MODE_Exec)) == AE_OK &&
-                        (Status = AmlGetRvalue ((OBJECT_DESCRIPTOR **) &ObjStack[ObjStackTop]))
+                        (Status = AmlGetRvalue ((ACPI_OBJECT **) &ObjStack[ObjStackTop]))
                                     == AE_OK)
                     {
                         /* Capture the length */
@@ -317,11 +317,11 @@ AmlSetupField (OBJECT_DESCRIPTOR *ObjDesc, OBJECT_DESCRIPTOR *RgnDesc, INT32 Fie
  ****************************************************************************/
 
 ACPI_STATUS
-AmlReadField (OBJECT_DESCRIPTOR *ObjDesc, UINT32 *Value, INT32 FieldBitWidth)
+AmlReadField (ACPI_OBJECT *ObjDesc, UINT32 *Value, INT32 FieldBitWidth)
 {
     /* ObjDesc is validated by callers */
 
-    OBJECT_DESCRIPTOR   *RgnDesc = NULL;
+    ACPI_OBJECT         *RgnDesc = NULL;
     ACPI_STATUS         Status;
     UINT32              Address;
     UINT32              LocalValue = 0;
@@ -529,11 +529,11 @@ AmlReadField (OBJECT_DESCRIPTOR *ObjDesc, UINT32 *Value, INT32 FieldBitWidth)
  ****************************************************************************/
 
 ACPI_STATUS
-AmlWriteField (OBJECT_DESCRIPTOR *ObjDesc, UINT32 Value, INT32 FieldBitWidth)
+AmlWriteField (ACPI_OBJECT *ObjDesc, UINT32 Value, INT32 FieldBitWidth)
 {
     /* ObjDesc is validated by callers */
 
-    OBJECT_DESCRIPTOR *     RgnDesc = NULL;
+    ACPI_OBJECT       *     RgnDesc = NULL;
     ACPI_STATUS             Status = AE_OK;
     UINT32                  Address;
     INT32                   FieldByteWidth;
@@ -713,9 +713,9 @@ AmlWriteField (OBJECT_DESCRIPTOR *ObjDesc, UINT32 Value, INT32 FieldBitWidth)
  ****************************************************************************/
 
 ACPI_STATUS
-AmlAccessNamedField (INT32 Mode, NsHandle NamedField, UINT32 *Value)
+AmlAccessNamedField (INT32 Mode, ACPI_HANDLE NamedField, UINT32 *Value)
 {
-    OBJECT_DESCRIPTOR       *ObjDesc = NULL;
+    ACPI_OBJECT             *ObjDesc = NULL;
     ACPI_STATUS             Status = AE_AML_ERROR;
     char                    *Type = NULL;
     INT32                   Granularity = 0;
@@ -723,7 +723,7 @@ AmlAccessNamedField (INT32 Mode, NsHandle NamedField, UINT32 *Value)
     UINT32                  Mask = 0;
     UINT32                  dValue = 0;
     UINT32                  OldVal = 0;
-    INT32                   Locked = FALSE;
+    BOOLEAN                 Locked;
 
 
 
@@ -823,24 +823,9 @@ AmlAccessNamedField (INT32 Mode, NsHandle NamedField, UINT32 *Value)
 
     if (AE_OK == Status)
     {
-        /*  Check lock rule prior to modifing the field */
-        
-        if ((UINT16) GLOCK_AlwaysLock == ObjDesc->FieldUnit.LockRule)
-        {   
-            /*  Lock Rule is Lock   */
-            
-            if (OsGetGlobalLock () != AE_OK)
+        /* Get the global lock if needed */
 
-                /*  
-                 * lock ownership failed: this is a single threaded implementation
-                 * so there is no way some other process should own this.
-                 * This means something grabbed the global lock and did not
-                 * release it.
-                 */
-                Status = AE_AML_ERROR;
-            else
-                Locked = TRUE;
-        }
+        Locked = AmlAcquireGlobalLock (ObjDesc->FieldUnit.LockRule);
     }
 
 
@@ -940,10 +925,9 @@ AmlAccessNamedField (INT32 Mode, NsHandle NamedField, UINT32 *Value)
         }
     }
 
-    if (Locked)
-    {
-        OsReleaseGlobalLock ();
-    }
+    /* Release global lock if we acquired it earlier */
+
+    AmlReleaseGlobalLock (Locked);
 
     FUNCTION_EXIT;
     return Status;
@@ -964,7 +948,7 @@ AmlAccessNamedField (INT32 Mode, NsHandle NamedField, UINT32 *Value)
  ****************************************************************************/
 
 ACPI_STATUS
-AmlSetNamedFieldValue (NsHandle NamedField, UINT32 Value)
+AmlSetNamedFieldValue (ACPI_HANDLE NamedField, UINT32 Value)
 {
     ACPI_STATUS         Status = AE_AML_ERROR;
 
@@ -1000,7 +984,7 @@ AmlSetNamedFieldValue (NsHandle NamedField, UINT32 Value)
  ****************************************************************************/
 
 ACPI_STATUS
-AmlGetNamedFieldValue (NsHandle NamedField, UINT32 *Value)
+AmlGetNamedFieldValue (ACPI_HANDLE NamedField, UINT32 *Value)
 {
     ACPI_STATUS         Status = AE_AML_ERROR;
 

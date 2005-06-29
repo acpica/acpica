@@ -244,7 +244,7 @@ AmlDumpBuffer (size_t NumBytes)
  ****************************************************************************/
 
 ACPI_STATUS
-AmlDumpStackEntry (OBJECT_DESCRIPTOR *EntryDesc)
+AmlDumpStackEntry (ACPI_OBJECT *EntryDesc)
 {
     char        *OutString = NULL;
     UINT8       *Buf = NULL;
@@ -380,7 +380,7 @@ AmlDumpStackEntry (OBJECT_DESCRIPTOR *EntryDesc)
                 EntryDesc->Package.PackageElems &&
                 GetDebugLevel () > 1)
             {
-                OBJECT_DESCRIPTOR   **Element;
+                ACPI_OBJECT         **Element;
                 UINT16              ElementIndex;
 
                 for (ElementIndex = 0, Element = EntryDesc->Package.PackageElems;
@@ -518,13 +518,13 @@ AmlDumpStackEntry (OBJECT_DESCRIPTOR *EntryDesc)
             /* !!!! POINTER STUFF COMMENTED OUT !!!! */
 
 /*
- *           if (PtrOffset (EntryDesc) > sizeof (OBJECT_DESCRIPTOR))
+ *           if (PtrOffset (EntryDesc) > sizeof (ACPI_OBJECT))
  *           {
  *               --EntryDesc;
  *           }
  *           else
  *           {
- *               EntryDesc = (OBJECT_DESCRIPTOR *) (((char *) EntryDesc) - PtrOffset (EntryDesc));
+ *               EntryDesc = (ACPI_OBJECT *) (((char *) EntryDesc) - PtrOffset (EntryDesc));
  *           }
  */
 
@@ -538,9 +538,9 @@ AmlDumpStackEntry (OBJECT_DESCRIPTOR *EntryDesc)
 
             /* TBD:  Change to use dump object routine !! */
 
-            DUMP_BUFFER (EntryDesc, sizeof (OBJECT_DESCRIPTOR), 0);
-            DUMP_BUFFER (++EntryDesc, sizeof (OBJECT_DESCRIPTOR), 0);
-            DUMP_BUFFER (++EntryDesc, sizeof (OBJECT_DESCRIPTOR), 0);
+            DUMP_BUFFER (EntryDesc, sizeof (ACPI_OBJECT), 0);
+            DUMP_BUFFER (++EntryDesc, sizeof (ACPI_OBJECT), 0);
+            DUMP_BUFFER (++EntryDesc, sizeof (ACPI_OBJECT), 0);
             break;
 
         }
@@ -565,9 +565,9 @@ AmlDumpStackEntry (OBJECT_DESCRIPTOR *EntryDesc)
  ****************************************************************************/
 
 void
-AmlDumpStack (OpMode LoadExecMode, char *Ident, INT32 NumLevels, char *Note)
+AmlDumpStack (OPERATING_MODE LoadExecMode, char *Ident, INT32 NumLevels, char *Note)
 {
-    OBJECT_DESCRIPTOR   **EntryDesc;
+    ACPI_OBJECT         **EntryDesc;
 
     
     FUNCTION_TRACE ("AmlDumpStack");
@@ -587,7 +587,7 @@ AmlDumpStack (OpMode LoadExecMode, char *Ident, INT32 NumLevels, char *Note)
                 ("*******************AmlDumpStack***********************\n"));
     DEBUG_PRINT (ACPI_INFO, ("%s: %s\n", Ident, Note));
 
-    for (EntryDesc = (OBJECT_DESCRIPTOR **) &ObjStack[ObjStackTop] ;
+    for (EntryDesc = (ACPI_OBJECT **) &ObjStack[ObjStackTop] ;
           /* exit condition at bottom of loop */ ;
           --EntryDesc, --NumLevels)
     {
@@ -608,8 +608,8 @@ AmlDumpStack (OpMode LoadExecMode, char *Ident, INT32 NumLevels, char *Note)
          *  - the entire stack has been dumped.
          */
         if ((AE_OK != AmlDumpStackEntry (*EntryDesc) &&
-            (OBJECT_DESCRIPTOR **) &ObjStack[ObjStackTop] != EntryDesc) || 
-            (OBJECT_DESCRIPTOR **) &ObjStack[0] == EntryDesc)
+            (ACPI_OBJECT **) &ObjStack[ObjStackTop] != EntryDesc) || 
+            (ACPI_OBJECT **) &ObjStack[0] == EntryDesc)
         {
             break;
         }
@@ -630,7 +630,7 @@ AmlDumpStack (OpMode LoadExecMode, char *Ident, INT32 NumLevels, char *Note)
  ****************************************************************************/
 
 void
-AmlDumpObjectDescriptor (OBJECT_DESCRIPTOR *Object)
+AmlDumpObjectDescriptor (ACPI_OBJECT *Object)
 {
 	
 	FUNCTION_TRACE ("AmlDumpObjectDescriptor");
