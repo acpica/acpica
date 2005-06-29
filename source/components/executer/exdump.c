@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: exdump - Interpreter debug output routines
- *              $Revision: 1.177 $
+ *              $Revision: 1.179 $
  *
  *****************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2004, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2005, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -652,6 +652,11 @@ AcpiExDumpObjectDescriptor (
     ACPI_FUNCTION_TRACE ("ExDumpObjectDescriptor");
 
 
+    if (!ObjDesc)
+    {
+        return_VOID;
+    }
+
     if (!Flags)
     {
         if (!((ACPI_LV_OBJECTS & AcpiDbgLevel) && (_COMPONENT & AcpiDbgLayer)))
@@ -860,6 +865,12 @@ AcpiExDumpObjectDescriptor (
         AcpiExOutPointer ("ObjDesc",        ObjDesc->Reference.Object);
         AcpiExOutPointer ("Node",           ObjDesc->Reference.Node);
         AcpiExOutPointer ("Where",          ObjDesc->Reference.Where);
+
+        if (ObjDesc->Reference.Object)
+        {
+            AcpiOsPrintf ("\nReferenced Object:\n");
+            AcpiExDumpObjectDescriptor (ObjDesc->Reference.Object, Flags);
+        }
         break;
 
 
