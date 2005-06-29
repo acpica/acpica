@@ -119,10 +119,19 @@
 
 #include <acpi.h>
 #include <hardware.h>
-#include <namespace.h>
+#include <namesp.h>
 
-#define _COMPONENT          DEVICE_MANAGER
+#define _COMPONENT          HARDWARE
         MODULE_NAME         ("hwregs");
+
+
+
+/* This matches the #defines in actypes.h. */
+
+ACPI_STRING SleepStateTable[] = {"\\_S0_","\\_S1_","\\_S2_","\\_S3_",
+                                 "\\_S4_","\\_S4B","\\_S5_"};
+
+
 
 /******************************************************************************
  *
@@ -225,6 +234,7 @@ HwClearAcpiStatus (void)
  * DESCRIPTION: HwObtainSleepTypeRegisterData() obtains the SLP_TYP and 
  *              SLP_TYPb values for the sleep state requested.
  *
+
  ***************************************************************************/
 ACPI_STATUS
 HwObtainSleepTypeRegisterData (
@@ -234,12 +244,10 @@ HwObtainSleepTypeRegisterData (
 {
     ACPI_STATUS             Status = AE_OK;
     ACPI_OBJECT_INTERNAL    *ObjDesc;
-    /* This matches the #defines in acpitypes.h. */
-    static ACPI_STRING SleepStateTable[] = {
-                    "\\_S0_","\\_S1_","\\_S2_","\\_S3_",
-                    "\\_S4_","\\_S4B","\\_S5_"};
 
+    
     FUNCTION_TRACE ("HwObtainSleepTypeRegisterData");
+
 
     /*
      *  Validate parameters
@@ -250,45 +258,44 @@ HwObtainSleepTypeRegisterData (
         return_ACPI_STATUS (AE_BAD_PARAMETER);
     }
 
-    ObjDesc = CmCreateInternalObject (ACPI_TYPE_Any);
-    if (!ObjDesc)
-    {
-        return_ACPI_STATUS (AE_NO_MEMORY);
-    }
-
     /*
      *  Evaluate the namespace object containing the values for this state
      */
   
-    Status = NsEvaluateByName (SleepStateTable[SleepState], NULL, ObjDesc);
+    Status = NsEvaluateByName (SleepStateTable[SleepState], NULL, &ObjDesc);
 
     if (AE_OK == Status)
-    {   
-        /*
-         *  We got something, now ensure it is correct.  The object must
-         *  be a package and must have at least 2 numeric values as the
-         *  two elements
-         */
-
-        if ((ObjDesc->Common.Type != ACPI_TYPE_Package) ||
-            ((ObjDesc->Package.Elements[0])->Common.Type != ACPI_TYPE_Number) ||
-            ((ObjDesc->Package.Elements[1])->Common.Type != ACPI_TYPE_Number))
-        {   
-            /* Invalid _Sx_ package type or value  */
-            
-            REPORT_ERROR ("Object type returned from interpreter differs from expected value");
-            Status = AE_ERROR;
-        }
-        else
-        {   
+    {  
+        if (ObjDesc)
+        {
             /*
-             *  Valid _Sx_ package size, type, and value
+             *  We got something, now ensure it is correct.  The object must
+             *  be a package and must have at least 2 numeric values as the
+             *  two elements
              */
-            *Slp_TypA = (UINT8) (ObjDesc->Package.Elements[0])->Number.Value;
-            *Slp_TypB = (UINT8) (ObjDesc->Package.Elements[1])->Number.Value;
+
+            if ((ObjDesc->Common.Type != ACPI_TYPE_Package) ||
+                ((ObjDesc->Package.Elements[0])->Common.Type != ACPI_TYPE_Number) ||
+                ((ObjDesc->Package.Elements[1])->Common.Type != ACPI_TYPE_Number))
+            {   
+                /* Invalid _Sx_ package type or value  */
+            
+                REPORT_ERROR ("Object type returned from interpreter differs from expected value");
+                Status = AE_ERROR;
+            }
+            else
+            {   
+                /*
+                 *  Valid _Sx_ package size, type, and value
+                 */
+                *Slp_TypA = (UINT8) (ObjDesc->Package.Elements[0])->Number.Value;
+                *Slp_TypB = (UINT8) (ObjDesc->Package.Elements[1])->Number.Value;
+            }
+
+            CmDeleteInternalObject (ObjDesc);
         }
     }
-    CmDeleteInternalObject (ObjDesc);
+
     return_ACPI_STATUS (Status);
 }
 
