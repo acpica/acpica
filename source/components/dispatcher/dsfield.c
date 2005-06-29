@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dsfield - Dispatcher field routines
- *              $Revision: 1.44 $
+ *              $Revision: 1.45 $
  *
  *****************************************************************************/
 
@@ -168,7 +168,7 @@ AcpiDsCreateField (
     FUNCTION_TRACE_PTR ("DsCreateField", Op);
 
 
-    /* First arg is the name of the parent OpRegion */
+    /* First arg is the name of the parent OpRegion (must already exist) */
 
     Arg = Op->Value.Arg;
     if (!RegionNode)
@@ -212,6 +212,8 @@ AcpiDsCreateField (
 
 
         case AML_INT_NAMEDFIELD_OP:
+
+            /* Enter a new field name into the namespace */
 
             Status = AcpiNsLookup (WalkState->ScopeInfo,
                             (NATIVE_CHAR *) &((ACPI_PARSE2_OBJECT *)Arg)->Name,
@@ -279,7 +281,7 @@ AcpiDsCreateBankField (
     FUNCTION_TRACE_PTR ("DsCreateBankField", Op);
 
 
-    /* First arg is the name of the parent OpRegion */
+    /* First arg is the name of the parent OpRegion (must already exist) */
 
     Arg = Op->Value.Arg;
     if (!RegionNode)
@@ -293,14 +295,13 @@ AcpiDsCreateBankField (
         }
     }
 
-    /* Second arg is the Bank Register */
+    /* Second arg is the Bank Register (must already exist) */
 
     Arg = Arg->Next;
 
     Status = AcpiNsLookup (WalkState->ScopeInfo, Arg->Value.String,
-                    INTERNAL_TYPE_BANK_FIELD_DEFN, IMODE_LOAD_PASS1,
-                    NS_NO_UPSEARCH | NS_DONT_OPEN_SCOPE,
-                    NULL, &RegisterNode);
+                    INTERNAL_TYPE_BANK_FIELD_DEFN, IMODE_EXECUTE,
+                    NS_SEARCH_PARENT, WalkState, &RegisterNode);
     if (ACPI_FAILURE (Status))
     {
         return_ACPI_STATUS (Status);
@@ -342,6 +343,8 @@ AcpiDsCreateBankField (
 
 
         case AML_INT_NAMEDFIELD_OP:
+
+            /* Enter a new field name into the namespace */
 
             Status = AcpiNsLookup (WalkState->ScopeInfo,
                             (NATIVE_CHAR *) &((ACPI_PARSE2_OBJECT *)Arg)->Name,
@@ -411,32 +414,29 @@ AcpiDsCreateIndexField (
     FUNCTION_TRACE_PTR ("DsCreateIndexField", Op);
 
 
+    /* First arg is the name of the Index register (must already exist) */
+
     Arg = Op->Value.Arg;
 
-    /* First arg is the name of the Index register */
-
     Status = AcpiNsLookup (WalkState->ScopeInfo, Arg->Value.String,
-                    ACPI_TYPE_ANY, IMODE_LOAD_PASS1,
-                    NS_NO_UPSEARCH | NS_DONT_OPEN_SCOPE,
-                    NULL, &IndexRegisterNode);
+                    ACPI_TYPE_ANY, IMODE_EXECUTE,
+                    NS_SEARCH_PARENT, WalkState, &IndexRegisterNode);
     if (ACPI_FAILURE (Status))
     {
         return_ACPI_STATUS (Status);
     }
 
-    /* Second arg is the data register */
+    /* Second arg is the data register (must already exist) */
 
     Arg = Arg->Next;
 
     Status = AcpiNsLookup (WalkState->ScopeInfo, Arg->Value.String,
-                    INTERNAL_TYPE_INDEX_FIELD_DEFN, IMODE_LOAD_PASS1,
-                    NS_NO_UPSEARCH | NS_DONT_OPEN_SCOPE,
-                    NULL, &DataRegisterNode);
+                    INTERNAL_TYPE_INDEX_FIELD_DEFN, IMODE_EXECUTE,
+                    NS_SEARCH_PARENT, WalkState, &DataRegisterNode);
     if (ACPI_FAILURE (Status))
     {
         return_ACPI_STATUS (Status);
     }
-
 
     /* Next arg is the field flags */
 
@@ -469,6 +469,8 @@ AcpiDsCreateIndexField (
 
 
         case AML_INT_NAMEDFIELD_OP:
+
+            /* Enter a new field name into the namespace */
 
             Status = AcpiNsLookup (WalkState->ScopeInfo,
                             (NATIVE_CHAR *) &((ACPI_PARSE2_OBJECT *)Arg)->Name,
