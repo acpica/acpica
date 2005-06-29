@@ -287,6 +287,10 @@ AcpiOsQueueForExecution (
     void                    *Context);
 
 void
+AcpiOsWaitEventsComplete (
+    void                    *Context);
+
+void
 AcpiOsSleep (
     UINT32                  Seconds,
     UINT32                  Milliseconds);
