@@ -117,7 +117,7 @@
  *****************************************************************************/
 
 #include <acpi.h>
-#include <namespace.h>
+#include <namesp.h>
 #include <hardware.h>
 #include <events.h>
 
@@ -154,48 +154,41 @@
 UINT32 
 EvSciHandler (void *Context)
 {
-    UINT32 InterruptHandled = INTERRUPT_NOT_HANDLED;
-       
-    
-    /* 
-     * CHANGE: if multiple SCI's happen concurrently and only one of them
-     *  is handled, what should be returned?
+    UINT32 InterruptHandled;
+
+    FUNCTION_TRACE("EvSciHandler");
+
+    /*
+     * ACPI Enabled?
+     * -------------
+     * Make sure that ACPI is enabled by checking SCI_EN.  Note that we are
+     * required to treat the SCI interrupt as sharable, level, active low.
      */
-    
-
-    DEBUG_PRINT (TRACE_INTERRUPTS, ("Entered SCI handler\n"));
-
-    if (! READ_ACPI_REGISTER (SCI_EN))
+    if (READ_ACPI_REGISTER (SCI_EN))
     {
-        DEBUG_PRINT (TRACE_INTERRUPTS, ("Not an SCI\n"));
-        return INTERRUPT_NOT_HANDLED;
-    }   
-    
-    /* Determine if the SCI was a fixed event ot a GPE. */
+        /*
+         * Fixed Events:
+         * -------------
+         * Check for and dispatch any Fixed Events that have occurred
+         */
+        InterruptHandled &= EvFixedEventDetect ();
 
-    DEBUG_PRINT (TRACE_INTERRUPTS, ("Got an SCI\n"));
+        /*
+         * GPEs:
+         * -----
+         * Check for and dispatch any GPEs that have occurred
+         */
+        InterruptHandled &= EvGpeDetect ();
+    }
+    else
+    {
+        REPORT_ERROR ("Received and SCI but ACPI is not enabled.");
+        InterruptHandled = INTERRUPT_NOT_HANDLED;
+    }
 
-
-    /*
-     * Check for and dispatch any Fixed Events that have occurred
-     */
-
-    InterruptHandled &= EvFixedEventDetect ();
-
-
-    /*
-     * Check for and dispatch any GPEs that have occurred
-     */
-
-    InterruptHandled &= EvGpeDetect ();
-
- 
-    return InterruptHandled;
+    return_VALUE (InterruptHandled);
 }
 
-/* TBD: is this needed?
-#pragma check_stack ()
-*/
 
 /******************************************************************************
  *
@@ -305,13 +298,11 @@ EvRemoveSciHandler (void)
 
 INT32 
 EvSciCount (
-    ACPI_EVENT_TYPE         Event)
+    UINT32                  Event)
 {
     INT32                   Count;
 
-
     FUNCTION_TRACE ("EvSciCount");
-
 
     /* 
      * Elements correspond to counts for TMR, NOT_USED, GBL, 
