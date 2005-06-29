@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: evevent - Fixed and General Purpose Even handling and dispatch
- *              $Revision: 1.86 $
+ *              $Revision: 1.87 $
  *
  *****************************************************************************/
 
@@ -592,7 +592,7 @@ AcpiEvGpeInitialize (void)
 
             GpeRegister++;
         }
-	/* %u */
+
         ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "GPE Block%d: %X registers at %8.8X%8.8X\n",
             (INT32) GpeBlock, AcpiGbl_GpeBlockInfo[0].RegisterCount,
             ACPI_HIDWORD (AcpiGbl_GpeBlockInfo[GpeBlock].BlockAddress->Address),
