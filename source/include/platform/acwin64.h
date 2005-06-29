@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acwin.h - OS specific defines, etc.
- *       $Revision: 1.6 $
+ *       $Revision: 1.9 $
  *
  *****************************************************************************/
 
@@ -124,6 +124,8 @@
 
 #define ACPI_OS_NAME                "Windows"
 
+#define ACPI_MACHINE_WIDTH          64
+
 #define strupr              _strupr
 #define ACPI_USE_STANDARD_HEADERS
 
@@ -149,8 +151,8 @@
  * For Acpi applications, we don't want to try to access the global lock
  */
 #ifdef ACPI_APPLICATION
-#define ACPI_ACQUIRE_GLOBAL_LOCK(GLptr, Acq)       (Acq = 0xFF)
-#define ACPI_RELEASE_GLOBAL_LOCK(GLptr, Pnd)       (Pnd = 0)
+#define ACPI_ACQUIRE_GLOBAL_LOCK(GLptr, Acq)       if (AcpiGbl_GlobalLockPresent) {Acq = 0xFF;} else {Acq = 0;}
+#define ACPI_RELEASE_GLOBAL_LOCK(GLptr, Pnd)       if (AcpiGbl_GlobalLockPresent) {Pnd = 0xFF;} else {Pnd = 0;}
 #else
 
 #define ACPI_ACQUIRE_GLOBAL_LOCK(GLptr, Acq)

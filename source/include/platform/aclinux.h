@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: aclinux.h - OS specific defines, etc.
- *       $Revision: 1.22 $
+ *       $Revision: 1.24 $
  *
  *****************************************************************************/
 
@@ -130,14 +130,9 @@
 #include <asm/system.h>
 #include <asm/atomic.h>
 #include <asm/div64.h>
+#include <asm/acpi.h>
 
 #define strtoul simple_strtoul
-
-#ifdef CONFIG_IA64
-#define ACPI_FLUSH_CPU_CACHE()
-#else
-#define ACPI_FLUSH_CPU_CACHE()	wbinvd()
-#endif
 
 #else /* !__KERNEL__ */
 
@@ -153,7 +148,8 @@
 #include "acgcc.h"
 
 #undef DEBUGGER_THREADING
-#define DEBUGGER_THREADING          DEBUGGER_SINGLE_THREADED
+#define DEBUGGER_THREADING	DEBUGGER_SINGLE_THREADED
 
+#define ACPI_MACHINE_WIDTH	BITS_PER_LONG
 
 #endif /* __ACLINUX_H__ */
