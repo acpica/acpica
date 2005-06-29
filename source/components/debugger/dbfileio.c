@@ -2,7 +2,7 @@
  *
  * Module Name: dbfileio - Debugger file I/O commands.  These can't usually
  *              be used when running the debugger in Ring 0 (Kernel mode)
- *              $Revision: 1.28 $
+ *              $Revision: 1.29 $
  *
  ******************************************************************************/
 
@@ -269,6 +269,7 @@ AcpiDbLoadTable(
     ACPI_TABLE_HEADER       TableHeader;
     UINT8                   *AmlPtr;
     UINT32                  AmlLength;
+    UINT32                  Actual;
 
 
     /* Read the table header */
@@ -307,12 +308,20 @@ AcpiDbLoadTable(
 
     /* Get the rest of the table */
 
-    if ((UINT32) fread (AmlPtr, 1, (size_t) AmlLength, fp) == AmlLength)
+    Actual = fread (AmlPtr, 1, (size_t) AmlLength, fp);  
+    if (Actual == AmlLength)
     {
         return (AE_OK);
     }
 
-    AcpiOsPrintf ("Error reading the table\n");
+    if (Actual > 0)
+    {
+        AcpiOsPrintf ("Warning - reading table, asked for %d got %d\n", AmlLength, Actual);
+       return (AE_OK);
+    }
+
+
+    AcpiOsPrintf ("Error - could not read the table file\n");
     free (*TablePtr);
     *TablePtr = NULL;
     *TableLength = 0;
