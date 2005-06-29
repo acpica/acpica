@@ -145,7 +145,7 @@ AmlExecStore(OBJECT_DESCRIPTOR *ValDesc, OBJECT_DESCRIPTOR *DestDesc)
     NsHandle        TempHandle;
     ACPI_STATUS     Status = AE_AML_ERROR;
     INT32           Stacked = FALSE;
-    INT32           Locked = FALSE;
+    BOOLEAN         Locked = FALSE;
 
 
     FUNCTION_TRACE ("AmlExecStore");
@@ -306,34 +306,11 @@ AmlExecStore(OBJECT_DESCRIPTOR *ValDesc, OBJECT_DESCRIPTOR *DestDesc)
 
             if (AE_OK == Status)
             {
+                /* Get the global lock if needed */
+
+                Locked = AmlAcquireGlobalLock (DestDesc->BankField.LockRule);
+
                 /* Set Bank value to select proper Bank */
-                /* Check lock rule prior to modifing the field */
-
-                if (DestDesc->BankField.LockRule == (UINT16) GLOCK_AlwaysLock)
-                {
-                    /* Lock Rule is Lock */
-
-                    if (OsGetGlobalLock () != AE_OK)
-                    {
-                        /* the ownship failed - Bad Bad Bad, this is a single threaded */
-                        /* implementation so there is no way some other process should */
-                        /* own this.  This means something grabbed it and did not */
-                        /* release the Global Lock! */
-
-                        Status = AE_AML_ERROR;
-                    }
-
-                    else
-                    {
-                        Locked = TRUE;
-                    }
-                }
-            }
-
-
-            if (AE_OK == Status)
-            {
-
                 /* Perform the update (Set Bank Select) */
 
                 Status = AmlSetNamedFieldValue (DestDesc->BankField.BankSelect,
@@ -410,30 +387,10 @@ AmlExecStore(OBJECT_DESCRIPTOR *ValDesc, OBJECT_DESCRIPTOR *DestDesc)
 
             if (AE_OK == Status)
             {
-                /* Check lock rule prior to modifing the field */
-            
-                if (ValDesc->Field.LockRule == (UINT16) GLOCK_AlwaysLock)
-                {
-                    /* Lock Rule is Lock */
-                
-                    if (OsGetGlobalLock () != AE_OK)
-                    {
-                        /* the ownship failed - Bad Bad Bad, this is a single threaded */
-                        /* implementation so there is no way some other process should */
-                        /* own this.  This means something grabbed it and did not */
-                        /* release the Global Lock!  */
-                    
-                        Status = AE_AML_ERROR;
-                    }
-                    else
-                    {
-                        Locked = TRUE;
-                    }
-                }
-            }
-                
-            if (AE_OK == Status)
-            {
+                /* Get the global lock if needed */
+
+                Locked = AmlAcquireGlobalLock (ValDesc->Field.LockRule);
+
                 /* perform the update */
                 
                 Status = AmlSetNamedFieldValue (TempHandle, ValDesc->Number.Number);
@@ -495,31 +452,11 @@ AmlExecStore(OBJECT_DESCRIPTOR *ValDesc, OBJECT_DESCRIPTOR *DestDesc)
 
             if (AE_OK == Status)
             {
+                /* Get the global lock if needed */
+
+                Locked = AmlAcquireGlobalLock (DestDesc->IndexField.LockRule);
+
                 /* Set Index value to select proper Data register */
-                /* Check lock rule prior to modifing the field */
-            
-                if (DestDesc->IndexField.LockRule == (UINT16) GLOCK_AlwaysLock)
-                {
-                    /* Lock Rule is Lock */
-               
-                    if (OsGetGlobalLock () != AE_OK)
-                    {
-                        /* the ownship failed - Bad Bad Bad, this is a single threaded */
-                        /* implementation so there is no way some other process should */
-                        /* own this.  This means something grabbed it and did not */
-                        /* release the Global Lock!  */
-                    
-                        Status = AE_AML_ERROR;
-                    }
-                    else
-                    {
-                        Locked = TRUE;
-                    }
-                }
-            }
-                
-            if (AE_OK == Status)
-            {
                 /* perform the update (Set index) */
 
                 Status = AmlSetNamedFieldValue (DestDesc->IndexField.Index,
@@ -612,29 +549,9 @@ AmlExecStore(OBJECT_DESCRIPTOR *ValDesc, OBJECT_DESCRIPTOR *DestDesc)
 
             if (AE_OK == Status)
             {
-                /* Check lock rule prior to modifing the field */
-            
-                if (DestDesc->FieldUnit.LockRule == (UINT16) GLOCK_AlwaysLock)
-                {
-                    /* Lock Rule is Lock */
-                
-                    if (OsGetGlobalLock () != AE_OK)
-                    {
-                        /* the ownship failed - Bad Bad Bad, this is a single threaded */
-                        /* implementation so there is no way some other process should */
-                        /* own this.  This means something grabbed it and did not */
-                        /* release the Global Lock! */
-                    
-                        Status = AE_AML_ERROR;
-                    }
-                
-                    else
-                    {
-                        /* Set the Locked Flag */
-                    
-                        Locked = TRUE;
-                    }
-                }
+                /* Get the global lock if needed */
+
+                Locked = AmlAcquireGlobalLock (DestDesc->FieldUnit.LockRule);
             }
 
             if ((AE_OK == Status) &&
@@ -779,12 +696,9 @@ AmlExecStore(OBJECT_DESCRIPTOR *ValDesc, OBJECT_DESCRIPTOR *DestDesc)
     }   /* switch(DestDesc->Lvalue.OpCode) */
 
 
-    if (Locked)
-    {
-        /* Release lock if we own it */
+    /* Release global lock if we acquired it earlier */
 
-        OsReleaseGlobalLock ();
-    }
+    AmlReleaseGlobalLock (Locked);
 
     if (Stacked)
     {
@@ -1194,7 +1108,7 @@ AmlExecMonadic2 (UINT16 opcode)
 
         /* store result */
         
-        DeleteObject ((OBJECT_DESCRIPTOR **) &ObjStack[ObjStackTop - 1]);
+        LocalDeleteObject ((OBJECT_DESCRIPTOR **) &ObjStack[ObjStackTop - 1]);
         ObjStack[ObjStackTop - 1] = (void *) ObjDesc;
         
         Status = AmlExecStore (ObjDesc, ResDesc);
@@ -1274,7 +1188,7 @@ AmlExecMonadic2 (UINT16 opcode)
 
             /* 
              * Replace (NsHandle) on TOS with descriptor containing result.
-             * No need to DeleteObject() first since TOS is an NsHandle.
+             * No need to LocalDeleteObject() first since TOS is an NsHandle.
              */
 
             ObjStack[ObjStackTop] = (void *) ObjDesc;
