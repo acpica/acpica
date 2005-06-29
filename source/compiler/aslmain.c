@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslmain - compiler main and utilities
- *              $Revision: 1.13 $
+ *              $Revision: 1.15 $
  *
  *****************************************************************************/
 
@@ -170,6 +170,16 @@ AcpiAmlDumpOperand (
 
 
 
+void
+AslCompilerSignon (
+    FILE                *Where)
+{
+
+    fprintf (Where, "\n%s [Version %s, %s]\n\n", CompilerId, CompilerVersion, __DATE__);
+
+}
+
+
 /*******************************************************************************
  *
  * FUNCTION:    Usage 
@@ -222,10 +232,11 @@ main (
     BOOLEAN             BadCommandLine = FALSE;
 
 
-
+    AslGbl_ExceptionCount[0] = 0;
+    AslGbl_ExceptionCount[1] = 0;
     AcpiDbgLevel = 0;
 
-    printf ("\n%s [Version %s, %s]\n\n", CompilerId, CompilerVersion, __DATE__);
+    AslCompilerSignon (stdout);
 
     /* Minimum command line contains at least the input file */
 
@@ -314,11 +325,13 @@ main (
     Status = FlOpenInputFile (Gbl_InputFilename);
     if (ACPI_FAILURE (Status))
     {
+        AePrintErrorLog (stderr);
         return -1;
     }
     Status = FlOpenMiscOutputFiles (Gbl_InputFilename);
     if (ACPI_FAILURE (Status))
     {
+        AePrintErrorLog (stderr);
         return -1;
     }
 
@@ -377,31 +390,23 @@ main (
     Status = FlOpenAmlOutputFile (Gbl_InputFilename);
     if (ACPI_FAILURE (Status))
     {
+        AePrintErrorLog (stderr);
         return -1;
     }
 
 
     /* Code generation - emit the AML */
 
-    if (Gbl_SourceOutputFlag || Gbl_ListingFlag)
+    CgGenerateAmlOutput ();
+
+
+    AePrintErrorLog (stderr);
+    if (Gbl_DebugFlag)
     {
-        fseek (Gbl_SourceOutputFile, 0, SEEK_SET);
+        /* Print to stdout */
+
+        AePrintErrorLog (stdout);
     }
-
-    Gbl_SourceLine = 0;
-
-    if (Gbl_ListingFlag)
-    {
-        fprintf (Gbl_ListingFile, "%s [Version %s, %s]\n\n", CompilerId, CompilerVersion, __DATE__);
-        fprintf (Gbl_ListingFile, "Compilation of %s\n\n", Gbl_InputFilename); 
-    }
-
-    DbgPrint ("\nWriting AML\n\n");
-    TgWalkParseTree (ASL_WALK_VISIT_DOWNWARD, CgAmlWriteWalk, NULL, NULL);
-
-
-    CgCloseTable ();
-
 
     /* Dump the AML as hex if requested */
 
@@ -413,7 +418,7 @@ main (
 
     fclose (Gbl_OutputAmlFile);
 
-    if ((ErrorCount > 0) && (!Gbl_IgnoreErrors))
+    if ((AslGbl_ExceptionCount[ASL_ERROR] > 0) && (!Gbl_IgnoreErrors))
     {
         unlink (Gbl_OutputFilename);
     }
