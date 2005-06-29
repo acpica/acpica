@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acmacros.h - C macros for the entire subsystem.
- *       $Revision: 1.133 $
+ *       $Revision: 1.135 $
  *
  *****************************************************************************/
 
@@ -425,11 +425,11 @@
  * 4) Reserved field is zero
  * 5) Expand address to 64 bits
  */
-#define ASL_BUILD_GAS_FROM_ENTRY(a,b,c,d)   {a.AddressSpaceId = (UINT8) d;\
-                                             a.RegisterBitWidth = (UINT8) ACPI_MUL_8 (b);\
-                                             a.RegisterBitOffset = 0;\
-                                             a.Reserved = 0;\
-                                             ACPI_STORE_ADDRESS (a.Address,(ACPI_PHYSICAL_ADDRESS) c);}
+#define ASL_BUILD_GAS_FROM_ENTRY(a,b,c,d)   do {a.AddressSpaceId = (UINT8) d;\
+                                                a.RegisterBitWidth = (UINT8) ACPI_MUL_8 (b);\
+                                                a.RegisterBitOffset = 0;\
+                                                a.Reserved = 0;\
+                                                ACPI_STORE_ADDRESS (a.Address,(ACPI_PHYSICAL_ADDRESS) c);} while (0)
 
 /* ACPI V1.0 entries -- address space is always I/O */
 
@@ -509,7 +509,7 @@
 #define ACPI_FUNCTION_TRACE_U32(a,b)    ACPI_FUNCTION_NAME(a)\
                                             AcpiUtTraceU32(__LINE__,&_Dbg,(UINT32)b)
 #define ACPI_FUNCTION_TRACE_STR(a,b)    ACPI_FUNCTION_NAME(a)\
-                                            AcpiUtTraceStr(__LINE__,&_Dbg,(NATIVE_CHAR *)b)
+                                            AcpiUtTraceStr(__LINE__,&_Dbg,(char *)b)
 
 #define ACPI_FUNCTION_ENTRY()           AcpiUtTrackStackPtr()
 
