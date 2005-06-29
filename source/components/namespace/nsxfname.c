@@ -431,14 +431,14 @@ AcpiHandleToPathname (
 
 /****************************************************************************
  *
- * FUNCTION:    AcpiGetDeviceInfo
+ * FUNCTION:    AcpiGetObjectInfo
  *
- * PARAMETERS:  Handle          - Handle to a device
- *              Info            - Where the device info is returned
+ * PARAMETERS:  Handle          - Object Handle
+ *              Info            - Where the info is returned
  *
  * RETURN:      Status
  *
- * DESCRIPTION: Returns information about the device as gleaned from running
+ * DESCRIPTION: Returns information about an object as gleaned from running
  *              several standard control methods.
  *
  ******************************************************************************/
@@ -486,7 +486,14 @@ AcpiGetObjectInfo (
     Status = Execute_HID (DeviceEntry, &Hid);
     if (ACPI_SUCCESS (Status))
     {
-        STRCPY (Info->HardwareId, Hid.Data.String);
+        if (Hid.Type == STRING_PTR_DEVICE_ID)
+        {
+            STRCPY (Info->HardwareId, Hid.Data.StringPtr);
+        }
+        else
+        {
+            STRCPY (Info->HardwareId, Hid.Data.Buffer);
+        }
         Info->Valid |= ACPI_VALID_HID;
     }
 
@@ -495,7 +502,7 @@ AcpiGetObjectInfo (
     Status = Execute_UID (DeviceEntry, &Uid);
     if (ACPI_SUCCESS (Status))
     {
-        STRCPY (Info->UniqueId, Uid.Data.String);
+        STRCPY (Info->UniqueId, Uid.Data.StringPtr);
         Info->Valid |= ACPI_VALID_UID;
     }
 
@@ -555,7 +562,7 @@ AcpiEnumerateDevice (
     BOOLEAN                 *EnumPtr)
 {
 
-    HidPtr->Data.String = NULL;
+    HidPtr->Data.StringPtr = NULL;
     *EnumPtr = FALSE;
 
     return (AE_OK);
