@@ -212,7 +212,7 @@ ACPI_EXTERN UINT32              Unmaps;
  *
  ****************************************************************************/
 
-#define NUM_NS_TYPES            37
+#define NUM_NS_TYPES            TYPE_Invalid+1
 #define NUM_PREDEFINED_NAMES    9
 
 extern SCOPE_STACK              ScopeStack[];
