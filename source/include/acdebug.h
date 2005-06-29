@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acdebug.h - ACPI/AML debugger
- *       $Revision: 1.46 $
+ *       $Revision: 1.47 $
  *
  *****************************************************************************/
 
@@ -164,7 +164,6 @@ extern UINT32                   AcpiGbl_SizeOfParseTree;
 extern UINT32                   AcpiGbl_SizeOfMethodTrees;
 extern UINT32                   AcpiGbl_SizeOfNodeEntries;
 extern UINT32                   AcpiGbl_SizeOfAcpiObjects;
-
 
 
 #define ACPI_DEBUG_BUFFER_SIZE  4196
