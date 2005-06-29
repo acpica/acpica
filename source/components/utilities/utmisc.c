@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: cmutils - common utility procedures
- *              $Revision: 1.35 $
+ *              $Revision: 1.36 $
  *
  ******************************************************************************/
 
@@ -295,8 +295,8 @@ AcpiCmCreateMutex (
     if (!AcpiGbl_AcpiMutexInfo[MutexId].Mutex)
     {
         Status = AcpiOsCreateSemaphore (1, 1,
-                                        &AcpiGbl_AcpiMutexInfo[MutexId].Mutex);
-        AcpiGbl_AcpiMutexInfo[MutexId].Locked = FALSE;
+                        &AcpiGbl_AcpiMutexInfo[MutexId].Mutex);
+        AcpiGbl_AcpiMutexInfo[MutexId].OwnerId = ACPI_MUTEX_NOT_ACQUIRED;
         AcpiGbl_AcpiMutexInfo[MutexId].UseCount = 0;
     }
 
@@ -335,7 +335,7 @@ AcpiCmDeleteMutex (
     Status = AcpiOsDeleteSemaphore (AcpiGbl_AcpiMutexInfo[MutexId].Mutex);
 
     AcpiGbl_AcpiMutexInfo[MutexId].Mutex = NULL;
-    AcpiGbl_AcpiMutexInfo[MutexId].Locked = FALSE;
+    AcpiGbl_AcpiMutexInfo[MutexId].OwnerId = ACPI_MUTEX_NOT_ACQUIRED;
 
     return_ACPI_STATUS (Status);
 }
@@ -378,8 +378,7 @@ AcpiCmAcquireMutex (
      */
     for (i = MutexId; i < MAX_MTX; i++)
     {
-        if ((AcpiGbl_AcpiMutexInfo[i].Locked) &&
-            (AcpiGbl_AcpiMutexInfo[i].OwnerId == ThisThreadId))
+        if (AcpiGbl_AcpiMutexInfo[i].OwnerId == ThisThreadId)
         {
             if (i == MutexId)
             {
@@ -413,7 +412,6 @@ AcpiCmAcquireMutex (
 
     if (ACPI_SUCCESS (Status))
     {
-        AcpiGbl_AcpiMutexInfo[MutexId].Locked = TRUE;
         AcpiGbl_AcpiMutexInfo[MutexId].UseCount++;
         AcpiGbl_AcpiMutexInfo[MutexId].OwnerId = ThisThreadId;
     }
@@ -455,9 +453,9 @@ AcpiCmReleaseMutex (
     /*
      * Mutex must be acquired in order to release it!
      */
-    if (!AcpiGbl_AcpiMutexInfo[MutexId].Locked)
+    if (AcpiGbl_AcpiMutexInfo[MutexId].OwnerId == ACPI_MUTEX_NOT_ACQUIRED)
     {
-        DEBUG_PRINT (ACPI_ERROR,
+        DEBUG_PRINT (ACPI_ERROR, 
                 ("Mutex [%s] is not acquired, cannot release\n",
                 AcpiCmGetMutexName (MutexId)));
 
@@ -467,15 +465,14 @@ AcpiCmReleaseMutex (
 
     /*
      * Deadlock prevention.  Check if this thread owns any mutexes of value
-     * greater than this one.  If so, the thread has violated
-     * the mutex ordering rule.  This indicates a coding error somewhere in
+     * greater than this one.  If so, the thread has violated the mutex
+     * ordering rule.  This indicates a coding error somewhere in
      * the ACPI subsystem code.
      */
     ThisThreadId = AcpiOsGetThreadId ();
     for (i = MutexId; i < MAX_MTX; i++)
     {
-        if ((AcpiGbl_AcpiMutexInfo[i].Locked) &&
-            (AcpiGbl_AcpiMutexInfo[i].OwnerId == ThisThreadId))
+        if (AcpiGbl_AcpiMutexInfo[i].OwnerId == ThisThreadId)
         {
             if (i == MutexId)
             {
@@ -490,8 +487,6 @@ AcpiCmReleaseMutex (
         }
     }
 
-    AcpiGbl_AcpiMutexInfo[MutexId].Locked = FALSE;  /* Mark before unlocking */
-    AcpiGbl_AcpiMutexInfo[MutexId].OwnerId = 0;
 
     Status = AcpiOsSignalSemaphore (AcpiGbl_AcpiMutexInfo[MutexId].Mutex, 1);
 
@@ -505,6 +500,10 @@ AcpiCmReleaseMutex (
         DEBUG_PRINT (TRACE_MUTEX, ("Released Mutex [%s], %s\n",
                     AcpiCmGetMutexName (MutexId), AcpiCmFormatException (Status)));
     }
+
+    /* Mark unlocked  */
+
+    AcpiGbl_AcpiMutexInfo[MutexId].OwnerId = ACPI_MUTEX_NOT_ACQUIRED;
 
     return (Status);
 }
