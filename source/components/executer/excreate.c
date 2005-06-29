@@ -979,7 +979,7 @@ AmlExecCreatePowerResource (
         return_ACPI_STATUS (Status);
     }
 
-    /* Install the new processor object in the parent NTE */
+    /* Install the new power resource object in the parent NTE */
 
     Status = NsAttachObject (PowerResNTE, ObjDesc, (UINT8) ACPI_TYPE_Power);
     if (ACPI_FAILURE (Status))
