@@ -1058,6 +1058,8 @@ AcpiRemoveAddressSpaceHandler (
  *
  * PARAMETERS:  GpeNumber       - The GPE number.  The numbering scheme is 
  *                                bank 0 first, then bank 1.
+ *              Trigger         - Whether this GPE should be treated as an
+ *                                edge- or level-triggered interrupt.
  *              Handler         - Address of the handler
  *              Context         - Value passed to the handler on each GPE
  *
@@ -1069,19 +1071,18 @@ AcpiRemoveAddressSpaceHandler (
 
 ACPI_STATUS
 AcpiInstallGpeHandler (
-    UINT32                  GpeNumber, 
-    GPE_HANDLER             Handler, 
+    UINT32                  GpeNumber,
+    ACPI_EVENT_TRIGGER_TYPE Type,
+    GPE_HANDLER             Handler,
     void                    *Context)
 {
     ACPI_STATUS             Status = AE_OK;
-
     
     FUNCTION_TRACE ("AcpiInstallGpeHandler");
 
-
     /* Parameter validation */
 
-    if (!Handler || (GpeNumber > NUM_GPE))
+    if (!Handler || (GpeNumber > NUM_GPE) || (Type != EVENT_LEVEL_TRIGGERED && Type != EVENT_EDGE_TRIGGERED))
     {
         return_ACPI_STATUS (AE_BAD_PARAMETER);
     }
@@ -1092,7 +1093,6 @@ AcpiInstallGpeHandler (
     {
         return_ACPI_STATUS (AE_BAD_PARAMETER);
     }
-
 
     CmAcquireMutex (MTX_GP_EVENT);
 
@@ -1108,6 +1108,7 @@ AcpiInstallGpeHandler (
 
     Gbl_GpeInfo[GpeNumber].Handler = Handler;
     Gbl_GpeInfo[GpeNumber].Context = Context;
+    Gbl_GpeInfo[GpeNumber].Type = Type;
 
     /* Now we can enable the GPE */
 
@@ -1361,6 +1362,7 @@ AcpiClearEvent (
  * DESCRIPTION: Computes the current status of the event
  *
  ******************************************************************************/
+
 
 ACPI_STATUS
 AcpiGetEventStatus (
