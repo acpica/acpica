@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: amutils - interpreter/scanner utilities
- *              $Revision: 1.51 $
+ *              $Revision: 1.54 $
  *
  *****************************************************************************/
 
@@ -125,14 +125,14 @@
 #include "acevents.h"
 
 #define _COMPONENT          INTERPRETER
-        MODULE_NAME         ("amutils");
+        MODULE_NAME         ("amutils")
 
 
 typedef struct Internal_Search_st
 {
-    ACPI_OBJECT_INTERNAL        *DestObj;
+    ACPI_OPERAND_OBJECT         *DestObj;
     UINT32                      Index;
-    ACPI_OBJECT_INTERNAL        *SourceObj;
+    ACPI_OPERAND_OBJECT         *SourceObj;
 
 } INTERNAL_PKG_SEARCH_INFO;
 
@@ -366,9 +366,7 @@ AcpiAmlDigitsNeeded (
 
     if (base < 1)
     {
-        /*  impossible base */
-
-        REPORT_ERROR ("AmlDigitsNeeded: Impossible base");
+        REPORT_ERROR (("AmlDigitsNeeded: Internal error - Invalid base\n"));
     }
 
     else
@@ -470,8 +468,8 @@ AcpiAmlEisaIdToString (
 
 ACPI_STATUS
 AcpiAmlBuildCopyInternalPackageObject (
-    ACPI_OBJECT_INTERNAL    *SourceObj,
-    ACPI_OBJECT_INTERNAL    *DestObj,
+    ACPI_OPERAND_OBJECT     *SourceObj,
+    ACPI_OPERAND_OBJECT     *DestObj,
     ACPI_WALK_STATE         *WalkState)
 {
     UINT32                      CurrentDepth = 0;
@@ -479,8 +477,8 @@ AcpiAmlBuildCopyInternalPackageObject (
     UINT32                      Length = 0;
     UINT32                      ThisIndex;
     UINT32                      ObjectSpace = 0;
-    ACPI_OBJECT_INTERNAL        *ThisDestObj;
-    ACPI_OBJECT_INTERNAL        *ThisSourceObj;
+    ACPI_OPERAND_OBJECT         *ThisDestObj;
+    ACPI_OPERAND_OBJECT         *ThisSourceObj;
     INTERNAL_PKG_SEARCH_INFO    *LevelPtr;
 
 
@@ -514,7 +512,7 @@ AcpiAmlBuildCopyInternalPackageObject (
     {
         /* Package vector allocation failure   */
 
-        REPORT_ERROR ("AmlBuildCopyInternalPackageObject: Package vector allocation failure");
+        REPORT_ERROR (("AmlBuildCopyInternalPackageObject: Package vector allocation failure\n"));
         return_ACPI_STATUS (AE_NO_MEMORY);
     }
 
@@ -524,8 +522,8 @@ AcpiAmlBuildCopyInternalPackageObject (
     while (1)
     {
         ThisIndex       = LevelPtr->Index;
-        ThisDestObj     = (ACPI_OBJECT_INTERNAL *) LevelPtr->DestObj->Package.Elements[ThisIndex];
-        ThisSourceObj   = (ACPI_OBJECT_INTERNAL *) LevelPtr->SourceObj->Package.Elements[ThisIndex];
+        ThisDestObj     = (ACPI_OPERAND_OBJECT  *) LevelPtr->DestObj->Package.Elements[ThisIndex];
+        ThisSourceObj   = (ACPI_OPERAND_OBJECT  *) LevelPtr->SourceObj->Package.Elements[ThisIndex];
 
         if (IS_THIS_OBJECT_TYPE (ThisSourceObj, ACPI_TYPE_PACKAGE))
         {
@@ -558,7 +556,7 @@ AcpiAmlBuildCopyInternalPackageObject (
              * update the buffer length counter
              */
             ObjectSpace             = ThisDestObj->Package.Count *
-                                        sizeof (ACPI_OBJECT_INTERNAL);
+                                        sizeof (ACPI_OPERAND_OBJECT);
             Length                  += ObjectSpace;
             CurrentDepth++;
             LevelPtr                = &CopyLevel[CurrentDepth];
