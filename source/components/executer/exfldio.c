@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: exfldio - Aml Field I/O
- *              $Revision: 1.107 $
+ *              $Revision: 1.108 $
  *
  *****************************************************************************/
 
@@ -212,6 +212,23 @@ AcpiExSetupRegion (
                                     + FieldDatumByteOffset
                                     + ObjDesc->CommonField.AccessByteWidth))
     {
+        if (AcpiGbl_EnableInterpeterSlack)
+        {
+            /*
+             * Slack mode only:  We will go ahead and allow access to this
+             * field if it is within the region length rounded up to the next
+             * access width boundary.
+             */
+            if (ACPI_ROUND_UP (RgnDesc->Region.Length,
+                                ObjDesc->CommonField.AccessByteWidth) >=
+                (ObjDesc->CommonField.BaseByteOffset +
+                 ObjDesc->CommonField.AccessByteWidth +
+                 FieldDatumByteOffset))
+            {
+                return_ACPI_STATUS (AE_OK);
+            }
+        }
+
         if (RgnDesc->Region.Length < ObjDesc->CommonField.AccessByteWidth)
         {
             /*
