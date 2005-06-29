@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: psopcode - Parser/Interpreter opcode information table
- *              $Revision: 1.52 $
+ *              $Revision: 1.53 $
  *
  *****************************************************************************/
 
@@ -538,7 +538,7 @@
  */
 
 
-static const ACPI_OPCODE_INFO    AmlOpInfo[] =
+static const ACPI_OPCODE_INFO    AcpiGbl_AmlOpInfo[] =
 {
 /* Index           Name                 Parser Args               Interpreter Args                 Class                      Type                  Flags */
 
@@ -685,7 +685,7 @@ static const ACPI_OPCODE_INFO    AmlOpInfo[] =
  * index into the table above
  */
 
-static const UINT8 AmlShortOpInfoIndex[256] =
+static const UINT8 AcpiGbl_ShortOpIndex[256] =
 {
 /*              0     1     2     3     4     5     6     7  */
 /*              8     9     A     B     C     D     E     F  */
@@ -724,7 +724,7 @@ static const UINT8 AmlShortOpInfoIndex[256] =
 };
 
 
-static const UINT8 AmlLongOpInfoIndex[NUM_EXTENDED_OPCODE] =
+static const UINT8 AcpiGbl_LongOpIndex[NUM_EXTENDED_OPCODE] =
 {
 /*              0     1     2     3     4     5     6     7  */
 /*              8     9     A     B     C     D     E     F  */
@@ -779,7 +779,7 @@ AcpiPsGetOpcodeInfo (
 
         /* Simple (8-bit) opcode: 0-255, can't index beyond table  */
 
-        return (&AmlOpInfo [AmlShortOpInfoIndex [(UINT8) Opcode]]);
+        return (&AcpiGbl_AmlOpInfo [AcpiGbl_ShortOpIndex [(UINT8) Opcode]]);
         break;
 
 
@@ -789,7 +789,7 @@ AcpiPsGetOpcodeInfo (
 
         if (((UINT8) Opcode) <= MAX_EXTENDED_OPCODE)
         {
-            return (&AmlOpInfo [AmlLongOpInfoIndex [(UINT8) Opcode]]);
+            return (&AcpiGbl_AmlOpInfo [AcpiGbl_LongOpIndex [(UINT8) Opcode]]);
             break;
         }
 
@@ -802,7 +802,7 @@ AcpiPsGetOpcodeInfo (
 
     /* Default is "unknown opcode" */
 
-    return (&AmlOpInfo [_UNK]);
+    return (&AcpiGbl_AmlOpInfo [_UNK]);
 }
 
 
