@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: psparse - Parser top level AML parse routines
- *              $Revision: 1.95 $
+ *              $Revision: 1.97 $
  *
  *****************************************************************************/
 
@@ -651,7 +651,8 @@ AcpiPsParseLoop (
                  * A predicate was just completed, get the value of the
                  * predicate and branch based on that value
                  */
-                Status = AcpiDsGetPredicateValue (WalkState, NULL, TRUE);
+                WalkState->Op = NULL;
+                Status = AcpiDsGetPredicateValue (WalkState, TRUE);
                 if (ACPI_FAILURE (Status) &&
                     ((Status & AE_CODE_MASK) != AE_CODE_CONTROL))
                 {
@@ -768,7 +769,11 @@ AcpiPsParseLoop (
                      * Find the object.  This will either insert the object into
                      * the namespace or simply look it up
                      */
-                    Status = WalkState->DescendingCallback (Opcode, NULL, WalkState, &Op);
+                    WalkState->Op = NULL;
+                    WalkState->OpInfo = OpInfo;
+                    WalkState->Opcode = Opcode;
+
+                    Status = WalkState->DescendingCallback (WalkState, &Op);
                     if (Op == NULL)
                     {
                         continue;
@@ -844,7 +849,11 @@ AcpiPsParseLoop (
                      * Find the object.  This will either insert the object into
                      * the namespace or simply look it up
                      */
-                    Status = WalkState->DescendingCallback (Opcode, Op, WalkState, &Op);
+                    WalkState->Op     = Op;
+                    WalkState->OpInfo = OpInfo;
+                    WalkState->Opcode = Opcode;
+
+                    Status = WalkState->DescendingCallback (WalkState, &Op);
                     Status = AcpiPsNextParseState (WalkState, Op, Status);
                     if (Status == AE_CTRL_PENDING)
                     {
@@ -998,7 +1007,11 @@ AcpiPsParseLoop (
 
             if (WalkState->AscendingCallback != NULL)
             {
-                Status = WalkState->AscendingCallback (WalkState, Op);
+                WalkState->Op     = Op;
+                WalkState->OpInfo = OpInfo;
+                WalkState->Opcode = Op->Opcode;
+
+                Status = WalkState->AscendingCallback (WalkState);
                 Status = AcpiPsNextParseState (WalkState, Op, Status);
                 if (Status == AE_CTRL_PENDING)
                 {
@@ -1044,7 +1057,11 @@ CloseThisOp:
 
                 AcpiPsPopScope (ParserState, &Op, &ArgTypes, &ArgCount);
 
-                Status = WalkState->AscendingCallback (WalkState, Op);
+                WalkState->Op     = Op;
+                WalkState->OpInfo = AcpiPsGetOpcodeInfo (Op->Opcode);
+                WalkState->Opcode = Op->Opcode;
+
+                Status = WalkState->AscendingCallback (WalkState);
                 Status = AcpiPsNextParseState (WalkState, Op, Status);
 
                 AcpiPsCompleteThisOp (WalkState, Op);
@@ -1131,7 +1148,11 @@ CloseThisOp:
         {
             if (WalkState->AscendingCallback != NULL)
             {
-                Status = WalkState->AscendingCallback (WalkState, Op);
+                WalkState->Op     = Op;
+                WalkState->OpInfo = AcpiPsGetOpcodeInfo (Op->Opcode);
+                WalkState->Opcode = Op->Opcode;
+
+                Status = WalkState->AscendingCallback (WalkState);
                 Status = AcpiPsNextParseState (WalkState, Op, Status);
                 if (Status == AE_CTRL_PENDING)
                 {
@@ -1184,7 +1205,7 @@ CloseThisOp:
  *                                root of the parsed op tree.
  *              Aml             - Pointer to the raw AML code to parse
  *              AmlSize         - Length of the AML to parse
- *              
+ *
  *
  * RETURN:      Status
  *
@@ -1240,7 +1261,7 @@ AcpiPsParseAml (
     WalkList.AcquiredMutexList.Prev = NULL;
     WalkList.AcquiredMutexList.Next = NULL;
 
-    WalkState = AcpiDsCreateWalkState (TABLE_ID_DSDT, ParserState->StartOp, 
+    WalkState = AcpiDsCreateWalkState (TABLE_ID_DSDT, ParserState->StartOp,
                         MthDesc, &WalkList);
     if (!WalkState)
     {
@@ -1287,7 +1308,7 @@ AcpiPsParseAml (
         {
             /* Push start scope on scope stack and make it current  */
 
-            Status = AcpiDsScopeStackPush (ParserState->StartNode, 
+            Status = AcpiDsScopeStackPush (ParserState->StartNode,
                             ParserState->StartNode->Type, WalkState);
             if (ACPI_FAILURE (Status))
             {
@@ -1311,7 +1332,7 @@ AcpiPsParseAml (
             Status = AcpiPsParseLoop (WalkState);
         }
 
-        ACPI_DEBUG_PRINT ((ACPI_DB_PARSE, 
+        ACPI_DEBUG_PRINT ((ACPI_DB_PARSE,
             "Completed one call to walk loop, State=%p\n", WalkState));
 
         if (Status == AE_CTRL_TRANSFER)
