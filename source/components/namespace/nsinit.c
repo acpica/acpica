@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: nsinit - namespace initialization
- *              $Revision: 1.14 $
+ *              $Revision: 1.15 $
  *
  *****************************************************************************/
 
@@ -399,7 +399,7 @@ AcpiNsInitOneDevice (
      * Run _STA to determine if we can run _INI on the device.
      */
 
-    AcpiCmDisplayInitPathname (Node, "_STA  [Method]");
+    DEBUG_EXEC(AcpiCmDisplayInitPathname (Node, "_STA  [Method]"));
     Status = AcpiCmExecute_STA (Node, &Flags);
     if (ACPI_FAILURE (Status))
     {
@@ -422,7 +422,7 @@ AcpiNsInitOneDevice (
      * The device is present. Run _INI.
      */
 
-    AcpiCmDisplayInitPathname (ObjHandle, "_INI  [Method]");
+    DEBUG_EXEC(AcpiCmDisplayInitPathname (ObjHandle, "_INI  [Method]"));
     Status = AcpiNsEvaluateRelative (ObjHandle, "_INI", NULL, NULL);
     if (AE_NOT_FOUND == Status)
     {
