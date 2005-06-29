@@ -117,12 +117,9 @@
 #define __NSLOAD_C__
 
 #include <acpi.h>
-#include <acobject.h>
 #include <interp.h>
 #include <namesp.h>
-#include <methods.h>
 #include <amlcode.h>
-#include <pnp.h>
 #include <parser.h>
 #include <dispatch.h>
 #include <debugger.h>
