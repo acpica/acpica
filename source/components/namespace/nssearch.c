@@ -518,7 +518,7 @@ NsInitializeTable (
 
 void
 NsInitializeEntry (
-    ACPI_WALK_STATE			*WalkState,
+    ACPI_WALK_STATE         *WalkState,
     NAME_TABLE_ENTRY        *NameTable, 
     UINT32                  Position, 
     UINT32                  EntryName, 
@@ -645,7 +645,7 @@ NsInitializeEntry (
 ACPI_STATUS
 NsSearchAndEnter (
     UINT32                  EntryName, 
-    ACPI_WALK_STATE			*WalkState,
+    ACPI_WALK_STATE         *WalkState,
     NAME_TABLE_ENTRY        *NameTable,
     OPERATING_MODE          InterpreterMode, 
     OBJECT_TYPE_INTERNAL    Type, 

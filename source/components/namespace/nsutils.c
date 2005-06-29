@@ -691,7 +691,7 @@ NsTerminate (void)
 
     DEBUG_PRINT (ACPI_INFO, ("NsTerminate: ACPI Tables freed\n"));
 
-	return_VOID;
+    return_VOID;
 }
 
  
