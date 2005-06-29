@@ -192,16 +192,17 @@ CmSearchAllocList (
  *
  ****************************************************************************/
 
-void
+ACPI_STATUS
 CmAddElementToAllocList (
     void                    *Address,
     UINT32                  Size,
     UINT8                   AllocType,
     UINT32                  Component,
     ACPI_STRING             Module,
-    INT32                   Line)
+    UINT32                  Line)
 {
     ALLOCATION_INFO         *Element;
+    ACPI_STATUS             Status = AE_OK;
 
 
     FUNCTION_TRACE_PTR ("CmAddElementToAllocList", Address);
@@ -229,15 +230,25 @@ CmAddElementToAllocList (
     if (NULL == Gbl_HeadAllocPtr)
     {
         Gbl_HeadAllocPtr = (ALLOCATION_INFO *) OsdCallocate (sizeof (ALLOCATION_INFO));
-        
-        /* error check */
-        
+        if (!Gbl_HeadAllocPtr)
+        {
+            DEBUG_PRINT (ACPI_ERROR, ("Could not allocate memory info block\n"));
+            Status = AE_NO_MEMORY;
+            goto UnlockAndExit;
+        }
+
         Gbl_TailAllocPtr = Gbl_HeadAllocPtr;
     }
 
     else
     {
         Gbl_TailAllocPtr->Next = (ALLOCATION_INFO *) OsdCallocate (sizeof (ALLOCATION_INFO));
+        if (!Gbl_TailAllocPtr->Next)
+        {
+            DEBUG_PRINT (ACPI_ERROR, ("Could not allocate memory info block\n"));
+            Status = AE_NO_MEMORY;
+            goto UnlockAndExit;
+        }
         
         /* error check */
         
@@ -267,10 +278,12 @@ CmAddElementToAllocList (
     Gbl_TailAllocPtr->Component = Component;
     Gbl_TailAllocPtr->Line      = Line;
 
-    STRNCPY (Gbl_TailAllocPtr->Module, Module, sizeof (Gbl_TailAllocPtr->Module));
-    
+    STRNCPY (Gbl_TailAllocPtr->Module, Module, MAX_MODULE_NAME);
+
+
+UnlockAndExit:
     CmReleaseMutex (MTX_MEMORY);
-    return_VOID;
+    return_ACPI_STATUS (Status);
 }
 
 
@@ -297,8 +310,9 @@ CmDeleteElementFromAllocList (
     INT32                   Line)
 {
     ALLOCATION_INFO         *Element;
-    UINT32					Size;
+    UINT32                  *DwordPtr;
     UINT32                  DwordLen;
+    UINT32					Size;
     UINT32                  i;
     
 
@@ -376,23 +390,26 @@ CmDeleteElementFromAllocList (
 
         if (Element->Size >= 4)
         {
-            DwordLen = Element->Size / 4;
+            DwordLen = DIV_4 (Element->Size);
+            DwordPtr = (UINT32 *) Element->Address;
 
             for (i = 0; i < DwordLen; i++)
             {
-                ((UINT32 *) Element->Address)[i] = (UINT32) 0x00DEAD00;
+                DwordPtr[i] = 0x00DEAD00;
             }
 
             /* Set obj type, desc, and ref count fields to all ones */
 
-            ((UINT32 *) Element->Address)[0] = (UINT32) 0xFFFFFFFF;
+            DwordPtr[0] = 0xFFFFFFFF;
             if (Element->Size >= 8)
             {
-                ((UINT32 *) Element->Address)[1] = (UINT32) 0xFFFFFFFF;
+                DwordPtr[1] = 0xFFFFFFFF;
             }
         }
 
         Size = Element->Size;
+
+        MEMSET (Element, 0xEA, sizeof (ALLOCATION_INFO));
         OsdFree (Element);
     }
             
@@ -504,7 +521,7 @@ CmDumpCurrentAllocations (
         if ((Element->Component & Component) &&
             ((Module == NULL) || (0 == STRCMP (Module, Element->Module))))
         {
-            DEBUG_PRINT (TRACE_ALLOCATIONS | TRACE_TABLES, ("%p Len %04X %9.9s-%d",
+            DEBUG_PRINT (TRACE_ALLOCATIONS | TRACE_TABLES, ("%p Len %04lX %9.9s-%ld",
                             Element->Address, Element->Size, Element->Module, Element->Line));
 
             /* Most of the elements will be internal objects. */
@@ -575,6 +592,7 @@ _CmAllocate (
     INT32                   Line)
 {
     void                    *Address = NULL;
+    ACPI_STATUS             Status;
 
 
     FUNCTION_TRACE_U32 ("_CmAllocate", Size);
@@ -603,7 +621,12 @@ _CmAllocate (
         return_VALUE (NULL);
     }
     
-    CmAddElementToAllocList (Address, Size, MEM_MALLOC, Component, Module, Line);
+    Status = CmAddElementToAllocList (Address, Size, MEM_MALLOC, Component, Module, Line);
+    if (ACPI_FAILURE (Status))
+    {
+        OsdFree (Address);
+        return_PTR (NULL);
+    }
 
     DEBUG_PRINT (TRACE_ALLOCATIONS, ("CmAllocate: %p Size 0x%x\n", Address, Size));
 
@@ -634,6 +657,7 @@ _CmCallocate (
     INT32                   Line)
 {
     void                    *Address = NULL;
+    ACPI_STATUS             Status;
 
 
     FUNCTION_TRACE_U32 ("_CmCallocate", Size);
@@ -663,7 +687,12 @@ _CmCallocate (
         return_VALUE (NULL);
     }
 
-    CmAddElementToAllocList (Address, Size, MEM_CALLOC, Component, Module, Line);
+    Status = CmAddElementToAllocList (Address, Size, MEM_CALLOC, Component, Module, Line);
+    if (ACPI_FAILURE (Status))
+    {
+        OsdFree (Address);
+        return_PTR (NULL);
+    }
     
     DEBUG_PRINT (TRACE_ALLOCATIONS, ("CmCallocate: %p Size 0x%x\n", Address, Size));
 
