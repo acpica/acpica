@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acutils.h -- prototypes for the common (subsystem-wide) procedures
- *       $Revision: 1.114 $
+ *       $Revision: 1.122 $
  *
  *****************************************************************************/
 
@@ -137,7 +137,7 @@ AcpiUtWalkPackageTree (
 typedef struct acpi_pkg_info
 {
     UINT8                   *FreeSpace;
-    UINT32                  Length;
+    ACPI_SIZE               Length;
     UINT32                  ObjectSpace;
     UINT32                  NumPackages;
 } ACPI_PKG_INFO;
@@ -335,6 +335,17 @@ AcpiUtCopyIpackageToIpackage (
     ACPI_OPERAND_OBJECT     *DestObj,
     ACPI_WALK_STATE         *WalkState);
 
+ACPI_STATUS
+AcpiUtCopySimpleObject (
+    ACPI_OPERAND_OBJECT     *SourceDesc,
+    ACPI_OPERAND_OBJECT     *DestDesc);
+
+ACPI_STATUS
+AcpiUtCopyIobjectToIobject (
+    ACPI_OPERAND_OBJECT     *SourceDesc,
+    ACPI_OPERAND_OBJECT     **DestDesc,
+    ACPI_WALK_STATE         *WalkState);
+
 
 /*
  * UtCreate - Object creation
@@ -435,7 +446,7 @@ AcpiUtDebugPrint (
     UINT32                  LineNumber,
     ACPI_DEBUG_PRINT_INFO   *DbgInfo,
     char                    *Format,
-    ...);
+    ...) ACPI_PRINTF_LIKE_FUNC;
 
 void
 AcpiUtDebugPrintRaw (
@@ -443,7 +454,7 @@ AcpiUtDebugPrintRaw (
     UINT32                  LineNumber,
     ACPI_DEBUG_PRINT_INFO   *DbgInfo,
     char                    *Format,
-    ...);
+    ...) ACPI_PRINTF_LIKE_FUNC;
 
 
 /*
@@ -474,12 +485,14 @@ AcpiUtDeleteInternalObjectList (
 /* Method name strings */
 
 #define METHOD_NAME__HID        "_HID"
+#define METHOD_NAME__CID        "_CID"
 #define METHOD_NAME__UID        "_UID"
 #define METHOD_NAME__ADR        "_ADR"
 #define METHOD_NAME__STA        "_STA"
 #define METHOD_NAME__REG        "_REG"
 #define METHOD_NAME__SEG        "_SEG"
 #define METHOD_NAME__BBN        "_BBN"
+#define METHOD_NAME__PRT        "_PRT"
 
 
 ACPI_STATUS
@@ -492,6 +505,11 @@ ACPI_STATUS
 AcpiUtExecute_HID (
     ACPI_NAMESPACE_NODE     *DeviceNode,
     ACPI_DEVICE_ID          *Hid);
+
+ACPI_STATUS
+AcpiUtExecute_CID (
+    ACPI_NAMESPACE_NODE     *DeviceNode,
+    ACPI_DEVICE_ID          *Cid);
 
 ACPI_STATUS
 AcpiUtExecute_STA (
@@ -581,17 +599,17 @@ AcpiUtRemoveReference (
 ACPI_STATUS
 AcpiUtGetSimpleObjectSize (
     ACPI_OPERAND_OBJECT     *Obj,
-    UINT32                  *ObjLength);
+    ACPI_SIZE               *ObjLength);
 
 ACPI_STATUS
 AcpiUtGetPackageObjectSize (
     ACPI_OPERAND_OBJECT     *Obj,
-    UINT32                  *ObjLength);
+    ACPI_SIZE               *ObjLength);
 
 ACPI_STATUS
 AcpiUtGetObjectSize(
     ACPI_OPERAND_OBJECT     *Obj,
-    UINT32                  *ObjLength);
+    ACPI_SIZE               *ObjLength);
 
 
 /*
@@ -610,6 +628,10 @@ AcpiUtPopGenericState (
 
 ACPI_GENERIC_STATE *
 AcpiUtCreateGenericState (
+    void);
+
+ACPI_THREAD_STATE *
+AcpiUtCreateThreadState (
     void);
 
 ACPI_GENERIC_STATE *
@@ -686,6 +708,14 @@ ACPI_STATUS
 AcpiUtResolvePackageReferences (
     ACPI_OPERAND_OBJECT     *ObjDesc);
 
+UINT8 *
+AcpiUtGetResourceEndTag (
+    ACPI_OPERAND_OBJECT     *ObjDesc);
+
+UINT8
+AcpiUtGenerateChecksum (
+    UINT8                   *Buffer,
+    UINT32                  Length);
 
 #ifdef ACPI_DEBUG
 void
@@ -718,14 +748,14 @@ AcpiUtDeleteGenericCache (
 
 void *
 AcpiUtAllocate (
-    UINT32                  Size,
+    ACPI_SIZE               Size,
     UINT32                  Component,
     NATIVE_CHAR             *Module,
     UINT32                  Line);
 
 void *
 AcpiUtCallocate (
-    UINT32                  Size,
+    ACPI_SIZE               Size,
     UINT32                  Component,
     NATIVE_CHAR             *Module,
     UINT32                  Line);
@@ -743,7 +773,7 @@ AcpiUtDumpAllocationInfo (
     void);
 
 void
-AcpiUtDumpCurrentAllocations (
+AcpiUtDumpAllocations (
     UINT32                  Component,
     NATIVE_CHAR             *Module);
 #endif

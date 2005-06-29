@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: actypes.h - Common data types for the entire ACPI subsystem
- *       $Revision: 1.204 $
+ *       $Revision: 1.205 $
  *
  *****************************************************************************/
 
@@ -153,7 +153,7 @@ typedef unsigned int                    UINT32;
 typedef COMPILER_DEPENDENT_UINT64       UINT64;
 
 typedef UINT64                          NATIVE_UINT;
-typedef INT64                           NATIVE_INT;
+typedef UINT64                          NATIVE_INT;
 
 typedef NATIVE_UINT                     ACPI_TBLPTR;
 typedef UINT64                          ACPI_IO_ADDRESS;
@@ -345,7 +345,7 @@ typedef UINT64                          ACPI_INTEGER;
  * Constants with special meanings
  */
 
-#define ACPI_ROOT_OBJECT                (ACPI_HANDLE)(-1)
+#define ACPI_ROOT_OBJECT                (ACPI_HANDLE) ACPI_PTR_ADD (char, NULL, ACPI_UINT32_MAX)
 
 
 /*
@@ -705,7 +705,7 @@ typedef struct AcpiObjList
 
 typedef struct
 {
-    UINT32                      Length;         /* Length in bytes of the buffer */
+    ACPI_SIZE                   Length;         /* Length in bytes of the buffer */
     void                        *Pointer;       /* pointer to buffer */
 
 } ACPI_BUFFER;
