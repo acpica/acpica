@@ -191,8 +191,8 @@ AcpiLoadNamespace (
 
 ACPI_STATUS
 AcpiNameToHandle (
+    ACPI_HANDLE             Parent, 
     ACPI_NAME               Name,
-    ACPI_HANDLE             Scope, 
     ACPI_HANDLE             *OutHandle);
 
 ACPI_STATUS
@@ -213,7 +213,7 @@ AcpiHandleToPathname (
 ACPI_STATUS
 AcpiWalkNamespace (
     ACPI_OBJECT_TYPE        Type, 
-    ACPI_HANDLE             StartHandle, 
+    ACPI_HANDLE             StartObject, 
     UINT32                  MaxDepth,
     void *                  (* UserFunction)(ACPI_HANDLE,UINT32,void *), 
     void                    *Context, 
@@ -240,20 +240,21 @@ AcpiGetFirmwareWakingVector (
 ACPI_STATUS
 AcpiGetNextObject (
     ACPI_OBJECT_TYPE        Type, 
-    ACPI_HANDLE             Scope, 
-    ACPI_HANDLE             Handle,
+    ACPI_HANDLE             Parent, 
+    ACPI_HANDLE             Child,
     ACPI_HANDLE             *OutHandle);
 
 ACPI_STATUS 
 AcpiGetType (
-    ACPI_HANDLE             Handle,
-    ACPI_OBJECT_TYPE        *RetType);
+    ACPI_HANDLE             Object,
+    ACPI_OBJECT_TYPE        *OutType);
 
 ACPI_STATUS
 AcpiGetParent (
-    ACPI_HANDLE             Handle,
+    ACPI_HANDLE             Object,
     ACPI_HANDLE             *OutHandle);
 
+/*
 ACPI_STATUS
 AcpiGetScope (
     ACPI_HANDLE             Handle,
@@ -263,7 +264,7 @@ ACPI_STATUS
 AcpiGetContainingScope (
     ACPI_HANDLE             Handle,
     ACPI_HANDLE             *OutHandle);
-
+*/
 
 /*
  * Event / System interfaces
