@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dbcmds - debug commands and output routines
- *              $Revision: 1.71 $
+ *              $Revision: 1.72 $
  *
  ******************************************************************************/
 
@@ -390,7 +390,7 @@ AcpiDbSetMethodBreakpoint (
 
     /* Save breakpoint in current walk */
 
-    WalkState->MethodBreakpoint = Address;
+    WalkState->UserBreakpoint = Address;
     AcpiOsPrintf ("Breakpoint set at AML offset %X\n", Address);
 }
 
