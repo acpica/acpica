@@ -153,7 +153,7 @@ CmHardwareInitialize (
 /* Exit interfaces */
 
 void
-CmLocalCleanup (
+CmTerminate (
     void);
 
 
@@ -202,7 +202,6 @@ CmDeleteInternalObjectList (
     ACPI_OBJECT_INTERNAL    **ObjList);
 
 ACPI_STATUS
-
 CmBuildInternalObject (
     ACPI_OBJECT             *Obj, 
     ACPI_OBJECT_INTERNAL    *InternalObj);
@@ -334,6 +333,7 @@ _CmFree (
 	ACPI_STRING             Module,
 	INT32                   Line);
 
+
 #define CmAllocate(a)		_CmAllocate(a,_COMPONENT,_THIS_MODULE,__LINE__)
 #define CmCallocate(a)		_CmCallocate(a, _COMPONENT,_THIS_MODULE,__LINE__)
 #define CmFree(a)			_CmFree(a,_COMPONENT,_THIS_MODULE,__LINE__)
@@ -351,5 +351,9 @@ LocalDeleteObject (
     ACPI_OBJECT_INTERNAL    **ObjDesc);
 
 
+void
+CmDumpCurrentAllocations (
+	UINT32					Component,
+	ACPI_STRING				Module);
 
 #endif /* _COMMON_H */
