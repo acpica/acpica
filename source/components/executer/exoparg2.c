@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: exoparg2 - AML execution - opcodes with 2 arguments
- *              $Revision: 1.122 $
+ *              $Revision: 1.123 $
  *
  *****************************************************************************/
 
@@ -378,7 +378,6 @@ AcpiExOpcode_2A_1T_1R (
 {
     ACPI_OPERAND_OBJECT     **Operand = &WalkState->Operands[0];
     ACPI_OPERAND_OBJECT     *ReturnDesc = NULL;
-    ACPI_OPERAND_OBJECT     *TempDesc = NULL;
     UINT32                  Index;
     ACPI_STATUS             Status = AE_OK;
     ACPI_SIZE               Length;
@@ -421,55 +420,15 @@ AcpiExOpcode_2A_1T_1R (
 
         /* ReturnDesc will contain the remainder */
 
-        Status = AcpiUtDivide (&Operand[0]->Integer.Value, &Operand[1]->Integer.Value,
+        Status = AcpiUtDivide (&Operand[0]->Integer.Value, 
+                        &Operand[1]->Integer.Value,
                         NULL, &ReturnDesc->Integer.Value);
         break;
 
 
     case AML_CONCAT_OP:             /* Concatenate (Data1, Data2, Result) */
 
-        /*
-         * Convert the second operand if necessary.  The first operand
-         * determines the type of the second operand, (See the Data Types
-         * section of the ACPI specification.)  Both object types are
-         * guaranteed to be either Integer/String/Buffer by the operand
-         * resolution mechanism above.
-         */
-        switch (ACPI_GET_OBJECT_TYPE (Operand[0]))
-        {
-        case ACPI_TYPE_INTEGER:
-            Status = AcpiExConvertToInteger (Operand[1], &TempDesc, WalkState);
-            break;
-
-        case ACPI_TYPE_STRING:
-            Status = AcpiExConvertToString (Operand[1], &TempDesc, 16, ACPI_UINT32_MAX, WalkState);
-            break;
-
-        case ACPI_TYPE_BUFFER:
-            Status = AcpiExConvertToBuffer (Operand[1], &TempDesc, WalkState);
-            break;
-
-        default:
-            ACPI_REPORT_ERROR (("Concat - invalid obj type: %X\n",
-                    ACPI_GET_OBJECT_TYPE (Operand[0])));
-            Status = AE_AML_INTERNAL;
-        }
-
-        if (ACPI_FAILURE (Status))
-        {
-            goto Cleanup;
-        }
-
-        /*
-         * Both operands are now known to be the same object type
-         * (Both are Integer, String, or Buffer), and we can now perform the
-         * concatenation.
-         */
-        Status = AcpiExDoConcatenate (Operand[0], TempDesc, &ReturnDesc, WalkState);
-        if (TempDesc != Operand[1])
-        {
-            AcpiUtRemoveReference (TempDesc);
-        }
+        Status = AcpiExDoConcatenate (Operand[0], Operand[1], &ReturnDesc, WalkState);
         break;
 
 
@@ -503,37 +462,26 @@ AcpiExOpcode_2A_1T_1R (
             goto Cleanup;
         }
 
-        /* Create the internal return object */
+        /* Allocate a new string (Length + 1 for null terminator) */
 
-        ReturnDesc = AcpiUtCreateInternalObject (ACPI_TYPE_STRING);
+        ReturnDesc = AcpiUtCreateStringObject (Length + 1);
         if (!ReturnDesc)
         {
             Status = AE_NO_MEMORY;
             goto Cleanup;
         }
 
-        /* Allocate a new string buffer (Length + 1 for null terminator) */
+        /* Copy the raw buffer data with no transform. NULL terminated already. */
 
-        ReturnDesc->String.Pointer = ACPI_MEM_CALLOCATE (Length + 1);
-        if (!ReturnDesc->String.Pointer)
-        {
-            Status = AE_NO_MEMORY;
-            goto Cleanup;
-        }
-
-        /* Copy the raw buffer data with no transform */
-
-        ACPI_MEMCPY (ReturnDesc->String.Pointer, Operand[0]->Buffer.Pointer, Length);
-
-        /* Set the string length */
-
-        ReturnDesc->String.Length = (UINT32) Length;
+        ACPI_MEMCPY (ReturnDesc->String.Pointer,
+            Operand[0]->Buffer.Pointer, Length);
         break;
 
 
     case AML_CONCAT_RES_OP:         /* ConcatenateResTemplate (Buffer, Buffer, Result) (ACPI 2.0) */
 
-        Status = AcpiExConcatTemplate (Operand[0], Operand[1], &ReturnDesc, WalkState);
+        Status = AcpiExConcatTemplate (Operand[0], Operand[1], 
+                    &ReturnDesc, WalkState);
         break;
 
 
@@ -559,7 +507,8 @@ AcpiExOpcode_2A_1T_1R (
 
             if (Index >= Operand[0]->Package.Count)
             {
-                ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Index value (%X) beyond package end (%X)\n",
+                ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
+                    "Index value (%X) beyond package end (%X)\n",
                     Index, Operand[0]->Package.Count));
                 Status = AE_AML_PACKAGE_LIMIT;
                 goto Cleanup;
@@ -575,7 +524,8 @@ AcpiExOpcode_2A_1T_1R (
 
             if (Index >= Operand[0]->Buffer.Length)
             {
-                ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Index value (%X) beyond end of buffer (%X)\n",
+                ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
+                    "Index value (%X) beyond end of buffer (%X)\n",
                     Index, Operand[0]->Buffer.Length));
                 Status = AE_AML_BUFFER_LIMIT;
                 goto Cleanup;
@@ -680,20 +630,17 @@ AcpiExOpcode_2A_0T_1R (
     /*
      * Execute the Opcode
      */
-    if (WalkState->OpInfo->Flags & AML_LOGICAL) /* LogicalOp  (Operand0, Operand1) */
+    if (WalkState->OpInfo->Flags & AML_LOGICAL_NUMERIC) /* LogicalOp  (Operand0, Operand1) */
     {
-        /* Both operands must be of the same type */
-
-        if (ACPI_GET_OBJECT_TYPE (Operand[0]) !=
-            ACPI_GET_OBJECT_TYPE (Operand[1]))
-        {
-            Status = AE_AML_OPERAND_TYPE;
-            goto Cleanup;
-        }
-
-        LogicalResult = AcpiExDoLogicalOp (WalkState->Opcode,
-                                            Operand[0],
-                                            Operand[1]);
+        Status = AcpiExDoLogicalNumericOp (WalkState->Opcode,
+                        Operand[0]->Integer.Value, Operand[1]->Integer.Value,
+                        &LogicalResult);
+        goto StoreLogicalResult;
+    }
+    else if (WalkState->OpInfo->Flags & AML_LOGICAL)    /* LogicalOp  (Operand0, Operand1) */
+    {
+        Status = AcpiExDoLogicalOp (WalkState->Opcode, Operand[0],
+                    Operand[1], &LogicalResult);
         goto StoreLogicalResult;
     }
 
