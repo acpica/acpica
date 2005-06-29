@@ -172,13 +172,13 @@ AmlSetupField (
 
     if (!ObjDesc || !RgnDesc)
     {
-        DEBUG_PRINT (ACPI_ERROR, ("AmlSetupField: internal error - null handle\n"));
+        DEBUG_PRINT (ACPI_ERROR, ("AmlSetupField: Internal error - null handle\n"));
         Status = AE_AML_ERROR;
     }
 
     else if (TYPE_Region != RgnDesc->Type)
     {
-        DEBUG_PRINT (ACPI_ERROR, ("SetupFld: Needed Region, found %d %s\n",
+        DEBUG_PRINT (ACPI_ERROR, ("AmlSetupField: Needed Region, found %d %s\n",
                         RgnDesc->Type, NsTypeNames[RgnDesc->Type]));
         Status = AE_AML_ERROR;
     }
@@ -247,6 +247,11 @@ AmlSetupField (
                     {
                         RgnDesc->Region.Address = ObjValDesc->Number.Value;
                     }
+
+                    /* Free ObjValDesc, it was allocated by AmlDoOpcode */
+
+                    ObjStack[ObjStackTop] = NULL;
+                    CmFree (ObjValDesc);
                 }
 
                 if (AE_OK == Status)
@@ -280,6 +285,11 @@ AmlSetupField (
                              */
                             RgnDesc->Region.DataValid = 1;
                         }
+
+                        /* Free ObjValDesc, it was allocated by AmlDoOpcode */
+
+                        ObjStack[ObjStackTop] = NULL;
+                        CmFree (ObjValDesc);
                     }
                 }
             }
