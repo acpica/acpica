@@ -122,16 +122,17 @@
 #include <internal.h>
 
 /* 
- * TBD: This wastes memory.
- * TBD: Allow variable sized acpi objects
- * TBD: Must find and fix all code that assumes constant sized object
+ * The ACPI_OBJECT_INTERNAL is used to pass AML operands from the dispatcher
+ * to the interpreter, and to keep track of the various handlers such as
+ * address space handlers and notify handlers.  The object is a constant
+ * size in order to allow them to be cached and reused.
  *
  * All variants of the ACPI_OBJECT_INTERNAL are defined with the same
  * sequence of field types, with fields that are not used in a particular
  * variant being named "Reserved".  This is not strictly necessary, but
  * may in some circumstances simplify understanding if these structures
  * need to be displayed in a debugger having limited (or no) support for
- * union types.  It also simplifies some debug code in NsDumpTable() which
+ * union types.  It also simplifies some debug code in DumpTable() which
  * dumps multi-level values: fetching Buffer.Pointer suffices to pick up
  * the value or next level for any of several types.
  */
