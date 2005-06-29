@@ -117,11 +117,11 @@
 #define __DSOBJECT_C__
 
 #include "acpi.h"
-#include "parser.h"
+#include "acparser.h"
 #include "amlcode.h"
-#include "dispatch.h"
-#include "interp.h"
-#include "namesp.h"
+#include "acdispat.h"
+#include "acinterp.h"
+#include "acnamesp.h"
 
 #define _COMPONENT          DISPATCHER
         MODULE_NAME         ("dsobject");
@@ -168,7 +168,7 @@ AcpiDsInitOneObject (
     if (((ACPI_NAMED_OBJECT*) ObjHandle)->OwnerId !=
             Info->TableDesc->TableId)
     {
-        return AE_OK;
+        return (AE_OK);
     }
 
 
@@ -333,7 +333,7 @@ AcpiDsInitObjectFromOp (
     {
         /* Unknown opcode */
 
-        return AE_TYPE;
+        return (AE_TYPE);
     }
 
 
@@ -355,7 +355,7 @@ AcpiDsInitObjectFromOp (
         if (ACPI_FAILURE (Status))
         {
             AcpiCmRemoveReference (ArgDesc);
-            return Status;
+            return (Status);
         }
 
         /* We are expecting a number */
@@ -366,7 +366,7 @@ AcpiDsInitObjectFromOp (
                 ("InitObject: Expecting number, got obj: %p type %X\n",
                 ArgDesc, ArgDesc->Common.Type));
             AcpiCmRemoveReference (ArgDesc);
-            return AE_TYPE;
+            return (AE_TYPE);
         }
 
         /* Get the value, delete the internal object */
@@ -381,7 +381,7 @@ AcpiDsInitObjectFromOp (
 
         if (!ObjDesc->Buffer.Pointer)
         {
-            return AE_NO_MEMORY;
+            return (AE_NO_MEMORY);
         }
 
         /*
@@ -400,7 +400,7 @@ AcpiDsInitObjectFromOp (
                 DEBUG_PRINT (ACPI_ERROR,
                     ("InitObject: Expecting bytelist, got: %x\n",
                     ByteList));
-                return AE_TYPE;
+                return (AE_TYPE);
             }
 
             MEMCPY (ObjDesc->Buffer.Pointer, ByteList->Data,
@@ -470,7 +470,7 @@ AcpiDsInitObjectFromOp (
         break;
     }
 
-    return AE_OK;
+    return (AE_OK);
 }
 
 
