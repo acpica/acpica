@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: psparse - Parser top level AML parse routines
- *              $Revision: 1.68 $
+ *              $Revision: 1.69 $
  *
  *****************************************************************************/
 
@@ -1037,29 +1037,38 @@ CloseThisOp:
             }
 
 
-            if (Status == AE_CTRL_TRANSFER)
+            switch (Status)
             {
+            case AE_OK:
+                break;
+
+
+            case AE_CTRL_TRANSFER:
+
                 /*
                  * We are about to transfer to a called method.
                  */
                 WalkState->PrevOp = Op;
                 WalkState->PrevArgTypes = ArgTypes;
                 return_ACPI_STATUS (Status);
-            }
+                break;
 
-            else if (Status == AE_CTRL_END)
-            {
+
+            case AE_CTRL_END:
+
                 AcpiPsPopScope (ParserState, &Op, &ArgTypes, &ArgCount);
 
                 Status = WalkState->AscendingCallback (WalkState, Op);
                 Status = AcpiPsNextParseState (WalkState, Op, Status);
+
                 AcpiPsCompleteThisOp (WalkState, Op);
                 Op = NULL;
                 Status = AE_OK;
-            }
+                break;
 
-            else if (Status == AE_CTRL_TERMINATE)
-            {
+
+            case AE_CTRL_TERMINATE:
+
                 Status = AE_OK;
 
                 /* Clean up */
@@ -1074,10 +1083,11 @@ CloseThisOp:
                 } while (Op);
 
                 return_ACPI_STATUS (Status);
-           }
+                break;
 
-            else if (ACPI_FAILURE (Status))
-            {
+
+            default:  /* All other non-AE_OK status */
+
                 if (Op == NULL)
                 {
                     AcpiPsPopScope (ParserState, &Op, &ArgTypes, &ArgCount);
@@ -1090,6 +1100,7 @@ CloseThisOp:
                  */
 
                 return_ACPI_STATUS (Status);
+                break;
             }
 
 
