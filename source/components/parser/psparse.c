@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: psparse - Parser top level AML parse routines
- *              $Revision: 1.153 $
+ *              $Revision: 1.154 $
  *
  *****************************************************************************/
 
@@ -315,7 +315,7 @@ AcpiPsCompleteThisOp (
                 {
                     goto AllocateError;
                 }
-            }   
+            }
             else if ((Op->Common.Parent->Common.AmlOpcode == AML_NAME_OP) &&
                      (WalkState->PassNumber <= ACPI_IMODE_LOAD_PASS2))
             {
