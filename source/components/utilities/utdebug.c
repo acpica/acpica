@@ -175,8 +175,10 @@ FunctionTrace (
 
     AcpiGbl_NestingLevel++;
 
-    DebugPrint (ModuleName, LineNumber, ComponentId, TRACE_FUNCTIONS,
-                " %2.2ld Entered Function: %s\n", AcpiGbl_NestingLevel, FunctionName);
+    DebugPrint (ModuleName, LineNumber, ComponentId,
+                TRACE_FUNCTIONS,
+                " %2.2ld Entered Function: %s\n",
+                AcpiGbl_NestingLevel, FunctionName);
 }
 
 
@@ -304,7 +306,9 @@ FunctionExit (
 {
 
     DebugPrint (ModuleName, LineNumber, ComponentId, TRACE_FUNCTIONS,
-                " %2.2ld Exiting Function: %s\n", AcpiGbl_NestingLevel, FunctionName);
+                " %2.2ld Exiting Function: %s\n",
+                AcpiGbl_NestingLevel, FunctionName);
+
     AcpiGbl_NestingLevel--;
 }
 
@@ -337,16 +341,22 @@ FunctionStatusExit (
 
     if (Status > ACPI_MAX_STATUS)
     {
-        DebugPrint (ModuleName, LineNumber, ComponentId, TRACE_FUNCTIONS,
-                    " %2.2ld Exiting Function: %s, [Unknown Status] 0x%X\n",
-                    AcpiGbl_NestingLevel, FunctionName, Status);
+        DebugPrint (ModuleName, LineNumber, ComponentId,
+            TRACE_FUNCTIONS,
+            " %2.2ld Exiting Function: %s, [Unknown Status] 0x%X\n",
+            AcpiGbl_NestingLevel,
+            FunctionName,
+            Status);
     }
 
     else
     {
-        DebugPrint (ModuleName, LineNumber, ComponentId, TRACE_FUNCTIONS,
-                    " %2.2ld Exiting Function: %s, %s\n",
-                    AcpiGbl_NestingLevel, FunctionName, AcpiCmFormatException (Status));
+        DebugPrint (ModuleName, LineNumber, ComponentId,
+            TRACE_FUNCTIONS,
+            " %2.2ld Exiting Function: %s, %s\n",
+            AcpiGbl_NestingLevel,
+            FunctionName,
+            AcpiCmFormatException (Status));
     }
 
     AcpiGbl_NestingLevel--;
@@ -382,6 +392,7 @@ FunctionValueExit (
     DebugPrint (ModuleName, LineNumber, ComponentId, TRACE_FUNCTIONS,
                 " %2.2ld Exiting Function: %s, 0x%X\n",
                 AcpiGbl_NestingLevel, FunctionName, Value);
+
     AcpiGbl_NestingLevel--;
 }
 
@@ -415,6 +426,7 @@ FunctionPtrExit (
     DebugPrint (ModuleName, LineNumber, ComponentId, TRACE_FUNCTIONS,
                 " %2.2ld Exiting Function: %s, 0x%p\n",
                 AcpiGbl_NestingLevel, FunctionName, Ptr);
+
     AcpiGbl_NestingLevel--;
 }
 
@@ -451,7 +463,8 @@ DebugPrint (
 
     /* Both the level and the component must be enabled */
 
-    if ((PrintLevel & AcpiDbgLevel) && (ComponentId & AcpiDbgLayer))
+    if ((PrintLevel & AcpiDbgLevel) &&
+        (ComponentId & AcpiDbgLayer))
     {
         va_start (args, Format);
 
@@ -545,7 +558,8 @@ AcpiCmDumpBuffer (
 
     /* Only dump the buffer if tracing is enabled */
 
-    if (!((TRACE_TABLES & AcpiDbgLevel) && (ComponentId & AcpiDbgLayer)))
+    if (!((TRACE_TABLES & AcpiDbgLevel) &&
+        (ComponentId & AcpiDbgLayer)))
     {
         return;
     }
@@ -579,14 +593,16 @@ AcpiCmDumpBuffer (
 
             default:
 
-                AcpiOsPrintf ("%02X ", *((UINT8 *) &Buffer[i + j]));
+                AcpiOsPrintf ("%02X ",
+                        *((UINT8 *) &Buffer[i + j]));
                 j += 1;
                 break;
 
 
             case DB_WORD_DISPLAY:
 
-                MOVE_UNALIGNED16_TO_32 (&Temp32, &Buffer[i + j]);
+                MOVE_UNALIGNED16_TO_32 (&Temp32,
+                                        &Buffer[i + j]);
                 AcpiOsPrintf ("%04X ", Temp32);
                 j += 2;
                 break;
@@ -594,7 +610,8 @@ AcpiCmDumpBuffer (
 
             case DB_DWORD_DISPLAY:
 
-                MOVE_UNALIGNED32_TO_32 (&Temp32, &Buffer[i + j]);
+                MOVE_UNALIGNED32_TO_32 (&Temp32,
+                                        &Buffer[i + j]);
                 AcpiOsPrintf ("%08X ", Temp32);
                 j += 4;
                 break;
@@ -602,10 +619,12 @@ AcpiCmDumpBuffer (
 
             case DB_QWORD_DISPLAY:
 
-                MOVE_UNALIGNED32_TO_32 (&Temp32, &Buffer[i + j]);
+                MOVE_UNALIGNED32_TO_32 (&Temp32,
+                                        &Buffer[i + j]);
                 AcpiOsPrintf ("%08X", Temp32);
 
-                MOVE_UNALIGNED32_TO_32 (&Temp32, &Buffer[i + j + 4]);
+                MOVE_UNALIGNED32_TO_32 (&Temp32,
+                                        &Buffer[i + j + 4]);
                 AcpiOsPrintf ("%08X ", Temp32);
                 j += 8;
                 break;
