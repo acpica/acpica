@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslerror - Error handling and statistics
- *              $Revision: 1.52 $
+ *              $Revision: 1.53 $
  *
  *****************************************************************************/
 
@@ -171,6 +171,8 @@ char                        *AslMessages [] = {
     "Could not seek file",
     "Could not close file",
     "Access width is greater than region size",
+    "Host Operation Region requires ByteAcc access",
+    "Host Operation Region requires BufferAcc access",
     "Field unit extends beyond region limit",
     "Resource field name cannot be used as a target",
     "Invalid Byte Offset, Bit Offset required",
