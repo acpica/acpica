@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dbdisply - debug display commands
- *              $Revision: 1.73 $
+ *              $Revision: 1.75 $
  *
  ******************************************************************************/
 
@@ -411,9 +411,9 @@ AcpiDbDecodeInternalObject (
         return;
     }
 
-    AcpiOsPrintf (" %s", AcpiUtGetTypeName (ObjDesc->Common.Type));
+    AcpiOsPrintf (" %s", AcpiUtGetObjectTypeName (ObjDesc));
 
-    switch (ObjDesc->Common.Type)
+    switch (ACPI_GET_OBJECT_TYPE (ObjDesc))
     {
     case ACPI_TYPE_INTEGER:
 
@@ -513,7 +513,7 @@ AcpiDbDisplayInternalObject (
 
     case ACPI_DESC_TYPE_OPERAND:
 
-        Type = ObjDesc->Common.Type;
+        Type = ACPI_GET_OBJECT_TYPE (ObjDesc);
         if (Type > INTERNAL_TYPE_MAX)
         {
             AcpiOsPrintf (" Type %hX [Invalid Type]", Type);
@@ -522,27 +522,11 @@ AcpiDbDisplayInternalObject (
 
         /* Decode the ACPI object type */
 
-        switch (ObjDesc->Common.Type)
+        switch (ACPI_GET_OBJECT_TYPE (ObjDesc))
         {
         case INTERNAL_TYPE_REFERENCE:
             switch (ObjDesc->Reference.Opcode)
             {
-            case AML_ZERO_OP:
-                AcpiOsPrintf ("[Const]           Zero (0) [Null Target]", 0);
-                break;
-
-            case AML_ONES_OP:
-                AcpiOsPrintf ("[Const]           Ones (0xFFFFFFFFFFFFFFFF) [No Limit]");
-                break;
-
-            case AML_ONE_OP:
-                AcpiOsPrintf ("[Const]           One (1)");
-                break;
-
-            case AML_REVISION_OP:
-                AcpiOsPrintf ("[Const]           Revision (%X)", ACPI_CA_SUPPORT_LEVEL);
-                break;
-
             case AML_LOCAL_OP:
                 AcpiOsPrintf ("[Local%d] ", ObjDesc->Reference.Offset);
                 if (WalkState)
@@ -573,6 +557,8 @@ AcpiDbDisplayInternalObject (
                 break;
 
             default:
+                AcpiOsPrintf ("Unknown Reference opcode %X\n", 
+                    ObjDesc->Reference.Opcode);
                 break;
 
             }
