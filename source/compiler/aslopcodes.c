@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslopcode - AML opcode generation
- *              $Revision: 1.42 $
+ *              $Revision: 1.43 $
  *
  *****************************************************************************/
 
@@ -419,7 +419,11 @@ OpcDoEisaId (
         }
     }
 
-    if (ACPI_SUCCESS (Status))
+    if (ACPI_FAILURE (Status))
+    {
+        AslError (ASL_ERROR, ASL_MSG_INVALID_EISAID, Op, Op->Asl.Value.String);
+    }
+    else
     {
         /* Create ID big-endian first (bits are contiguous) */
 
@@ -437,19 +441,19 @@ OpcDoEisaId (
         EisaId = AcpiUtDwordByteSwap (BigEndianId);
     }
 
+    /* 
+     * Morph the Op into an integer, regardless of whether there
+     * was an error in the EISAID string
+     */
     Op->Asl.Value.Integer32 = EisaId;
-
-    /* Op is now an integer */
 
     Op->Asl.CompileFlags &= ~NODE_COMPILE_TIME_CONST;
     Op->Asl.ParseOpcode = PARSEOP_INTEGER;
     (void) OpcSetOptimalIntegerSize (Op);
-    UtSetParseOpName (Op);
 
-    if (ACPI_FAILURE (Status))
-    {
-        AslError (ASL_ERROR, ASL_MSG_INVALID_EISAID, Op, Op->Asl.ExternalName);
-    }
+    /* Op is now an integer */
+
+    UtSetParseOpName (Op);
 }
 
 
