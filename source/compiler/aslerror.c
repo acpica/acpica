@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslerror - Error handling and statistics
- *              $Revision: 1.44 $
+ *              $Revision: 1.47 $
  *
  *****************************************************************************/
 
@@ -143,8 +143,8 @@ char                        *AslMessages [] = {
     "Effective AML buffer length is zero",
     "Effective AML package length is zero",
     "Mixed return types in method",
-    "Object not found or not accessable from scope",
-    "Object not accessable from this scope",
+    "Object not found or not accessible from scope",
+    "Object not accessible from this scope",
     "Object does not exist",
     "Nested comment found",
     "Reserved method has too many arguments",
@@ -170,6 +170,9 @@ char                        *AslMessages [] = {
     "Could not write file",
     "Could not seek file",
     "Could not close file",
+    "Access width is greater than region size",
+    "Field unit extends beyond region limit",
+    "Resource field name cannot be used as a target",
 };
 
 
@@ -259,7 +262,7 @@ AeAddToErrorLog (
  *
  * NOTE:        We don't use the FlxxxFile I/O functions here because on error
  *              they abort the compiler and call this function!  Since we
- *              are reporting errors here, we ignore most output errors and 
+ *              are reporting errors here, we ignore most output errors and
  *              just try to get out as much as we can.
  *
  ******************************************************************************/
