@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: actbl2.h - ACPI Specification Revision 2.0 Tables
- *       $Revision: 1.28 $
+ *       $Revision: 1.36 $
  *
  *****************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2004, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -142,9 +142,9 @@
 /*
  * ACPI 2.0 Root System Description Table (RSDT)
  */
-typedef struct
+typedef struct rsdt_descriptor_rev2
 {
-    ACPI_TABLE_HEADER       Header;                 /* ACPI table header */
+    ACPI_TABLE_HEADER_DEF                           /* ACPI common table header */
     UINT32                  TableOffsetEntry [1];   /* Array of pointers to  */
                                                     /* ACPI table headers */
 } RSDT_DESCRIPTOR_REV2;
@@ -153,9 +153,9 @@ typedef struct
 /*
  * ACPI 2.0 Extended System Description Table (XSDT)
  */
-typedef struct
+typedef struct xsdt_descriptor_rev2
 {
-    ACPI_TABLE_HEADER       Header;                 /* ACPI table header */
+    ACPI_TABLE_HEADER_DEF                           /* ACPI common table header */
     UINT64                  TableOffsetEntry [1];   /* Array of pointers to  */
                                                     /* ACPI table headers */
 } XSDT_DESCRIPTOR_REV2;
@@ -164,14 +164,14 @@ typedef struct
 /*
  * ACPI 2.0 Firmware ACPI Control Structure (FACS)
  */
-typedef struct
+typedef struct facs_descriptor_rev2
 {
-    NATIVE_CHAR             Signature[4];           /* ACPI signature */
+    char                    Signature[4];           /* ACPI signature */
     UINT32                  Length;                 /* Length of structure, in bytes */
     UINT32                  HardwareSignature;      /* Hardware configuration signature */
     UINT32                  FirmwareWakingVector;   /* 32bit physical address of the Firmware Waking Vector. */
     UINT32                  GlobalLock;             /* Global Lock used to synchronize access to shared hardware resources */
-    UINT32                  S4Bios_f        : 1;    /* S4Bios_f - Indicates if S4BIOS support is present */
+    UINT32_BIT              S4Bios_f        : 1;    /* S4Bios_f - Indicates if S4BIOS support is present */
     UINT32_BIT              Reserved1       : 31;   /* Must be 0 */
     UINT64                  XFirmwareWakingVector;  /* 64bit physical address of the Firmware Waking Vector. */
     UINT8                   Version;                /* Version of this table */
@@ -183,7 +183,7 @@ typedef struct
 /*
  * ACPI 2.0 Generic Address Structure (GAS)
  */
-typedef struct
+typedef struct acpi_generic_address
 {
     UINT8                   AddressSpaceId;         /* Address space where struct or register exists. */
     UINT8                   RegisterBitWidth;       /* Size in bits of given register */
@@ -197,9 +197,9 @@ typedef struct
 /*
  * ACPI 2.0 Fixed ACPI Description Table (FADT)
  */
-typedef struct
+typedef struct fadt_descriptor_rev2
 {
-    ACPI_TABLE_HEADER       Header;             /* ACPI table header */
+    ACPI_TABLE_HEADER_DEF                       /* ACPI common table header */
     UINT32                  V1_FirmwareCtrl;    /* 32-bit physical address of FACS */
     UINT32                  V1_Dsdt;            /* 32-bit physical address of DSDT */
     UINT8                   Reserved1;          /* System Interrupt Model isn't used in ACPI 2.0*/
@@ -268,7 +268,21 @@ typedef struct
     ACPI_GENERIC_ADDRESS    XGpe0Blk;           /* Extended General Purpose AcpiEvent 0 Reg Blk address */
     ACPI_GENERIC_ADDRESS    XGpe1Blk;           /* Extended General Purpose AcpiEvent 1 Reg Blk address */
 
-}  FADT_DESCRIPTOR_REV2;
+} FADT_DESCRIPTOR_REV2;
+
+
+/* Embedded Controller */
+
+typedef struct ec_boot_resources
+{
+    ACPI_TABLE_HEADER_DEF
+    ACPI_GENERIC_ADDRESS    EcControl;          /* Address of EC command/status register */
+    ACPI_GENERIC_ADDRESS    EcData;             /* Address of EC data register */
+    UINT32                  Uid;                /* Unique ID - must be same as the EC _UID method */
+    UINT8                   GpeBit;             /* The GPE for the EC */
+    UINT8                   EcId[1];            /* Full namepath of the EC in the ACPI namespace */
+
+} EC_BOOT_RESOURCES;
 
 
 #pragma pack()
