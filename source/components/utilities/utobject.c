@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: cmobject - ACPI object create/delete/size/cache routines
- *              $Revision: 1.41 $
+ *              $Revision: 1.43 $
  *
  *****************************************************************************/
 
@@ -598,10 +598,10 @@ AcpiCmGetSimpleObjectSize (
     case INTERNAL_TYPE_REFERENCE:
 
         /*
-         * The only type that should be here is opcode AML_NAMEPATH_OP -- since
+         * The only type that should be here is internal opcode NAMEPATH_OP -- since
          * this means an object reference
          */
-        if (InternalObject->Reference.Opcode != AML_NAMEPATH_OP)
+        if (InternalObject->Reference.Opcode != AML_INT_NAMEPATH_OP)
         {
             DEBUG_PRINT (ACPI_ERROR,
                 ("CmGetSimpleObjectSize: Unsupported Reference opcode=%X in object %p\n",
@@ -611,7 +611,7 @@ AcpiCmGetSimpleObjectSize (
 
         else
         {
-            /* 
+            /*
              * Get the actual length of the full pathname to this object.
              * The reference will be converted to the pathname to the object
              */
@@ -644,7 +644,7 @@ AcpiCmGetSimpleObjectSize (
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiCmGetElementLength 
+ * FUNCTION:    AcpiCmGetElementLength
  *
  * PARAMETERS:  ACPI_PKG_CALLBACK
  *
