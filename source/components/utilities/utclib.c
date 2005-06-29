@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: cmclib - Local implementation of C library functions
- * $Revision: 1.26 $
+ * $Revision: 1.27 $
  *
  *****************************************************************************/
 
@@ -738,7 +738,7 @@ AcpiCmStrstr (
         return (NULL);
     }
 
-    /* Walk entire string, uppercasing the letters */
+    /* Walk entire string, comparing the letters */
 
     for (String = String1; *String2; )
     {
