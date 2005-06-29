@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acwin.h - OS specific defines, etc.
- *       $Revision: 1.20 $
+ *       $Revision: 1.1 $
  *
  *****************************************************************************/
 
@@ -9,8 +9,8 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2005, Intel Corp.
- * All rights reserved.
+ * Some or all of this work - Copyright (c) 1999, Intel Corp.  All rights
+ * reserved.
  *
  * 2. License
  *
@@ -117,19 +117,14 @@
 #ifndef __ACWIN_H__
 #define __ACWIN_H__
 
-/*! [Begin] no source code translation (Keep the include) */
-
 /* Windows uses VC */
 #ifdef _MSC_VER
 #include "acmsvc.h"
 #endif
-/*! [End] no source code translation !*/
 
-#define ACPI_MACHINE_WIDTH      32
+#define ACPI_OS_NAME                "Windows"
 
-#define strupr                  _strupr
-#define isascii                 __isascii
-
+#define strupr              _strupr
 #define ACPI_USE_STANDARD_HEADERS
 
 /*
@@ -143,26 +138,22 @@
 /*! [Begin] no source code translation  */
 
 #define ACPI_ASM_MACROS
-#ifdef ACPI_APPLICATION
-#define BREAKPOINT3
-#define ACPI_DISABLE_IRQS()
-#define ACPI_ENABLE_IRQS()
-#define ACPI_FLUSH_CPU_CACHE()
-#else
+#define causeinterrupt(level)   __asm {int level}
 #define BREAKPOINT3             __asm {int 3}
-#define ACPI_DISABLE_IRQS()     __asm {cli}
-#define ACPI_ENABLE_IRQS()      __asm {sti}
-#define ACPI_FLUSH_CPU_CACHE()  __asm {WBINVD}
-#endif
+#define disable()               __asm {cli}
+#define enable()                __asm {sti}
+#define halt()                  __asm {hlt}
+#define wbinvd()                __asm {WBINVD}
 
 
 /*
  * For Acpi applications, we don't want to try to access the global lock
  */
 #ifdef ACPI_APPLICATION
-#define ACPI_ACQUIRE_GLOBAL_LOCK(GLptr, Acq)       if (AcpiGbl_GlobalLockPresent) Acq = TRUE;
-#define ACPI_RELEASE_GLOBAL_LOCK(GLptr, Pnd)       Pnd = 0;
+#define ACPI_ACQUIRE_GLOBAL_LOCK(GLptr, Acq)       (Acq = 0xFF)
+#define ACPI_RELEASE_GLOBAL_LOCK(GLptr, Pnd)       (Pnd = 0)
 #else
+
 #define ACPI_ACQUIRE_GLOBAL_LOCK(GLptr, Acq)       __asm {     \
         __asm mov           ecx, GLptr              \
         __asm acq10:                                \
