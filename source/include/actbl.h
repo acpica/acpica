@@ -114,10 +114,10 @@
  *
  *****************************************************************************/
 
-#ifndef __ACPITYPE_H__
-#define __ACPITYPE_H__
+#ifndef __ACPITABLES_H__
+#define __ACPITABLES_H__
 
-typedef UINT32              IO_ADDRESS;             /* Only for clarity in declarations */
+typedef NATIVE_UINT         IO_ADDRESS;             /* Only for clarity in declarations */
 
 /*
  *  Values for description table header signatures
@@ -148,6 +148,10 @@ typedef UINT32              IO_ADDRESS;             /* Only for clarity in decla
 #define APIC_IO             1
 
 
+/*
+ * Architecture-independent tables
+ * The architecture dependent tables are in separate files
+ */
 
 typedef struct  /* Root System Descriptor Pointer */
 {                                           
@@ -174,87 +178,6 @@ typedef struct  /* ACPI common table header */
     UINT32                  AslCompilerRevision;    /* ASL compiler revision number */
 
 } ACPI_TABLE_HEADER;
-
-
-typedef struct  /* Root System Description Table */
-{                                                   
-    ACPI_TABLE_HEADER       header;                 /* table header */
-    UINT32                  TableOffsetEntry [1];   /* array of pointers to other
-                                                     * tables' headers */
-} ROOT_SYSTEM_DESCRIPTION_TABLE;
-
-
-
-typedef struct  /* Firmware ACPI Control Structure */
-{                                           
-    char                    Signature[4];           /* signature "FACS" */
-    UINT32                  Length;                 /* length of structure, in bytes */
-    UINT32                  HardwareSignature;      /* hardware configuration signature */
-    UINT32                  FirmwareWakingVector;   /* ACPI OS waking vector */
-    UINT32                  GlobalLock;             /* Global Lock */
-    UINT16_BIT              S4Bios_f        : 1;    /* Indicates if S4BIOS support is present */
-    UINT16_BIT              Reserved1       : 15;   /* must be 0 */
-    UINT16                  Reserved2;              /* must be 0 */
-    UINT8                   Resverved3 [40];        /* reserved - must be zero */
-
-} FIRMWARE_ACPI_CONTROL_STRUCTURE;
-
-
-
-typedef struct  /* Fixed ACPI Description Table */
-{                                           
-    ACPI_TABLE_HEADER       header;                 /* table header */
-    UINT32                  FirmwareCtrl;           /* Physical addesss of FACS */
-    UINT32                  Dsdt;                   /* Physical address of DSDT */
-    UINT8                   Model;                  /* System Interrupt Model */
-    UINT8                   Reserved1;              /* reserved */
-    UINT16                  SciInt;                 /* System vector of SCI interrupt */
-    IO_ADDRESS              SmiCmd;                 /* Port address of SMI command port */
-    UINT8                   AcpiEnable;             /* value to write to smi_cmd to enable ACPI */
-    UINT8                   AcpiDisable;            /* value to write to smi_cmd to disable ACPI */
-    UINT8                   S4BiosReq;              /* Value to write to SMI CMD to enter S4BIOS state */
-    UINT8                   Reserved2;              /* reserved - must be zero */
-    IO_ADDRESS              Pm1aEvtBlk;             /* Port address of Power Mgt 1a Event Reg Blk */
-    IO_ADDRESS              Pm1bEvtBlk;             /* Port address of Power Mgt 1b Event Reg Blk */
-    IO_ADDRESS              Pm1aCntBlk;             /* Port address of Power Mgt 1a Control Reg Blk */
-    IO_ADDRESS              Pm1bCntBlk;             /* Port address of Power Mgt 1b Control Reg Blk */
-    IO_ADDRESS              Pm2CntBlk;              /* Port address of Power Mgt 2 Control Reg Blk */
-    IO_ADDRESS              PmTmrBlk;               /* Port address of Power Mgt Timer Ctrl Reg Blk */
-    IO_ADDRESS              Gpe0Blk;                /* Port addr of General Purpose Event 0 Reg Blk */
-    IO_ADDRESS              Gpe1Blk;                /* Port addr of General Purpose Event 1 Reg Blk */
-    UINT8                   Pm1EvtLen;              /* Byte Length of ports at pm1X_evt_blk */
-    UINT8                   Pm1CntLen;              /* Byte Length of ports at pm1X_cnt_blk */
-    UINT8                   Pm2CntLen;              /* Byte Length of ports at pm2_cnt_blk */
-    UINT8                   PmTmLen;                /* Byte Length of ports at pm_tm_blk */
-    UINT8                   Gpe0BlkLen;             /* Byte Length of ports at gpe0_blk */
-    UINT8                   Gpe1BlkLen;             /* Byte Length of ports at gpe1_blk */
-    UINT8                   Gpe1Base;               /* offset in gpe model where gpe1 events start */
-    UINT8                   Reserved3;              /* reserved */
-    UINT16                  PLvl2Lat;               /* worst case HW latency to enter/exit C2 state */
-    UINT16                  PLvl3Lat;               /* worst case HW latency to enter/exit C3 state */
-    UINT16                  FlushSize;              /* Size of area read to flush caches */
-    UINT16                  FlushStride;            /* Stride used in flushing caches */
-    UINT8                   DutyOffset;             /* bit location of duty cycle field in p_cnt reg */
-    UINT8                   DutyWidth;              /* bit width of duty cycle field in p_cnt reg */
-    UINT8                   DayAlrm;                /* index to day-of-month alarm in RTC CMOS RAM */
-    UINT8                   MonAlrm;                /* index to month-of-year alarm in RTC CMOS RAM */
-    UINT8                   Century;                /* index to century in RTC CMOS RAM */
-    UINT8                   Reserved4;              /* reserved */
-    UINT8                   Reserved4a;             /* reserved */
-    UINT8                   Reserved4b;             /* reserved */
-    UINT16_BIT              WBInvd          : 1;    /* wbinvd instruction works properly */
-    UINT16_BIT              WBInvdFlush     : 1;    /* wbinvd flushes but does not invalidate */
-    UINT16_BIT              ProcC1          : 1;    /* all processors support C1 state */
-    UINT16_BIT              PLvl2Up         : 1;    /* C2 state works on MP system */
-    UINT16_BIT              PwrButton       : 1;    /* Power button is handled as a generic feature */
-    UINT16_BIT              SleepButton     : 1;    /* Sleep button is handled as a generic feature, or not present */
-    UINT16_BIT              FixedRTC        : 1;    /* RTC wakeup stat not in fixed register space */
-    UINT16_BIT              RTCS4           : 1;    /* RTC wakeup stat not possible from S4 */
-    UINT16_BIT              TmrValExt       : 1;    /* tmr_val is 32 bits */
-    UINT16_BIT              Reserved5       : 7;    /* reserved - must be zero */
-    UINT16                  Reserved6;              /* reserved - must be zero */
-
-}  FIXED_ACPI_DESCRIPTION_TABLE;
 
 
 typedef struct  /* APIC Table */
@@ -299,6 +222,14 @@ typedef struct  /* IO APIC */
 } IO_APIC;
 
 
+/*
+**  IA64 TODO:  Add SAPIC Tables
+*/
+
+/*
+**  IA64 TODO:  Modify Smart Battery Description to comply with ACPI IA64
+**              extensions.
+*/
 typedef struct  /* Smart Battery Description Table */
 {
     ACPI_TABLE_HEADER       header;
@@ -336,8 +267,35 @@ typedef struct AcpiTableDesc
     UINT32                  Length;
     UINT32                  Allocation;
     UINT32                  Count;
+    UINT8                   Type;
 
 } ACPI_TABLE_DESC;
+
+
+/* Data about each known table type */
+
+typedef struct _AcpiTableSupport
+{
+    char                    *Name;
+    char                    *Signature;
+    UINT8                   SigLength;
+    UINT8                   Flags;
+    UINT16                  Status;
+    void                    **GlobalPtr;
+
+} ACPI_TABLE_SUPPORT; 
+
+
+
+/* 
+ * Get the architecture-specific tables
+ */
+
+#ifdef IA64
+#include <acpitbl64.h>
+#else
+#include <acpitbl32.h>
+#endif
 
 
 #endif /* __ACPITABLES_H__ */
