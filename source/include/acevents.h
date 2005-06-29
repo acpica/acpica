@@ -197,6 +197,10 @@ EvNotifyDispatch (
 /* Address Space handling - evregion */
 
 ACPI_STATUS
+EvInstallDefaultAddressSpaceHandlers (
+    void);
+
+ACPI_STATUS
 EvAddressSpaceDispatch (
     ACPI_OBJECT_INTERNAL   *RegionObj,
     UINT32                  Function,
