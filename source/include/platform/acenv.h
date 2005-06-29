@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acenv.h - Generation environment specific items
- *       $Revision: 1.79 $
+ *       $Revision: 1.81 $
  *
  *****************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -196,24 +196,26 @@
 
 /*! [Begin] no source code translation */
 
-#ifdef _LINUX
+#if defined(_LINUX)
 #include "aclinux.h"
 
-#else
-#ifdef _AED_EFI
+#elif defined(_AED_EFI)
 #include "acefi.h"
 
-#else
-#ifdef WIN32
+#elif defined(WIN32)
 #include "acwin.h"
 
-#else
-#ifdef WIN64
+#elif defined(WIN64)
 #include "acwin64.h"
 
-#else
-#ifdef __FreeBSD__
+#elif defined(__FreeBSD__)
 #include "acfreebsd.h"
+
+#elif defined(MODESTO)
+#include "acmodesto.h"
+
+#elif defined(NETWARE)
+#include "acnetware.h"
 
 #else
 
@@ -232,11 +234,6 @@
 #define ACPI_PRINTF_LIKE_FUNC
 
 #endif
-#endif
-#endif
-#endif
-#endif
-
 
 /*! [End] no source code translation !*/
 
