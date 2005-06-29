@@ -15,15 +15,18 @@
  | legacy to ACPI mode state transition functions
  |__________________________________________________________________________
  |
- | $Revision: 1.10 $
- | $Date: 2005/06/29 16:43:48 $
+ | $Revision: 1.11 $
+ | $Date: 2005/06/29 16:43:49 $
  | $Log: evsci.c,v $
- | Revision 1.10  2005/06/29 16:43:48  aystarik
- | New version of DEBUG_PRINT
+ | Revision 1.11  2005/06/29 16:43:49  aystarik
+ | Header cleanup;  Split debug switch into component_id and level
  |
  | 
- | date	99.04.02.22.40.00;	author rmoore1;	state Exp;
+ | date	99.04.05.23.09.00;	author rmoore1;	state Exp;
  |
+ * 
+ * 11    4/05/99 4:09p Rmoore1
+ * Header cleanup;  Split debug switch into component_id and level
  * 
  * 10    4/02/99 2:40p Rmoore1
  * New version of DEBUG_PRINT
@@ -53,20 +56,6 @@
  * 1     1/11/99 2:08p Rmoore1
  * Event Handling
 // 
-//    Rev 1.4   11 Sep 1998 18:03:28   phutchis
-// Change inc_error() etc. to Kinc_error() etc. (error key logging).
-// 
-//    Rev 1.3   14 Aug 1998 17:46:14   jkreinem
-// Added VerifyAcpiTablesPresent() function and NO_ACPI_TABLES_MASK
-// error code.
-// 
-//    Rev 1.2   13 Aug 1998 17:28:54   jkreinem
-// Added SAVE_NOT_VALID definition for interrupt configuration.
-// Enhanced failure messages and debug output.
-// 
-//    Rev 1.1   12 Aug 1998 16:31:04   jkreinem
-// Improved SCI configuration and legacy to ACPI transition log messages.
-// 
 //    Rev 1.0   12 Aug 1998 15:54:34   jkreinem
 // Initial revision.
  |__________________________________________________________________________
@@ -74,7 +63,6 @@
 */
 
 #define __EVSCI_C__
-#define _THIS_MODULE        "evsci.c"
 
 #include <acpi.h>
 #include <acpinmsp.h>
@@ -83,7 +71,11 @@
 #include <evsci.h>
 #include <acpitbls.h>
 
-extern INT32         __AcpiLibInitStatus;
+
+#define _THIS_MODULE        "evsci.c"
+#define _COMPONENT          EVENT_HANDLING
+
+extern INT32                __AcpiLibInitStatus;
 
 
 static ST_KEY_DESC_TABLE KDT[] = {
@@ -342,7 +334,7 @@ AcpiEnable (char *TestName, INT32 Flags)
 				
                 if (E_OK == AcpiSetMode (ACPI_MODE))
                 {
-					DEBUG_PRINT (EV_INFO, ("Transition to ACPI mode successful\n"));
+					DEBUG_PRINT (ACPI_INFO, ("Transition to ACPI mode successful\n"));
                 }
 
 				else
@@ -372,7 +364,7 @@ AcpiEnable (char *TestName, INT32 Flags)
 		{	
             /*	load ACPI namespace	*/
 
-            DEBUG_PRINT (EV_INFO, ("Loading ACPI namespace\n"));
+            DEBUG_PRINT (ACPI_INFO, ("Loading ACPI namespace\n"));
 			if (AcpiLoadNameSpace (FALSE))
 			{
                 REPORT_ERROR (&KDT[10]);
@@ -380,7 +372,7 @@ AcpiEnable (char *TestName, INT32 Flags)
 			}
 			else
             {
-				DEBUG_PRINT (EV_INFO, ("ACPI namespace loaded\n"));
+				DEBUG_PRINT (ACPI_INFO, ("ACPI namespace loaded\n"));
             }
         }
     }
