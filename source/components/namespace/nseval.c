@@ -108,15 +108,6 @@
 #define _COMPONENT          NAMESPACE
 
 
-static ST_KEY_DESC_TABLE KDT[] = {
-    {"0000", 'I', "Package stack not empty at method exit", "Package stack not empty at method exit"},
-    {"0001", '1', "Method stack not empty at method exit", "Method stack not empty at method exit"},
-    {"0002", 'I', "Object stack not empty at method exit", "Object stack not empty at method exit"},
-    {"0003", '1', "Descriptor Allocation Failure", "Descriptor Allocation Failure"},
-    {NULL, 'I', NULL, NULL}
-};
-
-
 
 /****************************************************************************
  *
@@ -141,12 +132,15 @@ static ST_KEY_DESC_TABLE KDT[] = {
  ****************************************************************************/
 
 ACPI_STATUS
-NsEvaluateRelative (NAME_TABLE_ENTRY *ObjEntry, char *Pathname, 
-                    OBJECT_DESCRIPTOR *ReturnObject, OBJECT_DESCRIPTOR **Params)
+NsEvaluateRelative (
+    NAME_TABLE_ENTRY        *ObjEntry, 
+    char                    *Pathname, 
+    ACPI_OBJECT             *ReturnObject, 
+    ACPI_OBJECT             **Params)
 {
-    char                NameBuffer[PATHNAME_MAX];
-    ACPI_STATUS         Status;
-    UINT32              MaxObjectPathLength = PATHNAME_MAX - 1;
+    char                    NameBuffer[PATHNAME_MAX];
+    ACPI_STATUS             Status;
+    UINT32                  MaxObjectPathLength = PATHNAME_MAX - 1;
 
 
     FUNCTION_TRACE ("NsEvaluateRelative");
@@ -231,11 +225,13 @@ NsEvaluateRelative (NAME_TABLE_ENTRY *ObjEntry, char *Pathname,
  ****************************************************************************/
 
 ACPI_STATUS
-NsEvaluateByName (char *Pathname, OBJECT_DESCRIPTOR *ReturnObject,
-                    OBJECT_DESCRIPTOR **Params)
+NsEvaluateByName (
+    char                    *Pathname, 
+    ACPI_OBJECT             *ReturnObject,
+    ACPI_OBJECT             **Params)
 {
-    ACPI_STATUS         Status = AE_ERROR;
-    NAME_TABLE_ENTRY    *ObjEntry = NULL;
+    ACPI_STATUS             Status = AE_ERROR;
+    NAME_TABLE_ENTRY        *ObjEntry = NULL;
 
     
     FUNCTION_TRACE ("NsEvaluateByName");
@@ -299,10 +295,12 @@ NsEvaluateByName (char *Pathname, OBJECT_DESCRIPTOR *ReturnObject,
  ****************************************************************************/
 
 ACPI_STATUS
-NsEvaluateByHandle (NAME_TABLE_ENTRY *ObjEntry, OBJECT_DESCRIPTOR *ReturnObject,
-                            OBJECT_DESCRIPTOR **Params)
+NsEvaluateByHandle (
+    NAME_TABLE_ENTRY        *ObjEntry, 
+    ACPI_OBJECT             *ReturnObject,
+    ACPI_OBJECT             **Params)
 {
-    ACPI_STATUS         Status = AE_ERROR;
+    ACPI_STATUS             Status = AE_ERROR;
 
 
     FUNCTION_TRACE ("NsEvaluateByHandle");
@@ -332,7 +330,7 @@ NsEvaluateByHandle (NAME_TABLE_ENTRY *ObjEntry, OBJECT_DESCRIPTOR *ReturnObject,
     {
         /* Initialize the return value */
 
-        memset (ReturnObject, 0, sizeof (OBJECT_DESCRIPTOR));
+        memset (ReturnObject, 0, sizeof (ACPI_OBJECT));
     }
 
 
@@ -379,7 +377,7 @@ NsEvaluateByHandle (NAME_TABLE_ENTRY *ObjEntry, OBJECT_DESCRIPTOR *ReturnObject,
 
         if (ReturnObject)
         {
-            (*ReturnObject) = *((OBJECT_DESCRIPTOR *) ObjStack[ObjStackTop]);            
+            (*ReturnObject) = *((ACPI_OBJECT *) ObjStack[ObjStackTop]);            
         }
     
         /* 
@@ -415,9 +413,12 @@ NsEvaluateByHandle (NAME_TABLE_ENTRY *ObjEntry, OBJECT_DESCRIPTOR *ReturnObject,
  ****************************************************************************/
 
 ACPI_STATUS
-NsExecuteControlMethod (NAME_TABLE_ENTRY *MethodEntry, OBJECT_DESCRIPTOR **Params)
+NsExecuteControlMethod (
+    NAME_TABLE_ENTRY        *MethodEntry, 
+    ACPI_OBJECT             **Params)
 {
-    ACPI_STATUS         Status;
+    ACPI_STATUS             Status;
+    UINT32                  i;
 
 
     FUNCTION_TRACE ("NsExecuteControlMethod");
@@ -441,7 +442,7 @@ NsExecuteControlMethod (NAME_TABLE_ENTRY *MethodEntry, OBJECT_DESCRIPTOR **Param
                 ((METHOD_INFO *) MethodEntry->Value)->Offset + 1,
                 ((METHOD_INFO *) MethodEntry->Value)->Length - 1));
 
-    NsDumpPathname (MethodEntry->Scope, "NsEvaluateByHandle: Setting scope to", 
+    NsDumpPathname (MethodEntry->Scope, "NsExecuteControlMethod: Setting scope to", 
                     TRACE_NAMES, _COMPONENT);
 
     /* Reset the current scope to the beginning of scope stack */
@@ -452,7 +453,7 @@ NsExecuteControlMethod (NAME_TABLE_ENTRY *MethodEntry, OBJECT_DESCRIPTOR **Param
 
     NsPushCurrentScope (MethodEntry->Scope, TYPE_Method);
 
-    NsDumpPathname (MethodEntry, "NsEvaluateByHandle: Executing", 
+    NsDumpPathname (MethodEntry, "NsExecuteControlMethod: Executing", 
                     TRACE_NAMES, _COMPONENT);
 
     DEBUG_PRINT (TRACE_NAMES, ("At offset %8XH\n",
@@ -473,21 +474,28 @@ NsExecuteControlMethod (NAME_TABLE_ENTRY *MethodEntry, OBJECT_DESCRIPTOR **Param
     {
         /*  Package stack not empty at method exit and should be  */
 
-        REPORT_INFO (&KDT[0]);
+        REPORT_ERROR ("Package stack not empty at method exit");
     }
 
     if (AmlGetMethodDepth () > -1)
     {
         /*  Method stack not empty at method exit and should be */
 
-        REPORT_ERROR (&KDT[1]);
+        REPORT_ERROR ("Method stack not empty at method exit");
     }
 
     if (ObjStackTop)
     {
         /* Object stack is not empty at method exit and should be */
 
-        REPORT_INFO (&KDT[2]);
+        REPORT_ERROR ("Object stack not empty at method exit");
+
+        DEBUG_PRINT (ACPI_ERROR, ("%d Remaining: ", ObjStackTop));
+        for (i = 0; i < (UINT32) ObjStackTop; i++)
+        {
+            DEBUG_PRINT (ACPI_ERROR, ("Object Stack [%d]: %p\n", i, ObjStack[ObjStackTop]));
+        }
+
         AmlDumpStack (MODE_Exec, "Remaining Object Stack entries", -1, "");
     }
 
@@ -514,16 +522,17 @@ NsExecuteControlMethod (NAME_TABLE_ENTRY *MethodEntry, OBJECT_DESCRIPTOR **Param
  ****************************************************************************/
 
 ACPI_STATUS
-NsGetObjectValue (NAME_TABLE_ENTRY *ObjectEntry)
+NsGetObjectValue (
+    NAME_TABLE_ENTRY        *ObjectEntry)
 {
     ACPI_STATUS             Status;
-    OBJECT_DESCRIPTOR       *ObjDesc;
+    ACPI_OBJECT             *ObjDesc;
 
 
     FUNCTION_TRACE ("NsGetObjectValue");
 
 
-    ObjDesc = AllocateObjectDesc (&KDT[3]);
+    ObjDesc = AllocateObjectDesc ();
     if (!ObjDesc)
     {
         /* Descriptor allocation failure */
@@ -545,12 +554,12 @@ NsGetObjectValue (NAME_TABLE_ENTRY *ObjectEntry)
      * top valid entry, not to the first unused position.
      */
 
-    LocalDeleteObject ((OBJECT_DESCRIPTOR **) &ObjStack[ObjStackTop]);
+    LocalDeleteObject ((ACPI_OBJECT **) &ObjStack[ObjStackTop]);
     ObjStack[ObjStackTop] = (void *) ObjDesc;
 
     /* This causes ObjDesc (allocated above) to always be deleted */
 
-    Status = AmlGetRvalue ((OBJECT_DESCRIPTOR **) &ObjStack[ObjStackTop]);
+    Status = AmlGetRvalue ((ACPI_OBJECT **) &ObjStack[ObjStackTop]);
 
     /* 
      * If AmlGetRvalue() succeeded, treat the top stack entry as
