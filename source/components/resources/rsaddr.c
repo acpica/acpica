@@ -4,7 +4,7 @@
  *                       AcpiRsAddress16Stream
  *                       AcpiRsAddress32Resource
  *                       AcpiRsAddress32Stream
- *              $Revision: 1.5 $
+ *              $Revision: 1.6 $
  *
  *****************************************************************************/
 
@@ -337,6 +337,7 @@ AcpiRsAddress16Resource (
          */
         Temp8 = (UINT8) (Index + 1);
         StructSize += ROUND_UP_TO_32BITS (Temp8);
+        OutputStruct->Length = StructSize;
     }
     else
     {
@@ -344,11 +345,6 @@ AcpiRsAddress16Resource (
         OutputStruct->Data.Address16.ResourceSourceStringLength = 0;
         OutputStruct->Data.Address16.ResourceSource[0] = 0x00;
     }
-
-    /*
-     * Set the Length parameter
-     */
-    OutputStruct->Length = StructSize;
 
     /*
      * Return the final size of the structure
