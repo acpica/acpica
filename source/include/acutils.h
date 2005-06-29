@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acutils.h -- prototypes for the common (subsystem-wide) procedures
- *       $Revision: 1.173 $
+ *       $Revision: 1.174 $
  *
  *****************************************************************************/
 
@@ -684,22 +684,6 @@ AcpiUtStrtoul64 (
 
 #define ACPI_ANY_BASE        0
 
-ACPI_STATUS
-AcpiUtMutexInitialize (
-    void);
-
-void
-AcpiUtMutexTerminate (
-    void);
-
-ACPI_STATUS
-AcpiUtAcquireMutex (
-    ACPI_MUTEX_HANDLE       MutexId);
-
-ACPI_STATUS
-AcpiUtReleaseMutex (
-    ACPI_MUTEX_HANDLE       MutexId);
-
 UINT8 *
 AcpiUtGetResourceEndTag (
     ACPI_OPERAND_OBJECT     *ObjDesc);
@@ -725,6 +709,27 @@ AcpiUtDisplayInitPathname (
     char                    *Path);
 
 #endif
+
+
+/*
+ * utmutex - mutex support
+ */
+ACPI_STATUS
+AcpiUtMutexInitialize (
+    void);
+
+void
+AcpiUtMutexTerminate (
+    void);
+
+ACPI_STATUS
+AcpiUtAcquireMutex (
+    ACPI_MUTEX_HANDLE       MutexId);
+
+ACPI_STATUS
+AcpiUtReleaseMutex (
+    ACPI_MUTEX_HANDLE       MutexId);
+
 
 
 /*
