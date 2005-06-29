@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: psopcode - Parser/Interpreter opcode information table
- *              $Revision: 1.54 $
+ *              $Revision: 1.55 $
  *
  *****************************************************************************/
 
@@ -540,7 +540,7 @@
 
 static const ACPI_OPCODE_INFO    AcpiGbl_AmlOpInfo[] =
 {
-/* Index           Name                 Parser Args               Interpreter Args                 Class                      Type                  Flags */
+/* Index           Name                 Parser Args               Interpreter Args                ObjectType                Class                      Type                  Flags */
 
 /* 00 */ ACPI_OP ("Zero",               ARGP_ZERO_OP,              ARGI_ZERO_OP,               INTERNAL_TYPE_REFERENCE, AML_CLASS_ARGUMENT,        AML_TYPE_CONSTANT,        0),
 /* 01 */ ACPI_OP ("One",                ARGP_ONE_OP,               ARGI_ONE_OP,                INTERNAL_TYPE_REFERENCE, AML_CLASS_ARGUMENT,        AML_TYPE_CONSTANT,        0),
