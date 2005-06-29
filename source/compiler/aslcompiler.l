@@ -3,7 +3,7 @@
 /******************************************************************************
  *
  * Module Name: aslcompiler.l - Flex input file
- *              $Revision: 1.57 $
+ *              $Revision: 1.58 $
  *
  *****************************************************************************/
 
@@ -645,9 +645,7 @@ ResetCurrentLineBuffer (
             Gbl_LineBufPtr - Gbl_CurrentLineBuffer);
     }
 
-    Gbl_InputByteCount++; /* Account for the CR/linefeed */
-    Gbl_CurrentLineOffset += Gbl_CurrentColumn + 1;
-
+    Gbl_CurrentLineOffset += Gbl_CurrentColumn;
     Gbl_CurrentColumn = 0;
 
     Gbl_CurrentLineNumber++;
