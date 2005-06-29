@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acmacros.h - C macros for the entire subsystem.
- *       $Revision: 1.119 $
+ *       $Revision: 1.120 $
  *
  *****************************************************************************/
 
@@ -311,7 +311,8 @@
  * Obsolete
  */
 
-/*#define ACPI_PCI_FUNCTION(a)            (UINT16) ((((UINT64)((UINT64)(a) & ACPI_PCI_FUNCTION_MASK)) >> 16))
+/*
+#define ACPI_PCI_FUNCTION(a)            (UINT16) ((((UINT64)((UINT64)(a) & ACPI_PCI_FUNCTION_MASK)) >> 16))
 #define ACPI_PCI_DEVICE(a)              (UINT16) ((((UINT64)((UINT64)(a) & ACPI_PCI_DEVICE_MASK)) >> 32))
 #define ACPI_PCI_REGISTER(a)            (UINT16) (((UINT64)((UINT64)(a) & ACPI_PCI_REGISTER_MASK)))
 */
