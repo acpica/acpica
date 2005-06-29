@@ -14,15 +14,18 @@
  | FILENAME: amlopsys.c
  |__________________________________________________________________________
  |
- | $Revision: 1.7 $
- | $Date: 2005/06/29 17:56:38 $
+ | $Revision: 1.8 $
+ | $Date: 2005/06/29 17:56:40 $
  | $Log: exsystem.c,v $
- | Revision 1.7  2005/06/29 17:56:38  aystarik
- | New names for I/O and PCI OSD interfaces
+ | Revision 1.8  2005/06/29 17:56:40  aystarik
+ | Integrated with 03/99 OPSD code
  |
  | 
- | date	99.03.10.00.08.00;	author rmoore1;	state Exp;
+ | date	99.03.31.22.33.00;	author rmoore1;	state Exp;
  |
+ * 
+ * 8     3/31/99 2:33p Rmoore1
+ * Integrated with 03/99 OPSD code
  * 
  * 7     3/09/99 4:08p Rmoore1
  * New names for I/O and PCI OSD interfaces
@@ -49,7 +52,7 @@
 // Change inc_error() etc. to dKinc_error() etc. (error key logging).
 // 
 //    Rev 1.3   14 May 1998 16:49:38   phutchis
-// Remove "return S_SUCCESS;" from VOID function ReleaseGlobalLock().
+// Remove "return S_SUCCESS;" from void function ReleaseGlobalLock().
 // 
 //    Rev 1.2   30 Apr 1998 07:23:48   calingle
 // Added two functions one to get ownership of the Global Lock and another to Release
@@ -65,25 +68,11 @@
 */
 
 #define __AMLOPSYS_C__
+#define _THIS_MODULE        "amlopsys.c"
 
-#include "acpitype.h"
-#include "acpipriv.h"
-#include "acpirio.h"
-#include "aml.h"
-#include "acpinmsp.h"
-#include "amldsio.h"
-#include "amlscan.h"
-#include "amlexec.h"
-#include "amlpriv.h"
-#include "amlopsys.h"
-#include "acpiosd.h"
-#include "bu.h"
-
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <limits.h>
-#include <time.h>
+#include <acpi.h>
+#include <acpinmsp.h>
+#include <amlopsys.h>
 
 /* Global Variables */
 
@@ -92,11 +81,18 @@ ACPI_EXTERN FIRMWARE_ACPI_CONTROL_STRUCTURE * FACS;
 extern char     *Why;
 
 
+
+static ST_KEY_DESC_TABLE KDT[] = {
+    {"0000", 'W', "NOT IMPLEMENTED", "NOT IMPLEMENTED"},
+    {NULL, 'I', NULL, NULL}
+};
+
+
 /******************************************************************************
  * 
  * FUNCTION:    ThreadId
  *
- * PARAMETERS:  VOID
+ * PARAMETERS:  void
  *
  * RETURN:      Current Thread ID (for this implementation a 1 is returned)
  *
@@ -107,7 +103,7 @@ extern char     *Why;
  ******************************************************************************/
 
 UINT16 
-ThreadId (VOID)
+ThreadId (void)
 {
     return (1);
 }
@@ -131,39 +127,42 @@ INT32
 DoNotifyOp (OBJECT_DESCRIPTOR *ValDesc, OBJECT_DESCRIPTOR *ObjDesc)
 {
 
-    fprintf_bu (LstFileHandle, LOGFILE,
-                "NotifyOp: %s %s ", NsTypeNames[ObjDesc->ValType],
-                NsFullyQualifiedName (ObjDesc->Device.Device));
-    
-    switch (ValDesc->Number.Number)
+    if (ValDesc)
     {
+        if (ObjDesc)
+        {
+            DEBUG_PRINT2 (AML_INFO, 
+                        "NotifyOp: %s %s \n", NsTypeNames[ObjDesc->ValType],
+                        NsFullyQualifiedName (ObjDesc->Device.Device));
+        }
+    
+        switch (ValDesc->Number.Number)
+        {
         case 0:
-            fprintf_bu (LstFileHandle, LOGFILE,
-                            "Re-enumerate Devices ");
+            DEBUG_PRINT (AML_INFO, "Re-enumerate Devices \n");
             break;
 
         case 1:
-            fprintf_bu (LstFileHandle, LOGFILE, "Ejection Request ");
+            DEBUG_PRINT (AML_INFO, "Ejection Request \n");
             break;
 
         case 2:
-            fprintf_bu (LstFileHandle, LOGFILE, "Device Wake ");
+            DEBUG_PRINT (AML_INFO, "Device Wake \n");
             break;
 
         case 0x80:
-            fprintf_bu (LstFileHandle, LOGFILE, "Status Change ");
+            DEBUG_PRINT (AML_INFO, "Status Change \n");
             break;
 
         default:
-            fprintf_bu (LstFileHandle, LOGFILE, "%lx ",
+            DEBUG_PRINT1 (AML_INFO, "%lx \n",
                     ValDesc->Number.Number);
             break;
+        }
+
+        REPORT_WARNING (&KDT[0]);
     }
-
-    fprintf_bu (LstFileHandle, LOGFILE, "[not implemented]");
-    _Kinc_warning ("0000", PACRLF, __LINE__, __FILE__,
-                        LstFileHandle, LOGFILE);
-
+    
     return S_SUCCESS;
 }
 
@@ -174,7 +173,7 @@ DoNotifyOp (OBJECT_DESCRIPTOR *ValDesc, OBJECT_DESCRIPTOR *ObjDesc)
  *
  * PARAMETERS:  UINT32 HowLong - The amount of time to suspend
  *
- * RETURN:      VOID
+ * RETURN:      void
  *
  * DESCRIPTION: Suspend processing for specified amount of time.  This
  *              function should be suspending the current thread but is using
@@ -182,7 +181,7 @@ DoNotifyOp (OBJECT_DESCRIPTOR *ValDesc, OBJECT_DESCRIPTOR *ObjDesc)
  *
  ******************************************************************************/
 
-VOID
+void
 DoSuspend (UINT32 HowLong)
 {
     OsdSleep ((UINT16) (HowLong / (UINT32) 1000), (UINT16) (HowLong % (UINT32) 1000));
@@ -210,28 +209,31 @@ INT32
 AcquireOpRqst (OBJECT_DESCRIPTOR *TimeDesc, OBJECT_DESCRIPTOR *ObjDesc)
 {
     UINT16      CurrentId;
-    INT32       RetVal = S_SUCCESS;
+    INT32       Excep = S_SUCCESS;
 
 
-    if (ObjDesc->Mutex.LockCount == 0)
+    if (ObjDesc)
     {
-        ObjDesc->Mutex.ThreadId = ThreadId ();
-    }
+        if (ObjDesc->Mutex.LockCount == 0)
+        {
+            ObjDesc->Mutex.ThreadId = ThreadId ();
+        }
     
-    else if (ObjDesc->Mutex.ThreadId != (CurrentId = ThreadId ()))
-    {
-        sprintf (WhyBuf, "Thread %02Xh attemted to Aquire a resource owned "
-                "by thread %02Xh", CurrentId, ObjDesc->Mutex.ThreadId);
-        Why = WhyBuf;
-        RetVal = S_ERROR;
+        else if (ObjDesc->Mutex.ThreadId != (CurrentId = ThreadId ()))
+        {
+            sprintf (WhyBuf, "Thread %02Xh attemted to Aquire a resource owned "
+                    "by thread %02Xh", CurrentId, ObjDesc->Mutex.ThreadId);
+            Why = WhyBuf;
+            Excep = S_ERROR;
+        }
+
+        if (S_SUCCESS == Excep)
+        {
+            ObjDesc->Mutex.LockCount++;
+        }
     }
 
-    if (S_SUCCESS == RetVal)
-    {
-        ObjDesc->Mutex.LockCount++;
-    }
-
-    return (RetVal);
+    return (Excep);
 }
 
 
@@ -256,29 +258,32 @@ INT32
 ReleaseOpRqst (OBJECT_DESCRIPTOR *ObjDesc)
 {
     UINT16      CurrentId;
-    INT32       RetVal = S_SUCCESS;
+    INT32       Excep = S_SUCCESS;
 
 
-    if (ObjDesc->Mutex.LockCount == 0)
+    if (ObjDesc)
     {
-        Why = "Attempting to Release a Mutex that is not locked";
-        RetVal == S_ERROR;
-    }
+        if (ObjDesc->Mutex.LockCount == 0)
+        {
+            Why = "Attempting to Release a Mutex that is not locked";
+            Excep == S_ERROR;
+        }
     
-    else if (ObjDesc->Mutex.ThreadId != (CurrentId = ThreadId ()))
-    {
-        sprintf (WhyBuf, "Thread %02Xh attemted to Release a Mutex owned "
-                    "by thread %02Xh", CurrentId, ObjDesc->Mutex.ThreadId);
-        Why = WhyBuf;
-        RetVal = S_ERROR;
-    }
+        else if (ObjDesc->Mutex.ThreadId != (CurrentId = ThreadId ()))
+        {
+            sprintf (WhyBuf, "Thread %02Xh attemted to Release a Mutex owned "
+                        "by thread %02Xh", CurrentId, ObjDesc->Mutex.ThreadId);
+            Why = WhyBuf;
+            Excep = S_ERROR;
+        }
     
-    if (S_SUCCESS == RetVal)
-    {
-        ObjDesc->Mutex.LockCount--;
+        if (S_SUCCESS == Excep)
+        {
+            ObjDesc->Mutex.LockCount--;
+        }
     }
 
-    return (RetVal);
+    return (Excep);
 }
 
 
@@ -303,7 +308,11 @@ INT32
 SignalOpRqst (OBJECT_DESCRIPTOR *ObjDesc)
 {
 
-    ObjDesc->Event.SignalCount++;
+    if (ObjDesc)
+    {
+        ObjDesc->Event.SignalCount++;
+    }
+
     return (S_SUCCESS);
 }
 
@@ -332,24 +341,27 @@ SignalOpRqst (OBJECT_DESCRIPTOR *ObjDesc)
 INT32
 WaitOpRqst (OBJECT_DESCRIPTOR *TimeDesc, OBJECT_DESCRIPTOR *ObjDesc)
 {
-    INT32       RetVal = S_SUCCESS;
+    INT32       Excep = S_SUCCESS;
 
 
-    if (0 == ObjDesc->Event.SignalCount)
+    if (ObjDesc)
     {
-        /* Error for single threaded OS */
+        if (0 == ObjDesc->Event.SignalCount)
+        {
+            /* Error for single threaded OS */
         
-        Why = "Waiting for a signal that has not occured.  In a single threaded"
-                "\nOperating System the signal would never be received.";
-        RetVal = S_ERROR;
-    }
+            Why = "Waiting for a signal that has not occured.  In a single threaded"
+                    "\nOperating System the signal would never be received.";
+            Excep = S_ERROR;
+        }
     
-    else
-    {
-        ObjDesc->Event.SignalCount--;
+        else
+        {
+            ObjDesc->Event.SignalCount--;
+        }
     }
-
-    return (RetVal);
+  
+    return (Excep);
 }
 
 
@@ -371,12 +383,15 @@ WaitOpRqst (OBJECT_DESCRIPTOR *TimeDesc, OBJECT_DESCRIPTOR *ObjDesc)
 INT32
 ResetOpRqst (OBJECT_DESCRIPTOR *ObjDesc)
 {
-    INT32       RetVal = S_SUCCESS;
+    INT32       Excep = S_SUCCESS;
 
 
-    ObjDesc->Event.SignalCount = 0;
+    if (ObjDesc)
+    {
+        ObjDesc->Event.SignalCount = 0;
+    }
 
-    return (RetVal);
+    return (Excep);
 }
 
 
@@ -393,29 +408,36 @@ ResetOpRqst (OBJECT_DESCRIPTOR *ObjDesc)
  **************************************************************************/
 
 INT32
-GetGlobalLock(VOID)
+GetGlobalLock(void)
 {
-    UINT32          GlobalLockReg = FACS->GlobalLock;
-    INT32           RetVal;
+    UINT32          GlobalLockReg;
+    INT32           Excep = S_ERROR;
 
 
-    if (GlobalLockReg & GL_OWNED)
+    if (FACS)
     {
-        Why = "The Global Lock is owned by another process\n"\
-                "This is a single threaded implementation. There is no way some\n"\
-                "other process can own the Global Lock!";
-        RetVal = S_ERROR;
-    }
+        /* Only if the FACS is valid */
+
+        GlobalLockReg = FACS->GlobalLock;
+
+        if (GlobalLockReg & GL_OWNED)
+        {
+            Why = "The Global Lock is owned by another process\n"\
+                    "This is a single threaded implementation. There is no way some\n"\
+                    "other process can own the Global Lock!";
+            Excep = S_ERROR;
+        }
     
-    else
-    {
-        /* Its not owned so take ownership and return S_SUCCESS */
+        else
+        {
+            /* Its not owned so take ownership and return S_SUCCESS */
         
-        FACS->GlobalLock |= GL_OWNED;
-        RetVal = S_SUCCESS;
+            FACS->GlobalLock |= GL_OWNED;
+            Excep = S_SUCCESS;
+        }
     }
-    
-    return (RetVal);
+
+    return (Excep);
 }
 
 
@@ -427,9 +449,12 @@ GetGlobalLock(VOID)
  *
  **************************************************************************/
 
-VOID
-ReleaseGlobalLock (VOID)
+void
+ReleaseGlobalLock (void)
 {
     
-    FACS->GlobalLock &= 0xFFFFFFFF ^ GL_OWNED;
+    if (FACS)
+    {
+        FACS->GlobalLock &= 0xFFFFFFFF ^ GL_OWNED;
+    }
 }
