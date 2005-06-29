@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dsmethod - Parser/Interpreter interface - control method parsing
- *              $Revision: 1.103 $
+ *              $Revision: 1.106 $
  *
  *****************************************************************************/
 
@@ -219,7 +219,8 @@ AcpiDsParseMethod (
     WalkState = AcpiDsCreateWalkState (OwnerId, NULL, NULL, NULL);
     if (!WalkState)
     {
-        return_ACPI_STATUS (AE_NO_MEMORY);
+        Status = AE_NO_MEMORY;
+        goto Cleanup;
     }
 
     Status = AcpiDsInitAmlWalk (WalkState, Op, Node,
@@ -228,29 +229,29 @@ AcpiDsParseMethod (
     if (ACPI_FAILURE (Status))
     {
         AcpiDsDeleteWalkState (WalkState);
-        return_ACPI_STATUS (Status);
+        goto Cleanup;
     }
 
     /*
      * Parse the method, first pass
      *
-     * The first pass load is where newly declared named objects are
-     * added into the namespace.  Actual evaluation of
-     * the named objects (what would be called a "second
-     * pass") happens during the actual execution of the
-     * method so that operands to the named objects can
-     * take on dynamic run-time values.
+     * The first pass load is where newly declared named objects are added into
+     * the namespace.  Actual evaluation of the named objects (what would be
+     * called a "second pass") happens during the actual execution of the
+     * method so that operands to the named objects can take on dynamic
+     * run-time values.
      */
     Status = AcpiPsParseAml (WalkState);
     if (ACPI_FAILURE (Status))
     {
-        return_ACPI_STATUS (Status);
+        goto Cleanup;
     }
 
     ACPI_DEBUG_PRINT ((ACPI_DB_PARSE,
         "**** [%4.4s] Parsed **** NamedObj=%p Op=%p\n",
         AcpiUtGetNodeName (ObjHandle), ObjHandle, Op));
 
+Cleanup:
     AcpiPsDeleteParseTree (Op);
     return_ACPI_STATUS (Status);
 }
@@ -557,7 +558,7 @@ AcpiDsRestartControlMethod (
          * to the caller. Just save the last result as the return value.
          * NOTE: this is optional because the ASL language does not actually
          * support this behavior.
-         */        
+         */
         else if (!AcpiDsDoImplicitReturn (ReturnDesc, WalkState, FALSE))
         {
             /*
