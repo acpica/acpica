@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acexcep.h - Exception codes returned by the ACPI subsystem
- *       $Revision: 1.60 $
+ *       $Revision: 1.61 $
  *
  *****************************************************************************/
 
@@ -339,7 +339,7 @@ NATIVE_CHAR const   *AcpiGbl_ExceptionNames_Aml[] =
     "AE_AML_INVALID_RESOURCE_TYPE",
     "AE_AML_INVALID_INDEX",
     "AE_AML_REGISTER_LIMIT",
-    "AE_AML_NO_WHILE".
+    "AE_AML_NO_WHILE",
     "AE_AML_ALIGNMENT"
 };
 
