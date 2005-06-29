@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acinterp.h - Interpreter subcomponent prototypes and defines
- *       $Revision: 1.107 $
+ *       $Revision: 1.108 $
  *
  *****************************************************************************/
 
@@ -279,7 +279,7 @@ AcpiExHexadic (
 
 ACPI_STATUS
 AcpiExCreateBufferField (
-    UINT8                   *AmlPtr,
+    UINT8                   *AmlStart,
     UINT32                  AmlLength,
     ACPI_NAMESPACE_NODE     *Node,
     ACPI_WALK_STATE         *WalkState);
@@ -304,7 +304,7 @@ AcpiExCreatePowerResource (
 
 ACPI_STATUS
 AcpiExCreateRegion (
-    UINT8                   *AmlPtr,
+    UINT8                   *AmlStart,
     UINT32                  AmlLength,
     UINT8                   RegionSpace,
     ACPI_WALK_STATE         *WalkState);
@@ -319,7 +319,7 @@ AcpiExCreateAlias (
 
 ACPI_STATUS
 AcpiExCreateMethod (
-    UINT8                   *AmlPtr,
+    UINT8                   *AmlStart,
     UINT32                  AmlLength,
     UINT32                  MethodFlags,
     ACPI_NAMESPACE_NODE     *Method);
@@ -503,7 +503,7 @@ AcpiExGetBufferFieldValue (
 void
 AcpiExShowHexValue (
     UINT32                  ByteCount,
-    UINT8                   *AmlPtr,
+    UINT8                   *AmlStart,
     UINT32                  LeadSpace);
 
 
