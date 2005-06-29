@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: nsdump - table dumping routines for debug
- *              $Revision: 1.91 $
+ *              $Revision: 1.92 $
  *
  *****************************************************************************/
 
@@ -163,7 +163,7 @@ AcpiNsDumpPathname (
         return_ACPI_STATUS (AE_OK);
     }
 
-    Buffer = AcpiCmAllocate (PATHNAME_MAX);
+    Buffer = AcpiUtAllocate (PATHNAME_MAX);
     if (!Buffer)
     {
         return_ACPI_STATUS (AE_NO_MEMORY);
@@ -177,7 +177,7 @@ AcpiNsDumpPathname (
         AcpiOsPrintf ("%s %s (%p)\n", Msg, Buffer, Handle);
     }
 
-    AcpiCmFree (Buffer);
+    AcpiUtFree (Buffer);
 
     return_ACPI_STATUS (AE_OK);
 }
@@ -303,7 +303,7 @@ AcpiNsDumpOneObject (
         Type = INTERNAL_TYPE_DEF_ANY;                                /* prints as *ERROR* */
     }
 
-    if (!AcpiCmValidAcpiName (ThisNode->Name))
+    if (!AcpiUtValidAcpiName (ThisNode->Name))
     {
         REPORT_WARNING (("Invalid ACPI Name %08X\n", ThisNode->Name));
     }
@@ -312,7 +312,7 @@ AcpiNsDumpOneObject (
      * Now we can print out the pertinent information
      */
 
-    DEBUG_PRINT_RAW (TRACE_TABLES, (" %4.4s %-9s ", &ThisNode->Name, AcpiCmGetTypeName (Type)));
+    DEBUG_PRINT_RAW (TRACE_TABLES, (" %4.4s %-9s ", &ThisNode->Name, AcpiUtGetTypeName (Type)));
     DEBUG_PRINT_RAW (TRACE_TABLES, ("%p S:%p O:%p",  ThisNode, ThisNode->Child, ThisNode->Object));
 
 
@@ -416,7 +416,7 @@ AcpiNsDumpOneObject (
             else
             {
                 DEBUG_PRINT_RAW (TRACE_TABLES, ("(Ptr to ACPI Object type %X [%s])\n",
-                                    ObjType, AcpiCmGetTypeName (ObjType)));
+                                    ObjType, AcpiUtGetTypeName (ObjType)));
                 BytesToDump = sizeof (ACPI_OPERAND_OBJECT);
             }
         }

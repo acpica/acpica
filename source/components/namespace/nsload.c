@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: nsload - namespace loading/expanding/contracting procedures
- *              $Revision: 1.37 $
+ *              $Revision: 1.40 $
  *
  *****************************************************************************/
 
@@ -379,9 +379,9 @@ AcpiNsLoadTable (
     DEBUG_PRINT (ACPI_INFO,
         ("NsLoadTable: **** Loading table into namespace ****\n"));
 
-    AcpiCmAcquireMutex (ACPI_MTX_NAMESPACE);
+    AcpiUtAcquireMutex (ACPI_MTX_NAMESPACE);
     Status = AcpiNsParseTable (TableDesc, Node->Child);
-    AcpiCmReleaseMutex (ACPI_MTX_NAMESPACE);
+    AcpiUtReleaseMutex (ACPI_MTX_NAMESPACE);
 
     if (ACPI_FAILURE (Status))
     {
@@ -427,14 +427,13 @@ AcpiNsLoadTableByType (
 {
     UINT32                  i;
     ACPI_STATUS             Status = AE_OK;
-    ACPI_TABLE_HEADER       *TablePtr;
     ACPI_TABLE_DESC         *TableDesc;
 
 
     FUNCTION_TRACE ("NsLoadTableByType");
 
 
-    AcpiCmAcquireMutex (ACPI_MTX_TABLES);
+    AcpiUtAcquireMutex (ACPI_MTX_TABLES);
 
 
     /*
@@ -484,8 +483,6 @@ AcpiNsLoadTableByType (
         TableDesc = &AcpiGbl_AcpiTables[ACPI_TABLE_SSDT];
         for (i = 0; i < AcpiGbl_AcpiTables[ACPI_TABLE_SSDT].Count; i++)
         {
-            TablePtr = TableDesc->Pointer;
-
             /*
              * Only attempt to load table if it is not
              * already loaded!
@@ -521,8 +518,6 @@ AcpiNsLoadTableByType (
 
         for (i = 0; i < AcpiGbl_AcpiTables[ACPI_TABLE_PSDT].Count; i++)
         {
-            TablePtr = TableDesc->Pointer;
-
             /* Only attempt to load table if it is not already loaded! */
 
             if (!TableDesc->LoadedIntoNamespace)
@@ -550,7 +545,7 @@ AcpiNsLoadTableByType (
 
 UnlockAndExit:
 
-    AcpiCmReleaseMutex (ACPI_MTX_TABLES);
+    AcpiUtReleaseMutex (ACPI_MTX_TABLES);
 
     return_ACPI_STATUS (Status);
 
@@ -613,7 +608,7 @@ AcpiNsDeleteSubtree (
         {
             /* Check if this object has any children */
 
-            if (ACPI_SUCCESS (AcpiGetNextObject (ACPI_TYPE_ANY, ChildHandle, 
+            if (ACPI_SUCCESS (AcpiGetNextObject (ACPI_TYPE_ANY, ChildHandle,
                                     0, &Dummy)))
             {
                 /*

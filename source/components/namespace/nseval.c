@@ -2,7 +2,7 @@
  *
  * Module Name: nseval - Object evaluation interfaces -- includes control
  *                       method lookup and execution.
- *              $Revision: 1.87 $
+ *              $Revision: 1.90 $
  *
  ******************************************************************************/
 
@@ -186,12 +186,12 @@ AcpiNsEvaluateRelative (
 
     /* Get the prefix handle and Node */
 
-    AcpiCmAcquireMutex (ACPI_MTX_NAMESPACE);
+    AcpiUtAcquireMutex (ACPI_MTX_NAMESPACE);
 
     PrefixNode = AcpiNsConvertHandleToEntry (Handle);
     if (!PrefixNode)
     {
-        AcpiCmReleaseMutex (ACPI_MTX_NAMESPACE);
+        AcpiUtReleaseMutex (ACPI_MTX_NAMESPACE);
         Status = AE_BAD_PARAMETER;
         goto Cleanup;
     }
@@ -203,13 +203,13 @@ AcpiNsEvaluateRelative (
                             IMODE_EXECUTE, NS_NO_UPSEARCH, NULL,
                             &Node);
 
-    AcpiCmReleaseMutex (ACPI_MTX_NAMESPACE);
+    AcpiUtReleaseMutex (ACPI_MTX_NAMESPACE);
 
     if (ACPI_FAILURE (Status))
     {
         DEBUG_PRINT (ACPI_INFO,
-            ("NsEvaluateRelative: Object [%s] not found [%.4X]\n",
-            Pathname, AcpiCmFormatException (Status)));
+            ("NsEvaluateRelative: Object [%s] not found [%s]\n",
+            Pathname, AcpiUtFormatException (Status)));
         goto Cleanup;
     }
 
@@ -232,7 +232,7 @@ Cleanup:
 
     /* Cleanup */
 
-    AcpiCmFree (InternalPath);
+    AcpiUtFree (InternalPath);
 
     return_ACPI_STATUS (Status);
 }
@@ -280,7 +280,7 @@ AcpiNsEvaluateByName (
         return_ACPI_STATUS (Status);
     }
 
-    AcpiCmAcquireMutex (ACPI_MTX_NAMESPACE);
+    AcpiUtAcquireMutex (ACPI_MTX_NAMESPACE);
 
     /* Lookup the name in the namespace */
 
@@ -288,7 +288,7 @@ AcpiNsEvaluateByName (
                             IMODE_EXECUTE, NS_NO_UPSEARCH, NULL,
                             &Node);
 
-    AcpiCmReleaseMutex (ACPI_MTX_NAMESPACE);
+    AcpiUtReleaseMutex (ACPI_MTX_NAMESPACE);
 
     if (ACPI_FAILURE (Status))
     {
@@ -320,7 +320,7 @@ Cleanup:
 
     if (InternalPath)
     {
-        AcpiCmFree (InternalPath);
+        AcpiUtFree (InternalPath);
     }
 
     return_ACPI_STATUS (Status);
@@ -383,12 +383,12 @@ AcpiNsEvaluateByHandle (
 
     /* Get the prefix handle and Node */
 
-    AcpiCmAcquireMutex (ACPI_MTX_NAMESPACE);
+    AcpiUtAcquireMutex (ACPI_MTX_NAMESPACE);
 
     Node = AcpiNsConvertHandleToEntry (Handle);
     if (!Node)
     {
-        AcpiCmReleaseMutex (ACPI_MTX_NAMESPACE);
+        AcpiUtReleaseMutex (ACPI_MTX_NAMESPACE);
         return_ACPI_STATUS (AE_BAD_PARAMETER);
     }
 
@@ -493,13 +493,13 @@ AcpiNsExecuteControlMethod (
 
     /* Verify that there is a method associated with this object */
 
-    ObjDesc = AcpiNsGetAttachedObject ((ACPI_HANDLE) MethodNode);
+    ObjDesc = AcpiNsGetAttachedObject (MethodNode);
     if (!ObjDesc)
     {
         DEBUG_PRINT (ACPI_ERROR,
             ("Control method is undefined (nil value)\n"));
 
-        AcpiCmReleaseMutex (ACPI_MTX_NAMESPACE);
+        AcpiUtReleaseMutex (ACPI_MTX_NAMESPACE);
         return_ACPI_STATUS (AE_ERROR);
     }
 
@@ -522,12 +522,12 @@ AcpiNsExecuteControlMethod (
      * interpreter locks to ensure that no thread is using the portion of the
      * namespace that is being deleted.
      */
-    AcpiCmReleaseMutex (ACPI_MTX_NAMESPACE);
+    AcpiUtReleaseMutex (ACPI_MTX_NAMESPACE);
 
     /*
      * Execute the method via the interpreter
      */
-    Status = AcpiAmlExecuteMethod (MethodNode, Params, ReturnObjDesc);
+    Status = AcpiExExecuteMethod (MethodNode, Params, ReturnObjDesc);
 
     return_ACPI_STATUS (Status);
 }
@@ -570,7 +570,7 @@ AcpiNsGetObjectValue (
         /*
          *  Create a Reference object to contain the object
          */
-        ObjDesc = AcpiCmCreateInternalObject (Node->Type);
+        ObjDesc = AcpiUtCreateInternalObject (Node->Type);
         if (!ObjDesc)
         {
            Status = AE_NO_MEMORY;
@@ -597,7 +597,7 @@ AcpiNsGetObjectValue (
 
         MEMCPY (ObjDesc, ValDesc, sizeof (ACPI_OPERAND_OBJECT));
         ObjDesc->Common.ReferenceCount = 1;
-        AcpiCmReleaseMutex (ACPI_MTX_NAMESPACE);
+        AcpiUtReleaseMutex (ACPI_MTX_NAMESPACE);
     }
 
 
@@ -609,7 +609,7 @@ AcpiNsGetObjectValue (
     {
         /* Create an Reference object to contain the object */
 
-        ObjDesc = AcpiCmCreateInternalObject (INTERNAL_TYPE_REFERENCE);
+        ObjDesc = AcpiUtCreateInternalObject (INTERNAL_TYPE_REFERENCE);
         if (!ObjDesc)
         {
            Status = AE_NO_MEMORY;
@@ -638,18 +638,18 @@ AcpiNsGetObjectValue (
          * intepreter.
          */
 
-        AcpiCmReleaseMutex (ACPI_MTX_NAMESPACE);
-        Status = AcpiAmlEnterInterpreter ();
+        AcpiUtReleaseMutex (ACPI_MTX_NAMESPACE);
+        Status = AcpiExEnterInterpreter ();
         if (ACPI_SUCCESS (Status))
         {
-            Status = AcpiAmlResolveToValue (&ObjDesc, NULL);
+            Status = AcpiExResolveToValue (&ObjDesc, NULL);
 
-            AcpiAmlExitInterpreter ();
+            AcpiExExitInterpreter ();
         }
     }
 
     /*
-     * If AcpiAmlResolveToValue() succeeded, the return value was
+     * If AcpiExResolveToValue() succeeded, the return value was
      * placed in ObjDesc.
      */
 
@@ -671,6 +671,6 @@ UnlockAndExit:
 
     /* Unlock the namespace */
 
-    AcpiCmReleaseMutex (ACPI_MTX_NAMESPACE);
+    AcpiUtReleaseMutex (ACPI_MTX_NAMESPACE);
     return_ACPI_STATUS (Status);
 }

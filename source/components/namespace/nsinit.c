@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: nsinit - namespace initialization
- *              $Revision: 1.23 $
+ *              $Revision: 1.24 $
  *
  *****************************************************************************/
 
@@ -301,7 +301,7 @@ AcpiNsInitOneObject (
             DEBUG_PRINT_RAW (ACPI_ERROR, ("\n"));
             DEBUG_PRINT (ACPI_ERROR,
                     ("%s while getting region arguments [%4.4s]\n",
-                    AcpiCmFormatException (Status), &Node->Name));
+                    AcpiUtFormatException (Status), &Node->Name));
         }
 
         if (!(AcpiDbgLevel & TRACE_INIT))
@@ -327,7 +327,7 @@ AcpiNsInitOneObject (
             DEBUG_PRINT_RAW (ACPI_ERROR, ("\n"));
             DEBUG_PRINT (ACPI_ERROR,
                     ("%s while getting buffer field arguments [%4.4s]\n",
-                    AcpiCmFormatException (Status), &Node->Name));
+                    AcpiUtFormatException (Status), &Node->Name));
         }
         if (!(AcpiDbgLevel & TRACE_INIT))
         {
@@ -386,23 +386,23 @@ AcpiNsInitOneDevice (
 
     Info->DeviceCount++;
 
-    AcpiCmAcquireMutex (ACPI_MTX_NAMESPACE);
+    AcpiUtAcquireMutex (ACPI_MTX_NAMESPACE);
 
     Node = AcpiNsConvertHandleToEntry (ObjHandle);
     if (!Node)
     {
-        AcpiCmReleaseMutex (ACPI_MTX_NAMESPACE);
+        AcpiUtReleaseMutex (ACPI_MTX_NAMESPACE);
         return (AE_BAD_PARAMETER);
     }
 
-    AcpiCmReleaseMutex (ACPI_MTX_NAMESPACE);
+    AcpiUtReleaseMutex (ACPI_MTX_NAMESPACE);
 
     /*
      * Run _STA to determine if we can run _INI on the device.
      */
 
-    DEBUG_EXEC(AcpiCmDisplayInitPathname (Node, "_STA  [Method]"));
-    Status = AcpiCmExecute_STA (Node, &Flags);
+    DEBUG_EXEC(AcpiUtDisplayInitPathname (Node, "_STA  [Method]"));
+    Status = AcpiUtExecute_STA (Node, &Flags);
     if (ACPI_FAILURE (Status))
     {
         /* Ignore error and move on to next device */
@@ -423,7 +423,7 @@ AcpiNsInitOneDevice (
      * The device is present. Run _INI.
      */
 
-    DEBUG_EXEC(AcpiCmDisplayInitPathname (ObjHandle, "_INI  [Method]"));
+    DEBUG_EXEC(AcpiUtDisplayInitPathname (ObjHandle, "_INI  [Method]"));
     Status = AcpiNsEvaluateRelative (ObjHandle, "_INI", NULL, NULL);
     if (AE_NOT_FOUND == Status)
     {
@@ -439,9 +439,9 @@ AcpiNsInitOneDevice (
         NATIVE_CHAR *ScopeName = AcpiNsGetTablePathname (ObjHandle);
 
         DEBUG_PRINT (ACPI_WARN, ("%s._INI failed: %s\n",
-                ScopeName, AcpiCmFormatException (Status)));
+                ScopeName, AcpiUtFormatException (Status)));
 
-        AcpiCmFree (ScopeName);
+        AcpiUtFree (ScopeName);
 #endif
     }
 

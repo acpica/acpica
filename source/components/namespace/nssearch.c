@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: nssearch - Namespace search
- *              $Revision: 1.68 $
+ *              $Revision: 1.69 $
  *
  ******************************************************************************/
 
@@ -180,7 +180,7 @@ AcpiNsSearchNode (
                 ("NsSearchNode: For %4.4s (type %X)\n",
                 &TargetName, Type));
 
-            AcpiCmFree (ScopeName);
+            AcpiUtFree (ScopeName);
         }
     }
 #endif
@@ -426,7 +426,7 @@ AcpiNsSearchAndEnter (
 
     /* Name must consist of printable characters */
 
-    if (!AcpiCmValidAcpiName (TargetName))
+    if (!AcpiUtValidAcpiName (TargetName))
     {
         DEBUG_PRINT (ACPI_ERROR,
             ("NsSearchAndEnter:  *** Bad character in name: %08lx *** \n",

@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: nsaccess - Top-level functions for accessing ACPI namespace
- *              $Revision: 1.124 $
+ *              $Revision: 1.125 $
  *
  ******************************************************************************/
 
@@ -153,7 +153,7 @@ AcpiNsRootInitialize (void)
     FUNCTION_TRACE ("NsRootInitialize");
 
 
-    AcpiCmAcquireMutex (ACPI_MTX_NAMESPACE);
+    AcpiUtAcquireMutex (ACPI_MTX_NAMESPACE);
 
     /*
      * The global root ptr is initially NULL, so a non-NULL value indicates
@@ -190,7 +190,7 @@ AcpiNsRootInitialize (void)
         {
             DEBUG_PRINT (ACPI_ERROR,
                 ("Could not create predefined name %s, %s\n",
-                InitVal->Name, AcpiCmFormatException (Status)));
+                InitVal->Name, AcpiUtFormatException (Status)));
         }
 
         /*
@@ -206,7 +206,7 @@ AcpiNsRootInitialize (void)
              * descriptor for it.
              */
 
-            ObjDesc = AcpiCmCreateInternalObject (InitVal->Type);
+            ObjDesc = AcpiUtCreateInternalObject (InitVal->Type);
             if (!ObjDesc)
             {
                 Status = AE_NO_MEMORY;
@@ -238,11 +238,11 @@ AcpiNsRootInitialize (void)
                  * String.Pointers must be allocated buffers!
                  * (makes deletion simpler)
                  */
-                ObjDesc->String.Pointer = AcpiCmAllocate (
+                ObjDesc->String.Pointer = AcpiUtAllocate (
                                                 (ObjDesc->String.Length + 1));
                 if (!ObjDesc->String.Pointer)
                 {
-                    AcpiCmRemoveReference (ObjDesc);
+                    AcpiUtRemoveReference (ObjDesc);
                     Status = AE_NO_MEMORY;
                     goto UnlockAndExit;
                 }
@@ -295,7 +295,7 @@ AcpiNsRootInitialize (void)
             default:
                 REPORT_ERROR (("Unsupported initial type value %X\n",
                     InitVal->Type));
-                AcpiCmRemoveReference (ObjDesc);
+                AcpiUtRemoveReference (ObjDesc);
                 ObjDesc = NULL;
                 continue;
             }
@@ -308,7 +308,7 @@ AcpiNsRootInitialize (void)
 
 
 UnlockAndExit:
-    AcpiCmReleaseMutex (ACPI_MTX_NAMESPACE);
+    AcpiUtReleaseMutex (ACPI_MTX_NAMESPACE);
     return_ACPI_STATUS (Status);
 }
 

@@ -2,7 +2,7 @@
  *
  * Module Name: nsutils - Utilities for accessing ACPI namespace, accessing
  *                        parents and siblings and Scope manipulation
- *              $Revision: 1.80 $
+ *              $Revision: 1.81 $
  *
  *****************************************************************************/
 
@@ -214,7 +214,7 @@ AcpiNsLocal (
     FUNCTION_TRACE ("NsLocal");
 
 
-    if (!AcpiCmValidObjectType (Type))
+    if (!AcpiUtValidObjectType (Type))
     {
         /* Type code out of range  */
 
@@ -316,7 +316,7 @@ AcpiNsInternalizeName (
 
     /* We need a segment to store the internal version of the name */
 
-    InternalName = AcpiCmCallocate ((ACPI_NAME_SIZE * NumSegments) + 4 + NumCarats);
+    InternalName = AcpiUtCallocate ((ACPI_NAME_SIZE * NumSegments) + 4 + NumCarats);
     if (!InternalName)
     {
         return_ACPI_STATUS (AE_NO_MEMORY);
@@ -415,7 +415,7 @@ AcpiNsInternalizeName (
         if (!AcpiNsValidPathSeparator (*ExternalName) &&
             (*ExternalName != 0))
         {
-            AcpiCmFree (InternalName);
+            AcpiUtFree (InternalName);
             return_ACPI_STATUS (AE_BAD_PARAMETER);
         }
 
@@ -581,7 +581,7 @@ AcpiNsExternalizeName (
      * Build ConvertedName...
      */
 
-    (*ConvertedName) = AcpiCmCallocate (*ConvertedNameLength);
+    (*ConvertedName) = AcpiUtCallocate (*ConvertedNameLength);
     if (!(*ConvertedName))
     {
         return_ACPI_STATUS (AE_NO_MEMORY);
@@ -744,7 +744,7 @@ AcpiNsTerminate (void)
     if (ObjDesc)
     {
         AcpiNsDetachObject (ThisNode);
-        AcpiCmRemoveReference (ObjDesc);
+        AcpiUtRemoveReference (ObjDesc);
     }
 
     AcpiNsDeleteChildren (ThisNode);
@@ -782,7 +782,7 @@ AcpiNsOpensScope (
     FUNCTION_TRACE_U32 ("NsOpensScope", Type);
 
 
-    if (!AcpiCmValidObjectType (Type))
+    if (!AcpiUtValidObjectType (Type))
     {
         /* type code out of range  */
 
@@ -850,7 +850,7 @@ AcpiNsGetNode (
     }
 
 
-    AcpiCmAcquireMutex (ACPI_MTX_NAMESPACE);
+    AcpiUtAcquireMutex (ACPI_MTX_NAMESPACE);
 
     /* Setup lookup scope (search starting point) */
 
@@ -866,15 +866,15 @@ AcpiNsGetNode (
     if (ACPI_FAILURE (Status))
     {
         DEBUG_PRINT (ACPI_INFO, ("NsGetNode: %s, %s\n",
-                        InternalPath, AcpiCmFormatException (Status)));
+                        InternalPath, AcpiUtFormatException (Status)));
     }
 
 
-    AcpiCmReleaseMutex (ACPI_MTX_NAMESPACE);
+    AcpiUtReleaseMutex (ACPI_MTX_NAMESPACE);
 
     /* Cleanup */
 
-    AcpiCmFree (InternalPath);
+    AcpiUtFree (InternalPath);
 
     return_ACPI_STATUS (Status);
 }

@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: nswalk - Functions for walking the APCI namespace
- *              $Revision: 1.21 $
+ *              $Revision: 1.22 $
  *
  *****************************************************************************/
 
@@ -309,7 +309,7 @@ AcpiNsWalkNamespace (
 
                 if (UnlockBeforeCallback)
                 {
-                    AcpiCmReleaseMutex (ACPI_MTX_NAMESPACE);
+                    AcpiUtReleaseMutex (ACPI_MTX_NAMESPACE);
                 }
 
                 Status = UserFunction (ChildNode, Level,
@@ -317,7 +317,7 @@ AcpiNsWalkNamespace (
 
                 if (UnlockBeforeCallback)
                 {
-                    AcpiCmAcquireMutex (ACPI_MTX_NAMESPACE);
+                    AcpiUtAcquireMutex (ACPI_MTX_NAMESPACE);
                 }
 
                 switch (Status)

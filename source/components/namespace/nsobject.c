@@ -2,7 +2,7 @@
  *
  * Module Name: nsobject - Utilities for objects attached to namespace
  *                         table entries
- *              $Revision: 1.53 $
+ *              $Revision: 1.54 $
  *
  ******************************************************************************/
 
@@ -404,7 +404,7 @@ AcpiNsAttachObject (
      * (if it is an internal object)
      */
 
-    AcpiCmAddReference (ObjDesc);
+    AcpiUtAddReference (ObjDesc);
 
     /* Save the existing object (if any) for deletion later */
 
@@ -425,11 +425,11 @@ AcpiNsAttachObject (
     {
         /* One for the attach to the Node */
 
-        AcpiCmRemoveReference (PreviousObjDesc);
+        AcpiUtRemoveReference (PreviousObjDesc);
 
         /* Now delete */
 
-        AcpiCmRemoveReference (PreviousObjDesc);
+        AcpiUtRemoveReference (PreviousObjDesc);
     }
 
     return_ACPI_STATUS (AE_OK);
@@ -476,7 +476,7 @@ AcpiNsDetachObject (
         Node, ObjDesc, &Node->Name));
 
     /*
-     * Not every value is an object allocated via AcpiCmCallocate,
+     * Not every value is an object allocated via AcpiUtCallocate,
      * - must check
      */
 
@@ -484,7 +484,7 @@ AcpiNsDetachObject (
     {
         /* Attempt to delete the object (and all subobjects) */
 
-        AcpiCmRemoveReference (ObjDesc);
+        AcpiUtRemoveReference (ObjDesc);
     }
 
     return_VOID;
