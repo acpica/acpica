@@ -42,7 +42,7 @@ RSC=rc.exe
 # ADD BASE RSC /l 0x409 /d "NDEBUG"
 # ADD RSC /l 0x409 /d "NDEBUG"
 # ADD BASE CPP /nologo /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_MBCS" /D "_LIB" /YX /FD /c
-# ADD CPP /nologo /Gz /MT /W3 /GX /O2 /I "..\..\Subsystem\include" /I "\98ddk\inc\win98" /D "NDEBUG" /D "WIN32" /D "_WINDOWS" /D "ACPILIB_GEN" /D "DRIVER" /D PROCESSOR_ARCHITECTURE=x86 /YX /FD /c
+# ADD CPP /nologo /Gz /MT /W3 /GX /O2 /I "..\..\Subsystem\Include" /I "\98ddk\inc\win98" /D "NDEBUG" /D "ACPILIB_GEN" /D "DRIVER" /D "_WINDOWS" /D PROCESSOR_ARCHITECTURE=x86 /D "WIN32" /YX /FD /c
 BSC32=bscmake.exe
 # ADD BASE BSC32 /nologo
 # ADD BSC32 /nologo
@@ -71,7 +71,7 @@ RSC=rc.exe
 # ADD BASE RSC /l 0x409 /d "_DEBUG"
 # ADD RSC /l 0x409
 # ADD BASE CPP /nologo /W3 /GX /Od /D "WIN32" /D "_DEBUG" /D "_MBCS" /D "_LIB" /YX /FD /ZI /GZ /c
-# ADD CPP /nologo /Gz /MT /W3 /GX /Z7 /Og /Os /I "..\..\Subsystem\include" /I "\98ddk\inc\win98" /D "_WINDOWS" /D PROCESSOR_ARCHITECTURE=x86 /D "WIN32" /D "ACPI_DEBUG" /D "_DEBUG" /FR /FD /c
+# ADD CPP /nologo /Gz /MT /W3 /GX /Z7 /Od /I "..\..\Subsystem\Include" /I "\98ddk\inc\win98" /D "ACPI_DEBUG" /D "_DEBUG" /D "_WINDOWS" /D PROCESSOR_ARCHITECTURE=x86 /D "WIN32" /FR /FD /c
 BSC32=bscmake.exe
 # ADD BASE BSC32 /nologo
 # ADD BSC32 /nologo
@@ -244,46 +244,6 @@ SOURCE=..\..\Subsystem\Interpreter\iapi.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\Subsystem\Interpreter\idoatoms.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\Subsystem\Interpreter\idoexpr.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\Subsystem\Interpreter\idoname.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\Subsystem\Interpreter\idoopcde.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\Subsystem\Interpreter\idoopty1.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\Subsystem\Interpreter\idoopty2.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\Subsystem\Interpreter\idopkctl.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\Subsystem\Interpreter\idopkfld.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\Subsystem\Interpreter\idopkg.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\Subsystem\Interpreter\idopkobj.c
-# End Source File
-# Begin Source File
-
 SOURCE=..\..\Subsystem\Interpreter\iedyad.c
 # End Source File
 # Begin Source File
@@ -301,11 +261,15 @@ SOURCE=..\..\Subsystem\Interpreter\iefield.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\Subsystem\Interpreter\iemonad.c
+SOURCE=..\..\Subsystem\Interpreter\iefread.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\Subsystem\Interpreter\iemstack.c
+SOURCE=..\..\Subsystem\Interpreter\iefwrite.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\Subsystem\Interpreter\iemonad.c
 # End Source File
 # Begin Source File
 
@@ -322,10 +286,6 @@ SOURCE=..\..\Subsystem\Interpreter\ieopexec.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\Subsystem\Interpreter\ieostack.c
-# End Source File
-# Begin Source File
-
 SOURCE=..\..\Subsystem\Interpreter\ieprep.c
 
 !IF  "$(CFG)" == "Subsystem - Win32 Release"
@@ -336,10 +296,6 @@ SOURCE=..\..\Subsystem\Interpreter\ieprep.c
 
 !ENDIF 
 
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\Subsystem\Interpreter\iepstack.c
 # End Source File
 # Begin Source File
 
@@ -365,19 +321,6 @@ SOURCE=..\..\Subsystem\Interpreter\ievalue.c
 # Begin Source File
 
 SOURCE=..\..\Subsystem\Interpreter\iexecute.c
-
-!IF  "$(CFG)" == "Subsystem - Win32 Release"
-
-!ELSEIF  "$(CFG)" == "Subsystem - Win32 Debug"
-
-# ADD CPP /W3 /Z7
-
-!ENDIF 
-
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\Subsystem\Interpreter\iscode.c
 
 !IF  "$(CFG)" == "Subsystem - Win32 Release"
 
@@ -416,33 +359,7 @@ SOURCE=..\..\Subsystem\Interpreter\isdump.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\Subsystem\Interpreter\isidata.c
-
-!IF  "$(CFG)" == "Subsystem - Win32 Release"
-
-!ELSEIF  "$(CFG)" == "Subsystem - Win32 Debug"
-
-# ADD CPP /W3 /Z7
-
-!ENDIF 
-
-# End Source File
-# Begin Source File
-
 SOURCE=..\..\Subsystem\Interpreter\isnames.c
-
-!IF  "$(CFG)" == "Subsystem - Win32 Release"
-
-!ELSEIF  "$(CFG)" == "Subsystem - Win32 Debug"
-
-# ADD CPP /W3 /Z7
-
-!ENDIF 
-
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\Subsystem\Interpreter\isrdata.c
 
 !IF  "$(CFG)" == "Subsystem - Win32 Release"
 
@@ -750,6 +667,82 @@ SOURCE=..\..\Subsystem\Tables\tbrsd.c
 SOURCE=..\..\Subsystem\Tables\tbutils.c
 # End Source File
 # End Group
+# Begin Group "Parser"
+
+# PROP Default_Filter ".c"
+# Begin Source File
+
+SOURCE=..\..\Subsystem\Parser\psapi.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\Subsystem\Parser\psargs.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\Subsystem\Parser\psopcode.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\Subsystem\Parser\psparse.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\Subsystem\Parser\psscope.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\Subsystem\Parser\pstree.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\Subsystem\Parser\psutils.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\Subsystem\Parser\pswalk.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\Subsystem\Parser\pswstate.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\Subsystem\Parser\psxctrl.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\Subsystem\Parser\psxexec.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\Subsystem\Parser\psxfield.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\Subsystem\Parser\psxload.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\Subsystem\Parser\psxmargs.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\Subsystem\Parser\psxmethd.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\Subsystem\Parser\psxobj.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\Subsystem\Parser\psxregn.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\Subsystem\Parser\psxutils.c
+# End Source File
+# End Group
 # End Group
 # Begin Group "Header Files"
 
@@ -845,6 +838,10 @@ SOURCE=..\..\Subsystem\Include\namespace.h
 # Begin Source File
 
 SOURCE=..\..\Subsystem\Include\output.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\Subsystem\Include\parser.h
 # End Source File
 # Begin Source File
 
