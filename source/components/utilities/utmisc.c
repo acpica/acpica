@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: cmutils - common utility procedures
- *              $Revision: 1.37 $
+ *              $Revision: 1.38 $
  *
  ******************************************************************************/
 
@@ -190,6 +190,36 @@ AcpiCmValidAcpiCharacter (
                         (Character >= '0' && Character <= '9')));
 }
 
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiCmStrupr
+ *
+ * PARAMETERS:  SrcString       - The source string to convert to
+ *
+ * RETURN:      SrcString
+ *
+ * DESCRIPTION: Convert string to uppercase
+ *
+ ******************************************************************************/
+
+NATIVE_CHAR *
+AcpiCmStrupr (
+    NATIVE_CHAR             *SrcString)
+{
+    NATIVE_CHAR             *String;
+
+
+    /* Walk entire string, uppercasing the letters */
+
+    for (String = SrcString; *String; )
+    {
+        *String = (char) TOUPPER (*String);
+        String++;
+    }
+
+
+    return (SrcString);
+}
 
 /*******************************************************************************
  *
