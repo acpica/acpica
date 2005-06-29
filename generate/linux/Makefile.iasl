@@ -25,7 +25,7 @@ SRCS=	aslcompilerparse.c aslcompilerlex.c aslanalyze.c aslcodegen.c \
 	../Subsystem/Parser/psutils.c \
 	../Subsystem/Dispatcher/dswscope.c \
 	../Subsystem/Dispatcher/dswstate.c \
-	../Common/osdosxf.c
+	../Common/osunixxf.c
 
 NOMAN=	YES
 CFLAGS+= -D_LINUX -D_ACPI_ASL_COMPILER -I../Subsystem/Include 
