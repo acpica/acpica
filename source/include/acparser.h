@@ -663,10 +663,6 @@ ACPI_BYTELIST_OP*
 PsToBytelistOp(
     ACPI_GENERIC_OP         *op);
 
-ACPI_GENERIC_OP*
-PsToNonconstOp(
-    ACPI_GENERIC_OP         *op);
-
 UINT32
 PsGetName(
     ACPI_GENERIC_OP         *op);
