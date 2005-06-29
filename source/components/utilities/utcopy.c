@@ -245,7 +245,7 @@ CmBuildExternalSimpleObject (
         break;
 
     default:
-        return_ACPI_STATUS (AE_RETURN_VALUE);
+        return_ACPI_STATUS (AE_CTRL_RETURN_VALUE);
         break;
     }
 
@@ -547,7 +547,7 @@ CmBuildInternalSimpleObject (
 
 
     default:
-        return_ACPI_STATUS (AE_RETURN_VALUE);
+        return_ACPI_STATUS (AE_CTRL_RETURN_VALUE);
         break;
     }
 
@@ -878,7 +878,7 @@ CmCopyInternalSimpleObject (
 
 
     default:
-        return_ACPI_STATUS (AE_RETURN_VALUE);
+        return_ACPI_STATUS (AE_CTRL_RETURN_VALUE);
         break;
     }
 
