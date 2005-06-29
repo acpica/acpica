@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dsobject - Dispatcher object management routines
- *              $Revision: 1.123 $
+ *              $Revision: 1.124 $
  *
  *****************************************************************************/
 
@@ -653,6 +653,9 @@ AcpiDsInitObjectFromOp (
         case AML_TYPE_LITERAL:
 
             ObjDesc->Integer.Value = Op->Common.Value.Integer;
+#ifndef ACPI_NO_METHOD_EXECUTION
+            AcpiExTruncateFor32bitTable (ObjDesc);
+#endif
             break;
 
 
