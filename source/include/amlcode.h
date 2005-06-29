@@ -3,7 +3,7 @@
  * Name: amlcode.h - Definitions for AML, as included in "definition blocks"
  *                   Declarations and definitions contained herein are derived
  *                   directly from the ACPI specification.
- *       $Revision: 1.57 $
+ *       $Revision: 1.58 $
  *
  *****************************************************************************/
 
@@ -423,11 +423,14 @@
 
 #define AML_TYPE_CREATE_FIELD       0x11
 #define AML_TYPE_CONTROL            0x12
-#define AML_TYPE_NAMED_OBJECT       0x13
-#define AML_TYPE_RETURN             0x14
+#define AML_TYPE_NAMED_NO_OBJ       0x13
+#define AML_TYPE_NAMED_FIELD        0x14
+#define AML_TYPE_NAMED_SIMPLE       0x15
+#define AML_TYPE_NAMED_COMPLEX      0x16
+#define AML_TYPE_RETURN             0x17
 
-#define AML_TYPE_UNDEFINED          0x15
-#define AML_TYPE_BOGUS              0x16
+#define AML_TYPE_UNDEFINED          0x18
+#define AML_TYPE_BOGUS              0x19
 
 
 /* 
