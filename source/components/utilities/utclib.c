@@ -137,6 +137,7 @@
 #pragma warning(disable:4706)   /* warning C4706: assignment within conditional expression */
 #endif
 
+#ifndef ACPI_USE_SYSTEM_CLIBRARY
 
 /*******************************************************************************
  *
@@ -166,7 +167,7 @@ AcpiCmStrlen (
         String++;
     }
 
-    return Length;
+    return (Length);
 }
 
 
@@ -205,7 +206,7 @@ AcpiCmStrcpy (
 
     *String = 0;
 
-    return DstString;
+    return (DstString);
 }
 
 
@@ -248,7 +249,7 @@ AcpiCmStrncpy (
 
     /* Return original pointer */
 
-    return DstString;
+    return (DstString);
 }
 
 
@@ -276,12 +277,12 @@ AcpiCmStrcmp (
     {
         if (!*String1++)
         {
-            return 0;
+            return (0);
         }
     }
 
 
-    return (unsigned char) *String1 - (unsigned char) *String2;
+    return ((unsigned char) *String1 - (unsigned char) *String2);
 }
 
 
@@ -311,12 +312,12 @@ AcpiCmStrncmp (
     {
         if (!*String1++)
         {
-            return 0;
+            return (0);
         }
     }
 
-    return (Count == -1) ? 0 : ((unsigned char) *String1 -
-        (unsigned char) *String2);
+    return ((Count == -1) ? 0 : ((unsigned char) *String1 -
+        (unsigned char) *String2));
 }
 
 
@@ -351,7 +352,7 @@ AcpiCmStrcat (
     for (--String; (*String++ = *SrcString++); )
     { ; }
 
-    return DstString;
+    return (DstString);
 }
 
 
@@ -399,7 +400,7 @@ AcpiCmStrncat (
         }
     }
 
-    return DstString;
+    return (DstString);
 }
 
 
@@ -435,7 +436,7 @@ AcpiCmMemcpy (
         Count--;
     }
 
-    return Dest;
+    return (Dest);
 }
 
 
@@ -469,7 +470,7 @@ AcpiCmMemset (
         Count--;
     }
 
-    return Dest;
+    return (Dest);
 }
 
 
@@ -704,7 +705,7 @@ AcpiCmStrupr (
     }
 
 
-    return SrcString;
+    return (SrcString);
 }
 
 
@@ -733,7 +734,7 @@ AcpiCmStrstr (
 
     if (AcpiCmStrlen (String2) > AcpiCmStrlen (String1))
     {
-        return NULL;
+        return (NULL);
     }
 
     /* Walk entire string, uppercasing the letters */
@@ -742,7 +743,7 @@ AcpiCmStrstr (
     {
         if (*String2 != *String)
         {
-            return NULL;
+            return (NULL);
         }
 
         String2++;
@@ -750,7 +751,7 @@ AcpiCmStrstr (
     }
 
 
-    return String1;
+    return (String1);
 }
 
 
@@ -949,3 +950,5 @@ done:
 
     return (ReturnValue);
 }
+
+#endif /* ACPI_USE_SYSTEM_CLIBRARY */
