@@ -136,6 +136,62 @@ UINT8                   *DsdtPtr;
 UINT32                  DsdtLength;
 
 
+
+
+
+BOOLEAN
+AcpiDsIsResultUsed (
+    ACPI_GENERIC_OP         *Op)
+{
+    return TRUE;
+}
+
+ACPI_STATUS
+AcpiDsRestartControlMethod (
+    ACPI_WALK_STATE         *WalkState,
+    ACPI_OBJECT_INTERNAL    *ReturnDesc)
+{
+    return (AE_OK);
+}
+
+ACPI_STATUS
+AcpiDsTerminateControlMethod (
+    ACPI_WALK_STATE         *WalkState)
+{
+    return (AE_OK);
+}
+
+void
+AcpiDsScopeStackClear (
+    ACPI_WALK_STATE         *WalkState)
+{
+}
+
+ACPI_STATUS
+AcpiDsCallControlMethod (
+    ACPI_WALK_LIST          *WalkList,
+    ACPI_WALK_STATE         *ThisWalkState,
+    ACPI_GENERIC_OP         *Op)
+{
+    return (AE_OK);
+}
+
+ACPI_STATUS
+AcpiDsMethodDataInitArgs (
+    ACPI_OBJECT_INTERNAL    **Params,
+    UINT32                  MaxParamCount,
+    ACPI_WALK_STATE         *WalkState)
+{
+    return (AE_OK);
+}
+
+void *
+AcpiNsGetAttachedObject (
+    ACPI_HANDLE             Handle)
+{
+    return NULL;
+}
+
 /******************************************************************************
  *
  * FUNCTION:    AdCreateTableHeaders
@@ -222,10 +278,10 @@ AdDisplayTables (void)
     AcpiDbDisplayOp (AcpiPsGetChild (AcpiGbl_ParsedNamespaceRoot), ACPI_UINT32_MAX);
 
     AcpiOsPrintf ("\n\nDSDT Header:\n");
-    AcpiCmDumpBuffer ((char *) AcpiGbl_DSDT, sizeof (ACPI_TABLE_HEADER), DB_BYTE_DISPLAY, ACPI_UINT32_MAX);
+    AcpiCmDumpBuffer ((UINT8 *) AcpiGbl_DSDT, sizeof (ACPI_TABLE_HEADER), DB_BYTE_DISPLAY, ACPI_UINT32_MAX);
 
     AcpiOsPrintf ("DSDT Body (Length 0x%X)\n", AmlLength);
-    AcpiCmDumpBuffer ((char *) AmlPtr, AmlLength, DB_BYTE_DISPLAY, ACPI_UINT32_MAX);
+    AcpiCmDumpBuffer ((UINT8 *) AmlPtr, AmlLength, DB_BYTE_DISPLAY, ACPI_UINT32_MAX);
 
     return AE_OK;
 }
@@ -303,7 +359,7 @@ AdSecondPassParse (
     ACPI_GENERIC_OP         *Root)
 {
     ACPI_GENERIC_OP         *Op = Root;
-    ACPI_DEFERRED_OP        *Method;
+    ACPI_EXTENDED_OP        *Method;
     ACPI_GENERIC_OP         *SearchOp;
     ACPI_GENERIC_OP         *StartOp;
     ACPI_STATUS             Status = AE_OK;
@@ -318,13 +374,13 @@ AdSecondPassParse (
         {
             printf (".");
 
-            Method = (ACPI_DEFERRED_OP *) Op;
+            Method = (ACPI_EXTENDED_OP *) Op;
             DEBUG_PRINT (ACPI_INFO, ("Parsing method [%4.4s]\n", &Method->Name));
 
             /* Parse the method */
 
-            Status = AcpiPsParseAml (Op, Method->Body, Method->BodyLength, 0,
-                                        AcpiPsFindObject, NULL);
+            Status = AcpiPsParseAml (Op, Method->Data, Method->Length, 0,
+                                        NULL, NULL, NULL, AcpiPsFindObject, NULL);
 
             /*
              * We need to update all of the Aml offsets, since the parser thought
@@ -459,7 +515,7 @@ AdParseTables (void)
 
     /* Initialize the root object */
 
-    ((ACPI_NAMED_OP *) AcpiGbl_ParsedNamespaceRoot)->Name = ACPI_ROOT_NAME;
+    ((ACPI_EXTENDED_OP *) AcpiGbl_ParsedNamespaceRoot)->Name = ACPI_ROOT_NAME;
 
     /* Pass 1:  Parse everything except control method bodies */
 
@@ -468,7 +524,7 @@ AdParseTables (void)
     AmlPtr = ((UINT8 *) AcpiGbl_DSDT + sizeof (ACPI_TABLE_HEADER));
 
     Status = AcpiPsParseAml (AcpiGbl_ParsedNamespaceRoot, AmlPtr, AmlLength, 0,
-                                AcpiPsFindObject, NULL);
+                                NULL, NULL, NULL, AcpiPsFindObject, NULL);
     if (ACPI_FAILURE (Status))
     {
         return Status;
