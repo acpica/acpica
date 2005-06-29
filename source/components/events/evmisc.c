@@ -2,7 +2,7 @@
  *
  * Module Name: evmisc - ACPI device notification handler dispatch
  *                       and ACPI Global Lock support
- *              $Revision: 1.36 $
+ *              $Revision: 1.37 $
  *
  *****************************************************************************/
 
@@ -453,7 +453,8 @@ AcpiEvInitGlobalLockHandler (void)
  *****************************************************************************/
 
 ACPI_STATUS
-AcpiEvAcquireGlobalLock(void)
+AcpiEvAcquireGlobalLock (
+    UINT32                  Timeout)
 {
     ACPI_STATUS             Status = AE_OK;
     BOOLEAN                 Acquired = FALSE;
@@ -461,6 +462,7 @@ AcpiEvAcquireGlobalLock(void)
 
 
     FUNCTION_TRACE ("EvAcquireGlobalLock");
+
 
     /* Make sure that we actually have a global lock */
 
@@ -512,7 +514,7 @@ AcpiEvAcquireGlobalLock(void)
       * Since this wait will block, we must release the interpreter
       */
     Status = AcpiExSystemWaitSemaphore (AcpiGbl_GlobalLockSemaphore,
-                                            ACPI_UINT32_MAX);
+                                            Timeout);
     return_ACPI_STATUS (Status);
 }
 
