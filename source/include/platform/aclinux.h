@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: aclinux.h - OS specific defines, etc.
- *       $Revision: 1.2 $
+ *       $Revision: 1.3 $
  *
  *****************************************************************************/
 
@@ -132,7 +132,7 @@
 #include "acgcc.h"
 
 #undef DEBUGGER_THREADING
-#define DEBUGGER_THREADING	DEBUGGER_SINGLE_THREADED
+#define DEBUGGER_THREADING          DEBUGGER_SINGLE_THREADED
 
 #if 0
 
