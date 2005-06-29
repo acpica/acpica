@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dswstate - Dispatcher parse tree walk management routines
- *              $Revision: 1.87 $
+ *              $Revision: 1.88 $
  *
  *****************************************************************************/
 
@@ -862,6 +862,7 @@ AcpiDsInitAmlWalk (
     /* The NextOp of the NextWalk will be the beginning of the method */
 
     WalkState->NextOp = NULL;
+    WalkState->PassNumber = (UINT8) PassNumber;
 
     if (Info)
     {
