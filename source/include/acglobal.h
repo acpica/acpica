@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acglobal.h - Declarations for global variables
- *       $Revision: 1.90 $
+ *       $Revision: 1.91 $
  *
  *****************************************************************************/
 
@@ -313,10 +313,7 @@ ACPI_EXTERN UINT8                       AcpiGbl_CmSingleStep;
  *
  ****************************************************************************/
 
-ACPI_EXTERN ACPI_PARSE_OBJECT           *AcpiGbl_ParsedNamespaceRoot;
-
-extern ACPI_OPCODE_INFO                 AcpiGbl_AmlOpInfo[];
-extern UINT8                            AcpiGbl_AmlOpInfoIndex[256];
+/* Parser has no globals */
 
 
 /*****************************************************************************
@@ -365,9 +362,10 @@ ACPI_EXTERN UINT32                      AcpiGbl_EventCount[NUM_FIXED_EVENTS];
  *
  ****************************************************************************/
 
+#ifdef ENABLE_DEBUGGER
 ACPI_EXTERN BOOLEAN                     AcpiGbl_MethodExecuting;
 ACPI_EXTERN BOOLEAN                     AcpiGbl_DbTerminateThreads;
-
+#endif
 
 /* Memory allocation metrics - Debug Only! */
 

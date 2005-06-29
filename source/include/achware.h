@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: achware.h -- hardware specific interfaces
- *       $Revision: 1.46 $
+ *       $Revision: 1.48 $
  *
  *****************************************************************************/
 
@@ -169,14 +169,14 @@ AcpiHwRegisterWrite (
 UINT32
 AcpiHwLowLevelRead (
     UINT32                  Width,
-    ACPI_GAS                *Register,
+    ACPI_GAS                *Reg,
     UINT32                  Offset);
 
 void
 AcpiHwLowLevelWrite (
     UINT32                  Width,
     UINT32                  Value,
-    ACPI_GAS                *Register,
+    ACPI_GAS                *Reg,
     UINT32                  Offset);
 
 void
@@ -242,6 +242,16 @@ ACPI_STATUS
 AcpiHwGetCxInfo (
     UINT32                  CxStates[]);
 
+ACPI_STATUS
+AcpiHwGetCxHandler (
+    UINT32                  CxState,
+    ACPI_C_STATE_HANDLER    *Handler);
+
+ACPI_STATUS
+AcpiHwSetCxHandler (
+    UINT32                  CxState,
+    ACPI_C_STATE_HANDLER    Handler);
+
 
 /* Throttling Prototypes */
 
@@ -281,6 +291,10 @@ AcpiHwPmtTicks (
 UINT32
 AcpiHwPmtResolution (
     void);
+
+ACPI_STATUS
+AcpiGetTimer (
+    UINT32                  *OutTicks);
 
 
 #endif /* __ACHWARE_H__ */
