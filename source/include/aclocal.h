@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: aclocal.h - Internal data types used across the ACPI subsystem
- *       $Revision: 1.153 $
+ *       $Revision: 1.154 $
  *
  *****************************************************************************/
 
@@ -401,26 +401,17 @@ typedef struct
  *
  ****************************************************************************/
 
+/* Information about each GPE register block */
 
-/* Status bits. */
+typedef struct
+{
+    UINT16                  RegisterCount;
+    UINT16                  BlockAddress;
+    UINT8                   BlockBaseNumber;
 
-#define ACPI_STATUS_PMTIMER             0x0001
-#define ACPI_STATUS_BUSMASTER           0x0010
-#define ACPI_STATUS_GLOBAL              0x0020
-#define ACPI_STATUS_POWER_BUTTON        0x0100
-#define ACPI_STATUS_SLEEP_BUTTON        0x0200
-#define ACPI_STATUS_RTC_ALARM           0x0400
+} ACPI_GPE_BLOCK_INFO;
 
-/* Enable bits. */
-
-#define ACPI_ENABLE_PMTIMER             0x0001
-#define ACPI_ENABLE_GLOBAL              0x0020
-#define ACPI_ENABLE_POWER_BUTTON        0x0100
-#define ACPI_ENABLE_SLEEP_BUTTON        0x0200
-#define ACPI_ENABLE_RTC_ALARM           0x0400
-
-
-/* Values and addresses of the GPE registers (both banks) */
+/* Information about a particular GPE register pair */
 
 typedef struct
 {
@@ -442,11 +433,12 @@ typedef struct
 
 typedef struct
 {
-    UINT8                   Type;           /* Level or Edge */
-
     ACPI_HANDLE             MethodHandle;   /* Method handle for direct (fast) execution */
     ACPI_GPE_HANDLER        Handler;        /* Address of handler, if any */
     void                    *Context;       /* Context to be passed to handler */
+    UINT8                   Type;           /* Level or Edge */
+    UINT8                   BitMask;
+
 
 } ACPI_GPE_NUMBER_INFO;
 
@@ -464,8 +456,17 @@ typedef struct
     ACPI_EVENT_HANDLER      Handler;        /* Address of handler. */
     void                    *Context;       /* Context to be passed to handler */
 
-} ACPI_FIXED_EVENT_INFO;
+} ACPI_FIXED_EVENT_HANDLER;
 
+
+typedef struct
+{
+    UINT8                   StatusRegisterId;
+    UINT8                   EnableRegisterId;
+    UINT16                  StatusBitMask;
+    UINT16                  EnableBitMask;
+
+} ACPI_FIXED_EVENT_INFO;
 
 /* Information used during field processing */
 
@@ -747,14 +748,10 @@ typedef struct acpi_parse_state
     UINT8                   *AmlEnd;        /* (last + 1) AML byte */
     UINT8                   *PkgStart;      /* current package begin */
     UINT8                   *PkgEnd;        /* current package end */
-
     struct acpi_parse_obj   *StartOp;       /* root of parse tree */
     struct acpi_node        *StartNode;
     union acpi_gen_state    *Scope;         /* current scope */
-
-
     struct acpi_parse_obj   *StartScope;
-
 
 } ACPI_PARSE_STATE;
 
@@ -770,135 +767,120 @@ typedef struct acpi_parse_state
 
 /*****************************************************************************
  *
- * Hardware and PNP
+ * Hardware (ACPI registers) and PNP
  *
  ****************************************************************************/
 
-
-/* PCI */
 #define PCI_ROOT_HID_STRING                 "PNP0A03"
 
-/*
- * The #defines and enum below establish an abstract way of identifying what
- * register block and register is to be accessed.  Do not change any of the
- * values as they are used in switch statements and offset calculations.
- */
+typedef struct 
+{
+    UINT8                   ParentRegister;
+    UINT8                   BitPosition;
+    UINT16                  AccessBitMask;
 
-#define ACPI_REGISTER_BLOCK_MASK            0xFF00  /* Register Block Id    */
-#define ACPI_BIT_IN_REGISTER_MASK           0x00FF  /* Bit Id in the Register Block Id    */
-#define ACPI_BYTE_IN_REGISTER_MASK          0x00FF  /* Register Offset in the Register Block    */
-
-#define ACPI_GET_REGISTER_BLOCK_ID(RegId)   (RegId & ACPI_REGISTER_BLOCK_MASK)
-#define ACPI_GET_REGISTER_BIT_ID(RegId)     (RegId & ACPI_BIT_IN_REGISTER_MASK)
-#define ACPI_GET_REGISTER_OFFSET(RegId)     (RegId & ACPI_BYTE_IN_REGISTER_MASK)
-
-/*
- * Access Rule
- *  To access a Register Bit:
- *  -> Use Bit Name (= Register Block Id | Bit Id) defined in the enum.
- *
- *  To access a Register:
- *  -> Use Register Id (= Register Block Id | Register Offset)
- */
+} ACPI_BIT_REGISTER_INFO;
 
 
 /*
- * Register Block Id
+ * Register IDs
+ * These are the full ACPI registers 
  */
-#define ACPI_PM1_STATUS                     0x0100
-#define ACPI_PM1_ENABLE                     0x0200
-#define ACPI_PM1_CONTROL                    0x0300
-#define ACPI_PM1A_CONTROL                   0x0400
-#define ACPI_PM1B_CONTROL                   0x0500
-#define ACPI_PM2_CONTROL                    0x0600
-#define ACPI_PM_TIMER                       0x0700
-#define ACPI_PROCESSOR_BLOCK                0x0800
-#define ACPI_GPE0_STATUS_BLOCK              0x0900
-#define ACPI_GPE0_ENABLE_BLOCK              0x0A00
-#define ACPI_GPE1_STATUS_BLOCK              0x0B00
-#define ACPI_GPE1_ENABLE_BLOCK              0x0C00
-#define ACPI_SMI_CMD_BLOCK                  0x0D00
+#define ACPI_REGISTER_PM1_STATUS            0x01
+#define ACPI_REGISTER_PM1_ENABLE            0x02
+#define ACPI_REGISTER_PM1_CONTROL           0x03
+#define ACPI_REGISTER_PM1A_CONTROL          0x04
+#define ACPI_REGISTER_PM1B_CONTROL          0x05
+#define ACPI_REGISTER_PM2_CONTROL           0x06
+#define ACPI_REGISTER_PM_TIMER              0x07
+#define ACPI_REGISTER_PROCESSOR_BLOCK       0x08
+#define ACPI_REGISTER_SMI_COMMAND_BLOCK     0x09
+
 
 /*
- * Address space bitmasks for mmio or io spaces
+ * BitRegister IDs
+ * These are bitfields defined within the full ACPI registers
  */
+#define ACPI_BITREG_TIMER_STATUS            0x00
+#define ACPI_BITREG_BUS_MASTER_STATUS       0x01
+#define ACPI_BITREG_GLOBAL_LOCK_STATUS      0x02
+#define ACPI_BITREG_POWER_BUTTON_STATUS     0x03
+#define ACPI_BITREG_SLEEP_BUTTON_STATUS     0x04
+#define ACPI_BITREG_RT_CLOCK_STATUS         0x05
+#define ACPI_BITREG_WAKE_STATUS             0x06
 
-#define ACPI_SMI_CMD_ADDRESS_SPACE          0x01
-#define ACPI_PM1_BLK_ADDRESS_SPACE          0x02
-#define ACPI_PM2_CNT_BLK_ADDRESS_SPACE      0x04
-#define ACPI_PM_TIMER_BLK_ADDRESS_SPACE     0x08
-#define ACPI_GPE0_BLK_ADDRESS_SPACE         0x10
-#define ACPI_GPE1_BLK_ADDRESS_SPACE         0x20
+#define ACPI_BITREG_TIMER_ENABLE            0x07
+#define ACPI_BITREG_GLOBAL_LOCK_ENABLE         0x08
+#define ACPI_BITREG_POWER_BUTTON_ENABLE        0x09
+#define ACPI_BITREG_SLEEP_BUTTON_ENABLE        0x0A
+#define ACPI_BITREG_RT_CLOCK_ENABLE         0x0B
+#define ACPI_BITREG_WAKE_ENABLE             0x0C      
 
-/*
- * Control bit definitions
- */
-#define ACPI_TIMER_STATUS                   (ACPI_PM1_STATUS | 0x01)
-#define ACPI_BM_STATUS                      (ACPI_PM1_STATUS | 0x02)
-#define ACPI_GBL_LOCK_STATUS                (ACPI_PM1_STATUS | 0x03)
-#define ACPI_POWER_BTN_STATUS               (ACPI_PM1_STATUS | 0x04)
-#define ACPI_SLEEP_BTN_STATUS               (ACPI_PM1_STATUS | 0x05)
-#define ACPI_RT_CLOCK_STATUS                (ACPI_PM1_STATUS | 0x06)
-#define ACPI_WAKE_STATUS                    (ACPI_PM1_STATUS | 0x07)
+#define ACPI_BITREG_SCI_ENABLE              0x0D
+#define ACPI_BITREG_BUS_MASTER_RLD          0x0E
+#define ACPI_BITREG_GLOBAL_LOCK_RELEASE        0x0F
+#define ACPI_BITREG_SLEEP_TYPE_A            0x10
+#define ACPI_BITREG_SLEEP_TYPE_B            0x11
+#define ACPI_BITREG_SLEEP_ENABLE            0x12
 
-#define ACPI_TIMER_ENABLE                   (ACPI_PM1_ENABLE | 0x01)
-                                            /* no ACPI_BM_ENABLE */
-#define ACPI_GBL_LOCK_ENABLE                (ACPI_PM1_ENABLE | 0x03)
-#define ACPI_POWER_BTN_ENABLE               (ACPI_PM1_ENABLE | 0x04)
-#define ACPI_SLEEP_BTN_ENABLE               (ACPI_PM1_ENABLE | 0x05)
-#define ACPI_RT_CLOCK_ENABLE                (ACPI_PM1_ENABLE | 0x06)
-#define ACPI_WAKE_ENABLE                    (ACPI_PM1_ENABLE | 0x07)
+#define ACPI_BITREG_ARB_DISABLE             0x13
 
-#define ACPI_SCI_ENABLE                     (ACPI_PM1_CONTROL | 0x01)
-#define ACPI_BM_RLD                         (ACPI_PM1_CONTROL | 0x02)
-#define ACPI_GBL_LOCK_RELEASE               (ACPI_PM1_CONTROL | 0x03)
-#define ACPI_SLEEP_TYPE_A                   (ACPI_PM1_CONTROL | 0x04)
-#define ACPI_SLEEP_TYPE_B                   (ACPI_PM1_CONTROL | 0x05)
-#define ACPI_SLEEP_ENABLE                   (ACPI_PM1_CONTROL | 0x06)
-
-#define ACPI_ARB_DIS                        (ACPI_PM2_CONTROL | 0x01)
-
-#define ACPI_TIMER_VAL                      (ACPI_PM_TIMER | 0x01)
-
-#define ACPI_GPE0_STATUS                    (ACPI_GPE0_STATUS_BLOCK | 0x01)
-#define ACPI_GPE0_ENABLE                    (ACPI_GPE0_ENABLE_BLOCK | 0x01)
-
-#define ACPI_GPE1_STATUS                    (ACPI_GPE1_STATUS_BLOCK | 0x01)
-#define ACPI_GPE1_ENABLE                    (ACPI_GPE1_ENABLE_BLOCK | 0x01)
+#define ACPI_BITREG_MAX                     0x13
+#define ACPI_NUM_BITREG                     ACPI_BITREG_MAX + 1
 
 
-#define ACPI_TIMER_STATUS_MASK              0x0001
-#define ACPI_BM_STATUS_MASK                 0x0010
-#define ACPI_GBL_LOCK_STATUS_MASK           0x0020
-#define ACPI_POWER_BTN_STATUS_MASK          0x0100
-#define ACPI_SLEEP_BTN_STATUS_MASK          0x0200
-#define ACPI_RT_CLOCK_STATUS_MASK           0x0400
-#define ACPI_WAKE_STATUS_MASK               0x8000
+/* Masks used to access the BitRegisters */
 
-#define ACPI_ALL_FIXED_STATUS_BITS          (ACPI_TIMER_STATUS_MASK   | ACPI_BM_STATUS_MASK  | ACPI_GBL_LOCK_STATUS_MASK \
-                                            | ACPI_POWER_BTN_STATUS_MASK | ACPI_SLEEP_BTN_STATUS_MASK \
-                                            | ACPI_RT_CLOCK_STATUS_MASK | ACPI_WAKE_STATUS_MASK)
+#define ACPI_BITMASK_TIMER_STATUS           0x0001
+#define ACPI_BITMASK_BUS_MASTER_STATUS      0x0010
+#define ACPI_BITMASK_GLOBAL_LOCK_STATUS        0x0020
+#define ACPI_BITMASK_POWER_BUTTON_STATUS       0x0100
+#define ACPI_BITMASK_SLEEP_BUTTON_STATUS       0x0200
+#define ACPI_BITMASK_RT_CLOCK_STATUS        0x0400
+#define ACPI_BITMASK_WAKE_STATUS            0x8000
 
-#define ACPI_TIMER_ENABLE_MASK              0x0001
-#define ACPI_GBL_LOCK_ENABLE_MASK           0x0020
-#define ACPI_POWER_BTN_ENABLE_MASK          0x0100
-#define ACPI_SLEEP_BTN_ENABLE_MASK          0x0200
-#define ACPI_RT_CLOCK_ENABLE_MASK           0x0400
+#define ACPI_BITMASK_ALL_FIXED_STATUS       ( ACPI_BITMASK_TIMER_STATUS     | ACPI_BITMASK_BUS_MASTER_STATUS  | ACPI_BITMASK_GLOBAL_LOCK_STATUS \
+                                            | ACPI_BITMASK_POWER_BUTTON_STATUS | ACPI_BITMASK_SLEEP_BUTTON_STATUS \
+                                            | ACPI_BITMASK_RT_CLOCK_STATUS  | ACPI_BITMASK_WAKE_STATUS)
 
-#define ACPI_SCI_ENABLE_MASK                0x0001
-#define ACPI_BM_RLD_MASK                    0x0002
-#define ACPI_GBL_LOCK_RELEASE_MASK          0x0004
-#define ACPI_SLEEP_TYPE_X_MASK              0x1C00
-#define ACPI_SLEEP_ENABLE_MASK              0x2000
+#define ACPI_BITMASK_TIMER_ENABLE           0x0001
+#define ACPI_BITMASK_GLOBAL_LOCK_ENABLE        0x0020
+#define ACPI_BITMASK_POWER_BUTTON_ENABLE       0x0100
+#define ACPI_BITMASK_SLEEP_BUTTON_ENABLE       0x0200
+#define ACPI_BITMASK_RT_CLOCK_ENABLE        0x0400
 
-#define ACPI_ARB_DIS_MASK                   0x0001
-#define ACPI_TIMER_VAL_MASK                 0xFFFFFFFF
+#define ACPI_BITMASK_SCI_ENABLE             0x0001
+#define ACPI_BITMASK_BUS_MASTER_RLD         0x0002
+#define ACPI_BITMASK_GLOBAL_LOCK_RELEASE       0x0004
+#define ACPI_BITMASK_SLEEP_TYPE_X           0x1C00
+#define ACPI_BITMASK_SLEEP_ENABLE           0x2000
 
-#define ACPI_GPE0_STATUS_MASK
-#define ACPI_GPE0_ENABLE_MASK
+#define ACPI_BITMASK_ARB_DISABLE            0x0001
 
-#define ACPI_GPE1_STATUS_MASK
-#define ACPI_GPE1_ENABLE_MASK
+
+/* Raw bit position of each BitRegister */
+
+#define ACPI_BITPOSITION_TIMER_STATUS       0x00
+#define ACPI_BITPOSITION_BUS_MASTER_STATUS  0x04
+#define ACPI_BITPOSITION_GLOBAL_LOCK_STATUS    0x05
+#define ACPI_BITPOSITION_POWER_BUTTON_STATUS   0x08
+#define ACPI_BITPOSITION_SLEEP_BUTTON_STATUS   0x09
+#define ACPI_BITPOSITION_RT_CLOCK_STATUS    0x0A
+#define ACPI_BITPOSITION_WAKE_STATUS        0x0F
+
+#define ACPI_BITPOSITION_TIMER_ENABLE       0x00
+#define ACPI_BITPOSITION_GLOBAL_LOCK_ENABLE    0x05
+#define ACPI_BITPOSITION_POWER_BUTTON_ENABLE   0x08
+#define ACPI_BITPOSITION_SLEEP_BUTTON_ENABLE   0x09
+#define ACPI_BITPOSITION_RT_CLOCK_ENABLE    0x0A
+
+#define ACPI_BITPOSITION_SCI_ENABLE         0x00
+#define ACPI_BITPOSITION_BUS_MASTER_RLD     0x01
+#define ACPI_BITPOSITION_GLOBAL_LOCK_RELEASE   0x02
+#define ACPI_BITPOSITION_SLEEP_TYPE_X       0x0A
+#define ACPI_BITPOSITION_SLEEP_ENABLE       0x0D
+
+#define ACPI_BITPOSITION_ARB_DISABLE        0x00
 
 
 /*****************************************************************************

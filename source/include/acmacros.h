@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acmacros.h - C macros for the entire subsystem.
- *       $Revision: 1.101 $
+ *       $Revision: 1.108 $
  *
  *****************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -216,9 +216,19 @@
 
 /* Pointer arithmetic */
 
+#define ACPI_PTR_ADD(t,a,b)             (t *) ((char *)(a) + (b))
+#define ACPI_PTR_DIFF(a,b)              (ACPI_SIZE) ((char *)(a) - (char *)(b))
 
-#define POINTER_ADD(t,a,b)              (t *) ((NATIVE_UINT)(a) + (NATIVE_UINT)(b))
-#define POINTER_DIFF(a,b)               ((UINT32) ((NATIVE_UINT)(a) - (NATIVE_UINT)(b)))
+/* Pointer/Integer type conversions */
+
+#define ACPI_TO_POINTER(i)              ACPI_PTR_ADD (void,NULL,(NATIVE_UINT)i)
+#define ACPI_TO_INTEGER(p)              ACPI_PTR_DIFF (p,NULL)
+
+#ifdef _IA16
+#define ACPI_PHYSADDR_TO_PTR(i)         (void *)(i)
+#else
+#define ACPI_PHYSADDR_TO_PTR(i)         ACPI_TO_POINTER(i)
+#endif
 
 /*
  * Macros for moving data around to/from buffers that are possibly unaligned.
@@ -292,8 +302,8 @@
 /*
  * Rounding macros (Power of two boundaries only)
  */
-#define ROUND_DOWN(value,boundary)      ((value) & (~((boundary)-1)))
-#define ROUND_UP(value,boundary)        (((value) + ((boundary)-1)) & (~((boundary)-1)))
+#define ROUND_DOWN(value,boundary)      (((NATIVE_UINT)(value)) & (~((boundary)-1)))
+#define ROUND_UP(value,boundary)        ((((NATIVE_UINT)(value)) + ((boundary)-1)) & (~((boundary)-1)))
 
 #define ROUND_DOWN_TO_32_BITS(a)        ROUND_DOWN(a,4)
 #define ROUND_DOWN_TO_64_BITS(a)        ROUND_DOWN(a,8)
@@ -303,8 +313,6 @@
 #define ROUND_UP_TO_64BITS(a)           ROUND_UP(a,8)
 #define ROUND_UP_TO_NATIVE_WORD(a)      ROUND_UP(a,ALIGNED_ADDRESS_BOUNDARY)
 
-#define ROUND_PTR_UP_TO_4(a,b)          ((b *)(((NATIVE_UINT)(a) + 3) & ~3))
-#define ROUND_PTR_UP_TO_8(a,b)          ((b *)(((NATIVE_UINT)(a) + 7) & ~7))
 
 #define ROUND_BITS_UP_TO_BYTES(a)       DIV_8((a) + 7)
 #define ROUND_BITS_DOWN_TO_BYTES(a)     DIV_8((a))
@@ -324,6 +332,7 @@
 #define MASK_BITS_ABOVE(position)       (~(((ACPI_INTEGER)(-1)) << ((UINT32) (position))))
 #define MASK_BITS_BELOW(position)       (((ACPI_INTEGER)(-1)) << ((UINT32) (position)))
 
+#define IS_OCTAL_DIGIT(d)               (((char)(d) >= '0') && ((char)(d) <= '7'))
 
 /* Macros for GAS addressing */
 
@@ -346,6 +355,12 @@
 #define ACPI_PCI_REGISTER(a)            (UINT16) ((a) & 0x0000FFFF)
 
 #endif
+
+
+/* Bitfields within ACPI registers */
+
+#define ACPI_REGISTER_PREPARE_BITS(Val, Pos, Mask)      ((Val << Pos) && Mask)
+#define ACPI_REGISTER_INSERT_VALUE(Reg, Pos, Mask, Val)  {Reg &= Mask; Reg |= ACPI_REGISTER_PREPARE_BITS(Val, Pos, Mask);}
 
 /*
  * An ACPI_NAMESPACE_NODE * can appear in some contexts,
