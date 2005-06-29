@@ -193,12 +193,12 @@ extern INT32                MethodStackTop;
 
 
 INT32
-SetNamedFieldValue (
+AmlSetNamedFieldValue (
     NsHandle            NamedField, 
     UINT32              Value);
 
 INT32
-GetNamedFieldValue (
+AmlGetNamedFieldValue (
     NsHandle            NamedField, 
     UINT32              *Value);
 
@@ -208,27 +208,27 @@ GetNamedFieldValue (
  */
 
 INT32
-ExecCreateField (
+AmlExecCreateField (
     UINT16              op);
 
 INT32
-ExecFatal (
+AmlExecFatal (
     void);
 
 INT32
-ExecIndex (
+AmlExecIndex (
     void);
 
 INT32
-ExecMatch (
+AmlExecMatch (
     void);
 
 INT32
-GetRvalue (
+AmlGetRvalue (
     OBJECT_DESCRIPTOR   **StackPtr);
 
 INT32
-IsMethodValue (
+AmlIsMethodValue (
     OBJECT_DESCRIPTOR   *pOD);
 
 
@@ -237,33 +237,33 @@ IsMethodValue (
  */
 
 INT32
-GetMethodDepth (
+AmlGetMethodDepth (
     void);
 
 NsType
-GetMethodValTyp (
+AmlGetMethodType (
     INT32               Index);
 
 INT32
-GetMethodValue (
+AmlGetMethodValue (
     INT32               Index, 
     OBJECT_DESCRIPTOR   *ObjDesc);
 
 INT32
-SetMethodValue (
+AmlSetMethodValue (
     INT32               Index, 
     OBJECT_DESCRIPTOR   *ObjDesc, 
     OBJECT_DESCRIPTOR   *ObjDesc2);
 
 INT32
-PrepDefFieldValue (
+AmlPrepDefFieldValue (
     NsHandle            Region, 
     UINT8               FldFlg, 
     INT32               FldPos, 
     INT32               FldLen);
 
 INT32
-PrepBankFieldValue (
+AmlPrepBankFieldValue (
     NsHandle            Region, 
     NsHandle            BankReg, 
     UINT32              BankVal,
@@ -272,7 +272,7 @@ PrepBankFieldValue (
     INT32               FldLen);
 
 INT32
-PrepIndexFieldValue(
+AmlPrepIndexFieldValue(
     NsHandle            IndexReg, 
     NsHandle            DataReg,
     UINT8               FldFlg, 
@@ -280,7 +280,7 @@ PrepIndexFieldValue(
     INT32               FldLen);
 
 INT32
-PrepStack (
+AmlPrepStack (
     char                *Types);
 
 
@@ -289,46 +289,46 @@ PrepStack (
  */
 
 UINT16 
-ThreadId (
+OsThreadId (
     void);
 
 INT32
-DoNotifyOp (
+OsDoNotifyOp (
     OBJECT_DESCRIPTOR   *val, 
     OBJECT_DESCRIPTOR   *obj);
 
 void
-DoSuspend(
+OsDoSuspend(
     UINT32              Time);
 
 INT32
-AcquireOpRqst(
+OsAcquireOpRqst(
     OBJECT_DESCRIPTOR   *Time, 
     OBJECT_DESCRIPTOR   *sOb);
 
 INT32
-ReleaseOpRqst(
+OsReleaseOpRqst(
     OBJECT_DESCRIPTOR   *sOb);
 
 INT32
-SignalOpRqst(
+OsSignalOpRqst(
     OBJECT_DESCRIPTOR   *sOb);
 
 INT32
-WaitOpRqst(
+OsWaitOpRqst(
     OBJECT_DESCRIPTOR   *Time, 
     OBJECT_DESCRIPTOR   *sOb);
 
 INT32
-ResetOpRqst(
+OsResetOpRqst(
     OBJECT_DESCRIPTOR   *sOb);
 
 INT32
-GetGlobalLock(
+OsGetGlobalLock(
     void);
 
 void
-ReleaseGlobalLock(
+OsReleaseGlobalLock(
     void);
 
 
@@ -337,40 +337,40 @@ ReleaseGlobalLock(
  */
 
 INT32
-ExecStore (
+AmlExecStore (
     OBJECT_DESCRIPTOR   *op1, 
     OBJECT_DESCRIPTOR   *res);
 
 INT32
-ExecMonadic1 (
+AmlExecMonadic1 (
     UINT16              op);
 
 INT32
-ExecMonadic2R (
+AmlExecMonadic2R (
     UINT16              op);
 
 INT32
-ExecMonadic2 (
+AmlExecMonadic2 (
     UINT16              op);
 
 INT32
-ExecDyadic1 (
+AmlExecDyadic1 (
     UINT16              op);
 
 INT32
-ExecDyadic2R (
+AmlExecDyadic2R (
     UINT16              op);
 
 INT32
-ExecDyadic2S (
+AmlExecDyadic2S (
     UINT16              op);
 
 INT32
-ExecDyadic2 (
+AmlExecDyadic2 (
     UINT16              op);
 
 INT32
-AmlExec (
+AmlExecuteMethod (
     INT32               Offset, 
     INT32               Len, 
     OBJECT_DESCRIPTOR   **Params);
@@ -381,12 +381,12 @@ AmlExec (
  */
 
 INT32 
-DoSuperName (
+AmlDoSuperName (
     OpMode              LoadExecMode, 
     NsType              Define);
 
 INT32 
-DoLiteral (
+AmlDoLiteral (
     OpMode              LoadExecMode);
 
 /*
@@ -394,45 +394,45 @@ DoLiteral (
  */
 
 INT32
-avail (
+AmlAvail (
     size_t              n);
 
 INT32
-Peek (
+AmlPeek (
     void);
 
 INT32
-GetPCodeByte (
+AmlGetPCodeByte (
     ptrdiff_t           Offset);
 
 INT32
-PeekOp (
+AmlPeekOp (
     void);
 
 UINT8 *
-ConsumeAMLByte (
+AmlConsumeBytes (
     size_t              Bytes);
 
 size_t
-ConsumeAMLStreamBytes (
+AmlConsumeStreamBytes (
     size_t              BytesToGet, 
     UINT8               *AmlBuffer);
 
 void
-ConsumeAMLPackage (
+AmlConsumePackage (
     OpMode              LoadExecMode);
 
 INT32
-IsInPCodeBlock (
+AmlIsInPCodeBlock (
     UINT8               *Where);
 
 void
-SetPCodeInput (
+AmlSetPCodeInput (
     UINT8               *Base, 
     INT32               Len);
 
 void
-SetMethod (
+AmlSetMethod (
     void                *Object);
 
 INT32
@@ -441,15 +441,15 @@ AmlPrepExec (
     INT32               Len);
 
 ACPI_OBJECT_HANDLE
-PCodeHandle (
+AmlGetPCodeHandle (
     void);
 
 void
-GetCurrentLoc (
+AmlGetCurrentLocation (
     meth                *Method);
 
 void
-SetCurrentLoc (
+AmlSetCurrentLocation (
     meth                *Method);
 
 
@@ -458,16 +458,16 @@ SetCurrentLoc (
  */
 
 void
-DumpAMLBuffer (
+AmlDumpBuffer (
     size_t              Length);
 
 
 INT32
-DumpStackEntry (
+AmlDumpStackEntry (
     OBJECT_DESCRIPTOR   *EntryDesc);
 
 void
-DumpStack (
+AmlDumpStack (
     OpMode              LoadExecMode, 
     char                *pcIdent, 
     INT32               NumLevels, 
@@ -479,20 +479,20 @@ DumpStack (
  */
 
 INT32 
-DoDataTerm (
+AmlDoDataTerm (
     OpMode              LoadExecMode);
 
 INT32
-DoCode (
+AmlDoCode (
     OpMode              iLE);
 
 INT32
-DoPkg (
+AmlDoPkg (
     NsType              Type, 
     OpMode              iLE);
 
 INT32
-DoDefinitionBlock (
+AmlDoDefinitionBlock (
     char                *name, 
     UINT8               *addr, 
     INT32               len,
@@ -505,15 +505,15 @@ DoDefinitionBlock (
  */
 
 INT32 
-DoFieldFlag (
+AmlDoFieldFlag (
     OpMode              LoadExecMode);
 
 INT32
-DoMatchOp (
+AmlDoMatchOp (
     OpMode              iLE);
 
 void
-DoOpByte (
+AmlDoOpByte (
     INT32               nl, 
     UINT16              op, 
     OpMode              iLE);
@@ -524,29 +524,29 @@ DoOpByte (
  */
 
 char *
-LastFullyQualifiedName (
+AmlLastFullyQualifiedName (
     void);
 
 void
-AllocateNameString (
+AmlAllocateNameString (
     INT32               PrefixCount,
     INT32               NSeg);
 
 INT32
-NcOK (
+AmlGoodChar (
     INT32               c);
 
 INT32 
-GetEncodedPkgLen (
+AmlDecodePackageLength (
     INT32               LastPkgLen);
 
 INT32 
-DoName (
+AmlDoName (
     NsType              DataType, 
     OpMode              LoadExecMode);
 
 void
-GenLabel (
+AmlGenLabel (
     char                *Name);
 
 
@@ -555,19 +555,19 @@ GenLabel (
  */
 
 INT32
-DoOpCode (
+AmlDoOpCode (
     OpMode              iLE);
 
 INT32 
-DoRefOpCode (
+AmlDoRefOpCode (
     OpMode              LoadExecMode);
 
 INT32 
-DoType1OpCode (
+AmlDoType1OpCode (
     OpMode              LoadExecMode);
 
 INT32 
-DoType2OpCode (
+AmlDoType2OpCode (
     OpMode              LoadExecMode);
 
 
@@ -576,29 +576,29 @@ DoType2OpCode (
  */
 
 void 
-ShowHexValue (
+AmlShowHexValue (
     INT32               ByteCount, 
     UINT8               *AmlPtr, 
     OpMode              LoadExecMode, 
     INT32               LeadSpace);
 
 INT32 
-DoPkgLength (
+AmlDoPkgLength (
     INT32               DoPush, 
     OpMode              LoadExecMode);
 
 INT32 
-DoByteConst (
+AmlDoByteConst (
     OpMode              LoadExecMode, 
     INT32               LeadSpace);
 
 INT32 
-DoWordConst (
+AmlDoWordConst (
     OpMode              LoadExecMode, 
     INT32               LeadSpace);
 
 INT32 
-DoDWordConst (
+AmlDoDWordConst (
     OpMode              LoadExecMode, 
     INT32               LeadSpace);
 
@@ -608,42 +608,42 @@ DoDWordConst (
  */
 
 void
-ClearPkgStack (
+AmlClearPkgStack (
     void);
 
 INT32
-PushLen (
+AmlPushLength (
     INT32               len, 
     OpMode              LoadExecMode);
 
 INT32
-PushExecLen (
+AmlPushExecLength (
     INT32               len);
 
 INT32
-PushExec (
+AmlPushExec (
     UINT8               *Code, 
     INT32               Len);
 
 INT32
-PopLen (
+AmlPopLength (
     INT32               NoErrUnder, 
     OpMode              LoadExecMode);
 
 INT32
-PopExecLen (
+AmlPopExecLength (
     void);
 
 INT32
-PopExec (
+AmlPopExec (
     void);
 
 INT32
-PushIfExec (
+AmlPushIfExec (
     OpMode              LoadExecMode);
 
 INT32
-PkgNested (
+AmlPackageNested (
      void);
 
 
