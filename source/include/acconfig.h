@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acconfig.h - Global configuration constants
- *       $Revision: 1.84 $
+ *       $Revision: 1.85 $
  *
  *****************************************************************************/
 
@@ -213,6 +213,10 @@
  * ACPI Specification constants (Do not change unless the specification changes)
  *
  *****************************************************************************/
+
+/* Number of distinct GPE register blocks */
+
+#define ACPI_MAX_GPE_BLOCKS         2
 
 /*
  * Method info (in WALK_STATE), containing local variables and argumetns
