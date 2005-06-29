@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: oswinxf - Windows application interface
- *              $Revision: 1.2 $
+ *              $Revision: 1.3 $
  *
  *****************************************************************************/
 
@@ -135,9 +135,8 @@
 #undef LOBYTE
 #undef HIBYTE
 
-#include "acpi.h"
-#include "amlcode.h"
-#include "acparser.h"
+
+#include "acpi.h"           /* TBD: this should be acpixf.h */
 #include "acdebug.h"
 
 #define _COMPONENT          OS_DEPENDENT
