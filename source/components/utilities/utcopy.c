@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: utcopy - Internal to external object translation utilities
- *              $Revision: 1.111 $
+ *              $Revision: 1.112 $
  *
  *****************************************************************************/
 
@@ -734,11 +734,11 @@ AcpiUtCopySimpleObject (
 
         /*
          * Allocate and copy the actual buffer if and only if:
-         * 1) There is a valid buffer (length > 0)
+         * 1) There is a valid buffer pointer
          * 2) The buffer is not static (not in an ACPI table) (in this case,
          *    the actual pointer was already copied above)
          */
-        if ((SourceDesc->Buffer.Length) &&
+        if ((SourceDesc->Buffer.Pointer) &&
             (!(SourceDesc->Common.Flags & AOPOBJ_STATIC_POINTER)))
         {
             DestDesc->Buffer.Pointer = ACPI_MEM_ALLOCATE (SourceDesc->Buffer.Length);
@@ -756,11 +756,11 @@ AcpiUtCopySimpleObject (
 
         /*
          * Allocate and copy the actual string if and only if:
-         * 1) There is a valid string (length > 0)
+         * 1) There is a valid string pointer
          * 2) The string is not static (not in an ACPI table) (in this case,
          *    the actual pointer was already copied above)
          */
-        if ((SourceDesc->String.Length) &&
+        if ((SourceDesc->String.Pointer) &&
             (!(SourceDesc->Common.Flags & AOPOBJ_STATIC_POINTER)))
         {
             DestDesc->String.Pointer = ACPI_MEM_ALLOCATE ((ACPI_SIZE) SourceDesc->String.Length + 1);
