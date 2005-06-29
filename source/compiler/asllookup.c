@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: asllookup- Namespace lookup
- *              $Revision: 1.72 $
+ *              $Revision: 1.75 $
  *
  *****************************************************************************/
 
@@ -192,6 +192,7 @@ LsDoOneNamespaceObject (
 
 
         case ACPI_TYPE_STRING:
+
             if ((Op->Asl.ParseOpcode == PARSEOP_NAMESEG)  ||
                 (Op->Asl.ParseOpcode == PARSEOP_NAMESTRING))
             {
@@ -203,14 +204,15 @@ LsDoOneNamespaceObject (
             break;
 
 
-        case INTERNAL_TYPE_REGION_FIELD:
+        case ACPI_TYPE_LOCAL_REGION_FIELD:
+
             if ((Op->Asl.ParseOpcode == PARSEOP_NAMESEG)  ||
                 (Op->Asl.ParseOpcode == PARSEOP_NAMESTRING))
             {
                 Op = Op->Asl.Child;
             }
-            FlPrintFile (ASL_FILE_NAMESPACE_OUTPUT, "    [Length = 0x%02X]",
-                        Op->Asl.Value.Integer32);
+            FlPrintFile (ASL_FILE_NAMESPACE_OUTPUT, "    [Offset 0x%02X, Length 0x%02X]",
+                        Op->Asl.Parent->Asl.ExtraValue, Op->Asl.Value.Integer32);
             break;
 
 
@@ -476,11 +478,10 @@ LkNamespaceLocateBegin (
     UINT32                  MinimumLength;
     UINT32                  Temp;
     const ACPI_OPCODE_INFO  *OpInfo;
+    UINT32                  Flags;
 
 
-    ACPI_FUNCTION_NAME ("LkNamespaceLocateBegin");
-    ACPI_DEBUG_PRINT ((ACPI_DB_DISPATCH, "NamespaceLocateBegin: Op %p\n", Op));
-
+    ACPI_FUNCTION_TRACE_PTR ("LkNamespaceLocateBegin", Op);
 
     /*
      * If this node is the actual declaration of a name 
@@ -507,13 +508,35 @@ LkNamespaceLocateBegin (
         return (AE_OK);
     }
 
+    /*
+     * We must enable the "search-to-root" for single NameSegs, but
+     * we have to be very careful about opening up scopes
+     */
+    Flags = ACPI_NS_SEARCH_PARENT;
+    if ((Op->Asl.ParseOpcode == PARSEOP_NAMESTRING) ||
+        (Op->Asl.ParseOpcode == PARSEOP_NAMESEG)    ||
+        (Op->Asl.ParseOpcode == PARSEOP_METHODCALL))
+    {
+        /*
+         * These are name references, do not push the scope stack
+         * for them.
+         */
+        Flags |= ACPI_NS_DONT_OPEN_SCOPE;
+    }
+ 
     /* Get the NamePath from the appropriate place */
 
     if (OpInfo->Flags & AML_NAMED)
     {
+        /* For all NAMED operators, the name reference is the first child */
+
         Path = Op->Asl.Child->Asl.Value.String;
         if (Op->Asl.AmlOpcode == AML_ALIAS_OP)
         {
+            /* 
+             * ALIAS is the only oddball opcode, the name declaration
+             * (alias name) is the second operand 
+             */
             Path = Op->Asl.Child->Asl.Next->Asl.Value.String;
         }
     }
@@ -534,7 +557,7 @@ LkNamespaceLocateBegin (
     }
 
     ObjectType = AslMapNamedOpcodeToDataType (Op->Asl.AmlOpcode);
-    ACPI_DEBUG_PRINT ((ACPI_DB_DISPATCH, "NamespaceLocateBegin: Type=%X\n", ObjectType));
+    ACPI_DEBUG_PRINT ((ACPI_DB_DISPATCH, "Type=%s\n", AcpiUtGetTypeName (ObjectType)));
 
     /*
      * Lookup the name in the namespace.  Name must exist at this point, or it
@@ -545,9 +568,8 @@ LkNamespaceLocateBegin (
      */
     Gbl_NsLookupCount++;
 
-    Status = AcpiNsLookup (WalkState->ScopeInfo,  Path,
-                            ObjectType, ACPI_IMODE_EXECUTE,
-                            ACPI_NS_SEARCH_PARENT, WalkState, &(Node));
+    Status = AcpiNsLookup (WalkState->ScopeInfo,  Path, ObjectType, 
+                    ACPI_IMODE_EXECUTE, Flags, WalkState, &(Node));
     if (ACPI_FAILURE (Status))
     {
         if (Status == AE_NOT_FOUND)
@@ -604,7 +626,7 @@ LkNamespaceLocateBegin (
      * Dereference an alias. (A name reference that is an alias.)
      * Aliases are not nested;  The alias always points to the final object
      */
-    if ((Op->Asl.ParseOpcode != PARSEOP_ALIAS) && (Node->Type == INTERNAL_TYPE_ALIAS))
+    if ((Op->Asl.ParseOpcode != PARSEOP_ALIAS) && (Node->Type == ACPI_TYPE_LOCAL_ALIAS))
     {
         /* This node points back to the original PARSEOP_ALIAS */
 
@@ -628,8 +650,8 @@ LkNamespaceLocateBegin (
 
     /* 1) Check for a reference to a resource descriptor */
 
-    if ((Node->Type == INTERNAL_TYPE_RESOURCE_FIELD) ||
-        (Node->Type == INTERNAL_TYPE_RESOURCE))
+    else if ((Node->Type == ACPI_TYPE_LOCAL_RESOURCE_FIELD) ||
+             (Node->Type == ACPI_TYPE_LOCAL_RESOURCE))
     {
         /*
          * This was a reference to a field within a resource descriptor.  Extract
@@ -704,11 +726,11 @@ LkNamespaceLocateBegin (
     /* 2) Check for a method invocation */
 
     else if ((((Op->Asl.ParseOpcode == PARSEOP_NAMESTRING) || (Op->Asl.ParseOpcode == PARSEOP_NAMESEG)) &&
-        (Node->Type == ACPI_TYPE_METHOD) &&
-        (Op->Asl.Parent) &&
-        (Op->Asl.Parent->Asl.ParseOpcode != PARSEOP_METHOD))   ||
+                (Node->Type == ACPI_TYPE_METHOD) &&
+                (Op->Asl.Parent) &&
+                (Op->Asl.Parent->Asl.ParseOpcode != PARSEOP_METHOD))   ||
 
-        (Op->Asl.ParseOpcode == PARSEOP_METHODCALL))
+                (Op->Asl.ParseOpcode == PARSEOP_METHODCALL))
     {
 
         /*
@@ -741,8 +763,8 @@ LkNamespaceLocateBegin (
         Op->Asl.ParseOpcode = PARSEOP_METHODCALL;
         UtSetParseOpName (Op);
 
-        PassedArgs          = 0;
-        NextOp              = Op->Asl.Child;
+        PassedArgs = 0;
+        NextOp     = Op->Asl.Child;
 
         while (NextOp)
         {
@@ -847,7 +869,6 @@ LkNamespaceLocateBegin (
                 {
                     AslError (ASL_ERROR, ASL_MSG_REGION_BYTE_ACCESS, Op, NULL);
                 }
-
                 break;
 
             case REGION_SMBUS:
@@ -859,6 +880,7 @@ LkNamespaceLocateBegin (
                 break;
 
             default:
+
                 /* Nothing to do for other address spaces */
                 break;
             }
@@ -914,7 +936,7 @@ LkNamespaceLocateEnd (
     const ACPI_OPCODE_INFO  *OpInfo;
 
 
-    ACPI_FUNCTION_NAME ("LkNamespaceLocateEnd");
+    ACPI_FUNCTION_TRACE ("LkNamespaceLocateEnd");
 
 
     /* We are only interested in opcodes that have an associated name */
@@ -925,13 +947,16 @@ LkNamespaceLocateEnd (
         return (AE_OK);
     }
 
-    /*
-     * TBD: do we ever need to check the argument of AML_NAME_OP
-     * to get the correct type?
-     *  if (Op->Asl.AmlOpcode == AML_NAME_OP)
-     */
+    /* Not interested in name references, we did not open a scope for them */
 
-    /* Pop the scope stack */
+    if ((Op->Asl.ParseOpcode == PARSEOP_NAMESTRING) ||
+        (Op->Asl.ParseOpcode == PARSEOP_NAMESEG)    ||
+        (Op->Asl.ParseOpcode == PARSEOP_METHODCALL))
+    {
+        return (AE_OK);
+    }
+
+    /* Pop the scope stack if necessary */
 
     if (AcpiNsOpensScope (AslMapNamedOpcodeToDataType (Op->Asl.AmlOpcode)))
     {
@@ -942,6 +967,7 @@ LkNamespaceLocateEnd (
 
         AcpiDsScopeStackPop (WalkState);
     }
+
     return (AE_OK);
 }
 
