@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dswstate - Dispatcher parse tree walk management routines
- *              $Revision: 1.69 $
+ *              $Revision: 1.70 $
  *
  *****************************************************************************/
 
@@ -455,7 +455,7 @@ AcpiDsResultPush (
  *
  * RETURN:      Status
  *
- * DESCRIPTION:
+ * DESCRIPTION: Push an object onto the WalkState result stack.
  *
  ******************************************************************************/
 
@@ -492,7 +492,7 @@ AcpiDsResultStackPush (
  *
  * RETURN:      Status
  *
- * DESCRIPTION:
+ * DESCRIPTION: Pop an object off of the WalkState result stack.
  *
  ******************************************************************************/
 
