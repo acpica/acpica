@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: exconvrt - Object conversion routines
- *              $Revision: 1.43 $
+ *              $Revision: 1.44 $
  *
  *****************************************************************************/
 
@@ -304,7 +304,6 @@ AcpiExConvertToBuffer (
 
         *ResultDesc = ObjDesc;
         return_ACPI_STATUS (AE_OK);
-        break;
 
 
     case ACPI_TYPE_INTEGER:
@@ -528,7 +527,6 @@ AcpiExConvertToString (
 
             return_ACPI_STATUS (AE_NOT_IMPLEMENTED);
         }
-        break;
 
 
     case ACPI_TYPE_INTEGER:
