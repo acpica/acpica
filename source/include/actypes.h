@@ -215,7 +215,7 @@ typedef UINT32              ACPI_TABLE_TYPE;
 #define TABLE_PSDT          (ACPI_TABLE_TYPE) 5
 #define TABLE_RSDT          (ACPI_TABLE_TYPE) 6
 #define TABLE_SSDT          (ACPI_TABLE_TYPE) 7
-#define TABLE_SBDT          (ACPI_TABLE_TYPE) 8
+#define TABLE_SBST          (ACPI_TABLE_TYPE) 8
 #define ACPI_TABLE_MAX      8
 #define NUM_ACPI_TABLES     9
 
@@ -265,7 +265,7 @@ typedef UINT32              ACPI_OBJECT_TYPE;
 #define TYPE_Lvalue         (ACPI_OBJECT_TYPE) 36 /* Arg#, Local#, Name, Debug; used only in descriptors */
 #define INTERNAL_TYPE_MAX   36
 
-#define TYPE_Invalid        (ACPI_OBJECT_TYPE) 0xFF
+#define TYPE_Invalid        (ACPI_OBJECT_TYPE) 37
 
 
 /* 
