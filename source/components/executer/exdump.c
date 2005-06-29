@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: exdump - Interpreter debug output routines
- *              $Revision: 1.129 $
+ *              $Revision: 1.130 $
  *
  *****************************************************************************/
 
@@ -975,6 +975,7 @@ AcpiExDumpObjectDescriptor (
         AcpiExOutInteger ("DatumValidBits",  ObjDesc->CommonField.DatumValidBits);
         AcpiExOutInteger ("EndFldValidBits", ObjDesc->CommonField.EndFieldValidBits);
         AcpiExOutInteger ("EndBufValidBits", ObjDesc->CommonField.EndBufferValidBits);
+        AcpiExOutPointer ("ParentNode",      ObjDesc->CommonField.Node);
 
         switch (ObjDesc->Common.Type)
         {
@@ -985,7 +986,7 @@ AcpiExDumpObjectDescriptor (
         case INTERNAL_TYPE_BANK_FIELD:
             AcpiExOutInteger ("Value",           ObjDesc->BankField.Value);
             AcpiExOutPointer ("RegionObj",       ObjDesc->BankField.RegionObj);
-            AcpiExOutPointer ("BankRegisterObj", ObjDesc->BankField.BankRegisterObj);
+            AcpiExOutPointer ("BankObj",         ObjDesc->BankField.BankObj);
             break;
 
         case INTERNAL_TYPE_INDEX_FIELD:
