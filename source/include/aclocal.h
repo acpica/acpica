@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: aclocal.h - Internal data types used across the ACPI subsystem
- *       $Revision: 1.162 $
+ *       $Revision: 1.163 $
  *
  *****************************************************************************/
 
@@ -503,8 +503,8 @@ typedef struct
 
 /* Forward declarations */
 struct acpi_walk_state;
-struct acpi_parse_obj;
 struct acpi_obj_mutex;
+union acpi_parse_obj;
 
 
 #define ACPI_STATE_COMMON                  /* Two 32-bit fields and a pointer */\
@@ -555,7 +555,7 @@ typedef struct acpi_pkg_state
 typedef struct acpi_control_state
 {
     ACPI_STATE_COMMON
-    struct acpi_parse_obj   *PredicateOp;
+    union acpi_parse_obj    *PredicateOp;
     UINT8                   *AmlPredicateStart;     /* Start of if/while predicate */
     UINT8                   *PackageEnd;            /* End of if/while block */
     UINT16                  Opcode;
@@ -577,7 +577,7 @@ typedef struct acpi_scope_state
 typedef struct acpi_pscope_state
 {
     ACPI_STATE_COMMON
-    struct acpi_parse_obj   *Op;                    /* current op being parsed */
+    union acpi_parse_obj    *Op;                    /* current op being parsed */
     UINT8                   *ArgEnd;                /* current argument end */
     UINT8                   *PkgEnd;                /* current package end */
     UINT32                  ArgList;                /* next argument to parse */
@@ -618,7 +618,7 @@ typedef struct acpi_result_values
 typedef
 ACPI_STATUS (*ACPI_PARSE_DOWNWARDS) (
     struct acpi_walk_state  *WalkState,
-    struct acpi_parse_obj   **OutOp);
+    union acpi_parse_obj    **OutOp);
 
 typedef
 ACPI_STATUS (*ACPI_PARSE_UPWARDS) (
@@ -701,7 +701,7 @@ typedef union acpi_parse_val
     NATIVE_CHAR             *String;        /* NULL terminated string */
     UINT8                   *Buffer;        /* buffer or string */
     NATIVE_CHAR             *Name;          /* NULL terminated string */
-    struct acpi_parse_obj   *Arg;           /* arguments and contained ops */
+    union acpi_parse_obj    *Arg;           /* arguments and contained ops */
 
 } ACPI_PARSE_VALUE;
 
@@ -709,12 +709,12 @@ typedef union acpi_parse_val
 #define ACPI_PARSE_COMMON \
     UINT8                   DataType;       /* To differentiate various internal objs */\
     UINT8                   Flags;          /* Type of Op */\
-    UINT16                  Opcode;         /* AML opcode */\
+    UINT16                  AmlOpcode;      /* AML opcode */\
     UINT32                  AmlOffset;      /* offset of declaration in AML */\
-    struct acpi_parse_obj   *Parent;        /* parent op */\
-    struct acpi_parse_obj   *Next;          /* next op */\
+    union acpi_parse_obj    *Parent;        /* parent op */\
+    union acpi_parse_obj    *Next;          /* next op */\
     ACPI_DEBUG_ONLY_MEMBERS (\
-    NATIVE_CHAR             OpName[16])     /* op name (debug only) */\
+    NATIVE_CHAR             AmlOpName[16])  /* op name (debug only) */\
                                             /* NON-DEBUG members below: */\
     ACPI_NAMESPACE_NODE     *Node;          /* for use by interpreter */\
     ACPI_PARSE_VALUE        Value;          /* Value or args associated with the opcode */\
@@ -723,24 +723,69 @@ typedef union acpi_parse_val
 /*
  * generic operation (eg. If, While, Store)
  */
-typedef struct acpi_parse_obj
+typedef struct acpi_parseobj_common
 {
     ACPI_PARSE_COMMON
-} ACPI_PARSE_OBJECT;
+} ACPI_PARSE_OBJ_COMMON;
 
 
 /*
  * Extended Op for named ops (Scope, Method, etc.), deferred ops (Methods and OpRegions),
  * and bytelists.
  */
-typedef struct acpi_parse2_obj
+typedef struct acpi_parseobj_named
 {
     ACPI_PARSE_COMMON
     UINT8                   *Data;          /* AML body or bytelist data */
     UINT32                  Length;         /* AML length */
     UINT32                  Name;           /* 4-byte name or zero if no name */
 
-} ACPI_PARSE2_OBJECT;
+} ACPI_PARSE_OBJ_NAMED;
+
+
+/* The parse node is the fundamental element of the parse tree */
+
+typedef struct acpi_parseobj_asl
+{
+    ACPI_PARSE_COMMON
+
+    union acpi_parse_obj        *Child;
+
+
+    union acpi_parse_obj        *ParentMethod;
+    char                        *Filename;
+    char                        *ExternalName;
+    char                        *Namepath;
+    UINT32                      ExtraValue;
+    UINT32                      Column;
+    UINT32                      LineNumber;
+    UINT32                      LogicalLineNumber;
+    UINT32                      LogicalByteOffset;
+    UINT32                      EndLine;
+    UINT32                      EndLogicalLine;
+    UINT16                      ParseOpcode;
+    UINT32                      AcpiBtype;
+    UINT32                      AmlLength;
+    UINT32                      AmlSubtreeLength;
+    UINT32                      FinalAmlLength;
+    UINT32                      FinalAmlOffset;
+    UINT8                       AmlOpcodeLength;
+    UINT8                       AmlPkgLenBytes;
+    UINT16                      CompileFlags;
+    UINT8                       Extra;
+    char                        ParseOpName[12];
+
+} ACPI_PARSE_OBJ_ASL;
+
+
+typedef union acpi_parse_obj
+{
+    ACPI_PARSE_OBJ_COMMON       Common;
+    ACPI_PARSE_OBJ_NAMED        Named;
+    ACPI_PARSE_OBJ_ASL          Asl;
+
+} ACPI_PARSE_OBJECT;
+
 
 
 /*
@@ -755,10 +800,10 @@ typedef struct acpi_parse_state
     UINT8                   *AmlEnd;        /* (last + 1) AML byte */
     UINT8                   *PkgStart;      /* current package begin */
     UINT8                   *PkgEnd;        /* current package end */
-    struct acpi_parse_obj   *StartOp;       /* root of parse tree */
+    union acpi_parse_obj    *StartOp;       /* root of parse tree */
     struct acpi_node        *StartNode;
     union acpi_gen_state    *Scope;         /* current scope */
-    struct acpi_parse_obj   *StartScope;
+    union acpi_parse_obj    *StartScope;
 
 } ACPI_PARSE_STATE;
 

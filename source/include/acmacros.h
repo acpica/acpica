@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acmacros.h - C macros for the entire subsystem.
- *       $Revision: 1.114 $
+ *       $Revision: 1.116 $
  *
  *****************************************************************************/
 
@@ -175,7 +175,7 @@
 /* Pointer arithmetic */
 
 #define ACPI_PTR_ADD(t,a,b)             (t *) ((char *)(a) + (b))
-#define ACPI_PTR_DIFF(a,b)              (ACPI_SIZE) ((char *)(a) - (char *)(b))
+#define ACPI_PTR_DIFF(a,b)              (NATIVE_UINT) ((char *)(a) - (char *)(b))
 
 /* Pointer/Integer type conversions */
 
@@ -203,10 +203,10 @@
 
 /* The hardware supports unaligned transfers, just do the move */
 
-#define ACPI_MOVE_UNALIGNED16_TO_16(d,s)    *(UINT16*)(d) = *(UINT16*)(s)
-#define ACPI_MOVE_UNALIGNED32_TO_32(d,s)    *(UINT32*)(d) = *(UINT32*)(s)
-#define ACPI_MOVE_UNALIGNED16_TO_32(d,s)    *(UINT32*)(d) = *(UINT16*)(s)
-#define ACPI_MOVE_UNALIGNED64_TO_64(d,s)    *(UINT64*)(d) = *(UINT64*)(s)
+#define ACPI_MOVE_UNALIGNED16_TO_16(d,s)    *(UINT16 *)(d) = *(UINT16 *)(s)
+#define ACPI_MOVE_UNALIGNED32_TO_32(d,s)    *(UINT32 *)(d) = *(UINT32 *)(s)
+#define ACPI_MOVE_UNALIGNED16_TO_32(d,s)    *(UINT32 *)(d) = *(UINT16 *)(s)
+#define ACPI_MOVE_UNALIGNED64_TO_64(d,s)    *(UINT64 *)(d) = *(UINT64 *)(s)
 
 #else
 /*
@@ -223,7 +223,7 @@
                                              ((UINT8 *)(d))[2] = ((UINT8 *)(s))[2];\
                                              ((UINT8 *)(d))[3] = ((UINT8 *)(s))[3];}
 
-#define ACPI_MOVE_UNALIGNED16_TO_32(d,s)    {(*(UINT32*)(d)) = 0; MOVE_UNALIGNED16_TO_16(d,s);}
+#define ACPI_MOVE_UNALIGNED16_TO_32(d,s)    {(*(UINT32*)(d)) = 0; ACPI_MOVE_UNALIGNED16_TO_16(d,s);}
 
 #define ACPI_MOVE_UNALIGNED64_TO_64(d,s)    {((UINT8 *)(d))[0] = ((UINT8 *)(s))[0];\
                                              ((UINT8 *)(d))[1] = ((UINT8 *)(s))[1];\
@@ -363,7 +363,7 @@
 /*
  * Macros for the master AML opcode table
  */
-#ifdef ACPI_DEBUG
+#if defined(ACPI_DEBUG) || defined(ENABLE_DEBUGGER)
 #define ACPI_OP(Name,PArgs,IArgs,ObjType,Class,Type,Flags)     {Name,PArgs,IArgs,Flags,ObjType,Class,Type}
 #else
 #define ACPI_OP(Name,PArgs,IArgs,ObjType,Class,Type,Flags)     {PArgs,IArgs,Flags,ObjType,Class,Type}
@@ -585,6 +585,10 @@
 #define return_ACPI_STATUS(s)           return(s)
 #define return_VALUE(s)                 return(s)
 #define return_PTR(s)                   return(s)
+
+#ifdef ENABLE_DEBUGGER
+#define _OPCODE_NAMES
+#endif
 
 #endif
 
