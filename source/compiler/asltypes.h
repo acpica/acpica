@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asltypes.h - compiler data types and struct definitions
- *              $Revision: 1.51 $
+ *              $Revision: 1.52 $
  *
  *****************************************************************************/
 
@@ -408,7 +408,7 @@ char                        *AslMessages [] = {
     "Use of reserved word",
     "Effective AML buffer length is zero",
     "Effective AML package length is zero",
-    "Mixed return types in method",
+    "Not all control paths return a value",
     "Object not found or not accessible from scope",
     "Object not accessible from this scope",
     "Object does not exist",
