@@ -182,17 +182,9 @@
 #define ALIGN64(bc)
 #endif
 
-/* Assert macros */
-
 #ifdef DEBUG_ASSERT
 #undef DEBUG_ASSERT
 #endif
-
-#define ACPI_ASSERT(exp)                if(!(exp)) \
-                                            OsdDbgAssert(#exp, __FILE__, __LINE__, "Failed Assertion")
-
-#define DEBUG_ASSERT(msg, exp)          if(!(exp)) \
-                                            OsdDbgAssert(#exp, __FILE__, __LINE__, msg)
 
 
 /* Register read/write Macros */
@@ -358,6 +350,14 @@
                                             DebugPrintRaw PARAM_LIST(fp);}
 
 
+/* Assert macros */
+
+#define ACPI_ASSERT(exp)                if(!(exp)) \
+                                            OsdDbgAssert(#exp, __FILE__, __LINE__, "Failed Assertion")
+
+#define DEBUG_ASSERT(msg, exp)          if(!(exp)) \
+                                            OsdDbgAssert(#exp, __FILE__, __LINE__, msg)
+
 
 #else
 /* 
@@ -388,6 +388,8 @@
 #define return_ACPI_STATUS(s)           return(s)
 #define return_VALUE(s)                 return(s)
 
+#define ACPI_ASSERT(exp)
+#define DEBUG_ASSERT(msg, exp)
 
 #endif
 
