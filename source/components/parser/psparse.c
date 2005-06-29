@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: psparse - Parser top level AML parse routines
- *              $Revision: 1.99 $
+ *              $Revision: 1.100 $
  *
  *****************************************************************************/
 
@@ -215,52 +215,10 @@ AcpiPsPeekOpcode (
         /* Extended opcode */
 
         Opcode = (UINT16) ((Opcode << 8) | GET8 (Aml));
-        Aml++;
     }
 
-    /* don't convert bare name to a namepath */
 
     return (Opcode);
-}
-
-
-/*******************************************************************************
- *
- * FUNCTION:    AcpiPsCreateState
- *
- * PARAMETERS:  Aml             - Aml code pointer
- *              AmlSize         - Length of AML code
- *
- * RETURN:      A new parser state object
- *
- * DESCRIPTION: Create and initialize a new parser state object
- *
- ******************************************************************************/
-
-ACPI_PARSE_STATE *
-AcpiPsCreateState (
-    UINT8                   *Aml,
-    UINT32                  AmlSize)
-{
-    ACPI_PARSE_STATE        *ParserState;
-
-
-    FUNCTION_TRACE ("PsCreateState");
-
-
-    ParserState = ACPI_MEM_CALLOCATE (sizeof (ACPI_PARSE_STATE));
-    if (!ParserState)
-    {
-        return_PTR (NULL);
-    }
-
-    ParserState->AmlStart  = Aml;
-    ParserState->Aml       = Aml;
-
-    ParserState->AmlEnd    =
-    ParserState->PkgEnd    = Aml + AmlSize;
-
-    return_PTR (ParserState);
 }
 
 
