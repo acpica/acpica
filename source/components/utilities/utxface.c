@@ -156,15 +156,17 @@ AcpiInitialize (void)
 
     CmInitGlobals ();
 
-
     /* Install the default OpRegion handlers */
 
-    AcpiInstallAddressSpaceHandler (REGION_SystemMemory, AmlSystemMemorySpaceHandler, NULL);
-    AcpiInstallAddressSpaceHandler (REGION_SystemIO, AmlSystemIoSpaceHandler, NULL);
+    AcpiInstallAddressSpaceHandler (RootObject, REGION_SystemMemory, AmlSystemMemorySpaceHandler, NULL);
+    AcpiInstallAddressSpaceHandler (RootObject, REGION_SystemIO, AmlSystemIoSpaceHandler, NULL);
+/*
+    Can't be any defaults till a device appears.
+
     AcpiInstallAddressSpaceHandler (REGION_PCIConfig, AmlPciConfigSpaceHandler, NULL);
     AcpiInstallAddressSpaceHandler (REGION_EmbeddedControl, AmlEmbeddedControllerSpaceHandler, NULL);
     AcpiInstallAddressSpaceHandler (REGION_SMBus, AmlSmBusSpaceHandler, NULL);
-
+*/
 
     /* Create the default mutex objects */
 
@@ -189,7 +191,6 @@ AcpiInitialize (void)
 ACPI_STATUS
 AcpiTerminate (void)
 {
-
 
     FUNCTION_TRACE ("AcpiTerminate");
     DEBUG_PRINT (ACPI_INFO, ("Shutting down ACPI Subsystem...\n"));
