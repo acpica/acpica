@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: rsirq - IRQ resource descriptors
- *              $Revision: 1.34 $
+ *              $Revision: 1.35 $
  *
  ******************************************************************************/
 
@@ -408,6 +408,13 @@ AcpiRsExtendedIrqResource (
     Buffer += 1;
     ACPI_MOVE_16_TO_16 (&Temp16, Buffer);
 
+    /* Validate minimum descriptor length */
+
+    if (Temp16 < 6)
+    {
+        return_ACPI_STATUS (AE_AML_BAD_RESOURCE_LENGTH);
+    }
+
     *BytesConsumed = Temp16 + 3;
     OutputStruct->Id = ACPI_RSTYPE_EXT_IRQ;
 
@@ -446,6 +453,13 @@ AcpiRsExtendedIrqResource (
     Buffer += 1;
     Temp8 = *Buffer;
 
+    /* Must have at least one IRQ */
+
+    if (Temp8 < 1)
+    {
+        return_ACPI_STATUS (AE_AML_BAD_RESOURCE_LENGTH);
+    }
+
     OutputStruct->Data.ExtendedIrq.NumberOfInterrupts = Temp8;
 
     /*
@@ -478,9 +492,12 @@ AcpiRsExtendedIrqResource (
      * pointer to where the null terminated string goes:
      * Each Interrupt takes 32-bits + the 5 bytes of the
      * stream that are default.
+     *
+     * Note: Some resource descriptors will have an additional null, so
+     * we add 1 to the length.
      */
     if (*BytesConsumed >
-        ((ACPI_SIZE) OutputStruct->Data.ExtendedIrq.NumberOfInterrupts * 4) + 5)
+        ((ACPI_SIZE) OutputStruct->Data.ExtendedIrq.NumberOfInterrupts * 4) + (5 + 1))
     {
         /* Dereference the Index */
 
