@@ -2,7 +2,7 @@
  *
  * Module Name: dbfileio - Debugger file I/O commands.  These can't usually
  *              be used when running the debugger in Ring 0 (Kernel mode)
- *              $Revision: 1.64 $
+ *              $Revision: 1.65 $
  *
  ******************************************************************************/
 
@@ -121,7 +121,7 @@
 #include "acnamesp.h"
 #include "actables.h"
 
-#ifdef ENABLE_DEBUGGER
+#if (defined ENABLE_DEBUGGER || defined ACPI_DISASSEMBLER)
 
 #define _COMPONENT          ACPI_DEBUGGER
         ACPI_MODULE_NAME    ("dbfileio")
@@ -180,6 +180,7 @@ AcpiDbMatchArgument (
 }
 
 
+#ifndef _ACPI_ASL_COMPILER
 /*******************************************************************************
  *
  * FUNCTION:    AcpiDbCloseDebugFile
@@ -245,6 +246,7 @@ AcpiDbOpenDebugFile (
 
 #endif
 }
+#endif
 
 
 #ifdef ACPI_APPLICATION
@@ -438,7 +440,7 @@ AcpiDbGetAcpiTable (
 
     /* Get the entire file */
 
-    AcpiOsPrintf ("Loading Acpi table from file %s\n", Filename);
+    fprintf (stderr, "Loading Acpi table from file %s\n", Filename);
     Status = AcpiDbLoadTable (fp, &AcpiGbl_DbTablePtr, &TableLength);
     fclose(fp);
 
@@ -497,8 +499,8 @@ AcpiDbLoadAcpiTable (
         return (Status);
     }
 
-    AcpiOsPrintf ("%4.4s at %p successfully installed and loaded\n",
-                                AcpiGbl_DbTablePtr->Signature, AcpiGbl_DbTablePtr);
+    fprintf (stderr, "Acpi table [%4.4s] successfully installed and loaded\n",
+                                AcpiGbl_DbTablePtr->Signature);
 
     AcpiGbl_AcpiHardwarePresent = FALSE;
 
