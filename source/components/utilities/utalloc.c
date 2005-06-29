@@ -520,6 +520,8 @@ _CmFree (
 	CmDeleteElementFromAllocList (Address, Component, Module, Line);
 	OsdFree (Address);
 	
+    DEBUG_PRINT (TRACE_ALLOCATIONS, ("CmFree: %x\n", Address));
+
 	FUNCTION_EXIT;
 }
 
