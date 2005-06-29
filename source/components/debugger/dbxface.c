@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dbxface - AML Debugger external interfaces
- *              $Revision: 1.63 $
+ *              $Revision: 1.64 $
  *
  ******************************************************************************/
 
@@ -292,7 +292,7 @@ AcpiDbSingleStep (
         /* Restore everything */
 
         Op->Common.Next = Next;
-        AcpiOsPrintf ("\n");
+        AcpiOsPrintf ("\n\n");
         AcpiDbgLevel = OriginalDebugLevel;
     }
 
