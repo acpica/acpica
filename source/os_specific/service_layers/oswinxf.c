@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: oswinxf - Windows OSL
- *              $Revision: 1.50 $
+ *              $Revision: 1.55 $
  *
  *****************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2003, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2004, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -170,6 +170,8 @@ FILE                        *AcpiGbl_OutputFile;
 #ifndef _ACPI_EXEC_APP
 /* Used by both iASL and AcpiDump applications */
 
+CHAR                s[500];
+
 /******************************************************************************
  *
  * FUNCTION:    OsGetTable
@@ -178,7 +180,7 @@ FILE                        *AcpiGbl_OutputFile;
  *
  * RETURN:      Pointer to the table.  NULL if failure
  *
- * DESCRIPTION: Get the DSDT from the Windows registry.
+ * DESCRIPTION: Get an ACPI table from the Windows registry.
  *
  *****************************************************************************/
 
@@ -186,8 +188,7 @@ ACPI_TABLE_HEADER *
 OsGetTable (
     char                *TableName)
 {
-    HKEY                Handle;
-    CHAR                s[500];
+    HKEY                Handle = NULL;
     ULONG               i;
     LONG                Status;
     ULONG               Type;
@@ -195,23 +196,46 @@ OsGetTable (
     ULONG               DataSize;
     HKEY                SubKey;
     ACPI_TABLE_HEADER   *Buffer;
+    char                *Signature = TableName;
 
 
     /* Get a handle to the DSDT key */
 
-    ACPI_STRCPY (s, "HARDWARE\\ACPI\\");
-    ACPI_STRCAT (s, TableName);
-
-    Status = RegOpenKeyEx (HKEY_LOCAL_MACHINE, s,
-                0L, KEY_ALL_ACCESS, &Handle);
-
-    if (Status != ERROR_SUCCESS)
+    while (1)
     {
-        AcpiOsPrintf ("Could not find %s in registry at %s\n", TableName, s);
-        return (NULL);
+        ACPI_STRCPY (s, "HARDWARE\\ACPI\\");
+        ACPI_STRCAT (s, Signature);
+
+        Status = RegOpenKeyEx (HKEY_LOCAL_MACHINE, s,
+                    0L, KEY_ALL_ACCESS, &Handle);
+
+        if (Status != ERROR_SUCCESS)
+        {
+            /*
+             * Somewhere along the way, MS changed the registry entry for
+             * the FADT from
+             * HARDWARE/ACPI/FACP  to
+             * HARDWARE/ACPI/FADT.
+             *
+             * This code allows for both.
+             */
+            if (!ACPI_STRNCMP (Signature, "FACP", 4))
+            {
+                Signature = "FADT";
+            }
+            else
+            {
+                AcpiOsPrintf ("Could not find %s in registry at %s\n", TableName, s);
+                return (NULL);
+            }
+        }
+        else
+        {
+            break;
+        }
     }
 
-    /* Actual DSDT is down a couple of levels */
+    /* Actual table is down a couple of levels */
 
     for (i = 0; ;)
     {
@@ -234,7 +258,7 @@ OsGetTable (
         i = 0;
     }
 
-    /* Find the DSDT entry */
+    /* Find the table entry */
 
     for (i = 0; ;)
     {
@@ -254,7 +278,7 @@ OsGetTable (
         i += 1;
     }
 
-    /* Get the size of the DSDT */
+    /* Get the size of the table */
 
     Status = RegQueryValueEx (Handle, s, NULL, NULL, NULL, &DataSize);
     if (Status != ERROR_SUCCESS)
@@ -263,7 +287,7 @@ OsGetTable (
         return (NULL);
     }
 
-    /* Allocate a new buffer for the DSDT */
+    /* Allocate a new buffer for the table */
 
     Buffer = AcpiOsAllocate (DataSize);
     if (!Buffer)
@@ -271,7 +295,7 @@ OsGetTable (
         goto Cleanup;
     }
 
-    /* Get the actual DSDT */
+    /* Get the actual table from the registry */
 
     Status = RegQueryValueEx (Handle, s, NULL, NULL, (UCHAR *) Buffer, &DataSize);
     if (Status != ERROR_SUCCESS)
@@ -363,8 +387,8 @@ AcpiOsGetRootPointer (
 
 ACPI_STATUS
 AcpiOsPredefinedOverride (
-	const ACPI_PREDEFINED_NAMES *InitVal,
-	ACPI_STRING                 *NewVal)
+    const ACPI_PREDEFINED_NAMES *InitVal,
+    ACPI_STRING                 *NewVal)
 {
 
     if (!InitVal || !NewVal)
@@ -995,8 +1019,6 @@ AcpiOsSignalSemaphore (
 }
 
 
-
-
 ACPI_STATUS
 AcpiOsCreateLock (
     ACPI_HANDLE             *OutHandle)
@@ -1031,8 +1053,6 @@ AcpiOsReleaseLock (
 }
 
 
-
-
 /******************************************************************************
  *
  * FUNCTION:    AcpiOsInstallInterruptHandler
@@ -1051,7 +1071,7 @@ AcpiOsReleaseLock (
 UINT32
 AcpiOsInstallInterruptHandler (
     UINT32                  InterruptNumber,
-    OSD_HANDLER             ServiceRoutine,
+    ACPI_OSD_HANDLER        ServiceRoutine,
     void                    *Context)
 {
 
@@ -1074,7 +1094,7 @@ AcpiOsInstallInterruptHandler (
 ACPI_STATUS
 AcpiOsRemoveInterruptHandler (
     UINT32                  InterruptNumber,
-    OSD_HANDLER             ServiceRoutine)
+    ACPI_OSD_HANDLER        ServiceRoutine)
 {
 
     return AE_OK;
@@ -1119,7 +1139,7 @@ AcpiOsGetThreadId (
 ACPI_STATUS
 AcpiOsQueueForExecution (
     UINT32                  Priority,
-    OSD_EXECUTION_CALLBACK  Function,
+    ACPI_OSD_EXEC_CALLBACK  Function,
     void                    *Context)
 {
 

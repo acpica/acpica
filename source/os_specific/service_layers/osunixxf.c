@@ -8,7 +8,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2003, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2004, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -686,7 +686,7 @@ AcpiOsReleaseLock (
 UINT32
 AcpiOsInstallInterruptHandler (
     UINT32                  InterruptNumber,
-    OSD_HANDLER             ServiceRoutine,
+    ACPI_OSD_HANDLER        ServiceRoutine,
     void                    *Context)
 {
 
@@ -710,7 +710,7 @@ AcpiOsInstallInterruptHandler (
 ACPI_STATUS
 AcpiOsRemoveInterruptHandler (
     UINT32                  InterruptNumber,
-    OSD_HANDLER             ServiceRoutine)
+    ACPI_OSD_HANDLER        ServiceRoutine)
 {
 
     return AE_OK;
@@ -734,7 +734,7 @@ AcpiOsRemoveInterruptHandler (
 ACPI_STATUS
 AcpiOsQueueForExecution (
     UINT32                  Priority,
-    OSD_EXECUTION_CALLBACK  Function,
+    ACPI_OSD_EXEC_CALLBACK  Function,
     void                    *Context)
 {
 
@@ -822,7 +822,7 @@ AcpiOsSleep (
 
     sleep (seconds + (milliseconds / 1000));    /* Sleep for whole seconds */
 
-    /* 
+    /*
      * Arg to usleep() must be less than 1,000,000 (1 second)
      */
     usleep ((milliseconds % 1000) * 1000);      /* Sleep for remaining usecs */
