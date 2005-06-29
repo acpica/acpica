@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exregion - ACPI default OpRegion (address space) handlers
- *              $Revision: 1.83 $
+ *              $Revision: 1.84 $
  *
  *****************************************************************************/
 
@@ -367,6 +367,7 @@ AcpiExSystemIoSpaceHandler (
     void                    *RegionContext)
 {
     ACPI_STATUS             Status = AE_OK;
+    UINT32                  Value32;
 
 
     ACPI_FUNCTION_TRACE ("ExSystemIoSpaceHandler");
@@ -382,13 +383,13 @@ AcpiExSystemIoSpaceHandler (
     {
     case ACPI_READ:
 
-        *Value = 0;
-        Status = AcpiOsReadPort ((ACPI_IO_ADDRESS) Address, Value, BitWidth);
+        Status = AcpiOsReadPort ((ACPI_IO_ADDRESS) Address, &Value32, BitWidth);
+        *Value = Value32;
         break;
 
     case ACPI_WRITE:
 
-        Status = AcpiOsWritePort ((ACPI_IO_ADDRESS) Address, *Value, BitWidth);
+        Status = AcpiOsWritePort ((ACPI_IO_ADDRESS) Address, (UINT32) *Value, BitWidth);
         break;
 
     default:
