@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: psopcode - Parser/Interpreter opcode information table
- *              $Revision: 1.53 $
+ *              $Revision: 1.54 $
  *
  *****************************************************************************/
 
@@ -275,7 +275,7 @@
 #define ARGP_TO_STRING_OP               ARGP_LIST3 (ARGP_TERMARG,    ARGP_TERMARG,       ARGP_TARGET)
 #define ARGP_TYPE_OP                    ARGP_LIST1 (ARGP_SUPERNAME)
 #define ARGP_UNLOAD_OP                  ARGP_LIST1 (ARGP_SUPERNAME)
-#define ARGP_VAR_PACKAGE_OP             ARGP_LIST3 (ARGP_PKGLENGTH,  ARGP_BYTEDATA,      ARGP_DATAOBJLIST)
+#define ARGP_VAR_PACKAGE_OP             ARGP_LIST3 (ARGP_PKGLENGTH,  ARGP_TERMARG,       ARGP_DATAOBJLIST)
 #define ARGP_WAIT_OP                    ARGP_LIST2 (ARGP_SUPERNAME,  ARGP_TERMARG)
 #define ARGP_WHILE_OP                   ARGP_LIST3 (ARGP_PKGLENGTH,  ARGP_TERMARG,       ARGP_TERMLIST)
 #define ARGP_WORD_OP                    ARGP_LIST1 (ARGP_WORDDATA)
@@ -633,7 +633,7 @@ static const ACPI_OPCODE_INFO    AcpiGbl_AmlOpInfo[] =
 /* 55 */ ACPI_OP ("Revision",           ARGP_REVISION_OP,          ARGI_REVISION_OP,           INTERNAL_TYPE_REFERENCE, AML_CLASS_ARGUMENT,        AML_TYPE_CONSTANT,        0),
 /* 56 */ ACPI_OP ("Debug",              ARGP_DEBUG_OP,             ARGI_DEBUG_OP,              INTERNAL_TYPE_REFERENCE, AML_CLASS_ARGUMENT,        AML_TYPE_CONSTANT,        0),
 /* 57 */ ACPI_OP ("Fatal",              ARGP_FATAL_OP,             ARGI_FATAL_OP,              ACPI_TYPE_ANY,           AML_CLASS_EXECUTE,         AML_TYPE_EXEC_3A_0T_0R,   AML_FLAGS_EXEC_3A_0T_0R),
-/* 58 */ ACPI_OP ("OpRegion",           ARGP_REGION_OP,            ARGI_REGION_OP,             ACPI_TYPE_REGION,        AML_CLASS_NAMED_OBJECT,    AML_TYPE_NAMED_COMPLEX,   AML_HAS_ARGS | AML_NSOBJECT | AML_NSOPCODE | AML_NSNODE | AML_NAMED | AML_DEFER),
+/* 58 */ ACPI_OP ("OperationRegion",    ARGP_REGION_OP,            ARGI_REGION_OP,             ACPI_TYPE_REGION,        AML_CLASS_NAMED_OBJECT,    AML_TYPE_NAMED_COMPLEX,   AML_HAS_ARGS | AML_NSOBJECT | AML_NSOPCODE | AML_NSNODE | AML_NAMED | AML_DEFER),
 /* 59 */ ACPI_OP ("Field",              ARGP_FIELD_OP,             ARGI_FIELD_OP,              INTERNAL_TYPE_FIELD_DEFN,AML_CLASS_NAMED_OBJECT,    AML_TYPE_NAMED_FIELD,     AML_HAS_ARGS | AML_NSOBJECT | AML_NSOPCODE | AML_FIELD),
 /* 5A */ ACPI_OP ("Device",             ARGP_DEVICE_OP,            ARGI_DEVICE_OP,             ACPI_TYPE_DEVICE,        AML_CLASS_NAMED_OBJECT,    AML_TYPE_NAMED_NO_OBJ,    AML_HAS_ARGS | AML_NSOBJECT | AML_NSOPCODE | AML_NSNODE | AML_NAMED),
 /* 5B */ ACPI_OP ("Processor",          ARGP_PROCESSOR_OP,         ARGI_PROCESSOR_OP,          ACPI_TYPE_PROCESSOR,     AML_CLASS_NAMED_OBJECT,    AML_TYPE_NAMED_SIMPLE,    AML_HAS_ARGS | AML_NSOBJECT | AML_NSOPCODE | AML_NSNODE | AML_NAMED),
@@ -663,8 +663,8 @@ static const ACPI_OPCODE_INFO    AcpiGbl_AmlOpInfo[] =
 /* ACPI 2.0 opcodes */
 
 /* 6E */ ACPI_OP ("QwordConst",         ARGP_QWORD_OP,             ARGI_QWORD_OP,              ACPI_TYPE_INTEGER,       AML_CLASS_ARGUMENT,        AML_TYPE_LITERAL,         0),
-/* 6F */ ACPI_OP ("VarPackage",         ARGP_VAR_PACKAGE_OP,       ARGI_VAR_PACKAGE_OP,        ACPI_TYPE_PACKAGE,       AML_CLASS_ARGUMENT,        AML_TYPE_DATA_TERM,       AML_HAS_ARGS | AML_DEFER),
-/* 70 */ ACPI_OP ("ConcatRes",          ARGP_CONCAT_RES_OP,        ARGI_CONCAT_RES_OP,         ACPI_TYPE_ANY,           AML_CLASS_EXECUTE,         AML_TYPE_EXEC_2A_1T_1R,   AML_FLAGS_EXEC_2A_1T_1R),
+/* 6F */ ACPI_OP ("Package /*Var*/",    ARGP_VAR_PACKAGE_OP,       ARGI_VAR_PACKAGE_OP,        ACPI_TYPE_PACKAGE,       AML_CLASS_ARGUMENT,        AML_TYPE_DATA_TERM,       AML_HAS_ARGS | AML_DEFER),
+/* 70 */ ACPI_OP ("ConcatenateResTemplate", ARGP_CONCAT_RES_OP,    ARGI_CONCAT_RES_OP,         ACPI_TYPE_ANY,           AML_CLASS_EXECUTE,         AML_TYPE_EXEC_2A_1T_1R,   AML_FLAGS_EXEC_2A_1T_1R),
 /* 71 */ ACPI_OP ("Mod",                ARGP_MOD_OP,               ARGI_MOD_OP,                ACPI_TYPE_ANY,           AML_CLASS_EXECUTE,         AML_TYPE_EXEC_2A_1T_1R,   AML_FLAGS_EXEC_2A_1T_1R),
 /* 72 */ ACPI_OP ("CreateQWordField",   ARGP_CREATE_QWORD_FIELD_OP,ARGI_CREATE_QWORD_FIELD_OP, ACPI_TYPE_BUFFER_FIELD,  AML_CLASS_CREATE,          AML_TYPE_CREATE_FIELD,    AML_HAS_ARGS | AML_NSOBJECT | AML_NSNODE | AML_DEFER | AML_CREATE),
 /* 73 */ ACPI_OP ("ToBuffer",           ARGP_TO_BUFFER_OP,         ARGI_TO_BUFFER_OP,          ACPI_TYPE_ANY,           AML_CLASS_EXECUTE,         AML_TYPE_EXEC_1A_1T_1R,   AML_FLAGS_EXEC_1A_1T_1R),
@@ -676,7 +676,7 @@ static const ACPI_OPCODE_INFO    AcpiGbl_AmlOpInfo[] =
 /* 79 */ ACPI_OP ("Mid",                ARGP_MID_OP,               ARGI_MID_OP,                ACPI_TYPE_ANY,           AML_CLASS_EXECUTE,         AML_TYPE_EXEC_3A_1T_1R,   AML_FLAGS_EXEC_3A_1T_1R),
 /* 7A */ ACPI_OP ("Continue",           ARGP_CONTINUE_OP,          ARGI_CONTINUE_OP,           ACPI_TYPE_ANY,           AML_CLASS_CONTROL,         AML_TYPE_CONTROL,         0),
 /* 7B */ ACPI_OP ("LoadTable",          ARGP_LOAD_TABLE_OP,        ARGI_LOAD_TABLE_OP,         ACPI_TYPE_ANY,           AML_CLASS_EXECUTE,         AML_TYPE_EXEC_6A_0T_1R,   AML_FLAGS_EXEC_6A_0T_1R),
-/* 7C */ ACPI_OP ("DataOpRegion",       ARGP_DATA_REGION_OP,       ARGI_DATA_REGION_OP,        ACPI_TYPE_REGION,        AML_CLASS_EXECUTE,         AML_TYPE_EXEC_1A_1T_1R,   AML_FLAGS_EXEC_1A_1T_1R),
+/* 7C */ ACPI_OP ("DataTableRegion",    ARGP_DATA_REGION_OP,       ARGI_DATA_REGION_OP,        ACPI_TYPE_REGION,        AML_CLASS_EXECUTE,         AML_TYPE_EXEC_1A_1T_1R,   AML_FLAGS_EXEC_1A_1T_1R),
 
 };
 
