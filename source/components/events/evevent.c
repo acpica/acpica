@@ -2,7 +2,7 @@
  *
  * Module Name: evevent - Fixed and General Purpose AcpiEvent
  *                          handling and dispatch
- *              $Revision: 1.28 $
+ *              $Revision: 1.29 $
  *
  *****************************************************************************/
 
@@ -891,7 +891,7 @@ AcpiEvGpeDispatch (
      */
     AcpiHwDisableGpe (GpeNumber);
 
-	GpeInfo = AcpiGblGpeInfo [GpeNumber];
+	GpeInfo = AcpiGbl_GpeInfo [GpeNumber];
 
 	/*
 	 * Edge-Triggered?
