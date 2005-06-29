@@ -1141,6 +1141,3 @@ AcpiRemoveAddressSpaceHandler (
 
     return_ACPI_STATUS (AE_NOT_EXIST);
 }
-
-
-o
