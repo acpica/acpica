@@ -235,12 +235,12 @@ PsGetNextPackageEnd (
  *
  ******************************************************************************/
 
-UINT8 *
+char *
 PsGetNextNamestring (
     ACPI_PARSE_STATE        *ParserState)
 {
-    UINT8                   *Start = ParserState->Aml;
-    UINT8                   *End = ParserState->Aml;
+    char                    *Start = (char *) ParserState->Aml;
+    char                    *End = (char *) ParserState->Aml;
     INT32                   Length;
 
 
@@ -332,13 +332,10 @@ PsGetNextNamepath (
     UINT32                  *ArgCount,
     BOOLEAN                 MethodCall)
 {
-    UINT8                   *Path;
-    NAME_TABLE_ENTRY        *Method = NULL;
-    NAME_TABLE_ENTRY        *Nte;
+    char                    *Path;
     ACPI_GENERIC_OP         *MethodOp;
     ACPI_GENERIC_OP         *Count;
     ACPI_GENERIC_OP         *Name;
-    ACPI_STATUS             Status;
 
 
 
@@ -393,6 +390,11 @@ PsGetNextNamepath (
 #ifndef PARSER_ONLY
     else
     {
+        ACPI_STATUS             Status;
+        NAME_TABLE_ENTRY        *Method = NULL;
+        NAME_TABLE_ENTRY        *Nte;
+
+
         /* 
          * Lookup the name in the internal namespace
          */
@@ -531,7 +533,7 @@ PsGetNextField (
 {
     ACPI_PTRDIFF            AmlOffset = ParserState->Aml - ParserState->AmlStart;
     ACPI_GENERIC_OP         *Field;
-    INT32                   Opcode;
+    UINT16                  Opcode;
 
 
     FUNCTION_TRACE ("PsGetNextField");
