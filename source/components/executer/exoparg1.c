@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exoparg1 - AML execution - opcodes with 1 argument
- *              $Revision: 1.154 $
+ *              $Revision: 1.155 $
  *
  *****************************************************************************/
 
@@ -199,7 +199,7 @@ AcpiExOpcode_1A_0T_0R (
 
     case AML_SLEEP_OP:      /*  Sleep (MsecTime) */
 
-        Status = AcpiExSystemDoSuspend ((UINT32) Operand[0]->Integer.Value);
+        Status = AcpiExSystemDoSuspend (Operand[0]->Integer.Value);
         break;
 
 
