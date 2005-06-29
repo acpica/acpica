@@ -127,6 +127,7 @@ NsSetup (void)
     ACPI_STATUS             Status;
     PREDEFINED_NAMES        *InitVal = NULL;
     NAME_TABLE_ENTRY        *NewEntry;
+    ACPI_OBJECT_INTERNAL    *ObjDesc;
 
 
     FUNCTION_TRACE ("NsSetup");
@@ -185,8 +186,7 @@ NsSetup (void)
         {
             /* Entry requests an initial value, allocate a descriptor for it. */
             
-            ACPI_OBJECT             *ObjDesc = AllocateObjectDesc ();
-
+            ObjDesc = AllocateObjectDesc ();
             if (!ObjDesc)
             {
                 FUNCTION_STATUS_EXIT (AE_NO_MEMORY);
