@@ -273,14 +273,6 @@ AcpiGoToSleep (
 /* ACPI mode Prototypes */
 
 INT32
-AcpiSetMode (
-    INT32                   Mode);
-
-INT32
-AcpiModeStatus (
-    void);
-
-INT32
 AcpiModeCapabilities (
     void);
 
