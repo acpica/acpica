@@ -1,8 +1,8 @@
 
 /******************************************************************************
- * 
+ *
  * Module Name: acpisrc.h - Include file for AcpiSrc utility
- *              $Revision: 1.7 $
+ *              $Revision: 1.9 $
  *
  *****************************************************************************/
 
@@ -39,9 +39,9 @@
  * The above copyright and patent license is granted only if the following
  * conditions are met:
  *
- * 3. Conditions 
+ * 3. Conditions
  *
- * 3.1. Redistribution of Source with Rights to Further Distribute Source.  
+ * 3.1. Redistribution of Source with Rights to Further Distribute Source.
  * Redistribution of source code of any substantial portion of the Covered
  * Code or modification with rights to further distribute source must include
  * the above Copyright Notice, the above License, this list of Conditions,
@@ -49,11 +49,11 @@
  * Licensee must cause all Covered Code to which Licensee contributes to
  * contain a file documenting the changes Licensee made to create that Covered
  * Code and the date of any change.  Licensee must include in that file the
- * documentation of any changes made by any predecessor Licensee.  Licensee 
+ * documentation of any changes made by any predecessor Licensee.  Licensee
  * must include a prominent statement that the modification is derived,
  * directly or indirectly, from Original Intel Code.
  *
- * 3.2. Redistribution of Source with no Rights to Further Distribute Source.  
+ * 3.2. Redistribution of Source with no Rights to Further Distribute Source.
  * Redistribution of source code of any substantial portion of the Covered
  * Code or modification without rights to further distribute source must
  * include the following Disclaimer and Export Compliance provision in the
@@ -87,7 +87,7 @@
  * INSTALLATION, TRAINING OR OTHER SERVICES.  INTEL WILL NOT PROVIDE ANY
  * UPDATES, ENHANCEMENTS OR EXTENSIONS.  INTEL SPECIFICALLY DISCLAIMS ANY
  * IMPLIED WARRANTIES OF MERCHANTABILITY, NONINFRINGEMENT AND FITNESS FOR A
- * PARTICULAR PURPOSE. 
+ * PARTICULAR PURPOSE.
  *
  * 4.2. IN NO EVENT SHALL INTEL HAVE ANY LIABILITY TO LICENSEE, ITS LICENSEES
  * OR ANY OTHER THIRD PARTY, FOR ANY LOST PROFITS, LOST DATA, LOSS OF USE OR
@@ -118,7 +118,6 @@
 #define LINES_IN_LEGAL_HEADER               105 /* See above */
 
 
-
 #include <stdio.h>
 #include <sys/stat.h>
 #include <sys/types.h>
@@ -140,18 +139,18 @@
 #define FILE_TYPE_HEADER                    2
 
 
-#define CVT_COUNT_TABS                      0x00000001    
+#define CVT_COUNT_TABS                      0x00000001
 #define CVT_COUNT_NON_ANSI_COMMENTS         0x00000002
 #define CVT_TRIM_LINES                      0x00000004
-#define CVT_COUNT_LINES                     0x00000008            
+#define CVT_COUNT_LINES                     0x00000008
 #define CVT_BRACES_ON_SAME_LINE             0x00000010
 #define CVT_MIXED_CASE_TO_UNDERSCORES       0x00000020
 #define CVT_LOWER_CASE_IDENTIFIERS          0x00000040
 #define CVT_REMOVE_DEBUG_MACROS             0x00000080
 #define CVT_TRIM_WHITESPACE                 0x00000100  /* Should be after all line removal */
 #define CVT_REMOVE_EMPTY_BLOCKS             0x00000200  /* Should be after trimming lines */
-#define CVT_SPACES_TO_TABS4                 0x40000000
-#define CVT_SPACES_TO_TABS8                 0x80000000
+#define CVT_SPACES_TO_TABS4                 0x40000000  /* Tab conversion should be last */
+#define CVT_SPACES_TO_TABS8                 0x80000000  /* Tab conversion should be last */
 
 
 #define FLG_DEFAULT_FLAGS                   0x00000000
@@ -175,7 +174,6 @@ extern char                     *Gbl_FileBuffer;
 extern UINT32                   Gbl_FileSize;
 extern BOOLEAN                  Gbl_VerboseMode;
 extern BOOLEAN                  Gbl_BatchMode;
-
 
 extern int                      optind;
 extern char                     *optarg;
@@ -220,13 +218,12 @@ typedef struct acpi_conversion_table
 } ACPI_CONVERSION_TABLE;
 
 
-
 /* Prototypes */
 
-int 
+int
 getopt (
-    int                     argc, 
-    char                    **argv, 
+    int                     argc,
+    char                    **argv,
     char                    *opts);
 
 char *
