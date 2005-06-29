@@ -135,6 +135,11 @@
 #define MAX_SCOPE_NESTING           15      /* Max nesting of name scopes, used for sizing stacks */
 
 
+/* Names within the namespace are 4 bytes long */
+
+#define ACPI_NAME_SIZE              4
+
+
 /* 
  * Defining FETCH_VALUES enables AcpiExecuteMethod() to "execute"
  * a name which is not a Method by fetching and returning its value.
