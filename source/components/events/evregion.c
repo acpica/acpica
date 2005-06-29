@@ -122,7 +122,8 @@
 #define _THIS_MODULE        "evregion.c"
 #define _COMPONENT          EVENT_HANDLING
 
-#define GO_NO_FURTHER   (void *) 0xffffffff
+#define GO_NO_FURTHER       (void *) 0xffffffff
+
 
 /**************************************************************************
  *
@@ -147,11 +148,13 @@ EvExecuteRegMethod (
     ACPI_OBJECT_INTERNAL    Function_Obj;
     ACPI_STATUS             Status;
 
-    FUNCTION_TRACE("EvExecuteRegMethod");
 
-    if(RegionObj->Region.REGMethod == NULL)
+    FUNCTION_TRACE ("EvExecuteRegMethod");
+
+
+    if (RegionObj->Region.REGMethod == NULL)
     {
-        return_ACPI_STATUS(AE_OK);
+        return_ACPI_STATUS (AE_OK);
     }
 
 /*
@@ -187,8 +190,9 @@ EvExecuteRegMethod (
      *  Execute the method, no return value
      */
     Status = NsEvaluateByHandle (RegionObj->Region.REGMethod, Params, NULL);
-    return_ACPI_STATUS(Status);
+    return_ACPI_STATUS (Status);
 } 
+
 
 /**************************************************************************
  *
@@ -220,7 +224,9 @@ EvAddressSpaceDispatch (
     PCI_HANDLER_CONTEXT     PCIContext;
     void                   *Context;
 
-    FUNCTION_TRACE("EvAddressSpaceDispatch");
+
+    FUNCTION_TRACE ("EvAddressSpaceDispatch");
+
 
     /* Check for an installed handler */
 
@@ -238,7 +244,7 @@ EvAddressSpaceDispatch (
 
     Handler = Obj->Region.AddrHandler->AddrHandler.Handler;
     Context = Obj->Region.AddrHandler->AddrHandler.Context;
-    if(Obj->Region.SpaceId == REGION_PCIConfig)
+    if (Obj->Region.SpaceId == REGION_PCIConfig)
     {
         /*
          *  BUGBUG: This is pretty bogus.  There's got to be a better way
@@ -253,13 +259,15 @@ EvAddressSpaceDispatch (
         PCIContext.DevNum     = HIWORD(Obj->Region.RegionData);
         PCIContext.FuncNum    = LOWORD(Obj->Region.RegionData);
     }
+
     DEBUG_PRINT ((TRACE_OPREGION | VERBOSE_INFO),
         ("Addrhandler 0x%X (0x%X), Address 0x%X\n", 
             Obj->Region.AddrHandler->AddrHandler, Handler, Address));
 
     Status = Handler (Function, Address, BitWidth, Value, Context);
-    return_ACPI_STATUS(Status);
+    return_ACPI_STATUS (Status);
 }
+
 
 /******************************************************************************
  *
@@ -283,7 +291,9 @@ EvDisassociateRegionFromHandler(
     ACPI_OBJECT_INTERNAL   *ObjDesc;
     ACPI_OBJECT_INTERNAL  **LastObjPtr;
 
+
     FUNCTION_TRACE ("EvDisassociateRegionAndHandler");
+
 
     HandlerObj = RegionObj->Region.AddrHandler;
     if (!HandlerObj)
@@ -331,7 +341,7 @@ EvDisassociateRegionFromHandler(
              *  this better be the region's handler
              */
 
-            ACPI_ASSERT( RegionObj->Region.AddrHandler == HandlerObj);
+            ACPI_ASSERT (RegionObj->Region.AddrHandler == HandlerObj);
 
             RegionObj->Region.AddrHandler = NULL;
 
@@ -339,8 +349,10 @@ EvDisassociateRegionFromHandler(
              *  Remove handler reference in the region and
              *  the region reference in the handler
              */
+/* TBRM
             CmUpdateObjectReference (RegionObj, REF_DECREMENT);
             CmUpdateObjectReference (HandlerObj, REF_DECREMENT);
+*/
 
             return_VOID;
 
@@ -386,19 +398,24 @@ EvAssociateRegionAndHander(
 {
     ACPI_STATUS     Status;
 
+
     FUNCTION_TRACE ("EvAssociateRegionAndHander");
+
 
     DEBUG_PRINT (TRACE_OPREGION,
         ("Adding Region 0x%X to address handler 0x%X\n", RegionObj, HandlerObj));
 
-    ACPI_ASSERT(RegionObj->Region.SpaceId == HandlerObj->AddrHandler.SpaceId);
-    ACPI_ASSERT(RegionObj->Region.AddrHandler == 0);
+    ACPI_ASSERT (RegionObj->Region.SpaceId == HandlerObj->AddrHandler.SpaceId);
+    ACPI_ASSERT (RegionObj->Region.AddrHandler == 0);
 
     /*
      *  We need to update the reference for the handler and the region
      */
+/* TBRM
     CmUpdateObjectReference (HandlerObj, REF_INCREMENT);
+
     CmUpdateObjectReference (RegionObj, REF_INCREMENT);
+*/
 
     /*
      *  Link this region to the front of the handler's list
@@ -452,7 +469,9 @@ EvAddrHandlerHelper (
     ACPI_OBJECT_INTERNAL    *ObjDesc;
     NAME_TABLE_ENTRY        *ObjEntry;
 
+
     FUNCTION_TRACE ("EvAddrHandlerHelper");
+
 
     HandlerObj = (ACPI_OBJECT_INTERNAL *) Context;
 
@@ -508,15 +527,17 @@ EvAddrHandlerHelper (
              *  Now let's see if it's for the same address space.
              */
             if (TmpObj->AddrHandler.SpaceId == HandlerObj->AddrHandler.SpaceId)
-                {
+            {
                 /*
                  *  It's for the same address space
                  */
+
                 DEBUG_PRINT (TRACE_OPREGION,
                     ("Found handler for %s in device 0x%X (0x%X) handler 0x%X\n",
                     Gbl_RegionTypes[HandlerObj->AddrHandler.SpaceId],
                     ObjDesc, TmpObj, HandlerObj));
-                /*
+                
+                    /*
                  *  Since the object we found it on was a device, then it
                  *  means that someone has already installed a handler for
                  *  the branch of the namespace from this device on.  Just
@@ -525,11 +546,13 @@ EvAddrHandlerHelper (
                  */
                 return_VALUE (GO_NO_FURTHER);
             }
+
             /*
              *  Move through the linked list of handlers
              */
             TmpObj = TmpObj->AddrHandler.Link;
         }
+
         /*
          *  As long as the device didn't have a handler for this
          *  space we don't care about it.  We just ignore it and
@@ -541,7 +564,7 @@ EvAddrHandlerHelper (
     /*
      *  Only here if it was a region
      */
-    ACPI_ASSERT(ObjDesc->Common.Type == ACPI_TYPE_Region);
+    ACPI_ASSERT (ObjDesc->Common.Type == ACPI_TYPE_Region);
 
     if (ObjDesc->Region.SpaceId != HandlerObj->AddrHandler.SpaceId)
     {
@@ -551,21 +574,23 @@ EvAddrHandlerHelper (
          */
         return_VALUE ((void *) AE_OK);
     }
+
     /*
      *  Now we have a region and it is for the handler's address
      *  space type.
      *
      *  First disconnect region for any previous handler (if any)
      */
-    EvDisassociateRegionFromHandler(ObjDesc);
+    EvDisassociateRegionFromHandler (ObjDesc);
 
     /*
      *  Then conenct the region to the new handler
      */
-    EvAssociateRegionAndHander(HandlerObj, ObjDesc);
+    EvAssociateRegionAndHander (HandlerObj, ObjDesc);
 
     return_VALUE ((void *) AE_OK);
 }
+
 
 /******************************************************************************
  *
@@ -599,7 +624,9 @@ EvInitializeRegion ( ACPI_OBJECT_INTERNAL *RegionObj)
     NAME_TABLE_ENTRY       *RegEntry;
     ACPI_NAME              *RegNamePtr = (ACPI_NAME *) METHOD_NAME__REG;
 
+
     FUNCTION_TRACE ("EvInitializeRegion");
+
 
     ACPI_ASSERT(RegionObj->Region.Nte);
 
@@ -618,37 +645,39 @@ EvInitializeRegion ( ACPI_OBJECT_INTERNAL *RegionObj)
      */
     switch (SpaceId)
     {
-        case REGION_PCIConfig:
-        {
-            /*
-             *  For PCI we have to get the value from the _ADR object
-             *  in the parent's scope.  In otherwords we want to find the
-             *  _ADR that is a peer to the region definition
-             */
 
-            Status = Execute_ADR (Nte, &RegionObj->Region.RegionData);
-            if (Status != AE_OK)
-            {
-                /*
-                 *  We stop the initialization here, we don't want to
-                 *  touch an address space if we don't know the address
-                 *  Since the handler is set to NULL, the dispatch routine
-                 *  not access anything
-                 */
-                DEBUG_PRINT (TRACE_OPREGION,
-                    ("Unable to execute PCI _ADR for region 0x%X in device 0x%X\n",
-                        RegionObj, Nte));
-                return_ACPI_STATUS (Status);
-            }
-            break;
-        }
-    default:
+    case REGION_PCIConfig:
+
+        /*
+         *  For PCI we have to get the value from the _ADR object
+         *  in the parent's scope.  In otherwords we want to find the
+         *  _ADR that is a peer to the region definition
+         */
+
+        Status = Execute_ADR (Nte, &RegionObj->Region.RegionData);
+        if (Status != AE_OK)
         {
             /*
-             *  No init required
+             *  We stop the initialization here, we don't want to
+             *  touch an address space if we don't know the address
+             *  Since the handler is set to NULL, the dispatch routine
+             *  not access anything
              */
-            break;
+            DEBUG_PRINT (TRACE_OPREGION,
+                ("Unable to execute PCI _ADR for region 0x%X in device 0x%X\n",
+                    RegionObj, Nte));
+
+            return_ACPI_STATUS (Status);
         }
+        break;
+
+
+    default:
+
+        /*
+         *  No init required
+         */
+        break;
     }
 
     /*
@@ -733,6 +762,7 @@ EvInitializeRegion ( ACPI_OBJECT_INTERNAL *RegionObj)
      */
     DEBUG_PRINT (TRACE_OPREGION,
         ("Unable to find handler for region 0x%X\n", RegionObj));
+
     return_ACPI_STATUS (AE_NOT_EXIST);
 }
 
@@ -756,6 +786,8 @@ EvInitializeRegion ( ACPI_OBJECT_INTERNAL *RegionObj)
  *              When that value is encountered the progression down a branch of
  *              tree halts but the search continues in the parent.
  *
+ * TBD: Merge into a single, common WalkNamespace!
+ *
  ******************************************************************************/
 
 ACPI_STATUS
@@ -769,6 +801,7 @@ EvWalkNamespace (
 {
     ACPI_HANDLE             ChildHandle;
     ACPI_HANDLE             ParentHandle;
+    ACPI_OBJECT_TYPE        ChildType;
     ACPI_HANDLE             Dummy;
     UINT32                  Level;
     void                    *UserReturnVal;
@@ -803,7 +836,9 @@ EvWalkNamespace (
 
     ParentHandle    = StartObject;
     ChildHandle     = 0;
+    ChildType       = ACPI_TYPE_Any;
     Level           = 1;
+    UserReturnVal   = NULL;
 
     /* 
      * Traverse the tree of objects until we bubble back up to where we
@@ -815,24 +850,34 @@ EvWalkNamespace (
     {
         /* Get the next typed object in this scope.  Null returned if not found */
 
-        if (ACPI_SUCCESS (AcpiGetNextObject (Type, ParentHandle, ChildHandle, &ChildHandle))) 
+        if (ACPI_SUCCESS (AcpiGetNextObject (ACPI_TYPE_Any, ParentHandle, ChildHandle, &ChildHandle))) 
         {
-            /* Found an object - process by calling the user function */
+            /* Found an object, Get the type if we are not searching for ANY */
 
-            UserReturnVal = UserFunction (ChildHandle, Level, Context);
-
-            if ((UserReturnVal) && (UserReturnVal != GO_NO_FURTHER))
+            if (Type != ACPI_TYPE_Any)
             {
-                /* Non-zero from user function means "exit now" */
+                AcpiGetType (ChildHandle, &ChildType);
+            }
 
-                if (ReturnValue)
+            if (ChildType == Type)
+            {
+                /* Found an object - process by calling the user function */
+
+                UserReturnVal = UserFunction (ChildHandle, Level, Context);
+
+                if ((UserReturnVal) && (UserReturnVal != GO_NO_FURTHER))
                 {
-                    /* Pass return value back to the caller */
+                    /* Non-zero from user function means "exit now" */
 
-                    *ReturnValue = UserReturnVal;
+                    if (ReturnValue)
+                    {
+                        /* Pass return value back to the caller */
+
+                        *ReturnValue = UserReturnVal;
+                    }
+
+                    return_ACPI_STATUS (AE_OK);
                 }
-
-                return_ACPI_STATUS (AE_OK);
             }
 
             /* Go down another level in the namespace if we are allowed to */
@@ -850,7 +895,10 @@ EvWalkNamespace (
                     ChildHandle     = 0;
                 }
             }
+
+            UserReturnVal   = NULL;
         }
+
         else
         {
             /* 
