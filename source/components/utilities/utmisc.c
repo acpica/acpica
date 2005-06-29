@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: utmisc - common utility procedures
- *              $Revision: 1.104 $
+ *              $Revision: 1.105 $
  *
  ******************************************************************************/
 
@@ -515,6 +515,13 @@ AcpiUtStrtoul64 (
         ACPI_TOLOWER (*(++String)) == 'x')
     {
         String++;
+    }
+
+    /* Any string left? */
+
+    if (!(*String))
+    {
+        goto ErrorExit;
     }
 
     /* Main loop: convert the string to a 64-bit integer */
