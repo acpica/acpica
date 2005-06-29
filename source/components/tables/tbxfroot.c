@@ -121,8 +121,8 @@
 #include <tables.h>
 
 
-#define _THIS_MODULE        "tbfac.c"
 #define _COMPONENT          TABLE_MANAGER
+        MODULE_NAME         ("tbfac");
 
 
 

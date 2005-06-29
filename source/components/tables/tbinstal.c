@@ -122,10 +122,8 @@
 #include <tables.h>
 
 
-#define _THIS_MODULE        "tbinstal.c"
 #define _COMPONENT          TABLE_MANAGER
-
-
+        MODULE_NAME         ("tbinstal");
 
 
 
