@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: aemain - Main routine for the AcpiExec utility
- *              $Revision: 1.58 $
+ *              $Revision: 1.59 $
  *
  *****************************************************************************/
 
@@ -206,7 +206,6 @@ AeDoDivideCheck (void)
 #endif
 
 
-
 #ifdef _IA16
 ACPI_STATUS
 AcpiGetIrqRoutingTable  (
@@ -362,7 +361,7 @@ main (
             goto enterloop;
         }
 
-        /* 
+        /*
          * TBD:
          * Need a way to call this after the "LOAD" command
          */

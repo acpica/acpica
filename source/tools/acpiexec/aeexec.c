@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: aeexec - Support routines for AcpiExec utility
- *              $Revision: 1.55 $
+ *              $Revision: 1.56 $
  *
  *****************************************************************************/
 
@@ -160,7 +160,7 @@ RSDT_DESCRIPTOR_REV1        LocalRSDT;
  *
  * RETURN:      Status
  *
- * DESCRIPTION: 
+ * DESCRIPTION:
  *
  *****************************************************************************/
 
@@ -169,8 +169,8 @@ AeBuildLocalTables (void)
 {
     /* Build an RSDP */
 
-    MEMSET (&LocalRSDP, 0, sizeof (RSDP_DESCRIPTOR));
-    MEMCPY (&LocalRSDP.Signature, RSDP_SIG, 8);
+    ACPI_MEMSET (&LocalRSDP, 0, sizeof (RSDP_DESCRIPTOR));
+    ACPI_MEMCPY (&LocalRSDP.Signature, RSDP_SIG, 8);
     LocalRSDP.Revision = 1;
     LocalRSDP.RsdtPhysicalAddress = ACPI_TO_INTEGER (&LocalRSDT);
 
@@ -179,8 +179,8 @@ AeBuildLocalTables (void)
 
     /* Build an RSDT */
 
-    MEMSET (&LocalRSDT, 0, sizeof (LocalRSDT));
-    MEMCPY (&LocalRSDT.Header.Signature, RSDT_SIG, 4);
+    ACPI_MEMSET (&LocalRSDT, 0, sizeof (LocalRSDT));
+    ACPI_MEMCPY (&LocalRSDT.Header.Signature, RSDT_SIG, 4);
     LocalRSDT.Header.Length = sizeof (RSDT_DESCRIPTOR_REV1);
 
 
@@ -188,8 +188,8 @@ AeBuildLocalTables (void)
 
     /* Build a FADT so we can test the hardware/event init */
 
-    MEMSET (&LocalFADT, 0, sizeof (FADT_DESCRIPTOR_REV1));
-    MEMCPY (&LocalFADT.Header.Signature, FADT_SIG, 4);
+    ACPI_MEMSET (&LocalFADT, 0, sizeof (FADT_DESCRIPTOR_REV1));
+    ACPI_MEMCPY (&LocalFADT.Header.Signature, FADT_SIG, 4);
 
     LocalFADT.FirmwareCtrl      = ACPI_TO_INTEGER (&LocalFACS);
     LocalFADT.Header.Revision   = 1;
@@ -216,8 +216,8 @@ AeBuildLocalTables (void)
 
     /* Build a FACS */
 
-    MEMSET (&LocalFACS, 0, sizeof (FACS_DESCRIPTOR_REV1));
-    MEMCPY (&LocalFACS.Signature, FACS_SIG, 4);
+    ACPI_MEMSET (&LocalFACS, 0, sizeof (FACS_DESCRIPTOR_REV1));
+    ACPI_MEMCPY (&LocalFACS.Signature, FACS_SIG, 4);
     LocalFACS.Length = sizeof (FACS_DESCRIPTOR_REV1);
     LocalFACS.GlobalLock = 0x11AA0011;
 
@@ -234,7 +234,7 @@ AeBuildLocalTables (void)
  *
  * RETURN:      Status
  *
- * DESCRIPTION: 
+ * DESCRIPTION:
  *
  *****************************************************************************/
 
@@ -264,7 +264,6 @@ AeInstallTables (void)
 
     return (Status);
 }
-
 
 
 /******************************************************************************
@@ -389,7 +388,7 @@ AeRegionHandler (
             return AE_NO_MEMORY;
         }
 
-        MEMSET (RegionElement->Buffer, 0, Length);
+        ACPI_MEMSET (RegionElement->Buffer, 0, Length);
         RegionElement->Address      = BaseAddress;
         RegionElement->Length       = Length;
         RegionElement->NextRegion   = NULL;
@@ -451,14 +450,14 @@ AeRegionHandler (
         /*
          * Set the pointer Value to whatever is in the buffer
          */
-        MEMCPY (Value, BufferValue, ByteWidth);
+        ACPI_MEMCPY (Value, BufferValue, ByteWidth);
         break;
 
     case ACPI_WRITE:
         /*
          * Write the contents of Value to the buffer
          */
-        MEMCPY (BufferValue, Value, ByteWidth);
+        ACPI_MEMCPY (BufferValue, Value, ByteWidth);
         break;
 
     default:
