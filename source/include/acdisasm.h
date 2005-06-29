@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acdisasm.h - AML disassembler
- *       $Revision: 1.13 $
+ *       $Revision: 1.15 $
  *
  *****************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2004, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2005, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -149,6 +149,13 @@ extern const char               *AcpiGbl_SHRDecode[2];
 extern const char               *AcpiGbl_TYPDecode[4];
 extern const char               *AcpiGbl_BMDecode[2];
 extern const char               *AcpiGbl_SIZDecode[4];
+extern const char               *AcpiGbl_TTPDecode[2];
+extern const char               *AcpiGbl_MTPDecode[4];
+extern const char               *AcpiGbl_TRSDecode[2];
+
+
+
+
 extern const char               *AcpiGbl_LockRule[ACPI_NUM_LOCK_RULES];
 extern const char               *AcpiGbl_AccessTypes[ACPI_NUM_ACCESS_TYPES];
 extern const char               *AcpiGbl_UpdateRules[ACPI_NUM_UPDATE_RULES];
