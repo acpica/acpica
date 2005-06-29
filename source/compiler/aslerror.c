@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslerror - Error handling and statistics
- *              $Revision: 1.50 $
+ *              $Revision: 1.57 $
  *
  *****************************************************************************/
 
@@ -10,7 +10,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -135,7 +135,7 @@ char                        *AslMessages [] = {
     "Could not open include file",
     "Package length too long to encode",
     "Invalid priority value",
-    "Invalid performace/robustness value",
+    "Invalid performance/robustness value",
     "Method local variable is not initialized",
     "Method argument is not initialized",
     "Unsupported feature",
@@ -171,11 +171,15 @@ char                        *AslMessages [] = {
     "Could not seek file",
     "Could not close file",
     "Access width is greater than region size",
+    "Host Operation Region requires ByteAcc access",
+    "Host Operation Region requires BufferAcc access",
     "Field unit extends beyond region limit",
     "Resource field name cannot be used as a target",
     "Invalid Byte Offset, Bit Offset required",
     "Invalid Bit Offset, Byte Offset required",
     "Opcode is not implemented in compiler AML code generator",
+    "No enclosing While statement",
+    "Invalid Escape Sequence",
 };
 
 
@@ -298,7 +302,7 @@ AePrintException (
 
         if (Enode->LineNumber)
         {
-            fprintf (OutputFile, "%6d: ", Enode->LineNumber);
+            fprintf (OutputFile, "%6u: ", Enode->LineNumber);
 
             /*
              * Seek to the offset in the combined source file, read the source
@@ -356,14 +360,14 @@ AePrintException (
                 if ((MsgLength + ErrorColumn) < (SourceColumn - 1))
                 {
                     fprintf (OutputFile, "%*s%s",
-                        (SourceColumn - 1) - ErrorColumn,
+                        (int) ((SourceColumn - 1) - ErrorColumn),
                         MainMessage, " ^ ");
                 }
 
                 else
                 {
                     fprintf (OutputFile, "%*s %s",
-                        (SourceColumn - ErrorColumn) + 1, "^",
+                        (int) ((SourceColumn - ErrorColumn) + 1), "^",
                         MainMessage);
                 }
             }

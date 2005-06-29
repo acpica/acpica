@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslrestype2 - Long (type2) resource templates and descriptors
- *              $Revision: 1.7 $
+ *              $Revision: 1.12 $
  *
  *****************************************************************************/
 
@@ -10,7 +10,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -121,7 +121,7 @@
 #include "aslresource.h"
 #include "amlcode.h"
 
-#define _COMPONENT          COMPILER
+#define _COMPONENT          ACPI_COMPILER
         MODULE_NAME         ("aslrestype2")
 
 
@@ -198,8 +198,8 @@ RsDoDwordIoDescriptor (
      * Initial descriptor length -- may be enlarged if there are
      * optional fields present
      */
-    Descriptor->Das.Length          = ASL_RESDESC_OFFSET (Das.OptionalFields) -
-                                      ASL_RESDESC_OFFSET (Das.ResourceType);
+    Descriptor->Das.Length = (UINT16) (ASL_RESDESC_OFFSET (Das.OptionalFields) -
+                                       ASL_RESDESC_OFFSET (Das.ResourceType));
 
 
     /*
@@ -294,9 +294,9 @@ RsDoDwordIoDescriptor (
             {
                 if (StringLength)
                 {
-                    Descriptor->Das.Length += StringLength;
+                    Descriptor->Das.Length = (UINT16) (Descriptor->Das.Length + StringLength);
 
-                    strcpy (&Descriptor->Das.OptionalFields[OptionIndex],
+                    strcpy ((char *) &Descriptor->Das.OptionalFields[OptionIndex],
                             InitializerNode->Value.Pointer);
                 }
             }
@@ -373,8 +373,8 @@ RsDoDwordMemoryDescriptor (
      * Initial descriptor length -- may be enlarged if there are
      * optional fields present
      */
-    Descriptor->Das.Length          = ASL_RESDESC_OFFSET (Das.OptionalFields) -
-                                      ASL_RESDESC_OFFSET (Das.ResourceType);
+    Descriptor->Das.Length = (UINT16) (ASL_RESDESC_OFFSET (Das.OptionalFields) -
+                                       ASL_RESDESC_OFFSET (Das.ResourceType));
 
     /*
      * Process all child initialization nodes
@@ -475,9 +475,9 @@ RsDoDwordMemoryDescriptor (
             {
                 if (StringLength)
                 {
-                    Descriptor->Das.Length += StringLength;
+                    Descriptor->Das.Length = (UINT16) (Descriptor->Das.Length + StringLength);
 
-                    strcpy (&Descriptor->Das.OptionalFields[OptionIndex],
+                    strcpy ((char *) &Descriptor->Das.OptionalFields[OptionIndex],
                             InitializerNode->Value.Pointer);
                 }
             }
@@ -555,8 +555,8 @@ RsDoQwordIoDescriptor (
      * Initial descriptor length -- may be enlarged if there are
      * optional fields present
      */
-    Descriptor->Qas.Length          = ASL_RESDESC_OFFSET (Qas.OptionalFields) -
-                                      ASL_RESDESC_OFFSET (Qas.ResourceType);
+    Descriptor->Qas.Length = (UINT16) (ASL_RESDESC_OFFSET (Qas.OptionalFields) -
+                                       ASL_RESDESC_OFFSET (Qas.ResourceType));
     /*
      * Process all child initialization nodes
      */
@@ -649,9 +649,9 @@ RsDoQwordIoDescriptor (
             {
                 if (StringLength)
                 {
-                    Descriptor->Qas.Length += StringLength;
+                    Descriptor->Qas.Length = (UINT16) (Descriptor->Qas.Length + StringLength);
 
-                    strcpy (&Descriptor->Qas.OptionalFields[OptionIndex],
+                    strcpy ((char *) &Descriptor->Qas.OptionalFields[OptionIndex],
                             InitializerNode->Value.Pointer);
                 }
             }
@@ -728,8 +728,8 @@ RsDoQwordMemoryDescriptor (
      * Initial descriptor length -- may be enlarged if there are
      * optional fields present
      */
-    Descriptor->Qas.Length          = ASL_RESDESC_OFFSET (Qas.OptionalFields) -
-                                      ASL_RESDESC_OFFSET (Qas.ResourceType);
+    Descriptor->Qas.Length = (UINT16) (ASL_RESDESC_OFFSET (Qas.OptionalFields) -
+                                       ASL_RESDESC_OFFSET (Qas.ResourceType));
     /*
      * Process all child initialization nodes
      */
@@ -829,9 +829,9 @@ RsDoQwordMemoryDescriptor (
             {
                 if (StringLength)
                 {
-                    Descriptor->Qas.Length += StringLength;
+                    Descriptor->Qas.Length = (UINT16) (Descriptor->Qas.Length + StringLength);
 
-                    strcpy (&Descriptor->Qas.OptionalFields[OptionIndex],
+                    strcpy ((char *) &Descriptor->Qas.OptionalFields[OptionIndex],
                             InitializerNode->Value.Pointer);
                 }
             }
@@ -909,8 +909,8 @@ RsDoWordIoDescriptor (
      * Initial descriptor length -- may be enlarged if there are
      * optional fields present
      */
-    Descriptor->Was.Length          = ASL_RESDESC_OFFSET (Was.OptionalFields) -
-                                      ASL_RESDESC_OFFSET (Was.ResourceType);
+    Descriptor->Was.Length = (UINT16) (ASL_RESDESC_OFFSET (Was.OptionalFields) -
+                                       ASL_RESDESC_OFFSET (Was.ResourceType));
 
     /*
      * Process all child initialization nodes
@@ -1004,9 +1004,9 @@ RsDoWordIoDescriptor (
             {
                 if (StringLength)
                 {
-                    Descriptor->Was.Length += StringLength;
+                    Descriptor->Was.Length = (UINT16) (Descriptor->Was.Length +StringLength);
 
-                    strcpy (&Descriptor->Was.OptionalFields[OptionIndex],
+                    strcpy ((char *) &Descriptor->Was.OptionalFields[OptionIndex],
                             InitializerNode->Value.Pointer);
                 }
             }
@@ -1083,8 +1083,8 @@ RsDoWordBusNumberDescriptor (
      * Initial descriptor length -- may be enlarged if there are
      * optional fields present
      */
-    Descriptor->Was.Length          = ASL_RESDESC_OFFSET (Was.OptionalFields) -
-                                      ASL_RESDESC_OFFSET (Was.ResourceType);
+    Descriptor->Was.Length = (UINT16) (ASL_RESDESC_OFFSET (Was.OptionalFields) -
+                                       ASL_RESDESC_OFFSET (Was.ResourceType));
 
     /*
      * Process all child initialization nodes
@@ -1171,9 +1171,9 @@ RsDoWordBusNumberDescriptor (
             {
                 if (StringLength)
                 {
-                    Descriptor->Was.Length += StringLength;
+                    Descriptor->Was.Length = (UINT16) (Descriptor->Was.Length + StringLength);
 
-                    strcpy (&Descriptor->Was.OptionalFields[OptionIndex],
+                    strcpy ((char *) &Descriptor->Was.OptionalFields[OptionIndex],
                             InitializerNode->Value.Pointer);
                 }
             }
@@ -1217,21 +1217,42 @@ RsDoInterruptDescriptor (
     UINT32                  CurrentByteOffset)
 {
     ASL_RESOURCE_DESC       *Descriptor;
+    ASL_RESOURCE_DESC       *Rover = NULL;
     ASL_PARSE_NODE          *InitializerNode;
     ASL_RESOURCE_NODE       *Rnode;
     UINT32                  StringLength = 0;
     UINT32                  OptionIndex = 0;
     UINT32                  i;
     BOOLEAN                 HasResSourceIndex = FALSE;
-    UINT8                   ResSourceIndex;
-    UINT8                   *ResSourceString;
+    UINT8                   ResSourceIndex = 0;
+    UINT8                   *ResSourceString = NULL;
 
 
     InitializerNode = Node->Child;
     StringLength = RsGetStringDataLength (InitializerNode);
+    if (StringLength)
+    {
+        /* Make room for the ResourceSourceIndex */
+
+        OptionIndex++;
+    }
+
+    /* Count the interrupt numbers */
+
+    for (i = 0; InitializerNode; i++)
+    {
+        InitializerNode = ASL_GET_PEER_NODE (InitializerNode);
+        if (i <= 6)
+        {
+            continue;
+        }
+
+        OptionIndex += 4;
+    }
+    InitializerNode = Node->Child;
 
     Rnode = RsAllocateResourceNode (sizeof (ASL_EXTENDED_XRUPT_DESC) +
-                                    StringLength);
+                                    OptionIndex + StringLength);
 
     Descriptor = Rnode->Buffer;
     Descriptor->Exx.DescriptorType  = RESOURCE_DESC_EXTENDED_XRUPT;
@@ -1242,6 +1263,8 @@ RsDoInterruptDescriptor (
      */
     Descriptor->Exx.Length          = 2;  /* Flags and table length byte */
     Descriptor->Exx.TableLength     = 0;
+
+    Rover = (ASL_RESOURCE_DESC *) (&(Descriptor->Exx.InterruptNumber[0]));
 
     /*
      * Process all child initialization nodes
@@ -1282,7 +1305,6 @@ RsDoInterruptDescriptor (
             {
                 HasResSourceIndex = TRUE;
                 ResSourceIndex = InitializerNode->Value.Integer8;
-                OptionIndex++;
             }
             break;
 
@@ -1306,15 +1328,21 @@ RsDoInterruptDescriptor (
 
         default:
 
-            /* Interrupt Numbers come through here, repeatedly */
-
-            * ((UINT32 *) Descriptor) = InitializerNode->Value.Integer32;
-            ((UINT32 *) Descriptor)++;
-
-            /* StartOfDescriptor->Exx.TableLength++;
-               StartOfDescriptor->Exx.Length += 4;
-
+            /*
+             * Interrupt Numbers come through here, repeatedly.
+             * Store the integer and move pointer to the next one.
              */
+            Rover->U32Item = InitializerNode->Value.Integer32;
+            Rover = (ASL_RESOURCE_DESC *) (&(Rover->U32Item) + 1);
+
+            Descriptor->Exx.TableLength++;
+            Descriptor->Exx.Length += 4;
+
+            if (i == 7) /* case 7: First interrupt number */
+            {
+                RsCreateByteField (InitializerNode, ASL_RESNAME_INTERRUPT,
+                                    CurrentByteOffset + ASL_RESDESC_OFFSET (Exx.InterruptNumber));
+            }
         }
 
         InitializerNode = RsCompleteNodeAndGetNext (InitializerNode);
@@ -1326,12 +1354,9 @@ RsDoInterruptDescriptor (
      */
     if (HasResSourceIndex)
     {
-        * ((UINT8 *) Descriptor) = ResSourceIndex;
-        ((UINT8 *) Descriptor)++;
-
-        /*
-        StartOfDescriptor->Exx.Length++;
-        */
+        Rover->U8Item = ResSourceIndex;
+        Rover = (ASL_RESOURCE_DESC *) (&(Rover->U8Item) + 1);
+        Descriptor->Exx.Length += 1;
     }
 
 
@@ -1341,8 +1366,9 @@ RsDoInterruptDescriptor (
     if (StringLength)
     {
 
-        strcpy ((char *) Descriptor, ResSourceString);
-        ((UINT8 *) Descriptor) += StringLength;
+        strcpy ((char *) Rover, (char *) ResSourceString);
+        Rover = (ASL_RESOURCE_DESC *) (&(Rover->U8Item) + StringLength);
+        Descriptor->Exx.Length = (UINT16) (Descriptor->Exx.Length + StringLength);
     }
 
     Rnode->BufferLength = (ASL_RESDESC_OFFSET (Exx.InterruptNumber) -

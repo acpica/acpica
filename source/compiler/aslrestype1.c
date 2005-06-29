@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslrestype1 - Short (type1) resource templates and descriptors
- *              $Revision: 1.9 $
+ *              $Revision: 1.15 $
  *
  *****************************************************************************/
 
@@ -10,7 +10,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -121,7 +121,7 @@
 #include "aslresource.h"
 #include "amlcode.h"
 
-#define _COMPONENT          COMPILER
+#define _COMPONENT          ACPI_COMPILER
         MODULE_NAME         ("aslrestype1")
 
 
@@ -155,7 +155,8 @@ RsDoDmaDescriptor (
     Rnode = RsAllocateResourceNode (sizeof (ASL_DMA_FORMAT_DESC));
 
     Descriptor = Rnode->Buffer;
-    Descriptor->Dma.DescriptorType  = RESOURCE_DESC_DMA_FORMAT;
+    Descriptor->Dma.DescriptorType  = RESOURCE_DESC_DMA_FORMAT |
+                                        ASL_RDESC_DMA_SIZE;
 
 
     /*
@@ -193,12 +194,19 @@ RsDoDmaDescriptor (
 
         default:
 
-            /* DMA channel bytes are handled here, after the flags and name */
+            /* All DMA channel bytes are handled here, after the flags and name */
 
             if (InitializerNode->ParseOpcode != DEFAULT_ARG)
             {
                 DmaChannelMask |= (1 << InitializerNode->Value.Integer8);
             }
+
+            if (i == 4) /* case 4: First DMA byte */
+            {
+                RsCreateByteField (InitializerNode, ASL_RESNAME_DMA,
+                                    CurrentByteOffset + ASL_RESDESC_OFFSET (Dma.DmaChannelMask));
+            }
+            break;
         }
 
         InitializerNode = RsCompleteNodeAndGetNext (InitializerNode);
@@ -239,7 +247,8 @@ RsDoEndDependentDescriptor (
     Rnode = RsAllocateResourceNode (sizeof (ASL_END_DEPENDENT_DESC));
 
     Descriptor = Rnode->Buffer;
-    Descriptor->End.DescriptorType  = RESOURCE_DESC_END_DEPENDENT;
+    Descriptor->End.DescriptorType  = RESOURCE_DESC_END_DEPENDENT |
+                                        ASL_RDESC_END_DEPEND_SIZE;
 
     return (Rnode);
 }
@@ -274,7 +283,8 @@ RsDoFixedIoDescriptor (
     Rnode = RsAllocateResourceNode (sizeof (ASL_FIXED_IO_PORT_DESC));
 
     Descriptor = Rnode->Buffer;
-    Descriptor->Iop.DescriptorType  = RESOURCE_DESC_FIXED_IO_PORT;
+    Descriptor->Iop.DescriptorType  = RESOURCE_DESC_FIXED_IO_PORT |
+                                        ASL_RDESC_FIXED_IO_SIZE;
 
 
     /*
@@ -341,7 +351,8 @@ RsDoIoDescriptor (
     Rnode = RsAllocateResourceNode (sizeof (ASL_IO_PORT_DESC));
 
     Descriptor = Rnode->Buffer;
-    Descriptor->Iop.DescriptorType  = RESOURCE_DESC_IO_PORT;
+    Descriptor->Iop.DescriptorType  = RESOURCE_DESC_IO_PORT |
+                                        ASL_RDESC_IO_SIZE;
 
 
     /*
@@ -354,6 +365,8 @@ RsDoIoDescriptor (
         case 0: /* Decode size */
 
             RsSetFlagBits (&Descriptor->Iop.Information, InitializerNode, 0, 1);
+            RsCreateBitField (InitializerNode, ASL_RESNAME_DECODE,
+                                CurrentByteOffset + ASL_RESDESC_OFFSET (Iop.Information), 0);
             break;
 
         case 1:  /* Min Address */
@@ -429,7 +442,8 @@ RsDoIrqDescriptor (
     /* Length = 3 (with flag byte) */
 
     Descriptor = Rnode->Buffer;
-    Descriptor->Irq.DescriptorType  = RESOURCE_DESC_IRQ_FORMAT | 0x01;
+    Descriptor->Irq.DescriptorType  = RESOURCE_DESC_IRQ_FORMAT |
+                                        (ASL_RDESC_IRQ_SIZE + 0x01);
 
 
     /*
@@ -465,25 +479,21 @@ RsDoIrqDescriptor (
             UtAttachNamepathToOwner (Node, InitializerNode);
             break;
 
-        case 4: /* First IRQ byte */
+        default:
+
+            /* All IRQ bytes are handled here, after the flags and name */
 
             if (InitializerNode->ParseOpcode != DEFAULT_ARG)
             {
                 IrqMask |= (1 << InitializerNode->Value.Integer8);
+            }
 
+            if (i == 4) /* case 4: First IRQ byte */
+            {
                 RsCreateByteField (InitializerNode, ASL_RESNAME_INTERRUPT,
                                     CurrentByteOffset + ASL_RESDESC_OFFSET (Irq.IrqMask));
             }
             break;
-
-        default:
-
-            /* IRQ bytes are handled here, after the flags and name */
-
-            if (InitializerNode->ParseOpcode != DEFAULT_ARG)
-            {
-                IrqMask |= (1 << InitializerNode->Value.Integer8);
-            }
         }
 
         InitializerNode = RsCompleteNodeAndGetNext (InitializerNode);
@@ -528,7 +538,8 @@ RsDoIrqNoFlagsDescriptor (
     Rnode = RsAllocateResourceNode (sizeof (ASL_IRQ_NOFLAGS_DESC));
 
     Descriptor = Rnode->Buffer;
-    Descriptor->Irq.DescriptorType  = RESOURCE_DESC_IRQ_FORMAT;
+    Descriptor->Irq.DescriptorType  = RESOURCE_DESC_IRQ_FORMAT |
+                                        ASL_RDESC_IRQ_SIZE;
 
 
     /*
@@ -543,17 +554,6 @@ RsDoIrqNoFlagsDescriptor (
             UtAttachNamepathToOwner (Node, InitializerNode);
             break;
 
-        case 1: /* First IRQ byte */
-
-            if (InitializerNode->ParseOpcode != DEFAULT_ARG)
-            {
-                IrqMask |= (1 << InitializerNode->Value.Integer8);
-
-                RsCreateByteField (InitializerNode, ASL_RESNAME_INTERRUPT,
-                                    CurrentByteOffset + ASL_RESDESC_OFFSET (Irq.IrqMask));
-            }
-            break;
-
         default:
 
             /* IRQ bytes are handled here, after the flags and name */
@@ -561,6 +561,12 @@ RsDoIrqNoFlagsDescriptor (
             if (InitializerNode->ParseOpcode != DEFAULT_ARG)
             {
                 IrqMask |= (1 << InitializerNode->Value.Integer8);
+            }
+
+            if (i == 1) /* case 1: First IRQ byte */
+            {
+                RsCreateByteField (InitializerNode, ASL_RESNAME_INTERRUPT,
+                                    CurrentByteOffset + ASL_RESDESC_OFFSET (Irq.IrqMask));
             }
             break;
         }
@@ -862,7 +868,8 @@ RsDoStartDependentDescriptor (
 
     /* Descriptor has priority byte */
 
-    Descriptor->Std.DescriptorType  = RESOURCE_DESC_START_DEPENDENT | 0x01;
+    Descriptor->Std.DescriptorType  = RESOURCE_DESC_START_DEPENDENT |
+                                        (ASL_RDESC_ST_DEPEND_SIZE + 0x01);
 
 
     /*
@@ -893,11 +900,6 @@ RsDoStartDependentDescriptor (
             RsSetFlagBits (&Descriptor->Std.Flags, InitializerNode, 2, 0);
             break;
 
-
-        case 2:
-
-            /* Finished with the StartDependent descriptor */
-            /* Fall through */
 
         default:
             NextRnode = RsDoOneResourceDescriptor  (InitializerNode, CurrentByteOffset);
@@ -951,7 +953,8 @@ RsDoStartDependentNoPriDescriptor (
     Rnode = RsAllocateResourceNode (sizeof (ASL_START_DEPENDENT_NOPRIO_DESC));
 
     Descriptor = Rnode->Buffer;
-    Descriptor->Std.DescriptorType  = RESOURCE_DESC_START_DEPENDENT;
+    Descriptor->Std.DescriptorType  = RESOURCE_DESC_START_DEPENDENT |
+                                        ASL_RDESC_ST_DEPEND_SIZE;
     PreviousRnode = Rnode;
 
     /*

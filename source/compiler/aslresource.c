@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslresource - Resource templates and descriptors
- *              $Revision: 1.15 $
+ *              $Revision: 1.20 $
  *
  *****************************************************************************/
 
@@ -10,7 +10,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -122,7 +122,7 @@
 #include "amlcode.h"
 
 
-#define _COMPONENT          COMPILER
+#define _COMPONENT          ACPI_COMPILER
         MODULE_NAME         ("aslresource")
 
 
@@ -189,7 +189,7 @@ RsCreateBitField (
 
     Node->ExternalName      = Name;
     Node->Value.Integer32   = (ByteOffset * 8) + BitOffset;
-    Node->Flags             |= NODE_IS_RESOURCE_FIELD;
+    Node->Flags             |= (NODE_IS_RESOURCE_FIELD | NODE_IS_BIT_OFFSET);
 }
 
 
@@ -551,7 +551,8 @@ RsDoResourceTemplate (
     Rnode = RsAllocateResourceNode (sizeof (ASL_END_TAG_DESC));
 
     Descriptor = Rnode->Buffer;
-    Descriptor->Et.DescriptorType = RESOURCE_DESC_END_TAG;
+    Descriptor->Et.DescriptorType = RESOURCE_DESC_END_TAG |
+                                        ASL_RDESC_END_TAG_SIZE;
     Descriptor->Et.Checksum = 0;
 
     CurrentByteOffset += RsLinkDescriptorChain (&PreviousRnode, Rnode);

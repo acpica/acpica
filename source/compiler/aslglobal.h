@@ -3,7 +3,7 @@
 /******************************************************************************
  *
  * Module Name: aslglobal.h - Global variable definitions
- *              $Revision: 1.11 $
+ *              $Revision: 1.20 $
  *
  *****************************************************************************/
 
@@ -11,7 +11,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -140,7 +140,7 @@
 extern int                      yydebug;
 extern FILE                     *AslCompilerin;
 extern int                      AslCompilerdebug;
-extern ASL_MAPPING_ENTRY        AslKeywordMapping[];
+extern const ASL_MAPPING_ENTRY  AslKeywordMapping[];
 extern char                     *AslCompilertext;
 extern FILE                     *AslCompilerin;
 extern int                      optind;
@@ -178,6 +178,7 @@ EXTERN BOOLEAN                  INIT_GLOBAL (Gbl_ListingFlag, FALSE);
 EXTERN BOOLEAN                  INIT_GLOBAL (Gbl_IgnoreErrors, FALSE);
 EXTERN BOOLEAN                  INIT_GLOBAL (Gbl_SourceOutputFlag, FALSE);
 EXTERN BOOLEAN                  INIT_GLOBAL (Gbl_ParseOnlyFlag, FALSE);
+EXTERN BOOLEAN                  INIT_GLOBAL (Gbl_CompileTimesFlag, FALSE);
 
 
 /* Files */
@@ -199,6 +200,10 @@ EXTERN UINT32                   INIT_GLOBAL (Gbl_NsLookupCount, 0);
 EXTERN UINT32                   INIT_GLOBAL (TotalKeywords, 0);
 EXTERN UINT32                   INIT_GLOBAL (TotalNamedObjects, 0);
 EXTERN UINT32                   INIT_GLOBAL (TotalExecutableOpcodes, 0);
+EXTERN UINT32                   INIT_GLOBAL (TotalParseNodes, 0);
+EXTERN UINT32                   INIT_GLOBAL (TotalMethods, 0);
+EXTERN UINT32                   INIT_GLOBAL (TotalAllocations, 0);
+EXTERN UINT32                   INIT_GLOBAL (TotalAllocated, 0);
 
 
 /* Misc */
@@ -207,6 +212,12 @@ EXTERN ASL_PARSE_NODE           INIT_GLOBAL (*RootNode, NULL);
 EXTERN UINT32                   INIT_GLOBAL (Gbl_TableLength, 0);
 EXTERN UINT32                   INIT_GLOBAL (Gbl_SourceLine, 0);
 EXTERN ASL_LISTING_NODE         INIT_GLOBAL (*Gbl_ListingNode, NULL);
+EXTERN ASL_PARSE_NODE           INIT_GLOBAL (*Gbl_NodeCacheNext, NULL);
+EXTERN ASL_PARSE_NODE           INIT_GLOBAL (*Gbl_NodeCacheLast, NULL);
+EXTERN NATIVE_CHAR              INIT_GLOBAL (*Gbl_StringCacheNext, NULL);
+EXTERN NATIVE_CHAR              INIT_GLOBAL (*Gbl_StringCacheLast, NULL);
+EXTERN UINT32                   INIT_GLOBAL (Gbl_TempCount, 0);
+EXTERN ASL_PARSE_NODE           *Gbl_FirstLevelInsertionNode;
 
 
 EXTERN UINT32                   INIT_GLOBAL (Gbl_CurrentHexColumn, 0);
@@ -216,14 +227,15 @@ EXTERN UINT8                    INIT_GLOBAL (Gbl_HexBytesWereWritten, FALSE);
 EXTERN UINT32                   INIT_GLOBAL (Gbl_NumNamespaceObjects, 0);
 EXTERN UINT32                   INIT_GLOBAL (Gbl_ReservedMethods, 0);
 EXTERN UINT8                    INIT_GLOBAL (AcpiGbl_DbOutputFlags, DB_CONSOLE_OUTPUT);
-EXTERN FILE                     *DebugFile; /* Placeholder for oswinxf only */
+EXTERN FILE                     *AcpiGbl_DebugFile; /* Placeholder for oswinxf only */
 
 
 /* Static structures */
 
 EXTERN ASL_ANALYSIS_WALK_INFO   AnalysisWalkInfo;
 EXTERN ACPI_TABLE_HEADER        TableHeader;
-extern ASL_RESERVED_INFO        ReservedMethods[];
+extern const ASL_RESERVED_INFO  ReservedMethods[];
+EXTERN ASL_EVENT_INFO           AslGbl_Events[20];
 
 
 /* Scratch buffers */

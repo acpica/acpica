@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asltypes.h - compiler data types and struct definitions
- *              $Revision: 1.11 $
+ *              $Revision: 1.28 $
  *
  *****************************************************************************/
 
@@ -10,7 +10,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -120,6 +120,9 @@
 #define __ASLTYPES_H
 
 
+#include <time.h>
+
+
 /*******************************************************************************
  *
  * Structure definitions
@@ -151,10 +154,11 @@ typedef struct asl_parse_node
     struct asl_parse_node       *Child;
     struct asl_parse_node       *ParentMethod;
     ACPI_NAMESPACE_NODE         *NsNode;
-    union asl_node_value        Value;
     char                        *Filename;
     char                        *ExternalName;
     char                        *Namepath;
+    union asl_node_value        Value;
+    UINT32                      ExtraValue;
     UINT32                      Column;
     UINT32                      LineNumber;
     UINT32                      LogicalLineNumber;
@@ -189,13 +193,15 @@ typedef struct asl_parse_node
 #define NODE_METHOD_SOME_NO_RETVAL  0x0200
 #define NODE_RESULT_NOT_USED        0x0400
 #define NODE_METHOD_TYPED           0x0800
+#define NODE_IS_BIT_OFFSET          0x1000
 
 /* Keeps information about individual control methods */
 
 typedef struct asl_method_info
 {
     UINT8                   NumArguments;
-    UINT8                   LocalInitialized[8];
+    UINT8                   LocalInitialized[MTH_NUM_LOCALS];
+    UINT8                   ArgInitialized[MTH_NUM_ARGS];
     UINT32                  NumReturnNoValue;
     UINT32                  NumReturnWithValue;
     ASL_PARSE_NODE          *Node;
@@ -249,6 +255,37 @@ typedef struct asl_walk_info
 } ASL_WALK_INFO;
 
 
+/* File info */
+
+typedef struct asl_file_info
+{
+    FILE                        *Handle;
+    char                        *Filename;
+
+} ASL_FILE_INFO;
+
+
+/* File types */
+
+typedef enum
+{
+    ASL_FILE_STDOUT             = 0,
+    ASL_FILE_STDERR,
+    ASL_FILE_INPUT,
+    ASL_FILE_AML_OUTPUT,
+    ASL_FILE_SOURCE_OUTPUT,
+    ASL_FILE_LISTING_OUTPUT,
+    ASL_FILE_HEX_OUTPUT,
+    ASL_FILE_NAMESPACE_OUTPUT,
+    ASL_FILE_DEBUG_OUTPUT
+
+} ASL_FILE_TYPES;
+
+
+#define ASL_MAX_FILE            8
+#define ASL_NUM_FILES           (ASL_MAX_FILE + 1)
+
+
 /* An entry in the exception list, one for each error/warning */
 
 typedef struct asl_error_msg
@@ -281,19 +318,30 @@ typedef struct asl_listing_node
 /* Callback interface for a parse tree walk */
 
 typedef
-void (*ASL_WALK_CALLBACK) (
+ACPI_STATUS (*ASL_WALK_CALLBACK) (
     ASL_PARSE_NODE              *Node,
     UINT32                      Level,
     void                        *Context);
 
 
+typedef struct
+{
+    time_t                      StartTime;
+    time_t                      EndTime;
+    char                        *EventName;
+    BOOLEAN                     Valid;
+
+} ASL_EVENT_INFO;
+
+
 #define ASL_ERROR               0
 #define ASL_WARNING             1
+#define ASL_REMARK              2
 
 
 typedef enum
 {
-    ASL_MSG_NULL = 0,
+    ASL_MSG_NULL                = 0,
     ASL_MSG_MEMORY_ALLOCATION,
     ASL_MSG_INPUT_FILE_OPEN,
     ASL_MSG_OUTPUT_FILENAME,
@@ -307,7 +355,7 @@ typedef enum
     ASL_MSG_INVALID_PRIORITY,
     ASL_MSG_INVALID_PERFORMANCE,
     ASL_MSG_LOCAL_INIT,
-    ASL_MSG_ARG_INVALID,
+    ASL_MSG_ARG_INIT,
     ASL_MSG_UNSUPPORTED,
     ASL_MSG_RESERVED_WORD,
     ASL_MSG_BUFFER_LENGTH,
@@ -324,7 +372,7 @@ typedef enum
     ASL_MSG_ARG_COUNT_LO,
     ASL_MSG_NO_RETVAL,
     ASL_MSG_SOME_NO_RETVAL,
-    ASL_MSG_INTERNAL,
+    ASL_MSG_COMPILER_INTERNAL,
     ASL_MSG_BACKWARDS_OFFSET,
     ASL_MSG_UNKNOWN_RESERVED_NAME,
     ASL_MSG_NAME_EXISTS,
@@ -333,6 +381,23 @@ typedef enum
     ASL_MSG_SYNTAX,
     ASL_MSG_NOT_METHOD,
     ASL_MSG_LONG_LINE,
+    ASL_MSG_RECURSION,
+    ASL_MSG_NOT_PARAMETER,
+    ASL_MSG_OPEN,
+    ASL_MSG_READ,
+    ASL_MSG_WRITE,
+    ASL_MSG_SEEK,
+    ASL_MSG_CLOSE,
+    ASL_MSG_FIELD_ACCESS_WIDTH,
+    ASL_MSG_REGION_BYTE_ACCESS,
+    ASL_MSG_REGION_BUFFER_ACCESS,
+    ASL_MSG_FIELD_UNIT_OFFSET,
+    ASL_MSG_RESOURCE_FIELD,
+    ASL_MSG_BYTES_TO_BITS,
+    ASL_MSG_BITS_TO_BYTES,
+    ASL_MSG_AML_NOT_IMPLEMENTED,
+    ASL_MSG_NO_WHILE,
+    ASL_MSG_INVALID_ESCAPE
 
 } ASL_MESSAGE_IDS;
 

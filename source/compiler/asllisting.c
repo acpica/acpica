@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asllisting - Listing file generation
- *              $Revision: 1.5 $
+ *              $Revision: 1.27 $
  *
  *****************************************************************************/
 
@@ -10,8 +10,8 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, Intel Corp.  All rights
- * reserved.
+ * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
+ * All rights reserved.
  *
  * 2. License
  *
@@ -116,32 +116,28 @@
  *****************************************************************************/
 
 
-#include "AslCompiler.h"
-#include "AslCompiler.y.h"
+#include "aslcompiler.h"
+#include "aslcompiler.y.h"
 #include "aslresource.h"
 #include "amlcode.h"
 #include "acparser.h"
 
-
-UINT32                      HexColumn = 0;
-UINT32                      AmlOffset = 0;
-UINT32                      Gbl_CurrentLine = 0;
-UINT8                       Gbl_AmlBuffer[16];
-UINT8                       Gbl_HexBytesWereWritten = FALSE;
-
-
-ASL_LISTING_NODE            *Gbl_ListingNode = NULL;
+#define _COMPONENT          ACPI_COMPILER
+        MODULE_NAME         ("aslisting")
 
 
 /*******************************************************************************
  *
- * FUNCTION:    
+ * FUNCTION:    LsPushNode
  *
- * PARAMETERS:  
+ * PARAMETERS:  Filename        - Pointer to the include filename
  *
- * RETURN:      
+ * RETURN:      None
  *
- * DESCRIPTION: 
+ * DESCRIPTION: Push a listing node on the listing/include file stack.  This
+ *              stack enables tracking of include files (infinitely nested)
+ *              and resumption of the listing of the parent file when the
+ *              include file is finished.
  *
  ******************************************************************************/
 
@@ -152,12 +148,11 @@ LsPushNode (
     ASL_LISTING_NODE        *Lnode;
 
 
-    if (!Gbl_ListingFile)
+    if (!Gbl_ListingFlag)
     {
         return;
     }
 
-    //fprintf (Gbl_SourceOutputFile, "\n");
 
     /* Create a new node */
 
@@ -175,16 +170,16 @@ LsPushNode (
 }
 
 
-
 /*******************************************************************************
  *
- * FUNCTION:    
+ * FUNCTION:    LsPopNode
  *
- * PARAMETERS:  
+ * PARAMETERS:  None
  *
- * RETURN:      
+ * RETURN:      List head after current head is popped off
  *
- * DESCRIPTION: 
+ * DESCRIPTION: Pop the current head of the list, free it, and return the
+ *              next node on the stack (the new current node).
  *
  ******************************************************************************/
 
@@ -194,12 +189,24 @@ LsPopNode (void)
     ASL_LISTING_NODE        *Lnode;
 
 
+    if (!Gbl_ListingFlag)
+    {
+        return Gbl_ListingNode;
+    }
+
     /* Just grab the node at the head of the list */
 
     Lnode = Gbl_ListingNode;
+    if ((!Lnode) ||
+        (!Lnode->Next))
+    {
+        AslError (ASL_ERROR, ASL_MSG_COMPILER_INTERNAL, NULL, "Could not pop empty listing stack");
+        return Gbl_ListingNode;
+    }
+
     Gbl_ListingNode = Lnode->Next;
 
-    free (Lnode);
+    ACPI_MEM_FREE (Lnode);
 
     /* New "Current" node is the new head */
 
@@ -207,17 +214,18 @@ LsPopNode (void)
 }
 
 
- 
-
 /*******************************************************************************
  *
- * FUNCTION:    
+ * FUNCTION:    LsCheckException
  *
- * PARAMETERS:  
+ * PARAMETERS:  LineNumber          - Current logical (cumulative) line #
  *
- * RETURN:      
+ * RETURN:      None
  *
- * DESCRIPTION: 
+ * DESCRIPTION: Check if there is an exception for this line, and if there is,
+ *              put it in the listing immediately.  Handles multiple errors
+ *              per line.  Gbl_NextError points to the next error in the
+ *              sorted (by line #) list of compile errors/warnings.
  *
  ******************************************************************************/
 
@@ -226,30 +234,40 @@ LsCheckException (
     UINT32                  LineNumber)
 {
 
-    if ((!AslGbl_NextError) || 
-        (LineNumber < AslGbl_NextError->LogicalLineNumber ))
+
+    if ((!Gbl_NextError) ||
+        (LineNumber < Gbl_NextError->LogicalLineNumber ))
     {
         return;
     }
- 
-    fprintf (Gbl_ListingFile, "\n[****AslException****]\n");
 
-    AePrintException (Gbl_ListingFile, AslGbl_NextError);
-    fprintf (Gbl_ListingFile, "\n");
+    /* Handle multiple errors per line */
 
-    AslGbl_NextError = AslGbl_NextError->Next;
+    while (Gbl_NextError &&
+          (LineNumber >= Gbl_NextError->LogicalLineNumber))
+    {
+        FlPrintFile (ASL_FILE_LISTING_OUTPUT, "\n[****AslException****]\n");
+
+        AePrintException (ASL_FILE_LISTING_OUTPUT, Gbl_NextError);
+
+        Gbl_NextError = Gbl_NextError->Next;
+    }
+
+    FlPrintFile (ASL_FILE_LISTING_OUTPUT, "\n");
 }
 
 
 /*******************************************************************************
  *
- * FUNCTION:    
+ * FUNCTION:    LsFlushListingBuffer
  *
- * PARAMETERS:  
+ * PARAMETERS:  None
  *
- * RETURN:      
+ * RETURN:      None
  *
- * DESCRIPTION: 
+ * DESCRIPTION: Flush out the current contents of the 16-byte hex AML code
+ *              buffer.  Usually called at the termination of a single line
+ *              of source code or when the buffer is full.
  *
  ******************************************************************************/
 
@@ -260,62 +278,64 @@ LsFlushListingBuffer (void)
     UINT8                   BufChar;
 
 
-    if (HexColumn == 0)
+    if (Gbl_CurrentHexColumn == 0)
     {
         return;
     }
 
     /* Write the hex bytes */
 
-    for (i = 0; i < HexColumn; i++)
+    for (i = 0; i < Gbl_CurrentHexColumn; i++)
     {
-        fwrite (&hex[Gbl_AmlBuffer[i] >> 4], 1, 1, Gbl_ListingFile);
-        fwrite (&hex[Gbl_AmlBuffer[i] & 0xF], 1, 1, Gbl_ListingFile);
-        fprintf (Gbl_ListingFile, " ");
+        FlWriteFile (ASL_FILE_LISTING_OUTPUT, &hex[Gbl_AmlBuffer[i] >> 4], 1);
+        FlWriteFile (ASL_FILE_LISTING_OUTPUT, &hex[Gbl_AmlBuffer[i] & 0xF], 1);
+        FlWriteFile (ASL_FILE_LISTING_OUTPUT, " ", 1);
     }
 
-    for (i = 0; i < ((16 - HexColumn) * 3); i++)
+    for (i = 0; i < ((16 - Gbl_CurrentHexColumn) * 3); i++)
     {
-        fprintf (Gbl_ListingFile, ".");
+        FlWriteFile (ASL_FILE_LISTING_OUTPUT, ".", 1);
     }
-    fprintf (Gbl_ListingFile, "    ");
 
-    //fprintf (Gbl_ListingFile, "%*s    ", ((16 - HexColumn) * 3) + 1, "XX");
+    FlWriteFile (ASL_FILE_LISTING_OUTPUT, "    ", 4);
 
 
     /* Write the ASCII character associated with each of the bytes */
 
-    for (i = 0; i < HexColumn; i++)
+    for (i = 0; i < Gbl_CurrentHexColumn; i++)
     {
         BufChar = Gbl_AmlBuffer[i];
         if ((BufChar > 0x1F && BufChar < 0x2E) ||
             (BufChar > 0x2F && BufChar < 0x61) ||
             (BufChar > 0x60 && BufChar < 0x7F))
         {
-            fprintf (Gbl_ListingFile, "%c", BufChar);
+            FlPrintFile (ASL_FILE_LISTING_OUTPUT,"%c", BufChar);
         }
         else
         {
-            fprintf (Gbl_ListingFile, ".");
+            FlWriteFile (ASL_FILE_LISTING_OUTPUT, ".", 1);
         }
     }
 
 
-    fprintf (Gbl_ListingFile, "\n");
-    HexColumn = 0;
+    FlPrintFile (ASL_FILE_LISTING_OUTPUT, "\n");
+    Gbl_CurrentHexColumn = 0;
     Gbl_HexBytesWereWritten = TRUE;
 }
 
 
 /*******************************************************************************
  *
- * FUNCTION:    
+ * FUNCTION:    LsWriteListingHexBytes
  *
- * PARAMETERS:  
+ * PARAMETERS:  Buffer          - AML code buffer
+ *              Length          - Number of AML bytes to write
  *
- * RETURN:      
+ * RETURN:      None
  *
- * DESCRIPTION: 
+ * DESCRIPTION: Write the contents of the AML buffer to the listing file via
+ *              the listing buffer.  The listing buffer is flushed every 16
+ *              AML bytes.
  *
  ******************************************************************************/
 
@@ -325,32 +345,41 @@ LsWriteListingHexBytes (
     UINT32                  Length)
 {
     UINT32                  i;
-    UINT8                   *CharBuffer = (UINT8 *) Buffer;
 
+
+    /* Are we in listing mode? */
 
     if (!Gbl_ListingFlag)
     {
         return;
     }
 
+    /* Transfer all requested bytes */
+
     for (i = 0; i < Length; i++)
     {
-        if (HexColumn == 0)
+        /* Print line header when buffer is empty */
+
+        if (Gbl_CurrentHexColumn == 0)
         {
             if (Gbl_HasIncludeFiles)
             {
-                fprintf (Gbl_ListingFile, "%*s", 17, " ");
+                FlPrintFile (ASL_FILE_LISTING_OUTPUT, "%*s", 10, " ");
             }
 
-            fprintf (Gbl_ListingFile, "%8.8X....", AmlOffset);
+            FlPrintFile (ASL_FILE_LISTING_OUTPUT, "%8.8X....", Gbl_CurrentAmlOffset);
         }
 
-        Gbl_AmlBuffer[HexColumn] = Buffer[i];
+        /* Transfer AML byte and update counts */
 
-        HexColumn++;
-        AmlOffset++;
+        Gbl_AmlBuffer[Gbl_CurrentHexColumn] = Buffer[i];
 
-        if (HexColumn >= 16)
+        Gbl_CurrentHexColumn++;
+        Gbl_CurrentAmlOffset++;
+
+        /* Flush buffer when it is full */
+
+        if (Gbl_CurrentHexColumn >= 16)
         {
             LsFlushListingBuffer ();
         }
@@ -359,16 +388,17 @@ LsWriteListingHexBytes (
 }
 
 
-
 /*******************************************************************************
  *
- * FUNCTION:    
+ * FUNCTION:    LsWriteOneSourceLine
  *
- * PARAMETERS:  
+ * PARAMETERS:  None
  *
- * RETURN:      
+ * RETURN:      FALSE on EOF (input source file), TRUE otherwise
  *
- * DESCRIPTION: 
+ * DESCRIPTION: Read one line from the input source file and echo it to the
+ *              listing file, prefixed with the line number, and if the source
+ *              file contains include files, prefixed with the current filename
  *
  ******************************************************************************/
 
@@ -383,25 +413,32 @@ LsWriteOneSourceLine (void)
 
     if (Gbl_HasIncludeFiles)
     {
-        sprintf (StringBuffer, "%s(%d)",
-                    Gbl_ListingNode->Filename, Gbl_ListingNode->LineNumber);
+        /*
+         * This file contains "include" statements, print the current
+         * filename and line number within the current file
+         */
 
-        fprintf (Gbl_ListingFile, "%-20s", StringBuffer);
-        fprintf (Gbl_ListingFile, "%5d....", Gbl_SourceLine);
+        FlPrintFile (ASL_FILE_LISTING_OUTPUT, "%12s %5d....",
+                    Gbl_ListingNode->Filename, Gbl_ListingNode->LineNumber);
     }
     else
     {
-        fprintf (Gbl_ListingFile, "%8d....", Gbl_SourceLine);
+        /* No include files, just print the line number */
+
+        FlPrintFile (ASL_FILE_LISTING_OUTPUT, "%8d....", Gbl_SourceLine);
     }
 
-    while (fread (&FileByte, 1, 1, Gbl_SourceOutputFile))
+
+    /* Read one line (up to a newline or EOF) */
+
+    while (FlReadFile (ASL_FILE_SOURCE_OUTPUT, &FileByte, 1) == AE_OK)
     {
-        fwrite (&FileByte, 1, 1, Gbl_ListingFile);
-        DbgPrint ("%c", FileByte);
+        FlWriteFile (ASL_FILE_LISTING_OUTPUT, &FileByte, 1);
+        DbgPrint (ASL_PARSE_OUTPUT, "%c", FileByte);
 
         if (FileByte == '\n')
         {
-            /* 
+            /*
              * Check if an error occurred on this source line during the compile.
              * If so, we print the error message after the source line.
              */
@@ -410,27 +447,29 @@ LsWriteOneSourceLine (void)
         }
     }
 
+    /* EOF on the input file was reached */
+
     return (0);
 }
 
 
 /*******************************************************************************
  *
- * FUNCTION:    
+ * FUNCTION:    LsFinishSourceListing
  *
- * PARAMETERS:  
+ * PARAMETERS:  None
  *
- * RETURN:      
+ * RETURN:      None
  *
- * DESCRIPTION: 
+ * DESCRIPTION: Cleanup routine for the listing file.  Flush the hex AML
+ *              listing buffer, and flush out any remaining lines in the
+ *              source input file.
  *
  ******************************************************************************/
 
 void
 LsFinishSourceListing (void)
 {
-    UINT32              Actual = 1;
-
 
 
     if (!Gbl_ListingFlag)
@@ -439,7 +478,7 @@ LsFinishSourceListing (void)
     }
 
     LsFlushListingBuffer ();
-    AmlOffset = 0;
+    Gbl_CurrentAmlOffset = 0;
 
     /* Flush any remaining text in the source file */
 
@@ -451,13 +490,18 @@ LsFinishSourceListing (void)
 
 /*******************************************************************************
  *
- * FUNCTION:    
+ * FUNCTION:    LsWriteSourceLines
  *
- * PARAMETERS:  
+ * PARAMETERS:  ToLineNumber
+ *              ToLogicalLineNumber
  *
- * RETURN:      
+ * RETURN:      None
  *
- * DESCRIPTION: 
+ * DESCRIPTION: Read then write source lines to the listing file until we have
+ *              reached the specified logical (cumulative) line number.  This
+ *              automatically echos out comment blocks and other non-AML
+ *              generating text until we get to the actual AML-generating line
+ *              of ASL code specified by the logical line number.
  *
  ******************************************************************************/
 
@@ -474,34 +518,46 @@ LsWriteSourceLines (
     LsFlushListingBuffer ();
 
     /*
-     * Read lines and write them as long as we are not caught up 
+     * Read lines and write them as long as we are not caught up
      */
     if (Gbl_SourceLine < Gbl_CurrentLine)
     {
+        /*
+         * If we just completed writing some AML hex bytes, output a linefeed
+         * to add some whitespace for readability.
+         */
+
         if (Gbl_HexBytesWereWritten)
         {
-            fprintf (Gbl_ListingFile, "\n");
+            FlPrintFile (ASL_FILE_LISTING_OUTPUT, "\n");
             Gbl_HexBytesWereWritten = FALSE;
         }
 
+        /*
+         * Write one line at a time until we have reached the target line #
+         */
         while ((Gbl_SourceLine < Gbl_CurrentLine) &&
                 LsWriteOneSourceLine ())
         { ; }
 
-        fprintf (Gbl_ListingFile, "\n");
+
+        FlPrintFile (ASL_FILE_LISTING_OUTPUT, "\n");
     }
 }
 
 
 /*******************************************************************************
  *
- * FUNCTION:    
+ * FUNCTION:    LsWriteNodeToListing
  *
- * PARAMETERS:  
+ * PARAMETERS:  Node            - Parse node to write to the listing file.
  *
- * RETURN:      
+ * RETURN:      None.
  *
- * DESCRIPTION: 
+ * DESCRIPTION: Write "a node" to the listing file.  This means to
+ *              1) Write out all of the source text associated with the node
+ *              2) Write out all of the AML bytes associated with the node
+ *              3) Write any compiler exceptions associated with the node
  *
  ******************************************************************************/
 
@@ -509,8 +565,8 @@ void
 LsWriteNodeToListing (
     ASL_PARSE_NODE          *Node)
 {
-    ACPI_OPCODE_INFO        *OpInfo;
-    UINT8                   Optype;
+    const ACPI_OPCODE_INFO  *OpInfo;
+    UINT32                  OpClass;
 
 
     if (!Gbl_ListingFlag)
@@ -538,7 +594,7 @@ LsWriteNodeToListing (
         LsWriteSourceLines (Node->LineNumber, Node->LogicalLineNumber);
 
         /*
-         * Create a new listing node and push it 
+         * Create a new listing node and push it
          */
 
         LsPushNode (Node->Child->Value.String);
@@ -550,10 +606,13 @@ LsWriteNodeToListing (
          */
         LsWriteSourceLines (Node->LineNumber, Node->LogicalLineNumber);
 
-        /* 
+        /*
          * Pop off this listing node and go back to the parent file
          */
         LsPopNode ();
+        return;
+
+    case DEFAULT_ARG:
         return;
     }
 
@@ -561,64 +620,65 @@ LsWriteNodeToListing (
     /*
      * Otherwise, we look at the AML opcode because we can
      * switch on the opcode type, getting an entire class
-     * at once 
+     * at once
      */
 
-    OpInfo = AcpiPsGetOpcodeInfo (Node->AmlOpcode);
-    Optype = (UINT8) ACPI_GET_OP_CLASS (OpInfo);
+    OpInfo  = AcpiPsGetOpcodeInfo (Node->AmlOpcode);
+    OpClass = OpInfo->Class;
 
-    switch (Optype)
+    switch (OpClass)
     {
-    case OPTYPE_BOGUS:
-    case OPTYPE_CONSTANT:           /* argument type only */
-    case OPTYPE_LITERAL:            /* argument type only */
-    case OPTYPE_DATA_TERM:          /* argument type only */
-    case OPTYPE_LOCAL_VARIABLE:     /* argument type only */
-    case OPTYPE_METHOD_ARGUMENT:    /* argument type only */
+    case AML_CLASS_ARGUMENT:       /* argument type only */
+    case AML_CLASS_INTERNAL:
 
         break;
 
 
-    case OPTYPE_NAMED_OBJECT:
+    case AML_CLASS_NAMED_OBJECT:
 
         switch (Node->AmlOpcode)
         {
 
         /* For fields, we want to dump all the AML after the entire definition */
 
+        case AML_FIELD_OP:
         case AML_INDEX_FIELD_OP:
-        case AML_DEF_FIELD_OP:
         case AML_BANK_FIELD_OP:
         case AML_NAME_OP:
 
             LsWriteSourceLines (Node->EndLine, Node->EndLogicalLine);
             break;
 
-        default: 
+        default:
             LsWriteSourceLines (Node->LineNumber, Node->LogicalLineNumber);
             break;
         }
         break;
 
-    case OPTYPE_UNDEFINED:
+    case AML_CLASS_EXECUTE:
+    case AML_CLASS_CREATE:
     default:
 
         LsWriteSourceLines (Node->LineNumber, Node->LogicalLineNumber);
+        break;
+
+    case AML_CLASS_UNKNOWN:
         break;
     }
 }
 
 
-
 /*******************************************************************************
  *
- * FUNCTION:    
+ * FUNCTION:    LsDoHexOutput
  *
- * PARAMETERS:  
+ * PARAMETERS:  None
  *
- * RETURN:      
+ * RETURN:      None.
  *
- * DESCRIPTION: 
+ * DESCRIPTION: Create the hex output file.  This is the same data as the AML
+ *              output file, but formatted into hex/ascii bytes suitable for
+ *              inclusion into a C source file.
  *
  ******************************************************************************/
 
@@ -633,7 +693,6 @@ LsDoHexOutput (void)
     UINT8                   Buffer[4];
 
 
-
     if (!Gbl_HexOutputFlag)
     {
         return;
@@ -642,10 +701,12 @@ LsDoHexOutput (void)
 
     /* Start at the beginning of the AML file */
 
-    fseek (Gbl_OutputAmlFile, 0, SEEK_SET);
+    FlSeekFile (ASL_FILE_AML_OUTPUT, 0);
+
+    /* Process all AML bytes in the AML file */
 
     j = 0;
-    while (fread (&FileByte[j], 1, 1, Gbl_OutputAmlFile))
+    while (FlReadFile (ASL_FILE_AML_OUTPUT, &FileByte[j], 1) == AE_OK)
     {
         /*
          * Convert each AML byte to hex
@@ -653,8 +714,8 @@ LsDoHexOutput (void)
 
         UtConvertByteToHex (FileByte[j], Buffer);
 
-        fwrite (Buffer, 4, 1, Gbl_HexFile);
-        fprintf (Gbl_HexFile, ",");
+        FlWriteFile (ASL_FILE_HEX_OUTPUT, Buffer, 4);
+        FlPrintFile (ASL_FILE_HEX_OUTPUT, ",");
 
         /* An occasional linefeed improves readability */
 
@@ -662,7 +723,7 @@ LsDoHexOutput (void)
         if (j >= HEX_CHARS_PER_LINE)
         {
 
-            fprintf  (Gbl_HexFile, "  /*  ");
+            FlPrintFile (ASL_FILE_HEX_OUTPUT, "  /*  ");
 
             /* Write the ASCII character associated with each of the bytes */
 
@@ -673,23 +734,22 @@ LsDoHexOutput (void)
                     (BufChar > 0x2F && BufChar < 0x61) ||
                     (BufChar > 0x60 && BufChar < 0x7F))
                 {
-                    fprintf (Gbl_HexFile, "%c", BufChar);
+                    FlPrintFile (ASL_FILE_HEX_OUTPUT, "%c", BufChar);
                 }
                 else
                 {
-                    fprintf (Gbl_HexFile, ".");
+                    FlPrintFile (ASL_FILE_HEX_OUTPUT, ".");
                 }
             }
 
 
-            fprintf  (Gbl_HexFile, "  */\n");
+            FlPrintFile (ASL_FILE_HEX_OUTPUT, "  */\n");
             j = 0;
         }
     }
 
-    fprintf  (Gbl_HexFile, "\n");
-    fclose (Gbl_HexFile);
+    FlPrintFile (ASL_FILE_HEX_OUTPUT, "\n");
+    FlCloseFile (ASL_FILE_HEX_OUTPUT);
 }
-
 
 
