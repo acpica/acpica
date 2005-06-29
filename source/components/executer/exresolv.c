@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exresolv - AML Interpreter object resolution
- *              $Revision: 1.125 $
+ *              $Revision: 1.127 $
  *
  *****************************************************************************/
 
@@ -10,7 +10,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2004, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2005, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -418,8 +418,7 @@ AcpiExResolveMultiple (
     ACPI_FUNCTION_TRACE ("AcpiExResolveMultiple");
 
 
-
-    /* 
+    /*
      * Operand can be either a namespace node or an operand descriptor
      */
     switch (ACPI_GET_DESCRIPTOR_TYPE (ObjDesc))
@@ -447,7 +446,7 @@ AcpiExResolveMultiple (
 
 
     /*
-     * If type is anything other than a reference, we are done 
+     * If type is anything other than a reference, we are done
      */
     if (Type != ACPI_TYPE_LOCAL_REFERENCE)
     {
@@ -517,6 +516,13 @@ AcpiExResolveMultiple (
              * This could of course in turn be another reference object.
              */
             ObjDesc = *(ObjDesc->Reference.Where);
+            if (!ObjDesc)
+            {
+                /* NULL package elements are allowed */
+
+                Type = 0; /* Uninitialized */
+                goto Exit;
+            }
             break;
 
 
