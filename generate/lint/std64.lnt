@@ -1,0 +1,17 @@
+//  Generic Compilers, -si4 -sl4 -sp8, 
+//  Standard lint options
+
+
+c:\acpi\generate\lint\co.lnt
+
+/* IA-64 */
+
+-e747	// Compiler supports parameter conversions
+-d_IA64
+-dWIN64
++fll            // enable long long
+
+-si4 -sl4 -sp8 -sll8
+
+options.lnt  
+

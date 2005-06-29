@@ -1,0 +1,54 @@
+// Please note -- this is a representative set of error suppression
+//                options.  Please adjust to suit your own policies
+//                See  manual (chapter LIVING WITH LINT)
+//                for further details.
+
+-ic:\acpi\source\include
+-ic:\acpi\source\include\platform
+-ic:\acpi\generate\msvc\aslcompiler
+-ic:\progra~1\"Microsoft Visual Studio"\VC98\include
+
+/* Global options */
+
+-A              // ANSI C only
++fie            // Enum is integer
+-dACPI_USE_DO_WHILE_0
+-dACPI_DEBUG
+-dACPI_APPLICATION
+-dENABLE_DEBUGGER
+-d_LINT=1
+
+/* Macro exceptions */
+
+-emacro( (413), ACPI_OFFSET )               // use of NULL pointer creates a stir
+-emacro( (413), ACPI_TO_INTEGER )           // use of NULL pointer creates a stir
+-emacro( (413), ACPI_TO_POINTER )           // use of NULL pointer creates a stir
+-emacro( (413), ACPI_PTR_ADD )              // use of NULL pointer creates a stir
+-emacro( (413), ACPI_PTR_DIFF )             // use of NULL pointer creates a stir
+-emacro( (413), ACPI_FADT_OFFSET )          // use of NULL pointer creates a stir
+-emacro( (413), ASL_RESDESC_OFFSET )        // use of NULL pointer creates a stir
+
+-emacro( 826, ACPI_MOVE_UNALIGNED16_TO_16)  // Pointer cast
+-emacro( 826, ACPI_MOVE_UNALIGNED16_TO_32)  // Pointer cast
+-emacro( 826, ACPI_MOVE_UNALIGNED32_TO_32)  // Pointer cast
+-emacro( 950, ACPI_INTERNAL_VAR_XFACE)      // Uses non-ANSI
+-emacro( 950, ACPI_SYSTEM_XFACE)            // Uses non-ANSI
+-emacro( 826, ACPI_CAST_PTR)                // Pointer cast
+-emacro( 826, ACPI_PTR_ADD)                 // Pointer cast
+-emacro( 826, ACPI_LODWORD)					// Pointer cast
+-emacro( 826, ACPI_HIDWORD)					// Pointer cast
+
+/* Symbol exceptions */
+
+-esym( 528, _THIS_MODULE)                   // Symbol not always used, but always present
+-esym( 550, CurrentSp)                      // Used to track stack use
+
+/* Global exceptions */
+
+-e717   // Allow do..while(0)
+-e801   // Allow judicious use of goto without incurring complaint
+-e818   // Don't make suggestions about const to avoid "const" pollution
+-e715   // Ignore non-referenced formal parameters
+-e750   // Ignore non-referenced local macros (_MODULE_NAME, _COMPONENT, etc.)
+-e834   // - followed by + is "confusing" NOT.
+-e820   // Allow Boolean test of a parenthesized assignment

@@ -1,0 +1,14 @@
+//  Microsoft C and Visual C++ 6.x, -si4 -sp4, lib-w32.lnt
+//  Standard lint options
+
+c:\acpi\generate\lint\co-msc60.lnt
+//c:\acpi\generate\lint\lib-w32.lnt
+
+-d_IA32
+-dWIN32=1
+-d_MSC_VER=1
++fll            // enable long long
++rw(__asm)      // enable in-line assembly
+-esym( 950, __asm)                      // Used to track stack use
+
+options.lnt  -si4 -sp4
