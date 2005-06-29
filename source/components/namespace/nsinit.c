@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: nsinit - namespace initialization
- *              $Revision: 1.52 $
+ *              $Revision: 1.53 $
  *
  *****************************************************************************/
 
@@ -380,7 +380,7 @@ AcpiNsInitOneObject (
 
     if (!(AcpiDbgLevel & ACPI_LV_INIT_NAMES))
     {
-        AcpiOsPrintf (".");
+        ACPI_DEBUG_PRINT_RAW ((ACPI_DB_INIT, "."));
     }
 
     /*
@@ -424,7 +424,7 @@ AcpiNsInitOneDevice (
 
     if ((AcpiDbgLevel <= ACPI_LV_ALL_EXCEPTIONS) && (!(AcpiDbgLevel & ACPI_LV_INFO)))
     {
-        AcpiOsPrintf (".");
+        ACPI_DEBUG_PRINT_RAW ((ACPI_DB_INIT, "."));
     }
 
     Info->DeviceCount++;
