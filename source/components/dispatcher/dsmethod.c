@@ -288,7 +288,8 @@ PsxCallControlMethod (
 
     /* Save the (current) Op for when this walk is restarted */
 
-    ThisWalkState->PrevOp = Op;
+    ThisWalkState->MethodCallOp = ThisWalkState->PrevOp;
+    ThisWalkState->PrevOp       = Op;
 
     /* Create a new state for the preempting walk */
 
@@ -296,6 +297,15 @@ PsxCallControlMethod (
     if (!NextWalkState)
     {
         return_ACPI_STATUS (AE_NO_MEMORY);
+    }
+
+
+    /* Open a new scope */
+
+    Status = NsScopeStackPush (MethodNte->Scope, ACPI_TYPE_Method);
+    if (ACPI_FAILURE (Status))
+    {
+        return_ACPI_STATUS (Status);
     }
 
 
@@ -367,8 +377,6 @@ PsxRestartControlMethod (
     ACPI_WALK_STATE         *WalkState,
     ACPI_OBJECT_INTERNAL    *ReturnDesc)
 {
-    ACPI_GENERIC_OP         *MethodCallOp = NULL;
-
 
     FUNCTION_TRACE_PTR ("PsxRestartControlMethod", WalkState);
 
@@ -381,11 +389,11 @@ PsxRestartControlMethod (
 
         /* Delete the return value if it will not be used by the calling method */
 
-        PsxDeleteResultIfNotUsed (WalkState->NextOp, ReturnDesc, WalkState);
+        PsxDeleteResultIfNotUsed (WalkState->MethodCallOp, ReturnDesc, WalkState);
     }
 
     DEBUG_PRINT (TRACE_PARSE, ("PsxRestart: Method=%p Return=%p State=%p\n", 
-                        MethodCallOp, ReturnDesc, WalkState));
+                        WalkState->MethodCallOp, ReturnDesc, WalkState));
 
     /*
      * Currently, the only way a method can be preempted is by the nested execution
