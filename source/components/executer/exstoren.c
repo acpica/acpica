@@ -1,7 +1,7 @@
 
 /******************************************************************************
- * 
- * Module Name: istorent - AML Interpreter object store support, store to NTE
+ *
+ * Module Name: amstoren - AML Interpreter object store support, store to NTE
  *
  *****************************************************************************/
 
@@ -38,9 +38,9 @@
  * The above copyright and patent license is granted only if the following
  * conditions are met:
  *
- * 3. Conditions 
+ * 3. Conditions
  *
- * 3.1. Redistribution of Source with Rights to Further Distribute Source.  
+ * 3.1. Redistribution of Source with Rights to Further Distribute Source.
  * Redistribution of source code of any substantial portion of the Covered
  * Code or modification with rights to further distribute source must include
  * the above Copyright Notice, the above License, this list of Conditions,
@@ -48,11 +48,11 @@
  * Licensee must cause all Covered Code to which Licensee contributes to
  * contain a file documenting the changes Licensee made to create that Covered
  * Code and the date of any change.  Licensee must include in that file the
- * documentation of any changes made by any predecessor Licensee.  Licensee 
+ * documentation of any changes made by any predecessor Licensee.  Licensee
  * must include a prominent statement that the modification is derived,
  * directly or indirectly, from Original Intel Code.
  *
- * 3.2. Redistribution of Source with no Rights to Further Distribute Source.  
+ * 3.2. Redistribution of Source with no Rights to Further Distribute Source.
  * Redistribution of source code of any substantial portion of the Covered
  * Code or modification without rights to further distribute source must
  * include the following Disclaimer and Export Compliance provision in the
@@ -86,7 +86,7 @@
  * INSTALLATION, TRAINING OR OTHER SERVICES.  INTEL WILL NOT PROVIDE ANY
  * UPDATES, ENHANCEMENTS OR EXTENSIONS.  INTEL SPECIFICALLY DISCLAIMS ANY
  * IMPLIED WARRANTIES OF MERCHANTABILITY, NONINFRINGEMENT AND FITNESS FOR A
- * PARTICULAR PURPOSE. 
+ * PARTICULAR PURPOSE.
  *
  * 4.2. IN NO EVENT SHALL INTEL HAVE ANY LIABILITY TO LICENSEE, ITS LICENSEES
  * OR ANY OTHER THIRD PARTY, FOR ANY LOST PROFITS, LOST DATA, LOSS OF USE OR
@@ -114,29 +114,28 @@
  *
  *****************************************************************************/
 
-#define __ISTORENT_C__
+#define __AMSTOREN_C__
 
 #include "acpi.h"
-#include "parser.h"
-#include "dispatch.h"
-#include "interp.h"
+#include "acparser.h"
+#include "acdispat.h"
+#include "acinterp.h"
 #include "amlcode.h"
-#include "namesp.h"
-#include "tables.h"
+#include "acnamesp.h"
+#include "actables.h"
 
 
 #define _COMPONENT          INTERPRETER
-        MODULE_NAME         ("istorent");
+        MODULE_NAME         ("amstoren");
 
 
-
-/*****************************************************************************
- * 
+/*******************************************************************************
+ *
  * FUNCTION:    AcpiAmlStoreObjectToNte
  *
  * PARAMETERS:  *ValDesc            - Value to be stored
  *              *Entry              - Named object to recieve the value
- *              
+ *
  * RETURN:      Status
  *
  * DESCRIPTION: Store the object to the named object.
@@ -155,12 +154,13 @@
  *              function fails during set up we may get the lock when we
  *              don't really need it.  I don't think we care.
  *
- ****************************************************************************/
+ ******************************************************************************/
 
 ACPI_STATUS
 AcpiAmlStoreObjectToNte (
     ACPI_OBJECT_INTERNAL    *ValDesc,
-    NAME_TABLE_ENTRY        *Entry)
+    ACPI_NAMED_OBJECT       *Entry,
+    ACPI_WALK_STATE         *WalkState)
 {
     ACPI_STATUS             Status = AE_OK;
     UINT8                   *Buffer = NULL;
@@ -175,8 +175,9 @@ AcpiAmlStoreObjectToNte (
 
     FUNCTION_TRACE ("AmlStoreObjectToNte");
 
-    DEBUG_PRINT (ACPI_INFO, ("entered AcpiAmlStoreObjectToNte: NTE=%p, Obj=%p\n", 
-                    Entry, ValDesc));
+    DEBUG_PRINT (ACPI_INFO,
+        ("entered AcpiAmlStoreObjectToNte: NTE=%p, Obj=%p\n",
+        Entry, ValDesc));
 
     /*
      *  Assuming the parameters are valid!!!
@@ -186,23 +187,24 @@ AcpiAmlStoreObjectToNte (
     DestinationType = AcpiNsGetType (Entry);
 
     DEBUG_PRINT (ACPI_INFO, ("AmlStoreObjectToNte: Storing %s into %s\n",
-                    AcpiCmGetTypeName (ValDesc->Common.Type),
-                    AcpiCmGetTypeName (DestinationType)));
+        AcpiCmGetTypeName (ValDesc->Common.Type),
+        AcpiCmGetTypeName (DestinationType)));
 
     /*
      *  First ensure we have a value that can be stored in the target
      */
-    switch (DestinationType) 
+    switch (DestinationType)
     {
         /* Type of Name's existing value */
 
-    case INTERNAL_TYPE_ALIAS: 
+    case INTERNAL_TYPE_ALIAS:
 
-        /* 
+        /*
          *  Aliases are resolved by AcpiAmlPrepOperands
          */
 
-        DEBUG_PRINT (ACPI_WARN, ("AmlStoreObjectToNte: Store into Alias - should never happen\n"));
+        DEBUG_PRINT (ACPI_WARN,
+            ("AmlStoreObjectToNte: Store into Alias - should never happen\n"));
         Status = AE_AML_INTERNAL;
         break;
 
@@ -219,21 +221,22 @@ AcpiAmlStoreObjectToNte (
          *  If value is not a Number, try to resolve it to one.
          */
 
-        if (ValDesc->Common.Type != ACPI_TYPE_NUMBER) 
+        if (ValDesc->Common.Type != ACPI_TYPE_NUMBER)
         {
             /*
              *  Initially not a number, convert
              */
-            Status = AcpiAmlResolveToValue (&ValDesc);
-            if ((Status == AE_OK) &&
-                (ValDesc->Common.Type != ACPI_TYPE_NUMBER)) 
+            Status = AcpiAmlResolveToValue (&ValDesc, WalkState);
+            if (ACPI_SUCCESS (Status) &&
+                (ValDesc->Common.Type != ACPI_TYPE_NUMBER))
             {
                 /*
                  *  Conversion successful but still not a number
                  */
-                DEBUG_PRINT (ACPI_ERROR, ("AmlStoreObjectToNte: Value assigned to %s must be Number, not %s\n",
-                                AcpiCmGetTypeName (DestinationType),
-                                AcpiCmGetTypeName (ValDesc->Common.Type)));
+                DEBUG_PRINT (ACPI_ERROR,
+                    ("AmlStoreObjectToNte: Value assigned to %s must be Number, not %s\n",
+                    AcpiCmGetTypeName (DestinationType),
+                    AcpiCmGetTypeName (ValDesc->Common.Type)));
                 Status = AE_AML_OPERAND_TYPE;
             }
         }
@@ -244,39 +247,40 @@ AcpiAmlStoreObjectToNte (
     case ACPI_TYPE_BUFFER:
     case INTERNAL_TYPE_DEF_FIELD:
 
-        /* 
+        /*
          *  Storing into a Field in a region or into a buffer or into
          *  a string all is essentially the same.
          *
          *  If value is not a valid type, try to resolve it to one.
          */
 
-        if ((ValDesc->Common.Type != ACPI_TYPE_NUMBER) && 
+        if ((ValDesc->Common.Type != ACPI_TYPE_NUMBER) &&
             (ValDesc->Common.Type != ACPI_TYPE_BUFFER) &&
-            (ValDesc->Common.Type != ACPI_TYPE_STRING)) 
+            (ValDesc->Common.Type != ACPI_TYPE_STRING))
         {
             /*
              *  Initially not a valid type, convert
              */
-            Status = AcpiAmlResolveToValue (&ValDesc);
-            if ((Status == AE_OK) &&
-                (ValDesc->Common.Type != ACPI_TYPE_NUMBER) && 
+            Status = AcpiAmlResolveToValue (&ValDesc, WalkState);
+            if (ACPI_SUCCESS (Status) &&
+                (ValDesc->Common.Type != ACPI_TYPE_NUMBER) &&
                 (ValDesc->Common.Type != ACPI_TYPE_BUFFER) &&
-                (ValDesc->Common.Type != ACPI_TYPE_STRING)) 
+                (ValDesc->Common.Type != ACPI_TYPE_STRING))
             {
                 /*
                  *  Conversion successful but still not a valid type
                  */
-                DEBUG_PRINT (ACPI_ERROR, ("AmlStoreObjectToNte: Assign wrong type %s to %s (must be type Num/Str/Buf)\n",
-                                AcpiCmGetTypeName (ValDesc->Common.Type),
-                                AcpiCmGetTypeName (DestinationType)));
+                DEBUG_PRINT (ACPI_ERROR,
+                    ("AmlStoreObjectToNte: Assign wrong type %s to %s (must be type Num/Str/Buf)\n",
+                    AcpiCmGetTypeName (ValDesc->Common.Type),
+                    AcpiCmGetTypeName (DestinationType)));
                 Status = AE_AML_OPERAND_TYPE;
             }
         }
         break;
 
 
-    case ACPI_TYPE_PACKAGE: 
+    case ACPI_TYPE_PACKAGE:
 
         /*
          *  TBD: [Unhandled] Not real sure what to do here
@@ -285,9 +289,9 @@ AcpiAmlStoreObjectToNte (
         break;
 
 
-    default: 
-        
-        /* 
+    default:
+
+        /*
          * All other types than Alias and the various Fields come here.
          * Store ValDesc as the new value of the Name, and set
          * the Name's type to that of the value being stored in it.
@@ -296,17 +300,18 @@ AcpiAmlStoreObjectToNte (
 
         Status = AcpiNsAttachObject (Entry, ValDesc, ValDesc->Common.Type);
 
-        DEBUG_PRINT (ACPI_INFO, ("AmlStoreObjectToNte: Store %s into %s via Attach\n",
-                            AcpiCmGetTypeName (ValDesc->Common.Type),
-                            AcpiCmGetTypeName (DestinationType)));
-    
+        DEBUG_PRINT (ACPI_INFO,
+            ("AmlStoreObjectToNte: Store %s into %s via Attach\n",
+            AcpiCmGetTypeName (ValDesc->Common.Type),
+            AcpiCmGetTypeName (DestinationType)));
+
         goto CleanUpAndBailOut;
         break;
     }
 
     /* Exit now if failure above */
 
-    if (Status != AE_OK)
+    if (ACPI_FAILURE (Status))
     {
         goto CleanUpAndBailOut;
     }
@@ -320,30 +325,32 @@ AcpiAmlStoreObjectToNte (
         /*
          *  There is no existing object attached to this NTE
          */
-        DEBUG_PRINT (ACPI_ERROR, ("AmlStoreObjectToNte: Internal error - no destination object for %4.4s type %d\n",
-                        &Entry->Name, DestinationType));
-        Status = AE_AML_INTERNAL;
-        goto CleanUpAndBailOut;
-    }
-
-    /* 
-     *  Make sure the destination Object is the same as the NTE
-     */
-    if (DestDesc->Common.Type != (UINT8) DestinationType)
-    {
-        DEBUG_PRINT (ACPI_ERROR, ("AmlStoreObjectToNte: Internal error - Name %4.4s type %d does not match value-type %d at %p\n",
-                        &Entry->Name, AcpiNsGetType (Entry), 
-                        DestDesc->Common.Type, DestDesc));
+        DEBUG_PRINT (ACPI_ERROR,
+            ("AmlStoreObjectToNte: Internal error - no destination object for %4.4s type %d\n",
+            &Entry->Name, DestinationType));
         Status = AE_AML_INTERNAL;
         goto CleanUpAndBailOut;
     }
 
     /*
-     * AcpiEverything is ready to execute now,  We have 
+     *  Make sure the destination Object is the same as the NTE
+     */
+    if (DestDesc->Common.Type != (UINT8) DestinationType)
+    {
+        DEBUG_PRINT (ACPI_ERROR,
+            ("AmlStoreObjectToNte: Internal error - Name %4.4s type %d does not match value-type %d at %p\n",
+            &Entry->Name, AcpiNsGetType (Entry),
+            DestDesc->Common.Type, DestDesc));
+        Status = AE_AML_INTERNAL;
+        goto CleanUpAndBailOut;
+    }
+
+    /*
+     * AcpiEverything is ready to execute now,  We have
      * a value we can handle, just perform the update
      */
 
-    switch (DestinationType) 
+    switch (DestinationType)
     {
         /* Type of Name's existing value */
 
@@ -359,16 +366,18 @@ AcpiAmlStoreObjectToNte (
          *  Perform the update (Set Bank Select)
          */
 
-        Status = AcpiAmlSetNamedFieldValue (DestDesc->BankField.BankSelect,
-                                    &DestDesc->BankField.Value,
-                                    sizeof (DestDesc->BankField.Value));
-        if (Status == AE_OK)
+        Status = AcpiAmlAccessNamedField (ACPI_WRITE,
+                                DestDesc->BankField.BankSelect,
+                                &DestDesc->BankField.Value,
+                                sizeof (DestDesc->BankField.Value));
+        if (ACPI_SUCCESS (Status))
         {
             /* Set bank select successful, set data value  */
-        
-            Status = AcpiAmlSetNamedFieldValue (DestDesc->BankField.BankSelect,
-                                           &ValDesc->BankField.Value,
-                                           sizeof (ValDesc->BankField.Value));
+
+            Status = AcpiAmlAccessNamedField (ACPI_WRITE,
+                                DestDesc->BankField.BankSelect,
+                                &ValDesc->BankField.Value,
+                                sizeof (ValDesc->BankField.Value));
         }
 
         break;
@@ -384,7 +393,7 @@ AcpiAmlStoreObjectToNte (
         /*
          *  Perform the update
          */
-       
+
         switch (ValDesc->Common.Type)
         {
         case ACPI_TYPE_NUMBER:
@@ -394,16 +403,18 @@ AcpiAmlStoreObjectToNte (
 
         case ACPI_TYPE_BUFFER:
             Buffer = (UINT8 *) ValDesc->Buffer.Pointer;
-            Length = ValDesc->Buffer.Length; 
+            Length = ValDesc->Buffer.Length;
             break;
 
         case ACPI_TYPE_STRING:
             Buffer = (UINT8 *) ValDesc->String.Pointer;
-            Length = ValDesc->String.Length; 
+            Length = ValDesc->String.Length;
             break;
         }
 
-        Status = AcpiAmlSetNamedFieldValue (Entry, Buffer, Length);
+        Status = AcpiAmlAccessNamedField (ACPI_WRITE, 
+                                    Entry, Buffer, Length);
+
         break;      /* Global Lock released below   */
 
 
@@ -412,7 +423,7 @@ AcpiAmlStoreObjectToNte (
         /*
          *  Perform the update
          */
-        
+
         switch (ValDesc->Common.Type)
         {
         case ACPI_TYPE_NUMBER:
@@ -422,12 +433,12 @@ AcpiAmlStoreObjectToNte (
 
         case ACPI_TYPE_BUFFER:
             Buffer = (UINT8 *) ValDesc->Buffer.Pointer;
-            Length = ValDesc->Buffer.Length; 
+            Length = ValDesc->Buffer.Length;
             break;
 
         case ACPI_TYPE_STRING:
             Buffer = (UINT8 *) ValDesc->String.Pointer;
-            Length = ValDesc->String.Length; 
+            Length = ValDesc->String.Length;
             break;
         }
 
@@ -460,7 +471,7 @@ AcpiAmlStoreObjectToNte (
                 AcpiCmFree(DestDesc->String.Pointer);
             }
 
-            DestDesc->String.Pointer = AcpiCmAllocate ((ACPI_SIZE) (Length + 1));
+            DestDesc->String.Pointer = AcpiCmAllocate (Length + 1);
             DestDesc->String.Length = Length;
 
             if (!DestDesc->String.Pointer)
@@ -479,7 +490,7 @@ AcpiAmlStoreObjectToNte (
         /*
          *  Perform the update to the buffer
          */
-        
+
         switch (ValDesc->Common.Type)
         {
         case ACPI_TYPE_NUMBER:
@@ -489,12 +500,12 @@ AcpiAmlStoreObjectToNte (
 
         case ACPI_TYPE_BUFFER:
             Buffer = (UINT8 *) ValDesc->Buffer.Pointer;
-            Length = ValDesc->Buffer.Length; 
+            Length = ValDesc->Buffer.Length;
             break;
 
         case ACPI_TYPE_STRING:
             Buffer = (UINT8 *) ValDesc->String.Pointer;
-            Length = ValDesc->String.Length; 
+            Length = ValDesc->String.Length;
             break;
         }
 
@@ -517,14 +528,15 @@ AcpiAmlStoreObjectToNte (
              *  truncate, copy only what will fit
              */
             MEMCPY(DestDesc->Buffer.Pointer, Buffer, DestDesc->Buffer.Length);
-            DEBUG_PRINT (ACPI_INFO, ("AmlStoreObjectToNte: Truncating src buffer from %d to %d\n", 
-                            Length, DestDesc->Buffer.Length));
+            DEBUG_PRINT (ACPI_INFO,
+                ("AmlStoreObjectToNte: Truncating src buffer from %d to %d\n",
+                Length, DestDesc->Buffer.Length));
         }
         break;
 
 
     case INTERNAL_TYPE_INDEX_FIELD:
-            
+
         /*
          * Get the global lock if needed
          */
@@ -535,21 +547,26 @@ AcpiAmlStoreObjectToNte (
          *  perform the update (Set index)
          */
 
-        Status = AcpiAmlSetNamedFieldValue (DestDesc->IndexField.Index,
-                                       &DestDesc->IndexField.Value,
-                                       sizeof (DestDesc->IndexField.Value));
-        
-        DEBUG_PRINT (ACPI_INFO, ("AmlStoreObjectToNte: IndexField: set index returned %s\n",
-                         AcpiCmFormatException (Status)));
-        
-        if (AE_OK == Status)
+        Status = AcpiAmlAccessNamedField (ACPI_WRITE,
+                                DestDesc->IndexField.Index,
+                                &DestDesc->IndexField.Value,
+                                sizeof (DestDesc->IndexField.Value));
+
+        DEBUG_PRINT (ACPI_INFO,
+            ("AmlStoreObjectToNte: IndexField: set index returned %s\n",
+            AcpiCmFormatException (Status)));
+
+        if (ACPI_SUCCESS (Status))
         {
             /* set index successful, next set Data value */
-        
-            Status = AcpiAmlSetNamedFieldValue (DestDesc->IndexField.Data,
-                                           &ValDesc->Number.Value, sizeof (ValDesc->Number.Value));
-            DEBUG_PRINT (ACPI_INFO, ("AmlStoreObjectToNte: IndexField: set data returned %s\n",
-                            AcpiCmFormatException (Status)));
+
+            Status = AcpiAmlAccessNamedField (ACPI_WRITE,
+                                DestDesc->IndexField.Data,
+                                &ValDesc->Number.Value,
+                                sizeof (ValDesc->Number.Value));
+            DEBUG_PRINT (ACPI_INFO,
+                ("AmlStoreObjectToNte: IndexField: set data returned %s\n",
+                AcpiCmFormatException (Status)));
         }
         break;
 
@@ -558,18 +575,22 @@ AcpiAmlStoreObjectToNte (
 
         if ((!DestDesc->FieldUnit.Container ||
             ACPI_TYPE_BUFFER != DestDesc->FieldUnit.Container->Common.Type ||
-            DestDesc->FieldUnit.Sequence != DestDesc->FieldUnit.Container->Buffer.Sequence))
+            DestDesc->FieldUnit.Sequence !=
+                DestDesc->FieldUnit.Container->Buffer.Sequence))
         {
-            DUMP_PATHNAME (Entry, "AmlStoreObjectToNte: FieldUnit: Bad container in ", ACPI_ERROR, _COMPONENT);
+            DUMP_PATHNAME (Entry,
+                "AmlStoreObjectToNte: FieldUnit: Bad container in ",
+                ACPI_ERROR, _COMPONENT);
             DUMP_ENTRY (Entry, ACPI_ERROR);
-            DEBUG_PRINT (ACPI_ERROR, ("Container: %p", DestDesc->FieldUnit.Container));
+            DEBUG_PRINT (ACPI_ERROR,
+                ("Container: %p", DestDesc->FieldUnit.Container));
 
             if (DestDesc->FieldUnit.Container)
             {
                 DEBUG_PRINT_RAW (ACPI_ERROR, (" Type %d, FuSeq %x BufSeq %x",
-                                    DestDesc->FieldUnit.Container->Common.Type,
-                                    DestDesc->FieldUnit.Sequence,
-                                    DestDesc->FieldUnit.Container->Buffer.Sequence));
+                    DestDesc->FieldUnit.Container->Common.Type,
+                    DestDesc->FieldUnit.Sequence,
+                    DestDesc->FieldUnit.Container->Buffer.Sequence));
             }
             DEBUG_PRINT_RAW (ACPI_ERROR, ("\n"));
 
@@ -584,47 +605,51 @@ AcpiAmlStoreObjectToNte (
 
         /*
          * TBD: [Unhandled] REMOVE this limitation
-         *  Make sure the operation is within the limits of our implementation
-         *  this is not a Spec limitation!!
+         * Make sure the operation is within the limits of our implementation
+         * this is not a Spec limitation!!
          */
         if (DestDesc->FieldUnit.Length + DestDesc->FieldUnit.BitOffset > 32)
         {
-            DEBUG_PRINT (ACPI_ERROR, ("AmlStoreObjectToNte: FieldUnit: Implementation limitation - Field exceeds UINT32\n"));
+            DEBUG_PRINT (ACPI_ERROR,
+                ("AmlStoreObjectToNte: FieldUnit: Implementation limitation - Field exceeds UINT32\n"));
             Status = AE_NOT_IMPLEMENTED;
             goto CleanUpAndBailOut;
         }
-        
+
         /* Field location is (base of buffer) + (byte offset) */
-        
+
         Location = DestDesc->FieldUnit.Container->Buffer.Pointer
                         + DestDesc->FieldUnit.Offset;
-        
-        /* 
+
+        /*
          * Construct Mask with 1 bits where the field is,
          * 0 bits elsewhere
          */
         Mask = ((UINT32) 1 << DestDesc->FieldUnit.Length) - ((UINT32)1
                             << DestDesc->FieldUnit.BitOffset);
 
-        DEBUG_PRINT (TRACE_EXEC, ("** Store %lx in buffer %p byte %ld bit %d width %d addr %p mask %08lx\n",
-                        ValDesc->Number.Value, DestDesc->FieldUnit.Container->Buffer.Pointer,
-                        DestDesc->FieldUnit.Offset, DestDesc->FieldUnit.BitOffset,
-                        DestDesc->FieldUnit.Length,Location, Mask));
+        DEBUG_PRINT (TRACE_EXEC,
+            ("** Store %lx in buffer %p byte %ld bit %d width %d addr %p mask %08lx\n",
+            ValDesc->Number.Value,
+            DestDesc->FieldUnit.Container->Buffer.Pointer,
+            DestDesc->FieldUnit.Offset, DestDesc->FieldUnit.BitOffset,
+            DestDesc->FieldUnit.Length,Location, Mask));
 
         /* Zero out the field in the buffer */
-        
-        STORE32TO32 (&NewValue, Location);
+
+        MOVE_UNALIGNED32_TO_32 (&NewValue, Location);
         NewValue &= ~Mask;
 
-        /* 
+        /*
          * Shift and mask the new value into position,
          * and or it into the buffer.
          */
-        NewValue |= (ValDesc->Number.Value << DestDesc->FieldUnit.BitOffset) & Mask;
-        
+        NewValue |= (ValDesc->Number.Value << DestDesc->FieldUnit.BitOffset) &
+                    Mask;
+
         /* Store back the value */
 
-        STORE32TO32 (Location, &NewValue);
+        MOVE_UNALIGNED32_TO_32 (Location, &NewValue);
 
         DEBUG_PRINT (TRACE_EXEC, ("New Field value %08lx\n", NewValue));
         break;
@@ -645,22 +670,22 @@ AcpiAmlStoreObjectToNte (
         break;
 
 
-    default: 
-            
-        /* 
+    default:
+
+        /*
          * All other types than Alias and the various Fields come here.
          * Store ValDesc as the new value of the Name, and set
          * the Name's type to that of the value being stored in it.
          * ValDesc reference count is incremented by AttachObject.
          */
 
-        DEBUG_PRINT (ACPI_WARN, ("AmlStoreObjectToNte: Store into %s not implemented\n",
-                        AcpiCmGetTypeName (AcpiNsGetType (Entry))));
-    
+        DEBUG_PRINT (ACPI_WARN,
+            ("AmlStoreObjectToNte: Store into %s not implemented\n",
+            AcpiCmGetTypeName (AcpiNsGetType (Entry))));
+
         Status = AE_NOT_IMPLEMENTED;
         break;
     }
-
 
 
 CleanUpAndBailOut:
