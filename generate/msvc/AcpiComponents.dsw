@@ -7,6 +7,10 @@ Project: "AcpiBin"=.\AcpiBin.dsp - Package Owner=<4>
 
 Package=<5>
 {{{
+    begin source code control
+    "$/Acpi/Components/Tools/AcpiBin", SVBAAAAA
+    ..\..
+    end source code control
 }}}
 
 Package=<4>
@@ -20,8 +24,8 @@ Project: "AcpiDriver"=.\AcpiDriver.dsp - Package Owner=<4>
 Package=<5>
 {{{
     begin source code control
-    "$/Acpi Components/test/driver/wdm", DBDAAAAA
-    .
+    "$/Acpi/Components/test/driver/wdm", DBDAAAAA
+    ..\..
     end source code control
 }}}
 
@@ -36,8 +40,8 @@ Project: "AcpiDump"=.\AcpiDump.dsp - Package Owner=<4>
 Package=<5>
 {{{
     begin source code control
-    "$/Acpi Components/Generate/VC", SVBAAAAA
-    .
+    "$/Acpi/Components/Tools/AcpiDump", SVBAAAAA
+    ..\..
     end source code control
 }}}
 
@@ -52,8 +56,8 @@ Project: "AcpiExec"=.\AcpiExec.dsp - Package Owner=<4>
 Package=<5>
 {{{
     begin source code control
-    "$/Acpi Components/Generate/VC", SVBAAAAA
-    .
+    "$/Acpi/Components/Tools/AcpiExec", SVBAAAAA
+    ..\..
     end source code control
 }}}
 
@@ -67,6 +71,10 @@ Project: "AcpiSrc"=.\AcpiSrc.dsp - Package Owner=<4>
 
 Package=<5>
 {{{
+    begin source code control
+    "$/Acpi/Components/Tools/AcpiSrc", SVBAAAAA
+    ..\..
+    end source code control
 }}}
 
 Package=<4>
@@ -80,7 +88,7 @@ Project: "AcpiSubsystem"=.\AcpiSubsystem.dsp - Package Owner=<4>
 Package=<5>
 {{{
     begin source code control
-    "$/Acpi Components/Subsystem", CQBAAAAA
+    "$/Acpi/Components", CQBAAAAA
     ..\..
     end source code control
 }}}
@@ -96,8 +104,8 @@ Project: "AcpiTest"=.\AcpiTest.dsp - Package Owner=<4>
 Package=<5>
 {{{
     begin source code control
-    "$/Acpi Components/Test/AcpiTest/Wdm", DLHAAAAA
-    .
+    "$/Acpi/Components/Test/AcpiTest/Wdm", DLHAAAAA
+    ..\..
     end source code control
 }}}
 
@@ -111,6 +119,10 @@ Project: "AslCompiler"=.\AslCompiler.dsp - Package Owner=<4>
 
 Package=<5>
 {{{
+    begin source code control
+    "$/Acpi/Components/compiler", DLHAAAAA
+    ..\..
+    end source code control
 }}}
 
 Package=<4>
