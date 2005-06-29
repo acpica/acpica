@@ -288,13 +288,13 @@ NsSetup (void)
 ACPI_STATUS
 NsEnter (char *Name, NsType Type, OpMode LoadMode, NsHandle *RetHandle)
 {
-    ACPI_STATUS     Status;
-    nte             *EntryToSearch = NULL;
-    nte             *ThisEntry = NULL;
-    nte             *ScopeToPush = NULL;
-    INT32           NumSegments;
-    INT32           NullNamePath = FALSE;
-    NsType          TypeToCheckFor;              /* Type To Check For */
+    ACPI_STATUS         Status;
+    NAME_TABLE_ENTRY    *EntryToSearch = NULL;
+    NAME_TABLE_ENTRY    *ThisEntry = NULL;
+    NAME_TABLE_ENTRY    *ScopeToPush = NULL;
+    INT32               NumSegments;
+    INT32               NullNamePath = FALSE;
+    NsType              TypeToCheckFor;              /* Type To Check For */
 
 
     FUNCTION_TRACE ("NsEnter");
@@ -306,7 +306,7 @@ NsEnter (char *Name, NsType Type, OpMode LoadMode, NsHandle *RetHandle)
         return AE_BAD_PARAMETER;
     }
 
-    *RetHandle = NOTFOUND;
+    *RetHandle = ENTRY_NOT_FOUND;
     if (!RootObject->Scope)
     {
         /* 
@@ -509,7 +509,7 @@ NsEnter (char *Name, NsType Type, OpMode LoadMode, NsHandle *RetHandle)
         }
 
         if ((NumSegments || NsOpensScope (Type)) &&
-            (ThisEntry->Scope == (nte *) 0))
+            (ThisEntry->Scope == NULL))
         {
             /* 
              * More segments or the type implies enclosed scope, 
@@ -534,7 +534,7 @@ NsEnter (char *Name, NsType Type, OpMode LoadMode, NsHandle *RetHandle)
 
             /* Now complain if there is no next scope */
             
-            if (ThisEntry->Scope == (nte *) 0)
+            if (ThisEntry->Scope == NULL)
             {
                 DEBUG_PRINT (ACPI_ERROR, ("No child scope at entry %p\n", ThisEntry));
 
