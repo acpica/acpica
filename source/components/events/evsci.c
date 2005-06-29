@@ -216,7 +216,7 @@ EvInstallSciHandler (void)
     FUNCTION_TRACE ("EvInstallSciHandler");
    
     Except = OsdInstallInterruptHandler (
-        (UINT32) FACP->SciInt,
+        (UINT32) Gbl_FACP->SciInt,
         EvSciHandler,
         NULL);
     
@@ -277,7 +277,7 @@ EvRemoveSciHandler (void)
 #endif      
             
     OsdRemoveInterruptHandler (
-        (UINT32) FACP->SciInt,
+        (UINT32) Gbl_FACP->SciInt,
         EvSciHandler);
 
     return_ACPI_STATUS (AE_OK);
@@ -323,7 +323,7 @@ EvSciCount (
     }
     else
     {
-        Count = EventCount[Event];
+        Count = Gbl_EventCount[Event];
     }
     
     return_VALUE (Count);
@@ -355,20 +355,20 @@ EvRestoreAcpiState (void)
 
     /* Restore the state of the chipset enable bits. */
     
-    if (RestoreAcpiChipset == TRUE)
+    if (Gbl_RestoreAcpiChipset == TRUE)
     {
         /* Restore the fixed events */
         
-        if (OsdIn16 ((UINT16) (FACP->Pm1aEvtBlk + 2)) != Pm1EnableRegisterSave)
+        if (OsdIn16 ((UINT16) (Gbl_FACP->Pm1aEvtBlk + 2)) != Gbl_Pm1EnableRegisterSave)
         {
-            OsdOut16 ((UINT16) (FACP->Pm1aEvtBlk + 2), Pm1EnableRegisterSave);
+            OsdOut16 ((UINT16) (Gbl_FACP->Pm1aEvtBlk + 2), Gbl_Pm1EnableRegisterSave);
         }
         
-        if (FACP->Pm1bEvtBlk)
+        if (Gbl_FACP->Pm1bEvtBlk)
         {
-            if (OsdIn16 ((UINT16) (FACP->Pm1bEvtBlk + 2)) != Pm1EnableRegisterSave)
+            if (OsdIn16 ((UINT16) (Gbl_FACP->Pm1bEvtBlk + 2)) != Gbl_Pm1EnableRegisterSave)
             {
-                OsdOut16 ((UINT16) (FACP->Pm1bEvtBlk + 2), Pm1EnableRegisterSave);
+                OsdOut16 ((UINT16) (Gbl_FACP->Pm1bEvtBlk + 2), Gbl_Pm1EnableRegisterSave);
             }
         }
 
@@ -380,28 +380,28 @@ EvRestoreAcpiState (void)
 
         /* Now restore the GPEs */
         
-        for (Index = 0; Index < FACP->Gpe0BlkLen / 2; Index++)
+        for (Index = 0; Index < Gbl_FACP->Gpe0BlkLen / 2; Index++)
         {
-            if (OsdIn8 ((UINT16)(FACP->Gpe0Blk + FACP->Gpe0BlkLen / 2)) != Gpe0EnableRegisterSave[Index])
+            if (OsdIn8 ((UINT16) (Gbl_FACP->Gpe0Blk + Gbl_FACP->Gpe0BlkLen / 2)) != Gbl_Gpe0EnableRegisterSave[Index])
             {
-                OsdOut8 ((UINT16)(FACP->Gpe0Blk + FACP->Gpe0BlkLen / 2), Gpe0EnableRegisterSave[Index]);
+                OsdOut8 ((UINT16) (Gbl_FACP->Gpe0Blk + Gbl_FACP->Gpe0BlkLen / 2), Gbl_Gpe0EnableRegisterSave[Index]);
             }
         }
 
-        if (FACP->Gpe1Blk && FACP->Gpe1BlkLen)
+        if (Gbl_FACP->Gpe1Blk && Gbl_FACP->Gpe1BlkLen)
         {
-            for (Index = 0; Index < FACP->Gpe1BlkLen / 2; Index++)
+            for (Index = 0; Index < Gbl_FACP->Gpe1BlkLen / 2; Index++)
             {
-                if (OsdIn8 ((UINT16)(FACP->Gpe1Blk + FACP->Gpe1BlkLen / 2)) != Gpe1EnableRegisterSave[Index])
+                if (OsdIn8 ((UINT16) (Gbl_FACP->Gpe1Blk + Gbl_FACP->Gpe1BlkLen / 2)) != Gbl_Gpe1EnableRegisterSave[Index])
                 {
-                    OsdOut8 ((UINT16)(FACP->Gpe1Blk + FACP->Gpe1BlkLen / 2), Gpe1EnableRegisterSave[Index]);
+                    OsdOut8 ((UINT16) (Gbl_FACP->Gpe1Blk + Gbl_FACP->Gpe1BlkLen / 2), Gbl_Gpe1EnableRegisterSave[Index]);
                 }
             }
         }
         
-        if (HwGetMode() != OriginalMode)
+        if (HwGetMode() != Gbl_OriginalMode)
         {
-            HwSetMode (OriginalMode);
+            HwSetMode (Gbl_OriginalMode);
         }
     }
     
@@ -431,14 +431,14 @@ EvTerminate (void)
 
     /* Free global tables, etc. */
 
-    if (GpeRegisters)
+    if (Gbl_GpeRegisters)
     {
-        CmFree (GpeRegisters);
+        CmFree (Gbl_GpeRegisters);
     }
 
-    if (GpeInfo)
+    if (Gbl_GpeInfo)
     {
-        CmFree (GpeInfo);
+        CmFree (Gbl_GpeInfo);
     }
 
     return_VOID;
