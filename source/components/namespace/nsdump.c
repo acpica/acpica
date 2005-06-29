@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: nsdump - table dumping routines for debug
- *              $Revision: 1.107 $
+ *              $Revision: 1.108 $
  *
  *****************************************************************************/
 
@@ -232,6 +232,11 @@ AcpiNsDumpOneObject (
         return (AE_OK);
     }
 
+    if (!((ACPI_LV_TABLES & AcpiDbgLevel) && (_COMPONENT & AcpiDbgLayer)))
+    {
+        return (AE_OK);
+    }
+
     if (!ObjHandle)
     {
         ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "Null object handle\n"));
@@ -258,12 +263,11 @@ AcpiNsDumpOneObject (
         {
             if (DownstreamSiblingMask & WhichBit)
             {
-                ACPI_DEBUG_PRINT_RAW ((ACPI_DB_TABLES, "|"));
+                AcpiOsPrintf ("|");
             }
-
             else
             {
-                ACPI_DEBUG_PRINT_RAW ((ACPI_DB_TABLES, " "));
+                AcpiOsPrintf (" ");
             }
 
             WhichBit <<= 1;
@@ -274,28 +278,25 @@ AcpiNsDumpOneObject (
             if (AcpiNsExistDownstreamSibling (ThisNode + 1))
             {
                 DownstreamSiblingMask |= (1 << (Level - 1));
-                ACPI_DEBUG_PRINT_RAW ((ACPI_DB_TABLES, "+"));
+                AcpiOsPrintf ("+");
             }
-
             else
             {
                 DownstreamSiblingMask &= ACPI_UINT32_MAX ^ (1 << (Level - 1));
-                ACPI_DEBUG_PRINT_RAW ((ACPI_DB_TABLES, "+"));
+                AcpiOsPrintf ("+");
             }
 
             if (ThisNode->Child == NULL)
             {
-                ACPI_DEBUG_PRINT_RAW ((ACPI_DB_TABLES, "-"));
+                AcpiOsPrintf ("-");
             }
-
             else if (AcpiNsExistDownstreamSibling (ThisNode->Child))
             {
-                ACPI_DEBUG_PRINT_RAW ((ACPI_DB_TABLES, "+"));
+                AcpiOsPrintf ("+");
             }
-
             else
             {
-                ACPI_DEBUG_PRINT_RAW ((ACPI_DB_TABLES, "-"));
+                AcpiOsPrintf ("-");
             }
         }
     }
@@ -305,7 +306,7 @@ AcpiNsDumpOneObject (
 
     if (Type > INTERNAL_TYPE_MAX)
     {
-        Type = INTERNAL_TYPE_DEF_ANY;                                /* prints as *ERROR* */
+        Type = INTERNAL_TYPE_DEF_ANY;  /* prints as *ERROR* */
     }
 
     if (!AcpiUtValidAcpiName (ThisNode->Name))
@@ -316,8 +317,8 @@ AcpiNsDumpOneObject (
     /*
      * Now we can print out the pertinent information
      */
-    ACPI_DEBUG_PRINT_RAW ((ACPI_DB_TABLES, " %4.4s %-12s %p", 
-            (char*)&ThisNode->Name, AcpiUtGetTypeName (Type), ThisNode));
+    AcpiOsPrintf (" %4.4s %-12s %p", 
+            (char *) &ThisNode->Name, AcpiUtGetTypeName (Type), ThisNode);
 
     ObjDesc = ThisNode->Object;
 
@@ -329,91 +330,86 @@ AcpiNsDumpOneObject (
         {
             /* No attached object, we are done */
 
-            ACPI_DEBUG_PRINT_RAW ((ACPI_DB_TABLES, "\n"));
+            AcpiOsPrintf ("\n");
             return (AE_OK);
         }
-
 
         switch (Type)
         {
         case ACPI_TYPE_PROCESSOR:
-            ACPI_DEBUG_PRINT_RAW ((ACPI_DB_TABLES, " ID %d Addr %.4X Len %.4X\n",
+            AcpiOsPrintf (" ID %d Addr %.4X Len %.4X\n",
                         ObjDesc->Processor.ProcId,
                         ObjDesc->Processor.Address,
-                        ObjDesc->Processor.Length));
+                        ObjDesc->Processor.Length);
             break;
 
         case ACPI_TYPE_DEVICE:
-            ACPI_DEBUG_PRINT_RAW ((ACPI_DB_TABLES, " Notification object: %p", ObjDesc));
+            AcpiOsPrintf (" Notification object: %p", ObjDesc);
             break;
 
         case ACPI_TYPE_METHOD:
-            ACPI_DEBUG_PRINT_RAW ((ACPI_DB_TABLES, " Args %d Len %.4X Aml %p \n",
+            AcpiOsPrintf (" Args %d Len %.4X Aml %p \n",
                         ObjDesc->Method.ParamCount,
                         ObjDesc->Method.AmlLength,
-                        ObjDesc->Method.AmlStart));
+                        ObjDesc->Method.AmlStart);
             break;
 
         case ACPI_TYPE_INTEGER:
-            ACPI_DEBUG_PRINT_RAW ((ACPI_DB_TABLES, " = %8.8X%8.8X\n",
+            AcpiOsPrintf (" = %8.8X%8.8X\n",
                         HIDWORD (ObjDesc->Integer.Value),
-                        LODWORD (ObjDesc->Integer.Value)));
+                        LODWORD (ObjDesc->Integer.Value));
             break;
 
         case ACPI_TYPE_PACKAGE:
-            ACPI_DEBUG_PRINT_RAW ((ACPI_DB_TABLES, " Elements %.2X\n",
-                        ObjDesc->Package.Count));
+            AcpiOsPrintf (" Elements %.2X\n",
+                        ObjDesc->Package.Count);
             break;
 
         case ACPI_TYPE_BUFFER:
-            ACPI_DEBUG_PRINT_RAW ((ACPI_DB_TABLES, " Len %.2X",
-                        ObjDesc->Buffer.Length));
+            AcpiOsPrintf (" Len %.2X",
+                        ObjDesc->Buffer.Length);
 
             /* Dump some of the buffer */
 
             if (ObjDesc->Buffer.Length > 0)
             {
-                ACPI_DEBUG_PRINT_RAW ((ACPI_DB_TABLES, " ="));
+                AcpiOsPrintf (" =");
                 for (i = 0; (i < ObjDesc->Buffer.Length && i < 12); i++)
                 {
-                    ACPI_DEBUG_PRINT_RAW ((ACPI_DB_TABLES, " %.2X", 
-                            ObjDesc->Buffer.Pointer[i]));
+                    AcpiOsPrintf (" %.2X", ObjDesc->Buffer.Pointer[i]);
                 }
             }
-            ACPI_DEBUG_PRINT_RAW ((ACPI_DB_TABLES, "\n"));
+            AcpiOsPrintf ("\n");
             break;
 
         case ACPI_TYPE_STRING:
-            ACPI_DEBUG_PRINT_RAW ((ACPI_DB_TABLES, " Len %.2X",
-                        ObjDesc->String.Length));
+            AcpiOsPrintf (" Len %.2X", ObjDesc->String.Length);
                         
             if (ObjDesc->String.Length > 0)
             {
-                 ACPI_DEBUG_PRINT_RAW ((ACPI_DB_TABLES, " = \"%.32s\"...", 
-                            ObjDesc->String.Pointer));
+                 AcpiOsPrintf (" = \"%.32s\"...", ObjDesc->String.Pointer);
             }
-            ACPI_DEBUG_PRINT_RAW ((ACPI_DB_TABLES, "\n"));
+            AcpiOsPrintf ("\n");
             break;
 
         case ACPI_TYPE_REGION:
-            ACPI_DEBUG_PRINT_RAW ((ACPI_DB_TABLES, " [%s]",
-                        AcpiUtGetRegionName (ObjDesc->Region.SpaceId)));
+            AcpiOsPrintf (" [%s]", AcpiUtGetRegionName (ObjDesc->Region.SpaceId));
             if (ObjDesc->Region.Flags & AOPOBJ_DATA_VALID)
             {
-                ACPI_DEBUG_PRINT_RAW ((ACPI_DB_TABLES, " Addr %8.8X%8.8X Len %.4X\n",
+                AcpiOsPrintf (" Addr %8.8X%8.8X Len %.4X\n",
                             HIDWORD(ObjDesc->Region.Address),
                             LODWORD(ObjDesc->Region.Address),
-                            ObjDesc->Region.Length));
+                            ObjDesc->Region.Length);
             }
             else
             {
-                ACPI_DEBUG_PRINT_RAW ((ACPI_DB_TABLES, " [Address/Length not evaluated]\n"));
+                AcpiOsPrintf (" [Address/Length not evaluated]\n");
             }
             break;
 
         case INTERNAL_TYPE_REFERENCE:
-            ACPI_DEBUG_PRINT_RAW ((ACPI_DB_TABLES, " [%s]\n",
-                        AcpiPsGetOpcodeName (ObjDesc->Reference.Opcode)));
+            AcpiOsPrintf (" [%s]\n",
+                    AcpiPsGetOpcodeName (ObjDesc->Reference.Opcode));
             break;
 
         case ACPI_TYPE_BUFFER_FIELD:
@@ -422,23 +418,23 @@ AcpiNsDumpOneObject (
             break;
 
         case INTERNAL_TYPE_REGION_FIELD:
-            ACPI_DEBUG_PRINT_RAW ((ACPI_DB_TABLES, " Rgn [%4.4s]",
-                        (char *) &ObjDesc->CommonField.RegionObj->Region.Node->Name));
+            AcpiOsPrintf (" Rgn [%4.4s]",
+                    (char *) &ObjDesc->CommonField.RegionObj->Region.Node->Name);
             break;
 
         case INTERNAL_TYPE_BANK_FIELD:
-            ACPI_DEBUG_PRINT_RAW ((ACPI_DB_TABLES, " Rgn [%4.4s]",
-                        (char *) &ObjDesc->CommonField.RegionObj->Region.Node->Name));
+            AcpiOsPrintf (" Rgn [%4.4s]",
+                    (char *) &ObjDesc->CommonField.RegionObj->Region.Node->Name);
             break;
 
         case INTERNAL_TYPE_INDEX_FIELD:
-            ACPI_DEBUG_PRINT_RAW ((ACPI_DB_TABLES, " Rgn [%4.4s]",
-                        (char *) &ObjDesc->IndexField.IndexObj->CommonField.RegionObj->Region.Node->Name));
+            AcpiOsPrintf (" Rgn [%4.4s]",
+                    (char *) &ObjDesc->IndexField.IndexObj->CommonField.RegionObj->Region.Node->Name);
             break;
 
         default:
 
-            ACPI_DEBUG_PRINT_RAW ((ACPI_DB_TABLES, " Object %p\n", ObjDesc));
+            AcpiOsPrintf (" Object %p\n", ObjDesc);
             break;
         }
 
@@ -450,10 +446,11 @@ AcpiNsDumpOneObject (
         case INTERNAL_TYPE_REGION_FIELD:
         case INTERNAL_TYPE_BANK_FIELD:
         case INTERNAL_TYPE_INDEX_FIELD:
-            ACPI_DEBUG_PRINT_RAW ((ACPI_DB_TABLES, " Off %.2X Len %.2X Acc %.2d\n",
-                        (ObjDesc->CommonField.BaseByteOffset * 8) + ObjDesc->CommonField.StartFieldBitOffset,
-                        ObjDesc->CommonField.BitLength,
-                        ObjDesc->CommonField.AccessBitWidth));
+            AcpiOsPrintf (" Off %.2X Len %.2X Acc %.2d\n",
+                    (ObjDesc->CommonField.BaseByteOffset * 8) 
+                        + ObjDesc->CommonField.StartFieldBitOffset,
+                    ObjDesc->CommonField.BitLength,
+                    ObjDesc->CommonField.AccessBitWidth);
             break;
         }
 
@@ -462,67 +459,58 @@ AcpiNsDumpOneObject (
 
     case ACPI_DISPLAY_OBJECTS:
 
-        ACPI_DEBUG_PRINT_RAW ((ACPI_DB_TABLES, "%p O:%p",  
-                ThisNode, ObjDesc));
+        AcpiOsPrintf ("%p O:%p",  
+                ThisNode, ObjDesc);
 
         if (!ObjDesc)
         {
             /* No attached object, we are done */
 
-            ACPI_DEBUG_PRINT_RAW ((ACPI_DB_TABLES, "\n"));
+            AcpiOsPrintf ("\n");
             return (AE_OK);
         }
 
-        ACPI_DEBUG_PRINT_RAW ((ACPI_DB_TABLES, "(R%d)",  
-                ObjDesc->Common.ReferenceCount));
+        AcpiOsPrintf ("(R%d)",  
+                ObjDesc->Common.ReferenceCount);
 
         switch (Type)
         {
-
         case ACPI_TYPE_METHOD:
 
             /* Name is a Method and its AML offset/length are set */
 
-            ACPI_DEBUG_PRINT_RAW ((ACPI_DB_TABLES, " M:%p-%X\n",
-                        ObjDesc->Method.AmlStart,
-                        ObjDesc->Method.AmlLength));
-
+            AcpiOsPrintf (" M:%p-%X\n", ObjDesc->Method.AmlStart,
+                                        ObjDesc->Method.AmlLength);
             break;
-
 
         case ACPI_TYPE_INTEGER:
 
-            ACPI_DEBUG_PRINT_RAW ((ACPI_DB_TABLES, " N:%X%X\n",
-                        HIDWORD(ObjDesc->Integer.Value),
-                        LODWORD(ObjDesc->Integer.Value)));
+            AcpiOsPrintf (" N:%X%X\n", HIDWORD(ObjDesc->Integer.Value),
+                                       LODWORD(ObjDesc->Integer.Value));
             break;
-
 
         case ACPI_TYPE_STRING:
 
-            ACPI_DEBUG_PRINT_RAW ((ACPI_DB_TABLES, " S:%p-%X\n",
-                        ObjDesc->String.Pointer,
-                        ObjDesc->String.Length));
+            AcpiOsPrintf (" S:%p-%X\n", ObjDesc->String.Pointer,
+                                        ObjDesc->String.Length);
             break;
-
 
         case ACPI_TYPE_BUFFER:
 
-            ACPI_DEBUG_PRINT_RAW ((ACPI_DB_TABLES, " B:%p-%X\n",
-                        ObjDesc->Buffer.Pointer,
-                        ObjDesc->Buffer.Length));
+            AcpiOsPrintf (" B:%p-%X\n", ObjDesc->Buffer.Pointer,
+                                        ObjDesc->Buffer.Length);
             break;
-
 
         default:
 
-            ACPI_DEBUG_PRINT_RAW ((ACPI_DB_TABLES, "\n"));
+            AcpiOsPrintf ("\n");
             break;
         }
         break;
 
+
     default:
-        ACPI_DEBUG_PRINT_RAW ((ACPI_DB_TABLES, "\n"));
+        AcpiOsPrintf ("\n");
         break;
     }
 
@@ -546,14 +534,13 @@ AcpiNsDumpOneObject (
 
         /* Decode the type of attached object and dump the contents */
 
-        ACPI_DEBUG_PRINT_RAW ((ACPI_DB_TABLES, "        Attached Object %p: ", ObjDesc));
+        AcpiOsPrintf ("        Attached Object %p: ", ObjDesc);
 
         if (VALID_DESCRIPTOR_TYPE (ObjDesc, ACPI_DESC_TYPE_NAMED))
         {
-            ACPI_DEBUG_PRINT_RAW ((ACPI_DB_TABLES, "(Ptr to Node)\n"));
+            AcpiOsPrintf ("(Ptr to Node)\n");
             BytesToDump = sizeof (ACPI_NAMESPACE_NODE);
         }
-
 
         else if (VALID_DESCRIPTOR_TYPE (ObjDesc, ACPI_DESC_TYPE_INTERNAL))
         {
@@ -561,21 +548,19 @@ AcpiNsDumpOneObject (
 
             if (ObjType > INTERNAL_TYPE_MAX)
             {
-                ACPI_DEBUG_PRINT_RAW ((ACPI_DB_TABLES, "(Ptr to ACPI Object type %X [UNKNOWN])\n", ObjType));
+                AcpiOsPrintf ("(Ptr to ACPI Object type %X [UNKNOWN])\n", ObjType);
                 BytesToDump = 32;
             }
-
             else
             {
-                ACPI_DEBUG_PRINT_RAW ((ACPI_DB_TABLES, "(Ptr to ACPI Object type %2.2X [%s])\n",
-                                    ObjType, AcpiUtGetTypeName (ObjType)));
+                AcpiOsPrintf ("(Ptr to ACPI Object type %2.2X [%s])\n",
+                                    ObjType, AcpiUtGetTypeName (ObjType));
                 BytesToDump = sizeof (ACPI_OPERAND_OBJECT);
             }
         }
-
         else
         {
-            ACPI_DEBUG_PRINT_RAW ((ACPI_DB_TABLES, "(String or Buffer - not descriptor)\n"));
+            AcpiOsPrintf ("(String or Buffer - not descriptor)\n");
             BytesToDump = 16;
         }
 
@@ -629,11 +614,11 @@ AcpiNsDumpOneObject (
             goto Cleanup;
         }
 
-        ObjType = INTERNAL_TYPE_INVALID;     /* Terminate loop after next pass */
+        ObjType = INTERNAL_TYPE_INVALID;   /* Terminate loop after next pass */
     }
 
 Cleanup:
-    ACPI_DEBUG_PRINT_RAW ((ACPI_DB_TABLES, "\n"));
+    AcpiOsPrintf ("\n");
     return (AE_OK);
 }
 
