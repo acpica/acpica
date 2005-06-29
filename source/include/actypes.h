@@ -652,7 +652,7 @@ ACPI_STATUS (*ADDRESS_SPACE_SETUP) (
     ACPI_HANDLE                 RegionHandle,
     UINT32                      Function,
     void                        *HandlerContext,
-    void                        *RegionContext);
+    void                        **RegionContext);
 
 #define ACPI_REGION_ACTIVATE    0
 #define ACPI_REGION_DEACTIVATE  1
