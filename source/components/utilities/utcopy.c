@@ -374,7 +374,7 @@ CmBuildExternalSimpleObject(
     UINT32                  *BufferSpaceUsed)
 {
     UINT32                  Length = 0;
-    char                    *SourcePtr;
+    char                    *SourcePtr = NULL;
 
 
     UserObj->Type = Obj->ValType;
@@ -734,10 +734,10 @@ CmBuildInternalPackageObject (
     char                    *FreeSpace;
     ACPI_OBJECT             *UserObj;
     UINT32                  CurrentDepth = 0;
-    ACPI_STATUS             Status;
+    ACPI_STATUS             Status = AE_OK;
     UINT32                  Length = 0;
     UINT32                  ThisIndex;
-    UINT32                  Temp;
+    UINT32                  Temp = 0;
     ACPI_OBJECT_INTERNAL    *ThisObj;
     ACPI_OBJECT             *ThisUObj;
     register struct Search_st  *LevelPtr;
