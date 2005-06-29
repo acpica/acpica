@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslanalyze.c - check for semantic errors
- *              $Revision: 1.50 $
+ *              $Revision: 1.51 $
  *
  *****************************************************************************/
 
@@ -281,7 +281,6 @@ AnMapEtypeToBtype (
 
     switch (Etype)
     {
-
     case INTERNAL_TYPE_REGION_FIELD:
     case INTERNAL_TYPE_BANK_FIELD:
     case INTERNAL_TYPE_INDEX_FIELD:
@@ -302,10 +301,6 @@ AnMapEtypeToBtype (
         printf ("Unhandled encoded type: %X\n", Etype);
         return (0);
     }
-
-
-    return 0;
-
 }
 
 
@@ -1144,7 +1139,6 @@ AnOperandTypecheckWalkEnd (
     void                    *Context)
 {
     const ACPI_OPCODE_INFO  *OpInfo;
-    UINT32                  ParseArgTypes;
     UINT32                  RuntimeArgTypes;
     UINT32                  RuntimeArgTypes2;
     UINT32                  RequiredBtypes;
@@ -1181,7 +1175,6 @@ AnOperandTypecheckWalkEnd (
 
     ArgNode         = Node->Child;
     RuntimeArgTypes = OpInfo->RuntimeArgs;
-    ParseArgTypes   = OpInfo->ParseArgs;
     OpcodeClass     = OpInfo->Class;
 
     /* Ignore the non-executable opcodes */

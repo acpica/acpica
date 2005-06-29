@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslcodegen - AML code generation
- *              $Revision: 1.34 $
+ *              $Revision: 1.35 $
  *
  *****************************************************************************/
 
@@ -303,7 +303,6 @@ CgWriteAmlOpcode (
         printf ("Found a node with an unassigned AML opcode\n");
         fprintf (stderr, "Found a node with an unassigned AML opcode\n");
         return;
-        break;
 
     case AML_INT_RESERVEDFIELD_OP:
 
