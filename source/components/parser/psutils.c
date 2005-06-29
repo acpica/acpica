@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: psutils - Parser miscellaneous utilities (Parser only)
- *              $Revision: 1.57 $
+ *              $Revision: 1.58 $
  *
  *****************************************************************************/
 
@@ -203,9 +203,9 @@ ACPI_PARSE_OBJECT*
 AcpiPsAllocOp (
     UINT16                  Opcode)
 {
-    ACPI_PARSE_OBJECT       *Op = NULL;
-    UINT8                   Flags = ACPI_PARSEOP_GENERIC;
+    ACPI_PARSE_OBJECT       *Op;
     const ACPI_OPCODE_INFO  *OpInfo;
+    UINT8                   Flags = ACPI_PARSEOP_GENERIC;
 
 
     ACPI_FUNCTION_ENTRY ();
@@ -213,7 +213,7 @@ AcpiPsAllocOp (
 
     OpInfo = AcpiPsGetOpcodeInfo (Opcode);
 
-    /* Allocate the minimum required size object */
+    /* Determine type of ParseOp required */
 
     if (OpInfo->Flags & AML_DEFER)
     {
@@ -227,6 +227,8 @@ AcpiPsAllocOp (
     {
         Flags = ACPI_PARSEOP_BYTELIST;
     }
+
+    /* Allocate the minimum required size object */
 
     if (Flags == ACPI_PARSEOP_GENERIC)
     {
