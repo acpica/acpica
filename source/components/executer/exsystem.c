@@ -14,15 +14,18 @@
  | FILENAME: amlopsys.c
  |__________________________________________________________________________
  |
- | $Revision: 1.5 $
- | $Date: 2005/06/29 17:56:36 $
+ | $Revision: 1.6 $
+ | $Date: 2005/06/29 17:56:37 $
  | $Log: exsystem.c,v $
- | Revision 1.5  2005/06/29 17:56:36  aystarik
- | Removed hungarian notation
+ | Revision 1.6  2005/06/29 17:56:37  aystarik
+ | Changed to generic 64-bit friendly data types
  |
  | 
- | date	99.02.16.21.22.00;	author rmoore1;	state Exp;
+ | date	99.02.20.00.33.00;	author rmoore1;	state Exp;
  |
+ * 
+ * 6     2/19/99 4:33p Rmoore1
+ * Changed to generic 64-bit friendly data types
  * 
  * 5     2/16/99 1:22p Rmoore1
  * Removed hungarian notation
@@ -43,7 +46,7 @@
 // Change inc_error() etc. to dKinc_error() etc. (error key logging).
 // 
 //    Rev 1.3   14 May 1998 16:49:38   phutchis
-// Remove "return S_SUCCESS;" from void function ReleaseGlobalLock().
+// Remove "return S_SUCCESS;" from VOID function ReleaseGlobalLock().
 // 
 //    Rev 1.2   30 Apr 1998 07:23:48   calingle
 // Added two functions one to get ownership of the Global Lock and another to Release
@@ -80,6 +83,7 @@
 /* Global Variables */
 
 ACPI_EXTERN FIRMWARE_ACPI_CONTROL_STRUCTURE * FACS;
+
 extern char     *Why;
 
 
@@ -87,7 +91,7 @@ extern char     *Why;
  * 
  * FUNCTION:    ThreadId
  *
- * PARAMETERS:  void
+ * PARAMETERS:  VOID
  *
  * RETURN:      Current Thread ID (for this implementation a 1 is returned)
  *
@@ -97,8 +101,8 @@ extern char     *Why;
  *
  ******************************************************************************/
 
-WORD 
-ThreadId (void)
+UINT16 
+ThreadId (VOID)
 {
     return (1);
 }
@@ -118,7 +122,7 @@ ThreadId (void)
  *
  ******************************************************************************/
 
-int
+INT32
 DoNotifyOp (OBJECT_DESCRIPTOR *ValDesc, OBJECT_DESCRIPTOR *ObjDesc)
 {
     fprintf_bu (LstFileHandle, LOGFILE,
@@ -162,9 +166,9 @@ DoNotifyOp (OBJECT_DESCRIPTOR *ValDesc, OBJECT_DESCRIPTOR *ObjDesc)
  * 
  * FUNCTION:    DoSuspend
  *
- * PARAMETERS:  DWORD HowLong - The amount of time to suspend
+ * PARAMETERS:  UINT32 HowLong - The amount of time to suspend
  *
- * RETURN:      void
+ * RETURN:      VOID
  *
  * DESCRIPTION: Suspend processing for specified amount of time.  This
  *              function should be suspending the current thread but is using
@@ -172,10 +176,10 @@ DoNotifyOp (OBJECT_DESCRIPTOR *ValDesc, OBJECT_DESCRIPTOR *ObjDesc)
  *
  ******************************************************************************/
 
-void
-DoSuspend (DWORD HowLong)
+VOID
+DoSuspend (UINT32 HowLong)
 {
-    bsleep ((WORD) (HowLong / (DWORD) 1000), (WORD) (HowLong % (DWORD) 1000));
+    bsleep ((UINT16) (HowLong / (UINT32) 1000), (UINT16) (HowLong % (UINT32) 1000));
 }
 
 
@@ -196,11 +200,11 @@ DoSuspend (DWORD HowLong)
  *
  ******************************************************************************/
 
-int
+INT32
 AcquireOpRqst (OBJECT_DESCRIPTOR *TimeDesc, OBJECT_DESCRIPTOR *ObjDesc)
 {
-    WORD        CurrentId;
-    int         RetVal = S_SUCCESS;
+    UINT16      CurrentId;
+    INT32       RetVal = S_SUCCESS;
 
 
     if (ObjDesc->Mutex.LockCount == 0)
@@ -242,11 +246,11 @@ AcquireOpRqst (OBJECT_DESCRIPTOR *TimeDesc, OBJECT_DESCRIPTOR *ObjDesc)
  *
  ******************************************************************************/
 
-int
+INT32
 ReleaseOpRqst (OBJECT_DESCRIPTOR *ObjDesc)
 {
-    WORD        CurrentId;
-    int         RetVal = S_SUCCESS;
+    UINT16      CurrentId;
+    INT32       RetVal = S_SUCCESS;
 
 
     if (ObjDesc->Mutex.LockCount == 0)
@@ -289,7 +293,7 @@ ReleaseOpRqst (OBJECT_DESCRIPTOR *ObjDesc)
  *
  ******************************************************************************/
 
-int
+INT32
 SignalOpRqst (OBJECT_DESCRIPTOR *ObjDesc)
 {
 
@@ -319,10 +323,10 @@ SignalOpRqst (OBJECT_DESCRIPTOR *ObjDesc)
  *
  ******************************************************************************/
 
-int
+INT32
 WaitOpRqst(OBJECT_DESCRIPTOR *TimeDesc, OBJECT_DESCRIPTOR *ObjDesc)
 {
-    int         RetVal = S_SUCCESS;
+    INT32       RetVal = S_SUCCESS;
 
 
     if (0 == ObjDesc->Event.SignalCount)
@@ -358,10 +362,10 @@ WaitOpRqst(OBJECT_DESCRIPTOR *TimeDesc, OBJECT_DESCRIPTOR *ObjDesc)
  *
  ******************************************************************************/
 
-int
+INT32
 ResetOpRqst (OBJECT_DESCRIPTOR *ObjDesc)
 {
-    int         RetVal = S_SUCCESS;
+    INT32       RetVal = S_SUCCESS;
 
 
     ObjDesc->Event.SignalCount = 0;
@@ -382,11 +386,11 @@ ResetOpRqst (OBJECT_DESCRIPTOR *ObjDesc)
  *
  **************************************************************************/
 
-int
-GetGlobalLock(void)
+INT32
+GetGlobalLock(VOID)
 {
-    DWORD           GlobalLockReg = FACS->GlobalLock;
-    int             RetVal;
+    UINT32          GlobalLockReg = FACS->GlobalLock;
+    INT32           RetVal;
 
 
     if (GlobalLockReg & GL_OWNED)
@@ -417,8 +421,8 @@ GetGlobalLock(void)
  *
  **************************************************************************/
 
-void
-ReleaseGlobalLock (void)
+VOID
+ReleaseGlobalLock (VOID)
 {
     
     FACS->GlobalLock &= 0xFFFFFFFF ^ GL_OWNED;
