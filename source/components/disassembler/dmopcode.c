@@ -168,6 +168,71 @@ DbBlockType (
 
 }
 
+#ifdef PARSER_ONLY
+
+ACPI_STATUS
+PsDisplayObjectPathname (
+    ACPI_GENERIC_OP         *Op,
+    char                    *Buffer,
+    UINT32                  BufferSize)
+{
+    ACPI_GENERIC_OP         *TargetOp;
+
+
+    OsdPrintf ("  (Path ");
+
+    /* Search parent tree up to the root if necessary */
+
+    TargetOp = PsFind (Op, Op->Value.Name, 0, 0);
+    if (!TargetOp)
+    {
+        OsdPrintf ("****Not Found****");
+        return AE_NOT_FOUND;
+    }
+
+    /* If target was found, print the name and complete path */
+
+    DbSprintPath (Buffer, sizeof (Buffer), TargetOp);
+    OsdPrintf (")");
+    return AE_OK;
+}
+
+#else
+
+ACPI_STATUS
+PsDisplayObjectPathname (
+    ACPI_GENERIC_OP         *Op,
+    char                    *Buffer,
+    UINT32                  BufferSize)
+{
+    ACPI_STATUS             Status;
+    NAME_TABLE_ENTRY        *Nte;
+
+
+    OsdPrintf ("  (Path ");
+
+    /* Just get the NTE out of the Op object */
+
+    Nte = Op->NameTableEntry;
+    if (!Nte)
+    {
+        STRCPY (Buffer, "****No NTE, could not get pathname****");
+        return AE_OK;
+    }
+
+    /* Convert NTE/handle to a full pathname */
+
+    Status = NsHandleToPathname (Nte, &BufferSize, Buffer);
+    if (ACPI_FAILURE (Status))
+    {
+       return Status;
+    }
+
+    OsdPrintf ("%s)", Buffer);
+    return AE_OK;
+}
+
+#endif
 
 /*******************************************************************************
  *
@@ -186,14 +251,12 @@ DbBlockType (
 
 void
 DbDisplayOp (
-    ACPI_GENERIC_OP         *origin,
+    ACPI_GENERIC_OP         *Origin,
     UINT32                  NumOpcodes)
 {
-    static char             buffer[MAX_SHOW_ENTRY];
-    ACPI_GENERIC_OP         *Op = origin;
+    static char             Buffer[MAX_SHOW_ENTRY];
+    ACPI_GENERIC_OP         *Op = Origin;
     ACPI_GENERIC_OP         *arg;
-    ACPI_GENERIC_OP         *TargetOp;
-    ACPI_GENERIC_OP         *ParentOp;
     ACPI_GENERIC_OP         *depth;
     UINT32                  DepthCount = 0;
     UINT32                  LastDepth = 0;
@@ -218,7 +281,7 @@ DbDisplayOp (
 			for (depth = Op->Parent; depth; depth = depth->Parent)
 			{
 				arg = PsGetArg (depth, 0);
-				while (arg && arg != origin)
+				while (arg && arg != Origin)
 				{
 					arg = arg->Next;
 				}
@@ -282,49 +345,24 @@ DbDisplayOp (
 
             /* Now print the opcode */
 
-            if (DbSprintOp (buffer, sizeof (buffer), Op) > 0)
+            if (DbSprintOp (Buffer, sizeof (Buffer), Op) > 0)
             {
                 /* Resolve a name reference */
 
-                if (Op->Opcode == AML_NAMEPATH && Op->Value.Name)
+                if (Op->Opcode == AML_NAMEPATH_OP && Op->Value.Name)
                 {
-                    TargetOp = NULL;
-                    ParentOp = Op; //TBD: was Op->Parent;
-
-                    /* Search parent tree up to the root if necessary */
-
-                    TargetOp = PsFind (ParentOp, Op->Value.Name, 0, 0);
-
-                    /* If target was found, print the name and complete path */
-
-                    if (TargetOp)
-                    {
-						if (opt_verbose)
-						{
-							OsdPrintf (" (Offset %8.8X)  (Path \\", TargetOp->AmlOffset);
-							DbSprintPath (buffer, sizeof (buffer), TargetOp);
-							OsdPrintf (")\n");
-						}
-						else
-						{
-							OsdPrintf ("\n");
-						}
-                    }
-                    else
-                    {
-                        OsdPrintf ("\n");
+					if (opt_verbose)
+					{
+                        PsDisplayObjectPathname (Op, Buffer, sizeof (Buffer));
                     }
                 }
 
-                else
-                {
-                    OsdPrintf ("\n");
-                }
-            }
+                OsdPrintf ("\n");
+           }
 
             /* Get the next node in the tree */
 
-            Op = PsGetDepthNext (origin, Op);
+            Op = PsGetDepthNext (Origin, Op);
             LastDepth = DepthCount;
 
             NumOpcodes--;
@@ -352,9 +390,9 @@ DbDisplayOp (
 
     else
     {
-        if (DbSprintOp (buffer, sizeof (buffer), Op) > 0)
+        if (DbSprintOp (Buffer, sizeof (Buffer), Op) > 0)
         {
-            OsdPrintf ("%s\n", buffer);
+            OsdPrintf ("%s\n", Buffer);
         }
     }
 }
@@ -365,7 +403,7 @@ DbDisplayOp (
  * FUNCTION:    DbSprintNamestring
  *
  * PARAMETERS:  BufferStart         - Where formatted data is to be stored
- *              BufferSize          - Length of the buffer
+ *              BufferSize          - Length of the Buffer
  *              Name                - ACPI Name string to store
  *
  * RETURN:      Status
@@ -449,7 +487,7 @@ DbSprintNamestring (
  * FUNCTION:    DbSprintPath
  *
  * PARAMETERS:  BufferStart         - Where formatted data is to be stored
- *              BufferSize          - Length of the buffer
+ *              BufferSize          - Length of the Buffer
  *              Op                  - Named Op whose path is to be constructed
  *
  * RETURN:      Status
@@ -524,12 +562,12 @@ DbSprintPath (
  * FUNCTION:    DbSprintOp
  *
  * PARAMETERS:  BufferStart         - Where formatted data is to be stored
- *              BufferSize          - Length of the buffer
+ *              BufferSize          - Length of the Buffer
  *              Op                  - Op that is to be printed
  *
  * RETURN:      Status
  *
- * DESCRIPTION: Store printed op in a buffer and return its length
+ * DESCRIPTION: Store printed op in a Buffer and return its length
  *              (or -1 if out of space)
  *
  ******************************************************************************/
@@ -602,7 +640,7 @@ DbSprintOp (
             break;
 
 
-        case AML_STATICSTRING:
+        case AML_STATICSTRING_OP:
 
             if (Op->Value.String)
             {
@@ -615,31 +653,31 @@ DbSprintOp (
             break;
 
 
-        case AML_NAMEPATH:
+        case AML_NAMEPATH_OP:
 
             Size = DbSprintNamestring (Buffer, BufferSize, Op->Value.Buffer);
             break;
 
 
-        case AML_NAMEDFIELD:
+        case AML_NAMEDFIELD_OP:
 
             OsdPrintf (Buffer, BufferSize, 0, "NamedField    (Length 0x%8.8X)  ", Op->Value.Integer);
             break;
 
 
-        case AML_RESERVEDFIELD:
+        case AML_RESERVEDFIELD_OP:
 
             OsdPrintf (Buffer, BufferSize, 0, "ReservedField (Length 0x%8.8X)  ", Op->Value.Integer);
             break;
 
 
-        case AML_ACCESSFIELD:
+        case AML_ACCESSFIELD_OP:
 
             OsdPrintf (Buffer, BufferSize, 0, "AccessField   (Length 0x%8.8X)  ", Op->Value.Integer);
             break;
 
 
-        case AML_BYTELIST:
+        case AML_BYTELIST_OP:
 
             if (opt_verbose)
             {
