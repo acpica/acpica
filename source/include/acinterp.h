@@ -118,7 +118,7 @@
 #define __INTERPRETER_H__
 
 
-#include <datatypes.h>
+#include <acpitypes.h>
 #include <acpiobj.h>
 
 
