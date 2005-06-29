@@ -1,7 +1,7 @@
 /******************************************************************************
  *
- * Module Name: oswinxf - Windows application interface
- *              $Revision: 1.21 $
+ * Module Name: oswinxf - Windows OSL
+ *              $Revision: 1.24 $
  *
  *****************************************************************************/
 
@@ -9,8 +9,8 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, Intel Corp.  All rights
- * reserved.
+ * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.  
+ * All rights reserved.
  *
  * 2. License
  *
@@ -487,38 +487,13 @@ AcpiOsAllocate (
 
 /******************************************************************************
  *
- * FUNCTION:    AcpiOsCallocate
- *
- * PARAMETERS:  Size                Amount to allocate, in bytes
- *
- * RETURN:      Pointer to the new allocation.  Null on error.
- *
- * DESCRIPTION: Allocate and zero memory.  Algorithm is dependent on the OS.
- *
- *****************************************************************************/
-
-void *
-AcpiOsCallocate (
-    ACPI_SIZE               size)
-{
-    void                    *Mem;
-
-
-    Mem = (void *) calloc (1, (size_t) size);
-
-    return Mem;
-}
-
-
-/******************************************************************************
- *
  * FUNCTION:    AcpiOsFree
  *
  * PARAMETERS:  mem                 Pointer to previously allocated memory
  *
  * RETURN:      None.
  *
- * DESCRIPTION: Free memory allocated via AcpiOsAllocate or AcpiOsCallocate
+ * DESCRIPTION: Free memory allocated via AcpiOsAllocate
  *
  *****************************************************************************/
 
@@ -995,19 +970,19 @@ AcpiOsReadPort (
     switch (Width)
     {
     case 8:
-        *((UINT8 *) Value) = 0;
+        *((UINT8 *) Value) = 0xFF;
         break;
 
     case 16:
-        *((UINT16 *) Value) = 0;
+        *((UINT16 *) Value) = 0xFFFF;
         break;
 
     case 32:
-        *((UINT32 *) Value) = 0;
+        *((UINT32 *) Value) = 0xFFFFFFFF;
         break;
 
     case 64:
-        *((UINT64 *) Value) = 0;
+        *((UINT64 *) Value) = 0xFFFFFFFFFFFFFFFF;
         break;
     }
 
