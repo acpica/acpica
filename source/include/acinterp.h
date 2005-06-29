@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acinterp.h - Interpreter subcomponent prototypes and defines
- *       $Revision: 1.103 $
+ *       $Revision: 1.104 $
  *
  *****************************************************************************/
 
@@ -166,17 +166,20 @@ AcpiExExecuteMethod (
 
 ACPI_STATUS
 AcpiExConvertToInteger (
-    ACPI_OPERAND_OBJECT     **ObjDesc,
+    ACPI_OPERAND_OBJECT     *ObjDesc,
+    ACPI_OPERAND_OBJECT     **ResultDesc,
     ACPI_WALK_STATE         *WalkState);
 
 ACPI_STATUS
 AcpiExConvertToBuffer (
-    ACPI_OPERAND_OBJECT     **ObjDesc,
+    ACPI_OPERAND_OBJECT     *ObjDesc,
+    ACPI_OPERAND_OBJECT     **ResultDesc,
     ACPI_WALK_STATE         *WalkState);
 
 ACPI_STATUS
 AcpiExConvertToString (
-    ACPI_OPERAND_OBJECT     **ObjDesc,
+    ACPI_OPERAND_OBJECT     *ObjDesc,
+    ACPI_OPERAND_OBJECT     **ResultDesc,
     ACPI_WALK_STATE         *WalkState);
 
 ACPI_STATUS
