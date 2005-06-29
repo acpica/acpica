@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: nsaccess - Top-level functions for accessing ACPI namespace
- *              $Revision: 1.126 $
+ *              $Revision: 1.135 $
  *
  ******************************************************************************/
 
@@ -145,7 +145,7 @@ ACPI_STATUS
 AcpiNsRootInitialize (void)
 {
     ACPI_STATUS             Status = AE_OK;
-    PREDEFINED_NAMES        *InitVal = NULL;
+    const PREDEFINED_NAMES  *InitVal = NULL;
     ACPI_NAMESPACE_NODE     *NewNode;
     ACPI_OPERAND_OBJECT     *ObjDesc;
 
@@ -159,7 +159,6 @@ AcpiNsRootInitialize (void)
      * The global root ptr is initially NULL, so a non-NULL value indicates
      * that AcpiNsRootInitialize() has already been called; just return.
      */
-
     if (AcpiGbl_RootNode)
     {
         Status = AE_OK;
@@ -171,13 +170,12 @@ AcpiNsRootInitialize (void)
      * Tell the rest of the subsystem that the root is initialized
      * (This is OK because the namespace is locked)
      */
-
     AcpiGbl_RootNode = &AcpiGbl_RootNodeStruct;
 
 
     /* Enter the pre-defined names in the name table */
 
-    DEBUG_PRINTP (ACPI_INFO, ("Entering predefined entries into namespace\n"));
+    ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "Entering predefined entries into namespace\n"));
 
     for (InitVal = AcpiGbl_PreDefinedNames; InitVal->Name; InitVal++)
     {
@@ -187,9 +185,9 @@ AcpiNsRootInitialize (void)
 
         if (ACPI_FAILURE (Status) || (!NewNode)) /* Must be on same line for code converter */
         {
-            DEBUG_PRINTP (ACPI_ERROR, 
-                ("Could not create predefined name %s, %s\n",
-                InitVal->Name, AcpiUtFormatException (Status)));
+            ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
+                "Could not create predefined name %s, %s\n",
+                InitVal->Name, AcpiFormatException (Status)));
         }
 
         /*
@@ -197,14 +195,12 @@ AcpiNsRootInitialize (void)
          * If entry in PreDefinedNames[] specifies an
          * initial value, create the initial value.
          */
-
         if (InitVal->Val)
         {
             /*
              * Entry requests an initial value, allocate a
              * descriptor for it.
              */
-
             ObjDesc = AcpiUtCreateInternalObject (InitVal->Type);
             if (!ObjDesc)
             {
@@ -230,23 +226,12 @@ AcpiNsRootInitialize (void)
 
             case ACPI_TYPE_STRING:
 
-                ObjDesc->String.Length = STRLEN (InitVal->Val);
-
                 /*
-                 * Allocate a buffer for the string.  All
-                 * String.Pointers must be allocated buffers!
-                 * (makes deletion simpler)
+                 * Build an object around the static string
                  */
-                ObjDesc->String.Pointer = AcpiUtAllocate (
-                                                (ObjDesc->String.Length + 1));
-                if (!ObjDesc->String.Pointer)
-                {
-                    AcpiUtRemoveReference (ObjDesc);
-                    Status = AE_NO_MEMORY;
-                    goto UnlockAndExit;
-                }
-
-                STRCPY (ObjDesc->String.Pointer, InitVal->Val);
+                ObjDesc->String.Length = STRLEN (InitVal->Val);
+                ObjDesc->String.Pointer = InitVal->Val;
+                ObjDesc->Common.Flags |= AOPOBJ_STATIC_POINTER;
                 break;
 
 
@@ -268,11 +253,11 @@ AcpiNsRootInitialize (void)
                     {
                         goto UnlockAndExit;
                     }
+
                     /*
                      * We just created the mutex for the
                      * global lock, save it
                      */
-
                     AcpiGbl_GlobalLockSemaphore = ObjDesc->Mutex.Semaphore;
                 }
 
@@ -302,6 +287,10 @@ AcpiNsRootInitialize (void)
             /* Store pointer to value descriptor in the Node */
 
             AcpiNsAttachObject (NewNode, ObjDesc, ObjDesc->Common.Type);
+
+            /* Remove local reference to the object */
+
+            AcpiUtRemoveReference (ObjDesc);
         }
     }
 
@@ -383,11 +372,10 @@ AcpiNsLookup (
      * Get the prefix scope.
      * A null scope means use the root scope
      */
-
     if ((!ScopeInfo) ||
         (!ScopeInfo->Scope.Node))
     {
-        DEBUG_PRINTP (TRACE_NAMES, ("Null scope prefix, using root node (%p)\n",
+        ACPI_DEBUG_PRINT ((ACPI_DB_NAMES, "Null scope prefix, using root node (%p)\n",
             AcpiGbl_RootNode));
 
         PrefixNode = AcpiGbl_RootNode;
@@ -405,7 +393,6 @@ AcpiNsLookup (
      * but the BankFieldDefn may also check for a Field definition as well
      * as an OperationRegion.
      */
-
     if (INTERNAL_TYPE_FIELD_DEFN == Type)
     {
         /* DefFieldDefn defines fields in a Region */
@@ -438,8 +425,8 @@ AcpiNsLookup (
         NumSegments = 0;
         ThisNode = AcpiGbl_RootNode;
 
-        DEBUG_PRINTP (TRACE_NAMES,
-            ("Null Pathname (Zero segments),  Flags=%x\n", Flags));
+        ACPI_DEBUG_PRINT ((ACPI_DB_NAMES,
+            "Null Pathname (Zero segments),  Flags=%x\n", Flags));
     }
 
     else
@@ -462,7 +449,6 @@ AcpiNsLookup (
          *  - A MultiNamePrefixOp, followed by a byte indicating the
          *    number of segments and the segments themselves.
          */
-
         if (*Pathname == AML_ROOT_PREFIX)
         {
             /* Pathname is fully qualified, look in root name table */
@@ -473,7 +459,7 @@ AcpiNsLookup (
 
             Pathname++;
 
-            DEBUG_PRINTP (TRACE_NAMES, ("Searching from root [%p]\n", 
+            ACPI_DEBUG_PRINT ((ACPI_DB_NAMES, "Searching from root [%p]\n",
                 CurrentNode));
 
             /* Direct reference to root, "\" */
@@ -491,14 +477,13 @@ AcpiNsLookup (
 
             CurrentNode = PrefixNode;
 
-            DEBUG_PRINTP (TRACE_NAMES, ("Searching relative to pfx scope [%p]\n",
+            ACPI_DEBUG_PRINT ((ACPI_DB_NAMES, "Searching relative to pfx scope [%p]\n",
                 PrefixNode));
 
             /*
              * Handle up-prefix (carat).  More than one prefix
              * is supported
              */
-
             while (*Pathname == AML_PARENT_PREFIX)
             {
                 /* Point to segment part or next ParentPrefix */
@@ -526,7 +511,6 @@ AcpiNsLookup (
          * Examine the name prefix opcode, if any,
          * to determine the number of segments
          */
-
         if (*Pathname == AML_DUAL_NAME_PREFIX)
         {
             NumSegments = 2;
@@ -535,8 +519,8 @@ AcpiNsLookup (
 
             Pathname++;
 
-            DEBUG_PRINTP (TRACE_NAMES,
-                ("Dual Pathname (2 segments, Flags=%X)\n", Flags));
+            ACPI_DEBUG_PRINT ((ACPI_DB_NAMES,
+                "Dual Pathname (2 segments, Flags=%X)\n", Flags));
         }
 
         else if (*Pathname == AML_MULTI_NAME_PREFIX_OP)
@@ -547,8 +531,8 @@ AcpiNsLookup (
 
             Pathname++;
 
-            DEBUG_PRINTP (TRACE_NAMES,
-                ("Multi Pathname (%d Segments, Flags=%X) \n",
+            ACPI_DEBUG_PRINT ((ACPI_DB_NAMES,
+                "Multi Pathname (%d Segments, Flags=%X) \n",
                 NumSegments, Flags));
         }
 
@@ -560,8 +544,8 @@ AcpiNsLookup (
              */
             NumSegments = 1;
 
-            DEBUG_PRINTP (TRACE_NAMES,
-                ("Simple Pathname (1 segment, Flags=%X)\n", Flags));
+            ACPI_DEBUG_PRINT ((ACPI_DB_NAMES,
+                "Simple Pathname (1 segment, Flags=%X)\n", Flags));
         }
 
 #ifdef ACPI_DEBUG
@@ -570,13 +554,13 @@ AcpiNsLookup (
 
         /* Debug only: print the entire name that we are about to lookup */
 
-        DEBUG_PRINTP (TRACE_NAMES, ("["));
+        ACPI_DEBUG_PRINT ((ACPI_DB_NAMES, "["));
 
         for (i = 0; i < NumSegments; i++)
         {
-            DEBUG_PRINT_RAW (TRACE_NAMES, ("%4.4s/", &Pathname[i * 4]));
+            ACPI_DEBUG_PRINT_RAW ((ACPI_DB_NAMES, "%4.4s/", (char*)&Pathname[i * 4]));
         }
-        DEBUG_PRINT_RAW (TRACE_NAMES, ("]\n"));
+        ACPI_DEBUG_PRINT_RAW ((ACPI_DB_NAMES, "]\n"));
 #endif
     }
 
@@ -585,8 +569,6 @@ AcpiNsLookup (
      * Search namespace for each segment of the name.
      * Loop through and verify/add each name segment.
      */
-
-
     while (NumSegments-- && CurrentNode)
     {
         /*
@@ -619,9 +601,9 @@ AcpiNsLookup (
             {
                 /* Name not found in ACPI namespace  */
 
-                DEBUG_PRINTP (TRACE_NAMES, 
-                    ("Name [%4.4s] not found in scope %X\n",
-                    &SimpleName, CurrentNode));
+                ACPI_DEBUG_PRINT ((ACPI_DB_NAMES,
+                    "Name [%4.4s] not found in scope %p\n",
+                    (char*)&SimpleName, CurrentNode));
             }
 
             return_ACPI_STATUS (Status);
@@ -654,7 +636,7 @@ AcpiNsLookup (
 
             REPORT_WARNING (
                 ("NsLookup: %4.4s, type %X, checking for type %X\n",
-                &SimpleName, ThisNode->Type, TypeToCheckFor));
+                (char*)&SimpleName, ThisNode->Type, TypeToCheckFor));
         }
 
         /*
@@ -662,7 +644,6 @@ AcpiNsLookup (
          * specific type, but the type of found object is known, use that type
          * to see if it opens a scope.
          */
-
         if ((0 == NumSegments) && (ACPI_TYPE_ANY == Type))
         {
             Type = ThisNode->Type;
@@ -675,8 +656,7 @@ AcpiNsLookup (
              * More segments or the type implies enclosed scope,
              * and the next scope has not been allocated.
              */
-
-            DEBUG_PRINTP (ACPI_INFO, ("Load mode=%X  ThisNode=%X\n",
+            ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "Load mode=%X  ThisNode=%p\n",
                 InterpreterMode, ThisNode));
         }
 
@@ -691,7 +671,6 @@ AcpiNsLookup (
     /*
      * Always check if we need to open a new scope
      */
-
 CheckForNewScopeAndExit:
 
     if (!(Flags & NS_DONT_OPEN_SCOPE) && (WalkState))
@@ -700,7 +679,6 @@ CheckForNewScopeAndExit:
          * If entry is a type which opens a scope,
          * push the new scope on the scope stack.
          */
-
         if (AcpiNsOpensScope (TypeToCheckFor))
         {
             /*  8-12-98 ASL Grammar Update supports null NamePath   */
@@ -723,7 +701,7 @@ CheckForNewScopeAndExit:
                 return_ACPI_STATUS (Status);
             }
 
-            DEBUG_PRINTP (ACPI_INFO, ("Set global scope to %p\n", ScopeToPush));
+            ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "Set global scope to %p\n", ScopeToPush));
         }
     }
 

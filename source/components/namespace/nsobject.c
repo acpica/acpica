@@ -2,7 +2,7 @@
  *
  * Module Name: nsobject - Utilities for objects attached to namespace
  *                         table entries
- *              $Revision: 1.55 $
+ *              $Revision: 1.67 $
  *
  ******************************************************************************/
 
@@ -133,10 +133,10 @@
  *
  * FUNCTION:    AcpiNsAttachObject
  *
- * PARAMETERS:  Node            - Parent Node
+ * PARAMETERS:  Node                - Parent Node
  *              Object              - Object to be attached
  *              Type                - Type of object, or ACPI_TYPE_ANY if not
- *                                      known
+ *                                    known
  *
  * DESCRIPTION: Record the given object as the value associated with the
  *              name whose ACPI_HANDLE is passed.  If Object is NULL
@@ -154,9 +154,8 @@ AcpiNsAttachObject (
 {
     ACPI_OPERAND_OBJECT     *ObjDesc;
     ACPI_OPERAND_OBJECT     *PreviousObjDesc;
-    ACPI_OBJECT_TYPE8      ObjType = ACPI_TYPE_ANY;
+    ACPI_OBJECT_TYPE8       ObjType = ACPI_TYPE_ANY;
     UINT8                   Flags;
-    UINT16                  Opcode;
 
 
     FUNCTION_TRACE ("NsAttachObject");
@@ -165,7 +164,6 @@ AcpiNsAttachObject (
     /*
      * Parameter validation
      */
-
     if (!AcpiGbl_RootNode)
     {
         /* Name space not initialized  */
@@ -202,7 +200,7 @@ AcpiNsAttachObject (
 
     if (Node->Object == Object)
     {
-        DEBUG_PRINTP (TRACE_EXEC, ("Obj %p already installed in NameObj %p\n",
+        ACPI_DEBUG_PRINT ((ACPI_DB_EXEC, "Obj %p already installed in NameObj %p\n",
             Object, Node));
 
         return_ACPI_STATUS (AE_OK);
@@ -224,10 +222,9 @@ AcpiNsAttachObject (
     }
 
     /*
-     * If the object is an Node with an attached object,
+     * If the source object is a namespace Node with an attached object,
      * we will use that (attached) object
      */
-
     else if (VALID_DESCRIPTOR_TYPE (Object, ACPI_DESC_TYPE_NAMED) &&
             ((ACPI_NAMESPACE_NODE *) Object)->Object)
     {
@@ -235,14 +232,12 @@ AcpiNsAttachObject (
          * Value passed is a name handle and that name has a
          * non-null value.  Use that name's value and type.
          */
-
         ObjDesc = ((ACPI_NAMESPACE_NODE *) Object)->Object;
         ObjType = ((ACPI_NAMESPACE_NODE *) Object)->Type;
 
         /*
          * Copy appropriate flags
          */
-
         if (((ACPI_NAMESPACE_NODE *) Object)->Flags & ANOBJ_AML_ATTACHMENT)
         {
             Flags |= ANOBJ_AML_ATTACHMENT;
@@ -254,11 +249,9 @@ AcpiNsAttachObject (
      * Otherwise, we will use the parameter object, but we must type
      * it first
      */
-
     else
     {
         ObjDesc = (ACPI_OPERAND_OBJECT  *) Object;
-
 
         /* If a valid type (non-ANY) was given, just use it */
 
@@ -267,120 +260,26 @@ AcpiNsAttachObject (
             ObjType = Type;
         }
 
-
-        /*
-         * Type is TYPE_Any, we must try to determinte the
-         * actual type of the object
-         */
-
-        /*
-         * Check if value points into the AML code
-         */
-        else if (AcpiTbSystemTablePointer (Object))
-        {
-            /*
-             * Object points into the AML stream.
-             * Set a flag bit in the Node to indicate this
-             */
-
-            Flags |= ANOBJ_AML_ATTACHMENT;
-
-            /*
-             * The next byte (perhaps the next two bytes)
-             * will be the AML opcode
-             */
-
-            MOVE_UNALIGNED16_TO_16 (&Opcode, Object);
-
-            /* Check for a recognized Opcode */
-
-            switch ((UINT8) Opcode)
-            {
-
-            case AML_OP_PREFIX:
-
-                if (Opcode != AML_REVISION_OP)
-                {
-                    /*
-                     * OpPrefix is unrecognized unless part
-                     * of RevisionOp
-                     */
-
-                    break;
-                }
-
-                /* Else fall through to set type as Number */
-
-
-            case AML_ZERO_OP: case AML_ONES_OP: case AML_ONE_OP:
-            case AML_BYTE_OP: case AML_WORD_OP: case AML_DWORD_OP:
-
-                ObjType = ACPI_TYPE_INTEGER;
-                break;
-
-
-            case AML_STRING_OP:
-
-                ObjType = ACPI_TYPE_STRING;
-                break;
-
-
-            case AML_BUFFER_OP:
-
-                ObjType = ACPI_TYPE_BUFFER;
-                break;
-
-
-            case AML_MUTEX_OP:
-
-                ObjType = ACPI_TYPE_MUTEX;
-                break;
-
-
-            case AML_PACKAGE_OP:
-
-                ObjType = ACPI_TYPE_PACKAGE;
-                break;
-
-
-            default:
-
-                DEBUG_PRINTP (ACPI_ERROR,
-                    ("AML Opcode/Type [%x] not supported in attach\n",
-                    (UINT8) Opcode));
-
-                return_ACPI_STATUS (AE_TYPE);
-                break;
-            }
-        }
-
         else
         {
             /*
              * Cannot figure out the type -- set to DefAny which
              * will print as an error in the name table dump
              */
-
-            if (GetDebugLevel () > 0)
+            if (AcpiDbgLevel > 0)
             {
                 DUMP_PATHNAME (Node,
                     "NsAttachObject confused: setting bogus type for  ",
-                    ACPI_INFO, _COMPONENT);
+                    ACPI_LV_INFO, _COMPONENT);
 
-                if (AcpiTbSystemTablePointer (Object))
+                if (VALID_DESCRIPTOR_TYPE (Object, ACPI_DESC_TYPE_NAMED))
                 {
-                    DEBUG_PRINTP (ACPI_INFO,
-                        ("AML-stream code %02x\n", *(UINT8 *) Object));
-                }
-
-                else if (VALID_DESCRIPTOR_TYPE (Object, ACPI_DESC_TYPE_NAMED))
-                {
-                    DUMP_PATHNAME (Object, "name ", ACPI_INFO, _COMPONENT);
+                    DUMP_PATHNAME (Object, "name ", ACPI_LV_INFO, _COMPONENT);
                 }
 
                 else
                 {
-                    DUMP_PATHNAME (Object, "object ", ACPI_INFO, _COMPONENT);
+                    DUMP_PATHNAME (Object, "object ", ACPI_LV_INFO, _COMPONENT);
                     DUMP_STACK_ENTRY (Object);
                 }
             }
@@ -390,15 +289,14 @@ AcpiNsAttachObject (
     }
 
 
-    DEBUG_PRINTP (TRACE_EXEC, ("Installing obj %p into NameObj %p [%4.4s]\n",
-        ObjDesc, Node, &Node->Name));
+    ACPI_DEBUG_PRINT ((ACPI_DB_EXEC, "Installing %p into Node %p [%4.4s]\n",
+        ObjDesc, Node, (char*)&Node->Name));
 
 
     /*
      * Must increment the new value's reference count
      * (if it is an internal object)
      */
-
     AcpiUtAddReference (ObjDesc);
 
     /* Save the existing object (if any) for deletion later */
@@ -415,7 +313,6 @@ AcpiNsAttachObject (
     /*
      * Delete an existing attached object.
      */
-
     if (PreviousObjDesc)
     {
         /* One for the attach to the Node */
@@ -454,6 +351,7 @@ AcpiNsDetachObject (
 
     FUNCTION_TRACE ("NsDetachObject");
 
+
     ObjDesc = Node->Object;
     if (!ObjDesc)
     {
@@ -464,23 +362,12 @@ AcpiNsDetachObject (
 
     Node->Object = NULL;
 
-    /* Found a valid value */
+    ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "Object=%p Value=%p Name %4.4s\n",
+        Node, ObjDesc, (char*)&Node->Name));
 
-    DEBUG_PRINTP (ACPI_INFO, ("Object=%p Value=%p Name %4.4s\n",
-        Node, ObjDesc, &Node->Name));
+    /* Remove one reference on the object (and all subobjects) */
 
-    /*
-     * Not every value is an object allocated via AcpiUtCallocate,
-     * - must check
-     */
-
-    if (!AcpiTbSystemTablePointer (ObjDesc))
-    {
-        /* Attempt to delete the object (and all subobjects) */
-
-        AcpiUtRemoveReference (ObjDesc);
-    }
-
+    AcpiUtRemoveReference (ObjDesc);
     return_VOID;
 }
 
@@ -507,7 +394,7 @@ AcpiNsGetAttachedObject (
     {
         /* handle invalid */
 
-        DEBUG_PRINTP (ACPI_WARN, ("Null Node ptr\n"));
+        ACPI_DEBUG_PRINT ((ACPI_DB_WARN, "Null Node ptr\n"));
         return_PTR (NULL);
     }
 

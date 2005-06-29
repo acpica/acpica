@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: nsinit - namespace initialization
- *              $Revision: 1.25 $
+ *              $Revision: 1.33 $
  *
  *****************************************************************************/
 
@@ -120,6 +120,7 @@
 #include "acpi.h"
 #include "acnamesp.h"
 #include "acdispat.h"
+#include "acinterp.h"
 
 #define _COMPONENT          ACPI_NAMESPACE
         MODULE_NAME         ("nsinit")
@@ -149,9 +150,9 @@ AcpiNsInitializeObjects (
     FUNCTION_TRACE ("NsInitializeObjects");
 
 
-    DEBUG_PRINTP (TRACE_DISPATCH,
-        ("**** Starting initialization of namespace objects ****\n"));
-    DEBUG_PRINT_RAW (ACPI_OK, ("Completing Region and Field initialization:"));
+    ACPI_DEBUG_PRINT ((ACPI_DB_DISPATCH,
+        "**** Starting initialization of namespace objects ****\n"));
+    ACPI_DEBUG_PRINT_RAW ((ACPI_DB_OK, "Completing Region and Field initialization:"));
 
 
     Info.FieldCount = 0;
@@ -168,17 +169,17 @@ AcpiNsInitializeObjects (
                                 &Info, NULL);
     if (ACPI_FAILURE (Status))
     {
-        DEBUG_PRINTP (ACPI_ERROR, ("WalkNamespace failed! %x\n", Status));
+        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "WalkNamespace failed! %x\n", Status));
     }
 
-    DEBUG_PRINT_RAW (ACPI_OK,
-        ("\n%d/%d Regions, %d/%d Fields initialized (%d nodes total)\n",
+    ACPI_DEBUG_PRINT_RAW ((ACPI_DB_OK,
+        "\n%d/%d Regions, %d/%d Fields initialized (%d nodes total)\n",
         Info.OpRegionInit, Info.OpRegionCount, Info.FieldInit,
         Info.FieldCount, Info.ObjectCount));
-    DEBUG_PRINTP (TRACE_DISPATCH,
-        ("%d Control Methods found\n", Info.MethodCount));
-    DEBUG_PRINTP (TRACE_DISPATCH,
-        ("%d Op Regions found\n", Info.OpRegionCount));
+    ACPI_DEBUG_PRINT ((ACPI_DB_DISPATCH,
+        "%d Control Methods found\n", Info.MethodCount));
+    ACPI_DEBUG_PRINT ((ACPI_DB_DISPATCH,
+        "%d Op Regions found\n", Info.OpRegionCount));
 
     return_ACPI_STATUS (AE_OK);
 }
@@ -216,19 +217,19 @@ AcpiNsInitializeDevices (
     Info.Num_INI = 0;
 
 
-    DEBUG_PRINT_RAW (ACPI_OK, ("Executing device _INI methods:"));
+    ACPI_DEBUG_PRINT_RAW ((ACPI_DB_OK, "Executing device _INI methods:"));
 
     Status = AcpiNsWalkNamespace (ACPI_TYPE_DEVICE, ACPI_ROOT_OBJECT,
                     ACPI_UINT32_MAX, FALSE, AcpiNsInitOneDevice, &Info, NULL);
 
     if (ACPI_FAILURE (Status))
     {
-        DEBUG_PRINTP (ACPI_ERROR, ("WalkNamespace failed! %x\n", Status));
+        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "WalkNamespace failed! %x\n", Status));
     }
 
 
-    DEBUG_PRINT_RAW (ACPI_OK,
-        ("\n%d Devices found: %d _STA, %d _INI\n",
+    ACPI_DEBUG_PRINT_RAW ((ACPI_DB_OK,
+        "\n%d Devices found: %d _STA, %d _INI\n",
         Info.DeviceCount, Info.Num_STA, Info.Num_INI));
 
     return_ACPI_STATUS (Status);
@@ -269,6 +270,9 @@ AcpiNsInitOneObject (
     ACPI_OPERAND_OBJECT     *ObjDesc;
 
 
+    PROC_NAME ("NsInitOneObject");
+
+
     Info->ObjectCount++;
 
 
@@ -279,6 +283,22 @@ AcpiNsInitOneObject (
     if (!ObjDesc)
     {
         return (AE_OK);
+    }
+
+    if ((Type != ACPI_TYPE_REGION) &&
+        (Type != ACPI_TYPE_BUFFER_FIELD))
+    {
+        return (AE_OK);
+    }
+
+
+    /*
+     * Must lock the interpreter before executing AML code
+     */
+    Status = AcpiExEnterInterpreter ();
+    if (ACPI_FAILURE (Status))
+    {
+        return (Status);
     }
 
     switch (Type)
@@ -296,15 +316,15 @@ AcpiNsInitOneObject (
         Status = AcpiDsGetRegionArguments (ObjDesc);
         if (ACPI_FAILURE (Status))
         {
-            DEBUG_PRINT_RAW (ACPI_ERROR, ("\n"));
-            DEBUG_PRINT (ACPI_ERROR,
-                    ("%s while getting region arguments [%4.4s]\n",
-                    AcpiUtFormatException (Status), &Node->Name));
+            ACPI_DEBUG_PRINT_RAW ((ACPI_DB_ERROR, "\n"));
+            ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
+                    "%s while getting region arguments [%4.4s]\n",
+                    AcpiFormatException (Status), (char*)&Node->Name));
         }
 
-        if (!(AcpiDbgLevel & TRACE_INIT))
+        if (!(AcpiDbgLevel & ACPI_LV_INIT))
         {
-            DEBUG_PRINT_RAW (ACPI_OK, ("."));
+            ACPI_DEBUG_PRINT_RAW ((ACPI_DB_OK, "."));
         }
 
         break;
@@ -322,14 +342,14 @@ AcpiNsInitOneObject (
         Status = AcpiDsGetBufferFieldArguments (ObjDesc);
         if (ACPI_FAILURE (Status))
         {
-            DEBUG_PRINT_RAW (ACPI_ERROR, ("\n"));
-            DEBUG_PRINT (ACPI_ERROR,
-                    ("%s while getting buffer field arguments [%4.4s]\n",
-                    AcpiUtFormatException (Status), &Node->Name));
+            ACPI_DEBUG_PRINT_RAW ((ACPI_DB_ERROR, "\n"));
+            ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
+                    "%s while getting buffer field arguments [%4.4s]\n",
+                    AcpiFormatException (Status), (char*)&Node->Name));
         }
-        if (!(AcpiDbgLevel & TRACE_INIT))
+        if (!(AcpiDbgLevel & ACPI_LV_INIT))
         {
-            DEBUG_PRINT_RAW (ACPI_OK, ("."));
+            ACPI_DEBUG_PRINT_RAW ((ACPI_DB_OK, "."));
         }
 
 
@@ -339,10 +359,12 @@ AcpiNsInitOneObject (
         break;
     }
 
+
     /*
      * We ignore errors from above, and always return OK, since
      * we don't want to abort the walk on a single error.
      */
+    AcpiExExitInterpreter ();
     return (AE_OK);
 }
 
@@ -374,19 +396,19 @@ AcpiNsInitOneDevice (
     ACPI_DEVICE_WALK_INFO  *Info = (ACPI_DEVICE_WALK_INFO *) Context;
 
 
-    FUNCTION_TRACE ("AcpiNsInitOneDevice");
+    FUNCTION_TRACE ("NsInitOneDevice");
 
 
-    if (!(AcpiDbgLevel & TRACE_INIT))
+    if (!(AcpiDbgLevel & ACPI_LV_INIT))
     {
-        DEBUG_PRINT_RAW (ACPI_OK, ("."));
+        ACPI_DEBUG_PRINT_RAW ((ACPI_DB_OK, "."));
     }
 
     Info->DeviceCount++;
 
     AcpiUtAcquireMutex (ACPI_MTX_NAMESPACE);
 
-    Node = AcpiNsConvertHandleToEntry (ObjHandle);
+    Node = AcpiNsMapHandleToNode (ObjHandle);
     if (!Node)
     {
         AcpiUtReleaseMutex (ACPI_MTX_NAMESPACE);
@@ -398,7 +420,6 @@ AcpiNsInitOneDevice (
     /*
      * Run _STA to determine if we can run _INI on the device.
      */
-
     DEBUG_EXEC (AcpiUtDisplayInitPathname (Node, "_STA  [Method]"));
     Status = AcpiUtExecute_STA (Node, &Flags);
     if (ACPI_FAILURE (Status))
@@ -437,10 +458,10 @@ AcpiNsInitOneDevice (
 #ifdef ACPI_DEBUG
         NATIVE_CHAR *ScopeName = AcpiNsGetTablePathname (ObjHandle);
 
-        DEBUG_PRINTP (ACPI_WARN, ("%s._INI failed: %s\n",
-                ScopeName, AcpiUtFormatException (Status)));
+        ACPI_DEBUG_PRINT ((ACPI_DB_WARN, "%s._INI failed: %s\n",
+                ScopeName, AcpiFormatException (Status)));
 
-        AcpiUtFree (ScopeName);
+        ACPI_MEM_FREE (ScopeName);
 #endif
     }
 
