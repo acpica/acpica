@@ -15,15 +15,18 @@
  | legacy to ACPI mode state transition functions
  |__________________________________________________________________________
  |
- | $Revision: 1.7 $
- | $Date: 2005/06/29 16:43:45 $
+ | $Revision: 1.8 $
+ | $Date: 2005/06/29 16:43:46 $
  | $Log: evsci.c,v $
- | Revision 1.7  2005/06/29 16:43:45  aystarik
- |
+ | Revision 1.8  2005/06/29 16:43:46  aystarik
+ | 16/32/64-bit common data types
  |
  | 
- | date	99.02.16.17.56.00;	author rmosgrov;	state Exp;
+ | date	99.03.10.00.05.00;	author rmoore1;	state Exp;
  |
+ * 
+ * 8     3/09/99 4:05p Rmoore1
+ * 16/32/64-bit common data types
  * 
  * 7     2/16/99 9:56a Rmosgrov
  * 
@@ -75,7 +78,7 @@
 #include "evsci.h"
 #include "acpitbls.h"
 
-extern int  __AcpiLibInitStatus;
+extern INT32         __AcpiLibInitStatus;
 
 
 /**************************************************************************
@@ -97,9 +100,9 @@ extern int  __AcpiLibInitStatus;
 
 
 /*
-int InitializeSCI (int ProgramSCI)
+INT32        InitializeSCI (INT32        ProgramSCI)
 {
-    int ErrorMask=0, StatusOfIrq;
+    INT32            ErrorMask=0, StatusOfIrq;
 
 
     //  Set up the System Control Interrupt (SCI) as required.
@@ -214,10 +217,10 @@ int InitializeSCI (int ProgramSCI)
  *
  *************************************************************************/
 
-int 
+INT32        
 VerifyAcpiTablesPresent (char *TestName)
 {
-    int ErrorMask=0;
+    INT32            ErrorMask = 0;
 
     FUNCTION_TRACE ("VerifyAcpiTablesPresent");
 
@@ -256,10 +259,10 @@ VerifyAcpiTablesPresent (char *TestName)
  *
  *************************************************************************/
 
-int 
-AcpiEnable (char *TestName, int Flags)
+INT32        
+AcpiEnable (char *TestName, INT32        Flags)
 {
-    int ErrorMask = 0;
+    INT32            ErrorMask = 0;
 
     FUNCTION_TRACE ("AcpiEnable");
 
@@ -386,9 +389,10 @@ AcpiEnable (char *TestName, int Flags)
  *
  *************************************************************************/
 
-int AcpiDisable ()
+INT32        
+AcpiDisable ()
 {
-    int ErrorMask = 0;
+    INT32            ErrorMask = 0;
 
     FUNCTION_TRACE ("AcpiDisable");
 
