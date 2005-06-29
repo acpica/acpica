@@ -155,7 +155,7 @@ BOOLEAN                 opt_tables      = FALSE;
 BOOLEAN                 opt_disasm      = FALSE;
 BOOLEAN                 opt_stats       = FALSE;
 BOOLEAN                 opt_parse_jit   = FALSE;
-BOOLEAN					opt_verbose     = TRUE;
+BOOLEAN                 opt_verbose     = TRUE;
    
 
 
@@ -165,7 +165,7 @@ enum AmlDebuggerCommands
 {
     CMD_NOT_FOUND = 0,
     CMD_NULL,
-	CMD_ALLOCATIONS,
+    CMD_ALLOCATIONS,
     CMD_ARGS,
     CMD_ARGUMENTS,
     CMD_BREAKPOINT,
@@ -173,7 +173,7 @@ enum AmlDebuggerCommands
     CMD_CLOSE,
     CMD_DEBUG,
     CMD_DUMP,
-	CMD_ENABLEACPI,
+    CMD_ENABLEACPI,
     CMD_EVENT,
     CMD_EXECUTE,
     CMD_EXIT,
@@ -224,7 +224,7 @@ COMMAND_INFO                Commands[] =
     {"CLOSE",        0},
     {"DEBUG",        1},
     {"DUMP",         1},
-	{"ENABLEACPI",   0},
+    {"ENABLEACPI",   0},
     {"EVENT",        1},
     {"EXECUTE",      1},
     {"EXIT",         0},
@@ -617,14 +617,14 @@ DbCommandDispatch (
         DbDecodeAndDisplayObject (Args[1], Args[2]);
         break;
 
-	case CMD_ENABLEACPI:
-		Status = AcpiEnable();
-		if (ACPI_FAILURE(Status))
-		{
-			OsdPrintf("AcpiEnable failed (0x%x)\n", Status);
-			return Status;
-		}
-		break;
+    case CMD_ENABLEACPI:
+        Status = AcpiEnable();
+        if (ACPI_FAILURE(Status))
+        {
+            OsdPrintf("AcpiEnable failed (0x%x)\n", Status);
+            return Status;
+        }
+        break;
 
     case CMD_EVENT:
         OsdPrintf ("Event command not implemented\n");
@@ -787,7 +787,7 @@ DbCommandDispatch (
         DbSetOutputDestination (DB_REDIRECTABLE_OUTPUT);
         CmSubsystemShutdown ();
 
-        /* TBD: Need some way to re-initialize without re-creating the semaphores! */
+        /* TBD: [Restructure] Need some way to re-initialize without re-creating the semaphores! */
 
 //        AcpiInitialize (NULL);
         break;
@@ -920,7 +920,7 @@ DbUserCommands (
     ACPI_STATUS             Status = AE_OK;
 
 
-    /* TBD: Need a separate command line buffer for step mode */
+    /* TBD: [Restructure] Need a separate command line buffer for step mode */
 
     while (!Gbl_DbTerminateThreads)
     {

@@ -279,7 +279,7 @@ DbSingleStep (
 
         /* Set the breakpoint on the call, it will stop execution as soon as we return */
 
-        /* TBD: don't kill the user breakpoint! */
+        /* TBD: [Future] don't kill the user breakpoint! */
 
         Gbl_MethodBreakpoint = Op->AmlOffset + 1;  /* Must be non-zero! */
         Gbl_BreakpointWalk = WalkState;
@@ -384,12 +384,12 @@ DbInitialize (void)
         OsdQueueForExecution (0, DbExecuteThread, NULL);
     }
 
-	if (!opt_verbose)
-	{
-		INDENT_STRING = "    ";
+    if (!opt_verbose)
+    {
+        INDENT_STRING = "    ";
         opt_disasm = TRUE;
         opt_stats = FALSE;
-	}
+    }
 
 
     return 0;
