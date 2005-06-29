@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: amcreate - Named object creation
- *              $Revision: 1.53 $
+ *              $Revision: 1.54 $
  *
  *****************************************************************************/
 
@@ -852,15 +852,15 @@ AcpiAmlExecCreateMethod (
     /*
      * Get the concurrency count.  If required, a semaphore will be
      * created for this method when it is parsed.
-     *
-     * TBD: [Future]  for APCI 2.0, there will be a SyncLevel value, not
-     * just a flag
-     * Concurrency = SyncLevel + 1;.
      */
-
     if (MethodFlags & METHOD_FLAGS_SERIALIZED)
     {
-        ObjDesc->Method.Concurrency = 1;
+        /*
+         * ACPI 1.0: Concurrency = 1 
+         * ACPI 2.0: Concurrency = (SyncLevel (in method declaration) + 1)
+         */
+        ObjDesc->Method.Concurrency = (UINT8)
+                        (((MethodFlags & METHOD_FLAGS_SYNCH_LEVEL) >> 4) + 1);
     }
 
     else
