@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: nsdump - table dumping routines for debug
- *              $Revision: 1.86 $
+ *              $Revision: 1.88 $
  *
  *****************************************************************************/
 
@@ -459,15 +459,15 @@ AcpiNsDumpOneObject (
             break;
 
         case ACPI_TYPE_FIELD_UNIT:
-            Value = (UINT8 *) ObjDesc->FieldUnit.Container;
+            Value = (UINT8 *) ObjDesc->FieldUnit.ContainerObj;
             break;
 
-        case INTERNAL_TYPE_DEF_FIELD:
-            Value = (UINT8 *) ObjDesc->Field.Container;
+        case INTERNAL_TYPE_FIELD:
+            Value = (UINT8 *) ObjDesc->Field.RegionObj;
             break;
 
         case INTERNAL_TYPE_BANK_FIELD:
-            Value = (UINT8 *) ObjDesc->BankField.Container;
+            Value = (UINT8 *) ObjDesc->BankField.RegionObj;
             break;
 
         case INTERNAL_TYPE_INDEX_FIELD:

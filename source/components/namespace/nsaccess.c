@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: nsaccess - Top-level functions for accessing ACPI namespace
- *              $Revision: 1.122 $
+ *              $Revision: 1.123 $
  *
  ******************************************************************************/
 
@@ -404,14 +404,14 @@ AcpiNsLookup (
 
 
     /*
-     * This check is explicitly split provide relax the TypeToCheckFor
+     * This check is explicitly split to relax the TypeToCheckFor
      * conditions for BankFieldDefn.  Originally, both BankFieldDefn and
      * DefFieldDefn caused TypeToCheckFor to be set to ACPI_TYPE_REGION,
      * but the BankFieldDefn may also check for a Field definition as well
      * as an OperationRegion.
      */
 
-    if (INTERNAL_TYPE_DEF_FIELD_DEFN == Type)
+    if (INTERNAL_TYPE_FIELD_DEFN == Type)
     {
         /* DefFieldDefn defines fields in a Region */
 

@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: nsalloc - Namespace allocation and deletion utilities
- *              $Revision: 1.46 $
+ *              $Revision: 1.47 $
  *
  ******************************************************************************/
 
@@ -307,7 +307,7 @@ AcpiNsInstallNode (
      */
 
     if ((ACPI_TYPE_ANY == Type) ||
-        (INTERNAL_TYPE_DEF_FIELD_DEFN == Type) ||
+        (INTERNAL_TYPE_FIELD_DEFN == Type) ||
         (INTERNAL_TYPE_BANK_FIELD_DEFN == Type))
     {
         /*
@@ -327,7 +327,7 @@ AcpiNsInstallNode (
      * looking up the Region in which the field will be defined
      */
 
-    if ((INTERNAL_TYPE_DEF_FIELD_DEFN == Type) ||
+    if ((INTERNAL_TYPE_FIELD_DEFN == Type) ||
         (INTERNAL_TYPE_BANK_FIELD_DEFN == Type))
     {
         Type = ACPI_TYPE_REGION;
