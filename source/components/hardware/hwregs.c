@@ -100,7 +100,6 @@
 
 #include <acpi.h>
 #include <hardware.h>
-#include <stdarg.h>
 
 
 #define _THIS_MODULE        "hwregs.c"
