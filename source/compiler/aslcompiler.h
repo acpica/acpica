@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslcompiler.h - common include file
- *              $Revision: 1.39 $
+ *              $Revision: 1.41 $
  *
  *****************************************************************************/
 
@@ -137,18 +137,12 @@
 #include "aslglobal.h"
 
 
-/* TBD: Move to definition of NAMESPACE NODE */
-
-#define ANOBJ_METHOD_NO_RETVAL          0x20
-#define ANOBJ_METHOD_SOME_NO_RETVAL     0x40
-
-
 /*
  * Compiler versions and names
  */
 
-#define CompilerVersion             "X207"
-#define CompilerCreatorRevision     0x00020206  /* Acpi 2.0, Version# */
+#define CompilerVersion             "X2009"
+#define CompilerCreatorRevision     0x02002009  /* Acpi 2.0, Version# */
 
 #define CompilerId                  "Intel ACPI Component Architecture ASL Compiler"
 #define CompilerCopyright           "Copyright (C) 2000 Intel Corporation"
@@ -171,7 +165,7 @@
 #define ASL_PTR_ADD(a,b)            ((UINT8 *)(a) = ((UINT8 *)(a) + (b)))
 #define ASL_GET_CHILD_NODE(a)       (a)->Child
 #define ASL_GET_PEER_NODE(a)        (a)->Peer
-#define OP_TABLE_ENTRY(a,b,c)       {b,a,c}
+#define OP_TABLE_ENTRY(a,b,c,d)     {b,d,a,c}
 
 
 #define ASL_PARSE_OPCODE_BASE       ACCESSAS        /* First Lex type */
@@ -497,6 +491,18 @@ AnSemanticAnalysisWalkBegin (
 
 void
 AnSemanticAnalysisWalkEnd (
+    ASL_PARSE_NODE          *Node,
+    UINT32                  Level,
+    void                    *Context);
+
+void
+AnMethodAnalysisWalkBegin (
+    ASL_PARSE_NODE          *Node,
+    UINT32                  Level,
+    void                    *Context);
+
+void
+AnMethodAnalysisWalkEnd (
     ASL_PARSE_NODE          *Node,
     UINT32                  Level,
     void                    *Context);

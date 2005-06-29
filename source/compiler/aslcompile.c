@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslcompile - top level compile module
- *              $Revision: 1.10 $
+ *              $Revision: 1.11 $
  *
  *****************************************************************************/
 
@@ -284,14 +284,6 @@ CmDoCompile (void)
     }
 
 
-    /* Semantic error checking */
-
-    AnalysisWalkInfo.MethodStack = NULL;
-
-    DbgPrint ("\nSemantic analysis\n\n");
-    TrWalkParseTree (ASL_WALK_VISIT_TWICE, AnSemanticAnalysisWalkBegin,
-                        AnSemanticAnalysisWalkEnd, &AnalysisWalkInfo);
-
 
     /* Namespace loading */
 
@@ -301,6 +293,20 @@ CmDoCompile (void)
     /* Namespace lookup */
 
     LkCrossReferenceNamespace ();
+
+    /* Semantic error checking part one - check control methods */
+
+    AnalysisWalkInfo.MethodStack = NULL;
+
+    DbgPrint ("\nSemantic analysis\n\n");
+    TrWalkParseTree (ASL_WALK_VISIT_TWICE, AnMethodAnalysisWalkBegin,
+                        AnMethodAnalysisWalkEnd, &AnalysisWalkInfo);
+
+    /* Semantic error checking part two - operand type checking */
+
+    TrWalkParseTree (ASL_WALK_VISIT_TWICE, AnSemanticAnalysisWalkBegin,
+                        AnSemanticAnalysisWalkEnd, &AnalysisWalkInfo);
+
 
     /* Calculate all AML package lengths */
 

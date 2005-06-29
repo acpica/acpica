@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslcodegen - AML code generation
- *              $Revision: 1.22 $
+ *              $Revision: 1.23 $
  *
  *****************************************************************************/
 
@@ -200,7 +200,7 @@ CgAmlWriteWalk (
         DbgPrint ("                ");
     }
 
-    DbgPrint ("Val-%08X POp-%04X AOp-%04X OpLen-%01X PByts-%01X Len-%04X SubLen-%04X PSubLen-%04X Node-%08X Chld-%08X Paren-%08X Flags-%04X\n",
+    DbgPrint ("Val-%08X POp-%04X AOp-%04X OpLen-%01X PByts-%01X Len-%04X SubLen-%04X PSubLen-%04X Node-%08X Chld-%08X Paren-%08X Flags-%04X AcTyp-%08X\n",
                 Node->Value.Integer32,
                 Node->ParseOpcode,
                 Node->AmlOpcode,
@@ -212,7 +212,8 @@ CgAmlWriteWalk (
                 Node,
                 Node->Child,
                 Node->Parent,
-                Node->Flags);
+                Node->Flags,
+                Node->AcpiBtype);
 
 
     LsWriteNodeToListing (Node);

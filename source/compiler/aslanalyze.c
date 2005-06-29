@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslanalyze.c - check for semantic errors
- *              $Revision: 1.17 $
+ *              $Revision: 1.18 $
  *
  *****************************************************************************/
 
@@ -118,8 +118,348 @@
 
 #include "AslCompiler.h"
 #include "AslCompiler.y.h"
+#include "acparser.h"
+#include "amlcode.h"
 
 #include <ctype.h>
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    
+ *
+ * PARAMETERS:  
+ *
+ * RETURN:      none
+ *
+ * DESCRIPTION: 
+ *
+ ******************************************************************************/
+
+UINT32
+AnMapArgTypeToAcpiType (
+    UINT32                  ArgType)
+{
+
+    switch (ArgType)
+    {
+    case ARGI_ANYTYPE:
+        return (ACPI_BTYPE_OBJECTS_AND_REFS);
+
+    case ARGI_TARGETREF:
+        return (ACPI_BTYPE_OBJECTS_AND_REFS);
+
+    case ARGI_REFERENCE:
+        return (ACPI_BTYPE_REFERENCE);
+
+    case ARGI_INTEGER_REF:
+        return (ACPI_BTYPE_NUMBER);
+
+    case ARGI_OBJECT_REF:
+        return (ACPI_BTYPE_ALL_OBJECTS);
+
+    case ARGI_DEVICE_REF:
+        return (ACPI_BTYPE_DEVICE_OBJECTS);
+
+    case ARGI_IF:
+        return (ACPI_BTYPE_ANY);
+
+    case ARGI_NUMBER:
+        return (ACPI_BTYPE_NUMBER);
+
+    case ARGI_STRING:
+        return (ACPI_BTYPE_STRING);
+
+    case ARGI_BUFFER:
+        return (ACPI_BTYPE_BUFFER);
+
+    case ARGI_PACKAGE:
+        return (ACPI_BTYPE_PACKAGE);
+
+    case ARGI_COMPUTEDATA:
+        return (ACPI_BTYPE_COMPUTE_DATA);
+
+    case ARGI_DATAOBJECT:     /* Buffer, string, package or reference to a Node - Used only by SizeOf operator*/
+        return (ACPI_BTYPE_STRING | ACPI_BTYPE_BUFFER | ACPI_BTYPE_PACKAGE | ACPI_BTYPE_REFERENCE);
+
+    case ARGI_COMPLEXOBJ:    /* Buffer or package */
+        return (ACPI_BTYPE_BUFFER | ACPI_BTYPE_PACKAGE);
+
+    case ARGI_MUTEX:
+        return (ACPI_BTYPE_MUTEX);
+
+    case ARGI_EVENT:
+        return (ACPI_BTYPE_EVENT);
+
+    case ARGI_REGION:
+        return (ACPI_BTYPE_REGION);
+
+    case ARGI_DDBHANDLE:
+        return (ACPI_BTYPE_DDB_HANDLE);
+    }
+
+    return (ACPI_BTYPE_OBJECTS_AND_REFS);
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AnMapEtypeToBtype
+ *
+ * PARAMETERS:  Etype           - Encoded ACPI Type
+ *
+ * RETURN:      Btype
+ *
+ * DESCRIPTION: Convert an encoded ACPI type to a bitfield type applying the
+ *              operand conversion rules.  In other words, returns the type(s)
+ *              this Etype is implicitly converted to during interpretation.
+ *
+ ******************************************************************************/
+
+UINT32
+AnMapEtypeToBtype (
+    UINT32              Etype)
+{
+
+
+    if (Etype == ACPI_TYPE_ANY)
+    {
+        return ACPI_BTYPE_OBJECTS_AND_REFS;
+    }
+
+    /* Try the standard ACPI data types */
+
+    if (Etype <= ACPI_TYPE_MAX)
+    {
+        /*
+         * This switch statement implements the allowed operand conversion 
+         * rules as per the "ASL Data Types" section of the ACPI 
+         * specification.
+         */
+        switch (Etype)
+        {
+        case ACPI_TYPE_NUMBER:
+            return (ACPI_BTYPE_COMPUTE_DATA | ACPI_BTYPE_DDB_HANDLE);
+
+        case ACPI_TYPE_STRING:
+        case ACPI_TYPE_BUFFER:
+            return (ACPI_BTYPE_COMPUTE_DATA);
+
+        case ACPI_TYPE_PACKAGE:
+            return (ACPI_BTYPE_PACKAGE);
+
+        case ACPI_TYPE_FIELD_UNIT:
+            return (ACPI_BTYPE_COMPUTE_DATA | ACPI_BTYPE_FIELD_UNIT);
+
+        case ACPI_TYPE_BUFFER_FIELD:
+            return (ACPI_BTYPE_COMPUTE_DATA | ACPI_BTYPE_BUFFER_FIELD);
+
+        case ACPI_TYPE_DDB_HANDLE:
+            return (ACPI_BTYPE_NUMBER | ACPI_BTYPE_DDB_HANDLE);
+
+        case ACPI_BTYPE_DEBUG_OBJECT:
+            return (0);     /* Cannot be used as a source operand */
+
+        default:
+            return (1 << (Etype - 1));
+        }
+    }
+
+    /* Try the internal data types */
+
+    switch (Etype)
+    {
+    
+    case INTERNAL_TYPE_DEF_FIELD:
+    case INTERNAL_TYPE_BANK_FIELD:
+    case INTERNAL_TYPE_INDEX_FIELD:
+
+        /* Named fields can be either Integer/Buffer/String */
+
+        return (ACPI_BTYPE_COMPUTE_DATA);
+
+    case INTERNAL_TYPE_ALIAS:
+        return (ACPI_BTYPE_NUMBER);
+
+
+    case INTERNAL_TYPE_RESOURCE:
+        return (ACPI_BTYPE_COMPUTE_DATA);
+
+    default:
+        printf ("Unhandled encoded type: %X\n", Etype);
+        return (0);
+    }
+
+
+    return 0;
+
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AnMapBtypeToEtype
+ *
+ * PARAMETERS:  Btype               - Bitfield of ACPI types
+ *
+ * RETURN:      none
+ *
+ * DESCRIPTION: Convert a bitfield type to an encoded type
+ *
+ ******************************************************************************/
+
+UINT32
+AnMapBtypeToEtype (
+    UINT32              Btype)
+{
+    UINT32              i;
+    UINT32              Etype;
+
+
+    if (Btype == 0)
+    {
+        return 0;
+    }
+
+    Etype = 1;
+    for (i = 1; i < Btype; i *= 2)
+    {
+        Etype++;
+    }
+
+    return (Etype);
+}
+
+
+
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AnFormatBtype
+ *
+ * PARAMETERS:  Btype               - Bitfield of ACPI types
+ *              Buffer              - Where to put the ascii string
+ *
+ * RETURN:      None.
+ *
+ * DESCRIPTION: Convert a Btype to a string of ACPI types
+ *
+ ******************************************************************************/
+
+void
+AnFormatBtype (
+    UINT32              Btype,
+    char                *Buffer)
+{
+    UINT32              Type;
+    BOOLEAN             First = TRUE;
+
+
+
+    *Buffer = 0;
+
+    for (Type = 1; Type < ACPI_TYPE_MAX; Type++)
+    {
+        if (Btype & 0x00000001)
+        {
+            if (!First)
+            {
+                strcat (Buffer, "|");
+            }
+            First = FALSE;
+
+            strcat (Buffer, AcpiCmGetTypeName (Type));
+        }
+
+        Btype >>= 1;
+    }
+
+
+    if (Btype & 0x00000001)
+    {
+        if (!First)
+        {
+            strcat (Buffer, "|");
+        }
+        First = FALSE;
+        strcat (Buffer, "Reference");
+    }
+
+    Btype >>= 1;
+    if (Btype & 0x00000001)
+    {
+        if (!First)
+        {
+            strcat (Buffer, "|");
+        }
+        First = FALSE;
+        strcat (Buffer, "Resource");
+    }
+}
+
+
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AnGetBtype 
+ *
+ * PARAMETERS:  
+ *
+ * RETURN:      None.
+ *
+ * DESCRIPTION: Get the (bitfield) ACPI type associated with the parse node.
+ *              Handles the case where the node is a name or method call and
+ *              the actual type must be obtained from the namespace node.
+ *
+ ******************************************************************************/
+
+UINT32
+AnGetBtype (
+    ASL_PARSE_NODE          *PsNode)
+{
+    ACPI_NAMESPACE_NODE     *NsNode;
+    ASL_PARSE_NODE          *ReferencedNode;
+    UINT32                  AcpiBtype = 0;
+
+
+    if ((PsNode->ParseOpcode == NAMESEG)     ||
+        (PsNode->ParseOpcode == NAMESTRING)  ||
+        (PsNode->ParseOpcode == METHODCALL))
+    {
+        NsNode = PsNode->NsNode;
+        if (!NsNode)
+        {
+            DbgPrint ("Null attached Nsnode: [%s] at line %d\n", 
+                        PsNode->ParseOpName, PsNode->LineNumber);
+            return ACPI_UINT32_MAX;
+        }
+
+        AcpiBtype = AnMapEtypeToBtype (NsNode->Type);
+
+        if (PsNode->ParseOpcode == METHODCALL)
+        {
+            ReferencedNode = NsNode->Object;
+            if (!ReferencedNode)
+            {
+               printf ("No back ptr to PsNode: type %X\n", NsNode->Type);
+               return ACPI_UINT32_MAX;
+            }
+
+            AcpiBtype = ReferencedNode->AcpiBtype;
+        }
+    }
+
+    else
+    {
+        AcpiBtype = PsNode->AcpiBtype;
+    }
+
+
+    return (AcpiBtype);
+}
+
 
 
 /*******************************************************************************
@@ -242,9 +582,10 @@ AnCheckForReservedMethod (
 }
 
 
+
 /*******************************************************************************
  *
- * FUNCTION:    AnSemanticAnalysisWalkBegin
+ * FUNCTION:    AnMethodAnalysisWalkBegin
  *
  * PARAMETERS:  ASL_WALK_CALLBACK
  *
@@ -258,7 +599,7 @@ AnCheckForReservedMethod (
  ******************************************************************************/
 
 void
-AnSemanticAnalysisWalkBegin (
+AnMethodAnalysisWalkBegin (
     ASL_PARSE_NODE          *Node,
     UINT32                  Level,
     void                    *Context)
@@ -281,6 +622,7 @@ AnSemanticAnalysisWalkBegin (
 
         MethodInfo = UtLocalCalloc (sizeof (ASL_METHOD_INFO));
         MethodInfo->Next = WalkInfo->MethodStack;
+        MethodInfo->Node = Node;
         WalkInfo->MethodStack = MethodInfo;
 
         /* Get the NumArguments node */
@@ -378,15 +720,10 @@ AnSemanticAnalysisWalkBegin (
             MethodInfo->NumReturnNoValue++;
         }
         break;
-
-
-    case NAMESEG:
-    case NAMESTRING:
-
-       break;
-
-    } /* end switch */
+    }
 }
+
+
 
 
 /*******************************************************************************
@@ -431,7 +768,7 @@ AnLastStatementIsReturn (
 
 /*******************************************************************************
  *
- * FUNCTION:    AnSemanticAnalysisWalkEnd
+ * FUNCTION:    AnMethodAnalysisWalkEnd
  *
  * PARAMETERS:  ASL_WALK_CALLBACK
  *
@@ -443,13 +780,13 @@ AnLastStatementIsReturn (
  ******************************************************************************/
 
 void
-AnSemanticAnalysisWalkEnd (
+AnMethodAnalysisWalkEnd (
     ASL_PARSE_NODE          *Node,
     UINT32                  Level,
     void                    *Context)
 {
     ASL_ANALYSIS_WALK_INFO  *WalkInfo = (ASL_ANALYSIS_WALK_INFO *) Context;
-    ASL_METHOD_INFO         *MethodInfo;
+    ASL_METHOD_INFO         *MethodInfo = WalkInfo->MethodStack;
     ASL_PARSE_NODE          *SecondToLastNode = NULL;
     ASL_PARSE_NODE          *LastNode = NULL;
 
@@ -458,7 +795,6 @@ AnSemanticAnalysisWalkEnd (
     {
     case METHOD:
 
-        MethodInfo = WalkInfo->MethodStack;
         WalkInfo->MethodStack = MethodInfo->Next;
 
 
@@ -525,6 +861,15 @@ AnSemanticAnalysisWalkEnd (
     case RETURN:
 
         Node->Parent->Flags |= NODE_HAS_NO_EXIT;
+
+        if ((Node->Child) &&
+            (Node->Child->ParseOpcode != DEFAULT_ARG))
+        {
+            /* Returns a value, get it's type */
+
+            MethodInfo->Node->AcpiBtype |= AnGetBtype (Node->Child);
+        }
+            
         break;
 
 
@@ -559,5 +904,239 @@ AnSemanticAnalysisWalkEnd (
         break;
     }
 }
+
+
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AnSemanticAnalysisWalkBegin
+ *
+ * PARAMETERS:  ASL_WALK_CALLBACK
+ *
+ * RETURN:      none
+ *
+ * DESCRIPTION: Descending callback for the analysis walk.  Check methods for :
+ *              1) Initialized local variables
+ *              2) Valid arguments
+ *              3) Return types
+ *
+ ******************************************************************************/
+
+void
+AnSemanticAnalysisWalkBegin (
+    ASL_PARSE_NODE          *Node,
+    UINT32                  Level,
+    void                    *Context)
+{
+    ASL_ANALYSIS_WALK_INFO  *WalkInfo = (ASL_ANALYSIS_WALK_INFO *) Context;
+
+
+
+
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AnSemanticAnalysisWalkEnd
+ *
+ * PARAMETERS:  ASL_WALK_CALLBACK
+ *
+ * RETURN:      None.
+ *
+ * DESCRIPTION: Ascending callback for analysis walk.  Complete method
+ *              return analysis.
+ *
+ ******************************************************************************/
+
+void
+AnSemanticAnalysisWalkEnd (
+    ASL_PARSE_NODE          *Node,
+    UINT32                  Level,
+    void                    *Context)
+{
+    ASL_ANALYSIS_WALK_INFO  *WalkInfo = (ASL_ANALYSIS_WALK_INFO *) Context;
+    ACPI_OPCODE_INFO        *OpInfo;
+    UINT32                  ParseArgTypes;
+    UINT32                  RuntimeArgTypes;
+    UINT32                  RuntimeArgTypes2;
+    UINT32                  RequiredAcpiType;
+    ASL_PARSE_NODE          *ArgNode;
+    UINT32                  ArgType;
+    UINT32                  AcpiBtype;
+    UINT32                  AcpiEtype;
+    UINT32                  OpcodeClass;
+    UINT32                  i;
+
+
+    switch (Node->AmlOpcode)
+    {
+    case AML_RAW_DATA_BYTE:
+    case AML_RAW_DATA_WORD:
+    case AML_RAW_DATA_DWORD:
+    case AML_RAW_DATA_QWORD:
+    case AML_RAW_DATA_BUFFER:
+    case AML_RAW_DATA_CHAIN:
+    case AML_PACKAGE_LENGTH:
+    case AML_UNASSIGNED_OPCODE:
+    case AML_DEFAULT_ARG_OP:
+        return;
+
+    }
+
+    OpInfo = AcpiPsGetOpcodeInfo (Node->AmlOpcode);
+    if (!OpInfo)
+    {
+        return;
+    }
+
+
+    ArgNode         = Node->Child;
+    RuntimeArgTypes = OpInfo->RuntimeArgs;
+    ParseArgTypes   = OpInfo->ParseArgs;
+    OpcodeClass     = ACPI_GET_OP_CLASS (OpInfo);
+
+    /* Ignore the non-executable opcodes */
+
+    if (RuntimeArgTypes == ARGI_INVALID_OPCODE)
+    {
+        return;
+    }
+
+
+    switch (OpcodeClass)
+    {
+    case OPTYPE_MONADIC2:
+    case OPTYPE_MONADIC2R:
+    case OPTYPE_DYADIC2:
+    case OPTYPE_DYADIC2R:
+    case OPTYPE_DYADIC2S:
+    case OPTYPE_INDEX:
+    case OPTYPE_MATCH:
+
+        RuntimeArgTypes2 = 0;
+        while (ArgType = GET_CURRENT_ARG_TYPE (RuntimeArgTypes))
+        {
+            RuntimeArgTypes2 <<= ARG_TYPE_WIDTH;
+            RuntimeArgTypes2 |= ArgType;
+            INCREMENT_ARG_LIST (RuntimeArgTypes);
+        }
+
+        i = 1;
+        while (ArgType = GET_CURRENT_ARG_TYPE (RuntimeArgTypes2))
+        {
+
+            RequiredAcpiType = AnMapArgTypeToAcpiType (ArgType);
+    
+            AcpiBtype = AnGetBtype (ArgNode);
+            if (AcpiBtype == ACPI_UINT32_MAX)
+            {
+                goto NextArgument;
+            }
+
+            /* Examine the arg based on the required type of the arg */
+
+            switch (ArgType)
+            {
+            case ARGI_TARGETREF:
+
+                if (ArgNode->ParseOpcode == ZERO)
+                {
+                    /* ZERO is the placeholder for "don't store result" */
+
+                    AcpiBtype = RequiredAcpiType;
+                    break;
+                }
+
+                if ((ArgNode->ParseOpcode == METHODCALL) ||
+                    (ArgNode->ParseOpcode == DEREFOF))
+                {
+                    break;
+                }
+   
+                AcpiBtype = RequiredAcpiType;
+                break;
+                
+
+            case ARGI_REFERENCE:            /* References */
+            case ARGI_INTEGER_REF:
+            case ARGI_OBJECT_REF:
+            case ARGI_DEVICE_REF:
+
+                switch (ArgNode->ParseOpcode)
+                {
+                case LOCAL0:
+                case LOCAL1:
+                case LOCAL2:
+                case LOCAL3:
+                case LOCAL4:
+                case LOCAL5:
+                case LOCAL6:
+                case LOCAL7:
+
+                    /* TBD: implement analysis of current value (type) of the local */
+
+                    break;
+
+                case ARG0:
+                case ARG1:
+                case ARG2:
+                case ARG3:
+                case ARG4:
+                case ARG5:
+                case ARG6:
+
+                    /* Hard to analyze argument types, sow we won't */
+                    break;
+
+                case DEBUG:
+                    break;
+
+                case REFOF:
+                case INDEX:
+                    break;
+
+                }
+                break;
+            }
+
+
+            /* 
+             * Now check if the actual type(s) match at least one
+             * bit to the required type
+             */
+            if (!(AcpiBtype & RequiredAcpiType))
+            {
+                AcpiEtype = AnMapBtypeToEtype (AcpiBtype);
+
+                AnFormatBtype (RequiredAcpiType, StringBuffer);
+
+                if (ArgNode->ParseOpcode == METHODCALL)
+                {
+                    sprintf (MsgBuffer, "Method returns %s, \"%s\" requires %s", 
+                                AcpiCmGetTypeName (AcpiEtype), OpInfo->Name, StringBuffer);
+                }
+                else
+                {
+                    sprintf (MsgBuffer, "Found %s, \"%s\" requires %s", 
+                                AcpiCmGetTypeName (AcpiEtype), OpInfo->Name, StringBuffer);
+                }
+
+                AslError (ASL_ERROR, ASL_MSG_INVALID_TYPE, ArgNode, MsgBuffer);
+            }
+
+
+        NextArgument:
+            ArgNode = ArgNode->Peer;
+            INCREMENT_ARG_LIST (RuntimeArgTypes2);
+            i++;
+        }
+    }
+    
+
+}
+
+
 
 
