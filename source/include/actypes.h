@@ -167,104 +167,14 @@ typedef int                 ACPI_PTRDIFF;
 typedef unsigned int        ACPI_SIZE;
 
 
-/*
- * data type ranges
- */
-
-#define ACPI_UCHAR_MAX      0xFF
-#define ACPI_INT_MAX        0x7FFFFFFF
-#define ACPI_UINT_MAX       0xFFFFFFFF
-#define ACPI_LONG_MAX       0x7FFFFFFF
-#define ACPI_ULONG_MAX      0xFFFFFFFF
-
- 
- /* 
- * Data manipulation macros 
- */
-
-#ifndef LOWORD
-#define LOWORD(l)           ((UINT16)(UINT32)(l))
-#endif
-
-#ifndef HIWORD
-#define HIWORD(l)           ((UINT16)((((UINT32)(l)) >> 16) & 0xFFFF))
-#endif  
-
-#ifndef LOBYTE
-#define LOBYTE(l)           ((UINT8)(UINT16)(l))
-#endif
-
-#ifndef HIBYTE
-#define HIBYTE(l)           ((UINT8)((((UINT16)(l)) >> 8) & 0xFF))
-#endif
-
-#define BIT0(x)             ((((x) & 0x01) > 0) ? 1 : 0)
-#define BIT1(x)             ((((x) & 0x02) > 0) ? 1 : 0)
-#define BIT2(x)             ((((x) & 0x04) > 0) ? 1 : 0)
-#define BIT3(x)             ((((x) & 0x08) > 0) ? 1 : 0)
-#define BIT4(x)             ((((x) & 0x10) > 0) ? 1 : 0)
-#define BIT5(x)             ((((x) & 0x20) > 0) ? 1 : 0)
-#define BIT6(x)             ((((x) & 0x40) > 0) ? 1 : 0)
-#define BIT7(x)             ((((x) & 0x80) > 0) ? 1 : 0)
-
-#define LOW_BASE(w)         ((UINT16) ((w) & 0x0000FFFF))
-#define MID_BASE(b)         ((UINT8) (((b) & 0x00FF0000) >> 16))
-#define HI_BASE(b)          ((UINT8) (((b) & 0xFF000000) >> 24))
-#define LOW_LIMIT(w)        ((UINT16) ((w) & 0x0000FFFF))
-#define HI_LIMIT(b)         ((UINT8) (((b) & 0x00FF0000) >> 16))
-
-
-/*
- * Fast power-of-two math for non-optimized compilers
- */
-
-#define DIV_2(a)            ((a)>>1)
-#define MUL_2(a)            ((a)<<1)
-#define MOD_2(a)            ((a)&0x01)
-
-#define DIV_4(a)            ((a)>>2)
-#define MUL_4(a)            ((a)<<2)
-#define MOD_4(a)            ((a)&0x03)
-
-#define DIV_8(a)            ((a)>>3)
-#define MUL_8(a)            ((a)<<3)
-#define MOD_8(a)            ((a)&0x07)
-
-#define DIV_16(a)           ((a)>>4)
-#define MUL_16(a)           ((a)<<4)
-#define MOD_16(a)           ((a)&0x0F)
-
-
-/* 
- * Useful defines 
- */
-
-#ifdef FALSE
-#undef FALSE
-#endif
-#define FALSE               (1 == 0)
-
-#ifdef TRUE
-#undef TRUE
-#endif
-#define TRUE                (1 == 1)
-
-#ifndef NULL
-#define NULL                (void *) 0
-#endif
-
-
 /* 
  * Local datatypes 
  */
 
 
-
-/* Types specific to the OS-independent subsystem interfaces */
-
-typedef UINT32              ACPI_STATUS;
-typedef UINT32              ACPI_NAME;
-typedef char*               ACPI_STRING;
+typedef UINT32              ACPI_STATUS;    /* All ACPI Exceptions */
+typedef UINT32              ACPI_NAME;      /* 4-char ACPI name */
+typedef char*               ACPI_STRING;    /* Null terminated ASCII string */
 typedef void*               ACPI_HANDLE;    /* Actually a ptr to an NTE */
 
 
@@ -284,6 +194,7 @@ typedef UINT32              ACPI_TABLE_TYPE;
 #define TABLE_SSDT          (ACPI_TABLE_TYPE) 7
 #define TABLE_SBDT          (ACPI_TABLE_TYPE) 8
 #define ACPI_TABLE_MAX      8
+#define NUM_ACPI_TABLES     9
 
 
 /* 
@@ -507,6 +418,95 @@ typedef struct
    UINT32                   Length;      /* length of method code including MethodFlags */
 
 } METHOD_INFO;
+
+
+/*
+ * data type ranges
+ */
+
+#define ACPI_UCHAR_MAX      0xFF
+#define ACPI_INT_MAX        0x7FFFFFFF
+#define ACPI_UINT_MAX       0xFFFFFFFF
+#define ACPI_LONG_MAX       0x7FFFFFFF
+#define ACPI_ULONG_MAX      0xFFFFFFFF
+
+ 
+ /* 
+ * Data manipulation macros 
+ */
+
+#ifndef LOWORD
+#define LOWORD(l)           ((UINT16)(UINT32)(l))
+#endif
+
+#ifndef HIWORD
+#define HIWORD(l)           ((UINT16)((((UINT32)(l)) >> 16) & 0xFFFF))
+#endif  
+
+#ifndef LOBYTE
+#define LOBYTE(l)           ((UINT8)(UINT16)(l))
+#endif
+
+#ifndef HIBYTE
+#define HIBYTE(l)           ((UINT8)((((UINT16)(l)) >> 8) & 0xFF))
+#endif
+
+#define BIT0(x)             ((((x) & 0x01) > 0) ? 1 : 0)
+#define BIT1(x)             ((((x) & 0x02) > 0) ? 1 : 0)
+#define BIT2(x)             ((((x) & 0x04) > 0) ? 1 : 0)
+#define BIT3(x)             ((((x) & 0x08) > 0) ? 1 : 0)
+#define BIT4(x)             ((((x) & 0x10) > 0) ? 1 : 0)
+#define BIT5(x)             ((((x) & 0x20) > 0) ? 1 : 0)
+#define BIT6(x)             ((((x) & 0x40) > 0) ? 1 : 0)
+#define BIT7(x)             ((((x) & 0x80) > 0) ? 1 : 0)
+
+#define LOW_BASE(w)         ((UINT16) ((w) & 0x0000FFFF))
+#define MID_BASE(b)         ((UINT8) (((b) & 0x00FF0000) >> 16))
+#define HI_BASE(b)          ((UINT8) (((b) & 0xFF000000) >> 24))
+#define LOW_LIMIT(w)        ((UINT16) ((w) & 0x0000FFFF))
+#define HI_LIMIT(b)         ((UINT8) (((b) & 0x00FF0000) >> 16))
+
+
+/*
+ * Fast power-of-two math for non-optimized compilers
+ */
+
+#define DIV_2(a)            ((a)>>1)
+#define MUL_2(a)            ((a)<<1)
+#define MOD_2(a)            ((a)&0x01)
+
+#define DIV_4(a)            ((a)>>2)
+#define MUL_4(a)            ((a)<<2)
+#define MOD_4(a)            ((a)&0x03)
+
+#define DIV_8(a)            ((a)>>3)
+#define MUL_8(a)            ((a)<<3)
+#define MOD_8(a)            ((a)&0x07)
+
+#define DIV_16(a)           ((a)>>4)
+#define MUL_16(a)           ((a)<<4)
+#define MOD_16(a)           ((a)&0x0F)
+
+
+/* 
+ * Useful defines 
+ */
+
+#ifdef FALSE
+#undef FALSE
+#endif
+#define FALSE               (1 == 0)
+
+#ifdef TRUE
+#undef TRUE
+#endif
+#define TRUE                (1 == 1)
+
+#ifndef NULL
+#define NULL                (void *) 0
+#endif
+
+
 
 
 /* TBD: remove! */
