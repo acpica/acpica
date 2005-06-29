@@ -241,6 +241,10 @@ void
 CmDeleteInternalObjDispatch (
     ACPI_OBJECT_INTERNAL    *Object);
 
+void
+CmDeleteOperand (
+    ACPI_OBJECT_INTERNAL    **Operand);
+
 
 /*
  * CmMutex - mutual exclusion interfaces
