@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: aeexec - Top level parse and execute routines
- *              $Revision: 1.46 $
+ *              $Revision: 1.47 $
  *
  *****************************************************************************/
 
@@ -448,8 +448,8 @@ AeInstallHandlers (void)
                         (ACPI_ADR_SPACE_TYPE) i, AeRegionHandler, AeRegionInit, NULL);
         if (ACPI_FAILURE (Status))
         {
-            ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, 
-                "Could not install an OpRegion handler for %s space (%d)\n", 
+            ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
+                "Could not install an OpRegion handler for %s space (%d)\n",
                 AcpiUtGetRegionName((UINT8) i), i));
             return (Status);
         }
@@ -464,6 +464,5 @@ AeInstallHandlers (void)
 
     return Status;
 }
-
 
 

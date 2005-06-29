@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: aemain - Main routine for the AcpiExec utility
- *              $Revision: 1.42 $
+ *              $Revision: 1.44 $
  *
  *****************************************************************************/
 
@@ -201,7 +201,7 @@ AeDoDivideCheck (void)
 }
 #else
 void
-AeDoDivideCheck (void)  
+AeDoDivideCheck (void)
 {
 }
 #endif
@@ -289,12 +289,12 @@ main (
     printf ("ACPI AML Execution/Debug Utility ");
 
 #ifdef _IA16
-    printf ("16-bit ");
+    printf ("(16-bit) ");
 #else
-    printf ("32-bit ");
+    printf ("(32-bit) ");
 #endif
 
-    printf ("version [%s]\n", __DATE__);
+    printf ("CA version %4.4X [%s]\n", ACPI_CA_VERSION, __DATE__);
 
     /* Get the command line options */
 
@@ -369,7 +369,6 @@ main (
             printf ("**** Could not load input table, %s\n", AcpiFormatException (Status));
             goto enterloop;
         }
-
 
 
         /* Need a fake FADT so that the hardware component is happy */
