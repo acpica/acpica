@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dsmthdat - control method arguments and local variables
- *              $Revision: 1.74 $
+ *              $Revision: 1.75 $
  *
  ******************************************************************************/
 
@@ -700,7 +700,6 @@ AcpiDsStoreObjectToLocal (
     if (ObjDesc->Common.ReferenceCount > 1)
     {
         Status = AcpiUtCopyIobjectToIobject (ObjDesc, &NewObjDesc, WalkState);
-        NewObjDesc;
         if (ACPI_FAILURE (Status))
         {
             return_ACPI_STATUS (Status);
