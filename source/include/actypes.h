@@ -616,14 +616,18 @@ ACPI_STATUS (*ADDRESS_SPACE_HANDLER) (
     UINT32                      *Value,
     void                        *Context);
 
+#define ACPI_DEFAULT_HANDLER            ((ADDRESS_SPACE_HANDLER) NULL)
+
+
 typedef
-ACPI_STATUS (*REGION_INIT_ROUTINE) (
-    ACPI_HANDLE                 Handle,
+ACPI_STATUS (*REGION_SETUP_FUNCTION) (
+    ACPI_HANDLE                 RegionHandle,
     UINT32                      Function,
-    void                        *OriginalContext,
+    void                        *HandlerContext,
     void                        **ReturnContext);
 
-#define ACPI_DEFAULT_HANDLER            ((ADDRESS_SPACE_HANDLER) NULL)
+#define ACPI_REGION_ACTIVATE    0
+#define ACPI_REGION_DEACTIVATE  1
 
 typedef
 ACPI_STATUS (*WALK_CALLBACK) (
