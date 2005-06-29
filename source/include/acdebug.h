@@ -213,7 +213,7 @@ DbCreateExecutionThreads (
     char                    *NumLoopsArg,
     char                    *MethodNameArg);
 
-INT32
+ACPI_OBJECT_TYPE
 DbMatchArgument (
     char                    *UserArgument,
     ARGUMENT_INFO           *Arguments);
