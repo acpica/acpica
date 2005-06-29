@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acenv.h - Generation environment specific items
- *       $Revision: 1.56 $
+ *       $Revision: 1.57 $
  *
  *****************************************************************************/
 
@@ -599,6 +599,14 @@ typedef char *va_list;
 /* warn C4127: conditional expression is constant */
 #pragma warning(disable:4127)
 
+#endif
+
+#ifdef __ia64__
+/* Look at interim FADT to determine IO or memory mapped */
+#define IoAddressSpace(flag)    (AcpiGbl_FACP->AddressSpace & flag)
+#else
+/* always IO space */
+#define IoAddressSpace(flag)    (1)
 #endif
 
 
