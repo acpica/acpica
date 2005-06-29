@@ -3,7 +3,7 @@
  * Name: amlcode.h - Definitions for AML, as included in "definition blocks"
  *                   Declarations and definitions contained herein are derived
  *                   directly from the ACPI specification.
- *       $Revision: 1.45 $
+ *       $Revision: 1.47 $
  *
  *****************************************************************************/
 
@@ -11,7 +11,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, 2000, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -302,6 +302,8 @@
 #define ARGP_TERMARG                0x0E
 #define ARGP_TERMLIST               0x0F
 #define ARGP_WORDDATA               0x10
+#define ARGP_QWORDDATA              0x11
+#define ARGP_SIMPLENAME             0x12
 
 /*
  * Resolved argument types for the AML Interpreter
@@ -311,7 +313,7 @@
 
 /* "Standard" ACPI types are 1-15 (0x0F) */
 
-#define ARGI_NUMBER                 ACPI_TYPE_NUMBER        /* 1 */
+#define ARGI_INTEGER                 ACPI_TYPE_INTEGER        /* 1 */
 #define ARGI_STRING                 ACPI_TYPE_STRING        /* 2 */
 #define ARGI_BUFFER                 ACPI_TYPE_BUFFER        /* 3 */
 #define ARGI_PACKAGE                ACPI_TYPE_PACKAGE       /* 4 */
@@ -328,11 +330,14 @@
 #define ARGI_COMPUTEDATA            0x13     /* Buffer, String, or Integer */
 #define ARGI_DATAOBJECT             0x14     /* Buffer, string, package or reference to a Node - Used only by SizeOf operator*/
 #define ARGI_COMPLEXOBJ             0x15     /* Buffer or package */
-#define ARGI_TARGETREF              0x16
-#define ARGI_INTEGER_REF            0x17
-#define ARGI_OBJECT_REF             0x18
-#define ARGI_DEVICE_REF             0x19
-#define ARGI_REFERENCE              0x1A
+#define ARGI_INTEGER_REF            0x16
+#define ARGI_OBJECT_REF             0x17
+#define ARGI_DEVICE_REF             0x18
+#define ARGI_REFERENCE              0x19
+#define ARGI_TARGETREF              0x1A     /* Target, subject to implicit conversion */
+#define ARGI_FIXED_TARGET           0x1B     /* Target, no implicit conversion */
+#define ARGI_SIMPLE_TARGET          0x1C     /* Name, Local, Arg -- no implicit conversion */
+#define ARGI_BUFFERSTRING           0x1D
 
 #define ARGI_INVALID_OPCODE         0xFFFFFFFF
 
@@ -472,8 +477,9 @@ typedef enum
 
 /* bit fields in MethodFlags byte */
 
-#define METHOD_FLAGS_ARG_COUNT  0x07
-#define METHOD_FLAGS_SERIALIZED 0x08
+#define METHOD_FLAGS_ARG_COUNT      0x07
+#define METHOD_FLAGS_SERIALIZED     0x08
+#define METHOD_FLAGS_SYNCH_LEVEL    0xF0
 
 
 /* Array sizes.  Used for range checking also */
