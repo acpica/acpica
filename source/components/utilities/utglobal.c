@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: utglobal - Global variables for the ACPI subsystem
- *              $Revision: 1.171 $
+ *              $Revision: 1.174 $
  *
  *****************************************************************************/
 
@@ -250,9 +250,13 @@ BOOLEAN                     AcpiGbl_Shutdown = TRUE;
 
 const UINT8                 AcpiGbl_DecodeTo8bit [8] = {1,2,4,8,16,32,64,128};
 
-const NATIVE_CHAR           *AcpiGbl_DbSleepStates[ACPI_NUM_SLEEP_STATES] = {
-                                "\\_S0_","\\_S1_","\\_S2_","\\_S3_",
-                                "\\_S4_","\\_S5_","\\_S4B"};
+const NATIVE_CHAR           *AcpiGbl_DbSleepStates[ACPI_S_STATE_COUNT] = {
+                                "\\_S0_",
+                                "\\_S1_",
+                                "\\_S2_",
+                                "\\_S3_",
+                                "\\_S4_",
+                                "\\_S5_"};
 
 
 /******************************************************************************
@@ -275,11 +279,11 @@ const NATIVE_CHAR           *AcpiGbl_DbSleepStates[ACPI_NUM_SLEEP_STATES] = {
 
 const ACPI_PREDEFINED_NAMES     AcpiGbl_PreDefinedNames[] =
 {
-    {"_GPE",    INTERNAL_TYPE_SCOPE,        NULL},
-    {"_PR_",    INTERNAL_TYPE_SCOPE,        NULL},
+    {"_GPE",    ACPI_TYPE_LOCAL_SCOPE,      NULL},
+    {"_PR_",    ACPI_TYPE_LOCAL_SCOPE,      NULL},
     {"_SB_",    ACPI_TYPE_DEVICE,           NULL},
-    {"_SI_",    INTERNAL_TYPE_SCOPE,        NULL},
-    {"_TZ_",    INTERNAL_TYPE_SCOPE,        NULL},
+    {"_SI_",    ACPI_TYPE_LOCAL_SCOPE,      NULL},
+    {"_TZ_",    ACPI_TYPE_LOCAL_SCOPE,      NULL},
     {"_REV",    ACPI_TYPE_INTEGER,          "2"},
     {"_OS_",    ACPI_TYPE_STRING,           ACPI_OS_NAME},
     {"_GL_",    ACPI_TYPE_MUTEX,            "0"},
@@ -324,17 +328,10 @@ const UINT8                     AcpiGbl_NsProperties[] =
     ACPI_NS_NORMAL,                     /* 23 Address Handler  */
     ACPI_NS_NEWSCOPE | ACPI_NS_LOCAL,   /* 24 Resource Desc    */
     ACPI_NS_NEWSCOPE | ACPI_NS_LOCAL,   /* 25 Resource Field   */
-    ACPI_NS_NORMAL,                     /* 26 DefFieldDefn     */
-    ACPI_NS_NORMAL,                     /* 27 BankFieldDefn    */
-    ACPI_NS_NORMAL,                     /* 28 IndexFieldDefn   */
-    ACPI_NS_NORMAL,                     /* 29 If               */
-    ACPI_NS_NORMAL,                     /* 30 Else             */
-    ACPI_NS_NORMAL,                     /* 31 While            */
-    ACPI_NS_NEWSCOPE,                   /* 32 Scope            */
-    ACPI_NS_LOCAL,                      /* 33 DefAny           */
-    ACPI_NS_NORMAL,                     /* 34 Extra            */
-    ACPI_NS_NORMAL,                     /* 35 Data             */
-    ACPI_NS_NORMAL                      /* 36 Invalid          */
+    ACPI_NS_NEWSCOPE,                   /* 26 Scope            */
+    ACPI_NS_NORMAL,                     /* 27 Extra            */
+    ACPI_NS_NORMAL,                     /* 28 Data             */
+    ACPI_NS_NORMAL                      /* 29 Invalid          */
 };
 
 
@@ -580,17 +577,10 @@ static const NATIVE_CHAR    *AcpiGbl_NsTypeNames[] =    /* printable names of AC
     /* 23 */ "AddrHandler",
     /* 24 */ "ResourceDesc",
     /* 25 */ "ResourceFld",
-    /* 26 */ "RegionFldDfn",
-    /* 27 */ "BankFldDfn",
-    /* 28 */ "IndexFldDfn",
-    /* 29 */ "If",
-    /* 30 */ "Else",
-    /* 31 */ "While",
-    /* 32 */ "Scope",
-    /* 33 */ "DefAny",
-    /* 34 */ "Extra",
-    /* 35 */ "Data",
-    /* 36 */ "Invalid"
+    /* 26 */ "Scope",
+    /* 27 */ "Extra",
+    /* 28 */ "Data",
+    /* 39 */ "Invalid"
 };
 
 
@@ -599,7 +589,7 @@ AcpiUtGetTypeName (
     ACPI_OBJECT_TYPE        Type)
 {
 
-    if (Type > INTERNAL_TYPE_INVALID)
+    if (Type > ACPI_TYPE_INVALID)
     {
         return ((NATIVE_CHAR *) AcpiGbl_BadType);
     }
@@ -662,7 +652,7 @@ AcpiUtGetMutexName (
  *
  * FUNCTION:    AcpiUtValidObjectType
  *
- * PARAMETERS:  None.
+ * PARAMETERS:  Type            - Object type to be validated
  *
  * RETURN:      TRUE if valid object type
  *
@@ -675,13 +665,11 @@ AcpiUtValidObjectType (
     ACPI_OBJECT_TYPE        Type)
 {
 
-    if (Type > ACPI_TYPE_MAX)
+    if (Type > ACPI_TYPE_LOCAL_MAX)
     {
-        if ((Type < INTERNAL_TYPE_BEGIN) ||
-            (Type > INTERNAL_TYPE_MAX))
-        {
-            return (FALSE);
-        }
+        /* Note: Assumes all TYPEs are contiguous (external/local) */
+
+        return (FALSE);
     }
 
     return (TRUE);
@@ -784,11 +772,11 @@ AcpiUtInitGlobals (
     AcpiGbl_MemoryLists[ACPI_MEM_LIST_OPERAND].ObjectSize       = sizeof (ACPI_OPERAND_OBJECT);
     AcpiGbl_MemoryLists[ACPI_MEM_LIST_WALK].ObjectSize          = sizeof (ACPI_WALK_STATE);
 
-    AcpiGbl_MemoryLists[ACPI_MEM_LIST_STATE].MaxCacheDepth      = MAX_STATE_CACHE_DEPTH;
-    AcpiGbl_MemoryLists[ACPI_MEM_LIST_PSNODE].MaxCacheDepth     = MAX_PARSE_CACHE_DEPTH;
-    AcpiGbl_MemoryLists[ACPI_MEM_LIST_PSNODE_EXT].MaxCacheDepth = MAX_EXTPARSE_CACHE_DEPTH;
-    AcpiGbl_MemoryLists[ACPI_MEM_LIST_OPERAND].MaxCacheDepth    = MAX_OBJECT_CACHE_DEPTH;
-    AcpiGbl_MemoryLists[ACPI_MEM_LIST_WALK].MaxCacheDepth       = MAX_WALK_CACHE_DEPTH;
+    AcpiGbl_MemoryLists[ACPI_MEM_LIST_STATE].MaxCacheDepth      = ACPI_MAX_STATE_CACHE_DEPTH;
+    AcpiGbl_MemoryLists[ACPI_MEM_LIST_PSNODE].MaxCacheDepth     = ACPI_MAX_PARSE_CACHE_DEPTH;
+    AcpiGbl_MemoryLists[ACPI_MEM_LIST_PSNODE_EXT].MaxCacheDepth = ACPI_MAX_EXTPARSE_CACHE_DEPTH;
+    AcpiGbl_MemoryLists[ACPI_MEM_LIST_OPERAND].MaxCacheDepth    = ACPI_MAX_OBJECT_CACHE_DEPTH;
+    AcpiGbl_MemoryLists[ACPI_MEM_LIST_WALK].MaxCacheDepth       = ACPI_MAX_WALK_CACHE_DEPTH;
 
     ACPI_MEM_TRACKING (AcpiGbl_MemoryLists[ACPI_MEM_LIST_GLOBAL].ListName       = "Global Memory Allocation");
     ACPI_MEM_TRACKING (AcpiGbl_MemoryLists[ACPI_MEM_LIST_NSNODE].ListName       = "Namespace Nodes");
@@ -866,7 +854,7 @@ AcpiUtInitGlobals (
 
     AcpiGbl_RootNodeStruct.Name.Integer = ACPI_ROOT_NAME;
     AcpiGbl_RootNodeStruct.Descriptor   = ACPI_DESC_TYPE_NAMED;
-    AcpiGbl_RootNodeStruct.Type         = ACPI_TYPE_ANY;
+    AcpiGbl_RootNodeStruct.Type         = ACPI_TYPE_DEVICE;
     AcpiGbl_RootNodeStruct.Child        = NULL;
     AcpiGbl_RootNodeStruct.Peer         = NULL;
     AcpiGbl_RootNodeStruct.Object       = NULL;
