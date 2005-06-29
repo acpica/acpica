@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acglobal.h - Declarations for global variables
- *       $Revision: 1.100 $
+ *       $Revision: 1.101 $
  *
  *****************************************************************************/
 
@@ -293,7 +293,7 @@ ACPI_EXTERN ACPI_WALK_LIST             *AcpiGbl_CurrentWalkList;
 /*
  * Table of Address Space handlers
  */
-ACPI_EXTERN ACPI_ADDRESS_SPACE_INFO     AcpiGbl_AddressSpaces[ACPI_NUM_ADDRESS_SPACES];
+ACPI_EXTERN ACPI_ADR_SPACE_INFO         AcpiGbl_AddressSpaces[ACPI_NUM_ADDRESS_SPACES];
 
 
 /* Control method single step flag */
@@ -325,7 +325,7 @@ extern UINT32                           AcpiHwActiveCxState;
  *
  ****************************************************************************/
 
-ACPI_EXTERN ACPI_FIXED_EVENT_INFO       AcpiGbl_FixedEventHandlers[NUM_FIXED_EVENTS];
+ACPI_EXTERN ACPI_FIXED_EVENT_INFO       AcpiGbl_FixedEventHandlers[ACPI_NUM_FIXED_EVENTS];
 
 ACPI_EXTERN ACPI_HANDLE                 AcpiGbl_GpeObjHandle;
 ACPI_EXTERN UINT32                      AcpiGbl_GpeRegisterCount;
@@ -340,12 +340,12 @@ ACPI_EXTERN ACPI_GPE_LEVEL_INFO         *AcpiGbl_GpeInfo;
  * This table is needed because the GPE numbers supported by block 1 do not
  * have to be contiguous with the GPE numbers supported by block 0.
  */
-ACPI_EXTERN UINT8                       AcpiGbl_GpeValid [NUM_GPE];
+ACPI_EXTERN UINT8                       AcpiGbl_GpeValid [ACPI_NUM_GPE];
 
 /* AcpiEvent counter for debug only */
 
 #ifdef ACPI_DEBUG
-ACPI_EXTERN UINT32                      AcpiGbl_EventCount[NUM_FIXED_EVENTS];
+ACPI_EXTERN UINT32                      AcpiGbl_EventCount[ACPI_NUM_FIXED_EVENTS];
 #endif
 
 
