@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: cmutils - common utility procedures
- *              $Revision: 1.30 $
+ *              $Revision: 1.31 $
  *
  ******************************************************************************/
 
@@ -978,11 +978,13 @@ AcpiCmResolvePackageReferences (
                 SubObject->Common.Type  = ACPI_TYPE_INTEGER;
                 SubObject->Integer.Value = 0;
             }
+
             else if (SubObject->Reference.Opcode == AML_ONE_OP)
             {
                 SubObject->Common.Type  = ACPI_TYPE_INTEGER;
                 SubObject->Integer.Value = 1;
             }
+
             else if (SubObject->Reference.Opcode == AML_ONES_OP)
             {
                 SubObject->Common.Type  = ACPI_TYPE_INTEGER;
@@ -996,7 +998,7 @@ AcpiCmResolvePackageReferences (
 
 #ifdef ACPI_DEBUG
 
-/******************************************************************************
+/*******************************************************************************
  *
  * FUNCTION:    AcpiCmDisplayInitPathname
  *
@@ -1007,7 +1009,7 @@ AcpiCmResolvePackageReferences (
  *
  * DESCRIPTION: Display full pathnbame of an object, DEBUG ONLY
  *
- *****************************************************************************/
+ ******************************************************************************/
 
 void
 AcpiCmDisplayInitPathname (
@@ -1071,16 +1073,17 @@ AcpiCmWalkPackageTree (
 
     while (State)
     {
-        ThisIndex        = State->Pkg.Index;
-        ThisSourceObj    = (ACPI_OPERAND_OBJECT *)
-                            State->Pkg.SourceObject->Package.Elements[ThisIndex];
+        ThisIndex     = State->Pkg.Index;
+        ThisSourceObj = (ACPI_OPERAND_OBJECT *)
+                        State->Pkg.SourceObject->Package.Elements[ThisIndex];
 
         /*
          * Check for
          * 1) An uninitialized package element.  It is completely
          *      legal to declare a package and leave it uninitialized
          * 2) Not an internal object - can be a namespace node instead
-         * 3) Any type other than a package.  Packages are handled in else case below.
+         * 3) Any type other than a package.  Packages are handled in else 
+         *      case below.
          */
         if ((!ThisSourceObj) ||
             (!VALID_DESCRIPTOR_TYPE (
@@ -1089,7 +1092,8 @@ AcpiCmWalkPackageTree (
                     ThisSourceObj, ACPI_TYPE_PACKAGE)))
         {
 
-            Status = WalkCallback (0, ThisSourceObj, State, Context);
+            Status = WalkCallback (ACPI_COPY_TYPE_SIMPLE, ThisSourceObj, 
+                                    State, Context);
             if (ACPI_FAILURE (Status))
             {
                 /* TBD: must delete package created up to this point */
@@ -1135,7 +1139,8 @@ AcpiCmWalkPackageTree (
         {
             /* This is a sub-object of type package */
 
-            Status = WalkCallback (1, ThisSourceObj, State, Context);
+            Status = WalkCallback (ACPI_COPY_TYPE_PACKAGE, ThisSourceObj, 
+                                        State, Context);
             if (ACPI_FAILURE (Status))
             {
                 /* TBD: must delete package created up to this point */
@@ -1152,7 +1157,8 @@ AcpiCmWalkPackageTree (
              * Push the current state and create a new one
              */
             AcpiCmPushGenericState (&StateList, State);
-            State = AcpiCmCreatePkgState (ThisSourceObj, State->Pkg.ThisTargetObj, 0);
+            State = AcpiCmCreatePkgState (ThisSourceObj, 
+                                            State->Pkg.ThisTargetObj, 0);
             if (!State)
             {
                 /* TBD: must delete package created up to this point */
