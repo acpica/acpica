@@ -338,11 +338,13 @@
 /* Stack and buffer dumping */
 
 #define DUMP_STACK_ENTRY(a)             AmlDumpObjStackEntry(a)
-#define DUMP_STACK(a,b,c,d)             AmlDumpObjStack(a,b,c,d)
+#define DUMP_OPERANDS(a,b,c,d,e)        _AmlDumpObjStack(a,b,c,d,e,_THIS_MODULE,__LINE__)
+
+
 #define DUMP_ENTRY(a,b)                 NsDumpEntry (a,b)
 #define DUMP_TABLES(a,b)                NsDumpTables(a,b)
 #define DUMP_PATHNAME(a,b,c,d)          NsDumpPathname(a,b,c,d)
-#define BREAK_MSG(a)                    {DEBUG_PRINT (ACPI_INFO, (a)); BREAKPOINT3}
+#define BREAK_MSG(a)                    OsdBreakpoint (a)
 
 /*
  * Generate INT3 on ACPI_ERROR (Debug only!)
@@ -350,9 +352,7 @@
 
 #define ERROR_BREAK
 #ifdef  ERROR_BREAK
-#define BREAK_ON_ERROR(lvl)             if ((lvl)&ACPI_ERROR) {\
-                                            DebugPrintRaw (MsgAcpiErrorBreak);\
-                                            BREAKPOINT3;}
+#define BREAK_ON_ERROR(lvl)             if ((lvl)&ACPI_ERROR) OsdBreakpoint("Fatal error encountered\n")
 #else
 #define BREAK_ON_ERROR(lvl) 
 #endif
@@ -409,7 +409,7 @@
 #define FUNCTION_STATUS_EXIT(s)
 #define FUNCTION_VALUE_EXIT(s)
 #define DUMP_STACK_ENTRY(a)
-#define DUMP_STACK(a,b,c,d)
+#define DUMP_OPERANDS(a,b,c,d,e)
 #define DUMP_ENTRY(a,b)
 #define DUMP_TABLES(a,b)
 #define DUMP_PATHNAME(a,b,c,d)
