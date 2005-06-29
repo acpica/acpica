@@ -136,7 +136,7 @@ static ST_KEY_DESC_TABLE KDT[] = {
  * PARAMETERS:  Handle              - Handle of containing object
  *              *MethodName         - Name of method to execute, If NULL, the
  *                                    handle is the object to execute
- *              *ReturnValue        - Where to put method's return value (if 
+ *              *ReturnObject       - Where to put method's return value (if 
  *                                    any).  If NULL, no value is returned.
  *              **Params            - List of parameters to pass to
  *                                    method, terminated by NULL.
@@ -154,11 +154,11 @@ static ST_KEY_DESC_TABLE KDT[] = {
 ACPI_STATUS
 AcpiExecuteRelativeMethod (NsHandle Handle,
                            char * MethodName,
-                           OBJECT_DESCRIPTOR *ReturnValue,
+                           OBJECT_DESCRIPTOR *ReturnObject,
                            OBJECT_DESCRIPTOR **Params)
 {
     char                NameBuffer[PATHNAME_MAX];
-    ACPI_STATUS         RetValue;
+    ACPI_STATUS         Status;
     UINT32              MaxObjectPathLength = PATHNAME_MAX - 1;
 
 
@@ -183,21 +183,20 @@ AcpiExecuteRelativeMethod (NsHandle Handle,
         /*
          *  Append the method name to the device pathname
          */
-        MaxObjectPathLength -= (strlen(MethodName) + 1);
+        MaxObjectPathLength -= (strlen (MethodName) + 1);
     }
 
     /*
      *  Get the device pathname
      */
-    RetValue = NsHandleToPathname (Handle, MaxObjectPathLength, NameBuffer);
-
-    if (RetValue != AE_OK) 
+    Status = NsHandleToPathname (Handle, MaxObjectPathLength, NameBuffer);
+    if (Status != AE_OK) 
     {
         /*
          *  Failed the conversion
          */
         FUNCTION_EXIT;
-        return RetValue;
+        return Status;
     }
 
     /*
@@ -207,19 +206,20 @@ AcpiExecuteRelativeMethod (NsHandle Handle,
     if (MethodName) 
     {
         /*
-         *  Append the method name to the device pathname
+         * Append the method name to the device pathname
+         * (Path separator is a period) 
          */
-        (void) strcat( NameBuffer, ".");
-        (void) strcat( NameBuffer, MethodName);
+        strcat (NameBuffer, ".");
+        strcat (NameBuffer, MethodName);
     }
 
     /*
      *  Execute the method
      */
-    RetValue = AcpiExecuteMethod(NameBuffer, ReturnValue, Params);
+    Status = AcpiExecuteMethod (NameBuffer, ReturnObject, Params);
 
     FUNCTION_EXIT;
-    return RetValue;
+    return Status;
 }
 
 
@@ -228,7 +228,7 @@ AcpiExecuteRelativeMethod (NsHandle Handle,
  * FUNCTION:    AcpiExecuteMethod
  *
  * PARAMETERS:  *MethodName         - Name of method to execute
- *              *ReturnValue        - Where to put method's return value (if 
+ *              *ReturnObject       - Where to put method's return value (if 
  *                                    any).  If NULL, no value is returned.
  *              **Params            - List of parameters to pass to
  *                                    method, terminated by NULL.
@@ -244,24 +244,20 @@ AcpiExecuteRelativeMethod (NsHandle Handle,
  ****************************************************************************/
 
 ACPI_STATUS
-AcpiExecuteMethod (char * MethodName, OBJECT_DESCRIPTOR *ReturnValue,
+AcpiExecuteMethod (char * MethodName, OBJECT_DESCRIPTOR *ReturnObject,
                     OBJECT_DESCRIPTOR **Params)
 {
     ACPI_STATUS         Status = AE_ERROR;
     nte                 *MethodPtr = NULL;
+    OBJECT_DESCRIPTOR   *ObjDesc;
+
+
 
 
     FUNCTION_TRACE ("AcpiExecuteMethod");
 
 
-BREAKPOINT3;
-
-    if (ReturnValue)
-    {
-        /* Init return value */
-
-        memset (ReturnValue, 0, sizeof (OBJECT_DESCRIPTOR));
-    }
+    /* Parameter validation */
 
     if (!RootObject->Scope)
     {
@@ -271,12 +267,24 @@ BREAKPOINT3;
          */
 
         DEBUG_PRINT (ACPI_ERROR, ("Name space not initialized ==> method not defined\n"));
-    }
-    else if (!MethodName)
-    {
-        DEBUG_PRINT (ACPI_ERROR, ("AcpiExecuteMethod: MethodName is NULL\n"));
+        FUNCTION_EXIT;
+        return AE_NO_NAMESPACE;
     }
 
+    if (!MethodName)
+    {
+        DEBUG_PRINT (ACPI_ERROR, ("AcpiExecuteMethod: MethodName is NULL\n"));
+        FUNCTION_EXIT;
+        return AE_BAD_PARAMETER;
+    }
+
+
+    if (ReturnObject)
+    {
+        /* Initialize the return value */
+
+        memset (ReturnObject, 0, sizeof (OBJECT_DESCRIPTOR));
+    }
 
     if (RootObject->Scope && MethodName)
     {   
@@ -297,7 +305,7 @@ BREAKPOINT3;
 
         if (Status != AE_OK)
         {
-            DEBUG_PRINT (ACPI_ERROR, ("Method [%s] was not found, status=%x\n",
+            DEBUG_PRINT (ACPI_INFO, ("Method [%s] was not found, status=%.4X\n",
                             MethodName, Status));
         }
     }
@@ -405,12 +413,6 @@ BREAKPOINT3;
              * Here if FETCH_VALUES and the name found was not a Method.
              * Return its value.
              */
-            OBJECT_DESCRIPTOR           *ObjDesc;
-
-
-            DEBUG_PRINT (ACPI_INFO, ("Method Return Value (below): \n"));
-            DUMP_ENTRY (MethodPtr);
-
             ObjDesc = AllocateObjectDesc (&KDT[3]);
             if (ObjDesc)
             {
@@ -462,7 +464,6 @@ BREAKPOINT3;
             Status = AE_ERROR;
         }
     
-BREAKPOINT3;
         if (AE_RETURN_VALUE == Status)
         {
             /* 
@@ -471,9 +472,9 @@ BREAKPOINT3;
              * descriptor provided by the caller.
              */
 
-            if (ReturnValue)
+            if (ReturnObject)
             {
-                (*ReturnValue) = *((OBJECT_DESCRIPTOR *) ObjStack[ObjStackTop]);            
+                (*ReturnObject) = *((OBJECT_DESCRIPTOR *) ObjStack[ObjStackTop]);            
             }
         
             /* 
@@ -873,7 +874,7 @@ NsEnter (char *Name, NsType Type, OpMode LoadMode, NsHandle *RetHandle)
 
                 else
                 {
-                    REPORT_ERROR (&KDT[9]);
+                    DEBUG_PRINT (TRACE_NAMES, ("Name not found in this scope\n"));
                 }
 
                 CheckTrash ("leave NsEnter NOTFOUND 2");
