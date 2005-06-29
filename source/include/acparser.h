@@ -330,6 +330,17 @@ ACPI_STATUS
 PsxParseAllMethods (
     void);
 
+ACPI_STATUS
+PsxCallControlMethod (
+    ACPI_WALK_LIST          *WalkList,
+    ACPI_WALK_STATE         *WalkState,
+    ACPI_GENERIC_OP         *Op);
+
+ACPI_STATUS
+PsxRestartControlMethod (
+    ACPI_WALK_STATE         *WalkState,
+    ACPI_OBJECT_INTERNAL    *ReturnDesc);
+
 
 /* psxobj - Parser/Interpreter interface - object conversion */
 
@@ -363,13 +374,17 @@ PsxInitObjectFromOp (
     ACPI_OBJECT_INTERNAL    *ObjDesc);
 
 void
-PsxSaveOrDeleteResult (
+PsxDeleteResultIfNotUsed (
     ACPI_GENERIC_OP         *Op);
 
 ACPI_STATUS
 PsxCreateOperands (
     ACPI_WALK_STATE         *WalkState,
     ACPI_GENERIC_OP         *FirstArg);
+
+ACPI_STATUS
+PsxResolveOperands (
+    ACPI_WALK_STATE         *WalkState);
 
 ACPI_OBJECT_TYPE
 PsxMapOpcodeToDataType (
@@ -528,7 +543,6 @@ PsGetDepthNext (
 
 /* pswalk - parse tree walk routines */
 
-
 ACPI_STATUS
 PsWalkParsedAml (
     ACPI_GENERIC_OP         *StartOp,
@@ -542,12 +556,26 @@ ACPI_STATUS
 PsGetNextWalkOp (
     ACPI_WALK_STATE         *WalkState,
     ACPI_GENERIC_OP         *Op,
-    INTERPRETER_CALLBACK    AscendingCallback,
-    ACPI_GENERIC_OP         **PrevOp,
-    ACPI_GENERIC_OP         **NextOp);
+    INTERPRETER_CALLBACK    AscendingCallback);
 
 ACPI_WALK_STATE *
 PsGetCurrentWalkState (
+    ACPI_WALK_LIST          *WalkList);
+
+
+/* pswstate - parser WALK_STATE management routines */
+
+ACPI_WALK_STATE *
+PsCreateWalkState (
+    ACPI_GENERIC_OP         *Origin,
+    ACPI_WALK_LIST          *WalkList);
+
+ACPI_STATUS
+PsxObjStackDeleteAll (
+    ACPI_WALK_STATE         *WalkState);
+
+ACPI_WALK_STATE *
+PsPopWalkState (
     ACPI_WALK_LIST          *WalkList);
 
 
