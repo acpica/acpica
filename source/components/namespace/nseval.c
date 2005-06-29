@@ -124,8 +124,8 @@
 #include <namespace.h>
 
 
-#define _THIS_MODULE        "nseval.c"
 #define _COMPONENT          NAMESPACE
+        MODULE_NAME         ("nseval");
 
 
 
@@ -352,7 +352,7 @@ NsEvaluateByHandle (
     {
         /* Initialize the return value to an invalid object */
 
-        memset (ReturnObject, 0, sizeof (ACPI_OBJECT_INTERNAL));
+        CmInitStaticObject (ReturnObject);
         ReturnObject->Common.Type = INTERNAL_TYPE_Invalid;
     }
 
@@ -382,7 +382,7 @@ NsEvaluateByHandle (
      * Check if there is a return value on the stack that must be dealt with 
      */
 
-    if (AE_RETURN_VALUE == Status)
+    if (Status == AE_RETURN_VALUE)
     {
 BREAKPOINT3;
         /* 
@@ -420,7 +420,10 @@ BREAKPOINT3;
 
         /* Map AE_RETURN_VALUE to AE_OK, we are done with it */
 
-        Status = AE_OK;
+        if (Status == AE_RETURN_VALUE)
+        {
+            Status = AE_OK;
+        }
     }
 
     return_ACPI_STATUS (Status);

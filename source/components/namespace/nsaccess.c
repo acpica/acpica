@@ -122,8 +122,8 @@
 #include <namespace.h>
 
 
-#define _THIS_MODULE        "nsaccess.c"
 #define _COMPONENT          NAMESPACE
+        MODULE_NAME         ("nsaccess");
 
 
 

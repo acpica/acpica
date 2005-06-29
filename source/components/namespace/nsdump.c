@@ -120,10 +120,11 @@
 #include <acpi.h>
 #include <interpreter.h>
 #include <namespace.h>
+#include <tables.h>
 
 
-#define _THIS_MODULE        "nsdump.c"
 #define _COMPONENT          NAMESPACE
+        MODULE_NAME         ("nsdump");
 
 
 
@@ -187,18 +188,19 @@ NsDumpPathname (
  *
  * PARAMETERS:  Handle              - Entry to be dumped
  *              Level               - Nesting level of the handle
- *              Context             - Passed into NsWalkNamespace
+ *              Context             - Passed into WalkNamespace
  *
  * DESCRIPTION: Dump a single nte
- *             This procedure is a UserFunction called by NsWalkNamespace.
+ *              This procedure is a UserFunction called by NsWalkNamespace.
  *
  ***************************************************************************/
 
-void *
+ACPI_STATUS
 NsDumpOneObject (
     ACPI_HANDLE             ObjHandle, 
     UINT32                  Level, 
-    void                    *Context)
+    void                    *Context,
+    void                    **ReturnValue)
 {
     UINT32                  DownstreamSiblingMask = 0;
     INT32                   LevelTmp;
@@ -212,6 +214,7 @@ NsDumpOneObject (
     ACPI_OBJECT_TYPE        ObjType;
     UINT32                  DbLevel = (UINT32) Context;
 
+
     ThisEntry = NsConvertHandleToEntry(ObjHandle);
 
     LevelTmp    = Level;
@@ -221,13 +224,13 @@ NsDumpOneObject (
 
     if (!(DebugLevel & DbLevel))
     {
-        return NULL;
+        return AE_OK;
     }
     
     if (!ObjHandle)
     {
         DEBUG_PRINT (ACPI_INFO, ("Null object handle\n"));
-        return NULL;
+        return AE_OK;
     }
 
     /* Indent the object according to the level */
@@ -302,7 +305,7 @@ NsDumpOneObject (
      */
 
     DEBUG_PRINT_RAW (TRACE_TABLES,
-                ("%4.4s [%s] ", &ThisEntry->Name, Gbl_NsTypeNames[Type]));
+                (" %4.4s %-9s ", &ThisEntry->Name, Gbl_NsTypeNames[Type]));
 
     DEBUG_PRINT_RAW (TRACE_TABLES, ("%p S:%p O:%p",
                 ThisEntry,
@@ -315,7 +318,7 @@ NsDumpOneObject (
         /* No attached object, we are done */
 
         DEBUG_PRINT_RAW (TRACE_TABLES, ("\n"));
-        return NULL;
+        return AE_OK;
     }
 
     if (ACPI_TYPE_Method == Type)
@@ -326,7 +329,7 @@ NsDumpOneObject (
                     ((ACPI_OBJECT_INTERNAL *) ThisEntry->Object)->Method.Pcode,
                     ((ACPI_OBJECT_INTERNAL *) ThisEntry->Object)->Method.PcodeLength));                
 
-        return NULL;
+        return AE_OK;
     }
   
     /* There is an attached object, display it */
@@ -352,12 +355,12 @@ NsDumpOneObject (
                     Value[6], Value[7], Value[8], Value[9], Value[10],
                     Value[11], Value[12], Value[13], Value[14], Value[15]));
 
-        /* If value is NOT an internal object, we are done here */
+        /* If value is NOT an internal object, we are done */
 
-        if ((NsIsInSystemTable (Value)) ||
-            (IS_NS_HANDLE (Value)))
+        if ((TbSystemTablePointer (Value)) ||
+            (VALID_DESCRIPTOR_TYPE (Value, DESC_TYPE_NTE)))
         {
-            return NULL;
+            return AE_OK;
         }
 
         /* 
@@ -394,13 +397,13 @@ NsDumpOneObject (
             break;
 
        default:
-            return NULL;
+            return AE_OK;
         }
 
         ObjType = INTERNAL_TYPE_Invalid;     /* Terminate loop after next pass */
     }
 
-    return NULL;
+    return AE_OK;
 }
 
 
@@ -436,26 +439,26 @@ NsDumpObjects (
  *
  * PARAMETERS:  Handle              - Entry to be dumped
  *              Level               - Nesting level of the handle
- *              Context             - Passed into NsWalkNamespace
+ *              Context             - Passed into WalkNamespace
  *
  * DESCRIPTION: Dump a single nte that represents a device
  *              This procedure is a UserFunction called by NsWalkNamespace.
  *
  ***************************************************************************/
 
-void *
+ACPI_STATUS
 NsDumpOneDevice (
     ACPI_HANDLE             ObjHandle, 
     UINT32                  Level, 
-    void                    *Context)
+    void                    *Context,
+    void                    **ReturnValue)
 {
-    void                    *RetVal;
     ACPI_DEVICE_INFO        Info;
     ACPI_STATUS             Status;
     UINT32                  i;
 
 
-    RetVal = NsDumpOneObject (ObjHandle, Level, Context);
+    Status = NsDumpOneObject (ObjHandle, Level, Context, ReturnValue);
 
     Status = AcpiGetObjectInfo (ObjHandle, &Info);
     if (ACPI_SUCCESS (Status))
@@ -470,7 +473,7 @@ NsDumpOneDevice (
 
     }
 
-    return RetVal;
+    return Status;
 }
 
 
@@ -572,7 +575,7 @@ NsDumpEntry (
     FUNCTION_TRACE_PTR ("NsDumpEntry", Handle);
 
 
-    NsDumpOneObject (Handle, 1, (void *) DebugLevel);
+    NsDumpOneObject (Handle, 1, (void *) DebugLevel, NULL);
     
     DEBUG_PRINT (TRACE_EXEC, ("leave NsDumpEntry %p\n", Handle));
     return_VOID;
