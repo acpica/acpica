@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: excreate - Named object creation
- *              $Revision: 1.73 $
+ *              $Revision: 1.76 $
  *
  *****************************************************************************/
 
@@ -130,7 +130,6 @@
         MODULE_NAME         ("excreate")
 
 
-
 /*****************************************************************************
  *
  * FUNCTION:    AcpiExCreateAlias
@@ -162,8 +161,8 @@ AcpiExCreateAlias (
 
     /* Attach the original source object to the new Alias Node */
 
-    Status = AcpiNsAttachObject ((ACPI_NAMESPACE_NODE *) WalkState->Operands[0], 
-                                    SourceNode->Object,
+    Status = AcpiNsAttachObject ((ACPI_NAMESPACE_NODE *) WalkState->Operands[0],
+                                    AcpiNsGetAttachedObject (SourceNode),
                                     SourceNode->Type);
 
     /*
@@ -226,7 +225,7 @@ AcpiExCreateEvent (
                                     ObjDesc, (UINT8) ACPI_TYPE_EVENT);
 
 Cleanup:
-    /* 
+    /*
      * Remove local reference to the object (on error, will cause deletion
      * of both object and semaphore if present.)
      */
@@ -269,8 +268,11 @@ AcpiExCreateMutex (
         goto Cleanup;
     }
 
-    /* Create the actual OS semaphore */
-
+    /* 
+     * Create the actual OS semaphore.
+     * One unit max to make it a mutex, with one initial unit to allow
+     * the mutex to be acquired.
+     */
     Status = AcpiOsCreateSemaphore (1, 1, &ObjDesc->Mutex.Semaphore);
     if (ACPI_FAILURE (Status))
     {
@@ -286,7 +288,7 @@ AcpiExCreateMutex (
 
 
 Cleanup:
-    /* 
+    /*
      * Remove local reference to the object (on error, will cause deletion
      * of both object and semaphore if present.)
      */
@@ -333,7 +335,7 @@ AcpiExCreateRegion (
      * If the region object is already attached to this node,
      * just return
      */
-    if (Node->Object)
+    if (AcpiNsGetAttachedObject (Node))
     {
         return_ACPI_STATUS (AE_OK);
     }
@@ -489,7 +491,7 @@ AcpiExCreateProcessor (
 
     /* Install the processor object in the parent Node */
 
-    Status = AcpiNsAttachObject ((ACPI_NAMESPACE_NODE *) Operand[0], 
+    Status = AcpiNsAttachObject ((ACPI_NAMESPACE_NODE *) Operand[0],
                     ObjDesc, (UINT8) ACPI_TYPE_PROCESSOR);
 
 
@@ -543,7 +545,7 @@ AcpiExCreatePowerResource (
 
     /* Install the  power resource object in the parent Node */
 
-    Status = AcpiNsAttachObject ((ACPI_NAMESPACE_NODE *) Operand[0], 
+    Status = AcpiNsAttachObject ((ACPI_NAMESPACE_NODE *) Operand[0],
                     ObjDesc, (UINT8) ACPI_TYPE_POWER);
 
 
@@ -625,7 +627,7 @@ AcpiExCreateMethod (
 
     /* Attach the new object to the method Node */
 
-    Status = AcpiNsAttachObject ((ACPI_NAMESPACE_NODE *) Operand[0], 
+    Status = AcpiNsAttachObject ((ACPI_NAMESPACE_NODE *) Operand[0],
                     ObjDesc, (UINT8) ACPI_TYPE_METHOD);
 
     /* Remove local reference to the object */
