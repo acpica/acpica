@@ -527,7 +527,7 @@ ACPI_STATUS (*ADDRESS_SPACE_HANDLER) (
     UINT32                  *Value,
     void                    *Context);
 
-#define ACPI_DEFAULT_HANDLE     ((ADDRESS_SPACE_HANDLER) NULL)
+#define ACPI_DEFAULT_HANDLER     ((ADDRESS_SPACE_HANDLER) NULL)
 
 typedef
 ACPI_STATUS (*WALK_CALLBACK) (
