@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asltypes.h - compiler data types and struct definitions
- *              $Revision: 1.61 $
+ *              $Revision: 1.63 $
  *
  *****************************************************************************/
 
@@ -10,7 +10,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2003, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2004, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -149,6 +149,7 @@
 #define NODE_IS_TERM_ARG            0x00004000
 #define NODE_WAS_ONES_OP            0x00008000
 #define NODE_IS_NAME_DECLARATION    0x00010000
+#define NODE_COMPILER_EMITTED       0x00020000
 
 /* Keeps information about individual control methods */
 
