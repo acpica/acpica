@@ -249,9 +249,9 @@
 
 
 #ifdef ACPI_DEBUG
-#define OP_INFO_ENTRY(Opcode,Type,ArgBool,Reserved,Name,Args)     {Opcode,Type,ArgBool,Reserved,Args,Name}
+#define OP_INFO_ENTRY(Opcode,Flags,Name,Args)     {Opcode,Flags,Args,Name}
 #else
-#define OP_INFO_ENTRY(Opcode,Type,ArgBool,Reserved,Name,Args)     {Opcode,Type,ArgBool,Reserved,Args}
+#define OP_INFO_ENTRY(Opcode,Flags,Name,Args)     {Opcode,Flags,Args}
 #endif
 
 
@@ -290,7 +290,7 @@
 
 /* Buffer dump macros */
 
-#define DUMP_BUFFER(a,b,c)              DumpBuffer((char *)a,b,c,_COMPONENT)
+#define DUMP_BUFFER(a,b)                CmDumpBuffer((char *)a,b,_COMPONENT)
 
 /*
  * Debug macros that are conditionally compiled
@@ -324,6 +324,7 @@
 #define return_VOID                     {FunctionExit(_THIS_MODULE,__LINE__,_COMPONENT,_ProcName);return;}
 #define return_ACPI_STATUS(s)           {FunctionStatusExit(_THIS_MODULE,__LINE__,_COMPONENT,_ProcName,s);return(s);}
 #define return_VALUE(s)                 {FunctionValueExit(_THIS_MODULE,__LINE__,_COMPONENT,_ProcName,(NATIVE_UINT)s);return(s);}
+#define return_PTR(s)                   {FunctionPtrExit(_THIS_MODULE,__LINE__,_COMPONENT,_ProcName,(char *)s);return(s);}
 
 
 /* Conditional execution */
@@ -337,8 +338,8 @@
 
 /* Stack and buffer dumping */
 
-#define DUMP_STACK_ENTRY(a)             AmlDumpObjStackEntry(a)
-#define DUMP_OPERANDS(a,b,c,d,e)        _AmlDumpObjStack(a,b,c,d,e,_THIS_MODULE,__LINE__)
+#define DUMP_STACK_ENTRY(a)             AmlDumpOperand(a)
+#define DUMP_OPERANDS(a,b,c,d,e)        AmlDumpOperands(a,b,c,d,e,_THIS_MODULE,__LINE__)
 
 
 #define DUMP_ENTRY(a,b)                 NsDumpEntry (a,b)
@@ -352,7 +353,7 @@
 
 #define ERROR_BREAK
 #ifdef  ERROR_BREAK
-#define BREAK_ON_ERROR(lvl)             if ((lvl)&ACPI_ERROR) OsdBreakpoint("Fatal error encountered\n")
+#define BREAK_ON_ERROR(lvl)             if ((lvl)&ACPI_ERROR & DebugLevel) OsdBreakpoint("Fatal error encountered\n")
 #else
 #define BREAK_ON_ERROR(lvl) 
 #endif
@@ -370,7 +371,7 @@
 #define TEST_DEBUG_SWITCH(lvl)          if (((lvl) & DebugLevel) && (_COMPONENT & DebugLayer))
 
 #define DEBUG_PRINT(lvl,fp)             TEST_DEBUG_SWITCH(lvl) {\
-                                            DebugPrintPrefix (_THIS_MODULE,__LINE__,_COMPONENT);\
+                                            DebugPrintPrefix (_THIS_MODULE,__LINE__);\
                                             DebugPrintRaw PARAM_LIST(fp);\
                                             BREAK_ON_ERROR(lvl);}
 
@@ -420,6 +421,7 @@
 #define return_VOID                     return
 #define return_ACPI_STATUS(s)           return(s)
 #define return_VALUE(s)                 return(s)
+#define return_PTR(s)                   return(s)
 
 #define ACPI_ASSERT(exp)
 #define DEBUG_ASSERT(msg, exp)
