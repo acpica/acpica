@@ -126,11 +126,8 @@
         MODULE_NAME         ("evregion");
 
 
-
-
 #define PCI_ROOT_HID_STRING        "PNP0A03"
 #define PCI_ROOT_HID_VALUE         0x030AD041       /* EISAID("PNP0A03") */
-
 
 
 /******************************************************************************
@@ -165,7 +162,7 @@ AcpiEvFindOnePciRootBus (
      * We are looking for all valid _HID objects.
      */
 
-    if (STRNCMP (&Entry->Name, METHOD_NAME__HID, ACPI_NAME_SIZE) ||
+    if (STRNCMP ((char *)&Entry->Name, METHOD_NAME__HID, ACPI_NAME_SIZE) ||
         (!ObjDesc))
     {
         return AE_OK;
@@ -217,7 +214,6 @@ AcpiEvFindOnePciRootBus (
 }
 
 
-
 /******************************************************************************
  *
  * FUNCTION:    AcpiEvFindPciRootBuses
@@ -240,7 +236,6 @@ AcpiEvFindPciRootBuses (
 
     return AE_OK;
 }
-
 
 
 /**************************************************************************
@@ -619,7 +614,6 @@ AcpiEvDisassociateRegionFromHandler(
 
     return_VOID;
 }
-
 
 
 /******************************************************************************
