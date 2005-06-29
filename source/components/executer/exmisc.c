@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exmisc - ACPI AML (p-code) execution - specific opcodes
- *              $Revision: 1.96 $
+ *              $Revision: 1.97 $
  *
  *****************************************************************************/
 
@@ -240,8 +240,8 @@ AcpiExConcatTemplate (
     NATIVE_CHAR             *NewBuf;
     UINT8                   *EndTag1;
     UINT8                   *EndTag2;
-    NATIVE_UINT             Length1;
-    NATIVE_UINT             Length2;
+    ACPI_SIZE               Length1;
+    ACPI_SIZE               Length2;
 
 
     FUNCTION_TRACE ("ExConcatTemplate");
@@ -267,9 +267,9 @@ AcpiExConcatTemplate (
 
     /* Allocate a new buffer for the result */
 
-    Length1 = POINTER_DIFF (EndTag1, ObjDesc1->Buffer.Pointer);
-    Length2 = POINTER_DIFF (EndTag2, ObjDesc2->Buffer.Pointer) +
-                            2; /* Size of END_TAG */
+    Length1 = ACPI_PTR_DIFF (EndTag1, ObjDesc1->Buffer.Pointer);
+    Length2 = ACPI_PTR_DIFF (EndTag2, ObjDesc2->Buffer.Pointer) +
+                             2; /* Size of END_TAG */
 
     NewBuf = ACPI_MEM_ALLOCATE (Length1 + Length2);
     if (!NewBuf)
