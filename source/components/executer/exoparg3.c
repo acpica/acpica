@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exoparg3 - AML execution - opcodes with 3 arguments
- *              $Revision: 1.21 $
+ *              $Revision: 1.19 $
  *
  *****************************************************************************/
 
@@ -10,7 +10,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2005, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2004, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -300,10 +300,6 @@ AcpiExOpcode_3A_1T_1R (
             ReturnDesc->String.Pointer = Buffer;
             ReturnDesc->String.Length = (UINT32) Length;
         }
-
-        /* Mark buffer initialized */
-
-        ReturnDesc->Buffer.Flags |= AOPOBJ_DATA_VALID;
         break;
 
 

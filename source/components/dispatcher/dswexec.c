@@ -2,7 +2,7 @@
  *
  * Module Name: dswexec - Dispatcher method execution callbacks;
  *                        dispatch to interpreter.
- *              $Revision: 1.104 $
+ *              $Revision: 1.106 $
  *
  *****************************************************************************/
 
@@ -10,7 +10,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2003, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2004, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -518,7 +518,7 @@ AcpiDsExecEndOp (
         }
         else
         {
-            /* 
+            /*
              * Treat constructs of the form "Store(LocalX,LocalX)" as noops when the
              * Local is uninitialized.
              */

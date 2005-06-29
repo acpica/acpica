@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exutils - interpreter/scanner utilities
- *              $Revision: 1.113 $
+ *              $Revision: 1.111 $
  *
  *****************************************************************************/
 
@@ -10,7 +10,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2005, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2004, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -363,27 +363,27 @@ AcpiExDigitsNeeded (
 {
     UINT32                  NumDigits;
     ACPI_INTEGER            CurrentValue;
+    ACPI_INTEGER            Quotient;
 
 
     ACPI_FUNCTION_TRACE ("ExDigitsNeeded");
 
 
-    /* ACPI_INTEGER is unsigned, so we don't worry about a '-' prefix */
-
-    if (Value == 0)
+    /*
+     * ACPI_INTEGER is unsigned, so we don't worry about a '-'
+     */
+    if ((CurrentValue = Value) == 0)
     {
         return_VALUE (1);
     }
 
-    CurrentValue = Value;
     NumDigits = 0;
-
-    /* Count the digits in the requested base */
 
     while (CurrentValue)
     {
-        (void) AcpiUtShortDivide (CurrentValue, Base, &CurrentValue, NULL);
+        (void) AcpiUtShortDivide (&CurrentValue, Base, &Quotient, NULL);
         NumDigits++;
+        CurrentValue = Quotient;
     }
 
     return_VALUE (NumDigits);
@@ -446,6 +446,7 @@ AcpiExUnsignedIntegerToString (
     UINT32                  Count;
     UINT32                  DigitsNeeded;
     UINT32                  Remainder;
+    ACPI_INTEGER            Quotient;
 
 
     ACPI_FUNCTION_ENTRY ();
@@ -456,8 +457,9 @@ AcpiExUnsignedIntegerToString (
 
     for (Count = DigitsNeeded; Count > 0; Count--)
     {
-        (void) AcpiUtShortDivide (Value, 10, &Value, &Remainder);
+        (void) AcpiUtShortDivide (&Value, 10, &Quotient, &Remainder);
         OutString[Count-1] = (char) ('0' + Remainder);\
+        Value = Quotient;
     }
 }
 

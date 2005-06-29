@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exstorob - AML Interpreter object store support, store to object
- *              $Revision: 1.53 $
+ *              $Revision: 1.51 $
  *
  *****************************************************************************/
 
@@ -10,7 +10,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2005, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2004, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -169,37 +169,36 @@ AcpiExStoreBufferToBuffer (
             return_ACPI_STATUS (AE_NO_MEMORY);
         }
 
+        TargetDesc->Common.Flags &= ~AOPOBJ_STATIC_POINTER;
         TargetDesc->Buffer.Length = Length;
     }
 
-    /* Copy source buffer to target buffer */
-
+    /*
+     * Buffer is a static allocation,
+     * only place what will fit in the buffer.
+     */
     if (Length <= TargetDesc->Buffer.Length)
     {
         /* Clear existing buffer and copy in the new one */
 
         ACPI_MEMSET (TargetDesc->Buffer.Pointer, 0, TargetDesc->Buffer.Length);
         ACPI_MEMCPY (TargetDesc->Buffer.Pointer, Buffer, Length);
-
-        /* Set the new length of the target */
-
-        TargetDesc->Buffer.Length = Length;
     }
     else
     {
-        /* Truncate the source, copy only what will fit */
-
+        /*
+         * Truncate the source, copy only what will fit
+         */
         ACPI_MEMCPY (TargetDesc->Buffer.Pointer, Buffer, TargetDesc->Buffer.Length);
 
         ACPI_DEBUG_PRINT ((ACPI_DB_INFO,
-            "Truncating source buffer from %X to %X\n",
+            "Truncating src buffer from %X to %X\n",
             Length, TargetDesc->Buffer.Length));
     }
 
     /* Copy flags */
 
     TargetDesc->Buffer.Flags = SourceDesc->Buffer.Flags;
-    TargetDesc->Common.Flags &= ~AOPOBJ_STATIC_POINTER;
     return_ACPI_STATUS (AE_OK);
 }
 

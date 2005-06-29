@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: psutils - Parser miscellaneous utilities (Parser only)
- *              $Revision: 1.59 $
+ *              $Revision: 1.56 $
  *
  *****************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2005, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2004, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -203,9 +203,10 @@ ACPI_PARSE_OBJECT*
 AcpiPsAllocOp (
     UINT16                  Opcode)
 {
-    ACPI_PARSE_OBJECT       *Op;
+    ACPI_PARSE_OBJECT       *Op = NULL;
+    UINT32                  Size;
+    UINT8                   Flags;
     const ACPI_OPCODE_INFO  *OpInfo;
-    UINT8                   Flags = ACPI_PARSEOP_GENERIC;
 
 
     ACPI_FUNCTION_ENTRY ();
@@ -213,33 +214,38 @@ AcpiPsAllocOp (
 
     OpInfo = AcpiPsGetOpcodeInfo (Opcode);
 
-    /* Determine type of ParseOp required */
+    /* Allocate the minimum required size object */
 
     if (OpInfo->Flags & AML_DEFER)
     {
+        Size = sizeof (ACPI_PARSE_OBJ_NAMED);
         Flags = ACPI_PARSEOP_DEFERRED;
     }
     else if (OpInfo->Flags & AML_NAMED)
     {
+        Size = sizeof (ACPI_PARSE_OBJ_NAMED);
         Flags = ACPI_PARSEOP_NAMED;
     }
     else if (Opcode == AML_INT_BYTELIST_OP)
     {
+        Size = sizeof (ACPI_PARSE_OBJ_NAMED);
         Flags = ACPI_PARSEOP_BYTELIST;
     }
-
-    /* Allocate the minimum required size object */
-
-    if (Flags == ACPI_PARSEOP_GENERIC)
+    else
     {
-        /* The generic op (default) is by far the most common (16 to 1) */
+        Size = sizeof (ACPI_PARSE_OBJ_COMMON);
+        Flags = ACPI_PARSEOP_GENERIC;
+    }
 
+    if (Size == sizeof (ACPI_PARSE_OBJ_COMMON))
+    {
+        /*
+         * The generic op is by far the most common (16 to 1)
+         */
         Op = AcpiUtAcquireFromCache (ACPI_MEM_LIST_PSNODE);
     }
     else
     {
-        /* Extended parseop */
-
         Op = AcpiUtAcquireFromCache (ACPI_MEM_LIST_PSNODE_EXT);
     }
 
