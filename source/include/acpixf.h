@@ -201,6 +201,14 @@ AcpiWalkNamespace (
     void                    *Context,
     void *                  *ReturnValue);
 
+
+ACPI_STATUS
+AcpiGetDevices (
+    NATIVE_CHAR             *HID,
+    WALK_CALLBACK           UserFunction,
+    void                    *Context,
+    void                    **ReturnValue);
+
 ACPI_STATUS
 AcpiGetName (
     ACPI_HANDLE             Handle,
