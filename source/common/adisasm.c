@@ -191,6 +191,56 @@ AcpiNsGetAttachedObject (
     return NULL;
 }
 
+
+
+ACPI_STATUS
+AdAmlDisassemble (
+    char                *Filename)
+{
+    ACPI_STATUS         Status;
+
+
+    /* Get the ACPI Tables (always) */
+
+    if (Filename)
+    {
+        Status = AcpiDbLoadAcpiTable (Filename);
+        if (ACPI_FAILURE (Status))
+        {
+            return Status;
+        }
+    }
+    else
+    {
+        Status = AdGetTables (Filename);
+        if (ACPI_FAILURE (Status))
+        {
+            AcpiOsPrintf ("Could not get ACPI tables %s\n", AcpiFormatException (Status));
+            return Status;
+        }
+    }
+
+    /* Always parse the tables, only option is what to display */
+
+    Status = AdParseTables ();
+    if (ACPI_FAILURE (Status))
+    {
+        AcpiOsPrintf ("Could not parse ACPI tables %s\n", AcpiFormatException (Status));
+        return Status;
+    }
+
+    /* Optional displays */
+
+    if (AcpiGbl_DbOpt_disasm)
+    {
+        AdDisplayTables ();
+    }
+
+
+    return AE_OK;
+}
+
+
 /******************************************************************************
  *
  * FUNCTION:    AdCreateTableHeaders
@@ -232,7 +282,7 @@ c (
     ACPI_PARSE_OBJECT       *Op)
 {
 
-    switch (Op->AmlOpcode)
+    switch (Op->Common.AmlOpcode)
     {
     case AML_METHOD_OP:
         return BLOCK_BRACE;
@@ -358,7 +408,7 @@ AdSecondPassParse (
     ACPI_PARSE_OBJECT       *Root)
 {
     ACPI_PARSE_OBJECT       *Op = Root;
-    ACPI_PARSE2_OBJECT      *Method;
+    ACPI_PARSE_OBJECT       *Method;
     ACPI_PARSE_OBJECT       *SearchOp;
     ACPI_PARSE_OBJECT       *StartOp;
     ACPI_STATUS             Status = AE_OK;
@@ -371,12 +421,12 @@ AdSecondPassParse (
 
     while (Op)
     {
-        if (Op->AmlOpcode == AML_METHOD_OP)
+        if (Op->Common.AmlOpcode == AML_METHOD_OP)
         {
             printf (".");
 
-            Method = (ACPI_PARSE2_OBJECT *) Op;
-            ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "Parsing method [%4.4s]\n", &Method->Name));
+            Method = Op;
+            ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "Parsing method [%4.4s]\n", &Method->Named.Name));
 
             WalkState = AcpiDsCreateWalkState (TABLE_ID_DSDT,
                                             Op, NULL, NULL);
@@ -385,8 +435,8 @@ AdSecondPassParse (
                 return_ACPI_STATUS (AE_NO_MEMORY);
             }
 
-            Status = AcpiDsInitAmlWalk (WalkState, Op, NULL, Method->Data,
-                            Method->Length, NULL, NULL, 1);
+            Status = AcpiDsInitAmlWalk (WalkState, Op, NULL, Method->Named.Data,
+                            Method->Named.Length, NULL, NULL, 1);
             if (ACPI_FAILURE (Status))
             {
                 return_ACPI_STATUS (Status);
@@ -404,21 +454,21 @@ AdSecondPassParse (
              * was just created and update the AmlOffset in each Op
              */
 
-            BaseAmlOffset = (Method->Value.Arg)->AmlOffset + 1;
-            StartOp = (Method->Value.Arg)->Next;
+            BaseAmlOffset = (Method->Common.Value.Arg)->Common.AmlOffset + 1;
+            StartOp = (Method->Common.Value.Arg)->Common.Next;
             SearchOp = StartOp;
 
             /* Walk the parse tree */
 
             while (SearchOp)
             {
-                SearchOp->AmlOffset += BaseAmlOffset;
+                SearchOp->Common.AmlOffset += BaseAmlOffset;
                 SearchOp = AcpiPsGetDepthNext (StartOp, SearchOp);
             }
 
         }
 
-        if (Op->AmlOpcode == AML_REGION_OP)
+        if (Op->Common.AmlOpcode == AML_REGION_OP)
         {
             /* TBD: Code below isn't quite the right thing to do!
              * Is there any need to parse regions here?
@@ -552,7 +602,7 @@ AdParseTables (void)
 
     /* Initialize the root object */
 
-    ((ACPI_PARSE2_OBJECT *) AcpiGbl_ParsedNamespaceRoot)->Name = ACPI_ROOT_NAME;
+    AcpiGbl_ParsedNamespaceRoot->Named.Name = ACPI_ROOT_NAME;
 
     /* Pass 1:  Parse everything except control method bodies */
 
