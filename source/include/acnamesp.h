@@ -14,15 +14,18 @@
  | FILENAME: acpinmsp.h - prototypes for accessing namespace
  |__________________________________________________________________________
  |
- | $Revision: 1.10 $
- | $Date: 2005/06/29 19:49:36 $
+ | $Revision: 1.11 $
+ | $Date: 2005/06/29 19:49:37 $
  | $Log: acnamesp.h,v $
- | Revision 1.10  2005/06/29 19:49:36  aystarik
- | 16/32/64-bit common data types
+ | Revision 1.11  2005/06/29 19:49:37  aystarik
+ | Fixed typo in one of the include statements
  |
  | 
- | date	99.03.10.00.04.00;	author rmoore1;	state Exp;
+ | date	99.04.01.17.56.00;	author rmosgrov;	state Exp;
  |
+ * 
+ * 11    4/01/99 9:56a Rmosgrov
+ * Fixed typo in one of the include statements
  * 
  * 10    3/09/99 4:04p Rmoore1
  * 16/32/64-bit common data types
@@ -183,7 +186,7 @@
    #include "amlscan.h"
    #include "amlpriv.h"
 #else
-   #include <acpType.h>
+   #include <acpitype.h>
    #include <amlexec.h>
    #include <amlscan.h>
    #include <amlpub.h>
