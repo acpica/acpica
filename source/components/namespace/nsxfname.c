@@ -2,7 +2,7 @@
  *
  * Module Name: nsxfname - Public interfaces to the ACPI subsystem
  *                         ACPI Namespace oriented interfaces
- *              $Revision: 1.60 $
+ *              $Revision: 1.62 $
  *
  *****************************************************************************/
 
@@ -181,7 +181,7 @@ AcpiLoadNamespace (
 
     DEBUG_PRINT_RAW (ACPI_OK,
         ("ACPI Namespace successfully loaded at root 0x%p\n",
-        AcpiGbl_RootObject->ChildTable));
+        AcpiGbl_RootObject));
 
 
     /*
@@ -220,8 +220,8 @@ AcpiGetHandle (
     ACPI_HANDLE             *RetHandle)
 {
     ACPI_STATUS             Status;
-    ACPI_NAMED_OBJECT       *ThisEntry;
-    ACPI_NAME_TABLE         *Scope = NULL;
+    ACPI_NAMED_OBJECT       *NameDesc;
+    ACPI_NAMED_OBJECT       *Scope = NULL;
 
 
     if (!RetHandle || !Pathname)
@@ -233,14 +233,14 @@ AcpiGetHandle (
     {
         AcpiCmAcquireMutex (ACPI_MTX_NAMESPACE);
 
-        ThisEntry = AcpiNsConvertHandleToEntry (Parent);
-        if (!ThisEntry)
+        NameDesc = AcpiNsConvertHandleToEntry (Parent);
+        if (!NameDesc)
         {
             AcpiCmReleaseMutex (ACPI_MTX_NAMESPACE);
             return (AE_BAD_PARAMETER);
         }
 
-        Scope = ThisEntry->ChildTable;
+        Scope = NameDesc->Child;
         AcpiCmReleaseMutex (ACPI_MTX_NAMESPACE);
     }
 
@@ -254,15 +254,15 @@ AcpiGetHandle (
     }
 
     /*
-     *  Find the Nte and convert to the user format
+     *  Find the Named Object and convert to the user format
      */
-    ThisEntry = NULL;
-    Status = AcpiNsGetNamedObject (Pathname, Scope, &ThisEntry);
+    NameDesc = NULL;
+    Status = AcpiNsGetNamedObject (Pathname, Scope, &NameDesc);
 
     *RetHandle = NULL;
     if(ACPI_SUCCESS(Status))
     {
-        *RetHandle = AcpiNsConvertEntryToHandle (ThisEntry);
+        *RetHandle = AcpiNsConvertEntryToHandle (NameDesc);
     }
 
     return (Status);
@@ -292,7 +292,7 @@ AcpiGetName (
     ACPI_BUFFER             *RetPathPtr)
 {
     ACPI_STATUS             Status;
-    ACPI_NAMED_OBJECT       *ObjEntry;
+    ACPI_NAMED_OBJECT       *NameDesc;
 
 
     /* Buffer pointer must be valid always */
@@ -321,12 +321,12 @@ AcpiGetName (
 
     /*
      * Wants the single segment ACPI name.
-     * Validate handle and convert to an NTE
+     * Validate handle and convert to an Named Object
      */
 
     AcpiCmAcquireMutex (ACPI_MTX_NAMESPACE);
-    ObjEntry = AcpiNsConvertHandleToEntry (Handle);
-    if (!ObjEntry)
+    NameDesc = AcpiNsConvertHandleToEntry (Handle);
+    if (!NameDesc)
     {
         Status = AE_BAD_PARAMETER;
         goto UnlockAndExit;
@@ -341,9 +341,9 @@ AcpiGetName (
         goto UnlockAndExit;
     }
 
-    /* Just copy the ACPI name from the NTE and zero terminate it */
+    /* Just copy the ACPI name from the Named Object and zero terminate it */
 
-    STRNCPY (RetPathPtr->Pointer, (UINT8 *) &ObjEntry->Name,
+    STRNCPY (RetPathPtr->Pointer, (NATIVE_CHAR *) &NameDesc->Name,
                 ACPI_NAME_SIZE);
     ((NATIVE_CHAR *) RetPathPtr->Pointer) [ACPI_NAME_SIZE] = 0;
     Status = AE_OK;
@@ -380,7 +380,7 @@ AcpiGetObjectInfo (
     ACPI_STATUS             Status;
     UINT32                  DeviceStatus = 0;
     UINT32                  Address = 0;
-    ACPI_NAMED_OBJECT       *DeviceEntry;
+    ACPI_NAMED_OBJECT       *DeviceDesc;
 
 
     /* Parameter validation */
@@ -392,17 +392,17 @@ AcpiGetObjectInfo (
 
     AcpiCmAcquireMutex (ACPI_MTX_NAMESPACE);
 
-    DeviceEntry = AcpiNsConvertHandleToEntry (Device);
-    if (!DeviceEntry)
+    DeviceDesc = AcpiNsConvertHandleToEntry (Device);
+    if (!DeviceDesc)
     {
         AcpiCmReleaseMutex (ACPI_MTX_NAMESPACE);
         return (AE_BAD_PARAMETER);
     }
 
-    Info->Type      = DeviceEntry->Type;
-    Info->Name      = DeviceEntry->Name;
-    Info->Parent    =
-        AcpiNsConvertEntryToHandle (AcpiNsGetParentEntry (DeviceEntry));
+    Info->Type      = DeviceDesc->Type;
+    Info->Name      = DeviceDesc->Name;
+    Info->Parent    = AcpiNsConvertEntryToHandle (
+                        AcpiNsGetParentObject (DeviceDesc));
 
     AcpiCmReleaseMutex (ACPI_MTX_NAMESPACE);
 
@@ -417,11 +417,11 @@ AcpiGetObjectInfo (
 
     /* Get extra info for ACPI devices */
 
-    Info->Valid     = 0;
+    Info->Valid = 0;
 
     /* Execute the _HID method and save the result */
 
-    Status = AcpiCmExecute_HID (DeviceEntry, &Hid);
+    Status = AcpiCmExecute_HID (DeviceDesc, &Hid);
     if (ACPI_SUCCESS (Status))
     {
         if (Hid.Type == STRING_PTR_DEVICE_ID)
@@ -438,7 +438,7 @@ AcpiGetObjectInfo (
 
     /* Execute the _UID method and save the result */
 
-    Status = AcpiCmExecute_UID (DeviceEntry, &Uid);
+    Status = AcpiCmExecute_UID (DeviceDesc, &Uid);
     if (ACPI_SUCCESS (Status))
     {
         if (Hid.Type == STRING_PTR_DEVICE_ID)
@@ -458,7 +458,7 @@ AcpiGetObjectInfo (
      * _STA is not always present
      */
 
-    Status = AcpiCmExecute_STA (DeviceEntry, &DeviceStatus);
+    Status = AcpiCmExecute_STA (DeviceDesc, &DeviceStatus);
     if (ACPI_SUCCESS (Status))
     {
         Info->CurrentStatus = DeviceStatus;
@@ -471,7 +471,7 @@ AcpiGetObjectInfo (
      */
 
     Status = AcpiCmEvaluateNumericObject (METHOD_NAME__ADR,
-                                            DeviceEntry, &Address);
+                                            DeviceDesc, &Address);
 
     if (ACPI_SUCCESS (Status))
     {
