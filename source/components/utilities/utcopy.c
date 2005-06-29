@@ -860,7 +860,7 @@ CmCopyInternalSimpleObject (
             }
             /* Copy the data
             */
-            STRNCPY (SourceObj->Buffer.Pointer, DestObj->Buffer.Pointer, DestObj->Buffer.Length);
+            STRNCPY (DestObj->Buffer.Pointer, SourceObj->Buffer.Pointer, DestObj->Buffer.Length);
         }
         else
         {
