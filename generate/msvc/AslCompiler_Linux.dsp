@@ -23,7 +23,7 @@ CFG=AslCompiler_Linux - Win32 Debug
 
 # Begin Project
 # PROP AllowPerConfigDependencies 0
-# PROP Scc_ProjName ""$/Acpi/source/compiler", CRIAAAAA"
+# PROP Scc_ProjName ""$/Acpi/source_linux/compiler", CRIAAAAA"
 # PROP Scc_LocalPath "..\.."
 CPP=cl.exe
 MTL=midl.exe
@@ -550,14 +550,14 @@ SOURCE=..\..\source_linux\compiler\asltypes.h
 # End Group
 # Begin Source File
 
-SOURCE=../../source/compiler/aslcompiler.l
+SOURCE=../../source_Linux/compiler/aslcompiler.l
 
 !IF  "$(CFG)" == "AslCompiler_Linux - Win32 Release"
 
 # PROP Ignore_Default_Tool 1
 # Begin Custom Build - Building Lexer from $(InputPath) to $(ProjDir)/AslCompiler_Linux/$(InputName).l.c
 ProjDir=.
-InputPath=../../source/compiler/aslcompiler.l
+InputPath=../../source_linux/compiler/aslcompiler.l
 InputName=aslcompiler
 
 "$(ProjDir)/AslCompiler_Linux/$(InputName).l.c" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
@@ -570,7 +570,7 @@ InputName=aslcompiler
 # PROP Ignore_Default_Tool 1
 # Begin Custom Build - Building Lexer from $(InputPath) to $(ProjDir)/AslCompiler_Linux/$(InputName).l.c
 ProjDir=.
-InputPath=../../source/compiler/aslcompiler.l
+InputPath=../../source_linux/compiler/aslcompiler.l
 InputName=aslcompiler
 
 "$(ProjDir)/AslCompiler_Linux/$(InputName).l.c" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
@@ -583,7 +583,7 @@ InputName=aslcompiler
 # End Source File
 # Begin Source File
 
-SOURCE=../../source/compiler/aslcompiler.y
+SOURCE=../../source_linux/compiler/aslcompiler.y
 
 !IF  "$(CFG)" == "AslCompiler_Linux - Win32 Release"
 
@@ -591,7 +591,7 @@ SOURCE=../../source/compiler/aslcompiler.y
 # Begin Custom Build - Building parser from $(InputPath) to $(ProjDir)/AslCompiler_Linux/$(InputName).y.c
 WkspDir=.
 ProjDir=.
-InputPath=../../source/compiler/aslcompiler.y
+InputPath=../../source_linux/compiler/aslcompiler.y
 InputName=aslcompiler
 
 BuildCmds= \
@@ -610,7 +610,7 @@ BuildCmds= \
 # Begin Custom Build - Building parser from $(InputPath) to $(ProjDir)/AslCompiler_Linux/$(InputName).y.c
 WkspDir=.
 ProjDir=.
-InputPath=../../source/compiler/aslcompiler.y
+InputPath=../../source_linux/compiler/aslcompiler.y
 InputName=aslcompiler
 
 BuildCmds= \
