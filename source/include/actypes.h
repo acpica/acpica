@@ -315,12 +315,12 @@ typedef UINT32                          ACPI_OBJECT_TYPE;
 
 #define ACPI_TYPE_MAX                   16
 
-    /* 
-     * This section contains object types that do not relate to the ACPI ObjectType operator.
-     * They are used for various internal purposes only.  A numerical gap is provided in 
-     * case additional "official" ObjectTypes are added in the future.  Also, values exceeding
-     * the largest official ACPI ObjectType must not overlap with defined AML opcodes.
-     */
+/* 
+ * This section contains object types that do not relate to the ACPI ObjectType operator.
+ * They are used for various internal purposes only.  A numerical gap is provided in 
+ * case additional "official" ObjectTypes are added in the future.  Also, values exceeding
+ * the largest official ACPI ObjectType must not overlap with defined AML opcodes.
+ */
 #define INTERNAL_TYPE_BEGIN             25
 #define INTERNAL_TYPE_DefField          (ACPI_OBJECT_TYPE) 25 /* 0x19  */
 #define INTERNAL_TYPE_BankField         (ACPI_OBJECT_TYPE) 26 /* 0x1A  */
@@ -527,15 +527,16 @@ typedef struct
  *  ACPI CPU Cx state handler
  */
 typedef
-ACPI_STATUS (*ACPI_SET_C_STATE_HANDLER) (NATIVE_UINT PBlkAddress);
+ACPI_STATUS (*ACPI_SET_C_STATE_HANDLER) (
+    NATIVE_UINT                 PBlkAddress);
 
 /*
  *  ACPI Cx State info
  */
 typedef struct
 {
-    UINT32                  StateNumber;
-    UINT32                  Latency;
+    UINT32                      StateNumber;
+    UINT32                      Latency;
 } ACPI_CX_STATE;
 
 /*
@@ -543,8 +544,8 @@ typedef struct
  */
 typedef struct
 {
-    UINT32                  StateNumber;
-    UINT32                  PercentOfClock;
+    UINT32                      StateNumber;
+    UINT32                      PercentOfClock;
 } ACPI_CPU_THROTTLING_STATE;
 
 /*
@@ -583,8 +584,8 @@ typedef struct _AcpiSysInfo
 
 typedef struct _AcpiInitData 
 {
-    void    *RSDP_PhysicalAddress;  /*  Address of RSDP, needed it it is    */
-                                    /*  not found in the IA32 manner        */
+    void                        *RSDP_PhysicalAddress;  /*  Address of RSDP, needed it it is    */
+                                                        /*  not found in the IA32 manner        */
 } ACPI_INIT_DATA;
 
 /*
@@ -655,7 +656,7 @@ ACPI_STATUS (*WALK_CALLBACK) (
     ACPI_OBJECT_TYPE            Type;           /* ACPI object type */\
     ACPI_NAME                   Name;           /* ACPI object Name */\
     /*\
-     *  BUGBUG:Do we want or need these next two??\
+     *  TBD:Do we want or need these next two??\
      */\
     ACPI_HANDLE                 Parent;         /* Parent object */\
     ACPI_HANDLE                 Children;       /* Linked list of children */\
@@ -672,13 +673,36 @@ typedef struct
     ACPI_COMMON_OBJ_INFO;
 
     /*
-     *  BUGBUG: a HID or a _UID can return either a number or a string
+     *  TBD: a HID or a _UID can return either a number or a string
      */
     char                        HardwareId [9];     /*  _HID value if any */
     char                        UniqueId[9];        /*  _UID value if any */
     UINT32                      Address;            /*  _ADR value if any */
     UINT32                      CurrentStatus;      /*  _STA value */
 } ACPI_DEVICE_INFO;
+
+
+
+
+/* Context structs for address space handlers */
+
+typedef struct
+{
+    void                        *HandlerContext;
+    UINT32                      Seg;
+    UINT32                      Bus;
+    UINT32                      DevFunc;
+} PCI_HANDLER_CONTEXT;
+
+
+typedef struct
+{
+    void                        *HandlerContext;
+    char                        *MappedPhysicalAddress;
+    char                        *MappedLogicalAddress;
+    UINT32                      MappedLength;
+
+} MEM_HANDLER_CONTEXT;
 
 
 
