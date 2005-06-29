@@ -436,7 +436,7 @@ AcpiHwRegisterAccess (
                 if (Value)
                 {
                     DEBUG_PRINT (TRACE_IO,
-                        ("About to write %04X to %04X\n", Value,
+                        ("About to write 0x%X to 0x%X\n", Value,
                         AcpiGbl_FACP->Pm1aEvtBlk));
 
                     AcpiOsOut16 (AcpiGbl_FACP->Pm1aEvtBlk, (UINT16) Value);
