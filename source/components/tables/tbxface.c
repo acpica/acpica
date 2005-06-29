@@ -2,7 +2,7 @@
  *
  * Module Name: tbxface - Public interfaces to the ACPI subsystem
  *                         ACPI table oriented interfaces
- *              $Revision: 1.40 $
+ *              $Revision: 1.41 $
  *
  *****************************************************************************/
 
@@ -141,9 +141,9 @@
  ******************************************************************************/
 
 ACPI_STATUS
-AcpiLoadTables (
-    ACPI_PHYSICAL_ADDRESS   RsdpPhysicalAddress)
+AcpiLoadTables (void)
 {
+    ACPI_PHYSICAL_ADDRESS   RsdpPhysicalAddress;
     ACPI_STATUS             Status;
     UINT32                  NumberOfTables = 0;
 
@@ -157,6 +157,18 @@ AcpiLoadTables (
     if (ACPI_FAILURE (Status))
     {
         return_ACPI_STATUS (Status);
+    }
+
+
+    /* Get the RSDP */
+
+    Status = AcpiOsGetRootPointer (ACPI_LOGICAL_ADDRESSING, 
+                    &RsdpPhysicalAddress);
+    if (ACPI_FAILURE (Status))
+    {
+        REPORT_ERROR (("AcpiLoadTables: Could not get RSDP, %s\n",
+                        AcpiFormatException (Status)));
+        goto ErrorExit;
     }
 
     /* Map and validate the RSDP */
