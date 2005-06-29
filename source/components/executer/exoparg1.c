@@ -1,7 +1,7 @@
 
 /******************************************************************************
- * 
- * Module Name: iemonad - ACPI AML (p-code) execution for monadic operators
+ *
+ * Module Name: ammonad - ACPI AML (p-code) execution for monadic operators
  *
  *****************************************************************************/
 
@@ -38,9 +38,9 @@
  * The above copyright and patent license is granted only if the following
  * conditions are met:
  *
- * 3. Conditions 
+ * 3. Conditions
  *
- * 3.1. Redistribution of Source with Rights to Further Distribute Source.  
+ * 3.1. Redistribution of Source with Rights to Further Distribute Source.
  * Redistribution of source code of any substantial portion of the Covered
  * Code or modification with rights to further distribute source must include
  * the above Copyright Notice, the above License, this list of Conditions,
@@ -48,11 +48,11 @@
  * Licensee must cause all Covered Code to which Licensee contributes to
  * contain a file documenting the changes Licensee made to create that Covered
  * Code and the date of any change.  Licensee must include in that file the
- * documentation of any changes made by any predecessor Licensee.  Licensee 
+ * documentation of any changes made by any predecessor Licensee.  Licensee
  * must include a prominent statement that the modification is derived,
  * directly or indirectly, from Original Intel Code.
  *
- * 3.2. Redistribution of Source with no Rights to Further Distribute Source.  
+ * 3.2. Redistribution of Source with no Rights to Further Distribute Source.
  * Redistribution of source code of any substantial portion of the Covered
  * Code or modification without rights to further distribute source must
  * include the following Disclaimer and Export Compliance provision in the
@@ -86,7 +86,7 @@
  * INSTALLATION, TRAINING OR OTHER SERVICES.  INTEL WILL NOT PROVIDE ANY
  * UPDATES, ENHANCEMENTS OR EXTENSIONS.  INTEL SPECIFICALLY DISCLAIMS ANY
  * IMPLIED WARRANTIES OF MERCHANTABILITY, NONINFRINGEMENT AND FITNESS FOR A
- * PARTICULAR PURPOSE. 
+ * PARTICULAR PURPOSE.
  *
  * 4.2. IN NO EVENT SHALL INTEL HAVE ANY LIABILITY TO LICENSEE, ITS LICENSEES
  * OR ANY OTHER THIRD PARTY, FOR ANY LOST PROFITS, LOST DATA, LOSS OF USE OR
@@ -114,26 +114,23 @@
  *
  *****************************************************************************/
 
-#define __IEMONAD_C__
+#define __AMMONAD_C__
 
-#include <acpi.h>
-#include <parser.h>
-#include <dispatch.h>
-#include <interp.h>
-#include <amlcode.h>
-#include <namesp.h>
+#include "acpi.h"
+#include "acparser.h"
+#include "acdispat.h"
+#include "acinterp.h"
+#include "amlcode.h"
+#include "acnamesp.h"
 
 
 #define _COMPONENT          INTERPRETER
-        MODULE_NAME         ("iemonad");
+        MODULE_NAME         ("ammonad");
 
 
-
-
-
-/*****************************************************************************
- * 
- * FUNCTION:    AmlGetObjectReference
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiAmlGetObjectReference
  *
  * PARAMETERS:  ObjDesc         - Create a reference to this object
  *              RetDesc         - Where to store the reference
@@ -143,48 +140,54 @@
  * DESCRIPTION: Obtain and return a "reference" to the target object
  *              Common code for the RefOfOp and the CondRefOfOp.
  *
- ****************************************************************************/
+ ******************************************************************************/
 
 ACPI_STATUS
-AmlGetObjectReference (
+AcpiAmlGetObjectReference (
     ACPI_OBJECT_INTERNAL    *ObjDesc,
-    ACPI_OBJECT_INTERNAL    **RetDesc)
+    ACPI_OBJECT_INTERNAL    **RetDesc,
+    ACPI_WALK_STATE         *WalkState)
 {
     ACPI_STATUS             Status = AE_OK;
 
 
+    FUNCTION_TRACE_PTR ("AmlGetObjectReference", ObjDesc);
 
-    if (VALID_DESCRIPTOR_TYPE (ObjDesc, DESC_TYPE_ACPI_OBJ))
+
+    if (VALID_DESCRIPTOR_TYPE (ObjDesc, ACPI_DESC_TYPE_INTERNAL))
     {
-        if (ObjDesc->Common.Type != INTERNAL_TYPE_Reference)
+        if (ObjDesc->Common.Type != INTERNAL_TYPE_REFERENCE)
         {
             *RetDesc = NULL;
             Status = AE_TYPE;
             goto Cleanup;
         }
 
-        /* 
+        /*
          * Not a Name -- an indirect name pointer would have
-         * been converted to a direct name pointer in AmlResolveOperands
+         * been converted to a direct name pointer in AcpiAmlResolveOperands
          */
         switch (ObjDesc->Reference.OpCode)
         {
-        case AML_LocalOp:
+        case AML_LOCAL_OP:
 
-            *RetDesc = (void *) DsMethodDataGetNte (MTH_TYPE_LOCAL, (ObjDesc->Reference.Offset));
+            *RetDesc = (void *) AcpiDsMethodDataGetNte (MTH_TYPE_LOCAL,
+                                        (ObjDesc->Reference.Offset), WalkState);
             break;
 
 
-        case AML_ArgOp:
+        case AML_ARG_OP:
 
-            *RetDesc = (void *) DsMethodDataGetNte (MTH_TYPE_ARG, (ObjDesc->Reference.Offset));
+            *RetDesc = (void *) AcpiDsMethodDataGetNte (MTH_TYPE_ARG,
+                                        (ObjDesc->Reference.Offset), WalkState);
             break;
 
 
         default:
 
-            DEBUG_PRINT (ACPI_ERROR, ("AmlGetObjectReference: (Internal) Unknown Reference subtype %02x\n",
-                            ObjDesc->Reference.OpCode));
+            DEBUG_PRINT (ACPI_ERROR,
+                ("AmlGetObjectReference: (Internal) Unknown Ref subtype %02x\n",
+                ObjDesc->Reference.OpCode));
             *RetDesc = NULL;
             Status = AE_AML_INTERNAL;
             goto Cleanup;
@@ -192,13 +195,13 @@ AmlGetObjectReference (
 
     }
 
-    else if (VALID_DESCRIPTOR_TYPE (ObjDesc, DESC_TYPE_NTE))
+    else if (VALID_DESCRIPTOR_TYPE (ObjDesc, ACPI_DESC_TYPE_NAMED))
     {
         /* Must be a named object;  Just return the NTE */
 
         *RetDesc = ObjDesc;
     }
-    
+
     else
     {
         *RetDesc = NULL;
@@ -207,27 +210,28 @@ AmlGetObjectReference (
 
 
 Cleanup:
- 
-    DEBUG_PRINT (TRACE_EXEC, ("AmlGetObjectReference: Obj=%p Ref=%p\n", ObjDesc, *RetDesc));
-    return Status;
+
+    DEBUG_PRINT (TRACE_EXEC,
+        ("AmlGetObjectReference: Obj=%p Ref=%p\n", ObjDesc, *RetDesc));
+    return_ACPI_STATUS (Status);
 }
 
 
-/*****************************************************************************
- * 
- * FUNCTION:    AmlExecMonadic1
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiAmlExecMonadic1
  *
  * PARAMETERS:  Opcode              - The opcode to be executed
  *
  * RETURN:      Status
  *
- * DESCRIPTION: Execute Type 1 monadic operator with numeric operand on 
+ * DESCRIPTION: Execute Type 1 monadic operator with numeric operand on
  *              object stack
  *
- ****************************************************************************/
+ ******************************************************************************/
 
 ACPI_STATUS
-AmlExecMonadic1 (
+AcpiAmlExecMonadic1 (
     UINT16                  Opcode,
     ACPI_WALK_STATE         *WalkState)
 {
@@ -240,15 +244,20 @@ AmlExecMonadic1 (
 
     /* Resolve all operands */
 
-    Status = AmlResolveOperands (Opcode, WALK_OPERANDS); 
-    DUMP_OPERANDS (WALK_OPERANDS, IMODE_Execute, PsGetOpcodeName (Opcode), 1, "after AmlResolveOperands");
+    Status = AcpiAmlResolveOperands (Opcode, WALK_OPERANDS, WalkState);
+    DUMP_OPERANDS (WALK_OPERANDS, IMODE_EXECUTE,
+                    AcpiPsGetOpcodeName (Opcode),
+                    1, "after AcpiAmlResolveOperands");
 
     /* Get all operands */
 
-    Status |= DsObjStackPopObject (&ObjDesc, WalkState);
-    if (Status != AE_OK)
+    Status |= AcpiDsObjStackPopObject (&ObjDesc, WalkState);
+    if (ACPI_FAILURE (Status))
     {
-        AmlAppendOperandDiag (_THIS_MODULE, __LINE__, Opcode, WALK_OPERANDS, 1);
+        DEBUG_PRINT (ACPI_ERROR, 
+            ("ExecMonadic1/%s: bad operand(s) (0x%X)\n",
+            AcpiPsGetOpcodeName (Opcode), Status));
+
         goto Cleanup;
     }
 
@@ -260,69 +269,68 @@ AmlExecMonadic1 (
 
     /*  DefRelease  :=  ReleaseOp   MutexObject */
 
-    case AML_ReleaseOp:
+    case AML_RELEASE_OP:
 
-        Status = OsReleaseMutex (ObjDesc);
+        Status = AcpiAmlSystemReleaseMutex (ObjDesc);
         break;
 
 
-    /*  DefReset    :=  ResetOp     EventObject */
+    /*  DefReset    :=  ResetOp     AcpiEventObject */
 
-    case AML_ResetOp:
+    case AML_RESET_OP:
 
-        Status = OsResetEvent (ObjDesc);
+        Status = AcpiAmlSystemResetEvent (ObjDesc);
         break;
 
 
-    /*  DefSignal   :=  SignalOp    EventObject */
-    
-    case AML_SignalOp:
+    /*  DefSignal   :=  SignalOp    AcpiEventObject */
 
-        Status = OsSignalEvent (ObjDesc);
+    case AML_SIGNAL_OP:
+
+        Status = AcpiAmlSystemSignalEvent (ObjDesc);
         break;
 
 
     /*  DefSleep    :=  SleepOp     MsecTime    */
-    
-    case AML_SleepOp:
 
-        OsDoSuspend (ObjDesc->Number.Value);
+    case AML_SLEEP_OP:
+
+        AcpiAmlSystemDoSuspend (ObjDesc->Number.Value);
         break;
 
 
     /*  DefStall    :=  StallOp     UsecTime    */
-    
-    case AML_StallOp:
 
-        OsDoStall (ObjDesc->Number.Value);
+    case AML_STALL_OP:
+
+        AcpiAmlSystemDoStall (ObjDesc->Number.Value);
         break;
 
 
     /*  Unknown opcode  */
-    
+
     default:
 
-        DEBUG_PRINT (ACPI_ERROR, ("AmlExecMonadic1: Unknown monadic opcode %02x\n", Opcode));
+        REPORT_ERROR ("AcpiAmlExecMonadic1: Unknown monadic opcode");
         Status = AE_AML_BAD_OPCODE;
         break;
-    
-    } /* switch */
 
+    } /* switch */
 
 
 Cleanup:
 
     /* Always delete the operand */
 
-    CmRemoveReference (ObjDesc);
+    AcpiCmRemoveReference (ObjDesc);
 
     return_ACPI_STATUS (AE_OK);
 }
 
 
-/*****************************************************************************
- * 
- * FUNCTION:    AmlExecMonadic2R
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiAmlExecMonadic2R
  *
  * PARAMETERS:  Opcode              - The opcode to be executed
  *
@@ -331,10 +339,10 @@ Cleanup:
  * DESCRIPTION: Execute Type 2 monadic operator with numeric operand and
  *              result operand on operand stack
  *
- ****************************************************************************/
+ ******************************************************************************/
 
 ACPI_STATUS
-AmlExecMonadic2R (
+AcpiAmlExecMonadic2R (
     UINT16                  Opcode,
     ACPI_WALK_STATE         *WalkState,
     ACPI_OBJECT_INTERNAL    **ReturnDesc)
@@ -345,7 +353,6 @@ AmlExecMonadic2R (
     ACPI_OBJECT_INTERNAL    *RetDesc2 = NULL;
     UINT32                  ResVal;
     ACPI_STATUS             Status;
-    UINT32                  ReferenceCount;
     INT32                   d0;
     INT32                   d1;
     INT32                   d2;
@@ -357,16 +364,21 @@ AmlExecMonadic2R (
 
     /* Resolve all operands */
 
-    Status = AmlResolveOperands (Opcode, WALK_OPERANDS);
-    DUMP_OPERANDS (WALK_OPERANDS, IMODE_Execute, PsGetOpcodeName (Opcode), 2, "after AmlResolveOperands");
+    Status = AcpiAmlResolveOperands (Opcode, WALK_OPERANDS, WalkState);
+    DUMP_OPERANDS (WALK_OPERANDS, IMODE_EXECUTE,
+                    AcpiPsGetOpcodeName (Opcode),
+                    2, "after AcpiAmlResolveOperands");
 
     /* Get all operands */
 
-    Status |= DsObjStackPopObject (&ResDesc, WalkState);
-    Status |= DsObjStackPopObject (&ObjDesc, WalkState);
-    if (Status != AE_OK)
+    Status |= AcpiDsObjStackPopObject (&ResDesc, WalkState);
+    Status |= AcpiDsObjStackPopObject (&ObjDesc, WalkState);
+    if (ACPI_FAILURE (Status))
     {
-        AmlAppendOperandDiag (_THIS_MODULE, __LINE__, Opcode, WALK_OPERANDS, 2);
+        DEBUG_PRINT (ACPI_ERROR, 
+            ("ExecMonadic2R/%s: bad operand(s) (0x%X)\n",
+            AcpiPsGetOpcodeName (Opcode), Status));
+
         goto Cleanup;
     }
 
@@ -375,14 +387,14 @@ AmlExecMonadic2R (
 
     switch (Opcode)
     {
-    case AML_BitNotOp:
-    case AML_FindSetLeftBitOp:
-    case AML_FindSetRightBitOp:
-    case AML_FromBCDOp:
-    case AML_ToBCDOp:
-    case AML_CondRefOfOp:
+    case AML_BIT_NOT_OP:
+    case AML_FIND_SET_LEFT_BIT_OP:
+    case AML_FIND_SET_RIGHT_BIT_OP:
+    case AML_FROM_BCD_OP:
+    case AML_TO_BCD_OP:
+    case AML_COND_REF_OF_OP:
 
-        RetDesc = CmCreateInternalObject (ACPI_TYPE_Number);
+        RetDesc = AcpiCmCreateInternalObject (ACPI_TYPE_NUMBER);
         if (!RetDesc)
         {
             Status = AE_NO_MEMORY;
@@ -396,8 +408,8 @@ AmlExecMonadic2R (
     switch (Opcode)
     {
     /*  DefNot  :=  NotOp   Operand Result  */
-    
-    case AML_BitNotOp:
+
+    case AML_BIT_NOT_OP:
 
         RetDesc->Number.Value = ~ObjDesc->Number.Value;
         break;
@@ -405,10 +417,16 @@ AmlExecMonadic2R (
 
     /*  DefFindSetLeftBit   :=  FindSetLeftBitOp    Operand Result  */
 
-    case AML_FindSetLeftBitOp:
+    case AML_FIND_SET_LEFT_BIT_OP:
 
         RetDesc->Number.Value = ObjDesc->Number.Value;
-        for (ResVal = 0; RetDesc->Number.Value && ResVal < 33; ++ResVal)
+
+        /*
+         * Acpi x1.94 spec, Chapter 16 describes Integer as a 32-bit
+         *  little endian unsigned value, so this boundry condition
+         *  is valid.
+         */
+        for (ResVal = 0; RetDesc->Number.Value && ResVal < 32; ++ResVal)
         {
             RetDesc->Number.Value >>= 1;
         }
@@ -419,98 +437,106 @@ AmlExecMonadic2R (
 
     /*  DefFindSetRightBit  :=  FindSetRightBitOp   Operand Result  */
 
-    case AML_FindSetRightBitOp:
+    case AML_FIND_SET_RIGHT_BIT_OP:
 
         RetDesc->Number.Value = ObjDesc->Number.Value;
-        for (ResVal = 0; RetDesc->Number.Value && ResVal < 33; ++ResVal)
+
+        /*
+         * Acpi x1.94 spec, Chapter 16 describes Integer as a 32-bit
+         *  little endian unsigned value, so this boundry condition
+         *  is valid.
+         */
+        for (ResVal = 0; RetDesc->Number.Value && ResVal < 32; ++ResVal)
         {
             RetDesc->Number.Value <<= 1;
         }
 
+        /* Since returns must be 1-based, subtract from 33 */
         RetDesc->Number.Value = ResVal == 0 ? 0 : 33 - ResVal;
         break;
 
 
     /*  DefFromBDC  :=  FromBCDOp   BCDValue    Result  */
 
-    case AML_FromBCDOp:
+    case AML_FROM_BCD_OP:
 
         d0 = (INT32) (ObjDesc->Number.Value & 15);
         d1 = (INT32) (ObjDesc->Number.Value >> 4 & 15);
         d2 = (INT32) (ObjDesc->Number.Value >> 8 & 15);
         d3 = (INT32) (ObjDesc->Number.Value >> 12 & 15);
-        
+
         if (d0 > 9 || d1 > 9 || d2 > 9 || d3 > 9)
         {
-            DEBUG_PRINT (ACPI_ERROR, ("AmlExecMonadic2R/FromBCDOp: BCD digit too large %d %d %d %d\n",
-                            d3, d2, d1, d0));
+            DEBUG_PRINT (ACPI_ERROR,
+                ("Monadic2R/FromBCDOp: BCD digit too large %d %d %d %d\n",
+                d3, d2, d1, d0));
             Status = AE_AML_NUMERIC_OVERFLOW;
             goto Cleanup;
         }
-        
+
         RetDesc->Number.Value = d0 + d1 * 10 + d2 * 100 + d3 * 1000;
         break;
 
 
     /*  DefToBDC    :=  ToBCDOp Operand Result  */
-    
-    case AML_ToBCDOp:
+
+    case AML_TO_BCD_OP:
 
 
         if (ObjDesc->Number.Value > 9999)
         {
-            DEBUG_PRINT (ACPI_ERROR, ("ExecMonadic2R/ToBCDOp: BCD overflow: %d\n",
-                            ObjDesc->Number.Value));
+            DEBUG_PRINT (ACPI_ERROR, ("Monadic2R/ToBCDOp: BCD overflow: %d\n",
+                ObjDesc->Number.Value));
             Status = AE_AML_NUMERIC_OVERFLOW;
             goto Cleanup;
         }
-        
+
         RetDesc->Number.Value
             = ObjDesc->Number.Value % 10
             + (ObjDesc->Number.Value / 10 % 10 << 4)
             + (ObjDesc->Number.Value / 100 % 10 << 8)
             + (ObjDesc->Number.Value / 1000 % 10 << 12);
-        
+
         break;
 
 
-    /*  DefCondRefOf        :=  CondRefOfOp         SourceObject    Result  */
+    /*  DefCondRefOf        :=  CondRefOfOp     SourceObject    Result  */
 
-    case AML_CondRefOfOp:
+    case AML_COND_REF_OF_OP:
 
         /*
-         * This op is a little strange because the internal return value is different 
-         * than the return value stored in the result descriptor (There are really 
-         * two return values)
+         * This op is a little strange because the internal return value is
+         * different than the return value stored in the result descriptor
+         * (There are really two return values)
          */
 
-        if ((NAME_TABLE_ENTRY *) ObjDesc == Gbl_RootObject)
+        if ((ACPI_NAMED_OBJECT*) ObjDesc == AcpiGbl_RootObject)
         {
-            /* This means that the object does not exist in the namespace, return FALSE */
+            /*
+             * This means that the object does not exist in the namespace,
+             * return FALSE
+             */
 
             RetDesc->Number.Value = 0;
 
-            /* Must delete the result descriptor since there is no reference being returned */
+            /*
+             * Must delete the result descriptor since there is no reference
+             * being returned
+             */
 
-            CmRemoveReference (ResDesc);
+            AcpiCmRemoveReference (ResDesc);
             goto Cleanup;
         }
 
         /* Get the object reference and store it */
 
-        Status = AmlGetObjectReference (ObjDesc, &RetDesc2);
+        Status = AcpiAmlGetObjectReference (ObjDesc, &RetDesc2, WalkState);
         if (ACPI_FAILURE (Status))
         {
             goto Cleanup;
         }
 
-        Status = AmlExecStore (RetDesc2, ResDesc);
-        if (RetDesc2->Common.ReferenceCount > 1)
-        {
-            DEBUG_PRINT (TRACE_EXEC, ("AmlExecMonadic2R: Return Obj %p has other refs, incrementing\n",
-                            RetDesc2));
-            CmUpdateObjectReference (RetDesc2, REF_INCREMENT);
-        }
+        Status = AcpiAmlExecStore (RetDesc2, ResDesc, WalkState);
 
         /* The object exists in the namespace, return TRUE */
 
@@ -519,55 +545,65 @@ AmlExecMonadic2R (
         break;
 
 
-    case AML_StoreOp:
+    case AML_STORE_OP:
 
         /*
          * A store operand is typically a number, string, buffer or lvalue
-         * TBD: What about a store to a package?
+         * TBD: [Unhandled] What about a store to a package?
          */
 
-        /* 
+        /*
          * Do the store, and be careful about deleting the source object,
          * since the object itself may have been stored.
          */
-        
-        ReferenceCount = ObjDesc->Common.ReferenceCount;
-        Status = AmlExecStore (ObjDesc, ResDesc);
-        if (ObjDesc->Common.ReferenceCount > ReferenceCount)
+
+        Status = AcpiAmlExecStore (ObjDesc, ResDesc, WalkState);
+        if (ACPI_FAILURE (Status))
         {
-            DEBUG_PRINT (TRACE_EXEC, ("AmlExecMonadic2R: Operand %p was physically stored, not deleting\n",
-                            ObjDesc));
-            CmUpdateObjectReference (ObjDesc, REF_INCREMENT);
+            /* On failure, just delete the ObjDesc */
+
+            AcpiCmRemoveReference (ObjDesc);
         }
-        
-        *ReturnDesc = ObjDesc;
+
+        else
+        {
+            /*
+             * Normally, we would remove a reference on the ObjDesc parameter;
+             * But since it is being used as the internal return object
+             * (meaning we would normally increment it), the two cancel out,
+             * and we simply don't do anything.
+             */
+            *ReturnDesc = ObjDesc;
+        }
+
         ObjDesc = NULL;
         return_ACPI_STATUS (Status);
 
         break;
 
 
-    case AML_DebugOp:
-    
+    case AML_DEBUG_OP:
+
         /* Reference, returning an Reference */
 
-        DEBUG_PRINT (ACPI_ERROR, ("AmlExecMonadic2R: DebugOp should never get here!\n"));
+        DEBUG_PRINT (ACPI_ERROR,
+            ("AmlExecMonadic2R: DebugOp should never get here!\n"));
         return_ACPI_STATUS (AE_OK);
         break;
 
 
     /*
-     * These are obsolete opcodes 
+     * These are obsolete opcodes
      */
 
     /*  DefShiftLeftBit     :=  ShiftLeftBitOp      Source          BitNum  */
     /*  DefShiftRightBit    :=  ShiftRightBitOp     Source          BitNum  */
 
-    case AML_ShiftLeftBitOp:
-    case AML_ShiftRightBitOp:
-        
-        DEBUG_PRINT (ACPI_ERROR, ("AmlExecMonadic2R: %s unimplemented\n", 
-                        PsGetOpcodeName (Opcode)));
+    case AML_SHIFT_LEFT_BIT_OP:
+    case AML_SHIFT_RIGHT_BIT_OP:
+
+        DEBUG_PRINT (ACPI_ERROR, ("AmlExecMonadic2R: %s unimplemented\n",
+                        AcpiPsGetOpcodeName (Opcode)));
         Status = AE_SUPPORT;
         goto Cleanup;
         break;
@@ -575,37 +611,28 @@ AmlExecMonadic2R (
 
     default:
 
-        DEBUG_PRINT (ACPI_ERROR, ("AmlExecMonadic2R: internal error: Unknown monadic opcode %02x\n",
-                        Opcode));
+        REPORT_ERROR ("AcpiAmlExecMonadic2R: Unknown monadic opcode");
         Status = AE_AML_BAD_OPCODE;
         goto Cleanup;
     }
-    
 
-    Status = AmlExecStore (RetDesc, ResDesc);
 
-    if (RetDesc->Common.ReferenceCount > 1)
-    {
-        DEBUG_PRINT (TRACE_EXEC, ("AmlExecMonadic2R: Return Obj %p has other refs, incrementing\n",
-                        RetDesc));
-        CmUpdateObjectReference (RetDesc, REF_INCREMENT);
-    }
-
+    Status = AcpiAmlExecStore (RetDesc, ResDesc, WalkState);
 
 
 Cleanup:
     /* Always delete the operand object */
 
-    CmRemoveReference (ObjDesc);
+    AcpiCmRemoveReference (ObjDesc);
 
     /* Delete return object(s) on error */
 
     if (ACPI_FAILURE (Status))
     {
-        CmRemoveReference (ResDesc);     /* Result descriptor */
+        AcpiCmRemoveReference (ResDesc);     /* Result descriptor */
         if (RetDesc)
         {
-            CmRemoveReference (RetDesc);
+            AcpiCmRemoveReference (RetDesc);
             RetDesc = NULL;
         }
     }
@@ -617,9 +644,9 @@ Cleanup:
 }
 
 
-/*****************************************************************************
- * 
- * FUNCTION:    AmlExecMonadic2
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiAmlExecMonadic2
  *
  * PARAMETERS:  Opcode              - The opcode to be executed
  *
@@ -629,10 +656,10 @@ Cleanup:
  *              DerefOfOp, RefOfOp, SizeOfOp, TypeOp, IncrementOp,
  *              DecrementOp, LNotOp,
  *
- ****************************************************************************/
+ ******************************************************************************/
 
 ACPI_STATUS
-AmlExecMonadic2 (
+AcpiAmlExecMonadic2 (
     UINT16                  Opcode,
     ACPI_WALK_STATE         *WalkState,
     ACPI_OBJECT_INTERNAL    **ReturnDesc)
@@ -640,6 +667,7 @@ AmlExecMonadic2 (
     ACPI_OBJECT_INTERNAL    *ObjDesc;
     ACPI_OBJECT_INTERNAL    *TmpDesc;
     ACPI_OBJECT_INTERNAL    *RetDesc = NULL;
+    ACPI_STATUS             ResolveStatus;
     ACPI_STATUS             Status;
     UINT32                  Type;
     UINT32                  Value;
@@ -648,20 +676,37 @@ AmlExecMonadic2 (
     FUNCTION_TRACE_PTR ("AmlExecMonadic2", WALK_OPERANDS);
 
 
-    /* Resolve all operands */
+    /* Attempt to resolve the operands */
 
-    Status = AmlResolveOperands (Opcode, WALK_OPERANDS);
-    DUMP_OPERANDS (WALK_OPERANDS, IMODE_Execute, PsGetOpcodeName (Opcode), 1, "after AmlResolveOperands");
+    ResolveStatus = AcpiAmlResolveOperands (Opcode, WALK_OPERANDS, WalkState);
+    DUMP_OPERANDS (WALK_OPERANDS, IMODE_EXECUTE,
+                    AcpiPsGetOpcodeName (Opcode),
+                    1, "after AcpiAmlResolveOperands");
 
-    /* Get all operands */
+    /* Always get all operands */
 
-    Status |= DsObjStackPopObject (&ObjDesc, WalkState);
-    if (Status != AE_OK)
+    Status = AcpiDsObjStackPopObject (&ObjDesc, WalkState);
+
+
+    /* Now we can check the status codes */
+
+    if (ACPI_FAILURE (ResolveStatus))
     {
-        AmlAppendOperandDiag (_THIS_MODULE, __LINE__, Opcode, WALK_OPERANDS, 1);
+        DEBUG_PRINT (ACPI_ERROR, 
+            ("ExecMonadic2[%s]: Could not resolve operands, %s\n",
+            AcpiPsGetOpcodeName (Opcode), AcpiCmFormatException (ResolveStatus)));
+
         goto Cleanup;
     }
 
+    if (ACPI_FAILURE (Status))
+    {
+        DEBUG_PRINT (ACPI_ERROR, 
+            ("ExecMonadic2[%s]: Bad operand(s), %s\n",
+            AcpiPsGetOpcodeName (Opcode), AcpiCmFormatException (Status)));
+
+        goto Cleanup;
+    }
 
 
     /* Get the operand and decode the opcode */
@@ -672,9 +717,9 @@ AmlExecMonadic2 (
 
     /*  DefLNot :=  LNotOp  Operand */
 
-    case AML_LNotOp:
+    case AML_LNOT_OP:
 
-        RetDesc = CmCreateInternalObject (ACPI_TYPE_Number);
+        RetDesc = AcpiCmCreateInternalObject (ACPI_TYPE_NUMBER);
         if (!RetDesc)
         {
             Status = AE_NO_MEMORY;
@@ -688,30 +733,30 @@ AmlExecMonadic2 (
     /*  DefDecrement    :=  DecrementOp Target  */
     /*  DefIncrement    :=  IncrementOp Target  */
 
-    case AML_DecrementOp:
-    case AML_IncrementOp:
+    case AML_DECREMENT_OP:
+    case AML_INCREMENT_OP:
 
-        /* 
+        /*
          * Since we are expecting an Reference on the top of the stack, it
          * can be either an NTE or an internal object.
          *
-         * TBD: This may be the prototype code for all cases where an Reference
-         * is expected!! 10/99
+         * TBD: [Future] This may be the prototype code for all cases where
+         * an Reference is expected!! 10/99
          */
 
-       if (VALID_DESCRIPTOR_TYPE (ObjDesc, DESC_TYPE_NTE))
+       if (VALID_DESCRIPTOR_TYPE (ObjDesc, ACPI_DESC_TYPE_NAMED))
        {
            RetDesc = ObjDesc;
        }
 
        else
        {
-            /* 
+            /*
              * Duplicate the Reference in a new object so that we can resolve it
              * without destroying the original Reference object
              */
-        
-            RetDesc = CmCreateInternalObject (INTERNAL_TYPE_Reference);
+
+            RetDesc = AcpiCmCreateInternalObject (INTERNAL_TYPE_REFERENCE);
             if (!RetDesc)
             {
               Status = AE_NO_MEMORY;
@@ -722,23 +767,26 @@ AmlExecMonadic2 (
             RetDesc->Reference.Offset = ObjDesc->Reference.Offset;
             RetDesc->Reference.Object = ObjDesc->Reference.Object;
         }
-        
 
-        /* 
+
+        /*
          * Convert the RetDesc Reference to a Number
          * (This deletes the original RetDesc)
          */
-    
-        Status = AmlResolveOperands (AML_LNotOp, &RetDesc);
-        if (Status != AE_OK)
+
+        Status = AcpiAmlResolveOperands (AML_LNOT_OP, &RetDesc, WalkState);
+        if (ACPI_FAILURE (Status))
         {
-            AmlAppendOperandDiag (_THIS_MODULE, __LINE__, Opcode, WALK_OPERANDS, 1);
+            DEBUG_PRINT (ACPI_ERROR, 
+                ("ExecMonadic2/%s: bad operand(s) (0x%X)\n",
+                AcpiPsGetOpcodeName (Opcode), Status));
+
             goto Cleanup;
         }
 
         /* Do the actual increment or decrement */
-    
-        if (AML_IncrementOp == Opcode)
+
+        if (AML_INCREMENT_OP == Opcode)
         {
             RetDesc->Number.Value++;
         }
@@ -749,7 +797,7 @@ AmlExecMonadic2 (
 
         /* Store the result back in the original descriptor */
 
-        Status = AmlExecStore (RetDesc, ObjDesc);
+        Status = AcpiAmlExecStore (RetDesc, ObjDesc, WalkState);
 
         /* Objdesc was just deleted (because it is an Reference) */
 
@@ -760,92 +808,102 @@ AmlExecMonadic2 (
 
     /*  DefObjectType   :=  ObjectTypeOp    SourceObject    */
 
-    case AML_TypeOp:
-        
-        if (INTERNAL_TYPE_Reference == ObjDesc->Common.Type)
+    case AML_TYPE_OP:
+
+        if (INTERNAL_TYPE_REFERENCE == ObjDesc->Common.Type)
         {
-            /* 
+            /*
              * Not a Name -- an indirect name pointer would have
-             * been converted to a direct name pointer in AmlResolveOperands
+             * been converted to a direct name pointer in ResolveOperands
              */
             switch (ObjDesc->Reference.OpCode)
             {
-            case AML_ZeroOp: 
-            case AML_OneOp: 
-            case AML_OnesOp:
-                
+            case AML_ZERO_OP:
+            case AML_ONE_OP:
+            case AML_ONES_OP:
+
                 /* Constants are of type Number */
-                
-                Type = ACPI_TYPE_Number;
+
+                Type = ACPI_TYPE_NUMBER;
                 break;
 
 
-            case AML_DebugOp:
-                
+            case AML_DEBUG_OP:
+
                 /* Per 1.0b spec, Debug object is of type DebugObject */
-                
-                Type = ACPI_TYPE_DebugObject;
+
+                Type = ACPI_TYPE_DEBUG_OBJECT;
                 break;
 
 
-            case AML_IndexOp:
+            case AML_INDEX_OP:
 
                 /* Get the type of this reference (index into another object) */
 
                 Type = ObjDesc->Reference.TargetType;
+                if (Type == ACPI_TYPE_PACKAGE)
+                {
+                    /*
+                     * The main object is a package, we want to get the type
+                     * of the individual package element that is referenced by
+                     * the index.
+                     */
+                    Type = (*(ObjDesc->Reference.Where))->Common.Type;
+                }
+
                 break;
 
 
-            case AML_LocalOp:
+            case AML_LOCAL_OP:
 
-                Type = DsMethodDataGetType (MTH_TYPE_LOCAL, (ObjDesc->Reference.Offset));
+                Type = AcpiDsMethodDataGetType (MTH_TYPE_LOCAL,
+                                (ObjDesc->Reference.Offset), WalkState);
                 break;
 
 
-            case AML_ArgOp:
+            case AML_ARG_OP:
 
-                Type = DsMethodDataGetType (MTH_TYPE_ARG, (ObjDesc->Reference.Offset));
+                Type = AcpiDsMethodDataGetType (MTH_TYPE_ARG,
+                                (ObjDesc->Reference.Offset), WalkState);
                 break;
 
 
             default:
 
-                DEBUG_PRINT (ACPI_ERROR, ("AmlExecMonadic2/TypeOp:internal error: Unknown Reference subtype %02x\n",
-                                ObjDesc->Reference.OpCode));
+                REPORT_ERROR ("AcpiAmlExecMonadic2/TypeOp:internal error: Unknown Reference subtype");
                 Status = AE_AML_INTERNAL;
                 goto Cleanup;
             }
         }
-        
+
         else
         {
-            /* 
-             * Since we passed AmlResolveOperands("l") and it's not an Reference,
-             * it must be a direct name pointer. 
+            /*
+             * It's not a Reference, so it must be a direct name pointer.
              */
-            Type = NsGetType ((ACPI_HANDLE) ObjDesc);
+            Type = AcpiNsGetType ((ACPI_HANDLE) ObjDesc);
         }
 
-        /*  Allocate a descriptor to hold the type. */
+        /* Allocate a descriptor to hold the type. */
 
-        RetDesc = CmCreateInternalObject (ACPI_TYPE_Number);
+        RetDesc = AcpiCmCreateInternalObject (ACPI_TYPE_NUMBER);
         if (!RetDesc)
         {
             Status = AE_NO_MEMORY;
             goto Cleanup;
         }
-        
+
         RetDesc->Number.Value = Type;
         break;
 
 
     /*  DefSizeOf   :=  SizeOfOp    SourceObject    */
 
-    case AML_SizeOfOp:
+    case AML_SIZE_OF_OP:
 
-        if (VALID_DESCRIPTOR_TYPE (ObjDesc, DESC_TYPE_NTE))
+        if (VALID_DESCRIPTOR_TYPE (ObjDesc, ACPI_DESC_TYPE_NAMED))
         {
-            ObjDesc = NsGetAttachedObject (ObjDesc);
+            ObjDesc = AcpiNsGetAttachedObject (ObjDesc);
         }
 
         if (!ObjDesc)
@@ -858,39 +916,44 @@ AmlExecMonadic2 (
             switch (ObjDesc->Common.Type)
             {
 
-            case ACPI_TYPE_Buffer:
+            case ACPI_TYPE_BUFFER:
 
                 Value = ObjDesc->Buffer.Length;
                 break;
 
 
-            case ACPI_TYPE_String:
+            case ACPI_TYPE_STRING:
 
                 Value = ObjDesc->String.Length;
                 break;
 
 
-            case ACPI_TYPE_Package:
+            case ACPI_TYPE_PACKAGE:
 
                 Value = ObjDesc->Package.Count;
                 break;
 
+            case INTERNAL_TYPE_REFERENCE:
+
+                Value = 4;
+                break;
 
             default:
 
-                DEBUG_PRINT (ACPI_ERROR, ("AmlExecMonadic2: Not Buf/Str/Pkg - found type 0x%X\n", 
-                                ObjDesc->Common.Type));
+                DEBUG_PRINT (ACPI_ERROR,
+                    ("AmlExecMonadic2: Not Buf/Str/Pkg - found type 0x%X\n",
+                    ObjDesc->Common.Type));
                 Status = AE_AML_OPERAND_TYPE;
                 goto Cleanup;
             }
         }
 
-        /* 
+        /*
          * Now that we have the size of the object, create a result
          * object to hold the value
          */
 
-        RetDesc = CmCreateInternalObject (ACPI_TYPE_Number);
+        RetDesc = AcpiCmCreateInternalObject (ACPI_TYPE_NUMBER);
         if (!RetDesc)
         {
             Status = AE_NO_MEMORY;
@@ -903,9 +966,9 @@ AmlExecMonadic2 (
 
     /*  DefRefOf    :=  RefOfOp     SourceObject    */
 
-    case AML_RefOfOp:
+    case AML_REF_OF_OP:
 
-        Status = AmlGetObjectReference (ObjDesc, &RetDesc);
+        Status = AcpiAmlGetObjectReference (ObjDesc, &RetDesc, WalkState);
         if (ACPI_FAILURE (Status))
         {
             goto Cleanup;
@@ -915,48 +978,81 @@ AmlExecMonadic2 (
 
     /*  DefDerefOf  :=  DerefOfOp   ObjReference    */
 
-    case AML_DerefOfOp:
+    case AML_DEREF_OF_OP:
 
 
         /* Check for a method local or argument */
 
-        if (!VALID_DESCRIPTOR_TYPE (ObjDesc, DESC_TYPE_NTE))
+        if (!VALID_DESCRIPTOR_TYPE (ObjDesc, ACPI_DESC_TYPE_NAMED))
         {
-            /* Must dereference the local/arg reference first */
-
+            /*
+             * Must resolve/dereference the local/arg reference first
+             */
             switch (ObjDesc->Reference.OpCode)
             {
-                /* Set ObjDesc to the value of the local/arg */
+            /* Set ObjDesc to the value of the local/arg */
 
-            case AML_LocalOp:
+            case AML_LOCAL_OP:
 
-                DsMethodDataGetValue (MTH_TYPE_LOCAL, (ObjDesc->Reference.Offset), &ObjDesc);
+                AcpiDsMethodDataGetValue (MTH_TYPE_LOCAL,
+                        (ObjDesc->Reference.Offset), WalkState, &TmpDesc);
+
+                /*
+                 * Delete our reference to the input object and
+                 * point to the object just retrieved
+                 */
+                AcpiCmRemoveReference (ObjDesc);
+                ObjDesc = TmpDesc;
                 break;
 
 
-            case AML_ArgOp:
+            case AML_ARG_OP:
 
-                DsMethodDataGetValue (MTH_TYPE_ARG, (ObjDesc->Reference.Offset), &ObjDesc);
+                AcpiDsMethodDataGetValue (MTH_TYPE_ARG,
+                        (ObjDesc->Reference.Offset), WalkState, &TmpDesc);
+
+                /*
+                 * Delete our reference to the input object and
+                 * point to the object just retrieved
+                 */
+                AcpiCmRemoveReference (ObjDesc);
+                ObjDesc = TmpDesc;
+                break;
+
+            default:
+
+                /* Index op - handled below */
                 break;
             }
         }
 
 
-        if (VALID_DESCRIPTOR_TYPE (ObjDesc, DESC_TYPE_NTE))
-        {
-            /* Extract the actual object from the NTE (This is the dereference) */
+        /* ObjDesc may have changed from the code above */
 
-            RetDesc = ((NAME_TABLE_ENTRY *) ObjDesc)->Object;
+        if (VALID_DESCRIPTOR_TYPE (ObjDesc, ACPI_DESC_TYPE_NAMED))
+        {
+            /* Get the actual object from the NTE (This is the dereference) */
+
+            RetDesc = ((ACPI_NAMED_OBJECT*) ObjDesc)->Object;
+
+            /* Returning a pointer to the object, add another reference! */
+
+            AcpiCmAddReference (RetDesc);
         }
 
         else
-        {   /* This must be a reference object produced by the Index ASL operation */
-            /* Must be an lvalue, make sure opcode is correct */
+        {
+            /*
+             * This must be a reference object produced by the Index
+             * ASL operation -- check internal opcode
+             */
 
-            if ((ObjDesc->Reference.OpCode != AML_IndexOp) &&
-                (ObjDesc->Reference.OpCode != AML_RefOfOp))
+            if ((ObjDesc->Reference.OpCode != AML_INDEX_OP) &&
+                (ObjDesc->Reference.OpCode != AML_REF_OF_OP))
             {
-                DEBUG_PRINT (ACPI_ERROR, ("AmlExecMonadic2: DerefOf, invalid obj ref %p\n", ObjDesc));
+                DEBUG_PRINT (ACPI_ERROR,
+                    ("AmlExecMonadic2: DerefOf, invalid obj ref %p\n",
+                    ObjDesc));
 
                 Status = AE_TYPE;
                 goto Cleanup;
@@ -965,11 +1061,26 @@ AmlExecMonadic2 (
 
             switch (ObjDesc->Reference.OpCode)
             {
-            case AML_IndexOp:
+            case AML_INDEX_OP:
 
-                if (ObjDesc->Reference.TargetType == ACPI_TYPE_BufferField)
+                /*
+                 * Supported target types for the Index operator are
+                 * 1) A Buffer
+                 * 2) A Package
+                 */
+
+                if (ObjDesc->Reference.TargetType == ACPI_TYPE_BUFFER_FIELD)
                 {
-                    RetDesc = CmCreateInternalObject (ACPI_TYPE_Number);
+                    /*
+                     * The target is a buffer, we must create a new object that
+                     * contains one element of the buffer, the element pointed
+                     * to by the index.
+                     *
+                     * NOTE: index into a buffer is NOT a pointer to a
+                     * sub-buffer of the main buffer, it is only a pointer to a
+                     * single element (byte) of the buffer!
+                     */
+                    RetDesc = AcpiCmCreateInternalObject (ACPI_TYPE_NUMBER);
                     if (!RetDesc)
                     {
                         Status = AE_NO_MEMORY;
@@ -977,19 +1088,46 @@ AmlExecMonadic2 (
                     }
 
                     TmpDesc = ObjDesc->Reference.Object;
-                    RetDesc->Number.Value = TmpDesc->Buffer.Pointer[ObjDesc->Reference.Offset];
+                    RetDesc->Number.Value =
+                        TmpDesc->Buffer.Pointer[ObjDesc->Reference.Offset];
 
-                    /* TBD: (see below) Don't add an additional ref! */
+                    /* TBD: [Investigate] (see below) Don't add an additional
+                     * ref!
+                     */
                 }
-                else if (ObjDesc->Reference.TargetType == ACPI_TYPE_Package)
+
+                else if (ObjDesc->Reference.TargetType == ACPI_TYPE_PACKAGE)
                 {
+                    /*
+                     * The target is a package, we want to return the referenced
+                     * element of the package.  We must add another reference to
+                     * this object, however.
+                     */
+
                     RetDesc = *(ObjDesc->Reference.Where);
+                    if (!RetDesc)
+                    {
+                        /*
+                         * We can't return a NULL dereferenced value.  This is
+                         * an uninitialized package element and is thus a
+                         * severe error.
+                         */
+
+                        DEBUG_PRINT (ACPI_ERROR,
+                            ("AmlExecMonadic2: DerefOf, NULL package element obj %p\n",
+                            ObjDesc));
+                        Status = AE_AML_UNINITIALIZED_ELEMENT;
+                        goto Cleanup;
+                    }
+
+                    AcpiCmAddReference (RetDesc);
                 }
-                
+
                 else
                 {
-                    DEBUG_PRINT (ACPI_ERROR, ("AmlExecMonadic2: DerefOf, Unknown TargetType %X in obj %p\n", 
-                                    ObjDesc->Reference.TargetType, ObjDesc));
+                    DEBUG_PRINT (ACPI_ERROR,
+                        ("AmlExecMonadic2: DerefOf, Unknown TargetType %X in obj %p\n",
+                        ObjDesc->Reference.TargetType, ObjDesc));
                     Status = AE_AML_OPERAND_TYPE;
                     goto Cleanup;
                 }
@@ -997,36 +1135,33 @@ AmlExecMonadic2 (
                 break;
 
 
-            case AML_RefOfOp:
-           
+            case AML_REF_OF_OP:
+
                 RetDesc = ObjDesc->Reference.Object;
+
+                /* Add another reference to the object! */
+
+                AcpiCmAddReference (RetDesc);
                 break;
             }
         }
 
-
-        /* TBD: ??? Return an additional reference to the object */
-
-        /* CmUpdateObjectReference (RetDesc, REF_INCREMENT); */
-
         break;
-        
+
 
     default:
 
-        DEBUG_PRINT (ACPI_ERROR, ( "AmlExecMonadic2: Internal error, unknown monadic opcode %02x\n",
-                        Opcode));
+        REPORT_ERROR ("AcpiAmlExecMonadic2: Internal error, unknown monadic opcode");
         Status = AE_AML_BAD_OPCODE;
         goto Cleanup;
     }
-
 
 
 Cleanup:
 
     if (ObjDesc)
     {
-        CmRemoveReference (ObjDesc);
+        AcpiCmRemoveReference (ObjDesc);
     }
 
     /* Delete return object on error */
@@ -1034,11 +1169,11 @@ Cleanup:
     if (ACPI_FAILURE (Status) &&
         (RetDesc))
     {
-        CmRemoveReference (RetDesc);
+        AcpiCmRemoveReference (RetDesc);
         RetDesc = NULL;
     }
 
     *ReturnDesc = RetDesc;
     return_ACPI_STATUS (Status);
 }
- 
+

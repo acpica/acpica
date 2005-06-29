@@ -1,7 +1,7 @@
 
 /******************************************************************************
- * 
- * Module Name: ieopexec - ACPI AML (p-code) execution - specific opcodes
+ *
+ * Module Name: ammisc - ACPI AML (p-code) execution - specific opcodes
  *
  *****************************************************************************/
 
@@ -38,9 +38,9 @@
  * The above copyright and patent license is granted only if the following
  * conditions are met:
  *
- * 3. Conditions 
+ * 3. Conditions
  *
- * 3.1. Redistribution of Source with Rights to Further Distribute Source.  
+ * 3.1. Redistribution of Source with Rights to Further Distribute Source.
  * Redistribution of source code of any substantial portion of the Covered
  * Code or modification with rights to further distribute source must include
  * the above Copyright Notice, the above License, this list of Conditions,
@@ -48,11 +48,11 @@
  * Licensee must cause all Covered Code to which Licensee contributes to
  * contain a file documenting the changes Licensee made to create that Covered
  * Code and the date of any change.  Licensee must include in that file the
- * documentation of any changes made by any predecessor Licensee.  Licensee 
+ * documentation of any changes made by any predecessor Licensee.  Licensee
  * must include a prominent statement that the modification is derived,
  * directly or indirectly, from Original Intel Code.
  *
- * 3.2. Redistribution of Source with no Rights to Further Distribute Source.  
+ * 3.2. Redistribution of Source with no Rights to Further Distribute Source.
  * Redistribution of source code of any substantial portion of the Covered
  * Code or modification without rights to further distribute source must
  * include the following Disclaimer and Export Compliance provision in the
@@ -87,7 +87,7 @@
 
  * UPDATES, ENHANCEMENTS OR EXTENSIONS.  INTEL SPECIFICALLY DISCLAIMS ANY
  * IMPLIED WARRANTIES OF MERCHANTABILITY, NONINFRINGEMENT AND FITNESS FOR A
- * PARTICULAR PURPOSE. 
+ * PARTICULAR PURPOSE.
  *
  * 4.2. IN NO EVENT SHALL INTEL HAVE ANY LIABILITY TO LICENSEE, ITS LICENSEES
  * OR ANY OTHER THIRD PARTY, FOR ANY LOST PROFITS, LOST DATA, LOSS OF USE OR
@@ -115,23 +115,22 @@
  *
  *****************************************************************************/
 
-#define __IEOPEXEC_C__
+#define __AMMISC_C__
 
-#include <acpi.h>
-#include <parser.h>
-#include <interp.h>
-#include <amlcode.h>
-#include <dispatch.h>
+#include "acpi.h"
+#include "acparser.h"
+#include "acinterp.h"
+#include "amlcode.h"
+#include "acdispat.h"
 
 
 #define _COMPONENT          INTERPRETER
-        MODULE_NAME         ("ieopexec");
+        MODULE_NAME         ("ammisc");
 
 
-
-/*****************************************************************************
- * 
- * FUNCTION:    AmlExecFatal
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiAmlExecFatal
  *
  * PARAMETERS:  none
  *
@@ -140,16 +139,16 @@
  *
  * DESCRIPTION: Execute Fatal operator
  *
- *  ACPI SPECIFICATION REFERENCES:
- *  16.2.4.3    DefFatal    :=  FatalOp FatalType   FatalCode   FatalArg
- *  16.2.4.3    FatalType   :=  ByteData
- *  16.2.4.3    FatalCode   :=  DWordData
- *  16.2.4.3    FatalArg    :=  TermArg=>Integer
+ * ACPI SPECIFICATION REFERENCES:
+ *  DefFatal    :=  FatalOp FatalType   FatalCode   FatalArg
+ *  FatalType   :=  ByteData
+ *  FatalCode   :=  DWordData
+ *  FatalArg    :=  TermArg=>Integer
  *
- ****************************************************************************/
+ ******************************************************************************/
 
 ACPI_STATUS
-AmlExecFatal (    
+AcpiAmlExecFatal (
     ACPI_WALK_STATE         *WalkState)
 {
     ACPI_OBJECT_INTERNAL    *TypeDesc;
@@ -163,41 +162,49 @@ AmlExecFatal (
 
     /* Resolve operands */
 
-    Status = AmlResolveOperands (AML_FatalOp, WALK_OPERANDS);
-    DUMP_OPERANDS (WALK_OPERANDS, IMODE_Execute, PsGetOpcodeName (AML_FatalOp), 3, "after AmlResolveOperands");
+    Status = AcpiAmlResolveOperands (AML_FATAL_OP, WALK_OPERANDS, WalkState);
+    DUMP_OPERANDS (WALK_OPERANDS, IMODE_EXECUTE,
+                    AcpiPsGetOpcodeName (AML_FATAL_OP),
+                    3, "after AcpiAmlResolveOperands");
 
     /* Get operands */
 
-    Status |= DsObjStackPopObject (&ArgDesc, WalkState);
-    Status |= DsObjStackPopObject (&CodeDesc, WalkState);
-    Status |= DsObjStackPopObject (&TypeDesc, WalkState);
-    if (Status != AE_OK)
+    Status |= AcpiDsObjStackPopObject (&ArgDesc, WalkState);
+    Status |= AcpiDsObjStackPopObject (&CodeDesc, WalkState);
+    Status |= AcpiDsObjStackPopObject (&TypeDesc, WalkState);
+    if (ACPI_FAILURE (Status))
     {
-        /* invalid parameters on object stack  */
+        /* Invalid parameters on object stack  */
 
-        AmlAppendOperandDiag (_THIS_MODULE, __LINE__, (UINT16) AML_FatalOp, WALK_OPERANDS, 3);
+        DEBUG_PRINT (ACPI_ERROR, 
+            ("AcpiAmlExecFatal/AML_FATAL_OP: bad operand(s) (0x%X)\n",
+            Status));
+
         goto Cleanup;
     }
-
 
 
     /* DefFatal    :=  FatalOp FatalType   FatalCode   FatalArg    */
 
 
-    DEBUG_PRINT (ACPI_INFO, ("FatalOp: Type %x Code %x Arg %x <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<\n",
-                    TypeDesc->Number.Value, CodeDesc->Number.Value, ArgDesc->Number.Value));
+    DEBUG_PRINT (ACPI_INFO,
+        ("FatalOp: Type %x Code %x Arg %x <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<\n",
+        TypeDesc->Number.Value, CodeDesc->Number.Value, ArgDesc->Number.Value));
 
 
-    /* TBD: call OSD interface to notify OS of fatal error requiring shutdown! */
+    /*
+     * TBD: [Unhandled] call OSD interface to notify OS of fatal error
+     * requiring shutdown!
+     */
 
 
 Cleanup:
 
     /* Free the operands */
 
-    CmRemoveReference (ArgDesc);
-    CmRemoveReference (CodeDesc);
-    CmRemoveReference (TypeDesc);
+    AcpiCmRemoveReference (ArgDesc);
+    AcpiCmRemoveReference (CodeDesc);
+    AcpiCmRemoveReference (TypeDesc);
 
 
     /* If we get back from the OS call, we might as well keep going. */
@@ -207,9 +214,9 @@ Cleanup:
 }
 
 
-/*****************************************************************************
- * 
- * FUNCTION:    AmlExecIndex
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiAmlExecIndex
  *
  * PARAMETERS:  none
  *
@@ -220,17 +227,17 @@ Cleanup:
  * ALLOCATION:  Deletes one operand descriptor -- other remains on stack
  *
  *  ACPI SPECIFICATION REFERENCES:
- *  16.2.4.4    DefIndex    :=  IndexOp BuffPkgObj IndexValue Result
- *  16.2.4.4    IndexValue  :=  TermArg=>Integer
- *  16.2.1      NameString  :=  <RootChar NamePath> | <PrefixPath NamePath>
- *  16.2.4.4    Result      :=  SuperName
- *  16.2.1      SuperName   :=  NameString | ArgObj | LocalObj | DebugObj | DefIndex
- *                              Local4Op | Local5Op | Local6Op | Local7Op
+ *  DefIndex    :=  IndexOp BuffPkgObj IndexValue Result
+ *  IndexValue  :=  TermArg=>Integer
+ *  NameString  :=  <RootChar NamePath> | <PrefixPath NamePath>
+ *  Result      :=  SuperName
+ *  SuperName   :=  NameString | ArgObj | LocalObj | DebugObj | DefIndex
+ *                             Local4Op | Local5Op | Local6Op | Local7Op
  *
- ****************************************************************************/
+ ******************************************************************************/
 
 ACPI_STATUS
-AmlExecIndex (
+AcpiAmlExecIndex (
     ACPI_WALK_STATE         *WalkState,
     ACPI_OBJECT_INTERNAL    **ReturnDesc)
 {
@@ -248,26 +255,31 @@ AmlExecIndex (
     /* Resolve operands */
     /* First operand can be either a package or a buffer */
 
-    Status = AmlResolveOperands (AML_IndexOp, WALK_OPERANDS);
-    DUMP_OPERANDS (WALK_OPERANDS, IMODE_Execute, PsGetOpcodeName (AML_IndexOp), 3, "after AmlResolveOperands");
+    Status = AcpiAmlResolveOperands (AML_INDEX_OP, WALK_OPERANDS, WalkState);
+    DUMP_OPERANDS (WALK_OPERANDS, IMODE_EXECUTE,
+                    AcpiPsGetOpcodeName (AML_INDEX_OP),
+                    3, "after AcpiAmlResolveOperands");
 
     /* Get all operands */
 
-    Status |= DsObjStackPopObject (&ResDesc, WalkState);
-    Status |= DsObjStackPopObject (&IdxDesc, WalkState);
-    Status |= DsObjStackPopObject (&ObjDesc, WalkState);
-    if (Status != AE_OK)
+    Status |= AcpiDsObjStackPopObject (&ResDesc, WalkState);
+    Status |= AcpiDsObjStackPopObject (&IdxDesc, WalkState);
+    Status |= AcpiDsObjStackPopObject (&ObjDesc, WalkState);
+    if (ACPI_FAILURE (Status))
     {
         /* Invalid parameters on object stack  */
 
-        AmlAppendOperandDiag (_THIS_MODULE, __LINE__, (UINT16) AML_IndexOp, WALK_OPERANDS, 3);
+        DEBUG_PRINT (ACPI_ERROR, 
+            ("AcpiAmlExecIndex/AML_INDEX_OP: bad operand(s) (0x%X)\n",
+            Status));
+
         goto Cleanup;
     }
 
 
     /* Create the internal return object */
 
-    RetDesc = CmCreateInternalObject (INTERNAL_TYPE_Reference);
+    RetDesc = AcpiCmCreateInternalObject (INTERNAL_TYPE_REFERENCE);
     if (!RetDesc)
     {
         Status = AE_NO_MEMORY;
@@ -279,51 +291,53 @@ AmlExecIndex (
      * At this point, the ObjDesc operand is either a Package or a Buffer
      */
 
-    if (ObjDesc->Common.Type == ACPI_TYPE_Package)
+    if (ObjDesc->Common.Type == ACPI_TYPE_PACKAGE)
     {
         /* Object to be indexed is a Package */
 
         if (IdxDesc->Number.Value >= ObjDesc->Package.Count)
         {
-            DEBUG_PRINT (ACPI_ERROR, ("AmlExecIndex: Index value out of range\n"));
+            DEBUG_PRINT (ACPI_ERROR,
+                ("AmlExecIndex: Index value out of range\n"));
             Status = AE_AML_PACKAGE_LIMIT;
             goto Cleanup;
         }
 
-        if ((ResDesc->Common.Type == INTERNAL_TYPE_Reference) &&
-            (ResDesc->Reference.OpCode == AML_ZeroOp))
+        if ((ResDesc->Common.Type == INTERNAL_TYPE_REFERENCE) &&
+            (ResDesc->Reference.OpCode == AML_ZERO_OP))
         {
-            /* 
-             * There is no actual result descriptor (the ZeroOp Result descriptor is a placeholder),
-             * so just delete the placeholder and return a reference to the package element
+            /*
+             * There is no actual result descriptor (the ZeroOp Result
+             * descriptor is a placeholder), so just delete the placeholder and
+             * return a reference to the package element
              */
 
-            CmRemoveReference (ResDesc);
+            AcpiCmRemoveReference (ResDesc);
         }
 
         else
         {
-            /* 
+            /*
              * Each element of the package is an internal object.  Get the one
              * we are after.
              */
 
-            TmpDesc                         = ObjDesc->Package.Elements[IdxDesc->Number.Value];
-            RetDesc->Reference.OpCode       = AML_IndexOp;
-            RetDesc->Reference.TargetType   = TmpDesc->Common.Type;
-            RetDesc->Reference.Object       = TmpDesc;
+            TmpDesc                       = ObjDesc->Package.Elements[IdxDesc->Number.Value];
+            RetDesc->Reference.OpCode     = AML_INDEX_OP;
+            RetDesc->Reference.TargetType = TmpDesc->Common.Type;
+            RetDesc->Reference.Object     = TmpDesc;
 
-            Status = AmlExecStore (RetDesc, ResDesc);
-            RetDesc->Reference.Object       = NULL;
+            Status = AcpiAmlExecStore (RetDesc, ResDesc, WalkState);
+            RetDesc->Reference.Object     = NULL;
         }
 
         /*
          * The local return object must always be a reference to the package element,
          * not the element itself.
          */
-        RetDesc->Reference.OpCode       = AML_IndexOp;
-        RetDesc->Reference.TargetType   = ACPI_TYPE_Package;
-        RetDesc->Reference.Where        = &ObjDesc->Package.Elements[IdxDesc->Number.Value];
+        RetDesc->Reference.OpCode     = AML_INDEX_OP;
+        RetDesc->Reference.TargetType = ACPI_TYPE_PACKAGE;
+        RetDesc->Reference.Where      = &ObjDesc->Package.Elements[IdxDesc->Number.Value];
     }
 
     else
@@ -332,17 +346,18 @@ AmlExecIndex (
 
         if (IdxDesc->Number.Value >= ObjDesc->Buffer.Length)
         {
-            DEBUG_PRINT (ACPI_ERROR, ("AmlExecIndex: Index value out of range\n"));
+            DEBUG_PRINT (ACPI_ERROR,
+                ("AmlExecIndex: Index value out of range\n"));
             Status = AE_AML_BUFFER_LIMIT;
             goto Cleanup;
         }
 
-        RetDesc->Reference.OpCode       = AML_IndexOp;
-        RetDesc->Reference.TargetType   = ACPI_TYPE_BufferField;
+        RetDesc->Reference.OpCode       = AML_INDEX_OP;
+        RetDesc->Reference.TargetType   = ACPI_TYPE_BUFFER_FIELD;
         RetDesc->Reference.Object       = ObjDesc;
         RetDesc->Reference.Offset       = IdxDesc->Number.Value;
 
-        Status = AmlExecStore (RetDesc, ResDesc);
+        Status = AcpiAmlExecStore (RetDesc, ResDesc, WalkState);
     }
 
 
@@ -350,18 +365,18 @@ Cleanup:
 
     /* Always delete operands */
 
-    CmRemoveReference (ObjDesc);
-    CmRemoveReference (IdxDesc);
+    AcpiCmRemoveReference (ObjDesc);
+    AcpiCmRemoveReference (IdxDesc);
 
     /* Delete return object on error */
 
     if (ACPI_FAILURE (Status))
     {
-        CmRemoveReference (ResDesc);
+        AcpiCmRemoveReference (ResDesc);
 
         if (RetDesc)
         {
-            CmRemoveReference (RetDesc);
+            AcpiCmRemoveReference (RetDesc);
             RetDesc = NULL;
         }
     }
@@ -373,9 +388,9 @@ Cleanup:
 }
 
 
-/*****************************************************************************
- * 
- * FUNCTION:    AmlExecMatch
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiAmlExecMatch
  *
  * PARAMETERS:  none
  *
@@ -383,22 +398,20 @@ Cleanup:
  *
  * DESCRIPTION: Execute Match operator
  *
- * ALLOCATION:  Deletes 5 operands
- *
- *  ACPI SPECIFICATION REFERENCES:
- *  16.2.4.4    DefMatch    :=  MatchOp SearchPkg   Opcode1     Operand1
+ * ACPI SPECIFICATION REFERENCES:
+ *  DefMatch    :=  MatchOp SearchPkg   Opcode1     Operand1
  *                              Opcode2 Operand2    StartIndex
- *  16.2.4.4    Opcode1     :=  ByteData: MTR, MEQ, MLE, MLT, MGE, or MGT
- *  16.2.4.4    Opcode2     :=  ByteData: MTR, MEQ, MLE, MLT, MGE, or MGT
- *  16.2.4.4    Operand1    :=  TermArg=>Integer
- *  16.2.4.4    Operand2    :=  TermArg=>Integer
- *  16.2.4.4    SearchPkg   :=  TermArg=>PackageObject
- *  16.2.4.4    StartIndex  :=  TermArg=>Integer
+ *  Opcode1     :=  ByteData: MTR, MEQ, MLE, MLT, MGE, or MGT
+ *  Opcode2     :=  ByteData: MTR, MEQ, MLE, MLT, MGE, or MGT
+ *  Operand1    :=  TermArg=>Integer
+ *  Operand2    :=  TermArg=>Integer
+ *  SearchPkg   :=  TermArg=>PackageObject
+ *  StartIndex  :=  TermArg=>Integer
  *
- ****************************************************************************/
+ ******************************************************************************/
 
 ACPI_STATUS
-AmlExecMatch (
+AcpiAmlExecMatch (
     ACPI_WALK_STATE         *WalkState,
     ACPI_OBJECT_INTERNAL    **ReturnDesc)
 {
@@ -419,32 +432,38 @@ AmlExecMatch (
 
     /* Resolve all operands */
 
-    Status = AmlResolveOperands (AML_MatchOp, WALK_OPERANDS);
-    DUMP_OPERANDS (WALK_OPERANDS, IMODE_Execute, PsGetOpcodeName (AML_MatchOp), 6, "after AmlResolveOperands");
+    Status = AcpiAmlResolveOperands (AML_MATCH_OP, WALK_OPERANDS, WalkState);
+    DUMP_OPERANDS (WALK_OPERANDS, IMODE_EXECUTE,
+                    AcpiPsGetOpcodeName (AML_MATCH_OP),
+                    6, "after AcpiAmlResolveOperands");
 
     /* Get all operands */
 
-    Status |= DsObjStackPopObject (&StartDesc, WalkState);
-    Status |= DsObjStackPopObject (&V2Desc, WalkState);
-    Status |= DsObjStackPopObject (&Op2Desc, WalkState);
-    Status |= DsObjStackPopObject (&V1Desc, WalkState);
-    Status |= DsObjStackPopObject (&Op1Desc, WalkState);
-    Status |= DsObjStackPopObject (&PkgDesc, WalkState);
+    Status |= AcpiDsObjStackPopObject (&StartDesc, WalkState);
+    Status |= AcpiDsObjStackPopObject (&V2Desc, WalkState);
+    Status |= AcpiDsObjStackPopObject (&Op2Desc, WalkState);
+    Status |= AcpiDsObjStackPopObject (&V1Desc, WalkState);
+    Status |= AcpiDsObjStackPopObject (&Op1Desc, WalkState);
+    Status |= AcpiDsObjStackPopObject (&PkgDesc, WalkState);
 
-    if (Status != AE_OK)
+    if (ACPI_FAILURE (Status))
     {
-        /* invalid parameters on object stack  */
+        /* Invalid parameters on object stack  */
 
-        AmlAppendOperandDiag (_THIS_MODULE, __LINE__, (UINT16) AML_MatchOp, WALK_OPERANDS, 6);
+        DEBUG_PRINT (ACPI_ERROR, 
+            ("ExecMatch/AML_MATCH_OP: bad operand(s) (0x%X)\n",
+            Status));
+
         goto Cleanup;
     }
 
     /* Validate match comparison sub-opcodes */
-    
-    if ((Op1Desc->Number.Value > MAX_MATCH_OPERATOR) || 
+
+    if ((Op1Desc->Number.Value > MAX_MATCH_OPERATOR) ||
         (Op2Desc->Number.Value > MAX_MATCH_OPERATOR))
     {
-        DEBUG_PRINT (ACPI_ERROR, ("AmlExecMatch: operation encoding out of range\n"));
+        DEBUG_PRINT (ACPI_ERROR,
+            ("AmlExecMatch: operation encoding out of range\n"));
         Status = AE_AML_OPERAND_VALUE;
         goto Cleanup;
     }
@@ -452,12 +471,13 @@ AmlExecMatch (
     Index = StartDesc->Number.Value;
     if (Index >= (UINT32) PkgDesc->Package.Count)
     {
-        DEBUG_PRINT (ACPI_ERROR, ("AmlExecMatch: start position value out of range\n"));
+        DEBUG_PRINT (ACPI_ERROR,
+            ("AmlExecMatch: start position value out of range\n"));
         Status = AE_AML_PACKAGE_LIMIT;
         goto Cleanup;
     }
 
-    RetDesc = CmCreateInternalObject (ACPI_TYPE_Number);
+    RetDesc = AcpiCmCreateInternalObject (ACPI_TYPE_NUMBER);
     if (!RetDesc)
     {
         Status = AE_NO_MEMORY;
@@ -465,7 +485,7 @@ AmlExecMatch (
 
     }
 
-    /* 
+    /*
      * Examine each element until a match is found.  Within the loop,
      * "continue" signifies that the current element does not match
      * and the next should be examined.
@@ -477,17 +497,18 @@ AmlExecMatch (
 
     for ( ; Index < PkgDesc->Package.Count; ++Index)
     {
-        /* 
+        /*
          * Treat any NULL or non-numeric elements as non-matching.
-         * XXX - if an element is a Name, should we examine its value?
+         * TBD [Unhandled] - if an element is a Name,
+         *      should we examine its value?
          */
         if (!PkgDesc->Package.Elements[Index] ||
-            ACPI_TYPE_Number != PkgDesc->Package.Elements[Index]->Common.Type)
+            ACPI_TYPE_NUMBER != PkgDesc->Package.Elements[Index]->Common.Type)
         {
             continue;
         }
 
-        /* 
+        /*
          * Within these switch statements:
          *      "break" (exit from the switch) signifies a match;
          *      "continue" (proceed to next iteration of enclosing
@@ -555,8 +576,8 @@ AmlExecMatch (
 
             continue;
         }
- 
-        
+
+
         switch(Op2Desc->Number.Value)
         {
 
@@ -621,7 +642,7 @@ AmlExecMatch (
         }
 
         /* Match found: exit from loop */
-        
+
         MatchValue = Index;
         break;
     }
@@ -635,20 +656,20 @@ Cleanup:
 
     /* Free the operands */
 
-    CmRemoveReference (StartDesc);
-    CmRemoveReference (V2Desc);
-    CmRemoveReference (Op2Desc);
-    CmRemoveReference (V1Desc);
-    CmRemoveReference (Op1Desc);
-    CmRemoveReference (PkgDesc);
+    AcpiCmRemoveReference (StartDesc);
+    AcpiCmRemoveReference (V2Desc);
+    AcpiCmRemoveReference (Op2Desc);
+    AcpiCmRemoveReference (V1Desc);
+    AcpiCmRemoveReference (Op1Desc);
+    AcpiCmRemoveReference (PkgDesc);
 
-    
+
     /* Delete return object on error */
 
     if (ACPI_FAILURE (Status) &&
         (RetDesc))
     {
-        CmRemoveReference (RetDesc);
+        AcpiCmRemoveReference (RetDesc);
         RetDesc = NULL;
     }
 
