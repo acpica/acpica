@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dbinput - user front-end to the AML debugger
- *              $Revision: 1.78 $
+ *              $Revision: 1.79 $
  *
  ******************************************************************************/
 
@@ -852,7 +852,7 @@ AcpiDbExecuteThread (
         AcpiGbl_StepToNextCall = FALSE;
 
         MStatus = AcpiUtAcquireMutex (ACPI_MTX_DEBUG_CMD_READY);
-        if (ACPI_FAILURE (MStatus)
+        if (ACPI_FAILURE (MStatus))
         {
             return;
         }
@@ -860,7 +860,7 @@ AcpiDbExecuteThread (
         Status = AcpiDbCommandDispatch (AcpiGbl_DbLineBuf, NULL, NULL);
 
         MStatus = AcpiUtReleaseMutex (ACPI_MTX_DEBUG_CMD_COMPLETE);
-        if (ACPI_FAILURE (MStatus)
+        if (ACPI_FAILURE (MStatus))
         {
             return;
         }
@@ -914,7 +914,7 @@ AcpiDbUserCommands (
     NATIVE_CHAR             Prompt,
     ACPI_PARSE_OBJECT       *Op)
 {
-    ACPI_STATUS             Status;
+    ACPI_STATUS             Status = AE_OK;
 
 
     /* TBD: [Restructure] Need a separate command line buffer for step mode */
