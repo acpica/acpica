@@ -153,16 +153,17 @@ typedef UINT32                  ACPI_MUTEX_HANDLE;
 #define MTX_MEMORY              1
 #define MTX_CACHES              2
 #define MTX_TABLES              3
-#define MTX_DISPATCHER          4
-#define MTX_INTERPRETER         5
-#define MTX_EXECUTE             6
-#define MTX_NAMESPACE           7
-#define MTX_EVENTS              8
-#define MTX_OP_REGIONS          9
-#define MTX_DEBUG_COMMAND       10
-#define MTX_DEBUGGER            11
+#define MTX_PARSER              4
+#define MTX_DISPATCHER          5
+#define MTX_INTERPRETER         6
+#define MTX_EXECUTE             7
+#define MTX_NAMESPACE           8
+#define MTX_EVENTS              9
+#define MTX_OP_REGIONS          10
+#define MTX_DEBUG_CMD_READY     11
+#define MTX_DEBUG_CMD_COMPLETE  12
 
-#define MAX_MTX                 11
+#define MAX_MTX                 12
 #define NUM_MTX                 MAX_MTX+1
 
 
@@ -177,14 +178,15 @@ static char                 *Gbl_MutexNames[] =
     "MTX_Memory",
     "MTX_Caches",
     "MTX_Tables",
+    "MTX_Parser",
     "MTX_Dispatcher",
     "MTX_Interpreter",
     "MTX_Execute",
     "MTX_Namespace",
     "MTX_Events",
     "MTX_OpRegions",
-    "MTX_DebugCommand",
-    "MTX_Debugger"
+    "MTX_DebugCmdReady",
+    "MTX_DebugCmdComplete"
 };
 
 #endif
@@ -201,6 +203,9 @@ typedef struct AcpiMutexInfo
 
 } ACPI_MUTEX_INFO;
 
+
+#define MTX_DO_NOT_LOCK         0
+#define MTX_LOCK                1
 
 
 typedef UINT16                  ACPI_OWNER_ID;       
@@ -502,6 +507,7 @@ typedef struct acpi_deferred_op
     UINT32                  Name;           /* 4-byte name or 0 if none */
     UINT32                  BodyLength;     /* AML body size */
     UINT8                   *Body;          /* AML body */
+    UINT16                  ThreadCount;    /* Count of threads currently executing a method */
 
 } ACPI_DEFERRED_OP;
 
