@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: exdump - Interpreter debug output routines
- *              $Revision: 1.141 $
+ *              $Revision: 1.142 $
  *
  *****************************************************************************/
 
@@ -521,8 +521,8 @@ AcpiExDumpOperand (
     case INTERNAL_TYPE_REGION_FIELD:
 
         AcpiOsPrintf (
-            "RegionField: Bits=%X  BitAccWidth=%X Lock=%X Update=%X at byte=%X bit=%X of below:\n",
-            ObjDesc->Field.BitLength,      ObjDesc->Field.AccessBitWidth,
+            "RegionField: Bits=%X AccWidth=%X Lock=%X Update=%X at byte=%X bit=%X of below:\n",
+            ObjDesc->Field.BitLength, ObjDesc->Field.AccessByteWidth,
             ObjDesc->Field.FieldFlags & AML_FIELD_LOCK_RULE_MASK,       
             ObjDesc->Field.FieldFlags & AML_FIELD_UPDATE_RULE_MASK,
             ObjDesc->Field.BaseByteOffset, ObjDesc->Field.StartFieldBitOffset);
@@ -950,7 +950,6 @@ AcpiExDumpObjectDescriptor (
     case INTERNAL_TYPE_INDEX_FIELD:
 
         AcpiExOutInteger ("FieldFlags",      ObjDesc->CommonField.FieldFlags);
-        AcpiExOutInteger ("AccessBitWidth",  ObjDesc->CommonField.AccessBitWidth);
         AcpiExOutInteger ("AccessByteWidth", ObjDesc->CommonField.AccessByteWidth);
         AcpiExOutInteger ("BitLength",       ObjDesc->CommonField.BitLength);
         AcpiExOutInteger ("FldBitOffset",    ObjDesc->CommonField.StartFieldBitOffset);
