@@ -281,32 +281,43 @@ DbDisplayHelp (
     char                    *HelpType)
 {
 
+
+    /* No parameter, just give the overview */
+
     if (!HelpType)
     {
-        OsdPrintf ("\nOverview of AML Debugger Commands\n\n");
+        OsdPrintf ("ACPI CA Debugger Commands\n\n");
         OsdPrintf ("The following classes of commands are available.  Help is available for\n");
         OsdPrintf ("each class by entering \"Help <ClassName>\"\n\n");
-        OsdPrintf ("[GENERAL]    General-Purpose Commands\n");
-        OsdPrintf ("[NAMESPACE]  Namespace Access Commands\n");
-        OsdPrintf ("[METHOD]     Control Method Execution Commands\n");
-        OsdPrintf ("[FILE]       File I/O Commands\n");
+        OsdPrintf ("    [GENERAL]       General-Purpose Commands\n");
+        OsdPrintf ("    [NAMESPACE]     Namespace Access Commands\n");
+        OsdPrintf ("    [METHOD]        Control Method Execution Commands\n");
+        OsdPrintf ("    [FILE]          File I/O Commands\n");
         return;
 
     }
+
+
+    /* 
+     * Parameter is the command class
+     *
+     * The idea here is to keep each class of commands smaller than a screenful
+     */
 
     switch (HelpType[0])
     {
     case 'G':
         OsdPrintf ("\nGeneral-Purpose Commands\n\n");
-        OsdPrintf ("Allocations                         Display memory allocation info\n");
+        OsdPrintf ("Allocations                         Display list of current memory allocations\n");
         OsdPrintf ("Dump <Address>|<Namepath>\n");
         OsdPrintf ("     [Byte|Word|Dword|Qword]        Display ACPI objects or memory\n");
-        OsdPrintf ("EnableAcpi                          Enable the ACPI CA subsystem\n");
+        OsdPrintf ("EnableAcpi                          Enable ACPI (hardware) mode\n");
         OsdPrintf ("Help                                This help screen\n");
         OsdPrintf ("History                             Display command history buffer\n");
         OsdPrintf ("Level [<DebugLevel>] [console]      Get/Set debug level for file or console\n");
         OsdPrintf ("Quit or Exit                        Exit this command\n");
-        OsdPrintf ("Stats [Memory|Misc|Objects|Tables]  Display namespace and memory statistics\n");
+        OsdPrintf ("Stats [Allocations|Memory|Misc\n"); 
+        OsdPrintf ("       |Objects|Tables]             Display namespace and memory statistics\n");
         OsdPrintf ("Tables                              Display info about loaded ACPI tables\n");
         OsdPrintf ("Unload                              Unload an ACPI table\n");
         OsdPrintf ("! <CommandNumber>                   Execute command from history buffer\n");
@@ -577,7 +588,7 @@ DbCommandDispatch (
         break;
 
     case CMD_ALLOCATIONS:
-        CmDumpAllocationInfo ();
+        CmDumpCurrentAllocations ((UINT32) -1, NULL);
         break;
 
     case CMD_ARGS:

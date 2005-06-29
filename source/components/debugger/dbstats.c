@@ -124,6 +124,22 @@
 #define _COMPONENT          DEBUGGER
         MODULE_NAME         ("dbstats");
 
+ARGUMENT_INFO               DbStatTypes [] = 
+{
+    "ALLOCATIONS"
+    "OBJECTS",
+    "MEMORY",
+    "MISC",
+    "TABLES",
+    NULL            /* Must be null terminated */
+};
+
+#define CMD_OBJECTS         0
+#define CMD_ALLOCATIONS     1
+#define CMD_MEMORY          2
+#define CMD_MISC            3
+#define CMD_TABLES          4
+
 /*
  * Statistics
  */
@@ -166,9 +182,11 @@ UINT32                      SizeOfAcpiObjects;
  ****************************************************************************/
 
 ACPI_STATUS
-DbDisplayStatistics (void)
+DbDisplayStatistics (
+    char                    *TypeArg)
 {
-    UINT32                      i;
+    UINT32                  i;
+    UINT32                  Type;
 
 
     if (!Gbl_DSDT)
@@ -176,68 +194,105 @@ DbDisplayStatistics (void)
         OsdPrintf ("*** Warning:  There is no DSDT loaded\n");
     }
 
-
-    OsdPrintf ("\n\n");
-
-    OsdPrintf ("ACPI Table Information:\n\n");
-    if (Gbl_DSDT)
+    if (!TypeArg)
     {
-        OsdPrintf ("DSDT Length:................% 7ld (0x%X)\n", Gbl_DSDT->Length, Gbl_DSDT->Length);
+        OsdPrintf ("Use subcommand OBJECTS, MEMORY, MISC, or TABLES\n");
+        return AE_OK;
     }
-    OsdPrintf ("Names:......................% 7ld\n", NumNames);
-    OsdPrintf ("Events:.....................% 7ld\n", NumEvents);
-    OsdPrintf ("Devices:....................% 7ld\n", NumDevices);
-    OsdPrintf ("Aliases:....................% 7ld\n", NumAliases);
-    OsdPrintf ("Mutexes:....................% 7ld\n", NumMutexes);
-    OsdPrintf ("Packages:...................% 7ld\n", NumPackages);
-    OsdPrintf ("Bank Fields.................% 7ld\n", NumBankFields);
-    OsdPrintf ("Index Fields................% 7ld\n", NumIndexFields);
-    OsdPrintf ("Thermal Zones:..............% 7ld\n", NumThermalZones);
-    OsdPrintf ("Power Resources:............% 7ld\n", NumPowerResources);
-    OsdPrintf ("Control Methods:............% 7ld\n", NumMethods);
-    OsdPrintf ("Operation Regions:..........% 7ld\n", NumRegions);
-    OsdPrintf ("Field Definitions:..........% 7ld\n", NumFieldDefs);
-    OsdPrintf ("Total Named objects:........% 7ld\n", NumNamedObjects);
 
-    OsdPrintf ("\n");
-
-    OsdPrintf ("ASL/AML Grammar Usage:\n\n");
-    OsdPrintf ("Elements Inside Methods:....% 7ld\n", NumMethodElements);
-    OsdPrintf ("Elements Outside Methods:...% 7ld\n", NumGrammarElements - NumMethodElements);
-    OsdPrintf ("Total Grammar Elements:.....% 7ld\n", NumGrammarElements);
-
-    OsdPrintf ("\n");
-
-    OsdPrintf ("Dynamic Memory Estimates:\n\n");
-    OsdPrintf ("Parse Tree without Methods:.% 7ld\n", SizeOfParseTree);
-    OsdPrintf ("Control Method Parse Trees:.% 7ld\n", SizeOfMethodTrees);
-    OsdPrintf ("Named Object NTEs:..........% 7ld\n", SizeOfNTEs);
-    OsdPrintf ("Named Internal Objects......% 7ld\n", SizeOfAcpiObjects);
-    OsdPrintf ("State Cache size............% 7ld\n", Gbl_GenericStateCacheDepth * sizeof (ACPI_GENERIC_STATE));
-    OsdPrintf ("Parse Cache size............% 7ld\n", Gbl_ParseCacheDepth * sizeof (ACPI_GENERIC_OP));
-
-    OsdPrintf ("\n");
-
-    OsdPrintf ("Cache Statistics:\n\n");
-    OsdPrintf ("State Cache requests........% 7ld\n", Gbl_StateCacheRequests);
-    OsdPrintf ("State Cache hits............% 7ld\n", Gbl_StateCacheHits);
-    OsdPrintf ("State Cache depth...........% 7ld\n", Gbl_GenericStateCacheDepth);
-    OsdPrintf ("Parse Cache requests........% 7ld\n", Gbl_ParseCacheRequests);
-    OsdPrintf ("Parse Cache hits............% 7ld\n", Gbl_ParseCacheHits);
-    OsdPrintf ("Parse Cache depth...........% 7ld\n", Gbl_ParseCacheDepth);
-
-    OsdPrintf ("\n");
-
-    OsdPrintf ("Miscellaneous Statistics:\n\n");
-    OsdPrintf ("Calls to PsFind:..  ........% 7ld\n", Gbl_PsFindCount);
-    OsdPrintf ("Calls to NsLookup:..........% 7ld\n", Gbl_NsLookupCount);
-
-    OsdPrintf ("\n");
-
-    OsdPrintf ("Mutex usage:\n\n");
-    for (i = 0; i < NUM_MTX; i++)
+    STRUPR (TypeArg);
+    Type = DbMatchArgument (TypeArg, DbStatTypes);
+    if (Type == (UINT32) -1)
     {
-        OsdPrintf ("%-20s:       % 7ld\n", CmGetMutexName (i), Gbl_AcpiMutexInfo[i].UseCount);
+        OsdPrintf ("Invalid or unsupported argument\n");
+        return AE_OK;
+    }
+
+
+    switch (Type)
+    {
+    case CMD_ALLOCATIONS:
+        CmDumpAllocationInfo ();
+        break;
+
+    case CMD_TABLES:
+
+        OsdPrintf ("ACPI Table Information:\n\n");
+        if (Gbl_DSDT)
+        {
+            OsdPrintf ("DSDT Length:................% 7ld (0x%X)\n", Gbl_DSDT->Length, Gbl_DSDT->Length);
+        }
+        break;
+
+    case CMD_OBJECTS:
+
+        OsdPrintf ("\nObjects defined in the current namespace:\n\n");
+        OsdPrintf ("Names:......................% 7ld\n", NumNames);
+        OsdPrintf ("Events:.....................% 7ld\n", NumEvents);
+        OsdPrintf ("Devices:....................% 7ld\n", NumDevices);
+        OsdPrintf ("Aliases:....................% 7ld\n", NumAliases);
+        OsdPrintf ("Mutexes:....................% 7ld\n", NumMutexes);
+        OsdPrintf ("Packages:...................% 7ld\n", NumPackages);
+        OsdPrintf ("Bank Fields.................% 7ld\n", NumBankFields);
+        OsdPrintf ("Index Fields................% 7ld\n", NumIndexFields);
+        OsdPrintf ("Thermal Zones:..............% 7ld\n", NumThermalZones);
+        OsdPrintf ("Power Resources:............% 7ld\n", NumPowerResources);
+        OsdPrintf ("Control Methods:............% 7ld\n", NumMethods);
+        OsdPrintf ("Operation Regions:..........% 7ld\n", NumRegions);
+        OsdPrintf ("Field Definitions:..........% 7ld\n", NumFieldDefs);
+        OsdPrintf ("Total Named objects:........% 7ld\n", NumNamedObjects);
+
+        OsdPrintf ("\n");
+
+        OsdPrintf ("ASL/AML Grammar Usage:\n\n");
+        OsdPrintf ("Elements Inside Methods:....% 7ld\n", NumMethodElements);
+        OsdPrintf ("Elements Outside Methods:...% 7ld\n", NumGrammarElements - NumMethodElements);
+        OsdPrintf ("Total Grammar Elements:.....% 7ld\n", NumGrammarElements);
+        break;
+
+    case CMD_MEMORY:
+
+        OsdPrintf ("\nDynamic Memory Estimates:\n\n");
+        OsdPrintf ("Parse Tree without Methods:.% 7ld\n", SizeOfParseTree);
+        OsdPrintf ("Control Method Parse Trees:.% 7ld (If parsed simultaneously)\n", SizeOfMethodTrees);
+        OsdPrintf ("Named Object NTEs:..........% 7ld (%d objects)\n", SizeOfNTEs, NumNamedObjects);
+        OsdPrintf ("Named Internal Objects......% 7ld\n", SizeOfAcpiObjects);
+        OsdPrintf ("State Cache size............% 7ld\n", Gbl_GenericStateCacheDepth * sizeof (ACPI_GENERIC_STATE));
+        OsdPrintf ("Parse Cache size............% 7ld\n", Gbl_ParseCacheDepth * sizeof (ACPI_GENERIC_OP));
+        OsdPrintf ("Object Cache size...........% 7ld\n", Gbl_ObjectCacheDepth * sizeof (ACPI_OBJECT_INTERNAL));
+        OsdPrintf ("WalkState Cache size........% 7ld\n", Gbl_WalkStateCacheDepth * sizeof (ACPI_WALK_STATE));
+
+        OsdPrintf ("\n");
+
+        OsdPrintf ("Cache Statistics:\n\n");
+        OsdPrintf ("State Cache requests........% 7ld\n", Gbl_StateCacheRequests);
+        OsdPrintf ("State Cache hits............% 7ld\n", Gbl_StateCacheHits);
+        OsdPrintf ("State Cache depth...........% 7ld\n", Gbl_GenericStateCacheDepth);
+        OsdPrintf ("Parse Cache requests........% 7ld\n", Gbl_ParseCacheRequests);
+        OsdPrintf ("Parse Cache hits............% 7ld\n", Gbl_ParseCacheHits);
+        OsdPrintf ("Parse Cache depth...........% 7ld\n", Gbl_ParseCacheDepth);
+        OsdPrintf ("Object Cache requests.......% 7ld\n", Gbl_ObjectCacheRequests);
+        OsdPrintf ("Object Cache hits...........% 7ld\n", Gbl_ObjectCacheHits);
+        OsdPrintf ("Object Cache depth..........% 7ld\n", Gbl_ObjectCacheDepth);
+        OsdPrintf ("WalkState Cache requests....% 7ld\n", Gbl_WalkStateCacheRequests);
+        OsdPrintf ("WalkState Cache hits........% 7ld\n", Gbl_WalkStateCacheHits);
+        OsdPrintf ("WalkState Cache depth.......% 7ld\n", Gbl_WalkStateCacheDepth);
+        break;
+
+    case CMD_MISC:
+
+        OsdPrintf ("\nMiscellaneous Statistics:\n\n");
+        OsdPrintf ("Calls to PsFind:..  ........% 7ld\n", Gbl_PsFindCount);
+        OsdPrintf ("Calls to NsLookup:..........% 7ld\n", Gbl_NsLookupCount);
+
+        OsdPrintf ("\n");
+
+        OsdPrintf ("Mutex usage:\n\n");
+        for (i = 0; i < NUM_MTX; i++)
+        {
+            OsdPrintf ("%-20s:       % 7ld\n", CmGetMutexName (i), Gbl_AcpiMutexInfo[i].UseCount);
+        }
+        break;
     }
 
     OsdPrintf ("\n");
