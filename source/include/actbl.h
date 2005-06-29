@@ -184,9 +184,8 @@ typedef struct  /* APIC Table */
 {                                           
     ACPI_TABLE_HEADER       header;                 /* table header */
     UINT32                  LocalApicAddress;       /* Physical address for accessing local APICs */
-    UINT16_BIT              PCATCompat      : 1;    /* a one indicates system also has dual 8259s */
-    UINT16_BIT              Reserved1       : 15;
-    UINT16                  Reserved2;
+    UINT32_BIT              PCATCompat      : 1;    /* a one indicates system also has dual 8259s */
+    UINT32_BIT              Reserved1       : 31;
 
 } APIC_TABLE;
 
@@ -204,9 +203,8 @@ typedef struct  /* Processor APIC */
     APIC_HEADER             header;
     UINT8                   ProcessorApicId;        /* ACPI processor id */
     UINT8                   LocalApicId;            /* processor's local APIC id */
-    UINT16_BIT              ProcessorEnabled: 1;    /* Processor is usable if set */
-    UINT16_BIT              Reserved1       : 15;
-    UINT16                  Reserved2;
+    UINT32_BIT              ProcessorEnabled: 1;    /* Processor is usable if set */
+    UINT32_BIT              Reserved1       : 32;
 
 } PROCESSOR_APIC;
 
