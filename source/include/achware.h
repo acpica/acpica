@@ -1,7 +1,7 @@
-
 /******************************************************************************
  *
- * Name: hardware.h -- hardware specific interfaces
+ * Name: achware.h -- hardware specific interfaces
+ *       $Revision: 1.42 $
  *
  *****************************************************************************/
 
@@ -114,23 +114,23 @@
  *
  *****************************************************************************/
 
-#ifndef __HARDWARE_H__
-#define __HARDWARE_H__
+#ifndef __ACHWARE_H__
+#define __ACHWARE_H__
 
 
 /* Prototypes */
 
 
 ACPI_STATUS
-AcpiHwInitialize(
+AcpiHwInitialize (
     void);
 
 ACPI_STATUS
-AcpiHwShutdown(
+AcpiHwShutdown (
     void);
 
 ACPI_STATUS
-AcpiHwInitializeSystemInfo(
+AcpiHwInitializeSystemInfo (
     void);
 
 ACPI_STATUS
@@ -257,4 +257,4 @@ AcpiHwPmtResolution (
     void);
 
 
-#endif /* __HARDWARE_H__ */
+#endif /* __ACHWARE_H__ */
