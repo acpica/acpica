@@ -1,6 +1,6 @@
 /******************************************************************************
  *
- * Module Name: evevent - Fixed and General Purpose AcpiEvent 
+ * Module Name: evevent - Fixed and General Purpose AcpiEvent
  *                          handling and dispatch
  *
  *****************************************************************************/
@@ -149,11 +149,11 @@ AcpiEvFixedEventInitialize(void)
         AcpiGbl_FixedEventHandlers[i].Context = NULL;
     }
 
-    AcpiHwRegisterAccess (ACPI_WRITE, MTX_LOCK, EVENT_PMTIMER + TMR_EN, 0);
-    AcpiHwRegisterAccess (ACPI_WRITE, MTX_LOCK, EVENT_GLOBAL + TMR_EN, 0);
-    AcpiHwRegisterAccess (ACPI_WRITE, MTX_LOCK, EVENT_POWER_BUTTON + TMR_EN, 0);
-    AcpiHwRegisterAccess (ACPI_WRITE, MTX_LOCK, EVENT_SLEEP_BUTTON + TMR_EN, 0);
-    AcpiHwRegisterAccess (ACPI_WRITE, MTX_LOCK, EVENT_RTC + TMR_EN, 0);
+    AcpiHwRegisterAccess (ACPI_WRITE, MTX_LOCK, ACPI_EVENT_PMTIMER      + TMR_EN, 0);
+    AcpiHwRegisterAccess (ACPI_WRITE, MTX_LOCK, ACPI_EVENT_GLOBAL       + TMR_EN, 0);
+    AcpiHwRegisterAccess (ACPI_WRITE, MTX_LOCK, ACPI_EVENT_POWER_BUTTON + TMR_EN, 0);
+    AcpiHwRegisterAccess (ACPI_WRITE, MTX_LOCK, ACPI_EVENT_SLEEP_BUTTON + TMR_EN, 0);
+    AcpiHwRegisterAccess (ACPI_WRITE, MTX_LOCK, ACPI_EVENT_RTC          + TMR_EN, 0);
 
     return AE_OK;
 }
@@ -199,30 +199,30 @@ AcpiEvFixedEventDetect(void)
 
     /* power management timer roll over */
 
-    if ((StatusRegister & STATUS_PMTIMER) && (EnableRegister & ENABLE_PMTIMER))
+    if ((StatusRegister & ACPI_STATUS_PMTIMER) && (EnableRegister & ACPI_ENABLE_PMTIMER))
     {
-        IntStatus |= AcpiEvFixedEventDispatch (EVENT_PMTIMER);
+        IntStatus |= AcpiEvFixedEventDispatch (ACPI_EVENT_PMTIMER);
     }
 
     /* global event (BIOS want's the global lock) */
 
-    if ((StatusRegister & STATUS_GLOBAL) && (EnableRegister & ENABLE_GLOBAL))
+    if ((StatusRegister & ACPI_STATUS_GLOBAL) && (EnableRegister & ACPI_ENABLE_GLOBAL))
     {
-        IntStatus |= AcpiEvFixedEventDispatch (EVENT_GLOBAL);
+        IntStatus |= AcpiEvFixedEventDispatch (ACPI_EVENT_GLOBAL);
     }
 
     /* power button event */
 
-    if ((StatusRegister & STATUS_POWER_BUTTON) && (EnableRegister & ENABLE_POWER_BUTTON))
+    if ((StatusRegister & ACPI_STATUS_POWER_BUTTON) && (EnableRegister & ACPI_ENABLE_POWER_BUTTON))
     {
-        IntStatus |= AcpiEvFixedEventDispatch (EVENT_POWER_BUTTON);
+        IntStatus |= AcpiEvFixedEventDispatch (ACPI_EVENT_POWER_BUTTON);
     }
 
     /* sleep button event */
 
-    if ((StatusRegister & STATUS_SLEEP_BUTTON) && (EnableRegister & ENABLE_SLEEP_BUTTON))
+    if ((StatusRegister & ACPI_STATUS_SLEEP_BUTTON) && (EnableRegister & ACPI_ENABLE_SLEEP_BUTTON))
     {
-        IntStatus |= AcpiEvFixedEventDispatch (EVENT_SLEEP_BUTTON);
+        IntStatus |= AcpiEvFixedEventDispatch (ACPI_EVENT_SLEEP_BUTTON);
     }
 
     return IntStatus;
@@ -307,7 +307,7 @@ AcpiEvGpeInitialize (void)
      * Allocate the Gpe information block
      */
 
-    AcpiGbl_GpeRegisters = AcpiCmCallocate (AcpiGbl_GpeRegisterCount * sizeof (GPE_REGISTERS));
+    AcpiGbl_GpeRegisters = AcpiCmCallocate (AcpiGbl_GpeRegisterCount * sizeof (ACPI_GPE_REGISTERS));
     if (!AcpiGbl_GpeRegisters)
     {
         DEBUG_PRINT (ACPI_ERROR, ("Could not allocate the GpeRegisters block\n"));
@@ -320,7 +320,7 @@ AcpiEvGpeInitialize (void)
      * Initialization to zeros is sufficient
      */
 
-    AcpiGbl_GpeInfo = AcpiCmCallocate (MUL_8 (AcpiGbl_GpeRegisterCount) * sizeof (GPE_LEVEL_INFO));
+    AcpiGbl_GpeInfo = AcpiCmCallocate (MUL_8 (AcpiGbl_GpeRegisterCount) * sizeof (ACPI_GPE_LEVEL_INFO));
     if (!AcpiGbl_GpeInfo)
     {
         AcpiCmFree (AcpiGbl_GpeRegisters);
@@ -330,7 +330,7 @@ AcpiEvGpeInitialize (void)
 
     /* Set the Gpe validation table to GPE_INVALID */
 
-    MEMSET (AcpiGbl_GpeValid, (int) GPE_INVALID, NUM_GPE);
+    MEMSET (AcpiGbl_GpeValid, (int) ACPI_GPE_INVALID, NUM_GPE);
 
     /*
      * Initialize the Gpe information and validation blocks.  A goal of these
@@ -434,7 +434,7 @@ AcpiEvSaveMethodInfo (
 
     /* Extract the name from the object and convert to a string */
 
-    STORE32 (Name, &((NAME_TABLE_ENTRY *) ObjHandle)->Name);
+    MOVE_UNALIGNED32_TO_32 (Name, &((NAME_TABLE_ENTRY *) ObjHandle)->Name);
     Name[ACPI_NAME_SIZE] = 0;
 
     /*
@@ -442,11 +442,11 @@ AcpiEvSaveMethodInfo (
      */
     if (Name[1] == 'L')
     {
-        Type = EVENT_LEVEL_TRIGGERED;
+        Type = ACPI_EVENT_LEVEL_TRIGGERED;
     }
     else if (Name[1] == 'E')
     {
-        Type = EVENT_EDGE_TRIGGERED;
+        Type = ACPI_EVENT_EDGE_TRIGGERED;
     }
     else
     {
@@ -471,7 +471,7 @@ AcpiEvSaveMethodInfo (
 
     /* Ensure that we have a valid GPE number */
 
-    if (AcpiGbl_GpeValid[GpeNumber] == GPE_INVALID)
+    if (AcpiGbl_GpeValid[GpeNumber] == ACPI_GPE_INVALID)
     {
         /* Not valid, all we can do here is ignore it */
 
@@ -497,7 +497,6 @@ AcpiEvSaveMethodInfo (
                     Name, GpeNumber));
     return AE_OK;
 }
-
 
 
 /******************************************************************************
@@ -652,7 +651,7 @@ AcpiEvAsynchExecuteGpeMethod (
     void                    *Context)
 {
     UINT32                  GpeNumber = (UINT32) Context;
-    GPE_LEVEL_INFO          GpeInfo;
+    ACPI_GPE_LEVEL_INFO     GpeInfo;
 
 
     FUNCTION_TRACE ("EvAsynchExecuteGpeMethod");
@@ -691,7 +690,7 @@ AcpiEvAsynchExecuteGpeMethod (
      * that edge-triggered events are cleared prior to calling (via DPC)
      * this function.
      */
-    if (GpeInfo.Type | EVENT_LEVEL_TRIGGERED)
+    if (GpeInfo.Type | ACPI_EVENT_LEVEL_TRIGGERED)
     {
         AcpiHwClearGpe (GpeNumber);
     }
@@ -737,7 +736,7 @@ AcpiEvGpeDispatch (
 
     /* Ensure that we have a valid GPE number */
 
-    if (AcpiGbl_GpeValid[GpeNumber] == GPE_INVALID)
+    if (AcpiGbl_GpeValid[GpeNumber] == ACPI_GPE_INVALID)
     {
         DEBUG_PRINT (ACPI_ERROR, ("Invalid GPE [%d].\n", GpeNumber));
         return_VALUE (INTERRUPT_NOT_HANDLED);
@@ -755,7 +754,7 @@ AcpiEvGpeDispatch (
      * level-triggered events are cleared after the GPE is serviced
      * (see AcpiEvAsynchExecuteGpeMethod).
      */
-    if (AcpiGbl_GpeInfo [GpeNumber].Type | EVENT_EDGE_TRIGGERED)
+    if (AcpiGbl_GpeInfo [GpeNumber].Type | ACPI_EVENT_EDGE_TRIGGERED)
     {
         AcpiHwClearGpe (GpeNumber);
     }
