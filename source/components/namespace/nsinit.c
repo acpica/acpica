@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: nsinit - namespace initialization
- *              $Revision: 1.59 $
+ *              $Revision: 1.60 $
  *
  *****************************************************************************/
 
@@ -226,7 +226,7 @@ AcpiNsInitializeDevices (
         return_ACPI_STATUS (Status);
     }
 
-    /* Walk namespace for all objects of type Device or Processor */
+    /* Walk namespace for all objects */
 
     Status = AcpiNsWalkNamespace (ACPI_TYPE_ANY, ACPI_ROOT_OBJECT,
                     ACPI_UINT32_MAX, TRUE, AcpiNsInitOneDevice, &Info, NULL);
@@ -441,10 +441,11 @@ AcpiNsInitOneDevice (
     }
 
     /*
-     * We will run _STA/_INI on Devices and Processors only
+     * We will run _STA/_INI on Devices, Processors and ThermalZones only
      */
-    if ((Pinfo.Node->Type != ACPI_TYPE_DEVICE) &&
-        (Pinfo.Node->Type != ACPI_TYPE_PROCESSOR))
+    if ((Pinfo.Node->Type != ACPI_TYPE_DEVICE)      &&
+        (Pinfo.Node->Type != ACPI_TYPE_PROCESSOR)   &&
+        (Pinfo.Node->Type != ACPI_TYPE_THERMAL))
     {
         return_ACPI_STATUS (AE_OK);
     }
@@ -471,7 +472,7 @@ AcpiNsInitOneDevice (
             return_ACPI_STATUS (AE_OK);
         }
 
-        /* _STA is not required for Processor objects */
+        /* _STA is not required for Processor or ThermalZone objects */
     }
     else
     {
@@ -498,14 +499,14 @@ AcpiNsInitOneDevice (
         {
             /* Ignore error and move on to next device */
 
-    #ifdef ACPI_DEBUG_OUTPUT
+#ifdef ACPI_DEBUG_OUTPUT
             char        *ScopeName = AcpiNsGetExternalPathname (Pinfo.Node);
 
             ACPI_DEBUG_PRINT ((ACPI_DB_WARN, "%s._INI failed: %s\n",
                     ScopeName, AcpiFormatException (Status)));
 
             ACPI_MEM_FREE (ScopeName);
-    #endif
+#endif
         }
 
         Status = AE_OK;
