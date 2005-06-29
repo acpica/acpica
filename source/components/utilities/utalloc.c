@@ -157,7 +157,7 @@ CmSearchAllocList (
 
     /* Search for the address. note - this always searches the entire list...*/
 
-    for (;;)
+    while (1)
     {
         if (Element == NULL)
         {
