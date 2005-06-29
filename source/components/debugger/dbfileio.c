@@ -2,7 +2,7 @@
  *
  * Module Name: dbfileio - Debugger file I/O commands.  These can't usually
  *              be used when running the debugger in Ring 0 (Kernel mode)
- *              $Revision: 1.63 $
+ *              $Revision: 1.64 $
  *
  ******************************************************************************/
 
@@ -383,9 +383,14 @@ AeLocalLoadTable (
         return_ACPI_STATUS (AE_BAD_PARAMETER);
     }
 
-    /* Install the new table into the local data structures */
-
     TableInfo.Pointer = TablePtr;
+    Status = AcpiTbRecognizeTable (&TableInfo, ACPI_TABLE_SECONDARY);
+    if (ACPI_FAILURE (Status))
+    {
+        return_ACPI_STATUS (Status);
+    }
+
+    /* Install the new table into the local data structures */
 
     Status = AcpiTbInstallTable (&TableInfo);
     if (ACPI_FAILURE (Status))
