@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: nsdump - table dumping routines for debug
- *              $Revision: 1.124 $
+ *              $Revision: 1.125 $
  *
  *****************************************************************************/
 
@@ -217,7 +217,7 @@ AcpiNsDumpPathname (
     if (ACPI_SUCCESS (Status))
     {
         AcpiOsPrintf ("%s %s (Node %p)\n", Msg, Buffer.Pointer, Handle);
-        AcpiOsFree (Buffer.Pointer);
+        ACPI_MEM_FREE (Buffer.Pointer);
     }
 
     return_ACPI_STATUS (Status);
