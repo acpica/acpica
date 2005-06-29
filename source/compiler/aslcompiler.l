@@ -3,7 +3,7 @@
 /******************************************************************************
  *
  * Module Name: aslcompiler.l - Flex input file
- *              $Revision: 1.40 $
+ *              $Revision: 1.42 $
  *
  *****************************************************************************/
 
@@ -679,6 +679,11 @@ InsertLineBuffer (
     UINT32                  Count = 1;
 
 
+    if (SourceChar == EOF)
+    {
+        return;
+    }
+
     Gbl_InputByteCount++;
 
 
@@ -768,35 +773,6 @@ count (
 }
 
 
-/*******************************************************************************
- *
- * FUNCTION:    DoOneChar
- *
- * PARAMETERS:  SourceChar      - One char from the input ASL source file
- *
- * RETURN:      None
- *
- * DESCRIPTION: Process one character: Count it, echo to the source output file,
- *              then put it into the line buffer.  This procedure is called
- *              to process comments and literals
- *
- ******************************************************************************/
-
-void
-DoOneChar (
-    int                     SourceChar)
-{
-
-    if (SourceChar == EOF)
-    {
-        return;
-    }
-
-    /* Put the char into the line buffer */
-
-    InsertLineBuffer (SourceChar);
-}
-
 
 /*******************************************************************************
  *
@@ -817,8 +793,8 @@ comment (void)
     char                c1 = 0;
 
 
-    DoOneChar ('/');
-    DoOneChar ('*');
+    InsertLineBuffer ('/');
+    InsertLineBuffer ('*');
 
 loop:
 
@@ -826,7 +802,7 @@ loop:
 
     while ((c = (char) input()) != '*' && c != EOF)
     {
-        DoOneChar (c);
+        InsertLineBuffer (c);
         c1 = c;
     }
 
@@ -845,7 +821,7 @@ loop:
 
     /* Comment is closed only if the NEXT character is a slash */
 
-    DoOneChar (c);
+    InsertLineBuffer (c);
 
     if ((c1 = (char) input()) != '/' && c1 != EOF)
     {
@@ -853,7 +829,7 @@ loop:
         goto loop;
     }
 
-    DoOneChar (c1);
+    InsertLineBuffer (c1);
 }
 
 
@@ -874,15 +850,15 @@ comment2 (void)
 {
     char                c;
 
-    DoOneChar ('/');
-    DoOneChar ('/');
+    InsertLineBuffer ('/');
+    InsertLineBuffer ('/');
 
     while ((c = (char) input()) != '\n' && c != EOF)
     {
-        DoOneChar (c);
+        InsertLineBuffer (c);
     }
 
-    DoOneChar (c);
+    InsertLineBuffer (c);
 }
 
 
@@ -906,11 +882,16 @@ literal (void)
     char                Escape = FALSE;
 
 
-    /* Eat chars until end-of-literal */
+    /* 
+     * Eat chars until end-of-literal.
+     * NOTE:  Put back the original surrounding quotes into the
+     * source line buffer.
+     */
 
+    InsertLineBuffer ('\"');
     while ((*s = (char) input()) != '\"' && *s != EOF)
     {
-        DoOneChar (*s);
+        InsertLineBuffer (*s);
 
         /* Special handling for backslash-escape sequence */
 
@@ -924,7 +905,7 @@ literal (void)
                 break;
             }
 
-            DoOneChar (*s);
+            InsertLineBuffer (*s);
 
             /* Weed out "special" chars */
 
@@ -946,11 +927,16 @@ literal (void)
         s++;
     }
 
-    /* Null terminate and copy string to a new buffer */
+    InsertLineBuffer ('\"');
+
+
+    /* 
+     * Null terminate the input string and copy string to a new buffer 
+     */
 
     *s = 0;
 
-    CleanString = malloc (strlen (MsgBuffer));
+    CleanString = UtGetStringBuffer (strlen (MsgBuffer) + 1);
     if (!CleanString)
     {
         AslCommonError (ASL_ERROR, ASL_MSG_MEMORY_ALLOCATION,
