@@ -65,6 +65,7 @@ SRCS=	aslcompilerparse.c aslcompilerlex.c aslanalyze.c aslcodegen.c \
 	../disassembler/dmbuffer.c \
 	../disassembler/dmnames.c \
 	../disassembler/dmopcode.c \
+	../disassembler/dmobject.c \
 	../disassembler/dmresrc.c \
 	../disassembler/dmresrcl.c \
 	../disassembler/dmresrcs.c \
