@@ -189,7 +189,7 @@ PsxExecBeginOp (
 
     OpInfo = PsGetOpcodeInfo (Op->Opcode);
 
-    switch (OpInfo->Type)
+    switch (OpInfo->Flags & OP_INFO_TYPE)
     {
     case OPTYPE_CONTROL:
 
@@ -269,7 +269,7 @@ PsxExecEndOp (
         return_ACPI_STATUS (AE_NOT_IMPLEMENTED);
     }
 
-    Optype = OpInfo->Type;
+    Optype = (UINT8) (OpInfo->Flags & OP_INFO_TYPE);
     FirstArg = Op->Value.Arg;
 
     /* Init the walk state */
