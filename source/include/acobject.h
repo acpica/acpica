@@ -530,7 +530,7 @@ typedef struct /* ADDRESS HANDLER */
     UINT16                  SpaceId;
     UINT16                  Hflags;
     ADDRESS_SPACE_HANDLER   Handler;
-    REGION_SETUP_FUNCTION   RegionSetupFunction;
+    ADDRESS_SPACE_SETUP     Setup;
     UINT32                  Reserved4;
 
     NAME_TABLE_ENTRY        *Nte;               /* Parent device */
