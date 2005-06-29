@@ -1,8 +1,8 @@
 
 /******************************************************************************
  *
- * Module Name: amlresrc.h - AML resource descriptors
- *              $Revision: 1.23 $
+ * Module Name: aslresource.h - ASL resource descriptors
+ *              $Revision: 1.12 $
  *
  *****************************************************************************/
 
@@ -10,7 +10,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2003, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -116,8 +116,8 @@
  *****************************************************************************/
 
 
-#ifndef __AMLRESRC_H
-#define __AMLRESRC_H
+#ifndef __ASLRESOURCE_H
+#define __ASLRESOURCE_H
 
 
 #define ASL_RESNAME_ADDRESS                     "_ADR"
@@ -126,7 +126,6 @@
 #define ASL_RESNAME_BASEADDRESS                 "_BAS"
 #define ASL_RESNAME_BUSMASTER                   "_BM_"  /* Master(1), Slave(0) */
 #define ASL_RESNAME_DECODE                      "_DEC"
-#define ASL_RESNAME_DMA                         "_DMA"
 #define ASL_RESNAME_DMATYPE                     "_TYP"  /* Compatible(0), A(1), B(2), F(3) */
 #define ASL_RESNAME_GRANULARITY                 "_GRA"
 #define ASL_RESNAME_INTERRUPT                   "_INT"
@@ -150,16 +149,6 @@
 #define ASL_RESNAME_XFERTYPE                    "_SIZ"  /* 8(0), 8And16(1), 16(2) */
 
 
-/* Default sizes for "small" resource descriptors */
-
-#define ASL_RDESC_IRQ_SIZE                      0x02
-#define ASL_RDESC_DMA_SIZE                      0x02
-#define ASL_RDESC_ST_DEPEND_SIZE                0x00
-#define ASL_RDESC_END_DEPEND_SIZE               0x00
-#define ASL_RDESC_IO_SIZE                       0x07
-#define ASL_RDESC_FIXED_IO_SIZE                 0x03
-#define ASL_RDESC_END_TAG_SIZE                  0x01
-
 
 typedef struct asl_resource_node
 {
@@ -171,13 +160,11 @@ typedef struct asl_resource_node
 
 
 /*
- * Resource descriptors defined in the ACPI specification.
- *
- * Alignment must be BYTE because these descriptors
- * are used to overlay the AML byte stream.
+ * Resource descriptors defined in the ACPI specification
  */
-#pragma pack(1)
 
+
+#pragma pack(1)
 typedef struct asl_irq_format_desc
 {
     UINT8                       DescriptorType;
@@ -187,6 +174,7 @@ typedef struct asl_irq_format_desc
 } ASL_IRQ_FORMAT_DESC;
 
 
+#pragma pack(1)
 typedef struct asl_irq_noflags_desc
 {
     UINT8                       DescriptorType;
@@ -195,6 +183,7 @@ typedef struct asl_irq_noflags_desc
 } ASL_IRQ_NOFLAGS_DESC;
 
 
+#pragma pack(1)
 typedef struct asl_dma_format_desc
 {
     UINT8                       DescriptorType;
@@ -204,6 +193,7 @@ typedef struct asl_dma_format_desc
 } ASL_DMA_FORMAT_DESC;
 
 
+#pragma pack(1)
 typedef struct asl_start_dependent_desc
 {
     UINT8                       DescriptorType;
@@ -212,6 +202,7 @@ typedef struct asl_start_dependent_desc
 } ASL_START_DEPENDENT_DESC;
 
 
+#pragma pack(1)
 typedef struct asl_start_dependent_noprio_desc
 {
     UINT8                       DescriptorType;
@@ -219,6 +210,7 @@ typedef struct asl_start_dependent_noprio_desc
 } ASL_START_DEPENDENT_NOPRIO_DESC;
 
 
+#pragma pack(1)
 typedef struct asl_end_dependent_desc
 {
     UINT8                       DescriptorType;
@@ -226,6 +218,7 @@ typedef struct asl_end_dependent_desc
 } ASL_END_DEPENDENT_DESC;
 
 
+#pragma pack(1)
 typedef struct asl_io_port_desc
 {
     UINT8                       DescriptorType;
@@ -238,6 +231,7 @@ typedef struct asl_io_port_desc
 } ASL_IO_PORT_DESC;
 
 
+#pragma pack(1)
 typedef struct asl_fixed_io_port_desc
 {
     UINT8                       DescriptorType;
@@ -247,6 +241,7 @@ typedef struct asl_fixed_io_port_desc
 } ASL_FIXED_IO_PORT_DESC;
 
 
+#pragma pack(1)
 typedef struct asl_small_vendor_desc
 {
     UINT8                       DescriptorType;
@@ -255,6 +250,7 @@ typedef struct asl_small_vendor_desc
 } ASL_SMALL_VENDOR_DESC;
 
 
+#pragma pack(1)
 typedef struct asl_end_tag_desc
 {
     UINT8                       DescriptorType;
@@ -265,6 +261,7 @@ typedef struct asl_end_tag_desc
 
 /* LARGE descriptors */
 
+#pragma pack(1)
 typedef struct asl_memory_24_desc
 {
     UINT8                       DescriptorType;
@@ -278,6 +275,7 @@ typedef struct asl_memory_24_desc
 } ASL_MEMORY_24_DESC;
 
 
+#pragma pack(1)
 typedef struct asl_large_vendor_desc
 {
     UINT8                       DescriptorType;
@@ -287,6 +285,7 @@ typedef struct asl_large_vendor_desc
 } ASL_LARGE_VENDOR_DESC;
 
 
+#pragma pack(1)
 typedef struct asl_memory_32_desc
 {
     UINT8                       DescriptorType;
@@ -300,6 +299,7 @@ typedef struct asl_memory_32_desc
 } ASL_MEMORY_32_DESC;
 
 
+#pragma pack(1)
 typedef struct asl_fixed_memory_32_desc
 {
     UINT8                       DescriptorType;
@@ -311,6 +311,7 @@ typedef struct asl_fixed_memory_32_desc
 } ASL_FIXED_MEMORY_32_DESC;
 
 
+#pragma pack(1)
 typedef struct asl_qword_address_desc
 {
     UINT8                       DescriptorType;
@@ -328,6 +329,7 @@ typedef struct asl_qword_address_desc
 } ASL_QWORD_ADDRESS_DESC;
 
 
+#pragma pack(1)
 typedef struct asl_dword_address_desc
 {
     UINT8                       DescriptorType;
@@ -345,6 +347,7 @@ typedef struct asl_dword_address_desc
 } ASL_DWORD_ADDRESS_DESC;
 
 
+#pragma pack(1)
 typedef struct asl_word_address_desc
 {
     UINT8                       DescriptorType;
@@ -362,6 +365,7 @@ typedef struct asl_word_address_desc
 } ASL_WORD_ADDRESS_DESC;
 
 
+#pragma pack(1)
 typedef struct asl_extended_xrupt_desc
 {
     UINT8                       DescriptorType;
@@ -374,6 +378,7 @@ typedef struct asl_extended_xrupt_desc
 } ASL_EXTENDED_XRUPT_DESC;
 
 
+#pragma pack(1)
 typedef struct asl_general_register_desc
 {
     UINT8                       DescriptorType;
@@ -386,9 +391,6 @@ typedef struct asl_general_register_desc
 
 } ASL_GENERAL_REGISTER_DESC;
 
-/* restore default alignment */
-
-#pragma pack()
 
 /* Union of all resource descriptors, sow we can allocate the worst case */
 
@@ -417,6 +419,169 @@ typedef union asl_resource_desc
     UINT8                       U8Item;
 
 } ASL_RESOURCE_DESC;
+
+
+#define NEXT_RESOURCE_DESC(a,b)     (ASL_RESOURCE_DESC *) (((char *) (a)) + sizeof(b))
+
+#define DEFAULT_RESOURCE_DESC_SIZE  (sizeof (ASL_RESOURCE_DESC) + sizeof (ASL_END_TAG_DESC))
+
+
+/*
+ * Resource utilities
+ */
+
+ASL_RESOURCE_NODE *
+RsAllocateResourceNode (
+    UINT32                  Size);
+
+    void
+RsCreateBitField (
+    ASL_PARSE_NODE          *Node,
+    char                    *Name,
+    UINT32                  ByteOffset,
+    UINT32                  BitOffset);
+
+void
+RsCreateByteField (
+    ASL_PARSE_NODE          *Node,
+    char                    *Name,
+    UINT32                  ByteOffset);
+
+void
+RsSetFlagBits (
+    UINT8                   *Flags,
+    ASL_PARSE_NODE          *Node,
+    UINT8                   Position,
+    UINT8                   Default);
+
+ASL_PARSE_NODE *
+RsCompleteNodeAndGetNext (
+    ASL_PARSE_NODE          *Node);
+
+ASL_RESOURCE_NODE *
+RsDoOneResourceDescriptor (
+    ASL_PARSE_NODE          *DescriptorTypeNode,
+    UINT32                  CurrentByteOffset);
+
+UINT32
+RsLinkDescriptorChain (
+    ASL_RESOURCE_NODE       **PreviousRnode,
+    ASL_RESOURCE_NODE       *Rnode);
+
+
+/*
+ * Small descriptors
+ */
+
+ASL_RESOURCE_NODE *
+RsDoDmaDescriptor (
+    ASL_PARSE_NODE          *Node,
+    UINT32                  CurrentByteOffset);
+
+ASL_RESOURCE_NODE *
+RsDoEndDependentDescriptor (
+    ASL_PARSE_NODE          *Node,
+    UINT32                  CurrentByteOffset);
+
+ASL_RESOURCE_NODE *
+RsDoFixedIoDescriptor (
+    ASL_PARSE_NODE          *Node,
+    UINT32                  CurrentByteOffset);
+
+ASL_RESOURCE_NODE *
+RsDoInterruptDescriptor (
+    ASL_PARSE_NODE          *Node,
+    UINT32                  CurrentByteOffset);
+
+ASL_RESOURCE_NODE *
+RsDoIoDescriptor (
+    ASL_PARSE_NODE          *Node,
+    UINT32                  CurrentByteOffset);
+
+ASL_RESOURCE_NODE *
+RsDoIrqDescriptor (
+    ASL_PARSE_NODE          *Node,
+    UINT32                  CurrentByteOffset);
+
+ASL_RESOURCE_NODE *
+RsDoIrqNoFlagsDescriptor (
+    ASL_PARSE_NODE          *Node,
+    UINT32                  CurrentByteOffset);
+
+ASL_RESOURCE_NODE *
+RsDoMemory24Descriptor (
+    ASL_PARSE_NODE          *Node,
+    UINT32                  CurrentByteOffset);
+
+ASL_RESOURCE_NODE *
+RsDoMemory32Descriptor (
+    ASL_PARSE_NODE          *Node,
+    UINT32                  CurrentByteOffset);
+
+ASL_RESOURCE_NODE *
+RsDoMemory32FixedDescriptor (
+    ASL_PARSE_NODE          *Node,
+    UINT32                  CurrentByteOffset);
+
+ASL_RESOURCE_NODE *
+RsDoStartDependentDescriptor (
+    ASL_PARSE_NODE          *Node,
+    UINT32                  CurrentByteOffset);
+
+ASL_RESOURCE_NODE *
+RsDoStartDependentNoPriDescriptor (
+    ASL_PARSE_NODE          *Node,
+    UINT32                  CurrentByteOffset);
+
+ASL_RESOURCE_NODE *
+RsDoVendorSmallDescriptor (
+    ASL_PARSE_NODE          *Node,
+    UINT32                  CurrentByteOffset);
+
+
+/*
+ * Large descriptors
+ */
+
+ASL_RESOURCE_NODE *
+RsDoDwordIoDescriptor (
+    ASL_PARSE_NODE          *Node,
+    UINT32                  CurrentByteOffset);
+
+ASL_RESOURCE_NODE *
+RsDoDwordMemoryDescriptor (
+    ASL_PARSE_NODE          *Node,
+    UINT32                  CurrentByteOffset);
+
+ASL_RESOURCE_NODE *
+RsDoQwordIoDescriptor (
+    ASL_PARSE_NODE          *Node,
+    UINT32                  CurrentByteOffset);
+
+ASL_RESOURCE_NODE *
+RsDoQwordMemoryDescriptor (
+    ASL_PARSE_NODE          *Node,
+    UINT32                  CurrentByteOffset);
+
+ASL_RESOURCE_NODE *
+RsDoWordIoDescriptor (
+    ASL_PARSE_NODE          *Node,
+    UINT32                  CurrentByteOffset);
+
+ASL_RESOURCE_NODE *
+RsDoWordBusNumberDescriptor (
+    ASL_PARSE_NODE          *Node,
+    UINT32                  CurrentByteOffset);
+
+ASL_RESOURCE_NODE *
+RsDoVendorLargeDescriptor (
+    ASL_PARSE_NODE          *Node,
+    UINT32                  CurrentByteOffset);
+
+ASL_RESOURCE_NODE *
+RsDoGeneralRegisterDescriptor (
+    ASL_PARSE_NODE          *Node,
+    UINT32                  CurrentByteOffset);
 
 
 #endif

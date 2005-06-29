@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: actypes.h - Common data types for the entire ACPI subsystem
- *       $Revision: 1.174 $
+ *       $Revision: 1.175 $
  *
  *****************************************************************************/
 
@@ -390,7 +390,7 @@ typedef UINT32                          ACPI_TABLE_TYPE;
  */
 
 typedef UINT32                          ACPI_OBJECT_TYPE;
-typedef UINT8                           OBJECT_TYPE_INTERNAL;
+typedef UINT8                           ACPI_OBJECT_TYPE8;
 
 
 #define ACPI_TYPE_ANY                   0  /* 0x00  */
@@ -513,11 +513,11 @@ typedef UINT32                          ACPI_EVENT_TYPE;
 #define ACPI_EVENT_RTC                  (ACPI_EVENT_TYPE) 5
 #define ACPI_EVENT_GENERAL              (ACPI_EVENT_TYPE) 6
 #define ACPI_EVENT_MAX                  6
-#define NUM_FIXED_EVENTS                (ACPI_EVENT_TYPE) 7
+#define ACPI_NUM_FIXED_EVENTS           (ACPI_EVENT_TYPE) 7
 
 #define ACPI_GPE_INVALID                0xFF
 #define ACPI_GPE_MAX                    0xFF
-#define NUM_GPE                         256
+#define ACPI_NUM_GPE                    256
 
 #define ACPI_EVENT_LEVEL_TRIGGERED      (ACPI_EVENT_TYPE) 1
 #define ACPI_EVENT_EDGE_TRIGGERED       (ACPI_EVENT_TYPE) 2
@@ -554,15 +554,15 @@ typedef UINT32                          ACPI_EVENT_STATUS;
 
 /* Address Space (Operation Region) Types */
 
-typedef UINT8                           ACPI_ADDRESS_SPACE_TYPE;
+typedef UINT8                           ACPI_ADR_SPACE_TYPE;
 
-#define ADDRESS_SPACE_SYSTEM_MEMORY     (ACPI_ADDRESS_SPACE_TYPE) 0
-#define ADDRESS_SPACE_SYSTEM_IO         (ACPI_ADDRESS_SPACE_TYPE) 1
-#define ADDRESS_SPACE_PCI_CONFIG        (ACPI_ADDRESS_SPACE_TYPE) 2
-#define ADDRESS_SPACE_EC                (ACPI_ADDRESS_SPACE_TYPE) 3
-#define ADDRESS_SPACE_SMBUS             (ACPI_ADDRESS_SPACE_TYPE) 4
-#define ADDRESS_SPACE_CMOS              (ACPI_ADDRESS_SPACE_TYPE) 5
-#define ADDRESS_SPACE_PCI_BAR_TARGET    (ACPI_ADDRESS_SPACE_TYPE) 6
+#define ACPI_ADR_SPACE_SYSTEM_MEMORY    (ACPI_ADR_SPACE_TYPE) 0
+#define ACPI_ADR_SPACE_SYSTEM_IO        (ACPI_ADR_SPACE_TYPE) 1
+#define ACPI_ADR_SPACE_PCI_CONFIG       (ACPI_ADR_SPACE_TYPE) 2
+#define ACPI_ADR_SPACE_EC               (ACPI_ADR_SPACE_TYPE) 3
+#define ACPI_ADR_SPACE_SMBUS            (ACPI_ADR_SPACE_TYPE) 4
+#define ACPI_ADR_SPACE_CMOS             (ACPI_ADR_SPACE_TYPE) 5
+#define ACPI_ADR_SPACE_PCI_BAR_TARGET   (ACPI_ADR_SPACE_TYPE) 6
 
 
 /*
@@ -731,29 +731,34 @@ typedef struct _AcpiInitData
                                                         /*  not found in the IA32 manner        */
 } ACPI_INIT_DATA;
 
+
 /*
  * Various handlers and callback procedures
  */
 
 typedef
-UINT32 (*FIXED_EVENT_HANDLER) (
+UINT32 (*ACPI_EVENT_HANDLER) (
     void                        *Context);
 
 typedef
-void (*GPE_HANDLER) (
+void (*ACPI_GPE_HANDLER) (
     void                        *Context);
 
 typedef
-void (*NOTIFY_HANDLER) (
+void (*ACPI_NOTIFY_HANDLER) (
     ACPI_HANDLE                 Device,
     UINT32                      Value,
     void                        *Context);
 
-#define ADDRESS_SPACE_READ              1
-#define ADDRESS_SPACE_WRITE             2
+
+
+/* Address Spaces (Operation Regions */
+
+#define ACPI_READ_ADR_SPACE     1
+#define ACPI_WRITE_ADR_SPACE    2
 
 typedef
-ACPI_STATUS (*ADDRESS_SPACE_HANDLER) (
+ACPI_STATUS (*ACPI_ADR_SPACE_HANDLER) (
     UINT32                      Function,
     ACPI_PHYSICAL_ADDRESS       Address,
     UINT32                      BitWidth,
@@ -761,11 +766,11 @@ ACPI_STATUS (*ADDRESS_SPACE_HANDLER) (
     void                        *HandlerContext,
     void                        *RegionContext);
 
-#define ACPI_DEFAULT_HANDLER            ((ADDRESS_SPACE_HANDLER) NULL)
+#define ACPI_DEFAULT_HANDLER            ((ACPI_ADR_SPACE_HANDLER) NULL)
 
 
 typedef
-ACPI_STATUS (*ADDRESS_SPACE_SETUP) (
+ACPI_STATUS (*ACPI_ADR_SPACE_SETUP) (
     ACPI_HANDLE                 RegionHandle,
     UINT32                      Function,
     void                        *HandlerContext,
@@ -775,7 +780,7 @@ ACPI_STATUS (*ADDRESS_SPACE_SETUP) (
 #define ACPI_REGION_DEACTIVATE  1
 
 typedef
-ACPI_STATUS (*WALK_CALLBACK) (
+ACPI_STATUS (*ACPI_WALK_CALLBACK) (
     ACPI_HANDLE                 ObjHandle,
     UINT32                      NestingLevel,
     void                        *Context,
@@ -826,7 +831,7 @@ typedef struct
     UINT32                      Seg;
     UINT32                      Bus;
     UINT32                      DevFunc;
-} PCI_HANDLER_CONTEXT;
+} ACPI_PCI_SPACE_CONTEXT;
 
 
 typedef struct
@@ -834,7 +839,7 @@ typedef struct
     ACPI_PHYSICAL_ADDRESS       MappedPhysicalAddress;
     UINT8                       *MappedLogicalAddress;
     UINT32                      MappedLength;
-} MEM_HANDLER_CONTEXT;
+} ACPI_MEM_SPACE_CONTEXT;
 
 
 /*

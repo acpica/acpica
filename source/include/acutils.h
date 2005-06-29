@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: accommon.h -- prototypes for the common (subsystem-wide) procedures
- *       $Revision: 1.93 $
+ *       $Revision: 1.97 $
  *
  *****************************************************************************/
 
@@ -254,20 +254,16 @@ AcpiCmStrncat (
     const NATIVE_CHAR       *SrcString,
     NATIVE_UINT             Count);
 
-NATIVE_UINT
+UINT32
 AcpiCmStrtoul (
     const NATIVE_CHAR       *String,
     NATIVE_CHAR             **Terminator,
-    NATIVE_UINT             Base);
+    UINT32                  Base);
 
 NATIVE_CHAR *
 AcpiCmStrstr (
     NATIVE_CHAR             *String1,
     NATIVE_CHAR             *String2);
-
-NATIVE_CHAR *
-AcpiCmStrupr (
-    NATIVE_CHAR             *SrcString);
 
 void *
 AcpiCmMemcpy (
@@ -349,7 +345,7 @@ _CmCreateInternalObject (
     NATIVE_CHAR             *ModuleName,
     UINT32                  LineNumber,
     UINT32                  ComponentId,
-    OBJECT_TYPE_INTERNAL    Type);
+    ACPI_OBJECT_TYPE8       Type);
 
 
 /*
@@ -514,7 +510,7 @@ AcpiCmEvaluateNumericObject (
 ACPI_STATUS
 AcpiCmExecute_HID (
     ACPI_NAMESPACE_NODE     *DeviceNode,
-    DEVICE_ID               *Hid);
+    ACPI_DEVICE_ID          *Hid);
 
 ACPI_STATUS
 AcpiCmExecute_STA (
@@ -524,7 +520,7 @@ AcpiCmExecute_STA (
 ACPI_STATUS
 AcpiCmExecute_UID (
     ACPI_NAMESPACE_NODE     *DeviceNode,
-    DEVICE_ID               *Uid);
+    ACPI_DEVICE_ID          *Uid);
 
 
 /*
@@ -689,6 +685,10 @@ BOOLEAN
 AcpiCmValidAcpiCharacter (
     NATIVE_CHAR             Character);
 
+NATIVE_CHAR *
+AcpiCmStrupr (
+    NATIVE_CHAR             *SrcString);
+
 ACPI_STATUS
 AcpiCmResolvePackageReferences (
     ACPI_OPERAND_OBJECT     *ObjDesc);
@@ -733,74 +733,6 @@ void
 AcpiCmInitStaticObject (
     ACPI_OPERAND_OBJECT     *ObjDesc);
 
-#define AcpiCmAllocate(a)               _CmAllocate(a,_COMPONENT,_THIS_MODULE,__LINE__)
-#define AcpiCmCallocate(a)              _CmCallocate(a, _COMPONENT,_THIS_MODULE,__LINE__)
-#define AcpiCmFree(a)                   _CmFree(a,_COMPONENT,_THIS_MODULE,__LINE__)
-
-#ifndef ACPI_DEBUG_TRACK_ALLOCATIONS
-
-#define AcpiCmAddElementToAllocList(a,b,c,d,e,f)
-#define AcpiCmDeleteElementFromAllocList(a,b,c,d)
-#define AcpiCmDumpCurrentAllocations(a,b)
-#define AcpiCmDumpAllocationInfo()
-
-#define DECREMENT_OBJECT_METRICS(a)
-#define INCREMENT_OBJECT_METRICS(a)
-#define INITIALIZE_ALLOCATION_METRICS()
-#define DECREMENT_NAME_TABLE_METRICS(a)
-#define INCREMENT_NAME_TABLE_METRICS(a)
-
-#else
-
-#define INITIALIZE_ALLOCATION_METRICS() \
-    AcpiGbl_CurrentObjectCount = 0; \
-    AcpiGbl_CurrentObjectSize = 0; \
-    AcpiGbl_RunningObjectCount = 0; \
-    AcpiGbl_RunningObjectSize = 0; \
-    AcpiGbl_MaxConcurrentObjectCount = 0; \
-    AcpiGbl_MaxConcurrentObjectSize = 0; \
-    AcpiGbl_CurrentAllocSize = 0; \
-    AcpiGbl_CurrentAllocCount = 0; \
-    AcpiGbl_RunningAllocSize = 0; \
-    AcpiGbl_RunningAllocCount = 0; \
-    AcpiGbl_MaxConcurrentAllocSize = 0; \
-    AcpiGbl_MaxConcurrentAllocCount = 0; \
-    AcpiGbl_CurrentNodeCount = 0; \
-    AcpiGbl_CurrentNodeSize = 0; \
-    AcpiGbl_MaxConcurrentNodeCount = 0
-
-
-#define DECREMENT_OBJECT_METRICS(a) \
-    AcpiGbl_CurrentObjectCount--; \
-    AcpiGbl_CurrentObjectSize -= a
-
-#define INCREMENT_OBJECT_METRICS(a) \
-    AcpiGbl_CurrentObjectCount++; \
-    AcpiGbl_RunningObjectCount++; \
-    if (AcpiGbl_MaxConcurrentObjectCount < AcpiGbl_CurrentObjectCount) \
-    { \
-        AcpiGbl_MaxConcurrentObjectCount = AcpiGbl_CurrentObjectCount; \
-    } \
-    AcpiGbl_RunningObjectSize += a; \
-    AcpiGbl_CurrentObjectSize += a; \
-    if (AcpiGbl_MaxConcurrentObjectSize < AcpiGbl_CurrentObjectSize) \
-    { \
-        AcpiGbl_MaxConcurrentObjectSize = AcpiGbl_CurrentObjectSize; \
-    }
-
-#define DECREMENT_NAME_TABLE_METRICS(a) \
-    AcpiGbl_CurrentNodeCount--; \
-    AcpiGbl_CurrentNodeSize -= (a)
-
-#define INCREMENT_NAME_TABLE_METRICS(a) \
-    AcpiGbl_CurrentNodeCount++; \
-    AcpiGbl_CurrentNodeSize+= (a); \
-    if (AcpiGbl_MaxConcurrentNodeCount < AcpiGbl_CurrentNodeCount) \
-    { \
-        AcpiGbl_MaxConcurrentNodeCount = AcpiGbl_CurrentNodeCount; \
-    } \
-
-
 void
 AcpiCmDumpAllocationInfo (
     void);
@@ -810,7 +742,11 @@ AcpiCmDumpCurrentAllocations (
     UINT32                  Component,
     NATIVE_CHAR             *Module);
 
-#endif
+
+#define AcpiCmAllocate(a)   _CmAllocate(a,_COMPONENT,_THIS_MODULE,__LINE__)
+#define AcpiCmCallocate(a)  _CmCallocate(a, _COMPONENT,_THIS_MODULE,__LINE__)
+#define AcpiCmFree(a)       _CmFree(a,_COMPONENT,_THIS_MODULE,__LINE__)
+
 
 
 #endif /* _ACCOMMON_H */
