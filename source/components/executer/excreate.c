@@ -170,7 +170,7 @@ AmlExecCreateField (
     ACPI_OBJECT_INTERNAL    *SrcDesc = NULL;
     ACPI_OBJECT_INTERNAL    *FieldDesc;
     ACPI_OBJECT_INTERNAL    *ObjDesc;
-    ACPI_OBJECT_TYPE        ResType;
+    OBJECT_TYPE_INTERNAL    ResType;
     ACPI_STATUS             Status;
     UINT32                  NumOperands = 3;
     UINT32                  Offset;
@@ -197,6 +197,7 @@ AmlExecCreateField (
         NumOperands = 4;
         Status |= DsObjStackPopObject (&CntDesc, WalkState);
     }
+
     Status |= DsObjStackPopObject (&OffDesc, WalkState);
     Status |= DsObjStackPopObject (&SrcDesc, WalkState);
 
