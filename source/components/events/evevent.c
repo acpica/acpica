@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: evevent - Fixed and General Purpose Even handling and dispatch
- *              $Revision: 1.97 $
+ *              $Revision: 1.98 $
  *
  *****************************************************************************/
 
@@ -434,11 +434,8 @@ AcpiEvGpeInitialize (void)
      *  FADT table contain zeros. The GPE0_LEN and GPE1_LEN do not need
      *  to be the same size."
      */
-    AcpiGbl_GpeBlockInfo[0].AddressSpaceId  = AcpiGbl_FADT->XGpe0Blk.AddressSpaceId;
-    AcpiGbl_GpeBlockInfo[1].AddressSpaceId  = AcpiGbl_FADT->XGpe1Blk.AddressSpaceId;
-
-    AcpiGbl_GpeBlockInfo[0].RegisterCount   = (UINT16) ACPI_DIV_16 (AcpiGbl_FADT->XGpe0Blk.RegisterBitWidth);
-    AcpiGbl_GpeBlockInfo[1].RegisterCount   = (UINT16) ACPI_DIV_16 (AcpiGbl_FADT->XGpe1Blk.RegisterBitWidth);
+    AcpiGbl_GpeBlockInfo[0].RegisterCount   = 0;
+    AcpiGbl_GpeBlockInfo[1].RegisterCount   = 0;
 
     AcpiGbl_GpeBlockInfo[0].BlockAddress    = &AcpiGbl_FADT->XGpe0Blk;
     AcpiGbl_GpeBlockInfo[1].BlockAddress    = &AcpiGbl_FADT->XGpe1Blk;
@@ -446,31 +443,27 @@ AcpiEvGpeInitialize (void)
     AcpiGbl_GpeBlockInfo[0].BlockBaseNumber = 0;
     AcpiGbl_GpeBlockInfo[1].BlockBaseNumber = AcpiGbl_FADT->Gpe1Base;
 
-    /* Warn and exit if there are no GPE registers */
-
-    AcpiGbl_GpeRegisterCount = AcpiGbl_GpeBlockInfo[0].RegisterCount +
-                               AcpiGbl_GpeBlockInfo[1].RegisterCount;
-    if (!AcpiGbl_GpeRegisterCount)
-    {
-        ACPI_REPORT_WARNING (("There are no GPE blocks defined in the FADT\n"));
-        return_ACPI_STATUS (AE_OK);
-    }
 
     /* 
      * Determine the maximum GPE number for this machine.
      * Note: both GPE0 and GPE1 are optional, and either can exist without
-     * the other
+     * the other.
+     * If EITHER the register length OR the block address are zero, then that
+     * particular block is not supported.
      */
-    if (AcpiGbl_GpeBlockInfo[0].RegisterCount)
+    if (AcpiGbl_FADT->XGpe0Blk.RegisterBitWidth && AcpiGbl_FADT->XGpe0Blk.Address)
     {
-        /* GPE block 0 exists */
+        /* GPE block 0 exists (has length and address > 0) */
 
-        AcpiGbl_GpeNumberMax = ACPI_MUL_8 (AcpiGbl_GpeBlockInfo[0].RegisterCount) - 1;
+        AcpiGbl_GpeBlockInfo[0].RegisterCount   = (UINT16) ACPI_DIV_16 (AcpiGbl_FADT->XGpe0Blk.RegisterBitWidth);
+        AcpiGbl_GpeNumberMax                    = ACPI_MUL_8 (AcpiGbl_GpeBlockInfo[0].RegisterCount) - 1;
     }
 
-    if (AcpiGbl_GpeBlockInfo[1].RegisterCount)
+    if (AcpiGbl_FADT->XGpe1Blk.RegisterBitWidth && AcpiGbl_FADT->XGpe1Blk.Address)
     {
-        /* GPE block 1 exists */
+        /* GPE block 1 exists (has length and address > 0) */
+
+        AcpiGbl_GpeBlockInfo[1].RegisterCount   = (UINT16) ACPI_DIV_16 (AcpiGbl_FADT->XGpe1Blk.RegisterBitWidth);
 
         /* Check for GPE0/GPE1 overlap (if both banks exist) */
 
@@ -490,6 +483,16 @@ AcpiEvGpeInitialize (void)
          */
         AcpiGbl_GpeNumberMax = AcpiGbl_FADT->Gpe1Base + 
                                 (ACPI_MUL_8 (AcpiGbl_GpeBlockInfo[1].RegisterCount) - 1);
+    }
+
+    /* Warn and exit if there are no GPE registers */
+
+    AcpiGbl_GpeRegisterCount = AcpiGbl_GpeBlockInfo[0].RegisterCount +
+                               AcpiGbl_GpeBlockInfo[1].RegisterCount;
+    if (!AcpiGbl_GpeRegisterCount)
+    {
+        ACPI_REPORT_WARNING (("There are no GPE blocks defined in the FADT\n"));
+        return_ACPI_STATUS (AE_OK);
     }
 
     /* Check for Max GPE number out-of-range */
@@ -573,8 +576,8 @@ AcpiEvGpeInitialize (void)
                                     + i
                                     + AcpiGbl_GpeBlockInfo[GpeBlock].RegisterCount));
 
-            GpeRegisterInfo->StatusAddress.AddressSpaceId    = AcpiGbl_GpeBlockInfo[GpeBlock].AddressSpaceId;
-            GpeRegisterInfo->EnableAddress.AddressSpaceId    = AcpiGbl_GpeBlockInfo[GpeBlock].AddressSpaceId;
+            GpeRegisterInfo->StatusAddress.AddressSpaceId    = AcpiGbl_GpeBlockInfo[GpeBlock].BlockAddress->AddressSpaceId;
+            GpeRegisterInfo->EnableAddress.AddressSpaceId    = AcpiGbl_GpeBlockInfo[GpeBlock].BlockAddress->AddressSpaceId;
             GpeRegisterInfo->StatusAddress.RegisterBitWidth  = 8;
             GpeRegisterInfo->EnableAddress.RegisterBitWidth  = 8;
             GpeRegisterInfo->StatusAddress.RegisterBitOffset = 8;
