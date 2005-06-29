@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: excreate - Named object creation
- *              $Revision: 1.85 $
+ *              $Revision: 1.87 $
  *
  *****************************************************************************/
 
@@ -124,6 +124,7 @@
 #include "acnamesp.h"
 #include "acevents.h"
 #include "acdispat.h"
+#include "actables.h"
 
 
 #define _COMPONENT          ACPI_EXECUTER
@@ -222,7 +223,7 @@ AcpiExCreateEvent (
     /* Attach object to the Node */
 
     Status = AcpiNsAttachObject ((ACPI_NAMESPACE_NODE *) WalkState->Operands[0],
-                                    ObjDesc, (UINT8) ACPI_TYPE_EVENT);
+                                    ObjDesc, ACPI_TYPE_EVENT);
 
 Cleanup:
     /*
@@ -284,7 +285,7 @@ AcpiExCreateMutex (
     ObjDesc->Mutex.SyncLevel = (UINT8) WalkState->Operands[1]->Integer.Value;
 
     Status = AcpiNsAttachObject ((ACPI_NAMESPACE_NODE *) WalkState->Operands[0],
-                                ObjDesc, (UINT8) ACPI_TYPE_MUTEX);
+                                ObjDesc, ACPI_TYPE_MUTEX);
 
 
 Cleanup:
@@ -382,7 +383,7 @@ AcpiExCreateRegion (
 
     /* Install the new region object in the parent Node */
 
-    Status = AcpiNsAttachObject (Node, ObjDesc, (UINT8) ACPI_TYPE_REGION);
+    Status = AcpiNsAttachObject (Node, ObjDesc, ACPI_TYPE_REGION);
 
 
 Cleanup:
@@ -433,36 +434,23 @@ AcpiExCreateTableRegion (
         return_ACPI_STATUS (AE_OK);
     }
 
-    /* Find the table */
+    /* Find the ACPI table */
 
-    if (!STRCMP (Operand[1]->String.Pointer, DSDT_SIG))
+    Status = AcpiTbFindTable (Operand[1]->String.Pointer,
+                              Operand[2]->String.Pointer,
+                              Operand[3]->String.Pointer, &Table);
+
+    if (ACPI_FAILURE (Status))
     {
-        Table = (ACPI_TABLE_HEADER *) AcpiGbl_DSDT;
+        return_ACPI_STATUS (Status);
     }
-    else
-    {
-#if 0
-        Status = AcpiGetFirmwareTable (Operand[1]->String.Pointer, 1, 
-                            ACPI_LOGICAL_ADDRESSING, &Table);
-        if (ACPI_FAILURE (Status))
-        {
-            return_ACPI_STATUS (Status);
-        }
-#endif
-            return_ACPI_STATUS (AE_SUPPORT);
-    }
-
-    /* Check OemId and TableId */
-
-
 
     /* Create the region descriptor */
 
     ObjDesc = AcpiUtCreateInternalObject (ACPI_TYPE_REGION);
     if (!ObjDesc)
     {
-        Status = AE_NO_MEMORY;
-        goto Cleanup;
+        return_ACPI_STATUS (AE_NO_MEMORY);
     }
 
     RegionObj2                      = ObjDesc->Common.NextObject;
@@ -478,7 +466,7 @@ AcpiExCreateTableRegion (
 
     /* Install the new region object in the parent Node */
 
-    Status = AcpiNsAttachObject (Node, ObjDesc, (UINT8) ACPI_TYPE_REGION);
+    Status = AcpiNsAttachObject (Node, ObjDesc, ACPI_TYPE_REGION);
     if (ACPI_FAILURE (Status))
     {
         goto Cleanup;
@@ -498,6 +486,7 @@ AcpiExCreateTableRegion (
     }
 
     ObjDesc->Region.Flags |= AOPOBJ_SETUP_COMPLETE;
+
 
 Cleanup:
 
@@ -554,7 +543,7 @@ AcpiExCreateProcessor (
     /* Install the processor object in the parent Node */
 
     Status = AcpiNsAttachObject ((ACPI_NAMESPACE_NODE *) Operand[0],
-                    ObjDesc, (UINT8) ACPI_TYPE_PROCESSOR);
+                    ObjDesc, ACPI_TYPE_PROCESSOR);
 
 
     /* Remove local reference to the object */
@@ -608,7 +597,7 @@ AcpiExCreatePowerResource (
     /* Install the  power resource object in the parent Node */
 
     Status = AcpiNsAttachObject ((ACPI_NAMESPACE_NODE *) Operand[0],
-                    ObjDesc, (UINT8) ACPI_TYPE_POWER);
+                    ObjDesc, ACPI_TYPE_POWER);
 
 
     /* Remove local reference to the object */
@@ -690,7 +679,7 @@ AcpiExCreateMethod (
     /* Attach the new object to the method Node */
 
     Status = AcpiNsAttachObject ((ACPI_NAMESPACE_NODE *) Operand[0],
-                    ObjDesc, (UINT8) ACPI_TYPE_METHOD);
+                    ObjDesc, ACPI_TYPE_METHOD);
 
     /* Remove local reference to the object */
 
