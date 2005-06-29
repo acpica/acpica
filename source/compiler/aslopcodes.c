@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslopcode - AML opcode generation
- *              $Revision: 1.54 $
+ *              $Revision: 1.56 $
  *
  *****************************************************************************/
 
@@ -10,7 +10,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2003, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2004, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -205,6 +205,14 @@ UINT32
 OpcSetOptimalIntegerSize (
     ACPI_PARSE_OBJECT       *Op)
 {
+
+    if (Op->Asl.Parent &&
+        Op->Asl.Parent->Asl.Parent &&
+        (Op->Asl.Parent->Asl.Parent->Asl.ParseOpcode == PARSEOP_DEFINITIONBLOCK))
+    {
+        return 0;
+    }
+
 
     /*
      * Check for the special AML integers first - Zero, One, Ones.
