@@ -308,10 +308,9 @@ AmlGetRvalueFromObject (
             break;
 
 
-        case AML_Local0: case AML_Local1: case AML_Local2: case AML_Local3:
-        case AML_Local4: case AML_Local5: case AML_Local6: case AML_Local7:
+        case AML_LocalOp:
 
-            MvIndex = Opcode - AML_Local0;
+            MvIndex = StackDesc->Lvalue.Offset;
 
             DEBUG_PRINT (ACPI_INFO, ("AmlGetRvalueFromObject: [Local%d] before MthStackGetValue %p %p %08lx \n",
                             MvIndex, StackPtr, StackDesc, *(UINT32 *) StackDesc));
@@ -335,10 +334,9 @@ AmlGetRvalueFromObject (
             break;
 
 
-        case AML_Arg0: case AML_Arg1: case AML_Arg2: case AML_Arg3:
-        case AML_Arg4: case AML_Arg5: case AML_Arg6:
+        case AML_ArgOp:
 
-            MvIndex = Opcode - AML_Arg0;
+            MvIndex = StackDesc->Lvalue.Offset;
 
             DEBUG_PRINT (TRACE_EXEC, ("AmlGetRvalueFromObject: [Arg%d] before PsxMthStackGetValue %p %p %08lx \n",
                             MvIndex, StackPtr, StackDesc, *(UINT32 *) StackDesc));
