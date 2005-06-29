@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslcodegen - AML code generation
- *              $Revision: 1.50 $
+ *              $Revision: 1.52 $
  *
  *****************************************************************************/
 
@@ -10,7 +10,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2004, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2005, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -444,6 +444,13 @@ CgWriteTableHeader (
 
     Child = Child->Asl.Next;
     TableHeader.Revision = (UINT8) Child->Asl.Value.Integer;
+
+    /* Command-line Revision override */
+
+    if (Gbl_RevisionOverride)
+    {
+        TableHeader.Revision = Gbl_RevisionOverride;
+    }
 
     /* OEMID */
 

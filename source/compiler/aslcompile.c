@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslcompile - top level compile module
- *              $Revision: 1.73 $
+ *              $Revision: 1.75 $
  *
  *****************************************************************************/
 
@@ -10,7 +10,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2004, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2005, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -179,7 +179,7 @@ AslCompilerSignon (
     /* Compiler signon with copyright */
 
     FlPrintFile (FileId,
-        "%s\n%s%s\n%s%s version %X [%s]\n%s%s\n%sSupports ACPI Specification Revision 2.0c\n%s\n",
+        "%s\n%s%s\n%s%s version %X [%s]\n%s%s\n%sSupports ACPI Specification Revision 3.0\n%s\n",
         Prefix,
         Prefix, IntelAcpiCA,
         Prefix, CompilerId, ACPI_CA_VERSION, __DATE__,

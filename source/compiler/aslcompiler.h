@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslcompiler.h - common include file
- *              $Revision: 1.128 $
+ *              $Revision: 1.132 $
  *
  *****************************************************************************/
 
@@ -10,7 +10,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2004, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2005, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -155,7 +155,7 @@
 #define IntelAcpiCA                 "Intel ACPI Component Architecture"
 #define CompilerId                  "ASL Optimizing Compiler / AML Disassembler"
 #define CompilerCopyright           "Copyright (C) 2000 - 2004 Intel Corporation"
-#define CompilerCompliance          "ACPI 2.0b"
+#define CompilerCompliance          "ACPI 2.0c"
 #define CompilerName                "iasl"
 #define CompilerCreatorId           "INTL"
 
@@ -580,11 +580,6 @@ TrDoSwitch (
 void
 TrDoDefinitionBlock (
     ACPI_PARSE_OBJECT       *Op);
-
-void
-TrDoElseif (
-    ACPI_PARSE_OBJECT       *Op);
-
 
 /*
  * asltree - parse tree support
@@ -1086,6 +1081,26 @@ RsDoDwordMemoryDescriptor (
     UINT32                  CurrentByteOffset);
 
 ASL_RESOURCE_NODE *
+RsDoDwordSpaceDescriptor (
+    ACPI_PARSE_OBJECT       *Op,
+    UINT32                  CurrentByteOffset);
+
+ASL_RESOURCE_NODE *
+RsDoExtendedIoDescriptor (
+    ACPI_PARSE_OBJECT       *Op,
+    UINT32                  CurrentByteOffset);
+
+ASL_RESOURCE_NODE *
+RsDoExtendedMemoryDescriptor (
+    ACPI_PARSE_OBJECT       *Op,
+    UINT32                  CurrentByteOffset);
+
+ASL_RESOURCE_NODE *
+RsDoExtendedSpaceDescriptor (
+    ACPI_PARSE_OBJECT       *Op,
+    UINT32                  CurrentByteOffset);
+
+ASL_RESOURCE_NODE *
 RsDoQwordIoDescriptor (
     ACPI_PARSE_OBJECT       *Op,
     UINT32                  CurrentByteOffset);
@@ -1096,7 +1111,17 @@ RsDoQwordMemoryDescriptor (
     UINT32                  CurrentByteOffset);
 
 ASL_RESOURCE_NODE *
+RsDoQwordSpaceDescriptor (
+    ACPI_PARSE_OBJECT       *Op,
+    UINT32                  CurrentByteOffset);
+
+ASL_RESOURCE_NODE *
 RsDoWordIoDescriptor (
+    ACPI_PARSE_OBJECT       *Op,
+    UINT32                  CurrentByteOffset);
+
+ASL_RESOURCE_NODE *
+RsDoWordSpaceDescriptor (
     ACPI_PARSE_OBJECT       *Op,
     UINT32                  CurrentByteOffset);
 

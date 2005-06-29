@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: adisasm - Application-level disassembler routines
- *              $Revision: 1.64 $
+ *              $Revision: 1.70 $
  *
  *****************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2004, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2005, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -145,7 +145,6 @@ AcpiDsIsResultUsed (
     return TRUE;
 }
 #endif
-
 
 ACPI_STATUS
 AcpiDsRestartControlMethod (
@@ -548,6 +547,18 @@ AdAmlDisassemble (
         goto Cleanup;
     }
 
+    /*
+     * TBD: We want to cross reference the namespace here, in order to
+     * generate External() statements.  The problem is that the parse
+     * tree is in run-time (interpreter) format, not compiler format,
+     * so we cannot directly use the function below:
+     *
+     *    Status = LkCrossReferenceNamespace ();
+     *
+     * We need to either convert the parse tree or create a new
+     * cross ref function that can handle interpreter parse trees
+     */
+
     /* Optional displays */
 
     if (AcpiGbl_DbOpt_disasm)
@@ -698,7 +709,7 @@ AdDeferredParse (
     }
 
     Status = AcpiDsInitAmlWalk (WalkState, Op, NULL, Aml,
-                    AmlLength, NULL, NULL, 1);
+                    AmlLength, NULL, 1);
     if (ACPI_FAILURE (Status))
     {
         return_ACPI_STATUS (Status);
@@ -869,6 +880,7 @@ AdGetLocalTables (
     ACPI_TABLE_HEADER       *NewTable;
     UINT32                  NumTables;
     UINT32                  PointerSize;
+    char                    *FacsSuffix = "";
 
 
     if (GetAllTables)
@@ -912,6 +924,10 @@ AdGetLocalTables (
             AcpiGbl_FADT = (void *) NewTable;
             AdWriteTable (NewTable, NewTable->Length,
                 FADT_SIG, NewTable->OemTableId);
+
+            /* Use the FADT tableID for the FACS, since FACS has no ID */
+
+            FacsSuffix = AcpiGbl_FADT->OemTableId;
         }
         AcpiOsPrintf ("\n");
 
@@ -923,7 +939,7 @@ AdGetLocalTables (
         {
             AcpiGbl_FACS = (void *) NewTable;
             AdWriteTable (NewTable, AcpiGbl_FACS->Length,
-                FACS_SIG, AcpiGbl_FADT->OemTableId);
+                FACS_SIG, FacsSuffix);
         }
         AcpiOsPrintf ("\n");
     }
@@ -958,10 +974,6 @@ AdGetLocalTables (
             Status = AcpiOsTableOverride (&TableHeader, &NewTable);
         }
     }
-
-#ifdef _HPET
-    AfGetHpet ();
-#endif
 
     return AE_OK;
 }
@@ -1019,7 +1031,7 @@ AdParseTable (
     }
 
     Status = AcpiDsInitAmlWalk (WalkState, AcpiGbl_ParsedNamespaceRoot,
-                NULL, AmlStart, AmlLength, NULL, NULL, 1);
+                NULL, AmlStart, AmlLength, NULL, 1);
     if (ACPI_FAILURE (Status))
     {
         return (Status);
