@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslcompile - top level compile module
- *              $Revision: 1.15 $
+ *              $Revision: 1.16 $
  *
  *****************************************************************************/
 
@@ -334,6 +334,10 @@ CmDoCompile (void)
     }
 
 
+    /*
+     * Create an internal namespace and use it as a symbol table
+     */
+
     /* Namespace loading */
 
     ASL_START_EVENT (5, "Load ACPI Namespace");
@@ -341,22 +345,25 @@ CmDoCompile (void)
     ASL_END_EVENT (5);
 
 
+    /* Namespace lookup */
+
+    ASL_START_EVENT (6, "Cross reference ACPI Namespace");
+    LkCrossReferenceNamespace ();
+    ASL_END_EVENT (6);
+
     /*
-     * Semantic error checking part one - check control methods
+     * Semantic error checking.  This must happen only after the
+     * namespace has been loaded and cross-referenced.
+     *
+     * part one - check control methods
      */
 
-    ASL_START_EVENT (6, "Check method return types");
+    ASL_START_EVENT (7, "Check method return types");
     AnalysisWalkInfo.MethodStack = NULL;
 
     DbgPrint (ASL_DEBUG_OUTPUT, "\nSemantic analysis - Method analysis\n\n");
     TrWalkParseTree (RootNode, ASL_WALK_VISIT_TWICE, AnMethodAnalysisWalkBegin,
                         AnMethodAnalysisWalkEnd, &AnalysisWalkInfo);
-    ASL_END_EVENT (6);
-
-    /* Namespace lookup */
-
-    ASL_START_EVENT (7, "Cross reference ACPI Namespace");
-    LkCrossReferenceNamespace ();
     ASL_END_EVENT (7);
 
 

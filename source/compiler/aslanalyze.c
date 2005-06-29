@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslanalyze.c - check for semantic errors
- *              $Revision: 1.22 $
+ *              $Revision: 1.23 $
  *
  *****************************************************************************/
 
@@ -627,6 +627,7 @@ AnMethodAnalysisWalkBegin (
     ASL_METHOD_INFO         *MethodInfo = WalkInfo->MethodStack;
     ASL_PARSE_NODE          *Next;
     UINT32                  RegisterNumber;
+    UINT32                  i;
     char                    LocalName[] = "Local0";
     char                    ArgName[] = "Arg0";
 
@@ -649,8 +650,29 @@ AnMethodAnalysisWalkBegin (
         Next = Node->Child;
         Next = Next->Peer;
         MethodInfo->NumArguments = (Next->Value.Integer8 & 0x07);
+
+        /*
+         * Actual arguments are initialized at method entry.
+         * All other ArgX "registers" can be used as locals, so we
+         * track their initialization.
+         */
+
+        for (i = 0; i < MethodInfo->NumArguments; i++)
+        {
+            MethodInfo->ArgInitialized[i] = TRUE;
+        }
+
         break;
 
+
+    case METHODCALL:
+        if (MethodInfo &&
+           (Node->NsNode == MethodInfo->Node->NsNode))
+        {
+            AslError (ASL_REMARK, ASL_MSG_RECURSION, Node, Node->ExternalName);
+        }
+
+        break;
 
     case LOCAL0:
     case LOCAL1:
@@ -673,7 +695,6 @@ AnMethodAnalysisWalkBegin (
          * If the local is being used as a target, mark the local
          * initialized
          */
-
         if (Node->Flags & NODE_IS_TARGET)
         {
             MethodInfo->LocalInitialized[RegisterNumber] = TRUE;
@@ -689,6 +710,7 @@ AnMethodAnalysisWalkBegin (
             LocalName[strlen (LocalName) -1] = RegisterNumber + 0x30;
             AslError (ASL_ERROR, ASL_MSG_LOCAL_INIT, Node, LocalName);
         }
+
         break;
 
 
@@ -707,14 +729,35 @@ AnMethodAnalysisWalkBegin (
         }
 
         RegisterNumber = (Node->AmlOpcode & 0x000F) - 8;
+        ArgName[strlen (ArgName) -1] = RegisterNumber + 0x30;
 
-        /* Simply check the arg number against the method num args */
+        /*
+         * If the Arg is being used as a target, mark the local
+         * initialized
+         */
+        if (Node->Flags & NODE_IS_TARGET)
+        {
+            MethodInfo->ArgInitialized[RegisterNumber] = TRUE;
+
+        }
+
+        /*
+         * Otherwise, this is a reference, check if the Arg
+         * has been previously initialized.
+         */
+        else if (!MethodInfo->ArgInitialized[RegisterNumber])
+        {
+            AslError (ASL_ERROR, ASL_MSG_ARG_INIT, Node, ArgName);
+        }
+
+
+        /* Flag this arg if it is not a "real" argument to the method */
 
         if (RegisterNumber >= MethodInfo->NumArguments)
         {
-            ArgName[strlen (ArgName) -1] = RegisterNumber + 0x30;
-            AslError (ASL_ERROR, ASL_MSG_ARG_INVALID, Node, ArgName);
+            AslError (ASL_REMARK, ASL_MSG_NOT_PARAMETER, Node, ArgName);
         }
+
         break;
 
 
