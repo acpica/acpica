@@ -566,8 +566,7 @@ PsWalkParsedAml (
         return_ACPI_STATUS (AE_NO_MEMORY);
     }
 
-    /* TBD:
-     * TEMP until we pass WalkState to the interpreter
+    /* TBD: [Restructure] TEMP until we pass WalkState to the interpreter
      */
     PrevWalkList = Gbl_CurrentWalkList;
     Gbl_CurrentWalkList = &WalkList;
@@ -587,7 +586,7 @@ PsWalkParsedAml (
     if (MthDesc)
     {
         /* Init arguments if this is a control method */
-        /* TBD: add walkstate as a param */
+        /* TBD: [Restructure] add walkstate as a param */
 
         DsMethodDataInitArgs (Params, MTH_NUM_ARGS);
     }
