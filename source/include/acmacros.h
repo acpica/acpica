@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acmacros.h - C macros for the entire subsystem.
- *       $Revision: 1.81 $
+ *       $Revision: 1.82 $
  *
  *****************************************************************************/
 
@@ -675,13 +675,8 @@
 #define ACPI_MEM_ALLOCATE(a)            AcpiOsAllocate(a)
 #define ACPI_MEM_CALLOCATE(a)           AcpiOsCallocate(a)
 #define ACPI_MEM_FREE(a)                AcpiOsFree(a)
+#define ACPI_MEM_TRACKING(a)
 
-
-#define DECREMENT_OBJECT_METRICS(a)
-#define INCREMENT_OBJECT_METRICS(a)
-#define INITIALIZE_ALLOCATION_METRICS()
-#define DECREMENT_NAME_TABLE_METRICS(a)
-#define INCREMENT_NAME_TABLE_METRICS(a)
 
 #else
 
@@ -690,54 +685,8 @@
 #define ACPI_MEM_ALLOCATE(a)            AcpiUtAllocate(a,_COMPONENT,_THIS_MODULE,__LINE__)
 #define ACPI_MEM_CALLOCATE(a)           AcpiUtCallocate(a, _COMPONENT,_THIS_MODULE,__LINE__)
 #define ACPI_MEM_FREE(a)                AcpiUtFree(a,_COMPONENT,_THIS_MODULE,__LINE__)
+#define ACPI_MEM_TRACKING(a)            a
 
-#define INITIALIZE_ALLOCATION_METRICS() \
-    AcpiGbl_CurrentObjectCount = 0; \
-    AcpiGbl_CurrentObjectSize = 0; \
-    AcpiGbl_RunningObjectCount = 0; \
-    AcpiGbl_RunningObjectSize = 0; \
-    AcpiGbl_MaxConcurrentObjectCount = 0; \
-    AcpiGbl_MaxConcurrentObjectSize = 0; \
-    AcpiGbl_CurrentAllocSize = 0; \
-    AcpiGbl_CurrentAllocCount = 0; \
-    AcpiGbl_RunningAllocSize = 0; \
-    AcpiGbl_RunningAllocCount = 0; \
-    AcpiGbl_MaxConcurrentAllocSize = 0; \
-    AcpiGbl_MaxConcurrentAllocCount = 0; \
-    AcpiGbl_CurrentNodeCount = 0; \
-    AcpiGbl_CurrentNodeSize = 0; \
-    AcpiGbl_MaxConcurrentNodeCount = 0
-
-
-#define DECREMENT_OBJECT_METRICS(a) \
-    AcpiGbl_CurrentObjectCount--; \
-    AcpiGbl_CurrentObjectSize -= a
-
-#define INCREMENT_OBJECT_METRICS(a) \
-    AcpiGbl_CurrentObjectCount++; \
-    AcpiGbl_RunningObjectCount++; \
-    if (AcpiGbl_MaxConcurrentObjectCount < AcpiGbl_CurrentObjectCount) \
-    { \
-        AcpiGbl_MaxConcurrentObjectCount = AcpiGbl_CurrentObjectCount; \
-    } \
-    AcpiGbl_RunningObjectSize += a; \
-    AcpiGbl_CurrentObjectSize += a; \
-    if (AcpiGbl_MaxConcurrentObjectSize < AcpiGbl_CurrentObjectSize) \
-    { \
-        AcpiGbl_MaxConcurrentObjectSize = AcpiGbl_CurrentObjectSize; \
-    }
-
-#define DECREMENT_NAME_TABLE_METRICS(a) \
-    AcpiGbl_CurrentNodeCount--; \
-    AcpiGbl_CurrentNodeSize -= (a)
-
-#define INCREMENT_NAME_TABLE_METRICS(a) \
-    AcpiGbl_CurrentNodeCount++; \
-    AcpiGbl_CurrentNodeSize+= (a); \
-    if (AcpiGbl_MaxConcurrentNodeCount < AcpiGbl_CurrentNodeCount) \
-    { \
-        AcpiGbl_MaxConcurrentNodeCount = AcpiGbl_CurrentNodeCount; \
-    }
 #endif /* ACPI_DBG_TRACK_ALLOCATIONS */
 
 
