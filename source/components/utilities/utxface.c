@@ -1,6 +1,7 @@
 /******************************************************************************
  *
  * Module Name: cmxface - External interfaces for "global" ACPI functions
+ *              $Revision: 1.43 $
  *
  *****************************************************************************/
 
@@ -117,16 +118,16 @@
 #define __CMXFACE_C__
 
 #include "acpi.h"
-#include "events.h"
-#include "hardware.h"
-#include "namesp.h"
-#include "interp.h"
+#include "acevents.h"
+#include "achware.h"
+#include "acnamesp.h"
+#include "acinterp.h"
 #include "amlcode.h"
-#include "debugger.h"
+#include "acdebug.h"
 
 
 #define _COMPONENT          MISCELLANEOUS
-        MODULE_NAME         ("cmxface");
+        MODULE_NAME         ("cmxface")
 
 
 /*******************************************************************************
@@ -183,7 +184,7 @@ AcpiInitialize (ACPI_INIT_DATA *InitData)
 
     /* If configured, initialize the AML debugger */
 
-    DEBUG_EXEC (AcpiDbInitialize ());
+    DEBUGGER_EXEC (AcpiDbInitialize ());
 
     return_ACPI_STATUS (Status);
 }
@@ -210,7 +211,9 @@ AcpiTerminate (void)
     /* Terminate the AML Debuger if present */
 
     AcpiGbl_DbTerminateThreads = TRUE;
-    AcpiCmReleaseMutex (ACPI_MTX_DEBUG_CMD_READY);
+
+    /* TBD: [Investigate] This is no longer needed?*/
+/*    AcpiCmReleaseMutex (ACPI_MTX_DEBUG_CMD_READY); */
 
 
     /* Shutdown and free all resources */
@@ -339,7 +342,7 @@ AcpiFormatException (
     ACPI_BUFFER             *OutBuffer)
 {
     UINT32                  Length;
-    char                    *FormattedException;
+    NATIVE_CHAR             *FormattedException;
 
 
     FUNCTION_TRACE ("AcpiFormatException");
@@ -355,15 +358,7 @@ AcpiFormatException (
     }
 
 
-    /* Exception must be within range */
-
-    if (Exception > ACPI_MAX_STATUS)
-    {
-        return_ACPI_STATUS (AE_BAD_PARAMETER);
-    }
-
-
-    /* Convert the exception code */
+    /* Convert the exception code (Handles bad exception codes) */
 
     FormattedException = AcpiCmFormatException (Exception);
 

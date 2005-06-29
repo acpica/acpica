@@ -1,8 +1,9 @@
-/******************************************************************************
+/*******************************************************************************
  *
  * Module Name: cmutils - common utility procedures
+ *              $Revision: 1.17 $
  *
- *****************************************************************************/
+ ******************************************************************************/
 
 /******************************************************************************
  *
@@ -117,19 +118,19 @@
 #define __CMUTILS_C__
 
 #include "acpi.h"
-#include "events.h"
-#include "hardware.h"
-#include "namesp.h"
-#include "interp.h"
+#include "acevents.h"
+#include "achware.h"
+#include "acnamesp.h"
+#include "acinterp.h"
 #include "amlcode.h"
-#include "debugger.h"
+#include "acdebug.h"
 
 
 #define _COMPONENT          MISCELLANEOUS
-        MODULE_NAME         ("cmutils");
+        MODULE_NAME         ("cmutils")
 
 
-/*****************************************************************************
+/*******************************************************************************
  *
  * FUNCTION:    AcpiCmValidAcpiName
  *
@@ -142,13 +143,13 @@
  *              2) numeric
  *              3) underscore
  *
- ****************************************************************************/
+ ******************************************************************************/
 
 BOOLEAN
 AcpiCmValidAcpiName (
     UINT32                  Name)
 {
-    char                    *NamePtr = (char *) &Name;
+    NATIVE_CHAR             *NamePtr = (NATIVE_CHAR *) &Name;
     UINT32                  i;
 
 
@@ -158,16 +159,16 @@ AcpiCmValidAcpiName (
               (NamePtr[i] >= 'A' && NamePtr[i] <= 'Z') ||
               (NamePtr[i] >= '0' && NamePtr[i] <= '9')))
         {
-            return FALSE;
+            return (FALSE);
         }
     }
 
 
-    return TRUE;
+    return (TRUE);
 }
 
 
-/*****************************************************************************
+/*******************************************************************************
  *
  * FUNCTION:    AcpiCmValidAcpiCharacter
  *
@@ -177,11 +178,11 @@ AcpiCmValidAcpiName (
  *
  * DESCRIPTION: Check for a printable character
  *
- ****************************************************************************/
+ ******************************************************************************/
 
 BOOLEAN
 AcpiCmValidAcpiCharacter (
-    char                    Character)
+    NATIVE_CHAR             Character)
 {
 
     return ((BOOLEAN)   ((Character == '_') ||
@@ -190,7 +191,7 @@ AcpiCmValidAcpiCharacter (
 }
 
 
-/*****************************************************************************
+/*******************************************************************************
  *
  * FUNCTION:    AcpiCmMutexInitialize
  *
@@ -200,7 +201,7 @@ AcpiCmValidAcpiCharacter (
  *
  * DESCRIPTION: Create the system mutex objects.
  *
- ****************************************************************************/
+ ******************************************************************************/
 
 ACPI_STATUS
 AcpiCmMutexInitialize (
@@ -229,7 +230,7 @@ AcpiCmMutexInitialize (
 }
 
 
-/*****************************************************************************
+/*******************************************************************************
  *
  * FUNCTION:    AcpiCmMutexTerminate
  *
@@ -239,7 +240,7 @@ AcpiCmMutexInitialize (
  *
  * DESCRIPTION: Delete all of the system mutex objects.
  *
- ****************************************************************************/
+ ******************************************************************************/
 
 void
 AcpiCmMutexTerminate (
@@ -263,7 +264,7 @@ AcpiCmMutexTerminate (
 }
 
 
-/*****************************************************************************
+/*******************************************************************************
  *
  * FUNCTION:    AcpiCmCreateMutex
  *
@@ -273,7 +274,7 @@ AcpiCmMutexTerminate (
  *
  * DESCRIPTION: Create a mutex object.
  *
- ****************************************************************************/
+ ******************************************************************************/
 
 ACPI_STATUS
 AcpiCmCreateMutex (
@@ -303,7 +304,7 @@ AcpiCmCreateMutex (
 }
 
 
-/*****************************************************************************
+/*******************************************************************************
  *
  * FUNCTION:    AcpiCmDeleteMutex
  *
@@ -313,7 +314,7 @@ AcpiCmCreateMutex (
  *
  * DESCRIPTION: Delete a mutex object.
  *
- ****************************************************************************/
+ ******************************************************************************/
 
 ACPI_STATUS
 AcpiCmDeleteMutex (
@@ -340,7 +341,7 @@ AcpiCmDeleteMutex (
 }
 
 
-/*****************************************************************************
+/*******************************************************************************
  *
  * FUNCTION:    AcpiCmAcquireMutex
  *
@@ -350,7 +351,7 @@ AcpiCmDeleteMutex (
  *
  * DESCRIPTION: Acquire a mutex object.
  *
- ****************************************************************************/
+ ******************************************************************************/
 
 ACPI_STATUS
 AcpiCmAcquireMutex (
@@ -368,8 +369,8 @@ AcpiCmAcquireMutex (
     }
 
 
-    Status = AcpiOsWaitSemaphore (AcpiGbl_AcpiMutexInfo[MutexId].Mutex, 1,
-                                  WAIT_FOREVER);
+    Status = AcpiOsWaitSemaphore (AcpiGbl_AcpiMutexInfo[MutexId].Mutex,
+                                    1, WAIT_FOREVER);
 
     DEBUG_PRINT (TRACE_MUTEX, ("Acquired Mutex  [%s] Status %s\n",
                 AcpiCmGetMutexName (MutexId), AcpiCmFormatException (Status)));
@@ -384,7 +385,7 @@ AcpiCmAcquireMutex (
 }
 
 
-/*****************************************************************************
+/*******************************************************************************
  *
  * FUNCTION:    AcpiCmReleaseMutex
  *
@@ -394,7 +395,7 @@ AcpiCmAcquireMutex (
  *
  * DESCRIPTION: Release a mutex object.
  *
- ****************************************************************************/
+ ******************************************************************************/
 
 ACPI_STATUS
 AcpiCmReleaseMutex (
@@ -403,7 +404,8 @@ AcpiCmReleaseMutex (
     ACPI_STATUS             Status;
 
 
-    DEBUG_PRINT (TRACE_MUTEX, ("Releasing Mutex [%s]\n", AcpiCmGetMutexName (MutexId)));
+    DEBUG_PRINT (TRACE_MUTEX, 
+        ("Releasing Mutex [%s]\n", AcpiCmGetMutexName (MutexId)));
 
     if (MutexId > MAX_MTX)
     {
@@ -415,14 +417,22 @@ AcpiCmReleaseMutex (
 
     Status = AcpiOsSignalSemaphore (AcpiGbl_AcpiMutexInfo[MutexId].Mutex, 1);
 
-    DEBUG_PRINT (TRACE_MUTEX, ("Released Mutex  [%s] Status %s\n",
-                AcpiCmGetMutexName (MutexId), AcpiCmFormatException (Status)));
+    if (ACPI_FAILURE (Status))
+    {
+        DEBUG_PRINT (ACPI_ERROR, ("Error Releasing Mutex [%s], %s\n",
+                    AcpiCmGetMutexName (MutexId), AcpiCmFormatException (Status)));
+    }
+    else
+    {
+        DEBUG_PRINT (TRACE_MUTEX, ("Released Mutex [%s], %s\n",
+                    AcpiCmGetMutexName (MutexId), AcpiCmFormatException (Status)));
+    }
 
     return (Status);
 }
 
 
-/******************************************************************************
+/*******************************************************************************
  *
  * FUNCTION:    AcpiCmCreateUpdateStateAndPush
  *
@@ -449,22 +459,22 @@ AcpiCmCreateUpdateStateAndPush (
 
     if (!Object)
     {
-        return AE_OK;
+        return (AE_OK);
     }
 
     State = AcpiCmCreateUpdateState (Object, Action);
     if (!State)
     {
-        return AE_NO_MEMORY;
+        return (AE_NO_MEMORY);
     }
 
 
     AcpiCmPushGenericState (StateList, State);
-    return AE_OK;
+    return (AE_OK);
 }
 
 
-/******************************************************************************
+/*******************************************************************************
  *
  * FUNCTION:    AcpiCmPushGenericState
  *
@@ -493,7 +503,7 @@ AcpiCmPushGenericState (
 }
 
 
-/******************************************************************************
+/*******************************************************************************
  *
  * FUNCTION:    AcpiCmPopGenericState
  *
@@ -529,7 +539,7 @@ AcpiCmPopGenericState (
 }
 
 
-/******************************************************************************
+/*******************************************************************************
  *
  * FUNCTION:    AcpiCmCreateGenericState
  *
@@ -566,6 +576,8 @@ AcpiCmCreateGenericState (void)
         AcpiGbl_GenericStateCacheDepth--;
 
         AcpiCmReleaseMutex (ACPI_MTX_CACHES);
+
+        DEBUG_PRINT (TRACE_EXEC, ("CreateGenState: State %p from cache\n", State));
     }
 
     else
@@ -581,18 +593,23 @@ AcpiCmCreateGenericState (void)
 
     if (State)
     {
+        /* Always zero out the object before init */
+
+        MEMSET (State, 0, sizeof (ACPI_GENERIC_STATE));
+
         State->Common.DataType = ACPI_DESC_TYPE_STATE;
     }
 
-    return State;
+    return (State);
 }
 
 
-/******************************************************************************
+/*******************************************************************************
  *
  * FUNCTION:    AcpiCmCreateUpdateState
  *
- * PARAMETERS:  Object              - Initial Object to be installed in the state
+ * PARAMETERS:  Object              - Initial Object to be installed in the 
+ *                                    state
  *              Action              - Update action to be performed
  *
  * RETURN:      Status
@@ -619,7 +636,7 @@ AcpiCmCreateUpdateState (
     State = AcpiCmCreateGenericState ();
     if (!State)
     {
-        return NULL;
+        return (NULL);
     }
 
     /* Init fields specific to the update struct */
@@ -631,7 +648,7 @@ AcpiCmCreateUpdateState (
 }
 
 
-/******************************************************************************
+/*******************************************************************************
  *
  * FUNCTION:    AcpiCmCreateControlState
  *
@@ -658,7 +675,7 @@ AcpiCmCreateControlState (
     State = AcpiCmCreateGenericState ();
     if (!State)
     {
-        return NULL;
+        return (NULL);
     }
 
 
@@ -670,7 +687,7 @@ AcpiCmCreateControlState (
 }
 
 
-/******************************************************************************
+/*******************************************************************************
  *
  * FUNCTION:    AcpiCmDeleteGenericState
  *
@@ -721,7 +738,7 @@ AcpiCmDeleteGenericState (
 }
 
 
-/******************************************************************************
+/*******************************************************************************
  *
  * FUNCTION:    AcpiCmDeleteGenericStateCache
  *
@@ -753,13 +770,14 @@ AcpiCmDeleteGenericStateCache (
         Next = AcpiGbl_GenericStateCache->Common.Next;
         AcpiCmFree (AcpiGbl_GenericStateCache);
         AcpiGbl_GenericStateCache = Next;
+        AcpiGbl_GenericStateCacheDepth--;
     }
 
     return_VOID;
 }
 
 
-/*****************************************************************************
+/*******************************************************************************
  *
  * FUNCTION:    _ReportError
  *
@@ -772,14 +790,14 @@ AcpiCmDeleteGenericStateCache (
  *
  * DESCRIPTION: Print error message from KD table
  *
- ****************************************************************************/
+ ******************************************************************************/
 
 void
 _ReportError (
-    char                    *ModuleName,
-    INT32                   LineNumber,
-    INT32                   ComponentId,
-    char                    *Message)
+    NATIVE_CHAR             *ModuleName,
+    UINT32                  LineNumber,
+    UINT32                  ComponentId,
+    NATIVE_CHAR             *Message)
 {
 
     DebugPrint (ModuleName, LineNumber, ComponentId, ACPI_ERROR,
@@ -788,7 +806,7 @@ _ReportError (
 }
 
 
-/*****************************************************************************
+/*******************************************************************************
  *
  * FUNCTION:    _ReportWarning
  *
@@ -801,14 +819,14 @@ _ReportError (
  *
  * DESCRIPTION: Print warning message from KD table
  *
- ****************************************************************************/
+ ******************************************************************************/
 
 void
 _ReportWarning (
-    char                    *ModuleName,
-    INT32                   LineNumber,
-    INT32                   ComponentId,
-    char                    *Message)
+    NATIVE_CHAR             *ModuleName,
+    UINT32                  LineNumber,
+    UINT32                  ComponentId,
+    NATIVE_CHAR             *Message)
 {
 
     DebugPrint (ModuleName, LineNumber, ComponentId, ACPI_WARN,
@@ -817,35 +835,7 @@ _ReportWarning (
 }
 
 
-/*****************************************************************************
- *
- * FUNCTION:    _ReportSuccess
- *
- * PARAMETERS:  ModuleName          - Caller's module name (for error output)
- *              LineNumber          - Caller's line number (for error output)
- *              ComponentId         - Caller's component ID (for error output)
- *              Message             - Error message to use on failure
- *
- * RETURN:      None
- *
- * DESCRIPTION: Print warning message from KD table
- *
- ****************************************************************************/
-
-void
-_ReportSuccess (
-    char                    *ModuleName,
-    INT32                   LineNumber,
-    INT32                   ComponentId,
-    char                    *Message)
-{
-
-    DebugPrint (ModuleName, LineNumber, ComponentId, ACPI_OK,
-                "*** Success: %s\n", Message);
-}
-
-
-/*****************************************************************************
+/*******************************************************************************
  *
  * FUNCTION:    _ReportInfo
  *
@@ -858,14 +848,14 @@ _ReportSuccess (
  *
  * DESCRIPTION: Print information message from KD table
  *
- ****************************************************************************/
+ ******************************************************************************/
 
 void
 _ReportInfo (
-    char                    *ModuleName,
-    INT32                   LineNumber,
-    INT32                   ComponentId,
-    char                    *Message)
+    NATIVE_CHAR             *ModuleName,
+    UINT32                  LineNumber,
+    UINT32                  ComponentId,
+    NATIVE_CHAR             *Message)
 {
 
     DebugPrint (ModuleName, LineNumber, ComponentId, ACPI_INFO,

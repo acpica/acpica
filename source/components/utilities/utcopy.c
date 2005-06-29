@@ -1,6 +1,7 @@
 /******************************************************************************
  *
  * Module Name: cmcopy - Internal to external object translation utilities
+ *              $Revision: 1.54 $
  *
  *****************************************************************************/
 
@@ -121,7 +122,7 @@
 
 
 #define _COMPONENT          MISCELLANEOUS
-        MODULE_NAME         ("cmcopy");
+        MODULE_NAME         ("cmcopy")
 
 
 typedef struct Search_st

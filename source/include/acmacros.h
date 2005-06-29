@@ -1,7 +1,6 @@
-
 /******************************************************************************
  *
- * Name: macros.h - C macros for the entire subsystem.
+ * Name: acmacros.h - C macros for the entire subsystem.
  *
  *****************************************************************************/
 
@@ -114,8 +113,8 @@
  *
  *****************************************************************************/
 
-#ifndef __MACROS_H__
-#define __MACROS_H__
+#ifndef __ACMACROS_H__
+#define __ACMACROS_H__
 
 /*
  * Data manipulation macros
@@ -182,13 +181,13 @@
  * the destination (or both) is/are unaligned.
  */
 
-#define MOVE_UNALIGNED16_TO_16(d,s)     {((char *)(d))[0] = ((char *)(s))[0];\
-                                         ((char *)(d))[1] = ((char *)(s))[1];}
+#define MOVE_UNALIGNED16_TO_16(d,s)     {((UINT8 *)(d))[0] = ((UINT8 *)(s))[0];\
+                                         ((UINT8 *)(d))[1] = ((UINT8 *)(s))[1];}
 
-#define MOVE_UNALIGNED32_TO_32(d,s)     {((char *)(d))[0] = ((char *)(s))[0];\
-                                         ((char *)(d))[1] = ((char *)(s))[1];\
-                                         ((char *)(d))[2] = ((char *)(s))[2];\
-                                         ((char *)(d))[3] = ((char *)(s))[3];}
+#define MOVE_UNALIGNED32_TO_32(d,s)     {((UINT8 *)(d))[0] = ((UINT8 *)(s))[0];\
+                                         ((UINT8 *)(d))[1] = ((UINT8 *)(s))[1];\
+                                         ((UINT8 *)(d))[2] = ((UINT8 *)(s))[2];\
+                                         ((UINT8 *)(d))[3] = ((UINT8 *)(s))[3];}
 
 #define MOVE_UNALIGNED16_TO_32(d,s)     {(*(UINT32*)(d)) = 0; MOVE_UNALIGNED16_TO_16(d,s);}
 
@@ -199,9 +198,9 @@
  * Fast power-of-two math macros for non-optimized compilers
  */
 
-#define _DIV(value,PowerOf2)            ((value) >> (PowerOf2))
-#define _MUL(value,PowerOf2)            ((value) << (PowerOf2))
-#define _MOD(value,Divisor)             ((value) & ((Divisor) -1))
+#define _DIV(value,PowerOf2)            ((UINT32) ((value) >> (PowerOf2)))
+#define _MUL(value,PowerOf2)            ((UINT32) ((value) << (PowerOf2)))
+#define _MOD(value,Divisor)             ((UINT32) ((value) & ((Divisor) -1)))
 
 #define DIV_2(a)                        _DIV(a,1)
 #define MUL_2(a)                        _MUL(a,1)
@@ -240,29 +239,23 @@
 
 
 /*
- * An ACPI_HANDLE (which is actually an NAME_TABLE_ENTRY *) can appear in some contexts,
+ * An ACPI_HANDLE (which is actually an ACPI_NAMED_OBJECT*) can appear in some contexts,
  * such as on apObjStack, where a pointer to an ACPI_OBJECT_INTERNAL can also
  * appear.  This macro is used to distinguish them.
  *
  * The DataType field is the first field in both structures.
  */
 
-#define VALID_DESCRIPTOR_TYPE(d,t)      (((NAME_TABLE_ENTRY *)d)->DataType == t)
+#define VALID_DESCRIPTOR_TYPE(d,t)      (((ACPI_NAMED_OBJECT*)d)->DataType == t)
 
 
 /* Macro to test the object type */
 
 #define IS_THIS_OBJECT_TYPE(d,t)        (((ACPI_OBJECT_INTERNAL *)d)->Common.Type == (UINT8)t)
 
+/* Macro to check the table flags for SINGLE or MULTIPLE tables are allowed */
 
-/*
- * There is an (nte *) prefix to each name table, containing either a NULL
- * pointer or the address of the next array of nte's in the scope.
- *
- * This macro extracts a pointer to the NEXT table in the chain.
- */
-#define NEXTSEG(NameTbl)                ((NAME_TABLE_ENTRY **)NameTbl)[-1]
-
+#define IS_SINGLE_TABLE(x)              (((x) & 0x01) == ACPI_TABLE_SINGLE ? 1 : 0)
 
 /*
  * Macro to check if a pointer is within an ACPI table.
@@ -286,9 +279,9 @@
  */
 
 #ifdef ACPI_DEBUG
-#define OP_INFO_ENTRY(Opcode,Flags,Name,PArgs,IArgs)     {Opcode,Flags,PArgs,IArgs,Name}
+#define OP_INFO_ENTRY(Flags,Name,PArgs,IArgs)     {Flags,PArgs,IArgs,Name}
 #else
-#define OP_INFO_ENTRY(Opcode,Flags,Name,PArgs,IArgs)     {Opcode,Flags,PArgs,IArgs}
+#define OP_INFO_ENTRY(Flags,Name,PArgs,IArgs)     {Flags,PArgs,IArgs}
 #endif
 
 #define ARG_TYPE_WIDTH                  5
@@ -332,14 +325,12 @@
 #define REPORT_INFO(a)                  _ReportInfo(_THIS_MODULE,__LINE__,_COMPONENT,a)
 #define REPORT_ERROR(a)                 _ReportError(_THIS_MODULE,__LINE__,_COMPONENT,a)
 #define REPORT_WARNING(a)               _ReportWarning(_THIS_MODULE,__LINE__,_COMPONENT,a)
-#define REPORT_SUCCESS(a)               _ReportSuccess(_THIS_MODULE,__LINE__,_COMPONENT,a)
 
 #else
 
 #define REPORT_INFO(a)                  _ReportInfo("",__LINE__,_COMPONENT,a)
 #define REPORT_ERROR(a)                 _ReportError("",__LINE__,_COMPONENT,a)
 #define REPORT_WARNING(a)               _ReportWarning("",__LINE__,_COMPONENT,a)
-#define REPORT_SUCCESS(a)               _ReportSuccess("",__LINE__,_COMPONENT,a)
 
 #endif
 
@@ -351,7 +342,7 @@
 
 /* Buffer dump macros */
 
-#define DUMP_BUFFER(a,b)                AcpiCmDumpBuffer((char *)a,b,DB_BYTE_DISPLAY,_COMPONENT)
+#define DUMP_BUFFER(a,b)                AcpiCmDumpBuffer((UINT8 *)a,b,DB_BYTE_DISPLAY,_COMPONENT)
 
 /*
  * Debug macros that are conditionally compiled
@@ -359,7 +350,7 @@
 
 #ifdef ACPI_DEBUG
 
-#define MODULE_NAME(name)               static char *_THIS_MODULE = name
+#define MODULE_NAME(name)               static char *_THIS_MODULE = name;
 
 /*
  * Function entry tracing.
@@ -374,7 +365,7 @@
 #define FUNCTION_TRACE_U32(a,b)         char * _ProcName = a;\
                                         FunctionTraceU32(_THIS_MODULE,__LINE__,_COMPONENT,a,(UINT32)b)
 #define FUNCTION_TRACE_STR(a,b)         char * _ProcName = a;\
-                                        FunctionTraceStr(_THIS_MODULE,__LINE__,_COMPONENT,a,(char *)b)
+                                        FunctionTraceStr(_THIS_MODULE,__LINE__,_COMPONENT,a,(NATIVE_CHAR *)b)
 /*
  * Function exit tracing.
  * WARNING: These macros include a return statement.  This is usually considered
@@ -385,7 +376,7 @@
 #define return_VOID                     {FunctionExit(_THIS_MODULE,__LINE__,_COMPONENT,_ProcName);return;}
 #define return_ACPI_STATUS(s)           {FunctionStatusExit(_THIS_MODULE,__LINE__,_COMPONENT,_ProcName,s);return(s);}
 #define return_VALUE(s)                 {FunctionValueExit(_THIS_MODULE,__LINE__,_COMPONENT,_ProcName,(NATIVE_UINT)s);return(s);}
-#define return_PTR(s)                   {FunctionPtrExit(_THIS_MODULE,__LINE__,_COMPONENT,_ProcName,(char *)s);return(s);}
+#define return_PTR(s)                   {FunctionPtrExit(_THIS_MODULE,__LINE__,_COMPONENT,_ProcName,(UINT8 *)s);return(s);}
 
 
 /* Conditional execution */
@@ -406,7 +397,8 @@
 #define DUMP_ENTRY(a,b)                 AcpiNsDumpEntry (a,b)
 #define DUMP_TABLES(a,b)                AcpiNsDumpTables(a,b)
 #define DUMP_PATHNAME(a,b,c,d)          AcpiNsDumpPathname(a,b,c,d)
-#define BREAK_MSG(a)                    AcpiOsdBreakpoint (a)
+#define DUMP_RESOURCE_LIST(a)           AcpiRsDumpResourceList(a)
+#define BREAK_MSG(a)                    AcpiOsBreakpoint (a)
 
 /*
  * Generate INT3 on ACPI_ERROR (Debug only!)
@@ -414,7 +406,7 @@
 
 #define ERROR_BREAK
 #ifdef  ERROR_BREAK
-#define BREAK_ON_ERROR(lvl)             if ((lvl)&ACPI_ERROR) AcpiOsdBreakpoint("Fatal error encountered\n")
+#define BREAK_ON_ERROR(lvl)             if ((lvl)&ACPI_ERROR) AcpiOsBreakpoint("Fatal error encountered\n")
 #else
 #define BREAK_ON_ERROR(lvl)
 #endif
@@ -443,10 +435,10 @@
 /* Assert macros */
 
 #define ACPI_ASSERT(exp)                if(!(exp)) \
-                                            AcpiOsdDbgAssert(#exp, __FILE__, __LINE__, "Failed Assertion")
+                                            AcpiOsDbgAssert(#exp, __FILE__, __LINE__, "Failed Assertion")
 
 #define DEBUG_ASSERT(msg, exp)          if(!(exp)) \
-                                            AcpiOsdDbgAssert(#exp, __FILE__, __LINE__, msg)
+                                            AcpiOsDbgAssert(#exp, __FILE__, __LINE__, msg)
 
 
 #else
@@ -475,6 +467,7 @@
 #define DUMP_ENTRY(a,b)
 #define DUMP_TABLES(a,b)
 #define DUMP_PATHNAME(a,b,c,d)
+#define DUMP_RESOURCE_LIST(a)
 #define DEBUG_PRINT(l,f)
 #define DEBUG_PRINT_RAW(l,f)
 #define BREAK_MSG(a)
@@ -487,6 +480,17 @@
 #define ACPI_ASSERT(exp)
 #define DEBUG_ASSERT(msg, exp)
 
+#endif
+
+/*
+ * Some code only gets executed when the debugger is built in.
+ * Note that this is entirely independent of whether the
+ * DEBUG_PRINT stuff (set by ACPI_DEBUG) is on, or not.
+ */
+#ifdef ENABLE_DEBUGGER
+#define DEBUGGER_EXEC(a)                a;
+#else
+#define DEBUGGER_EXEC(a)
 #endif
 
 
@@ -502,12 +506,7 @@
 #endif
 
 
-#ifndef ACPI_DEBUG
-
-#define ADD_OBJECT_NAME(a,b)
-
-#else
-
+#ifdef ACPI_DEBUG
 
 /*
  * 1) Set name to blanks
@@ -517,7 +516,10 @@
 #define ADD_OBJECT_NAME(a,b)            MEMSET (a->Common.Name, ' ', sizeof (a->Common.Name));\
                                         STRNCPY (a->Common.Name, AcpiGbl_NsTypeNames[b], sizeof (a->Common.Name))
 
+#else
+
+#define ADD_OBJECT_NAME(a,b)
+
 #endif
 
-
-#endif /* MACROS_H */
+#endif /* ACMACROS_H */

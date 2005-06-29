@@ -1,7 +1,6 @@
-
 /******************************************************************************
  *
- * Name: globals.h - Declarations for global variables
+ * Name: acglobal.h - Declarations for global variables
  *
  *****************************************************************************/
 
@@ -114,12 +113,15 @@
  *
  *****************************************************************************/
 
-#ifndef __GLOBALS_H__
-#define __GLOBALS_H__
+#ifndef __ACGLOBAL_H__
+#define __ACGLOBAL_H__
 
 
 /*
- * Ensure that the globals are actually defined only once
+ * Ensure that the globals are actually defined only once.
+ *
+ * The use of these defines allows a single list of globals (here) in order
+ * to simplify maintenance of the code.
  */
 #ifdef DEFINE_ACPI_GLOBALS
 #define ACPI_EXTERN
@@ -128,7 +130,7 @@
 #endif
 
 
-extern      char                        *MsgAcpiErrorBreak;
+extern      NATIVE_CHAR                 *MsgAcpiErrorBreak;
 
 /*****************************************************************************
  *
@@ -202,6 +204,7 @@ ACPI_EXTERN UINT8                      *AcpiGbl_Gpe1EnableRegisterSave;
 ACPI_EXTERN ACPI_WALK_STATE            *AcpiGbl_BreakpointWalk;
 ACPI_EXTERN ACPI_GENERIC_STATE         *AcpiGbl_GenericStateCache;
 ACPI_EXTERN ACPI_GENERIC_OP            *AcpiGbl_ParseCache;
+ACPI_EXTERN ACPI_EXTENDED_OP           *AcpiGbl_ExtParseCache;
 ACPI_EXTERN ACPI_OBJECT_INTERNAL       *AcpiGbl_ObjectCache;
 ACPI_EXTERN ACPI_WALK_STATE            *AcpiGbl_WalkStateCache;
 ACPI_EXTERN ACPI_HANDLE                 AcpiGbl_GlobalLockSemaphore;
@@ -218,6 +221,8 @@ ACPI_EXTERN UINT32                      AcpiGbl_StateCacheRequests;
 ACPI_EXTERN UINT32                      AcpiGbl_StateCacheHits;
 ACPI_EXTERN UINT32                      AcpiGbl_ParseCacheRequests;
 ACPI_EXTERN UINT32                      AcpiGbl_ParseCacheHits;
+ACPI_EXTERN UINT32                      AcpiGbl_ExtParseCacheRequests;
+ACPI_EXTERN UINT32                      AcpiGbl_ExtParseCacheHits;
 ACPI_EXTERN UINT32                      AcpiGbl_ObjectCacheRequests;
 ACPI_EXTERN UINT32                      AcpiGbl_ObjectCacheHits;
 ACPI_EXTERN UINT32                      AcpiGbl_WalkStateCacheRequests;
@@ -228,6 +233,7 @@ ACPI_EXTERN UINT32                      AcpiGbl_PsFindCount;
 
 ACPI_EXTERN UINT16                      AcpiGbl_GenericStateCacheDepth;
 ACPI_EXTERN UINT16                      AcpiGbl_ParseCacheDepth;
+ACPI_EXTERN UINT16                      AcpiGbl_ExtParseCacheDepth;
 ACPI_EXTERN UINT16                      AcpiGbl_ObjectCacheDepth;
 ACPI_EXTERN UINT16                      AcpiGbl_WalkStateCacheDepth;
 ACPI_EXTERN UINT16                      AcpiGbl_Pm1EnableRegisterSave;
@@ -260,8 +266,8 @@ extern      UINT32                      AcpiGbl_StartupFlags;
 #define NUM_PREDEFINED_NAMES            9
 
 
-ACPI_EXTERN NAME_TABLE_ENTRY            AcpiGbl_RootObjStruct;
-ACPI_EXTERN NAME_TABLE_ENTRY           *AcpiGbl_RootObject;
+ACPI_EXTERN ACPI_NAMED_OBJECT           AcpiGbl_RootNamedObject;
+ACPI_EXTERN ACPI_NAMED_OBJECT          *AcpiGbl_RootObject;
 
 extern      UINT8                       AcpiGbl_NsProperties[NUM_NS_TYPES];
 extern      PREDEFINED_NAMES            AcpiGbl_PreDefinedNames [NUM_PREDEFINED_NAMES];
@@ -297,7 +303,7 @@ ACPI_EXTERN UINT32                      AcpiGbl_PCodeBlockLen;
 ACPI_EXTERN UINT32                      AcpiGbl_PCodeLen;
 
 ACPI_EXTERN UINT32                      AcpiGbl_BufSeq;             /* Counts allocated Buffer descriptors */
-ACPI_EXTERN INT32                       AcpiGbl_NamedObjectErr;     /* Indicate if inc_error should be called */
+ACPI_EXTERN UINT32                      AcpiGbl_NamedObjectErr;     /* Indicate if inc_error should be called */
 
 /*
  * Handle to the last method found - used during pass1 of load
@@ -308,7 +314,7 @@ ACPI_EXTERN ACPI_HANDLE                 AcpiGbl_LastMethod;
  * Table of Address Space handlers
  */
 
-ACPI_EXTERN ADDRESS_SPACE_INFO          AcpiGbl_AddressSpaces[ACPI_NUM_ADDRESS_SPACES];
+ACPI_EXTERN ACPI_ADDRESS_SPACE_INFO     AcpiGbl_AddressSpaces[ACPI_NUM_ADDRESS_SPACES];
 
 
 /* Control method single step flag */
@@ -326,21 +332,30 @@ ACPI_EXTERN ACPI_GENERIC_OP             *AcpiGbl_ParsedNamespaceRoot;
 
 extern ACPI_OP_INFO                     AcpiGbl_AmlOpInfo[];
 extern UINT8                            AcpiGbl_AmlOpInfoIndex[256];
-extern char                             *AcpiGbl_ParserId;
 
 
 /*****************************************************************************
  *
- * AcpiEvent globals
+ * Hardware globals
  *
  ****************************************************************************/
 
-ACPI_EXTERN FIXED_EVENT_INFO            AcpiGbl_FixedEventHandlers[NUM_FIXED_EVENTS];
+extern ACPI_C_STATE_HANDLER             AcpiHwCxHandlers[MAX_CX_STATES];
+extern UINT32                           AcpiHwActiveCxState;
+
+
+/*****************************************************************************
+ *
+ * Event globals
+ *
+ ****************************************************************************/
+
+ACPI_EXTERN ACPI_FIXED_EVENT_INFO       AcpiGbl_FixedEventHandlers[NUM_FIXED_EVENTS];
 
 ACPI_EXTERN ACPI_HANDLE                 AcpiGbl_GpeObjHandle;
 ACPI_EXTERN UINT32                      AcpiGbl_GpeRegisterCount;
-ACPI_EXTERN GPE_REGISTERS              *AcpiGbl_GpeRegisters;
-ACPI_EXTERN GPE_LEVEL_INFO             *AcpiGbl_GpeInfo;
+ACPI_EXTERN ACPI_GPE_REGISTERS          *AcpiGbl_GpeRegisters;
+ACPI_EXTERN ACPI_GPE_LEVEL_INFO         *AcpiGbl_GpeInfo;
 
 /*
  * Gpe validation and translation table
@@ -385,8 +400,11 @@ ACPI_EXTERN UINT32                      AcpiGbl_MaxConcurrentObjectCount;
 ACPI_EXTERN UINT32                      AcpiGbl_MaxConcurrentObjectSize;
 ACPI_EXTERN UINT32                      AcpiGbl_RunningObjectCount;
 ACPI_EXTERN UINT32                      AcpiGbl_RunningObjectSize;
+ACPI_EXTERN UINT32                      AcpiGbl_CurrentNamedObjectCount;
+ACPI_EXTERN UINT32                      AcpiGbl_CurrentNamedObjectSize;
+ACPI_EXTERN UINT32                      AcpiGbl_MaxConcurrentNamedObjectCount;
 
 #endif
 
 
-#endif /* __GLOBALS_H__ */
+#endif /* __ACGLOBAL_H__ */

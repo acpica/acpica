@@ -1,7 +1,7 @@
-
 /******************************************************************************
  *
  * Module Name: cmdelete - object deletion and reference count utilities
+ *              $Revision: 1.51 $
  *
  *****************************************************************************/
 
@@ -123,7 +123,7 @@
 #include "acparser.h"
 
 #define _COMPONENT          MISCELLANEOUS
-        MODULE_NAME         ("cmdelete");
+        MODULE_NAME         ("cmdelete")
 
 
 /******************************************************************************

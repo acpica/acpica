@@ -1,7 +1,6 @@
-
 /******************************************************************************
  *
- * Name: events.h - AcpiEvent subcomponent prototypes and defines
+ * Name: acevents.h - Event subcomponent prototypes and defines
  *
  *****************************************************************************/
 
@@ -114,25 +113,8 @@
  *
  *****************************************************************************/
 
-#ifndef __EVENTS_H__
-#define __EVENTS_H__
-
-
-/* Status bits. */
-
-#define STATUS_PMTIMER                  0x0001
-#define STATUS_GLOBAL                   0x0020
-#define STATUS_POWER_BUTTON             0x0100
-#define STATUS_SLEEP_BUTTON             0x0200
-#define STATUS_RTC_ALARM                0x0400
-
-/* Enable bits. */
-
-#define ENABLE_PMTIMER                  0x0001
-#define ENABLE_GLOBAL                   0x0020
-#define ENABLE_POWER_BUTTON             0x0100
-#define ENABLE_SLEEP_BUTTON             0x0200
-#define ENABLE_RTC_ALARM                0x0400
+#ifndef __ACEVENTS_H__
+#define __ACEVENTS_H__
 
 
 /*
@@ -230,9 +212,10 @@ AcpiEvDisassociateRegionFromHandler(
 
 
 ACPI_STATUS
-AcpiEvAssociateRegionAndHandler(
+AcpiEvAssociateRegionAndHandler (
     ACPI_OBJECT_INTERNAL    *HandlerObj,
-    ACPI_OBJECT_INTERNAL    *RegionObj);
+    ACPI_OBJECT_INTERNAL    *RegionObj,
+    BOOLEAN                 AcpiNsIsLocked);
 
 
 /*
@@ -244,28 +227,28 @@ AcpiEvSystemMemoryRegionSetup (
     ACPI_HANDLE             Handle,
     UINT32                  Function,
     void                    *HandlerContext,
-    void                    **ReturnContext);
+    void                    **RegionContext);
 
 ACPI_STATUS
 AcpiEvIoSpaceRegionSetup (
     ACPI_HANDLE             Handle,
     UINT32                  Function,
     void                    *HandlerContext,
-    void                    **ReturnContext);
+    void                    **RegionContext);
 
 ACPI_STATUS
 AcpiEvPciConfigRegionSetup (
     ACPI_HANDLE             Handle,
     UINT32                  Function,
     void                    *HandlerContext,
-    void                    **ReturnContext);
+    void                    **RegionContext);
 
 ACPI_STATUS
 AcpiEvDefaultRegionSetup (
     ACPI_HANDLE             Handle,
     UINT32                  Function,
     void                    *HandlerContext,
-    void                    **ReturnContext);
+    void                    **RegionContext);
 
 ACPI_STATUS
 AcpiEvInitializeRegion (
@@ -274,7 +257,7 @@ AcpiEvInitializeRegion (
 
 
 /*
- * AcpiEvsci - SCI (System Control Interrupt) handling/dispatch
+ * Evsci - SCI (System Control Interrupt) handling/dispatch
  */
 
 UINT32
@@ -285,9 +268,9 @@ ACPI_STATUS
 AcpiEvRemoveSciHandler (
     void);
 
-INT32
+UINT32
 AcpiEvInitializeSCI (
-    INT32                   ProgramSCI);
+    UINT32                  ProgramSCI);
 
 void
 AcpiEvRestoreAcpiState (
@@ -302,7 +285,7 @@ AcpiEvTerminate (
 
 #ifdef ACPI_DEBUG
 
-INT32
+UINT32
 AcpiEvSciCount (
     UINT32                  AcpiEvent);
 
@@ -314,4 +297,4 @@ AcpiEvSciCount (
 #endif
 
 
-#endif  /*  __EVENTS_H__   */
+#endif  /* __ACEVENTS_H__  */

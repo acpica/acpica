@@ -1,7 +1,7 @@
-
 /******************************************************************************
  *
  * Module Name: cmobject - ACPI object create/delete/size/cache routines
+ *              $Revision: 1.24 $
  *
  *****************************************************************************/
 
@@ -117,14 +117,14 @@
 #define __CMOBJECT_C__
 
 #include "acpi.h"
-#include "interp.h"
-#include "namesp.h"
-#include "tables.h"
+#include "acinterp.h"
+#include "acnamesp.h"
+#include "actables.h"
 #include "amlcode.h"
 
 
 #define _COMPONENT          MISCELLANEOUS
-        MODULE_NAME         ("cmobject");
+        MODULE_NAME         ("cmobject")
 
 
 /******************************************************************************
@@ -151,9 +151,9 @@
 
 ACPI_OBJECT_INTERNAL *
 _CmCreateInternalObject (
-    char                    *ModuleName,
-    INT32                   LineNumber,
-    INT32                   ComponentId,
+    NATIVE_CHAR             *ModuleName,
+    UINT32                  LineNumber,
+    UINT32                  ComponentId,
     OBJECT_TYPE_INTERNAL    Type)
 {
     ACPI_OBJECT_INTERNAL    *Object;
@@ -184,10 +184,6 @@ _CmCreateInternalObject (
     /* Any per-type initialization should go here */
 
 
-    /* Memory allocation metrics - compiled out in non debug mode. */
-
-    INCREMENT_OBJECT_METRICS (sizeof (ACPI_OBJECT_INTERNAL));
-
     return_PTR (Object);
 }
 
@@ -213,7 +209,7 @@ AcpiCmValidInternalObject (
     {
         DEBUG_PRINT (ACPI_INFO,
             ("CmValidInternalObject: **** Null Object Ptr\n"));
-        return FALSE;
+        return (FALSE);
     }
 
     /* Check for a pointer within one of the ACPI tables */
@@ -222,7 +218,7 @@ AcpiCmValidInternalObject (
     {
         DEBUG_PRINT (ACPI_INFO,
             ("CmValidInternalObject: **** Object %p is a Pcode Ptr\n", Object));
-        return FALSE;
+        return (FALSE);
     }
 
     /* Check the descriptor type field */
@@ -234,7 +230,7 @@ AcpiCmValidInternalObject (
         if (VALID_DESCRIPTOR_TYPE (Object, ACPI_DESC_TYPE_NAMED))
         {
             DEBUG_PRINT (ACPI_INFO,
-                ("CmValidInternalObject: **** Obj %p is NTE, not ACPI obj\n",
+                ("CmValidInternalObject: **** Obj %p is a named obj, not ACPI obj\n",
                 Object));
         }
 
@@ -252,13 +248,13 @@ AcpiCmValidInternalObject (
                 Object));
         }
 
-        return FALSE;
+        return (FALSE);
     }
 
 
     /* The object appears to be a valid ACPI_OBJECT_INTERNAL */
 
-    return TRUE;
+    return (TRUE);
 }
 
 
@@ -280,9 +276,9 @@ AcpiCmValidInternalObject (
 
 void *
 _CmAllocateObjectDesc (
-    char                    *ModuleName,
-    INT32                   LineNumber,
-    INT32                   ComponentId)
+    NATIVE_CHAR             *ModuleName,
+    UINT32                  LineNumber,
+    UINT32                  ComponentId)
 {
     ACPI_OBJECT_INTERNAL    *Object;
 
@@ -320,7 +316,6 @@ _CmAllocateObjectDesc (
 
         Object = _CmCallocate (sizeof (ACPI_OBJECT_INTERNAL), ComponentId,
                                     ModuleName, LineNumber);
-
         if (!Object)
         {
             /* Allocation failed */
@@ -330,6 +325,10 @@ _CmAllocateObjectDesc (
 
             return_PTR (NULL);
         }
+
+        /* Memory allocation metrics - compiled out in non debug mode. */
+
+        INCREMENT_OBJECT_METRICS (sizeof (ACPI_OBJECT_INTERNAL));
     }
 
     /* Mark the descriptor type */
@@ -360,6 +359,8 @@ AcpiCmDeleteObjectDesc (
     ACPI_OBJECT_INTERNAL    *Object)
 {
 
+    FUNCTION_TRACE ("AcpiCmDeleteObjectDesc");
+
 
     /* Object must be an ACPI_OBJECT_INTERNAL */
 
@@ -367,17 +368,22 @@ AcpiCmDeleteObjectDesc (
     {
         DEBUG_PRINT (ACPI_ERROR,
             ("CmDeleteObjectDesc: Obj %p is not an ACPI object\n", Object));
-        return;
+        return_VOID;
     }
 
     /* Make sure that the object isn't already in the cache */
 
     if (Object->Common.Next)
     {
-        DEBUG_PRINT (ACPI_ERROR,
-            ("CmDeleteObjectDesc: Obj %p is already in the object cache\n",
-            Object));
-        return;
+        /* Some objects actually use the Next link field */
+
+        if (Object->Common.Type != ACPI_TYPE_REGION)
+        {
+            DEBUG_PRINT (ACPI_ERROR,
+                ("CmDeleteObjectDesc: Obj %p is already in the object cache\n",
+                Object));
+            return_VOID;
+        }
     }
 
 
@@ -389,10 +395,10 @@ AcpiCmDeleteObjectDesc (
          * Memory allocation metrics.  Call the macro here since we only
          * care about dynamically allocated objects.
          */
-        DECREMENT_OBJECT_METRICS (AcpiGbl_ObjectCache->Common.Size);
+        DECREMENT_OBJECT_METRICS (sizeof (ACPI_OBJECT_INTERNAL));
 
         AcpiCmFree (Object);
-        return;
+        return_VOID;
     }
 
     AcpiCmAcquireMutex (ACPI_MTX_CACHES);
@@ -410,6 +416,7 @@ AcpiCmDeleteObjectDesc (
 
 
     AcpiCmReleaseMutex (ACPI_MTX_CACHES);
+    return_VOID;
 }
 
 
@@ -449,10 +456,11 @@ AcpiCmDeleteObjectCache (
          * Memory allocation metrics.  Call the macro here since we only
          * care about dynamically allocated objects.
          */
-        DECREMENT_OBJECT_METRICS (AcpiGbl_ObjectCache->Common.Size);
+        DECREMENT_OBJECT_METRICS (sizeof (ACPI_OBJECT_INTERNAL));
 
         AcpiCmFree (AcpiGbl_ObjectCache);
         AcpiGbl_ObjectCache = Next;
+        AcpiGbl_ObjectCacheDepth--;
     }
 
     return_VOID;
@@ -555,7 +563,7 @@ AcpiCmGetSimpleObjectSize (
 
     if (VALID_DESCRIPTOR_TYPE (InternalObj, ACPI_DESC_TYPE_NAMED))
     {
-        /* Object is an NTE (reference), just return the length */
+        /* Object is a named object (reference), just return the length */
 
         *ObjLength = (UINT32) ROUND_UP_TO_NATIVE_WORD (Length);
         return_ACPI_STATUS (Status);
@@ -695,8 +703,10 @@ AcpiCmGetPackageObjectSize (
              *  also)
              */
 
-            Status = AcpiCmGetSimpleObjectSize (ThisInternalObj, &ObjectSpace);
-            if (Status != AE_OK)
+            Status =
+                AcpiCmGetSimpleObjectSize (ThisInternalObj, &ObjectSpace);
+
+            if (ACPI_FAILURE (Status))
             {
                 return_ACPI_STATUS (Status);
             }
@@ -708,27 +718,34 @@ AcpiCmGetPackageObjectSize (
                 ParentObj[CurrentDepth]->Package.Count)
             {
                 /*
-                 * We've handled all of the objects at this level,  This means
-                 * that we have just completed a package.  That package may
-                 * have contained one or more packages itself.
+                 * We've handled all of the objects at
+                 * this level,  This means that we have
+                 * just completed a package.  That package
+                 * may have contained one or more packages
+                 * itself.
                  */
                 if (CurrentDepth == 0)
                 {
                     /*
-                     * We have handled all of the objects in the top level
-                     * package just add the length of the package objects and
-                     * get out. Round up to the next machine word.
+                     * We have handled all of the objects
+                     * in the top level package just add the
+                     * length of the package objects and
+                     * get out. Round up to the next machine
+                     * word.
                      */
-                    Length += ROUND_UP_TO_NATIVE_WORD (sizeof (ACPI_OBJECT)) *
-                                                       PackageCount;
+                    Length +=
+                        ROUND_UP_TO_NATIVE_WORD (
+                                sizeof (ACPI_OBJECT)) *
+                                PackageCount;
+
                     *ObjLength = Length;
 
                     return_ACPI_STATUS (AE_OK);
                 }
 
                 /*
-                 * Go back up a level and move the index past the just
-                 * completed package object.
+                 * Go back up a level and move the index
+                 * past the just completed package object.
                  */
                 CurrentDepth--;
                 Index[CurrentDepth]++;
@@ -738,7 +755,8 @@ AcpiCmGetPackageObjectSize (
         else
         {
             /*
-             * This object is a package -- go one level deeper
+             * This object is a package
+             * -- go one level deeper
              */
             PackageCount++;
             if (CurrentDepth < MAX_PACKAGE_DEPTH-1)
@@ -751,7 +769,8 @@ AcpiCmGetPackageObjectSize (
             else
             {
                 /*
-                 * Too many nested levels of packages for us to handle
+                 * Too many nested levels of packages for us
+                 * to handle
                  */
 
                 DEBUG_PRINT (ACPI_ERROR,
@@ -761,8 +780,6 @@ AcpiCmGetPackageObjectSize (
             }
         }
     }
-
-    return_ACPI_STATUS (AE_OK);
 }
 
 
@@ -791,15 +808,17 @@ AcpiCmGetObjectSize(
     if ((VALID_DESCRIPTOR_TYPE (InternalObj, ACPI_DESC_TYPE_INTERNAL)) &&
         (IS_THIS_OBJECT_TYPE (InternalObj, ACPI_TYPE_PACKAGE)))
     {
-        Status = AcpiCmGetPackageObjectSize (InternalObj, ObjLength);
+        Status =
+            AcpiCmGetPackageObjectSize (InternalObj, ObjLength);
     }
 
     else
     {
-        Status = AcpiCmGetSimpleObjectSize (InternalObj, ObjLength);
+        Status =
+            AcpiCmGetSimpleObjectSize (InternalObj, ObjLength);
     }
 
-    return Status;
+    return (Status);
 }
 
 

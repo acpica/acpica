@@ -1,7 +1,6 @@
-
 /******************************************************************************
  *
- * Name: config.h - Global configuration constants
+ * Name: acconfig.h - Global configuration constants
  *
  *****************************************************************************/
 
@@ -114,8 +113,8 @@
  *
  *****************************************************************************/
 
-#ifndef _CONFIG_H
-#define _CONFIG_H
+#ifndef _ACCONFIG_H
+#define _ACCONFIG_H
 
 
 /******************************************************************************
@@ -148,7 +147,11 @@
 
 /* Name of host operating system (returned by the _OS_ namespace object) */
 
+#ifdef _LINUX
+#define ACPI_OS_NAME                "Linux"
+#else
 #define ACPI_OS_NAME                "Intel ACPI/CA Core Subsystem"
+#endif
 
 
 /*
@@ -168,9 +171,10 @@
 
 /* Maximum objects in the various object caches */
 
-#define MAX_STATE_CACHE_DEPTH       24          /* State objects for stacks */
-#define MAX_PARSE_CACHE_DEPTH       512         /* Parse tree objects */
-#define MAX_OBJECT_CACHE_DEPTH      32          /* Interpreter operand objects */
+#define MAX_STATE_CACHE_DEPTH       64         /* State objects for stacks */
+#define MAX_PARSE_CACHE_DEPTH       96          /* Parse tree objects */
+#define MAX_EXTPARSE_CACHE_DEPTH    64          /* Parse tree objects */
+#define MAX_OBJECT_CACHE_DEPTH      64          /* Interpreter operand objects */
 #define MAX_WALK_CACHE_DEPTH        2           /* Objects for parse tree walks (method execution) */
 
 /*
@@ -181,7 +185,7 @@
  * are in turn linked together to form a chain of tables.
  */
 
-#define NS_TABLE_SIZE               16
+#define NS_TABLE_SIZE               4
 
 /* String size constants */
 
@@ -250,7 +254,7 @@
 /* Names within the namespace are 4 bytes long */
 
 #define ACPI_NAME_SIZE              4
-#define PATH_SEGMENT_LENGTH         5       /* 4 chars for name + 1 char for separator */
+#define PATH_SEGMENT_LENGTH         5       /* 4 chars for name + 1 INT8 for separator */
 #define PATH_SEPARATOR              '.'
 
 
@@ -268,5 +272,5 @@
 #define MAX_PACKAGE_DEPTH           16
 
 
-#endif /* _CONFIG_H */
+#endif /* _ACCONFIG_H */
 

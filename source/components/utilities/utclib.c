@@ -1,9 +1,7 @@
 /******************************************************************************
  *
  * Module Name: cmclib - Local implementation of C library functions
- *
- * $Revision: 1.22 $ 
- * $JustDate:  8/14/00 $
+ * $Revision: 1.23 $ 
  *
  *****************************************************************************/
 
@@ -133,7 +131,7 @@
  */
 
 #define _COMPONENT          MISCELLANEOUS
-        MODULE_NAME         ("cmclib");
+        MODULE_NAME         ("cmclib")
 
 
 #ifdef _MSC_VER                 /* disable some level-4 warnings for VC++ */

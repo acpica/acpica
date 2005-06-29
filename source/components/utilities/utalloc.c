@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: cmalloc - local memory allocation routines
- *              $Revision: 1.71 $ 
+ *              $Revision: 1.72 $ 
  *
  *****************************************************************************/
 
@@ -123,7 +123,7 @@
 #include "acglobal.h"
 
 #define _COMPONENT          MISCELLANEOUS
-        MODULE_NAME         ("cmalloc");
+        MODULE_NAME         ("cmalloc")
 
 
 #ifdef ACPI_DEBUG
