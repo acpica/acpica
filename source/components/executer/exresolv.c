@@ -907,7 +907,7 @@ AmlGetRvalueFromEntry (
          * XXX - Number, but they really are supposed to be type Buffer.
          * XXX - The two are interchangeable only for lengths <= 32 bits.
          */
-        Status = AmlGetNamedFieldValue ((ACPI_HANDLE) StackEntry, &TempVal);
+        Status = AmlGetNamedFieldValue ((ACPI_HANDLE) StackEntry, &TempVal, sizeof (TempVal));
         if (AE_OK != Status)
         {
             return_ACPI_STATUS (AE_AML_ERROR);
@@ -960,7 +960,7 @@ BREAKPOINT3;
             /* perform the update */
         
             Status = AmlSetNamedFieldValue (ValDesc->BankField.BankSelect,
-                                            ValDesc->BankField.Value);
+                                            &ValDesc->BankField.Value, sizeof (ValDesc->BankField.Value));
         }
         AmlReleaseGlobalLock (Locked);
 
@@ -972,7 +972,7 @@ BREAKPOINT3;
         
         /* Read Data value */
         
-        Status = AmlGetNamedFieldValue ((ACPI_HANDLE) ValDesc->BankField.Container, &TempVal);
+        Status = AmlGetNamedFieldValue ((ACPI_HANDLE) ValDesc->BankField.Container, &TempVal, sizeof (TempVal));
         if (AE_OK != Status)
         {
             return_ACPI_STATUS (AE_AML_ERROR);
@@ -1023,7 +1023,7 @@ BREAKPOINT3;
             /* Perform the update */
             
             Status = AmlSetNamedFieldValue (ValDesc->IndexField.Index,
-                                            ValDesc->IndexField.Value);
+                                            &ValDesc->IndexField.Value, sizeof (ValDesc->IndexField.Value));
         }
         AmlReleaseGlobalLock (Locked);
 
@@ -1034,7 +1034,7 @@ BREAKPOINT3;
 
         /* Read Data value */
         
-        Status = AmlGetNamedFieldValue (ValDesc->IndexField.Data, &TempVal);
+        Status = AmlGetNamedFieldValue (ValDesc->IndexField.Data, &TempVal, sizeof (TempVal));
         if (AE_OK != Status)
         {
             return_ACPI_STATUS (AE_AML_ERROR);
