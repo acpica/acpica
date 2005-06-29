@@ -706,7 +706,11 @@ AcpiNsSearchAndEnter (
 
     if (!NameTable || !EntryName || !RetEntry)
     {
-        REPORT_ERROR ("NsSearchAndEnter: bad parameter");
+        DEBUG_PRINT (ACPI_ERROR,
+            ("NsSearchAndEnter: Null param:  Table %p Name %p Return %p\n",
+            NameTable, EntryName, RetEntry));
+
+        REPORT_ERROR ("NsSearchAndEnter: bad (null)parameter");
         return_ACPI_STATUS (AE_BAD_PARAMETER);
     }
 
