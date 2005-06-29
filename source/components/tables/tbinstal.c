@@ -361,7 +361,7 @@ AcpiTbInitTableDescriptor (
             /* Update new entry */
 
             TableDesc->Prev = ListHead->Prev;
-            TableDesc->Next = (ACPI_TABLE_DESC *) ListHead;
+            TableDesc->Next = ListHead;
 
             /* Update list head */
 
