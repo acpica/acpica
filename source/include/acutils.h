@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: accommon.h -- prototypes for the common (subsystem-wide) procedures
- *       $Revision: 1.88 $
+ *       $Revision: 1.90 $
  *
  *****************************************************************************/
 
@@ -117,6 +117,32 @@
 #ifndef _ACCOMMON_H
 #define _ACCOMMON_H
 
+
+
+typedef
+ACPI_STATUS (*ACPI_PKG_CALLBACK) (
+    UINT8                   ObjectType,
+    ACPI_OPERAND_OBJECT     *SourceObject,
+    ACPI_GENERIC_STATE      *State,
+    void                    *Context);
+
+
+
+ACPI_STATUS
+AcpiCmWalkPackageTree (
+    ACPI_OPERAND_OBJECT     *SourceObject,
+    void                    *TargetObject,
+    ACPI_PKG_CALLBACK       WalkCallback,
+    void                    *Context);
+
+
+typedef struct acpi_pkg_info
+{
+    UINT8                   *FreeSpace;
+    UINT32                  Length;
+    UINT32                  ObjectSpace;
+    UINT32                  NumPackages;
+} ACPI_PKG_INFO;
 
 #define REF_INCREMENT       (UINT16) 0
 #define REF_DECREMENT       (UINT16) 1
@@ -285,29 +311,30 @@ AcpiCmBuildPackageObject (
     UINT32                  *SpaceUsed);
 
 ACPI_STATUS
-AcpiCmBuildExternalObject (
+AcpiCmCopyIobjectToEobject (
     ACPI_OPERAND_OBJECT     *Obj,
     ACPI_BUFFER             *RetBuffer);
 
 ACPI_STATUS
-AcpiCmBuildInternalSimpleObject(
+AcpiCmCopyEsimpleToIsimple(
     ACPI_OBJECT             *UserObj,
     ACPI_OPERAND_OBJECT     *Obj);
 
 ACPI_STATUS
-AcpiCmBuildInternalObject (
+AcpiCmCopyEobjectToIobject (
     ACPI_OBJECT             *Obj,
     ACPI_OPERAND_OBJECT     *InternalObj);
 
 ACPI_STATUS
-AcpiCmCopyInternalSimpleObject (
+AcpiCmCopyISimpleToIsimple (
     ACPI_OPERAND_OBJECT     *SourceObj,
     ACPI_OPERAND_OBJECT     *DestObj);
 
 ACPI_STATUS
-AcpiCmBuildCopyInternalPackageObject (
+AcpiCmCopyIpackageToIpackage (
     ACPI_OPERAND_OBJECT     *SourceObj,
-    ACPI_OPERAND_OBJECT     *DestObj);
+    ACPI_OPERAND_OBJECT     *DestObj,
+    ACPI_WALK_STATE         *WalkState);
 
 
 /*
@@ -618,9 +645,9 @@ AcpiCmCreateUpdateState (
     UINT16                  Action);
 
 ACPI_GENERIC_STATE *
-AcpiCmCreateCopyState (
-    ACPI_OPERAND_OBJECT     *InternalObject,
-    ACPI_OBJECT             *ExternalObject,
+AcpiCmCreatePkgState (
+    void                    *InternalObject,
+    void                    *ExternalObject,
     UINT16                  Index);
 
 ACPI_STATUS
@@ -630,9 +657,9 @@ AcpiCmCreateUpdateStateAndPush (
     ACPI_GENERIC_STATE      **StateList);
 
 ACPI_STATUS
-AcpiCmCreateCopyStateAndPush (
-    ACPI_OPERAND_OBJECT     *InternalObject,
-    ACPI_OBJECT             *ExternalObject,
+AcpiCmCreatePkgStateAndPush (
+    void                    *InternalObject,
+    void                    *ExternalObject,
     UINT16                  Index,
     ACPI_GENERIC_STATE      **StateList);
 
@@ -667,6 +694,15 @@ AcpiCmValidAcpiCharacter (
 ACPI_STATUS
 AcpiCmResolvePackageReferences (
     ACPI_OPERAND_OBJECT     *ObjDesc);
+
+#ifdef ACPI_DEBUG
+
+void
+AcpiCmDisplayInitPathname (
+    ACPI_HANDLE             ObjHandle,
+    char                    *Path);
+
+#endif
 
 
 /*
