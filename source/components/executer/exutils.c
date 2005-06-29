@@ -95,7 +95,7 @@
  *****************************************************************************/
 
 
-#define __ISEXPRS_C__
+#define __ISUTILS_C__
 
 #include <acpi.h>
 #include <interpreter.h>
@@ -104,12 +104,6 @@
 
 #define _THIS_MODULE        "isutils.c"
 #define _COMPONENT          INTERPRETER
-
-
-static ST_KEY_DESC_TABLE KDT[] = {
-    {"0000", '1', "DigitsNeeded: impossible base", "DigitsNeeded: impossible base"},
-    {NULL, 'I', NULL, NULL}
-};
 
 
 
@@ -124,7 +118,8 @@ static ST_KEY_DESC_TABLE KDT[] = {
  ****************************************************************************/
 
 void
-AmlAppendBlockOwner (void *Owner)
+AmlAppendBlockOwner (
+    void                    *Owner)
 {
 
 #ifdef PLUMBER
@@ -156,9 +151,13 @@ AmlAppendBlockOwner (void *Owner)
  ****************************************************************************/
 
 void
-AmlAppendOperandDiag(char *FileName, INT32 LineNum, UINT16 OpCode, INT32 NumOperands)
+AmlAppendOperandDiag(
+    char                    *FileName, 
+    INT32                   LineNum, 
+    UINT16                  OpCode, 
+    INT32                   NumOperands)
 {
-    METHOD_INFO     Method;
+    METHOD_INFO             Method;
 
 
     AmlGetCurrentLocation (&Method);
@@ -222,9 +221,10 @@ AmlBufSeq (void)
  ****************************************************************************/
 
 BOOLEAN
-AmlAcquireGlobalLock (UINT16 Rule)
+AmlAcquireGlobalLock (
+    UINT16                  Rule)
 {
-    BOOLEAN             Locked = FALSE;
+    BOOLEAN                 Locked = FALSE;
 
 
     FUNCTION_TRACE ("AmlAcquireGlobalLock");
@@ -271,7 +271,8 @@ AmlAcquireGlobalLock (UINT16 Rule)
  ****************************************************************************/
 
 ACPI_STATUS
-AmlReleaseGlobalLock (BOOLEAN LockedByMe)
+AmlReleaseGlobalLock (
+    BOOLEAN                 LockedByMe)
 {
 
     FUNCTION_TRACE ("AmlReleaseGlobalLock");
@@ -317,9 +318,10 @@ AmlReleaseGlobalLock (BOOLEAN LockedByMe)
  ***************************************************************************/
 
 void 
-AmlMarkPackage (OBJECT_DESCRIPTOR *ObjDesc)
+AmlMarkPackage (
+    ACPI_OBJECT             *ObjDesc)
 {
-    UINT16          Count;
+    UINT16                  Count;
 
 
     FUNCTION_TRACE ("AmlMarkPackage");
@@ -333,7 +335,7 @@ AmlMarkPackage (OBJECT_DESCRIPTOR *ObjDesc)
         {    
             /*  ObjDesc->Package.PackageElems valid  */
             
-            OBJECT_DESCRIPTOR           **Elems = ObjDesc->Package.PackageElems;
+            ACPI_OBJECT           **Elems = ObjDesc->Package.PackageElems;
 
             for (Count = ObjDesc->Package.PkgCount; Count; --Count)
             {
@@ -366,7 +368,8 @@ AmlMarkPackage (OBJECT_DESCRIPTOR *ObjDesc)
  ***************************************************************************/
 
 void 
-AmlMarkObject (OBJECT_DESCRIPTOR *ObjDesc)
+AmlMarkObject (
+    ACPI_OBJECT             *ObjDesc)
 {
     FUNCTION_TRACE ("AmlMarkObject");
 
@@ -450,9 +453,10 @@ AmlMarkObject (OBJECT_DESCRIPTOR *ObjDesc)
  ****************************************************************************/
 
 void 
-MarkObjectStack (INT32 *Count)
+MarkObjectStack (
+    INT32                   *Count)
 {
-    INT32           Index;
+    INT32                   Index;
 
 
     FUNCTION_TRACE ("MarkObjectStack");
@@ -493,9 +497,11 @@ MarkObjectStack (INT32 *Count)
  *****************************************************************************/
 
 INT32
-DigitsNeeded (INT32 val, INT32 base)
+DigitsNeeded (
+    INT32                   val, 
+    INT32                   base)
 {
-    INT32       NumDigits = 0;
+    INT32                   NumDigits = 0;
 
 
     FUNCTION_TRACE ("DigitsNeeded");
@@ -505,7 +511,7 @@ DigitsNeeded (INT32 val, INT32 base)
     {   
         /*  impossible base */
 
-        REPORT_ERROR (&KDT[0]);
+        REPORT_ERROR ("DigitsNeeded: impossible base");
     }
 
     else
