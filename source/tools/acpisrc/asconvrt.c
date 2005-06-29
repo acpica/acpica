@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asconvrt - Source conversion code
- *              $Revision: 1.25 $
+ *              $Revision: 1.26 $
  *
  *****************************************************************************/
 
@@ -1589,12 +1589,13 @@ AsRemoveDebugMacros (
 {
     AsRemoveConditionalCompile (Buffer, "ACPI_DEBUG");
 
-    AsRemoveStatement (Buffer, "ACPI_DEBUG_PRINT",  REPLACE_WHOLE_WORD);
-    AsRemoveStatement (Buffer, "DEBUG_EXEC",        REPLACE_WHOLE_WORD);
-    AsRemoveStatement (Buffer, "FUNCTION_ENTRY",    REPLACE_WHOLE_WORD);
-    AsRemoveStatement (Buffer, "PROC_NAME",         REPLACE_WHOLE_WORD);
-    AsRemoveStatement (Buffer, "FUNCTION_TRACE",    REPLACE_SUBSTRINGS);
-    AsRemoveStatement (Buffer, "DUMP_",             REPLACE_SUBSTRINGS);
+    AsRemoveStatement (Buffer, "ACPI_DEBUG_PRINT",      REPLACE_WHOLE_WORD);
+    AsRemoveStatement (Buffer, "ACPI_DEBUG_PRINT_RAW",  REPLACE_WHOLE_WORD);
+    AsRemoveStatement (Buffer, "DEBUG_EXEC",            REPLACE_WHOLE_WORD);
+    AsRemoveStatement (Buffer, "FUNCTION_ENTRY",        REPLACE_WHOLE_WORD);
+    AsRemoveStatement (Buffer, "PROC_NAME",             REPLACE_WHOLE_WORD);
+    AsRemoveStatement (Buffer, "FUNCTION_TRACE",        REPLACE_SUBSTRINGS);
+    AsRemoveStatement (Buffer, "DUMP_",                 REPLACE_SUBSTRINGS);
 
     AsReplaceString ("return_VOID",         "return", REPLACE_WHOLE_WORD, Buffer);
     AsReplaceString ("return_PTR",          "return", REPLACE_WHOLE_WORD, Buffer);
