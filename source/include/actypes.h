@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: actypes.h - Common data types for the entire ACPI subsystem
- *       $Revision: 1.259 $
+ *       $Revision: 1.260 $
  *
  *****************************************************************************/
 
@@ -625,9 +625,6 @@ typedef UINT32                          ACPI_EVENT_TYPE;
 
 #define ACPI_NOT_ISR                    0x1
 #define ACPI_ISR                        0x0
-
-
-
 
 
 /*
