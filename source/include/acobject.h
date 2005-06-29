@@ -117,9 +117,6 @@
 #ifndef _ACOBJECT_H
 #define _ACOBJECT_H
 
-#include "actypes.h"
-#include "macros.h"
-#include "internal.h"
 
 /*
  * The ACPI_OBJECT_INTERNAL is used to pass AML operands from the dispatcher
@@ -165,7 +162,6 @@
 #define AO_STATIC_ALLOCATION        0x1
 
 
-
 /*
  * Common bitfield for the field objects
  */
@@ -178,7 +174,6 @@
     UINT8                   LockRule;\
     UINT8                   UpdateRule;\
     UINT8                   AccessAttribute;
-
 
 
 /******************************************************************************
@@ -223,7 +218,7 @@ typedef struct /* STRING - has length and pointer */
     UINT32                  Reserved3;
     UINT32                  Reserved4;
 
-    char                    *Pointer;       /* String value in AML stream or in allocated space */
+    INT8                    *Pointer;       /* String value in AML stream or in allocated space */
     void                    *Reserved_p2;
     void                    *Reserved_p3;
     void                    *Reserved_p4;
@@ -380,14 +375,15 @@ typedef struct /* REGION */
     UINT16                  RegionFlags;        /* bits defined above */
     UINT32                  Address;
     UINT32                  Length;
-    UINT32                  Reserved4;          /* Region Specific data (PCI _ADR) */
+    void                   *RegionContext;      /* Region Specific data (Handler->Context
+                                                    optional things like PCI _ADR) */
 
     union AcpiObjInternal  *Method;             /* Associated control method */
     union AcpiObjInternal  *AddrHandler;        /* Handler for system notifies */
     union AcpiObjInternal  *Link;               /* Link in list of regions */
                                                 /* list is owned by AddrHandler */
-    NAME_TABLE_ENTRY       *REGMethod;          /* _REG method for this region (if any) */
-    NAME_TABLE_ENTRY       *Nte;                /* containing object */
+    ACPI_NAMED_OBJECT      *REGMethod;          /* _REG method for this region (if any) */
+    ACPI_NAMED_OBJECT      *Nte;                /* containing object */
 
 } ACPI_OBJECT_REGION;
 
@@ -512,7 +508,7 @@ typedef struct /* NOTIFY HANDLER */
     UINT32                  Reserved3;
     UINT32                  Reserved4;
 
-    NAME_TABLE_ENTRY        *Nte;               /* Parent device */
+    ACPI_NAMED_OBJECT       *Nte;               /* Parent device */
     NOTIFY_HANDLER          Handler;
     void                    *Context;
     void                    *Reserved_p4;
@@ -533,7 +529,7 @@ typedef struct /* ADDRESS HANDLER */
     UINT16                  Hflags;
     ADDRESS_SPACE_HANDLER   Handler;
 
-    NAME_TABLE_ENTRY        *Nte;               /* Parent device */
+    ACPI_NAMED_OBJECT       *Nte;               /* Parent device */
     void                    *Context;
     ADDRESS_SPACE_SETUP     Setup;
     union AcpiObjInternal   *Link;              /* Link to next handler on device */
@@ -559,7 +555,7 @@ typedef struct /* Reference - Local object type */
     UINT32                  Reserved4;
 
     void                    *Object;            /* NameOp=>HANDLE to obj, IndexOp=>ACPI_OBJECT_INTERNAL */
-    NAME_TABLE_ENTRY        *Nte;
+    ACPI_NAMED_OBJECT       *Nte;
     union AcpiObjInternal   **Where;
     void                    *Reserved_p4;
     void                    *Reserved_p5;
