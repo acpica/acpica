@@ -130,8 +130,6 @@
         MODULE_NAME         ("nsxfname");
 
 
-
-
 /******************************************************************************
  *
  * FUNCTION:    AcpiLoadNamespace
@@ -180,7 +178,7 @@ AcpiLoadNamespace (
      * but the SSDT and PSDT tables are optional.
      */
 
-    Status = AcpiNsLoadTableByType (TABLE_DSDT);
+    Status = AcpiNsLoadTableByType (ACPI_TABLE_DSDT);
     if (ACPI_FAILURE (Status))
     {
         return_ACPI_STATUS (Status);
@@ -188,8 +186,8 @@ AcpiLoadNamespace (
 
     /* Ignore exceptions from these */
 
-    AcpiNsLoadTableByType (TABLE_SSDT);
-    AcpiNsLoadTableByType (TABLE_PSDT);
+    AcpiNsLoadTableByType (ACPI_TABLE_SSDT);
+    AcpiNsLoadTableByType (ACPI_TABLE_PSDT);
 
 
     DEBUG_PRINT_RAW (ACPI_OK, ("ACPI Namespace successfully loaded at root 0x%p\n",
@@ -202,7 +200,6 @@ AcpiLoadNamespace (
 
     return_ACPI_STATUS (Status);
 }
-
 
 
 /****************************************************************************
