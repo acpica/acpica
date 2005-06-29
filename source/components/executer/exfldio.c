@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: exfldio - Aml Field I/O
- *              $Revision: 1.95 $
+ *              $Revision: 1.96 $
  *
  *****************************************************************************/
 
@@ -895,7 +895,7 @@ AcpiExExtractFromField (
 
         /* Store the datum to the caller buffer */
 
-        AcpiExSetBufferDatum (MergedDatum, Buffer, BufferLength, 
+        AcpiExSetBufferDatum (MergedDatum, Buffer, BufferLength,
                 ObjDesc->CommonField.AccessByteWidth, DatumOffset);
 
         return_ACPI_STATUS (AE_OK);
