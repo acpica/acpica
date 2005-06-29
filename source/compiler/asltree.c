@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asltree - parse tree management
- *              $Revision: 1.46 $
+ *              $Revision: 1.47 $
  *
  *****************************************************************************/
 
@@ -226,7 +226,6 @@ TrUpdateNode (
     ACPI_PARSE_OBJECT       *Op)
 {
 
-
     if (!Op)
     {
         return NULL;
@@ -238,6 +237,28 @@ TrUpdateNode (
         UtGetOpName (ParseOpcode));
 
     /* Assign new opcode and name */
+
+    if (Op->Asl.ParseOpcode == PARSEOP_ONES)
+    {
+        switch (ParseOpcode)
+        {
+        case PARSEOP_BYTECONST:
+            Op->Asl.Value.Integer = 0xFF;
+            break;
+
+        case PARSEOP_WORDCONST:
+            Op->Asl.Value.Integer = 0xFFFF;
+            break;
+
+        case PARSEOP_DWORDCONST:
+            Op->Asl.Value.Integer = 0xFFFFFFFF;
+            break;
+
+        default:
+            /* Don't care about others, don't need to check QWORD */
+            break;
+        }
+    }
 
     Op->Asl.ParseOpcode = (UINT16) ParseOpcode;
     UtSetParseOpName (Op);
