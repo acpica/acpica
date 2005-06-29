@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dbdisasm - parser op tree display routines
- *              $Revision: 1.32 $
+ *              $Revision: 1.33 $
  *
  ******************************************************************************/
 
@@ -192,7 +192,6 @@ AcpiPsDisplayObjectPathname (
     ACPI_PARSE_OBJECT       *Op)
 {
     ACPI_PARSE_OBJECT       *TargetOp;
-
 
 
     /* Search parent tree up to the root if necessary */
@@ -651,12 +650,12 @@ AcpiDbDisplayOpcode (
 
         if (opt_verbose)
         {
-            AcpiOsPrintf ("(UINT8)  0x%2.2X", Op->Value.Integer & 0xff);
+            AcpiOsPrintf ("(UINT8)  0x%2.2X", Op->Value.Integer & ACPI_UINT8_MAX);
         }
 
         else
         {
-            AcpiOsPrintf ("0x%2.2X", Op->Value.Integer & 0xff);
+            AcpiOsPrintf ("0x%2.2X", Op->Value.Integer & ACPI_UINT8_MAX);
         }
 
         break;
@@ -666,12 +665,12 @@ AcpiDbDisplayOpcode (
 
         if (opt_verbose)
         {
-            AcpiOsPrintf ("(UINT16) 0x%4.4X", Op->Value.Integer & 0xffff);
+            AcpiOsPrintf ("(UINT16) 0x%4.4X", Op->Value.Integer & ACPI_UINT16_MAX);
         }
 
         else
         {
-            AcpiOsPrintf ("0x%4.4X", Op->Value.Integer & 0xffff);
+            AcpiOsPrintf ("0x%4.4X", Op->Value.Integer & ACPI_UINT16_MAX);
         }
 
         break;
