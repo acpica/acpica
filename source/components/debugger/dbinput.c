@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dbinput - user front-end to the AML debugger
- *              $Revision: 1.70 $
+ *              $Revision: 1.71 $
  *
  ******************************************************************************/
 
@@ -141,7 +141,6 @@ NATIVE_CHAR                 *AcpiGbl_DbArgs[DB_MAX_ARGS];
 NATIVE_CHAR                 *AcpiGbl_DbBuffer = NULL;
 NATIVE_CHAR                 *AcpiGbl_DbFilename = NULL;
 BOOLEAN                     AcpiGbl_DbOutputToFile = FALSE;
-ACPI_TABLE_HEADER           *AcpiGbl_DbTablePtr = NULL;
 
 UINT32                      AcpiGbl_DbDebugLevel = ACPI_LV_VERBOSITY2;
 UINT32                      AcpiGbl_DbConsoleDebugLevel = NORMAL_DEFAULT | ACPI_LV_TABLES;
