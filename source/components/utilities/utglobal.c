@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: utglobal - Global variables for the ACPI subsystem
- *              $Revision: 1.160 $
+ *              $Revision: 1.161 $
  *
  *****************************************************************************/
 
@@ -908,7 +908,7 @@ AcpiUtInitGlobals (
 
 
 #ifdef ACPI_DEBUG
-    AcpiGbl_LowestStackPointer          = ACPI_UINT32_MAX;
+    AcpiGbl_LowestStackPointer          = ACPI_SIZE_MAX;
 #endif
 
     return_VOID;
