@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dsobject - Dispatcher object management routines
- *              $Revision: 1.99 $
+ *              $Revision: 1.100 $
  *
  *****************************************************************************/
 
@@ -121,6 +121,7 @@
 #include "amlcode.h"
 #include "acdispat.h"
 #include "acnamesp.h"
+#include "acinterp.h"
 
 #define _COMPONENT          ACPI_DISPATCHER
         ACPI_MODULE_NAME    ("dsobject")
@@ -340,9 +341,10 @@ AcpiDsInitObjectFromOp (
 {
     const ACPI_OPCODE_INFO  *OpInfo;
     ACPI_OPERAND_OBJECT     *ObjDesc;
+    ACPI_STATUS             Status = AE_OK;
 
 
-    ACPI_FUNCTION_NAME ("DsInitObjectFromOp");
+    ACPI_FUNCTION_TRACE ("DsInitObjectFromOp");
 
 
     ObjDesc = *RetObjDesc;
@@ -351,7 +353,7 @@ AcpiDsInitObjectFromOp (
     {
         /* Unknown opcode */
 
-        return (AE_TYPE);
+        return_ACPI_STATUS (AE_TYPE);
     }
 
     /* Perform per-object initialization */
@@ -425,7 +427,58 @@ AcpiDsInitObjectFromOp (
             break;
 
 
-        default: /* Constants, Literals, etc.. */
+        case AML_TYPE_CONSTANT:
+
+            /* Resolve constants here */
+
+            switch (Opcode)
+            {
+            case AML_ZERO_OP:
+
+                ObjDesc->Integer.Value = 0;
+                break;
+
+            case AML_ONE_OP:
+
+                ObjDesc->Integer.Value = 1;
+                break;
+
+            case AML_ONES_OP:
+
+                ObjDesc->Integer.Value = ACPI_INTEGER_MAX;
+                break;
+
+            case AML_REVISION_OP:
+
+                ObjDesc->Integer.Value = ACPI_CA_SUPPORT_LEVEL;
+                break;
+
+            case AML_DEBUG_OP:
+
+                /* Not really a constant, just return */
+
+                /* TBD: Perhaps this op should not be of type AML_TYPE_CONSTANT */
+
+                ObjDesc->Reference.Opcode = Opcode;
+                return_ACPI_STATUS (Status);
+
+            default:
+
+                ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Unknown constant opcode %X\n", Opcode));
+                Status = AE_AML_OPERAND_TYPE;
+                break;
+            }
+
+            ObjDesc->Common.Type  = ACPI_TYPE_INTEGER;
+            ObjDesc->Common.Flags = AOPOBJ_AML_CONSTANT;
+
+            /* Truncate value if we are executing from a 32-bit ACPI table */
+
+            AcpiExTruncateFor32bitTable (ObjDesc);
+            break;
+
+
+        default: /* Other literals, etc.. */
 
             if (Op->Common.AmlOpcode == AML_INT_NAMEPATH_OP)
             {
@@ -445,10 +498,11 @@ AcpiDsInitObjectFromOp (
         ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Unimplemented data type: %X\n",
             ObjDesc->Common.Type));
 
+        Status = AE_AML_OPERAND_TYPE;
         break;
     }
 
-    return (AE_OK);
+    return_ACPI_STATUS (Status);
 }
 
 
@@ -484,7 +538,7 @@ AcpiDsBuildInternalObject (
     if (Op->Common.AmlOpcode == AML_INT_NAMEPATH_OP)
     {
         /*
-         * This is an object reference.  If this name was
+         * This is an named object reference.  If this name was
          * previously looked up in the namespace, it was stored in this op.
          * Otherwise, go ahead and look it up now
          */
@@ -547,7 +601,9 @@ AcpiDsBuildInternalObject (
  *
  * FUNCTION:    AcpiDsBuildInternalBufferObj
  *
- * PARAMETERS:  Op              - Parser object to be translated
+ * PARAMETERS:  WalkState       - Current walk state
+ *              Op              - Parser object to be translated
+ *              BufferLength    - Length of the buffer
  *              ObjDescPtr      - Where the ACPI internal object is returned
  *
  * RETURN:      Status
@@ -662,7 +718,9 @@ AcpiDsBuildInternalBufferObj (
  *
  * FUNCTION:    AcpiDsBuildInternalPackageObj
  *
- * PARAMETERS:  Op              - Parser object to be translated
+ * PARAMETERS:  WalkState       - Current walk state
+ *              Op              - Parser object to be translated
+ *              PackageLength   - Number of elements in the package
  *              ObjDescPtr      - Where the ACPI internal object is returned
  *
  * RETURN:      Status
@@ -789,12 +847,13 @@ AcpiDsBuildInternalPackageObj (
  *
  * FUNCTION:    AcpiDsCreateNode
  *
- * PARAMETERS:  Op              - Parser object to be translated
- *              ObjDescPtr      - Where the ACPI internal object is returned
+ * PARAMETERS:  WalkState       - Current walk state
+ *              Node            - NS Node to be initialized
+ *              Op              - Parser object to be translated
  *
  * RETURN:      Status
  *
- * DESCRIPTION:
+ * DESCRIPTION: Create the object to be associated with a namespace node
  *
  ****************************************************************************/
 
