@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: amutils - interpreter/scanner utilities
- *              $Revision: 1.71 $
+ *              $Revision: 1.74 $
  *
  *****************************************************************************/
 
@@ -124,7 +124,7 @@
 #include "acnamesp.h"
 #include "acevents.h"
 
-#define _COMPONENT          INTERPRETER
+#define _COMPONENT          ACPI_EXECUTER
         MODULE_NAME         ("amutils")
 
 
@@ -135,18 +135,20 @@
  * PARAMETERS:  None
  *
  * DESCRIPTION: Enter the interpreter execution region
+ *              TBD: should be a macro
  *
  ******************************************************************************/
 
-void
+ACPI_STATUS
 AcpiAmlEnterInterpreter (void)
 {
+    ACPI_STATUS             Status;
+
     FUNCTION_TRACE ("AmlEnterInterpreter");
 
 
-    AcpiCmAcquireMutex (ACPI_MTX_EXECUTE);
-
-    return_VOID;
+    Status = AcpiCmAcquireMutex (ACPI_MTX_EXECUTE);
+    return_ACPI_STATUS (Status);
 }
 
 
@@ -167,6 +169,8 @@ AcpiAmlEnterInterpreter (void)
  *      6) Method blocked to execute a serialized control method that is
  *          already executing
  *      7) About to invoke a user-installed opregion handler
+ *
+ *              TBD: should be a macro
  *
  ******************************************************************************/
 
@@ -283,17 +287,17 @@ AcpiAmlAcquireGlobalLock (
         /* We should attempt to get the lock */
 
         Status = AcpiEvAcquireGlobalLock ();
-        if (ACPI_FAILURE (Status))
+        if (ACPI_SUCCESS (Status))
         {
-            DEBUG_PRINT (ACPI_ERROR, 
-                ("Could not acquire Global Lock, %s\n",
-                AcpiCmFormatException (Status)));
+            AcpiGbl_GlobalLockSet = TRUE;
+            Locked = TRUE;
         }
 
         else
         {
-            AcpiGbl_GlobalLockSet = TRUE;
-            Locked = TRUE;
+            DEBUG_PRINT (ACPI_ERROR, 
+                ("Could not acquire Global Lock, %s\n",
+                AcpiCmFormatException (Status)));
         }
     }
 
