@@ -135,7 +135,7 @@
  * UCHAR        Character. 1 byte unsigned value. 
  */
 
-#ifdef IA64
+#ifdef _IA64
 /*
  * 64-bit type definitions 
  */
@@ -155,7 +155,7 @@ typedef INT64                           NATIVE_INT;
 typedef NATIVE_UINT                     ACPI_TBLPTR;
 
 
-#elif IA16
+#elif _IA16
 /*
  * 16-bit type definitions
  */
