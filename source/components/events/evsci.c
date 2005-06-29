@@ -1,5 +1,4 @@
-/*
-  __________________________________________________________________________
+/*__________________________________________________________________________
  |
  |
  |           Copyright (C) Intel Corporation 1994-1998
@@ -11,60 +10,9 @@
  | otherwise, without the prior written permission of Intel Corporation.
  |__________________________________________________________________________
  |
- | System Control Interrupt configuration and
- | legacy to ACPI mode state transition functions
+ | ModuleName: evsci - System Control Interrupt configuration and
+ |                      legacy to ACPI mode state transition functions
  |__________________________________________________________________________
- |
- | $Revision: 1.13 $
- | $Date: 2005/06/29 16:43:51 $
- | $Log: evsci.c,v $
- | Revision 1.13  2005/06/29 16:43:51  aystarik
- | Major header file consolidation
- |
- | 
- | date	99.04.07.22.34.00;	author rmoore1;	state Exp;
- |
- * 
- * 13    4/07/99 3:34p Rmoore1
- * Major header file consolidation
- * 
- * 12    4/06/99 1:42p Rmoore1
- * 
- * 11    4/05/99 4:09p Rmoore1
- * Header cleanup;  Split debug switch into component_id and level
- * 
- * 10    4/02/99 2:40p Rmoore1
- * New version of DEBUG_PRINT
- * 
- * 9     3/31/99 2:32p Rmoore1
- * Integrated with 03/99 OPSD code
- * 
- * 8     3/09/99 4:05p Rmoore1
- * 16/32/64-bit common data types
- * 
- * 7     2/16/99 9:56a Rmosgrov
- * 
- * 6     2/11/99 5:27p Grsmith1
- * Took out Hungarian Notation
- * 
- * 5     2/03/99 4:08p Rmoore1
- * 
- * 4     1/20/99 9:39a Rmoore1
- * Major cleanup
- * 
- * 3     1/13/99 2:49p Grsmith1
- * First BeOS build.
- * 
- * 2     1/11/99 4:08p Grsmith1
- * Detabified.
- * 
- * 1     1/11/99 2:08p Rmoore1
- * Event Handling
-// 
-//    Rev 1.0   12 Aug 1998 15:54:34   jkreinem
-// Initial revision.
- |__________________________________________________________________________
-
 */
 
 #define __EVSCI_C__
@@ -79,6 +27,11 @@
 #define _COMPONENT          EVENT_HANDLING
 
 extern INT32                __AcpiLibInitStatus;
+
+
+INT32                       EdgeLevelSave   = SAVE_NOT_VALID;
+INT32                       IrqEnableSave   = SAVE_NOT_VALID;
+INT32                       OriginalMode    = SAVE_NOT_VALID;   /*  original ACPI/legacy mode   */
 
 
 static ST_KEY_DESC_TABLE KDT[] = {
@@ -303,6 +256,8 @@ AcpiEnable (char *TestName, INT32 Flags)
              */
 
             /*	TBD:	verify input file specified	*/
+
+            DEBUG_PRINT (ACPI_WARN, ("Only legacy mode supported\n"));
         }
 
 
@@ -312,11 +267,22 @@ AcpiEnable (char *TestName, INT32 Flags)
         {   
             /*  disable any ACPI interrupt sources that may be enabled  */
 
-            AcpiEventDisableEvent (TMR_FIXED_EVENT);
-            AcpiEventDisableEvent (GBL_FIXED_EVENT);
-            AcpiEventDisableEvent (PWR_BTN_FIXED_EVENT);
-            AcpiEventDisableEvent (SLP_BTN_FIXED_EVENT);
-            AcpiEventDisableEvent (RTC_FIXED_EVENT);
+            DISABLE_EVENT (TMR_FIXED_EVENT);
+            DISABLE_EVENT (GBL_FIXED_EVENT);
+            DISABLE_EVENT (PWR_BTN_FIXED_EVENT);
+            DISABLE_EVENT (SLP_BTN_FIXED_EVENT);
+            DISABLE_EVENT (RTC_FIXED_EVENT);
+        }
+
+        else
+        {
+            /* Enable everything */
+
+            ENABLE_EVENT (TMR_FIXED_EVENT);
+            ENABLE_EVENT (GBL_FIXED_EVENT);
+            ENABLE_EVENT (PWR_BTN_FIXED_EVENT);
+            ENABLE_EVENT (SLP_BTN_FIXED_EVENT);
+            ENABLE_EVENT (RTC_FIXED_EVENT);
         }
 
         if (InstallSciHandler () == 0)
@@ -337,7 +303,7 @@ AcpiEnable (char *TestName, INT32 Flags)
 				
                 if (E_OK == AcpiSetMode (ACPI_MODE))
                 {
-					DEBUG_PRINT (ACPI_INFO, ("Transition to ACPI mode successful\n"));
+					DEBUG_PRINT (ACPI_SUCCESS, ("Transition to ACPI mode successful\n"));
                 }
 
 				else
