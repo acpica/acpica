@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: actbl.h - Table data structures defined in ACPI specification
- *       $Revision: 1.42 $
+ *       $Revision: 1.46 $
  *
  *****************************************************************************/
 
@@ -9,8 +9,8 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, Intel Corp.  All rights
- * reserved.
+ * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
+ * All rights reserved.
  *
  * 2. License
  *
@@ -150,7 +150,6 @@
 #define APIC_IO                 1
 
 
-
 /*
  * Common table types.  The base code can remain
  * constant if the underlying tables are changed
@@ -232,7 +231,7 @@ typedef struct  /* Processor APIC */
     UINT8                   ProcessorApicId;        /* ACPI processor id */
     UINT8                   LocalApicId;            /* processor's local APIC id */
     UINT32_BIT              ProcessorEnabled: 1;    /* Processor is usable if set */
-    UINT32_BIT              Reserved1       : 32;
+    UINT32_BIT              Reserved1       : 31;
 
 } PROCESSOR_APIC;
 
