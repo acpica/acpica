@@ -599,23 +599,10 @@ AmlDumpOperand (
     default:
         /*  unknown EntryDesc->Common.Type value    */
 
-        DEBUG_PRINT_RAW (ACPI_INFO, ("Unknown Type %X\n", EntryDesc->Common.Type));
+        DEBUG_PRINT_RAW (ACPI_INFO, ("Unknown Type 0x%X\n", EntryDesc->Common.Type));
         REPORT_ERROR ("AmlDumpOperand: Unknown Type");
         
-/* Gbl_Aml table pertains to old parser only */
-/* TBD: fix for new parser or remove this code */
-
-#ifdef _RPARSER        
-        if (AML_UNASSIGNED != Gbl_Aml[(INT32) EntryDesc->Common.Type])
-        {
-            DEBUG_PRINT_RAW (ACPI_ERROR,
-                          ("AmlDumpOperand: Unhandled opcode (AML %s) \n", 
-                          Gbl_ShortOps[Gbl_Aml[(INT32) EntryDesc->Common.Type]]));
-        }
-
-#endif
-
-        /* Back up to previous entry ?? */
+        /* Back up to previous entry */
 
         EntryDesc--;
 
@@ -745,7 +732,7 @@ AmlDumpNameTableEntry (
 
 void
 AmlDumpObjectDescriptor (
-    ACPI_OBJECT_INTERNAL    *Object,
+    ACPI_OBJECT_INTERNAL    *ObjDesc,
     UINT32                  Flags)
 {
 	FUNCTION_TRACE ("AmlDumpObjectDescriptor");
@@ -759,187 +746,202 @@ AmlDumpObjectDescriptor (
         }
     }
 	
-	switch (Object->Common.Type)
+    if (!(VALID_DESCRIPTOR_TYPE (ObjDesc, DESC_TYPE_ACPI_OBJ)))
+    {
+        OsdPrintf ("0x%p is not a valid ACPI object\n", ObjDesc);
+        return;
+    }
+
+    /* Common Fields */
+
+    OsdPrintf ("%20s : 0x%X\n",   "Reference Count", ObjDesc->Common.ReferenceCount);
+    OsdPrintf ("%20s : 0x%X\n",   "Flags", ObjDesc->Common.Flags);
+
+    /* Object-specific Fields */
+
+	switch (ObjDesc->Common.Type)
 	{
 	case ACPI_TYPE_Number:
 
-		OsdPrintf ("%20s : %s\n", "Type", "Number");
-        OsdPrintf ("%20s : %x\n", "Value", Object->Number.Value);
+		OsdPrintf ("%20s : %s\n",   "Type", "Number");
+        OsdPrintf ("%20s : 0x%X\n", "Value", ObjDesc->Number.Value);
 		break;
  
         
 	case ACPI_TYPE_String:
 
-	    OsdPrintf ("%20s : %s\n", "Type", "String");
-        OsdPrintf ("%20s : %x\n", "Length", Object->String.Length);
-        OsdPrintf ("%20s : %x\n", "Pointer", Object->String.Pointer);
+	    OsdPrintf ("%20s : %s\n",   "Type", "String");
+        OsdPrintf ("%20s : 0x%X\n", "Length", ObjDesc->String.Length);
+        OsdPrintf ("%20s : 0x%p\n", "Pointer", ObjDesc->String.Pointer);
 		break;
 
 
 	case ACPI_TYPE_Buffer:
 
-		OsdPrintf ("%20s : %s\n", "Type", "Buffer");
-		OsdPrintf ("%20s : %x\n", "Length", Object->Buffer.Length);
-        OsdPrintf ("%20s : %x\n", "Sequence", Object->Buffer.Sequence);
-        OsdPrintf ("%20s : %x\n", "Pointer", Object->Buffer.Pointer);
+		OsdPrintf ("%20s : %s\n",   "Type", "Buffer");
+		OsdPrintf ("%20s : 0x%X\n", "Length", ObjDesc->Buffer.Length);
+        OsdPrintf ("%20s : 0x%X\n", "Sequence", ObjDesc->Buffer.Sequence);
+        OsdPrintf ("%20s : 0x%p\n", "Pointer", ObjDesc->Buffer.Pointer);
 		break;
         
         
 	case ACPI_TYPE_Package:
 
-		OsdPrintf ("%20s : %s\n", "Type", "Package");
-	    OsdPrintf ("%20s : %x\n", "Count", Object->Package.Count);
-	    OsdPrintf ("%20s : %x\n", "Elements", Object->Package.Elements);
-	    OsdPrintf ("%20s : %x\n", "NextElement", Object->Package.NextElement);
+		OsdPrintf ("%20s : %s\n",   "Type", "Package");
+	    OsdPrintf ("%20s : 0x%X\n", "Count", ObjDesc->Package.Count);
+	    OsdPrintf ("%20s : 0x%p\n", "Elements", ObjDesc->Package.Elements);
+	    OsdPrintf ("%20s : 0x%p\n", "NextElement", ObjDesc->Package.NextElement);
 		break;
         
 
 	case ACPI_TYPE_FieldUnit:
 
-		OsdPrintf ("%20s : %s\n", "Type", "FieldUnit");
-		OsdPrintf ("%20s : %x\n", "Access", Object->FieldUnit.Access);
-	    OsdPrintf ("%20s : %x\n", "LockRule", Object->FieldUnit.LockRule);
-	    OsdPrintf ("%20s : %x\n", "UpdateRule", Object->FieldUnit.UpdateRule);
-	    OsdPrintf ("%20s : %x\n", "Length", Object->FieldUnit.Length);
-	    OsdPrintf ("%20s : %x\n", "BitOffset", Object->FieldUnit.BitOffset);
-	    OsdPrintf ("%20s : %x\n", "Offset", Object->FieldUnit.Offset);
-	    OsdPrintf ("%20s : %x\n", "Sequence", Object->FieldUnit.Sequence);
-	    OsdPrintf ("%20s : %x\n", "Container", Object->FieldUnit.Container);
+		OsdPrintf ("%20s : %s\n",   "Type", "FieldUnit");
+		OsdPrintf ("%20s : 0x%X\n", "Access", ObjDesc->FieldUnit.Access);
+	    OsdPrintf ("%20s : 0x%X\n", "LockRule", ObjDesc->FieldUnit.LockRule);
+	    OsdPrintf ("%20s : 0x%X\n", "UpdateRule", ObjDesc->FieldUnit.UpdateRule);
+	    OsdPrintf ("%20s : 0x%X\n", "Length", ObjDesc->FieldUnit.Length);
+	    OsdPrintf ("%20s : 0x%X\n", "BitOffset", ObjDesc->FieldUnit.BitOffset);
+	    OsdPrintf ("%20s : 0x%X\n", "Offset", ObjDesc->FieldUnit.Offset);
+	    OsdPrintf ("%20s : 0x%X\n", "Sequence", ObjDesc->FieldUnit.Sequence);
+	    OsdPrintf ("%20s : 0x%p\n", "Container", ObjDesc->FieldUnit.Container);
 	    break;
         
 
 	case ACPI_TYPE_Device:
 
-		OsdPrintf ("%20s : %s\n", "Type", "Device");
-	    OsdPrintf ("%20s : %x\n", "Handle", Object->Device.Handle);
-	    OsdPrintf ("%20s : %p\n", "AddrHandler", Object->Device.AddrHandler);
-	    OsdPrintf ("%20s : %p\n", "SysHandler", Object->Device.SysHandler);
-	    OsdPrintf ("%20s : %p\n", "DrvHandler", Object->Device.DrvHandler);
+		OsdPrintf ("%20s : %s\n",   "Type", "Device");
+	    OsdPrintf ("%20s : 0x%X\n", "Handle", ObjDesc->Device.Handle);
+	    OsdPrintf ("%20s : 0x%p\n", "AddrHandler", ObjDesc->Device.AddrHandler);
+	    OsdPrintf ("%20s : 0x%p\n", "SysHandler", ObjDesc->Device.SysHandler);
+	    OsdPrintf ("%20s : 0x%p\n", "DrvHandler", ObjDesc->Device.DrvHandler);
         break;
 
 	case ACPI_TYPE_Event:
 
-		OsdPrintf ("%20s : %s\n", "Type", "Event");
-	    OsdPrintf ("%20s : %x\n", "SignalCount", Object->Event.SignalCount);
-	    OsdPrintf ("%20s : %x\n", "Semaphore", Object->Event.Semaphore);
-	    OsdPrintf ("%20s : %x\n", "LockCount", Object->Event.LockCount);
-	    OsdPrintf ("%20s : %x\n", "ThreadId", Object->Event.ThreadId);
+		OsdPrintf ("%20s : %s\n",   "Type", "Event");
+	    OsdPrintf ("%20s : 0x%X\n", "SignalCount", ObjDesc->Event.SignalCount);
+	    OsdPrintf ("%20s : 0x%X\n", "Semaphore", ObjDesc->Event.Semaphore);
+	    OsdPrintf ("%20s : 0x%X\n", "LockCount", ObjDesc->Event.LockCount);
+	    OsdPrintf ("%20s : 0x%X\n", "ThreadId", ObjDesc->Event.ThreadId);
 	    break;
 
 
 	case ACPI_TYPE_Method:
 
-		OsdPrintf ("%20s : %s\n", "Type", "Method");
-	    OsdPrintf ("%20s : %x\n", "ParamCount", Object->Method.ParamCount);
-	    OsdPrintf ("%20s : %x\n", "PcodeLength", Object->Method.PcodeLength);
-	    OsdPrintf ("%20s : %x\n", "Pcode", Object->Method.Pcode);
-	    OsdPrintf ("%20s : %x\n", "AcpiTable", Object->Method.AcpiTable);
+		OsdPrintf ("%20s : %s\n",   "Type", "Method");
+	    OsdPrintf ("%20s : 0x%X\n", "ParamCount", ObjDesc->Method.ParamCount);
+	    OsdPrintf ("%20s : 0x%X\n", "Concurrency", ObjDesc->Method.Concurrency);
+	    OsdPrintf ("%20s : 0x%p\n", "Semaphore", ObjDesc->Method.Semaphore);
+	    OsdPrintf ("%20s : 0x%X\n", "PcodeLength", ObjDesc->Method.PcodeLength);
+	    OsdPrintf ("%20s : 0x%X\n", "Pcode", ObjDesc->Method.Pcode);
+	    OsdPrintf ("%20s : 0x%X\n", "AcpiTable", ObjDesc->Method.AcpiTable);
 	    break;
 	
 
 	case ACPI_TYPE_Mutex:
 
-		OsdPrintf ("%20s : %s\n", "Type", "Mutex");
-	    OsdPrintf ("%20s : %x\n", "SyncLevel", Object->Mutex.SyncLevel);
-	    OsdPrintf ("%20s : %x\n", "Semaphore", Object->Mutex.Semaphore);
-	    OsdPrintf ("%20s : %x\n", "LockCount", Object->Mutex.LockCount);
-	    OsdPrintf ("%20s : %x\n", "ThreadId", Object->Mutex.ThreadId);
+		OsdPrintf ("%20s : %s\n",   "Type", "Mutex");
+	    OsdPrintf ("%20s : 0x%X\n", "SyncLevel", ObjDesc->Mutex.SyncLevel);
+	    OsdPrintf ("%20s : 0x%p\n", "Semaphore", ObjDesc->Mutex.Semaphore);
+	    OsdPrintf ("%20s : 0x%X\n", "LockCount", ObjDesc->Mutex.LockCount);
+	    OsdPrintf ("%20s : 0x%X\n", "ThreadId", ObjDesc->Mutex.ThreadId);
 	    break;
 
 
 	case ACPI_TYPE_Region:
 
-		OsdPrintf ("%20s : %s\n", "Type", "Region");
-	    OsdPrintf ("%20s : %x\n", "SpaceId", Object->Region.SpaceId);
-	    OsdPrintf ("%20s : %x\n", "DataValid", Object->Region.DataValid);
-	    OsdPrintf ("%20s : %x\n", "Address", Object->Region.Address);
-	    OsdPrintf ("%20s : %x\n", "Length", Object->Region.Length);
-	    OsdPrintf ("%20s : %x\n", "Method", Object->Region.Method);
-	    OsdPrintf ("%20s : %x\n", "AddrHandler", Object->Region.AddrHandler);
-	    OsdPrintf ("%20s : %x\n", "Link", Object->Region.Link);
+		OsdPrintf ("%20s : %s\n",   "Type", "Region");
+	    OsdPrintf ("%20s : 0x%X\n", "SpaceId", ObjDesc->Region.SpaceId);
+	    OsdPrintf ("%20s : 0x%X\n", "DataValid", ObjDesc->Region.DataValid);
+	    OsdPrintf ("%20s : 0x%X\n", "Address", ObjDesc->Region.Address);
+	    OsdPrintf ("%20s : 0x%X\n", "Length", ObjDesc->Region.Length);
+	    OsdPrintf ("%20s : 0x%p\n", "Method", ObjDesc->Region.Method);
+	    OsdPrintf ("%20s : 0x%p\n", "AddrHandler", ObjDesc->Region.AddrHandler);
+	    OsdPrintf ("%20s : 0x%p\n", "Link", ObjDesc->Region.Link);
  	    break;
 
 
 	case ACPI_TYPE_Power:
 
-		OsdPrintf ("%20s : %s\n", "Type", "PowerResource");
-	    OsdPrintf ("%20s : %x\n", "Handle", Object->PowerResource.Handle);
-	    OsdPrintf ("%20s : %p\n", "SysHandler", Object->PowerResource.SysHandler);
-	    OsdPrintf ("%20s : %p\n", "DrvHandler", Object->PowerResource.DrvHandler);
+		OsdPrintf ("%20s : %s\n",   "Type", "PowerResource");
+	    OsdPrintf ("%20s : 0x%p\n", "Handle", ObjDesc->PowerResource.Handle);
+	    OsdPrintf ("%20s : 0x%p\n", "SysHandler", ObjDesc->PowerResource.SysHandler);
+	    OsdPrintf ("%20s : 0x%p\n", "DrvHandler", ObjDesc->PowerResource.DrvHandler);
 	    break;
 
 
 	case ACPI_TYPE_Processor:
 
-		OsdPrintf ("%20s : %s\n", "Type", "Processor");
-	    OsdPrintf ("%20s : %x\n", "Handle", Object->Processor.Handle);
-	    OsdPrintf ("%20s : %p\n", "SysHandler", Object->Processor.SysHandler);
-	    OsdPrintf ("%20s : %p\n", "DrvHandler", Object->Processor.DrvHandler);
+		OsdPrintf ("%20s : %s\n",   "Type", "Processor");
+	    OsdPrintf ("%20s : 0x%p\n", "Handle", ObjDesc->Processor.Handle);
+	    OsdPrintf ("%20s : 0x%p\n", "SysHandler", ObjDesc->Processor.SysHandler);
+	    OsdPrintf ("%20s : 0x%p\n", "DrvHandler", ObjDesc->Processor.DrvHandler);
 	    break;
 
 
 	case ACPI_TYPE_Thermal:
 
-		OsdPrintf ("%20s : %s\n", "Type", "ThermalZone");
-	    OsdPrintf ("%20s : %x\n", "Handle", Object->ThermalZone.Handle);
-	    OsdPrintf ("%20s : %p\n", "SysHandler", Object->ThermalZone.SysHandler);
-	    OsdPrintf ("%20s : %p\n", "DrvHandler", Object->ThermalZone.DrvHandler);
+		OsdPrintf ("%20s : %s\n",   "Type", "ThermalZone");
+	    OsdPrintf ("%20s : 0x%p\n", "Handle", ObjDesc->ThermalZone.Handle);
+	    OsdPrintf ("%20s : 0x%p\n", "SysHandler", ObjDesc->ThermalZone.SysHandler);
+	    OsdPrintf ("%20s : 0x%p\n", "DrvHandler", ObjDesc->ThermalZone.DrvHandler);
 	    break;
 
 	case INTERNAL_TYPE_BankField:
 
-		OsdPrintf ("%20s : %s\n", "Type", "BankField");
-	    OsdPrintf ("%20s : %x\n", "Access", Object->BankField.Access);
-	    OsdPrintf ("%20s : %x\n", "LockRule", Object->BankField.LockRule);
-	    OsdPrintf ("%20s : %x\n", "UpdateRule", Object->BankField.UpdateRule);
-	    OsdPrintf ("%20s : %x\n", "Length", Object->BankField.Length);
-	    OsdPrintf ("%20s : %x\n", "BitOffset", Object->BankField.BitOffset);
-	    OsdPrintf ("%20s : %x\n", "Offset", Object->BankField.Offset);
-	    OsdPrintf ("%20s : %x\n", "Value", Object->BankField.Value);
-		OsdPrintf ("%20s : %x\n", "Container", Object->BankField.Container);
-	    OsdPrintf ("%20s : %x\n", "BankSelect", Object->BankField.BankSelect);
+		OsdPrintf ("%20s : %s\n",   "Type", "BankField");
+	    OsdPrintf ("%20s : 0x%X\n", "Access", ObjDesc->BankField.Access);
+	    OsdPrintf ("%20s : 0x%X\n", "LockRule", ObjDesc->BankField.LockRule);
+	    OsdPrintf ("%20s : 0x%X\n", "UpdateRule", ObjDesc->BankField.UpdateRule);
+	    OsdPrintf ("%20s : 0x%X\n", "Length", ObjDesc->BankField.Length);
+	    OsdPrintf ("%20s : 0x%X\n", "BitOffset", ObjDesc->BankField.BitOffset);
+	    OsdPrintf ("%20s : 0x%X\n", "Offset", ObjDesc->BankField.Offset);
+	    OsdPrintf ("%20s : 0x%X\n", "Value", ObjDesc->BankField.Value);
+		OsdPrintf ("%20s : 0x%p\n", "Container", ObjDesc->BankField.Container);
+	    OsdPrintf ("%20s : 0x%X\n", "BankSelect", ObjDesc->BankField.BankSelect);
 	    break;
 
 
 	case INTERNAL_TYPE_IndexField:
 
-		OsdPrintf ("%20s : %s\n", "Type", "IndexField");
-	    OsdPrintf ("%20s : %x\n", "Access", Object->IndexField.Access);
-	    OsdPrintf ("%20s : %x\n", "LockRule", Object->IndexField.LockRule);
-	    OsdPrintf ("%20s : %x\n", "UpdateRule", Object->IndexField.UpdateRule);
-	    OsdPrintf ("%20s : %x\n", "Length", Object->IndexField.Length);
-	    OsdPrintf ("%20s : %x\n", "BitOffset", Object->IndexField.BitOffset);
-	    OsdPrintf ("%20s : %x\n", "Value", Object->IndexField.Value);
-		OsdPrintf ("%20s : %x\n", "Index", Object->IndexField.Index);
-	    OsdPrintf ("%20s : %x\n", "Data", Object->IndexField.Data);
+		OsdPrintf ("%20s : %s\n",   "Type", "IndexField");
+	    OsdPrintf ("%20s : 0x%X\n", "Access", ObjDesc->IndexField.Access);
+	    OsdPrintf ("%20s : 0x%X\n", "LockRule", ObjDesc->IndexField.LockRule);
+	    OsdPrintf ("%20s : 0x%X\n", "UpdateRule", ObjDesc->IndexField.UpdateRule);
+	    OsdPrintf ("%20s : 0x%X\n", "Length", ObjDesc->IndexField.Length);
+	    OsdPrintf ("%20s : 0x%X\n", "BitOffset", ObjDesc->IndexField.BitOffset);
+	    OsdPrintf ("%20s : 0x%X\n", "Value", ObjDesc->IndexField.Value);
+		OsdPrintf ("%20s : 0x%X\n", "Index", ObjDesc->IndexField.Index);
+	    OsdPrintf ("%20s : 0x%X\n", "Data", ObjDesc->IndexField.Data);
 	    break;
 
 
 	case INTERNAL_TYPE_Lvalue:
 
-		OsdPrintf ("%20s : %s\n", "Type", "Lvalue");
-	    OsdPrintf ("%20s : %x\n", "OpCode", Object->Lvalue.OpCode);
-	    OsdPrintf ("%20s : %x\n", "Object", Object->Lvalue.Object);
+		OsdPrintf ("%20s : %s\n",   "Type", "Lvalue");
+	    OsdPrintf ("%20s : 0x%X\n", "OpCode", ObjDesc->Lvalue.OpCode);
+	    OsdPrintf ("%20s : 0x%p\n", "ObjDesc", ObjDesc->Lvalue.Object);
 		break;
 
 
 	case INTERNAL_TYPE_AddressHandler:
 
-		OsdPrintf ("%20s : %s\n", "Type", "Address Handler");
-	    OsdPrintf ("%20s : %x\n", "SpaceId", Object->AddrHandler.SpaceId);
-	    OsdPrintf ("%20s : %x\n", "Link", Object->AddrHandler.Link);
-	    OsdPrintf ("%20s : %x\n", "RegionList", Object->AddrHandler.RegionList);
-	    OsdPrintf ("%20s : %x\n", "Nte", Object->AddrHandler.Nte);
-	    OsdPrintf ("%20s : %x\n", "Handler", Object->AddrHandler.Handler);
-	    OsdPrintf ("%20s : %x\n", "Context", Object->AddrHandler.Context);
+		OsdPrintf ("%20s : %s\n",   "Type", "Address Handler");
+	    OsdPrintf ("%20s : 0x%X\n", "SpaceId", ObjDesc->AddrHandler.SpaceId);
+	    OsdPrintf ("%20s : 0x%p\n", "Link", ObjDesc->AddrHandler.Link);
+	    OsdPrintf ("%20s : 0x%p\n", "RegionList", ObjDesc->AddrHandler.RegionList);
+	    OsdPrintf ("%20s : 0x%p\n", "Nte", ObjDesc->AddrHandler.Nte);
+	    OsdPrintf ("%20s : 0x%p\n", "Handler", ObjDesc->AddrHandler.Handler);
+	    OsdPrintf ("%20s : 0x%p\n", "Context", ObjDesc->AddrHandler.Context);
 		break;
 
 	case INTERNAL_TYPE_Notify:
 
-		OsdPrintf ("%20s : %s\n", "Type", "Notify Handler");
-	    OsdPrintf ("%20s : %x\n", "Nte", Object->NotifyHandler.Nte);
-	    OsdPrintf ("%20s : %x\n", "Handler", Object->NotifyHandler.Handler);
-	    OsdPrintf ("%20s : %x\n", "Context", Object->NotifyHandler.Context);
+		OsdPrintf ("%20s : %s\n",   "Type", "Notify Handler");
+	    OsdPrintf ("%20s : 0x%p\n", "Nte", ObjDesc->NotifyHandler.Nte);
+	    OsdPrintf ("%20s : 0x%p\n", "Handler", ObjDesc->NotifyHandler.Handler);
+	    OsdPrintf ("%20s : 0x%p\n", "Context", ObjDesc->NotifyHandler.Context);
 		break;
 
 
@@ -955,13 +957,13 @@ AmlDumpObjectDescriptor (
 	case INTERNAL_TYPE_DefAny:
 
 		OsdPrintf ("*** Structure display not implemented for type %d! ***\n",
-        	Object->Common.Type);
+        	ObjDesc->Common.Type);
 		break;
 
 
 	default:
 
-		OsdPrintf ("*** Cannot display unknown type %d! ***\n", Object->Common.Type);
+		OsdPrintf ("*** Cannot display unknown type %d! ***\n", ObjDesc->Common.Type);
 		break;
 	}
 
