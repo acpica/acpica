@@ -2,7 +2,7 @@
  *
  * Module Name: dsopcode - Dispatcher Op Region support and handling of
  *                         "control" opcodes
- *              $Revision: 1.66 $
+ *              $Revision: 1.68 $
  *
  *****************************************************************************/
 
@@ -459,9 +459,9 @@ AcpiDsEvalBufferFieldOperands (
      * If ResDesc is a Name, it will be a direct name pointer after
      * AcpiExResolveOperands()
      */
-    if (!VALID_DESCRIPTOR_TYPE (ResDesc, ACPI_DESC_TYPE_NAMED))
+    if (ACPI_GET_DESCRIPTOR_TYPE (ResDesc) != ACPI_DESC_TYPE_NAMED)
     {
-        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "(%s) destination must be a Node\n",
+        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "(%s) destination must be a NS Node\n",
             AcpiPsGetOpcodeName (Op->Opcode)));
 
         Status = AE_AML_OPERAND_TYPE;
@@ -783,15 +783,18 @@ AcpiDsExecBeginControlOp (
             Status = AE_NO_MEMORY;
             break;
         }
-
-        AcpiUtPushGenericState (&WalkState->ControlState, ControlState);
-
         /*
          * Save a pointer to the predicate for multiple executions
          * of a loop
          */
-        WalkState->ControlState->Control.AmlPredicateStart =
-                    WalkState->ParserState.Aml - 1;
+        ControlState->Control.AmlPredicateStart = WalkState->ParserState.Aml - 1;
+        ControlState->Control.PackageEnd = WalkState->ParserState.PkgEnd;
+        ControlState->Control.Opcode = Op->Opcode;
+
+
+        /* Push the control state on this walk's control stack */
+
+        AcpiUtPushGenericState (&WalkState->ControlState, ControlState);
         break;
 
     case AML_ELSE_OP:
@@ -944,7 +947,7 @@ AcpiDsExecEndControlOp (
              *
              * Allow references created by the Index operator to return unchanged.
              */
-            if (VALID_DESCRIPTOR_TYPE (WalkState->Results->Results.ObjDesc [0], ACPI_DESC_TYPE_INTERNAL) &&
+            if ((ACPI_GET_DESCRIPTOR_TYPE (WalkState->Results->Results.ObjDesc[0]) == ACPI_DESC_TYPE_INTERNAL) &&
                 ((WalkState->Results->Results.ObjDesc [0])->Common.Type == INTERNAL_TYPE_REFERENCE) &&
                 ((WalkState->Results->Results.ObjDesc [0])->Reference.Opcode != AML_INDEX_OP))
             {
@@ -1001,32 +1004,38 @@ AcpiDsExecEndControlOp (
 
 
     case AML_BREAK_OP:
-
-        ACPI_DEBUG_PRINT ((ACPI_DB_INFO,
-            "Break to end of current package, Op=%p\n", Op));
-
-        /* TBD: update behavior for ACPI 2.0 */
-
-        /*
-         * As per the ACPI specification:
-         *      "The break operation causes the current package
-         *          execution to complete"
-         *      "Break -- Stop executing the current code package
-         *          at this point"
-         *
-         * Returning AE_FALSE here will cause termination of
-         * the current package, and execution will continue one
-         * level up, starting with the completion of the parent Op.
-         */
-        Status = AE_CTRL_FALSE;
-        break;
-
-
     case AML_CONTINUE_OP: /* ACPI 2.0 */
 
-        Status = AE_NOT_IMPLEMENTED;
-        break;
 
+        /* Pop and delete control states until we find a while */
+
+        while (WalkState->ControlState && 
+                (WalkState->ControlState->Control.Opcode != AML_WHILE_OP))
+        {
+            ControlState = AcpiUtPopGenericState (&WalkState->ControlState);
+            AcpiUtDeleteGenericState (ControlState);
+        }
+
+        /* No while found? */
+
+        if (!WalkState->ControlState)
+        {
+            return (AE_AML_NO_WHILE);
+        }
+        WalkState->AmlLastWhile = WalkState->ControlState->Control.PackageEnd;
+/*   TBD: why not this?    WalkState->AmlLastWhile = WalkState->ControlState->Control.AmlPredicateStart; */
+
+        /* Return status depending on opcode */
+
+        if (Op->Opcode == AML_BREAK_OP)
+        {
+            Status = AE_CTRL_BREAK;
+        }
+        else
+        {
+            Status = AE_CTRL_CONTINUE;
+        }
+        break;
 
     default:
 
