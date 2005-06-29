@@ -190,10 +190,20 @@
 
 #else
 
+#ifdef WIN32
+
+/* MS-VC++ */
+
+#define strupr              _strupr
+#define ACPI_USE_STANDARD_HEADERS
+
+#else
+
 /* All other environments */
 
 #define ACPI_USE_STANDARD_HEADERS
 
+#endif
 #endif
 #endif
 
