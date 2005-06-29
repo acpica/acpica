@@ -422,7 +422,7 @@ CmDumpCurrentAllocations (
             ((Module == NULL) || (0 == STRCMP (Module, Element->Module))))
         {
             DEBUG_PRINT (TRACE_ALLOCATIONS | TRACE_TABLES,
-                ("%p: Length %04x %10.10s Line %d",
+                ("%p: Length %04x %10.10s-%04d",
                 Element->Address, Element->Size, Element->Module, Element->Line));
 
             /* Most of the elements will be internal objects. */
