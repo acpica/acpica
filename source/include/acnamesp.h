@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acnamesp.h - Namespace subcomponent prototypes and defines
- *       $Revision: 1.124 $
+ *       $Revision: 1.126 $
  *
  *****************************************************************************/
 
@@ -134,7 +134,7 @@
 /* Definitions of the predefined namespace names  */
 
 #define ACPI_UNKNOWN_NAME           (UINT32) 0x3F3F3F3F     /* Unknown name is  "????" */
-#define ACPI_ROOT_NAME              (UINT32) 0x2F202020     /* Root name is     "/   " */
+#define ACPI_ROOT_NAME              (UINT32) 0x5F5F5F5C     /* Root name is     "\___" */
 #define ACPI_SYS_BUS_NAME           (UINT32) 0x5F53425F     /* Sys bus name is  "_SB_" */
 
 #define ACPI_NS_ROOT_PATH           "\\"
@@ -199,7 +199,7 @@ AcpiNsGetNextNode (
     ACPI_NAMESPACE_NODE     *Parent,
     ACPI_NAMESPACE_NODE     *Child);
 
-ACPI_STATUS
+void
 AcpiNsDeleteNamespaceByOwner (
     UINT16                  TableId);
 
@@ -230,7 +230,6 @@ AcpiNsLoadTableByType (
  * Top-level namespace access - nsaccess
  */
 
-
 ACPI_STATUS
 AcpiNsRootInitialize (
     void);
@@ -250,7 +249,6 @@ AcpiNsLookup (
  * Named object allocation/deallocation - nsalloc
  */
 
-
 ACPI_NAMESPACE_NODE *
 AcpiNsCreateNode (
     UINT32                  Name);
@@ -259,7 +257,7 @@ void
 AcpiNsDeleteNode (
     ACPI_NAMESPACE_NODE     *Node);
 
-ACPI_STATUS
+void
 AcpiNsDeleteNamespaceSubtree (
     ACPI_NAMESPACE_NODE     *ParentHandle);
 
@@ -311,9 +309,23 @@ AcpiNsPrintPathname (
     UINT32                  NumSegments,
     char                    *Pathname);
 
+ACPI_STATUS
+AcpiNsDumpOneDevice (
+    ACPI_HANDLE             ObjHandle,
+    UINT32                  Level,
+    void                    *Context,
+    void                    **ReturnValue);
+
 void
 AcpiNsDumpRootDevices (
     void);
+
+ACPI_STATUS
+AcpiNsDumpOneObject (
+    ACPI_HANDLE             ObjHandle,
+    UINT32                  Level,
+    void                    *Context,
+    void                    **ReturnValue);
 
 void
 AcpiNsDumpObjects (
@@ -379,6 +391,12 @@ AcpiNsExistDownstreamSibling (
 UINT32
 AcpiNsOpensScope (
     ACPI_OBJECT_TYPE        Type);
+
+void
+AcpiNsBuildExternalPath (
+    ACPI_NAMESPACE_NODE     *Node,
+    ACPI_SIZE               Size,
+    NATIVE_CHAR             *NameBuffer);
 
 NATIVE_CHAR *
 AcpiNsGetExternalPathname (
