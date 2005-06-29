@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asmain - Main module for the acpi source processor utility
- *              $Revision: 1.35 $
+ *              $Revision: 1.38 $
  *
  *****************************************************************************/
 
@@ -187,7 +187,7 @@ ACPI_STRING_TABLE           StandardDataTypes[] = {
 
 char                        LinuxHeader[] =
 "/*\n"
-" *  Copyright (C) 2000, 2001 R. Byron Moore\n"
+" *  Copyright (C) 2000 - 2002, R. Byron Moore\n"
 " *\n"
 " *  This program is free software; you can redistribute it and/or modify\n"
 " *  it under the terms of the GNU General Public License as published by\n"
@@ -344,18 +344,18 @@ ACPI_IDENTIFIER_TABLE           LinuxLowerCase[] = {
     "ACPI_WALK_INFO",
     "ACPI_WALK_LIST",
     "ACPI_WALK_STATE",
-    "DB_METHOD_INFO",
+    "ACPI_DB_METHOD_INFO",
     "FACS_DESCRIPTOR_REV071",
     "FACS_DESCRIPTOR_REV1",
     "FACS_DESCRIPTOR_REV2",
     "FADT_DESCRIPTOR_REV071",
     "FADT_DESCRIPTOR_REV1",
     "FADT_DESCRIPTOR_REV2",
-    "FIND_CONTEXT",
-    "NS_SEARCH_DATA",
-    "OPERATING_MODE",
+    "ACPI_FIND_CONTEXT",
+    "ACPI_NS_SEARCH_DATA",
+    "ACPI_INTERPRETER_MODE",
     "ACPI_PCI_ROUTING_TABLE",
-    "PREDEFINED_NAMES",
+    "ACPI_PREDEFINED_NAMES",
     "UINT64_OVERLAY",
     "UINT64_STRUCT",
     "XSDT_DESCRIPTOR",
@@ -465,7 +465,10 @@ ACPI_CONVERSION_TABLE       StatsConversionTable = {
 ACPI_STRING_TABLE           CustomReplacements[] = {
 
 
-    "1999 - 2002, Intel Corp",     "1999 - 2002, Intel Corp",     REPLACE_WHOLE_WORD,
+    "1999 - 2002, Intel Corp",      "1999 - 2002, Intel Corp",     REPLACE_WHOLE_WORD,
+    "1999, Intel Corp",             "1999 - 2002, Intel Corp",     REPLACE_WHOLE_WORD,
+    "  All rights\n * reserved.",    "\n * All rights reserved.",     REPLACE_WHOLE_WORD,
+    "Copyright (C) 2000, 2001",     "Copyright (C) 2000 - 2002",      REPLACE_WHOLE_WORD,
     NULL,                   NULL, 0
 };
 

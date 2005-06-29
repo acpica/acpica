@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: aemain - Main routine for the AcpiExec utility
- *              $Revision: 1.50 $
+ *              $Revision: 1.58 $
  *
  *****************************************************************************/
 
@@ -121,7 +121,6 @@
 #include "acpi.h"
 #include "amlcode.h"
 #include "acparser.h"
-#include "actables.h"
 #include "acnamesp.h"
 #include "acinterp.h"
 #include "acdebug.h"
@@ -130,7 +129,7 @@
 
 
 #define _COMPONENT          PARSER
-        MODULE_NAME         ("aemain")
+        ACPI_MODULE_NAME    ("aemain")
 
 /*
  * TBD: Debug only, remove!
@@ -207,14 +206,6 @@ AeDoDivideCheck (void)
 #endif
 
 
-/*
- * We need a local FADT so that the hardware subcomponent will function,
- * even though the underlying OSD HW access functions don't do
- * anything.
- */
-
-FADT_DESCRIPTOR             LocalFADT;
-ACPI_COMMON_FACS            LocalFACS;
 
 #ifdef _IA16
 ACPI_STATUS
@@ -223,16 +214,6 @@ AcpiGetIrqRoutingTable  (
     ACPI_BUFFER             *RetBuffer)
 {
     return AE_NOT_IMPLEMENTED;
-}
-
-ACPI_STATUS
-AcpiGetFirmwareTable (
-    ACPI_STRING             Signature,
-    UINT32                  Instance,
-    UINT32                  Flags,
-    ACPI_TABLE_HEADER       **TablePointer)
-{
-    return (AE_NOT_IMPLEMENTED);
 }
 #endif
 
@@ -290,7 +271,7 @@ main (
 
     /* Init globals */
 
-    AcpiDbgLevel = NORMAL_DEFAULT | ACPI_LV_TABLES;
+    AcpiDbgLevel = NORMAL_DEFAULT;
     AcpiDbgLayer = 0xFFFFFFFF;
 
 
@@ -308,7 +289,7 @@ main (
 
     /* Get the command line options */
 
-    while ((j = getopt (argc, argv, "?dgijl:o:sv")) != EOF) switch(j)
+    while ((j = getopt (argc, argv, "?dgil:o:sv")) != EOF) switch(j)
     {
     case 'd':
         AcpiGbl_DbOpt_disasm = TRUE;
@@ -322,10 +303,6 @@ main (
 
     case 'i':
         AcpiGbl_DbOpt_ini_methods = FALSE;
-        break;
-
-    case 'j':
-        AcpiGbl_DbOpt_parse_jit = TRUE;
         break;
 
     case 'l':
@@ -376,25 +353,17 @@ main (
             goto enterloop;
         }
 
-        /* Build a fake FADT so we can test the hardware/event init */
 
-        ACPI_STORE_ADDRESS (LocalFADT.XGpe0Blk.Address, 0x70);
-        ACPI_STORE_ADDRESS (LocalFADT.XPm1aEvtBlk.Address, 0x80);
-        ACPI_STORE_ADDRESS (LocalFADT.XPm1aCntBlk.Address, 0x90);
-        ACPI_STORE_ADDRESS (LocalFADT.XPmTmrBlk.Address, 0xA0);
+        AeBuildLocalTables ();
+        Status = AeInstallTables ();
+        if (ACPI_FAILURE (Status))
+        {
+            printf ("**** Could not load ACPI tables, %s\n", AcpiFormatException (Status));
+            goto enterloop;
+        }
 
-        LocalFADT.Gpe0BlkLen    = 8;
-        LocalFADT.Gpe1BlkLen    = 12;
-        LocalFADT.Gpe1Base      = 64;
-        LocalFADT.Pm1EvtLen     = 4;
-        LocalFADT.Pm1CntLen     = 4;
-        LocalFADT.PmTmLen       = 8;
-
-        AcpiGbl_FADT = &LocalFADT;
-        AcpiGbl_FACS = &LocalFACS;
-
-
-        /* TBD:
+        /* 
+         * TBD:
          * Need a way to call this after the "LOAD" command
          */
         Status = AeInstallHandlers ();
@@ -414,6 +383,7 @@ main (
         ReturnBuf.Pointer = Buffer;
         AcpiGetName (AcpiGbl_RootNode, ACPI_FULL_PATHNAME, &ReturnBuf);
         AcpiEnableEvent (ACPI_EVENT_GLOBAL, ACPI_EVENT_FIXED, 0);
+        AcpiEnableEvent (0, ACPI_EVENT_GPE, 0);
     }
 
 #ifdef _IA16
@@ -464,7 +434,7 @@ enterloop:
 
     /* Enter the debugger command loop */
 
-    AcpiDbUserCommands (DB_COMMAND_PROMPT, NULL);
+    AcpiDbUserCommands (ACPI_DEBUGGER_COMMAND_PROMPT, NULL);
 
     return 0;
 }

@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: aeexec - Support routines for AcpiExec utility
- *              $Revision: 1.54 $
+ *              $Revision: 1.55 $
  *
  *****************************************************************************/
 
@@ -127,7 +127,7 @@
 
 
 #define _COMPONENT          ACPI_TOOLS
-        MODULE_NAME         ("aeexec")
+        ACPI_MODULE_NAME    ("aeexec")
 
 
 ACPI_PARSE_OBJECT           *AcpiGbl_ParsedNamespaceRoot;
@@ -286,7 +286,7 @@ AeLocalGetRootPointer (
     ACPI_PHYSICAL_ADDRESS   *RsdpPhysicalAddress)
 {
 
-    *RsdpPhysicalAddress = ACPI_TO_INTEGER (&LocalRSDP);
+    *RsdpPhysicalAddress = ACPI_PTR_TO_PHYSADDR (&LocalRSDP);
     return (AE_OK);
 }
 
@@ -323,7 +323,7 @@ AeRegionHandler (
     UINT32                  ByteWidth;
 
 
-    PROC_NAME ("AeRegionHandler");
+    ACPI_FUNCTION_NAME ("AeRegionHandler");
 
 
     /*
@@ -582,7 +582,7 @@ AeInstallHandlers (void)
     UINT32                  i;
 
 
-    PROC_NAME ("AeInstallHandlers");
+    ACPI_FUNCTION_NAME ("AeInstallHandlers");
 
 
     Status = AcpiInstallNotifyHandler (ACPI_ROOT_OBJECT, ACPI_SYSTEM_NOTIFY,
