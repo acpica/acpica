@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: cmxface - External interfaces for "global" ACPI functions
- *              $Revision: 1.65 $
+ *              $Revision: 1.66 $
  *
  *****************************************************************************/
 
@@ -535,3 +535,68 @@ AcpiFormatException (
     return_ACPI_STATUS (AE_OK);
 }
 
+
+/*****************************************************************************
+ *
+ * FUNCTION:    AcpiAllocate
+ *
+ * PARAMETERS:  Size                - Size of the allocation
+ *
+ * RETURN:      Address of the allocated memory on success, NULL on failure.
+ *
+ * DESCRIPTION: The subsystem's equivalent of malloc.
+ *              External front-end to the Cm* memory manager
+ *
+ ****************************************************************************/
+
+void *
+AcpiAllocate (
+    UINT32                  Size)
+{
+
+    return (AcpiCmAllocate (Size));
+}
+
+
+/*****************************************************************************
+ *
+ * FUNCTION:    AcpiCallocate
+ *
+ * PARAMETERS:  Size                - Size of the allocation
+ *
+ * RETURN:      Address of the allocated memory on success, NULL on failure.
+ *
+ * DESCRIPTION: The subsystem's equivalent of calloc.
+ *              External front-end to the Cm* memory manager
+ *
+ ****************************************************************************/
+
+void *
+AcpiCallocate (
+    UINT32                  Size)
+{
+
+    return (AcpiCmCallocate (Size));
+}
+
+
+/*****************************************************************************
+ *
+ * FUNCTION:    AcpiFree
+ *
+ * PARAMETERS:  Address             - Address of the memory to deallocate
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Frees the memory at Address
+ *              External front-end to the Cm* memory manager
+ *
+ ****************************************************************************/
+
+void
+AcpiFree (
+    void                    *Address)
+{
+
+    AcpiCmFree (Address);
+}
