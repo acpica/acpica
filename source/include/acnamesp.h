@@ -136,15 +136,13 @@
 /* 
  * An ACPI_HANDLE (which is actually an NAME_TABLE_ENTRY *) can appear in some contexts,
  * such as on apObjStack, where a pointer to an ACPI_OBJECT can also
- * appear.  This macro is used to distinguish them.
+ * appear.  These macros are used to distinguish them.
  *
- * The first byte of an NAME_TABLE_ENTRY is a character of the name segment, which will
- * be accepted by NcOK().  The first byte of an ACPI_OBJECT is the
- * ValTyp field, whose (UINT8) value comes from the ACPI_OBJECT_TYPE enumeration.
- * Valid ACPI_OBJECT_TYPE values must not include any character acceptable in a name.
+ * The DataType field is the first field in both structures.
  */
 
-#define IS_NS_HANDLE(h)         (AmlGoodChar((INT32) * (char *) (h)))
+#define IS_NS_HANDLE(h)         (((NAME_TABLE_ENTRY *)h)->DataType == DESC_TYPE_NTE) 
+#define IS_ACPI_OBJECT(o)       (((NAME_TABLE_ENTRY *)o)->DataType == DESC_TYPE_ACPI_OBJ) 
 
 /* To search the entire name space, pass this as SearchBase */
 
@@ -418,7 +416,7 @@ NsFindAttachedObject (
 
 ACPI_STATUS
 NsSearchAndEnter (
-    char                    *EntryName, 
+    UINT32                  EntryName, 
     NAME_TABLE_ENTRY        *NameTable,
     OPERATING_MODE          LoadMode, 
     ACPI_OBJECT_TYPE        Type, 

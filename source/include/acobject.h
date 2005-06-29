@@ -150,14 +150,21 @@
  *****************************************************************************/
 
 /*
- * Common area for all objects 
+ * Common area for all objects.
+ *
+ * DataType is used to differentiate between internal descriptors, and MUST
+ * be the first byte in this structure.
  */
 
+
 #define ACPI_OBJECT_COMMON \
+    UINT8                   DataType;       /* To differentiate various internal objs */\
     UINT8                   Type;           /* See definition of NsType for values */ \
     UINT8                   Flags;\
-    UINT16                  ReferenceCount; /* For object deletion management */
-
+    UINT8                   CmFill1; \
+    UINT16                  ReferenceCount; /* For object deletion management */\
+    UINT16                  CmFill2;\
+    char                    Name[8];        /* TBD: Temporary only, for debug */
 
 /* Defines for flag byte above */
 
@@ -186,8 +193,6 @@
 
 typedef union AcpiObjInternal           
 {
-    UINT8                   Type;           /* See definition of NsType for values */
-
 
     /* 
      * Fields that are common across all objects 
@@ -214,6 +219,8 @@ typedef union AcpiObjInternal
         void                    *Reserved_p1;
         void                    *Reserved_p2;
         void                    *Reserved_p3;
+        void                    *Reserved_p4;
+        void                    *Reserved_p5;
 
     } Number;
 
@@ -229,6 +236,8 @@ typedef union AcpiObjInternal
         UINT8                   *Pointer;       /* String value in AML stream or in allocated space */
         void                    *Reserved_p2;
         void                    *Reserved_p3;
+        void                    *Reserved_p4;
+        void                    *Reserved_p5;
 
     } String;
 
@@ -244,6 +253,8 @@ typedef union AcpiObjInternal
         UINT8                   *Pointer;       /* points to the buffer in allocated space */
         void                    *Reserved_p2;
         void                    *Reserved_p3;
+        void                    *Reserved_p4;
+        void                    *Reserved_p5;
 
     } Buffer;
 
@@ -259,6 +270,8 @@ typedef union AcpiObjInternal
         union AcpiObjInternal   **Elements;     /* Array of pointers to AcpiObjects */
         union AcpiObjInternal   **NextElement;  /* used only while initializing */
         void                    *Reserved_p3;
+        void                    *Reserved_p4;
+        void                    *Reserved_p5;
 
     } Package;
 
@@ -274,9 +287,10 @@ typedef union AcpiObjInternal
         union AcpiObjInternal   *Container;         /* Containing object (Buffer) */
         void                    *Reserved_p2;
         void                    *Reserved_p3;
+        void                    *Reserved_p4;
+        void                    *Reserved_p5;
 
     } FieldUnit;
-
 
     struct /* DEVICE - has handle and notification handler/context */
     {
@@ -284,11 +298,13 @@ typedef union AcpiObjInternal
 
         UINT32                  Reserved1;
         UINT32                  Reserved2;
-        UINT32                  Reserved3;
+        union AcpiObjInternal  *AddrHandler;        /* Handler for Address space */
 
         ACPI_HANDLE             Handle;
-        NOTIFY_HANDLER          Handler;
-        void                    *Context;
+        union AcpiObjInternal  *SysHandler;         /* Handler for system notifies */
+        union AcpiObjInternal  *DrvHandler;         /* Handler for driver notifies */
+        void                    *Reserved_p4;
+        void                    *Reserved_p5;
 
     } Device;
 
@@ -306,6 +322,8 @@ typedef union AcpiObjInternal
         void                    *Reserved_p1;
         void                    *Reserved_p2;
         void                    *Reserved_p3;
+        void                    *Reserved_p4;
+        void                    *Reserved_p5;
 
     } Event;
 
@@ -322,6 +340,8 @@ typedef union AcpiObjInternal
         UINT8                   *Pcode;
         UINT8                   *AcpiTable;
         void                    *Reserved_p3;
+        void                    *Reserved_p4;
+        void                    *Reserved_p5;
 
     } Method;
 
@@ -339,6 +359,8 @@ typedef union AcpiObjInternal
         void                    *Reserved_p1;
         void                    *Reserved_p2;
         void                    *Reserved_p3;
+        void                    *Reserved_p4;
+        void                    *Reserved_p5;
 
     } Mutex;
 
@@ -352,14 +374,50 @@ typedef union AcpiObjInternal
         UINT32                  Address;
         UINT32                  Length;
 
-        union AcpiObjInternal   *AddressLocation;   /* Loc of 1st (address) OpCode in AML stream */
-        void                    *Reserved_p2;
-        void                    *Reserved_p3;
+        union AcpiObjInternal  *AddressLocation;    /* Loc of 1st (address) OpCode in AML stream */
+        union AcpiObjInternal  *AddrHandler;        /* Handler for system notifies */
+        union AcpiObjInternal  *Link;               /* Link in list of regions */
+                                                    /* list is owned by AddrHandler */
+        union AcpiObjInternal  *REGList;            /* List of _REG methods for this region */
+        NAME_TABLE_ENTRY       *Parent;             /* containing object */
 
     } Region;
 
+    struct /* ADDRESS HANDLER */
+    {
+        ACPI_OBJECT_COMMON
 
-    struct /* POWER RESOURCE - has Handle */
+        UINT16                  SpaceId;
+        UINT16                  Reserved;
+        union AcpiObjInternal  *Link;               /* Link to next handler on device */
+        union AcpiObjInternal  *RegionList;         /* regions using this handler */
+
+        NAME_TABLE_ENTRY       *Nte;                /* device handler was installed for */
+        ADDRESS_SPACE_HANDLER   Handler;
+        void                   *Context;
+        void                    *Reserved_p4;
+        void                    *Reserved_p5;
+
+    } AddrHandler;
+
+
+    struct /* NOTIFY HANDLER */
+    {
+        ACPI_OBJECT_COMMON
+
+        UINT32                  Reserved1;
+        UINT32                  Reserved2;
+        UINT32                  Reserved3;
+
+        NAME_TABLE_ENTRY       *Nte;                /* device handler was installed for */
+        NOTIFY_HANDLER          Handler;
+        void                   *Context;
+        void                    *Reserved_p4;
+        void                    *Reserved_p5;
+
+    } NotifyHandler;
+
+    struct /* POWER RESOURCE - has Handle and notification handler/context*/
     {
         ACPI_OBJECT_COMMON
 
@@ -368,23 +426,27 @@ typedef union AcpiObjInternal
         UINT32                  Reserved3;
 
         ACPI_HANDLE             Handle;
-        void                    *Reserved_p2;
-        void                    *Reserved_p3;
+        union AcpiObjInternal  *SysHandler;         /* Handler for system notifies */
+        union AcpiObjInternal  *DrvHandler;         /* Handler for driver notifies */
+        void                    *Reserved_p4;
+        void                    *Reserved_p5;
 
     } PowerResource;
 
 
-    struct /* PROCESSOR - has Handle */
+    struct /* PROCESSOR - has Handle and notification handler/context*/
     {
         ACPI_OBJECT_COMMON
 
         UINT32                  Reserved1;
         UINT32                  Reserved2;
-        UINT32                  Reserved3;
+        union AcpiObjInternal  *AddrHandler;        /* Handler for Address space */
 
         ACPI_HANDLE             Handle;
-        void                    *Reserved_p2;
-        void                    *Reserved_p3;
+        union AcpiObjInternal  *SysHandler;         /* Handler for system notifies */
+        union AcpiObjInternal  *DrvHandler;         /* Handler for driver notifies */
+        void                    *Reserved_p4;
+        void                    *Reserved_p5;
 
     } Processor;
 
@@ -395,11 +457,13 @@ typedef union AcpiObjInternal
 
         UINT32                  Reserved1;
         UINT32                  Reserved2;
-        UINT32                  Reserved3;
+        union AcpiObjInternal  *AddrHandler;        /* Handler for Address space */
 
         ACPI_HANDLE             Handle;
-        NOTIFY_HANDLER          Handler;
-        void                    *Context;
+        union AcpiObjInternal  *SysHandler;         /* Handler for system notifies */
+        union AcpiObjInternal  *DrvHandler;         /* Handler for driver notifies */
+        void                    *Reserved_p4;
+        void                    *Reserved_p5;
 
     } ThermalZone;
 
@@ -415,6 +479,8 @@ typedef union AcpiObjInternal
         union AcpiObjInternal   *Container;         /* Containing object */
         void                    *Reserved_p2;
         void                    *Reserved_p3;
+        void                    *Reserved_p4;
+        void                    *Reserved_p5;
 
     } Field;
 
@@ -430,6 +496,8 @@ typedef union AcpiObjInternal
         ACPI_HANDLE             BankSelect;         /* Bank select register */
         union AcpiObjInternal   *Container;         /* Containing object */
         void                    *Reserved_p3;
+        void                    *Reserved_p4;
+        void                    *Reserved_p5;
 
     } BankField;
 
@@ -449,6 +517,8 @@ typedef union AcpiObjInternal
         ACPI_HANDLE             Index;              /* Index register */
         ACPI_HANDLE             Data;               /* Data register */
         void                    *Reserved_p3;
+        void                    *Reserved_p4;
+        void                    *Reserved_p5;
 
     } IndexField;
 
@@ -470,6 +540,8 @@ typedef union AcpiObjInternal
                                                      */
         void                    *Reserved_p2;
         void                    *Reserved_p3;
+        void                    *Reserved_p4;
+        void                    *Reserved_p5;
 
     } Lvalue;
 
