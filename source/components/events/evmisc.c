@@ -2,7 +2,7 @@
  *
  * Module Name: evmisc - ACPI device notification handler dispatch
  *                       and ACPI Global Lock support
- *              $Revision: 1.37 $
+ *              $Revision: 1.43 $
  *
  *****************************************************************************/
 
@@ -10,7 +10,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -123,6 +123,61 @@
 
 #define _COMPONENT          ACPI_EVENTS
         MODULE_NAME         ("evmisc")
+
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiEvGetGpeRegisterIndex
+ *
+ * PARAMETERS:  GpeNumber       - Raw GPE number
+ *
+ * RETURN:      None.
+ *
+ * DESCRIPTION: Returns the register index (index into the GPE register info 
+ *              table) associated with this GPE.
+ *
+ ******************************************************************************/
+
+UINT32
+AcpiEvGetGpeRegisterIndex (
+    UINT32                  GpeNumber)
+{
+
+    if (GpeNumber > AcpiGbl_GpeNumberMax)
+    {
+        return (ACPI_GPE_INVALID);
+    }
+
+    return (DIV_8 (AcpiGbl_GpeNumberToIndex[GpeNumber].NumberIndex));
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiEvGetGpeNumberIndex
+ *
+ * PARAMETERS:  GpeNumber       - Raw GPE number
+ *
+ * RETURN:      None.
+ *
+ * DESCRIPTION: Returns the number index (index into the GPE number info table)
+ *              associated with this GPE.
+ *
+ ******************************************************************************/
+
+UINT32
+AcpiEvGetGpeNumberIndex (
+    UINT32                  GpeNumber)
+{
+
+    if (GpeNumber > AcpiGbl_GpeNumberMax)
+    {
+        return (ACPI_GPE_INVALID);
+    }
+
+    return (AcpiGbl_GpeNumberToIndex[GpeNumber].NumberIndex);
+}
 
 
 /*******************************************************************************
@@ -427,7 +482,7 @@ AcpiEvInitGlobalLockHandler (void)
 
     /*
      * If the global lock does not exist on this platform, the attempt
-     * to enable GBL_STS will fail (the GBL_EN bit will not stick)
+     * to enable GBL_STATUS will fail (the GBL_ENABLE bit will not stick)
      * Map to AE_OK, but mark global lock as not present.
      * Any attempt to actually use the global lock will be flagged
      * with an error.
@@ -497,7 +552,7 @@ AcpiEvAcquireGlobalLock (
     {
        /* We got the lock */
 
-        ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "Acquired the Global Lock\n"));
+        ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "Acquired the HW Global Lock\n"));
 
         AcpiGbl_GlobalLockAcquired = TRUE;
         return_ACPI_STATUS (AE_OK);
@@ -509,10 +564,10 @@ AcpiEvAcquireGlobalLock (
      */
     ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "Waiting for the HW Global Lock\n"));
 
-     /*
-      * Acquire the global lock semaphore first.
-      * Since this wait will block, we must release the interpreter
-      */
+    /*
+     * Acquire the global lock semaphore first.
+     * Since this wait will block, we must release the interpreter
+     */
     Status = AcpiExSystemWaitSemaphore (AcpiGbl_GlobalLockSemaphore,
                                             Timeout);
     return_ACPI_STATUS (Status);
@@ -539,36 +594,81 @@ AcpiEvReleaseGlobalLock (void)
 
     if (!AcpiGbl_GlobalLockThreadCount)
     {
-        REPORT_WARNING(("Global Lock has not be acquired, cannot release\n"));
+        REPORT_WARNING(("Cannot release HW Global Lock, it has not been acquired\n"));
         return_VOID;
     }
 
-   /* One fewer thread has the global lock */
+    /* One fewer thread has the global lock */
 
     AcpiGbl_GlobalLockThreadCount--;
-
-    /* Have all threads released the lock? */
-
-    if (!AcpiGbl_GlobalLockThreadCount)
+    if (AcpiGbl_GlobalLockThreadCount)
     {
-        /*
-         * No more threads holding lock, we can do the actual hardware
-         * release
-         */
-        GlobalLock = AcpiGbl_FACS->GlobalLock;
-        ACPI_RELEASE_GLOBAL_LOCK (GlobalLock, Pending);
-        AcpiGbl_GlobalLockAcquired = FALSE;
+        /* There are still some threads holding the lock, cannot release */
 
-        /*
-         * If the pending bit was set, we must write GBL_RLS to the control
-         * register
-         */
-        if (Pending)
-        {
-            AcpiHwRegisterBitAccess (ACPI_WRITE, ACPI_MTX_LOCK,
-                                    GBL_RLS, 1);
-        }
+        return_VOID;
+    }
+
+    /*
+     * No more threads holding lock, we can do the actual hardware
+     * release
+     */
+    GlobalLock = AcpiGbl_FACS->GlobalLock;
+    ACPI_RELEASE_GLOBAL_LOCK (GlobalLock, Pending);
+    AcpiGbl_GlobalLockAcquired = FALSE;
+
+    /*
+     * If the pending bit was set, we must write GBL_RLS to the control
+     * register
+     */
+    if (Pending)
+    {
+        AcpiHwBitRegisterWrite (ACPI_BITREG_GLOBAL_LOCK_RELEASE, 1, ACPI_MTX_LOCK);
     }
 
     return_VOID;
 }
+
+
+/******************************************************************************
+ *
+ * FUNCTION:    AcpiEvTerminate
+ *
+ * PARAMETERS:  none
+ *
+ * RETURN:      none
+ *
+ * DESCRIPTION: free memory allocated for table storage.
+ *
+ ******************************************************************************/
+
+void
+AcpiEvTerminate (void)
+{
+
+    FUNCTION_TRACE ("EvTerminate");
+
+
+    /*
+     * Free global tables, etc.
+     */
+    if (AcpiGbl_GpeRegisterInfo)
+    {
+        ACPI_MEM_FREE (AcpiGbl_GpeRegisterInfo);
+        AcpiGbl_GpeRegisterInfo = NULL;
+    }
+
+    if (AcpiGbl_GpeNumberInfo)
+    {
+        ACPI_MEM_FREE (AcpiGbl_GpeNumberInfo);
+        AcpiGbl_GpeNumberInfo = NULL;
+    }
+
+    if (AcpiGbl_GpeNumberToIndex)
+    {
+        ACPI_MEM_FREE (AcpiGbl_GpeNumberToIndex);
+        AcpiGbl_GpeNumberToIndex = NULL;
+    }
+
+    return_VOID;
+}
+
