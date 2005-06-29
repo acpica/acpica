@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: evxfevnt - External Interfaces, ACPI event disable/enable
- *              $Revision: 1.42 $
+ *              $Revision: 1.43 $
  *
  *****************************************************************************/
 
@@ -285,7 +285,6 @@ AcpiEnableEvent (
 
         default:
             return_ACPI_STATUS (AE_BAD_PARAMETER);
-            break;
         }
 
         /*
@@ -399,7 +398,6 @@ AcpiDisableEvent (
 
         default:
             return_ACPI_STATUS (AE_BAD_PARAMETER);
-            break;
         }
 
         /*
@@ -508,7 +506,6 @@ AcpiClearEvent (
 
         default:
             return_ACPI_STATUS (AE_BAD_PARAMETER);
-            break;
         }
 
         /*
@@ -611,7 +608,6 @@ AcpiGetEventStatus (
 
         default:
             return_ACPI_STATUS (AE_BAD_PARAMETER);
-            break;
         }
 
         /* Get the status of the requested fixed event */
