@@ -3,7 +3,7 @@
 /******************************************************************************
  *
  * Module Name: aslcompiler.l - Flex input file
- *              $Revision: 1.50 $
+ *              $Revision: 1.52 $
  *
  *****************************************************************************/
 
@@ -134,7 +134,7 @@ YYSTYPE AslCompilerlval;
  */
 
 #define _COMPONENT          ACPI_COMPILER
-        MODULE_NAME         ("aslscan")
+        ACPI_MODULE_NAME    ("aslscan")
 void
 comment (void);
 void
@@ -465,7 +465,7 @@ NamePathTail                [.]{NameSeg}
                                 if (strcmp (AslCompilertext, "\\"))
                                 {
                                     strcpy (s, "____");
-                                    STRUPR (AslCompilertext);
+                                    ACPI_STRUPR (AslCompilertext);
                                 }
                                 memcpy (s, AslCompilertext, strlen (AslCompilertext));
                                 AslCompilerlval.s = s;
@@ -475,7 +475,7 @@ NamePathTail                [.]{NameSeg}
 {NameString}                { char *s;
                                 count (0);
                                 s=malloc (strlen (AslCompilertext)+1);
-                                STRUPR (AslCompilertext);
+                                ACPI_STRUPR (AslCompilertext);
                                 strcpy (s, AslCompilertext);
                                 s[strlen (AslCompilertext)] = 0;
                                 AslCompilerlval.s = s;
@@ -972,7 +972,7 @@ DoCharacter:
 
                 /* Check for an octal digit (0-7) */
 
-                if (IS_OCTAL_DIGIT (StringChar))
+                if (ACPI_IS_OCTAL_DIGIT (StringChar))
                 {
                     State = ASL_OCTAL_CONSTANT;
                     ConvertBuffer[0] = StringChar;
@@ -995,7 +995,7 @@ DoCharacter:
 
             /* Up to three octal digits allowed */
 
-            if (!IS_OCTAL_DIGIT (StringChar) ||
+            if (!ACPI_IS_OCTAL_DIGIT (StringChar) ||
                 (i > 2))
             {
                 /*
@@ -1003,7 +1003,7 @@ DoCharacter:
                  * string and resume processing of the next character
                  */
                 ConvertBuffer[i] = 0;
-                Digit = (UINT8) STRTOUL (ConvertBuffer, NULL, 8);
+                Digit = (UINT8) ACPI_STRTOUL (ConvertBuffer, NULL, 8);
 
                 /* Check for NULL or non-ascii character (ignore if so) */
 
@@ -1036,7 +1036,7 @@ DoCharacter:
 
             /* Up to two hex digits allowed */
 
-            if (!IS_XDIGIT (StringChar) ||
+            if (!ACPI_IS_XDIGIT (StringChar) ||
                 (i > 1))
             {
                 /*
@@ -1044,7 +1044,7 @@ DoCharacter:
                  * string and resume processing of the next character
                  */
                 ConvertBuffer[i] = 0;
-                Digit = (UINT8) STRTOUL (ConvertBuffer, NULL, 16);
+                Digit = (UINT8) ACPI_STRTOUL (ConvertBuffer, NULL, 16);
 
                 /* Check for NULL or non-ascii character (ignore if so) */
 
@@ -1096,7 +1096,7 @@ CompletedString:
         return;
     }
 
-    STRCPY (CleanString, MsgBuffer);
+    ACPI_STRCPY (CleanString, MsgBuffer);
     AslCompilerlval.s = CleanString;
 }
 
