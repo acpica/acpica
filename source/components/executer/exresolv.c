@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: amresolv - AML Interpreter object resolution
- *              $Revision: 1.81 $
+ *              $Revision: 1.84 $
  *
  *****************************************************************************/
 
@@ -127,7 +127,7 @@
 #include "acevents.h"
 
 
-#define _COMPONENT          INTERPRETER
+#define _COMPONENT          ACPI_EXECUTER
         MODULE_NAME         ("amresolv")
 
 
@@ -366,7 +366,7 @@ AcpiAmlResolveObjectToValue (
 
     case INTERNAL_TYPE_REFERENCE:
 
-        Opcode = StackDesc->Reference.OpCode;
+        Opcode = StackDesc->Reference.Opcode;
 
         switch (Opcode)
         {
@@ -392,6 +392,7 @@ AcpiAmlResolveObjectToValue (
 
 
         case AML_LOCAL_OP:
+        case AML_ARG_OP:
 
             Index = StackDesc->Reference.Offset;
 
@@ -400,7 +401,7 @@ AcpiAmlResolveObjectToValue (
              * Note: this increments the local's object reference count
              */
 
-            Status = AcpiDsMethodDataGetValue (MTH_TYPE_LOCAL, Index,
+            Status = AcpiDsMethodDataGetValue (Opcode, Index,
                                                 WalkState, &ObjDesc);
             if (ACPI_FAILURE (Status))
             {
@@ -416,60 +417,10 @@ AcpiAmlResolveObjectToValue (
             *StackPtr = ObjDesc;
 
             DEBUG_PRINT (ACPI_INFO,
-                ("AmlResolveObjectToValue: [Local%d] ValueObj is %p\n",
+                ("AmlResolveObjectToValue: [Arg/Local %d] ValueObj is %p\n",
                 Index, ObjDesc));
-
-            if (ACPI_TYPE_INTEGER == ObjDesc->Common.Type)
-            {
-                /* Value is a Number */
-
-                DEBUG_PRINT (ACPI_INFO,
-                    ("AmlResolveObjectToValue: [Local%d] value=%X \n",
-                    Index, ObjDesc->Integer.Value));
-            }
-
             break;
 
-
-        case AML_ARG_OP:
-
-            Index = StackDesc->Reference.Offset;
-
-
-            /*
-             * Get the argument from the method's state info
-             * Note: this increments the object reference count
-             */
-
-            Status = AcpiDsMethodDataGetValue (MTH_TYPE_ARG, Index,
-                                                WalkState, &ObjDesc);
-            if (ACPI_FAILURE (Status))
-            {
-                return_ACPI_STATUS (Status);
-            }
-
-            /*
-             * Now we can delete the original Reference Object and
-             * replace it with the resolve value
-             */
-
-            AcpiCmRemoveReference (StackDesc);
-            *StackPtr = ObjDesc;
-
-            DEBUG_PRINT (TRACE_EXEC,
-                ("AmlResolveObjectToValue: [Arg%d] ValueObj is %p\n",
-                Index, ObjDesc));
-
-            if (ACPI_TYPE_INTEGER == ObjDesc->Common.Type)
-            {
-                /* Value is a Number */
-
-                DEBUG_PRINT (ACPI_INFO,
-                    ("AmlResolveObjectToValue: [Arg%d] value=%X\n",
-                    Index, ObjDesc->Integer.Value));
-            }
-
-            break;
 
 
         /*
