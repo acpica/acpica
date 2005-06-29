@@ -289,6 +289,18 @@ ACPI_EXTERN UINT32              GpeRegisterCount;
 ACPI_EXTERN GPE_REGISTERS       *GpeRegisters;
 ACPI_EXTERN GPE_LEVEL_INFO      *GpeInfo;
 
+/* 
+ * Gpe validation and translation table
+ * Indexed by the GPE number, returns GPE_INVALID if the GPE is not supported.
+ * Otherwise, returns a valid index into the global GPE table.
+ *
+ * This table is needed because the GPE numbers supported by block 1 do not
+ * have to be contiguous with the GPE numbers supported by block 0.
+ */
+ACPI_EXTERN UINT8               GpeValid [NUM_GPE];
+
+
+
 
 
 #endif /* __GLOBALS_H__ */
