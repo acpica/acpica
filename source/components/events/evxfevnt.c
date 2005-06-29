@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: evxfevnt - External Interfaces, ACPI event disable/enable
- *              $Revision: 1.69 $
+ *              $Revision: 1.70 $
  *
  *****************************************************************************/
 
@@ -119,6 +119,7 @@
 
 #include "acpi.h"
 #include "acevents.h"
+#include "acnamesp.h"
 
 #define _COMPONENT          ACPI_EVENTS
         ACPI_MODULE_NAME    ("evxfevnt")
@@ -718,6 +719,9 @@ AcpiInstallGpeBlock (
     UINT32                  InterruptLevel)
 {
     ACPI_STATUS             Status;
+    ACPI_OPERAND_OBJECT     *ObjDesc;
+    ACPI_NAMESPACE_NODE     *Node;
+    ACPI_GPE_BLOCK_INFO     *GpeBlock;
 
 
     ACPI_FUNCTION_TRACE ("AcpiInstallGpeBlock");
@@ -730,13 +734,58 @@ AcpiInstallGpeBlock (
         return_ACPI_STATUS (AE_BAD_PARAMETER);
     }
 
+    Status = AcpiUtAcquireMutex (ACPI_MTX_NAMESPACE);
+    if (ACPI_FAILURE (Status))
+    {
+        return (Status);
+    }
+
+    Node = AcpiNsMapHandleToNode (GpeDevice);
+    if (!Node)
+    {
+        Status = AE_BAD_PARAMETER;
+        goto UnlockAndExit;
+    }
+
     /*
      * For user-installed GPE Block Devices, the GpeBlockBaseNumber is always
      * zero, and we don't care about the GpeBlock pointer returned
      */
-    Status = AcpiEvCreateGpeBlock (GpeDevice, GpeBlockAddress, RegisterCount,
-                    0, InterruptLevel, NULL);
+    Status = AcpiEvCreateGpeBlock (Node, GpeBlockAddress, RegisterCount,
+                    0, InterruptLevel, &GpeBlock);
+    if (ACPI_FAILURE (Status))
+    {
+        goto UnlockAndExit;
+    }
 
+    /* Get the DeviceObject attached to the node */
+
+    ObjDesc = AcpiNsGetAttachedObject (Node);
+    if (!ObjDesc)
+    {
+        /* No object, create a new one */
+
+        ObjDesc = AcpiUtCreateInternalObject (ACPI_TYPE_DEVICE);
+        if (!ObjDesc)
+        {
+            Status = AE_NO_MEMORY;
+            goto UnlockAndExit;
+        }
+
+        Status = AcpiNsAttachObject (Node, ObjDesc, ACPI_TYPE_DEVICE);
+        AcpiUtRemoveReference (ObjDesc);
+        if (ACPI_FAILURE (Status))
+        {
+            goto UnlockAndExit;
+        }
+    }
+
+    ObjDesc->Device.GpeBlock = GpeBlock;
+
+
+UnlockAndExit:
+
+    (void) AcpiUtReleaseMutex (ACPI_MTX_NAMESPACE);
     return_ACPI_STATUS (Status);
 }
 
@@ -757,8 +806,52 @@ ACPI_STATUS
 AcpiRemoveGpeBlock (
     ACPI_HANDLE             GpeDevice)
 {
+    ACPI_OPERAND_OBJECT     *ObjDesc;
+    ACPI_STATUS             Status;
+    ACPI_NAMESPACE_NODE     *Node;
 
 
-    return (AE_NOT_IMPLEMENTED);
+    ACPI_FUNCTION_TRACE ("AcpiRemoveGpeBlock");
+
+
+    if (!GpeDevice)
+    {
+        return_ACPI_STATUS (AE_BAD_PARAMETER);
+    }
+
+    Status = AcpiUtAcquireMutex (ACPI_MTX_NAMESPACE);
+    if (ACPI_FAILURE (Status))
+    {
+        return (Status);
+    }
+
+    Node = AcpiNsMapHandleToNode (GpeDevice);
+    if (!Node)
+    {
+        Status = AE_BAD_PARAMETER;
+        goto UnlockAndExit;
+    }
+
+    /* Get the DeviceObject attached to the node */
+
+    ObjDesc = AcpiNsGetAttachedObject (Node);
+    if (!ObjDesc ||
+        !ObjDesc->Device.GpeBlock)
+    {
+        return_ACPI_STATUS (AE_NULL_OBJECT);
+    }
+
+    /* Delete the GPE block (but not the DeviceObject) */
+
+    Status = AcpiEvDeleteGpeBlock (ObjDesc->Device.GpeBlock);
+    if (ACPI_SUCCESS (Status))
+    {
+        ObjDesc->Device.GpeBlock = NULL;
+    }
+
+UnlockAndExit:
+
+    (void) AcpiUtReleaseMutex (ACPI_MTX_NAMESPACE);
+    return_ACPI_STATUS (Status);
 }
 
