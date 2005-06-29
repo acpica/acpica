@@ -190,8 +190,7 @@ AmlAllocateNameString (
         /* Allocation failure  */
 
         REPORT_ERROR ("AmlAllocateNameString: name allocation failure");
-        FUNCTION_EXIT;
-        return NULL;
+        return_VALUE (NULL);
     }
 
     TempPtr = NameString;
@@ -233,8 +232,7 @@ AmlAllocateNameString (
 
     *TempPtr = 0;
 
-    FUNCTION_EXIT;
-    return NameString;
+    return_VALUE (NameString);
 }
 
 
@@ -308,8 +306,7 @@ AmlDecodePackageLength (
         NumBytes = 4;
     }
 
-    FUNCTION_EXIT;
-    return NumBytes;
+    return_VALUE (NumBytes);
 }
 
 
@@ -415,8 +412,7 @@ AmlDoSeg (
 
     DEBUG_PRINT (TRACE_EXEC, ("Leave AmlDoSeg %s \n", ExceptionNames[Status]));
 
-    FUNCTION_STATUS_EXIT (Status);
-    return Status;
+    return_ACPI_STATUS (Status);
 }
 
 
@@ -449,7 +445,7 @@ AmlDoName (
     INT32                   PreviousStackTop = 0;
     INT32                   CurrentStackTop = 0;
     UINT32                  StackOffset;
-    METHOD_INFO             *MethodPtr;
+    ACPI_OBJECT_INTERNAL    *MthDesc;
     ACPI_HANDLE             MethodScope;
     char                    *NameString = NULL;
 
@@ -665,12 +661,12 @@ BREAKPOINT3;
                  * byte of the Method's AML.
                  */
 
-                MethodPtr = (METHOD_INFO *) NsGetValue (Handle);
-                if (MethodPtr)
+                MthDesc = (ACPI_OBJECT_INTERNAL *) NsGetAttachedObject (Handle);
+                if (MthDesc)
                 {   
-                    /* MethodPtr valid   */
+                    /* MthDesc valid   */
                     
-                    MethodFlags = AmlGetPCodeByte (MethodPtr->Offset);
+                    MethodFlags = AmlGetPCodeByte (MthDesc->Method.Offset);
 
                     if (AML_END_OF_BLOCK == MethodFlags)
                     {
@@ -681,7 +677,7 @@ BREAKPOINT3;
 
                     else
                     {   
-                        /* MethodPtr points at valid method  */
+                        /* MthDesc points at valid method  */
                         
                         ArgCount = (MethodFlags & METHOD_ARG_COUNT_MASK) >> METHOD_ARG_COUNT_SHIFT;
 
@@ -745,7 +741,7 @@ BREAKPOINT3;
 
                             /* Execute the Method, passing the stacked args */
                             
-                            Status = AmlExecuteMethod (MethodPtr->Offset + 1, MethodPtr->Length - 1,
+                            Status = AmlExecuteMethod (MthDesc->Method.Offset + 1, MthDesc->Method.Length - 1,
                                                         AmlObjStackGetPtr (StackOffset -1));
 
                             CurrentStackTop = AmlObjStackLevel ();
@@ -833,8 +829,7 @@ BREAKPOINT3;
         CmFree (NameString);
     }
 
-    FUNCTION_STATUS_EXIT (Status);
-    return Status;
+    return_ACPI_STATUS (Status);
 }
 
 
