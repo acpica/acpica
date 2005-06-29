@@ -106,11 +106,11 @@ PostBuild_Cmds=copy Debug\iasldebug.exe ..\..\Libraries
 # PROP Default_Filter ".c"
 # Begin Source File
 
-SOURCE=..\..\source_linux\COMPONENTS\INTERPRETER\DISPATCHER\dsobject.c
+SOURCE=..\..\source_linux\components\utilities\utalloc.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\source_linux\components\utilities\utalloc.c
+SOURCE=..\..\source_linux\components\utilities\utcache.c
 # End Source File
 # Begin Source File
 
@@ -138,7 +138,15 @@ SOURCE=..\..\source_linux\components\utilities\utmisc.c
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\source_linux\components\utilities\utmutex.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\source_linux\components\utilities\utobject.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source_linux\components\utilities\utstate.c
 # End Source File
 # End Group
 # Begin Group "Namespace"
@@ -286,6 +294,10 @@ SOURCE=..\..\source_linux\COMPONENTS\INTERPRETER\PARSER\psargs.c
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\source_linux\components\interpreter\parser\psloop.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\source_linux\components\interpreter\parser\psopcode.c
 # End Source File
 # Begin Source File
@@ -315,6 +327,10 @@ SOURCE=..\..\source_linux\COMPONENTS\INTERPRETER\PARSER\pswalk.c
 # Begin Source File
 
 SOURCE=..\..\source_linux\components\interpreter\dispatcher\dsfield.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source_linux\COMPONENTS\INTERPRETER\DISPATCHER\dsobject.c
 # End Source File
 # Begin Source File
 
