@@ -1,9 +1,9 @@
-/******************************************************************************
+/*******************************************************************************
  *
  * Module Name: dbexec - debugger control method execution
- *              $Revision: 1.15 $
+ *              $Revision: 1.16 $
  *
- *****************************************************************************/
+ ******************************************************************************/
 
 /******************************************************************************
  *
@@ -147,7 +147,7 @@ typedef struct dbmethodinfo
 DB_METHOD_INFO              Info;
 
 
-/******************************************************************************
+/*******************************************************************************
  *
  * FUNCTION:    AcpiDbExecuteMethod
  *
@@ -158,7 +158,7 @@ DB_METHOD_INFO              Info;
  *
  * DESCRIPTION: Execute a control method.
  *
- *****************************************************************************/
+ ******************************************************************************/
 
 ACPI_STATUS
 AcpiDbExecuteMethod (
@@ -175,6 +175,8 @@ AcpiDbExecuteMethod (
     {
         AcpiOsPrintf ("Warning: debug output is not enabled!\n");
     }
+
+    /* Are there arguments to the method? */
 
     if (Info->Args && Info->Args[0])
     {
@@ -220,7 +222,7 @@ AcpiDbExecuteMethod (
 }
 
 
-/******************************************************************************
+/*******************************************************************************
  *
  * FUNCTION:    AcpiDbExecuteSetup
  *
@@ -230,7 +232,7 @@ AcpiDbExecuteMethod (
  *
  * DESCRIPTION: Setup info segment prior to method execution
  *
- *****************************************************************************/
+ ******************************************************************************/
 
 void
 AcpiDbExecuteSetup (
@@ -267,20 +269,20 @@ AcpiDbExecuteSetup (
 }
 
 
-/******************************************************************************
+/*******************************************************************************
  *
  * FUNCTION:    AcpiDbExecute
  *
  * PARAMETERS:  Name                - Name of method to execute
  *              Args                - Parameters to the method
- *              Flags               - single step/no singl step
+ *              Flags               - single step/no single step
  *
  * RETURN:      Status
  *
  * DESCRIPTION: Execute a control method.  Name is relative to the current
  *              scope.
  *
- *****************************************************************************/
+ ******************************************************************************/
 
 void
 AcpiDbExecute (
@@ -344,18 +346,18 @@ AcpiDbExecute (
 }
 
 
-/******************************************************************************
+/*******************************************************************************
  *
  * FUNCTION:    AcpiDbMethodThread
  *
- * PARAMETERS:  None
+ * PARAMETERS:  Context             - Execution info segment
  *
  * RETURN:      None
  *
  * DESCRIPTION: Debugger execute thread.  Waits for a command line, then
  *              simply dispatches it.
  *
- *****************************************************************************/
+ ******************************************************************************/
 
 void
 AcpiDbMethodThread (
@@ -387,17 +389,19 @@ AcpiDbMethodThread (
 }
 
 
-/******************************************************************************
+/*******************************************************************************
  *
  * FUNCTION:    AcpiDbCreateExecutionThreads
  *
- * PARAMETERS:
+ * PARAMETERS:  NumThreadsArg           - Number of threads to create
+ *              NumLoopsArg             - Loop count for the thread(s)
+ *              MethodNameArg           - Control method to execute
  *
  * RETURN:      None
  *
  * DESCRIPTION: Create threads to execute method(s)
  *
- *****************************************************************************/
+ ******************************************************************************/
 
 void
 AcpiDbCreateExecutionThreads (

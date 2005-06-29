@@ -1,9 +1,9 @@
-/******************************************************************************
+/*******************************************************************************
  *
  * Module Name: dbstats - Generation and display of ACPI table statistics
- *              $Revision: 1.30 $
+ *              $Revision: 1.33 $
  *
- *****************************************************************************/
+ ******************************************************************************/
 
 /******************************************************************************
  *
@@ -115,16 +115,20 @@
  *****************************************************************************/
 
 
-#include "acpi.h"
-#include "acdebug.h"
-#include "amlcode.h"
-#include "acparser.h"
+#include <acpi.h>
+#include <acdebug.h>
+#include <amlcode.h>
+#include <acparser.h>
+#include <acnamesp.h>
 
 #ifdef ENABLE_DEBUGGER
 
 #define _COMPONENT          DEBUGGER
         MODULE_NAME         ("dbstats")
 
+/*
+ * Statistics subcommands
+ */
 ARGUMENT_INFO               AcpiDbStatTypes [] =
 {
     {"ALLOCATIONS"},
@@ -132,35 +136,28 @@ ARGUMENT_INFO               AcpiDbStatTypes [] =
     {"MEMORY"},
     {"MISC"},
     {"TABLES"},
+    {"SIZES"},
     {NULL}           /* Must be null terminated */
 };
 
-#define CMD_OBJECTS         0
-#define CMD_ALLOCATIONS     1
+#define CMD_ALLOCATIONS     0
+#define CMD_OBJECTS         1
 #define CMD_MEMORY          2
 #define CMD_MISC            3
 #define CMD_TABLES          4
+#define CMD_SIZES           5
+
 
 /*
- * Statistics
+ * Statistic globals
  */
+UINT16                      AcpiGbl_ObjTypeCount[INTERNAL_TYPE_NODE_MAX+1];
+UINT16                      AcpiGbl_NodeTypeCount[INTERNAL_TYPE_NODE_MAX+1];
+UINT16                      AcpiGbl_ObjTypeCountMisc;
+UINT16                      AcpiGbl_NodeTypeCountMisc;
+UINT32                      NumNodes;
+UINT32                      NumObjects;
 
-UINT32                      NumNames = 0;
-UINT32                      NumMethods = 0;
-UINT32                      NumRegions = 0;
-UINT32                      NumPackages = 0;
-UINT32                      NumAliases = 0;
-UINT32                      NumDevices = 0;
-UINT32                      NumFieldDefs = 0;
-UINT32                      NumThermalZones =  0;
-UINT32                      NumNodes = 0;
-UINT32                      NumGrammarElements = 0;
-UINT32                      NumMethodElements = 0;
-UINT32                      NumMutexes = 0;
-UINT32                      NumPowerResources = 0;
-UINT32                      NumBankFields = 0;
-UINT32                      NumIndexFields = 0;
-UINT32                      NumEvents = 0;
 
 UINT32                      SizeOfParseTree;
 UINT32                      SizeOfMethodTrees;
@@ -168,17 +165,214 @@ UINT32                      SizeOfNodeEntries;
 UINT32                      SizeOfAcpiObjects;
 
 
-/*****************************************************************************
+/*******************************************************************************
  *
- * FUNCTION:    AcpiDbDisplayStatistics
- *
- * PARAMETERS:
+ * FUNCTION:    AcpiDbEnumerateObject
+ *  
+ * PARAMETERS:  ObjDesc             - Object to be counted
  *
  * RETURN:      None
  *
- * DESCRIPTION:
+ * DESCRIPTION: Add this object to the global counts, by object type.  
+ *              Recursively handles subobjects and packages.
  *
- ****************************************************************************/
+ *              [TBD] Restructure - remove recursion.
+ *
+ ******************************************************************************/
+
+void
+AcpiDbEnumerateObject (
+    ACPI_OPERAND_OBJECT     *ObjDesc)
+{
+    UINT32                  Type;
+    UINT32                  i;
+
+
+    if (!ObjDesc)
+    {
+        return;
+    }
+
+
+    /* Enumerate this object first */
+
+    NumObjects++;
+
+    Type = ObjDesc->Common.Type;
+    if (Type > INTERNAL_TYPE_NODE_MAX)
+    {
+        AcpiGbl_ObjTypeCountMisc++;
+    }
+    else
+    {
+        AcpiGbl_ObjTypeCount [Type]++;
+    }
+
+    /* Count the sub-objects */
+
+    switch (Type)
+    {
+    case ACPI_TYPE_PACKAGE:
+        for (i = 0; i< ObjDesc->Package.Count; i++)
+        {
+            AcpiDbEnumerateObject (ObjDesc->Package.Elements[i]);
+        }
+        break;
+
+    case ACPI_TYPE_DEVICE:
+        AcpiDbEnumerateObject (ObjDesc->Device.SysHandler);
+        AcpiDbEnumerateObject (ObjDesc->Device.DrvHandler);
+        AcpiDbEnumerateObject (ObjDesc->Device.AddrHandler);
+        break;
+
+    case ACPI_TYPE_REGION:
+        AcpiDbEnumerateObject (ObjDesc->Region.AddrHandler);
+        break;
+
+    case ACPI_TYPE_POWER:
+        AcpiDbEnumerateObject (ObjDesc->PowerResource.SysHandler);
+        AcpiDbEnumerateObject (ObjDesc->PowerResource.DrvHandler);
+        break;
+
+    case ACPI_TYPE_PROCESSOR:
+        AcpiDbEnumerateObject (ObjDesc->Processor.SysHandler);
+        AcpiDbEnumerateObject (ObjDesc->Processor.DrvHandler);
+        AcpiDbEnumerateObject (ObjDesc->Processor.AddrHandler);
+        break;
+
+    case ACPI_TYPE_THERMAL:
+        AcpiDbEnumerateObject (ObjDesc->ThermalZone.SysHandler);
+        AcpiDbEnumerateObject (ObjDesc->ThermalZone.DrvHandler);
+        AcpiDbEnumerateObject (ObjDesc->ThermalZone.AddrHandler);
+        break;
+    }
+}
+
+
+#ifndef PARSER_ONLY
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiDbClassifyOneObject
+ *
+ * PARAMETERS:  Callback for WalkNamespace
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Enumerate both the object descriptor (including subobjects) and
+ *              the parent namespace node.
+ *
+ ******************************************************************************/
+
+ACPI_STATUS
+AcpiDbClassifyOneObject (
+    ACPI_HANDLE             ObjHandle,
+    UINT32                  NestingLevel,
+    void                    *Context,
+    void                    **ReturnValue)
+{
+    ACPI_NAMESPACE_NODE     *Node;
+    ACPI_OPERAND_OBJECT     *ObjDesc;
+    UINT32                  Type;
+
+
+    NumNodes++;
+
+    Node = (ACPI_NAMESPACE_NODE *) ObjHandle;
+    ObjDesc = ((ACPI_NAMESPACE_NODE *) ObjHandle)->Object;
+
+    AcpiDbEnumerateObject (ObjDesc);
+
+    Type = Node->Type;
+    if (Type > INTERNAL_TYPE_INVALID)
+    {
+        AcpiGbl_NodeTypeCountMisc++;
+    }
+
+    else
+    {
+        AcpiGbl_NodeTypeCount [Type]++;
+    }
+
+    return AE_OK;
+
+
+
+    /* TBD: These need to be counted during the initial parsing phase */
+    /*
+    if (AcpiPsIsNamedOp (Op->Opcode))
+    {
+        NumNodes++;
+    }
+
+    if (IsMethod)
+    {
+        NumMethodElements++;
+    }
+
+    NumGrammarElements++;
+    Op = AcpiPsGetDepthNext (Root, Op);
+
+    SizeOfParseTree             = (NumGrammarElements - NumMethodElements) * (UINT32) sizeof (ACPI_PARSE_OBJECT);
+    SizeOfMethodTrees           = NumMethodElements * (UINT32) sizeof (ACPI_PARSE_OBJECT);
+    SizeOfNodeEntries           = NumNodes * (UINT32) sizeof (ACPI_NAMESPACE_NODE);
+    SizeOfAcpiObjects           = NumNodes * (UINT32) sizeof (ACPI_OPERAND_OBJECT);
+
+    */
+}
+
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiDbCountNamespaceObjects
+ *
+ * PARAMETERS:  None
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Count and classify the entire namespace, including all
+ *              namespace nodes and attached objects.
+ *
+ ******************************************************************************/
+
+ACPI_STATUS
+AcpiDbCountNamespaceObjects (
+    void)
+{
+    UINT32                  i;
+
+
+    NumNodes = 0;
+    NumObjects = 0;
+
+    AcpiGbl_ObjTypeCountMisc = 0;
+    for (i = 0; i < INTERNAL_TYPE_INVALID; i++)
+    {
+        AcpiGbl_ObjTypeCount [i] = 0;
+        AcpiGbl_NodeTypeCount [i] = 0;
+    }
+
+    AcpiNsWalkNamespace (ACPI_TYPE_ANY, ACPI_ROOT_OBJECT, ACPI_UINT32_MAX,
+                        FALSE, AcpiDbClassifyOneObject, NULL, NULL);
+
+    return (AE_OK);
+}
+
+#endif
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiDbDisplayStatistics
+ *
+ * PARAMETERS:  TypeArg         - Subcommand
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Display various statistics
+ *
+ ******************************************************************************/
 
 ACPI_STATUS
 AcpiDbDisplayStatistics (
@@ -195,7 +389,7 @@ AcpiDbDisplayStatistics (
 
     if (!TypeArg)
     {
-        AcpiOsPrintf ("Use subcommand OBJECTS, MEMORY, MISC, or TABLES\n");
+        AcpiOsPrintf ("The following subcommands are available:\n    ALLOCATIONS, OBJECTS, MEMORY, MISC, SIZES, TABLES\n");
         return (AE_OK);
     }
 
@@ -207,6 +401,11 @@ AcpiDbDisplayStatistics (
         return (AE_OK);
     }
 
+#ifndef PARSER_ONLY
+
+    AcpiDbCountNamespaceObjects ();
+#endif
+    
 
     switch (Type)
     {
@@ -228,27 +427,29 @@ AcpiDbDisplayStatistics (
     case CMD_OBJECTS:
 
         AcpiOsPrintf ("\nObjects defined in the current namespace:\n\n");
-        AcpiOsPrintf ("Names:......................% 7ld\n", NumNames);
-        AcpiOsPrintf ("Events:.....................% 7ld\n", NumEvents);
-        AcpiOsPrintf ("Devices:....................% 7ld\n", NumDevices);
-        AcpiOsPrintf ("Aliases:....................% 7ld\n", NumAliases);
-        AcpiOsPrintf ("Mutexes:....................% 7ld\n", NumMutexes);
-        AcpiOsPrintf ("Packages:...................% 7ld\n", NumPackages);
-        AcpiOsPrintf ("Bank Fields.................% 7ld\n", NumBankFields);
-        AcpiOsPrintf ("Index Fields................% 7ld\n", NumIndexFields);
-        AcpiOsPrintf ("Thermal Zones:..............% 7ld\n", NumThermalZones);
-        AcpiOsPrintf ("Power Resources:............% 7ld\n", NumPowerResources);
-        AcpiOsPrintf ("Control Methods:............% 7ld\n", NumMethods);
-        AcpiOsPrintf ("Operation Regions:..........% 7ld\n", NumRegions);
-        AcpiOsPrintf ("Field Definitions:..........% 7ld\n", NumFieldDefs);
-        AcpiOsPrintf ("Total Named objects:........% 7ld\n", NumNodes);
 
+        AcpiOsPrintf ("%16.16s % 10.10s % 10.10s\n", "ACPI_TYPE", "NODES", "OBJECTS");
+
+        for (i = 0; i < INTERNAL_TYPE_NODE_MAX; i++)
+        {
+            AcpiOsPrintf ("%16.16s % 10ld% 10ld\n", AcpiCmGetTypeName (i), 
+                AcpiGbl_NodeTypeCount [i], AcpiGbl_ObjTypeCount [i]);
+        }
+        AcpiOsPrintf ("%16.16s % 10ld% 10ld\n", "Misc/Unknown", 
+            AcpiGbl_NodeTypeCountMisc, AcpiGbl_ObjTypeCountMisc);
+
+        AcpiOsPrintf ("%16.16s % 10ld% 10ld\n", "TOTALS:", 
+            NumNodes, NumObjects);
+
+
+/*
         AcpiOsPrintf ("\n");
 
         AcpiOsPrintf ("ASL/AML Grammar Usage:\n\n");
         AcpiOsPrintf ("Elements Inside Methods:....% 7ld\n", NumMethodElements);
         AcpiOsPrintf ("Elements Outside Methods:...% 7ld\n", NumGrammarElements - NumMethodElements);
         AcpiOsPrintf ("Total Grammar Elements:.....% 7ld\n", NumGrammarElements);
+*/
         break;
 
     case CMD_MEMORY:
@@ -256,7 +457,7 @@ AcpiDbDisplayStatistics (
         AcpiOsPrintf ("\nDynamic Memory Estimates:\n\n");
         AcpiOsPrintf ("Parse Tree without Methods:.% 7ld\n", SizeOfParseTree);
         AcpiOsPrintf ("Control Method Parse Trees:.% 7ld (If parsed simultaneously)\n", SizeOfMethodTrees);
-        AcpiOsPrintf ("Node NTEs:..........% 7ld (%d objects)\n", SizeOfNodeEntries, NumNodes);
+        AcpiOsPrintf ("Namespace Nodes:............% 7ld (%d nodes)\n", sizeof (ACPI_NAMESPACE_NODE) * NumNodes, NumNodes);
         AcpiOsPrintf ("Named Internal Objects......% 7ld\n", SizeOfAcpiObjects);
         AcpiOsPrintf ("State Cache size............% 7ld\n", AcpiGbl_GenericStateCacheDepth * sizeof (ACPI_GENERIC_STATE));
         AcpiOsPrintf ("Parse Cache size............% 7ld\n", AcpiGbl_ParseCacheDepth * sizeof (ACPI_PARSE_OBJECT));
@@ -302,112 +503,48 @@ AcpiDbDisplayStatistics (
             AcpiOsPrintf ("%-20s:       % 7ld\n", AcpiCmGetMutexName (i), AcpiGbl_AcpiMutexInfo[i].UseCount);
         }
         break;
+
+
+    case CMD_SIZES:
+
+        AcpiOsPrintf ("\nInternal object sizes:\n\n");
+
+        AcpiOsPrintf ("Common           %3d\n", sizeof (ACPI_OBJECT_COMMON));
+        AcpiOsPrintf ("Number           %3d\n", sizeof (ACPI_OBJECT_NUMBER));
+        AcpiOsPrintf ("String           %3d\n", sizeof (ACPI_OBJECT_STRING));
+        AcpiOsPrintf ("Buffer           %3d\n", sizeof (ACPI_OBJECT_BUFFER));
+        AcpiOsPrintf ("Package          %3d\n", sizeof (ACPI_OBJECT_PACKAGE));
+        AcpiOsPrintf ("FieldUnit        %3d\n", sizeof (ACPI_OBJECT_FIELD_UNIT));
+        AcpiOsPrintf ("Device           %3d\n", sizeof (ACPI_OBJECT_DEVICE));
+        AcpiOsPrintf ("Event            %3d\n", sizeof (ACPI_OBJECT_EVENT));
+        AcpiOsPrintf ("Method           %3d\n", sizeof (ACPI_OBJECT_METHOD));
+        AcpiOsPrintf ("Mutex            %3d\n", sizeof (ACPI_OBJECT_MUTEX));
+        AcpiOsPrintf ("Region           %3d\n", sizeof (ACPI_OBJECT_REGION));
+        AcpiOsPrintf ("PowerResource    %3d\n", sizeof (ACPI_OBJECT_POWER_RESOURCE));
+        AcpiOsPrintf ("Processor        %3d\n", sizeof (ACPI_OBJECT_PROCESSOR));
+        AcpiOsPrintf ("ThermalZone      %3d\n", sizeof (ACPI_OBJECT_THERMAL_ZONE));
+        AcpiOsPrintf ("Field            %3d\n", sizeof (ACPI_OBJECT_FIELD));
+        AcpiOsPrintf ("BankField        %3d\n", sizeof (ACPI_OBJECT_BANK_FIELD));
+        AcpiOsPrintf ("IndexField       %3d\n", sizeof (ACPI_OBJECT_INDEX_FIELD));
+        AcpiOsPrintf ("Reference        %3d\n", sizeof (ACPI_OBJECT_REFERENCE));
+        AcpiOsPrintf ("NotifyHandler    %3d\n", sizeof (ACPI_OBJECT_NOTIFY_HANDLER));
+        AcpiOsPrintf ("AddrHandler      %3d\n", sizeof (ACPI_OBJECT_ADDR_HANDLER));
+        AcpiOsPrintf ("Extra            %3d\n", sizeof (ACPI_OBJECT_EXTRA));
+
+        AcpiOsPrintf ("\n");
+
+        AcpiOsPrintf ("ParseObject      %3d\n", sizeof (ACPI_PARSE_OBJECT));
+        AcpiOsPrintf ("Parse2Object     %3d\n", sizeof (ACPI_PARSE2_OBJECT));
+        AcpiOsPrintf ("OperandObject    %3d\n", sizeof (ACPI_OPERAND_OBJECT));
+        AcpiOsPrintf ("NamespaceNode    %3d\n", sizeof (ACPI_NAMESPACE_NODE));
+
+        break;
+
     }
 
     AcpiOsPrintf ("\n");
     return (AE_OK);
 }
 
-
-/*****************************************************************************
- *
- * FUNCTION:    AcpiDbGenerateStatistics
- *
- * PARAMETERS:
- *
- * RETURN:      None
- *
- * DESCRIPTION:
- *
- ****************************************************************************/
-
-void
-AcpiDbGenerateStatistics (
-    ACPI_PARSE_OBJECT       *Root,
-    BOOLEAN                 IsMethod)
-{
-    ACPI_PARSE_OBJECT       *Op;
-
-
-    Op = AcpiPsGetChild (Root);
-
-    while (Op)
-    {
-        switch (Op->Opcode)
-        {
-        case AML_METHOD_OP:
-            NumMethods++;
-            break;
-
-        case AML_NAME_OP:
-            NumNames++;
-            break;
-
-        case AML_REGION_OP:
-            NumRegions++;
-            break;
-
-        case AML_ALIAS_OP:
-            NumAliases++;
-            break;
-
-        case AML_PACKAGE_OP:
-            NumPackages++;
-            break;
-
-        case AML_DEVICE_OP:
-            NumDevices++;
-            break;
-
-        case AML_THERMAL_ZONE_OP:
-            NumThermalZones++;
-            break;
-
-        case AML_DEF_FIELD_OP:
-            NumFieldDefs++;
-            break;
-
-        case AML_POWER_RES_OP:
-            NumPowerResources++;
-            break;
-
-        case AML_MUTEX_OP:
-            NumMutexes++;
-            break;
-
-        case AML_BANK_FIELD_OP:
-            NumBankFields++;
-            break;
-
-        case AML_INDEX_FIELD_OP:
-            NumIndexFields++;
-            break;
-
-        case AML_EVENT_OP:
-            NumEvents++;
-            break;
-        }
-
-        if (AcpiPsIsNamedOp (Op->Opcode))
-        {
-            NumNodes++;
-        }
-
-        if (IsMethod)
-        {
-            NumMethodElements++;
-        }
-
-        NumGrammarElements++;
-        Op = AcpiPsGetDepthNext (Root, Op);
-    }
-
-
-    SizeOfParseTree             = (NumGrammarElements - NumMethodElements) * (UINT32) sizeof (ACPI_PARSE_OBJECT);
-    SizeOfMethodTrees           = NumMethodElements * (UINT32) sizeof (ACPI_PARSE_OBJECT);
-    SizeOfNodeEntries           = NumNodes * (UINT32) sizeof (ACPI_NAMESPACE_NODE);
-    SizeOfAcpiObjects           = NumNodes * (UINT32) sizeof (ACPI_OPERAND_OBJECT);
-
-}
 
 #endif /* ENABLE_DEBUGGER  */

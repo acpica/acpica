@@ -1,9 +1,9 @@
-/******************************************************************************
+/*******************************************************************************
  *
  * Module Name: dbdisasm - parser op tree display routines
- *              $Revision: 1.27 $
+ *              $Revision: 1.28 $
  *
- *****************************************************************************/
+ ******************************************************************************/
 
 /******************************************************************************
  *
@@ -129,6 +129,11 @@
 
 
 #define MAX_SHOW_ENTRY      128
+#define BLOCK_PAREN         1
+#define BLOCK_BRACE         2
+#define DB_NO_OP_INFO       "            [%2.2d]  "
+#define DB_FULL_OP_INFO     "%5.5X #%4.4X [%2.2d]  "
+
 
 
 NATIVE_CHAR                 *INDENT_STRING = "....";
@@ -138,7 +143,7 @@ NATIVE_CHAR                 *INDENT_STRING = "....";
  *
  * FUNCTION:    AcpiDbBlockType
  *
- * PARAMETERS:  None
+ * PARAMETERS:  Op              - Object to be examined
  *
  * RETURN:      Status
  *
@@ -146,12 +151,9 @@ NATIVE_CHAR                 *INDENT_STRING = "....";
  *
  ******************************************************************************/
 
-#define BLOCK_PAREN 1
-#define BLOCK_BRACE 2
-
 UINT32
 AcpiDbBlockType (
-    ACPI_PARSE_OBJECT *Op)
+    ACPI_PARSE_OBJECT       *Op)
 {
 
     switch (Op->Opcode)
@@ -168,6 +170,7 @@ AcpiDbBlockType (
 
 }
 
+
 /*******************************************************************************
  *
  * FUNCTION:    AcpiPsDisplayObjectPathname
@@ -176,10 +179,10 @@ AcpiDbBlockType (
  *
  * RETURN:      Status
  *
- * DESCRIPTION: Diplay the pathname associated with a named object.  Two versions.
- *              One searches the parse tree (for parser-only applications such
- *              as AcpiDump), and the other searches the ACPI namespace (the
- *              parse tree is probably deleted)
+ * DESCRIPTION: Diplay the pathname associated with a named object.  Two 
+ *              versions. One searches the parse tree (for parser-only 
+ *              applications suchas AcpiDump), and the other searches the 
+ *              ACPI namespace (the parse tree is probably deleted)
  *
  ******************************************************************************/
 
@@ -267,16 +270,14 @@ AcpiPsDisplayObjectPathname (
  *
  * FUNCTION:    AcpiDbDisplayOp
  *
- * PARAMETERS:  None
+ * PARAMETERS:  Origin          - Starting object
+ *              NumOpcodes      - Max number of opcodes to be displayed
  *
- * RETURN:      Status
+ * RETURN:      None
  *
- * DESCRIPTION: Show op and its children
+ * DESCRIPTION: Display parser object and its children
  *
  ******************************************************************************/
-
-#define DB_NO_OP_INFO       "            [%2.2d]  "
-#define DB_FULL_OP_INFO     "%5.5X #%4.4X [%2.2d]  "
 
 void
 AcpiDbDisplayOp (

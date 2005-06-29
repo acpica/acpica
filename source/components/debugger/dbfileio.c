@@ -1,10 +1,10 @@
-/******************************************************************************
+/*******************************************************************************
  *
  * Module Name: dbfileio - Debugger file I/O commands.  These can't usually
  *              be used when running the debugger in Ring 0 (Kernel mode)
- *              $Revision: 1.24 $
+ *              $Revision: 1.25 $
  *
- *****************************************************************************/
+ ******************************************************************************/
 
 /******************************************************************************
  *
@@ -128,27 +128,32 @@
 #define _COMPONENT          DEBUGGER
         MODULE_NAME         ("dbfileio")
 
-ACPI_PARSE_OBJECT       *root;
+
+ACPI_PARSE_OBJECT           *root;
 
 #ifdef ACPI_APPLICATION
 #include <stdio.h>
-FILE                    *DebugFile = NULL;
+FILE                        *DebugFile = NULL;
 #endif
 
 
-/* NOTE: this is here for lack of a better place.  It is used in all flavors of the debugger, need LCD file */
+/* 
+ * NOTE: this is here for lack of a better place.  It is used in all 
+ *  flavors of the debugger, need LCD file 
+ */
 
-/******************************************************************************
+/*******************************************************************************
  *
  * FUNCTION:    AcpiDbMatchArgument
  *
- * PARAMETERS:  UserArgument             - User command line
+ * PARAMETERS:  UserArgument            - User command line
+ *              Arguments               - Array of commands to match against
  *
- * RETURN:      Index into command array, -1 if not found
+ * RETURN:      Index into command array or ACPI_TYPE_NOT_FOUND if not found
  *
  * DESCRIPTION: Search command array for a command match
  *
- *****************************************************************************/
+ ******************************************************************************/
 
 OBJECT_TYPE_INTERNAL
 AcpiDbMatchArgument (
@@ -177,7 +182,7 @@ AcpiDbMatchArgument (
 }
 
 
-/******************************************************************************
+/*******************************************************************************
  *
  * FUNCTION:    AcpiDbCloseDebugFile
  *
@@ -187,7 +192,7 @@ AcpiDbMatchArgument (
  *
  * DESCRIPTION: If open, close the current debug output file
  *
- *****************************************************************************/
+ ******************************************************************************/
 
 void
 AcpiDbCloseDebugFile (
@@ -208,17 +213,17 @@ AcpiDbCloseDebugFile (
 }
 
 
-/******************************************************************************
+/*******************************************************************************
  *
  * FUNCTION:    AcpiDbOpenDebugFile
  *
- * PARAMETERS:  Name                - Filename
+ * PARAMETERS:  Name                - Filename to open
  *
  * RETURN:      Status
  *
  * DESCRIPTION: Open a file where debug output will be directed.
  *
- *****************************************************************************/
+ ******************************************************************************/
 
 void
 AcpiDbOpenDebugFile (
@@ -241,17 +246,19 @@ AcpiDbOpenDebugFile (
 
 
 #ifdef ACPI_APPLICATION
-/******************************************************************************
+/*******************************************************************************
  *
  * FUNCTION:    AcpiDbLoadTable
  *
- * PARAMETERS:
+ * PARAMETERS:  fp              - File that contains table
+ *              TablePtr        - Return value, buffer with table
+ *              TableLenght     - Return value, length of table
  *
  * RETURN:      Status
  *
  * DESCRIPTION: Load the DSDT from the file pointer
  *
- *****************************************************************************/
+ ******************************************************************************/
 
 ACPI_STATUS
 AcpiDbLoadTable(
@@ -315,17 +322,17 @@ AcpiDbLoadTable(
 #endif
 
 
-/******************************************************************************
+/*******************************************************************************
  *
  * FUNCTION:    AcpiDbLoadAcpiTable
  *
- * PARAMETERS:
+ * PARAMETERS:  Filname         - File where table is located
  *
  * RETURN:      Status
  *
  * DESCRIPTION: Load an ACPI table from a file
  *
- *****************************************************************************/
+ ******************************************************************************/
 
 ACPI_STATUS
 AcpiDbLoadAcpiTable (

@@ -1,9 +1,9 @@
-/******************************************************************************
+/*******************************************************************************
  *
  * Module Name: dbutils - AML debugger utilities
- *              $Revision: 1.28 $
+ *              $Revision: 1.29 $
  *
- *****************************************************************************/
+ ******************************************************************************/
 
 /******************************************************************************
  *
@@ -132,17 +132,19 @@
         MODULE_NAME         ("dbutils")
 
 
-/******************************************************************************
+
+/*******************************************************************************
  *
  * FUNCTION:    AcpiDbSetOutputDestination
  *
- * PARAMETERS:  Address             - Pointer to the buffer
+ * PARAMETERS:  OutputFlags         - Current flags word
  *
  * RETURN:      None
  *
- * DESCRIPTION: Print a portion of a buffer
+ * DESCRIPTION: Set the current destination for debugger output.  Alos sets
+ *              the debug output level accordingly.
  *
- *****************************************************************************/
+ ******************************************************************************/
 
 void
 AcpiDbSetOutputDestination (
@@ -164,7 +166,8 @@ AcpiDbSetOutputDestination (
     }
 }
 
-/******************************************************************************
+
+/*******************************************************************************
  *
  * FUNCTION:    AcpiDbDumpBuffer
  *
@@ -174,7 +177,7 @@ AcpiDbSetOutputDestination (
  *
  * DESCRIPTION: Print a portion of a buffer
  *
- *****************************************************************************/
+ ******************************************************************************/
 
 void
 AcpiDbDumpBuffer (
@@ -188,18 +191,18 @@ AcpiDbDumpBuffer (
 }
 
 
-/******************************************************************************
+/*******************************************************************************
  *
  * FUNCTION:    AcpiDbDumpObject
  *
- * PARAMETERS:  MethodName          - Method that returned the object
- *              ReturnObj           - The object to dump
+ * PARAMETERS:  ObjDesc         - External ACPI object to dump
+ *              Level           - Nesting level.
  *
  * RETURN:      None
  *
  * DESCRIPTION: Dump the contents of an ACPI external object
  *
- *****************************************************************************/
+ ******************************************************************************/
 
 void
 AcpiDbDumpObject (
@@ -270,17 +273,17 @@ AcpiDbDumpObject (
 }
 
 
-/******************************************************************************
+/*******************************************************************************
  *
  * FUNCTION:    AcpiDbPrepNamestring
  *
- * PARAMETERS:
+ * PARAMETERS:  Name            - String to prepare
  *
  * RETURN:      None
  *
  * DESCRIPTION: Translate all forward slashes and dots to backslashes.
  *
- *****************************************************************************/
+ ******************************************************************************/
 
 void
 AcpiDbPrepNamestring (
@@ -324,17 +327,18 @@ AcpiDbPrepNamestring (
 }
 
 
-/******************************************************************************
+/*******************************************************************************
  *
  * FUNCTION:    AdSecondPassParse
  *
  * PARAMETERS:  Root            - Root of the parse tree
  *
- * RETURN:      None
+ * RETURN:      Status
  *
- * DESCRIPTION: Need to wait until second pass to parse the control methods
+ * DESCRIPTION: Second pass parse of the ACPI tables.  We need to wait until 
+ *              second pass to parse the control methods
  *
- *****************************************************************************/
+ ******************************************************************************/
 
 ACPI_STATUS
 AcpiDbSecondPassParse (
@@ -393,17 +397,17 @@ AcpiDbSecondPassParse (
 }
 
 
-/******************************************************************************
+/*******************************************************************************
  *
  * FUNCTION:    AcpiDbLocalNsLookup
  *
- * PARAMETERS:
+ * PARAMETERS:  Name            - Name to lookup
  *
- * RETURN:      None
+ * RETURN:      Pointer to a namespace node
  *
  * DESCRIPTION: Lookup a name in the ACPI namespace
  *
- *****************************************************************************/
+ ******************************************************************************/
 
 ACPI_NAMESPACE_NODE *
 AcpiDbLocalNsLookup (

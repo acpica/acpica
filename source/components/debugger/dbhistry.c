@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dbhistry - debugger HISTORY command
- *              $Revision: 1.13 $
+ *              $Revision: 1.14 $
  *
  *****************************************************************************/
 
@@ -132,6 +132,11 @@
         MODULE_NAME         ("dbhistry")
 
 
+#define HI_NO_HISTORY       0
+#define HI_RECORD_HISTORY   1
+#define HISTORY_SIZE        20
+
+
 typedef struct HistoryInfo
 {
     NATIVE_CHAR             Command[80];
@@ -140,27 +145,25 @@ typedef struct HistoryInfo
 } HISTORY_INFO;
 
 
-#define HI_NO_HISTORY       0
-#define HI_RECORD_HISTORY   1
-
-#define HISTORY_SIZE        20
 HISTORY_INFO                HistoryBuffer[HISTORY_SIZE];
 UINT16                      LoHistory = 0;
 UINT16                      NumHistory = 0;
 UINT16                      NextHistoryIndex = 0;
 UINT32                      NextCmdNum = 1;
 
-/******************************************************************************
+
+
+/*******************************************************************************
  *
  * FUNCTION:    AcpiDbAddToHistory
  *
- * PARAMETERS:  None
+ * PARAMETERS:  CommandLine     - Command to add
  *
  * RETURN:      None
  *
  * DESCRIPTION: Add a command line to the history buffer.
  *
- *****************************************************************************/
+ ******************************************************************************/
 
 void
 AcpiDbAddToHistory (
@@ -168,8 +171,12 @@ AcpiDbAddToHistory (
 {
 
 
+    /* Put command into the next available slot */
+
     STRCPY (HistoryBuffer[NextHistoryIndex].Command, CommandLine);
     HistoryBuffer[NextHistoryIndex].CmdNum = NextCmdNum;
+
+    /* Adjust indexes */
 
     if ((NumHistory == HISTORY_SIZE) &&
         (NextHistoryIndex == LoHistory))
@@ -197,7 +204,7 @@ AcpiDbAddToHistory (
 }
 
 
-/******************************************************************************
+/*******************************************************************************
  *
  * FUNCTION:    AcpiDbDisplayHistory
  *
@@ -207,7 +214,7 @@ AcpiDbAddToHistory (
  *
  * DESCRIPTION: Display the contents of the history buffer
  *
- *****************************************************************************/
+ ******************************************************************************/
 
 void
 AcpiDbDisplayHistory (void)
@@ -217,6 +224,9 @@ AcpiDbDisplayHistory (void)
 
 
     HistoryIndex = LoHistory;
+
+    /* Dump entire history buffer */
+
     for (i = 0; i < NumHistory; i++)
     {
         AcpiOsPrintf ("%ld  %s\n", HistoryBuffer[HistoryIndex].CmdNum, HistoryBuffer[HistoryIndex].Command);
@@ -230,7 +240,7 @@ AcpiDbDisplayHistory (void)
 }
 
 
-/******************************************************************************
+/*******************************************************************************
  *
  * FUNCTION:    AcpiDbGetFromHistory
  *
@@ -241,7 +251,7 @@ AcpiDbDisplayHistory (void)
  *
  * DESCRIPTION: Get a command from the history buffer
  *
- *****************************************************************************/
+ ******************************************************************************/
 
 NATIVE_CHAR *
 AcpiDbGetFromHistory (
@@ -262,11 +272,16 @@ AcpiDbGetFromHistory (
         CmdNum = STRTOUL (CommandNumArg, NULL, 0);
     }
 
+
+    /* Search history buffer */
+
     HistoryIndex = LoHistory;
     for (i = 0; i < NumHistory; i++)
     {
         if (HistoryBuffer[HistoryIndex].CmdNum == CmdNum)
         {
+            /* Found the commnad, return it */
+
             return (HistoryBuffer[HistoryIndex].Command);
         }
 

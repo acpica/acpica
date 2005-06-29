@@ -1,9 +1,9 @@
-/******************************************************************************
+/*******************************************************************************
  *
  * Module Name: dbdisply - debug display commands
- *              $Revision: 1.30 $
+ *              $Revision: 1.31 $
  *
- *****************************************************************************/
+ ******************************************************************************/
 
 /******************************************************************************
  *
@@ -175,7 +175,7 @@ AcpiDbGetPointer (
 }
 
 
-/******************************************************************************
+/*******************************************************************************
  *
  * FUNCTION:    AcpiDbDumpParserDescriptor
  *
@@ -185,7 +185,7 @@ AcpiDbGetPointer (
  *
  * DESCRIPTION: Display a formatted parser object
  *
- *****************************************************************************/
+ ******************************************************************************/
 
 void
 AcpiDbDumpParserDescriptor (
@@ -207,17 +207,19 @@ AcpiDbDumpParserDescriptor (
 }
 
 
-/******************************************************************************
+/*******************************************************************************
  *
  * FUNCTION:    AcpiDbDecodeAndDisplayObject
  *
- * PARAMETERS:
+ * PARAMETERS:  Target          - String with object to be displayed.  Names
+ *                                and hex pointers are supported.
+ *              OutputType      - Byte, Word, Dword, or Qword (B|W|D|Q)
  *
  * RETURN:      None
  *
  * DESCRIPTION: Display a formatted ACPI object
  *
- *****************************************************************************/
+ ******************************************************************************/
 
 void
 AcpiDbDecodeAndDisplayObject (
@@ -237,6 +239,8 @@ AcpiDbDecodeAndDisplayObject (
     {
         return;
     }
+
+    /* Decode the output type */
 
     if (OutputType)
     {
@@ -269,6 +273,8 @@ AcpiDbDecodeAndDisplayObject (
             AcpiOsPrintf ("Address %p is invalid in this address space\n", ObjPtr);
             return;
         }
+
+        /* Decode the object type */
 
         if (VALID_DESCRIPTOR_TYPE ((ObjPtr), ACPI_DESC_TYPE_NAMED))
         {
@@ -338,6 +344,7 @@ AcpiDbDecodeAndDisplayObject (
         return;
     }
 
+
 DumpNte:
     /* Now dump the Named obj */
 
@@ -373,17 +380,17 @@ DumpNte:
 }
 
 
-/******************************************************************************
+/*******************************************************************************
  *
  * FUNCTION:    AcpiDbDecodeInternalObject
  *
- * PARAMETERS:
+ * PARAMETERS:  ObjDesc         - Object to be displayed
  *
  * RETURN:      None
  *
- * DESCRIPTION: Short display of an internal object
+ * DESCRIPTION: Short display of an internal object.  Numbers and Strings.
  *
- *****************************************************************************/
+ ******************************************************************************/
 
 void
 AcpiDbDecodeInternalObject (
@@ -410,17 +417,18 @@ AcpiDbDecodeInternalObject (
 }
 
 
-/******************************************************************************
+/*******************************************************************************
  *
  * FUNCTION:    AcpiDbDisplayInternalObject
  *
- * PARAMETERS:
+ * PARAMETERS:  ObjDesc         - Object to be displayed
+ *              WalkState       - Current walk state
  *
  * RETURN:      None
  *
  * DESCRIPTION: Short display of an internal object
  *
- *****************************************************************************/
+ ******************************************************************************/
 
 void
 AcpiDbDisplayInternalObject (
@@ -437,6 +445,9 @@ AcpiDbDisplayInternalObject (
         AcpiOsPrintf ("<NullObj>\n");
         return;
     }
+
+
+    /* Decode the object type */
 
     else if (VALID_DESCRIPTOR_TYPE (ObjDesc, ACPI_DESC_TYPE_PARSER))
     {
@@ -458,6 +469,8 @@ AcpiDbDisplayInternalObject (
             AcpiOsPrintf (" Type %x [Invalid Type]", Type);
             return;
         }
+
+        /* Decode the ACPI object type */
 
         switch (ObjDesc->Common.Type)
         {
@@ -525,17 +538,17 @@ AcpiDbDisplayInternalObject (
 }
 
 
-/******************************************************************************
+/*******************************************************************************
  *
  * FUNCTION:    AcpiDbDisplayMethodInfo
  *
- * PARAMETERS:
+ * PARAMETERS:  StartOp         - Root of the control method parse tree
  *
  * RETURN:      None
  *
  * DESCRIPTION: Display information about the current method
  *
- *****************************************************************************/
+ ******************************************************************************/
 
 void
 AcpiDbDisplayMethodInfo (
@@ -640,17 +653,17 @@ AcpiDbDisplayMethodInfo (
 }
 
 
-/******************************************************************************
+/*******************************************************************************
  *
  * FUNCTION:    AcpiDbDisplayLocals
  *
- * PARAMETERS:
+ * PARAMETERS:  None
  *
  * RETURN:      None
  *
- * DESCRIPTION: Display all locals for a control method
+ * DESCRIPTION: Display all locals for the currently running control method
  *
- *****************************************************************************/
+ ******************************************************************************/
 
 void
 AcpiDbDisplayLocals (void)
@@ -683,17 +696,17 @@ AcpiDbDisplayLocals (void)
 }
 
 
-/******************************************************************************
+/*******************************************************************************
  *
  * FUNCTION:    AcpiDbDisplayArguments
  *
- * PARAMETERS:
+ * PARAMETERS:  None
  *
  * RETURN:      None
  *
- * DESCRIPTION: Display all arguments for a control method
+ * DESCRIPTION: Display all arguments for the currently running control method
  *
- *****************************************************************************/
+ ******************************************************************************/
 
 void
 AcpiDbDisplayArguments (void)
@@ -714,7 +727,7 @@ AcpiDbDisplayArguments (void)
     }
 
     ObjDesc = WalkState->MethodDesc;
-    Node = WalkState->Origin->Node;
+    Node = WalkState->MethodNode;
 
     NumArgs = ObjDesc->Method.ParamCount;
     Concurrency = ObjDesc->Method.Concurrency;
@@ -730,17 +743,17 @@ AcpiDbDisplayArguments (void)
 }
 
 
-/******************************************************************************
+/*******************************************************************************
  *
  * FUNCTION:    AcpiDbDisplayResults
  *
- * PARAMETERS:
+ * PARAMETERS:  None
  *
  * RETURN:      None
  *
  * DESCRIPTION: Display current contents of a method result stack
  *
- *****************************************************************************/
+ ******************************************************************************/
 
 void
 AcpiDbDisplayResults (void)
@@ -774,17 +787,17 @@ AcpiDbDisplayResults (void)
 }
 
 
-/******************************************************************************
+/*******************************************************************************
  *
  * FUNCTION:    AcpiDbDisplayCallingTree
  *
- * PARAMETERS:
+ * PARAMETERS:  None
  *
  * RETURN:      None
  *
  * DESCRIPTION: Display current calling tree of nested control methods
  *
- *****************************************************************************/
+ ******************************************************************************/
 
 void
 AcpiDbDisplayCallingTree (void)
@@ -819,17 +832,18 @@ AcpiDbDisplayCallingTree (void)
 }
 
 
-/******************************************************************************
+/*******************************************************************************
  *
  * FUNCTION:    AcpiDbDisplayResultObject
  *
- * PARAMETERS:
+ * PARAMETERS:  ObjDesc         - Object to be displayed
+ *              WalkState       - Current walk state
  *
  * RETURN:      None
  *
  * DESCRIPTION: Display the result of an AML opcode
  *
- *****************************************************************************/
+ ******************************************************************************/
 
 void
 AcpiDbDisplayResultObject (
@@ -853,17 +867,18 @@ AcpiDbDisplayResultObject (
 }
 
 
-/******************************************************************************
+/*******************************************************************************
  *
  * FUNCTION:    AcpiDbDisplayArgumentObject
  *
- * PARAMETERS:
+ * PARAMETERS:  ObjDesc         - Object to be displayed
+ *              WalkState       - Current walk state
  *
  * RETURN:      None
  *
  * DESCRIPTION: Display the result of an AML opcode
  *
- *****************************************************************************/
+ ******************************************************************************/
 
 void
 AcpiDbDisplayArgumentObject (

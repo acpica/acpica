@@ -1,9 +1,9 @@
-/******************************************************************************
+/*******************************************************************************
  *
  * Module Name: dbcmds - debug commands and output routines
- *              $Revision: 1.37 $
+ *              $Revision: 1.38 $
  *
- *****************************************************************************/
+ ******************************************************************************/
 
 /******************************************************************************
  *
@@ -132,8 +132,10 @@
         MODULE_NAME         ("dbcmds")
 
 
-/* These object types map directly to the ACPI_TYPES */
-
+/* 
+ * Arguments for the Objects command
+ * These object types map directly to the ACPI_TYPES 
+ */
 
 ARGUMENT_INFO               AcpiDbObjectTypes [] =
 {
@@ -156,17 +158,20 @@ ARGUMENT_INFO               AcpiDbObjectTypes [] =
     {NULL}           /* Must be null terminated */
 };
 
-/******************************************************************************
+
+
+/*******************************************************************************
  *
  * FUNCTION:    AcpiDbWalkForReferences
  *
  * PARAMETERS:  Callback from WalkNamespace
  *
- * RETURN:      None
+ * RETURN:      Status
  *
- * DESCRIPTION: Called for a single method found in the namespace
+ * DESCRIPTION: Check if this namespace object refers to the target object 
+ *              that is passed in as the context value.
  *
- *****************************************************************************/
+ ******************************************************************************/
 
 ACPI_STATUS
 AcpiDbWalkForReferences (
@@ -179,15 +184,22 @@ AcpiDbWalkForReferences (
     ACPI_NAMESPACE_NODE     *Node = (ACPI_NAMESPACE_NODE *) ObjHandle;
 
 
+    /* Check for match against the namespace node itself */
+
     if (Node == (void *) ObjDesc)
     {
         AcpiOsPrintf ("Object is a Node [%4.4s]\n", &Node->Name);
     }
 
+    /* Check for match against the object attached to the node */
+
     if (Node->Object == ObjDesc)
     {
         AcpiOsPrintf ("Reference at Node->Object %p [%4.4s]\n", Node, &Node->Name);
     }
+
+    /* Check first child for a match */
+    /* TBD: [Investigate] probably now obsolete with new datastructure */
 
     if (Node->Child == (void *) ObjDesc)
     {
@@ -198,17 +210,17 @@ AcpiDbWalkForReferences (
 }
 
 
-/******************************************************************************
+/*******************************************************************************
  *
  * FUNCTION:    AcpiDbFindReferences
  *
- * PARAMETERS:
+ * PARAMETERS:  ObjectArg       - String with hex value of the object 
  *
- * RETURN:
+ * RETURN:      None
  *
- * DESCRIPTION:
+ * DESCRIPTION: Search namespace for all references to the input object
  *
- *****************************************************************************/
+ ******************************************************************************/
 
 void
 AcpiDbFindReferences (
@@ -217,26 +229,29 @@ AcpiDbFindReferences (
     ACPI_OPERAND_OBJECT     *ObjDesc;
 
 
+    /* Convert string to object pointer */
+
     ObjDesc = (ACPI_OPERAND_OBJECT  *) STRTOUL (ObjectArg, NULL, 16);
+
+    /* Search all nodes in namespace */
 
     AcpiWalkNamespace (ACPI_TYPE_ANY, ACPI_ROOT_OBJECT, ACPI_UINT32_MAX,
                     AcpiDbWalkForReferences, (void *) ObjDesc, NULL);
-
-
 }
 
 
-/******************************************************************************
+/*******************************************************************************
  *
  * FUNCTION:    AcpiDbDisplayTableInfo
  *
- * PARAMETERS:
+ * PARAMETERS:  TableArg        - String with name of table to be displayed
  *
- * RETURN:
+ * RETURN:      None
  *
- * DESCRIPTION:
+ * DESCRIPTION: Display information about loaded tables.  Current 
+ *              implementation displays all loaded tables.
  *
- *****************************************************************************/
+ ******************************************************************************/
 
 void
 AcpiDbDisplayTableInfo (
@@ -256,17 +271,20 @@ AcpiDbDisplayTableInfo (
 }
 
 
-/******************************************************************************
+/*******************************************************************************
  *
  * FUNCTION:    AcpiDbUnloadAcpiTable
  *
- * PARAMETERS:
+ * PARAMETERS:  TableArg        - Name of the table to be unloaded
+ *              InstanceArg     - Which instance of the table to unload (if
+ *                                there are multiple tables of the same type)
  *
- * RETURN:
+ * RETURN:      Nonde
  *
- * DESCRIPTION:
+ * DESCRIPTION: Unload an ACPI table.  
+ *              Instance is not implemented
  *
- *****************************************************************************/
+ ******************************************************************************/
 
 void
 AcpiDbUnloadAcpiTable (
@@ -277,10 +295,14 @@ AcpiDbUnloadAcpiTable (
     ACPI_STATUS             Status;
 
 
+    /* Search all tables for the targe type */
+
     for (i = 0; i < NUM_ACPI_TABLES; i++)
     {
         if (!STRNCMP (TableArg, AcpiGbl_AcpiTableData[i].Signature, AcpiGbl_AcpiTableData[i].SigLength))
         {
+            /* Found the table, unload it */
+
             Status = AcpiUnloadTable (i);
             if (ACPI_SUCCESS (Status))
             {
@@ -299,11 +321,12 @@ AcpiDbUnloadAcpiTable (
 }
 
 
-/******************************************************************************
+/*******************************************************************************
  *
  * FUNCTION:    AcpiDbSetMethodBreakpoint
  *
  * PARAMETERS:  Location            - AML offset of breakpoint
+ *              WalkState           - Current walk info
  *              Op                  - Current Op (from parse walk)
  *
  * RETURN:      None
@@ -311,7 +334,7 @@ AcpiDbUnloadAcpiTable (
  * DESCRIPTION: Set a breakpoint in a control method at the specified
  *              AML offset
  *
- *****************************************************************************/
+ ******************************************************************************/
 
 void
 AcpiDbSetMethodBreakpoint (
@@ -336,26 +359,25 @@ AcpiDbSetMethodBreakpoint (
         AcpiOsPrintf ("Breakpoint 0x%X is beyond current address 0x%X\n", Address, Op->AmlOffset);
     }
 
-    /* Just save the breakpoint in a global */
+    /* Save breakpoint in current walk */
 
     WalkState->MethodBreakpoint = Address;
     AcpiOsPrintf ("Breakpoint set at AML offset 0x%X\n", Address);
 }
 
 
-/******************************************************************************
+/*******************************************************************************
  *
  * FUNCTION:    AcpiDbSetMethodCallBreakpoint
  *
- * PARAMETERS:  Location            - AML offset of breakpoint
- *              Op                  - Current Op (from parse walk)
+ * PARAMETERS:  Op                  - Current Op (from parse walk)
  *
  * RETURN:      None
  *
  * DESCRIPTION: Set a breakpoint in a control method at the specified
  *              AML offset
  *
- *****************************************************************************/
+ ******************************************************************************/
 
 void
 AcpiDbSetMethodCallBreakpoint (
@@ -374,7 +396,7 @@ AcpiDbSetMethodCallBreakpoint (
 }
 
 
-/******************************************************************************
+/*******************************************************************************
  *
  * FUNCTION:    AcpiDbDisassembleAml
  *
@@ -383,9 +405,10 @@ AcpiDbSetMethodCallBreakpoint (
  *
  * RETURN:      None
  *
- * DESCRIPTION: Lookup a name in the ACPI namespace
+ * DESCRIPTION: Display disassembled AML (ASL) starting from Op for the number
+ *              of statements specified.
  *
- *****************************************************************************/
+ ******************************************************************************/
 
 void
 AcpiDbDisassembleAml (
@@ -411,17 +434,19 @@ AcpiDbDisassembleAml (
 }
 
 
-/******************************************************************************
+/*******************************************************************************
  *
  * FUNCTION:    AcpiDbDumpNamespace
  *
- * PARAMETERS:
+ * PARAMETERS:  StartArg        - Node to begin namespace dump
+ *              DepthArg        - Maximum tree depth to be dumped
  *
  * RETURN:      None
  *
- * DESCRIPTION: Dump entire namespace or a subtree
+ * DESCRIPTION: Dump entire namespace or a subtree.  Each node is displayed
+ *              with type and other information.
  *
- *****************************************************************************/
+ ******************************************************************************/
 
 void
 AcpiDbDumpNamespace (
@@ -436,7 +461,6 @@ AcpiDbDumpNamespace (
 
     if (StartArg)
     {
-
         /* Check if numeric argument, must be a Node */
 
         if ((StartArg[0] >= 0x30) && (StartArg[0] <= 0x39))
@@ -447,6 +471,7 @@ AcpiDbDumpNamespace (
                 AcpiOsPrintf ("Address %p is invalid in this address space\n", SubtreeEntry);
                 return;
             }
+
             if (!VALID_DESCRIPTOR_TYPE ((SubtreeEntry), ACPI_DESC_TYPE_NAMED))
             {
                 AcpiOsPrintf ("Address %p is not a valid Named object\n", SubtreeEntry);
@@ -458,7 +483,6 @@ AcpiDbDumpNamespace (
 
         else
         {
-
             /* The parameter is a name string that must be resolved to a Named obj*/
 
             SubtreeEntry = AcpiDbLocalNsLookup (StartArg);
@@ -467,7 +491,6 @@ AcpiDbDumpNamespace (
                 SubtreeEntry = AcpiGbl_RootNode;
             }
         }
-
 
         /* Now we can check for the depth argument */
 
@@ -489,17 +512,18 @@ AcpiDbDumpNamespace (
 }
 
 
-/******************************************************************************
+/*******************************************************************************
  *
  * FUNCTION:    AcpiDbDumpNamespaceByOwner
  *
- * PARAMETERS:
+ * PARAMETERS:  OwnerArg        - Owner ID whose nodes will be displayed
+ *              DepthArg        - Maximum tree depth to be dumped
  *
  * RETURN:      None
  *
- * DESCRIPTION: Dump entire namespace or a subtree
+ * DESCRIPTION: Dump elements of the namespace that are owned by the OwnerId.
  *
- *****************************************************************************/
+ ******************************************************************************/
 
 void
 AcpiDbDumpNamespaceByOwner (
@@ -533,17 +557,19 @@ AcpiDbDumpNamespaceByOwner (
 }
 
 
-/******************************************************************************
+/*******************************************************************************
  *
  * FUNCTION:    AcpiDbSendNotify
  *
- * PARAMETERS:
+ * PARAMETERS:  Name            - Name of ACPI object to send the notify to
+ *              Value           - Value of the notify to send.
  *
  * RETURN:      None
  *
- * DESCRIPTION: Send an ACPI notificationn
+ * DESCRIPTION: Send an ACPI notification.  The value specified is sent to the
+ *              named object as an ACPI notify.
  *
- *****************************************************************************/
+ ******************************************************************************/
 
 void
 AcpiDbSendNotify (
@@ -581,17 +607,20 @@ AcpiDbSendNotify (
 }
 
 
-/******************************************************************************
+/*******************************************************************************
  *
  * FUNCTION:    AcpiDbSetMethodData
  *
- * PARAMETERS:
+ * PARAMETERS:  TypeArg         - L for local, A for argument
+ *              IndexArg        - which one
+ *              ValueArg        - Value to set.
  *
  * RETURN:      None
  *
- * DESCRIPTION: Set control method local or argument
+ * DESCRIPTION: Set a local or argument for the running control method.
+ *              NOTE: only object supported is Number.
  *
- *****************************************************************************/
+ ******************************************************************************/
 
 void
 AcpiDbSetMethodData (
@@ -606,6 +635,8 @@ AcpiDbSetMethodData (
     ACPI_OPERAND_OBJECT     *ObjDesc;
 
 
+    /* Validate TypeArg */
+
     STRUPR (TypeArg);
     Type = TypeArg[0];
     if ((Type != 'L') &&
@@ -614,6 +645,8 @@ AcpiDbSetMethodData (
         AcpiOsPrintf ("Invalid SET operand: %s\n", TypeArg);
         return;
     }
+
+    /* Get the index and value */
 
     Index = STRTOUL (IndexArg, NULL, 16);
     Value = STRTOUL (ValueArg, NULL, 16);
@@ -626,6 +659,8 @@ AcpiDbSetMethodData (
     }
 
 
+    /* Create and initialize the new object */
+
     ObjDesc = AcpiCmCreateInternalObject (ACPI_TYPE_NUMBER);
     if (!ObjDesc)
     {
@@ -634,6 +669,9 @@ AcpiDbSetMethodData (
     }
 
     ObjDesc->Number.Value = Value;
+
+
+    /* Store the new object into the target */
 
     switch (Type)
     {
@@ -649,6 +687,7 @@ AcpiDbSetMethodData (
 
         AcpiDsMethodDataSetValue (MTH_TYPE_ARG, Index, ObjDesc, WalkState);
         ObjDesc = WalkState->Arguments[Index].Object;
+
         AcpiOsPrintf ("Arg%d: ", Index);
         AcpiDbDisplayInternalObject (ObjDesc, WalkState);
         break;
@@ -665,6 +704,7 @@ AcpiDbSetMethodData (
 
         AcpiDsMethodDataSetValue (MTH_TYPE_LOCAL, Index, ObjDesc, WalkState);
         ObjDesc = WalkState->LocalVariables[Index].Object;
+
         AcpiOsPrintf ("Local%d: ", Index);
         AcpiDbDisplayInternalObject (ObjDesc, WalkState);
         break;
@@ -675,17 +715,17 @@ AcpiDbSetMethodData (
 }
 
 
-/******************************************************************************
+/*******************************************************************************
  *
- * FUNCTION:    AcpiDbWalkMethods
+ * FUNCTION:    AcpiDbWalkForSpecificObjects
  *
  * PARAMETERS:  Callback from WalkNamespace
  *
- * RETURN:      None
+ * RETURN:      Status
  *
- * DESCRIPTION: Called for a single method found in the namespace
+ * DESCRIPTION: Display short info about objects in the namespace
  *
- *****************************************************************************/
+ ******************************************************************************/
 
 ACPI_STATUS
 AcpiDbWalkForSpecificObjects (
@@ -702,7 +742,7 @@ AcpiDbWalkForSpecificObjects (
 
     ObjDesc = ((ACPI_NAMESPACE_NODE *)ObjHandle)->Object;
 
-    /* Get the full pathname to this method */
+    /* Get and display the full pathname to this object */
 
     Status = AcpiNsHandleToPathname (ObjHandle, &BufSize, buffer);
 
@@ -713,6 +753,9 @@ AcpiDbWalkForSpecificObjects (
     }
 
     AcpiOsPrintf ("%32s", buffer);
+
+
+    /* Display short information about the object */
 
     if (ObjDesc)
     {
@@ -749,17 +792,18 @@ AcpiDbWalkForSpecificObjects (
 }
 
 
-/******************************************************************************
+/*******************************************************************************
  *
  * FUNCTION:    AcpiDbDisplayObjects
  *
  * PARAMETERS:  ObjTypeArg          - Type of object to display
+ *              DisplayCountArg     - Max depth to display
  *
  * RETURN:      None
  *
  * DESCRIPTION: Display objects in the namespace of the requested type
  *
- *****************************************************************************/
+ ******************************************************************************/
 
 ACPI_STATUS
 AcpiDbDisplayObjects (
@@ -770,6 +814,8 @@ AcpiDbDisplayObjects (
     OBJECT_TYPE_INTERNAL    Type;
 
 
+    /* Get the object type */
+
     STRUPR (ObjTypeArg);
     Type = AcpiDbMatchArgument (ObjTypeArg, AcpiDbObjectTypes);
     if (Type == ACPI_TYPE_NOT_FOUND)
@@ -778,6 +824,7 @@ AcpiDbDisplayObjects (
         return (AE_OK);
     }
 
+    /* Get the display depth */
 
     if (DisplayCountArg)
     {
@@ -794,6 +841,8 @@ AcpiDbDisplayObjects (
 
     AcpiDbSetOutputDestination (DB_REDIRECTABLE_OUTPUT);
 
+    /* Walk the namespace from the root */
+
     AcpiWalkNamespace (Type, ACPI_ROOT_OBJECT, ACPI_UINT32_MAX,
                         AcpiDbWalkForSpecificObjects, (void *) &Type, NULL);
 
@@ -802,17 +851,18 @@ AcpiDbDisplayObjects (
 }
 
 
-/******************************************************************************
+/*******************************************************************************
  *
  * FUNCTION:    AcpiDbWalkAndMatchName
  *
- * PARAMETERS:
+ * PARAMETERS:  Callback from WalkNamespace
  *
- * RETURN:      None
+ * RETURN:      Status
  *
- * DESCRIPTION:
+ * DESCRIPTION: Find a particular name/names within the namespace.  Wildcards
+ *              are supported -- '?' matches any character.
  *
- *****************************************************************************/
+ ******************************************************************************/
 
 ACPI_STATUS
 AcpiDbWalkAndMatchName (
@@ -868,17 +918,18 @@ AcpiDbWalkAndMatchName (
 }
 
 
-/******************************************************************************
+/*******************************************************************************
  *
  * FUNCTION:    AcpiDbFindNameInNamespace
  *
- * PARAMETERS:
+ * PARAMETERS:  NameArg         - The 4-character ACPI name to find.  
+ *                                wildcards are supported.
  *
  * RETURN:      None
  *
  * DESCRIPTION: Search the namespace for a given name (with wildcards)
  *
- *****************************************************************************/
+ ******************************************************************************/
 
 ACPI_STATUS
 AcpiDbFindNameInNamespace (
@@ -891,6 +942,8 @@ AcpiDbFindNameInNamespace (
         return (AE_OK);
     }
 
+    /* Walk the namespace from the root */
+
     AcpiWalkNamespace (ACPI_TYPE_ANY, ACPI_ROOT_OBJECT, ACPI_UINT32_MAX,
                         AcpiDbWalkAndMatchName, NameArg, NULL);
 
@@ -899,7 +952,7 @@ AcpiDbFindNameInNamespace (
 }
 
 
-/******************************************************************************
+/*******************************************************************************
  *
  * FUNCTION:    AcpiDbSetScope
  *
@@ -910,7 +963,7 @@ AcpiDbFindNameInNamespace (
  * DESCRIPTION: Set the "current scope" as maintained by this utility.
  *              The scope is used as a prefix to ACPI paths.
  *
- *****************************************************************************/
+ ******************************************************************************/
 
 void
 AcpiDbSetScope (
