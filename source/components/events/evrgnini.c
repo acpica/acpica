@@ -437,7 +437,7 @@ AcpiEvInitializeRegion (
     ACPI_NAME              *RegNamePtr = (ACPI_NAME *) METHOD_NAME__REG;
 
 
-    FUNCTION_TRACE ("EvInitializeRegion");
+    FUNCTION_TRACE_U32 ("EvInitializeRegion", AcpiNsLocked);
 
 
     if (!RegionObj)
@@ -518,7 +518,7 @@ AcpiEvInitializeRegion (
                     /*
                      *  Found it! Now update the region and the handler
                      */
-                    AcpiEvAssociateRegionAndHandler(HandlerObj, RegionObj);
+                    AcpiEvAssociateRegionAndHandler (HandlerObj, RegionObj, AcpiNsLocked);
                     return_ACPI_STATUS (AE_OK);
                 }
 

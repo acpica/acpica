@@ -652,9 +652,10 @@ AcpiEvDisassociateRegionFromHandler(
  ******************************************************************************/
 
 ACPI_STATUS
-AcpiEvAssociateRegionAndHandler(
+AcpiEvAssociateRegionAndHandler ( 
     ACPI_OBJECT_INTERNAL    *HandlerObj,
-    ACPI_OBJECT_INTERNAL    *RegionObj)
+    ACPI_OBJECT_INTERNAL    *RegionObj,
+    BOOLEAN                 AcpiNsIsLocked)
 {
     ACPI_STATUS     Status;
 
@@ -689,9 +690,17 @@ AcpiEvAssociateRegionAndHandler(
     /*
      *  Last thing, tell all users that this region is usable
      */
-    AcpiCmReleaseMutex (ACPI_MTX_NAMESPACE);
+    if (AcpiNsIsLocked)
+    {
+        AcpiCmReleaseMutex (ACPI_MTX_NAMESPACE);
+    }
+
     Status = AcpiEvExecuteRegMethod (RegionObj, 1);
-    AcpiCmAcquireMutex (ACPI_MTX_NAMESPACE);
+
+    if (AcpiNsIsLocked)
+    {
+        AcpiCmAcquireMutex (ACPI_MTX_NAMESPACE);
+    }
 
     return_ACPI_STATUS (Status);
 }
@@ -843,7 +852,7 @@ AcpiEvAddrHandlerHelper (
     /*
      *  Then connect the region to the new handler
      */
-    Status = AcpiEvAssociateRegionAndHandler (HandlerObj, ObjDesc);
+    Status = AcpiEvAssociateRegionAndHandler (HandlerObj, ObjDesc, FALSE);
 
     return (Status);
 }
