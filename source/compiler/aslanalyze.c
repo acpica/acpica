@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslanalyze.c - check for semantic errors
- *              $Revision: 1.32 $
+ *              $Revision: 1.34 $
  *
  *****************************************************************************/
 
@@ -383,7 +383,7 @@ AnFormatBtype (
             }
             First = FALSE;
 
-            strcat (Buffer, AcpiCmGetTypeName (Type));
+            strcat (Buffer, AcpiUtGetTypeName (Type));
         }
 
         Btype >>= 1;
@@ -636,10 +636,11 @@ AnMethodAnalysisWalkBegin (
     {
     case METHOD:
 
+        TotalMethods++;
+
         /*
          * Create and init method info
          */
-
         MethodInfo       = UtLocalCalloc (sizeof (ASL_METHOD_INFO));
         MethodInfo->Next = WalkInfo->MethodStack;
         MethodInfo->Node = Node;
@@ -657,7 +658,6 @@ AnMethodAnalysisWalkBegin (
          * All other ArgX "registers" can be used as locals, so we
          * track their initialization.
          */
-
         for (i = 0; i < MethodInfo->NumArguments; i++)
         {
             MethodInfo->ArgInitialized[i] = TRUE;
@@ -927,7 +927,7 @@ AnMethodAnalysisWalkEnd (
          * and correct number of arguments
          */
         AnCheckForReservedMethod (Node, MethodInfo);
-        AcpiCmFree (MethodInfo);
+        AcpiUtFree (MethodInfo);
 
         break;
 

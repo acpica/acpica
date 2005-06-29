@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslcompiler.h - common include file
- *              $Revision: 1.62 $
+ *              $Revision: 1.63 $
  *
  *****************************************************************************/
 
@@ -177,6 +177,7 @@ getopt (
 /* Configuration constants */
 
 #define ASL_MAX_ERROR_COUNT         200
+#define ASL_NODE_CACHE_SIZE         128
 
 /*
  * Macros

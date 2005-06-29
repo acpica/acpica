@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslcompile - top level compile module
- *              $Revision: 1.24 $
+ *              $Revision: 1.29 $
  *
  *****************************************************************************/
 
@@ -182,7 +182,7 @@ AnGetTimeMs (void)
 
 
 void
-AcpiAmlUnlinkMutex (
+AcpiExUnlinkMutex (
     ACPI_OPERAND_OBJECT     *ObjDesc)
 {
 }
@@ -202,7 +202,7 @@ AcpiTbSystemTablePointer (
 }
 
 void
-AcpiAmlDumpOperands (
+AcpiExDumpOperands (
     ACPI_OPERAND_OBJECT     **Operands,
     OPERATING_MODE          InterpreterMode,
     NATIVE_CHAR             *Ident,
@@ -214,7 +214,7 @@ AcpiAmlDumpOperands (
 }
 
 ACPI_STATUS
-AcpiAmlDumpOperand (
+AcpiExDumpOperand (
     ACPI_OPERAND_OBJECT     *EntryDesc)
 {
     return AE_OK;
@@ -315,8 +315,8 @@ CmDoCompile (void)
     /* ACPI CA subsystem initialization */
 
     ASL_START_EVENT (1, "ACPI CA Init");
-    AcpiCmInitGlobals ();
-    AcpiCmMutexInitialize ();
+    AcpiUtInitGlobals ();
+    AcpiUtMutexInitialize ();
     AcpiNsRootInitialize ();
     ASL_END_EVENT (1);
 
@@ -483,10 +483,30 @@ CmCleanupAndExit (void)
     DbgPrint (ASL_DEBUG_OUTPUT, "\n\nElapsed time for major events\n\n");
     for (i = 0; i < 13; i++)
     {
-        DbgPrint (ASL_DEBUG_OUTPUT, "%8.8X - %s\n",
+        DbgPrint (ASL_DEBUG_OUTPUT, "%8d ms - %s\n",
             AslGbl_Events[i].EndTime -
             AslGbl_Events[i].StartTime,
             AslGbl_Events[i].EventName);
+    }
+
+    if (Gbl_CompileTimesFlag)
+    {
+        printf ("\nElapsed time for major events\n\n");
+        for (i = 0; i < 13; i++)
+        {
+            printf ("%8d ms : %s\n",
+                AslGbl_Events[i].EndTime -
+                AslGbl_Events[i].StartTime,
+                AslGbl_Events[i].EventName);
+        }
+        printf ("\nMiscellaneous compile statistics\n\n");
+        printf ("%11d : %s\n", TotalParseNodes, "Parse nodes");
+        printf ("%11d : %s\n", Gbl_NsLookupCount, "Namespace searches");
+        printf ("%11d : %s\n", TotalNamedObjects, "Named objects");
+        printf ("%11d : %s\n", TotalMethods, "Control methods");
+        printf ("%11d : %s\n", TotalAllocations, "Memory Allocations");
+        printf ("%11d : %s\n", TotalAllocated, "Total allocated memory");
+        printf ("\n");
     }
 
     if (Gbl_NsLookupCount)
@@ -499,14 +519,39 @@ CmCleanupAndExit (void)
     }
 
 
-    /* Close all open files */
+    if (Gbl_ListingFlag)
+    {
+        /* Flush any final AML in the buffer */
 
+        LsFlushListingBuffer ();
+
+        /* Print a summary of the compile exceptions */
+
+        FlPrintFile (ASL_FILE_LISTING_OUTPUT, "\n\nSummary of errors and warnings\n\n");
+        AePrintErrorLog (ASL_FILE_LISTING_OUTPUT);
+        FlPrintFile (ASL_FILE_LISTING_OUTPUT, "\n\n");
+        UtDisplaySummary (ASL_FILE_LISTING_OUTPUT);
+        FlPrintFile (ASL_FILE_LISTING_OUTPUT, "\n\n");
+    }
+
+
+    /* Close all open files */
 
     for (i = 2; i < ASL_MAX_FILE; i++)
     {
         FlCloseFile (i);
     }
 
+
+    /*
+     * TBD: SourceOutput should be .TMP, then rename if we want to keep it?
+     */
+    if (!Gbl_SourceOutputFlag)
+    {
+        unlink (Gbl_Files[ASL_FILE_SOURCE_OUTPUT].Filename);
+    }
+
+    /* Delete AML file if there are errors */
 
     if ((Gbl_ExceptionCount[ASL_ERROR] > 0) && (!Gbl_IgnoreErrors))
     {
