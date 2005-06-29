@@ -1,4 +1,4 @@
-/******************************************************************************
+    /******************************************************************************
  * 
  * Module Name: aemain - Main routine for the AcpiExec utility
  *
@@ -191,7 +191,15 @@ main (
     DebugLayer = 0xFFFFFFFF;
 
 
-    printf ("ACPI AML Execution/Debug Utility version [%s]\n", __DATE__);
+    printf ("ACPI AML Execution/Debug Utility ");
+
+#ifdef _IA16
+    printf ("16-bit ");
+#else
+    printf ("32-bit ");
+#endif
+
+    printf ("version [%s]\n", __DATE__);
 
     /* Get the command line options */
 
@@ -244,7 +252,7 @@ main (
         Status = DbLoadAcpiTable (Filename);
         if (ACPI_FAILURE (Status))
         {
-            return Status;
+            goto enterloop;
         }
 
         DbSetOutputDestination (DB_REDIRECTABLE_OUTPUT);
@@ -253,7 +261,7 @@ main (
 
         if (ACPI_FAILURE (Status))
         {
-            return Status;
+            goto enterloop;
         }
 
         /* TBD:
@@ -261,9 +269,35 @@ main (
          */
         AeInstallHandlers ();
     }
+ 
+#ifdef _IA16 
+    else
+    {
+        Status = AdFindDsdt (NULL, NULL);
+        if (ACPI_FAILURE (Status))
+        {
+            goto enterloop;
+        }
+
+        DbSetOutputDestination (DB_REDIRECTABLE_OUTPUT);
+        Status = AcpiLoadNamespace ();
+        DbSetOutputDestination (DB_CONSOLE_OUTPUT);
+
+        if (ACPI_FAILURE (Status))
+        {
+            goto enterloop;
+        }
 
 
+        /* TBD:
+         * Need a way to call this after the "LOAD" command
+         */
+        AeInstallHandlers ();
+    }
+#endif
 
+enterloop:
+                
     /* Enter the debugger command loop */
 
     DbUserCommands (DB_COMMAND_PROMPT, NULL);
