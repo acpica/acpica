@@ -134,8 +134,6 @@
  *
  ******************************************************************************/
 
-UINT32                        Gbl_AcpiCaVersion = ACPI_CA_VERSION;
-
 /* 
  * We want the debug switches statically initialized so they 
  * are already set when the debugger is entered.
