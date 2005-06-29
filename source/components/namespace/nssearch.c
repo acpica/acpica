@@ -27,7 +27,7 @@
  * Code in any form, with the right to sublicense such rights; and
  *
  * 2.3. Intel grants Licensee a non-exclusive and non-transferable patent
- * license (without the right to sublicense), under only those claims of Intel
+ * license (with the right to sublicense), under only those claims of Intel
  * patents that are infringed by the Original Intel Code, to make, use, sell,
  * offer to sell, and import the Covered Code and derivative works thereof
  * solely to the minimum extent necessary to exercise the above copyright
@@ -166,7 +166,7 @@ NsSearchOnly (
                             ScopeName, NameTable));
         DEBUG_PRINT (TRACE_NAMES, ("NsSearchOnly: For %4.4s (type %d)\n",
                             EntryName, Type));
-        DEBUG_EXEC (OsdFree (ScopeName));
+        DEBUG_EXEC (CmFree (ScopeName));
     }
 
 
@@ -238,8 +238,7 @@ NsSearchOnly (
                             EntryName, NameTable[Position].Type, &NameTable[Position]));
             
             *RetEntry = &NameTable[Position];
-            FUNCTION_STATUS_EXIT (AE_OK);
-            return AE_OK;
+            return_ACPI_STATUS (AE_OK);
         }
 
         if (RetInfo)
@@ -288,8 +287,7 @@ NsSearchOnly (
         RetInfo->NameTable  = NameTable;
     }
 
-    FUNCTION_STATUS_EXIT (AE_NOT_FOUND);
-    return AE_NOT_FOUND;
+    return_ACPI_STATUS (AE_NOT_FOUND);
 }
 
 
@@ -356,8 +354,7 @@ NsSearchParentTree (
             Status = NsSearchOnly (EntryName, ParentScope, TYPE_Any, RetEntry, NULL);
             if (Status == AE_OK)
             {
-                FUNCTION_STATUS_EXIT (Status);
-                return Status;
+                return_ACPI_STATUS (Status);
             }
 
             /* Not found here, go up another level (until we reach the root) */
@@ -386,8 +383,7 @@ NsSearchParentTree (
         }
     }
 
-    FUNCTION_STATUS_EXIT (AE_NOT_FOUND);
-    return AE_NOT_FOUND;
+    return_ACPI_STATUS (AE_NOT_FOUND);
 }
 
 
@@ -464,8 +460,7 @@ NsCreateAndLinkNewTable (
                 NewTable, ParentScope, NameTable->Scope));
     }
 
-    FUNCTION_STATUS_EXIT (Status);
-    return Status;
+    return_ACPI_STATUS (Status);
 }
 
 
@@ -600,7 +595,7 @@ NsInitializeEntry (
     DEBUG_PRINT (TRACE_NAMES, ("NsInitializeEntry: %.4s added to %p at %p\n", 
                                 EntryName, NameTable, NewEntry));
     
-    FUNCTION_EXIT;
+    return_VOID;
 }
 
 
@@ -610,7 +605,7 @@ NsInitializeEntry (
  *
  * PARAMETERS:  *EntryName          - Ascii ACPI name to search for
  *              *NameTable          - Starting table where search will begin
- *              LoadMode            - Add names only in MODE_Loadx.  Otherwise,
+ *              InterpreterMode     - Add names only in MODE_LoadPassX.  Otherwise,
  *                                    search only.
  *              Type                - Object type to match
  *              **RetEntry          - Where the matched NTE is returned
@@ -622,7 +617,7 @@ NsInitializeEntry (
  *              Type is not Any and the type previously stored in the
  *              entry was Any (i.e. unknown), update the stored type.
  *
- *              In MODE_Exec, search only.
+ *              In IMODE_Execute, search only.
  *              In other modes, search and add if not found.
  *
  ***************************************************************************/
@@ -631,7 +626,7 @@ ACPI_STATUS
 NsSearchAndEnter (
     char                    *EntryName, 
     NAME_TABLE_ENTRY        *NameTable,
-    OPERATING_MODE          LoadMode, 
+    OPERATING_MODE          InterpreterMode, 
     ACPI_OBJECT_TYPE        Type, 
     UINT32                  Flags,
     NAME_TABLE_ENTRY        **RetEntry)
@@ -649,8 +644,7 @@ NsSearchAndEnter (
     if (!NameTable || !EntryName || !RetEntry)
     {
         REPORT_ERROR ("NsSearchAndEnter: bad parameter");
-        FUNCTION_STATUS_EXIT (AE_BAD_PARAMETER);
-        return AE_BAD_PARAMETER;
+        return_ACPI_STATUS (AE_BAD_PARAMETER);
     }
 
 
@@ -664,8 +658,7 @@ NsSearchAndEnter (
         DEBUG_PRINT (ACPI_ERROR, ("NsSearchAndEnter:  *** bad name %08lx *** \n", 
                                     *(UINT32 *) EntryName));
 
-        FUNCTION_STATUS_EXIT (AE_BAD_CHARACTER);
-        return AE_BAD_CHARACTER;
+        return_ACPI_STATUS (AE_BAD_CHARACTER);
     }
 
 
@@ -677,8 +670,7 @@ NsSearchAndEnter (
     {
         /* Either found it or there was an error -- finished either way */
 
-        FUNCTION_STATUS_EXIT (Status);
-        return Status;
+        return_ACPI_STATUS (Status);
     }
 
 
@@ -690,7 +682,7 @@ NsSearchAndEnter (
      * and during the execution phase.
      */
 
-    if ((LoadMode != MODE_Load1) &&
+    if ((InterpreterMode != IMODE_LoadPass1) &&
         (Flags == NS_SEARCH_PARENT))
     {
         /* Not found in table - search parent tree according to ACPI specification */
@@ -698,8 +690,7 @@ NsSearchAndEnter (
         Status = NsSearchParentTree (EntryName, NameTable, Type, RetEntry);
         if (Status == AE_OK)
         {
-            FUNCTION_STATUS_EXIT (Status);
-            return Status;
+            return_ACPI_STATUS (Status);
         }
     }
 
@@ -708,13 +699,12 @@ NsSearchAndEnter (
      * In execute mode, just search, never add names.  Exit now.
      */
 
-    if (LoadMode == MODE_Exec)
+    if (InterpreterMode == IMODE_Execute)
     {
         DEBUG_PRINT (TRACE_NAMES, ("NsSearchAndEnter: %.4s Not found in %p [Not adding]\n", 
                                     EntryName, NameTable));
     
-        FUNCTION_STATUS_EXIT (AE_NOT_FOUND);
-        return AE_NOT_FOUND;
+        return_ACPI_STATUS (AE_NOT_FOUND);
     }
 
 
@@ -736,8 +726,7 @@ NsSearchAndEnter (
         Status = NsCreateAndLinkNewTable (NameTable);
         if (Status != AE_OK)
         {
-            FUNCTION_STATUS_EXIT (Status);
-            return Status;
+            return_ACPI_STATUS (Status);
         }
 
         /* Point to the first slot in the new table */
@@ -756,7 +745,6 @@ NsSearchAndEnter (
                         SearchInfo.PreviousEntry);
     *RetEntry = &NameTable[Position];
 
-    FUNCTION_STATUS_EXIT (AE_OK);
-    return AE_OK;
+    return_ACPI_STATUS (AE_OK);
 }
 
