@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: tbxfroot - Find the root ACPI table (RSDT)
- *              $Revision: 1.44 $
+ *              $Revision: 1.45 $
  *
  *****************************************************************************/
 
@@ -418,8 +418,9 @@ AcpiGetFirmwareTable (
     AcpiGbl_RSDP = (RSDP_DESCRIPTOR *) (ACPI_TBLPTR) TableInfo.PhysicalAddress;
 
     DEBUG_PRINTP (ACPI_INFO,
-        ("RSDP located at %p, RSDT physical=%p \n",
-        AcpiGbl_RSDP, AcpiGbl_RSDP->RsdtPhysicalAddress));
+        ("RSDP located at %p, RSDT physical=%8.8lX%8.8lX \n",
+        AcpiGbl_RSDP, HIDWORD(AcpiGbl_RSDP->RsdtPhysicalAddress),
+        LODWORD(AcpiGbl_RSDP->RsdtPhysicalAddress)));
 
 
     /* Get the RSDT and validate it */
