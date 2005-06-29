@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: evgpe - General Purpose Event handling and dispatch
- *              $Revision: 1.21 $
+ *              $Revision: 1.22 $
  *
  *****************************************************************************/
 
@@ -126,9 +126,9 @@
  *
  * FUNCTION:    AcpiEvGetGpeEventInfo
  *
- * PARAMETERS:  GpeNumber           - Raw GPE number
- *              OwningGpeBlock      - Block ptr.  NULL for GPE0/GPE1
- *
+ * PARAMETERS:  GpeDevice           - Device node.  NULL for GPE0/GPE1
+ *              GpeNumber           - Raw GPE number
+ *              
  * RETURN:      A GPE EventInfo struct.  NULL if not a valid GPE
  *
  * DESCRIPTION: Returns the EventInfo struct associated with this GPE.

@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: evmisc - Miscellaneous event manager support functions
- *              $Revision: 1.63 $
+ *              $Revision: 1.67 $
  *
  *****************************************************************************/
 
@@ -155,87 +155,6 @@ AcpiEvIsNotifyObject (
     default:
         return (FALSE);
     }
-}
-
-
-/*******************************************************************************
- *
- * FUNCTION:    AcpiEvGetGpeRegisterInfo
- *
- * PARAMETERS:  GpeNumber       - Raw GPE number
- *
- * RETURN:      Pointer to the info struct for this GPE register.
- *
- * DESCRIPTION: Returns the register index (index into the GPE register info
- *              table) associated with this GPE.
- *
- ******************************************************************************/
-
-ACPI_GPE_REGISTER_INFO *
-AcpiEvGetGpeRegisterInfo (
-    UINT32                  GpeNumber)
-{
-
-    if (GpeNumber > AcpiGbl_GpeNumberMax)
-    {
-        return (NULL);
-    }
-
-    return (&AcpiGbl_GpeRegisterInfo [ACPI_DIV_8 (AcpiGbl_GpeNumberToIndex[GpeNumber].NumberIndex)]);
-}
-
-
-/*******************************************************************************
- *
- * FUNCTION:    AcpiEvGetGpeNumberInfo
- *
- * PARAMETERS:  GpeNumber       - Raw GPE number
- *
- * RETURN:      None.
- *
- * DESCRIPTION: Returns the number index (index into the GPE number info table)
- *              associated with this GPE.
- *
- ******************************************************************************/
-
-ACPI_GPE_NUMBER_INFO *
-AcpiEvGetGpeNumberInfo (
-    UINT32                  GpeNumber)
-{
-
-    if (GpeNumber > AcpiGbl_GpeNumberMax)
-    {
-        return (NULL);
-    }
-
-    return (&AcpiGbl_GpeNumberInfo [AcpiGbl_GpeNumberToIndex[GpeNumber].NumberIndex]);
-}
-
-
-/*******************************************************************************
- *
- * FUNCTION:    AcpiEvGetGpeNumberIndex
- *
- * PARAMETERS:  GpeNumber       - Raw GPE number
- *
- * RETURN:      None.
- *
- * DESCRIPTION: Returns the number index (index into the GPE number info table)
- *              associated with this GPE.
- *
- ******************************************************************************/
-
-UINT32
-AcpiEvGetGpeNumberIndex (
-    UINT32                  GpeNumber)
-{
-
-    if (GpeNumber > AcpiGbl_GpeNumberMax)
-    {
-        return (ACPI_GPE_INVALID);
-    }
-
-    return (AcpiGbl_GpeNumberToIndex[GpeNumber].NumberIndex);
 }
 
 
@@ -716,36 +635,23 @@ AcpiEvTerminate (void)
          * In all cases, on error, print a message but obviously we don't abort.
          */
 
-        /*
-         * Disable all fixed events
-         */
+        /* Disable all fixed events */
+
         for (i = 0; i < ACPI_NUM_FIXED_EVENTS; i++)
         {
-            Status = AcpiDisableEvent ((UINT32) i, ACPI_EVENT_FIXED, 0);
+            Status = AcpiDisableEvent ((UINT32) i, 0);
             if (ACPI_FAILURE (Status))
             {
                 ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Could not disable fixed event %d\n", (UINT32) i));
             }
         }
 
-        /*
-         * Disable all GPEs
-         */
-        for (i = 0; i < AcpiGbl_GpeNumberMax; i++)
-        {
-            if (AcpiEvGetGpeNumberIndex ((UINT32)i) != ACPI_GPE_INVALID)
-            {
-                Status = AcpiHwDisableGpe((UINT32) i);
-                if (ACPI_FAILURE (Status))
-                {
-                    ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Could not disable GPE %d\n", (UINT32) i));
-                }
-            }
-        }
+        /* Disable all GPEs in all GPE blocks */
 
-        /*
-         * Remove SCI handler
-         */
+        Status = AcpiEvWalkGpeList (AcpiHwDisableGpeBlock);
+
+        /* Remove SCI handler */
+
         Status = AcpiEvRemoveSciHandler ();
         if (ACPI_FAILURE(Status))
         {
@@ -753,9 +659,8 @@ AcpiEvTerminate (void)
         }
     }
 
-    /*
-     * Return to original mode if necessary
-     */
+    /* Return to original mode if necessary */
+
     if (AcpiGbl_OriginalMode == ACPI_SYS_MODE_LEGACY)
     {
         Status = AcpiDisable ();
@@ -764,28 +669,6 @@ AcpiEvTerminate (void)
             ACPI_DEBUG_PRINT ((ACPI_DB_WARN, "AcpiDisable failed\n"));
         }
     }
-
-    /*
-     * Free global tables, etc.
-     */
-    if (AcpiGbl_GpeRegisterInfo)
-    {
-        ACPI_MEM_FREE (AcpiGbl_GpeRegisterInfo);
-        AcpiGbl_GpeRegisterInfo = NULL;
-    }
-
-    if (AcpiGbl_GpeNumberInfo)
-    {
-        ACPI_MEM_FREE (AcpiGbl_GpeNumberInfo);
-        AcpiGbl_GpeNumberInfo = NULL;
-    }
-
-    if (AcpiGbl_GpeNumberToIndex)
-    {
-        ACPI_MEM_FREE (AcpiGbl_GpeNumberToIndex);
-        AcpiGbl_GpeNumberToIndex = NULL;
-    }
-
     return_VOID;
 }
 
