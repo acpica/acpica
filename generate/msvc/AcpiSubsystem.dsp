@@ -708,10 +708,6 @@ SOURCE=..\..\Subsystem\Include\acpi.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\Subsystem\Include\acpiasm.h
-# End Source File
-# Begin Source File
-
 SOURCE=..\..\Subsystem\Include\acpiexcep.h
 # End Source File
 # Begin Source File
