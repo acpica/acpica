@@ -99,20 +99,6 @@
 #define _ACPI_INTERNAL_H
 
 
-/*
- * Debug/Error reporting table definition
- */
-
-typedef struct
-{
-    char            *Key;
-    char            Level;
-    char            *Description;
-    char            *Description2;
-
-} ST_KEY_DESC_TABLE;
-
-
 /* Operational mode of AML scanner */
 
 typedef enum 
