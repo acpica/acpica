@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dbdisply - debug display commands
- *              $Revision: 1.81 $
+ *              $Revision: 1.82 $
  *
  ******************************************************************************/
 
@@ -843,7 +843,7 @@ AcpiDbDisplayArguments (void)
     AcpiOsPrintf ("Method [%4.4s] has %X arguments, max concurrency = %X\n",
             Node->Name.Ascii, NumArgs, Concurrency);
 
-    for (i = 0; i < NumArgs; i++)
+    for (i = 0; i < MTH_NUM_ARGS; i++)
     {
         ObjDesc = WalkState->Arguments[i].Object;
         AcpiOsPrintf ("Arg%d: ", i);
