@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: aemain - Main routine for the AcpiExec utility
- *              $Revision: 1.52 $
+ *              $Revision: 1.53 $
  *
  *****************************************************************************/
 
@@ -223,16 +223,6 @@ AcpiGetIrqRoutingTable  (
     ACPI_BUFFER             *RetBuffer)
 {
     return AE_NOT_IMPLEMENTED;
-}
-
-ACPI_STATUS
-AcpiGetFirmwareTable (
-    ACPI_STRING             Signature,
-    UINT32                  Instance,
-    UINT32                  Flags,
-    ACPI_TABLE_HEADER       **TablePointer)
-{
-    return (AE_NOT_IMPLEMENTED);
 }
 #endif
 
