@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acnamesp.h - Namespace subcomponent prototypes and defines
- *       $Revision: 1.107 $
+ *       $Revision: 1.108 $
  *
  *****************************************************************************/
 
@@ -193,13 +193,11 @@ AcpiNsWalkNamespace (
     void                    *Context,
     void                    **ReturnValue);
 
-
 ACPI_NAMESPACE_NODE *
-AcpiNsGetNextObject (
+AcpiNsGetNextNode (
     ACPI_OBJECT_TYPE8       Type,
     ACPI_NAMESPACE_NODE     *Parent,
     ACPI_NAMESPACE_NODE     *Child);
-
 
 ACPI_STATUS
 AcpiNsDeleteNamespaceByOwner (
@@ -395,7 +393,6 @@ AcpiNsPatternMatch (
     ACPI_NAMESPACE_NODE     *ObjNode,
     NATIVE_CHAR             *SearchFor);
 
-
 ACPI_STATUS
 AcpiNsGetNode (
     NATIVE_CHAR             *Pathname,
@@ -509,7 +506,7 @@ AcpiNsGetParentObject (
 
 
 ACPI_NAMESPACE_NODE *
-AcpiNsGetNextValidObject (
+AcpiNsGetNextValidNode (
     ACPI_NAMESPACE_NODE     *Node);
 
 
