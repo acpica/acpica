@@ -189,7 +189,7 @@
  * String versions of the exception codes above
  * These strings must match the corresponding defines exactly
  */
-static char                 *Gbl_ExceptionNames[] = 
+static char                 *Acpi_GblExceptionNames[] = 
 { 
     "AE_OK",
     "AE_CTRL_RETURN_VALUE",

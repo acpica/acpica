@@ -127,7 +127,7 @@
 extern int                      optind;
 extern char                     *optarg;
 extern UINT8                    *AmlPtr;
-extern UINT32                   AmlLength;
+extern UINT32                   AcpiAmlLength;
 
 extern BOOLEAN                  opt_tables;
 extern BOOLEAN                  opt_disasm;
@@ -144,10 +144,10 @@ extern BOOLEAN                  OutputToFile;
 extern char                     *Buffer;
 extern char                     *Filename;
 extern char                     *INDENT_STRING;
-extern UINT32                   Gbl_MethodBreakpoint;
-extern UINT8                    Gbl_DbOutputFlags;
-extern UINT32                   Gbl_DbDebugLevel;
-extern UINT32                   Gbl_DbConsoleDebugLevel;
+extern UINT32                   Acpi_GblMethodBreakpoint;
+extern UINT8                    Acpi_GblDbOutputFlags;
+extern UINT32                   Acpi_GblDbDebugLevel;
+extern UINT32                   Acpi_GblDbConsoleDebugLevel;
 
 extern UINT32                   NumNames;
 extern UINT32                   NumMethods;
@@ -201,7 +201,7 @@ typedef struct ArgumentInfo
 #define DBTEST_OUTPUT_LEVEL(lvl)        if (opt_verbose)
 
 #define VERBOSE_PRINT(fp)               DBTEST_OUTPUT_LEVEL(lvl) {\
-                                            OsdPrintf PARAM_LIST(fp);}
+                                            AcpiOsdPrintf PARAM_LIST(fp);}
 
 #define EX_NO_SINGLE_STEP       1
 #define EX_SINGLE_STEP          2
@@ -215,11 +215,11 @@ typedef struct ArgumentInfo
  */
 
 int
-DbInitialize (
+AcpiDbInitialize (
     void);
 
 ACPI_STATUS
-DbSingleStep (
+AcpiDbSingleStep (
     ACPI_WALK_STATE         *WalkState,
     ACPI_GENERIC_OP         *Op,
     UINT8                   OpType);
@@ -231,61 +231,61 @@ DbSingleStep (
 
 
 void
-DbDisplayTableInfo (
+AcpiDbDisplayTableInfo (
     char                    *TableArg);
 
 void
-DbUnloadAcpiTable (
+AcpiDbUnloadAcpiTable (
     char                    *TableArg,
     char                    *InstanceArg);
 
 void
-DbSetMethodBreakpoint (
+AcpiDbSetMethodBreakpoint (
     char                    *Location,
     ACPI_WALK_STATE         *WalkState,
     ACPI_GENERIC_OP         *Op);
 
 void
-DbSetMethodCallBreakpoint (
+AcpiDbSetMethodCallBreakpoint (
     ACPI_GENERIC_OP         *Op);
 
 void
-DbDisassembleAml (
+AcpiDbDisassembleAml (
     char                    *Statements,
     ACPI_GENERIC_OP         *Op);
 
 void
-DbDumpNamespace (
+AcpiDbDumpNamespace (
     char                    *StartArg,
     char                    *DepthArg);
 
 void
-DbDumpNamespaceByOwner (
+AcpiDbDumpNamespaceByOwner (
     char                    *OwnerArg,
     char                    *DepthArg);
 
 void
-DbSendNotify (
+AcpiDbSendNotify (
     char                    *Name,
     UINT32                  Value);
 
 void
-DbSetMethodData (
+AcpiDbSetMethodData (
     char                    *TypeArg,
     char                    *IndexArg,
     char                    *ValueArg);
 
 ACPI_STATUS
-DbDisplayObjects (
+AcpiDbDisplayObjects (
     char                    *ObjTypeArg,
     char                    *DisplayCountArg);
 
 ACPI_STATUS
-DbFindNameInNamespace (
+AcpiDbFindNameInNamespace (
     char                    *NameArg);
 
 void
-DbSetScope (
+AcpiDbSetScope (
     char                    *Name);
 
 
@@ -294,20 +294,20 @@ DbSetScope (
  */
 
 void
-DbDisplayOp (
+AcpiDbDisplayOp (
     ACPI_GENERIC_OP         *origin,
     UINT32                  NumOpcodes);
 
 void
-DbDisplayNamestring (
+AcpiDbDisplayNamestring (
     char                    *Name);
 
 void
-DbDisplayPath (
+AcpiDbDisplayPath (
     ACPI_GENERIC_OP         *Op);
 
 void
-DbDisplayOpcode (
+AcpiDbDisplayOpcode (
     ACPI_GENERIC_OP         *Op);
 
 
@@ -318,44 +318,44 @@ DbDisplayOpcode (
 
 
 void
-DbDisplayMethodInfo (
+AcpiDbDisplayMethodInfo (
     ACPI_GENERIC_OP         *Op);
 
 void
-DbDecodeAndDisplayObject (
+AcpiDbDecodeAndDisplayObject (
     char                    *Target,
     char                    *OutputType);
 
 void
-DbDisplayResultObject (
+AcpiDbDisplayResultObject (
     ACPI_OBJECT_INTERNAL    *RetDesc);
 
 ACPI_STATUS
-DbDisplayAllMethods (
+AcpiDbDisplayAllMethods (
     char                    *DisplayCountArg);
 
 void 
-DbDisplayInternalObject (
+AcpiDbDisplayInternalObject (
     ACPI_OBJECT_INTERNAL    *ObjDesc);
 
 void
-DbDisplayArguments (
+AcpiDbDisplayArguments (
     void);
 
 void
-DbDisplayLocals (
+AcpiDbDisplayLocals (
     void);
 
 void
-DbDisplayResults (
+AcpiDbDisplayResults (
     void);
 
 void
-DbDisplayCallingTree (
+AcpiDbDisplayCallingTree (
     void);
 
 void
-DbDisplayArgumentObject (
+AcpiDbDisplayArgumentObject (
     ACPI_OBJECT_INTERNAL    *ObjDesc);
 
 
@@ -364,13 +364,13 @@ DbDisplayArgumentObject (
  */
 
 void
-DbExecute (
+AcpiDbExecute (
     char                    *Name,
     char                    **Args,
     UINT32                  Flags);
 
 void
-DbCreateExecutionThreads (
+AcpiDbCreateExecutionThreads (
     char                    *NumThreadsArg,
     char                    *NumLoopsArg,
     char                    *MethodNameArg);
@@ -382,21 +382,21 @@ DbCreateExecutionThreads (
  */
 
 OBJECT_TYPE_INTERNAL
-DbMatchArgument (
+AcpiDbMatchArgument (
     char                    *UserArgument,
     ARGUMENT_INFO           *Arguments);
 
 
 void
-DbCloseDebugFile (
+AcpiDbCloseDebugFile (
     void);
 
 void
-DbOpenDebugFile (
+AcpiDbOpenDebugFile (
     char                    *Name);
 
 ACPI_STATUS
-DbLoadAcpiTable (
+AcpiDbLoadAcpiTable (
     char                    *Filename);
 
 
@@ -405,14 +405,14 @@ DbLoadAcpiTable (
  */
 
 void
-DbAddToHistory (
+AcpiDbAddToHistory (
     char                    *CommandLine);
 
 void
-DbDisplayHistory (void);
+AcpiDbDisplayHistory (void);
 
 char *
-DbGetFromHistory (
+AcpiDbGetFromHistory (
     char                    *CommandNumArg);
 
 
@@ -421,17 +421,17 @@ DbGetFromHistory (
  */
 
 ACPI_STATUS
-DbCommandDispatch (
+AcpiDbCommandDispatch (
     char                    *InputBuffer,
     ACPI_WALK_STATE         *WalkState,
     ACPI_GENERIC_OP         *Op);
 
 void
-DbExecuteThread (
+AcpiDbExecuteThread (
     void                    *Context);
 
 ACPI_STATUS
-DbUserCommands (
+AcpiDbUserCommands (
     char                    Prompt,
     ACPI_GENERIC_OP         *Op);
 
@@ -443,13 +443,13 @@ DbUserCommands (
  */
 
 void
-DbGenerateStatistics (
+AcpiDbGenerateStatistics (
     ACPI_GENERIC_OP         *Root,
     BOOLEAN                 IsMethod);
 
 
 ACPI_STATUS
-DbDisplayStatistics (
+AcpiDbDisplayStatistics (
     char                    *TypeArg);
 
 
@@ -459,29 +459,29 @@ DbDisplayStatistics (
  */
 
 void
-DbSetOutputDestination (
+AcpiDbSetOutputDestination (
     INT32                   Where);
     
 void
-DbDumpBuffer (
+AcpiDbDumpBuffer (
     UINT32                  Address);
 
 void
-DbDumpObject (
+AcpiDbDumpObject (
     ACPI_OBJECT             *ObjDesc,
     UINT32                  Level);
 
 void
-DbPrepNamestring (
+AcpiDbPrepNamestring (
     char                    *Name);
 
 
 ACPI_STATUS
-DbSecondPassParse (
+AcpiDbSecondPassParse (
     ACPI_GENERIC_OP         *Root);
 
 NAME_TABLE_ENTRY *
-DbLocalNsLookup (
+AcpiDbLocalNsLookup (
     char                    *Name);
 
 

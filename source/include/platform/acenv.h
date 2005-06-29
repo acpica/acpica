@@ -1,7 +1,7 @@
+
 /******************************************************************************
- *
+ * 
  * Name: acenv.h - Generation environment specific items
- *       $Revision: 1.80 $
  *
  *****************************************************************************/
 
@@ -9,8 +9,8 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
- * All rights reserved.
+ * Some or all of this work - Copyright (c) 1999, Intel Corp.  All rights
+ * reserved.
  *
  * 2. License
  *
@@ -38,9 +38,9 @@
  * The above copyright and patent license is granted only if the following
  * conditions are met:
  *
- * 3. Conditions
+ * 3. Conditions 
  *
- * 3.1. Redistribution of Source with Rights to Further Distribute Source.
+ * 3.1. Redistribution of Source with Rights to Further Distribute Source.  
  * Redistribution of source code of any substantial portion of the Covered
  * Code or modification with rights to further distribute source must include
  * the above Copyright Notice, the above License, this list of Conditions,
@@ -48,11 +48,11 @@
  * Licensee must cause all Covered Code to which Licensee contributes to
  * contain a file documenting the changes Licensee made to create that Covered
  * Code and the date of any change.  Licensee must include in that file the
- * documentation of any changes made by any predecessor Licensee.  Licensee
+ * documentation of any changes made by any predecessor Licensee.  Licensee 
  * must include a prominent statement that the modification is derived,
  * directly or indirectly, from Original Intel Code.
  *
- * 3.2. Redistribution of Source with no Rights to Further Distribute Source.
+ * 3.2. Redistribution of Source with no Rights to Further Distribute Source.  
  * Redistribution of source code of any substantial portion of the Covered
  * Code or modification without rights to further distribute source must
  * include the following Disclaimer and Export Compliance provision in the
@@ -86,7 +86,7 @@
  * INSTALLATION, TRAINING OR OTHER SERVICES.  INTEL WILL NOT PROVIDE ANY
  * UPDATES, ENHANCEMENTS OR EXTENSIONS.  INTEL SPECIFICALLY DISCLAIMS ANY
  * IMPLIED WARRANTIES OF MERCHANTABILITY, NONINFRINGEMENT AND FITNESS FOR A
- * PARTICULAR PURPOSE.
+ * PARTICULAR PURPOSE. 
  *
  * 4.2. IN NO EVENT SHALL INTEL HAVE ANY LIABILITY TO LICENSEE, ITS LICENSEES
  * OR ANY OTHER THIRD PARTY, FOR ANY LOST PROFITS, LOST DATA, LOSS OF USE OR
@@ -118,58 +118,26 @@
 #define __ACENV_H__
 
 
-/*
- * Configuration for ACPI tools and utilities
+/* 
+ * define SYSTEM_CLIB_FUNCTIONS if linking to an actual C library.
+ * Otherwise, local versions of the string and memory functions will be used.
  */
 
-#ifdef _ACPI_DUMP_APP
-#define ACPI_DEBUG
-#define ACPI_APPLICATION
-#define ENABLE_DEBUGGER
-#define ACPI_USE_SYSTEM_CLIBRARY
-#define PARSER_ONLY
-#endif
+/******************************************************************************
+ * 
+ * Using native C library functions
+ *
+ *****************************************************************************/
 
-#ifdef _ACPI_EXEC_APP
-#undef DEBUGGER_THREADING
-#define DEBUGGER_THREADING      DEBUGGER_SINGLE_THREADED
-#define ACPI_DEBUG
-#define ACPI_APPLICATION
-#define ENABLE_DEBUGGER
-#define ACPI_USE_SYSTEM_CLIBRARY
-#endif
-
-#ifdef _ACPI_ASL_COMPILER
-#define ACPI_DEBUG
-#define ACPI_APPLICATION
-#define ENABLE_DEBUGGER
-#define ACPI_USE_SYSTEM_CLIBRARY
-#endif
-
+#ifdef SYSTEM_CLIB_FUNCTIONS
 /*
- * Memory allocation tracking.  Used only if
- * 1) This is the debug version
- * 2) This is NOT a 16-bit version of the code (not enough real-mode memory)
- */
-#ifdef ACPI_DEBUG
-#ifndef _IA16
-#define ACPI_DBG_TRACK_ALLOCATIONS
-#endif
-#endif
-
-/*
- * Environment configuration.  The purpose of this file is to interface to the
- * local generation environment.
+ * Standard C library headers.
+ * We want to keep these to a minimum.
+ * 
+ * The ACPI subsystem only uses low level functions that do not call OS
+ * system services and may therefore be inlined in the code.
  *
- * 1) ACPI_USE_SYSTEM_CLIBRARY - Define this if linking to an actual C library.
- *      Otherwise, local versions of string/memory functions will be used.
- * 2) ACPI_USE_STANDARD_HEADERS - Define this if linking to a C library and
- *      the standard header files may be used.
- *
- * The ACPI subsystem only uses low level C library functions that do not call
- * operating system services and may therefore be inlined in the code.
- *
- * It may be necessary to tailor these include files to the target
+ * It may be necessary to tailor these include files to the target 
  * generation environment.
  *
  *
@@ -183,7 +151,7 @@
  *              strlen
  *              strncmp
  *              strncat
- *              strncpy
+ *              strncpy 
  *
  * stdlib.h:    strtoul
  *
@@ -194,98 +162,32 @@
  *
  */
 
-/*! [Begin] no source code translation */
-
-#ifdef _LINUX
-#include "aclinux.h"
-
-#else
-#ifdef _AED_EFI
-#include "acefi.h"
-
-#else
-#ifdef WIN32
-#include "acwin.h"
-
-#else
-#ifdef WIN64
-#include "acwin64.h"
-
-#else
-#ifdef __FreeBSD__
-#include "acfreebsd.h"
-
-#else
-
-/* All other environments */
-
-#define ACPI_USE_STANDARD_HEADERS
-
-/* Name of host operating system (returned by the _OS_ namespace object) */
-
-#define ACPI_OS_NAME         "Intel ACPI/CA Core Subsystem"
-
-/* This macro is used to tag functions as "printf-like" because
- * some compilers can catch printf format string problems. MSVC
- * doesn't, so this is proprocessed away.
- */
-#define ACPI_PRINTF_LIKE_FUNC
-
-#endif
-#endif
-#endif
-#endif
-#endif
-
-
-/*! [End] no source code translation !*/
-
-/******************************************************************************
- *
- * C library configuration
- *
- *****************************************************************************/
-
-#ifdef ACPI_USE_SYSTEM_CLIBRARY
-/*
- * Use the standard C library headers.
- * We want to keep these to a minimum.
- *
- */
-
-#ifdef ACPI_USE_STANDARD_HEADERS
-/*
- * Use the standard headers from the standard locations
- */
 #include <stdarg.h>
 #include <stdlib.h>
 #include <string.h>
-#include <ctype.h>
-
-#endif /* ACPI_USE_STANDARD_HEADERS */
 
 /*
- * We will be linking to the standard Clib functions
+ * We will be using the standard Clib functions
  */
 
-#define STRSTR(s1,s2)   strstr((s1), (s2))
-#define STRUPR(s)       AcpiUtStrupr  ((s))
-#define STRLEN(s)       (UINT32) strlen((s))
-#define STRCPY(d,s)     strcpy((d), (s))
-#define STRNCPY(d,s,n)  strncpy((d), (s), (NATIVE_INT)(n))
-#define STRNCMP(d,s,n)  strncmp((d), (s), (NATIVE_INT)(n))
-#define STRCMP(d,s)     strcmp((d), (s))
-#define STRCAT(d,s)     strcat((d), (s))
-#define STRNCAT(d,s,n)  strncat((d), (s), (NATIVE_INT)(n))
-#define STRTOUL(d,s,n)  strtoul((d), (s), (NATIVE_INT)(n))
-#define MEMCPY(d,s,n)   memcpy((d), (s), (NATIVE_INT)(n))
-#define MEMSET(d,s,n)   memset((d), (s), (NATIVE_INT)(n))
-#define TOUPPER         toupper
-#define TOLOWER         tolower
-#define IS_XDIGIT       isxdigit
+#define STRSTR(s1,s2)           strstr((char *) (s1), (char *) (s2))
+#define STRUPR(s)               strupr((char *) (s))
+#define STRLEN(s)               strlen((char *) (s))
+#define STRCPY(d,s)             strcpy((char *) (d), (char *) (s))
+#define STRNCPY(d,s,n)          strncpy((char *) (d), (char *) (s), (n))
+#define STRNCMP(d,s,n)          strncmp((char *) (d), (char *) (s), (n))
+#define STRCMP(d,s)             strcmp((char *) (d), (char *) (s))
+#define STRCAT(d,s)             strcat((char *) (d), (char *) (s))
+#define STRNCAT(d,s,n)          strncat((char *) (d), (char *) (s), (n))
+#define STRTOUL(d,s,n)          strtoul((char *) (d), (char **) (s), (n))
+#define MEMCPY(d,s,n)           memcpy(d, s, (size_t) n)
+#define MEMSET(d,s,n)           memset(d, s, (size_t) n)
+#define TOUPPER                 toupper
+#define TOLOWER                 tolower
+
 
 /******************************************************************************
- *
+ * 
  * Not using native C library, use local implementations
  *
  *****************************************************************************/
@@ -309,88 +211,172 @@ typedef char *va_list;
  * Storage alignment properties
  */
 
-#define  _AUPBND         (sizeof (NATIVE_INT) - 1)
-#define  _ADNBND         (sizeof (NATIVE_INT) - 1)
+#define  _AUPBND                (sizeof(int) - 1)
+#define  _ADNBND                (sizeof(int) - 1) 
 
 /*
  * Variable argument list macro definitions
  */
 
-#define _Bnd(X, bnd)    (((sizeof (X)) + (bnd)) & (~(bnd)))
-#define va_arg(ap, T)   (*(T *)(((ap) += (_Bnd (T, _AUPBND))) - (_Bnd (T,_ADNBND))))
-#define va_end(ap)      (void) 0
-#define va_start(ap, A) (void) ((ap) = (((char *) &(A)) + (_Bnd (A,_AUPBND))))
+#define _Bnd(X, bnd)            (((sizeof(X)) + (bnd)) & (~(bnd)))
+#define va_arg(ap, T)           (*(T *)(((ap) += ((_Bnd(T, _AUPBND))) - (_Bnd(T, _ADNBND)))))
+#define va_end(ap)              (void)0 
+#define va_start(ap, A)         (void) ((ap) = (((char *)&(A)) + (_Bnd(A, _AUPBND))))
 
 #endif /* va_arg */
 
 
-#define STRSTR(s1,s2)    AcpiUtStrstr  ((s1), (s2))
-#define STRUPR(s)        AcpiUtStrupr  ((s))
-#define STRLEN(s)        AcpiUtStrlen  ((s))
-#define STRCPY(d,s)      AcpiUtStrcpy  ((d), (s))
-#define STRNCPY(d,s,n)   AcpiUtStrncpy ((d), (s), (n))
-#define STRNCMP(d,s,n)   AcpiUtStrncmp ((d), (s), (n))
-#define STRCMP(d,s)      AcpiUtStrcmp  ((d), (s))
-#define STRCAT(d,s)      AcpiUtStrcat  ((d), (s))
-#define STRNCAT(d,s,n)   AcpiUtStrncat ((d), (s), (n))
-#define STRTOUL(d,s,n)   AcpiUtStrtoul ((d), (s),(n))
-#define MEMCPY(d,s,n)    AcpiUtMemcpy  ((d), (s), (n))
-#define MEMSET(d,v,n)    AcpiUtMemset  ((d), (v), (n))
-#define TOUPPER          AcpiUtToUpper
-#define TOLOWER          AcpiUtToLower
+#define STRSTR(s1,s2)           AcpiCmStrstr    ((char *) (s1), (char *) (s2))
+#define STRUPR(s)               AcpiCmStrupr    ((char *) (s))
+#define STRLEN(s)               AcpiCmStrlen    ((char *) (s))
+#define STRCPY(d,s)             AcpiCmStrcpy    ((char *) (d), (char *) (s))
+#define STRNCPY(d,s,n)          AcpiCmStrncpy   ((char *) (d), (char *) (s), (n))
+#define STRNCMP(d,s,n)          AcpiCmStrncmp   ((char *) (d), (char *) (s), (n))
+#define STRCMP(d,s)             AcpiCmStrcmp    ((char *) (d), (char *) (s))
+#define STRCAT(d,s)             AcpiCmStrcat    ((char *) (d), (char *) (s))
+#define STRNCAT(d,s,n)          AcpiCmStrncat   ((char *) (d), (char *) (s), (n))
+#define STRTOUL(d,s,n)          AcpiCmStrtoul   ((char *) (d), (char **) (s), (n))
+#define MEMCPY(d,s,n)           AcpiCmMemcpy    ((void *) (d), (const void *) (s), (n))
+#define MEMSET(d,v,n)           AcpiCmMemset    ((void *) (d), (v), (n))
+#define TOUPPER                 AcpiCmToUpper
+#define TOLOWER                 AcpiCmToLower
 
-#endif /* ACPI_USE_SYSTEM_CLIBRARY */
+#endif /* LOCAL_CLIB_FUNCTIONS */
+
 
 
 /******************************************************************************
- *
+ * 
  * Assembly code macros
  *
  *****************************************************************************/
 
 /*
  * Handle platform- and compiler-specific assembly language differences.
- * These should already have been defined by the platform includes above.
  *
  * Notes:
  * 1) Interrupt 3 is used to break into a debugger
  * 2) Interrupts are turned off during ACPI register setup
  */
 
-/* Unrecognized compiler, use defaults */
-#ifndef ACPI_ASM_MACROS
+#ifdef WIN32   /* MS VC */
 
-#define ACPI_ASM_MACROS
+#define causeinterrupt(level)   __asm {int level}
+#define BREAKPOINT3             __asm {int 3}
+#define disable()               __asm {cli}
+#define enable()                __asm {sti}
+#define halt()                  __asm {hlt}
+#define wbinvd()                __asm {WBINVD}
+
+
+#define ASM_AcquireGL(GLptr, Acq)       __asm {     \
+        __asm mov           ecx, GLptr              \
+                                                    \
+        __asm acq10:                                \
+        __asm mov           eax, [ecx]              \
+        __asm mov           edx, eax                \
+        __asm and           edx, 0xFFFFFFFE         \
+        __asm bts           edx, 1                  \
+        __asm adc           edx, 0                  \
+        __asm lock cmpxchg  dword ptr [ecx], edx    \
+        __asm jnz           acq10                   \
+                                                    \
+        __asm cmp           dl, 3                   \
+        __asm sbb           eax, eax                \
+        __asm mov           Acq, al                 \
+}
+
+#define ASM_ReleaseGL(GLptr, Pnd)       __asm {     \
+        __asm mov           ecx, GLptr              \
+                                                    \
+        __asm Rel10:                                \
+        __asm mov           eax, [ecx]              \
+        __asm mov           edx, eax                \
+        __asm and           edx, 0xFFFFFFFC         \
+        __asm lock cmpxchg  dword ptr [ecx], edx    \
+        __asm jnz           rel10                   \
+                                                    \
+        __asm cmp           dl, 3                   \
+        __asm and           eax, 1                  \
+        __asm mov           Pnd, al                 \
+}
+
+
+#elif defined(__GNUC__)
+
 #define causeinterrupt(level)
 #define BREAKPOINT3
-#define acpi_disable_irqs()
-#define acpi_enable_irqs()
+#define disable()               __asm ("cli")
+#define enable()                __asm ("sti")
+#define halt()                  __asm ("hlt")
+#define wbinvd()                __asm ("wbinvd")
+
+
+/*
+ * A brief explanation as GNU inline assembly is a bit hairy
+ *  %0 is the output parameter in EAX ("=a") 
+ *  %1 and %2 are the input parameters in ECX ("c") and an immediate value ("i") respectively
+ *  All actual register references are preceded with "%%" as in "%%edx"
+ *  Immediate values in the assembly are preceded by "$" as in "$0x1"
+ *  The final asm parameter is the non-output registers altered by the operation
+ */
+#define ASM_AcquireGL(GLptr, Acq)           \
+  asm("1: movl              (%1),%%eax;"    \
+         "movl              %%eax,%%edx;"   \
+         "andl              %2,%%edx;"      \
+         "btsl              $0x1,%%edx;"    \
+         "adcl              $0x0,%%edx;"    \
+         "lock; cmpxchgl    %%edx,(%1);"    \
+         "jnz               1b;"            \
+                                            \
+         "cmpb              $0x3,%%dl;"     \
+         "sbbl              %%eax,%%eax"    \
+         :"=a"(Acq):"c"(GLptr),"i"(~1L):"cx","dx")
+
+#define ASM_ReleaseGL(GLptr, Acq)           \
+  asm("1: movl              (%1),%%eax;"    \
+         "movl              %%eax,%%edx;"   \
+         "andl              %2,%%edx;"      \
+         "lock; cmpxchgl    %%edx,(%1);"    \
+         "jnz               1b;"            \
+                                            \
+         "andl              $0x1,%%eax"     \
+         :"=a"(Acq):"c"(GLptr),"i"(~3L):"cx","dx")
+
+
+#else
+
+#define causeinterrupt(level)
+#define BREAKPOINT3
+#define disable()
+#define enable()
 #define halt()
-#define ACPI_ACQUIRE_GLOBAL_LOCK(GLptr, Acq)
-#define ACPI_RELEASE_GLOBAL_LOCK(GLptr, Acq)
 
-#endif /* ACPI_ASM_MACROS */
+#define ASM_AcquireGL(GLptr, Acq)
+#define ASM_ReleaseGL(GLptr, Acq) 
 
+#endif
 
 #ifdef ACPI_APPLICATION
-
-/* Don't want software interrupts within a ring3 application */
-
 #undef causeinterrupt
 #undef BREAKPOINT3
 #define causeinterrupt(level)
-#define BREAKPOINT3
-#endif
+#define BREAKPOINT3   
+#endif         
+
 
 
 /******************************************************************************
- *
+ * 
  * Compiler-specific
  *
  *****************************************************************************/
 
-/* this has been moved to compiler-specific headers, which are included from the
-   platform header. */
+#ifdef _MSC_VER                 /* disable some level-4 warnings */
+#pragma warning(disable:4100)   /* warning C4100: unreferenced formal parameter */
+#pragma warning(disable:4127)   /* warning C4127: conditional expression is constant */
+#endif
+
 
 
 #endif /* __ACENV_H__ */

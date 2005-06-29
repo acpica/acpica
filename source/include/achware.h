@@ -252,62 +252,62 @@ enum
 
 
 ACPI_STATUS
-HwInitialize();
+AcpiHwInitialize();
 
 ACPI_STATUS
-HwShutdown();
+AcpiHwShutdown();
 
 ACPI_STATUS
-HwInitializeSystemInfo();
+AcpiHwInitializeSystemInfo();
 
 ACPI_STATUS
-HwSetMode (
+AcpiHwSetMode (
     UINT32                  Mode);
 
 UINT32
-HwGetMode (
+AcpiHwGetMode (
     void);
 
 UINT32
-HwGetModeCapabilities (
+AcpiHwGetModeCapabilities (
     void);
 
 /* Register I/O Prototypes */
 
 UINT32
-HwRegisterIO (
+AcpiHwRegisterIO (
     NATIVE_UINT             ReadWrite,
     BOOLEAN                 UseLock,    
     UINT32                  RegisterId, ... /* DWORD Value */);
 
 void 
-HwClearAcpiStatus (
+AcpiHwClearAcpiStatus (
    void);
 
 
 /* GPE support */
 
 void
-HwEnableGpe (
+AcpiHwEnableGpe (
     UINT32                  GpeIndex);
 
 void
-HwDisableGpe (
+AcpiHwDisableGpe (
     UINT32                  GpeIndex);
 
 void
-HwClearGpe (
+AcpiHwClearGpe (
     UINT32                  GpeIndex);
 
 void
-HwGetGpeStatus (
+AcpiHwGetGpeStatus (
     UINT32                  GpeNumber,
     ACPI_EVENT_STATUS       *EventStatus);
 
 /* Sleep Prototypes */
 
 ACPI_STATUS
-HwObtainSleepTypeRegisterData (
+AcpiHwObtainSleepTypeRegisterData (
     UINT8                   SleepState,
     UINT8                   *Slp_TypA,
     UINT8                   *Slp_TypB);
@@ -316,59 +316,59 @@ HwObtainSleepTypeRegisterData (
 /* Cx State Prototypes */
 
 ACPI_STATUS
-HwIa32EnterC1(
+AcpiHwIa32EnterC1(
     ACPI_IO_ADDRESS         PBlkAddress,
     UINT32                  *PmTimerTicks);
 
 ACPI_STATUS
-HwIa32EnterC2(
+AcpiHwIa32EnterC2(
     ACPI_IO_ADDRESS         PBlkAddress,
     UINT32                  *PmTimerTicks);
 
 ACPI_STATUS
-HwIa32EnterC3(
+AcpiHwIa32EnterC3(
     ACPI_IO_ADDRESS         PBlkAddress,
     UINT32                  *PmTimerTicks);
 
 ACPI_STATUS
-HwIa32EnterCx (
+AcpiHwIa32EnterCx (
     ACPI_IO_ADDRESS         PBlkAddress,
     UINT32                  *PmTimerTicks);
 
 ACPI_STATUS
-HwIa32SetCx (
+AcpiHwIa32SetCx (
     UINT32                  CxState);
 
 ACPI_STATUS
-HwIa32GetCxInfo (
+AcpiHwIa32GetCxInfo (
     UINT32                  CxStates[MAX_CX_STATES]);
 
 
 /* Throttling Prototypes */
 
 void 
-HwEnableThrottling (
+AcpiHwEnableThrottling (
     ACPI_IO_ADDRESS         PBlkAddress);
 
 void 
-HwDisableThrottling (
+AcpiHwDisableThrottling (
     ACPI_IO_ADDRESS         PBlkAddress);
 
 UINT32
-HwGetDutyCycle (
+AcpiHwGetDutyCycle (
     UINT8                   DutyOffset,
     ACPI_IO_ADDRESS         PBlkAddress,
     UINT32                  NumThrottleStates);
 
 void
-HwProgramDutyCycle (
+AcpiHwProgramDutyCycle (
     UINT8                   DutyOffset,
     UINT32                  DutyCycle,
     ACPI_IO_ADDRESS         PBlkAddress,
     UINT32                  NumThrottleStates);
 
 NATIVE_UINT
-HwLocalPow (
+AcpiHwLocalPow (
     NATIVE_UINT             x,
     NATIVE_UINT             y);
 
@@ -376,11 +376,11 @@ HwLocalPow (
 /* ACPI Timer prototypes */
 
 UINT32
-HwPmtTicks (
+AcpiHwPmtTicks (
     void);
 
 UINT32
-HwPmtResolution (
+AcpiHwPmtResolution (
     void);
 
 

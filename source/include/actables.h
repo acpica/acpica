@@ -1,7 +1,7 @@
+
 /******************************************************************************
- *
- * Name: actables.h - ACPI table management
- *       $Revision: 1.35 $
+ * 
+ * Name: tables.h - ACPI table management
  *
  *****************************************************************************/
 
@@ -9,8 +9,8 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
- * All rights reserved.
+ * Some or all of this work - Copyright (c) 1999, Intel Corp.  All rights
+ * reserved.
  *
  * 2. License
  *
@@ -38,9 +38,9 @@
  * The above copyright and patent license is granted only if the following
  * conditions are met:
  *
- * 3. Conditions
+ * 3. Conditions 
  *
- * 3.1. Redistribution of Source with Rights to Further Distribute Source.
+ * 3.1. Redistribution of Source with Rights to Further Distribute Source.  
  * Redistribution of source code of any substantial portion of the Covered
  * Code or modification with rights to further distribute source must include
  * the above Copyright Notice, the above License, this list of Conditions,
@@ -48,11 +48,11 @@
  * Licensee must cause all Covered Code to which Licensee contributes to
  * contain a file documenting the changes Licensee made to create that Covered
  * Code and the date of any change.  Licensee must include in that file the
- * documentation of any changes made by any predecessor Licensee.  Licensee
+ * documentation of any changes made by any predecessor Licensee.  Licensee 
  * must include a prominent statement that the modification is derived,
  * directly or indirectly, from Original Intel Code.
  *
- * 3.2. Redistribution of Source with no Rights to Further Distribute Source.
+ * 3.2. Redistribution of Source with no Rights to Further Distribute Source.  
  * Redistribution of source code of any substantial portion of the Covered
  * Code or modification without rights to further distribute source must
  * include the following Disclaimer and Export Compliance provision in the
@@ -86,7 +86,7 @@
  * INSTALLATION, TRAINING OR OTHER SERVICES.  INTEL WILL NOT PROVIDE ANY
  * UPDATES, ENHANCEMENTS OR EXTENSIONS.  INTEL SPECIFICALLY DISCLAIMS ANY
  * IMPLIED WARRANTIES OF MERCHANTABILITY, NONINFRINGEMENT AND FITNESS FOR A
- * PARTICULAR PURPOSE.
+ * PARTICULAR PURPOSE. 
  *
  * 4.2. IN NO EVENT SHALL INTEL HAVE ANY LIABILITY TO LICENSEE, ITS LICENSEES
  * OR ANY OTHER THIRD PARTY, FOR ANY LOST PROFITS, LOST DATA, LOSS OF USE OR
@@ -114,8 +114,12 @@
  *
  *****************************************************************************/
 
-#ifndef __ACTABLES_H__
-#define __ACTABLES_H__
+#ifndef __TABLES_H__
+#define __TABLES_H__
+
+#include "actypes.h"
+#include "actables.h"
+
 
 
 /* Used in AcpiTbMapAcpiTable for size parameter if table header is to be used */
@@ -123,100 +127,62 @@
 #define SIZE_IN_HEADER          0
 
 
+
 ACPI_STATUS
 AcpiTbHandleToObject (
     UINT16                  TableId,
     ACPI_TABLE_DESC         **TableDesc);
 
+
 /*
- * tbconvrt - Table conversion routines
+ * AcpiTbfac - FACP, FACS utilities
  */
 
 ACPI_STATUS
-AcpiTbConvertToXsdt (
-    ACPI_TABLE_DESC         *TableInfo,
-    UINT32                  *NumberOfTables);
-
-ACPI_STATUS
-AcpiTbConvertTableFadt (
-    void);
-
-ACPI_STATUS
-AcpiTbBuildCommonFacs (
+AcpiTbGetTableFacs (
+    char                    *BufferPtr,
     ACPI_TABLE_DESC         *TableInfo);
 
-UINT32
-AcpiTbGetTableCount (
-    RSDP_DESCRIPTOR         *RSDP,
-    ACPI_TABLE_HEADER       *RSDT);
 
 /*
- * tbget - Table "get" routines
+ * AcpiTbget - Table "get" routines
  */
 
 ACPI_STATUS
 AcpiTbGetTablePtr (
-    ACPI_TABLE_TYPE         TableType,
+    ACPI_TABLE_TYPE         TableType, 
     UINT32                  Instance,
     ACPI_TABLE_HEADER       **TablePtrLoc);
 
 ACPI_STATUS
 AcpiTbGetTable (
-    ACPI_PHYSICAL_ADDRESS   PhysicalAddress,
-    ACPI_TABLE_HEADER       *BufferPtr,
+    void                    *PhysicalAddress, 
+    char                    *BufferPtr,
     ACPI_TABLE_DESC         *TableInfo);
 
-ACPI_STATUS
-AcpiTbVerifyRsdp (
-    ACPI_PHYSICAL_ADDRESS   RSDP_PhysicalAddress);
 
-ACPI_STATUS
-AcpiTbGetTableFacs (
-    ACPI_TABLE_HEADER       *BufferPtr,
-    ACPI_TABLE_DESC         *TableInfo);
-
-ACPI_PHYSICAL_ADDRESS
-AcpiTbGetRsdtAddress (
-    void);
-
-ACPI_STATUS
-AcpiTbValidateRsdt (
-    ACPI_TABLE_HEADER       *TablePtr);
-
-ACPI_STATUS
-AcpiTbGetTablePointer (
-    ACPI_PHYSICAL_ADDRESS   PhysicalAddress,
-    UINT32                  Flags,
-    UINT32                  *Size,
-    ACPI_TABLE_HEADER       **TablePtr);
-
-/*
- * tbgetall - Get all firmware ACPI tables
+/* 
+ * AcpiTbgetall - Get all firmware ACPI tables
  */
 
 ACPI_STATUS
 AcpiTbGetAllTables (
-    UINT32                  NumberOfTables,
-    ACPI_TABLE_HEADER       *BufferPtr);
+    UINT32                  NumberOfTables, 
+    char                    *BufferPtr);
 
 
 /*
- * tbinstall - Table installation
+ * AcpiTbinstall - Table installation
  */
 
 ACPI_STATUS
 AcpiTbInstallTable (
-    ACPI_TABLE_HEADER       *TablePtr,
-    ACPI_TABLE_DESC         *TableInfo);
-
-ACPI_STATUS
-AcpiTbMatchSignature (
-    NATIVE_CHAR             *Signature,
+    char                    *TablePtr,
     ACPI_TABLE_DESC         *TableInfo);
 
 ACPI_STATUS
 AcpiTbRecognizeTable (
-    ACPI_TABLE_HEADER       *TablePtr,
+    char                    *TablePtr,
     ACPI_TABLE_DESC         *TableInfo);
 
 ACPI_STATUS
@@ -226,7 +192,7 @@ AcpiTbInitTableDescriptor (
 
 
 /*
- * tbremove - Table removal and deletion
+ * AcpiTbremove - Table removal and deletion
  */
 
 void
@@ -237,12 +203,8 @@ void
 AcpiTbDeleteAcpiTable (
     ACPI_TABLE_TYPE         Type);
 
-void
-AcpiTbDeleteSingleTable (
-    ACPI_TABLE_DESC         *TableDesc);
-
 ACPI_TABLE_DESC *
-AcpiTbUninstallTable (
+AcpiTbDeleteSingleTable (
     ACPI_TABLE_DESC         *TableDesc);
 
 void
@@ -251,44 +213,40 @@ AcpiTbFreeAcpiTablesOfType (
 
 
 /*
- * tbrsd - RSDP, RSDT utilities
+ * AcpiTbrsd - RSDP, RSDT utilities
  */
 
 ACPI_STATUS
 AcpiTbGetTableRsdt (
     UINT32                  *NumberOfTables);
 
-UINT8 *
+char *
 AcpiTbScanMemoryForRsdp (
-    UINT8                   *StartAddress,
+    char                    *StartAddress, 
     UINT32                  Length);
 
 ACPI_STATUS
 AcpiTbFindRsdp (
-    ACPI_TABLE_DESC         *TableInfo,
-    UINT32                  Flags);
+    ACPI_TABLE_DESC         *TableInfo);
 
 
 /*
- * tbutils - common table utilities
+ * AcpiTbutils - common table utilities
  */
 
-ACPI_STATUS
-AcpiTbFindTable (
-    NATIVE_CHAR             *Signature,
-    NATIVE_CHAR             *OemId,
-    NATIVE_CHAR             *OemTableId,
-    ACPI_TABLE_HEADER       **TablePtr);
+BOOLEAN
+AcpiTbSystemTablePointer (
+    void                    *Where);
 
 ACPI_STATUS
 AcpiTbMapAcpiTable (
-    ACPI_PHYSICAL_ADDRESS   PhysicalAddress,
+    void                    *PhysicalAddress,
     UINT32                  *Size,
-    ACPI_TABLE_HEADER       **LogicalAddress);
+    void                    **LogicalAddress);
 
 ACPI_STATUS
 AcpiTbVerifyTableChecksum (
-    ACPI_TABLE_HEADER       *TableHeader);
+    ACPI_TABLE_HEADER       *TableHeader); 
 
 UINT8
 AcpiTbChecksum (
@@ -300,4 +258,4 @@ AcpiTbValidateTableHeader (
     ACPI_TABLE_HEADER       *TableHeader);
 
 
-#endif /* __ACTABLES_H__ */
+#endif /* __TABLES_H__ */

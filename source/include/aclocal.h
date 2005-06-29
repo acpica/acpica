@@ -117,7 +117,7 @@
 #ifndef _ACPI_INTERNAL_H
 #define _ACPI_INTERNAL_H
 
-#include <config.h>
+#include "config.h"
 
 
 #define WAIT_FOREVER            ((UINT32) -1)
@@ -145,8 +145,8 @@ typedef UINT32                  ACPI_MUTEX_HANDLE;
 
 /*
  * Predefined handles for the mutex objects used within the subsystem
- * All mutex objects are automatically created by CmMutexInitialize.
- * NOTE: any changes here must be reflected in the Gbl_MutexNames table also!
+ * All mutex objects are automatically created by AcpiCmMutexInitialize.
+ * NOTE: any changes here must be reflected in the Acpi_GblMutexNames table also!
  */
 
 #define MTX_HARDWARE            0
@@ -172,7 +172,7 @@ typedef UINT32                  ACPI_MUTEX_HANDLE;
 
 /* Names for the mutexes used in the subsystem */
 
-static char                 *Gbl_MutexNames[] =
+static char                 *Acpi_GblMutexNames[] =
 {
     "MTX_Hardware",
     "MTX_Memory",
@@ -231,9 +231,9 @@ typedef UINT16                  ACPI_OWNER_ID;
 
 typedef enum 
 {
-    IMODE_LoadPass1 = 0x01,
-    IMODE_LoadPass2 = 0x02,
-    IMODE_Execute   = 0x0E
+    IMODE_LOAD_PASS1 = 0x01,
+    IMODE_LOAD_PASS2 = 0x02,
+    IMODE_EXECUTE   = 0x0E
 
 } OPERATING_MODE;
 
@@ -354,7 +354,7 @@ typedef struct
 
 /*****************************************************************************
  * 
- * Event typedefs and structs
+ * AcpiEvent typedefs and structs
  *
  ****************************************************************************/
 
@@ -583,7 +583,7 @@ typedef struct acpi_parse_scope
     UINT8                   Flags; \
     UINT16                  Value; \
     UINT16                  State; \
-    UINT16                  Eval;  \
+    UINT16                  AcpiEval;  \
     void                    *Next; \
 
 typedef struct acpi_common_state
@@ -701,7 +701,7 @@ ACPI_STATUS (*INTERPRETER_CALLBACK) (
 
 
 
-/* Info used by PsInitObjects */
+/* Info used by AcpiPsInitObjects */
 
 typedef struct InitWalkInfo
 {

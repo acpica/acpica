@@ -1,7 +1,7 @@
+
 /******************************************************************************
- *
- * Name: acevents.h - Event subcomponent prototypes and defines
- *       $Revision: 1.99 $
+ * 
+ * Name: events.h - AcpiEvent subcomponent prototypes and defines
  *
  *****************************************************************************/
 
@@ -9,8 +9,8 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2005, Intel Corp.
- * All rights reserved.
+ * Some or all of this work - Copyright (c) 1999, Intel Corp.  All rights
+ * reserved.
  *
  * 2. License
  *
@@ -38,9 +38,9 @@
  * The above copyright and patent license is granted only if the following
  * conditions are met:
  *
- * 3. Conditions
+ * 3. Conditions 
  *
- * 3.1. Redistribution of Source with Rights to Further Distribute Source.
+ * 3.1. Redistribution of Source with Rights to Further Distribute Source.  
  * Redistribution of source code of any substantial portion of the Covered
  * Code or modification with rights to further distribute source must include
  * the above Copyright Notice, the above License, this list of Conditions,
@@ -48,11 +48,11 @@
  * Licensee must cause all Covered Code to which Licensee contributes to
  * contain a file documenting the changes Licensee made to create that Covered
  * Code and the date of any change.  Licensee must include in that file the
- * documentation of any changes made by any predecessor Licensee.  Licensee
+ * documentation of any changes made by any predecessor Licensee.  Licensee 
  * must include a prominent statement that the modification is derived,
  * directly or indirectly, from Original Intel Code.
  *
- * 3.2. Redistribution of Source with no Rights to Further Distribute Source.
+ * 3.2. Redistribution of Source with no Rights to Further Distribute Source.  
  * Redistribution of source code of any substantial portion of the Covered
  * Code or modification without rights to further distribute source must
  * include the following Disclaimer and Export Compliance provision in the
@@ -86,7 +86,7 @@
  * INSTALLATION, TRAINING OR OTHER SERVICES.  INTEL WILL NOT PROVIDE ANY
  * UPDATES, ENHANCEMENTS OR EXTENSIONS.  INTEL SPECIFICALLY DISCLAIMS ANY
  * IMPLIED WARRANTIES OF MERCHANTABILITY, NONINFRINGEMENT AND FITNESS FOR A
- * PARTICULAR PURPOSE.
+ * PARTICULAR PURPOSE. 
  *
  * 4.2. IN NO EVENT SHALL INTEL HAVE ANY LIABILITY TO LICENSEE, ITS LICENSEES
  * OR ANY OTHER THIRD PARTY, FOR ANY LOST PROFITS, LOST DATA, LOSS OF USE OR
@@ -114,23 +114,34 @@
  *
  *****************************************************************************/
 
-#ifndef __ACEVENTS_H__
-#define __ACEVENTS_H__
+#ifndef __EVENTS_H__
+#define __EVENTS_H__
 
 
-ACPI_STATUS
-AcpiEvInitializeEvents (
-    void);
 
-ACPI_STATUS
-AcpiEvInstallXruptHandlers (
-    void);
+/* Status bits. */
+
+#define STATUS_PMTIMER                  0x0001
+#define STATUS_GLOBAL                   0x0020
+#define STATUS_POWER_BUTTON             0x0100
+#define STATUS_SLEEP_BUTTON             0x0200
+#define STATUS_RTC_ALARM                0x0400
+
+/* Enable bits. */
+
+#define ENABLE_PMTIMER                  0x0001
+#define ENABLE_GLOBAL                   0x0020
+#define ENABLE_POWER_BUTTON             0x0100
+#define ENABLE_SLEEP_BUTTON             0x0200
+#define ENABLE_RTC_ALARM                0x0400
 
 
-/*
- * Evfixed - Fixed event handling
+
+/* 
+ * AcpiEvfixed - Fixed event handling
  */
-static ACPI_STATUS
+
+ACPI_STATUS
 AcpiEvFixedEventInitialize (
     void);
 
@@ -138,23 +149,20 @@ UINT32
 AcpiEvFixedEventDetect (
     void);
 
-static UINT32
+UINT32
 AcpiEvFixedEventDispatch (
-    UINT32                  Event);
+    UINT32                  AcpiEvent);
 
 
 /*
- * Evmisc
+ * AcpiEvglock - Global Lock support
  */
-BOOLEAN
-AcpiEvIsNotifyObject (
-    ACPI_NAMESPACE_NODE     *Node);
 
 ACPI_STATUS
 AcpiEvAcquireGlobalLock(
-    UINT16                  Timeout);
+    void);
 
-ACPI_STATUS
+void
 AcpiEvReleaseGlobalLock(
     void);
 
@@ -162,260 +170,116 @@ ACPI_STATUS
 AcpiEvInitGlobalLockHandler (
     void);
 
-UINT32
-AcpiEvGetGpeNumberIndex (
-    UINT32                  GpeNumber);
-
-ACPI_STATUS
-AcpiEvQueueNotifyRequest (
-    ACPI_NAMESPACE_NODE     *Node,
-    UINT32                  NotifyValue);
-
-static void ACPI_SYSTEM_XFACE
-AcpiEvNotifyDispatch (
-    void                    *Context);
-
-static void ACPI_SYSTEM_XFACE
-AcpiEvGlobalLockThread (
-    void                    *Context);
-
-static UINT32
-AcpiEvGlobalLockHandler (
-    void                    *Context);
 
 /*
- * Evgpe - GPE handling and dispatch
+ * AcpiEvgpe - GPE handling and dispatch
  */
-ACPI_STATUS
-AcpiEvUpdateGpeEnableMasks (
-    ACPI_GPE_EVENT_INFO     *GpeEventInfo,
-    UINT8                   Type);
-
-ACPI_STATUS
-AcpiEvEnableGpe (
-    ACPI_GPE_EVENT_INFO     *GpeEventInfo,
-    BOOLEAN                 WriteToHardware);
-
-ACPI_STATUS
-AcpiEvDisableGpe (
-    ACPI_GPE_EVENT_INFO     *GpeEventInfo);
-
-ACPI_GPE_EVENT_INFO *
-AcpiEvGetGpeEventInfo (
-    ACPI_HANDLE             GpeDevice,
-    UINT32                  GpeNumber);
-
-static void ACPI_SYSTEM_XFACE
-AcpiEvAsynchExecuteGpeMethod (
-    void                    *Context);
-
-
-/*
- * evgpeblk
- */
-BOOLEAN
-AcpiEvValidGpeEvent (
-    ACPI_GPE_EVENT_INFO     *GpeEventInfo);
-
-ACPI_STATUS
-AcpiEvWalkGpeList (
-    ACPI_GPE_CALLBACK       GpeWalkCallback,
-    UINT32                  Flags);
-
-ACPI_STATUS
-AcpiEvDeleteGpeHandlers (
-    ACPI_GPE_XRUPT_INFO     *GpeXruptInfo,
-    ACPI_GPE_BLOCK_INFO     *GpeBlock);
-
-ACPI_STATUS
-AcpiEvCreateGpeBlock (
-    ACPI_NAMESPACE_NODE     *GpeDevice,
-    ACPI_GENERIC_ADDRESS    *GpeBlockAddress,
-    UINT32                  RegisterCount,
-    UINT8                   GpeBlockBaseNumber,
-    UINT32                  InterruptLevel,
-    ACPI_GPE_BLOCK_INFO     **ReturnGpeBlock);
-
-ACPI_STATUS
-AcpiEvDeleteGpeBlock (
-    ACPI_GPE_BLOCK_INFO     *GpeBlock);
-
-UINT32
-AcpiEvGpeDispatch (
-    ACPI_GPE_EVENT_INFO     *GpeEventInfo,
-    UINT32                  GpeNumber);
-
-UINT32
-AcpiEvGpeDetect (
-    ACPI_GPE_XRUPT_INFO     *GpeXruptList);
-
-ACPI_STATUS
-AcpiEvSetGpeType (
-    ACPI_GPE_EVENT_INFO     *GpeEventInfo,
-    UINT8                   Type);
-
-ACPI_STATUS
-AcpiEvCheckForWakeOnlyGpe (
-    ACPI_GPE_EVENT_INFO     *GpeEventInfo);
 
 ACPI_STATUS
 AcpiEvGpeInitialize (
     void);
 
-static ACPI_STATUS
-AcpiEvSaveMethodInfo (
-    ACPI_HANDLE             ObjHandle,
-    UINT32                  Level,
-    void                    *ObjDesc,
-    void                    **ReturnValue);
+ACPI_STATUS
+AcpiEvInitGpeControlMethods (
+    void);
 
-static ACPI_STATUS
-AcpiEvMatchPrwAndGpe (
-    ACPI_HANDLE             ObjHandle,
-    UINT32                  Level,
-    void                    *Info,
-    void                    **ReturnValue);
+UINT32
+AcpiEvGpeDispatch (
+    UINT32                  GpeNumber);
 
-static ACPI_GPE_XRUPT_INFO *
-AcpiEvGetGpeXruptBlock (
-    UINT32                  InterruptLevel);
-
-static ACPI_STATUS
-AcpiEvDeleteGpeXrupt (
-    ACPI_GPE_XRUPT_INFO     *GpeXrupt);
-
-static ACPI_STATUS
-AcpiEvInstallGpeBlock (
-    ACPI_GPE_BLOCK_INFO     *GpeBlock,
-    UINT32                  InterruptLevel);
-
-static ACPI_STATUS
-AcpiEvCreateGpeInfoBlocks (
-    ACPI_GPE_BLOCK_INFO     *GpeBlock);
+UINT32
+AcpiEvGpeDetect (
+    void);
 
 
 /*
- * Evregion - Address Space handling
+ * AcpiEvnotify - Device Notify handling and dispatch
  */
-ACPI_STATUS
-AcpiEvInstallRegionHandlers (
-    void);
+
+void
+AcpiEvNotifyDispatch (
+    ACPI_HANDLE             Device, 
+    UINT32                  NotifyValue);
+
+
+/* 
+ * AcpiEvregion - Address Space handling
+ */
 
 ACPI_STATUS
-AcpiEvInitializeOpRegions (
+AcpiEvInstallDefaultAddressSpaceHandlers (
     void);
 
 ACPI_STATUS
 AcpiEvAddressSpaceDispatch (
-    ACPI_OPERAND_OBJECT    *RegionObj,
+    ACPI_OBJECT_INTERNAL   *RegionObj,
     UINT32                  Function,
-    ACPI_PHYSICAL_ADDRESS   Address,
+    UINT32                  Address,
     UINT32                  BitWidth,
-    void                    *Value);
+    UINT32                  *Value);
+
 
 ACPI_STATUS
-AcpiEvAttachRegion (
-    ACPI_OPERAND_OBJECT     *HandlerObj,
-    ACPI_OPERAND_OBJECT     *RegionObj,
-    BOOLEAN                 AcpiNsIsLocked);
+AcpiEvAddrHandlerHelper (
+    ACPI_HANDLE             ObjHandle, 
+    UINT32                  Level, 
+    void                    *Context,
+    void                    **ReturnValue);
 
 void
-AcpiEvDetachRegion (
-    ACPI_OPERAND_OBJECT    *RegionObj,
-    BOOLEAN                 AcpiNsIsLocked);
+AcpiEvDisassociateRegionFromHandler(
+    ACPI_OBJECT_INTERNAL   *RegionObj);
+
 
 ACPI_STATUS
-AcpiEvInstallSpaceHandler (
-    ACPI_NAMESPACE_NODE     *Node,
-    ACPI_ADR_SPACE_TYPE     SpaceId,
-    ACPI_ADR_SPACE_HANDLER  Handler,
-    ACPI_ADR_SPACE_SETUP    Setup,
-    void                    *Context);
-
-ACPI_STATUS
-AcpiEvExecuteRegMethods (
-    ACPI_NAMESPACE_NODE     *Node,
-    ACPI_ADR_SPACE_TYPE     SpaceId);
-
-ACPI_STATUS
-AcpiEvExecuteRegMethod (
-    ACPI_OPERAND_OBJECT    *RegionObj,
-    UINT32                  Function);
-
-static ACPI_STATUS
-AcpiEvRegRun (
-    ACPI_HANDLE             ObjHandle,
-    UINT32                  Level,
-    void                    *Context,
-    void                    **ReturnValue);
-
-static ACPI_STATUS
-AcpiEvInstallHandler (
-    ACPI_HANDLE             ObjHandle,
-    UINT32                  Level,
-    void                    *Context,
-    void                    **ReturnValue);
+AcpiEvAssociateRegionAndHandler(
+    ACPI_OBJECT_INTERNAL    *HandlerObj,
+    ACPI_OBJECT_INTERNAL    *RegionObj);
 
 
 /*
- * Evregini - Region initialization and setup
+ * AcpiEvregini - Region initialization and setup
  */
+
 ACPI_STATUS
 AcpiEvSystemMemoryRegionSetup (
     ACPI_HANDLE             Handle,
     UINT32                  Function,
     void                    *HandlerContext,
-    void                    **RegionContext);
+    void                    **ReturnContext);
 
 ACPI_STATUS
 AcpiEvIoSpaceRegionSetup (
     ACPI_HANDLE             Handle,
     UINT32                  Function,
     void                    *HandlerContext,
-    void                    **RegionContext);
+    void                    **ReturnContext);
 
 ACPI_STATUS
 AcpiEvPciConfigRegionSetup (
     ACPI_HANDLE             Handle,
     UINT32                  Function,
     void                    *HandlerContext,
-    void                    **RegionContext);
-
-ACPI_STATUS
-AcpiEvCmosRegionSetup (
-    ACPI_HANDLE             Handle,
-    UINT32                  Function,
-    void                    *HandlerContext,
-    void                    **RegionContext);
-
-ACPI_STATUS
-AcpiEvPciBarRegionSetup (
-    ACPI_HANDLE             Handle,
-    UINT32                  Function,
-    void                    *HandlerContext,
-    void                    **RegionContext);
+    void                    **ReturnContext);
 
 ACPI_STATUS
 AcpiEvDefaultRegionSetup (
     ACPI_HANDLE             Handle,
     UINT32                  Function,
     void                    *HandlerContext,
-    void                    **RegionContext);
+    void                    **ReturnContext);
 
 ACPI_STATUS
 AcpiEvInitializeRegion (
-    ACPI_OPERAND_OBJECT     *RegionObj,
+    ACPI_OBJECT_INTERNAL    *RegionObj,
     BOOLEAN                 AcpiNsLocked);
 
 
 /*
- * Evsci - SCI (System Control Interrupt) handling/dispatch
+ * AcpiEvsci - SCI (System Control Interrupt) handling/dispatch
  */
-UINT32 ACPI_SYSTEM_XFACE
-AcpiEvGpeXruptHandler (
-    void                    *Context);
-
-UINT32
+    
+UINT32 
 AcpiEvInstallSciHandler (
     void);
 
@@ -423,17 +287,38 @@ ACPI_STATUS
 AcpiEvRemoveSciHandler (
     void);
 
-UINT32
+INT32 
 AcpiEvInitializeSCI (
-    UINT32                  ProgramSCI);
+    INT32                   ProgramSCI);
+
+void
+AcpiEvRestoreAcpiState (
+    void);
 
 void
 AcpiEvTerminate (
     void);
 
-static UINT32 ACPI_SYSTEM_XFACE
-AcpiEvSciXruptHandler (
-    void                    *Context);
 
 
-#endif  /* __ACEVENTS_H__  */
+
+
+
+
+/* Debug support */
+
+#ifdef ACPI_DEBUG
+
+INT32 
+AcpiEvSciCount (
+    UINT32                  AcpiEvent);
+
+#define DEBUG_INCREMENT_EVENT_COUNT(a)   Acpi_GblEventCount[a]++;
+
+#else
+
+#define DEBUG_INCREMENT_EVENT_COUNT(a)
+#endif
+
+
+#endif  /*  __EVENTS_H__   */

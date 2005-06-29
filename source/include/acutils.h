@@ -1,7 +1,7 @@
+
 /******************************************************************************
- *
- * Name: acutils.h -- prototypes for the common (subsystem-wide) procedures
- *       $Revision: 1.124 $
+ * 
+ * Name: common.h -- prototypes for the common (subsystem-wide) procedures
  *
  *****************************************************************************/
 
@@ -9,8 +9,8 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
- * All rights reserved.
+ * Some or all of this work - Copyright (c) 1999, Intel Corp.  All rights
+ * reserved.
  *
  * 2. License
  *
@@ -38,9 +38,9 @@
  * The above copyright and patent license is granted only if the following
  * conditions are met:
  *
- * 3. Conditions
+ * 3. Conditions 
  *
- * 3.1. Redistribution of Source with Rights to Further Distribute Source.
+ * 3.1. Redistribution of Source with Rights to Further Distribute Source.  
  * Redistribution of source code of any substantial portion of the Covered
  * Code or modification with rights to further distribute source must include
  * the above Copyright Notice, the above License, this list of Conditions,
@@ -48,11 +48,11 @@
  * Licensee must cause all Covered Code to which Licensee contributes to
  * contain a file documenting the changes Licensee made to create that Covered
  * Code and the date of any change.  Licensee must include in that file the
- * documentation of any changes made by any predecessor Licensee.  Licensee
+ * documentation of any changes made by any predecessor Licensee.  Licensee 
  * must include a prominent statement that the modification is derived,
  * directly or indirectly, from Original Intel Code.
  *
- * 3.2. Redistribution of Source with no Rights to Further Distribute Source.
+ * 3.2. Redistribution of Source with no Rights to Further Distribute Source.  
  * Redistribution of source code of any substantial portion of the Covered
  * Code or modification without rights to further distribute source must
  * include the following Disclaimer and Export Compliance provision in the
@@ -86,7 +86,7 @@
  * INSTALLATION, TRAINING OR OTHER SERVICES.  INTEL WILL NOT PROVIDE ANY
  * UPDATES, ENHANCEMENTS OR EXTENSIONS.  INTEL SPECIFICALLY DISCLAIMS ANY
  * IMPLIED WARRANTIES OF MERCHANTABILITY, NONINFRINGEMENT AND FITNESS FOR A
- * PARTICULAR PURPOSE.
+ * PARTICULAR PURPOSE. 
  *
  * 4.2. IN NO EVENT SHALL INTEL HAVE ANY LIABILITY TO LICENSEE, ITS LICENSEES
  * OR ANY OTHER THIRD PARTY, FOR ANY LOST PROFITS, LOST DATA, LOSS OF USE OR
@@ -114,39 +114,15 @@
  *
  *****************************************************************************/
 
-#ifndef _ACUTILS_H
-#define _ACUTILS_H
+#ifndef _COMMON_H
+#define _COMMON_H
 
-
-typedef
-ACPI_STATUS (*ACPI_PKG_CALLBACK) (
-    UINT8                   ObjectType,
-    ACPI_OPERAND_OBJECT     *SourceObject,
-    ACPI_GENERIC_STATE      *State,
-    void                    *Context);
-
-
-ACPI_STATUS
-AcpiUtWalkPackageTree (
-    ACPI_OPERAND_OBJECT     *SourceObject,
-    void                    *TargetObject,
-    ACPI_PKG_CALLBACK       WalkCallback,
-    void                    *Context);
-
-
-typedef struct acpi_pkg_info
-{
-    UINT8                   *FreeSpace;
-    ACPI_SIZE               Length;
-    UINT32                  ObjectSpace;
-    UINT32                  NumPackages;
-} ACPI_PKG_INFO;
 
 #define REF_INCREMENT       (UINT16) 0
 #define REF_DECREMENT       (UINT16) 1
 #define REF_FORCE_DELETE    (UINT16) 2
 
-/* AcpiUtDumpBuffer */
+/* AcpiCmDumpBuffer */
 
 #define DB_BYTE_DISPLAY     1
 #define DB_WORD_DISPLAY     2
@@ -156,627 +132,614 @@ typedef struct acpi_pkg_info
 
 /* Global initialization interfaces */
 
-void
-AcpiUtInitGlobals (
-    void);
+void 
+AcpiCmInitGlobals (
+    ACPI_INIT_DATA *InitData);
 
 void
-AcpiUtTerminate (
+AcpiCmTerminate (
     void);
 
 
 /*
- * UtInit - miscellaneous initialization and shutdown
+ * AcpiCmInit - miscellaneous initialization and shutdown
  */
 
 ACPI_STATUS
-AcpiUtHardwareInitialize (
+AcpiCmHardwareInitialize (
     void);
 
 ACPI_STATUS
-AcpiUtSubsystemShutdown (
-    void);
-
-ACPI_STATUS
-AcpiUtValidateFadt (
+AcpiCmSubsystemShutdown (
     void);
 
 /*
- * UtGlobal - Global data structures and procedures
+ * AcpiCmGlobal - Global data structures and procedures
  */
 
-#ifdef ACPI_DEBUG
-
-NATIVE_CHAR *
-AcpiUtGetMutexName (
+char *
+AcpiCmGetMutexName (
     UINT32                  MutexId);
 
-NATIVE_CHAR *
-AcpiUtGetTypeName (
-    ACPI_OBJECT_TYPE        Type);
-
-NATIVE_CHAR *
-AcpiUtGetRegionName (
-    UINT8                   SpaceId);
-
-#endif
-
-
-UINT8
-AcpiUtHexToAsciiChar (
-    ACPI_INTEGER            Integer,
-    UINT32                  Position);
+char *
+AcpiCmGetTypeName (
+    UINT32                  Type);
 
 BOOLEAN
-AcpiUtValidObjectType (
-    ACPI_OBJECT_TYPE        Type);
+AcpiCmValidObjectType (
+    UINT32                  Type);
 
 ACPI_OWNER_ID
-AcpiUtAllocateOwnerId (
+AcpiCmAllocateOwnerId (
     UINT32                  IdType);
 
 
 /*
- * UtClib - Local implementations of C library functions
+ * AcpiCmClib - Local implementations of C library functions
  */
 
-#ifndef ACPI_USE_SYSTEM_CLIBRARY
+ACPI_SIZE
+AcpiCmStrlen (
+    const char              *String);
+
+char *
+AcpiCmStrcpy (
+    char                    *DstString, 
+    const char              *SrcString);
+
+char *
+AcpiCmStrncpy (
+    char                    *DstString, 
+    const char              *SrcString, 
+    ACPI_SIZE               Count);
 
 UINT32
-AcpiUtStrlen (
-    const NATIVE_CHAR       *String);
-
-NATIVE_CHAR *
-AcpiUtStrcpy (
-    NATIVE_CHAR             *DstString,
-    const NATIVE_CHAR       *SrcString);
-
-NATIVE_CHAR *
-AcpiUtStrncpy (
-    NATIVE_CHAR             *DstString,
-    const NATIVE_CHAR       *SrcString,
-    NATIVE_UINT             Count);
+AcpiCmStrncmp (
+    const char              *String1, 
+    const char              *String2, 
+    ACPI_SIZE               Count);
 
 UINT32
-AcpiUtStrncmp (
-    const NATIVE_CHAR       *String1,
-    const NATIVE_CHAR       *String2,
-    NATIVE_UINT             Count);
+AcpiCmStrcmp (
+    const char              *String1, 
+    const char              *String2);
+
+char *
+AcpiCmStrcat (
+    char                    *DstString,
+    const char              *SrcString);
+
+char *
+AcpiCmStrncat (
+    char                    *DstString, 
+    const char              *SrcString, 
+    ACPI_SIZE               Count);
 
 UINT32
-AcpiUtStrcmp (
-    const NATIVE_CHAR       *String1,
-    const NATIVE_CHAR       *String2);
+AcpiCmStrtoul (
+    const char              *String, 
+    char                    **Terminator, 
+    INT32                   Base);
 
-NATIVE_CHAR *
-AcpiUtStrcat (
-    NATIVE_CHAR             *DstString,
-    const NATIVE_CHAR       *SrcString);
+char *
+AcpiCmStrstr (
+    char                    *String1,
+    char                    *String2);
 
-NATIVE_CHAR *
-AcpiUtStrncat (
-    NATIVE_CHAR             *DstString,
-    const NATIVE_CHAR       *SrcString,
-    NATIVE_UINT             Count);
-
-UINT32
-AcpiUtStrtoul (
-    const NATIVE_CHAR       *String,
-    NATIVE_CHAR             **Terminator,
-    UINT32                  Base);
-
-NATIVE_CHAR *
-AcpiUtStrstr (
-    NATIVE_CHAR             *String1,
-    NATIVE_CHAR             *String2);
+char *
+AcpiCmStrupr (
+    char                    *SrcString);
 
 void *
-AcpiUtMemcpy (
-    void                    *Dest,
-    const void              *Src,
-    NATIVE_UINT             Count);
+AcpiCmMemcpy (
+    void                    *Dest, 
+    const void              *Src, 
+    ACPI_SIZE               Count);
 
 void *
-AcpiUtMemset (
+AcpiCmMemset (
     void                    *Dest,
-    NATIVE_UINT             Value,
-    NATIVE_UINT             Count);
+    INT32                   Value,
+    ACPI_SIZE               Count);
 
-UINT32
-AcpiUtToUpper (
-    UINT32                  c);
+INT32
+AcpiCmToUpper (
+    INT32                   c);
 
-UINT32
-AcpiUtToLower (
-    UINT32                  c);
+INT32
+AcpiCmToLower (
+    INT32                   c);
 
-#endif /* ACPI_USE_SYSTEM_CLIBRARY */
 
-/*
- * UtCopy - Object construction and conversion interfaces
+/* 
+ * AcpiCmCopy - Object construction and conversion interfaces
  */
 
 ACPI_STATUS
-AcpiUtBuildSimpleObject(
-    ACPI_OPERAND_OBJECT     *Obj,
+AcpiCmBuildSimpleObject(
+    ACPI_OBJECT_INTERNAL    *Obj,
     ACPI_OBJECT             *UserObj,
-    UINT8                   *DataSpace,
+    char                    *DataSpace,
     UINT32                  *BufferSpaceUsed);
 
 ACPI_STATUS
-AcpiUtBuildPackageObject (
-    ACPI_OPERAND_OBJECT     *Obj,
-    UINT8                   *Buffer,
+AcpiCmBuildPackageObject (
+    ACPI_OBJECT_INTERNAL    *Obj, 
+    char                    *Buffer, 
     UINT32                  *SpaceUsed);
 
 ACPI_STATUS
-AcpiUtCopyIobjectToEobject (
-    ACPI_OPERAND_OBJECT     *Obj,
+AcpiCmBuildExternalObject (
+    ACPI_OBJECT_INTERNAL    *Obj, 
     ACPI_BUFFER             *RetBuffer);
 
 ACPI_STATUS
-AcpiUtCopyEsimpleToIsimple(
+AcpiCmBuildInternalSimpleObject(
     ACPI_OBJECT             *UserObj,
-    ACPI_OPERAND_OBJECT     **ReturnObj);
+    ACPI_OBJECT_INTERNAL    *Obj);
 
 ACPI_STATUS
-AcpiUtCopyEobjectToIobject (
-    ACPI_OBJECT             *Obj,
-    ACPI_OPERAND_OBJECT     **InternalObj);
+AcpiCmBuildInternalObject (
+    ACPI_OBJECT             *Obj, 
+    ACPI_OBJECT_INTERNAL    *InternalObj);
 
 ACPI_STATUS
-AcpiUtCopyISimpleToIsimple (
-    ACPI_OPERAND_OBJECT     *SourceObj,
-    ACPI_OPERAND_OBJECT     *DestObj);
+AcpiCmCopyInternalSimpleObject (
+    ACPI_OBJECT_INTERNAL    *SourceObj,
+    ACPI_OBJECT_INTERNAL    *DestObj);
 
 ACPI_STATUS
-AcpiUtCopyIpackageToIpackage (
-    ACPI_OPERAND_OBJECT     *SourceObj,
-    ACPI_OPERAND_OBJECT     *DestObj,
-    ACPI_WALK_STATE         *WalkState);
-
-ACPI_STATUS
-AcpiUtCopySimpleObject (
-    ACPI_OPERAND_OBJECT     *SourceDesc,
-    ACPI_OPERAND_OBJECT     *DestDesc);
-
-ACPI_STATUS
-AcpiUtCopyIobjectToIobject (
-    ACPI_OPERAND_OBJECT     *SourceDesc,
-    ACPI_OPERAND_OBJECT     **DestDesc,
-    ACPI_WALK_STATE         *WalkState);
+AcpiCmBuildCopyInternalPackageObject (
+    ACPI_OBJECT_INTERNAL    *SourceObj, 
+    ACPI_OBJECT_INTERNAL    *DestObj);
 
 
 /*
- * UtCreate - Object creation
+ * AcpiCmCreate - Object creation
  */
 
 ACPI_STATUS
-AcpiUtUpdateObjectReference (
-    ACPI_OPERAND_OBJECT     *Object,
+AcpiCmUpdateObjectReference (
+    ACPI_OBJECT_INTERNAL    *Object,
     UINT16                  Action);
 
+ACPI_OBJECT_INTERNAL *
+_CmCreateInternalObject (
+    char                    *ModuleName, 
+    INT32                   LineNumber, 
+    INT32                   ComponentId,
+    OBJECT_TYPE_INTERNAL    Type);
 
-/*
- * UtDebug - Debug interfaces
+
+/* 
+ * AcpiCmDebug - Debug interfaces 
  */
 
-void
-AcpiUtInitStackPtrTrace (
+INT32
+GetDebugLevel (
     void);
 
 void
-AcpiUtTrackStackPtr (
-    void);
+SetDebugLevel (
+    INT32                   level);
 
 void
-AcpiUtTrace (
-    UINT32                  LineNumber,
-    ACPI_DEBUG_PRINT_INFO   *DbgInfo);
+FunctionTrace (
+    ACPI_STRING             ModuleName, 
+    INT32                   LineNumber, 
+    INT32                   ComponentId, 
+    ACPI_STRING             FunctionName);
 
 void
-AcpiUtTracePtr (
-    UINT32                  LineNumber,
-    ACPI_DEBUG_PRINT_INFO   *DbgInfo,
+FunctionTracePtr (
+    ACPI_STRING             ModuleName, 
+    INT32                   LineNumber, 
+    INT32                   ComponentId, 
+    ACPI_STRING             FunctionName,
     void                    *Pointer);
 
 void
-AcpiUtTraceU32 (
-    UINT32                  LineNumber,
-    ACPI_DEBUG_PRINT_INFO   *DbgInfo,
+FunctionTraceU32 (
+    ACPI_STRING             ModuleName, 
+    INT32                   LineNumber, 
+    INT32                   ComponentId, 
+    ACPI_STRING             FunctionName,
     UINT32                  Integer);
 
 void
-AcpiUtTraceStr (
-    UINT32                  LineNumber,
-    ACPI_DEBUG_PRINT_INFO   *DbgInfo,
-    NATIVE_CHAR             *String);
+FunctionTraceStr (
+    ACPI_STRING             ModuleName, 
+    INT32                   LineNumber, 
+    INT32                   ComponentId, 
+    ACPI_STRING             FunctionName,
+    char                    *String);
 
 void
-AcpiUtExit (
-    UINT32                  LineNumber,
-    ACPI_DEBUG_PRINT_INFO   *DbgInfo);
+FunctionExit (
+    ACPI_STRING             ModuleName, 
+    INT32                   LineNumber, 
+    INT32                   ComponentId, 
+    ACPI_STRING             FunctionName);
 
 void
-AcpiUtStatusExit (
-    UINT32                  LineNumber,
-    ACPI_DEBUG_PRINT_INFO   *DbgInfo,
+FunctionStatusExit (
+    ACPI_STRING             ModuleName, 
+    INT32                   LineNumber, 
+    INT32                   ComponentId, 
+    ACPI_STRING             FunctionName,
     ACPI_STATUS             Status);
 
 void
-AcpiUtValueExit (
-    UINT32                  LineNumber,
-    ACPI_DEBUG_PRINT_INFO   *DbgInfo,
-    ACPI_INTEGER            Value);
+FunctionValueExit (
+    ACPI_STRING             ModuleName, 
+    INT32                   LineNumber, 
+    INT32                   ComponentId, 
+    ACPI_STRING             FunctionName,
+    NATIVE_UINT             Value);
 
 void
-AcpiUtPtrExit (
-    UINT32                  LineNumber,
-    ACPI_DEBUG_PRINT_INFO   *DbgInfo,
-    UINT8                   *Ptr);
+FunctionPtrExit (
+    ACPI_STRING             ModuleName, 
+    INT32                   LineNumber, 
+    INT32                   ComponentId, 
+    ACPI_STRING             FunctionName,
+    char                    *Ptr); 
+    
+void
+DebugPrintPrefix (
+    ACPI_STRING             ModuleName, 
+    INT32                   LineNumber);
 
 void
-AcpiUtReportInfo (
-    NATIVE_CHAR             *ModuleName,
-    UINT32                  LineNumber,
-    UINT32                  ComponentId);
+DebugPrint (
+    ACPI_STRING             ModuleName, 
+    INT32                   LineNumber, 
+    INT32                   ComponentId, 
+    INT32                   PrintLevel, 
+    char                    *Format, ...);
 
 void
-AcpiUtReportError (
-    NATIVE_CHAR             *ModuleName,
-    UINT32                  LineNumber,
-    UINT32                  ComponentId);
+DebugPrintRaw (
+    char                    *Format, ...);
 
 void
-AcpiUtReportWarning (
-    NATIVE_CHAR             *ModuleName,
-    UINT32                  LineNumber,
-    UINT32                  ComponentId);
+_ReportInfo (
+    ACPI_STRING             ModuleName, 
+    INT32                   LineNumber, 
+    INT32                   ComponentId, 
+    ACPI_STRING             Message);
 
 void
-AcpiUtDumpBuffer (
-    UINT8                   *Buffer,
-    UINT32                  Count,
+_ReportError (
+    ACPI_STRING             ModuleName, 
+    INT32                   LineNumber, 
+    INT32                   ComponentId, 
+    ACPI_STRING             Message);
+
+void
+_ReportWarning (
+    ACPI_STRING             ModuleName, 
+    INT32                   LineNumber, 
+    INT32                   ComponentId, 
+    ACPI_STRING             Message);
+
+void
+_ReportSuccess (
+    ACPI_STRING             ModuleName, 
+    INT32                   LineNumber, 
+    INT32                   ComponentId, 
+    ACPI_STRING             Message);
+
+void 
+AcpiCmDumpBuffer (
+    char                    *Buffer, 
+    UINT32                  Count, 
     UINT32                  Display,
-    UINT32                  componentId);
-
-void
-AcpiUtDebugPrint (
-    UINT32                  RequestedDebugLevel,
-    UINT32                  LineNumber,
-    ACPI_DEBUG_PRINT_INFO   *DbgInfo,
-    char                    *Format,
-    ...) ACPI_PRINTF_LIKE_FUNC;
-
-void
-AcpiUtDebugPrintRaw (
-    UINT32                  RequestedDebugLevel,
-    UINT32                  LineNumber,
-    ACPI_DEBUG_PRINT_INFO   *DbgInfo,
-    char                    *Format,
-    ...) ACPI_PRINTF_LIKE_FUNC;
+    INT32                   componentId);
 
 
-/*
- * UtDelete - Object deletion
+
+/* 
+ * AcpiCmDelete - Object deletion 
  */
 
 void
-AcpiUtDeleteInternalObj (
-    ACPI_OPERAND_OBJECT     *Object);
+AcpiCmDeleteInternalObj (
+    ACPI_OBJECT_INTERNAL    *Object);
 
 void
-AcpiUtDeleteInternalPackageObject (
-    ACPI_OPERAND_OBJECT     *Object);
+AcpiCmDeleteInternalPackageObject (
+    ACPI_OBJECT_INTERNAL    *Object);
 
 void
-AcpiUtDeleteInternalSimpleObject (
-    ACPI_OPERAND_OBJECT     *Object);
+AcpiCmDeleteInternalSimpleObject (
+    ACPI_OBJECT_INTERNAL    *Object);
 
 ACPI_STATUS
-AcpiUtDeleteInternalObjectList (
-    ACPI_OPERAND_OBJECT     **ObjList);
+AcpiCmDeleteInternalObjectList (
+    ACPI_OBJECT_INTERNAL    **ObjList);
 
 
 /*
- * UtEval - object evaluation
+ * AcpiCmEval - object evaluation
  */
 
 /* Method name strings */
 
 #define METHOD_NAME__HID        "_HID"
-#define METHOD_NAME__CID        "_CID"
 #define METHOD_NAME__UID        "_UID"
 #define METHOD_NAME__ADR        "_ADR"
 #define METHOD_NAME__STA        "_STA"
 #define METHOD_NAME__REG        "_REG"
 #define METHOD_NAME__SEG        "_SEG"
 #define METHOD_NAME__BBN        "_BBN"
-#define METHOD_NAME__PRT        "_PRT"
 
 
-ACPI_STATUS
-AcpiUtEvaluateNumericObject (
-    NATIVE_CHAR             *ObjectName,
-    ACPI_NAMESPACE_NODE     *DeviceNode,
-    ACPI_INTEGER            *Address);
 
 ACPI_STATUS
-AcpiUtExecute_HID (
-    ACPI_NAMESPACE_NODE     *DeviceNode,
-    ACPI_DEVICE_ID          *Hid);
+AcpiCmEvaluateNumericObject (
+    char                    *MethodName, 
+    NAME_TABLE_ENTRY        *AcpiDevice, 
+    UINT32                  *Address);
 
 ACPI_STATUS
-AcpiUtExecute_CID (
-    ACPI_NAMESPACE_NODE     *DeviceNode,
-    ACPI_DEVICE_ID          *Cid);
+AcpiCmExecute_HID (
+    NAME_TABLE_ENTRY        *AcpiDevice, 
+    DEVICE_ID               *Hid);
 
-ACPI_STATUS
-AcpiUtExecute_STA (
-    ACPI_NAMESPACE_NODE     *DeviceNode,
+ACPI_STATUS 
+AcpiCmExecute_STA (
+    NAME_TABLE_ENTRY        *AcpiDevice, 
     UINT32                  *StatusFlags);
 
 ACPI_STATUS
-AcpiUtExecute_UID (
-    ACPI_NAMESPACE_NODE     *DeviceNode,
-    ACPI_DEVICE_ID          *Uid);
+AcpiCmExecute_UID (
+    NAME_TABLE_ENTRY        *AcpiDevice, 
+    DEVICE_ID               *Uid);
 
 
 /*
- * UtMutex - mutual exclusion interfaces
+ * AcpiCmError - exception interfaces
+ */
+
+char *
+AcpiCmFormatException (
+    ACPI_STATUS             Status);
+
+
+/*
+ * AcpiCmMutex - mutual exclusion interfaces
  */
 
 ACPI_STATUS
-AcpiUtMutexInitialize (
+AcpiCmMutexInitialize (
     void);
 
 void
-AcpiUtMutexTerminate (
+AcpiCmMutexTerminate (
     void);
 
 ACPI_STATUS
-AcpiUtCreateMutex (
+AcpiCmCreateMutex (
     ACPI_MUTEX_HANDLE       MutexId);
 
 ACPI_STATUS
-AcpiUtDeleteMutex (
+AcpiCmDeleteMutex (
     ACPI_MUTEX_HANDLE       MutexId);
 
 ACPI_STATUS
-AcpiUtAcquireMutex (
+AcpiCmAcquireMutex (
     ACPI_MUTEX_HANDLE       MutexId);
 
 ACPI_STATUS
-AcpiUtReleaseMutex (
+AcpiCmReleaseMutex (
     ACPI_MUTEX_HANDLE       MutexId);
 
 
 /*
- * UtObject - internal object create/delete/cache routines
+ * AcpiCmObject - internal object create/delete/cache routines
  */
 
-ACPI_OPERAND_OBJECT  *
-AcpiUtCreateInternalObjectDbg (
-    NATIVE_CHAR             *ModuleName,
-    UINT32                  LineNumber,
-    UINT32                  ComponentId,
-    ACPI_OBJECT_TYPE        Type);
+#define AcpiCmCreateInternalObject(t)   _CmCreateInternalObject(_THIS_MODULE,__LINE__,_COMPONENT,t)
+#define AcpiCmAllocateObjectDesc()      _CmAllocateObjectDesc(_THIS_MODULE,__LINE__,_COMPONENT)
 
 void *
-AcpiUtAllocateObjectDescDbg (
-    NATIVE_CHAR             *ModuleName,
-    UINT32                  LineNumber,
-    UINT32                  ComponentId);
-
-#define AcpiUtCreateInternalObject(t)   AcpiUtCreateInternalObjectDbg (_THIS_MODULE,__LINE__,_COMPONENT,t)
-#define AcpiUtAllocateObjectDesc()      AcpiUtAllocateObjectDescDbg (_THIS_MODULE,__LINE__,_COMPONENT)
+_CmAllocateObjectDesc (
+    char                    *ModuleName, 
+    INT32                   LineNumber, 
+    INT32                   ComponentId); 
 
 void
-AcpiUtDeleteObjectDesc (
-    ACPI_OPERAND_OBJECT     *Object);
+AcpiCmDeleteObjectDesc (
+    ACPI_OBJECT_INTERNAL    *Object);
 
 BOOLEAN
-AcpiUtValidInternalObject (
+AcpiCmValidInternalObject (
     void                    *Object);
 
-
+    
 /*
- * UtRefCnt - Object reference count management
+ * AcpiCmRefCnt - Object reference count management
  */
 
 void
-AcpiUtAddReference (
-    ACPI_OPERAND_OBJECT     *Object);
+AcpiCmAddReference (
+    ACPI_OBJECT_INTERNAL    *Object);
 
 void
-AcpiUtRemoveReference (
-    ACPI_OPERAND_OBJECT     *Object);
+AcpiCmRemoveReference (
+    ACPI_OBJECT_INTERNAL    *Object);
 
 /*
- * UtSize - Object size routines
+ * AcpiCmSize - Object size routines
  */
 
 ACPI_STATUS
-AcpiUtGetSimpleObjectSize (
-    ACPI_OPERAND_OBJECT     *Obj,
-    ACPI_SIZE               *ObjLength);
+AcpiCmGetSimpleObjectSize (
+    ACPI_OBJECT_INTERNAL    *Obj, 
+    UINT32                  *ObjLength);
 
 ACPI_STATUS
-AcpiUtGetPackageObjectSize (
-    ACPI_OPERAND_OBJECT     *Obj,
-    ACPI_SIZE               *ObjLength);
+AcpiCmGetPackageObjectSize (
+    ACPI_OBJECT_INTERNAL    *Obj, 
+    UINT32                  *ObjLength);
 
 ACPI_STATUS
-AcpiUtGetObjectSize(
-    ACPI_OPERAND_OBJECT     *Obj,
-    ACPI_SIZE               *ObjLength);
+AcpiCmGetObjectSize(
+    ACPI_OBJECT_INTERNAL    *Obj, 
+    UINT32                  *ObjLength);
 
 
-/*
- * UtState - Generic state creation/cache routines
+/* 
+ * AcpiCmState - Generic state creation/cache routines
  */
 
 void
-AcpiUtPushGenericState (
+AcpiCmPushGenericState (
     ACPI_GENERIC_STATE      **ListHead,
     ACPI_GENERIC_STATE      *State);
 
 ACPI_GENERIC_STATE *
-AcpiUtPopGenericState (
+AcpiCmPopGenericState (
     ACPI_GENERIC_STATE      **ListHead);
 
 
 ACPI_GENERIC_STATE *
-AcpiUtCreateGenericState (
-    void);
-
-ACPI_THREAD_STATE *
-AcpiUtCreateThreadState (
+AcpiCmCreateGenericState (
     void);
 
 ACPI_GENERIC_STATE *
-AcpiUtCreateUpdateState (
-    ACPI_OPERAND_OBJECT     *Object,
+AcpiCmCreateUpdateState (
+    ACPI_OBJECT_INTERNAL    *Object,
     UINT16                  Action);
 
-ACPI_GENERIC_STATE *
-AcpiUtCreatePkgState (
-    void                    *InternalObject,
-    void                    *ExternalObject,
-    UINT16                  Index);
-
 ACPI_STATUS
-AcpiUtCreateUpdateStateAndPush (
-    ACPI_OPERAND_OBJECT     *Object,
+AcpiCmCreateUpdateStateAndPush (
+    ACPI_OBJECT_INTERNAL    *Object,
     UINT16                  Action,
     ACPI_GENERIC_STATE      **StateList);
 
-ACPI_STATUS
-AcpiUtCreatePkgStateAndPush (
-    void                    *InternalObject,
-    void                    *ExternalObject,
-    UINT16                  Index,
-    ACPI_GENERIC_STATE      **StateList);
-
 ACPI_GENERIC_STATE *
-AcpiUtCreateControlState (
+AcpiCmCreateControlState (
     void);
 
 void
-AcpiUtDeleteGenericState (
+AcpiCmDeleteGenericState (
     ACPI_GENERIC_STATE      *State);
 
 void
-AcpiUtDeleteGenericStateCache (
+AcpiCmDeleteGenericStateCache (
     void);
 
 void
-AcpiUtDeleteObjectCache (
+AcpiCmDeleteObjectCache (
     void);
 
 /*
- * utmisc
+ * AcpiCmutils
  */
 
-ACPI_STATUS
-AcpiUtDivide (
-    ACPI_INTEGER            *InDividend,
-    ACPI_INTEGER            *InDivisor,
-    ACPI_INTEGER            *OutQuotient,
-    ACPI_INTEGER            *OutRemainder);
-
-ACPI_STATUS
-AcpiUtShortDivide (
-    ACPI_INTEGER            *InDividend,
-    UINT32                  Divisor,
-    ACPI_INTEGER            *OutQuotient,
-    UINT32                  *OutRemainder);
-
-BOOLEAN
-AcpiUtValidAcpiName (
+BOOLEAN 
+AcpiCmValidAcpiName (
     UINT32                  Name);
 
 BOOLEAN
-AcpiUtValidAcpiCharacter (
-    NATIVE_CHAR             Character);
+AcpiCmValidAcpiCharacter (
+    char                    Character);
 
-NATIVE_CHAR *
-AcpiUtStrupr (
-    NATIVE_CHAR             *SrcString);
-
-ACPI_STATUS
-AcpiUtResolvePackageReferences (
-    ACPI_OPERAND_OBJECT     *ObjDesc);
-
-UINT8 *
-AcpiUtGetResourceEndTag (
-    ACPI_OPERAND_OBJECT     *ObjDesc);
-
-UINT8
-AcpiUtGenerateChecksum (
-    UINT8                   *Buffer,
-    UINT32                  Length);
-
-#ifdef ACPI_DEBUG
-void
-AcpiUtDisplayInitPathname (
-    ACPI_HANDLE             ObjHandle,
-    char                    *Path);
-
-#endif
 
 
 /*
- * Utalloc - memory allocation and object caching
+ * Memory allocation functions and related macros.
+ * Macros that expand to include filename and line number
  */
 
 void *
-AcpiUtAcquireFromCache (
-    UINT32                  ListId);
-
-void
-AcpiUtReleaseToCache (
-    UINT32                  ListId,
-    void                    *Object);
-
-void
-AcpiUtDeleteGenericCache (
-    UINT32                  ListId);
-
-
-/* Debug Memory allocation functions */
+_CmAllocate (
+    UINT32                  Size,
+    UINT32                  Component,
+    ACPI_STRING             Module,
+    INT32                   Line);
 
 void *
-AcpiUtAllocate (
-    ACPI_SIZE               Size,
+_CmCallocate (
+    UINT32                  Size,
     UINT32                  Component,
-    NATIVE_CHAR             *Module,
-    UINT32                  Line);
-
-void *
-AcpiUtCallocate (
-    ACPI_SIZE               Size,
-    UINT32                  Component,
-    NATIVE_CHAR             *Module,
-    UINT32                  Line);
+    ACPI_STRING             Module,
+    INT32                   Line);
 
 void
-AcpiUtFree (
+_CmFree (
     void                    *Address,
     UINT32                  Component,
-    NATIVE_CHAR             *Module,
-    UINT32                  Line);
+    ACPI_STRING             Module,
+    INT32                   Line);
 
-#ifdef ACPI_DBG_TRACK_ALLOCATIONS
 void
-AcpiUtDumpAllocationInfo (
+AcpiCmInitStaticObject (
+    ACPI_OBJECT_INTERNAL    *ObjDesc);
+
+#define AcpiCmAllocate(a)               _CmAllocate(a,_COMPONENT,_THIS_MODULE,__LINE__)
+#define AcpiCmCallocate(a)              _CmCallocate(a, _COMPONENT,_THIS_MODULE,__LINE__)
+#define AcpiCmFree(a)                   _CmFree(a,_COMPONENT,_THIS_MODULE,__LINE__)
+
+#ifndef ACPI_DEBUG
+
+#define AcpiCmAddElementToAllocList(a,b,c,d,e,f)
+#define AcpiCmDeleteElementFromAllocList(a,b,c,d)
+#define AcpiCmDumpCurrentAllocations(a,b)
+#define AcpiCmDumpAllocationInfo()
+
+#define DECREMENT_OBJECT_METRICS(a)
+#define INCREMENT_OBJECT_METRICS(a)
+#define INITIALIZE_ALLOCATION_METRICS()
+
+#else
+
+#define INITIALIZE_ALLOCATION_METRICS() \
+    Acpi_GblCurrentObjectCount = 0; \
+    Acpi_GblCurrentObjectSize = 0; \
+    Acpi_GblRunningObjectCount = 0; \
+    Acpi_GblRunningObjectSize = 0; \
+    Acpi_GblMaxConcurrentObjectCount = 0; \
+    Acpi_GblMaxConcurrentObjectSize = 0; \
+    Acpi_GblCurrentAllocSize = 0; \
+    Acpi_GblCurrentAllocCount = 0; \
+    Acpi_GblRunningAllocSize = 0; \
+    Acpi_GblRunningAllocCount = 0; \
+    Acpi_GblMaxConcurrentAllocSize = 0; \
+    Acpi_GblMaxConcurrentAllocCount = 0
+
+#define DECREMENT_OBJECT_METRICS(a) \
+    Acpi_GblCurrentObjectCount--; \
+    Acpi_GblCurrentObjectSize -= a
+
+#define INCREMENT_OBJECT_METRICS(a) \
+    Acpi_GblCurrentObjectCount++; \
+    Acpi_GblRunningObjectCount++; \
+    if (Acpi_GblMaxConcurrentObjectCount < Acpi_GblCurrentObjectCount) \
+    { \
+        Acpi_GblMaxConcurrentObjectCount = Acpi_GblCurrentObjectCount; \
+    } \
+    Acpi_GblRunningObjectSize += a; \
+    Acpi_GblCurrentObjectSize += a; \
+    if (Acpi_GblMaxConcurrentObjectSize < Acpi_GblCurrentObjectSize) \
+    { \
+        Acpi_GblMaxConcurrentObjectSize = Acpi_GblCurrentObjectSize; \
+    }
+    
+
+void
+AcpiCmDumpAllocationInfo (
     void);
-
+    
 void
-AcpiUtDumpAllocations (
+AcpiCmDumpCurrentAllocations (
     UINT32                  Component,
-    NATIVE_CHAR             *Module);
+    ACPI_STRING             Module);
+
 #endif
 
 
-#endif /* _ACUTILS_H */
+
+#endif /* _COMMON_H */

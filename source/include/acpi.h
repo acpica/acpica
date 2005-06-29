@@ -1,7 +1,7 @@
+
 /******************************************************************************
- *
+ * 
  * Name: acpi.h - Master include file, Publics and external data.
- *       $Revision: 1.55 $
  *
  *****************************************************************************/
 
@@ -9,8 +9,8 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
- * All rights reserved.
+ * Some or all of this work - Copyright (c) 1999, Intel Corp.  All rights
+ * reserved.
  *
  * 2. License
  *
@@ -38,9 +38,9 @@
  * The above copyright and patent license is granted only if the following
  * conditions are met:
  *
- * 3. Conditions
+ * 3. Conditions 
  *
- * 3.1. Redistribution of Source with Rights to Further Distribute Source.
+ * 3.1. Redistribution of Source with Rights to Further Distribute Source.  
  * Redistribution of source code of any substantial portion of the Covered
  * Code or modification with rights to further distribute source must include
  * the above Copyright Notice, the above License, this list of Conditions,
@@ -48,11 +48,11 @@
  * Licensee must cause all Covered Code to which Licensee contributes to
  * contain a file documenting the changes Licensee made to create that Covered
  * Code and the date of any change.  Licensee must include in that file the
- * documentation of any changes made by any predecessor Licensee.  Licensee
+ * documentation of any changes made by any predecessor Licensee.  Licensee 
  * must include a prominent statement that the modification is derived,
  * directly or indirectly, from Original Intel Code.
  *
- * 3.2. Redistribution of Source with no Rights to Further Distribute Source.
+ * 3.2. Redistribution of Source with no Rights to Further Distribute Source.  
  * Redistribution of source code of any substantial portion of the Covered
  * Code or modification without rights to further distribute source must
  * include the following Disclaimer and Export Compliance provision in the
@@ -86,7 +86,7 @@
  * INSTALLATION, TRAINING OR OTHER SERVICES.  INTEL WILL NOT PROVIDE ANY
  * UPDATES, ENHANCEMENTS OR EXTENSIONS.  INTEL SPECIFICALLY DISCLAIMS ANY
  * IMPLIED WARRANTIES OF MERCHANTABILITY, NONINFRINGEMENT AND FITNESS FOR A
- * PARTICULAR PURPOSE.
+ * PARTICULAR PURPOSE. 
  *
  * 4.2. IN NO EVENT SHALL INTEL HAVE ANY LIABILITY TO LICENSEE, ITS LICENSEES
  * OR ANY OTHER THIRD PARTY, FOR ANY LOST PROFITS, LOST DATA, LOSS OF USE OR
@@ -117,26 +117,26 @@
 #ifndef __ACPI_H__
 #define __ACPI_H__
 
-/*
+/* 
  * Common includes for all ACPI driver files
  * We put them here because we don't want to duplicate them
  * in the rest of the source code again and again.
  */
-#include "acconfig.h"           /* Configuration constants */
-#include "platform/acenv.h"     /* Target environment specific items */
-#include "actypes.h"            /* Fundamental common data types */
-#include "acexcep.h"            /* ACPI exception codes */
-#include "acmacros.h"           /* C macros */
-#include "actbl.h"              /* ACPI table definitions */
-#include "aclocal.h"            /* Internal data types */
-#include "acoutput.h"           /* Error output and Debug macros */
-#include "acpiosxf.h"           /* Interfaces to the ACPI-to-OS layer*/
-#include "acpixf.h"             /* ACPI core subsystem external interfaces */
-#include "acobject.h"           /* ACPI internal object */
-#include "acstruct.h"           /* Common structures */
-#include "acglobal.h"           /* All global variables */
-#include "achware.h"            /* Hardware defines and interfaces */
-#include "acutils.h"            /* Utility interfaces */
+#include "config.h"         /* Configuration constants */
+#include "acenv.h"          /* Target environment specific items */
+#include "actypes.h"        /* Fundamental data types */
+#include "acexcep.h"        /* Local exception codes */
+#include "macros.h"         /* C macros */
+#include "actables.h"       /* Acpi table definitions */
+#include "internal.h"       /* Internal data types */
+#include "output.h"         /* Error output and Debug macros */
+#include "actables.h"       /* ACPI table definitions */
+#include "acpiosd.h"        /* Interfaces to OS-dependent part (OSD) */
+#include "acapi.h"          /* External interfaces to this part */
+#include "acobject.h"       /* Acpi internal object */
+#include "globals.h"        /* All global variables */
+#include "pnp.h"            /* Plug and play definitions */
+#include "common.h"         /* Common (global) interfaces */
 
 
 #endif /* __ACPI_H__ */
