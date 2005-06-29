@@ -2,7 +2,7 @@
  *
  * Module Name: evevent - Fixed and General Purpose AcpiEvent
  *                          handling and dispatch
- *              $Revision: 1.22 $
+ *              $Revision: 1.23 $
  *
  *****************************************************************************/
 
@@ -267,31 +267,21 @@ UINT32
 AcpiEvFixedEventDetect(void)
 {
     UINT32                  IntStatus = INTERRUPT_NOT_HANDLED;
-    UINT32                  StatusRegister = 0;
-    UINT32                  EnableRegister = 0;
+    UINT32                  StatusRegister;
+    UINT32                  EnableRegister;
 
     /*
      * Read the fixed feature status and enable registers, as all the cases
      * depend on their values.
      */
 
-    StatusRegister = (UINT32) AcpiOsIn16 (AcpiGbl_FADT->Pm1aEvtBlk);
-    if (AcpiGbl_FADT->Pm1bEvtBlk)
-    {
-        StatusRegister |= (UINT32) AcpiOsIn16 (AcpiGbl_FADT->Pm1bEvtBlk);
-    }
-
-    EnableRegister = (UINT32) AcpiOsIn16 (AcpiGbl_FADT->Pm1aEvtBlk +
-                        DIV_2 (AcpiGbl_FADT->Pm1EvtLen));
-    if (AcpiGbl_FADT->Pm1bEvtBlk)
-    {
-        EnableRegister |= (UINT32) AcpiOsIn16 (AcpiGbl_FADT->Pm1bEvtBlk +
-                            DIV_2 (AcpiGbl_FADT->Pm1EvtLen));
-    }
+    StatusRegister = AcpiHwRegisterRead (ACPI_MTX_DO_NOT_LOCK, PM1_STS);
+    EnableRegister = AcpiHwRegisterRead (ACPI_MTX_DO_NOT_LOCK, PM1_EN);
 
     DEBUG_PRINT (TRACE_INTERRUPTS,
         ("Fixed AcpiEvent Block: Enable = %08x\tStatus = %08x\n",
         EnableRegister, StatusRegister));
+
 
     /* power management timer roll over */
 
@@ -399,24 +389,25 @@ AcpiEvGpeInitialize (void)
 
     FUNCTION_TRACE ("EvGpeInitialize");
 
-    /*******************************************************************/
-    /* Setting up various GPE counts                                   */
-    /*                                                                 */
-    /* You may ask,why are the GPE register block lengths divided by 2?*/
-    /* From the ACPI 2.0 Spec, section, 4.7.1.6 General-Purpose Event  */
-    /* Registers, we have,                                             */
-    /*                                                                 */
-    /* "Each register block contains two registers of equal length:     */
-    /* GPEx_STS and GPEx_EN (where x is 0 or 1). The length of the     */
-    /* GPE0_STS and GPE0_EN registers is equal to half the GPE0_LEN.   */
-    /* The length of the GPE1_STS and GPE1_EN registers is equal to    */
-    /* half the GPE1_LEN. If a generic register block is not supported */
-    /* then its respective block pointer and block length values in the*/
-    /* FADT table contain zeros. The GPE0_LEN and GPE1_LEN do not need */
-    /* to be the same size."                                           */
-    /*******************************************************************/
-    Gpe0RegisterCount       = (UINT16) DIV_2 (AcpiGbl_FADT->Gpe0BlkLen);
-    Gpe1RegisterCount       = (UINT16) DIV_2 (AcpiGbl_FADT->Gpe1BlkLen);
+    /*
+     * Set up various GPE counts
+     *
+     * You may ask,why are the GPE register block lengths divided by 2?
+     * From the ACPI 2.0 Spec, section, 4.7.1.6 General-Purpose Event
+     * Registers, we have,
+     *
+     * "Each register block contains two registers of equal length
+     * GPEx_STS and GPEx_EN (where x is 0 or 1). The length of the
+     * GPE0_STS and GPE0_EN registers is equal to half the GPE0_LEN
+     * The length of the GPE1_STS and GPE1_EN registers is equal to
+     * half the GPE1_LEN. If a generic register block is not supported
+     * then its respective block pointer and block length values in the
+     * FADT table contain zeros. The GPE0_LEN and GPE1_LEN do not need
+     * to be the same size."
+     */
+
+    Gpe0RegisterCount           = (UINT16) DIV_2 (AcpiGbl_FADT->Gpe0BlkLen);
+    Gpe1RegisterCount           = (UINT16) DIV_2 (AcpiGbl_FADT->Gpe1BlkLen);
     AcpiGbl_GpeRegisterCount    = Gpe0RegisterCount + Gpe1RegisterCount;
 
     if (!AcpiGbl_GpeRegisterCount)
@@ -471,10 +462,10 @@ AcpiEvGpeInitialize (void)
     for (i = 0; i < Gpe0RegisterCount; i++)
     {
         AcpiGbl_GpeRegisters[RegisterIndex].StatusAddr  =
-                    (UINT16) (AcpiGbl_FADT->Gpe0Blk + i);
+                    (UINT16) (AcpiGbl_FADT->XGpe0Blk.Address + i);
 
         AcpiGbl_GpeRegisters[RegisterIndex].EnableAddr  =
-                    (UINT16) (AcpiGbl_FADT->Gpe0Blk + i + Gpe0RegisterCount);
+                    (UINT16) (AcpiGbl_FADT->XGpe0Blk.Address + i + Gpe0RegisterCount);
 
         AcpiGbl_GpeRegisters[RegisterIndex].GpeBase     = (UINT8) MUL_8 (i);
 
@@ -500,10 +491,10 @@ AcpiEvGpeInitialize (void)
     for (i = 0; i < Gpe1RegisterCount; i++)
     {
         AcpiGbl_GpeRegisters[RegisterIndex].StatusAddr  =
-                    (UINT16) (AcpiGbl_FADT->Gpe1Blk + i);
+                    (UINT16) (AcpiGbl_FADT->XGpe1Blk.Address + i);
 
         AcpiGbl_GpeRegisters[RegisterIndex].EnableAddr  =
-                    (UINT16) (AcpiGbl_FADT->Gpe1Blk + i + Gpe1RegisterCount);
+                    (UINT16) (AcpiGbl_FADT->XGpe1Blk.Address + i + Gpe1RegisterCount);
 
         AcpiGbl_GpeRegisters[RegisterIndex].GpeBase     =
                     (UINT8) (AcpiGbl_FADT->Gpe1Base + MUL_8 (i));
@@ -526,9 +517,9 @@ AcpiEvGpeInitialize (void)
     }
 
     DEBUG_PRINT (ACPI_INFO,
-        ("GPE registers: %d@%X (Blk0) %d@%X (Blk1)\n",
-        Gpe0RegisterCount, AcpiGbl_FADT->Gpe0Blk, Gpe1RegisterCount,
-        AcpiGbl_FADT->Gpe1Blk));
+        ("GPE registers: %d@%p (Blk0) %d@%p (Blk1)\n",
+        Gpe0RegisterCount, AcpiGbl_FADT->XGpe0Blk.Address, Gpe1RegisterCount,
+        AcpiGbl_FADT->XGpe1Blk.Address));
 
     return_ACPI_STATUS (AE_OK);
 }
