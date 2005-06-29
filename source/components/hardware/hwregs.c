@@ -3,7 +3,7 @@
  *
  * Module Name: hwregs - Read/write access functions for the various ACPI
  *                       control and status registers.
- *              $Revision: 1.146 $
+ *              $Revision: 1.148 $
  *
  ******************************************************************************/
 
@@ -382,7 +382,8 @@ AcpiGetRegister (
 
         *ReturnValue = RegisterValue;
 
-        ACPI_DEBUG_PRINT ((ACPI_DB_IO, "Read value %X\n", RegisterValue));
+        ACPI_DEBUG_PRINT ((ACPI_DB_IO, "Read value %8.8X register %X\n", 
+                RegisterValue, BitRegInfo->ParentRegister));
     }
 
     return_ACPI_STATUS (Status);
@@ -543,7 +544,8 @@ UnlockAndExit:
 
     ACPI_DEBUG_EXEC (RegisterValue = ((RegisterValue & BitRegInfo->AccessBitMask) >> BitRegInfo->BitPosition));
 
-    ACPI_DEBUG_PRINT ((ACPI_DB_IO, "ACPI Register Write actual %X\n", RegisterValue));
+    ACPI_DEBUG_PRINT ((ACPI_DB_IO, "Set bits: %8.8X actual %8.8X register %X\n",
+            Value, RegisterValue, BitRegInfo->ParentRegister));
     return_ACPI_STATUS (Status);
 }
 
@@ -840,14 +842,14 @@ AcpiHwLowLevelRead (
     case ACPI_ADR_SPACE_SYSTEM_MEMORY:
 
         Status = AcpiOsReadMemory (
-                    (ACPI_PHYSICAL_ADDRESS) ACPI_GET_ADDRESS (Reg->Address), 
+                    (ACPI_PHYSICAL_ADDRESS) ACPI_GET_ADDRESS (Reg->Address),
                     Value, Width);
         break;
 
 
     case ACPI_ADR_SPACE_SYSTEM_IO:
 
-        Status = AcpiOsReadPort ((ACPI_IO_ADDRESS) ACPI_GET_ADDRESS (Reg->Address), 
+        Status = AcpiOsReadPort ((ACPI_IO_ADDRESS) ACPI_GET_ADDRESS (Reg->Address),
                     Value, Width);
         break;
 
@@ -860,17 +862,22 @@ AcpiHwLowLevelRead (
         PciId.Function = ACPI_PCI_FUNCTION (ACPI_GET_ADDRESS (Reg->Address));
         PciRegister    = (UINT16) ACPI_PCI_REGISTER (ACPI_GET_ADDRESS (Reg->Address));
 
-        Status = AcpiOsReadPciConfiguration  (&PciId, PciRegister, 
+        Status = AcpiOsReadPciConfiguration  (&PciId, PciRegister,
                     Value, Width);
         break;
 
 
     default:
-        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, 
+        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
             "Unsupported address space: %X\n", Reg->AddressSpaceId));
-        Status = AE_BAD_PARAMETER;
-        break;
+        return (AE_BAD_PARAMETER);
     }
+
+    ACPI_DEBUG_PRINT ((ACPI_DB_IO, "Read:  %8.8X width %2d from %8.8X%8.8X (%s)\n",
+            *Value, Width, 
+            ACPI_HIDWORD (ACPI_GET_ADDRESS (Reg->Address)), 
+            ACPI_LODWORD (ACPI_GET_ADDRESS (Reg->Address)), 
+            AcpiUtGetRegionName (Reg->AddressSpaceId)));
 
     return (Status);
 }
@@ -923,14 +930,14 @@ AcpiHwLowLevelWrite (
     case ACPI_ADR_SPACE_SYSTEM_MEMORY:
 
         Status = AcpiOsWriteMemory (
-                    (ACPI_PHYSICAL_ADDRESS) ACPI_GET_ADDRESS (Reg->Address), 
+                    (ACPI_PHYSICAL_ADDRESS) ACPI_GET_ADDRESS (Reg->Address),
                     Value, Width);
         break;
 
 
     case ACPI_ADR_SPACE_SYSTEM_IO:
 
-        Status = AcpiOsWritePort ((ACPI_IO_ADDRESS) ACPI_GET_ADDRESS (Reg->Address), 
+        Status = AcpiOsWritePort ((ACPI_IO_ADDRESS) ACPI_GET_ADDRESS (Reg->Address),
                     Value, Width);
         break;
 
@@ -943,17 +950,22 @@ AcpiHwLowLevelWrite (
         PciId.Function = ACPI_PCI_FUNCTION (ACPI_GET_ADDRESS (Reg->Address));
         PciRegister    = (UINT16) ACPI_PCI_REGISTER (ACPI_GET_ADDRESS (Reg->Address));
 
-        Status = AcpiOsWritePciConfiguration (&PciId, PciRegister, 
+        Status = AcpiOsWritePciConfiguration (&PciId, PciRegister,
                     (ACPI_INTEGER) Value, Width);
         break;
 
 
     default:
-        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, 
+        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
             "Unsupported address space: %X\n", Reg->AddressSpaceId));
-        Status = AE_BAD_PARAMETER;
-        break;
+        return (AE_BAD_PARAMETER);
     }
+
+    ACPI_DEBUG_PRINT ((ACPI_DB_IO, "Wrote: %8.8X width %2d   to %8.8X%8.8X (%s)\n",
+            Value, Width, 
+            ACPI_HIDWORD (ACPI_GET_ADDRESS (Reg->Address)), 
+            ACPI_LODWORD (ACPI_GET_ADDRESS (Reg->Address)), 
+            AcpiUtGetRegionName (Reg->AddressSpaceId)));
 
     return (Status);
 }
