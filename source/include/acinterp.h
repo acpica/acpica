@@ -569,15 +569,20 @@ AmlDumpObjStackEntry (
     ACPI_OBJECT_INTERNAL    *EntryDesc);
 
 void
-AmlDumpObjStack (
+_AmlDumpObjStack (
     OPERATING_MODE          LoadExecMode, 
-    char                    *pcIdent, 
+    char                    *Ident, 
     INT32                   NumLevels, 
-    char                    *pcNote);
+    char                    *Note,
+    char                    *ModuleName, 
+    INT32                   LineNumber);
 
 void
 AmlDumpObjectDescriptor (
 	ACPI_OBJECT_INTERNAL    *ObjDesc);
+
+
+#define AmlDumpObjStack(a,b,c,d)    _AmlDumpObjStack(a,b,c,d,_THIS_MODULE,__LINE__)
 
 
 /*
@@ -710,7 +715,6 @@ AmlDoMatchOp (
 
 void
 AmlDoOpByte (
-    INT32                   nl, 
     UINT16                  Opcode, 
     OPERATING_MODE          LoadExecMode);
 
