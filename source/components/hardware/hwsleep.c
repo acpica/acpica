@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Name: hwsleep.c - ACPI Hardware Sleep/Wake Interface
- *              $Revision: 1.26 $
+ *              $Revision: 1.27 $
  *
  *****************************************************************************/
 
@@ -265,13 +265,18 @@ AcpiEnterSleepStatePrep (
     Arg.Integer.Value = SleepState;
 
     Status = AcpiEvaluateObject (NULL, "\\_PTS", &ArgList, NULL);
-    if (!ACPI_SUCCESS (Status))
+    if (!ACPI_SUCCESS (Status) && Status != AE_NOT_FOUND))
     {
         return_ACPI_STATUS (Status);
     }
 
     Status = AcpiEvaluateObject (NULL, "\\_GTS", &ArgList, NULL);
-    return_ACPI_STATUS (Status);
+    if (!ACPI_SUCCESS (Status) && Status != AE_NOT_FOUND))
+    {
+        return_ACPI_STATUS (Status);
+    }
+
+    return_ACPI_STATUS (AE_OK);
 }
 
 
@@ -407,13 +412,13 @@ AcpiLeaveSleepState (
     /* Ignore any errors from these methods */
 
     Status = AcpiEvaluateObject (NULL, "\\_BFS", &ArgList, NULL);
-    if (!ACPI_SUCCESS (Status))
+    if (!ACPI_SUCCESS (Status) && Status != AE_NOT_FOUND)
     {
         REPORT_ERROR (("Method _BFS failed, %s\n", AcpiFormatException (Status)));
     }
 
     Status = AcpiEvaluateObject (NULL, "\\_WAK", &ArgList, NULL);
-    if (!ACPI_SUCCESS (Status))
+    if (!ACPI_SUCCESS (Status) && Status != AE_NOT_FOUND)
     {
         REPORT_ERROR (("Method _WAK failed, %s\n", AcpiFormatException (Status)));
     }
