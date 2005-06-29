@@ -292,7 +292,7 @@ NsDumpOneObject (
     
         while (Value && (DebugLevel & TRACE_VALUES))
         {
-            UINT8               bT = ((ACPI_OBJECT *) Value)->ValType;
+            UINT8               bT = ((ACPI_OBJECT_INTERNAL *) Value)->ValType;
 
 
             DEBUG_PRINT_RAW (TRACE_TABLES,
@@ -310,10 +310,10 @@ NsDumpOneObject (
             {
                 /* 
                  * Get pointer to next level.  ThisEntry assumes that all of
-                 * the above-listed variants of ACPI_OBJECT have
+                 * the above-listed variants of ACPI_OBJECT_INTERNAL have
                  * compatible mappings.
                  */
-                Value = ((ACPI_OBJECT *)Value)->Buffer.Buffer;
+                Value = ((ACPI_OBJECT_INTERNAL *)Value)->Buffer.Buffer;
             }
             else
             {

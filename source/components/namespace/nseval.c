@@ -113,16 +113,14 @@
  *
  * FUNCTION:    NsEvaluateRelative
  *
- * PARAMETERS:  ObjEntry            - NTE of containing object
+ * PARAMETERS:  RelObjEntry         - NTE of the relative containing object
  *              *Pathname           - Name of method to execute, If NULL, the
  *                                    handle is the object to execute
+ *              **Params            - List of parameters to pass to the method,
+ *                                    terminated by NULL.  Params itself may be 
+ *                                    NULL if no parameters are being passed.
  *              *ReturnObject       - Where to put method's return value (if 
  *                                    any).  If NULL, no value is returned.
- *              **Params            - List of parameters to pass to
- *                                    method, terminated by NULL.
- *                                    Params itself may be NULL
- *                                    if no parameters are being
- *                                    passed.
  *
  * RETURN:      Status
  *
@@ -133,73 +131,72 @@
 
 ACPI_STATUS
 NsEvaluateRelative (
-    NAME_TABLE_ENTRY        *ObjEntry, 
+    NAME_TABLE_ENTRY        *RelObjEntry, 
     char                    *Pathname, 
-    ACPI_OBJECT             *ReturnObject, 
-    ACPI_OBJECT             **Params)
+    ACPI_OBJECT_INTERNAL    **Params,
+    ACPI_OBJECT_INTERNAL    *ReturnObject)
 {
-    char                    NameBuffer[PATHNAME_MAX];
     ACPI_STATUS             Status;
-    UINT32                  MaxObjectPathLength = PATHNAME_MAX - 1;
+    NAME_TABLE_ENTRY        *ObjEntry = NULL;
+    char                    *InternalPath = NULL;
 
 
     FUNCTION_TRACE ("NsEvaluateRelative");
 
+
     /*
-     *  Must have a valid object NTE
+     * Must have a valid object NTE
      */
-    if (!ObjEntry) 
+    if (!RelObjEntry) 
     {
-        FUNCTION_EXIT;
+        FUNCTION_STATUS_EXIT (AE_BAD_PARAMETER);
         return AE_BAD_PARAMETER;
     }
 
-    /*
-     *  If the caller specified a method then it must be a path relative to
-     *  the object indicated by the handle we need to reserve space in the
-     *  buffer to append the CM name later
-     */
-    if (Pathname) 
-    {
-        /*
-         *  We will append the method name to the device pathname
-         */
-        MaxObjectPathLength -= (strlen (Pathname) + 1);
-    }
 
-    /*
-     *  Get the device pathname
-     */
-    Status = NsHandleToPathname (ObjEntry, MaxObjectPathLength, NameBuffer);
-    if (Status != AE_OK) 
+    /* Build an internal name string for the method */
+
+    Status = NsInternalizeName (Pathname, &InternalPath);
+    if (ACPI_FAILURE (Status))
     {
-        /*
-         *  Failed the conversion
-         */
-        FUNCTION_EXIT;
+        FUNCTION_STATUS_EXIT (Status);
         return Status;
     }
 
-    /*
-     *  If the caller specified a method then it must be a path relative to
-     *  the object indicated by the handle
-     */
-    if (Pathname) 
+
+    /* Lookup the name in the namespace */
+
+    Status = NsLookup (RelObjEntry->Scope, InternalPath, TYPE_Any, MODE_Exec, 
+                                NS_NO_UPSEARCH, &ObjEntry);
+    if (Status != AE_OK)
     {
-        /*
-         * Append the method name to the device pathname
-         * (Path separator is a period) 
-         */
-        strcat (NameBuffer, ".");
-        strcat (NameBuffer, Pathname);
+        DEBUG_PRINT (ACPI_INFO, ("NsEvaluateRelative: Object [%s] not found [%.4X]\n",
+                        InternalPath, Status));
+
     }
 
-    /*
-     *  Execute the method
-     */
-    Status = NsEvaluateByName (NameBuffer, ReturnObject, Params);
+    else
+    {
+        /*
+         * Now that we have a handle to the object, we can attempt
+         * to evaluate it.
+         */
 
-    FUNCTION_EXIT;
+        DEBUG_PRINT (ACPI_INFO, ("NsEvaluateRelative: %s [%p] Value %p\n",
+                                    Pathname, ObjEntry, ObjEntry->Value));
+
+        Status = NsEvaluateByHandle (ObjEntry, Params, ReturnObject);
+
+        DEBUG_PRINT (ACPI_INFO, ("NsEvaluateRelative: *** Completed eval of object %s ***\n",
+                                    Pathname));
+    }
+
+
+    /* Cleanup */
+
+    OsdFree (InternalPath);
+
+    FUNCTION_STATUS_EXIT (Status);
     return Status;
 }
 
@@ -211,12 +208,10 @@ NsEvaluateRelative (
  * PARAMETERS:  Pathname            - Fully qualified pathname to the object
  *              *ReturnObject       - Where to put method's return value (if 
  *                                    any).  If NULL, no value is returned.
- *              **Params            - List of parameters to pass to
- *                                    method, terminated by NULL.
- *                                    Params itself may be NULL
- *                                    if no parameters are being
- *                                    passed.
- *
+ *              **Params            - List of parameters to pass to the method,
+ *                                    terminated by NULL.  Params itself may be 
+ *                                    NULL if no parameters are being passed.
+ *                                    
  * RETURN:      Status
  *
  * DESCRIPTION: Find and execute the requested method passing the given
@@ -227,11 +222,12 @@ NsEvaluateRelative (
 ACPI_STATUS
 NsEvaluateByName (
     char                    *Pathname, 
-    ACPI_OBJECT             *ReturnObject,
-    ACPI_OBJECT             **Params)
+    ACPI_OBJECT_INTERNAL    **Params,
+    ACPI_OBJECT_INTERNAL    *ReturnObject)
 {
-    ACPI_STATUS             Status = AE_ERROR;
+    ACPI_STATUS             Status;
     NAME_TABLE_ENTRY        *ObjEntry = NULL;
+    char                    *InternalPath = NULL;
 
     
     FUNCTION_TRACE ("NsEvaluateByName");
@@ -241,36 +237,51 @@ NsEvaluateByName (
 
     if (Pathname[0] != '\\' || Pathname[1] != '/')
     {
-        Pathname = NsInternalizeName (Pathname);
+        Status = NsInternalizeName (Pathname, &InternalPath);
+        if (ACPI_FAILURE (Status))
+        {
+            FUNCTION_STATUS_EXIT (Status);
+            return Status;
+        }
     }
 
 
     /* Lookup the name in the namespace */
 
-    Status = NsEnter (Pathname, TYPE_Any, MODE_Exec, &ObjEntry);
-
+    Status = NsLookup (NULL, InternalPath, TYPE_Any, MODE_Exec, 
+                                NS_NO_UPSEARCH, &ObjEntry);
     if (Status != AE_OK)
     {
-        DEBUG_PRINT (ACPI_INFO, ("Method [%s] was not found, status=%.4X\n",
-                        Pathname, Status));
-        return Status;
+        DEBUG_PRINT (ACPI_INFO, ("NsEvaluateByName: Object at [%s] was not found, status=%.4X\n",
+                        InternalPath, Status));
+
+    }
+
+    else
+    {
+        /*
+         * Now that we have a handle to the object, we can attempt
+         * to evaluate it.
+         */
+
+        DEBUG_PRINT (ACPI_INFO, ("NsEvaluateByName: %s [%p] Value %p\n",
+                                    Pathname, ObjEntry, ObjEntry->Value));
+
+        Status = NsEvaluateByHandle (ObjEntry, Params, ReturnObject);
+
+        DEBUG_PRINT (ACPI_INFO, ("NsEvaluateByName: *** Completed eval of object %s ***\n",
+                                    Pathname));
     }
 
 
-    /*
-     * Now that we have a handle to the object, we can attempt
-     * to evaluate it.
-     */
+    /* Cleanup */
 
-    DEBUG_PRINT (ACPI_INFO, ("[%s Method %p Value %p\n",
-                                Pathname, ObjEntry, ObjEntry->Value));
+    if (InternalPath)
+    {
+        OsdFree (InternalPath);
+    }
 
-    Status = NsEvaluateByHandle (ObjEntry, ReturnObject, Params);
-
-    DEBUG_PRINT (ACPI_INFO, ("*** Completed execution of method %s ***\n",
-                                Pathname));
-
-    FUNCTION_EXIT;
+    FUNCTION_STATUS_EXIT (Status);
     return Status;
 }
 
@@ -282,11 +293,9 @@ NsEvaluateByName (
  * PARAMETERS:  ObjEntry            - NTE of method to execute
  *              *ReturnObject       - Where to put method's return value (if 
  *                                    any).  If NULL, no value is returned.
- *              **Params            - List of parameters to pass to
- *                                    method, terminated by NULL.
- *                                    Params itself may be NULL
- *                                    if no parameters are being
- *                                    passed.
+ *              **Params            - List of parameters to pass to the method,
+ *                                    terminated by NULL.  Params itself may be 
+ *                                    NULL if no parameters are being passed.
  *
  * RETURN:      Status
  *
@@ -297,10 +306,10 @@ NsEvaluateByName (
 ACPI_STATUS
 NsEvaluateByHandle (
     NAME_TABLE_ENTRY        *ObjEntry, 
-    ACPI_OBJECT             *ReturnObject,
-    ACPI_OBJECT             **Params)
+    ACPI_OBJECT_INTERNAL    **Params,
+    ACPI_OBJECT_INTERNAL    *ReturnObject)
 {
-    ACPI_STATUS             Status = AE_ERROR;
+    ACPI_STATUS             Status;
 
 
     FUNCTION_TRACE ("NsEvaluateByHandle");
@@ -315,14 +324,14 @@ NsEvaluateByHandle (
          * not been defined and there is nothing to execute.
          */
 
-        DEBUG_PRINT (ACPI_ERROR, ("Name space not initialized ==> method not defined\n"));
-        FUNCTION_EXIT;
+        DEBUG_PRINT (ACPI_ERROR, ("NsEvaluateByHandle: Name space not initialized - method not defined\n"));
+        FUNCTION_STATUS_EXIT (AE_NO_NAMESPACE);
         return AE_NO_NAMESPACE;
     }
 
     if (!ObjEntry)
     {
-        FUNCTION_EXIT;
+        FUNCTION_STATUS_EXIT (AE_BAD_PARAMETER);
         return AE_BAD_PARAMETER;
     }
 
@@ -330,7 +339,7 @@ NsEvaluateByHandle (
     {
         /* Initialize the return value */
 
-        memset (ReturnObject, 0, sizeof (ACPI_OBJECT));
+        memset (ReturnObject, 0, sizeof (ACPI_OBJECT_INTERNAL));
     }
 
 
@@ -355,42 +364,55 @@ NsEvaluateByHandle (
     }
 
 
-    /* TBD: Unecessary mapping? */
-
-    if (AE_AML_ERROR == Status)
-    {
-        Status = AE_ERROR;
-    }
-
-
     /*
      * Check if there is a return value on the stack that must be dealt with 
      */
 
     if (AE_RETURN_VALUE == Status)
     {
+BREAKPOINT3;
         /* 
          * If the Method returned a value and the caller provided a place
          * to store a returned value, Copy the returned value to the object
          * descriptor provided by the caller.
          */
 
+        /*
+         * TBD: Translate to a different external object type here 
+         */
+
         if (ReturnObject)
         {
-            (*ReturnObject) = *((ACPI_OBJECT *) ObjStack[ObjStackTop]);            
+            (*ReturnObject) = *((ACPI_OBJECT_INTERNAL *) ObjStack[ObjStackTop]);            
         }
     
         /* 
-         * TBD: do we ever want to delete this??? 
-         * There are clearly cases that we don't and this will fault
+         * Now that the return value (object) has been copied, we must purge the stack 
+         * of the return value by deleting the object and popping the stack!
+         *
+         * TBD: There a difference between what is returned by NsExecuteControlMethod and
+         * NsGetObjectValue - ObjStackTop is one vs. zero (respectively).  
+         * What is the real reason for this??
          */
 
-        /* OsdFree (ObjStack[ObjStackTop]); */
+        LocalDeleteObject ((ACPI_OBJECT_INTERNAL **) &ObjStack[ObjStackTop]);
+        if (ObjStackTop)
+        {
+            if (ObjStackTop > 1)
+            {
+                DEBUG_PRINT (ACPI_ERROR, ("NsEvaluateByHandle: Object stack not empty: %d\n",
+                                ObjStackTop));
+            }
+
+            /* In all cases, clear the object stack! */
+
+            ObjStackTop = 0;
+        }
 
         Status = AE_OK;
     }
 
-    FUNCTION_EXIT;
+    FUNCTION_STATUS_EXIT (Status);
     return Status;
 }
 
@@ -400,24 +422,23 @@ NsEvaluateByHandle (
  * FUNCTION:    NsExecuteControlMethod
  *
  * PARAMETERS:  MethodEntry         - The Nte of the object/method
- *              **Params            - List of parameters to pass to
- *                                    method, terminated by NULL.
- *                                    Params itself may be NULL
- *                                    if no parameters are being
- *                                    passed.
+ *              **Params            - List of parameters to pass to the method,
+ *                                    terminated by NULL.  Params itself may be 
+ *                                    NULL if no parameters are being passed.
  *
  * RETURN:      Status
  *
- * DESCRIPTION: execute the requested method passing the given parameters
+ * DESCRIPTION: Execute the requested method passing the given parameters
  *
  ****************************************************************************/
 
 ACPI_STATUS
 NsExecuteControlMethod (
     NAME_TABLE_ENTRY        *MethodEntry, 
-    ACPI_OBJECT             **Params)
+    ACPI_OBJECT_INTERNAL    **Params)
 {
     ACPI_STATUS             Status;
+    UINT32                  i;
 
 
     FUNCTION_TRACE ("NsExecuteControlMethod");
@@ -427,8 +448,8 @@ NsExecuteControlMethod (
 
     if (!MethodEntry->Value)
     {
-        DEBUG_PRINT (ACPI_ERROR, ("Method is undefined\n"));
-        FUNCTION_EXIT;
+        DEBUG_PRINT (ACPI_ERROR, ("Control method is undefined (nil value)\n"));
+        FUNCTION_STATUS_EXIT (AE_ERROR);
         return AE_ERROR;
     }
 
@@ -441,7 +462,7 @@ NsExecuteControlMethod (
                 ((METHOD_INFO *) MethodEntry->Value)->Offset + 1,
                 ((METHOD_INFO *) MethodEntry->Value)->Length - 1));
 
-    NsDumpPathname (MethodEntry->Scope, "NsEvaluateByHandle: Setting scope to", 
+    NsDumpPathname (MethodEntry->Scope, "NsExecuteControlMethod: Setting scope to", 
                     TRACE_NAMES, _COMPONENT);
 
     /* Reset the current scope to the beginning of scope stack */
@@ -452,16 +473,17 @@ NsExecuteControlMethod (
 
     NsPushCurrentScope (MethodEntry->Scope, TYPE_Method);
 
-    NsDumpPathname (MethodEntry, "NsEvaluateByHandle: Executing", 
+    NsDumpPathname (MethodEntry, "NsExecuteControlMethod: Executing", 
                     TRACE_NAMES, _COMPONENT);
 
     DEBUG_PRINT (TRACE_NAMES, ("At offset %8XH\n",
                       ((METHOD_INFO *) MethodEntry->Value)->Offset + 1));
 
-    AmlClearPkgStack ();
-    ObjStackTop = 0;    /* Clear object stack */
-    
+    /* Clear both the package and object stacks */
 
+    AmlClearPkgStack ();
+    AmlClearObjStack ();
+    
     /* 
      * Excecute the method via the interpreter
      */
@@ -469,29 +491,37 @@ NsExecuteControlMethod (
                                ((METHOD_INFO *) MethodEntry->Value)->Length - 1,
                                Params);
 
-    if (AmlPackageNested ())
+    if (AmlPkgStackLevel ())
     {
-        /*  Package stack not empty at method exit and should be  */
+        /* Package stack not empty at method exit and should be */
 
-        REPORT_INFO ("Package stack not empty at method exit");
+        REPORT_ERROR ("Package stack not empty at method exit");
     }
 
-    if (AmlGetMethodDepth () > -1)
+    if (AmlMthStackLevel () > -1)
     {
-        /*  Method stack not empty at method exit and should be */
+        /* Method stack not empty at method exit and should be */
 
         REPORT_ERROR ("Method stack not empty at method exit");
     }
 
-    if (ObjStackTop)
+    if ((AmlObjStackLevel ()) &&
+        (Status != AE_RETURN_VALUE))
     {
         /* Object stack is not empty at method exit and should be */
 
-        REPORT_INFO ("Object stack not empty at method exit");
-        AmlDumpStack (MODE_Exec, "Remaining Object Stack entries", -1, "");
+        REPORT_ERROR ("Object stack not empty at method exit");
+        DEBUG_PRINT (ACPI_ERROR, ("%d Remaining: \n", ObjStackTop));
+
+        for (i = 0; i < (UINT32) ObjStackTop; i++)
+        {
+            DEBUG_PRINT (ACPI_ERROR, ("Object Stack [%d]: %p\n", i, ObjStack[ObjStackTop]));
+        }
+
+        AmlDumpObjStack (MODE_Exec, "Remaining Object Stack entries", -1, "");
     }
 
-    FUNCTION_EXIT;
+    FUNCTION_STATUS_EXIT (Status);
     return Status;
 }
 
@@ -501,15 +531,10 @@ NsExecuteControlMethod (
  * FUNCTION:    NsGetObjectValue
  *
  * PARAMETERS:  ObjectEntry         - The Nte of the object
- *              **Params            - List of parameters to pass to
- *                                    method, terminated by NULL.
- *                                    Params itself may be NULL
- *                                    if no parameters are being
- *                                    passed.
  *
  * RETURN:      Status
  *
- * DESCRIPTION: return the current value of the object
+ * DESCRIPTION: Return the current value of the object
  *
  ****************************************************************************/
 
@@ -518,7 +543,7 @@ NsGetObjectValue (
     NAME_TABLE_ENTRY        *ObjectEntry)
 {
     ACPI_STATUS             Status;
-    ACPI_OBJECT             *ObjDesc;
+    ACPI_OBJECT_INTERNAL    *ObjDesc;
 
 
     FUNCTION_TRACE ("NsGetObjectValue");
@@ -529,7 +554,7 @@ NsGetObjectValue (
     {
         /* Descriptor allocation failure */
 
-        FUNCTION_EXIT;
+        FUNCTION_STATUS_EXIT (AE_NO_MEMORY);
         return AE_NO_MEMORY;
     }
 
@@ -546,12 +571,12 @@ NsGetObjectValue (
      * top valid entry, not to the first unused position.
      */
 
-    LocalDeleteObject ((ACPI_OBJECT **) &ObjStack[ObjStackTop]);
+    LocalDeleteObject ((ACPI_OBJECT_INTERNAL **) &ObjStack[ObjStackTop]);
     ObjStack[ObjStackTop] = (void *) ObjDesc;
 
     /* This causes ObjDesc (allocated above) to always be deleted */
 
-    Status = AmlGetRvalue ((ACPI_OBJECT **) &ObjStack[ObjStackTop]);
+    Status = AmlGetRvalue ((ACPI_OBJECT_INTERNAL **) &ObjStack[ObjStackTop]);
 
     /* 
      * If AmlGetRvalue() succeeded, treat the top stack entry as
@@ -563,7 +588,8 @@ NsGetObjectValue (
         Status = AE_RETURN_VALUE;
     }
 
+    DEBUG_PRINT (ACPI_INFO, ("NsGetObjectValue: Returning object value (on obj stack)\n"));
 
-    FUNCTION_EXIT;
+    FUNCTION_STATUS_EXIT (Status);
     return Status;
 }
