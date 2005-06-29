@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Name: hwsleep.c - ACPI Hardware Sleep/Wake Interface
- *              $Revision: 1.2 $
+ *              $Revision: 1.3 $
  *
  *****************************************************************************/
 
@@ -251,23 +251,19 @@ AcpiEnterSleepState (
         return Status;
     }
 
-    if (SleepState != ACPI_STATE_S5)
-    {
-        /* run the _PTS method */
-        MEMSET(&ArgList, 0, sizeof(ArgList));
-        ArgList.Count = 1;
-        ArgList.Pointer = &Arg;
+    /* run the _PTS and _GTS methods */
+    MEMSET(&ArgList, 0, sizeof(ArgList));
+    ArgList.Count = 1;
+    ArgList.Pointer = &Arg;
 
-        MEMSET(&Arg, 0, sizeof(Arg));
-        Arg.Type = ACPI_TYPE_INTEGER;
-        Arg.Integer.Value = SleepState;
+    MEMSET(&Arg, 0, sizeof(Arg));
+    Arg.Type = ACPI_TYPE_INTEGER;
+    Arg.Integer.Value = SleepState;
 
-        /* acpi 2.0 requires _GTS as well as _PTS */
-        AcpiEvaluateObject(NULL, "\\_PTS", &ArgList, NULL);
-        AcpiEvaluateObject(NULL, "\\_GTS", &ArgList, NULL);
-    }
-
-    /* clear wake status by writing a 1 */
+    AcpiEvaluateObject(NULL, "\\_PTS", &ArgList, NULL);
+    AcpiEvaluateObject(NULL, "\\_GTS", &ArgList, NULL);
+    
+    /* clear wake status */
     AcpiHwRegisterBitAccess(ACPI_WRITE, ACPI_MTX_LOCK, WAK_STS, 1);
 
     PM1AControl = (UINT16) AcpiHwRegisterRead(ACPI_MTX_LOCK, PM1_CONTROL);
