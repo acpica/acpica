@@ -469,7 +469,7 @@ DsObjStackPopAndDelete (
         ObjDesc = WalkState->Operands [WalkState->NumOperands];
         if (ObjDesc)
         {
-            CmDeleteInternalObject (WalkState->Operands [WalkState->NumOperands]);
+            CmRemoveReference (WalkState->Operands [WalkState->NumOperands]);
             WalkState->Operands [WalkState->NumOperands] = NULL;
         }
     }
@@ -702,7 +702,7 @@ DsCreateWalkState (
 
     /* Init the method args/local */
 
-    DsMthStackInit (WalkState);
+    DsMethodDataInit (WalkState);
 
     /* Put the new state at the head of the walk list */
 
