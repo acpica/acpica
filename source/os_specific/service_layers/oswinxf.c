@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: oswinxf - Windows application interface
- *              $Revision: 1.6 $
+ *              $Revision: 1.7 $
  *
  *****************************************************************************/
 
@@ -944,9 +944,8 @@ AcpiOsSleep (
 
 ACPI_STATUS
 AcpiOsReadPciCfgByte (
-    UINT32                  Bus,
-    UINT32                  Function,
-    UINT32                  Register,
+    ACPI_PCI_ID             *PciId,
+    UINT16                  Register,
     UINT8                   *Value)
 {
 
@@ -971,9 +970,8 @@ AcpiOsReadPciCfgByte (
 
 ACPI_STATUS
 AcpiOsReadPciCfgWord (
-    UINT32                  Bus,
-    UINT32                  Function,
-    UINT32                  Register,
+    ACPI_PCI_ID             *PciId,
+    UINT16                  Register,
     UINT16                  *Value)
 {
 
@@ -998,9 +996,8 @@ AcpiOsReadPciCfgWord (
 
 ACPI_STATUS
 AcpiOsReadPciCfgDword (
-    UINT32                  Bus,
-    UINT32                  Function,
-    UINT32                  Register,
+    ACPI_PCI_ID             *PciId,
+    UINT16                  Register,
     UINT32                  *Value)
 {
 
@@ -1026,9 +1023,8 @@ AcpiOsReadPciCfgDword (
 
 ACPI_STATUS
 AcpiOsWritePciCfgByte (
-    UINT32                  Bus,
-    UINT32                  Function,
-    UINT32                  Register,
+    ACPI_PCI_ID             *PciId,
+    UINT16                  Register,
     UINT8                   Value)
 {
 
@@ -1053,9 +1049,8 @@ AcpiOsWritePciCfgByte (
 
 ACPI_STATUS
 AcpiOsWritePciCfgWord (
-    UINT32                  Bus,
-    UINT32                  Function,
-    UINT32                  Register,
+    ACPI_PCI_ID             *PciId,
+    UINT16                  Register,
     UINT16                  Value)
 {
 
@@ -1080,9 +1075,8 @@ AcpiOsWritePciCfgWord (
 
 ACPI_STATUS
 AcpiOsWritePciCfgDword (
-    UINT32                  Bus,
-    UINT32                  Function,
-    UINT32                  Register,
+    ACPI_PCI_ID             *PciId,
+    UINT16                  Register,
     UINT32                  Value)
 {
     return 0;
