@@ -169,23 +169,23 @@ AmlSetupField (
 
     FUNCTION_TRACE ("AmlSetupField");
 
-
+BREAKPOINT3;
     if (!ObjDesc || !RgnDesc)
     {
         DEBUG_PRINT (ACPI_ERROR, ("AmlSetupField: Internal error - null handle\n"));
         Status = AE_AML_ERROR;
     }
 
-    else if (TYPE_Region != RgnDesc->Type)
+    else if (TYPE_Region != RgnDesc->Common.Type)
     {
         DEBUG_PRINT (ACPI_ERROR, ("AmlSetupField: Needed Region, found %d %s\n",
-                        RgnDesc->Type, NsTypeNames[RgnDesc->Type]));
+                        RgnDesc->Common.Type, Gbl_NsTypeNames[RgnDesc->Common.Type]));
         Status = AE_AML_ERROR;
     }
 
     if (AE_OK == Status)
     {   
-        /* ObjDesc, RgnDesc, and RgnDesc->Type valid */
+        /* ObjDesc, RgnDesc, and RgnDesc->Common.Type valid */
         
         FieldByteWidth = FieldBitWidth / 8;     /*  possible values are 1, 2, 4 */
 
@@ -223,13 +223,8 @@ AmlSetupField (
 
                 if (!RgnDesc->Region.AddressLocation)
                 {
-                    RgnDesc->Region.AddressLocation = 
-                        CmCreateInternalObject (TYPE_Method);
-
-                    if (!RgnDesc->Region.AddressLocation)
-                    {
-                        return_ACPI_STATUS (AE_NO_MEMORY);
-                    }
+                    REPORT_ERROR ("AmlSetupField: Region Method subobject does not exist");
+                    return_ACPI_STATUS (AE_EXIST);
                 }
 
                 AmlSetCurrentLocation (RgnDesc->Region.AddressLocation);
@@ -245,11 +240,11 @@ AmlSetupField (
 
 
                     if (!ObjValDesc ||
-                        ObjValDesc->Type != (UINT8) TYPE_Number)
+                        ObjValDesc->Common.Type != (UINT8) TYPE_Number)
                     {
                         DEBUG_PRINT (ACPI_ERROR, ("AmlSetupField: Malformed Region/Address "
-                                    "ObjValDesc = %p, ObjValDesc->Type = %02Xh, Number = %02Xh\n",
-                                    ObjValDesc, ObjValDesc->Type, (UINT8) TYPE_Number));
+                                    "ObjValDesc = %p, ObjValDesc->Common.Type = %02Xh, Number = %02Xh\n",
+                                    ObjValDesc, ObjValDesc->Common.Type, (UINT8) TYPE_Number));
 
                         Status = AE_AML_ERROR;
                     }
@@ -276,7 +271,7 @@ AmlSetupField (
                         ObjValDesc = AmlObjStackRemoveValue (STACK_TOP);
 
                         if (!ObjValDesc ||
-                            ObjValDesc->Type != (UINT8) TYPE_Number)
+                            ObjValDesc->Common.Type != (UINT8) TYPE_Number)
                         {
 
                             DEBUG_PRINT (ACPI_ERROR, ("AmlSetupField: Malformed Region/Length \n"));
@@ -415,19 +410,19 @@ AmlReadField (
     {
         DEBUG_PRINT (TRACE_OPREGION,
                     ("AmlReadField: Read from OpRegion %s at %08lx width %d\n",
-                    RegionTypes[RgnDesc->Region.SpaceId], Address, FieldBitWidth));
+                    Gbl_RegionTypes[RgnDesc->Region.SpaceId], Address, FieldBitWidth));
     }
 
 
     /* Invoke the appropriate AddressSpace/OpRegion handler */
 
-    Status = EvAddressSpaceDispatch (RgnDesc->Region.SpaceId, ADDRESS_SPACE_READ, 
+    Status = EvAddressSpaceDispatch (RgnDesc, ADDRESS_SPACE_READ, 
                                         Address, FieldBitWidth, Value);
 
     if (Status == AE_NOT_IMPLEMENTED)
     {
         DEBUG_PRINT (ACPI_ERROR, ("AmlReadField: **** OpRegion type %s not implemented\n",
-                RegionTypes[RgnDesc->Region.SpaceId]));
+                Gbl_RegionTypes[RgnDesc->Region.SpaceId]));
     }
 
     else if (Status == AE_EXIST)
@@ -498,18 +493,18 @@ AmlWriteField (
     {
         DEBUG_PRINT (TRACE_OPREGION,
                 ("AmlWriteField: Store %lx in OpRegion %s at %08lx width %d\n",
-                Value, RegionTypes[RgnDesc->Region.SpaceId], Address, FieldBitWidth));
+                Value, Gbl_RegionTypes[RgnDesc->Region.SpaceId], Address, FieldBitWidth));
     }
 
     /* Invoke the appropriate AddressSpace/OpRegion handler */
 
-    Status = EvAddressSpaceDispatch (RgnDesc->Region.SpaceId, ADDRESS_SPACE_WRITE, 
+    Status = EvAddressSpaceDispatch (RgnDesc, ADDRESS_SPACE_WRITE, 
                                         Address, FieldBitWidth, &Value);
 
     if (Status == AE_NOT_IMPLEMENTED)
     {
         DEBUG_PRINT (ACPI_ERROR, ("AmlWriteField: **** OpRegion type %s not implemented\n",
-                        RegionTypes[RgnDesc->Region.SpaceId]));
+                        Gbl_RegionTypes[RgnDesc->Region.SpaceId]));
     }
 
     else if (Status == AE_EXIST)
@@ -543,7 +538,7 @@ AmlAccessNamedField (
     UINT32                  *Value)
 {
     ACPI_OBJECT_INTERNAL    *ObjDesc = NULL;
-    ACPI_STATUS             Status = AE_AML_ERROR;
+    ACPI_STATUS             Status = AE_OK;
     char                    *Type = NULL;
     UINT32                  Granularity = 0;
     UINT32                  MaxW = 0;
@@ -560,194 +555,177 @@ AmlAccessNamedField (
     if (!ObjDesc)
     {
         DEBUG_PRINT (ACPI_ERROR, ("AmlAccessNamedField: Internal error - null value pointer\n"));
+        return_ACPI_STATUS (AE_AML_ERROR);
     }
 
-    else if (TYPE_DefField != NsGetType (NamedField))
+    if (TYPE_DefField != NsGetType (NamedField))
     {
         DEBUG_PRINT (ACPI_ERROR, (
                   "AmlAccessNamedField: Name %4.4s type %d is not a defined field\n",
-                  NamedField, NsGetType (NamedField)));
+                  &(((NAME_TABLE_ENTRY *) NamedField)->Name), NsGetType (NamedField)));
+        return_ACPI_STATUS (AE_AML_ERROR);
+    }
+
+    /* ObjDesc valid and NamedField is a defined field  */
+
+    DEBUG_PRINT (ACPI_INFO,
+                ("AmlAccessNamedField: DefField type and ValPtr OK in nte \n"));
+    DUMP_ENTRY (NamedField, ACPI_INFO);
+
+    DEBUG_PRINT (ACPI_INFO, ("AmlAccessNamedField: ObjDesc=%p, ObjDesc->Common.Type=%d\n",
+                ObjDesc, ObjDesc->Common.Type));
+    DEBUG_PRINT (ACPI_INFO, ("AmlAccessNamedField: DatLen=%d, BitOffset=%d\n",
+                ObjDesc->FieldUnit.Length, ObjDesc->FieldUnit.BitOffset));
+
+    if (TYPE_DefField != ObjDesc->Common.Type)
+    {
+        DEBUG_PRINT (ACPI_ERROR, (
+                "AmlAccessNamedField: Internal error - Name %4.4s type %d does not match value-type %d at %p\n",
+                &(((NAME_TABLE_ENTRY *) NamedField)->Name), NsGetType (NamedField), ObjDesc->Common.Type, ObjDesc));
+        return_ACPI_STATUS (AE_AML_ERROR);
+    }
+
+
+    switch (ObjDesc->Field.Access)
+    {
+    case ACCESS_AnyAcc:
+        Granularity     = 8;
+        MaxW            = 32;
+        Type            = "UINT32";
+        break;
+
+    case ACCESS_ByteAcc:
+        Granularity     = 8;
+        MaxW            = 8;
+        Type            = "UINT8";
+        break;
+
+    case ACCESS_WordAcc:
+        Granularity     = 16;
+        MaxW            = 16;
+        Type            = "UINT16";
+        break;
+
+    case ACCESS_DWordAcc:
+        Granularity     = 32;
+        MaxW            = 32;
+        Type            = "UINT32";
+        break;
+
+    default:
+        /* Invalid field access type */
+
+        DEBUG_PRINT (ACPI_ERROR, (
+                    "AmlAccessNamedField: Unknown field access type %d\n",
+                    ObjDesc->Field.Access));
+        return_ACPI_STATUS (AE_AML_ERROR);
+    }
+
+
+    /* Field has valid access type */
+
+    if ((UINT32) (ObjDesc->FieldUnit.Length + ObjDesc->FieldUnit.BitOffset) > MaxW)
+    {
+        DEBUG_PRINT (ACPI_ERROR, ("AmlAccessNamedField: Field exceeds %s\n", Type));
+        return_ACPI_STATUS (AE_AML_ERROR);
+    }
+
+
+    /* Get the global lock if needed */
+
+    Locked = AmlAcquireGlobalLock (ObjDesc->FieldUnit.LockRule);
+
+
+    /* 
+     * As long as MaxW/2 is wide enough for the data and MaxW > Granularity,
+     * divide MaxW by 2.
+     */
+    while (Granularity < MaxW && 
+           ObjDesc->FieldUnit.Length + ObjDesc->FieldUnit.BitOffset
+                <= (UINT16) MaxW / 2)
+    {
+        MaxW /= 2;
+    }
+
+    if (ACPI_WRITE == Mode)
+    {
+        /* Write access */
+        /* Construct Mask with 1 bits where the field is, 0 bits elsewhere */
+
+        Mask = (((UINT32) 1 << ObjDesc->FieldUnit.Length) - (UINT32) 1)
+                            << ObjDesc->Field.BitOffset;
+        
+        if (Value)
+        {
+            /* Shift and mask the value into the field position */
+
+            dValue = (*Value << ObjDesc->Field.BitOffset) & Mask;
+        }
+
+
+        if (ObjDesc->FieldUnit.Length % Granularity || 
+            ObjDesc->FieldUnit.BitOffset)
+        {
+            /* Write does not fill an integral number of naturally aligned units */
+
+            switch (ObjDesc->Field.UpdateRule)
+            {
+            case UPDATE_Preserve:
+
+                /* 
+                 * Read the current contents of the byte/word/dword containing
+                 * the field, and merge with the new field value.
+                 */
+                Status = AmlReadField (ObjDesc, &OldVal, MaxW);
+                dValue |= OldVal & ~Mask;
+                break;
+
+            case UPDATE_WriteAsOnes:
+
+                /* Set positions outside the field to 1's */
+
+                dValue |= ~Mask;
+                break;
+
+            case UPDATE_WriteAsZeros:
+
+                /* 
+                 * Positions outside the field are already 0
+                 * due to "& Mask" above
+                 */
+                break;
+
+            default:
+                DEBUG_PRINT (ACPI_ERROR, (
+                            "AmlAccessNamedField: Unknown UpdateRule setting %d\n",
+                            ObjDesc->Field.UpdateRule));
+                Status = AE_AML_ERROR;
+            }
+        }
+
+
+        if (AE_OK == Status)
+        {
+
+            DEBUG_PRINT (ACPI_INFO, ("AmlAccessNamedField: Calling AmlWriteField\n"));
+
+            /* Perform the update */
+
+            Status = AmlWriteField (ObjDesc, dValue, MaxW);
+        }
     }
 
     else
     {
-        /* ObjDesc valid and NamedField is a defined field  */
+        /* ACPI_READ access */
 
-        DEBUG_PRINT (ACPI_INFO,
-                    ("AmlAccessNamedField: DefField type and ValPtr OK in nte \n"));
-        DUMP_ENTRY (NamedField);
+        Status = AmlReadField (ObjDesc, Value, MaxW);
 
-        DEBUG_PRINT (ACPI_INFO, ("AmlAccessNamedField: ObjDesc=%p, ObjDesc->Type=%d\n",
-                    ObjDesc, ObjDesc->Type));
-        DEBUG_PRINT (ACPI_INFO, ("AmlAccessNamedField: DatLen=%d, BitOffset=%d\n",
-                    ObjDesc->FieldUnit.Length, ObjDesc->FieldUnit.BitOffset));
-
-        if (TYPE_DefField != ObjDesc->Type)
+        if ((AE_OK == Status) &&
+             Value)
         {
-            DEBUG_PRINT (ACPI_ERROR, (
-                    "AmlAccessNamedField: Internal error - Name %4.4s type %d does not match value-type %d at %p\n",
-                    NamedField, NsGetType (NamedField), ObjDesc->Type, ObjDesc));
-        }
-
-        else
-        {
-            Status = AE_OK;
-        }
-    }
-
-    if (AE_OK == Status)
-    {
-
-        switch (ObjDesc->Field.Access)
-        {
-        case ACCESS_AnyAcc:
-            Granularity     = 8;
-            MaxW            = 32;
-            Type            = "UINT32";
-            break;
-
-        case ACCESS_ByteAcc:
-            Granularity     = 8;
-            MaxW            = 8;
-            Type            = "UINT8";
-            break;
-
-        case ACCESS_WordAcc:
-            Granularity     = 16;
-            MaxW            = 16;
-            Type            = "UINT16";
-            break;
-
-        case ACCESS_DWordAcc:
-            Granularity     = 32;
-            MaxW            = 32;
-            Type            = "UINT32";
-            break;
-
-        default:
-            /* Invalid field access type */
-
-            DEBUG_PRINT (ACPI_ERROR, (
-                        "AmlAccessNamedField: Unknown field access type %d\n",
-                        ObjDesc->Field.Access));
-            Status = AE_AML_ERROR;
-        }
-    }
-
-
-
-    if (AE_OK == Status)
-   {
-        /* Field has valid access type */
-
-        if ((UINT32) (ObjDesc->FieldUnit.Length + ObjDesc->FieldUnit.BitOffset) > MaxW)
-        {
-            DEBUG_PRINT (ACPI_ERROR, ("AmlAccessNamedField: Field exceeds %s\n", Type));
-            Status = AE_AML_ERROR;
-        }
-    }
-
-    if (AE_OK == Status)
-    {
-        /* Get the global lock if needed */
-
-        Locked = AmlAcquireGlobalLock (ObjDesc->FieldUnit.LockRule);
-    }
-
-
-    if (AE_OK == Status)
-    {
-        /* 
-         * As long as MaxW/2 is wide enough for the data and MaxW > Granularity,
-         * divide MaxW by 2.
-         */
-        while (Granularity < MaxW && 
-               ObjDesc->FieldUnit.Length + ObjDesc->FieldUnit.BitOffset
-                    <= (UINT16) MaxW / 2)
-        {
-            MaxW /= 2;
-        }
-
-        if (ACPI_WRITE == Mode)
-        {
-            /* Write access */
-            /* Construct Mask with 1 bits where the field is, 0 bits elsewhere */
-
-            Mask = (((UINT32) 1 << ObjDesc->FieldUnit.Length) - (UINT32) 1)
-                                << ObjDesc->Field.BitOffset;
-            
-            if (Value)
-            {
-                /* Shift and mask the value into the field position */
-
-                dValue = (*Value << ObjDesc->Field.BitOffset) & Mask;
-            }
-
-
-            if (ObjDesc->FieldUnit.Length % Granularity || 
-                ObjDesc->FieldUnit.BitOffset)
-            {
-                /* Write does not fill an integral number of naturally aligned units */
-
-                switch (ObjDesc->Field.UpdateRule)
-                {
-                case UPDATE_Preserve:
-
-                    /* 
-                     * Read the current contents of the byte/word/dword containing
-                     * the field, and merge with the new field value.
-                     */
-                    Status = AmlReadField (ObjDesc, &OldVal, MaxW);
-                    dValue |= OldVal & ~Mask;
-                    break;
-
-                case UPDATE_WriteAsOnes:
-
-                    /* Set positions outside the field to 1's */
-
-                    dValue |= ~Mask;
-                    break;
-
-                case UPDATE_WriteAsZeros:
-
-                    /* 
-                     * Positions outside the field are already 0
-                     * due to "& Mask" above
-                     */
-                    break;
-
-                default:
-                    DEBUG_PRINT (ACPI_ERROR, (
-                                "AmlAccessNamedField: Unknown UpdateRule setting %d\n",
-                                ObjDesc->Field.UpdateRule));
-                    Status = AE_AML_ERROR;
-                }
-            }
-
-
-            if (AE_OK == Status)
-            {
-
-                DEBUG_PRINT (ACPI_INFO, ("AmlAccessNamedField: Calling AmlWriteField\n"));
-
-                /* Perform the update */
-
-                Status = AmlWriteField (ObjDesc, dValue, MaxW);
-            }
-        }
-
-        else
-        {
-            /* ACPI_READ access */
-
-            Status = AmlReadField (ObjDesc, Value, MaxW);
-
-            if ((AE_OK == Status) &&
-                 Value)
-            {
-                *Value >>= ObjDesc->Field.BitOffset;
-                *Value &= (((UINT32) 1 << ObjDesc->FieldUnit.Length) - (UINT32) 1);
-            }
+            *Value >>= ObjDesc->Field.BitOffset;
+            *Value &= (((UINT32) 1 << ObjDesc->FieldUnit.Length) - (UINT32) 1);
         }
     }
 
@@ -787,6 +765,7 @@ AmlSetNamedFieldValue (
     {
         DEBUG_PRINT (ACPI_ERROR, ("AmlSetNamedFieldValue: Internal error - null handle\n"));
     }
+
     else
     {
         Status = AmlAccessNamedField (ACPI_WRITE, NamedField, &Value);
