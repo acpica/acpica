@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: amutils - interpreter/scanner utilities
- *              $Revision: 1.60 $
+ *              $Revision: 1.61 $
  *
  *****************************************************************************/
 
@@ -392,7 +392,7 @@ AcpiAmlDigitsNeeded (
 
     else
     {
-        for (NumDigits = 1 + (val < 0) ; val /= base ; ++NumDigits)
+        for (NumDigits = 1 + (val < 0); val = ACPI_DIVIDE (val,base); ++NumDigits)
         { ; }
     }
 
@@ -499,8 +499,8 @@ AcpiAmlUnsignedIntegerToString (
 
     for (Count = DigitsNeeded; Count > 0; Count--)
     {
-        OutString[Count-1] = (NATIVE_CHAR) ('0' + (Value % 10));
-        Value /= 10;
+        OutString[Count-1] = (NATIVE_CHAR) ('0' + (ACPI_MODULO (Value, 10)));
+        Value = ACPI_DIVIDE (Value, 10);
     }
 
     return (AE_OK);
@@ -551,8 +551,8 @@ AcpiAmlBuildCopyInternalPackageObject (
     LevelPtr                = &CopyLevel[0];
     CurrentDepth            = 0;
 
-    DestObj->Common.Type        = SourceObj->Common.Type;
-    DestObj->Package.Count      = SourceObj->Package.Count;
+    DestObj->Common.Type    = SourceObj->Common.Type;
+    DestObj->Package.Count  = SourceObj->Package.Count;
 
 
     /*
@@ -577,8 +577,8 @@ AcpiAmlBuildCopyInternalPackageObject (
     while (1)
     {
         ThisIndex       = LevelPtr->Index;
-        ThisDestObj     = (ACPI_OPERAND_OBJECT  *) LevelPtr->DestObj->Package.Elements[ThisIndex];
-        ThisSourceObj   = (ACPI_OPERAND_OBJECT  *) LevelPtr->SourceObj->Package.Elements[ThisIndex];
+        ThisDestObj     = (ACPI_OPERAND_OBJECT *) LevelPtr->DestObj->Package.Elements[ThisIndex];
+        ThisSourceObj   = (ACPI_OPERAND_OBJECT *) LevelPtr->SourceObj->Package.Elements[ThisIndex];
 
         if (IS_THIS_OBJECT_TYPE (ThisSourceObj, ACPI_TYPE_PACKAGE))
         {
