@@ -307,6 +307,10 @@ void
 HwClearGpe (
     UINT32                  GpeIndex);
 
+void
+HwGetGpeStatus (
+    UINT32                  GpeNumber,
+    ACPI_EVENT_STATUS       *EventStatus);
 
 /* Sleep Prototypes */
 
