@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dbxface - AML Debugger external interfaces
- *              $Revision: 1.40 $
+ *              $Revision: 1.44 $
  *
  ******************************************************************************/
 
@@ -149,13 +149,15 @@ ACPI_STATUS
 AcpiDbSingleStep (
     ACPI_WALK_STATE         *WalkState,
     ACPI_PARSE_OBJECT       *Op,
-    UINT8                   OpType)
+    UINT32                  OpType)
 {
     ACPI_PARSE_OBJECT       *Next;
     ACPI_STATUS             Status = AE_OK;
     UINT32                  OriginalDebugLevel;
     ACPI_PARSE_OBJECT       *DisplayOp;
 
+
+    FUNCTION_ENTRY ();
 
     /* Is there a breakpoint set? */
 
@@ -174,12 +176,10 @@ AcpiDbSingleStep (
         }
     }
 
-
     /*
      * Check if this is an opcode that we are interested in --
      * namely, opcodes that have arguments
      */
-
     if (Op->Opcode == AML_INT_NAMEDFIELD_OP)
     {
         return (AE_OK);
@@ -187,29 +187,15 @@ AcpiDbSingleStep (
 
     switch (OpType)
     {
-    case OPTYPE_UNDEFINED:
-    case OPTYPE_CONSTANT:           /* argument type only */
-    case OPTYPE_LITERAL:            /* argument type only */
-    case OPTYPE_DATA_TERM:          /* argument type only */
-    case OPTYPE_LOCAL_VARIABLE:     /* argument type only */
-    case OPTYPE_METHOD_ARGUMENT:    /* argument type only */
+    case AML_CLASS_UNKNOWN:
+    case AML_CLASS_ARGUMENT:
         return (AE_OK);
         break;
-
-    case OPTYPE_NAMED_OBJECT:
-        switch (Op->Opcode)
-        {
-        case AML_INT_NAMEPATH_OP:
-            return (AE_OK);
-            break;
-        }
     }
-
 
     /*
      * Under certain debug conditions, display this opcode and its operands
      */
-
     if ((AcpiGbl_DbOutputToFile)            ||
         (AcpiGbl_CmSingleStep)              ||
         (AcpiDbgLevel & ACPI_LV_PARSE))
@@ -225,7 +211,6 @@ AcpiDbSingleStep (
          * and disable parser trace output for the duration of the display because
          * we don't want the extraneous debug output)
          */
-
         OriginalDebugLevel = AcpiDbgLevel;
         AcpiDbgLevel &= ~(ACPI_LV_PARSE | ACPI_LV_FUNCTIONS);
         Next = Op->Next;
@@ -264,14 +249,12 @@ AcpiDbSingleStep (
             /* TBD */
         }
 
-
         /* Restore everything */
 
         Op->Next = Next;
         AcpiOsPrintf ("\n");
         AcpiDbgLevel = OriginalDebugLevel;
-   }
-
+    }
 
     /* If we are not single stepping, just continue executing the method */
 
@@ -285,7 +268,6 @@ AcpiDbSingleStep (
      * If we are executing a step-to-call command,
      * Check if this is a method call.
      */
-
     if (AcpiGbl_StepToNextCall)
     {
         if (Op->Opcode != AML_INT_METHODCALL_OP)
@@ -305,7 +287,6 @@ AcpiDbSingleStep (
      * If the next opcode is a method call, we will "step over" it
      * by default.
      */
-
     if (Op->Opcode == AML_INT_METHODCALL_OP)
     {
         AcpiGbl_CmSingleStep = FALSE;  /* No more single step while executing called method */
@@ -365,7 +346,6 @@ AcpiDbSingleStep (
 
     /* AcpiUtAcquireMutex (ACPI_MTX_NAMESPACE); */
 
-
     /* User commands complete, continue execution of the interrupted method */
 
     return (Status);
@@ -391,7 +371,7 @@ AcpiDbInitialize (void)
 
     /* Init globals */
 
-    AcpiGbl_DbBuffer = AcpiOsAllocate (ACPI_DEBUG_BUFFER_SIZE);
+    AcpiGbl_DbBuffer = AcpiOsCallocate (ACPI_DEBUG_BUFFER_SIZE);
 
     /* Initial scope is the root */
 
@@ -404,7 +384,6 @@ AcpiDbInitialize (void)
      * a separate thread so that the front end can be in another address
      * space, environment, or even another machine.
      */
-
     if (AcpiGbl_DebuggerConfiguration & DEBUGGER_MULTI_THREADED)
     {
         /* These were created with one unit, grab it */
@@ -424,9 +403,36 @@ AcpiDbInitialize (void)
         AcpiGbl_DbOpt_stats = FALSE;
     }
 
-
     return (0);
 }
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiDbTerminate
+ *
+ * PARAMETERS:  None
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Stop debugger
+ *
+ ******************************************************************************/
+
+void
+AcpiDbTerminate (void)
+{
+
+    if (AcpiGbl_DbTablePtr)
+    {
+        AcpiOsFree (AcpiGbl_DbTablePtr);
+    }
+    if (AcpiGbl_DbBuffer)
+    {
+        AcpiOsFree (AcpiGbl_DbBuffer);
+    }
+}
+
 
 
 #endif /* ENABLE_DEBUGGER */
