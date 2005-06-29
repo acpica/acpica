@@ -244,6 +244,14 @@ FunctionStatusExit (
     ACPI_STATUS             Status);
 
 void
+FunctionValueExit (
+    ACPI_STRING             ModuleName, 
+    INT32                   LineNumber, 
+    INT32                   ComponentId, 
+    ACPI_STRING             FunctionName,
+    UINT32                  Value);
+
+void
 DebugPrintPrefix (
     ACPI_STRING             ModuleName, 
     INT32                   LineNumber, 
