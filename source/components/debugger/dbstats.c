@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dbstats - Generation and display of ACPI table statistics
- *              $Revision: 1.67 $
+ *              $Revision: 1.69 $
  *
  ******************************************************************************/
 
@@ -204,7 +204,7 @@ AcpiDbEnumerateObject (
 
         AcpiDbEnumerateObject (ObjDesc->Device.SystemNotify);
         AcpiDbEnumerateObject (ObjDesc->Device.DeviceNotify);
-        AcpiDbEnumerateObject (ObjDesc->Device.AddressSpace);
+        AcpiDbEnumerateObject (ObjDesc->Device.Handler);
         break;
 
     case ACPI_TYPE_BUFFER_FIELD:
@@ -218,7 +218,7 @@ AcpiDbEnumerateObject (
     case ACPI_TYPE_REGION:
 
         AcpiGbl_ObjTypeCount [ACPI_TYPE_LOCAL_REGION_FIELD ]++;
-        AcpiDbEnumerateObject (ObjDesc->Region.AddressSpace);
+        AcpiDbEnumerateObject (ObjDesc->Region.Handler);
         break;
 
     case ACPI_TYPE_POWER:
@@ -231,14 +231,14 @@ AcpiDbEnumerateObject (
 
         AcpiDbEnumerateObject (ObjDesc->Processor.SystemNotify);
         AcpiDbEnumerateObject (ObjDesc->Processor.DeviceNotify);
-        AcpiDbEnumerateObject (ObjDesc->Processor.AddressSpace);
+        AcpiDbEnumerateObject (ObjDesc->Processor.Handler);
         break;
 
     case ACPI_TYPE_THERMAL:
 
         AcpiDbEnumerateObject (ObjDesc->ThermalZone.SystemNotify);
         AcpiDbEnumerateObject (ObjDesc->ThermalZone.DeviceNotify);
-        AcpiDbEnumerateObject (ObjDesc->ThermalZone.AddressSpace);
+        AcpiDbEnumerateObject (ObjDesc->ThermalZone.Handler);
         break;
 
     default:
@@ -488,9 +488,9 @@ AcpiDbDisplayStatistics (
         AcpiOsPrintf ("\n");
 
         AcpiOsPrintf ("Mutex usage:\n\n");
-        for (i = 0; i < NUM_MTX; i++)
+        for (i = 0; i < NUM_MUTEX; i++)
         {
-            AcpiOsPrintf ("%-28s:       % 7ld\n", AcpiUtGetMutexName (i), AcpiGbl_AcpiMutexInfo[i].UseCount);
+            AcpiOsPrintf ("%-28s:       % 7ld\n", AcpiUtGetMutexName (i), AcpiGbl_MutexInfo[i].UseCount);
         }
         break;
 
