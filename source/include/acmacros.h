@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acmacros.h - C macros for the entire subsystem.
- *       $Revision: 1.143 $
+ *       $Revision: 1.144 $
  *
  *****************************************************************************/
 
@@ -511,26 +511,6 @@
 
 #define GET_CURRENT_ARG_TYPE(List)      (List & ((UINT32) 0x1F))
 #define INCREMENT_ARG_LIST(List)        (List >>= ((UINT32) ARG_TYPE_WIDTH))
-
-
-/*
- * Build a GAS structure from earlier ACPI table entries (V1.0 and 0.71 extensions)
- *
- * 1) Address space
- * 2) Length in bytes -- convert to length in bits
- * 3) Bit offset is zero
- * 4) Reserved field is zero
- * 5) Expand address to 64 bits
- */
-#define ASL_BUILD_GAS_FROM_ENTRY(a,b,c,d)   do {a.AddressSpaceId = (UINT8) d;\
-                                                a.RegisterBitWidth = (UINT8) ACPI_MUL_8 (b);\
-                                                a.RegisterBitOffset = 0;\
-                                                a.Reserved = 0;\
-                                                ACPI_STORE_ADDRESS (a.Address,(ACPI_PHYSICAL_ADDRESS) c);} while (0)
-
-/* ACPI V1.0 entries -- address space is always I/O */
-
-#define ASL_BUILD_GAS_FROM_V1_ENTRY(a,b,c)  ASL_BUILD_GAS_FROM_ENTRY(a,b,c,ACPI_ADR_SPACE_SYSTEM_IO)
 
 
 /*
