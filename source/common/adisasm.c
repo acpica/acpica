@@ -291,7 +291,7 @@ AdAmlDisassemble (
 {
     ACPI_STATUS             Status;
     char                    *OutFilename = NULL;
-    FILE                    *File;
+    FILE                    *File = NULL;
 
 
     /* Get the ACPI Tables (always) */
@@ -351,6 +351,13 @@ AdAmlDisassemble (
         fprintf (stderr, "Disassembly completed, written to \"%s\"\n", OutFilename);
     }
 
+    if (OutToFile)
+    {
+        fclose (File);
+        AcpiOsRedirectOutput (stdout);
+    }
+
+    AcpiPsDeleteParseTree (AcpiGbl_ParsedNamespaceRoot);
     return AE_OK;
 }
 
