@@ -14,15 +14,18 @@
  | FILENAME: amlopsys.c
  |__________________________________________________________________________
  |
- | $Revision: 1.9 $
- | $Date: 2005/06/29 17:56:41 $
+ | $Revision: 1.10 $
+ | $Date: 2005/06/29 17:56:42 $
  | $Log: exsystem.c,v $
- | Revision 1.9  2005/06/29 17:56:41  aystarik
- | New version of DEBUG_PRINT
+ | Revision 1.10  2005/06/29 17:56:42  aystarik
+ | Header cleanup;  Split debug switch into component_id and level
  |
  | 
- | date	99.04.02.22.39.00;	author rmoore1;	state Exp;
+ | date	99.04.05.23.10.00;	author rmoore1;	state Exp;
  |
+ * 
+ * 10    4/05/99 4:10p Rmoore1
+ * Header cleanup;  Split debug switch into component_id and level
  * 
  * 9     4/02/99 2:39p Rmoore1
  * New version of DEBUG_PRINT
@@ -50,20 +53,7 @@
  * 
  * 1     1/11/99 2:11p Rmoore1
  * AML Interpreter
-// 
-//    Rev 1.4   11 Sep 1998 18:03:18   phutchis
-// Change inc_error() etc. to dKinc_error() etc. (error key logging).
-// 
-//    Rev 1.3   14 May 1998 16:49:38   phutchis
-// Remove "return S_SUCCESS;" from void function ReleaseGlobalLock().
-// 
-//    Rev 1.2   30 Apr 1998 07:23:48   calingle
-// Added two functions one to get ownership of the Global Lock and another to Release
-// ownership of the Global Lock.
-//
-//    Rev 1.1   13 Mar 1998 07:39:04   calingle
-// Added *ObjDesc to the DoNotifyOp function.
-//
+
 //    Rev 1.0   13 Mar 1998 07:23:42   calingle
 // Initial revision.
  |__________________________________________________________________________
@@ -71,11 +61,14 @@
 */
 
 #define __AMLOPSYS_C__
-#define _THIS_MODULE        "amlopsys.c"
 
 #include <acpi.h>
 #include <acpinmsp.h>
 #include <amlopsys.h>
+
+
+#define _THIS_MODULE        "amlopsys.c"
+#define _COMPONENT          INTERPRETER
 
 /* Global Variables */
 
@@ -134,7 +127,7 @@ DoNotifyOp (OBJECT_DESCRIPTOR *ValDesc, OBJECT_DESCRIPTOR *ObjDesc)
     {
         if (ObjDesc)
         {
-            DEBUG_PRINT (AML_INFO, 
+            DEBUG_PRINT (ACPI_INFO, 
                         ("NotifyOp: %s %s \n", NsTypeNames[ObjDesc->ValType],
                         NsFullyQualifiedName (ObjDesc->Device.Device)));
         }
@@ -142,23 +135,23 @@ DoNotifyOp (OBJECT_DESCRIPTOR *ValDesc, OBJECT_DESCRIPTOR *ObjDesc)
         switch (ValDesc->Number.Number)
         {
         case 0:
-            DEBUG_PRINT (AML_INFO, ("Re-enumerate Devices \n"));
+            DEBUG_PRINT (ACPI_INFO, ("Re-enumerate Devices \n"));
             break;
 
         case 1:
-            DEBUG_PRINT (AML_INFO, ("Ejection Request \n"));
+            DEBUG_PRINT (ACPI_INFO, ("Ejection Request \n"));
             break;
 
         case 2:
-            DEBUG_PRINT (AML_INFO, ("Device Wake \n"));
+            DEBUG_PRINT (ACPI_INFO, ("Device Wake \n"));
             break;
 
         case 0x80:
-            DEBUG_PRINT (AML_INFO, ("Status Change \n"));
+            DEBUG_PRINT (ACPI_INFO, ("Status Change \n"));
             break;
 
         default:
-            DEBUG_PRINT (AML_INFO, ("%lx \n",
+            DEBUG_PRINT (ACPI_INFO, ("%lx \n",
                     ValDesc->Number.Number));
             break;
         }
