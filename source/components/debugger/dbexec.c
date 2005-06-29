@@ -1,8 +1,9 @@
-/******************************************************************************
+/*******************************************************************************
  *
  * Module Name: dbexec - debugger control method execution
+ *              $Revision: 1.17 $
  *
- *****************************************************************************/
+ ******************************************************************************/
 
 /******************************************************************************
  *
@@ -115,31 +116,30 @@
 
 
 #include "acpi.h"
-#include "parser.h"
-#include "dispatch.h"
+#include "acparser.h"
+#include "acdispat.h"
 #include "amlcode.h"
-#include "namesp.h"
-#include "parser.h"
-#include "events.h"
-#include "interp.h"
-#include "debugger.h"
-#include "tables.h"
+#include "acnamesp.h"
+#include "acparser.h"
+#include "acevents.h"
+#include "acinterp.h"
+#include "acdebug.h"
+#include "actables.h"
 
-#ifdef ACPI_DEBUG
+#ifdef ENABLE_DEBUGGER
 
 #define _COMPONENT          DEBUGGER
-        MODULE_NAME         ("dbexec");
-
+        MODULE_NAME         ("dbexec")
 
 
 typedef struct dbmethodinfo
 {
     ACPI_HANDLE             ThreadGate;
-    char                    *Name;
-    char                    **Args;
+    NATIVE_CHAR             *Name;
+    NATIVE_CHAR             **Args;
     UINT32                  Flags;
     UINT32                  NumLoops;
-    char                    Pathname[128];
+    NATIVE_CHAR             Pathname[128];
 
 } DB_METHOD_INFO;
 
@@ -148,7 +148,7 @@ DB_METHOD_INFO              Info;
 
 
 
-/******************************************************************************
+/*******************************************************************************
  *
  * FUNCTION:    AcpiDbExecuteMethod
  *
@@ -159,7 +159,7 @@ DB_METHOD_INFO              Info;
  *
  * DESCRIPTION: Execute a control method.
  *
- *****************************************************************************/
+ ******************************************************************************/
 
 ACPI_STATUS
 AcpiDbExecuteMethod (
@@ -174,8 +174,10 @@ AcpiDbExecuteMethod (
 
     if (OutputToFile && !AcpiDbgLevel)
     {
-        AcpiOsdPrintf ("Warning: debug output is not enabled!\n");
+        AcpiOsPrintf ("Warning: debug output is not enabled!\n");
     }
+
+    /* Are there arguments to the method? */
 
     if (Info->Args && Info->Args[0])
     {
@@ -217,12 +219,11 @@ AcpiDbExecuteMethod (
     AcpiGbl_CmSingleStep = FALSE;
     AcpiGbl_MethodExecuting = FALSE;
 
-    return Status;
+    return (Status);
 }
 
 
-
-/******************************************************************************
+/*******************************************************************************
  *
  * FUNCTION:    AcpiDbExecuteSetup
  *
@@ -232,7 +233,7 @@ AcpiDbExecuteMethod (
  *
  * DESCRIPTION: Setup info segment prior to method execution
  *
- *****************************************************************************/
+ ******************************************************************************/
 
 void
 AcpiDbExecuteSetup (
@@ -252,7 +253,7 @@ AcpiDbExecuteSetup (
     AcpiDbPrepNamestring (Info->Pathname);
 
     AcpiDbSetOutputDestination (DB_DUPLICATE_OUTPUT);
-    AcpiOsdPrintf ("Executing %s\n", Info->Pathname);
+    AcpiOsPrintf ("Executing %s\n", Info->Pathname);
 
     if (Info->Flags & EX_SINGLE_STEP)
     {
@@ -269,33 +270,36 @@ AcpiDbExecuteSetup (
 }
 
 
-/******************************************************************************
+/*******************************************************************************
  *
  * FUNCTION:    AcpiDbExecute
  *
  * PARAMETERS:  Name                - Name of method to execute
  *              Args                - Parameters to the method
- *              Flags               - single step/no singl step
+ *              Flags               - single step/no single step
  *
  * RETURN:      Status
  *
  * DESCRIPTION: Execute a control method.  Name is relative to the current
  *              scope.
  *
- *****************************************************************************/
+ ******************************************************************************/
 
 void
 AcpiDbExecute (
-    char                    *Name,
-    char                    **Args,
+    NATIVE_CHAR             *Name,
+    NATIVE_CHAR             **Args,
     UINT32                  Flags)
 {
     ACPI_STATUS             Status;
+    ACPI_BUFFER             ReturnObj;
+
+
+#ifdef ACPI_DEBUG
     UINT32                  PreviousAllocations;
     UINT32                  PreviousSize;
     UINT32                  Allocations;
     UINT32                  Size;
-    ACPI_BUFFER             ReturnObj;
 
 
 
@@ -303,7 +307,7 @@ AcpiDbExecute (
 
     PreviousAllocations = AcpiGbl_CurrentAllocCount;
     PreviousSize = AcpiGbl_CurrentAllocSize;
-
+#endif
 
     Info.Name = Name;
     Info.Args = Args;
@@ -312,6 +316,8 @@ AcpiDbExecute (
     AcpiDbExecuteSetup (&Info);
     Status = AcpiDbExecuteMethod (&Info, &ReturnObj);
 
+
+#ifdef ACPI_DEBUG
 
     /* Memory allocation tracking */
 
@@ -322,14 +328,14 @@ AcpiDbExecute (
 
     if (Allocations > 0)
     {
-        AcpiOsdPrintf ("Outstanding: %ld allocations of total size %ld after execution\n",
+        AcpiOsPrintf ("Outstanding: %ld allocations of total size %ld after execution\n",
                         Allocations, Size);
     }
-
+#endif
 
     if (ACPI_FAILURE (Status))
     {
-        AcpiOsdPrintf ("Execution of %s failed with status %s\n", Info.Pathname, AcpiCmFormatException (Status));
+        AcpiOsPrintf ("Execution of %s failed with status %s\n", Info.Pathname, AcpiCmFormatException (Status));
     }
 
     else
@@ -338,7 +344,7 @@ AcpiDbExecute (
 
         if (ReturnObj.Length)
         {
-            AcpiOsdPrintf ("Execution of %s returned object %p\n", Info.Pathname, ReturnObj.Pointer);
+            AcpiOsPrintf ("Execution of %s returned object %p\n", Info.Pathname, ReturnObj.Pointer);
             AcpiDbDumpObject (ReturnObj.Pointer, 1);
         }
     }
@@ -347,18 +353,18 @@ AcpiDbExecute (
 }
 
 
-/******************************************************************************
+/*******************************************************************************
  *
  * FUNCTION:    AcpiDbMethodThread
  *
- * PARAMETERS:  None
+ * PARAMETERS:  Context             - Execution info segment
  *
  * RETURN:      None
  *
  * DESCRIPTION: Debugger execute thread.  Waits for a command line, then
  *              simply dispatches it.
  *
- *****************************************************************************/
+ ******************************************************************************/
 
 void
 AcpiDbMethodThread (
@@ -377,7 +383,7 @@ AcpiDbMethodThread (
         {
             if (ReturnObj.Length)
             {
-                AcpiOsdPrintf ("Execution of %s returned object %p\n", Info->Pathname, ReturnObj.Pointer);
+                AcpiOsPrintf ("Execution of %s returned object %p\n", Info->Pathname, ReturnObj.Pointer);
                 AcpiDbDumpObject (ReturnObj.Pointer, 1);
             }
         }
@@ -386,28 +392,29 @@ AcpiDbMethodThread (
 
     /* Signal our completion */
 
-    AcpiOsdSignalSemaphore (Info->ThreadGate, 1);
+    AcpiOsSignalSemaphore (Info->ThreadGate, 1);
 }
 
 
-
-/******************************************************************************
+/*******************************************************************************
  *
  * FUNCTION:    AcpiDbCreateExecutionThreads
  *
- * PARAMETERS:
+ * PARAMETERS:  NumThreadsArg           - Number of threads to create
+ *              NumLoopsArg             - Loop count for the thread(s)
+ *              MethodNameArg           - Control method to execute
  *
  * RETURN:      None
  *
  * DESCRIPTION: Create threads to execute method(s)
  *
- *****************************************************************************/
+ ******************************************************************************/
 
 void
 AcpiDbCreateExecutionThreads (
-    char                    *NumThreadsArg,
-    char                    *NumLoopsArg,
-    char                    *MethodNameArg)
+    NATIVE_CHAR             *NumThreadsArg,
+    NATIVE_CHAR             *NumLoopsArg,
+    NATIVE_CHAR             *MethodNameArg)
 {
     ACPI_STATUS             Status;
     UINT32                  NumThreads;
@@ -423,17 +430,17 @@ AcpiDbCreateExecutionThreads (
 
     if (!NumThreads || !NumLoops)
     {
-        AcpiOsdPrintf ("Bad argument: Threads %d, Loops %d\n", NumThreads, NumLoops);
+        AcpiOsPrintf ("Bad argument: Threads %d, Loops %d\n", NumThreads, NumLoops);
         return;
     }
 
 
     /* Create the synchronization semaphore */
 
-    Status = AcpiOsdCreateSemaphore (0, &ThreadGate);
+    Status = AcpiOsCreateSemaphore (1, 0, &ThreadGate);
     if (ACPI_FAILURE (Status))
     {
-        AcpiOsdPrintf ("Could not create semaphore, %s\n", AcpiCmFormatException (Status));
+        AcpiOsPrintf ("Could not create semaphore, %s\n", AcpiCmFormatException (Status));
         return;
     }
 
@@ -450,11 +457,11 @@ AcpiDbCreateExecutionThreads (
 
     /* Create the threads */
 
-    AcpiOsdPrintf ("Creating %d threads to execute %d times each\n", NumThreads, NumLoops);
+    AcpiOsPrintf ("Creating %d threads to execute %d times each\n", NumThreads, NumLoops);
 
     for (i = 0; i < (NumThreads); i++)
     {
-        AcpiOsdQueueForExecution (OSD_PRIORITY_MED, AcpiDbMethodThread, &Info);
+        AcpiOsQueueForExecution (OSD_PRIORITY_MED, AcpiDbMethodThread, &Info);
     }
 
 
@@ -463,20 +470,20 @@ AcpiDbCreateExecutionThreads (
     i = NumThreads;
     while (i)   /* Brain damage for OSD implementations that only support wait of 1 unit */
     {
-        Status = AcpiOsdWaitSemaphore (ThreadGate, 1, WAIT_FOREVER);
+        Status = AcpiOsWaitSemaphore (ThreadGate, 1, WAIT_FOREVER);
         i--;
     }
 
     /* Cleanup and exit */
 
-    AcpiOsdDeleteSemaphore (ThreadGate);
+    AcpiOsDeleteSemaphore (ThreadGate);
 
     AcpiDbSetOutputDestination (DB_DUPLICATE_OUTPUT);
-    AcpiOsdPrintf ("All threads (%d) have completed\n", NumThreads);
+    AcpiOsPrintf ("All threads (%d) have completed\n", NumThreads);
     AcpiDbSetOutputDestination (DB_CONSOLE_OUTPUT);
 }
 
 
-#endif
+#endif /* ENABLE_DEBUGGER */
 
 
