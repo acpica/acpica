@@ -119,8 +119,8 @@
 
 #include <acpi.h>
 #include <amlcode.h>
-#include <namespace.h>
-#include <interpreter.h>
+#include <namesp.h>
+#include <interp.h>
 #include <tables.h>
 
 
@@ -388,7 +388,7 @@ NsAttachObject (
         /* Install the object and set the type, flags */
 
         ThisEntry->Object = ObjDesc;
-        ThisEntry->Type = ObjType;
+        ThisEntry->Type = (UINT8) ObjType;
         ThisEntry->Flags = Flags;
     }
     CmReleaseMutex (MTX_NAMESPACE);
@@ -542,13 +542,10 @@ NsDetachObject (
 
     /* Not every value is an object allocated via CmCallocate, must check */
 
-    if (!TbSystemTablePointer (ObjDesc)) /*&&
-        !VALID_DESCRIPTOR_TYPE      (ObjDesc, DESC_TYPE_NTE))*/
+    if (!TbSystemTablePointer (ObjDesc))
     {
+        /* Attempt to delete the object (and all subobjects) */
 
-        /* Delete the object (and all subobjects) */
-
-        CmUpdateObjectReference (ObjDesc, REF_DECREMENT);   /* Removed from Namespace */
         CmDeleteInternalObject (ObjDesc);
     }
 
@@ -605,7 +602,7 @@ IsNsObject (
 
     FUNCTION_TRACE ("IsNsObject");
 
-    RetHandle = NsFindAttachedObject (ObjDesc, NS_ALL, ACPI_INT_MAX);
+    RetHandle = NsFindAttachedObject (ObjDesc, NS_ALL, ACPI_INT32_MAX);
 
     return_VALUE ((RetHandle != (ACPI_HANDLE) 0));
 }
