@@ -637,7 +637,7 @@ AmlGetRvalueFromEntry (
         /* Return an additional reference to the object */
 
         ObjDesc = ValDesc;
-        ObjDesc->Common.ReferenceCount++;
+        CmUpdateObjectReference (ObjDesc, REF_INCREMENT);
         break;
 
 
@@ -713,7 +713,7 @@ AmlGetRvalueFromEntry (
         /* Return an additional reference to the object */
 
         ObjDesc = ValDesc;
-        ObjDesc->Common.ReferenceCount++;
+        CmUpdateObjectReference (ObjDesc, REF_INCREMENT);
 
         DEBUG_PRINT (TRACE_BFIELD,
                     ("AmlGetRvalueFromEntry: New Buffer descriptor seq# %ld @ %p \n",
@@ -752,7 +752,7 @@ AmlGetRvalueFromEntry (
             /* Return an additional reference to the object */
 
             ObjDesc = ValDesc;
-            ObjDesc->Common.ReferenceCount++;
+            CmUpdateObjectReference (ObjDesc, REF_INCREMENT);
         }
 
         break;
@@ -858,7 +858,7 @@ AmlGetRvalueFromEntry (
             /* Return an additional reference to the object */
 
             ObjDesc = ValDesc;
-            ObjDesc->Common.ReferenceCount++;
+            CmUpdateObjectReference (ObjDesc, REF_INCREMENT);
         }
 
         break;
@@ -1180,7 +1180,7 @@ AmlGetRvalue (
     }
 
 
-    DEBUG_PRINT (ACPI_INFO, ("AmlGetRvalue: %p\n", *StackPtr));
+    DEBUG_PRINT (ACPI_INFO, ("AmlGetRvalue: Returning resolved object %p\n", *StackPtr));
 
     return_ACPI_STATUS (Status);
 }
