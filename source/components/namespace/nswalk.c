@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: nswalk - Functions for walking the ACPI namespace
- *              $Revision: 1.25 $
+ *              $Revision: 1.26 $
  *
  *****************************************************************************/
 
@@ -261,7 +261,6 @@ AcpiNsWalkNamespace (
     {
         StartNode = AcpiGbl_RootNode;
     }
-
 
     /* Null child means "get first node" */
 

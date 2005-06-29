@@ -2,7 +2,7 @@
  *
  * Module Name: nsxfobj - Public interfaces to the ACPI subsystem
  *                         ACPI Object oriented interfaces
- *              $Revision: 1.94 $
+ *              $Revision: 1.95 $
  *
  ******************************************************************************/
 
@@ -409,7 +409,7 @@ AcpiGetNextObject (
     {
         /* Start search at the beginning of the specified scope */
 
-        ParentNode = AcpiNsConvertHandleToEntry (Parent);
+        ParentNode = AcpiNsMapHandleToNode (Parent);
         if (!ParentNode)
         {
             Status = AE_BAD_PARAMETER;
@@ -423,7 +423,7 @@ AcpiGetNextObject (
     {
         /* Convert and validate the handle */
 
-        ChildNode = AcpiNsConvertHandleToEntry (Child);
+        ChildNode = AcpiNsMapHandleToNode (Child);
         if (!ChildNode)
         {
             Status = AE_BAD_PARAMETER;
@@ -497,7 +497,7 @@ AcpiGetType (
 
     /* Convert and validate the handle */
 
-    Node = AcpiNsConvertHandleToEntry (Handle);
+    Node = AcpiNsMapHandleToNode (Handle);
     if (!Node)
     {
         AcpiUtReleaseMutex (ACPI_MTX_NAMESPACE);
@@ -552,7 +552,7 @@ AcpiGetParent (
 
     /* Convert and validate the handle */
 
-    Node = AcpiNsConvertHandleToEntry (Handle);
+    Node = AcpiNsMapHandleToNode (Handle);
     if (!Node)
     {
         Status = AE_BAD_PARAMETER;
@@ -682,7 +682,7 @@ AcpiNsGetDeviceCallback (
     Info = Context;
 
     AcpiUtAcquireMutex (ACPI_MTX_NAMESPACE);
-    Node = AcpiNsConvertHandleToEntry (ObjHandle);
+    Node = AcpiNsMapHandleToNode (ObjHandle);
     AcpiUtReleaseMutex (ACPI_MTX_NAMESPACE);
 
     if (!Node)

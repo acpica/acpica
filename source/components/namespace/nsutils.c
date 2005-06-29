@@ -2,7 +2,7 @@
  *
  * Module Name: nsutils - Utilities for accessing ACPI namespace, accessing
  *                        parents and siblings and Scope manipulation
- *              $Revision: 1.90 $
+ *              $Revision: 1.91 $
  *
  *****************************************************************************/
 
@@ -682,7 +682,7 @@ AcpiNsExternalizeName (
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiNsConvertHandleToEntry
+ * FUNCTION:    AcpiNsMapHandleToNode
  *
  * PARAMETERS:  Handle          - Handle to be converted to an Node
  *
@@ -693,7 +693,7 @@ AcpiNsExternalizeName (
  ******************************************************************************/
 
 ACPI_NAMESPACE_NODE *
-AcpiNsConvertHandleToEntry (
+AcpiNsMapHandleToNode (
     ACPI_HANDLE             Handle)
 {
 
