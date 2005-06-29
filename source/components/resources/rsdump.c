@@ -902,7 +902,7 @@ void
 AcpiRsDumpResourceList (
     RESOURCE            *Resource)
 {
-    INT8                Count = 0;
+    UINT8               Count = 0;
     BOOLEAN             Done = FALSE;
 
 
@@ -1004,7 +1004,7 @@ AcpiRsDumpIrqList (
     UINT8               *RouteTable)
 {
     UINT8               *Buffer = RouteTable;
-    INT8                Count = 0;
+    UINT8               Count = 0;
     BOOLEAN             Done = FALSE;
     PCI_ROUTING_TABLE   *PrtElement;
 
