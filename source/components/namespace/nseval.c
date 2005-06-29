@@ -487,10 +487,11 @@ NsExecuteControlMethod (
     DEBUG_PRINT (TRACE_NAMES, ("At offset %8XH\n",
                       ((METHOD_INFO *) MethodEntry->Value)->Offset + 1));
 
-    AmlClearPkgStack ();
-    ObjStackTop = 0;    /* Clear object stack */
-    
+    /* Clear both the package and object stacks */
 
+    AmlClearPkgStack ();
+    AmlClearObjStack ();
+    
     /* 
      * Excecute the method via the interpreter
      */
