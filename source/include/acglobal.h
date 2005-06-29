@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acglobal.h - Declarations for global variables
- *       $Revision: 1.127 $
+ *       $Revision: 1.128 $
  *
  *****************************************************************************/
 
@@ -357,7 +357,6 @@ ACPI_EXTERN NATIVE_CHAR                 AcpiGbl_DbDebugFilename[40];
 ACPI_EXTERN BOOLEAN                     AcpiGbl_DbOutputToFile;
 ACPI_EXTERN NATIVE_CHAR                *AcpiGbl_DbBuffer;
 ACPI_EXTERN NATIVE_CHAR                *AcpiGbl_DbFilename;
-ACPI_EXTERN NATIVE_CHAR                *AcpiGbl_DbDisasmIndent;
 ACPI_EXTERN UINT32                      AcpiGbl_DbDebugLevel;
 ACPI_EXTERN UINT32                      AcpiGbl_DbConsoleDebugLevel;
 ACPI_EXTERN ACPI_TABLE_HEADER          *AcpiGbl_DbTablePtr;
