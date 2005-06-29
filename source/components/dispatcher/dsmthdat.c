@@ -793,7 +793,6 @@ PsxMthStackSetValue (
 {
     ACPI_STATUS             Status;
     ACPI_OBJECT_INTERNAL    **Entry;
-    ACPI_OBJECT_INTERNAL    *NewDesc = NULL;
 
 
     FUNCTION_TRACE ("PsxMthStackSetValue");
