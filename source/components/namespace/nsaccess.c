@@ -29,19 +29,6 @@
 #define _COMPONENT          NAMESPACE
 
 
-/* Namespace globals */
-
-nte             *Root = (nte *)0;
-
-/* set from ROOTSIZE -- could potentially support dynamic sizing of root NT */
-
-INT32           NsRootSize;        
-
-/* will be either ROOTSIZE or TABLSIZE depending on whether the current scope is the root */
-
-INT32           NsCurrentSize;      
-
-
 /* Scope stack */
 
 SCOPE_STACK     ScopeStack[MAXNEST];
