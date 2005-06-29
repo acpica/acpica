@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: utglobal - Global variables for the ACPI subsystem
- *              $Revision: 1.209 $
+ *              $Revision: 1.210 $
  *
  *****************************************************************************/
 
@@ -285,15 +285,13 @@ const char                  *AcpiGbl_ValidOsiStrings[ACPI_NUM_OSI_STRINGS] =
     "Windows 2001 SP1",
     "Windows 2001 SP2",
     "Windows 2001 SP3",
-    "Windows 2001 SP4"
-};
+    "Windows 2001 SP4",
 
-const char                  *AcpiGbl_ValidOsiFeatureStrings[ACPI_NUM_OSI_FEATURE_STRINGS] =
-{
     /* Feature Group Strings */
 
     "Extended Address Space Descriptor"
 };
+
 
 /******************************************************************************
  *
