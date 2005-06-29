@@ -435,7 +435,7 @@ AmlDumpObjectDescriptor (
 
 
 /*
- * isexprs - interpreter/scanner expression load/execute
+ * isdoexp - interpreter/scanner expression load/execute
  */
 
 ACPI_STATUS
@@ -447,17 +447,32 @@ AmlDoCode (
     OpMode              iLE);
 
 ACPI_STATUS
-AmlDoPkg (
-    NsType              Type, 
-    OpMode              iLE);
-
-ACPI_STATUS
 AmlDoDefinitionBlock (
     char                *name, 
     UINT8               *addr, 
     INT32               len,
     LogHandle           iLstHandle, 
     OSD_FILE            *fAsmF);
+
+
+ACPI_STATUS
+AmlDoNamedObject (
+    OpMode              LoadExecMode);
+
+ACPI_STATUS
+AmlDoFieldElement (
+    NsType              DataType, 
+    OpMode              LoadExecMode);
+
+
+/*
+ * isdokg - interpreter/scanner AML package load/execute
+ */
+
+ACPI_STATUS
+AmlDoPkg (
+    NsType              Type, 
+    OpMode              iLE);
 
 
 /*
