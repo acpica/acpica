@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: evgpe - General Purpose Event handling and dispatch
- *              $Revision: 1.8 $
+ *              $Revision: 1.9 $
  *
  *****************************************************************************/
 
@@ -182,24 +182,22 @@ AcpiEvGpeInitialize (void)
      * If EITHER the register length OR the block address are zero, then that
      * particular block is not supported.
      */
-    if (AcpiGbl_FADT->XGpe0Blk.RegisterBitWidth && 
+    if (AcpiGbl_FADT->Gpe0BlkLen && 
         ACPI_GET_ADDRESS (AcpiGbl_FADT->XGpe0Blk.Address))
     {
         /* GPE block 0 exists (has both length and address > 0) */
 
-        AcpiGbl_GpeBlockInfo[0].RegisterCount = (UINT16) (AcpiGbl_FADT->XGpe0Blk.RegisterBitWidth / 
-                                                         (ACPI_GPE_REGISTER_WIDTH * 2));
+        AcpiGbl_GpeBlockInfo[0].RegisterCount = (UINT16) (AcpiGbl_FADT->Gpe0BlkLen / 2);
 
         AcpiGbl_GpeNumberMax = (AcpiGbl_GpeBlockInfo[0].RegisterCount * ACPI_GPE_REGISTER_WIDTH) - 1;
     }
 
-    if (AcpiGbl_FADT->XGpe1Blk.RegisterBitWidth && 
+    if (AcpiGbl_FADT->Gpe1BlkLen && 
         ACPI_GET_ADDRESS (AcpiGbl_FADT->XGpe1Blk.Address))
     {
         /* GPE block 1 exists (has both length and address > 0) */
 
-        AcpiGbl_GpeBlockInfo[1].RegisterCount = (UINT16) (AcpiGbl_FADT->XGpe1Blk.RegisterBitWidth / 
-                                                          (ACPI_GPE_REGISTER_WIDTH * 2));
+        AcpiGbl_GpeBlockInfo[1].RegisterCount = (UINT16) (AcpiGbl_FADT->Gpe1BlkLen / 2);
 
         /* Check for GPE0/GPE1 overlap (if both banks exist) */
 
