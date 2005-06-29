@@ -133,7 +133,7 @@ extern BOOLEAN                  opt_tables;
 extern BOOLEAN                  opt_disasm;
 extern BOOLEAN                  opt_stats;
 extern BOOLEAN                  opt_parse_jit;
-extern BOOLEAN					opt_verbose;
+extern BOOLEAN                  opt_verbose;
    
 
 extern char                     *Args[DB_MAX_ARGS];
@@ -143,7 +143,7 @@ extern char                     DebugFilename[40];
 extern BOOLEAN                  OutputToFile;
 extern char                     *Buffer;
 extern char                     *Filename;
-extern char					    *INDENT_STRING;
+extern char                     *INDENT_STRING;
 extern UINT32                   Gbl_MethodBreakpoint;
 extern UINT8                    Gbl_DbOutputFlags;
 extern UINT32                   Gbl_DbDebugLevel;

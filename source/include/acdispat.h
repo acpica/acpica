@@ -414,16 +414,16 @@ ACPI_STATUS
 DsScopeStackPush (
     NAME_TABLE_ENTRY        *NewScope, 
     OBJECT_TYPE_INTERNAL    Type,
-	ACPI_WALK_STATE			*WalkState);
+    ACPI_WALK_STATE         *WalkState);
 
 
 ACPI_STATUS
 DsScopeStackPop (
-	ACPI_WALK_STATE			*WalkState);
+    ACPI_WALK_STATE         *WalkState);
 
 void
 DsScopeStackClear (
-	ACPI_WALK_STATE			*WalkState);
+    ACPI_WALK_STATE         *WalkState);
 
 
 /* Dswstate - parser WALK_STATE management routines */
