@@ -2,7 +2,7 @@
 /******************************************************************************
  * 
  * Module Name: nsapinam - Public interfaces to the ACPI subsystem
- *                         ACPI Name oriented interfaces
+ *                         ACPI Namespace oriented interfaces
  *
  *****************************************************************************/
 
@@ -129,6 +129,87 @@
 #define _COMPONENT          NAMESPACE
 
 
+/******************************************************************************
+ *
+ * FUNCTION:    AcpiLoadNamespace
+ *
+ * PARAMETERS:  DisplayAmlDuringLoad
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Load the name space from what ever is pointed to by DSDT.
+ *              (DSDT points to either the BIOS or a buffer.)
+ *
+ ******************************************************************************/
+
+ACPI_STATUS
+AcpiLoadNamespace (
+    void)
+{
+    ACPI_STATUS             Status;
+
+
+    FUNCTION_TRACE ("AcpiLoadNameSpace");
+
+
+    /* Are the tables loaded yet? */
+
+    if (DSDT == NULL)
+    {
+        DEBUG_PRINT (ACPI_ERROR, ("DSDT is not in memory\n"));
+        Status = AE_NO_ACPI_TABLES;
+        goto ErrorExit;
+    }
+
+
+    /*
+     * Now that the tables are loaded, finish some other initialization
+     */
+
+
+    /* Initialize the GPE handling */
+
+    Status = EvGpeInitialize ();
+    if (Status != AE_OK)
+    {
+        goto ErrorExit;
+    }
+
+    /* Everything OK, now init the hardware */
+
+    Status = CmHardwareInitialize ();
+    if (Status != AE_OK)
+    {
+        goto ErrorExit;
+    }
+
+
+    /* Initialize the namespace */
+    
+    Status = NsSetup ();
+    if (Status != AE_OK)
+    {
+        goto ErrorExit;
+    }
+
+
+    /* Load the namespace via the interpreter */
+
+BREAKPOINT3;
+    Status = AmlDoDefinitionBlock ("AML contained in DSDT",
+                (UINT8 *) (DSDT + 1),
+                (INT32) (DSDT->Length - (UINT32) sizeof (ACPI_TABLE_HEADER)));
+
+
+
+    /* TBD:  AmlDoDefinitionBlock always returns AE_AML_ERROR for some reason!! */
+
+ErrorExit:    
+    FUNCTION_STATUS_EXIT (Status);
+    return Status;
+}
+
+
 /****************************************************************************
  *
  * FUNCTION:    AcpiNameToHandle
@@ -149,7 +230,7 @@
 
 ACPI_STATUS 
 AcpiNameToHandle (
-    UINT32                  Name, 
+    ACPI_NAME               Name, 
     ACPI_HANDLE             Scope, 
     ACPI_HANDLE             *RetHandle)
 {
@@ -223,7 +304,7 @@ AcpiNameToHandle (
 ACPI_STATUS 
 AcpiHandleToName (
     ACPI_HANDLE             Handle, 
-    UINT32                  *RetName)
+    ACPI_NAME               *RetName)
 {
     NAME_TABLE_ENTRY        *ObjEntry;
 
@@ -266,7 +347,7 @@ AcpiHandleToName (
 
 ACPI_STATUS 
 AcpiPathnameToHandle (
-    char                    *Pathname, 
+    ACPI_STRING             *Pathname, 
     ACPI_HANDLE             *RetHandle)
 {
 
@@ -317,5 +398,164 @@ AcpiHandleToPathname (
 
     return (NsHandleToPathname (Handle, RetPathPtr->Length, RetPathPtr->Pointer));
 }
+
+
+/****************************************************************************
+ *
+ * FUNCTION:    AcpiGetDeviceInfo
+ *
+ * PARAMETERS:  Handle          - Handle to a device
+ *              Info            - Where the device info is returned
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Returns information about the device as gleaned from running
+ *              several standard control methods.
+ *
+ ******************************************************************************/
+
+ACPI_STATUS
+AcpiGetDeviceInfo (
+    ACPI_HANDLE             Device, 
+    ACPI_DEVICE_INFO        *Info)
+{
+    DEVICE_ID               Hid;
+    DEVICE_ID               Uid;
+    ACPI_STATUS             Status;
+    UINT32                  DeviceStatus = 0;
+    UINT32                  Address = 0;
+    NAME_TABLE_ENTRY        *DeviceEntry;
+
+
+    /* Parameter validation */
+
+    if (!Device || !Info)
+    {
+        return AE_BAD_PARAMETER;
+    }
+
+    if (!(DeviceEntry = NsConvertHandleToEntry (Device)))
+   {
+        return AE_BAD_PARAMETER;
+    }
+
+
+    Info->Valid = 0;
+
+    /* Execute the _HID method and save the result */
+
+    Status = Execute_HID (DeviceEntry, &Hid);
+    if (ACPI_SUCCESS (Status))
+    {
+        Info->HardwareId = Hid.Data.Number;
+        Info->Valid |= ACPI_VALID_HID;
+    }
+
+    /* Execute the _UID method and save the result */
+
+    Status = Execute_UID (DeviceEntry, &Uid);
+    if (ACPI_SUCCESS (Status))
+    {
+        Info->UniqueId = Uid.Data.Number;
+        Info->Valid |= ACPI_VALID_UID;
+    }
+
+    /* 
+     * Execute the _STA method and save the result
+     * _STA is not always present 
+     */
+
+    Status = Execute_STA (DeviceEntry, &DeviceStatus);
+    if (ACPI_SUCCESS (Status))
+    {
+        Info->CurrentStatus = DeviceStatus;
+        Info->Valid |= ACPI_VALID_STA;
+    }
+
+    /* 
+     * Execute the _ADR method and save result if successful
+     * _ADR is not always present
+     */
+
+    Status = Execute_ADR (DeviceEntry, &Address);
+    if (ACPI_SUCCESS (Status))
+    {
+        Info->Address = Address;
+        Info->Valid |= ACPI_VALID_ADR;
+    }
+
+    return AE_OK;
+}
+
+
+
+/* OBSOLETE FUNCTIONS */
+
+/****************************************************************************
+ *
+ * FUNCTION:    AcpiEnumerateDevice
+ *
+ * PARAMETERS:  DevHandle       - handle to the device to  enumerate
+ *              HidPtr          - Pointer to a DEVICE_ID structure to return 
+ *                                the device's HID
+ *              EnumPtr         - Pointer to a BOOLEAN flag that if set to TRUE 
+ *                                indicate that the enumeration of this device 
+ *                                is owned by ACPI.
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Returns HID in the HidPtr structure and an indication that the
+ *              device should be enumerated in the field pointed to by EnumPtr
+ *
+ ******************************************************************************/
+
+ACPI_STATUS
+AcpiEnumerateDevice (
+    ACPI_HANDLE             DevHandle, 
+    DEVICE_ID               *HidPtr, 
+    BOOLEAN                 *EnumPtr)
+{
+
+    HidPtr->Data.String = NULL;
+    *EnumPtr = FALSE;
+
+    return (AE_OK);
+}
+
+
+/****************************************************************************
+ *
+ * FUNCTION:    AcpiGetNextSubDevice
+ *
+ * PARAMETERS:  DevHandle       - handle to the device to enumerate
+ *              Count           - zero based counter of the sub-device to locate
+ *              RetHandle       - Where handle for next device is placed
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: This routine is used in the enumeration process to locate devices
+ *              located within the namespace of another device.
+ *
+ ******************************************************************************/
+
+ACPI_STATUS 
+AcpiGetNextSubDevice (
+    ACPI_HANDLE             DevHandle, 
+    UINT32                  Count, 
+    ACPI_HANDLE             *RetHandle)
+{
+
+    if (!RetHandle)
+    {
+        return AE_BAD_PARAMETER;
+    }
+
+    *RetHandle = NULL;
+
+    return (AE_OK);
+}
+
+
+
 
 
