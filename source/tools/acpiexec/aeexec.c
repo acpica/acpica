@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: aeexec - Support routines for AcpiExec utility
- *              $Revision: 1.68 $
+ *              $Revision: 1.69 $
  *
  *****************************************************************************/
 
@@ -749,6 +749,7 @@ AeInstallHandlers (void)
 {
     ACPI_STATUS             Status;
     UINT32                  i;
+    ACPI_HANDLE             Handle;
 
 
     ACPI_FUNCTION_NAME ("AeInstallHandlers");
@@ -762,8 +763,24 @@ AeInstallHandlers (void)
             AcpiFormatException (Status));
     }
 
+    Status = AcpiGetHandle (NULL, "\\_SB_", &Handle);
+    if (ACPI_SUCCESS (Status))
+    {
+        Status = AcpiInstallNotifyHandler (Handle, ACPI_SYSTEM_NOTIFY,
+                                            AeNotifyHandler, NULL);
+        Status = AcpiRemoveNotifyHandler (Handle, ACPI_SYSTEM_NOTIFY,
+                                            AeNotifyHandler);
+        Status = AcpiInstallNotifyHandler (Handle, ACPI_SYSTEM_NOTIFY,
+                                            AeNotifyHandler, NULL);
+    }
+
     for (i = 0; i < AEXEC_NUM_REGIONS; i++)
     {
+        if (i == 2)
+        {
+            continue;
+        }
+
         Status = AcpiRemoveAddressSpaceHandler (AcpiGbl_RootNode,
                         SpaceId[i], AeRegionHandler);
 
