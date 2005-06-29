@@ -1,5 +1,5 @@
 /******************************************************************************
- * 
+ *
  * Module Name: ieregion - ACPI default OpRegion (address space) handlers
  *
  *****************************************************************************/
@@ -37,9 +37,9 @@
  * The above copyright and patent license is granted only if the following
  * conditions are met:
  *
- * 3. Conditions 
+ * 3. Conditions
  *
- * 3.1. Redistribution of Source with Rights to Further Distribute Source.  
+ * 3.1. Redistribution of Source with Rights to Further Distribute Source.
  * Redistribution of source code of any substantial portion of the Covered
  * Code or modification with rights to further distribute source must include
  * the above Copyright Notice, the above License, this list of Conditions,
@@ -47,11 +47,11 @@
  * Licensee must cause all Covered Code to which Licensee contributes to
  * contain a file documenting the changes Licensee made to create that Covered
  * Code and the date of any change.  Licensee must include in that file the
- * documentation of any changes made by any predecessor Licensee.  Licensee 
+ * documentation of any changes made by any predecessor Licensee.  Licensee
  * must include a prominent statement that the modification is derived,
  * directly or indirectly, from Original Intel Code.
  *
- * 3.2. Redistribution of Source with no Rights to Further Distribute Source.  
+ * 3.2. Redistribution of Source with no Rights to Further Distribute Source.
  * Redistribution of source code of any substantial portion of the Covered
  * Code or modification without rights to further distribute source must
  * include the following Disclaimer and Export Compliance provision in the
@@ -85,7 +85,7 @@
  * INSTALLATION, TRAINING OR OTHER SERVICES.  INTEL WILL NOT PROVIDE ANY
  * UPDATES, ENHANCEMENTS OR EXTENSIONS.  INTEL SPECIFICALLY DISCLAIMS ANY
  * IMPLIED WARRANTIES OF MERCHANTABILITY, NONINFRINGEMENT AND FITNESS FOR A
- * PARTICULAR PURPOSE. 
+ * PARTICULAR PURPOSE.
  *
  * 4.2. IN NO EVENT SHALL INTEL HAVE ANY LIABILITY TO LICENSEE, ITS LICENSEES
  * OR ANY OTHER THIRD PARTY, FOR ANY LOST PROFITS, LOST DATA, LOSS OF USE OR
@@ -116,12 +116,12 @@
 
 #define __IEREGION_C__
 
-#include <acpi.h>
-#include <interp.h>
-#include <amlcode.h>
-#include <namesp.h>
-#include <hardware.h>
-#include <events.h>
+#include "acpi.h"
+#include "interp.h"
+#include "amlcode.h"
+#include "namesp.h"
+#include "hardware.h"
+#include "events.h"
 
 
 #define _COMPONENT          INTERPRETER
@@ -129,8 +129,8 @@
 
 
 /*****************************************************************************
- * 
- * FUNCTION:    AmlSystemMemorySpaceHandler
+ *
+ * FUNCTION:    AcpiAmlSystemMemorySpaceHandler
  *
  * PARAMETERS:  Function            - Read or Write operation
  *              Address             - Where in the space to read or write
@@ -145,7 +145,7 @@
  ****************************************************************************/
 
 ACPI_STATUS
-AmlSystemMemorySpaceHandler (
+AcpiAmlSystemMemorySpaceHandler (
     UINT32                  Function,
     UINT32                  Address,        /* TBD: [Future] Should this be A POINTER for 64-bit support? */
     UINT32                  BitWidth,
@@ -192,21 +192,21 @@ AmlSystemMemorySpaceHandler (
     {
         /*
          * The request cannot be resolved by the current memory mapping;
-         * Delete the existing mapping and create a new one.  
+         * Delete the existing mapping and create a new one.
          */
 
         if (MemInfo->MappedLength)
         {
             /* Valid mapping, delete it */
 
-            OsdUnMapMemory (MemInfo->MappedLogicalAddress, MemInfo->MappedLength);
+            AcpiOsdUnMapMemory (MemInfo->MappedLogicalAddress, MemInfo->MappedLength);
         }
 
         MemInfo->MappedLength = 0;  /* In case of failure below */
 
         /* Create a new mapping starting at the address given */
 
-        Status = OsdMapMemory ((void *) Address, SYSMEM_REGION_WINDOW_SIZE, (void **) &MemInfo->MappedLogicalAddress);
+        Status = AcpiOsdMapMemory ((void *) Address, SYSMEM_REGION_WINDOW_SIZE, (void **) &MemInfo->MappedLogicalAddress);
         if (ACPI_FAILURE (Status))
         {
             return_ACPI_STATUS (Status);
@@ -282,8 +282,8 @@ AmlSystemMemorySpaceHandler (
 
 
 /*****************************************************************************
- * 
- * FUNCTION:    AmlSystemIoSpaceHandler
+ *
+ * FUNCTION:    AcpiAmlSystemIoSpaceHandler
  *
  * PARAMETERS:  Function            - Read or Write operation
  *              Address             - Where in the space to read or write
@@ -298,7 +298,7 @@ AmlSystemMemorySpaceHandler (
  ****************************************************************************/
 
 ACPI_STATUS
-AmlSystemIoSpaceHandler (
+AcpiAmlSystemIoSpaceHandler (
     UINT32                  Function,
     UINT32                  Address,
     UINT32                  BitWidth,
@@ -326,15 +326,15 @@ AmlSystemIoSpaceHandler (
         /* I/O Port width */
 
         case 8:
-            *Value = (UINT32) OsdIn8 ((ACPI_IO_ADDRESS) Address);
+            *Value = (UINT32) AcpiOsdIn8 ((ACPI_IO_ADDRESS) Address);
             break;
 
         case 16:
-            *Value = (UINT32) OsdIn16 ((ACPI_IO_ADDRESS) Address);
+            *Value = (UINT32) AcpiOsdIn16 ((ACPI_IO_ADDRESS) Address);
             break;
 
         case 32:
-            *Value = OsdIn32 ((ACPI_IO_ADDRESS) Address);
+            *Value = AcpiOsdIn32 ((ACPI_IO_ADDRESS) Address);
             break;
 
         default:
@@ -355,15 +355,15 @@ AmlSystemIoSpaceHandler (
         {
         /* I/O Port width */
         case 8:
-            OsdOut8 ((ACPI_IO_ADDRESS) Address, (UINT8) *Value);
+            AcpiOsdOut8 ((ACPI_IO_ADDRESS) Address, (UINT8) *Value);
             break;
 
         case 16:
-            OsdOut16 ((ACPI_IO_ADDRESS) Address, (UINT16) *Value);
+            AcpiOsdOut16 ((ACPI_IO_ADDRESS) Address, (UINT16) *Value);
             break;
 
         case 32:
-            OsdOut32 ((ACPI_IO_ADDRESS) Address, *Value);
+            AcpiOsdOut32 ((ACPI_IO_ADDRESS) Address, *Value);
             break;
 
         default:
@@ -384,8 +384,8 @@ AmlSystemIoSpaceHandler (
 }
 
 /*****************************************************************************
- * 
- * FUNCTION:    AmlPciConfigSpaceHandler
+ *
+ * FUNCTION:    AcpiAmlPciConfigSpaceHandler
  *
  * PARAMETERS:  Function            - Read or Write operation
  *              Address             - Where in the space to read or write
@@ -400,7 +400,7 @@ AmlSystemIoSpaceHandler (
  ****************************************************************************/
 
 ACPI_STATUS
-AmlPciConfigSpaceHandler (
+AcpiAmlPciConfigSpaceHandler (
     UINT32                  Function,
     UINT32                  Address,
     UINT32                  BitWidth,
@@ -417,7 +417,7 @@ AmlPciConfigSpaceHandler (
     FUNCTION_TRACE ("AmlPciConfigSpaceHandler");
 
     /*
-     *  The arguments to Osd(Read|Write)PciCfg(Byte|Word|Dword) are:
+     *  The arguments to AcpiOsd(Read|Write)PciCfg(Byte|Word|Dword) are:
      *
      *  SegBus - 0xSSSSBBBB     - SSSS is the PCI bus segment
      *                            BBBB is the PCI bus number
@@ -456,15 +456,15 @@ AmlPciConfigSpaceHandler (
         /* PCI Register width */
 
         case 8:
-            Status = OsdReadPciCfgByte (PciBus, DevFunc, PciReg, (UINT8 *) Value);
+            Status = AcpiOsdReadPciCfgByte (PciBus, DevFunc, PciReg, (UINT8 *) Value);
             break;
 
         case 16:
-            Status = OsdReadPciCfgWord (PciBus, DevFunc, PciReg, (UINT16 *) Value);
+            Status = AcpiOsdReadPciCfgWord (PciBus, DevFunc, PciReg, (UINT16 *) Value);
             break;
 
         case 32:
-            Status = OsdReadPciCfgDword (PciBus, DevFunc, PciReg, Value);
+            Status = AcpiOsdReadPciCfgDword (PciBus, DevFunc, PciReg, Value);
             break;
 
         default:
@@ -494,15 +494,15 @@ AmlPciConfigSpaceHandler (
         /* PCI Register width */
 
         case 8:
-            Status = OsdWritePciCfgByte (PciBus, DevFunc, PciReg, *(UINT8 *) Value);
+            Status = AcpiOsdWritePciCfgByte (PciBus, DevFunc, PciReg, *(UINT8 *) Value);
             break;
 
         case 16:
-            Status = OsdWritePciCfgWord (PciBus, DevFunc, PciReg, *(UINT16 *) Value);
+            Status = AcpiOsdWritePciCfgWord (PciBus, DevFunc, PciReg, *(UINT16 *) Value);
             break;
 
         case 32:
-            Status = OsdWritePciCfgDword (PciBus, DevFunc, PciReg, *Value);
+            Status = AcpiOsdWritePciCfgDword (PciBus, DevFunc, PciReg, *Value);
             break;
 
         default:

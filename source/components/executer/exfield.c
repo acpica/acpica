@@ -1,5 +1,5 @@
 /******************************************************************************
- * 
+ *
  * Module Name: iefield - ACPI AML (p-code) execution - field manipulation
  *
  *****************************************************************************/
@@ -37,9 +37,9 @@
  * The above copyright and patent license is granted only if the following
  * conditions are met:
  *
- * 3. Conditions 
+ * 3. Conditions
  *
- * 3.1. Redistribution of Source with Rights to Further Distribute Source.  
+ * 3.1. Redistribution of Source with Rights to Further Distribute Source.
  * Redistribution of source code of any substantial portion of the Covered
  * Code or modification with rights to further distribute source must include
  * the above Copyright Notice, the above License, this list of Conditions,
@@ -47,11 +47,11 @@
  * Licensee must cause all Covered Code to which Licensee contributes to
  * contain a file documenting the changes Licensee made to create that Covered
  * Code and the date of any change.  Licensee must include in that file the
- * documentation of any changes made by any predecessor Licensee.  Licensee 
+ * documentation of any changes made by any predecessor Licensee.  Licensee
  * must include a prominent statement that the modification is derived,
  * directly or indirectly, from Original Intel Code.
  *
- * 3.2. Redistribution of Source with no Rights to Further Distribute Source.  
+ * 3.2. Redistribution of Source with no Rights to Further Distribute Source.
  * Redistribution of source code of any substantial portion of the Covered
  * Code or modification without rights to further distribute source must
  * include the following Disclaimer and Export Compliance provision in the
@@ -85,7 +85,7 @@
  * INSTALLATION, TRAINING OR OTHER SERVICES.  INTEL WILL NOT PROVIDE ANY
  * UPDATES, ENHANCEMENTS OR EXTENSIONS.  INTEL SPECIFICALLY DISCLAIMS ANY
  * IMPLIED WARRANTIES OF MERCHANTABILITY, NONINFRINGEMENT AND FITNESS FOR A
- * PARTICULAR PURPOSE. 
+ * PARTICULAR PURPOSE.
  *
  * 4.2. IN NO EVENT SHALL INTEL HAVE ANY LIABILITY TO LICENSEE, ITS LICENSEES
  * OR ANY OTHER THIRD PARTY, FOR ANY LOST PROFITS, LOST DATA, LOSS OF USE OR
@@ -116,13 +116,13 @@
 
 #define __IEFIELD_C__
 
-#include <acpi.h>
-#include <dispatch.h>
-#include <interp.h>
-#include <amlcode.h>
-#include <namesp.h>
-#include <hardware.h>
-#include <events.h>
+#include "acpi.h"
+#include "dispatch.h"
+#include "interp.h"
+#include "amlcode.h"
+#include "namesp.h"
+#include "hardware.h"
+#include "events.h"
 
 
 #define _COMPONENT          INTERPRETER
@@ -132,8 +132,8 @@
 
 
 /*****************************************************************************
- * 
- * FUNCTION:    AmlSetupField
+ *
+ * FUNCTION:    AcpiAmlSetupField
  *
  * PARAMETERS:  *ObjDesc            - Field to be read or written
  *              *RgnDesc            - Region containing field
@@ -141,7 +141,7 @@
  *
  * RETURN:      Status
  *
- * DESCRIPTION: Common processing for AmlReadField and AmlWriteField
+ * DESCRIPTION: Common processing for AcpiAmlReadField and AcpiAmlWriteField
  *
  *  ACPI SPECIFICATION REFERENCES:
  *  16.2.4.3    Each of the Type1Opcodes is defined as specified in in-line
@@ -160,9 +160,9 @@
  ****************************************************************************/
 
 ACPI_STATUS
-AmlSetupField (
-    ACPI_OBJECT_INTERNAL    *ObjDesc, 
-    ACPI_OBJECT_INTERNAL    *RgnDesc, 
+AcpiAmlSetupField (
+    ACPI_OBJECT_INTERNAL    *ObjDesc,
+    ACPI_OBJECT_INTERNAL    *RgnDesc,
     INT32                   FieldBitWidth)
 {
     ACPI_STATUS             Status = AE_OK;
@@ -180,20 +180,20 @@ AmlSetupField (
         return_ACPI_STATUS (AE_AML_NO_OPERAND);
     }
 
-    if (ACPI_TYPE_Region != RgnDesc->Common.Type)
+    if (ACPI_TYPE_REGION != RgnDesc->Common.Type)
     {
         DEBUG_PRINT (ACPI_ERROR, ("AmlSetupField: Needed Region, found type %x %s\n",
-                        RgnDesc->Common.Type, CmGetTypeName (RgnDesc->Common.Type)));
+                        RgnDesc->Common.Type, AcpiCmGetTypeName (RgnDesc->Common.Type)));
         return_ACPI_STATUS (AE_AML_OPERAND_TYPE);
     }
 
 
     /* Init and validate Field width */
-    
+
     FieldByteWidth = DIV_8 (FieldBitWidth);     /*  possible values are 1, 2, 4 */
 
-    if ((FieldBitWidth != 8) && 
-        (FieldBitWidth != 16) && 
+    if ((FieldBitWidth != 8) &&
+        (FieldBitWidth != 16) &&
         (FieldBitWidth != 32))
     {
         DEBUG_PRINT (ACPI_ERROR, ("AmlSetupField: Internal error - bad width %d\n", FieldBitWidth));
@@ -201,14 +201,14 @@ AmlSetupField (
     }
 
 
-    /* 
+    /*
      * If the address and length have not been previously evaluated,
      * evaluate them and save the results.
      */
     if (!(RgnDesc->Region.RegionFlags & REGION_AGRUMENT_DATA_VALID))
     {
 
-        Status = DsGetRegionArguments (RgnDesc);
+        Status = AcpiDsGetRegionArguments (RgnDesc);
         if (ACPI_FAILURE (Status))
         {
             return_ACPI_STATUS (Status);
@@ -216,7 +216,7 @@ AmlSetupField (
     }
 
 
-    /* 
+    /*
      * If (offset rounded up to next multiple of field width)
      * exceeds region length, indicate an error.
      */
@@ -224,7 +224,7 @@ AmlSetupField (
     if (RgnDesc->Region.Length <
        (ObjDesc->Field.Offset & ~((UINT32) FieldByteWidth - 1)) + FieldByteWidth)
     {
-        /*  
+        /*
          * Offset rounded up to next multiple of field width
          * exceeds region length, indicate an error
          */
@@ -244,8 +244,8 @@ AmlSetupField (
 
 
 /*****************************************************************************
- * 
- * FUNCTION:    AmlAccessNamedField
+ *
+ * FUNCTION:    AcpiAmlAccessNamedField
  *
  * PARAMETERS:  Mode                - ACPI_READ or ACPI_WRITE
  *              NamedField          - Handle for field to be accessed
@@ -259,9 +259,9 @@ AmlSetupField (
  ****************************************************************************/
 
 ACPI_STATUS
-AmlAccessNamedField (
-    INT32                   Mode, 
-    ACPI_HANDLE             NamedField, 
+AcpiAmlAccessNamedField (
+    INT32                   Mode,
+    ACPI_HANDLE             NamedField,
     void                    *Buffer,
     UINT32                  BufferLength)
 {
@@ -280,7 +280,7 @@ AmlAccessNamedField (
 
     /* Get the attached field object */
 
-    ObjDesc = NsGetAttachedObject (NamedField);
+    ObjDesc = AcpiNsGetAttachedObject (NamedField);
     if (!ObjDesc)
     {
         DEBUG_PRINT (ACPI_ERROR, ("AmlAccessNamedField: Internal error - null value pointer\n"));
@@ -289,10 +289,10 @@ AmlAccessNamedField (
 
     /* Check the type */
 
-    if (INTERNAL_TYPE_DefField != NsGetType (NamedField))
+    if (INTERNAL_TYPE_DEF_FIELD != AcpiNsGetType (NamedField))
     {
         DEBUG_PRINT (ACPI_ERROR, ("AmlAccessNamedField: Name %4.4s type %x is not a defined field\n",
-                        &(((NAME_TABLE_ENTRY *) NamedField)->Name), NsGetType (NamedField)));
+                        &(((NAME_TABLE_ENTRY *) NamedField)->Name), AcpiNsGetType (NamedField)));
         return_ACPI_STATUS (AE_AML_OPERAND_TYPE);
     }
 
@@ -307,11 +307,11 @@ AmlAccessNamedField (
 
     /* Double-check that the attached object is also a field */
 
-    if (INTERNAL_TYPE_DefField != ObjDesc->Common.Type)
+    if (INTERNAL_TYPE_DEF_FIELD != ObjDesc->Common.Type)
     {
         DEBUG_PRINT (ACPI_ERROR, (
                 "AmlAccessNamedField: Internal error - Name %4.4s type %x does not match value-type %x at %p\n",
-                &(((NAME_TABLE_ENTRY *) NamedField)->Name), NsGetType (NamedField), ObjDesc->Common.Type, ObjDesc));
+                &(((NAME_TABLE_ENTRY *) NamedField)->Name), AcpiNsGetType (NamedField), ObjDesc->Common.Type, ObjDesc));
         return_ACPI_STATUS (AE_AML_OPERAND_TYPE);
     }
 
@@ -348,7 +348,7 @@ AmlAccessNamedField (
 
     /* Get the global lock if needed */
 
-    Locked = AmlAcquireGlobalLock (ObjDesc->FieldUnit.LockRule);
+    Locked = AcpiAmlAcquireGlobalLock (ObjDesc->FieldUnit.LockRule);
 
 
     /* Perform the actual read or write of the buffer */
@@ -357,14 +357,14 @@ AmlAccessNamedField (
     {
     case ACPI_READ:
 
-        Status = AmlReadField (ObjDesc, Buffer, BufferLength, ActualByteLength, DatumLength,
+        Status = AcpiAmlReadField (ObjDesc, Buffer, BufferLength, ActualByteLength, DatumLength,
                                 BitGranularity, ByteGranularity);
         break;
 
 
     case ACPI_WRITE:
 
-        Status = AmlWriteField (ObjDesc, Buffer, BufferLength, ActualByteLength, DatumLength,
+        Status = AcpiAmlWriteField (ObjDesc, Buffer, BufferLength, ActualByteLength, DatumLength,
                                 BitGranularity, ByteGranularity);
         break;
 
@@ -380,15 +380,15 @@ AmlAccessNamedField (
 
     /* Release global lock if we acquired it earlier */
 
-    AmlReleaseGlobalLock (Locked);
+    AcpiAmlReleaseGlobalLock (Locked);
 
     return_ACPI_STATUS (Status);
 }
 
 
 /*****************************************************************************
- * 
- * FUNCTION:    AmlSetNamedFieldValue
+ *
+ * FUNCTION:    AcpiAmlSetNamedFieldValue
  *
  * PARAMETERS:  NamedField          - Handle for field to be set
  *              Buffer              - Bytes to be stored
@@ -401,7 +401,7 @@ AmlAccessNamedField (
  ****************************************************************************/
 
 ACPI_STATUS
-AmlSetNamedFieldValue (
+AcpiAmlSetNamedFieldValue (
     ACPI_HANDLE             NamedField,
     void                    *Buffer,
     UINT32                  BufferLength)
@@ -418,14 +418,14 @@ AmlSetNamedFieldValue (
         return_ACPI_STATUS (AE_AML_INTERNAL);
     }
 
-    Status = AmlAccessNamedField (ACPI_WRITE, NamedField, Buffer, BufferLength);
+    Status = AcpiAmlAccessNamedField (ACPI_WRITE, NamedField, Buffer, BufferLength);
     return_ACPI_STATUS (Status);
 }
 
 
 /*****************************************************************************
- * 
- * FUNCTION:    AmlGetNamedFieldValue
+ *
+ * FUNCTION:    AcpiAmlGetNamedFieldValue
  *
  * PARAMETERS:  NamedField          - Handle for field to be read
  *              *Buffer             - Where to store value read from field
@@ -438,8 +438,8 @@ AmlSetNamedFieldValue (
  ****************************************************************************/
 
 ACPI_STATUS
-AmlGetNamedFieldValue (
-    ACPI_HANDLE             NamedField, 
+AcpiAmlGetNamedFieldValue (
+    ACPI_HANDLE             NamedField,
     void                    *Buffer,
     UINT32                  BufferLength)
 {
@@ -455,7 +455,7 @@ AmlGetNamedFieldValue (
         return_ACPI_STATUS (AE_AML_INTERNAL);
     }
 
-    Status = AmlAccessNamedField (ACPI_READ, NamedField, Buffer, BufferLength);
+    Status = AcpiAmlAccessNamedField (ACPI_READ, NamedField, Buffer, BufferLength);
     return_ACPI_STATUS (Status);
 }
-  
+

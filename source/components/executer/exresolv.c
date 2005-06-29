@@ -1,6 +1,6 @@
 
 /******************************************************************************
- * 
+ *
  * Module Name: iresolve - AML Interpreter object resolution
  *
  *****************************************************************************/
@@ -38,9 +38,9 @@
  * The above copyright and patent license is granted only if the following
  * conditions are met:
  *
- * 3. Conditions 
+ * 3. Conditions
  *
- * 3.1. Redistribution of Source with Rights to Further Distribute Source.  
+ * 3.1. Redistribution of Source with Rights to Further Distribute Source.
  * Redistribution of source code of any substantial portion of the Covered
  * Code or modification with rights to further distribute source must include
  * the above Copyright Notice, the above License, this list of Conditions,
@@ -48,11 +48,11 @@
  * Licensee must cause all Covered Code to which Licensee contributes to
  * contain a file documenting the changes Licensee made to create that Covered
  * Code and the date of any change.  Licensee must include in that file the
- * documentation of any changes made by any predecessor Licensee.  Licensee 
+ * documentation of any changes made by any predecessor Licensee.  Licensee
  * must include a prominent statement that the modification is derived,
  * directly or indirectly, from Original Intel Code.
  *
- * 3.2. Redistribution of Source with no Rights to Further Distribute Source.  
+ * 3.2. Redistribution of Source with no Rights to Further Distribute Source.
  * Redistribution of source code of any substantial portion of the Covered
  * Code or modification without rights to further distribute source must
  * include the following Disclaimer and Export Compliance provision in the
@@ -86,7 +86,7 @@
  * INSTALLATION, TRAINING OR OTHER SERVICES.  INTEL WILL NOT PROVIDE ANY
  * UPDATES, ENHANCEMENTS OR EXTENSIONS.  INTEL SPECIFICALLY DISCLAIMS ANY
  * IMPLIED WARRANTIES OF MERCHANTABILITY, NONINFRINGEMENT AND FITNESS FOR A
- * PARTICULAR PURPOSE. 
+ * PARTICULAR PURPOSE.
  *
  * 4.2. IN NO EVENT SHALL INTEL HAVE ANY LIABILITY TO LICENSEE, ITS LICENSEES
  * OR ANY OTHER THIRD PARTY, FOR ANY LOST PROFITS, LOST DATA, LOSS OF USE OR
@@ -116,14 +116,14 @@
 
 #define __IRESOLVE_C__
 
-#include <acpi.h>
-#include <amlcode.h>
-#include <parser.h>
-#include <dispatch.h>
-#include <interp.h>
-#include <namesp.h>
-#include <tables.h>
-#include <events.h>
+#include "acpi.h"
+#include "amlcode.h"
+#include "parser.h"
+#include "dispatch.h"
+#include "interp.h"
+#include "namesp.h"
+#include "tables.h"
+#include "events.h"
 
 
 #define _COMPONENT          INTERPRETER
@@ -132,8 +132,8 @@
 
 
 /*****************************************************************************
- * 
- * FUNCTION:    AmlGetFieldUnitValue
+ *
+ * FUNCTION:    AcpiAmlGetFieldUnitValue
  *
  * PARAMETERS:  *FieldDesc          - Pointer to a FieldUnit
  *              *ResultDesc         - Pointer to an empty descriptor
@@ -147,8 +147,8 @@
  ****************************************************************************/
 
 ACPI_STATUS
-AmlGetFieldUnitValue (
-    ACPI_OBJECT_INTERNAL    *FieldDesc, 
+AcpiAmlGetFieldUnitValue (
+    ACPI_OBJECT_INTERNAL    *FieldDesc,
     ACPI_OBJECT_INTERNAL    *ResultDesc)
 {
     ACPI_STATUS             Status = AE_OK;
@@ -172,7 +172,7 @@ AmlGetFieldUnitValue (
         Status = AE_AML_INTERNAL;
     }
 
-    else if (ACPI_TYPE_Buffer != FieldDesc->FieldUnit.Container->Common.Type)
+    else if (ACPI_TYPE_BUFFER != FieldDesc->FieldUnit.Container->Common.Type)
     {
         DEBUG_PRINT (ACPI_ERROR, ("AmlGetFieldUnitValue: Internal error - container is not a Buffer\n"));
         Status = AE_AML_OPERAND_TYPE;
@@ -201,17 +201,17 @@ AmlGetFieldUnitValue (
 
         /* Get the global lock if needed */
 
-    Locked = AmlAcquireGlobalLock (FieldDesc->FieldUnit.LockRule);
+    Locked = AcpiAmlAcquireGlobalLock (FieldDesc->FieldUnit.LockRule);
 
     /* Field location is (base of buffer) + (byte offset) */
 
     Location = FieldDesc->FieldUnit.Container->Buffer.Pointer
                 + FieldDesc->FieldUnit.Offset;
 
-    /* Construct Mask with as many 1 bits as the field width 
-     * 
+    /* Construct Mask with as many 1 bits as the field width
+     *
      * NOTE: Only the bottom 5 bits are valid for a shift operation, so
-     *  special care must be taken for any shift greater than 31 bits. 
+     *  special care must be taken for any shift greater than 31 bits.
      *
      * TBD: [Unhandled] Fields greater than 32-bits will not work.
      */
@@ -225,7 +225,7 @@ AmlGetFieldUnitValue (
         Mask = 0xFFFFFFFF;
     }
 
-    ResultDesc->Number.Type = (UINT8) ACPI_TYPE_Number;
+    ResultDesc->Number.Type = (UINT8) ACPI_TYPE_NUMBER;
 
     /* Get the 32 bit value at the location */
 
@@ -244,17 +244,17 @@ AmlGetFieldUnitValue (
 
     /* Release global lock if we acquired it earlier */
 
-    AmlReleaseGlobalLock (Locked);
+    AcpiAmlReleaseGlobalLock (Locked);
 
     return_ACPI_STATUS (Status);
 }
 
 
 /*****************************************************************************
- * 
- * FUNCTION:    AmlResolveToValue
  *
- * PARAMETERS:  **StackPtr          - Points to entry on ObjStack, which can 
+ * FUNCTION:    AcpiAmlResolveToValue
+ *
+ * PARAMETERS:  **StackPtr          - Points to entry on ObjStack, which can
  *                                    be either an (ACPI_OBJECT_INTERNAL *)
  *                                    or an ACPI_HANDLE.
  *
@@ -265,7 +265,7 @@ AmlGetFieldUnitValue (
  ****************************************************************************/
 
 ACPI_STATUS
-AmlResolveToValue (
+AcpiAmlResolveToValue (
     ACPI_OBJECT_INTERNAL    **StackPtr)
 {
     ACPI_STATUS             Status = AE_OK;
@@ -281,30 +281,30 @@ AmlResolveToValue (
     }
 
 
-    /* 
+    /*
      * The entity pointed to by the StackPtr can be either
      * 1) A valid ACPI_OBJECT_INTERNAL, or
      * 2) A NAME_TABLE_ENTRY (nte)
      */
 
-    if (VALID_DESCRIPTOR_TYPE (*StackPtr, DESC_TYPE_ACPI_OBJ))       
+    if (VALID_DESCRIPTOR_TYPE (*StackPtr, DESC_TYPE_ACPI_OBJ))
     {
 
-        Status = AmlResolveObjectToValue (StackPtr);
+        Status = AcpiAmlResolveObjectToValue (StackPtr);
         if (ACPI_FAILURE (Status))
         {
             return_ACPI_STATUS (Status);
         }
     }
 
-    /* 
-     * Object on the stack may have changed if AmlResolveObjectToValue() was called
+    /*
+     * Object on the stack may have changed if AcpiAmlResolveObjectToValue() was called
      * (i.e., we can't use an _else_ here.)
      */
 
-    if (VALID_DESCRIPTOR_TYPE (*StackPtr, DESC_TYPE_NTE))       
+    if (VALID_DESCRIPTOR_TYPE (*StackPtr, DESC_TYPE_NTE))
     {
-        Status = AmlResolveEntryToValue ((NAME_TABLE_ENTRY **) StackPtr);
+        Status = AcpiAmlResolveEntryToValue ((NAME_TABLE_ENTRY **) StackPtr);
     }
 
 
@@ -312,4 +312,4 @@ AmlResolveToValue (
 
     return_ACPI_STATUS (Status);
 }
-    
+
