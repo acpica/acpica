@@ -1,6 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dbxface - AML Debugger external interfaces
+ *              $Revision: 1.25 $
  *
  *****************************************************************************/
 
@@ -155,19 +156,18 @@ AcpiDbSingleStep (
 
     /* Is there a breakpoint set? */
 
-    if (AcpiGbl_MethodBreakpoint)
+    if (WalkState->MethodBreakpoint)
     {
         /* Check if the breakpoint has been reached or passed */
 
-        if ((AcpiGbl_BreakpointWalk == WalkState) &&
-            (AcpiGbl_MethodBreakpoint <= Op->AmlOffset))
+        if (WalkState->MethodBreakpoint <= Op->AmlOffset)
         {
             /* Hit the breakpoint, resume single step, reset breakpoint */
 
             AcpiOsPrintf ("***Break*** at AML offset 0x%X\n", Op->AmlOffset);
             AcpiGbl_CmSingleStep = TRUE;
             AcpiGbl_StepToNextCall = FALSE;
-            AcpiGbl_MethodBreakpoint = 0;
+            WalkState->MethodBreakpoint = 0;
         }
     }
 
@@ -179,7 +179,7 @@ AcpiDbSingleStep (
 
     if (Op->Opcode == AML_NAMEDFIELD_OP)
     {
-        return AE_OK;
+        return (AE_OK);
     }
 
     switch (OpType)
@@ -232,6 +232,24 @@ AcpiDbSingleStep (
 
         AcpiDbDisplayOp (Op, ACPI_UINT32_MAX);
 
+        if ((Op->Opcode == AML_IF_OP) ||
+            (Op->Opcode == AML_WHILE_OP))
+        {
+            if (WalkState->ControlState->Common.Value)
+            {
+                AcpiOsPrintf ("Predicate was TRUE, executed block\n");
+            }
+            else
+            {
+                AcpiOsPrintf ("Predicate is FALSE, skipping block\n");
+            }
+        }
+
+        else if (Op->Opcode == AML_ELSE_OP)
+        {
+        }
+
+
         /* Restore everything */
 
         Op->Next = Next;
@@ -281,8 +299,7 @@ AcpiDbSingleStep (
 
         /* TBD: [Future] don't kill the user breakpoint! */
 
-        AcpiGbl_MethodBreakpoint = Op->AmlOffset + 1;  /* Must be non-zero! */
-        AcpiGbl_BreakpointWalk = WalkState;
+        WalkState->MethodBreakpoint = Op->AmlOffset + 1;  /* Must be non-zero! */
     }
 
 
@@ -334,7 +351,7 @@ AcpiDbSingleStep (
 
     /* User commands complete, continue execution of the interrupted method */
 
-    return Status;
+    return (Status);
 }
 
 
@@ -391,7 +408,7 @@ AcpiDbInitialize (void)
     }
 
 
-    return 0;
+    return (0);
 }
 
 

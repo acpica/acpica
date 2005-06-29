@@ -1,6 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dbdisply - debug display commands
+ *              $Revision: 1.27 $
  *
  *****************************************************************************/
 
@@ -427,7 +428,6 @@ AcpiDbDisplayInternalObject (
     ACPI_WALK_STATE         *WalkState)
 {
     UINT8                   Type;
-
 
 
     AcpiOsPrintf ("%p ", ObjDesc);
