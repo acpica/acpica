@@ -346,6 +346,7 @@ typedef struct nte
 
 #define NOTFOUND            (nte *)0
 #define INVALID_HANDLE      0
+#define NULL_HANDLE         INVALID_HANDLE
 
 
 /* Stack of currently-open scopes, and pointer to top of that stack */
@@ -457,7 +458,7 @@ typedef struct
 typedef struct
 {
     UINT8           Type;           /* Level or Edge */
-    UINT32          MethodName;     /* _Lxx or _Exx name */
+    NsHandle        MethodHandle;   /* Method handle for direct (fast) execution */
     GPE_HANDLER     Handler;        /* Address of handler, if any */
     void            *Context;       /* Context to be passed to handler */
 
