@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dmopcode - AML disassembler, specific AML opcodes
- *              $Revision: 1.83 $
+ *              $Revision: 1.84 $
  *
  ******************************************************************************/
 
@@ -118,7 +118,6 @@
 #include "acparser.h"
 #include "amlcode.h"
 #include "acdisasm.h"
-#include "acdebug.h"
 
 #ifdef ACPI_DISASSEMBLER
 
@@ -590,7 +589,7 @@ AcpiDmDisassembleOneOp (
             (WalkState->Results) &&
             (WalkState->Results->Results.NumResults))
         {
-            AcpiDbDecodeInternalObject (
+            AcpiDmDecodeInternalObject (
                 WalkState->Results->Results.ObjDesc [WalkState->Results->Results.NumResults-1]);
         }
 #endif
