@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acmacros.h - C macros for the entire subsystem.
- *       $Revision: 1.122 $
+ *       $Revision: 1.124 $
  *
  *****************************************************************************/
 
@@ -128,16 +128,17 @@
 #define ACPI_HIBYTE(l)                  ((UINT8)((((UINT16)(l)) >> 8) & 0xFF))
 
 
-#ifdef _IA16
+#if ACPI_MACHINE_WIDTH == 16
+
 /*
  * For 16-bit addresses, we have to assume that the upper 32 bits
  * are zero.
  */
-#define ACPI_LODWORD(l)                 (l)
-#define ACPI_HIDWORD(l)                 (0)
+#define ACPI_LODWORD(l)                 ((UINT32)(l))
+#define ACPI_HIDWORD(l)                 ((UINT32)(0))
 
 #define ACPI_GET_ADDRESS(a)             ((a).Lo)
-#define ACPI_STORE_ADDRESS(a,b)         {(a).Hi=0;(a).Lo=(b);}
+#define ACPI_STORE_ADDRESS(a,b)         {(a).Hi=0;(a).Lo=(UINT32)(b);}
 #define ACPI_VALID_ADDRESS(a)           ((a).Hi | (a).Lo)
 
 #else
@@ -146,7 +147,7 @@
  * ACPI_INTEGER is 32-bits, no 64-bit support on this platform
  */
 #define ACPI_LODWORD(l)                 ((UINT32)(l))
-#define ACPI_HIDWORD(l)                 (0)
+#define ACPI_HIDWORD(l)                 ((UINT32)(0))
 
 #define ACPI_GET_ADDRESS(a)             (a)
 #define ACPI_STORE_ADDRESS(a,b)         ((a)=(b))
@@ -187,10 +188,10 @@
 #define ACPI_CAST_PTR(t, p)             ((t *)(void *)(p))
 #define ACPI_CAST_INDIRECT_PTR(t, p)    ((t **)(void *)(p))
 
-#ifdef _IA16
+#if ACPI_MACHINE_WIDTH == 16
 #define ACPI_STORE_POINTER(d,s)         ACPI_MOVE_UNALIGNED32_TO_32(d,s)
 #define ACPI_PHYSADDR_TO_PTR(i)         (void *)(i)
-#define ACPI_PTR_TO_PHYSADDR(i)         (char *)(i)
+#define ACPI_PTR_TO_PHYSADDR(i)         (UINT32) (char *)(i)
 #else
 #define ACPI_PHYSADDR_TO_PTR(i)         ACPI_TO_POINTER(i)
 #define ACPI_PTR_TO_PHYSADDR(i)         ACPI_TO_INTEGER(i)
@@ -302,7 +303,7 @@
 
 /* Macros for GAS addressing */
 
-#ifndef _IA16
+#if ACPI_MACHINE_WIDTH != 16
 
 #define ACPI_PCI_DEVICE_MASK            (UINT64) 0x0000FFFF00000000
 #define ACPI_PCI_FUNCTION_MASK          (UINT64) 0x00000000FFFF0000
@@ -352,7 +353,7 @@
 
 /* Macro to test the object type */
 
-#define ACPI_GET_OBJECT_TYPE(d)         (((ACPI_OPERAND_OBJECT *)(void *)d)->Common.Type)
+#define ACPI_GET_OBJECT_TYPE(d)         (((ACPI_OPERAND_OBJECT *)(void *)(d))->Common.Type)
 
 /* Macro to check the table flags for SINGLE or MULTIPLE tables are allowed */
 
@@ -364,7 +365,7 @@
  * as a pointer to an ACPI_TABLE_HEADER.  (b+1) then points past the header,
  * and ((UINT8 *)b+b->Length) points one byte past the end of the table.
  */
-#ifndef _IA16
+#if ACPI_MACHINE_WIDTH != 16
 #define ACPI_IS_IN_ACPI_TABLE(a,b)      (((UINT8 *)(a) >= (UINT8 *)(b + 1)) &&\
                                          ((UINT8 *)(a) < ((UINT8 *)b + b->Length)))
 
@@ -627,7 +628,7 @@
  * For 16-bit code, we want to shrink some things even though
  * we are using ACPI_DEBUG to get the debug output
  */
-#ifdef _IA16
+#if ACPI_MACHINE_WIDTH == 16
 #undef ACPI_DEBUG_ONLY_MEMBERS
 #undef _VERBOSE_STRUCTURES
 #define ACPI_DEBUG_ONLY_MEMBERS(a)
@@ -655,8 +656,8 @@
 
 /* Memory allocation */
 
-#define ACPI_MEM_ALLOCATE(a)            AcpiUtAllocate(a,_COMPONENT,_THIS_MODULE,__LINE__)
-#define ACPI_MEM_CALLOCATE(a)           AcpiUtCallocate(a, _COMPONENT,_THIS_MODULE,__LINE__)
+#define ACPI_MEM_ALLOCATE(a)            AcpiUtAllocate((ACPI_SIZE)(a),_COMPONENT,_THIS_MODULE,__LINE__)
+#define ACPI_MEM_CALLOCATE(a)           AcpiUtCallocate((ACPI_SIZE)(a), _COMPONENT,_THIS_MODULE,__LINE__)
 #define ACPI_MEM_FREE(a)                AcpiOsFree(a)
 #define ACPI_MEM_TRACKING(a)
 
@@ -665,8 +666,8 @@
 
 /* Memory allocation */
 
-#define ACPI_MEM_ALLOCATE(a)            AcpiUtAllocateAndTrack(a,_COMPONENT,_THIS_MODULE,__LINE__)
-#define ACPI_MEM_CALLOCATE(a)           AcpiUtCallocateAndTrack(a, _COMPONENT,_THIS_MODULE,__LINE__)
+#define ACPI_MEM_ALLOCATE(a)            AcpiUtAllocateAndTrack((ACPI_SIZE)(a),_COMPONENT,_THIS_MODULE,__LINE__)
+#define ACPI_MEM_CALLOCATE(a)           AcpiUtCallocateAndTrack((ACPI_SIZE)(a), _COMPONENT,_THIS_MODULE,__LINE__)
 #define ACPI_MEM_FREE(a)                AcpiUtFreeAndTrack(a,_COMPONENT,_THIS_MODULE,__LINE__)
 #define ACPI_MEM_TRACKING(a)            a
 
