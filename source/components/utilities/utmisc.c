@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: cmutils - common utility procedures
- *              $Revision: 1.39 $
+ *              $Revision: 1.40 $
  *
  ******************************************************************************/
 
@@ -479,7 +479,7 @@ AcpiCmReleaseMutex (
 
     ThisThreadId = AcpiOsGetThreadId ();
     DEBUG_PRINT (TRACE_MUTEX,
-        ("Thread %X releasing Mutex [%s]\n", ThisThreadId, 
+        ("Thread %X releasing Mutex [%s]\n", ThisThreadId,
         AcpiCmGetMutexName (MutexId)));
 
     if (MutexId > MAX_MTX)
@@ -493,7 +493,7 @@ AcpiCmReleaseMutex (
      */
     if (AcpiGbl_AcpiMutexInfo[MutexId].OwnerId == ACPI_MUTEX_NOT_ACQUIRED)
     {
-        DEBUG_PRINT (ACPI_ERROR, 
+        DEBUG_PRINT (ACPI_ERROR,
                 ("Mutex [%s] is not acquired, cannot release\n",
                 AcpiCmGetMutexName (MutexId)));
 
@@ -534,7 +534,7 @@ AcpiCmReleaseMutex (
     if (ACPI_FAILURE (Status))
     {
         DEBUG_PRINT (ACPI_ERROR, ("Thread %X could not release Mutex [%s] %s\n",
-                    ThisThreadId, AcpiCmGetMutexName (MutexId), 
+                    ThisThreadId, AcpiCmGetMutexName (MutexId),
                     AcpiCmFormatException (Status)));
     }
     else
