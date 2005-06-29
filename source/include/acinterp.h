@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acinterp.h - Interpreter subcomponent prototypes and defines
- *       $Revision: 1.109 $
+ *       $Revision: 1.110 $
  *
  *****************************************************************************/
 
@@ -307,6 +307,10 @@ AcpiExCreateRegion (
     UINT8                   *AmlStart,
     UINT32                  AmlLength,
     UINT8                   RegionSpace,
+    ACPI_WALK_STATE         *WalkState);
+
+ACPI_STATUS
+AcpiExCreateTableRegion (
     ACPI_WALK_STATE         *WalkState);
 
 ACPI_STATUS
