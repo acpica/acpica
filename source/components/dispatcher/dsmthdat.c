@@ -828,10 +828,48 @@ PsxMthStackSetValue (
         goto Cleanup;
     }
 
-    /* If there is an object already in this stack slot, delete it */
+
+    /*
+     * If there is an object already in this slot, we either have to delete it, or if
+     * this is an argument and there is an object reference stored there, we have to do
+     * an indirect store!
+     */
 
     if (*Entry)
     {
+        /*
+         * Check for an indirect store if an argument contains an object reference (stored as an NTE).
+         * We don't allow this automatic dereferencing for locals, since a store to a local should overwrite
+         * anything there, including an object reference.
+         *
+         * If both Arg0 and Local0 contain RefOf (Local4):
+         *
+         * Store (1, Arg0)                  - Causes indirect store to local4
+         * Store (1, Local0)                - Stores 1 in local0, overwriting the reference to local4
+         * Store (1, DeRefof (Local0))      - Causes indirect store to local4
+         *
+         * Weird, but true.
+         */
+
+        if ((Type == MTH_TYPE_ARG) &&
+            (VALID_DESCRIPTOR_TYPE (*Entry, DESC_TYPE_NTE)))
+        {
+            DEBUG_PRINT (TRACE_EXEC, ("PsxMthStackSetValue: Arg (%p) is an ObjRef(NTE), storing in %p\n",
+                            SrcDesc, *Entry));
+
+            /* Detach an existing object from the NTE */
+
+            NsDetachObject (*Entry);
+
+            /* Store this object into the NTE (do the indirect store) */
+
+            Status = NsAttachObject (*Entry, SrcDesc, SrcDesc->Common.Type);
+            return_ACPI_STATUS (Status);
+        }
+
+
+        /* Otherwise, just delete the existing object before storing the new one */
+
         PsxMthStackDeleteValue (Type, Index);
     }
 
