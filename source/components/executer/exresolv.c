@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: amresolv - AML Interpreter object resolution
- *              $Revision: 1.75 $
+ *              $Revision: 1.76 $
  *
  *****************************************************************************/
 
@@ -227,7 +227,7 @@ AcpiAmlGetFieldUnitValue (
     }
     else
     {
-        Mask = 0xFFFFFFFF;
+        Mask = ACPI_UINT32_MAX;
     }
 
     ResultDesc->Number.Type = (UINT8) ACPI_TYPE_NUMBER;
@@ -494,7 +494,7 @@ AcpiAmlResolveObjectToValue (
         case AML_ONES_OP:
 
             StackDesc->Common.Type = (UINT8) ACPI_TYPE_NUMBER;
-            StackDesc->Number.Value = 0xFFFFFFFF;
+            StackDesc->Number.Value = ACPI_INTEGER_MAX;
             break;
 
 
