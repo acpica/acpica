@@ -2,7 +2,7 @@
  *
  * Module Name: dswexec - Dispatcher method execution callbacks;
  *                        dispatch to interpreter.
- *              $Revision: 1.74 $
+ *              $Revision: 1.76 $
  *
  *****************************************************************************/
 
@@ -129,16 +129,20 @@
 #define _COMPONENT          ACPI_DISPATCHER
         MODULE_NAME         ("dswexec")
 
-
+/*
+ * Dispatch tables for opcode classes 
+ */
 ACPI_EXECUTE_OP         AcpiGbl_OpClassDispatch [] = {
                             AcpiExOpcode_1A_0T_0R,
                             AcpiExOpcode_1A_0T_1R,
+                            AcpiExOpcode_1A_1T_0R,
                             AcpiExOpcode_1A_1T_1R,
                             AcpiExOpcode_2A_0T_0R,
                             AcpiExOpcode_2A_0T_1R,
                             AcpiExOpcode_2A_1T_1R,
                             AcpiExOpcode_2A_2T_1R,
-                            AcpiExOpcode_3A_1T_0R,
+                            AcpiExOpcode_3A_0T_0R,
+                            AcpiExOpcode_3A_1T_1R,
                             AcpiExOpcode_6A_0T_1R};
 
 
@@ -340,7 +344,7 @@ AcpiDsExecBeginOp (
     }
 
 
-    OpcodeClass = ACPI_GET_OP_CLASS (WalkState->OpInfo);
+    OpcodeClass = WalkState->OpInfo->Class;
 
     /* We want to send namepaths to the load code */
 
@@ -443,8 +447,8 @@ AcpiDsExecEndOp (
 
 
     Op      = WalkState->Op;
-    OpType  = ACPI_GET_OP_TYPE (WalkState->OpInfo);
-    OpClass = ACPI_GET_OP_CLASS (WalkState->OpInfo);
+    OpType  = WalkState->OpInfo->Type;
+    OpClass = WalkState->OpInfo->Class;
 
     if (OpClass == AML_CLASS_UNKNOWN)
     {

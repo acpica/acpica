@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dsutils - Dispatcher utilities
- *              $Revision: 1.76 $
+ *              $Revision: 1.78 $
  *
  ******************************************************************************/
 
@@ -179,7 +179,7 @@ AcpiDsIsResultUsed (
      */
 
     ParentInfo = AcpiPsGetOpcodeInfo (Op->Parent->Opcode);
-    if (ACPI_GET_OP_CLASS (ParentInfo) == AML_CLASS_UNKNOWN)
+    if (ParentInfo->Class == AML_CLASS_UNKNOWN)
     {
         ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Unknown parent opcode. Op=%X\n", Op));
         return_VALUE (FALSE);
@@ -192,7 +192,7 @@ AcpiDsIsResultUsed (
      * Otherwise leave it as is, it will be deleted when it is used
      * as an operand later.
      */
-    switch (ACPI_GET_OP_CLASS (ParentInfo))
+    switch (ParentInfo->Class)
     {
     /*
      * In these cases, the parent will never use the return object
@@ -712,7 +712,7 @@ AcpiDsMapOpcodeToDataType (
 
 
     OpInfo = AcpiPsGetOpcodeInfo (Opcode);
-    if (ACPI_GET_OP_CLASS (OpInfo) == AML_CLASS_UNKNOWN)
+    if (OpInfo->Class == AML_CLASS_UNKNOWN)
     {
         /* Unknown opcode */
 
@@ -720,7 +720,12 @@ AcpiDsMapOpcodeToDataType (
         return (DataType);
     }
 
-    switch (ACPI_GET_OP_TYPE (OpInfo))
+
+/*
+ * TBD: Use op class
+ */
+
+    switch (OpInfo->Type)
     {
 
     case AML_TYPE_LITERAL:
@@ -784,13 +789,13 @@ AcpiDsMapOpcodeToDataType (
         break;
 
 
-    case AML_TYPE_EX_1A_0T_1R:
-    case AML_TYPE_EX_1A_1T_1R:
-    case AML_TYPE_EX_2A_0T_1R:
-    case AML_TYPE_EX_2A_1T_1R:
-    case AML_TYPE_EX_2A_2T_1R:
-    case AML_TYPE_EX_3A_0T_0R:
-    case AML_TYPE_EX_6A_0T_1R:
+    case AML_TYPE_EXEC_1A_0T_1R:
+    case AML_TYPE_EXEC_1A_1T_1R:
+    case AML_TYPE_EXEC_2A_0T_1R:
+    case AML_TYPE_EXEC_2A_1T_1R:
+    case AML_TYPE_EXEC_2A_2T_1R:
+    case AML_TYPE_EXEC_3A_1T_1R:
+    case AML_TYPE_EXEC_6A_0T_1R:
     case AML_TYPE_RETURN:
 
         Flags = OP_HAS_RETURN_VALUE;
@@ -811,7 +816,10 @@ AcpiDsMapOpcodeToDataType (
         break;
 
 
-    case AML_TYPE_EX_2A_0T_0R:
+    case AML_TYPE_EXEC_1A_0T_0R:
+    case AML_TYPE_EXEC_2A_0T_0R:
+    case AML_TYPE_EXEC_3A_0T_0R:
+    case AML_TYPE_EXEC_1A_1T_0R:
     case AML_TYPE_CONTROL:
 
         /* No mapping needed at this time */
