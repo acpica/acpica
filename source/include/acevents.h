@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acevents.h - Event subcomponent prototypes and defines
- *       $Revision: 1.58 $
+ *       $Revision: 1.59 $
  *
  *****************************************************************************/
 
@@ -200,7 +200,7 @@ ACPI_STATUS
 AcpiEvAddressSpaceDispatch (
     ACPI_OPERAND_OBJECT    *RegionObj,
     UINT32                  Function,
-    UINT32                  Address,
+    ACPI_INTEGER            Address,
     UINT32                  BitWidth,
     UINT32                  *Value);
 
