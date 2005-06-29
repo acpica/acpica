@@ -311,7 +311,7 @@ AmlGetRvalue (
 
             DEBUG_PRINT (ACPI_INFO,
                         ("AmlGetRvalue: [Local%d] after MSGV Status=%s %p %p %08lx \n",
-                            MvIndex, ExceptionNames[Status], StackPtr, *StackPtr,
+                            MvIndex, Gbl_ExceptionNames[Status], StackPtr, *StackPtr,
                             *(UINT32 *)* StackPtr));
             
             if (TYPE_Number == (*StackPtr)->Type)
@@ -337,7 +337,7 @@ AmlGetRvalue (
         
             DEBUG_PRINT (TRACE_EXEC,
                             ("AmlGetRvalue: [Arg%d] MSGV returned %s %p %p %08lx \n",
-                            MvIndex, ExceptionNames[Status], StackPtr, *StackPtr,
+                            MvIndex, Gbl_ExceptionNames[Status], StackPtr, *StackPtr,
                             *(UINT32 *)* StackPtr));
 
             if (TYPE_Number == (*StackPtr)->Type)
@@ -932,12 +932,12 @@ BREAKPOINT3;
         case TYPE_Any:
 
             DEBUG_PRINT (TRACE_EXEC, ("case %s \n",
-                        NsTypeNames[NsGetType ((ACPI_HANDLE)* StackPtr)]));
+                        Gbl_NsTypeNames[NsGetType ((ACPI_HANDLE)* StackPtr)]));
           
 #ifdef FETCH_OVERRIDE
             DEBUG_PRINT (ACPI_WARN,
                         ("** AmlGetRvalue: Fetch from [%s] not implemented, using value 0\n",
-                        NsTypeNames[NsGetType ((ACPI_HANDLE)* StackPtr)]));
+                        Gbl_NsTypeNames[NsGetType ((ACPI_HANDLE)* StackPtr)]));
             
             ObjDesc = CmCreateInternalObject (TYPE_Number);
             if (!ObjDesc)
@@ -952,7 +952,7 @@ BREAKPOINT3;
 #else
             DEBUG_PRINT (ACPI_ERROR, (
                     "AmlGetRvalue: Fetch from [%s] not implemented\n",
-                    NsTypeNames[NsGetType ((ACPI_HANDLE)* StackPtr)]));
+                    Gbl_NsTypeNames[NsGetType ((ACPI_HANDLE)* StackPtr)]));
             
             return_ACPI_STATUS (AE_AML_ERROR);
 #endif /* HACK */
