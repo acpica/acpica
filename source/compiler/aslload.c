@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dswload - Dispatcher namespace load callbacks
- *              $Revision: 1.15 $
+ *              $Revision: 1.23 $
  *
  *****************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, 2000, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -123,11 +123,11 @@
 #include "acinterp.h"
 #include "acnamesp.h"
 #include "acevents.h"
-#include "AslCompiler.h"
+#include "aslcompiler.h"
 
-#include "AslCompiler.y.h"
+#include "aslcompiler.y.h"
 
-#define _COMPONENT          DISPATCHER
+#define _COMPONENT          ACPI_COMPILER
         MODULE_NAME         ("aslload")
 
 
@@ -153,7 +153,7 @@ LdLoadNamespace (void)
     ACPI_WALK_LIST          WalkList;
 
 
-    DbgPrint ("\nCreating namespace\n\n");
+    DbgPrint (ASL_DEBUG_OUTPUT, "\nCreating namespace\n\n");
 
 
     /* Create a new walk state */
@@ -168,7 +168,7 @@ LdLoadNamespace (void)
 
     /* Perform the walk of the parse tree */
 
-    TrWalkParseTree (ASL_WALK_VISIT_TWICE, LdNamespace1Begin,
+    TrWalkParseTree (RootNode, ASL_WALK_VISIT_TWICE, LdNamespace1Begin,
                         LdNamespace1End, WalkState);
 
 
@@ -216,7 +216,7 @@ LdLoadFieldElements (
         Child = UtGetArg (PsNode, 5);
         break;
 
-    case AML_DEF_FIELD_OP:
+    case AML_FIELD_OP:
         Child = UtGetArg (PsNode, 4);
         break;
     }
@@ -234,10 +234,8 @@ LdLoadFieldElements (
 
         default:
 
-            Status = AcpiNsLookup (WalkState->ScopeInfo,
-                            Child->Value.String,
-                            INTERNAL_TYPE_DEF_FIELD,
-                            IMODE_LOAD_PASS1,
+            Status = AcpiNsLookup (WalkState->ScopeInfo, Child->Value.String,
+                            INTERNAL_TYPE_REGION_FIELD, IMODE_LOAD_PASS1,
                             NS_NO_UPSEARCH | NS_DONT_OPEN_SCOPE,
                             NULL, &NsNode);
             if (ACPI_FAILURE (Status))
@@ -362,7 +360,6 @@ LdNamespace1Begin (
     UINT32                  i;
 
 
-
     DEBUG_PRINT (TRACE_DISPATCH,
         ("Load1BeginOp: PsNode %p\n", PsNode));
 
@@ -373,7 +370,7 @@ LdNamespace1Begin (
     {
     case AML_BANK_FIELD_OP:
     case AML_INDEX_FIELD_OP:
-    case AML_DEF_FIELD_OP:
+    case AML_FIELD_OP:
 
         LdLoadFieldElements (PsNode, WalkState);
         return (AE_OK);
@@ -450,7 +447,7 @@ LdNamespace1Begin (
      * as we go downward in the parse tree.  Any necessary subobjects that involve
      * arguments to the opcode must be created as we go back up the parse tree later.
      */
-    Status = AcpiNsLookup (WalkState->ScopeInfo,  Path, DataType, 
+    Status = AcpiNsLookup (WalkState->ScopeInfo,  Path, DataType,
                     IMODE_LOAD_PASS1, Flags, WalkState, &(NsNode));
 
     if (ACPI_FAILURE (Status))
@@ -478,16 +475,8 @@ LdNamespace1Begin (
     if (PsNode->ParseOpcode == METHOD)
     {
         NsNode->OwnerId = PsNode->Extra;
+    }
 
-        if (PsNode->Flags & NODE_METHOD_NO_RETVAL)
-        {
-            NsNode->Flags |= ANOBJ_METHOD_NO_RETVAL;
-        }
-        if (PsNode->Flags & NODE_METHOD_SOME_NO_RETVAL)
-        {
-            NsNode->Flags |= ANOBJ_METHOD_SOME_NO_RETVAL;
-        }
-   }
 
     return (Status);
 }
