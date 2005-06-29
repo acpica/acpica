@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: nsaccess - Top-level functions for accessing ACPI namespace
- *              $Revision: 1.146 $
+ *              $Revision: 1.147 $
  *
  ******************************************************************************/
 
@@ -396,9 +396,8 @@ AcpiNsLookup (
         TypeToCheckFor = Type;
     }
 
-
     /* 
-     * Examine the pathname for NULL and special prefixes
+     * Begin examination of the actual pathname
      */
     if (!Pathname)
     {
@@ -413,15 +412,16 @@ AcpiNsLookup (
     else
     {
         /*
-         * Valid name pointer (Internal name format)
+         * Name pointer is valid (and must be in internal name format)
          *
-         * Check for prefixes.  As represented in the AML stream, a
-         * Pathname consists of an optional scope prefix followed by
-         * a name segment part.
+         * Check for scope prefixes:
          *
-         * If present, the scope prefix is either a RootPrefix (in
-         * which case the name is fully qualified), or zero or more
-         * ParentPrefixes (in which case the name's scope is relative
+         * As represented in the AML stream, a namepath consists of an 
+         * optional scope prefix followed by a name segment part.
+         *
+         * If present, the scope prefix is either a Root Prefix (in
+         * which case the name is fully qualified), or one or more
+         * Parent Prefixes (in which case the name's scope is relative
          * to the current scope).
          */
         if (*Pathname == AML_ROOT_PREFIX)
@@ -431,7 +431,7 @@ AcpiNsLookup (
             ThisNode = AcpiGbl_RootNode;
             CurrentNode = ThisNode;
 
-            /* Point to segment part */
+            /* Point to name segment part */
 
             Pathname++;
 
@@ -447,7 +447,7 @@ AcpiNsLookup (
                 PrefixNode));
 
             /*
-             * Handle multiple parent-prefixes (carat) by just getting
+             * Handle multiple Parent Prefixes (carat) by just getting
              * the parent node for each prefix instance.
              */
             CurrentNode = PrefixNode;
@@ -465,7 +465,7 @@ AcpiNsLookup (
                     /* Current scope has no parent scope */
 
                     REPORT_ERROR (
-                        ("Too many parent prefixes (^) - reached root\n"));
+                        ("Too many parent prefixes (^) - reached beyond root node\n"));
                     return_ACPI_STATUS (AE_NOT_FOUND);
                 }
 
@@ -477,14 +477,14 @@ AcpiNsLookup (
          * Determine the number of ACPI name segments in this pathname.
          *
          * The segment part consists of either:
-         *  - A null name segment (0)
+         *  - A Null name segment (0)
          *  - A DualNamePrefix followed by two 4-byte name segments
          *  - A MultiNamePrefix followed by a byte indicating the
          *    number of segments and the segments themselves.
          *  - A single 4-byte name segment
          *
          * Examine the name prefix opcode, if any, to determine the number of 
-         * segments
+         * segments.
          */
         switch (*Pathname)
         {
@@ -501,7 +501,7 @@ AcpiNsLookup (
 
         case AML_DUAL_NAME_PREFIX:
 
-            /* Two segments, point to first segment */
+            /* Two segments, point to first name segment */
 
             NumSegments = 2;
             Pathname++;
@@ -512,7 +512,7 @@ AcpiNsLookup (
 
         case AML_MULTI_NAME_PREFIX_OP:
 
-            /* Extract segment count, point to first segment */
+            /* Extract segment count, point to first name segment */
 
             Pathname++;
             NumSegments = (UINT32) (UINT8) *Pathname;
@@ -557,7 +557,7 @@ AcpiNsLookup (
             LocalFlags = Flags;
         }
 
-        /* Pluck one ACPI name from the front of the pathname */
+        /* Extract one ACPI name from the front of the pathname */
 
         MOVE_UNALIGNED32_TO_32 (&SimpleName, Pathname);
 
@@ -569,7 +569,7 @@ AcpiNsLookup (
         {
             if (Status == AE_NOT_FOUND)
             {
-                /* Name not found in ACPI namespace  */
+                /* Name not found in ACPI namespace */
 
                 ACPI_DEBUG_PRINT ((ACPI_DB_NAMES,
                     "Name [%4.4s] not found in scope [%4.4s] %p\n",
@@ -580,15 +580,17 @@ AcpiNsLookup (
         }
 
         /*
+         * Sanity typecheck of the target object:
+         *
          * If 1) This is the last segment (NumSegments == 0)
-         *    2) and looking for a specific type
+         *    2) And we are looking for a specific type
          *       (Not checking for TYPE_ANY)
          *    3) Which is not an alias
-         *    4) which is not a local type (TYPE_DEF_ANY)
-         *    5) which is not a local type (TYPE_SCOPE)
-         *    6) which is not a local type (TYPE_INDEX_FIELD_DEFN)
-         *    7) and type of object is known (not TYPE_ANY)
-         *    8) and object does not match request
+         *    4) Which is not a local type (TYPE_DEF_ANY)
+         *    5) Which is not a local type (TYPE_SCOPE)
+         *    6) Which is not a local type (TYPE_INDEX_FIELD_DEFN)
+         *    7) And the type of target object is known (not TYPE_ANY)
+         *    8) And target object does not match what we are looking for
          *
          * Then we have a type mismatch.  Just warn and ignore it.
          */
@@ -642,7 +644,7 @@ AcpiNsLookup (
             }
 
             ACPI_DEBUG_PRINT ((ACPI_DB_INFO, 
-                "Set global scope to %p\n", ThisNode));
+                "Setting global scope to %p\n", ThisNode));
         }
     }
 
