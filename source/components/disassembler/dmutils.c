@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dmutils - AML disassembler utilities
- *              $Revision: 1.10 $
+ *              $Revision: 1.15 $
  *
  ******************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2004, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2005, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -222,28 +222,6 @@ const char                      *AcpiGbl_DECDecode[2] =
     "SubDecode"
 };
 
-const char                      *AcpiGbl_RNGDecode[4] =
-{
-    "InvalidRanges",
-    "NonISAOnlyRanges",
-    "ISAOnlyRanges",
-    "EntireRange"
-};
-
-const char                      *AcpiGbl_MEMDecode[4] =
-{
-    "NonCacheable",
-    "Cacheable",
-    "WriteCombining",
-    "Prefetchable"
-};
-
-const char                      *AcpiGbl_RWDecode[2] =
-{
-    "ReadOnly",
-    "ReadWrite"
-};
-
 const char                      *AcpiGbl_IrqDecode[2] =
 {
     "IRQNoFlags",
@@ -290,7 +268,52 @@ const char                      *AcpiGbl_SIZDecode[4] =
     "InvalidSize"
 };
 
+/* Type Specific Flags */
 
+const char                      *AcpiGbl_TTPDecode[2] =
+{
+    "TypeStatic",
+    "TypeTranslation"
+};
+
+const char                      *AcpiGbl_MTPDecode[4] =
+{
+    "AddressRangeMemory",
+    "AddressRangeReserved",
+    "AddressRangeACPI",
+    "AddressRangeNVS"
+};
+
+const char                      *AcpiGbl_MEMDecode[4] =
+{
+    "NonCacheable",
+    "Cacheable",
+    "WriteCombining",
+    "Prefetchable"
+};
+
+const char                      *AcpiGbl_RWDecode[2] =
+{
+    "ReadOnly",
+    "ReadWrite"
+};
+
+const char                      *AcpiGbl_TRSDecode[2] =
+{
+    "DenseTranslation",
+    "SparseTranslation"
+};
+
+const char                      *AcpiGbl_RNGDecode[4] =
+{
+    "InvalidRanges",
+    "NonISAOnlyRanges",
+    "ISAOnlyRanges",
+    "EntireRange"
+};
+
+
+#ifdef ACPI_ASL_COMPILER
 /*******************************************************************************
  *
  * FUNCTION:    AcpiDmAddToExternalList
@@ -339,7 +362,7 @@ AcpiDmAddToExternalList (
         AcpiGbl_ExternalList = NewExternal;
     }
 }
-
+#endif
 
 /*******************************************************************************
  *
@@ -513,6 +536,5 @@ AcpiDmCommaIfFieldMember (
         AcpiOsPrintf (", ");
     }
 }
-
 
 #endif
