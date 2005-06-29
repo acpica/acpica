@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Name: hwtimer.c - ACPI Power Management Timer Interface
- *              $Revision: 1.3 $
+ *              $Revision: 1.4 $
  *
  *****************************************************************************/
 
@@ -204,7 +204,7 @@ AcpiGetTimer (
  *              The PM Timer's clock ticks at roughly 3.6 times per 
  *              _microsecond_, and its clock continues through Cx state
  *              transitions (unlike many CPU timestamp counters) -- making it
- *              an versatile and accurate timer.
+ *              a versatile and accurate timer.
  *
  *              Note that this function accomodates only a single timer 
  *              rollover.  Thus for 24-bit timers, this function should only
@@ -216,7 +216,7 @@ AcpiGetTimer (
 ACPI_STATUS
 AcpiGetTimerDuration (
     UINT32                  StartTicks,
-	UINT32                  EndTicks,
+    UINT32                  EndTicks,
     UINT32                  *TimeElapsed)
 {
     UINT32                  DeltaTicks = 0;
@@ -225,12 +225,12 @@ AcpiGetTimerDuration (
     UINT32                  Microseconds = 0;
     UINT32                  Remainder = 0;
 
-	FUNCTION_TRACE ("AcpiGetTimerDuration");
+    FUNCTION_TRACE ("AcpiGetTimerDuration");
 
-	if (!TimeElapsed) 
+    if (!TimeElapsed) 
     {
-		return_ACPI_STATUS (AE_BAD_PARAMETER);
-	}
+        return_ACPI_STATUS (AE_BAD_PARAMETER);
+    }
 
     /* 
      * Compute Tick Delta:
@@ -296,7 +296,7 @@ AcpiGetTimerDuration (
     *TimeElapsed += Milliseconds * 1000;
     *TimeElapsed += Microseconds;
 
-	return_ACPI_STATUS (AE_OK);
+    return_ACPI_STATUS (AE_OK);
 }
 
 
