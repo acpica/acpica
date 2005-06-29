@@ -1,8 +1,7 @@
-
 /******************************************************************************
  *
- * Module Name: amcreate - Named object creation
- *              $Revision: 1.41 $
+ * Module Name: excreate - Named object creation
+ *              $Revision: 1.93 $
  *
  *****************************************************************************/
 
@@ -10,8 +9,8 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, Intel Corp.  All rights
- * reserved.
+ * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
+ * All rights reserved.
  *
  * 2. License
  *
@@ -116,378 +115,26 @@
  *
  *****************************************************************************/
 
-#define __AMCREATE_C__
+#define __EXCREATE_C__
 
 #include "acpi.h"
-#include "acparser.h"
 #include "acinterp.h"
 #include "amlcode.h"
 #include "acnamesp.h"
 #include "acevents.h"
-#include "acdispat.h"
+#include "actables.h"
 
 
-#define _COMPONENT          INTERPRETER
-        MODULE_NAME         ("amcreate");
+#define _COMPONENT          ACPI_EXECUTER
+        ACPI_MODULE_NAME    ("excreate")
 
 
-/*******************************************************************************
- *
- * FUNCTION:    AcpiAmlExecCreateField
- *
- * PARAMETERS:  Opcode              - The opcode to be executed
- *              Operands            - List of operands for the opcode
- *
- * RETURN:      Status
- *
- * DESCRIPTION: Execute CreateField operators: CreateBitFieldOp,
- *              CreateByteFieldOp, CreateWordFieldOp, CreateDWordFieldOp,
- *              CreateFieldOp (which define fields in buffers)
- *
- * ALLOCATION:  Deletes CreateFieldOp's count operand descriptor
- *
- *
- *  ACPI SPECIFICATION REFERENCES:
- *  DefCreateBitField   :=  CreateBitFieldOp    SrcBuf  BitIdx    NameString
- *  DefCreateByteField  :=  CreateByteFieldOp   SrcBuf  ByteIdx   NameString
- *  DefCreateDWordField :=  CreateDWordFieldOp  SrcBuf  ByteIdx   NameString
- *  DefCreateField      :=  CreateFieldOp       SrcBuf  BitIdx    NumBits     NameString
- *  DefCreateWordField  :=  CreateWordFieldOp   SrcBuf  ByteIdx   NameString
- *  BitIndex            :=  TermArg=>Integer
- *  ByteIndex           :=  TermArg=>Integer
- *  NumBits             :=  TermArg=>Integer
- *  SourceBuff          :=  TermArg=>Buffer
- *
- ******************************************************************************/
-
-ACPI_STATUS
-AcpiAmlExecCreateField (
-    UINT16                  Opcode,
-    ACPI_WALK_STATE         *WalkState)
-{
-    ACPI_OBJECT_INTERNAL    *ResDesc = NULL;
-    ACPI_OBJECT_INTERNAL    *CntDesc = NULL;
-    ACPI_OBJECT_INTERNAL    *OffDesc = NULL;
-    ACPI_OBJECT_INTERNAL    *SrcDesc = NULL;
-    ACPI_OBJECT_INTERNAL    *FieldDesc;
-    ACPI_OBJECT_INTERNAL    *ObjDesc;
-    OBJECT_TYPE_INTERNAL    ResType;
-    ACPI_STATUS             Status;
-    UINT32                  NumOperands = 3;
-    UINT32                  Offset;
-    UINT32                  BitOffset;
-    UINT16                  BitCount;
-    UINT8                   TypeFound;
-
-
-    FUNCTION_TRACE ("AmlExecCreateField");
-
-
-    /* Resolve the operands */
-
-    Status = AcpiAmlResolveOperands (Opcode, WALK_OPERANDS, WalkState);
-    DUMP_OPERANDS (WALK_OPERANDS, IMODE_EXECUTE, AcpiPsGetOpcodeName (Opcode),
-                    NumOperands, "after AcpiAmlResolveOperands");
-
-
-    /* Get the operands */
-
-    Status |= AcpiDsObjStackPopObject (&ResDesc, WalkState);
-    if (AML_CREATE_FIELD_OP == Opcode)
-    {
-        NumOperands = 4;
-        Status |= AcpiDsObjStackPopObject (&CntDesc, WalkState);
-    }
-
-    Status |= AcpiDsObjStackPopObject (&OffDesc, WalkState);
-    Status |= AcpiDsObjStackPopObject (&SrcDesc, WalkState);
-
-    if (ACPI_FAILURE (Status))
-    {
-        /* Invalid parameters on object stack  */
-
-        DEBUG_PRINT (ACPI_ERROR, 
-            ("ExecCreateField/%s: bad operand(s) (0x%X)\n",
-            AcpiPsGetOpcodeName (Opcode), Status));
-
-        goto Cleanup;
-    }
-
-
-    Offset = OffDesc->Number.Value;
-
-
-    /*
-     * If ResDesc is a Name, it will be a direct name pointer after
-     * AcpiAmlResolveOperands()
-     */
-
-    if (!VALID_DESCRIPTOR_TYPE (ResDesc, ACPI_DESC_TYPE_NAMED))
-    {
-        DEBUG_PRINT (ACPI_ERROR, 
-            ("AmlExecCreateField (%s): destination must be a Named Object\n", 
-            AcpiPsGetOpcodeName (Opcode)));
-
-        Status = AE_AML_OPERAND_TYPE;
-        goto Cleanup;
-    }
-
-
-    /*
-     * Setup the Bit offsets and counts, according to the opcode
-     */
-
-    switch (Opcode)
-    {
-
-    /* DefCreateBitField */
-
-    case AML_BIT_FIELD_OP:
-
-        /* Offset is in bits, Field is a bit */
-
-        BitOffset = Offset;
-        BitCount = 1;
-        break;
-
-
-    /* DefCreateByteField */
-
-    case AML_BYTE_FIELD_OP:
-
-        /* Offset is in bytes, field is a byte */
-
-        BitOffset = 8 * Offset;
-        BitCount = 8;
-        break;
-
-
-    /* DefCreateWordField  */
-
-    case AML_WORD_FIELD_OP:
-
-        /* Offset is in bytes, field is a word */
-
-        BitOffset = 8 * Offset;
-        BitCount = 16;
-        break;
-
-
-    /* DefCreateDWordField */
-
-    case AML_DWORD_FIELD_OP:
-
-        /* Offset is in bytes, field is a dword */
-
-        BitOffset = 8 * Offset;
-        BitCount = 32;
-        break;
-
-
-    /* DefCreateField   */
-
-    case AML_CREATE_FIELD_OP:
-
-        /* Offset is in bits, count is in bits */
-
-        BitOffset = Offset;
-        BitCount = (UINT16) CntDesc->Number.Value;
-        break;
-
-
-    default:
-
-        DEBUG_PRINT (ACPI_ERROR,
-            ("AmlExecCreateField: Internal error - unknown field creation opcode %02x\n",
-            Opcode));
-        Status = AE_AML_BAD_OPCODE;
-        goto Cleanup;
-    }
-
-
-    /*
-     * Setup field according to the object type
-     */
-
-    switch (SrcDesc->Common.Type)
-    {
-
-    /* SourceBuff  :=  TermArg=>Buffer */
-
-    case ACPI_TYPE_BUFFER:
-
-        if (BitOffset + (UINT32) BitCount >
-            (8 * (UINT32) SrcDesc->Buffer.Length))
-        {
-            DEBUG_PRINT (ACPI_ERROR,
-                ("AmlExecCreateField: Field exceeds Buffer %d > %d\n",
-                 BitOffset + (UINT32) BitCount,
-                 8 * (UINT32) SrcDesc->Buffer.Length));
-            Status = AE_AML_BUFFER_LIMIT;
-            goto Cleanup;
-        }
-
-
-        /* Allocate an object for the field */
-
-        FieldDesc = AcpiCmCreateInternalObject (ACPI_TYPE_FIELD_UNIT);
-        if (!FieldDesc)
-        {
-            Status = AE_NO_MEMORY;
-            goto Cleanup;
-        }
-
-        /* Construct the field object */
-
-        FieldDesc->FieldUnit.Access       = (UINT8) ACCESS_ANY_ACC;
-        FieldDesc->FieldUnit.LockRule     = (UINT8) GLOCK_NEVER_LOCK;
-        FieldDesc->FieldUnit.UpdateRule   = (UINT8) UPDATE_PRESERVE;
-        FieldDesc->FieldUnit.Length       = BitCount;
-        FieldDesc->FieldUnit.BitOffset    = (UINT8) (BitOffset % 8);
-        FieldDesc->FieldUnit.Offset       = DIV_8 (BitOffset);
-        FieldDesc->FieldUnit.Container    = SrcDesc;
-        FieldDesc->FieldUnit.Sequence     = SrcDesc->Buffer.Sequence;
-
-        /* An additional reference for SrcDesc */
-
-        AcpiCmAddReference (SrcDesc);
-
-        break;
-
-
-    /* Improper object type */
-
-    default:
-
-        TypeFound = SrcDesc->Common.Type;
-
-        if ((TypeFound > (UINT8) INTERNAL_TYPE_REFERENCE) ||
-            !AcpiCmValidObjectType (TypeFound))
-        {
-            DEBUG_PRINT (ACPI_ERROR,
-                ("AmlExecCreateField: Tried to create field in invalid object type - 0x%X\n",
-                TypeFound));
-        }
-
-        else
-        {
-            DEBUG_PRINT (ACPI_ERROR,
-                ("AmlExecCreateField: Tried to create field in improper object type - %s\n",
-                AcpiCmGetTypeName (TypeFound)));
-        }
-
-        Status = AE_AML_OPERAND_TYPE;
-        goto Cleanup;
-    }
-
-
-    if (AML_CREATE_FIELD_OP == Opcode)
-    {
-        /* Delete object descriptor unique to CreateField  */
-
-        AcpiCmRemoveReference (CntDesc);
-        CntDesc = NULL;
-    }
-
-    /*
-     * This operation is supposed to cause the destination Name to refer
-     * to the defined FieldUnit -- it must not store the constructed
-     * FieldUnit object (or its current value) in some location that the
-     * Name may already be pointing to.  So, if the Name currently contains
-     * a reference which would cause AcpiAmlExecStore() to perform an indirect
-     * store rather than setting the value of the Name itself, clobber that
-     * reference before calling AcpiAmlExecStore().
-     */
-
-    ResType = AcpiNsGetType (ResDesc);
-
-    /* Type of Name's existing value */
-
-    switch (ResType)
-    {
-
-    case ACPI_TYPE_FIELD_UNIT:
-
-    case INTERNAL_TYPE_ALIAS:
-    case INTERNAL_TYPE_BANK_FIELD:
-    case INTERNAL_TYPE_DEF_FIELD:
-    case INTERNAL_TYPE_INDEX_FIELD:
-
-        ObjDesc = AcpiNsGetAttachedObject (ResDesc);
-        if (ObjDesc)
-        {
-            /*
-             * There is an existing object here;  delete it and zero out the
-             * object field within the NamedObject
-             */
-
-            DUMP_PATHNAME (ResDesc,
-                "AmlExecCreateField: Removing Current Reference",
-                TRACE_BFIELD, _COMPONENT);
-
-            DUMP_ENTRY (ResDesc, TRACE_BFIELD);
-            DUMP_STACK_ENTRY (ObjDesc);
-
-            AcpiCmRemoveReference (ObjDesc);
-            AcpiNsAttachObject ((ACPI_NAMED_OBJECT *) ResDesc, NULL, 
-                                    ACPI_TYPE_ANY);
-        }
-
-        /* Set the type to ANY (or the store below will fail) */
-
-        ((ACPI_NAMED_OBJECT*) ResDesc)->Type = ACPI_TYPE_ANY;
-
-        break;
-
-
-    default:
-
-        break;
-    }
-
-
-    /* Store constructed field descriptor in result location */
-
-    Status = AcpiAmlExecStore (FieldDesc, ResDesc, WalkState);
-
-    /*
-     * If the field descriptor was not physically stored (or if a failure
-     * above), we must delete it
-     */
-    if (FieldDesc->Common.ReferenceCount <= 1)
-    {
-        AcpiCmRemoveReference (FieldDesc);
-    }
-
-
-Cleanup:
-
-    /* Always delete the operands */
-
-    AcpiCmRemoveReference (OffDesc);
-    AcpiCmRemoveReference (SrcDesc);
-
-    if (AML_CREATE_FIELD_OP == Opcode)
-    {
-        AcpiCmRemoveReference (CntDesc);
-    }
-
-    /* On failure, delete the result descriptor */
-
-    if (ACPI_FAILURE (Status))
-    {
-        AcpiCmRemoveReference (ResDesc);     /* Result descriptor */
-    }
-
-    return_ACPI_STATUS (Status);
-}
-
-
+#ifndef ACPI_NO_METHOD_EXECUTION
 /*****************************************************************************
  *
- * FUNCTION:    AcpiAmlExecCreateAlias
+ * FUNCTION:    AcpiExCreateAlias
  *
- * PARAMETERS:  Operands            - List of operands for the opcode
+ * PARAMETERS:  WalkState            - Current state, contains operands
  *
  * RETURN:      Status
  *
@@ -496,51 +143,35 @@ Cleanup:
  ****************************************************************************/
 
 ACPI_STATUS
-AcpiAmlExecCreateAlias (
+AcpiExCreateAlias (
     ACPI_WALK_STATE         *WalkState)
 {
-    ACPI_NAMED_OBJECT       *SrcEntry;
-    ACPI_NAMED_OBJECT       *AliasEntry;
+    ACPI_NAMESPACE_NODE     *SourceNode;
     ACPI_STATUS             Status;
 
 
-    FUNCTION_TRACE ("AmlExecCreateAlias");
+    ACPI_FUNCTION_TRACE ("ExCreateAlias");
 
 
-    /* Get the source/alias operands (both NTEs) */
+    /* Get the source/alias operands (both namespace nodes) */
 
-    Status = AcpiDsObjStackPopObject ((ACPI_OBJECT_INTERNAL **) &SrcEntry,
-                                        WalkState);
-    if (ACPI_FAILURE (Status))
-    {
-        return_ACPI_STATUS (Status);
-    }
+    SourceNode = (ACPI_NAMESPACE_NODE *) WalkState->Operands[1];
 
-    /* 
-     * Don't pop it, it gets removed in the calling routine
-     */
 
-    AliasEntry  = AcpiDsObjStackGetValue (0, WalkState);
+    /* Attach the original source object to the new Alias Node */
 
-    /* Add an additional reference to the object */
-
-    AcpiCmAddReference (SrcEntry->Object);
-
-    /*
-     * Attach the original source Named Object to the new Alias Named Object.
-     */
-    Status = AcpiNsAttachObject (AliasEntry, SrcEntry->Object,
-                                    SrcEntry->Type);
-
+    Status = AcpiNsAttachObject ((ACPI_NAMESPACE_NODE *) WalkState->Operands[0],
+                                    AcpiNsGetAttachedObject (SourceNode),
+                                    SourceNode->Type);
 
     /*
      * The new alias assumes the type of the source, but it points
-     * to the same object.  The reference count of the object has two
-     * additional references to prevent deletion out from under either the
-     * source or the alias Named Object
+     * to the same object.  The reference count of the object has an
+     * additional reference to prevent deletion out from under either the
+     * source or the alias Node
      */
 
-    /* Since both operands are NTEs, we don't need to delete them */
+    /* Since both operands are Nodes, we don't need to delete them */
 
     return_ACPI_STATUS (Status);
 }
@@ -548,9 +179,9 @@ AcpiAmlExecCreateAlias (
 
 /*****************************************************************************
  *
- * FUNCTION:    AcpiAmlExecCreateEvent
+ * FUNCTION:    AcpiExCreateEvent
  *
- * PARAMETERS:  None
+ * PARAMETERS:  WalkState           - Current state
  *
  * RETURN:      Status
  *
@@ -559,138 +190,120 @@ AcpiAmlExecCreateAlias (
  ****************************************************************************/
 
 ACPI_STATUS
-AcpiAmlExecCreateEvent (
+AcpiExCreateEvent (
     ACPI_WALK_STATE         *WalkState)
 {
     ACPI_STATUS             Status;
-    ACPI_OBJECT_INTERNAL    *ObjDesc;
+    ACPI_OPERAND_OBJECT     *ObjDesc;
 
 
-    FUNCTION_TRACE ("AmlExecCreateEvent");
+    ACPI_FUNCTION_TRACE ("ExCreateEvent");
 
 
- BREAKPOINT3;
-
-    ObjDesc = AcpiCmCreateInternalObject (ACPI_TYPE_EVENT);
+    ObjDesc = AcpiUtCreateInternalObject (ACPI_TYPE_EVENT);
     if (!ObjDesc)
     {
         Status = AE_NO_MEMORY;
         goto Cleanup;
     }
 
-    /* Create the actual OS semaphore */
-
-    /* TBD: [Investigate] should be created with 0 or 1 units? */
-
-    Status = AcpiOsCreateSemaphore (ACPI_NO_UNIT_LIMIT, 1,
+    /*
+     * Create the actual OS semaphore, with zero initial units -- meaning
+     * that the event is created in an unsignalled state
+     */
+    Status = AcpiOsCreateSemaphore (ACPI_NO_UNIT_LIMIT, 0,
                                     &ObjDesc->Event.Semaphore);
     if (ACPI_FAILURE (Status))
     {
-        AcpiCmRemoveReference (ObjDesc);
         goto Cleanup;
     }
 
-    /* Attach object to the Named Object */
+    /* Attach object to the Node */
 
-    Status = AcpiNsAttachObject (AcpiDsObjStackGetValue (0, WalkState),
-                                    ObjDesc, (UINT8) ACPI_TYPE_EVENT);
-    if (ACPI_FAILURE (Status))
-    {
-        AcpiOsDeleteSemaphore (ObjDesc->Event.Semaphore);
-        AcpiCmRemoveReference (ObjDesc);
-        goto Cleanup;
-    }
-
+    Status = AcpiNsAttachObject ((ACPI_NAMESPACE_NODE *) WalkState->Operands[0],
+                                    ObjDesc, ACPI_TYPE_EVENT);
 
 Cleanup:
-
+    /*
+     * Remove local reference to the object (on error, will cause deletion
+     * of both object and semaphore if present.)
+     */
+    AcpiUtRemoveReference (ObjDesc);
     return_ACPI_STATUS (Status);
 }
 
 
 /*****************************************************************************
  *
- * FUNCTION:    AcpiAmlExecCreateMutex
+ * FUNCTION:    AcpiExCreateMutex
  *
- * PARAMETERS:  InterpreterMode     - Current running mode (load1/Load2/Exec)
- *              Operands            - List of operands for the opcode
+ * PARAMETERS:  WalkState           - Current state
  *
  * RETURN:      Status
  *
  * DESCRIPTION: Create a new mutex object
  *
+ *              Mutex (Name[0], SyncLevel[1])
+ *
  ****************************************************************************/
 
 ACPI_STATUS
-AcpiAmlExecCreateMutex (
+AcpiExCreateMutex (
     ACPI_WALK_STATE         *WalkState)
 {
     ACPI_STATUS             Status = AE_OK;
-    ACPI_OBJECT_INTERNAL    *SyncDesc;
-    ACPI_OBJECT_INTERNAL    *ObjDesc;
+    ACPI_OPERAND_OBJECT     *ObjDesc;
 
 
-    FUNCTION_TRACE_PTR ("AmlExecCreateMutex", WALK_OPERANDS);
+    ACPI_FUNCTION_TRACE_PTR ("ExCreateMutex", ACPI_WALK_OPERANDS);
 
 
-    /* Get the operand */
+    /* Create the new mutex object */
 
-    Status = AcpiDsObjStackPopObject (&SyncDesc, WalkState);
-    if (ACPI_FAILURE (Status))
-    {
-        return_ACPI_STATUS (Status);
-    }
-
-    /* Attempt to allocate a new object */
-
-    ObjDesc = AcpiCmCreateInternalObject (ACPI_TYPE_MUTEX);
+    ObjDesc = AcpiUtCreateInternalObject (ACPI_TYPE_MUTEX);
     if (!ObjDesc)
     {
         Status = AE_NO_MEMORY;
         goto Cleanup;
     }
 
-    /* Create the actual OS semaphore */
-
+    /*
+     * Create the actual OS semaphore.
+     * One unit max to make it a mutex, with one initial unit to allow
+     * the mutex to be acquired.
+     */
     Status = AcpiOsCreateSemaphore (1, 1, &ObjDesc->Mutex.Semaphore);
     if (ACPI_FAILURE (Status))
     {
-        AcpiCmRemoveReference (ObjDesc);
         goto Cleanup;
     }
 
-    ObjDesc->Mutex.SyncLevel = (UINT8) SyncDesc->Number.Value;
+    /* Init object and attach to NS node */
 
-    /* ObjDesc was on the stack top, and the name is below it */
+    ObjDesc->Mutex.SyncLevel = (UINT8) WalkState->Operands[1]->Integer.Value;
 
-    Status = AcpiNsAttachObject (AcpiDsObjStackGetValue (0, WalkState),
-                                ObjDesc, (UINT8) ACPI_TYPE_MUTEX);
-    if (ACPI_FAILURE (Status))
-    {
-        AcpiOsDeleteSemaphore (ObjDesc->Mutex.Semaphore);
-        AcpiCmRemoveReference (ObjDesc);
-        goto Cleanup;
-    }
+    Status = AcpiNsAttachObject ((ACPI_NAMESPACE_NODE *) WalkState->Operands[0],
+                                ObjDesc, ACPI_TYPE_MUTEX);
 
 
 Cleanup:
-
-    /* Always delete the operand */
-
-    AcpiCmRemoveReference (SyncDesc);
-
+    /*
+     * Remove local reference to the object (on error, will cause deletion
+     * of both object and semaphore if present.)
+     */
+    AcpiUtRemoveReference (ObjDesc);
     return_ACPI_STATUS (Status);
 }
 
 
 /*****************************************************************************
  *
- * FUNCTION:    AcpiAmlExecCreateRegion
+ * FUNCTION:    AcpiExCreateRegion
  *
- * PARAMETERS:  AmlPtr              - Pointer to the region declaration AML
+ * PARAMETERS:  AmlStart            - Pointer to the region declaration AML
  *              AmlLength           - Max length of the declaration AML
  *              Operands            - List of operands for the opcode
- *              InterpreterMode     - Load1/Load2/Execute
+ *              WalkState           - Current state
  *
  * RETURN:      Status
  *
@@ -699,299 +312,303 @@ Cleanup:
  ****************************************************************************/
 
 ACPI_STATUS
-AcpiAmlExecCreateRegion (
-    UINT8                   *AmlPtr,
+AcpiExCreateRegion (
+    UINT8                   *AmlStart,
     UINT32                  AmlLength,
-    UINT32                  RegionSpace,
+    UINT8                   RegionSpace,
     ACPI_WALK_STATE         *WalkState)
 {
     ACPI_STATUS             Status;
-    ACPI_OBJECT_INTERNAL    *ObjDescRegion;
-    ACPI_HANDLE             *Entry;
+    ACPI_OPERAND_OBJECT     *ObjDesc;
+    ACPI_NAMESPACE_NODE     *Node;
+    ACPI_OPERAND_OBJECT     *RegionObj2;
 
 
-    FUNCTION_TRACE ("AmlExecCreateRegion");
+    ACPI_FUNCTION_TRACE ("ExCreateRegion");
 
 
-    if (RegionSpace >= NUM_REGION_TYPES)
+    /* Get the Node from the object stack  */
+
+    Node = WalkState->Op->Common.Node;
+
+    /*
+     * If the region object is already attached to this node,
+     * just return
+     */
+    if (AcpiNsGetAttachedObject (Node))
     {
-        /* TBD: [Future] In ACPI 2.0, valid region space 
-         *  includes types 0-6 (Adding CMOS and PCIBARTarget).
-         *  Also, types 0x80-0xff are defined as "OEM Region 
-         *  Space handler"
-         * 
-         * Should this return an error, or should we just keep
-         * going?  How do we handle the OEM region handlers? 
-         */
-
-        DEBUG_PRINT (TRACE_LOAD,
-            ("AmlDoNamedObject: Type out of range [*???*]\n"));
-        REPORT_WARNING ("Unable to decode the RegionSpace");
-    }
-
-    DEBUG_PRINT (TRACE_LOAD, ("AmlDoNamedObject: Region Type [%s]\n",
-                    AcpiGbl_RegionTypes[RegionSpace]));
-
-
-    /* Get the Named Object from the object stack  */
-
-    Entry = AcpiDsObjStackGetValue (0, WalkState);
-
-    /* Create the region descriptor */
-
-    ObjDescRegion = AcpiCmCreateInternalObject (ACPI_TYPE_REGION);
-    if (!ObjDescRegion)
-    {
-        Status = AE_NO_MEMORY;
-        goto Cleanup;
+        return_ACPI_STATUS (AE_OK);
     }
 
     /*
-     * Allocate a method object for this region.
+     * Space ID must be one of the predefined IDs, or in the user-defined
+     * range
      */
-    ObjDescRegion->Region.Method =  AcpiCmCreateInternalObject (
-                                        ACPI_TYPE_METHOD);
-    if (!ObjDescRegion->Region.Method)
+    if ((RegionSpace >= ACPI_NUM_PREDEFINED_REGIONS) &&
+        (RegionSpace < ACPI_USER_REGION_BEGIN))
+    {
+        ACPI_REPORT_ERROR (("Invalid AddressSpace type %X\n", RegionSpace));
+        return_ACPI_STATUS (AE_AML_INVALID_SPACE_ID);
+    }
+
+    ACPI_DEBUG_PRINT ((ACPI_DB_LOAD, "Region Type - %s (%X)\n",
+                    AcpiUtGetRegionName (RegionSpace), RegionSpace));
+
+
+    /* Create the region descriptor */
+
+    ObjDesc = AcpiUtCreateInternalObject (ACPI_TYPE_REGION);
+    if (!ObjDesc)
     {
         Status = AE_NO_MEMORY;
         goto Cleanup;
     }
-
-    /* Init the region from the operands */
-
-    ObjDescRegion->Region.SpaceId       = (UINT16) RegionSpace;
-    ObjDescRegion->Region.Address       = 0;
-    ObjDescRegion->Region.Length        = 0;
-    ObjDescRegion->Region.RegionFlags   = 0;
 
     /*
      * Remember location in AML stream of address & length
      * operands since they need to be evaluated at run time.
      */
-    ObjDescRegion->Region.Method->Method.Pcode       = AmlPtr;
-    ObjDescRegion->Region.Method->Method.PcodeLength = AmlLength;
+    RegionObj2                  = ObjDesc->Common.NextObject;
+    RegionObj2->Extra.AmlStart  = AmlStart;
+    RegionObj2->Extra.AmlLength = AmlLength;
 
+    /* Init the region from the operands */
 
-    /* Install the new region object in the parent Named Object */
+    ObjDesc->Region.SpaceId = RegionSpace;
+    ObjDesc->Region.Address = 0;
+    ObjDesc->Region.Length  = 0;
+    ObjDesc->Region.Node    = Node;
 
-    ObjDescRegion->Region.NameDesc = (ACPI_NAMED_OBJECT *) Entry;
+    /* Install the new region object in the parent Node */
 
-    Status = AcpiNsAttachObject ((ACPI_NAMED_OBJECT *) Entry, ObjDescRegion,
-                                (UINT8) ACPI_TYPE_REGION);
+    Status = AcpiNsAttachObject (Node, ObjDesc, ACPI_TYPE_REGION);
 
-    if (ACPI_FAILURE (Status))
-    {
-        goto Cleanup;
-    }
-
-    /*
-     * If we have a valid region, initialize it
-     * Namespace is NOT locked at this point.
-     */
-
-    Status = AcpiEvInitializeRegion (ObjDescRegion, FALSE);
-
-    if (ACPI_FAILURE (Status))
-    {
-        /*
-         *  If AE_NOT_EXIST is returned, it is not fatal 
-         *  because many regions get created before a handler
-         *  is installed for said region.
-         */
-        if (AE_NOT_EXIST == Status)
-        {
-            Status = AE_OK;
-        }
-    }
 
 Cleanup:
 
-    if (ACPI_FAILURE (Status))
-    {
-        /* Delete region object and method subobject */
+    /* Remove local reference to the object */
 
-        if (ObjDescRegion)
-        {
-            /* Remove deletes both objects! */
-
-            AcpiCmRemoveReference (ObjDescRegion);
-            ObjDescRegion = NULL;
-        }
-    }
-
+    AcpiUtRemoveReference (ObjDesc);
     return_ACPI_STATUS (Status);
 }
 
 
 /*****************************************************************************
  *
- * FUNCTION:    AcpiAmlExecCreateProcessor
+ * FUNCTION:    AcpiExCreateTableRegion
  *
- * PARAMETERS:  Op              - Op containing the Processor definition and
- *                                args
- *              ProcessorNTE    - Named Object for the containing Named Object
+ * PARAMETERS:  WalkState           - Current state
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Create a new DataTableRegion object
+ *
+ ****************************************************************************/
+
+ACPI_STATUS
+AcpiExCreateTableRegion (
+    ACPI_WALK_STATE         *WalkState)
+{
+    ACPI_STATUS             Status;
+    ACPI_OPERAND_OBJECT     **Operand = &WalkState->Operands[0];
+    ACPI_OPERAND_OBJECT     *ObjDesc;
+    ACPI_NAMESPACE_NODE     *Node;
+    ACPI_TABLE_HEADER       *Table;
+    ACPI_OPERAND_OBJECT     *RegionObj2;
+
+
+    ACPI_FUNCTION_TRACE ("ExCreateTableRegion");
+
+    /* Get the Node from the object stack  */
+
+    Node = WalkState->Op->Common.Node;
+
+    /*
+     * If the region object is already attached to this node,
+     * just return
+     */
+    if (AcpiNsGetAttachedObject (Node))
+    {
+        return_ACPI_STATUS (AE_OK);
+    }
+
+    /* Find the ACPI table */
+
+    Status = AcpiTbFindTable (Operand[1]->String.Pointer,
+                              Operand[2]->String.Pointer,
+                              Operand[3]->String.Pointer, &Table);
+
+    if (ACPI_FAILURE (Status))
+    {
+        return_ACPI_STATUS (Status);
+    }
+
+    /* Create the region descriptor */
+
+    ObjDesc = AcpiUtCreateInternalObject (ACPI_TYPE_REGION);
+    if (!ObjDesc)
+    {
+        return_ACPI_STATUS (AE_NO_MEMORY);
+    }
+
+    RegionObj2                      = ObjDesc->Common.NextObject;
+    RegionObj2->Extra.RegionContext = NULL;
+
+    /* Init the region from the operands */
+
+    ObjDesc->Region.SpaceId = REGION_DATA_TABLE;
+    ObjDesc->Region.Address = (ACPI_PHYSICAL_ADDRESS) ACPI_TO_INTEGER (Table);
+    ObjDesc->Region.Length  = Table->Length;
+    ObjDesc->Region.Node    = Node;
+    ObjDesc->Region.Flags   = AOPOBJ_DATA_VALID;
+
+    /* Install the new region object in the parent Node */
+
+    Status = AcpiNsAttachObject (Node, ObjDesc, ACPI_TYPE_REGION);
+    if (ACPI_FAILURE (Status))
+    {
+        goto Cleanup;
+    }
+
+    Status = AcpiEvInitializeRegion (ObjDesc, FALSE);
+    if (ACPI_FAILURE (Status))
+    {
+        if (Status == AE_NOT_EXIST)
+        {
+            Status = AE_OK;
+        }
+        else
+        {
+            goto Cleanup;
+        }
+    }
+
+    ObjDesc->Region.Flags |= AOPOBJ_SETUP_COMPLETE;
+
+
+Cleanup:
+
+    /* Remove local reference to the object */
+
+    AcpiUtRemoveReference (ObjDesc);
+    return_ACPI_STATUS (Status);
+}
+
+
+/*****************************************************************************
+ *
+ * FUNCTION:    AcpiExCreateProcessor
+ *
+ * PARAMETERS:  WalkState           - Current state
  *
  * RETURN:      Status
  *
  * DESCRIPTION: Create a new processor object and populate the fields
  *
+ *              Processor (Name[0], CpuID[1], PblockAddr[2], PblockLength[3])
+ *
  ****************************************************************************/
 
 ACPI_STATUS
-AcpiAmlExecCreateProcessor (
-    ACPI_GENERIC_OP         *Op,
-    ACPI_HANDLE             ProcessorNTE)
+AcpiExCreateProcessor (
+    ACPI_WALK_STATE         *WalkState)
 {
+    ACPI_OPERAND_OBJECT     **Operand = &WalkState->Operands[0];
+    ACPI_OPERAND_OBJECT     *ObjDesc;
     ACPI_STATUS             Status;
-    ACPI_GENERIC_OP         *Arg;
-    ACPI_OBJECT_INTERNAL    *ObjDesc;
 
 
-    FUNCTION_TRACE_PTR ("AmlExecCreateProcessor", Op);
+    ACPI_FUNCTION_TRACE_PTR ("ExCreateProcessor", WalkState);
 
 
-    ObjDesc = AcpiCmCreateInternalObject (ACPI_TYPE_PROCESSOR);
+    /* Create the processor object */
+
+    ObjDesc = AcpiUtCreateInternalObject (ACPI_TYPE_PROCESSOR);
     if (!ObjDesc)
     {
-        Status = AE_NO_MEMORY;
-        return_ACPI_STATUS (Status);
+        return_ACPI_STATUS (AE_NO_MEMORY);
     }
 
-    /* Install the new processor object in the parent Named Object */
+    /*
+     * Initialize the processor object from the operands
+     */
+    ObjDesc->Processor.ProcId  = (UINT8)           Operand[1]->Integer.Value;
+    ObjDesc->Processor.Address = (ACPI_IO_ADDRESS) Operand[2]->Integer.Value;
+    ObjDesc->Processor.Length  = (UINT8)           Operand[3]->Integer.Value;
 
-    Status = AcpiNsAttachObject (ProcessorNTE, ObjDesc,
-                                    (UINT8) ACPI_TYPE_PROCESSOR);
-    if (ACPI_FAILURE (Status))
-    {
-        return_ACPI_STATUS(Status);
-    }
+    /* Install the processor object in the parent Node */
 
-    Arg = Op->Value.Arg;
+    Status = AcpiNsAttachObject ((ACPI_NAMESPACE_NODE *) Operand[0],
+                    ObjDesc, ACPI_TYPE_PROCESSOR);
 
-    /* check existence */
 
-    if (!Arg)
-    {
-        Status = AE_AML_NO_OPERAND;
-        return_ACPI_STATUS (Status);
-    }
+    /* Remove local reference to the object */
 
-    /* First arg is the Processor ID */
-
-    ObjDesc->Processor.ProcId = (UINT8) Arg->Value.Integer;
-
-    /* Move to next arg and check existence */
-
-    Arg = Arg->Next;
-    if (!Arg)
-    {
-        Status = AE_AML_NO_OPERAND;
-        return_ACPI_STATUS (Status);
-    }
-
-    /* Second arg is the PBlock Address */
-
-    ObjDesc->Processor.PblkAddress = (ACPI_IO_ADDRESS) Arg->Value.Integer;
-
-    /* Move to next arg and check existence */
-
-    Arg = Arg->Next;
-    if (!Arg)
-    {
-        Status = AE_AML_NO_OPERAND;
-        return_ACPI_STATUS (Status);
-    }
-
-    /* Third arg is the PBlock Length */
-
-    ObjDesc->Processor.PblkLength = (UINT8) Arg->Value.Integer;
-
-    return_ACPI_STATUS (AE_OK);
+    AcpiUtRemoveReference (ObjDesc);
+    return_ACPI_STATUS (Status);
 }
 
 
 /*****************************************************************************
  *
- * FUNCTION:    AcpiAmlExecCreatePowerResource
+ * FUNCTION:    AcpiExCreatePowerResource
  *
- * PARAMETERS:  Op              - Op containing the PowerResource definition
- *                                and args
- *              PowerResNTE     - Named Object for the containing Named Object
+ * PARAMETERS:  WalkState           - Current state
  *
  * RETURN:      Status
  *
  * DESCRIPTION: Create a new PowerResource object and populate the fields
  *
+ *              PowerResource (Name[0], SystemLevel[1], ResourceOrder[2])
+ *
  ****************************************************************************/
 
 ACPI_STATUS
-AcpiAmlExecCreatePowerResource (
-    ACPI_GENERIC_OP         *Op,
-    ACPI_HANDLE             PowerResNTE)
+AcpiExCreatePowerResource (
+    ACPI_WALK_STATE         *WalkState)
 {
+    ACPI_OPERAND_OBJECT     **Operand = &WalkState->Operands[0];
     ACPI_STATUS             Status;
-    ACPI_GENERIC_OP         *Arg;
-    ACPI_OBJECT_INTERNAL    *ObjDesc;
+    ACPI_OPERAND_OBJECT     *ObjDesc;
 
 
-    FUNCTION_TRACE_PTR ("AmlExecCreatePowerResource", Op);
+    ACPI_FUNCTION_TRACE_PTR ("ExCreatePowerResource", WalkState);
 
 
-    ObjDesc = AcpiCmCreateInternalObject (ACPI_TYPE_POWER);
+    /* Create the power resource object */
+
+    ObjDesc = AcpiUtCreateInternalObject (ACPI_TYPE_POWER);
     if (!ObjDesc)
     {
-        Status = AE_NO_MEMORY;
-        return_ACPI_STATUS (Status);
+        return_ACPI_STATUS (AE_NO_MEMORY);
     }
 
-    /* Install the new power resource object in the parent Named Object */
+    /* Initialize the power object from the operands */
 
-    Status = AcpiNsAttachObject (PowerResNTE, ObjDesc,
-                                (UINT8) ACPI_TYPE_POWER);
-    if (ACPI_FAILURE (Status))
-    {
-        return_ACPI_STATUS(Status);
-    }
+    ObjDesc->PowerResource.SystemLevel   = (UINT8)  Operand[1]->Integer.Value;
+    ObjDesc->PowerResource.ResourceOrder = (UINT16) Operand[2]->Integer.Value;
 
-    Arg = Op->Value.Arg;
+    /* Install the  power resource object in the parent Node */
 
-    /* check existence */
+    Status = AcpiNsAttachObject ((ACPI_NAMESPACE_NODE *) Operand[0],
+                    ObjDesc, ACPI_TYPE_POWER);
 
-    if (!Arg)
-    {
-        Status = AE_AML_NO_OPERAND;
-        return_ACPI_STATUS (Status);
-    }
 
-    /* First arg is the SystemLevel */
+    /* Remove local reference to the object */
 
-    ObjDesc->PowerResource.SystemLevel = (UINT8) Arg->Value.Integer;
-
-    /* Move to next arg and check existence */
-
-    Arg = Arg->Next;
-    if (!Arg)
-    {
-        Status = AE_AML_NO_OPERAND;
-        return_ACPI_STATUS (Status);
-    }
-
-    /* Second arg is the PBlock Address */
-
-    ObjDesc->PowerResource.ResourceOrder = (UINT16) Arg->Value.Integer;
-
-    return_ACPI_STATUS (AE_OK);
+    AcpiUtRemoveReference (ObjDesc);
+    return_ACPI_STATUS (Status);
 }
 
+#endif
 
 /*****************************************************************************
  *
- * FUNCTION:    AcpiAmlExecCreateMethod
+ * FUNCTION:    AcpiExCreateMethod
  *
- * PARAMETERS:  AmlPtr          - First byte of the method's AML
+ * PARAMETERS:  AmlStart        - First byte of the method's AML
  *              AmlLength       - AML byte count for this method
- *              MethodFlags     - AML method flag byte
- *              Method          - Method Named Object
+ *              WalkState       - Current state
  *
  * RETURN:      Status
  *
@@ -1000,53 +617,52 @@ AcpiAmlExecCreatePowerResource (
  ****************************************************************************/
 
 ACPI_STATUS
-AcpiAmlExecCreateMethod (
-    UINT8                   *AmlPtr,
+AcpiExCreateMethod (
+    UINT8                   *AmlStart,
     UINT32                  AmlLength,
-    UINT32                  MethodFlags,
-    ACPI_HANDLE             Method)
+    ACPI_WALK_STATE         *WalkState)
 {
-    ACPI_OBJECT_INTERNAL    *ObjDesc;
+    ACPI_OPERAND_OBJECT     **Operand = &WalkState->Operands[0];
+    ACPI_OPERAND_OBJECT     *ObjDesc;
     ACPI_STATUS             Status;
+    UINT8                   MethodFlags;
 
 
-    FUNCTION_TRACE_PTR ("AmlExecCreateMethod", Method);
+    ACPI_FUNCTION_TRACE_PTR ("ExCreateMethod", WalkState);
 
 
     /* Create a new method object */
 
-    ObjDesc = AcpiCmCreateInternalObject (ACPI_TYPE_METHOD);
+    ObjDesc = AcpiUtCreateInternalObject (ACPI_TYPE_METHOD);
     if (!ObjDesc)
     {
        return_ACPI_STATUS (AE_NO_MEMORY);
     }
 
-    /* Get the method's AML pointer/length from the Op */
+    /* Save the method's AML pointer and length  */
 
-    ObjDesc->Method.Pcode       = AmlPtr;
-    ObjDesc->Method.PcodeLength = AmlLength;
+    ObjDesc->Method.AmlStart  = AmlStart;
+    ObjDesc->Method.AmlLength = AmlLength;
 
-    /*
-     * First argument is the Method Flags (contains parameter count for the
-     * method)
-     */
+    /* disassemble the method flags */
 
-    ObjDesc->Method.MethodFlags = (UINT8) MethodFlags;
-    ObjDesc->Method.ParamCount  = (UINT8) (MethodFlags &
-                                            METHOD_FLAGS_ARG_COUNT);
+    MethodFlags = (UINT8) Operand[1]->Integer.Value;
+
+    ObjDesc->Method.MethodFlags = MethodFlags;
+    ObjDesc->Method.ParamCount  = (UINT8) (MethodFlags & METHOD_FLAGS_ARG_COUNT);
 
     /*
-     * Get the concurrency count.  If required, a semaphore will be 
+     * Get the concurrency count.  If required, a semaphore will be
      * created for this method when it is parsed.
-     *
-     * TBD: [Future]  for APCI 2.0, there will be a SyncLevel value, not
-     * just a flag
-     * Concurrency = SyncLevel + 1;.
      */
-
     if (MethodFlags & METHOD_FLAGS_SERIALIZED)
     {
-        ObjDesc->Method.Concurrency = 1;
+        /*
+         * ACPI 1.0: Concurrency = 1
+         * ACPI 2.0: Concurrency = (SyncLevel (in method declaration) + 1)
+         */
+        ObjDesc->Method.Concurrency = (UINT8)
+                        (((MethodFlags & METHOD_FLAGS_SYNCH_LEVEL) >> 4) + 1);
     }
 
     else
@@ -1054,14 +670,18 @@ AcpiAmlExecCreateMethod (
         ObjDesc->Method.Concurrency = INFINITE_CONCURRENCY;
     }
 
-    /* Attach the new object to the method Named Object */
+    /* Attach the new object to the method Node */
 
-    Status = AcpiNsAttachObject (Method, ObjDesc, (UINT8) ACPI_TYPE_METHOD);
-    if (ACPI_FAILURE (Status))
-    {
-        AcpiCmDeleteObjectDesc (ObjDesc);
-    }
+    Status = AcpiNsAttachObject ((ACPI_NAMESPACE_NODE *) Operand[0],
+                    ObjDesc, ACPI_TYPE_METHOD);
 
+    /* Remove local reference to the object */
+
+    AcpiUtRemoveReference (ObjDesc);
+
+    /* Remove a reference to the operand */
+
+    AcpiUtRemoveReference (Operand[1]);
     return_ACPI_STATUS (Status);
 }
 
