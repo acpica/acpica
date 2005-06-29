@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: aslopt- Compiler optimizations
- *              $Revision: 1.14 $
+ *              $Revision: 1.15 $
  *
  *****************************************************************************/
 
@@ -211,8 +211,11 @@ OptSearchToRoot (
     *NewPath = ACPI_MEM_CALLOCATE (ACPI_NAME_SIZE + 1);
     ACPI_STRCPY (*NewPath, Path);
 
-    AslError (ASL_OPTIMIZATION, ASL_MSG_SINGLE_NAME_OPTIMIZATION, Op,
-            *NewPath);
+    if (ACPI_STRNCMP (*NewPath, "_T_", 3))
+    {
+        AslError (ASL_OPTIMIZATION, ASL_MSG_SINGLE_NAME_OPTIMIZATION, Op,
+                *NewPath);
+    }
 
     return (AE_OK);
 }
