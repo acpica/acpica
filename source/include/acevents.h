@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acevents.h - Event subcomponent prototypes and defines
- *       $Revision: 1.84 $
+ *       $Revision: 1.85 $
  *
  *****************************************************************************/
 
@@ -182,9 +182,14 @@ AcpiEvNotifyDispatch (
  * Evgpe - GPE handling and dispatch
  */
 
+ACPI_STATUS
+AcpiEvWalkGpeList (
+    ACPI_GPE_CALLBACK       GpeWalkCallback);
+
 ACPI_GPE_EVENT_INFO *
 AcpiEvGetGpeEventInfo (
-    UINT32                  GpeNumber);
+    UINT32                  GpeNumber,
+    ACPI_GPE_BLOCK_INFO     *OwningGpeBlock);
 
 ACPI_STATUS
 AcpiEvGpeInitialize (
@@ -288,6 +293,10 @@ AcpiEvInitializeRegion (
 /*
  * Evsci - SCI (System Control Interrupt) handling/dispatch
  */
+
+UINT32 ACPI_SYSTEM_XFACE
+AcpiEvGpeXruptHandler (
+    void                    *Context);
 
 UINT32
 AcpiEvInstallSciHandler (

@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acglobal.h - Declarations for global variables
- *       $Revision: 1.137 $
+ *       $Revision: 1.138 $
  *
  *****************************************************************************/
 
@@ -307,7 +307,8 @@ ACPI_EXTERN UINT8                       AcpiGbl_SleepTypeB;
 
 extern      ACPI_FIXED_EVENT_INFO       AcpiGbl_FixedEventInfo[ACPI_NUM_FIXED_EVENTS];
 ACPI_EXTERN ACPI_FIXED_EVENT_HANDLER    AcpiGbl_FixedEventHandlers[ACPI_NUM_FIXED_EVENTS];
-ACPI_EXTERN ACPI_GPE_BLOCK_INFO         *AcpiGbl_GpeBlockListHead;
+ACPI_EXTERN ACPI_GPE_XRUPT_INFO         *AcpiGbl_GpeXruptListHead;
+ACPI_EXTERN ACPI_GPE_BLOCK_INFO         *AcpiGbl_GpeFadtBlocks[ACPI_MAX_GPE_BLOCKS];
 
 
 /*****************************************************************************
