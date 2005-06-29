@@ -209,8 +209,8 @@ NsDumpOneObject (
     NAME_TABLE_ENTRY        *ThisEntry;
     UINT8                   *Value;
     ACPI_OBJECT_INTERNAL    *ObjDesc = NULL;
-    ACPI_OBJECT_TYPE        ObjType;
-    ACPI_OBJECT_TYPE        Type;
+    OBJECT_TYPE_INTERNAL    ObjType;
+    OBJECT_TYPE_INTERNAL    Type;
     UINT32                  BytesToDump;
     UINT32                  DownstreamSiblingMask = 0;
     INT32                   LevelTmp;
@@ -509,7 +509,7 @@ Cleanup:
 
 void
 NsDumpObjects (
-    ACPI_OBJECT_TYPE        Type, 
+    OBJECT_TYPE_INTERNAL    Type, 
     UINT32                  MaxDepth, 
     UINT32                  OwnerId,
     ACPI_HANDLE             StartHandle)
