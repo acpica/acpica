@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: actypes.h - Common data types for the entire ACPI subsystem
- *       $Revision: 1.136 $
+ *       $Revision: 1.137 $
  *
  *****************************************************************************/
 
@@ -1042,6 +1042,8 @@ typedef struct _resource_tag
 
 #define RESOURCE_LENGTH                 12
 #define RESOURCE_LENGTH_NO_DATA         8
+
+#define NEXT_RESOURCE(Res)    (Res + Res->Length)
 
 /*
  * END: Definitions for Resource Attributes
