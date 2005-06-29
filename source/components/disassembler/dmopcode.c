@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dbdisasm - parser op tree display routines
- *              $Revision: 1.49 $
+ *              $Revision: 1.50 $
  *
  ******************************************************************************/
 
@@ -232,7 +232,13 @@ AcpiPsDisplayObjectPathname (
     ACPI_NAMESPACE_NODE     *Node;
     NATIVE_CHAR             Buffer[MAX_SHOW_ENTRY];
     UINT32                  BufferSize = MAX_SHOW_ENTRY;
+    UINT32                  DebugLevel;
 
+
+    /* Save current debug level so we don't get extraneous debug output */
+
+    DebugLevel = AcpiDbgLevel;
+    AcpiDbgLevel = 0;
 
     /* Just get the Node out of the Op object */
 
@@ -252,7 +258,7 @@ AcpiPsDisplayObjectPathname (
              * stepping where a dynamic named object is *about* to be created.
              */
             AcpiOsPrintf ("  [Path not found]");
-            return (AE_OK);
+            goto Exit;
         }
 
         /* Save it for next time. */
@@ -266,11 +272,17 @@ AcpiPsDisplayObjectPathname (
     if (ACPI_FAILURE (Status))
     {
         AcpiOsPrintf ("****Could not get pathname****)");
-        return (Status);
+        goto Exit;
     }
 
     AcpiOsPrintf ("  (Path %s)", Buffer);
-    return (AE_OK);
+
+
+Exit:
+    /* Restore the debug level */
+
+    AcpiDbgLevel = DebugLevel;
+    return (Status);
 }
 
 #endif
