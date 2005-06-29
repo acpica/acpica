@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dsobject - Dispatcher object management routines
- *              $Revision: 1.98 $
+ *              $Revision: 1.99 $
  *
  *****************************************************************************/
 
@@ -303,12 +303,12 @@ AcpiDsInitializeObjects (
     }
 
     ACPI_DEBUG_PRINT_RAW ((ACPI_DB_OK,
-        "\nTable [%4.4s] - %d Objects with %d Devices %d Methods %d Regions\n",
+        "\nTable [%4.4s] - %hd Objects with %hd Devices %hd Methods %hd Regions\n",
         TableDesc->Pointer->Signature, Info.ObjectCount,
         Info.DeviceCount, Info.MethodCount, Info.OpRegionCount));
 
     ACPI_DEBUG_PRINT ((ACPI_DB_DISPATCH,
-        "%d Methods, %d Regions\n", Info.MethodCount, Info.OpRegionCount));
+        "%hd Methods, %hd Regions\n", Info.MethodCount, Info.OpRegionCount));
 
     return_ACPI_STATUS (AE_OK);
 }
