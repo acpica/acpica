@@ -181,6 +181,10 @@ SOURCE=..\..\Subsystem\Hardware\hwtimer.c
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\Subsystem\Interpreter\iedyadic.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\Subsystem\Interpreter\iefield.c
 
 !IF  "$(CFG)" == "Subsystem - Win32 Release"
@@ -191,6 +195,10 @@ SOURCE=..\..\Subsystem\Interpreter\iefield.c
 
 !ENDIF 
 
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\Subsystem\Interpreter\iemonadic.c
 # End Source File
 # Begin Source File
 
@@ -230,6 +238,10 @@ SOURCE=..\..\Subsystem\Interpreter\iesystem.c
 
 !ENDIF 
 
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\Subsystem\Interpreter\ievalue.c
 # End Source File
 # Begin Source File
 
@@ -285,20 +297,31 @@ SOURCE=..\..\Subsystem\Interpreter\isdebug.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\Subsystem\Interpreter\isdump.c
-
-!IF  "$(CFG)" == "Subsystem - Win32 Release"
-
-!ELSEIF  "$(CFG)" == "Subsystem - Win32 Debug"
-
-# ADD CPP /W3 /Z7
-
-!ENDIF 
-
+SOURCE=..\..\Subsystem\Interpreter\isdoexp.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\Subsystem\Interpreter\isexprs.c
+SOURCE=..\..\Subsystem\Interpreter\isdoname.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\Subsystem\Interpreter\isdoop.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\Subsystem\Interpreter\isdoopt1.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\Subsystem\Interpreter\isdoopt2.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\Subsystem\Interpreter\isdopkg.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\Subsystem\Interpreter\isdump.c
 
 !IF  "$(CFG)" == "Subsystem - Win32 Release"
 
@@ -325,19 +348,6 @@ SOURCE=..\..\Subsystem\Interpreter\isidata.c
 # Begin Source File
 
 SOURCE=..\..\Subsystem\Interpreter\isnames.c
-
-!IF  "$(CFG)" == "Subsystem - Win32 Release"
-
-!ELSEIF  "$(CFG)" == "Subsystem - Win32 Debug"
-
-# ADD CPP /W3 /Z7
-
-!ENDIF 
-
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\Subsystem\Interpreter\isopcode.c
 
 !IF  "$(CFG)" == "Subsystem - Win32 Release"
 
@@ -426,16 +436,15 @@ SOURCE=..\..\Subsystem\NameSpace\nsaccess.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\Subsystem\NameSpace\nsapi.c
+SOURCE=..\..\Subsystem\Namespace\nsapinam.c
+# End Source File
+# Begin Source File
 
-!IF  "$(CFG)" == "Subsystem - Win32 Release"
+SOURCE=..\..\Subsystem\Namespace\nsapiobj.c
+# End Source File
+# Begin Source File
 
-!ELSEIF  "$(CFG)" == "Subsystem - Win32 Debug"
-
-# ADD CPP /W3 /Z7
-
-!ENDIF 
-
+SOURCE=..\..\Subsystem\Namespace\nsapitbl.c
 # End Source File
 # Begin Source File
 
@@ -449,6 +458,10 @@ SOURCE=..\..\Subsystem\NameSpace\nsdump.c
 
 !ENDIF 
 
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\Subsystem\Namespace\nsexec.c
 # End Source File
 # Begin Source File
 
@@ -466,6 +479,10 @@ SOURCE=..\..\Subsystem\NameSpace\nsfamily.c
 # Begin Source File
 
 SOURCE=..\..\Subsystem\Namespace\nsmodify.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\Subsystem\Namespace\nsnames.c
 # End Source File
 # Begin Source File
 
