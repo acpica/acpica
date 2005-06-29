@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: acparser.h - AML Parser subcomponent prototypes and defines
- *       $Revision: 1.75 $
+ *       $Revision: 1.76 $
  *
  *****************************************************************************/
 
@@ -231,6 +231,25 @@ AcpiPsGetOpcodeSize (
 UINT16
 AcpiPsPeekOpcode (
     ACPI_PARSE_STATE        *state);
+
+ACPI_STATUS
+AcpiPsCompleteThisOp (
+    ACPI_WALK_STATE         *WalkState,
+    ACPI_PARSE_OBJECT       *Op);
+
+ACPI_STATUS
+AcpiPsNextParseState (
+    ACPI_WALK_STATE         *WalkState,
+    ACPI_PARSE_OBJECT       *Op,
+    ACPI_STATUS             CallbackStatus);
+
+
+/*
+ * psloop - main parse loop
+ */
+ACPI_STATUS
+AcpiPsParseLoop (
+    ACPI_WALK_STATE         *WalkState);
 
 
 /*
