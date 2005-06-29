@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: aeexec - Top level parse and execute routines
- *              $Revision: 1.43 $
+ *              $Revision: 1.44 $
  *
  *****************************************************************************/
 
@@ -139,43 +139,6 @@ UINT32                      AcpiDsdtLength;
 DEBUG_REGIONS               Regions;
 
 
-static char                 *AcpiGbl_RegionNames[] =    /* printable names of ACPI region types */
-{
-    "SystemMemory",
-    "SystemIO",
-    "PciConfig",
-    "EmbeddedControl",
-    "SMBus"
-};
-
-#define ACPI_MAX_SPACE_ID   4
-
-/*****************************************************************************
- *
- * FUNCTION:    AcpiUtFormatSpaceId
- *
- * PARAMETERS:  Status              - Acpi status to be formatted
- *
- * RETURN:      Formatted status string
- *
- * DESCRIPTION: Convert an ACPI exception to a string
- *
- ****************************************************************************/
-
-char *
-AcpiUtFormatSpaceId (
-    UINT32                  SpaceId)
-{
-
-    if (SpaceId > ACPI_MAX_SPACE_ID)
-    {
-        return "UNKNOWN_REGION_SPACE_ID";
-    }
-
-    return (AcpiGbl_RegionNames [SpaceId]);
-}
-
-
 /******************************************************************************
  *
  * FUNCTION:    AeRegionHandler
@@ -194,7 +157,7 @@ AeRegionHandler (
     UINT32                  Function,
     ACPI_PHYSICAL_ADDRESS   Address,
     UINT32                  BitWidth,
-    UINT32                  *Value,
+    ACPI_INTEGER            *Value,
     void                    *HandlerContext,
     void                    *RegionContext)
 {
@@ -220,7 +183,7 @@ AeRegionHandler (
     }
 
     ACPI_DEBUG_PRINT ((ACPI_DB_OPREGION, "Operation Region request on %s at 0x%X\n",
-            AcpiUtFormatSpaceId (RegionObject->Region.SpaceId),
+            AcpiUtGetRegionName (RegionObject->Region.SpaceId),
             Address));
 
 
@@ -261,7 +224,7 @@ AeRegionHandler (
         /*
          * Do the memory allocations first
          */
-        RegionElement = AcpiOsAllocate (sizeof(REGION));
+        RegionElement = AcpiOsAllocate (sizeof (REGION));
         if (!RegionElement)
         {
             return AE_NO_MEMORY;
@@ -277,7 +240,6 @@ AeRegionHandler (
         RegionElement->Address      = BaseAddress;
         RegionElement->Length       = Length;
         RegionElement->NextRegion   = NULL;
-
 
         /*
          * Increment the number of regions and put this one

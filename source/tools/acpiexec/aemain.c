@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: aemain - Main routine for the AcpiExec utility
- *              $Revision: 1.36 $
+ *              $Revision: 1.41 $
  *
  *****************************************************************************/
 
@@ -132,6 +132,80 @@
 #define _COMPONENT          PARSER
         MODULE_NAME         ("aemain")
 
+/*
+ * TBD: Debug only, remove!
+ */
+#ifdef _IA32
+void
+AcpiCompare (
+    UINT64_OVERLAY          Dividend,
+    UINT64_OVERLAY          Divisor,
+    UINT64_OVERLAY          LibDiv,
+    UINT64_OVERLAY          Div,
+    UINT64_OVERLAY          LibMod,
+    UINT64_OVERLAY          Mod)
+{
+
+    if (LibDiv.Full != Div.Full)
+    {
+        AcpiOsPrintf ("Mismatch-DIV: n=%8.8X%8.8X d=%8.8X%8.8X, lr=%8.8X%8.8X ar=%8.8X%8.8X\n",
+                Dividend.Part.Hi,       Dividend.Part.Lo,
+                Divisor.Part.Hi,        Divisor.Part.Lo,
+                LibDiv.Part.Hi,         LibDiv.Part.Lo,
+                Div.Part.Hi,            Div.Part.Lo);
+    }
+
+    if (LibMod.Full != Mod.Full)
+    {
+        AcpiOsPrintf ("Mismatch-MOD: n=%8.8X%8.8X d=%8.8X%8.8X, lr=%8.8X%8.8X ar=%8.8X%8.8X\n",
+                Dividend.Part.Hi,       Dividend.Part.Lo,
+                Divisor.Part.Hi,        Divisor.Part.Lo,
+                LibMod.Part.Hi,         LibMod.Part.Lo,
+                Mod.Part.Hi,            Mod.Part.Lo);
+    }
+}
+
+    /* Check answer against the library (DEBUG ONLY) */
+/*
+    CompareDiv.Full = Dividend.Full / Divisor.Full;
+    CompareMod.Full = Dividend.Full % Divisor.Full;
+    AcpiCompare (Dividend, Divisor, CompareDiv, Quotient, CompareMod, Remainder);
+*/
+void
+AeDoDivideCheck (void)
+{
+    UINT32                  i;
+    UINT64_OVERLAY          CompareDiv;
+    UINT64_OVERLAY          CompareMod;
+    UINT64_OVERLAY          Dividend;
+    UINT64_OVERLAY          Divisor;
+    UINT64_OVERLAY          Quotient;
+    UINT64_OVERLAY          Remainder;
+
+
+    for (i = 1; i < 0xFFFFFF; i++)
+    {
+        Dividend.Part.Hi = rand ();
+        Dividend.Part.Lo = rand ();
+        Divisor.Part.Hi  = rand ();
+        Divisor.Part.Lo  = rand ();
+
+        CompareDiv.Full = Dividend.Full / Divisor.Full;
+        CompareMod.Full = Dividend.Full % Divisor.Full;
+
+        AcpiUtDivide (&Dividend.Full, &Divisor.Full, &Quotient.Full, &Remainder.Full);
+
+        AcpiCompare (Dividend, Divisor, CompareDiv, Quotient, CompareMod, Remainder);
+    }
+
+}
+#else
+void
+AeDoDivideCheck (void)  
+{
+}
+#endif
+
 
 /*
  * We need a local FADT so that the hardware subcomponent will function,
@@ -200,14 +274,17 @@ main (
     int                     j;
     ACPI_STATUS             Status;
     UINT32                  InitFlags;
+    ACPI_BUFFER             ReturnBuf;
+    char                    Buffer[32];
 
 
     /* Init globals */
 
-    Buffer = malloc (BUFFER_SIZE);
     AcpiDbgLevel = NORMAL_DEFAULT | ACPI_LV_TABLES;
     AcpiDbgLayer = 0xFFFFFFFF;
 
+
+    AeDoDivideCheck ();
 
     printf ("ACPI AML Execution/Debug Utility ");
 
@@ -224,21 +301,21 @@ main (
     while ((j = getopt (argc, argv, "?dgijl:o:sv")) != EOF) switch(j)
     {
     case 'd':
-        opt_disasm = TRUE;
-        opt_stats = TRUE;
+        AcpiGbl_DbOpt_disasm = TRUE;
+        AcpiGbl_DbOpt_stats = TRUE;
         break;
 
     case 'g':
-        opt_tables = TRUE;
-        Filename = NULL;
+        AcpiGbl_DbOpt_tables = TRUE;
+        AcpiGbl_DbFilename = NULL;
         break;
 
     case 'i':
-        opt_ini_methods = FALSE;
+        AcpiGbl_DbOpt_ini_methods = FALSE;
         break;
 
     case 'j':
-        opt_parse_jit = TRUE;
+        AcpiGbl_DbOpt_parse_jit = TRUE;
         break;
 
     case 'l':
@@ -252,7 +329,7 @@ main (
         break;
 
     case 's':
-        opt_stats = TRUE;
+        AcpiGbl_DbOpt_stats = TRUE;
         break;
 
     case 'v':
@@ -273,7 +350,7 @@ main (
 
     InitFlags = (ACPI_NO_HARDWARE_INIT | ACPI_NO_ACPI_ENABLE | ACPI_NO_EVENT_INIT);
 
-    if (!opt_ini_methods)
+    if (!AcpiGbl_DbOpt_ini_methods)
     {
         InitFlags |= (ACPI_NO_DEVICE_INIT | ACPI_NO_OBJECT_INIT);
     }
@@ -282,16 +359,17 @@ main (
 
     if (argv[optind])
     {
-        opt_tables = TRUE;
-        Filename = argv[optind];
+        AcpiGbl_DbOpt_tables = TRUE;
+        AcpiGbl_DbFilename = argv[optind];
 
 
-        Status = AcpiDbLoadAcpiTable (Filename);
+        Status = AcpiDbLoadAcpiTable (AcpiGbl_DbFilename);
         if (ACPI_FAILURE (Status))
         {
             printf ("**** Could not load input table, %s\n", AcpiFormatException (Status));
             goto enterloop;
         }
+
 
 
         /* Need a fake FADT so that the hardware component is happy */
@@ -322,6 +400,9 @@ main (
             goto enterloop;
         }
 
+        ReturnBuf.Length = 32;
+        ReturnBuf.Pointer = Buffer;
+        AcpiGetName (AcpiGbl_RootNode, ACPI_FULL_PATHNAME, &ReturnBuf);
     }
 
 #ifdef _IA16
