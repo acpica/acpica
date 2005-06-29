@@ -114,6 +114,7 @@
 #define WHYBUF_SIZE                 512     /* Runtime error message communication */
 
 #define MAX_STRING_LENGTH           512
+#define PATHNAME_MAX                256     /* A full namespace pathname */
 
 /*
  * AML Interpreter
