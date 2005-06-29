@@ -100,7 +100,6 @@
 #include <acpi.h>
 #include <namespace.h>
 #include <interpreter.h>
-#include <string.h>
 
 
 #define _THIS_MODULE        "nsutils.c"
@@ -164,22 +163,22 @@ NsChecksum (void *Buffer, UINT32 Length)
  *
  ***************************************************************************/
 
-nte *
+NAME_TABLE_ENTRY *
 NsAllocateNteDesc (INT32 NteCount)
 {
-    nte             *NewNteDesc = NULL;
-    size_t          AllocSize;
+    NAME_TABLE_ENTRY    *NewNteDesc = NULL;
+    size_t              AllocSize;
 
 
     FUNCTION_TRACE ("AllocateNteDesc");
 
 
-    AllocSize = (size_t) NteCount * sizeof (nte);
+    AllocSize = (size_t) NteCount * sizeof (NAME_TABLE_ENTRY);
 
     
     /* Allow room for link to appendage */
     
-    AllocSize += sizeof (nte *);
+    AllocSize += sizeof (NAME_TABLE_ENTRY *);
 
   
     NewNteDesc = LocalCallocate (AllocSize);
@@ -187,7 +186,8 @@ NsAllocateNteDesc (INT32 NteCount)
     {
         /* Move past the appendage pointer */
     
-        NewNteDesc = (nte *) (((UINT8 *) NewNteDesc) + sizeof (nte *));
+        NewNteDesc = (NAME_TABLE_ENTRY *) (((UINT8 *) NewNteDesc) + 
+                        sizeof (NAME_TABLE_ENTRY *));
     }
 
     DEBUG_PRINT (TRACE_EXEC, ("AllocateNteDesc: NewNteDesc=%p\n", NewNteDesc));
@@ -224,7 +224,7 @@ NsGetType (NsHandle handle)
     }
 
     FUNCTION_EXIT;
-    return ((nte *) handle)->Type;
+    return ((NAME_TABLE_ENTRY *) handle)->Type;
 }
 
 
@@ -254,7 +254,7 @@ NsGetValue (NsHandle handle)
     }
 
     FUNCTION_EXIT;
-    return ((nte *) handle)->Value;
+    return ((NAME_TABLE_ENTRY *) handle)->Value;
 }
 
 
@@ -390,8 +390,35 @@ NsInternalizeName (char *DottedName)
 }
 
 
+/****************************************************************************
+ *
+ * FUNCTION:    NsConvertHandleToEntry
+ *
+ * PARAMETERS:  Handle          - Handle to be converted to an NTE
+ *
+ * RETURN:      A Name table entry pointer
+ *
+ * DESCRIPTION: Convert a namespace handle to a real NTE
+ *
+ ****************************************************************************/
 
+NAME_TABLE_ENTRY *
+NsConvertHandleToEntry (NsHandle Handle)
+{
 
+    /* 
+     * Simple implementation for now;
+     * TBD: Real integer handles allow for more verification 
+     * and keep all pointers within this subsystem!
+     */
+
+    if (!Handle)
+    {
+        return NULL;
+    }
+
+    return (NAME_TABLE_ENTRY *) Handle;
+}
 
 
 
