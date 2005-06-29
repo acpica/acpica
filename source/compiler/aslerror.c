@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslerror - Error handling and statistics
- *              $Revision: 1.29 $
+ *              $Revision: 1.30 $
  *
  *****************************************************************************/
 
@@ -152,6 +152,7 @@ char                        *AslMessages [] = {
     "Internal compiler error:",
     "Invalid backwards offset",
     "Unknown reserved name:",
+    "Name already exists in scope:",
 };
 
 
