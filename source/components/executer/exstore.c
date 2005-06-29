@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exstore - AML Interpreter object store support
- *              $Revision: 1.151 $
+ *              $Revision: 1.152 $
  *
  *****************************************************************************/
 
@@ -138,13 +138,15 @@
  *              *DestDesc           - Where to store it.  Must be an NS node
  *                                    or an ACPI_OPERAND_OBJECT of type
  *                                    Reference;
+ *              WalkState           - Current walk state
  *
  * RETURN:      Status
  *
  * DESCRIPTION: Store the value described by SourceDesc into the location
  *              described by DestDesc.  Called by various interpreter
  *              functions to store the result of an operation into
- *              the destination operand.
+ *              the destination operand -- not just simply the actual STORE
+ *              ASL operator.
  *
  ******************************************************************************/
 
@@ -185,7 +187,6 @@ AcpiExStore (
         return_ACPI_STATUS (Status);
     }
 
-
     /* Destination object must be an object of type Reference */
 
     if (DestDesc->Common.Type != INTERNAL_TYPE_REFERENCE)
@@ -203,7 +204,6 @@ AcpiExStore (
         return_ACPI_STATUS (AE_AML_OPERAND_TYPE);
     }
 
-
     /*
      * Examine the Reference opcode.  These cases are handled:
      *
@@ -215,7 +215,6 @@ AcpiExStore (
      */
     switch (RefDesc->Reference.Opcode)
     {
-
     case AML_NAME_OP:
 
         /* Storing an object into a Name "container" */
@@ -319,7 +318,6 @@ AcpiExStore (
 
     }   /* switch (RefDesc->Reference.Opcode) */
 
-
     return_ACPI_STATUS (Status);
 }
 
@@ -328,12 +326,13 @@ AcpiExStore (
  *
  * FUNCTION:    AcpiExStoreObjectToIndex
  *
- * PARAMETERS:  *SourceDesc           - Value to be stored
- *              *Node               - Named object to receive the value
+ * PARAMETERS:  *SourceDesc             - Value to be stored
+ *              *DestDesc               - Named object to receive the value
+ *              WalkState               - Current walk state
  *
  * RETURN:      Status
  *
- * DESCRIPTION: Store the object to the named object.
+ * DESCRIPTION: Store the object to indexed Buffer or Package element
  *
  ******************************************************************************/
 
@@ -476,6 +475,7 @@ AcpiExStoreObjectToIndex (
         switch (SourceDesc->Common.Type)
         {
         case ACPI_TYPE_INTEGER:
+
             /*
              * Type is Integer, assign bytewise
              * This loop to assign each of the elements is somewhat
@@ -491,6 +491,7 @@ AcpiExStoreObjectToIndex (
 
 
         case ACPI_TYPE_BUFFER:
+
             /*
              * Type is Buffer, the Length is in the structure.
              * Just loop through the elements and assign each one in turn.
@@ -505,6 +506,7 @@ AcpiExStoreObjectToIndex (
 
 
         case ACPI_TYPE_STRING:
+
             /*
              * Type is String, the Length is in the structure.
              * Just loop through the elements and assign each one in turn.
@@ -537,7 +539,6 @@ AcpiExStoreObjectToIndex (
         break;
     }
 
-
     return_ACPI_STATUS (Status);
 }
 
@@ -546,15 +547,16 @@ AcpiExStoreObjectToIndex (
  *
  * FUNCTION:    AcpiExStoreObjectToNode
  *
- * PARAMETERS:  *SourceDesc            - Value to be stored
- *              *Node                  - Named object to receive the value
+ * PARAMETERS:  SourceDesc              - Value to be stored
+ *              Node                    - Named object to receive the value
+ *              WalkState               - Current walk state
  *
  * RETURN:      Status
  *
  * DESCRIPTION: Store the object to the named object.
  *
  *              The Assignment of an object to a named object is handled here
- *              The val passed in will replace the current value (if any)
+ *              The value passed in will replace the current value (if any)
  *              with the input value.
  *
  *              When storing into an object the data is converted to the
@@ -562,10 +564,7 @@ AcpiExStoreObjectToIndex (
  *              that the target object type (for an initialized target) will
  *              not be changed by a store operation.
  *
- *              NOTE: the global lock is acquired early.  This will result
- *              in the global lock being held a bit longer.  Also, if the
- *              function fails during set up we may get the lock when we
- *              don't really need it.  I don't think we care.
+ *              Assumes parameters are already validated.
  *
  ******************************************************************************/
 
@@ -584,10 +583,6 @@ AcpiExStoreObjectToNode (
 
 
     /*
-     * Assuming the parameters were already validated
-     */
-
-    /*
      * Get current type of the node, and object attached to Node
      */
     TargetType = AcpiNsGetType (Node);
@@ -596,7 +591,6 @@ AcpiExStoreObjectToNode (
     ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "Storing %p(%s) into node %p(%s)\n",
         Node, AcpiUtGetTypeName (SourceDesc->Common.Type),
         SourceDesc, AcpiUtGetTypeName (TargetType)));
-
 
     /*
      * Resolve the source object to an actual value
@@ -607,7 +601,6 @@ AcpiExStoreObjectToNode (
     {
         return_ACPI_STATUS (Status);
     }
-
 
     /*
      * Do the actual store operation
@@ -668,7 +661,6 @@ AcpiExStoreObjectToNode (
         break;
     }
 
-
     return_ACPI_STATUS (Status);
 }
 
@@ -677,8 +669,9 @@ AcpiExStoreObjectToNode (
  *
  * FUNCTION:    AcpiExStoreObjectToObject
  *
- * PARAMETERS:  *SourceDesc            - Value to be stored
- *              *DestDesc           - Object to receive the value
+ * PARAMETERS:  SourceDesc              - Value to be stored
+ *              DestDesc                - Object to receive the value
+ *              WalkState               - Current walk state
  *
  * RETURN:      Status
  *
@@ -697,6 +690,8 @@ AcpiExStoreObjectToNode (
  *              This module allows destination types of Number, String,
  *              and Buffer.
  *
+ *              Assumes parameters are already validated.
+ *
  ******************************************************************************/
 
 ACPI_STATUS
@@ -711,10 +706,6 @@ AcpiExStoreObjectToObject (
 
     FUNCTION_TRACE ("ExStoreObjectToObject");
 
-
-    /*
-     *  Assuming the parameters are valid!
-     */
     ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "Storing %p(%s) to %p(%s)\n",
                     SourceDesc, AcpiUtGetTypeName (SourceDesc->Common.Type),
                     DestDesc, AcpiUtGetTypeName (DestDesc->Common.Type)));
@@ -737,7 +728,6 @@ AcpiExStoreObjectToObject (
         return_ACPI_STATUS (AE_NOT_IMPLEMENTED);
     }
 
-
     /*
      * Resolve the source object to an actual value
      * (If it is a reference object)
@@ -748,13 +738,10 @@ AcpiExStoreObjectToObject (
         return_ACPI_STATUS (Status);
     }
 
-
     /*
      * Copy and/or convert the source object to the destination object
      */
     Status = AcpiExStoreObject (SourceDesc, DestinationType, &DestDesc, WalkState);
-
-
     return_ACPI_STATUS (Status);
 }
 
