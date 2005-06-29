@@ -2,7 +2,7 @@
  *
  * Module Name: tbxface - Public interfaces to the ACPI subsystem
  *                         ACPI table oriented interfaces
- *              $Revision: 1.47 $
+ *              $Revision: 1.48 $
  *
  *****************************************************************************/
 
@@ -503,9 +503,9 @@ AcpiGetTable (
         TableLength = TblPtr->Length;
     }
 
-    /* Validate buffer size or allocate new buffer */
+    /* Validate/Allocate/Clear caller buffer */
 
-    Status = AcpiUtValidateBufferSize (RetBuffer, TableLength);
+    Status = AcpiUtInitializeBuffer (RetBuffer, TableLength);
     if (ACPI_FAILURE (Status))
     {
         return_ACPI_STATUS (Status);
