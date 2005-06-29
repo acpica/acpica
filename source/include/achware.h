@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: achware.h -- hardware specific interfaces
- *       $Revision: 1.51 $
+ *       $Revision: 1.52 $
  *
  *****************************************************************************/
 
@@ -186,6 +186,11 @@ AcpiHwLowLevelWrite (
 void
 AcpiHwClearAcpiStatus (
    void);
+
+UINT32
+AcpiHwGetBitShift (
+    UINT32                  Mask);
+
 
 
 /* GPE support */
