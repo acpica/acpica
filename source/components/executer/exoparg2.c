@@ -2,6 +2,7 @@
 /******************************************************************************
  *
  * Module Name: amdyadic - ACPI AML (p-code) execution for dyadic operators
+ *              $Revision: 1.61 $
  *
  *****************************************************************************/
 
@@ -190,7 +191,7 @@ AcpiAmlExecDyadic1 (
 
     case AML_NOTIFY_OP:
 
-        /* The ObjDesc is actually an NTE */
+        /* The ObjDesc is actually an Named Object */
 
         Entry = (ACPI_NAMED_OBJECT*) ObjDesc;
         ObjDesc = NULL;

@@ -2,6 +2,7 @@
 /******************************************************************************
  *
  * Module Name: ammonad - ACPI AML (p-code) execution for monadic operators
+ *              $Revision: 1.77 $
  *
  *****************************************************************************/
 
@@ -197,7 +198,7 @@ AcpiAmlGetObjectReference (
 
     else if (VALID_DESCRIPTOR_TYPE (ObjDesc, ACPI_DESC_TYPE_NAMED))
     {
-        /* Must be a named object;  Just return the NTE */
+        /* Must be a named object;  Just return the Named Object */
 
         *RetDesc = ObjDesc;
     }
@@ -738,7 +739,7 @@ AcpiAmlExecMonadic2 (
 
         /*
          * Since we are expecting an Reference on the top of the stack, it
-         * can be either an NTE or an internal object.
+         * can be either an Named Object or an internal object.
          *
          * TBD: [Future] This may be the prototype code for all cases where
          * an Reference is expected!! 10/99
@@ -1031,7 +1032,7 @@ AcpiAmlExecMonadic2 (
 
         if (VALID_DESCRIPTOR_TYPE (ObjDesc, ACPI_DESC_TYPE_NAMED))
         {
-            /* Get the actual object from the NTE (This is the dereference) */
+            /* Get the actual object from the Named Object (This is the dereference) */
 
             RetDesc = ((ACPI_NAMED_OBJECT*) ObjDesc)->Object;
 
