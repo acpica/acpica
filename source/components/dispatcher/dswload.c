@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dswload - Dispatcher namespace load callbacks
- *              $Revision: 1.24 $
+ *              $Revision: 1.27 $
  *
  *****************************************************************************/
 
@@ -9,8 +9,8 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, Intel Corp.  All rights
- * reserved.
+ * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
+ * All rights reserved.
  *
  * 2. License
  *
@@ -129,7 +129,7 @@
         MODULE_NAME         ("dswload")
 
 
-/*****************************************************************************
+/*******************************************************************************
  *
  * FUNCTION:    AcpiDsLoad1BeginOp
  *
@@ -141,7 +141,7 @@
  *
  * DESCRIPTION: Descending callback used during the loading of ACPI tables.
  *
- ****************************************************************************/
+ ******************************************************************************/
 
 ACPI_STATUS
 AcpiDsLoad1BeginOp (
@@ -238,7 +238,7 @@ AcpiDsLoad1BeginOp (
 }
 
 
-/*****************************************************************************
+/*******************************************************************************
  *
  * FUNCTION:    AcpiDsLoad1EndOp
  *
@@ -251,7 +251,7 @@ AcpiDsLoad1BeginOp (
  * DESCRIPTION: Ascending callback used during the loading of the namespace,
  *              both control methods and everything else.
  *
- ****************************************************************************/
+ ******************************************************************************/
 
 ACPI_STATUS
 AcpiDsLoad1EndOp (
@@ -306,7 +306,7 @@ AcpiDsLoad1EndOp (
 }
 
 
-/*****************************************************************************
+/*******************************************************************************
  *
  * FUNCTION:    AcpiDsLoad2BeginOp
  *
@@ -318,7 +318,7 @@ AcpiDsLoad1EndOp (
  *
  * DESCRIPTION: Descending callback used during the loading of ACPI tables.
  *
- ****************************************************************************/
+ ******************************************************************************/
 
 ACPI_STATUS
 AcpiDsLoad2BeginOp (
@@ -489,7 +489,7 @@ AcpiDsLoad2BeginOp (
 }
 
 
-/*****************************************************************************
+/*******************************************************************************
  *
  * FUNCTION:    AcpiDsLoad2EndOp
  *
@@ -502,7 +502,7 @@ AcpiDsLoad2BeginOp (
  * DESCRIPTION: Ascending callback used during the loading of the namespace,
  *              both control methods and everything else.
  *
- ****************************************************************************/
+ ******************************************************************************/
 
 ACPI_STATUS
 AcpiDsLoad2EndOp (
@@ -760,9 +760,7 @@ AcpiDsLoad2EndOp (
 
         Arg = Op->Value.Arg;
 
-        Status = AcpiDsCreateField (Op,
-                                    Arg->Node,
-                                    WalkState);
+        Status = AcpiDsCreateField (Op, Arg->Node, WalkState);
         break;
 
 
@@ -774,8 +772,7 @@ AcpiDsLoad2EndOp (
 
         Arg = Op->Value.Arg;
 
-        Status = AcpiDsCreateIndexField (Op,
-                                        (ACPI_HANDLE) Arg->Node,
+        Status = AcpiDsCreateIndexField (Op, (ACPI_HANDLE) Arg->Node,
                                         WalkState);
         break;
 
@@ -787,9 +784,7 @@ AcpiDsLoad2EndOp (
             WalkState, Op, Node));
 
         Arg = Op->Value.Arg;
-        Status = AcpiDsCreateBankField (Op,
-                                        Arg->Node,
-                                        WalkState);
+        Status = AcpiDsCreateBankField (Op, Arg->Node, WalkState);
         break;
 
 
@@ -860,7 +855,7 @@ AcpiDsLoad2EndOp (
 
         Status = AcpiAmlExecCreateRegion (((ACPI_PARSE2_OBJECT *) Op)->Data,
                                         ((ACPI_PARSE2_OBJECT *) Op)->Length,
-                                        (ACPI_ADDRESS_SPACE_TYPE) Arg->Value.Integer, 
+                                        (ACPI_ADDRESS_SPACE_TYPE) Arg->Value.Integer,
                                         WalkState);
 
         DEBUG_PRINT (TRACE_DISPATCH,
