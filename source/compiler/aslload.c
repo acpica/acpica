@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dswload - Dispatcher namespace load callbacks
- *              $Revision: 1.49 $
+ *              $Revision: 1.51 $
  *
  *****************************************************************************/
 
@@ -476,6 +476,58 @@ LdNamespace1Begin (
 
         printf ("Failure from lookup %s\n", AcpiFormatException (Status));
         return (Status);
+    }
+
+    if (Op->Asl.ParseOpcode == PARSEOP_SCOPE)
+    {
+        switch (Node->Type)
+        {
+        case ACPI_TYPE_ANY:         /* Scope nodes are untyped (ANY) */
+        case ACPI_TYPE_DEVICE:
+        case ACPI_TYPE_METHOD:
+        case ACPI_TYPE_POWER:
+        case ACPI_TYPE_PROCESSOR:
+        case ACPI_TYPE_THERMAL:
+
+            /* These are acceptable types */
+            break;
+
+        case ACPI_TYPE_INTEGER:
+        case ACPI_TYPE_STRING:
+        case ACPI_TYPE_BUFFER:
+
+            /* 
+             * These types we will allow, but we will change the type.  This
+             * enables some existing code of the form:
+             *
+             *  Name (DEB, 0)
+             *  Scope (DEB) { ... }
+             */
+            sprintf (MsgBuffer, "%s, %s - Changing type to SCOPE", Path, AcpiUtGetTypeName (Node->Type));
+            AslError (ASL_REMARK, ASL_MSG_SCOPE_TYPE, Op, MsgBuffer);
+
+            /* 
+             * Switch the type
+             */
+            Node->Type = ACPI_TYPE_ANY;
+            break;
+
+        default:
+
+            /* 
+             * All other types are an error */
+
+            sprintf (MsgBuffer, "%s, %s", Path, AcpiUtGetTypeName (Node->Type));
+            AslError (ASL_ERROR, ASL_MSG_SCOPE_TYPE, Op, MsgBuffer);
+
+            /* 
+             * However, switch the type to be an actual scope so 
+             * that compilation can continue without generating a whole
+             * cascade of additional errors.
+             */
+            Node->Type = ACPI_TYPE_ANY;
+            break;
+        }
     }
 
     /*
