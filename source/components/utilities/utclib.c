@@ -2,8 +2,8 @@
  *
  * Module Name: cmclib - Local implementation of C library functions
  *
- * $Revision: 1.20 $ 
- * $JustDate:  8/07/00 $
+ * $Revision: 1.21 $ 
+ * $JustDate:  8/09/00 $
  *
  *****************************************************************************/
 
@@ -955,3 +955,4 @@ done:
 }
 
 #endif /* ACPI_USE_SYSTEM_CLIBRARY */
+
