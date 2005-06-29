@@ -172,10 +172,10 @@
     UINT16                  Length;             /* # of bits in buffer */ \
     UINT8                   Granularity;\
     UINT8                   BitOffset;          /* Bit offset within min read/write data unit */\
-    UINT8                   Access;\
+    UINT8                   Access;             /* AccessType */\
     UINT8                   LockRule;\
     UINT8                   UpdateRule;\
-    UINT8                   ReservedF1;
+    UINT8                   AccessAttribute;
 
 
 
