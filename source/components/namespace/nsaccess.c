@@ -112,7 +112,7 @@
 
 /* Scope stack */
 
-SCOPE_STACK     ScopeStack[MAXNEST];
+SCOPE_STACK     ScopeStack[MAX_SCOPE_NESTING];
 SCOPE_STACK     *CurrentScope;
 
 /* 
@@ -237,33 +237,6 @@ static ST_KEY_DESC_TABLE KDT[] = {
 
 /****************************************************************************
  *
- *  FUNCTION:       PriUnloadNameSpace (void)
- *
- *  PARAMETERS:     none
- *
- *  RETURN:         E_OK or E_ERROR
- *
- *  DESCRIPTION:    Contracts namespace, typically in response to an undocking
- *                      event
- *
- ****************************************************************************/
-
-INT32
-PriUnloadNameSpace (void)
-{
-    FUNCTION_TRACE ("PriUnloadNameSpace");
-
-
-    if (!Root)
-    {
-        return E_ERROR;
-    }
-    
-    return (E_OK);
-}
-
-/****************************************************************************
- *
  * FUNCTION:    AcpiExecuteMethod
  *
  * PARAMETERS:  char *MethodName        name of method to execute
@@ -286,10 +259,6 @@ PriUnloadNameSpace (void)
  * DESCRIPTION: Find and execute the requested method passing the given
  *              parameters
  *
- * ALLOCATION:
- * Reference       Size                 Pool Owner       Description
- * *ReturnValue    s(OBJECT_DESCRIPTOR) bu   CALLER      returned value
- *
  ****************************************************************************/
 
 INT32
@@ -311,7 +280,7 @@ BREAKPOINT3;
         *ReturnValue = NULL;
     }
 
-    if (!Root)
+    if (!RootObject->Scope)
     {
         /* 
          * If the name space has not been initialized, the Method has surely
@@ -326,13 +295,13 @@ BREAKPOINT3;
     }
 
 
-    if (Root && MethodName)
+    if (RootObject->Scope && MethodName)
     {   
         /*  Root and MethodName valid   */
 
         if (MethodName[0] != '\\' || MethodName[1] != '/')
         {
-            MethodName = InternalizeName (MethodName);
+            MethodName = NsInternalizeName (MethodName);
         }
 
         /* See comment near top of file re significance of FETCH_VALUES */
@@ -349,26 +318,25 @@ BREAKPOINT3;
         }
     }
 
-    if (Root && MethodName && (NOTFOUND != MethodPtr))
+    if (RootObject->Scope && MethodName && (NOTFOUND != MethodPtr))
     {   
         /*  Root, MethodName, and Method valid  */
 
 #ifdef FETCH_VALUES
-        if (NsValType (MethodPtr) == TYPE_Method)
+        if (NsGetType (MethodPtr) == TYPE_Method)
         {
             /* Method points to a method name */
         
-            LINE_SET (55, MODE_Exec);
             DEBUG_PRINT (ACPI_INFO,
-                        ("[%s Method %p ptrVal %p\n",
-                        MethodName, MethodPtr, MethodPtr->ptrVal));
+                        ("[%s Method %p Value %p\n",
+                        MethodName, MethodPtr, MethodPtr->Value));
 
-            if (MethodPtr->ptrVal)
+            if (MethodPtr->Value)
             {
                 DEBUG_PRINT (ACPI_INFO,
                             ("Offset %x Length %lx]\n",
-                            ((meth *) MethodPtr->ptrVal)->Offset + 1,
-                            ((meth *) MethodPtr->ptrVal)->Length - 1));
+                            ((meth *) MethodPtr->Value)->Offset + 1,
+                            ((meth *) MethodPtr->Value)->Length - 1));
             }
         
             else
@@ -383,36 +351,36 @@ BREAKPOINT3;
              * case, set the current scope to that of the Method, and execute it.
              */
 
-            if (!MethodPtr->ptrVal)
+            if (!MethodPtr->Value)
             {
                 DEBUG_PRINT (ACPI_ERROR, ("Method is undefined\n"));
             }
 
             else
             {
-                DEBUG_EXEC ((FullyQualifiedName = NsFullyQualifiedName(MethodPtr->ChildScope)));
+                DEBUG_EXEC ((FullyQualifiedName = NsFullyQualifiedName(MethodPtr->Scope)));
                 DEBUG_PRINT (TRACE_NAMES, ("Set scope %s \n", FullyQualifiedName));
         
                 /*  reset current scope to beginning of scope stack */
 
                 CurrentScope = &ScopeStack[0];
 
-                /*  push current scope on scope stack and make hMethod->ChildScope current  */
+                /*  push current scope on scope stack and make hMethod->Scope current  */
 
-                NsPushCurrentScope (MethodPtr->ChildScope, TYPE_Method);
+                NsPushCurrentScope (MethodPtr->Scope, TYPE_Method);
 
                 DEBUG_EXEC ((FullyQualifiedName = NsFullyQualifiedName (MethodPtr)));
                 DEBUG_PRINT (TRACE_NAMES, ("Exec Method %s at offset %8XH\n",
                                   FullyQualifiedName, 
-                                  ((meth *) MethodPtr->ptrVal)->Offset + 1));
+                                  ((meth *) MethodPtr->Value)->Offset + 1));
         
                 ClearPkgStack ();
                 ObjStackTop = 0;                                           /* Clear object stack */
                 
                 /* Excecute the method here */
 
-                Excep = AmlExec (((meth *) MethodPtr->ptrVal)->Offset + 1,
-                                    ((meth *) MethodPtr->ptrVal)->Length - 1,
+                Excep = AmlExec (((meth *) MethodPtr->Value)->Offset + 1,
+                                    ((meth *) MethodPtr->Value)->Length - 1,
                                     Params);
 
                 if (PkgNested ())
@@ -550,7 +518,7 @@ AcpiLoadTableInNameSpace (void)
     FUNCTION_TRACE ("AcpiLoadTableInNameSpace");
 
 
-    if (!Root)
+    if (!RootObject->Scope)
     {
         return E_ERROR;
     }
@@ -568,12 +536,6 @@ AcpiLoadTableInNameSpace (void)
  *
  * DESCRIPTION: Allocate and initialize the root name table
  *
- * ALLOCATION:
- * Reference        Size                 Pool  Owner       Description
- * Root             NsRootSize*s(nte)    bu    acpinmsp    Root Name Table
- * nte.ptrVal       s(OBJECT_DESCRIPTOR) bu    acpinmsp    initialized value
- * ptrVal->String   varies               bu    acpinmsp    string value
- *
  ***************************************************************************/
 
 void
@@ -590,29 +552,35 @@ NsSetup (void)
      * that NsSetup() has already been called; just return.
      */
 
-    if (Root)
+    if (RootObject->Scope)
     {
         return;
     }
 
-    NsCurrentSize = NsRootSize = ROOTSIZE;
-    Root = AllocateNteDesc (NsRootSize);
-    if (!Root)
+    NsCurrentSize = NsRootSize = NS_ROOT_TABLE_SIZE;
+    RootObject->Scope = NsAllocateNteDesc (NsRootSize);
+    if (!RootObject->Scope)
     {
         /*  root name table allocation failure  */
 
         REPORT_ERROR (&KDT[4]);
     }
 
+    /* 
+     * Init the root scope first entry -- since it is the exemplar of 
+     * the scope (Some fields are duplicated to new entries!) 
+     */
+    RootObject->Scope->ParentEntry = RootObject;
+
     /* Push the root name table on the scope stack */
     
-    ScopeStack[0].Scope = Root;
+    ScopeStack[0].Scope = RootObject->Scope;
     ScopeStack[0].Type = TYPE_Any;
     CurrentScope = &ScopeStack[0];
 
 #ifdef NSLOGFILE
     LogFile = OsdOpen ("ns.log", "wtc");
-    OsdPrintf (LogFile, "root = %08x size %d\n", Root, NsRootSize);
+    OsdPrintf (LogFile, "root = %08x size %d\n", RootObject->Scope, NsRootSize);
 #endif
 
     /* Enter the pre-defined names in the name table */
@@ -702,9 +670,6 @@ NsSetup (void)
  * DESCRIPTION: Find or enter the passed name in the name space.
  *              Log an error if name not found in Exec mode.
  *
- * ALLOCATION:
- * Reference        Size                 Pool  Owner       Description
- * nte.ChildScope   TABLSIZE*s(nte)      bu    acpinmsp    Name Table
  *
  ***************************************************************************/
 
@@ -723,7 +688,7 @@ NsEnter (char *Name, NsType Type, OpMode LoadMode)
     FUNCTION_TRACE ("NsEnter");
 
 
-    if (!Root)
+    if (!RootObject->Scope)
     {
         /* 
          * If the name space has not been initialized:
@@ -787,7 +752,7 @@ NsEnter (char *Name, NsType Type, OpMode LoadMode)
         
         DEBUG_PRINT (TRACE_NAMES, ("root \n"));
         
-        EntryToSearch = Root;
+        EntryToSearch = RootObject->Scope;
         Size = NsRootSize;
         Name++;                 /* point to segment part */
     }
@@ -804,20 +769,20 @@ NsEnter (char *Name, NsType Type, OpMode LoadMode)
 
         while (*Name == AML_ParentPrefix)
         {
-            /*  recursively search in parent's name scope   */
-
             DEBUG_PRINT (TRACE_NAMES, ("parent \n"));
             
-            Name++;                   /* point to segment part or next ParentPrefix */
-            EntryToSearch = EntryToSearch->ParentScope;
+            /* point to segment part or next ParentPrefix */
+
+            Name++;     
+
+            /*  Backup to the parent's scope  */
             
+            EntryToSearch = EntryToSearch->ParentScope;
             if (!EntryToSearch)
             {
-                /* Scope has no parent */
+                /* Current scope has no parent scope */
                 
-                LINE_SET ((INT32) strlen (OrigName) + 18, LoadMode);
                 REPORT_ERROR (&KDT[7]);
-                LINE_SET (0, LoadMode);
                 CheckTrash ("leave NsEnter NOTFOUND 1");
 
                 return (NsHandle) NOTFOUND;
@@ -826,8 +791,10 @@ NsEnter (char *Name, NsType Type, OpMode LoadMode)
 
         if (EntryToSearch->ParentScope == (nte *) 0)
         {
-            /* backed up all the way to the root */
-            
+            /*
+             * Backed up all the way to the root
+             * (Only root should have not no parent scope)
+             */
             Size = NsRootSize;
         }
     }
@@ -854,7 +821,11 @@ NsEnter (char *Name, NsType Type, OpMode LoadMode)
 
         NullNamePath = TRUE;
         NumSegments = 0;
-        ThisEntry = Root;
+
+        /* WAS:
+        ThisEntry = RootObject->Scope;
+        */
+        ThisEntry = RootObject;
         Size = NsRootSize;
     }
 
@@ -873,16 +844,16 @@ NsEnter (char *Name, NsType Type, OpMode LoadMode)
     {
         /*  loop through and verify/add each name segment   */
         
-        CheckTrash ("before SearchTable");
+        CheckTrash ("before NsSearchTable");
         
         /* 
          * Search for the current segment in the table where it should be.
          * Type is significant only at the last level.
          */
 
-        ThisEntry = SearchTable (Name, EntryToSearch, Size, LoadMode,
+        ThisEntry = NsSearchTable (Name, EntryToSearch, Size, LoadMode,
                                 NumSegments == 0 ? Type : TYPE_Any);
-        CheckTrash ("after SearchTable");
+        CheckTrash ("after NsSearchTable");
 
         if (ThisEntry == NOTFOUND)
         {
@@ -907,8 +878,8 @@ NsEnter (char *Name, NsType Type, OpMode LoadMode)
             TypeToCheckFor      != TYPE_DefAny &&           /* which is not a phoney type       */
             TypeToCheckFor      != TYPE_Scope &&            /*   "   "   "  "   "     "         */
             TypeToCheckFor      != TYPE_IndexFieldDefn &&   /*   "   "   "  "   "     "         */
-            ThisEntry->NtType   != TYPE_Any &&              /* and type of entry is known       */
-            ThisEntry->NtType   != TypeToCheckFor)          /* and entry does not match request */
+            ThisEntry->Type     != TYPE_Any &&              /* and type of entry is known       */
+            ThisEntry->Type     != TypeToCheckFor)          /* and entry does not match request */
         {                                                   /* complain.                        */
             /*  complain about type mismatch    */
 
@@ -922,11 +893,11 @@ NsEnter (char *Name, NsType Type, OpMode LoadMode)
 
         if ((0 == NumSegments) && (TYPE_Any == Type))
         {
-            Type = ThisEntry->NtType;
+            Type = ThisEntry->Type;
         }
 
         if ((NumSegments || NsOpensScope (Type)) &&
-            (ThisEntry->ChildScope == (nte *) 0))
+            (ThisEntry->Scope == (nte *) 0))
         {
             /* 
              * more segments or the type implies enclosed scope, 
@@ -940,12 +911,12 @@ NsEnter (char *Name, NsType Type, OpMode LoadMode)
                 /*  first or second pass load mode ==> locate the next scope    */
                 
                 DEBUG_PRINT (TRACE_NAMES, ("add level \n"));
-                ThisEntry->ChildScope = AllocateNteDesc (TABLSIZE);
+                ThisEntry->Scope = NsAllocateNteDesc (NS_DEFAULT_TABLE_SIZE);
             }
 
             /* Now complain if there is no next scope */
             
-            if (ThisEntry->ChildScope == (nte *) 0)
+            if (ThisEntry->Scope == (nte *) 0)
             {
                 DEBUG_PRINT (ACPI_ERROR, ("No child scope at entry %p\n", ThisEntry));
 
@@ -963,19 +934,29 @@ NsEnter (char *Name, NsType Type, OpMode LoadMode)
 
 #ifdef NSLOGFILE
             OsdPrintf (LogFile, "%s = %08x size %d\n",
-                        Name, ThisEntry->ChildScope, TABLSIZE);
+                        Name, ThisEntry->Scope, NS_DEFAULT_TABLE_SIZE);
 #endif
 
             if (MODE_Load1 == LoadMode || MODE_Load == LoadMode)
             {
                 /* Set newly-created child scope's parent scope */
                 
-                ThisEntry->ChildScope->ParentScope = EntryToSearch;
+                ThisEntry->Scope->ParentScope = EntryToSearch;
+
+                /* Set newly-create child scope's actual parent */
+
+                ThisEntry->Scope->ParentEntry = ThisEntry;
+
+                /* Set links */
+
+                ThisEntry->Scope->NextEntry = NULL;
+                ThisEntry->Scope->PrevEntry = NULL;  /* This is first entry?? TBD */
+
             }
         }
 
-        Size = TABLSIZE;
-        EntryToSearch = ThisEntry->ChildScope;
+        Size = NS_DEFAULT_TABLE_SIZE;
+        EntryToSearch = ThisEntry->Scope;
         Name += 4;                        /* point to next name segment */
     }
 
@@ -991,7 +972,7 @@ NsEnter (char *Name, NsType Type, OpMode LoadMode)
         if (NullNamePath)   
             ScopeToPush = ThisEntry;
         else
-            ScopeToPush = ThisEntry->ChildScope;
+            ScopeToPush = ThisEntry->Scope;
 
 
         CheckTrash ("before NsPushCurrentScope");
@@ -1000,6 +981,33 @@ NsEnter (char *Name, NsType Type, OpMode LoadMode)
     }
 
     return (NsHandle) ThisEntry;
+}
+
+/****************************************************************************
+ *
+ *  FUNCTION:       PriUnloadNameSpace (void)
+ *
+ *  PARAMETERS:     none
+ *
+ *  RETURN:         E_OK or E_ERROR
+ *
+ *  DESCRIPTION:    Shrinks the namespace, typically in response to an undocking
+ *                  event
+ *
+ ****************************************************************************/
+
+INT32
+PriUnloadNameSpace (void)
+{
+    FUNCTION_TRACE ("PriUnloadNameSpace");
+
+
+    if (!RootObject->Scope)
+    {
+        return E_ERROR;
+    }
+    
+    return (E_OK);
 }
 
 
