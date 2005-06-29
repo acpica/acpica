@@ -550,6 +550,10 @@ SOURCE=..\..\source_linux\COMPONENTS\Disassembler\dmnames.c
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\SOURCE\COMPONENTS\disassembler\dmobject.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\source_linux\COMPONENTS\Disassembler\dmopcode.c
 # End Source File
 # Begin Source File
