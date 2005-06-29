@@ -146,9 +146,16 @@ FlGenerateFilename (
     char                    *Suffix);
 
 ACPI_STATUS
+FlSplitInputPathname (
+    char                    *InputPath,
+    char                    **OutDirectoryPath,
+    char                    **OutFilename);
+
+ACPI_STATUS
 AdAmlDisassemble (
     BOOLEAN                 OutToFile,
     char                    *Filename,
+    char                    *Prefix,
     char                    **OutFilename,
     BOOLEAN                 GetAllTables);
 
