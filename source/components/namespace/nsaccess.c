@@ -14,15 +14,18 @@
  | Functions for accessing ACPI namespace
  |__________________________________________________________________________
  |
- | $Revision: 1.6 $
- | $Date: 2005/06/29 18:15:27 $
+ | $Revision: 1.7 $
+ | $Date: 2005/06/29 18:15:29 $
  | $Log: nsaccess.c,v $
- | Revision 1.6  2005/06/29 18:15:27  aystarik
- | Anti-Polish clean up
+ | Revision 1.7  2005/06/29 18:15:29  aystarik
+ | Polish Conversion Complete - Compiles
  |
  | 
- | date	99.02.12.23.20.00;	author rmosgrov;	state Exp;
+ | date	99.02.16.17.05.00;	author rmosgrov;	state Exp;
  |
+ * 
+ * 7     2/16/99 9:05a Rmosgrov
+ * Polish Conversion Complete - Compiles 
  * 
  * 6     2/12/99 3:20p Rmosgrov
  * Anti-Polish clean up
@@ -169,7 +172,7 @@
 //   Change 4th parameter in recursive call of SearchTable to correspond
 //     with the change of that parameter from (int) to (OpMode).
 // Add debug output when NsSetValue cannot determine the correct type and
-//   sets ValTyp to DefAny.
+//   sets ValType to DefAny.
 // Improved comments.
 //
 //    Rev 1.27   31 Oct 1997 15:43:18   phutchis
@@ -608,7 +611,7 @@ RegisterStaticBlockPtr (void **BlkPtr)
     {
         fprintf_bu (LstFileHandle, LOGFILE,
                         "RegisterStaticBlockPtr: too many static blocks");
-        _dKinc_warning ("0001", PRINT, __LINE__, __FILE__, LstFileHandle, LOGFILE);
+        _Kinc_warning ("0001", PRINT, __LINE__, __FILE__, LstFileHandle, LOGFILE);
     }
 }
 
@@ -709,7 +712,7 @@ NsPushCurrentScope (nte *NewScope, NsType Type)
     {
         fprintf_bu (LstFileHandle, LOGFILE,
                         "NsPushCurrentScope: type code %d out of range", Type);
-        _dKinc_warning ("0003", PRINT, __LINE__, __FILE__, LstFileHandle, LOGFILE);
+        _Kinc_warning ("0003", PRINT, __LINE__, __FILE__, LstFileHandle, LOGFILE);
     }
 
     if (CurrentScope < &ScopeStack[MAXNEST-1])   /* check for overflow */
@@ -892,7 +895,7 @@ int
 AcpiExecuteMethod (char * MethodName, OBJECT_DESCRIPTOR **ReturnValue,
                     OBJECT_DESCRIPTOR **Params)
 {
-    nte             *Method;
+    nte             *MethodPtr;
     int             RetVal;
 
 
@@ -926,19 +929,19 @@ BREAKPOINT3;
     /* See comment near top of file re significance of FETCH_VALUES */
 
 #ifdef FETCH_VALUES
-    Method = (nte *) NsEnter (MethodName, Any, Exec);
+    MethodPtr = (nte *) NsEnter (MethodName, Any, Exec);
 #else 
-    Method = (nte *) NsEnter (MethodName, Method, Exec);
+    MethodPtr = (nte *) NsEnter (MethodName, Method, Exec);
 #endif
 
-    if (NOTFOUND == Method)
+    if (NOTFOUND == MethodPtr)
     {
         Why = "Method not found";
         return E_ERROR;
     }
 
 #ifdef FETCH_VALUES
-    if (NsValType (Method) == Method)
+    if (NsValType (MethodPtr) == Method)
     {
         /* Name found is in fact a Method */
         
@@ -947,14 +950,14 @@ BREAKPOINT3;
             LineSet (55, Exec);
             fprintf_bu (LstFileHandle, LOGFILE,
                         "[%s Method %p ptrVal %p ",
-                        MethodName, Method, Method->ptrVal);
+                        MethodName, MethodPtr, MethodPtr->ptrVal);
 
-            if (Method->ptrVal)
+            if (MethodPtr->ptrVal)
             {
                 fprintf_bu (LstFileHandle, LOGFILE,
                             "Offset %x Length %lx]",
-                            ((meth *) Method->ptrVal)->Offset + 1,
-                            ((meth *) Method->ptrVal)->Length - 1);
+                            ((meth *) MethodPtr->ptrVal)->Offset + 1,
+                            ((meth *) MethodPtr->ptrVal)->Length - 1);
             }
             
             else
@@ -970,7 +973,7 @@ BREAKPOINT3;
          * case, set the current scope to that of the Method, and execute it.
          */
 
-        if (!Method->ptrVal)
+        if (!MethodPtr->ptrVal)
         {
             Why = "Method is undefined";
             return E_ERROR;
@@ -979,36 +982,36 @@ BREAKPOINT3;
         if (Trace & TraceNames)
         {
             fprintf_bu (LstFileHandle, LOGFILE, "Set scope %s ",
-                          NsFullyQualifiedName(Method->ChildScope));
+                          NsFullyQualifiedName(MethodPtr->ChildScope));
         }
         
         CurrentScope = &ScopeStack[0];
-        NsPushCurrentScope (Method->ChildScope, Method);
+        NsPushCurrentScope (MethodPtr->ChildScope, Method);
         
         if (Trace & TraceNames)
         {
             fprintf_bu (LstFileHandle, LOGFILE, "Exec Method %s ",
-                          NsFullyQualifiedName (Method));
+                          NsFullyQualifiedName (MethodPtr));
         }
         
         ClearPkgStack ();
         ObjStackTop = 0;                                           /* Clear object stack */
-        RetVal = AmlExec (((meth *) Method->ptrVal)->Offset + 1,
-                            ((meth *) Method->ptrVal)->Length - 1,
+        RetVal = AmlExec (((meth *) MethodPtr->ptrVal)->Offset + 1,
+                            ((meth *) MethodPtr->ptrVal)->Length - 1,
                             Params);
 
         if (debug_level () > 0 && PkgNested ())
         {
             fprintf_bu (LstFileHandle, LOGFILE,
                             "Package stack not empty at method exit");
-            _dKinc_info ("0008", PACRLF, __LINE__, __FILE__, LstFileHandle, LOGFILE);
+            _Kinc_info ("0008", PACRLF, __LINE__, __FILE__, LstFileHandle, LOGFILE);
         }
 
         if (GetMethodDepth () > -1)
         {
             fprintf_bu (LstFileHandle, LOGFILE,
                             "Method stack not empty at method exit");
-            _dKinc_error("0009", PACRLF, __LINE__, __FILE__, LstFileHandle, LOGFILE);
+            _Kinc_error("0009", PACRLF, __LINE__, __FILE__, LstFileHandle, LOGFILE);
         }
 
         if (debug_level () > 0 && ObjStackTop)
@@ -1017,7 +1020,7 @@ BREAKPOINT3;
 
             fprintf_bu (LstFileHandle, LOGFILE,
                             "Object stack not empty at method exit");
-            _dKinc_info ("0010", PACRLF, __LINE__, __FILE__, LstFileHandle, LOGFILE);
+            _Kinc_info ("0010", PACRLF, __LINE__, __FILE__, LstFileHandle, LOGFILE);
             
             Trace |= TraceExec;         /* enable output from DumpStack */
             DumpStack (Exec, "Remaining Object Stack entries", -1, "");
@@ -1038,7 +1041,7 @@ BREAKPOINT3;
         if (debug_level () > 0)
         {
             fprintf_bu (LstFileHandle, LOGFILE, "Value: ");
-            NsDumpEntry (Method, LOGFILE);
+            NsDumpEntry (MethodPtr, LOGFILE);
         }
 
         pOD = NEW (OBJECT_DESCRIPTOR);
@@ -1046,9 +1049,9 @@ BREAKPOINT3;
         {
             /* Construct a descriptor pointing to the name */
             
-            pOD->sLvalue.ValTyp = (BYTE) Lvalue;
-            pOD->sLvalue.OpCode = (BYTE) NameOp;
-            pOD->sLvalue.Ref = (void *) Method;
+            pOD->Lvalue.ValType = (BYTE) Lvalue;
+            pOD->Lvalue.OpCode = (BYTE) NameOp;
+            pOD->Lvalue.Ref = (void *) MethodPtr;
 
             /* 
              * Put it on the stack, and use GetRvalue() to get the value.
@@ -1114,7 +1117,7 @@ BREAKPOINT3;
 
 /****************************************************************************
  *
- * FUNCTION:    AcpiLoadNameSpace
+ * FUNCTION:    AcpiLoadTableInNameSpace
  *
  * PARAMETERS:  none
  *
@@ -1125,7 +1128,7 @@ BREAKPOINT3;
  ****************************************************************************/
 
 int
-AcpiLoadNameSpace (void)
+AcpiLoadTableInNameSpace (void)
 {
     FUNCTION_TRACE ("AcpiLoadNameSpace");
 
@@ -1188,7 +1191,7 @@ NsOpensScope (NsType Type)
     {
         fprintf_bu (LstFileHandle, LOGFILE,
                         "NsOpensScope: type code %d out of range", Type);
-        _dKinc_warning ("0011", PRINT, __LINE__, __FILE__, LstFileHandle, LOGFILE);
+        _Kinc_warning ("0011", PRINT, __LINE__, __FILE__, LstFileHandle, LOGFILE);
         return 0;
     }
 
@@ -1218,7 +1221,7 @@ NsLocal (NsType Type)
     {
         fprintf_bu (LstFileHandle, LOGFILE,
                         "NsLocal: type code %d out of range", Type);
-        _dKinc_warning ("0012", PRINT, __LINE__, __FILE__, LstFileHandle, LOGFILE);
+        _Kinc_warning ("0012", PRINT, __LINE__, __FILE__, LstFileHandle, LOGFILE);
          return 0;
     }
 
@@ -1245,7 +1248,7 @@ NsValType (NsHandle h)
     if ((NsHandle) 0 == h)
     {
         fprintf_bu (LstFileHandle, LOGFILE, "NsValType: Null handle");
-        _dKinc_warning ("0013", PRINT, __LINE__, __FILE__, LstFileHandle, LOGFILE);
+        _Kinc_warning ("0013", PRINT, __LINE__, __FILE__, LstFileHandle, LOGFILE);
         return Any;
     }
 
@@ -1272,7 +1275,7 @@ NsValPtr (NsHandle h)
     if ((NsHandle) 0 == h)
     {
         fprintf_bu (LstFileHandle, LOGFILE, "NsValPtr: Null handle");
-        _dKinc_warning ("0014", PRINT, __LINE__, __FILE__, LstFileHandle, LOGFILE);
+        _Kinc_warning ("0014", PRINT, __LINE__, __FILE__, LstFileHandle, LOGFILE);
         return (void *) 0;
     }
 
@@ -1574,7 +1577,7 @@ SearchTable(char *NamSeg, nte *NameTbl, int TableSize, OpMode LoadMode, NsType T
             fprintf_bu (LstFileHandle != NO_LOG_HANDLE ? LstFileHandle : GetMasterLogHandle (),
                         LOGFILE | SCREEN, "Unknown reference in name space \"%4.4s\"",
                             NamSeg);
-            _dKinc_error ("0017", PRINT, __LINE__, __FILE__,
+            _Kinc_error ("0017", PRINT, __LINE__, __FILE__,
                         LstFileHandle != NO_LOG_HANDLE ? LstFileHandle : GetMasterLogHandle(),
                         LOGFILE | SCREEN);
             LineSet (0, LoadMode);        /* start new line in listing */
@@ -1637,7 +1640,7 @@ SearchTable(char *NamSeg, nte *NameTbl, int TableSize, OpMode LoadMode, NsType T
  * Reference      Size                 Pool  Owner       Description
  * Root         NsRootSize*s(nte)   bu    acpinmsp    Root Name Table
  * nte.ptrVal       s(OBJECT_DESCRIPTOR) bu    acpinmsp    initialized value
- * nte.ptrVal->pbString   varies         bu    acpinmsp    string value
+ * nte.ptrVal->String   varies         bu    acpinmsp    string value
  *
  ***************************************************************************/
 
@@ -1701,7 +1704,7 @@ NsSetup (void)
                 KFatalError("0019", ("Initial value descriptor allocation failure"));
             }
 
-            pOD->ValTyp = (BYTE) InitVal->Type;
+            pOD->ValType = (BYTE) InitVal->Type;
 
             /* 
              * Convert value string from table entry to internal representation.
@@ -1711,11 +1714,11 @@ NsSetup (void)
             switch (InitVal->Type)
             {
                 case Number:
-                    pOD->sNumber.dNumber = (DWORD) atol (InitVal->Val);
+                    pOD->Number.Number = (DWORD) atol (InitVal->Val);
                     break;
 
                 case String:
-                    pOD->sString.wStrLen = (WORD) strlen (InitVal->Val);
+                    pOD->String.StrLen = (WORD) strlen (InitVal->Val);
 
                     /* 
                      * XXX - if this malloc_bu() causes a garbage collection pass,
@@ -1723,13 +1726,13 @@ NsSetup (void)
                      * XXX - This "should not happen" during initialization.
                      */
 
-                    pOD->sString.pbString = OsdAllocate ((size_t) (pOD->sString.wStrLen + 1));
-                    if ((BYTE *) 0 == pOD->sString.pbString)
+                    pOD->String.String = OsdAllocate ((size_t) (pOD->String.StrLen + 1));
+                    if ((BYTE *) 0 == pOD->String.String)
                     {
                         KFatalError ("0020", ("Initial value string allocation failure"));
                     }
                     
-                    strcpy ((char *) pOD->sString.pbString, InitVal->Val);
+                    strcpy ((char *) pOD->String.String, InitVal->Val);
                     break;
 
                 default:
@@ -1739,7 +1742,7 @@ NsSetup (void)
 
             /* Store pointer to value descriptor in nte */
             
-            NsSetValue(hN, pOD, pOD->ValTyp);
+            NsSetValue(hN, pOD, pOD->ValType);
         }
     }
 
@@ -1779,7 +1782,7 @@ NsPopCurrent (NsType Type)
     {
         fprintf_bu (LstFileHandle, LOGFILE,
                         "NsPopCurrent: type code %d out of range", Type);
-        _dKinc_warning ("0021", PRINT, __LINE__, __FILE__, LstFileHandle, LOGFILE);
+        _Kinc_warning ("0021", PRINT, __LINE__, __FILE__, LstFileHandle, LOGFILE);
     }
 
     printfd_bu (TRACE_LEVEL, "Popping Scope till type (%i) is found\n", Type);
@@ -1928,7 +1931,7 @@ NsEnter (char *Name, NsType Type, OpMode LoadMode)
                 LineSet ((int) strlen (OrigName) + 18, LoadMode);
                 fprintf_bu (LstFileHandle, LOGFILE, "*Too many ^ in <%s>*",
                             OrigName);
-                _dKinc_error ("0022", PRINT, __LINE__, __FILE__, LstFileHandle, LOGFILE);
+                _Kinc_error ("0022", PRINT, __LINE__, __FILE__, LstFileHandle, LOGFILE);
                 LineSet (0, LoadMode);
                 CheckTrash ("leave NsEnter NOTFOUND 1");
 
@@ -2024,7 +2027,7 @@ NsEnter (char *Name, NsType Type, OpMode LoadMode)
                 fprintf_bu (LstFileHandle, LOGFILE,
                             "name %4.4s not found in %s",
                             Name, NsFullyQualifiedName(Look));
-                _dKinc_error ("0024", PACRLF, __LINE__, __FILE__, LstFileHandle, LOGFILE);
+                _Kinc_error ("0024", PACRLF, __LINE__, __FILE__, LstFileHandle, LOGFILE);
             }
 
             CheckTrash ("leave NsEnter NOTFOUND 2");
@@ -2043,7 +2046,7 @@ NsEnter (char *Name, NsType Type, OpMode LoadMode)
             fprintf_bu (LstFileHandle, LOGFILE,
                         "Type mismatch, wanted %s, found %s\n",
                         NsTypeNames[TTCF], NsTypeNames[This->NtType]);
-            _dKinc_warning ("0025", PACRLF, __LINE__, __FILE__, LstFileHandle, LOGFILE);
+            _Kinc_warning ("0025", PACRLF, __LINE__, __FILE__, LstFileHandle, LOGFILE);
         }
 
         /*
@@ -2089,7 +2092,7 @@ NsEnter (char *Name, NsType Type, OpMode LoadMode)
                     fprintf_bu (LstFileHandle, LOGFILE, " Name not found");
                 }
                 
-                _dKinc_error ("0027", PACRLF, __LINE__, __FILE__, LstFileHandle, LOGFILE);
+                _Kinc_error ("0027", PACRLF, __LINE__, __FILE__, LstFileHandle, LOGFILE);
                 CheckTrash ("leave NsEnter NOTFOUND 3");
                 
                 return (NsHandle) NOTFOUND;
@@ -2139,7 +2142,7 @@ NsEnter (char *Name, NsType Type, OpMode LoadMode)
  *
  ***************************************************************************/
 
- NsHandle GetParentHandle(NsHandle Look)
+ NsHandle GetParentHandle(NsHandle LookHdl)
 {
     nte             *Look, *This, *NextSeg;
     int             Size;
@@ -2148,14 +2151,14 @@ NsEnter (char *Name, NsType Type, OpMode LoadMode)
     FUNCTION_TRACE ("GetParentHandle");
 
 
-    if (Look == (NsHandle)0 || ((nte *) Look)->ParentScope == (nte *) 0)
+    if (LookHdl == (NsHandle)0 || ((nte *) LookHdl)->ParentScope == (nte *) 0)
     {
         return NOTFOUND;
     }
 
     /* Look for the handle passed as a parameter */
     
-    Look = (nte *) Look;
+    Look = (nte *) LookHdl;
 
     /* Look in its parent scope */
     
@@ -2379,9 +2382,9 @@ NsNameOfCurrentScope (void)
  ***************************************************************************/
 
 char *
-NsFullyQualifiedName (NsHandle Look)
+NsFullyQualifiedName (NsHandle LookHdl)
 {
-    nte                 *Look = (nte *) Look;
+    nte                 *Look = (nte *) LookHdl;
     nte                 *Temp;
     static char         *pcFQN = (char *) 0;
     static size_t       iFQNsiz = 0;
@@ -2542,11 +2545,11 @@ NsSetMethod (NsHandle h, ptrdiff_t Offset, long Length)
  *
  * PARAMETERS:  NsHandle            hN          handle of nte to be set
  *              ACPI_OBJECT_HANDLE  hV          value to be set
- *              BYTE                ValTyp     type of value,
+ *              BYTE                ValType     type of value,
  *                                              or Any if not known
  *
  * DESCRIPTION: Record the given object as the value associated with the
- *              name whose NsHandle is passed.  If hV is NULL and ValTyp
+ *              name whose NsHandle is passed.  If hV is NULL and ValType
  *              is Any, set the name as having no value.
  *
  * ALLOCATION:  This function must not call NEW() or [mc]alloc_bu because
@@ -2556,7 +2559,7 @@ NsSetMethod (NsHandle h, ptrdiff_t Offset, long Length)
  ***************************************************************************/
 
 void
-NsSetValue (NsHandle hN, ACPI_OBJECT_HANDLE hV, BYTE ValTyp)
+NsSetValue (NsHandle hN, ACPI_OBJECT_HANDLE hV, BYTE ValType)
 {
     void                *Temp;
 
@@ -2574,7 +2577,7 @@ NsSetValue (NsHandle hN, ACPI_OBJECT_HANDLE hV, BYTE ValTyp)
         KFatalError ("0035", ("NsSetValue: null name handle"));
     }
     
-    if ((ACPI_OBJECT_HANDLE) 0 == hV && Any != ValTyp)
+    if ((ACPI_OBJECT_HANDLE) 0 == hV && Any != ValType)
     {
         KFatalError ("0036", ("NsSetValue: null value handle"));
     }
@@ -2595,9 +2598,9 @@ NsSetValue (NsHandle hN, ACPI_OBJECT_HANDLE hV, BYTE ValTyp)
 
     /* If the new value is NULL, done */
     
-    if ((ACPI_OBJECT_HANDLE) 0 == hV && Any == ValTyp)
+    if ((ACPI_OBJECT_HANDLE) 0 == hV && Any == ValType)
     {
-        ((nte *) hN)->NtType = (NsType) ValTyp;
+        ((nte *) hN)->NtType = (NsType) ValType;
         return;
     }
 
@@ -2607,12 +2610,12 @@ NsSetValue (NsHandle hN, ACPI_OBJECT_HANDLE hV, BYTE ValTyp)
 
     /* Set the type if given, or if it can be discerned */
     
-    if (Any != ValTyp)
+    if (Any != ValType)
     {
-        ((nte *) hN)->NtType = (NsType) ValTyp;
+        ((nte *) hN)->NtType = (NsType) ValType;
     }
     
-    else if (iIsInPCodeBlock ((BYTE *) hV))
+    else if (IsInPCodeBlock ((BYTE *) hV))
     {
         /* hV points into the AML stream.  Check for a recognized OpCode */
         
@@ -2673,7 +2676,7 @@ NsSetValue (NsHandle hN, ACPI_OBJECT_HANDLE hV, BYTE ValTyp)
                         "NsSetValue:confused:setting bogus type for %s from ",
                         NsFullyQualifiedName (hN));
 
-            if (iIsInPCodeBlock((BYTE *)hV))
+            if (IsInPCodeBlock((BYTE *)hV))
             {
                 fprintf_bu (LstFileHandle, LOGFILE,
                             "AML-stream code %02x\n", *(BYTE *) hV);
@@ -2896,7 +2899,7 @@ NsDumpTable (nte *This, int Size, int Level, int DisplayBitFlags,
             {
                 fprintf_bu (LstFileHandle, LOGFILE,
                             "*** bad name %08lx at %p *** ", This->NameSeg, This);
-                _dKinc_error ("0038", PACRLF, __LINE__, __FILE__, LstFileHandle, LOGFILE);
+                _Kinc_error ("0038", PACRLF, __LINE__, __FILE__, LstFileHandle, LOGFILE);
             }
 
             if (Method == Type && This->ptrVal != (void *)0)
@@ -2965,7 +2968,7 @@ NsDumpTable (nte *This, int Size, int Level, int DisplayBitFlags,
                 
                 while (Value && debug_level () > 0)
                 {
-                    BYTE                bT = ((OBJECT_DESCRIPTOR *) Value)->ValTyp;
+                    BYTE                bT = ((OBJECT_DESCRIPTOR *) Value)->ValType;
 
 
                     fprintf_bu (LstFileHandle, LOGFILE,
@@ -2986,7 +2989,7 @@ NsDumpTable (nte *This, int Size, int Level, int DisplayBitFlags,
                          * the above-listed variants of OBJECT_DESCRIPTOR have
                          * compatible mappings.
                          */
-                        Value = ((OBJECT_DESCRIPTOR *)Value)->sBuffer.pbBuffer;
+                        Value = ((OBJECT_DESCRIPTOR *)Value)->Buffer.Buffer;
                     }
                     else
                     {
@@ -3104,17 +3107,17 @@ NsDumpEntry (NsHandle h, int DisplayBitFlags)
 
 /****************************************************************************
  * 
- * FUNCTION:    NsFindNames
+ * FUNCTION:    InternalNsFindNames
  *
- * PARAMETERS:  nte         *This          table to be searched
- *              int         Size           size of table
- *              char        *SearchFor    pattern to be found.
+ * PARAMETERS:  nte         *This           table to be searched
+ *              int          Size           size of table
+ *              char        *SearchFor      pattern to be found.
  *                                          4 bytes, ? matches any character.
- *              int         *Count        output count of matches found.
+ *              int         *Count          output count of matches found.
  *                                          Outermost caller should preset to 0
- *              NsHandle     List[]       output array of handles.  If
+ *              NsHandle     List[]         output array of handles.  If
  *                                          null, only the count is obtained.
- *              int         MaxDepth       Maximum depth of search.  Use
+ *              int          MaxDepth       Maximum depth of search.  Use
  *                                          INT_MAX for an effectively
  *                                          unlimited depth.
  *
@@ -3126,7 +3129,7 @@ NsDumpEntry (NsHandle h, int DisplayBitFlags)
 #define BYTES_PER_SEGMENT 4
 
 static void
-NsFindNames (nte *This, int Size, char *SearchFor,
+InternalNsFindNames (nte *This, int Size, char *SearchFor,
                  int *Count, NsHandle List[], int MaxDepth)
 {
     nte             *NextSeg;
@@ -3183,7 +3186,7 @@ NsFindNames (nte *This, int Size, char *SearchFor,
 
             if (This->ChildScope)
             {
-                NsFindNames (This->ChildScope, TABLSIZE, SearchFor,
+                InternalNsFindNames (This->ChildScope, TABLSIZE, SearchFor,
                                  Count, List, MaxDepth - 1);
             }
         }
@@ -3215,12 +3218,12 @@ NsFindNames (nte *This, int Size, char *SearchFor,
  *
  * FUNCTION:    NsFindNames
  *
- * PARAMETERS:  char        *SearchFor    pattern to be found.
+ * PARAMETERS:  char        *SearchFor      pattern to be found.
  *                                          4 bytes, ? matches any character.
  *                                          If NULL, "????" will be used.
- *              NsHandle    SearchBase     Root of subtree to be searched, or
+ *              NsHandle    SearchBase      Root of subtree to be searched, or
  *                                          NS_ALL to search the entire namespace
- *              int         MaxDepth       Maximum depth of search.  Use INT_MAX
+ *              int         MaxDepth        Maximum depth of search.  Use INT_MAX
  *                                          for an effectively unlimited depth.
  *
  * DESCRIPTION: Traverse the name space finding names which match a search
@@ -3297,7 +3300,7 @@ NsFindNames (char *SearchFor, NsHandle SearchBase, int MaxDepth)
     
     Count = 0;
     CheckTrash ("NsFindNames before count");
-    NsFindNames (SearchBase, BaseSize, SearchFor, &Count, (NsHandle *)0,
+    InternalNsFindNames (SearchBase, BaseSize, SearchFor, &Count, (NsHandle *)0,
                     MaxDepth);
     CheckTrash ("NsFindNames after count");
     
@@ -3317,7 +3320,7 @@ NsFindNames (char *SearchFor, NsHandle SearchBase, int MaxDepth)
     
     Count = 0;
     CheckTrash ("NsFindNames before list");
-    NsFindNames (SearchBase, BaseSize, SearchFor, &Count, List,
+    InternalNsFindNames (SearchBase, BaseSize, SearchFor, &Count, List,
                     MaxDepth);
     CheckTrash ("NsFindNames after list");
 
@@ -3628,9 +3631,9 @@ NsMarkNT (nte *This, int Size, int *Count)
                     {
                         /* Avoid marking value if it is in the AML stream */
                         
-                        if (!IsInPCodeBlock (ptrVal->sString.pbString))
+                        if (!IsInPCodeBlock (ptrVal->String.String))
                         {
-                            MarkBlock (ptrVal->sString.pbString);
+                            MarkBlock (ptrVal->String.String);
                         }
                         MarkBlock (ptrVal);
                     }
