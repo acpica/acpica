@@ -3,7 +3,7 @@
 /******************************************************************************
  *
  * Module Name: aslglobal.h - Global variable definitions
- *              $Revision: 1.18 $
+ *              $Revision: 1.19 $
  *
  *****************************************************************************/
 
@@ -227,7 +227,7 @@ EXTERN UINT8                    INIT_GLOBAL (Gbl_HexBytesWereWritten, FALSE);
 EXTERN UINT32                   INIT_GLOBAL (Gbl_NumNamespaceObjects, 0);
 EXTERN UINT32                   INIT_GLOBAL (Gbl_ReservedMethods, 0);
 EXTERN UINT8                    INIT_GLOBAL (AcpiGbl_DbOutputFlags, DB_CONSOLE_OUTPUT);
-EXTERN FILE                     *DebugFile; /* Placeholder for oswinxf only */
+EXTERN FILE                     *AcpiGbl_DebugFile; /* Placeholder for oswinxf only */
 
 
 /* Static structures */
