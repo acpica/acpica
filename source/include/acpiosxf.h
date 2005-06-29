@@ -312,5 +312,14 @@ OsdWrite (
     UINT32                  Count, 
     OSD_FILE                *Stream); 
 
+void
+OsdDbgTrap(
+    UCHAR *pTrapCause);
 
+void
+OsdDbgAssert(
+    void *FailedAssertion,
+    void *FileName,
+    UINT32 LineNumber,
+	UCHAR *Message);
 #endif
