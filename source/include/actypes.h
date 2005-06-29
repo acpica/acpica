@@ -396,8 +396,17 @@ typedef struct _AcpiSysInfo
 
 } ACPI_SYS_INFO;
 
+
+/* Structure and flags for AcpiGetDeviceInfo */
+
+#define ACPI_VALID_HID      0x1
+#define ACPI_VALID_UID      0x2
+#define ACPI_VALID_ADR      0x4
+#define ACPI_VALID_STA      0x8
+
 typedef struct 
 {
+    UINT32                  Valid;
     UINT32                  HardwareId;
     UINT32                  UniqueId;
     UINT32                  Address;
