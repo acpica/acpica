@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: tbxfroot - Find the root ACPI table (RSDT)
- *              $Revision: 1.43 $
+ *              $Revision: 1.44 $
  *
  *****************************************************************************/
 
@@ -211,7 +211,7 @@ AcpiTbScanMemoryForRsdp (
     }
 
     /* Searched entire block, no RSDP was found */
-    DEBUG_PRINTP (ACPI_ERROR,("Searched entire block, no RSDP was found.\n"));
+    DEBUG_PRINTP (ACPI_INFO,("Searched entire block, no RSDP was found.\n"));
 
     return_PTR (NULL);
 }
