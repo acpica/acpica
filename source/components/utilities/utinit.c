@@ -16,15 +16,18 @@
  | library initialization and some types of table access
  |__________________________________________________________________________
  |
- | $Revision: 1.2 $
- | $Date: 2005/06/29 19:14:58 $
+ | $Revision: 1.3 $
+ | $Date: 2005/06/29 19:14:59 $
  | $Log: utinit.c,v $
- | Revision 1.2  2005/06/29 19:14:58  aystarik
- | 16/32/64-bit common data types
+ | Revision 1.3  2005/06/29 19:14:59  aystarik
+ | Comment out long pointer code
  |
  | 
- | date	99.03.10.00.06.00;	author rmoore1;	state Exp;
+ | date	99.03.10.21.20.00;	author rmoore1;	state Exp;
  |
+ * 
+ * 3     3/10/99 1:20p Rmoore1
+ * Comment out long pointer code
  * 
  * 2     3/09/99 4:06p Rmoore1
  * 16/32/64-bit common data types
@@ -374,7 +377,11 @@ BREAKPOINT3;
             OsdWrite (ACPILIB_DATA_FILE_VERSION, strlen (ACPILIB_DATA_FILE_VERSION),
                         (size_t) 1, FilePtr);
             
-            RsdpOriginalLocation = (UINT32) PtrOffset (RSDP);
+            /* POINTER STUFF COMMENTED OUT !!!! */
+
+/*
+ *           RsdpOriginalLocation = (UINT32) PtrOffset (RSDP);
+ */
 
             OsdWrite (&RsdpOriginalLocation, sizeof (UINT32), (size_t) 1, FilePtr);
             OsdWrite (RSDP, sizeof (ROOT_SYSTEM_DESCRIPTOR_POINTER), (size_t) 1, FilePtr);
