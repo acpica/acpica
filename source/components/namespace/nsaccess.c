@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: nsaccess - Top-level functions for accessing ACPI namespace
- *              $Revision: 1.147 $
+ *              $Revision: 1.148 $
  *
  ******************************************************************************/
 
@@ -429,14 +429,13 @@ AcpiNsLookup (
             /* Pathname is fully qualified, start from the root */
 
             ThisNode = AcpiGbl_RootNode;
-            CurrentNode = ThisNode;
 
             /* Point to name segment part */
 
             Pathname++;
 
             ACPI_DEBUG_PRINT ((ACPI_DB_NAMES, "Searching from root [%p]\n",
-                CurrentNode));
+                ThisNode));
         }
         else
         {
@@ -450,26 +449,26 @@ AcpiNsLookup (
              * Handle multiple Parent Prefixes (carat) by just getting
              * the parent node for each prefix instance.
              */
-            CurrentNode = PrefixNode;
+            ThisNode = PrefixNode;
             while (*Pathname == AML_PARENT_PREFIX)
             {
-                /* Point to segment part or next ParentPrefix */
-
+                /* 
+                 * Point past this prefix to the name segment 
+                 * part or the next Parent Prefix 
+                 */
                 Pathname++;
 
                 /* Backup to the parent node */
 
-                ThisNode = AcpiNsGetParentNode (CurrentNode);
+                ThisNode = AcpiNsGetParentNode (ThisNode);
                 if (!ThisNode)
                 {
                     /* Current scope has no parent scope */
 
                     REPORT_ERROR (
-                        ("Too many parent prefixes (^) - reached beyond root node\n"));
+                        ("ACPI path has too many parent prefixes (^) - reached beyond root node\n"));
                     return_ACPI_STATUS (AE_NOT_FOUND);
                 }
-
-                CurrentNode = ThisNode;
             }
         }
 
@@ -480,7 +479,7 @@ AcpiNsLookup (
          *  - A Null name segment (0)
          *  - A DualNamePrefix followed by two 4-byte name segments
          *  - A MultiNamePrefix followed by a byte indicating the
-         *    number of segments and the segments themselves.
+         *      number of segments and the segments themselves.
          *  - A single 4-byte name segment
          *
          * Examine the name prefix opcode, if any, to determine the number of 
@@ -525,8 +524,8 @@ AcpiNsLookup (
 
         default:
             /*
-             * Not a null name, no Dual or Multi prefix, hence there is 
-             * only one segment and Pathname is already pointing to it.
+             * Not a Null name, no Dual or Multi prefix, hence there is 
+             * only one name segment and Pathname is already pointing to it.
              */
             NumSegments = 1;
 
@@ -542,15 +541,17 @@ AcpiNsLookup (
      * Search namespace for each segment of the name.  Loop through and 
      * verify/add each name segment.
      */
-    while (NumSegments-- && CurrentNode)
+    CurrentNode = ThisNode;
+    while (NumSegments && CurrentNode)
     {
         /*
          * Search for the current name segment under the current
-         * named object.  The Type is significant only at the last (topmost)
-         * level.  (We don't care about the types along the path, only
+         * named object.  The Type is significant only at the last name 
+         * segment.  (We don't care about the types along the path, only
          * the type of the final target object.)
          */
         ThisSearchType = ACPI_TYPE_ANY;
+        NumSegments--;
         if (!NumSegments)
         {
             ThisSearchType = Type;
