@@ -246,7 +246,7 @@ TbMapAcpiTable (
 
 ACPI_STATUS
 TbVerifyTableChecksum (
-    void                    *TableHeader); 
+    ACPI_TABLE_HEADER       *TableHeader); 
 
 UINT8
 TbChecksum (
