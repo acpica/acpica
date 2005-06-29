@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acenv.h - Generation environment specific items
- *       $Revision: 1.53 $
+ *       $Revision: 1.101 $
  *
  *****************************************************************************/
 
@@ -9,8 +9,8 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, Intel Corp.  All rights
- * reserved.
+ * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
+ * All rights reserved.
  *
  * 2. License
  *
@@ -119,6 +119,38 @@
 
 
 /*
+ * Configuration for ACPI tools and utilities
+ */
+
+#ifdef _ACPI_DUMP_APP
+#ifndef MSDOS
+#define ACPI_DEBUG_OUTPUT
+#endif
+#define ACPI_APPLICATION
+#define ACPI_DISASSEMBLER
+#define ACPI_NO_METHOD_EXECUTION
+#define ACPI_USE_SYSTEM_CLIBRARY
+#endif
+
+#ifdef _ACPI_EXEC_APP
+#undef DEBUGGER_THREADING
+#define DEBUGGER_THREADING      DEBUGGER_SINGLE_THREADED
+#define ACPI_DEBUG_OUTPUT
+#define ACPI_APPLICATION
+#define ACPI_DEBUGGER
+#define ACPI_DISASSEMBLER
+#define ACPI_USE_SYSTEM_CLIBRARY
+#endif
+
+#ifdef _ACPI_ASL_COMPILER
+#define ACPI_DEBUG_OUTPUT
+#define ACPI_APPLICATION
+#define ACPI_DISASSEMBLER
+#define ACPI_CONSTANT_EVAL_ONLY
+#define ACPI_USE_SYSTEM_CLIBRARY
+#endif
+
+/*
  * Environment configuration.  The purpose of this file is to interface to the
  * local generation environment.
  *
@@ -155,48 +187,31 @@
  *
  */
 
+/*! [Begin] no source code translation */
 
-/*
- * Environment-specific configuration
- */
+#if defined(_LINUX)
+#include "aclinux.h"
 
-#ifdef _LINUX
+#elif defined(_AED_EFI)
+#include "acefi.h"
 
-#include <linux/config.h>
-#include <linux/string.h>
-#include <linux/kernel.h>
-#include <linux/ctype.h>
-#include <asm/system.h>
-#include <asm/atomic.h>
+#elif defined(WIN32)
+#include "acwin.h"
 
-/* Use native Linux string library */
+#elif defined(WIN64)
+#include "acwin64.h"
 
-#define ACPI_USE_SYSTEM_CLIBRARY
+#elif defined(MSDOS)        /* Must appear after WIN32 and WIN64 check */
+#include "acdos16.h"
 
-/* Special functions */
+#elif defined(__FreeBSD__)
+#include "acfreebsd.h"
 
-#define strtoul             simple_strtoul
+#elif defined(MODESTO)
+#include "acmodesto.h"
 
-/* Linux clib doesn't to strupr, but we do. */
-char *
-strupr(char *str);
-
-#else
-
-#ifdef _AED_EFI
-
-#include <efi.h>
-#include <efistdarg.h>
-#include <efilib.h>
-
-#else
-
-#ifdef WIN32
-
-/* MS-VC++ */
-
-#define strupr              _strupr
-#define ACPI_USE_STANDARD_HEADERS
+#elif defined(NETWARE)
+#include "acnetware.h"
 
 #else
 
@@ -204,8 +219,52 @@ strupr(char *str);
 
 #define ACPI_USE_STANDARD_HEADERS
 
+#define COMPILER_DEPENDENT_INT64   long long
+#define COMPILER_DEPENDENT_UINT64  unsigned long long
+
+
+/* Name of host operating system (returned by the _OS_ namespace object) */
+
+#define ACPI_OS_NAME         "Intel ACPI/CA Core Subsystem"
+
+/* This macro is used to tag functions as "printf-like" because
+ * some compilers can catch printf format string problems. MSVC
+ * doesn't, so this is proprocessed away.
+ */
+#define ACPI_PRINTF_LIKE_FUNC
+
+#endif
+
+/*
+ * Memory allocation tracking.  Used only if
+ * 1) This is the debug version
+ * 2) This is NOT a 16-bit version of the code (not enough real-mode memory)
+ */
+#ifdef ACPI_DEBUG_OUTPUT
+#if ACPI_MACHINE_WIDTH != 16
+#define ACPI_DBG_TRACK_ALLOCATIONS
 #endif
 #endif
+
+/*! [End] no source code translation !*/
+
+
+/*
+ * Debugger threading model
+ * Use single threaded if the entire subsystem is contained in an application
+ * Use multiple threaded when the subsystem is running in the kernel.
+ *
+ * By default the model is single threaded if ACPI_APPLICATION is set,
+ * multi-threaded if ACPI_APPLICATION is not set.
+ */
+#define DEBUGGER_SINGLE_THREADED    0
+#define DEBUGGER_MULTI_THREADED     1
+
+#ifdef ACPI_APPLICATION
+#define DEBUGGER_THREADING          DEBUGGER_SINGLE_THREADED
+
+#else
+#define DEBUGGER_THREADING          DEBUGGER_MULTI_THREADED
 #endif
 
 
@@ -219,7 +278,6 @@ strupr(char *str);
 /*
  * Use the standard C library headers.
  * We want to keep these to a minimum.
- *
  */
 
 #ifdef ACPI_USE_STANDARD_HEADERS
@@ -237,21 +295,28 @@ strupr(char *str);
  * We will be linking to the standard Clib functions
  */
 
-#define STRSTR(s1,s2)   strstr((s1), (s2))
-#define STRUPR(s)       strupr((s))
-#define STRLEN(s)       strlen((s))
-#define STRCPY(d,s)     strcpy((d), (s))
-#define STRNCPY(d,s,n)  strncpy((d), (s), (n))
-#define STRNCMP(d,s,n)  strncmp((d), (s), (n))
-#define STRCMP(d,s)     strcmp((d), (s))
-#define STRCAT(d,s)     strcat((d), (s))
-#define STRNCAT(d,s,n)  strncat((d), (s), (n))
-#define STRTOUL(d,s,n)  strtoul((d), (s), (n))
-#define MEMCPY(d,s,n)   memcpy((d), (s), (n))
-#define MEMSET(d,s,n)   memset((d), (s), (n))
-#define TOUPPER         toupper
-#define TOLOWER         tolower
+#define ACPI_STRSTR(s1,s2)      strstr((s1), (s2))
+#define ACPI_STRUPR(s)          (void) AcpiUtStrupr ((s))
+#define ACPI_STRLEN(s)          (ACPI_SIZE) strlen((s))
+#define ACPI_STRCPY(d,s)        (void) strcpy((d), (s))
+#define ACPI_STRNCPY(d,s,n)     (void) strncpy((d), (s), (ACPI_SIZE)(n))
+#define ACPI_STRNCMP(d,s,n)     strncmp((d), (s), (ACPI_SIZE)(n))
+#define ACPI_STRCMP(d,s)        strcmp((d), (s))
+#define ACPI_STRCAT(d,s)        (void) strcat((d), (s))
+#define ACPI_STRNCAT(d,s,n)     strncat((d), (s), (ACPI_SIZE)(n))
+#define ACPI_STRTOUL(d,s,n)     strtoul((d), (s), (ACPI_SIZE)(n))
+#define ACPI_MEMCPY(d,s,n)      (void) memcpy((d), (s), (ACPI_SIZE)(n))
+#define ACPI_MEMSET(d,s,n)      (void) memset((d), (s), (ACPI_SIZE)(n))
 
+#define ACPI_TOUPPER            toupper
+#define ACPI_TOLOWER            tolower
+#define ACPI_IS_XDIGIT          isxdigit
+#define ACPI_IS_DIGIT           isdigit
+#define ACPI_IS_SPACE           isspace
+#define ACPI_IS_UPPER           isupper
+#define ACPI_IS_PRINT           isprint
+#define ACPI_IS_ALPHA           isalpha
+#define ACPI_IS_ASCII           isascii
 
 /******************************************************************************
  *
@@ -278,35 +343,35 @@ typedef char *va_list;
  * Storage alignment properties
  */
 
-#define  _AUPBND         (sizeof(int) - 1)
-#define  _ADNBND         (sizeof(int) - 1)
+#define  _AUPBND                (sizeof (NATIVE_INT) - 1)
+#define  _ADNBND                (sizeof (NATIVE_INT) - 1)
 
 /*
  * Variable argument list macro definitions
  */
 
-#define _Bnd(X, bnd)    (((sizeof(X)) + (bnd)) & (~(bnd)))
-#define va_arg(ap, T)  (*(T *)(((ap)+=((_Bnd(T, _AUPBND)))-(_Bnd(T,_ADNBND)))))
-#define va_end(ap)      (void)0
-#define va_start(ap, A) (void)((ap)=(((char*)&(A))+(_Bnd(A,_AUPBND))))
+#define _Bnd(X, bnd)            (((sizeof (X)) + (bnd)) & (~(bnd)))
+#define va_arg(ap, T)           (*(T *)(((ap) += (_Bnd (T, _AUPBND))) - (_Bnd (T,_ADNBND))))
+#define va_end(ap)              (void) 0
+#define va_start(ap, A)         (void) ((ap) = (((char *) &(A)) + (_Bnd (A,_AUPBND))))
 
 #endif /* va_arg */
 
 
-#define STRSTR(s1,s2)    AcpiCmStrstr  ((s1), (s2))
-#define STRUPR(s)        AcpiCmStrupr  ((s))
-#define STRLEN(s)        AcpiCmStrlen  ((s))
-#define STRCPY(d,s)      AcpiCmStrcpy  ((d), (s))
-#define STRNCPY(d,s,n)   AcpiCmStrncpy ((d), (s), (n))
-#define STRNCMP(d,s,n)   AcpiCmStrncmp ((d), (s), (n))
-#define STRCMP(d,s)      AcpiCmStrcmp  ((d), (s))
-#define STRCAT(d,s)      AcpiCmStrcat  ((d), (s))
-#define STRNCAT(d,s,n)   AcpiCmStrncat ((d), (s), (n))
-#define STRTOUL(d,s,n)   AcpiCmStrtoul ((d), (s),(n))
-#define MEMCPY(d,s,n)    AcpiCmMemcpy  ((d), (s), (n))
-#define MEMSET(d,v,n)    AcpiCmMemset  ((d), (v), (n))
-#define TOUPPER          AcpiCmToUpper
-#define TOLOWER          AcpiCmToLower
+#define ACPI_STRSTR(s1,s2)      AcpiUtStrstr  ((s1), (s2))
+#define ACPI_STRUPR(s)          (void) AcpiUtStrupr ((s))
+#define ACPI_STRLEN(s)          (ACPI_SIZE) AcpiUtStrlen  ((s))
+#define ACPI_STRCPY(d,s)        (void) AcpiUtStrcpy  ((d), (s))
+#define ACPI_STRNCPY(d,s,n)     (void) AcpiUtStrncpy ((d), (s), (ACPI_SIZE)(n))
+#define ACPI_STRNCMP(d,s,n)     AcpiUtStrncmp ((d), (s), (ACPI_SIZE)(n))
+#define ACPI_STRCMP(d,s)        AcpiUtStrcmp  ((d), (s))
+#define ACPI_STRCAT(d,s)        (void) AcpiUtStrcat  ((d), (s))
+#define ACPI_STRNCAT(d,s,n)     AcpiUtStrncat ((d), (s), (ACPI_SIZE)(n))
+#define ACPI_STRTOUL(d,s,n)     AcpiUtStrtoul ((d), (s), (ACPI_SIZE)(n))
+#define ACPI_MEMCPY(d,s,n)      (void) AcpiUtMemcpy  ((d), (s), (ACPI_SIZE)(n))
+#define ACPI_MEMSET(d,v,n)      (void) AcpiUtMemset  ((d), (v), (ACPI_SIZE)(n))
+#define ACPI_TOUPPER            AcpiUtToUpper
+#define ACPI_TOLOWER            AcpiUtToLower
 
 #endif /* ACPI_USE_SYSTEM_CLIBRARY */
 
@@ -319,189 +384,34 @@ typedef char *va_list;
 
 /*
  * Handle platform- and compiler-specific assembly language differences.
+ * These should already have been defined by the platform includes above.
  *
  * Notes:
  * 1) Interrupt 3 is used to break into a debugger
  * 2) Interrupts are turned off during ACPI register setup
  */
 
-#ifdef WIN32   /* MS VC */
-
-/*! [Begin] no source code translation  */
-
-#define ACPI_ASM_MACROS
-#define causeinterrupt(level)   __asm {int level}
-#define BREAKPOINT3             __asm {int 3}
-#define disable()               __asm {cli}
-#define enable()                __asm {sti}
-#define halt()                  __asm {hlt}
-#define wbinvd()                __asm {WBINVD}
-
-
-#define ACPI_ACQUIRE_GLOBAL_LOCK(GLptr, Acq)       __asm {     \
-        __asm mov           ecx, GLptr              \
-        __asm acq10:                                \
-        __asm mov           eax, [ecx]              \
-        __asm mov           edx, eax                \
-        __asm and           edx, 0xFFFFFFFE         \
-        __asm bts           edx, 1                  \
-        __asm adc           edx, 0                  \
-        __asm lock cmpxchg  dword ptr [ecx], edx    \
-        __asm jnz           acq10                   \
-                                                    \
-        __asm cmp           dl, 3                   \
-        __asm sbb           eax, eax                \
-        __asm mov           Acq, al                 \
-}
-
-#define ACPI_RELEASE_GLOBAL_LOCK(GLptr, Pnd)       __asm {     \
-        __asm mov           ecx, GLptr              \
-        __asm Rel10:                                \
-        __asm mov           eax, [ecx]              \
-        __asm mov           edx, eax                \
-        __asm and           edx, 0xFFFFFFFC         \
-        __asm lock cmpxchg  dword ptr [ecx], edx    \
-        __asm jnz           Rel10                   \
-                                                    \
-        __asm cmp           dl, 3                   \
-        __asm and           eax, 1                  \
-        __asm mov           Pnd, al                 \
-}
-
-/*! [End] no source code translation !*/
-
-
-#endif /* WIN32 */
-
-
-#ifdef __GNUC__
-
-
-#ifdef __ia64__
-
-/* Single threaded */
-#define ACPI_APPLICATION
-
-#define ACPI_ASM_MACROS
-#define causeinterrupt(level)
-#define BREAKPOINT3
-#define disable() __cli()
-#define enable()  __sti()
-#define wbinvd()
-
-/*! [Begin] no source code translation */
-#include <asm/pal.h>
-
-/* PAL_HALT[_LIGHT] */
-#define halt() ia64_pal_halt_light()
-
-/* PAL_HALT */
-#define safe_halt() ia64_pal_halt(1)
-
-#define ACPI_ACQUIRE_GLOBAL_LOCK(GLptr, Acq) \
-    do { \
-    __asm__ volatile ("1:  ld4      r29=%1\n"  \
-        ";;\n"                  \
-        "mov    ar.ccv=r29\n"   \
-        "mov    r2=r29\n"       \
-        "shr.u  r30=r29,1\n"    \
-        "and    r29=-4,r29\n"   \
-        ";;\n"                  \
-        "add    r29=2,r29\n"    \
-        "and    r30=1,r30\n"    \
-        ";;\n"                  \
-        "add    r29=r29,r30\n"  \
-        ";;\n"                  \
-        "cmpxchg4.acq   r30=%1,r29,ar.ccv\n" \
-        ";;\n"                  \
-        "cmp.eq p6,p7=r2,r30\n" \
-        "(p7) br.dpnt.few 1b\n" \
-        "cmp.gt p8,p9=3,r29\n"  \
-        ";;\n"                  \
-        "(p8) mov %0=-1\n"      \
-        "(p9) mov %0=r0\n"      \
-        :"=r"(Acq):"m" __atomic_fool_gcc((GLptr)):"r2","r29","r30","memory"); \
-    } while (0)
-
-#define ACPI_RELEASE_GLOBAL_LOCK(GLptr, Acq) \
-    do { \
-    __asm__ volatile ("1:  ld4      r29=%1\n" \
-        ";;\n"                  \
-        "mov    ar.ccv=r29\n"   \
-        "mov    r2=r29\n"       \
-        "and    r29=-4,r29\n"   \
-        ";;\n"                  \
-        "cmpxchg4.acq   r30=%1,r29,ar.ccv\n" \
-        ";;\n"                  \
-        "cmp.eq p6,p7=r2,r30\n" \
-        "(p7) br.dpnt.few 1b\n" \
-        "and    %0=1,r2\n"      \
-        ";;\n"                  \
-        :"=r"(Acq):"m" __atomic_fool_gcc((GLptr)):"r2","r29","r30","memory"); \
-    } while (0)
-/*! [End] no source code translation !*/
-
-#else /* DO IA32 */
-
-#define ACPI_ASM_MACROS
-#define causeinterrupt(level)
-#define BREAKPOINT3
-#define disable() __cli()
-#define enable()  __sti()
-#define halt()    __asm__ __volatile__ ("sti; hlt":::"memory")
-#define wbinvd()
-
-/*! [Begin] no source code translation
- *
- * A brief explanation as GNU inline assembly is a bit hairy
- *  %0 is the output parameter in EAX ("=a")
- *  %1 and %2 are the input parameters in ECX ("c")
- *  and an immediate value ("i") respectively
- *  All actual register references are preceded with "%%" as in "%%edx"
- *  Immediate values in the assembly are preceded by "$" as in "$0x1"
- *  The final asm parameter are the operation altered non-output registers.
- */
-#define ACPI_ACQUIRE_GLOBAL_LOCK(GLptr, Acq) \
-    do { \
-        int dummy; \
-        asm("1:     movl (%1),%%eax;" \
-            "movl   %%eax,%%edx;" \
-            "andl   %2,%%edx;" \
-            "btsl   $0x1,%%edx;" \
-            "adcl   $0x0,%%edx;" \
-            "lock;  cmpxchgl %%edx,(%1);" \
-            "jnz    1b;" \
-            "cmpb   $0x3,%%dl;" \
-            "sbbl   %%eax,%%eax" \
-            :"=a"(Acq),"=c"(dummy):"c"(GLptr),"i"(~1L):"dx"); \
-    } while(0)
-
-#define ACPI_RELEASE_GLOBAL_LOCK(GLptr, Acq) \
-    do { \
-        int dummy; \
-        asm("1:     movl (%1),%%eax;" \
-            "movl   %%eax,%%edx;" \
-            "andl   %2,%%edx;" \
-            "lock;  cmpxchgl %%edx,(%1);" \
-            "jnz    1b;" \
-            "andl   $0x1,%%eax" \
-            :"=a"(Acq),"=c"(dummy):"c"(GLptr),"i"(~3L):"dx"); \
-    } while(0)
-/*! [End] no source code translation !*/
-
-#endif /* IA 32 */
-#endif /* __GNUC__ */
-
-
 /* Unrecognized compiler, use defaults */
+
 #ifndef ACPI_ASM_MACROS
 
+/*
+ * Calling conventions:
+ *
+ * ACPI_SYSTEM_XFACE        - Interfaces to host OS (handlers, threads)
+ * ACPI_EXTERNAL_XFACE      - External ACPI interfaces
+ * ACPI_INTERNAL_XFACE      - Internal ACPI interfaces
+ * ACPI_INTERNAL_VAR_XFACE  - Internal variable-parameter list interfaces
+ */
+#define ACPI_SYSTEM_XFACE
+#define ACPI_EXTERNAL_XFACE
+#define ACPI_INTERNAL_XFACE
+#define ACPI_INTERNAL_VAR_XFACE
+
 #define ACPI_ASM_MACROS
-#define causeinterrupt(level)
 #define BREAKPOINT3
-#define disable()
-#define enable()
-#define halt()
+#define ACPI_DISABLE_IRQS()
+#define ACPI_ENABLE_IRQS()
 #define ACPI_ACQUIRE_GLOBAL_LOCK(GLptr, Acq)
 #define ACPI_RELEASE_GLOBAL_LOCK(GLptr, Acq)
 
@@ -512,28 +422,15 @@ typedef char *va_list;
 
 /* Don't want software interrupts within a ring3 application */
 
-#undef causeinterrupt
 #undef BREAKPOINT3
-#define causeinterrupt(level)
 #define BREAKPOINT3
 #endif
 
 
-#ifdef _MSC_VER                 /* disable some level-4 warnings */
-
 /******************************************************************************
  *
- * Compiler-specific
+ * Compiler-specific information is contained in the compiler-specific
+ * headers.
  *
  *****************************************************************************/
-
-/* warn C4100: unreferenced formal parameter */
-#pragma warning(disable:4100)
-
-/* warn C4127: conditional expression is constant */
-#pragma warning(disable:4127)
-
-#endif
-
-
 #endif /* __ACENV_H__ */
