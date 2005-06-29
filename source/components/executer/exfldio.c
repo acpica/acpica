@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: exfldio - Aml Field I/O
- *              $Revision: 1.98 $
+ *              $Revision: 1.99 $
  *
  *****************************************************************************/
 
@@ -315,7 +315,7 @@ AcpiExAccessRegion (
         ObjDesc->CommonField.AccessByteWidth,
         ObjDesc->CommonField.BaseByteOffset,
         FieldDatumByteOffset,
-        ACPI_HIDWORD (Address), ACPI_LODWORD (Address)));
+        ACPI_FORMAT_UINT64 (Address)));
 
     /* Invoke the appropriate AddressSpace/OpRegion handler */
 
@@ -588,13 +588,13 @@ AcpiExFieldDatumIo (
         if (ReadWrite == ACPI_READ)
         {
             ACPI_DEBUG_PRINT ((ACPI_DB_BFIELD, "Value Read %8.8X%8.8X, Width %d\n",
-                                ACPI_HIDWORD (*Value), ACPI_LODWORD (*Value),
+                                ACPI_FORMAT_UINT64 (*Value),
                                 ObjDesc->CommonField.AccessByteWidth));
         }
         else
         {
             ACPI_DEBUG_PRINT ((ACPI_DB_BFIELD, "Value Written %8.8X%8.8X, Width %d\n",
-                                ACPI_HIDWORD (*Value), ACPI_LODWORD (*Value),
+                                ACPI_FORMAT_UINT64 (*Value),
                                 ObjDesc->CommonField.AccessByteWidth));
         }
     }
@@ -691,11 +691,11 @@ AcpiExWriteWithUpdateRule (
 
     ACPI_DEBUG_PRINT ((ACPI_DB_BFIELD,
         "Mask %8.8X%8.8X, DatumOffset %X, Width %X, Value %8.8X%8.8X, MergedValue %8.8X%8.8X\n",
-        ACPI_HIDWORD (Mask), ACPI_LODWORD (Mask),
+        ACPI_FORMAT_UINT64 (Mask),
         FieldDatumByteOffset,
         ObjDesc->CommonField.AccessByteWidth,
-        ACPI_HIDWORD (FieldValue), ACPI_LODWORD (FieldValue),
-        ACPI_HIDWORD (MergedValue),ACPI_LODWORD (MergedValue)));
+        ACPI_FORMAT_UINT64 (FieldValue),
+        ACPI_FORMAT_UINT64 (MergedValue)));
 
     /* Write the merged value */
 
