@@ -162,7 +162,7 @@ AcpiCmBuildExternalSimpleObject (
     UINT32                  *BufferSpaceUsed)
 {
     UINT32                  Length = 0;
-    char                    *SourcePtr = NULL;
+    UINT8                   *SourcePtr = NULL;
 
 
     FUNCTION_TRACE ("CmBuildExternalSimpleObject");
@@ -199,8 +199,8 @@ AcpiCmBuildExternalSimpleObject (
 
         Length = InternalObj->String.Length;
         ExternalObj->String.Length = InternalObj->String.Length;
-        ExternalObj->String.Pointer = (char *) DataSpace;
-        SourcePtr = InternalObj->String.Pointer;
+        ExternalObj->String.Pointer = (NATIVE_CHAR *) DataSpace;
+        SourcePtr = (UINT8 *) InternalObj->String.Pointer;
         break;
 
 
@@ -209,7 +209,7 @@ AcpiCmBuildExternalSimpleObject (
         Length = InternalObj->Buffer.Length;
         ExternalObj->Buffer.Length = InternalObj->Buffer.Length;
         ExternalObj->Buffer.Pointer = DataSpace;
-        SourcePtr = (char *) InternalObj->Buffer.Pointer;
+        SourcePtr = (UINT8 *) InternalObj->Buffer.Pointer;
         break;
 
 
@@ -228,7 +228,7 @@ AcpiCmBuildExternalSimpleObject (
          */
 
         ExternalObj->Type = ACPI_TYPE_ANY;
-        ExternalObj->Reference.Handle = InternalObj->Reference.Nte;
+        ExternalObj->Reference.Handle = InternalObj->Reference.NameDesc;
         break;
 
 
@@ -365,10 +365,11 @@ AcpiCmBuildExternalPackageObject (
 
 
         /*
-         * Check for 1) Null object -- OK, this can happen if package
+         * Check for 
+         * 1) Null object -- OK, this can happen if package
          *              element is never initialized
-         *           2) Not an internal object - can be an NTE instead
-         *           3) Any internal object other than a package.
+         * 2) Not an internal object - can be NamedObject instead
+         * 3) Any internal object other than a package.
          *
          * The more complex package case is handled later
          */
@@ -475,8 +476,6 @@ AcpiCmBuildExternalPackageObject (
             LevelPtr->Index         = 0;
         }
     }
-
-    return_ACPI_STATUS (AE_OK);
 }
 
 
@@ -630,7 +629,6 @@ AcpiCmBuildInternalPackageObject (
     UINT8                   *FreeSpace;
     ACPI_OBJECT             *ExternalObj;
     UINT32                  CurrentDepth = 0;
-    ACPI_STATUS             Status = AE_OK;
     UINT32                  Length = 0;
     UINT32                  ThisIndex;
     UINT32                  ObjectSpace = 0;
@@ -730,18 +728,6 @@ AcpiCmBuildInternalPackageObject (
 
         else
         {
-/*            Status = AcpiCmBuildSimpleObject(ThisInternalObj,
-                                               ThisExternalObj, FreeSpace,
-                                               &ObjectSpace);
-*/
-            if (Status != AE_OK)
-            {
-                /*
-                 * Failure get out
-                 */
-                return_ACPI_STATUS (Status);
-            }
-
             FreeSpace   += ObjectSpace;
             Length      += ObjectSpace;
 
@@ -778,13 +764,6 @@ AcpiCmBuildInternalPackageObject (
             }
         }   /* else object is NOT a package */
     }   /* while (1)  */
-
-
-    /*
-     * We'll never get here, but the compiler whines about
-     * return value
-     */
-    return_ACPI_STATUS (AE_OK);
 }
 
 

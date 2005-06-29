@@ -118,9 +118,9 @@
 #define DEFINE_ACPI_GLOBALS
 
 #include "acpi.h"
-#include "events.h"
-#include "namesp.h"
-#include "interp.h"
+#include "acevents.h"
+#include "acnamesp.h"
+#include "acinterp.h"
 
 
 #define _COMPONENT          MISCELLANEOUS
@@ -287,7 +287,7 @@ ACPI_INIT_DATA AcpiGbl_AcpiInitData;
  *
  ******************************************************************************/
 
-char                        *MsgAcpiErrorBreak = "*** Break on ACPI_ERROR ***\n";
+NATIVE_CHAR                 *MsgAcpiErrorBreak = "*** Break on ACPI_ERROR ***\n";
 
 
 /*****************************************************************************
@@ -302,7 +302,7 @@ char                        *MsgAcpiErrorBreak = "*** Break on ACPI_ERROR ***\n"
  *
  ****************************************************************************/
 
-char *
+NATIVE_CHAR *
 AcpiCmGetMutexName (
     UINT32                  MutexId)
 {
@@ -325,10 +325,10 @@ AcpiCmGetMutexName (
  * indicatewhat type is actually going to be stored for this entry.
  */
 
-static char                 AcpiGbl_BadType[] = "UNDEFINED";
+static NATIVE_CHAR          AcpiGbl_BadType[] = "UNDEFINED";
 #define TYPE_NAME_LENGTH    9                       /* Maximum length of each string */
 
-static char                 *AcpiGbl_NsTypeNames[] =    /* printable names of ACPI types */
+static NATIVE_CHAR          *AcpiGbl_NsTypeNames[] =    /* printable names of ACPI types */
 {
     "Untyped",
     "Number",
@@ -386,7 +386,7 @@ static char                 *AcpiGbl_NsTypeNames[] =    /* printable names of AC
  *
  ****************************************************************************/
 
-char *
+NATIVE_CHAR *
 AcpiCmGetTypeName (
     UINT32                  Type)
 {
@@ -424,11 +424,11 @@ AcpiCmValidObjectType (
         if ((Type < INTERNAL_TYPE_BEGIN) ||
             (Type > INTERNAL_TYPE_MAX))
         {
-            return FALSE;
+            return (FALSE);
         }
     }
 
-    return TRUE;
+    return (TRUE);
 }
 
 
@@ -444,17 +444,65 @@ AcpiCmValidObjectType (
  *
  ****************************************************************************/
 
-char *
+NATIVE_CHAR *
 AcpiCmFormatException (
     ACPI_STATUS             Status)
 {
+    NATIVE_CHAR             *Exception = "UNKNOWN_STATUS";
+    ACPI_STATUS             SubStatus;
 
-    if (Status > ACPI_MAX_STATUS)
+
+    SubStatus = (Status & ~AE_CODE_MASK);
+
+
+    switch (Status & AE_CODE_MASK)
     {
-        return "UNKNOWN_STATUS";
+    case AE_CODE_ENVIRONMENTAL:
+
+        if (SubStatus <= AE_CODE_ENV_MAX)
+        {
+            Exception = AcpiGbl_ExceptionNames_Env [SubStatus];
+        }
+        break;
+
+    case AE_CODE_PROGRAMMER:
+
+        if (SubStatus <= AE_CODE_PGM_MAX)
+        {
+            Exception = AcpiGbl_ExceptionNames_Pgm [SubStatus -1];
+        }
+        break;
+
+    case AE_CODE_ACPI_TABLES:
+
+        if (SubStatus <= AE_CODE_TBL_MAX)
+        {
+            Exception = AcpiGbl_ExceptionNames_Tbl [SubStatus -1];
+        }
+        break;
+
+    case AE_CODE_AML:
+
+        if (SubStatus <= AE_CODE_AML_MAX)
+        {
+            Exception = AcpiGbl_ExceptionNames_Aml [SubStatus -1];
+        }
+        break;
+
+    case AE_CODE_CONTROL:
+
+        if (SubStatus <= AE_CODE_CTRL_MAX)
+        {
+            Exception = AcpiGbl_ExceptionNames_Ctrl [SubStatus -1];
+        }
+        break;
+
+    default:
+        break;
     }
 
-    return (AcpiGbl_ExceptionNames [Status]);
+
+    return (Exception);
 }
 
 
@@ -622,6 +670,11 @@ AcpiCmInitGlobals (ACPI_INIT_DATA *InitData)
     AcpiGbl_ParseCacheRequests          = 0;
     AcpiGbl_ParseCacheHits              = 0;
 
+    AcpiGbl_ExtParseCache               = NULL;
+    AcpiGbl_ExtParseCacheDepth          = 0;
+    AcpiGbl_ExtParseCacheRequests       = 0;
+    AcpiGbl_ExtParseCacheHits           = 0;
+
     AcpiGbl_ObjectCache                 = NULL;
     AcpiGbl_ObjectCacheDepth            = 0;
     AcpiGbl_ObjectCacheRequests         = 0;
@@ -651,18 +704,15 @@ AcpiCmInitGlobals (ACPI_INIT_DATA *InitData)
 
     /* Namespace */
 
-    AcpiGbl_RootNameTable.NextTable     = NULL;
-    AcpiGbl_RootNameTable.ParentEntry   = NULL;
-    AcpiGbl_RootNameTable.ParentTable   = NULL;
+    AcpiGbl_RootObject                  = NULL;
 
-    AcpiGbl_RootObject                  = AcpiGbl_RootNameTable.Entries;
-
-    AcpiGbl_RootObject->Name            = ACPI_ROOT_NAME;
-    AcpiGbl_RootObject->DataType        = ACPI_DESC_TYPE_NAMED;
-    AcpiGbl_RootObject->Type            = ACPI_TYPE_ANY;
-    AcpiGbl_RootObject->ThisIndex       = 0;
-    AcpiGbl_RootObject->ChildTable      = NULL;
-    AcpiGbl_RootObject->Object          = NULL;
+    AcpiGbl_RootNamedObject.Name        = ACPI_ROOT_NAME;
+    AcpiGbl_RootNamedObject.DataType    = ACPI_DESC_TYPE_NAMED;
+    AcpiGbl_RootNamedObject.Type        = ACPI_TYPE_ANY;
+    AcpiGbl_RootNamedObject.Child       = NULL;
+    AcpiGbl_RootNamedObject.Peer        = NULL;
+    AcpiGbl_RootNamedObject.Object      = NULL;
+    AcpiGbl_RootNamedObject.Flags       = ANOBJ_END_OF_PEER_LIST;
 
     /* Memory allocation metrics - compiled out in non-debug mode. */
 

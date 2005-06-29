@@ -227,18 +227,9 @@ AcpiCmDeleteInternalObj (
     case ACPI_TYPE_METHOD:
 
         DEBUG_PRINT (ACPI_INFO,
-            ("CmDeleteInternalObj: ***** Method %p, ParserOp %p\n",
-            Object, Object->Method.ParserOp));
+            ("CmDeleteInternalObj: ***** Method %p\n", Object));
 
-        /* Delete parse tree if it exists */
-
-        if (Object->Method.ParserOp)
-        {
-            AcpiPsDeleteParseTree (Object->Method.ParserOp);
-            Object->Method.ParserOp = NULL;
-        }
-
-        /* Delete semaphore if it exists */
+        /* Delete the method semaphore if it exists */
 
         if (Object->Method.Semaphore)
         {
@@ -364,7 +355,7 @@ AcpiCmDeleteInternalObjectList (
 void
 AcpiCmUpdateRefCount (
     ACPI_OBJECT_INTERNAL    *Object,
-    INT32                   Action)
+    UINT32                  Action)
 {
     UINT16                  Count;
     UINT16                  NewCount;
@@ -484,11 +475,11 @@ AcpiCmUpdateRefCount (
  * DESCRIPTION: Increment the object reference count
  *
  * Object references are incremented when:
- * 1) An object is added as a value in an Name Table Entry (NTE)
+ * 1) An object is attached to a NamedObject (namespace object)
  * 2) An object is copied (all subobjects must be incremented)
  *
  * Object references are decremented when:
- * 1) An object is removed from an NTE
+ * 1) An object is detached from an NamedObject
  *
  ******************************************************************************/
 

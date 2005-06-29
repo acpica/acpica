@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: cmalloc - local memory allocation routines
- *              $Revision: 1.70 $ 
+ *              $Revision: 1.71 $ 
  *
  *****************************************************************************/
 
@@ -500,9 +500,14 @@ AcpiCmDumpAllocationInfo (
                     (AcpiGbl_MaxConcurrentObjectSize + 1023) / 1024));
 
     DEBUG_PRINT (TRACE_ALLOCATIONS | TRACE_TABLES,
-                    ("%30s: %4d (%3d Kb)\n", "Current Name Tables",
-                    AcpiGbl_CurrentNameTableCount,
-                    (AcpiGbl_CurrentNameTableSize + 1023) / 1024));
+                    ("%30s: %4d (%3d Kb)\n", "Current Named Objects",
+                    AcpiGbl_CurrentNamedObjectCount,
+                    (AcpiGbl_CurrentNamedObjectSize + 1023) / 1024));
+
+    DEBUG_PRINT (TRACE_ALLOCATIONS | TRACE_TABLES,
+                    ("%30s: %4d (%3d Kb)\n", "Max Named Objects",
+                    AcpiGbl_MaxConcurrentNamedObjectCount,
+                    ((AcpiGbl_MaxConcurrentNamedObjectCount * sizeof (ACPI_NAMED_OBJECT)) + 1023) / 1024));
 
     DEBUG_PRINT (TRACE_ALLOCATIONS | TRACE_TABLES,
                     ("%30s: %4d (%3d Kb)\n", "Total (all) internal objects",
@@ -589,7 +594,7 @@ AcpiCmDumpCurrentAllocations (
 
             case ACPI_DESC_TYPE_NAMED:
                 DEBUG_PRINT_RAW (TRACE_ALLOCATIONS | TRACE_TABLES,
-                        (" NTE Name %4.4s",
+                        (" Named Object %4.4s",
                         &((ACPI_NAMED_OBJECT*)(Element->Address))->Name));
                 break;
 

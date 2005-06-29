@@ -129,7 +129,7 @@
  *
  * FUNCTION:    AcpiCmEvaluateNumericObject
  *
- * PARAMETERS:  AcpiDevice          - NTE for the device
+ * PARAMETERS:  AcpiDevice          - Named Object for the device
  *              *Address            - Where the value is returned
  *
  * RETURN:      Status
@@ -143,7 +143,7 @@
 
 ACPI_STATUS
 AcpiCmEvaluateNumericObject (
-    char                    *ObjectName,
+    NATIVE_CHAR             *ObjectName,
     ACPI_NAMED_OBJECT       *AcpiDevice,
     UINT32                  *Address)
 {
@@ -169,7 +169,8 @@ AcpiCmEvaluateNumericObject (
         {
             DEBUG_PRINT (ACPI_ERROR,
                 ("%s on %4.4s failed with status %4.4x\n", ObjectName,
-                &((ACPI_NAMED_OBJECT*) AcpiDevice)->Name, Status));
+                &((ACPI_NAMED_OBJECT*) AcpiDevice)->Name, 
+                AcpiCmFormatException (Status)));
         }
 
         return_ACPI_STATUS (Status);
@@ -215,7 +216,7 @@ AcpiCmEvaluateNumericObject (
  *
  * FUNCTION:    AcpiCmExecute_HID
  *
- * PARAMETERS:  AcpiDevice          - NTE for the device
+ * PARAMETERS:  AcpiDevice          - Named Object for the device
  *              *Hid                - Where the HID is returned
  *
  * RETURN:      Status
@@ -256,7 +257,8 @@ AcpiCmExecute_HID (
         {
             DEBUG_PRINT (ACPI_ERROR,
                 ("_HID on %4.4s failed with status %4.4x\n",
-                &((ACPI_NAMED_OBJECT*) AcpiDevice)->Name, Status));
+                &((ACPI_NAMED_OBJECT*) AcpiDevice)->Name, 
+                AcpiCmFormatException (Status)));
         }
 
         return_ACPI_STATUS (Status);
@@ -316,7 +318,7 @@ AcpiCmExecute_HID (
  *
  * FUNCTION:    AcpiCmExecute_UID
  *
- * PARAMETERS:  AcpiDevice          - NTE for the device
+ * PARAMETERS:  AcpiDevice          - Named Object for the device
  *              *Uid                - Where the UID is returned
  *
  * RETURN:      Status
@@ -354,7 +356,8 @@ AcpiCmExecute_UID (
         {
             DEBUG_PRINT (ACPI_ERROR,
                 ("_UID on %4.4s failed with status %4.4x\n",
-                &((ACPI_NAMED_OBJECT*) AcpiDevice)->Name, Status));
+                &((ACPI_NAMED_OBJECT*) AcpiDevice)->Name,
+                AcpiCmFormatException (Status)));
         }
 
         return (Status);
@@ -412,7 +415,7 @@ AcpiCmExecute_UID (
  *
  * FUNCTION:    AcpiCmExecute_STA
  *
- * PARAMETERS:  AcpiDevice          - NTE for the device
+ * PARAMETERS:  AcpiDevice          - Named Object for the device
  *              *Flags              - Where the status flags are returned
  *
  * RETURN:      Status
@@ -453,7 +456,8 @@ AcpiCmExecute_STA (
         {
             DEBUG_PRINT (ACPI_ERROR,
                 ("_STA on %4.4s failed with status %4.4x\n",
-                &((ACPI_NAMED_OBJECT*) AcpiDevice)->Name, Status));
+                &((ACPI_NAMED_OBJECT*) AcpiDevice)->Name, 
+                AcpiCmFormatException (Status)));
         }
 
         return_ACPI_STATUS (Status);
