@@ -153,7 +153,7 @@ SetupField (OBJECT_DESCRIPTOR *ObjDesc, OBJECT_DESCRIPTOR *RgnDesc, INT32 FieldB
         Excep = S_ERROR;
     }
 
-    else if (Region != RgnDesc->ValType)
+    else if (TYPE_Region != RgnDesc->ValType)
     {
         DEBUG_PRINT (ACPI_ERROR, ("SetupFld: Needed Region, found %d %s\n",
                         RgnDesc->ValType, NsTypeNames[RgnDesc->ValType]));
@@ -203,7 +203,7 @@ SetupField (OBJECT_DESCRIPTOR *ObjDesc, OBJECT_DESCRIPTOR *RgnDesc, INT32 FieldB
 
                 /* Evaluate the Address opcode */
 
-                if ((Excep = DoOpCode (Exec)) == S_SUCCESS && 
+                if ((Excep = DoOpCode (MODE_Exec)) == S_SUCCESS && 
                     (Excep = GetRvalue ((OBJECT_DESCRIPTOR **) &ObjStack[ObjStackTop]))
                                 == S_SUCCESS)
                 {
@@ -213,11 +213,11 @@ SetupField (OBJECT_DESCRIPTOR *ObjDesc, OBJECT_DESCRIPTOR *RgnDesc, INT32 FieldB
 
 
                     if (!ObjValDesc ||
-                        ObjValDesc->ValType != (UINT8) Number)
+                        ObjValDesc->ValType != (UINT8) TYPE_Number)
                     {
                         DEBUG_PRINT (ACPI_ERROR, ("SetupFld: Malformed Region/Address "
                                     "ObjValDesc = %p, ObjValDesc->ValType = %02Xh, Number = %02Xh\n",
-                                    ObjValDesc, ObjValDesc->ValType, (UINT8) Number));
+                                    ObjValDesc, ObjValDesc->ValType, (UINT8) TYPE_Number));
 
                         Excep = S_ERROR;
                     }
@@ -232,7 +232,7 @@ SetupField (OBJECT_DESCRIPTOR *ObjDesc, OBJECT_DESCRIPTOR *RgnDesc, INT32 FieldB
                 {   
                     /* Evaluate the Length opcode */
 
-                    if ((Excep = DoOpCode (Exec)) == S_SUCCESS &&
+                    if ((Excep = DoOpCode (MODE_Exec)) == S_SUCCESS &&
                         (Excep = GetRvalue ((OBJECT_DESCRIPTOR **) &ObjStack[ObjStackTop]))
                                     == S_SUCCESS)
                     {
@@ -241,7 +241,7 @@ SetupField (OBJECT_DESCRIPTOR *ObjDesc, OBJECT_DESCRIPTOR *RgnDesc, INT32 FieldB
                         ObjValDesc = ObjStack[ObjStackTop];
 
                         if (!ObjValDesc ||
-                            ObjValDesc->ValType != (UINT8) Number)
+                            ObjValDesc->ValType != (UINT8) TYPE_Number)
                         {
 
                             DEBUG_PRINT (ACPI_ERROR, ("SetupFld: Malformed Region/Length \n"));
@@ -382,7 +382,7 @@ ReadField (OBJECT_DESCRIPTOR *ObjDesc, UINT32 *Value, INT32 FieldBitWidth)
         UINT8       PciReg;
         UINT8       PciExcep;
 
-    case SystemMemory:
+    case REGION_SystemMemory:
 
         /* System memory defined to be in first Mbyte  */
         /* XXX:  Is this true on all OS/platform combinations??  */
@@ -430,7 +430,7 @@ ReadField (OBJECT_DESCRIPTOR *ObjDesc, UINT32 *Value, INT32 FieldBitWidth)
         OsdUnMapMemory (PhysicalAddrPtr, 4);
         break;
 
-    case SystemIO:
+    case REGION_SystemIO:
         switch (FieldBitWidth)
         {
         /* I/O Port width */
@@ -454,7 +454,7 @@ ReadField (OBJECT_DESCRIPTOR *ObjDesc, UINT32 *Value, INT32 FieldBitWidth)
         }
         break;
 
-    case PCIConfig:
+    case REGION_PCIConfig:
         PciBus = (UINT8) (Address >> 16);
         DevFunc = (UINT8) (Address >> 8);
         PciReg = (UINT8) ((Address >> 2) & 0x3f);
@@ -486,8 +486,8 @@ ReadField (OBJECT_DESCRIPTOR *ObjDesc, UINT32 *Value, INT32 FieldBitWidth)
         }
         break;
 
-    case EmbeddedControl:
-    case SMBus:
+    case REGION_EmbeddedControl:
+    case REGION_SMBus:
 
         /* XXX - Actual read should happen here */
 
@@ -574,7 +574,7 @@ WriteField (OBJECT_DESCRIPTOR *ObjDesc, UINT32 Value, INT32 FieldBitWidth)
         UINT8       PciExcep;
 
 
-    case SystemMemory:
+    case REGION_SystemMemory:
 
         /* RBM:  Is this an issue in protected mode?  !!! */
 
@@ -618,7 +618,7 @@ WriteField (OBJECT_DESCRIPTOR *ObjDesc, UINT32 Value, INT32 FieldBitWidth)
         OsdUnMapMemory (PhysicalAddrPtr, 4);
         break;
 
-    case SystemIO:
+    case REGION_SystemIO:
         switch (FieldBitWidth)
         {
         case 8:
@@ -640,7 +640,7 @@ WriteField (OBJECT_DESCRIPTOR *ObjDesc, UINT32 Value, INT32 FieldBitWidth)
         }
         break;
 
-    case PCIConfig:
+    case REGION_PCIConfig:
         PciBus = (UINT8) (Address >> 16);
         DevFunc = (UINT8) (Address >> 8);
         PciReg = (UINT8) ((Address >> 2) & 0x3f);
@@ -671,8 +671,8 @@ WriteField (OBJECT_DESCRIPTOR *ObjDesc, UINT32 Value, INT32 FieldBitWidth)
         }
         break;
 
-    case EmbeddedControl:
-    case SMBus:
+    case REGION_EmbeddedControl:
+    case REGION_SMBus:
 
         /* XXX - Actual write should happen here */
 
@@ -726,7 +726,7 @@ AccessNamedField (INT32 Mode, NsHandle NamedField, UINT32 *Value)
         DEBUG_PRINT (ACPI_ERROR, ("AccessNamedField:internal error: null value pointer\n"));
     }
 
-    else if (DefField != NsValType (NamedField))
+    else if (TYPE_DefField != NsValType (NamedField))
     {
         DEBUG_PRINT (ACPI_ERROR, (
                   "AccessNamedField: Name %4.4s type %d is not a defined field\n",
@@ -746,7 +746,7 @@ AccessNamedField (INT32 Mode, NsHandle NamedField, UINT32 *Value)
         DEBUG_PRINT (ACPI_INFO, (" DatLen = %d, BitOffset = %d\n",
                     ObjDesc->FieldUnit.DatLen, ObjDesc->FieldUnit.BitOffset));
 
-        if (DefField != ObjDesc->ValType)
+        if (TYPE_DefField != ObjDesc->ValType)
         {
             DEBUG_PRINT (ACPI_ERROR, (
                     "AccessNamedField:internal error: Name %4.4s type %d does not match value-type %d at %p\n",
@@ -764,25 +764,25 @@ AccessNamedField (INT32 Mode, NsHandle NamedField, UINT32 *Value)
 
         switch (ObjDesc->Field.Access)
         {
-        case AnyAcc:
+        case ACCESS_AnyAcc:
             Granularity     = 8;
             MaxW            = 32;
             Type            = "UINT32";
             break;
 
-        case ByteAcc:
+        case ACCESS_ByteAcc:
             Granularity     = 8;
             MaxW            = 8;
             Type            = "UINT8";
             break;
 
-        case WordAcc:
+        case ACCESS_WordAcc:
             Granularity     = 16;
             MaxW            = 16;
             Type            = "UINT16";
             break;
 
-        case DWordAcc:
+        case ACCESS_DWordAcc:
             Granularity     = 32;
             MaxW            = 32;
             Type            = "UINT32";
@@ -815,7 +815,7 @@ AccessNamedField (INT32 Mode, NsHandle NamedField, UINT32 *Value)
     {
         /*  Check lock rule prior to modifing the field */
         
-        if ((UINT16) Lock == ObjDesc->FieldUnit.LockRule)
+        if ((UINT16) GLOCK_AlwaysLock == ObjDesc->FieldUnit.LockRule)
         {   
             /*  Lock Rule is Lock   */
             
@@ -870,7 +870,7 @@ AccessNamedField (INT32 Mode, NsHandle NamedField, UINT32 *Value)
 
                 switch (ObjDesc->Field.UpdateRule)
                 {
-                case Preserve:
+                case UPDATE_Preserve:
 
                     /* 
                      * Read the current contents of the byte/word/dword containing
@@ -880,14 +880,14 @@ AccessNamedField (INT32 Mode, NsHandle NamedField, UINT32 *Value)
                     dValue |= OldVal & ~Mask;
                     break;
 
-                case WriteAsOnes:
+                case UPDATE_WriteAsOnes:
 
                     /* Set positions outside the field to 1's */
 
                     dValue |= ~Mask;
                     break;
 
-                case WriteAsZeros:
+                case UPDATE_WriteAsZeros:
 
                     /* 
                      * Positions outside the field are already 0

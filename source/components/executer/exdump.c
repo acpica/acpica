@@ -265,19 +265,19 @@ DumpStackEntry (OBJECT_DESCRIPTOR *EntryDesc)
 
         switch (EntryDesc->ValType)
         {
-        case Lvalue:
+        case TYPE_Lvalue:
 
             switch (EntryDesc->Lvalue.OpCode)
             {
-            case ZeroOp:
+            case AML_ZeroOp:
                 DEBUG_PRINT (ACPI_INFO, ("Lvalue: Zero\n"));
                 break;
 
-            case OneOp:
+            case AML_OneOp:
                 DEBUG_PRINT (ACPI_INFO, ("Lvalue: One\n"));
                 break;
 
-            case OnesOp:
+            case AML_OnesOp:
                 DEBUG_PRINT (ACPI_INFO, ("Lvalue: Ones\n"));
                 break;
 
@@ -285,7 +285,7 @@ DumpStackEntry (OBJECT_DESCRIPTOR *EntryDesc)
                 DEBUG_PRINT (ACPI_INFO, ("Lvalue: Debug\n"));
                 break;
 
-            case NameOp:
+            case AML_NameOp:
                 FullyQualifiedName = NsFullyQualifiedName
                                         (EntryDesc->Lvalue.Ref);
 
@@ -294,21 +294,21 @@ DumpStackEntry (OBJECT_DESCRIPTOR *EntryDesc)
                 DUMP_ENTRY (EntryDesc->Lvalue.Ref);
                 break;
  
-            case IndexOp:
+            case AML_IndexOp:
                 DEBUG_PRINT (ACPI_INFO, ("Lvalue: Index %p\n",
                             EntryDesc->Lvalue.Ref));
                 break;
  
-            case Arg0: case Arg1: case Arg2: case Arg3:
-            case Arg4: case Arg5: case Arg6:
+            case AML_Arg0: case AML_Arg1: case AML_Arg2: case AML_Arg3:
+            case AML_Arg4: case AML_Arg5: case AML_Arg6:
                 DEBUG_PRINT (ACPI_INFO, ("Lvalue: Arg%d\n",
-                            EntryDesc->Lvalue.OpCode - Arg0));
+                            EntryDesc->Lvalue.OpCode - AML_Arg0));
                 break;
 
-            case Local0: case Local1: case Local2: case Local3:
-            case Local4: case Local5: case Local6: case Local7:
+            case AML_Local0: case AML_Local1: case AML_Local2: case AML_Local3:
+            case AML_Local4: case AML_Local5: case AML_Local6: case AML_Local7:
                 DEBUG_PRINT (ACPI_INFO, ("Lvalue: Local%d\n",
-                            EntryDesc->Lvalue.OpCode - Local0));
+                            EntryDesc->Lvalue.OpCode - AML_Local0));
                 break;
 
             default:
@@ -320,7 +320,7 @@ DumpStackEntry (OBJECT_DESCRIPTOR *EntryDesc)
             }
             break;
 
-        case Buffer:
+        case TYPE_Buffer:
             DEBUG_PRINT (ACPI_INFO, ("Buffer[%d] seq %lx @ %p \n",
                         EntryDesc->Buffer.BufLen, EntryDesc->Buffer.Sequence,
                         EntryDesc->Buffer.Buffer));
@@ -343,22 +343,22 @@ DumpStackEntry (OBJECT_DESCRIPTOR *EntryDesc)
 
             break;
 
-        case Number:
+        case TYPE_Number:
             DEBUG_PRINT (ACPI_INFO, ("Number 0x%lx\n",
                         EntryDesc->Number.Number));
             break;
 
-        case If:
+        case TYPE_If:
             DEBUG_PRINT (ACPI_INFO, ("If [Number] 0x%lx\n",
                         EntryDesc->Number.Number));
             break;
 
-        case While:
+        case TYPE_While:
             DEBUG_PRINT (ACPI_INFO, ("While [Number] 0x%lx\n",
                         EntryDesc->Number.Number));
             break;
 
-        case Package:
+        case TYPE_Package:
             DEBUG_PRINT (ACPI_INFO, ("Package[%d] @ %p\n",
                         EntryDesc->Package.PkgCount, EntryDesc->Package.PackageElems));
 
@@ -390,7 +390,7 @@ DumpStackEntry (OBJECT_DESCRIPTOR *EntryDesc)
 
             break;
 
-        case Region:
+        case TYPE_Region:
             if (OUTRANGE (EntryDesc->Region.SpaceId, RegionTypes))
             {
                 OutString = "**UNRECOGNIZED**";
@@ -416,16 +416,16 @@ DumpStackEntry (OBJECT_DESCRIPTOR *EntryDesc)
             }
             break;
 
-        case String:
+        case TYPE_String:
             DEBUG_PRINT (ACPI_INFO, ("String[%d] @ %p\n",
                         EntryDesc->String.StrLen, EntryDesc->String.String));
             break;
 
-        case BankField:
+        case TYPE_BankField:
             DEBUG_PRINT (ACPI_INFO, ("BankField\n"));
             break;
 
-        case DefField:
+        case TYPE_DefField:
             DEBUG_PRINT (ACPI_INFO,
                         ("DefField: %d bits acc %d lock %d update %d at byte %lx bit %d of \n",
                         EntryDesc->Field.DatLen,   EntryDesc->Field.Access,
@@ -436,11 +436,11 @@ DumpStackEntry (OBJECT_DESCRIPTOR *EntryDesc)
             DecIndent ();
             break;
 
-        case IndexField:
+        case TYPE_IndexField:
             DEBUG_PRINT (ACPI_INFO, ("IndexField\n"));
             break;
 
-        case FieldUnit:
+        case TYPE_FieldUnit:
             DEBUG_PRINT (ACPI_INFO,
                         ("FieldUnit: %d bits acc %d lock %d update %d at byte %lx bit %d of \n",
                         EntryDesc->FieldUnit.DatLen,   EntryDesc->FieldUnit.Access,
@@ -451,7 +451,7 @@ DumpStackEntry (OBJECT_DESCRIPTOR *EntryDesc)
             {
                 DEBUG_PRINT (ACPI_INFO, ("*NULL* \n"));
             }
-            else if (Buffer != EntryDesc->FieldUnit.Container->ValType)
+            else if (TYPE_Buffer != EntryDesc->FieldUnit.Container->ValType)
             {
                 DEBUG_PRINT (ACPI_INFO, ("*not a Buffer* \n"));
             }
@@ -470,34 +470,34 @@ DumpStackEntry (OBJECT_DESCRIPTOR *EntryDesc)
             }
             break;
 
-        case Event:
+        case TYPE_Event:
             DEBUG_PRINT (ACPI_INFO, ("Event\n"));
             break;
 
-        case Method:
+        case TYPE_Method:
             DEBUG_PRINT (ACPI_INFO,
                         ("Method(%d) @ %p:%lx:%lx\n",
                         EntryDesc->Method.NumParam, EntryDesc->Method.AmlBase,
                         EntryDesc->Method.AmlOffset, EntryDesc->Method.Length));
             break;
 
-        case Mutex:
+        case TYPE_Mutex:
             DEBUG_PRINT (ACPI_INFO, ("Mutex\n"));
             break;
 
-        case Device:
+        case TYPE_Device:
             DEBUG_PRINT (ACPI_INFO, ("Device\n"));
             break;
 
-        case Power:
+        case TYPE_Power:
             DEBUG_PRINT (ACPI_INFO, ("Power\n"));
             break;
 
-        case Processor:
+        case TYPE_Processor:
             DEBUG_PRINT (ACPI_INFO, ("Processor\n"));
             break;
 
-        case Thermal:
+        case TYPE_Thermal:
             DEBUG_PRINT (ACPI_INFO, ("Thermal\n"));
             break;
 
@@ -506,7 +506,7 @@ DumpStackEntry (OBJECT_DESCRIPTOR *EntryDesc)
 
             REPORT_ERROR (&KDT[0]);
             
-            if (UNASSIGNED != Aml[(INT32) EntryDesc->ValType])
+            if (AML_UNASSIGNED != Aml[(INT32) EntryDesc->ValType])
             {
                 DEBUG_PRINT (ACPI_ERROR,
                               ("DumpStackEntry: Unhandled opcode (AML %s) \n", 
@@ -628,11 +628,10 @@ DumpObjectDescriptor (OBJECT_DESCRIPTOR *Object)
 {
 	
 	FUNCTION_TRACE ("DumpObjectDescriptor");
-
 		
 	switch (Object->ValType)
 	{
-	case Number:
+	case TYPE_Number:
 
 		DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %s\n", "ValType", "Number"));
         DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "Reserved1", Object->Number.Reserved1));
@@ -643,7 +642,7 @@ DumpObjectDescriptor (OBJECT_DESCRIPTOR *Object)
         DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "Reserved5", Object->Number.Reserved5));
 		break;
     
-	case String:
+	case TYPE_String:
 
 	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %s\n", "ValType", "String"));
         DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "Reserved1", Object->String.Reserved1));
@@ -654,7 +653,7 @@ DumpObjectDescriptor (OBJECT_DESCRIPTOR *Object)
         DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "Reserved4", Object->String.Reserved4));
 		break;
 
-	case Buffer:
+	case TYPE_Buffer:
 
 		DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %s\n", "ValType", "Buffer"));
         DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "Reserved1", Object->Buffer.Reserved1));
@@ -666,7 +665,7 @@ DumpObjectDescriptor (OBJECT_DESCRIPTOR *Object)
 		break;
         
         
-	case Package:
+	case TYPE_Package:
 
 		DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %s\n", "ValType", "Package"));
 	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "Reserved1", Object->Package.Reserved1));
@@ -677,7 +676,7 @@ DumpObjectDescriptor (OBJECT_DESCRIPTOR *Object)
 	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "NextElement", Object->Package.NextElement));
 		break;
         
-	case FieldUnit:
+	case TYPE_FieldUnit:
 
 		DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %s\n", "ValType", "FieldUnit"));
 		DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "Access", Object->FieldUnit.Access));
@@ -692,7 +691,7 @@ DumpObjectDescriptor (OBJECT_DESCRIPTOR *Object)
 	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "Reserved3", Object->FieldUnit.Reserved3));
 	    break;
         
-	case Device:
+	case TYPE_Device:
 
 		DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %s\n", "ValType", "Device"));
 	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "Reserved1", Object->Device.Reserved1));
@@ -703,7 +702,7 @@ DumpObjectDescriptor (OBJECT_DESCRIPTOR *Object)
 	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "Reserved5", Object->Device.Reserved5));
         break;
 
-	case Event:
+	case TYPE_Event:
 
 		DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %s\n", "ValType", "Event"));
 	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "Reserved1", Object->Event.Reserved1));
@@ -715,7 +714,7 @@ DumpObjectDescriptor (OBJECT_DESCRIPTOR *Object)
 	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "Reserved5", Object->Event.Reserved5));
 	    break;
 
-	case Method:
+	case TYPE_Method:
 
 		DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %s\n", "ValType", "Method"));
 	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "NumParam", Object->Method.NumParam));
@@ -726,7 +725,7 @@ DumpObjectDescriptor (OBJECT_DESCRIPTOR *Object)
 	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "Reserved4", Object->Method.Reserved4));
 	    break;
 	
-	case Mutex:
+	case TYPE_Mutex:
 
 		DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %s\n", "ValType", "Mutex"));
 	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "SyncLevel", Object->Mutex.SyncLevel));
@@ -738,7 +737,7 @@ DumpObjectDescriptor (OBJECT_DESCRIPTOR *Object)
 	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "Reserved5", Object->Mutex.Reserved5));
 	    break;
 
-	case Region:
+	case TYPE_Region:
 
 		DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %s\n", "ValType", "Region"));
 	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "SpaceId", Object->Region.SpaceId));
@@ -748,7 +747,7 @@ DumpObjectDescriptor (OBJECT_DESCRIPTOR *Object)
 	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "AdrLoc", Object->Region.AdrLoc));
 	    break;
 
-	case Power:
+	case TYPE_Power:
 
 		DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %s\n", "ValType", "PowerResource"));
 	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "Reserved1", Object->PowerResource.Reserved1));
@@ -759,7 +758,7 @@ DumpObjectDescriptor (OBJECT_DESCRIPTOR *Object)
 	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "Reserved5", Object->PowerResource.Reserved5));
 	    break;
 
-	case Processor:
+	case TYPE_Processor:
 
 		DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %s\n", "ValType", "Processor"));
 	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "Reserved1", Object->Processor.Reserved1));
@@ -770,7 +769,7 @@ DumpObjectDescriptor (OBJECT_DESCRIPTOR *Object)
 	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "Reserved5", Object->Processor.Reserved5));
 	    break;
 
-	case Thermal:
+	case TYPE_Thermal:
 
 		DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %s\n", "ValType", "ThermalZone"));
 	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "Reserved1", Object->ThermalZone.Reserved1));
@@ -781,7 +780,7 @@ DumpObjectDescriptor (OBJECT_DESCRIPTOR *Object)
 	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "Reserved5", Object->ThermalZone.Reserved5));
 	    break;
 
-	case BankField:
+	case TYPE_BankField:
 
 		DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %s\n", "ValType", "BankField"));
 	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "Access", Object->BankField.Access));
@@ -796,7 +795,7 @@ DumpObjectDescriptor (OBJECT_DESCRIPTOR *Object)
 	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "BankSelect", Object->BankField.BankSelect));
 	    break;
 
-	case IndexField:
+	case TYPE_IndexField:
 
 		DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %s\n", "ValType", "IndexField"));
 	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "Access", Object->IndexField.Access));
@@ -811,7 +810,7 @@ DumpObjectDescriptor (OBJECT_DESCRIPTOR *Object)
 	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "Data", Object->IndexField.Data));
 	    break;
 
-	case Lvalue:
+	case TYPE_Lvalue:
 
 		DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %s\n", "ValType", "Lvalue"));
 	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "OpCode", Object->Lvalue.OpCode));
@@ -822,16 +821,16 @@ DumpObjectDescriptor (OBJECT_DESCRIPTOR *Object)
 	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "Reserved4", Object->Lvalue.Reserved4));
 		break;
 	
-	case Alias:
-	case DefField:
-	case DefFieldDefn:
-	case BankFieldDefn:
-	case IndexFieldDefn:
-	case If:
-	case Else:
-	case While:
-	case Scope:
-	case DefAny:
+	case TYPE_Alias:
+	case TYPE_DefField:
+	case TYPE_DefFieldDefn:
+	case TYPE_BankFieldDefn:
+	case TYPE_IndexFieldDefn:
+	case TYPE_If:
+	case TYPE_Else:
+	case TYPE_While:
+	case TYPE_Scope:
+	case TYPE_DefAny:
 
 		DEBUG_PRINT (ACPI_ERROR, ("*** Structure display not implemented for type %d! ***\n",
                         Object->ValType));
