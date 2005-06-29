@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dsutils - Dispatcher utilities
- *              $Revision: 1.63 $
+ *              $Revision: 1.64 $
  *
  ******************************************************************************/
 
@@ -397,7 +397,6 @@ AcpiDsCreateOperand (
          * IMODE_EXECUTE) in order to support the creation of
          * namespace objects during the execution of control methods.
          */
-
         ParentOp = Arg->Parent;
         if ((AcpiPsIsNodeOp (ParentOp->Opcode)) &&
             (ParentOp->Opcode != AML_INT_METHODCALL_OP) &&
