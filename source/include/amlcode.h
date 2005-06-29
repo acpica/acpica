@@ -3,7 +3,7 @@
  * Name: amlcode.h - Definitions for AML, as included in "definition blocks"
  *                   Declarations and definitions contained herein are derived
  *                   directly from the ACPI specification.
- *       $Revision: 1.59 $
+ *       $Revision: 1.60 $
  *
  *****************************************************************************/
 
@@ -358,8 +358,8 @@
 #define OPGRP_BYTELIST              0x04
 
 
-/* 
- * Opcode information 
+/*
+ * Opcode information
  */
 
 /* Opcode flags */
@@ -433,8 +433,8 @@
 #define AML_TYPE_BOGUS              0x19
 
 
-/* 
- * Opcode classes 
+/*
+ * Opcode classes
  */
 #define AML_CLASS_EXECUTE           0x00
 #define AML_CLASS_CREATE            0x01
@@ -539,8 +539,6 @@ typedef enum
 #define NUM_MATCH_OPS               7
 #define NUM_OPCODES                 256
 #define NUM_FIELD_NAMES             2
-
-
 
 
 #endif /* __AMLCODE_H__ */
