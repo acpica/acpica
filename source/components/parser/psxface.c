@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: psxface - Parser external interfaces
- *              $Revision: 1.50 $
+ *              $Revision: 1.51 $
  *
  *****************************************************************************/
 
@@ -221,7 +221,7 @@ AcpiPsxExecute (
     }
 
     Status = AcpiDsInitAmlWalk (WalkState, Op, MethodNode, ObjDesc->Method.AmlStart, 
-                    ObjDesc->Method.AmlLength, 1);
+                    ObjDesc->Method.AmlLength, NULL, NULL, 1);
     if (ACPI_FAILURE (Status))
     {
         /* TBD: delete walk state */
@@ -263,22 +263,13 @@ AcpiPsxExecute (
         return_ACPI_STATUS (AE_NO_MEMORY);
     }
 
-    WalkState->Params                       = Params;
-    WalkState->CallerReturnDesc             = ReturnObjDesc;
-    
     Status = AcpiDsInitAmlWalk (WalkState, Op, MethodNode, ObjDesc->Method.AmlStart, 
-                    ObjDesc->Method.AmlLength, 3);
+                    ObjDesc->Method.AmlLength, Params, ReturnObjDesc, 3);
     if (ACPI_FAILURE (Status))
     {
         /* TBD: delete walk state */
         return_ACPI_STATUS (Status);
     }
-
-    /* Init arguments if this is a control method */
-    /* TBD: [Restructure] move to InitAmlWalk */
-
-    AcpiDsMethodDataInitArgs (Params, MTH_NUM_ARGS, WalkState);
-    
 
     /*
      * The walk of the parse tree is where we actually execute the method
