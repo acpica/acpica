@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: cmxface - External interfaces for "global" ACPI functions
- *              $Revision: 1.67 $
+ *              $Revision: 1.69 $
  *
  *****************************************************************************/
 
@@ -126,7 +126,7 @@
 #include "acdebug.h"
 
 
-#define _COMPONENT          MISCELLANEOUS
+#define _COMPONENT          ACPI_UTILITIES
         MODULE_NAME         ("cmxface")
 
 
@@ -495,7 +495,7 @@ AcpiFormatException (
     ACPI_STATUS             Exception,
     ACPI_BUFFER             *OutBuffer)
 {
-    NATIVE_UINT             Length;
+    UINT32                  Length;
     NATIVE_CHAR             *FormattedException;
 
 
