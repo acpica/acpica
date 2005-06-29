@@ -134,6 +134,7 @@
 #define EVENT_HANDLING              0x00000040
 #define MISCELLANEOUS               0x00000080
 #define OS_DEPENDENT                0x00000100
+#define HARDWARE                    0x00000200
 #define OS_APP_INTERFACE            0x00001000
 #define POWER_MANAGER               0x00002000
 #define ACPI_DEVICE_DRIVER          0x00004000
