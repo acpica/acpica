@@ -3,7 +3,7 @@
  * Module Name: rscreate - AcpiRsCreateResourceList
  *                         AcpiRsCreatePciRoutingTable
  *                         AcpiRsCreateByteStream
- *              $Revision: 1.26 $
+ *              $Revision: 1.30 $
  *
  ******************************************************************************/
 
@@ -124,7 +124,7 @@
 #include "amlcode.h"
 #include "acnamesp.h"
 
-#define _COMPONENT          RESOURCE_MANAGER
+#define _COMPONENT          ACPI_RESOURCES
         MODULE_NAME         ("rscreate")
 
 
@@ -282,6 +282,11 @@ AcpiRsCreatePciRoutingTable (
     Status = AcpiRsCalculatePciRoutingTableLength(PackageObject,
                                                   &BufferSizeNeeded);
 
+    if (!ACPI_SUCCESS(Status))
+    {
+        return_ACPI_STATUS (Status);
+    }
+
     DEBUG_PRINT (VERBOSE_INFO,
         ("RsCreatePciRoutingTable: BufferSizeNeeded = %X\n",
         BufferSizeNeeded));
@@ -351,7 +356,7 @@ AcpiRsCreatePciRoutingTable (
 
             else
             {
-                DEBUG_PRINT (ACPI_ERROR, 
+                DEBUG_PRINT (ACPI_ERROR,
                     ("CreatePciRoutingTable: Need Integer, found %s\n",
                     AcpiCmGetTypeName ((*SubObjectList)->Common.Type)));
                 return_ACPI_STATUS (AE_BAD_DATA);
@@ -370,7 +375,7 @@ AcpiRsCreatePciRoutingTable (
 
             else
             {
-                DEBUG_PRINT (ACPI_ERROR, 
+                DEBUG_PRINT (ACPI_ERROR,
                     ("CreatePciRoutingTable: Need Integer, found %s\n",
                     AcpiCmGetTypeName ((*SubObjectList)->Common.Type)));
                 return_ACPI_STATUS (AE_BAD_DATA);
@@ -384,9 +389,9 @@ AcpiRsCreatePciRoutingTable (
             switch ((*SubObjectList)->Common.Type)
             {
             case INTERNAL_TYPE_REFERENCE:
-                if ((*SubObjectList)->Reference.Opcode != AML_NAMEPATH_OP)
+                if ((*SubObjectList)->Reference.Opcode != AML_INT_NAMEPATH_OP)
                 {
-                   DEBUG_PRINT (ACPI_ERROR, 
+                   DEBUG_PRINT (ACPI_ERROR,
                         ("CreatePciRoutingTable: Need name, found reference op %X\n",
                         (*SubObjectList)->Reference.Opcode));
                     return_ACPI_STATUS (AE_BAD_DATA);
@@ -430,7 +435,7 @@ AcpiRsCreatePciRoutingTable (
 
 
             default:
-               DEBUG_PRINT (ACPI_ERROR, 
+               DEBUG_PRINT (ACPI_ERROR,
                     ("CreatePciRoutingTable: Need Integer, found %s\n",
                     AcpiCmGetTypeName ((*SubObjectList)->Common.Type)));
                return_ACPI_STATUS (AE_BAD_DATA);
@@ -454,7 +459,7 @@ AcpiRsCreatePciRoutingTable (
 
             else
             {
-                DEBUG_PRINT (ACPI_ERROR, 
+                DEBUG_PRINT (ACPI_ERROR,
                     ("CreatePciRoutingTable: Need Integer, found %s\n",
                     AcpiCmGetTypeName ((*SubObjectList)->Common.Type)));
                 return_ACPI_STATUS (AE_BAD_DATA);
