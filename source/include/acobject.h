@@ -218,7 +218,7 @@ typedef struct /* STRING - has length and pointer */
     UINT32                  Reserved3;
     UINT32                  Reserved4;
 
-    INT8                    *Pointer;       /* String value in AML stream or in allocated space */
+    NATIVE_CHAR             *Pointer;       /* String value in AML stream or in allocated space */
     void                    *Reserved_p2;
     void                    *Reserved_p3;
     void                    *Reserved_p4;
@@ -328,14 +328,14 @@ typedef struct /* METHOD */
     UINT8                   Concurrency;
     UINT8                   ThreadCount;
     UINT32                  PcodeLength;
-    UINT32                  TableLength;
     ACPI_OWNER_ID           OwningId;
-    UINT16                  Reserved4;
+    UINT16                  Reserved3_16;
+    UINT32                  Reserved4;
 
     UINT8                   *Pcode;
-    UINT8                   *AcpiTable;
-    void                    *ParserOp;
     void                    *Semaphore;
+    void                    *Reserved_p3;
+    void                    *Reserved_p4;
     void                    *Reserved_p5;
 
 } ACPI_OBJECT_METHOD;
