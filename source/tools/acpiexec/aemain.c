@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: aemain - Main routine for the AcpiExec utility
- *              $Revision: 1.56 $
+ *              $Revision: 1.60 $
  *
  *****************************************************************************/
 
@@ -121,7 +121,6 @@
 #include "acpi.h"
 #include "amlcode.h"
 #include "acparser.h"
-#include "actables.h"
 #include "acnamesp.h"
 #include "acinterp.h"
 #include "acdebug.h"
@@ -130,7 +129,7 @@
 
 
 #define _COMPONENT          PARSER
-        MODULE_NAME         ("aemain")
+        ACPI_MODULE_NAME    ("aemain")
 
 /*
  * TBD: Debug only, remove!
@@ -207,15 +206,6 @@ AeDoDivideCheck (void)
 #endif
 
 
-/*
- * We need a local FADT so that the hardware subcomponent will function,
- * even though the underlying OSD HW access functions don't do
- * anything.
- */
-RSDP_DESCRIPTOR             LocalRSDP;
-FADT_DESCRIPTOR_REV1        LocalFADT;
-FACS_DESCRIPTOR_REV1        LocalFACS;
-
 #ifdef _IA16
 ACPI_STATUS
 AcpiGetIrqRoutingTable  (
@@ -266,7 +256,7 @@ usage (void)
  *
  *****************************************************************************/
 
-int
+int ACPI_SYSTEM_XFACE
 main (
     int                     argc,
     char                    **argv)
@@ -362,59 +352,16 @@ main (
             goto enterloop;
         }
 
-        /* Build an RSDT */
 
-        LocalRSDP.Revision = 1;
-        AcpiGbl_RSDP = &LocalRSDP;
-
-
-        /* Build a FADT so we can test the hardware/event init */
-
-        MEMSET (&LocalFADT, 0, sizeof (FADT_DESCRIPTOR_REV1));
-        MEMCPY (&LocalFADT.Header.Signature, FADT_SIG, 4);
-        LocalFADT.Header.Revision = 1;
-        LocalFADT.Header.Length = sizeof (FADT_DESCRIPTOR_REV1);
-        LocalFADT.Gpe0BlkLen    = 8;
-        LocalFADT.Gpe1BlkLen    = 12;
-        LocalFADT.Gpe1Base      = 64;
-
-        LocalFADT.Pm1EvtLen     = 4;
-        LocalFADT.Pm1CntLen     = 4;
-        LocalFADT.PmTmLen       = 8;
-
-        LocalFADT.Gpe0Blk       = 0x12340000;
-        LocalFADT.Gpe1Blk       = 0x12341110;
-
-        LocalFADT.Pm1aEvtBlk    = 0x1234aaa0;
-        LocalFADT.Pm1bEvtBlk    = 0;
-        LocalFADT.PmTmrBlk      = 0xA0;
-        LocalFADT.Pm1aCntBlk    = 0xB0;
-
-        /* Complete the FADT with the checksum */
-
-        LocalFADT.Header.Checksum = AcpiTbChecksum (&LocalFADT, LocalFADT.Header.Length);
-
-        Status = AcpiLoadTable ((ACPI_TABLE_HEADER *) &LocalFADT);
+        AeBuildLocalTables ();
+        Status = AeInstallTables ();
         if (ACPI_FAILURE (Status))
         {
-            printf ("**** Could not load local FADT, %s\n", AcpiFormatException (Status));
+            printf ("**** Could not load ACPI tables, %s\n", AcpiFormatException (Status));
             goto enterloop;
         }
 
-        /* Build a FACS */
-
-        MEMSET (&LocalFACS, 0, sizeof (FACS_DESCRIPTOR_REV1));
-        MEMCPY (&LocalFACS.Signature, FACS_SIG, 4);
-        LocalFACS.Length = sizeof (FACS_DESCRIPTOR_REV1);
-
-        Status = AcpiLoadTable ((ACPI_TABLE_HEADER *) &LocalFACS);
-        if (ACPI_FAILURE (Status))
-        {
-            printf ("**** Could not load local FACS, %s\n", AcpiFormatException (Status));
-            goto enterloop;
-        }
-
-        /* 
+        /*
          * TBD:
          * Need a way to call this after the "LOAD" command
          */

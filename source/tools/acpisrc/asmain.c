@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asmain - Main module for the acpi source processor utility
- *              $Revision: 1.38 $
+ *              $Revision: 1.39 $
  *
  *****************************************************************************/
 
@@ -639,7 +639,7 @@ AsDisplayUsage (void)
  *
  ******************************************************************************/
 
-int
+int ACPI_SYSTEM_XFACE
 main (
     NATIVE_UINT             argc,
     char                    *argv[])
