@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: aclocal.h - Internal data types used across the ACPI subsystem
- *       $Revision: 1.199 $
+ *       $Revision: 1.200 $
  *
  *****************************************************************************/
 
@@ -598,7 +598,7 @@ typedef struct acpi_thread_state
     struct acpi_walk_state      *WalkStateList;         /* Head of list of WalkStates for this thread */
     union acpi_operand_object   *AcquiredMutexList;     /* List of all currently acquired mutexes */
     UINT32                      ThreadId;               /* Running thread ID */
-    UINT16                      CurrentSyncLevel;       /* Mutex Sync (nested acquire) level */
+    UINT8                       CurrentSyncLevel;       /* Mutex Sync (nested acquire) level */
 
 } ACPI_THREAD_STATE;
 
