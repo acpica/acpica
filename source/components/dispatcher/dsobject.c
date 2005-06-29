@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dsobject - Dispatcher object management routines
- *              $Revision: 1.84 $
+ *              $Revision: 1.94 $
  *
  *****************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -120,11 +120,10 @@
 #include "acparser.h"
 #include "amlcode.h"
 #include "acdispat.h"
-#include "acinterp.h"
 #include "acnamesp.h"
 
 #define _COMPONENT          ACPI_DISPATCHER
-        MODULE_NAME         ("dsobject")
+        ACPI_MODULE_NAME    ("dsobject")
 
 
 /*******************************************************************************
@@ -139,11 +138,11 @@
  * RETURN:      Status
  *
  * DESCRIPTION: Callback from AcpiWalkNamespace.  Invoked for every object
- *              within the  namespace.
+ *              within the namespace.
  *
  *              Currently, the only objects that require initialization are:
  *              1) Methods
- *              2) Op Regions
+ *              2) Operation Regions
  *
  ******************************************************************************/
 
@@ -154,13 +153,13 @@ AcpiDsInitOneObject (
     void                    *Context,
     void                    **ReturnValue)
 {
-    ACPI_OBJECT_TYPE8       Type;
+    ACPI_OBJECT_TYPE        Type;
     ACPI_STATUS             Status;
     ACPI_INIT_WALK_INFO     *Info = (ACPI_INIT_WALK_INFO *) Context;
     UINT8                   TableRevision;
 
 
-    PROC_NAME ("DsInitOneObject");
+    ACPI_FUNCTION_NAME ("DsInitOneObject");
 
 
     Info->ObjectCount++;
@@ -176,17 +175,21 @@ AcpiDsInitOneObject (
         return (AE_OK);
     }
 
-
     /* And even then, we are only interested in a few object types */
 
     Type = AcpiNsGetType (ObjHandle);
 
     switch (Type)
     {
-
     case ACPI_TYPE_REGION:
 
-        AcpiDsInitializeRegion (ObjHandle);
+        Status = AcpiDsInitializeRegion (ObjHandle);
+        if (ACPI_FAILURE (Status))
+        {
+            ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Region %p [%4.4s] - Init failure, %s\n",
+                ObjHandle, ((ACPI_NAMESPACE_NODE *) ObjHandle)->Name.Ascii,
+                AcpiFormatException (Status)));
+        }
 
         Info->OpRegionCount++;
         break;
@@ -207,7 +210,7 @@ AcpiDsInitOneObject (
          */
         if (TableRevision == 1)
         {
-            ((ACPI_NAMESPACE_NODE *)ObjHandle)->Flags |= ANOBJ_DATA_WIDTH_32;
+            ((ACPI_NAMESPACE_NODE *) ObjHandle)->Flags |= ANOBJ_DATA_WIDTH_32;
         }
 
         /*
@@ -218,7 +221,7 @@ AcpiDsInitOneObject (
         if (ACPI_FAILURE (Status))
         {
             ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Method %p [%4.4s] - parse failure, %s\n",
-                ObjHandle, (char*)&((ACPI_NAMESPACE_NODE *)ObjHandle)->Name,
+                ObjHandle, ((ACPI_NAMESPACE_NODE *) ObjHandle)->Name.Ascii,
                 AcpiFormatException (Status)));
 
             /* This parse failed, but we will continue parsing more methods */
@@ -231,6 +234,7 @@ AcpiDsInitOneObject (
          * for every execution since there isn't much overhead
          */
         AcpiNsDeleteNamespaceSubtree (ObjHandle);
+        AcpiNsDeleteNamespaceByOwner (((ACPI_NAMESPACE_NODE *) ObjHandle)->Object->Method.OwningId);
         break;
 
     default:
@@ -249,12 +253,13 @@ AcpiDsInitOneObject (
  *
  * FUNCTION:    AcpiDsInitializeObjects
  *
- * PARAMETERS:  None
+ * PARAMETERS:  TableDesc       - Descriptor for parent ACPI table
+ *              StartNode       - Root of subtree to be initialized.
  *
  * RETURN:      Status
  *
- * DESCRIPTION: Walk the entire namespace and perform any necessary
- *              initialization on the objects found therein
+ * DESCRIPTION: Walk the namespace starting at "StartNode" and perform any 
+ *              necessary initialization on the objects found therein
  *
  ******************************************************************************/
 
@@ -267,7 +272,7 @@ AcpiDsInitializeObjects (
     ACPI_INIT_WALK_INFO     Info;
 
 
-    FUNCTION_TRACE ("DsInitializeObjects");
+    ACPI_FUNCTION_TRACE ("DsInitializeObjects");
 
 
     ACPI_DEBUG_PRINT ((ACPI_DB_DISPATCH,
@@ -279,7 +284,6 @@ AcpiDsInitializeObjects (
     Info.OpRegionCount  = 0;
     Info.ObjectCount    = 0;
     Info.TableDesc      = TableDesc;
-
 
     /* Walk entire namespace from the supplied root */
 
@@ -306,9 +310,10 @@ AcpiDsInitializeObjects (
  *
  * FUNCTION:    AcpiDsInitObjectFromOp
  *
- * PARAMETERS:  Op              - Parser op used to init the internal object
+ * PARAMETERS:  WalkState       - Current walk state
+ *              Op              - Parser op used to init the internal object
  *              Opcode          - AML opcode associated with the object
- *              ObjDesc         - Namespace object to be initialized
+ *              RetObjDesc      - Namespace object to be initialized
  *
  * RETURN:      Status
  *
@@ -325,15 +330,11 @@ AcpiDsInitObjectFromOp (
     UINT16                  Opcode,
     ACPI_OPERAND_OBJECT     **RetObjDesc)
 {
-    ACPI_STATUS             Status;
-    ACPI_PARSE_OBJECT       *Arg;
-    ACPI_PARSE2_OBJECT      *ByteList;
-    ACPI_OPERAND_OBJECT     *ArgDesc;
     const ACPI_OPCODE_INFO  *OpInfo;
     ACPI_OPERAND_OBJECT     *ObjDesc;
 
 
-    PROC_NAME ("DsInitObjectFromOp");
+    ACPI_FUNCTION_NAME ("DsInitObjectFromOp");
 
 
     ObjDesc = *RetObjDesc;
@@ -345,110 +346,42 @@ AcpiDsInitObjectFromOp (
         return (AE_TYPE);
     }
 
-
-    /* Get and prepare the first argument */
+    /* Perform per-object initialization */
 
     switch (ObjDesc->Common.Type)
     {
     case ACPI_TYPE_BUFFER:
 
-        ObjDesc->Buffer.Node = (ACPI_NAMESPACE_NODE *) WalkState->Operands[0];
-
-        /* First arg is a number */
-
-        AcpiDsCreateOperand (WalkState, Op->Value.Arg, 0);
-        ArgDesc = WalkState->Operands [WalkState->NumOperands - 1];
-        AcpiDsObjStackPop (1, WalkState);
-
-        /* Resolve the object (could be an arg or local) */
-
-        Status = AcpiExResolveToValue (&ArgDesc, WalkState);
-        if (ACPI_FAILURE (Status))
-        {
-            AcpiUtRemoveReference (ArgDesc);
-            return (Status);
-        }
-
-        /* We are expecting a number */
-
-        if (ArgDesc->Common.Type != ACPI_TYPE_INTEGER)
-        {
-            ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
-                "Expecting number, got obj: %p type %X\n",
-                ArgDesc, ArgDesc->Common.Type));
-            AcpiUtRemoveReference (ArgDesc);
-            return (AE_TYPE);
-        }
-
-        /* Get the value, delete the internal object */
-
-        ObjDesc->Buffer.Length = (UINT32) ArgDesc->Integer.Value;
-        AcpiUtRemoveReference (ArgDesc);
-
-        /* Allocate the buffer */
-
-        if (ObjDesc->Buffer.Length == 0)
-        {
-            ObjDesc->Buffer.Pointer = NULL;
-            REPORT_WARNING (("Buffer created with zero length in AML\n"));
-            break;
-        }
-
-        else
-        {
-            ObjDesc->Buffer.Pointer = ACPI_MEM_CALLOCATE (
-                                            ObjDesc->Buffer.Length);
-
-            if (!ObjDesc->Buffer.Pointer)
-            {
-                return (AE_NO_MEMORY);
-            }
-        }
-
         /*
-         * Second arg is the buffer data (optional) ByteList can be either
-         * individual bytes or a string initializer.
+         * Defer evaluation of Buffer TermArg operand
          */
-        Arg = Op->Value.Arg;         /* skip first arg */
-
-        ByteList = (ACPI_PARSE2_OBJECT *) Arg->Next;
-        if (ByteList)
-        {
-            if (ByteList->Opcode != AML_INT_BYTELIST_OP)
-            {
-                ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Expecting bytelist, got: %p\n",
-                    ByteList));
-                return (AE_TYPE);
-            }
-
-            MEMCPY (ObjDesc->Buffer.Pointer, ByteList->Data,
-                    ObjDesc->Buffer.Length);
-        }
-
+        ObjDesc->Buffer.Node      = (ACPI_NAMESPACE_NODE *) WalkState->Operands[0];
+        ObjDesc->Buffer.AmlStart  = Op->Named.Data;
+        ObjDesc->Buffer.AmlLength = Op->Named.Length;
         break;
 
 
     case ACPI_TYPE_PACKAGE:
 
         /*
-         * When called, an internal package object has already been built and
-         * is pointed to by ObjDesc.  AcpiDsBuildInternalObject builds another
-         * internal package object, so remove reference to the original so
-         * that it is deleted.  Error checking is done within the remove
-         * reference function.
+         * Defer evaluation of Package TermArg operand
          */
-        AcpiUtRemoveReference (ObjDesc);
-        Status = AcpiDsBuildInternalObject (WalkState, Op, RetObjDesc);
+        ObjDesc->Package.Node      = (ACPI_NAMESPACE_NODE *) WalkState->Operands[0];
+        ObjDesc->Package.AmlStart  = Op->Named.Data;
+        ObjDesc->Package.AmlLength = Op->Named.Length;
         break;
 
-    case ACPI_TYPE_INTEGER:
-        ObjDesc->Integer.Value = Op->Value.Integer;
+
+    case ACPI_TYPE_INTEGER: 
+
+        ObjDesc->Integer.Value = Op->Common.Value.Integer;
         break;
 
 
     case ACPI_TYPE_STRING:
-        ObjDesc->String.Pointer = Op->Value.String;
-        ObjDesc->String.Length = STRLEN (Op->Value.String);
+
+        ObjDesc->String.Pointer = Op->Common.Value.String;
+        ObjDesc->String.Length = ACPI_STRLEN (Op->Common.Value.String);
 
         /*
          * The string is contained in the ACPI table, don't ever try
@@ -486,17 +419,16 @@ AcpiDsInitObjectFromOp (
 
         default: /* Constants, Literals, etc.. */
 
-            if (Op->Opcode == AML_INT_NAMEPATH_OP)
+            if (Op->Common.AmlOpcode == AML_INT_NAMEPATH_OP)
             {
                 /* Node was saved in Op */
 
-                ObjDesc->Reference.Node = Op->Node;
+                ObjDesc->Reference.Node = Op->Common.Node;
             }
 
             ObjDesc->Reference.Opcode = Opcode;
             break;
         }
-
         break;
 
 
@@ -514,9 +446,10 @@ AcpiDsInitObjectFromOp (
 
 /*****************************************************************************
  *
- * FUNCTION:    AcpiDsBuildInternalSimpleObj
+ * FUNCTION:    AcpiDsBuildInternalObject
  *
- * PARAMETERS:  Op              - Parser object to be translated
+ * PARAMETERS:  WalkState       - Current walk state
+ *              Op              - Parser object to be translated
  *              ObjDescPtr      - Where the ACPI internal object is returned
  *
  * RETURN:      Status
@@ -526,58 +459,54 @@ AcpiDsInitObjectFromOp (
  *
  ****************************************************************************/
 
-static ACPI_STATUS
-AcpiDsBuildInternalSimpleObj (
+ACPI_STATUS
+AcpiDsBuildInternalObject (
     ACPI_WALK_STATE         *WalkState,
     ACPI_PARSE_OBJECT       *Op,
     ACPI_OPERAND_OBJECT     **ObjDescPtr)
 {
     ACPI_OPERAND_OBJECT     *ObjDesc;
     ACPI_STATUS             Status;
-    UINT32                  Length;
     char                    *Name;
 
 
-    FUNCTION_TRACE ("DsBuildInternalSimpleObj");
+    ACPI_FUNCTION_TRACE ("DsBuildInternalObject");
 
 
-    if (Op->Opcode == AML_INT_NAMEPATH_OP)
+    if (Op->Common.AmlOpcode == AML_INT_NAMEPATH_OP)
     {
         /*
          * This is an object reference.  If this name was
          * previously looked up in the namespace, it was stored in this op.
          * Otherwise, go ahead and look it up now
          */
-        if (!Op->Node)
+        if (!Op->Common.Node)
         {
-            Status = AcpiNsLookup (WalkState->ScopeInfo, Op->Value.String,
-                            ACPI_TYPE_ANY, IMODE_EXECUTE,
-                            NS_SEARCH_PARENT | NS_DONT_OPEN_SCOPE, NULL,
-                            (ACPI_NAMESPACE_NODE **)&(Op->Node));
+            Status = AcpiNsLookup (WalkState->ScopeInfo, Op->Common.Value.String,
+                            ACPI_TYPE_ANY, ACPI_IMODE_EXECUTE,
+                            ACPI_NS_SEARCH_PARENT | ACPI_NS_DONT_OPEN_SCOPE, NULL,
+                            (ACPI_NAMESPACE_NODE **) &(Op->Common.Node));
 
             if (ACPI_FAILURE (Status))
             {
                 if (Status == AE_NOT_FOUND)
                 {
                     Name = NULL;
-                    AcpiNsExternalizeName (ACPI_UINT32_MAX, Op->Value.String, &Length, &Name);
-
-                    if (Name)
+                    Status = AcpiNsExternalizeName (ACPI_UINT32_MAX, Op->Common.Value.String, NULL, &Name);
+                    if (ACPI_SUCCESS (Status))
                     {
-                        REPORT_WARNING (("Reference %s at AML %X not found\n",
-                                    Name, Op->AmlOffset));
+                        ACPI_REPORT_WARNING (("Reference %s at AML %X not found\n",
+                                    Name, Op->Common.AmlOffset));
                         ACPI_MEM_FREE (Name);
                     }
-
                     else
                     {
-                        REPORT_WARNING (("Reference %s at AML %X not found\n",
-                                   Op->Value.String, Op->AmlOffset));
+                        ACPI_REPORT_WARNING (("Reference %s at AML %X not found\n",
+                                   Op->Common.Value.String, Op->Common.AmlOffset));
                     }
 
                     *ObjDescPtr = NULL;
                 }
-
                 else
                 {
                     return_ACPI_STATUS (Status);
@@ -588,13 +517,13 @@ AcpiDsBuildInternalSimpleObj (
 
     /* Create and init the internal ACPI object */
 
-    ObjDesc = AcpiUtCreateInternalObject ((AcpiPsGetOpcodeInfo (Op->Opcode))->ObjectType);
+    ObjDesc = AcpiUtCreateInternalObject ((AcpiPsGetOpcodeInfo (Op->Common.AmlOpcode))->ObjectType);
     if (!ObjDesc)
     {
         return_ACPI_STATUS (AE_NO_MEMORY);
     }
 
-    Status = AcpiDsInitObjectFromOp (WalkState, Op, Op->Opcode, &ObjDesc);
+    Status = AcpiDsInitObjectFromOp (WalkState, Op, Op->Common.AmlOpcode, &ObjDesc);
     if (ACPI_FAILURE (Status))
     {
         AcpiUtRemoveReference (ObjDesc);
@@ -602,7 +531,121 @@ AcpiDsBuildInternalSimpleObj (
     }
 
     *ObjDescPtr = ObjDesc;
+    return_ACPI_STATUS (AE_OK);
+}
 
+
+/*****************************************************************************
+ *
+ * FUNCTION:    AcpiDsBuildInternalBufferObj
+ *
+ * PARAMETERS:  Op              - Parser object to be translated
+ *              ObjDescPtr      - Where the ACPI internal object is returned
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Translate a parser Op package object to the equivalent
+ *              namespace object
+ *
+ ****************************************************************************/
+
+ACPI_STATUS
+AcpiDsBuildInternalBufferObj (
+    ACPI_WALK_STATE         *WalkState,
+    ACPI_PARSE_OBJECT       *Op,
+    UINT32                  BufferLength,
+    ACPI_OPERAND_OBJECT     **ObjDescPtr)
+{
+    ACPI_PARSE_OBJECT       *Arg;
+    ACPI_OPERAND_OBJECT     *ObjDesc;
+    ACPI_PARSE_OBJECT       *ByteList;
+    UINT32                  ByteListLength = 0;
+
+
+    ACPI_FUNCTION_TRACE ("DsBuildInternalBufferObj");
+
+
+    ObjDesc = *ObjDescPtr;
+    if (ObjDesc)
+    {
+        /*
+         * We are evaluating a Named buffer object "Name (xxxx, Buffer)".
+         * The buffer object already exists (from the NS node)
+         */
+    }
+    else
+    {
+        /* Create a new buffer object */
+
+        ObjDesc = AcpiUtCreateInternalObject (ACPI_TYPE_BUFFER);
+        *ObjDescPtr = ObjDesc;
+        if (!ObjDesc)
+        {
+            return_ACPI_STATUS (AE_NO_MEMORY);
+        }
+    }
+
+    /*
+     * Second arg is the buffer data (optional) ByteList can be either
+     * individual bytes or a string initializer.  In either case, a 
+     * ByteList appears in the AML.
+     */
+    Arg = Op->Common.Value.Arg;         /* skip first arg */
+
+    ByteList = Arg->Named.Next;
+    if (ByteList)
+    {
+        if (ByteList->Common.AmlOpcode != AML_INT_BYTELIST_OP)
+        {
+            ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, 
+                "Expecting bytelist, got AML opcode %X in op %p\n",
+                ByteList->Common.AmlOpcode, ByteList));
+
+            AcpiUtRemoveReference (ObjDesc);
+            return (AE_TYPE);
+        }
+
+        ByteListLength = ByteList->Common.Value.Integer32;
+    }
+
+    /*
+     * The buffer length (number of bytes) will be the larger of:
+     * 1) The specified buffer length and 
+     * 2) The length of the initializer byte list
+     */
+    ObjDesc->Buffer.Length = BufferLength;
+    if (ByteListLength > BufferLength)
+    {
+        ObjDesc->Buffer.Length = ByteListLength;
+    }
+
+    /* Allocate the buffer */
+
+    if (ObjDesc->Buffer.Length == 0)
+    {
+        ObjDesc->Buffer.Pointer = NULL;
+        ACPI_REPORT_WARNING (("Buffer created with zero length in AML\n"));
+        return_ACPI_STATUS (AE_OK);
+    }
+
+    ObjDesc->Buffer.Pointer = ACPI_MEM_CALLOCATE (
+                                    ObjDesc->Buffer.Length);
+    if (!ObjDesc->Buffer.Pointer)
+    {
+        AcpiUtDeleteObjectDesc (ObjDesc);
+        return_ACPI_STATUS (AE_NO_MEMORY);        
+    }
+
+    /* Initialize buffer from the ByteList (if present) */
+
+    if (ByteList)
+    {
+        ACPI_MEMCPY (ObjDesc->Buffer.Pointer, ByteList->Named.Data,
+                     ByteListLength);
+    }
+
+    ObjDesc->Buffer.Flags |= AOPOBJ_DATA_VALID;
+    Op->Common.Node = (ACPI_NAMESPACE_NODE *) ObjDesc;
     return_ACPI_STATUS (AE_OK);
 }
 
@@ -625,39 +668,75 @@ ACPI_STATUS
 AcpiDsBuildInternalPackageObj (
     ACPI_WALK_STATE         *WalkState,
     ACPI_PARSE_OBJECT       *Op,
+    UINT32                  PackageLength,
     ACPI_OPERAND_OBJECT     **ObjDescPtr)
 {
     ACPI_PARSE_OBJECT       *Arg;
-    ACPI_OPERAND_OBJECT     *ObjDesc;
+    ACPI_PARSE_OBJECT       *Parent;
+    ACPI_OPERAND_OBJECT     *ObjDesc = NULL;
+    UINT32                  PackageListLength;
     ACPI_STATUS             Status = AE_OK;
+    UINT32                  i;
 
 
-    FUNCTION_TRACE ("DsBuildInternalPackageObj");
+    ACPI_FUNCTION_TRACE ("DsBuildInternalPackageObj");
 
 
-    ObjDesc = AcpiUtCreateInternalObject (ACPI_TYPE_PACKAGE);
-    *ObjDescPtr = ObjDesc;
-    if (!ObjDesc)
+    /* Find the parent of a possibly nested package */
+
+
+    Parent = Op->Common.Parent;
+    while ((Parent->Common.AmlOpcode == AML_PACKAGE_OP)     ||
+           (Parent->Common.AmlOpcode == AML_VAR_PACKAGE_OP))
     {
-        return_ACPI_STATUS (AE_NO_MEMORY);
+        Parent = Parent->Common.Parent;
     }
 
-    if (Op->Opcode == AML_VAR_PACKAGE_OP)
+    ObjDesc = *ObjDescPtr;
+    if (ObjDesc)
     {
         /*
-         * Variable length package parameters are evaluated JIT
+         * We are evaluating a Named package object "Name (xxxx, Package)".
+         * Get the existing package object from the NS node
          */
-        return_ACPI_STATUS (AE_OK);
+    }
+    else
+    {
+        ObjDesc = AcpiUtCreateInternalObject (ACPI_TYPE_PACKAGE);
+        *ObjDescPtr = ObjDesc;
+        if (!ObjDesc)
+        {
+            return_ACPI_STATUS (AE_NO_MEMORY);
+        }
+
+        ObjDesc->Package.Node = Parent->Common.Node;
     }
 
-    /* The first argument must be the package length */
+    ObjDesc->Package.Count = PackageLength;
 
-    Arg = Op->Value.Arg;
-    ObjDesc->Package.Count = Arg->Value.Integer32;
+    /* Count the number of items in the package list */
+
+    PackageListLength = 0;
+    Arg = Op->Common.Value.Arg;
+    Arg = Arg->Common.Next;
+    while (Arg)
+    {
+        PackageListLength++;
+        Arg = Arg->Common.Next;
+    }
 
     /*
-     * Allocate the array of pointers (ptrs to the
-     * individual objects) Add an extra pointer slot so
+     * The package length (number of elements) will be the greater
+     * of the specified length and the length of the initializer list
+     */
+    if (PackageListLength > PackageLength)
+    {
+        ObjDesc->Package.Count = PackageListLength;
+    }
+
+    /*
+     * Allocate the pointer array (array of pointers to the
+     * individual objects). Add an extra pointer slot so
      * that the list is always null terminated.
      */
     ObjDesc->Package.Elements = ACPI_MEM_CALLOCATE (
@@ -669,74 +748,33 @@ AcpiDsBuildInternalPackageObj (
         return_ACPI_STATUS (AE_NO_MEMORY);
     }
 
-    ObjDesc->Package.NextElement = ObjDesc->Package.Elements;
-
     /*
      * Now init the elements of the package
      */
-    Arg = Arg->Next;
+    i = 0;
+    Arg = Op->Common.Value.Arg;
+    Arg = Arg->Common.Next;
     while (Arg)
     {
-        if (Arg->Opcode == AML_PACKAGE_OP)
+        if (Arg->Common.AmlOpcode == AML_INT_RETURN_VALUE_OP)
         {
-            Status = AcpiDsBuildInternalPackageObj (WalkState, Arg,
-                                        ObjDesc->Package.NextElement);
-        }
+            /* Object (package or buffer) is already built */
 
+            ObjDesc->Package.Elements[i] = (ACPI_OPERAND_OBJECT *) Arg->Common.Node;
+        }
         else
         {
-            Status = AcpiDsBuildInternalSimpleObj (WalkState, Arg,
-                                        ObjDesc->Package.NextElement);
+            Status = AcpiDsBuildInternalObject (WalkState, Arg,
+                                        &ObjDesc->Package.Elements[i]);
         }
 
-        ObjDesc->Package.NextElement++;
-        Arg = Arg->Next;
+        i++;
+        Arg = Arg->Common.Next;
     }
 
     ObjDesc->Package.Flags |= AOPOBJ_DATA_VALID;
+    Op->Common.Node = (ACPI_NAMESPACE_NODE *) ObjDesc;
     return_ACPI_STATUS (Status);
-}
-
-
-/*****************************************************************************
- *
- * FUNCTION:    AcpiDsBuildInternalObject
- *
- * PARAMETERS:  Op              - Parser object to be translated
- *              ObjDescPtr      - Where the ACPI internal object is returned
- *
- * RETURN:      Status
- *
- * DESCRIPTION: Translate a parser Op object to the equivalent namespace
- *              object
- *
- ****************************************************************************/
-
-ACPI_STATUS
-AcpiDsBuildInternalObject (
-    ACPI_WALK_STATE         *WalkState,
-    ACPI_PARSE_OBJECT       *Op,
-    ACPI_OPERAND_OBJECT     **ObjDescPtr)
-{
-    ACPI_STATUS             Status;
-
-
-    switch (Op->Opcode)
-    {
-    case AML_PACKAGE_OP:
-    case AML_VAR_PACKAGE_OP:
-
-        Status = AcpiDsBuildInternalPackageObj (WalkState, Op, ObjDescPtr);
-        break;
-
-
-    default:
-
-        Status = AcpiDsBuildInternalSimpleObj (WalkState, Op, ObjDescPtr);
-        break;
-    }
-
-    return (Status);
 }
 
 
@@ -763,7 +801,7 @@ AcpiDsCreateNode (
     ACPI_OPERAND_OBJECT     *ObjDesc;
 
 
-    FUNCTION_TRACE_PTR ("DsCreateNode", Op);
+    ACPI_FUNCTION_TRACE_PTR ("DsCreateNode", Op);
 
 
     /*
@@ -771,12 +809,12 @@ AcpiDsCreateNode (
      * parts of the table, we can arrive here twice.  Only init
      * the named object node the first time through
      */
-    if (Node->Object)
+    if (AcpiNsGetAttachedObject (Node))
     {
         return_ACPI_STATUS (AE_OK);
     }
 
-    if (!Op->Value.Arg)
+    if (!Op->Common.Value.Arg)
     {
         /* No arguments, there is nothing to do */
 
@@ -785,7 +823,7 @@ AcpiDsCreateNode (
 
     /* Build an internal object for the argument(s) */
 
-    Status = AcpiDsBuildInternalObject (WalkState, Op->Value.Arg, &ObjDesc);
+    Status = AcpiDsBuildInternalObject (WalkState, Op->Common.Value.Arg, &ObjDesc);
     if (ACPI_FAILURE (Status))
     {
         return_ACPI_STATUS (Status);
@@ -795,9 +833,9 @@ AcpiDsCreateNode (
 
     Node->Type = ObjDesc->Common.Type;
 
-    /* Init obj */
+    /* Attach obj to node */
 
-    Status = AcpiNsAttachObject (Node, ObjDesc, (UINT8) Node->Type);
+    Status = AcpiNsAttachObject (Node, ObjDesc, Node->Type);
 
     /* Remove local reference to the object */
 

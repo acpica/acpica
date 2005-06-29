@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dsmthdat - control method arguments and local variables
- *              $Revision: 1.51 $
+ *              $Revision: 1.61 $
  *
  ******************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -117,15 +117,13 @@
 #define __DSMTHDAT_C__
 
 #include "acpi.h"
-#include "acparser.h"
 #include "acdispat.h"
-#include "acinterp.h"
 #include "amlcode.h"
 #include "acnamesp.h"
 
 
 #define _COMPONENT          ACPI_DISPATCHER
-        MODULE_NAME         ("dsmthdat")
+        ACPI_MODULE_NAME    ("dsmthdat")
 
 
 /*******************************************************************************
@@ -149,42 +147,42 @@
  *
  ******************************************************************************/
 
-ACPI_STATUS
+void
 AcpiDsMethodDataInit (
     ACPI_WALK_STATE         *WalkState)
 {
     UINT32                  i;
 
 
-    FUNCTION_TRACE ("DsMethodDataInit");
+    ACPI_FUNCTION_TRACE ("DsMethodDataInit");
 
 
     /* Init the method arguments */
 
     for (i = 0; i < MTH_NUM_ARGS; i++)
     {
-        MOVE_UNALIGNED32_TO_32 (&WalkState->Arguments[i].Name,
+        ACPI_MOVE_UNALIGNED32_TO_32 (&WalkState->Arguments[i].Name,
                                 NAMEOF_ARG_NTE);
-        WalkState->Arguments[i].Name       |= (i << 24);
-        WalkState->Arguments[i].DataType    = ACPI_DESC_TYPE_NAMED;
-        WalkState->Arguments[i].Type        = ACPI_TYPE_ANY;
-        WalkState->Arguments[i].Flags       = ANOBJ_END_OF_PEER_LIST | ANOBJ_METHOD_ARG;
+        WalkState->Arguments[i].Name.Integer |= (i << 24);
+        WalkState->Arguments[i].Descriptor    = ACPI_DESC_TYPE_NAMED;
+        WalkState->Arguments[i].Type          = ACPI_TYPE_ANY;
+        WalkState->Arguments[i].Flags         = ANOBJ_END_OF_PEER_LIST | ANOBJ_METHOD_ARG;
     }
 
     /* Init the method locals */
 
     for (i = 0; i < MTH_NUM_LOCALS; i++)
     {
-        MOVE_UNALIGNED32_TO_32 (&WalkState->LocalVariables[i].Name,
+        ACPI_MOVE_UNALIGNED32_TO_32 (&WalkState->LocalVariables[i].Name,
                                 NAMEOF_LOCAL_NTE);
 
-        WalkState->LocalVariables[i].Name    |= (i << 24);
-        WalkState->LocalVariables[i].DataType = ACPI_DESC_TYPE_NAMED;
-        WalkState->LocalVariables[i].Type     = ACPI_TYPE_ANY;
-        WalkState->LocalVariables[i].Flags    = ANOBJ_END_OF_PEER_LIST | ANOBJ_METHOD_LOCAL;
+        WalkState->LocalVariables[i].Name.Integer |= (i << 24);
+        WalkState->LocalVariables[i].Descriptor    = ACPI_DESC_TYPE_NAMED;
+        WalkState->LocalVariables[i].Type          = ACPI_TYPE_ANY;
+        WalkState->LocalVariables[i].Flags         = ANOBJ_END_OF_PEER_LIST | ANOBJ_METHOD_LOCAL;
     }
 
-    return_ACPI_STATUS (AE_OK);
+    return_VOID;
 }
 
 
@@ -194,21 +192,21 @@ AcpiDsMethodDataInit (
  *
  * PARAMETERS:  WalkState           - Current walk state object
  *
- * RETURN:      Status
+ * RETURN:      None
  *
  * DESCRIPTION: Delete method locals and arguments.  Arguments are only
  *              deleted if this method was called from another method.
  *
  ******************************************************************************/
 
-ACPI_STATUS
+void
 AcpiDsMethodDataDeleteAll (
     ACPI_WALK_STATE         *WalkState)
 {
     UINT32                  Index;
 
 
-    FUNCTION_TRACE ("DsMethodDataDeleteAll");
+    ACPI_FUNCTION_TRACE ("DsMethodDataDeleteAll");
 
 
     /* Detach the locals */
@@ -223,7 +221,7 @@ AcpiDsMethodDataDeleteAll (
             /* Detach object (if present) and remove a reference */
 
             AcpiNsDetachObject (&WalkState->LocalVariables[Index]);
-       }
+        }
     }
 
     /* Detach the arguments */
@@ -241,7 +239,7 @@ AcpiDsMethodDataDeleteAll (
         }
     }
 
-    return_ACPI_STATUS (AE_OK);
+    return_VOID;
 }
 
 
@@ -271,7 +269,7 @@ AcpiDsMethodDataInitArgs (
     UINT32                  Index = 0;
 
 
-    FUNCTION_TRACE_PTR ("DsMethodDataInitArgs", Params);
+    ACPI_FUNCTION_TRACE_PTR ("DsMethodDataInitArgs", Params);
 
 
     if (!Params)
@@ -323,7 +321,7 @@ AcpiDsMethodDataGetNode (
     ACPI_WALK_STATE         *WalkState,
     ACPI_NAMESPACE_NODE     **Node)
 {
-    FUNCTION_TRACE ("DsMethodDataGetNode");
+    ACPI_FUNCTION_TRACE ("DsMethodDataGetNode");
 
 
     /*
@@ -362,7 +360,6 @@ AcpiDsMethodDataGetNode (
     default:
         ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Opcode %d is invalid\n", Opcode));
         return_ACPI_STATUS (AE_AML_BAD_OPCODE);
-        break;
     }
 
     return_ACPI_STATUS (AE_OK);
@@ -395,7 +392,7 @@ AcpiDsMethodDataSetValue (
     ACPI_NAMESPACE_NODE     *Node;
 
 
-    FUNCTION_TRACE ("DsMethodDataSetValue");
+    ACPI_FUNCTION_TRACE ("DsMethodDataSetValue");
 
 
     /* Get the namespace node for the arg/local */
@@ -430,7 +427,7 @@ AcpiDsMethodDataSetValue (
  *
  ******************************************************************************/
 
-ACPI_OBJECT_TYPE8
+ACPI_OBJECT_TYPE
 AcpiDsMethodDataGetType (
     UINT16                  Opcode,
     UINT32                  Index,
@@ -441,7 +438,7 @@ AcpiDsMethodDataGetType (
     ACPI_OPERAND_OBJECT     *Object;
 
 
-    FUNCTION_TRACE ("DsMethodDataGetType");
+    ACPI_FUNCTION_TRACE ("DsMethodDataGetType");
 
 
     /* Get the namespace node for the arg/local */
@@ -454,7 +451,7 @@ AcpiDsMethodDataGetType (
 
     /* Get the object */
 
-    Object = Node->Object;
+    Object = AcpiNsGetAttachedObject (Node);
     if (!Object)
     {
         /* Uninitialized local/arg, return TYPE_ANY */
@@ -498,7 +495,7 @@ AcpiDsMethodDataGetValue (
     ACPI_OPERAND_OBJECT     *Object;
 
 
-    FUNCTION_TRACE ("DsMethodDataGetValue");
+    ACPI_FUNCTION_TRACE ("DsMethodDataGetValue");
 
 
     /* Validate the object descriptor */
@@ -540,7 +537,6 @@ AcpiDsMethodDataGetValue (
                 Index, Node));
 
             return_ACPI_STATUS (AE_AML_UNINITIALIZED_ARG);
-            break;
 
         case AML_LOCAL_OP:
 
@@ -548,7 +544,9 @@ AcpiDsMethodDataGetValue (
                 Index, Node));
 
             return_ACPI_STATUS (AE_AML_UNINITIALIZED_LOCAL);
-            break;
+
+        default:
+            return_ACPI_STATUS (AE_AML_INTERNAL);
         }
     }
 
@@ -571,14 +569,14 @@ AcpiDsMethodDataGetValue (
  *              Index               - Which localVar or argument to delete
  *              WalkState           - Current walk state object
  *
- * RETURN:      Status
+ * RETURN:      None
  *
  * DESCRIPTION: Delete the entry at Opcode:Index on the method stack.  Inserts
  *              a null into the stack slot after the object is deleted.
  *
  ******************************************************************************/
 
-ACPI_STATUS
+void
 AcpiDsMethodDataDeleteValue (
     UINT16                  Opcode,
     UINT32                  Index,
@@ -589,7 +587,7 @@ AcpiDsMethodDataDeleteValue (
     ACPI_OPERAND_OBJECT     *Object;
 
 
-    FUNCTION_TRACE ("DsMethodDataDeleteValue");
+    ACPI_FUNCTION_TRACE ("DsMethodDataDeleteValue");
 
 
     /* Get the namespace node for the arg/local */
@@ -597,12 +595,12 @@ AcpiDsMethodDataDeleteValue (
     Status = AcpiDsMethodDataGetNode (Opcode, Index, WalkState, &Node);
     if (ACPI_FAILURE (Status))
     {
-        return_ACPI_STATUS (Status);
+        return_VOID;
     }
 
     /* Get the associated object */
 
-    Object = Node->Object;
+    Object = AcpiNsGetAttachedObject (Node);
 
     /*
      * Undefine the Arg or Local by setting its descriptor
@@ -612,7 +610,7 @@ AcpiDsMethodDataDeleteValue (
     Node->Object = NULL;
 
     if ((Object) &&
-        (VALID_DESCRIPTOR_TYPE (Object, ACPI_DESC_TYPE_INTERNAL)))
+        (ACPI_GET_DESCRIPTOR_TYPE (Object) == ACPI_DESC_TYPE_OPERAND))
     {
         /*
          * There is a valid object.
@@ -622,7 +620,7 @@ AcpiDsMethodDataDeleteValue (
         AcpiUtRemoveReference (Object);
     }
 
-    return_ACPI_STATUS (AE_OK);
+    return_VOID;
 }
 
 
@@ -652,9 +650,10 @@ AcpiDsStoreObjectToLocal (
 {
     ACPI_STATUS             Status;
     ACPI_NAMESPACE_NODE     *Node;
+    ACPI_OPERAND_OBJECT     *CurrentObjDesc;
 
 
-    FUNCTION_TRACE ("DsStoreObjectToLocal");
+    ACPI_FUNCTION_TRACE ("DsStoreObjectToLocal");
     ACPI_DEBUG_PRINT ((ACPI_DB_EXEC, "Opcode=%d Idx=%d Obj=%p\n",
         Opcode, Index, ObjDesc));
 
@@ -674,7 +673,8 @@ AcpiDsStoreObjectToLocal (
         return_ACPI_STATUS (Status);
     }
 
-    if (Node->Object == ObjDesc)
+    CurrentObjDesc = AcpiNsGetAttachedObject (Node);
+    if (CurrentObjDesc == ObjDesc)
     {
         ACPI_DEBUG_PRINT ((ACPI_DB_EXEC, "Obj=%p already installed!\n", ObjDesc));
         return_ACPI_STATUS (Status);
@@ -686,7 +686,7 @@ AcpiDsStoreObjectToLocal (
      * is an object reference stored there, we have to do
      * an indirect store!
      */
-    if (Node->Object)
+    if (CurrentObjDesc)
     {
         /*
          * Check for an indirect store if an argument
@@ -705,21 +705,22 @@ AcpiDsStoreObjectToLocal (
          * Weird, but true.
          */
         if ((Opcode == AML_ARG_OP) &&
-            (VALID_DESCRIPTOR_TYPE (Node->Object, ACPI_DESC_TYPE_NAMED)))
+            (ACPI_GET_DESCRIPTOR_TYPE (CurrentObjDesc) == ACPI_DESC_TYPE_NAMED))
         {
             ACPI_DEBUG_PRINT ((ACPI_DB_EXEC,
-                "Arg (%p) is an ObjRef(Node), storing in %p\n",
-                ObjDesc, Node->Object));
+                "Arg (%p) is an ObjRef(Node), storing in node %p\n",
+                ObjDesc, CurrentObjDesc));
 
             /* Detach an existing object from the Node */
 
-            AcpiNsDetachObject (Node);
+            AcpiNsDetachObject ((ACPI_NAMESPACE_NODE *) CurrentObjDesc);
 
             /*
              * Store this object into the Node
              * (perform the indirect store)
              */
-            Status = AcpiNsAttachObject (Node, ObjDesc, ObjDesc->Common.Type);
+            Status = AcpiNsAttachObject ((ACPI_NAMESPACE_NODE *) CurrentObjDesc,
+                            ObjDesc, ObjDesc->Common.Type);
             return_ACPI_STATUS (Status);
         }
 

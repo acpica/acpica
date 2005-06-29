@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Name: hwsleep.c - ACPI Hardware Sleep/Wake Interface
- *              $Revision: 1.37 $
+ *              $Revision: 1.39 $
  *
  *****************************************************************************/
 
@@ -116,8 +116,6 @@
  *****************************************************************************/
 
 #include "acpi.h"
-#include "acnamesp.h"
-#include "achware.h"
 
 #define _COMPONENT          ACPI_HARDWARE
         ACPI_MODULE_NAME    ("hwsleep")
@@ -148,11 +146,13 @@ AcpiSetFirmwareWakingVector (
 
     if (AcpiGbl_CommonFACS.VectorWidth == 32)
     {
-        *(UINT32 *) AcpiGbl_CommonFACS.FirmwareWakingVector = (UINT32) PhysicalAddress;
+        *(ACPI_CAST_PTR (UINT32, AcpiGbl_CommonFACS.FirmwareWakingVector)) 
+                = (UINT32) PhysicalAddress;
     }
     else
     {
-        *AcpiGbl_CommonFACS.FirmwareWakingVector = PhysicalAddress;
+        *AcpiGbl_CommonFACS.FirmwareWakingVector 
+                = PhysicalAddress;
     }
 
     return_ACPI_STATUS (AE_OK);
@@ -190,11 +190,13 @@ AcpiGetFirmwareWakingVector (
 
     if (AcpiGbl_CommonFACS.VectorWidth == 32)
     {
-        *PhysicalAddress = *(UINT32 *) AcpiGbl_CommonFACS.FirmwareWakingVector;
+        *PhysicalAddress = (ACPI_PHYSICAL_ADDRESS) 
+            *(ACPI_CAST_PTR (UINT32, AcpiGbl_CommonFACS.FirmwareWakingVector));
     }
     else
     {
-        *PhysicalAddress = *AcpiGbl_CommonFACS.FirmwareWakingVector;
+        *PhysicalAddress = 
+            *AcpiGbl_CommonFACS.FirmwareWakingVector;
     }
 
     return_ACPI_STATUS (AE_OK);
@@ -281,10 +283,12 @@ ACPI_STATUS
 AcpiEnterSleepState (
     UINT8                   SleepState)
 {
-    UINT16                  PM1AControl;
-    UINT16                  PM1BControl;
+    UINT32                  PM1AControl;
+    UINT32                  PM1BControl;
     ACPI_BIT_REGISTER_INFO  *SleepTypeRegInfo;
     ACPI_BIT_REGISTER_INFO  *SleepEnableRegInfo;
+    UINT32                  InValue;
+    ACPI_STATUS             Status;
 
 
     ACPI_FUNCTION_TRACE ("AcpiEnterSleepState");
@@ -304,16 +308,33 @@ AcpiEnterSleepState (
 
     /* Clear wake status */
 
-    AcpiHwBitRegisterWrite (ACPI_BITREG_WAKE_STATUS, 1, ACPI_MTX_LOCK);
-    AcpiHwClearAcpiStatus();
+    Status = AcpiHwBitRegisterWrite (ACPI_BITREG_WAKE_STATUS, 1, ACPI_MTX_LOCK);
+    if (ACPI_FAILURE (Status))
+    {
+        return_ACPI_STATUS (Status);
+    }
+
+    Status = AcpiHwClearAcpiStatus();
+    if (ACPI_FAILURE (Status))
+    {
+        return_ACPI_STATUS (Status);
+    }
 
     /* TBD: Disable arbitration here? */
 
-    AcpiHwDisableNonWakeupGpes();
+    Status = AcpiHwDisableNonWakeupGpes();
+    if (ACPI_FAILURE (Status))
+    {
+        return_ACPI_STATUS (Status);
+    }
 
     /* Get current value of PM1A control */
 
-    PM1AControl = (UINT16) AcpiHwRegisterRead (ACPI_MTX_LOCK, ACPI_REGISTER_PM1_CONTROL);
+    Status = AcpiHwRegisterRead (ACPI_MTX_LOCK, ACPI_REGISTER_PM1_CONTROL, &PM1AControl);
+    if (ACPI_FAILURE (Status))
+    {
+        return_ACPI_STATUS (Status);
+    }
     ACPI_DEBUG_PRINT ((ACPI_DB_OK, "Entering S%d\n", SleepState));
 
     /* Clear SLP_EN and SLP_TYP fields */
@@ -328,8 +349,17 @@ AcpiEnterSleepState (
 
     /* Write #1: fill in SLP_TYP data */
 
-    AcpiHwRegisterWrite (ACPI_MTX_LOCK, ACPI_REGISTER_PM1A_CONTROL, PM1AControl);
-    AcpiHwRegisterWrite (ACPI_MTX_LOCK, ACPI_REGISTER_PM1B_CONTROL, PM1BControl);
+    Status = AcpiHwRegisterWrite (ACPI_MTX_LOCK, ACPI_REGISTER_PM1A_CONTROL, PM1AControl);
+    if (ACPI_FAILURE (Status))
+    {
+        return_ACPI_STATUS (Status);
+    }
+
+    Status = AcpiHwRegisterWrite (ACPI_MTX_LOCK, ACPI_REGISTER_PM1B_CONTROL, PM1BControl);
+    if (ACPI_FAILURE (Status))
+    {
+        return_ACPI_STATUS (Status);
+    }
 
     /* Insert SLP_ENABLE bit */
 
@@ -337,10 +367,20 @@ AcpiEnterSleepState (
     PM1BControl |= SleepEnableRegInfo->AccessBitMask;
 
     /* Write #2: SLP_TYP + SLP_EN */
-    ACPI_FLUSH_CPU_CACHE();
 
-    AcpiHwRegisterWrite (ACPI_MTX_LOCK, ACPI_REGISTER_PM1A_CONTROL, PM1AControl);
-    AcpiHwRegisterWrite (ACPI_MTX_LOCK, ACPI_REGISTER_PM1B_CONTROL, PM1BControl);
+    ACPI_FLUSH_CPU_CACHE ();
+
+    Status = AcpiHwRegisterWrite (ACPI_MTX_LOCK, ACPI_REGISTER_PM1A_CONTROL, PM1AControl);
+    if (ACPI_FAILURE (Status))
+    {
+        return_ACPI_STATUS (Status);
+    }
+
+    Status = AcpiHwRegisterWrite (ACPI_MTX_LOCK, ACPI_REGISTER_PM1B_CONTROL, PM1BControl);
+    if (ACPI_FAILURE (Status))
+    {
+        return_ACPI_STATUS (Status);
+    }
 
     /*
      * Wait a second, then try again. This is to get S4/5 to work on all machines.
@@ -349,16 +389,27 @@ AcpiEnterSleepState (
     {
         AcpiOsStall (1000000);
 
-        AcpiHwRegisterWrite (ACPI_MTX_LOCK, ACPI_REGISTER_PM1_CONTROL,
-                SleepEnableRegInfo->AccessBitMask);
+        Status = AcpiHwRegisterWrite (ACPI_MTX_LOCK, ACPI_REGISTER_PM1_CONTROL,
+                    SleepEnableRegInfo->AccessBitMask);
+        if (ACPI_FAILURE (Status))
+        {
+            return_ACPI_STATUS (Status);
+        }
     }
 
     /* Wait until we enter sleep state */
 
-    while (!AcpiHwBitRegisterRead (ACPI_BITREG_WAKE_STATUS, ACPI_MTX_LOCK))
+    do 
     {
+        Status = AcpiHwBitRegisterRead (ACPI_BITREG_WAKE_STATUS, &InValue, ACPI_MTX_LOCK);
+        if (ACPI_FAILURE (Status))
+        {
+            return_ACPI_STATUS (Status);
+        }
+
         /* Spin until we wake */
-    }
+
+    } while (!InValue);
 
     return_ACPI_STATUS (AE_OK);
 }
@@ -415,7 +466,7 @@ AcpiLeaveSleepState (
 
     /* _WAK returns stuff - do we want to look at it? */
 
-    AcpiHwEnableNonWakeupGpes();
+    Status = AcpiHwEnableNonWakeupGpes();
 
-    return_ACPI_STATUS (AE_OK);
+    return_ACPI_STATUS (Status);
 }
