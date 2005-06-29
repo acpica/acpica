@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: cmeval - Object evaluation
- *              $Revision: 1.23 $
+ *              $Revision: 1.24 $
  *
  *****************************************************************************/
 
@@ -232,7 +232,7 @@ AcpiCmEvaluateNumericObject (
 ACPI_STATUS
 AcpiCmExecute_HID (
     ACPI_NAMESPACE_NODE     *DeviceNode,
-    DEVICE_ID               *Hid)
+    ACPI_DEVICE_ID          *Hid)
 {
     ACPI_OPERAND_OBJECT     *ObjDesc;
     ACPI_STATUS             Status;
@@ -332,7 +332,7 @@ AcpiCmExecute_HID (
 ACPI_STATUS
 AcpiCmExecute_UID (
     ACPI_NAMESPACE_NODE     *DeviceNode,
-    DEVICE_ID               *Uid)
+    ACPI_DEVICE_ID          *Uid)
 {
     ACPI_OPERAND_OBJECT     *ObjDesc;
     ACPI_STATUS             Status;
