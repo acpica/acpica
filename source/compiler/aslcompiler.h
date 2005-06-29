@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslcompiler.h - common include file
- *              $Revision: 1.82 $
+ *              $Revision: 1.83 $
  *
  *****************************************************************************/
 
@@ -164,8 +164,8 @@ getopt (
  * Compiler versions and names
  */
 
-#define CompilerVersion             "X2033"
-#define CompilerCreatorRevision     0x02002033  /* Acpi 2.0, Version # */
+#define CompilerVersion             "X2034"
+#define CompilerCreatorRevision     0x02002034  /* Acpi 2.0, Version # */
 
 #define CompilerId                  "Intel ACPI Component Architecture ASL Compiler"
 #define CompilerCopyright           "Copyright (C) 2000, 2001 Intel Corporation"
@@ -451,7 +451,7 @@ CgWriteNode (
  * aslmap
  */
 
-ACPI_OBJECT_TYPE8
+ACPI_OBJECT_TYPE
 AslMapNamedOpcodeToDataType (
     UINT16                  Opcode);
 
