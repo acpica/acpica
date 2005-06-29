@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: acparser.h - AML Parser subcomponent prototypes and defines
- *       $Revision: 1.47 $
+ *       $Revision: 1.50 $
  *
  *****************************************************************************/
 
@@ -9,8 +9,8 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, Intel Corp.  All rights
- * reserved.
+ * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
+ * All rights reserved.
  *
  * 2. License
  *
@@ -151,15 +151,6 @@ AcpiPsxExecute (
     ACPI_NAMESPACE_NODE     *MethodNode,
     ACPI_OPERAND_OBJECT     **Params,
     ACPI_OPERAND_OBJECT     **ReturnObjDesc);
-
-
-BOOLEAN
-AcpiPsIsNamespaceObjectOp (
-    UINT16                  Opcode);
-BOOLEAN
-AcpiPsIsNamespaceOp (
-    UINT16                  Opcode);
-
 
 /******************************************************************************
  *
@@ -376,34 +367,6 @@ AcpiPsIsLeadingChar (
 BOOLEAN
 AcpiPsIsPrefixChar (
     UINT32                  c);
-
-BOOLEAN
-AcpiPsIsNamedOp (
-    UINT16                  opcode);
-
-BOOLEAN
-AcpiPsIsNodeOp (
-    UINT16                  opcode);
-
-BOOLEAN
-AcpiPsIsDeferredOp (
-    UINT16                  opcode);
-
-BOOLEAN
-AcpiPsIsBytelistOp(
-    UINT16                  opcode);
-
-BOOLEAN
-AcpiPsIsFieldOp(
-    UINT16                  opcode);
-
-BOOLEAN
-AcpiPsIsCreateFieldOp (
-    UINT16                  Opcode);
-
-ACPI_PARSE2_OBJECT*
-AcpiPsToExtendedOp(
-    ACPI_PARSE_OBJECT       *op);
 
 UINT32
 AcpiPsGetName(
