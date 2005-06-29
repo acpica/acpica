@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslerror - Error handling and statistics
- *              $Revision: 1.11 $
+ *              $Revision: 1.12 $
  *
  *****************************************************************************/
 
@@ -125,6 +125,7 @@ char                        *AslWarnings [] = {
     "Effective AML package length is zero",
     "Mixed return types in method",
     "Cannot find/access object",
+    "Nested comment found",
 };
 
 char                        *AslErrors [] = {
