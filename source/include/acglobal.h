@@ -162,7 +162,8 @@ ACPI_EXTERN ACPI_TABLE_HEADER                   * SBDT;
  ****************************************************************************/
 
 ACPI_EXTERN BOOLEAN             GlobalLockSet;
-ACPI_EXTERN UINT32              Capabilities;
+extern      UINT32              SystemFlags;
+extern      UINT32              StartupFlags;
 
 ACPI_EXTERN INT32               RestoreAcpiChipset;
 ACPI_EXTERN UINT16              Pm1EnableRegisterSave;
@@ -173,11 +174,6 @@ ACPI_EXTERN INT32               EdgeLevelSave;
 ACPI_EXTERN INT32               IrqEnableSave;
 extern char                     *ExceptionNames[];
 
-/* File I/O globals */
-
-ACPI_EXTERN char                *DsdtFile;
-ACPI_EXTERN char                *OutputFile;
-ACPI_EXTERN char                *InputFile;
 ACPI_EXTERN UINT32              RsdpOriginalLocation; 
 
 /* Procedure nesting level for debug output */
