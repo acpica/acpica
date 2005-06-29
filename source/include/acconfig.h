@@ -119,7 +119,6 @@
  * AML Interpreter
  */
 
-#define MAX_ACPI_TABLE_SIZE         49152   /* For phys to logical mapping */
 #define AML_PKG_MAX_NEST            100     /* Max depth of package nesting */
 #define AML_METHOD_MAX_NEST         10      /* Max depth of nested method calls */
 #define INITIAL_NAME_BUF_SIZE       32
@@ -146,9 +145,9 @@
 
 /* Constants used in searching for the RSDP in low memory */
 
-#define LO_RSDP_WINDOW_BASE         0
+#define LO_RSDP_WINDOW_BASE         (void *) 0
+#define HI_RSDP_WINDOW_BASE         (void *) 0xE0000
 #define LO_RSDP_WINDOW_SIZE         0x400           
-#define HI_RSDP_WINDOW_BASE         0xE0000
 #define HI_RSDP_WINDOW_SIZE         0x20000
 #define RSDP_SCAN_STEP              16
 
