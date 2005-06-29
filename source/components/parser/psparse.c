@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: psparse - Parser top level AML parse routines
- *              $Revision: 1.152 $
+ *              $Revision: 1.153 $
  *
  *****************************************************************************/
 
@@ -139,7 +139,7 @@ static UINT32               AcpiGbl_Depth = 0;
 
 /* Local prototypes */
 
-static void
+static ACPI_STATUS
 AcpiPsCompleteThisOp (
     ACPI_WALK_STATE         *WalkState,
     ACPI_PARSE_OBJECT       *Op);
@@ -227,13 +227,13 @@ AcpiPsPeekOpcode (
  * PARAMETERS:  WalkState       - Current State
  *              Op              - Op to complete
  *
- * RETURN:      None.
+ * RETURN:      Status
  *
  * DESCRIPTION: Perform any cleanup at the completion of an Op.
  *
  ******************************************************************************/
 
-static void
+static ACPI_STATUS
 AcpiPsCompleteThisOp (
     ACPI_WALK_STATE         *WalkState,
     ACPI_PARSE_OBJECT       *Op)
@@ -251,7 +251,7 @@ AcpiPsCompleteThisOp (
 
     if (!Op)
     {
-        return_VOID;
+        return_ACPI_STATUS (AE_OK);  /* OK for now */
     }
 
     /* Delete this op and the subtree below it if asked to */
@@ -259,18 +259,26 @@ AcpiPsCompleteThisOp (
     if (((WalkState->ParseFlags & ACPI_PARSE_TREE_MASK) != ACPI_PARSE_DELETE_TREE) ||
          (WalkState->OpInfo->Class == AML_CLASS_ARGUMENT))
     {
-        return_VOID;
+        return_ACPI_STATUS (AE_OK);
     }
 
     /* Make sure that we only delete this subtree */
 
     if (Op->Common.Parent)
     {
+        Prev = Op->Common.Parent->Common.Value.Arg;
+        if (!Prev)
+        {
+            /* Nothing more to do */
+
+            goto Cleanup;
+        }
+
         /*
          * Check if we need to replace the operator and its subtree
          * with a return value op (placeholder op)
          */
-        ParentInfo  = AcpiPsGetOpcodeInfo (Op->Common.Parent->Common.AmlOpcode);
+        ParentInfo = AcpiPsGetOpcodeInfo (Op->Common.Parent->Common.AmlOpcode);
 
         switch (ParentInfo->Class)
         {
@@ -286,7 +294,7 @@ AcpiPsCompleteThisOp (
             ReplacementOp = AcpiPsAllocOp (AML_INT_RETURN_VALUE_OP);
             if (!ReplacementOp)
             {
-                goto Cleanup;
+                goto AllocateError;
             }
             break;
 
@@ -305,13 +313,11 @@ AcpiPsCompleteThisOp (
                 ReplacementOp = AcpiPsAllocOp (AML_INT_RETURN_VALUE_OP);
                 if (!ReplacementOp)
                 {
-                    goto Cleanup;
+                    goto AllocateError;
                 }
-            }
-
-            if ((Op->Common.Parent->Common.AmlOpcode == AML_NAME_OP) &&
-                (WalkState->DescendingCallback != AcpiDsExecBeginOp))
-
+            }   
+            else if ((Op->Common.Parent->Common.AmlOpcode == AML_NAME_OP) &&
+                     (WalkState->PassNumber <= ACPI_IMODE_LOAD_PASS2))
             {
                 if ((Op->Common.AmlOpcode == AML_BUFFER_OP) ||
                     (Op->Common.AmlOpcode == AML_PACKAGE_OP) ||
@@ -320,7 +326,7 @@ AcpiPsCompleteThisOp (
                     ReplacementOp = AcpiPsAllocOp (Op->Common.AmlOpcode);
                     if (!ReplacementOp)
                     {
-                        goto Cleanup;
+                        goto AllocateError;
                     }
 
                     ReplacementOp->Named.Data = Op->Named.Data;
@@ -330,16 +336,16 @@ AcpiPsCompleteThisOp (
             break;
 
         default:
+
             ReplacementOp = AcpiPsAllocOp (AML_INT_RETURN_VALUE_OP);
             if (!ReplacementOp)
             {
-                goto Cleanup;
+                goto AllocateError;
             }
         }
 
         /* We must unlink this op from the parent tree */
 
-        Prev = Op->Common.Parent->Common.Value.Arg;
         if (Prev == Op)
         {
             /* This op is the first in the list */
@@ -392,7 +398,15 @@ Cleanup:
     /* Now we can actually delete the subtree rooted at Op */
 
     AcpiPsDeleteParseTree (Op);
-    return_VOID;
+    return_ACPI_STATUS (AE_OK);
+
+
+AllocateError:
+
+    /* Always delete the subtree, even on error */
+
+    AcpiPsDeleteParseTree (Op);
+    return_ACPI_STATUS (AE_NO_MEMORY);
 }
 
 
@@ -539,6 +553,7 @@ AcpiPsParseLoop (
     ACPI_WALK_STATE         *WalkState)
 {
     ACPI_STATUS             Status = AE_OK;
+    ACPI_STATUS             Status2;
     ACPI_PARSE_OBJECT       *Op = NULL;     /* current op */
     ACPI_PARSE_OBJECT       *Arg = NULL;
     ACPI_PARSE_OBJECT       *PreOp = NULL;
@@ -871,7 +886,6 @@ AcpiPsParseLoop (
                 break;
 
             default:
-
                 /*
                  * Op is not a constant or string, append each argument
                  * to the Op
@@ -900,6 +914,25 @@ AcpiPsParseLoop (
 
                 /* Special processing for certain opcodes */
 
+                if (WalkState->PassNumber <= ACPI_IMODE_LOAD_PASS1)
+                {
+                    switch (Op->Common.AmlOpcode)
+                    {
+                    case AML_IF_OP:
+                    case AML_ELSE_OP:
+                    case AML_WHILE_OP:
+
+                        /* Skip body of if/else/while in pass 1 */
+
+                        ParserState->Aml    = ParserState->PkgEnd;
+                        WalkState->ArgCount = 0;
+                        break;
+
+                    default:
+                        break;
+                    }
+                }
+
                 switch (Op->Common.AmlOpcode)
                 {
                 case AML_METHOD_OP:
@@ -927,7 +960,7 @@ AcpiPsParseLoop (
 
                     if ((Op->Common.Parent) &&
                         (Op->Common.Parent->Common.AmlOpcode == AML_NAME_OP) &&
-                        (WalkState->DescendingCallback != AcpiDsExecBeginOp))
+                        (WalkState->PassNumber <= ACPI_IMODE_LOAD_PASS2))
                     {
                         /*
                          * Skip parsing of Buffers and Packages
@@ -1041,15 +1074,22 @@ CloseThisOp:
          */
         ParserState->Scope->ParseScope.ArgCount--;
 
-        /* Close this Op (will result in parse subtree deletion) */
+        /* Finished with PreOp */
 
-        AcpiPsCompleteThisOp (WalkState, Op);
-        Op = NULL;
         if (PreOp)
         {
             AcpiPsFreeOp (PreOp);
             PreOp = NULL;
         }
+
+        /* Close this Op (will result in parse subtree deletion) */
+
+        Status2 = AcpiPsCompleteThisOp (WalkState, Op);
+        if (ACPI_FAILURE (Status2))
+        {
+            return_ACPI_STATUS (Status2);
+        }
+        Op = NULL;
 
         switch (Status)
         {
@@ -1080,7 +1120,11 @@ CloseThisOp:
                 Status = WalkState->AscendingCallback (WalkState);
                 Status = AcpiPsNextParseState (WalkState, Op, Status);
 
-                AcpiPsCompleteThisOp (WalkState, Op);
+                Status2 = AcpiPsCompleteThisOp (WalkState, Op);
+                if (ACPI_FAILURE (Status2))
+                {
+                    return_ACPI_STATUS (Status2);
+                }
                 Op = NULL;
             }
             Status = AE_OK;
@@ -1107,7 +1151,11 @@ CloseThisOp:
             Status = WalkState->AscendingCallback (WalkState);
             Status = AcpiPsNextParseState (WalkState, Op, Status);
 
-            AcpiPsCompleteThisOp (WalkState, Op);
+            Status2 = AcpiPsCompleteThisOp (WalkState, Op);
+            if (ACPI_FAILURE (Status2))
+            {
+                return_ACPI_STATUS (Status2);
+            }
             Op = NULL;
 
             Status = AE_OK;
@@ -1123,7 +1171,11 @@ CloseThisOp:
             {
                 if (Op)
                 {
-                    AcpiPsCompleteThisOp (WalkState, Op);
+                    Status2 = AcpiPsCompleteThisOp (WalkState, Op);
+                    if (ACPI_FAILURE (Status2))
+                    {
+                        return_ACPI_STATUS (Status2);
+                    }
                 }
                 AcpiPsPopScope (ParserState, &Op,
                     &WalkState->ArgTypes, &WalkState->ArgCount);
@@ -1139,7 +1191,11 @@ CloseThisOp:
             {
                 if (Op)
                 {
-                    AcpiPsCompleteThisOp (WalkState, Op);
+                    Status2 = AcpiPsCompleteThisOp (WalkState, Op);
+                    if (ACPI_FAILURE (Status2))
+                    {
+                        return_ACPI_STATUS (Status2);
+                    }
                 }
                 AcpiPsPopScope (ParserState, &Op,
                     &WalkState->ArgTypes, &WalkState->ArgCount);
@@ -1212,7 +1268,11 @@ CloseThisOp:
                     {
                         if (Op)
                         {
-                            AcpiPsCompleteThisOp (WalkState, Op);
+                            Status2 = AcpiPsCompleteThisOp (WalkState, Op);
+                            if (ACPI_FAILURE (Status2))
+                            {
+                                return_ACPI_STATUS (Status2);
+                            }
                         }
 
                         AcpiPsPopScope (ParserState, &Op,
@@ -1225,12 +1285,18 @@ CloseThisOp:
 
                 else if (ACPI_FAILURE (Status))
                 {
-                    AcpiPsCompleteThisOp (WalkState, Op);
+                    /* First error is most important */
+
+                    (void) AcpiPsCompleteThisOp (WalkState, Op);
                     return_ACPI_STATUS (Status);
                 }
             }
 
-            AcpiPsCompleteThisOp (WalkState, Op);
+            Status2 = AcpiPsCompleteThisOp (WalkState, Op);
+            if (ACPI_FAILURE (Status2))
+            {
+                return_ACPI_STATUS (Status2);
+            }
         }
 
         AcpiPsPopScope (ParserState, &Op, &WalkState->ArgTypes,
