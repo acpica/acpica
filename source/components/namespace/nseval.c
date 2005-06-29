@@ -1,8 +1,8 @@
 
 /******************************************************************************
  * 
- * Module Name: nsapiexe - Public interfaces for ACPI control method 
- *                         lookup and execution
+ * Module Name: nseval - Object evaluation interfaces -- includes control
+ *                       method lookup and execution.
  *
  *****************************************************************************/
 
@@ -96,7 +96,7 @@
  *****************************************************************************/
 
 
-#define __NSAPIEXE_C__
+#define __NSEVAL_C__
 
 #include <acpi.h>
 #include <amlcode.h>
@@ -105,7 +105,7 @@
 #include <string.h>
 
 
-#define _THIS_MODULE        "nsapiexe.c"
+#define _THIS_MODULE        "nseval.c"
 #define _COMPONENT          NAMESPACE
 
 
@@ -121,81 +121,10 @@ static ST_KEY_DESC_TABLE KDT[] = {
 
 /****************************************************************************
  *
- * FUNCTION:    AcpiEvaluateObject
- *
- * PARAMETERS:  Handle              - Object handle (optional)
- *              *Pathname           - Object pathname (optional)
- *              *ReturnObject       - Where to put method's return value (if 
- *                                    any).  If NULL, no value is returned.
- *              **Params            - List of parameters to pass to
- *                                    method, terminated by NULL.
- *                                    Params itself may be NULL
- *                                    if no parameters are being
- *                                    passed.
- *
- * RETURN:      Status
- *
- * DESCRIPTION: Find and evaluate the given object, passing the given
- *              parameters if necessary.  One of "Handle" or "Pathname" must
- *              be valid (non-null)
- *
- ****************************************************************************/
-
-ACPI_STATUS
-AcpiEvaluateObject (NsHandle Handle, char *Pathname, OBJECT_DESCRIPTOR *ReturnObject,
-                    OBJECT_DESCRIPTOR **Params)
-{
-    ACPI_STATUS             Status;
-
-
-    FUNCTION_TRACE ("AcpiEvaluateObject");
-
-
-    /* Parameter validation */
-
-    if (!Handle && !Pathname)
-    {
-        DEBUG_PRINT (ACPI_ERROR, ("AcpiEvaluateObject: Both Handle and Pathname are NULL\n"));
-        FUNCTION_EXIT;
-        return AE_BAD_PARAMETER;
-    }
-
-
-    /* The null pathname case means the handle is for the object */
-
-    if (!Pathname)
-    {
-        Status = NsEvaluateByHandle (Handle, ReturnObject, Params);
-    }
-
-
-    /* The null handle case means that the pathname is fully qualified */
-
-    else if (!Handle)
-    {
-        Status = NsEvaluateByName (Pathname, ReturnObject, Params);
-    }
-
-
-    /* Both Handle and Pathname means we have a path relative to the handle */
-
-    else
-    {
-        Status = NsEvaluateRelative (Handle, Pathname, ReturnObject, Params);
-    }
-
-    FUNCTION_EXIT;
-    return Status;
-}
-
-
-
-/****************************************************************************
- *
  * FUNCTION:    NsEvaluateRelative
  *
- * PARAMETERS:  Handle              - Handle of containing object
- *              *Pathname         - Name of method to execute, If NULL, the
+ * PARAMETERS:  ObjEntry            - NTE of containing object
+ *              *Pathname           - Name of method to execute, If NULL, the
  *                                    handle is the object to execute
  *              *ReturnObject       - Where to put method's return value (if 
  *                                    any).  If NULL, no value is returned.
@@ -213,8 +142,8 @@ AcpiEvaluateObject (NsHandle Handle, char *Pathname, OBJECT_DESCRIPTOR *ReturnOb
  ****************************************************************************/
 
 ACPI_STATUS
-NsEvaluateRelative (NsHandle Handle, char *Pathname, OBJECT_DESCRIPTOR *ReturnObject,
-                        OBJECT_DESCRIPTOR **Params)
+NsEvaluateRelative (NAME_TABLE_ENTRY *ObjEntry, char *Pathname, 
+                    OBJECT_DESCRIPTOR *ReturnObject, OBJECT_DESCRIPTOR **Params)
 {
     char                NameBuffer[PATHNAME_MAX];
     ACPI_STATUS         Status;
@@ -224,9 +153,9 @@ NsEvaluateRelative (NsHandle Handle, char *Pathname, OBJECT_DESCRIPTOR *ReturnOb
     FUNCTION_TRACE ("NsEvaluateRelative");
 
     /*
-     *  Must have a valid handle
+     *  Must have a valid object NTE
      */
-    if (!Handle) 
+    if (!ObjEntry) 
     {
         FUNCTION_EXIT;
         return AE_BAD_PARAMETER;
@@ -248,7 +177,7 @@ NsEvaluateRelative (NsHandle Handle, char *Pathname, OBJECT_DESCRIPTOR *ReturnOb
     /*
      *  Get the device pathname
      */
-    Status = NsHandleToPathname (Handle, MaxObjectPathLength, NameBuffer);
+    Status = NsHandleToPathname (ObjEntry, MaxObjectPathLength, NameBuffer);
     if (Status != AE_OK) 
     {
         /*
@@ -302,12 +231,12 @@ NsEvaluateRelative (NsHandle Handle, char *Pathname, OBJECT_DESCRIPTOR *ReturnOb
  *
  ****************************************************************************/
 
-ACPI_STATUS;
+ACPI_STATUS
 NsEvaluateByName (char *Pathname, OBJECT_DESCRIPTOR *ReturnObject,
                     OBJECT_DESCRIPTOR **Params)
 {
     ACPI_STATUS         Status = AE_ERROR;
-    nte                 *MethodNte = NULL;
+    NAME_TABLE_ENTRY    *MethodEntry = NULL;
 
     
     FUNCTION_TRACE ("NsEvaluateByName");
@@ -323,7 +252,7 @@ NsEvaluateByName (char *Pathname, OBJECT_DESCRIPTOR *ReturnObject,
 
     /* Lookup the name in the namespace */
 
-    Status = NsEnter (Pathname, TYPE_Any, MODE_Exec, (NsHandle *) &MethodNte);
+    Status = NsEnter (Pathname, TYPE_Any, MODE_Exec, (NsHandle *) &MethodEntry);
 
     if (Status != AE_OK)
     {
@@ -339,9 +268,9 @@ NsEvaluateByName (char *Pathname, OBJECT_DESCRIPTOR *ReturnObject,
      */
 
     DEBUG_PRINT (ACPI_INFO, ("[%s Method %p Value %p\n",
-                                Pathname, MethodNte, MethodNte->Value));
+                                Pathname, MethodEntry, MethodEntry->Value));
 
-    Status = NsEvaluateByHandle ((NsHandle *) MethodNte, ReturnObject, Params);
+    Status = NsEvaluateByHandle (MethodEntry, ReturnObject, Params);
 
     DEBUG_PRINT (ACPI_INFO, ("*** Completed execution of method %s ***\n",
                                 Pathname));
@@ -351,12 +280,11 @@ NsEvaluateByName (char *Pathname, OBJECT_DESCRIPTOR *ReturnObject,
 }
 
 
-
 /****************************************************************************
  *
  * FUNCTION:    NsEvaluateByHandle
  *
- * PARAMETERS:  Handle              - Handle of method to execute
+ * PARAMETERS:  ObjEntry            - NTE of method to execute
  *              *ReturnObject       - Where to put method's return value (if 
  *                                    any).  If NULL, no value is returned.
  *              **Params            - List of parameters to pass to
@@ -367,16 +295,15 @@ NsEvaluateByName (char *Pathname, OBJECT_DESCRIPTOR *ReturnObject,
  *
  * RETURN:      Status
  *
- * DESCRIPTION: Find and execute the requested method passing the given
- *              parameters
+ * DESCRIPTION: Execute the requested method passing the given parameters
  *
  ****************************************************************************/
 
 ACPI_STATUS
-NsEvaluateByHandle (NsHandle Handle, OBJECT_DESCRIPTOR *ReturnObject,
+NsEvaluateByHandle (NAME_TABLE_ENTRY *ObjEntry, OBJECT_DESCRIPTOR *ReturnObject,
                             OBJECT_DESCRIPTOR **Params)
 {
-    nte                 *MethodNte;
+    NAME_TABLE_ENTRY    *MethodEntry;
     ACPI_STATUS         Status = AE_ERROR;
 
 
@@ -397,7 +324,7 @@ NsEvaluateByHandle (NsHandle Handle, OBJECT_DESCRIPTOR *ReturnObject,
         return AE_NO_NAMESPACE;
     }
 
-    if (!Handle)
+    if (!ObjEntry)
     {
         FUNCTION_EXIT;
         return AE_BAD_PARAMETER;
@@ -417,19 +344,18 @@ NsEvaluateByHandle (NsHandle Handle, OBJECT_DESCRIPTOR *ReturnObject,
      * 2) The object is not a method -- just return it's current value
      */
 
-    MethodNte = (nte *) Handle;
-    if (NsGetType (MethodNte) == TYPE_Method)
+    if (NsGetType (MethodEntry) == TYPE_Method)
     {
         /* Case 1) We have an actual control method to execute */
 
-        Status = NsExecuteControlMethod (MethodNte, Params);
+        Status = NsExecuteControlMethod (ObjEntry, Params);
     }
 
     else
     {
         /* Case 2) Object is NOT a method, just return its current value */
     
-        Status = NsGetObjectValue (MethodNte);
+        Status = NsGetObjectValue (ObjEntry);
     }
 
 
@@ -473,12 +399,11 @@ NsEvaluateByHandle (NsHandle Handle, OBJECT_DESCRIPTOR *ReturnObject,
 }
 
 
-
 /****************************************************************************
  *
  * FUNCTION:    NsExecuteControlMethod
  *
- * PARAMETERS:  MethodNte           - The Nte of the object/method
+ * PARAMETERS:  MethodEntry         - The Nte of the object/method
  *              **Params            - List of parameters to pass to
  *                                    method, terminated by NULL.
  *                                    Params itself may be NULL
@@ -492,7 +417,7 @@ NsEvaluateByHandle (NsHandle Handle, OBJECT_DESCRIPTOR *ReturnObject,
  ****************************************************************************/
 
 ACPI_STATUS
-NsExecuteControlMethod (nte *MethodNte, OBJECT_DESCRIPTOR **Params)
+NsExecuteControlMethod (NAME_TABLE_ENTRY *MethodEntry, OBJECT_DESCRIPTOR **Params)
 {
     ACPI_STATUS         Status;
 
@@ -502,7 +427,7 @@ NsExecuteControlMethod (nte *MethodNte, OBJECT_DESCRIPTOR **Params)
 
     /* Verify that there is a method associated with this object */
 
-    if (!MethodNte->Value)
+    if (!MethodEntry->Value)
     {
         DEBUG_PRINT (ACPI_ERROR, ("Method is undefined\n"));
         FUNCTION_EXIT;
@@ -515,10 +440,10 @@ NsExecuteControlMethod (nte *MethodNte, OBJECT_DESCRIPTOR **Params)
 
     DEBUG_PRINT (ACPI_INFO,
                 ("Control method at Offset %x Length %lx]\n",
-                ((meth *) MethodNte->Value)->Offset + 1,
-                ((meth *) MethodNte->Value)->Length - 1));
+                ((METHOD_INFO *) MethodEntry->Value)->Offset + 1,
+                ((METHOD_INFO *) MethodEntry->Value)->Length - 1));
 
-    NsDumpPathname (MethodNte->Scope, "NsEvaluateByHandle: Setting scope to", 
+    NsDumpPathname (MethodEntry->Scope, "NsEvaluateByHandle: Setting scope to", 
                     TRACE_NAMES, _COMPONENT);
 
     /* Reset the current scope to the beginning of scope stack */
@@ -527,13 +452,13 @@ NsExecuteControlMethod (nte *MethodNte, OBJECT_DESCRIPTOR **Params)
 
     /* Push current scope on scope stack and make Method->Scope current  */
 
-    NsPushCurrentScope (MethodNte->Scope, TYPE_Method);
+    NsPushCurrentScope (MethodEntry->Scope, TYPE_Method);
 
-    NsDumpPathname (MethodNte, "NsEvaluateByHandle: Executing", 
+    NsDumpPathname (MethodEntry, "NsEvaluateByHandle: Executing", 
                     TRACE_NAMES, _COMPONENT);
 
     DEBUG_PRINT (TRACE_NAMES, ("At offset %8XH\n",
-                      ((meth *) MethodNte->Value)->Offset + 1));
+                      ((METHOD_INFO *) MethodEntry->Value)->Offset + 1));
 
     AmlClearPkgStack ();
     ObjStackTop = 0;    /* Clear object stack */
@@ -543,8 +468,8 @@ NsExecuteControlMethod (nte *MethodNte, OBJECT_DESCRIPTOR **Params)
      * Excecute the method via the interpreter
      */
     Status = AmlExecuteMethod (
-                     ((meth *) MethodNte->Value)->Offset + 1,
-                     ((meth *) MethodNte->Value)->Length - 1,
+                     ((METHOD_INFO *) MethodEntry->Value)->Offset + 1,
+                     ((METHOD_INFO *) MethodEntry->Value)->Length - 1,
                      Params);
 
     if (AmlPackageNested ())
@@ -574,12 +499,11 @@ NsExecuteControlMethod (nte *MethodNte, OBJECT_DESCRIPTOR **Params)
 }
 
 
-
 /****************************************************************************
  *
  * FUNCTION:    NsGetObjectValue
  *
- * PARAMETERS:  ObjectNte           - The Nte of the object
+ * PARAMETERS:  ObjectEntry         - The Nte of the object
  *              **Params            - List of parameters to pass to
  *                                    method, terminated by NULL.
  *                                    Params itself may be NULL
@@ -593,7 +517,7 @@ NsExecuteControlMethod (nte *MethodNte, OBJECT_DESCRIPTOR **Params)
  ****************************************************************************/
 
 ACPI_STATUS
-NsGetObjectValue (nte *ObjectNte)
+NsGetObjectValue (NAME_TABLE_ENTRY *ObjectEntry)
 {
     ACPI_STATUS             Status;
     OBJECT_DESCRIPTOR       *ObjDesc;
@@ -615,7 +539,7 @@ NsGetObjectValue (nte *ObjectNte)
 
     ObjDesc->Lvalue.ValType = (UINT8) TYPE_Lvalue;
     ObjDesc->Lvalue.OpCode  = (UINT8) AML_NameOp;
-    ObjDesc->Lvalue.Ref     = (void *) ObjectNte;
+    ObjDesc->Lvalue.Ref     = (void *) ObjectEntry;
 
 
     /* 
