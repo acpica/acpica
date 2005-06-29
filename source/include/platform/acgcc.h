@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acgcc.h - GCC specific defines, etc.
- *       $Revision: 1.9 $
+ *       $Revision: 1.10 $
  *
  *****************************************************************************/
 
@@ -185,6 +185,7 @@
 
 
 #else /* DO IA32 */
+
 #define COMPILER_DEPENDENT_UINT64   unsigned long long
 #define ACPI_ASM_MACROS
 #define causeinterrupt(level)
@@ -230,6 +231,21 @@
             "andl   $0x1,%%eax" \
             :"=a"(Acq),"=c"(dummy):"c"(GLptr),"i"(~3L):"dx"); \
     } while(0)
+
+
+/*
+ * Math helper asm macros
+ */
+#define ACPI_DIV_64_BY_32(n_hi, n_lo, d32, q32, r32) \
+		asm("divl %2;"            \
+		:"=a"(q32), "=d"(r32) \
+		:"r"(d32), \
+		"0"(n_hi), "1"(n_lo));
+
+
+#define ACPI_SHIFT_RIGHT_64(n_hi, n_lo) \
+        asm("shrl   $1,%1;"          \
+            "rcrl   $1,%2;");
 
 /*! [End] no source code translation !*/
 
