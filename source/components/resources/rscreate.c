@@ -579,8 +579,8 @@ AcpiRsCreateByteStream (
      */
     Status = AcpiRsCalculateByteStreamLength (LinkedListBuffer, &ByteStreamSizeNeeded);
 
-    DEBUG_PRINT (VERBOSE_INFO, ("RsCreateByteStream: Status = %d; ByteStreamSizeNeeded = %d\n",
-                    Status, ByteStreamSizeNeeded));
+    DEBUG_PRINT (VERBOSE_INFO, ("RsCreateByteStream: ByteStreamSizeNeeded=%d, %s\n",
+                    ByteStreamSizeNeeded, AcpiCmFormatException (Status)));
 
     /*
      * Exit with the error passed back
