@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: evxface - External interfaces for ACPI events
- *              $Revision: 1.99 $
+ *              $Revision: 1.100 $
  *
  *****************************************************************************/
 
@@ -490,7 +490,7 @@ AcpiRemoveNotifyHandler (
      * Root Object:
      * ------------
      */
-    if (device == ACPI_ROOT_OBJECT) {
+    if (Device == ACPI_ROOT_OBJECT) {
 
         DEBUG_PRINT(ACPI_INFO, ("Removing notify handler for ROOT object.\n"));
 
@@ -499,8 +499,8 @@ AcpiRemoveNotifyHandler (
 			((HandlerType == ACPI_DEVICE_NOTIFY) &&
 			  !AcpiGbl_DrvNotify.Handler))
 		{
-			status = AE_NOT_EXIST;
-            goto unlock_and_exit;
+			Status = AE_NOT_EXIST;
+            goto UnlockAndExit;
 		}
 
 		if (HandlerType == ACPI_SYSTEM_NOTIFY) {
