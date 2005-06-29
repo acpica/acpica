@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslmap - parser to AML opcode mapping table
- *              $Revision: 1.1 $
+ *              $Revision: 1.2 $
  *
  *****************************************************************************/
 
@@ -178,7 +178,7 @@ ASL_MAPPING_ENTRY AslKeywordMapping [] =
 /* BUFF */                      OP_TABLE_ENTRY (AML_BUFF_OP,                0, 0),
 /* BUFFER */                    OP_TABLE_ENTRY (AML_BUFFER_OP,              0,                  NODE_AML_PACKAGE),
 /* BYTECONST */                 OP_TABLE_ENTRY (AML_RAW_DATA_BYTE,          0, 0),
-/* CASE */                      OP_TABLE_ENTRY (AML_CASE_OP,                0, 0),
+/* CASE */                      OP_TABLE_ENTRY (AML_DEFAULT_ARG_OP,         0, 0),
 /* CONCATENATE */               OP_TABLE_ENTRY (AML_CONCAT_OP,              0, 0),
 /* CONCATENATERESTEMPLATE */    OP_TABLE_ENTRY (AML_CONCAT_TPL_OP,          0, 0),
 /* CONDREFOF */                 OP_TABLE_ENTRY (AML_COND_REF_OF_OP,         0, 0),
@@ -194,7 +194,7 @@ ASL_MAPPING_ENTRY AslKeywordMapping [] =
 /* DEBUG */                     OP_TABLE_ENTRY (AML_DEBUG_OP,               0, 0),
 /* DECREMENT */                 OP_TABLE_ENTRY (AML_DECREMENT_OP,           0, 0),
 /* DECSTR */                    OP_TABLE_ENTRY (AML_DEC_STR_OP,             0, 0),
-/* DEFAULT */                   OP_TABLE_ENTRY (AML_DEFAULT_OP,             0, 0),
+/* DEFAULT */                   OP_TABLE_ENTRY (AML_DEFAULT_ARG_OP,         0, 0),
 /* DEFAULT_ARG */               OP_TABLE_ENTRY (AML_DEFAULT_ARG_OP,         0, 0),
 /* DEFINITIONBLOCK */           OP_TABLE_ENTRY (AML_DEFAULT_ARG_OP,         0, 0),
 /* DEREFOF */                   OP_TABLE_ENTRY (AML_DEREF_OF_OP,            0, 0),
@@ -206,7 +206,7 @@ ASL_MAPPING_ENTRY AslKeywordMapping [] =
 /* DWORDMEMORY */               OP_TABLE_ENTRY (AML_DEFAULT_ARG_OP,         0, 0),
 /* EISAID */                    OP_TABLE_ENTRY (AML_DWORD_OP,               0, 0),
 /* ELSE */                      OP_TABLE_ENTRY (AML_ELSE_OP,                0,                  NODE_AML_PACKAGE),
-/* ELSEIF */                    OP_TABLE_ENTRY (AML_ELSEIF_OP,              0,                  NODE_AML_PACKAGE),
+/* ELSEIF */                    OP_TABLE_ENTRY (AML_DEFAULT_ARG_OP,         0,                  NODE_AML_PACKAGE),
 /* ENDDEPENDENTFN */            OP_TABLE_ENTRY (AML_DEFAULT_ARG_OP,         0, 0),
 /* EVENT */                     OP_TABLE_ENTRY (AML_EVENT_OP,               0, 0),
 /* EXTERNAL */                  OP_TABLE_ENTRY (AML_DEFAULT_ARG_OP,         0, 0),
@@ -215,7 +215,7 @@ ASL_MAPPING_ENTRY AslKeywordMapping [] =
 /* FINDSETLEFTBIT */            OP_TABLE_ENTRY (AML_FIND_SET_LEFT_BIT_OP,   0, 0),
 /* FINDSETRIGHTBIT */           OP_TABLE_ENTRY (AML_FIND_SET_LEFT_BIT_OP,   0, 0),
 /* FROMBCD */                   OP_TABLE_ENTRY (AML_FROM_BCD_OP,            0, 0),
-/* HEXSTR */                    OP_TABLE_ENTRY (AML_HEXSTR_OP,              0, 0),
+/* HEXSTR */                    OP_TABLE_ENTRY (AML_HEX_STR_OP,             0, 0),
 /* IF */                        OP_TABLE_ENTRY (AML_IF_OP,                  0,                  NODE_AML_PACKAGE),
 /* INCLUDE */                   OP_TABLE_ENTRY (AML_DEFAULT_ARG_OP,         0, 0),
 /* INCREMENT */                 OP_TABLE_ENTRY (AML_INCREMENT_OP,           0, 0),
@@ -328,7 +328,7 @@ ASL_MAPPING_ENTRY AslKeywordMapping [] =
 /* STRING */                    OP_TABLE_ENTRY (AML_STRING_OP,              0, 0),
 /* STRING_LITERAL */            OP_TABLE_ENTRY (AML_STRING_OP,              0, 0),
 /* SUBTRACT */                  OP_TABLE_ENTRY (AML_SUBTRACT_OP,            0, 0),
-/* SWITCH */                    OP_TABLE_ENTRY (AML_SWITCH_OP,              0, 0),
+/* SWITCH */                    OP_TABLE_ENTRY (AML_DEFAULT_ARG_OP,         0, 0),
 /* THERMALZONE */               OP_TABLE_ENTRY (AML_THERMAL_ZONE_OP,        0,                  NODE_AML_PACKAGE),
 /* TOBCD */                     OP_TABLE_ENTRY (AML_TO_BCD_OP,              0, 0),
 /* UNICODE */                   OP_TABLE_ENTRY (AML_BYTE_OP,                0, 0),
