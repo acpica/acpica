@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dbcmds - debug commands and output routines
- *              $Revision: 1.57 $
+ *              $Revision: 1.58 $
  *
  ******************************************************************************/
 
@@ -1088,7 +1088,7 @@ GoCRS:
         goto GoPRS;
     }
 
-    AcpiRsDumpResourceList((RESOURCE *)Buffer);
+    AcpiRsDumpResourceList ((ACPI_RESOURCE *) Buffer);
 
     /* _PRS */
 GoPRS:
@@ -1114,7 +1114,7 @@ GoPRS:
         goto Cleanup;
     }
 
-    AcpiRsDumpResourceList((RESOURCE *)Buffer);
+    AcpiRsDumpResourceList ((ACPI_RESOURCE *) Buffer);
 
 
 Cleanup:
