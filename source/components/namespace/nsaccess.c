@@ -354,8 +354,8 @@ NsLookup (
     char                    *Pathname, 
     OBJECT_TYPE_INTERNAL    Type, 
     OPERATING_MODE          InterpreterMode,
-	UINT32					Flags,
-    ACPI_WALK_STATE			*WalkState,
+    UINT32                  Flags,
+    ACPI_WALK_STATE         *WalkState,
     NAME_TABLE_ENTRY        **RetEntry)
 {
     ACPI_STATUS             Status;

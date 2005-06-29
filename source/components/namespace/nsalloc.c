@@ -170,36 +170,213 @@ NsAllocateNameTable (
 
     DEBUG_PRINT (TRACE_EXEC, ("NsAllocateNameTable: NameTable=%p\n", NameTable));
 
-    return_VALUE (NameTable);
+    return_PTR (NameTable);
 }
 
 
 /****************************************************************************
  *
- * FUNCTION:    NsDeleteNamespace
+ * FUNCTION:    NsDeleteNamespaceSubtree
  *
  * PARAMETERS:  None.
  *
  * RETURN:      None.
  *
- * DESCRIPTION: Delete the entire namespace.  This includes all objects stored
- *              within it, as well as the actual namespace tables.
+ * DESCRIPTION: Delete a subtree of the namespace.  This includes all objects stored
+ *              within the subtree.  Scope tables are deleted also
  *
  ***************************************************************************/
 
 ACPI_STATUS
-NsDeleteNamespace (void)
+NsDeleteNamespaceSubtree (
+    NAME_TABLE_ENTRY        *ParentHandle)
 {
-    ACPI_HANDLE             ChildHandle;
-    ACPI_HANDLE             ParentHandle;
-    ACPI_HANDLE             Dummy;
+    NAME_TABLE_ENTRY        *ChildHandle;
     UINT32                  Level;
+    ACPI_OBJECT_INTERNAL    *ObjDesc;
 
 
-    FUNCTION_TRACE ("NsDeleteNamespace");
+    FUNCTION_TRACE ("NsDeleteNamespaceSubtree");
 
 
-    /* Begin deletion walk at the root object */
+
+    ChildHandle     = 0;
+    Level           = 1;
+
+    /* 
+     * Traverse the tree of objects until we bubble back up 
+     * to where we started.
+     */
+
+    while (Level > 0)
+    {
+        /* Get the next typed object in this scope.  Null returned if not found */
+
+        ChildHandle = NsGetNextObject (ACPI_TYPE_Any, ParentHandle, ChildHandle);
+        if (ChildHandle)
+        {
+            /* Found an object - delete the object within the Value field */
+
+            ObjDesc = NsGetAttachedObject (ChildHandle);
+            if (ObjDesc)
+            {
+                NsDetachObject (ChildHandle);
+                CmRemoveReference (ObjDesc);
+            }
+
+
+            /* Clear the NTE in case this scope is reused (e.g., a control method scope) */
+
+            ChildHandle->Type = ACPI_TYPE_Any;
+            ChildHandle->Name = 0;
+
+            /* Check if this object has any children */
+
+            if (NsGetNextObject (ACPI_TYPE_Any, ChildHandle, 0))
+            {
+                /* There is at least one child of this object, visit the object */
+
+                Level++;
+                ParentHandle    = ChildHandle;
+                ChildHandle     = 0;
+            }
+
+            else
+            {
+                /* There may be a name table even if there are no children */
+
+                NsDeleteScope (((NAME_TABLE_ENTRY *) ChildHandle)->Scope);
+                ((NAME_TABLE_ENTRY *) ChildHandle)->Scope = NULL;
+
+            }
+        }
+
+        else
+        {
+            /* 
+             * No more children in this object.  
+             * We will move up to the grandparent.
+             */
+            Level--;
+
+            /* Delete the scope (Name Table) associated with the parent object */
+            /* Don't delete the top level scope, this allows the dynamic deletion of
+             * objects created underneath control methods!
+             */
+
+            if (Level != 0)
+            {
+                NsDeleteScope (((NAME_TABLE_ENTRY *) ParentHandle)->Scope);
+                ((NAME_TABLE_ENTRY *) ParentHandle)->Scope = NULL;
+            }
+
+            /* New "last child" is this parent object */
+
+            ChildHandle = ParentHandle;
+
+            /* Now we can move up the tree to the grandparent */
+
+            ParentHandle = ParentHandle->ParentEntry;
+        }
+    }
+
+
+    return_ACPI_STATUS (AE_OK); 
+}
+
+
+
+
+/****************************************************************************
+ *
+ * FUNCTION:    NsRemoveReference
+ *
+ * PARAMETERS:  Entry           - NTE whose reference count is to be decremented
+ *
+ * RETURN:      None.
+ *
+ * DESCRIPTION: Remove an NTE reference.  Decrements the reference count of
+ *              all parent NTEs up to the root.  Any NTE along the way that
+ *              reaches zero references is freed.
+ *
+ ***************************************************************************/
+
+void
+NsRemoveReference (
+    NAME_TABLE_ENTRY        *Entry)
+{
+    NAME_TABLE_ENTRY        *ThisEntry;
+
+
+    /* There may be a name table even if there are no children */
+
+    NsDeleteScope (Entry->Scope);
+    Entry->Scope = NULL;
+
+
+    /* 
+     * Decrement the reference count(s) of all parents up to the root,
+     * And delete anything with zero remaining references.
+     */
+    ThisEntry = Entry;
+    while (ThisEntry)
+    {
+        /* Decrement the reference */
+
+        ThisEntry->ReferenceCount--;
+
+        /* Delete entry if no more references */
+
+        if (!ThisEntry->ReferenceCount)
+        {
+            /* Delete the scope if present */
+
+            if (ThisEntry->Scope)
+            {
+                NsDeleteScope (ThisEntry->Scope);
+                ThisEntry->Scope = NULL;
+            }
+
+            /* Mark the entry free  (This doesn't deallocate anything) */
+
+            NsFreeTableEntry (ThisEntry);
+
+        }
+
+        /* Move up to parent */
+
+        ThisEntry = ThisEntry->ParentEntry;
+    }
+}
+
+
+
+/****************************************************************************
+ *
+ * FUNCTION:    NsDeleteNamespaceByOwner
+ *
+ * PARAMETERS:  None.
+ *
+ * RETURN:      None.
+ *
+ * DESCRIPTION: Delete entries within the namespace that are owned by a
+ *              specific ID.  Used to delete entire ACPI tables.  All
+ *              reference counts are updated.
+ *
+ ***************************************************************************/
+
+ACPI_STATUS
+NsDeleteNamespaceByOwner (
+    UINT16                  OwnerId)
+{
+    NAME_TABLE_ENTRY        *ChildHandle;
+    UINT32                  Level;
+    ACPI_OBJECT_INTERNAL    *ObjDesc;
+    NAME_TABLE_ENTRY        *ParentHandle;
+
+
+    FUNCTION_TRACE ("NsDeleteNamespaceSubtree");
+
 
     ParentHandle    = Gbl_RootObject;
     ChildHandle     = 0;
@@ -214,15 +391,24 @@ NsDeleteNamespace (void)
     {
         /* Get the next typed object in this scope.  Null returned if not found */
 
-        if (ACPI_SUCCESS (AcpiGetNextObject (ACPI_TYPE_Any, ParentHandle, ChildHandle, &ChildHandle)))
+        ChildHandle = NsGetNextObject (ACPI_TYPE_Any, ParentHandle, ChildHandle);
+        if (ChildHandle)
         {
-            /* Found an object - delete the object within the Value field */
+            if (ChildHandle->OwnerId == OwnerId)
+            {
+                /* Found an object - delete the object within the Value field */
 
-            NsDetachObject (ChildHandle);
+                ObjDesc = NsGetAttachedObject (ChildHandle);
+                if (ObjDesc)
+                {
+                    NsDetachObject (ChildHandle);
+                    CmRemoveReference (ObjDesc);
+                }
+            }
 
             /* Check if this object has any children */
 
-            if (ACPI_SUCCESS (AcpiGetNextObject (ACPI_TYPE_Any, ChildHandle, 0, &Dummy)))
+            if (NsGetNextObject (ACPI_TYPE_Any, ChildHandle, 0))
             {
                 /* There is at least one child of this object, visit the object */
 
@@ -231,12 +417,9 @@ NsDeleteNamespace (void)
                 ChildHandle     = 0;
             }
 
-            else
+            else if (ChildHandle->OwnerId == OwnerId)
             {
-                /* There may be a name table even if there are no children */
-
-                NsDeleteScope (((NAME_TABLE_ENTRY *) ChildHandle)->Scope);
-
+                NsRemoveReference (ChildHandle);
             }
         }
 
@@ -249,8 +432,18 @@ NsDeleteNamespace (void)
             Level--;
 
             /* Delete the scope (Name Table) associated with the parent object */
+            /* Don't delete the top level scope, this allows the dynamic deletion of
+             * objects created underneath control methods!
+             */
 
-            NsDeleteScope (((NAME_TABLE_ENTRY *) ParentHandle)->Scope);
+            if (Level != 0)
+            {
+                if (ParentHandle->OwnerId == OwnerId)
+                {
+                    NsRemoveReference (ParentHandle);
+                }
+            }
+
 
             /* New "last child" is this parent object */
 
@@ -258,16 +451,10 @@ NsDeleteNamespace (void)
 
             /* Now we can move up the tree to the grandparent */
 
-            AcpiGetParent (ParentHandle, &ParentHandle);
+            ParentHandle = ParentHandle->ParentEntry;
         }
     }
 
-    /* Detach any object(s) attached to the root */
-    
-    NsDetachObject (Gbl_RootObject);
-    Gbl_RootObject->Scope = NULL;
-
-    REPORT_SUCCESS ("Entire namespace and objects deleted");
 
     return_ACPI_STATUS (AE_OK); 
 }
@@ -294,8 +481,8 @@ NsDeleteScope (
     char                    *AllocatedTable;
 
 
-	FUNCTION_TRACE ("NsDeleteScope");
-    DEBUG_PRINT (ACPI_INFO, ("NsDeleteScope: Deleting Scope %p \n", Scope));
+    FUNCTION_TRACE_PTR ("NsDeleteScope", Scope);
+
 
     if (!Scope)
     {
@@ -315,7 +502,7 @@ NsDeleteScope (
          * and get the next appendage pointer.  This ptr is null at end-of-list.
          */
 
-        AllocatedTable =  (((UINT8 *) ThisTable) - sizeof (NAME_TABLE_ENTRY *));
+        AllocatedTable =  (((char *) ThisTable) - sizeof (NAME_TABLE_ENTRY *));
         ThisTable = NEXTSEG (ThisTable);
 
         DEBUG_PRINT (ACPI_INFO, ("NsDeleteScope: Deleting Name Table at %p \n", AllocatedTable));
