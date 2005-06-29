@@ -197,7 +197,7 @@ NsSetup (void)
         {
             /* Entry requests an initial value, allocate a descriptor for it. */
             
-            OBJECT_DESCRIPTOR       *ObjDesc = AllocateObjectDesc (&KDT[1]);
+            ACPI_OBJECT             *ObjDesc = AllocateObjectDesc (&KDT[1]);
 
             if (!ObjDesc)
             {
@@ -284,7 +284,7 @@ NsSetup (void)
  ***************************************************************************/
 
 ACPI_STATUS
-NsEnter (char *Name, NsType Type, OpMode LoadMode, NAME_TABLE_ENTRY **RetEntry)
+NsEnter (char *Name, ACPI_OBJECT_TYPE Type, OPERATING_MODE LoadMode, NAME_TABLE_ENTRY **RetEntry)
 {
     ACPI_STATUS         Status;
     NAME_TABLE_ENTRY    *EntryToSearch = NULL;
@@ -292,7 +292,7 @@ NsEnter (char *Name, NsType Type, OpMode LoadMode, NAME_TABLE_ENTRY **RetEntry)
     NAME_TABLE_ENTRY    *ScopeToPush = NULL;
     INT32               NumSegments;
     INT32               NullNamePath = FALSE;
-    NsType              TypeToCheckFor;              /* Type To Check For */
+    ACPI_OBJECT_TYPE    TypeToCheckFor;              /* Type To Check For */
 
 
     FUNCTION_TRACE ("NsEnter");
