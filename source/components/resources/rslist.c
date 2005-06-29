@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: rslist - Linked list utilities
- *              $Revision: 1.36 $
+ *              $Revision: 1.37 $
  *
  ******************************************************************************/
 
@@ -571,7 +571,8 @@ AcpiRsListToByteStream (
              * If we get here, everything is out of sync,
              *  so exit with an error
              */
-            ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Invalid descriptor type (%X) in resource list\n",
+            ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, 
+                "Invalid descriptor type (%X) in resource list\n",
                 LinkedList->Id));
             Status = AE_BAD_DATA;
             break;

@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: rsaddr - Address resource descriptors (16/32/64)
- *              $Revision: 1.37 $
+ *              $Revision: 1.38 $
  *
  ******************************************************************************/
 
@@ -267,7 +267,8 @@ AcpiRsAddress16Resource (
      * Get AddressTranslationOffset (Bytes 12-13)
      */
     Buffer += 2;
-    ACPI_MOVE_16_TO_32 (&OutputStruct->Data.Address16.AddressTranslationOffset, Buffer);
+    ACPI_MOVE_16_TO_32 (&OutputStruct->Data.Address16.AddressTranslationOffset,
+        Buffer);
 
     /*
      * Get AddressLength (Bytes 14-15)
@@ -468,7 +469,8 @@ AcpiRsAddress16Stream (
     /*
      * Set the address translation offset
      */
-    ACPI_MOVE_32_TO_16 (Buffer, &LinkedList->Data.Address16.AddressTranslationOffset);
+    ACPI_MOVE_32_TO_16 (Buffer,
+        &LinkedList->Data.Address16.AddressTranslationOffset);
     Buffer += 2;
 
     /*
@@ -499,7 +501,8 @@ AcpiRsAddress16Stream (
          * Buffer needs to be set to the length of the sting + one for the
          * terminating null
          */
-        Buffer += (ACPI_SIZE)(ACPI_STRLEN (LinkedList->Data.Address16.ResourceSource.StringPtr) + 1);
+        Buffer += (ACPI_SIZE)(ACPI_STRLEN (
+                    LinkedList->Data.Address16.ResourceSource.StringPtr) + 1);
     }
 
     /*
@@ -670,7 +673,8 @@ AcpiRsAddress32Resource (
      * Get AddressTranslationOffset (Bytes 18-21)
      */
     Buffer += 4;
-    ACPI_MOVE_32_TO_32 (&OutputStruct->Data.Address32.AddressTranslationOffset, Buffer);
+    ACPI_MOVE_32_TO_32 (&OutputStruct->Data.Address32.AddressTranslationOffset,
+        Buffer);
 
     /*
      * Get AddressLength (Bytes 22-25)
@@ -869,7 +873,8 @@ AcpiRsAddress32Stream (
     /*
      * Set the address translation offset
      */
-    ACPI_MOVE_32_TO_32 (Buffer, &LinkedList->Data.Address32.AddressTranslationOffset);
+    ACPI_MOVE_32_TO_32 (Buffer, 
+        &LinkedList->Data.Address32.AddressTranslationOffset);
     Buffer += 4;
 
     /*
@@ -900,7 +905,8 @@ AcpiRsAddress32Stream (
          * Buffer needs to be set to the length of the sting + one for the
          *  terminating null
          */
-        Buffer += (ACPI_SIZE)(ACPI_STRLEN (LinkedList->Data.Address32.ResourceSource.StringPtr) + 1);
+        Buffer += (ACPI_SIZE)(ACPI_STRLEN (
+                    LinkedList->Data.Address32.ResourceSource.StringPtr) + 1);
     }
 
     /*
@@ -1078,7 +1084,8 @@ AcpiRsAddress64Resource (
      * Get AddressTranslationOffset (Bytes 30-37) or (Bytes 32-39)
      */
     Buffer += 8;
-    ACPI_MOVE_64_TO_64 (&OutputStruct->Data.Address64.AddressTranslationOffset, Buffer);
+    ACPI_MOVE_64_TO_64 (&OutputStruct->Data.Address64.AddressTranslationOffset,
+        Buffer);
 
     /*
      * Get AddressLength (Bytes 38-45) or (Bytes 40-47)
@@ -1095,7 +1102,8 @@ AcpiRsAddress64Resource (
         /* Get TypeSpecificAttribute (Bytes 48-55) */
 
         Buffer += 8;
-        ACPI_MOVE_64_TO_64 (&OutputStruct->Data.Address64.TypeSpecificAttributes, Buffer);
+        ACPI_MOVE_64_TO_64 (&OutputStruct->Data.Address64.TypeSpecificAttributes,
+            Buffer);
     }
     else
     {
@@ -1289,7 +1297,8 @@ AcpiRsAddress64Stream (
     /*
      * Set the address translation offset
      */
-    ACPI_MOVE_64_TO_64 (Buffer, &LinkedList->Data.Address64.AddressTranslationOffset);
+    ACPI_MOVE_64_TO_64 (Buffer,
+        &LinkedList->Data.Address64.AddressTranslationOffset);
     Buffer += 8;
 
     /*
@@ -1313,13 +1322,15 @@ AcpiRsAddress64Stream (
         /*
          * Copy the string
          */
-        ACPI_STRCPY (TempPointer, LinkedList->Data.Address64.ResourceSource.StringPtr);
+        ACPI_STRCPY (TempPointer, 
+            LinkedList->Data.Address64.ResourceSource.StringPtr);
 
         /*
          * Buffer needs to be set to the length of the sting + one for the
          * terminating null
          */
-        Buffer += (ACPI_SIZE)(ACPI_STRLEN (LinkedList->Data.Address64.ResourceSource.StringPtr) + 1);
+        Buffer += (ACPI_SIZE)(ACPI_STRLEN (
+                    LinkedList->Data.Address64.ResourceSource.StringPtr) + 1);
     }
 
     /*

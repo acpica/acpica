@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: rsdump - Functions to display the resource structures.
- *              $Revision: 1.40 $
+ *              $Revision: 1.42 $
  *
  ******************************************************************************/
 
@@ -138,7 +138,7 @@
  *
  ******************************************************************************/
 
-void
+static void
 AcpiRsDumpIrq (
     ACPI_RESOURCE_DATA      *Data)
 {
@@ -152,13 +152,13 @@ AcpiRsDumpIrq (
     AcpiOsPrintf ("IRQ Resource\n");
 
     AcpiOsPrintf ("    %s Triggered\n",
-                ACPI_LEVEL_SENSITIVE == IrqData->EdgeLevel ? "Level" : "Edge");
+        ACPI_LEVEL_SENSITIVE == IrqData->EdgeLevel ? "Level" : "Edge");
 
     AcpiOsPrintf ("    Active %s\n",
-                ACPI_ACTIVE_LOW == IrqData->ActiveHighLow ? "Low" : "High");
+        ACPI_ACTIVE_LOW == IrqData->ActiveHighLow ? "Low" : "High");
 
     AcpiOsPrintf ("    %s\n",
-                ACPI_SHARED == IrqData->SharedExclusive ? "Shared" : "Exclusive");
+        ACPI_SHARED == IrqData->SharedExclusive ? "Shared" : "Exclusive");
 
     AcpiOsPrintf ("    %X Interrupts ( ", IrqData->NumberOfInterrupts);
 
@@ -184,7 +184,7 @@ AcpiRsDumpIrq (
  *
  ******************************************************************************/
 
-void
+static void
 AcpiRsDumpDma (
     ACPI_RESOURCE_DATA      *Data)
 {
@@ -267,7 +267,7 @@ AcpiRsDumpDma (
  *
  ******************************************************************************/
 
-void
+static void
 AcpiRsDumpStartDependFns (
     ACPI_RESOURCE_DATA      *Data)
 {
@@ -334,7 +334,7 @@ AcpiRsDumpStartDependFns (
  *
  ******************************************************************************/
 
-void
+static void
 AcpiRsDumpIo (
     ACPI_RESOURCE_DATA      *Data)
 {
@@ -377,7 +377,7 @@ AcpiRsDumpIo (
  *
  ******************************************************************************/
 
-void
+static void
 AcpiRsDumpFixedIo (
     ACPI_RESOURCE_DATA      *Data)
 {
@@ -410,7 +410,7 @@ AcpiRsDumpFixedIo (
  *
  ******************************************************************************/
 
-void
+static void
 AcpiRsDumpVendorSpecific (
     ACPI_RESOURCE_DATA      *Data)
 {
@@ -447,7 +447,7 @@ AcpiRsDumpVendorSpecific (
  *
  ******************************************************************************/
 
-void
+static void
 AcpiRsDumpMemory24 (
     ACPI_RESOURCE_DATA      *Data)
 {
@@ -492,7 +492,7 @@ AcpiRsDumpMemory24 (
  *
  ******************************************************************************/
 
-void
+static void
 AcpiRsDumpMemory32 (
     ACPI_RESOURCE_DATA      *Data)
 {
@@ -537,7 +537,7 @@ AcpiRsDumpMemory32 (
  *
  ******************************************************************************/
 
-void
+static void
 AcpiRsDumpFixedMemory32 (
     ACPI_RESOURCE_DATA          *Data)
 {
@@ -576,7 +576,7 @@ AcpiRsDumpFixedMemory32 (
  *
  ******************************************************************************/
 
-void
+static void
 AcpiRsDumpAddress16 (
     ACPI_RESOURCE_DATA      *Data)
 {
@@ -728,7 +728,7 @@ AcpiRsDumpAddress16 (
  *
  ******************************************************************************/
 
-void
+static void
 AcpiRsDumpAddress32 (
     ACPI_RESOURCE_DATA      *Data)
 {
@@ -807,7 +807,7 @@ AcpiRsDumpAddress32 (
             break;
         }
 
-        AcpiOsPrintf ("  Type Specific: %s Translation\n",
+        AcpiOsPrintf ("    Type Specific: %s Translation\n",
             ACPI_SPARSE_TRANSLATION ==
             Address32Data->Attribute.Io.TranslationAttribute ?
             "Sparse" : "Dense");
@@ -820,7 +820,8 @@ AcpiRsDumpAddress32 (
 
     default:
 
-        AcpiOsPrintf ("    Resource Type: 0x%2.2X\n", Address32Data->ResourceType);
+        AcpiOsPrintf ("    Resource Type: 0x%2.2X\n",
+            Address32Data->ResourceType);
         break;
     }
 
@@ -879,7 +880,7 @@ AcpiRsDumpAddress32 (
  *
  ******************************************************************************/
 
-void
+static void
 AcpiRsDumpAddress64 (
     ACPI_RESOURCE_DATA      *Data)
 {
@@ -971,7 +972,8 @@ AcpiRsDumpAddress64 (
 
     default:
 
-        AcpiOsPrintf ("    Resource Type: 0x%2.2X\n", Address64Data->ResourceType);
+        AcpiOsPrintf ("    Resource Type: 0x%2.2X\n",
+            Address64Data->ResourceType);
         break;
     }
 
@@ -1033,7 +1035,7 @@ AcpiRsDumpAddress64 (
  *
  ******************************************************************************/
 
-void
+static void
 AcpiRsDumpExtendedIrq (
     ACPI_RESOURCE_DATA      *Data)
 {
