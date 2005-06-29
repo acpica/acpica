@@ -191,7 +191,7 @@ AmlSetupField (
              * save PCode and PCodeLen on package stack
              */
 
-            Status = AmlPushExecLength (0L);
+            Status = AmlPkgPushExecLength (0L);
 
             if (AE_OK == Status)
             {   
@@ -267,7 +267,7 @@ AmlSetupField (
             {
                 /*  restore PCode and PCodeLen  */
 
-                Status = AmlPopExec ();
+                Status = AmlPkgPopExec ();
             }
         }
     }
@@ -298,7 +298,6 @@ AmlSetupField (
         }
     }
 
-    DEBUG_PRINT (TRACE_EXEC, ("Leave AmlSetupField: %s\n", ExceptionNames[Status]));
     FUNCTION_STATUS_EXIT (Status);
     return Status;
 }
@@ -351,7 +350,7 @@ AmlReadField (
     Status = AmlSetupField (ObjDesc, RgnDesc, FieldBitWidth);
     if (AE_OK != Status)
     {
-        FUNCTION_EXIT;
+        FUNCTION_STATUS_EXIT (Status);
         return Status;
     }
 
@@ -399,7 +398,7 @@ AmlReadField (
         {
             DEBUG_PRINT (ACPI_ERROR,
                     ("AmlReadField: **** Implementation limitation - SystemMemory address %08lx over 1MB\n", Address));
-            FUNCTION_EXIT;
+            FUNCTION_STATUS_EXIT (AE_AML_ERROR);
             return AE_AML_ERROR;
         }
 
@@ -432,7 +431,7 @@ AmlReadField (
             DEBUG_PRINT (ACPI_ERROR,
                     ("AmlReadField: Invalid SystemMemory width %d\n", FieldBitWidth));
             OsdUnMapMemory (PhysicalAddrPtr, 4);
-            FUNCTION_EXIT;
+            FUNCTION_STATUS_EXIT (AE_AML_ERROR);
             return AE_AML_ERROR;
         }
 
@@ -459,7 +458,7 @@ AmlReadField (
         default:
             DEBUG_PRINT (ACPI_ERROR,
                     ("AmlReadField: Invalid SystemIO width %d\n", FieldBitWidth));
-            FUNCTION_EXIT;
+            FUNCTION_STATUS_EXIT (AE_AML_ERROR);
             return AE_AML_ERROR;
         }
         break;
@@ -489,12 +488,12 @@ AmlReadField (
         default:
             DEBUG_PRINT (ACPI_ERROR,
                     ("AmlReadField: Invalid PCIConfig width %d\n", FieldBitWidth));
-            FUNCTION_EXIT;
+            FUNCTION_STATUS_EXIT (AE_AML_ERROR);
             return AE_AML_ERROR;
         }
         if (PciExcep)
         {
-            FUNCTION_EXIT;
+            FUNCTION_STATUS_EXIT (AE_AML_ERROR);
             return AE_AML_ERROR;
         }
         break;
@@ -506,13 +505,13 @@ AmlReadField (
 
         DEBUG_PRINT (ACPI_ERROR, ("AmlReadField: **** OpRegion type %s not implemented\n",
                 RegionTypes[RgnDesc->Region.SpaceId]));
-        FUNCTION_EXIT;
+        FUNCTION_STATUS_EXIT (AE_AML_ERROR);
         return AE_AML_ERROR;
 
     default:
         DEBUG_PRINT (ACPI_ERROR, ("AmlReadField: **** Unknown OpRegion SpaceID %d\n",
                 RgnDesc->Region.SpaceId));
-        FUNCTION_EXIT;
+        FUNCTION_STATUS_EXIT (AE_AML_ERROR);
         return AE_AML_ERROR;
     }
 
@@ -568,7 +567,7 @@ AmlWriteField (
     Status = AmlSetupField (ObjDesc, RgnDesc, FieldBitWidth);
     if (AE_OK != Status)
     {
-        FUNCTION_EXIT;
+        FUNCTION_STATUS_EXIT (Status);
         return Status;
     }
 
@@ -602,7 +601,7 @@ AmlWriteField (
         {
             DEBUG_PRINT (ACPI_ERROR, (
                     "AmlWriteField: Implementation limitation - SystemMemory address %08lx over 1MB\n", Address));
-            FUNCTION_EXIT;
+            FUNCTION_STATUS_EXIT (AE_AML_ERROR);
             return AE_AML_ERROR;
         }
 
@@ -776,8 +775,8 @@ AmlAccessNamedField (
             DEBUG_PRINT (ACPI_ERROR, (
                     "AmlAccessNamedField: Internal error - Name %4.4s type %d does not match value-type %d at %p\n",
                     NamedField, NsGetType (NamedField), ObjDesc->ValType, ObjDesc));
-            AmlAppendBlockOwner (ObjDesc);
         }
+
         else
         {
             Status = AE_OK;
@@ -982,7 +981,7 @@ AmlSetNamedFieldValue (
         Status = AmlAccessNamedField (ACPI_WRITE, NamedField, &Value);
     }
 
-    FUNCTION_EXIT;
+    FUNCTION_STATUS_EXIT (Status);
     return Status;
 }
 
