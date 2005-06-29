@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: cmglobal - Global variables for the ACPI subsystem
- *              $Revision: 1.105 $
+ *              $Revision: 1.106 $
  *
  *****************************************************************************/
 
@@ -630,7 +630,6 @@ AcpiCmInitGlobals (
     AcpiGbl_StartupFlags                = 0;
     AcpiGbl_GlobalLockSet               = FALSE;
     AcpiGbl_RsdpOriginalLocation        = 0;
-    AcpiGbl_WhenToParseMethods          = METHOD_PARSE_CONFIGURATION;
     AcpiGbl_CmSingleStep                = FALSE;
     AcpiGbl_DbTerminateThreads          = FALSE;
     AcpiGbl_Shutdown                    = FALSE;
@@ -668,10 +667,6 @@ AcpiCmInitGlobals (
     AcpiGbl_WalkStateCacheRequests      = 0;
     AcpiGbl_WalkStateCacheHits          = 0;
 
-    /* Interpreter */
-
-    AcpiGbl_BufSeq                      = 0;
-    AcpiGbl_NodeErr                     = FALSE;
 
     /* Parser */
 
