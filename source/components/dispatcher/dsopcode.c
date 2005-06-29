@@ -2,7 +2,7 @@
  *
  * Module Name: dsopcode - Dispatcher Op Region support and handling of
  *                         "control" opcodes
- *              $Revision: 1.58 $
+ *              $Revision: 1.59 $
  *
  *****************************************************************************/
 
@@ -380,7 +380,6 @@ AcpiDsGetRegionArguments (
     RegionOp = Op->Value.Arg;
     Op->Node = Node;
 
-
     RegionOp = Op->Value.Arg;
     RegionOp->Node = Node;
     AcpiPsDeleteParseTree (Op);
@@ -460,21 +459,6 @@ AcpiDsInitializeRegion (
  * DESCRIPTION: Get BufferField Buffer and Index
  *              Called from AcpiDsExecEndOp during BufferField parse tree walk
  *
- * ACPI SPECIFICATION REFERENCES:
- *  Each of the Buffer Field opcodes is defined as specified in in-line
- *  comments below. For each one, use the following definitions.
- *
- *  DefBitField     :=  BitFieldOp      SrcBuf  BitIdx  Destination
- *  DefByteField    :=  ByteFieldOp     SrcBuf  ByteIdx Destination
- *  DefCreateField  :=  CreateFieldOp   SrcBuf  BitIdx  NumBits  NameString
- *  DefDWordField   :=  DWordFieldOp    SrcBuf  ByteIdx Destination
- *  DefWordField    :=  WordFieldOp     SrcBuf  ByteIdx Destination
- *  BitIndex        :=  TermArg=>Integer
- *  ByteIndex       :=  TermArg=>Integer
- *  Destination     :=  NameString
- *  NumBits         :=  TermArg=>Integer
- *  SourceBuf       :=  TermArg=>Buffer
- *
  ****************************************************************************/
 
 ACPI_STATUS
@@ -523,7 +507,6 @@ AcpiDsEvalBufferFieldOperands (
         return_ACPI_STATUS (AE_NOT_EXIST);
     }
 
-
     /* Resolve the operands */
 
     Status = AcpiExResolveOperands (Op->Opcode, WALK_OPERANDS, WalkState);
@@ -552,10 +535,7 @@ AcpiDsEvalBufferFieldOperands (
 
     OffDesc = WalkState->Operands[1];
     SrcDesc = WalkState->Operands[0];
-
-
-
-    Offset = (UINT32) OffDesc->Integer.Value;
+    Offset  = (UINT32) OffDesc->Integer.Value;
 
     /*
      * If ResDesc is a Name, it will be a direct name pointer after
@@ -576,8 +556,6 @@ AcpiDsEvalBufferFieldOperands (
     switch (Op->Opcode)
     {
 
-    /* DefCreateField   */
-
     case AML_CREATE_FIELD_OP:
 
         /* Offset is in bits, count is in bits */
@@ -586,9 +564,6 @@ AcpiDsEvalBufferFieldOperands (
         BitCount    = (UINT32) CntDesc->Integer.Value;
         FieldFlags  = ACCESS_BYTE_ACC;
         break;
-
-
-    /* DefCreateBitField */
 
     case AML_CREATE_BIT_FIELD_OP:
 
@@ -599,9 +574,6 @@ AcpiDsEvalBufferFieldOperands (
         FieldFlags  = ACCESS_BYTE_ACC;
         break;
 
-
-    /* DefCreateByteField */
-
     case AML_CREATE_BYTE_FIELD_OP:
 
         /* Offset is in bytes, field is one byte */
@@ -610,9 +582,6 @@ AcpiDsEvalBufferFieldOperands (
         BitCount    = 8;
         FieldFlags  = ACCESS_BYTE_ACC;
         break;
-
-
-    /* DefCreateWordField  */
 
     case AML_CREATE_WORD_FIELD_OP:
 
@@ -623,9 +592,6 @@ AcpiDsEvalBufferFieldOperands (
         FieldFlags  = ACCESS_WORD_ACC;
         break;
 
-
-    /* DefCreateDWordField */
-
     case AML_CREATE_DWORD_FIELD_OP:
 
         /* Offset is in bytes, field is one dword */
@@ -634,9 +600,6 @@ AcpiDsEvalBufferFieldOperands (
         BitCount    = 32;
         FieldFlags  = ACCESS_DWORD_ACC;
         break;
-
-
-    /* DefCreateQWordField */
 
     case AML_CREATE_QWORD_FIELD_OP:
 
@@ -647,7 +610,6 @@ AcpiDsEvalBufferFieldOperands (
         FieldFlags  = ACCESS_QWORD_ACC;
         break;
 
-
     default:
 
         ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
@@ -656,7 +618,6 @@ AcpiDsEvalBufferFieldOperands (
         Status = AE_AML_BAD_OPCODE;
         goto Cleanup;
     }
-
 
     /*
      * Setup field according to the object type
@@ -678,7 +639,6 @@ AcpiDsEvalBufferFieldOperands (
             goto Cleanup;
         }
 
-
         /*
          * Initialize areas of the field object that are common to all fields
          * For FieldFlags, use LOCK_RULE = 0 (NO_LOCK), UPDATE_RULE = 0 (UPDATE_PRESERVE)
@@ -696,7 +656,6 @@ AcpiDsEvalBufferFieldOperands (
 
         SrcDesc->Common.ReferenceCount = (UINT16) (SrcDesc->Common.ReferenceCount +
                                                    ObjDesc->Common.ReferenceCount);
-
         break;
 
 
@@ -919,7 +878,6 @@ AcpiDsExecBeginControlOp (
                     /*AcpiPsPkgLengthEncodingSize (GET8 (WalkState->ParserState->Aml));*/
         break;
 
-
     case AML_ELSE_OP:
 
         /* Predicate is in the state object */
@@ -932,11 +890,9 @@ AcpiDsExecBeginControlOp (
 
         break;
 
-
     case AML_RETURN_OP:
 
         break;
-
 
     default:
         break;
@@ -957,7 +913,6 @@ AcpiDsExecBeginControlOp (
  *
  * DESCRIPTION: Handles all control ops encountered during control method
  *              execution.
- *
  *
  ******************************************************************************/
 
@@ -1077,11 +1032,11 @@ AcpiDsExecEndControlOp (
                 ((WalkState->Results->Results.ObjDesc [0])->Common.Type == INTERNAL_TYPE_REFERENCE) &&
                 ((WalkState->Results->Results.ObjDesc [0])->Reference.Opcode != AML_INDEX_OP))
             {
-                    Status = AcpiExResolveToValue (&WalkState->Results->Results.ObjDesc [0], WalkState);
-                    if (ACPI_FAILURE (Status))
-                    {
-                        return (Status);
-                    }
+                Status = AcpiExResolveToValue (&WalkState->Results->Results.ObjDesc [0], WalkState);
+                if (ACPI_FAILURE (Status))
+                {
+                    return (Status);
+                }
             }
 
             WalkState->ReturnDesc = WalkState->Results->Results.ObjDesc [0];
@@ -1165,7 +1120,6 @@ AcpiDsExecEndControlOp (
         Status = AE_AML_BAD_OPCODE;
         break;
     }
-
 
     return (Status);
 }
