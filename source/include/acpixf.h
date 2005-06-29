@@ -317,7 +317,7 @@ ACPI_STATUS
 AcpiGetEventStatus (
     UINT32                  Event,
     UINT32                  Type,
-    ACPI_EVENT_STATUS       EventStatus);
+    ACPI_EVENT_STATUS       *EventStatus);
 
 /*
  * Resource interfaces
