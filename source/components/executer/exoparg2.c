@@ -99,6 +99,7 @@
 
 #include <acpi.h>
 #include <interpreter.h>
+#include <events.h>
 #include <amlcode.h>
 #include <string.h>
 
@@ -146,7 +147,7 @@ AmlExecDyadic1 (UINT16 opcode)
 
     if (Status != AE_OK)
     {
-        /*  invalid parameters on object stack  */
+        /* Invalid parameters on object stack  */
 
         AmlAppendOperandDiag (_THIS_MODULE, __LINE__, opcode, 2);
         FUNCTION_EXIT;
@@ -166,30 +167,20 @@ AmlExecDyadic1 (UINT16 opcode)
 
     case AML_NotifyOp:
 
-        /* XXX - What should actually happen here [NotifyOp] ?
-         * XXX - See ACPI 1.0 spec sec 5.6.3 p. 5-102.
-         * XXX - We may need to simulate what an OS would
-         * XXX - do in response to the Notify operation.
-         * XXX - For value 1 (Ejection Request),
-         * XXX -        some device method may need to be run.
-         * XXX - For value 2 (Device Wake) if _PRW exists,
-         * XXX -        the _PS0 method may need to be run.
-         * XXX - For value 0x80 (Status Change) on the power button or
-         * XXX -        sleep button, initiate soft-off or sleep operation?
-         */
+        /* Object must be a device or thermal zone */
 
-        if (ObjDesc)
+        if (ObjDesc && ValDesc)
         {
             switch (ObjDesc->ValType)
             {
             case TYPE_Device:
             case TYPE_Thermal:
             
-                /* XXX - Requires that sDevice and sThermalZone
-                 * XXX - be compatible mappings
-                 */
+                /* Requires that Device and ThermalZone be compatible mappings */
 
-                OsDoNotifyOp (ValDesc, ObjDesc);
+                /* Dispatch the notify to the appropriate handler */
+
+                EvNotifyDispatch (ObjDesc->Device.Device, ValDesc->Number.Number);
                 break;
 
             default:
