@@ -3,7 +3,7 @@
  *
  * Module Name: hwregs - Read/write access functions for the various ACPI
  *                       control and status registers.
- *              $Revision: 1.70 $
+ *              $Revision: 1.71 $
  *
  ******************************************************************************/
 
@@ -715,7 +715,7 @@ AcpiHwRegisterAccess (
         DEBUG_PRINT (TRACE_IO, ("PM_TIMER: Read 0x%X from 0x%X\n",
                         RegisterValue, AcpiGbl_FACP->PmTmrBlk));
 
-        Mask = 0xFFFFFFFF;
+        Mask = ACPI_UINT32_MAX;
         break;
 
 
