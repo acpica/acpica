@@ -8,7 +8,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, 2000, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -464,7 +464,7 @@ AdGetTables (
 
     else
     {
-#ifdef _IA16 
+#ifdef _IA16
 #include "16bit.h"
         printf ("Scanning for DSDT\n");
 
