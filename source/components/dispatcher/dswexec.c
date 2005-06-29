@@ -1,8 +1,8 @@
 
 /******************************************************************************
  * 
- * Module Name: psxexec - Parser/Interpreter interface, method execution 
- *                        callbacks;  Dispatch to interpreter.
+ * Module Name: dswexec - Dispatcher method execution callbacks;  
+ *                          Dispatch to interpreter.
  *
  *****************************************************************************/
 
@@ -115,25 +115,26 @@
  *
  *****************************************************************************/
 
-#define __PSXEXEC_C__
+#define __DSWEXEC_C__
 
 #include <acpi.h>
-#include <amlcode.h>
 #include <parser.h>
+#include <amlcode.h>
+#include <dispatch.h>
 #include <interp.h>
 #include <namesp.h>
 #include <debugger.h>
 
 
-#define _COMPONENT          PARSER
-        MODULE_NAME         ("psxexec");
+#define _COMPONENT          DISPATCHER
+        MODULE_NAME         ("dswexec");
 
 
 
 
 /*****************************************************************************
  *
- * FUNCTION:    PsxExecBeginOp
+ * FUNCTION:    DsExecBeginOp
  *
  * PARAMETERS:  WalkState       - Current state of the parse tree walk
  *              Op              - Op that has been just been reached in the
@@ -148,7 +149,7 @@
  ****************************************************************************/
 
 ACPI_STATUS
-PsxExecBeginOp (
+DsExecBeginOp (
     ACPI_WALK_STATE         *WalkState,
     ACPI_GENERIC_OP         *Op)
 {
@@ -156,7 +157,7 @@ PsxExecBeginOp (
     ACPI_STATUS             Status = AE_OK;
 
 
-    FUNCTION_TRACE_PTR ("PsxExecBeginOp", Op);
+    FUNCTION_TRACE_PTR ("DsExecBeginOp", Op);
 
 
     if (Op == WalkState->Origin)
@@ -190,11 +191,18 @@ PsxExecBeginOp (
 
     OpInfo = PsGetOpcodeInfo (Op->Opcode);
 
+    /* We want to send name paths to the load code */
+
+    if (Op->Opcode == AML_NAMEPATH_OP)
+    {
+        OpInfo->Flags = OPTYPE_NAMED_OBJECT;
+    }
+
     switch (OpInfo->Flags & OP_INFO_TYPE)
     {
     case OPTYPE_CONTROL:
 
-        Status = PsxExecBeginControlOp (WalkState, Op);
+        Status = DsExecBeginControlOp (WalkState, Op);
         break;
 
     case OPTYPE_NAMED_OBJECT:
@@ -208,7 +216,7 @@ PsxExecBeginOp (
              * TBD: make this a temporary namespace object
              */
 
-            Status = PsxLoad2BeginOp (WalkState, Op);
+            Status = DsLoad2BeginOp (WalkState, Op);
         }
         break;
 
@@ -224,7 +232,7 @@ PsxExecBeginOp (
 
 /*****************************************************************************
  *
- * FUNCTION:    PsxExecEndOp
+ * FUNCTION:    DsExecEndOp
  *
  * PARAMETERS:  WalkState       - Current state of the parse tree walk
  *              Op              - Op that has been just been completed in the
@@ -239,7 +247,7 @@ PsxExecBeginOp (
  ****************************************************************************/
 
 ACPI_STATUS
-PsxExecEndOp (
+DsExecEndOp (
     ACPI_WALK_STATE         *WalkState,
     ACPI_GENERIC_OP         *Op)
 {
@@ -255,7 +263,7 @@ PsxExecEndOp (
     UINT32                  OperandIndex;
 
 
-    FUNCTION_TRACE_PTR ("PsxExecEndOp", Op);
+    FUNCTION_TRACE_PTR ("DsExecEndOp", Op);
 
 
     Opcode = (UINT16) Op->Opcode;
@@ -298,7 +306,7 @@ PsxExecEndOp (
 
 
     case OPTYPE_BOGUS:
-        DEBUG_PRINT (TRACE_PARSE, ("ExecEndOp: Internal opcode=%X type Op=%X\n",
+        DEBUG_PRINT (TRACE_DISPATCH, ("ExecEndOp: Internal opcode=%X type Op=%X\n",
                         Opcode, Op));
         break;
 
@@ -324,7 +332,7 @@ PsxExecEndOp (
     case OPTYPE_CREATE_FIELD:
     case OPTYPE_FATAL:
 
-        Status = PsxCreateOperands (WalkState, FirstArg);
+        Status = DsCreateOperands (WalkState, FirstArg);
         if (ACPI_FAILURE (Status))
         {
             goto Cleanup;
@@ -350,7 +358,7 @@ PsxExecEndOp (
             Status = AmlExecMonadic2 (Opcode, &WalkState->Operands [OperandIndex], &ResultObj);
             if (ACPI_SUCCESS (Status))
             {
-                PsxResultStackPush (ResultObj, WalkState);
+                DsResultStackPush (ResultObj, WalkState);
             }
 
             break;
@@ -363,7 +371,7 @@ PsxExecEndOp (
             Status = AmlExecMonadic2R (Opcode, &WalkState->Operands [OperandIndex], &ResultObj);
             if (ACPI_SUCCESS (Status))
             {
-                PsxResultStackPush (ResultObj, WalkState);
+                DsResultStackPush (ResultObj, WalkState);
             }
 
             break;
@@ -385,7 +393,7 @@ PsxExecEndOp (
             Status = AmlExecDyadic2 (Opcode, &WalkState->Operands [OperandIndex], &ResultObj);
             if (ACPI_SUCCESS (Status))
             {
-                PsxResultStackPush (ResultObj, WalkState);
+                DsResultStackPush (ResultObj, WalkState);
             }
 
             break;
@@ -398,7 +406,7 @@ PsxExecEndOp (
             Status = AmlExecDyadic2R (Opcode, &WalkState->Operands [OperandIndex], &ResultObj);
             if (ACPI_SUCCESS (Status))
             {
-                PsxResultStackPush (ResultObj, WalkState);
+                DsResultStackPush (ResultObj, WalkState);
             }
 
             break;
@@ -411,7 +419,7 @@ PsxExecEndOp (
             Status = AmlExecDyadic2S (Opcode, &WalkState->Operands [OperandIndex], &ResultObj);
             if (ACPI_SUCCESS (Status))
             {
-                PsxResultStackPush (ResultObj, WalkState);
+                DsResultStackPush (ResultObj, WalkState);
             }
 
             break;
@@ -441,7 +449,7 @@ PsxExecEndOp (
             Status = AmlExecIndex (&WalkState->Operands [OperandIndex], &ResultObj);
             if (ACPI_SUCCESS (Status))
             {
-                PsxResultStackPush (ResultObj, WalkState);
+                DsResultStackPush (ResultObj, WalkState);
             }
 
             break;
@@ -452,7 +460,7 @@ PsxExecEndOp (
             /* 6 Operands, 0 ExternalResult, 1 InternalResult */
 
             Status = AmlExecMatch (&WalkState->Operands [OperandIndex], &ResultObj);
-            PsxResultStackPush (ResultObj, WalkState);
+            DsResultStackPush (ResultObj, WalkState);
 
             break;
         }
@@ -465,20 +473,20 @@ PsxExecEndOp (
 
         /* 1 Operand, 0 ExternalResult, 0 InternalResult */
 
-        Status = PsxExecEndControlOp (WalkState, Op);
+        Status = DsExecEndControlOp (WalkState, Op);
 
         break;
 
 
     case OPTYPE_METHOD_CALL: 
 
-        DEBUG_PRINT (TRACE_PARSE, ("ExecEndOp: Method invocation, Op=%X\n", Op));
+        DEBUG_PRINT (TRACE_DISPATCH, ("ExecEndOp: Method invocation, Op=%X\n", Op));
 
         /*
-         * (AML_METHODCALL) Op->Value->Arg->ResultObj contains the method NTE pointer
+         * (AML_METHODCALL) Op->Value->Arg->NameTableEntry contains the method NTE pointer
          */
         NextOp = FirstArg;          /* NextOp points to the op that holds the method name */
-        Entry = NextOp->ResultObj;
+        Entry = NextOp->NameTableEntry;
 
         NextOp = NextOp->Next;      /* NextOp points to first argument op */
 
@@ -487,7 +495,7 @@ PsxExecEndOp (
          * Get the method's arguments and put them on the operand stack
          */
 
-        Status = PsxCreateOperands (WalkState, NextOp);
+        Status = DsCreateOperands (WalkState, NextOp);
         if (ACPI_FAILURE (Status))
         {
             break;
@@ -498,7 +506,7 @@ PsxExecEndOp (
          * resolve all local references here (Local variables, arguments to *this* method, etc.)
          */
 
-        Status = PsxResolveOperands (WalkState);
+        Status = DsResolveOperands (WalkState);
         if (ACPI_FAILURE (Status))
         {
             break;
@@ -539,7 +547,7 @@ PsxExecEndOp (
         if ((WalkState->Origin->Opcode == AML_MethodOp) &&
             (WalkState->Origin != Op))
         {
-            PsxLoad2EndOp (WalkState, Op);
+            DsLoad2EndOp (WalkState, Op);
         }
 
         switch (Op->Opcode)
@@ -549,7 +557,7 @@ PsxExecEndOp (
             DEBUG_PRINT (TRACE_EXEC, ("ExecEndOp: Executing OpRegion Address/Length Op=%X\n",
                             Op));
 
-            Status = PsxEvalRegionOperands (WalkState, Op);
+            Status = DsEvalRegionOperands (WalkState, Op);
 
 
             break;
@@ -605,7 +613,7 @@ PsxExecEndOp (
 
         if (ResultObj)
         {
-            Status = PsxResultStackPop (&ObjDesc, WalkState);
+            Status = DsResultStackPop (&ObjDesc, WalkState);
             if (ACPI_FAILURE (Status))
             {
                 goto Cleanup;
@@ -614,7 +622,7 @@ PsxExecEndOp (
 
         else
         {
-            Status = PsxCreateOperand (WalkState, Op);
+            Status = DsCreateOperand (WalkState, Op);
             if (ACPI_FAILURE (Status))
             {
                 goto Cleanup;
@@ -629,16 +637,23 @@ PsxExecEndOp (
             ObjDesc = WalkState->Operands [0];
         }
 
-        if ((!ObjDesc) ||
-            (ObjDesc->Common.Type != ACPI_TYPE_Number))
+        if (!ObjDesc)
+        {
+            DEBUG_PRINT (ACPI_ERROR, ("ExecEndOp: No predicate ObjDesc=%X State=%X\n",
+                            ObjDesc, WalkState));
+
+            Status = AE_AML_NO_OPERAND;
+            goto Cleanup;
+        }
+
+        if (ObjDesc->Common.Type != ACPI_TYPE_Number)
         {
             DEBUG_PRINT (ACPI_ERROR, ("ExecEndOp: Bad predicate ObjDesc=%X State=%X\n",
                             ObjDesc, WalkState));
 
-            Status = AE_AML_ERROR;
+            Status = AE_AML_OPERAND_TYPE;
             goto Cleanup;
         }
-
         /* Save the result of the predicate evaluation on the control stack */
 
         if (ObjDesc->Number.Value)
@@ -665,7 +680,7 @@ PsxExecEndOp (
         CmDeleteInternalObject (ObjDesc);
         ResultObj = NULL;
 
-        PsxObjStackPop (1, WalkState);
+        DsObjStackPop (1, WalkState);
 
         WalkState->ControlState->Exec = CONTROL_NORMAL;
     }
@@ -682,7 +697,7 @@ Cleanup:
         /* Delete the result op IFF:
          * Parent will not use the result -- such as any non-nested type2 op in a method (parent will be method)
          */
-        PsxDeleteResultIfNotUsed (Op, ResultObj, WalkState);
+        DsDeleteResultIfNotUsed (Op, ResultObj, WalkState);
     }
 
     /* Always clear the object stack */
