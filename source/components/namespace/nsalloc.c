@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: nsalloc - Namespace allocation and deletion utilities
- *              $Revision: 1.61 $
+ *              $Revision: 1.62 $
  *
  ******************************************************************************/
 
@@ -235,7 +235,11 @@ AcpiNsDeleteNode (
  *
  * RETURN:      None
  *
- * DESCRIPTION: Initialize a new entry within a namespace table.
+ * DESCRIPTION: Initialize a new namespace node and install it amongst
+ *              its peers.
+ *
+ *              Note: Current namespace lookup is linear search, so the nodes
+ *              are not linked in any particular order. 
  *
  ******************************************************************************/
 
@@ -263,17 +267,13 @@ AcpiNsInstallNode (
         OwnerId = WalkState->OwnerId;
     }
 
-
-    /* link the new entry into the parent and existing children */
-
-    /* TBD: Could be first, last, or alphabetic */
+    /* Link the new entry into the parent and existing children */
 
     ChildNode = ParentNode->Child;
     if (!ChildNode)
     {
         ParentNode->Child = Node;
     }
-
     else
     {
         while (!(ChildNode->Flags & ANOBJ_END_OF_PEER_LIST))
@@ -494,7 +494,6 @@ AcpiNsDeleteNamespaceSubtree (
                 ChildNode     = 0;
             }
         }
-
         else
         {
             /*
@@ -637,13 +636,11 @@ AcpiNsDeleteNamespaceByOwner (
                 ParentNode    = ChildNode;
                 ChildNode     = 0;
             }
-
             else if (ChildNode->OwnerId == OwnerId)
             {
                 AcpiNsRemoveReference (ChildNode);
             }
         }
-
         else
         {
             /*
