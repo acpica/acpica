@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dsobject - Dispatcher object management routines
- *              $Revision: 1.67 $
+ *              $Revision: 1.68 $
  *
  *****************************************************************************/
 
@@ -656,7 +656,7 @@ AcpiDsBuildInternalPackageObj (
     /* The first argument must be the package length */
 
     Arg = Op->Value.Arg;
-    ObjDesc->Package.Count = Arg->Value.Integer;
+    ObjDesc->Package.Count = Arg->Value.Integer32;
 
     /*
      * Allocate the array of pointers (ptrs to the
