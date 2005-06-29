@@ -322,8 +322,8 @@ BREAKPOINT3;
 
             else
             {
-                DEBUG_PRINT (TRACE_NAMES, ("Set scope %s \n",
-                                  NsFullyQualifiedName(MethodPtr->ChildScope)));
+                DEBUG_EXEC ((FullyQualifiedName = NsFullyQualifiedName(MethodPtr->ChildScope)));
+                DEBUG_PRINT (TRACE_NAMES, ("Set scope %s \n", FullyQualifiedName));
         
                 /*  reset current scope to beginning of scope stack */
 
@@ -332,9 +332,10 @@ BREAKPOINT3;
                 /*  push current scope on scope stack and make hMethod->ChildScope current  */
 
                 NsPushCurrentScope (MethodPtr->ChildScope, Method);
-        
+
+                DEBUG_EXEC ((FullyQualifiedName = NsFullyQualifiedName (MethodPtr)));
                 DEBUG_PRINT (TRACE_NAMES, ("Exec Method %s at offset %8XH\n",
-                                  NsFullyQualifiedName (MethodPtr), 
+                                  FullyQualifiedName, 
                                   ((meth *) MethodPtr->ptrVal)->Offset + 1));
         
                 ClearPkgStack ();
@@ -372,6 +373,8 @@ BREAKPOINT3;
                     /* enable output from DumpStack */
                     DumpStack (Exec, "Remaining Object Stack entries", -1, "");
                 }
+
+                DEBUG_PRINT (ACPI_INFO, ("Method execution completed\n"));
             }
 
 #ifdef FETCH_VALUES
@@ -875,6 +878,8 @@ NsEnter (char *Name, NsType Type, OpMode LoadMode)
             
             if (ThisEntry->ChildScope == (nte *) 0)
             {
+                DEBUG_PRINT (ACPI_ERROR, ("No child scope at entry %p\n", ThisEntry));
+
                 if (Load1 == LoadMode || Load == LoadMode)
                 {
                     REPORT_ERROR (&KDT[11]);
