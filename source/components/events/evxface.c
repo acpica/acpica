@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: evxface - External interfaces for ACPI events
- *              $Revision: 1.115 $
+ *              $Revision: 1.116 $
  *
  *****************************************************************************/
 
@@ -305,7 +305,7 @@ AcpiInstallNotifyHandler (
 
     /* Convert and validate the device handle */
 
-    DeviceNode = AcpiNsConvertHandleToEntry (Device);
+    DeviceNode = AcpiNsMapHandleToNode (Device);
     if (!DeviceNode)
     {
         Status = AE_BAD_PARAMETER;
@@ -478,7 +478,7 @@ AcpiRemoveNotifyHandler (
 
     /* Convert and validate the device handle */
 
-    DeviceNode = AcpiNsConvertHandleToEntry (Device);
+    DeviceNode = AcpiNsMapHandleToNode (Device);
     if (!DeviceNode)
     {
         Status = AE_BAD_PARAMETER;
