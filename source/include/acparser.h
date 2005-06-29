@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: acparser.h - AML Parser subcomponent prototypes and defines
- *       $Revision: 1.70 $
+ *       $Revision: 1.71 $
  *
  *****************************************************************************/
 
@@ -247,7 +247,6 @@ AcpiPsNextParseState (
 static ACPI_STATUS
 AcpiPsParseLoop (
     ACPI_WALK_STATE         *WalkState);
-
 
 
 /* psscope - Scope stack management routines */
