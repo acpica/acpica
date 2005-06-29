@@ -124,7 +124,7 @@ GetMethodValue (INT32 Index, OBJECT_DESCRIPTOR *ObjDesc)
 
     if (!ObjDesc)
     {
-        sprintf (WhyBuf, "GetMethodValue: NULL object descriptor pointer");
+        DEBUG_PRINT (ACPI_ERROR, ("GetMethodValue: NULL object descriptor pointer\n"));
     }
     
     else
@@ -136,8 +136,8 @@ GetMethodValue (INT32 Index, OBJECT_DESCRIPTOR *ObjDesc)
         {
             /* MethodStackTop or Index invalid for current object stack */
 
-            sprintf (WhyBuf, "GetMethodValue: Bad method stack index [%d][%d]",
-                        MethodStackTop, Index);
+            DEBUG_PRINT (ACPI_ERROR, ("GetMethodValue: Bad method stack index [%d][%d]\n",
+                            MethodStackTop, Index));
         }
 
         else if (!MethodStack[MethodStackTop][Index])
@@ -146,18 +146,18 @@ GetMethodValue (INT32 Index, OBJECT_DESCRIPTOR *ObjDesc)
 
             if ((ARGBASE <= Index) && (Index < (ARGBASE + NUMARG)))
             {
-                sprintf (WhyBuf, "GetMethodValue: Uninitialized Arg%d",
-                        Index - ARGBASE);
+                DEBUG_PRINT (ACPI_ERROR, ("GetMethodValue: Uninitialized Arg%d\n",
+                        Index - ARGBASE));
             }
             else if ((LCLBASE <= Index) && (Index < (LCLBASE + NUMLCL)))
             {
-                sprintf (WhyBuf, "GetMethodValue: Uninitialized Local%d",
-                        Index - LCLBASE);
+                DEBUG_PRINT (ACPI_ERROR, ("GetMethodValue: Uninitialized Local%d\n",
+                                Index - LCLBASE));
             }
             else
             {
-                sprintf (WhyBuf, "GetMethodValue: Uninitialized method value %d",
-                        Index);
+                DEBUG_PRINT (ACPI_ERROR, ("GetMethodValue: Uninitialized method value %d\n",
+                                Index));
             }
 
 #ifdef HACK
@@ -186,11 +186,6 @@ GetMethodValue (INT32 Index, OBJECT_DESCRIPTOR *ObjDesc)
 
             Excep = S_SUCCESS;
         }
-    }
-
-    if (S_SUCCESS != Excep)
-    {
-        Why = WhyBuf;
     }
 
     return Excep;
@@ -237,9 +232,8 @@ SetMethodValue (INT32 Index, OBJECT_DESCRIPTOR *ObjDesc, OBJECT_DESCRIPTOR *ObjD
     {
         /* MethodStackTop or Index invalid for current object stack */
 
-        sprintf (WhyBuf, "SetMethodValue: Bad method stack index [%d][%d]",
-                MethodStackTop, Index);
-        Why = WhyBuf;
+        DEBUG_PRINT (ACPI_ERROR, ("SetMethodValue: Bad method stack index [%d][%d]\n",
+                        MethodStackTop, Index));
         return S_ERROR;
     }
 
@@ -386,15 +380,14 @@ PrepDefFieldValue (NsHandle Region, UINT8 FldFlg, INT32 FldPos, INT32 FldLen)
 
     if (!Region)
     {
-        Why = "PrepDefFieldValue: null Region";
+        DEBUG_PRINT (ACPI_ERROR, ("PrepDefFieldValue: null Region\n"));
         Excep = S_ERROR;
     }
 
     else if (Region != (NsHandle)(Type = NsValType (Region)))
     {
-        sprintf (WhyBuf, "PrepDefFieldValue: Needed Region, found %d %s",
-                    Type, NsTypeNames[Type]);
-        Why = WhyBuf;
+        DEBUG_PRINT (ACPI_ERROR, ("PrepDefFieldValue: Needed Region, found %d %s\n",
+                    Type, NsTypeNames[Type]));
         Excep = S_ERROR;
     }
 
@@ -426,11 +419,10 @@ PrepDefFieldValue (NsHandle Region, UINT8 FldFlg, INT32 FldPos, INT32 FldLen)
              * Log some evidence to facilitate porting the code.
              */
             ObjDesc->Field.ValType = 0x005a;
-            sprintf (WhyBuf,
-                    "PrepDefFieldValue: internal failure %p %02x %02x %02x %02x",
+            DEBUG_PRINT (ACPI_ERROR, (
+                    "PrepDefFieldValue: internal failure %p %02x %02x %02x %02x\n",
                     ObjDesc, ((UINT8 *) ObjDesc)[0], ((UINT8 *) ObjDesc)[1], ((UINT8 *) ObjDesc)[2],
-                    ((UINT8 *) ObjDesc)[3]);
-            Why = WhyBuf;
+                    ((UINT8 *) ObjDesc)[3]));
             DELETE (ObjDesc);
             Excep = S_ERROR;
         }
@@ -517,14 +509,13 @@ PrepBankFieldValue (NsHandle Region, NsHandle BankReg, UINT32 BankVal,
 
     if (!Region)
     {
-        Why = "PrepBankFieldValue: null Region";
+        DEBUG_PRINT (ACPI_ERROR, ("PrepBankFieldValue: null Region\n"));
         Excep = S_ERROR;
     }
     else if (Region != (NsHandle) (Type = NsValType (Region)))
     {
-        sprintf (WhyBuf, "PrepBankFieldValue: Needed Region, found %d %s",
-                    Type, NsTypeNames[Type]);
-        Why = WhyBuf;
+        DEBUG_PRINT (ACPI_ERROR, ("PrepBankFieldValue: Needed Region, found %d %s\n",
+                        Type, NsTypeNames[Type]));
         Excep = S_ERROR;
     }
     else if (!(ObjDesc = AllocateObjectDesc (&KDT[3])))
@@ -547,11 +538,10 @@ PrepBankFieldValue (NsHandle Region, NsHandle BankReg, UINT32 BankVal,
             /* See comments in PrepDefFieldValue() re unexpected C behavior */
 
             ObjDesc->BankField.ValType = 0x005a;
-            sprintf (WhyBuf,
-                    "PrepBankFieldValue: internal failure %p %02x %02x %02x %02x",
+            DEBUG_PRINT (ACPI_ERROR, (
+                    "PrepBankFieldValue: internal failure %p %02x %02x %02x %02x\n",
                     ObjDesc, ((UINT8 *) ObjDesc)[0], ((UINT8 *) ObjDesc)[1], ((UINT8 *) ObjDesc)[2],
-                    ((UINT8 *) ObjDesc)[3]);
-            Why = WhyBuf;
+                    ((UINT8 *) ObjDesc)[3]));
             DELETE (ObjDesc);
             return S_ERROR;
         }
@@ -634,7 +624,7 @@ PrepIndexFieldValue (NsHandle IndexReg, NsHandle DataReg,
 
     if (!IndexReg || !DataReg)
     {
-        Why = "PrepIndexFieldValue: null handle";
+        DEBUG_PRINT (ACPI_ERROR, ("PrepIndexFieldValue: null handle\n"));
         Excep = S_ERROR;
     }
 
@@ -655,11 +645,10 @@ PrepIndexFieldValue (NsHandle IndexReg, NsHandle DataReg,
             /* See comments in PrepDefFieldValue() re unexpected C behavior */
         
             ObjDesc->IndexField.ValType = 0x005a;
-            sprintf (WhyBuf,
-                    "PrepIndexFieldValue: internal failure %p %02x %02x %02x %02x",
+            DEBUG_PRINT (ACPI_ERROR, (
+                    "PrepIndexFieldValue: internal failure %p %02x %02x %02x %02x\n",
                     ObjDesc, ((UINT8 *) ObjDesc)[0], ((UINT8 *) ObjDesc)[1], ((UINT8 *) ObjDesc)[2],
-                    ((UINT8 *) ObjDesc)[3]);
-            Why = WhyBuf;
+                    ((UINT8 *) ObjDesc)[3]));
             DELETE (ObjDesc);
             return S_ERROR;
         }
@@ -767,7 +756,7 @@ PrepStack (char *Types)
 
         if (!StackPtr || !*StackPtr)
         {
-            Why = "PrepStack:internal error: null stack entry";
+            DEBUG_PRINT (ACPI_ERROR, ("PrepStack:internal error: null stack entry\n"));
             ObjStackTop--;
             return S_ERROR;
         }
@@ -845,9 +834,8 @@ PrepStack (char *Types)
 
             if (Lvalue != (*StackPtr)->ValType)
             {
-                sprintf (WhyBuf, "PrepStack: Needed Lvalue, found %s",
-                            TypeFoundPtr);
-                Why = WhyBuf;
+                DEBUG_PRINT (ACPI_ERROR, ("PrepStack: Needed Lvalue, found %s\n",
+                            TypeFoundPtr));
                 ObjStackTop--;
                 return S_ERROR;
             }
@@ -876,9 +864,8 @@ PrepStack (char *Types)
 
             if (Number != (*StackPtr)->ValType)
             {
-                sprintf (WhyBuf, "PrepStack: Needed Number, found %s",
-                            TypeFoundPtr);
-                Why = WhyBuf;
+                DEBUG_PRINT (ACPI_ERROR, ("PrepStack: Needed Number, found %s\n",
+                            TypeFoundPtr));
                 ObjStackTop--;
                 return S_ERROR;
             }
@@ -896,10 +883,9 @@ PrepStack (char *Types)
             if (String != (*StackPtr)->ValType &&
                 Buffer != (*StackPtr)->ValType)
             {
-                sprintf (WhyBuf,
-                        "PrepStack: Needed String or Buffer, found %s",
-                        TypeFoundPtr);
-                Why = WhyBuf;
+                DEBUG_PRINT (ACPI_ERROR, (
+                        "PrepStack: Needed String or Buffer, found %s\n",
+                        TypeFoundPtr));
                 ObjStackTop--;
                 return S_ERROR;
             }
@@ -916,9 +902,8 @@ PrepStack (char *Types)
 
             if (Buffer != (*StackPtr)->ValType)
             {
-                sprintf(WhyBuf, "PrepStack: Needed Buffer, found %s",
-                            TypeFoundPtr);
-                Why = WhyBuf;
+                DEBUG_PRINT (ACPI_ERROR, ("PrepStack: Needed Buffer, found %s\n",
+                            TypeFoundPtr));
                 ObjStackTop--;
                 return S_ERROR;
             }
@@ -927,9 +912,8 @@ PrepStack (char *Types)
         case 'i':                                   /* need If */
             if (If != (*StackPtr)->ValType)
             {
-                sprintf (WhyBuf, "PrepStack: Needed If, found %s",
-                        TypeFoundPtr);
-                Why = WhyBuf;
+                DEBUG_PRINT (ACPI_ERROR, ("PrepStack: Needed If, found %s\n",
+                        TypeFoundPtr));
                 ObjStackTop--;
                 return S_ERROR;
             }
@@ -946,19 +930,17 @@ PrepStack (char *Types)
 
             if (Package != (*StackPtr)->ValType)
             {
-                sprintf (WhyBuf, "PrepStack: Needed Package, found %s",
-                            TypeFoundPtr);
-                Why = WhyBuf;
+                DEBUG_PRINT (ACPI_ERROR, ("PrepStack: Needed Package, found %s\n",
+                            TypeFoundPtr));
                 ObjStackTop--;
                 return S_ERROR;
             }
             break;
 
         default:
-            sprintf (WhyBuf,
-                    "PrepStack:internal error Unknown type flag %02x",
-                    *--Types);
-            Why = WhyBuf;
+            DEBUG_PRINT (ACPI_ERROR, (
+                    "PrepStack:internal error Unknown type flag %02x\n",
+                    *--Types));
             ObjStackTop--;
             return S_ERROR;
 
@@ -975,7 +957,7 @@ PrepStack (char *Types)
             
             if ((OBJECT_DESCRIPTOR **) &ObjStack[0] == StackPtr)
             {
-                Why = "PrepStack: not enough operands";
+                DEBUG_PRINT (ACPI_ERROR, ("PrepStack: not enough operands\n"));
                 ObjStackTop--;
                 return S_ERROR;
             }
