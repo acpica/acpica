@@ -3,7 +3,7 @@
 /******************************************************************************
  *
  * Module Name: aslcompiler.y - Bison input file (ASL grammar and actions)
- *              $Revision: 1.42 $
+ *              $Revision: 1.43 $
  *
  *****************************************************************************/
 
@@ -1464,7 +1464,7 @@ DefaultTermList
 
 CaseTerm
     : CASE '('                      {$$ = TrCreateLeafNode (CASE);}
-        DataObject
+        TermArg
         ')' '{'
             TermList '}'            {$$ = TrLinkChildren ($<n>3,2,$4,$7);}
     | CASE '('
