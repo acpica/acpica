@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: nsaccess - Top-level functions for accessing ACPI namespace
- *              $Revision: 1.136 $
+ *              $Revision: 1.137 $
  *
  ******************************************************************************/
 
@@ -165,13 +165,11 @@ AcpiNsRootInitialize (void)
         goto UnlockAndExit;
     }
 
-
     /*
      * Tell the rest of the subsystem that the root is initialized
      * (This is OK because the namespace is locked)
      */
     AcpiGbl_RootNode = &AcpiGbl_RootNodeStruct;
-
 
     /* Enter the pre-defined names in the name table */
 
@@ -213,10 +211,8 @@ AcpiNsRootInitialize (void)
              * internal representation. Only types actually
              * used for initial values are implemented here.
              */
-
             switch (InitVal->Type)
             {
-
             case ACPI_TYPE_INTEGER:
 
                 ObjDesc->Integer.Value =
@@ -248,7 +244,6 @@ AcpiNsRootInitialize (void)
                      */
                     Status = AcpiOsCreateSemaphore (ACPI_NO_UNIT_LIMIT,
                                             1, &ObjDesc->Mutex.Semaphore);
-
                     if (ACPI_FAILURE (Status))
                     {
                         goto UnlockAndExit;
@@ -260,14 +255,12 @@ AcpiNsRootInitialize (void)
                      */
                     AcpiGbl_GlobalLockSemaphore = ObjDesc->Mutex.Semaphore;
                 }
-
                 else
                 {
                     /* Create a mutex */
 
                     Status = AcpiOsCreateSemaphore (1, 1,
                                         &ObjDesc->Mutex.Semaphore);
-
                     if (ACPI_FAILURE (Status))
                     {
                         goto UnlockAndExit;
@@ -385,7 +378,6 @@ AcpiNsLookup (
         PrefixNode = ScopeInfo->Scope.Node;
     }
 
-
     /*
      * This check is explicitly split to relax the TypeToCheckFor
      * conditions for BankFieldDefn.  Originally, both BankFieldDefn and
@@ -411,7 +403,6 @@ AcpiNsLookup (
     {
         TypeToCheckFor = Type;
     }
-
 
     /* TBD: [Restructure] - Move the pathname stuff into a new procedure */
 
@@ -470,7 +461,6 @@ AcpiNsLookup (
                 goto CheckForNewScopeAndExit;
             }
         }
-
         else
         {
             /* Pathname is relative to current scope, start there */
@@ -522,7 +512,6 @@ AcpiNsLookup (
             ACPI_DEBUG_PRINT ((ACPI_DB_NAMES,
                 "Dual Pathname (2 segments, Flags=%X)\n", Flags));
         }
-
         else if (*Pathname == AML_MULTI_NAME_PREFIX_OP)
         {
             NumSegments = (UINT32)* (UINT8 *) ++Pathname;
@@ -535,7 +524,6 @@ AcpiNsLookup (
                 "Multi Pathname (%d Segments, Flags=%X) \n",
                 NumSegments, Flags));
         }
-
         else
         {
             /*
@@ -563,7 +551,6 @@ AcpiNsLookup (
         ACPI_DEBUG_PRINT_RAW ((ACPI_DB_NAMES, "]\n"));
 #endif
     }
-
 
     /*
      * Search namespace for each segment of the name.
@@ -594,7 +581,6 @@ AcpiNsLookup (
                                         CurrentNode, InterpreterMode,
                                         ThisSearchType, LocalFlags,
                                         &ThisNode);
-
         if (ACPI_FAILURE (Status))
         {
             if (Status == AE_NOT_FOUND)
