@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: cmeval - Object evaluation
- *              $Revision: 1.24 $
+ *              $Revision: 1.25 $
  *
  *****************************************************************************/
 
@@ -277,7 +277,6 @@ AcpiCmExecute_HID (
      *  A _HID can return either a Number (32 bit compressed EISA ID) or
      *  a string
      */
-
     if ((ObjDesc->Common.Type != ACPI_TYPE_INTEGER) &&
         (ObjDesc->Common.Type != ACPI_TYPE_STRING))
     {
@@ -374,7 +373,6 @@ AcpiCmExecute_UID (
      *  A _UID can return either a Number (32 bit compressed EISA ID) or
      *  a string
      */
-
     if ((ObjDesc->Common.Type != ACPI_TYPE_INTEGER) &&
         (ObjDesc->Common.Type != ACPI_TYPE_STRING))
     {
@@ -409,6 +407,7 @@ AcpiCmExecute_UID (
     return (Status);
 }
 
+
 /****************************************************************************
  *
  * FUNCTION:    AcpiCmExecute_STA
@@ -435,6 +434,7 @@ AcpiCmExecute_STA (
 
 
     FUNCTION_TRACE ("CmExecute_STA");
+
 
     /* Execute the method */
 
