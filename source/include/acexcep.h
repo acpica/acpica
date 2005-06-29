@@ -99,56 +99,22 @@
 #define _EXCEP_H
 
 
-/* Error codes  */
+/* 
+ * Exceptions returned by external ACPI interfaces
+ */
 
-#ifndef EXIT_SUCCESS                                  /* also defined in stdlib.h as 0 */
-#define EXIT_SUCCESS        0
-#endif
+#define ACPI_SUCCESS(a)     (!(a))
+#define ACPI_FAILURE(a)     (a)
 
-#ifndef E_OK
-#define E_OK                0
-#endif
-
-#ifndef NO_ERROR
-#define NO_ERROR            0
-#endif
-
-#ifndef E_ERROR
-#define E_ERROR             1
-#endif
-
-#ifdef E_IRQ_ERROR
-#undef E_IRQ_ERROR
-#endif
-#define E_IRQ_ERROR         -1 /* MUST be negative */
-
-#ifndef E_FILE_NOT_EXIST
-#define E_FILE_NOT_EXIST    1
-#endif
-
-#ifndef E_ARGUMENT
-#define E_ARGUMENT          2
-#endif
-
-#ifndef E_MEMORY
-#define E_MEMORY            3
-#endif
-
-/* returned from parse_command_line() */
-
-#ifndef E_HELP_MESSAGE
-#define E_HELP_MESSAGE      4
-#endif
-
-#ifndef E_NO_ACPI_TBLS
-#define E_NO_ACPI_TBLS      5
-#endif
-
-/* returned from parse_command_line() */
-
-#ifndef E_NON_STANDARD_ARGUMENT
-#define E_NON_STANDARD_ARGUMENT 0xff
-#endif
+#define AE_OK               (ACPI_STATUS) 0
+#define AE_ERROR            (ACPI_STATUS) 1
+#define AE_NO_ACPI_TABLES   (ACPI_STATUS) 2
+#define AE_NO_NAMESPACE     (ACPI_STATUS) 3
+#define AE_BAD_PARAM        (ACPI_STATUS) 4
+#define AE_NOT_FOUND        (ACPI_STATUS) 5
+#define AE_NULL_ENTRY       (ACPI_STATUS) 6
+#define AE_FILE_NOT_EXIST   (ACPI_STATUS) 7
+#define AE_BUFFER_OVERFLOW  (ACPI_STATUS) 8
 
 
 /*

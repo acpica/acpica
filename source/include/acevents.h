@@ -208,7 +208,7 @@ UINT32
 InstallSciHandler (
     void);
 
-void 
+ACPI_STATUS
 UninstallSciHandler (
     void);
 
@@ -224,14 +224,6 @@ INT32
 VerifyAcpiTablesPresent (
     char *          TestName);
 
-INT32 
-InstallSCIHandlerXferToACPI (
-    char *          TestName, 
-    INT32           Flags);
-
-INT32 
-UninstallSCIHandlerXferToLegacy (
-    void);
 
 UINT32
 InstallInterruptHandler (
