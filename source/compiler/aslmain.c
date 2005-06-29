@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslmain - compiler main and utilities
- *              $Revision: 1.68 $
+ *              $Revision: 1.70 $
  *
  *****************************************************************************/
 
@@ -163,6 +163,7 @@ Options (
 
     printf ("\nAML Output:\n");
     printf ("  -s<a|c>        Create AML in assembler or C source file (*.asm or *.c)\n");
+    printf ("  -i<a|c>        Create assembler or C include file (*.inc or *.h)\n");
     printf ("  -t<a|c>        Create AML in assembler or C hex table (*.hex)\n");
 
     printf ("\nAML Optimization:\n");
@@ -220,7 +221,7 @@ HelpMessage (
     printf ("\nCompiler Debug Options:\n");
     printf ("  -b<p|t|b>      Create compiler debug/trace file (*.txt)\n");
     printf ("                   Types: Parse/Tree/Both\n");
-    printf ("  -i             Ignore errors, always create AML output file(s)\n");
+    printf ("  -e             Ignore errors, always create AML output file(s)\n");
     printf ("  -c             Parse only, no output generation\n");
     printf ("  -ot            Display compile times\n");
     printf ("  -x<level>      Set debug level for trace output\n");
@@ -319,7 +320,7 @@ AslCommandLine (
 
     /* Get the command line options */
 
-    while ((j = AcpiGetopt (argc, argv, "b:cd^gh^il^o:p:rs:t:v:x:")) != EOF) switch (j)
+    while ((j = AcpiGetopt (argc, argv, "b:cd^egh^i^l^o:p:rs:t:v:x:")) != EOF) switch (j)
     {
     case 'b':
 
@@ -376,6 +377,14 @@ AslCommandLine (
         break;
 
 
+    case 'e':
+
+        /* Ignore errors and always attempt to create aml file */
+
+        Gbl_IgnoreErrors = TRUE;
+        break;
+
+
     case 'g':
 
         /* Get all ACPI tables */
@@ -413,9 +422,27 @@ AslCommandLine (
 
     case 'i':
 
-        /* Ignore errors and always attempt to create aml file */
+        switch (AcpiGbl_Optarg[0])
+        {
+        case 'a':
 
-        Gbl_IgnoreErrors = TRUE;
+            /* Produce assembly code include file */
+
+            Gbl_AsmIncludeOutputFlag = TRUE;
+            break;
+
+        case 'c':
+
+            /* Produce C include file */
+
+            Gbl_C_IncludeOutputFlag = TRUE;
+            break;
+
+        default:
+            printf ("Unknown option: -s%s\n", AcpiGbl_Optarg);
+            BadCommandLine = TRUE;
+            break;
+        }
         break;
 
 
