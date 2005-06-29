@@ -412,7 +412,12 @@ PsGetNextNamepath (
             ScopeInfo.Scope = Nte->Scope;
         }
 
-        Status = NsLookup (&ScopeInfo, Path, ACPI_TYPE_Any, IMODE_LoadPass2, /* MUST BE PASS2 to perform upsearch */ 
+        /* 
+         * Lookup object.  We don't want to add anything new to the namespace here, however.
+         * So we use MODE_EXECUTE.
+         */
+
+        Status = NsLookup (&ScopeInfo, Path, ACPI_TYPE_Any, IMODE_Execute, /* MUST BE mode EXECUTE to perform upsearch */ 
                                 NS_SEARCH_PARENT | NS_DONT_OPEN_SCOPE, NULL, &Nte);
         if (ACPI_SUCCESS (Status))
         {
