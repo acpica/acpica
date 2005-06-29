@@ -3,7 +3,7 @@
 /******************************************************************************
  *
  * Module Name: aslcompiler.y - Bison input file (ASL grammar and actions)
- *              $Revision: 1.89 $
+ *              $Revision: 1.90 $
  *
  *****************************************************************************/
 
@@ -681,7 +681,6 @@ AslLocalAllocate (unsigned int Size);
 %type <n> DWordListTail
 
 %type <n> PackageTerm
-%type <n> PackageLengthTerm
 %type <n> PackageList
 %type <n> PackageListTail
 %type <n> PackageElement
@@ -2419,11 +2418,7 @@ DWordListTail
     ;
 
 PackageTerm
-    : PARSEOP_PACKAGE '('           {$$ = TrCreateLeafNode (PARSEOP_PACKAGE);}
-        PackageLengthTerm
-        ')' '{'
-            PackageList '}'         {$$ = TrLinkChildren ($<n>3,2,$4,$7);}
-    | PARSEOP_PACKAGE '('                   {$$ = TrCreateLeafNode (PARSEOP_VAR_PACKAGE);}
+    : PARSEOP_PACKAGE '('           {$$ = TrCreateLeafNode (PARSEOP_VAR_PACKAGE);}
         VarPackageLengthTerm
         ')' '{'
             PackageList '}'         {$$ = TrLinkChildren ($<n>3,2,$4,$7);}
@@ -2431,13 +2426,9 @@ PackageTerm
         error ')'                   {$$ = AslDoError(); yyclearin;}
     ;
 
-PackageLengthTerm
-    :                               {$$ = NULL;}
-    | ByteConstExpr                 {}
-    ;
-
 VarPackageLengthTerm
-    : TermArg                       {}
+    :                               {$$ = TrCreateLeafNode (PARSEOP_DEFAULT_ARG);}
+    | TermArg                       {$$ = $1;}
     ;
 
 PackageList
