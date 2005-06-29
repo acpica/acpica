@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: cmobject - ACPI object create/delete/size/cache routines
- *              $Revision: 1.27 $
+ *              $Revision: 1.30 $
  *
  *****************************************************************************/
 
@@ -320,7 +320,7 @@ _CmAllocateObjectDesc (
             /* Allocation failed */
 
             _REPORT_ERROR (ModuleName, LineNumber, ComponentId,
-                            "Could not allocate Object Descriptor");
+                            ("Could not allocate an object descriptor\n"));
 
             return_PTR (NULL);
         }
@@ -358,7 +358,7 @@ AcpiCmDeleteObjectDesc (
     ACPI_OPERAND_OBJECT     *Object)
 {
 
-    FUNCTION_TRACE ("AcpiCmDeleteObjectDesc");
+    FUNCTION_TRACE_PTR ("AcpiCmDeleteObjectDesc", Object);
 
 
     /* Make sure that the object isn't already in the cache */
@@ -682,7 +682,7 @@ AcpiCmGetPackageObjectSize (
 
 
         /*
-         * Check for 1) An unitialized package element.  It is completely
+         * Check for 1) An uninitialized package element.  It is completely
          *              legal to declare a package and leave it uninitialized
          *           2) Any type other than a package.  Packages are handled
          *              below.
