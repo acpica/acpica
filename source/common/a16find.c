@@ -253,10 +253,10 @@ CopyExtendedToReal (
     UINT32      PhysicalSource,
     UINT32      Size)
 {
-    int         RetVal = AE_AML_ERROR;
+    int         RetVal;
 
 
-    RetVal = FlatMove (GET_PHYSICAL_ADDRESS (Destination), PhysicalSource, Size);
+    RetVal = FlatMove (GET_PHYSICAL_ADDRESS (Destination), PhysicalSource, (UINT16) Size);
     return (RetVal);
 }
 
@@ -501,7 +501,7 @@ AfGetAllTables (
     if (!AcpiGbl_FADT)
     {
         AcpiOsPrintf ("FADT was not found, cannot obtain FACS and DSDT!\n");
-        return AE_AML_ERROR;
+        return (AE_NO_ACPI_TABLES);
     }
 
     Status = AcpiTbConvertTableFadt ();
@@ -539,11 +539,7 @@ AfGetAllTables (
 
     AcpiTbInitTableDescriptor (TableInfo.Type, &TableInfo);
 
-    Status = AcpiTbBuildCommonFacs (&TableInfo);
-    if (ACPI_FAILURE (Status))
-    {
-        return_ACPI_STATUS (Status);
-    }
+    AcpiTbBuildCommonFacs (&TableInfo);
 
     /* Get the DSDT */
 
@@ -608,7 +604,7 @@ AfFindDsdt(
     if (!Found)
     {
         AcpiOsPrintf ("Could not find RSDP in the low megabyte\n");
-        return (AE_AML_ERROR);
+        return (AE_NO_ACPI_TABLES);
     }
 
     /*
@@ -703,7 +699,8 @@ AfFindDsdt(
 
 ErrorExit:
 
-    ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Failure during ACPI Table initialization: %x\n", Status));
+    ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Failure during ACPI Table initialization: %s\n", 
+            AcpiFormatException (Status)));
     return (Status);
 }
 
