@@ -118,11 +118,9 @@
 #define __TBAPI_C__
 
 #include <acpi.h>
-#include <acobject.h>
+#include <namesp.h>
 #include <interp.h>
 #include <tables.h>
-#include <methods.h>
-#include <pnp.h>
 
 
 #define _COMPONENT          TABLE_MANAGER
@@ -251,17 +249,34 @@ ACPI_STATUS
 AcpiUnloadTable (
     ACPI_TABLE_TYPE         TableType)
 {
+    ACPI_TABLE_DESC         *ListHead;
+
 
     FUNCTION_TRACE ("AcpiUnloadTable");
+
+
+    /* Parameter validation */
 
     if (TableType > ACPI_TABLE_MAX)
     {
         return_ACPI_STATUS (AE_BAD_PARAMETER);
     }
 
-    /* Delete existing table if there is one */
+    
+    /* Find all tables of the requested type */
 
-    TbDeleteAcpiTable (TableType);
+    ListHead = &Gbl_AcpiTables[TableType];
+    do
+    {            
+        /* Delete the entire namespace under this table NTE */
+
+        NsDeleteNamespaceByOwner (ListHead->TableId);
+
+        /* Delete (or unmap) the actual table */
+
+        TbDeleteAcpiTable (TableType);  
+
+    } while (ListHead != &Gbl_AcpiTables[TableType]);
 
     return_ACPI_STATUS (AE_OK);
 }
