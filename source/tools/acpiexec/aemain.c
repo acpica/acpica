@@ -132,7 +132,14 @@
         MODULE_NAME         ("aemain");
 
 
-char                    *Version = "X004";
+/*
+ * We need a local FADT so that the hardware subcomponent will function,
+ * even though the underlying OSD HW access functions don't do
+ * anything.
+ */
+
+FIXED_ACPI_DESCRIPTION_TABLE    LocalFADT;
+
 
 
 /******************************************************************************
@@ -185,7 +192,7 @@ main (
     /* Init globals */
 
     Buffer = malloc (BUFFER_SIZE);
-    AcpiDbgLevel = DEBUG_DEFAULT & (~TRACE_TABLES);
+    AcpiDbgLevel = NORMAL_DEFAULT | TRACE_TABLES;
     AcpiDbgLayer = 0xFFFFFFFF;
 
 
@@ -259,6 +266,7 @@ main (
 
         if (ACPI_FAILURE (Status))
         {
+            printf ("**** Could not load namespace, %s\n", AcpiCmFormatException (Status));
             goto enterloop;
         }
 
@@ -266,6 +274,11 @@ main (
          * Need a way to call this after the "LOAD" command
          */
         AeInstallHandlers ();
+
+        LocalFADT.Gpe0BlkLen = 19;
+        AcpiGbl_FACP = &LocalFADT;
+
+        AcpiEnable ();
     }
 
 #ifdef _IA16
@@ -283,6 +296,7 @@ main (
 
         if (ACPI_FAILURE (Status))
         {
+            printf ("**** Could not load namespace, %s\n", AcpiCmFormatException (Status));
             goto enterloop;
         }
 
@@ -291,6 +305,11 @@ main (
          * Need a way to call this after the "LOAD" command
          */
         AeInstallHandlers ();
+
+        LocalFADT.Gpe0BlkLen = 19;
+        AcpiGbl_FACP = &LocalFADT;
+
+        AcpiEnable ();
     }
 #endif
 

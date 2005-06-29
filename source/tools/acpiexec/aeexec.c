@@ -215,9 +215,9 @@ RegionHandler (
         return AE_OK;
     }
 
-    printf ("Operation Region request on %s at 0x%X\n", 
+    DEBUG_PRINT (TRACE_OPREGION, ("Operation Region request on %s at 0x%X\n", 
             AcpiCmFormatSpaceId (RegionObject->Region.SpaceId),
-            Address);
+            Address));
 
 
     /*
