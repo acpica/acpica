@@ -223,7 +223,9 @@ extern ACPI_INIT_DATA Gbl_AcpiInitData;
  *
  ****************************************************************************/
 
-ACPI_EXTERN BOOLEAN                     Gbl_GlobalLockSet;
+ACPI_EXTERN BOOLEAN                     Gbl_GlobalLockAcquired;
+ACPI_EXTERN BOOLEAN                     Gbl_GlobalLockSet; /* TBD: OBSOLETE?? */
+ACPI_EXTERN UINT32                      Gbl_GlobalLockThreadCount;
 ACPI_EXTERN INT32                       Gbl_RestoreAcpiChipset;
 ACPI_EXTERN UINT16                      Gbl_Pm1EnableRegisterSave;
 ACPI_EXTERN UINT8                      *Gbl_Gpe0EnableRegisterSave;
