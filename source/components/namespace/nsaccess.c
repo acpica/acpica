@@ -218,12 +218,12 @@ NsSetup (void)
             {
 
             case ACPI_TYPE_Number:
-                ObjDesc->Number.Value = (UINT32) strtoul (InitVal->Val, NULL, 10);
+                ObjDesc->Number.Value = (UINT32) STRTOUL (InitVal->Val, NULL, 10);
                 break;
 
 
             case ACPI_TYPE_String:
-                ObjDesc->String.Length = (UINT16) strlen (InitVal->Val);
+                ObjDesc->String.Length = (UINT16) STRLEN (InitVal->Val);
 
                 /* 
                  * Allocate a buffer for the string.  All String.Pointers must be
@@ -237,12 +237,12 @@ NsSetup (void)
                     return_ACPI_STATUS (AE_NO_MEMORY);
                 }
 
-                strcpy ((char *) ObjDesc->String.Pointer, InitVal->Val);
+                STRCPY ((char *) ObjDesc->String.Pointer, InitVal->Val);
                 break;
 
 
             case ACPI_TYPE_Mutex:
-                ObjDesc->Mutex.SyncLevel = (UINT16) strtoul (InitVal->Val, NULL, 10);
+                ObjDesc->Mutex.SyncLevel = (UINT16) STRTOUL (InitVal->Val, NULL, 10);
                 ObjDesc->Mutex.Semaphore = 0;
                 ObjDesc->Mutex.LockCount = 0;
                 ObjDesc->Mutex.ThreadId  = 0;
