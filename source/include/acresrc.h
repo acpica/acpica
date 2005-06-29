@@ -1,6 +1,6 @@
 /******************************************************************************
  * 
- * Name: resource.h - Rs* function prototypes.
+ * Name: resource.h - Resource Manager function prototypes
  *
  *****************************************************************************/
 
@@ -121,6 +121,31 @@
  */
 
 ACPI_STATUS
+RsGetPRTMethodData (
+    ACPI_HANDLE             Handle, 
+    ACPI_BUFFER             *RetBuffer
+    );
+
+
+ACPI_STATUS
+RsGetCRSMethodData (
+    ACPI_HANDLE             Handle, 
+    ACPI_BUFFER             *RetBuffer
+    );
+
+ACPI_STATUS
+RsGetPRSMethodData (
+    ACPI_HANDLE             Handle, 
+    ACPI_BUFFER             *RetBuffer
+    );
+
+ACPI_STATUS
+RsSetSRSMethodData (
+    ACPI_HANDLE             Handle, 
+    ACPI_BUFFER             *RetBuffer
+    );
+
+ACPI_STATUS
 RsCreateResourceList (
     UINT8     * ByteStreamBuffer,
     UINT8     * OutputBuffer,
@@ -129,7 +154,7 @@ RsCreateResourceList (
 
 ACPI_STATUS
 RsCreateByteStream (
-    RESOURCE  * ByteStreamBuffer,
+    RESOURCE  * LinkedListBuffer,
     UINT8     * OutputBuffer,
     UINT32    * OutputBufferLength
     );
