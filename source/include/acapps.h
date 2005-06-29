@@ -119,19 +119,10 @@
 
 #ifdef _MSC_VER                 /* disable some level-4 warnings */
 #pragma warning(disable:4100)   /* warning C4100: unreferenced formal parameter */
-
-int
-getopt (
-    int                     argc,
-    char                    **argv,
-    char                    *opts);
 #endif
-
 
 extern UINT8                    *DsdtPtr;
 extern UINT32                   AcpiDsdtLength;
-extern int                      optind;
-extern char                     *optarg;
 extern UINT8                    *AmlStart;
 extern UINT32                   AmlLength;
 
