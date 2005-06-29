@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: amdump - Interpreter debug output routines
- *              $Revision: 1.99 $
+ *              $Revision: 1.105 $
  *
  *****************************************************************************/
 
@@ -122,7 +122,7 @@
 #include "acnamesp.h"
 #include "actables.h"
 
-#define _COMPONENT          INTERPRETER
+#define _COMPONENT          ACPI_EXECUTER
         MODULE_NAME         ("amdump")
 
 
@@ -130,7 +130,7 @@
  * The following routines are used for debug output only
  */
 
-#ifdef ACPI_DEBUG
+#if defined(ACPI_DEBUG) || defined(ENABLE_DEBUGGER)
 
 /*****************************************************************************
  *
@@ -288,7 +288,7 @@ AcpiAmlDumpOperand (
     {
     case INTERNAL_TYPE_REFERENCE:
 
-        switch (EntryDesc->Reference.OpCode)
+        switch (EntryDesc->Reference.Opcode)
         {
         case AML_ZERO_OP:
 
@@ -374,7 +374,7 @@ AcpiAmlDumpOperand (
             /*  unknown opcode  */
 
             DEBUG_PRINT_RAW (ACPI_INFO, ("Unknown opcode=%X\n",
-                EntryDesc->Reference.OpCode));
+                EntryDesc->Reference.Opcode));
             break;
 
         }
@@ -513,7 +513,7 @@ AcpiAmlDumpOperand (
             EntryDesc->Field.Length,   EntryDesc->Field.Access,
             EntryDesc->Field.LockRule, EntryDesc->Field.UpdateRule,
             EntryDesc->Field.Offset,   EntryDesc->Field.BitOffset));
-        DUMP_STACK_ENTRY (EntryDesc->Field.Container);
+        DUMP_STACK_ENTRY (EntryDesc->Field.RegionObj);
         break;
 
 
@@ -531,20 +531,20 @@ AcpiAmlDumpOperand (
             EntryDesc->FieldUnit.LockRule, EntryDesc->FieldUnit.UpdateRule,
             EntryDesc->FieldUnit.Offset,   EntryDesc->FieldUnit.BitOffset));
 
-        if (!EntryDesc->FieldUnit.Container)
+        if (!EntryDesc->FieldUnit.ContainerObj)
         {
             DEBUG_PRINT (ACPI_INFO, ("*NULL* \n"));
         }
 
         else if (ACPI_TYPE_BUFFER !=
-                     EntryDesc->FieldUnit.Container->Common.Type)
+                     EntryDesc->FieldUnit.ContainerObj->Common.Type)
         {
             DEBUG_PRINT_RAW (ACPI_INFO, ("*not a Buffer* \n"));
         }
 
         else
         {
-            DUMP_STACK_ENTRY (EntryDesc->FieldUnit.Container);
+            DUMP_STACK_ENTRY (EntryDesc->FieldUnit.ContainerObj);
         }
 
         break;
@@ -665,7 +665,9 @@ AcpiAmlDumpOperands (
         ("From %12s(%d)  %s: %s\n", ModuleName, LineNumber, Ident, Note));
 
     if (NumLevels == 0)
+    {
         NumLevels = 1;
+    }
 
     /* Dump the stack starting at the top, working down */
 
@@ -804,7 +806,7 @@ AcpiAmlDumpObjectDescriptor (
         AcpiOsPrintf ("%20s : %X\n", "Length", ObjDesc->FieldUnit.Length);
         AcpiOsPrintf ("%20s : %X\n", "BitOffset", ObjDesc->FieldUnit.BitOffset);
         AcpiOsPrintf ("%20s : %X\n", "Offset", ObjDesc->FieldUnit.Offset);
-        AcpiOsPrintf ("%20s : %p\n", "Container", ObjDesc->FieldUnit.Container);
+        AcpiOsPrintf ("%20s : %p\n", "ContainerObj", ObjDesc->FieldUnit.ContainerObj);
         break;
 
 
@@ -838,6 +840,8 @@ AcpiAmlDumpObjectDescriptor (
 
         AcpiOsPrintf ("%20s : %s\n", "Type", "Mutex");
         AcpiOsPrintf ("%20s : %X\n", "SyncLevel", ObjDesc->Mutex.SyncLevel);
+        AcpiOsPrintf ("%20s : %p\n", "Owner", ObjDesc->Mutex.Owner);
+        AcpiOsPrintf ("%20s : %X\n", "AcquisitionDepth", ObjDesc->Mutex.AcquisitionDepth);
         AcpiOsPrintf ("%20s : %p\n", "Semaphore", ObjDesc->Mutex.Semaphore);
         break;
 
@@ -894,8 +898,8 @@ AcpiAmlDumpObjectDescriptor (
         AcpiOsPrintf ("%20s : %X\n", "BitOffset", ObjDesc->BankField.BitOffset);
         AcpiOsPrintf ("%20s : %X\n", "Offset", ObjDesc->BankField.Offset);
         AcpiOsPrintf ("%20s : %X\n", "Value", ObjDesc->BankField.Value);
-        AcpiOsPrintf ("%20s : %p\n", "Container", ObjDesc->BankField.Container);
-        AcpiOsPrintf ("%20s : %X\n", "BankSelect", ObjDesc->BankField.BankSelect);
+        AcpiOsPrintf ("%20s : %p\n", "RegionObj", ObjDesc->BankField.RegionObj);
+        AcpiOsPrintf ("%20s : %X\n", "BankRegisterNode", ObjDesc->BankField.BankRegisterNode);
         break;
 
 
@@ -917,7 +921,7 @@ AcpiAmlDumpObjectDescriptor (
 
         AcpiOsPrintf ("%20s : %s\n", "Type", "Reference");
         AcpiOsPrintf ("%20s : %X\n", "TargetType", ObjDesc->Reference.TargetType);
-        AcpiOsPrintf ("%20s : %X\n", "OpCode", ObjDesc->Reference.OpCode);
+        AcpiOsPrintf ("%20s : %X\n", "Opcode", ObjDesc->Reference.Opcode);
         AcpiOsPrintf ("%20s : %X\n", "Offset", ObjDesc->Reference.Offset);
         AcpiOsPrintf ("%20s : %p\n", "ObjDesc", ObjDesc->Reference.Object);
         AcpiOsPrintf ("%20s : %p\n", "Node", ObjDesc->Reference.Node);
@@ -952,7 +956,7 @@ AcpiAmlDumpObjectDescriptor (
         AcpiOsPrintf ("%20s : %p\n", "Length", ObjDesc->Field.Length);
         AcpiOsPrintf ("%20s : %p\n", "Offset", ObjDesc->Field.Offset);
         AcpiOsPrintf ("%20s : %p\n", "BitOffset", ObjDesc->Field.BitOffset);
-        AcpiOsPrintf ("%20s : %p\n", "Container", ObjDesc->Field.Container);
+        AcpiOsPrintf ("%20s : %p\n", "RegionObj", ObjDesc->Field.RegionObj);
         break;
 
 

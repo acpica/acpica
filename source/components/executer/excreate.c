@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: amcreate - Named object creation
- *              $Revision: 1.57 $
+ *              $Revision: 1.58 $
  *
  *****************************************************************************/
 
@@ -655,7 +655,7 @@ Cleanup:
 ACPI_STATUS
 AcpiAmlExecCreateProcessor (
     ACPI_PARSE_OBJECT       *Op,
-    ACPI_HANDLE             ProcessorNode)
+    ACPI_NAMESPACE_NODE     *ProcessorNode)
 {
     ACPI_STATUS             Status;
     ACPI_PARSE_OBJECT       *Arg;
@@ -737,7 +737,7 @@ AcpiAmlExecCreateProcessor (
 ACPI_STATUS
 AcpiAmlExecCreatePowerResource (
     ACPI_PARSE_OBJECT       *Op,
-    ACPI_HANDLE             PowerNode)
+    ACPI_NAMESPACE_NODE     *PowerNode)
 {
     ACPI_STATUS             Status;
     ACPI_PARSE_OBJECT       *Arg;
@@ -811,7 +811,7 @@ AcpiAmlExecCreateMethod (
     UINT8                   *AmlPtr,
     UINT32                  AmlLength,
     UINT32                  MethodFlags,
-    ACPI_HANDLE             Method)
+    ACPI_NAMESPACE_NODE     *Method)
 {
     ACPI_OPERAND_OBJECT     *ObjDesc;
     ACPI_STATUS             Status;

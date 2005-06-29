@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: amfldio - Aml Field I/O
- *              $Revision: 1.35 $
+ *              $Revision: 1.42 $
  *
  *****************************************************************************/
 
@@ -125,7 +125,7 @@
 #include "acevents.h"
 
 
-#define _COMPONENT          INTERPRETER
+#define _COMPONENT          ACPI_EXECUTER
         MODULE_NAME         ("amfldio")
 
 
@@ -164,7 +164,7 @@ AcpiAmlReadFieldData (
 
     if (ObjDesc)
     {
-        RgnDesc = ObjDesc->Field.Container;
+        RgnDesc = ObjDesc->Field.RegionObj;
     }
 
 
@@ -480,7 +480,7 @@ AcpiAmlWriteFieldData (
 
     if (ObjDesc)
     {
-        RgnDesc = ObjDesc->Field.Container;
+        RgnDesc = ObjDesc->Field.RegionObj;
     }
 
     FieldByteWidth = DIV_8 (FieldBitWidth);
@@ -561,8 +561,6 @@ AcpiAmlWriteFieldDataWithUpdateRule (
 
     MergedValue = FieldValue;
 
-    /* Check if update rule needs to be applied (not if mask is all ones) */
-
 
     /* Decode the update rule */
 
@@ -571,13 +569,19 @@ AcpiAmlWriteFieldDataWithUpdateRule (
 
     case UPDATE_PRESERVE:
 
-        /*
-         * Read the current contents of the byte/word/dword containing
-         * the field, and merge with the new field value.
-         */
-        Status = AcpiAmlReadFieldData (ObjDesc, ThisFieldByteOffset,
-                                        BitGranularity, &CurrentValue);
-        MergedValue |= (CurrentValue & ~Mask);
+        /* Check if update rule needs to be applied (not if mask is all ones) */
+
+        /* The left shift drops the bits we want to ignore. */
+        if ((~Mask << (sizeof(Mask)*8 - BitGranularity)) != 0)
+        {
+            /*
+             * Read the current contents of the byte/word/dword containing
+             * the field, and merge with the new field value.
+             */
+            Status = AcpiAmlReadFieldData (ObjDesc, ThisFieldByteOffset,
+                                            BitGranularity, &CurrentValue);
+            MergedValue |= (CurrentValue & ~Mask);
+        }
         break;
 
 
