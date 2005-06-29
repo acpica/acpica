@@ -124,6 +124,48 @@
         MODULE_NAME         ("tbutils");
 
 
+/*****************************************************************************
+ * 
+ * FUNCTION:    TbSystemTablePointer
+ *
+ * PARAMETERS:  *Where              - Pointer to be examined
+ *
+ * RETURN:      TRUE if Where is within the AML stream (in one of the ACPI
+ *              system tables such as the DSDT or an SSDT.)
+ *              FALSE otherwise
+ *
+ ****************************************************************************/
+
+ACPI_STATUS
+TbHandleToObject (
+    UINT16                  TableId,
+    ACPI_TABLE_DESC         **TableDesc)
+{
+    UINT32                  i;
+    ACPI_TABLE_DESC         *ListHead;
+
+
+    for (i = 0; i < ACPI_TABLE_MAX; i++)
+    {
+        ListHead = &Gbl_AcpiTables[i];
+        do
+        {
+            if (ListHead->TableId == TableId)
+            {
+                *TableDesc = ListHead;
+                return AE_OK;
+            }
+
+            ListHead = ListHead->Next;
+
+        } while (ListHead != &Gbl_AcpiTables[i]);
+    }
+
+
+    DEBUG_PRINT (ACPI_ERROR, ("TableId=0x%X does not exist\n", TableId));
+    return AE_BAD_PARAMETER;
+
+}
 
 
 /*****************************************************************************

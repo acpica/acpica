@@ -168,6 +168,10 @@ TbInstallTable (
     TableType   = TableInfo->Type;
     TableHeader = TableInfo->Pointer;
 
+    /* Lock tables while installing */
+
+    CmAcquireMutex (MTX_TABLES);
+
     /* Install the table into the global data structure */
 
     Status = TbInitTableDescriptor (TableInfo->Type, TableInfo);
@@ -176,20 +180,19 @@ TbInstallTable (
         return_ACPI_STATUS (Status);
     }
 
-    /* Initialize the typed global pointer for this table */
-
-    if (Gbl_AcpiTableData[TableType].GlobalPtr)
-    {
-        *(Gbl_AcpiTableData[TableType].GlobalPtr) = TableHeader;
-    }
 
     DEBUG_PRINT (ACPI_INFO, ("%s located at %p\n", 
                                 Gbl_AcpiTableData[TableType].Name, TableHeader));
+
+    CmReleaseMutex (MTX_TABLES);
 
     /* Validate checksum for _most_ tables */
 
     if (TableType != TABLE_FACS)
     {
+        /* But don't abort if the checksum is wrong */
+        /* TBD: make this a configuration option? */
+
         TbVerifyTableChecksum (TableHeader);
     }
 
@@ -246,20 +249,14 @@ TbRecognizeTable (
             TableType       = i;
             Status          = Gbl_AcpiTableData[i].Status;
 
-            /* Set the appropriate global pointer (if there is one) to point to the newly recognized table */
-
-            if (Gbl_AcpiTableData[i].GlobalPtr)
-            {
-                *(Gbl_AcpiTableData[i].GlobalPtr) = TableInfo->Pointer;
-            }
-
             break;
         }
     }
 
-    /* Return the table type via the info struct */
+    /* Return the table type and length via the info struct */
 
     TableInfo->Type = (UINT8) TableType;
+    TableInfo->Length = TableHeader->Length;
 
     /*
      * Bad_Signature means that the table is bad or not one of the recognized tables
@@ -346,7 +343,7 @@ TbInitTableDescriptor (
 
         if (ListHead->Pointer)
         {
-            TbFreeAcpiTable (ListHead);
+            return_ACPI_STATUS (AE_EXIST);
         }
 
         TableDesc->Count = 1;
@@ -393,9 +390,23 @@ TbInitTableDescriptor (
 
     /* Common initialization of the table descriptor */
 
-    TableDesc->Pointer      = TableInfo->Pointer;
-    TableDesc->Length       = TableInfo->Length;
-    TableDesc->Allocation   = TableInfo->Allocation;
+    TableDesc->Pointer              = TableInfo->Pointer;
+    TableDesc->Length               = TableInfo->Length;
+    TableDesc->Allocation           = TableInfo->Allocation;
+    TableDesc->AmlPointer           = (UINT8 *) (TableDesc->Pointer + 1),
+    TableDesc->AmlLength            = (UINT32) (TableDesc->Length - (UINT32) sizeof (ACPI_TABLE_HEADER));
+    TableDesc->TableId              = Gbl_TbNextTableId;
+    TableDesc->LoadedIntoNamespace  = FALSE;
+
+    Gbl_TbNextTableId++;
+
+
+    /* Set the appropriate global pointer (if there is one) to point to the newly installed table */
+
+    if (Gbl_AcpiTableData[TableType].GlobalPtr)
+    {
+        *(Gbl_AcpiTableData[TableType].GlobalPtr) = TableInfo->Pointer;
+    }
 
 
     return_ACPI_STATUS (AE_OK);
