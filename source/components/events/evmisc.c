@@ -2,7 +2,7 @@
  *
  * Module Name: evmisc - ACPI device notification handler dispatch
  *                       and ACPI Global Lock support
- *              $Revision: 1.35 $
+ *              $Revision: 1.39 $
  *
  *****************************************************************************/
 
@@ -10,7 +10,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -127,6 +127,60 @@
 
 /*******************************************************************************
  *
+ * FUNCTION:    AcpiEvGetGpeRegisterIndex
+ *
+ * PARAMETERS:  GpeNumber       - Raw GPE number
+ *
+ * RETURN:      None.
+ *
+ * DESCRIPTION: Returns the register index (index into the GPE register info 
+ *              table) associated with this GPE.
+ *
+ ******************************************************************************/
+
+UINT32
+AcpiEvGetGpeRegisterIndex (
+    UINT32                  GpeNumber)
+{
+
+    if (GpeNumber > AcpiGbl_GpeNumberMax)
+    {
+        return (ACPI_GPE_INVALID);
+    }
+
+    return (AcpiGbl_GpeNumberToIndex[GpeNumber].RegisterIndex);
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiEvGetGpeNumberIndex
+ *
+ * PARAMETERS:  GpeNumber       - Raw GPE number
+ *
+ * RETURN:      None.
+ *
+ * DESCRIPTION: Returns the number index (index into the GPE number info table)
+ *              associated with this GPE.
+ *
+ ******************************************************************************/
+
+UINT32
+AcpiEvGetGpeNumberIndex (
+    UINT32                  GpeNumber)
+{
+
+    if (GpeNumber > AcpiGbl_GpeNumberMax)
+    {
+        return (ACPI_GPE_INVALID);
+    }
+
+    return (AcpiGbl_GpeNumberToIndex[GpeNumber].NumberIndex);
+}
+
+
+/*******************************************************************************
+ *
  * FUNCTION:    AcpiEvQueueNotifyRequest
  *
  * PARAMETERS:
@@ -220,7 +274,6 @@ AcpiEvQueueNotifyRequest (
         }
     }
 
-
     /* If there is any handler to run, schedule the dispatcher */
 
     if ((AcpiGbl_SysNotify.Handler && (NotifyValue <= MAX_SYS_NOTIFY)) ||
@@ -298,7 +351,6 @@ AcpiEvNotifyDispatch (
             GlobalContext = AcpiGbl_SysNotify.Context;
         }
     }
-
     else
     {
         /* Global driver notification handler */
@@ -309,7 +361,6 @@ AcpiEvNotifyDispatch (
             GlobalContext = AcpiGbl_DrvNotify.Context;
         }
     }
-
 
     /* Invoke the system handler first, if present */
 
@@ -456,7 +507,8 @@ AcpiEvInitGlobalLockHandler (void)
  *****************************************************************************/
 
 ACPI_STATUS
-AcpiEvAcquireGlobalLock(void)
+AcpiEvAcquireGlobalLock (
+    UINT32                  Timeout)
 {
     ACPI_STATUS             Status = AE_OK;
     BOOLEAN                 Acquired = FALSE;
@@ -464,6 +516,7 @@ AcpiEvAcquireGlobalLock(void)
 
 
     FUNCTION_TRACE ("EvAcquireGlobalLock");
+
 
     /* Make sure that we actually have a global lock */
 
@@ -475,7 +528,6 @@ AcpiEvAcquireGlobalLock(void)
     /* One more thread wants the global lock */
 
     AcpiGbl_GlobalLockThreadCount++;
-
 
     /* If we (OS side) have the hardware lock already, we are done */
 
@@ -491,7 +543,6 @@ AcpiEvAcquireGlobalLock(void)
         return_ACPI_STATUS (AE_OK);
     }
 
-
     /* We must acquire the actual hardware lock */
 
     GlobalLock = AcpiGbl_FACS->GlobalLock;
@@ -506,7 +557,6 @@ AcpiEvAcquireGlobalLock(void)
         return_ACPI_STATUS (AE_OK);
     }
 
-
     /*
      * Did not get the lock.  The pending bit was set above, and we must now
      * wait until we get the global lock released interrupt.
@@ -518,7 +568,7 @@ AcpiEvAcquireGlobalLock(void)
       * Since this wait will block, we must release the interpreter
       */
     Status = AcpiExSystemWaitSemaphore (AcpiGbl_GlobalLockSemaphore,
-                                            ACPI_UINT32_MAX);
+                                            Timeout);
     return_ACPI_STATUS (Status);
 }
 
@@ -576,3 +626,48 @@ AcpiEvReleaseGlobalLock (void)
 
     return_VOID;
 }
+
+
+/******************************************************************************
+ *
+ * FUNCTION:    AcpiEvTerminate
+ *
+ * PARAMETERS:  none
+ *
+ * RETURN:      none
+ *
+ * DESCRIPTION: free memory allocated for table storage.
+ *
+ ******************************************************************************/
+
+void
+AcpiEvTerminate (void)
+{
+
+    FUNCTION_TRACE ("EvTerminate");
+
+
+    /*
+     * Free global tables, etc.
+     */
+    if (AcpiGbl_GpeRegisterInfo)
+    {
+        ACPI_MEM_FREE (AcpiGbl_GpeRegisterInfo);
+        AcpiGbl_GpeRegisterInfo = NULL;
+    }
+
+    if (AcpiGbl_GpeNumberInfo)
+    {
+        ACPI_MEM_FREE (AcpiGbl_GpeNumberInfo);
+        AcpiGbl_GpeNumberInfo = NULL;
+    }
+
+    if (AcpiGbl_GpeNumberToIndex)
+    {
+        ACPI_MEM_FREE (AcpiGbl_GpeNumberToIndex);
+        AcpiGbl_GpeNumberToIndex = NULL;
+    }
+
+    return_VOID;
+}
+
