@@ -226,6 +226,10 @@ void
 NsDeleteAcpiTable (
     ACPI_TABLE_TYPE         Type);
 
+void
+NsFreeAcpiTable (
+    ACPI_TABLE_INFO         *TableInfo);
+
 
 /*
  * Namespace modification - nsmodify
