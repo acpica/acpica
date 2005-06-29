@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: nsinit - namespace initialization
- *              $Revision: 1.45 $
+ *              $Revision: 1.47 $
  *
  *****************************************************************************/
 
@@ -170,15 +170,15 @@ AcpiNsInitializeObjects (
     }
 
     ACPI_DEBUG_PRINT_RAW ((ACPI_DB_OK,
-        "\n Initialized %d/%d Regions %d/%d Fields %d/%d Buffers %d/%d Packages (%d nodes)\n",
+        "\nInitialized %hd/%hd Regions %hd/%hd Fields %hd/%hd Buffers %hd/%hd Packages (%hd nodes)\n",
         Info.OpRegionInit,  Info.OpRegionCount, 
         Info.FieldInit,     Info.FieldCount, 
         Info.BufferInit,    Info.BufferCount, 
         Info.PackageInit,   Info.PackageCount, Info.ObjectCount));
     ACPI_DEBUG_PRINT ((ACPI_DB_DISPATCH,
-        "%d Control Methods found\n", Info.MethodCount));
+        "%hd Control Methods found\n", Info.MethodCount));
     ACPI_DEBUG_PRINT ((ACPI_DB_DISPATCH,
-        "%d Op Regions found\n", Info.OpRegionCount));
+        "%hd Op Regions found\n", Info.OpRegionCount));
 
     return_ACPI_STATUS (AE_OK);
 }
@@ -231,7 +231,7 @@ AcpiNsInitializeDevices (
     }
 
     ACPI_DEBUG_PRINT_RAW ((ACPI_DB_OK,
-        "\n%d Devices found containing: %d _STA, %d _INI methods\n",
+        "\n%hd Devices found containing: %hd _STA, %hd _INI methods\n",
         Info.DeviceCount, Info.Num_STA, Info.Num_INI));
 
     return_ACPI_STATUS (Status);
@@ -471,27 +471,26 @@ AcpiNsInitOneDevice (
      */
     ACPI_DEBUG_EXEC (AcpiUtDisplayInitPathname (ObjHandle, "_INI  [Method]"));
     Status = AcpiNsEvaluateRelative (ObjHandle, "_INI", NULL, NULL);
-    if (AE_NOT_FOUND == Status)
+    if (ACPI_FAILURE (Status))
     {
-        /* No _INI means device requires no initialization */
+        /* No _INI (AE_NOT_FOUND) means device requires no initialization */
+
+        if (Status != AE_NOT_FOUND)
+        {
+            /* Ignore error and move on to next device */
+
+    #ifdef ACPI_DEBUG
+            NATIVE_CHAR *ScopeName = AcpiNsGetExternalPathname (ObjHandle);
+
+            ACPI_DEBUG_PRINT ((ACPI_DB_WARN, "%s._INI failed: %s\n",
+                    ScopeName, AcpiFormatException (Status)));
+
+            ACPI_MEM_FREE (ScopeName);
+    #endif
+        }
 
         Status = AE_OK;
     }
-
-    else if (ACPI_FAILURE (Status))
-    {
-        /* Ignore error and move on to next device */
-
-#ifdef ACPI_DEBUG
-        NATIVE_CHAR *ScopeName = AcpiNsGetExternalPathname (ObjHandle);
-
-        ACPI_DEBUG_PRINT ((ACPI_DB_WARN, "%s._INI failed: %s\n",
-                ScopeName, AcpiFormatException (Status)));
-
-        ACPI_MEM_FREE (ScopeName);
-#endif
-    }
-
     else
     {
         /* Count of successful INIs */
@@ -499,5 +498,13 @@ AcpiNsInitOneDevice (
         Info->Num_INI++;
     }
 
-    return_ACPI_STATUS (AE_OK);
+    if (AcpiGbl_InitHandler)
+    {
+        /* External initialization handler is present, call it */
+
+        Status = AcpiGbl_InitHandler (ObjHandle, ACPI_INIT_DEVICE_INI);
+    }
+
+
+    return_ACPI_STATUS (Status);
 }

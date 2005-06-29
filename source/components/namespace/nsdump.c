@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: nsdump - table dumping routines for debug
- *              $Revision: 1.134 $
+ *              $Revision: 1.135 $
  *
  *****************************************************************************/
 
@@ -370,7 +370,7 @@ AcpiNsDumpOneObject (
         {
         case ACPI_TYPE_PROCESSOR:
             
-            AcpiOsPrintf (" ID %d Addr %.4X Len %.4X\n",
+            AcpiOsPrintf (" ID %hd Addr %.4X Len %.4X\n",
                         ObjDesc->Processor.ProcId,
                         ObjDesc->Processor.Address,
                         ObjDesc->Processor.Length);
@@ -385,7 +385,7 @@ AcpiNsDumpOneObject (
 
         case ACPI_TYPE_METHOD:
             
-            AcpiOsPrintf (" Args %d Len %.4X Aml %p \n",
+            AcpiOsPrintf (" Args %hd Len %.4X Aml %p \n",
                         ObjDesc->Method.ParamCount,
                         ObjDesc->Method.AmlLength,
                         ObjDesc->Method.AmlStart);
@@ -428,7 +428,7 @@ AcpiNsDumpOneObject (
                     AcpiOsPrintf (" =");
                     for (i = 0; (i < ObjDesc->Buffer.Length && i < 12); i++)
                     {
-                        AcpiOsPrintf (" %.2X", ObjDesc->Buffer.Pointer[i]);
+                        AcpiOsPrintf (" %.2hX", ObjDesc->Buffer.Pointer[i]);
                     }
                 }
                 AcpiOsPrintf ("\n");
@@ -528,7 +528,7 @@ AcpiNsDumpOneObject (
         case INTERNAL_TYPE_REGION_FIELD:
         case INTERNAL_TYPE_BANK_FIELD:
         case INTERNAL_TYPE_INDEX_FIELD:
-            AcpiOsPrintf (" Off %.2X Len %.2X Acc %.2d\n",
+            AcpiOsPrintf (" Off %.2X Len %.2X Acc %.2hd\n",
                     (ObjDesc->CommonField.BaseByteOffset * 8)
                         + ObjDesc->CommonField.StartFieldBitOffset,
                     ObjDesc->CommonField.BitLength,
