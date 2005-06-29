@@ -119,15 +119,14 @@
 #define __RSCREATE_C__
 
 #include "acpi.h"
-#include "resource.h"
+#include "acresrc.h"
 
 #define _COMPONENT          RESOURCE_MANAGER
         MODULE_NAME         ("rscreate");
 
 
-
 /*******************************************************************************
- * 
+ *
  * FUNCTION:    AcpiRsCreateResourceList
  *
  * PARAMETERS:
@@ -184,14 +183,14 @@ AcpiRsCreateResourceList (
                                         ByteStreamBufferLength,
                                         &ListSizeNeeded);
 
-    DEBUG_PRINT (VERBOSE_INFO, 
-        ("RsCreateResourceList: Status=%d ListSizeNeeded=%d\n", 
+    DEBUG_PRINT (VERBOSE_INFO,
+        ("RsCreateResourceList: Status=%d ListSizeNeeded=%d\n",
         Status, ListSizeNeeded));
 
     /*
      * Exit with the error passed back
      */
-    if (AE_OK != Status)
+    if (ACPI_FAILURE (Status))
     {
         return_ACPI_STATUS (Status);
     }
@@ -215,7 +214,7 @@ AcpiRsCreateResourceList (
         /*
          * Exit with the error passed back
          */
-        if (AE_OK != Status)
+        if (ACPI_FAILURE (Status))
         {
             return_ACPI_STATUS (Status);
         }
@@ -371,7 +370,7 @@ AcpiRsCreatePciRoutingTable (
         TopObjectList++;
     }
 
-    DEBUG_PRINT (VERBOSE_INFO, 
+    DEBUG_PRINT (VERBOSE_INFO,
         ("RsCreatePciRoutingTable: BufferSizeNeeded = %d\n",
         BufferSizeNeeded));
 
@@ -472,7 +471,7 @@ AcpiRsCreatePciRoutingTable (
                  * Add to the Length field the length of the string
                  */
                 UserPrt->Length += (*SubObjectList)->String.Length;
-                UserPrt->Length = 
+                UserPrt->Length =
                     ROUND_UP_TO_32BITS (UserPrt->Length);
             }
 
@@ -520,8 +519,8 @@ AcpiRsCreatePciRoutingTable (
             TopObjectList++;
         }
 
-        DEBUG_PRINT (VERBOSE_INFO, 
-            ("RsCreatePciRoutingTable: OutputBuffer = %p\n", 
+        DEBUG_PRINT (VERBOSE_INFO,
+            ("RsCreatePciRoutingTable: OutputBuffer = %p\n",
             OutputBuffer));
     }
 
@@ -574,7 +573,7 @@ AcpiRsCreateByteStream (
 
     FUNCTION_TRACE ("RsCreateByteStream");
 
-    DEBUG_PRINT (VERBOSE_INFO, 
+    DEBUG_PRINT (VERBOSE_INFO,
         ("RsCreateByteStream: LinkedListBuffer = %p\n",
         LinkedListBuffer));
 
@@ -594,7 +593,7 @@ AcpiRsCreateByteStream (
     Status = AcpiRsCalculateByteStreamLength (LinkedListBuffer,
                                               &ByteStreamSizeNeeded);
 
-    DEBUG_PRINT (VERBOSE_INFO, 
+    DEBUG_PRINT (VERBOSE_INFO,
         ("RsCreateByteStream: ByteStreamSizeNeeded=%d, %s\n",
         ByteStreamSizeNeeded,
         AcpiCmFormatException (Status)));
@@ -602,7 +601,7 @@ AcpiRsCreateByteStream (
     /*
      * Exit with the error passed back
      */
-    if (AE_OK != Status)
+    if (ACPI_FAILURE (Status))
     {
         return_ACPI_STATUS (Status);
     }
@@ -626,12 +625,12 @@ AcpiRsCreateByteStream (
         /*
          * Exit with the error passed back
          */
-        if (AE_OK != Status)
+        if (ACPI_FAILURE (Status))
         {
             return_ACPI_STATUS (Status);
         }
 
-        DEBUG_PRINT (VERBOSE_INFO, 
+        DEBUG_PRINT (VERBOSE_INFO,
             ("RsListToByteStream: OutputBuffer = %p\n",
             OutputBuffer));
     }
