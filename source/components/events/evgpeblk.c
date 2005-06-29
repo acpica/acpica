@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: evgpeblk - GPE block creation and initialization.
- *              $Revision: 1.1 $
+ *              $Revision: 1.2 $
  *
  *****************************************************************************/
 
@@ -242,6 +242,55 @@ AcpiEvSaveMethodInfo (
 
 /*******************************************************************************
  *
+ * FUNCTION:    AcpiEvInstallGpeBlock
+ *
+ * PARAMETERS:  GpeBlock    - New GPE block
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Install new GPE block with mutex support
+ *
+ ******************************************************************************/
+
+ACPI_STATUS
+AcpiEvInstallGpeBlock (
+    ACPI_GPE_BLOCK_INFO     *GpeBlock)
+{
+    ACPI_GPE_BLOCK_INFO     *NextGpeBlock;
+    ACPI_STATUS             Status;
+
+
+    Status = AcpiUtAcquireMutex (ACPI_MTX_EVENTS);
+    if (ACPI_FAILURE (Status))
+    {
+        return (Status);
+    }
+
+    /* Install the new block at the end of the global list */
+
+    if (AcpiGbl_GpeBlockListHead)
+    {
+        NextGpeBlock = AcpiGbl_GpeBlockListHead;
+        while (NextGpeBlock->Next)
+        {
+            NextGpeBlock = NextGpeBlock->Next;
+        }
+
+        NextGpeBlock->Next = GpeBlock;
+        GpeBlock->Previous = NextGpeBlock;
+    }
+    else
+    {
+        AcpiGbl_GpeBlockListHead = GpeBlock;
+    }
+
+    Status = AcpiUtReleaseMutex (ACPI_MTX_EVENTS);
+    return (Status);
+}
+
+
+/*******************************************************************************
+ *
  * FUNCTION:    AcpiEvCreateGpeInfoBlocks
  *
  * PARAMETERS:  GpeBlock    - New GPE block
@@ -399,7 +448,6 @@ AcpiEvCreateGpeBlock (
     UINT8                   GpeBlockBaseNumber,
     UINT32                  InterruptLevel)
 {
-    ACPI_GPE_BLOCK_INFO     *NextGpeBlock;
     ACPI_GPE_BLOCK_INFO     *GpeBlock;
     ACPI_STATUS             Status;
     ACPI_HANDLE             ObjHandle;
@@ -436,6 +484,25 @@ AcpiEvCreateGpeBlock (
 
     ACPI_MEMCPY (&GpeBlock->BlockAddress, GpeBlockAddress, sizeof (ACPI_GENERIC_ADDRESS));
 
+    /* Create the RegisterInfo and EventInfo sub-structures */
+
+    Status = AcpiEvCreateGpeInfoBlocks (GpeBlock);
+    if (ACPI_FAILURE (Status))
+    {
+        ACPI_MEM_FREE (GpeBlock);
+        return_ACPI_STATUS (Status);
+    }
+        
+    /* Install the new block in the global list(s) */
+    /* TBD: Install block in the interrupt handler list */
+
+    Status = AcpiEvInstallGpeBlock (GpeBlock);
+    if (ACPI_FAILURE (Status))
+    {
+        ACPI_MEM_FREE (GpeBlock);
+        return_ACPI_STATUS (Status);
+    }
+
     /* Dump info about this GPE block */
 
     ACPI_DEBUG_PRINT ((ACPI_DB_INIT, "GPE Block: %X registers at %8.8X%8.8X\n",
@@ -448,40 +515,11 @@ AcpiEvCreateGpeBlock (
         (UINT32) (GpeBlock->BlockBaseNumber +
                 ((GpeBlock->RegisterCount * ACPI_GPE_REGISTER_WIDTH) -1))));
 
-    /* Create the RegisterInfo and EventInfo sub-structures */
-
-    Status = AcpiEvCreateGpeInfoBlocks (GpeBlock);
-    if (ACPI_FAILURE (Status))
-    {
-        ACPI_MEM_FREE (GpeBlock);
-        return_ACPI_STATUS (Status);
-    }
-        
-    /* Install the new block at the end of the global list */
-
-    if (AcpiGbl_GpeBlockListHead)
-    {
-        NextGpeBlock = AcpiGbl_GpeBlockListHead;
-        while (NextGpeBlock->Next)
-        {
-            NextGpeBlock = NextGpeBlock->Next;
-        }
-
-        NextGpeBlock->Next = GpeBlock;
-        GpeBlock->Previous = NextGpeBlock;
-    }
-    else
-    {
-        AcpiGbl_GpeBlockListHead = GpeBlock;
-    }
-
     /* Find all GPE methods (_Lxx, _Exx) for this block */
 
     Status = AcpiWalkNamespace (ACPI_TYPE_METHOD, ObjHandle,
                                 ACPI_UINT32_MAX, AcpiEvSaveMethodInfo,
                                 GpeBlock, NULL);
-
-    /* TBD: Install block in the interrupt handler list */
 
     return_ACPI_STATUS (AE_OK);
 }
