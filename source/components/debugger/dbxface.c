@@ -197,13 +197,23 @@ DbSingleStep (
     }
 
 
-    if (OutputToFile)
+    /*
+     * Under certain debug conditions, display this opcode and its operands
+     */
+
+    if ((OutputToFile)                  ||
+        (Gbl_CmSingleStep)              ||
+        (DebugLevel & TRACE_PARSE))
     {
+        if ((OutputToFile)                  ||
+            (DebugLevel & TRACE_PARSE))
+        {
+            OsdPrintf ("\n[AmlDebug] Next AML Opcode to execute:\n");
+        }
+
         /* 
          * Display this op (and only this op - zero out the NEXT field temporarily)
          */
-
-        OsdPrintf ("\n[AmlDebug] Next AML Opcode to execute:\n");
         Next = Op->Next;
         Op->Next = NULL;
         DbDisplayOp (Op, ACPI_UINT32_MAX);
@@ -218,15 +228,6 @@ DbSingleStep (
     {
         return (AE_OK);
     }
-
-    /* 
-     * Display this op (and only this op - zero out the NEXT field temporarily)
-     */
-
-    Next = Op->Next;
-    Op->Next = NULL;
-    DbDisplayOp (Op, ACPI_UINT32_MAX);
-    Op->Next = Next;
 
 
     /*
