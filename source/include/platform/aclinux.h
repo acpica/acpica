@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: aclinux.h - OS specific defines, etc.
- *       $Revision: 1.14 $
+ *       $Revision: 1.23 $
  *
  *****************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -130,24 +130,26 @@
 #include <asm/system.h>
 #include <asm/atomic.h>
 #include <asm/div64.h>
+#include <asm/acpi.h>
 
 #define strtoul simple_strtoul
 
-#else
+#else /* !__KERNEL__ */
 
 #include <stdarg.h>
 #include <string.h>
 #include <stdlib.h>
 #include <ctype.h>
 
-#endif
+#endif /* __KERNEL__ */
 
 /* Linux uses GCC */
 
 #include "acgcc.h"
 
 #undef DEBUGGER_THREADING
-#define DEBUGGER_THREADING          DEBUGGER_SINGLE_THREADED
+#define DEBUGGER_THREADING	DEBUGGER_SINGLE_THREADED
 
+#define ACPI_BITS_PER_LONG	BITS_PER_LONG
 
 #endif /* __ACLINUX_H__ */
