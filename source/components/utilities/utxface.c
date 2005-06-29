@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: utxface - External interfaces for "global" ACPI functions
- *              $Revision: 1.88 $
+ *              $Revision: 1.89 $
  *
  *****************************************************************************/
 
@@ -284,6 +284,19 @@ AcpiEnableSubsystem (
         ACPI_DEBUG_PRINT ((ACPI_DB_EXEC, "[Init] Initializing ACPI events\n"));
 
         Status = AcpiEvInitialize ();
+        if (ACPI_FAILURE (Status))
+        {
+            return_ACPI_STATUS (Status);
+        }
+    }
+
+    /* Install SCI handler, Global Lock handler, GPE handlers */
+
+    if (!(Flags & ACPI_NO_HANDLER_INIT))
+    {
+        ACPI_DEBUG_PRINT ((ACPI_DB_EXEC, "[Init] Installing SCI/GL/GPE handlers\n"));
+
+        Status = AcpiEvHandlerInitialize ();
         if (ACPI_FAILURE (Status))
         {
             return_ACPI_STATUS (Status);
