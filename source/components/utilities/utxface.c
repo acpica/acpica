@@ -302,8 +302,8 @@ AcpiGetSystemInfo (
 
     /* Current debug levels */
 
-    InfoPtr->DebugLayer         = DebugLayer;
-    InfoPtr->DebugLevel         = DebugLevel;
+    InfoPtr->DebugLayer         = AcpiDbgLayer;
+    InfoPtr->DebugLevel         = AcpiDbgLevel;
 
     /* Current status of the ACPI tables, per table type */
 
