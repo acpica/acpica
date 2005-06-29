@@ -419,6 +419,7 @@ AmlResolveObjectToValue (
                      * Valid obj descriptor, copy pointer to return value
                      */
                     CmRemoveReference (StackDesc);     /* Delete the Reference object */
+                    CmAddReference (ObjDesc);          /* Increment the return value object */
                     *StackPtr = ObjDesc;
                     Status = AE_OK;
                 }
