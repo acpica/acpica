@@ -1088,26 +1088,22 @@ AmlGetRvalueFromEntry (
         break;
 
 
-
-    /* TBD: Unimplemented cases */
+    /* TYPE_Any is untyped, and thus there is no object associated with it */
 
     case ACPI_TYPE_Any:
 
-        DEBUG_PRINT (TRACE_EXEC, ("AmlGetRvalueFromEntry: case %s \n", 
-                        Gbl_NsTypeNames[EntryType]));
-      
-        DEBUG_PRINT (ACPI_ERROR, ("AmlGetRvalueFromEntry: Type [%s] is not implemented!\n",
-                        Gbl_NsTypeNames[EntryType]));
+        DEBUG_PRINT (ACPI_ERROR, ("AmlGetRvalueFromEntry: Untyped entry %p - has no Rvalue\n",
+                        StackEntry));
         
-        return_ACPI_STATUS (AE_NOT_IMPLEMENTED);
+        return_ACPI_STATUS (AE_AML_ERROR);  /* Cannot be AE_TYPE */
 
 
     /* Default case is for unknown types */
 
     default:
 
-        DEBUG_PRINT (ACPI_ERROR, ("AmlGetRvalueFromEntry: Unknown object type %d\n",
-                        EntryType));
+        DEBUG_PRINT (ACPI_ERROR, ("AmlGetRvalueFromEntry: Entry %p - Unknown object type %d\n",
+                        StackEntry, EntryType));
         
         return_ACPI_STATUS (AE_AML_ERROR);
     
