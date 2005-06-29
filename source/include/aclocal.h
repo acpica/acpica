@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: aclocal.h - Internal data types used across the ACPI subsystem
- *       $Revision: 1.136 $
+ *       $Revision: 1.138 $
  *
  *****************************************************************************/
 
@@ -280,7 +280,7 @@ typedef struct acpi_node
     UINT32                  Name;           /* ACPI Name, always 4 chars per ACPI spec */
 
 
-    void                    *Object;        /* Pointer to attached ACPI object (optional) */
+    union acpi_operand_obj  *Object;        /* Pointer to attached ACPI object (optional) */
     struct acpi_node        *Child;         /* first child */
     struct acpi_node        *Peer;          /* Next peer*/
     UINT16                  ReferenceCount; /* Current count of references and children */
@@ -374,6 +374,33 @@ typedef struct acpi_namestring_info
     BOOLEAN                 FullyQualified;
 
 } ACPI_NAMESTRING_INFO;
+
+
+/* Field creation info */
+
+typedef struct
+{
+    ACPI_NAMESPACE_NODE     *RegionNode;
+    ACPI_NAMESPACE_NODE     *FieldNode;
+    ACPI_NAMESPACE_NODE     *RegisterNode;
+    ACPI_NAMESPACE_NODE     *DataRegisterNode;
+    UINT32                  BankValue;
+    UINT32                  FieldBitPosition;
+    UINT32                  FieldBitLength;
+    UINT8                   FieldFlags;
+    UINT8                   FieldType;
+
+} ACPI_CREATE_FIELD_INFO;
+
+/*
+ * Field flags: Bits 00 - 03 : AccessType (AnyAcc, ByteAcc, etc.)
+ *                   04      : LockRule (1 == Lock)
+ *                   05 - 06 : UpdateRule
+ */
+
+#define FIELD_ACCESS_TYPE_MASK      0x0F
+#define FIELD_LOCK_RULE_MASK        0x10
+#define FIELD_UPDATE_RULE_MASK      0x60
 
 
 /*****************************************************************************
