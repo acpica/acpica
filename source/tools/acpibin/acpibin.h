@@ -1,7 +1,7 @@
 
 /******************************************************************************
  * 
- * Module Name: abmain - Main module for the acpi binary utility
+ * Module Name: acpibinh - Include file for AcpiBin utility
  *              $Revision: 1.1 $
  *
  *****************************************************************************/
@@ -116,77 +116,43 @@
  *****************************************************************************/
 
 
-#include "acpibin.h"
+
+
+#include <stdio.h>
+#include <sys/stat.h>
+#include <sys/types.h>
+#include <fcntl.h>
+#include <io.h>
+#include <ctype.h>
+#include <direct.h>
+#include <errno.h>
+
+#include "acpi.h"
+
+
+/* Constants */
+
+
 
 
 /* Globals */
 
+extern int                      optind;
+extern char                     *optarg;
 
 
 
-/******************************************************************************
- *
- * FUNCTION:    AbDisplayUsage  
- *
- * DESCRIPTION: Usage message
- *
- ******************************************************************************/
-
-void
-AbDisplayUsage (void)
-{
-
-    printf ("Usage: acpibin [-c ] <File1> <File2>\n\n");
-    printf ("\n");
-    return;
-}
-
-
-/******************************************************************************
- *
- * FUNCTION:    main
- *
- * DESCRIPTION: C main function
- *
- ******************************************************************************/
+/* Prototypes */
 
 int 
-main (
-    NATIVE_UINT             argc, 
-    char                    *argv[])
-{
-    int                     j;
+getopt (
+    int                     argc, 
+    char                    **argv, 
+    char                    *opts);
 
-    
-    printf ("\nACPI Binary (AML) Utility");
-    printf (" version [%s]\n\n", __DATE__);
-
-    if (argc < 2)
-    {
-        AbDisplayUsage ();
-        return 0;
-    }
-
-    /* Command line options */
-
-    while ((j = getopt (argc, argv, "c")) != EOF) switch(j) 
-    {
-    case 'c':
-        /* Compare Files */
-
-        AbCompareAmlFiles (argv[optind], argv[optind+1]);
-
-        break;
+int
+AbCompareAmlFiles (
+    char                    *File1Path,
+    char                    *File2Path);
 
 
-
-    default:    
-        AbDisplayUsage ();
-        return -1;
-    }
-
-
-
-
-	return 0;
-}

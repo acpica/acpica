@@ -1,8 +1,8 @@
 
 /******************************************************************************
- *
+ * 
  * Module Name: abcompare - compare AML files
- *              $Revision: 1.14 $
+ *              $Revision: 1.1 $
  *
  *****************************************************************************/
 
@@ -39,9 +39,9 @@
  * The above copyright and patent license is granted only if the following
  * conditions are met:
  *
- * 3. Conditions
+ * 3. Conditions 
  *
- * 3.1. Redistribution of Source with Rights to Further Distribute Source.
+ * 3.1. Redistribution of Source with Rights to Further Distribute Source.  
  * Redistribution of source code of any substantial portion of the Covered
  * Code or modification with rights to further distribute source must include
  * the above Copyright Notice, the above License, this list of Conditions,
@@ -49,11 +49,11 @@
  * Licensee must cause all Covered Code to which Licensee contributes to
  * contain a file documenting the changes Licensee made to create that Covered
  * Code and the date of any change.  Licensee must include in that file the
- * documentation of any changes made by any predecessor Licensee.  Licensee
+ * documentation of any changes made by any predecessor Licensee.  Licensee 
  * must include a prominent statement that the modification is derived,
  * directly or indirectly, from Original Intel Code.
  *
- * 3.2. Redistribution of Source with no Rights to Further Distribute Source.
+ * 3.2. Redistribution of Source with no Rights to Further Distribute Source.  
  * Redistribution of source code of any substantial portion of the Covered
  * Code or modification without rights to further distribute source must
  * include the following Disclaimer and Export Compliance provision in the
@@ -87,7 +87,7 @@
  * INSTALLATION, TRAINING OR OTHER SERVICES.  INTEL WILL NOT PROVIDE ANY
  * UPDATES, ENHANCEMENTS OR EXTENSIONS.  INTEL SPECIFICALLY DISCLAIMS ANY
  * IMPLIED WARRANTIES OF MERCHANTABILITY, NONINFRINGEMENT AND FITNESS FOR A
- * PARTICULAR PURPOSE.
+ * PARTICULAR PURPOSE. 
  *
  * 4.2. IN NO EVENT SHALL INTEL HAVE ANY LIABILITY TO LICENSEE, ITS LICENSEES
  * OR ANY OTHER THIRD PARTY, FOR ANY LOST PROFITS, LOST DATA, LOSS OF USE OR
@@ -116,7 +116,6 @@
  *****************************************************************************/
 
 #include "acpibin.h"
-#include <stdlib.h>
 
 
 FILE                *File1;
@@ -124,143 +123,6 @@ FILE                *File2;
 ACPI_TABLE_HEADER   Header1;
 ACPI_TABLE_HEADER   Header2;
 
-
-/******************************************************************************
- *
- * FUNCTION:    AbValidateHeader
- *
- * DESCRIPTION: Check for valid ACPI table header
- *
- ******************************************************************************/
-
-BOOLEAN
-AbValidateHeader (
-    ACPI_TABLE_HEADER       *Header)
-{
-
-    if (!AcpiUtValidAcpiName (* (UINT32 *) &Header->Signature))
-    {
-        printf ("Header signature is invalid\n");
-        return FALSE;
-    }
-
-    return TRUE;
-}
-
-
-/*******************************************************************************
- *
- * FUNCTION:    AcpiTbChecksum
- *
- * PARAMETERS:  Buffer              - Buffer to checksum
- *              Length              - Size of the buffer
- *
- * RETURNS      8 bit checksum of buffer
- *
- * DESCRIPTION: Computes an 8 bit checksum of the buffer(length) and returns it.
- *
- ******************************************************************************/
-
-UINT8
-AcpiTbChecksum (
-    void                    *Buffer,
-    UINT32                  Length)
-{
-    const UINT8             *limit;
-    const UINT8             *rover;
-    UINT8                   sum = 0;
-
-
-    if (Buffer && Length)
-    {
-        /*  Buffer and Length are valid   */
-
-        limit = (UINT8 *) Buffer + Length;
-
-        for (rover = Buffer; rover < limit; rover++)
-        {
-            sum = (UINT8) (sum + *rover);
-        }
-    }
-    return (sum);
-}
-
-
-/******************************************************************************
- *
- * FUNCTION:    AbComputeChecksum
- *
- * DESCRIPTION: Compute proper checksum for an ACPI table
- *
- ******************************************************************************/
-
-void
-AbComputeChecksum (
-    char                    *File1Path)
-{
-    UINT32                  Actual1;
-    ACPI_TABLE_HEADER       *Table;
-    UINT8                   Checksum;
-
-
-    File1 = fopen (File1Path, "rb");
-    if (!File1)
-    {
-        printf ("Could not open file %s\n", File1Path);
-        return;
-    }
-
-    Actual1 = fread (&Header1, 1, sizeof (ACPI_TABLE_HEADER), File1);
-    if (Actual1 < sizeof (ACPI_TABLE_HEADER))
-    {
-        printf ("File %s does not contain an ACPI table header\n", File1Path);
-        return;
-    }
-
-    if (!AbValidateHeader (&Header1))
-    {
-        return;
-    }
-
-    if (!Gbl_TerseMode)
-    {
-        /* Display header information */
-
-        printf ("Signature         : %8.4s\n",    Header1.Signature);
-        printf ("Length            : %8.8X\n",    Header1.Length);
-        printf ("Revision          : % 8.2X\n",  Header1.Revision);
-        printf ("Checksum          : % 8.2X\n",  Header1.Checksum);
-        printf ("OEM ID            : %8.6s\n",    Header1.OemId);
-        printf ("OEM Table ID      : %8.8s\n",    Header1.OemTableId);
-        printf ("OEM Revision      : %8.8X\n",    Header1.OemRevision);
-        printf ("ASL Compiler ID   : %8.4s\n",    Header1.AslCompilerId);
-        printf ("Compiler Revision : %8.8X\n",    Header1.AslCompilerRevision);
-        printf ("\n");
-    }
-
-
-    Table = AcpiOsAllocate (Header1.Length);
-    if (!Table)
-    {
-        printf ("could not allocate\n");
-        return;
-    }
-
-    fseek (File1, 0, SEEK_SET);
-    Actual1 = fread (Table, 1, Header1.Length, File1);
-    if (Actual1 < Header1.Length)
-    {
-        printf ("could not read table\n");
-        return;
-    }
-
-    Table->Checksum = 0;
-
-    Checksum     = (UINT8) (0 - AcpiTbChecksum (Table, Table->Length));
-
-
-    printf ("Computed checksum: 0x%X\n\n", Checksum);
-}
 
 
 /******************************************************************************
@@ -284,6 +146,7 @@ AbCompareAmlFiles (
     UINT8                   Mismatches = 0;
 
 
+
     File1 = fopen (File1Path, "rb");
     if (!File1)
     {
@@ -300,29 +163,9 @@ AbCompareAmlFiles (
     }
 
 
-    /* Read the ACPI header from each file */
 
-    Actual1 = fread (&Header1, 1, sizeof (ACPI_TABLE_HEADER), File1);
-    if (Actual1 < sizeof (ACPI_TABLE_HEADER))
-    {
-        printf ("File %s does not contain an ACPI table header\n", File1Path);
-        return -1;
-    }
-
-    Actual2 = fread (&Header2, 1, sizeof (ACPI_TABLE_HEADER), File2);
-    if (Actual2 < sizeof (ACPI_TABLE_HEADER))
-    {
-        printf ("File %s does not contain an ACPI table header\n", File2Path);
-        return -1;
-    }
-
-    if ((!AbValidateHeader (&Header1)) ||
-        (!AbValidateHeader (&Header2)))
-    {
-        return -1;
-    }
-
-    /* Table signatures must match */
+    Actual1 = fread (&Header1, sizeof (ACPI_TABLE_HEADER), 1, File1);
+    Actual2 = fread (&Header2, sizeof (ACPI_TABLE_HEADER), 1, File2);
 
     if ((UINT32) Header1.Signature != (UINT32) Header1.Signature)
     {
@@ -331,23 +174,16 @@ AbCompareAmlFiles (
     }
 
 
-    if (!Gbl_TerseMode)
-    {
-        /* Display header information */
-
-        printf ("Signature         : %8.4s  %8.4s\n",    Header1.Signature, Header2.Signature);
-        printf ("Length            : %8.8X  %8.8X\n",    Header1.Length, Header2.Length);
-        printf ("Revision          : % 8.2X  % 8.2X\n",  Header1.Revision, Header2.Revision);
-        printf ("Checksum          : % 8.2X  % 8.2X\n",  Header1.Checksum, Header2.Checksum);
-        printf ("OEM ID            : %8.6s  %8.6s\n",    Header1.OemId, Header2.OemId);
-        printf ("OEM Table ID      : %8.8s  %8.8s\n",    Header1.OemTableId, Header2.OemTableId);
-        printf ("OEM Revision      : %8.8X  %8.8X\n",    Header1.OemRevision, Header2.OemRevision);
-        printf ("ASL Compiler ID   : %8.4s  %8.4s\n",    Header1.AslCompilerId, Header2.AslCompilerId);
-        printf ("Compiler Revision : %8.8X  %8.8X\n",    Header1.AslCompilerRevision, Header2.AslCompilerRevision);
-        printf ("\n");
-    }
-
-    /* Do the byte-by-byte compare */
+    printf ("Signature         : %8.4s %8.4s\n",    Header1.Signature, Header2.Signature);
+    printf ("Length            : %8.8X %8.8X\n",    Header1.Length, Header2.Length);
+    printf ("Revision          : % 8.2X % 8.2X\n",  Header1.Revision, Header2.Revision);
+    printf ("Checksum          : % 8.2X % 8.2X\n",  Header1.Checksum, Header2.Checksum);
+    printf ("OEM ID            : \n");
+    printf ("OEM Table ID      : \n");
+    printf ("OEM Revision      : %8.8X %8.8X\n",    Header1.OemRevision, Header2.OemRevision);
+    printf ("ASL Compiler ID   : %8.8X %8.8X\n",    *(UINT32 *) Header1.AslCompilerId, *(UINT32 *) Header2.AslCompilerId);
+    printf ("Compiler Revision : %8.8X %8.8X\n",    Header1.AslCompilerRevision, Header2.AslCompilerRevision);
+    printf ("\n");
 
     Actual1 = fread (&Char1, 1, 1, File1);
     Actual2 = fread (&Char2, 1, 1, File2);
@@ -357,11 +193,11 @@ AbCompareAmlFiles (
     {
         if (Char1 != Char2)
         {
-            printf ("Error - Byte mismatch at offset %8.8X: 0x%2.2X 0x%2.2X\n", Offset, Char1, Char2);
+            printf ("Byte mismatch at offset %8.8X: 0x%2.2X 0x%2.2X\n", Offset, Char1, Char2);
             Mismatches++;
-            if (Mismatches > 100)
+            if (Mismatches > 10)
             {
-                printf ("100 Mismatches: Too many mismatches\n");
+                printf ("Too many mismatches\n");
                 return 0;
             }
         }
@@ -370,153 +206,21 @@ AbCompareAmlFiles (
         Actual1 = fread (&Char1, 1, 1, File1);
         Actual2 = fread (&Char2, 1, 1, File2);
 
-    }
+    } 
 
 
-    if (Actual1)
-    {
-        printf ("Error - file %s is longer than file %s\n", File1Path, File2Path);
-        Mismatches++;
-    }
-    else if (Actual2)
-    {
-        printf ("Error - file %s is shorter than file %s\n", File1Path, File2Path);
-        Mismatches++;
-    }
-    else if (!Mismatches)
-    {
+
+    if (!Mismatches)
+    { 
         printf ("Files compare exactly after header\n");
     }
 
-    printf ("%d Mismatches found\n", Mismatches);
     return 0;
 }
 
 
-struct stat              Gbl_StatBuf;
 
 
-/******************************************************************************
- *
- * FUNCTION:    AsGetFile
- *
- * DESCRIPTION: Open a file and read it entirely into a an allocated buffer
- *
- ******************************************************************************/
-
-char *
-AbGetFile (
-    char                    *Filename,
-    UINT32                  *FileSize)
-{
-
-    int                     FileHandle;
-    UINT32                  Size;
-    char                    *Buffer = NULL;
 
 
-    /* Binary mode leaves CR/LF pairs */
-
-    FileHandle = open (Filename, O_BINARY | O_RDONLY);
-    if (!FileHandle)
-    {
-        printf ("Could not open %s\n", Filename);
-        return NULL;
-    }
-
-    if (fstat (FileHandle, &Gbl_StatBuf))
-    {
-        printf ("Could not get file status for %s\n", Filename);
-        goto ErrorExit;
-    }
-
-    /*
-     * Create a buffer for the entire file
-     * Add 10% extra to accomodate string replacements
-     */
-
-    Size = Gbl_StatBuf.st_size;
-    Buffer = calloc (Size + (Size / 10), 1);
-    if (!Buffer)
-    {
-        printf ("Could not allocate buffer of size %d\n", Size + (Size / 10));
-        goto ErrorExit;
-    }
-
-    /* Read the entire file */
-
-    Size = read (FileHandle, Buffer, Size);
-    if (Size == -1)
-    {
-        printf ("Could not read the input file %s\n", Filename);
-        free (Buffer);
-        Buffer = NULL;
-        goto ErrorExit;
-    }
-
-    *FileSize = Size;
-
-ErrorExit:
-    close (FileHandle);
-
-    return (Buffer);
-}
-
-
-int
-AbDumpAmlFile (
-    char                    *File1Path)
-{
-    char                    *FileBuffer;
-    UINT32                  FileSize;
-
-
-    FileBuffer = AbGetFile (File1Path, &FileSize);
-    printf ("File %s contains 0x%X bytes\n\n", File1Path, FileSize);
-
-
-    if (!AbValidateHeader ((ACPI_TABLE_HEADER *) FileBuffer))
-    {
-        return -1;
-    }
-
-
-    AcpiDbgLevel = ACPI_UINT32_MAX;
-    AcpiUtDumpBuffer (FileBuffer, FileSize, DB_BYTE_DISPLAY, ACPI_UINT32_MAX);
-
-    return 0;
-}
-
-#define DB_CONSOLE_OUTPUT       0x02
-
-FILE                        *AcpiGbl_DebugFile = NULL;
-UINT8                       AcpiGbl_DbOutputFlags = DB_CONSOLE_OUTPUT ;
-
-void
-AcpiUtFree (
-    void                    *Address,
-    UINT32                  Component,
-    char                    *Module,
-    UINT32                  Line)
-{
-    return;
-}
-
-
-void *
-AcpiUtMemset (
-    void                    *Dest,
-    UINT32                  Value,
-    ACPI_NATIVE_UINT        Count)
-{
-    return (Dest);
-}
-
-ACPI_STATUS
-AeLocalGetRootPointer (
-    UINT32                  Flags,
-    ACPI_PHYSICAL_ADDRESS   *RsdpPhysicalAddress)
-{
-    return AE_OK;
-}
 
