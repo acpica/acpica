@@ -213,12 +213,13 @@ AcpiLoadNamespace (
 }
 
 
+
 /****************************************************************************
  *
- * FUNCTION:    AcpiNameToHandle
+ * FUNCTION:    AcpiGetHandle
  *
  * PARAMETERS:  Parent          - Object to search under (search scope).
- *              Name            - Pointer to an ascii string containing the name
+ *              PathName        - Pointer to an asciiz string containing the name
  *              RetHandle       - Where the return handle is placed
  *
  * RETURN:      Status
@@ -231,133 +232,14 @@ AcpiLoadNamespace (
  ******************************************************************************/
 
 ACPI_STATUS 
-AcpiNameToHandle (
+AcpiGetHandle (
     ACPI_HANDLE             Parent, 
-    ACPI_NAME               Name, 
-    ACPI_HANDLE             *RetHandle)
-{
-    NAME_TABLE_ENTRY        *ThisEntry;
-    ACPI_HANDLE             LocalParent = Parent;
-
-
-    if (!RetHandle)
-    {
-        return AE_BAD_PARAMETER;
-    }
-
-    /* Special case for root, since we can't search for it */
-
-    if (Name == NS_ROOT)
-    {
-        *RetHandle = NsConvertEntryToHandle(Gbl_RootObject);
-        return AE_OK;
-    }
-
-    /* Null parent means root object */
-
-    if (!Parent)
-    {
-        LocalParent = Gbl_RootObject;
-    }
-
-    /* Validate the Parent handle */
-
-    if (!(ThisEntry = NsConvertHandleToEntry (LocalParent)))
-    {
-        return AE_BAD_PARAMETER;
-    }
-    
-    /* It is the scope that we are really after */
-
-    ThisEntry = ThisEntry->Scope;
-
-    /* Search for the name within this Parent */
-
-    while (ThisEntry)
-    {
-        if (ThisEntry->Name == Name)
-        {
-            *RetHandle = NsConvertEntryToHandle(ThisEntry);
-            return AE_OK;
-        }
-
-        ThisEntry = ThisEntry->NextEntry;
-    }
-
-    *RetHandle = NULL;
-    return AE_NOT_FOUND;
-}
-
-
-/****************************************************************************
- *
- * FUNCTION:    AcpiHandleToName
- *
- * PARAMETERS:  Handle          - Handle to be converted to a name
- *              RetName         - Where the 4 char (UINT32) name is placed
- *
- * RETURN:      Status
- *
- * DESCRIPTION: This routine returns the name associated with ACPI_HANDLE.  This
- *              and the AcpiNameToHandle are complementary functions.
- *
- *                  Handle == AcpiNameToHandle(AcpiHandleToName(Handle))
- *              and
- *                  Name == AcpiHandleToName(AcpiNameToHandle(Name, NULL))
- *
- ******************************************************************************/
-
-ACPI_STATUS 
-AcpiHandleToName (
-    ACPI_HANDLE             Handle, 
-    ACPI_NAME               *RetName)
-{
-    NAME_TABLE_ENTRY        *ObjEntry;
-
-
-    if (!RetName)
-    {
-        return AE_BAD_PARAMETER;
-    }
-
-    /* Validate handle and convert to and NTE */
-
-    if (!(ObjEntry = NsConvertHandleToEntry (Handle)))
-    {
-        *RetName = 0;
-        return AE_BAD_PARAMETER;
-    }
-
-
-    /* Just extract the name field */
-
-    *RetName = ObjEntry->Name;
-    return AE_OK;
-}
-
-
-/****************************************************************************
- *
- * FUNCTION:    AcpiPathnameToHandle
- *
- * PARAMETERS:  Pathname        - pointer to ascii string containing full pathname
- *              RetHandle       - Where the return handle is stored
- *
- * RETURN:      Status
- *
- * DESCRIPTION: This routine will search for a caller specified name in the
- *              name space.  The pathname provided must be a fully qualified 
- *              path from the root of the namespace.
- *
- ******************************************************************************/
-
-ACPI_STATUS 
-AcpiPathnameToHandle (
     ACPI_STRING             Pathname, 
     ACPI_HANDLE             *RetHandle)
 {
-    NAME_TABLE_ENTRY     *TmpNte;
-    ACPI_STATUS     Status;
+    ACPI_STATUS             Status;
+    NAME_TABLE_ENTRY        *ThisEntry;
+
 
     if (!RetHandle || !Pathname)
     {
@@ -368,17 +250,19 @@ AcpiPathnameToHandle (
 
     if (STRCMP (Pathname, NS_ROOT_PATH) == 0)
     {
-        *RetHandle = NsConvertEntryToHandle(Gbl_RootObject);
+        *RetHandle = NsConvertEntryToHandle (Gbl_RootObject);
         return AE_OK;
     }
+
+
 
     /*
      *  Find the Nte and convert to the user format
      */
-    TmpNte = NULL;
-    Status = NsGetNte (Pathname, NS_ALL, &TmpNte);
+    ThisEntry = NULL;
+    Status = NsGetNte (Pathname, Parent, &ThisEntry);
 
-   *RetHandle = NsConvertEntryToHandle(TmpNte);
+   *RetHandle = NsConvertEntryToHandle (ThisEntry);
 
     return (Status);
 }
@@ -386,12 +270,13 @@ AcpiPathnameToHandle (
 
 /****************************************************************************
  *
- * FUNCTION:    AcpiHandleToPathname
+ * FUNCTION:    AcpiGetPathname
  *
  * PARAMETERS:  Handle          - Handle to be converted to a pathname
+ *              NameType        - Full pathname or single segment
  *              RetPathPtr      - Buffer for returned path
  *
- * RETURN:      pointer to a string containing the fully qualified Name.
+ * RETURN:      Pointer to a string containing the fully qualified Name.
  *
  * DESCRIPTION: This routine returns the fully qualified name associated with
  *              the Handle parameter.  This and the AcpiPathnameToHandle are 
@@ -399,18 +284,19 @@ AcpiPathnameToHandle (
  *
  ******************************************************************************/
 
-
 ACPI_STATUS 
-AcpiHandleToPathname (
+AcpiGetName (
     ACPI_HANDLE             Handle, 
+    UINT32                  NameType,
     ACPI_BUFFER             *RetPathPtr)
 {
     ACPI_STATUS             Status;
+    NAME_TABLE_ENTRY        *ObjEntry;
 
 
     /* Buffer pointer must be valid always */
 
-    if (!RetPathPtr)
+    if (!RetPathPtr || (NameType > ACPI_NAME_TYPE_MAX))
     {
         return AE_BAD_PARAMETER;
     }
@@ -423,7 +309,39 @@ AcpiHandleToPathname (
         return AE_BAD_PARAMETER;
     }
 
-    Status = NsHandleToPathname (Handle, &RetPathPtr->Length, RetPathPtr->Pointer);
+    if (NameType == ACPI_FULL_PATHNAME)
+    {
+        /* Get the full pathname (From the namespace root) */
+
+        Status = NsHandleToPathname (Handle, &RetPathPtr->Length, RetPathPtr->Pointer);
+    }
+
+    else
+    {
+        /* 
+         * Wants the single segment ACPI name.  
+         * Validate handle and convert to an NTE 
+         */
+
+        if (!(ObjEntry = NsConvertHandleToEntry (Handle)))
+        {
+            return AE_BAD_PARAMETER;
+        }
+
+        /* Check if name will fit in buffer */
+
+        if (RetPathPtr->Length < PATH_SEGMENT_LENGTH)
+        {
+            RetPathPtr->Length = PATH_SEGMENT_LENGTH;
+            return AE_BUFFER_OVERFLOW;
+        }
+
+        /* Just copy the ACPI name from the NTE and zero terminate it */
+
+        STRNCPY (RetPathPtr->Pointer, (char *) ObjEntry->Name, ACPI_NAME_SIZE);
+        ((char *) RetPathPtr->Pointer) [ACPI_NAME_SIZE] = 0;
+        Status = AE_OK;
+    }
 
     return Status;
 }
@@ -502,8 +420,14 @@ AcpiGetObjectInfo (
     Status = Execute_UID (DeviceEntry, &Uid);
     if (ACPI_SUCCESS (Status))
     {
-        /* Until the underlying code works, this will crash.
-        STRCPY (Info->UniqueId, Uid.Data.StringPtr); */
+        if (Hid.Type == STRING_PTR_DEVICE_ID)
+        {
+            STRCPY (Info->UniqueId, Uid.Data.StringPtr);
+        }
+        else
+        {
+            STRCPY (Info->UniqueId, Uid.Data.Buffer);
+        }
         Info->Valid |= ACPI_VALID_UID;
     }
 
