@@ -1,7 +1,8 @@
 
 /******************************************************************************
- * 
- * Module Name: iresop - AML Interpreter operand/object resolution
+ *
+ * Module Name: amresop - AML Interpreter operand/object resolution
+ *              $Revision: 1.17 $
  *
  *****************************************************************************/
 
@@ -38,9 +39,9 @@
  * The above copyright and patent license is granted only if the following
  * conditions are met:
  *
- * 3. Conditions 
+ * 3. Conditions
  *
- * 3.1. Redistribution of Source with Rights to Further Distribute Source.  
+ * 3.1. Redistribution of Source with Rights to Further Distribute Source.
  * Redistribution of source code of any substantial portion of the Covered
  * Code or modification with rights to further distribute source must include
  * the above Copyright Notice, the above License, this list of Conditions,
@@ -48,11 +49,11 @@
  * Licensee must cause all Covered Code to which Licensee contributes to
  * contain a file documenting the changes Licensee made to create that Covered
  * Code and the date of any change.  Licensee must include in that file the
- * documentation of any changes made by any predecessor Licensee.  Licensee 
+ * documentation of any changes made by any predecessor Licensee.  Licensee
  * must include a prominent statement that the modification is derived,
  * directly or indirectly, from Original Intel Code.
  *
- * 3.2. Redistribution of Source with no Rights to Further Distribute Source.  
+ * 3.2. Redistribution of Source with no Rights to Further Distribute Source.
  * Redistribution of source code of any substantial portion of the Covered
  * Code or modification without rights to further distribute source must
  * include the following Disclaimer and Export Compliance provision in the
@@ -86,7 +87,7 @@
  * INSTALLATION, TRAINING OR OTHER SERVICES.  INTEL WILL NOT PROVIDE ANY
  * UPDATES, ENHANCEMENTS OR EXTENSIONS.  INTEL SPECIFICALLY DISCLAIMS ANY
  * IMPLIED WARRANTIES OF MERCHANTABILITY, NONINFRINGEMENT AND FITNESS FOR A
- * PARTICULAR PURPOSE. 
+ * PARTICULAR PURPOSE.
  *
  * 4.2. IN NO EVENT SHALL INTEL HAVE ANY LIABILITY TO LICENSEE, ITS LICENSEES
  * OR ANY OTHER THIRD PARTY, FOR ANY LOST PROFITS, LOST DATA, LOSS OF USE OR
@@ -114,25 +115,71 @@
  *
  *****************************************************************************/
 
-#define __IRESOP_C__
+#define __AMRESOP_C__
 
-#include <acpi.h>
-#include <amlcode.h>
-#include <parser.h>
-#include <dispatch.h>
-#include <interp.h>
-#include <namesp.h>
-#include <tables.h>
-#include <events.h>
+#include "acpi.h"
+#include "amlcode.h"
+#include "acparser.h"
+#include "acdispat.h"
+#include "acinterp.h"
+#include "acnamesp.h"
+#include "actables.h"
+#include "acevents.h"
 
 
 #define _COMPONENT          INTERPRETER
-        MODULE_NAME         ("iresop");
+        MODULE_NAME         ("amresop")
 
 
-/*****************************************************************************
- * 
- * FUNCTION:    AmlResolveOperands
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiAmlCheckObjectType
+ *
+ * PARAMETERS:  TypeNeeded          Object type needed
+ *              ThisType            Actual object type
+ *              Object              Object pointer
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Check required type against actual type
+ *
+ ******************************************************************************/
+
+ACPI_STATUS
+AcpiAmlCheckObjectType (
+    ACPI_OBJECT_TYPE        TypeNeeded,
+    ACPI_OBJECT_TYPE        ThisType,
+    void                    *Object)
+{
+
+
+    if (TypeNeeded == ACPI_TYPE_ANY)
+    {
+        /* All types OK, so we don't perform any typechecks */
+
+        return (AE_OK);
+    }
+
+
+    if (TypeNeeded != ThisType)
+    {
+        DEBUG_PRINT (ACPI_INFO,
+            ("AmlResolveOperands: Needed %s, found %s %p\n",
+            AcpiCmGetTypeName (TypeNeeded),
+            AcpiCmGetTypeName (ThisType), Object));
+
+        return (AE_AML_OPERAND_TYPE);
+    }
+
+
+    return (AE_OK);
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiAmlResolveOperands
  *
  * PARAMETERS:  Opcode              Opcode being interpreted
  *              StackPtr            Top of operand stack
@@ -147,27 +194,29 @@
  *      The corresponding stack entry will be converted to the
  *      required type if possible, else return an exception
  *
- ****************************************************************************/
+ ******************************************************************************/
 
 ACPI_STATUS
-AmlResolveOperands (
+AcpiAmlResolveOperands (
     UINT16                  Opcode,
-    ACPI_OBJECT_INTERNAL    **StackPtr)
+    ACPI_OPERAND_OBJECT     **StackPtr,
+    ACPI_WALK_STATE         *WalkState)
 {
-    ACPI_OBJECT_INTERNAL    *ObjDesc;
+    ACPI_OPERAND_OBJECT     *ObjDesc;
     ACPI_STATUS             Status = AE_OK;
     UINT8                   ObjectType;
     ACPI_HANDLE             TempHandle;
     UINT32                  ArgTypes;
-    ACPI_OP_INFO            *OpInfo;
+    ACPI_OPCODE_INFO        *OpInfo;
     UINT32                  ThisArgType;
+    ACPI_OBJECT_TYPE        TypeNeeded;
 
 
     FUNCTION_TRACE_U32 ("AmlResolveOperands", Opcode);
 
 
-    OpInfo = PsGetOpcodeInfo (Opcode);
-    if (!OpInfo)
+    OpInfo = AcpiPsGetOpcodeInfo (Opcode);
+    if (ACPI_GET_OP_TYPE (OpInfo) != ACPI_OP_TYPE_OPCODE)
     {
         return_ACPI_STATUS (AE_AML_BAD_OPCODE);
     }
@@ -176,15 +225,18 @@ AmlResolveOperands (
     ArgTypes = OpInfo->RuntimeArgs;
     if (ArgTypes == ARGI_INVALID_OPCODE)
     {
-        DEBUG_PRINT (ACPI_ERROR, ("AmlResolveOperands: Internal error - %X is not a runtime opcode\n", Opcode));
-        Status = AE_AML_INTERNAL;
-        goto Cleanup;
+        DEBUG_PRINT (ACPI_ERROR,
+            ("AmlResolveOperands: Internal error - %X is not a valid AML opcode\n", Opcode));
+
+        return_ACPI_STATUS (AE_AML_INTERNAL);
     }
 
-    DEBUG_PRINT (TRACE_EXEC, ("AmlResolveOperands: Opcode %X OperandTypes=%X \n", Opcode, ArgTypes));
+    DEBUG_PRINT (TRACE_EXEC,
+        ("AmlResolveOperands: Opcode %X OperandTypes=%X \n",
+        Opcode, ArgTypes));
 
 
-   /* 
+   /*
      * Normal exit is with *Types == '\0' at end of string.
      * Function will return an exception from within the loop upon
      * finding an entry which is not, and cannot be converted
@@ -196,9 +248,10 @@ AmlResolveOperands (
     {
         if (!StackPtr || !*StackPtr)
         {
-            DEBUG_PRINT (ACPI_ERROR, ("AmlResolveOperands: Internal error - null stack entry at %X\n", StackPtr));
-            Status = AE_AML_INTERNAL;
-            goto Cleanup;
+            DEBUG_PRINT (ACPI_ERROR,
+                ("AmlResolveOperands: Internal error - null stack entry at %X\n", StackPtr));
+
+            return_ACPI_STATUS (AE_AML_INTERNAL);
         }
 
         /* Extract useful items */
@@ -207,14 +260,14 @@ AmlResolveOperands (
 
         /* Decode the descriptor type */
 
-        if (VALID_DESCRIPTOR_TYPE (ObjDesc, DESC_TYPE_NTE))
+        if (VALID_DESCRIPTOR_TYPE (ObjDesc, ACPI_DESC_TYPE_NAMED))
         {
-            /* NTE */
+            /* Node */
 
-            ObjectType = ((NAME_TABLE_ENTRY *) ObjDesc)->Type;
+            ObjectType = ((ACPI_NAMESPACE_NODE *) ObjDesc)->Type;
         }
 
-        else if (VALID_DESCRIPTOR_TYPE (ObjDesc, DESC_TYPE_ACPI_OBJ))
+        else if (VALID_DESCRIPTOR_TYPE (ObjDesc, ACPI_DESC_TYPE_INTERNAL))
         {
             /* ACPI internal object */
 
@@ -222,21 +275,23 @@ AmlResolveOperands (
 
             /* Check for bad ACPI_OBJECT_TYPE */
 
-            if (!AmlValidateObjectType (ObjectType))
+            if (!AcpiAmlValidateObjectType (ObjectType))
             {
-                DEBUG_PRINT (ACPI_ERROR, ("AmlResolveOperands: Bad operand object type [0x%x]\n", ObjectType));
-                Status = AE_AML_OPERAND_TYPE;
-                goto Cleanup;
+                DEBUG_PRINT (ACPI_ERROR,
+                    ("AmlResolveOperands: Bad operand object type [%X]\n",
+                    ObjectType));
+
+                return_ACPI_STATUS (AE_AML_OPERAND_TYPE);
             }
-        
-            if (ObjectType == (UINT8) INTERNAL_TYPE_Reference)
+
+            if (ObjectType == (UINT8) INTERNAL_TYPE_REFERENCE)
             {
                 /*
-                 * Decode the Reference 
+                 * Decode the Reference
                  */
 
-                OpInfo = PsGetOpcodeInfo (Opcode);
-                if (!OpInfo)
+                OpInfo = AcpiPsGetOpcodeInfo (Opcode);
+                if (ACPI_GET_OP_TYPE (OpInfo) != ACPI_OP_TYPE_OPCODE)
                 {
                     return_ACPI_STATUS (AE_AML_BAD_OPCODE);
                 }
@@ -244,47 +299,54 @@ AmlResolveOperands (
 
                 switch (ObjDesc->Reference.OpCode)
                 {
-                case AML_ZeroOp:
-                case AML_OneOp:
-                case AML_OnesOp:
-                case AML_DebugOp:
-                case AML_NameOp:
-                case AML_IndexOp:
-                case AML_ArgOp:
-                case AML_LocalOp:
+                case AML_ZERO_OP:
+                case AML_ONE_OP:
+                case AML_ONES_OP:
+                case AML_DEBUG_OP:
+                case AML_NAME_OP:
+                case AML_INDEX_OP:
+                case AML_ARG_OP:
+                case AML_LOCAL_OP:
 
-                    DEBUG_ONLY_MEMBERS (DEBUG_PRINT (ACPI_INFO, ("Reference Opcode: %s\n", OpInfo->Name)));
+                    DEBUG_ONLY_MEMBERS (DEBUG_PRINT (ACPI_INFO,
+                        ("Reference Opcode: %s\n", OpInfo->Name)));
                     break;
-            
-                default:
-                    DEBUG_PRINT (ACPI_INFO, ("Reference Opcode: Unknown [%02x]\n", ObjDesc->Reference.OpCode));
 
-                    Status = AE_AML_OPERAND_TYPE;
-                    goto Cleanup;
+                default:
+                    DEBUG_PRINT (ACPI_INFO,
+                        ("Reference Opcode: Unknown [%02x]\n",
+                        ObjDesc->Reference.OpCode));
+
+                    return_ACPI_STATUS (AE_AML_OPERAND_TYPE);
                     break;
                 }
             }
-        
         }
-        
+
         else
         {
             /* Invalid descriptor */
 
-            DEBUG_PRINT (ACPI_ERROR, ("Bad descriptor type 0x%X in Obj %p\n", ObjDesc->Common.DataType, ObjDesc));
+            DEBUG_PRINT (ACPI_ERROR,
+                ("Bad descriptor type %X in Obj %p\n",
+                ObjDesc->Common.DataType, ObjDesc));
 
-            Status = AE_AML_OPERAND_TYPE;
-            goto Cleanup;
+            return_ACPI_STATUS (AE_AML_OPERAND_TYPE);
         }
 
 
         /*
-         * Decode a character from the type string
+         * Get one argument type, point to the next
          */
 
         ThisArgType = GET_CURRENT_ARG_TYPE (ArgTypes);
         INCREMENT_ARG_LIST (ArgTypes);
 
+
+        /*
+         * Handle cases where the object does not need to be 
+         * resolved to a value 
+         */
 
         switch (ThisArgType)
         {
@@ -292,205 +354,152 @@ AmlResolveOperands (
         case ARGI_REFERENCE:   /* Reference */
         case ARGI_TARGETREF:
 
-            /* Need an operand of type INTERNAL_TYPE_Reference */
+            /* Need an operand of type INTERNAL_TYPE_REFERENCE */
 
-            if (VALID_DESCRIPTOR_TYPE (ObjDesc, DESC_TYPE_NTE))             /* direct name ptr OK as-is */
+            if (VALID_DESCRIPTOR_TYPE (ObjDesc, ACPI_DESC_TYPE_NAMED))             /* direct name ptr OK as-is */
             {
-                break;
+                goto NextOperand;
             }
 
-            if (INTERNAL_TYPE_Reference != ObjectType)
+            Status = AcpiAmlCheckObjectType (INTERNAL_TYPE_REFERENCE, 
+                            ObjectType, ObjDesc);
+            if (ACPI_FAILURE (Status))
             {
-                DEBUG_PRINT (ACPI_INFO, ("AmlResolveOperands: Needed Reference, found %s Obj=%p\n",
-                                CmGetTypeName (ObjectType), *StackPtr));
-                Status = AE_AML_OPERAND_TYPE;
-                goto Cleanup;
+                return_ACPI_STATUS (Status);
             }
 
-            if (AML_NameOp == ObjDesc->Reference.OpCode)
+
+            if (AML_NAME_OP == ObjDesc->Reference.OpCode)
             {
-                /* Convert an indirect name ptr to direct name ptr and put it on the stack */
-                
+                /*
+                 * Convert an indirect name ptr to direct name ptr and put
+                 * it on the stack
+                 */
+
                 TempHandle = ObjDesc->Reference.Object;
-                CmRemoveReference (ObjDesc);
+                AcpiCmRemoveReference (ObjDesc);
                 (*StackPtr) = TempHandle;
             }
-            break;
-
-
-        case ARGI_NUMBER:   /* Number */
-
-            /* Need an operand of type ACPI_TYPE_Number */
-
-            if ((Status = AmlResolveToValue (StackPtr)) != AE_OK)
-            {
-                goto Cleanup;
-            }
-
-            if (ACPI_TYPE_Number != (*StackPtr)->Common.Type)
-            {
-                DEBUG_PRINT (ACPI_INFO, ("AmlResolveOperands: Needed Number, found %s Obj=%p\n",
-                                CmGetTypeName (ObjectType), *StackPtr));
-                Status = AE_AML_OPERAND_TYPE;
-                goto Cleanup;
-            }
-            break;
-
-
-        case ARGI_STRING:
-
-            /* Need an operand of type ACPI_TYPE_String or ACPI_TYPE_Buffer */
-
-            if ((Status = AmlResolveToValue (StackPtr)) != AE_OK)
-            {
-                goto Cleanup;
-            }
-
-            if ((ACPI_TYPE_String != (*StackPtr)->Common.Type) &&
-                (ACPI_TYPE_Buffer != (*StackPtr)->Common.Type))
-            {
-                DEBUG_PRINT (ACPI_INFO, ("AmlResolveOperands: Needed String or Buffer, found %s Obj=%p\n",
-                                CmGetTypeName (ObjectType), *StackPtr));
-                Status = AE_AML_OPERAND_TYPE;
-                goto Cleanup;
-            }
-            break;
-
-
-        case ARGI_BUFFER:
-
-            /* Need an operand of type ACPI_TYPE_Buffer */
-
-            if ((Status = AmlResolveToValue(StackPtr)) != AE_OK)
-            {
-                goto Cleanup;
-            }
-
-            if (ACPI_TYPE_Buffer != (*StackPtr)->Common.Type)
-            {
-                DEBUG_PRINT (ACPI_INFO, ("AmlResolveOperands: Needed Buffer, found %s Obj=%p\n",
-                                CmGetTypeName (ObjectType), *StackPtr));
-                Status = AE_AML_OPERAND_TYPE;
-                goto Cleanup;
-            }
-            break;
-
-
-        case ARGI_MUTEX:
-
-            /* Need an operand of type ACPI_TYPE_Mutex */
-
-            if ((Status = AmlResolveToValue(StackPtr)) != AE_OK)
-            {
-                goto Cleanup;
-            }
-
-            if (ACPI_TYPE_Mutex != (*StackPtr)->Common.Type)
-            {
-                DEBUG_PRINT (ACPI_INFO, ("AmlResolveOperands: Needed Mutex, found %s Obj=%p\n",
-                                CmGetTypeName (ObjectType), *StackPtr));
-                Status = AE_AML_OPERAND_TYPE;
-                goto Cleanup;
-            }
-            break;
-
-
-        case ARGI_EVENT:
-
-            /* Need an operand of type ACPI_TYPE_Event */
-
-            if ((Status = AmlResolveToValue(StackPtr)) != AE_OK)
-            {
-                goto Cleanup;
-            }
-
-            if (ACPI_TYPE_Event != (*StackPtr)->Common.Type)
-            {
-                DEBUG_PRINT (ACPI_INFO, ("AmlResolveOperands: Needed Event, found %s Obj=%p\n",
-                                CmGetTypeName (ObjectType), *StackPtr));
-                Status = AE_AML_OPERAND_TYPE;
-                goto Cleanup;
-            }
-            break;
-
-
-        case ARGI_REGION:
-
-            /* Need an operand of type ACPI_TYPE_Region */
-
-            if ((Status = AmlResolveToValue(StackPtr)) != AE_OK)
-            {
-                goto Cleanup;
-            }
-
-            if (ACPI_TYPE_Region != (*StackPtr)->Common.Type)
-            {
-                DEBUG_PRINT (ACPI_INFO, ("AmlResolveOperands: Needed Region, found %s Obj=%p\n",
-                                CmGetTypeName (ObjectType), *StackPtr));
-                Status = AE_AML_OPERAND_TYPE;
-                goto Cleanup;
-            }
-            break;
-
-
-         case ARGI_IF:   /* If */
-
-            /* Need an operand of type INTERNAL_TYPE_If */
-
-            if (INTERNAL_TYPE_If != (*StackPtr)->Common.Type)
-            {
-                DEBUG_PRINT (ACPI_INFO, ("AmlResolveOperands: Needed If, found %s Obj=%p\n",
-                                CmGetTypeName (ObjectType), *StackPtr));
-                Status = AE_AML_OPERAND_TYPE;
-                goto Cleanup;
-            }
-            break;
-
-
-        case ARGI_PACKAGE:   /* Package */
-
-            /* Need an operand of type ACPI_TYPE_Package */
-
-            if ((Status = AmlResolveToValue (StackPtr)) != AE_OK)
-            {
-                goto Cleanup;
-            }
-
-            if (ACPI_TYPE_Package != (*StackPtr)->Common.Type)
-            {
-                DEBUG_PRINT (ACPI_INFO, ("AmlResolveOperands: Needed Package, found %s Obj=%p\n",
-                                CmGetTypeName (ObjectType), *StackPtr));
-                Status = AE_AML_OPERAND_TYPE;
-                goto Cleanup;
-            }
+            
+            goto NextOperand;
             break;
 
 
         case ARGI_ANYTYPE:
 
-
-            /* 
+            /*
              * We don't want to resolve IndexOp reference objects during
              * a store because this would be an implicit DeRefOf operation.
              * Instead, we just want to store the reference object.
+             * -- All others must be resolved below.
              */
 
-            if ((Opcode == AML_StoreOp) &&
-                ((*StackPtr)->Common.Type == INTERNAL_TYPE_Reference) &&
-                ((*StackPtr)->Reference.OpCode == AML_IndexOp))
+            if ((Opcode == AML_STORE_OP) &&
+                ((*StackPtr)->Common.Type == INTERNAL_TYPE_REFERENCE) &&
+                ((*StackPtr)->Reference.OpCode == AML_INDEX_OP))
             {
-                break;
+                goto NextOperand;
             }
+            break;
+        }
 
-            /* All others must be resolved */
 
-            if ((Status = AmlResolveToValue (StackPtr)) != AE_OK)
+
+        /*
+         * Resolve this object to a value
+         */
+
+        Status = AcpiAmlResolveToValue (StackPtr, WalkState);
+        if (ACPI_FAILURE (Status))
+        {
+            return_ACPI_STATUS (Status);
+        }
+
+
+        /*
+         * Check the resulting object (value) type
+         */
+        switch (ThisArgType)
+        {
+        /*
+         * For the simple cases, only one type of resolved object
+         * is allowed
+         */
+        case ARGI_NUMBER:   /* Number */
+            
+            /* Need an operand of type ACPI_TYPE_NUMBER */
+
+            TypeNeeded = ACPI_TYPE_NUMBER;
+            break;
+
+        case ARGI_BUFFER:
+
+            /* Need an operand of type ACPI_TYPE_BUFFER */
+
+            TypeNeeded = ACPI_TYPE_BUFFER;
+            break;
+
+        case ARGI_MUTEX:
+
+            /* Need an operand of type ACPI_TYPE_MUTEX */
+
+            TypeNeeded = ACPI_TYPE_MUTEX;
+            break;
+
+        case ARGI_EVENT:
+
+            /* Need an operand of type ACPI_TYPE_EVENT */
+
+            TypeNeeded = ACPI_TYPE_EVENT;
+            break;
+
+        case ARGI_REGION:
+
+            /* Need an operand of type ACPI_TYPE_REGION */
+
+            TypeNeeded = ACPI_TYPE_REGION;
+            break;
+
+        case ARGI_IF:   /* If */
+
+            /* Need an operand of type INTERNAL_TYPE_IF */
+
+            TypeNeeded = INTERNAL_TYPE_IF;
+            break;
+
+        case ARGI_PACKAGE:   /* Package */
+
+            /* Need an operand of type ACPI_TYPE_PACKAGE */
+
+            TypeNeeded = ACPI_TYPE_PACKAGE;
+            break;
+
+        case ARGI_ANYTYPE:
+
+            /* Any operand type will do */
+
+            TypeNeeded = ACPI_TYPE_ANY;
+            break;
+
+
+        /*
+         * The more complex cases allow multiple resolved object types
+         */
+
+        case ARGI_STRING:
+
+            /* Need an operand of type ACPI_TYPE_STRING or ACPI_TYPE_BUFFER */
+
+            if ((ACPI_TYPE_STRING != (*StackPtr)->Common.Type) &&
+                (ACPI_TYPE_BUFFER != (*StackPtr)->Common.Type))
             {
-                goto Cleanup;
+                DEBUG_PRINT (ACPI_INFO,
+                    ("AmlResolveOperands: Needed String or Buffer, found %s %p\n",
+                    AcpiCmGetTypeName ((*StackPtr)->Common.Type), *StackPtr));
+
+                return_ACPI_STATUS (AE_AML_OPERAND_TYPE);
             }
-
-            /* All types OK, so we don't perform any typechecks */
-
+            goto NextOperand;
             break;
 
 
@@ -500,79 +509,89 @@ AmlResolveOperands (
              *
              * The ACPI specification allows SizeOf to return the size of
              *  a Buffer, String or Package.  However, the MS ACPI.SYS AML
-             *  Interpreter also allows an NTE reference to return without
+             *  Interpreter also allows an Node reference to return without
              *  error with a size of 4.
              */
 
-            if ((Status = AmlResolveToValue (StackPtr)) != AE_OK)
-            {
-                goto Cleanup;
-            }
+            /* Need a buffer, string, package or Node reference */
 
-            /* Need a buffer, string, package or NTE reference */
-
-            if (((*StackPtr)->Common.Type != ACPI_TYPE_Buffer) &&
-                ((*StackPtr)->Common.Type != ACPI_TYPE_String) &&
-                ((*StackPtr)->Common.Type != ACPI_TYPE_Package) &&
-                ((*StackPtr)->Common.Type != INTERNAL_TYPE_Reference))
+            if (((*StackPtr)->Common.Type != ACPI_TYPE_BUFFER) &&
+                ((*StackPtr)->Common.Type != ACPI_TYPE_STRING) &&
+                ((*StackPtr)->Common.Type != ACPI_TYPE_PACKAGE) &&
+                ((*StackPtr)->Common.Type != INTERNAL_TYPE_REFERENCE))
             {
-                DEBUG_PRINT (ACPI_INFO, ("AmlResolveOperands: Needed Buf/Str/Pkg, found %s Obj=%p\n",
-                                CmGetTypeName (ObjectType), *StackPtr));
-                Status = AE_AML_OPERAND_TYPE;
-                goto Cleanup;
+                DEBUG_PRINT (ACPI_INFO,
+                    ("AmlResolveOperands: Needed Buf/Str/Pkg/Ref, found %s %p\n",
+                    AcpiCmGetTypeName ((*StackPtr)->Common.Type), *StackPtr));
+                
+                return_ACPI_STATUS (AE_AML_OPERAND_TYPE);
             }
 
             /*
-             * If this is a reference, only allow a reference to an NTE.
+             * If this is a reference, only allow a reference to an Node.
              */
-            if ((*StackPtr)->Common.Type == INTERNAL_TYPE_Reference)
+            if ((*StackPtr)->Common.Type == INTERNAL_TYPE_REFERENCE)
             {
-                if (!(*StackPtr)->Reference.Nte)
+                if (!(*StackPtr)->Reference.Node)
                 {
-                    DEBUG_PRINT (ACPI_INFO, ("AmlResolveOperands: Needed NTE reference, found %s Obj=%p\n",
-                                    CmGetTypeName (ObjectType), *StackPtr));
-                    Status = AE_AML_OPERAND_TYPE;
-                    goto Cleanup;
+                    DEBUG_PRINT (ACPI_INFO,
+                        ("AmlResolveOperands: Needed Node reference, found %p\n",
+                        *StackPtr));
+
+                    return_ACPI_STATUS (AE_AML_OPERAND_TYPE);
                 }
             }
-
+            goto NextOperand;
             break;
 
 
         case ARGI_COMPLEXOBJ:
 
-            if ((Status = AmlResolveToValue (StackPtr)) != AE_OK)
-            {
-                goto Cleanup;
-            }
-
             /* Need a buffer or package */
 
-            if (((*StackPtr)->Common.Type != ACPI_TYPE_Buffer) &&
-                ((*StackPtr)->Common.Type != ACPI_TYPE_Package))
+            if (((*StackPtr)->Common.Type != ACPI_TYPE_BUFFER) &&
+                ((*StackPtr)->Common.Type != ACPI_TYPE_PACKAGE))
             {
-                DEBUG_PRINT (ACPI_INFO, ("AmlResolveOperands: Needed Package, Buf/Pkg %s Obj=%p\n",
-                                CmGetTypeName (ObjectType), *StackPtr));
-                Status = AE_AML_OPERAND_TYPE;
-                goto Cleanup;
+                DEBUG_PRINT (ACPI_INFO,
+                    ("AmlResolveOperands: Needed Buf/Pkg, found %s %p\n",
+                    AcpiCmGetTypeName ((*StackPtr)->Common.Type), *StackPtr));
+
+                return_ACPI_STATUS (AE_AML_OPERAND_TYPE);
             }
+            goto NextOperand;
             break;
 
 
-        /* Unknown abbreviation passed in */
-
         default:
-            DEBUG_PRINT (ACPI_ERROR, ("AmlResolveOperands: Internal error - Unknown arg type %X\n",
-                        ThisArgType));
-            Status = AE_BAD_PARAMETER;
-            goto Cleanup;
 
-        }   /* switch (*Types++) */
+            /* Unknown type */
+
+            DEBUG_PRINT (ACPI_ERROR,
+                ("AmlResolveOperands: Internal error - Unknown ARGI type %X\n",
+                ThisArgType));
+
+            return_ACPI_STATUS (AE_BAD_PARAMETER);
+        }
 
 
         /* 
+         * Make sure that the original object was resolved to the
+         * required object type (Simple cases only).
+         */
+        Status = AcpiAmlCheckObjectType (TypeNeeded, 
+                        (*StackPtr)->Common.Type, *StackPtr);
+        if (ACPI_FAILURE (Status))
+        {
+            return_ACPI_STATUS (Status);
+        }
+
+
+
+
+NextOperand:
+        /*
          * If more operands needed, decrement StackPtr to point
-         * to next operand on stack (after checking for underflow).
+         * to next operand on stack
          */
         if (GET_CURRENT_ARG_TYPE (ArgTypes))
         {
@@ -582,14 +601,8 @@ AmlResolveOperands (
     }   /* while (*Types) */
 
 
-Cleanup:
 
-  return_ACPI_STATUS (Status);
+    return_ACPI_STATUS (Status);
 }
-
-
-
-
-
 
 
