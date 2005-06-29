@@ -164,7 +164,7 @@ EvFixedEventDetect (
 
 UINT32
 EvFixedEventDispatch (
-    ACPI_EVENT_TYPE         Event);
+    UINT32                  Event);
 
 
 /* GPE handling - evgpe */
@@ -239,7 +239,7 @@ EvDisassociateRegionFromHandler(
 
 INT32 
 EvSciCount (
-    ACPI_EVENT_TYPE         Event);
+    UINT32                  Event);
 
 #define DEBUG_INCREMENT_EVENT_COUNT(a)   Gbl_EventCount[a]++;
 
