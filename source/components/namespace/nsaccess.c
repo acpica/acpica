@@ -284,15 +284,19 @@ NsSetup (void)
  ***************************************************************************/
 
 ACPI_STATUS
-NsEnter (char *Name, ACPI_OBJECT_TYPE Type, OPERATING_MODE LoadMode, NAME_TABLE_ENTRY **RetEntry)
+NsEnter (
+    char                    *Name, 
+    ACPI_OBJECT_TYPE        Type, 
+    OPERATING_MODE          LoadMode, 
+    NAME_TABLE_ENTRY        **RetEntry)
 {
-    ACPI_STATUS         Status;
-    NAME_TABLE_ENTRY    *EntryToSearch = NULL;
-    NAME_TABLE_ENTRY    *ThisEntry = NULL;
-    NAME_TABLE_ENTRY    *ScopeToPush = NULL;
-    INT32               NumSegments;
-    INT32               NullNamePath = FALSE;
-    ACPI_OBJECT_TYPE    TypeToCheckFor;              /* Type To Check For */
+    ACPI_STATUS             Status;
+    NAME_TABLE_ENTRY        *EntryToSearch = NULL;
+    NAME_TABLE_ENTRY        *ThisEntry = NULL;
+    NAME_TABLE_ENTRY        *ScopeToPush = NULL;
+    INT32                   NumSegments;
+    INT32                   NullNamePath = FALSE;
+    ACPI_OBJECT_TYPE        TypeToCheckFor;              /* Type To Check For */
 
 
     FUNCTION_TRACE ("NsEnter");
