@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: evevent - Fixed and General Purpose Even handling and dispatch
- *              $Revision: 1.92 $
+ *              $Revision: 1.93 $
  *
  *****************************************************************************/
 
@@ -464,7 +464,9 @@ AcpiEvGpeInitialize (void)
 
         if (AcpiGbl_GpeNumberMax >= AcpiGbl_FADT->Gpe1Base)
         {
-            ACPI_REPORT_ERROR (("GPE0 block overlaps the GPE1 block\n"));
+            ACPI_REPORT_ERROR (("GPE0 block (GPE  0 to %d) overlaps the GPE1 block (GPE %d to %d)\n",
+                AcpiGbl_GpeNumberMax, AcpiGbl_FADT->Gpe1Base, 
+                AcpiGbl_FADT->Gpe1Base + (ACPI_MUL_8 (AcpiGbl_GpeBlockInfo[1].RegisterCount) - 1)));
             return_ACPI_STATUS (AE_BAD_VALUE);
         }
 
