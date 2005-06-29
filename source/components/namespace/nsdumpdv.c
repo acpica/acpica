@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: nsdump - table dumping routines for debug
- *              $Revision: 1.6 $
+ *              $Revision: 1.7 $
  *
  *****************************************************************************/
 
@@ -158,6 +158,7 @@ AcpiNsDumpOneDevice (
 
     Status = AcpiNsDumpOneObject (ObjHandle, Level, Context, ReturnValue);
 
+    Buffer.Length = ACPI_ALLOCATE_LOCAL_BUFFER;
     Status = AcpiGetObjectInfo (ObjHandle, &Buffer);
     if (ACPI_SUCCESS (Status))
     {
