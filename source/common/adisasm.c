@@ -117,6 +117,7 @@
 #include <acpi.h>
 #include <parser.h>
 #include <amlcode.h>
+#include <debugger.h>
 #include "adcommon.h"
 
 #include <stdio.h>
@@ -133,6 +134,76 @@ ACPI_GENERIC_OP         *root;
 UINT8                   *AmlPtr;
 UINT32                  AmlLength;
 
+
+void
+AdCreateTableHeaders (void)
+{
+
+    OsdPrintf ("%s\n", "DefinitionBlock(\"SE0005B.aml\",\"DSDT\",1,\"Intel\",\"Seattl\",2)");
+    OsdPrintf ("%s\n", "{");
+}
+
+
+#define BLOCK_PAREN 1
+#define BLOCK_BRACE 2
+
+INT32
+AdBlockType (
+    ACPI_GENERIC_OP *Op)
+{
+
+    switch (Op->Opcode)
+    {
+    case AML_MethodOp:
+        return BLOCK_BRACE;
+        break;
+
+    default:
+        break;
+    }
+
+    return BLOCK_PAREN;
+
+}
+
+/******************************************************************************
+ * 
+ * FUNCTION:    AdDisplayTables
+ *
+ * PARAMETERS:  None
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Display (disassemble) loaded tables and dump raw tables
+ *
+ *****************************************************************************/
+
+ACPI_STATUS
+AdDisplayTables (void)
+{
+
+
+    if (!DsdtPtr || !Gbl_ParsedNamespaceRoot)
+    {
+        return AE_NOT_EXIST;
+    }
+
+
+    if (!opt_verbose)
+    {
+        AdCreateTableHeaders ();
+    }
+
+    DbDisplayOp (PsGetChild (Gbl_ParsedNamespaceRoot));
+
+    OsdPrintf ("\n\nDSDT Header:\n");
+    CmDumpBuffer ((char *) DsdtPtr, sizeof (ACPI_TABLE_HEADER), 0);
+
+    OsdPrintf ("DSDT Body (Length 0x%X)\n", AmlLength);
+    CmDumpBuffer ((char *) AmlPtr, AmlLength, 0);
+
+    return AE_OK;
+}
 
 
 /******************************************************************************
