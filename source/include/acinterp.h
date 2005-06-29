@@ -95,8 +95,8 @@
  *****************************************************************************/
 
 
-#ifndef __AML_H__
-#define __AML_H__
+#ifndef __INTERPRETER_H__
+#define __INTERPRETER_H__
 
 
 #define AML_END_OF_BLOCK    -1
@@ -109,6 +109,8 @@
  * CheckTrash macros
  * define _CHECK_TRASH to enable trash tracing
  */
+
+/* TBD: obsolete?? */
 
 #ifndef _CHECK_TRASH
 
@@ -165,7 +167,7 @@ AmlGetNamedFieldValue (
 
 ACPI_STATUS
 AmlExecCreateField (
-    UINT16                  op);
+    UINT16                  Opcode);
 
 ACPI_STATUS
 AmlExecFatal (
@@ -190,7 +192,7 @@ AmlGetRvalue (
 
 BOOLEAN
 AmlIsMethodValue (
-    ACPI_OBJECT             *pOD);
+    ACPI_OBJECT             *ObjDesc);
 
 
 /*
@@ -281,12 +283,12 @@ AmlClearPkgStack (
 
 ACPI_STATUS
 AmlPkgPushLength (
-    INT32                   len, 
+    INT32                   Length, 
     OPERATING_MODE          LoadExecMode);
 
 ACPI_STATUS
 AmlPkgPushExecLength (
-    INT32                   len);
+    INT32                   Length);
 
 ACPI_STATUS
 AmlPkgPushExec (
@@ -317,8 +319,8 @@ OsThreadId (
 
 ACPI_STATUS
 OsDoNotifyOp (
-    ACPI_OBJECT             *val, 
-    ACPI_OBJECT             *obj);
+    ACPI_OBJECT             *Value, 
+    ACPI_OBJECT             *ObjDesc);
 
 void
 OsDoSuspend(
@@ -327,24 +329,24 @@ OsDoSuspend(
 ACPI_STATUS
 OsAcquireOpRqst(
     ACPI_OBJECT             *Time, 
-    ACPI_OBJECT             *sOb);
+    ACPI_OBJECT             *ObjDesc);
 
 ACPI_STATUS
 OsReleaseOpRqst(
-    ACPI_OBJECT             *sOb);
+    ACPI_OBJECT             *ObjDesc);
 
 ACPI_STATUS
 OsSignalOpRqst(
-    ACPI_OBJECT             *sOb);
+    ACPI_OBJECT             *ObjDesc);
 
 ACPI_STATUS
 OsWaitOpRqst(
     ACPI_OBJECT             *Time, 
-    ACPI_OBJECT             *sOb);
+    ACPI_OBJECT             *ObjDesc);
 
 ACPI_STATUS
 OsResetOpRqst(
-    ACPI_OBJECT             *sOb);
+    ACPI_OBJECT             *ObjDesc);
 
 ACPI_STATUS
 OsGetGlobalLock(
@@ -377,15 +379,15 @@ AmlExecStore (
 
 ACPI_STATUS
 AmlExecMonadic1 (
-    UINT16                  op);
+    UINT16                  Opcode);
 
 ACPI_STATUS
 AmlExecMonadic2R (
-    UINT16                  op);
+    UINT16                  Opcode);
 
 ACPI_STATUS
 AmlExecMonadic2 (
-    UINT16                  op);
+    UINT16                  Opcode);
 
 
 /*
@@ -394,19 +396,19 @@ AmlExecMonadic2 (
 
 ACPI_STATUS
 AmlExecDyadic1 (
-    UINT16                  op);
+    UINT16                  Opcode);
 
 ACPI_STATUS
 AmlExecDyadic2R (
-    UINT16                  op);
+    UINT16                  Opcode);
         
 ACPI_STATUS
 AmlExecDyadic2S (
-    UINT16                  op);
+    UINT16                  Opcode);
 
 ACPI_STATUS
 AmlExecDyadic2 (
-    UINT16                  op);
+    UINT16                  Opcode);
 
 
 /*
@@ -508,7 +510,7 @@ AmlDumpObjStack (
 
 void
 AmlDumpObjectDescriptor (
-	ACPI_OBJECT             *Obj);
+	ACPI_OBJECT             *ObjDesc);
 
 
 /*
@@ -527,7 +529,7 @@ ACPI_STATUS
 AmlDoDefinitionBlock (
     char                    *name, 
     UINT8                   *addr, 
-    INT32                   len);
+    INT32                   Length);
     
 ACPI_STATUS
 AmlDoFieldElement (
@@ -573,7 +575,7 @@ AmlDoMatchOp (
 void
 AmlDoOpByte (
     INT32                   nl, 
-    UINT16                  op, 
+    UINT16                  Opcode, 
     OPERATING_MODE          LoadExecMode);
 
 
@@ -667,7 +669,6 @@ AmlDoDWordConst (
     INT32                   LeadSpace);
 
 
-
 /*
  * isutils - interpreter/scanner utilities
  */
@@ -681,10 +682,6 @@ AmlReleaseGlobalLock (
     BOOLEAN                 Locked);
 
 void
-AmlAppendBlockOwner (
-    void                    *Owner);
-
-void
 AmlAppendOperandDiag(
     char                    *Name, 
     INT32                   Line, 
@@ -696,39 +693,9 @@ AmlBufSeq (
     void);
 
 INT32
-DigitsNeeded (
-    INT32                   val, 
-    INT32                   base);
-
-void
-LineSet (
-    INT32                   n, 
-    OPERATING_MODE          LoadExecMode);
-
-void
-Indent (
-    INT32                   n);
+AmlDigitsNeeded (
+    INT32                   Value, 
+    INT32                   Base);
 
 
-/* More PLUMBER stuff (in isutils) TBD: what is this? */
-
-void
-AmlMarkPackage (
-    ACPI_OBJECT             *pOD);
-
-void
-vAmlMarkObject (
-    ACPI_OBJECT             *pOD);
-
-void
-MarkObjectStack (
-    INT32                   *piCount);
-
-
-void
-MarkMethodValues (
-    INT32                   *Count);
-
-
-
-#endif
+#endif /* __INTERPRETER_H__ */
