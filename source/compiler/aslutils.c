@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslutils -- compiler utilities
- *              $Revision: 1.57 $
+ *              $Revision: 1.59 $
  *
  *****************************************************************************/
 
@@ -10,7 +10,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2004, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2005, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -126,7 +126,7 @@
 
 #ifdef _USE_BERKELEY_YACC
 extern const char * const       AslCompilername[];
-static const char * const       *yytname = &AslCompilername[255];
+static const char * const       *yytname = &AslCompilername[254];
 #else
 extern const char * const       yytname[];
 #endif

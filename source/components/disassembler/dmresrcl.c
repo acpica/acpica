@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dmresrcl.c - "Large" Resource Descriptor disassembly
- *              $Revision: 1.12 $
+ *              $Revision: 1.15 $
  *
  ******************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2004, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2005, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -127,6 +127,30 @@
 
 /*******************************************************************************
  *
+ * FUNCTION:    AcpiDmSpaceFlags
+ *
+ * PARAMETERS:  Flags               - Flag byte to be decoded
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Decode the flags specific to Space Address space descriptors
+ *
+ ******************************************************************************/
+
+void
+AcpiDmSpaceFlags (
+        UINT8               Flags)
+{
+    AcpiOsPrintf ("%s, %s, %s, %s,",
+        AcpiGbl_ConsumeDecode [(Flags & 1)],
+        AcpiGbl_DECDecode [(Flags & 0x2) >> 1],
+        AcpiGbl_MinDecode [(Flags & 0x4) >> 2],
+        AcpiGbl_MaxDecode [(Flags & 0x8) >> 3]);
+}
+
+
+/*******************************************************************************
+ *
  * FUNCTION:    AcpiDmIoFlags
  *
  * PARAMETERS:  Flags               - Flag byte to be decoded
@@ -199,31 +223,40 @@ AcpiDmWordDescriptor (
 {
 
     AcpiDmIndent (Level);
-    AcpiOsPrintf ("%s (",
-        AcpiGbl_WordDecode [(Resource->ResourceType & 3)]);
-
-    AcpiDmIoFlags (Resource->Flags);
-
-    if ((Resource->ResourceType & 0x3) == 1)
+    if (Resource->ResourceType >= 0xC0)
     {
-        AcpiOsPrintf (" %s,",
-            AcpiGbl_RNGDecode [(Resource->SpecificFlags & 0x3)]);
+        AcpiOsPrintf ("WordSpace (0x%2.2X, ", Resource->ResourceType);
+        AcpiDmSpaceFlags (Resource->Flags);
+        AcpiOsPrintf (" 0x%2.2X,", Resource->SpecificFlags);
+    }
+    else
+    {
+        AcpiOsPrintf ("%s (",
+            AcpiGbl_WordDecode [(Resource->ResourceType & 3)]);
+
+        AcpiDmIoFlags (Resource->Flags);
+
+        if ((Resource->ResourceType & 0x3) == 1)
+        {
+            AcpiOsPrintf (" %s,",
+                AcpiGbl_RNGDecode [(Resource->SpecificFlags & 0x3)]);
+        }
     }
 
     /* The WORD values */
 
     AcpiOsPrintf ("\n");
     AcpiDmIndent (Level + 1);
-    AcpiOsPrintf ("0x%4.4X,\n",
+    AcpiOsPrintf ("0x%4.4X, /* Address Space Granularity */\n",
         (UINT32) Resource->Granularity);
     AcpiDmIndent (Level + 1);
-    AcpiOsPrintf ("0x%4.4X,\n",
+    AcpiOsPrintf ("0x%4.4X, /* Address Range Minimum */\n",
         (UINT32) Resource->AddressMin);
     AcpiDmIndent (Level + 1);
-    AcpiOsPrintf ("0x%4.4X,\n",
+    AcpiOsPrintf ("0x%4.4X, /* Address Range Maximum */\n",
         (UINT32) Resource->AddressMax);
     AcpiDmIndent (Level + 1);
-    AcpiOsPrintf ("0x%4.4X,\n",
+    AcpiOsPrintf ("0x%4.4X, /* Address Translation Offset */\n",
         (UINT32) Resource->TranslationOffset);
     AcpiDmIndent (Level + 1);
     AcpiOsPrintf ("0x%4.4X",
@@ -268,34 +301,43 @@ AcpiDmDwordDescriptor (
 {
 
     AcpiDmIndent (Level);
-    AcpiOsPrintf ("D%s (",
-        AcpiGbl_WordDecode [(Resource->ResourceType & 3)]);
-
-    if ((Resource->ResourceType & 0x3) == 1)
+    if (Resource->ResourceType >= 0xC0)
     {
-        AcpiDmIoFlags (Resource->Flags);
-        AcpiOsPrintf (" %s,",
-            AcpiGbl_RNGDecode [(Resource->SpecificFlags & 0x3)]);
+        AcpiOsPrintf ("DWordSpace (0x%2.2X, ", Resource->ResourceType);
+        AcpiDmSpaceFlags (Resource->Flags);
+        AcpiOsPrintf (" 0x%2.2X,", Resource->SpecificFlags);
     }
     else
     {
-        AcpiDmMemoryFlags (Resource->Flags, Resource->SpecificFlags);
+        AcpiOsPrintf ("D%s (",
+            AcpiGbl_WordDecode [(Resource->ResourceType & 3)]);
+
+        if ((Resource->ResourceType & 0x3) == 1)
+        {
+            AcpiDmIoFlags (Resource->Flags);
+            AcpiOsPrintf (" %s,",
+                AcpiGbl_RNGDecode [(Resource->SpecificFlags & 0x3)]);
+        }
+        else
+        {
+            AcpiDmMemoryFlags (Resource->Flags, Resource->SpecificFlags);
+        }
     }
 
     /* The DWORD values */
 
     AcpiOsPrintf ("\n");
     AcpiDmIndent (Level + 1);
-    AcpiOsPrintf ("0x%8.8X,\n",
+    AcpiOsPrintf ("0x%8.8X, /* Address Space Granularity */\n",
         Resource->Granularity);
     AcpiDmIndent (Level + 1);
-    AcpiOsPrintf ("0x%8.8X,\n",
+    AcpiOsPrintf ("0x%8.8X, /* Address Range Minimum */\n",
         Resource->AddressMin);
     AcpiDmIndent (Level + 1);
-    AcpiOsPrintf ("0x%8.8X,\n",
+    AcpiOsPrintf ("0x%8.8X, /* Address Range Maximum */\n",
         Resource->AddressMax);
     AcpiDmIndent (Level + 1);
-    AcpiOsPrintf ("0x%8.8X,\n",
+    AcpiOsPrintf ("0x%8.8X, /* Address Translation Offset */\n",
         Resource->TranslationOffset);
     AcpiDmIndent (Level + 1);
     AcpiOsPrintf ("0x%8.8X",
@@ -314,6 +356,79 @@ AcpiDmDwordDescriptor (
             &Resource->OptionalFields[1]);
     }
     AcpiOsPrintf (")\n");
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiDmExtendedDescriptor
+ *
+ * PARAMETERS:  Resource            - Pointer to the resource descriptor
+ *              Length              - Length of the descriptor in bytes
+ *              Level               - Current source code indentation level
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Decode a Extended Address Space descriptor
+ *
+ ******************************************************************************/
+
+void
+AcpiDmExtendedDescriptor (
+    ASL_EXTENDED_ADDRESS_DESC  *Resource,
+    UINT32                  Length,
+    UINT32                  Level)
+{
+
+    AcpiDmIndent (Level);
+    if (Resource->ResourceType >= 0xC0)
+    {
+        AcpiOsPrintf ("ExtendedSpace (0x%2.2X, ", Resource->ResourceType);
+        AcpiDmSpaceFlags (Resource->Flags);
+        AcpiOsPrintf (" 0x%2.2X,", Resource->SpecificFlags);
+    }
+    else
+    {
+        if ((Resource->ResourceType & 0x3) == 1)
+        {
+            AcpiOsPrintf ("ExtendedIO (");
+            AcpiDmIoFlags (Resource->Flags);
+            AcpiOsPrintf (" %s,",
+                AcpiGbl_RNGDecode [(Resource->SpecificFlags & 0x3)]);
+        }
+        else
+        {
+            AcpiOsPrintf ("ExtendedMemory (");
+            AcpiDmMemoryFlags (Resource->Flags, Resource->SpecificFlags);
+        }
+    }
+
+    /* The QWORD values */
+
+    AcpiOsPrintf ("\n");
+    AcpiDmIndent (Level + 1);
+    AcpiOsPrintf ("0x%8.8X%8.8X, /* Address Space Granularity */\n",
+        ACPI_FORMAT_UINT64 (ACPI_GET_ADDRESS (Resource->Granularity)));
+
+    AcpiDmIndent (Level + 1);
+    AcpiOsPrintf ("0x%8.8X%8.8X, /* Address Range Minimum */\n",
+        ACPI_FORMAT_UINT64 (ACPI_GET_ADDRESS (Resource->AddressMin)));
+
+    AcpiDmIndent (Level + 1);
+    AcpiOsPrintf ("0x%8.8X%8.8X, /* Address Range Maximum */\n",
+        ACPI_FORMAT_UINT64 (ACPI_GET_ADDRESS (Resource->AddressMax)));
+
+    AcpiDmIndent (Level + 1);
+    AcpiOsPrintf ("0x%8.8X%8.8X, /* Address Translation Offset */\n",
+        ACPI_FORMAT_UINT64 (ACPI_GET_ADDRESS (Resource->TranslationOffset)));
+
+    AcpiDmIndent (Level + 1);
+    AcpiOsPrintf ("0x%8.8X%8.8X, /* Address Length */\n",
+        ACPI_FORMAT_UINT64 (ACPI_GET_ADDRESS (Resource->AddressLength)));
+
+    AcpiDmIndent (Level + 1);
+    AcpiOsPrintf ("0x%8.8X%8.8X) /* Type Specific Attributes */\n",
+        ACPI_FORMAT_UINT64 (ACPI_GET_ADDRESS (Resource->TypeSpecificAttributes)));
 }
 
 
@@ -339,37 +454,46 @@ AcpiDmQwordDescriptor (
 {
 
     AcpiDmIndent (Level);
-    AcpiOsPrintf ("Q%s (",
-        AcpiGbl_WordDecode [(Resource->ResourceType & 3)]);
-
-    if ((Resource->ResourceType & 0x3) == 1)
+    if (Resource->ResourceType >= 0xC0)
     {
-        AcpiDmIoFlags (Resource->Flags);
-        AcpiOsPrintf (" %s,",
-            AcpiGbl_RNGDecode [(Resource->SpecificFlags & 0x3)]);
+        AcpiOsPrintf ("QWordSpace (0x%2.2X, ", Resource->ResourceType);
+        AcpiDmSpaceFlags (Resource->Flags);
+        AcpiOsPrintf (" 0x%2.2X,", Resource->SpecificFlags);
     }
     else
     {
-        AcpiDmMemoryFlags (Resource->Flags, Resource->SpecificFlags);
+        AcpiOsPrintf ("Q%s (",
+            AcpiGbl_WordDecode [(Resource->ResourceType & 3)]);
+
+        if ((Resource->ResourceType & 0x3) == 1)
+        {
+            AcpiDmIoFlags (Resource->Flags);
+            AcpiOsPrintf (" %s,",
+                AcpiGbl_RNGDecode [(Resource->SpecificFlags & 0x3)]);
+        }
+        else
+        {
+            AcpiDmMemoryFlags (Resource->Flags, Resource->SpecificFlags);
+        }
     }
 
     /* The QWORD values */
 
     AcpiOsPrintf ("\n");
     AcpiDmIndent (Level + 1);
-    AcpiOsPrintf ("0x%8.8X%8.8X,\n",
+    AcpiOsPrintf ("0x%8.8X%8.8X, /* Address Space Granularity */\n",
         ACPI_FORMAT_UINT64 (ACPI_GET_ADDRESS (Resource->Granularity)));
 
     AcpiDmIndent (Level + 1);
-    AcpiOsPrintf ("0x%8.8X%8.8X,\n",
+    AcpiOsPrintf ("0x%8.8X%8.8X, /* Address Range Minimum */\n",
         ACPI_FORMAT_UINT64 (ACPI_GET_ADDRESS (Resource->AddressMin)));
 
     AcpiDmIndent (Level + 1);
-    AcpiOsPrintf ("0x%8.8X%8.8X,\n",
+    AcpiOsPrintf ("0x%8.8X%8.8X, /* Address Range Maximum */\n",
         ACPI_FORMAT_UINT64 (ACPI_GET_ADDRESS (Resource->AddressMax)));
 
     AcpiDmIndent (Level + 1);
-    AcpiOsPrintf ("0x%8.8X%8.8X,\n",
+    AcpiOsPrintf ("0x%8.8X%8.8X, /* Address Translation Offset */\n",
         ACPI_FORMAT_UINT64 (ACPI_GET_ADDRESS (Resource->TranslationOffset)));
 
     AcpiDmIndent (Level + 1);

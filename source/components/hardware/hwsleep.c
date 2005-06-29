@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Name: hwsleep.c - ACPI Hardware Sleep/Wake Interface
- *              $Revision: 1.62 $
+ *              $Revision: 1.71 $
  *
  *****************************************************************************/
 
@@ -10,7 +10,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2004, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2005, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -119,6 +119,19 @@
 
 #define _COMPONENT          ACPI_HARDWARE
         ACPI_MODULE_NAME    ("hwsleep")
+
+
+#define METHOD_NAME__BFS        "\\_BFS"
+#define METHOD_NAME__GTS        "\\_GTS"
+#define METHOD_NAME__PTS        "\\_PTS"
+#define METHOD_NAME__SST        "\\_SI._SST"
+#define METHOD_NAME__WAK        "\\_WAK"
+
+#define ACPI_SST_INDICATOR_OFF  0
+#define ACPI_SST_WORKING        1
+#define ACPI_SST_WAKING         2
+#define ACPI_SST_SLEEPING       3
+#define ACPI_SST_SLEEP_CONTEXT  4
 
 
 /******************************************************************************
@@ -250,21 +263,44 @@ AcpiEnterSleepStatePrep (
 
     /* Run the _PTS and _GTS methods */
 
-    Status = AcpiEvaluateObject (NULL, "\\_PTS", &ArgList, NULL);
+    Status = AcpiEvaluateObject (NULL, METHOD_NAME__PTS, &ArgList, NULL);
     if (ACPI_FAILURE (Status) && Status != AE_NOT_FOUND)
     {
         return_ACPI_STATUS (Status);
     }
 
-    Status = AcpiEvaluateObject (NULL, "\\_GTS", &ArgList, NULL);
+    Status = AcpiEvaluateObject (NULL, METHOD_NAME__GTS, &ArgList, NULL);
     if (ACPI_FAILURE (Status) && Status != AE_NOT_FOUND)
     {
         return_ACPI_STATUS (Status);
+    }
+
+    /* Setup the argument to _SST */
+
+    switch (SleepState)
+    {
+    case ACPI_STATE_S0:
+        Arg.Integer.Value = ACPI_SST_WORKING;
+        break;
+
+    case ACPI_STATE_S1:
+    case ACPI_STATE_S2:
+    case ACPI_STATE_S3:
+        Arg.Integer.Value = ACPI_SST_SLEEPING;
+        break;
+
+    case ACPI_STATE_S4:
+        Arg.Integer.Value = ACPI_SST_SLEEP_CONTEXT;
+        break;
+
+    default:
+        Arg.Integer.Value = ACPI_SST_INDICATOR_OFF; /* Default is indicator off */
+        break;
     }
 
     /* Set the system indicators to show the desired sleep state. */
 
-    Status = AcpiEvaluateObject (NULL, "\\_SI._SST", &ArgList, NULL);
+    Status = AcpiEvaluateObject (NULL, METHOD_NAME__SST, &ArgList, NULL);
     if (ACPI_FAILURE (Status) && Status != AE_NOT_FOUND)
     {
          ACPI_REPORT_ERROR (("Method _SST failed, %s\n", AcpiFormatException (Status)));
@@ -313,22 +349,24 @@ AcpiEnterSleepState (
     SleepTypeRegInfo   = AcpiHwGetBitRegisterInfo (ACPI_BITREG_SLEEP_TYPE_A);
     SleepEnableRegInfo = AcpiHwGetBitRegisterInfo (ACPI_BITREG_SLEEP_ENABLE);
 
+    /* Clear wake status */
+
+    Status = AcpiSetRegister (ACPI_BITREG_WAKE_STATUS, 1, ACPI_MTX_DO_NOT_LOCK);
+    if (ACPI_FAILURE (Status))
+    {
+        return_ACPI_STATUS (Status);
+    }
+
+    /* Clear all fixed and general purpose status bits */
+
+    Status = AcpiHwClearAcpiStatus (ACPI_MTX_DO_NOT_LOCK);
+    if (ACPI_FAILURE (Status))
+    {
+        return_ACPI_STATUS (Status);
+    }
+
     if (SleepState != ACPI_STATE_S5)
     {
-        /* Clear wake status */
-
-        Status = AcpiSetRegister (ACPI_BITREG_WAKE_STATUS, 1, ACPI_MTX_DO_NOT_LOCK);
-        if (ACPI_FAILURE (Status))
-        {
-            return_ACPI_STATUS (Status);
-        }
-
-        Status = AcpiHwClearAcpiStatus (ACPI_MTX_DO_NOT_LOCK);
-        if (ACPI_FAILURE (Status))
-        {
-            return_ACPI_STATUS (Status);
-        }
-
         /* Disable BM arbitration */
 
         Status = AcpiSetRegister (ACPI_BITREG_ARB_DISABLE, 1, ACPI_MTX_DO_NOT_LOCK);
@@ -338,7 +376,18 @@ AcpiEnterSleepState (
         }
     }
 
-    Status = AcpiHwDisableNonWakeupGpes ();
+    /*
+     * 1) Disable/Clear all GPEs
+     * 2) Enable all wakeup GPEs
+     */
+    Status = AcpiHwDisableAllGpes (ACPI_ISR);
+    if (ACPI_FAILURE (Status))
+    {
+        return_ACPI_STATUS (Status);
+    }
+    AcpiGbl_SystemAwakeAndRunning = FALSE;
+
+    Status = AcpiHwEnableAllWakeupGpes (ACPI_ISR);
     if (ACPI_FAILURE (Status))
     {
         return_ACPI_STATUS (Status);
@@ -479,7 +528,18 @@ AcpiEnterSleepStateS4bios (
         return_ACPI_STATUS (Status);
     }
 
-    Status = AcpiHwDisableNonWakeupGpes ();
+    /*
+     * 1) Disable/Clear all GPEs
+     * 2) Enable all wakeup GPEs
+     */
+    Status = AcpiHwDisableAllGpes (ACPI_ISR);
+    if (ACPI_FAILURE (Status))
+    {
+        return_ACPI_STATUS (Status);
+    }
+    AcpiGbl_SystemAwakeAndRunning = FALSE;
+
+    Status = AcpiHwEnableAllWakeupGpes (ACPI_ISR);
     if (ACPI_FAILURE (Status))
     {
         return_ACPI_STATUS (Status);
@@ -511,6 +571,7 @@ AcpiEnterSleepStateS4bios (
  * RETURN:      Status
  *
  * DESCRIPTION: Perform OS-independent ACPI cleanup after a sleep
+ *              Called with interrupts ENABLED.
  *
  ******************************************************************************/
 
@@ -580,36 +641,66 @@ AcpiLeaveSleepState (
 
     /* Ignore any errors from these methods */
 
-    Arg.Integer.Value = 0;
-    Status = AcpiEvaluateObject (NULL, "\\_SI._SST", &ArgList, NULL);
+    Arg.Integer.Value = ACPI_SST_WAKING;
+    Status = AcpiEvaluateObject (NULL, METHOD_NAME__SST, &ArgList, NULL);
     if (ACPI_FAILURE (Status) && Status != AE_NOT_FOUND)
     {
         ACPI_REPORT_ERROR (("Method _SST failed, %s\n", AcpiFormatException (Status)));
     }
 
     Arg.Integer.Value = SleepState;
-    Status = AcpiEvaluateObject (NULL, "\\_BFS", &ArgList, NULL);
+    Status = AcpiEvaluateObject (NULL, METHOD_NAME__BFS, &ArgList, NULL);
     if (ACPI_FAILURE (Status) && Status != AE_NOT_FOUND)
     {
         ACPI_REPORT_ERROR (("Method _BFS failed, %s\n", AcpiFormatException (Status)));
     }
 
-    Status = AcpiEvaluateObject (NULL, "\\_WAK", &ArgList, NULL);
+    Status = AcpiEvaluateObject (NULL, METHOD_NAME__WAK, &ArgList, NULL);
     if (ACPI_FAILURE (Status) && Status != AE_NOT_FOUND)
     {
         ACPI_REPORT_ERROR (("Method _WAK failed, %s\n", AcpiFormatException (Status)));
     }
+    /* TBD: _WAK "sometimes" returns stuff - do we want to look at it? */
 
-    /* _WAK returns stuff - do we want to look at it? */
+    /*
+     * Restore the GPEs:
+     * 1) Disable/Clear all GPEs
+     * 2) Enable all runtime GPEs
+     */
+    Status = AcpiHwDisableAllGpes (ACPI_NOT_ISR);
+    if (ACPI_FAILURE (Status))
+    {
+        return_ACPI_STATUS (Status);
+    }
+    AcpiGbl_SystemAwakeAndRunning = TRUE;
 
-    Status = AcpiHwEnableNonWakeupGpes ();
+    Status = AcpiHwEnableAllRuntimeGpes (ACPI_NOT_ISR);
     if (ACPI_FAILURE (Status))
     {
         return_ACPI_STATUS (Status);
     }
 
+    /* Enable power button */
+
+    (void) AcpiSetRegister(AcpiGbl_FixedEventInfo[ACPI_EVENT_POWER_BUTTON].EnableRegisterId,
+            1, ACPI_MTX_DO_NOT_LOCK);
+    (void) AcpiSetRegister(AcpiGbl_FixedEventInfo[ACPI_EVENT_POWER_BUTTON].StatusRegisterId,
+            1, ACPI_MTX_DO_NOT_LOCK);
+
     /* Enable BM arbitration */
 
     Status = AcpiSetRegister (ACPI_BITREG_ARB_DISABLE, 0, ACPI_MTX_LOCK);
+    if (ACPI_FAILURE (Status))
+    {
+        return_ACPI_STATUS (Status);
+    }
+
+    Arg.Integer.Value = ACPI_SST_WORKING;
+    Status = AcpiEvaluateObject (NULL, METHOD_NAME__SST, &ArgList, NULL);
+    if (ACPI_FAILURE (Status) && Status != AE_NOT_FOUND)
+    {
+        ACPI_REPORT_ERROR (("Method _SST failed, %s\n", AcpiFormatException (Status)));
+    }
+
     return_ACPI_STATUS (Status);
 }

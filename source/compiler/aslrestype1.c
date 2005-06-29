@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslrestype1 - Short (type1) resource templates and descriptors
- *              $Revision: 1.26 $
+ *              $Revision: 1.29 $
  *
  *****************************************************************************/
 
@@ -10,7 +10,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2004, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2005, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -147,6 +147,7 @@ RsDoDmaDescriptor (
     ASL_RESOURCE_NODE       *Rnode;
     UINT32                  i;
     UINT8                   DmaChannelMask = 0;
+    UINT8                   DmaChannels = 0;
 
 
     InitializerOp = Op->Asl.Child;
@@ -195,13 +196,31 @@ RsDoDmaDescriptor (
 
             if (InitializerOp->Asl.ParseOpcode != PARSEOP_DEFAULT_ARG)
             {
+                /* Up to 8 channels can be specified in the list */
+
+                DmaChannels++;
+                if (DmaChannels > 8)
+                {
+                    AslError (ASL_ERROR, ASL_MSG_DMA_LIST, InitializerOp, NULL);
+                    return (Rnode);
+                }
+
+                /* Only DMA channels 0-7 are allowed (mask is 8 bits) */
+
+                if (InitializerOp->Asl.Value.Integer > 7)
+                {
+                    AslError (ASL_ERROR, ASL_MSG_DMA_CHANNEL, InitializerOp, NULL);
+                }
+
+                /* Build the mask */
+
                 DmaChannelMask |= (1 << ((UINT8) InitializerOp->Asl.Value.Integer));
             }
 
             if (i == 4) /* case 4: First DMA byte */
             {
                 RsCreateByteField (InitializerOp, ASL_RESNAME_DMA,
-                                    CurrentByteOffset + ASL_RESDESC_OFFSET (Dma.DmaChannelMask));
+                    CurrentByteOffset + ASL_RESDESC_OFFSET (Dma.DmaChannelMask));
             }
             break;
         }
@@ -1022,8 +1041,23 @@ RsDoVendorSmallDescriptor (
      * Process all child initialization nodes
      */
     InitializerOp = RsCompleteNodeAndGetNext (InitializerOp);
-    for (i = 0; (InitializerOp && (i < 7)); i++)
+    for (i = 0; InitializerOp; i++)
     {
+        /* Maximum 7 vendor data bytes allowed (0-6) */
+
+        if (i >= 7)
+        {
+            AslError (ASL_ERROR, ASL_MSG_VENDOR_LIST, InitializerOp, NULL);
+
+            /* Eat the excess initializers */
+
+            while (InitializerOp)
+            {
+                InitializerOp = RsCompleteNodeAndGetNext (InitializerOp);
+            }
+            break;
+        }
+
         Descriptor->Smv.VendorDefined[i] = (UINT8) InitializerOp->Asl.Value.Integer;
         InitializerOp = RsCompleteNodeAndGetNext (InitializerOp);
     }

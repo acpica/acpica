@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dbexec - debugger control method execution
- *              $Revision: 1.57 $
+ *              $Revision: 1.63 $
  *
  ******************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2004, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2005, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -395,7 +395,7 @@ AcpiDbExecute (
      * Allow any handlers in separate threads to complete.
      * (Such as Notify handlers invoked from AML executed above).
      */
-    AcpiOsSleep (0, 10);
+    AcpiOsSleep (10);
 
 
 #ifdef ACPI_DEBUG_OUTPUT
@@ -408,7 +408,7 @@ AcpiDbExecute (
 
     if (Allocations > 0)
     {
-        AcpiOsPrintf ("Outstanding: %u allocations after execution\n",
+        AcpiOsPrintf ("Outstanding: 0x%X allocations after execution\n",
                         Allocations);
     }
 #endif
@@ -474,15 +474,17 @@ AcpiDbMethodThread (
 #endif
 
         Status = AcpiDbExecuteMethod (Info, &ReturnObj);
-
         if (ACPI_FAILURE (Status))
         {
             AcpiOsPrintf ("%s During execution of %s at iteration %X\n",
                 AcpiFormatException (Status), Info->Pathname, i);
-            break;
+            if (Status == AE_ABORT_METHOD)
+            {
+                break;
+            }
         }
 
-        if ((i % 1000) == 0)
+        if ((i % 100) == 0)
         {
             AcpiOsPrintf ("%d executions\n", i);
         }

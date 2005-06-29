@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dbcmds - debug commands and output routines
- *              $Revision: 1.110 $
+ *              $Revision: 1.116 $
  *
  ******************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2004, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2005, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -124,6 +124,9 @@
 #include "acresrc.h"
 #include "acdisasm.h"
 
+
+#include "acparser.h"
+
 #ifdef ACPI_DEBUGGER
 
 #define _COMPONENT          ACPI_CA_DEBUGGER
@@ -155,6 +158,53 @@ static ARGUMENT_INFO        AcpiDbObjectTypes [] =
     {"DDBHANDLES"},
     {NULL}           /* Must be null terminated */
 };
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiDbSleep
+ *
+ * PARAMETERS:  ObjectArg       - Desired sleep state (0-5)
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Simulate a sleep/wake sequence
+ *
+ ******************************************************************************/
+
+ACPI_STATUS
+AcpiDbSleep (
+    char                    *ObjectArg)
+{
+#if ACPI_MACHINE_WIDTH == 16
+    return (AE_OK);
+#else
+    ACPI_STATUS             Status;
+    UINT8                   SleepState;
+
+
+    SleepState = (UINT8) ACPI_STRTOUL (ObjectArg, NULL, 0);
+
+    AcpiOsPrintf ("**** Prepare to sleep ****\n");
+    Status = AcpiEnterSleepStatePrep (SleepState);
+    if (ACPI_FAILURE (Status))
+    {
+        return (Status);
+    }
+
+    AcpiOsPrintf ("**** Going to sleep ****\n");
+    Status = AcpiEnterSleepState (SleepState);
+    if (ACPI_FAILURE (Status))
+    {
+        return (Status);
+    }
+
+    AcpiOsPrintf ("**** returning from sleep ****\n");
+    Status = AcpiLeaveSleepState (SleepState);
+
+    return (Status);
+#endif
+}
 
 
 /*******************************************************************************
@@ -465,6 +515,71 @@ AcpiDbDisassembleAml (
     }
 
     AcpiDmDisassemble (NULL, Op, NumStatements);
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiDbDisassembleMethod
+ *
+ * PARAMETERS:  Method              - Name of control method
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Display disassembled AML (ASL) starting from Op for the number
+ *              of statements specified.
+ *
+ ******************************************************************************/
+
+ACPI_STATUS
+AcpiDbDisassembleMethod (
+    char                    *Name)
+{
+    ACPI_STATUS             Status;
+    ACPI_PARSE_OBJECT       *Op;
+    ACPI_WALK_STATE         *WalkState;
+    ACPI_OPERAND_OBJECT     *ObjDesc;
+    ACPI_NAMESPACE_NODE     *Method;
+
+
+    Method = ACPI_CAST_PTR (ACPI_NAMESPACE_NODE, ACPI_STRTOUL (Name, NULL, 16));
+    if (!Method)
+    {
+        return (AE_BAD_PARAMETER);
+    }
+
+    ObjDesc = Method->Object;
+
+    Op = AcpiPsCreateScopeOp ();
+    if (!Op)
+    {
+        return (AE_NO_MEMORY);
+    }
+
+    /* Create and initialize a new walk state */
+
+    WalkState = AcpiDsCreateWalkState (0, Op, NULL, NULL);
+    if (!WalkState)
+    {
+        return (AE_NO_MEMORY);
+    }
+
+    Status = AcpiDsInitAmlWalk (WalkState, Op, NULL,
+                    ObjDesc->Method.AmlStart,
+                    ObjDesc->Method.AmlLength, NULL, 1);
+    if (ACPI_FAILURE (Status))
+    {
+        return (Status);
+    }
+
+    /* Parse the AML */
+
+    WalkState->ParseFlags &= ~ACPI_PARSE_DELETE_TREE;
+    Status = AcpiPsParseAml (WalkState);
+
+    AcpiDmDisassemble (NULL, Op, 0);
+    AcpiPsDeleteParseTree (Op);
+    return (AE_OK);
 }
 
 
@@ -801,6 +916,8 @@ AcpiDbWalkForSpecificObjects (
 
     if (ObjDesc)
     {
+        AcpiOsPrintf ("  %p/%p", ObjHandle, ObjDesc);
+
         switch (ACPI_GET_OBJECT_TYPE (ObjDesc))
         {
         case ACPI_TYPE_METHOD:
@@ -1298,7 +1415,7 @@ AcpiDbGenerateGpe (
         return;
     }
 
-    AcpiEvGpeDispatch (GpeEventInfo, GpeNumber);
+    (void) AcpiEvGpeDispatch (GpeEventInfo, GpeNumber);
 }
 
 #endif /* ACPI_DEBUGGER */

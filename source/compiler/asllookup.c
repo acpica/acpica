@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: asllookup- Namespace lookup
- *              $Revision: 1.82 $
+ *              $Revision: 1.84 $
  *
  *****************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2004, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2005, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -715,12 +715,12 @@ LkNamespaceLocateBegin (
 
         /* Now convert this node to an integer whose value is the field offset */
 
+        Op->Asl.AmlLength       = 0;
         Op->Asl.ParseOpcode     = PARSEOP_INTEGER;
         Op->Asl.Value.Integer   = (UINT64) Temp;
         Op->Asl.CompileFlags   |= NODE_IS_RESOURCE_FIELD;
 
         OpcGenerateAmlOpcode (Op);
-        Op->Asl.AmlLength = OpcSetOptimalIntegerSize (Op);
     }
 
     /* 2) Check for a method invocation */

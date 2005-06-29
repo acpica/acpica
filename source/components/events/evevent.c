@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: evevent - Fixed Event handling and dispatch
- *              $Revision: 1.112 $
+ *              $Revision: 1.114 $
  *
  *****************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2004, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2005, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -123,7 +123,7 @@
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiEvInitialize
+ * FUNCTION:    AcpiEvInitializeEvents
  *
  * PARAMETERS:  None
  *
@@ -134,13 +134,13 @@
  ******************************************************************************/
 
 ACPI_STATUS
-AcpiEvInitialize (
+AcpiEvInitializeEvents (
     void)
 {
     ACPI_STATUS             Status;
 
 
-    ACPI_FUNCTION_TRACE ("EvInitialize");
+    ACPI_FUNCTION_TRACE ("EvInitializeEvents");
 
 
     /* Make sure we have ACPI tables */
@@ -180,7 +180,7 @@ AcpiEvInitialize (
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiEvHandlerInitialize
+ * FUNCTION:    AcpiEvInstallXruptHandlers
  *
  * PARAMETERS:  None
  *
@@ -191,13 +191,13 @@ AcpiEvInitialize (
  ******************************************************************************/
 
 ACPI_STATUS
-AcpiEvHandlerInitialize (
+AcpiEvInstallXruptHandlers (
     void)
 {
     ACPI_STATUS             Status;
 
 
-    ACPI_FUNCTION_TRACE ("EvHandlerInitialize");
+    ACPI_FUNCTION_TRACE ("EvInstallXruptHandlers");
 
 
     /* Install the SCI handler */

@@ -3,7 +3,7 @@
 /******************************************************************************
  *
  * Module Name: aslcompiler.y - Bison input file (ASL grammar and actions)
- *              $Revision: 1.85 $
+ *              $Revision: 1.86 $
  *
  *****************************************************************************/
 
@@ -11,7 +11,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2004, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2005, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -942,15 +942,15 @@ SimpleTarget
 ParameterTypePackageList
     :                               {$$ = NULL;}
     | ObjectTypeKeyword             {$$ = $1;}
-    | ObjectTypeKeyword ',' 
+    | ObjectTypeKeyword ','
         ParameterTypePackageList    {$$ = TrLinkPeerNodes (2,$1,$3);}
     ;
 
 ParameterTypePackage
     :                               {$$ = NULL;}
     | ObjectTypeKeyword             {$$ = $1;}
-    | '{' 
-        ParameterTypePackageList 
+    | '{'
+        ParameterTypePackageList
       '}'                           {$$ = $2;}
     ;
 
@@ -965,15 +965,15 @@ OptionalParameterTypePackage
 ParameterTypesPackageList
     :                               {$$ = NULL;}
     | ObjectTypeKeyword             {$$ = $1;}
-    | ObjectTypeKeyword ',' 
+    | ObjectTypeKeyword ','
         ParameterTypesPackage       {$$ = TrLinkPeerNodes (2,$1,$3);}
     ;
 
 ParameterTypesPackage
     :                               {$$ = NULL;}
     | ObjectTypeKeyword             {$$ = $1;}
-    | '{' 
-        ParameterTypesPackageList 
+    | '{'
+        ParameterTypesPackageList
       '}'                           {$$ = TrLinkChildren (TrCreateLeafNode (PARSEOP_DEFAULT_ARG),1,$2);}
     ;
 
@@ -1307,8 +1307,8 @@ FunctionTerm
         OptionalParameterTypesPackage
         ')' '{'
             TermList '}'            {$$ = TrLinkChildren ($<n>3,7,TrSetNodeFlags ($4, NODE_IS_NAME_DECLARATION),
-                                        TrCreateValuedLeafNode (PARSEOP_BYTECONST, 0),  
-                                        TrCreateLeafNode (PARSEOP_SERIALIZERULE_NOTSERIAL), 
+                                        TrCreateValuedLeafNode (PARSEOP_BYTECONST, 0),
+                                        TrCreateLeafNode (PARSEOP_SERIALIZERULE_NOTSERIAL),
                                         TrCreateValuedLeafNode (PARSEOP_BYTECONST, 0),$5,$6,$9);}
     | PARSEOP_FUNCTION '('
         error ')'                   {$$ = AslDoError(); yyclearin;}

@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dmobject - ACPI object decode and display
- *              $Revision: 1.9 $
+ *              $Revision: 1.12 $
  *
  ******************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2004, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2005, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -432,14 +432,30 @@ AcpiDmDisplayInternalObject (
 
             case AML_INDEX_OP:
 
-                AcpiOsPrintf ("[Index]          ");
-                if (!ObjDesc->Reference.Where)
+                AcpiOsPrintf ("[Index]  ");
+                switch (ObjDesc->Reference.TargetType)
                 {
-                    AcpiOsPrintf ("Uninitialized WHERE ptr");
-                }
-                else
-                {
-                    AcpiDmDecodeInternalObject (*(ObjDesc->Reference.Where));
+                case ACPI_TYPE_BUFFER_FIELD:
+                    AcpiOsPrintf ("%p", ObjDesc->Reference.Object);
+                    AcpiDmDecodeInternalObject (ObjDesc->Reference.Object);
+                    break;
+
+                case ACPI_TYPE_PACKAGE:
+
+                    AcpiOsPrintf ("%p", ObjDesc->Reference.Where);
+                    if (!ObjDesc->Reference.Where)
+                    {
+                        AcpiOsPrintf (" Uninitialized WHERE ptr");
+                    }
+                    else
+                    {
+                        AcpiDmDecodeInternalObject (*(ObjDesc->Reference.Where));
+                    }
+                    break;
+
+                default:
+                    AcpiOsPrintf ("Unknown index target type");
+                    break;
                 }
                 break;
 
@@ -453,6 +469,12 @@ AcpiDmDisplayInternalObject (
             case AML_REF_OF_OP:
 
                 AcpiOsPrintf ("[RefOf]          ");
+
+                if (!ObjDesc->Reference.Object)
+                {
+                    AcpiOsPrintf ("Uninitialized reference subobject ptr");
+                    break;
+                }
 
                 /* Reference can be to a Node or an Operand object */
 
@@ -483,8 +505,7 @@ AcpiDmDisplayInternalObject (
 
         default:
 
-            AcpiOsPrintf ("<Obj> ");
-            AcpiOsPrintf ("           ");
+            AcpiOsPrintf ("<Obj>            ");
             AcpiDmDecodeInternalObject (ObjDesc);
             break;
         }
