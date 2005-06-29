@@ -388,6 +388,11 @@ CmDeleteInternalObj (
 
     FUNCTION_TRACE_PTR ("CmDeleteInternalObj", Object);
 
+    if (!Object)
+    {
+        return_VOID;
+    }
+
 
     /* Only delete the object when the reference count reaches zero */
 
