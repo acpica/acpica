@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: tbxfroot - Find the root ACPI table (RSDT)
- *              $Revision: 1.80 $
+ *              $Revision: 1.82 $
  *
  *****************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2004, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2005, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -461,7 +461,8 @@ AcpiFindRootPointer (
     Status = AcpiTbFindRsdp (&TableInfo, Flags);
     if (ACPI_FAILURE (Status))
     {
-        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "RSDP structure not found, %s Flags=%X\n",
+        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
+            "RSDP structure not found, %s Flags=%X\n",
             AcpiFormatException (Status), Flags));
         return_ACPI_STATUS (AE_NO_ACPI_TABLES);
     }
@@ -516,7 +517,7 @@ AcpiTbScanMemoryForRsdp (
 
         /* Signature matches, check the appropriate checksum */
 
-        if (((RSDP_DESCRIPTOR *) MemRover)->Revision < 2)
+        if ((ACPI_CAST_PTR (RSDP_DESCRIPTOR, MemRover))->Revision < 2)
         {
             /* ACPI version 1.0 */
 
@@ -600,7 +601,8 @@ AcpiTbFindRsdp (
                                     (void *) &TablePtr);
         if (ACPI_FAILURE (Status))
         {
-            ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Could not map memory at %8.8X for length %X\n",
+            ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
+                "Could not map memory at %8.8X for length %X\n",
                 ACPI_EBDA_PTR_LOCATION, ACPI_EBDA_PTR_LENGTH));
             return_ACPI_STATUS (Status);
         }
@@ -621,7 +623,8 @@ AcpiTbFindRsdp (
                                         (void *) &TablePtr);
             if (ACPI_FAILURE (Status))
             {
-                ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Could not map memory at %8.8X for length %X\n",
+                ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
+                    "Could not map memory at %8.8X for length %X\n",
                     PhysicalAddress, ACPI_EBDA_WINDOW_SIZE));
                 return_ACPI_STATUS (Status);
             }
@@ -648,7 +651,8 @@ AcpiTbFindRsdp (
                                     (void *) &TablePtr);
         if (ACPI_FAILURE (Status))
         {
-            ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Could not map memory at %8.8X for length %X\n",
+            ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
+                "Could not map memory at %8.8X for length %X\n",
                 ACPI_HI_RSDP_WINDOW_BASE, ACPI_HI_RSDP_WINDOW_SIZE));
             return_ACPI_STATUS (Status);
         }
