@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: aclocal.h - Internal data types used across the ACPI subsystem
- *       $Revision: 1.168 $
+ *       $Revision: 1.169 $
  *
  *****************************************************************************/
 
@@ -695,15 +695,21 @@ typedef union acpi_parse_val
     UINT32                  AmlOffset;      /* offset of declaration in AML */\
     union acpi_parse_obj    *Parent;        /* parent op */\
     union acpi_parse_obj    *Next;          /* next op */\
+    UINT8                   DisasmFlags;    /* Used during AML disassembly */\
+    UINT8                   DisasmOpcode;   /* Subtype used for disassembly */\
     ACPI_DEBUG_ONLY_MEMBERS (\
     NATIVE_CHAR             AmlOpName[16])  /* op name (debug only) */\
                                             /* NON-DEBUG members below: */\
     ACPI_NAMESPACE_NODE     *Node;          /* for use by interpreter */\
     ACPI_PARSE_VALUE        Value;          /* Value or args associated with the opcode */\
 
+#define ACPI_DASM_BUFFER        0x00
+#define ACPI_DASM_RESOURCE      0x01
+#define ACPI_DASM_STRING        0x02
+#define ACPI_DASM_UNICODE       0x03
 
 /*
- * generic operation (eg. If, While, Store)
+ * generic operation (for example:  If, While, Store)
  */
 typedef struct acpi_parseobj_common
 {
@@ -745,15 +751,15 @@ typedef struct acpi_parseobj_asl
     UINT32                      LogicalByteOffset;
     UINT32                      EndLine;
     UINT32                      EndLogicalLine;
-    UINT16                      ParseOpcode;
     UINT32                      AcpiBtype;
     UINT32                      AmlLength;
     UINT32                      AmlSubtreeLength;
     UINT32                      FinalAmlLength;
     UINT32                      FinalAmlOffset;
+    UINT16                      ParseOpcode;
+    UINT16                      CompileFlags;
     UINT8                       AmlOpcodeLength;
     UINT8                       AmlPkgLenBytes;
-    UINT16                      CompileFlags;
     UINT8                       Extra;
     char                        ParseOpName[12];
 
@@ -797,6 +803,13 @@ typedef struct acpi_parse_state
 #define ACPI_PARSEOP_DEFERRED                   0x04
 #define ACPI_PARSEOP_BYTELIST                   0x08
 #define ACPI_PARSEOP_IN_CACHE                   0x80
+
+/* Parse object DisasmFlags */
+
+#define ACPI_PARSEOP_IGNORE                     0x01
+#define ACPI_PARSEOP_PARAMLIST                  0x02
+#define ACPI_PARSEOP_EMPTY_TERMLIST             0x04
+#define ACPI_PARSEOP_SPECIAL                    0x10
 
 
 /*****************************************************************************
