@@ -2,7 +2,7 @@
  *
  * Module Name: nsutils - Utilities for accessing ACPI namespace, accessing
  *                        parents and siblings and Scope manipulation
- *              $Revision: 1.127 $
+ *              $Revision: 1.128 $
  *
  *****************************************************************************/
 
@@ -264,7 +264,12 @@ AcpiNsPrintNodePathname (
     Status = AcpiNsHandleToPathname (Node, &Buffer);
     if (ACPI_SUCCESS (Status))
     {
-        AcpiOsPrintf ("%s [%s] (Node %p)", Msg, (char *) Buffer.Pointer, Node);
+        if (Msg)
+        {
+            AcpiOsPrintf ("%s ", Msg);
+        }
+
+        AcpiOsPrintf ("[%s] (Node %p)", (char *) Buffer.Pointer, Node);
         ACPI_MEM_FREE (Buffer.Pointer);
     }
 }
