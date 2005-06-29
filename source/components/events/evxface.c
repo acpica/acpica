@@ -816,7 +816,7 @@ AcpiInstallAddressSpaceHandler (
     /* Parameter validation */
 
     if ((!Device)   ||
-        ((!Handler)  && (Handler != ACPI_DEFAULT_HANDLE)) ||
+        ((!Handler)  && (Handler != ACPI_DEFAULT_HANDLER)) ||
         (SpaceId > ACPI_MAX_ADDRESS_SPACE))
     {
         return_ACPI_STATUS (AE_BAD_PARAMETER);
@@ -844,7 +844,7 @@ AcpiInstallAddressSpaceHandler (
     }
 
 
-    if (Handler == ACPI_DEFAULT_HANDLE)
+    if (Handler == ACPI_DEFAULT_HANDLER)
     {
         switch (SpaceId)
         {
@@ -1035,7 +1035,7 @@ AcpiRemoveAddressSpaceHandler (
     /* Parameter validation */
 
     if ((!Device)   ||
-        ((!Handler)  && (Handler != ACPI_DEFAULT_HANDLE)) ||
+        ((!Handler)  && (Handler != ACPI_DEFAULT_HANDLER)) ||
         (SpaceId > ACPI_MAX_ADDRESS_SPACE))
     {
         return_ACPI_STATUS (AE_BAD_PARAMETER);
