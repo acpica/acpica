@@ -156,7 +156,7 @@ AcpiNsNameOfScope (
     FUNCTION_TRACE ("NsNameOfScope");
 
 
-    if (!Acpi_GblRootObject->Scope || !EntryToSearch)
+    if (!AcpiGbl_RootObject->Scope || !EntryToSearch)
     {
         /*
          * If the name space has not been initialized,
@@ -277,7 +277,7 @@ AcpiNsHandleToPathname (
     FUNCTION_TRACE_PTR ("NsHandleToPathname", TargetHandle);
 
 
-    if (!Acpi_GblRootObject->Scope || !TargetHandle)
+    if (!AcpiGbl_RootObject->Scope || !TargetHandle)
     {
         /*
          * If the name space has not been initialized,
@@ -287,7 +287,7 @@ AcpiNsHandleToPathname (
         return_ACPI_STATUS (AE_NO_NAMESPACE);
     }
 
-    NamespaceWasLocked = Acpi_GblAcpiMutexInfo[MTX_NAMESPACE].Locked;
+    NamespaceWasLocked = AcpiGbl_AcpiMutexInfo[MTX_NAMESPACE].Locked;
     if (!NamespaceWasLocked)
     {
         AcpiCmAcquireMutex (MTX_NAMESPACE);
@@ -552,7 +552,7 @@ AcpiNsFindNames (
     FUNCTION_TRACE ("NsFindNames");
 
 
-    if (!Acpi_GblRootObject->Scope)
+    if (!AcpiGbl_RootObject->Scope)
     {
         /*
          * If the name space has not been initialized,
@@ -565,7 +565,7 @@ AcpiNsFindNames (
     {
         /* base is root */
 
-        StartHandle = Acpi_GblRootObject;
+        StartHandle = AcpiGbl_RootObject;
     }
 
     else if (((NAME_TABLE_ENTRY *) StartHandle)->Scope)

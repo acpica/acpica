@@ -225,7 +225,7 @@ AcpiNsLocal (
         return_VALUE (NSP_NORMAL);
     }
 
-    return_VALUE ((INT32) Acpi_GblNsProperties[Type] & NSP_LOCAL);
+    return_VALUE ((INT32) AcpiGbl_NsProperties[Type] & NSP_LOCAL);
 }
 
 
@@ -575,7 +575,7 @@ AcpiNsConvertHandleToEntry (
 
     if (Handle == ACPI_ROOT_OBJECT)
     {
-        return Acpi_GblRootObject;
+        return AcpiGbl_RootObject;
     }
 
 
@@ -623,7 +623,7 @@ AcpiNsConvertEntryToHandle(NAME_TABLE_ENTRY *Nte)
         return NULL;
     }
 
-    if (Nte == Acpi_GblRootObject)
+    if (Nte == AcpiGbl_RootObject)
     {
         return ACPI_ROOT_OBJECT;
     }
@@ -657,7 +657,7 @@ AcpiNsTerminate (void)
     FUNCTION_TRACE ("NsTerminate");
 
 
-    Entry = Acpi_GblRootObject;
+    Entry = AcpiGbl_RootObject;
 
     /*
      * 1) Free the entire namespace -- all objects, tables, and stacks

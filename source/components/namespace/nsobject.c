@@ -166,7 +166,7 @@ AcpiNsAttachObject (
      * Parameter validation
      */
 
-    if (!Acpi_GblRootObject->Scope)
+    if (!AcpiGbl_RootObject->Scope)
     {
         /* Name space not initialized  */
 
@@ -440,7 +440,7 @@ AcpiNsAttachMethod (
 
     /* Parameter validation */
 
-    if (!Acpi_GblRootObject->Scope)
+    if (!AcpiGbl_RootObject->Scope)
     {
         /* Name space uninitialized */
 
@@ -664,7 +664,7 @@ AcpiNsFindAttachedObject (
         return_PTR (NULL);
     }
 
-    if (!Acpi_GblRootObject->Scope)
+    if (!AcpiGbl_RootObject->Scope)
     {
         /*
          * If the name space has not been initialized,
@@ -675,7 +675,7 @@ AcpiNsFindAttachedObject (
 
     if (NS_ALL == StartHandle)
     {
-        StartHandle = Acpi_GblRootObject;
+        StartHandle = AcpiGbl_RootObject;
     }
 
     else

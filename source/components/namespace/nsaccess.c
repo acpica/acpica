@@ -209,7 +209,7 @@ AcpiNsRootInitialize (void)
      * that AcpiNsRootInitialize() has already been called; just return.
      */
 
-    if (Acpi_GblRootObject->Scope)
+    if (AcpiGbl_RootObject->Scope)
     {
         Status = AE_OK;
         goto UnlockAndExit;
@@ -218,7 +218,7 @@ AcpiNsRootInitialize (void)
 
     /* Create the root scope */
 
-    Status = AcpiNsRootCreateScope (Acpi_GblRootObject);
+    Status = AcpiNsRootCreateScope (AcpiGbl_RootObject);
     if (ACPI_FAILURE (Status))
     {
         goto UnlockAndExit;
@@ -228,7 +228,7 @@ AcpiNsRootInitialize (void)
 
     DEBUG_PRINT (ACPI_INFO, ("Entering predefined name table entries into namespace\n"));
 
-    for (InitVal = Acpi_GblPreDefinedNames; InitVal->Name; InitVal++)
+    for (InitVal = AcpiGbl_PreDefinedNames; InitVal->Name; InitVal++)
     {
         Status = AcpiNsLookup (NULL, InitVal->Name, (OBJECT_TYPE_INTERNAL) InitVal->Type,
                                     IMODE_LOAD_PASS2, NS_NO_UPSEARCH, NULL, &NewEntry);
@@ -298,7 +298,7 @@ AcpiNsRootInitialize (void)
                 {
                     /* We just created the mutex for the global lock, save it */
 
-                    Acpi_GblGlobalLockSemaphore = ObjDesc->Mutex.Semaphore;
+                    AcpiGbl_GlobalLockSemaphore = ObjDesc->Mutex.Semaphore;
                 }
 
                 /* TBD: [Restructure] These fields may be obsolete */
@@ -380,10 +380,10 @@ AcpiNsLookup (
     }
 
 
-    Acpi_GblNsLookupCount++;
+    AcpiGbl_NsLookupCount++;
 
     *RetEntry = ENTRY_NOT_FOUND;
-    if (!Acpi_GblRootObject->Scope)
+    if (!AcpiGbl_RootObject->Scope)
     {
         /*
          * If the name space has not been initialized:
@@ -414,7 +414,7 @@ AcpiNsLookup (
     if ((!ScopeInfo) ||
         (!ScopeInfo->Scope.Entry))
     {
-        PrefixScope = Acpi_GblRootObject->Scope;
+        PrefixScope = AcpiGbl_RootObject->Scope;
     }
     else
     {
@@ -458,7 +458,7 @@ AcpiNsLookup (
 
         NullNamePath = TRUE;
         NumSegments = 0;
-        ThisEntry = Acpi_GblRootObject;
+        ThisEntry = AcpiGbl_RootObject;
 
         DEBUG_PRINT (TRACE_NAMES, ("NsLookup: Null Pathname (Zero segments),  Flags=%x\n", Flags));
     }
@@ -486,7 +486,7 @@ AcpiNsLookup (
         {
             /* Pathname is fully qualified, look in root name table */
 
-            EntryToSearch = Acpi_GblRootObject->Scope;
+            EntryToSearch = AcpiGbl_RootObject->Scope;
             Pathname++;                 /* point to segment part */
 
             DEBUG_PRINT (TRACE_NAMES, ("NsLookup: Searching from root [%p]\n",
@@ -496,7 +496,7 @@ AcpiNsLookup (
 
             if (!(*Pathname))
             {
-                ThisEntry = Acpi_GblRootObject;
+                ThisEntry = AcpiGbl_RootObject;
                 goto CheckForNewScopeAndExit;
             }
         }

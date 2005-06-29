@@ -263,7 +263,7 @@ AcpiNsWalkNamespace (
 
     if (StartObject == ACPI_ROOT_OBJECT)
     {
-        StartObject = Acpi_GblRootObject;
+        StartObject = AcpiGbl_RootObject;
     }
 
 

@@ -356,7 +356,7 @@ AcpiNsEvaluateByHandle (
 
     /* Check if namespace has been initialized */
 
-    if (!Acpi_GblRootObject->Scope)
+    if (!AcpiGbl_RootObject->Scope)
     {
         return_ACPI_STATUS (AE_NO_NAMESPACE);
     }
@@ -586,7 +586,7 @@ AcpiNsGetObjectValue (
         MEMCPY (&ObjDesc->Common.FirstNonCommonByte, &ValDesc->Common.FirstNonCommonByte,
                 (sizeof(ACPI_OBJECT_COMMON) - sizeof(ObjDesc->Common.FirstNonCommonByte)));
     }
- 
+
 
     /*
      * Other objects require a reference object wrapper which we then attempt to resolve.

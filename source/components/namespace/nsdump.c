@@ -624,7 +624,7 @@ AcpiNsDumpTables (
     FUNCTION_TRACE ("NsDumpTables");
 
 
-    if (!Acpi_GblRootObject->Scope)
+    if (!AcpiGbl_RootObject->Scope)
     {
         /*
          * If the name space has not been initialized,
@@ -638,7 +638,7 @@ AcpiNsDumpTables (
     {
         /*  entire namespace    */
 
-        SearchHandle = Acpi_GblRootObject;
+        SearchHandle = AcpiGbl_RootObject;
         DEBUG_PRINT (TRACE_TABLES, ("\\\n"));
     }
 

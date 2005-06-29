@@ -208,7 +208,7 @@ AcpiEvaluateObject (
         }
         ParamPtr[Count] = NULL;
 
-        /* 
+        /*
          * Convert each external object in the list to an internal object
          */
         for (i = 0; i < Count; i++)

@@ -157,7 +157,7 @@ AcpiLoadNamespace (
 
     /* There must be at least a DSDT installed */
 
-    if (Acpi_GblDSDT == NULL)
+    if (AcpiGbl_DSDT == NULL)
     {
         DEBUG_PRINT (ACPI_ERROR, ("DSDT is not in memory\n"));
         return_ACPI_STATUS (AE_NO_ACPI_TABLES);
@@ -193,7 +193,7 @@ AcpiLoadNamespace (
 
 
     DEBUG_PRINT_RAW (ACPI_OK, ("ACPI Namespace successfully loaded at root 0x%p\n",
-                    Acpi_GblRootObject->Scope));
+                    AcpiGbl_RootObject->Scope));
 
 
     /* Install the default OpRegion handlers, ignore the return code right now. */
@@ -258,7 +258,7 @@ AcpiGetHandle (
 
     if (STRCMP (Pathname, NS_ROOT_PATH) == 0)
     {
-        *RetHandle = AcpiNsConvertEntryToHandle (Acpi_GblRootObject);
+        *RetHandle = AcpiNsConvertEntryToHandle (AcpiGbl_RootObject);
         return AE_OK;
     }
 

@@ -378,7 +378,7 @@ AcpiNsDeleteNamespaceByOwner (
     FUNCTION_TRACE ("NsDeleteNamespaceSubtree");
 
 
-    ParentHandle    = Acpi_GblRootObject;
+    ParentHandle    = AcpiGbl_RootObject;
     ChildHandle     = 0;
     Level           = 1;
 

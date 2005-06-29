@@ -155,19 +155,19 @@ AcpiNsParseTable (
 
     /* Create the root object */
 
-    Acpi_GblParsedNamespaceRoot = AcpiPsAllocOp (AML_SCOPE_OP);
-    if (!Acpi_GblParsedNamespaceRoot)
+    AcpiGbl_ParsedNamespaceRoot = AcpiPsAllocOp (AML_SCOPE_OP);
+    if (!AcpiGbl_ParsedNamespaceRoot)
     {
         return_ACPI_STATUS (AE_NO_MEMORY);
     }
 
     /* Initialize the root object */
 
-    ((ACPI_NAMED_OP *) Acpi_GblParsedNamespaceRoot)->Name = ACPI_ROOT_NAME;
+    ((ACPI_NAMED_OP *) AcpiGbl_ParsedNamespaceRoot)->Name = ACPI_ROOT_NAME;
 
     /* Pass 1:  Parse everything except control method bodies */
 
-    Status = AcpiPsParseAml (Acpi_GblParsedNamespaceRoot, TableDesc->AmlPointer, TableDesc->AmlLength, 0);
+    Status = AcpiPsParseAml (AcpiGbl_ParsedNamespaceRoot, TableDesc->AmlPointer, TableDesc->AmlLength, 0);
     if (ACPI_FAILURE (Status))
     {
         return_ACPI_STATUS (Status);
@@ -177,7 +177,7 @@ AcpiNsParseTable (
 #ifndef PARSER_ONLY
     DEBUG_PRINT (TRACE_PARSE, ("NsParseTable: Building Internal Namespace\n"));
 
-    Status = AcpiPsWalkParsedAml (AcpiPsGetChild (Acpi_GblParsedNamespaceRoot), Acpi_GblParsedNamespaceRoot, NULL, Scope, NULL, NULL,
+    Status = AcpiPsWalkParsedAml (AcpiPsGetChild (AcpiGbl_ParsedNamespaceRoot), AcpiGbl_ParsedNamespaceRoot, NULL, Scope, NULL, NULL,
                         TableDesc->TableId, AcpiDsLoad2BeginOp, AcpiDsLoad2EndOp);
 
 
@@ -188,10 +188,10 @@ AcpiNsParseTable (
 
     DEBUG_PRINT (TRACE_PARSE, ("NsParseTable: Deleting Parsed Namespace\n"));
 
-    DEBUG_EXEC (AcpiDbGenerateStatistics (Acpi_GblParsedNamespaceRoot, 0));
+    DEBUG_EXEC (AcpiDbGenerateStatistics (AcpiGbl_ParsedNamespaceRoot, 0));
 
-    AcpiPsDeleteParseTree (Acpi_GblParsedNamespaceRoot);
-    Acpi_GblParsedNamespaceRoot = NULL;
+    AcpiPsDeleteParseTree (AcpiGbl_ParsedNamespaceRoot);
+    AcpiGbl_ParsedNamespaceRoot = NULL;
 #endif
 
 
@@ -320,7 +320,7 @@ AcpiNsLoadTableByType (
 
         DEBUG_PRINT (ACPI_INFO, ("NsLoadTableByType: Loading DSDT\n"));
 
-        TableDesc = &Acpi_GblAcpiTables[TABLE_DSDT];
+        TableDesc = &AcpiGbl_AcpiTables[TABLE_DSDT];
 
         /* If table already loaded into namespace, just return */
 
@@ -341,7 +341,7 @@ AcpiNsLoadTableByType (
 
         /* Now load the single DSDT */
 
-        Status = AcpiNsLoadTable (TableDesc, Acpi_GblRootObject);
+        Status = AcpiNsLoadTable (TableDesc, AcpiGbl_RootObject);
         if (ACPI_SUCCESS (Status))
         {
             TableDesc->LoadedIntoNamespace = TRUE;
@@ -353,14 +353,14 @@ AcpiNsLoadTableByType (
     case TABLE_SSDT:
 
         DEBUG_PRINT (ACPI_INFO, ("NsLoadTableByType: Loading %d SSDTs\n",
-                        Acpi_GblAcpiTables[TABLE_SSDT].Count));
+                        AcpiGbl_AcpiTables[TABLE_SSDT].Count));
 
         /*
          * Traverse list of SSDT tables
          */
 
-        TableDesc = &Acpi_GblAcpiTables[TABLE_SSDT];
-        for (i = 0; i < Acpi_GblAcpiTables[TABLE_SSDT].Count; i++)
+        TableDesc = &AcpiGbl_AcpiTables[TABLE_SSDT];
+        for (i = 0; i < AcpiGbl_AcpiTables[TABLE_SSDT].Count; i++)
         {
             TablePtr = TableDesc->Pointer;
 
@@ -368,7 +368,7 @@ AcpiNsLoadTableByType (
 
             if (!TableDesc->LoadedIntoNamespace)
             {
-                Status = AcpiNsLoadTable (TableDesc, Acpi_GblRootObject);
+                Status = AcpiNsLoadTable (TableDesc, AcpiGbl_RootObject);
                 if (ACPI_FAILURE (Status))
                 {
                     break;
@@ -386,14 +386,14 @@ AcpiNsLoadTableByType (
     case TABLE_PSDT:
 
         DEBUG_PRINT (ACPI_INFO, ("NsLoadTableByType: Loading %d PSDTs\n",
-                        Acpi_GblAcpiTables[TABLE_PSDT].Count));
+                        AcpiGbl_AcpiTables[TABLE_PSDT].Count));
 
         /*
          * Traverse list of PSDT tables
          */
 
-        TableDesc = &Acpi_GblAcpiTables[TABLE_PSDT];
-        for (i = 0; i < Acpi_GblAcpiTables[TABLE_PSDT].Count ; i++)
+        TableDesc = &AcpiGbl_AcpiTables[TABLE_PSDT];
+        for (i = 0; i < AcpiGbl_AcpiTables[TABLE_PSDT].Count ; i++)
         {
             TablePtr = TableDesc->Pointer;
 
@@ -401,7 +401,7 @@ AcpiNsLoadTableByType (
 
             if (!TableDesc->LoadedIntoNamespace)
             {
-                Status = AcpiNsLoadTable (TableDesc, Acpi_GblRootObject);
+                Status = AcpiNsLoadTable (TableDesc, AcpiGbl_RootObject);
                 if (ACPI_FAILURE (Status))
                 {
                     break;
