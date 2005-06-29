@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: aemain - Main routine for the AcpiExec utility
- *              $Revision: 1.48 $
+ *              $Revision: 1.49 $
  *
  *****************************************************************************/
 
@@ -356,7 +356,7 @@ main (
 
     AcpiInitializeSubsystem ();
 
-    InitFlags = (ACPI_NO_HANDLER_INIT | ACPI_NO_ACPI_ENABLE); //| ACPI_NO_EVENT_INIT);
+    InitFlags = (ACPI_NO_HANDLER_INIT | ACPI_NO_ACPI_ENABLE);
     if (!AcpiGbl_DbOpt_ini_methods)
     {
         InitFlags |= (ACPI_NO_DEVICE_INIT | ACPI_NO_OBJECT_INIT);
@@ -376,7 +376,7 @@ main (
             goto enterloop;
         }
 
-        /* Make a fake FADT so we can test the hardware component */
+        /* Build a fake FADT so we can test the hardware/event init */
 
         ACPI_STORE_ADDRESS (LocalFADT.XGpe0Blk.Address, 0x70);
         ACPI_STORE_ADDRESS (LocalFADT.XPm1aEvtBlk.Address, 0x80);
@@ -386,7 +386,7 @@ main (
         LocalFADT.Gpe0BlkLen    = 8;
         LocalFADT.Gpe1BlkLen    = 12;
         LocalFADT.Gpe1Base      = 64;
-        LocalFADT.Pm1EvtLen     = 0;
+        LocalFADT.Pm1EvtLen     = 4;
         LocalFADT.Pm1CntLen     = 4;
         LocalFADT.PmTmLen       = 8;
 
