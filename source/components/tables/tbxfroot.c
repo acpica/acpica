@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: tbxfroot - Find the root ACPI table (RSDT)
- *              $Revision: 1.51 $
+ *              $Revision: 1.53 $
  *
  *****************************************************************************/
 
@@ -319,26 +319,26 @@ AcpiTbFindRsdp (
         /*
          * 1) Search EBDA (low memory) paragraphs
          */
-        MemRover = AcpiTbScanMemoryForRsdp ((UINT8 *) LO_RSDP_WINDOW_BASE,
+        MemRover = AcpiTbScanMemoryForRsdp (ACPI_PHYSADDR_TO_PTR (LO_RSDP_WINDOW_BASE),
                         LO_RSDP_WINDOW_SIZE);
         if (MemRover)
         {
             /* Found it, return the physical address */
 
-            TableInfo->PhysicalAddress = (ACPI_TBLPTR) MemRover;
+            TableInfo->PhysicalAddress = ACPI_TO_INTEGER (MemRover);
             return_ACPI_STATUS (AE_OK);
         }
 
         /*
          * 2) Search upper memory: 16-byte boundaries in E0000h-F0000h
          */
-        MemRover = AcpiTbScanMemoryForRsdp ((UINT8 *) HI_RSDP_WINDOW_BASE,
+        MemRover = AcpiTbScanMemoryForRsdp (ACPI_PHYSADDR_TO_PTR (HI_RSDP_WINDOW_BASE),
                         HI_RSDP_WINDOW_SIZE);
         if (MemRover)
         {
             /* Found it, return the physical address */
 
-            TableInfo->PhysicalAddress = (ACPI_TBLPTR) MemRover;
+            TableInfo->PhysicalAddress = ACPI_TO_INTEGER (MemRover);
             return_ACPI_STATUS (AE_OK);
         }
     }
@@ -432,7 +432,7 @@ AcpiGetFirmwareTable (
         }
         else
         {
-            AcpiGbl_RSDP = (void *) (NATIVE_UINT) PhysicalAddress;
+            AcpiGbl_RSDP = ACPI_PHYSADDR_TO_PTR (PhysicalAddress);
         }
 
         /*
@@ -457,7 +457,7 @@ AcpiGetFirmwareTable (
 
 
     ACPI_DEBUG_PRINT ((ACPI_DB_INFO,
-        "RSDP located at %p, RSDT physical=%8.8lX%8.8lX \n",
+        "RSDP located at %p, RSDT physical=%8.8X%8.8X \n",
         AcpiGbl_RSDP, HIDWORD(AcpiGbl_RSDP->RsdtPhysicalAddress),
         LODWORD(AcpiGbl_RSDP->RsdtPhysicalAddress)));
 
