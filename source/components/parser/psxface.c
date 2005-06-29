@@ -156,41 +156,32 @@ PsxExecute (
 {
     ACPI_STATUS             Status;
     ACPI_OBJECT_INTERNAL    *ObjDesc;
-    UINT8                   *Pcode;
-    UINT32                  PcodeLength;
     UINT32                  i;
 
 
     FUNCTION_TRACE ("PsxExecute");
 
 
-    ObjDesc     = MethodEntry->Object;
-    Pcode       = ObjDesc->Method.Pcode;
-    PcodeLength = ObjDesc->Method.PcodeLength;
+    /* Validate the NTE and get the attached object */
 
-
-BREAKPOINT3;
-
-    /* If method not parsed yet, must parse it first */
-
-    if (!ObjDesc->Method.ParserOp)
+    if (!MethodEntry)
     {
-
-        DEBUG_PRINT (ACPI_INFO, ("PsxExecute: **** Parsing Method **** obj=%p\n",
-                        ObjDesc));
-
-        Status = DsParseMethod (MethodEntry);
-
-        if (ACPI_FAILURE (Status))
-        {
-            return_ACPI_STATUS (Status);
-        }
+        return_ACPI_STATUS (AE_NULL_ENTRY);
     }
 
+    ObjDesc = NsGetAttachedObject (MethodEntry);
+    if (!ObjDesc)
+    {
+        return_ACPI_STATUS (AE_NULL_OBJECT);
+    }
 
-    DEBUG_PRINT (ACPI_INFO, ("PsxExecute: **** Begin Method Execution **** obj=%p code=%p len=%X\n",
-                    ObjDesc, Pcode, PcodeLength));
+    /* Parse method if necessary, wait on concurrency semaphore */
 
+    Status = DsBeginMethodExecution (MethodEntry, ObjDesc);
+    if (ACPI_FAILURE (Status))
+    {
+        return_ACPI_STATUS (Status);
+    }
 
     if (Params)
     {
@@ -202,38 +193,20 @@ BREAKPOINT3;
         }
     }
 
-
-
     /* 
-     * If there is a concurrency limit on this method, we need to obtain a unit
-     * from the method semaphore.  This releases the interpreter if we block
+     * Method is parsed and ready to execute
+     * The walk of the parse tree is where we actually execute the method
      */
 
-    if (ObjDesc->Method.Semaphore)
-    {
-        Status = OsLocalWaitSemaphore (ObjDesc->Method.Semaphore, WAIT_FOREVER);
-        if (ACPI_FAILURE (Status))
-        {
-            return_ACPI_STATUS (Status);
-        }
-    }
-
-    /* Method is parsed and ready to execute */
-    /* This is where we really execute the method */
+    DEBUG_PRINT (ACPI_INFO, ("PsxExecute: **** Begin Method Execution **** Entry=%p obj=%p\n",
+                    MethodEntry, ObjDesc));
 
     Status = PsWalkParsedAml (ObjDesc->Method.ParserOp, ObjDesc->Method.ParserOp, ObjDesc, MethodEntry->Scope, Params,
                                 ReturnObjDesc, ObjDesc->Method.OwningId, DsExecBeginOp, DsExecEndOp);
     
-    /* Signal completion of the execution of this method if necessary */
-
-    if (ObjDesc->Method.Semaphore)
-    {
-        Status = OsdSignalSemaphore (ObjDesc->Method.Semaphore, 1);
-    }
-
     if (Params)
     {
-        /* Take away the extra reference we gave the parameters above */
+        /* Take away the extra reference that we gave the parameters above */
 
         for (i = 0; Params[i]; i++)
         {
@@ -253,16 +226,6 @@ BREAKPOINT3;
         DUMP_STACK_ENTRY (*ReturnObjDesc);
 
         Status = AE_CTRL_RETURN_VALUE;
-    }
-
-    else
-    {
-        /* Map PENDING (normal exit, no return value) to OK */
-
-        if (AE_CTRL_PENDING == Status)
-        {
-            Status = AE_OK;
-        }
     }
 
 
