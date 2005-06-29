@@ -253,7 +253,7 @@ AmlResolveOperands (
                 case AML_ArgOp:
                 case AML_LocalOp:
 
-                    DEBUG_PRINT (ACPI_INFO, ("Reference Opcode: %s\n", OpInfo->Name));
+                    DEBUG_ONLY_MEMBERS (DEBUG_PRINT (ACPI_INFO, ("Reference Opcode: %s\n", OpInfo->Name)));
                     break;
             
                 default:
