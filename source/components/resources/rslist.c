@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: rslist - Linked list utilities
- *              $Revision: 1.29 $
+ *              $Revision: 1.33 $
  *
  ******************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2003, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -365,9 +365,9 @@ AcpiRsByteStreamToList (
 
         default:
             /*
-             * Invalid/Unknowns resource type
+             * Invalid/Unknown resource type
              */
-            Status = AE_AML_ERROR;
+            Status = AE_AML_INVALID_RESOURCE_TYPE;
             break;
         }
 
@@ -390,8 +390,8 @@ AcpiRsByteStreamToList (
          * Set the Buffer to the next structure
          */
         Resource = ACPI_CAST_PTR (ACPI_RESOURCE, Buffer);
-        Resource->Length = ACPI_ALIGN_RESOURCE_SIZE(Resource->Length);
-        Buffer += ACPI_ALIGN_RESOURCE_SIZE(StructureSize);
+        Resource->Length = (UINT32) ACPI_ALIGN_RESOURCE_SIZE (Resource->Length);
+        Buffer += ACPI_ALIGN_RESOURCE_SIZE (StructureSize);
 
     } /*  end while */
 
@@ -400,7 +400,7 @@ AcpiRsByteStreamToList (
      */
     if (!EndTagProcessed)
     {
-        return_ACPI_STATUS (AE_AML_ERROR);
+        return_ACPI_STATUS (AE_AML_NO_RESOURCE_END_TAG);
     }
 
     return_ACPI_STATUS (AE_OK);
@@ -570,6 +570,8 @@ AcpiRsListToByteStream (
              * If we get here, everything is out of sync,
              *  so exit with an error
              */
+            ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Invalid descriptor type (%X) in resource list\n",
+                LinkedList->Id));
             Status = AE_BAD_DATA;
             break;
 
