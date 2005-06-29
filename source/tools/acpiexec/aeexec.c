@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: aeexec - Top level parse and execute routines
- *              $Revision: 1.47 $
+ *              $Revision: 1.48 $
  *
  *****************************************************************************/
 
@@ -433,7 +433,8 @@ AeInstallHandlers (void)
                                         AeNotifyHandler, NULL);
     if (ACPI_FAILURE (Status))
     {
-        printf ("Could not install a global notify handler\n");
+        printf ("Could not install a global notify handler, %s\n",
+            AcpiFormatException (Status));
     }
 
     for (i = 0; i < 3; i++)
@@ -449,8 +450,8 @@ AeInstallHandlers (void)
         if (ACPI_FAILURE (Status))
         {
             ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
-                "Could not install an OpRegion handler for %s space (%d)\n",
-                AcpiUtGetRegionName((UINT8) i), i));
+                "Could not install an OpRegion handler for %s space(%d), %s\n",
+                AcpiUtGetRegionName((UINT8) i), i, AcpiFormatException (Status)));
             return (Status);
         }
     }
