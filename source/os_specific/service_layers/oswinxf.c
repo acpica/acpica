@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: oswinxf - Windows application interface
- *              $Revision: 1.15 $
+ *              $Revision: 1.18 $
  *
  *****************************************************************************/
 
@@ -145,7 +145,7 @@
         MODULE_NAME         ("oswinxf")
 
 
-UINT32                      NextSemaphoreHandle = 0;
+UINT32                      AcpiGbl_NextSemaphore = 0;
 #define NUM_SEMAPHORES      128
 
 typedef struct semaphore_entry
@@ -156,12 +156,10 @@ typedef struct semaphore_entry
 } SEMAPHORE_ENTRY;
 
 
-SEMAPHORE_ENTRY             SemaphoreTable[NUM_SEMAPHORES];
+SEMAPHORE_ENTRY             AcpiGbl_Semaphores[NUM_SEMAPHORES];
 
 
-
-extern FILE                 *DebugFile;
-
+extern FILE                 *AcpiGbl_DebugFile;
 
 
 /******************************************************************************
@@ -182,10 +180,9 @@ AcpiOsInitialize (void)
     UINT32                  i;
 
 
-
     for (i = 0; i < NUM_SEMAPHORES; i++)
     {
-        SemaphoreTable[i].OsHandle = NULL;
+        AcpiGbl_Semaphores[i].OsHandle = NULL;
     }
 
     return AE_OK;
@@ -339,11 +336,11 @@ AcpiOsVprintf (
     {
         /* Output is directable to either a file (if open) or the console */
 
-        if (DebugFile)
+        if (AcpiGbl_DebugFile)
         {
             /* Output file is open, send the output there */
 
-            Count = vfprintf (DebugFile, Fmt, Args);
+            Count = vfprintf (AcpiGbl_DebugFile, Fmt, Args);
         }
         else
         {
@@ -552,8 +549,6 @@ AcpiOsCreateSemaphore (
 #endif
 
 
-
-
     if (MaxUnits == ACPI_UINT32_MAX)
     {
         MaxUnits = 255;
@@ -583,15 +578,15 @@ AcpiOsCreateSemaphore (
     }
 
 
-    SemaphoreTable[NextSemaphoreHandle].MaxUnits = (UINT16) MaxUnits;
-    SemaphoreTable[NextSemaphoreHandle].CurrentUnits = (UINT16) InitialUnits;
-    SemaphoreTable[NextSemaphoreHandle].OsHandle = Mutex;
+    AcpiGbl_Semaphores[AcpiGbl_NextSemaphore].MaxUnits = (UINT16) MaxUnits;
+    AcpiGbl_Semaphores[AcpiGbl_NextSemaphore].CurrentUnits = (UINT16) InitialUnits;
+    AcpiGbl_Semaphores[AcpiGbl_NextSemaphore].OsHandle = Mutex;
 
     ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "Handle=%d, Max=%d, Current=%d, OsHandle=%p\n",
-            NextSemaphoreHandle, MaxUnits, InitialUnits, Mutex));
+            AcpiGbl_NextSemaphore, MaxUnits, InitialUnits, Mutex));
 
-    *OutHandle = (void *) NextSemaphoreHandle;
-    NextSemaphoreHandle++;
+    *OutHandle = (void *) AcpiGbl_NextSemaphore;
+    AcpiGbl_NextSemaphore++;
 #endif
 
     return AE_OK;
@@ -617,7 +612,7 @@ AcpiOsDeleteSemaphore (
 
 
     if ((Index >= NUM_SEMAPHORES) ||
-        !SemaphoreTable[Index].OsHandle)
+        !AcpiGbl_Semaphores[Index].OsHandle)
     {
         return AE_BAD_PARAMETER;
     }
@@ -625,8 +620,8 @@ AcpiOsDeleteSemaphore (
 
 #ifdef _MULTI_THREADED
 
-    CloseHandle (SemaphoreTable[Index].OsHandle);
-    SemaphoreTable[Index].OsHandle = NULL;
+    CloseHandle (AcpiGbl_Semaphores[Index].OsHandle);
+    AcpiGbl_Semaphores[Index].OsHandle = NULL;
 #endif
 
     return AE_OK;
@@ -662,7 +657,7 @@ AcpiOsWaitSemaphore (
 
 
     if ((Index >= NUM_SEMAPHORES) ||
-        !SemaphoreTable[Index].OsHandle)
+        !AcpiGbl_Semaphores[Index].OsHandle)
     {
         return AE_BAD_PARAMETER;
     }
@@ -674,33 +669,32 @@ AcpiOsWaitSemaphore (
     }
 
 
-
-/* Make this a command line option so that we can catch
+/* TBD: Make this a command line option so that we can catch
  * synchronization deadlocks
  *
     if (Timeout == INFINITE)
         Timeout = 400000;
 */
 
-    WaitStatus = WaitForSingleObject (SemaphoreTable[Index].OsHandle, Timeout);
+    WaitStatus = WaitForSingleObject (AcpiGbl_Semaphores[Index].OsHandle, Timeout);
     if (WaitStatus == WAIT_TIMEOUT)
     {
-/* Make optional -- wait of 0 is used to detect if unit is available 
+/* Make optional -- wait of 0 is used to detect if unit is available
         ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "WaitSemaphore [%d]: *** Timeout on semaphore %d\n",
                     Handle));
 */
         return AE_TIME;
     }
 
-    if (SemaphoreTable[Index].CurrentUnits == 0)
+    if (AcpiGbl_Semaphores[Index].CurrentUnits == 0)
     {
-        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "[%d] No units, Timeout %X, Status 0x%X\n",
-                    Index, Timeout, WaitStatus));
+        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "%s - No unit received. Timeout %X, OSstatus 0x%X\n",
+                    AcpiUtGetMutexName (Index), Timeout, WaitStatus));
 
         return AE_OK;
     }
 
-    SemaphoreTable[Index].CurrentUnits--;
+    AcpiGbl_Semaphores[Index].CurrentUnits--;
 #endif
 
 
@@ -734,7 +728,7 @@ AcpiOsSignalSemaphore (
 
 
     if ((Index >= NUM_SEMAPHORES) ||
-        !SemaphoreTable[Index].OsHandle)
+        !AcpiGbl_Semaphores[Index].OsHandle)
     {
         return AE_BAD_PARAMETER;
     }
@@ -747,20 +741,20 @@ AcpiOsSignalSemaphore (
     }
 
 
-    if ((SemaphoreTable[Index].CurrentUnits + 1) > 
-        SemaphoreTable[Index].MaxUnits)
+    if ((AcpiGbl_Semaphores[Index].CurrentUnits + 1) >
+        AcpiGbl_Semaphores[Index].MaxUnits)
     {
-        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Oversignalled semaphore[%d]! Current %d Max %d\n", 
-            Index, SemaphoreTable[Index].CurrentUnits, SemaphoreTable[Index].MaxUnits));
+        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Oversignalled semaphore[%d]! Current %d Max %d\n",
+            Index, AcpiGbl_Semaphores[Index].CurrentUnits, AcpiGbl_Semaphores[Index].MaxUnits));
 
         return (AE_LIMIT);
     }
 
-    ReleaseSemaphore (SemaphoreTable[Index].OsHandle, Units, NULL);
+    AcpiGbl_Semaphores[Index].CurrentUnits++;
+    ReleaseSemaphore (AcpiGbl_Semaphores[Index].OsHandle, Units, NULL);
 
-    SemaphoreTable[Index].CurrentUnits++;
 #endif
-    
+
 
     return (AE_OK);
 }
@@ -865,7 +859,6 @@ AcpiOsQueueForExecution (
 
     return 0;
 }
-
 
 
 /******************************************************************************
@@ -999,7 +992,7 @@ AcpiOsReadPort (
         *((UINT16 *) Value) = 0;
         break;
 
-    case 32: 
+    case 32:
         *((UINT32 *) Value) = 0;
         break;
     }
@@ -1064,7 +1057,7 @@ AcpiOsReadMemory (
         *((UINT16 *) Value) = 0;
         break;
 
-    case 32: 
+    case 32:
         *((UINT32 *) Value) = 0;
         break;
     }
@@ -1138,7 +1131,5 @@ AcpiOsSignal (
 
     return (AE_OK);
 }
-
-
 
 
