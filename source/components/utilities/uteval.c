@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: uteval - Object evaluation
- *              $Revision: 1.47 $
+ *              $Revision: 1.48 $
  *
  *****************************************************************************/
 
@@ -399,7 +399,7 @@ AcpiUtExecute_HID (
  * DESCRIPTION: Return a numeric or string _CID value as a string.
  *              (Compatible ID)
  *
- *              NOTE:  Assumes a maximum _CID string length of 
+ *              NOTE:  Assumes a maximum _CID string length of
  *                     ACPI_MAX_CID_LENGTH.
  *
  ******************************************************************************/
@@ -492,7 +492,7 @@ AcpiUtExecute_CID (
 
     /* Allocate a worst-case buffer for the _CIDs */
 
-    Size = (((Count - 1) * sizeof (ACPI_COMPATIBLE_ID)) + 
+    Size = (((Count - 1) * sizeof (ACPI_COMPATIBLE_ID)) +
                            sizeof (ACPI_COMPATIBLE_ID_LIST));
 
     CidList = ACPI_MEM_CALLOCATE ((ACPI_SIZE) Size);
