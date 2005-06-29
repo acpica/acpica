@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dbinput - user front-end to the AML debugger
- *              $Revision: 1.94 $
+ *              $Revision: 1.95 $
  *
  ******************************************************************************/
 
@@ -148,6 +148,7 @@ enum AcpiExDebuggerCommands
     CMD_EXIT,
     CMD_FIND,
     CMD_GO,
+    CMD_GPES,
     CMD_HELP,
     CMD_HELP2,
     CMD_HISTORY,
@@ -203,6 +204,7 @@ static const COMMAND_INFO       AcpiGbl_DbCommands[] =
     {"EXIT",         0},
     {"FIND",         1},
     {"GO",           0},
+    {"GPES",         0},
     {"HELP",         0},
     {"?",            0},
     {"HISTORY",      0},
@@ -621,6 +623,10 @@ AcpiDbCommandDispatch (
     case CMD_GO:
         AcpiGbl_CmSingleStep = FALSE;
         return (AE_OK);
+
+    case CMD_GPES:
+        AcpiDbDisplayGpes ();
+        break;
 
     case CMD_HELP:
     case CMD_HELP2:
