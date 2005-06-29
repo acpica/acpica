@@ -21,7 +21,8 @@
 #ifndef _DATATYPES_H
 #define _DATATYPES_H
 
-// #ifdef FLAT_MODEL
+#include <stddef.h>
+
 
 /* 
  * Data types - Fixed across all compilation models
@@ -43,7 +44,6 @@
 
 /* 
  * Need a 32-bit vs. 64-bit section !!! 
- * Get rid of FLAT_MODEL !!!
  */
 
 /*  IA-32 type definitions */
@@ -58,67 +58,86 @@ typedef unsigned short  UINT16;
 typedef int             INT32;
 typedef unsigned int    UINT32;
 typedef unsigned char   UCHAR;
+/*typedef long            size_t; */
+
+typedef unsigned char   UINT8_BIT;
+typedef unsigned short  UINT16_BIT;
+typedef unsigned long   UINT32_BIT;
+
+
+/* Types specific to the OS-dependent interface */
+
+typedef void            OSD_FILE;
+
+#ifndef NULL
+#define NULL            (void *)0
+#endif
+
+#ifndef NOVOID
 typedef void            VOID;
+#endif
 
 /* Not supported */
 
 #define UINT64 
-#define WCHAR
+/*
+ * This is needed somewhere!!!
+ * #define WCHAR
+ */
 
 
-    /* We want to obsolete these !!!!*/
-
-    #define BYTE    	unsigned char
-    #define WORD    	unsigned short
-    #define DWORD   	unsigned long
-    /* #define BOOLEAN 	unsigned char */
-    #define BYTE_BIT   	BYTE
-    #define NATIVE_WORD	WORD
-
-/* We want to obsolete everything that is NOT flat model */
-
-/* #else                                             	/* ! RMX   */
-/*    #pragma pack(1)
-    #include <graph.h>
-
-    #define BYTE    	unsigned char
-    #define WORD    	unsigned short
-    #define DWORD   	unsigned long
-    #define BOOLEAN 	unsigned char
-    #define BYTE_BIT  	BYTE
-    #define NATIVE_WORD WORD
-
-    #ifdef BULIB_GEN
-        #include "switch.h"
-    #else
-        #include <switch.h>
-    #endif
-#endif                                                /* ! RMX   */
-
-#define WORD_BIT    unsigned
+/* The 64-bit data type in IA-32 */
 
 #ifndef  _QWORD_DEFINED
 typedef struct
 {
-    DWORD Low;
-    DWORD High;
+    UINT32 Low;
+    UINT32 High;
 }  QWORD;
 #endif
 
+/* Local datatypes */
+
+typedef INT32 LogHandle;
+#define NO_LOG_HANDLE ((LogHandle) -1)
+
+/* Operational mode of AML scanner */
+
+typedef enum {
+    Load = 0,
+    Exec = 1,
+    Load1 = 2
+} OpMode;
+
+
+typedef struct
+{
+   ptrdiff_t   Offset;      /* offset to MethodFlags in AML pcode block */
+   UINT32      Length;      /* length of method code including MethodFlags */
+} meth;
+
+/* NsHandle is actually an nte *, which is private to acpinmsp.c */
+
+typedef void * NsHandle;
+
+
+
+/* Miscellaneous data manipulation macros */
+
 #ifndef LOWORD
-#define LOWORD(l)   ((WORD)(DWORD)(l))
+#define LOWORD(l)   ((UINT16)(UINT32)(l))
 #endif
 
 #ifndef HIWORD
-#define HIWORD(l)   ((WORD)((((DWORD)(l)) >> 16) & 0xFFFF))
+#define HIWORD(l)   ((UINT16)((((UINT32)(l)) >> 16) & 0xFFFF))
 #endif
 
 #ifndef LOBYTE
-#define LOBYTE(l)   ((BYTE)(WORD)(l))
+#define LOBYTE(l)   ((UINT8)(UINT16)(l))
 #endif
 
 #ifndef HIBYTE
-#define HIBYTE(l)   ((BYTE)((((WORD)(l)) >> 8) & 0xFF))
+#define HIBYTE(l)   ((UINT8)((((UINT16)(l)) >> 8) & 0xFF))
 #endif
 
 #define BIT0(x) 	((((x) & 0x1) > 0) ? 1 : 0)
@@ -135,33 +154,24 @@ typedef struct
 #endif
 
 
-#ifndef RMX
-  #ifndef FLAT_MODEL
-    #define selector                        __segment
-  #else
-    #define selector                        DWORD
-    #define FAR
-    extern selector sFlatSeg;
-  #endif
+#define LOW_BASE(w)     ((UINT16) ((w) & 0x0000FFFF))
+#define MID_BASE(b)     ((UINT8)(((b) & 0x00FF0000) >> 16))
+#define HI_BASE(b)      ((UINT8)(((b) & 0xFF000000) >> 24))
+#define LOW_LIMIT(w)  	((UINT16) ((w) & 0x0000FFFF))
+#define HI_LIMIT(b)     ((UINT8)(((b) & 0x00FF0000) >> 16))
 
-  #ifndef GDT_SLOTS
-    #define GDT_SLOTS 10
-  #endif
-#else       /* RMX */
-  #define MAX_PRIORITY    (unsigned char) 0X37
-  #define THIS_JOB     	NULLSEL
-  #define s4GBSegName     (const char *) "4GB selector"
-  #ifndef __BU_BASE_C__
-    extern selector sF000;
-    extern selector sFlatSeg;
-    #define s4GBSeg sFlatSeg
-  #endif
-#endif  /* RMX */
 
-#define LOW_BASE(w)     ((WORD) ((w) & 0x0000FFFF))
-#define MID_BASE(b)     ((BYTE)(((b) & 0x00FF0000) >> 16))
-#define HI_BASE(b)      ((BYTE)(((b) & 0xFF000000) >> 24))
-#define LOW_LIMIT(w)  	((WORD) ((w) & 0x0000FFFF))
-#define HI_LIMIT(b)     ((BYTE)(((b) & 0x00FF0000) >> 16))
+/* useful defines */
+
+#ifdef FALSE
+#undef FALSE
+#endif
+#define FALSE       (1 == 0)
+
+#ifdef TRUE
+#undef TRUE
+#endif
+#define TRUE        (1 == 1)
+
 
 #endif /* DATATYPES_H */
