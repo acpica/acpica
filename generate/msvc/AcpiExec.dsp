@@ -475,43 +475,47 @@ SOURCE=..\..\Subsystem\Debugger\dbutils.c
 # PROP Default_Filter ""
 # Begin Source File
 
-SOURCE=..\..\Subsystem\Dispatcher\dpcontrl.c
+SOURCE=..\..\Subsystem\Dispatcher\dscontrl.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\Subsystem\Dispatcher\dpfield.c
+SOURCE=..\..\Subsystem\Dispatcher\dsfield.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\Subsystem\Dispatcher\dpmethod.c
+SOURCE=..\..\Subsystem\Dispatcher\dsmethod.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\Subsystem\Dispatcher\dpmthdat.c
+SOURCE=..\..\Subsystem\Dispatcher\dsmthdat.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\Subsystem\Dispatcher\dpobject.c
+SOURCE=..\..\Subsystem\Dispatcher\dsobject.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\Subsystem\Dispatcher\dpregion.c
+SOURCE=..\..\Subsystem\Dispatcher\dsregion.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\Subsystem\Dispatcher\dputils.c
+SOURCE=..\..\Subsystem\Dispatcher\dsutils.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\Subsystem\Dispatcher\dpwexec.c
+SOURCE=..\..\Subsystem\Dispatcher\dswexec.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\Subsystem\Dispatcher\dpwload1.c
+SOURCE=..\..\Subsystem\Dispatcher\dswload1.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\Subsystem\Dispatcher\dpwload2.c
+SOURCE=..\..\Subsystem\Dispatcher\dswload2.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\Subsystem\Dispatcher\dswstate.c
 # End Source File
 # End Group
 # End Group
