@@ -413,19 +413,68 @@ DumpBuffer (
     INT32                   componentId);
 
 
-/* assert macros */
 
-#ifdef DEBUG_ASSERT
-#undef DEBUG_ASSERT
-#endif
+/*
+ * Local implementations of C library functions
+ */
 
-#define ACPI_ASSERT(exp)	                                \
-    if(!(exp))												\
-        OsdDbgAssert(#exp, __FILE__, __LINE__, "Failed Assertion")
+ACPI_SIZE
+_strlen (
+    const char              *String);
 
-#define DEBUG_ASSERT(msg, exp)								\
-    if(!(exp))												\
-        OsdDbgAssert(#exp, __FILE__, __LINE__, msg)
+char *
+_strcpy (
+    char                    *DstString, 
+    const char              *SrcString);
+
+char *
+_strncpy (
+    char                    *DstString, 
+    const char              *SrcString, 
+    ACPI_SIZE               Count);
+
+UINT32
+_strncmp (
+    const char              *String1, 
+    const char              *String2, 
+    ACPI_SIZE               Count);
+
+UINT32
+_strcmp (
+    const char              *String1, 
+    const char              *String2);
+
+char *
+_strcat (
+    char                    *DstString,
+    const char              *SrcString);
+
+char *
+_strncat (
+    char                    *DstString, 
+    const char              *SrcString, 
+    ACPI_SIZE               Count);
+
+UINT32
+_strtoul (
+    const char              *String, 
+    char                    **Terminator, 
+    INT32                   Base);
+
+void *
+_memcpy (
+    void                    *Dest, 
+    const void              *Src, 
+    ACPI_SIZE               Count);
+
+void *
+_memset (
+    void                    *Dest,
+    INT32                   Value,
+    ACPI_SIZE               Count);
+
+
+
 
 /*
  * Memory allocation functions and related macros.
