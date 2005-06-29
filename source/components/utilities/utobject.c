@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: utobject - ACPI object create/delete/size/cache routines
- *              $Revision: 1.53 $
+ *              $Revision: 1.61 $
  *
  *****************************************************************************/
 
@@ -157,6 +157,7 @@ AcpiUtCreateInternalObjectDbg (
     ACPI_OBJECT_TYPE8       Type)
 {
     ACPI_OPERAND_OBJECT     *Object;
+    ACPI_OPERAND_OBJECT     *SecondObject;
 
 
     FUNCTION_TRACE_STR ("UtCreateInternalObjectDbg", AcpiUtGetTypeName (Type));
@@ -167,9 +168,30 @@ AcpiUtCreateInternalObjectDbg (
     Object = AcpiUtAllocateObjectDescDbg (ModuleName, LineNumber, ComponentId);
     if (!Object)
     {
-        /* Allocation failure */
-
         return_PTR (NULL);
+    }
+
+    switch (Type)
+    {
+    case ACPI_TYPE_REGION:
+    case ACPI_TYPE_BUFFER_FIELD:
+        
+        /* These types require a secondary object */
+
+        SecondObject = AcpiUtAllocateObjectDescDbg (ModuleName, LineNumber, ComponentId);
+        if (!SecondObject)
+        {
+            AcpiUtDeleteObjectDesc (Object);
+            return_PTR (NULL);
+        }
+
+        SecondObject->Common.Type = INTERNAL_TYPE_EXTRA;
+        SecondObject->Common.ReferenceCount = 1;
+
+        /* Link the second object to the first */
+
+        Object->Common.NextObject = SecondObject;
+        break;
     }
 
     /* Save the object type in the object descriptor */
@@ -210,14 +232,6 @@ AcpiUtValidInternalObject (
     {
         ACPI_DEBUG_PRINT ((ACPI_DB_INFO,
             "**** Null Object Ptr\n"));
-        return (FALSE);
-    }
-
-    /* Check for a pointer within one of the ACPI tables */
-
-    if (AcpiTbSystemTablePointer (Object))
-    {
-        ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "**** Object %p is a Pcode Ptr\n", Object));
         return (FALSE);
     }
 
@@ -359,57 +373,6 @@ AcpiUtDeleteObjectCache (
 
 
     AcpiUtDeleteGenericCache (ACPI_MEM_LIST_OPERAND);
-    return_VOID;
-}
-
-
-/*******************************************************************************
- *
- * FUNCTION:    AcpiUtInitStaticObject
- *
- * PARAMETERS:  ObjDesc             - Pointer to a "static" object - on stack
- *                                    or in the data segment.
- *
- * RETURN:      None.
- *
- * DESCRIPTION: Initialize a static object.  Sets flags to disallow dynamic
- *              deletion of the object.
- *
- ******************************************************************************/
-
-void
-AcpiUtInitStaticObject (
-    ACPI_OPERAND_OBJECT     *ObjDesc)
-{
-
-    FUNCTION_TRACE_PTR ("UtInitStaticObject", ObjDesc);
-
-
-    if (!ObjDesc)
-    {
-        return_VOID;
-    }
-
-
-    /*
-     * Clear the entire descriptor
-     */
-    MEMSET ((void *) ObjDesc, 0, sizeof (ACPI_OPERAND_OBJECT));
-
-
-    /*
-     * Initialize the header fields
-     * 1) This is an ACPI_OPERAND_OBJECT  descriptor
-     * 2) The size is the full object (worst case)
-     * 3) The flags field indicates static allocation
-     * 4) Reference count starts at one (not really necessary since the
-     *    object can't be deleted, but keeps everything sane)
-     */
-
-    ObjDesc->Common.DataType        = ACPI_DESC_TYPE_INTERNAL;
-    ObjDesc->Common.Flags           = AOPOBJ_STATIC_ALLOCATION;
-    ObjDesc->Common.ReferenceCount  = 1;
-
     return_VOID;
 }
 
@@ -636,6 +599,10 @@ AcpiUtGetPackageObjectSize (
 
     Status = AcpiUtWalkPackageTree (InternalObject, NULL,
                             AcpiUtGetElementLength, &Info);
+    if (ACPI_FAILURE (Status))
+    {
+        return_ACPI_STATUS (Status);
+    }
 
     /*
      * We have handled all of the objects in all levels of the package.
@@ -672,6 +639,9 @@ AcpiUtGetObjectSize(
     UINT32                  *ObjLength)
 {
     ACPI_STATUS             Status;
+
+
+    FUNCTION_ENTRY ();
 
 
     if ((VALID_DESCRIPTOR_TYPE (InternalObject, ACPI_DESC_TYPE_INTERNAL)) &&

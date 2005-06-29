@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: utmisc - common utility procedures
- *              $Revision: 1.55 $
+ *              $Revision: 1.56 $
  *
  ******************************************************************************/
 
@@ -1116,7 +1116,7 @@ AcpiUtWalkPackageTree (
                         State->Pkg.SourceObject->Package.Elements[ThisIndex];
 
         /*
-         * Check for
+         * Check for:
          * 1) An uninitialized package element.  It is completely
          *      legal to declare a package and leave it uninitialized
          * 2) Not an internal object - can be a namespace node instead
@@ -1134,8 +1134,6 @@ AcpiUtWalkPackageTree (
                                     State, Context);
             if (ACPI_FAILURE (Status))
             {
-                /* TBD: must delete package created up to this point */
-
                 return_ACPI_STATUS (Status);
             }
 
@@ -1151,7 +1149,6 @@ AcpiUtWalkPackageTree (
                  */
                 AcpiUtDeleteGenericState (State);
                 State = AcpiUtPopGenericState (&StateList);
-
 
                 /* Finished when there are no more states */
 
@@ -1172,35 +1169,26 @@ AcpiUtWalkPackageTree (
                 State->Pkg.Index++;
             }
         }
-
         else
         {
-            /* This is a sub-object of type package */
+            /* This is a subobject of type package */
 
             Status = WalkCallback (ACPI_COPY_TYPE_PACKAGE, ThisSourceObj,
                                         State, Context);
             if (ACPI_FAILURE (Status))
             {
-                /* TBD: must delete package created up to this point */
-
                 return_ACPI_STATUS (Status);
             }
 
-
-            /*
-             * The callback above returned a new target package object.
-             */
-
             /*
              * Push the current state and create a new one
+             * The callback above returned a new target package object.
              */
             AcpiUtPushGenericState (&StateList, State);
             State = AcpiUtCreatePkgState (ThisSourceObj,
                                             State->Pkg.ThisTargetObj, 0);
             if (!State)
             {
-                /* TBD: must delete package created up to this point */
-
                 return_ACPI_STATUS (AE_NO_MEMORY);
             }
         }
