@@ -116,14 +116,14 @@
 
 #define __IRESOLVE_C__
 
-#include <acpi.h>
-#include <amlcode.h>
-#include <parser.h>
-#include <dispatch.h>
-#include <interp.h>
-#include <namesp.h>
-#include <tables.h>
-#include <events.h>
+#include "acpi.h"
+#include "amlcode.h"
+#include "parser.h"
+#include "dispatch.h"
+#include "interp.h"
+#include "namesp.h"
+#include "tables.h"
+#include "events.h"
 
 
 #define _COMPONENT          INTERPRETER
@@ -133,7 +133,7 @@
 
 /*****************************************************************************
  * 
- * FUNCTION:    AmlGetFieldUnitValue
+ * FUNCTION:    AcpiAmlGetFieldUnitValue
  *
  * PARAMETERS:  *FieldDesc          - Pointer to a FieldUnit
  *              *ResultDesc         - Pointer to an empty descriptor
@@ -147,7 +147,7 @@
  ****************************************************************************/
 
 ACPI_STATUS
-AmlGetFieldUnitValue (
+AcpiAmlGetFieldUnitValue (
     ACPI_OBJECT_INTERNAL    *FieldDesc, 
     ACPI_OBJECT_INTERNAL    *ResultDesc)
 {
@@ -172,7 +172,7 @@ AmlGetFieldUnitValue (
         Status = AE_AML_INTERNAL;
     }
 
-    else if (ACPI_TYPE_Buffer != FieldDesc->FieldUnit.Container->Common.Type)
+    else if (ACPI_TYPE_BUFFER != FieldDesc->FieldUnit.Container->Common.Type)
     {
         DEBUG_PRINT (ACPI_ERROR, ("AmlGetFieldUnitValue: Internal error - container is not a Buffer\n"));
         Status = AE_AML_OPERAND_TYPE;
@@ -201,7 +201,7 @@ AmlGetFieldUnitValue (
 
         /* Get the global lock if needed */
 
-    Locked = AmlAcquireGlobalLock (FieldDesc->FieldUnit.LockRule);
+    Locked = AcpiAmlAcquireGlobalLock (FieldDesc->FieldUnit.LockRule);
 
     /* Field location is (base of buffer) + (byte offset) */
 
@@ -213,7 +213,7 @@ AmlGetFieldUnitValue (
      * NOTE: Only the bottom 5 bits are valid for a shift operation, so
      *  special care must be taken for any shift greater than 31 bits. 
      *
-     * TBD: Fields greater than 32-bits will not work.
+     * TBD: [Unhandled] Fields greater than 32-bits will not work.
      */
 
     if (FieldDesc->FieldUnit.Length < 32)
@@ -225,11 +225,15 @@ AmlGetFieldUnitValue (
         Mask = 0xFFFFFFFF;
     }
 
-    ResultDesc->Number.Type = (UINT8) ACPI_TYPE_Number;
+    ResultDesc->Number.Type = (UINT8) ACPI_TYPE_NUMBER;
 
-    /* Shift the word containing the field, and mask the value */
+    /* Get the 32 bit value at the location */
 
-    ResultDesc->Number.Value = *(UINT32 *) Location >> FieldDesc->FieldUnit.BitOffset & Mask;
+    STORE32TO32 (&ResultDesc->Number.Value, Location);
+
+    /* Shift the 32-bit word containing the field, and mask off the resulting value */
+
+    ResultDesc->Number.Value = (ResultDesc->Number.Value >> FieldDesc->FieldUnit.BitOffset) & Mask;
 
     DEBUG_PRINT (ACPI_INFO, ("** Read from buffer %p byte %ld bit %d width %d addr %p mask %08lx val %08lx\n",
                     FieldDesc->FieldUnit.Container->Buffer.Pointer,
@@ -240,7 +244,7 @@ AmlGetFieldUnitValue (
 
     /* Release global lock if we acquired it earlier */
 
-    AmlReleaseGlobalLock (Locked);
+    AcpiAmlReleaseGlobalLock (Locked);
 
     return_ACPI_STATUS (Status);
 }
@@ -248,7 +252,7 @@ AmlGetFieldUnitValue (
 
 /*****************************************************************************
  * 
- * FUNCTION:    AmlResolveToValue
+ * FUNCTION:    AcpiAmlResolveToValue
  *
  * PARAMETERS:  **StackPtr          - Points to entry on ObjStack, which can 
  *                                    be either an (ACPI_OBJECT_INTERNAL *)
@@ -261,7 +265,7 @@ AmlGetFieldUnitValue (
  ****************************************************************************/
 
 ACPI_STATUS
-AmlResolveToValue (
+AcpiAmlResolveToValue (
     ACPI_OBJECT_INTERNAL    **StackPtr)
 {
     ACPI_STATUS             Status = AE_OK;
@@ -286,7 +290,7 @@ AmlResolveToValue (
     if (VALID_DESCRIPTOR_TYPE (*StackPtr, DESC_TYPE_ACPI_OBJ))       
     {
 
-        Status = AmlResolveObjectToValue (StackPtr);
+        Status = AcpiAmlResolveObjectToValue (StackPtr);
         if (ACPI_FAILURE (Status))
         {
             return_ACPI_STATUS (Status);
@@ -294,13 +298,13 @@ AmlResolveToValue (
     }
 
     /* 
-     * Object on the stack may have changed if AmlResolveObjectToValue() was called
+     * Object on the stack may have changed if AcpiAmlResolveObjectToValue() was called
      * (i.e., we can't use an _else_ here.)
      */
 
     if (VALID_DESCRIPTOR_TYPE (*StackPtr, DESC_TYPE_NTE))       
     {
-        Status = AmlResolveEntryToValue ((NAME_TABLE_ENTRY **) StackPtr);
+        Status = AcpiAmlResolveEntryToValue ((NAME_TABLE_ENTRY **) StackPtr);
     }
 
 

@@ -1,5 +1,5 @@
 /******************************************************************************
- *
+ * 
  * Module Name: psscope - Parser scope stack management routines
  *
  *****************************************************************************/
@@ -37,9 +37,9 @@
  * The above copyright and patent license is granted only if the following
  * conditions are met:
  *
- * 3. Conditions
+ * 3. Conditions 
  *
- * 3.1. Redistribution of Source with Rights to Further Distribute Source.
+ * 3.1. Redistribution of Source with Rights to Further Distribute Source.  
  * Redistribution of source code of any substantial portion of the Covered
  * Code or modification with rights to further distribute source must include
  * the above Copyright Notice, the above License, this list of Conditions,
@@ -47,11 +47,11 @@
  * Licensee must cause all Covered Code to which Licensee contributes to
  * contain a file documenting the changes Licensee made to create that Covered
  * Code and the date of any change.  Licensee must include in that file the
- * documentation of any changes made by any predecessor Licensee.  Licensee
+ * documentation of any changes made by any predecessor Licensee.  Licensee 
  * must include a prominent statement that the modification is derived,
  * directly or indirectly, from Original Intel Code.
  *
- * 3.2. Redistribution of Source with no Rights to Further Distribute Source.
+ * 3.2. Redistribution of Source with no Rights to Further Distribute Source.  
  * Redistribution of source code of any substantial portion of the Covered
  * Code or modification without rights to further distribute source must
  * include the following Disclaimer and Export Compliance provision in the
@@ -85,7 +85,7 @@
  * INSTALLATION, TRAINING OR OTHER SERVICES.  INTEL WILL NOT PROVIDE ANY
  * UPDATES, ENHANCEMENTS OR EXTENSIONS.  INTEL SPECIFICALLY DISCLAIMS ANY
  * IMPLIED WARRANTIES OF MERCHANTABILITY, NONINFRINGEMENT AND FITNESS FOR A
- * PARTICULAR PURPOSE.
+ * PARTICULAR PURPOSE. 
  *
  * 4.2. IN NO EVENT SHALL INTEL HAVE ANY LIABILITY TO LICENSEE, ITS LICENSEES
  * OR ANY OTHER THIRD PARTY, FOR ANY LOST PROFITS, LOST DATA, LOSS OF USE OR
@@ -114,6 +114,7 @@
  *****************************************************************************/
 
 
+
 #include "acpi.h"
 #include "parser.h"
 
@@ -121,9 +122,10 @@
         MODULE_NAME         ("psscope");
 
 
+
 /*******************************************************************************
  *
- * FUNCTION:    AcpiPsGetParentScope
+ * FUNCTION:    AcpiPsGetParentScope 
  *
  * PARAMETERS:  ParserState         - Current parser state object
  *
@@ -183,8 +185,8 @@ AcpiPsInitScope (
     ACPI_GENERIC_OP         *Root)
 {
     ACPI_PARSE_SCOPE        *Scope;
-
-
+    
+    
     Scope = AcpiCmCallocate (sizeof (ACPI_PARSE_SCOPE));
     if (!Scope)
     {
@@ -209,7 +211,7 @@ AcpiPsInitScope (
  * PARAMETERS:  ParserState         - Current parser state object
  *              Op                  - Current op to be pushed
  *              NextArg             - Next op argument (to be pushed)
- *              ArgCount            - Fixed or variable number of args
+ *              ArgCount            - Fixed or variable number of args 
  *
  * RETURN:      Status
  *
@@ -220,7 +222,7 @@ AcpiPsInitScope (
 ACPI_STATUS
 AcpiPsPushScope (
     ACPI_PARSE_STATE        *ParserState,
-    ACPI_GENERIC_OP         *Op,
+    ACPI_GENERIC_OP         *Op, 
     UINT32                  RemainingArgs,
     UINT32                  ArgCount)
 {
@@ -258,21 +260,21 @@ AcpiPsPushScope (
     Scope->PkgEnd       = ParserState->PkgEnd;
     Scope->Parent       = ParserState->Scope;
     ParserState->Scope  = Scope;
-
+    
     if (ArgCount == ACPI_VAR_ARGS)
     {
         /* multiple arguments */
 
         Scope->ArgEnd = ParserState->PkgEnd;
     }
-
+    
     else
     {
         /* single argument */
 
         Scope->ArgEnd = ACPI_MAX_AML;
     }
-
+ 
     return_ACPI_STATUS (AE_OK);
 }
 
@@ -306,7 +308,7 @@ AcpiPsPopScope (
     if (Scope->Parent)
     {
         /* return to parsing previous op */
-
+        
         *Op                     = Scope->Op;
         *ArgList                = Scope->ArgList;
         ParserState->PkgEnd     = Scope->PkgEnd;
@@ -338,7 +340,7 @@ AcpiPsPopScope (
  *
  * RETURN:      Status
  *
- * DESCRIPTION: Destroy available list, remaining stack levels, and return
+ * DESCRIPTION: Destroy available list, remaining stack levels, and return 
  *              root scope
  *
  ******************************************************************************/
@@ -347,7 +349,7 @@ void
 AcpiPsCleanupScope (
     ACPI_PARSE_STATE        *ParserState)
 {
-    ACPI_PARSE_SCOPE        *Scope;
+    ACPI_PARSE_SCOPE        *Scope; 
 
 
     FUNCTION_TRACE_PTR ("PsCleanupScope", ParserState);

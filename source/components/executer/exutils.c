@@ -1,8 +1,7 @@
 
 /******************************************************************************
- *
- * Module Name: exutils - interpreter/scanner utilities
- *              $Revision: 1.99 $
+ * 
+ * Module Name: isutils - interpreter/scanner utilities
  *
  *****************************************************************************/
 
@@ -10,8 +9,8 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
- * All rights reserved.
+ * Some or all of this work - Copyright (c) 1999, Intel Corp.  All rights
+ * reserved.
  *
  * 2. License
  *
@@ -39,9 +38,9 @@
  * The above copyright and patent license is granted only if the following
  * conditions are met:
  *
- * 3. Conditions
+ * 3. Conditions 
  *
- * 3.1. Redistribution of Source with Rights to Further Distribute Source.
+ * 3.1. Redistribution of Source with Rights to Further Distribute Source.  
  * Redistribution of source code of any substantial portion of the Covered
  * Code or modification with rights to further distribute source must include
  * the above Copyright Notice, the above License, this list of Conditions,
@@ -49,11 +48,11 @@
  * Licensee must cause all Covered Code to which Licensee contributes to
  * contain a file documenting the changes Licensee made to create that Covered
  * Code and the date of any change.  Licensee must include in that file the
- * documentation of any changes made by any predecessor Licensee.  Licensee
+ * documentation of any changes made by any predecessor Licensee.  Licensee 
  * must include a prominent statement that the modification is derived,
  * directly or indirectly, from Original Intel Code.
  *
- * 3.2. Redistribution of Source with no Rights to Further Distribute Source.
+ * 3.2. Redistribution of Source with no Rights to Further Distribute Source.  
  * Redistribution of source code of any substantial portion of the Covered
  * Code or modification without rights to further distribute source must
  * include the following Disclaimer and Export Compliance provision in the
@@ -87,7 +86,7 @@
  * INSTALLATION, TRAINING OR OTHER SERVICES.  INTEL WILL NOT PROVIDE ANY
  * UPDATES, ENHANCEMENTS OR EXTENSIONS.  INTEL SPECIFICALLY DISCLAIMS ANY
  * IMPLIED WARRANTIES OF MERCHANTABILITY, NONINFRINGEMENT AND FITNESS FOR A
- * PARTICULAR PURPOSE.
+ * PARTICULAR PURPOSE. 
  *
  * 4.2. IN NO EVENT SHALL INTEL HAVE ANY LIABILITY TO LICENSEE, ITS LICENSEES
  * OR ANY OTHER THIRD PARTY, FOR ANY LOST PROFITS, LOST DATA, LOSS OF USE OR
@@ -115,65 +114,47 @@
  *
  *****************************************************************************/
 
-#define __EXUTILS_C__
-
-/*
- * DEFINE_AML_GLOBALS is tested in amlcode.h
- * to determine whether certain global names should be "defined" or only
- * "declared" in the current compilation.  This enhances maintainability
- * by enabling a single header file to embody all knowledge of the names
- * in question.
- *
- * Exactly one module of any executable should #define DEFINE_GLOBALS
- * before #including the header files which use this convention.  The
- * names in question will be defined and initialized in that module,
- * and declared as extern in all other modules which #include those
- * header files.
- */
-
-#define DEFINE_AML_GLOBALS
+#define __ISUTILS_C__
 
 #include "acpi.h"
-#include "acinterp.h"
+#include "parser.h"
+#include "interp.h"
 #include "amlcode.h"
-#include "acevents.h"
+#include "namesp.h"
+#include "events.h"
 
-#define _COMPONENT          ACPI_EXECUTER
-        ACPI_MODULE_NAME    ("exutils")
+#define _COMPONENT          INTERPRETER
+        MODULE_NAME         ("isutils");
+
+static char                 hex[] = {'0','1','2','3','4','5','6','7','8','9','A','B','C','D','E','F'};
 
 
-/*******************************************************************************
- *
- * FUNCTION:    AcpiExEnterInterpreter
+
+/*****************************************************************************
+ * 
+ * FUNCTION:    AcpiAmlEnterInterpreter
  *
  * PARAMETERS:  None
  *
- * DESCRIPTION: Enter the interpreter execution region.  Failure to enter
- *              the interpreter region is a fatal system error
+ * DESCRIPTION: Enter the interpreter execution region
  *
- ******************************************************************************/
+ ****************************************************************************/
 
-ACPI_STATUS
-AcpiExEnterInterpreter (void)
+void
+AcpiAmlEnterInterpreter (void)
 {
-    ACPI_STATUS             Status;
+    FUNCTION_TRACE ("AmlEnterInterpreter");
 
-    ACPI_FUNCTION_TRACE ("ExEnterInterpreter");
+    
+    AcpiCmAcquireMutex (MTX_EXECUTE);
 
-
-    Status = AcpiUtAcquireMutex (ACPI_MTX_EXECUTE);
-    if (ACPI_FAILURE (Status))
-    {
-        ACPI_REPORT_ERROR (("Could not acquire interpreter mutex\n"));
-    }
-
-    return_ACPI_STATUS (Status);
+    return_VOID;
 }
 
 
-/*******************************************************************************
- *
- * FUNCTION:    AcpiExExitInterpreter
+/*****************************************************************************
+ * 
+ * FUNCTION:    AcpiAmlExitInterpreter
  *
  * PARAMETERS:  None
  *
@@ -189,103 +170,110 @@ AcpiExEnterInterpreter (void)
  *          already executing
  *      7) About to invoke a user-installed opregion handler
  *
- ******************************************************************************/
+ ****************************************************************************/
 
 void
-AcpiExExitInterpreter (void)
+AcpiAmlExitInterpreter (void)
 {
-    ACPI_STATUS             Status;
+    FUNCTION_TRACE ("AmlExitInterpreter");
 
 
-    ACPI_FUNCTION_TRACE ("ExExitInterpreter");
-
-
-    Status = AcpiUtReleaseMutex (ACPI_MTX_EXECUTE);
-    if (ACPI_FAILURE (Status))
-    {
-        ACPI_REPORT_ERROR (("Could not release interpreter mutex\n"));
-    }
+    AcpiCmReleaseMutex (MTX_EXECUTE);
 
     return_VOID;
 }
 
 
-/*******************************************************************************
- *
- * FUNCTION:    AcpiExValidateObjectType
+/*****************************************************************************
+ * 
+ * FUNCTION:    AcpiAmlValidateObjectType
  *
  * PARAMETERS:  Type            Object type to validate
  *
  * DESCRIPTION: Determine if a type is a valid ACPI object type
  *
- ******************************************************************************/
+ ****************************************************************************/
 
 BOOLEAN
-AcpiExValidateObjectType (
+AcpiAmlValidateObjectType (
     ACPI_OBJECT_TYPE        Type)
 {
-
-    ACPI_FUNCTION_ENTRY ();
-
 
     if ((Type > ACPI_TYPE_MAX && Type < INTERNAL_TYPE_BEGIN) ||
         (Type > INTERNAL_TYPE_MAX))
     {
-        return (FALSE);
+        return FALSE;
     }
 
-    return (TRUE);
+    return TRUE;
 }
 
 
-/*******************************************************************************
+/*****************************************************************************
+ * 
+ * FUNCTION:    AcpiAmlAppendOperandDiag
  *
- * FUNCTION:    AcpiExTruncateFor32bitTable
+ * PARAMETERS:  *FileName       - Name of source file
+ *              LineNum         - Line Number in file
+ *              OpCode          - OpCode being executed
+ *              NumOperands     - Number of operands PrepStack tried to check
  *
- * PARAMETERS:  ObjDesc         - Object to be truncated
+ * DESCRIPTION: Print diagnostic information about operands.
+ *              This function is intended to be called after PrepStack
+ *              has returned S_ERROR.
  *
- * RETURN:      none
- *
- * DESCRIPTION: Truncate a number to 32-bits if the currently executing method
- *              belongs to a 32-bit ACPI table.
- *
- ******************************************************************************/
+ ****************************************************************************/
 
 void
-AcpiExTruncateFor32bitTable (
-    ACPI_OPERAND_OBJECT     *ObjDesc)
+AcpiAmlAppendOperandDiag (
+    char                    *FileName, 
+    INT32                   LineNum, 
+    UINT16                  OpCode, 
+    ACPI_OBJECT_INTERNAL    **Operands,
+    INT32                   NumOperands)
 {
 
-    ACPI_FUNCTION_ENTRY ();
+    DEBUG_PRINT (ACPI_ERROR, (" [%s:%d, opcode = %s AML offset %04x]\n",
+                    FileName, LineNum, AcpiPsGetOpcodeName (OpCode), NULL));
 
-
-    /*
-     * Object must be a valid number and we must be executing
-     * a control method
-     */
-    if ((!ObjDesc) ||
-        (ObjDesc->Common.Type != ACPI_TYPE_INTEGER))
+    if (GetDebugLevel () > 0)
     {
-        return;
-    }
-
-    if (AcpiGbl_IntegerByteWidth == 4)
-    {
-        /*
-         * We are running a method that exists in a 32-bit ACPI table.
-         * Truncate the value to 32 bits by zeroing out the upper 32-bit field
-         */
-        ObjDesc->Integer.Value &= (ACPI_INTEGER) ACPI_UINT32_MAX;
+        DUMP_OPERANDS (Operands, IMODE_EXECUTE, AcpiPsGetOpcodeName (OpCode),
+                        NumOperands, "after PrepStack failed");
     }
 }
 
 
-/*******************************************************************************
+
+/*****************************************************************************
  *
- * FUNCTION:    AcpiExAcquireGlobalLock
+ * FUNCTION:    AcpiAmlBufSeq
  *
- * PARAMETERS:  FieldFlags            - Flags with Lock rule:
- *                                      AlwaysLock or NeverLock
+ * RETURN:      The next buffer descriptor sequence number
+ *
+ * DESCRIPTION: Provide a unique sequence number for each Buffer descriptor
+ *              allocated during the interpreter's existence.  These numbers
+ *              are used to relate FieldUnit descriptors to the Buffers
+ *              within which the fields are defined.
+ *
+ *              Just increment the global counter and return it.
+ *
+ ****************************************************************************/
+
+UINT32 
+AcpiAmlBufSeq (void)
+{
+    
+    return ++Acpi_GblBufSeq;
+}
+
+
+
+/*****************************************************************************
+ *
+ * FUNCTION:    AcpiAmlAcquireGlobalLock
+ *
+ * PARAMETERS:  Rule            - Lock rule: AlwaysLock, NeverLock
  *
  * RETURN:      TRUE/FALSE indicating whether the lock was actually acquired
  *
@@ -293,34 +281,36 @@ AcpiExTruncateFor32bitTable (
  *              methods.  A global variable keeps the state of the lock, and
  *              the state is returned to the caller.
  *
- ******************************************************************************/
+ ****************************************************************************/
 
 BOOLEAN
-AcpiExAcquireGlobalLock (
-    UINT32                  FieldFlags)
+AcpiAmlAcquireGlobalLock (
+    UINT32                  Rule)
 {
     BOOLEAN                 Locked = FALSE;
-    ACPI_STATUS             Status;
 
 
-    ACPI_FUNCTION_TRACE ("ExAcquireGlobalLock");
+    FUNCTION_TRACE ("AmlAcquireGlobalLock");
 
 
-    /* Only attempt lock if the AlwaysLock bit is set */
-
-    if (FieldFlags & AML_FIELD_LOCK_RULE_MASK)
-    {
-        /* We should attempt to get the lock, wait forever */
-
-        Status = AcpiEvAcquireGlobalLock (ACPI_UINT32_MAX);
-        if (ACPI_SUCCESS (Status))
+    /*  Only attempt lock if the Rule says so */
+    
+    if (Rule == (UINT32) GLOCK_ALWAYS_LOCK)
+    {   
+        /*  OK to get the lock   */
+        
+        if (AcpiEvAcquireGlobalLock () != AE_OK)
         {
-            Locked = TRUE;
+            /*  
+             * lock ownership failed
+             */
+            DEBUG_PRINT (ACPI_ERROR, ("Get Global Lock Failed!!\n"));
         }
+
         else
         {
-            ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Could not acquire Global Lock, %s\n",
-                AcpiFormatException (Status)));
+            Acpi_GblGlobalLockSet = TRUE;
+            Locked = TRUE;
         }
     }
 
@@ -328,9 +318,9 @@ AcpiExAcquireGlobalLock (
 }
 
 
-/*******************************************************************************
+/*****************************************************************************
  *
- * FUNCTION:    AcpiExReleaseGlobalLock
+ * FUNCTION:    AcpiAmlReleaseGlobalLock
  *
  * PARAMETERS:  LockedByMe      - Return value from corresponding call to
  *                                AcquireGlobalLock.
@@ -339,147 +329,150 @@ AcpiExAcquireGlobalLock (
  *
  * DESCRIPTION: Release the global lock if it is locked.
  *
- ******************************************************************************/
+ ****************************************************************************/
 
-void
-AcpiExReleaseGlobalLock (
+ACPI_STATUS
+AcpiAmlReleaseGlobalLock (
     BOOLEAN                 LockedByMe)
 {
-    ACPI_STATUS             Status;
 
-
-    ACPI_FUNCTION_TRACE ("ExReleaseGlobalLock");
+    FUNCTION_TRACE ("AmlReleaseGlobalLock");
 
 
     /* Only attempt unlock if the caller locked it */
 
     if (LockedByMe)
     {
-        /* OK, now release the lock */
+        /* Double check against the global flag */
 
-        Status = AcpiEvReleaseGlobalLock ();
-        if (ACPI_FAILURE (Status))
+        if (Acpi_GblGlobalLockSet)
         {
-            /* Report the error, but there isn't much else we can do */
+            /* OK, now release the lock */
 
-            ACPI_REPORT_ERROR (("Could not release ACPI Global Lock\n"));
+            AcpiEvReleaseGlobalLock ();
+            Acpi_GblGlobalLockSet = FALSE;
+        }
+
+        else
+        {
+            /* Sorry, the lock wasn't set, according to our records */
+
+            DEBUG_PRINT (ACPI_ERROR, ("Global lock was not set\n"));
         }
     }
+
+
+    return_ACPI_STATUS (AE_OK);
 }
 
 
-/*******************************************************************************
+/******************************************************************************
+ * 
+ * FUNCTION:    AcpiAmlDigitsNeeded
  *
- * FUNCTION:    AcpiExDigitsNeeded
+ * PARAMETERS:  val             - Value to be represented
+ *              base            - Base of representation
  *
- * PARAMETERS:  Value           - Value to be represented
- *              Base            - Base of representation
+ * RETURN:      the number of digits needed to represent val in base
  *
- * RETURN:      the number of digits needed to represent Value in Base
- *
- ******************************************************************************/
+ *****************************************************************************/
 
-UINT32
-AcpiExDigitsNeeded (
-    ACPI_INTEGER            Value,
-    UINT32                  Base)
+INT32
+AcpiAmlDigitsNeeded (
+    INT32                   val, 
+    INT32                   base)
 {
-    UINT32                  NumDigits;
-    ACPI_INTEGER            CurrentValue;
-    ACPI_INTEGER            Quotient;
+    INT32                   NumDigits = 0;
 
 
-    ACPI_FUNCTION_TRACE ("ExDigitsNeeded");
+    FUNCTION_TRACE ("AmlDigitsNeeded");
 
 
-    /*
-     * ACPI_INTEGER is unsigned, so we don't worry about a '-'
-     */
-    CurrentValue = Value;
-    NumDigits = 0;
+    if (base < 1)
+    {   
+        /*  impossible base */
 
-    while (CurrentValue)
+        REPORT_ERROR ("AmlDigitsNeeded: Impossible base");
+    }
+
+    else
     {
-        (void) AcpiUtShortDivide (&CurrentValue, Base, &Quotient, NULL);
-        NumDigits++;
-        CurrentValue = Quotient;
+        for (NumDigits = 1 + (val < 0) ; val /= base ; ++NumDigits)
+        { ; }
     }
 
     return_VALUE (NumDigits);
 }
 
 
-/*******************************************************************************
+/******************************************************************************
+ * 
+ * FUNCTION:    ntohl
  *
- * FUNCTION:    AcpiExEisaIdToString
+ * PARAMETERS:  Value           - Value to be converted
+ *
+ * RETURN:      Convert a 32-bit value to big-endian (swap the bytes)
+ *
+ *****************************************************************************/
+
+UINT32
+_ntohl (
+    UINT32                  Value)
+{
+    union 
+    {
+        UINT32              Value;
+        char                Bytes[4];
+    } Out; 
+
+    union
+    {
+        UINT32              Value;
+        char                Bytes[4];
+    } In; 
+
+
+    In.Value = Value;
+
+    Out.Bytes[0] = In.Bytes[3];
+    Out.Bytes[1] = In.Bytes[2];
+    Out.Bytes[2] = In.Bytes[1];
+    Out.Bytes[3] = In.Bytes[0];
+
+    return Out.Value;
+}
+
+
+/******************************************************************************
+ * 
+ * FUNCTION:    AcpiAmlEisaIdToString
  *
  * PARAMETERS:  NumericId       - EISA ID to be converted
  *              OutString       - Where to put the converted string (8 bytes)
  *
- * DESCRIPTION: Convert a numeric EISA ID to string representation
+ * RETURN:      Convert a numeric EISA ID to string representation
  *
- ******************************************************************************/
+ *****************************************************************************/
 
-void
-AcpiExEisaIdToString (
+ACPI_STATUS
+AcpiAmlEisaIdToString (
     UINT32                  NumericId,
-    NATIVE_CHAR             *OutString)
+    char                    *OutString)
 {
-    UINT32                  EisaId;
+    UINT32                  id;
 
-
-    ACPI_FUNCTION_ENTRY ();
-
-
-    /* Swap ID to big-endian to get contiguous bits */
-
-    EisaId = AcpiUtDwordByteSwap (NumericId);
-
-    OutString[0] = (char) ('@' + ((EisaId >> 26) & 0x1f));
-    OutString[1] = (char) ('@' + ((EisaId >> 21) & 0x1f));
-    OutString[2] = (char) ('@' + ((EisaId >> 16) & 0x1f));
-    OutString[3] = AcpiUtHexToAsciiChar ((ACPI_INTEGER) EisaId, 12);
-    OutString[4] = AcpiUtHexToAsciiChar ((ACPI_INTEGER) EisaId, 8);
-    OutString[5] = AcpiUtHexToAsciiChar ((ACPI_INTEGER) EisaId, 4);
-    OutString[6] = AcpiUtHexToAsciiChar ((ACPI_INTEGER) EisaId, 0);
+    
+    id = _ntohl (NumericId);                    /* swap to big-endian to get contiguous bits */
+    
+    OutString[0] = (char) ('@' + ((id >> 26) & 0x1f));
+    OutString[1] = (char) ('@' + ((id >> 21) & 0x1f));
+    OutString[2] = (char) ('@' + ((id >> 16) & 0x1f));
+    OutString[3] = hex[(id >> 12) & 0xf];
+    OutString[4] = hex[(id >> 8) & 0xf];
+    OutString[5] = hex[(id >> 4) & 0xf];
+    OutString[6] = hex[id & 0xf];
     OutString[7] = 0;
+    
+    return AE_OK;
 }
-
-
-/*******************************************************************************
- *
- * FUNCTION:    AcpiExUnsignedIntegerToString
- *
- * PARAMETERS:  Value           - Value to be converted
- *              OutString       - Where to put the converted string (8 bytes)
- *
- * RETURN:      Convert a number to string representation
- *
- ******************************************************************************/
-
-void
-AcpiExUnsignedIntegerToString (
-    ACPI_INTEGER            Value,
-    NATIVE_CHAR             *OutString)
-{
-    UINT32                  Count;
-    UINT32                  DigitsNeeded;
-    UINT32                  Remainder;
-    ACPI_INTEGER            Quotient;
-
-
-    ACPI_FUNCTION_ENTRY ();
-
-
-    DigitsNeeded = AcpiExDigitsNeeded (Value, 10);
-    OutString[DigitsNeeded] = 0;
-
-    for (Count = DigitsNeeded; Count > 0; Count--)
-    {
-        (void) AcpiUtShortDivide (&Value, 10, &Quotient, &Remainder);
-        OutString[Count-1] = (NATIVE_CHAR) ('0' + Remainder);\
-        Value = Quotient;
-    }
-}
-
 
