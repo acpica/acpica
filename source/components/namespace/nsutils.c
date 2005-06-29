@@ -2,7 +2,7 @@
  *
  * Module Name: nsutils - Utilities for accessing ACPI namespace, accessing
  *                        parents and siblings and Scope manipulation
- *              $Revision: 1.125 $
+ *              $Revision: 1.126 $
  *
  *****************************************************************************/
 
@@ -928,34 +928,27 @@ void
 AcpiNsTerminate (void)
 {
     ACPI_OPERAND_OBJECT     *ObjDesc;
-    ACPI_NAMESPACE_NODE     *ThisNode;
 
 
     ACPI_FUNCTION_TRACE ("NsTerminate");
 
 
-    ThisNode = AcpiGbl_RootNode;
-
     /*
-     * 1) Free the entire namespace -- all objects, tables, and stacks
+     * 1) Free the entire namespace -- all nodes and objects
      *
-     * Delete all objects linked to the root
-     * (additional table descriptors)
+     * Delete all object descriptors attached to namepsace nodes
      */
-    AcpiNsDeleteNamespaceSubtree (ThisNode);
+    AcpiNsDeleteNamespaceSubtree (AcpiGbl_RootNode);
 
-    /* Detach any object(s) attached to the root */
+    /* Detach any objects attached to the root */
 
-    ObjDesc = AcpiNsGetAttachedObject (ThisNode);
+    ObjDesc = AcpiNsGetAttachedObject (AcpiGbl_RootNode);
     if (ObjDesc)
     {
-        AcpiNsDetachObject (ThisNode);
-        AcpiUtRemoveReference (ObjDesc);
+        AcpiNsDetachObject (AcpiGbl_RootNode);
     }
 
-    AcpiNsDeleteChildren (ThisNode);
     ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "Namespace freed\n"));
-
 
     /*
      * 2) Now we can delete the ACPI tables
