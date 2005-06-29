@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acmacros.h - C macros for the entire subsystem.
- *       $Revision: 1.130 $
+ *       $Revision: 1.131 $
  *
  *****************************************************************************/
 
@@ -545,7 +545,7 @@
 
 #define ACPI_DUMP_ENTRY(a,b)            AcpiNsDumpEntry (a,b)
 #define ACPI_DUMP_TABLES(a,b)           AcpiNsDumpTables(a,b)
-#define ACPI_DUMP_PATHNAME(a,b,c,d)     (void) AcpiNsDumpPathname(a,b,c,d)
+#define ACPI_DUMP_PATHNAME(a,b,c,d)     AcpiNsDumpPathname(a,b,c,d)
 #define ACPI_DUMP_RESOURCE_LIST(a)      AcpiRsDumpResourceList(a)
 #define ACPI_DUMP_BUFFER(a,b)           AcpiUtDumpBuffer((UINT8 *)a,b,DB_BYTE_DISPLAY,_COMPONENT)
 #define ACPI_BREAK_MSG(a)               AcpiOsSignal (ACPI_SIGNAL_BREAKPOINT,(a))
