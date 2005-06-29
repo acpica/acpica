@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: utmisc - common utility procedures
- *              $Revision: 1.87 $
+ *              $Revision: 1.88 $
  *
  ******************************************************************************/
 
@@ -301,11 +301,12 @@ AcpiUtSetIntegerWidth (
  * FUNCTION:    AcpiUtDisplayInitPathname
  *
  * PARAMETERS:  ObjHandle           - Handle whose pathname will be displayed
- *              Path                - Additional path string to be appended
+ *              Path                - Additional path string to be appended.
+ *                                      (NULL if no extra path)
  *
  * RETURN:      ACPI_STATUS
  *
- * DESCRIPTION: Display full pathnbame of an object, DEBUG ONLY
+ * DESCRIPTION: Display full pathname of an object, DEBUG ONLY
  *
  ******************************************************************************/
 
@@ -321,6 +322,13 @@ AcpiUtDisplayInitPathname (
     ACPI_FUNCTION_NAME ("UtDisplayInitPathname");
 
 
+    /* Only print the path if the appropriate debug level is enabled */
+
+    if (!(AcpiDbgLevel & ACPI_LV_INIT_NAMES))
+    {
+        return;
+    }
+
     Buffer.Length = ACPI_ALLOCATE_LOCAL_BUFFER;
 
     Status = AcpiNsHandleToPathname (ObjHandle, &Buffer);
@@ -328,11 +336,11 @@ AcpiUtDisplayInitPathname (
     {
         if (Path)
         {
-            ACPI_DEBUG_PRINT ((ACPI_DB_INIT, "%s.%s\n", (char *) Buffer.Pointer, Path));
+            ACPI_DEBUG_PRINT ((ACPI_DB_INIT_NAMES, "%s.%s\n", (char *) Buffer.Pointer, Path));
         }
         else
         {
-            ACPI_DEBUG_PRINT ((ACPI_DB_INIT, "%s\n", (char *) Buffer.Pointer));
+            ACPI_DEBUG_PRINT ((ACPI_DB_INIT_NAMES, "%s\n", (char *) Buffer.Pointer));
         }
 
         ACPI_MEM_FREE (Buffer.Pointer);
