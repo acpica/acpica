@@ -23,6 +23,7 @@
  * copy of the source code appearing in this file ("Covered Code") an
  * irrevocable, perpetual, worldwide license under Intel's copyrights in the
  * base code distributed originally by Intel ("Original Intel Code") to copy,
+
  * make derivatives, distribute, use and display any portion of the Covered
  * Code in any form, with the right to sublicense such rights; and
  *
@@ -148,18 +149,21 @@ NsDumpPathname (
     UINT32                  Component)
 {
     char                    *Buffer;
-
+    
+    FUNCTION_TRACE ("NsDumpPathname");
 
     /* Do this only if the requested debug level and component are enabled */
 
     if (!(DebugLevel & Level) || !(DebugLayer & Component))
     {
+        FUNCTION_EXIT;
         return AE_OK;
     }
 
-    Buffer = LocalAllocate (PATHNAME_MAX);
+    Buffer = CmAllocate (PATHNAME_MAX);
     if (!Buffer)
     {
+        FUNCTION_EXIT;
         return AE_NO_MEMORY;
     }
 
@@ -170,7 +174,8 @@ NsDumpPathname (
         OsdPrintf ("%s %s (%p)\n", Msg, Buffer, Handle);
     }
 
-    OsdFree (Buffer);
+    CmFree (Buffer);
+	FUNCTION_EXIT;
     return AE_OK;
 }
 
@@ -408,6 +413,7 @@ BREAKPOINT3;
 
         DEBUG_PRINT_RAW (TRACE_TABLES, ("    HID: %.8X, ADR: %.8X, Status: %x\n",
                         Info.HardwareId, Info.Address, Info.CurrentStatus));
+
     }
 
     return RetVal;
@@ -437,7 +443,7 @@ NsDumpRootDevices (void)
         return;
     }
 
-    AcpiNameToHandle (NS_SYSTEM_BUS, 0, &SysBusHandle);
+    AcpiNameToHandle (0, NS_SYSTEM_BUS, &SysBusHandle);
 
     DEBUG_PRINT (TRACE_TABLES, ("Display of all devices in the namespace:\n"));
     AcpiWalkNamespace (TYPE_Device, SysBusHandle, ACPI_INT_MAX, NsDumpOneDevice, NULL, NULL);
