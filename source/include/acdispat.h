@@ -199,7 +199,7 @@ AcpiDsCreateField (
 ACPI_STATUS
 AcpiDsCreateBankField (
     ACPI_GENERIC_OP         *Op,
-    ACPI_HANDLE             Region,
+    ACPI_NAMED_OBJECT       *Region,
     ACPI_WALK_STATE         *WalkState);
 
 ACPI_STATUS
