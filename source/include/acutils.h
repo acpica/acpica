@@ -497,8 +497,8 @@ CmInitStaticObject (
 #define CmDumpCurrentAllocations(a,b)
 #define CmDumpAllocationInfo()
 
-#define DECREMENT_OBJECT_METRICS()
-#define INCREMENT_OBJECT_METRICS()
+#define DECREMENT_OBJECT_METRICS(a)
+#define INCREMENT_OBJECT_METRICS(a)
 #define INITIALIZE_ALLOCATION_METRICS()
 
 #else
