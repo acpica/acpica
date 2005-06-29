@@ -2,6 +2,7 @@
 /******************************************************************************
  *
  * Module Name: amresolv - AML Interpreter object resolution
+ *              $Revision: 1.73 $
  *
  *****************************************************************************/
 
@@ -127,7 +128,7 @@
 
 
 #define _COMPONENT          INTERPRETER
-        MODULE_NAME         ("amresolv");
+        MODULE_NAME         ("amresolv")
 
 
 /*******************************************************************************
@@ -296,7 +297,7 @@ AcpiAmlResolveToValue (
     /*
      * The entity pointed to by the StackPtr can be either
      * 1) A valid ACPI_OBJECT_INTERNAL, or
-     * 2) A ACPI_NAMED_OBJECT(nte)
+     * 2) A ACPI_NAMED_OBJECT (NamedObj)
      */
 
     if (VALID_DESCRIPTOR_TYPE (*StackPtr, ACPI_DESC_TYPE_INTERNAL))
@@ -316,7 +317,7 @@ AcpiAmlResolveToValue (
 
     if (VALID_DESCRIPTOR_TYPE (*StackPtr, ACPI_DESC_TYPE_NAMED))
     {
-        Status = AcpiAmlResolveEntryToValue ((ACPI_NAMED_OBJECT**) StackPtr);
+        Status = AcpiAmlResolveNamedObjectToValue ((ACPI_NAMED_OBJECT**) StackPtr);
     }
 
 
@@ -375,7 +376,7 @@ AcpiAmlResolveObjectToValue (
 
             /*
              * Convert indirect name ptr to a direct name ptr.
-             * Then, AcpiAmlResolveEntryToValue can be used to get the value
+             * Then, AcpiAmlResolveNamedObjectToValue can be used to get the value
              */
 
             TempHandle = StackDesc->Reference.Object;

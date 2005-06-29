@@ -2,6 +2,7 @@
 /******************************************************************************
  *
  * Module Name: amstorob - AML Interpreter object store support, store to object
+ *              $Revision: 1.15 $
  *
  *****************************************************************************/
 
@@ -126,7 +127,7 @@
 
 
 #define _COMPONENT          INTERPRETER
-        MODULE_NAME         ("amstorob");
+        MODULE_NAME         ("amstorob")
 
 
 /*******************************************************************************

@@ -2,6 +2,7 @@
 /******************************************************************************
  *
  * Module Name: amstore - AML Interpreter object store support
+ *              $Revision: 1.115 $
  *
  *****************************************************************************/
 
@@ -126,7 +127,7 @@
 
 
 #define _COMPONENT          INTERPRETER
-        MODULE_NAME         ("amstore");
+        MODULE_NAME         ("amstore")
 
 
 /*******************************************************************************
@@ -233,7 +234,7 @@ AcpiAmlExecStore (
          *  Storing into a Name
          */
         DeleteDestDesc = DestDesc;
-        Status = AcpiAmlStoreObjectToNte (ValDesc, DestDesc->Reference.Object,
+        Status = AcpiAmlStoreObjectToNamedObject (ValDesc, DestDesc->Reference.Object,
                         WalkState);
 
         break;  /* Case NameOp */
