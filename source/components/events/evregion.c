@@ -120,10 +120,9 @@
 #include <amlcode.h>
 #include <methods.h>
 
-#define _THIS_MODULE        "evregion.c"
 #define _COMPONENT          EVENT_HANDLING
+        MODULE_NAME         ("evregion");
 
-#define GO_NO_FURTHER       (void *) 0xffffffff
 
 /**************************************************************************
  *
