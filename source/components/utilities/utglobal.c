@@ -204,6 +204,7 @@ char                        *Gbl_ExceptionNames[] =
 };
 
 
+
 /* Message strings */
 
 char                        *MsgAcpiErrorBreak = "*** Break on ACPI_ERROR ***\n";
@@ -356,6 +357,23 @@ char                        *Gbl_NsTypeNames[] =  /* printable names of types */
     "Invalid"
 };
 
+
+/* Names for the mutexes used in the subsystem */
+
+char                        *Gbl_MutexNames[] =
+{
+    "MTX_Execute",
+    "MTX_Interpreter",
+    "MTX_Namespace",
+    "MTX_Memory",
+    "MTX_Gp_Event",
+    "MTX_Fixed_Event",
+    "MTX_Op_Regions",
+    "MTX_Debug_Command",
+    "MTX_Debugger"
+};
+
+
 #endif
 
 /******************************************************************************
@@ -405,14 +423,6 @@ CmInitGlobals (ACPI_INIT_DATA *InitData)
 
     FUNCTION_TRACE ("CmInitGlobals");
 
-    /* TBD: Remove rparser globals */
-
-#ifdef _RPARSER
-    Gbl_PkgStackLevel           = 0;
-    Gbl_ObjStackTop             = 0;
-    Gbl_MthStackHead            = NULL;
-    Gbl_MethodStackTop          = -1;
-#endif
 
     if (InitData)
     {
@@ -445,6 +455,12 @@ CmInitGlobals (ACPI_INIT_DATA *InitData)
         Gbl_AddressSpaces[i].Context    = NULL;
     }
 
+    /* Mutex locked flags */
+
+    for (i = 0; i < NUM_MTX; i++)
+    {
+        Gbl_AcpiMutexLocked[i] = FALSE;
+    }
 
     /* Global notify handlers */
 
@@ -468,7 +484,8 @@ CmInitGlobals (ACPI_INIT_DATA *InitData)
     Gbl_GlobalLockThreadCount   = 0;
 
     /* Miscellaneous variables */
-    
+
+    Gbl_Shutdown                = FALSE;
     Gbl_SystemFlags             = 0;
     Gbl_StartupFlags            = 0;
     Gbl_GlobalLockSet           = FALSE;
@@ -512,6 +529,7 @@ CmInitGlobals (ACPI_INIT_DATA *InitData)
     Gbl_RootObject->Object      = NULL;
     
     /* Memory allocation metrics - compiled out in non-debug mode. */
+
     INITIALIZE_ALLOCATION_METRICS();
 
     return_VOID;
