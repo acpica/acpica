@@ -110,6 +110,10 @@ void vDumpBuf(BYTE *pbBuffer, size_t sCount, int iFlags, LogHandle hLogFile,
     */
     while (i <= sCount)
     {
+        /* Print current offset */
+
+        OsdPrintf (NULL, "%05X    ", i);
+
 
         /* Print 16 hex chars */
 
