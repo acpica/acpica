@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslerror - Error handling and statistics
- *              $Revision: 1.12 $
+ *              $Revision: 1.14 $
  *
  *****************************************************************************/
 
@@ -126,6 +126,8 @@ char                        *AslWarnings [] = {
     "Mixed return types in method",
     "Cannot find/access object",
     "Nested comment found",
+    "Reserved method incorrect arg count:",
+    "Reserved method must return a value:",
 };
 
 char                        *AslErrors [] = {
@@ -143,8 +145,8 @@ char                        *AslErrors [] = {
     "Invalid performace/robustness value",
     "Method variable not initialized:",
     "Method argument is invalid:",
-    "Reserved method does not return a value:",
     "Unsupported feature:",
+    "Use of reserved word:",
 };
 
 
