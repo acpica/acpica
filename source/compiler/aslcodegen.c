@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslcodegen - AML code generation
- *              $Revision: 1.16 $
+ *              $Revision: 1.19 $
  *
  *****************************************************************************/
 
@@ -123,16 +123,15 @@
 #include "acparser.h"
 
 
-
 /*******************************************************************************
  *
- * FUNCTION:    
+ * FUNCTION:
  *
- * PARAMETERS:  
+ * PARAMETERS:
  *
- * RETURN:      
+ * RETURN:
  *
- * DESCRIPTION: 
+ * DESCRIPTION:
  *
  ******************************************************************************/
 
@@ -150,31 +149,30 @@ CgGenerateAmlOutput (void)
 
     Gbl_SourceLine = 0;
     LsPushNode (Gbl_InputFilename);
-    AslGbl_NextError = AslGbl_ErrorLog;
+    Gbl_NextError = Gbl_ErrorLog;
 
-    TgWalkParseTree (ASL_WALK_VISIT_DOWNWARD, CgAmlWriteWalk, NULL, NULL);
+    TrWalkParseTree (ASL_WALK_VISIT_DOWNWARD, CgAmlWriteWalk, NULL, NULL);
 
 
     if (Gbl_ListingFlag)
     {
         LsFinishSourceListing ();
-        fprintf (Gbl_ListingFile, "\n\nTable header with final checksum:\n\n");
+        fprintf (Gbl_ListingOutputFile, "\n\nTable header with final checksum:\n\n");
     }
 
     CgCloseTable ();
 }
 
 
-
 /*******************************************************************************
  *
- * FUNCTION:    
+ * FUNCTION:
  *
- * PARAMETERS:  
+ * PARAMETERS:
  *
- * RETURN:      
+ * RETURN:
  *
- * DESCRIPTION: 
+ * DESCRIPTION:
  *
  ******************************************************************************/
 
@@ -215,7 +213,6 @@ CgAmlWriteWalk (
 				Node->Parent);
 
 
-
     LsWriteNodeToListing (Node);
 
     CgWriteNode (Node);
@@ -225,13 +222,13 @@ CgAmlWriteWalk (
 
 /*******************************************************************************
  *
- * FUNCTION:    
+ * FUNCTION:
  *
- * PARAMETERS:  
+ * PARAMETERS:
  *
- * RETURN:      
+ * RETURN:
  *
- * DESCRIPTION: 
+ * DESCRIPTION:
  *
  ******************************************************************************/
 
@@ -243,7 +240,7 @@ CgLocalWriteAmlData (
 
     /* Write the raw data to the AML file */
 
-    fwrite ((char *) Buffer, Length, 1, Gbl_OutputAmlFile);
+    fwrite ((char *) Buffer, Length, 1, Gbl_AmlOutputFile);
 
     /* Write the hex bytes to the listing file (if requested) */
 
@@ -251,16 +248,15 @@ CgLocalWriteAmlData (
 }
 
 
-
 /*******************************************************************************
  *
- * FUNCTION:    
+ * FUNCTION:
  *
- * PARAMETERS:  
+ * PARAMETERS:
  *
- * RETURN:      
+ * RETURN:
  *
- * DESCRIPTION: 
+ * DESCRIPTION:
  *
  ******************************************************************************/
 
@@ -279,7 +275,6 @@ CgWriteAmlOpcode (
 
     UINT8                       PkgLenFirstByte;
     UINT32                      i;
-
 
 
     /* We expect some DEFAULT_ARGs, just ignore them */
@@ -305,7 +300,7 @@ CgWriteAmlOpcode (
 
         /* Special opcodes for within a field definition */
 
-        Aml.Opcode = 0x00;  
+        Aml.Opcode = 0x00;
         break;
 
     case AML_ACCESSFIELD_OP:
@@ -361,7 +356,7 @@ CgWriteAmlOpcode (
 
         else
         {
-            /* 
+            /*
              * Encode the "bytes to follow" in the first byte, top two bits.
              * The low-order nybble of the length is in the bottom 4 bits
              */
@@ -381,7 +376,7 @@ CgWriteAmlOpcode (
             {
                 CgLocalWriteAmlData (&PkgLen.LenBytes[i], 1);
             }
-        }   
+        }
     }
 
     switch (Aml.Opcode)
@@ -410,13 +405,13 @@ CgWriteAmlOpcode (
 
 /*******************************************************************************
  *
- * FUNCTION:    
+ * FUNCTION:
  *
- * PARAMETERS:  
+ * PARAMETERS:
  *
- * RETURN:      
+ * RETURN:
  *
- * DESCRIPTION: 
+ * DESCRIPTION:
  *
  ******************************************************************************/
 
@@ -425,7 +420,7 @@ CgWriteTableHeader (
     ASL_PARSE_NODE              *Node)
 {
     ASL_PARSE_NODE              *Child;
-    
+
 
     /* AML filename */
 
@@ -477,13 +472,13 @@ CgWriteTableHeader (
 
 /*******************************************************************************
  *
- * FUNCTION:    
+ * FUNCTION:
  *
- * PARAMETERS:  
+ * PARAMETERS:
  *
- * RETURN:      
+ * RETURN:
  *
- * DESCRIPTION: 
+ * DESCRIPTION:
  *
  ******************************************************************************/
 
@@ -494,13 +489,12 @@ CgCloseTable (void)
     UINT8               FileByte;
 
 
-
     /* Calculate the checksum over the entire file */
 
-    fseek (Gbl_OutputAmlFile, 0, SEEK_SET);
+    fseek (Gbl_AmlOutputFile, 0, SEEK_SET);
 
     Sum = 0;
-    while (fread (&FileByte, 1, 1, Gbl_OutputAmlFile))
+    while (fread (&FileByte, 1, 1, Gbl_AmlOutputFile))
     {
         Sum += FileByte;
     }
@@ -509,20 +503,20 @@ CgCloseTable (void)
 
     TableHeader.Checksum = (0 - Sum);
 
-    fseek (Gbl_OutputAmlFile, 0, SEEK_SET);
+    fseek (Gbl_AmlOutputFile, 0, SEEK_SET);
     CgLocalWriteAmlData (&TableHeader, sizeof (ACPI_TABLE_HEADER));
 }
 
 
 /*******************************************************************************
  *
- * FUNCTION:    
+ * FUNCTION:
  *
- * PARAMETERS:  
+ * PARAMETERS:
  *
- * RETURN:      
+ * RETURN:
  *
- * DESCRIPTION: 
+ * DESCRIPTION:
  *
  ******************************************************************************/
 
@@ -533,17 +527,15 @@ CgWriteNode (
     ASL_RESOURCE_NODE       *Rnode;
 
 
-
     /* TEMP FIX: always check for DEFAULT_ARG */
 
     if ((Node->ParseOpcode == DEFAULT_ARG)  ||
-        (Node->ParseOpcode == EXTERNAL)     || 
-        (Node->ParseOpcode == INCLUDE)      || 
+        (Node->ParseOpcode == EXTERNAL)     ||
+        (Node->ParseOpcode == INCLUDE)      ||
         (Node->ParseOpcode == INCLUDE_END))
     {
         return;
     }
-
 
 
     switch (Node->AmlOpcode)
@@ -564,7 +556,7 @@ CgWriteNode (
 
 
     case AML_RAW_DATA_CHAIN:
-        
+
         Rnode = Node->Value.Pointer;
         while (Rnode)
         {
@@ -573,8 +565,6 @@ CgWriteNode (
         }
         return;
     }
-
-
 
 
     switch (Node->ParseOpcode)
@@ -597,10 +587,5 @@ CgWriteNode (
         break;
     }
 }
-
-
-
-
-
 
 

@@ -3,7 +3,7 @@
 /******************************************************************************
  *
  * Module Name: aslcompiler.l - Flex input file
- *              $Revision: 1.16 $
+ *              $Revision: 1.19 $
  *
  *****************************************************************************/
 
@@ -480,8 +480,17 @@ NamePathTail        [.]{NameSeg}
                                 DbgPrint ("NameString: %s\n", s);
                                 return (NAMESTRING); }
 
+"*" |
+"/"                         { copy(); count (1); 
+                                AslCompilererror ("parse error, expecting ASL keyword or name");}
 
-<<EOF>>                     { if (AslPopInputFileStack ()) yyterminate(); else return (INCLUDE_END);};
+.                           { copy(); count (1); 
+                                AslCompilererror ("invalid character, expecting ASL keyword or name");}
+
+<<EOF>>                     { if (AslPopInputFileStack ()) 
+                                yyterminate(); 
+                              else 
+                                return (INCLUDE_END);};
 
 %%
 
@@ -552,29 +561,29 @@ copy_one (int c)
 int
 AslPopInputFileStack (void)
 {
-    ASL_FILE_NODE           *Node;
+    ASL_FILE_NODE           *Fnode;
     FILE                    *InputFile = NULL;
   
 
-    Node = InputStack;
-    DbgPrint ("\nPop InputFile Stack, Node %p\n\n", Node);
+    Fnode = InputStack;
+    DbgPrint ("\nPop InputFile Stack, Fnode %p\n\n", Fnode);
 
-    if (Node)
+    if (Fnode)
     {
         fclose (yyin);
 
-        InputStack = Node->Next;
-        InputFile = Node->File;
+        InputStack = Fnode->Next;
+        InputFile = Fnode->File;
 
 
-        Gbl_InputFilename = Node->Filename;
-        Gbl_CurrentLineNumber = Node->CurrentLineNumber;
+        Gbl_InputFilename = Fnode->Filename;
+        Gbl_CurrentLineNumber = Fnode->CurrentLineNumber;
 
         yy_delete_buffer (YY_CURRENT_BUFFER);
 
-        yy_switch_to_buffer (Node->State);
+        yy_switch_to_buffer (Fnode->State);
 
-        free (Node);
+        free (Fnode);
         return 0;
     }
 
@@ -599,23 +608,20 @@ AslPushInputFileStack (
     FILE                    *InputFile,
     char                    *Filename)
 {
-    ASL_FILE_NODE           *Node;
+    ASL_FILE_NODE           *Fnode;
     YY_BUFFER_STATE         State;
       
 
           
-    Node = calloc (sizeof (ASL_FILE_NODE), 1);
-//    if (!Node)
-//    {
-//    }
+    Fnode = UtLocalCalloc (sizeof (ASL_FILE_NODE));
 
-    Node->File = yyin;
-    Node->Next = InputStack;
-    Node->State = YY_CURRENT_BUFFER;
-    Node->CurrentLineNumber = Gbl_CurrentLineNumber;
-    Node->Filename = Gbl_InputFilename;
+    Fnode->File                 = yyin;
+    Fnode->Next                 = InputStack;
+    Fnode->State                = YY_CURRENT_BUFFER;
+    Fnode->CurrentLineNumber    = Gbl_CurrentLineNumber;
+    Fnode->Filename             = Gbl_InputFilename;
 
-    InputStack = Node;
+    InputStack = Fnode;
 
 
     State = yy_create_buffer (InputFile, YY_BUF_SIZE);
@@ -625,7 +631,6 @@ AslPushInputFileStack (
 
     Gbl_InputFilename = Filename;
     Gbl_CurrentLineNumber = 1;
-
     yyin = InputFile;
 }
 
@@ -802,7 +807,8 @@ loop:
     if ((c1 == '/') && (c == '*'))
     {
         AslCommonError (ASL_WARNING, ASL_MSG_NESTED_COMMENT, 
-                    Gbl_CurrentLineNumber, Gbl_LogicalLineNumber, NULL);
+                    Gbl_CurrentLineNumber, Gbl_LogicalLineNumber, 
+                    Gbl_InputFilename, NULL);
     }
 
 
