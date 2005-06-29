@@ -91,6 +91,18 @@ void *OsdInstallInterruptHandler (
     unsigned long * ExceptPtr);
 
 
+/* Scheduling */
+
+void
+OsdSleep (
+    unsigned long   seconds,
+    unsigned long   milliseconds);
+
+void
+OsdSleepUsec (
+    unsigned long   microseconds);
+
+
 
 /* Misc */
 
