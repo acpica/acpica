@@ -3,7 +3,7 @@
 /******************************************************************************
  *
  * Module Name: aslcompiler.y - Bison input file (ASL grammar and actions)
- *              $Revision: 1.53 $
+ *              $Revision: 1.54 $
  *
  *****************************************************************************/
 
@@ -277,6 +277,7 @@ AslLocalAllocate (unsigned int Size);
 %token <i> LEQUAL
 %token <i> LGREATER
 %token <i> LGREATEREQUAL
+%token <i> LINE_CSTYLE
 %token <i> LLESS
 %token <i> LLESSEQUAL
 %token <i> LNOT
@@ -464,7 +465,7 @@ AslLocalAllocate (unsigned int Size);
 %type <n> Type5Opcode
 %type <n> Type6Opcode
 
-
+%type <n> LineTerm
 %type <n> IncludeTerm
 %type <n> IncludeCStyleTerm
 %type <n> ExternalTerm
@@ -778,6 +779,7 @@ Term
 CompilerDirective
     : IncludeTerm                   {}
     | IncludeCStyleTerm             {$$ = NULL;}
+    | LineTerm						{$$ = NULL;}
     | ExternalTerm                  {}
     ;
 
@@ -1030,6 +1032,11 @@ IncludeCStyleTerm
     : INCLUDE_CSTYLE
         String                      {FlOpenIncludeFile ($2);}
     ;
+
+LineTerm
+	: LINE_CSTYLE
+		Integer						{FlSetLineNumber ($2);}
+	;
 
 ExternalTerm
     : EXTERNAL '('

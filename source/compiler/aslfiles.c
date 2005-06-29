@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslfiles - file I/O suppoert
- *              $Revision: 1.32 $
+ *              $Revision: 1.33 $
  *
  *****************************************************************************/
 
@@ -427,6 +427,28 @@ FlCloseFile (
     }
 
     return (AE_OK);
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    FlSetLineNumber
+ *
+ * PARAMETERS:  Node        - Parse node for the LINE asl statement
+ *
+ * RETURN:      None.
+ *
+ * DESCRIPTION: Set the current line number
+ *
+ ******************************************************************************/
+
+void
+FlSetLineNumber (
+    ASL_PARSE_NODE          *Node)
+{
+
+    Gbl_CurrentLineNumber = Node->Value.Integer32;
+    Gbl_LogicalLineNumber = Node->Value.Integer32;
 }
 
 
