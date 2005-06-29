@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: ammutex - ASL Mutex Acquire/Release functions
- *              $Revision: 1.1 $
+ *              $Revision: 1.2 $
  *
  *****************************************************************************/
 
@@ -155,7 +155,6 @@ AcpiAmlUnlinkMutex (
 }
 
 
-
 /*******************************************************************************
  *
  * FUNCTION:    AcpiAmlLinkMutex
@@ -235,7 +234,7 @@ AcpiAmlAcquireMutex (
      * If the mutex is already owned by this thread,
      * just increment the acquisition depth
      */
-    if (ObjDesc->Mutex.Owner == WalkState) 
+    if (ObjDesc->Mutex.Owner == WalkState)
     {
         ObjDesc->Mutex.AcquisitionDepth++;
         return_ACPI_STATUS (AE_OK);
@@ -259,7 +258,7 @@ AcpiAmlAcquireMutex (
 
     /* Link the mutex to the walk state for force-unlock at method exit */
 
-    AcpiAmlLinkMutex (ObjDesc, (ACPI_OPERAND_OBJECT *) 
+    AcpiAmlLinkMutex (ObjDesc, (ACPI_OPERAND_OBJECT *)
                 &(WalkState->WalkList->AcquiredMutexList));
 
     return_ACPI_STATUS (AE_OK);
@@ -274,7 +273,7 @@ AcpiAmlAcquireMutex (
  *
  * RETURN:      Status
  *
- * DESCRIPTION: Release a previously acquired Mutex.  
+ * DESCRIPTION: Release a previously acquired Mutex.
  *
  ******************************************************************************/
 
@@ -295,7 +294,7 @@ AcpiAmlReleaseMutex (
     }
 
     /*  The mutex must have been previously acquired in order to release it */
-    
+
     if (!ObjDesc->Mutex.Owner)
     {
         return_ACPI_STATUS (AE_AML_MUTEX_NOT_ACQUIRED);
@@ -308,7 +307,7 @@ AcpiAmlReleaseMutex (
         return_ACPI_STATUS (AE_AML_NOT_OWNER);
     }
 
-    /* 
+    /*
      * The sync level of the mutex must be less than or
      * equal to the current sync level
      */
@@ -346,7 +345,6 @@ AcpiAmlReleaseMutex (
 }
 
 
-
 /*******************************************************************************
  *
  * FUNCTION:    AcpiAmlReleaseAllMutexes
@@ -365,7 +363,7 @@ AcpiAmlReleaseAllMutexes (
 {
     ACPI_OPERAND_OBJECT     *Next = ListHead->Mutex.Next;
     ACPI_OPERAND_OBJECT     *This;
-    
+
 
     /*
      * Traverse the list of owned mutexes, releasing each one.
