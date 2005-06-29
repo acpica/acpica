@@ -2,7 +2,7 @@
  *
  * Module Name: nsutils - Utilities for accessing ACPI namespace, accessing
  *                        parents and siblings and Scope manipulation
- *              $Revision: 1.96 $
+ *              $Revision: 1.99 $
  *
  *****************************************************************************/
 
@@ -179,7 +179,7 @@ AcpiNsValidPathSeparator (
  *
  ******************************************************************************/
 
-ACPI_OBJECT_TYPE8
+ACPI_OBJECT_TYPE
 AcpiNsGetType (
     ACPI_NAMESPACE_NODE     *Node)
 {
@@ -192,7 +192,7 @@ AcpiNsGetType (
         return_VALUE (ACPI_TYPE_ANY);
     }
 
-    return_VALUE (Node->Type);
+    return_VALUE ((ACPI_OBJECT_TYPE) Node->Type);
 }
 
 
@@ -209,7 +209,7 @@ AcpiNsGetType (
 
 UINT32
 AcpiNsLocal (
-    ACPI_OBJECT_TYPE8       Type)
+    ACPI_OBJECT_TYPE        Type)
 {
     FUNCTION_TRACE ("NsLocal");
 
@@ -270,7 +270,6 @@ AcpiNsGetInternalNameLength (
         Info->FullyQualified = TRUE;
         NextExternalChar++;
     }
-
     else
     {
         /*
@@ -379,13 +378,11 @@ AcpiNsBuildInternalName (
         {
             Result = &InternalName[i];
         }
-
         else if (NumSegments == 2)
         {
             InternalName[i] = AML_DUAL_NAME_PREFIX;
             Result = &InternalName[i+1];
         }
-
         else
         {
             InternalName[i] = AML_MULTI_NAME_PREFIX_OP;
@@ -408,7 +405,6 @@ AcpiNsBuildInternalName (
 
                 Result[i] = '_';
             }
-
             else
             {
                 /* Convert the character to uppercase and save it */
@@ -431,7 +427,6 @@ AcpiNsBuildInternalName (
         ExternalName++;
         Result += ACPI_NAME_SIZE;
     }
-
 
     /* Terminate the string */
 
@@ -486,7 +481,6 @@ AcpiNsInternalizeName (
     {
         return_ACPI_STATUS (AE_BAD_PARAMETER);
     }
-
 
     /* Get the length of the new internal name */
 
@@ -556,7 +550,6 @@ AcpiNsExternalizeName (
         return_ACPI_STATUS (AE_BAD_PARAMETER);
     }
 
-
     /*
      * Check for a prefix (one '\' | one or more '^').
      */
@@ -599,7 +592,6 @@ AcpiNsExternalizeName (
             NumSegments = (UINT32) (UINT8) InternalName[PrefixLength + 1];
             break;
 
-
         case AML_DUAL_NAME_PREFIX:
             
             /* Two 4-byte names */
@@ -608,7 +600,6 @@ AcpiNsExternalizeName (
             NumSegments = 2;
             break;
 
-
         case 0:
 
             /* NullName */
@@ -616,7 +607,6 @@ AcpiNsExternalizeName (
             NamesIndex = 0;
             NumSegments = 0;
             break;
-
 
         default:
 
@@ -844,7 +834,7 @@ AcpiNsTerminate (void)
 
 UINT32
 AcpiNsOpensScope (
-    ACPI_OBJECT_TYPE8       Type)
+    ACPI_OBJECT_TYPE        Type)
 {
     FUNCTION_TRACE_U32 ("NsOpensScope", Type);
 
@@ -853,7 +843,7 @@ AcpiNsOpensScope (
     {
         /* type code out of range  */
 
-        REPORT_WARNING (("NsOpensScope: Invalid Object Type\n"));
+        REPORT_WARNING (("NsOpensScope: Invalid Object Type %X\n", Type));
         return_VALUE (NSP_NORMAL);
     }
 
@@ -863,7 +853,7 @@ AcpiNsOpensScope (
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiNsGetNode
+ * FUNCTION:    AcpiNsGetNodeByPath
  *
  * PARAMETERS:  *Pathname   - Name to be found, in external (ASL) format. The
  *                            \ (backslash) and ^ (carat) prefixes, and the
@@ -872,6 +862,8 @@ AcpiNsOpensScope (
  *                            root of the name space.  If Name is fully
  *                            qualified (first INT8 is '\'), the passed value
  *                            of Scope will not be accessed.
+ *              Flags       - Used to indicate whether to perform upsearch or
+ *                            not.
  *              ReturnNode  - Where the Node is returned
  *
  * DESCRIPTION: Look up a name relative to a given scope and return the
@@ -882,9 +874,10 @@ AcpiNsOpensScope (
  ******************************************************************************/
 
 ACPI_STATUS
-AcpiNsGetNode (
+AcpiNsGetNodeByPath (
     NATIVE_CHAR             *Pathname,
     ACPI_NAMESPACE_NODE     *StartNode,
+    UINT32                  Flags,
     ACPI_NAMESPACE_NODE     **ReturnNode)
 {
     ACPI_GENERIC_STATE      ScopeInfo;
@@ -892,21 +885,13 @@ AcpiNsGetNode (
     NATIVE_CHAR             *InternalPath = NULL;
 
 
-    FUNCTION_TRACE_PTR ("NsGetNode", Pathname);
+    FUNCTION_TRACE_PTR ("NsGetNodeByPath", Pathname);
 
-
-    /* Ensure that the namespace has been initialized */
-
-    if (!AcpiGbl_RootNode)
-    {
-        return_ACPI_STATUS (AE_NO_NAMESPACE);
-    }
 
     if (!Pathname)
     {
         return_ACPI_STATUS (AE_BAD_PARAMETER);
     }
-
 
     /* Convert path to internal representation */
 
@@ -916,6 +901,7 @@ AcpiNsGetNode (
         return_ACPI_STATUS (Status);
     }
 
+    /* Must lock namespace during lookup */
 
     AcpiUtAcquireMutex (ACPI_MTX_NAMESPACE);
 
@@ -927,20 +913,17 @@ AcpiNsGetNode (
 
     Status = AcpiNsLookup (&ScopeInfo, InternalPath,
                             ACPI_TYPE_ANY, IMODE_EXECUTE,
-                            NS_NO_UPSEARCH | NS_DONT_OPEN_SCOPE,
+                            (Flags | NS_DONT_OPEN_SCOPE),
                             NULL, ReturnNode);
-
     if (ACPI_FAILURE (Status))
     {
         ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "%s, %s\n",
                 InternalPath, AcpiFormatException (Status)));
     }
 
-
-    AcpiUtReleaseMutex (ACPI_MTX_NAMESPACE);
-
     /* Cleanup */
 
+    AcpiUtReleaseMutex (ACPI_MTX_NAMESPACE);
     ACPI_MEM_FREE (InternalPath);
     return_ACPI_STATUS (Status);
 }
@@ -974,7 +957,7 @@ AcpiNsFindParentName (
     {
         /* Valid entry.  Get the parent Node */
 
-        ParentNode = AcpiNsGetParentObject (ChildNode);
+        ParentNode = AcpiNsGetParentNode (ChildNode);
         if (ParentNode)
         {
             ACPI_DEBUG_PRINT ((ACPI_DB_EXEC, "Parent of %p [%4.4s] is %p [%4.4s]\n",
@@ -1035,7 +1018,7 @@ AcpiNsExistDownstreamSibling (
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiNsGetParentObject
+ * FUNCTION:    AcpiNsGetParentNode
  *
  * PARAMETERS:  Node       - Current table entry
  *
@@ -1047,11 +1030,9 @@ AcpiNsExistDownstreamSibling (
 
 
 ACPI_NAMESPACE_NODE *
-AcpiNsGetParentObject (
+AcpiNsGetParentNode (
     ACPI_NAMESPACE_NODE     *Node)
 {
-
-
     FUNCTION_ENTRY ();
 
 
