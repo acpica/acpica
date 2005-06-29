@@ -3,6 +3,22 @@ Microsoft Developer Studio Workspace File, Format Version 6.00
 
 ###############################################################################
 
+Project: "Docs"=..\..\Docs\Docs.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+    begin source code control
+    "$/Acpi Components/Docs", KDCAAAAA
+    ..\..\docs
+    end source code control
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
 Project: "Subsystem"=..\..\Subsystem\Subsystem.dsp - Package Owner=<4>
 
 Package=<5>
