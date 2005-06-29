@@ -750,7 +750,7 @@ ExecMonadic1 (UINT16 opcode)
 
     if (Excep != S_SUCCESS)
     {
-        AmlAppendOperandDiag (__FILE__, __LINE__, opcode, 1);
+        AmlAppendOperandDiag (_THIS_MODULE, __LINE__, opcode, 1);
         return Excep;
     }
 
@@ -867,7 +867,7 @@ ExecMonadic2R (UINT16 opcode)
 
         if (Excep != S_SUCCESS)
         {
-            AmlAppendOperandDiag (__FILE__, __LINE__, opcode, 2);
+            AmlAppendOperandDiag (_THIS_MODULE, __LINE__, opcode, 2);
             return Excep;
         }
     }
@@ -1022,7 +1022,7 @@ ExecMonadic2 (UINT16 opcode)
 
     if (Excep != S_SUCCESS)
     {
-        AmlAppendOperandDiag (__FILE__, __LINE__, opcode, 1);
+        AmlAppendOperandDiag (_THIS_MODULE, __LINE__, opcode, 1);
         return Excep;
     }
 
@@ -1075,7 +1075,7 @@ ExecMonadic2 (UINT16 opcode)
         Excep = PrepStack ("n");
         if (Excep != S_SUCCESS)
         {
-            AmlAppendOperandDiag (__FILE__, __LINE__, opcode, 1);
+            AmlAppendOperandDiag (_THIS_MODULE, __LINE__, opcode, 1);
             return Excep;
         }
 
@@ -1265,7 +1265,7 @@ ExecDyadic1 (UINT16 opcode)
     {
         /*  invalid parameters on object stack  */
 
-        AmlAppendOperandDiag (__FILE__, __LINE__, opcode, 2);
+        AmlAppendOperandDiag (_THIS_MODULE, __LINE__, opcode, 2);
         return Excep;
     }
 
@@ -1401,7 +1401,7 @@ ExecDyadic2R (UINT16 opcode)
 
     if (Excep != S_SUCCESS)
     {
-        AmlAppendOperandDiag (__FILE__, __LINE__, opcode, NumOperands);
+        AmlAppendOperandDiag (_THIS_MODULE, __LINE__, opcode, NumOperands);
         return Excep;
     }
 
@@ -1634,7 +1634,7 @@ ExecDyadic2S (UINT16 opcode)
     {   
         /*  invalid parameters on object stack  */
 
-        AmlAppendOperandDiag (__FILE__, __LINE__, opcode, 2);
+        AmlAppendOperandDiag (_THIS_MODULE, __LINE__, opcode, 2);
     }
 
     else
@@ -1734,7 +1734,7 @@ ExecDyadic2 (UINT16 opcode)
     {
         /*  invalid parameters on object stack  */
 
-        AmlAppendOperandDiag (__FILE__, __LINE__, opcode, 2);
+        AmlAppendOperandDiag (_THIS_MODULE, __LINE__, opcode, 2);
         return Excep;
     }
 
