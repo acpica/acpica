@@ -559,42 +559,6 @@ DsGetCurrentWalkState (
 
 /*******************************************************************************
  *
- * FUNCTION:    DsDeleteWalkState
- *
- * PARAMETERS:  WalkState       - State to delete
- *
- * RETURN:      Status
- *
- * DESCRIPTION: Delete a walk state including all internal data structures
- *
- ******************************************************************************/
-
-void
-DsDeleteWalkState (
-    ACPI_WALK_STATE         *WalkState)
-{
-    ACPI_GENERIC_STATE      *ControlState;
-
-
-    FUNCTION_TRACE_PTR ("DsDeleteWalkState", WalkState);
-
-
-    while (WalkState->ControlState)
-    {
-        ControlState = WalkState->ControlState;
-        WalkState->ControlState = ControlState->Common.Next;
-
-        CmDeleteGenericState (ControlState);
-    }
-
-    CmFree (WalkState);
-
-    return_VOID;
-}
-
-
-/*******************************************************************************
- *
  * FUNCTION:    DsPushWalkState
  *
  * PARAMETERS:  WalkState       - State to push
@@ -692,12 +656,38 @@ DsCreateWalkState (
     FUNCTION_TRACE ("DsCreateWalkState");
 
 
-    WalkState = CmCallocate (sizeof (ACPI_WALK_STATE));
-    if (!WalkState)
+    CmAcquireMutex (MTX_CACHES);
+    Gbl_WalkStateCacheRequests++;
+
+    /* Check the cache first */
+
+    if (Gbl_WalkStateCache)
     {
-        return_VALUE (NULL);
+        /* There is an object available, use it */
+
+        WalkState = Gbl_WalkStateCache;
+        Gbl_WalkStateCache = WalkState->Next;
+
+        Gbl_WalkStateCacheHits++;
+        Gbl_WalkStateCacheDepth--;
+
+        CmReleaseMutex (MTX_CACHES);
+   }
+
+    else
+    {
+        /* The cache is empty, create a new object */
+
+        CmReleaseMutex (MTX_CACHES);                        /* Avoid deadlock with CmCallocate */
+
+        WalkState = CmCallocate (sizeof (ACPI_WALK_STATE));
+        if (!WalkState)
+        {
+            return_VALUE (NULL);
+        }
     }
 
+    WalkState->DataType         = DESC_TYPE_WALK;
     WalkState->Origin           = Origin;
     WalkState->MethodDesc       = MthDesc;
 
@@ -712,5 +702,129 @@ DsCreateWalkState (
     return_VALUE (WalkState);
 }
 
+
+/*******************************************************************************
+ *
+ * FUNCTION:    DsDeleteWalkState
+ *
+ * PARAMETERS:  WalkState       - State to delete
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Delete a walk state including all internal data structures
+ *
+ ******************************************************************************/
+
+void
+DsDeleteWalkState (
+    ACPI_WALK_STATE         *WalkState)
+{
+    ACPI_GENERIC_STATE      *State;
+
+
+    FUNCTION_TRACE_PTR ("DsDeleteWalkState", WalkState);
+
+
+    if (!WalkState)
+    {
+        return;
+    }
+
+    if (WalkState->DataType != DESC_TYPE_WALK)
+    {
+        DEBUG_PRINT (ACPI_ERROR, ("DsDeleteWalkState: **** %p not a valid walk state\n", WalkState));
+        return;
+    }
+
+    /* Always must free any linked control states */
+
+    while (WalkState->ControlState)
+    {
+        State = WalkState->ControlState;
+        WalkState->ControlState = State->Common.Next;
+
+        CmDeleteGenericState (State);
+    }
+
+
+    /* Always must free any linked parse states */
+
+    while (WalkState->ScopeInfo)
+    {
+        State = WalkState->ScopeInfo;
+        WalkState->ScopeInfo = State->Common.Next;
+
+        CmDeleteGenericState (State);
+    }
+
+    /* If walk cache is full, just free this wallkstate object */
+
+    if (Gbl_WalkStateCacheDepth >= MAX_WALK_CACHE_DEPTH)
+    {
+        CmFree (WalkState);
+    }
+
+    /* Otherwise put this object back into the cache */
+
+    else
+    {
+        CmAcquireMutex (MTX_CACHES);
+
+        /* Clear the state */
+
+        MEMSET (WalkState, 0, sizeof (ACPI_WALK_STATE));
+        WalkState->DataType = DESC_TYPE_WALK;
+
+        /* Put the object at the head of the global cache list */
+
+        WalkState->Next = Gbl_WalkStateCache;
+        Gbl_WalkStateCache = WalkState;
+        Gbl_WalkStateCacheDepth++;
+
+
+        CmReleaseMutex (MTX_CACHES);
+    }
+
+    return_VOID;
+}
+
+
+/******************************************************************************
+ *
+ * FUNCTION:    DsDeleteWalkStateCache
+ *
+ * PARAMETERS:  None
+ * 
+ * RETURN:      Status
+ * 
+ * DESCRIPTION: Purge the global state object cache.  Used during subsystem
+ *              termination.
+ *
+ ******************************************************************************/
+
+void
+DsDeleteWalkStateCache (
+    void)
+{
+    ACPI_WALK_STATE         *Next;
+
+
+    FUNCTION_TRACE ("DsDeleteWalkStateCache");
+
+
+    /* Traverse the global cache list */
+
+    while (Gbl_WalkStateCache)
+    {
+        /* Delete one cached state object */
+
+        Next = Gbl_WalkStateCache->Next;
+        CmFree (Gbl_WalkStateCache);
+        Gbl_WalkStateCache = Next;
+    }
+
+    return_VOID;
+}
+ 
 
 
