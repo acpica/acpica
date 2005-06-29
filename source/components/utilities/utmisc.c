@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: utmisc - common utility procedures
- *              $Revision: 1.85 $
+ *              $Revision: 1.86 $
  *
  ******************************************************************************/
 
@@ -819,7 +819,7 @@ AcpiUtAcquireMutex (
                 ThisThreadId, AcpiUtGetMutexName (MutexId)));
 
     Status = AcpiOsWaitSemaphore (AcpiGbl_AcpiMutexInfo[MutexId].Mutex,
-                                    1, WAIT_FOREVER);
+                                    1, ACPI_WAIT_FOREVER);
     if (ACPI_SUCCESS (Status))
     {
         ACPI_DEBUG_PRINT ((ACPI_DB_MUTEX, "Thread %X acquired Mutex [%s]\n",
