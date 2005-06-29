@@ -2,7 +2,7 @@
  *
  * Module Name: dswexec - Dispatcher method execution callbacks;
  *                        dispatch to interpreter.
- *              $Revision: 1.106 $
+ *              $Revision: 1.107 $
  *
  *****************************************************************************/
 
@@ -755,7 +755,8 @@ AcpiDsExecEndOp (
      * conditional predicate
      */
 
-    if ((WalkState->ControlState) &&
+    if ((ACPI_SUCCESS (Status)) && 
+        (WalkState->ControlState) &&
         (WalkState->ControlState->Common.State ==
             ACPI_CONTROL_PREDICATE_EXECUTING) &&
         (WalkState->ControlState->Control.PredicateOp == Op))
