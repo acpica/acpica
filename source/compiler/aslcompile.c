@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslcompile - top level compile module
- *              $Revision: 1.21 $
+ *              $Revision: 1.25 $
  *
  *****************************************************************************/
 
@@ -182,7 +182,7 @@ AnGetTimeMs (void)
 
 
 void
-AcpiAmlUnlinkMutex (
+AcpiExUnlinkMutex (
     ACPI_OPERAND_OBJECT     *ObjDesc)
 {
 }
@@ -202,7 +202,7 @@ AcpiTbSystemTablePointer (
 }
 
 void
-AcpiAmlDumpOperands (
+AcpiExDumpOperands (
     ACPI_OPERAND_OBJECT     **Operands,
     OPERATING_MODE          InterpreterMode,
     NATIVE_CHAR             *Ident,
@@ -214,7 +214,7 @@ AcpiAmlDumpOperands (
 }
 
 ACPI_STATUS
-AcpiAmlDumpOperand (
+AcpiExDumpOperand (
     ACPI_OPERAND_OBJECT     *EntryDesc)
 {
     return AE_OK;
@@ -235,11 +235,12 @@ AcpiAmlDumpOperand (
 
 void
 AslCompilerSignon (
-    FILE                    *Where)
+    UINT32                  FileId)
 {
 
-    fprintf (Where, "\n%s %s [%s]\n%s\nSupports ACPI Specification Revision 2.0\n\n",
-                CompilerId, CompilerVersion, __DATE__, CompilerCopyright);
+    FlPrintFile (FileId,
+        "\n%s %s [%s]\n%s\nSupports ACPI Specification Revision 2.0\n\n",
+        CompilerId, CompilerVersion, __DATE__, CompilerCopyright);
 
 }
 
@@ -258,13 +259,15 @@ AslCompilerSignon (
 
 void
 AslCompilerFileHeader (
-    FILE                    *Where)
+    UINT32                  FileId)
 {
 
     time (&Aclock);
     NewTime = localtime (&Aclock);
 
-    fprintf (Where, "Compilation of \"%s\" - %s\n", Gbl_InputFilename, asctime (NewTime));
+    FlPrintFile (FileId,
+        "Compilation of \"%s\" - %s\n",
+        Gbl_Files[ASL_FILE_INPUT].Filename, asctime (NewTime));
 
 }
 
@@ -292,17 +295,17 @@ CmDoCompile (void)
 
     /* Open the required input and output files */
 
-    Status = FlOpenInputFile (Gbl_InputFilename);
+    Status = FlOpenInputFile (Gbl_Files[ASL_FILE_INPUT].Filename);
     if (ACPI_FAILURE (Status))
     {
-        AePrintErrorLog (stderr);
+        AePrintErrorLog (ASL_FILE_STDERR);
         return -1;
     }
 
     Status = FlOpenMiscOutputFiles (Gbl_OutputFilenamePrefix);
     if (ACPI_FAILURE (Status))
     {
-        AePrintErrorLog (stderr);
+        AePrintErrorLog (ASL_FILE_STDERR);
         return -1;
     }
 
@@ -312,8 +315,8 @@ CmDoCompile (void)
     /* ACPI CA subsystem initialization */
 
     ASL_START_EVENT (1, "ACPI CA Init");
-    AcpiCmInitGlobals ();
-    AcpiCmMutexInitialize ();
+    AcpiUtInitGlobals ();
+    AcpiUtMutexInitialize ();
     AcpiNsRootInitialize ();
     ASL_END_EVENT (1);
 
@@ -343,14 +346,14 @@ CmDoCompile (void)
 
     if (Gbl_ParseOnlyFlag)
     {
-        AePrintErrorLog (stdout);
-        UtDisplaySummary (stdout);
+        AePrintErrorLog (ASL_FILE_STDOUT);
+        UtDisplaySummary (ASL_FILE_STDOUT);
         if (Gbl_DebugFlag)
         {
             /* Print error summary to the debug file */
 
-            AePrintErrorLog (stderr);
-            UtDisplaySummary (stderr);
+            AePrintErrorLog (ASL_FILE_STDERR);
+            UtDisplaySummary (ASL_FILE_STDERR);
         }
         return 0;
     }
@@ -423,7 +426,7 @@ CmDoCompile (void)
     Status = FlOpenAmlOutputFile (Gbl_OutputFilenamePrefix);
     if (ACPI_FAILURE (Status))
     {
-        AePrintErrorLog (stderr);
+        AePrintErrorLog (ASL_FILE_STDERR);
         return -1;
     }
 
@@ -469,12 +472,12 @@ CmCleanupAndExit (void)
     UINT32                  i;
 
 
-    AePrintErrorLog (stdout);
+    AePrintErrorLog (ASL_FILE_STDOUT);
     if (Gbl_DebugFlag)
     {
         /* Print error summary to the debug file */
 
-        AePrintErrorLog (stderr);
+        AePrintErrorLog (ASL_FILE_STDERR);
     }
 
     DbgPrint (ASL_DEBUG_OUTPUT, "\n\nElapsed time for major events\n\n");
@@ -498,21 +501,19 @@ CmCleanupAndExit (void)
 
     /* Close all open files */
 
-    FlCloseListingFile ();
-    FlCloseSourceOutputFile ();
-    FlCloseHexOutputFile ();
 
-    if (Gbl_AmlOutputFile)
+    for (i = 2; i < ASL_MAX_FILE; i++)
     {
-        fclose (Gbl_AmlOutputFile);
+        FlCloseFile (i);
     }
+
 
     if ((Gbl_ExceptionCount[ASL_ERROR] > 0) && (!Gbl_IgnoreErrors))
     {
-        unlink (Gbl_OutputFilename);
+        unlink (Gbl_Files[ASL_FILE_AML_OUTPUT].Filename);
     }
 
-    UtDisplaySummary (stdout);
+    UtDisplaySummary (ASL_FILE_STDOUT);
 
     exit (0);
 }

@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslanalyze.c - check for semantic errors
- *              $Revision: 1.25 $
+ *              $Revision: 1.33 $
  *
  *****************************************************************************/
 
@@ -194,8 +194,8 @@ AnMapArgTypeToBtype (
     case ARGI_DATAOBJECT:     /* Buffer, string, package or reference to a Node - Used only by SizeOf operator*/
         return (ACPI_BTYPE_STRING | ACPI_BTYPE_BUFFER | ACPI_BTYPE_PACKAGE | ACPI_BTYPE_REFERENCE);
 
-    case ARGI_COMPLEXOBJ:    /* Buffer or package */
-        return (ACPI_BTYPE_BUFFER | ACPI_BTYPE_PACKAGE);
+    case ARGI_COMPLEXOBJ:    /* Buffer, String, or package */
+        return (ACPI_BTYPE_STRING | ACPI_BTYPE_BUFFER | ACPI_BTYPE_PACKAGE);
 
     case ARGI_MUTEX:
         return (ACPI_BTYPE_MUTEX);
@@ -282,7 +282,7 @@ AnMapEtypeToBtype (
     switch (Etype)
     {
 
-    case INTERNAL_TYPE_DEF_FIELD:
+    case INTERNAL_TYPE_REGION_FIELD:
     case INTERNAL_TYPE_BANK_FIELD:
     case INTERNAL_TYPE_INDEX_FIELD:
 
@@ -383,7 +383,7 @@ AnFormatBtype (
             }
             First = FALSE;
 
-            strcat (Buffer, AcpiCmGetTypeName (Type));
+            strcat (Buffer, AcpiUtGetTypeName (Type));
         }
 
         Btype >>= 1;
@@ -617,7 +617,7 @@ AnCheckForReservedMethod (
  *
  ******************************************************************************/
 
-void
+ACPI_STATUS
 AnMethodAnalysisWalkBegin (
     ASL_PARSE_NODE          *Node,
     UINT32                  Level,
@@ -640,16 +640,17 @@ AnMethodAnalysisWalkBegin (
          * Create and init method info
          */
 
-        MethodInfo = UtLocalCalloc (sizeof (ASL_METHOD_INFO));
+        MethodInfo       = UtLocalCalloc (sizeof (ASL_METHOD_INFO));
         MethodInfo->Next = WalkInfo->MethodStack;
         MethodInfo->Node = Node;
+
         WalkInfo->MethodStack = MethodInfo;
 
         /* Get the NumArguments node */
 
         Next = Node->Child;
         Next = Next->Peer;
-        MethodInfo->NumArguments = (Next->Value.Integer8 & 0x07);
+        MethodInfo->NumArguments = (UINT8) (Next->Value.Integer8 & 0x07);
 
         /*
          * Actual arguments are initialized at method entry.
@@ -686,7 +687,7 @@ AnMethodAnalysisWalkBegin (
         if (!MethodInfo)
         {
             AslError (ASL_ERROR, ASL_MSG_INTERNAL, Node, "No parent method");
-            return;
+            return (AE_ERROR);
         }
 
         RegisterNumber = (Node->AmlOpcode & 0x000F);
@@ -707,7 +708,7 @@ AnMethodAnalysisWalkBegin (
          */
         else if (!MethodInfo->LocalInitialized[RegisterNumber])
         {
-            LocalName[strlen (LocalName) -1] = RegisterNumber + 0x30;
+            LocalName[strlen (LocalName) -1] = (UINT8) (RegisterNumber + 0x30);
             AslError (ASL_ERROR, ASL_MSG_LOCAL_INIT, Node, LocalName);
         }
 
@@ -725,11 +726,11 @@ AnMethodAnalysisWalkBegin (
         if (!MethodInfo)
         {
             AslError (ASL_ERROR, ASL_MSG_INTERNAL, Node, "No parent method");
-            return;
+            return (AE_ERROR);
         }
 
         RegisterNumber = (Node->AmlOpcode & 0x000F) - 8;
-        ArgName[strlen (ArgName) -1] = RegisterNumber + 0x30;
+        ArgName[strlen (ArgName) -1] = (UINT8) (RegisterNumber + 0x30);
 
         /*
          * If the Arg is being used as a target, mark the local
@@ -766,7 +767,7 @@ AnMethodAnalysisWalkBegin (
         if (!MethodInfo)
         {
             AslError (ASL_ERROR, ASL_MSG_INTERNAL, Node, "No parent method");
-            return;
+            return (AE_ERROR);
         }
 
         /* Child indicates a return value */
@@ -783,6 +784,8 @@ AnMethodAnalysisWalkBegin (
         }
         break;
     }
+
+    return AE_OK;
 }
 
 
@@ -839,7 +842,7 @@ AnLastStatementIsReturn (
  *
  ******************************************************************************/
 
-void
+ACPI_STATUS
 AnMethodAnalysisWalkEnd (
     ASL_PARSE_NODE          *Node,
     UINT32                  Level,
@@ -847,8 +850,6 @@ AnMethodAnalysisWalkEnd (
 {
     ASL_ANALYSIS_WALK_INFO  *WalkInfo = (ASL_ANALYSIS_WALK_INFO *) Context;
     ASL_METHOD_INFO         *MethodInfo = WalkInfo->MethodStack;
-    ASL_PARSE_NODE          *SecondToLastNode = NULL;
-    ASL_PARSE_NODE          *LastNode = NULL;
 
 
     switch (Node->ParseOpcode)
@@ -926,7 +927,7 @@ AnMethodAnalysisWalkEnd (
          * and correct number of arguments
          */
         AnCheckForReservedMethod (Node, MethodInfo);
-        AcpiCmFree (MethodInfo);
+        AcpiUtFree (MethodInfo);
 
         break;
 
@@ -968,6 +969,8 @@ AnMethodAnalysisWalkEnd (
         }
         break;
     }
+
+    return AE_OK;
 }
 
 
@@ -986,7 +989,7 @@ AnMethodAnalysisWalkEnd (
  *
  ******************************************************************************/
 
-void
+ACPI_STATUS
 AnMethodTypingWalkBegin (
     ASL_PARSE_NODE          *Node,
     UINT32                  Level,
@@ -997,6 +1000,9 @@ AnMethodTypingWalkBegin (
     switch (Node->ParseOpcode)
     {
     }
+
+
+    return AE_OK;
 }
 
 
@@ -1013,7 +1019,7 @@ AnMethodTypingWalkBegin (
  *
  ******************************************************************************/
 
-void
+ACPI_STATUS
 AnMethodTypingWalkEnd (
     ASL_PARSE_NODE          *Node,
     UINT32                  Level,
@@ -1056,6 +1062,8 @@ AnMethodTypingWalkEnd (
 
         break;
     }
+
+    return AE_OK;
 }
 
 
@@ -1074,15 +1082,15 @@ AnMethodTypingWalkEnd (
  *
  ******************************************************************************/
 
-void
+ACPI_STATUS
 AnSemanticAnalysisWalkBegin (
     ASL_PARSE_NODE          *Node,
     UINT32                  Level,
     void                    *Context)
 {
-    ASL_ANALYSIS_WALK_INFO  *WalkInfo = (ASL_ANALYSIS_WALK_INFO *) Context;
+    /* ASL_ANALYSIS_WALK_INFO  *WalkInfo = (ASL_ANALYSIS_WALK_INFO *) Context; */
 
-
+    return AE_OK;
 }
 
 
@@ -1099,13 +1107,13 @@ AnSemanticAnalysisWalkBegin (
  *
  ******************************************************************************/
 
-void
+ACPI_STATUS
 AnSemanticAnalysisWalkEnd (
     ASL_PARSE_NODE          *Node,
     UINT32                  Level,
     void                    *Context)
 {
-    ASL_ANALYSIS_WALK_INFO  *WalkInfo = (ASL_ANALYSIS_WALK_INFO *) Context;
+    /* ASL_ANALYSIS_WALK_INFO  *WalkInfo = (ASL_ANALYSIS_WALK_INFO *) Context; */
     ACPI_OPCODE_INFO        *OpInfo;
     UINT32                  ParseArgTypes;
     UINT32                  RuntimeArgTypes;
@@ -1131,14 +1139,14 @@ AnSemanticAnalysisWalkEnd (
     case AML_PACKAGE_LENGTH:
     case AML_UNASSIGNED_OPCODE:
     case AML_DEFAULT_ARG_OP:
-        return;
+        return (AE_OK);
 
     }
 
     OpInfo = AcpiPsGetOpcodeInfo (Node->AmlOpcode);
     if (!OpInfo)
     {
-        return;
+        return (AE_OK);
     }
 
 
@@ -1151,7 +1159,7 @@ AnSemanticAnalysisWalkEnd (
 
     if (RuntimeArgTypes == ARGI_INVALID_OPCODE)
     {
-        return;
+        return (AE_OK);
     }
 
 
@@ -1166,7 +1174,7 @@ AnSemanticAnalysisWalkEnd (
     case OPTYPE_MATCH:
 
         RuntimeArgTypes2 = 0;
-        while (ArgType = GET_CURRENT_ARG_TYPE (RuntimeArgTypes))
+        while ((ArgType = GET_CURRENT_ARG_TYPE (RuntimeArgTypes)))
         {
             RuntimeArgTypes2 <<= ARG_TYPE_WIDTH;
             RuntimeArgTypes2 |= ArgType;
@@ -1174,7 +1182,7 @@ AnSemanticAnalysisWalkEnd (
         }
 
         i = 1;
-        while (ArgType = GET_CURRENT_ARG_TYPE (RuntimeArgTypes2))
+        while ((ArgType = GET_CURRENT_ARG_TYPE (RuntimeArgTypes2)))
         {
 
             RequiredBtypes = AnMapArgTypeToBtype (ArgType);
@@ -1227,6 +1235,9 @@ AnSemanticAnalysisWalkEnd (
 
                     /* TBD: implement analysis of current value (type) of the local */
 
+                    /* For now, just treat any local as a typematch */
+
+                    //ThisNodeBtype = RequiredBtypes;
                     break;
 
                 case ARG0:
@@ -1238,6 +1249,9 @@ AnSemanticAnalysisWalkEnd (
                 case ARG6:
 
                     /* Hard to analyze argument types, sow we won't */
+                    /* For now, just treat any arg as a typematch */
+
+                    //ThisNodeBtype = RequiredBtypes;
                     break;
 
                 case DEBUG:
@@ -1321,6 +1335,9 @@ AnSemanticAnalysisWalkEnd (
             i++;
         }
     }
+
+
+    return (AE_OK);
 }
 
 

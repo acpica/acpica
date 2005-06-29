@@ -419,7 +419,7 @@ AfRecognizeTable (
 
     /* Now get the rest of the table */
 
-    *TableGlobalPtr = AcpiCmAllocate (AcpiTblHeader.Length);
+    *TableGlobalPtr = AcpiUtAllocate (AcpiTblHeader.Length);
     if (!*TableGlobalPtr)
     {
         AcpiOsPrintf ("Could not allocate buffer for Acpi table of length 0x%lX\n",
@@ -435,7 +435,7 @@ AfRecognizeTable (
     AcpiOsPrintf ("%s=%p, (TableGlobalPtr=%p)\n", AcpiGbl_AcpiTableData[TableType].Signature,
                     *TableGlobalPtr, TableGlobalPtr);
 
-    AcpiCmDumpBuffer (*TableGlobalPtr, 48, 0, 0);
+    AcpiUtDumpBuffer (*TableGlobalPtr, 48, 0, 0);
 
 
     /*
@@ -530,7 +530,7 @@ AfGetAllTables (
 
     CopyExtendedToReal (&AcpiTblHeader, ACPI_GET_ADDRESS (AcpiGbl_FADT->XFirmwareCtrl), 
                         sizeof (ACPI_TABLE_HEADER));
-    AcpiGbl_FACS = AcpiCmAllocate (AcpiTblHeader.Length);
+    AcpiGbl_FACS = AcpiUtAllocate (AcpiTblHeader.Length);
     if (!AcpiGbl_FACS)
     {
         AcpiOsPrintf ("Could not allocate buffer for FADT length 0x%lX\n",
@@ -543,7 +543,7 @@ AfGetAllTables (
     AcpiOsPrintf ("FACS at %p (Phys %lX) length %lX FADT=%p\n",
                     AcpiGbl_FACS, ACPI_GET_ADDRESS (AcpiGbl_FADT->XFirmwareCtrl), 
                     AcpiTblHeader.Length, AcpiGbl_FADT);
-    AcpiCmDumpBuffer ((char *) AcpiGbl_FADT, sizeof (ACPI_TABLE_HEADER), 0, 0);
+    AcpiUtDumpBuffer ((char *) AcpiGbl_FADT, sizeof (ACPI_TABLE_HEADER), 0, 0);
 
 
     TableInfo.Type          = ACPI_TABLE_FADT;
@@ -566,7 +566,7 @@ AfGetAllTables (
     /* Get the DSDT */
 
     CopyExtendedToReal (&AcpiTblHeader, ACPI_GET_ADDRESS (AcpiGbl_FADT->XDsdt), sizeof (ACPI_TABLE_HEADER));
-    AcpiGbl_DSDT = AcpiCmAllocate (AcpiTblHeader.Length);
+    AcpiGbl_DSDT = AcpiUtAllocate (AcpiTblHeader.Length);
     if (!AcpiGbl_DSDT)
     {
         AcpiOsPrintf ("Could not allocate buffer for DSDT length 0x%lX\n", AcpiTblHeader.Length);
@@ -578,7 +578,7 @@ AfGetAllTables (
     AcpiOsPrintf ("DSDT at %p (Phys %lX) length %lX FADT=%p\n", 
                     AcpiGbl_DSDT, ACPI_GET_ADDRESS (AcpiGbl_FADT->XDsdt), 
                     AcpiTblHeader.Length, AcpiGbl_FADT);
-    AcpiCmDumpBuffer ((char *) AcpiGbl_DSDT, sizeof (ACPI_TABLE_HEADER), 0, 0);
+    AcpiUtDumpBuffer ((char *) AcpiGbl_DSDT, sizeof (ACPI_TABLE_HEADER), 0, 0);
 
     TableInfo.Type          =  ACPI_TABLE_DSDT;
     TableInfo.Pointer       = (void *) AcpiGbl_DSDT;
@@ -649,7 +649,7 @@ AfFindDsdt(
         DEBUG_PRINT (ACPI_INFO, ("Found ACPI 2.0 RSDP\n"));
     }
  
-    AcpiCmDumpBuffer ((char *) AcpiGbl_RSDP, sizeof (RSDP_DESCRIPTOR), 0, ACPI_UINT32_MAX);
+    AcpiUtDumpBuffer ((char *) AcpiGbl_RSDP, sizeof (RSDP_DESCRIPTOR), 0, ACPI_UINT32_MAX);
   
   
     
@@ -658,7 +658,7 @@ AfFindDsdt(
     CopyExtendedToReal (&AcpiTblHeader, PhysicalAddress, sizeof (ACPI_TABLE_HEADER));
 
     DEBUG_PRINT (ACPI_INFO, ("RSDT/XSDT at %lX\n", PhysicalAddress)); 
-    AcpiCmDumpBuffer ((char *) &AcpiTblHeader, sizeof (ACPI_TABLE_HEADER), 0, ACPI_UINT32_MAX);
+    AcpiUtDumpBuffer ((char *) &AcpiTblHeader, sizeof (ACPI_TABLE_HEADER), 0, ACPI_UINT32_MAX);
  
     /* Validate the table header */
     
@@ -685,7 +685,7 @@ AfFindDsdt(
     
     CopyExtendedToReal (AcpiGbl_XSDT, PhysicalAddress, AcpiTblHeader.Length);
     AcpiOsPrintf ("%s at %p (Paddr=%lX)\n", TableSignature, PhysicalAddress);
-    AcpiCmDumpBuffer ((char *) &AcpiTblHeader, sizeof (ACPI_TABLE_HEADER), 0, 0);
+    AcpiUtDumpBuffer ((char *) &AcpiTblHeader, sizeof (ACPI_TABLE_HEADER), 0, 0);
 
 
     /* Convert to common format XSDT */
