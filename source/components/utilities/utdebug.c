@@ -1,7 +1,7 @@
 /******************************************************************************
  *
- * Module Name: cmdebug - Debug print routines
- *              $Revision: 1.71 $
+ * Module Name: utdebug - Debug print routines
+ *              $Revision: 1.73 $
  *
  *****************************************************************************/
 
@@ -114,12 +114,12 @@
  *
  *****************************************************************************/
 
-#define __CMDEBUG_C__
+#define __UTDEBUG_C__
 
 #include "acpi.h"
 
 #define _COMPONENT          ACPI_UTILITIES
-        MODULE_NAME         ("cmdebug")
+        MODULE_NAME         ("utdebug")
 
 
 UINT32          PrevThreadId = 0xFFFFFFFF;
@@ -342,11 +342,8 @@ FunctionStatusExit (
 {
 
     DebugPrint (ModuleName, LineNumber, ComponentId,
-        TRACE_FUNCTIONS,
-        " %2.2ld Exiting Function: %s, %s\n",
-        AcpiGbl_NestingLevel,
-        FunctionName,
-        AcpiCmFormatException (Status));
+        TRACE_FUNCTIONS, " %2.2ld Exiting Function: %s, %s\n",
+        AcpiGbl_NestingLevel, FunctionName, AcpiFormatException (Status));
 
     AcpiGbl_NestingLevel--;
 }
@@ -565,7 +562,7 @@ DebugPrintRaw (
 
 /*****************************************************************************
  *
- * FUNCTION:    AcpiCmDumpBuffer
+ * FUNCTION:    AcpiUtDumpBuffer
  *
  * PARAMETERS:  Buffer              - Buffer to dump
  *              Count               - Amount to dump, in bytes
@@ -578,7 +575,7 @@ DebugPrintRaw (
  ****************************************************************************/
 
 void
-AcpiCmDumpBuffer (
+AcpiUtDumpBuffer (
     UINT8                   *Buffer,
     UINT32                  Count,
     UINT32                  Display,
