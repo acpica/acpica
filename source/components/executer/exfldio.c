@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: exfldio - Aml Field I/O
- *              $Revision: 1.73 $
+ *              $Revision: 1.74 $
  *
  *****************************************************************************/
 
@@ -587,9 +587,9 @@ AcpiExWriteWithUpdateRule (
     {
         /* Decode the update rule */
 
-        switch (ObjDesc->CommonField.UpdateRule)
+        switch (ObjDesc->CommonField.FieldFlags & AML_FIELD_UPDATE_RULE_MASK)
         {
-        case UPDATE_PRESERVE:
+        case AML_FIELD_UPDATE_PRESERVE:
             /*
              * Check if update rule needs to be applied (not if mask is all
              * ones)  The left shift drops the bits we want to ignore.
@@ -607,14 +607,14 @@ AcpiExWriteWithUpdateRule (
             }
             break;
 
-        case UPDATE_WRITE_AS_ONES:
+        case AML_FIELD_UPDATE_WRITE_AS_ONES:
 
             /* Set positions outside the field to all ones */
 
             MergedValue |= ~Mask;
             break;
 
-        case UPDATE_WRITE_AS_ZEROS:
+        case AML_FIELD_UPDATE_WRITE_AS_ZEROS:
 
             /* Set positions outside the field to all zeros */
 
@@ -624,7 +624,7 @@ AcpiExWriteWithUpdateRule (
         default:
             ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
                 "WriteWithUpdateRule: Unknown UpdateRule setting: %x\n",
-                ObjDesc->CommonField.UpdateRule));
+                (ObjDesc->CommonField.FieldFlags & AML_FIELD_UPDATE_RULE_MASK)));
             return_ACPI_STATUS (AE_AML_OPERAND_VALUE);
             break;
         }
@@ -820,7 +820,7 @@ AcpiExExtractFromField (
     /* We might actually be done if the request fits in one datum */
 
     if ((DatumCount == 1) &&
-        (ObjDesc->CommonField.AccessFlags & AFIELD_SINGLE_DATUM))
+        (ObjDesc->CommonField.Flags & AOPOBJ_SINGLE_DATUM))
     {
         /* 1) Shift the valid data bits down to start at bit 0 */
 
@@ -1015,7 +1015,7 @@ AcpiExInsertIntoField (
 
     /* If the field fits in one datum, may need to mask upper bits */
 
-    if ((ObjDesc->CommonField.AccessFlags & AFIELD_SINGLE_DATUM) &&
+    if ((ObjDesc->CommonField.Flags & AOPOBJ_SINGLE_DATUM) &&
          ObjDesc->CommonField.EndFieldValidBits)
     {
         /* There are bits above the field, mask them off also */
@@ -1040,7 +1040,7 @@ AcpiExInsertIntoField (
     /* If the entire field fits within one datum, we are done. */
 
     if ((DatumCount == 1) &&
-       (ObjDesc->CommonField.AccessFlags & AFIELD_SINGLE_DATUM))
+       (ObjDesc->CommonField.Flags & AOPOBJ_SINGLE_DATUM))
     {
         return_ACPI_STATUS (AE_OK);
     }
