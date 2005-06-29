@@ -125,7 +125,7 @@
 
 
 #define _COMPONENT          PARSER
-        MODULE_NAME         ("aeexec");
+        MODULE_NAME         ("aeexec")
 
 
 ACPI_GENERIC_OP             *AcpiGbl_ParsedNamespaceRoot;

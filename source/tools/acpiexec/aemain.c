@@ -129,7 +129,7 @@
 
 
 #define _COMPONENT          PARSER
-        MODULE_NAME         ("aemain");
+        MODULE_NAME         ("aemain")
 
 
 /*
