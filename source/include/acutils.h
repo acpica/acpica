@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: accommon.h -- prototypes for the common (subsystem-wide) procedures
- *       $Revision: 1.78 $
+ *       $Revision: 1.79 $
  *
  *****************************************************************************/
 
@@ -638,6 +638,10 @@ AcpiCmValidAcpiName (
 BOOLEAN
 AcpiCmValidAcpiCharacter (
     NATIVE_CHAR             Character);
+
+ACPI_STATUS
+AcpiCmResolvePackageReferences (
+    ACPI_OPERAND_OBJECT     *ObjDesc);
 
 
 /*
