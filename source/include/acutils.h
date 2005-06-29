@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acutils.h -- prototypes for the common (subsystem-wide) procedures
- *       $Revision: 1.121 $
+ *       $Revision: 1.126 $
  *
  *****************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -137,7 +137,7 @@ AcpiUtWalkPackageTree (
 typedef struct acpi_pkg_info
 {
     UINT8                   *FreeSpace;
-    UINT32                  Length;
+    ACPI_SIZE               Length;
     UINT32                  ObjectSpace;
     UINT32                  NumPackages;
 } ACPI_PKG_INFO;
@@ -193,11 +193,15 @@ AcpiUtGetMutexName (
 
 NATIVE_CHAR *
 AcpiUtGetTypeName (
-    UINT32                  Type);
+    ACPI_OBJECT_TYPE        Type);
 
 NATIVE_CHAR *
 AcpiUtGetRegionName (
     UINT8                   SpaceId);
+
+NATIVE_CHAR *
+AcpiUtGetEventName (
+    UINT32                  EventId);
 
 #endif
 
@@ -209,7 +213,7 @@ AcpiUtHexToAsciiChar (
 
 BOOLEAN
 AcpiUtValidObjectType (
-    UINT32                  Type);
+    ACPI_OBJECT_TYPE        Type);
 
 ACPI_OWNER_ID
 AcpiUtAllocateOwnerId (
@@ -560,7 +564,7 @@ AcpiUtCreateInternalObjectDbg (
     NATIVE_CHAR             *ModuleName,
     UINT32                  LineNumber,
     UINT32                  ComponentId,
-    ACPI_OBJECT_TYPE8       Type);
+    ACPI_OBJECT_TYPE        Type);
 
 void *
 AcpiUtAllocateObjectDescDbg (
@@ -599,17 +603,17 @@ AcpiUtRemoveReference (
 ACPI_STATUS
 AcpiUtGetSimpleObjectSize (
     ACPI_OPERAND_OBJECT     *Obj,
-    UINT32                  *ObjLength);
+    ACPI_SIZE               *ObjLength);
 
 ACPI_STATUS
 AcpiUtGetPackageObjectSize (
     ACPI_OPERAND_OBJECT     *Obj,
-    UINT32                  *ObjLength);
+    ACPI_SIZE               *ObjLength);
 
 ACPI_STATUS
 AcpiUtGetObjectSize(
     ACPI_OPERAND_OBJECT     *Obj,
-    UINT32                  *ObjLength);
+    ACPI_SIZE               *ObjLength);
 
 
 /*
@@ -743,19 +747,28 @@ void
 AcpiUtDeleteGenericCache (
     UINT32                  ListId);
 
+ACPI_STATUS
+AcpiUtValidateBuffer (
+    ACPI_BUFFER             *Buffer);
+
+ACPI_STATUS
+AcpiUtValidateBufferSize (
+    ACPI_BUFFER             *Buffer,
+    ACPI_SIZE               RequiredLength);
+
 
 /* Debug Memory allocation functions */
 
 void *
 AcpiUtAllocate (
-    UINT32                  Size,
+    ACPI_SIZE               Size,
     UINT32                  Component,
     NATIVE_CHAR             *Module,
     UINT32                  Line);
 
 void *
 AcpiUtCallocate (
-    UINT32                  Size,
+    ACPI_SIZE               Size,
     UINT32                  Component,
     NATIVE_CHAR             *Module,
     UINT32                  Line);
