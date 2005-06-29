@@ -236,6 +236,11 @@
 #define FUNCTION_STATUS_EXIT(s)         FunctionStatusExit(_THIS_MODULE,__LINE__,_COMPONENT,ThisProc,s)
 #define FUNCTION_VALUE_EXIT(s)          FunctionValueExit(_THIS_MODULE,__LINE__,_COMPONENT,ThisProc,(UINT32)s)
 
+#define return_VOID                     {FunctionExit(_THIS_MODULE,__LINE__,_COMPONENT,ThisProc);return;}
+#define return_ACPI_STATUS(s)           {FunctionStatusExit(_THIS_MODULE,__LINE__,_COMPONENT,ThisProc,s);return(s);}
+#define return_VALUE(s)                 {FunctionValueExit(_THIS_MODULE,__LINE__,_COMPONENT,ThisProc,(UINT32)s);return(s);}
+
+
 /* Stack and buffer dumping */
 
 #define DUMP_STACK_ENTRY(a)             AmlDumpObjStackEntry(a)
@@ -284,6 +289,11 @@
 #define DEBUG_MEMSTAT
 #define DEBUG_PRINT(l,f)
 #define DEBUG_PRINT_RAW(l,f) 
+
+#define return_VOID                     return
+#define return_ACPI_STATUS(s)           return(s)
+#define return_VALUE(s)                 return(s)
+
 
 #endif
 
