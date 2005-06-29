@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: evgpe - General Purpose Event handling and dispatch
- *              $Revision: 1.39 $
+ *              $Revision: 1.40 $
  *
  *****************************************************************************/
 
@@ -298,7 +298,7 @@ AcpiEvEnableGpe (
 
             /* Enable the requested runtime GPE */
 
-            Status = AcpiHwEnableGpe (GpeEventInfo);
+            Status = AcpiHwWriteGpeEnableReg (GpeEventInfo);
         }
         break;
 
@@ -363,7 +363,7 @@ AcpiEvDisableGpe (
         /* Disable the requested runtime GPE */
 
         GpeEventInfo->Flags &= ~ACPI_GPE_RUN_ENABLED;
-        Status = AcpiHwDisableGpe (GpeEventInfo);
+        Status = AcpiHwWriteGpeEnableReg (GpeEventInfo);
         break;
 
     default:
@@ -614,6 +614,10 @@ AcpiEvAsynchExecuteGpeMethod (
         return_VOID;
     }
 
+    /* Set the GPE flags for return to enabled state */
+
+    (void) AcpiEvEnableGpe (GpeEventInfo, FALSE);
+
     /*
      * Take a snapshot of the GPE info for this level - we copy the
      * info to prevent a race condition with RemoveHandler/RemoveBlock.
@@ -666,7 +670,7 @@ AcpiEvAsynchExecuteGpeMethod (
 
     /* Enable this GPE */
 
-    (void) AcpiHwEnableGpe (&LocalGpeEventInfo);
+    (void) AcpiHwWriteGpeEnableReg (&LocalGpeEventInfo);
     return_VOID;
 }
 
@@ -761,7 +765,7 @@ AcpiEvGpeDispatch (
          * Disable GPE, so it doesn't keep firing before the method has a
          * chance to run.
          */
-        Status = AcpiHwDisableGpe (GpeEventInfo);
+        Status = AcpiEvDisableGpe (GpeEventInfo);
         if (ACPI_FAILURE (Status))
         {
             ACPI_REPORT_ERROR ((
@@ -796,7 +800,7 @@ AcpiEvGpeDispatch (
          * Disable the GPE.  The GPE will remain disabled until the ACPI
          * Core Subsystem is restarted, or a handler is installed.
          */
-        Status = AcpiHwDisableGpe (GpeEventInfo);
+        Status = AcpiEvDisableGpe (GpeEventInfo);
         if (ACPI_FAILURE (Status))
         {
             ACPI_REPORT_ERROR ((
@@ -844,7 +848,7 @@ AcpiEvCheckForWakeOnlyGpe (
     {
         /* This must be a wake-only GPE, disable it */
 
-        Status = AcpiHwDisableGpe (GpeEventInfo);
+        Status = AcpiEvDisableGpe (GpeEventInfo);
 
         /* Set GPE to wake-only.  Do not change wake disabled/enabled status */
 
