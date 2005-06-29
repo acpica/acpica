@@ -724,10 +724,12 @@ PsParseLoop (
 
             /* Delete op if asked to */
 
+#ifndef PARSER_ONLY
             if (ParseFlags & PARSE_DELETE_TREE)
             {
                 PsDeleteParseTree (Op);
             }
+#endif                
             
                 
             if (PsHasCompletedScope (ParserState))
