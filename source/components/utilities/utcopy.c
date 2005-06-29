@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: utcopy - Internal to external object translation utilities
- *              $Revision: 1.106 $
+ *              $Revision: 1.107 $
  *
  *****************************************************************************/
 
@@ -732,8 +732,25 @@ AcpiUtCopySimpleObject (
         DestDesc->Buffer.Node = NULL;
         DestDesc->Common.Flags = SourceDesc->Common.Flags;
 
-        /* Fall through to common string/buffer case */
-        /*lint -fallthrough */
+        /*
+         * Allocate and copy the actual buffer if and only if:
+         * 1) There is a valid buffer (length > 0)
+         * 2) The buffer is not static (not in an ACPI table) (in this case,
+         *    the actual pointer was already copied above)
+         */
+        if ((SourceDesc->Buffer.Length) &&
+            (!(SourceDesc->Common.Flags & AOPOBJ_STATIC_POINTER)))
+        {
+            DestDesc->Buffer.Pointer = ACPI_MEM_ALLOCATE (SourceDesc->Buffer.Length);
+            if (!DestDesc->Buffer.Pointer)
+            {
+                return (AE_NO_MEMORY);
+            }
+
+            ACPI_MEMCPY (DestDesc->Buffer.Pointer, SourceDesc->Buffer.Pointer,
+                         SourceDesc->Buffer.Length);
+        }
+        break;
 
     case ACPI_TYPE_STRING:
 
@@ -746,14 +763,14 @@ AcpiUtCopySimpleObject (
         if ((SourceDesc->String.Length) &&
             (!(SourceDesc->Common.Flags & AOPOBJ_STATIC_POINTER)))
         {
-            DestDesc->String.Pointer = ACPI_MEM_ALLOCATE (SourceDesc->String.Length);
+            DestDesc->String.Pointer = ACPI_MEM_ALLOCATE (SourceDesc->String.Length + 1);
             if (!DestDesc->String.Pointer)
             {
                 return (AE_NO_MEMORY);
             }
 
             ACPI_MEMCPY (DestDesc->String.Pointer, SourceDesc->String.Pointer,
-                         SourceDesc->String.Length);
+                         SourceDesc->String.Length + 1);
         }
         break;
 
