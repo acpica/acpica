@@ -160,8 +160,7 @@ AmlExecFatal (
     FUNCTION_TRACE ("AmlExecFatal");
 
 
-    Status = AmlPrepOperands ("nnn", Operands);
-
+    Status = AmlResolveOperands (AML_FatalOp, Operands);
     if (Status != AE_OK)
     {
         /* invalid parameters on object stack  */
@@ -170,7 +169,7 @@ AmlExecFatal (
         goto Cleanup;
     }
 
-    DUMP_OPERANDS (Operands, IMODE_Execute, PsGetOpcodeName (AML_FatalOp), 3, "after AmlPrepOperands");
+    DUMP_OPERANDS (Operands, IMODE_Execute, PsGetOpcodeName (AML_FatalOp), 3, "after AmlResolveOperands");
 
 
     /* DefFatal    :=  FatalOp FatalType   FatalCode   FatalArg    */
@@ -242,13 +241,7 @@ AmlExecIndex (
 
     /* First operand can be either a package or a buffer */
 
-    Status = AmlPrepOperands ("lnp", Operands);
-
-    if (Status == AE_TYPE)
-    {
-        Status = AmlPrepOperands ("lnb", Operands);
-    }
-
+    Status = AmlResolveOperands (AML_IndexOp, Operands);
     if (Status != AE_OK)
     {
         /* invalid parameters on object stack  */
@@ -257,12 +250,14 @@ AmlExecIndex (
         goto Cleanup;
     }
 
-    DUMP_OPERANDS (Operands, IMODE_Execute, PsGetOpcodeName (AML_IndexOp), 3, "after AmlPrepOperands");
 
     ResDesc = Operands[0];
     IdxDesc = Operands[-1];
     ObjDesc = Operands[-2];
+    DUMP_OPERANDS (Operands, IMODE_Execute, PsGetOpcodeName (AML_IndexOp), 3, "after AmlResolveOperands");
 
+
+    /* Create the internal return object */
 
     RetDesc = CmCreateInternalObject (INTERNAL_TYPE_Lvalue);
     if (!RetDesc)
@@ -283,7 +278,7 @@ AmlExecIndex (
         if (IdxDesc->Number.Value >= ObjDesc->Package.Count)
         {
             DEBUG_PRINT (ACPI_ERROR, ("AmlExecIndex: Index value out of range\n"));
-            Status = AE_AML_ERROR;
+            Status = AE_AML_PACKAGE_LIMIT;
             goto Cleanup;
         }
 
@@ -335,7 +330,7 @@ AmlExecIndex (
         if (IdxDesc->Number.Value >= ObjDesc->Buffer.Length)
         {
             DEBUG_PRINT (ACPI_ERROR, ("AmlExecIndex: Index value out of range\n"));
-            Status = AE_AML_ERROR;
+            Status = AE_AML_BUFFER_LIMIT;
             goto Cleanup;
         }
 
@@ -420,8 +415,7 @@ AmlExecMatch (
     FUNCTION_TRACE ("AmlExecMatch");
 
 
-    Status = AmlPrepOperands ("nnnnnp", Operands);
-
+    Status = AmlResolveOperands (AML_MatchOp, Operands);
     if (Status != AE_OK)
     {
         /* invalid parameters on object stack  */
@@ -433,7 +427,7 @@ AmlExecMatch (
 
     /* Get the parameters from the object stack */
 
-    DUMP_OPERANDS (Operands, IMODE_Execute, PsGetOpcodeName (AML_MatchOp), 6, "after AmlPrepOperands");
+    DUMP_OPERANDS (Operands, IMODE_Execute, PsGetOpcodeName (AML_MatchOp), 6, "after AmlResolveOperands");
 
     StartDesc = Operands[0];
     V2Desc    = Operands[-1];
@@ -448,7 +442,7 @@ AmlExecMatch (
         (Op2Desc->Number.Value > MAX_MATCH_OPERATOR))
     {
         DEBUG_PRINT (ACPI_ERROR, ("AmlExecMatch: operation encoding out of range\n"));
-        Status = AE_AML_ERROR;
+        Status = AE_AML_OPERAND_VALUE;
         goto Cleanup;
     }
 
@@ -456,7 +450,7 @@ AmlExecMatch (
     if (Index >= (UINT32) PkgDesc->Package.Count)
     {
         DEBUG_PRINT (ACPI_ERROR, ("AmlExecMatch: start position value out of range\n"));
-        Status = AE_AML_ERROR;
+        Status = AE_AML_PACKAGE_LIMIT;
         goto Cleanup;
     }
 
