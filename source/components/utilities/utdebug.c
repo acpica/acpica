@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: cmdebug - Debug print routines
- *              $Revision: 1.67 $
+ *              $Revision: 1.68 $
  *
  *****************************************************************************/
 
@@ -121,6 +121,8 @@
 #define _COMPONENT          ACPI_UTILITIES
         MODULE_NAME         ("cmdebug")
 
+
+UINT32          PrevThreadId = 0xFFFFFFFF;
 
 /*****************************************************************************
  *
@@ -446,6 +448,10 @@ DebugPrint (
     ...)
 {
     va_list                 args;
+    UINT32                  ThreadId;
+
+
+    ThreadId = AcpiOsGetThreadId ();
 
 
     /* Both the level and the component must be enabled */
@@ -457,7 +463,7 @@ DebugPrint (
 
         if (TRACE_THREADS & AcpiDbgLevel)
         {
-            AcpiOsPrintf ("%8s-%04d[%04X]: ", ModuleName, LineNumber, AcpiOsGetThreadId());
+            AcpiOsPrintf ("%8s-%04d[%04X]: ", ModuleName, LineNumber, ThreadId);
         }
         else
         {
@@ -465,6 +471,14 @@ DebugPrint (
         }
 
         AcpiOsVprintf (Format, args);
+
+        if (ThreadId != PrevThreadId)
+        {
+            AcpiOsPrintf ("\n**** Context Switch from TID %X to TID %X ****\n\n", 
+                PrevThreadId, ThreadId);
+
+            PrevThreadId = ThreadId;
+        }
     }
 }
 
@@ -489,9 +503,27 @@ DebugPrintPrefix (
     NATIVE_CHAR             *ModuleName,
     UINT32                  LineNumber)
 {
+    UINT32                  ThreadId;
 
 
-    AcpiOsPrintf ("%8s-%04d: ", ModuleName, LineNumber);
+    ThreadId = AcpiOsGetThreadId ();
+
+    if (TRACE_THREADS & AcpiDbgLevel)
+    {
+        AcpiOsPrintf ("%8s-%04d[%04X]: ", ModuleName, LineNumber, AcpiOsGetThreadId());
+    }
+    else
+    {
+        AcpiOsPrintf ("%8s-%04d: ", ModuleName, LineNumber);
+    }
+
+    if (ThreadId != PrevThreadId)
+    {
+        AcpiOsPrintf ("\n**** Context Switch from TID %X to TID %X ****\n\n", 
+            PrevThreadId, ThreadId);
+
+        PrevThreadId = ThreadId;
+    }
 }
 
 
