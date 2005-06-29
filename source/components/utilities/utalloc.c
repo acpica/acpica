@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: utalloc - local cache and memory allocation routines
- *              $Revision: 1.138 $
+ *              $Revision: 1.140 $
  *
  *****************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2004, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2005, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -147,9 +147,12 @@ AcpiUtReleaseToCache (
     ACPI_FUNCTION_ENTRY ();
 
 
+    CacheInfo = &AcpiGbl_MemoryLists[ListId];
+
+#ifdef ACPI_ENABLE_OBJECT_CACHE
+
     /* If walk cache is full, just free this wallkstate object */
 
-    CacheInfo = &AcpiGbl_MemoryLists[ListId];
     if (CacheInfo->CacheDepth >= CacheInfo->MaxCacheDepth)
     {
         ACPI_MEM_FREE (Object);
@@ -178,6 +181,14 @@ AcpiUtReleaseToCache (
 
         (void) AcpiUtReleaseMutex (ACPI_MTX_CACHES);
     }
+
+#else
+
+    /* Object cache is disabled; just free the object */
+
+    ACPI_MEM_FREE (Object);
+    ACPI_MEM_TRACKING (CacheInfo->TotalFreed++);
+#endif
 }
 
 
@@ -207,6 +218,9 @@ AcpiUtAcquireFromCache (
 
 
     CacheInfo = &AcpiGbl_MemoryLists[ListId];
+
+#ifdef ACPI_ENABLE_OBJECT_CACHE
+
     if (ACPI_FAILURE (AcpiUtAcquireMutex (ACPI_MTX_CACHES)))
     {
         return (NULL);
@@ -256,10 +270,19 @@ AcpiUtAcquireFromCache (
         ACPI_MEM_TRACKING (CacheInfo->TotalAllocated++);
     }
 
+#else
+
+    /* Object cache is disabled; just allocate the object */
+
+    Object = ACPI_MEM_CALLOCATE (CacheInfo->ObjectSize);
+    ACPI_MEM_TRACKING (CacheInfo->TotalAllocated++);
+#endif
+
     return (Object);
 }
 
 
+#ifdef ACPI_ENABLE_OBJECT_CACHE
 /******************************************************************************
  *
  * FUNCTION:    AcpiUtDeleteGenericCache
@@ -295,6 +318,7 @@ AcpiUtDeleteGenericCache (
         CacheInfo->CacheDepth--;
     }
 }
+#endif
 
 
 /*******************************************************************************
