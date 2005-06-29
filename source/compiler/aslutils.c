@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslutils -- compiler utilities
- *              $Revision: 1.26 $
+ *              $Revision: 1.31 $
  *
  *****************************************************************************/
 
@@ -130,7 +130,6 @@ extern const char * const       yytname[];
 #endif
 
 
-
 /*******************************************************************************
  *
  * FUNCTION:    UtLocalCalloc
@@ -152,13 +151,13 @@ UtLocalCalloc (
     void                    *Allocated;
 
 
-    Allocated = AcpiCmCallocate (Size);
+    Allocated = AcpiUtCallocate (Size);
     if (!Allocated)
     {
         AslCommonError (ASL_ERROR, ASL_MSG_MEMORY_ALLOCATION,
             Gbl_CurrentLineNumber, Gbl_LogicalLineNumber,
             Gbl_InputByteCount, Gbl_CurrentColumn,
-            Gbl_InputFilename, NULL);
+            Gbl_Files[ASL_FILE_INPUT].Filename, NULL);
         exit (1);
     }
 
@@ -184,15 +183,15 @@ UtHexCharToValue (
 {
     if (hc <= 0x39)
     {
-        return (hc - 0x30);
+        return ((UINT8) (hc - 0x30));
     }
 
     if (hc <= 0x46)
     {
-        return (hc - 0x37);
+        return ((UINT8) (hc - 0x37));
     }
 
-    return (hc - 0x57);
+    return ((UINT8) (hc - 0x57));
 }
 
 
@@ -336,21 +335,25 @@ UtGetOpName (
 
 void
 UtDisplaySummary (
-    FILE                    *Where)
+    UINT32                  FileId)
 {
 
 
-    fprintf (Where, "Compilation complete. %d Errors %d Warnings\n",
-                Gbl_ExceptionCount[ASL_ERROR],
-                Gbl_ExceptionCount[ASL_WARNING]);
+    FlPrintFile (FileId,
+        "Compilation complete. %d Errors %d Warnings\n",
+         Gbl_ExceptionCount[ASL_ERROR], Gbl_ExceptionCount[ASL_WARNING]);
 
-    fprintf (Where, "ASL Input: %s - %d lines, %d bytes, %d keywords\n",
-                Gbl_InputFilename, Gbl_CurrentLineNumber, Gbl_InputByteCount, TotalKeywords);
+    FlPrintFile (FileId,
+        "ASL Input: %s - %d lines, %d bytes, %d keywords\n",
+        Gbl_Files[ASL_FILE_INPUT].Filename, Gbl_CurrentLineNumber,
+        Gbl_InputByteCount, TotalKeywords);
 
     if ((Gbl_ExceptionCount[ASL_ERROR] == 0) || (Gbl_IgnoreErrors))
     {
-        fprintf (Where, "AML Output: %s - %d bytes %d named objects %d executable opcodes\n\n",
-                    Gbl_OutputFilename, Gbl_TableLength, TotalNamedObjects, TotalExecutableOpcodes);
+        FlPrintFile (FileId,
+            "AML Output: %s - %d bytes %d named objects %d executable opcodes\n\n",
+            Gbl_Files[ASL_FILE_AML_OUTPUT].Filename, Gbl_TableLength,
+            TotalNamedObjects, TotalExecutableOpcodes);
     }
 }
 
@@ -398,7 +401,7 @@ UtCheckIntegerRange (
     {
         sprintf (Buffer, "%s 0x%X-0x%X", ParseError, LowValue, HighValue);
         AslCompilererror (Buffer);
-        AcpiCmFree (Node);
+        AcpiUtFree (Node);
         return NULL;
     }
 
