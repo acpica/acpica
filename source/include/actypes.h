@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: actypes.h - Common data types for the entire ACPI subsystem
- *       $Revision: 1.203 $
+ *       $Revision: 1.204 $
  *
  *****************************************************************************/
 
@@ -1213,7 +1213,7 @@ typedef struct AcpiResource
  */
 
 
-typedef struct pci_routing_table
+typedef struct acpi_pci_routing_table
 {
     UINT32                      Length;
     UINT32                      Pin;
