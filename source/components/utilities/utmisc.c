@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: utmisc - common utility procedures
- *              $Revision: 1.82 $
+ *              $Revision: 1.83 $
  *
  ******************************************************************************/
 
@@ -1569,7 +1569,6 @@ AcpiUtReportNsError (
     if (Name)
     {
         AcpiOsPrintf ("[%s]", Name);
-        ACPI_MEM_FREE (Name);
     }
     else
     {
@@ -1579,6 +1578,10 @@ AcpiUtReportNsError (
     AcpiOsPrintf (" in namespace, %s\n", 
         AcpiFormatException (LookupStatus));
 
+    if (Name)
+    {
+        ACPI_MEM_FREE (Name);
+    }
 }
 
 
