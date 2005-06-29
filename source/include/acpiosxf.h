@@ -135,6 +135,19 @@
 #define ACPI_MUTEX_SEM              1
 
 
+/* Functions for AcpiOsSignal */
+
+#define ACPI_SIGNAL_FATAL           0
+
+typedef struct AcpiFatalInfo
+{
+    UINT32                  Type;
+    UINT32                  Code;
+    UINT32                  Argument;
+
+} ACPI_SIGNAL_FATAL_INFO;
+
+
 /*
  * Types specific to the OS service interfaces
  */
@@ -261,7 +274,7 @@ AcpiOsStall (
 
 
 /*
- * Platform/Hardware independent I/O interfaces
+ * Platform and hardware-independent I/O interfaces
  */
 
 ACPI_STATUS
@@ -279,7 +292,7 @@ AcpiOsWritePort (
 
 
 /*
- * Platform/Hardware independent physical memory interfaces
+ * Platform and hardware-independent physical memory interfaces
  */
 
 ACPI_STATUS
@@ -297,7 +310,7 @@ AcpiOsWriteMemory (
 
 
 /*
- * PCI configuration space access
+ * Platform and hardware-independent PCI configuration space access
  */
 
 ACPI_STATUS
@@ -339,7 +352,10 @@ UINT32
 AcpiOsGetTimer (
     void);
 
-
+ACPI_STATUS
+AcpiOsSignal (
+    UINT32                  Function,
+    void                    *Info);
 
 /*
  * Debug print routines
