@@ -2,7 +2,7 @@
  *
  * Module Name: nsutils - Utilities for accessing ACPI namespace, accessing
  *                        parents and siblings and Scope manipulation
- *              $Revision: 1.115 $
+ *              $Revision: 1.116 $
  *
  *****************************************************************************/
 
@@ -137,7 +137,7 @@
  *
  * RETURN:      None
  *
- * DESCRIPTION: Print warning message
+ * DESCRIPTION: Print warning message with full pathname
  *
  ******************************************************************************/
 
@@ -153,12 +153,16 @@ AcpiNsReportError (
     char                    *Name;
 
     
+    /* Convert path to external format */
+
     Status = AcpiNsExternalizeName (ACPI_UINT32_MAX, InternalName, NULL, &Name);
 
     AcpiOsPrintf ("%8s-%04d: *** Error: Looking up ", 
         ModuleName, LineNumber);
 
-    if (Name)
+    /* Print target name */
+
+    if (ACPI_SUCCESS (Status))
     {
         AcpiOsPrintf ("[%s]", Name);
     }
