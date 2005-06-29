@@ -176,9 +176,9 @@ BREAKPOINT3;
         Status = AE_AML_ERROR;
     }
 
-    else if (TYPE_Region != RgnDesc->Common.Type)
+    else if (ACPI_TYPE_Region != RgnDesc->Common.Type)
     {
-        DEBUG_PRINT (ACPI_ERROR, ("AmlSetupField: Needed Region, found %d %s\n",
+        DEBUG_PRINT (ACPI_ERROR, ("AmlSetupField: Needed Region, found type %x %s\n",
                         RgnDesc->Common.Type, Gbl_NsTypeNames[RgnDesc->Common.Type]));
         Status = AE_AML_ERROR;
     }
@@ -221,13 +221,13 @@ BREAKPOINT3;
                  * Point to Address opcode in AML stream
                  */
 
-                if (!RgnDesc->Region.AddressLocation)
+                if (!RgnDesc->Region.Method)
                 {
                     REPORT_ERROR ("AmlSetupField: Region Method subobject does not exist");
                     return_ACPI_STATUS (AE_EXIST);
                 }
 
-                AmlSetCurrentLocation (RgnDesc->Region.AddressLocation);
+                AmlSetCurrentLocation (RgnDesc->Region.Method);
 
                 /* Evaluate the Address opcode */
 
@@ -240,11 +240,11 @@ BREAKPOINT3;
 
 
                     if (!ObjValDesc ||
-                        ObjValDesc->Common.Type != (UINT8) TYPE_Number)
+                        ObjValDesc->Common.Type != (UINT8) ACPI_TYPE_Number)
                     {
                         DEBUG_PRINT (ACPI_ERROR, ("AmlSetupField: Malformed Region/Address "
                                     "ObjValDesc = %p, ObjValDesc->Common.Type = %02Xh, Number = %02Xh\n",
-                                    ObjValDesc, ObjValDesc->Common.Type, (UINT8) TYPE_Number));
+                                    ObjValDesc, ObjValDesc->Common.Type, (UINT8) ACPI_TYPE_Number));
 
                         Status = AE_AML_ERROR;
                     }
@@ -271,7 +271,7 @@ BREAKPOINT3;
                         ObjValDesc = AmlObjStackRemoveValue (STACK_TOP);
 
                         if (!ObjValDesc ||
-                            ObjValDesc->Common.Type != (UINT8) TYPE_Number)
+                            ObjValDesc->Common.Type != (UINT8) ACPI_TYPE_Number)
                         {
 
                             DEBUG_PRINT (ACPI_ERROR, ("AmlSetupField: Malformed Region/Length \n"));
@@ -509,7 +509,7 @@ AmlWriteField (
 
     else if (Status == AE_EXIST)
     {
-        DEBUG_PRINT (ACPI_ERROR, ("AmlWriteField: **** Unknown OpRegion SpaceID %d\n",
+        DEBUG_PRINT (ACPI_ERROR, ("AmlWriteField: **** Unknown OpRegion SpaceID %x\n",
                         RgnDesc->Region.SpaceId));
     }
 
@@ -558,29 +558,28 @@ AmlAccessNamedField (
         return_ACPI_STATUS (AE_AML_ERROR);
     }
 
-    if (TYPE_DefField != NsGetType (NamedField))
+    if (INTERNAL_TYPE_DefField != NsGetType (NamedField))
     {
         DEBUG_PRINT (ACPI_ERROR, (
-                  "AmlAccessNamedField: Name %4.4s type %d is not a defined field\n",
+                  "AmlAccessNamedField: Name %4.4s type %x is not a defined field\n",
                   &(((NAME_TABLE_ENTRY *) NamedField)->Name), NsGetType (NamedField)));
         return_ACPI_STATUS (AE_AML_ERROR);
     }
 
     /* ObjDesc valid and NamedField is a defined field  */
 
-    DEBUG_PRINT (ACPI_INFO,
-                ("AmlAccessNamedField: DefField type and ValPtr OK in nte \n"));
+    DEBUG_PRINT (ACPI_INFO, ("AmlAccessNamedField: DefField type and ValPtr OK in nte \n"));
     DUMP_ENTRY (NamedField, ACPI_INFO);
 
-    DEBUG_PRINT (ACPI_INFO, ("AmlAccessNamedField: ObjDesc=%p, ObjDesc->Common.Type=%d\n",
-                ObjDesc, ObjDesc->Common.Type));
+    DEBUG_PRINT (ACPI_INFO, ("AmlAccessNamedField: ObjDesc=%p, Type=%x\n",
+                    ObjDesc, ObjDesc->Common.Type));
     DEBUG_PRINT (ACPI_INFO, ("AmlAccessNamedField: DatLen=%d, BitOffset=%d\n",
-                ObjDesc->FieldUnit.Length, ObjDesc->FieldUnit.BitOffset));
+                    ObjDesc->FieldUnit.Length, ObjDesc->FieldUnit.BitOffset));
 
-    if (TYPE_DefField != ObjDesc->Common.Type)
+    if (INTERNAL_TYPE_DefField != ObjDesc->Common.Type)
     {
         DEBUG_PRINT (ACPI_ERROR, (
-                "AmlAccessNamedField: Internal error - Name %4.4s type %d does not match value-type %d at %p\n",
+                "AmlAccessNamedField: Internal error - Name %4.4s type %x does not match value-type %x at %p\n",
                 &(((NAME_TABLE_ENTRY *) NamedField)->Name), NsGetType (NamedField), ObjDesc->Common.Type, ObjDesc));
         return_ACPI_STATUS (AE_AML_ERROR);
     }
@@ -616,7 +615,7 @@ AmlAccessNamedField (
         /* Invalid field access type */
 
         DEBUG_PRINT (ACPI_ERROR, (
-                    "AmlAccessNamedField: Unknown field access type %d\n",
+                    "AmlAccessNamedField: Unknown field access type %x\n",
                     ObjDesc->Field.Access));
         return_ACPI_STATUS (AE_AML_ERROR);
     }
