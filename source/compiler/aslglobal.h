@@ -3,7 +3,7 @@
 /******************************************************************************
  *
  * Module Name: aslglobal.h - Global variable definitions
- *              $Revision: 1.19 $
+ *              $Revision: 1.24 $
  *
  *****************************************************************************/
 
@@ -11,7 +11,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -173,12 +173,18 @@ extern UINT32                   Gbl_ExceptionCount[];
 EXTERN BOOLEAN                  INIT_GLOBAL (Gbl_UseDefaultAmlFilename, TRUE);
 EXTERN BOOLEAN                  INIT_GLOBAL (Gbl_NsOutputFlag, FALSE);
 EXTERN BOOLEAN                  INIT_GLOBAL (Gbl_DebugFlag, FALSE);
-EXTERN BOOLEAN                  INIT_GLOBAL (Gbl_HexOutputFlag, FALSE);
+EXTERN BOOLEAN                  INIT_GLOBAL (Gbl_AsmOutputFlag, FALSE);
+EXTERN BOOLEAN                  INIT_GLOBAL (Gbl_C_OutputFlag, FALSE);
 EXTERN BOOLEAN                  INIT_GLOBAL (Gbl_ListingFlag, FALSE);
 EXTERN BOOLEAN                  INIT_GLOBAL (Gbl_IgnoreErrors, FALSE);
 EXTERN BOOLEAN                  INIT_GLOBAL (Gbl_SourceOutputFlag, FALSE);
 EXTERN BOOLEAN                  INIT_GLOBAL (Gbl_ParseOnlyFlag, FALSE);
 EXTERN BOOLEAN                  INIT_GLOBAL (Gbl_CompileTimesFlag, FALSE);
+
+#define HEX_OUTPUT_NONE         0
+#define HEX_OUTPUT_C            1
+#define HEX_OUTPUT_ASM          2
+EXTERN BOOLEAN                  INIT_GLOBAL (Gbl_HexOutputFlag, HEX_OUTPUT_NONE);
 
 
 /* Files */
@@ -226,7 +232,6 @@ EXTERN UINT32                   INIT_GLOBAL (Gbl_CurrentLine, 0);
 EXTERN UINT8                    INIT_GLOBAL (Gbl_HexBytesWereWritten, FALSE);
 EXTERN UINT32                   INIT_GLOBAL (Gbl_NumNamespaceObjects, 0);
 EXTERN UINT32                   INIT_GLOBAL (Gbl_ReservedMethods, 0);
-EXTERN UINT8                    INIT_GLOBAL (AcpiGbl_DbOutputFlags, DB_CONSOLE_OUTPUT);
 EXTERN FILE                     *AcpiGbl_DebugFile; /* Placeholder for oswinxf only */
 
 
