@@ -140,19 +140,18 @@ extern INT32        OBJECT_DESCRIPTOR_IS_VOID;
 #undef DELETE
 #endif
 
-#define  NEW(type)          ((type *)OsdCallocate (sizeof(type)))
-#define  DELETE(ptr)        OsdFree ((void *)(ptr)), (ptr) = 0
+#define  x_NEW(type)          ((type *)OsdCallocate (sizeof(type)))
+#define  x_DELETE(ptr)        OsdFree ((void *)(ptr)), (ptr) = 0
 
 /* 
  * Macro to test for out-of-range subscript
- * No parens needed around aArray in expansion since the actual parameter
+ * No parens needed around Array in expansion since the actual parameter
  * must be the name of a declared array and cannot be an expression.
- * Cast of iSubscript to int required by broken IC386 compiler.
  */
 
 #define OUTRANGE(Subscript, Array) \
-    (sizeof(Array[0]) == 0 || (int)(Subscript) < 0 \
-     || (int)(Subscript) >= sizeof(Array)/sizeof(Array[0]))
+    (sizeof(Array[0]) == 0 ||\
+    (UINT32)(Subscript) >= (sizeof(Array)/sizeof(Array[0])))
 
 
 /* Object Stack */
@@ -523,10 +522,6 @@ AmlDoOpByte (
  * isnames - interpreter/scanner name load/execute
  */
 
-char *
-AmlLastFullyQualifiedName (
-    void);
-
 void
 AmlAllocateNameString (
     INT32               PrefixCount,
@@ -544,10 +539,6 @@ ACPI_STATUS
 AmlDoName (
     NsType              DataType, 
     OpMode              LoadExecMode);
-
-void
-AmlGenLabel (
-    char                *Name);
 
 
 /*
