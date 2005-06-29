@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslmain - compiler main and utilities
- *              $Revision: 1.57 $
+ *              $Revision: 1.59 $
  *
  *****************************************************************************/
 
@@ -131,6 +131,10 @@
 
 int                     optind;
 NATIVE_CHAR             *optarg;
+BOOLEAN                 AslToFile = TRUE;
+BOOLEAN                 DoCompile = TRUE;
+BOOLEAN                 DoSignon = TRUE;
+
 
 UINT32                  Gbl_ExceptionCount[ASL_NUM_REPORT_LEVELS] = {0,0,0};
 char                    hex[] = {'0','1','2','3','4','5','6','7',
@@ -154,34 +158,34 @@ Options (
     void)
 {
 
-    printf ("Global Output Options:\n");
-    printf ("    -e             Less verbose errors and warnings for use with an IDE\n");
-    printf ("    -o<name>       Specify filename prefix for all output files\n");
-    printf ("                       (including the .aml file)\n");
+    printf ("General Output:\n");
+    printf ("  -o<prefix>     Specify filename prefix for all output files (including .aml)\n");
+    printf ("  -vi            Less verbose errors and warnings for use with IDEs\n");
+    printf ("  -vr            Disable generation of remarks\n");
+    printf ("  -vs            Disable signon\n");
 
-    printf ("\nCompiler AML Output Options:\n");
-    printf ("    -s<a|c>        Create AML in assembler or C source file (*.asm or *.c)\n");
-    printf ("    -t<a|c>        Create AML in assembler or C hex table (*.hex)\n");
+    printf ("\nAML Output:\n");
+    printf ("  -s<a|c>        Create AML in assembler or C source file (*.asm or *.c)\n");
+    printf ("  -t<a|c>        Create AML in assembler or C hex table (*.hex)\n");
 
-    printf ("\nCompiler Listing Options:\n");
-    printf ("    -l             Create listing file (mixed ASL source and AML) (*.lst)\n");
-    printf ("    -n             Create namespace file (*.nsp)\n");
-    printf ("    -x             Create combined source file (expanded includes) (*.src)\n");
+    printf ("\nAML Optimization:\n");
+    printf ("  -cf            Disable constant folding\n");
+    printf ("  -ci            Disable integer optimization to Zero/One/Ones\n");
 
-    printf ("\nCompiler Optimization Options:\n");
-    printf ("    -cf            Disable constant folding\n");
-    printf ("    -ci            Disable integer optimization to Zero/One/Ones\n");
+    printf ("\nListings:\n");
+    printf ("  -lm            Create mixed listing file (ASL source and AML) (*.lst)\n");
+    printf ("  -ln            Create namespace file (*.nsp)\n");
+    printf ("  -ls            Create combined source file (expanded includes) (*.src)\n");
 
-    printf ("\nDisassembler Options:\n");
-    printf ("    -d             Disassemble AML file to ASL source code file (*.dsl)\n");
-    printf ("    -g             Disassemble AML (to *.dsl) and compile it\n");
-//    printf ("                   (Obtain AML from current system if no input file)\n");
+    printf ("\nAML Disassembler:\n");
+    printf ("  -da [file]     Disassemble AML to ASL source code file (*.dsl)\n");
+    printf ("  -dc [file]     Disassemble AML (to *.dsl) and compile it\n");
+    printf ("                 (Obtain AML from current system if no input file)\n");
 
-    printf ("\nHelp Options:\n");
-    printf ("    -h             Additional help and compiler debug options\n");
-    printf ("    -qc            Display operators allowed in constant expressions\n");
-    printf ("    -qr            Display ACPI reserved method names\n");
-
+    printf ("\nHelp:\n");
+    printf ("  -h             Additional help and compiler debug options\n");
+    printf ("  -qc            Display operators allowed in constant expressions\n");
+    printf ("  -qr            Display ACPI reserved method names\n");
 }
 
 
@@ -214,12 +218,12 @@ HelpMessage (
     Options ();
 
     printf ("\nCompiler Debug Options:\n");
-    printf ("    -b<p|t|b>        Create compiler debug/trace file (*.txt)\n");
-    printf ("                        Types: Parse/Tree/Both\n");
-    printf ("    -i               Ignore errors, always create AML output file(s)\n");
-    printf ("    -p               Parse only, no output generation\n");
-    printf ("    -ct              Display compile times\n");
-    printf ("    -v <trace level> Set debug level for trace output\n");
+    printf ("  -b<p|t|b>      Create compiler debug/trace file (*.txt)\n");
+    printf ("                   Types: Parse/Tree/Both\n");
+    printf ("  -i             Ignore errors, always create AML output file(s)\n");
+    printf ("  -p             Parse only, no output generation\n");
+    printf ("  -ct            Display compile times\n");
+    printf ("  -x<level>      Set debug level for trace output\n");
 }
 
 
@@ -240,7 +244,7 @@ Usage (
     void)
 {
 
-    printf ("Usage:    %s <Options> <InputFile>\n\n", CompilerName);
+    printf ("Usage:    %s [Options] [InputFile]\n\n", CompilerName);
     Options ();
 }
 
@@ -285,43 +289,36 @@ AslInitialize (void)
 
 /*******************************************************************************
  *
- * FUNCTION:    main
+ * FUNCTION:    AslCommandLine
  *
- * PARAMETERS:  Standard argc/argv
+ * PARAMETERS:  argc/argv
  *
- * RETURN:      Program termination code
+ * RETURN:      None
  *
- * DESCRIPTION: C main routine for the Asl Compiler.  Handle command line
- *              options and begin the compile.
+ * DESCRIPTION: Command line processing
  *
  ******************************************************************************/
 
-int ACPI_SYSTEM_XFACE
-main (
+void
+AslCommandLine (
     int                 argc,
     char                **argv)
 {
-    int                 j;
     BOOLEAN             BadCommandLine = FALSE;
-    int                 Status;
-    BOOLEAN             AslToFile = TRUE;
-    BOOLEAN             DoCompile = TRUE;
+    NATIVE_UINT         j;
 
 
-    AslInitialize ();
-    AslCompilerSignon (ASL_FILE_STDOUT);
-
-    /* Minimum command line contains at least the input file */
+    /* Minimum command line contains at least one option or an input file */
 
     if (argc < 2)
     {
         Usage ();
-        return 0;
+        exit (1);
     }
 
     /* Get the command line options */
 
-    while ((j = getopt (argc, argv, "b:c:defghilmno:pq:rs:t:v:x")) != EOF) switch (j)
+    while ((j = getopt (argc, argv, "b:c:d:hil:o:pq:rs:t:v:x")) != EOF) switch (j)
     {
     case 'b':
 
@@ -348,6 +345,7 @@ main (
 
         Gbl_DebugFlag = TRUE;
         break;
+
 
     case 'c':
 
@@ -381,28 +379,35 @@ main (
         }
         break;
 
+
     case 'd':
 
+        switch (optarg[0])
+        {
+        case 'a':
+            AslCompilerdebug = 1; /* same as yydebug */
+            DoCompile = FALSE;
+            break;
+
+        case 'c':
+            AslCompilerdebug = 1; /* same as yydebug */
+            break;
+
+        default:
+            printf ("Unknown option: -d%s\n", optarg);
+            BadCommandLine = TRUE;
+            break;
+        }
+
         Gbl_DisasmFlag = TRUE;
-        DoCompile = FALSE;
         break;
 
-    case 'e':
-
-        /* Less verbose error messages */
-
-        Gbl_VerboseErrors = FALSE;
-        break;
-
-    case 'g':
-
-        Gbl_DisasmFlag = TRUE;
-        break;
 
     case 'h':
 
         HelpMessage ();
-        return 0;
+        exit (0);
+
 
     case 'i':
 
@@ -411,19 +416,36 @@ main (
         Gbl_IgnoreErrors = TRUE;
         break;
 
+
     case 'l':
 
-        /* Produce listing file (Mixed source/aml) */
+        switch (optarg[0])
+        {
+        case 'm':
+            /* Produce listing file (Mixed source/aml) */
 
-        Gbl_ListingFlag = TRUE;
+            Gbl_ListingFlag = TRUE;
+            break;
+
+        case 'n':
+            /* Produce namespace file */
+
+            Gbl_NsOutputFlag = TRUE;
+            break;
+
+        case 's':
+            /* Produce combined source file */
+
+            Gbl_SourceOutputFlag = TRUE;
+            break;
+
+        default:
+            printf ("Unknown option: -l%s\n", optarg);
+            BadCommandLine = TRUE;
+            break;
+        }
         break;
 
-    case 'n':
-
-        /* Produce namespace file */
-
-        Gbl_NsOutputFlag = TRUE;
-        break;
 
     case 'o':
 
@@ -433,6 +455,7 @@ main (
         Gbl_UseDefaultAmlFilename = FALSE;
         break;
 
+
     case 'p':
 
         /* Parse only */
@@ -440,19 +463,20 @@ main (
         Gbl_ParseOnlyFlag = TRUE;
         break;
 
+
     case 'q':
 
         switch (optarg[0])
         {
         case 'c':
             UtDisplayConstantOpcodes ();
-            return (0);
+            exit (0);
 
         case 'r':
             /* reserved names */
 
             MpDisplayReservedNames ();
-            return (0);
+            exit (0);
 
         default:
             printf ("Unknown option: -q%s\n", optarg);
@@ -461,9 +485,11 @@ main (
         }
         break;
 
+
     case 'r':
         AslToFile = FALSE;
         break;
+
 
     case 's':
 
@@ -490,6 +516,7 @@ main (
         }
         break;
 
+
     case 't':
 
         /* Produce hex table output file */
@@ -511,17 +538,38 @@ main (
         }
         break;
 
+
     case 'v':
+
+        switch (optarg[0])
+        {
+        case 'i':
+            /* Less verbose error messages */
+
+            Gbl_VerboseErrors = FALSE;
+            break;
+
+        case 'r':
+            printf ("-vr not implemented\n");
+            break;
+
+        case 's':
+            DoSignon = FALSE;
+            break;
+
+        default:
+            printf ("Unknown option: -v%s\n", optarg);
+            BadCommandLine = TRUE;
+            break;
+        }
+        break;
+
+
+    case 'x':
 
         AcpiDbgLevel = strtoul (optarg, NULL, 16);
         break;
 
-    case 'x':
-
-        /* Produce combined source file */
-
-        Gbl_SourceOutputFlag = TRUE;
-        break;
 
     default:
 
@@ -532,7 +580,7 @@ main (
     /* Next parameter must be the input filename */
 
     Gbl_Files[ASL_FILE_INPUT].Filename = argv[optind];
-    if (!Gbl_Files[ASL_FILE_INPUT].Filename)
+    if (!Gbl_Files[ASL_FILE_INPUT].Filename && !Gbl_DisasmFlag)
     {
         printf ("Missing input filename\n");
         BadCommandLine = TRUE;
@@ -544,12 +592,45 @@ main (
     {
         printf ("\n");
         Usage ();
-        return 0;
+        exit (1);
     }
 
     if ((optind + 1) < argc)
     {
-        printf ("Warning: extra arguments (%d) after input filename are ignored\n\n", argc - optind - 1);
+        printf ("Warning: extra arguments (%d) after input filename are ignored\n\n",
+            argc - optind - 1);
+    }
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    main
+ *
+ * PARAMETERS:  Standard argc/argv
+ *
+ * RETURN:      Program termination code
+ *
+ * DESCRIPTION: C main routine for the Asl Compiler.  Handle command line
+ *              options and begin the compile.
+ *
+ ******************************************************************************/
+
+int ACPI_SYSTEM_XFACE
+main (
+    int                 argc,
+    char                **argv)
+{
+    ACPI_STATUS         Status;
+
+
+    /* Init and command line */
+
+    AslInitialize ();
+    AslCommandLine (argc, argv);
+    if (DoSignon)
+    {
+        AslCompilerSignon (ASL_FILE_STDOUT);
     }
 
     /*
@@ -561,9 +642,11 @@ main (
         Gbl_OutputFilenamePrefix = Gbl_Files[ASL_FILE_INPUT].Filename;
     }
 
+    /*
+     * AML Disassembly
+     */
     if (Gbl_DisasmFlag)
     {
-
         /* ACPI CA subsystem initialization */
 
         AcpiUtInitGlobals ();
@@ -580,13 +663,39 @@ main (
         }
 
         AcpiGbl_DbOpt_disasm = TRUE;
-        Status = AdAmlDisassemble (AslToFile, Gbl_Files[ASL_FILE_INPUT].Filename);
-        Gbl_Files[ASL_FILE_INPUT].Filename = FlGenerateFilename (Gbl_Files[ASL_FILE_INPUT].Filename, FILE_SUFFIX_DISASSEMBLY);
+        Status = AdAmlDisassemble (AslToFile, Gbl_Files[ASL_FILE_INPUT].Filename, 
+                                             &Gbl_Files[ASL_FILE_INPUT].Filename);
+        if (ACPI_FAILURE (Status))
+        {
+            return -1;
+        }
+
+        Gbl_Files[ASL_FILE_INPUT].Filename = 
+            FlGenerateFilename (Gbl_Files[ASL_FILE_INPUT].Filename, 
+                FILE_SUFFIX_DISASSEMBLY);
+
+        if (DoCompile)
+        {
+            AcpiOsPrintf ("\nCompiling \"%s\"\n", 
+                Gbl_Files[ASL_FILE_INPUT].Filename);
+        }
     }
 
+    /*
+     * ASL Compilation
+     */
     if (DoCompile)
     {
-        /* ACPI CA subsystem initialization */
+        /*
+         * If -o not specified, we will use the input filename as the
+         * output filename prefix
+         */
+        if (Gbl_UseDefaultAmlFilename)
+        {
+            Gbl_OutputFilenamePrefix = Gbl_Files[ASL_FILE_INPUT].Filename;
+        }
+
+        /* ACPI CA subsystem initialization (Must be Re-initialized) */
 
         AcpiUtInitGlobals ();
         Status = AcpiUtMutexInitialize ();
