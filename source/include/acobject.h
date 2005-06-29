@@ -117,7 +117,7 @@
 #ifndef _ACPIOBJ_H
 #define _ACPIOBJ_H
 
-#include <datatypes.h>
+#include <acpitypes.h>
 
 /* 
  * All variants of the ACPI_OBJECT_INTERNAL are defined with the same
@@ -126,7 +126,7 @@
  * may in some circumstances simplify understanding if these structures
  * need to be displayed in a debugger having limited (or no) support for
  * union types.  It also simplifies some debug code in NsDumpTable() which
- * dumps multi-level values: fetching Buffer.Buffer suffices to pick up
+ * dumps multi-level values: fetching Buffer.Pointer suffices to pick up
  * the value or next level for any of several types.
  */
 
@@ -140,272 +140,302 @@
  *   Pointer
  */
 
-typedef union od                    /* OBJECT DESCRIPTOR */
+typedef union AcpiObjInternal           /* ACPI_OBJECT_INTERNAL DESCRIPTOR */
 {
-    UINT8               ValType;        /* See definition of NsType for values */
+    UINT8                   Type;           /* See definition of NsType for values */
 
-    struct
+    struct /* NUMBER - has value */
     {
-        UINT8           ValType;
-        UINT8           Reserved1;
-        UINT16          Reserved2;
-        UINT32          Number;
-        UINT32          Reserved3;
-        void            *Reserved_p1;
-        void            *Reserved_p2;
-        void            *Reserved_p3;
+        UINT8                   Type;
+        UINT8                   Reserved1;
+        UINT16                  Reserved2;
+        UINT32                  Value;
+        UINT32                  Reserved3;
+        void                    *Reserved_p1;
+        void                    *Reserved_p2;
+        void                    *Reserved_p3;
+
     } Number;
 
-    struct
+
+    struct /* STRING - has length and pointer */
     {
-        UINT8           ValType;
-        UINT8           Reserved1;
-        UINT16          StrLen;         /* # of bytes in string, excluding trailing null */
-        UINT32          Reserved2;
-        UINT32          Reserved3;
-        UINT8           *String;        /* points to the string value in the AML stream
-                                         * or in allocated space
-                                         */
-        void            *Reserved_p2;
-        void            *Reserved_p3;
+        UINT8                   Type;
+        UINT8                   Reserved1;
+        UINT16                  Length;         /* # of bytes in string, excluding trailing null */
+        UINT32                  Reserved2;
+        UINT32                  Reserved3;
+        UINT8                   *Pointer;        /* points to the string value in the AML stream
+                                                 * or in allocated space
+                                                 */
+        void                    *Reserved_p2;
+        void                    *Reserved_p3;
+
     } String;
 
-    struct
+
+    struct /* BUFFER - has length, sequence, and pointer */
     {
-        UINT8           ValType;
-        UINT8           Reserved1;
-        UINT16          BufLen;         /* # of bytes in buffer */
-        UINT32          Reserved2;
-        UINT32          Sequence;       /* Sequential count of buffers created */
-        UINT8           *Buffer;        /* points to the buffer in allocated space */
-        void            *Reserved_p2;
-        void            *Reserved_p3;
+        UINT8                   Type;
+        UINT8                   Reserved1;
+        UINT16                  Length;         /* # of bytes in buffer */
+        UINT32                  Reserved2;
+        UINT32                  Sequence;       /* Sequential count of buffers created */
+        UINT8                   *Pointer;       /* points to the buffer in allocated space */
+        void                    *Reserved_p2;
+        void                    *Reserved_p3;
+
     } Buffer;
 
-    struct
+
+    struct /* PACKAGE - has count, elements, next element */
     {
-        UINT8           ValType;
-        UINT8           Reserved1;
-        UINT16          PkgCount;       /* # of elements in package */
-        UINT32          Reserved2;
-        UINT32          Reserved3;
-        union od        **PackageElems; /* Addr of an allocated array of pointers
-                                         * to the OBJECT_DESCRIPTORs representing
-                                         * the elements
-                                         */
-        union od        **NextElement;  /* used only while initializing */
-        void            *Reserved_p3;
+        UINT8                   Type;
+        UINT8                   Reserved1;
+        UINT16                  Count;          /* # of elements in package */
+        UINT32                  Reserved2;
+        UINT32                  Reserved3;
+        union AcpiObjInternal   **Elements;     /* Addr of an allocated array of pointers
+                                                 * to the OBJECT_DESCRIPTORs representing
+                                                 * the elements
+                                                 */
+        union AcpiObjInternal   **NextElement;  /* used only while initializing */
+        void                    *Reserved_p3;
+
     } Package;
 
-    struct
+
+    struct /* FIELD UNIT */
     {
-        /* Using WORD_BIT instead of BYTE_BIT here because the wDatLen field
+        /* Using WORD_BIT instead of BYTE_BIT here because the Length field
          * is larger than a UINT8.  It is possible that some implementations
          * may map this in an unexpected way -- see code and comments in
          * amlexec.c:iPrep*FieldValue() -- but it works properly in IC386
          * and in MS Visual C++
          */
-        UINT16_BIT      ValType     : 8;
-        UINT16_BIT      Access      : 4;
-        UINT16_BIT      LockRule    : 1;
-        UINT16_BIT      UpdateRule  : 2;
-        UINT16_BIT      Reserved1   : 1;
-        UINT16_BIT      DatLen      :13;    /* # of bits in buffer */
-        UINT16_BIT      BitOffset   : 3;
-        UINT32          Offset;             /* Byte offset within containing object */
-        UINT32          ConSeq;             /* Container's sequence number */
-        union od        *Container;         /* Containing object (Buffer) */
-        void            *Reserved_p2;
-        void            *Reserved_p3;
+        UINT16_BIT              Type        : 8;
+        UINT16_BIT              Access      : 4;
+        UINT16_BIT              LockRule    : 1;
+        UINT16_BIT              UpdateRule  : 2;
+        UINT16_BIT              Reserved1   : 1;
+        UINT16_BIT              Length      :13;    /* # of bits in buffer */
+        UINT16_BIT              BitOffset   : 3;
+        UINT32                  Offset;             /* Byte offset within containing object */
+        UINT32                  Sequence;           /* Container's sequence number */
+        union AcpiObjInternal   *Container;         /* Containing object (Buffer) */
+        void                    *Reserved_p2;
+        void                    *Reserved_p3;
+
     } FieldUnit;
 
-    struct
+
+    struct /* DEVICE - has handle and notification handler/context */
     {
-        UINT8           ValType;
-        UINT8           Reserved1;
-        UINT16          Reserved2;
-        UINT32          Reserved3;
-        UINT32          Reserved4;
-        ACPI_HANDLE     Device;
-        NOTIFY_HANDLER  Handler;
-        void            *Context;
+        UINT8                   Type;
+        UINT8                   Reserved1;
+        UINT16                  Reserved2;
+        UINT32                  Reserved3;
+        UINT32                  Reserved4;
+        ACPI_HANDLE             Handle;
+        NOTIFY_HANDLER          Handler;
+        void                    *Context;
+
     } Device;
 
-    struct
+
+    struct /* EVENT */
     {
-        UINT8           ValType;
-        UINT8           Reserved1;
-        UINT16          SignalCount;
-        UINT32          Semaphore;
-        UINT16          LockCount;
-        UINT16          ThreadId;
-        void            *Reserved_p1;
-        void            *Reserved_p2;
-        void            *Reserved_p3;
+        UINT8                   Type;
+        UINT8                   Reserved1;
+        UINT16                  SignalCount;
+        UINT32                  Semaphore;
+        UINT16                  LockCount;
+        UINT16                  ThreadId;
+        void                    *Reserved_p1;
+        void                    *Reserved_p2;
+        void                    *Reserved_p3;
+
     } Event;
 
-    struct
+
+    struct /* METHOD */
     {
-        UINT8           ValType;
-        UINT8           NumParam;
-        UINT16          Length;
-        UINT32          AmlOffset;
-        UINT32          Reserved3;
-        UINT8           *AmlBase;
-        void            *Reserved4;
+        UINT8                   Type;
+        UINT8                   ParamCount;
+        UINT16                  Length;
+        UINT32                  AmlOffset;
+        UINT32                  Reserved3;
+        UINT8                   *AmlBase;
+        void                    *Reserved4;
+
     } Method;
 
-    struct
+
+    struct /* MUTEX */
     {
-        UINT8           ValType;
-        UINT8          SyncLevel;
-        UINT16          Reserved2;
-        UINT32          Semaphore;
-        UINT16          LockCount;
-        UINT16          ThreadId;
-        void            *Reserved_p1;
-        void            *Reserved_p2;
-        void            *Reserved_p3;
+        UINT8                   Type;
+        UINT8                   SyncLevel;
+        UINT16                  Reserved2;
+        UINT32                  Semaphore;
+        UINT16                  LockCount;
+        UINT16                  ThreadId;
+        void                    *Reserved_p1;
+        void                    *Reserved_p2;
+        void                    *Reserved_p3;
+
     } Mutex;
 
-    struct
+
+    struct /* REGION */
     {
-        UINT8           ValType;
-        UINT8           SpaceId;
-        UINT16          AdrLenValid;    /* 1 => Address & Length have been set
-                                         * 0 => Address & Length have not been set,
-                                         *        and should be obtained via AdrLoc
-                                         */
-        UINT32          Address;
-        UINT32          Length;
-        METHOD_INFO     AdrLoc;         /* Loc of 1st (address) OpCode in AML stream */
+        UINT8                   Type;
+        UINT8                   SpaceId;
+        UINT16                  DataValid;      /* 1 => Address & Length have been set
+                                                 * 0 => Address & Length have not been set,
+                                                 *        and should be obtained via AdrLoc
+                                                 */
+        UINT32                  Address;
+        UINT32                  Length;
+        METHOD_INFO             AddressLocation;/* Loc of 1st (address) OpCode in AML stream */
+
     } Region;
 
-    struct
+
+    struct /* POWER RESOURCE - has Handle */
     {
-        UINT8           ValType;
-        UINT8           Reserved1;
-        UINT16          Reserved2;
-        UINT32          Reserved3;
-        UINT32          Reserved4;
-        ACPI_HANDLE     PowerResource;
-        void            *Reserved_p2;
-        void            *Reserved_p3;
+        UINT8                   Type;
+        UINT8                   Reserved1;
+        UINT16                  Reserved2;
+        UINT32                  Reserved3;
+        UINT32                  Reserved4;
+        ACPI_HANDLE             Handle;
+        void                    *Reserved_p2;
+        void                    *Reserved_p3;
+
     } PowerResource;
 
-    struct
+
+    struct /* PROCESSOR - has Handle */
     {
-        UINT8           ValType;
-        UINT8           Reserved1;
-        UINT16          Reserved2;
-        UINT32          Reserved3;
-        UINT32          Reserved4;
-        ACPI_HANDLE     Processor;
-        void            *Reserved_p2;
-        void            *Reserved_p3;
+        UINT8                   Type;
+        UINT8                   Reserved1;
+        UINT16                  Reserved2;
+        UINT32                  Reserved3;
+        UINT32                  Reserved4;
+        ACPI_HANDLE             Handle;
+        void                    *Reserved_p2;
+        void                    *Reserved_p3;
+
     } Processor;
 
-    struct
+
+    struct /* THERMAL ZONE - has Handle and Handler/Context */
     {
-        UINT8           ValType;
-        UINT8           Reserved1;
-        UINT16          Reserved2;
-        UINT32          Reserved3;
-        UINT32          Reserved4;
-        ACPI_HANDLE     ThermalZone;
-        NOTIFY_HANDLER  Handler;
-        void            *Context;
+        UINT8                   Type;
+        UINT8                   Reserved1;
+        UINT16                  Reserved2;
+        UINT32                  Reserved3;
+        UINT32                  Reserved4;
+        ACPI_HANDLE             Handle;
+        NOTIFY_HANDLER          Handler;
+        void                    *Context;
+
     } ThermalZone;
 
-    struct
+
+    struct /* FIELD */
     {
         /* See comments in FieldUnit about use of WORD_BIT */
 
-        UINT16_BIT      ValType     : 8;
-        UINT16_BIT      Access      : 4;
-        UINT16_BIT      LockRule    : 1;
-        UINT16_BIT      UpdateRule  : 2;
-        UINT16_BIT      Reserved1   : 1;
-        UINT16_BIT      DatLen      :13;    /* # of bits in buffer */
-        UINT16_BIT      BitOffset   : 3;
-        UINT32          Offset;             /* Byte offset within containing object */
-        UINT32          Reserved2;
-        union od        *Container;         /* Containing object */
-        void            *Reserved_p2;
-        void            *Reserved_p3;
+        UINT16_BIT              Type        : 8;
+        UINT16_BIT              Access      : 4;
+        UINT16_BIT              LockRule    : 1;
+        UINT16_BIT              UpdateRule  : 2;
+        UINT16_BIT              Reserved1   : 1;
+        UINT16_BIT              Length      :13;    /* # of bits in buffer */
+        UINT16_BIT              BitOffset   : 3;
+        UINT32                  Offset;             /* Byte offset within containing object */
+        UINT32                  Reserved2;
+        union AcpiObjInternal   *Container;         /* Containing object */
+        void                    *Reserved_p2;
+        void                    *Reserved_p3;
+
     } Field;
 
-    struct
-    {
-        /* See comments in sFieldUnit about use of WORD_BIT */
 
-        UINT16_BIT      ValType     : 8;
-        UINT16_BIT      Access      : 4;
-        UINT16_BIT      LockRule    : 1;
-        UINT16_BIT      UpdateRule  : 2;
-        UINT16_BIT      Reserved1   : 1;
-        UINT16_BIT      DatLen      :13;    /* # of bits in buffer */
-        UINT16_BIT      BitOffset   : 3;
-        UINT32          Offset;             /* Byte offset within containing object */
-        UINT32          BankVal;            /* Value to store into pBankSelect */
-        union od        *Container;         /* Containing object */
-        ACPI_HANDLE     BankSelect;         /* Bank select register */
-        void            *Reserved_p3;
-    } BankField;
-
-    struct
+    struct /* BANK FIELD */
     {
         /* See comments in FieldUnit about use of WORD_BIT */
 
-        UINT16_BIT      ValType     : 8;
-        UINT16_BIT      Access      : 4;
-        UINT16_BIT      LockRule    : 1;
-        UINT16_BIT      UpdateRule  : 2;
-        UINT16_BIT      Reserved1   : 1;
-        UINT16_BIT      DatLen      :13;    /* # of bits in buffer */
-        UINT16_BIT      BitOffset   : 3;
-        UINT32          IndexVal;           /* Value to store into Index register */
-        UINT32          Reserved2;          /* No container pointer needed since the index
-                                             * and data register definitions will define
-                                             * how to access the respective registers
-                                             */
-        ACPI_HANDLE     Index;              /* Index register */
-        ACPI_HANDLE     Data;               /* Data register */
-        void            *Reserved_p3;
+        UINT16_BIT              Type        : 8;
+        UINT16_BIT              Access      : 4;
+        UINT16_BIT              LockRule    : 1;
+        UINT16_BIT              UpdateRule  : 2;
+        UINT16_BIT              Reserved1   : 1;
+        UINT16_BIT              Length      :13;    /* # of bits in buffer */
+        UINT16_BIT              BitOffset   : 3;
+        UINT32                  Offset;             /* Byte offset within containing object */
+        UINT32                  Value;              /* Value to store into BankSelect */
+        union AcpiObjInternal   *Container;         /* Containing object */
+        ACPI_HANDLE             BankSelect;         /* Bank select register */
+        void                    *Reserved_p3;
+
+    } BankField;
+
+
+    struct /* INDEX FIELD */
+    {
+        /* See comments in FieldUnit about use of WORD_BIT */
+
+        UINT16_BIT              Type        : 8;
+        UINT16_BIT              Access      : 4;
+        UINT16_BIT              LockRule    : 1;
+        UINT16_BIT              UpdateRule  : 2;
+        UINT16_BIT              Reserved1   : 1;
+        UINT16_BIT              Length      :13;    /* # of bits in buffer */
+        UINT16_BIT              BitOffset   : 3;
+        UINT32                  Value;              /* Value to store into Index register */
+        UINT32                  Reserved2;          /* No container pointer needed since the index
+                                                     * and data register definitions will define
+                                                     * how to access the respective registers
+                                                     */
+        ACPI_HANDLE             Index;              /* Index register */
+        ACPI_HANDLE             Data;               /* Data register */
+        void                    *Reserved_p3;
+
     } IndexField;
 
-    struct
+
+    struct /* Lvalue - Local object type */
     {
-        UINT8           ValType;
-        UINT8           OpCode;             /* Arg#, Local#, IndexOp, NameOp,
-                                             * ZeroOp, OneOp, OnesOp, Debug1 => DebugOp
-                                             */
-        UINT16          Reserved1;
-        UINT32          Reserved2;
-        UINT32          Reserved3;
-        void            *Ref;               /* bOpCode  Use of pvRef field
-                                             * -------  ----------------------------
-                                             * NameOp   ACPI_HANDLE for referenced name
-                                             * IndexOp  ACPI_OBJECT_INTERNAL **
-                                             */
-        void            *Reserved_p2;
-        void            *Reserved_p3;
+        UINT8                   Type;
+        UINT8                   OpCode;             /* Arg#, Local#, IndexOp, NameOp,
+                                                     * ZeroOp, OneOp, OnesOp, Debug1 => DebugOp
+                                                     */
+        UINT16                  Reserved1;
+        UINT32                  Reserved2;
+        UINT32                  Reserved3;
+        void                    *Object;            /* OpCode   Use of Object field
+                                                     * -------  ----------------------------
+                                                     * NameOp   ACPI_HANDLE for referenced name
+                                                     * IndexOp  ACPI_OBJECT_INTERNAL **
+                                                     */
+        void                    *Reserved_p2;
+        void                    *Reserved_p3;
+
     } Lvalue;
 
 } ACPI_OBJECT_INTERNAL;
 
 
-/*
- * This appears to be obsolete!!
- */
-
 /* 
  * The sLvalue case of ACPI_OBJECT_INTERNAL includes a one-byte field which
  * contains an AML opcode identifying the type of lvalue.  Debug1 is used
  * in this field as a stand-in for the (two-byte) AML encoding of DebugOp.
+ * TBD: Obsolete?
  */
 
-#define Debug1 0x31
+#define Debug1          0x31
 
 
 
