@@ -1152,45 +1152,6 @@ AcpiOsMemOut32 (
 
 
 
-/******************************************************************************
- *
- * FUNCTION:    AcpiOsDbgTrap
- *
- * PARAMETERS:  pTrapCause      - pointer to char array that contains description
- *                                of cause of trap.
- *
- * RETURN:      None.
- *
- * DESCRIPTION: Trap. Causes execution to halt after logging message.
- *
- *****************************************************************************/
-
-void
-AcpiOsDbgTrap (char *pTrapCause)
-{
-} // Debug_TRAP
-
-
-/******************************************************************************
- *
- * FUNCTION:    AcpiOsDbgTrap
- *
- * PARAMETERS:  This should not be called directly. Use DEBUG_ASSERT macro.
- *
- * RETURN:      None.
- *
- * DESCRIPTION: Assertion routine.
- *
- *****************************************************************************/
-
-void
-AcpiOsDbgAssert(void *FailedAssertion, void *FileName, UINT32 LineNumber,
-             char *Message)
-{
-
-//    return 0;
-} // Debug_Assert
-
 
 UINT32
 AcpiOsGetThreadId(void)
