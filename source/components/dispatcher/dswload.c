@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dswload - Dispatcher namespace load callbacks
- *              $Revision: 1.55 $
+ *              $Revision: 1.57 $
  *
  *****************************************************************************/
 
@@ -170,7 +170,6 @@ AcpiDsInitCallbacks (
 
     default:
         return (AE_BAD_PARAMETER);
-        break;
     }
 
     return (AE_OK);
@@ -199,7 +198,7 @@ AcpiDsLoad1BeginOp (
     ACPI_PARSE_OBJECT       *Op;
     ACPI_NAMESPACE_NODE     *Node;
     ACPI_STATUS             Status;
-    ACPI_OBJECT_TYPE8       ObjectType;
+    ACPI_OBJECT_TYPE        ObjectType;
     NATIVE_CHAR             *Path;
 
 
@@ -302,7 +301,7 @@ AcpiDsLoad1EndOp (
     ACPI_WALK_STATE         *WalkState)
 {
     ACPI_PARSE_OBJECT       *Op;
-    ACPI_OBJECT_TYPE8       ObjectType;
+    ACPI_OBJECT_TYPE        ObjectType;
 
 
     PROC_NAME ("DsLoad1EndOp");
@@ -388,7 +387,7 @@ AcpiDsLoad2BeginOp (
     ACPI_PARSE_OBJECT       *Op;
     ACPI_NAMESPACE_NODE     *Node;
     ACPI_STATUS             Status;
-    ACPI_OBJECT_TYPE8       ObjectType;
+    ACPI_OBJECT_TYPE        ObjectType;
     NATIVE_CHAR             *BufferPtr;
     void                    *Original = NULL;
 
@@ -559,7 +558,7 @@ AcpiDsLoad2EndOp (
 {
     ACPI_PARSE_OBJECT       *Op;
     ACPI_STATUS             Status = AE_OK;
-    ACPI_OBJECT_TYPE8       ObjectType;
+    ACPI_OBJECT_TYPE        ObjectType;
     ACPI_NAMESPACE_NODE     *Node;
     ACPI_PARSE_OBJECT       *Arg;
     ACPI_NAMESPACE_NODE     *NewNode;
@@ -584,7 +583,7 @@ AcpiDsLoad2EndOp (
         ACPI_DEBUG_PRINT ((ACPI_DB_DISPATCH,
             "Ending scope Op=%p State=%p\n", Op, WalkState));
 
-        if (((ACPI_PARSE2_OBJECT *)Op)->Name == -1)
+        if (((ACPI_PARSE2_OBJECT *)Op)->Name == ACPI_UINT16_MAX)
         {
             ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Unnamed scope! Op=%p State=%p\n",
                 Op, WalkState));
@@ -733,7 +732,6 @@ AcpiDsLoad2EndOp (
 
             Status = AE_OK;
             goto Cleanup;
-            break;
         }
 
         /* Delete operands */
