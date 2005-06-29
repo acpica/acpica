@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: nssearch - Namespace search
- *              $Revision: 1.102 $
+ *              $Revision: 1.103 $
  *
  ******************************************************************************/
 
@@ -315,7 +315,7 @@ AcpiNsSearchParentTree (
          * object type at this point, we only care about the existence of
          * the actual name we are searching for.  Typechecking comes later.
          */
-        Status = AcpiNsSearchNode (TargetName, ParentNode, 
+        Status = AcpiNsSearchNode (TargetName, ParentNode,
                                     ACPI_TYPE_ANY, ReturnNode);
         if (ACPI_SUCCESS (Status))
         {
@@ -433,7 +433,7 @@ AcpiNsSearchAndEnter (
         (Flags & ACPI_NS_SEARCH_PARENT))
     {
         /*
-         * Not found at this level - search parent tree according to the 
+         * Not found at this level - search parent tree according to the
          * ACPI specification
          */
         Status = AcpiNsSearchParentTree (TargetName, Node, Type, ReturnNode);
