@@ -1,7 +1,7 @@
 
 /******************************************************************************
  * 
- * Module Name: dvregs - Read/write access functions for the various ACPI
+ * Module Name: hwregs - Read/write access functions for the various ACPI
  *                       control and status registers.
  *
  *****************************************************************************/
@@ -96,18 +96,18 @@
  *****************************************************************************/
 
 
-#define __DVREGS_C__
+#define __HWREGS_C__
 
 #include <acpi.h>
-#include <devices.h>
+#include <hardware.h>
 #include <stdarg.h>
 
 
-#define _THIS_MODULE        "dvregs.c"
+#define _THIS_MODULE        "hwregs.c"
 #define _COMPONENT          DEVICE_MANAGER
 
 
-/* Is this needed? #pragma check_stack (off) */
+/* TBD: Is this needed? #pragma check_stack (off) */
 
 
 /******************************************************************************
