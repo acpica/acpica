@@ -136,8 +136,8 @@ ACPI_STATUS
 AcpiEvaluateObject (
     ACPI_HANDLE             Handle, 
     char                    *Pathname, 
-    ACPI_OBJECT             **Params,
-    ACPI_OBJECT             *ReturnObject)
+    ACPI_OBJECT_INTERNAL    **Params,
+    ACPI_OBJECT_INTERNAL    *ReturnObject)
 {
     ACPI_STATUS             Status;
     NAME_TABLE_ENTRY        *ObjEntry;
