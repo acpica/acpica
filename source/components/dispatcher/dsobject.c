@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dsobject - Dispatcher object management routines
- *              $Revision: 1.100 $
+ *              $Revision: 1.101 $
  *
  *****************************************************************************/
 
@@ -429,7 +429,7 @@ AcpiDsInitObjectFromOp (
 
         case AML_TYPE_CONSTANT:
 
-            /* Resolve constants here */
+            /* Resolve AML Constants here - AND ONLY HERE! */
 
             switch (Opcode)
             {
@@ -469,6 +469,12 @@ AcpiDsInitObjectFromOp (
                 break;
             }
 
+            /*
+             * All constants are integers.
+             * We mark the integer with a flag that indicates that it started life
+             * as a constant -- so that stores to constants will perform as expected (noop).
+             * (ZeroOp is used as a placeholder for optional target operands.)
+             */
             ObjDesc->Common.Type  = ACPI_TYPE_INTEGER;
             ObjDesc->Common.Flags = AOPOBJ_AML_CONSTANT;
 
