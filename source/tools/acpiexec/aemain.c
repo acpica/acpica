@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: aemain - Main routine for the AcpiExec utility
- *              $Revision: 1.37 $
+ *              $Revision: 1.39 $
  *
  *****************************************************************************/
 
@@ -132,6 +132,80 @@
 #define _COMPONENT          PARSER
         MODULE_NAME         ("aemain")
 
+/*
+ * TBD: Debug only, remove!
+ */
+#ifdef _IA32
+void
+AcpiCompare (
+    UINT64_OVERLAY          Dividend,
+    UINT64_OVERLAY          Divisor,
+    UINT64_OVERLAY          LibDiv,
+    UINT64_OVERLAY          Div,
+    UINT64_OVERLAY          LibMod,
+    UINT64_OVERLAY          Mod)
+{
+
+    if (LibDiv.Full != Div.Full)
+    {
+        AcpiOsPrintf ("Mismatch-DIV: n=%8.8X%8.8X d=%8.8X%8.8X, lr=%8.8X%8.8X ar=%8.8X%8.8X\n",
+                Dividend.Part.Hi,       Dividend.Part.Lo,
+                Divisor.Part.Hi,        Divisor.Part.Lo,
+                LibDiv.Part.Hi,         LibDiv.Part.Lo,
+                Div.Part.Hi,            Div.Part.Lo);
+    }
+
+    if (LibMod.Full != Mod.Full)
+    {
+        AcpiOsPrintf ("Mismatch-MOD: n=%8.8X%8.8X d=%8.8X%8.8X, lr=%8.8X%8.8X ar=%8.8X%8.8X\n",
+                Dividend.Part.Hi,       Dividend.Part.Lo,
+                Divisor.Part.Hi,        Divisor.Part.Lo,
+                LibMod.Part.Hi,         LibMod.Part.Lo,
+                Mod.Part.Hi,            Mod.Part.Lo);
+    }
+}
+
+    /* Check answer against the library (DEBUG ONLY) */
+/*
+    CompareDiv.Full = Dividend.Full / Divisor.Full;
+    CompareMod.Full = Dividend.Full % Divisor.Full;
+    AcpiCompare (Dividend, Divisor, CompareDiv, Quotient, CompareMod, Remainder);
+*/
+void
+AeDoDivideCheck (void)
+{
+    UINT32                  i;
+    UINT64_OVERLAY          CompareDiv;
+    UINT64_OVERLAY          CompareMod;
+    UINT64_OVERLAY          Dividend;
+    UINT64_OVERLAY          Divisor;
+    UINT64_OVERLAY          Quotient;
+    UINT64_OVERLAY          Remainder;
+
+
+    for (i = 1; i < 0xFFFFFF; i++)
+    {
+        Dividend.Part.Hi = rand ();
+        Dividend.Part.Lo = rand ();
+        Divisor.Part.Hi  = rand ();
+        Divisor.Part.Lo  = rand ();
+
+        CompareDiv.Full = Dividend.Full / Divisor.Full;
+        CompareMod.Full = Dividend.Full % Divisor.Full;
+
+        AcpiUtDivide (&Dividend.Full, &Divisor.Full, &Quotient.Full, &Remainder.Full);
+
+        AcpiCompare (Dividend, Divisor, CompareDiv, Quotient, CompareMod, Remainder);
+    }
+
+}
+#else
+void
+AeDoDivideCheck (void)  
+{
+}
+#endif
+
 
 /*
  * We need a local FADT so that the hardware subcomponent will function,
@@ -204,10 +278,11 @@ main (
 
     /* Init globals */
 
-    AcpiGbl_DbBuffer = malloc (BUFFER_SIZE);
     AcpiDbgLevel = NORMAL_DEFAULT | ACPI_LV_TABLES;
     AcpiDbgLayer = 0xFFFFFFFF;
 
+
+    AeDoDivideCheck ();
 
     printf ("ACPI AML Execution/Debug Utility ");
 
