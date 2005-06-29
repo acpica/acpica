@@ -150,18 +150,6 @@ typedef struct acpi_signal_fatal_info
 } ACPI_SIGNAL_FATAL_INFO;
 
 
-/*
- * Types specific to the OS service interfaces
- */
-
-typedef UINT32
-(ACPI_SYSTEM_XFACE *OSD_HANDLER) (
-    void                    *Context);
-
-typedef void
-(ACPI_SYSTEM_XFACE *OSD_EXECUTION_CALLBACK) (
-    void                    *Context);
-
 
 /*
  * OSL Initialization and shutdown primitives

@@ -430,6 +430,19 @@ AcpiGetGpeStatus (
     UINT32                  Flags,
     ACPI_EVENT_STATUS       *EventStatus);
 
+ACPI_STATUS
+AcpiInstallGpeBlock (
+    ACPI_HANDLE             GpeDevice,
+    ACPI_GENERIC_ADDRESS    *GpeBlockAddress,
+    UINT32                  RegisterCount,
+    UINT32                  InterruptLevel);
+
+ACPI_STATUS
+AcpiRemoveGpeBlock (
+    ACPI_HANDLE             GpeDevice);
+
+
+
 /*
  * Resource interfaces
  */
