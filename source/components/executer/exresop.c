@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exresop - AML Interpreter operand/object resolution
- *              $Revision: 1.68 $
+ *              $Revision: 1.69 $
  *
  *****************************************************************************/
 
@@ -493,8 +493,7 @@ AcpiExResolveOperands (
              * But we can implicitly convert from a STRING or BUFFER
              * Aka - "Implicit Source Operand Conversion"
              */
-            Status = AcpiExConvertToInteger (ObjDesc, StackPtr,
-                        WalkState->Opcode);
+            Status = AcpiExConvertToInteger (ObjDesc, StackPtr, 16);
             if (ACPI_FAILURE (Status))
             {
                 if (Status == AE_TYPE)
@@ -518,8 +517,7 @@ AcpiExResolveOperands (
              * But we can implicitly convert from a STRING or INTEGER
              * Aka - "Implicit Source Operand Conversion"
              */
-            Status = AcpiExConvertToBuffer (ObjDesc, StackPtr,
-                        WalkState->Opcode);
+            Status = AcpiExConvertToBuffer (ObjDesc, StackPtr);
             if (ACPI_FAILURE (Status))
             {
                 if (Status == AE_TYPE)
@@ -544,7 +542,7 @@ AcpiExResolveOperands (
              * Aka - "Implicit Source Operand Conversion"
              */
             Status = AcpiExConvertToString (ObjDesc, StackPtr,
-                        ACPI_IMPLICIT_CONVERT_HEX, WalkState->Opcode);
+                        ACPI_IMPLICIT_CONVERT_HEX);
             if (ACPI_FAILURE (Status))
             {
                 if (Status == AE_TYPE)
@@ -600,8 +598,7 @@ AcpiExResolveOperands (
 
                 /* Highest priority conversion is to type Buffer */
 
-                Status = AcpiExConvertToBuffer (ObjDesc, StackPtr,
-                            WalkState->Opcode);
+                Status = AcpiExConvertToBuffer (ObjDesc, StackPtr);
                 if (ACPI_FAILURE (Status))
                 {
                     return_ACPI_STATUS (Status);
