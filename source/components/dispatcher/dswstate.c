@@ -125,6 +125,122 @@
         MODULE_NAME         ("pswstate");
 
 
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    
+ *
+ * PARAMETERS:  WalkState       - State to push
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: 
+ *
+ ******************************************************************************/
+
+ACPI_STATUS
+PsxResultStackClear (
+    ACPI_WALK_STATE         *WalkState)
+{
+
+    WalkState->NumResults = 0;
+    WalkState->CurrentResult = 0;
+
+    return AE_OK;
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    
+ *
+ * PARAMETERS:  WalkState       - State to push
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: 
+ *
+ ******************************************************************************/
+
+ACPI_STATUS
+PsxResultStackPush (
+    void                    *Object,
+    ACPI_WALK_STATE         *WalkState)
+{
+
+
+    if (WalkState->NumResults >= OBJ_NUM_OPERANDS)
+    {
+        DEBUG_PRINT (ACPI_ERROR, ("PsxResultStackPush: overflow! Obj=%X State=%X Num=%X\n", 
+                        Object, WalkState, WalkState->NumResults));
+        return AE_STACK_OVERFLOW;
+    }
+
+    WalkState->Results [WalkState->NumResults] = Object;
+    WalkState->NumResults++;
+
+    DEBUG_PRINT (TRACE_EXEC, ("PsxResultStackPush: Obj=%X State=%X Num=%X\n", 
+                    Object, WalkState, WalkState->NumResults));
+
+    return AE_OK;
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    
+ *
+ * PARAMETERS:  WalkState       - State to push
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: 
+ *
+ ******************************************************************************/
+
+ACPI_STATUS
+PsxResultStackPop (
+    ACPI_OBJECT_INTERNAL    **Object,
+    ACPI_WALK_STATE         *WalkState)
+{
+
+
+    if ((WalkState->NumResults == 0) ||
+        (WalkState->CurrentResult >= WalkState->NumResults))
+    {
+        DEBUG_PRINT (ACPI_ERROR, ("PsxResultStackPop: Underflow! State=%X Cur=%X Num=%X\n", 
+                        WalkState, WalkState->CurrentResult, WalkState->NumResults));
+        return AE_STACK_UNDERFLOW;
+    }
+
+    *Object = WalkState->Results [WalkState->CurrentResult];
+    WalkState->Results [WalkState->CurrentResult] = NULL;
+    WalkState->CurrentResult++;
+
+    if (WalkState->CurrentResult == WalkState->NumResults)
+    {
+        WalkState->CurrentResult = 0;
+        WalkState->NumResults = 0;
+
+        DEBUG_PRINT (TRACE_EXEC, ("PsxResultStackPop: Stack is now empty.  State=%X Next=%X\n", 
+                        WalkState, WalkState->CurrentResult));
+    }
+
+    DEBUG_PRINT (TRACE_EXEC, ("PsxResultStackPop: State=%X Next=%X\n", 
+                    WalkState, WalkState->CurrentResult));
+
+    return AE_OK;
+}
+
+    
+
+
+
+
+
+
+
 /*******************************************************************************
  *
  * FUNCTION:    
@@ -191,6 +307,8 @@ PsxObjStackPush (
 
     DEBUG_PRINT (TRACE_EXEC, ("PsxObjStackPush: Obj=%X State=%X #Ops=%X\n", 
                     Object, WalkState, WalkState->NumOperands));
+
+    return AE_OK;
 }
 
 
@@ -229,6 +347,8 @@ PsxObjStackPop (
 
     DEBUG_PRINT (TRACE_EXEC, ("PsxObjStackPop: Count=%X State=%X #Ops=%X\n", 
                     PopCount, WalkState, WalkState->NumOperands));
+
+    return AE_OK;
 }
 
     
