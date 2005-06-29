@@ -856,9 +856,8 @@ typedef struct
 {
     UINT32          Address;
     UINT32          Pin;
-    UINT32          SourceIndex;
     UINT8           * Source;
-    
+    UINT32          SourceIndex;
 } PRT_ENTRY;
 
 #define PRT_ENTRY_LENGTH    16
