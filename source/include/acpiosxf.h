@@ -203,7 +203,7 @@ AcpiOsFree (
 
 ACPI_STATUS
 AcpiOsMapMemory (
-    void                    *PhysicalAddress,
+    UINT64                  PhysicalAddress,
     UINT32                  Length,
     void                    **LogicalAddress);
 
