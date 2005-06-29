@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dsutils - Dispatcher utilities
- *              $Revision: 1.103 $
+ *              $Revision: 1.104 $
  *
  ******************************************************************************/
 
@@ -175,6 +175,8 @@ AcpiDsIsResultUsed (
          * optional support for a so-called "implicit return". Some AML code 
          * assumes that the last value of the method is "implicitly" returned
          * to the caller. Just save the last result as the return value.
+         * NOTE: this is optional because the ASL language does not actually
+         * support this behavior.
          */
         if ((AcpiGbl_EnableInterpeterSlack) &&
             (WalkState->ParserState.Aml >= WalkState->ParserState.AmlEnd))
@@ -304,9 +306,9 @@ ResultNotUsed:
  *
  * FUNCTION:    AcpiDsDeleteResultIfNotUsed
  *
- * PARAMETERS:  Op
- *              ResultObj
- *              WalkState
+ * PARAMETERS:  Op              - Current parse Op
+ *              ResultObj       - Result of the operation
+ *              WalkState       - Current state
  *
  * RETURN:      Status
  *
@@ -445,8 +447,9 @@ AcpiDsClearOperands (
  *
  * FUNCTION:    AcpiDsCreateOperand
  *
- * PARAMETERS:  WalkState
- *              Arg
+ * PARAMETERS:  WalkState       - Current walk state
+ *              Arg             - Parse object for the argument
+ *              ArgIndex        - Which argument (zero based)
  *
  * RETURN:      Status
  *
