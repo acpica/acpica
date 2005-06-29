@@ -2,7 +2,7 @@
  *
  * Module Name: nsobject - Utilities for objects attached to namespace
  *                         table entries
- *              $Revision: 1.59 $
+ *              $Revision: 1.61 $
  *
  ******************************************************************************/
 
@@ -201,7 +201,7 @@ AcpiNsAttachObject (
 
     if (Node->Object == Object)
     {
-        DEBUG_PRINTP (TRACE_EXEC, ("Obj %p already installed in NameObj %p\n",
+        ACPI_DEBUG_PRINT ((ACPI_DB_EXEC, "Obj %p already installed in NameObj %p\n",
             Object, Node));
 
         return_ACPI_STATUS (AE_OK);
@@ -341,8 +341,8 @@ AcpiNsAttachObject (
 
             default:
 
-                DEBUG_PRINTP (ACPI_ERROR,
-                    ("AML Opcode/Type [%x] not supported in attach\n",
+                ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
+                    "AML Opcode/Type [%x] not supported in attach\n",
                     (UINT8) Opcode));
 
                 return_ACPI_STATUS (AE_TYPE);
@@ -356,26 +356,26 @@ AcpiNsAttachObject (
              * Cannot figure out the type -- set to DefAny which
              * will print as an error in the name table dump
              */
-            if (GetDebugLevel () > 0)
+            if (AcpiDbgLevel > 0)
             {
                 DUMP_PATHNAME (Node,
                     "NsAttachObject confused: setting bogus type for  ",
-                    ACPI_INFO, _COMPONENT);
+                    ACPI_LV_INFO, _COMPONENT);
 
                 if (AcpiTbSystemTablePointer (Object))
                 {
-                    DEBUG_PRINTP (ACPI_INFO,
-                        ("AML-stream code %02x\n", *(UINT8 *) Object));
+                    ACPI_DEBUG_PRINT ((ACPI_DB_INFO,
+                        "AML-stream code %02x\n", *(UINT8 *) Object));
                 }
 
                 else if (VALID_DESCRIPTOR_TYPE (Object, ACPI_DESC_TYPE_NAMED))
                 {
-                    DUMP_PATHNAME (Object, "name ", ACPI_INFO, _COMPONENT);
+                    DUMP_PATHNAME (Object, "name ", ACPI_LV_INFO, _COMPONENT);
                 }
 
                 else
                 {
-                    DUMP_PATHNAME (Object, "object ", ACPI_INFO, _COMPONENT);
+                    DUMP_PATHNAME (Object, "object ", ACPI_LV_INFO, _COMPONENT);
                     DUMP_STACK_ENTRY (Object);
                 }
             }
@@ -385,7 +385,7 @@ AcpiNsAttachObject (
     }
 
 
-    DEBUG_PRINTP (TRACE_EXEC, ("Installing %p into Node %p [%4.4s]\n",
+    ACPI_DEBUG_PRINT ((ACPI_DB_EXEC, "Installing %p into Node %p [%4.4s]\n",
         ObjDesc, Node, &Node->Name));
 
 
@@ -459,7 +459,7 @@ AcpiNsDetachObject (
 
     /* Found a valid value */
 
-    DEBUG_PRINTP (ACPI_INFO, ("Object=%p Value=%p Name %4.4s\n",
+    ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "Object=%p Value=%p Name %4.4s\n",
         Node, ObjDesc, &Node->Name));
 
     /*
@@ -499,7 +499,7 @@ AcpiNsGetAttachedObject (
     {
         /* handle invalid */
 
-        DEBUG_PRINTP (ACPI_WARN, ("Null Node ptr\n"));
+        ACPI_DEBUG_PRINT ((ACPI_DB_WARN, "Null Node ptr\n"));
         return_PTR (NULL);
     }
 
