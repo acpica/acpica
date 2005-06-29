@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: ammonad - ACPI AML (p-code) execution for monadic operators
- *              $Revision: 1.95 $
+ *              $Revision: 1.97 $
  *
  *****************************************************************************/
 
@@ -417,7 +417,7 @@ AcpiAmlExecMonadic2R (
 
         /*
          * Acpi specification describes Integer type as a little
-         * endian unsigned value, so this boundry condition is valid.
+         * endian unsigned value, so this boundary condition is valid.
          */
         for (ResVal = 0; RetDesc->Integer.Value && ResVal < ACPI_INTEGER_BIT_SIZE; ++ResVal)
         {
@@ -436,7 +436,7 @@ AcpiAmlExecMonadic2R (
 
         /*
          * Acpi specification describes Integer type as a little
-         * endian unsigned value, so this boundry condition is valid.
+         * endian unsigned value, so this boundary condition is valid.
          */
         for (ResVal = 0; RetDesc->Integer.Value && ResVal < ACPI_INTEGER_BIT_SIZE; ++ResVal)
         {
@@ -901,6 +901,18 @@ AcpiAmlExecMonadic2 (
              * It's not a Reference, so it must be a direct name pointer.
              */
             Type = AcpiNsGetType ((ACPI_NAMESPACE_NODE *) ObjDesc);
+
+            /* Convert internal types to external types */
+
+            switch (Type)
+            {
+            case INTERNAL_TYPE_REGION_FIELD:
+            case INTERNAL_TYPE_BANK_FIELD:
+            case INTERNAL_TYPE_INDEX_FIELD:
+
+                Type = ACPI_TYPE_FIELD_UNIT;
+            }
+
         }
 
         /* Allocate a descriptor to hold the type. */
