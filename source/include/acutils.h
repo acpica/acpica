@@ -121,9 +121,9 @@
 #include "acpiosd.h"
 
 
-#define REF_INCREMENT       1
-#define REF_DECREMENT       -1
-#define REF_FORCE_DELETE    0x80000000
+#define REF_INCREMENT       (UINT16) 0
+#define REF_DECREMENT       (UINT16) 1
+#define REF_FORCE_DELETE    (UINT16) 2
 
 /* CmDumpBuffer */
 
@@ -142,6 +142,41 @@ CmInitGlobals (
 void
 CmTerminate (
     void);
+
+
+
+
+void
+CmPushGenericState (
+    ACPI_GENERIC_STATE      **ListHead,
+    ACPI_GENERIC_STATE      *State);
+
+ACPI_GENERIC_STATE *
+CmPopGenericState (
+    ACPI_GENERIC_STATE      **ListHead);
+
+
+ACPI_GENERIC_STATE *
+CmCreateUpdateState (
+    ACPI_OBJECT_INTERNAL    *Object,
+    UINT16                  Action);
+
+ACPI_GENERIC_STATE *
+CmCreateControlState (
+    void);
+
+
+void
+CmDeleteGenericState (
+    ACPI_GENERIC_STATE      *State);
+
+
+void
+CmDeleteGenericStateCache (
+    void);
+
+
+
 
 /*
  * CmInit - miscellaneous initialization and shutdown
@@ -243,7 +278,7 @@ CmGetObjectSize(
 ACPI_STATUS
 CmUpdateObjectReference (
     ACPI_OBJECT_INTERNAL    *Object,
-    INT32                   Action);
+    UINT16                  Action);
 
 ACPI_OBJECT_INTERNAL *
 _CmCreateInternalObject (
@@ -278,10 +313,6 @@ CmDeleteInternalObjectList (
 void
 CmDeleteInternalObjDispatch (
     ACPI_OBJECT_INTERNAL    *Object);
-
-void
-CmDeleteOperand (
-    ACPI_OBJECT_INTERNAL    **Operand);
 
 
 /*
