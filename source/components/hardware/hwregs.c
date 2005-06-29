@@ -323,14 +323,15 @@ HwObtainSleepTypeRegisterData (
 
 UINT32
 HwRegisterIO (
-    INT32                   ReadWrite, 
+    INT32                   ReadWrite,
+    UINT32                  UseLock,
     INT32                   RegisterId, 
     ...)
 {
     UINT32                  RegisterValue = 0;
     UINT32                  Mask = 0;
     UINT32                  Value = 0;
-    UINT32                  GpeReg = 0;
+    ACPI_IO_ADDRESS         GpeReg = 0;
 
 
     FUNCTION_TRACE ("HwRegisterIO");
@@ -356,7 +357,10 @@ HwRegisterIO (
 
         if (RegisterId < (INT32) TMR_EN)
         {   
-            CmAcquireMutex (MTX_HARDWARE);
+            if(MTX_LOCK == UseLock)
+            {
+                CmAcquireMutex (MTX_HARDWARE);
+            }
 
             /* status register */
             
@@ -433,14 +437,21 @@ HwRegisterIO (
                 }
             }
 
-            CmReleaseMutex (MTX_HARDWARE);
+            if(MTX_LOCK == UseLock)
+            {
+                CmReleaseMutex (MTX_HARDWARE);
+            }
         }
         
         else
         {   
             /* enable register */
             
-            CmAcquireMutex (MTX_HARDWARE);
+            if(MTX_LOCK == UseLock)
+            {
+                CmAcquireMutex (MTX_HARDWARE);
+            }
+
             RegisterValue = (UINT32) OsdIn16 ((Gbl_FACP->Pm1aEvtBlk + Gbl_FACP->Pm1EvtLen / 2));
 
             DEBUG_PRINT (TRACE_IO, ("PM1a enable: Read 0x%X from 0x%X\n", 
@@ -500,7 +511,10 @@ HwRegisterIO (
                                 (UINT16) RegisterValue);
                 }
             }
-            CmReleaseMutex (MTX_HARDWARE);
+            if(MTX_LOCK == UseLock)
+            {
+                CmReleaseMutex (MTX_HARDWARE);
+            }
         }
         break;
     
@@ -509,7 +523,11 @@ HwRegisterIO (
 
         RegisterValue = 0;
         
-        CmAcquireMutex (MTX_HARDWARE);
+        if(MTX_LOCK == UseLock)
+        {
+            CmAcquireMutex (MTX_HARDWARE);
+        }
+
         if (RegisterId != (INT32) SLP_TYPb)   
         {
             /* 
@@ -599,13 +617,19 @@ HwRegisterIO (
             }
         }
 
-        CmReleaseMutex (MTX_HARDWARE);
+        if(MTX_LOCK == UseLock)
+        {
+            CmReleaseMutex (MTX_HARDWARE);
+        }
         break;
     
 
     case PM2_CONTROL:
 
-        CmAcquireMutex (MTX_HARDWARE);
+        if(MTX_LOCK == UseLock)
+        {
+            CmAcquireMutex (MTX_HARDWARE);
+        }
         RegisterValue = (UINT32) OsdIn16 (Gbl_FACP->Pm2CntBlk);
         DEBUG_PRINT (TRACE_IO, ("PM2 control: Read 0x%X from 0x%X\n", 
                         RegisterValue, Gbl_FACP->Pm2CntBlk));
@@ -633,7 +657,10 @@ HwRegisterIO (
             OsdOut16 (Gbl_FACP->Pm2CntBlk, (UINT16) RegisterValue);
         }
 
-        CmReleaseMutex (MTX_HARDWARE);
+        if(MTX_LOCK == UseLock)
+        {
+            CmReleaseMutex (MTX_HARDWARE);
+        }
         break;
     
 
@@ -649,15 +676,15 @@ HwRegisterIO (
 
     case GPE1_EN_BLOCK:
 
-        GpeReg = (Gbl_FACP->Gpe1Blk + (UINT32) Gbl_FACP->Gpe1Base) + (GpeReg + 
-                    ((UINT32) ((Gbl_FACP->Gpe1BlkLen) / 2)));
+        GpeReg = (Gbl_FACP->Gpe1Blk + Gbl_FACP->Gpe1Base) + (GpeReg + 
+                    ((Gbl_FACP->Gpe1BlkLen) / 2));
     
 
     case GPE1_STS_BLOCK:
 
         if (!GpeReg)
         {
-            GpeReg = (Gbl_FACP->Gpe1Blk + (UINT32) Gbl_FACP->Gpe1Base);
+            GpeReg = (Gbl_FACP->Gpe1Blk + Gbl_FACP->Gpe1Base);
         }
 
 
@@ -665,7 +692,7 @@ HwRegisterIO (
 
         if (!GpeReg)
         {
-            GpeReg = Gbl_FACP->Gpe0Blk + ((UINT32) ((Gbl_FACP->Gpe0BlkLen) / 2));
+            GpeReg = Gbl_FACP->Gpe0Blk + (Gbl_FACP->Gpe0BlkLen / 2);
         }
     
 
@@ -699,7 +726,11 @@ HwRegisterIO (
         
         /* Now get the current Enable Bits in the selected Reg */
         
-        CmAcquireMutex (MTX_HARDWARE);
+        if(MTX_LOCK == UseLock)
+        {
+            CmAcquireMutex (MTX_HARDWARE);
+        }
+
         RegisterValue = (UINT32) OsdIn8 (GpeReg);
         DEBUG_PRINT (TRACE_IO, ("GPE Enable bits: Read 0x%X from 0x%X\n", RegisterValue, GpeReg));
         
@@ -719,7 +750,11 @@ HwRegisterIO (
             OsdOut8 (GpeReg, (UINT8) RegisterValue);
             RegisterValue = (UINT32) OsdIn8 (GpeReg);          
         }
-        CmReleaseMutex (MTX_HARDWARE);
+        
+        if(MTX_LOCK == UseLock)
+        {
+            CmReleaseMutex (MTX_HARDWARE);
+        }
         break;
     
 
