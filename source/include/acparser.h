@@ -330,14 +330,7 @@ PsxLoadEndOp (
 
 ACPI_STATUS
 PsxParseMethod (
-    ACPI_HANDLE             ObjHandle, 
-    UINT32                  Level, 
-    void                    *Context,
-    void                    **ReturnValue);
-
-ACPI_STATUS
-PsxParseAllMethods (
-    void);
+    ACPI_HANDLE             ObjHandle);
 
 ACPI_STATUS
 PsxCallControlMethod (
@@ -372,7 +365,11 @@ PsxEvalRegionOperands (
     ACPI_WALK_STATE         *WalkState,
     ACPI_GENERIC_OP         *Op);
 
+ACPI_STATUS
+PsxInitializeRegion (
+    ACPI_HANDLE             ObjHandle);
 
+    
 /* psxutils - Parser/Interpreter interface utility routines */
 
 
