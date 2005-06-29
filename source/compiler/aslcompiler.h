@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslcompiler.h - common include file
- *              $Revision: 1.13 $
+ *              $Revision: 1.19 $
  *
  *****************************************************************************/
 
@@ -133,11 +133,11 @@
 
 #include "acpi.h"
 
+#define CompilerVersion                         "X204"
 
 #define CompilerId                              "ACPI Component Architecture ASL Compiler"
 #define CompilerName                            "iasl"
 #define CompilerCreatorId                       "IASL"
-#define Version                                 "X203"
 #define CompilerCreatorRevision                 0x00020203
 
 
@@ -188,6 +188,7 @@ typedef struct asl_analysis_walk_info
 #define AML_RAW_DATA_DWORD          (UINT16) 0xAA04
 #define AML_RAW_DATA_QWORD          (UINT16) 0xAA08
 #define AML_RAW_DATA_BUFFER         (UINT16) 0xAA0B
+#define AML_RAW_DATA_CHAIN          (UINT16) 0xAA0C
 
 #define AML_PACKAGE_LENGTH          (UINT16) 0xAA10
 
@@ -199,6 +200,8 @@ typedef struct asl_analysis_walk_info
 #define NODE_IS_TARGET              0x04
 #define NODE_IS_RESOURCE_DESC       0x08
 #define NODE_IS_RESOURCE_FIELD      0x10
+#define NODE_HAS_NO_EXIT            0x20
+#define NODE_IF_HAS_NO_EXIT         0x40
 
 #define ASL_WALK_VISIT_DOWNWARD     0x01
 #define ASL_WALK_VISIT_UPWARD       0x02
@@ -241,6 +244,7 @@ typedef struct asl_parse_node
     char                    *ExternalName;
     char                    *Namepath;
     UINT32                  LineNumber;
+    UINT32                  LogicalLineNumber;
     UINT16                  AmlOpcode;
     UINT16                  ParseOpcode;
     UINT32                  AmlLength;
@@ -291,30 +295,45 @@ extern ASL_MAPPING_ENTRY        AslKeywordMapping[];
 extern int                      yydebug;
 
 
+extern char                     hex[];
+
+#define ASL_LINE_BUFFER_SIZE    1024
 
 /* Source code buffers and pointers for error reporting */
 
 EXTERN int                      INIT_GLOBAL (Gbl_CurrentColumn, 0);
 EXTERN int                      INIT_GLOBAL (Gbl_CurrentLineNumber, 1);
-EXTERN char                     Gbl_CurrentLineBuffer[256];
+EXTERN int                      INIT_GLOBAL (Gbl_LogicalLineNumber, 1);
+EXTERN char                     Gbl_CurrentLineBuffer[ASL_LINE_BUFFER_SIZE];
 EXTERN char                     INIT_GLOBAL (*Gbl_LineBufPtr, Gbl_CurrentLineBuffer);
 
 /* Option flags */
 
+EXTERN BOOLEAN                  INIT_GLOBAL (Gbl_UseDefaultAmlFilename, TRUE);
+EXTERN BOOLEAN                  INIT_GLOBAL (Gbl_NsOutputFlag, FALSE);
 EXTERN BOOLEAN                  INIT_GLOBAL (Gbl_DebugFlag, FALSE);
+EXTERN BOOLEAN                  INIT_GLOBAL (Gbl_HexOutputFlag, FALSE);
 EXTERN BOOLEAN                  INIT_GLOBAL (Gbl_ListingFlag, FALSE);
 EXTERN BOOLEAN                  INIT_GLOBAL (Gbl_IgnoreErrors, FALSE);
+EXTERN BOOLEAN                  INIT_GLOBAL (Gbl_SourceOutputFlag, FALSE);
 
 /* Files */
 
+EXTERN char                     INIT_GLOBAL (*Gbl_NsFilename, NULL);
 EXTERN char                     INIT_GLOBAL (*Gbl_InputFilename, NULL);
+EXTERN char                     INIT_GLOBAL (*Gbl_IncludeFilename, NULL);
+EXTERN char                     INIT_GLOBAL (*Gbl_SourceOutputFilename, NULL);
 EXTERN char                     INIT_GLOBAL (*Gbl_OutputFilename, NULL);
 EXTERN char                     INIT_GLOBAL (*Gbl_ListingFilename, NULL);
 EXTERN char                     INIT_GLOBAL (*Gbl_DebugFilename, NULL);
+EXTERN char                     INIT_GLOBAL (*Gbl_HexFilename, NULL);
 EXTERN FILE                     *Gbl_AslInputFile;
 EXTERN FILE                     *Gbl_OutputAmlFile;
 EXTERN FILE                     *Gbl_DebugFile;
 EXTERN FILE                     *Gbl_ListingFile;
+EXTERN FILE                     *Gbl_HexFile;
+EXTERN FILE                     *Gbl_NsFile;
+EXTERN FILE                     *Gbl_SourceOutputFile;
 
 /* Statistics */
 
@@ -331,6 +350,7 @@ EXTERN UINT32                   INIT_GLOBAL (WarningCount, 0);
 EXTERN ASL_PARSE_NODE           INIT_GLOBAL (*RootNode, NULL);
 EXTERN ACPI_TABLE_HEADER        TableHeader;
 EXTERN UINT32                   INIT_GLOBAL (Gbl_TableLength, 0);
+EXTERN UINT32                   INIT_GLOBAL (Gbl_SourceLine, 0);
 
 
 
@@ -343,6 +363,9 @@ typedef enum
     ASL_WARNING_PACKAGE_LENGTH,
     ASL_WARNING_RETURN_TYPES,
     ASL_WARNING_NOT_FOUND,
+    ASL_WARNING_NESTED_COMMENT,
+    ASL_WARNING_RESERVED_ARG_COUNT,
+    ASL_WARNING_RESERVED_RETURN_VALUE
 
 } ASL_WARNING_IDS;
 
@@ -356,15 +379,29 @@ typedef enum
     ASL_ERROR_LISTING_FILE_OPEN,
     ASL_ERROR_DEBUG_FILENAME,
     ASL_ERROR_DEBUG_FILE_OPEN,
+    ASL_ERROR_INCLUDE_FILE_OPEN,
     ASL_ERROR_ENCODING_LENGTH,
     ASL_ERROR_INVALID_PRIORITY,
     ASL_ERROR_INVALID_PERFORMANCE,
     ASL_ERROR_LOCAL_INIT,
     ASL_ERROR_ARG_INVALID,
-    ASL_ERROR_PREDEFINED_METHOD_RETURN,
+    ASL_ERROR_UNSUPPORTED,
 
 } ASL_ERROR_IDS;
 
+
+
+void
+AslDoSourceOutputFile (
+    char                    *Buffer);
+
+int
+AslPopInputFileStack (void);
+
+void
+AslPushInputFileStack (
+    FILE                    *InputFile,
+    char                    *Filename);
 
 int
 AslCompilererror(char *s);
@@ -430,11 +467,23 @@ CgAmlOpcodeWalk (
     UINT32                  Level,
     void                    *Context);
 
+/* asllength */
+
 void
-CgAmlPackageLengthWalk (
+LnPackageLengthWalk (
     ASL_PARSE_NODE          *Node,
     UINT32                  Level,
     void                    *Context);
+
+void
+LnInitLengthsWalk (
+    ASL_PARSE_NODE          *Node,
+    UINT32                  Level,
+    void                    *Context);
+
+
+
+
 
 void
 CgAmlWriteWalk (
@@ -532,7 +581,36 @@ AnSemanticAnalysisWalkEnd (
     UINT32                      Level,
     void                        *Context);
 
+
+/* Files */
+
+#define FlOpenIncludeFile(a)        _FlOpenIncludeFile ((ASL_PARSE_NODE *)(a))
+
+void
+_FlOpenIncludeFile (
+    ASL_PARSE_NODE          *Node);
+
+ACPI_STATUS
+FlOpenInputFile (
+    char                    *InputFilename);
+
+ACPI_STATUS
+FlOpenAmlOutputFile (
+    char                    *InputFilename);
+
+ACPI_STATUS
+FlOpenMiscOutputFiles (
+    char                    *InputFilename);
+
+void
+FlDoHexOutput (void);
+
+
 /* Load */
+
+ACPI_STATUS
+LdLoadNamespace (void);
+
 
 ACPI_STATUS
 LdNamespace1Begin (
@@ -546,7 +624,11 @@ LdNamespace1End (
     UINT32                      Level,
     void                        *Context);
 
+
 /* Lookup */
+
+ACPI_STATUS
+LkCrossReferenceNamespace (void);
 
 ACPI_STATUS
 LkNamespaceLocateBegin (
@@ -559,6 +641,10 @@ LkNamespaceLocateEnd (
     ASL_PARSE_NODE              *PsNode,
     UINT32                      Level,
     void                        *Context);
+
+ACPI_STATUS
+LsDisplayNamespace (void);
+
 
 /* Utils */
 
@@ -579,10 +665,6 @@ UtPrintFormattedName (
     UINT16                  ParseOpcode,
     UINT32                  Level);
 
-ACPI_STATUS
-UtOpenAllFiles (
-    char                    *InputFilename);
-
 void
 UtDisplaySummary (
     void);
@@ -592,6 +674,10 @@ UINT8
 UtHexCharToValue (
     int                     hc);
 
+void
+UtConvertByteToHex (
+    UINT8                   RawByte,
+    UINT8                   *Buffer);
 
 char *
 UtGetOpName (
@@ -607,6 +693,7 @@ void
 UtAttachNamepathToOwner (
     ASL_PARSE_NODE          *Node,
     ASL_PARSE_NODE          *NameNode);
+
 
 
 /* Find */

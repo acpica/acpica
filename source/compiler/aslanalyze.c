@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslanalyze.c - check for semantic errors
- *              $Revision: 1.5 $
+ *              $Revision: 1.6 $
  *
  *****************************************************************************/
 
@@ -118,6 +118,80 @@
 
 #include "AslCompiler.h"
 #include "AslCompiler.y.h"
+
+
+
+#define ASL_RSVD_RETURN_VALUE   0x01
+
+typedef struct
+{
+    char                        *Name;
+    UINT8                       NumArguments;
+    UINT8                       Flags;
+
+} ASL_RESERVED_INFO;
+
+
+ASL_RESERVED_INFO               ReservedMethods[] = {
+    "_STA",     0,      ASL_RSVD_RETURN_VALUE,
+    NULL,       0,                          0,
+};
+
+char    MsgBuffer[256];
+
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    
+ *
+ * PARAMETERS:  
+ *
+ * RETURN:      
+ *
+ * DESCRIPTION: 
+ *
+ ******************************************************************************/
+
+void
+AnCheckForReservedMethod (
+    ASL_PARSE_NODE              *Node,
+    ASL_METHOD_INFO             *MethodInfo)
+{
+    UINT32                      i;
+
+
+
+    for (i = 0; ReservedMethods[i].Name; i++)
+    {
+        if (!STRCMP (Node->ExternalName, ReservedMethods[i].Name))
+        {
+            /* Matched a reserved method name */
+
+            if (MethodInfo->NumArguments != ReservedMethods[i].NumArguments)
+            {
+                sprintf (MsgBuffer, "%s(%d) not %d", 
+                            ReservedMethods[i].Name,
+                            ReservedMethods[i].NumArguments, 
+                            MethodInfo->NumArguments);
+
+                AslWarningMsg (ASL_WARNING_RESERVED_ARG_COUNT, Node->LineNumber, MsgBuffer);
+            }
+
+            if (MethodInfo->NumReturnNoValue &&
+                ReservedMethods[i].Flags & ASL_RSVD_RETURN_VALUE)
+            {
+                sprintf (MsgBuffer, "%s", 
+                            ReservedMethods[i].Name);
+
+                AslWarningMsg (ASL_WARNING_RESERVED_RETURN_VALUE, Node->LineNumber, MsgBuffer);
+            }
+
+            return;
+        }
+    }
+}
+
 
 
 /*******************************************************************************
@@ -311,7 +385,6 @@ AnSemanticAnalysisWalkEnd (
 {
     ASL_ANALYSIS_WALK_INFO      *WalkInfo = (ASL_ANALYSIS_WALK_INFO *) Context;
     ASL_METHOD_INFO             *MethodInfo;
-    ASL_PARSE_NODE              *Next;
     ASL_PARSE_NODE              *SecondToLastNode = NULL;
     ASL_PARSE_NODE              *LastNode = NULL;
 
@@ -330,30 +403,19 @@ AnSemanticAnalysisWalkEnd (
         WalkInfo->MethodStack = MethodInfo->Next;
 
 
-
-        Next = ASL_GET_CHILD_NODE (Node);
-        while (Next)
-        {
-            SecondToLastNode = LastNode;
-            LastNode = Next;
-            Next = ASL_GET_PEER_NODE (Next);
-        }
-
-        if ((SecondToLastNode) &&
-            (LastNode) &&
-            (SecondToLastNode->ParseOpcode == IF) &&
-            (LastNode->ParseOpcode == ELSE) &&
-            AnLastStatementIsReturn (SecondToLastNode) &&
-            AnLastStatementIsReturn (LastNode))
-        {
-        }
         
         /*
-         * Check if last statement is a return
+         * Check if there is no return statement at the end of the
+         * method AND we can actually get there -- i.e., the execution
+         * of the method can possibly terminate without a return statement.
          */
-        else if (!AnLastStatementIsReturn (Node))
+        if ((!AnLastStatementIsReturn (Node)) &&
+            (!(Node->Flags & NODE_HAS_NO_EXIT)))
         {
-            /* No return statement, this is equivalent to Return () */
+            /* 
+             * No return statement, and execution can possibly exit
+             * via this path.  This is equivalent to Return () 
+             */
 
             MethodInfo->NumReturnNoValue++;
         }
@@ -374,22 +436,52 @@ AnSemanticAnalysisWalkEnd (
 
         /*
          * Check predefined method names for correct return behavior
+         * and correct number of arguments
          */
-/******** TBD: needs to be more sophisticated
-        if (!strcmp (Node->ExternalName, "_STA"))
-        {
-            if (MethodInfo->NumReturnNoValue)
-            {
-                AslErrorMsg (ASL_ERROR_PREDEFINED_METHOD_RETURN, 
-                                Node->LineNumber, Node->ExternalName);
-            }
-        }
-*/
+        AnCheckForReservedMethod (Node, MethodInfo);
 
         DbgPrint ("Method obj %p popped\n", MethodInfo);
         free (MethodInfo);
 
         break;
+
+
+    case RETURN:
+
+        Node->Parent->Flags |= NODE_HAS_NO_EXIT;
+        break;
+
+
+    case IF:
+
+        if ((Node->Flags & NODE_HAS_NO_EXIT) &&
+            (Node->Peer) &&
+            (Node->Peer->ParseOpcode == ELSE))
+        {
+            Node->Peer->Flags |= NODE_IF_HAS_NO_EXIT;
+        }
+        break;
+
+
+    case ELSE:
+
+        if ((Node->Flags & NODE_HAS_NO_EXIT) &&
+            (Node->Flags & NODE_IF_HAS_NO_EXIT))
+        {
+            Node->Parent->Flags |= NODE_HAS_NO_EXIT;
+        }
+
+        break;
+
+
+    default:
+
+        if (Node->Flags & NODE_HAS_NO_EXIT)
+        {
+            Node->Parent->Flags |= NODE_HAS_NO_EXIT;
+        }
+        break;
+
     }
 
 
