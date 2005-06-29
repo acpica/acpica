@@ -144,12 +144,13 @@
 
 ACPI_STATUS
 EvSystemMemoryRegionSetup (
-    ACPI_OBJECT_INTERNAL    *RegionObj,
+    ACPI_HANDLE             Handle,
     UINT32                  Function,
     void                    *HandlerContext,
     void                    **ReturnContext)
 {
     MEM_HANDLER_CONTEXT     *MemContext;
+    ACPI_OBJECT_INTERNAL    *RegionObj = (ACPI_OBJECT_INTERNAL *) Handle;
 
 
     FUNCTION_TRACE ("EvSystemMemoryRegionSetup");
@@ -206,11 +207,13 @@ EvSystemMemoryRegionSetup (
 
 ACPI_STATUS
 EvIoSpaceRegionSetup (
-    ACPI_OBJECT_INTERNAL    *RegionObj,
+    ACPI_HANDLE             Handle,
     UINT32                  Function,
     void                    *HandlerContext,
     void                    **ReturnContext)
 {
+    ACPI_OBJECT_INTERNAL    *RegionObj = (ACPI_OBJECT_INTERNAL *) Handle;
+
 
     FUNCTION_TRACE ("EvIoSpaceRegionSetup");
 
@@ -250,7 +253,7 @@ EvIoSpaceRegionSetup (
 
 ACPI_STATUS
 EvPciConfigRegionSetup (
-    ACPI_OBJECT_INTERNAL    *RegionObj,
+    ACPI_HANDLE             Handle,
     UINT32                  Function,
     void                    *HandlerContext,
     void                    **ReturnContext)
@@ -260,6 +263,7 @@ EvPciConfigRegionSetup (
     PCI_HANDLER_CONTEXT     *PciContext;
     ACPI_OBJECT_INTERNAL    *HandlerObj;
     NAME_TABLE_ENTRY        *SearchScope;
+    ACPI_OBJECT_INTERNAL    *RegionObj = (ACPI_OBJECT_INTERNAL *) Handle;
 
 
     FUNCTION_TRACE ("EvPciConfigRegionSetup");
@@ -386,11 +390,13 @@ EvPciConfigRegionSetup (
 
 ACPI_STATUS
 EvDefaultRegionSetup (
-    ACPI_OBJECT_INTERNAL    *RegionObj,
+    ACPI_HANDLE             Handle,
     UINT32                  Function,
     void                    *HandlerContext,
     void                    **ReturnContext)
 {
+    ACPI_OBJECT_INTERNAL    *RegionObj = (ACPI_OBJECT_INTERNAL *) Handle;
+
 
     FUNCTION_TRACE ("EvDefaultRegionSetup");
 
