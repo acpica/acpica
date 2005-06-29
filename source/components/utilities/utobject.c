@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: utobject - ACPI object create/delete/size/cache routines
- *              $Revision: 1.64 $
+ *              $Revision: 1.66 $
  *
  *****************************************************************************/
 
@@ -154,7 +154,7 @@ AcpiUtCreateInternalObjectDbg (
     NATIVE_CHAR             *ModuleName,
     UINT32                  LineNumber,
     UINT32                  ComponentId,
-    ACPI_OBJECT_TYPE8       Type)
+    ACPI_OBJECT_TYPE        Type)
 {
     ACPI_OPERAND_OBJECT     *Object;
     ACPI_OPERAND_OBJECT     *SecondObject;
@@ -196,7 +196,7 @@ AcpiUtCreateInternalObjectDbg (
 
     /* Save the object type in the object descriptor */
 
-    Object->Common.Type = Type;
+    Object->Common.Type = (UINT8) Type;
 
     /* Init the reference count */
 
@@ -244,7 +244,6 @@ AcpiUtValidInternalObject (
         /* The object appears to be a valid ACPI_OPERAND_OBJECT  */
 
         return (TRUE);
-        break;
 
     case ACPI_DESC_TYPE_NAMED:
 
@@ -397,9 +396,9 @@ AcpiUtDeleteObjectCache (
 ACPI_STATUS
 AcpiUtGetSimpleObjectSize (
     ACPI_OPERAND_OBJECT     *InternalObject,
-    UINT32                  *ObjLength)
+    ACPI_SIZE               *ObjLength)
 {
-    UINT32                  Length;
+    ACPI_SIZE               Length;
     ACPI_STATUS             Status = AE_OK;
 
 
@@ -423,7 +422,7 @@ AcpiUtGetSimpleObjectSize (
     {
         /* Object is a named object (reference), just return the length */
 
-        *ObjLength = (UINT32) ROUND_UP_TO_NATIVE_WORD (Length);
+        *ObjLength = ROUND_UP_TO_NATIVE_WORD (Length);
         return_ACPI_STATUS (Status);
     }
 
@@ -513,8 +512,7 @@ AcpiUtGetSimpleObjectSize (
      * on a machine word boundary. (preventing alignment faults on some
      * machines.)
      */
-    *ObjLength = (UINT32) ROUND_UP_TO_NATIVE_WORD (Length);
-
+    *ObjLength = ROUND_UP_TO_NATIVE_WORD (Length);
     return_ACPI_STATUS (Status);
 }
 
@@ -540,7 +538,7 @@ AcpiUtGetElementLength (
 {
     ACPI_STATUS             Status = AE_OK;
     ACPI_PKG_INFO           *Info = (ACPI_PKG_INFO *) Context;
-    UINT32                  ObjectSpace;
+    ACPI_SIZE               ObjectSpace;
 
 
     switch (ObjectType)
@@ -594,7 +592,7 @@ AcpiUtGetElementLength (
 ACPI_STATUS
 AcpiUtGetPackageObjectSize (
     ACPI_OPERAND_OBJECT     *InternalObject,
-    UINT32                  *ObjLength)
+    ACPI_SIZE               *ObjLength)
 {
     ACPI_STATUS             Status;
     ACPI_PKG_INFO           Info;
@@ -646,7 +644,7 @@ AcpiUtGetPackageObjectSize (
 ACPI_STATUS
 AcpiUtGetObjectSize(
     ACPI_OPERAND_OBJECT     *InternalObject,
-    UINT32                  *ObjLength)
+    ACPI_SIZE               *ObjLength)
 {
     ACPI_STATUS             Status;
 
