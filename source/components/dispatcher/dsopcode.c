@@ -1,8 +1,9 @@
 
 /******************************************************************************
  *
- * Module Name: dsopcode - Dispatcher Op Region support
- *                          and handling of "control" opcodes
+ * Module Name: dsopcode - Dispatcher Op Region support and handling of 
+ *                         "control" opcodes
+ *              $Revision: 1.13 $
  *
  *****************************************************************************/
 
@@ -225,7 +226,8 @@ AcpiDsGetRegionArguments (
     Op->AcpiNamedObject = AcpiNsGetParentEntry (Entry);
 
     Status = AcpiPsParseAml (Op, MethodDesc->Method.Pcode,
-                                MethodDesc->Method.PcodeLength, PARSE_DELETE_TREE,
+                                MethodDesc->Method.PcodeLength, 
+                                ACPI_PARSE_EXECUTE | ACPI_PARSE_DELETE_TREE,
                                 NULL /*MethodDesc*/, NULL, NULL,
                                 AcpiDsExecBeginOp, AcpiDsExecEndOp);
 /*
