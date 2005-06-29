@@ -284,7 +284,7 @@ OsAcquireMutex (
     ACPI_STATUS             Status = AE_OK;
 
 
-    FUNCTION_TRACE ("OsAcquireMutex");
+    FUNCTION_TRACE_PTR ("OsAcquireMutex", ObjDesc);
 
     if (!ObjDesc)
     {
