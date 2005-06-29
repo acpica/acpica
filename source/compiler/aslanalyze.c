@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslanalyze.c - check for semantic errors
- *              $Revision: 1.40 $
+ *              $Revision: 1.42 $
  *
  *****************************************************************************/
 
@@ -639,6 +639,9 @@ AnMethodAnalysisWalkBegin (
     char                    ArgName[] = "Arg0";
 
 
+    PROC_NAME ("AnMethodAnalysisWalkBegin");
+
+
     switch (Node->ParseOpcode)
     {
     case METHOD:
@@ -695,7 +698,7 @@ AnMethodAnalysisWalkBegin (
         {
             /* Probably was an error in the method declaration, no additional error here */
 
-            DEBUG_PRINT (ACPI_WARN, ("%X, No parent method\n", Node));
+            ACPI_DEBUG_PRINT ((ACPI_DB_WARN, "%X, No parent method\n", Node));
             return (AE_ERROR);
         }
 
@@ -736,7 +739,7 @@ AnMethodAnalysisWalkBegin (
         {
             /* Probably was an error in the method declaration, no additional error here */
 
-            DEBUG_PRINT (ACPI_WARN, ("%X, No parent method\n", Node));
+            ACPI_DEBUG_PRINT ((ACPI_DB_WARN, "%X, No parent method\n", Node));
             return (AE_ERROR);
         }
 
@@ -779,7 +782,7 @@ AnMethodAnalysisWalkBegin (
         {
             /* Probably was an error in the method declaration, no additional error here */
 
-            DEBUG_PRINT (ACPI_WARN, ("%X, No parent method\n", Node));
+            ACPI_DEBUG_PRINT ((ACPI_DB_WARN, "%X, No parent method\n", Node));
             return (AE_ERROR);
         }
 
@@ -1118,7 +1121,7 @@ AnSemanticAnalysisWalkEnd (
     UINT32                  Level,
     void                    *Context)
 {
-    ACPI_OPCODE_INFO        *OpInfo;
+    const ACPI_OPCODE_INFO  *OpInfo;
     UINT32                  ParseArgTypes;
     UINT32                  RuntimeArgTypes;
     UINT32                  RuntimeArgTypes2;
