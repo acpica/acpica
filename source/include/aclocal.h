@@ -131,6 +131,7 @@
 
 typedef struct AcpiTableInfo
 {
+    char                Name[4];           /* signature */
     void                *Pointer;
     UINT32              Length;
     UINT32              Allocation;
