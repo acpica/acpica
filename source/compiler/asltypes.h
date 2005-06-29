@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asltypes.h - compiler data types and struct definitions
- *              $Revision: 1.41 $
+ *              $Revision: 1.42 $
  *
  *****************************************************************************/
 
@@ -296,6 +296,7 @@ typedef struct
 #define ASL_ERROR               0
 #define ASL_WARNING             1
 #define ASL_REMARK              2
+#define ASL_NUM_REPORT_LEVELS   3
 
 
 typedef enum
