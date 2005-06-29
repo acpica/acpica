@@ -1,7 +1,7 @@
 /******************************************************************************
  *
- * Module Name: aeexec - Top level parse and execute routines
- *              $Revision: 1.42 $
+ * Module Name: aeexec - Support routines for AcpiExec utility
+ *              $Revision: 1.50 $
  *
  *****************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -137,42 +137,32 @@ UINT8                       *DsdtPtr;
 UINT32                      AcpiDsdtLength;
 
 DEBUG_REGIONS               Regions;
+RSDP_DESCRIPTOR             LocalRsdp;
 
 
-static char                 *AcpiGbl_RegionNames[] =    /* printable names of ACPI region types */
-{
-    "SystemMemory",
-    "SystemIO",
-    "PciConfig",
-    "EmbeddedControl",
-    "SMBus"
-};
+/******************************************************************************
+ *
+ * FUNCTION:    AeLocalGetRootPointer
+ *
+ * PARAMETERS:
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Return a local RSDP, used to dynamically load tables via the
+ *              standard ACPI mechanism.
+ *
+ *****************************************************************************/
 
-#define ACPI_MAX_SPACE_ID   4
-
-/*****************************************************************************
- *
- * FUNCTION:    AcpiUtFormatSpaceId
- *
- * PARAMETERS:  Status              - Acpi status to be formatted
- *
- * RETURN:      Formatted status string
- *
- * DESCRIPTION: Convert an ACPI exception to a string
- *
- ****************************************************************************/
-
-char *
-AcpiUtFormatSpaceId (
-    UINT32                  SpaceId)
+ACPI_STATUS
+AeLocalGetRootPointer (
+    UINT32                  Flags,
+    ACPI_PHYSICAL_ADDRESS   *RsdpPhysicalAddress)
 {
 
-    if (SpaceId > ACPI_MAX_SPACE_ID)
-    {
-        return "UNKNOWN_REGION_SPACE_ID";
-    }
+    STRCPY (LocalRsdp.Signature, RSDP_SIG);
+    LocalRsdp.Revision = 1;
 
-    return (AcpiGbl_RegionNames [SpaceId]);
+    return (AE_NOT_FOUND);
 }
 
 
@@ -194,7 +184,7 @@ AeRegionHandler (
     UINT32                  Function,
     ACPI_PHYSICAL_ADDRESS   Address,
     UINT32                  BitWidth,
-    UINT32                  *Value,
+    ACPI_INTEGER            *Value,
     void                    *HandlerContext,
     void                    *RegionContext)
 {
@@ -220,7 +210,7 @@ AeRegionHandler (
     }
 
     ACPI_DEBUG_PRINT ((ACPI_DB_OPREGION, "Operation Region request on %s at 0x%X\n",
-            AcpiUtFormatSpaceId (RegionObject->Region.SpaceId),
+            AcpiUtGetRegionName (RegionObject->Region.SpaceId),
             Address));
 
 
@@ -261,7 +251,7 @@ AeRegionHandler (
         /*
          * Do the memory allocations first
          */
-        RegionElement = AcpiOsAllocate (sizeof(REGION));
+        RegionElement = AcpiOsAllocate (sizeof (REGION));
         if (!RegionElement)
         {
             return AE_NO_MEMORY;
@@ -277,7 +267,6 @@ AeRegionHandler (
         RegionElement->Address      = BaseAddress;
         RegionElement->Length       = Length;
         RegionElement->NextRegion   = NULL;
-
 
         /*
          * Increment the number of regions and put this one
@@ -332,14 +321,14 @@ AeRegionHandler (
      */
     switch (Function)
     {
-    case ACPI_READ_ADR_SPACE:
+    case ACPI_READ:
         /*
          * Set the pointer Value to whatever is in the buffer
          */
         MEMCPY (Value, BufferValue, ByteWidth);
         break;
 
-    case ACPI_WRITE_ADR_SPACE:
+    case ACPI_WRITE:
         /*
          * Write the contents of Value to the buffer
          */
@@ -464,11 +453,15 @@ AeInstallHandlers (void)
     UINT32                  i;
 
 
+    PROC_NAME ("AeInstallHandlers");
+
+
     Status = AcpiInstallNotifyHandler (ACPI_ROOT_OBJECT, ACPI_SYSTEM_NOTIFY,
                                         AeNotifyHandler, NULL);
     if (ACPI_FAILURE (Status))
     {
-        printf ("Could not install a global notify handler\n");
+        printf ("Could not install a global notify handler, %s\n",
+            AcpiFormatException (Status));
     }
 
     for (i = 0; i < 3; i++)
@@ -483,7 +476,10 @@ AeInstallHandlers (void)
                         (ACPI_ADR_SPACE_TYPE) i, AeRegionHandler, AeRegionInit, NULL);
         if (ACPI_FAILURE (Status))
         {
-            printf ("Could not install an OpRegion handler\n");
+            ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
+                "Could not install an OpRegion handler for %s space(%d), %s\n",
+                AcpiUtGetRegionName((UINT8) i), i, AcpiFormatException (Status)));
+            return (Status);
         }
     }
 
@@ -496,6 +492,5 @@ AeInstallHandlers (void)
 
     return Status;
 }
-
 
 

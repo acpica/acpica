@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asutils - common utilities
- *              $Revision: 1.4 $
+ *              $Revision: 1.6 $
  *
  *****************************************************************************/
 
@@ -10,7 +10,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -215,6 +215,7 @@ AsReplaceData (
 
         if (LengthToRemove > 0)
         {
+            Gbl_MadeChanges = TRUE;
             memmove ((Buffer + LengthToAdd), (Buffer + LengthToRemove), (BufferLength - LengthToRemove));
         }
     }
@@ -226,6 +227,7 @@ AsReplaceData (
 
     if (LengthToAdd > 0)
     {
+        Gbl_MadeChanges = TRUE;
         memmove (Buffer, BufferToAdd, LengthToAdd);
     }
 

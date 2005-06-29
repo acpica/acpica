@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asconvrt - Source conversion code
- *              $Revision: 1.53 $
+ *              $Revision: 1.30 $
  *
  *****************************************************************************/
 
@@ -10,7 +10,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2005, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -131,7 +131,7 @@ char        *HeaderBegin = "/***************************************************
  *
  ******************************************************************************/
 
-BOOLEAN
+static BOOLEAN
 AsMatchExactWord (
     char                    *Word,
     UINT32                  WordLength)
@@ -232,6 +232,7 @@ AsCheckAndSkipLiterals (
         }
     }
 
+
     if (TotalLines)
     {
         (*TotalLines) += NewLines;
@@ -269,6 +270,7 @@ AsCheckForBraces (
         {
             TotalLines++;
         }
+
         else if (!(strncmp (" if", SubBuffer, 3)))
         {
             SubBuffer += 2;
@@ -284,6 +286,7 @@ AsCheckForBraces (
                 printf ("Missing braces for <if>, line %d: %s\n", TotalLines, Filename);
             }
         }
+
         else if (!(strncmp (" else if", SubBuffer, 8)))
         {
             SubBuffer += 7;
@@ -299,6 +302,8 @@ AsCheckForBraces (
                 printf ("Missing braces for <if>, line %d: %s\n", TotalLines, Filename);
             }
         }
+
+
         else if (!(strncmp (" else", SubBuffer, 5)))
         {
             SubBuffer += 4;
@@ -334,6 +339,7 @@ AsTrimLines (
     char                    *Buffer,
     char                    *Filename)
 {
+    UINT32                  Length;
     char                    *SubBuffer = Buffer;
     char                    *StartWhiteSpace = NULL;
     UINT32                  SpaceCount = 0;
@@ -367,9 +373,9 @@ AsTrimLines (
         {
             SpaceCount += (SubBuffer - StartWhiteSpace);
 
-            /* Remove the spaces */
+            Length = strlen (SubBuffer) + 1;
 
-            SubBuffer = AsRemoveData (StartWhiteSpace, SubBuffer);
+            memmove (StartWhiteSpace, SubBuffer, Length);
             StartWhiteSpace = NULL;
         }
 
@@ -381,7 +387,7 @@ Exit:
     if (SpaceCount)
     {
         Gbl_MadeChanges = TRUE;
-        AsPrint ("Extraneous spaces removed", SpaceCount, Filename);
+        AsPrint ("Extraneous spaces Removed", SpaceCount, Filename);
     }
 }
 
@@ -422,6 +428,8 @@ AsReplaceHeader (
     char                    *Buffer,
     char                    *NewHeader)
 {
+    UINT32                  Length;
+    UINT32                  HdrLength;
     char                    *SubBuffer;
     char                    *TokenEnd;
 
@@ -439,9 +447,17 @@ AsReplaceHeader (
     TokenEnd = strstr (SubBuffer, "*/");
     TokenEnd = AsSkipPastChar (TokenEnd, '\n');
 
-    /* Delete old header, insert new one */
+    /* Move up the rest of the buffer to delete the header */
 
-    AsReplaceData (SubBuffer, TokenEnd - SubBuffer, NewHeader, strlen (NewHeader));
+    Length = strlen (TokenEnd) + 1;
+    memmove (SubBuffer, TokenEnd, Length);
+
+    /* Insert the new header */
+
+    HdrLength = strlen (NewHeader);
+    memmove (SubBuffer + HdrLength, SubBuffer, Length);
+    memmove (SubBuffer, NewHeader, HdrLength);
+
 }
 
 
@@ -475,6 +491,7 @@ AsReplaceString (
     SubBuffer = Buffer;
     SubString1 = Buffer;
 
+
     while (SubString1)
     {
         /* Find the target string */
@@ -484,6 +501,7 @@ AsReplaceString (
         {
             return ReplaceCount;
         }
+
 
         /*
          * Check for translation escape string -- means to ignore
@@ -514,7 +532,7 @@ AsReplaceString (
 
         else
         {
-            if ((Type & REPLACE_MASK) == REPLACE_WHOLE_WORD)
+            if (Type == REPLACE_WHOLE_WORD)
             {
                 if (!AsMatchExactWord (SubString1, TargetLength))
                 {
@@ -523,15 +541,8 @@ AsReplaceString (
                 }
             }
 
-            SubBuffer = AsReplaceData (SubString1, TargetLength, Replacement, ReplacementLength);
-/*
-            if (((Type & INDENT_MASK) == EXTRA_INDENT_C) &&
-                (Gbl_FileType == FILE_TYPE_SOURCE))
-            {
-                SubBuffer = AsReplaceData (SubBuffer, 0, "    ", 4);
-            }
-*/
 
+            SubBuffer = AsReplaceData (SubString1, TargetLength, Replacement, ReplacementLength);
             ReplaceCount++;
         }
     }
@@ -539,75 +550,343 @@ AsReplaceString (
     return ReplaceCount;
 }
 
-
 /******************************************************************************
  *
- * FUNCTION:    AsConvertToLineFeeds
+ * FUNCTION:    AsLowerCaseString
  *
- * DESCRIPTION:
+ * DESCRIPTION: LowerCase all instances of a target string with a replacement
+ *              string.  Returns count of the strings replaced.
  *
  ******************************************************************************/
 
-void
-AsConvertToLineFeeds (
+int
+AsLowerCaseString (
+    char                    *Target,
     char                    *Buffer)
 {
-    char                    *SubString;
+    char                    *SubString1;
+    char                    *SubString2;
     char                    *SubBuffer;
+    int                     TargetLength;
+    int                     LowerCaseCount = 0;
+    int                     i;
 
+
+    TargetLength = strlen (Target);
 
     SubBuffer = Buffer;
-    SubString = Buffer;
+    SubString1 = Buffer;
 
-    while (SubString)
+
+    while (SubString1)
     {
         /* Find the target string */
 
-        SubString = strstr (SubBuffer, "\r\n");
-        if (!SubString)
+        SubString1 = strstr (SubBuffer, Target);
+        if (!SubString1)
         {
-            return;
+            return LowerCaseCount;
         }
 
-        SubBuffer = AsReplaceData (SubString, 1, NULL, 0);
+
+        /*
+         * Check for translation escape string -- means to ignore
+         * blocks of code while replacing
+         */
+
+        SubString2 = strstr (SubBuffer, "/*!");
+
+        if ((SubString2) &&
+            (SubString2 < SubString1))
+        {
+            /* Find end of the escape block starting at "Substring2" */
+
+            SubString2 = strstr (SubString2, "!*/");
+            if (!SubString2)
+            {
+                /* Didn't find terminator */
+
+                return LowerCaseCount;
+            }
+
+            /* Move buffer to end of escape block and continue */
+
+            SubBuffer = SubString2;
+        }
+
+        /* Do the actual replace if the target was found */
+
+        else
+        {
+            if (!AsMatchExactWord (SubString1, TargetLength))
+            {
+                SubBuffer = SubString1 + 1;
+                continue;
+            }
+
+            for (i = 0; i < TargetLength; i++)
+            {
+                SubString1[i] = (char) tolower (SubString1[i]);
+            }
+
+            SubBuffer = SubString1 + TargetLength;
+            LowerCaseCount++;
+        }
     }
-    return;
+
+    return LowerCaseCount;
 }
 
 
 /******************************************************************************
  *
- * FUNCTION:    AsInsertCarriageReturns
+ * FUNCTION:    AsMixedCaseToUnderscores
  *
- * DESCRIPTION:
+ * DESCRIPTION: Converts mixed case identifiers to underscored identifiers.
+ *              for example,
+ *
+ *              ThisUsefullyNamedIdentifier   becomes:
+ *
+ *              this_usefully_named_identifier
  *
  ******************************************************************************/
 
 void
-AsInsertCarriageReturns (
+AsMixedCaseToUnderscores (
     char                    *Buffer)
 {
+    UINT32                  Length;
+    char                    *SubBuffer = Buffer;
+    char                    *TokenEnd;
     char                    *SubString;
-    char                    *SubBuffer;
 
 
-    SubBuffer = Buffer;
-    SubString = Buffer;
-
-    while (SubString)
+    while (*SubBuffer)
     {
-        /* Find the target string */
 
-        SubString = strstr (SubBuffer, "\n");
-        if (!SubString)
+        /*
+         * Check for translation escape string -- means to ignore
+         * blocks of code while replacing
+         */
+
+        if ((SubBuffer[0] == '/') &&
+            (SubBuffer[1] == '*') &&
+            (SubBuffer[2] == '!'))
+        {
+            SubBuffer = strstr (SubBuffer, "!*/");
+            if (!SubBuffer)
+            {
+                return;
+            }
+        }
+
+        /* Ignore hex constants */
+
+        if (SubBuffer[0] == '0')
+        {
+            if ((SubBuffer[1] == 'x') ||
+                (SubBuffer[1] == 'X'))
+            {
+                SubBuffer += 2;
+                while (isxdigit (*SubBuffer))
+                {
+                    SubBuffer++;
+                }
+                continue;
+            }
+
+            SubBuffer++;
+            continue;
+        }
+
+        /* Ignore format specification fields */
+
+        if (SubBuffer[0] == '%')
+        {
+            SubBuffer++;
+
+            while ((isalnum (*SubBuffer)) ||
+                   (*SubBuffer == '.'))
+            {
+                SubBuffer++;
+            }
+
+            continue;
+        }
+
+
+        /*
+         * Convert each pair of letters that matches the form:
+         *
+         *      <LowerCase><UpperCase>
+         * to
+         *      <LowerCase><Underscore><LowerCase>
+         */
+
+        else if ((islower (SubBuffer[0]) || isdigit (SubBuffer[0])) &&
+                 (isupper (SubBuffer[1])))
+
+        {
+            if (isdigit (SubBuffer[0]))
+            {
+                /* Ignore <UpperCase><Digit><UpperCase> */
+                /* Ignore <Underscore><Digit><UpperCase> */
+
+                if (isupper (*(SubBuffer-1)) ||
+                    *(SubBuffer-1) == '_')
+                {
+                    SubBuffer++;
+                    continue;
+                }
+
+            }
+
+            /*
+             * Matched the pattern.
+             * Find the end of this identifier (token)
+             */
+
+            TokenEnd = SubBuffer;
+            while ((isalnum (*TokenEnd)) || (*TokenEnd == '_'))
+            {
+                TokenEnd++;
+            }
+
+            /* Force the UpperCase letter (#2) to lower case */
+
+            Gbl_MadeChanges = TRUE;
+            SubBuffer[1] = (char) tolower (SubBuffer[1]);
+
+
+            SubString = TokenEnd;
+            Length = 0;
+
+            while (*SubString != '\n')
+            {
+                /*
+                 * If we have at least two trailing spaces, we can get rid of
+                 * one to make up for the newly inserted underscore.  This will
+                 * help preserve the alignment of the text
+                 */
+                if ((SubString[0] == ' ') &&
+                    (SubString[1] == ' '))
+                {
+                    Length = SubString - SubBuffer - 2;
+                    break;
+                }
+
+                SubString++;
+            }
+
+
+            if (!Length)
+            {
+                Length = strlen (&SubBuffer[1]);
+            }
+
+            memmove (&SubBuffer[2], &SubBuffer[1], (Length+1));
+            SubBuffer[1] = '_';
+            SubBuffer +=2;
+        }
+
+        SubBuffer++;
+    }
+}
+
+
+/******************************************************************************
+ *
+ * FUNCTION:    AsLowerCaseIdentifiers
+ *
+ * DESCRIPTION: Converts mixed case identifiers to lower case.  Leaves comments,
+ *              quoted strings, and all-upper-case macros alone.
+ *
+ ******************************************************************************/
+
+void
+AsLowerCaseIdentifiers (
+    char                    *Buffer)
+{
+    char                    *SubBuffer = Buffer;
+
+
+    while (*SubBuffer)
+    {
+        /*
+         * Check for translation escape string -- means to ignore
+         * blocks of code while replacing
+         */
+        if ((SubBuffer[0] == '/') &&
+            (SubBuffer[1] == '*') &&
+            (SubBuffer[2] == '!'))
+        {
+            SubBuffer = strstr (SubBuffer, "!*/");
+            if (!SubBuffer)
+            {
+                return;
+            }
+        }
+
+        /* Ignore comments */
+
+        if ((SubBuffer[0] == '/') &&
+            (SubBuffer[1] == '*'))
+        {
+            SubBuffer = strstr (SubBuffer, "*/");
+            if (!SubBuffer)
+            {
+                return;
+            }
+
+            SubBuffer += 2;
+        }
+
+        /* Ignore quoted strings */
+
+        if (SubBuffer[0] == '\"')
+        {
+            SubBuffer++;
+
+            /* Find the closing quote */
+
+            while (SubBuffer[0])
+            {
+                /* Ignore escaped quote characters */
+
+                if (SubBuffer[0] == '\\')
+                {
+                    SubBuffer++;
+                }
+
+                else if (SubBuffer[0] == '\"')
+                {
+                    SubBuffer++;
+                    break;
+                }
+                SubBuffer++;
+            }
+        }
+
+        if (!SubBuffer[0])
         {
             return;
         }
 
-        SubBuffer = AsInsertData (SubString, "\r", 1);
-        SubBuffer += 1;
+        /*
+         * Only lower case if we have an upper followed by a lower
+         * This leaves the all-uppercase things (macros, etc.) intact
+         */
+
+        if ((isupper (SubBuffer[0])) &&
+            (islower (SubBuffer[1])))
+        {
+            Gbl_MadeChanges = TRUE;
+            *SubBuffer = (char) tolower (*SubBuffer);
+        }
+
+        SubBuffer++;
     }
-    return;
+
 }
 
 
@@ -678,11 +957,13 @@ AsBracesOnSameLine (
             {
                 BlockBegin = FALSE;
             }
+
             else
             {
                 /*
                  * Backup to previous non-whitespace
                  */
+
                 Beginning = SubBuffer - 1;
                 while ((*Beginning == ' ')   ||
                        (*Beginning == '\n'))
@@ -709,21 +990,413 @@ AsBracesOnSameLine (
                     (*Beginning != ','))
                 {
                     Beginning++;
+                    *Beginning = 0;
+
                     SubBuffer++;
                     Length = strlen (SubBuffer);
 
                     Gbl_MadeChanges = TRUE;
-
-#ifdef ADD_EXTRA_WHITESPACE
-                    AsReplaceData (Beginning, SubBuffer-Beginning, " {\n", 3);
-#else
-                    AsReplaceData (Beginning, SubBuffer-Beginning, " {", 2);
-#endif
+                    memmove (Beginning + 2, SubBuffer, Length+3);
+                    memmove (Beginning, " {", 2);
                 }
             }
         }
 
         SubBuffer++;
+    }
+}
+
+
+/******************************************************************************
+ *
+ * FUNCTION:    AsRemoveStatement
+ *
+ * DESCRIPTION: Remove all statements that contain the given keyword.
+ *              Limitations:  Removes text from the start of the line that
+ *              contains the keyword to the next semicolon.  Currently
+ *              doesn't ignore comments.
+ *
+ ******************************************************************************/
+
+void
+AsRemoveStatement (
+    char                    *Buffer,
+    char                    *Keyword,
+    UINT32                  Type)
+{
+    char                    *SubString;
+    char                    *SubBuffer;
+    int                     StrLength;
+    int                     KeywordLength;
+
+
+    KeywordLength = strlen (Keyword);
+    SubBuffer = Buffer;
+    SubString = Buffer;
+
+
+    while (SubString)
+    {
+        SubString = strstr (SubBuffer, Keyword);
+
+        if (SubString)
+        {
+            SubBuffer = SubString;
+
+            if ((Type == REPLACE_WHOLE_WORD) &&
+                (!AsMatchExactWord (SubString, KeywordLength)))
+            {
+                SubBuffer++;
+                continue;
+            }
+
+            /* Find start of this line */
+
+            while (*SubString != '\n')
+            {
+                SubString--;
+            }
+            SubString++;
+
+            /* Find end of this statement */
+
+            SubBuffer = AsSkipPastChar (SubBuffer, ';');
+            if (!SubBuffer)
+            {
+                return;
+            }
+
+            /* Find end of this line */
+
+            SubBuffer = AsSkipPastChar (SubBuffer, '\n');
+            if (!SubBuffer)
+            {
+                return;
+            }
+
+            /* If next line is blank, remove it too */
+
+            if (*SubBuffer == '\n')
+            {
+                SubBuffer++;
+            }
+
+            StrLength = strlen (SubBuffer);
+
+            Gbl_MadeChanges = TRUE;
+            memmove (SubString, SubBuffer, StrLength+1);
+            SubBuffer = SubString;
+        }
+    }
+}
+
+
+/******************************************************************************
+ *
+ * FUNCTION:    AsRemoveConditionalCompile
+ *
+ * DESCRIPTION: Remove a "#ifdef" statement, and all text that it encompasses.
+ *              Limitations: cannot handle nested ifdefs.
+ *
+ ******************************************************************************/
+
+void
+AsRemoveConditionalCompile (
+    char                    *Buffer,
+    char                    *Keyword)
+{
+    char                    *SubString;
+    char                    *SubBuffer;
+    char                    *IfPtr;
+    char                    *EndifPtr;
+    char                    *ElsePtr;
+    char                    *Comment;
+    int                     StrLength;
+    int                     KeywordLength;
+
+
+    KeywordLength = strlen (Keyword);
+    SubBuffer = Buffer;
+    SubString = Buffer;
+
+
+    while (SubString)
+    {
+        SubBuffer = strstr (SubString, Keyword);
+        if (!SubBuffer)
+        {
+            return;
+        }
+
+        /*
+         * Check for translation escape string -- means to ignore
+         * blocks of code while replacing
+         */
+        Comment = strstr (SubString, "/*!");
+
+        if ((Comment) &&
+            (Comment < SubBuffer))
+        {
+            SubString = strstr (Comment, "!*/");
+            if (!SubString)
+            {
+                return;
+            }
+
+            SubString += 3;
+            continue;
+        }
+
+        /* Check for ordinary comment */
+
+        Comment = strstr (SubString, "/*");
+
+        if ((Comment) &&
+            (Comment < SubBuffer))
+        {
+            SubString = strstr (Comment, "*/");
+            if (!SubString)
+            {
+                return;
+            }
+
+            SubString += 2;
+            continue;
+        }
+
+        SubString = SubBuffer;
+        if (!AsMatchExactWord (SubString, KeywordLength))
+        {
+            SubString++;
+            continue;
+        }
+
+        /* Find start of this line */
+
+        while (*SubString != '\n' && (SubString > Buffer))
+        {
+            SubString--;
+        }
+        SubString++;
+
+
+        /* Find the "#ifxxxx" */
+
+        IfPtr = strstr (SubString, "#if");
+        if (!IfPtr)
+        {
+            return;
+        }
+
+        if (IfPtr > SubBuffer)
+        {
+            /* Not the right #if */
+
+            SubString = SubBuffer + strlen (Keyword);
+            continue;
+        }
+
+        /* Find closing #endif or #else */
+
+        EndifPtr = strstr (SubBuffer, "#endif");
+        if (!EndifPtr)
+        {
+            /* There has to be an #endif */
+
+            return;
+        }
+
+        ElsePtr = strstr (SubBuffer, "#else");
+        if ((ElsePtr) &&
+            (EndifPtr > ElsePtr))
+        {
+            /* This #ifdef contains an #else clause */
+
+            /* Find end of this line */
+
+            SubBuffer = AsSkipPastChar (ElsePtr, '\n');
+            if (!SubBuffer)
+            {
+                return;
+            }
+
+            /* Remove the #ifdef .... #else code */
+
+            StrLength = strlen (SubBuffer);
+            Gbl_MadeChanges = TRUE;
+            memmove (SubString, SubBuffer, StrLength+1);
+
+            /* Next, we will remove the #endif statement */
+
+            EndifPtr = strstr (SubString, "#endif");
+            if (!EndifPtr)
+            {
+                /* There has to be an #endif */
+
+                return;
+            }
+
+            SubString = EndifPtr;
+        }
+
+        /* Remove the ... #endif part */
+
+        /* Find end of this line */
+
+        SubBuffer = AsSkipPastChar (EndifPtr, '\n');
+        if (!SubBuffer)
+        {
+            return;
+        }
+
+        StrLength = strlen (SubBuffer);
+
+        Gbl_MadeChanges = TRUE;
+        memmove (SubString, SubBuffer, StrLength+1);
+
+        SubBuffer = SubString;
+    }
+}
+
+
+/******************************************************************************
+ *
+ * FUNCTION:    AsRemoveLine
+ *
+ * DESCRIPTION: Remove every line that contains the keyword.  Does not
+ *              skip comments.
+ *
+ ******************************************************************************/
+
+void
+AsRemoveLine (
+    char                    *Buffer,
+    char                    *Keyword)
+{
+    char                    *SubString;
+    char                    *SubBuffer;
+    int                     StrLength;
+
+
+    SubBuffer = Buffer;
+    SubString = Buffer;
+
+
+    while (SubString)
+    {
+        SubString = strstr (SubBuffer, Keyword);
+
+        if (SubString)
+        {
+            SubBuffer = SubString;
+
+            /* Find start of this line */
+
+            while (*SubString != '\n')
+            {
+                SubString--;
+            }
+            SubString++;
+
+            /* Find end of this line */
+
+            SubBuffer = AsSkipPastChar (SubBuffer, '\n');
+            if (!SubBuffer)
+            {
+                return;
+            }
+
+            StrLength = strlen (SubBuffer);
+            Gbl_MadeChanges = TRUE;
+
+            memmove (SubString, SubBuffer, StrLength+1);
+            SubBuffer = SubString;
+        }
+    }
+}
+
+
+/******************************************************************************
+ *
+ * FUNCTION:    AsRemoveEmptyBlocks
+ *
+ * DESCRIPTION: Remove any C blocks (e.g., if {}) that contain no code.  This
+ *              can happen as a result of removing lines such as DEBUG_PRINT.
+ *
+ ******************************************************************************/
+
+void
+AsRemoveEmptyBlocks (
+    char                    *Buffer,
+    char                    *Filename)
+{
+    char                    *SubBuffer;
+    char                    *BlockStart;
+    BOOLEAN                 EmptyBlock = TRUE;
+    BOOLEAN                 AnotherPassRequired = TRUE;
+    UINT32                  BlockCount = 0;
+
+
+    while (AnotherPassRequired)
+    {
+        SubBuffer = Buffer;
+        AnotherPassRequired = FALSE;
+
+        while (*SubBuffer)
+        {
+            if (*SubBuffer == '{')
+            {
+                BlockStart = SubBuffer;
+                EmptyBlock = TRUE;
+
+                SubBuffer++;
+                while (*SubBuffer != '}')
+                {
+                    if ((*SubBuffer != ' ') &&
+                        (*SubBuffer != '\n'))
+                    {
+                        EmptyBlock = FALSE;
+                        break;
+                    }
+                    SubBuffer++;
+                }
+
+                if (EmptyBlock)
+                {
+                    /* Find start of the first line of the block */
+
+                    while (*BlockStart != '\n')
+                    {
+                        BlockStart--;
+                    }
+
+                    /* Find end of the last line of the block */
+
+                    SubBuffer = AsSkipUntilChar (SubBuffer, '\n');
+                    if (!SubBuffer)
+                    {
+                        break;
+                    }
+
+                    memmove (BlockStart, SubBuffer, strlen (SubBuffer) +1);
+
+                    SubBuffer = BlockStart;
+                    BlockCount++;
+                    AnotherPassRequired = TRUE;
+                    continue;
+                }
+
+            }
+
+            SubBuffer++;
+        }
+    }
+
+
+    if (BlockCount)
+    {
+        Gbl_MadeChanges = TRUE;
+        AsPrint ("Code blocks deleted", BlockCount, Filename);
     }
 }
 
@@ -753,6 +1426,7 @@ AsTabify4 (
         {
             Column = 0;
         }
+
         else
         {
             Column++;
@@ -796,11 +1470,11 @@ AsTabify4 (
 
                 NewSubBuffer = (SubBuffer + 1) - 4;
                 *NewSubBuffer = '\t';
-                NewSubBuffer++;
 
-                /* Remove the spaces */
-
-                SubBuffer = AsRemoveData (NewSubBuffer, SubBuffer + 1);
+                Gbl_MadeChanges = TRUE;
+                SubBuffer++;
+                memmove ((NewSubBuffer + 1), SubBuffer, strlen (SubBuffer) + 1);
+                SubBuffer = NewSubBuffer;
             }
 
             if ((Column % 4) == 0)
@@ -808,6 +1482,7 @@ AsTabify4 (
                 SpaceCount = 0;
             }
         }
+
         else
         {
             SpaceCount = 0;
@@ -874,23 +1549,28 @@ AsTabify8 (
              * continuation line (which was indented correctly for tabs=4) would
              * get indented off the screen if we just blindly converted to tabs.
              */
+
             ThisColumnStart = FirstNonBlank - SubBuffer;
 
             if (LastLineTabCount == 0)
             {
                 ThisTabCount = 0;
             }
+
             else if (ThisColumnStart == LastLineColumnStart)
             {
                 ThisTabCount = LastLineTabCount -1;
             }
+
             else
             {
+
                 ThisTabCount = LastLineTabCount + 1;
             }
         }
 
         Column++;
+
 
         /* Check if we are in a comment */
 
@@ -899,6 +1579,7 @@ AsTabify8 (
         {
             SpaceCount = 0;
             SubBuffer += 2;
+
 
             if (*SubBuffer == '\n')
             {
@@ -984,6 +1665,8 @@ AsTabify8 (
             Column = 0;
             SpaceCount = 0;
         }
+
+
         else
         {
             /* Another space */
@@ -1006,15 +1689,45 @@ AsTabify8 (
                     TabCount++;
                 }
 
-                /* Remove the spaces */
-
-                SubBuffer = AsRemoveData (NewSubBuffer, SubBuffer);
+                Gbl_MadeChanges = TRUE;
+                memmove (NewSubBuffer, SubBuffer, strlen (SubBuffer) + 1);
+                SubBuffer = NewSubBuffer;
                 continue;
             }
         }
 
         SubBuffer++;
     }
+}
+
+
+/******************************************************************************
+ *
+ * FUNCTION:    AsRemoveDebugMacros
+ *
+ * DESCRIPTION: Remove all "Debug" macros -- macros that produce debug output.
+ *
+ ******************************************************************************/
+
+void
+AsRemoveDebugMacros (
+    char                    *Buffer)
+{
+    AsRemoveConditionalCompile (Buffer, "ACPI_DEBUG");
+
+    AsRemoveStatement (Buffer, "ACPI_DEBUG_PRINT",      REPLACE_WHOLE_WORD);
+    AsRemoveStatement (Buffer, "ACPI_DEBUG_PRINT_RAW",  REPLACE_WHOLE_WORD);
+    AsRemoveStatement (Buffer, "DEBUG_EXEC",            REPLACE_WHOLE_WORD);
+    AsRemoveStatement (Buffer, "FUNCTION_ENTRY",        REPLACE_WHOLE_WORD);
+    AsRemoveStatement (Buffer, "PROC_NAME",             REPLACE_WHOLE_WORD);
+    AsRemoveStatement (Buffer, "FUNCTION_TRACE",        REPLACE_SUBSTRINGS);
+    AsRemoveStatement (Buffer, "DUMP_",                 REPLACE_SUBSTRINGS);
+
+    AsReplaceString ("return_VOID",         "return", REPLACE_WHOLE_WORD, Buffer);
+    AsReplaceString ("return_PTR",          "return", REPLACE_WHOLE_WORD, Buffer);
+    AsReplaceString ("return_ACPI_STATUS",  "return", REPLACE_WHOLE_WORD, Buffer);
+    AsReplaceString ("return_acpi_status",  "return", REPLACE_WHOLE_WORD, Buffer);
+    AsReplaceString ("return_VALUE",        "return", REPLACE_WHOLE_WORD, Buffer);
 }
 
 
@@ -1050,12 +1763,12 @@ AsCountLines (
         if ((EndOfLine - SubBuffer) > 80)
         {
             LongLineCount++;
-            VERBOSE_PRINT (("long: %.80s\n", SubBuffer));
         }
 
         LineCount++;
         SubBuffer = EndOfLine + 1;
     }
+
 
     if (LongLineCount)
     {
@@ -1138,7 +1851,6 @@ AsCountNonAnsiComments (
     }
 }
 
-
 /******************************************************************************
  *
  * FUNCTION:    AsCountSourceLines
@@ -1205,6 +1917,7 @@ AsCountSourceLines (
 
     CommentCount -= LINES_IN_LEGAL_HEADER;
 
+
     Gbl_SourceLines += LineCount;
     Gbl_WhiteLines += WhiteCount;
     Gbl_CommentLines += CommentCount;
@@ -1216,223 +1929,82 @@ AsCountSourceLines (
 
 /******************************************************************************
  *
- * FUNCTION:    AsInsertPrefix
+ * FUNCTION:    AsUppercaseTokens
  *
- * DESCRIPTION: Insert struct or union prefixes
+ * DESCRIPTION: Force to uppercase all tokens that begin with the prefix string.
+ *              used to convert mixed-case macros and constants to uppercase.
  *
  ******************************************************************************/
 
 void
-AsInsertPrefix (
+AsUppercaseTokens (
     char                    *Buffer,
-    char                    *Keyword,
-    UINT8                   Type)
+    char                    *PrefixString)
 {
-    char                    *SubString;
     char                    *SubBuffer;
-    char                    *EndKeyword;
-    int                     StrLength;
-    int                     InsertLength;
-    char                    *InsertString;
-    int                     TrailingSpaces;
-    char                    LowerKeyword[128];
-    int                     KeywordLength;
+    char                    *TokenEnd;
+    char                    *SubString;
+    int                     i;
+    UINT32                  Length;
 
-
-    switch (Type)
-    {
-    case SRC_TYPE_STRUCT:
-        InsertString = "struct ";
-        break;
-
-    case SRC_TYPE_UNION:
-        InsertString = "union ";
-        break;
-
-    default:
-        return;
-    }
-
-    strcpy (LowerKeyword, Keyword);
-    strlwr (LowerKeyword);
 
     SubBuffer = Buffer;
-    SubString = Buffer;
-    InsertLength = strlen (InsertString);
-    KeywordLength = strlen (Keyword);
 
-
-    while (SubString)
+    while (SubBuffer)
     {
-        /* Find an instance of the keyword */
-
-        SubString = strstr (SubBuffer, LowerKeyword);
-
-        if (!SubString)
+        SubBuffer = strstr (SubBuffer, PrefixString);
+        if (SubBuffer)
         {
-            return;
-        }
-
-        SubBuffer = SubString;
-
-        /* Must be standalone word, not a substring */
-
-        if (AsMatchExactWord (SubString, KeywordLength))
-        {
-            /* Make sure the keyword isn't already prefixed with the insert */
-
-            if (!strncmp (SubString - InsertLength, InsertString, InsertLength))
+            TokenEnd = SubBuffer;
+            while ((isalnum (*TokenEnd)) || (*TokenEnd == '_'))
             {
-                /* Add spaces if not already at the end-of-line */
+                TokenEnd++;
+            }
 
-                if (*(SubBuffer + KeywordLength) != '\n')
+
+            for (i = 0; i < (TokenEnd - SubBuffer); i++)
+            {
+                if ((islower (SubBuffer[i])) &&
+                    (isupper (SubBuffer[i+1])))
+
                 {
-                    /* Already present, add spaces after to align structure members */
 
-                    AsInsertData (SubBuffer + KeywordLength, "        ", 8);
+                    SubString = TokenEnd;
+                    Length = 0;
+
+                    while (*SubString != '\n')
+                    {
+                        if ((SubString[0] == ' ') &&
+                            (SubString[1] == ' '))
+                        {
+                            Length = SubString - &SubBuffer[i] - 2;
+                            break;
+                        }
+
+                        SubString++;
+                    }
+
+
+                    if (!Length)
+                    {
+                        Length = strlen (&SubBuffer[i+1]);
+                    }
+
+                    memmove (&SubBuffer[i+2], &SubBuffer[i+1], (Length+1));
+                    SubBuffer[i+1] = '_';
+                    i +=2;
+                    TokenEnd++;
                 }
-                goto Next;
             }
 
-            /* Make sure the keyword isn't at the end of a struct/union */
-            /* Note: This code depends on a single space after the brace */
-
-            if (*(SubString - 2) == '}')
+            for (i = 0; i < (TokenEnd - SubBuffer); i++)
             {
-                goto Next;
+                SubBuffer[i] = (char) toupper (SubBuffer[i]);
             }
 
-            /* Prefix the keyword with the insert string */
-
-            Gbl_MadeChanges = TRUE;
-            StrLength = strlen (SubString);
-
-            /* Is there room for insertion */
-
-            EndKeyword = SubString + strlen (LowerKeyword);
-
-            TrailingSpaces = 0;
-            while (EndKeyword[TrailingSpaces] == ' ')
-            {
-                TrailingSpaces++;
-            }
-
-            /*
-             * Use "if (TrailingSpaces > 1)" if we want to ignore casts
-             */
-            SubBuffer = SubString + InsertLength;
-
-            if (TrailingSpaces > InsertLength)
-            {
-                /* Insert the keyword */
-
-                memmove (SubBuffer, SubString, KeywordLength);
-
-                /* Insert the keyword */
-
-                memmove (SubString, InsertString, InsertLength);
-            }
-            else
-            {
-                AsInsertData (SubString, InsertString, InsertLength);
-            }
+            SubBuffer = TokenEnd;
         }
-
-Next:
-        SubBuffer += KeywordLength;
     }
 }
-
-#ifdef ACPI_FUTURE_IMPLEMENTATION
-/******************************************************************************
- *
- * FUNCTION:    AsTrimComments
- *
- * DESCRIPTION: Finds 3-line comments with only a single line of text
- *
- ******************************************************************************/
-
-void
-AsTrimComments (
-    char                    *Buffer,
-    char                    *Filename)
-{
-    char                    *SubBuffer = Buffer;
-    char                    *Ptr1;
-    char                    *Ptr2;
-    UINT32                  LineCount;
-    UINT32                  ShortCommentCount = 0;
-
-
-    while (1)
-    {
-        /* Find comment open, within procedure level */
-
-        SubBuffer = strstr (SubBuffer, "    /*");
-        if (!SubBuffer)
-        {
-            goto Exit;
-        }
-
-        /* Find comment terminator */
-
-        Ptr1 = strstr (SubBuffer, "*/");
-        if (!Ptr1)
-        {
-            goto Exit;
-        }
-
-        /* Find next EOL (from original buffer) */
-
-        Ptr2 = strstr (SubBuffer, "\n");
-        if (!Ptr2)
-        {
-            goto Exit;
-        }
-
-        /* Ignore one-line comments */
-
-        if (Ptr1 < Ptr2)
-        {
-            /* Normal comment, ignore and continue; */
-
-            SubBuffer = Ptr2;
-            continue;
-        }
-
-        /* Examine multi-line comment */
-
-        LineCount = 1;
-        while (Ptr1 > Ptr2)
-        {
-            /* Find next EOL */
-
-            Ptr2++;
-            Ptr2 = strstr (Ptr2, "\n");
-            if (!Ptr2)
-            {
-                goto Exit;
-            }
-
-            LineCount++;
-        }
-
-        SubBuffer = Ptr1;
-
-        if (LineCount <= 3)
-        {
-            ShortCommentCount++;
-        }
-    }
-
-
-Exit:
-
-    if (ShortCommentCount)
-    {
-        AsPrint ("Short Comments found", ShortCommentCount, Filename);
-    }
-}
-#endif
 
 

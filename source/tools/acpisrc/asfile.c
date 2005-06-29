@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asfile - Main module for the acpi source processor utility
- *              $Revision: 1.10 $
+ *              $Revision: 1.15 $
  *
  *****************************************************************************/
 
@@ -10,7 +10,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -381,6 +381,16 @@ AsConvertFile (
 //    TERSE_PRINT (("."));
 
 
+    if (ConversionTable->LowerCaseTable)
+    {
+        for (i = 0; ConversionTable->LowerCaseTable[i].Identifier; i++)
+        {
+            AsLowerCaseString (ConversionTable->LowerCaseTable[i].Identifier,
+                                FileBuffer);
+        }
+    }
+
+
     /* Process all the string replacements */
 
     if (StringTable)
@@ -389,6 +399,7 @@ AsConvertFile (
         {
             AsReplaceString (StringTable[i].Target,
                                 StringTable[i].Replacement,
+                                StringTable[i].Type,
                                 FileBuffer);
         }
     }
@@ -433,6 +444,12 @@ AsConvertFile (
         case CVT_COUNT_NON_ANSI_COMMENTS:
 
             AsCountNonAnsiComments (FileBuffer, Filename);
+            break;
+
+
+        case CVT_CHECK_BRACES:
+
+            AsCheckForBraces (FileBuffer, Filename);
             break;
 
 
@@ -563,20 +580,24 @@ AsProcessOneFile (
 
     /* Process the file in the buffer */
 
+    Gbl_MadeChanges = FALSE;
     AsConvertFile (ConversionTable, Gbl_FileBuffer, Pathname, FileType);
 
     if (!(ConversionTable->Flags & FLG_NO_FILE_OUTPUT))
     {
-        /* Generate the target pathname and write the file */
-
-        strcpy (Pathname, TargetPath);
-        if (SourcePath)
+        if (!(Gbl_Overwrite && !Gbl_MadeChanges))
         {
-            strcat (Pathname, "/");
-            strcat (Pathname, Filename);
-        }
+            /* Generate the target pathname and write the file */
 
-        AsPutFile (Pathname, Gbl_FileBuffer, ConversionTable->Flags);
+            strcpy (Pathname, TargetPath);
+            if (SourcePath)
+            {
+                strcat (Pathname, "/");
+                strcat (Pathname, Filename);
+            }
+
+            AsPutFile (Pathname, Gbl_FileBuffer, ConversionTable->Flags);
+        }
     }
 
     free (Gbl_FileBuffer);
