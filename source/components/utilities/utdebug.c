@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: utdebug - Debug print routines
- *              $Revision: 1.88 $
+ *              $Revision: 1.89 $
  *
  *****************************************************************************/
 
@@ -182,11 +182,6 @@ AcpiUtTrackStackPtr (
     if (AcpiGbl_NestingLevel > AcpiGbl_DeepestNesting)
     {
         AcpiGbl_DeepestNesting = AcpiGbl_NestingLevel;
-
-        if (AcpiGbl_DeepestNesting == 32)
-        {
-            AcpiOsPrintf ("hit deepest nesting\n");
-        }
     }
 }
 
