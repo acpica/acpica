@@ -243,8 +243,6 @@ ACPI_EXTERN BOOLEAN                     Gbl_DbTerminateThreads;
 
 extern      UINT32                      Gbl_SystemFlags;
 extern      UINT32                      Gbl_StartupFlags;
-extern      char                       *Gbl_ExceptionNames[];
-extern      char                       *Gbl_MutexNames[];
 extern      char                       *Gbl_AcpiCaVersion;
 
 ACPI_EXTERN ACPI_OBJECT_NotifyHandler   Gbl_DrvNotify;
@@ -268,8 +266,6 @@ ACPI_EXTERN SCOPE_STACK                *Gbl_CurrentScope;
 ACPI_EXTERN NAME_TABLE_ENTRY            Gbl_RootObjStruct;
 ACPI_EXTERN NAME_TABLE_ENTRY           *Gbl_RootObject;
 
-extern      char                        Gbl_BadType[];
-extern      char                       *Gbl_NsTypeNames[NUM_NS_TYPES];
 extern      UINT8                       Gbl_NsProperties[NUM_NS_TYPES];
 extern      PREDEFINED_NAMES            Gbl_PreDefinedNames [NUM_PREDEFINED_NAMES];
 
