@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslfiles - file I/O suppoert
- *              $Revision: 1.38 $
+ *              $Revision: 1.41 $
  *
  *****************************************************************************/
 
@@ -116,6 +116,7 @@
  *****************************************************************************/
 
 #include "aslcompiler.h"
+#include "acapps.h"
 
 #define _COMPONENT          ACPI_COMPILER
         ACPI_MODULE_NAME    ("aslfiles")
@@ -503,56 +504,6 @@ FlOpenIncludeFile (
 
 /*******************************************************************************
  *
- * FUNCTION:    FlGenerateFilename
- *
- * PARAMETERS:  InputFilename       - Original ASL source filename
- *              Suffix              - New extension.
- *
- * RETURN:      New filename containing the original base + the new suffix
- *
- * DESCRIPTION: Generate a new filename from the ASL source filename and a new
- *              extension.  Used to create the *.LST, *.TXT, etc. files.
- *
- ******************************************************************************/
-
-char *
-FlGenerateFilename (
-    char                    *InputFilename,
-    char                    *Suffix)
-{
-    char                    *Position;
-    char                    *NewFilename;
-
-
-    /* Copy the original filename to a new buffer */
-
-    NewFilename = UtLocalCalloc (strlen (InputFilename) + strlen (Suffix));
-    strcpy (NewFilename, InputFilename);
-
-    /* Try to find the last dot in the filename */
-
-    Position = strrchr (NewFilename, '.');
-    if (Position)
-    {
-        /* Tack on the new suffix */
-        Position++;
-        *Position = 0;
-        strcat (Position, Suffix);
-    }
-    else
-    {
-        /* No dot, add one and then the suffix */
-
-        strcat (NewFilename, ".");
-        strcat (NewFilename, Suffix);
-    }
-
-    return NewFilename;
-}
-
-
-/*******************************************************************************
- *
  * FUNCTION:    FlOpenInputFile
  *
  * PARAMETERS:  InputFilename       - The user-specified ASL source file to be
@@ -680,7 +631,7 @@ FlOpenMiscOutputFiles (
         return (AE_ERROR);
     }
 
-    /* 
+    /*
      * Open the source output file, binary mode (so that LF does not get
      * expanded to CR/LF on some systems, messing up our seek
      * calculations.)
