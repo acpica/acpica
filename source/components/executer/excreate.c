@@ -539,7 +539,9 @@ AcpiAmlExecCreateEvent (
 
     /* Create the actual OS semaphore */
 
-    Status = AcpiOsdCreateSemaphore (1, &ObjDesc->Event.Semaphore);
+    /* TBD: [Investigate] should be created with 0 or 1 units? */
+
+    Status = AcpiOsCreateSemaphore (ACPI_NO_UNIT_LIMIT, 1, &ObjDesc->Event.Semaphore);
     if (ACPI_FAILURE (Status))
     {
         AcpiCmRemoveReference (ObjDesc);
@@ -551,7 +553,7 @@ AcpiAmlExecCreateEvent (
     Status = AcpiNsAttachObject (AcpiDsObjStackGetValue (0, WalkState), ObjDesc, (UINT8) ACPI_TYPE_EVENT);
     if (ACPI_FAILURE (Status))
     {
-        AcpiOsdDeleteSemaphore (ObjDesc->Event.Semaphore);
+        AcpiOsDeleteSemaphore (ObjDesc->Event.Semaphore);
         AcpiCmRemoveReference (ObjDesc);
         goto Cleanup;
     }
@@ -607,7 +609,7 @@ AcpiAmlExecCreateMutex (
 
     /* Create the actual OS semaphore */
 
-    Status = AcpiOsdCreateSemaphore (1, &ObjDesc->Mutex.Semaphore);
+    Status = AcpiOsCreateSemaphore (1, 1, &ObjDesc->Mutex.Semaphore);
     if (ACPI_FAILURE (Status))
     {
         AcpiCmRemoveReference (ObjDesc);
@@ -622,7 +624,7 @@ AcpiAmlExecCreateMutex (
                                 ObjDesc, (UINT8) ACPI_TYPE_MUTEX);
     if (ACPI_FAILURE (Status))
     {
-        AcpiOsdDeleteSemaphore (ObjDesc->Mutex.Semaphore);
+        AcpiOsDeleteSemaphore (ObjDesc->Mutex.Semaphore);
         AcpiCmRemoveReference (ObjDesc);
         goto Cleanup;
     }
