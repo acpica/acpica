@@ -1,8 +1,8 @@
 
 /******************************************************************************
  *
- * Module Name: amstorob - AML Interpreter object store support, store to object
- *              $Revision: 1.19 $
+ * Module Name: exstorob - AML Interpreter object store support, store to object
+ *              $Revision: 1.56 $
  *
  *****************************************************************************/
 
@@ -10,7 +10,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, 2000, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2005, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -115,332 +115,187 @@
  *
  *****************************************************************************/
 
-#define __AMSTOROB_C__
+#define __EXSTOROB_C__
 
 #include "acpi.h"
-#include "acparser.h"
-#include "acdispat.h"
 #include "acinterp.h"
-#include "amlcode.h"
-#include "acnamesp.h"
-#include "actables.h"
 
 
-#define _COMPONENT          INTERPRETER
-        MODULE_NAME         ("amstorob")
+#define _COMPONENT          ACPI_EXECUTER
+        ACPI_MODULE_NAME    ("exstorob")
 
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiAmlStoreObjectToObject
+ * FUNCTION:    AcpiExStoreBufferToBuffer
  *
- * PARAMETERS:  *ValDesc            - Value to be stored
- *              *DestDesc           - Object to receive the value
+ * PARAMETERS:  SourceDesc          - Source object to copy
+ *              TargetDesc          - Destination object of the copy
  *
  * RETURN:      Status
  *
- * DESCRIPTION: Store an object to another object.
- *
- *              The Assignment of an object to another (not named) object
- *              is handled here.
- *              The val passed in will replace the current value (if any)
- *              with the input value.
- *
- *              When storing into an object the data is converted to the
- *              target object type then stored in the object.  This means
- *              that the target object type (for an initialized target) will
- *              not be changed by a store operation.
- *
- *              This module allows destination types of Number, String,
- *              and Buffer.
+ * DESCRIPTION: Copy a buffer object to another buffer object.
  *
  ******************************************************************************/
 
 ACPI_STATUS
-AcpiAmlStoreObjectToObject (
-    ACPI_OPERAND_OBJECT     *ValDesc,
-    ACPI_OPERAND_OBJECT     *DestDesc,
-    ACPI_WALK_STATE         *WalkState)
+AcpiExStoreBufferToBuffer (
+    ACPI_OPERAND_OBJECT     *SourceDesc,
+    ACPI_OPERAND_OBJECT     *TargetDesc)
 {
-    ACPI_STATUS             Status = AE_OK;
-    UINT8                   *Buffer = NULL;
-    UINT32                  Length = 0;
-    OBJECT_TYPE_INTERNAL    DestinationType = DestDesc->Common.Type;
+    UINT32                  Length;
+    UINT8                   *Buffer;
 
 
-    FUNCTION_TRACE ("AmlStoreObjectToObject");
+    ACPI_FUNCTION_TRACE_PTR ("ExStoreBufferToBuffer", SourceDesc);
 
-    DEBUG_PRINT (ACPI_INFO,
-        ("entered AcpiAmlStoreObjectToObject: Dest=%p, Val=%p\n",
-        DestDesc, ValDesc));
 
-    /*
-     *  Assuming the parameters are valid!!!
-     */
-    ACPI_ASSERT((DestDesc) && (ValDesc));
+    /* We know that SourceDesc is a buffer by now */
 
-    DEBUG_PRINT (ACPI_INFO, ("AmlStoreObjectToObject: Storing %s into %s\n",
-                    AcpiCmGetTypeName (ValDesc->Common.Type),
-                    AcpiCmGetTypeName (DestDesc->Common.Type)));
+    Buffer = (UINT8 *) SourceDesc->Buffer.Pointer;
+    Length = SourceDesc->Buffer.Length;
 
     /*
-     *  First ensure we have a value that can be stored in the target
+     * If target is a buffer of length zero or is a static buffer,
+     * allocate a new buffer of the proper length
      */
-    switch (DestinationType)
+    if ((TargetDesc->Buffer.Length == 0) ||
+        (TargetDesc->Common.Flags & AOPOBJ_STATIC_POINTER))
     {
-        /* Type of Name's existing value */
-
-    case ACPI_TYPE_NUMBER:
-
-        /*
-         *  These cases all require only number values or values that
-         *  can be converted to numbers.
-         *
-         *  If value is not a Number, try to resolve it to one.
-         */
-
-        if (ValDesc->Common.Type != ACPI_TYPE_NUMBER)
+        TargetDesc->Buffer.Pointer = ACPI_MEM_ALLOCATE (Length);
+        if (!TargetDesc->Buffer.Pointer)
         {
-            /*
-             *  Initially not a number, convert
-             */
-            Status = AcpiAmlResolveToValue (&ValDesc, WalkState);
-            if (ACPI_SUCCESS (Status) &&
-                (ValDesc->Common.Type != ACPI_TYPE_NUMBER))
-            {
-                /*
-                 *  Conversion successful but still not a number
-                 */
-                DEBUG_PRINT (ACPI_ERROR,
-                    ("AmlStoreObjectToObject: Value assigned to %s must be Number, not %s\n",
-                    AcpiCmGetTypeName (DestinationType),
-                    AcpiCmGetTypeName (ValDesc->Common.Type)));
-                Status = AE_AML_OPERAND_TYPE;
-            }
+            return_ACPI_STATUS (AE_NO_MEMORY);
         }
 
-        break;
-
-    case ACPI_TYPE_STRING:
-    case ACPI_TYPE_BUFFER:
-
-        /*
-         *  Storing into a Field in a region or into a buffer or into
-         *  a string all is essentially the same.
-         *
-         *  If value is not a valid type, try to resolve it to one.
-         */
-
-        if ((ValDesc->Common.Type != ACPI_TYPE_NUMBER) &&
-            (ValDesc->Common.Type != ACPI_TYPE_BUFFER) &&
-            (ValDesc->Common.Type != ACPI_TYPE_STRING))
-        {
-            /*
-             *  Initially not a valid type, convert
-             */
-            Status = AcpiAmlResolveToValue (&ValDesc, WalkState);
-            if (ACPI_SUCCESS (Status) &&
-                (ValDesc->Common.Type != ACPI_TYPE_NUMBER) &&
-                (ValDesc->Common.Type != ACPI_TYPE_BUFFER) &&
-                (ValDesc->Common.Type != ACPI_TYPE_STRING))
-            {
-                /*
-                 *  Conversion successful but still not a valid type
-                 */
-                DEBUG_PRINT (ACPI_ERROR,
-                    ("AmlStoreObjectToObject: Assign wrong type %s to %s (must be type Num/Str/Buf)\n",
-                    AcpiCmGetTypeName (ValDesc->Common.Type),
-                    AcpiCmGetTypeName (DestinationType)));
-                Status = AE_AML_OPERAND_TYPE;
-            }
-        }
-        break;
-
-
-    default:
-
-        /*
-         * TBD: [Unhandled] What other combinations must be implemented?
-         */
-        Status = AE_NOT_IMPLEMENTED;
-        break;
+        TargetDesc->Buffer.Length = Length;
     }
 
-    /* Exit now if failure above */
+    /* Copy source buffer to target buffer */
 
-    if (ACPI_FAILURE (Status))
+    if (Length <= TargetDesc->Buffer.Length)
     {
-        goto CleanUpAndBailOut;
+        /* Clear existing buffer and copy in the new one */
+
+        ACPI_MEMSET (TargetDesc->Buffer.Pointer, 0, TargetDesc->Buffer.Length);
+        ACPI_MEMCPY (TargetDesc->Buffer.Pointer, Buffer, Length);
+
+#ifdef ACPI_OBSOLETE_BEHAVIOR
+        /*
+         * NOTE: ACPI versions up to 3.0 specified that the buffer must be
+         * truncated if the string is smaller than the buffer.  However, "other"
+         * implementations of ACPI never did this and thus became the defacto
+         * standard. ACPI 3.0A changes this behavior such that the buffer
+         * is no longer truncated.
+         */
+
+        /*
+         * OBSOLETE BEHAVIOR:
+         * If the original source was a string, we must truncate the buffer,
+         * according to the ACPI spec.  Integer-to-Buffer and Buffer-to-Buffer
+         * copy must not truncate the original buffer.
+         */
+        if (OriginalSrcType == ACPI_TYPE_STRING)
+        {
+            /* Set the new length of the target */
+
+            TargetDesc->Buffer.Length = Length;
+        }
+#endif
+    }
+    else
+    {
+        /* Truncate the source, copy only what will fit */
+
+        ACPI_MEMCPY (TargetDesc->Buffer.Pointer, Buffer,
+            TargetDesc->Buffer.Length);
+
+        ACPI_DEBUG_PRINT ((ACPI_DB_INFO,
+            "Truncating source buffer from %X to %X\n",
+            Length, TargetDesc->Buffer.Length));
     }
 
-    /*
-     * AcpiEverything is ready to execute now,  We have
-     * a value we can handle, just perform the update
-     */
+    /* Copy flags */
 
-    switch (DestinationType)
-    {
-
-    case ACPI_TYPE_STRING:
-
-        /*
-         *  Perform the update
-         */
-
-        switch (ValDesc->Common.Type)
-        {
-        case ACPI_TYPE_NUMBER:
-            Buffer = (UINT8 *) &ValDesc->Number.Value;
-            Length = sizeof (ValDesc->Number.Value);
-            break;
-
-        case ACPI_TYPE_BUFFER:
-            Buffer = (UINT8 *) ValDesc->Buffer.Pointer;
-            Length = ValDesc->Buffer.Length;
-            break;
-
-        case ACPI_TYPE_STRING:
-            Buffer = (UINT8 *) ValDesc->String.Pointer;
-            Length = ValDesc->String.Length;
-            break;
-        }
-
-        /*
-         *  Setting a string value replaces the old string
-         */
-
-        if (Length < DestDesc->String.Length)
-        {
-            /*
-             *  Zero fill, not willing to do pointer arithmetic for
-             *  architecture independence.  Just clear the whole thing
-             */
-            MEMSET(DestDesc->String.Pointer, 0, DestDesc->String.Length);
-            MEMCPY(DestDesc->String.Pointer, Buffer, Length);
-        }
-        else
-        {
-            /*
-             *  Free the current buffer, then allocate a buffer
-             *  large enough to hold the value
-             */
-            if ( DestDesc->String.Pointer &&
-                !AcpiTbSystemTablePointer (DestDesc->String.Pointer))
-            {
-                /*
-                 *  Only free if not a pointer into the DSDT
-                 */
-
-                AcpiCmFree(DestDesc->String.Pointer);
-            }
-
-            DestDesc->String.Pointer = AcpiCmAllocate (Length + 1);
-            DestDesc->String.Length = Length;
-
-            if (!DestDesc->String.Pointer)
-            {
-                Status = AE_NO_MEMORY;
-                goto CleanUpAndBailOut;
-            }
-
-            MEMCPY(DestDesc->String.Pointer, Buffer, Length);
-        }
-        break;
-
-
-    case ACPI_TYPE_BUFFER:
-
-        /*
-         *  Perform the update to the buffer
-         */
-
-        switch (ValDesc->Common.Type)
-        {
-        case ACPI_TYPE_NUMBER:
-            Buffer = (UINT8 *) &ValDesc->Number.Value;
-            Length = sizeof (ValDesc->Number.Value);
-            break;
-
-        case ACPI_TYPE_BUFFER:
-            Buffer = (UINT8 *) ValDesc->Buffer.Pointer;
-            Length = ValDesc->Buffer.Length;
-            break;
-
-        case ACPI_TYPE_STRING:
-            Buffer = (UINT8 *) ValDesc->String.Pointer;
-            Length = ValDesc->String.Length;
-            break;
-        }
-
-        /*
-         * If the buffer is uninitialized,
-         *  memory needs to be allocated for the copy.
-         */
-        if(0 == DestDesc->Buffer.Length)
-        {
-            DestDesc->Buffer.Pointer = AcpiCmCallocate(Length);
-            DestDesc->Buffer.Length = Length;
-
-            if (!DestDesc->Buffer.Pointer)
-            {
-                Status = AE_NO_MEMORY;
-                goto CleanUpAndBailOut;
-            }
-        }
-
-        /*
-         *  Buffer is a static allocation,
-         *  only place what will fit in the buffer.
-         */
-        if (Length <= DestDesc->Buffer.Length)
-        {
-            /*
-             *  Zero fill first, not willing to do pointer arithmetic for
-             *  architecture independence.  Just clear the whole thing
-             */
-            MEMSET(DestDesc->Buffer.Pointer, 0, DestDesc->Buffer.Length);
-            MEMCPY(DestDesc->Buffer.Pointer, Buffer, Length);
-        }
-        else
-        {
-            /*
-             *  truncate, copy only what will fit
-             */
-            MEMCPY(DestDesc->Buffer.Pointer, Buffer, DestDesc->Buffer.Length);
-            DEBUG_PRINT (ACPI_INFO,
-                ("AmlStoreObjectToObject: Truncating src buffer from %X to %X\n",
-                Length, DestDesc->Buffer.Length));
-        }
-        break;
-
-    case ACPI_TYPE_NUMBER:
-
-        DestDesc->Number.Value = ValDesc->Number.Value;
-
-        /* Truncate value if we are executing from a 32-bit ACPI table */
-
-        AcpiAmlTruncateFor32bitTable (DestDesc, WalkState);
-        break;
-
-    default:
-
-        /*
-         * All other types than Alias and the various Fields come here.
-         * Store ValDesc as the new value of the Name, and set
-         * the Name's type to that of the value being stored in it.
-         * ValDesc reference count is incremented by AttachObject.
-         */
-
-        DEBUG_PRINT (ACPI_WARN,
-            ("AmlStoreObjectToObject: Store into %s not implemented\n",
-            AcpiCmGetTypeName (DestDesc->Common.Type)));
-
-        Status = AE_NOT_IMPLEMENTED;
-        break;
-    }
-
-CleanUpAndBailOut:
-
-    return_ACPI_STATUS (Status);
+    TargetDesc->Buffer.Flags = SourceDesc->Buffer.Flags;
+    TargetDesc->Common.Flags &= ~AOPOBJ_STATIC_POINTER;
+    return_ACPI_STATUS (AE_OK);
 }
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiExStoreStringToString
+ *
+ * PARAMETERS:  SourceDesc          - Source object to copy
+ *              TargetDesc          - Destination object of the copy
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Copy a String object to another String object
+ *
+ ******************************************************************************/
+
+ACPI_STATUS
+AcpiExStoreStringToString (
+    ACPI_OPERAND_OBJECT     *SourceDesc,
+    ACPI_OPERAND_OBJECT     *TargetDesc)
+{
+    UINT32                  Length;
+    UINT8                   *Buffer;
+
+
+    ACPI_FUNCTION_TRACE_PTR ("ExStoreStringToString", SourceDesc);
+
+
+    /* We know that SourceDesc is a string by now */
+
+    Buffer = (UINT8 *) SourceDesc->String.Pointer;
+    Length = SourceDesc->String.Length;
+
+    /*
+     * Replace existing string value if it will fit and the string
+     * pointer is not a static pointer (part of an ACPI table)
+     */
+    if ((Length < TargetDesc->String.Length) &&
+       (!(TargetDesc->Common.Flags & AOPOBJ_STATIC_POINTER)))
+    {
+        /*
+         * String will fit in existing non-static buffer.
+         * Clear old string and copy in the new one
+         */
+        ACPI_MEMSET (TargetDesc->String.Pointer, 0,
+            (ACPI_SIZE) TargetDesc->String.Length + 1);
+        ACPI_MEMCPY (TargetDesc->String.Pointer, Buffer, Length);
+    }
+    else
+    {
+        /*
+         * Free the current buffer, then allocate a new buffer
+         * large enough to hold the value
+         */
+        if (TargetDesc->String.Pointer &&
+           (!(TargetDesc->Common.Flags & AOPOBJ_STATIC_POINTER)))
+        {
+            /* Only free if not a pointer into the DSDT */
+
+            ACPI_MEM_FREE (TargetDesc->String.Pointer);
+        }
+
+        TargetDesc->String.Pointer = ACPI_MEM_CALLOCATE ((ACPI_SIZE) Length + 1);
+        if (!TargetDesc->String.Pointer)
+        {
+            return_ACPI_STATUS (AE_NO_MEMORY);
+        }
+
+        TargetDesc->Common.Flags &= ~AOPOBJ_STATIC_POINTER;
+        ACPI_MEMCPY (TargetDesc->String.Pointer, Buffer, Length);
+    }
+
+    /* Set the new target length */
+
+    TargetDesc->String.Length = Length;
+    return_ACPI_STATUS (AE_OK);
+}
+
 

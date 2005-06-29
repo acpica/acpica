@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exoparg3 - AML execution - opcodes with 3 arguments
- *              $Revision: 1.19 $
+ *              $Revision: 1.22 $
  *
  *****************************************************************************/
 
@@ -10,7 +10,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2004, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2005, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -172,12 +172,13 @@ AcpiExOpcode_3A_0T_0R (
     ACPI_STATUS             Status = AE_OK;
 
 
-    ACPI_FUNCTION_TRACE_STR ("ExOpcode_3A_0T_0R", AcpiPsGetOpcodeName (WalkState->Opcode));
+    ACPI_FUNCTION_TRACE_STR ("ExOpcode_3A_0T_0R",
+        AcpiPsGetOpcodeName (WalkState->Opcode));
 
 
     switch (WalkState->Opcode)
     {
-    case AML_FATAL_OP:          /* Fatal (FatalType  FatalCode  FatalArg)    */
+    case AML_FATAL_OP:          /* Fatal (FatalType  FatalCode  FatalArg) */
 
         ACPI_DEBUG_PRINT ((ACPI_DB_INFO,
             "FatalOp: Type %X Code %X Arg %X <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<\n",
@@ -243,18 +244,20 @@ AcpiExOpcode_3A_1T_1R (
     ACPI_SIZE               Length;
 
 
-    ACPI_FUNCTION_TRACE_STR ("ExOpcode_3A_1T_1R", AcpiPsGetOpcodeName (WalkState->Opcode));
+    ACPI_FUNCTION_TRACE_STR ("ExOpcode_3A_1T_1R",
+        AcpiPsGetOpcodeName (WalkState->Opcode));
 
 
     switch (WalkState->Opcode)
     {
-    case AML_MID_OP:        /* Mid  (Source[0], Index[1], Length[2], Result[3]) */
+    case AML_MID_OP:    /* Mid (Source[0], Index[1], Length[2], Result[3]) */
 
         /*
          * Create the return object.  The Source operand is guaranteed to be
          * either a String or a Buffer, so just use its type.
          */
-        ReturnDesc = AcpiUtCreateInternalObject (ACPI_GET_OBJECT_TYPE (Operand[0]));
+        ReturnDesc = AcpiUtCreateInternalObject (
+                        ACPI_GET_OBJECT_TYPE (Operand[0]));
         if (!ReturnDesc)
         {
             Status = AE_NO_MEMORY;
@@ -300,6 +303,10 @@ AcpiExOpcode_3A_1T_1R (
             ReturnDesc->String.Pointer = Buffer;
             ReturnDesc->String.Length = (UINT32) Length;
         }
+
+        /* Mark buffer initialized */
+
+        ReturnDesc->Buffer.Flags |= AOPOBJ_DATA_VALID;
         break;
 
 

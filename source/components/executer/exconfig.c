@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: exconfig - Namespace reconfiguration (Load/Unload opcodes)
- *              $Revision: 1.79 $
+ *              $Revision: 1.81 $
  *
  *****************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2004, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2005, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -145,7 +145,7 @@
  *
  ******************************************************************************/
 
-ACPI_STATUS
+static ACPI_STATUS
 AcpiExAddTable (
     ACPI_TABLE_HEADER       *Table,
     ACPI_NAMESPACE_NODE     *ParentNode,
@@ -316,7 +316,7 @@ AcpiExLoadTableOp (
          * Find the node referenced by the ParameterPathString
          */
         Status = AcpiNsGetNodeByPath (Operand[4]->String.Pointer, StartNode,
-                                        ACPI_NS_SEARCH_PARENT, &ParameterNode);
+                    ACPI_NS_SEARCH_PARENT, &ParameterNode);
         if (ACPI_FAILURE (Status))
         {
             return_ACPI_STATUS (Status);
@@ -337,8 +337,9 @@ AcpiExLoadTableOp (
     {
         /* Store the parameter data into the optional parameter object */
 
-        Status = AcpiExStore (Operand[5], ACPI_CAST_PTR (ACPI_OPERAND_OBJECT, ParameterNode),
-                                WalkState);
+        Status = AcpiExStore (Operand[5],
+                    ACPI_CAST_PTR (ACPI_OPERAND_OBJECT, ParameterNode),
+                    WalkState);
         if (ACPI_FAILURE (Status))
         {
             (void) AcpiExUnloadTable (DdbHandle);
@@ -471,7 +472,8 @@ AcpiExLoadOp (
             goto Cleanup;
         }
 
-        TablePtr = ACPI_CAST_PTR (ACPI_TABLE_HEADER, BufferDesc->Buffer.Pointer);
+        TablePtr = ACPI_CAST_PTR (ACPI_TABLE_HEADER,
+                        BufferDesc->Buffer.Pointer);
 
          /* Sanity check the table length */
 
