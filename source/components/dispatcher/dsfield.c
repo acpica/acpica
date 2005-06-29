@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dsfield - Dispatcher field routines
- *              $Revision: 1.55 $
+ *              $Revision: 1.56 $
  *
  *****************************************************************************/
 
@@ -319,12 +319,15 @@ AcpiDsGetFieldNames (
         case AML_INT_ACCESSFIELD_OP:
 
             /*
-             * Get a new AccessType and AccessAttribute for all
-             * entries (until end or another AccessAs keyword)
-             * Preserve flag bits other than the ACCESS_TYPE bits
+             * Get a new AccessType and AccessAttribute -- to be used for all
+             * field units that follow, until field end or another AccessAs keyword.
+             *
+             * In FieldFlags, preserve the flag bits other than the ACCESS_TYPE bits
              */
-            Info->FieldFlags  = (UINT8) ((Info->FieldFlags & FIELD_ACCESS_TYPE_MASK) |
-                                            ((UINT8) (Arg->Value.Integer >> 8)));
+            Info->FieldFlags = (UINT8) ((Info->FieldFlags & ~(AML_FIELD_ACCESS_TYPE_MASK)) |
+                                        ((UINT8) (Arg->Value.Integer32 >> 8)));
+
+            Info->Attribute = (UINT8) (Arg->Value.Integer32);
             break;
 
 
@@ -334,8 +337,7 @@ AcpiDsGetFieldNames (
 
             Status = AcpiNsLookup (WalkState->ScopeInfo,
                             (NATIVE_CHAR *) &((ACPI_PARSE2_OBJECT *)Arg)->Name,
-                            Info->FieldType, IMODE_EXECUTE,
-                            NS_DONT_OPEN_SCOPE,
+                            Info->FieldType, IMODE_EXECUTE, NS_DONT_OPEN_SCOPE,
                             NULL, &Info->FieldNode);
             if (ACPI_FAILURE (Status))
             {
@@ -428,6 +430,7 @@ AcpiDsCreateField (
 
     Arg = Arg->Next;
     Info.FieldFlags = Arg->Value.Integer8;
+    Info.Attribute = 0;
 
     /* Each remaining arg is a Named Field */
 
