@@ -165,7 +165,7 @@ CmBuildExternalSimpleObject (
     UINT32                  *BufferSpaceUsed)
 {
     UINT32                  Length = 0;
-    UINT8                   *SourcePtr = NULL;
+    char                    *SourcePtr = NULL;
 
 
     FUNCTION_TRACE ("CmBuildExternalSimpleObject");
@@ -180,7 +180,7 @@ CmBuildExternalSimpleObject (
 
         Length = InternalObj->String.Length;
         ExternalObj->String.Length = InternalObj->String.Length;
-        ExternalObj->String.Pointer = DataSpace;
+        ExternalObj->String.Pointer = (char *) DataSpace;
         SourcePtr = InternalObj->String.Pointer;
         break;
 
@@ -190,7 +190,7 @@ CmBuildExternalSimpleObject (
         Length = InternalObj->Buffer.Length;
         ExternalObj->Buffer.Length = InternalObj->Buffer.Length;
         ExternalObj->Buffer.Pointer = DataSpace;
-        SourcePtr = InternalObj->Buffer.Pointer;
+        SourcePtr = (char *) InternalObj->Buffer.Pointer;
         break;
 
 
@@ -297,7 +297,7 @@ CmBuildExternalPackageObject (
     FreeSpace += ExternalObj->Package.Count * sizeof (ACPI_OBJECT);
 
 
-    while (1)
+    for (; ;)
     {
         ThisIndex       = LevelPtr->Index;
         ThisInternalObj = (ACPI_OBJECT_INTERNAL *) LevelPtr->InternalObj->Package.Elements[ThisIndex];
@@ -472,7 +472,7 @@ CmBuildInternalSimpleObject (
     FUNCTION_TRACE ("CmBuildInternalSimpleObject");
 
 
-    InternalObj->Common.Type = ExternalObj->Type;
+    InternalObj->Common.Type = (UINT8) ExternalObj->Type;
 
     switch (ExternalObj->Type)
     {
@@ -585,7 +585,7 @@ CmBuildInternalPackageObject (
     FreeSpace += ExternalObj->Package.Count * sizeof(ACPI_OBJECT);
 
 
-    while (1)
+    for (; ;)
     {
         ThisIndex       = LevelPtr->Index;
         ThisInternalObj = (ACPI_OBJECT_INTERNAL *) &LevelPtr->InternalObj->Package.Elements[ThisIndex];
