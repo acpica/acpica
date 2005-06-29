@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Name: hwsleep.c - ACPI Hardware Sleep/Wake Interface
- *              $Revision: 1.45 $
+ *              $Revision: 1.47 $
  *
  *****************************************************************************/
 
@@ -146,12 +146,12 @@ AcpiSetFirmwareWakingVector (
 
     if (AcpiGbl_CommonFACS.VectorWidth == 32)
     {
-        *(ACPI_CAST_PTR (UINT32, AcpiGbl_CommonFACS.FirmwareWakingVector)) 
+        *(ACPI_CAST_PTR (UINT32, AcpiGbl_CommonFACS.FirmwareWakingVector))
                 = (UINT32) PhysicalAddress;
     }
     else
     {
-        *AcpiGbl_CommonFACS.FirmwareWakingVector 
+        *AcpiGbl_CommonFACS.FirmwareWakingVector
                 = PhysicalAddress;
     }
 
@@ -190,12 +190,12 @@ AcpiGetFirmwareWakingVector (
 
     if (AcpiGbl_CommonFACS.VectorWidth == 32)
     {
-        *PhysicalAddress = (ACPI_PHYSICAL_ADDRESS) 
+        *PhysicalAddress = (ACPI_PHYSICAL_ADDRESS)
             *(ACPI_CAST_PTR (UINT32, AcpiGbl_CommonFACS.FirmwareWakingVector));
     }
     else
     {
-        *PhysicalAddress = 
+        *PhysicalAddress =
             *AcpiGbl_CommonFACS.FirmwareWakingVector;
     }
 
@@ -410,7 +410,7 @@ AcpiEnterSleepState (
 
     /* Wait until we enter sleep state */
 
-    do 
+    do
     {
         Status = AcpiGetRegister (ACPI_BITREG_WAKE_STATUS, &InValue, ACPI_MTX_LOCK);
         if (ACPI_FAILURE (Status))
@@ -421,6 +421,12 @@ AcpiEnterSleepState (
         /* Spin until we wake */
 
     } while (!InValue);
+
+    Status = AcpiSetRegister (ACPI_BITREG_ARB_DISABLE, 0, ACPI_MTX_LOCK);
+    if (ACPI_FAILURE (Status))
+    {
+        return_ACPI_STATUS (Status);
+    }
 
     return_ACPI_STATUS (AE_OK);
 }
