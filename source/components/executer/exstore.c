@@ -1,8 +1,7 @@
 
 /******************************************************************************
- *
- * Module Name: amstore - AML Interpreter object store support
- *              $Revision: 1.119 $
+ * 
+ * Module Name: iexecute - ACPI AML (p-code) execution, top-level routines
  *
  *****************************************************************************/
 
@@ -10,8 +9,8 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
- * All rights reserved.
+ * Some or all of this work - Copyright (c) 1999, Intel Corp.  All rights
+ * reserved.
  *
  * 2. License
  *
@@ -39,9 +38,9 @@
  * The above copyright and patent license is granted only if the following
  * conditions are met:
  *
- * 3. Conditions
+ * 3. Conditions 
  *
- * 3.1. Redistribution of Source with Rights to Further Distribute Source.
+ * 3.1. Redistribution of Source with Rights to Further Distribute Source.  
  * Redistribution of source code of any substantial portion of the Covered
  * Code or modification with rights to further distribute source must include
  * the above Copyright Notice, the above License, this list of Conditions,
@@ -49,11 +48,11 @@
  * Licensee must cause all Covered Code to which Licensee contributes to
  * contain a file documenting the changes Licensee made to create that Covered
  * Code and the date of any change.  Licensee must include in that file the
- * documentation of any changes made by any predecessor Licensee.  Licensee
+ * documentation of any changes made by any predecessor Licensee.  Licensee 
  * must include a prominent statement that the modification is derived,
  * directly or indirectly, from Original Intel Code.
  *
- * 3.2. Redistribution of Source with no Rights to Further Distribute Source.
+ * 3.2. Redistribution of Source with no Rights to Further Distribute Source.  
  * Redistribution of source code of any substantial portion of the Covered
  * Code or modification without rights to further distribute source must
  * include the following Disclaimer and Export Compliance provision in the
@@ -87,7 +86,7 @@
  * INSTALLATION, TRAINING OR OTHER SERVICES.  INTEL WILL NOT PROVIDE ANY
  * UPDATES, ENHANCEMENTS OR EXTENSIONS.  INTEL SPECIFICALLY DISCLAIMS ANY
  * IMPLIED WARRANTIES OF MERCHANTABILITY, NONINFRINGEMENT AND FITNESS FOR A
- * PARTICULAR PURPOSE.
+ * PARTICULAR PURPOSE. 
  *
  * 4.2. IN NO EVENT SHALL INTEL HAVE ANY LIABILITY TO LICENSEE, ITS LICENSEES
  * OR ANY OTHER THIRD PARTY, FOR ANY LOST PROFITS, LOST DATA, LOSS OF USE OR
@@ -115,30 +114,147 @@
  *
  *****************************************************************************/
 
-#define __AMSTORE_C__
+#define __IEXECUTE_C__
 
-#include "acpi.h"
-#include "acparser.h"
-#include "acdispat.h"
-#include "acinterp.h"
-#include "amlcode.h"
-#include "acnamesp.h"
-#include "actables.h"
+#include <acpi.h>
+#include <interpreter.h>
+#include <amlcode.h>
+#include <namespace.h>
 
 
+#define _THIS_MODULE        "iexecute.c"
 #define _COMPONENT          INTERPRETER
-        MODULE_NAME         ("amstore")
 
 
-/*******************************************************************************
+
+/******************************************************************************
+ * 
+ * FUNCTION:    AmlExecuteMethod
  *
- * FUNCTION:    AcpiAmlExecStore
+ * PARAMETERS:  Offset              - Offset to method in code block
+ *              Length              - Length of method
+ *              **Params            - List of parameters to pass to method, 
+ *                                    terminated by NULL. Params itself may be 
+ *                                    NULL if no parameters are being passed.
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Execute a control method
+ *
+ *****************************************************************************/
+
+ACPI_STATUS
+AmlExecuteMethod (
+    INT32                   Offset, 
+    INT32                   Length, 
+    ACPI_OBJECT_INTERNAL    **Params)
+{
+    ACPI_STATUS             Status;
+    INT32                   i1;
+    INT32                   i2;
+
+
+    FUNCTION_TRACE ("AmlExecuteMethod");
+
+
+    if ((Status = AmlPrepExec (Offset, Length)) != AE_OK)  /* package stack */
+    {
+        DEBUG_PRINT (ACPI_ERROR, ("AmlExecuteMethod: Exec Stack Overflow\n"));
+    }
+
+    /* Push new frame on Method stack */
+    
+    else if (++MethodStackTop >= AML_METHOD_MAX_NEST)
+    {
+        MethodStackTop--;
+        DEBUG_PRINT (ACPI_ERROR, ("AmlExecuteMethod: Method Stack Overflow\n"));
+        Status = AE_AML_ERROR;
+    }
+
+    else
+    {
+        /* Undefine all local variables */
+    
+        for (i1 = 0; (i1 < MTH_NUM_LOCALS) && (Status == AE_OK); ++i1)
+        {
+            Status = AmlMthStackSetValue (i1 + MTH_LOCAL_BASE, NULL, NULL);
+        }
+
+        if (AE_OK == Status)
+        {
+            /*  Copy passed parameters into method stack frame  */
+                
+            for (i2 = i1 = 0; (i1 < MTH_NUM_ARGS) && (AE_OK == Status); ++i1)
+            {   
+                if (Params && Params[i2])   
+                {
+                    /*  parameter/argument specified    */
+                    /*  define ppsParams[i2++] argument object descriptor   */
+                    
+                    Status = AmlMthStackSetValue (i1 + MTH_ARG_BASE, Params[i2++], NULL);
+                }
+                else    
+                {
+                    /*  no parameter/argument object descriptor definition  */
+                    
+                    Status = AmlMthStackSetValue (i1 + MTH_ARG_BASE, NULL, NULL);
+                }
+            }
+        }
+
+
+        /* 
+         * Normal exit is with Status == AE_RETURN_VALUE when a ReturnOp has been executed,
+         * or with Status == AE_PENDING at end of AML block (end of Method code)
+         */
+
+        if (AE_OK == Status)
+        {
+            while ((Status = AmlDoCode (MODE_Exec)) == AE_OK)
+            {;}
+        }
+
+        if (AE_PENDING == Status)
+        {
+            Status = AmlPkgPopExec ();            /* package stack -- inverse of AmlPrepExec() */
+        }
+
+        else
+        {
+            if (AE_RETURN_VALUE == Status)
+            {
+                DEBUG_PRINT (ACPI_INFO, ("Method returned: \n"));
+                DUMP_STACK_ENTRY (AmlObjStackGetValue (STACK_TOP));
+                DEBUG_PRINT (ACPI_INFO, (" at stack level %d\n", AmlObjStackLevel()));
+            }
+
+            AmlPkgPopExec ();            /* package stack -- inverse of AmlPrepExec() */
+        }
+
+        MethodStackTop--;          /* pop our frame off method stack */
+
+    }
+
+    if (AmlObjStackLevel())
+    {
+        DEBUG_PRINT (ACPI_INFO, ("AmlExecuteMethod: Obj TOS at exit=%d\n",
+                        AmlObjStackLevel()));
+    }
+
+    FUNCTION_STATUS_EXIT (Status);
+    return Status;
+}
+
+
+/*****************************************************************************
+ * 
+ * FUNCTION:    AmlExecStore
  *
  * PARAMETERS:  *ValDesc            - Value to be stored
- *              *DestDesc           - Where to store it 0 Must be (ACPI_HANDLE)
- *                                    or an ACPI_OPERAND_OBJECT  of type
- *                                    Reference; if the latter the descriptor
- *                                    will be either reused or deleted.
+ *              *DestDesc           - Where to store it -- must be an (ACPI_HANDLE)
+ *                                    or an ACPI_OBJECT_INTERNAL of type Lvalue;
+ *                                    if the latter the descriptor will be 
+ *                                    either reused or deleted.
  *
  * RETURN:      Status
  *
@@ -147,316 +263,551 @@
  *              functions to store the result of an operation into
  *              the destination operand.
  *
- ******************************************************************************/
+ ****************************************************************************/
 
 ACPI_STATUS
-AcpiAmlExecStore (
-    ACPI_OPERAND_OBJECT     *ValDesc,
-    ACPI_OPERAND_OBJECT     *DestDesc,
-    ACPI_WALK_STATE         *WalkState)
+AmlExecStore (
+    ACPI_OBJECT_INTERNAL    *ValDesc, 
+    ACPI_OBJECT_INTERNAL    *DestDesc)
 {
-    ACPI_STATUS             Status = AE_OK;
-    ACPI_OPERAND_OBJECT     *DeleteDestDesc = NULL;
-    ACPI_OPERAND_OBJECT     *TmpDesc;
-    ACPI_NAMESPACE_NODE     *Node = NULL;
-    UINT8                   Value = 0;
-    UINT32                  Length;
-    UINT32                  i;
+    ACPI_HANDLE             TempHandle;
+    ACPI_STATUS             Status = AE_AML_ERROR;
+    INT32                   Stacked = FALSE;
+    BOOLEAN                 Locked = FALSE;
+    ACPI_OBJECT_INTERNAL    *DeleteDestDesc = NULL;
+    UINT8                   *Location=NULL;
+    UINT32                  Mask;
+
+
 
 
     FUNCTION_TRACE ("AmlExecStore");
 
-    DEBUG_PRINT (ACPI_INFO, ("entered AcpiAmlExecStore: Val=%p, Dest=%p\n",
+    DEBUG_PRINT (ACPI_INFO, ("entered AmlExecStore: Val=%p, Dest=%p\n", 
                     ValDesc, DestDesc));
-
-
-    /* Validate parameters */
 
     if (!ValDesc || !DestDesc)
     {
-        DEBUG_PRINT (ACPI_ERROR,
-            ("AmlExecStore: Internal error - null pointer\n"));
-        return_ACPI_STATUS (AE_AML_NO_OPERAND);
+        DEBUG_PRINT (ACPI_ERROR, ("AmlExecStore: internal error - null pointer\n"));
     }
 
-    /* Examine the datatype of the DestDesc */
-
-    if (VALID_DESCRIPTOR_TYPE (DestDesc, ACPI_DESC_TYPE_NAMED))
+    else if (IS_NS_HANDLE (DestDesc))
     {
-        /* Dest is an ACPI_HANDLE, create a new object */
+        /* Dest is an ACPI_HANDLE */
 
-        Node = (ACPI_NAMESPACE_NODE *) DestDesc;
-        DestDesc = AcpiCmCreateInternalObject (INTERNAL_TYPE_REFERENCE);
+        TempHandle = (ACPI_HANDLE) DestDesc;
+        DestDesc = AllocateObjectDesc ();
         if (!DestDesc)
-        {
+        {   
             /* Allocation failure  */
-
-            return_ACPI_STATUS (AE_NO_MEMORY);
+            
+            FUNCTION_STATUS_EXIT (AE_NO_MEMORY);
+            return AE_NO_MEMORY;
         }
+        else
+        {
+            /* DestDesc is valid */
 
-        /* Build a new Reference wrapper around the handle */
+            DestDesc->Type          = (UINT8) TYPE_Lvalue;
+            DestDesc->Lvalue.OpCode = AML_NameOp;
+            DestDesc->Lvalue.Object = TempHandle;
 
-        DestDesc->Reference.OpCode = AML_NAME_OP;
-        DestDesc->Reference.Object = Node;
+            /* 
+             * Push the descriptor on the object stack temporarily
+             * to protect it from garbage collection
+             */
+
+            Status = AmlObjStackPushIfExec (MODE_Exec);
+            if (AE_OK != Status)
+            {
+                CmFree (DestDesc);
+                DestDesc = NULL;
+            }
+            else
+            {
+                AmlObjStackSetValue (STACK_TOP, DestDesc);
+                Stacked = TRUE;
+            }
+        }
     }
 
     else
     {
-        DEBUG_PRINT (ACPI_INFO,
-            ("AmlExecStore: Dest is object (not handle) - may be deleted!\n"));
+        /* DestDesc is not an ACPI_HANDLE  */
+
+        DEBUG_PRINT (ACPI_INFO, 
+                        ("AmlExecStore: Dest is object (not handle) - may be deleted!\n", 
+                        DestDesc));
+        Status = AE_OK;
     }
 
-    /* Destination object must be of type Reference */
+    if ((AE_OK == Status) && 
+        (DestDesc->Type != TYPE_Lvalue))
+    {   
+        /* Store target is not an Lvalue */
 
-    if (DestDesc->Common.Type != INTERNAL_TYPE_REFERENCE)
-    {
-        /* Destination is not an Reference */
-
-        DEBUG_PRINT (ACPI_ERROR,
-            ("AmlExecStore: Destination is not an Reference [%p]\n", DestDesc));
+        DEBUG_PRINT (ACPI_ERROR, ("AmlExecStore: Store target is not an Lvalue [%s]\n",
+                        NsTypeNames[DestDesc->Type]));
 
         DUMP_STACK_ENTRY (ValDesc);
         DUMP_STACK_ENTRY (DestDesc);
-        DUMP_OPERANDS (&DestDesc, IMODE_EXECUTE, "AmlExecStore",
-                        2, "target not Reference");
+        DUMP_STACK (MODE_Exec, "AmlExecStore", 2, "target not Lvalue");
 
-        return_ACPI_STATUS (AE_AML_OPERAND_TYPE);
+        Status = AE_AML_ERROR;
     }
 
-    /* Examine the Reference opcode */
-
-    switch (DestDesc->Reference.OpCode)
+    if (AE_OK != Status)
     {
+        FUNCTION_STATUS_EXIT (Status);
+        return Status;   /* TBD: temporary hack */
+    }
 
-    case AML_NAME_OP:
 
-        /*
-         *  Storing into a Name
-         */
-        DeleteDestDesc = DestDesc;
-        Status = AcpiAmlStoreObjectToNode (ValDesc, DestDesc->Reference.Object,
-                        WalkState);
+    /* Now examine the opcode */
+
+    switch (DestDesc->Lvalue.OpCode)
+    {
+    case AML_NameOp:
+
+        /* Storing into a Name */
+
+        TempHandle = DestDesc->Lvalue.Object;
+        switch (NsGetType (TempHandle)) 
+        {
+            /* Type of Name's existing value */
+
+        case TYPE_Alias:
+
+            DEBUG_PRINT (ACPI_WARN,
+                        ("AmlExecStore/NameOp: Store into %s not implemented\n",
+                        NsTypeNames[NsGetType(TempHandle)]));
+#if 1
+            Status = AE_AML_ERROR;
+#else
+            Status = AE_OK;
+#endif
+            DeleteDestDesc = DestDesc;
+            break;
+
+
+        case TYPE_BankField:
+
+            /* 
+             * Storing into a BankField.
+             * If value is not a Number, try to resolve it to one.
+             */
+
+            if ((ValDesc->Type != TYPE_Number) &&
+               ((Status = AmlGetRvalue (&ValDesc)) != AE_OK))
+            {
+                DeleteDestDesc = DestDesc;
+            }
+
+            else if (ValDesc->Type != TYPE_Number)
+            {
+                DEBUG_PRINT (ACPI_ERROR, (
+                        "AmlExecStore: Value assigned to BankField must be Number, not %d\n",
+                        ValDesc->Type));
+
+                DeleteDestDesc = DestDesc;
+                Status = AE_AML_ERROR;
+            }
+
+            else
+            {
+                /* 
+                 * Delete descriptor that points to name,
+                 * and point to descriptor for name's value instead.
+                 */
+
+                DeleteDestDesc = DestDesc;
+                if (Stacked)
+                {
+                    /* Must clear the top of the stack or it will get deleted twice */
+
+                    AmlObjStackClearTop ();
+                }
+
+                DestDesc = NsGetValue (TempHandle);
+                if (!DestDesc)
+                {
+                    DEBUG_PRINT (ACPI_ERROR, ("AmlExecStore/BankField: internal error: null old-value pointer\n"));
+                    Status = AE_AML_ERROR;
+                }
+            }
+
+
+            if ((AE_OK == Status) && 
+                (TYPE_BankField != DestDesc->Type))
+            {
+                DEBUG_PRINT (ACPI_ERROR, (
+                        "AmlExecStore/BankField: internal error: Name %4.4s type %d does not match value-type %d at %p\n",
+                        TempHandle, NsGetType (TempHandle), DestDesc->Type, DestDesc));
+
+                Status = AE_AML_ERROR;
+            }
+
+            if (AE_OK == Status)
+            {
+                /* Get the global lock if needed */
+
+                Locked = AmlAcquireGlobalLock (DestDesc->BankField.LockRule);
+
+                /* Set Bank value to select proper Bank */
+                /* Perform the update (Set Bank Select) */
+
+                Status = AmlSetNamedFieldValue (DestDesc->BankField.BankSelect,
+                                            DestDesc->BankField.Value);
+
+                DEBUG_PRINT (ACPI_INFO,
+                            ("AmlExecStore: set bank select returned %s\n", ExceptionNames[Status]));
+            }
+
+
+            if (AE_OK == Status)
+            {
+                /* Set bank select successful, next set data value  */
+                
+                Status = AmlSetNamedFieldValue (DestDesc->BankField.BankSelect,
+                                               ValDesc->BankField.Value);
+                DEBUG_PRINT (ACPI_INFO,
+                            ("AmlExecStore: set bank select returned %s\n", ExceptionNames[Status]));
+            }
+            
+            break;  /* Global Lock released below  */
+
+
+        case TYPE_DefField:
+
+            /* 
+             * Storing into a Field defined in a Region.
+             * If value is not a Number, try to resolve it to one.
+             */
+
+            if ((ValDesc->Type != TYPE_Number) && 
+               ((Status = AmlGetRvalue (&ValDesc)) != AE_OK))
+            {
+                DeleteDestDesc = DestDesc;
+            }
+
+            else if (ValDesc->Type != TYPE_Number)
+            {
+                DEBUG_PRINT (ACPI_ERROR, (
+                        "AmlExecStore/DefField: Value assigned to Field must be Number, not %d\n",
+                        ValDesc->Type));
+
+                DeleteDestDesc = DestDesc;
+                Status = AE_AML_ERROR;
+            }
+
+            else
+            {
+                /* 
+                 * Delete descriptor that points to name,
+                 * and point to descriptor for name's value instead.
+                 */
+
+                DeleteDestDesc = DestDesc;
+                if (Stacked)
+                {
+                    /* Must clear the top of the stack or it will get deleted twice */
+
+                    AmlObjStackClearTop ();
+                }
+
+                DestDesc = NsGetValue (TempHandle);
+                if (!DestDesc)
+                {
+                    DEBUG_PRINT (ACPI_ERROR, ("AmlExecStore/DefField: internal error: null old-value pointer\n"));
+                    Status = AE_AML_ERROR;
+                }
+            }
+
+            if ((AE_OK == Status) && 
+                (TYPE_DefField != DestDesc->Type))
+            {
+                DEBUG_PRINT (ACPI_ERROR, (
+                        "AmlExecStore/DefField:internal error: Name %4.4s type %d does not match value-type %d at %p\n",
+                        TempHandle, NsGetType (TempHandle), DestDesc->Type, DestDesc));
+
+                Status = AE_AML_ERROR;
+            }
+
+            if (AE_OK == Status)
+            {
+                /* Get the global lock if needed */
+
+                Locked = AmlAcquireGlobalLock (ValDesc->Field.LockRule);
+
+                /* Perform the update */
+                
+                Status = AmlSetNamedFieldValue (TempHandle, ValDesc->Number.Value);
+            }
+                
+            break;      /* Global Lock released below   */
+
+
+        case TYPE_IndexField:
+            
+            /* 
+             * Storing into an IndexField.
+             * If value is not a Number, try to resolve it to one.
+             */
+            
+            if ((ValDesc->Type != TYPE_Number) &&
+               ((Status = AmlGetRvalue (&ValDesc)) != AE_OK))
+            {
+                DeleteDestDesc = DestDesc;
+            }
+
+            else if (ValDesc->Type != TYPE_Number)
+            {
+                DEBUG_PRINT (ACPI_ERROR, (
+                        "AmlExecStore: Value assigned to IndexField must be Number, not %d\n",
+                        ValDesc->Type));
+
+                DeleteDestDesc = DestDesc;
+                Status = AE_AML_ERROR;
+            }
+
+            if (AE_OK == Status)
+            {
+                /* 
+                 * Delete descriptor that points to name,
+                 * and point to descriptor for name's value instead.
+                 */
+
+                DeleteDestDesc = DestDesc;
+                if (Stacked)
+                {
+                    /* Must clear the top of the stack or it will get deleted twice */
+
+                    AmlObjStackClearTop ();
+                }
+
+                DestDesc = NsGetValue (TempHandle);
+                if (!DestDesc)
+                {
+                    DEBUG_PRINT (ACPI_ERROR, ("AmlExecStore/IndexField: internal error: null old-value pointer\n"));
+                    Status = AE_AML_ERROR;
+                }
+            }
+
+            if ((AE_OK == Status) &&
+                (TYPE_IndexField != DestDesc->Type))
+            {
+                DEBUG_PRINT (ACPI_ERROR, (
+                        "AmlExecStore/IndexField:internal error: Name %4.4s type %d does not match value-type %d at %p\n",
+                        TempHandle, NsGetType (TempHandle), DestDesc->Type, DestDesc));
+
+                Status = AE_AML_ERROR;
+            }
+
+            if (AE_OK == Status)
+            {
+                /* Get the global lock if needed */
+
+                Locked = AmlAcquireGlobalLock (DestDesc->IndexField.LockRule);
+
+                /* Set Index value to select proper Data register */
+                /* perform the update (Set index) */
+
+                Status = AmlSetNamedFieldValue (DestDesc->IndexField.Index,
+                                               DestDesc->IndexField.Value);
+                DEBUG_PRINT (ACPI_INFO,
+                            ("AmlExecStore: IndexField: set index returned %s\n", ExceptionNames[Status]));
+            }
+
+            if (AE_OK == Status)
+            {
+                /* set index successful, next set Data value */
+                
+                Status = AmlSetNamedFieldValue (DestDesc->IndexField.Data,
+                                               ValDesc->Number.Value);
+                DEBUG_PRINT (ACPI_INFO,
+                            ("AmlExecStore: IndexField: set data returned %s\n", ExceptionNames[Status]));
+            }
+
+            break;      /* Global Lock released below   */
+
+
+        case TYPE_FieldUnit:
+            
+            /* 
+             * Storing into a FieldUnit (defined in a Buffer).
+             * If value is not a Number, try to resolve it to one.
+             */
+            if ((ValDesc->Type != TYPE_Number) &&
+               ((Status = AmlGetRvalue (&ValDesc)) != AE_OK))
+            {
+                DeleteDestDesc = DestDesc;
+            }
+
+            else if (ValDesc->Type != TYPE_Number)
+            {
+                DEBUG_PRINT (ACPI_ERROR, (
+                        "AmlExecStore/FieldUnit: Value assigned to Field must be Number, not %d\n",
+                          ValDesc->Type));
+
+                DeleteDestDesc = DestDesc;
+                Status = AE_AML_ERROR;
+            }
+
+
+            if (AE_OK == Status)
+            {
+                /* 
+                 * Delete descriptor that points to name,
+                 * and point to descriptor for name's value instead.
+                 */
+
+                DeleteDestDesc = DestDesc;
+                if (Stacked)
+                {
+                    /* Must clear the top of the stack or it will get deleted twice */
+
+                    AmlObjStackClearTop ();
+                }
+
+                DestDesc = NsGetValue (TempHandle);
+                if (!DestDesc)
+                {
+                    DEBUG_PRINT (ACPI_ERROR, ("AmlExecStore/FieldUnit: internal error: null old-value pointer\n"));
+                    Status = AE_AML_ERROR;
+                }
+
+                else
+                {
+                    DEBUG_PRINT (ACPI_INFO,
+                        ("AmlExecStore: FieldUnit: Name's value DestDesc=%p, DestDesc->Type=%02Xh\n",
+                        DestDesc, DestDesc->Type));
+                }
+            }
+
+            if ((AE_OK == Status) &&
+                (DestDesc->Type != (UINT8) NsGetType (TempHandle)))
+            {
+                DEBUG_PRINT (ACPI_ERROR, (
+                        "AmlExecStore/FieldUnit: Internal error - Name %4.4s type %d does not match value-type %d at %p\n",
+                          TempHandle, NsGetType(TempHandle), DestDesc->Type, DestDesc));
+
+                Status = AE_AML_ERROR;
+            }
+
+            if ((AE_OK == Status) &&
+               (!DestDesc->FieldUnit.Container ||
+                TYPE_Buffer != DestDesc->FieldUnit.Container->Type ||
+                DestDesc->FieldUnit.Sequence
+                    != DestDesc->FieldUnit.Container->Buffer.Sequence))
+            {
+                NsDumpPathname (TempHandle, "AmlExecStore/FieldUnit: Bad container in ", 
+                                ACPI_ERROR, _COMPONENT);
+                DUMP_ENTRY (TempHandle);
+
+                DEBUG_PRINT (ACPI_ERROR, ("Container: %p", DestDesc->FieldUnit.Container));
+                if (DestDesc->FieldUnit.Container)
+                {
+                    DEBUG_PRINT_RAW (ACPI_ERROR, (" Type %d, FuSeq %x BufSeq %x",
+                        DestDesc->FieldUnit.Container->Type,
+                        DestDesc->FieldUnit.Sequence,
+                        DestDesc->FieldUnit.Container->Buffer.Sequence));
+                }
+                DEBUG_PRINT_RAW (ACPI_ERROR, ("\n"));
+
+                Status = AE_AML_ERROR;
+            }
+
+            if (AE_OK == Status)
+            {
+                /* Get the global lock if needed */
+
+                Locked = AmlAcquireGlobalLock (DestDesc->FieldUnit.LockRule);
+            }
+
+            if ((AE_OK == Status) &&
+                (DestDesc->FieldUnit.Length + DestDesc->FieldUnit.BitOffset > 32))
+            {
+                DEBUG_PRINT (ACPI_ERROR, ("AmlExecStore/FieldUnit: implementation limitation: Field exceeds UINT32\n"));
+                Status = AE_AML_ERROR;
+            }
+            
+            if (AE_OK == Status)
+            {
+                /* Field location is (base of buffer) + (byte offset) */
+                
+                Location = DestDesc->FieldUnit.Container->Buffer.Pointer
+                                + DestDesc->FieldUnit.Offset;
+                
+                /* 
+                 * Construct Mask with 1 bits where the field is,
+                 * 0 bits elsewhere
+                 */
+                Mask = ((UINT32) 1 << DestDesc->FieldUnit.Length) - ((UINT32)1
+                                    << DestDesc->FieldUnit.BitOffset);
+
+                DEBUG_PRINT (TRACE_BFIELD,
+                        ("** Store %lx in buffer %p byte %ld bit %d width %d addr %p mask %08lx\n",
+                        ValDesc->Number.Value,
+                        DestDesc->FieldUnit.Container->Buffer.Pointer,
+                        DestDesc->FieldUnit.Offset,
+                        DestDesc->FieldUnit.BitOffset,
+                        DestDesc->FieldUnit.Length,
+                        Location, Mask));
+
+                /* zero out the field in the buffer */
+                
+                *(UINT32 *) Location &= ~Mask;
+
+                /* 
+                 * Shift and mask the new value into position,
+                 * and or it into the buffer.
+                 */
+                *(UINT32 *) Location |=
+                    (ValDesc->Number.Value << DestDesc->FieldUnit.BitOffset) & Mask;
+                
+                DEBUG_PRINT (TRACE_BFIELD,
+                            (" val %08lx\n", *(UINT32 *) Location));
+            }
+            break;  /* Global lock released below */
+
+
+        default:
+            
+            /* 
+             * All other types than Alias and the various Fields come here.
+             * Store a copy of ValDesc as the new value of the Name, and set
+             * the Name's type to that of the value being stored in it.
+             */
+            memcpy ((void *) DestDesc, (void *) ValDesc, sizeof (*ValDesc));
+            
+            if (TYPE_Buffer == DestDesc->Type)
+            {
+                /* Assign a new sequence number */
+
+                DestDesc->Buffer.Sequence = AmlBufSeq ();
+            }
+
+
+            NsSetValue (TempHandle, DestDesc, DestDesc->Type);
+
+            if (Stacked)
+            {
+                NsDumpPathname (TempHandle, "AmlExecStore: set ", ACPI_INFO, _COMPONENT);
+
+                DUMP_ENTRY (TempHandle);
+                DUMP_STACK_ENTRY (DestDesc);
+            }
+
+            break;
+        }
 
         break;  /* Case NameOp */
 
 
-    case AML_INDEX_OP:
+    case AML_ZeroOp: case AML_OneOp: case AML_OnesOp:
 
-        DeleteDestDesc = DestDesc;
-
-        /*
-         * Valid source value and destination reference pointer.
-         *
-         * ACPI Specification 1.0B section 15.2.3.4.2.13:
-         * Destination should point to either a buffer or a package
-         */
-
-        /*
-         * Actually, storing to a package is not so simple.  The source must be
-         * evaluated and converted to the type of the destination and then the
-         * source is copied into the destination - we can't just point to the
-         * source object.
-         */
-        if (DestDesc->Reference.TargetType == ACPI_TYPE_PACKAGE)
-        {
-            /*
-             * The object at *(DestDesc->Reference.Where) is the
-             *  element within the package that is to be modified.
-             */
-            TmpDesc = *(DestDesc->Reference.Where);
-            if (TmpDesc)
-            {
-                /*
-                 * If the Destination element is a package, we will delete
-                 *  that object and construct a new one.
-                 *
-                 * TBD: [Investigate] Should both the src and dest be required
-                 *      to be packages?
-                 *       && (ValDesc->Common.Type == ACPI_TYPE_PACKAGE)
-                 */
-                if (TmpDesc->Common.Type == ACPI_TYPE_PACKAGE)
-                {
-                    /*
-                     * Take away the reference for being part of a package and
-                     * delete
-                     */
-                    AcpiCmRemoveReference (TmpDesc);
-                    AcpiCmRemoveReference (TmpDesc);
-
-                    TmpDesc = NULL;
-                }
-            }
-
-            if (!TmpDesc)
-            {
-                /*
-                 * If the TmpDesc is NULL, that means an uninitialized package
-                 * has been used as a destination, therefore, we must create
-                 * the destination element to match the type of the source
-                 * element NOTE: ValDesc can be of any type.
-                 */
-                TmpDesc = AcpiCmCreateInternalObject (ValDesc->Common.Type);
-                if (!TmpDesc)
-                {
-                    Status = AE_NO_MEMORY;
-                    goto Cleanup;
-                }
-
-                /*
-                 * If the source is a package, copy the source to the new dest
-                 */
-                if (ACPI_TYPE_PACKAGE == TmpDesc->Common.Type)
-                {
-                    Status = AcpiAmlBuildCopyInternalPackageObject (
-                                ValDesc, TmpDesc, WalkState);
-                    if (ACPI_FAILURE (Status))
-                    {
-                        AcpiCmRemoveReference (TmpDesc);
-                        TmpDesc = NULL;
-                        goto Cleanup;
-                    }
-                }
-
-                /*
-                 * Install the new descriptor into the package and add a
-                 * reference to the newly created descriptor for now being
-                 * part of the parent package
-                 */
-
-                *(DestDesc->Reference.Where) = TmpDesc;
-                AcpiCmAddReference (TmpDesc);
-            }
-
-            if (ACPI_TYPE_PACKAGE != TmpDesc->Common.Type)
-            {
-                /*
-                 * The destination element is not a package, so we need to
-                 * convert the contents of the source (ValDesc) and copy into
-                 * the destination (TmpDesc)
-                 */
-                Status = AcpiAmlStoreObjectToObject (ValDesc, TmpDesc,
-                                                        WalkState);
-                if (ACPI_FAILURE (Status))
-                {
-                    /*
-                     * An error occurrered when copying the internal object
-                     * so delete the reference.
-                     */
-                    DEBUG_PRINT (ACPI_ERROR,
-                        ("AmlExecStore/Index: Unable to copy the internal object\n"));
-                    Status = AE_AML_OPERAND_TYPE;
-                }
-            }
-
-            break;
-        }
-
-        /*
-         * Check that the destination is a Buffer Field type
-         */
-        if (DestDesc->Reference.TargetType != ACPI_TYPE_BUFFER_FIELD)
-        {
-            Status = AE_AML_OPERAND_TYPE;
-            break;
-        }
-
-        /*
-         * Storing into a buffer at a location defined by an Index.
-         *
-         * Each 8-bit element of the source object is written to the
-         * 8-bit Buffer Field of the Index destination object.
-         */
-
-        /*
-         * Set the TmpDesc to the destination object and type check.
-         */
-        TmpDesc = DestDesc->Reference.Object;
-
-        if (TmpDesc->Common.Type != ACPI_TYPE_BUFFER)
-        {
-            Status = AE_AML_OPERAND_TYPE;
-            break;
-        }
-
-        /*
-         * The assignment of the individual elements will be slightly
-         * different for each source type.
-         */
-
-        switch (ValDesc->Common.Type)
-        {
-        /*
-         * If the type is Integer, the Length is 4.
-         * This loop to assign each of the elements is somewhat
-         *  backward because of the Big Endian-ness of IA-64
-         */
-        case ACPI_TYPE_INTEGER:
-            Length = 4;
-            for (i = Length; i != 0; i--)
-            {
-                Value = (UINT8)(ValDesc->Integer.Value >> (MUL_8 (i - 1)));
-                TmpDesc->Buffer.Pointer[DestDesc->Reference.Offset] = Value;
-            }
-            break;
-
-        /*
-         * If the type is Buffer, the Length is in the structure.
-         * Just loop through the elements and assign each one in turn.
-         */
-        case ACPI_TYPE_BUFFER:
-            Length = ValDesc->Buffer.Length;
-            for (i = 0; i < Length; i++)
-            {
-                Value = *(ValDesc->Buffer.Pointer + i);
-                TmpDesc->Buffer.Pointer[DestDesc->Reference.Offset] = Value;
-            }
-            break;
-
-        /*
-         * If the type is String, the Length is in the structure.
-         * Just loop through the elements and assign each one in turn.
-         */
-        case ACPI_TYPE_STRING:
-            Length = ValDesc->String.Length;
-            for (i = 0; i < Length; i++)
-            {
-                Value = *(ValDesc->String.Pointer + i);
-                TmpDesc->Buffer.Pointer[DestDesc->Reference.Offset] = Value;
-            }
-            break;
-
-        /*
-         * If source is not a valid type so return an error.
-         */
-        default:
-            DEBUG_PRINT (ACPI_ERROR,
-                ("AmlExecStore/Index: Source must be Number/Buffer/String type, not %X\n",
-                ValDesc->Common.Type));
-            Status = AE_AML_OPERAND_TYPE;
-            break;
-        }
-
-        /*
-         * If we had an error, break out of this case statement.
-         */
-        if (ACPI_FAILURE (Status))
-        {
-            break;
-        }
-
-        /*
-         * Set the return pointer
-         */
-        DestDesc = TmpDesc;
-
-        break;
-
-    case AML_ZERO_OP:
-    case AML_ONE_OP:
-    case AML_ONES_OP:
-
-        /*
-         * Storing to a constant is a no-op -- see ACPI Specification
+        /* 
+         * Storing to a constant is a no-op -- see spec sec 15.2.3.3.1.
          * Delete the result descriptor.
          */
 
@@ -464,68 +815,82 @@ AcpiAmlExecStore (
         break;
 
 
-    case AML_LOCAL_OP:
+    case AML_Local0: case AML_Local1: case AML_Local2: case AML_Local3:
+    case AML_Local4: case AML_Local5: case AML_Local6: case AML_Local7:
 
-        Status = AcpiDsMethodDataSetValue (MTH_TYPE_LOCAL,
-                        (DestDesc->Reference.Offset), ValDesc, WalkState);
-        DeleteDestDesc = DestDesc;
+        Status = AmlMthStackSetValue (MTH_LOCAL_BASE + DestDesc->Lvalue.OpCode - AML_Local0, ValDesc, DestDesc);
         break;
 
 
-    case AML_ARG_OP:
+    case AML_Arg0: case AML_Arg1: case AML_Arg2: case AML_Arg3:
+    case AML_Arg4: case AML_Arg5: case AML_Arg6:
 
-        Status = AcpiDsMethodDataSetValue (MTH_TYPE_ARG,
-                        (DestDesc->Reference.Offset), ValDesc, WalkState);
-        DeleteDestDesc = DestDesc;
+        Status = AmlMthStackSetValue (MTH_ARG_BASE + DestDesc->Lvalue.OpCode - AML_Arg0, ValDesc, DestDesc);
         break;
 
 
-    case AML_DEBUG_OP:
+    case Debug1:
 
-        /*
+        /* 
          * Storing to the Debug object causes the value stored to be
-         * displayed and otherwise has no effect -- see ACPI Specification
+         * displayed and otherwise has no effect -- see sec. 15.2.3.3.3.
          */
-        DEBUG_PRINT (ACPI_INFO, ("**** Write to Debug Object: ****: \n"));
-        if (ValDesc->Common.Type == ACPI_TYPE_STRING)
-        {
-            DEBUG_PRINT (ACPI_INFO, ("%s\n", ValDesc->String.Pointer));
-        }
-        else
-        {
-            DUMP_STACK_ENTRY (ValDesc);
-        }
+        DEBUG_PRINT (ACPI_INFO, ("DebugOp: \n"));
+        DUMP_STACK_ENTRY (ValDesc);
 
         DeleteDestDesc = DestDesc;
         break;
 
+#if 0
+    case IndexOp:
+        break;
+#endif
 
     default:
-
         DEBUG_PRINT (ACPI_ERROR,
-            ("AmlExecStore: Internal error - Unknown Reference subtype %02x\n",
-            DestDesc->Reference.OpCode));
+                    ("AmlExecStore:internal error: Unknown Lvalue subtype %02x\n",
+                    DestDesc->Lvalue.OpCode));
+        
+        /* TBD:  use object dump routine !! */
 
-        /* TBD: [Restructure] use object dump routine !! */
-
-        DUMP_BUFFER (DestDesc, sizeof (ACPI_OPERAND_OBJECT));
+        DUMP_BUFFER (DestDesc, sizeof (ACPI_OBJECT_INTERNAL),0);
 
         DeleteDestDesc = DestDesc;
-        Status = AE_AML_INTERNAL;
+        Status = AE_AML_ERROR;
+    
+    }   /* switch(DestDesc->Lvalue.OpCode) */
 
-    }   /* switch(DestDesc->Reference.OpCode) */
 
+    /* Release global lock if we acquired it earlier */
 
-Cleanup:
+    AmlReleaseGlobalLock (Locked);
 
-    /* Cleanup and exit*/
+    /* Cleanup */
 
     if (DeleteDestDesc)
     {
-        AcpiCmRemoveReference (DeleteDestDesc);
+        CmFree (DeleteDestDesc);
+        if (AmlObjStackGetValue (STACK_TOP) == DeleteDestDesc)
+        {
+            /* 
+             * Clear the object from the stack entry so that it won't be used
+             * again -- but don't actually pop the stack!
+             */
+
+            DEBUG_PRINT (ACPI_ERROR, ("AmlExecStore - Deleted desc was at stack top %p (idx %d)\n",
+                            AmlObjStackGetTopPtr (), AmlObjStackLevel ()));
+            
+            AmlObjStackClearTop ();
+        }
     }
 
-    return_ACPI_STATUS (Status);
+    if (Stacked)
+    {
+        AmlObjStackPop (1);
+    }
+
+    FUNCTION_STATUS_EXIT (Status);
+    return Status;
 }
 
 
