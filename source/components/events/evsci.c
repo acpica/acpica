@@ -2,7 +2,7 @@
  *
  * Module Name: evsci - System Control Interrupt configuration and
  *                      legacy to ACPI mode state transition functions
- *              $Revision: 1.81 $
+ *              $Revision: 1.93 $
  *
  ******************************************************************************/
 
@@ -10,7 +10,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2003, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -117,63 +117,91 @@
  *****************************************************************************/
 
 #include "acpi.h"
-#include "acnamesp.h"
-#include "achware.h"
 #include "acevents.h"
 
 
 #define _COMPONENT          ACPI_EVENTS
-        MODULE_NAME         ("evsci")
+        ACPI_MODULE_NAME    ("evsci")
 
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiEvSciHandler
+ * FUNCTION:    AcpiEvSciXruptHandler
  *
  * PARAMETERS:  Context   - Calling Context
  *
  * RETURN:      Status code indicates whether interrupt was handled.
  *
  * DESCRIPTION: Interrupt handler that will figure out what function or
- *              control method to call to deal with a SCI.  Installed
- *              using BU interrupt support.
+ *              control method to call to deal with a SCI.
  *
  ******************************************************************************/
 
-static UINT32
-AcpiEvSciHandler (
+static UINT32 ACPI_SYSTEM_XFACE
+AcpiEvSciXruptHandler (
     void                    *Context)
 {
-    UINT32                  InterruptHandled = INTERRUPT_NOT_HANDLED;
+    ACPI_GPE_XRUPT_INFO     *GpeXruptList = Context;
+    UINT32                  InterruptHandled = ACPI_INTERRUPT_NOT_HANDLED;
 
 
-    FUNCTION_TRACE("EvSciHandler");
+    ACPI_FUNCTION_TRACE("EvSciXruptHandler");
 
 
     /*
-     * Make sure that ACPI is enabled by checking SCI_EN.  Note that we are
-     * required to treat the SCI interrupt as sharable, level, active low.
+     * We are guaranteed by the ACPI CA initialization/shutdown code that
+     * if this interrupt handler is installed, ACPI is enabled.
      */
-    if (!AcpiHwBitRegisterRead (ACPI_BITREG_SCI_ENABLE, ACPI_MTX_DO_NOT_LOCK))
-    {
-        /* ACPI is not enabled;  this interrupt cannot be for us */
-
-        return_VALUE (INTERRUPT_NOT_HANDLED);
-    }
 
     /*
-     * Fixed AcpiEvents:
-     * -------------
-     * Check for and dispatch any Fixed AcpiEvents that have occurred
+     * Fixed Events:
+     * Check for and dispatch any Fixed Events that have occurred
      */
     InterruptHandled |= AcpiEvFixedEventDetect ();
 
     /*
-     * GPEs:
-     * -----
+     * General Purpose Events:
      * Check for and dispatch any GPEs that have occurred
      */
-    InterruptHandled |= AcpiEvGpeDetect ();
+    InterruptHandled |= AcpiEvGpeDetect (GpeXruptList);
+
+    return_VALUE (InterruptHandled);
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiEvGpeXruptHandler
+ *
+ * PARAMETERS:  Context   - Calling Context
+ *
+ * RETURN:      Status code indicates whether interrupt was handled.
+ *
+ * DESCRIPTION: Handler for GPE Block Device interrupts
+ *
+ ******************************************************************************/
+
+UINT32 ACPI_SYSTEM_XFACE
+AcpiEvGpeXruptHandler (
+    void                    *Context)
+{
+    ACPI_GPE_XRUPT_INFO     *GpeXruptList = Context;
+    UINT32                  InterruptHandled = ACPI_INTERRUPT_NOT_HANDLED;
+
+
+    ACPI_FUNCTION_TRACE("EvGpeXruptHandler");
+
+
+    /*
+     * We are guaranteed by the ACPI CA initialization/shutdown code that
+     * if this interrupt handler is installed, ACPI is enabled.
+     */
+
+    /*
+     * GPEs:
+     * Check for and dispatch any GPEs that have occurred
+     */
+    InterruptHandled |= AcpiEvGpeDetect (GpeXruptList);
 
     return_VALUE (InterruptHandled);
 }
@@ -197,11 +225,11 @@ AcpiEvInstallSciHandler (void)
     UINT32                  Status = AE_OK;
 
 
-    FUNCTION_TRACE ("EvInstallSciHandler");
+    ACPI_FUNCTION_TRACE ("EvInstallSciHandler");
 
 
     Status = AcpiOsInstallInterruptHandler ((UINT32) AcpiGbl_FADT->SciInt,
-                        AcpiEvSciHandler, NULL);
+                        AcpiEvSciXruptHandler, AcpiGbl_GpeXruptListHead);
     return_ACPI_STATUS (Status);
 }
 
@@ -228,15 +256,18 @@ AcpiEvInstallSciHandler (void)
 ACPI_STATUS
 AcpiEvRemoveSciHandler (void)
 {
-    FUNCTION_TRACE ("EvRemoveSciHandler");
+    ACPI_STATUS             Status;
+
+
+    ACPI_FUNCTION_TRACE ("EvRemoveSciHandler");
 
 
     /* Just let the OS remove the handler and disable the level */
 
-    AcpiOsRemoveInterruptHandler ((UINT32) AcpiGbl_FADT->SciInt,
-                                    AcpiEvSciHandler);
+    Status = AcpiOsRemoveInterruptHandler ((UINT32) AcpiGbl_FADT->SciInt,
+                                    AcpiEvSciXruptHandler);
 
-    return_ACPI_STATUS (AE_OK);
+    return_ACPI_STATUS (Status);
 }
 
 
