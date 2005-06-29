@@ -2,7 +2,7 @@
  *
  * Module Name: evxfregn - External Interfaces, ACPI Operation Regions and
  *                         Address Spaces.
- *              $Revision: 1.41 $
+ *              $Revision: 1.44 $
  *
  *****************************************************************************/
 
@@ -156,7 +156,7 @@ AcpiInstallAddressSpaceHandler (
     ACPI_OPERAND_OBJECT     *HandlerObj;
     ACPI_NAMESPACE_NODE     *Node;
     ACPI_STATUS             Status = AE_OK;
-    ACPI_OBJECT_TYPE8       Type;
+    ACPI_OBJECT_TYPE        Type;
     UINT16                  Flags = 0;
 
 
@@ -228,10 +228,14 @@ AcpiInstallAddressSpaceHandler (
             Setup   = AcpiEvPciBarRegionSetup;
             break;
 
+        case ACPI_ADR_SPACE_DATA_TABLE:
+            Handler = AcpiExDataTableSpaceHandler;
+            Setup   = NULL;
+            break;
+
         default:
             Status = AE_NOT_EXIST;
             goto UnlockAndExit;
-            break;
         }
     }
 
@@ -305,7 +309,7 @@ AcpiInstallAddressSpaceHandler (
 
         /* Attach the new object to the Node */
 
-        Status = AcpiNsAttachObject (Node, ObjDesc, (UINT8) Type);
+        Status = AcpiNsAttachObject (Node, ObjDesc, Type);
         if (ACPI_FAILURE (Status))
         {
             AcpiUtRemoveReference (ObjDesc);
