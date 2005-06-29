@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslfold - Constant folding
- *              $Revision: 1.11 $
+ *              $Revision: 1.12 $
  *
  *****************************************************************************/
 
@@ -436,6 +436,7 @@ OpcAmlConstantWalk (
     {
         /* We could not resolve the subtree for some reason */
 
+        AslCoreSubsystemError (Op, Status, "Failure during constant evaluation", FALSE);
         AslError (ASL_ERROR, ASL_MSG_CONSTANT_EVALUATION, Op, Op->Asl.ParseOpName);
 
         /* Set the subtree value to ZERO anyway.  Eliminates further errors */
