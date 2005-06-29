@@ -225,8 +225,8 @@ EvExecuteRegMethod (
      *          Passed as a parameter
      */
 
-    memset ((void *) &SpaceID_Obj, 0, sizeof (SpaceID_Obj));
-    memset ((void *) &Function_Obj, 0, sizeof (Function_Obj));
+    MEMSET ((void *) &SpaceID_Obj, 0, sizeof (SpaceID_Obj));
+    MEMSET ((void *) &Function_Obj, 0, sizeof (Function_Obj));
 
     /*
      *  Method requires two parameters.
