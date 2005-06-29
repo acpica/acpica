@@ -176,7 +176,7 @@ AcpiUnLoadTable (
 ACPI_STATUS
 AcpiLoadTableFromFile (
     char                *FileName,
-    NsHandle            *OutHandle);
+    NsHandle            **OutHandle);
 
 ACPI_STATUS
 AcpiNameToHandle (
