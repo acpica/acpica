@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asltree - parse tree management
- *              $Revision: 1.30 $
+ *              $Revision: 1.33 $
  *
  *****************************************************************************/
 
@@ -123,7 +123,6 @@
         MODULE_NAME         ("asltree")
 
 
-
 /*******************************************************************************
  *
  * FUNCTION:    TrGetNextNode
@@ -183,6 +182,26 @@ TrAllocateNode (
     strncpy (Node->ParseOpName, UtGetOpName (ParseOpcode), 12);
 
     return Node;
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    TrReleaseNode
+ *
+ * PARAMETERS:  Node            - Node to be released
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: "release" a node.  In truth, nothing is done since the node
+ *              is part of a larger buffer
+ *
+ ******************************************************************************/
+
+void
+TrReleaseNode (
+    ASL_PARSE_NODE          *Node)
+{
 }
 
 
@@ -597,6 +616,13 @@ TrLinkChildren (
     for (i = 0; i < NumChildren; i++)
     {
         Child = va_arg (ap, ASL_PARSE_NODE *);
+
+        if (Child == PrevChild)
+        {
+            printf ("Child list invalid\n");
+            return Node;
+        }
+
         DbgPrint (ASL_PARSE_OUTPUT, "%p, ", Child);
 
 
