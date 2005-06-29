@@ -3,7 +3,7 @@
 /******************************************************************************
  *
  * Module Name: aslcompiler.l - Flex input file
- *              $Revision: 1.64 $
+ *              $Revision: 1.66 $
  *
  *****************************************************************************/
 
@@ -11,7 +11,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2003, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -143,6 +143,8 @@ char
 literal (void);
 void
 copy (void);
+
+/*! [Begin] no source code translation */
 
 %}
 
@@ -499,6 +501,7 @@ NamePathTail                [.]{NameSeg}
 
 %%
 
+/*! [End] no source code translation !*/
 
 typedef struct asl_file_node
 {
