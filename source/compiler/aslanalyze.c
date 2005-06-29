@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslanalyze.c - check for semantic errors
- *              $Revision: 1.11 $
+ *              $Revision: 1.12 $
  *
  *****************************************************************************/
 
@@ -136,10 +136,10 @@
 
 void
 AnCheckForReservedMethod (
-    ASL_PARSE_NODE              *Node,
-    ASL_METHOD_INFO             *MethodInfo)
+    ASL_PARSE_NODE          *Node,
+    ASL_METHOD_INFO         *MethodInfo)
 {
-    UINT32                      i;
+    UINT32                  i;
 
 
     /* All reserved names are prefixed with a single underscore */
@@ -239,16 +239,16 @@ AnCheckForReservedMethod (
 
 void
 AnSemanticAnalysisWalkBegin (
-    ASL_PARSE_NODE              *Node,
-    UINT32                      Level,
-    void                        *Context)
+    ASL_PARSE_NODE          *Node,
+    UINT32                  Level,
+    void                    *Context)
 {
-    ASL_ANALYSIS_WALK_INFO      *WalkInfo = (ASL_ANALYSIS_WALK_INFO *) Context;
-    ASL_METHOD_INFO             *MethodInfo = WalkInfo->MethodStack;
-    ASL_PARSE_NODE              *Next;
-    UINT32                      RegisterNumber;
-    char                        LocalName[] = "Local0";
-    char                        ArgName[] = "Arg0";
+    ASL_ANALYSIS_WALK_INFO  *WalkInfo = (ASL_ANALYSIS_WALK_INFO *) Context;
+    ASL_METHOD_INFO         *MethodInfo = WalkInfo->MethodStack;
+    ASL_PARSE_NODE          *Next;
+    UINT32                  RegisterNumber;
+    char                    LocalName[] = "Local0";
+    char                    ArgName[] = "Arg0";
 
 
     switch (Node->ParseOpcode)
@@ -348,9 +348,9 @@ AnSemanticAnalysisWalkBegin (
 
 BOOLEAN
 AnLastStatementIsReturn (
-    ASL_PARSE_NODE              *Node)
+    ASL_PARSE_NODE          *Node)
 {
-    ASL_PARSE_NODE              *Next;
+    ASL_PARSE_NODE          *Next;
 
 
     /*
@@ -386,14 +386,14 @@ AnLastStatementIsReturn (
 
 void
 AnSemanticAnalysisWalkEnd (
-    ASL_PARSE_NODE              *Node,
-    UINT32                      Level,
-    void                        *Context)
+    ASL_PARSE_NODE          *Node,
+    UINT32                  Level,
+    void                    *Context)
 {
-    ASL_ANALYSIS_WALK_INFO      *WalkInfo = (ASL_ANALYSIS_WALK_INFO *) Context;
-    ASL_METHOD_INFO             *MethodInfo;
-    ASL_PARSE_NODE              *SecondToLastNode = NULL;
-    ASL_PARSE_NODE              *LastNode = NULL;
+    ASL_ANALYSIS_WALK_INFO  *WalkInfo = (ASL_ANALYSIS_WALK_INFO *) Context;
+    ASL_METHOD_INFO         *MethodInfo;
+    ASL_PARSE_NODE          *SecondToLastNode = NULL;
+    ASL_PARSE_NODE          *LastNode = NULL;
 
 
     switch (Node->ParseOpcode)
@@ -468,7 +468,6 @@ AnSemanticAnalysisWalkEnd (
         {
             Node->Parent->Flags |= NODE_HAS_NO_EXIT;
         }
-
         break;
 
 
@@ -479,7 +478,6 @@ AnSemanticAnalysisWalkEnd (
             Node->Parent->Flags |= NODE_HAS_NO_EXIT;
         }
         break;
-
     }
 }
 
