@@ -2,7 +2,7 @@
  *
  * Module Name: dswexec - Dispatcher method execution callbacks;
  *                        dispatch to interpreter.
- *              $Revision: 1.72 $
+ *              $Revision: 1.75 $
  *
  *****************************************************************************/
 
@@ -131,15 +131,16 @@
 
 
 ACPI_EXECUTE_OP         AcpiGbl_OpClassDispatch [] = {
-                            AcpiExMonadic1,
-                            AcpiExMonadic2,
-                            AcpiExMonadic2R,
-                            AcpiExDyadic1,
-                            AcpiExDyadic2,
-                            AcpiExDyadic2R,
-                            AcpiExDyadicType21,
-                            AcpiExTriadic,
-                            AcpiExHexadic};
+                            AcpiExOpcode_1A_0T_0R,
+                            AcpiExOpcode_1A_0T_1R,
+                            NULL,
+                            AcpiExOpcode_1A_1T_1R,
+                            AcpiExOpcode_2A_0T_0R,
+                            AcpiExOpcode_2A_0T_1R,
+                            AcpiExOpcode_2A_1T_1R,
+                            AcpiExOpcode_2A_2T_1R,
+                            AcpiExOpcode_3A_1T_0R,
+                            AcpiExOpcode_6A_0T_1R};
 
 
 
@@ -340,7 +341,7 @@ AcpiDsExecBeginOp (
     }
 
 
-    OpcodeClass = ACPI_GET_OP_CLASS (WalkState->OpInfo);
+    OpcodeClass = WalkState->OpInfo->Class;
 
     /* We want to send namepaths to the load code */
 
@@ -443,8 +444,8 @@ AcpiDsExecEndOp (
 
 
     Op      = WalkState->Op;
-    OpType  = ACPI_GET_OP_TYPE (WalkState->OpInfo);
-    OpClass = ACPI_GET_OP_CLASS (WalkState->OpInfo);
+    OpType  = WalkState->OpInfo->Type;
+    OpClass = WalkState->OpInfo->Class;
 
     if (OpClass == AML_CLASS_UNKNOWN)
     {
@@ -463,7 +464,7 @@ AcpiDsExecEndOp (
 
     /* Call debugger for single step support (DEBUG build only) */
 
-    DEBUGGER_EXEC (Status = AcpiDbSingleStep (WalkState, Op, OpType));
+    DEBUGGER_EXEC (Status = AcpiDbSingleStep (WalkState, Op, OpClass));
     DEBUGGER_EXEC (if (ACPI_FAILURE (Status)) {return_ACPI_STATUS (Status);});
 
 

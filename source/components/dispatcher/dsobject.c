@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dsobject - Dispatcher object management routines
- *              $Revision: 1.78 $
+ *              $Revision: 1.79 $
  *
  *****************************************************************************/
 
@@ -338,7 +338,7 @@ AcpiDsInitObjectFromOp (
 
     ObjDesc = *RetObjDesc;
     OpInfo = AcpiPsGetOpcodeInfo (Opcode);
-    if (ACPI_GET_OP_CLASS (OpInfo) == AML_CLASS_UNKNOWN)
+    if (OpInfo->Class == AML_CLASS_UNKNOWN)
     {
         /* Unknown opcode */
 
@@ -462,7 +462,7 @@ AcpiDsInitObjectFromOp (
 
     case INTERNAL_TYPE_REFERENCE:
 
-        switch (ACPI_GET_OP_TYPE (OpInfo))
+        switch (OpInfo->Type)
         {
         case AML_TYPE_LOCAL_VARIABLE:
 
