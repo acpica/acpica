@@ -397,19 +397,6 @@ typedef enum
 } AML_UPDATE_RULE;
 
 
-/* Region Space ID values */
-
-typedef enum 
-{
-    REGION_SystemMemory         = 0,
-    REGION_SystemIO             = 1,
-    REGION_PCIConfig            = 2,
-    REGION_EmbeddedControl      = 3,
-    REGION_SMBus                = 4
-
-} AML_REGION_SPACE;
-
-
 /* bit fields in MethodFlags byte */
 
 #define METHOD_ARG_COUNT_MASK   7
