@@ -388,7 +388,9 @@ PsxInitObjectFromOp (
 
 void
 PsxDeleteResultIfNotUsed (
-    ACPI_GENERIC_OP         *Op);
+    ACPI_GENERIC_OP         *Op,
+    ACPI_OBJECT_INTERNAL    *ResultObj,
+    ACPI_WALK_STATE         *WalkState);
 
 ACPI_STATUS
 PsxCreateOperands (
@@ -594,6 +596,20 @@ PsxObjStackDeleteAll (
 ACPI_WALK_STATE *
 PsPopWalkState (
     ACPI_WALK_LIST          *WalkList);
+
+ACPI_STATUS
+PsxResultStackPop (
+    ACPI_OBJECT_INTERNAL    **Object,
+    ACPI_WALK_STATE         *WalkState);
+
+ACPI_STATUS
+PsxResultStackPush (
+    void                    *Object,
+    ACPI_WALK_STATE         *WalkState);
+
+ACPI_STATUS
+PsxResultStackClear (
+    ACPI_WALK_STATE         *WalkState);
 
 
 /* psutils - parser utilities */
