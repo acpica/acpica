@@ -143,39 +143,64 @@
 
 #else
 
-enum {
-    MALLOC = 0,
-    CALLOC
-};
+/* Global allocation list pointers */
 
-typedef struct ALLOCATION_INFO 
+ALLOCATION_INFO         *HeadAllocPtr;
+ALLOCATION_INFO         *TailAllocPtr;
+
+
+
+/*****************************************************************************
+ * 
+ * FUNCTION:    CmSearchAllocList
+ *
+ * PARAMETERS:  Address             - Address of allocated memory
+ *
+ * RETURN:      A list element if found; NULL otherwise.
+ *
+ * DESCRIPTION: Inserts an element into the global allocation tracking list.
+ *
+ ****************************************************************************/
+
+ALLOCATION_INFO *
+CmSearchAllocList (
+    void                    *Address)
 {
-    void                    *Address;
-    UINT32                  Size;
-    UINT8                   AllocType;
-    UINT32                  Component;
-    char                    Module[32];
-    INT32                   Line;
-    struct ALLOCATION_INFO  *Previous;
-    struct ALLOCATION_INFO  *Next;
-} ALLOCATION_INFO;
+    ALLOCATION_INFO         *Element = HeadAllocPtr;
 
-ALLOCATION_INFO *HeadAllocPtr;
-ALLOCATION_INFO *TailAllocPtr;
+
+    /* Search for the address. note - this always searches the entire list...*/
+
+    for (;;)
+    {
+        if (Element == NULL)
+        {
+            return NULL;
+        }
+        
+        if (Element->Address == Address)
+        {
+            return Element;
+        }
+
+        Element = Element->Next; 
+    }
+}
+
 
 /*****************************************************************************
  * 
  * FUNCTION:    CmAddElementToAllocList
  *
- * PARAMETERS:  Address             Address of allocated memory
- *              Size                Size of the allocation
- *              AllocType           MALLOC or CALLOC
- *              Component           Component type of caller
- *              Module              Source file name of caller
- *              Line                Line number of caller
- *              Function            Calling function name
+ * PARAMETERS:  Address             - Address of allocated memory
+ *              Size                - Size of the allocation
+ *              AllocType           - MEM_MALLOC or MEM_CALLOC
+ *              Component           - Component type of caller
+ *              Module              - Source file name of caller
+ *              Line                - Line number of caller
+ *              Function            - Calling function name
  *
- * RETURN:      
+ * RETURN:      None.
  *
  * DESCRIPTION: Inserts an element into the global allocation tracking list.
  *
@@ -190,6 +215,9 @@ CmAddElementToAllocList (
     ACPI_STRING             Module,
     INT32                   Line)
 {
+    ALLOCATION_INFO         *Element;
+
+
     FUNCTION_TRACE ("CmAddElementToAllocList");
     
 
@@ -216,6 +244,20 @@ CmAddElementToAllocList (
         TailAllocPtr = TailAllocPtr->Next;
     }
 
+    /* 
+     * Search list for this address to make sure it is not already on the list.
+     * This will catch several kinds of problems.
+     */
+
+    Element = CmSearchAllocList (Address);
+    if (Element)
+    {
+        REPORT_ERROR ("CmAddElementToAllocList: Address already present in list!");
+        DEBUG_PRINT (ACPI_ERROR, ("Element %p Address %p\n", Element, Address));
+
+        BREAKPOINT3;
+    }
+
     /* Fill in the instance data. */    
     
     TailAllocPtr->Address   = Address;
@@ -234,13 +276,10 @@ CmAddElementToAllocList (
  * 
  * FUNCTION:    CmDeleteElementFromAllocList
  *
- * PARAMETERS:  Address             Address of allocated memory
- *              Size                Size of the allocation
- *              AllocType           MALLOC or CALLOC
- *              Component           Component type of caller
- *              Module              Source file name of caller
- *              Line                Line number of caller
- *              Function            Calling function name
+ * PARAMETERS:  Address             - Address of allocated memory
+ *              Component           - Component type of caller
+ *              Module              - Source file name of caller
+ *              Line                - Line number of caller
  *
  * RETURN:      
  *
@@ -255,7 +294,7 @@ CmDeleteElementFromAllocList (
     ACPI_STRING             Module,
     INT32                   Line)
 {
-    ALLOCATION_INFO         *Element = HeadAllocPtr;
+    ALLOCATION_INFO         *Element;
     
 
     FUNCTION_TRACE ("CmDeleteElementFromAllocList");
@@ -295,52 +334,44 @@ CmDeleteElementFromAllocList (
         return;
     }
     
-    /* search and destroy. note - this always searches the entire list...*/
 
-    for (;;)
-    {       
-        if (Element->Address == Address)
+    /* Search list for this address */
+
+    Element = CmSearchAllocList (Address);
+    if (Element)
+    {
+        /* cases: head, tail, other */
+
+        if (Element == HeadAllocPtr)
         {
-            /* cases: head, tail, other */
+            Element->Next->Previous = NULL;
+            HeadAllocPtr = Element->Next;
+        }
 
-            if (Element == HeadAllocPtr)
+        else
+        {
+            if (Element == TailAllocPtr)
             {
-                Element->Next->Previous = NULL;
-                HeadAllocPtr = Element->Next;
+                Element->Previous->Next = NULL;
+                TailAllocPtr = Element->Previous;
             }
 
             else
             {
-                if (Element == TailAllocPtr)
-                {
-                    Element->Previous->Next = NULL;
-                    TailAllocPtr = Element->Previous;
-                }
-
-                else
-                {
-                    Element->Previous->Next = Element->Next;
-                    Element->Next->Previous = Element->Previous;
-                }
-            }       
-            
-            OsdFree (Element);
-            FUNCTION_EXIT;
-            return;
-        }
-            
-        if (Element->Next == NULL)
-        {
-            _REPORT_ERROR (Module, Line, Component,
-                "_CmFree: Reached the end of the list without finding the entry.");
-
-            FUNCTION_EXIT;
-            return;
-        }
+                Element->Previous->Next = Element->Next;
+                Element->Next->Previous = Element->Previous;
+            }
+        }       
         
-        Element = Element->Next; 
+        OsdFree (Element);
     }
-    
+            
+    else
+    {
+        _REPORT_ERROR (Module, Line, Component,
+            "_CmFree: Reached the end of the list without finding the entry.");
+    }
+
     FUNCTION_EXIT;
 }
 
@@ -349,12 +380,12 @@ CmDeleteElementFromAllocList (
  * 
  * FUNCTION:    CmDumpCurrentAllocations
  *
- * PARAMETERS:  Component           Componet(s) to dump info for.
- *              Module              Module to dump info for.  NULL means all.
+ * PARAMETERS:  Component           - Component(s) to dump info for.
+ *              Module              - Module to dump info for.  NULL means all.
  *
- * RETURN:      
+ * RETURN:      None  
  *
- * DESCRIPTION: 
+ * DESCRIPTION: Print a list of all outstanding allocations.
  *
  ****************************************************************************/
 
@@ -398,19 +429,17 @@ CmDumpCurrentAllocations (
     /* won't ever get here. */
 }   
 
-
-#endif
+#endif  /* Debug routines for memory leak detection */
 
 
 /*****************************************************************************
  * 
  * FUNCTION:    _CmAllocate
  *
- * PARAMETERS:  Size                Size of the allocation
- *              Component           Component type of caller
- *              Module              Source file name of caller
- *              Line                Line number of caller
- *              Function            Calling function name
+ * PARAMETERS:  Size                - Size of the allocation
+ *              Component           - Component type of caller
+ *              Module              - Source file name of caller
+ *              Line                - Line number of caller
  *
  * RETURN:      Address of the allocated memory on success, NULL on failure.
  *
@@ -446,7 +475,7 @@ _CmAllocate (
             Address, Size));
     }
     
-    CmAddElementToAllocList (Address, Size, MALLOC, Component, Module, Line);
+    CmAddElementToAllocList (Address, Size, MEM_MALLOC, Component, Module, Line);
 
     FUNCTION_EXIT;  
     return Address;
@@ -457,11 +486,10 @@ _CmAllocate (
  * 
  * FUNCTION:    _CmCallocate
  *
- * PARAMETERS:  Size                Size of the allocation
- *              Component           Component type of caller
- *              Module              Source file name of caller
- *              Line                Line number of caller
- *              Function            Calling function name
+ * PARAMETERS:  Size                - Size of the allocation
+ *              Component           - Component type of caller
+ *              Module              - Source file name of caller
+ *              Line                - Line number of caller
  *
  * RETURN:      Address of the allocated memory on success, NULL on failure.
  *
@@ -497,7 +525,7 @@ _CmCallocate (
             Address, Size));
     }
 
-    CmAddElementToAllocList (Address, Size, CALLOC, Component, Module, Line);
+    CmAddElementToAllocList (Address, Size, MEM_CALLOC, Component, Module, Line);
     
     FUNCTION_EXIT;
     return Address;
@@ -508,13 +536,12 @@ _CmCallocate (
  * 
  * FUNCTION:    _CmFree
  *
- * PARAMETERS:  Address             Address of the memory to deallocate
- *              Component           Component type of caller
- *              Module              Source file name of caller
- *              Line                Line number of caller
- *              Function            Calling function name
+ * PARAMETERS:  Address             - Address of the memory to deallocate
+ *              Component           - Component type of caller
+ *              Module              - Source file name of caller
+ *              Line                - Line number of caller
  *
- * RETURN:      
+ * RETURN:      None
  *
  * DESCRIPTION: Frees the memory at Address
  *
