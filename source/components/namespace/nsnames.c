@@ -265,7 +265,7 @@ NsHandleToPathname (
     UINT32                  UserBufSize;
 
 
-    FUNCTION_TRACE ("NsHandleToPathname");
+    FUNCTION_TRACE_PTR ("NsHandleToPathname", TargetHandle);
 
 
     if (!Gbl_RootObject->Scope || !TargetHandle)
