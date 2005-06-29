@@ -127,6 +127,7 @@
 #include <actypes.h>        /* Fundamental data types */
 #include <acexcep.h>        /* Local exception codes */
 #include <macros.h>         /* C macros */
+#include <actables.h>       /* Acpi table definitions */
 #include <internal.h>       /* Internal data types */
 #include <output.h>         /* Error output and Debug macros */
 #include <actables.h>       /* ACPI table definitions */
