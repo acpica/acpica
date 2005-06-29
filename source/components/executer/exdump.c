@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: exdump - Interpreter debug output routines
- *              $Revision: 1.153 $
+ *              $Revision: 1.154 $
  *
  *****************************************************************************/
 
@@ -199,30 +199,6 @@ AcpiExDumpOperand (
 
         switch (ObjDesc->Reference.Opcode)
         {
-        case AML_ZERO_OP:
-
-            AcpiOsPrintf ("Reference: Zero\n");
-            break;
-
-
-        case AML_ONE_OP:
-
-            AcpiOsPrintf ("Reference: One\n");
-            break;
-
-
-        case AML_ONES_OP:
-
-            AcpiOsPrintf ("Reference: Ones\n");
-            break;
-
-
-        case AML_REVISION_OP:
-
-            AcpiOsPrintf ("Reference: Revision\n");
-            break;
-
-
         case AML_DEBUG_OP:
 
             AcpiOsPrintf ("Reference: Debug\n");
@@ -290,7 +266,7 @@ AcpiExDumpOperand (
 
             /*  unknown opcode  */
 
-            AcpiOsPrintf ("Unknown opcode=%X\n",
+            AcpiOsPrintf ("Unknown Reference opcode=%X\n",
                 ObjDesc->Reference.Opcode);
             break;
 
