@@ -2,7 +2,7 @@
  *
  * Module Name: nsxfname - Public interfaces to the ACPI subsystem
  *                         ACPI Namespace oriented interfaces
- *              $Revision: 1.70 $
+ *              $Revision: 1.71 $
  *
  *****************************************************************************/
 
@@ -337,7 +337,7 @@ AcpiGetObjectInfo (
 
     Info->Type      = Node->Type;
     Info->Name      = Node->Name;
-    
+
     AcpiCmReleaseMutex (ACPI_MTX_NAMESPACE);
 
     /*
