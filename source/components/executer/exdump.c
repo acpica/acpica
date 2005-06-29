@@ -561,8 +561,8 @@ AmlDumpObjStackEntry (
 
             DEBUG_PRINT_RAW (ACPI_INFO,
                         ("Method(%d) @ %p:%lx:%lx\n",
-                        EntryDesc->Method.ParamCount, EntryDesc->Method.AmlBase,
-                        EntryDesc->Method.Offset, EntryDesc->Method.Length));
+                        EntryDesc->Method.ParamCount, EntryDesc->Method.AcpiTable,
+                        EntryDesc->Method.Pcode, EntryDesc->Method.PcodeLength));
             break;
 
 
@@ -812,9 +812,9 @@ AmlDumpObjectDescriptor (
 
 		OsdPrintf ("%20s : %s\n", "Type", "Method");
 	    OsdPrintf ("%20s : %x\n", "ParamCount", Object->Method.ParamCount);
-	    OsdPrintf ("%20s : %x\n", "Length", Object->Method.Length);
-	    OsdPrintf ("%20s : %x\n", "Offset", Object->Method.Offset);
-	    OsdPrintf ("%20s : %x\n", "AmlBase", Object->Method.AmlBase);
+	    OsdPrintf ("%20s : %x\n", "PcodeLength", Object->Method.PcodeLength);
+	    OsdPrintf ("%20s : %x\n", "Pcode", Object->Method.Pcode);
+	    OsdPrintf ("%20s : %x\n", "AcpiTable", Object->Method.AcpiTable);
 	    break;
 	
 

@@ -221,11 +221,17 @@ AmlSetupField (
                  * Point to Address opcode in AML stream
                  */
 
-                AmlSetCurrentLocation (&RgnDesc->Region.AddressLocation);
+                if (!RgnDesc->Region.AddressLocation)
+                {
+                    REPORT_ERROR ("AmlSetupField: Region Method subobject does not exist");
+                    return_ACPI_STATUS (AE_EXIST);
+                }
+
+                AmlSetCurrentLocation (RgnDesc->Region.AddressLocation);
 
                 /* Evaluate the Address opcode */
 
-                if ((Status = AmlDoOpCode (MODE_Exec)) == AE_OK && 
+                if ((Status = AmlDoOpCode (IMODE_Execute)) == AE_OK && 
                     (Status = AmlGetRvalue (AmlObjStackGetTopPtr ())) == AE_OK)
                 {
                     /* Pull the address off the stack */
@@ -250,14 +256,14 @@ AmlSetupField (
 
                     /* Free ObjValDesc, it was allocated by AmlDoOpcode */
 
-                    CmFree (ObjValDesc);
+                    CmDeleteInternalObject (ObjValDesc);
                 }
 
                 if (AE_OK == Status)
                 {   
                     /* Evaluate the Length opcode */
 
-                    if ((Status = AmlDoOpCode (MODE_Exec)) == AE_OK &&
+                    if ((Status = AmlDoOpCode (IMODE_Execute)) == AE_OK &&
                         (Status = AmlGetRvalue (AmlObjStackGetTopPtr ())) == AE_OK)
                     {
                         /* Pull the length off the stack */
@@ -287,7 +293,7 @@ AmlSetupField (
 
                         /* Free ObjValDesc, it was allocated by AmlDoOpcode */
 
-                        CmFree (ObjValDesc);
+                        CmDeleteInternalObject (ObjValDesc);
                     }
                 }
             }
@@ -545,7 +551,7 @@ AmlAccessNamedField (
 
     FUNCTION_TRACE ("AmlAccessNamedField");
 
-    ObjDesc = NsGetValue (NamedField);
+    ObjDesc = NsGetAttachedObject (NamedField);
     if (!ObjDesc)
     {
         DEBUG_PRINT (ACPI_ERROR, ("AmlAccessNamedField: Internal error - null value pointer\n"));
