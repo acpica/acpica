@@ -323,7 +323,8 @@ AdSecondPassParse (
 
             /* Parse the method */
 
-            Status = AcpiPsParseAml (Op, Method->Body, Method->BodyLength, 0);
+            Status = AcpiPsParseAml (Op, Method->Body, Method->BodyLength, 0,
+                                        AcpiPsFindObject, NULL);
 
             /*
              * We need to update all of the Aml offsets, since the parser thought
@@ -466,7 +467,8 @@ AdParseTables (void)
     AmlLength = DsdtLength  - sizeof (ACPI_TABLE_HEADER);
     AmlPtr = ((UINT8 *) AcpiGbl_DSDT + sizeof (ACPI_TABLE_HEADER));
 
-    Status = AcpiPsParseAml (AcpiGbl_ParsedNamespaceRoot, AmlPtr, AmlLength, 0);
+    Status = AcpiPsParseAml (AcpiGbl_ParsedNamespaceRoot, AmlPtr, AmlLength, 0,
+                                AcpiPsFindObject, NULL);
     if (ACPI_FAILURE (Status))
     {
         return Status;
