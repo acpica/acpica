@@ -162,7 +162,7 @@ AcpiEvFindOnePciRootBus (
      * We are looking for all valid _HID objects.
      */
 
-    if (STRNCMP ((INT8 *)&Entry->Name, METHOD_NAME__HID, ACPI_NAME_SIZE) ||
+    if (STRNCMP (&Entry->Name, METHOD_NAME__HID, ACPI_NAME_SIZE) ||
         (!ObjDesc))
     {
         return (AE_OK);
@@ -476,7 +476,7 @@ AcpiEvAddressSpaceDispatch (
 
     DEBUG_PRINT ((TRACE_OPREGION | VERBOSE_INFO),
         ("Addrhandler 0x%p (0x%p), Address 0x%p\n",
-        RegionObj->Region.AddrHandler->AddrHandler, Handler, Address));
+        &RegionObj->Region.AddrHandler->AddrHandler, Handler, Address));
 
     if (!(HandlerDesc->AddrHandler.Flags & ADDR_HANDLER_DEFAULT_INSTALLED))
     {
