@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dswload - Dispatcher namespace load callbacks
- *              $Revision: 1.57 $
+ *              $Revision: 1.58 $
  *
  *****************************************************************************/
 
@@ -394,23 +394,16 @@ AcpiDsLoad2BeginOp (
 
     PROC_NAME ("DsLoad2BeginOp");
 
+
     Op = WalkState->Op;
     ACPI_DEBUG_PRINT ((ACPI_DB_DISPATCH, "Op=%p State=%p\n", Op, WalkState));
-
 
     if (Op)
     {
         /* We only care about Namespace opcodes here */
 
-        if (!(WalkState->OpInfo->Flags & AML_NSOPCODE) &&
-            WalkState->Opcode != AML_INT_NAMEPATH_OP)
-        {
-            return (AE_OK);
-        }
-
-        /* TBD: [Restructure] Temp! same code as in psparse */
-
-        if (!(WalkState->OpInfo->Flags & AML_NAMED))
+        if ((!(WalkState->OpInfo->Flags & AML_NSOPCODE) && (WalkState->Opcode != AML_INT_NAMEPATH_OP)) ||
+            (!(WalkState->OpInfo->Flags & AML_NAMED)))
         {
             return (AE_OK);
         }
@@ -439,11 +432,12 @@ AcpiDsLoad2BeginOp (
     }
     else
     {
+        /* Get the namestring from the raw AML */
+
         BufferPtr = AcpiPsGetNextNamestring (&WalkState->ParserState);
     }
 
-
-    /* Map the raw opcode into an internal object type */
+    /* Map the opcode into an internal object type */
 
     ObjectType = WalkState->OpInfo->ObjectType;
 
@@ -458,7 +452,6 @@ AcpiDsLoad2BeginOp (
         Node = NULL;
         Status = AE_OK;
     }
-
     else if (WalkState->Opcode == AML_INT_NAMEPATH_OP)
     {
         /*
@@ -468,7 +461,6 @@ AcpiDsLoad2BeginOp (
         Status = AcpiNsLookup (WalkState->ScopeInfo, BufferPtr, ObjectType,
                         IMODE_EXECUTE, NS_SEARCH_PARENT, WalkState, &(Node));
     }
-
     else
     {
         if (Op && Op->Node)
@@ -509,7 +501,7 @@ AcpiDsLoad2BeginOp (
                 return (AE_NO_MEMORY);
             }
 
-            /* Initialize */
+            /* Initialize the new op */
 
             ((ACPI_PARSE2_OBJECT *)Op)->Name = Node->Name;
             *OutOp = Op;
