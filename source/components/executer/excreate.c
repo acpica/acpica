@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: excreate - Named object creation
- *              $Revision: 1.94 $
+ *              $Revision: 1.96 $
  *
  *****************************************************************************/
 
@@ -159,7 +159,7 @@ AcpiExCreateAlias (
     AliasNode =  (ACPI_NAMESPACE_NODE *) WalkState->Operands[0];
     TargetNode = (ACPI_NAMESPACE_NODE *) WalkState->Operands[1];
 
-    if (TargetNode->Type == INTERNAL_TYPE_ALIAS)
+    if (TargetNode->Type == ACPI_TYPE_LOCAL_ALIAS)
     {
         /* 
          * Dereference an existing alias so that we don't create a chain
@@ -190,7 +190,7 @@ AcpiExCreateAlias (
          * NS node, not the object itself.  This is because for these
          * types, the object can change dynamically via a Store.
          */
-        AliasNode->Type = INTERNAL_TYPE_ALIAS;
+        AliasNode->Type = ACPI_TYPE_LOCAL_ALIAS;
         AliasNode->Object = (ACPI_OPERAND_OBJECT *) TargetNode;
         break;
 
@@ -320,9 +320,10 @@ AcpiExCreateMutex (
     /* Init object and attach to NS node */
 
     ObjDesc->Mutex.SyncLevel = (UINT8) WalkState->Operands[1]->Integer.Value;
+    ObjDesc->Mutex.Node = (ACPI_NAMESPACE_NODE *) WalkState->Operands[0];
 
-    Status = AcpiNsAttachObject ((ACPI_NAMESPACE_NODE *) WalkState->Operands[0],
-                                ObjDesc, ACPI_TYPE_MUTEX);
+    Status = AcpiNsAttachObject (ObjDesc->Mutex.Node,
+                ObjDesc, ACPI_TYPE_MUTEX);
 
 
 Cleanup:
