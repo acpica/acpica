@@ -244,6 +244,17 @@ typedef char *va_list;
  *
  *****************************************************************************/
 
+
+/*
+ * Handle differences for invoking assembly instructions across C compliers.
+ */
+#ifdef GCC
+#define ASM(a)	__asm(#a)
+#else
+#define ASM(a)	__asm{##a}
+#endif 
+
+ 
 /*
  *
  * Notes:
