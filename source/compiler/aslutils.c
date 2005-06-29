@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asllength - Tree walk to determine package and opcode lengths
- *              $Revision: 1.4 $
+ *              $Revision: 1.5 $
  *
  *****************************************************************************/
 
@@ -169,18 +169,22 @@ UtLocalCalloc (
 void *
 UtLocalRealloc (
     void                    *Previous,
-    UINT32                  Size)
+    UINT32                  ValidSize,
+    UINT32                  AdditionalSize)
 {
-    void                    *Allocated;
+    char                    *Allocated;
 
 
-    Allocated = realloc (Previous, Size);
+    Allocated = (char *) realloc (Previous, ValidSize + AdditionalSize);
     if (!Allocated)
     {
         AslError (ASL_ERROR_MEMORY_ALLOCATION, 0);
         /*TBD: Abort */
     }
 
+    /* Zero out the new part of the buffer */
+
+    memset (Allocated + ValidSize, 0, AdditionalSize);
     return Allocated;
 }
 
@@ -319,9 +323,9 @@ UtDisplaySummary (
 
     printf ("Compilation complete. %d Errors %d Warnings\n", ErrorCount, WarningCount);
     printf ("ASL Input: %d lines, %d bytes, %d keywords\n", 
-                Gbl_CurrentLineNumber, InputChars, TotalKeywords);
+                Gbl_CurrentLineNumber, Gbl_InputByteCount, TotalKeywords);
 
-    if (ErrorCount == 0)
+    if ((ErrorCount == 0) || (Gbl_IgnoreErrors))
     {
         printf ("AML Output: %s - %d bytes %d named objects %d executable opcodes\n\n", 
                     Gbl_OutputFilename, Gbl_TableLength, TotalNamedObjects, TotalExecutableOpcodes);
