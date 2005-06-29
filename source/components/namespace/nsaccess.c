@@ -14,15 +14,18 @@
  | Functions for accessing ACPI namespace
  |__________________________________________________________________________
  |
- | $Revision: 1.13 $
- | $Date: 2005/06/29 18:15:36 $
+ | $Revision: 1.14 $
+ | $Date: 2005/06/29 18:15:37 $
  | $Log: nsaccess.c,v $
- | Revision 1.13  2005/06/29 18:15:36  aystarik
- | New version of DEBUG_PRINT
+ | Revision 1.14  2005/06/29 18:15:37  aystarik
+ | Header cleanup;  Split debug switch into component_id and level
  |
  | 
- | date	99.04.02.22.39.00;	author rmoore1;	state Exp;
+ | date	99.04.05.23.10.00;	author rmoore1;	state Exp;
  |
+ * 
+ * 14    4/05/99 4:10p Rmoore1
+ * Header cleanup;  Split debug switch into component_id and level
  * 
  * 13    4/02/99 2:39p Rmoore1
  * New version of DEBUG_PRINT
@@ -61,296 +64,6 @@
  * 
  * 1     1/11/99 2:11p Rmoore1
  * Name Space Manipulation
-// 
-//    Rev 1.55   11 Sep 1998 18:02:52   phutchis
-// Change inc_error() etc. to dKinc_error() etc. (error key logging).
-// 
-//    Rev 1.54   11 Sep 1998 16:26:08   phutchis
-// Rename the Type member of the nte to NtType to improve readability.
-// 
-// Add support for a Method's nte to have a null ptrVal field, indicating
-// that the Method is undefined (yet we somehow know that the name is
-// supposed to represent a Method).
-// 
-// Refine debug output fron NsPopCurrent().
-// 
-// Add a comment re an unfixed bug in GetParentHandle() when the parent
-// directory has multiple extents.
-// 
-// Reformat overlength lines.
-// 
-//    Rev 1.53   07 Jul 1998 12:58:58   calingle
-// When a name is accessed but not defined (only happens in pass2 or exec),
-// the interpreter will issue an error instead of a warning.  The error is
-// "Unknown Reference" rather than the "Illegal Forward Reference" warning
-// of the past.
-//
-//    Rev 1.52   02 Jul 1998 08:57:50   calingle
-// Debug output added for popping current stack scope.
-//
-//    Rev 1.51   02 Jun 1998 12:46:08   calingle
-// output control during pass 1 of the loader
-//
-//    Rev 1.49   14 May 1998 16:04:26   phutchis
-// Fixed bug in ExistDownstreamSibling() when checking the last entry of an
-// extent.
-//
-//    Rev 1.48   13 Mar 1998 14:05:44   phutchis
-// Corrected marking of name tables in NsMarkNT().
-//
-//    Rev 1.47   13 Mar 1998 11:16:10   phutchis
-// Corrected handling of types BankField, DefField, FieldUnit, IndexField,
-//   and Region in NsMarkNT().
-// Call vMarkObjectStack() from NsMarkNS().
-//
-//    Rev 1.46   06 Mar 1998 11:41:00   phutchis
-// Added comments concerning garbage collection.
-// No code changes.
-//
-//    Rev 1.45   03 Mar 1998 16:31:24   phutchis
-// Enable NsSetValue() to set the value to NULL.
-//
-//    Rev 1.44   02 Mar 1998 19:02:06   phutchis
-// When marking a Name Table, also mark the block(s) occupied by its
-// appendage(s).  (The values pointed to by appendages were already
-// being marked, but the appendages themselves were not.)
-//
-//    Rev 1.43   19 Feb 1998 15:25:48   phutchis
-// Don't look for an NT appendage if dumping a single entry (DUH!)
-//
-//    Rev 1.42   05 Feb 1998 17:46:48   phutchis
-// Implemented dynamic sizing of name tables.  ROOTSIZE and TABLSIZE now
-//   determine the initial allocation, but upon overflow an appendage of
-//   TABLSIZE entries is added.
-// Also changed "Illegal forward reference..." from an error to a warning.
-//   While Memphis appears to tolerate forward references, the implicit
-//   definition carries a risk of their being allocated in a different
-//   scope than intended.
-//
-//    Rev 1.41   05 Feb 1998 11:56:30   phutchis
-// Temporarily reduced name table sizes.
-// Added support for calling a Method from within another Method:
-//   Added NsPushMethodScope()
-//   Check for non-empty stacks only at outermost Method exit.
-// Improved storage management
-//   Added NsFindpVal(), IsNsValue(), RegisterStaticBlockPtr(),
-//     and MarkStaticBlocks().
-//   Delete descriptors when popped from stack or overlaid in name table.
-//
-//    Rev 1.40   18 Dec 1997 21:09:30   kdbranno
-// Increased ROOTSIZE and TABLSIZE to 64.  ESG has some scopes that have up
-// to 64 entries.  We really should make this into a linked list instead to
-// make it entirely dynamic rather than having a static size.
-//
-//    Rev 1.39   11 Dec 1997 12:08:02   kdbranno
-// Fixed bug in SearchTable where false failure occured if ROOTSIZE and TABLSIZE were the same.
-// Also enabled logging of forward reference problems even when debug level is 0.
-// Changed ROOTSIZE and TABLSIZE both to 25
-//
-//    Rev 1.38   10 Dec 1997 12:58:28   calingle
-// increased the size of the ROOTSIZE from 29 to 53
-//
-//    Rev 1.37   10 Dec 1997 10:45:04   phutchis
-// Corrected comments.
-// Removed unneeded {}.
-// Fixed OpMode parameter to SearchTable() call in NsGetHandle().
-//
-//    Rev 1.36   10 Dec 1997 09:27:54   kdbranno
-// Added vFatalError calls to some malloc_bu validations rather than passing NULL back to caller.
-// Reduced ROOTSIZE and TABLESIZE to 29 to save memory
-//
-//    Rev 1.35   08 Dec 1997 17:09:18   kdbranno
-// Added cast to quiet iC386
-//
-//    Rev 1.34   05 Dec 1997 09:36:12   kdbranno
-// Fixed up so it compiles with clean with iRMX.
-//
-//    Rev 1.33   02 Dec 1997 13:14:02   nburke
-// Changed HELLO calls to conditional vFunctionHello calls - temporary.
-//
-//    Rev 1.32   26 Nov 1997 16:37:00   nburke
-// Added HELLO function call to every function in the file.
-//
-//    Rev 1.31   26 Nov 1997 16:19:40   phutchis
-// Code inspection rework:
-//   Made BadType[] public so other modules can check for it in NsTypeNames[].
-//
-//    Rev 1.30   06 Nov 1997 10:10:06   phutchis
-// Added some parameter checking and a few more comments.
-//
-//    Rev 1.29   05 Nov 1997 08:48:30   calingle
-// removed #include <bu_plumr.h>
-//
-//    Rev 1.28   04 Nov 1997 14:18:36   phutchis
-// Fix problems in rev 1.27:
-//   Restore increment of DottedName in InternalizeName (lost when the
-//     return buffer was changed from static to HWM allocation).
-//   Change 4th parameter in recursive call of SearchTable to correspond
-//     with the change of that parameter from (INT32) to (OpMode).
-// Add debug output when NsSetValue cannot determine the correct type and
-//   sets ValType to DefAny.
-// Improved comments.
-//
-//    Rev 1.27   31 Oct 1997 15:43:18   phutchis
-// Rework from code inspection:
-//   Added/revised comments throughout.
-//   Added #include <stddef.h> to get typedef for ptrdiff_t.
-//   Replaced empty strings in NsTypeNames[] with error message.
-//   Renamed nte.ulNamSeg to nte.NameSeg.
-//   Renamed nte.nChildren to nte.ChildScope.
-//   Renamed sCurrentScope[] to ScopeStack[].
-//   Renamed vNsSetCurrent() to NsPushCurrentScope().
-//   Removed vReporter() parameter from several functions.
-//   Added calls to KFatalError(()) for numerous catastrophic failures.
-//   Changed name buffer used by InternalizeName() from static to HWM alloc.
-//   Changed printf control %ls to %p when printing pointers.
-//   Changed return-value symbols SUCCESS, FAILURE, ERROR, and RETURN to
-//     S_SUCCESS, S_FAILURE, S_ERROR, and S_RETURN to forestall collisions
-//     with other subsystems.
-//   Delete allocated return value if caller of AcpiExecuteMethod() did not
-//     provide a place to store the descriptor.
-//   Added warnings to various functions for invalid parameters.
-//   Replaced "INT32 iAdd" parameter of SearchTable() with "OpMode LoadMode".
-//   Fixed major bug in SearchTable when USE_HASHING was not #defined.
-//   Initial values which are strings now get copied to allocated space
-//     instead of being left in compiler-allocated static storage.
-//   Changed vNsPopCurrent() to NsPopCurrent, returning the number of frames
-//     popped (or an error indication).
-//   Replaced "INT32 iLoading" parameter of NsEnter() with "OpMode LoadMode".
-//   Revised FindParentName() to call GetParentHandle() instead of
-//     duplicating its logic.
-//   Changed empty formal parameter lists to "(void)".
-//   Changed values which are offsets from (INT32) to (ptrdiff_t).
-//   Improved parameter diagnostics in NsSetMethod() and NsSetValue().
-//   Revised ExistDownstreamSibling() to eliminate unneeded local variables.
-//   Ensure correct table size is passed to various functions depending on
-//     whether the root, or some other scope, is being processed.
-//   Improve NOTFOUND handling in NsGetHandle().
-//   Made ExistDownstreamSibling() static.
-//
-//    Rev 1.26   24 Sep 1997 15:10:26   phutchis
-// Add #include of bu_plumr.h, and functions NsMarkNT() and NsMarkNS(),
-//   to audit allocation and find leaks.
-// Add allocation comments to function headers.
-//
-//    Rev 1.25   16 Sep 1997 10:37:18   phutchis
-// Renamed nParent member of nte to ParentScope to better reflect its use
-// Added scope-related tracing in AcpiExecuteMethod() and SearchTable()
-// Handle case where vReporter() parameter to NsEnter() is NULL
-// Corrected oversimplification in GetParentHandle()
-// Corrected handling of subtree search in NsFindNames()
-// Added function NsNameOfScope() [generalization of NsNameOfCurrentScope()]
-// Added function NsGetHandle()
-//
-//    Rev 1.24   04 Aug 1997 16:14:04   kdbranno
-// Added function GetParentHandle.
-//
-//    Rev 1.23   29 Jul 1997 14:35:16   phutchis
-// Add Params parameter to AcpiExecuteMethod()
-// Ensure correct setting of current scope when a method starts execution
-// Improve reporting of "name table overflow" and "name not found" conditions
-//
-//    Rev 1.22   16 Jul 1997 14:26:40   phutchis
-// Change types of predefined names from Any to DefAny to eliminate
-// forward reference complaints.
-// Revised error reporting for forward references and excessive ^ in names.
-//
-//    Rev 1.21   15 Jul 1997 11:56:54   phutchis
-// Refined detection of forward references to eliminate flagging of non-
-// erroneous cases.
-//
-//    Rev 1.20   11 Jul 1997 16:05:12   phutchis
-// Add IsNsHandle() macro, some comments re typedef nte, and a function
-// header for InternalizeName
-//
-//    Rev 1.19   08 Jul 1997 17:02:30   phutchis
-// Add ReturnValue parameter to AcpiExecuteMethod().
-//
-//    Rev 1.18   03 Jul 1997 16:26:22   phutchis
-// fixed typo !!??$$##%%!!!
-//
-//    Rev 1.17   03 Jul 1997 16:14:30   phutchis
-// Adjust scope handling so that types which open a scope level do so only
-// when being defined, not when referenced.  (Fix for "Scope stack overflow"
-// and other problems in 6/12/97 Anchorage)
-// Generate message for forward-referenced names.
-// Increment BUlib error count for forward referenced names, scope stack
-// overflow, too many ^
-// Increment BUlib warning count for name table overflow or allocation fail.
-//
-//    Rev 1.16   18 Jun 1997 16:41:22   kdbranno
-// removed closing comment (star-slash) from change history.
-// Caused the file header to end prematurely...
-//
-//    Rev 1.15   18 Jun 1997 09:35:36   phutchis
-// Add SearchBase and MaxDepth parameters to NsDumpTables()
-// and phFindNames()
-// Replace (XXX) debugging hack with (Trace & TraceNames)
-// Clean up some XXX commented areas
-//
-//    Rev 1.14   12 Jun 1997 10:00:20   phutchis
-// Add parameter to NsFindNames() to enable searching a subtree.
-//
-//    Rev 1.13   11 Jun 1997 15:47:38   phutchis
-// Adjust scope rules to agree with Memphis OS.
-// Add capability to preload namespace.
-// When a non-method object is passed to AcpiExecuteMethod,
-//   return the object as the result.
-// When a search specifying "Any" type finds an object of known type,
-//   make subsequent scope-related decisions according to the type found.
-// Add capability to get a list of handles whose names match a search pattern.
-// Suppress listing while executing.
-// Improve checktrash facility.
-//
-//    Rev 1.12   14 May 1997 16:56:32   phutchis
-// Generate debug/trace output only if debug level > 0
-//
-//    Rev 1.11   14 May 1997 16:05:02   kdbranno
-// Removed calloc_bu
-//
-//    Rev 1.10   13 May 1997 17:57:30   phutchis
-// Add guards for uninitialized namespace and hooks for interpreter
-//
-//    Rev 1.9   16 Apr 1997 15:02:32   kdbranno
-// returned declarations for "meth" and "nte" to apcinmsp.c from acpinmsp.h.
-// Changed prototpye of ExistDownstreamSibling to take NsHandle rather than
-// nte.
-// Changed include brackets to quotes for .h files from ACPILIB
-//
-//    Rev 1.8   Apr 14 1997 16:18:28   kdbranno
-// Moved typedef for nte and meth to acpinmsp.h
-//
-//    Rev 1.7   Apr 14 1997 15:49:08   kdbranno
-// Added #include <display.h>.  Implemented function ExistDownstreamSibling().
-// Used ExistDownstreamSibling() to make intellegent choice of line drawing
-// characters when outputing nametree. Added DisplayBitFlags parameter to
-// NsDumpTables().
-//
-//    Rev 1.6   18 Mar 1997 09:29:56   phutchis
-// Work around ic386 breakage where enum != INT32
-// Change #include of <malloc.h> to <stdlib.h>
-// Cast params of calloc() and NcOK() to proper types
-//
-//    Rev 1.5   14 Mar 1997 17:44:20   phutchis
-// Renamed vNsEnter to NsEnter to correspond to its return value
-// type (handle), and added iLoading parameter.
-// AcpiExecuteMethod() now finds the passed name in the name space,
-// locates the method's p-code, and (temporarily) processes it through
-// the dumper.  Actual interpretation of the p-code is not yet provided.
-//
-//    Rev 1.4   12 Mar 1997 17:46:28   phutchis
-// Make listing output optional and via printf_bu
-// Replace some spaces with tabs
-// Add function headers
-//
-//    Rev 1.3   07 Mar 1997 10:38:04   phutchis
-// Change LOGFILE to NSLOGFILE since something is defining LOGFILE
-//
-//    Rev 1.2   06 Mar 1997 17:21:00   phutchis
-// Put debug logging under #ifdef LOGFILE
-//
-//    Rev 1.1   05 Mar 1997 13:32:56   phutchis
-// Added several functions
 //
 //    Rev 1.0   Feb 28 1997 08:59:24   KBRANNOC
 // Initial revision.
@@ -359,16 +72,17 @@
 */
 
 #define __NSACCESS_C__
-#define _THIS_MODULE        "nsaccess.c"
 
 #include <acpi.h>
 #include <aml.h>
 #include <amldsio.h>
-
 #include <limits.h>
 #include <stdlib.h>
 #include <string.h>
 
+
+#define _THIS_MODULE        "nsaccess.c"
+#define _COMPONENT          NAMESPACE
 
 /* 
  * set non-zero to enable some flow tracing
@@ -1036,13 +750,13 @@ BREAKPOINT3;
             /* Method points to a method name */
         
             LINE_SET (55, Exec);
-            DEBUG_PRINT (AML_INFO,
+            DEBUG_PRINT (ACPI_INFO,
                         ("[%s Method %p ptrVal %p\n",
                         MethodName, MethodPtr, MethodPtr->ptrVal));
 
             if (MethodPtr->ptrVal)
             {
-                DEBUG_PRINT (AML_INFO,
+                DEBUG_PRINT (ACPI_INFO,
                             ("Offset %x Length %lx]\n",
                             ((meth *) MethodPtr->ptrVal)->Offset + 1,
                             ((meth *) MethodPtr->ptrVal)->Length - 1));
@@ -1050,7 +764,7 @@ BREAKPOINT3;
         
             else
             {
-                DEBUG_PRINT (AML_INFO, ("*Undefined*]\n"));
+                DEBUG_PRINT (ACPI_INFO, ("*Undefined*]\n"));
             }
 #endif
 
@@ -1132,7 +846,7 @@ BREAKPOINT3;
             OBJECT_DESCRIPTOR           *ObjDesc;
 
 
-            DEBUG_PRINT (AML_INFO, ("Value: \n"));
+            DEBUG_PRINT (ACPI_INFO, ("Value: \n"));
             DUMP_ENTRY (MethodPtr);
 
             ObjDesc = AllocateObjectDesc (&KDT[39]);
@@ -1405,7 +1119,7 @@ SearchTable (char *NamSeg, nte *NameTbl, INT32 TableSize,
     {
         sprintf (WhyBuf, "*** bad name %08lx *** \n", *(UINT32 *) NamSeg);
         Why = WhyBuf;
-        DEBUG_PRINT (NS_ERROR, (Why));
+        DEBUG_PRINT (ACPI_ERROR, (Why));
         CheckTrash ("leave SearchTable BADNAME");
         return NOTFOUND;
     }
@@ -1413,7 +1127,7 @@ SearchTable (char *NamSeg, nte *NameTbl, INT32 TableSize,
     if ((NameTbl == Root && TableSize != ROOTSIZE) ||
         (NameTbl != Root && TableSize != TABLSIZE))
     {
-        DEBUG_PRINT (NS_ERROR, 
+        DEBUG_PRINT (ACPI_ERROR, 
                     (" *** NAME TABLE SIZE ERROR: expected %d, actual %d *** \n",
                     (NameTbl == Root) ? ROOTSIZE : TABLSIZE, TableSize));
         Why = "*** NAME TABLE SIZE ERROR ***";
@@ -1613,7 +1327,7 @@ SearchTable (char *NamSeg, nte *NameTbl, INT32 TableSize,
         {
             /*  we should NEVER get here    */
 
-            DEBUG_PRINT (NS_ERROR,
+            DEBUG_PRINT (ACPI_ERROR,
                         ("SearchTable: appendage %p about to be overwritten\n",
                         NEXTSEG (NameTbl)));
         }
@@ -1765,7 +1479,7 @@ NsSetup (void)
 
     /* Enter the pre-defined names in the name table */
     
-    DEBUG_PRINT (NS_INFO, ("Entering predefined name table into namespace\n"));
+    DEBUG_PRINT (ACPI_INFO, ("Entering predefined name table into namespace\n"));
 
     for (InitVal = PreDefinedNames; InitVal->Name; InitVal++)
     {
@@ -2146,7 +1860,7 @@ NsEnter (char *Name, NsType Type, OpMode LoadMode)
              * and the next scope has not been allocated ...
              */
 
-            DEBUG_PRINT (NS_INFO, ("Load mode= %d  ThisEntry= %x\n", LoadMode, ThisEntry));
+            DEBUG_PRINT (ACPI_INFO, ("Load mode= %d  ThisEntry= %x\n", LoadMode, ThisEntry));
 
             if ((Load1 == LoadMode) || (Load == LoadMode))
             {   
@@ -2336,7 +2050,7 @@ FindParentName (nte *EntryToSearch, INT32 Trace)
             nte         *ParentEntry = (nte *) ParentHandle;
 
 
-            DEBUG_PRINT (NS_INFO, ("Parent Entry: %p->%.4s\n", 
+            DEBUG_PRINT (ACPI_INFO, ("Parent Entry: %p->%.4s\n", 
                             ParentEntry, &ParentEntry->NameSeg));
 
             if (ParentEntry->NameSeg)
@@ -2554,7 +2268,7 @@ NsFullyQualifiedName (NsHandle TargetHandle)
     if (0x4353505f == EntryToSearch->NameSeg)
     {
         TraceFQN = 1;
-        DEBUG_PRINT (NS_INFO,
+        DEBUG_PRINT (ACPI_INFO,
                 ("NsFQN: nte @ %p, name %08lx, parent @ %p, SizeOfFQN = %d \n",
                 EntryToSearch, EntryToSearch->NameSeg, EntryToSearch->ParentScope, Size));
     }
@@ -2567,7 +2281,7 @@ NsFullyQualifiedName (NsHandle TargetHandle)
     
     if (TraceFQN)
     {
-        DEBUG_PRINT (NS_INFO, ("%d:%08lx \n", Size, EntryToSearch->NameSeg));
+        DEBUG_PRINT (ACPI_INFO, ("%d:%08lx \n", Size, EntryToSearch->NameSeg));
     }
     
     *(UINT32 *) (FullyQualifiedName + Size) = EntryToSearch->NameSeg;
@@ -2583,7 +2297,7 @@ NsFullyQualifiedName (NsHandle TargetHandle)
         
         if (TraceFQN)
         {
-            DEBUG_PRINT (NS_INFO,
+            DEBUG_PRINT (ACPI_INFO,
                             ("%d:%08lx \n", Size, *(UINT32 *)(FullyQualifiedName + Size)));
         }
 
@@ -2655,7 +2369,7 @@ NsSetMethod (NsHandle Handle, ptrdiff_t Offset, INT32 Length)
     ((nte *) Handle)->ptrVal = (void *) Method;
 
     LINE_SET (55, Load);
-    DEBUG_PRINT (NS_INFO,
+    DEBUG_PRINT (ACPI_INFO,
                 ("[Method %p ptrVal %p Offset %x Length %lx]\n",
                 Handle, Method, Method->Offset, Method->Length));
 }
@@ -2805,25 +2519,25 @@ NsSetValue (NsHandle handle, ACPI_OBJECT_HANDLE AcpiValue, UINT8 ValType)
 
             if (GetDebugLevel () > 0)
             {
-                DEBUG_PRINT (NS_INFO,
+                DEBUG_PRINT (ACPI_INFO,
                             ("NsSetValue:confused:setting bogus type for %s from ",
                             NsFullyQualifiedName (handle)));
 
                 if (IsInPCodeBlock((UINT8 *) AcpiValue))
                 {
-                    DEBUG_PRINT (NS_INFO,
+                    DEBUG_PRINT (ACPI_INFO,
                                 ("AML-stream code %02x\n", *(UINT8 *) AcpiValue));
                 }
             
                 else if (IsNsHandle (AcpiValue))
                 {
-                    DEBUG_PRINT (NS_INFO,
+                    DEBUG_PRINT (ACPI_INFO,
                                 ("name %s\n", NsFullyQualifiedName (AcpiValue)));
                 }
             
                 else
                 {
-                    DEBUG_PRINT (NS_INFO,
+                    DEBUG_PRINT (ACPI_INFO,
                                 ("object %p:\n", NsFullyQualifiedName (AcpiValue)));
                     DUMP_STACK_ENTRY (AcpiValue);
                 }
@@ -2937,7 +2651,7 @@ NsDumpTable (nte *ThisEntry, INT32 Size, INT32 Level, INT32 DisplayBitFlags,
         return;
     }
 
-    DEBUG_PRINT (NS_INFO,
+    DEBUG_PRINT (ACPI_INFO,
                 ("enter NsDumpTable (%p, %d, %d, %d, %d) %p\n",
                 ThisEntry, Size, Level, DisplayBitFlags, UseGraphicCharSet,
                 ThisEntry->NameSeg));
@@ -2977,12 +2691,12 @@ NsDumpTable (nte *ThisEntry, INT32 Size, INT32 Level, INT32 DisplayBitFlags,
                 {
                     if (DownstreamSiblingMask & WhichBit)
                     {    
-                        DEBUG_PRINT_RAW (NS_INFO, ("|  "));
+                        DEBUG_PRINT_RAW (ACPI_INFO, ("|  "));
                     }
                     
                     else
                     {
-                        DEBUG_PRINT_RAW (NS_INFO, ("   "));
+                        DEBUG_PRINT_RAW (ACPI_INFO, ("   "));
                     }
                     
                     WhichBit <<= 1;
@@ -2993,29 +2707,29 @@ NsDumpTable (nte *ThisEntry, INT32 Size, INT32 Level, INT32 DisplayBitFlags,
                     if (ExistDownstreamSibling (ThisEntry + 1, Size, Appendage))
                     {
                         DownstreamSiblingMask |= (1 << (Level - 1));
-                        DEBUG_PRINT_RAW (NS_INFO, ("+--"));
+                        DEBUG_PRINT_RAW (ACPI_INFO, ("+--"));
                     }
                     
                     else
                     {
                         DownstreamSiblingMask &= 0xffffffff ^ (1 << (Level - 1));
-                        DEBUG_PRINT_RAW (NS_INFO, ("+--"));
+                        DEBUG_PRINT_RAW (ACPI_INFO, ("+--"));
                     }
 
                     if (ThisEntry->ChildScope == NULL)
                     {
-                        DEBUG_PRINT_RAW (NS_INFO, ("- "));
+                        DEBUG_PRINT_RAW (ACPI_INFO, ("- "));
                     }
                     
                     else if (ExistDownstreamSibling (ThisEntry->ChildScope, TABLSIZE,
                                                         NEXTSEG (ThisEntry->ChildScope)))
                     {
-                        DEBUG_PRINT_RAW (NS_INFO, ("+ "));
+                        DEBUG_PRINT_RAW (ACPI_INFO, ("+ "));
                     }
                     
                     else
                     {
-                        DEBUG_PRINT_RAW (NS_INFO, ("- "));
+                        DEBUG_PRINT_RAW (ACPI_INFO, ("- "));
                     }
                 }
             }
@@ -3034,14 +2748,14 @@ NsDumpTable (nte *ThisEntry, INT32 Size, INT32 Level, INT32 DisplayBitFlags,
             {
                 /* name is a Method and its AML offset/length are set */
                 
-                DEBUG_PRINT_RAW (NS_INFO, ("%p: ", ThisEntry));
+                DEBUG_PRINT_RAW (ACPI_INFO, ("%p: ", ThisEntry));
                 
-                DEBUG_PRINT_RAW (NS_INFO, ("%4.4s [%s %04x:%04lx]",
+                DEBUG_PRINT_RAW (ACPI_INFO, ("%4.4s [%s %04x:%04lx]",
                             &ThisEntry->NameSeg, NsTypeNames[Type],
                             ((meth *) ThisEntry->ptrVal)->Offset,
                             ((meth *) ThisEntry->ptrVal)->Length));
                 
-                DEBUG_PRINT_RAW (NS_INFO, (" C:%p P:%p\n",
+                DEBUG_PRINT_RAW (ACPI_INFO, (" C:%p P:%p\n",
                         ThisEntry->ChildScope, ThisEntry->ParentScope));
             }
             
@@ -3052,12 +2766,12 @@ NsDumpTable (nte *ThisEntry, INT32 Size, INT32 Level, INT32 DisplayBitFlags,
 
                 /* name is not a Method, or the AML offset/length are not set */
                 
-                DEBUG_PRINT_RAW (NS_INFO, ("%p: ", ThisEntry));
+                DEBUG_PRINT_RAW (ACPI_INFO, ("%p: ", ThisEntry));
                 
-                DEBUG_PRINT_RAW (NS_INFO,
+                DEBUG_PRINT_RAW (ACPI_INFO,
                             ("%4.4s [%s]", &ThisEntry->NameSeg, NsTypeNames[Type]));
                 
-                DEBUG_PRINT_RAW (NS_INFO, (" C:%p P:%p V:%p\n",
+                DEBUG_PRINT_RAW (ACPI_INFO, (" C:%p P:%p V:%p\n",
                             ThisEntry->ChildScope, ThisEntry->ParentScope, ThisEntry->ptrVal));
 
 #if 0
@@ -3066,13 +2780,13 @@ NsDumpTable (nte *ThisEntry, INT32 Size, INT32 Level, INT32 DisplayBitFlags,
                 if ((IndexField == Type) && (0 == Size) && (0 == Level) &&
                     ThisEntry->ParentScope)
                 {
-                    DEBUG_PRINT_RAW (NS_INFO, ("  in "));
+                    DEBUG_PRINT_RAW (ACPI_INFO, ("  in "));
                     ++TRACE;
-                    DEBUG_PRINT_RAW (NS_INFO,
+                    DEBUG_PRINT_RAW (ACPI_INFO,
                                 ("call NsDumpEntry %p\n", ThisEntry->ParentScope));
                     
                     NsDumpEntry ((NsHandle) ThisEntry->ParentScope, DisplayBitFlags);
-                    DEBUG_PRINT_RAW (NS_INFO,
+                    DEBUG_PRINT_RAW (ACPI_INFO,
                                 ("ret from NsDumpEntry %p\n", ThisEntry->ParentScope));
                     --TRACE;
                 }
@@ -3084,11 +2798,11 @@ NsDumpTable (nte *ThisEntry, INT32 Size, INT32 Level, INT32 DisplayBitFlags,
                     UINT8               bT = ((OBJECT_DESCRIPTOR *) Value)->ValType;
 
 
-                    DEBUG_PRINT_RAW (NS_INFO,
+                    DEBUG_PRINT_RAW (ACPI_INFO,
                                 ("                 %p  %02x %02x %02x %02x %02x %02x",
                                 Value, Value[0], Value[1], Value[2], Value[3], Value[4],
                                 Value[5]));
-                    DEBUG_PRINT_RAW (NS_INFO,
+                    DEBUG_PRINT_RAW (ACPI_INFO,
                                 (" %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x\n",
                                 Value[6], Value[7], Value[8], Value[9], Value[10],
                                 Value[11], Value[12], Value[13], Value[14], Value[15]));
@@ -3180,7 +2894,7 @@ NsDumpTables (INT32 DisplayBitFlags, INT32 UseGraphicCharSet,
         /*  entire namespace    */
 
         SearchBase = Root;
-        DEBUG_PRINT (NS_INFO, ("\\\n"));
+        DEBUG_PRINT (ACPI_INFO, ("\\\n"));
     }
 
     NsDumpTable (SearchBase, SearchBase == Root ? NsRootSize : TABLSIZE,
