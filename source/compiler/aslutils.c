@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslutils -- compiler utilities
- *              $Revision: 1.13 $
+ *              $Revision: 1.15 $
  *
  *****************************************************************************/
 
@@ -123,16 +123,17 @@
 extern const char * const       yytname[];
 
 
-
 /*******************************************************************************
  *
- * FUNCTION:    
+ * FUNCTION:    UtLocalCalloc
  *
- * PARAMETERS:  
+ * PARAMETERS:  Size        - Bytes to be allocated
  *
- * RETURN:      
+ * RETURN:      Pointer to the allocated memory.  Guaranteed to be valid.
  *
- * DESCRIPTION: 
+ * DESCRIPTION: Allocate zero-initialized memory.  Aborts the compile on an
+ *              allocation failure, on the assumption that nothing more can be
+ *              accomplished.
  *
  ******************************************************************************/
 
@@ -146,7 +147,7 @@ UtLocalCalloc (
     Allocated = calloc (Size, 1);
     if (!Allocated)
     {
-        AslCommonError (ASL_ERROR, ASL_MSG_MEMORY_ALLOCATION, 
+        AslCommonError (ASL_ERROR, ASL_MSG_MEMORY_ALLOCATION,
             Gbl_CurrentLineNumber, Gbl_LogicalLineNumber, Gbl_InputFilename, NULL);
         exit (1);
     }
@@ -157,49 +158,13 @@ UtLocalCalloc (
 
 /*******************************************************************************
  *
- * FUNCTION:    
+ * FUNCTION:    UtHexCharToValue
  *
- * PARAMETERS:  
+ * PARAMETERS:  hc          - Hex character in Ascii
  *
- * RETURN:      
+ * RETURN:      The binary value of the hex character
  *
- * DESCRIPTION: 
- *
- ******************************************************************************/
-
-void *
-UtLocalRealloc (
-    void                    *Previous,
-    UINT32                  ValidSize,
-    UINT32                  AdditionalSize)
-{
-    char                    *Allocated;
-
-
-    Allocated = (char *) realloc (Previous, ValidSize + AdditionalSize);
-    if (!Allocated)
-    {
-        AslCommonError (ASL_ERROR, ASL_MSG_MEMORY_ALLOCATION, 
-            Gbl_CurrentLineNumber, Gbl_LogicalLineNumber, Gbl_InputFilename, NULL);
-        exit (1);
-    }
-
-    /* Zero out the new part of the buffer */
-
-    memset (Allocated + ValidSize, 0, AdditionalSize);
-    return Allocated;
-}
-
-
-/*******************************************************************************
- *
- * FUNCTION:    
- *
- * PARAMETERS:  
- *
- * RETURN:      
- *
- * DESCRIPTION: 
+ * DESCRIPTION: Perform ascii-to-hex translation
  *
  ******************************************************************************/
 
@@ -223,13 +188,15 @@ UtHexCharToValue (
 
 /*******************************************************************************
  *
- * FUNCTION:    
+ * FUNCTION:    UtConvertByteToHex
  *
- * PARAMETERS:  
+ * PARAMETERS:  RawByte         - Binary data
+ *              *Buffer         - Pointer to where the hex bytes will be stored
  *
- * RETURN:      
+ * RETURN:      Ascii hex byte is stored in Buffer.
  *
- * DESCRIPTION: 
+ * DESCRIPTION: Perform hex-to-ascii translation.  The return data is prefixed
+ *              with "0x"
  *
  ******************************************************************************/
 
@@ -247,16 +214,17 @@ UtConvertByteToHex (
 }
 
 
-
 /*******************************************************************************
  *
- * FUNCTION:    
+ * FUNCTION:    DbgPrint
  *
- * PARAMETERS:  
+ * PARAMETERS:  Fmt             - Printf format string
+ *              ...             - variable printf list
  *
- * RETURN:      
+ * RETURN:      None
  *
- * DESCRIPTION: 
+ * DESCRIPTION: Conditional print statement.  Prints to stderr only if the
+ *              debug flag is set.
  *
  ******************************************************************************/
 
@@ -278,16 +246,16 @@ DbgPrint (
 }
 
 
-
 /*******************************************************************************
  *
- * FUNCTION:    
+ * FUNCTION:    UtPrintFormattedName
  *
- * PARAMETERS:  
+ * PARAMETERS:  ParseOpcode         - Parser keyword ID
+ *              Level               - Indentation level
  *
- * RETURN:      
+ * RETURN:      None
  *
- * DESCRIPTION: 
+ * DESCRIPTION: Print the ascii name of the parse opcode.
  *
  ******************************************************************************/
 
@@ -301,7 +269,7 @@ UtPrintFormattedName (
 
 
     DbgPrint ("%*s %-16.16s", (3 * Level), " ", yytname[ParseOpcode-255]);
-        
+
     
     if (Level < TEXT_OFFSET)
     {
@@ -312,13 +280,13 @@ UtPrintFormattedName (
 
 /*******************************************************************************
  *
- * FUNCTION:    
+ * FUNCTION:    UtGetOpName
  *
- * PARAMETERS:  
+ * PARAMETERS:  ParseOpcode         - Parser keyword ID
  *
- * RETURN:      
+ * RETURN:      Pointer to the opcode name
  *
- * DESCRIPTION: 
+ * DESCRIPTION: Get the ascii name of the parse opcode
  *
  ******************************************************************************/
 
@@ -330,10 +298,9 @@ UtGetOpName (
 }
 
 
-
 /*******************************************************************************
  *
- * FUNCTION:    AslDisplaySummary
+ * FUNCTION:    UtDisplaySummary
  *
  * PARAMETERS:  None
  *
@@ -349,31 +316,33 @@ UtDisplaySummary (
 {
 
 
-    printf ("Compilation complete. %d Errors %d Warnings\n", 
-                Gbl_ExceptionCount[ASL_ERROR], 
+    printf ("Compilation complete. %d Errors %d Warnings\n",
+                Gbl_ExceptionCount[ASL_ERROR],
                 Gbl_ExceptionCount[ASL_WARNING]);
 
-    printf ("ASL Input: %d lines, %d bytes, %d keywords\n", 
+    printf ("ASL Input: %d lines, %d bytes, %d keywords\n",
                 Gbl_CurrentLineNumber, Gbl_InputByteCount, TotalKeywords);
 
     if ((Gbl_ExceptionCount[ASL_ERROR] == 0) || (Gbl_IgnoreErrors))
     {
-        printf ("AML Output: %s - %d bytes %d named objects %d executable opcodes\n\n", 
+        printf ("AML Output: %s - %d bytes %d named objects %d executable opcodes\n\n",
                     Gbl_OutputFilename, Gbl_TableLength, TotalNamedObjects, TotalExecutableOpcodes);
     }
 }
 
 
-
 /*******************************************************************************
  *
- * FUNCTION:    
+ * FUNCTION:    UtAttachNamepathToOwner 
  *
- * PARAMETERS:  
+ * PARAMETERS:  Node            - Parent parse node
+ *              NameNode        - Node that contains the name
  *
- * RETURN:      
+ * RETURN:      Sets the ExternalName and Namepath in the parent node
  *
- * DESCRIPTION: 
+ * DESCRIPTION: Store the name in two forms in the parent node:  The original
+ *              (external) name, and the internalized name that is used within
+ *              the ACPI namespace manager.
  *
  ******************************************************************************/
 
@@ -385,7 +354,6 @@ UtAttachNamepathToOwner (
     ACPI_STATUS             Status;
 
 
-
     Node->ExternalName = NameNode->Value.String;
 
     Status = AcpiNsInternalizeName (NameNode->Value.String, &Node->Namepath);
@@ -395,9 +363,5 @@ UtAttachNamepathToOwner (
     }
 
 }
-
-
-
-
 
 
