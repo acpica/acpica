@@ -1,6 +1,6 @@
 
 /******************************************************************************
- * 
+ *
  * Name: acenv.h - Generation environment specific items
  *
  *****************************************************************************/
@@ -38,9 +38,9 @@
  * The above copyright and patent license is granted only if the following
  * conditions are met:
  *
- * 3. Conditions 
+ * 3. Conditions
  *
- * 3.1. Redistribution of Source with Rights to Further Distribute Source.  
+ * 3.1. Redistribution of Source with Rights to Further Distribute Source.
  * Redistribution of source code of any substantial portion of the Covered
  * Code or modification with rights to further distribute source must include
  * the above Copyright Notice, the above License, this list of Conditions,
@@ -48,11 +48,11 @@
  * Licensee must cause all Covered Code to which Licensee contributes to
  * contain a file documenting the changes Licensee made to create that Covered
  * Code and the date of any change.  Licensee must include in that file the
- * documentation of any changes made by any predecessor Licensee.  Licensee 
+ * documentation of any changes made by any predecessor Licensee.  Licensee
  * must include a prominent statement that the modification is derived,
  * directly or indirectly, from Original Intel Code.
  *
- * 3.2. Redistribution of Source with no Rights to Further Distribute Source.  
+ * 3.2. Redistribution of Source with no Rights to Further Distribute Source.
  * Redistribution of source code of any substantial portion of the Covered
  * Code or modification without rights to further distribute source must
  * include the following Disclaimer and Export Compliance provision in the
@@ -86,7 +86,7 @@
  * INSTALLATION, TRAINING OR OTHER SERVICES.  INTEL WILL NOT PROVIDE ANY
  * UPDATES, ENHANCEMENTS OR EXTENSIONS.  INTEL SPECIFICALLY DISCLAIMS ANY
  * IMPLIED WARRANTIES OF MERCHANTABILITY, NONINFRINGEMENT AND FITNESS FOR A
- * PARTICULAR PURPOSE. 
+ * PARTICULAR PURPOSE.
  *
  * 4.2. IN NO EVENT SHALL INTEL HAVE ANY LIABILITY TO LICENSEE, ITS LICENSEES
  * OR ANY OTHER THIRD PARTY, FOR ANY LOST PROFITS, LOST DATA, LOSS OF USE OR
@@ -118,26 +118,20 @@
 #define __ACENV_H__
 
 
-/* 
- * define SYSTEM_CLIB_FUNCTIONS if linking to an actual C library.
- * Otherwise, local versions of the string and memory functions will be used.
- */
 
-/******************************************************************************
- * 
- * Using native C library functions
- *
- *****************************************************************************/
-
-#ifdef SYSTEM_CLIB_FUNCTIONS
 /*
- * Standard C library headers.
- * We want to keep these to a minimum.
- * 
- * The ACPI subsystem only uses low level functions that do not call OS
+ * Environment configuration.  The purpose of this file is to interface to the 
+ * local generation environment. 
+ *
+ * 1) ACPI_USE_SYSTEM_CLIBRARY - Define this if linking to an actual C library.
+ *      Otherwise, local versions of string/memory functions will be used.
+ * 2) ACPI_USE_STANDARD_HEADERS - Define this if linking to a C library and
+ *      the standard header files may be used.
+ *
+ * The ACPI subsystem only uses low level C library functions that do not call OS
  * system services and may therefore be inlined in the code.
  *
- * It may be necessary to tailor these include files to the target 
+ * It may be necessary to tailor these include files to the target
  * generation environment.
  *
  *
@@ -151,7 +145,7 @@
  *              strlen
  *              strncmp
  *              strncat
- *              strncpy 
+ *              strncpy
  *
  * stdlib.h:    strtoul
  *
@@ -162,12 +156,68 @@
  *
  */
 
+
+
+/* 
+ * Environment-specific configuration
+ */
+
+#ifdef _LINUX
+
+#include <linux/config.h>
+#include <linux/string.h>
+#include <linux/kernel.h>
+#include <linux/ctype.h>
+#include <asm/system.h>
+
+/* Single threaded */
+
+#define ACPI_APPLICATION
+
+/* Use native Linux string library */
+
+#define ACPI_USE_SYSTEM_CLIBRARY
+
+/* The compiler of choice */
+
+#define __GNUC__
+
+#else
+
+/* All other environments */
+
+#define ACPI_USE_STANDARD_HEADERS
+
+#endif
+
+
+
+
+/******************************************************************************
+ *
+ * C library configuration 
+ *
+ *****************************************************************************/
+
+#ifdef ACPI_USE_SYSTEM_CLIBRARY
+/*
+ * Use the standard C library headers.
+ * We want to keep these to a minimum.
+ *
+ */
+
+#ifdef ACPI_USE_STANDARD_HEADERS
+/*
+ * Use the standard headers from the standard locations
+ */
 #include <stdarg.h>
 #include <stdlib.h>
 #include <string.h>
 
+#endif /* ACPI_USE_STANDARD_HEADERS */
+
 /*
- * We will be using the standard Clib functions
+ * We will be linking to the standard Clib functions
  */
 
 #define STRSTR(s1,s2)           strstr((char *) (s1), (char *) (s2))
@@ -187,7 +237,7 @@
 
 
 /******************************************************************************
- * 
+ *
  * Not using native C library, use local implementations
  *
  *****************************************************************************/
@@ -212,7 +262,7 @@ typedef char *va_list;
  */
 
 #define  _AUPBND                (sizeof(int) - 1)
-#define  _ADNBND                (sizeof(int) - 1) 
+#define  _ADNBND                (sizeof(int) - 1)
 
 /*
  * Variable argument list macro definitions
@@ -220,33 +270,32 @@ typedef char *va_list;
 
 #define _Bnd(X, bnd)            (((sizeof(X)) + (bnd)) & (~(bnd)))
 #define va_arg(ap, T)           (*(T *)(((ap) += ((_Bnd(T, _AUPBND))) - (_Bnd(T, _ADNBND)))))
-#define va_end(ap)              (void)0 
+#define va_end(ap)              (void)0
 #define va_start(ap, A)         (void) ((ap) = (((char *)&(A)) + (_Bnd(A, _AUPBND))))
 
 #endif /* va_arg */
 
 
-#define STRSTR(s1,s2)           CmStrstr    ((char *) (s1), (char *) (s2))
-#define STRUPR(s)               CmStrupr    ((char *) (s))
-#define STRLEN(s)               CmStrlen    ((char *) (s))
-#define STRCPY(d,s)             CmStrcpy    ((char *) (d), (char *) (s))
-#define STRNCPY(d,s,n)          CmStrncpy   ((char *) (d), (char *) (s), (n))
-#define STRNCMP(d,s,n)          CmStrncmp   ((char *) (d), (char *) (s), (n))
-#define STRCMP(d,s)             CmStrcmp    ((char *) (d), (char *) (s))
-#define STRCAT(d,s)             CmStrcat    ((char *) (d), (char *) (s))
-#define STRNCAT(d,s,n)          CmStrncat   ((char *) (d), (char *) (s), (n))
-#define STRTOUL(d,s,n)          CmStrtoul   ((char *) (d), (char **) (s), (n))
-#define MEMCPY(d,s,n)           CmMemcpy    ((void *) (d), (const void *) (s), (n))
-#define MEMSET(d,v,n)           CmMemset    ((void *) (d), (v), (n))
-#define TOUPPER                 CmToUpper
-#define TOLOWER                 CmToLower
+#define STRSTR(s1,s2)           AcpiCmStrstr    ((char *) (s1), (char *) (s2))
+#define STRUPR(s)               AcpiCmStrupr    ((char *) (s))
+#define STRLEN(s)               AcpiCmStrlen    ((char *) (s))
+#define STRCPY(d,s)             AcpiCmStrcpy    ((char *) (d), (char *) (s))
+#define STRNCPY(d,s,n)          AcpiCmStrncpy   ((char *) (d), (char *) (s), (n))
+#define STRNCMP(d,s,n)          AcpiCmStrncmp   ((char *) (d), (char *) (s), (n))
+#define STRCMP(d,s)             AcpiCmStrcmp    ((char *) (d), (char *) (s))
+#define STRCAT(d,s)             AcpiCmStrcat    ((char *) (d), (char *) (s))
+#define STRNCAT(d,s,n)          AcpiCmStrncat   ((char *) (d), (char *) (s), (n))
+#define STRTOUL(d,s,n)          AcpiCmStrtoul   ((char *) (d), (char **) (s), (n))
+#define MEMCPY(d,s,n)           AcpiCmMemcpy    ((void *) (d), (const void *) (s), (n))
+#define MEMSET(d,v,n)           AcpiCmMemset    ((void *) (d), (v), (n))
+#define TOUPPER                 AcpiCmToUpper
+#define TOLOWER                 AcpiCmToLower
 
-#endif /* LOCAL_CLIB_FUNCTIONS */
-
+#endif /* ACPI_USE_SYSTEM_CLIBRARY */
 
 
 /******************************************************************************
- * 
+ *
  * Assembly code macros
  *
  *****************************************************************************/
@@ -261,6 +310,7 @@ typedef char *va_list;
 
 #ifdef WIN32   /* MS VC */
 
+#define ACPI_ASM_MACROS
 #define causeinterrupt(level)   __asm {int level}
 #define BREAKPOINT3             __asm {int 3}
 #define disable()               __asm {cli}
@@ -301,20 +351,25 @@ typedef char *va_list;
         __asm mov           Pnd, al                 \
 }
 
+#endif /* WIN32 */
 
-#elif defined(__GNUC__)
 
+
+#ifdef __GNUC__
+
+#define ACPI_ASM_MACROS
 #define causeinterrupt(level)
 #define BREAKPOINT3
-#define disable()               __asm ("cli")
-#define enable()                __asm ("sti")
-#define halt()                  __asm ("hlt")
-#define wbinvd()                __asm ("wbinvd")
+#define disable() __cli()
+#define enable()  __sti()
+#define halt()    __asm__ __volatile__ ("sti; hlt":::"memory")
+#define wbinvd()
+
 
 
 /*
  * A brief explanation as GNU inline assembly is a bit hairy
- *  %0 is the output parameter in EAX ("=a") 
+ *  %0 is the output parameter in EAX ("=a")
  *  %1 and %2 are the input parameters in ECX ("c") and an immediate value ("i") respectively
  *  All actual register references are preceded with "%%" as in "%%edx"
  *  Immediate values in the assembly are preceded by "$" as in "$0x1"
@@ -343,9 +398,14 @@ typedef char *va_list;
          "andl              $0x1,%%eax"     \
          :"=a"(Acq):"c"(GLptr),"i"(~3L):"cx","dx")
 
+#endif /* __GNUC__ */
 
-#else
 
+#ifndef ACPI_ASM_MACROS
+
+/* Unrecognized compiler, use defaults */
+
+#define ACPI_ASM_MACROS
 #define causeinterrupt(level)
 #define BREAKPOINT3
 #define disable()
@@ -353,30 +413,33 @@ typedef char *va_list;
 #define halt()
 
 #define ASM_AcquireGL(GLptr, Acq)
-#define ASM_ReleaseGL(GLptr, Acq) 
+#define ASM_ReleaseGL(GLptr, Acq)
 
-#endif
+#endif /* ACPI_ASM_MACROS */
+
 
 #ifdef ACPI_APPLICATION
+
+/* Don't want software interrupts within a ring3 application */
+
 #undef causeinterrupt
 #undef BREAKPOINT3
 #define causeinterrupt(level)
-#define BREAKPOINT3   
-#endif         
+#define BREAKPOINT3
+#endif
 
 
+#ifdef _MSC_VER                 /* disable some level-4 warnings */
 
 /******************************************************************************
- * 
+ *
  * Compiler-specific
  *
  *****************************************************************************/
 
-#ifdef _MSC_VER                 /* disable some level-4 warnings */
 #pragma warning(disable:4100)   /* warning C4100: unreferenced formal parameter */
 #pragma warning(disable:4127)   /* warning C4127: conditional expression is constant */
 #endif
-
 
 
 #endif /* __ACENV_H__ */
