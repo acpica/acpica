@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dsfield - Dispatcher field routines
- *              $Revision: 1.38 $
+ *              $Revision: 1.39 $
  *
  *****************************************************************************/
 
@@ -360,7 +360,7 @@ AcpiDsCreateBankField (
              */
 
             Status = AcpiAmlPrepBankFieldValue (Node, RegionNode, RegisterNode,
-                            BankValue, FieldFlags, FieldBitPosition, 
+                            BankValue, FieldFlags, FieldBitPosition,
                             Arg->Value.Size);
             if (ACPI_FAILURE (Status))
             {
@@ -418,7 +418,7 @@ AcpiDsCreateIndexField (
     /* First arg is the name of the Index register */
 
     Status = AcpiNsLookup (WalkState->ScopeInfo, Arg->Value.String,
-                    ACPI_TYPE_ANY, IMODE_LOAD_PASS1, 
+                    ACPI_TYPE_ANY, IMODE_LOAD_PASS1,
                     NS_NO_UPSEARCH | NS_DONT_OPEN_SCOPE,
                     NULL, &IndexRegisterNode);
     if (ACPI_FAILURE (Status))
@@ -431,7 +431,7 @@ AcpiDsCreateIndexField (
     Arg = Arg->Next;
 
     Status = AcpiNsLookup (WalkState->ScopeInfo, Arg->Value.String,
-                    INTERNAL_TYPE_INDEX_FIELD_DEFN, IMODE_LOAD_PASS1, 
+                    INTERNAL_TYPE_INDEX_FIELD_DEFN, IMODE_LOAD_PASS1,
                     NS_NO_UPSEARCH | NS_DONT_OPEN_SCOPE,
                     NULL, &DataRegisterNode);
     if (ACPI_FAILURE (Status))
@@ -487,7 +487,7 @@ AcpiDsCreateIndexField (
              * the object stack
              */
 
-            Status = AcpiAmlPrepIndexFieldValue (Node, IndexRegisterNode, 
+            Status = AcpiAmlPrepIndexFieldValue (Node, IndexRegisterNode,
                             DataRegisterNode, FieldFlags,
                             FieldBitPosition, Arg->Value.Size);
             if (ACPI_FAILURE (Status))
