@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asmain - Main module for the acpi source processor utility
- *              $Revision: 1.22 $
+ *              $Revision: 1.23 $
  *
  *****************************************************************************/
 
@@ -240,11 +240,11 @@ ACPI_STRING_TABLE           LinuxDataTypes[] = {
     "_u8_",                     "_UINT8_",
 
     "ACPI_STATUS  ",            "acpi_status_t",
-    "ACPI_IO_ADDRESS  ",        "acpi_io_address_t",
-    "ACPI_PHYSICAL_ADDRESS  ",  "acpi_physical_address_t",
-    "NATIVE_UINT  ",            "native_uint_t",
-    "NATIVE_INT  ",             "native_int_t",
-    "NATIVE_CHAR  ",            "native_char_t",
+    /*"ACPI_IO_ADDRESS  ",        "acpi_io_address_t",*/
+    /*"ACPI_PHYSICAL_ADDRESS  ",  "acpi_physical_address_t",*/
+    /*"NATIVE_UINT  ",            "native_uint_t",*/
+    /*"NATIVE_INT  ",             "native_int_t",*/
+    /*"NATIVE_CHAR  ",            "native_char_t",*/
     "ACPI_NAME  ",              "acpi_name_t",
     "ACPI_STRING  ",            "acpi_string_t",
     "ACPI_HANDLE  ",            "acpi_handle_t",
@@ -265,7 +265,6 @@ ACPI_STRING_TABLE           LinuxDataTypes[] = {
     "ACPI_WALK_LIST",           "acpi_walk_list",
     "ACPI_PARSE_STATE",         "acpi_parse_state",
     "ACPI_BUFFER",              "acpi_buffer",
-    "ACPI_OBJECT",              "acpi_object",
     "ACPI_OBJECT_LIST",         "acpi_object_list",
     "ACPI_OPCODE_INFO",         "acpi_opcode_info",
     "PREDEFINED_NAMES",         "predefined_names",
@@ -306,12 +305,11 @@ ACPI_STRING_TABLE           LinuxDataTypes[] = {
 
     "ACPI_STATUS",              "acpi_status_t",
 
-
-    "ACPI_IO_ADDRESS)",         "acpi_io_address_t)",
-    "ACPI_PHYSICAL_ADDRESS)",   "acpi_physical_address_t)",
-    "NATIVE_UINT)",             "native_uint_t)",
-    "NATIVE_INT)",              "native_int_t)",
-    "NATIVE_CHAR)",             "native_char_t)",
+    /*"ACPI_IO_ADDRESS)",         "acpi_io_address_t)",*/
+    /*"ACPI_PHYSICAL_ADDRESS)",   "acpi_physical_address_t)",*/
+    /*"NATIVE_UINT)",             "native_uint_t)",*/
+    /*"NATIVE_INT)",              "native_int_t)",*/
+    /*"NATIVE_CHAR)",             "native_char_t)",*/
     "ACPI_NAME)",               "acpi_name_t)",
     "ACPI_STRING)",             "acpi_string_t)",
     "ACPI_HANDLE)",             "acpi_handle_t)",
@@ -322,6 +320,33 @@ ACPI_STRING_TABLE           LinuxDataTypes[] = {
     "ACPI_EVENT_STATUS)",       "acpi_event_status_t)",
     "ACPI_OWNER_ID)",           "acpi_owner_id_t)",
     "ACPI_TABLE_TYPE)",         "acpi_table_type_t)",
+
+    /*"ACPI_IO_ADDRESS;",         "acpi_io_address_t;",*/
+    /*"ACPI_PHYSICAL_ADDRESS;",   "acpi_physical_address_t;",*/
+    /*"NATIVE_UINT;",             "native_uint_t;",*/
+    /*"NATIVE_INT;",              "native_int_t;",*/
+    /*"NATIVE_CHAR;",             "native_char_t;",*/
+    "ACPI_NAME;",               "acpi_name_t;",
+    "ACPI_STRING;",             "acpi_string_t;",
+    "ACPI_HANDLE;",             "acpi_handle_t;",
+    "ACPI_INTEGER;",            "acpi_integer_t;",
+    "ACPI_OBJECT_TYPE;",        "acpi_object_type_t;",
+    "ACPI_OBJECT_TYPE8;",       "acpi_object_type8_t;",
+    "OPERATING_MODE;",          "operating_mode_t;",
+    "ACPI_EVENT_STATUS;",       "acpi_event_status_t;",
+    "ACPI_OWNER_ID;",           "acpi_owner_id_t;",
+    "ACPI_TABLE_TYPE;",         "acpi_table_type_t;",
+
+    /*
+     * Function return values.
+     * This is fragile. We have to put these in to get it to compile, BUT
+     * we can't put all tokens here, because that will break strings where
+     * we want to conver FOO but not FOO_MAX_LEN, for example.
+     */
+    "ACPI_OWNER_ID",           "acpi_owner_id_t",
+    "ACPI_OBJECT_TYPE8",       "acpi_object_type8_t",
+    "ACPI_NAME",               "acpi_name_t",
+    "ACPI_HANDLE",             "acpi_handle_t",
 
     NULL,                       NULL
 };
