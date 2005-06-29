@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: evevent - Fixed and General Purpose Even handling and dispatch
- *              $Revision: 1.75 $
+ *              $Revision: 1.76 $
  *
  *****************************************************************************/
 
@@ -570,9 +570,10 @@ AcpiEvGpeInitialize (void)
             GpeRegister++;
         }
 
-        ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "GPE Block%d Registers: %X at %8.8X\n",
+        ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "GPE Block%d: %X registers at %8.8X\n",
             GpeBlock, AcpiGbl_GpeBlockInfo[0].RegisterCount,
-            AcpiGbl_GpeBlockInfo[GpeBlock].BlockAddress->Address));
+            ACPI_HIDWORD (AcpiGbl_GpeBlockInfo[GpeBlock].BlockAddress->Address),
+            ACPI_LODWORD (AcpiGbl_GpeBlockInfo[GpeBlock].BlockAddress->Address)));
 
         ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "GPE Block%d Range GPE #%2.2X to GPE #%2.2X\n",
             GpeBlock, 
@@ -785,7 +786,7 @@ AcpiEvGpeDetect (void)
                                         &GpeRegisterInfo->EnableAddress, 0);
 
         ACPI_DEBUG_PRINT ((ACPI_DB_INTERRUPTS,
-            "GPE block at %8.8X%8,8X - Enable %08X Status %08X\n",
+            "GPE block at %8.8X%8.8X - Enable %08X Status %08X\n",
             ACPI_HIDWORD (GpeRegisterInfo->EnableAddress.Address),
             ACPI_LODWORD (GpeRegisterInfo->EnableAddress.Address),
             GpeRegisterInfo->Enable,
