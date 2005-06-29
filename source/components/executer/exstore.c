@@ -118,9 +118,9 @@
 
 #include <acpi.h>
 #include <parser.h>
-#include <interpreter.h>
+#include <interp.h>
 #include <amlcode.h>
-#include <namespace.h>
+#include <namesp.h>
 
 
 #define _COMPONENT          INTERPRETER
@@ -629,24 +629,13 @@ AmlExecStore (
             
             /* 
              * All other types than Alias and the various Fields come here.
-             * Store a copy of ValDesc as the new value of the Name, and set
+             * Store ValDesc as the new value of the Name, and set
              * the Name's type to that of the value being stored in it.
+             * ValDesc reference count is incremented by AttachObject.
              */
-            CmCopyInternalObject (ValDesc, DestDesc);
-            if (ACPI_FAILURE (Status))
-            {
-                return_ACPI_STATUS (Status);
-            }
-            
-            if (ACPI_TYPE_Buffer == DestDesc->Common.Type)
-            {
-                /* Assign a new sequence number */
 
-                DestDesc->Buffer.Sequence = AmlBufSeq ();
-            }
-
-
-            NsAttachObject (TempHandle, DestDesc, DestDesc->Common.Type);
+            NsAttachObject (TempHandle, ValDesc, ValDesc->Common.Type);
+            DeleteDestDesc = DestDesc;
             break;
         }
 
@@ -749,7 +738,8 @@ AmlExecStore (
     case AML_Local4: case AML_Local5: case AML_Local6: case AML_Local7:
 
         Status = PsxMthStackSetValue (MTH_TYPE_LOCAL, (DestDesc->Lvalue.OpCode - AML_Local0),
-                                        ValDesc, DestDesc);
+                                        ValDesc);
+        DeleteDestDesc = DestDesc;
         break;
 
 
@@ -757,7 +747,8 @@ AmlExecStore (
     case AML_Arg4: case AML_Arg5: case AML_Arg6:
 
         Status = PsxMthStackSetValue (MTH_TYPE_ARG, (DestDesc->Lvalue.OpCode - AML_Arg0), 
-                                        ValDesc, DestDesc);
+                                        ValDesc);
+        DeleteDestDesc = DestDesc;
         break;
 
 

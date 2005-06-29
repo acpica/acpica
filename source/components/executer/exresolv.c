@@ -119,8 +119,8 @@
 #include <acpi.h>
 #include <amlcode.h>
 #include <parser.h>
-#include <interpreter.h>
-#include <namespace.h>
+#include <interp.h>
+#include <namesp.h>
 #include <tables.h>
 #include <events.h>
 
@@ -313,10 +313,12 @@ AmlGetRvalueFromObject (
 
             MvIndex = Opcode - AML_Local0;
 
-            DEBUG_PRINT (ACPI_INFO, ("AmlGetRvalueFromObject: [Local%d] before PsxMthStackGetValue %p %p %08lx \n",
+            DEBUG_PRINT (ACPI_INFO, ("AmlGetRvalueFromObject: [Local%d] before MthStackGetValue %p %p %08lx \n",
                             MvIndex, StackPtr, StackDesc, *(UINT32 *) StackDesc));
 
-            Status = PsxMthStackGetValue (MTH_TYPE_LOCAL, MvIndex, StackDesc);
+            CmDeleteInternalObject (StackDesc);     /* Delete the Lvalue */
+            Status = PsxMthStackGetValue (MTH_TYPE_LOCAL, MvIndex, StackPtr);
+            StackDesc = *StackPtr;
 
             DEBUG_PRINT (ACPI_INFO, ("AmlGetRvalueFromObject: [Local%d] after MSGV Status=%s %p %p %08lx \n",
                             MvIndex, Gbl_ExceptionNames[Status], StackPtr, StackDesc,
@@ -341,8 +343,10 @@ AmlGetRvalueFromObject (
             DEBUG_PRINT (TRACE_EXEC, ("AmlGetRvalueFromObject: [Arg%d] before PsxMthStackGetValue %p %p %08lx \n",
                             MvIndex, StackPtr, StackDesc, *(UINT32 *) StackDesc));
 
-            Status = PsxMthStackGetValue (MTH_TYPE_ARG, MvIndex, StackDesc);
-    
+            CmDeleteInternalObject (StackDesc);     /* Delete the Lvalue */
+            Status = PsxMthStackGetValue (MTH_TYPE_ARG, MvIndex, StackPtr);
+            StackDesc = *StackPtr;
+   
             DEBUG_PRINT (TRACE_EXEC, ("AmlGetRvalueFromObject: [Arg%d] MSGV returned %s %p %p %08lx \n",
                             MvIndex, Gbl_ExceptionNames[Status], StackPtr, StackDesc,
                             *(UINT32 *) StackDesc));
@@ -630,23 +634,10 @@ AmlGetRvalueFromEntry (
             return_ACPI_STATUS (AE_AML_ERROR);
         }
 
-        ObjDesc = CmCreateInternalObject (ValDesc->Common.Type);
-        if (!ObjDesc)
-        {   
-            /* Descriptor allocation failure */
-            
-            return_ACPI_STATUS (AE_NO_MEMORY);
-        }
+        /* Return an additional reference to the object */
 
-        /* Copy object to the newly allocated descriptor */
-
-        Status = CmCopyInternalObject (ValDesc, ObjDesc);
-        if (ACPI_FAILURE (Status))
-        {
-            CmDeleteInternalObject (ObjDesc);
-            return_ACPI_STATUS (Status);
-        }
-
+        ObjDesc = ValDesc;
+        ObjDesc->Common.ReferenceCount++;
         break;
 
 
@@ -718,32 +709,15 @@ AmlGetRvalueFromEntry (
             DEBUG_PRINT (ACPI_ERROR, ("AmlGetRvalueFromEntry: Bad buffer value\n"));
             return_ACPI_STATUS (AE_AML_ERROR);
         }
-
-        ObjDesc = CmCreateInternalObject (ValDesc->Common.Type);
-        if (!ObjDesc)
-        {   
-            /* Descriptor allocation failure */
-            
-            return_ACPI_STATUS (AE_NO_MEMORY);
-        }
-
-        /* Copy object to the newly allocated descriptor */
-
-        Status = CmCopyInternalObject (ValDesc, ObjDesc);
-        if (ACPI_FAILURE (Status))
-        {
-            CmDeleteInternalObject (ObjDesc);
-            return_ACPI_STATUS (Status);
-        }
-
-        /* Assign a new sequence number */
         
-        ObjDesc->Buffer.Sequence = AmlBufSeq();
-        
+        /* Return an additional reference to the object */
+
+        ObjDesc = ValDesc;
+        ObjDesc->Common.ReferenceCount++;
+
         DEBUG_PRINT (TRACE_BFIELD,
                     ("AmlGetRvalueFromEntry: New Buffer descriptor seq# %ld @ %p \n",
                     ObjDesc->Buffer.Sequence, ObjDesc));
-
         break;
 
 
@@ -775,22 +749,10 @@ AmlGetRvalueFromEntry (
                 return_ACPI_STATUS (AE_AML_ERROR);
             }
 
-            ObjDesc = CmCreateInternalObject (ValDesc->Common.Type);
-            if (!ObjDesc)
-            {   
-                /* Descriptor allocation failure */
+            /* Return an additional reference to the object */
 
-                return_ACPI_STATUS (AE_NO_MEMORY);
-            }
-
-            /* Copy object to the newly allocated descriptor */
-
-            Status = CmCopyInternalObject (ValDesc, ObjDesc);
-            if (ACPI_FAILURE (Status))
-            {
-                CmDeleteInternalObject (ObjDesc);
-                return_ACPI_STATUS (Status);
-            }
+            ObjDesc = ValDesc;
+            ObjDesc->Common.ReferenceCount++;
         }
 
         break;
@@ -893,22 +855,10 @@ AmlGetRvalueFromEntry (
                 return_ACPI_STATUS (AE_AML_ERROR);
             }
 
-            ObjDesc = CmCreateInternalObject (ValDesc->Common.Type);
-            if (!ObjDesc)
-            {   
-                /* Descriptor allocation failure  */
-            
-                return_ACPI_STATUS (AE_NO_MEMORY);
-            }
-        
-            /* Copy object to the newly allocated descriptor */
+            /* Return an additional reference to the object */
 
-            Status = CmCopyInternalObject (ValDesc, ObjDesc);
-            if (ACPI_FAILURE (Status))
-            {
-                CmDeleteInternalObject (ObjDesc);
-                return_ACPI_STATUS (Status);
-            }
+            ObjDesc = ValDesc;
+            ObjDesc->Common.ReferenceCount++;
         }
 
         break;
@@ -1229,6 +1179,8 @@ AmlGetRvalue (
         Status = AmlGetRvalueFromEntry ((NAME_TABLE_ENTRY **) StackPtr);
     }
 
+
+    DEBUG_PRINT (ACPI_INFO, ("AmlGetRvalue: %p\n", *StackPtr));
 
     return_ACPI_STATUS (Status);
 }
