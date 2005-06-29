@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acmacros.h - C macros for the entire subsystem.
- *       $Revision: 1.82 $
+ *       $Revision: 1.83 $
  *
  *****************************************************************************/
 
@@ -565,24 +565,11 @@
  * Print iff:
  *    1) Debug print for the current component is enabled
  *    2) Debug error level or trace level for the print statement is enabled
- *
  */
 
-#define TEST_DEBUG_SWITCH(lvl)          if (((lvl) & AcpiDbgLevel) && (_COMPONENT & AcpiDbgLayer))
+#define ACPI_DEBUG_PRINT(pl)            AcpiUtDebugPrint PARAM_LIST(pl)
+#define ACPI_DEBUG_PRINT_RAW(pl)        AcpiUtDebugPrintRaw PARAM_LIST(pl)
 
-#define DEBUG_PRINT(lvl,fp)             TEST_DEBUG_SWITCH(lvl) {\
-                                            DebugPrintPrefix (_THIS_MODULE,__LINE__);\
-                                            DebugPrintRaw PARAM_LIST(fp);\
-                                            BREAK_ON_ERROR(lvl);}
-
-#define DEBUG_PRINTP(lvl,fp)            TEST_DEBUG_SWITCH(lvl) {\
-                                            DebugPrintPrefix (_THIS_MODULE,__LINE__);\
-                                            DebugPrintRaw ("%s: ",_ProcName);\
-                                            DebugPrintRaw PARAM_LIST(fp);\
-                                            BREAK_ON_ERROR(lvl);}
-
-#define DEBUG_PRINT_RAW(lvl,fp)         TEST_DEBUG_SWITCH(lvl) {\
-                                            DebugPrintRaw PARAM_LIST(fp);}
 
 #else
 /*
@@ -612,9 +599,8 @@
 #define DUMP_TABLES(a,b)
 #define DUMP_PATHNAME(a,b,c,d)
 #define DUMP_RESOURCE_LIST(a)
-#define DEBUG_PRINT(l,f)
-#define DEBUG_PRINTP(l,f)
-#define DEBUG_PRINT_RAW(l,f)
+#define ACPI_DEBUG_PRINT(pl)
+#define ACPI_DEBUG_PRINT_RAW(pl)
 #define BREAK_MSG(a)
 
 #define return_VOID                     return
