@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslmain - compiler main and utilities
- *              $Revision: 1.5 $
+ *              $Revision: 1.7 $
  *
  *****************************************************************************/
 
@@ -120,6 +120,7 @@
 #define _DECLARE_GLOBALS
 
 #include "AslCompiler.h"
+#include "acnamesp.h"
 
 
 ASL_ANALYSIS_WALK_INFO  AnalysisWalkInfo;
@@ -140,9 +141,11 @@ void
 Usage (
     void)
 {
-    printf ("Usage:    %s [-dl] <InputFile>\n\n", CompilerName);
-    printf ("Options:  -d               Create debug/trace output file (*.txt)\n");
+    printf ("Usage:    %s [-cdlno] <InputFile>\n\n", CompilerName);
+    printf ("Options:  -c               Generate ACPI 1.0 table (32-bit)\n");
+    printf ("          -d               Create debug/trace output file (*.txt)\n");
     printf ("          -l               Create listing file (*.lst)\n");
+    printf ("          -n               Create namespace file (*.nsp)\n");
     printf ("          -o <filename>    Specify output file (default is *.aml)\n");
 }
 
@@ -168,8 +171,11 @@ main (
 {
     UINT32              j;
     ACPI_STATUS         Status;
+    UINT32              DebugLevel = AcpiDbgLevel;
 
 
+
+    AcpiDbgLevel = 0;
 
     printf ("\n%s [Version %s, %s]\n\n", CompilerId, Version, __DATE__);
 
@@ -184,12 +190,20 @@ main (
 
     /* Get the command line options */
 
-    while ((j = getopt (argc, argv, "d")) != EOF) switch (j)
+    while ((j = getopt (argc, argv, "1dn")) != EOF) switch (j)
     {
+    case 'c':
+        break;
+
     case 'd':
         Gbl_DebugFlag = TRUE;
         AslCompilerdebug = 1; /* same as yydebug */
         break;
+
+    case 'n':
+        AcpiDbgLevel = TRACE_TABLES;
+        break;
+
 
     default:
         printf ("Unknown option %c\n", j);
@@ -210,10 +224,13 @@ main (
     }
 
 
+    AcpiCmInitGlobals ();
+    AcpiCmMutexInitialize ();
+    AcpiNsRootInitialize ();
+
     /* Build the parse tree */
 
     AslCompilerparse();
-    
     
 
     /* Generate AML opcodes corresponding to the parse tokens */
@@ -233,6 +250,17 @@ main (
     DbgPrint ("\nSemantic analysis\n\n");
     TgWalkParseTree (ASL_WALK_VISIT_TWICE, AnSemanticAnalysisWalkBegin, 
                         AnSemanticAnalysisWalkEnd, &AnalysisWalkInfo);
+
+
+    /* Namespace loading */
+
+    LkLoadNamespace ();
+
+
+    /* Namespace lookup */
+
+    LkCrossReferenceNamespace ();
+
 
     /* Code generation - emit the AML */
 

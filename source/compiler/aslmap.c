@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslmap - parser to AML opcode mapping table
- *              $Revision: 1.4 $
+ *              $Revision: 1.6 $
  *
  *****************************************************************************/
 
@@ -239,8 +239,8 @@ ASL_MAPPING_ENTRY AslKeywordMapping [] =
 /* INTEGER */                   OP_TABLE_ENTRY (AML_BYTE_OP,                0, 0),
 /* INTERRUPT */                 OP_TABLE_ENTRY (AML_DEFAULT_ARG_OP,         0, 0),
 /* INTLEVEL_ACTIVEHIGH */       OP_TABLE_ENTRY (AML_BYTE_OP,                0, 0),
-/* INTLEVEL_ACTIVELOW */        OP_TABLE_ENTRY (AML_BYTE_OP,                0, 0),
-/* INTTYPE_EDGE */              OP_TABLE_ENTRY (AML_BYTE_OP,                0, 0),
+/* INTLEVEL_ACTIVELOW */        OP_TABLE_ENTRY (AML_BYTE_OP,                1, 0),
+/* INTTYPE_EDGE */              OP_TABLE_ENTRY (AML_BYTE_OP,                1, 0),
 /* INTTYPE_LEVEL */             OP_TABLE_ENTRY (AML_BYTE_OP,                0, 0),
 /* IO */                        OP_TABLE_ENTRY (AML_DEFAULT_ARG_OP,         0, 0),
 /* IODECODETYPE_10 */           OP_TABLE_ENTRY (AML_BYTE_OP,                0, 0),
@@ -351,9 +351,9 @@ ASL_MAPPING_ENTRY AslKeywordMapping [] =
 /* RETURN */                    OP_TABLE_ENTRY (AML_RETURN_OP,              0, 0),
 /* SCOPE */                     OP_TABLE_ENTRY (AML_SCOPE_OP,               0,                  NODE_AML_PACKAGE),
 /* SERIALIZERULE_NOTSERIAL */   OP_TABLE_ENTRY (AML_BYTE_OP,                0, 0),
-/* SERIALIZERULE_SERIAL */      OP_TABLE_ENTRY (AML_BYTE_OP,                0, 0),
+/* SERIALIZERULE_SERIAL */      OP_TABLE_ENTRY (AML_BYTE_OP,                1, 0),
 /* SHARETYPE_EXCLUSIVE */       OP_TABLE_ENTRY (AML_BYTE_OP,                0, 0),
-/* SHARETYPE_SHARED */          OP_TABLE_ENTRY (AML_BYTE_OP,                0, 0),
+/* SHARETYPE_SHARED */          OP_TABLE_ENTRY (AML_BYTE_OP,                1, 0),
 /* SHIFTLEFT */                 OP_TABLE_ENTRY (AML_SHIFT_LEFT_OP,          0, 0),
 /* SHIFTRIGHT */                OP_TABLE_ENTRY (AML_SHIFT_RIGHT_OP,         0, 0),
 /* SIGNAL */                    OP_TABLE_ENTRY (AML_SIGNAL_OP,              0, 0),

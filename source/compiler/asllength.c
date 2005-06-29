@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asllength - Tree walk to determine package and opcode lengths
- *              $Revision: 1.3 $
+ *              $Revision: 1.5 $
  *
  *****************************************************************************/
 
@@ -119,6 +119,11 @@
 #include "AslCompiler.h"
 #include "AslCompiler.y.h"
 #include "amlcode.h"
+#include "acnamesp.h"
+
+
+#define _COMPONENT          MISCELLANEOUS
+        MODULE_NAME         ("asllength")
 
 
 
@@ -166,49 +171,6 @@ CgAmlPackageLengthWalk (
 }
 
 
-
-/*******************************************************************************
- *
- * FUNCTION:    AcpiNsValidRootPrefix
- *
- * PARAMETERS:  Prefix          - Character to be checked
- *
- * RETURN:      TRUE if a valid prefix
- *
- * DESCRIPTION: Check if a character is a valid ACPI Root prefix
- *
- ******************************************************************************/
-
-BOOLEAN
-AcpiNsValidRootPrefix (
-    NATIVE_CHAR             Prefix)
-{
-
-    return ((BOOLEAN) (Prefix == '\\'));
-}
-
-
-/*******************************************************************************
- *
- * FUNCTION:    AcpiNsValidPathSeparator
- *
- * PARAMETERS:  Sep              - Character to be checked
- *
- * RETURN:      TRUE if a valid path separator
- *
- * DESCRIPTION: Check if a character is a valid ACPI path separator
- *
- ******************************************************************************/
-
-BOOLEAN
-AcpiNsValidPathSeparator (
-    NATIVE_CHAR             Sep)
-{
-
-    return ((BOOLEAN) (Sep == '.'));
-}
-
-
 /*******************************************************************************
  *
  * FUNCTION:    
@@ -221,200 +183,26 @@ AcpiNsValidPathSeparator (
  *
  ******************************************************************************/
 
-ACPI_STATUS
-AcpiNsInternalizeName (
-    NATIVE_CHAR             *ExternalName,
-    NATIVE_CHAR             **ConvertedName)
+void
+LnAdjustLengthToRoot (
+    ASL_PARSE_NODE          *PsNode,
+    UINT32                  LengthDelta)
 {
-    NATIVE_CHAR             *Result = NULL;
-    NATIVE_CHAR             *InternalName;
-    UINT32                  NumSegments;
-    UINT32                  NumCarats;
-    BOOLEAN                 FullyQualified = FALSE;
-    UINT32                  i;
+    ASL_PARSE_NODE          *Node;
 
+    /* Adjust all subtree lengths up to the root */
 
-    FUNCTION_TRACE ("NsInternalizeName");
-
-
-    if ((!ExternalName)      ||
-        (*ExternalName == 0) ||
-        (!ConvertedName))
+    Node = PsNode->Parent;
+    while (Node)
     {
-        return_ACPI_STATUS (AE_BAD_PARAMETER);
+        Node->AmlSubtreeLength -= LengthDelta;
+        Node = Node->Parent;
     }
 
+    /* Adjust the global table length */
 
-    /*
-     * For the internal name, the required length is 4 bytes
-     * per segment, plus 1 each for RootPrefix, MultiNamePrefixOp,
-     * segment count, trailing null (which is not really needed,
-     * but there's no harm in putting it there)
-     *
-     * strlen() + 1 covers the first NameSeg, which has no
-     * path separator
-     */
-
-    if (AcpiNsValidRootPrefix (ExternalName[0]))
-    {
-        FullyQualified = TRUE;
-        ExternalName++;
-    }
-
-    NumCarats = 0;
-    while (*ExternalName == '^')
-    {
-        if (FullyQualified)
-        {
-            return_ACPI_STATUS (AE_BAD_PATHNAME);
-        }
-
-        NumCarats++;
-        ExternalName++;
-    }
-
-    /*
-     * Determine the number of ACPI name "segments" by counting
-     * the number of path separators within the string.  Start
-     * with one segment since the segment count is (# separators)
-     * + 1, and zero separators is ok.
-     */
-
-    NumSegments = 1;
-    for (i = 0; ExternalName[i]; i++)
-    {
-        if (AcpiNsValidPathSeparator (ExternalName[i]))
-        {
-            NumSegments++;
-        }
-    }
-
-
-    /* We need a segment to store the internal version of the name */
-
-    InternalName = UtLocalCalloc ((ACPI_NAME_SIZE * NumSegments) + 4 + NumCarats);
-
-    /* Setup the correct prefixes, counts, and pointers */
-
-    if (FullyQualified)
-    {
-        InternalName[0] = '\\';
-
-        if (NumSegments == 1)
-        {
-            Result = &InternalName[1];
-            if (!ExternalName[0])
-            {
-                *Result = 0;
-                NumSegments = 0;
-            }
-        }
-        else if (NumSegments == 2)
-        {
-            InternalName[1] = AML_DUAL_NAME_PREFIX;
-            Result = &InternalName[2];
-        }
-        else
-        {
-            InternalName[1] = AML_MULTI_NAME_PREFIX_OP;
-            InternalName[2] = (char) NumSegments;
-            Result = &InternalName[3];
-        }
-
-    }
-    else 
-    {
-        Result = InternalName;
-        for (i = 0; i < NumCarats; i++)
-        {
-            *Result = '^';
-            Result++;
-        }
-
-        if (NumSegments == 1)
-        {
-        }
-
-        else if (NumSegments == 2)
-        {
-            *Result = AML_DUAL_NAME_PREFIX;
-            Result++;
-        }
-        else
-        {
-            Result[0] = AML_MULTI_NAME_PREFIX_OP;
-            Result[1] = (char) NumSegments;
-            Result = &Result[2];
-        }
-    }
-
-
-    /* Build the name (minus path separators) */
-
-    for (; NumSegments; NumSegments--)
-    {
-        for (i = 0; i < ACPI_NAME_SIZE; i++)
-        {
-            if (AcpiNsValidPathSeparator (*ExternalName) ||
-               (*ExternalName == 0))
-            {
-                /*
-                 * Pad the segment with underscore(s) if
-                 * segment is short
-                 */
-
-                Result[i] = '_';
-            }
-
-            else
-            {
-                /* Convert INT8 to uppercase and save it */
-
-                Result[i] = (char) toupper (*ExternalName);
-                ExternalName++;
-            }
-
-        }
-
-        /* Now we must have a path separator, or the pathname is bad */
-
-        if (!AcpiNsValidPathSeparator (*ExternalName) &&
-            (*ExternalName != 0))
-        {
-            free(InternalName);
-            return_ACPI_STATUS (AE_BAD_PARAMETER);
-        }
-
-        /* Move on the next segment */
-
-        ExternalName++;
-        Result += ACPI_NAME_SIZE;
-    }
-
-
-    /* Return the completed name */
-
-    /* Terminate the string! */
-    *Result = 0;
-    *ConvertedName = InternalName;
-
-
-    if (FullyQualified)
-    {
-        DEBUG_PRINT (TRACE_EXEC,
-            ("NsInternalizeName: returning [%p] (abs) \"\\%s\"\n",
-            InternalName, &InternalName[3]));
-    }
-    else
-    {
-        DEBUG_PRINT (TRACE_EXEC,
-            ("NsInternalizeName: returning [%p] (rel) \"%s\"\n",
-            InternalName, &InternalName[2]));
-    }
-
-    return_ACPI_STATUS (AE_OK);
+    Gbl_TableLength -= LengthDelta;
 }
-
 
 
 /*******************************************************************************
@@ -578,12 +366,13 @@ CgGenerateAmlLengths (
     switch (Node->ParseOpcode)
     {
     case DEFINITIONBLOCK:
-        TableLength = sizeof (ACPI_TABLE_HEADER) + Node->AmlSubtreeLength;
+        Gbl_TableLength = sizeof (ACPI_TABLE_HEADER) + Node->AmlSubtreeLength;
         break;
 
     case NAMESEG:
         Node->AmlOpcodeLength = 0;
         Node->AmlLength = 4;
+        Node->ExternalName = Node->Value.String;
         break;
 
     case NAMESTRING:
@@ -595,7 +384,7 @@ CgGenerateAmlLengths (
             break;
         }
 
-        free (Node->Value.String);
+        Node->ExternalName = Node->Value.String;
         Node->Value.String = Buffer;
 
         Node->AmlLength = strlen (Buffer);

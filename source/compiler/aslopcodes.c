@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslopcode - AML opcode generation
- *              $Revision: 1.7 $
+ *              $Revision: 1.9 $
  *
  *****************************************************************************/
 
@@ -120,7 +120,7 @@
 #include "AslCompiler.y.h"
 #include "amlcode.h"
 
-
+#include "acnamesp.h"
 
 /*******************************************************************************
  *
@@ -160,29 +160,34 @@ CgAmlOpcodeWalk (
  *
  ******************************************************************************/
 
-void
+UINT32
 CgSetOptimalIntegerSize (
     ASL_PARSE_NODE          *Node)
 {
 
+
     if (Node->Value.Integer <= ACPI_UINT8_MAX)
     {
         Node->AmlOpcode = AML_BYTE_OP;
+        return 1;
     }
 
     else if (Node->Value.Integer <= ACPI_UINT16_MAX)
     {
         Node->AmlOpcode = AML_WORD_OP;
+        return 2;
     }
 
     else if (Node->Value.Integer <= ACPI_UINT32_MAX)
     {
         Node->AmlOpcode = AML_DWORD_OP;
+        return 4;
     }
 
     else
     {
         Node->AmlOpcode = AML_QWORD_OP;
+        return 8;
     }
 }
 
@@ -239,7 +244,7 @@ CgDoMethod (
         Next->ParseOpcode = DEFAULT_ARG;
     }
 
-    /* Concurrency Flag */
+    /* Concurrency value (0-15 valid) */
 
     Next = Next->Peer;
     if (Next->ParseOpcode != DEFAULT_ARG)
@@ -797,6 +802,120 @@ CgDoDefinitionBlock (
 }
 
 
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiPsGetArg
+ *
+ * PARAMETERS:  Op              - Get an argument for this op
+ *              Argn            - Nth argument to get
+ *
+ * RETURN:      The argument (as an Op object).  NULL if argument does not exist
+ *
+ * DESCRIPTION: Get the specified op's argument.
+ *
+ ******************************************************************************/
+
+ASL_PARSE_NODE  *
+UtGetArg (
+    ASL_PARSE_NODE          *Op,
+    UINT32                  Argn)
+{
+    ASL_PARSE_NODE          *Arg = NULL;
+
+
+
+    /* Get the requested argument object */
+
+    Arg = Op->Child;
+    while (Arg && Argn)
+    {
+        Argn--;
+        Arg = Arg->Peer;
+    }
+
+    return (Arg);
+}
+
+
+
+
+void
+CgAttachNameToNode (
+    ASL_PARSE_NODE          *PsNode)
+{
+    ASL_PARSE_NODE          *Child = NULL;
+    ACPI_STATUS             Status;
+
+
+    switch (PsNode->AmlOpcode)
+    {
+
+    case AML_DATA_REGION_OP:
+    case AML_DEVICE_OP:
+    case AML_EVENT_OP:
+    case AML_METHOD_OP:
+    case AML_MUTEX_OP:
+    case AML_REGION_OP:
+    case AML_POWER_RES_OP:
+    case AML_PROCESSOR_OP:
+    case AML_THERMAL_ZONE_OP:
+    case AML_NAME_OP:
+    case AML_SCOPE_OP:
+
+        Child = UtGetArg (PsNode, 0);
+        break;
+
+
+    case AML_ALIAS_OP:
+
+        Child = UtGetArg (PsNode, 1);
+        break;
+
+
+    case AML_BIT_FIELD_OP:
+    case AML_BYTE_FIELD_OP:
+    case AML_WORD_FIELD_OP:
+    case AML_DWORD_FIELD_OP:
+    case AML_QWORD_FIELD_OP:
+        
+        Child = UtGetArg (PsNode, 2);
+        break;
+
+
+    case AML_CREATE_FIELD_OP:
+       
+        Child = UtGetArg (PsNode, 3);
+        break;
+
+
+    case AML_BANK_FIELD_OP:
+    case AML_INDEX_FIELD_OP:
+    case AML_DEF_FIELD_OP:
+
+        return;
+        break;
+
+
+    default:
+        return;
+        break;
+    }
+
+
+    if (Child)
+    {
+        PsNode->ExternalName = Child->Value.String;
+        Status = AcpiNsInternalizeName (Child->Value.String, &PsNode->Namepath);
+        if (ACPI_FAILURE (Status))
+        {
+        }
+    }
+}
+
+
+
 /*******************************************************************************
  *
  * FUNCTION:    
@@ -863,7 +982,17 @@ CgGenerateAmlOperands (
     default:
         break;
     }
+
+
+
+
+    /* TBD: move */
+
+    CgAttachNameToNode (Node);
 }
+
+
+
 
 /*******************************************************************************
  *
