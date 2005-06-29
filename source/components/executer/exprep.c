@@ -216,21 +216,6 @@ OBSOLETE!
 
             ObjectType = ((NAME_TABLE_ENTRY *) ObjDesc)->Type;
 
-            /*
-             * Support for name aliases.  Follow the alias chain until
-             * we get to the real object.  This allows multiple aliases.
-             * (aliases of aliases>
-             */
-
-/* TBD: OBSOLETE, remove
-            while (ObjectType == INTERNAL_TYPE_Alias)
-            {
-                ObjDesc = ((NAME_TABLE_ENTRY *) ObjDesc)->Object;
-                ObjectType = ((NAME_TABLE_ENTRY *) ObjDesc)->Type;
-                (*StackPtr) = ObjDesc;
-            }
-*/
-
             DEBUG_EXEC (ObjectTypeName = "[NTE]");
         }
 
@@ -308,7 +293,7 @@ OBSOLETE!
         
             else
             {
-                DEBUG_EXEC (ObjectTypeName = Gbl_NsTypeNames[ObjectType]);
+                DEBUG_EXEC (ObjectTypeName = CmGetTypeName (ObjectType));
             }
         }
 
@@ -568,7 +553,7 @@ AmlPrepDefFieldValue (
     if (ACPI_TYPE_Region != (Type = NsGetType (Region)))
     {
         DEBUG_PRINT (ACPI_ERROR, ("AmlPrepDefFieldValue: Needed Region, found %d %s\n",
-                    Type, Gbl_NsTypeNames[Type]));
+                    Type, CmGetTypeName (Type)));
         return_ACPI_STATUS (AE_AML_ERROR);
     }
 
@@ -714,7 +699,7 @@ AmlPrepBankFieldValue (
     if (Type != ACPI_TYPE_Region)
     {
         DEBUG_PRINT (ACPI_ERROR, ("AmlPrepBankFieldValue: Needed Region, found %d %s\n",
-                        Type, Gbl_NsTypeNames[Type]));
+                        Type, CmGetTypeName (Type)));
         return_ACPI_STATUS (AE_AML_ERROR);
     }
 
