@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Name: acobject.h - Definition of ACPI_OPERAND_OBJECT  (Internal object only)
- *       $Revision: 1.126 $
+ *       $Revision: 1.127 $
  *
  *****************************************************************************/
 
@@ -167,9 +167,7 @@
     UINT32                          BitLength;          /* Length of field in bits */\
     UINT32                          BaseByteOffset;     /* Byte offset within containing object */\
     UINT8                           StartFieldBitOffset;/* Bit offset within first field datum (0-63) */\
-    UINT8                           DatumValidBits;     /* Valid bit in first "Field datum" */\
-    UINT8                           EndFieldValidBits;  /* Valid bits in the last "field datum" */\
-    UINT8                           EndBufferValidBits; /* Valid bits in the last "buffer datum" */\
+    UINT8                           AccessBitWidth;     /* Read/Write size in bits (8-64) */\
     UINT32                          Value;              /* Value to store into the Bank or Index register */\
     ACPI_NAMESPACE_NODE             *Node;              /* Link back to parent node */
 
