@@ -1,6 +1,6 @@
 
 /******************************************************************************
- * 
+ *
  * Module Name: iresolve - AML Interpreter object resolution
  *
  *****************************************************************************/
@@ -38,9 +38,9 @@
  * The above copyright and patent license is granted only if the following
  * conditions are met:
  *
- * 3. Conditions 
+ * 3. Conditions
  *
- * 3.1. Redistribution of Source with Rights to Further Distribute Source.  
+ * 3.1. Redistribution of Source with Rights to Further Distribute Source.
  * Redistribution of source code of any substantial portion of the Covered
  * Code or modification with rights to further distribute source must include
  * the above Copyright Notice, the above License, this list of Conditions,
@@ -48,11 +48,11 @@
  * Licensee must cause all Covered Code to which Licensee contributes to
  * contain a file documenting the changes Licensee made to create that Covered
  * Code and the date of any change.  Licensee must include in that file the
- * documentation of any changes made by any predecessor Licensee.  Licensee 
+ * documentation of any changes made by any predecessor Licensee.  Licensee
  * must include a prominent statement that the modification is derived,
  * directly or indirectly, from Original Intel Code.
  *
- * 3.2. Redistribution of Source with no Rights to Further Distribute Source.  
+ * 3.2. Redistribution of Source with no Rights to Further Distribute Source.
  * Redistribution of source code of any substantial portion of the Covered
  * Code or modification without rights to further distribute source must
  * include the following Disclaimer and Export Compliance provision in the
@@ -86,7 +86,7 @@
  * INSTALLATION, TRAINING OR OTHER SERVICES.  INTEL WILL NOT PROVIDE ANY
  * UPDATES, ENHANCEMENTS OR EXTENSIONS.  INTEL SPECIFICALLY DISCLAIMS ANY
  * IMPLIED WARRANTIES OF MERCHANTABILITY, NONINFRINGEMENT AND FITNESS FOR A
- * PARTICULAR PURPOSE. 
+ * PARTICULAR PURPOSE.
  *
  * 4.2. IN NO EVENT SHALL INTEL HAVE ANY LIABILITY TO LICENSEE, ITS LICENSEES
  * OR ANY OTHER THIRD PARTY, FOR ANY LOST PROFITS, LOST DATA, LOSS OF USE OR
@@ -132,7 +132,7 @@
 
 
 /*****************************************************************************
- * 
+ *
  * FUNCTION:    AcpiAmlGetFieldUnitValue
  *
  * PARAMETERS:  *FieldDesc          - Pointer to a FieldUnit
@@ -148,7 +148,7 @@
 
 ACPI_STATUS
 AcpiAmlGetFieldUnitValue (
-    ACPI_OBJECT_INTERNAL    *FieldDesc, 
+    ACPI_OBJECT_INTERNAL    *FieldDesc,
     ACPI_OBJECT_INTERNAL    *ResultDesc)
 {
     ACPI_STATUS             Status = AE_OK;
@@ -208,10 +208,10 @@ AcpiAmlGetFieldUnitValue (
     Location = FieldDesc->FieldUnit.Container->Buffer.Pointer
                 + FieldDesc->FieldUnit.Offset;
 
-    /* Construct Mask with as many 1 bits as the field width 
-     * 
+    /* Construct Mask with as many 1 bits as the field width
+     *
      * NOTE: Only the bottom 5 bits are valid for a shift operation, so
-     *  special care must be taken for any shift greater than 31 bits. 
+     *  special care must be taken for any shift greater than 31 bits.
      *
      * TBD: [Unhandled] Fields greater than 32-bits will not work.
      */
@@ -251,10 +251,10 @@ AcpiAmlGetFieldUnitValue (
 
 
 /*****************************************************************************
- * 
+ *
  * FUNCTION:    AcpiAmlResolveToValue
  *
- * PARAMETERS:  **StackPtr          - Points to entry on ObjStack, which can 
+ * PARAMETERS:  **StackPtr          - Points to entry on ObjStack, which can
  *                                    be either an (ACPI_OBJECT_INTERNAL *)
  *                                    or an ACPI_HANDLE.
  *
@@ -281,13 +281,13 @@ AcpiAmlResolveToValue (
     }
 
 
-    /* 
+    /*
      * The entity pointed to by the StackPtr can be either
      * 1) A valid ACPI_OBJECT_INTERNAL, or
      * 2) A NAME_TABLE_ENTRY (nte)
      */
 
-    if (VALID_DESCRIPTOR_TYPE (*StackPtr, DESC_TYPE_ACPI_OBJ))       
+    if (VALID_DESCRIPTOR_TYPE (*StackPtr, DESC_TYPE_ACPI_OBJ))
     {
 
         Status = AcpiAmlResolveObjectToValue (StackPtr);
@@ -297,12 +297,12 @@ AcpiAmlResolveToValue (
         }
     }
 
-    /* 
+    /*
      * Object on the stack may have changed if AcpiAmlResolveObjectToValue() was called
      * (i.e., we can't use an _else_ here.)
      */
 
-    if (VALID_DESCRIPTOR_TYPE (*StackPtr, DESC_TYPE_NTE))       
+    if (VALID_DESCRIPTOR_TYPE (*StackPtr, DESC_TYPE_NTE))
     {
         Status = AcpiAmlResolveEntryToValue ((NAME_TABLE_ENTRY **) StackPtr);
     }
@@ -312,4 +312,278 @@ AcpiAmlResolveToValue (
 
     return_ACPI_STATUS (Status);
 }
-    
+
+
+
+/*****************************************************************************
+ *
+ * FUNCTION:    AcpiAmlResolveObjectToValue
+ *
+ * PARAMETERS:  StackPtr        - Pointer to a stack location that contains a
+ *                                ptr to an internal object.
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Retrieve the value from an internal object.  The Reference type
+ *              uses the associated AML opcode to determine the value.
+ *
+ ****************************************************************************/
+
+ACPI_STATUS
+AcpiAmlResolveObjectToValue (
+    ACPI_OBJECT_INTERNAL    **StackPtr)
+{
+    ACPI_OBJECT_INTERNAL    *StackDesc;
+    ACPI_STATUS             Status = AE_OK;
+    ACPI_HANDLE             TempHandle = NULL;
+    ACPI_OBJECT_INTERNAL    *ObjDesc = NULL;
+    UINT32                  Index = 0;
+    UINT16                  Opcode;
+
+
+    FUNCTION_TRACE ("AmlResolveObjectToValue");
+
+
+    StackDesc = *StackPtr;
+
+    /* This is an ACPI_OBJECT_INTERNAL */
+
+    switch (StackDesc->Common.Type)
+    {
+
+    case INTERNAL_TYPE_REFERENCE:
+
+        Opcode = StackDesc->Reference.OpCode;
+
+        switch (Opcode)
+        {
+
+        case AML_NAME_OP:
+
+            /*
+             * Convert indirect name ptr to a direct name ptr.
+             * Then, AcpiAmlResolveEntryToValue can be used to get the value
+             */
+
+            TempHandle = StackDesc->Reference.Object;
+            AcpiCmRemoveReference (StackDesc);     /* Delete the Reference Object */
+
+            /* Put direct name pointer onto stack and exit */
+
+            (*StackPtr) = TempHandle;
+            Status = AE_OK;
+            break;
+
+
+        case AML_LOCAL_OP:
+
+            Index = StackDesc->Reference.Offset;
+            AcpiCmRemoveReference (StackDesc);     /* Delete the Reference Object */
+
+            /*
+             * Get the local from the method's state info
+             * Note: this increments the object reference count
+             */
+
+            Status = AcpiDsMethodDataGetValue (MTH_TYPE_LOCAL, Index, StackPtr);
+            if (ACPI_FAILURE (Status))
+            {
+                return_ACPI_STATUS (Status);
+            }
+
+            StackDesc = *StackPtr;
+
+            DEBUG_PRINT (ACPI_INFO, ("AmlResolveObjectToValue: [Local%d] ValueObj is %p\n",
+                            Index, StackDesc));
+
+            if (ACPI_TYPE_NUMBER == StackDesc->Common.Type)
+            {
+                /* Value is a Number */
+
+                DEBUG_PRINT (ACPI_INFO, ("AmlResolveObjectToValue: [Local%d] value is [0x%X] \n",
+                                            Index, StackDesc->Number.Value));
+            }
+
+            break;
+
+
+        case AML_ARG_OP:
+
+            Index = StackDesc->Reference.Offset;
+            AcpiCmRemoveReference (StackDesc);     /* Delete the Reference Object*/
+
+            /*
+             * Get the argument from the method's state info
+             * Note: this increments the object reference count
+             */
+
+            Status = AcpiDsMethodDataGetValue (MTH_TYPE_ARG, Index, StackPtr);
+            if (ACPI_FAILURE (Status))
+            {
+                return_ACPI_STATUS (Status);
+            }
+
+            StackDesc = *StackPtr;
+
+            DEBUG_PRINT (TRACE_EXEC, ("AmlResolveObjectToValue: [Arg%d] ValueObj is %p\n",
+                            Index, StackDesc));
+
+            if (ACPI_TYPE_NUMBER == StackDesc->Common.Type)
+            {
+                /* Value is a Number */
+
+                DEBUG_PRINT (ACPI_INFO, ("AmlResolveObjectToValue: [Arg%d] value is [0x%X] \n",
+                                            Index, StackDesc->Number.Value));
+            }
+
+            break;
+
+
+        /*
+         * TBD: [Restructure] These next three opcodes change the type of the object,
+         * which is actually a no-no.
+         */
+
+        case AML_ZERO_OP:
+
+            StackDesc->Common.Type = (UINT8) ACPI_TYPE_NUMBER;
+            StackDesc->Number.Value = 0;
+            break;
+
+
+        case AML_ONE_OP:
+
+            StackDesc->Common.Type = (UINT8) ACPI_TYPE_NUMBER;
+            StackDesc->Number.Value = 1;
+            break;
+
+
+        case AML_ONES_OP:
+
+            StackDesc->Common.Type = (UINT8) ACPI_TYPE_NUMBER;
+            StackDesc->Number.Value = 0xFFFFFFFF;
+            break;
+
+
+        case AML_INDEX_OP:
+
+            switch (StackDesc->Reference.TargetType)
+            {
+            case ACPI_TYPE_BUFFER_FIELD:
+
+                /* Just return - leave the Reference on the stack */
+                break;
+
+
+            case ACPI_TYPE_PACKAGE:
+                ObjDesc = *StackDesc->Reference.Where;
+                if (ObjDesc)
+                {
+                    /*
+                     * Valid obj descriptor, copy pointer to return value
+                     * (i.e., dereference the package index)
+                     */
+                    AcpiCmRemoveReference (StackDesc);     /* Delete the Reference object */
+                    AcpiCmAddReference (ObjDesc);          /* Increment the return value object */
+                    *StackPtr = ObjDesc;
+                }
+
+                else
+                {
+                    /* NULL object descriptor means an unitialized element of the package, can't deref it */
+
+                    DEBUG_PRINT (ACPI_ERROR, ("AmlResolveObjectToValue: Attempt to deref an Index to NULL pkg element Idx=%p\n", StackDesc));
+                    Status = AE_AML_UNINITIALIZED_ELEMENT;
+                }
+                break;
+
+            default:
+                /* Invalid reference OBJ*/
+
+                DEBUG_PRINT (ACPI_ERROR, ("AmlResolveObjectToValue: Unknown TargetType %d in Index/Reference obj %p\n",
+                                StackDesc->Reference.TargetType, StackDesc));
+                Status = AE_AML_INTERNAL;
+                break;
+            }
+
+            break;
+
+
+        case AML_DEBUG_OP:
+
+            /* Just leave the object as-is */
+            break;
+
+
+        default:
+
+            DEBUG_PRINT (ACPI_ERROR, ("AmlResolveObjectToValue: Unknown Reference object subtype %02x in %p\n",
+                            Opcode, StackDesc));
+            Status = AE_AML_INTERNAL;
+
+        }   /* switch (Opcode) */
+
+
+        if (AE_OK != Status)
+        {
+            return_ACPI_STATUS (Status);
+        }
+
+        break; /* case INTERNAL_TYPE_REFERENCE */
+
+
+    case ACPI_TYPE_FIELD_UNIT:
+
+        ObjDesc = AcpiCmCreateInternalObject (ACPI_TYPE_ANY);
+        if (!ObjDesc)
+        {
+            /* Descriptor allocation failure  */
+
+            return_ACPI_STATUS (AE_NO_MEMORY);
+        }
+
+        if ((Status = AcpiAmlGetFieldUnitValue (StackDesc, ObjDesc)) != AE_OK)
+        {
+            AcpiCmRemoveReference (ObjDesc);
+            ObjDesc = NULL;
+        }
+
+        *StackPtr = (void *) ObjDesc;
+        break;
+
+
+    case INTERNAL_TYPE_BANK_FIELD:
+
+        ObjDesc = AcpiCmCreateInternalObject (ACPI_TYPE_ANY);
+        if (!ObjDesc)
+        {
+            /* Descriptor allocation failure */
+
+            return_ACPI_STATUS (AE_NO_MEMORY);
+        }
+
+        if ((Status = AcpiAmlGetFieldUnitValue (StackDesc, ObjDesc)) != AE_OK)
+        {
+            AcpiCmRemoveReference (ObjDesc);
+            ObjDesc = NULL;
+        }
+
+        *StackPtr = (void *) ObjDesc;
+        break;
+
+
+    /* TBD: [Future] - may need to handle IndexField, and DefField someday */
+
+    default:
+
+        break;
+
+    }   /* switch (StackDesc->Common.Type) */
+
+
+    return_ACPI_STATUS (Status);
+}
+
+
+
+
