@@ -428,7 +428,11 @@ AmlDumpStack (
     char                *pcIdent, 
     INT32               NumLevels, 
     char                *pcNote);
-        
+
+void
+AmlDumpObjectDescriptor (
+	OBJECT_DESCRIPTOR   *Obj);
+
 
 /*
  * isexprs - interpreter/scanner expression load/execute
