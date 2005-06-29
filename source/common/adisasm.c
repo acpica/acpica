@@ -120,13 +120,13 @@
 #include "acdebug.h"
 #include "acdispat.h"
 #include "acnamesp.h"
-#include "adcommon.h"
+#include "adisasm.h"
 
 #include <stdio.h>
 
 
 #define _COMPONENT          ACPI_TOOLS
-        ACPI_MODULE_NAME    ("adexec")
+        ACPI_MODULE_NAME    ("adisasm")
 
 
 ACPI_PARSE_OBJECT       *AcpiGbl_ParsedNamespaceRoot;
@@ -160,12 +160,6 @@ AcpiDsTerminateControlMethod (
     return (AE_OK);
 }
 
-void
-AcpiDsScopeStackClear (
-    ACPI_WALK_STATE         *WalkState)
-{
-}
-
 ACPI_STATUS
 AcpiDsCallControlMethod (
     ACPI_THREAD_STATE       *Thread,
@@ -184,14 +178,19 @@ AcpiDsMethodDataInitArgs (
     return (AE_OK);
 }
 
-ACPI_OPERAND_OBJECT *
-AcpiNsGetAttachedObject (
-    ACPI_NAMESPACE_NODE     *Node)
-{
-    return NULL;
-}
 
 
+/******************************************************************************
+ *
+ * FUNCTION:    AdAmlDisassemble
+ *
+ * PARAMETERS:  Filename        - AML file
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION:
+ *
+ *****************************************************************************/
 
 ACPI_STATUS
 AdAmlDisassemble (
