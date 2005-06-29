@@ -2,7 +2,7 @@
  *
  * Module Name: dswexec - Dispatcher method execution callbacks;
  *                        dispatch to interpreter.
- *              $Revision: 1.77 $
+ *              $Revision: 1.80 $
  *
  *****************************************************************************/
 
@@ -203,7 +203,7 @@ AcpiDsGetPredicateValue (
 
     if (!ObjDesc)
     {
-        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "No predicate ObjDesc=%X State=%X\n",
+        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "No predicate ObjDesc=%p State=%p\n",
             ObjDesc, WalkState));
 
         return_ACPI_STATUS (AE_AML_NO_OPERAND);
@@ -217,7 +217,7 @@ AcpiDsGetPredicateValue (
     if (ObjDesc->Common.Type != ACPI_TYPE_INTEGER)
     {
         ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
-            "Bad predicate (not a number) ObjDesc=%X State=%X Type=%X\n",
+            "Bad predicate (not a number) ObjDesc=%p State=%p Type=%X\n",
             ObjDesc, WalkState, ObjDesc->Common.Type));
 
         Status = AE_AML_OPERAND_TYPE;
@@ -251,7 +251,7 @@ AcpiDsGetPredicateValue (
 
 Cleanup:
 
-    ACPI_DEBUG_PRINT ((ACPI_DB_EXEC, "Completed a predicate eval=%X Op=%X\n",
+    ACPI_DEBUG_PRINT ((ACPI_DB_EXEC, "Completed a predicate eval=%X Op=%p\n",
         WalkState->ControlState->Common.Value, WalkState->Op));
 
      /* Break to debugger to display result */
@@ -331,7 +331,7 @@ AcpiDsExecBeginOp (
         (WalkState->ControlState->Common.State ==
             CONTROL_CONDITIONAL_EXECUTING))
     {
-        ACPI_DEBUG_PRINT ((ACPI_DB_EXEC, "Exec predicate Op=%X State=%X\n",
+        ACPI_DEBUG_PRINT ((ACPI_DB_EXEC, "Exec predicate Op=%p State=%p\n",
                         Op, WalkState));
 
         WalkState->ControlState->Common.State = CONTROL_PREDICATE_EXECUTING;
@@ -576,7 +576,7 @@ AcpiDsExecEndOp (
 
         case AML_TYPE_METHOD_CALL:
 
-            ACPI_DEBUG_PRINT ((ACPI_DB_DISPATCH, "Method invocation, Op=%X\n", Op));
+            ACPI_DEBUG_PRINT ((ACPI_DB_DISPATCH, "Method invocation, Op=%p\n", Op));
 
             /*
              * (AML_METHODCALL) Op->Value->Arg->Node contains
@@ -628,7 +628,7 @@ AcpiDsExecEndOp (
         case AML_TYPE_CREATE_FIELD:
 
             ACPI_DEBUG_PRINT ((ACPI_DB_EXEC,
-                "Executing CreateField Buffer/Index Op=%X\n", Op));
+                "Executing CreateField Buffer/Index Op=%p\n", Op));
 
             Status = AcpiDsLoad2EndOp (WalkState);
             if (ACPI_FAILURE (Status))
@@ -640,7 +640,9 @@ AcpiDsExecEndOp (
             break;
 
 
-        case AML_TYPE_NAMED_OBJECT:
+        case AML_TYPE_NAMED_FIELD:
+        case AML_TYPE_NAMED_COMPLEX:
+        case AML_TYPE_NAMED_SIMPLE:
 
             Status = AcpiDsLoad2EndOp (WalkState);
             if (ACPI_FAILURE (Status))
@@ -648,12 +650,10 @@ AcpiDsExecEndOp (
                 break;
             }
 
-            switch (Op->Opcode)
+            if (Op->Opcode == AML_REGION_OP)
             {
-            case AML_REGION_OP:
-
                 ACPI_DEBUG_PRINT ((ACPI_DB_EXEC,
-                    "Executing OpRegion Address/Length Op=%X\n", Op));
+                    "Executing OpRegion Address/Length Op=%p\n", Op));
 
                 Status = AcpiDsEvalRegionOperands (WalkState, Op);
                 if (ACPI_FAILURE (Status))
@@ -662,45 +662,26 @@ AcpiDsExecEndOp (
                 }
 
                 Status = AcpiDsResultStackPop (WalkState);
-                break;
-
-
-            case AML_METHOD_OP:
-                break;
-
-
-            case AML_ALIAS_OP:
-
-                /* Alias creation was already handled by call
-                to psxload above */
-                break;
-
-
-            default:
-                /* Nothing needs to be done */
-
-                Status = AE_OK;
-                break;
             }
 
             break;
 
         case AML_TYPE_UNDEFINED:
 
-            ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Undefined opcode type Op=%X\n", Op));
+            ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Undefined opcode type Op=%p\n", Op));
             return_ACPI_STATUS (AE_NOT_IMPLEMENTED);
             break;
 
 
         case AML_TYPE_BOGUS:
-            ACPI_DEBUG_PRINT ((ACPI_DB_DISPATCH, "Internal opcode=%X type Op=%X\n",
+            ACPI_DEBUG_PRINT ((ACPI_DB_DISPATCH, "Internal opcode=%X type Op=%p\n",
                 WalkState->Opcode, Op));
             break;
 
         default:
 
             ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
-                "Unimplemented opcode, class=%X type=%X Opcode=%X Op=%X\n",
+                "Unimplemented opcode, class=%X type=%X Opcode=%X Op=%p\n",
                 OpClass, OpType, Op->Opcode, Op));
 
             Status = AE_NOT_IMPLEMENTED;
