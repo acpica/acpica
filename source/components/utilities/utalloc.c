@@ -631,7 +631,7 @@ _CmCallocate (
         DEBUG_PRINT (ACPI_ERROR, ("CmCallocate: ** ERROR: Attempt to allocate zero bytes! (%s line %d)\n",
                                     Module, Line));
         REPORT_ERROR ("CmCallocate: Attempt to allocate zero bytes");
-        Size = 1;
+        return_VALUE (NULL);
     }
 
 
