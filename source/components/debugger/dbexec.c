@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dbexec - debugger control method execution
- *              $Revision: 1.17 $
+ *              $Revision: 1.18 $
  *
  ******************************************************************************/
 
@@ -145,7 +145,6 @@ typedef struct dbmethodinfo
 
 
 DB_METHOD_INFO              Info;
-
 
 
 /*******************************************************************************
@@ -300,7 +299,6 @@ AcpiDbExecute (
     UINT32                  PreviousSize;
     UINT32                  Allocations;
     UINT32                  Size;
-
 
 
     /* Memory allocation tracking */
