@@ -15,15 +15,18 @@
  | control and status registers.
  |__________________________________________________________________________
  |
- | $Revision: 1.11 $
- | $Date: 2005/06/29 16:54:11 $
+ | $Revision: 1.12 $
+ | $Date: 2005/06/29 16:54:12 $
  | $Log: hwregs.c,v $
- | Revision 1.11  2005/06/29 16:54:11  aystarik
- | Header cleanup;  Split debug switch into component_id and level
+ | Revision 1.12  2005/06/29 16:54:12  aystarik
+ | Major header file consolidation
  |
  | 
- | date	99.04.05.23.09.00;	author rmoore1;	state Exp;
+ | date	99.04.07.22.33.00;	author rmoore1;	state Exp;
  |
+ * 
+ * 12    4/07/99 3:33p Rmoore1
+ * Major header file consolidation
  * 
  * 11    4/05/99 4:09p Rmoore1
  * Header cleanup;  Split debug switch into component_id and level
@@ -66,8 +69,7 @@
 #define __DVREGS_C__
 
 #include <acpi.h>
-#include <acpirio.h>
-#include <acpipriv.h>
+#include <devices.h>
 #include <stdarg.h>
 
 
