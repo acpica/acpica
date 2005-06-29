@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslanalyze.c - check for semantic errors
- *              $Revision: 1.76 $
+ *              $Revision: 1.78 $
  *
  *****************************************************************************/
 
@@ -890,6 +890,16 @@ AnMethodAnalysisWalkBegin (
         break;
 
 
+    case PARSEOP_STALL:
+
+        AcpiOsPrintf ("Found a stall\n");
+        if (Op->Asl.Child->Asl.Value.Integer > ACPI_UINT8_MAX)
+        {
+            AslError (ASL_ERROR, ASL_MSG_INVALID_TIME, Op, NULL);
+        }
+        break;
+
+
     case PARSEOP_DEVICE:
     case PARSEOP_EVENT:
     case PARSEOP_MUTEX:
@@ -1113,7 +1123,7 @@ AnMethodAnalysisWalkEnd (
 
     case PARSEOP_RETURN:
 
-        /* 
+        /*
          * The parent block does not "exit" and continue execution -- the
          * method is terminated here with the Return() statement.
          */
@@ -1139,7 +1149,7 @@ AnMethodAnalysisWalkEnd (
             (Op->Asl.Next->Asl.ParseOpcode == PARSEOP_ELSE))
         {
             /*
-             * This IF has a corresponding ELSE.  The IF block has no exit, 
+             * This IF has a corresponding ELSE.  The IF block has no exit,
              * (it contains an unconditional Return)
              * mark the ELSE block to remember this fact.
              */
