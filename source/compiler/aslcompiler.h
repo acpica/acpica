@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslcompiler.h - common include file
- *              $Revision: 1.115 $
+ *              $Revision: 1.116 $
  *
  *****************************************************************************/
 
@@ -316,7 +316,8 @@ AslCommonError (
 void
 AePrintException (
     UINT32                  FileId,
-    ASL_ERROR_MSG           *Enode);
+    ASL_ERROR_MSG           *Enode,
+    char                    *Header);
 
 void
 AePrintErrorLog (
