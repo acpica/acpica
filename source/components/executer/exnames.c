@@ -101,29 +101,9 @@
 #include <interpreter.h>
 #include <amlcode.h>
 #include <namespace.h>
-#include <string.h>
 
 #define _THIS_MODULE        "isnames.c"
 #define _COMPONENT          INTERPRETER
-
-
-static ST_KEY_DESC_TABLE KDT[] = {
-   {"0000", '1', "LastFQN: Allocation failure requesting", "LastFQN: Allocation failure requesting"},
-   {"0001", '1', "AmlAllocateNameString: name allocation failure", "AmlAllocateNameString: name allocation failure"},
-   {"0002", '1', "NamedObject/NameSpaceModifier Failure with at least one more byte available in package", "NamedObject/NameSpaceModifier Failure with at least one more byte available in package"},
-   {"0003", '1', "During LOAD this segment started with one or more valid characters, but fewer than 4", "During LOAD this segment started with one or more valid characters, but fewer than 4"},
-   {"0004", '1', "*UNEXPECTED END* [Name]", "*UNEXPECTED END* [Name]"},
-   {"0005", '1', "Ran out of segments after processing a prefix", "Ran out of segments after processing a prefix (See Log for details)"},
-   {NULL, 'I', NULL, NULL}
-};
-
-
-/* |-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|
- *
- * Functions that Load/Dump/Execute Names
- *
- * |-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|
- */
 
 
 /*****************************************************************************
@@ -141,10 +121,12 @@ static ST_KEY_DESC_TABLE KDT[] = {
  ****************************************************************************/
 
 void 
-AmlAllocateNameString (INT32 PrefixCount, INT32 NumNameSegs)
+AmlAllocateNameString (
+    INT32                   PrefixCount, 
+    INT32                   NumNameSegs)
 {
-    char            *TempPtr;
-    INT32           SizeNeeded;
+    char                    *TempPtr;
+    INT32                   SizeNeeded;
 
 
     FUNCTION_TRACE ("AmlAllocateNameString");
@@ -208,7 +190,7 @@ AmlAllocateNameString (INT32 PrefixCount, INT32 NumNameSegs)
         {
             /*  allocation failure  */
 
-            REPORT_ERROR (&KDT[1]);
+            REPORT_ERROR ("AmlAllocateNameString: name allocation failure");
             NameStringSize = 0;
             FUNCTION_EXIT;
             return;
@@ -278,7 +260,8 @@ AmlAllocateNameString (INT32 PrefixCount, INT32 NumNameSegs)
  ****************************************************************************/
 
 INT32 
-AmlGoodChar (INT32 Character)
+AmlGoodChar (
+    INT32                   Character)
 {
 
     return ((Character == '_') || (Character >= 'A' && Character <= 'Z') ||
@@ -312,9 +295,10 @@ AmlGoodChar (INT32 Character)
 
 
 INT32 
-AmlDecodePackageLength (INT32 LastPkgLen)
+AmlDecodePackageLength (
+    INT32                   LastPkgLen)
 {
-    INT32           NumBytes = 0;
+    INT32                   NumBytes = 0;
 
     FUNCTION_TRACE ("AmlDecodePackageLength");
 
@@ -349,11 +333,12 @@ AmlDecodePackageLength (INT32 LastPkgLen)
  ****************************************************************************/
 
 ACPI_STATUS
-AmlDoSeg (OpMode LoadExecMode)
+AmlDoSeg (
+    OPERATING_MODE          LoadExecMode)
 {
-    ACPI_STATUS     Status = AE_OK;
-    INT32           Index;
-    char            CharBuf[5];
+    ACPI_STATUS             Status = AE_OK;
+    INT32                   Index;
+    char                    CharBuf[5];
 
 
     FUNCTION_TRACE ("AmlDoSeg");
@@ -420,7 +405,7 @@ AmlDoSeg (OpMode LoadExecMode)
             {
                 /*  second pass load mode   */
 
-                REPORT_ERROR (&KDT[3]);
+                REPORT_ERROR ("During LOAD this segment started with one or more valid characters, but fewer than 4");
             }
 
             else
@@ -453,13 +438,15 @@ AmlDoSeg (OpMode LoadExecMode)
  ****************************************************************************/
 
 ACPI_STATUS
-AmlDoName (NsType DataType, OpMode LoadExecMode)
+AmlDoName (
+    ACPI_OBJECT_TYPE        DataType, 
+    OPERATING_MODE          LoadExecMode)
 {
-    ACPI_STATUS     Status = AE_OK;
-    INT32           NumSegments;
-    INT32           PrefixCount = 0;
-    UINT8           Prefix = 0;
-    NsHandle        handle;
+    ACPI_STATUS             Status = AE_OK;
+    INT32                   NumSegments;
+    INT32                   PrefixCount = 0;
+    UINT8                   Prefix = 0;
+    ACPI_HANDLE             handle;
 
 
     FUNCTION_TRACE ("AmlDoName");
@@ -544,7 +531,7 @@ BREAKPOINT3;
             {
                 /* unexpected end of AML */
 
-                REPORT_ERROR (&KDT[4]);
+                REPORT_ERROR ("*UNEXPECTED END* [Name]");
                 
                 Status = AE_AML_ERROR;
                 break;
@@ -594,7 +581,7 @@ BREAKPOINT3;
     {
         /* All prefixes have been handled, and the name is in NameString */
 
-        LocalDeleteObject ((OBJECT_DESCRIPTOR **) &ObjStack[ObjStackTop]);
+        LocalDeleteObject ((ACPI_OBJECT **) &ObjStack[ObjStackTop]);
         Status = NsEnter (NameString, DataType, LoadExecMode, 
                             (NAME_TABLE_ENTRY **) &ObjStack[ObjStackTop]);
 
@@ -676,7 +663,7 @@ BREAKPOINT3;
                                      */
                                     if (MODE_Exec == LoadExecMode)
                                     {
-                                        Status = AmlGetRvalue ((OBJECT_DESCRIPTOR **)
+                                        Status = AmlGetRvalue ((ACPI_OBJECT **)
                                             &ObjStack[ObjStackTop]);
                                     }
 
@@ -693,12 +680,12 @@ BREAKPOINT3;
                             /* execution mode  */
                             /* Mark end of arg list */
 
-                            LocalDeleteObject ((OBJECT_DESCRIPTOR **) &ObjStack[ObjStackTop]);
+                            LocalDeleteObject ((ACPI_OBJECT **) &ObjStack[ObjStackTop]);
                             ObjStack[ObjStackTop] = NULL;
 
                             /* Establish Method's scope as current */
 
-                            NsPushMethodScope ((NsHandle) ObjStack[StackBeforeArgs]);
+                            NsPushMethodScope ((ACPI_HANDLE) ObjStack[StackBeforeArgs]);
 
                             DEBUG_PRINT (TRACE_LOAD,
                                         ("Calling %4.4s, StackBeforeArgs %d  ObjStackTop %d\n",
@@ -709,7 +696,7 @@ BREAKPOINT3;
                             
                             Status = AmlExecuteMethod (
                                         MethodPtr->Offset + 1, MethodPtr->Length - 1,
-                                        (OBJECT_DESCRIPTOR **)&ObjStack[StackBeforeArgs + 1]);
+                                        (ACPI_OBJECT **)&ObjStack[StackBeforeArgs + 1]);
 
                             DEBUG_PRINT (TRACE_LOAD,
                                     ("AmlExec Status=%s, StackBeforeArgs %d  ObjStackTop %d\n",
@@ -721,7 +708,7 @@ BREAKPOINT3;
 
                                 if (StackBeforeArgs < ObjStackTop)
                                 {
-                                    LocalDeleteObject ((OBJECT_DESCRIPTOR **) &ObjStack[StackBeforeArgs]);
+                                    LocalDeleteObject ((ACPI_OBJECT **) &ObjStack[StackBeforeArgs]);
                                     ObjStack[StackBeforeArgs] = ObjStack[ObjStackTop--];
                                 }
 
@@ -738,7 +725,7 @@ BREAKPOINT3;
                         
                         while (ObjStackTop > StackBeforeArgs)
                         {
-                            LocalDeleteObject ((OBJECT_DESCRIPTOR **) &ObjStack[ObjStackTop]);
+                            LocalDeleteObject ((ACPI_OBJECT **) &ObjStack[ObjStackTop]);
 
                             /* Zero out the slot and move on */
 
@@ -759,7 +746,7 @@ BREAKPOINT3;
         {
             DEBUG_PRINT (ACPI_ERROR, ("***Malformed Name***\n"));
 
-            REPORT_ERROR (&KDT[5]);
+            REPORT_ERROR ("Ran out of segments after processing a prefix");
         }
 
         else
