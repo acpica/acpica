@@ -192,9 +192,10 @@ DbSingleStep (
         {
 /*
         case AML_MethodOp:
+*/
+        case AML_NAMEPATH_OP:
             return (AE_OK);
             break;
-*/
         }
     }
 
