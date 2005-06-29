@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acwin.h - OS specific defines, etc.
- *       $Revision: 1.12 $
+ *       $Revision: 1.4 $
  *
  *****************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -127,8 +127,6 @@
 
 #define ACPI_OS_NAME                "Windows"
 
-#define ACPI_MACHINE_WIDTH          32
-
 #define strupr              _strupr
 #define ACPI_USE_STANDARD_HEADERS
 
@@ -143,19 +141,22 @@
 /*! [Begin] no source code translation  */
 
 #define ACPI_ASM_MACROS
+#define causeinterrupt(level)   __asm {int level}
 #define BREAKPOINT3             __asm {int 3}
-#define ACPI_DISABLE_IRQS()     __asm {cli}
-#define ACPI_ENABLE_IRQS()      __asm {sti}
-#define ACPI_FLUSH_CPU_CACHE()  __asm {WBINVD}
+#define disable()               __asm {cli}
+#define enable()                __asm {sti}
+#define halt()                  __asm {hlt}
+#define wbinvd()                __asm {WBINVD}
 
 
 /*
  * For Acpi applications, we don't want to try to access the global lock
  */
 #ifdef ACPI_APPLICATION
-#define ACPI_ACQUIRE_GLOBAL_LOCK(GLptr, Acq)       if (AcpiGbl_GlobalLockPresent) {Acq = 0xFF;} else {Acq = 0;}
-#define ACPI_RELEASE_GLOBAL_LOCK(GLptr, Pnd)       if (AcpiGbl_GlobalLockPresent) {Pnd = 0xFF;} else {Pnd = 0;}
+#define ACPI_ACQUIRE_GLOBAL_LOCK(GLptr, Acq)       (Acq = 0xFF)
+#define ACPI_RELEASE_GLOBAL_LOCK(GLptr, Pnd)       (Pnd = 0)
 #else
+
 #define ACPI_ACQUIRE_GLOBAL_LOCK(GLptr, Acq)       __asm {     \
         __asm mov           ecx, GLptr              \
         __asm acq10:                                \
