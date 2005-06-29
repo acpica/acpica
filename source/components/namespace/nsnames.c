@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: nsnames - Name manipulation and search
- *              $Revision: 1.76 $
+ *              $Revision: 1.77 $
  *
  ******************************************************************************/
 
@@ -191,7 +191,7 @@ AcpiNsBuildExternalPath (
     {
         ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
             "Could not construct pathname; index=%X, size=%X, Path=%s\n",
-            Index, Size, &NameBuffer[Size]));
+            (UINT32) Index, (UINT32) Size, &NameBuffer[Size]));
     }
 
     return;
@@ -334,7 +334,7 @@ AcpiNsHandleToPathname (
 
     AcpiNsBuildExternalPath (Node, RequiredSize, Buffer->Pointer);
 
-    ACPI_DEBUG_PRINT ((ACPI_DB_EXEC, "%s [%X] \n", (char *) Buffer->Pointer, RequiredSize));
+    ACPI_DEBUG_PRINT ((ACPI_DB_EXEC, "%s [%X] \n", (char *) Buffer->Pointer, (UINT32) RequiredSize));
     return_ACPI_STATUS (AE_OK);
 }
 
