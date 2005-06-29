@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acoutput.h -- debug output
- *       $Revision: 1.79 $
+ *       $Revision: 1.80 $
  *
  *****************************************************************************/
 
@@ -146,6 +146,7 @@
 #define ACPI_BUTTON                 0x00400000
 #define ACPI_PROCESSOR              0x00800000
 #define ACPI_THERMAL                0x01000000
+#define ACPI_FAN                    0x02000000
 
 #define ACPI_ALL_COMPONENTS         0x0FFFFFFF
 
