@@ -458,11 +458,12 @@ EvAssociateRegionAndHander(
  *
  ***************************************************************************/
 
-void *
+ACPI_STATUS
 EvAddrHandlerHelper (
     ACPI_HANDLE             ObjHandle, 
     UINT32                  Level, 
-    void                    *Context)
+    void                    *Context,
+    void                    **ReturnValue)
 {
     ACPI_OBJECT_INTERNAL   *HandlerObj;
     ACPI_OBJECT_INTERNAL   *TmpObj;
@@ -479,14 +480,14 @@ EvAddrHandlerHelper (
 
     if (!HandlerObj)
     {
-        return_VALUE((void *) AE_OK);
+        return_ACPI_STATUS (AE_OK);
     }
 
     /* Convert and validate the device handle */
 
     if (!(ObjEntry = NsConvertHandleToEntry (ObjHandle)))
     {
-        return_VALUE ((void *) AE_BAD_PARAMETER);
+        return_ACPI_STATUS (AE_BAD_PARAMETER);
     }
 
     /*
@@ -498,7 +499,7 @@ EvAddrHandlerHelper (
         (ObjEntry->Type != ACPI_TYPE_Region) &&
         (ObjEntry != Gbl_RootObject))
     {
-        return_VALUE ((void *) AE_OK);
+        return_ACPI_STATUS (AE_OK);
     }
 
     /* Check for an existing internal object */
@@ -509,7 +510,7 @@ EvAddrHandlerHelper (
         /*
          *  The object DNE, we don't care about it
          */
-        return_VALUE ((void *) AE_OK);
+        return_ACPI_STATUS (AE_OK);
     }
 
     /*
@@ -537,14 +538,14 @@ EvAddrHandlerHelper (
                     Gbl_RegionTypes[HandlerObj->AddrHandler.SpaceId],
                     ObjDesc, TmpObj, HandlerObj));
                 
-                    /*
+                /*
                  *  Since the object we found it on was a device, then it
                  *  means that someone has already installed a handler for
                  *  the branch of the namespace from this device on.  Just
                  *  bail out telling the walk routine to not traverse this
                  *  branch.  This preserves the scoping rule for handlers.
                  */
-                return_VALUE (GO_NO_FURTHER);
+                return_ACPI_STATUS (AE_DEPTH);
             }
 
             /*
@@ -558,7 +559,7 @@ EvAddrHandlerHelper (
          *  space we don't care about it.  We just ignore it and
          *  proceed.
          */
-        return_VALUE ((void *) AE_OK);
+        return_ACPI_STATUS (AE_OK);
     }
 
     /*
@@ -569,10 +570,10 @@ EvAddrHandlerHelper (
     if (ObjDesc->Region.SpaceId != HandlerObj->AddrHandler.SpaceId)
     {
         /*
-         *  This region os for a different address space
+         *  This region is for a different address space
          *  ignore it
          */
-        return_VALUE ((void *) AE_OK);
+        return_ACPI_STATUS (AE_OK);
     }
 
     /*
@@ -588,7 +589,7 @@ EvAddrHandlerHelper (
      */
     EvAssociateRegionAndHander (HandlerObj, ObjDesc);
 
-    return_VALUE ((void *) AE_OK);
+    return_ACPI_STATUS (AE_OK);
 }
 
 
@@ -767,148 +768,3 @@ EvInitializeRegion ( ACPI_OBJECT_INTERNAL *RegionObj)
 }
 
 
-/******************************************************************************
- *
- * FUNCTION:    EvWalkNamespace
- *
- * PARAMETERS:  Type                - ACPI_OBJECT_TYPE to search for
- *              StartObject         - Handle in namespace where search begins
- *              MaxDepth            - Depth to which search is to reach
- *              UserFunction        - Called when an object of "Type" is found
- *              Context             - Passed to user function
- *
- * RETURNS      Return value from the UserFunction if terminated early.
- *              Otherwise, returns NULL.
- *
- * DESCRIPTION: Identical to the AcpiWalkNamespace except. Checks the return
- *              value from the user function for the special value GO_NO_FURTHER
- *
- *              When that value is encountered the progression down a branch of
- *              tree halts but the search continues in the parent.
- *
- * TBD: Merge into a single, common WalkNamespace!
- *
- ******************************************************************************/
-
-ACPI_STATUS
-EvWalkNamespace (
-    ACPI_OBJECT_TYPE        Type, 
-    ACPI_HANDLE             StartObject, 
-    UINT32                  MaxDepth,
-    WALK_CALLBACK           UserFunction, 
-    void                    *Context, 
-    void                    **ReturnValue)
-{
-    ACPI_HANDLE             ChildHandle;
-    ACPI_HANDLE             ParentHandle;
-    ACPI_OBJECT_TYPE        ChildType;
-    ACPI_HANDLE             Dummy;
-    UINT32                  Level;
-    void                    *UserReturnVal;
-
-
-    FUNCTION_TRACE ("EvWalkNamespace");
-
-    /* Parameter validation */
-
-    if ((Type > ACPI_TABLE_MAX) ||
-        (!MaxDepth)             || 
-        (!UserFunction))
-    {
-        return_ACPI_STATUS (AE_BAD_PARAMETER);
-    }
-
-    /* Special case for the namespace root object */
-
-    if (StartObject == ACPI_ROOT_OBJECT)
-    {
-        StartObject = Gbl_RootObject;
-    }
-
-    /* Init return value, if any */
-
-    if (ReturnValue)
-    {
-        *ReturnValue = NULL;
-    }
-
-    /* Null child means "get first object" */
-
-    ParentHandle    = StartObject;
-    ChildHandle     = 0;
-    ChildType       = ACPI_TYPE_Any;
-    Level           = 1;
-    UserReturnVal   = NULL;
-
-    /* 
-     * Traverse the tree of objects until we bubble back up to where we
-     * started. When Level is zero, the loop is done because we have 
-     * bubbled up to (and passed) the original parent handle (StartHandle)
-     */
-
-    while (Level > 0)
-    {
-        /* Get the next typed object in this scope.  Null returned if not found */
-
-        if (ACPI_SUCCESS (AcpiGetNextObject (ACPI_TYPE_Any, ParentHandle, ChildHandle, &ChildHandle))) 
-        {
-            /* Found an object, Get the type if we are not searching for ANY */
-
-            if (Type != ACPI_TYPE_Any)
-            {
-                AcpiGetType (ChildHandle, &ChildType);
-            }
-
-            if (ChildType == Type)
-            {
-                /* Found an object - process by calling the user function */
-
-                UserReturnVal = UserFunction (ChildHandle, Level, Context);
-
-                if ((UserReturnVal) && (UserReturnVal != GO_NO_FURTHER))
-                {
-                    /* Non-zero from user function means "exit now" */
-
-                    if (ReturnValue)
-                    {
-                        /* Pass return value back to the caller */
-
-                        *ReturnValue = UserReturnVal;
-                    }
-
-                    return_ACPI_STATUS (AE_OK);
-                }
-            }
-
-            /* Go down another level in the namespace if we are allowed to */
-
-            if ((Level < MaxDepth) && (UserReturnVal != GO_NO_FURTHER))
-            {
-                /* Check if this object has any children */
-
-                if (ACPI_SUCCESS (AcpiGetNextObject (Type, ChildHandle, 0, &Dummy)))
-                {
-                    /* There is at least one child of this object, visit the object */
-
-                    Level++;
-                    ParentHandle    = ChildHandle;
-                    ChildHandle     = 0;
-                }
-            }
-
-            UserReturnVal   = NULL;
-        }
-
-        else
-        {
-            /* 
-             * No more children in this object, go back up to the object's parent
-             */
-            Level--;
-            ChildHandle = ParentHandle;
-            AcpiGetParent (ParentHandle, &ParentHandle);
-        }
-    }
-
-    return_ACPI_STATUS (AE_OK);                   /* Complete walk, not terminated by user function */
-}
