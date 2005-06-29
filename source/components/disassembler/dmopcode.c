@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dbdisasm - parser op tree display routines
- *              $Revision: 1.67 $
+ *              $Revision: 1.68 $
  *
  ******************************************************************************/
 
@@ -128,44 +128,291 @@
         ACPI_MODULE_NAME    ("dbdisasm")
 
 
+#define BLOCK_NONE          0
 #define BLOCK_PAREN         1
 #define BLOCK_BRACE         2
-#define DB_NO_OP_INFO       "            [%2.2d]  "
-#define DB_FULL_OP_INFO     "%5.5X #%4.4hX [%2.2d]  "
+#define BLOCK_COMMA_LIST    4
 
 
 NATIVE_CHAR                 *AcpiGbl_DbDisasmIndent = "....";
 
+#define ACPI_PARSEOP_IGNORE                   0x10
+#define ACPI_PARSEOP_PARAMLIST                0x20
+#define ACPI_PARSEOP_EMPTY_TERMLIST           0x40
+
+
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiDbBlockType
+ * FUNCTION:    
  *
  * PARAMETERS:  Op              - Object to be examined
  *
  * RETURN:      Status
  *
- * DESCRIPTION: Type of block for this op (parens or braces)
+ * DESCRIPTION: Decode control method flags
  *
  ******************************************************************************/
 
 UINT32
-AcpiDbBlockType (
-    ACPI_PARSE_OBJECT       *Op)
+AcpiDmDumpName (
+    char                    *Name)
 {
+    UINT32                  i;
+    UINT32                  Length;
+    char                    *End = Name + ACPI_NAME_SIZE;
 
-    switch (Op->Common.AmlOpcode)
+
+    for (i = 0; i < ACPI_NAME_SIZE; i++)
     {
-    case AML_METHOD_OP:
-        return (BLOCK_BRACE);
-
-    default:
-        break;
+        if (Name[i] != '_')
+        {
+            End = &Name[i];
+        }
     }
 
-    return (BLOCK_PAREN);
+    Length = (End - Name) + 1;
+    for (i = 0; i < Length; i++)
+    {
+        AcpiOsPrintf ("%c", Name[i]);
+    }
+
+    return (Length);
 }
 
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiDmDoMethodFlags
+ *
+ * PARAMETERS:  Op              - Object to be examined
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Decode control method flags
+ *
+ ******************************************************************************/
+
+ACPI_PARSE_OBJECT *
+AcpiDmDoMethodFlags (
+    ACPI_PARSE_OBJECT       *Op)
+{
+    UINT32                  Flags;
+    UINT32                  Args;
+
+
+    if (Op->Named.Name == 'INIX')
+    {
+        AcpiOsPrintf ("/* FOUND XINI */\n");
+    }
+
+    /* The next Op contains the flags */
+
+    Op = AcpiPsGetDepthNext (NULL, Op);
+    Flags = Op->Common.Value.Integer8;
+    Args = Flags & 0x7;
+
+    /* Mark the Op as completed */
+
+    Op->Common.Flags |= ACPI_PARSEOP_IGNORE;
+
+    /* 1) Method argument count */
+
+    AcpiOsPrintf (", %d, ", Args);
+
+    /* 2) Serialize rule */
+
+    if (!(Flags & 0x4))
+    {
+        AcpiOsPrintf ("Not");
+    }
+
+    AcpiOsPrintf ("Serialized");
+
+    /* 3) SyncLevel */
+
+    if (Flags & 0xF0)
+    {
+        AcpiOsPrintf (", %d", Flags >> 4);
+    }
+
+    return (Op);
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiDmDoFieldFlags
+ *
+ * PARAMETERS:  Op              - Object to be examined
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Decode control method flags
+ *
+ ******************************************************************************/
+
+ACPI_PARSE_OBJECT *
+AcpiDmDoFieldFlags (
+    ACPI_PARSE_OBJECT       *Op)
+{
+    UINT32                  Flags;
+
+
+    /* The next Op contains the flags */
+
+    Op = AcpiPsGetDepthNext (NULL, Op);
+    Flags = Op->Common.Value.Integer8;
+
+    /* Mark the Op as completed */
+
+    Op->Common.Flags |= ACPI_PARSEOP_IGNORE;
+
+    AcpiOsPrintf ("%s, ", AcpiGbl_AccessTypes [Flags & 0x0F]);
+    AcpiOsPrintf ("%s, ", AcpiGbl_LockRule [(Flags & 0x10) >> 5]);
+    AcpiOsPrintf ("%s)",  AcpiGbl_UpdateRules [(Flags & 0x60) >> 6]);
+
+
+    return (Op);
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiDmDoRegionFlags
+ *
+ * PARAMETERS:  Op              - Object to be examined
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Decode region flags
+ *
+ ******************************************************************************/
+
+ACPI_PARSE_OBJECT *
+AcpiDmDoRegionFlags (
+    ACPI_PARSE_OBJECT       *Op)
+{
+    UINT32                  SpaceId;
+
+
+
+    /* The next Op contains the SpaceId */
+
+    Op = AcpiPsGetDepthNext (NULL, Op);
+    SpaceId = Op->Common.Value.Integer8;
+
+    /* Mark the Op as completed */
+
+    Op->Common.Flags |= ACPI_PARSEOP_IGNORE;
+
+    if (SpaceId > ACPI_NUM_PREDEFINED_REGIONS)
+    {
+        AcpiOsPrintf (", 0x%X, ", SpaceId);
+    }
+    else
+    {
+        AcpiOsPrintf (", %s, ", AcpiGbl_RegionTypes [SpaceId]);
+    }
+
+
+    return (Op);
+}
+
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiDmDoMethodOp
+ *
+ * PARAMETERS:  Op              - Object to be examined
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Decode region flags
+ *
+ ******************************************************************************/
+
+ACPI_PARSE_OBJECT *
+AcpiDmDoMethodOp (
+    ACPI_PARSE_OBJECT       *Op)
+{
+    ACPI_PARSE_OBJECT       *NextOp;
+
+
+    NextOp = AcpiPsGetDepthNext (NULL, Op);
+    NextOp = NextOp->Common.Next;
+
+    NextOp->Common.AmlOpcode = AML_INT_STATICSTRING_OP;
+    NextOp->Common.Value.String = (char *) AcpiGbl_MatchOps[NextOp->Common.Value.Integer32];
+
+    NextOp = NextOp->Common.Next;
+    NextOp = NextOp->Common.Next;
+    NextOp->Common.AmlOpcode = AML_INT_STATICSTRING_OP;
+    NextOp->Common.Value.String = (char *) AcpiGbl_MatchOps[NextOp->Common.Value.Integer32];
+
+    return (Op);
+}
+
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiDmCommaIfListMember 
+ *
+ * PARAMETERS:  
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Insert a comma if this Op is a member of an argument list.
+ *
+ ******************************************************************************/
+
+void 
+AcpiDmCommaIfListMember (
+    ACPI_PARSE_OBJECT       *Op)
+{
+    if (!Op->Common.Next)
+    {
+        return;
+    }
+
+    if (AcpiDmListType (Op->Common.Parent) & BLOCK_COMMA_LIST)
+    {
+        /* Check for a NULL target operand */
+
+        if ((Op->Common.Next->Common.AmlOpcode == AML_INT_NAMEPATH_OP) &&
+            (!Op->Common.Next->Common.Value.String))
+        {
+            return;
+        }
+
+        if ((Op->Common.Flags & ACPI_PARSEOP_PARAMLIST) &&
+            (!(Op->Common.Next->Common.Flags & ACPI_PARSEOP_PARAMLIST)))
+        {
+            return;
+        }
+
+        AcpiOsPrintf (", ");
+    }
+
+    else if ((Op->Common.Flags & ACPI_PARSEOP_PARAMLIST) &&
+        (Op->Common.Next->Common.Flags & ACPI_PARSEOP_PARAMLIST))
+    {
+        AcpiOsPrintf (", ");
+    }
+
+}
+
+void 
+AcpiDmCommaIfFieldMember (
+    ACPI_PARSE_OBJECT       *Op)
+{
+    if (Op->Common.Next)
+    {
+        AcpiOsPrintf (", ");
+    }
+}
 
 /*******************************************************************************
  *
@@ -225,7 +472,7 @@ AcpiPsDisplayObjectPathname (
         /* The target was found, print the name and complete path */
 
         AcpiOsPrintf ("  (Path ");
-        AcpiDbDisplayPath (TargetOp);
+        AcpiDmDisplayPath (TargetOp);
         AcpiOsPrintf (")");
     }
 
@@ -300,171 +547,10 @@ Exit:
 #endif
 
 
-/*******************************************************************************
- *
- * FUNCTION:    AcpiDbDisplayOp
- *
- * PARAMETERS:  Origin          - Starting object
- *              NumOpcodes      - Max number of opcodes to be displayed
- *
- * RETURN:      None
- *
- * DESCRIPTION: Display parser object and its children
- *
- ******************************************************************************/
-
-void
-AcpiDbDisplayOp (
-    ACPI_WALK_STATE         *WalkState,
-    ACPI_PARSE_OBJECT       *Origin,
-    UINT32                  NumOpcodes)
-{
-    ACPI_PARSE_OBJECT       *Op = Origin;
-    ACPI_PARSE_OBJECT       *arg;
-    ACPI_PARSE_OBJECT       *depth;
-    UINT32                  DepthCount = 0;
-    UINT32                  LastDepth = 0;
-    UINT32                  i;
-    UINT32                  j;
-
-
-    if (!Op)
-    {
-        AcpiDbDisplayOpcode (WalkState, Op);
-        return;
-    }
-
-
-    while (Op)
-    {
-        /* Indentation */
-
-        DepthCount = 0;
-        if (!AcpiGbl_DbOpt_verbose)
-        {
-            DepthCount++;
-        }
-
-        /* Determine the nesting depth of this argument */
-
-        for (depth = Op->Common.Parent; depth; depth = depth->Common.Parent)
-        {
-            arg = AcpiPsGetArg (depth, 0);
-            while (arg && arg != Origin)
-            {
-                arg = arg->Common.Next;
-            }
-
-            if (arg)
-            {
-                break;
-            }
-
-            DepthCount++;
-        }
-
-        /* Open a new block if we are nested further than last time */
-
-        if (DepthCount > LastDepth)
-        {
-            VERBOSE_PRINT ((DB_NO_OP_INFO, LastDepth));
-            for (i = 0; i < LastDepth; i++)
-            {
-                AcpiOsPrintf ("%s", AcpiGbl_DbDisasmIndent);
-            }
-
-            if (AcpiDbBlockType (Op) == BLOCK_PAREN)
-            {
-                AcpiOsPrintf ("(\n");
-            }
-            else
-            {
-                AcpiOsPrintf ("{\n");
-            }
-        }
-
-        /* Close a block if we are nested less than last time */
-
-        else if (DepthCount < LastDepth)
-        {
-            for (j = LastDepth; j >= (DepthCount + 1); j--)
-            {
-                VERBOSE_PRINT ((DB_NO_OP_INFO, (j - 1)));
-                for (i = 1; i < j; i++)
-                {
-                    AcpiOsPrintf ("%s", AcpiGbl_DbDisasmIndent);
-                }
-
-                if (AcpiDbBlockType (Op) == BLOCK_PAREN)
-                {
-                    AcpiOsPrintf (")\n");
-                }
-                else
-                {
-                    AcpiOsPrintf ("}\n");
-                }
-            }
-        }
-
-        /* In verbose mode, print the AML offset, opcode and depth count */
-
-        VERBOSE_PRINT ((DB_FULL_OP_INFO, (UINT32) Op->Common.AmlOffset, 
-                Op->Common.AmlOpcode, DepthCount));
-
-
-        /* Indent the output according to the depth count */
-
-        for (i = 0; i < DepthCount; i++)
-        {
-            AcpiOsPrintf ("%s", AcpiGbl_DbDisasmIndent);
-        }
-
-        /* Now print the opcode */
-
-        AcpiDbDisplayOpcode (WalkState, Op);
-
-        /* Resolve a name reference */
-
-        if ((Op->Common.AmlOpcode == AML_INT_NAMEPATH_OP && Op->Common.Value.Name)  &&
-            (Op->Common.Parent) &&
-            (AcpiGbl_DbOpt_verbose))
-        {
-            (void) AcpiPsDisplayObjectPathname (WalkState, Op);
-        }
-
-        AcpiOsPrintf ("\n");
-
-        /* Get the next node in the tree */
-
-        Op = AcpiPsGetDepthNext (Origin, Op);
-        LastDepth = DepthCount;
-
-        NumOpcodes--;
-        if (!NumOpcodes)
-        {
-            Op = NULL;
-        }
-    }
-
-    /* Close the last block(s) */
-
-    DepthCount = LastDepth -1;
-    for (i = 0; i < LastDepth; i++)
-    {
-        VERBOSE_PRINT ((DB_NO_OP_INFO, LastDepth - i));
-        for (j = 0; j < DepthCount; j++)
-        {
-            AcpiOsPrintf ("%s", AcpiGbl_DbDisasmIndent);
-        }
-        AcpiOsPrintf ("}\n");
-        DepthCount--;
-    }
-}
-
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiDbDisplayNamestring
+ * FUNCTION:    AcpiDmDisplayNamestring
  *
  * PARAMETERS:  Name                - ACPI Name string to store
  *
@@ -475,7 +561,7 @@ AcpiDbDisplayOp (
  ******************************************************************************/
 
 void
-AcpiDbDisplayNamestring (
+AcpiDmDisplayNamestring (
     NATIVE_CHAR             *Name)
 {
     UINT32                  SegCount;
@@ -483,7 +569,7 @@ AcpiDbDisplayNamestring (
 
     if (!Name)
     {
-        AcpiOsPrintf ("<NULL NAME PTR>");
+//        AcpiOsPrintf ("<NULL NAME PTR>");
         return;
     }
 
@@ -522,7 +608,7 @@ AcpiDbDisplayNamestring (
     {
         /* Append Name segment */
 
-        AcpiOsPrintf ("%4.4s", Name);
+        AcpiDmDumpName ((char *) Name);
 
         SegCount--;
         if (SegCount)
@@ -538,7 +624,7 @@ AcpiDbDisplayNamestring (
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiDbDisplayPath
+ * FUNCTION:    AcpiDmDisplayPath
  *
  * PARAMETERS:  Op                  - Named Op whose path is to be constructed
  *
@@ -551,7 +637,7 @@ AcpiDbDisplayNamestring (
  ******************************************************************************/
 
 void
-AcpiDbDisplayPath (
+AcpiDmDisplayPath (
     ACPI_PARSE_OBJECT       *Op)
 {
     ACPI_PARSE_OBJECT       *Prev;
@@ -587,7 +673,7 @@ AcpiDbDisplayPath (
             (NamePath->Common.Value.String) &&
             (NamePath->Common.Value.String[0] == '\\'))
         {
-            AcpiDbDisplayNamestring (NamePath->Common.Value.String);
+            AcpiDmDisplayNamestring (NamePath->Common.Value.String);
             return;
         }
     }
@@ -639,13 +725,13 @@ AcpiDbDisplayPath (
                     if ((NamePath) &&
                         (NamePath->Common.Value.String))
                     {
-                        AcpiOsPrintf ("%4.4s", NamePath->Common.Value.String);
+                        AcpiDmDumpName (NamePath->Common.Value.String);
                     }
                 }
                 else
                 {
                     Name = AcpiPsGetName (Search);
-                    AcpiOsPrintf ("%4.4s", &Name);
+                    AcpiDmDumpName ((char *) &Name);
                 }
 
                 DoDot = TRUE;
@@ -659,7 +745,7 @@ AcpiDbDisplayPath (
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiDbDisplayOpcode
+ * FUNCTION:    AcpiDmDisplayOpcode
  *
  * PARAMETERS:  Op                  - Op that is to be printed
  *
@@ -672,79 +758,73 @@ AcpiDbDisplayPath (
  *
  ******************************************************************************/
 
-void
-AcpiDbDisplayOpcode (
+ACPI_PARSE_OBJECT *
+AcpiDmDisplayOpcode (
     ACPI_WALK_STATE         *WalkState,
+    ACPI_OP_WALK_INFO       *Info,    
     ACPI_PARSE_OBJECT       *Op)
 {
-    UINT8                   *ByteData;
-    UINT32                  ByteCount;
     UINT32                  i;
     const ACPI_OPCODE_INFO  *OpInfo = NULL;
-    UINT32                  Name;
+    UINT32                  Offset;
 
 
     if (!Op)
     {
         AcpiOsPrintf ("<NULL OP PTR>");
-        return;
+        return (Op);
     }
 
     /* op and arguments */
 
     switch (Op->Common.AmlOpcode)
     {
+    case AML_ZERO_OP:
+
+        AcpiOsPrintf ("Zero");
+        break;
+
+
+    case AML_ONE_OP:
+
+        AcpiOsPrintf ("One");
+        break;
+
+
+    case AML_ONES_OP:
+
+        AcpiOsPrintf ("Ones");
+        break;
+
+
+    case AML_REVISION_OP:
+
+        AcpiOsPrintf ("Revision");
+        break;
+
+
     case AML_BYTE_OP:
 
-        if (AcpiGbl_DbOpt_verbose)
-        {
-            AcpiOsPrintf ("(UINT8)  0x%2.2hX", Op->Common.Value.Integer8);
-        }
-        else
-        {
-            AcpiOsPrintf ("0x%2.2hX", Op->Common.Value.Integer8);
-        }
+        AcpiOsPrintf ("0x%X", (UINT32) Op->Common.Value.Integer8);
         break;
 
 
     case AML_WORD_OP:
 
-        if (AcpiGbl_DbOpt_verbose)
-        {
-            AcpiOsPrintf ("(UINT16) 0x%4.4hX", Op->Common.Value.Integer16);
-        }
-        else
-        {
-            AcpiOsPrintf ("0x%4.4hX", Op->Common.Value.Integer16);
-        }
+        AcpiOsPrintf ("0x%X", (UINT32) Op->Common.Value.Integer16);
         break;
 
 
     case AML_DWORD_OP:
 
-        if (AcpiGbl_DbOpt_verbose)
-        {
-            AcpiOsPrintf ("(UINT32) 0x%8.8X", Op->Common.Value.Integer32);
-        }
-        else
-        {
-            AcpiOsPrintf ("0x%8.8X", Op->Common.Value.Integer32);
-        }
+        AcpiOsPrintf ("0x%X", Op->Common.Value.Integer32);
         break;
 
 
     case AML_QWORD_OP:
 
-        if (AcpiGbl_DbOpt_verbose)
-        {
-            AcpiOsPrintf ("(UINT64) 0x%8.8X%8.8X", Op->Common.Value.Integer64.Hi,
-                                                   Op->Common.Value.Integer64.Lo);
-        }
-        else
-        {
-            AcpiOsPrintf ("0x%8.8X%8.8X", Op->Common.Value.Integer64.Hi,
-                                          Op->Common.Value.Integer64.Lo);
-        }
+        AcpiOsPrintf ("0x%X%8.8X", Op->Common.Value.Integer64.Hi,
+                                  Op->Common.Value.Integer64.Lo);
         break;
 
 
@@ -752,7 +832,23 @@ AcpiDbDisplayOpcode (
 
         if (Op->Common.Value.String)
         {
-            AcpiOsPrintf ("\"%s\"", Op->Common.Value.String);
+            AcpiOsPrintf ("\"");
+            for (i = 0; Op->Common.Value.String[i]; i++)
+            {
+                switch (Op->Common.Value.String[i])
+                {
+                case '"':
+                    AcpiOsPrintf ("\\");
+                    break;
+
+                /* TBD: Handle escapes here */
+                default:
+                    break;
+                }
+
+                AcpiOsPrintf ("%c", Op->Common.Value.String[i]);
+            }
+            AcpiOsPrintf ("\"");
         }
         else
         {
@@ -761,11 +857,24 @@ AcpiDbDisplayOpcode (
         break;
 
 
+    case AML_BUFFER_OP:
+
+        if (AcpiDmIsResourceDescriptor (Op))
+        {
+            AcpiOsPrintf ("ResourceTemplate");
+        }
+        else
+        {
+            AcpiOsPrintf ("Buffer");
+        }
+        break;
+
+
     case AML_INT_STATICSTRING_OP:
 
         if (Op->Common.Value.String)
         {
-            AcpiOsPrintf ("\"%s\"", Op->Common.Value.String);
+            AcpiOsPrintf ("%s", Op->Common.Value.String);
         }
         else
         {
@@ -776,46 +885,60 @@ AcpiDbDisplayOpcode (
 
     case AML_INT_NAMEPATH_OP:
 
-        AcpiDbDisplayNamestring (Op->Common.Value.Name);
+        AcpiDmDisplayNamestring (Op->Common.Value.Name);
         break;
 
 
     case AML_INT_NAMEDFIELD_OP:
 
-        AcpiOsPrintf ("NamedField    (Length 0x%8.8X)  ", Op->Common.Value.Integer32);
+        AcpiDmDumpName ((char *) &Op->Named.Name);
+        AcpiOsPrintf (", %d", Op->Common.Value.Integer32);
+        AcpiDmCommaIfFieldMember (Op);
+
+        Info->BitOffset += Op->Common.Value.Integer32;
         break;
 
 
     case AML_INT_RESERVEDFIELD_OP:
 
-        AcpiOsPrintf ("ReservedField (Length 0x%8.8X)  ", Op->Common.Value.Integer32);
+        /* TBD: offset is wrong, must account for previous offsets */
+
+        Offset = Op->Common.Value.Integer32;
+        Info->BitOffset += Offset;
+
+        if (Info->BitOffset % 8 == 0)
+        {
+            AcpiOsPrintf ("Offset (0x%X)", (Info->BitOffset / 8));
+        }
+        else
+        {
+            AcpiOsPrintf ("    , %d", Offset);
+        }
+
+        AcpiDmCommaIfFieldMember (Op);
         break;
 
 
     case AML_INT_ACCESSFIELD_OP:
 
-        AcpiOsPrintf ("AccessField   (Length 0x%8.8X)  ", Op->Common.Value.Integer32);
+        AcpiOsPrintf ("AccessAs (%s, 0x%X)", AcpiGbl_AccessTypes [Op->Common.Value.Integer32 >> 8], Op->Common.Value.Integer32 & 0x0F);
+        AcpiDmCommaIfFieldMember (Op);
         break;
 
 
     case AML_INT_BYTELIST_OP:
 
-        if (AcpiGbl_DbOpt_verbose)
-        {
-            AcpiOsPrintf ("ByteList      (Length 0x%8.8X)  ", Op->Common.Value.Integer32);
-        }
-        else
-        {
-            AcpiOsPrintf ("0x%2.2X", Op->Common.Value.Integer32);
+        AcpiDmDoByteList (Info, Op);
+        break;
 
-            ByteCount = Op->Common.Value.Integer32;
-            ByteData = Op->Named.Data;
 
-            for (i = 0; i < ByteCount; i++)
-            {
-                AcpiOsPrintf (", 0x%2.2X", ByteData[i]);
-            }
-        }
+    case AML_INT_METHODCALL_OP:
+
+        OpInfo = AcpiPsGetOpcodeInfo (Op->Common.AmlOpcode);
+        Op = AcpiPsGetDepthNext (NULL, Op);
+        Op->Common.Flags |= ACPI_PARSEOP_IGNORE;
+
+        AcpiDmDisplayNamestring (Op->Common.Value.Name);
         break;
 
 
@@ -840,31 +963,7 @@ AcpiDbDisplayOpcode (
         break;
     }
 
-    if (!OpInfo)
-    {
-        /* If there is another element in the list, add a comma */
-
-        if (Op->Common.Next)
-        {
-            AcpiOsPrintf (",");
-        }
-    }
-
-    /*
-     * If this is a named opcode, print the associated name value
-     */
-    OpInfo = AcpiPsGetOpcodeInfo (Op->Common.AmlOpcode);
-    if (Op && (OpInfo->Flags & AML_NAMED))
-    {
-        Name = AcpiPsGetName (Op);
-        AcpiOsPrintf (" %4.4s", &Name);
-
-        if ((AcpiGbl_DbOpt_verbose) && (Op->Common.AmlOpcode != AML_INT_NAMEDFIELD_OP))
-        {
-            (void) AcpiPsDisplayObjectPathname (WalkState, Op);
-        }
-    }
+    return (Op);
 }
 
 #endif  /* ENABLE_DEBUGGER */
-
