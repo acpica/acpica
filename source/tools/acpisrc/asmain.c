@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asmain - Main module for the acpi source processor utility
- *              $Revision: 1.44 $
+ *              $Revision: 1.46 $
  *
  *****************************************************************************/
 
@@ -253,8 +253,8 @@ ACPI_IDENTIFIER_TABLE           LinuxLowerCase[] = {
 
     /*"ACPI_IO_ADDRESS  ",        "acpi_io_address  ",*/
     /*"ACPI_PHYSICAL_ADDRESS  ",  "acpi_physical_address  ",*/
-    /*"NATIVE_UINT  ",            "native_uint  ",*/
-    /*"NATIVE_INT  ",             "native_int  ",*/
+    /*"ACPI_NATIVE_UINT  ",            "native_uint  ",*/
+    /*"ACPI_NATIVE_INT  ",             "native_int  ",*/
     /*"char         ",            "native_char  ",*/
 
     "ACPI_ADR_SPACE_HANDLER",
@@ -311,6 +311,8 @@ ACPI_IDENTIFIER_TABLE           LinuxLowerCase[] = {
     "ACPI_NAME_UNION",
     "ACPI_NAMESPACE_NODE",
     "ACPI_NAMESTRING_INFO",
+    "ACPI_NATIVE_INT",
+    "ACPI_NATIVE_UINT",
     "ACPI_NOTIFY_HANDLER",
     "ACPI_NOTIFY_INFO",
     "ACPI_NS_SEARCH_DATA",
@@ -397,6 +399,7 @@ ACPI_IDENTIFIER_TABLE           LinuxLowerCase[] = {
     "ACPI_TABLE_DESC",
     "ACPI_TABLE_HEADER",
     "ACPI_TABLE_INFO",
+    "ACPI_TABLE_PTR",
     "ACPI_TABLE_TYPE",
     "ACPI_TABLE_TYPE",
     "ACPI_THREAD_STATE",
@@ -459,9 +462,10 @@ ACPI_IDENTIFIER_TABLE       LinuxEliminateMacros[] = {
 };
 
 
-ACPI_IDENTIFIER_TABLE       LinuxLineIdentifiers[] = {
+ACPI_IDENTIFIER_TABLE       LinuxEliminateLines_C[] = {
 
     "#define __",
+    "$Revision: 1.46 $Revision:",
     NULL
 };
 
@@ -484,7 +488,7 @@ ACPI_CONVERSION_TABLE       LinuxConversionTable = {
     /* C source files */
 
     LinuxDataTypes,
-    LinuxLineIdentifiers,
+    LinuxEliminateLines_C,
     NULL,
     LinuxEliminateMacros,
     (CVT_COUNT_TABS | CVT_COUNT_NON_ANSI_COMMENTS | CVT_COUNT_LINES | CVT_CHECK_BRACES | CVT_TRIM_LINES | CVT_BRACES_ON_SAME_LINE |
@@ -494,7 +498,7 @@ ACPI_CONVERSION_TABLE       LinuxConversionTable = {
     /* C header files */
 
     LinuxDataTypes,
-    NULL,
+    LinuxEliminateLines_H,
     LinuxConditionalIdentifiers,
     NULL,
     (CVT_COUNT_TABS | CVT_COUNT_NON_ANSI_COMMENTS | CVT_COUNT_LINES | CVT_TRIM_LINES | CVT_MIXED_CASE_TO_UNDERSCORES |
@@ -572,9 +576,12 @@ ACPI_STRING_TABLE           CustomReplacements[] = {
     "Copyright (C) 2000, 2001",     "Copyright (C) 2000 - 2002",      REPLACE_WHOLE_WORD,
 #endif
 
-    "NATIVE CHAR *",         "char *",           REPLACE_WHOLE_WORD,
-    "NATIVE CHAR ",          "char        ",     REPLACE_WHOLE_WORD,
-    "char",                  "char",             REPLACE_WHOLE_WORD,
+    "ACPI_NATIVE_UINT",     "ACPI_NATIVE_UINT",           REPLACE_WHOLE_WORD,
+    "ACPI_NATIVE_UINT *",        "ACPI_NATIVE_UINT *",           REPLACE_WHOLE_WORD,
+    "ACPI_NATIVE_UINT",          "ACPI_NATIVE_UINT",           REPLACE_WHOLE_WORD,
+    "ACPI_NATIVE_INT",      "ACPI_NATIVE_INT",           REPLACE_WHOLE_WORD,
+    "ACPI_NATIVE_INT *",         "ACPI_NATIVE_INT *",           REPLACE_WHOLE_WORD,
+    "ACPI_NATIVE_INT",           "ACPI_NATIVE_INT",           REPLACE_WHOLE_WORD,
     NULL,                    NULL, 0
 };
 
@@ -747,7 +754,7 @@ AsDisplayUsage (void)
 
 int ACPI_SYSTEM_XFACE
 main (
-    NATIVE_UINT             argc,
+    ACPI_NATIVE_UINT        argc,
     char                    *argv[])
 {
     int                     j;
