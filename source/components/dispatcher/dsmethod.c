@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dsmethod - Parser/Interpreter interface - control method parsing
- *              $Revision: 1.58 $
+ *              $Revision: 1.61 $
  *
  *****************************************************************************/
 
@@ -126,7 +126,7 @@
 #include "acdebug.h"
 
 
-#define _COMPONENT          DISPATCHER
+#define _COMPONENT          ACPI_DISPATCHER
         MODULE_NAME         ("dsmethod")
 
 
@@ -188,7 +188,7 @@ AcpiDsParseMethod (
     if ((ObjDesc->Method.Concurrency != INFINITE_CONCURRENCY) &&
         (!ObjDesc->Method.Semaphore))
     {
-        Status = AcpiOsCreateSemaphore (ObjDesc->Method.Concurrency, 
+        Status = AcpiOsCreateSemaphore (ObjDesc->Method.Concurrency,
                                         ObjDesc->Method.Concurrency,
                                         &ObjDesc->Method.Semaphore);
         if (ACPI_FAILURE (Status))
@@ -292,7 +292,7 @@ AcpiDsBeginMethodExecution (
 
     /*
      * If there is a concurrency limit on this method, we need to
-     * obtain a unit from the method semaphore.  
+     * obtain a unit from the method semaphore.
      */
     if (ObjDesc->Method.Semaphore)
     {
@@ -382,7 +382,7 @@ AcpiDsCallControlMethod (
 
     /* Init for new method, wait on concurrency semaphore */
 
-    Status = AcpiDsBeginMethodExecution (MethodNode, ObjDesc, 
+    Status = AcpiDsBeginMethodExecution (MethodNode, ObjDesc,
                     ThisWalkState->MethodNode);
     if (ACPI_FAILURE (Status))
     {
@@ -550,7 +550,7 @@ AcpiDsRestartControlMethod (
 
     DEBUG_PRINT (TRACE_DISPATCH,
         ("DsRestart: Method=%p Return=%p ReturnUsed?=%X ResStack=%p State=%p\n",
-        WalkState->MethodCallOp, ReturnDesc, WalkState->ReturnUsed, 
+        WalkState->MethodCallOp, ReturnDesc, WalkState->ReturnUsed,
         WalkState->Results, WalkState));
 
 
@@ -576,7 +576,6 @@ ACPI_STATUS
 AcpiDsTerminateControlMethod (
     ACPI_WALK_STATE         *WalkState)
 {
-    ACPI_STATUS             Status;
     ACPI_OPERAND_OBJECT     *ObjDesc;
     ACPI_NAMESPACE_NODE     *MethodNode;
 
@@ -608,8 +607,8 @@ AcpiDsTerminateControlMethod (
 
     if (WalkState->MethodDesc->Method.Semaphore)
     {
-        Status = AcpiOsSignalSemaphore (
-                    WalkState->MethodDesc->Method.Semaphore, 1);
+        AcpiOsSignalSemaphore (
+            WalkState->MethodDesc->Method.Semaphore, 1);
     }
 
     /* Decrement the thread count on the method parse tree */
