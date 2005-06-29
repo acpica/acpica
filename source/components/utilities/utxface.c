@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: utxface - External interfaces for "global" ACPI functions
- *              $Revision: 1.90 $
+ *              $Revision: 1.95 $
  *
  *****************************************************************************/
 
@@ -119,18 +119,13 @@
 
 #include "acpi.h"
 #include "acevents.h"
-#include "achware.h"
 #include "acnamesp.h"
-#include "acinterp.h"
-#include "amlcode.h"
-#include "acdebug.h"
-#include "acexcep.h"
 #include "acparser.h"
 #include "acdispat.h"
-
+#include "acdebug.h"
 
 #define _COMPONENT          ACPI_UTILITIES
-        MODULE_NAME         ("utxface")
+        ACPI_MODULE_NAME    ("utxface")
 
 
 /*******************************************************************************
@@ -152,10 +147,10 @@ AcpiInitializeSubsystem (
 {
     ACPI_STATUS             Status;
 
-    FUNCTION_TRACE ("AcpiInitializeSubsystem");
+    ACPI_FUNCTION_TRACE ("AcpiInitializeSubsystem");
 
 
-    DEBUG_EXEC(AcpiUtInitStackPtrTrace ());
+    ACPI_DEBUG_EXEC (AcpiUtInitStackPtrTrace ());
 
 
     /* Initialize all globals used by the subsystem */
@@ -167,7 +162,7 @@ AcpiInitializeSubsystem (
     Status = AcpiOsInitialize ();
     if (ACPI_FAILURE (Status))
     {
-        REPORT_ERROR (("OSD failed to initialize, %s\n",
+        ACPI_REPORT_ERROR (("OSD failed to initialize, %s\n",
             AcpiFormatException (Status)));
         return_ACPI_STATUS (Status);
     }
@@ -177,7 +172,7 @@ AcpiInitializeSubsystem (
     Status = AcpiUtMutexInitialize ();
     if (ACPI_FAILURE (Status))
     {
-        REPORT_ERROR (("Global mutex creation failure, %s\n",
+        ACPI_REPORT_ERROR (("Global mutex creation failure, %s\n",
             AcpiFormatException (Status)));
         return_ACPI_STATUS (Status);
     }
@@ -190,7 +185,7 @@ AcpiInitializeSubsystem (
     Status = AcpiNsRootInitialize ();
     if (ACPI_FAILURE (Status))
     {
-        REPORT_ERROR (("Namespace initialization failure, %s\n",
+        ACPI_REPORT_ERROR (("Namespace initialization failure, %s\n",
             AcpiFormatException (Status)));
         return_ACPI_STATUS (Status);
     }
@@ -198,7 +193,7 @@ AcpiInitializeSubsystem (
 
     /* If configured, initialize the AML debugger */
 
-    DEBUGGER_EXEC (AcpiDbInitialize ());
+    ACPI_DEBUGGER_EXEC (Status = AcpiDbInitialize ());
 
     return_ACPI_STATUS (Status);
 }
@@ -224,19 +219,19 @@ AcpiEnableSubsystem (
     ACPI_STATUS             Status = AE_OK;
 
 
-    FUNCTION_TRACE ("AcpiEnableSubsystem");
+    ACPI_FUNCTION_TRACE ("AcpiEnableSubsystem");
 
 
     /*
      * Install the default OpRegion handlers.  These are installed unless
-     * other handlers have already been installed via the 
+     * other handlers have already been installed via the
      * InstallAddressSpaceHandler interface
      */
     if (!(Flags & ACPI_NO_ADDRESS_SPACE_INIT))
     {
         ACPI_DEBUG_PRINT ((ACPI_DB_EXEC, "[Init] Installing default address space handlers\n"));
 
-        Status = AcpiEvInstallDefaultAddressSpaceHandlers ();
+        Status = AcpiEvInitAddressSpaces ();
         if (ACPI_FAILURE (Status))
         {
             return_ACPI_STATUS (Status);
@@ -361,12 +356,15 @@ AcpiEnableSubsystem (
 ACPI_STATUS
 AcpiTerminate (void)
 {
-    FUNCTION_TRACE ("AcpiTerminate");
+    ACPI_STATUS         Status;
+
+
+    ACPI_FUNCTION_TRACE ("AcpiTerminate");
 
 
     /* Terminate the AML Debugger if present */
 
-    DEBUGGER_EXEC(AcpiGbl_DbTerminateThreads = TRUE);
+    ACPI_DEBUGGER_EXEC(AcpiGbl_DbTerminateThreads = TRUE);
 
     /* Shutdown and free all resources */
 
@@ -387,10 +385,8 @@ AcpiTerminate (void)
 
     /* Now we can shutdown the OS-dependent layer */
 
-    AcpiOsTerminate ();
-
-
-    return_ACPI_STATUS (AE_OK);
+    Status = AcpiOsTerminate ();
+    return_ACPI_STATUS (Status);
 }
 
 
@@ -450,7 +446,7 @@ AcpiGetSystemInfo (
     ACPI_STATUS             Status;
 
 
-    FUNCTION_TRACE ("AcpiGetSystemInfo");
+    ACPI_FUNCTION_TRACE ("AcpiGetSystemInfo");
 
 
     /* Parameter validation */
@@ -478,7 +474,7 @@ AcpiGetSystemInfo (
 
     /* System flags (ACPI capabilities) */
 
-    InfoPtr->Flags              = SYS_MODE_ACPI;
+    InfoPtr->Flags              = ACPI_SYS_MODE_ACPI;
 
     /* Timer resolution - 24 or 32 bits  */
 
@@ -532,7 +528,7 @@ AcpiGetSystemInfo (
 ACPI_STATUS
 AcpiPurgeCachedObjects (void)
 {
-    FUNCTION_TRACE ("AcpiPurgeCachedObjects");
+    ACPI_FUNCTION_TRACE ("AcpiPurgeCachedObjects");
 
 
     AcpiUtDeleteGenericStateCache ();
