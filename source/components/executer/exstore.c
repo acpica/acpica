@@ -179,14 +179,14 @@ ExecStore(OBJECT_DESCRIPTOR *ValDesc, OBJECT_DESCRIPTOR *DestDesc)
         {
             /* DestDesc is valid */
 
-            DestDesc->ValType       = (UINT8) Lvalue;
-            DestDesc->Lvalue.OpCode = NameOp;
+            DestDesc->ValType       = (UINT8) TYPE_Lvalue;
+            DestDesc->Lvalue.OpCode = AML_NameOp;
             DestDesc->Lvalue.Ref    = TempHandle;
 
             /* Push the descriptor on TOS temporarily
              * to protect it from garbage collection
              */
-            Excep = PushIfExec (Exec);
+            Excep = PushIfExec (MODE_Exec);
             if (S_SUCCESS != Excep)
             {
                 DELETE (DestDesc);
@@ -207,7 +207,7 @@ ExecStore(OBJECT_DESCRIPTOR *ValDesc, OBJECT_DESCRIPTOR *DestDesc)
     }
 
     if ((S_SUCCESS == Excep) && 
-        (DestDesc->ValType != Lvalue))
+        (DestDesc->ValType != TYPE_Lvalue))
     {   
         /*  Store target is not an Lvalue   */
 
@@ -216,7 +216,7 @@ ExecStore(OBJECT_DESCRIPTOR *ValDesc, OBJECT_DESCRIPTOR *DestDesc)
 
         DUMP_STACK_ENTRY (ValDesc);
         DUMP_STACK_ENTRY (DestDesc);
-        DUMP_STACK (Exec, "ExecStore", 2, "target not Lvalue");
+        DUMP_STACK (MODE_Exec, "ExecStore", 2, "target not Lvalue");
 
         Excep = S_ERROR;
     }
@@ -231,7 +231,7 @@ ExecStore(OBJECT_DESCRIPTOR *ValDesc, OBJECT_DESCRIPTOR *DestDesc)
 
     switch (DestDesc->Lvalue.OpCode)
     {
-    case NameOp:
+    case AML_NameOp:
 
         /* Storing into a Name */
 
@@ -240,7 +240,7 @@ ExecStore(OBJECT_DESCRIPTOR *ValDesc, OBJECT_DESCRIPTOR *DestDesc)
         {
             /* Type of Name's existing value */
 
-        case Alias:
+        case TYPE_Alias:
 #if 1
             DEBUG_PRINT (ACPI_ERROR, (
                       "ExecStore/NameOp: Store into %s not implemented\n",
@@ -255,19 +255,19 @@ ExecStore(OBJECT_DESCRIPTOR *ValDesc, OBJECT_DESCRIPTOR *DestDesc)
             DELETE (DestDesc);
             break;
 
-        case BankField:
+        case TYPE_BankField:
 
             /* 
              * Storing into a BankField.
              * If value is not a Number, try to resolve it to one.
              */
-            if ((ValDesc->ValType != Number) &&
+            if ((ValDesc->ValType != TYPE_Number) &&
                ((Excep = GetRvalue (&ValDesc)) != S_SUCCESS))
             {
                 DELETE (DestDesc);
             }
 
-            else if (ValDesc->ValType != Number)
+            else if (ValDesc->ValType != TYPE_Number)
             {
                DEBUG_PRINT (ACPI_ERROR, (
                         "ExecStore: Value assigned to BankField must be Number, not %d\n",
@@ -294,7 +294,7 @@ ExecStore(OBJECT_DESCRIPTOR *ValDesc, OBJECT_DESCRIPTOR *DestDesc)
 
 
             if ((S_SUCCESS == Excep) && 
-                (BankField != DestDesc->ValType))
+                (TYPE_BankField != DestDesc->ValType))
             {
                 DEBUG_PRINT (ACPI_ERROR, (
                         "ExecStore/BankField: internal error: Name %4.4s type %d does not match value-type %d at %p\n",
@@ -308,7 +308,7 @@ ExecStore(OBJECT_DESCRIPTOR *ValDesc, OBJECT_DESCRIPTOR *DestDesc)
                 /* Set Bank value to select proper Bank */
                 /* Check lock rule prior to modifing the field */
 
-                if (DestDesc->BankField.LockRule == (UINT16) Lock)
+                if (DestDesc->BankField.LockRule == (UINT16) GLOCK_AlwaysLock)
                 {
                     /* Lock Rule is Lock */
 
@@ -356,20 +356,20 @@ ExecStore(OBJECT_DESCRIPTOR *ValDesc, OBJECT_DESCRIPTOR *DestDesc)
             break;  /*  Global Lock released below  */
 
 
-        case DefField:
+        case TYPE_DefField:
 
             /* 
              * Storing into a Field defined in a Region.
              * If value is not a Number, try to resolve it to one.
              */
 
-            if ((ValDesc->ValType != Number) && 
+            if ((ValDesc->ValType != TYPE_Number) && 
                ((Excep = GetRvalue (&ValDesc)) != S_SUCCESS))
             {
                 DELETE (DestDesc);
             }
 
-            else if (ValDesc->ValType != Number)
+            else if (ValDesc->ValType != TYPE_Number)
             {
                 DEBUG_PRINT (ACPI_ERROR, (
                         "ExecStore/DefField: Value assigned to Field must be Number, not %d\n",
@@ -396,7 +396,7 @@ ExecStore(OBJECT_DESCRIPTOR *ValDesc, OBJECT_DESCRIPTOR *DestDesc)
             }
 
             if ((S_SUCCESS == Excep) && 
-                (DefField != DestDesc->ValType))
+                (TYPE_DefField != DestDesc->ValType))
             {
                 DEBUG_PRINT (ACPI_ERROR, (
                         "ExecStore/DefField:internal error: Name %4.4s type %d does not match value-type %d at %p\n",
@@ -409,7 +409,7 @@ ExecStore(OBJECT_DESCRIPTOR *ValDesc, OBJECT_DESCRIPTOR *DestDesc)
             {
                 /* Check lock rule prior to modifing the field */
             
-                if (ValDesc->Field.LockRule == (UINT16) Lock)
+                if (ValDesc->Field.LockRule == (UINT16) GLOCK_AlwaysLock)
                 {
                     /* Lock Rule is Lock */
                 
@@ -439,20 +439,20 @@ ExecStore(OBJECT_DESCRIPTOR *ValDesc, OBJECT_DESCRIPTOR *DestDesc)
             break;      /* Global Lock released below   */
 
 
-        case IndexField:
+        case TYPE_IndexField:
             
             /* 
              * Storing into an IndexField.
              * If value is not a Number, try to resolve it to one.
              */
             
-            if ((ValDesc->ValType != Number) &&
+            if ((ValDesc->ValType != TYPE_Number) &&
                ((Excep = GetRvalue (&ValDesc)) != S_SUCCESS))
             {
                 DELETE (DestDesc);
             }
 
-            else if (ValDesc->ValType != Number)
+            else if (ValDesc->ValType != TYPE_Number)
             {
                 DEBUG_PRINT (ACPI_ERROR, (
                         "ExecStore: Value assigned to IndexField must be Number, not %d\n",
@@ -479,7 +479,7 @@ ExecStore(OBJECT_DESCRIPTOR *ValDesc, OBJECT_DESCRIPTOR *DestDesc)
             }
 
             if ((S_SUCCESS == Excep) &&
-                (IndexField != DestDesc->ValType))
+                (TYPE_IndexField != DestDesc->ValType))
             {
                 DEBUG_PRINT (ACPI_ERROR, (
                         "ExecStore/IndexField:internal error: Name %4.4s type %d does not match value-type %d at %p\n",
@@ -493,7 +493,7 @@ ExecStore(OBJECT_DESCRIPTOR *ValDesc, OBJECT_DESCRIPTOR *DestDesc)
                 /* Set Index value to select proper Data register */
                 /* Check lock rule prior to modifing the field */
             
-                if (DestDesc->IndexField.LockRule == (UINT16) Lock)
+                if (DestDesc->IndexField.LockRule == (UINT16) GLOCK_AlwaysLock)
                 {
                     /* Lock Rule is Lock */
                
@@ -536,19 +536,19 @@ ExecStore(OBJECT_DESCRIPTOR *ValDesc, OBJECT_DESCRIPTOR *DestDesc)
             break;      /* Global Lock released below   */
 
 
-        case FieldUnit:
+        case TYPE_FieldUnit:
             
             /* 
              * Storing into a FieldUnit (defined in a Buffer).
              * If value is not a Number, try to resolve it to one.
              */
-            if ((ValDesc->ValType != Number) &&
+            if ((ValDesc->ValType != TYPE_Number) &&
                ((Excep = GetRvalue (&ValDesc)) != S_SUCCESS))
             {
                 DELETE (DestDesc);
             }
 
-            else if (ValDesc->ValType != Number)
+            else if (ValDesc->ValType != TYPE_Number)
             {
                 DEBUG_PRINT (ACPI_ERROR, (
                         "ExecStore/FieldUnit: Value assigned to Field must be Number, not %d\n",
@@ -593,7 +593,7 @@ ExecStore(OBJECT_DESCRIPTOR *ValDesc, OBJECT_DESCRIPTOR *DestDesc)
 
             if ((S_SUCCESS == Excep) &&
                (!DestDesc->FieldUnit.Container ||
-                Buffer != DestDesc->FieldUnit.Container->ValType ||
+                TYPE_Buffer != DestDesc->FieldUnit.Container->ValType ||
                 DestDesc->FieldUnit.ConSeq
                     != DestDesc->FieldUnit.Container->Buffer.Sequence))
             {
@@ -616,7 +616,7 @@ ExecStore(OBJECT_DESCRIPTOR *ValDesc, OBJECT_DESCRIPTOR *DestDesc)
             {
                 /* Check lock rule prior to modifing the field */
             
-                if (DestDesc->FieldUnit.LockRule == (UINT16) Lock)
+                if (DestDesc->FieldUnit.LockRule == (UINT16) GLOCK_AlwaysLock)
                 {
                     /* Lock Rule is Lock */
                 
@@ -699,7 +699,7 @@ ExecStore(OBJECT_DESCRIPTOR *ValDesc, OBJECT_DESCRIPTOR *DestDesc)
              */
             memcpy ((void *) DestDesc, (void *) ValDesc, sizeof (*ValDesc));
             
-            if (Buffer == DestDesc->ValType)
+            if (TYPE_Buffer == DestDesc->ValType)
             {
                 /* Assign a new sequence number */
 
@@ -722,7 +722,7 @@ ExecStore(OBJECT_DESCRIPTOR *ValDesc, OBJECT_DESCRIPTOR *DestDesc)
         break;  /* Case NameOp */
 
 
-    case ZeroOp: case OneOp: case OnesOp:
+    case AML_ZeroOp: case AML_OneOp: case AML_OnesOp:
 
         /* 
          * Storing to a constant is a no-op -- see spec sec 15.2.3.3.1.
@@ -732,17 +732,17 @@ ExecStore(OBJECT_DESCRIPTOR *ValDesc, OBJECT_DESCRIPTOR *DestDesc)
         break;
 
 
-    case Local0: case Local1: case Local2: case Local3:
-    case Local4: case Local5: case Local6: case Local7:
+    case AML_Local0: case AML_Local1: case AML_Local2: case AML_Local3:
+    case AML_Local4: case AML_Local5: case AML_Local6: case AML_Local7:
 
-        Excep = SetMethodValue (LCLBASE + DestDesc->Lvalue.OpCode - Local0, ValDesc, DestDesc);
+        Excep = SetMethodValue (LCLBASE + DestDesc->Lvalue.OpCode - AML_Local0, ValDesc, DestDesc);
         break;
 
 
-    case Arg0: case Arg1: case Arg2: case Arg3:
-    case Arg4: case Arg5: case Arg6:
+    case AML_Arg0: case AML_Arg1: case AML_Arg2: case AML_Arg3:
+    case AML_Arg4: case AML_Arg5: case AML_Arg6:
 
-        Excep = SetMethodValue (ARGBASE + DestDesc->Lvalue.OpCode - Arg0, ValDesc, DestDesc);
+        Excep = SetMethodValue (ARGBASE + DestDesc->Lvalue.OpCode - AML_Arg0, ValDesc, DestDesc);
         break;
 
 
@@ -819,7 +819,7 @@ ExecMonadic1 (UINT16 opcode)
     FUNCTION_TRACE ("ExecMonadic1");
 
 
-    if (SleepOp == opcode || StallOp == opcode)
+    if (AML_SleepOp == opcode || AML_StallOp == opcode)
     {
         Excep = PrepStack ("n");                 /* operand should be a Number */
     }
@@ -835,7 +835,7 @@ ExecMonadic1 (UINT16 opcode)
     }
 
 
-    DumpStack (Exec, LongOps[opcode & 0x00ff], 1, "after PrepStack");
+    DumpStack (MODE_Exec, LongOps[opcode & 0x00ff], 1, "after PrepStack");
 
     ObjDesc = (OBJECT_DESCRIPTOR *) ObjStack[ObjStackTop];
 
@@ -844,8 +844,8 @@ ExecMonadic1 (UINT16 opcode)
 
     /*  DefRelease  :=  ReleaseOp   MutexObject */
 
-    case ReleaseOp:
-        if (Mutex != ObjDesc->ValType)
+    case AML_ReleaseOp:
+        if (TYPE_Mutex != ObjDesc->ValType)
         {
             DEBUG_PRINT (ACPI_ERROR, (
                     "ExecMonadic1/ReleaseOp: Needed Mutex, found %d\n",
@@ -858,8 +858,8 @@ ExecMonadic1 (UINT16 opcode)
 
     /*  DefReset        :=  ResetOp     EventObject */
 
-    case ResetOp:
-        if (Event != ObjDesc->ValType)
+    case AML_ResetOp:
+        if (TYPE_Event != ObjDesc->ValType)
         {
             DEBUG_PRINT (ACPI_ERROR, (
                     "ExecMonadic1/ResetOp: Needed Event, found %d\n", ObjDesc->ValType));
@@ -871,8 +871,8 @@ ExecMonadic1 (UINT16 opcode)
 
     /*  DefSignal   :=  SignalOp        EventObject */
     
-    case SignalOp:
-        if (Event != ObjDesc->ValType)
+    case AML_SignalOp:
+        if (TYPE_Event != ObjDesc->ValType)
         {
             DEBUG_PRINT (ACPI_ERROR, (
                     "ExecMonadic1/SignalOp: Needed Event, found %d\n", ObjDesc->ValType));
@@ -883,14 +883,14 @@ ExecMonadic1 (UINT16 opcode)
 
     /*  DefSleep    :=  SleepOp MsecTime    */
     
-    case SleepOp:
+    case AML_SleepOp:
         DoSuspend (ObjDesc->Number.Number);
         break;
 
 
     /*  DefStall    :=  StallOp UsecTime    */
     
-    case StallOp:
+    case AML_StallOp:
         OsdSleepUsec (ObjDesc->Number.Number);
         break;
 
@@ -952,7 +952,7 @@ ExecMonadic2R (UINT16 opcode)
         }
     }
 
-    DumpStack (Exec, ShortOps[opcode], 2, "after PrepStack");
+    DumpStack (MODE_Exec, ShortOps[opcode], 2, "after PrepStack");
 
     ResDesc = (OBJECT_DESCRIPTOR *) ObjStack[ObjStackTop];
     ObjDesc = (OBJECT_DESCRIPTOR *) ObjStack[ObjStackTop - 1];
@@ -964,14 +964,14 @@ ExecMonadic2R (UINT16 opcode)
 
     /*  DefNot  :=  NotOp   Operand Result  */
     
-    case BitNotOp:
+    case AML_BitNotOp:
         ObjDesc->Number.Number = ~ObjDesc->Number.Number;
         break;
 
 
     /*  DefFindSetLeftBit   :=  FindSetLeftBitOp    Operand Result  */
 
-    case FindSetLeftBitOp:
+    case AML_FindSetLeftBitOp:
         for (ResVal = 0; ObjDesc->Number.Number && ResVal < 33; ++ResVal)
         {
             ObjDesc->Number.Number >>= 1;
@@ -983,7 +983,7 @@ ExecMonadic2R (UINT16 opcode)
 
     /*  DefFindSetRightBit  :=  FindSetRightBitOp   Operand Result  */
 
-    case FindSetRightBitOp:
+    case AML_FindSetRightBitOp:
         for (ResVal = 0; ObjDesc->Number.Number && ResVal < 33; ++ResVal)
         {
             ObjDesc->Number.Number <<= 1;
@@ -995,7 +995,7 @@ ExecMonadic2R (UINT16 opcode)
 
     /*  DefFromBDC  :=  FromBCDOp   BCDValue    Result  */
 
-    case FromBCDOp:
+    case AML_FromBCDOp:
         d0 = (INT32) (ObjDesc->Number.Number & 15);
         d1 = (INT32) (ObjDesc->Number.Number >> 4 & 15);
         d2 = (INT32) (ObjDesc->Number.Number >> 8 & 15);
@@ -1015,7 +1015,7 @@ ExecMonadic2R (UINT16 opcode)
 
     /*  DefToBDC    :=  ToBCDOp Operand Result  */
     
-    case ToBCDOp:
+    case AML_ToBCDOp:
         if (ObjDesc->Number.Number > 9999)
         {
             DEBUG_PRINT (ACPI_ERROR, ("iExecMonadic2R/ToBCDOp: BCD overflow: %d\n",
@@ -1036,15 +1036,15 @@ ExecMonadic2R (UINT16 opcode)
     /*  DefShiftRightBit    :=  ShiftRightBitOp     Source          BitNum  */
     /*  DefCondRefOf        :=  CondRefOfOp         SourceObject    Result  */
 
-    case ShiftLeftBitOp:
-    case ShiftRightBitOp:
-    case CondRefOfOp:
+    case AML_ShiftLeftBitOp:
+    case AML_ShiftRightBitOp:
+    case AML_CondRefOfOp:
         
         DEBUG_PRINT (ACPI_ERROR, ("ExecMonadic2R: %s unimplemented\n",
                 (opcode > UCHAR_MAX) ? LongOps[opcode & 0x00ff] : ShortOps[opcode]));
         return S_ERROR;
 
-    case StoreOp:
+    case AML_StoreOp:
         break;
 
     default:
@@ -1091,7 +1091,7 @@ ExecMonadic2 (UINT16 opcode)
     FUNCTION_TRACE ("ExecMonadic2");
 
 
-    if (LNotOp == opcode)
+    if (AML_LNotOp == opcode)
     {
         Excep = PrepStack ("n");
     }
@@ -1106,7 +1106,7 @@ ExecMonadic2 (UINT16 opcode)
         return Excep;
     }
 
-    DumpStack (Exec, ShortOps[opcode], 1, "after PrepStack");
+    DumpStack (MODE_Exec, ShortOps[opcode], 1, "after PrepStack");
 
     ObjDesc = (OBJECT_DESCRIPTOR *) ObjStack[ObjStackTop];
 
@@ -1116,7 +1116,7 @@ ExecMonadic2 (UINT16 opcode)
 
     /*  DefLNot :=  LNotOp  Operand */
 
-    case LNotOp:
+    case AML_LNotOp:
         ObjDesc->Number.Number = (!ObjDesc->Number.Number) - (UINT32) 1;
         break;
 
@@ -1124,10 +1124,10 @@ ExecMonadic2 (UINT16 opcode)
     /*  DefDecrement    :=  DecrementOp Target  */
     /*  DefIncrement    :=  IncrementOp Target  */
 
-    case DecrementOp:
-    case IncrementOp:
+    case AML_DecrementOp:
+    case AML_IncrementOp:
 
-        if ((Excep = PushIfExec (Exec)) != S_SUCCESS)
+        if ((Excep = PushIfExec (MODE_Exec)) != S_SUCCESS)
         {
             REPORT_ERROR (&KDT[2]);
             return S_ERROR;
@@ -1166,7 +1166,7 @@ ExecMonadic2 (UINT16 opcode)
 
         /* do the ++ or -- */
         
-        if (IncrementOp == opcode)
+        if (AML_IncrementOp == opcode)
         {
             ObjDesc->Number.Number++;
         }
@@ -1188,11 +1188,11 @@ ExecMonadic2 (UINT16 opcode)
 
     /*  DefObjectType   :=  ObjectTypeOp    SourceObject    */
 
-    case TypeOp:
+    case AML_TypeOp:
         
         /* This case uses Excep to hold the type encoding */
         
-        if (Lvalue == ObjDesc->ValType)
+        if (TYPE_Lvalue == ObjDesc->ValType)
         {
             /* 
              * Not a Name -- an indirect name pointer would have
@@ -1200,32 +1200,32 @@ ExecMonadic2 (UINT16 opcode)
              */
             switch (ObjDesc->Lvalue.OpCode)
             {
-            case ZeroOp: case OneOp: case OnesOp:
+            case AML_ZeroOp: case AML_OneOp: case AML_OnesOp:
                 
                 /* Constants are of type Number */
                 
-                Excep = (INT32) Number;
+                Excep = (INT32) TYPE_Number;
                 break;
 
             case Debug1:
                 
                 /* Per spec, Debug object is of type Region */
                 
-                Excep = (INT32) Region;
+                Excep = (INT32) TYPE_Region;
                 break;
 
-            case IndexOp:
+            case AML_IndexOp:
                 DEBUG_PRINT (ACPI_ERROR, ("ExecMonadic2/TypeOp: determining type of Index result is not implemented\n"));
                 return S_ERROR;
 
-            case Local0: case Local1: case Local2: case Local3:
-            case Local4: case Local5: case Local6: case Local7:
-                Excep = (INT32) GetMethodValTyp (LCLBASE + ObjDesc->Lvalue.OpCode - Local0);
+            case AML_Local0: case AML_Local1: case AML_Local2: case AML_Local3:
+            case AML_Local4: case AML_Local5: case AML_Local6: case AML_Local7:
+                Excep = (INT32) GetMethodValTyp (LCLBASE + ObjDesc->Lvalue.OpCode - AML_Local0);
                 break;
 
-            case Arg0: case Arg1: case Arg2: case Arg3:
-            case Arg4: case Arg5: case Arg6:
-                Excep = (INT32) GetMethodValTyp (ARGBASE + ObjDesc->Lvalue.OpCode - Arg0);
+            case AML_Arg0: case AML_Arg1: case AML_Arg2: case AML_Arg3:
+            case AML_Arg4: case AML_Arg5: case AML_Arg6:
+                Excep = (INT32) GetMethodValTyp (ARGBASE + ObjDesc->Lvalue.OpCode - AML_Arg0);
                 break;
 
             default:
@@ -1259,29 +1259,29 @@ ExecMonadic2 (UINT16 opcode)
             ObjStack[ObjStackTop] = (void *) ObjDesc;
         }
         
-        ObjDesc->ValType = (UINT8) Number;
+        ObjDesc->ValType = (UINT8) TYPE_Number;
         ObjDesc->Number.Number = (UINT32) Excep;
         break;
 
 
     /*  DefSizeOf   :=  SizeOfOp    SourceObject    */
 
-    case SizeOfOp:
+    case AML_SizeOfOp:
         switch (ObjDesc->ValType)
         {
-        case Buffer:
+        case TYPE_Buffer:
             ObjDesc->Number.Number = ObjDesc->Buffer.BufLen;
-            ObjDesc->ValType = (UINT8) Number;
+            ObjDesc->ValType = (UINT8) TYPE_Number;
             break;
 
-        case String:
+        case TYPE_String:
             ObjDesc->Number.Number = ObjDesc->String.StrLen;
-            ObjDesc->ValType = (UINT8) Number;
+            ObjDesc->ValType = (UINT8) TYPE_Number;
             break;
 
-        case Package:
+        case TYPE_Package:
             ObjDesc->Number.Number = ObjDesc->Package.PkgCount;
-            ObjDesc->ValType = (UINT8) Number;
+            ObjDesc->ValType = (UINT8) TYPE_Number;
             break;
 
         default:
@@ -1295,8 +1295,8 @@ ExecMonadic2 (UINT16 opcode)
     /*  DefRefOf    :=  RefOfOp     SourceObject    */
     /*  DefDerefOf  :=  DerefOfOp   ObjReference    */
 
-    case RefOfOp:
-    case DerefOfOp:
+    case AML_RefOfOp:
+    case AML_DerefOfOp:
         DEBUG_PRINT (ACPI_ERROR, ("ExecMonadic2: %s unimplemented\n",
                 (opcode > UCHAR_MAX) ? LongOps[opcode & 0x00ff] : ShortOps[opcode]));
         ObjStackTop++;  /*  dummy return value  */
@@ -1349,7 +1349,7 @@ ExecDyadic1 (UINT16 opcode)
         return Excep;
     }
 
-    DumpStack (Exec, ShortOps[opcode], 2, "after PrepStack");
+    DumpStack (MODE_Exec, ShortOps[opcode], 2, "after PrepStack");
 
     ValDesc = (OBJECT_DESCRIPTOR *) ObjStack[ObjStackTop];
     ObjDesc = (OBJECT_DESCRIPTOR *) ObjStack[ObjStackTop - 1];
@@ -1360,7 +1360,7 @@ ExecDyadic1 (UINT16 opcode)
 
     /*  DefNotify   :=  NotifyOp    NotifyObject    NotifyValue */
 
-    case NotifyOp:
+    case AML_NotifyOp:
 
         /* XXX - What should actually happen here [NotifyOp] ?
          * XXX - See ACPI 1.0 spec sec 5.6.3 p. 5-102.
@@ -1378,8 +1378,8 @@ ExecDyadic1 (UINT16 opcode)
         {
             switch (ObjDesc->ValType)
             {
-            case Device:
-            case Thermal:
+            case TYPE_Device:
+            case TYPE_Thermal:
             
                 /* XXX - Requires that sDevice and sThermalZone
                  * XXX - be compatible mappings
@@ -1457,7 +1457,7 @@ ExecDyadic2R (UINT16 opcode)
 
     /*  DefConcat   :=  ConcatOp    Data1   Data2   Result  */
 
-    case ConcatOp:
+    case AML_ConcatOp:
         Excep = PrepStack ("lss");
         NumOperands = 3;
         break;
@@ -1465,7 +1465,7 @@ ExecDyadic2R (UINT16 opcode)
 
     /*  DefDivide   :=  DivideOp Dividend Divisor Remainder Quotient    */
 
-    case DivideOp:
+    case AML_DivideOp:
         Excep = PrepStack ("llnn");
         NumOperands = 4;
         break;
@@ -1485,9 +1485,9 @@ ExecDyadic2R (UINT16 opcode)
         return Excep;
     }
 
-    DumpStack (Exec, ShortOps[opcode], NumOperands, "after PrepStack");
+    DumpStack (MODE_Exec, ShortOps[opcode], NumOperands, "after PrepStack");
 
-    if (DivideOp == opcode)
+    if (AML_DivideOp == opcode)
     {
         ResDesc2 = (OBJECT_DESCRIPTOR *) ObjStack[ObjStackTop--];
     }
@@ -1503,49 +1503,49 @@ ExecDyadic2R (UINT16 opcode)
 
     /*  DefAdd  :=  AddOp   Operand1    Operand2    Result  */
 
-    case AddOp:
+    case AML_AddOp:
         ObjDesc->Number.Number += ObjDesc2->Number.Number;
         break;
  
         
     /*  DefAnd  :=  AndOp   Operand1    Operand2    Result  */
 
-    case BitAndOp:
+    case AML_BitAndOp:
         ObjDesc->Number.Number &= ObjDesc2->Number.Number;
         break;
 
         
     /*  DefNAnd :=  NAndOp  Operand1    Operand2    Result  */
 
-    case BitNandOp:
+    case AML_BitNandOp:
         ObjDesc->Number.Number = ~(ObjDesc->Number.Number & ObjDesc2->Number.Number);
         break;
    
        
     /*  DefOr       :=  OrOp    Operand1    Operand2    Result  */
         
-    case BitOrOp:
+    case AML_BitOrOp:
         ObjDesc->Number.Number |= ObjDesc2->Number.Number;
         break;
 
         
     /*  DefNOr  :=  NOrOp   Operand1    Operand2    Result  */
 
-    case BitNorOp:
+    case AML_BitNorOp:
         ObjDesc->Number.Number = ~(ObjDesc->Number.Number | ObjDesc2->Number.Number);
         break;
 
         
     /*  DefXOr  :=  XOrOp   Operand1    Operand2    Result  */
 
-    case BitXorOp:
+    case AML_BitXorOp:
         ObjDesc->Number.Number ^= ObjDesc2->Number.Number;
         break;
 
         
     /*  DefDivide   :=  DivideOp Dividend Divisor Remainder Quotient    */
 
-    case DivideOp:
+    case AML_DivideOp:
         if ((UINT32) 0 == ObjDesc2->Number.Number)
         {
             DEBUG_PRINT (ACPI_ERROR, ("ExecDyadic2R/DivideOp: divide by zero\n"));
@@ -1560,35 +1560,35 @@ ExecDyadic2R (UINT16 opcode)
         
     /*  DefMultiply :=  MultiplyOp  Operand1    Operand2    Result  */
 
-    case MultiplyOp:
+    case AML_MultiplyOp:
         ObjDesc->Number.Number *= ObjDesc2->Number.Number;
         break;
 
         
     /*  DefShiftLeft    :=  ShiftLeftOp Operand ShiftCount  Result  */
 
-    case ShiftLeftOp:
+    case AML_ShiftLeftOp:
         ObjDesc->Number.Number <<= ObjDesc2->Number.Number;
         break;
 
         
     /*  DefShiftRight   :=  ShiftRightOp    Operand ShiftCount  Result  */
 
-    case ShiftRightOp:
+    case AML_ShiftRightOp:
         ObjDesc->Number.Number >>= ObjDesc2->Number.Number;
         break;
 
         
     /*  DefSubtract :=  SubtractOp  Operand1    Operand2    Result  */
 
-    case SubtractOp:
+    case AML_SubtractOp:
         ObjDesc->Number.Number -= ObjDesc2->Number.Number;
         break;
 
 
     /*  DefConcat   :=  ConcatOp    Data1   Data2   Result  */
 
-    case ConcatOp:
+    case AML_ConcatOp:
         if (ObjDesc2->ValType != ObjDesc->ValType)
         {
             DEBUG_PRINT (ACPI_ERROR, (
@@ -1599,7 +1599,7 @@ ExecDyadic2R (UINT16 opcode)
 
         /* Both operands are now known to be the same */
         
-        if (String == ObjDesc->ValType)
+        if (TYPE_String == ObjDesc->ValType)
         {
             /*  Operand1 is string  */
 
@@ -1665,7 +1665,7 @@ ExecDyadic2R (UINT16 opcode)
         return Excep;
     }
     
-    if (DivideOp == opcode)
+    if (AML_DivideOp == opcode)
     {
         Excep = ExecStore(ObjDesc2, ResDesc2);
     }
@@ -1719,7 +1719,7 @@ ExecDyadic2S (UINT16 opcode)
 
     else
     {
-        DumpStack (Exec, LongOps[opcode & 0x00ff], 2, "after PrepStack");
+        DumpStack (MODE_Exec, LongOps[opcode & 0x00ff], 2, "after PrepStack");
 
         TimeDesc = (OBJECT_DESCRIPTOR *) ObjStack[ObjStackTop];
         ObjDesc = (OBJECT_DESCRIPTOR *) ObjStack[ObjStackTop - 1];
@@ -1730,8 +1730,8 @@ ExecDyadic2S (UINT16 opcode)
 
         /*  DefAcquire  :=  AcquireOp   MutexObject Timeout */
 
-        case AcquireOp:
-            if (Mutex != ObjDesc->ValType)
+        case AML_AcquireOp:
+            if (TYPE_Mutex != ObjDesc->ValType)
             {
                 DEBUG_PRINT (ACPI_ERROR, (
                         "ExecDyadic2S/AcquireOp: Needed Mutex, found %d\n",
@@ -1747,8 +1747,8 @@ ExecDyadic2S (UINT16 opcode)
 
         /*  DefWait :=  WaitOp  EventObject Timeout */
 
-        case WaitOp:
-            if (Event != ObjDesc->ValType)
+        case AML_WaitOp:
+            if (TYPE_Event != ObjDesc->ValType)
             {
                 DEBUG_PRINT (ACPI_ERROR, (
                         "ExecDyadic2S/WaitOp: Needed Event, found %d\n",
@@ -1818,7 +1818,7 @@ ExecDyadic2 (UINT16 opcode)
         return Excep;
     }
 
-    DumpStack (Exec, ShortOps[opcode], 2, "after PrepStack");
+    DumpStack (MODE_Exec, ShortOps[opcode], 2, "after PrepStack");
 
     ObjDesc2 = (OBJECT_DESCRIPTOR *) ObjStack[ObjStackTop];
     ObjDesc = (OBJECT_DESCRIPTOR *) ObjStack[ObjStackTop - 1];
@@ -1829,7 +1829,7 @@ ExecDyadic2 (UINT16 opcode)
 
     /*  DefLAnd :=  LAndOp  Operand1    Operand2    */
 
-    case LAndOp:
+    case AML_LAndOp:
         if (ObjDesc->Number.Number && ObjDesc2->Number.Number)
             Excep = 1;
         else
@@ -1839,7 +1839,7 @@ ExecDyadic2 (UINT16 opcode)
 
     /*  DefLEqual   :=  LEqualOp    Operand1    Operand2    */
 
-    case LEqualOp:
+    case AML_LEqualOp:
         if (ObjDesc->Number.Number == ObjDesc2->Number.Number)
             Excep = 1;
         else
@@ -1849,7 +1849,7 @@ ExecDyadic2 (UINT16 opcode)
 
     /*  DefLGreater :=  LGreaterOp  Operand1    Operand2    */
 
-    case LGreaterOp:
+    case AML_LGreaterOp:
         if (ObjDesc->Number.Number > ObjDesc2->Number.Number)
             Excep = 1;
         else
@@ -1859,7 +1859,7 @@ ExecDyadic2 (UINT16 opcode)
 
     /*  DefLLess    :=  LLessOp Operand1    Operand2    */
 
-    case LLessOp:
+    case AML_LLessOp:
         if (ObjDesc->Number.Number < ObjDesc2->Number.Number)
             Excep = 1;
         else
@@ -1869,7 +1869,7 @@ ExecDyadic2 (UINT16 opcode)
 
     /*  DefLOr  :=  LOrOp   Operand1    Operand2    */
 
-    case LOrOp:
+    case AML_LOrOp:
         if (ObjDesc->Number.Number || ObjDesc2->Number.Number)
             Excep = 1;
         else
@@ -1983,7 +1983,7 @@ AmlExec (INT32 Offset, INT32 Length, OBJECT_DESCRIPTOR **Params)
 
         if (S_SUCCESS == Excep)
         {
-            while ((Excep = DoCode (Exec)) == S_SUCCESS)
+            while ((Excep = DoCode (MODE_Exec)) == S_SUCCESS)
             {;}
         }
 
