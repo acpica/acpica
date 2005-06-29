@@ -769,7 +769,7 @@ AcpiNsExistDownstreamSibling (
     return (FALSE);
 }
 
-#endif // ACPI_DEBUG
+#endif /* ACPI_DEBUG */
 
 /****************************************************************************
  *
