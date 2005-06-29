@@ -14,15 +14,17 @@
  | FILENAME: acpinmsp.h - prototypes for accessing namespace
  |__________________________________________________________________________
  |
- | $Revision: 1.5 $
- | $Date: 2005/06/29 19:49:31 $
+ | $Revision: 1.6 $
+ | $Date: 2005/06/29 19:49:32 $
  | $Log: acnamesp.h,v $
- | Revision 1.5  2005/06/29 19:49:31  aystarik
- | Anti-Polish clean up
+ | Revision 1.6  2005/06/29 19:49:32  aystarik
+ |
  |
  | 
- | date	99.02.12.18.26.00;	author rmosgrov;	state Exp;
+ | date	99.02.13.00.22.00;	author rmosgrov;	state Exp;
  |
+ * 
+ * 6     2/12/99 4:22p Rmosgrov
  * 
  * 5     2/12/99 10:26a Rmosgrov
  * Anti-Polish clean up
@@ -167,7 +169,7 @@
  */
 
 #ifdef ACPILIB_GEN
-   #include "acpType.h"
+   #include "acpitype.h"
    #include "amlexec.h"
    #include "amlscan.h"
    #include "amlpriv.h"
