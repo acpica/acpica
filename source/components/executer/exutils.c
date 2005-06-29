@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: amutils - interpreter/scanner utilities
- *              $Revision: 1.61 $
+ *              $Revision: 1.62 $
  *
  *****************************************************************************/
 
@@ -392,7 +392,7 @@ AcpiAmlDigitsNeeded (
 
     else
     {
-        for (NumDigits = 1 + (val < 0); val = ACPI_DIVIDE (val,base); ++NumDigits)
+        for (NumDigits = 1 + (val < 0); (val = ACPI_DIVIDE (val,base)); ++NumDigits)
         { ; }
     }
 
