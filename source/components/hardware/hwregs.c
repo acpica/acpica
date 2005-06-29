@@ -3,7 +3,7 @@
  *
  * Module Name: hwregs - Read/write access functions for the various ACPI
  *                       control and status registers.
- *              $Revision: 1.155 $
+ *              $Revision: 1.158 $
  *
  ******************************************************************************/
 
@@ -135,6 +135,7 @@
  * RETURN:      none
  *
  * DESCRIPTION: Clears all fixed and general purpose status bits
+ *              THIS FUNCTION MUST BE CALLED WITH INTERRUPTS DISABLED
  *
  ******************************************************************************/
 
@@ -182,7 +183,7 @@ AcpiHwClearAcpiStatus (
 
     /* Clear the GPE Bits in all GPE registers in all GPE blocks */
 
-    Status = AcpiEvWalkGpeList (AcpiHwClearGpeBlock);
+    Status = AcpiEvWalkGpeList (AcpiHwClearGpeBlock, ACPI_ISR);
 
 UnlockAndExit:
     if (Flags & ACPI_MTX_LOCK)
@@ -289,9 +290,9 @@ AcpiGetSleepTypeData (
 
     if (ACPI_FAILURE (Status))
     {
-        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, 
+        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
             "While evaluating SleepState [%s], bad Sleep object %p type %s\n",
-            AcpiGbl_SleepStateNames[SleepState], Info.ReturnObject, 
+            AcpiGbl_SleepStateNames[SleepState], Info.ReturnObject,
             AcpiUtGetObjectTypeName (Info.ReturnObject)));
     }
 
@@ -811,7 +812,7 @@ UnlockAndExit:
  *
  * RETURN:      Status
  *
- * DESCRIPTION: Read from either memory, IO, or PCI config space.
+ * DESCRIPTION: Read from either memory or IO space.
  *
  ******************************************************************************/
 
@@ -821,8 +822,6 @@ AcpiHwLowLevelRead (
     UINT32                  *Value,
     ACPI_GENERIC_ADDRESS    *Reg)
 {
-    ACPI_PCI_ID             PciId;
-    UINT16                  PciRegister;
     ACPI_STATUS             Status;
 
 
@@ -842,8 +841,8 @@ AcpiHwLowLevelRead (
     *Value = 0;
 
     /*
-     * Three address spaces supported:
-     * Memory, IO, or PCI_Config.
+     * Two address spaces supported:
+     * Memory or IO. PCI_Config is not supported here.
      */
     switch (Reg->AddressSpaceId)
     {
@@ -858,19 +857,6 @@ AcpiHwLowLevelRead (
     case ACPI_ADR_SPACE_SYSTEM_IO:
 
         Status = AcpiOsReadPort ((ACPI_IO_ADDRESS) ACPI_GET_ADDRESS (Reg->Address),
-                    Value, Width);
-        break;
-
-
-    case ACPI_ADR_SPACE_PCI_CONFIG:
-
-        PciId.Segment  = 0;
-        PciId.Bus      = 0;
-        PciId.Device   = ACPI_PCI_DEVICE (ACPI_GET_ADDRESS (Reg->Address));
-        PciId.Function = ACPI_PCI_FUNCTION (ACPI_GET_ADDRESS (Reg->Address));
-        PciRegister    = (UINT16) ACPI_PCI_REGISTER (ACPI_GET_ADDRESS (Reg->Address));
-
-        Status = AcpiOsReadPciConfiguration  (&PciId, PciRegister,
                     Value, Width);
         break;
 
@@ -900,7 +886,7 @@ AcpiHwLowLevelRead (
  *
  * RETURN:      Status
  *
- * DESCRIPTION: Write to either memory, IO, or PCI config space.
+ * DESCRIPTION: Write to either memory or IO space.
  *
  ******************************************************************************/
 
@@ -910,8 +896,6 @@ AcpiHwLowLevelWrite (
     UINT32                  Value,
     ACPI_GENERIC_ADDRESS    *Reg)
 {
-    ACPI_PCI_ID             PciId;
-    UINT16                  PciRegister;
     ACPI_STATUS             Status;
 
 
@@ -930,8 +914,8 @@ AcpiHwLowLevelWrite (
     }
 
     /*
-     * Three address spaces supported:
-     * Memory, IO, or PCI_Config.
+     * Two address spaces supported:
+     * Memory or IO. PCI_Config is not supported here.
      */
     switch (Reg->AddressSpaceId)
     {
@@ -947,19 +931,6 @@ AcpiHwLowLevelWrite (
 
         Status = AcpiOsWritePort ((ACPI_IO_ADDRESS) ACPI_GET_ADDRESS (Reg->Address),
                     Value, Width);
-        break;
-
-
-    case ACPI_ADR_SPACE_PCI_CONFIG:
-
-        PciId.Segment  = 0;
-        PciId.Bus      = 0;
-        PciId.Device   = ACPI_PCI_DEVICE (ACPI_GET_ADDRESS (Reg->Address));
-        PciId.Function = ACPI_PCI_FUNCTION (ACPI_GET_ADDRESS (Reg->Address));
-        PciRegister    = (UINT16) ACPI_PCI_REGISTER (ACPI_GET_ADDRESS (Reg->Address));
-
-        Status = AcpiOsWritePciConfiguration (&PciId, PciRegister,
-                    (ACPI_INTEGER) Value, Width);
         break;
 
 
