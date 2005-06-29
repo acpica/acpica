@@ -590,6 +590,10 @@ SOURCE=..\..\Subsystem\Include\acpiasm.h
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\Subsystem\Include\acpiexcep.h
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\Subsystem\Include\acpiobj.h
 # End Source File
 # Begin Source File
@@ -631,10 +635,6 @@ SOURCE=..\..\Subsystem\Include\environment.h
 # Begin Source File
 
 SOURCE=..\..\Subsystem\Include\events.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\Subsystem\Include\excep.h
 # End Source File
 # Begin Source File
 
