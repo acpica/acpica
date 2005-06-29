@@ -4,7 +4,7 @@
  *                       AcpiRsAddress16Stream
  *                       AcpiRsAddress32Resource
  *                       AcpiRsAddress32Stream
- *              $Revision: 1.12 $
+ *              $Revision: 1.15 $
  *
  ******************************************************************************/
 
@@ -12,8 +12,8 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, Intel Corp.  All rights
- * reserved.
+ * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
+ * All rights reserved.
  *
  * 2. License
  *
@@ -122,7 +122,7 @@
 #include "acpi.h"
 #include "acresrc.h"
 
-#define _COMPONENT          RESOURCE_MANAGER
+#define _COMPONENT          ACPI_RESOURCES
         MODULE_NAME         ("rsaddr")
 
 

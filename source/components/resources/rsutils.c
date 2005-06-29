@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: rsutils - Utilities for the resource manager
- *              $Revision: 1.11 $
+ *              $Revision: 1.15 $
  *
  ******************************************************************************/
 
@@ -9,8 +9,8 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, Intel Corp.  All rights
- * reserved.
+ * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
+ * All rights reserved.
  *
  * 2. License
  *
@@ -122,9 +122,8 @@
 #include "acresrc.h"
 
 
-#define _COMPONENT          RESOURCE_MANAGER
+#define _COMPONENT          ACPI_RESOURCES
         MODULE_NAME         ("rsutils")
-
 
 
 /*******************************************************************************
