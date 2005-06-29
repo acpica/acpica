@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dbcmds - debug commands and output routines
- *              $Revision: 1.115 $
+ *              $Revision: 1.117 $
  *
  ******************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2004, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2005, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -222,7 +222,7 @@ AcpiDbSleep (
  *
  ******************************************************************************/
 
-ACPI_STATUS
+static ACPI_STATUS
 AcpiDbWalkForReferences (
     ACPI_HANDLE             ObjHandle,
     UINT32                  NestingLevel,
@@ -442,7 +442,8 @@ AcpiDbSetMethodBreakpoint (
     Address = ACPI_STRTOUL (Location, NULL, 16);
     if (Address <= Op->Common.AmlOffset)
     {
-        AcpiOsPrintf ("Breakpoint %X is beyond current address %X\n", Address, Op->Common.AmlOffset);
+        AcpiOsPrintf ("Breakpoint %X is beyond current address %X\n",
+            Address, Op->Common.AmlOffset);
     }
 
     /* Save breakpoint in current walk */
@@ -617,7 +618,8 @@ AcpiDbDumpNamespace (
             SubtreeEntry = ACPI_TO_POINTER (ACPI_STRTOUL (StartArg, NULL, 16));
             if (!AcpiOsReadable (SubtreeEntry, sizeof (ACPI_NAMESPACE_NODE)))
             {
-                AcpiOsPrintf ("Address %p is invalid in this address space\n", SubtreeEntry);
+                AcpiOsPrintf ("Address %p is invalid in this address space\n",
+                    SubtreeEntry);
                 return;
             }
 
@@ -631,8 +633,9 @@ AcpiDbDumpNamespace (
         else
         {
             /* Alpha argument */
-            /* The parameter is a name string that must be resolved to a Named obj*/
-
+            /* The parameter is a name string that must be resolved to a
+             * Named obj
+             */
             SubtreeEntry = AcpiDbLocalNsLookup (StartArg);
             if (!SubtreeEntry)
             {
@@ -654,7 +657,8 @@ AcpiDbDumpNamespace (
     /* Display the subtree */
 
     AcpiDbSetOutputDestination (ACPI_DB_REDIRECTABLE_OUTPUT);
-    AcpiNsDumpObjects (ACPI_TYPE_ANY, ACPI_DISPLAY_SUMMARY, MaxDepth, ACPI_UINT32_MAX, SubtreeEntry);
+    AcpiNsDumpObjects (ACPI_TYPE_ANY, ACPI_DISPLAY_SUMMARY, MaxDepth,
+        ACPI_UINT32_MAX, SubtreeEntry);
     AcpiDbSetOutputDestination (ACPI_DB_CONSOLE_OUTPUT);
 }
 
@@ -697,7 +701,8 @@ AcpiDbDumpNamespaceByOwner (
     /* Display the subtree */
 
     AcpiDbSetOutputDestination (ACPI_DB_REDIRECTABLE_OUTPUT);
-    AcpiNsDumpObjects (ACPI_TYPE_ANY, ACPI_DISPLAY_SUMMARY, MaxDepth, OwnerId, SubtreeEntry);
+    AcpiNsDumpObjects (ACPI_TYPE_ANY, ACPI_DISPLAY_SUMMARY, MaxDepth, OwnerId,
+        SubtreeEntry);
     AcpiDbSetOutputDestination (ACPI_DB_CONSOLE_OUTPUT);
 }
 
@@ -833,7 +838,8 @@ AcpiDbSetMethodData (
             return;
         }
 
-        Status = AcpiDsStoreObjectToLocal (AML_ARG_OP, Index, ObjDesc, WalkState);
+        Status = AcpiDsStoreObjectToLocal (AML_ARG_OP, Index, ObjDesc,
+                    WalkState);
         if (ACPI_FAILURE (Status))
         {
             return;
@@ -855,7 +861,8 @@ AcpiDbSetMethodData (
             return;
         }
 
-        Status = AcpiDsStoreObjectToLocal (AML_LOCAL_OP, Index, ObjDesc, WalkState);
+        Status = AcpiDsStoreObjectToLocal (AML_LOCAL_OP, Index, ObjDesc,
+                    WalkState);
         if (ACPI_FAILURE (Status))
         {
             return;
@@ -885,7 +892,7 @@ AcpiDbSetMethodData (
  *
  ******************************************************************************/
 
-ACPI_STATUS
+static ACPI_STATUS
 AcpiDbWalkForSpecificObjects (
     ACPI_HANDLE             ObjHandle,
     UINT32                  NestingLevel,
@@ -991,7 +998,8 @@ AcpiDbDisplayObjects (
     }
 
     AcpiDbSetOutputDestination (ACPI_DB_DUPLICATE_OUTPUT);
-    AcpiOsPrintf ("Objects of type [%s] defined in the current ACPI Namespace: \n",
+    AcpiOsPrintf (
+        "Objects of type [%s] defined in the current ACPI Namespace: \n",
         AcpiUtGetTypeName (Type));
 
     AcpiDbSetOutputDestination (ACPI_DB_REDIRECTABLE_OUTPUT);
@@ -1019,7 +1027,7 @@ AcpiDbDisplayObjects (
  *
  ******************************************************************************/
 
-ACPI_STATUS
+static ACPI_STATUS
 AcpiDbWalkAndMatchName (
     ACPI_HANDLE             ObjHandle,
     UINT32                  NestingLevel,
@@ -1133,7 +1141,8 @@ AcpiDbSetScope (
     {
         /* Validate new scope from the root */
 
-        Status = AcpiNsGetNodeByPath (Name, AcpiGbl_RootNode, ACPI_NS_NO_UPSEARCH, &Node);
+        Status = AcpiNsGetNodeByPath (Name, AcpiGbl_RootNode,
+                    ACPI_NS_NO_UPSEARCH, &Node);
         if (ACPI_FAILURE (Status))
         {
             goto ErrorExit;
@@ -1146,7 +1155,8 @@ AcpiDbSetScope (
     {
         /* Validate new scope relative to old scope */
 
-        Status = AcpiNsGetNodeByPath (Name, AcpiGbl_DbScopeNode, ACPI_NS_NO_UPSEARCH, &Node);
+        Status = AcpiNsGetNodeByPath (Name, AcpiGbl_DbScopeNode,
+                    ACPI_NS_NO_UPSEARCH, &Node);
         if (ACPI_FAILURE (Status))
         {
             goto ErrorExit;
@@ -1162,7 +1172,8 @@ AcpiDbSetScope (
 
 ErrorExit:
 
-    AcpiOsPrintf ("Could not attach scope: %s, %s\n", Name, AcpiFormatException (Status));
+    AcpiOsPrintf ("Could not attach scope: %s, %s\n",
+        Name, AcpiFormatException (Status));
 }
 
 
@@ -1208,7 +1219,8 @@ AcpiDbDisplayResources (
     Status = AcpiEvaluateObject (ObjDesc, "_PRT", NULL, &ReturnObj);
     if (ACPI_FAILURE (Status))
     {
-        AcpiOsPrintf ("Could not obtain _PRT: %s\n", AcpiFormatException (Status));
+        AcpiOsPrintf ("Could not obtain _PRT: %s\n",
+            AcpiFormatException (Status));
         goto GetCrs;
     }
 
@@ -1218,7 +1230,8 @@ AcpiDbDisplayResources (
     Status = AcpiGetIrqRoutingTable (ObjDesc, &ReturnObj);
     if (ACPI_FAILURE (Status))
     {
-        AcpiOsPrintf ("GetIrqRoutingTable failed: %s\n", AcpiFormatException (Status));
+        AcpiOsPrintf ("GetIrqRoutingTable failed: %s\n",
+            AcpiFormatException (Status));
     }
     else
     {
@@ -1237,7 +1250,8 @@ GetCrs:
     Status = AcpiEvaluateObject (ObjDesc, "_CRS", NULL, &ReturnObj);
     if (ACPI_FAILURE (Status))
     {
-        AcpiOsPrintf ("Could not obtain _CRS: %s\n", AcpiFormatException (Status));
+        AcpiOsPrintf ("Could not obtain _CRS: %s\n",
+            AcpiFormatException (Status));
         goto GetPrs;
     }
 
@@ -1247,18 +1261,21 @@ GetCrs:
     Status = AcpiGetCurrentResources (ObjDesc, &ReturnObj);
     if (ACPI_FAILURE (Status))
     {
-        AcpiOsPrintf ("AcpiGetCurrentResources failed: %s\n", AcpiFormatException (Status));
+        AcpiOsPrintf ("AcpiGetCurrentResources failed: %s\n",
+            AcpiFormatException (Status));
         goto GetPrs;
     }
     else
     {
-        AcpiRsDumpResourceList (ACPI_CAST_PTR (ACPI_RESOURCE, AcpiGbl_DbBuffer));
+        AcpiRsDumpResourceList (ACPI_CAST_PTR (ACPI_RESOURCE,
+            AcpiGbl_DbBuffer));
     }
 
     Status = AcpiSetCurrentResources (ObjDesc, &ReturnObj);
     if (ACPI_FAILURE (Status))
     {
-        AcpiOsPrintf ("AcpiSetCurrentResources failed: %s\n", AcpiFormatException (Status));
+        AcpiOsPrintf ("AcpiSetCurrentResources failed: %s\n",
+            AcpiFormatException (Status));
         goto GetPrs;
     }
 
@@ -1274,7 +1291,8 @@ GetPrs:
     Status = AcpiEvaluateObject (ObjDesc, "_PRS", NULL, &ReturnObj);
     if (ACPI_FAILURE (Status))
     {
-        AcpiOsPrintf ("Could not obtain _PRS: %s\n", AcpiFormatException (Status));
+        AcpiOsPrintf ("Could not obtain _PRS: %s\n",
+            AcpiFormatException (Status));
         goto Cleanup;
     }
 
@@ -1284,7 +1302,8 @@ GetPrs:
     Status = AcpiGetPossibleResources (ObjDesc, &ReturnObj);
     if (ACPI_FAILURE (Status))
     {
-        AcpiOsPrintf ("AcpiGetPossibleResources failed: %s\n", AcpiFormatException (Status));
+        AcpiOsPrintf ("AcpiGetPossibleResources failed: %s\n",
+            AcpiFormatException (Status));
     }
     else
     {
@@ -1311,7 +1330,7 @@ Cleanup:
  *
  ******************************************************************************/
 
-ACPI_STATUS
+static ACPI_STATUS
 AcpiDbIntegrityWalk (
     ACPI_HANDLE             ObjHandle,
     UINT32                  NestingLevel,
@@ -1378,7 +1397,8 @@ AcpiDbCheckIntegrity (void)
     (void) AcpiWalkNamespace (ACPI_TYPE_ANY, ACPI_ROOT_OBJECT, ACPI_UINT32_MAX,
                     AcpiDbIntegrityWalk, (void *) &Info, NULL);
 
-    AcpiOsPrintf ("Verified %d namespace nodes with %d Objects\n", Info.Nodes, Info.Objects);
+    AcpiOsPrintf ("Verified %d namespace nodes with %d Objects\n",
+        Info.Nodes, Info.Objects);
 }
 
 
@@ -1408,7 +1428,8 @@ AcpiDbGenerateGpe (
     BlockNumber = ACPI_STRTOUL (BlockArg, NULL, 0);
 
 
-    GpeEventInfo = AcpiEvGetGpeEventInfo (ACPI_TO_POINTER (BlockNumber), GpeNumber);
+    GpeEventInfo = AcpiEvGetGpeEventInfo (ACPI_TO_POINTER (BlockNumber),
+        GpeNumber);
     if (!GpeEventInfo)
     {
         AcpiOsPrintf ("Invalid GPE\n");

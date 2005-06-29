@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dbstats - Generation and display of ACPI table statistics
- *              $Revision: 1.62 $
+ *              $Revision: 1.72 $
  *
  ******************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2005, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -115,9 +115,9 @@
  *****************************************************************************/
 
 
-#include <acpi.h>
-#include <acdebug.h>
-#include <acnamesp.h>
+#include "acpi.h"
+#include "acdebug.h"
+#include "acnamesp.h"
 
 #ifdef ACPI_DEBUGGER
 
@@ -162,7 +162,7 @@ static ARGUMENT_INFO        AcpiDbStatTypes [] =
  *
  ******************************************************************************/
 
-void
+static void
 AcpiDbEnumerateObject (
     ACPI_OPERAND_OBJECT     *ObjDesc)
 {
@@ -179,7 +179,7 @@ AcpiDbEnumerateObject (
 
     AcpiGbl_NumObjects++;
 
-    if (ACPI_GET_OBJECT_TYPE (ObjDesc) > INTERNAL_TYPE_NODE_MAX)
+    if (ACPI_GET_OBJECT_TYPE (ObjDesc) > ACPI_TYPE_NS_NODE_MAX)
     {
         AcpiGbl_ObjTypeCountMisc++;
     }
@@ -193,6 +193,7 @@ AcpiDbEnumerateObject (
     switch (ACPI_GET_OBJECT_TYPE (ObjDesc))
     {
     case ACPI_TYPE_PACKAGE:
+
         for (i = 0; i < ObjDesc->Package.Count; i++)
         {
             AcpiDbEnumerateObject (ObjDesc->Package.Elements[i]);
@@ -200,12 +201,14 @@ AcpiDbEnumerateObject (
         break;
 
     case ACPI_TYPE_DEVICE:
-        AcpiDbEnumerateObject (ObjDesc->Device.SysHandler);
-        AcpiDbEnumerateObject (ObjDesc->Device.DrvHandler);
-        AcpiDbEnumerateObject (ObjDesc->Device.AddrHandler);
+
+        AcpiDbEnumerateObject (ObjDesc->Device.SystemNotify);
+        AcpiDbEnumerateObject (ObjDesc->Device.DeviceNotify);
+        AcpiDbEnumerateObject (ObjDesc->Device.Handler);
         break;
 
     case ACPI_TYPE_BUFFER_FIELD:
+
         if (AcpiNsGetSecondaryObject (ObjDesc))
         {
             AcpiGbl_ObjTypeCount [ACPI_TYPE_BUFFER_FIELD]++;
@@ -213,25 +216,29 @@ AcpiDbEnumerateObject (
         break;
 
     case ACPI_TYPE_REGION:
-        AcpiGbl_ObjTypeCount [INTERNAL_TYPE_REGION_FIELD ]++;
-        AcpiDbEnumerateObject (ObjDesc->Region.AddrHandler);
+
+        AcpiGbl_ObjTypeCount [ACPI_TYPE_LOCAL_REGION_FIELD ]++;
+        AcpiDbEnumerateObject (ObjDesc->Region.Handler);
         break;
 
     case ACPI_TYPE_POWER:
-        AcpiDbEnumerateObject (ObjDesc->PowerResource.SysHandler);
-        AcpiDbEnumerateObject (ObjDesc->PowerResource.DrvHandler);
+
+        AcpiDbEnumerateObject (ObjDesc->PowerResource.SystemNotify);
+        AcpiDbEnumerateObject (ObjDesc->PowerResource.DeviceNotify);
         break;
 
     case ACPI_TYPE_PROCESSOR:
-        AcpiDbEnumerateObject (ObjDesc->Processor.SysHandler);
-        AcpiDbEnumerateObject (ObjDesc->Processor.DrvHandler);
-        AcpiDbEnumerateObject (ObjDesc->Processor.AddrHandler);
+
+        AcpiDbEnumerateObject (ObjDesc->Processor.SystemNotify);
+        AcpiDbEnumerateObject (ObjDesc->Processor.DeviceNotify);
+        AcpiDbEnumerateObject (ObjDesc->Processor.Handler);
         break;
 
     case ACPI_TYPE_THERMAL:
-        AcpiDbEnumerateObject (ObjDesc->ThermalZone.SysHandler);
-        AcpiDbEnumerateObject (ObjDesc->ThermalZone.DrvHandler);
-        AcpiDbEnumerateObject (ObjDesc->ThermalZone.AddrHandler);
+
+        AcpiDbEnumerateObject (ObjDesc->ThermalZone.SystemNotify);
+        AcpiDbEnumerateObject (ObjDesc->ThermalZone.DeviceNotify);
+        AcpiDbEnumerateObject (ObjDesc->ThermalZone.Handler);
         break;
 
     default:
@@ -253,7 +260,7 @@ AcpiDbEnumerateObject (
  *
  ******************************************************************************/
 
-ACPI_STATUS
+static ACPI_STATUS
 AcpiDbClassifyOneObject (
     ACPI_HANDLE             ObjHandle,
     UINT32                  NestingLevel,
@@ -273,7 +280,7 @@ AcpiDbClassifyOneObject (
     AcpiDbEnumerateObject (ObjDesc);
 
     Type = Node->Type;
-    if (Type > INTERNAL_TYPE_NODE_MAX)
+    if (Type > ACPI_TYPE_NS_NODE_MAX)
     {
         AcpiGbl_NodeTypeCountMisc++;
     }
@@ -285,9 +292,9 @@ AcpiDbClassifyOneObject (
 
     return AE_OK;
 
-
+#if 0
     /* TBD: These need to be counted during the initial parsing phase */
-    /*
+
     if (AcpiPsIsNamedOp (Op->Opcode))
     {
         NumNodes++;
@@ -305,8 +312,8 @@ AcpiDbClassifyOneObject (
     SizeOfMethodTrees           = NumMethodElements * (UINT32) sizeof (ACPI_PARSE_OBJECT);
     SizeOfNodeEntries           = NumNodes * (UINT32) sizeof (ACPI_NAMESPACE_NODE);
     SizeOfAcpiObjects           = NumNodes * (UINT32) sizeof (ACPI_OPERAND_OBJECT);
+#endif
 
-    */
 }
 
 
@@ -323,7 +330,7 @@ AcpiDbClassifyOneObject (
  *
  ******************************************************************************/
 
-void
+static void
 AcpiDbCountNamespaceObjects (
     void)
 {
@@ -334,14 +341,14 @@ AcpiDbCountNamespaceObjects (
     AcpiGbl_NumObjects = 0;
 
     AcpiGbl_ObjTypeCountMisc = 0;
-    for (i = 0; i < (INTERNAL_TYPE_NODE_MAX -1); i++)
+    for (i = 0; i < (ACPI_TYPE_NS_NODE_MAX -1); i++)
     {
         AcpiGbl_ObjTypeCount [i] = 0;
         AcpiGbl_NodeTypeCount [i] = 0;
     }
 
-    (void) AcpiNsWalkNamespace (ACPI_TYPE_ANY, ACPI_ROOT_OBJECT, ACPI_UINT32_MAX,
-                        FALSE, AcpiDbClassifyOneObject, NULL, NULL);
+    (void) AcpiNsWalkNamespace (ACPI_TYPE_ANY, ACPI_ROOT_OBJECT,
+                ACPI_UINT32_MAX, FALSE, AcpiDbClassifyOneObject, NULL, NULL);
 }
 
 
@@ -359,7 +366,7 @@ AcpiDbCountNamespaceObjects (
 
 ACPI_STATUS
 AcpiDbDisplayStatistics (
-    NATIVE_CHAR             *TypeArg)
+    char                    *TypeArg)
 {
     UINT32                  i;
     UINT32                  Type;
@@ -402,7 +409,8 @@ AcpiDbDisplayStatistics (
         AcpiOsPrintf ("ACPI Table Information:\n\n");
         if (AcpiGbl_DSDT)
         {
-            AcpiOsPrintf ("DSDT Length:................% 7ld (%X)\n", AcpiGbl_DSDT->Length, AcpiGbl_DSDT->Length);
+            AcpiOsPrintf ("DSDT Length:................% 7ld (%X)\n",
+                AcpiGbl_DSDT->Length, AcpiGbl_DSDT->Length);
         }
         break;
 
@@ -412,9 +420,10 @@ AcpiDbDisplayStatistics (
 
         AcpiOsPrintf ("\nObjects defined in the current namespace:\n\n");
 
-        AcpiOsPrintf ("%16.16s %10.10s %10.10s\n", "ACPI_TYPE", "NODES", "OBJECTS");
+        AcpiOsPrintf ("%16.16s %10.10s %10.10s\n",
+            "ACPI_TYPE", "NODES", "OBJECTS");
 
-        for (i = 0; i < INTERNAL_TYPE_NODE_MAX; i++)
+        for (i = 0; i < ACPI_TYPE_NS_NODE_MAX; i++)
         {
             AcpiOsPrintf ("%16.16s % 10ld% 10ld\n", AcpiUtGetTypeName (i),
                 AcpiGbl_NodeTypeCount [i], AcpiGbl_ObjTypeCount [i]);
@@ -481,9 +490,9 @@ AcpiDbDisplayStatistics (
         AcpiOsPrintf ("\n");
 
         AcpiOsPrintf ("Mutex usage:\n\n");
-        for (i = 0; i < NUM_MTX; i++)
+        for (i = 0; i < NUM_MUTEX; i++)
         {
-            AcpiOsPrintf ("%-28s:       % 7ld\n", AcpiUtGetMutexName (i), AcpiGbl_AcpiMutexInfo[i].UseCount);
+            AcpiOsPrintf ("%-28s:       % 7ld\n", AcpiUtGetMutexName (i), AcpiGbl_MutexInfo[i].UseCount);
         }
         break;
 
@@ -510,8 +519,8 @@ AcpiDbDisplayStatistics (
         AcpiOsPrintf ("BankField        %3d\n", sizeof (ACPI_OBJECT_BANK_FIELD));
         AcpiOsPrintf ("IndexField       %3d\n", sizeof (ACPI_OBJECT_INDEX_FIELD));
         AcpiOsPrintf ("Reference        %3d\n", sizeof (ACPI_OBJECT_REFERENCE));
-        AcpiOsPrintf ("NotifyHandler    %3d\n", sizeof (ACPI_OBJECT_NOTIFY_HANDLER));
-        AcpiOsPrintf ("AddrHandler      %3d\n", sizeof (ACPI_OBJECT_ADDR_HANDLER));
+        AcpiOsPrintf ("Notify           %3d\n", sizeof (ACPI_OBJECT_NOTIFY_HANDLER));
+        AcpiOsPrintf ("AddressSpace     %3d\n", sizeof (ACPI_OBJECT_ADDR_HANDLER));
         AcpiOsPrintf ("Extra            %3d\n", sizeof (ACPI_OBJECT_EXTRA));
         AcpiOsPrintf ("Data             %3d\n", sizeof (ACPI_OBJECT_DATA));
 

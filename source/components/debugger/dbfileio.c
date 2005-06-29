@@ -2,7 +2,7 @@
  *
  * Module Name: dbfileio - Debugger file I/O commands.  These can't usually
  *              be used when running the debugger in Ring 0 (Kernel mode)
- *              $Revision: 1.75 $
+ *              $Revision: 1.78 $
  *
  ******************************************************************************/
 
@@ -10,7 +10,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2003, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2005, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -235,8 +235,9 @@ AcpiDbCheckTextModeCorruption (
 
     if (TableLength != FileLength)
     {
-        ACPI_REPORT_WARNING (("File length (0x%X) is not the same as the table length (0x%X)\n",
-                FileLength, TableLength));
+        ACPI_REPORT_WARNING ((
+            "File length (0x%X) is not the same as the table length (0x%X)\n",
+            FileLength, TableLength));
     }
 
     /* Scan entire table to determine if each LF has been prefixed with a CR */
@@ -247,7 +248,7 @@ AcpiDbCheckTextModeCorruption (
         {
             if (Table[i - 1] != 0x0D)
             {
-                /* the LF does not have a preceeding CR, table is not corrupted */
+                /* The LF does not have a preceeding CR, table not corrupted */
 
                 return (AE_OK);
             }
@@ -398,7 +399,7 @@ AcpiDbReadTable (
  *
  ******************************************************************************/
 
-ACPI_STATUS
+static ACPI_STATUS
 AeLocalLoadTable (
     ACPI_TABLE_HEADER       *Table)
 {
