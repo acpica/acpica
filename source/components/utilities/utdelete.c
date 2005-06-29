@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: cmdelete - object deletion and reference count utilities
- *              $Revision: 1.54 $
+ *              $Revision: 1.55 $
  *
  ******************************************************************************/
 
@@ -250,7 +250,6 @@ AcpiCmDeleteInternalObj (
         DEBUG_PRINT (ACPI_INFO,
             ("CmDeleteInternalObj: ***** Region %p\n",
             Object));
-
 
 
         if (Object->Region.Extra)
@@ -802,7 +801,6 @@ AcpiCmRemoveReference (
         DEBUG_PRINT (ACPI_INFO, ("CmRemoveReference: Obj %p Refs=%d\n",
                                     Object, Object->Common.ReferenceCount));
     }
-
 
 
     DEBUG_PRINT (ACPI_INFO, ("CmRemoveReference: Obj %p Refs=%d\n",
