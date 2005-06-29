@@ -176,7 +176,7 @@ DsScopeStackClear (
 ACPI_STATUS
 DsScopeStackPush (
     NAME_TABLE_ENTRY        *NewScope, 
-    ACPI_OBJECT_TYPE        Type,
+    OBJECT_TYPE_INTERNAL    Type,
 	ACPI_WALK_STATE			*WalkState)
 {
     ACPI_GENERIC_STATE      *ScopeInfo;
