@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dbinput - user front-end to the AML debugger
- *              $Revision: 1.50 $
+ *              $Revision: 1.56 $
  *
  ******************************************************************************/
 
@@ -9,8 +9,8 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, Intel Corp.  All rights
- * reserved.
+ * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
+ * All rights reserved.
  *
  * 2. License
  *
@@ -153,6 +153,7 @@ BOOLEAN                 opt_disasm      = FALSE;
 BOOLEAN                 opt_stats       = FALSE;
 BOOLEAN                 opt_parse_jit   = FALSE;
 BOOLEAN                 opt_verbose     = TRUE;
+BOOLEAN                 opt_ini_methods = TRUE;
 
 
 /*
@@ -199,6 +200,7 @@ enum AcpiAmlDebuggerCommands
     CMD_PREFIX,
     CMD_QUIT,
     CMD_REFERENCES,
+    CMD_RESOURCES,
     CMD_RESULTS,
     CMD_SET,
     CMD_STATS,
@@ -251,6 +253,7 @@ COMMAND_INFO                Commands[] =
     {"PREFIX",       0},
     {"QUIT",         0},
     {"REFERENCES",   1},
+    {"RESOURCES",    1},
     {"RESULTS",      0},
     {"SET",          3},
     {"STATS",        0},
@@ -337,6 +340,7 @@ AcpiDbDisplayHelp (
         AcpiOsPrintf ("Owner <OwnerId> [Depth]             Display loaded namespace by object owner\n");
         AcpiOsPrintf ("Prefix [<NamePath>]                 Set or Get current execution prefix\n");
         AcpiOsPrintf ("References <Addr>                   Find all references to object at addr\n");
+        AcpiOsPrintf ("Resources xxx                       Get and display resources\n");
         AcpiOsPrintf ("Terminate                           Delete namespace and all internal objects\n");
         AcpiOsPrintf ("Thread <Threads><Loops><NamePath>   Spawn threads to execute method(s)\n");
         return;
@@ -626,7 +630,7 @@ AcpiDbCommandDispatch (
         Status = AcpiEnable();
         if (ACPI_FAILURE(Status))
         {
-            AcpiOsPrintf("AcpiEnable failed (0x%x)\n", Status);
+            AcpiOsPrintf("AcpiEnable failed (Status=%X)\n", Status);
             return (Status);
         }
         break;
@@ -726,11 +730,6 @@ AcpiDbCommandDispatch (
         {
             return (Status);
         }
-
-        if (ACPI_FAILURE (Status))
-        {
-            return (Status);
-        }
         break;
 
     case CMD_LOCALS:
@@ -768,6 +767,10 @@ AcpiDbCommandDispatch (
 
     case CMD_REFERENCES:
         AcpiDbFindReferences (Args[1]);
+        break;
+
+    case CMD_RESOURCES:
+        AcpiDbDisplayResources (Args[1]);
         break;
 
     case CMD_RESULTS:
