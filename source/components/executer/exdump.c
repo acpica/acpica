@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: exdump - Interpreter debug output routines
- *              $Revision: 1.139 $
+ *              $Revision: 1.140 $
  *
  *****************************************************************************/
 
@@ -276,7 +276,7 @@ AcpiExDumpOperand (
 
     if (ACPI_GET_DESCRIPTOR_TYPE (ObjDesc) != ACPI_DESC_TYPE_INTERNAL)
     {
-        ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "%p Is not a local object \n", ObjDesc));
+        ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "%p is not a local object\n", ObjDesc));
         DUMP_BUFFER (ObjDesc, sizeof (ACPI_OPERAND_OBJECT));
         return (AE_OK);
     }
@@ -890,6 +890,7 @@ AcpiExDumpObjectDescriptor (
         AcpiExOutInteger ("ParamCount",      ObjDesc->Method.ParamCount);
         AcpiExOutInteger ("Concurrency",     ObjDesc->Method.Concurrency);
         AcpiExOutPointer ("Semaphore",       ObjDesc->Method.Semaphore);
+        AcpiExOutInteger ("OwningId",        ObjDesc->Method.OwningId);
         AcpiExOutInteger ("AmlLength",       ObjDesc->Method.AmlLength);
         AcpiExOutPointer ("AmlStart",        ObjDesc->Method.AmlStart);
         break;
