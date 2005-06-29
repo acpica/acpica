@@ -1,7 +1,8 @@
 
 /******************************************************************************
  * 
- * Module Name: asmain - Main module for the acpi source processor utility
+ * Module Name: asfile - Main module for the acpi source processor utility
+ *              $Revision: 1.8 $
  *
  *****************************************************************************/
 
@@ -249,6 +250,44 @@ AsProcessTree (
     free (FileSpec);
     return 0;
 }
+
+
+BOOLEAN
+AsDetectLoneLineFeeds (
+    char                    *Filename,
+    char                    *Buffer)
+{
+    UINT32                  i = 1;
+    UINT32                  LfCount = 0;
+
+    if (!Buffer[0])
+    {
+        return FALSE;
+    }
+
+    while (Buffer[i])
+    {
+        if (Buffer[i] == 0x0A)
+        {
+            if (Buffer[i-1] != 0x0D)
+            {
+                LfCount++;
+            }
+        }
+
+        i++;
+    }
+
+    if (LfCount)
+    {
+        printf ("****UNIX CONTAMINATION DETECTED****\n");
+        printf ("%d lone linefeeds in file %s\n", LfCount, Filename);
+        return TRUE;
+    }
+
+    return (FALSE);
+}
+
 
 
 /******************************************************************************
@@ -588,7 +627,7 @@ AsCheckForDirectory (
 
 int
 AsGetFile (
-    char                    *FileName,
+    char                    *Filename,
     char                    **FileBuffer,
     UINT32                  *FileSize)
 {
@@ -599,19 +638,18 @@ AsGetFile (
 
 
 
-    /* Text mode translates CR/LF to LF only on input */
+    /* Binary mode leaves CR/LF pairs */
 
-
-    FileHandle = open (FileName, O_TEXT | O_RDONLY);
+    FileHandle = open (Filename, O_BINARY | O_RDONLY);
     if (!FileHandle)
     {
-        printf ("Could not open %s\n", FileName);
+        printf ("Could not open %s\n", Filename);
         return -1;
     }
 
     if (fstat (FileHandle, &Gbl_StatBuf))
     {
-        printf ("Could not get file status for %s\n", FileName);
+        printf ("Could not get file status for %s\n", Filename);
         goto ErrorExit;
     }
 
@@ -633,12 +671,51 @@ AsGetFile (
     Size = read (FileHandle, Buffer, Size);
     if (Size == -1)
     {
-        printf ("Could not read the input file %s\n", FileName);
+        printf ("Could not read the input file %s\n", Filename);
         goto ErrorExit;
     }
 
     Buffer [Size] = 0;         /* Null terminate the buffer */
     close (FileHandle);
+
+
+    /* Check for unix contamination */
+
+    if (AsDetectLoneLineFeeds (Filename, Buffer))
+    {  
+        return -1;
+    }
+
+    /* Text mode translates CR/LF to LF only on input */
+
+    FileHandle = open (Filename, O_TEXT | O_RDONLY);
+    if (!FileHandle)
+    {
+        printf ("Could not open %s\n", Filename);
+        return -1;
+    }
+
+    if (fstat (FileHandle, &Gbl_StatBuf))
+    {
+        printf ("Could not get file status for %s\n", Filename);
+        goto ErrorExit;
+    }
+    Size = Gbl_StatBuf.st_size;
+
+
+    /* Read the entire file */
+
+    Size = read (FileHandle, Buffer, Size);
+    if (Size == -1)
+    {
+        printf ("Could not read the input file %s\n", Filename);
+        goto ErrorExit;
+    }
+
+    Buffer [Size] = 0;         /* Null terminate the buffer */
+    close (FileHandle);
+
+
 
     *FileBuffer = Buffer;
     *FileSize = Size;

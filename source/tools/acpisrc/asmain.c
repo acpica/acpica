@@ -2,6 +2,7 @@
 /******************************************************************************
  * 
  * Module Name: asmain - Main module for the acpi source processor utility
+ *              $Revision: 1.13 $
  *
  *****************************************************************************/
 
@@ -134,6 +135,7 @@ char                    *Gbl_FileBuffer;
 UINT32                  Gbl_FileSize;
 BOOLEAN                 Gbl_VerboseMode = FALSE;
 BOOLEAN                 Gbl_BatchMode = FALSE;
+BOOLEAN                 Gbl_DebugStatementsMode = FALSE;
 
 
 
@@ -257,7 +259,7 @@ ACPI_IDENTIFIER_TABLE       LinuxConditionalIdentifiers[] = {
 ACPI_CONVERSION_TABLE       LinuxConversionTable = {
 
     LinuxHeader,
-    FLG_NO_CARRIAGE_RETURNS,
+    FLG_NO_CARRIAGE_RETURNS | FLG_LOWERCASE_DIRNAMES,
 
     /* C source files */
 
@@ -328,6 +330,42 @@ ACPI_CONVERSION_TABLE       StatsConversionTable = {
     (CVT_COUNT_TABS | CVT_COUNT_NON_ANSI_COMMENTS | CVT_COUNT_LINES),
 };
 
+
+
+
+/******************************************************************************
+ *
+ * Customizable translation tables
+ *
+ ******************************************************************************/
+
+ACPI_STRING_TABLE           CustomReplacements[] = {
+
+
+    "char ",             "INT8 ",
+    NULL,               NULL
+};
+
+
+ACPI_CONVERSION_TABLE       CustomConversionTable = {
+
+    NULL,
+    FLG_DEFAULT_FLAGS,
+
+    /* C source files */
+
+    CustomReplacements,
+    NULL,
+    NULL,
+    (CVT_COUNT_TABS | CVT_COUNT_NON_ANSI_COMMENTS | CVT_COUNT_LINES | CVT_TRIM_LINES | CVT_TRIM_WHITESPACE),
+
+    /* C header files */
+
+    CustomReplacements,
+    NULL,
+    NULL,
+    (CVT_COUNT_TABS | CVT_COUNT_NON_ANSI_COMMENTS | CVT_COUNT_LINES | CVT_TRIM_LINES | CVT_TRIM_WHITESPACE),
+};
 
 
 
@@ -450,12 +488,14 @@ AsDisplayUsage (void)
 {
 
     printf ("\n");
-    printf ("Usage: acpisrc [-clsvy] <SourceDir> <DestinationDir>\n\n");
+    printf ("Usage: acpisrc [-c | -l | -u] [-s] [-v] [-y] [-d] <SourceDir> <DestinationDir>\n\n");
     printf ("Where: -c          Generate cleaned version of the source\n");
     printf ("       -l          Generate Linux version of the source\n");
+    printf ("       -u          Custom source translation\n");
     printf ("       -s          Generate source statistics only\n");
     printf ("       -v          Verbose mode\n");
     printf ("       -y          Suppress file overwrite prompts\n");
+    printf ("       -d          Leave debug statements in code\n");
     printf ("\n");
     return;
 }
@@ -492,48 +532,51 @@ main (
 
     /* Command line options */
 
-    while ((j = getopt (argc, argv, "lcsvy")) != EOF) switch(j) 
+    while ((j = getopt (argc, argv, "lcsuvyd")) != EOF) switch(j) 
     {
     case 'l':
-
         /* Linux code generation */
 
         printf ("Creating Linux source code\n");
         ConversionTable = &LinuxConversionTable;
         break;
 
-
     case 'c':
-
         /* Cleanup code */
 
         printf ("Code cleanup\n");
         ConversionTable = &CleanupConversionTable;
         break;
 
-
     case 's':
-
         /* Statistics only */
 
         break;
 
+    case 'u':
+        /* Cleanup code */
+
+        printf ("Custom source translation\n");
+        ConversionTable = &CustomConversionTable;
+        break;
 
     case 'v':
-
         /* Verbose mode */
 
         Gbl_VerboseMode = TRUE;
         break;
 
-
     case 'y':
-
         /* Batch mode */
 
         Gbl_BatchMode = TRUE;
         break;
 
+    case 'd':
+        /* Leave debug statements in */
+
+        Gbl_DebugStatementsMode = TRUE;   
+        break;
 
     default:    
         AsDisplayUsage ();
@@ -552,6 +595,11 @@ main (
 
         printf ("Source code statistics only\n");
         ConversionTable = &StatsConversionTable;
+    }
+
+    if (Gbl_DebugStatementsMode)
+    {
+        ConversionTable->SourceFunctions &= ~CVT_REMOVE_DEBUG_MACROS;
     }
 
 
@@ -584,5 +632,3 @@ main (
 
 	return 0;
 }
-
-

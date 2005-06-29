@@ -2,6 +2,7 @@
 /******************************************************************************
  * 
  * Module Name: asconvrt - Source conversion code
+ *              $Revision: 1.8 $
  *
  *****************************************************************************/
 
@@ -325,11 +326,17 @@ AsReplaceString (
         if ((SubString2) &&
             (SubString2 < SubString1))
         {
-            SubString2 = strstr (SubBuffer, "!*/");
+            /* Find end of the escape block starting at "Substring2" */
+
+            SubString2 = strstr (SubString2, "!*/");
             if (!SubString2)
             {
+                /* Didn't find terminator */
+
                 return ReplaceCount;
             }
+
+            /* Move buffer to end of escape block and continue */
 
             SubBuffer = SubString2;
         }
@@ -405,6 +412,21 @@ AsMixedCaseToUnderscores (
             }
 
             SubBuffer++;
+            continue;
+        }
+
+        /* Ignore format specification fields */
+
+        if (SubBuffer[0] == '%')
+        {
+            SubBuffer++;
+
+            while ((isalnum (*SubBuffer)) ||
+                   (*SubBuffer == '.'))
+            {
+                SubBuffer++;
+            }
+
             continue;
         }
 
@@ -1058,6 +1080,10 @@ AsTabify8 (
     UINT32                  Column = 0;
     UINT32                  TabCount = 0;
     UINT32                  LastLineTabCount = 0;
+    UINT32                  LastLineColumnStart = 0;
+    UINT32                  ThisColumnStart = 0;
+    UINT32                  ThisTabCount =  0;
+    char                    *FirstNonBlank = NULL;
 
 
 
@@ -1066,18 +1092,47 @@ AsTabify8 (
         if (*SubBuffer == '\n')
         {
             Column = 0;
-//            LastLineTabCount = 0;
             TabCount = 0;
+            SubBuffer++;
+            continue;
         }
 
         else
         {
+            if (!FirstNonBlank)
+            {
+                FirstNonBlank = SubBuffer;
+                while (*FirstNonBlank == ' ')
+                {
+                    FirstNonBlank++;
+                }
+
+                ThisColumnStart = FirstNonBlank - SubBuffer;
+
+                if (LastLineTabCount == 0)
+                {
+                    ThisTabCount = 0;
+                }
+
+                else if (ThisColumnStart == LastLineColumnStart)
+                {
+                    ThisTabCount = LastLineTabCount -1;
+                }
+
+                else
+                {
+
+                    ThisTabCount = LastLineTabCount + 1;
+                }
+            }
+
             Column++;
         }
 
 
         if (*SubBuffer != ' ')
         {
+
             SubBuffer = AsSkipUntilChar (SubBuffer, '\n');
             if (!SubBuffer)
             {
@@ -1088,12 +1143,15 @@ AsTabify8 (
                 LastLineTabCount = TabCount;
             }
             
+            FirstNonBlank = NULL;
+            LastLineColumnStart = ThisColumnStart;
             TabCount = 0;
             Column = 0;
             SpaceCount = 0;
             SubBuffer++;
             continue;
         }
+
 
 
         SpaceCount++;
@@ -1104,7 +1162,7 @@ AsTabify8 (
 
             NewSubBuffer = SubBuffer - 4;
 
-            if (TabCount <= LastLineTabCount ? (LastLineTabCount + 1) : 0)
+            if (TabCount <= ThisTabCount ? (ThisTabCount +1) : 0)
             {
                 NewSubBuffer++;
                 *NewSubBuffer = '\t';
@@ -1114,10 +1172,10 @@ AsTabify8 (
 
             memmove ((NewSubBuffer + 1), SubBuffer, strlen (SubBuffer) + 1);
             SubBuffer = NewSubBuffer;
+
         }
 
         SubBuffer++;
-
     }
 }
 
@@ -1191,8 +1249,7 @@ AsCountLines (
 
     if (LongLineCount)
     {
-// Another verbose mode?
-//        AsPrint ("Lines longer than 80 found", LongLineCount, Filename);
+        VERBOSE_PRINT (("%d Lines longer than 80 found in %s\n", LongLineCount, Filename));
         Gbl_LongLines += LongLineCount;
     }
 
