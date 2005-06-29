@@ -25,7 +25,7 @@ CFG=AcpiSubsystem - Win32 Debug
 # PROP AllowPerConfigDependencies 0
 # PROP Scc_ProjName ""$/Acpi Components/Subsystem", CQBAAAAA"
 # PROP Scc_LocalPath "..\.."
-CPP=cl.exe
+CPP=xicl6.exe
 RSC=rc.exe
 
 !IF  "$(CFG)" == "AcpiSubsystem - Win32 Release"
@@ -41,13 +41,13 @@ RSC=rc.exe
 # PROP Intermediate_Dir "\Acpi\Components\Generate\VC\AcpiSubsystem"
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_MBCS" /D "_LIB" /YX /FD /c
-# ADD CPP /nologo /Gz /MT /W4 /GX /O2 /I "..\..\Subsystem\Include" /I "\98ddk\inc\win98" /D "NDEBUG" /D "ACPILIB_GEN" /D "DRIVER" /D "_WINDOWS" /D PROCESSOR_ARCHITECTURE=x86 /D "WIN32" /YX /FD /c
+# ADD CPP /nologo /Gz /MT /Za /W4 /GX /O2 /I "..\..\Subsystem\Include" /I "\98ddk\inc\win98" /D "NDEBUG" /D "ACPILIB_GEN" /D "DRIVER" /D "_WINDOWS" /D PROCESSOR_ARCHITECTURE=x86 /D "WIN32" /YX /FD /c
 # ADD BASE RSC /l 0x409 /d "NDEBUG"
 # ADD RSC /l 0x409 /d "NDEBUG"
 BSC32=bscmake.exe
 # ADD BASE BSC32 /nologo
 # ADD BSC32 /nologo
-LIB32=link.exe -lib
+LIB32=xilink6.exe -lib
 # ADD BASE LIB32 /nologo
 # ADD LIB32 /nologo /out:"bin\acpica.lib"
 # Begin Special Build Tool
@@ -71,13 +71,13 @@ PostBuild_Cmds=copy bin\acpica.lib ..\..\libraries\acpica.lib	dir ..\..\librarie
 # PROP Intermediate_Dir "\Acpi\Components\Generate\VC\AcpiSubsystem"
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_MBCS" /D "_LIB" /YX /FD /GZ /c
-# ADD CPP /nologo /Gz /MT /W4 /GX /Z7 /Od /I "..\..\Subsystem\Include" /I "\98ddk\inc\win98" /D "ACPI_DEBUG" /D "ENABLE_DEBUGGER" /D "_DEBUG" /D "_WINDOWS" /D PROCESSOR_ARCHITECTURE=x86 /D "WIN32" /FR /FD /c
+# ADD CPP /nologo /Gz /MT /Za /W4 /GX /Z7 /Od /I "..\..\Subsystem\Include" /I "\98ddk\inc\win98" /D "ACPI_DEBUG" /D "ENABLE_DEBUGGER" /D "_DEBUG" /D "_WINDOWS" /D PROCESSOR_ARCHITECTURE=x86 /D "WIN32" /FR /FD /c
 # ADD BASE RSC /l 0x409 /d "_DEBUG"
 # ADD RSC /l 0x409
 BSC32=bscmake.exe
 # ADD BASE BSC32 /nologo
 # ADD BSC32 /nologo
-LIB32=link.exe -lib
+LIB32=xilink6.exe -lib
 # ADD BASE LIB32 /nologo
 # ADD LIB32 /nologo /out:"bin\acpica.lib"
 # Begin Special Build Tool
