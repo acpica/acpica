@@ -14,15 +14,18 @@
  | FILENAME: amlexec.c - ACPI AML (p-code) execution
  |__________________________________________________________________________
  |
- | $Revision: 1.7 $
- | $Date: 2005/06/29 17:50:44 $
+ | $Revision: 1.8 $
+ | $Date: 2005/06/29 17:50:47 $
  | $Log: exstore.c,v $
- | Revision 1.7  2005/06/29 17:50:44  aystarik
- | Removed hungarian notation
+ | Revision 1.8  2005/06/29 17:50:47  aystarik
+ | Changed to generic 64-bit friendly data types
  |
  | 
- | date	99.02.16.21.22.00;	author rmoore1;	state Exp;
+ | date	99.02.20.00.33.00;	author rmoore1;	state Exp;
  |
+ * 
+ * 8     2/19/99 4:33p Rmoore1
+ * Changed to generic 64-bit friendly data types
  * 
  * 7     2/16/99 1:22p Rmoore1
  * Removed hungarian notation
@@ -263,7 +266,7 @@ extern char *RV[];
 #define AML_METHOD_MAX_NEST 10  /* Max depth of nested method calls */
 
 static OBJECT_DESCRIPTOR *  MethodStack[AML_METHOD_MAX_NEST][ARGBASE+NUMARG];
-static int                  MethodStackTop = -1;
+static INT32                MethodStackTop = -1;
 
 #include <pciutils.h>
 
@@ -276,7 +279,7 @@ static int                  MethodStackTop = -1;
  *
  ****************************************************************************/
 
-int
+INT32
 GetMethodDepth (void)
 {
 
@@ -288,7 +291,7 @@ GetMethodDepth (void)
  * 
  * FUNCTION:    GetMethodValTyp
  *
- * PARAMETERS:  int Index      index in MethodStack[MethodStackTop]
+ * PARAMETERS:  INT32 Index      index in MethodStack[MethodStackTop]
  *
  * RETURN:      Data type of selected Arg or Local
  *              Used only in ExecMonadic2()/TypeOp.
@@ -296,7 +299,7 @@ GetMethodDepth (void)
  ****************************************************************************/
 
 static NsType
-GetMethodValTyp (int Index)
+GetMethodValTyp (INT32 Index)
 {
     FUNCTION_TRACE ("GetMethodValTyp");
 
@@ -325,7 +328,7 @@ GetMethodValTyp (int Index)
  * 
  * FUNCTION:    GetMethodValue
  *
- * PARAMETERS:  int                 Index       index in MethodStack[MethodStackTop]
+ * PARAMETERS:  INT32               Index       index in MethodStack[MethodStackTop]
  *              OBJECT_DESCRIPTOR   *ObjDesc    Descriptor into which selected Arg
  *                                              or Local value should be copied
  *
@@ -336,8 +339,8 @@ GetMethodValTyp (int Index)
  *
  ****************************************************************************/
 
-static int
-GetMethodValue (int Index, OBJECT_DESCRIPTOR *ObjDesc)
+static INT32
+GetMethodValue (INT32 Index, OBJECT_DESCRIPTOR *ObjDesc)
 {
     FUNCTION_TRACE ("GetMethodValue");
 
@@ -370,7 +373,7 @@ GetMethodValue (int Index, OBJECT_DESCRIPTOR *ObjDesc)
 #ifdef HACK
         fprintf_bu (LstFileHandle, LOGFILE,
                     " ** GetMethodValue: ret uninit as 4 **");
-        ObjDesc->Number.ValType = (BYTE) Number;
+        ObjDesc->Number.ValType = (UINT8) Number;
         ObjDesc->Number.Number = 0x4;
         return S_SUCCESS;
 #endif /* HACK */
@@ -402,7 +405,7 @@ GetMethodValue (int Index, OBJECT_DESCRIPTOR *ObjDesc)
  * 
  * FUNCTION:    SetMethodValue
  *
- * PARAMETERS:  int                 Index       index in MethodStack[MethodStackTop]
+ * PARAMETERS:  INT32               Index       index in MethodStack[MethodStackTop]
  *              OBJECT_DESCRIPTOR * ObjDesc     Value to be stored
  *                                              May be NULL -- see Description.
  *              OBJECT_DESCRIPTOR * ObjDesc2    Spare descriptor into which *ObjDesc
@@ -424,8 +427,8 @@ GetMethodValue (int Index, OBJECT_DESCRIPTOR *ObjDesc)
  *
  ****************************************************************************/
 
-static int
-SetMethodValue (int Index, OBJECT_DESCRIPTOR *ObjDesc, OBJECT_DESCRIPTOR *ObjDesc2)
+static INT32
+SetMethodValue (INT32 Index, OBJECT_DESCRIPTOR *ObjDesc, OBJECT_DESCRIPTOR *ObjDesc2)
 {
     FUNCTION_TRACE ("SetMethodValue");
 
@@ -548,11 +551,11 @@ SetMethodValue (int Index, OBJECT_DESCRIPTOR *ObjDesc, OBJECT_DESCRIPTOR *ObjDes
  * FUNCTION:    PrepDefFieldValue
  *
  * PARAMETERS:  NsHandle    Region     Region in which field is being defined
- *              BYTE        FldFlg     Access, LockRule, UpdateRule
+ *              UINT8       FldFlg     Access, LockRule, UpdateRule
  *                                      The format of a FieldFlag is described
  *                                      in the ACPI specification and in <aml.h>
- *              long        FldPos     field position
- *              long        FldLen     field length
+ *              INT32       FldPos     field position
+ *              INT32       FldLen     field length
  *
  * RETURN:      S_SUCCESS or S_ERROR
  *
@@ -565,8 +568,8 @@ SetMethodValue (int Index, OBJECT_DESCRIPTOR *ObjDesc, OBJECT_DESCRIPTOR *ObjDes
  *
  ****************************************************************************/
 
-int
-PrepDefFieldValue (NsHandle Region, BYTE FldFlg, long FldPos, long FldLen)
+INT32
+PrepDefFieldValue (NsHandle Region, UINT8 FldFlg, INT32 FldPos, INT32 FldLen)
 {
     OBJECT_DESCRIPTOR *ObjDesc = NEW (OBJECT_DESCRIPTOR);
 
@@ -601,12 +604,12 @@ PrepDefFieldValue (NsHandle Region, BYTE FldFlg, long FldPos, long FldLen)
         DumpStack (Exec, "PrepDefFieldValue", 2, "case DefField");
     }
 
-    ObjDesc->ValType = (BYTE) DefField;
+    ObjDesc->ValType = (UINT8) DefField;
     if (DefField != ObjDesc->Field.ValType)
     {
         /* 
          * The C implementation has done something which is technically legal
-         * but unexpected:  the ValType field which was defined as a BYTE did
+         * but unexpected:  the ValType field which was defined as a UINT8 did
          * not map to the same structure offset as the one which was defined
          * as a WORD_BIT -- see comments in the definition of the FieldUnit
          * variant of OBJECT_DESCRIPTOR in amlpriv.h.
@@ -616,8 +619,8 @@ PrepDefFieldValue (NsHandle Region, BYTE FldFlg, long FldPos, long FldLen)
         ObjDesc->Field.ValType = 0x005a;
         sprintf (WhyBuf,
                 "PrepDefFieldValue: internal failure %p %02x %02x %02x %02x",
-                ObjDesc, ((BYTE *) ObjDesc)[0], ((BYTE *) ObjDesc)[1], ((BYTE *) ObjDesc)[2],
-                ((BYTE *) ObjDesc)[3]);
+                ObjDesc, ((UINT8 *) ObjDesc)[0], ((UINT8 *) ObjDesc)[1], ((UINT8 *) ObjDesc)[2],
+                ((UINT8 *) ObjDesc)[3]);
         Why = WhyBuf;
         DELETE (ObjDesc);
         return S_ERROR;
@@ -626,14 +629,14 @@ PrepDefFieldValue (NsHandle Region, BYTE FldFlg, long FldPos, long FldLen)
     ObjDesc->Field.Access     = (FldFlg & ACCESS_TYPE_MASK) >> ACCESS_TYPE_SHIFT;
     ObjDesc->Field.LockRule   = (FldFlg & LOCK_RULE_MASK) >> LOCK_RULE_SHIFT;
     ObjDesc->Field.UpdateRule = (FldFlg & UPDATE_RULE_MASK) >> UPDATE_RULE_SHIFT;
-    ObjDesc->Field.DatLen     = (WORD) FldLen;
+    ObjDesc->Field.DatLen     = (UINT16) FldLen;
 
     /* XXX - should use width of data register, not hardcoded 8 */
 
     PRINT_XXX (LstFileHandle, LOGFILE, " ** PrepDefFieldValue: hard 8 **");
 
-    ObjDesc->Field.BitOffset  = (WORD) FldPos % 8;
-    ObjDesc->Field.Offset     = (DWORD) FldPos / 8;
+    ObjDesc->Field.BitOffset  = (UINT16) FldPos % 8;
+    ObjDesc->Field.Offset     = (UINT32) FldPos / 8;
     ObjDesc->Field.Container  = NsValPtr (Region);
 
     if (debug_level () > 0)
@@ -660,7 +663,7 @@ PrepDefFieldValue (NsHandle Region, BYTE FldFlg, long FldPos, long FldLen)
      * handle is on TOS, preserving the current type of that nte.
      */
     NsSetValue ((NsHandle) ObjStack[ObjStackTop], ObjDesc,
-                (BYTE) NsValType ((NsHandle) ObjStack[ObjStackTop]));
+                (UINT8) NsValType ((NsHandle) ObjStack[ObjStackTop]));
 
     return S_SUCCESS;
 }
@@ -672,10 +675,10 @@ PrepDefFieldValue (NsHandle Region, BYTE FldFlg, long FldPos, long FldLen)
  *
  * PARAMETERS:  NsHandle    Region     Region in which field is being defined
  *              NsHandle    BankReg    Bank selection register
- *              DWORD       BankVal    Value to store in selection register
- *              BYTE        FldFlg     Access, LockRule, UpdateRule
- *              long        FldPos     field position
- *              long        FldLen     field length
+ *              UINT32      BankVal    Value to store in selection register
+ *              UINT8       FldFlg     Access, LockRule, UpdateRule
+ *              INT32       FldPos     field position
+ *              INT32       FldLen     field length
  *
  * RETURN:      S_SUCCESS or S_ERROR
  *
@@ -688,9 +691,9 @@ PrepDefFieldValue (NsHandle Region, BYTE FldFlg, long FldPos, long FldLen)
  *
  ****************************************************************************/
 
-int
-PrepBankFieldValue (NsHandle Region, NsHandle BankReg, DWORD BankVal,
-                        BYTE FldFlg, long FldPos, long FldLen)
+INT32
+PrepBankFieldValue (NsHandle Region, NsHandle BankReg, UINT32 BankVal,
+                        UINT8 FldFlg, INT32 FldPos, INT32 FldLen)
 {
     OBJECT_DESCRIPTOR *ObjDesc = NEW (OBJECT_DESCRIPTOR);
 
@@ -725,7 +728,7 @@ PrepBankFieldValue (NsHandle Region, NsHandle BankReg, DWORD BankVal,
         DumpStack (Exec, "PrepBankFieldValue", 2, "case BankField");
     }
 
-    ObjDesc->ValType = (BYTE) BankField;
+    ObjDesc->ValType = (UINT8) BankField;
     if (BankField != ObjDesc->BankField.ValType)
     {
         /* See comments in PrepDefFieldValue() re unexpected C behavior */
@@ -733,8 +736,8 @@ PrepBankFieldValue (NsHandle Region, NsHandle BankReg, DWORD BankVal,
         ObjDesc->BankField.ValType = 0x005a;
         sprintf (WhyBuf,
                 "PrepBankFieldValue: internal failure %p %02x %02x %02x %02x",
-                ObjDesc, ((BYTE *) ObjDesc)[0], ((BYTE *) ObjDesc)[1], ((BYTE *) ObjDesc)[2],
-                ((BYTE *) ObjDesc)[3]);
+                ObjDesc, ((UINT8 *) ObjDesc)[0], ((UINT8 *) ObjDesc)[1], ((UINT8 *) ObjDesc)[2],
+                ((UINT8 *) ObjDesc)[3]);
         Why = WhyBuf;
         DELETE (ObjDesc);
         return S_ERROR;
@@ -743,14 +746,14 @@ PrepBankFieldValue (NsHandle Region, NsHandle BankReg, DWORD BankVal,
     ObjDesc->BankField.Access     = (FldFlg & ACCESS_TYPE_MASK) >> ACCESS_TYPE_SHIFT;
     ObjDesc->BankField.LockRule   = (FldFlg & LOCK_RULE_MASK) >> LOCK_RULE_SHIFT;
     ObjDesc->BankField.UpdateRule = (FldFlg & UPDATE_RULE_MASK) >> UPDATE_RULE_SHIFT;
-    ObjDesc->BankField.DatLen     = (WORD) FldLen;
+    ObjDesc->BankField.DatLen     = (UINT16) FldLen;
 
     /* XXX - should use width of data register, not hardcoded 8 */
 
     PRINT_XXX (LstFileHandle, LOGFILE, " ** PrepBankFieldValue: hard 8 **");
 
-    ObjDesc->BankField.BitOffset  = (WORD) FldPos % 8;
-    ObjDesc->BankField.Offset     = (DWORD) FldPos / 8;
+    ObjDesc->BankField.BitOffset  = (UINT16) FldPos % 8;
+    ObjDesc->BankField.Offset     = (UINT32) FldPos / 8;
     ObjDesc->BankField.BankVal    = BankVal;
     ObjDesc->BankField.Container  = NsValPtr (Region);
     ObjDesc->BankField.BankSelect = NsValPtr (BankReg);
@@ -773,7 +776,7 @@ PrepBankFieldValue (NsHandle Region, NsHandle BankReg, DWORD BankVal,
      * handle is on TOS, preserving the current type of that nte.
      */
     NsSetValue ((NsHandle) ObjStack[ObjStackTop], ObjDesc,
-                (BYTE) NsValType ((NsHandle) ObjStack[ObjStackTop]));
+                (UINT8) NsValType ((NsHandle) ObjStack[ObjStackTop]));
 
     return S_SUCCESS;
 }
@@ -785,9 +788,9 @@ PrepBankFieldValue (NsHandle Region, NsHandle BankReg, DWORD BankVal,
  *
  * PARAMETERS:  NsHandle    IndexReg   Index register
  *              NsHandle    DataReg    Data register
- *              BYTE        FldFlg     Access, LockRule, UpdateRule
- *              long        FldPos     field position
- *              long        FldLen     field length
+ *              UINT8       FldFlg     Access, LockRule, UpdateRule
+ *              INT32       FldPos     field position
+ *              INT32       FldLen     field length
  *
  * RETURN:      S_SUCCESS or S_ERROR
  *
@@ -800,9 +803,9 @@ PrepBankFieldValue (NsHandle Region, NsHandle BankReg, DWORD BankVal,
  *
  ****************************************************************************/
 
-int
+INT32
 PrepIndexFieldValue (NsHandle IndexReg, NsHandle DataReg,
-                        BYTE FldFlg, long FldPos, long FldLen)
+                        UINT8 FldFlg, INT32 FldPos, INT32 FldLen)
 {
     OBJECT_DESCRIPTOR *ObjDesc = NEW (OBJECT_DESCRIPTOR);
 
@@ -823,7 +826,7 @@ PrepIndexFieldValue (NsHandle IndexReg, NsHandle DataReg,
         return S_ERROR;
     }
 
-    ObjDesc->ValType = (BYTE) IndexField;
+    ObjDesc->ValType = (UINT8) IndexField;
     if (IndexField != ObjDesc->IndexField.ValType)
     {
         /* See comments in PrepDefFieldValue() re unexpected C behavior */
@@ -831,8 +834,8 @@ PrepIndexFieldValue (NsHandle IndexReg, NsHandle DataReg,
         ObjDesc->IndexField.ValType = 0x005a;
         sprintf (WhyBuf,
                 "PrepIndexFieldValue: internal failure %p %02x %02x %02x %02x",
-                ObjDesc, ((BYTE *) ObjDesc)[0], ((BYTE *) ObjDesc)[1], ((BYTE *) ObjDesc)[2],
-                ((BYTE *) ObjDesc)[3]);
+                ObjDesc, ((UINT8 *) ObjDesc)[0], ((UINT8 *) ObjDesc)[1], ((UINT8 *) ObjDesc)[2],
+                ((UINT8 *) ObjDesc)[3]);
         Why = WhyBuf;
         DELETE (ObjDesc);
         return S_ERROR;
@@ -841,14 +844,14 @@ PrepIndexFieldValue (NsHandle IndexReg, NsHandle DataReg,
     ObjDesc->IndexField.Access        = (FldFlg & ACCESS_TYPE_MASK) >> ACCESS_TYPE_SHIFT;
     ObjDesc->IndexField.LockRule      = (FldFlg & LOCK_RULE_MASK) >> LOCK_RULE_SHIFT;
     ObjDesc->IndexField.UpdateRule    = (FldFlg & UPDATE_RULE_MASK) >> UPDATE_RULE_SHIFT;
-    ObjDesc->IndexField.DatLen        = (WORD) FldLen;
+    ObjDesc->IndexField.DatLen        = (UINT16) FldLen;
 
     /* XXX - should use width of data register, not hardcoded 8 */
 
     PRINT_XXX (LstFileHandle, LOGFILE, " ** PrepIndexFieldValue: hard 8 **");
 
-    ObjDesc->IndexField.BitOffset = (WORD) FldPos % 8;
-    ObjDesc->IndexField.IndexVal  = (DWORD) FldPos / 8;
+    ObjDesc->IndexField.BitOffset = (UINT16) FldPos % 8;
+    ObjDesc->IndexField.IndexVal  = (UINT32) FldPos / 8;
     ObjDesc->IndexField.Index     = IndexReg;
     ObjDesc->IndexField.Data      = DataReg;
 
@@ -871,7 +874,7 @@ PrepIndexFieldValue (NsHandle IndexReg, NsHandle DataReg,
      * handle is on TOS, preserving the current type of that nte.
      */
     NsSetValue ((NsHandle) ObjStack[ObjStackTop], ObjDesc,
-                (BYTE) NsValType ((NsHandle) ObjStack[ObjStackTop]));
+                (UINT8) NsValType ((NsHandle) ObjStack[ObjStackTop]));
 
     return S_SUCCESS;
 }
@@ -883,7 +886,7 @@ PrepIndexFieldValue (NsHandle IndexReg, NsHandle DataReg,
  *
  * PARAMETERS:  OBJECT_DESCRIPTOR * ObjDesc         Field to be read or written
  *              OBJECT_DESCRIPTOR * RgnDesc         Region containing field
- *              int                 FieldBitWidth   Field Width in bits (8, 16, or 32)
+ *              INT32               FieldBitWidth   Field Width in bits (8, 16, or 32)
  *
  * RETURN:      S_SUCCESS or S_ERROR
  *
@@ -891,11 +894,11 @@ PrepIndexFieldValue (NsHandle IndexReg, NsHandle DataReg,
  *
  ****************************************************************************/
 
-static int
-SetupField (OBJECT_DESCRIPTOR *ObjDesc, OBJECT_DESCRIPTOR *RgnDesc, int FieldBitWidth)
+static INT32
+SetupField (OBJECT_DESCRIPTOR *ObjDesc, OBJECT_DESCRIPTOR *RgnDesc, INT32 FieldBitWidth)
 {
-    int Excep;
-    int FieldByteWidth = FieldBitWidth / 8;                  /* possible values are 1, 2, 4 */
+    INT32 Excep;
+    INT32 FieldByteWidth = FieldBitWidth / 8;                  /* possible values are 1, 2, 4 */
 
 
     FUNCTION_TRACE ("SetupField");
@@ -962,7 +965,7 @@ SetupField (OBJECT_DESCRIPTOR *ObjDesc, OBJECT_DESCRIPTOR *RgnDesc, int FieldBit
 
 
             if ((OBJECT_DESCRIPTOR *) 0 == ObjValDesc
-                || ObjValDesc->ValType != (BYTE) Number)
+                || ObjValDesc->ValType != (UINT8) Number)
             {
                 Why = "SetupField: Malformed Region/Address";
 
@@ -971,7 +974,7 @@ SetupField (OBJECT_DESCRIPTOR *ObjDesc, OBJECT_DESCRIPTOR *RgnDesc, int FieldBit
                     /* flow trace */
                     fprintf_bu (LstFileHandle, LOGFILE, " Malformed Region/Address "
                                 "ObjValDesc = %p, ObjValDesc->ValType = %02Xh, Number = %02Xh",
-                                ObjValDesc, ObjValDesc->ValType, (BYTE) Number);
+                                ObjValDesc, ObjValDesc->ValType, (UINT8) Number);
 
                 }
                 return S_ERROR;
@@ -990,7 +993,7 @@ SetupField (OBJECT_DESCRIPTOR *ObjDesc, OBJECT_DESCRIPTOR *RgnDesc, int FieldBit
                 ObjValDesc = ObjStack[ObjStackTop];
 
                 if ((OBJECT_DESCRIPTOR *)0 == ObjValDesc
-                    || ObjValDesc->ValType != (BYTE) Number)
+                    || ObjValDesc->ValType != (UINT8) Number)
                 {
                     Why = "SetupField: Malformed Region/Length";
                     if (debug_level () > 2)
@@ -1041,7 +1044,7 @@ SetupField (OBJECT_DESCRIPTOR *ObjDesc, OBJECT_DESCRIPTOR *RgnDesc, int FieldBit
      * exceeds region length, indicate an error.
      */
     if (RgnDesc->Region.Length
-        < (ObjDesc->Field.Offset & ~((DWORD) FieldByteWidth - 1)) + FieldByteWidth)
+        < (ObjDesc->Field.Offset & ~((UINT32) FieldByteWidth - 1)) + FieldByteWidth)
     {
         sprintf (WhyBuf,
                 "SetupField: Operation at %08lx width %d bits exceeds region bound %08lx",
@@ -1077,8 +1080,8 @@ SetupField (OBJECT_DESCRIPTOR *ObjDesc, OBJECT_DESCRIPTOR *RgnDesc, int FieldBit
  * FUNCTION:    ReadField
  *
  * PARAMETERS:  OBJECT_DESCRIPTOR * ObjDesc         Field to be read
- *              DWORD *             Value           Where to store value
- *              int                 FieldBitWidth   Field Width in bits (8, 16, or 32)
+ *              UINT32*             Value           Where to store value
+ *              INT32               FieldBitWidth   Field Width in bits (8, 16, or 32)
  *
  * RETURN:      S_SUCCESS or S_ERROR
  *
@@ -1086,15 +1089,15 @@ SetupField (OBJECT_DESCRIPTOR *ObjDesc, OBJECT_DESCRIPTOR *RgnDesc, int FieldBit
  *
  ****************************************************************************/
 
-static int
-ReadField (OBJECT_DESCRIPTOR *ObjDesc, DWORD *Value, int FieldBitWidth)
+static INT32
+ReadField (OBJECT_DESCRIPTOR *ObjDesc, UINT32*Value, INT32 FieldBitWidth)
 {
     /* ObjDesc is validated by callers */
 
     OBJECT_DESCRIPTOR   *RgnDesc = ObjDesc->Field.Container;
-    DWORD               Address;
-    int                 FieldByteWidth = FieldBitWidth / 8;
-    int                 Excep = SetupField (ObjDesc, RgnDesc, FieldBitWidth);
+    UINT32              Address;
+    INT32               FieldByteWidth = FieldBitWidth / 8;
+    INT32               Excep = SetupField (ObjDesc, RgnDesc, FieldBitWidth);
 
 
     FUNCTION_TRACE ("ReadField");
@@ -1110,7 +1113,7 @@ ReadField (OBJECT_DESCRIPTOR *ObjDesc, DWORD *Value, int FieldBitWidth)
      * field width, and add region base address.
      */
     Address = RgnDesc->Region.Address
-            + (ObjDesc->Field.Offset & ~((DWORD) FieldByteWidth - 1));
+            + (ObjDesc->Field.Offset & ~((UINT32) FieldByteWidth - 1));
 
     if (Trace & TraceOpRgn)
     {
@@ -1134,10 +1137,10 @@ ReadField (OBJECT_DESCRIPTOR *ObjDesc, DWORD *Value, int FieldBitWidth)
     switch(RgnDesc->Region.SpaceId)
     {
         void *      PhysicalAddrPtr;
-        BYTE        PciBus;
-        BYTE        DevFunc;
-        BYTE        PciReg;
-        BYTE        PciExcep;
+        UINT8       PciBus;
+        UINT8       DevFunc;
+        UINT8       PciReg;
+        UINT8       PciExcep;
 
         case SystemMemory:
 
@@ -1164,15 +1167,15 @@ ReadField (OBJECT_DESCRIPTOR *ObjDesc, DWORD *Value, int FieldBitWidth)
             switch (FieldBitWidth)
             {
                 case 8:
-                    *Value = (DWORD)* (BYTE *) PhysicalAddrPtr;
+                    *Value = (UINT32)* (UINT8 *) PhysicalAddrPtr;
                     break;
 
                 case 16:
-                    *Value = (DWORD)* (WORD *) PhysicalAddrPtr;
+                    *Value = (UINT32)* (UINT16 *) PhysicalAddrPtr;
                     break;
 
                 case 32:
-                    *Value = * (DWORD *) PhysicalAddrPtr;
+                    *Value = * (UINT32 *) PhysicalAddrPtr;
                     break;
 
                 default:
@@ -1190,15 +1193,15 @@ ReadField (OBJECT_DESCRIPTOR *ObjDesc, DWORD *Value, int FieldBitWidth)
             switch (FieldBitWidth)
             {
                 case 8:
-                    *Value = (DWORD) In8 ((WORD) Address);
+                    *Value = (UINT32) In8 ((UINT16) Address);
                     break;
 
                 case 16:
-                    *Value = (DWORD) In16 ((WORD) Address);
+                    *Value = (UINT32) In16 ((UINT16) Address);
                     break;
 
                 case 32:
-                    *Value = In32 ((WORD) Address);
+                    *Value = In32 ((UINT16) Address);
                     break;
 
                 default:
@@ -1210,18 +1213,18 @@ ReadField (OBJECT_DESCRIPTOR *ObjDesc, DWORD *Value, int FieldBitWidth)
             break;
 
         case PCIConfig:
-            PciBus = (BYTE) (Address >> 16);
-            DevFunc = (BYTE) (Address >> 8);
-            PciReg = (BYTE) ((Address >> 2) & 0x3f);
+            PciBus = (UINT8) (Address >> 16);
+            DevFunc = (UINT8) (Address >> 8);
+            PciReg = (UINT8) ((Address >> 2) & 0x3f);
 
             switch (FieldBitWidth)
             {
                 case 8:
-                    PciExcep = ReadPciCfgByte (PciBus, DevFunc, PciReg, (BYTE *) Value);
+                    PciExcep = ReadPciCfgByte (PciBus, DevFunc, PciReg, (UINT8 *) Value);
                     break;
 
                 case 16:
-                    PciExcep = ReadPciCfgWord (PciBus, DevFunc, PciReg, (WORD *) Value);
+                    PciExcep = ReadPciCfgWord (PciBus, DevFunc, PciReg, (UINT16 *) Value);
                     break;
 
                 case 32:
@@ -1271,8 +1274,8 @@ ReadField (OBJECT_DESCRIPTOR *ObjDesc, DWORD *Value, int FieldBitWidth)
  * FUNCTION:    WriteField
  *
  * PARAMETERS:  OBJECT_DESCRIPTOR * ObjDesc         Field to be set
- *              DWORD               Value           Value to store
- *              int                 FieldBitWidth   Field Width in bits (8, 16, or 32)
+ *              UINT32              Value           Value to store
+ *              INT32               FieldBitWidth   Field Width in bits (8, 16, or 32)
  *
  * RETURN:      S_SUCCESS or S_ERROR
  *
@@ -1280,15 +1283,15 @@ ReadField (OBJECT_DESCRIPTOR *ObjDesc, DWORD *Value, int FieldBitWidth)
  *
  ****************************************************************************/
 
-static int
-WriteField (OBJECT_DESCRIPTOR *ObjDesc, DWORD Value, int FieldBitWidth)
+static INT32
+WriteField (OBJECT_DESCRIPTOR *ObjDesc, UINT32 Value, INT32 FieldBitWidth)
 {
     /* ObjDesc is validated by callers */
 
     OBJECT_DESCRIPTOR *     RgnDesc = ObjDesc->Field.Container;
-    DWORD                   Address;
-    int                     FieldByteWidth = FieldBitWidth / 8;
-    int                     Excep = SetupField (ObjDesc, RgnDesc, FieldBitWidth);
+    UINT32                  Address;
+    INT32                   FieldByteWidth = FieldBitWidth / 8;
+    INT32                   Excep = SetupField (ObjDesc, RgnDesc, FieldBitWidth);
 
 
     FUNCTION_TRACE ("WriteField");
@@ -1300,7 +1303,7 @@ WriteField (OBJECT_DESCRIPTOR *ObjDesc, DWORD Value, int FieldBitWidth)
     }
 
     Address = RgnDesc->Region.Address
-                + (ObjDesc->Field.Offset & ~((DWORD) FieldByteWidth - 1));
+                + (ObjDesc->Field.Offset & ~((UINT32) FieldByteWidth - 1));
 
     if (Trace & TraceOpRgn)
     {
@@ -1322,10 +1325,10 @@ WriteField (OBJECT_DESCRIPTOR *ObjDesc, DWORD Value, int FieldBitWidth)
     switch(RgnDesc->Region.SpaceId)
     {
         void        *PhysicalAddrPtr;
-        BYTE        PciBus;
-        BYTE        DevFunc;
-        BYTE        PciReg;
-        BYTE        PciExcep;
+        UINT8       PciBus;
+        UINT8       DevFunc;
+        UINT8       PciReg;
+        UINT8       PciExcep;
 
 
         case SystemMemory:
@@ -1350,15 +1353,15 @@ WriteField (OBJECT_DESCRIPTOR *ObjDesc, DWORD Value, int FieldBitWidth)
             switch (FieldBitWidth)
             {
                 case 8:
-                    *(BYTE *) PhysicalAddrPtr = (BYTE) Value;
+                    *(UINT8 *) PhysicalAddrPtr = (UINT8) Value;
                     break;
 
                 case 16:
-                    *(WORD *) PhysicalAddrPtr = (WORD) Value;
+                    *(UINT16 *) PhysicalAddrPtr = (UINT16) Value;
                     break;
 
                 case 32:
-                    *(DWORD *) PhysicalAddrPtr = Value;
+                    *(UINT32 *) PhysicalAddrPtr = Value;
                     break;
 
                 default:
@@ -1376,15 +1379,15 @@ WriteField (OBJECT_DESCRIPTOR *ObjDesc, DWORD Value, int FieldBitWidth)
             switch (FieldBitWidth)
             {
                 case 8:
-                    Out8 ((WORD) Address, (BYTE) Value);
+                    Out8 ((UINT16) Address, (UINT8) Value);
                     break;
 
                 case 16:
-                    Out16 ((WORD) Address, (WORD) Value);
+                    Out16 ((UINT16) Address, (UINT16) Value);
                     break;
 
                 case 32:
-                    Out32 ((WORD) Address, Value);
+                    Out32 ((UINT16) Address, Value);
                     break;
 
                 default:
@@ -1396,18 +1399,18 @@ WriteField (OBJECT_DESCRIPTOR *ObjDesc, DWORD Value, int FieldBitWidth)
             break;
 
         case PCIConfig:
-            PciBus = (BYTE) (Address >> 16);
-            DevFunc = (BYTE) (Address >> 8);
-            PciReg = (BYTE) ((Address >> 2) & 0x3f);
+            PciBus = (UINT8) (Address >> 16);
+            DevFunc = (UINT8) (Address >> 8);
+            PciReg = (UINT8) ((Address >> 2) & 0x3f);
 
             switch (FieldBitWidth)
             {
                 case 8:
-                    PciExcep = WritePciCfgByte (PciBus, DevFunc, PciReg, *(BYTE *)&Value);
+                    PciExcep = WritePciCfgByte (PciBus, DevFunc, PciReg, *(UINT8 *)&Value);
                     break;
 
                 case 16:
-                    PciExcep = WritePciCfgWord (PciBus, DevFunc, PciReg, *(WORD *)&Value);
+                    PciExcep = WritePciCfgWord (PciBus, DevFunc, PciReg, *(UINT16 *)&Value);
                     break;
 
                 case 32:
@@ -1484,9 +1487,9 @@ AmlAppendBlockOwner (void *Owner)
  * 
  * FUNCTION:    AccessNamedField
  *
- * PARAMETERS:  int         Mode           ACPI_READ or ACPI_WRITE
+ * PARAMETERS:  INT32       Mode           ACPI_READ or ACPI_WRITE
  *              NsHandle    NamedField     Handle for field to be accessed
- *              DWORD       *Value          Value to be read or written
+ *              UINT32      *Value          Value to be read or written
  *
  * RETURN:      S_SUCCESS or S_ERROR
  *
@@ -1494,14 +1497,14 @@ AmlAppendBlockOwner (void *Owner)
  *
  ****************************************************************************/
 
-static int
-AccessNamedField (int Mode, NsHandle NamedField, DWORD *Value)
+static INT32
+AccessNamedField (INT32 Mode, NsHandle NamedField, UINT32 *Value)
 {
     OBJECT_DESCRIPTOR *     ObjDesc = NsValPtr (NamedField);
     char *                  Type;
-    int                     Granularity;
-    int                     Excep;
-    int                     MaxW;
+    INT32                   Granularity;
+    INT32                   Excep;
+    INT32                   MaxW;
 
 
     FUNCTION_TRACE ("AccessNamedField");
@@ -1549,22 +1552,22 @@ AccessNamedField (int Mode, NsHandle NamedField, DWORD *Value)
         case AnyAcc:
             Granularity = 8;
             MaxW = 32;
-            Type = "DWORD";
+            Type = "UINT32";
             break;
 
         case ByteAcc:
             Granularity = MaxW = 8;
-            Type = "BYTE";
+            Type = "UINT8";
             break;
 
         case WordAcc:
             Granularity = MaxW = 16;
-            Type = "WORD";
+            Type = "UINT16";
             break;
 
         case DWordAcc:
             Granularity = MaxW = 32;
-            Type = "DWORD";
+            Type = "UINT32";
             break;
 
         default:
@@ -1575,7 +1578,7 @@ AccessNamedField (int Mode, NsHandle NamedField, DWORD *Value)
             return S_ERROR;
     }
 
-    if (ObjDesc->FieldUnit.DatLen + ObjDesc->FieldUnit.BitOffset > (WORD) MaxW)
+    if (ObjDesc->FieldUnit.DatLen + ObjDesc->FieldUnit.BitOffset > (UINT16) MaxW)
     {
         sprintf (WhyBuf, "AccessNamedField: Field exceeds %s", Type);
         Why = WhyBuf;
@@ -1588,7 +1591,7 @@ AccessNamedField (int Mode, NsHandle NamedField, DWORD *Value)
      */
     while (Granularity < MaxW
             && ObjDesc->FieldUnit.DatLen + ObjDesc->FieldUnit.BitOffset
-                <= (WORD) MaxW / 2)
+                <= (UINT16) MaxW / 2)
     {
         MaxW /= 2;
     }
@@ -1597,12 +1600,12 @@ AccessNamedField (int Mode, NsHandle NamedField, DWORD *Value)
     {
         /* Construct Mask with 1 bits where the field is, 0 bits elsewhere */
 
-        DWORD       Mask = (((DWORD)1 << ObjDesc->FieldUnit.DatLen) - (DWORD)1)
+        UINT32      Mask = (((UINT32)1 << ObjDesc->FieldUnit.DatLen) - (UINT32)1)
                             << ObjDesc->Field.BitOffset;
         /* Shift and mask the value into the field position */
 
-        DWORD       dValue = (*Value << ObjDesc->Field.BitOffset) & Mask;
-        int         Locked = FALSE;
+        UINT32      dValue = (*Value << ObjDesc->Field.BitOffset) & Mask;
+        INT32       Locked = FALSE;
 
 
         if (ObjDesc->FieldUnit.DatLen % Granularity || ObjDesc->FieldUnit.BitOffset)
@@ -1611,7 +1614,7 @@ AccessNamedField (int Mode, NsHandle NamedField, DWORD *Value)
 
             switch (ObjDesc->Field.UpdateRule)
             {
-                DWORD OldVal;
+                UINT32 OldVal;
 
                 case Preserve:
 
@@ -1659,7 +1662,7 @@ AccessNamedField (int Mode, NsHandle NamedField, DWORD *Value)
 
         /* Check lock rule prior to modifing the field */
 
-        if (ObjDesc->FieldUnit.LockRule == (WORD) Lock)
+        if (ObjDesc->FieldUnit.LockRule == (UINT16) Lock)
         {
             if (GetGlobalLock () == S_ERROR)
             {
@@ -1698,7 +1701,7 @@ AccessNamedField (int Mode, NsHandle NamedField, DWORD *Value)
         if (S_SUCCESS == Excep)
         {
             *Value >>= ObjDesc->Field.BitOffset;
-            *Value &= (((DWORD) 1 << ObjDesc->FieldUnit.DatLen) - (DWORD) 1);
+            *Value &= (((UINT32) 1 << ObjDesc->FieldUnit.DatLen) - (UINT32) 1);
         }
     }
 
@@ -1711,7 +1714,7 @@ AccessNamedField (int Mode, NsHandle NamedField, DWORD *Value)
  * FUNCTION:    SetNamedFieldValue
  *
  * PARAMETERS:  NsHandle    NamedField     Handle for field to be set
- *              DWORD       Value          Value to be stored in field
+ *              UINT32      Value          Value to be stored in field
  *
  * RETURN:      S_SUCCESS or S_ERROR
  *
@@ -1719,8 +1722,8 @@ AccessNamedField (int Mode, NsHandle NamedField, DWORD *Value)
  *
  ****************************************************************************/
 
-int
-SetNamedFieldValue (NsHandle NamedField, DWORD Value)
+INT32
+SetNamedFieldValue (NsHandle NamedField, UINT32 Value)
 {
     FUNCTION_TRACE ("SetNamedFieldValue");
 
@@ -1740,7 +1743,7 @@ SetNamedFieldValue (NsHandle NamedField, DWORD Value)
  * FUNCTION:    GetNamedFieldValue
  *
  * PARAMETERS:  NsHandle    NamedField      Handle for field to be read
- *              DWORD       *Value          Where to store value read froom field
+ *              UINT32      *Value          Where to store value read froom field
  *
  * RETURN:      S_SUCCESS or S_ERROR
  *
@@ -1748,8 +1751,8 @@ SetNamedFieldValue (NsHandle NamedField, DWORD Value)
  *
  ****************************************************************************/
 
-int
-GetNamedFieldValue (NsHandle NamedField, DWORD *Value)
+INT32
+GetNamedFieldValue (NsHandle NamedField, UINT32 *Value)
 {
     FUNCTION_TRACE ("GetNamedFieldValue");
 
@@ -1788,13 +1791,13 @@ GetNamedFieldValue (NsHandle NamedField, DWORD *Value)
  *
  ****************************************************************************/
 
-int
+INT32
 ExecStore(OBJECT_DESCRIPTOR *ValDesc, OBJECT_DESCRIPTOR *DestDesc)
 {
     NsHandle        TempHandle;
-    int             Excep;
-    int             Stacked = FALSE;
-    int             Locked = FALSE;
+    INT32           Excep;
+    INT32           Stacked = FALSE;
+    INT32           Locked = FALSE;
 
 
     FUNCTION_TRACE ("ExecStore");
@@ -1818,7 +1821,7 @@ ExecStore(OBJECT_DESCRIPTOR *ValDesc, OBJECT_DESCRIPTOR *DestDesc)
 
         if (DestDesc)
         {
-            DestDesc->ValType       = (BYTE) Lvalue;
+            DestDesc->ValType       = (UINT8) Lvalue;
             DestDesc->Lvalue.OpCode = NameOp;
             DestDesc->Lvalue.Ref    = TempHandle;
 
@@ -1937,7 +1940,7 @@ ExecStore(OBJECT_DESCRIPTOR *ValDesc, OBJECT_DESCRIPTOR *DestDesc)
                 /* Set Bank value to select proper Bank */
                 /* Check lock rule prior to modifing the field */
 
-                if (DestDesc->BankField.LockRule == (WORD) Lock)
+                if (DestDesc->BankField.LockRule == (UINT16) Lock)
                 {
                     /* Lock Rule is Lock */
 
@@ -2052,7 +2055,7 @@ ExecStore(OBJECT_DESCRIPTOR *ValDesc, OBJECT_DESCRIPTOR *DestDesc)
 
                 /* Check lock rule prior to modifing the field */
                 
-                if (ValDesc->Field.LockRule == (WORD) Lock)
+                if (ValDesc->Field.LockRule == (UINT16) Lock)
                 {
                     /* Lock Rule is Lock */
                     
@@ -2142,7 +2145,7 @@ ExecStore(OBJECT_DESCRIPTOR *ValDesc, OBJECT_DESCRIPTOR *DestDesc)
                 /* Set Index value to select proper Data register */
                 /* Check lock rule prior to modifing the field */
                 
-                if (DestDesc->IndexField.LockRule == (WORD) Lock)
+                if (DestDesc->IndexField.LockRule == (UINT16) Lock)
                 {
                     /* Lock Rule is Lock */
                    
@@ -2242,7 +2245,7 @@ ExecStore(OBJECT_DESCRIPTOR *ValDesc, OBJECT_DESCRIPTOR *DestDesc)
                     break;
                 }
                 
-                if (DestDesc->ValType != (BYTE) NsValType (TempHandle))
+                if (DestDesc->ValType != (UINT8) NsValType (TempHandle))
                 {
                     sprintf (WhyBuf,
                             "ExecStore/FieldUnit:internal error: Name %4.4s type %d does not match value-type %d at %p",
@@ -2277,7 +2280,7 @@ ExecStore(OBJECT_DESCRIPTOR *ValDesc, OBJECT_DESCRIPTOR *DestDesc)
 
                 /* Check lock rule prior to modifing the field */
                 
-                if (DestDesc->FieldUnit.LockRule == (WORD) Lock)
+                if (DestDesc->FieldUnit.LockRule == (UINT16) Lock)
                 {
                     /* Lock Rule is Lock */
                     
@@ -2309,7 +2312,7 @@ ExecStore(OBJECT_DESCRIPTOR *ValDesc, OBJECT_DESCRIPTOR *DestDesc)
                         Locked = FALSE;
                     }
                     
-                    Why = "ExecStore/FieldUnit:implementation limitation: Field exceeds DWORD";
+                    Why = "ExecStore/FieldUnit:implementation limitation: Field exceeds UINT32";
                     Excep = S_ERROR;
                 }
                 
@@ -2317,14 +2320,14 @@ ExecStore(OBJECT_DESCRIPTOR *ValDesc, OBJECT_DESCRIPTOR *DestDesc)
                 {
                     /* Field location is (base of buffer) + (byte offset) */
                     
-                    BYTE *      Location = DestDesc->FieldUnit.Container->Buffer.Buffer
+                    UINT8 *      Location = DestDesc->FieldUnit.Container->Buffer.Buffer
                                             + DestDesc->FieldUnit.Offset;
                     
                     /* 
                      * Construct Mask with 1 bits where the field is,
                      * 0 bits elsewhere
                      */
-                    DWORD       Mask = ((DWORD) 1 << DestDesc->FieldUnit.DatLen) - (DWORD)1
+                    UINT32      Mask = ((UINT32) 1 << DestDesc->FieldUnit.DatLen) - (UINT32)1
                                          << DestDesc->FieldUnit.BitOffset;
 
                     if (Trace & TraceBufFld)
@@ -2341,19 +2344,19 @@ ExecStore(OBJECT_DESCRIPTOR *ValDesc, OBJECT_DESCRIPTOR *DestDesc)
 
                     /* zero out the field in the buffer */
                     
-                    *(DWORD *) Location &= ~Mask;
+                    *(UINT32 *) Location &= ~Mask;
 
                     /* 
                      * Shift and mask the new value into position,
                      * and or it into the buffer.
                      */
-                    *(DWORD *) Location
+                    *(UINT32 *) Location
                         |= (ValDesc->Number.Number << DestDesc->FieldUnit.BitOffset) & Mask;
                     
                     if (Trace & TraceBufFld)
                     {
                         fprintf_bu(LstFileHandle, LOGFILE,
-                            " val %08lx", *(DWORD *) Location);
+                            " val %08lx", *(UINT32 *) Location);
                     }
 
                     Excep = S_SUCCESS;
@@ -2486,12 +2489,12 @@ ExecStore(OBJECT_DESCRIPTOR *ValDesc, OBJECT_DESCRIPTOR *DestDesc)
  *
  ****************************************************************************/
 
-static int
+static INT32
 GetFieldUnitValue (OBJECT_DESCRIPTOR *FieldDesc, OBJECT_DESCRIPTOR *ResultDesc)
 {
-    BYTE *          Location;
-    DWORD           Mask;
-    int             Locked = FALSE;
+    UINT8 *          Location;
+    UINT32          Mask;
+    INT32           Locked = FALSE;
 
 
     FUNCTION_TRACE ("GetFieldUnitValue");
@@ -2534,7 +2537,7 @@ GetFieldUnitValue (OBJECT_DESCRIPTOR *FieldDesc, OBJECT_DESCRIPTOR *ResultDesc)
 
     /* Check lock rule prior to modifing the field */
 
-    if (FieldDesc->FieldUnit.LockRule == (WORD) Lock)
+    if (FieldDesc->FieldUnit.LockRule == (UINT16) Lock)
     {
         /* Lock Rule is Lock */
         
@@ -2566,7 +2569,7 @@ GetFieldUnitValue (OBJECT_DESCRIPTOR *FieldDesc, OBJECT_DESCRIPTOR *ResultDesc)
             Locked = FALSE;
         }
         
-        Why = "GetFieldUnitValue: implementation limitation: Field exceeds DWORD";
+        Why = "GetFieldUnitValue: implementation limitation: Field exceeds UINT32";
         return S_ERROR;
     }
 
@@ -2577,14 +2580,14 @@ GetFieldUnitValue (OBJECT_DESCRIPTOR *FieldDesc, OBJECT_DESCRIPTOR *ResultDesc)
 
     /* Construct Mask with as many 1 bits as the field width */
     
-    Mask = ((DWORD) 1 << FieldDesc->FieldUnit.DatLen) - (DWORD) 1;
+    Mask = ((UINT32) 1 << FieldDesc->FieldUnit.DatLen) - (UINT32) 1;
 
-    ResultDesc->Number.ValType = (BYTE) Number;
+    ResultDesc->Number.ValType = (UINT8) Number;
 
     /* Shift the word containing the field, and mask the value */
     
     ResultDesc->Number.Number
-        = *(DWORD *) Location >> FieldDesc->FieldUnit.BitOffset & Mask;
+        = *(UINT32 *) Location >> FieldDesc->FieldUnit.BitOffset & Mask;
 
     if (Trace & TraceBufFld)
     {
@@ -2628,12 +2631,12 @@ GetFieldUnitValue (OBJECT_DESCRIPTOR *FieldDesc, OBJECT_DESCRIPTOR *ResultDesc)
  *
  ****************************************************************************/
 
-int
+INT32
 GetRvalue (OBJECT_DESCRIPTOR **StackPtr)
 {
     NsHandle            TempHandle;
     OBJECT_DESCRIPTOR * ObjDesc;
-    int                 Excep;
+    INT32               Excep;
 
 
     FUNCTION_TRACE ("GetRvalue");
@@ -2651,7 +2654,7 @@ GetRvalue (OBJECT_DESCRIPTOR **StackPtr)
         case Lvalue:
             switch ((*StackPtr)->Lvalue.OpCode)
             {
-                BYTE        MvIndex;
+                UINT8       MvIndex;
 
                 case NameOp:
                     
@@ -2671,7 +2674,7 @@ GetRvalue (OBJECT_DESCRIPTOR **StackPtr)
                         fprintf_bu (LstFileHandle, LOGFILE,
                             "GetRvalue:Lcl%d: before GetMethodValue %p %p %08lx ",
                             MvIndex = (*StackPtr)->Lvalue.OpCode - Local0,
-                            StackPtr, *StackPtr, *(DWORD *)* StackPtr);
+                            StackPtr, *StackPtr, *(UINT32 *)* StackPtr);
                     }
 
                     Excep = GetMethodValue (LCLBASE + (*StackPtr)->Lvalue.OpCode - Local0,
@@ -2682,7 +2685,7 @@ GetRvalue (OBJECT_DESCRIPTOR **StackPtr)
                         fprintf_bu (LstFileHandle, LOGFILE,
                                     "GetRvalue:Lcl%d: iGMV Excep=%s %p %p %08lx ",
                                     MvIndex, RV[Excep], StackPtr, *StackPtr,
-                                    *(DWORD *)* StackPtr);
+                                    *(UINT32 *)* StackPtr);
                         
                         if (Number == (*StackPtr)->ValType)
                         {
@@ -2702,7 +2705,7 @@ GetRvalue (OBJECT_DESCRIPTOR **StackPtr)
                         fprintf_bu (LstFileHandle, LOGFILE,
                                     "GetRvalue:Arg%d: before GetMethodValue %p %p %08lx ",
                                     MvIndex = (*StackPtr)->Lvalue.OpCode - Arg0,
-                                    StackPtr, *StackPtr, *(DWORD *)* StackPtr);
+                                    StackPtr, *StackPtr, *(UINT32 *)* StackPtr);
                     }
 
                     Excep = GetMethodValue (ARGBASE + (*StackPtr)->Lvalue.OpCode - Arg0,
@@ -2713,7 +2716,7 @@ GetRvalue (OBJECT_DESCRIPTOR **StackPtr)
                         fprintf_bu (LstFileHandle, LOGFILE,
                                     "GetRvalue:Arg%d: iGMV returned %s %p %p %08lx ",
                                     MvIndex, RV[Excep], StackPtr, *StackPtr,
-                                    *(DWORD *)* StackPtr);
+                                    *(UINT32 *)* StackPtr);
 
                         if (Number == (*StackPtr)->ValType)
                         {
@@ -2726,19 +2729,19 @@ GetRvalue (OBJECT_DESCRIPTOR **StackPtr)
                     break;
 
                 case ZeroOp:
-                    (*StackPtr)->ValType = (BYTE) Number;
+                    (*StackPtr)->ValType = (UINT8) Number;
                     (*StackPtr)->Number.Number = 0;
                     Excep = S_SUCCESS;
                     break;
 
                 case OneOp:
-                    (*StackPtr)->ValType = (BYTE) Number;
+                    (*StackPtr)->ValType = (UINT8) Number;
                     (*StackPtr)->Number.Number = 1;
                     Excep = S_SUCCESS;
                     break;
 
                 case OnesOp:
-                    (*StackPtr)->ValType = (BYTE) Number;
+                    (*StackPtr)->ValType = (UINT8) Number;
                     (*StackPtr)->Number.Number = 0xFFFFFFFF;
                     Excep = S_SUCCESS;
                     break;
@@ -2812,7 +2815,7 @@ GetRvalue (OBJECT_DESCRIPTOR **StackPtr)
 
         switch (NsValType ((NsHandle)* StackPtr))
         {
-            DWORD           TempVal;
+            UINT32          TempVal;
 
             case Package:
 
@@ -2826,7 +2829,7 @@ GetRvalue (OBJECT_DESCRIPTOR **StackPtr)
                     return S_ERROR;
                 }
 
-                if (PackageOp == *(BYTE *) ValDesc)
+                if (PackageOp == *(UINT8 *) ValDesc)
                 {
                     /* 
                      * The value pointer in the name table entry
@@ -2839,13 +2842,13 @@ GetRvalue (OBJECT_DESCRIPTOR **StackPtr)
                         return Excep;
                     }
 
-                    if (S_SUCCESS == (Excep = PushExec ((BYTE *) ValDesc + 1, 0L))/*PkgStack*/
+                    if (S_SUCCESS == (Excep = PushExec ((UINT8 *) ValDesc + 1, 0L))/*PkgStack*/
                         && S_SUCCESS == (Excep = DoPkg (Package, Exec))
                         && S_SUCCESS == (Excep = PopExec ()))                 /* PkgStack */
                     {
                         NsSetValue ((NsHandle)* StackPtr,
                                         ObjStack[ObjStackTop],
-                                        (BYTE) Package);
+                                        (UINT8) Package);
 
                         /* Refresh local value pointer to reflect newly set value */
                         
@@ -2895,7 +2898,7 @@ GetRvalue (OBJECT_DESCRIPTOR **StackPtr)
                 break;
 
             case Buffer:
-                if (BufferOp == *(BYTE *) ValDesc)
+                if (BufferOp == *(UINT8 *) ValDesc)
                 {
                     /* 
                      * The value pointer in the name table entry
@@ -2907,13 +2910,13 @@ GetRvalue (OBJECT_DESCRIPTOR **StackPtr)
                         return Excep;
                     }
 
-                    if (S_SUCCESS == (Excep = PushExec ((BYTE *) ValDesc + 1, 0L))   /*PkgStack*/
+                    if (S_SUCCESS == (Excep = PushExec ((UINT8 *) ValDesc + 1, 0L))   /*PkgStack*/
                         && S_SUCCESS == (Excep = DoPkg (Buffer, Exec))
                         && S_SUCCESS == (Excep = PopExec ()))                     /* PkgStack */
                     {
                         NsSetValue ((NsHandle) *StackPtr,
                                         ObjStack[ObjStackTop],
-                                        (BYTE) Buffer);
+                                        (UINT8) Buffer);
                         
                         /* Refresh local value pointer to reflect newly set value */
                         
@@ -2978,7 +2981,7 @@ GetRvalue (OBJECT_DESCRIPTOR **StackPtr)
                      * nte type is Number, but it does not point to a Number,
                      * so it had better point to a Literal in the AML stream.
                      */
-                    if (!IsInPCodeBlock ((BYTE *) ValDesc))
+                    if (!IsInPCodeBlock ((UINT8 *) ValDesc))
                     {
                         Why = "GetRvalue/Number:internal error: not a Number";
                         return S_ERROR;
@@ -2990,7 +2993,7 @@ GetRvalue (OBJECT_DESCRIPTOR **StackPtr)
                         KFatalError ("0013", ("GetRvalue: Descriptor Allocation Failure"));
                     }
                     
-                    switch (*(BYTE *) ValDesc)
+                    switch (*(UINT8 *) ValDesc)
                     {
                         case ZeroOp:
                             ObjDesc->Number.Number = 0;
@@ -3005,7 +3008,7 @@ GetRvalue (OBJECT_DESCRIPTOR **StackPtr)
                             break;
 
                         case ByteOp:
-                            ObjDesc->Number.Number = (DWORD)((BYTE *) ValDesc)[1];
+                            ObjDesc->Number.Number = (UINT32)((UINT8 *) ValDesc)[1];
                             break;
 
                         /* 
@@ -3014,22 +3017,22 @@ GetRvalue (OBJECT_DESCRIPTOR **StackPtr)
                          * XXX - that of the AML.
                          */
                         case WordOp:
-                            ObjDesc->Number.Number = (DWORD)*(WORD *)&((BYTE *) ValDesc)[1];
+                            ObjDesc->Number.Number = (UINT32)*(UINT16 *)&((UINT8 *) ValDesc)[1];
                             break;
 
                         case DWordOp:
-                            ObjDesc->Number.Number = *(DWORD *)&((BYTE *) ValDesc)[1];
+                            ObjDesc->Number.Number = *(UINT32 *)&((UINT8 *) ValDesc)[1];
                             break;
 
                         default:
                             DELETE (ObjDesc);
                             sprintf (WhyBuf,
                                     "GetRvalue/Number:internal error: Expected AML number, found %02x",
-                                    *(BYTE *) ValDesc);
+                                    *(UINT8 *) ValDesc);
                             Why = WhyBuf;
                             return S_ERROR;
                     }
-                    ObjDesc->Number.ValType = (BYTE) Number;
+                    ObjDesc->Number.ValType = (UINT8) Number;
                 }
                 break;
 
@@ -3052,7 +3055,7 @@ GetRvalue (OBJECT_DESCRIPTOR **StackPtr)
                     KFatalError ("0014", ("GetRvalue: Descriptor Allocation Failure"));
                 }
 
-                ObjDesc->Number.ValType = (BYTE) Number;
+                ObjDesc->Number.ValType = (UINT8) Number;
                 ObjDesc->Number.Number = TempVal;
                 break;
 
@@ -3071,7 +3074,7 @@ GetRvalue (OBJECT_DESCRIPTOR **StackPtr)
                 /* Set Index value to select proper Data register */
                 /* Check lock rule prior to modifing the field */
                 
-                if (ObjDesc->FieldUnit.LockRule == (WORD) Lock)
+                if (ObjDesc->FieldUnit.LockRule == (UINT16) Lock)
                 {
                     /* Lock Rule is Lock */
                     
@@ -3126,7 +3129,7 @@ GetRvalue (OBJECT_DESCRIPTOR **StackPtr)
                     KFatalError ("0015", ("GetRvalue: Descriptor Allocation Failure"));
                 }
 
-                ObjDesc->Number.ValType = (BYTE) Number;
+                ObjDesc->Number.ValType = (UINT8) Number;
                 ObjDesc->Number.Number = TempVal;
                 break;
 
@@ -3146,7 +3149,7 @@ GetRvalue (OBJECT_DESCRIPTOR **StackPtr)
                 /* Set Index value to select proper Data register */
                 /* Check lock rule prior to modifing the field */
                 
-                if (ObjDesc->FieldUnit.LockRule == (WORD) Lock)
+                if (ObjDesc->FieldUnit.LockRule == (UINT16) Lock)
                 {
                     /* Lock Rule is Lock */
                     
@@ -3201,12 +3204,12 @@ GetRvalue (OBJECT_DESCRIPTOR **StackPtr)
                     KFatalError("0016", ("GetRvalue: Descriptor Allocation Failure"));
                 }
 
-                ObjDesc->Number.ValType = (BYTE) Number;
+                ObjDesc->Number.ValType = (UINT8) Number;
                 ObjDesc->Number.Number = TempVal;
                 break;
 
             case FieldUnit:
-                if (ValDesc->ValType != (BYTE) NsValType ((NsHandle)* StackPtr))
+                if (ValDesc->ValType != (UINT8) NsValType ((NsHandle)* StackPtr))
                 {
                     sprintf (WhyBuf,
                             "GetRvalue/FieldUnit:internal error: Name %4.4s type %d does not match value-type %d at %p",
@@ -3266,7 +3269,7 @@ GetRvalue (OBJECT_DESCRIPTOR **StackPtr)
                     KFatalError ("0018", ("GetRvalue: Descriptor Allocation Failure"));
                 }
 
-                ObjDesc->Number.ValType = (BYTE) Number;
+                ObjDesc->Number.ValType = (UINT8) Number;
                 ObjDesc->Number.Number = 0x0;
                 break;
 #else
@@ -3322,11 +3325,11 @@ GetRvalue (OBJECT_DESCRIPTOR **StackPtr)
  *
  ****************************************************************************/
 
-int
+INT32
 PrepStack (char *Types)
 {
     OBJECT_DESCRIPTOR **    StackPtr = (OBJECT_DESCRIPTOR **) &ObjStack[ObjStackTop];
-    int                     Excep;
+    INT32                   Excep;
 
 
     FUNCTION_TRACE ("PrepStack");
@@ -3353,7 +3356,7 @@ PrepStack (char *Types)
 
     while (*Types)
     {
-        BYTE        bTypeFound;
+        UINT8       bTypeFound;
         char        TypeFound[30];
         char        *TypeFoundPtr;
 
@@ -3366,14 +3369,14 @@ PrepStack (char *Types)
         }
 
         bTypeFound = (*StackPtr)->ValType;
-        if (bTypeFound > (BYTE) Lvalue
+        if (bTypeFound > (UINT8) Lvalue
             || BadType == NsTypeNames[bTypeFound])
         {
             sprintf (TypeFound, "type encoding %d", bTypeFound);
             TypeFoundPtr = TypeFound;
         }
         
-        else if ((BYTE) Lvalue == bTypeFound)
+        else if ((UINT8) Lvalue == bTypeFound)
         {
             strcpy (TypeFound, "Lvalue ");
             switch ((*StackPtr)->Lvalue.OpCode)
@@ -3607,9 +3610,9 @@ PrepStack (char *Types)
  * FUNCTION:    AmlAppendOperandDiag
  *
  * PARAMETERS:  char *  FileName    Name of source file
- *              int     LineNum     Line Number in file
- *              WORD    OpCode      OpCode being executed
- *              int     NumOperands Number of operands PrepStack tried to check
+ *              INT32   LineNum     Line Number in file
+ *              UINT16  OpCode      OpCode being executed
+ *              INT32   NumOperands Number of operands PrepStack tried to check
  *
  * DESCRIPTION: Append diagnostic information about operands to WhyBuf
  *              This function is intended to be called after PrepStack
@@ -3618,7 +3621,7 @@ PrepStack (char *Types)
  ****************************************************************************/
 
 void
-AmlAppendOperandDiag(char *FileName, int LineNum, WORD OpCode, int NumOperands)
+AmlAppendOperandDiag(char *FileName, INT32 LineNum, UINT16 OpCode, INT32 NumOperands)
 {
     meth            sM;
 
@@ -3642,7 +3645,7 @@ AmlAppendOperandDiag(char *FileName, int LineNum, WORD OpCode, int NumOperands)
 
     if (debug_level () > 0)
     {
-        int         iTraceWas = Trace;
+        INT32       iTraceWas = Trace;
 
         /* Turn on TraceExec to enable output from DumpStack() */
         
@@ -3663,7 +3666,7 @@ AmlAppendOperandDiag(char *FileName, int LineNum, WORD OpCode, int NumOperands)
  * 
  * FUNCTION:    ExecMonadic1
  *
- * PARAMETERS:  WORD    opcode      The opcode to be executed
+ * PARAMETERS:  UINT16  opcode      The opcode to be executed
  *
  * RETURN:      S_SUCCESS or S_ERROR
  *
@@ -3674,11 +3677,11 @@ AmlAppendOperandDiag(char *FileName, int LineNum, WORD OpCode, int NumOperands)
  *
  ****************************************************************************/
 
-int
-ExecMonadic1 (WORD opcode)
+INT32
+ExecMonadic1 (UINT16 opcode)
 {
     OBJECT_DESCRIPTOR *     ObjDesc;
-    int                     Excep;
+    INT32                   Excep;
 
 
     FUNCTION_TRACE ("ExecMonadic1");
@@ -3776,7 +3779,7 @@ ExecMonadic1 (WORD opcode)
  * 
  * FUNCTION:    ExecMonadic2R
  *
- * PARAMETERS:  WORD    opcode      The opcode to be executed
+ * PARAMETERS:  UINT16  opcode      The opcode to be executed
  *
  * RETURN:      S_SUCCESS or S_ERROR
  *
@@ -3785,13 +3788,13 @@ ExecMonadic1 (WORD opcode)
  *
  ****************************************************************************/
 
-int
-ExecMonadic2R (WORD opcode)
+INT32
+ExecMonadic2R (UINT16 opcode)
 {
     OBJECT_DESCRIPTOR       *ObjDesc;
     OBJECT_DESCRIPTOR       *ResDesc;
-    DWORD                   ResVal;
-    int                     Excep;
+    UINT32                  ResVal;
+    INT32                   Excep;
 
 
     FUNCTION_TRACE ("ExecMonadic2R");
@@ -3821,7 +3824,7 @@ ExecMonadic2R (WORD opcode)
 
     switch (opcode)
     {
-        int             d0, d1, d2, d3;
+        INT32           d0, d1, d2, d3;
 
 
         case BitNotOp:
@@ -3847,10 +3850,10 @@ ExecMonadic2R (WORD opcode)
             break;
 
         case FromBCDOp:
-            d0 = (int) (ObjDesc->Number.Number & 15);
-            d1 = (int) (ObjDesc->Number.Number >> 4 & 15);
-            d2 = (int) (ObjDesc->Number.Number >> 8 & 15);
-            d3 = (int) (ObjDesc->Number.Number >> 12 & 15);
+            d0 = (INT32) (ObjDesc->Number.Number & 15);
+            d1 = (INT32) (ObjDesc->Number.Number >> 4 & 15);
+            d2 = (INT32) (ObjDesc->Number.Number >> 8 & 15);
+            d3 = (INT32) (ObjDesc->Number.Number >> 12 & 15);
             
             if (d0 > 9 || d1 > 9 || d2 > 9 || d3 > 9)
             {
@@ -3908,7 +3911,7 @@ ExecMonadic2R (WORD opcode)
  * 
  * FUNCTION:    ExecMonadic2
  *
- * PARAMETERS:  WORD    opcode      The opcode to be executed
+ * PARAMETERS:  UINT16  opcode      The opcode to be executed
  *
  * RETURN:      S_SUCCESS or S_ERROR
  *
@@ -3922,12 +3925,12 @@ ExecMonadic2R (WORD opcode)
  *
  ****************************************************************************/
 
-int
-ExecMonadic2 (WORD opcode)
+INT32
+ExecMonadic2 (UINT16 opcode)
 {
     OBJECT_DESCRIPTOR       *ObjDesc;
     OBJECT_DESCRIPTOR       *ResDesc;
-    int                     Excep;
+    INT32                   Excep;
 
 
     FUNCTION_TRACE ("ExecMonadic2");
@@ -3956,7 +3959,7 @@ ExecMonadic2 (WORD opcode)
     switch (opcode)
     {
         case LNotOp:
-            ObjDesc->Number.Number = (!ObjDesc->Number.Number) - (DWORD) 1;
+            ObjDesc->Number.Number = (!ObjDesc->Number.Number) - (UINT32) 1;
             break;
 
         case DecrementOp:
@@ -4035,14 +4038,14 @@ ExecMonadic2 (WORD opcode)
                     
                     /* Constants are of type Number */
                     
-                    Excep = (int) Number;
+                    Excep = (INT32) Number;
                     break;
 
                 case Debug1:
                     
                     /* Per spec, Debug object is of type Region */
                     
-                    Excep = (int) Region;
+                    Excep = (INT32) Region;
                     break;
 
                 case IndexOp:
@@ -4053,13 +4056,13 @@ ExecMonadic2 (WORD opcode)
                 case Local0: case Local1: case Local2: case Local3:
                 case Local4: case Local5: case Local6: case Local7:
                     
-                    Excep = (int) GetMethodValTyp (LCLBASE + ObjDesc->Lvalue.OpCode - Local0);
+                    Excep = (INT32) GetMethodValTyp (LCLBASE + ObjDesc->Lvalue.OpCode - Local0);
                     break;
 
                 case Arg0: case Arg1: case Arg2: case Arg3:
                 case Arg4: case Arg5: case Arg6:
                     
-                    Excep = (int) GetMethodValTyp (ARGBASE + ObjDesc->Lvalue.OpCode - Arg0);
+                    Excep = (INT32) GetMethodValTyp (ARGBASE + ObjDesc->Lvalue.OpCode - Arg0);
                     break;
 
                 default:
@@ -4078,7 +4081,7 @@ ExecMonadic2 (WORD opcode)
                  * it must be a direct name pointer.  Allocate a descriptor
                  * to hold the type.
                  */
-                Excep = (int) NsValType ((NsHandle) ObjDesc);
+                Excep = (INT32) NsValType ((NsHandle) ObjDesc);
                 ObjDesc = NEW (OBJECT_DESCRIPTOR);
                 if ((OBJECT_DESCRIPTOR *) 0 == ObjDesc)
                 {
@@ -4094,8 +4097,8 @@ ExecMonadic2 (WORD opcode)
                 ObjStack[ObjStackTop] = (void *) ObjDesc;
             }
             
-            ObjDesc->ValType = (BYTE) Number;
-            ObjDesc->Number.Number = (DWORD)(long) Excep;
+            ObjDesc->ValType = (UINT8) Number;
+            ObjDesc->Number.Number = (UINT32)(INT32) Excep;
             break;
 
         case SizeOfOp:
@@ -4103,17 +4106,17 @@ ExecMonadic2 (WORD opcode)
             {
                 case Buffer:
                     ObjDesc->Number.Number = ObjDesc->Buffer.BufLen;
-                    ObjDesc->ValType = (BYTE) Number;
+                    ObjDesc->ValType = (UINT8) Number;
                     break;
 
                 case String:
                     ObjDesc->Number.Number = ObjDesc->String.StrLen;
-                    ObjDesc->ValType = (BYTE) Number;
+                    ObjDesc->ValType = (UINT8) Number;
                     break;
 
                 case Package:
                     ObjDesc->Number.Number = ObjDesc->Package.PkgCount;
-                    ObjDesc->ValType = (BYTE) Number;
+                    ObjDesc->ValType = (UINT8) Number;
                     break;
 
                 default:
@@ -4148,7 +4151,7 @@ ExecMonadic2 (WORD opcode)
  * 
  * FUNCTION:    ExecDyadic1
  *
- * PARAMETERS:  WORD opcode  The opcode to be executed
+ * PARAMETERS:  UINT16 opcode  The opcode to be executed
  *
  * RETURN:      S_SUCCESS or S_ERROR
  *
@@ -4159,12 +4162,12 @@ ExecMonadic2 (WORD opcode)
  *
  ****************************************************************************/
 
-int
-ExecDyadic1 (WORD opcode)
+INT32
+ExecDyadic1 (UINT16 opcode)
 {
     OBJECT_DESCRIPTOR       *ObjDesc;
     OBJECT_DESCRIPTOR       *ValDesc;
-    int                     Excep;
+    INT32                   Excep;
 
 
     FUNCTION_TRACE ("ExecDyadic1");
@@ -4238,7 +4241,7 @@ ExecDyadic1 (WORD opcode)
  * 
  * FUNCTION:    ExecDyadic2R
  *
- * PARAMETERS:  WORD    opcode      The opcode to be executed
+ * PARAMETERS:  UINT16  opcode      The opcode to be executed
  *
  * RETURN:      S_SUCCESS or S_ERROR
  *
@@ -4252,16 +4255,16 @@ ExecDyadic1 (WORD opcode)
  *
  ****************************************************************************/
 
-int
-ExecDyadic2R (WORD opcode)
+INT32
+ExecDyadic2R (UINT16 opcode)
 {
     OBJECT_DESCRIPTOR       *ObjDesc;
     OBJECT_DESCRIPTOR       *ObjDesc2;
     OBJECT_DESCRIPTOR       *ResDesc;
     OBJECT_DESCRIPTOR       *ResDesc2;
-    DWORD                   remain;
-    int                     Excep;
-    int                     NumOperands;
+    UINT32                  remain;
+    INT32                   Excep;
+    INT32                   NumOperands;
 
 
     FUNCTION_TRACE ("ExecDyadic2R");
@@ -4330,7 +4333,7 @@ ExecDyadic2R (WORD opcode)
             break;
         
         case DivideOp:
-            if ((DWORD) 0 == ObjDesc2->Number.Number)
+            if ((UINT32) 0 == ObjDesc2->Number.Number)
             {
                 Why = "ExecDyadic2R/DivideOp: divide by zero";
                 return S_ERROR;
@@ -4389,7 +4392,7 @@ ExecDyadic2R (WORD opcode)
                 
                 /* Don't free old ObjDesc->String.String; the operand still exists */
                 
-                ObjDesc->String.String = (BYTE *) NewBuf;
+                ObjDesc->String.String = (UINT8 *) NewBuf;
                 ObjDesc->String.StrLen += ObjDesc2->String.StrLen;
             }
             
@@ -4421,7 +4424,7 @@ ExecDyadic2R (WORD opcode)
                 
                 /* Don't free old ObjDesc->Buffer.Buffer; the operand still exists */
                 
-                ObjDesc->Buffer.Buffer = (BYTE *) NewBuf;
+                ObjDesc->Buffer.Buffer = (UINT8 *) NewBuf;
                 ObjDesc->Buffer.BufLen += ObjDesc2->Buffer.BufLen;
             }
             break;
@@ -4456,7 +4459,7 @@ ExecDyadic2R (WORD opcode)
  * 
  * FUNCTION:    ExecDyadic2S
  *
- * PARAMETERS:  WORD    opcode      The opcode to be executed
+ * PARAMETERS:  UINT16  opcode      The opcode to be executed
  *
  * RETURN:      S_SUCCESS or S_ERROR
  *
@@ -4466,13 +4469,13 @@ ExecDyadic2R (WORD opcode)
  *
  ****************************************************************************/
 
-int
-ExecDyadic2S (WORD opcode)
+INT32
+ExecDyadic2S (UINT16 opcode)
 {
     OBJECT_DESCRIPTOR       *ObjDesc;
     OBJECT_DESCRIPTOR       *TimeDesc;
     OBJECT_DESCRIPTOR       *ResDesc;
-    int                     Excep;
+    INT32                   Excep;
 
 
     FUNCTION_TRACE ("ExecDyadic2S");
@@ -4538,7 +4541,7 @@ ExecDyadic2S (WORD opcode)
  * 
  * FUNCTION:    ExecDyadic2
  *
- * PARAMETERS:  WORD    opcode      The opcode to be executed
+ * PARAMETERS:  UINT16  opcode      The opcode to be executed
  *
  * RETURN:      S_SUCCESS or S_ERROR
  *
@@ -4550,12 +4553,12 @@ ExecDyadic2S (WORD opcode)
  *
  ****************************************************************************/
 
-int
-ExecDyadic2 (WORD opcode)
+INT32
+ExecDyadic2 (UINT16 opcode)
 {
     OBJECT_DESCRIPTOR       *ObjDesc;
     OBJECT_DESCRIPTOR       *ObjDesc2;
-    int                     Excep;
+    INT32                   Excep;
 
 
     FUNCTION_TRACE ("ExecDyadic2");
@@ -4639,7 +4642,7 @@ ExecDyadic2 (WORD opcode)
  * 
  * FUNCTION:    ExecCreateField
  *
- * PARAMETERS:  WORD    opcode      The opcode to be executed
+ * PARAMETERS:  UINT16  opcode      The opcode to be executed
  *
  * RETURN:      S_SUCCESS or S_ERROR
  *
@@ -4651,18 +4654,18 @@ ExecDyadic2 (WORD opcode)
  *
  ****************************************************************************/
 
-int
-ExecCreateField (WORD opcode)
+INT32
+ExecCreateField (UINT16 opcode)
 {
     OBJECT_DESCRIPTOR       *ResDesc;
     OBJECT_DESCRIPTOR       *CntDesc;
     OBJECT_DESCRIPTOR       *OffDesc;
     OBJECT_DESCRIPTOR       *SrcDesc;
     char                    *OpName;
-    int                     NumOperands;
-    WORD                    BitCount;
-    DWORD                   BitOffset;
-    int                     Excep;
+    INT32                   NumOperands;
+    UINT16                  BitCount;
+    UINT32                  BitOffset;
+    INT32                   Excep;
 
 
     FUNCTION_TRACE ("ExecCreateField");
@@ -4734,7 +4737,7 @@ ExecCreateField (WORD opcode)
 
         case CreateFieldOp:
             BitOffset = OffDesc->Number.Number;             /* offset is in bits */
-            BitCount = (WORD) CntDesc->Number.Number;       /* as is count */
+            BitCount = (UINT16) CntDesc->Number.Number;       /* as is count */
             break;
 
         default:
@@ -4747,28 +4750,28 @@ ExecCreateField (WORD opcode)
 
     switch (SrcDesc->ValType)
     {
-        BYTE        bTypeFound;
+        UINT8       bTypeFound;
         char        TypeFound[20];
         char        *TypeFoundPtr;
 
     case Buffer:
-        if (BitOffset + (DWORD) BitCount > 8 * (DWORD) SrcDesc->Buffer.BufLen)
+        if (BitOffset + (UINT32) BitCount > 8 * (UINT32) SrcDesc->Buffer.BufLen)
         {
             sprintf (WhyBuf, "ExecCreateField: Field exceeds Buffer %d > %d",
-                    BitOffset + (DWORD)BitCount,
-                    8 * (DWORD)SrcDesc->Buffer.BufLen);
+                    BitOffset + (UINT32)BitCount,
+                    8 * (UINT32)SrcDesc->Buffer.BufLen);
             Why = WhyBuf;
             return S_ERROR;
         }
 
         /* Reuse "OffDesc" descriptor to build result */
         
-        OffDesc->ValType                = (BYTE) FieldUnit;
-        OffDesc->FieldUnit.Access       = (WORD) AnyAcc;
-        OffDesc->FieldUnit.LockRule     = (WORD) NoLock;
-        OffDesc->FieldUnit.UpdateRule   = (WORD) Preserve;
+        OffDesc->ValType                = (UINT8) FieldUnit;
+        OffDesc->FieldUnit.Access       = (UINT16) AnyAcc;
+        OffDesc->FieldUnit.LockRule     = (UINT16) NoLock;
+        OffDesc->FieldUnit.UpdateRule   = (UINT16) Preserve;
         OffDesc->FieldUnit.DatLen       = BitCount;
-        OffDesc->FieldUnit.BitOffset    = (WORD) BitOffset % 8;
+        OffDesc->FieldUnit.BitOffset    = (UINT16) BitOffset % 8;
         OffDesc->FieldUnit.Offset       = BitOffset / 8;
         OffDesc->FieldUnit.Container    = SrcDesc;
         OffDesc->FieldUnit.ConSeq       = SrcDesc->Buffer.Sequence;
@@ -4777,7 +4780,7 @@ ExecCreateField (WORD opcode)
     default:
         bTypeFound = SrcDesc->ValType;
 
-        if (bTypeFound > (BYTE) Lvalue
+        if (bTypeFound > (UINT8) Lvalue
             || BadType == NsTypeNames[bTypeFound])
         {
             sprintf (TypeFound, "encoding %d", bTypeFound);
@@ -4855,13 +4858,13 @@ ExecCreateField (WORD opcode)
  *
  ****************************************************************************/
 
-int
+INT32
 ExecFatal (void)
 {
     OBJECT_DESCRIPTOR       *TypeDesc;
     OBJECT_DESCRIPTOR       *CodeDesc;
     OBJECT_DESCRIPTOR       *ArgDesc;
-    int                     Excep;
+    INT32                   Excep;
 
 
     FUNCTION_TRACE ("ExecFatal");
@@ -4871,7 +4874,7 @@ ExecFatal (void)
 
     if (Excep != S_SUCCESS)
     {
-        AmlAppendOperandDiag (__FILE__, __LINE__, (WORD) FatalOp, 3);
+        AmlAppendOperandDiag (__FILE__, __LINE__, (UINT16) FatalOp, 3);
         return Excep;
     }
 
@@ -4905,13 +4908,13 @@ ExecFatal (void)
  *
  ****************************************************************************/
 
-int
+INT32
 ExecIndex (void)
 {
     OBJECT_DESCRIPTOR       *PkgDesc;
     OBJECT_DESCRIPTOR       *IdxDesc;
     OBJECT_DESCRIPTOR       *ResDesc;
-    int                     Excep;
+    INT32                   Excep;
 
 
     FUNCTION_TRACE ("ExecIndex");
@@ -4921,7 +4924,7 @@ ExecIndex (void)
 
     if (Excep != S_SUCCESS)
     {
-        AmlAppendOperandDiag (__FILE__, __LINE__, (WORD)IndexOp, 3);
+        AmlAppendOperandDiag (__FILE__, __LINE__, (UINT16)IndexOp, 3);
         return Excep;
     }
 
@@ -4932,7 +4935,7 @@ ExecIndex (void)
     PkgDesc = (OBJECT_DESCRIPTOR *) ObjStack[ObjStackTop - 2];
 
     if (IdxDesc->Number.Number < 0
-        || IdxDesc->Number.Number >= (DWORD) PkgDesc->Package.PkgCount)
+        || IdxDesc->Number.Number >= (UINT32) PkgDesc->Package.PkgCount)
     {
         Why = "ExecIndex: Index value out of range";
         return S_ERROR;
@@ -4943,7 +4946,7 @@ ExecIndex (void)
      * XXX - before this pointer is used, the results may be surprising.
      */
     PkgDesc->Lvalue.Ref     = (void *) &PkgDesc->Package.PackageElems[IdxDesc->Number.Number];
-    PkgDesc->ValType        = (BYTE) Lvalue;
+    PkgDesc->ValType        = (UINT8) Lvalue;
     PkgDesc->Lvalue.OpCode  = IndexOp;
 
     if ((Excep = ExecStore (PkgDesc, ResDesc)) != S_SUCCESS)
@@ -4973,7 +4976,7 @@ ExecIndex (void)
  *
  ****************************************************************************/
 
-int
+INT32
 ExecMatch (void)
 {
     OBJECT_DESCRIPTOR       *PkgDesc;
@@ -4982,9 +4985,9 @@ ExecMatch (void)
     OBJECT_DESCRIPTOR       *Op2Desc;
     OBJECT_DESCRIPTOR       *V2Desc;
     OBJECT_DESCRIPTOR       *StartDesc;
-    DWORD                   Look;
-    DWORD                   MatchValue = (DWORD)-1;
-    int                     Excep;
+    UINT32                  Look;
+    UINT32                  MatchValue = (UINT32)-1;
+    INT32                   Excep;
 
 
     FUNCTION_TRACE ("ExecMatch");
@@ -4994,7 +4997,7 @@ ExecMatch (void)
 
     if (Excep != S_SUCCESS)
     {
-        AmlAppendOperandDiag (__FILE__, __LINE__, (WORD)MatchOp, 6);
+        AmlAppendOperandDiag (__FILE__, __LINE__, (UINT16)MatchOp, 6);
         return Excep;
     }
 
@@ -5017,7 +5020,7 @@ ExecMatch (void)
     }
 
     Look = StartDesc->Number.Number;
-    if (Look < 0 || Look >= (DWORD) PkgDesc->Package.PkgCount)
+    if (Look < 0 || Look >= (UINT32) PkgDesc->Package.PkgCount)
     {
         Why = "ExecMatch: start position value out of range";
         return S_ERROR;
@@ -5033,7 +5036,7 @@ ExecMatch (void)
      * returned as a Number, this will produce the Ones value as specified.
      */
 
-    for ( ; Look < (DWORD) PkgDesc->Package.PkgCount ; ++Look)
+    for ( ; Look < (UINT32) PkgDesc->Package.PkgCount ; ++Look)
     {
         /* 
          * Treat any NULL or non-numeric elements as non-matching.
@@ -5135,7 +5138,7 @@ ExecMatch (void)
         break;
     }
 
-    PkgDesc->ValType = (BYTE) Number;
+    PkgDesc->ValType = (UINT8) Number;
     PkgDesc->Number.Number = MatchValue;
 
     DELETE (StartDesc);
@@ -5153,8 +5156,8 @@ ExecMatch (void)
  * 
  * FUNCTION:    AmlExec
  *
- * PARAMETERS:  int                 Offset      Offset to method in code block
- *              long                Length      Length of method
+ * PARAMETERS:  INT32               Offset      Offset to method in code block
+ *              INT32               Length      Length of method
  *              OBJECT_DESCRIPTOR   **Params    list of parameters to pass to
  *                                              method, terminated by NULL.
  *                                              Params itself may be NULL if
@@ -5166,12 +5169,12 @@ ExecMatch (void)
  *
  *****************************************************************************/
 
-int
-AmlExec (int Offset, long Length, OBJECT_DESCRIPTOR **Params)
+INT32
+AmlExec (INT32 Offset, INT32 Length, OBJECT_DESCRIPTOR **Params)
 {
-    int             Excep;
-    int             i1;
-    int             i2;
+    INT32           Excep;
+    INT32           i1;
+    INT32           i2;
 
 
     FUNCTION_TRACE ("AmlExec");
@@ -5268,17 +5271,17 @@ AmlExec (int Offset, long Length, OBJECT_DESCRIPTOR **Params)
  * 
  * FUNCTION:    MarkMethodValues
  *
- * PARAMETERS:  int *   Count        Count of blocks marked
+ * PARAMETERS:  INT32 *   Count        Count of blocks marked
  *
  * DESCRIPTION: Mark blocks occupied by currently-active args and locals
  *
  ****************************************************************************/
 
 void
-MarkMethodValues (int *Count)
+MarkMethodValues (INT32 *Count)
 {
-    int             MethodNestLevel;
-    int             Index;
+    INT32           MethodNestLevel;
+    INT32           Index;
 
 
     FUNCTION_TRACE ("MarkMethodValues");
@@ -5317,11 +5320,11 @@ MarkMethodValues (int *Count)
  *
  ****************************************************************************/
 
-int
+INT32
 IsMethodValue (OBJECT_DESCRIPTOR *ObjDesc)
 {
-    int             MethodNestLevel;
-    int             Index;
+    INT32           MethodNestLevel;
+    INT32           Index;
 
 
     FUNCTION_TRACE ("IsMethodValue");
