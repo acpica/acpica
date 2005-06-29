@@ -142,85 +142,69 @@
 ACPI_STATUS
 AcpiEnable (void)
 {
-    UINT32                  i;
     ACPI_STATUS             Status;
-
 
     FUNCTION_TRACE ("AcpiEnable");
 
+    /* Make sure we've got ACPI tables */ 
 
     if (!Gbl_RSDP)
     {
-        /*  ACPI tables are not available   */
-
         DEBUG_PRINT (ACPI_WARN, ("No ACPI tables present!\n"));
         return_ACPI_STATUS (AE_NO_ACPI_TABLES);
     }
 
-    /*  ACPI tables are available or not required */
+    /* Make sure the BIOS supports ACPI mode */
 
-    if (SYS_MODE_LEGACY == HwGetModeCapabilities ())
+    if (SYS_MODE_LEGACY == HwGetModeCapabilities())
     {   
-        /*
-         * No ACPI mode support provided by BIOS
-         */
-
-        /* TBD: verify input file specified */
-
         DEBUG_PRINT (ACPI_WARN, ("Only legacy mode supported!\n"));
         return_ACPI_STATUS (AE_ERROR);
     }
 
-    Gbl_OriginalMode = HwGetMode ();
+    Gbl_OriginalMode = HwGetMode();
 
-    if (EvInstallSciHandler () != AE_OK)
+    /*
+     * Initialize the Fixed and General Purpose Events prior.  This is
+     * done prior to enabling SCIs to prevent interrupts from occuring
+     * before handers are installed.
+     */ 
+   
+    if (ACPI_FAILURE(EvFixedEventInitialize()))
+    {
+        DEBUG_PRINT (ACPI_FATAL, ("Unable to initialize fixed events.\n"));
+        return_ACPI_STATUS (AE_ERROR);
+    }
+
+    if (ACPI_FAILURE(EvGpeInitialize()))
+    {
+        DEBUG_PRINT (ACPI_FATAL, ("Unable to initialize general purpose events.\n"));
+        return_ACPI_STATUS (AE_ERROR);
+    }
+
+    /* Install the SCI handler */
+
+    if (ACPI_FAILURE(EvInstallSciHandler()))
     {   
-        /* Unable to install SCI handler */
-
         DEBUG_PRINT (ACPI_FATAL, ("Unable to install System Control Interrupt Handler\n"));
         return_ACPI_STATUS (AE_ERROR);
     }
-    
-    /*  SCI Interrupt Handler installed properly    */
 
-    if (SYS_MODE_ACPI != Gbl_OriginalMode)
+    /* Transition to ACPI mode */
+
+    if (AE_OK != HwSetMode (SYS_MODE_ACPI))
+    {   
+        DEBUG_PRINT (ACPI_FATAL, ("Could not transition to ACPI mode.\n"));
+        return_ACPI_STATUS (AE_ERROR);    
+    }
+    else
     {
-        /*  legacy mode */
-                
-        if (AE_OK != HwSetMode (SYS_MODE_ACPI))
-        {   
-            /*  Unable to transition to ACPI Mode   */
-
-            DEBUG_PRINT (ACPI_FATAL, ("Could not transition to ACPI mode.\n"));
-            return_ACPI_STATUS (AE_ERROR);    
-        }
-        else
-        {
-            DEBUG_PRINT (ACPI_OK, ("Transition to ACPI mode successful\n"));
-        }
-        
-        /* Initialize the structure that keeps track of fixed event handler. */
-
-        for (i = 0; i < NUM_FIXED_EVENTS; i++)
-        {
-        	Gbl_FixedEventHandlers[i].Handler = NULL;
-        	Gbl_FixedEventHandlers[i].Context = NULL;
-        }
-        
-        /* Initialize GPEs now. */
-        
-        if (EvGpeInitialize () != AE_OK)
-        {
-            /* Unable to initialize GPEs. */
-        
-            DEBUG_PRINT (ACPI_FATAL, ("Unable to initialize general purpose events.\n"));
-            return_ACPI_STATUS (AE_ERROR);
-        }
-    
-        EvInitGpeControlMethods ();
-
+        DEBUG_PRINT (ACPI_OK, ("Transition to ACPI mode successful\n"));
     }
 
+    /* Install handlers for control method GPE handlers (_Lxx, _Exx) */
+
+    EvInitGpeControlMethods();
 
     Status = EvInitGlobalLockHandler ();
 
@@ -394,7 +378,6 @@ AcpiRemoveFixedEventHandler (
     Gbl_FixedEventHandlers[Event].Context = NULL;
     
     DEBUG_PRINT (ACPI_INFO, ("Disabled fixed event %d.\n", Event));    
-    
 
 Cleanup:
     CmReleaseMutex (MTX_FIXED_EVENT);
@@ -1123,12 +1106,9 @@ AcpiInstallGpeHandler (
     Gbl_GpeInfo[GpeNumber].Context = Context;
     Gbl_GpeInfo[GpeNumber].Type = (UINT8) Type;
     
-    /* Clear the GPE (stale) */
+    /* Clear the GPE (of stale events), the enable it */
 
     HwClearGpe (GpeNumber);
-
-    /* Now we can enable the GPE */
-
     HwEnableGpe (GpeNumber);
 
 Cleanup:
@@ -1175,6 +1155,9 @@ AcpiRemoveGpeHandler (
         return_ACPI_STATUS (AE_BAD_PARAMETER);
     }
 
+    /* Disable the GPE before removing the handler */
+
+    HwDisableGpe (GpeNumber);
 
     CmAcquireMutex (MTX_GP_EVENT);
 
@@ -1182,21 +1165,15 @@ AcpiRemoveGpeHandler (
 
     if (Gbl_GpeInfo[GpeNumber].Handler != Handler)
     {
+        HwEnableGpe (GpeNumber);
         Status = AE_BAD_PARAMETER;
         goto Cleanup;
     }
-
-
-    /* Disable the GPE before removing the handler */
-
-    HwDisableGpe (GpeNumber);
-
 
     /* Remove the handler */
 
     Gbl_GpeInfo[GpeNumber].Handler = NULL;
     Gbl_GpeInfo[GpeNumber].Context = NULL;
-
  
 Cleanup:
     CmReleaseMutex (MTX_GP_EVENT);
