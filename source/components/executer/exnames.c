@@ -708,7 +708,7 @@ BREAKPOINT3;
 
                     if (AML_END_OF_BLOCK == MethodFlags)
                     {
-                        DEBUG_PRINT (ACPI_ERROR, ("AmlDoName: invoked Method %s has no AML\n",
+                        DEBUG_PRINT (ACPI_ERROR, ("AmlDoName: Invoked Method %s has no AML\n",
                                         NameString));
                         Status = AE_AML_ERROR;
                     }
@@ -718,6 +718,8 @@ BREAKPOINT3;
                         /* MthDesc points at valid method  */
                         
                         ArgCount = (MethodFlags & METHOD_ARG_COUNT_MASK) >> METHOD_ARG_COUNT_SHIFT;
+
+                        DEBUG_PRINT (ACPI_INFO, ("AmlDoName: MthFlags %x - Getting %d args\n", MethodFlags, ArgCount));
 
                         PreviousStackTop = AmlObjStackLevel ();
                         MethodScope = AmlObjStackGetValue (STACK_TOP);
@@ -773,8 +775,9 @@ BREAKPOINT3;
                             CurrentStackTop = AmlObjStackLevel ();
                             StackOffset = CurrentStackTop - PreviousStackTop;
 
-                            DEBUG_PRINT (TRACE_LOAD, ("Execute method [%4.4s] Args=%d PreviousTOS=%d CurrentTOS=%d\n",
-                                                        &(((NAME_TABLE_ENTRY *) MethodScope)->Name), ArgCount,
+                            DEBUG_PRINT (TRACE_LOAD, ("AmlDoName: Execute method [%4.4s] at %p len=%x #Args=%d PrevTOS=%d CurTOS=%d\n",
+                                                        &(((NAME_TABLE_ENTRY *) MethodScope)->Name), MthDesc->Method.Pcode,
+                                                        MthDesc->Method.PcodeLength, ArgCount,
                                                         PreviousStackTop, CurrentStackTop));
                             if (ArgCount > 0)
                             {
@@ -789,7 +792,7 @@ BREAKPOINT3;
 
                             CurrentStackTop = AmlObjStackLevel ();
 
-                            DEBUG_PRINT (TRACE_LOAD, ("After AmlExecute, PreviousTOS=%d  CurrentTOS=%d\n",
+                            DEBUG_PRINT (TRACE_LOAD, ("AmlDoName: After AmlExecute, PrevTOS=%d  CurTOS=%d\n",
                                             PreviousStackTop, CurrentStackTop));
 
                             if (AE_RETURN_VALUE == Status)
