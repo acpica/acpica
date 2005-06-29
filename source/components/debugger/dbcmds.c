@@ -617,7 +617,7 @@ DbSetMethodData (
     Index = STRTOUL (IndexArg, NULL, 16);
     Value = STRTOUL (ValueArg, NULL, 16);
 
-    WalkState = PsGetCurrentWalkState (Gbl_CurrentWalkList);
+    WalkState = DsGetCurrentWalkState (Gbl_CurrentWalkList);
     if (!WalkState)
     {
         OsdPrintf ("There is no method currently executing\n");

@@ -117,6 +117,7 @@
 #include <acpi.h>
 #include <parser.h>
 #include <amlcode.h>
+#include <dispatch.h>
 #include <namesp.h>
 #include <parser.h>
 #include <events.h>
@@ -333,6 +334,18 @@ DbDecodeAndDisplayObject (
 }
 
 
+/******************************************************************************
+ * 
+ * FUNCTION:    DbDecodeInternalObject
+ *
+ * PARAMETERS:  
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Short display of an internal object
+ *
+ *****************************************************************************/
+
 void
 DbDecodeInternalObject (
     ACPI_OBJECT_INTERNAL    *ObjDesc)
@@ -343,7 +356,7 @@ DbDecodeInternalObject (
         return;
     }
 
-    OsdPrintf (" %9.9s ", Gbl_NsTypeNames[ObjDesc->Common.Type]);
+    OsdPrintf (" %9.9s ", CmGetTypeName (ObjDesc->Common.Type));
 
     switch (ObjDesc->Common.Type)
     {
@@ -378,7 +391,7 @@ DbDisplayInternalObject (
     ACPI_WALK_STATE         *WalkState;
 
 
-    WalkState = PsGetCurrentWalkState (Gbl_CurrentWalkList);
+    WalkState = DsGetCurrentWalkState (Gbl_CurrentWalkList);
 
     OsdPrintf ("%p ", ObjDesc);
 
@@ -395,7 +408,8 @@ DbDisplayInternalObject (
 
     else if (VALID_DESCRIPTOR_TYPE (ObjDesc, DESC_TYPE_NTE))
     {
-        OsdPrintf ("<NTE>             Name %4.4s", &((NAME_TABLE_ENTRY *)ObjDesc)->Name);
+        OsdPrintf ("<NTE>             Name %4.4s Type %s", &((NAME_TABLE_ENTRY *)ObjDesc)->Name, 
+                                                            CmGetTypeName (((NAME_TABLE_ENTRY *)ObjDesc)->Type));
     }
 
     else if (VALID_DESCRIPTOR_TYPE (ObjDesc, DESC_TYPE_ACPI_OBJ))
@@ -508,7 +522,7 @@ DbDisplayMethodInfo (
 
 
 
-    WalkState = PsGetCurrentWalkState (Gbl_CurrentWalkList);
+    WalkState = DsGetCurrentWalkState (Gbl_CurrentWalkList);
     if (!WalkState)
     {
         OsdPrintf ("There is no method currently executing\n");
@@ -516,7 +530,7 @@ DbDisplayMethodInfo (
     }
 
     ObjDesc = WalkState->MethodDesc;
-    Entry = WalkState->Origin->ResultObj;
+    Entry = WalkState->Origin->NameTableEntry;
 
     NumArgs = ObjDesc->Method.ParamCount;
     Concurrency = ObjDesc->Method.Concurrency;
@@ -608,7 +622,7 @@ DbDisplayLocals (void)
 
 
 
-    WalkState = PsGetCurrentWalkState (Gbl_CurrentWalkList);
+    WalkState = DsGetCurrentWalkState (Gbl_CurrentWalkList);
     if (!WalkState)
     {
         OsdPrintf ("There is no method currently executing\n");
@@ -616,7 +630,7 @@ DbDisplayLocals (void)
     }
 
     ObjDesc = WalkState->MethodDesc;
-    Entry = WalkState->Origin->ResultObj;
+    Entry = WalkState->Origin->NameTableEntry;
 
 
     OsdPrintf ("Local Variables for method [%4.4s]:\n", &Entry->Name);
@@ -654,7 +668,7 @@ DbDisplayArguments (void)
     NAME_TABLE_ENTRY        *Entry;
 
 
-    WalkState = PsGetCurrentWalkState (Gbl_CurrentWalkList);
+    WalkState = DsGetCurrentWalkState (Gbl_CurrentWalkList);
     if (!WalkState)
     {
         OsdPrintf ("There is no method currently executing\n");
@@ -662,7 +676,7 @@ DbDisplayArguments (void)
     }
 
     ObjDesc = WalkState->MethodDesc;
-    Entry = WalkState->Origin->ResultObj;
+    Entry = WalkState->Origin->NameTableEntry;
 
     NumArgs = ObjDesc->Method.ParamCount;
     Concurrency = ObjDesc->Method.Concurrency;
@@ -701,7 +715,7 @@ DbDisplayResults (void)
     NAME_TABLE_ENTRY        *Entry;
 
 
-    WalkState = PsGetCurrentWalkState (Gbl_CurrentWalkList);
+    WalkState = DsGetCurrentWalkState (Gbl_CurrentWalkList);
     if (!WalkState)
     {
         OsdPrintf ("There is no method currently executing\n");
@@ -709,7 +723,7 @@ DbDisplayResults (void)
     }
 
     ObjDesc = WalkState->MethodDesc;
-    Entry = WalkState->Origin->ResultObj;
+    Entry = WalkState->Origin->NameTableEntry;
     NumResults = WalkState->NumResults - WalkState->CurrentResult;
 
     OsdPrintf ("Method [%4.4s] has %d stacked result objects\n", &Entry->Name, NumResults);
@@ -745,7 +759,7 @@ DbDisplayCallingTree (void)
     NAME_TABLE_ENTRY        *Entry;
 
 
-    WalkState = PsGetCurrentWalkState (Gbl_CurrentWalkList);
+    WalkState = DsGetCurrentWalkState (Gbl_CurrentWalkList);
     if (!WalkState)
     {
         OsdPrintf ("There is no method currently executing\n");
@@ -753,14 +767,14 @@ DbDisplayCallingTree (void)
     }
 
     ObjDesc = WalkState->MethodDesc;
-    Entry = WalkState->Origin->ResultObj;
+    Entry = WalkState->Origin->NameTableEntry;
 
     OsdPrintf ("Current Control Method Call Tree\n");
 
     for (i = 0; WalkState; i++)
     {
         ObjDesc = WalkState->MethodDesc;
-        Entry = WalkState->Origin->ResultObj;
+        Entry = WalkState->Origin->NameTableEntry;
 
         OsdPrintf ("    [%4.4s]\n", &Entry->Name);
 
