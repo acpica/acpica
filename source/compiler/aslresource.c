@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslresource - Resource templates and descriptors
- *              $Revision: 1.29 $
+ *              $Revision: 1.33 $
  *
  *****************************************************************************/
 
@@ -10,7 +10,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2004, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -185,7 +185,7 @@ RsCreateBitField (
 {
 
     Op->Asl.ExternalName      = Name;
-    Op->Asl.Value.Integer32   = (ByteOffset * 8) + BitOffset;
+    Op->Asl.Value.Integer     = (ByteOffset * 8) + BitOffset;
     Op->Asl.CompileFlags     |= (NODE_IS_RESOURCE_FIELD | NODE_IS_BIT_OFFSET);
 }
 
@@ -215,7 +215,7 @@ RsCreateByteField (
 {
 
     Op->Asl.ExternalName      = Name;
-    Op->Asl.Value.Integer32   = ByteOffset;
+    Op->Asl.Value.Integer     = ByteOffset;
     Op->Asl.CompileFlags     |= NODE_IS_RESOURCE_FIELD;
 }
 
@@ -256,7 +256,7 @@ RsSetFlagBits (
     {
         /* Use the bit specified in the initialization node */
 
-        *Flags |= (Op->Asl.Value.Integer8 << Position);
+        *Flags |= (((UINT8) Op->Asl.Value.Integer) << Position);
     }
 }
 
@@ -329,6 +329,10 @@ RsDoOneResourceDescriptor (
         Rnode = RsDoDwordMemoryDescriptor (DescriptorTypeOp, CurrentByteOffset);
         break;
 
+    case PARSEOP_DWORDSPACE:
+        Rnode = RsDoDwordSpaceDescriptor (DescriptorTypeOp, CurrentByteOffset);
+        break;
+
     case PARSEOP_ENDDEPENDENTFN:
         switch (*State)
         {
@@ -347,6 +351,18 @@ RsDoOneResourceDescriptor (
 
         *State = ACPI_RSTATE_NORMAL;
         Rnode = RsDoEndDependentDescriptor (DescriptorTypeOp, CurrentByteOffset);
+        break;
+
+    case PARSEOP_EXTENDEDIO:
+        Rnode = RsDoExtendedIoDescriptor (DescriptorTypeOp, CurrentByteOffset);
+        break;
+
+    case PARSEOP_EXTENDEDMEMORY:
+        Rnode = RsDoExtendedMemoryDescriptor (DescriptorTypeOp, CurrentByteOffset);
+        break;
+
+    case PARSEOP_EXTENDEDSPACE:
+        Rnode = RsDoExtendedSpaceDescriptor (DescriptorTypeOp, CurrentByteOffset);
         break;
 
     case PARSEOP_FIXEDIO:
@@ -387,6 +403,10 @@ RsDoOneResourceDescriptor (
 
     case PARSEOP_QWORDMEMORY:
         Rnode = RsDoQwordMemoryDescriptor (DescriptorTypeOp, CurrentByteOffset);
+        break;
+
+    case PARSEOP_QWORDSPACE:
+        Rnode = RsDoQwordSpaceDescriptor (DescriptorTypeOp, CurrentByteOffset);
         break;
 
     case PARSEOP_REGISTER:
@@ -443,6 +463,10 @@ RsDoOneResourceDescriptor (
 
     case PARSEOP_WORDIO:
         Rnode = RsDoWordIoDescriptor (DescriptorTypeOp, CurrentByteOffset);
+        break;
+
+    case PARSEOP_WORDSPACE:
+        Rnode = RsDoWordSpaceDescriptor (DescriptorTypeOp, CurrentByteOffset);
         break;
 
     case PARSEOP_DEFAULT_ARG:
