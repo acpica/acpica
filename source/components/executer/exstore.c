@@ -14,15 +14,18 @@
  | FILENAME: amlexec.c - ACPI AML (p-code) execution
  |__________________________________________________________________________
  |
- | $Revision: 1.8 $
- | $Date: 2005/06/29 17:50:47 $
+ | $Revision: 1.9 $
+ | $Date: 2005/06/29 17:50:50 $
  | $Log: exstore.c,v $
- | Revision 1.8  2005/06/29 17:50:47  aystarik
- | Changed to generic 64-bit friendly data types
+ | Revision 1.9  2005/06/29 17:50:50  aystarik
+ | New names for I/O and PCI OSD interfaces
  |
  | 
- | date	99.02.20.00.33.00;	author rmoore1;	state Exp;
+ | date	99.03.10.00.08.00;	author rmoore1;	state Exp;
  |
+ * 
+ * 9     3/09/99 4:08p Rmoore1
+ * New names for I/O and PCI OSD interfaces
  * 
  * 8     2/19/99 4:33p Rmoore1
  * Changed to generic 64-bit friendly data types
@@ -590,7 +593,7 @@ PrepDefFieldValue (NsHandle Region, UINT8 FldFlg, INT32 FldPos, INT32 FldLen)
         return S_ERROR;
     }
 
-    if (Region != NsValType (Region))
+    if (Region != (NsHandle) NsValType (Region))
     {
         sprintf (WhyBuf, "PrepDefFieldValue: Needed Region, found %d",
                     NsValType (Region));
@@ -714,7 +717,7 @@ PrepBankFieldValue (NsHandle Region, NsHandle BankReg, UINT32 BankVal,
         return S_ERROR;
     }
 
-    if (Region != NsValType (Region))
+    if (Region != (NsHandle) NsValType (Region))
     {
         sprintf (WhyBuf, "PrepBankFieldValue: Needed Region, found %d",
                     NsValType (Region));
@@ -1193,15 +1196,15 @@ ReadField (OBJECT_DESCRIPTOR *ObjDesc, UINT32*Value, INT32 FieldBitWidth)
             switch (FieldBitWidth)
             {
                 case 8:
-                    *Value = (UINT32) In8 ((UINT16) Address);
+                    *Value = (UINT32) OsdIn8 ((UINT16) Address);
                     break;
 
                 case 16:
-                    *Value = (UINT32) In16 ((UINT16) Address);
+                    *Value = (UINT32) OsdIn16 ((UINT16) Address);
                     break;
 
                 case 32:
-                    *Value = In32 ((UINT16) Address);
+                    *Value = OsdIn32 ((UINT16) Address);
                     break;
 
                 default:
@@ -1220,15 +1223,15 @@ ReadField (OBJECT_DESCRIPTOR *ObjDesc, UINT32*Value, INT32 FieldBitWidth)
             switch (FieldBitWidth)
             {
                 case 8:
-                    PciExcep = ReadPciCfgByte (PciBus, DevFunc, PciReg, (UINT8 *) Value);
+                    PciExcep = OsdReadPciCfgByte (PciBus, DevFunc, PciReg, (UINT8 *) Value);
                     break;
 
                 case 16:
-                    PciExcep = ReadPciCfgWord (PciBus, DevFunc, PciReg, (UINT16 *) Value);
+                    PciExcep = OsdReadPciCfgWord (PciBus, DevFunc, PciReg, (UINT16 *) Value);
                     break;
 
                 case 32:
-                    PciExcep = ReadPciCfgDword (PciBus, DevFunc, PciReg, Value);
+                    PciExcep = OsdReadPciCfgDword (PciBus, DevFunc, PciReg, Value);
                     break;
 
                 default:
@@ -1379,15 +1382,15 @@ WriteField (OBJECT_DESCRIPTOR *ObjDesc, UINT32 Value, INT32 FieldBitWidth)
             switch (FieldBitWidth)
             {
                 case 8:
-                    Out8 ((UINT16) Address, (UINT8) Value);
+                    OsdOut8 ((UINT16) Address, (UINT8) Value);
                     break;
 
                 case 16:
-                    Out16 ((UINT16) Address, (UINT16) Value);
+                    OsdOut16 ((UINT16) Address, (UINT16) Value);
                     break;
 
                 case 32:
-                    Out32 ((UINT16) Address, Value);
+                    OsdOut32 ((UINT16) Address, Value);
                     break;
 
                 default:
@@ -1406,15 +1409,15 @@ WriteField (OBJECT_DESCRIPTOR *ObjDesc, UINT32 Value, INT32 FieldBitWidth)
             switch (FieldBitWidth)
             {
                 case 8:
-                    PciExcep = WritePciCfgByte (PciBus, DevFunc, PciReg, *(UINT8 *)&Value);
+                    PciExcep = OsdWritePciCfgByte (PciBus, DevFunc, PciReg, *(UINT8 *)&Value);
                     break;
 
                 case 16:
-                    PciExcep = WritePciCfgWord (PciBus, DevFunc, PciReg, *(UINT16 *)&Value);
+                    PciExcep = OsdWritePciCfgWord (PciBus, DevFunc, PciReg, *(UINT16 *)&Value);
                     break;
 
                 case 32:
-                    PciExcep = WritePciCfgDword (PciBus, DevFunc, PciReg, Value);
+                    PciExcep = OsdWritePciCfgDword (PciBus, DevFunc, PciReg, Value);
                     break;
 
                 default:
@@ -1600,7 +1603,7 @@ AccessNamedField (INT32 Mode, NsHandle NamedField, UINT32 *Value)
     {
         /* Construct Mask with 1 bits where the field is, 0 bits elsewhere */
 
-        UINT32      Mask = (((UINT32)1 << ObjDesc->FieldUnit.DatLen) - (UINT32)1)
+        UINT32      Mask = (((UINT32) 1 << ObjDesc->FieldUnit.DatLen) - (UINT32) 1)
                             << ObjDesc->Field.BitOffset;
         /* Shift and mask the value into the field position */
 
