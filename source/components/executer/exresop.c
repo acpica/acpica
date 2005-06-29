@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exresop - AML Interpreter operand/object resolution
- *              $Revision: 1.62 $
+ *              $Revision: 1.63 $
  *
  *****************************************************************************/
 
@@ -311,6 +311,7 @@ AcpiExResolveOperands (
                 case AML_REF_OF_OP:
                 case AML_ARG_OP:
                 case AML_LOCAL_OP:
+                case AML_LOAD_OP:   /* DdbHandle from LOAD_OP or LOAD_TABLE_OP */
 
                     ACPI_DEBUG_ONLY_MEMBERS (ACPI_DEBUG_PRINT ((ACPI_DB_EXEC,
                         "Reference Opcode: %s\n", OpInfo->Name)));
@@ -318,8 +319,9 @@ AcpiExResolveOperands (
 
                 default:
                     ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
-                        "Unknown Reference Opcode %X\n",
-                        ObjDesc->Reference.Opcode));
+                        "Unknown Reference Opcode %X [%s]\n",
+                        ObjDesc->Reference.Opcode,
+                        (AcpiPsGetOpcodeInfo (ObjDesc->Reference.Opcode))->Name));
 
                     return_ACPI_STATUS (AE_AML_OPERAND_TYPE);
                 }
