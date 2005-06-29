@@ -3,7 +3,7 @@
  *
  * Module Name: hwregs - Read/write access functions for the various ACPI
  *                       control and status registers.
- *              $Revision: 1.94 $
+ *              $Revision: 1.95 $
  *
  ******************************************************************************/
 
@@ -379,7 +379,7 @@ AcpiHwRegisterBitAccess (
         va_end (marker);
     }
 
-    if (ACPI_MTX_LOCK == UseLock) 
+    if (ACPI_MTX_LOCK == UseLock)
     {
         AcpiCmAcquireMutex (ACPI_MTX_HARDWARE);
     }
@@ -448,7 +448,7 @@ AcpiHwRegisterBitAccess (
 
             if (Value)
             {
-                AcpiHwRegisterWrite (ACPI_MTX_DO_NOT_LOCK, PM1_STS, 
+                AcpiHwRegisterWrite (ACPI_MTX_DO_NOT_LOCK, PM1_STS,
                     (UINT16) Value);
                 RegisterValue = 0;
             }
@@ -558,7 +558,7 @@ AcpiHwRegisterBitAccess (
              * because we need to do different things. Yuck.
              */
 
-            AcpiHwRegisterWrite (ACPI_MTX_DO_NOT_LOCK, RegisterId, 
+            AcpiHwRegisterWrite (ACPI_MTX_DO_NOT_LOCK, RegisterId,
                     (UINT16) RegisterValue);
         }
         break;
@@ -661,9 +661,9 @@ AcpiHwRegisterBitAccess (
 
             DEBUG_PRINT (TRACE_IO, ("About to write %04X to %04X\n",
                 RegisterValue, RegisterId));
-            AcpiHwRegisterWrite (ACPI_MTX_DO_NOT_LOCK, RegisterId, 
+            AcpiHwRegisterWrite (ACPI_MTX_DO_NOT_LOCK, RegisterId,
                 (UINT8) RegisterValue);
-            RegisterValue = AcpiHwRegisterRead (ACPI_MTX_DO_NOT_LOCK, 
+            RegisterValue = AcpiHwRegisterRead (ACPI_MTX_DO_NOT_LOCK,
                                 RegisterId);
         }
         break;
