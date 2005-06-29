@@ -1,7 +1,7 @@
 /******************************************************************************
  *
- * Module Name: cmalloc - local memory allocation routines
- *              $Revision: 1.88 $
+ * Module Name: utalloc - local memory allocation routines
+ *              $Revision: 1.91 $
  *
  *****************************************************************************/
 
@@ -114,7 +114,7 @@
  *
  *****************************************************************************/
 
-#define __CMALLOC_C__
+#define __UTALLOC_C__
 
 #include "acpi.h"
 #include "acparser.h"
@@ -123,24 +123,27 @@
 #include "acglobal.h"
 
 #define _COMPONENT          ACPI_UTILITIES
-        MODULE_NAME         ("cmalloc")
+        MODULE_NAME         ("utalloc")
 
 
 #ifdef ACPI_DEBUG_TRACK_ALLOCATIONS
 
+
 /*
- * Most of this code is for tracking memory leaks in the subsystem, and it
+ * This module is used for tracking memory leaks in the subsystem, and it
  * gets compiled out when the ACPI_DEBUG flag is not set.
- * Every memory allocation is kept track of in a doubly linked list.  Each
+ *
+ * Each memory allocation is tracked via a doubly linked list.  Each
  * element contains the caller's component, module name, function name, and
- * line number.  _CmAllocate and _CmCallocate call AcpiCmAddElementToAllocList
- * to add an element to the list; deletion occurs in the bosy of _CmFree.
+ * line number.  AcpiUtAllocate and AcpiUtCallocate call 
+ * AcpiUtAddElementToAllocList to add an element to the list; deletion 
+ * occurs in the body of AcpiUtFree.
  */
 
 
-/*****************************************************************************
+/*******************************************************************************
  *
- * FUNCTION:    AcpiCmSearchAllocList
+ * FUNCTION:    AcpiUtSearchAllocList
  *
  * PARAMETERS:  Address             - Address of allocated memory
  *
@@ -148,10 +151,10 @@
  *
  * DESCRIPTION: Searches for an element in the global allocation tracking list.
  *
- ****************************************************************************/
+ ******************************************************************************/
 
 ACPI_ALLOCATION_INFO *
-AcpiCmSearchAllocList (
+AcpiUtSearchAllocList (
     void                    *Address)
 {
     ACPI_ALLOCATION_INFO    *Element = AcpiGbl_HeadAllocPtr;
@@ -173,9 +176,9 @@ AcpiCmSearchAllocList (
 }
 
 
-/*****************************************************************************
+/*******************************************************************************
  *
- * FUNCTION:    AcpiCmAddElementToAllocList
+ * FUNCTION:    AcpiUtAddElementToAllocList
  *
  * PARAMETERS:  Address             - Address of allocated memory
  *              Size                - Size of the allocation
@@ -188,10 +191,10 @@ AcpiCmSearchAllocList (
  *
  * DESCRIPTION: Inserts an element into the global allocation tracking list.
  *
- ****************************************************************************/
+ ******************************************************************************/
 
 ACPI_STATUS
-AcpiCmAddElementToAllocList (
+AcpiUtAddElementToAllocList (
     void                    *Address,
     UINT32                  Size,
     UINT8                   AllocType,
@@ -203,10 +206,10 @@ AcpiCmAddElementToAllocList (
     ACPI_STATUS             Status = AE_OK;
 
 
-    FUNCTION_TRACE_PTR ("CmAddElementToAllocList", Address);
+    FUNCTION_TRACE_PTR ("UtAddElementToAllocList", Address);
 
 
-    AcpiCmAcquireMutex (ACPI_MTX_MEMORY);
+    AcpiUtAcquireMutex (ACPI_MTX_MEMORY);
 
     /* Keep track of the running total of all allocations. */
 
@@ -233,8 +236,7 @@ AcpiCmAddElementToAllocList (
         AcpiGbl_HeadAllocPtr = AcpiOsCallocate (sizeof (ACPI_ALLOCATION_INFO));
         if (!AcpiGbl_HeadAllocPtr)
         {
-            DEBUG_PRINT (ACPI_ERROR,
-                ("Could not allocate memory info block\n"));
+            DEBUG_PRINTP (ACPI_ERROR, ("Could not allocate mem info block\n"));
             Status = AE_NO_MEMORY;
             goto UnlockAndExit;
         }
@@ -247,8 +249,7 @@ AcpiCmAddElementToAllocList (
         AcpiGbl_TailAllocPtr->Next = AcpiOsCallocate (sizeof (ACPI_ALLOCATION_INFO));
         if (!AcpiGbl_TailAllocPtr->Next)
         {
-            DEBUG_PRINT (ACPI_ERROR,
-                ("Could not allocate memory info block\n"));
+            DEBUG_PRINTP (ACPI_ERROR, ("Could not allocate mem info block\n"));
             Status = AE_NO_MEMORY;
             goto UnlockAndExit;
         }
@@ -264,13 +265,13 @@ AcpiCmAddElementToAllocList (
      * This will catch several kinds of problems.
      */
 
-    Element = AcpiCmSearchAllocList (Address);
+    Element = AcpiUtSearchAllocList (Address);
     if (Element)
     {
-        REPORT_ERROR (("CmAddElementToAllocList: Address already present in list! (%p)\n",
+        REPORT_ERROR (("UtAddElementToAllocList: Address already present in list! (%p)\n",
             Address));
 
-        DEBUG_PRINT (ACPI_ERROR, ("Element %p Address %p\n", Element, Address));
+        DEBUG_PRINTP (ACPI_ERROR, ("Element %p Address %p\n", Element, Address));
 
         BREAKPOINT3;
     }
@@ -287,14 +288,14 @@ AcpiCmAddElementToAllocList (
 
 
 UnlockAndExit:
-    AcpiCmReleaseMutex (ACPI_MTX_MEMORY);
+    AcpiUtReleaseMutex (ACPI_MTX_MEMORY);
     return_ACPI_STATUS (Status);
 }
 
 
-/*****************************************************************************
+/*******************************************************************************
  *
- * FUNCTION:    AcpiCmDeleteElementFromAllocList
+ * FUNCTION:    AcpiUtDeleteElementFromAllocList
  *
  * PARAMETERS:  Address             - Address of allocated memory
  *              Component           - Component type of caller
@@ -305,10 +306,10 @@ UnlockAndExit:
  *
  * DESCRIPTION: Deletes an element from the global allocation tracking list.
  *
- ****************************************************************************/
+ ******************************************************************************/
 
 void
-AcpiCmDeleteElementFromAllocList (
+AcpiUtDeleteElementFromAllocList (
     void                    *Address,
     UINT32                  Component,
     NATIVE_CHAR             *Module,
@@ -321,20 +322,20 @@ AcpiCmDeleteElementFromAllocList (
     UINT32                  i;
 
 
-    FUNCTION_TRACE ("CmDeleteElementFromAllocList");
+    FUNCTION_TRACE ("UtDeleteElementFromAllocList");
 
     if (NULL == AcpiGbl_HeadAllocPtr)
     {
         /* Boy we got problems. */
 
         _REPORT_ERROR (Module, Line, Component,
-                ("CmDeleteElementFromAllocList: Empty allocation list, nothing to free!\n"));
+                ("UtDeleteElementFromAllocList: Empty allocation list, nothing to free!\n"));
 
         return_VOID;
     }
 
 
-    AcpiCmAcquireMutex (ACPI_MTX_MEMORY);
+    AcpiUtAcquireMutex (ACPI_MTX_MEMORY);
 
     /* Keep track of the amount of memory allocated. */
 
@@ -346,7 +347,7 @@ AcpiCmDeleteElementFromAllocList (
         if (Address != AcpiGbl_HeadAllocPtr->Address)
         {
             _REPORT_ERROR (Module, Line, Component,
-                ("CmDeleteElementFromAllocList: Deleting non-allocated memory\n"));
+                ("UtDeleteElementFromAllocList: Deleting non-allocated memory\n"));
 
             goto Cleanup;
         }
@@ -357,8 +358,8 @@ AcpiCmDeleteElementFromAllocList (
         AcpiGbl_HeadAllocPtr = NULL;
         AcpiGbl_TailAllocPtr = NULL;
 
-        DEBUG_PRINT (TRACE_ALLOCATIONS,
-            ("_CmFree: Allocation list deleted.  There are no outstanding allocations\n"));
+        DEBUG_PRINTP (TRACE_ALLOCATIONS,
+            ("Allocation list deleted.  There are no outstanding allocations\n"));
 
         goto Cleanup;
     }
@@ -366,7 +367,7 @@ AcpiCmDeleteElementFromAllocList (
 
     /* Search list for this address */
 
-    Element = AcpiCmSearchAllocList (Address);
+    Element = AcpiUtSearchAllocList (Address);
     if (Element)
     {
         /* cases: head, tail, other */
@@ -421,11 +422,12 @@ AcpiCmDeleteElementFromAllocList (
 
         if (Size == sizeof (ACPI_OPERAND_OBJECT))
         {
-            DEBUG_PRINT (TRACE_ALLOCATIONS, ("CmDelete: Freeing size %X (ACPI_OPERAND_OBJECT)\n", Size));
+            DEBUG_PRINTP (TRACE_ALLOCATIONS, 
+                ("Freeing size %X (ACPI_OPERAND_OBJECT)\n", Size));
         }
         else
         {
-            DEBUG_PRINT (TRACE_ALLOCATIONS, ("CmDelete: Freeing size %X\n", Size));
+            DEBUG_PRINTP (TRACE_ALLOCATIONS, ("Freeing size %X\n", Size));
         }
 
         AcpiOsFree (Element);
@@ -434,11 +436,10 @@ AcpiCmDeleteElementFromAllocList (
     else
     {
         _REPORT_ERROR (Module, Line, Component,
-                ("_CmFree: Entry not found in list\n"));
-        DEBUG_PRINT (ACPI_ERROR,
-                ("_CmFree: Entry %p was not found in allocation list\n",
+                ("AcpiUtFree: Entry not found in list\n"));
+        DEBUG_PRINTP (ACPI_ERROR, ("Entry %p was not found in allocation list\n",
                 Address));
-        AcpiCmReleaseMutex (ACPI_MTX_MEMORY);
+        AcpiUtReleaseMutex (ACPI_MTX_MEMORY);
         return_VOID;
     }
 
@@ -446,15 +447,15 @@ AcpiCmDeleteElementFromAllocList (
 Cleanup:
 
     AcpiGbl_CurrentAllocSize -= Size;
-    AcpiCmReleaseMutex (ACPI_MTX_MEMORY);
+    AcpiUtReleaseMutex (ACPI_MTX_MEMORY);
 
     return_VOID;
 }
 
 
-/*****************************************************************************
+/*******************************************************************************
  *
- * FUNCTION:    AcpiCmDumpAllocationInfo
+ * FUNCTION:    AcpiUtDumpAllocationInfo
  *
  * PARAMETERS:
  *
@@ -462,13 +463,13 @@ Cleanup:
  *
  * DESCRIPTION: Print some info about the outstanding allocations.
  *
- ****************************************************************************/
+ ******************************************************************************/
 
 void
-AcpiCmDumpAllocationInfo (
+AcpiUtDumpAllocationInfo (
     void)
 {
-    FUNCTION_TRACE ("CmDumpAllocationInfo");
+    FUNCTION_TRACE ("UtDumpAllocationInfo");
 
 
     DEBUG_PRINT (TRACE_ALLOCATIONS | TRACE_TABLES,
@@ -515,9 +516,9 @@ AcpiCmDumpAllocationInfo (
 }
 
 
-/*****************************************************************************
+/*******************************************************************************
  *
- * FUNCTION:    AcpiCmDumpCurrentAllocations
+ * FUNCTION:    AcpiUtDumpCurrentAllocations
  *
  * PARAMETERS:  Component           - Component(s) to dump info for.
  *              Module              - Module to dump info for.  NULL means all.
@@ -526,10 +527,10 @@ AcpiCmDumpAllocationInfo (
  *
  * DESCRIPTION: Print a list of all outstanding allocations.
  *
- ****************************************************************************/
+ ******************************************************************************/
 
 void
-AcpiCmDumpCurrentAllocations (
+AcpiUtDumpCurrentAllocations (
     UINT32                  Component,
     NATIVE_CHAR             *Module)
 {
@@ -537,7 +538,7 @@ AcpiCmDumpCurrentAllocations (
     UINT32                  i;
 
 
-    FUNCTION_TRACE ("CmDumpCurrentAllocations");
+    FUNCTION_TRACE ("UtDumpCurrentAllocations");
 
 
     if (Element == NULL)
@@ -552,7 +553,7 @@ AcpiCmDumpCurrentAllocations (
      * Walk the allocation list.
      */
 
-    AcpiCmAcquireMutex (ACPI_MTX_MEMORY);
+    AcpiUtAcquireMutex (ACPI_MTX_MEMORY);
 
     DEBUG_PRINT (TRACE_ALLOCATIONS | TRACE_TABLES,
         ("Outstanding allocations:\n"));
@@ -575,7 +576,7 @@ AcpiCmDumpCurrentAllocations (
             case ACPI_DESC_TYPE_INTERNAL:
                 DEBUG_PRINT_RAW (TRACE_ALLOCATIONS | TRACE_TABLES,
                         (" ObjType %s",
-                        AcpiCmGetTypeName (((ACPI_OPERAND_OBJECT  *)(Element->Address))->Common.Type)));
+                        AcpiUtGetTypeName (((ACPI_OPERAND_OBJECT  *)(Element->Address))->Common.Type)));
                 break;
 
             case ACPI_DESC_TYPE_PARSER:
@@ -607,7 +608,7 @@ AcpiCmDumpCurrentAllocations (
         Element = Element->Next;
     }
 
-    AcpiCmReleaseMutex (ACPI_MTX_MEMORY);
+    AcpiUtReleaseMutex (ACPI_MTX_MEMORY);
 
     DEBUG_PRINT (TRACE_ALLOCATIONS | TRACE_TABLES,
         ("Total number of unfreed allocations = %d(%X)\n", i,i));
@@ -616,11 +617,11 @@ AcpiCmDumpCurrentAllocations (
     return_VOID;
 
 }
-#endif  /* #ifdef ACPI_DEBUG_TRACK_ALLOCATIONS */
 
-/*****************************************************************************
+
+/*******************************************************************************
  *
- * FUNCTION:    _CmAllocate
+ * FUNCTION:    AcpiUtAllocate
  *
  * PARAMETERS:  Size                - Size of the allocation
  *              Component           - Component type of caller
@@ -631,10 +632,10 @@ AcpiCmDumpCurrentAllocations (
  *
  * DESCRIPTION: The subsystem's equivalent of malloc.
  *
- ****************************************************************************/
+ ******************************************************************************/
 
 void *
-_CmAllocate (
+AcpiUtAllocate (
     UINT32                  Size,
     UINT32                  Component,
     NATIVE_CHAR             *Module,
@@ -643,7 +644,7 @@ _CmAllocate (
     void                    *Address = NULL;
 
 
-    FUNCTION_TRACE_U32 ("_CmAllocate", Size);
+    FUNCTION_TRACE_U32 ("AcpiUtAllocate", Size);
 
 
     /* Check for an inadvertent size of zero bytes */
@@ -651,7 +652,7 @@ _CmAllocate (
     if (!Size)
     {
         _REPORT_ERROR (Module, Line, Component,
-                ("CmAllocate: Attempt to allocate zero bytes\n"));
+                ("UtAllocate: Attempt to allocate zero bytes\n"));
         Size = 1;
     }
 
@@ -661,31 +662,28 @@ _CmAllocate (
         /* Report allocation error */
 
         _REPORT_ERROR (Module, Line, Component,
-                ("CmAllocate: Could not allocate size %X\n", Size));
+                ("UtAllocate: Could not allocate size %X\n", Size));
 
         return_PTR (NULL);
     }
 
-#ifdef ACPI_DEBUG_TRACK_ALLOCATIONS
 
-    if (ACPI_FAILURE (AcpiCmAddElementToAllocList (Address, Size, MEM_MALLOC,
+    if (ACPI_FAILURE (AcpiUtAddElementToAllocList (Address, Size, MEM_MALLOC,
                                 Component, Module, Line)))
     {
         AcpiOsFree (Address);
         return_PTR (NULL);
     }
 
-    DEBUG_PRINT (TRACE_ALLOCATIONS,
-        ("CmAllocate: %p Size %X\n", Address, Size));
-#endif
+    DEBUG_PRINTP (TRACE_ALLOCATIONS, ("%p Size %X\n", Address, Size));
 
     return_PTR (Address);
 }
 
 
-/*****************************************************************************
+/*******************************************************************************
  *
- * FUNCTION:    _CmCallocate
+ * FUNCTION:    AcpiUtCallocate
  *
  * PARAMETERS:  Size                - Size of the allocation
  *              Component           - Component type of caller
@@ -696,10 +694,10 @@ _CmAllocate (
  *
  * DESCRIPTION: Subsystem equivalent of calloc.
  *
- ****************************************************************************/
+ ******************************************************************************/
 
 void *
-_CmCallocate (
+AcpiUtCallocate (
     UINT32                  Size,
     UINT32                  Component,
     NATIVE_CHAR             *Module,
@@ -708,7 +706,7 @@ _CmCallocate (
     void                    *Address = NULL;
 
 
-    FUNCTION_TRACE_U32 ("_CmCallocate", Size);
+    FUNCTION_TRACE_U32 ("AcpiUtCallocate", Size);
 
 
     /* Check for an inadvertent size of zero bytes */
@@ -716,7 +714,7 @@ _CmCallocate (
     if (!Size)
     {
         _REPORT_ERROR (Module, Line, Component,
-                ("CmCallocate: Attempt to allocate zero bytes\n"));
+                ("UtCallocate: Attempt to allocate zero bytes\n"));
         return_PTR (NULL);
     }
 
@@ -727,30 +725,27 @@ _CmCallocate (
         /* Report allocation error */
 
         _REPORT_ERROR (Module, Line, Component,
-                ("CmCallocate: Could not allocate size %X\n", Size));
+                ("UtCallocate: Could not allocate size %X\n", Size));
         return_PTR (NULL);
     }
 
-#ifdef ACPI_DEBUG_TRACK_ALLOCATIONS
 
-    if (ACPI_FAILURE (AcpiCmAddElementToAllocList (Address, Size, MEM_CALLOC,
+    if (ACPI_FAILURE (AcpiUtAddElementToAllocList (Address, Size, MEM_CALLOC,
                             Component,Module, Line)))
     {
         AcpiOsFree (Address);
         return_PTR (NULL);
     }
-#endif
 
-    DEBUG_PRINT (TRACE_ALLOCATIONS,
-        ("CmCallocate: %p Size %X\n", Address, Size));
+    DEBUG_PRINTP (TRACE_ALLOCATIONS, ("%p Size %X\n", Address, Size));
 
     return_PTR (Address);
 }
 
 
-/*****************************************************************************
+/*******************************************************************************
  *
- * FUNCTION:    _CmFree
+ * FUNCTION:    AcpiUtFree
  *
  * PARAMETERS:  Address             - Address of the memory to deallocate
  *              Component           - Component type of caller
@@ -761,35 +756,33 @@ _CmCallocate (
  *
  * DESCRIPTION: Frees the memory at Address
  *
- ****************************************************************************/
+ ******************************************************************************/
 
 void
-_CmFree (
+AcpiUtFree (
     void                    *Address,
     UINT32                  Component,
     NATIVE_CHAR             *Module,
     UINT32                  Line)
 {
-    FUNCTION_TRACE_PTR ("_CmFree", Address);
+    FUNCTION_TRACE_PTR ("AcpiUtFree", Address);
 
 
     if (NULL == Address)
     {
         _REPORT_ERROR (Module, Line, Component,
-            ("_CmFree: Trying to delete a NULL address\n"));
+            ("AcpiUtFree: Trying to delete a NULL address\n"));
 
         return_VOID;
     }
 
-#ifdef ACPI_DEBUG_TRACK_ALLOCATIONS
-    AcpiCmDeleteElementFromAllocList (Address, Component, Module, Line);
-#endif
-
+    AcpiUtDeleteElementFromAllocList (Address, Component, Module, Line);
     AcpiOsFree (Address);
 
-    DEBUG_PRINT (TRACE_ALLOCATIONS, ("CmFree: %p freed\n", Address));
+    DEBUG_PRINTP (TRACE_ALLOCATIONS, ("%p freed\n", Address));
 
     return_VOID;
 }
 
+#endif  /* #ifdef ACPI_DEBUG_TRACK_ALLOCATIONS */
 
