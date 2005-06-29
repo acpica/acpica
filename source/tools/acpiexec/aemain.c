@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: aemain - Main routine for the AcpiExec utility
- *              $Revision: 1.39 $
+ *              $Revision: 1.40 $
  *
  *****************************************************************************/
 
@@ -367,6 +367,7 @@ main (
             printf ("**** Could not load input table, %s\n", AcpiFormatException (Status));
             goto enterloop;
         }
+
 
 
         /* Need a fake FADT so that the hardware component is happy */
