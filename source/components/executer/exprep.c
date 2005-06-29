@@ -117,11 +117,11 @@ INT32                       MethodStackTop = -1;
 
 
 static ST_KEY_DESC_TABLE KDT[] = {
-    {"0000", 'T', "GetMethodValTyp: internal error", "GetMethodValTyp: internal error"},
-    {"0001", '1', "SetMethodValue: Descriptor Allocation Failure", "SetMethodValue: Descriptor Allocation Failure"},
-    {"0002", '1', "PrepDefFieldValue: Descriptor Allocation Failure", "PrepDefFieldValue: Descriptor Allocation Failure"},
-    {"0003", '1', "PrepBankFieldValue: Descriptor Allocation Failure", "PrepBankFieldValue: Descriptor Allocation Failure"},
-    {"0004", '1', "PrepIndexFieldValue: Descriptor Allocation Failure", "PrepIndexFieldValue: Descriptor Allocation Failure"},
+    {"0000", 'T', "AmlGetMethodType: internal error", "AmlGetMethodType: internal error"},
+    {"0001", '1', "AmlSetMethodValue: Descriptor Allocation Failure", "AmlSetMethodValue: Descriptor Allocation Failure"},
+    {"0002", '1', "AmlPrepDefFieldValue: Descriptor Allocation Failure", "AmlPrepDefFieldValue: Descriptor Allocation Failure"},
+    {"0003", '1', "AmlPrepBankFieldValue: Descriptor Allocation Failure", "AmlPrepBankFieldValue: Descriptor Allocation Failure"},
+    {"0004", '1', "AmlPrepIndexFieldValue: Descriptor Allocation Failure", "AmlPrepIndexFieldValue: Descriptor Allocation Failure"},
     {NULL, 'I', NULL, NULL}
 };
 
@@ -129,14 +129,14 @@ static ST_KEY_DESC_TABLE KDT[] = {
 
 /*****************************************************************************
  * 
- * FUNCTION:    GetMethodDepth
+ * FUNCTION:    AmlGetMethodDepth
  *
  * RETURN:      The current value of MethodStackTop
  *
  ****************************************************************************/
 
 INT32
-GetMethodDepth (void)
+AmlGetMethodDepth (void)
 {
 
     return MethodStackTop;
@@ -145,7 +145,7 @@ GetMethodDepth (void)
 
 /*****************************************************************************
  * 
- * FUNCTION:    GetMethodValTyp
+ * FUNCTION:    AmlGetMethodType
  *
  * PARAMETERS:  INT32 Index      index in MethodStack[MethodStackTop]
  *
@@ -155,9 +155,9 @@ GetMethodDepth (void)
  ****************************************************************************/
 
 NsType
-GetMethodValTyp (INT32 Index)
+AmlGetMethodType (INT32 Index)
 {
-    FUNCTION_TRACE ("GetMethodValTyp");
+    FUNCTION_TRACE ("AmlGetMethodType");
 
 
     if (OUTRANGE (MethodStackTop, MethodStack) ||
@@ -180,7 +180,7 @@ GetMethodValTyp (INT32 Index)
 
 /*****************************************************************************
  * 
- * FUNCTION:    GetMethodValue
+ * FUNCTION:    AmlGetMethodValue
  *
  * PARAMETERS:  INT32               Index       index in MethodStack[MethodStackTop]
  *              OBJECT_DESCRIPTOR   *ObjDesc    Descriptor into which selected Arg
@@ -189,22 +189,22 @@ GetMethodValTyp (INT32 Index)
  * RETURN:      S_SUCCESS or S_ERROR
  *
  * DESCRIPTION: Retrieve value of selected Arg or Local
- *              Used only in GetRvalue().
+ *              Used only in AmlGetRvalue().
  *
  ****************************************************************************/
 
 INT32
-GetMethodValue (INT32 Index, OBJECT_DESCRIPTOR *ObjDesc)
+AmlGetMethodValue (INT32 Index, OBJECT_DESCRIPTOR *ObjDesc)
 {
     INT32           Excep = S_ERROR;
 
 
-    FUNCTION_TRACE ("GetMethodValue");
+    FUNCTION_TRACE ("AmlGetMethodValue");
 
 
     if (!ObjDesc)
     {
-        DEBUG_PRINT (ACPI_ERROR, ("GetMethodValue: NULL object descriptor pointer\n"));
+        DEBUG_PRINT (ACPI_ERROR, ("AmlGetMethodValue: NULL object descriptor pointer\n"));
     }
     
     else
@@ -216,7 +216,7 @@ GetMethodValue (INT32 Index, OBJECT_DESCRIPTOR *ObjDesc)
         {
             /* MethodStackTop or Index invalid for current object stack */
 
-            DEBUG_PRINT (ACPI_ERROR, ("GetMethodValue: Bad method stack index [%d][%d]\n",
+            DEBUG_PRINT (ACPI_ERROR, ("AmlGetMethodValue: Bad method stack index [%d][%d]\n",
                             MethodStackTop, Index));
         }
 
@@ -226,22 +226,22 @@ GetMethodValue (INT32 Index, OBJECT_DESCRIPTOR *ObjDesc)
 
             if ((ARGBASE <= Index) && (Index < (ARGBASE + NUMARG)))
             {
-                DEBUG_PRINT (ACPI_ERROR, ("GetMethodValue: Uninitialized Arg%d\n",
+                DEBUG_PRINT (ACPI_ERROR, ("AmlGetMethodValue: Uninitialized Arg%d\n",
                         Index - ARGBASE));
             }
             else if ((LCLBASE <= Index) && (Index < (LCLBASE + NUMLCL)))
             {
-                DEBUG_PRINT (ACPI_ERROR, ("GetMethodValue: Uninitialized Local%d\n",
+                DEBUG_PRINT (ACPI_ERROR, ("AmlGetMethodValue: Uninitialized Local%d\n",
                                 Index - LCLBASE));
             }
             else
             {
-                DEBUG_PRINT (ACPI_ERROR, ("GetMethodValue: Uninitialized method value %d\n",
+                DEBUG_PRINT (ACPI_ERROR, ("AmlGetMethodValue: Uninitialized method value %d\n",
                                 Index));
             }
 
 #ifdef HACK
-            DEBUG_PRINT (ACPI_WARN, (" ** GetMethodValue: ret uninit as 4 **\n"));
+            DEBUG_PRINT (ACPI_WARN, (" ** AmlGetMethodValue: ret uninit as 4 **\n"));
             ObjDesc->Number.ValType = (UINT8) Number;
             ObjDesc->Number.Number = 0x4;
             Excep = S_SUCCESS;
@@ -274,7 +274,7 @@ GetMethodValue (INT32 Index, OBJECT_DESCRIPTOR *ObjDesc)
 
 /*****************************************************************************
  * 
- * FUNCTION:    SetMethodValue
+ * FUNCTION:    AmlSetMethodValue
  *
  * PARAMETERS:  INT32               Index       Index in MethodStack[MethodStackTop]
  *              OBJECT_DESCRIPTOR * ObjDesc     Value to be stored
@@ -299,12 +299,12 @@ GetMethodValue (INT32 Index, OBJECT_DESCRIPTOR *ObjDesc)
  ****************************************************************************/
 
 INT32
-SetMethodValue (INT32 Index, OBJECT_DESCRIPTOR *ObjDesc, OBJECT_DESCRIPTOR *ObjDesc2)
+AmlSetMethodValue (INT32 Index, OBJECT_DESCRIPTOR *ObjDesc, OBJECT_DESCRIPTOR *ObjDesc2)
 {
-    FUNCTION_TRACE ("SetMethodValue");
+    FUNCTION_TRACE ("AmlSetMethodValue");
 
 
-    DEBUG_PRINT (TRACE_EXEC, ("SetMethodValue: Index=%d, ObjDesc=%p, ObjDesc2=%p\n",
+    DEBUG_PRINT (TRACE_EXEC, ("AmlSetMethodValue: Index=%d, ObjDesc=%p, ObjDesc2=%p\n",
                     Index, ObjDesc, ObjDesc2));
 
     if (OUTRANGE (MethodStackTop, MethodStack) ||
@@ -312,7 +312,7 @@ SetMethodValue (INT32 Index, OBJECT_DESCRIPTOR *ObjDesc, OBJECT_DESCRIPTOR *ObjD
     {
         /* MethodStackTop or Index invalid for current object stack */
 
-        DEBUG_PRINT (ACPI_ERROR, ("SetMethodValue: Bad method stack index [%d][%d]\n",
+        DEBUG_PRINT (ACPI_ERROR, ("AmlSetMethodValue: Bad method stack index [%d][%d]\n",
                         MethodStackTop, Index));
         return S_ERROR;
     }
@@ -427,7 +427,7 @@ SetMethodValue (INT32 Index, OBJECT_DESCRIPTOR *ObjDesc, OBJECT_DESCRIPTOR *ObjD
 
 /*****************************************************************************
  * 
- * FUNCTION:    PrepDefFieldValue
+ * FUNCTION:    AmlPrepDefFieldValue
  *
  * PARAMETERS:  NsHandle    Region     Region in which field is being defined
  *              UINT8       FldFlg     Access, LockRule, UpdateRule
@@ -448,25 +448,25 @@ SetMethodValue (INT32 Index, OBJECT_DESCRIPTOR *ObjDesc, OBJECT_DESCRIPTOR *ObjD
  ****************************************************************************/
 
 INT32
-PrepDefFieldValue (NsHandle Region, UINT8 FldFlg, INT32 FldPos, INT32 FldLen)
+AmlPrepDefFieldValue (NsHandle Region, UINT8 FldFlg, INT32 FldPos, INT32 FldLen)
 {
     OBJECT_DESCRIPTOR   *ObjDesc = NULL;
     INT32               Excep = S_SUCCESS;
     INT32               Type;
 
 
-    FUNCTION_TRACE ("PrepDefFieldValue");
+    FUNCTION_TRACE ("AmlPrepDefFieldValue");
 
 
     if (!Region)
     {
-        DEBUG_PRINT (ACPI_ERROR, ("PrepDefFieldValue: null Region\n"));
+        DEBUG_PRINT (ACPI_ERROR, ("AmlPrepDefFieldValue: null Region\n"));
         Excep = S_ERROR;
     }
 
     else if (Region != (NsHandle)(Type = NsGetType (Region)))
     {
-        DEBUG_PRINT (ACPI_ERROR, ("PrepDefFieldValue: Needed Region, found %d %s\n",
+        DEBUG_PRINT (ACPI_ERROR, ("AmlPrepDefFieldValue: Needed Region, found %d %s\n",
                     Type, NsTypeNames[Type]));
         Excep = S_ERROR;
     }
@@ -483,7 +483,7 @@ PrepDefFieldValue (NsHandle Region, UINT8 FldFlg, INT32 FldPos, INT32 FldLen)
     {   
         /* ObjDesc and Region valid */
 
-        DUMP_STACK (MODE_Exec, "PrepDefFieldValue", 2, "case DefField");
+        DUMP_STACK (MODE_Exec, "AmlPrepDefFieldValue", 2, "case DefField");
 
 
         ObjDesc->ValType = (UINT8) TYPE_DefField;
@@ -500,7 +500,7 @@ PrepDefFieldValue (NsHandle Region, UINT8 FldFlg, INT32 FldPos, INT32 FldLen)
              */
             ObjDesc->Field.ValType = 0x005a;
             DEBUG_PRINT (ACPI_ERROR, (
-                    "PrepDefFieldValue: internal failure %p %02x %02x %02x %02x\n",
+                    "AmlPrepDefFieldValue: internal failure %p %02x %02x %02x %02x\n",
                     ObjDesc, ((UINT8 *) ObjDesc)[0], ((UINT8 *) ObjDesc)[1], ((UINT8 *) ObjDesc)[2],
                     ((UINT8 *) ObjDesc)[3]));
             DELETE (ObjDesc);
@@ -519,14 +519,14 @@ PrepDefFieldValue (NsHandle Region, UINT8 FldFlg, INT32 FldPos, INT32 FldLen)
 
         /* XXX - should use width of data register, not hardcoded 8 */
 
-        DEBUG_PRINT (ACPI_INFO, (" ** PrepDefFieldValue: hard 8 **\n"));
+        DEBUG_PRINT (ACPI_INFO, (" ** AmlPrepDefFieldValue: hard 8 **\n"));
 
         ObjDesc->Field.BitOffset  = (UINT16) FldPos % 8;
         ObjDesc->Field.Offset     = (UINT32) FldPos / 8;
         ObjDesc->Field.Container  = NsGetValue (Region);
 
 
-        DEBUG_PRINT (ACPI_INFO, ("PrepDefFieldValue: set nte %p (%4.4s) val = %p\n",
+        DEBUG_PRINT (ACPI_INFO, ("AmlPrepDefFieldValue: set nte %p (%4.4s) val = %p\n",
                         ObjStack[ObjStackTop], ObjStack[ObjStackTop], ObjDesc));
 
         DUMP_STACK_ENTRY (ObjDesc);
@@ -555,7 +555,7 @@ PrepDefFieldValue (NsHandle Region, UINT8 FldFlg, INT32 FldPos, INT32 FldLen)
 
 /*****************************************************************************
  * 
- * FUNCTION:    PrepBankFieldValue
+ * FUNCTION:    AmlPrepBankFieldValue
  *
  * PARAMETERS:  NsHandle    Region     Region in which field is being defined
  *              NsHandle    BankReg    Bank selection register
@@ -576,7 +576,7 @@ PrepDefFieldValue (NsHandle Region, UINT8 FldFlg, INT32 FldPos, INT32 FldLen)
  ****************************************************************************/
 
 INT32
-PrepBankFieldValue (NsHandle Region, NsHandle BankReg, UINT32 BankVal,
+AmlPrepBankFieldValue (NsHandle Region, NsHandle BankReg, UINT32 BankVal,
                         UINT8 FldFlg, INT32 FldPos, INT32 FldLen)
 {
     OBJECT_DESCRIPTOR   *ObjDesc = NULL;
@@ -584,17 +584,17 @@ PrepBankFieldValue (NsHandle Region, NsHandle BankReg, UINT32 BankVal,
     INT32               Type;
 
 
-    FUNCTION_TRACE ("PrepBankFieldValue");
+    FUNCTION_TRACE ("AmlPrepBankFieldValue");
 
 
     if (!Region)
     {
-        DEBUG_PRINT (ACPI_ERROR, ("PrepBankFieldValue: null Region\n"));
+        DEBUG_PRINT (ACPI_ERROR, ("AmlPrepBankFieldValue: null Region\n"));
         Excep = S_ERROR;
     }
     else if (Region != (NsHandle) (Type = NsGetType (Region)))
     {
-        DEBUG_PRINT (ACPI_ERROR, ("PrepBankFieldValue: Needed Region, found %d %s\n",
+        DEBUG_PRINT (ACPI_ERROR, ("AmlPrepBankFieldValue: Needed Region, found %d %s\n",
                         Type, NsTypeNames[Type]));
         Excep = S_ERROR;
     }
@@ -610,16 +610,16 @@ PrepBankFieldValue (NsHandle Region, NsHandle BankReg, UINT32 BankVal,
     {   
         /*  ObjDesc and Region valid    */
 
-        DUMP_STACK (MODE_Exec, "PrepBankFieldValue", 2, "case BankField");
+        DUMP_STACK (MODE_Exec, "AmlPrepBankFieldValue", 2, "case BankField");
 
         ObjDesc->ValType = (UINT8) TYPE_BankField;
         if (TYPE_BankField != ObjDesc->BankField.ValType)
         {
-            /* See comments in PrepDefFieldValue() re unexpected C behavior */
+            /* See comments in AmlPrepDefFieldValue() re unexpected C behavior */
 
             ObjDesc->BankField.ValType = 0x005a;
             DEBUG_PRINT (ACPI_ERROR, (
-                    "PrepBankFieldValue: internal failure %p %02x %02x %02x %02x\n",
+                    "AmlPrepBankFieldValue: internal failure %p %02x %02x %02x %02x\n",
                     ObjDesc, ((UINT8 *) ObjDesc)[0], ((UINT8 *) ObjDesc)[1], ((UINT8 *) ObjDesc)[2],
                     ((UINT8 *) ObjDesc)[3]));
             DELETE (ObjDesc);
@@ -638,7 +638,7 @@ PrepBankFieldValue (NsHandle Region, NsHandle BankReg, UINT32 BankVal,
 
         /* XXX - should use width of data register, not hardcoded 8 */
 
-        DEBUG_PRINT (ACPI_INFO, (" ** PrepBankFieldValue: hard 8 **\n"));
+        DEBUG_PRINT (ACPI_INFO, (" ** AmlPrepBankFieldValue: hard 8 **\n"));
 
         ObjDesc->BankField.BitOffset  = (UINT16) FldPos % 8;
         ObjDesc->BankField.Offset     = (UINT32) FldPos / 8;
@@ -647,7 +647,7 @@ PrepBankFieldValue (NsHandle Region, NsHandle BankReg, UINT32 BankVal,
         ObjDesc->BankField.BankSelect = NsGetValue (BankReg);
 
 
-        DEBUG_PRINT (ACPI_INFO, ("PrepBankFieldValue: set nte %p (%4.4s) val = %p\n",
+        DEBUG_PRINT (ACPI_INFO, ("AmlPrepBankFieldValue: set nte %p (%4.4s) val = %p\n",
                         ObjStack[ObjStackTop], ObjStack[ObjStackTop], ObjDesc));
         
         DUMP_STACK_ENTRY (ObjDesc);
@@ -672,7 +672,7 @@ PrepBankFieldValue (NsHandle Region, NsHandle BankReg, UINT32 BankVal,
 
 /*****************************************************************************
  * 
- * FUNCTION:    PrepIndexFieldValue
+ * FUNCTION:    AmlPrepIndexFieldValue
  *
  * PARAMETERS:  NsHandle    IndexReg   Index register
  *              NsHandle    DataReg    Data register
@@ -692,19 +692,19 @@ PrepBankFieldValue (NsHandle Region, NsHandle BankReg, UINT32 BankVal,
  ****************************************************************************/
 
 INT32
-PrepIndexFieldValue (NsHandle IndexReg, NsHandle DataReg,
+AmlPrepIndexFieldValue (NsHandle IndexReg, NsHandle DataReg,
                         UINT8 FldFlg, INT32 FldPos, INT32 FldLen)
 {
     OBJECT_DESCRIPTOR   *ObjDesc = NULL;
     INT32               Excep = S_SUCCESS;
 
 
-    FUNCTION_TRACE ("PrepIndexFieldValue");
+    FUNCTION_TRACE ("AmlPrepIndexFieldValue");
 
 
     if (!IndexReg || !DataReg)
     {
-        DEBUG_PRINT (ACPI_ERROR, ("PrepIndexFieldValue: null handle\n"));
+        DEBUG_PRINT (ACPI_ERROR, ("AmlPrepIndexFieldValue: null handle\n"));
         Excep = S_ERROR;
     }
 
@@ -722,11 +722,11 @@ PrepIndexFieldValue (NsHandle IndexReg, NsHandle DataReg,
         ObjDesc->ValType = (UINT8) TYPE_IndexField;
         if (TYPE_IndexField != ObjDesc->IndexField.ValType)
         {
-            /* See comments in PrepDefFieldValue() re unexpected C behavior */
+            /* See comments in AmlPrepDefFieldValue() re unexpected C behavior */
         
             ObjDesc->IndexField.ValType = 0x005a;
             DEBUG_PRINT (ACPI_ERROR, (
-                    "PrepIndexFieldValue: internal failure %p %02x %02x %02x %02x\n",
+                    "AmlPrepIndexFieldValue: internal failure %p %02x %02x %02x %02x\n",
                     ObjDesc, ((UINT8 *) ObjDesc)[0], ((UINT8 *) ObjDesc)[1], ((UINT8 *) ObjDesc)[2],
                     ((UINT8 *) ObjDesc)[3]));
             DELETE (ObjDesc);
@@ -746,14 +746,14 @@ PrepIndexFieldValue (NsHandle IndexReg, NsHandle DataReg,
 
         /* XXX - should use width of data register, not hardcoded 8 */
 
-        DEBUG_PRINT (ACPI_INFO, (" ** PrepIndexFieldValue: hard 8 **\n"));
+        DEBUG_PRINT (ACPI_INFO, (" ** AmlPrepIndexFieldValue: hard 8 **\n"));
 
         ObjDesc->IndexField.BitOffset = (UINT16) FldPos % 8;
         ObjDesc->IndexField.IndexVal  = (UINT32) FldPos / 8;
         ObjDesc->IndexField.Index     = IndexReg;
         ObjDesc->IndexField.Data      = DataReg;
 
-        DEBUG_PRINT (ACPI_INFO, ("PrepIndexFieldValue: set nte %p (%4.4s) val = %p\n",
+        DEBUG_PRINT (ACPI_INFO, ("AmlPrepIndexFieldValue: set nte %p (%4.4s) val = %p\n",
                         ObjStack[ObjStackTop], ObjStack[ObjStackTop], ObjDesc));
 
         DUMP_STACK_ENTRY (ObjDesc);
@@ -776,7 +776,7 @@ PrepIndexFieldValue (NsHandle IndexReg, NsHandle DataReg,
 
 /*****************************************************************************
  * 
- * FUNCTION:    PrepStack
+ * FUNCTION:    AmlPrepStack
  *
  * PARAMETERS:  char *Types       String showing operand types needed
  *
@@ -799,21 +799,21 @@ PrepIndexFieldValue (NsHandle IndexReg, NsHandle DataReg,
  ****************************************************************************/
 
 INT32
-PrepStack (char *Types)
+AmlPrepStack (char *Types)
 {
     OBJECT_DESCRIPTOR **    StackPtr = (OBJECT_DESCRIPTOR **) &ObjStack[ObjStackTop];
     INT32                   Excep;
 
 
-    FUNCTION_TRACE ("PrepStack");
+    FUNCTION_TRACE ("AmlPrepStack");
 
 
     /* 
-     * Ensure room on stack for GetRvalue() to operate
+     * Ensure room on stack for AmlGetRvalue() to operate
      * without clobbering top existing entry.
      */
 
-    Excep = PushIfExec (MODE_Exec);
+    Excep = AmlPushIfExec (MODE_Exec);
     if (S_SUCCESS != Excep)
     {
         return Excep;
@@ -836,7 +836,7 @@ PrepStack (char *Types)
 
         if (!StackPtr || !*StackPtr)
         {
-            DEBUG_PRINT (ACPI_ERROR, ("PrepStack:internal error: null stack entry\n"));
+            DEBUG_PRINT (ACPI_ERROR, ("AmlPrepStack:internal error: null stack entry\n"));
             ObjStackTop--;
             return S_ERROR;
         }
@@ -907,14 +907,14 @@ PrepStack (char *Types)
         switch (*Types++)
         {
         case 'l':                                   /* need Lvalue */
-            if (IsNsHandle (*StackPtr))             /* direct name ptr OK as-is */
+            if (IS_NS_HANDLE (*StackPtr))             /* direct name ptr OK as-is */
             {
                 break;
             }
 
             if (TYPE_Lvalue != (*StackPtr)->ValType)
             {
-                DEBUG_PRINT (ACPI_ERROR, ("PrepStack: Needed Lvalue, found %s\n",
+                DEBUG_PRINT (ACPI_ERROR, ("AmlPrepStack: Needed Lvalue, found %s\n",
                             TypeFoundPtr));
                 ObjStackTop--;
                 return S_ERROR;
@@ -931,10 +931,10 @@ PrepStack (char *Types)
             break;
 
         case 'n':                                   /* need Number */
-            Excep = GetRvalue (StackPtr);
+            Excep = AmlGetRvalue (StackPtr);
 
             DEBUG_PRINT (TRACE_EXEC,
-                          ("PrepStack:n: GetRvalue returned %s\n", RV[Excep]));
+                          ("AmlPrepStack:n: AmlGetRvalue returned %s\n", RV[Excep]));
 
             if (S_SUCCESS != Excep)
             {
@@ -944,7 +944,7 @@ PrepStack (char *Types)
 
             if (TYPE_Number != (*StackPtr)->ValType)
             {
-                DEBUG_PRINT (ACPI_ERROR, ("PrepStack: Needed Number, found %s\n",
+                DEBUG_PRINT (ACPI_ERROR, ("AmlPrepStack: Needed Number, found %s\n",
                             TypeFoundPtr));
                 ObjStackTop--;
                 return S_ERROR;
@@ -952,19 +952,19 @@ PrepStack (char *Types)
             break;
 
         case 's':                                   /* need String (or Buffer) */
-            if ((Excep = GetRvalue (StackPtr)) != S_SUCCESS)
+            if ((Excep = AmlGetRvalue (StackPtr)) != S_SUCCESS)
             {
                 ObjStackTop--;
                 return Excep;
             }
 
-            DEBUG_PRINT (TRACE_EXEC, ("GetRvalue returned S_SUCCESS\n"));
+            DEBUG_PRINT (TRACE_EXEC, ("AmlGetRvalue returned S_SUCCESS\n"));
 
             if (TYPE_String != (*StackPtr)->ValType &&
                 TYPE_Buffer != (*StackPtr)->ValType)
             {
                 DEBUG_PRINT (ACPI_ERROR, (
-                        "PrepStack: Needed String or Buffer, found %s\n",
+                        "AmlPrepStack: Needed String or Buffer, found %s\n",
                         TypeFoundPtr));
                 ObjStackTop--;
                 return S_ERROR;
@@ -972,17 +972,17 @@ PrepStack (char *Types)
             break;
 
         case 'b':                                   /* need Buffer */
-            if ((Excep = GetRvalue(StackPtr)) != S_SUCCESS)
+            if ((Excep = AmlGetRvalue(StackPtr)) != S_SUCCESS)
             {
                 ObjStackTop--;
                 return Excep;
             }
 
-            DEBUG_PRINT (TRACE_EXEC, ("GetRvalue returned S_SUCCESS\n"));
+            DEBUG_PRINT (TRACE_EXEC, ("AmlGetRvalue returned S_SUCCESS\n"));
 
             if (TYPE_Buffer != (*StackPtr)->ValType)
             {
-                DEBUG_PRINT (ACPI_ERROR, ("PrepStack: Needed Buffer, found %s\n",
+                DEBUG_PRINT (ACPI_ERROR, ("AmlPrepStack: Needed Buffer, found %s\n",
                             TypeFoundPtr));
                 ObjStackTop--;
                 return S_ERROR;
@@ -992,7 +992,7 @@ PrepStack (char *Types)
         case 'i':                                   /* need If */
             if (TYPE_If != (*StackPtr)->ValType)
             {
-                DEBUG_PRINT (ACPI_ERROR, ("PrepStack: Needed If, found %s\n",
+                DEBUG_PRINT (ACPI_ERROR, ("AmlPrepStack: Needed If, found %s\n",
                         TypeFoundPtr));
                 ObjStackTop--;
                 return S_ERROR;
@@ -1000,17 +1000,17 @@ PrepStack (char *Types)
             break;
 
         case 'p':                                   /* need Package */
-            if ((Excep = GetRvalue (StackPtr)) != S_SUCCESS)
+            if ((Excep = AmlGetRvalue (StackPtr)) != S_SUCCESS)
             {
                 ObjStackTop--;
                 return Excep;
             }
 
-            DEBUG_PRINT (TRACE_EXEC, ("GetRvalue returned S_SUCCESS\n"));
+            DEBUG_PRINT (TRACE_EXEC, ("AmlGetRvalue returned S_SUCCESS\n"));
 
             if (TYPE_Package != (*StackPtr)->ValType)
             {
-                DEBUG_PRINT (ACPI_ERROR, ("PrepStack: Needed Package, found %s\n",
+                DEBUG_PRINT (ACPI_ERROR, ("AmlPrepStack: Needed Package, found %s\n",
                             TypeFoundPtr));
                 ObjStackTop--;
                 return S_ERROR;
@@ -1019,7 +1019,7 @@ PrepStack (char *Types)
 
         default:
             DEBUG_PRINT (ACPI_ERROR, (
-                    "PrepStack:internal error Unknown type flag %02x\n",
+                    "AmlPrepStack:internal error Unknown type flag %02x\n",
                     *--Types));
             ObjStackTop--;
             return S_ERROR;
@@ -1037,7 +1037,7 @@ PrepStack (char *Types)
             
             if ((OBJECT_DESCRIPTOR **) &ObjStack[0] == StackPtr)
             {
-                DEBUG_PRINT (ACPI_ERROR, ("PrepStack: not enough operands\n"));
+                DEBUG_PRINT (ACPI_ERROR, ("AmlPrepStack: not enough operands\n"));
                 ObjStackTop--;
                 return S_ERROR;
             }
