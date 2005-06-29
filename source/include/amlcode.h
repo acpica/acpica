@@ -3,7 +3,7 @@
  * Name: amlcode.h - Definitions for AML, as included in "definition blocks"
  *                   Declarations and definitions contained herein are derived
  *                   directly from the ACPI specification.
- *       $Revision: 1.48 $
+ *       $Revision: 1.49 $
  *
  *****************************************************************************/
 
@@ -189,12 +189,12 @@
 #define AML_SIZE_OF_OP              (UINT16) 0x87
 #define AML_INDEX_OP                (UINT16) 0x88
 #define AML_MATCH_OP                (UINT16) 0x89
-#define AML_DWORD_FIELD_OP          (UINT16) 0x8a
-#define AML_WORD_FIELD_OP           (UINT16) 0x8b
-#define AML_BYTE_FIELD_OP           (UINT16) 0x8c
-#define AML_BIT_FIELD_OP            (UINT16) 0x8d
+#define AML_CREATE_DWORD_FIELD_OP   (UINT16) 0x8a
+#define AML_CREATE_WORD_FIELD_OP    (UINT16) 0x8b
+#define AML_CREATE_BYTE_FIELD_OP    (UINT16) 0x8c
+#define AML_CREATE_BIT_FIELD_OP     (UINT16) 0x8d
 #define AML_TYPE_OP                 (UINT16) 0x8e
-#define AML_QWORD_FIELD_OP          (UINT16) 0x8f     /* ACPI 2.0 */
+#define AML_CREATE_QWORD_FIELD_OP   (UINT16) 0x8f     /* ACPI 2.0 */
 #define AML_LAND_OP                 (UINT16) 0x90
 #define AML_LOR_OP                  (UINT16) 0x91
 #define AML_LNOT_OP                 (UINT16) 0x92
@@ -245,7 +245,7 @@
 #define AML_DEBUG_OP                (UINT16) 0x5b31
 #define AML_FATAL_OP                (UINT16) 0x5b32
 #define AML_REGION_OP               (UINT16) 0x5b80
-#define AML_DEF_FIELD_OP            (UINT16) 0x5b81
+#define AML_FIELD_OP                (UINT16) 0x5b81
 #define AML_DEVICE_OP               (UINT16) 0x5b82
 #define AML_PROCESSOR_OP            (UINT16) 0x5b83
 #define AML_POWER_RES_OP            (UINT16) 0x5b84
@@ -313,7 +313,7 @@
 
 /* "Standard" ACPI types are 1-15 (0x0F) */
 
-#define ARGI_INTEGER                 ACPI_TYPE_INTEGER        /* 1 */
+#define ARGI_INTEGER                ACPI_TYPE_INTEGER       /* 1 */
 #define ARGI_STRING                 ACPI_TYPE_STRING        /* 2 */
 #define ARGI_BUFFER                 ACPI_TYPE_BUFFER        /* 3 */
 #define ARGI_PACKAGE                ACPI_TYPE_PACKAGE       /* 4 */
@@ -403,14 +403,14 @@
 
 typedef enum
 {
-    REGION_MEMORY               = 0,
+    REGION_MEMORY                   = 0,
     REGION_IO,
     REGION_PCI_CONFIG,
     REGION_EC,
     REGION_SMBUS,
     REGION_CMOS,
     REGION_PCI_BAR,
-    REGION_FIXED_HW             = 0x7F,
+    REGION_FIXED_HW                 = 0x7F,
 
 } AML_REGION_TYPES;
 
@@ -419,59 +419,59 @@ typedef enum
 
 typedef enum
 {
-    MATCH_MTR                   = 0,
-    MATCH_MEQ                   = 1,
-    MATCH_MLE                   = 2,
-    MATCH_MLT                   = 3,
-    MATCH_MGE                   = 4,
-    MATCH_MGT                   = 5
+    MATCH_MTR                       = 0,
+    MATCH_MEQ                       = 1,
+    MATCH_MLE                       = 2,
+    MATCH_MLT                       = 3,
+    MATCH_MGE                       = 4,
+    MATCH_MGT                       = 5
 
 } AML_MATCH_OPERATOR;
 
-#define MAX_MATCH_OPERATOR      5
+#define MAX_MATCH_OPERATOR          5
 
 
 /* Field Access Types */
 
-#define ACCESS_TYPE_MASK        0x0f
-#define ACCESS_TYPE_SHIFT       0
+#define ACCESS_TYPE_MASK            0x0f
+#define ACCESS_TYPE_SHIFT           0
 
 typedef enum
 {
-    ACCESS_ANY_ACC              = 0,
-    ACCESS_BYTE_ACC             = 1,
-    ACCESS_WORD_ACC             = 2,
-    ACCESS_DWORD_ACC            = 3,
-    ACCESS_BLOCK_ACC            = 4,
-    ACCESS_SMBSEND_RECV_ACC     = 5,
-    ACCESS_SMBQUICK_ACC         = 6
+    ACCESS_ANY_ACC                  = 0,
+    ACCESS_BYTE_ACC                 = 1,
+    ACCESS_WORD_ACC                 = 2,
+    ACCESS_DWORD_ACC                = 3,
+    ACCESS_BLOCK_ACC                = 4,
+    ACCESS_SMBSEND_RECV_ACC         = 5,
+    ACCESS_SMBQUICK_ACC             = 6
 
 } AML_ACCESS_TYPE;
 
 
 /* Field Lock Rules */
 
-#define LOCK_RULE_MASK          0x10
-#define LOCK_RULE_SHIFT         4
+#define LOCK_RULE_MASK              0x10
+#define LOCK_RULE_SHIFT             4
 
 typedef enum
 {
-    GLOCK_NEVER_LOCK            = 0,
-    GLOCK_ALWAYS_LOCK           = 1
+    GLOCK_NEVER_LOCK                = 0,
+    GLOCK_ALWAYS_LOCK               = 1
 
 } AML_LOCK_RULE;
 
 
 /* Field Update Rules */
 
-#define UPDATE_RULE_MASK        0x060
-#define UPDATE_RULE_SHIFT       5
+#define UPDATE_RULE_MASK            0x060
+#define UPDATE_RULE_SHIFT           5
 
 typedef enum
 {
-    UPDATE_PRESERVE             = 0,
-    UPDATE_WRITE_AS_ONES        = 1,
-    UPDATE_WRITE_AS_ZEROS       = 2
+    UPDATE_PRESERVE                 = 0,
+    UPDATE_WRITE_AS_ONES            = 1,
+    UPDATE_WRITE_AS_ZEROS           = 2
 
 } AML_UPDATE_RULE;
 
@@ -485,15 +485,15 @@ typedef enum
 
 /* Array sizes.  Used for range checking also */
 
-#define NUM_REGION_TYPES        7
-#define NUM_ACCESS_TYPES        7
-#define NUM_UPDATE_RULES        3
-#define NUM_MATCH_OPS           7
-#define NUM_OPCODES             256
-#define NUM_FIELD_NAMES         2
+#define NUM_REGION_TYPES            7
+#define NUM_ACCESS_TYPES            7
+#define NUM_UPDATE_RULES            3
+#define NUM_MATCH_OPS               7
+#define NUM_OPCODES                 256
+#define NUM_FIELD_NAMES             2
 
 
-#define USER_REGION_BEGIN       0x80
+#define USER_REGION_BEGIN           0x80
 
 /*
  * AML tables
