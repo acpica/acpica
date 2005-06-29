@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dsutils - Dispatcher utilities
- *              $Revision: 1.107 $
+ *              $Revision: 1.109 $
  *
  ******************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2004, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2005, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -163,11 +163,13 @@ AcpiDsIsResultUsed (
     }
 
     /*
-     * If there is no parent, we are executing at the method level.
-     * An executing method typically has no parent, since each method
-     * is parsed separately.
+     * If there is no parent, or the parent is a ScopeOp, we are executing
+     * at the method level. An executing method typically has no parent, 
+     * since each method is parsed separately.  A method invoked externally
+     * via ExecuteControlMethod has a ScopeOp as the parent.
      */
-    if (!Op->Common.Parent)
+    if ((!Op->Common.Parent) ||
+        (Op->Common.Parent->Common.AmlOpcode == AML_SCOPE_OP))
     {
         /*
          * If this is the last statement in the method, we know it is not a
