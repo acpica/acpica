@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: utglobal - Global variables for the ACPI subsystem
- *              $Revision: 1.142 $
+ *              $Revision: 1.143 $
  *
  *****************************************************************************/
 
@@ -769,6 +769,7 @@ AcpiUtInitGlobals (
 
     AcpiGbl_GlobalLockAcquired          = FALSE;
     AcpiGbl_GlobalLockThreadCount       = 0;
+    AcpiGbl_GlobalLockHandle            = 0;
 
     /* Miscellaneous variables */
 
