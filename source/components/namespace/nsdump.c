@@ -354,10 +354,10 @@ NsDumpOneObject (
                     Value[6], Value[7], Value[8], Value[9], Value[10],
                     Value[11], Value[12], Value[13], Value[14], Value[15]));
 
-        /* If value is NOT an internal object, we are done here */
+        /* If value is NOT an internal object, we are done */
 
         if ((NsIsInSystemTable (Value)) ||
-            (IS_NS_HANDLE (Value)))
+            (VALID_DESCRIPTOR_TYPE (Value, DESC_TYPE_NTE)))
         {
             return AE_OK;
         }
