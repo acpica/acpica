@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exmonad - ACPI AML execution for monadic (1 operand) operators
- *              $Revision: 1.110 $
+ *              $Revision: 1.111 $
  *
  *****************************************************************************/
 
@@ -778,6 +778,7 @@ AcpiExMonadic2 (
             case AML_ZERO_OP:
             case AML_ONE_OP:
             case AML_ONES_OP:
+            case AML_REVISION_OP:
 
                 /* Constants are of type Number */
 
