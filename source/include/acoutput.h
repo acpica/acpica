@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acoutput.h -- debug output
- *       $Revision: 1.71 $
+ *       $Revision: 1.72 $
  *
  *****************************************************************************/
 
@@ -139,19 +139,18 @@
 #define OS_DEPENDENT                0x00000800
 
 #define BUS_MANAGER                 0x00001000
+#define POWER_CONTROL               0x00002000
+#define EMBEDDED_CONTROLLER         0x00004000
+#define PROCESSOR                   0x00008000
+#define AC_ADAPTER                  0x00010000
+#define BATTERY                     0x00020000
+#define BUTTON                      0x00040000
+#define SYSTEM                      0x00080000
+#define THERMAL_ZONE                0x00100000
 
-#define PROCESSOR_CONTROL           0x00002000
-#define SYSTEM_CONTROL              0x00004000
-#define THERMAL_CONTROL             0x00008000
-#define POWER_CONTROL               0x00010000
-
-#define EMBEDDED_CONTROLLER         0x00020000
-#define BATTERY                     0x00040000
-#define BUTTON                      0x00080000
-
-#define DEBUGGER                    0x00100000
-#define COMPILER                    0x00200000
-#define ALL_COMPONENTS              0x001FFFFF
+#define DEBUGGER                    0x01000000
+#define COMPILER                    0x02000000
+#define ALL_COMPONENTS              0x01FFFFFF
 
 #define COMPONENT_DEFAULT           (ALL_COMPONENTS)
 
