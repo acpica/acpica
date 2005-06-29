@@ -233,6 +233,30 @@ FunctionTrace (
     ACPI_STRING             FunctionName);
 
 void
+FunctionTracePtr (
+    ACPI_STRING             ModuleName, 
+    INT32                   LineNumber, 
+    INT32                   ComponentId, 
+    ACPI_STRING             FunctionName,
+    void                    *Pointer);
+
+void
+FunctionTraceU32 (
+    ACPI_STRING             ModuleName, 
+    INT32                   LineNumber, 
+    INT32                   ComponentId, 
+    ACPI_STRING             FunctionName,
+    UINT32                  Integer);
+
+void
+FunctionTraceStr (
+    ACPI_STRING             ModuleName, 
+    INT32                   LineNumber, 
+    INT32                   ComponentId, 
+    ACPI_STRING             FunctionName,
+    char                    *String);
+
+void
 FunctionExit (
     ACPI_STRING             ModuleName, 
     INT32                   LineNumber, 
