@@ -427,7 +427,7 @@ AcpiGetRegister (
     UINT32                  Flags);
 
 ACPI_STATUS
-AcpiPutRegister (
+AcpiSetRegister (
     UINT32                  RegisterId,
     UINT32                  Value,
     UINT32                  Flags);
