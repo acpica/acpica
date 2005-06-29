@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslcompile - top level compile module
- *              $Revision: 1.13 $
+ *              $Revision: 1.14 $
  *
  *****************************************************************************/
 
@@ -10,7 +10,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, 2000, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -132,7 +132,7 @@ struct tm                   *NewTime;
 time_t                      Aclock;
 
 SYSTEMTIME                 SysTime;
-typedef struct 
+typedef struct
 {
     time_t                  StartTime;
     time_t                  EndTime;
@@ -151,8 +151,8 @@ UINT32
 AnGetTimeMs (void)
 {
     GetSystemTime (&SysTime);
-    return ((SysTime.wMinute * 60000) + 
-        (SysTime.wSecond * 1000) + 
+    return ((SysTime.wMinute * 60000) +
+        (SysTime.wSecond * 1000) +
         SysTime.wMilliseconds);
 }
 
@@ -213,7 +213,7 @@ AslCompilerSignon (
     FILE                    *Where)
 {
 
-    fprintf (Where, "\n%s %s [%s]\n%s\nSupports ACPI Specification Revision 2.0\n\n", 
+    fprintf (Where, "\n%s %s [%s]\n%s\nSupports ACPI Specification Revision 2.0\n\n",
                 CompilerId, CompilerVersion, __DATE__, CompilerCopyright);
 
 }
@@ -260,7 +260,6 @@ int
 CmDoCompile (void)
 {
     ACPI_STATUS             Status;
-    UINT32                  i;
 
 
     ASL_START_EVENT (12, "Total Compile time");
@@ -331,7 +330,6 @@ CmDoCompile (void)
     }
 
 
-
     /* Namespace loading */
 
     ASL_START_EVENT (5, "Load ACPI Namespace");
@@ -339,7 +337,7 @@ CmDoCompile (void)
     ASL_END_EVENT (5);
 
 
-    /* 
+    /*
      * Semantic error checking part one - check control methods
      */
 
@@ -351,7 +349,7 @@ CmDoCompile (void)
                         AnMethodAnalysisWalkEnd, &AnalysisWalkInfo);
     ASL_END_EVENT (6);
 
-    
+
     /* Namespace lookup */
 
     ASL_START_EVENT (7, "Cross reference ACPI Namespace");
@@ -385,7 +383,6 @@ CmDoCompile (void)
     ASL_END_EVENT (10);
 
 
-
     /*
      * Now that the input is parsed, we can open the AML output file.
      * Note: by default, the name of this file comes from the table descriptor
@@ -406,14 +403,6 @@ CmDoCompile (void)
     ASL_END_EVENT (11);
 
 
-    AePrintErrorLog (stdout);
-    if (Gbl_DebugFlag)
-    {
-        /* Print error summary to the debug file */
-
-        AePrintErrorLog (stderr);
-    }
-
     /* Dump the AML as hex if requested */
 
     LsDoHexOutput ();
@@ -423,25 +412,11 @@ CmDoCompile (void)
     LsDisplayNamespace ();
     ASL_END_EVENT (12);
 
-    DbgPrint (ASL_DEBUG_OUTPUT, "\n\nElapsed time for major events\n\n");
-    for (i = 0; i < 13; i++)
-    {
-        DbgPrint (ASL_DEBUG_OUTPUT, "%8.8X - %s\n",
-            AslGbl_Events[i].EndTime - 
-            AslGbl_Events[i].StartTime,
-            AslGbl_Events[i].EventName);
-    }
 
-    DbgPrint (ASL_DEBUG_OUTPUT, "\n\nMiscellaneous compile statistics\n\n");
-    DbgPrint (ASL_DEBUG_OUTPUT, "%32s : %d\n", "Total Namespace searches", Gbl_NsLookupCount);
-    DbgPrint (ASL_DEBUG_OUTPUT, "%32s : %d\n", "Time per search", 
-                    ((AslGbl_Events[7].EndTime - AslGbl_Events[7].StartTime) * 1000) /
-                    Gbl_NsLookupCount);
     CmCleanupAndExit ();
 
     return 0;
 }
-
 
 
 /*******************************************************************************
@@ -459,6 +434,35 @@ CmDoCompile (void)
 void
 CmCleanupAndExit (void)
 {
+    UINT32                  i;
+
+
+    AePrintErrorLog (stdout);
+    if (Gbl_DebugFlag)
+    {
+        /* Print error summary to the debug file */
+
+        AePrintErrorLog (stderr);
+    }
+
+    DbgPrint (ASL_DEBUG_OUTPUT, "\n\nElapsed time for major events\n\n");
+    for (i = 0; i < 13; i++)
+    {
+        DbgPrint (ASL_DEBUG_OUTPUT, "%8.8X - %s\n",
+            AslGbl_Events[i].EndTime -
+            AslGbl_Events[i].StartTime,
+            AslGbl_Events[i].EventName);
+    }
+
+    if (Gbl_NsLookupCount)
+    {
+        DbgPrint (ASL_DEBUG_OUTPUT, "\n\nMiscellaneous compile statistics\n\n");
+        DbgPrint (ASL_DEBUG_OUTPUT, "%32s : %d\n", "Total Namespace searches", Gbl_NsLookupCount);
+        DbgPrint (ASL_DEBUG_OUTPUT, "%32s : %d\n", "Time per search",
+                        ((AslGbl_Events[7].EndTime - AslGbl_Events[7].StartTime) * 1000) /
+                        Gbl_NsLookupCount);
+    }
+
 
     /* Close all open files */
 

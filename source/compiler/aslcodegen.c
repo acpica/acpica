@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslcodegen - AML code generation
- *              $Revision: 1.25 $
+ *              $Revision: 1.26 $
  *
  *****************************************************************************/
 
@@ -10,7 +10,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, 2000, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -185,7 +185,7 @@ CgAmlWriteWalk (
 {
 
 
-    DbgPrint (ASL_TREE_OUTPUT, 
+    DbgPrint (ASL_TREE_OUTPUT,
         "%5.5d [%d]", Node->LogicalLineNumber, Level);
     UtPrintFormattedName (Node->ParseOpcode, Level);
 
@@ -193,7 +193,7 @@ CgAmlWriteWalk (
         Node->ParseOpcode == NAMESTRING ||
         Node->ParseOpcode == METHODCALL)
     {
-        DbgPrint (ASL_TREE_OUTPUT, 
+        DbgPrint (ASL_TREE_OUTPUT,
             "%10.32s      ", Node->ExternalName);
     }
 

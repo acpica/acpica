@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslopcode - AML opcode generation
- *              $Revision: 1.7 $
+ *              $Revision: 1.9 $
  *
  *****************************************************************************/
 
@@ -10,7 +10,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, 2000, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -252,7 +252,7 @@ OpnDoFieldCommon (
     Next->AmlLength = 1;
     Next->ParseOpcode = RAW_DATA;
 
-    /*  Process the FieldUnitList */
+    /* Process the FieldUnitList */
 
     Next = Next->Peer;
     CurrentBitOffset = 0;
@@ -262,28 +262,70 @@ OpnDoFieldCommon (
         switch (Next->ParseOpcode)
         {
         case ACCESSAS:
+
+            /* Nothing additional to do */
             break;
+
 
         case OFFSET:
+
+            /* New offset into the field */
+
             PkgLengthNode = Next->Child;
             NewBitOffset = PkgLengthNode->Value.Integer32 * 8;
+
+            /*
+             * Examine the specified offset in relation to the
+             * current offset counter.
+             */
+
             if (NewBitOffset < CurrentBitOffset)
             {
-                DbgPrint ("Offset less than current offset\n");
+                /*
+                 * Not allowed to specify a backwards offset!
+                 * Issue error and ignore this node.
+                 */
+                AslError (ASL_ERROR, ASL_MSG_BACKWARDS_OFFSET, PkgLengthNode, NULL);
+                Next->ParseOpcode = DEFAULT_ARG;
+                PkgLengthNode->ParseOpcode = DEFAULT_ARG;
             }
 
-            PkgLengthNode->Value.Integer = NewBitOffset - CurrentBitOffset;
-            CurrentBitOffset = NewBitOffset;
+            else if (NewBitOffset == CurrentBitOffset)
+            {
+                /*
+                 * Offset is redundant; we don't need to output an
+                 * offset opcode.  Just set these nodes to default
+                 */
+                Next->ParseOpcode = DEFAULT_ARG;
+                PkgLengthNode->ParseOpcode = DEFAULT_ARG;
+            }
+
+            else
+            {
+                /*
+                 * Valid new offset - set the value to be inserted into the AML
+                 * and update the offset counter.
+                 */
+                PkgLengthNode->Value.Integer = NewBitOffset - CurrentBitOffset;
+                CurrentBitOffset = NewBitOffset;
+            }
             break;
+
 
         case NAMESEG:
         case RESERVED_BYTES:
-            PkgLengthNode = Next->Child;
-            NewBitOffset = PkgLengthNode->Value.Integer32;
+
+            /* Named or reserved field entry */
+
+            PkgLengthNode     = Next->Child;
+            NewBitOffset      = PkgLengthNode->Value.Integer32;
             CurrentBitOffset += NewBitOffset;
             break;
 
         }
+
+        /* Move on to next entry in the field list */
+
         Next = Next->Peer;
     }
 }

@@ -3,7 +3,7 @@
 /******************************************************************************
  *
  * Module Name: aslcompiler.l - Flex input file
- *              $Revision: 1.28 $
+ *              $Revision: 1.29 $
  *
  *****************************************************************************/
 
@@ -11,7 +11,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, 2000, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -691,12 +691,12 @@ ResetCurrentLineBuffer (
 
     if (Gbl_SourceOutputFile)
     {
-       fwrite (Gbl_CurrentLineBuffer, Gbl_LineBufPtr - Gbl_CurrentLineBuffer, 
+       fwrite (Gbl_CurrentLineBuffer, Gbl_LineBufPtr - Gbl_CurrentLineBuffer,
                 1, Gbl_SourceOutputFile);
     }
 
     Gbl_InputByteCount++; /* Account for the CR/linefeed */
-    Gbl_CurrentLineOffset += Gbl_CurrentColumn + 1; 
+    Gbl_CurrentLineOffset += Gbl_CurrentColumn + 1;
 
     Gbl_CurrentColumn = 0;
 
@@ -729,8 +729,6 @@ InsertLineBuffer (
 
 
     Gbl_InputByteCount++;
-    
-
 
 
     /* Handle tabs.  Convert to spaces */
@@ -738,7 +736,7 @@ InsertLineBuffer (
     if (SourceChar == '\t')
     {
         SourceChar = ' ';
-        Count = ASL_SPACES_PER_TAB - 
+        Count = ASL_SPACES_PER_TAB -
                     (Gbl_CurrentColumn & (ASL_SPACES_PER_TAB-1));
     }
 
@@ -754,8 +752,11 @@ InsertLineBuffer (
 
         if (Gbl_LineBufPtr > (Gbl_CurrentLineBuffer + (ASL_LINE_BUFFER_SIZE - 1)))
         {
-            printf ("Warning: Input line too long for input buffer (%d) at line %d in file %s\n",
-                        ASL_LINE_BUFFER_SIZE, Gbl_CurrentLineNumber, Gbl_InputFilename);
+            sprintf (MsgBuffer, "Max %d", ASL_LINE_BUFFER_SIZE);
+            AslCommonError (ASL_WARNING, ASL_MSG_LONG_LINE, Gbl_CurrentLineNumber, Gbl_LogicalLineNumber,
+                    Gbl_CurrentLineOffset, Gbl_CurrentColumn, Gbl_InputFilename, MsgBuffer);
+
+
             ResetCurrentLineBuffer ();
         }
 

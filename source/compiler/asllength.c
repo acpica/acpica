@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asllength - Tree walk to determine package and opcode lengths
- *              $Revision: 1.15 $
+ *              $Revision: 1.16 $
  *
  *****************************************************************************/
 
@@ -10,7 +10,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, 2000, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -433,7 +433,7 @@ CgGenerateAmlLengths (
         Status = AcpiNsInternalizeName (Node->Value.String, &Buffer);
         if (ACPI_FAILURE (Status))
         {
-            DbgPrint (ASL_DEBUG_OUTPUT, 
+            DbgPrint (ASL_DEBUG_OUTPUT,
                 "Failure from internalize name %X\n", Status);
             break;
         }

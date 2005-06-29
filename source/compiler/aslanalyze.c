@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslanalyze.c - check for semantic errors
- *              $Revision: 1.20 $
+ *              $Revision: 1.21 $
  *
  *****************************************************************************/
 
@@ -10,7 +10,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, 2000, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -126,18 +126,21 @@
 
 /*******************************************************************************
  *
- * FUNCTION:    
+ * FUNCTION:    AnMapArgTypeToBtype
  *
- * PARAMETERS:  
+ * PARAMETERS:  ArgType      - The ARGI required type(s) for this argument,
+ *                               from the opcode info table
  *
- * RETURN:      none
+ * RETURN:      The corresponding Bit-encoded types
  *
- * DESCRIPTION: 
+ * DESCRIPTION: Convert an encoded ARGI required argument type code into a
+ *              bitfield type code.  Implements the implicit source conversion
+ *              rules.
  *
  ******************************************************************************/
 
 UINT32
-AnMapArgTypeToAcpiType (
+AnMapArgTypeToBtype (
     UINT32                  ArgType)
 {
 
@@ -147,13 +150,15 @@ AnMapArgTypeToAcpiType (
         return (ACPI_BTYPE_OBJECTS_AND_REFS);
 
     case ARGI_TARGETREF:
+    case ARGI_FIXED_TARGET:
+    case ARGI_SIMPLE_TARGET:
         return (ACPI_BTYPE_OBJECTS_AND_REFS);
 
     case ARGI_REFERENCE:
         return (ACPI_BTYPE_REFERENCE);
 
     case ARGI_INTEGER_REF:
-        return (ACPI_BTYPE_NUMBER);
+        return (ACPI_BTYPE_INTEGER);
 
     case ARGI_OBJECT_REF:
         return (ACPI_BTYPE_ALL_OBJECTS);
@@ -164,14 +169,18 @@ AnMapArgTypeToAcpiType (
     case ARGI_IF:
         return (ACPI_BTYPE_ANY);
 
-    case ARGI_NUMBER:
-        return (ACPI_BTYPE_NUMBER);
+    /*
+     * Source conversion rules:
+     * Integer, String, and Buffer are interchangable
+     */
+    case ARGI_INTEGER:
+        return (ACPI_BTYPE_INTEGER | ACPI_BTYPE_STRING | ACPI_BTYPE_BUFFER);
 
     case ARGI_STRING:
-        return (ACPI_BTYPE_STRING);
+        return (ACPI_BTYPE_INTEGER | ACPI_BTYPE_STRING | ACPI_BTYPE_BUFFER);
 
     case ARGI_BUFFER:
-        return (ACPI_BTYPE_BUFFER);
+        return (ACPI_BTYPE_INTEGER | ACPI_BTYPE_STRING | ACPI_BTYPE_BUFFER);
 
     case ARGI_PACKAGE:
         return (ACPI_BTYPE_PACKAGE);
@@ -232,13 +241,13 @@ AnMapEtypeToBtype (
     if (Etype <= ACPI_TYPE_MAX)
     {
         /*
-         * This switch statement implements the allowed operand conversion 
-         * rules as per the "ASL Data Types" section of the ACPI 
+         * This switch statement implements the allowed operand conversion
+         * rules as per the "ASL Data Types" section of the ACPI
          * specification.
          */
         switch (Etype)
         {
-        case ACPI_TYPE_NUMBER:
+        case ACPI_TYPE_INTEGER:
             return (ACPI_BTYPE_COMPUTE_DATA | ACPI_BTYPE_DDB_HANDLE);
 
         case ACPI_TYPE_STRING:
@@ -255,7 +264,7 @@ AnMapEtypeToBtype (
             return (ACPI_BTYPE_COMPUTE_DATA | ACPI_BTYPE_BUFFER_FIELD);
 
         case ACPI_TYPE_DDB_HANDLE:
-            return (ACPI_BTYPE_NUMBER | ACPI_BTYPE_DDB_HANDLE);
+            return (ACPI_BTYPE_INTEGER | ACPI_BTYPE_DDB_HANDLE);
 
         case ACPI_BTYPE_DEBUG_OBJECT:
             return (0);     /* Cannot be used as a source operand */
@@ -269,7 +278,7 @@ AnMapEtypeToBtype (
 
     switch (Etype)
     {
-    
+
     case INTERNAL_TYPE_DEF_FIELD:
     case INTERNAL_TYPE_BANK_FIELD:
     case INTERNAL_TYPE_INDEX_FIELD:
@@ -279,7 +288,7 @@ AnMapEtypeToBtype (
         return (ACPI_BTYPE_COMPUTE_DATA);
 
     case INTERNAL_TYPE_ALIAS:
-        return (ACPI_BTYPE_NUMBER);
+        return (ACPI_BTYPE_INTEGER);
 
 
     case INTERNAL_TYPE_RESOURCE:
@@ -331,9 +340,6 @@ AnMapBtypeToEtype (
 }
 
 
-
-
-
 /*******************************************************************************
  *
  * FUNCTION:    AnFormatBtype
@@ -354,7 +360,6 @@ AnFormatBtype (
 {
     UINT32              Type;
     BOOLEAN             First = TRUE;
-
 
 
     *Buffer = 0;
@@ -405,13 +410,11 @@ AnFormatBtype (
 }
 
 
-
-
 /*******************************************************************************
  *
- * FUNCTION:    AnGetBtype 
+ * FUNCTION:    AnGetBtype
  *
- * PARAMETERS:  
+ * PARAMETERS:
  *
  * RETURN:      None.
  *
@@ -427,7 +430,7 @@ AnGetBtype (
 {
     ACPI_NAMESPACE_NODE     *NsNode;
     ASL_PARSE_NODE          *ReferencedNode;
-    UINT32                  AcpiBtype = 0;
+    UINT32                  ThisNodeBtype = 0;
 
 
     if ((PsNode->ParseOpcode == NAMESEG)     ||
@@ -438,12 +441,12 @@ AnGetBtype (
         if (!NsNode)
         {
             DbgPrint (ASL_DEBUG_OUTPUT,
-                "Null attached Nsnode: [%s] at line %d\n", 
+                "Null attached Nsnode: [%s] at line %d\n",
                 PsNode->ParseOpName, PsNode->LineNumber);
             return ACPI_UINT32_MAX;
         }
 
-        AcpiBtype = AnMapEtypeToBtype (NsNode->Type);
+        ThisNodeBtype = AnMapEtypeToBtype (NsNode->Type);
 
         if (PsNode->ParseOpcode == METHODCALL)
         {
@@ -456,7 +459,7 @@ AnGetBtype (
 
             if (ReferencedNode->Flags & NODE_METHOD_TYPED)
             {
-                AcpiBtype = ReferencedNode->AcpiBtype;
+                ThisNodeBtype = ReferencedNode->AcpiBtype;
             }
 
             else
@@ -468,13 +471,12 @@ AnGetBtype (
 
     else
     {
-        AcpiBtype = PsNode->AcpiBtype;
+        ThisNodeBtype = PsNode->AcpiBtype;
     }
 
 
-    return (AcpiBtype);
+    return (ThisNodeBtype);
 }
-
 
 
 /*******************************************************************************
@@ -595,7 +597,6 @@ AnCheckForReservedMethod (
     AslError (ASL_WARNING, ASL_MSG_UNKNOWN_RESERVED_NAME, Node, Node->ExternalName);
     return;
 }
-
 
 
 /*******************************************************************************
@@ -739,8 +740,6 @@ AnMethodAnalysisWalkBegin (
 }
 
 
-
-
 /*******************************************************************************
  *
  * FUNCTION:    AnLastStatementIsReturn
@@ -805,6 +804,19 @@ AnMethodAnalysisWalkEnd (
     ASL_PARSE_NODE          *SecondToLastNode = NULL;
     ASL_PARSE_NODE          *LastNode = NULL;
 
+
+    switch (Node->ParseOpcode)
+    {
+    case METHOD:
+    case RETURN:
+        if (!MethodInfo)
+        {
+            printf ("No method info for method! [%s]\n", Node->Namepath);
+            AslError (ASL_ERROR, ASL_MSG_INTERNAL, Node, "No method info for this method");
+            CmCleanupAndExit ();
+        }
+        break;
+    }
 
     switch (Node->ParseOpcode)
     {
@@ -913,7 +925,6 @@ AnMethodAnalysisWalkEnd (
 }
 
 
-
 /*******************************************************************************
  *
  * FUNCTION:    AnMethodTypingWalkBegin
@@ -962,7 +973,7 @@ AnMethodTypingWalkEnd (
     UINT32                  Level,
     void                    *Context)
 {
-    UINT32                  AcpiBtype;
+    UINT32                  ThisNodeBtype;
 
 
     switch (Node->ParseOpcode)
@@ -975,13 +986,13 @@ AnMethodTypingWalkEnd (
         if ((Node->Child) &&
             (Node->Child->ParseOpcode != DEFAULT_ARG))
         {
-            AcpiBtype = AnGetBtype (Node->Child);            
-            
+            ThisNodeBtype = AnGetBtype (Node->Child);
+
             if ((Node->Child->ParseOpcode == METHODCALL) &&
-                (AcpiBtype == (ACPI_UINT32_MAX -1)))
+                (ThisNodeBtype == (ACPI_UINT32_MAX -1)))
             {
 
-                /* 
+                /*
                  * The method is untyped at this time (typically a forward reference).  We must
                  * recursively type the method here
                  */
@@ -989,14 +1000,14 @@ AnMethodTypingWalkEnd (
                 TrWalkParseTree (Node->Child->NsNode->Object, ASL_WALK_VISIT_TWICE, AnMethodTypingWalkBegin,
                                     AnMethodTypingWalkEnd, NULL);
 
-                AcpiBtype = AnGetBtype (Node->Child);            
+                ThisNodeBtype = AnGetBtype (Node->Child);
             }
 
             /* Returns a value, get it's type */
 
-            Node->ParentMethod->AcpiBtype |= AcpiBtype;
+            Node->ParentMethod->AcpiBtype |= ThisNodeBtype;
         }
-            
+
         break;
     }
 }
@@ -1026,8 +1037,6 @@ AnSemanticAnalysisWalkBegin (
     ASL_ANALYSIS_WALK_INFO  *WalkInfo = (ASL_ANALYSIS_WALK_INFO *) Context;
 
 
-
-
 }
 
 
@@ -1055,10 +1064,10 @@ AnSemanticAnalysisWalkEnd (
     UINT32                  ParseArgTypes;
     UINT32                  RuntimeArgTypes;
     UINT32                  RuntimeArgTypes2;
-    UINT32                  RequiredAcpiType;
+    UINT32                  RequiredBtypes;
     ASL_PARSE_NODE          *ArgNode;
     UINT32                  ArgType;
-    UINT32                  AcpiBtype;
+    UINT32                  ThisNodeBtype;
     UINT32                  AcpiEtype;
     UINT32                  OpcodeClass;
     UINT32                  i;
@@ -1122,10 +1131,10 @@ AnSemanticAnalysisWalkEnd (
         while (ArgType = GET_CURRENT_ARG_TYPE (RuntimeArgTypes2))
         {
 
-            RequiredAcpiType = AnMapArgTypeToAcpiType (ArgType);
-    
-            AcpiBtype = AnGetBtype (ArgNode);
-            if (AcpiBtype == ACPI_UINT32_MAX)
+            RequiredBtypes = AnMapArgTypeToBtype (ArgType);
+
+            ThisNodeBtype = AnGetBtype (ArgNode);
+            if (ThisNodeBtype == ACPI_UINT32_MAX)
             {
                 goto NextArgument;
             }
@@ -1140,7 +1149,7 @@ AnSemanticAnalysisWalkEnd (
                 {
                     /* ZERO is the placeholder for "don't store result" */
 
-                    AcpiBtype = RequiredAcpiType;
+                    ThisNodeBtype = RequiredBtypes;
                     break;
                 }
 
@@ -1149,10 +1158,10 @@ AnSemanticAnalysisWalkEnd (
                 {
                     break;
                 }
-   
-                AcpiBtype = RequiredAcpiType;
+
+                ThisNodeBtype = RequiredBtypes;
                 break;
-                
+
 
             case ARGI_REFERENCE:            /* References */
             case ARGI_INTEGER_REF:
@@ -1197,14 +1206,14 @@ AnSemanticAnalysisWalkEnd (
             }
 
 
-            CommonBtypes = AcpiBtype & RequiredAcpiType;
+            CommonBtypes = ThisNodeBtype & RequiredBtypes;
 
             if (ArgNode->ParseOpcode == METHODCALL)
             {
                 if (!CommonBtypes)
                 {
-                    AnFormatBtype (StringBuffer, AcpiBtype);
-                    AnFormatBtype (StringBuffer2, RequiredAcpiType);
+                    AnFormatBtype (StringBuffer, ThisNodeBtype);
+                    AnFormatBtype (StringBuffer2, RequiredBtypes);
 
                     /*
                      * The case where the method does not return any value at all
@@ -1212,9 +1221,9 @@ AnSemanticAnalysisWalkEnd (
                      * -- Only issue an error if the method in fact returns a value,
                      * but it is of the wrong type
                      */
-                    if (AcpiBtype != 0)
+                    if (ThisNodeBtype != 0)
                     {
-                        sprintf (MsgBuffer, "Method returns [%s], %s operator requires [%s]", 
+                        sprintf (MsgBuffer, "Method returns [%s], %s operator requires [%s]",
                                     StringBuffer, OpInfo->Name, StringBuffer2);
 
                         AslError (ASL_ERROR, ASL_MSG_INVALID_TYPE, ArgNode, MsgBuffer);
@@ -1223,12 +1232,12 @@ AnSemanticAnalysisWalkEnd (
 
 /* TBD: needs to handle the implicit conversion rules
 
-                else if (CommonBtypes ^ AcpiBtype)
+                else if (CommonBtypes ^ ThisNodeBtype)
                 {
-                    AnFormatBtype (StringBuffer, AcpiBtype);
-                    AnFormatBtype (StringBuffer2, RequiredAcpiType);
+                    AnFormatBtype (StringBuffer, ThisNodeBtype);
+                    AnFormatBtype (StringBuffer2, RequiredBtypes);
 
-                    sprintf (MsgBuffer, "Method returns [%s], %s operator requires [%s]", 
+                    sprintf (MsgBuffer, "Method returns [%s], %s operator requires [%s]",
                                 StringBuffer, OpInfo->Name, StringBuffer2);
 
                     AslError (ASL_WARNING, ASL_MSG_MULTIPLE_TYPES, ArgNode, MsgBuffer);
@@ -1237,18 +1246,22 @@ AnSemanticAnalysisWalkEnd (
 
             }
 
-            /* 
+            /*
              * Now check if the actual type(s) match at least one
              * bit to the required type
              */
             else if (!CommonBtypes)
             {
-                AcpiEtype = AnMapBtypeToEtype (AcpiBtype);
 
-                AnFormatBtype (StringBuffer, AcpiBtype);
-                AnFormatBtype (StringBuffer2, RequiredAcpiType);
+                /* Can an implicit conversion be performed? */
 
-                sprintf (MsgBuffer, "[%s] found, %s operator requires [%s]", 
+
+                AcpiEtype = AnMapBtypeToEtype (ThisNodeBtype);
+
+                AnFormatBtype (StringBuffer, ThisNodeBtype);
+                AnFormatBtype (StringBuffer2, RequiredBtypes);
+
+                sprintf (MsgBuffer, "[%s] found, %s operator requires [%s]",
                             StringBuffer, OpInfo->Name, StringBuffer2);
 
 
@@ -1263,7 +1276,5 @@ AnSemanticAnalysisWalkEnd (
         }
     }
 }
-
-
 
 

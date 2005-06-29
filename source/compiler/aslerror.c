@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslerror - Error handling and statistics
- *              $Revision: 1.33 $
+ *              $Revision: 1.35 $
  *
  *****************************************************************************/
 
@@ -10,7 +10,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, 2000, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -135,8 +135,8 @@ char                        *AslMessages [] = {
     "Invalid performace/robustness value",
     "Method variable not initialized",
     "Method argument is invalid",
-    "Unsupported feature:",
-    "Use of reserved word:",
+    "Unsupported feature",
+    "Use of reserved word",
     "Effective AML buffer length is zero",
     "Effective AML package length is zero",
     "Mixed return types in method",
@@ -149,13 +149,15 @@ char                        *AslMessages [] = {
     "Too few arguments",
     "Called method returns no value",
     "Called method may not always return a value",
-    "Internal compiler error:",
+    "Internal compiler error",
     "Invalid backwards offset",
     "Unknown reserved name",
     "Name already exists in scope",
-    "Invalid type:",
-    "Multiple types:",
-    ""
+    "Invalid type",
+    "Multiple types",
+    "",
+    "Not a control method",
+    "Splitting long input line",
 };
 
 
@@ -165,6 +167,7 @@ char                        *AslErrorLevel [] = {
 };
 
 #define ASL_ERROR_LEVEL_LENGTH          7
+
 
 /*******************************************************************************
  *
@@ -259,10 +262,6 @@ AePrintException (
 
     /* Print filename and line number if present and valid */
 
-    if (Enode->LogicalLineNumber)
-    {
-    }
-
     if (Enode->Filename)
     {
         fprintf (Where, "%6s", Enode->Filename);
@@ -271,6 +270,10 @@ AePrintException (
         {
             fprintf (Where, "%6d: ", Enode->LineNumber);
 
+            /*
+             * Seek to the offset in the combined source file, read the source
+             * line, and write it to the output.
+             */
             fseek (Gbl_SourceOutputFile, Enode->LogicalByteOffset, SEEK_SET);
 
 
@@ -298,10 +301,10 @@ AePrintException (
 
     else
     {
-        fprintf (Where, "%s %04.4d:",
+        fprintf (Where, "%s %04.4d -",
                     AslErrorLevel[Enode->Level],
                     Enode->MessageId + ((Enode->Level+1) * 1000));
-        
+
 
         MainMessage = AslMessages[Enode->MessageId];
         ExtraMessage = Enode->Message;
@@ -312,41 +315,54 @@ AePrintException (
             if (MsgLength == 0)
             {
                 MainMessage = Enode->Message;
-                
+
                 MsgLength = strlen (MainMessage);
-                ExtraMessage = "";
+                ExtraMessage = NULL;
             }
 
             SourceColumn = Enode->Column + Enode->FilenameLength + 6 + 2;
-            ErrorColumn = ASL_ERROR_LEVEL_LENGTH + 5 + 1 +1;
+            ErrorColumn = ASL_ERROR_LEVEL_LENGTH + 5 + 2 + 1;
 
-
-            if ((MsgLength + ErrorColumn) < (SourceColumn - 1))
+            if (SourceColumn < 80)
             {
-                fprintf (Where, "%*s%s (%s)\n\n", 
-                    (SourceColumn - 1) - ErrorColumn,
-                    MainMessage, " ^ ",
-                    ExtraMessage);
-            }
+                if ((MsgLength + ErrorColumn) < (SourceColumn - 1))
+                {
+                    fprintf (Where, "%*s%s",
+                        (SourceColumn - 1) - ErrorColumn,
+                        MainMessage, " ^ ");
+                }
 
+                else
+                {
+                    fprintf (Where, "%*s %s",
+                        (SourceColumn - ErrorColumn) + 1, "^",
+                        MainMessage);
+                }
+            }
             else
             {
-                fprintf (Where, "%*s %s (%s)\n\n",
-                    (SourceColumn - ErrorColumn) + 1, "^",
-                    MainMessage,
-                    ExtraMessage);
+                fprintf (Where, " ^ %s   %s\n\n",
+                            MainMessage,
+                            ExtraMessage);
             }
+
+            /* Print the extra info message if present */
+
+            if (ExtraMessage)
+            {
+                fprintf (Where, " (%s)", ExtraMessage);
+            }
+
+            fprintf (Where, "\n\n");
         }
 
         else
         {
-            fprintf (Where, "%s %s\n\n",
+            fprintf (Where, " %s %s\n\n",
                         MainMessage,
                         ExtraMessage);
         }
     }
-
-//    printf ("SC: %d, EC: %d, ML %d\n", SourceColumn, ErrorColumn, MsgLength);
 }
 
 
@@ -374,8 +390,6 @@ AePrintErrorLog (
         AePrintException (Where, Enode);
         Enode = Enode->Next;
     }
-
-
 }
 
 
@@ -407,24 +421,41 @@ AslCommonError (
     char                    *Filename,
     char                    *ExtraMessage)
 {
-    char                    *LocalMessage = "";
     UINT32                  MessageSize;
-    char                    *MessageBuffer;
+    char                    *MessageBuffer = NULL;
     ASL_ERROR_MSG           *Enode;
 
 
-    if (ExtraMessage)
-    {
-        LocalMessage = ExtraMessage;
-    }
-
-    MessageSize     = strlen (LocalMessage) + 1;
-    MessageBuffer   = UtLocalCalloc (MessageSize);
     Enode           = UtLocalCalloc (sizeof (ASL_ERROR_MSG));
 
-    STRCPY (MessageBuffer, LocalMessage);
-    Enode->Filename             = Filename;
-    Enode->FilenameLength       = strlen (Filename);
+    if (ExtraMessage)
+    {
+        /*
+         * Allocate a buffer for the message and a new error node
+         */
+        MessageSize     = strlen (ExtraMessage) + 1;
+        MessageBuffer   = UtLocalCalloc (MessageSize);
+
+        /*
+         * Keep a copy of the extra message
+         */
+        STRCPY (MessageBuffer, ExtraMessage);
+    }
+
+
+    /*
+     * Initialize the error node
+     */
+    if (Filename)
+    {
+        Enode->Filename             = Filename;
+        Enode->FilenameLength       = strlen (Filename);
+        if (Enode->FilenameLength < 6)
+        {
+            Enode->FilenameLength = 6;
+        }
+    }
+
     Enode->MessageId            = MessageId;
     Enode->Level                = Level;
     Enode->LineNumber           = CurrentLineNumber;
@@ -434,10 +465,7 @@ AslCommonError (
     Enode->Message              = MessageBuffer;
 
 
-    if (Enode->FilenameLength < 6)
-    {
-        Enode->FilenameLength = 6;
-    }
+    /* Add the new node to the error node list */
 
     AeAddToErrorLog (Enode);
 
@@ -498,7 +526,7 @@ AslError (
     if (Node)
     {
         AslCommonError (Level, MessageId, Node->LineNumber,
-                        Node->LogicalLineNumber, 
+                        Node->LogicalLineNumber,
                         Node->LogicalByteOffset,
                         Node->Column,
                         Node->Filename, ExtraMessage);
@@ -530,32 +558,10 @@ AslCompilererror (
     char                    *CompilerMessage)
 {
 
-    UINT32                  Length;
-
-
-    Length = strlen (Gbl_InputFilename);
-
-/*
-    if ((strlen (Gbl_CurrentLineBuffer) +
-         strlen (CompilerMessage) +
-         Length + Gbl_CurrentColumn + 9) >= ASL_MSG_BUFFER_SIZE)
-    {
-        strcpy (MsgBuffer, "Message Buffer Overflow");
-    }
-
-    else
-    {
-        sprintf (MsgBuffer, "%s\n%*s %s\n",
-                    Gbl_CurrentLineBuffer,
-                    Gbl_CurrentColumn + 14 + Length, "^",
-                    CompilerMessage);
-    }
-*/
-
 
     AslCommonError (ASL_ERROR, ASL_MSG_SYNTAX, Gbl_CurrentLineNumber,
-                    Gbl_LogicalLineNumber, Gbl_CurrentLineOffset, 
-                    Gbl_CurrentColumn, Gbl_InputFilename, 
+                    Gbl_LogicalLineNumber, Gbl_CurrentLineOffset,
+                    Gbl_CurrentColumn, Gbl_InputFilename,
                     CompilerMessage /*MsgBuffer*/);
 
     return 0;

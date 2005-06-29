@@ -3,7 +3,7 @@
 /******************************************************************************
  *
  * Module Name: aslcompiler.y - Bison input file (ASL grammar and actions)
- *              $Revision: 1.29 $
+ *              $Revision: 1.30 $
  *
  *****************************************************************************/
 
@@ -11,7 +11,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, 2000, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -444,6 +444,7 @@ AslLocalAllocate (unsigned int Size);
 %type <n> ArgListTail
 %type <n> TermArg
 %type <n> Target
+%type <n> SimpleTarget
 
 %type <n> Type1Opcode
 %type <n> Type2Opcode
@@ -537,7 +538,6 @@ AslLocalAllocate (unsigned int Size);
 %type <n> ConcatResTerm
 %type <n> CondRefOfTerm
 %type <n> CopyTerm
-%type <n> CopyTarget
 %type <n> DecTerm
 %type <n> DerefOfTerm
 %type <n> DivideTerm
@@ -871,6 +871,12 @@ Target
     :                               {$$ = TrCreateLeafNode (ZERO)}       /* Placeholder is a ZeroOp object */
     | ','                           {$$ = TrCreateLeafNode (ZERO)}       /* Placeholder is a ZeroOp object */
     | ',' SuperName                 {$$ = TrSetNodeFlags ($2, NODE_IS_TARGET)}
+    ;
+
+SimpleTarget
+    : NameString                    {}
+    | LocalTerm                     {}
+    | ArgTerm                       {}
     ;
 
 
@@ -1519,7 +1525,7 @@ ConcatTerm
     ;
 
 ConcatResTerm
-    : CONCATENATERESTEMPLATE '('        {$$ = TrCreateLeafNode (CONCATENATERESTEMPLATE)}
+    : CONCATENATERESTEMPLATE '('    {$$ = TrCreateLeafNode (CONCATENATERESTEMPLATE)}
         TermArg
         TermArgItem
         Target
@@ -1540,16 +1546,10 @@ CondRefOfTerm
 CopyTerm
     : COPY '('                      {$$ = TrCreateLeafNode (COPY)}
         TermArg
-        ',' CopyTarget
+        ',' SimpleTarget
         ')'                         {$$ = TrLinkChildren ($<n>3,2,$4,$6)}
     | COPY '('
         error ')'                   {$$ = AslDoError(); yyerrok;}
-    ;
-
-CopyTarget
-    : NameString                    {}
-    | LocalTerm                     {}
-    | ArgTerm                       {}
     ;
 
 DecTerm
@@ -2575,7 +2575,7 @@ StartDependentFnTerm
     ;
 
 StartDependentFnNoPriTerm
-    : STARTDEPENDENTFN_NOPRI '('     {$$ = TrCreateLeafNode (STARTDEPENDENTFN_NOPRI)}
+    : STARTDEPENDENTFN_NOPRI '('    {$$ = TrCreateLeafNode (STARTDEPENDENTFN_NOPRI)}
         ')' '{'
         ResourceMacroList '}'       {$$ = TrLinkChildren ($<n>3,1,$6)}
     | STARTDEPENDENTFN_NOPRI '('

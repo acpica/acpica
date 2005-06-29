@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: asllookup- Namespace lookup
- *              $Revision: 1.18 $
+ *              $Revision: 1.20 $
  *
  *****************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, 2000, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -150,14 +150,78 @@ LsDoOneNamespaceObject (
     void                    **ReturnValue)
 {
     ACPI_NAMESPACE_NODE     *Node = (ACPI_NAMESPACE_NODE *) ObjHandle;
+    ASL_PARSE_NODE          *Pnode;
 
 
     Gbl_NumNamespaceObjects++;
 
-    fprintf (Gbl_NamespaceOutputFile, "%5d  [%d]  %*s %4.4s - %s\n",
+    fprintf (Gbl_NamespaceOutputFile, "%5d  [%d]  %*s %4.4s - %s",
                         Gbl_NumNamespaceObjects, Level, (Level * 3), " ",
                         &Node->Name,
                         AcpiCmGetTypeName (Node->Type));
+
+    Pnode = (ASL_PARSE_NODE *) Node->Object;
+
+    if (Pnode)
+    {
+        if (Pnode->ParseOpcode == NAME)
+        {
+            Pnode = Pnode->Child;
+        }
+
+
+        switch (Node->Type)
+        {
+        case ACPI_TYPE_INTEGER:
+
+            if ((Pnode->ParseOpcode == NAMESEG)  ||
+                (Pnode->ParseOpcode == NAMESTRING))
+            {
+                Pnode = Pnode->Peer;
+            }
+
+            if (Pnode->Value.Integer64 > ACPI_UINT32_MAX)
+            {
+                fprintf (Gbl_NamespaceOutputFile, "    [Initial Value = 0x%X%X]",
+                            HIDWORD (Pnode->Value.Integer64), Pnode->Value.Integer32);
+            }
+            else
+            {
+                fprintf (Gbl_NamespaceOutputFile, "    [Initial Value = 0x%X]",
+                            Pnode->Value.Integer32);
+            }
+            break;
+
+
+        case ACPI_TYPE_STRING:
+            if ((Pnode->ParseOpcode == NAMESEG)  ||
+                (Pnode->ParseOpcode == NAMESTRING))
+            {
+                Pnode = Pnode->Peer;
+            }
+
+            fprintf (Gbl_NamespaceOutputFile, "    [Initial Value = \"%s\"]",
+                        Pnode->Value.String);
+
+            break;
+
+
+        case INTERNAL_TYPE_DEF_FIELD:
+            if ((Pnode->ParseOpcode == NAMESEG)  ||
+                (Pnode->ParseOpcode == NAMESTRING))
+            {
+                Pnode = Pnode->Child;
+            }
+            fprintf (Gbl_NamespaceOutputFile, "    [Length = 0x%02X]",
+                        Pnode->Value.Integer32);
+
+            break;
+
+        }
+
+    }
+
+    fprintf (Gbl_NamespaceOutputFile, "\n");
 
     return (AE_OK);
 }
@@ -375,6 +439,13 @@ LkNamespaceLocateBegin (
 
         (PsNode->ParseOpcode == METHODCALL))
     {
+
+        if (NsNode->Type != ACPI_TYPE_METHOD)
+        {
+            AslError (ASL_ERROR, ASL_MSG_NOT_METHOD, PsNode, PsNode->ExternalName);
+            return (AE_OK);
+        }
+
         /*
          * This is a method invocation, with or without arguments.
          * Count the number of arguments, each appears as a child
@@ -402,6 +473,12 @@ LkNamespaceLocateBegin (
             if (PassedArgs < NsNode->OwnerId)
             {
                 AslError (ASL_ERROR, ASL_MSG_ARG_COUNT_LO, PsNode, MsgBuffer);
+
+                if (NsNode->OwnerId > 7)
+                {
+                    printf ("too many arguments defined for method [%4.4s]\n", &NsNode->Name);
+                    return (AE_BAD_PARAMETER);
+                }
             }
             else
             {
