@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: psargs - Parse AML opcode arguments
- *              $Revision: 1.70 $
+ *              $Revision: 1.71 $
  *
  *****************************************************************************/
 
@@ -500,7 +500,7 @@ AcpiPsGetNextSimpleArg (
 
         /* Get 2 bytes from the AML stream */
 
-        ACPI_MOVE_UNALIGNED16_TO_32 (&Arg->Common.Value.Integer, ParserState->Aml);
+        ACPI_MOVE_16_TO_32 (&Arg->Common.Value.Integer, ParserState->Aml);
         ParserState->Aml += 2;
         break;
 
@@ -511,7 +511,7 @@ AcpiPsGetNextSimpleArg (
 
         /* Get 4 bytes from the AML stream */
 
-        ACPI_MOVE_UNALIGNED32_TO_32 (&Arg->Common.Value.Integer, ParserState->Aml);
+        ACPI_MOVE_32_TO_32 (&Arg->Common.Value.Integer, ParserState->Aml);
         ParserState->Aml += 4;
         break;
 
@@ -522,7 +522,7 @@ AcpiPsGetNextSimpleArg (
 
         /* Get 8 bytes from the AML stream */
 
-        ACPI_MOVE_UNALIGNED64_TO_64 (&Arg->Common.Value.Integer, ParserState->Aml);
+        ACPI_MOVE_64_TO_64 (&Arg->Common.Value.Integer, ParserState->Aml);
         ParserState->Aml += 8;
         break;
 
@@ -625,7 +625,7 @@ AcpiPsGetNextField (
 
         /* Get the 4-character name */
 
-        ACPI_MOVE_UNALIGNED32_TO_32 (&Name, ParserState->Aml);
+        ACPI_MOVE_32_TO_32 (&Name, ParserState->Aml);
         AcpiPsSetName (Field, Name);
         ParserState->Aml += ACPI_NAME_SIZE;
 
