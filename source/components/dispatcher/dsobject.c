@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dsobject - Dispatcher object management routines
- *              $Revision: 1.107 $
+ *              $Revision: 1.108 $
  *
  *****************************************************************************/
 
@@ -339,12 +339,12 @@ AcpiDsBuildInternalObject (
 {
     ACPI_OPERAND_OBJECT     *ObjDesc;
     ACPI_STATUS             Status;
-    char                    *Name;
 
 
     ACPI_FUNCTION_TRACE ("DsBuildInternalObject");
 
 
+    *ObjDescPtr = NULL;
     if (Op->Common.AmlOpcode == AML_INT_NAMEPATH_OP)
     {
         /*
@@ -361,28 +361,8 @@ AcpiDsBuildInternalObject (
 
             if (ACPI_FAILURE (Status))
             {
-                if (Status == AE_NOT_FOUND)
-                {
-                    Name = NULL;
-                    Status = AcpiNsExternalizeName (ACPI_UINT32_MAX, Op->Common.Value.String, NULL, &Name);
-                    if (ACPI_SUCCESS (Status))
-                    {
-                        ACPI_REPORT_WARNING (("Reference %s at AML %X not found\n",
-                                    Name, Op->Common.AmlOffset));
-                        ACPI_MEM_FREE (Name);
-                    }
-                    else
-                    {
-                        ACPI_REPORT_WARNING (("Reference %s at AML %X not found\n",
-                                   Op->Common.Value.String, Op->Common.AmlOffset));
-                    }
-
-                    *ObjDescPtr = NULL;
-                }
-                else
-                {
-                    return_ACPI_STATUS (Status);
-                }
+                ACPI_REPORT_NSERROR (Op->Common.Value.String, Status);
+                return_ACPI_STATUS (Status);
             }
         }
     }
