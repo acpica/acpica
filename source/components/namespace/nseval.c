@@ -481,18 +481,22 @@ NsExecuteControlMethod (
                     ObjDesc->Method.Pcode + 1,
                     ObjDesc->Method.PcodeLength - 1));
 
-    NsDumpPathname (MethodEntry->Scope, "NsExecuteControlMethod: Setting scope to", 
+    DUMP_PATHNAME (MethodEntry->Scope, "NsExecuteControlMethod: Setting scope to", 
                     TRACE_NAMES, _COMPONENT);
 
     /* Reset the current scope to the beginning of scope stack */
 
-    Gbl_CurrentScope = &Gbl_ScopeStack[0];
+    NsScopeStackClear ();
 
     /* Push current scope on scope stack and make Method->Scope current  */
 
-    NsPushCurrentScope (MethodEntry->Scope, ACPI_TYPE_Method);
+    Status = NsScopeStackPush (MethodEntry->Scope, ACPI_TYPE_Method);
+    if (ACPI_FAILURE (Status))
+    {
+        return_ACPI_STATUS (Status);
+    }
 
-    NsDumpPathname (MethodEntry, "NsExecuteControlMethod: Executing", 
+    DUMP_PATHNAME (MethodEntry, "NsExecuteControlMethod: Executing", 
                     TRACE_NAMES, _COMPONENT);
 
     DEBUG_PRINT (TRACE_NAMES, ("At offset %8XH\n",
@@ -517,12 +521,9 @@ NsExecuteControlMethod (
     }
 #endif
 
-    if (AmlMthStackLevel () > -1)
-    {
-        /* Method stack not empty at method exit and should be */
+    /* If this was a nested method call, the method stack won't be empty */
 
-        REPORT_ERROR ("Method stack not empty at method exit");
-    }
+    /* Check the object stack */
 
     if ((AmlObjStackLevel ()) &&
         (Status != AE_RETURN_VALUE))
