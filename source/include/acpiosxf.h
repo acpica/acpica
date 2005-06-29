@@ -312,7 +312,6 @@ AcpiOsMemOut32 (
     UINT32                  Value);
 
 
-
 /*
  * Standard access to PCI configuration space
  */
