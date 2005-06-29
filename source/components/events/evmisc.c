@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: evmisc - Miscellaneous event manager support functions
- *              $Revision: 1.77 $
+ *              $Revision: 1.78 $
  *
  *****************************************************************************/
 
@@ -277,8 +277,10 @@ AcpiEvQueueNotifyRequest (
 
     if (!HandlerObj)
     {
-        /* There is no per-device notify handler for this device */
-
+        /* 
+         * There is no per-device notify handler for this device.
+         * This may or may not be a problem.
+         */
         ACPI_DEBUG_PRINT ((ACPI_DB_INFO,
             "No notify handler for Notify(%4.4s, %X) node %p\n",
             AcpiUtGetNodeName (Node), NotifyValue, Node));
