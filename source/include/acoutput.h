@@ -234,7 +234,6 @@
 
 
 
-
 #else
 /* 
  * This is the non-debug case -- make everything go away,
@@ -257,132 +256,6 @@
 
 
 
-/* Prototypes */
-
-INT32
-GetDebugLevel (void);
-
-void
-SetDebugLevel (
-    INT32               level);
-
-void
-FunctionTrace (
-    char                *ModuleName, 
-    INT32               LineNumber, 
-    INT32               ComponentId, 
-    char                *FunctionName);
-
-void
-FunctionExit (
-    char                *ModuleName, 
-    INT32               LineNumber, 
-    INT32               ComponentId, 
-    char                *FunctionName);
-
-void
-DebugPrintPrefix (
-    char                *ModuleName, 
-    INT32               LineNumber, 
-    INT32               ComponentId);
-
-void
-DebugPrint (
-    char                *ModuleName, 
-    INT32               LineNumber, 
-    INT32               ComponentId, 
-    INT32               PrintLevel, 
-    char                *Format, ...);
-
-void
-DebugPrintRaw (
-    char                *Format, ...);
-
-void
-_ReportInfo (
-    char                *ModuleName, 
-    INT32               LineNumber, 
-    INT32               ComponentId, 
-    ST_KEY_DESC_TABLE   *KdtEntry);
-
-void
-_ReportError (
-    char                *ModuleName, 
-    INT32               LineNumber, 
-    INT32               ComponentId, 
-    ST_KEY_DESC_TABLE   *KdtEntry);
-
-void
-_ReportWarning (
-    char                *ModuleName, 
-    INT32               LineNumber, 
-    INT32               ComponentId, 
-    ST_KEY_DESC_TABLE   *KdtEntry);
-
-void
-_ReportSuccess (
-    char                *ModuleName, 
-    INT32               LineNumber, 
-    INT32               ComponentId, 
-    ST_KEY_DESC_TABLE   *KdtEntry);
-
-void 
-DumpBuffer (
-    char               *Buffer, 
-    UINT32              Count, 
-    INT32               Flags, 
-    INT32               componentId);
-
-
-
-/* TBD: simplify or remove entirely */
-
-void 
-_Kinc_error (char *, INT32, INT32, char *, INT32, INT32); 
-void 
-_Kinc_info (char *, INT32, INT32, char *, INT32, INT32); 
-void 
-_Kinc_warning (char *, INT32, INT32, char *, INT32, INT32);
-
-
-/*
- * Memory allocation functions and related macros.
- * Macros that expand to include filename and line number
- *
- * TBD:  Move to a more appropriate header!!
- *
- */
-
-void *
-_AllocateObjectDesc (
-    char                *ModuleName, 
-    INT32               LineNumber, 
-    INT32               ComponentId, 
-    ST_KEY_DESC_TABLE   *KdtEntry);
-
-void *
-_LocalAllocate (
-    char                *ModuleName, 
-    INT32               LineNumber, 
-    INT32               ComponentId, 
-    INT32               AllocSize);
-
-void *
-_LocalCallocate (
-    char                *ModuleName, 
-    INT32               LineNumber, 
-    INT32               ComponentId, 
-    INT32               AllocSize);
-
-#define LocalAllocate(a)                _LocalAllocate(_THIS_MODULE,__LINE__,_COMPONENT,a)
-#define LocalCallocate(a)               _LocalCallocate(_THIS_MODULE,__LINE__,_COMPONENT,a)
-#define AllocateObjectDesc(a)           _AllocateObjectDesc(_THIS_MODULE,__LINE__,_COMPONENT,a)
-
-
-
-
-
-
 /********************************************************************************************
  *
  * Obsolete??
@@ -390,35 +263,15 @@ _LocalCallocate (
 
 /*  Bitflags for all display functions  */
 
-#define DISPLAY_DATA        SCREEN          /*  SCREEN defined in BU.H (1)  */
-#define LOG_DATA            LOGFILE         /*  LOGFILE defined in BU.H (2) */
+#define DISPLAY_DATA        SCREEN
+#define LOG_DATA            LOGFILE 
 #define OUTPUT_DATA         (DISPLAY_DATA | LOG_DATA)
-
-/*  
- * start using bits from the other end to minimize the possibility
- * of additional flag bits from BU being defined that will conflict
- */
 #define OUTPUT_ERRORS       0x80
-
-/* flags for print_message, inc_warning, inc_error, and inc_info. */
-
-#define NO_PRINT        0                  /* quietly increment the count */
-#define PRINT           1                  /* print the word "ERROR " (or
-                                            * "WARNING " or "INFO ") */
-#define PREPEND_CRLF    2                  /* prepend CRLF before printing
-                                            * "ERROR " (or "WARNING " or
-                                            * "INFO ") */
-#define APPEND_CRLF 4                      /* append CRLF after printing
-                                            * "ERROR " (or "WARNING " or
-                                            * "INFO ") */
-#define PACRLF          (PRINT | APPEND_CRLF)
-#define FILE_LINE       8                  /* print file and line message was
-                                            * generated from. */
-#define NO_INC          16                 /* not increase a global count */
-
-#define SCREEN          1
-#define LOGFILE         2
-
+#define PRINT               1                 
+#define APPEND_CRLF         4   
+#define PACRLF              (PRINT | APPEND_CRLF)
+#define SCREEN              1
+#define LOGFILE             2
 
 
 #endif /* _OUTPUT_H */
