@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslmap - parser to AML opcode mapping table
- *              $Revision: 1.10 $
+ *              $Revision: 1.18 $
  *
  *****************************************************************************/
 
@@ -120,7 +120,146 @@
 #include "AslCompiler.y.h"
 #include "amlcode.h"
 
-/* 
+
+
+/*******************************************************************************
+ *
+ * DATA STRUCTURE:  ReservedMethods
+ *
+ * DESCRIPTION:     Contains all reserved methods and names as defined in the
+ *                  ACPI specification.  Used during the analysis phase to
+ *                  ensure that reserved methods have the required number of
+ *                  arguments and the proper return type.
+ *
+ * Each entry in the table contains the following items:
+ *
+ * Name         - The ACPI reserved name
+ * Args         - Number of arguments to the method
+ * Flags        - Whether this method must return a value or not
+ *
+ ******************************************************************************/
+
+ASL_RESERVED_INFO               ReservedMethods[] = {
+    "_AC0",     0,      ASL_RSVD_RETURN_VALUE,
+    "_AC1",     0,      ASL_RSVD_RETURN_VALUE,
+    "_AC2",     0,      ASL_RSVD_RETURN_VALUE,
+    "_AC3",     0,      ASL_RSVD_RETURN_VALUE,
+    "_ADR",     0,      ASL_RSVD_RETURN_VALUE,
+    "_AL0",     0,      ASL_RSVD_RETURN_VALUE,
+    "_AL1",     0,      ASL_RSVD_RETURN_VALUE,
+    "_AL2",     0,      ASL_RSVD_RETURN_VALUE,
+    "_AL3",     0,      ASL_RSVD_RETURN_VALUE,
+    "_BBN",     0,      ASL_RSVD_RETURN_VALUE,
+    "_BCL",     0,      ASL_RSVD_RETURN_VALUE,
+    "_BCM",     1,      0,
+    "_BDN",     0,      ASL_RSVD_RETURN_VALUE,
+    "_BFS",     1,      0,
+    "_BIF",     0,      ASL_RSVD_RETURN_VALUE,
+    "_BST",     0,      ASL_RSVD_RETURN_VALUE,
+    "_BTP",     1,      0,
+    "_CID",     0,      ASL_RSVD_RETURN_VALUE,
+    "_CRS",     0,      ASL_RSVD_RETURN_VALUE,
+    "_CRT",     0,      ASL_RSVD_RETURN_VALUE,
+    "_CST",     0,      ASL_RSVD_RETURN_VALUE,
+    "_DCK",     1,      ASL_RSVD_RETURN_VALUE,
+    "_DCS",     0,      ASL_RSVD_RETURN_VALUE,
+    "_DDC",     1,      ASL_RSVD_RETURN_VALUE,
+    "_DDN",     1,      0,                          /* Spec is ambiguous about this */
+    "_DGS",     0,      ASL_RSVD_RETURN_VALUE,
+    "_DIS",     0,      0,
+    "_DMA",     0,      ASL_RSVD_RETURN_VALUE,
+    "_DOD",     0,      ASL_RSVD_RETURN_VALUE,
+    "_DOS",     1,      0,
+    "_DSS",     1,      0,
+    "_EC_",     0,      ASL_RSVD_RETURN_VALUE,
+    "_EDL",     0,      ASL_RSVD_RETURN_VALUE,
+    "_EJ0",     1,      0,
+    "_EJ1",     1,      0,
+    "_EJ2",     1,      0,
+    "_EJ3",     1,      0,
+    "_EJ4",     1,      0,
+    "_EJD",     0,      ASL_RSVD_RETURN_VALUE,
+    "_FDE",     0,      ASL_RSVD_RETURN_VALUE,
+    "_FDI",     0,      ASL_RSVD_RETURN_VALUE,
+    "_FDM",     1,      0,
+    "_FIX",     0,      ASL_RSVD_RETURN_VALUE,
+    "_GLK",     0,      ASL_RSVD_RETURN_VALUE,
+    "_GPD",     0,      ASL_RSVD_RETURN_VALUE,
+    "_GPE",     0,      ASL_RSVD_RETURN_VALUE,
+    "_GTF",     0,      ASL_RSVD_RETURN_VALUE,
+    "_GTM",     0,      ASL_RSVD_RETURN_VALUE,
+    "_GTS",     1,      0,
+    "_HID",     0,      ASL_RSVD_RETURN_VALUE,
+    "_HOT",     0,      ASL_RSVD_RETURN_VALUE,
+    "_HPP",     0,      ASL_RSVD_RETURN_VALUE,
+    "_INI",     0,      0,
+    "_IRC",     0,      0,
+    "_LCK",     1,      0,
+    "_LID",     0,      ASL_RSVD_RETURN_VALUE,
+    "_MAT",     0,      ASL_RSVD_RETURN_VALUE,
+    "_MSG",     1,      0,
+    "_OFF",     0,      0,
+    "_ON_",     0,      0,
+    "_PCL",     0,      ASL_RSVD_RETURN_VALUE,
+    "_PCT",     0,      ASL_RSVD_RETURN_VALUE,
+    "_PIC",     1,      0,
+    "_PPC",     0,      ASL_RSVD_RETURN_VALUE,
+    "_PR0",     0,      ASL_RSVD_RETURN_VALUE,
+    "_PR1",     0,      ASL_RSVD_RETURN_VALUE,
+    "_PR2",     0,      ASL_RSVD_RETURN_VALUE,
+    "_PRS",     0,      ASL_RSVD_RETURN_VALUE,
+    "_PRT",     0,      ASL_RSVD_RETURN_VALUE,
+    "_PRW",     0,      ASL_RSVD_RETURN_VALUE,
+    "_PS0",     0,      0,
+    "_PS1",     0,      0,
+    "_PS2",     0,      0,
+    "_PS3",     0,      0,
+    "_PSC",     0,      ASL_RSVD_RETURN_VALUE,
+    "_PSL",     0,      ASL_RSVD_RETURN_VALUE,
+    "_PSR",     0,      ASL_RSVD_RETURN_VALUE,
+    "_PSS",     0,      ASL_RSVD_RETURN_VALUE,
+    "_PSV",     0,      ASL_RSVD_RETURN_VALUE,
+    "_PSW",     1,      0,
+    "_PTC",     0,      ASL_RSVD_RETURN_VALUE,
+    "_PTS",     1,      0,
+    "_PXM",     0,      ASL_RSVD_RETURN_VALUE,
+    "_REG",     2,      0,
+    "_RMV",     0,      ASL_RSVD_RETURN_VALUE,
+    "_ROM",     2,      ASL_RSVD_RETURN_VALUE,
+    "_S0_",     0,      ASL_RSVD_RETURN_VALUE,
+    "_S1_",     0,      ASL_RSVD_RETURN_VALUE,
+    "_S2_",     0,      ASL_RSVD_RETURN_VALUE,
+    "_S3_",     0,      ASL_RSVD_RETURN_VALUE,
+    "_S4_",     0,      ASL_RSVD_RETURN_VALUE,
+    "_S5_",     0,      ASL_RSVD_RETURN_VALUE,
+    "_S1D",     0,      ASL_RSVD_RETURN_VALUE,
+    "_S2D",     0,      ASL_RSVD_RETURN_VALUE,
+    "_S3D",     0,      ASL_RSVD_RETURN_VALUE,
+    "_S4D",     0,      ASL_RSVD_RETURN_VALUE,
+    "_SBS",     0,      ASL_RSVD_RETURN_VALUE,
+    "_SCP",     1,      0,
+    "_SEG",     0,      ASL_RSVD_RETURN_VALUE,
+    "_SPD",     1,      ASL_RSVD_RETURN_VALUE,
+    "_SRS",     1,      0,
+    "_SST",     1,      0,
+    "_STA",     0,      ASL_RSVD_RETURN_VALUE,
+    "_STM",     3,      0,
+    "_STR",     0,      ASL_RSVD_RETURN_VALUE,
+    "_SUN",     0,      ASL_RSVD_RETURN_VALUE,
+    "_TC1",     0,      ASL_RSVD_RETURN_VALUE,
+    "_TC2",     0,      ASL_RSVD_RETURN_VALUE,
+    "_TMP",     0,      ASL_RSVD_RETURN_VALUE,
+    "_TSP",     0,      ASL_RSVD_RETURN_VALUE,
+    "_TZD",     0,      ASL_RSVD_RETURN_VALUE,
+    "_TZP",     0,      ASL_RSVD_RETURN_VALUE,
+    "_UID",     0,      ASL_RSVD_RETURN_VALUE,
+    "_VPO",     0,      ASL_RSVD_RETURN_VALUE,
+    "_WAK",     1,      ASL_RSVD_RETURN_VALUE,
+    NULL,       0,      0,
+};
+
+
+/*
  * TBD:
  * AccessAttrib
  * AccessType
@@ -145,7 +284,7 @@
  *
  ******************************************************************************/
 
-ASL_MAPPING_ENTRY AslKeywordMapping [] = 
+ASL_MAPPING_ENTRY AslKeywordMapping [] =
 {
 
 /* ACCESSAS */                  OP_TABLE_ENTRY (AML_ACCESSFIELD_OP,         0,                  0),
@@ -219,6 +358,7 @@ ASL_MAPPING_ENTRY AslKeywordMapping [] =
 /* ELSE */                      OP_TABLE_ENTRY (AML_ELSE_OP,                0,                  NODE_AML_PACKAGE),
 /* ELSEIF */                    OP_TABLE_ENTRY (AML_DEFAULT_ARG_OP,         0,                  NODE_AML_PACKAGE),
 /* ENDDEPENDENTFN */            OP_TABLE_ENTRY (AML_DEFAULT_ARG_OP,         0,                  0),
+/* ERRORNODE */                 OP_TABLE_ENTRY (AML_NOOP_OP,                0,                  0),
 /* EVENT */                     OP_TABLE_ENTRY (AML_EVENT_OP,               0,                  0),
 /* EXTERNAL */                  OP_TABLE_ENTRY (AML_DEFAULT_ARG_OP,         0,                  0),
 /* FATAL */                     OP_TABLE_ENTRY (AML_FATAL_OP,               0,                  0),
@@ -230,6 +370,7 @@ ASL_MAPPING_ENTRY AslKeywordMapping [] =
 /* IF */                        OP_TABLE_ENTRY (AML_IF_OP,                  0,                  NODE_AML_PACKAGE),
 /* INCLUDE */                   OP_TABLE_ENTRY (AML_DEFAULT_ARG_OP,         0,                  0),
 /* INCLUDE_CSTYLE */            OP_TABLE_ENTRY (AML_DEFAULT_ARG_OP,         0,                  0),
+/* INCLUDE_END */               OP_TABLE_ENTRY (AML_DEFAULT_ARG_OP,         0,                  0),
 /* INCREMENT */                 OP_TABLE_ENTRY (AML_INCREMENT_OP,           0,                  0),
 /* INDEX */                     OP_TABLE_ENTRY (AML_INDEX_OP,               0,                  0),
 /* INDEXFIELD */                OP_TABLE_ENTRY (AML_INDEX_FIELD_OP,         0,                  NODE_AML_PACKAGE),
@@ -282,6 +423,7 @@ ASL_MAPPING_ENTRY AslKeywordMapping [] =
 /* MEMTYPE_PREFETCHABLE */      OP_TABLE_ENTRY (AML_BYTE_OP,                3,                  0),
 /* MEMTYPE_WRITECOMBINING */    OP_TABLE_ENTRY (AML_BYTE_OP,                2,                  0),
 /* METHOD */                    OP_TABLE_ENTRY (AML_METHOD_OP,              0,                  NODE_AML_PACKAGE),
+/* METHODCALL */                OP_TABLE_ENTRY (AML_BYTE_OP,                0,                  0),
 /* MID */                       OP_TABLE_ENTRY (AML_MID_OP,                 0,                  0),
 /* MINTYPE_FIXED */             OP_TABLE_ENTRY (AML_BYTE_OP,                1,                  0),
 /* MINTYPE_NOTFIXED */          OP_TABLE_ENTRY (AML_BYTE_OP,                0,                  0),
@@ -346,6 +488,7 @@ ASL_MAPPING_ENTRY AslKeywordMapping [] =
 /* RESOURCETYPE_CONSUMER */     OP_TABLE_ENTRY (AML_BYTE_OP,                1,                  0),
 /* RESOURCETYPE_PRODUCER */     OP_TABLE_ENTRY (AML_BYTE_OP,                0,                  0),
 /* RETURN */                    OP_TABLE_ENTRY (AML_RETURN_OP,              0,                  0),
+/* REVISION */                  OP_TABLE_ENTRY (AML_REVISION_OP,            0,                  0),
 /* SCOPE */                     OP_TABLE_ENTRY (AML_SCOPE_OP,               0,                  NODE_AML_PACKAGE),
 /* SERIALIZERULE_NOTSERIAL */   OP_TABLE_ENTRY (AML_BYTE_OP,                0,                  0),
 /* SERIALIZERULE_SERIAL */      OP_TABLE_ENTRY (AML_BYTE_OP,                1,                  0),
@@ -360,16 +503,16 @@ ASL_MAPPING_ENTRY AslKeywordMapping [] =
 /* STARTDEPENDENTFN */          OP_TABLE_ENTRY (AML_BYTE_OP,                0,                  0),
 /* STARTDEPENDENTFN_NOPRI */    OP_TABLE_ENTRY (AML_BYTE_OP,                0,                  0),
 /* STORE */                     OP_TABLE_ENTRY (AML_STORE_OP,               0,                  0),
-/* STRING */                    OP_TABLE_ENTRY (AML_STRING_OP,              0,                  0),
 /* STRING_LITERAL */            OP_TABLE_ENTRY (AML_STRING_OP,              0,                  0),
 /* SUBTRACT */                  OP_TABLE_ENTRY (AML_SUBTRACT_OP,            0,                  0),
 /* SWITCH */                    OP_TABLE_ENTRY (AML_DEFAULT_ARG_OP,         0,                  0),
 /* THERMALZONE */               OP_TABLE_ENTRY (AML_THERMAL_ZONE_OP,        0,                  NODE_AML_PACKAGE),
 /* TOBCD */                     OP_TABLE_ENTRY (AML_TO_BCD_OP,              0,                  0),
-/* TOBUFFER */                  OP_TABLE_ENTRY (AML_BUFF_OP,                0,                  0),
-/* TODECIMALSTRING */           OP_TABLE_ENTRY (AML_DEC_STR_OP,             0,                  0),
-/* TOHEXSTRING */               OP_TABLE_ENTRY (AML_HEX_STR_OP,             0,                  0),
-/* TOINTEGER */                 OP_TABLE_ENTRY (AML_INT_OP,                 0,                  0),
+/* TOBUFFER */                  OP_TABLE_ENTRY (AML_TO_BUFFER_OP,           0,                  0),
+/* TODECIMALSTRING */           OP_TABLE_ENTRY (AML_TO_DECSTRING_OP,        0,                  0),
+/* TOHEXSTRING */               OP_TABLE_ENTRY (AML_TO_HEXSTRING_OP,        0,                  0),
+/* TOINTEGER */                 OP_TABLE_ENTRY (AML_TO_INTEGER_OP,          0,                  0),
+/* TOSTRING */                  OP_TABLE_ENTRY (AML_TO_STRING_OP,           0,                  0),
 /* TRANSLATIONTYPE_DENSE */     OP_TABLE_ENTRY (AML_BYTE_OP,                0,                  0),
 /* TRANSLATIONTYPE_SPARSE */    OP_TABLE_ENTRY (AML_BYTE_OP,                1,                  0),
 /* TYPE_STATIC */               OP_TABLE_ENTRY (AML_BYTE_OP,                0,                  0),
@@ -395,11 +538,8 @@ ASL_MAPPING_ENTRY AslKeywordMapping [] =
 };
 
 
-
 #define _COMPONENT          MISCELLANEOUS
         MODULE_NAME         ("aslmap")
-
-
 
 
 #include "amlcode.h"
@@ -436,7 +576,6 @@ AcpiAmlValidateObjectType (
 
     return (TRUE);
 }
-
 
 
 /*******************************************************************************
@@ -687,6 +826,5 @@ AcpiDsMapNamedOpcodeToDataType (
 
     return (DataType);
 }
-
 
 
