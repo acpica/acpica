@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exregion - ACPI default OpRegion (address space) handlers
- *              $Revision: 1.74 $
+ *              $Revision: 1.76 $
  *
  *****************************************************************************/
 
@@ -120,10 +120,6 @@
 
 #include "acpi.h"
 #include "acinterp.h"
-#include "amlcode.h"
-#include "acnamesp.h"
-#include "achware.h"
-#include "acevents.h"
 
 
 #define _COMPONENT          ACPI_EXECUTER
@@ -162,7 +158,9 @@ AcpiExSystemMemorySpaceHandler (
     ACPI_MEM_SPACE_CONTEXT  *MemInfo = RegionContext;
     UINT32                  Length;
     UINT32                  WindowSize;
-
+#ifndef _HW_ALIGNMENT_SUPPORT
+    UINT32                  Remainder;
+#endif
 
     ACPI_FUNCTION_TRACE ("ExSystemMemorySpaceHandler");
 
@@ -192,6 +190,19 @@ AcpiExSystemMemorySpaceHandler (
             BitWidth));
         return_ACPI_STATUS (AE_AML_OPERAND_VALUE);
     }
+
+
+#ifndef _HW_ALIGNMENT_SUPPORT
+    /*
+     * Hardware does not support non-aligned data transfers, we must verify
+     * the request.
+     */
+    (void) AcpiUtShortDivide ((ACPI_INTEGER *) &Address, Length, NULL, &Remainder);
+    if (Remainder != 0)
+    {
+        return_ACPI_STATUS (AE_AML_ALIGNMENT);
+    }
+#endif
 
     /*
      * Does the request fit into the cached memory mapping?
@@ -251,8 +262,14 @@ AcpiExSystemMemorySpaceHandler (
         "SystemMemory %d (%d width) Address=%8.8X%8.8X\n", Function, BitWidth,
         ACPI_HIDWORD (Address), ACPI_LODWORD (Address)));
 
-   /* Perform the memory read or write */
-
+   /* 
+    * Perform the memory read or write
+    *
+    * Note: For machines that do not support non-aligned transfers, the target
+    * address was checked for alignment above.  We do not attempt to break the
+    * transfer up into smaller (byte-size) chunks because the AML specifically
+    * asked for a transfer width that the hardware may require.
+    */
     switch (Function)
     {
     case ACPI_READ:
@@ -261,19 +278,23 @@ AcpiExSystemMemorySpaceHandler (
         switch (BitWidth)
         {
         case 8:
-            *Value = (UINT32)* (UINT8 *) LogicalAddrPtr;
+            *Value = (ACPI_INTEGER) *((UINT8 *) LogicalAddrPtr);
             break;
 
         case 16:
-            ACPI_MOVE_UNALIGNED16_TO_16 (Value, LogicalAddrPtr);
+            *Value = (ACPI_INTEGER) *((UINT16 *) LogicalAddrPtr);
             break;
 
         case 32:
-            ACPI_MOVE_UNALIGNED32_TO_32 (Value, LogicalAddrPtr);
+            *Value = (ACPI_INTEGER) *((UINT32 *) LogicalAddrPtr);
             break;
 
         case 64:
-            ACPI_MOVE_UNALIGNED64_TO_64 (Value, LogicalAddrPtr);
+            *Value = (ACPI_INTEGER) *((UINT64 *) LogicalAddrPtr);
+            break;
+        
+        default:
+            /* BitWidth was already validated */
             break;
         }
         break;
@@ -287,15 +308,19 @@ AcpiExSystemMemorySpaceHandler (
             break;
 
         case 16:
-            ACPI_MOVE_UNALIGNED16_TO_16 (LogicalAddrPtr, Value);
+            *(UINT16 *) LogicalAddrPtr = (UINT16) *Value;
             break;
 
         case 32:
-            ACPI_MOVE_UNALIGNED32_TO_32 (LogicalAddrPtr, Value);
+            *(UINT32 *) LogicalAddrPtr = (UINT32) *Value;
             break;
 
         case 64:
-            ACPI_MOVE_UNALIGNED64_TO_64 (LogicalAddrPtr, Value);
+            *(UINT64 *) LogicalAddrPtr = (UINT64) *Value;
+            break;
+        
+        default:
+            /* BitWidth was already validated */
             break;
         }
         break;
@@ -574,6 +599,7 @@ AcpiExDataTableSpaceHandler (
         break;
 
     case ACPI_WRITE:
+    default:
 
         return_ACPI_STATUS (AE_SUPPORT);
     }
