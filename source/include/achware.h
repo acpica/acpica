@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: achware.h -- hardware specific interfaces
- *       $Revision: 1.66 $
+ *       $Revision: 1.67 $
  *
  *****************************************************************************/
 
@@ -181,7 +181,7 @@ AcpiHwLowLevelWrite (
 
 ACPI_STATUS
 AcpiHwClearAcpiStatus (
-   void);
+    UINT32                  Flags);
 
 
 /* GPE support */
