@@ -23,6 +23,7 @@
  * irrevocable, perpetual, worldwide license under Intel's copyrights in the
  * base code distributed originally by Intel ("Original Intel Code") to copy,
 
+
  * make derivatives, distribute, use and display any portion of the Covered
  * Code in any form, with the right to sublicense such rights; and
  *
@@ -123,11 +124,6 @@
 #define _COMPONENT          EVENT_HANDLING
 
 
-
-extern FIXED_EVENT_HANDLER  FixedEventHandlers[NUM_FIXED_EVENTS];
-
-
-
 /**************************************************************************
  *
  * FUNCTION:    AcpiEnable
@@ -184,7 +180,9 @@ AcpiEnable (void)
     /*  SCI Interrupt Handler installed properly    */
 
     if (SYS_MODE_ACPI != OriginalMode)
-    {   
+    {
+    	UINT8		i;
+    	
         /*  legacy mode */
                 
         if (AE_OK != HwSetMode (SYS_MODE_ACPI))
@@ -197,6 +195,13 @@ AcpiEnable (void)
         else
         {
             DEBUG_PRINT (ACPI_OK, ("Transition to ACPI mode successful\n"));
+        }
+        
+        /* Initialize the structure that keeps track of fixed event handler. */
+        for (i = 0; i < NUM_FIXED_EVENTS; i++)
+        {
+        	FixedEventHandlers[i].Handler = NULL;
+        	FixedEventHandlers[i].Context = NULL;
         }
         
         /* Initialize GPEs now. */
@@ -301,20 +306,23 @@ AcpiInstallFixedEventHandler (
 
     /* Don't allow two handlers. */
 
-    if (NULL != FixedEventHandlers[Event])
+    if (NULL != FixedEventHandlers[Event].Handler)
     {
         Status = AE_EXIST;
         goto Cleanup;
     }
     
+
     /* Install the handler before enabling the event - just in case... */
 
-    FixedEventHandlers[Event] = Handler;
+    FixedEventHandlers[Event].Handler = Handler;
+    FixedEventHandlers[Event].Context = Context;
     
     if (1 != HwRegisterIO (ACPI_WRITE, Event + TMR_EN, 1))
     {
         DEBUG_PRINT (ACPI_WARN, ("Could not write to fixed event enable register.\n"));
-        FixedEventHandlers[Event] = NULL;
+        FixedEventHandlers[Event].Handler = NULL;
+        FixedEventHandlers[Event].Context = NULL;
         Status = AE_ERROR;
         goto Cleanup;
     }
@@ -347,9 +355,7 @@ AcpiRemoveFixedEventHandler (
 {
     ACPI_STATUS             Status = AE_OK;
 
-
     FUNCTION_TRACE ("AcpiRemoveFixedEventHandler");
-
 
     /* Sanity check the parameters. */
 
@@ -371,7 +377,9 @@ AcpiRemoveFixedEventHandler (
 
     /* Remove the handler */
 
-    FixedEventHandlers[Event] = NULL;    
+    FixedEventHandlers[Event].Handler = NULL;
+    FixedEventHandlers[Event].Context = NULL;
+    
     DEBUG_PRINT (ACPI_INFO, ("Disabled fixed event %d.\n", Event));    
     
 Cleanup:
@@ -974,6 +982,7 @@ EvAssociateRegionAndHander(
 
     /*
      *  BUGBUG:  We should invoke _REG here up to 2 times, If there was
+
      *           a previous handler, it should have _REG run and the new
      *           handler too.
      */
