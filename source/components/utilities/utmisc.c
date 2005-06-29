@@ -1,6 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: cmutils - common utility procedures
+ *              $Revision: 1.18 $
  *
  ******************************************************************************/
 
@@ -126,7 +127,7 @@
 
 
 #define _COMPONENT          MISCELLANEOUS
-        MODULE_NAME         ("cmutils");
+        MODULE_NAME         ("cmutils")
 
 
 /*******************************************************************************
@@ -148,7 +149,7 @@ BOOLEAN
 AcpiCmValidAcpiName (
     UINT32                  Name)
 {
-    INT8                    *NamePtr = (INT8 *) &Name;
+    NATIVE_CHAR             *NamePtr = (NATIVE_CHAR *) &Name;
     UINT32                  i;
 
 
@@ -181,7 +182,7 @@ AcpiCmValidAcpiName (
 
 BOOLEAN
 AcpiCmValidAcpiCharacter (
-    INT8                    Character)
+    NATIVE_CHAR             Character)
 {
 
     return ((BOOLEAN)   ((Character == '_') ||
@@ -403,7 +404,7 @@ AcpiCmReleaseMutex (
     ACPI_STATUS             Status;
 
 
-    DEBUG_PRINT (TRACE_MUTEX, 
+    DEBUG_PRINT (TRACE_MUTEX,
         ("Releasing Mutex [%s]\n", AcpiCmGetMutexName (MutexId)));
 
     if (MutexId > MAX_MTX)
@@ -447,7 +448,7 @@ AcpiCmReleaseMutex (
 
 ACPI_STATUS
 AcpiCmCreateUpdateStateAndPush (
-    ACPI_OBJECT_INTERNAL    *Object,
+    ACPI_OPERAND_OBJECT     *Object,
     UINT16                  Action,
     ACPI_GENERIC_STATE      **StateList)
 {
@@ -607,7 +608,7 @@ AcpiCmCreateGenericState (void)
  *
  * FUNCTION:    AcpiCmCreateUpdateState
  *
- * PARAMETERS:  Object              - Initial Object to be installed in the 
+ * PARAMETERS:  Object              - Initial Object to be installed in the
  *                                    state
  *              Action              - Update action to be performed
  *
@@ -621,7 +622,7 @@ AcpiCmCreateGenericState (void)
 
 ACPI_GENERIC_STATE *
 AcpiCmCreateUpdateState (
-    ACPI_OBJECT_INTERNAL    *Object,
+    ACPI_OPERAND_OBJECT     *Object,
     UINT16                  Action)
 {
     ACPI_GENERIC_STATE      *State;
@@ -793,10 +794,10 @@ AcpiCmDeleteGenericStateCache (
 
 void
 _ReportError (
-    INT8                    *ModuleName,
-    INT32                   LineNumber,
-    INT32                   ComponentId,
-    INT8                    *Message)
+    NATIVE_CHAR             *ModuleName,
+    UINT32                  LineNumber,
+    UINT32                  ComponentId,
+    NATIVE_CHAR             *Message)
 {
 
     DebugPrint (ModuleName, LineNumber, ComponentId, ACPI_ERROR,
@@ -822,10 +823,10 @@ _ReportError (
 
 void
 _ReportWarning (
-    INT8                    *ModuleName,
-    INT32                   LineNumber,
-    INT32                   ComponentId,
-    INT8                    *Message)
+    NATIVE_CHAR             *ModuleName,
+    UINT32                  LineNumber,
+    UINT32                  ComponentId,
+    NATIVE_CHAR             *Message)
 {
 
     DebugPrint (ModuleName, LineNumber, ComponentId, ACPI_WARN,
@@ -851,10 +852,10 @@ _ReportWarning (
 
 void
 _ReportInfo (
-    INT8                    *ModuleName,
-    INT32                   LineNumber,
-    INT32                   ComponentId,
-    INT8                    *Message)
+    NATIVE_CHAR             *ModuleName,
+    UINT32                  LineNumber,
+    UINT32                  ComponentId,
+    NATIVE_CHAR             *Message)
 {
 
     DebugPrint (ModuleName, LineNumber, ComponentId, ACPI_INFO,
