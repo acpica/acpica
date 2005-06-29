@@ -241,6 +241,11 @@ AmlExecCreateProcessor (
     ACPI_HANDLE             ProcessorNTE);
 
 ACPI_STATUS
+AmlExecCreatePowerResource (
+    ACPI_GENERIC_OP         *Op,
+    ACPI_HANDLE             ProcessorNTE);
+
+ACPI_STATUS
 AmlExecCreateRegion (
     UINT8                   *AmlPtr,
     UINT32                  AmlLength,
