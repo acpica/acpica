@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: evxface - External interfaces for ACPI events
- *              $Revision: 1.109 $
+ *              $Revision: 1.111 $
  *
  *****************************************************************************/
 
@@ -156,6 +156,14 @@ AcpiInstallFixedEventHandler (
     FUNCTION_TRACE ("AcpiInstallFixedEventHandler");
 
 
+    /* Ensure that ACPI has been initialized */
+
+    ACPI_IS_INITIALIZATION_COMPLETE (Status);
+    if (ACPI_FAILURE (Status))
+    {
+        return_ACPI_STATUS (Status);
+    }
+
     /* Parameter validation */
 
     if (Event > ACPI_EVENT_MAX)
@@ -182,7 +190,7 @@ AcpiInstallFixedEventHandler (
     Status = AcpiEnableEvent (Event, ACPI_EVENT_FIXED);
     if (!ACPI_SUCCESS (Status))
     {
-        DEBUG_PRINTP (ACPI_WARN, ("Could not enable fixed event.\n"));
+        ACPI_DEBUG_PRINT ((ACPI_DB_WARN, "Could not enable fixed event.\n"));
 
         /* Remove the handler */
 
@@ -192,8 +200,8 @@ AcpiInstallFixedEventHandler (
 
     else
     {
-        DEBUG_PRINTP (ACPI_INFO,
-            ("Enabled fixed event %X, Handler=%p\n", Event, Handler));
+        ACPI_DEBUG_PRINT ((ACPI_DB_INFO,
+            "Enabled fixed event %X, Handler=%p\n", Event, Handler));
     }
 
 
@@ -227,6 +235,14 @@ AcpiRemoveFixedEventHandler (
     FUNCTION_TRACE ("AcpiRemoveFixedEventHandler");
 
 
+    /* Ensure that ACPI has been initialized */
+
+    ACPI_IS_INITIALIZATION_COMPLETE (Status);
+    if (ACPI_FAILURE (Status))
+    {
+        return_ACPI_STATUS (Status);
+    }
+
     /* Parameter validation */
 
     if (Event > ACPI_EVENT_MAX)
@@ -248,13 +264,13 @@ AcpiRemoveFixedEventHandler (
 
     if (!ACPI_SUCCESS(Status))
     {
-        DEBUG_PRINTP (ACPI_WARN,
-            ("Could not write to fixed event enable register.\n"));
+        ACPI_DEBUG_PRINT ((ACPI_DB_WARN,
+            "Could not write to fixed event enable register.\n"));
     }
 
     else
     {
-        DEBUG_PRINTP (ACPI_INFO, ("Disabled fixed event %X.\n", Event));
+        ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "Disabled fixed event %X.\n", Event));
     }
 
     AcpiUtReleaseMutex (ACPI_MTX_EVENTS);
@@ -294,6 +310,14 @@ AcpiInstallNotifyHandler (
 
     FUNCTION_TRACE ("AcpiInstallNotifyHandler");
 
+
+    /* Ensure that ACPI has been initialized */
+
+    ACPI_IS_INITIALIZATION_COMPLETE (Status);
+    if (ACPI_FAILURE (Status))
+    {
+        return_ACPI_STATUS (Status);
+    }
 
     /* Parameter validation */
 
@@ -468,6 +492,14 @@ AcpiRemoveNotifyHandler (
     FUNCTION_TRACE ("AcpiRemoveNotifyHandler");
 
 
+    /* Ensure that ACPI has been initialized */
+
+    ACPI_IS_INITIALIZATION_COMPLETE (Status);
+    if (ACPI_FAILURE (Status))
+    {
+        return_ACPI_STATUS (Status);
+    }
+
     /* Parameter validation */
 
     if ((!Handler) ||
@@ -493,7 +525,7 @@ AcpiRemoveNotifyHandler (
      */
     if (Device == ACPI_ROOT_OBJECT) {
 
-        DEBUG_PRINTP (ACPI_INFO, ("Removing notify handler for ROOT object.\n"));
+        ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "Removing notify handler for ROOT object.\n"));
 
         if (((HandlerType == ACPI_SYSTEM_NOTIFY) &&
               !AcpiGbl_SysNotify.Handler) ||
@@ -611,6 +643,14 @@ AcpiInstallGpeHandler (
     FUNCTION_TRACE ("AcpiInstallGpeHandler");
 
 
+    /* Ensure that ACPI has been initialized */
+
+    ACPI_IS_INITIALIZATION_COMPLETE (Status);
+    if (ACPI_FAILURE (Status))
+    {
+        return_ACPI_STATUS (Status);
+    }
+
     /* Parameter validation */
 
     if (!Handler || (GpeNumber > ACPI_GPE_MAX))
@@ -676,6 +716,14 @@ AcpiRemoveGpeHandler (
     FUNCTION_TRACE ("AcpiRemoveGpeHandler");
 
 
+    /* Ensure that ACPI has been initialized */
+
+    ACPI_IS_INITIALIZATION_COMPLETE (Status);
+    if (ACPI_FAILURE (Status))
+    {
+        return_ACPI_STATUS (Status);
+    }
+
     /* Parameter validation */
 
     if (!Handler || (GpeNumber > ACPI_GPE_MAX))
@@ -735,6 +783,14 @@ AcpiAcquireGlobalLock (
     ACPI_STATUS             Status;
 
 
+    /* Ensure that ACPI has been initialized */
+
+    ACPI_IS_INITIALIZATION_COMPLETE (Status);
+    if (ACPI_FAILURE (Status))
+    {
+        return (Status);
+    }
+
     Status = AcpiExEnterInterpreter ();
     if (ACPI_FAILURE (Status))
     {
@@ -769,6 +825,16 @@ ACPI_STATUS
 AcpiReleaseGlobalLock (
     void)
 {
+    ACPI_STATUS             Status;
+
+
+    /* Ensure that ACPI has been initialized */
+
+    ACPI_IS_INITIALIZATION_COMPLETE (Status);
+    if (ACPI_FAILURE (Status))
+    {
+        return (Status);
+    }
 
     AcpiEvReleaseGlobalLock ();
     return (AE_OK);
