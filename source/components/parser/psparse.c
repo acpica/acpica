@@ -1,6 +1,8 @@
+
 /******************************************************************************
  *
  * Module Name: psparse - Parser top level AML parse routines
+ *              $Revision: 1.47 $
  *
  *****************************************************************************/
 
@@ -1391,6 +1393,7 @@ AcpiPsParseAml (
 
     /* Normal exit */
 
+    AcpiGbl_CurrentWalkList = PrevWalkList;
     return_ACPI_STATUS (Status);
 
 
