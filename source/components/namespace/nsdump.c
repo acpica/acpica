@@ -204,8 +204,7 @@ AcpiNsDumpOneObject (
     void                    **ReturnValue)
 {
     ACPI_WALK_INFO          *Info = (ACPI_WALK_INFO *) Context;
-    NAME_TABLE_ENTRY        *Appendage = NULL;
-    NAME_TABLE_ENTRY        *ThisEntry;
+    ACPI_NAMED_OBJECT       *ThisEntry;
     UINT8                   *Value;
     ACPI_OBJECT_INTERNAL    *ObjDesc = NULL;
     OBJECT_TYPE_INTERNAL    ObjType;
@@ -214,7 +213,6 @@ AcpiNsDumpOneObject (
     UINT32                  DownstreamSiblingMask = 0;
     INT32                   LevelTmp;
     UINT32                  WhichBit;
-    UINT32                  Size = 0;
 
 
     ThisEntry = AcpiNsConvertHandleToEntry (ObjHandle);
@@ -268,7 +266,7 @@ AcpiNsDumpOneObject (
 
         else
         {
-            if (AcpiNsExistDownstreamSibling (ThisEntry + 1, Size, Appendage))
+            if (AcpiNsExistDownstreamSibling (ThisEntry + 1))
             {
                 DownstreamSiblingMask |= (1 << (Level - 1));
                 DEBUG_PRINT_RAW (TRACE_TABLES, ("+"));
@@ -280,13 +278,12 @@ AcpiNsDumpOneObject (
                 DEBUG_PRINT_RAW (TRACE_TABLES, ("+"));
             }
 
-            if (ThisEntry->Scope == NULL)
+            if (ThisEntry->ChildTable == NULL)
             {
                 DEBUG_PRINT_RAW (TRACE_TABLES, ("-"));
             }
 
-            else if (AcpiNsExistDownstreamSibling (ThisEntry->Scope, NS_TABLE_SIZE,
-                                                NEXTSEG (ThisEntry->Scope)))
+            else if (AcpiNsExistDownstreamSibling (ThisEntry->ChildTable->Entries))
             {
                 DEBUG_PRINT_RAW (TRACE_TABLES, ("+"));
             }
@@ -316,7 +313,7 @@ AcpiNsDumpOneObject (
      */
 
     DEBUG_PRINT_RAW (TRACE_TABLES, (" %4.4s %-9s ", &ThisEntry->Name, AcpiCmGetTypeName (Type)));
-    DEBUG_PRINT_RAW (TRACE_TABLES, ("%p S:%p O:%p",  ThisEntry, ThisEntry->Scope, ThisEntry->Object));
+    DEBUG_PRINT_RAW (TRACE_TABLES, ("%p S:%p O:%p",  ThisEntry, ThisEntry->ChildTable, ThisEntry->Object));
 
 
     if (!ThisEntry->Object)
@@ -398,14 +395,14 @@ AcpiNsDumpOneObject (
             BytesToDump = 16;
         }
 
-        else if (VALID_DESCRIPTOR_TYPE (Value, DESC_TYPE_NTE))
+        else if (VALID_DESCRIPTOR_TYPE (Value, ACPI_DESC_TYPE_NAMED))
         {
             DEBUG_PRINT_RAW (TRACE_TABLES, ("(Ptr to Name Table Entry)\n"));
-            BytesToDump = sizeof (NAME_TABLE_ENTRY);
+            BytesToDump = sizeof (ACPI_NAMED_OBJECT);
         }
 
 
-        else if (VALID_DESCRIPTOR_TYPE (Value, DESC_TYPE_ACPI_OBJ))
+        else if (VALID_DESCRIPTOR_TYPE (Value, ACPI_DESC_TYPE_INTERNAL))
         {
             ObjDesc = (ACPI_OBJECT_INTERNAL *) Value;
             ObjType = ObjDesc->Common.Type;
@@ -435,7 +432,7 @@ AcpiNsDumpOneObject (
         /* If value is NOT an internal object, we are done */
 
         if ((AcpiTbSystemTablePointer (Value)) ||
-            (VALID_DESCRIPTOR_TYPE (Value, DESC_TYPE_NTE)))
+            (VALID_DESCRIPTOR_TYPE (Value, ACPI_DESC_TYPE_NAMED)))
         {
             goto Cleanup;
         }
@@ -623,7 +620,7 @@ AcpiNsDumpTables (
     FUNCTION_TRACE ("NsDumpTables");
 
 
-    if (!AcpiGbl_RootObject->Scope)
+    if (!AcpiGbl_RootObject->ChildTable)
     {
         /*
          * If the name space has not been initialized,

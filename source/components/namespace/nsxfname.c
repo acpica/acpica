@@ -178,7 +178,7 @@ AcpiLoadNamespace (
      * but the SSDT and PSDT tables are optional.
      */
 
-    Status = AcpiNsLoadTableByType (TABLE_DSDT);
+    Status = AcpiNsLoadTableByType (ACPI_TABLE_DSDT);
     if (ACPI_FAILURE (Status))
     {
         return_ACPI_STATUS (Status);
@@ -186,12 +186,12 @@ AcpiLoadNamespace (
 
     /* Ignore exceptions from these */
 
-    AcpiNsLoadTableByType (TABLE_SSDT);
-    AcpiNsLoadTableByType (TABLE_PSDT);
+    AcpiNsLoadTableByType (ACPI_TABLE_SSDT);
+    AcpiNsLoadTableByType (ACPI_TABLE_PSDT);
 
 
     DEBUG_PRINT_RAW (ACPI_OK, ("ACPI Namespace successfully loaded at root 0x%p\n",
-                    AcpiGbl_RootObject->Scope));
+                    AcpiGbl_RootObject->ChildTable));
 
 
     /* Install the default OpRegion handlers, ignore the return code right now. */
@@ -226,8 +226,8 @@ AcpiGetHandle (
     ACPI_HANDLE             *RetHandle)
 {
     ACPI_STATUS             Status;
-    NAME_TABLE_ENTRY        *ThisEntry;
-    NAME_TABLE_ENTRY        *Scope = NULL;
+    ACPI_NAMED_OBJECT       *ThisEntry;
+    ACPI_NAME_TABLE         *Scope = NULL;
 
 
     if (!RetHandle || !Pathname)
@@ -237,17 +237,17 @@ AcpiGetHandle (
 
     if (Parent)
     {
-        AcpiCmAcquireMutex (MTX_NAMESPACE);
+        AcpiCmAcquireMutex (ACPI_MTX_NAMESPACE);
 
         ThisEntry = AcpiNsConvertHandleToEntry (Parent);
         if (!ThisEntry)
         {
-            AcpiCmReleaseMutex (MTX_NAMESPACE);
+            AcpiCmReleaseMutex (ACPI_MTX_NAMESPACE);
             return AE_BAD_PARAMETER;
         }
 
-        Scope = ThisEntry->Scope;
-        AcpiCmReleaseMutex (MTX_NAMESPACE);
+        Scope = ThisEntry->ChildTable;
+        AcpiCmReleaseMutex (ACPI_MTX_NAMESPACE);
     }
 
     /* Special case for root, since we can't search for it */
@@ -263,7 +263,7 @@ AcpiGetHandle (
      *  Find the Nte and convert to the user format
      */
     ThisEntry = NULL;
-    Status = AcpiNsGetNte (Pathname, Scope, &ThisEntry);
+    Status = AcpiNsGetNamedObject (Pathname, Scope, &ThisEntry);
 
    *RetHandle = AcpiNsConvertEntryToHandle (ThisEntry);
 
@@ -294,7 +294,7 @@ AcpiGetName (
     ACPI_BUFFER             *RetPathPtr)
 {
     ACPI_STATUS             Status;
-    NAME_TABLE_ENTRY        *ObjEntry;
+    ACPI_NAMED_OBJECT       *ObjEntry;
 
 
     /* Buffer pointer must be valid always */
@@ -325,7 +325,7 @@ AcpiGetName (
      * Validate handle and convert to an NTE
      */
 
-    AcpiCmAcquireMutex (MTX_NAMESPACE);
+    AcpiCmAcquireMutex (ACPI_MTX_NAMESPACE);
     ObjEntry = AcpiNsConvertHandleToEntry (Handle);
     if (!ObjEntry)
     {
@@ -351,7 +351,7 @@ AcpiGetName (
 
 UnlockAndExit:
 
-    AcpiCmReleaseMutex (MTX_NAMESPACE);
+    AcpiCmReleaseMutex (ACPI_MTX_NAMESPACE);
     return Status;
 }
 
@@ -380,7 +380,7 @@ AcpiGetObjectInfo (
     ACPI_STATUS             Status;
     UINT32                  DeviceStatus = 0;
     UINT32                  Address = 0;
-    NAME_TABLE_ENTRY        *DeviceEntry;
+    ACPI_NAMED_OBJECT       *DeviceEntry;
 
 
     /* Parameter validation */
@@ -390,20 +390,20 @@ AcpiGetObjectInfo (
         return AE_BAD_PARAMETER;
     }
 
-    AcpiCmAcquireMutex (MTX_NAMESPACE);
+    AcpiCmAcquireMutex (ACPI_MTX_NAMESPACE);
 
     DeviceEntry = AcpiNsConvertHandleToEntry (Device);
     if (!DeviceEntry)
     {
-        AcpiCmReleaseMutex (MTX_NAMESPACE);
+        AcpiCmReleaseMutex (ACPI_MTX_NAMESPACE);
         return AE_BAD_PARAMETER;
     }
 
     Info->Type      = DeviceEntry->Type;
     Info->Name      = DeviceEntry->Name;
-    Info->Parent    = AcpiNsConvertEntryToHandle (DeviceEntry->ParentEntry);
+    Info->Parent    = AcpiNsConvertEntryToHandle (AcpiNsGetParentEntry (DeviceEntry));
 
-    AcpiCmReleaseMutex (MTX_NAMESPACE);
+    AcpiCmReleaseMutex (ACPI_MTX_NAMESPACE);
 
     /*
      * If not a device, we are all done.

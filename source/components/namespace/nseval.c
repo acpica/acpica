@@ -153,14 +153,14 @@
 
 ACPI_STATUS
 AcpiNsEvaluateRelative (
-    NAME_TABLE_ENTRY        *Handle,
+    ACPI_NAMED_OBJECT       *Handle,
     char                    *Pathname,
     ACPI_OBJECT_INTERNAL    **Params,
     ACPI_OBJECT_INTERNAL    **ReturnObject)
 {
-    NAME_TABLE_ENTRY        *RelObjEntry;
+    ACPI_NAMED_OBJECT       *RelObjEntry;
     ACPI_STATUS             Status;
-    NAME_TABLE_ENTRY        *ObjEntry = NULL;
+    ACPI_NAMED_OBJECT       *ObjEntry = NULL;
     char                    *InternalPath = NULL;
     ACPI_GENERIC_STATE      ScopeInfo;
 
@@ -186,22 +186,22 @@ AcpiNsEvaluateRelative (
 
     /* Get the prefix handle and NTE */
 
-    AcpiCmAcquireMutex (MTX_NAMESPACE);
+    AcpiCmAcquireMutex (ACPI_MTX_NAMESPACE);
 
     RelObjEntry = AcpiNsConvertHandleToEntry (Handle);
     if (!RelObjEntry)
     {
-        AcpiCmReleaseMutex (MTX_NAMESPACE);
+        AcpiCmReleaseMutex (ACPI_MTX_NAMESPACE);
         Status = AE_BAD_PARAMETER;
         goto Cleanup;
     }
 
     /* Lookup the name in the namespace */
 
-    ScopeInfo.Scope.Entry = RelObjEntry->Scope;
+    ScopeInfo.Scope.NameTable = RelObjEntry->ChildTable;
     Status = AcpiNsLookup (&ScopeInfo, InternalPath, ACPI_TYPE_ANY, IMODE_EXECUTE,
                                 NS_NO_UPSEARCH, NULL, &ObjEntry);
-    AcpiCmReleaseMutex (MTX_NAMESPACE);
+    AcpiCmReleaseMutex (ACPI_MTX_NAMESPACE);
 
     if (Status != AE_OK)
     {
@@ -260,7 +260,7 @@ AcpiNsEvaluateByName (
     ACPI_OBJECT_INTERNAL    **ReturnObject)
 {
     ACPI_STATUS             Status;
-    NAME_TABLE_ENTRY        *ObjEntry = NULL;
+    ACPI_NAMED_OBJECT       *ObjEntry = NULL;
     char                    *InternalPath = NULL;
 
 
@@ -278,13 +278,13 @@ AcpiNsEvaluateByName (
         }
     }
 
-    AcpiCmAcquireMutex (MTX_NAMESPACE);
+    AcpiCmAcquireMutex (ACPI_MTX_NAMESPACE);
 
     /* Lookup the name in the namespace */
 
     Status = AcpiNsLookup (NULL, InternalPath, ACPI_TYPE_ANY, IMODE_EXECUTE,
                                 NS_NO_UPSEARCH, NULL, &ObjEntry);
-    AcpiCmReleaseMutex (MTX_NAMESPACE);
+    AcpiCmReleaseMutex (ACPI_MTX_NAMESPACE);
 
     if (Status != AE_OK)
     {
@@ -341,11 +341,11 @@ Cleanup:
 
 ACPI_STATUS
 AcpiNsEvaluateByHandle (
-    NAME_TABLE_ENTRY        *Handle,
+    ACPI_NAMED_OBJECT       *Handle,
     ACPI_OBJECT_INTERNAL    **Params,
     ACPI_OBJECT_INTERNAL    **ReturnObject)
 {
-    NAME_TABLE_ENTRY        *ObjEntry;
+    ACPI_NAMED_OBJECT       *ObjEntry;
     ACPI_STATUS             Status;
     ACPI_OBJECT_INTERNAL    *LocalReturnObject;
 
@@ -355,7 +355,7 @@ AcpiNsEvaluateByHandle (
 
     /* Check if namespace has been initialized */
 
-    if (!AcpiGbl_RootObject->Scope)
+    if (!AcpiGbl_RootObject->ChildTable)
     {
         return_ACPI_STATUS (AE_NO_NAMESPACE);
     }
@@ -376,7 +376,7 @@ AcpiNsEvaluateByHandle (
 
     /* Get the prefix handle and NTE */
 
-    AcpiCmAcquireMutex (MTX_NAMESPACE);
+    AcpiCmAcquireMutex (ACPI_MTX_NAMESPACE);
 
     ObjEntry = AcpiNsConvertHandleToEntry (Handle);
     if (!ObjEntry)
@@ -444,7 +444,7 @@ AcpiNsEvaluateByHandle (
 
 UnlockAndExit:
 
-    AcpiCmReleaseMutex (MTX_NAMESPACE);
+    AcpiCmReleaseMutex (ACPI_MTX_NAMESPACE);
     return_ACPI_STATUS (Status);
 }
 
@@ -468,7 +468,7 @@ UnlockAndExit:
 
 ACPI_STATUS
 AcpiNsExecuteControlMethod (
-    NAME_TABLE_ENTRY        *MethodEntry,
+    ACPI_NAMED_OBJECT       *MethodEntry,
     ACPI_OBJECT_INTERNAL    **Params,
     ACPI_OBJECT_INTERNAL    **ReturnObjDesc)
 {
@@ -510,7 +510,7 @@ AcpiNsExecuteControlMethod (
      * namespace that is being deleted.
      */
 
-    AcpiCmReleaseMutex (MTX_NAMESPACE);
+    AcpiCmReleaseMutex (ACPI_MTX_NAMESPACE);
 
     /*
      * Excecute the method via the interpreter
@@ -537,7 +537,7 @@ AcpiNsExecuteControlMethod (
 
 ACPI_STATUS
 AcpiNsGetObjectValue (
-    NAME_TABLE_ENTRY        *ObjectEntry,
+    ACPI_NAMED_OBJECT       *ObjectEntry,
     ACPI_OBJECT_INTERNAL    **ReturnObjDesc)
 {
     ACPI_STATUS             Status = AE_OK;
@@ -630,6 +630,6 @@ UnlockAndExit:
 
     /* Unlock the namespace */
 
-    AcpiCmReleaseMutex (MTX_NAMESPACE);
+    AcpiCmReleaseMutex (ACPI_MTX_NAMESPACE);
     return_ACPI_STATUS (Status);
 }

@@ -150,7 +150,7 @@ AcpiNsAttachObject (
     ACPI_HANDLE             Object,
     OBJECT_TYPE_INTERNAL    Type)
 {
-    NAME_TABLE_ENTRY        *ThisEntry = (NAME_TABLE_ENTRY *) Handle;
+    ACPI_NAMED_OBJECT       *ThisEntry = (ACPI_NAMED_OBJECT*) Handle;
     ACPI_OBJECT_INTERNAL    *ObjDesc;
     ACPI_OBJECT_INTERNAL    *PreviousObjDesc;
     OBJECT_TYPE_INTERNAL    ObjType = ACPI_TYPE_ANY;
@@ -165,7 +165,7 @@ AcpiNsAttachObject (
      * Parameter validation
      */
 
-    if (!AcpiGbl_RootObject->Scope)
+    if (!AcpiGbl_RootObject->ChildTable)
     {
         /* Name space not initialized  */
 
@@ -189,7 +189,7 @@ AcpiNsAttachObject (
         return_ACPI_STATUS (AE_BAD_PARAMETER);
     }
 
-    if (!VALID_DESCRIPTOR_TYPE (Handle, DESC_TYPE_NTE))
+    if (!VALID_DESCRIPTOR_TYPE (Handle, ACPI_DESC_TYPE_NAMED))
     {
         /* Not a name handle */
 
@@ -227,22 +227,22 @@ AcpiNsAttachObject (
      * we will use that (attached) object
      */
 
-    else if (VALID_DESCRIPTOR_TYPE (Object, DESC_TYPE_NTE) &&
-            ((NAME_TABLE_ENTRY *) Object)->Object)
+    else if (VALID_DESCRIPTOR_TYPE (Object, ACPI_DESC_TYPE_NAMED) &&
+            ((ACPI_NAMED_OBJECT*) Object)->Object)
     {
         /*
          * Value passed is a name handle and that name has a non-null value.
          * Use that name's value and type.
          */
 
-        ObjDesc = ((NAME_TABLE_ENTRY *) Object)->Object;
-        ObjType = ((NAME_TABLE_ENTRY *) Object)->Type;
+        ObjDesc = ((ACPI_NAMED_OBJECT*) Object)->Object;
+        ObjType = ((ACPI_NAMED_OBJECT*) Object)->Type;
 
         /*
          * Copy appropriate flags
          */
 
-        if (((NAME_TABLE_ENTRY *) Object)->Flags & NTE_AML_ATTACHMENT)
+        if (((ACPI_NAMED_OBJECT*) Object)->Flags & NTE_AML_ATTACHMENT)
         {
             Flags |= NTE_AML_ATTACHMENT;
         }
@@ -357,7 +357,7 @@ AcpiNsAttachObject (
                                 ("AML-stream code %02x\n", *(UINT8 *) Object));
                 }
 
-                else if (VALID_DESCRIPTOR_TYPE (Object, DESC_TYPE_NTE))
+                else if (VALID_DESCRIPTOR_TYPE (Object, ACPI_DESC_TYPE_NAMED))
                 {
                     DUMP_PATHNAME (Object, "name ", ACPI_INFO, _COMPONENT);
                 }
@@ -430,7 +430,7 @@ AcpiNsAttachMethod (
 {
     ACPI_OBJECT_INTERNAL    *ObjDesc;
     ACPI_OBJECT_INTERNAL    *PreviousObjDesc;
-    NAME_TABLE_ENTRY        *ThisEntry = (NAME_TABLE_ENTRY *) Handle;
+    ACPI_NAMED_OBJECT       *ThisEntry = (ACPI_NAMED_OBJECT*) Handle;
 
 
     FUNCTION_TRACE ("NsAttachMethod");
@@ -438,7 +438,7 @@ AcpiNsAttachMethod (
 
     /* Parameter validation */
 
-    if (!AcpiGbl_RootObject->Scope)
+    if (!AcpiGbl_RootObject->ChildTable)
     {
         /* Name space uninitialized */
 
@@ -515,7 +515,7 @@ void
 AcpiNsDetachObject (
     ACPI_HANDLE             Object)
 {
-    NAME_TABLE_ENTRY        *Entry = Object;
+    ACPI_NAMED_OBJECT       *Entry = Object;
     ACPI_OBJECT_INTERNAL    *ObjDesc;
 
 
@@ -574,7 +574,7 @@ AcpiNsGetAttachedObject (
         return_PTR (NULL);
     }
 
-    return_PTR (((NAME_TABLE_ENTRY *) Handle)->Object);
+    return_PTR (((ACPI_NAMED_OBJECT*) Handle)->Object);
 }
 
 
@@ -602,10 +602,10 @@ AcpiNsCompareObject (
     void                    **ReturnValue)
 {
 
-    if (((NAME_TABLE_ENTRY *) ObjHandle)->Object == ObjDesc)
+    if (((ACPI_NAMED_OBJECT*) ObjHandle)->Object == ObjDesc)
     {
         DEBUG_PRINT (ACPI_INFO, ("NsCompareObject: match found, Obj %x Val %x\n",
-                        ObjHandle, ((NAME_TABLE_ENTRY *) ObjHandle)->Object));
+                        ObjHandle, ((ACPI_NAMED_OBJECT*) ObjHandle)->Object));
 
         if (ReturnValue)
         {
@@ -662,7 +662,7 @@ AcpiNsFindAttachedObject (
         return_PTR (NULL);
     }
 
-    if (!AcpiGbl_RootObject->Scope)
+    if (!AcpiGbl_RootObject->ChildTable)
     {
         /*
          * If the name space has not been initialized,

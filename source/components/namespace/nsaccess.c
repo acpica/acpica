@@ -143,20 +143,20 @@
 
 ACPI_STATUS
 AcpiNsRootCreateScope (
-    NAME_TABLE_ENTRY        *Entry)
+    ACPI_NAMED_OBJECT       *Entry)
 {
     FUNCTION_TRACE ("NsRootCreateScope");
 
 
     /* Allocate a scope table */
 
-    if (Entry->Scope)
+    if (Entry->ChildTable)
     {
         return_ACPI_STATUS (AE_EXIST);
     }
 
-    Entry->Scope = AcpiNsAllocateNameTable (NS_TABLE_SIZE);
-    if (!Entry->Scope)
+    Entry->ChildTable = AcpiNsAllocateNameTable (NS_TABLE_SIZE);
+    if (!Entry->ChildTable)
     {
         /*  root name table allocation failure  */
 
@@ -168,7 +168,7 @@ AcpiNsRootCreateScope (
      * Init the scope first entry -- since it is the exemplar of
      * the scope (Some fields are duplicated to new entries!)
      */
-    AcpiNsInitializeTable (Entry->Scope, NULL, Entry);
+    AcpiNsInitializeTable (Entry->ChildTable, NULL, Entry);
     return_ACPI_STATUS (AE_OK);
 
 }
@@ -193,21 +193,21 @@ AcpiNsRootInitialize (void)
 {
     ACPI_STATUS             Status = AE_OK;
     PREDEFINED_NAMES        *InitVal = NULL;
-    NAME_TABLE_ENTRY        *NewEntry;
+    ACPI_NAMED_OBJECT       *NewEntry;
     ACPI_OBJECT_INTERNAL    *ObjDesc;
 
 
     FUNCTION_TRACE ("NsRootInitialize");
 
 
-    AcpiCmAcquireMutex (MTX_NAMESPACE);
+    AcpiCmAcquireMutex (ACPI_MTX_NAMESPACE);
 
     /*
      * Root is initially NULL, so a non-NULL value indicates
      * that AcpiNsRootInitialize() has already been called; just return.
      */
 
-    if (AcpiGbl_RootObject->Scope)
+    if (AcpiGbl_RootObject->ChildTable)
     {
         Status = AE_OK;
         goto UnlockAndExit;
@@ -335,7 +335,7 @@ AcpiNsRootInitialize (void)
 
 
 UnlockAndExit:
-    AcpiCmReleaseMutex (MTX_NAMESPACE);
+    AcpiCmReleaseMutex (ACPI_MTX_NAMESPACE);
     return_ACPI_STATUS (Status);
 }
 
@@ -345,8 +345,8 @@ UnlockAndExit:
  * FUNCTION:    AcpiNsLookup
  *
  * PARAMETERS:  PrefixScope     - Search scope if name is not fully qualified
- *              Pathname            - Name to be entered, in internal format
- *                                as represented in the AML stream
+ *              Pathname        - Search pathname, in internal format
+ *                                (as represented in the AML stream)
  *              Type            - Type associated with name
  *              InterpreterMode - IMODE_LOAD_PASS2 => add name if not found
  *              RetEntry        - Where the new entry (NTE) is placed
@@ -368,13 +368,13 @@ AcpiNsLookup (
     OPERATING_MODE          InterpreterMode,
     UINT32                  Flags,
     ACPI_WALK_STATE         *WalkState,
-    NAME_TABLE_ENTRY        **RetEntry)
+    ACPI_NAMED_OBJECT       **RetEntry)
 {
     ACPI_STATUS             Status;
-    NAME_TABLE_ENTRY        *PrefixScope;
-    NAME_TABLE_ENTRY        *EntryToSearch = NULL;
-    NAME_TABLE_ENTRY        *ThisEntry = NULL;
-    NAME_TABLE_ENTRY        *ScopeToPush = NULL;
+    ACPI_NAME_TABLE         *PrefixScope;
+    ACPI_NAME_TABLE         *TableToSearch = NULL;
+    ACPI_NAME_TABLE         *ScopeToPush = NULL;
+    ACPI_NAMED_OBJECT       *ThisEntry = NULL;
     UINT32                  NumSegments;
     ACPI_NAME               SimpleName;
     BOOLEAN                 NullNamePath = FALSE;
@@ -395,7 +395,7 @@ AcpiNsLookup (
     AcpiGbl_NsLookupCount++;
 
     *RetEntry = ENTRY_NOT_FOUND;
-    if (!AcpiGbl_RootObject->Scope)
+    if (!AcpiGbl_RootObject->ChildTable)
     {
         /*
          * If the name space has not been initialized:
@@ -424,13 +424,13 @@ AcpiNsLookup (
      */
 
     if ((!ScopeInfo) ||
-        (!ScopeInfo->Scope.Entry))
+        (!ScopeInfo->Scope.NameTable))
     {
-        PrefixScope = AcpiGbl_RootObject->Scope;
+        PrefixScope = AcpiGbl_RootObject->ChildTable;
     }
     else
     {
-        PrefixScope = ScopeInfo->Scope.Entry;
+        PrefixScope = ScopeInfo->Scope.NameTable;
     }
 
 
@@ -498,11 +498,11 @@ AcpiNsLookup (
         {
             /* Pathname is fully qualified, look in root name table */
 
-            EntryToSearch = AcpiGbl_RootObject->Scope;
+            TableToSearch = AcpiGbl_RootObject->ChildTable;
             Pathname++;                 /* point to segment part */
 
             DEBUG_PRINT (TRACE_NAMES, ("NsLookup: Searching from root [%p]\n",
-                                        EntryToSearch));
+                                        TableToSearch));
 
             /* Direct reference to root, "\" */
 
@@ -517,7 +517,7 @@ AcpiNsLookup (
         {
             /* Pathname is relative to current scope, start there */
 
-            EntryToSearch = PrefixScope;
+            TableToSearch = PrefixScope;
 
             DEBUG_PRINT (TRACE_NAMES, ("NsLookup: Searching relative to pfx scope [%p]\n",
                                         PrefixScope));
@@ -533,8 +533,8 @@ AcpiNsLookup (
 
                 /*  Backup to the parent's scope  */
 
-                EntryToSearch = EntryToSearch->ParentEntry;
-                if (!EntryToSearch)
+                TableToSearch = TableToSearch->ParentTable;
+                if (!TableToSearch)
                 {
                     /* Current scope has no parent scope */
 
@@ -542,8 +542,6 @@ AcpiNsLookup (
 
                     return_ACPI_STATUS (AE_NOT_FOUND);
                 }
-
-                EntryToSearch = EntryToSearch->Scope;
             }
         }
 
@@ -600,7 +598,7 @@ AcpiNsLookup (
      */
 
 
-    while (NumSegments-- && EntryToSearch)
+    while (NumSegments-- && TableToSearch)
     {
         /*
          * Search for the current segment in the table where it should be.
@@ -613,7 +611,7 @@ AcpiNsLookup (
         }
 
         MOVE_UNALIGNED32_TO_32 (&SimpleName, Pathname);
-        Status = AcpiNsSearchAndEnter (SimpleName, WalkState, EntryToSearch, InterpreterMode,
+        Status = AcpiNsSearchAndEnter (SimpleName, WalkState, TableToSearch, InterpreterMode,
                                     ThisSearchType, Flags, &ThisEntry);
         if (Status != AE_OK)
         {
@@ -674,7 +672,7 @@ AcpiNsLookup (
         }
 
         if ((NumSegments || AcpiNsOpensScope (Type)) &&
-            (ThisEntry->Scope == NULL))
+            (ThisEntry->ChildTable == NULL))
         {
             /*
              * More segments or the type implies enclosed scope,
@@ -689,9 +687,9 @@ AcpiNsLookup (
                 /* First or second pass load mode ==> locate the next scope */
 
                 DEBUG_PRINT (TRACE_NAMES, ("NsLookup: Creating and adding a new scope\n"));
-                ThisEntry->Scope = AcpiNsAllocateNameTable (NS_TABLE_SIZE);
+                ThisEntry->ChildTable = AcpiNsAllocateNameTable (NS_TABLE_SIZE);
 
-                if (!ThisEntry->Scope)
+                if (!ThisEntry->ChildTable)
                 {
                     return_ACPI_STATUS (AE_NO_MEMORY);
                 }
@@ -699,7 +697,7 @@ AcpiNsLookup (
 
             /* Now complain if there is no next scope */
 
-            if (ThisEntry->Scope == NULL)
+            if (ThisEntry->ChildTable == NULL)
             {
                 if (IMODE_LOAD_PASS1 == InterpreterMode ||
                     IMODE_LOAD_PASS2 == InterpreterMode)
@@ -722,11 +720,11 @@ AcpiNsLookup (
             {
                 /* Initialize the new table */
 
-                AcpiNsInitializeTable (ThisEntry->Scope, EntryToSearch, ThisEntry);
+                AcpiNsInitializeTable (ThisEntry->ChildTable, TableToSearch, ThisEntry);
             }
         }
 
-        EntryToSearch = ThisEntry->Scope;
+        TableToSearch = ThisEntry->ChildTable;
         Pathname += ACPI_NAME_SIZE;                 /* point to next name segment */
     }
 
@@ -754,7 +752,7 @@ CheckForNewScopeAndExit:
             }
             else
             {
-                ScopeToPush = ThisEntry->Scope;
+                ScopeToPush = ThisEntry->ChildTable;
             }
 
             Status = AcpiDsScopeStackPush (ScopeToPush, Type, WalkState);

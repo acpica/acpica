@@ -296,7 +296,7 @@ AcpiEvaluateObject (
 
         if (ReturnObj)
         {
-            if (VALID_DESCRIPTOR_TYPE (ReturnObj, DESC_TYPE_NTE))
+            if (VALID_DESCRIPTOR_TYPE (ReturnObj, ACPI_DESC_TYPE_NAMED))
             {
                 /*
                  * If we got an NTE as a return object, this means the object we are evaluating has nothing
@@ -399,9 +399,9 @@ AcpiGetNextObject (
     ACPI_HANDLE             *RetHandle)
 {
     ACPI_STATUS             Status = AE_OK;
-    NAME_TABLE_ENTRY        *Entry;
-    NAME_TABLE_ENTRY        *ParentEntry = NULL;
-    NAME_TABLE_ENTRY        *ChildEntry = NULL;
+    ACPI_NAMED_OBJECT       *Entry;
+    ACPI_NAMED_OBJECT       *ParentEntry = NULL;
+    ACPI_NAMED_OBJECT       *ChildEntry = NULL;
 
 
     /* Parameter validation */
@@ -411,7 +411,7 @@ AcpiGetNextObject (
         return AE_BAD_PARAMETER;
     }
 
-    AcpiCmAcquireMutex (MTX_NAMESPACE);
+    AcpiCmAcquireMutex (ACPI_MTX_NAMESPACE);
 
     /* If null handle, use the parent */
 
@@ -459,7 +459,7 @@ AcpiGetNextObject (
 
 UnlockAndExit:
 
-    AcpiCmReleaseMutex (MTX_NAMESPACE);
+    AcpiCmReleaseMutex (ACPI_MTX_NAMESPACE);
     return Status;
 }
 
@@ -482,7 +482,7 @@ AcpiGetType (
     ACPI_HANDLE             Handle,
     ACPI_OBJECT_TYPE        *RetType)
 {
-    NAME_TABLE_ENTRY        *Object;
+    ACPI_NAMED_OBJECT       *Object;
 
 
     /* Parameter Validation */
@@ -500,21 +500,21 @@ AcpiGetType (
         return AE_OK;
     }
 
-    AcpiCmAcquireMutex (MTX_NAMESPACE);
+    AcpiCmAcquireMutex (ACPI_MTX_NAMESPACE);
 
     /* Convert and validate the handle */
 
     Object = AcpiNsConvertHandleToEntry (Handle);
     if (!Object)
     {
-        AcpiCmReleaseMutex (MTX_NAMESPACE);
+        AcpiCmReleaseMutex (ACPI_MTX_NAMESPACE);
         return AE_BAD_PARAMETER;
     }
 
     *RetType = Object->Type;
 
 
-    AcpiCmReleaseMutex (MTX_NAMESPACE);
+    AcpiCmReleaseMutex (ACPI_MTX_NAMESPACE);
     return AE_OK;
 }
 
@@ -538,7 +538,7 @@ AcpiGetParent (
     ACPI_HANDLE             Handle,
     ACPI_HANDLE             *RetHandle)
 {
-    NAME_TABLE_ENTRY        *Object;
+    ACPI_NAMED_OBJECT       *Object;
     ACPI_STATUS             Status = AE_OK;
 
 
@@ -558,7 +558,7 @@ AcpiGetParent (
     }
 
 
-    AcpiCmAcquireMutex (MTX_NAMESPACE);
+    AcpiCmAcquireMutex (ACPI_MTX_NAMESPACE);
 
     /* Convert and validate the handle */
 
@@ -572,11 +572,11 @@ AcpiGetParent (
 
     /* Get the parent entry */
 
-    *RetHandle = AcpiNsConvertEntryToHandle(Object->ParentEntry);
+    *RetHandle = AcpiNsConvertEntryToHandle (AcpiNsGetParentEntry (Object));
 
     /* Return exeption if parent is null */
 
-    if (!Object->ParentEntry)
+    if (!AcpiNsGetParentEntry (Object))
     {
         Status = AE_NULL_ENTRY;
     }
@@ -584,7 +584,7 @@ AcpiGetParent (
 
 UnlockAndExit:
 
-    AcpiCmReleaseMutex (MTX_NAMESPACE);
+    AcpiCmReleaseMutex (ACPI_MTX_NAMESPACE);
     return AE_OK;
 }
 
@@ -647,10 +647,10 @@ AcpiWalkNamespace (
      * must be allowed to make Acpi calls itself.
      */
 
-    AcpiCmAcquireMutex (MTX_NAMESPACE);
+    AcpiCmAcquireMutex (ACPI_MTX_NAMESPACE);
     Status = AcpiNsWalkNamespace ((OBJECT_TYPE_INTERNAL) Type, StartObject, MaxDepth, NS_WALK_UNLOCK,
                                 UserFunction, Context, ReturnValue);
-    AcpiCmReleaseMutex (MTX_NAMESPACE);
+    AcpiCmReleaseMutex (ACPI_MTX_NAMESPACE);
 
     return_ACPI_STATUS (Status);
 }

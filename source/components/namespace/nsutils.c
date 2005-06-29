@@ -194,7 +194,7 @@ AcpiNsGetType (
         return_VALUE (ACPI_TYPE_ANY);
     }
 
-    return_VALUE (((NAME_TABLE_ENTRY *) handle)->Type);
+    return_VALUE (((ACPI_NAMED_OBJECT*) handle)->Type);
 }
 
 
@@ -553,7 +553,7 @@ AcpiNsExternalizeName (
  *
  ****************************************************************************/
 
-NAME_TABLE_ENTRY *
+ACPI_NAMED_OBJECT*
 AcpiNsConvertHandleToEntry (
     ACPI_HANDLE             Handle)
 {
@@ -577,12 +577,12 @@ AcpiNsConvertHandleToEntry (
 
     /* We can at least attempt to verify the handle */
 
-    if (!VALID_DESCRIPTOR_TYPE (Handle, DESC_TYPE_NTE))
+    if (!VALID_DESCRIPTOR_TYPE (Handle, ACPI_DESC_TYPE_NAMED))
     {
         return NULL;
     }
 
-    return (NAME_TABLE_ENTRY *) Handle;
+    return (ACPI_NAMED_OBJECT*) Handle;
 }
 
 
@@ -599,7 +599,7 @@ AcpiNsConvertHandleToEntry (
  ****************************************************************************/
 
 ACPI_HANDLE
-AcpiNsConvertEntryToHandle(NAME_TABLE_ENTRY *Nte)
+AcpiNsConvertEntryToHandle(ACPI_NAMED_OBJECT*Nte)
 {
 
 
@@ -646,7 +646,7 @@ void
 AcpiNsTerminate (void)
 {
     ACPI_OBJECT_INTERNAL    *ObjDesc;
-    NAME_TABLE_ENTRY        *Entry;
+    ACPI_NAMED_OBJECT       *Entry;
 
 
     FUNCTION_TRACE ("NsTerminate");
@@ -670,8 +670,8 @@ AcpiNsTerminate (void)
         AcpiCmRemoveReference (ObjDesc);
     }
 
-    AcpiNsDeleteScope (Entry->Scope);
-    Entry->Scope = NULL;
+    AcpiNsDeleteNameTable (Entry->ChildTable);
+    Entry->ChildTable = NULL;
 
 
     REPORT_SUCCESS ("Entire namespace and objects deleted");
@@ -722,7 +722,7 @@ AcpiNsOpensScope (
 
 /****************************************************************************
  *
- * FUNCTION:    AcpiNsGetNte
+ * FUNCTION:    AcpiNsGetNamedObject
  *
  * PARAMETERS:  *Pathname   - Name to be found, in external (ASL) format. The
  *                            \ (backslash) and ^ (carat) prefixes, and the
@@ -741,24 +741,25 @@ AcpiNsOpensScope (
  ***************************************************************************/
 
 ACPI_STATUS
-AcpiNsGetNte (
+AcpiNsGetNamedObject (
     char                    *Pathname,
-    ACPI_HANDLE             InScope,
-    NAME_TABLE_ENTRY        **OutNte)
+    ACPI_NAME_TABLE         *InScope,
+    ACPI_NAMED_OBJECT       **OutNte)
 {
     ACPI_GENERIC_STATE      ScopeInfo;
     ACPI_STATUS             Status;
-    NAME_TABLE_ENTRY        *ObjEntry = NULL;
+    ACPI_NAMED_OBJECT       *ObjEntry = NULL;
     char                    *InternalPath = NULL;
 
 
     FUNCTION_TRACE_PTR ("NsGetNte", Pathname);
 
-    ScopeInfo.Scope.Entry = InScope;
+
+    ScopeInfo.Scope.NameTable = InScope;
 
     /* Ensure that the namespace has been initialized */
 
-    if (!AcpiGbl_RootObject->Scope)
+    if (!AcpiGbl_RootObject->ChildTable)
     {
         return_ACPI_STATUS (AE_NO_NAMESPACE);
     }
@@ -778,19 +779,19 @@ AcpiNsGetNte (
     }
 
 
-    AcpiCmAcquireMutex (MTX_NAMESPACE);
+    AcpiCmAcquireMutex (ACPI_MTX_NAMESPACE);
 
     /* NS_ALL means start from the root */
 
-    if (NS_ALL == ScopeInfo.Scope.Entry)
+    if (NS_ALL == ScopeInfo.Scope.NameTable)
     {
-        ScopeInfo.Scope.Entry = AcpiGbl_RootObject->Scope;
+        ScopeInfo.Scope.NameTable = AcpiGbl_RootObject->ChildTable;
     }
 
     else
     {
-        ScopeInfo.Scope.Entry = AcpiNsConvertHandleToEntry (InScope);
-        if (!ScopeInfo.Scope.Entry)
+        ScopeInfo.Scope.NameTable = InScope;
+        if (!ScopeInfo.Scope.NameTable)
         {
             Status = AE_BAD_PARAMETER;
             goto UnlockAndExit;
@@ -814,7 +815,7 @@ AcpiNsGetNte (
 
 UnlockAndExit:
 
-    AcpiCmReleaseMutex (MTX_NAMESPACE);
+    AcpiCmReleaseMutex (ACPI_MTX_NAMESPACE);
 
     /* Cleanup */
 
@@ -840,9 +841,9 @@ UnlockAndExit:
 
 ACPI_NAME
 AcpiNsFindParentName (
-    NAME_TABLE_ENTRY        *ChildEntry)
+    ACPI_NAMED_OBJECT       *ChildEntry)
 {
-    NAME_TABLE_ENTRY        *ParentEntry;
+    ACPI_NAMED_OBJECT       *ParentEntry;
 
 
     FUNCTION_TRACE ("FindParentName");
@@ -852,7 +853,7 @@ AcpiNsFindParentName (
     {
         /* Valid entry.  Get the parent Nte */
 
-        ParentEntry = ChildEntry->ParentEntry;
+        ParentEntry = AcpiNsGetParentEntry (ChildEntry);
         if (ParentEntry)
         {
             DEBUG_PRINT (TRACE_EXEC, ("Parent of %p [%4.4s] is %p [%4.4s]\n",
@@ -877,8 +878,6 @@ AcpiNsFindParentName (
  * FUNCTION:    AcpiNsExistDownstreamSibling
  *
  * PARAMETERS:  *ThisEntry          - pointer to first nte to examine
- *              Size                - # of entries remaining in table
- *              *Appendage          - addr of NT's appendage, or NULL
  *
  * RETURN:      TRUE if sibling is found, FALSE otherwise
  *
@@ -890,11 +889,9 @@ AcpiNsFindParentName (
  *
  ***************************************************************************/
 
-INT32
+BOOLEAN
 AcpiNsExistDownstreamSibling (
-    NAME_TABLE_ENTRY        *ThisEntry,
-    INT32                   Size,
-    NAME_TABLE_ENTRY        *Appendage)
+    ACPI_NAMED_OBJECT       *ThisEntry)
 {
 
     if (!ThisEntry)
@@ -907,11 +904,143 @@ AcpiNsExistDownstreamSibling (
         return TRUE;
     }
 
+
+/* TBD: what did this really do?
     if (ThisEntry->NextEntry)
     {
         return TRUE;
     }
-
+*/
     return FALSE;
 }
+
+
+/****************************************************************************
+ *
+ * FUNCTION:    AcpiNsGetOwnerTable
+ *
+ * PARAMETERS:  
+ *
+ * RETURN:      
+ *
+ * DESCRIPTION: 
+ *
+ ***************************************************************************/
+
+
+ACPI_NAME_TABLE *
+AcpiNsGetOwnerTable (
+    ACPI_NAMED_OBJECT       *ThisEntry)
+{
+
+    /*
+     * Given an entry in the NameTable->Entries field of a name table, we can create
+     * a pointer to the beginning of the table as follows:
+     *
+     * 1) Starting with the the pointer to the entry,
+     * 2) Subtract the entry index * size of each entry to get a ptr to Entries[0]
+     * 3) Subtract the size of NAME_TABLE structure to get a ptr to the start.
+     *
+     * This saves having to put a pointer in every entry that points back to the 
+     * beginning of the table and/or a pointer back to the parent.
+     */
+
+    return (ACPI_NAME_TABLE *) ((char *) ThisEntry - 
+                                    (ThisEntry->ThisIndex * sizeof (ACPI_NAMED_OBJECT)) - 
+                                    (sizeof (ACPI_NAME_TABLE) - sizeof (ACPI_NAMED_OBJECT)));
+
+}
+
+
+/****************************************************************************
+ *
+ * FUNCTION:    AcpiNsGetParentEntry
+ *
+ * PARAMETERS:  ThisEntry       - Current table entry
+ *
+ * RETURN:      Parent entry of the given entry
+ *
+ * DESCRIPTION: Obtain the parent entry for a given entry in the namespace.
+ *
+ ***************************************************************************/
+
+
+ACPI_NAMED_OBJECT *
+AcpiNsGetParentEntry (
+    ACPI_NAMED_OBJECT       *ThisEntry)
+{
+    ACPI_NAME_TABLE         *NameTable;
+
+
+    NameTable = AcpiNsGetOwnerTable (ThisEntry);
+
+    /*
+     * Now that we have a pointer to the name table, we can just pluck the parent
+     */
+
+    return (NameTable->ParentEntry);
+}
+
+
+
+/****************************************************************************
+ *
+ * FUNCTION:    AcpiNsGetNextValidEntry
+ *
+ * PARAMETERS:  ThisEntry       - Current table entry
+ *
+ * RETURN:      Next valid object in the table.  NULL if no more valid 
+ *              objects
+ *
+ * DESCRIPTION: Find the next valid object within a name table.
+ *
+ ***************************************************************************/
+
+
+ACPI_NAMED_OBJECT *
+AcpiNsGetNextValidEntry (
+    ACPI_NAMED_OBJECT       *ThisEntry)
+{
+    ACPI_NAME_TABLE         *NameTable;
+    UINT32                  Index;
+
+
+    Index = ThisEntry->ThisIndex + 1;
+    NameTable = AcpiNsGetOwnerTable (ThisEntry);
+
+
+    while (NameTable)
+    {
+        if (Index >= NS_TABLE_SIZE)
+        {
+            /* We are at the end of this table */
+
+            NameTable = NameTable->NextTable;
+            Index = 0;
+            continue;
+        }
+
+
+        /* Is this a valid (occupied) slot? */
+
+        if (NameTable->Entries[Index].Name)
+        {
+            /* Found a valid entry, all done */
+
+            return (&NameTable->Entries[Index]);
+        }
+
+        /* Go to the next slot */
+
+        Index++;
+    }
+
+    /* No more valid entries in this name table */
+
+    return NULL;
+}
+
+
+
+
 

@@ -139,33 +139,20 @@
  *
  ***************************************************************************/
 
-NAME_TABLE_ENTRY *
+ACPI_NAME_TABLE *
 AcpiNsAllocateNameTable (
-    INT32                   NteCount)
+    UINT32                  NumEntries)
 {
-    NAME_TABLE_ENTRY        *NameTable = NULL;
+    ACPI_NAME_TABLE         *NameTable = NULL;
     ACPI_SIZE               AllocSize;
 
 
     FUNCTION_TRACE ("NsAllocateNameTable");
 
 
-    AllocSize = (ACPI_SIZE) NteCount * sizeof (NAME_TABLE_ENTRY);
-
-
-    /* Allow room for link to appendage */
-
-    AllocSize += sizeof (NAME_TABLE_ENTRY *);
-
-
+    AllocSize = sizeof (ACPI_NAME_TABLE) + ((NumEntries - 1) * sizeof (ACPI_NAMED_OBJECT));
     NameTable = AcpiCmCallocate (AllocSize);
-    if (NameTable)
-    {
-        /* Move past the appendage pointer */
 
-        NameTable = (NAME_TABLE_ENTRY *) (((UINT8 *) NameTable) +
-                        sizeof (NAME_TABLE_ENTRY *));
-    }
 
     DEBUG_PRINT (TRACE_EXEC, ("NsAllocateNameTable: NameTable=%p\n", NameTable));
 
@@ -188,9 +175,9 @@ AcpiNsAllocateNameTable (
 
 ACPI_STATUS
 AcpiNsDeleteNamespaceSubtree (
-    NAME_TABLE_ENTRY        *ParentHandle)
+    ACPI_NAMED_OBJECT       *ParentEntry)
 {
-    NAME_TABLE_ENTRY        *ChildHandle;
+    ACPI_NAMED_OBJECT       *ChildEntry;
     UINT32                  Level;
     ACPI_OBJECT_INTERNAL    *ObjDesc;
 
@@ -198,7 +185,7 @@ AcpiNsDeleteNamespaceSubtree (
     FUNCTION_TRACE ("NsDeleteNamespaceSubtree");
 
 
-    ChildHandle     = 0;
+    ChildEntry     = 0;
     Level           = 1;
 
     /*
@@ -210,41 +197,41 @@ AcpiNsDeleteNamespaceSubtree (
     {
         /* Get the next typed object in this scope.  Null returned if not found */
 
-        ChildHandle = AcpiNsGetNextObject (ACPI_TYPE_ANY, ParentHandle, ChildHandle);
-        if (ChildHandle)
+        ChildEntry = AcpiNsGetNextObject (ACPI_TYPE_ANY, ParentEntry, ChildEntry);
+        if (ChildEntry)
         {
             /* Found an object - delete the object within the Value field */
 
-            ObjDesc = AcpiNsGetAttachedObject (ChildHandle);
+            ObjDesc = AcpiNsGetAttachedObject (ChildEntry);
             if (ObjDesc)
             {
-                AcpiNsDetachObject (ChildHandle);
+                AcpiNsDetachObject (ChildEntry);
                 AcpiCmRemoveReference (ObjDesc);
             }
 
 
             /* Clear the NTE in case this scope is reused (e.g., a control method scope) */
 
-            ChildHandle->Type = ACPI_TYPE_ANY;
-            ChildHandle->Name = 0;
+            ChildEntry->Type = ACPI_TYPE_ANY;
+            ChildEntry->Name = 0;
 
             /* Check if this object has any children */
 
-            if (AcpiNsGetNextObject (ACPI_TYPE_ANY, ChildHandle, 0))
+            if (AcpiNsGetNextObject (ACPI_TYPE_ANY, ChildEntry, 0))
             {
                 /* There is at least one child of this object, visit the object */
 
                 Level++;
-                ParentHandle    = ChildHandle;
-                ChildHandle     = 0;
+                ParentEntry    = ChildEntry;
+                ChildEntry     = 0;
             }
 
             else
             {
                 /* There may be a name table even if there are no children */
 
-                AcpiNsDeleteScope (((NAME_TABLE_ENTRY *) ChildHandle)->Scope);
-                ((NAME_TABLE_ENTRY *) ChildHandle)->Scope = NULL;
+                AcpiNsDeleteNameTable (ChildEntry->ChildTable);
+                ChildEntry->ChildTable = NULL;
 
             }
         }
@@ -264,17 +251,17 @@ AcpiNsDeleteNamespaceSubtree (
 
             if (Level != 0)
             {
-                AcpiNsDeleteScope (((NAME_TABLE_ENTRY *) ParentHandle)->Scope);
-                ((NAME_TABLE_ENTRY *) ParentHandle)->Scope = NULL;
+                AcpiNsDeleteNameTable (ParentEntry->ChildTable);
+                ParentEntry->ChildTable = NULL;
             }
 
             /* New "last child" is this parent object */
 
-            ChildHandle = ParentHandle;
+            ChildEntry = ParentEntry;
 
             /* Now we can move up the tree to the grandparent */
 
-            ParentHandle = ParentHandle->ParentEntry;
+            ParentEntry = AcpiNsGetParentEntry (ParentEntry);
         }
     }
 
@@ -299,15 +286,15 @@ AcpiNsDeleteNamespaceSubtree (
 
 void
 AcpiNsRemoveReference (
-    NAME_TABLE_ENTRY        *Entry)
+    ACPI_NAMED_OBJECT       *Entry)
 {
-    NAME_TABLE_ENTRY        *ThisEntry;
+    ACPI_NAMED_OBJECT       *ThisEntry;
 
 
     /* There may be a name table even if there are no children */
 
-    AcpiNsDeleteScope (Entry->Scope);
-    Entry->Scope = NULL;
+    AcpiNsDeleteNameTable (Entry->ChildTable);
+    Entry->ChildTable = NULL;
 
 
     /*
@@ -327,10 +314,10 @@ AcpiNsRemoveReference (
         {
             /* Delete the scope if present */
 
-            if (ThisEntry->Scope)
+            if (ThisEntry->ChildTable)
             {
-                AcpiNsDeleteScope (ThisEntry->Scope);
-                ThisEntry->Scope = NULL;
+                AcpiNsDeleteNameTable (ThisEntry->ChildTable);
+                ThisEntry->ChildTable = NULL;
             }
 
             /* Mark the entry free  (This doesn't deallocate anything) */
@@ -341,7 +328,7 @@ AcpiNsRemoveReference (
 
         /* Move up to parent */
 
-        ThisEntry = ThisEntry->ParentEntry;
+        ThisEntry = AcpiNsGetParentEntry (ThisEntry);
     }
 }
 
@@ -364,17 +351,17 @@ ACPI_STATUS
 AcpiNsDeleteNamespaceByOwner (
     UINT16                  OwnerId)
 {
-    NAME_TABLE_ENTRY        *ChildHandle;
+    ACPI_NAMED_OBJECT       *ChildEntry;
     UINT32                  Level;
     ACPI_OBJECT_INTERNAL    *ObjDesc;
-    NAME_TABLE_ENTRY        *ParentHandle;
+    ACPI_NAMED_OBJECT       *ParentEntry;
 
 
     FUNCTION_TRACE ("NsDeleteNamespaceSubtree");
 
 
-    ParentHandle    = AcpiGbl_RootObject;
-    ChildHandle     = 0;
+    ParentEntry    = AcpiGbl_RootObject;
+    ChildEntry     = 0;
     Level           = 1;
 
     /*
@@ -386,35 +373,35 @@ AcpiNsDeleteNamespaceByOwner (
     {
         /* Get the next typed object in this scope.  Null returned if not found */
 
-        ChildHandle = AcpiNsGetNextObject (ACPI_TYPE_ANY, ParentHandle, ChildHandle);
-        if (ChildHandle)
+        ChildEntry = AcpiNsGetNextObject (ACPI_TYPE_ANY, ParentEntry, ChildEntry);
+        if (ChildEntry)
         {
-            if (ChildHandle->OwnerId == OwnerId)
+            if (ChildEntry->OwnerId == OwnerId)
             {
                 /* Found an object - delete the object within the Value field */
 
-                ObjDesc = AcpiNsGetAttachedObject (ChildHandle);
+                ObjDesc = AcpiNsGetAttachedObject (ChildEntry);
                 if (ObjDesc)
                 {
-                    AcpiNsDetachObject (ChildHandle);
+                    AcpiNsDetachObject (ChildEntry);
                     AcpiCmRemoveReference (ObjDesc);
                 }
             }
 
             /* Check if this object has any children */
 
-            if (AcpiNsGetNextObject (ACPI_TYPE_ANY, ChildHandle, 0))
+            if (AcpiNsGetNextObject (ACPI_TYPE_ANY, ChildEntry, 0))
             {
                 /* There is at least one child of this object, visit the object */
 
                 Level++;
-                ParentHandle    = ChildHandle;
-                ChildHandle     = 0;
+                ParentEntry    = ChildEntry;
+                ChildEntry     = 0;
             }
 
-            else if (ChildHandle->OwnerId == OwnerId)
+            else if (ChildEntry->OwnerId == OwnerId)
             {
-                AcpiNsRemoveReference (ChildHandle);
+                AcpiNsRemoveReference (ChildEntry);
             }
         }
 
@@ -433,20 +420,20 @@ AcpiNsDeleteNamespaceByOwner (
 
             if (Level != 0)
             {
-                if (ParentHandle->OwnerId == OwnerId)
+                if (ParentEntry->OwnerId == OwnerId)
                 {
-                    AcpiNsRemoveReference (ParentHandle);
+                    AcpiNsRemoveReference (ParentEntry);
                 }
             }
 
 
             /* New "last child" is this parent object */
 
-            ChildHandle = ParentHandle;
+            ChildEntry = ParentEntry;
 
             /* Now we can move up the tree to the grandparent */
 
-            ParentHandle = ParentHandle->ParentEntry;
+            ParentEntry = AcpiNsGetParentEntry (ParentEntry);
         }
     }
 
@@ -457,34 +444,34 @@ AcpiNsDeleteNamespaceByOwner (
 
 /****************************************************************************
  *
- * FUNCTION:    AcpiNsDeleteScope
+ * FUNCTION:    AcpiNsDeleteNameTable
  *
  * PARAMETERS:  Scope           - A handle to the scope to be deleted
  *
  * RETURN:      None.
  *
- * DESCRIPTION: Delete a namespace scope, which is a Name Table with zero or
+ * DESCRIPTION: Delete a namespace Name Table with zero or
  *              more appendages.  The table and all appendages are deleted.
  *
  ***************************************************************************/
 
 void
-AcpiNsDeleteScope (
-    ACPI_HANDLE             Scope)
+AcpiNsDeleteNameTable (
+    ACPI_NAME_TABLE         *NameTable)
 {
-    NAME_TABLE_ENTRY        *ThisTable;
-    char                    *AllocatedTable;
+    ACPI_NAME_TABLE         *ThisTable;
+    ACPI_NAME_TABLE         *NextTable;
 
 
-    FUNCTION_TRACE_PTR ("NsDeleteScope", Scope);
+    FUNCTION_TRACE_PTR ("AcpiNsDeleteNameTable", NameTable);
 
 
-    if (!Scope)
+    if (!NameTable)
     {
         return_VOID;
     }
 
-    ThisTable = (NAME_TABLE_ENTRY *) Scope;
+    ThisTable = NameTable;
 
 
     /*
@@ -492,19 +479,14 @@ AcpiNsDeleteScope (
      */
     do
     {
-        /*
-         * Create the original allocated pointer (backup to before appendage ptr),
-         * and get the next appendage pointer.  This ptr is null at end-of-list.
-         */
+        NextTable = ThisTable->NextTable;
 
-        AllocatedTable =  (((char *) ThisTable) - sizeof (NAME_TABLE_ENTRY *));
-        ThisTable = NEXTSEG (ThisTable);
-
-        DEBUG_PRINT (ACPI_INFO, ("NsDeleteScope: Deleting Name Table at %p \n", AllocatedTable));
+        DEBUG_PRINT (ACPI_INFO, ("AcpiNsDeleteNameTable: Table %p \n", ThisTable));
 
         /* Now we can free the table */
 
-        AcpiCmFree (AllocatedTable);
+        AcpiCmFree (ThisTable);
+        ThisTable = NextTable;
 
     } while (ThisTable);
 

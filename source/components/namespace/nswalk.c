@@ -144,13 +144,13 @@
  *
  ******************************************************************************/
 
-NAME_TABLE_ENTRY *
+ACPI_NAMED_OBJECT*
 AcpiNsGetNextObject (
     OBJECT_TYPE_INTERNAL    Type,
-    NAME_TABLE_ENTRY        *Parent,
-    NAME_TABLE_ENTRY        *Child)
+    ACPI_NAMED_OBJECT       *Parent,
+    ACPI_NAMED_OBJECT       *Child)
 {
-    NAME_TABLE_ENTRY        *ThisEntry;
+    ACPI_NAMED_OBJECT       *ThisEntry = NULL;
 
 
     if (!Child)
@@ -158,14 +158,17 @@ AcpiNsGetNextObject (
 
         /* It's really the parent's _scope_ that we want */
 
-        ThisEntry = Parent->Scope;
+        if (Parent->ChildTable)
+        {
+            ThisEntry = Parent->ChildTable->Entries;
+        }
     }
 
     else
     {
         /* Start search at the NEXT object */
 
-        ThisEntry = Child->NextEntry;
+        ThisEntry = AcpiNsGetNextValidEntry (Child);
     }
 
 
@@ -198,7 +201,7 @@ AcpiNsGetNextObject (
 
         /* Otherwise, move on to the next object */
 
-        ThisEntry = ThisEntry->NextEntry;
+        ThisEntry = AcpiNsGetNextValidEntry (ThisEntry);
     }
 
 
@@ -249,8 +252,8 @@ AcpiNsWalkNamespace (
     void                    **ReturnValue)
 {
     ACPI_STATUS             Status;
-    NAME_TABLE_ENTRY        *ChildHandle;
-    NAME_TABLE_ENTRY        *ParentHandle;
+    ACPI_NAMED_OBJECT       *ChildEntry;
+    ACPI_NAMED_OBJECT       *ParentEntry;
     OBJECT_TYPE_INTERNAL    ChildType;
     UINT32                  Level;
 
@@ -267,15 +270,15 @@ AcpiNsWalkNamespace (
 
     /* Null child means "get first object" */
 
-    ParentHandle    = StartObject;
-    ChildHandle     = 0;
+    ParentEntry    = StartObject;
+    ChildEntry     = 0;
     ChildType       = ACPI_TYPE_ANY;
     Level           = 1;
 
     /*
      * Traverse the tree of objects until we bubble back up to where we
      * started. When Level is zero, the loop is done because we have
-     * bubbled up to (and passed) the original parent handle (StartHandle)
+     * bubbled up to (and passed) the original parent handle (StartEntry)
      */
 
     while (Level > 0)
@@ -283,14 +286,14 @@ AcpiNsWalkNamespace (
         /* Get the next typed object in this scope.  Null returned if not found */
 
         Status = AE_OK;
-        ChildHandle = AcpiNsGetNextObject (ACPI_TYPE_ANY, ParentHandle, ChildHandle);
-        if (ChildHandle)
+        ChildEntry = AcpiNsGetNextObject (ACPI_TYPE_ANY, ParentEntry, ChildEntry);
+        if (ChildEntry)
         {
             /* Found an object, Get the type if we are not searching for ANY */
 
             if (Type != ACPI_TYPE_ANY)
             {
-                ChildType = ChildHandle->Type;
+                ChildType = ChildEntry->Type;
             }
 
             if (ChildType == Type)
@@ -300,14 +303,14 @@ AcpiNsWalkNamespace (
 
                 if (UnlockBeforeCallback)
                 {
-                    AcpiCmReleaseMutex (MTX_NAMESPACE);
+                    AcpiCmReleaseMutex (ACPI_MTX_NAMESPACE);
                 }
 
-                Status = UserFunction (ChildHandle, Level, Context, ReturnValue);
+                Status = UserFunction (ChildEntry, Level, Context, ReturnValue);
 
                 if (UnlockBeforeCallback)
                 {
-                    AcpiCmAcquireMutex (MTX_NAMESPACE);
+                    AcpiCmAcquireMutex (ACPI_MTX_NAMESPACE);
                 }
 
                 switch (Status)
@@ -335,13 +338,13 @@ AcpiNsWalkNamespace (
 
             if ((Level < MaxDepth) && (Status != AE_CTRL_DEPTH))
             {
-                if (AcpiNsGetNextObject (ACPI_TYPE_ANY, ChildHandle, 0))
+                if (AcpiNsGetNextObject (ACPI_TYPE_ANY, ChildEntry, 0))
                 {
                     /* There is at least one child of this object, visit the object */
 
                     Level++;
-                    ParentHandle    = ChildHandle;
-                    ChildHandle     = 0;
+                    ParentEntry    = ChildEntry;
+                    ChildEntry     = 0;
                 }
             }
         }
@@ -353,8 +356,8 @@ AcpiNsWalkNamespace (
              * go back upwards in the namespace tree to the object's parent.
              */
             Level--;
-            ChildHandle = ParentHandle;
-            ParentHandle = ParentHandle->ParentEntry;
+            ChildEntry = ParentEntry;
+            ParentEntry = AcpiNsGetParentEntry (ParentEntry);
         }
     }
 

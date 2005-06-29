@@ -145,7 +145,7 @@
 ACPI_STATUS
 AcpiNsParseTable (
     ACPI_TABLE_DESC         *TableDesc,
-    NAME_TABLE_ENTRY        *Scope)
+    ACPI_NAME_TABLE         *Scope)
 {
     ACPI_STATUS             Status;
 
@@ -216,7 +216,7 @@ AcpiNsParseTable (
 ACPI_STATUS
 AcpiNsLoadTable (
     ACPI_TABLE_DESC         *TableDesc,
-    NAME_TABLE_ENTRY        *Entry)
+    ACPI_NAMED_OBJECT       *Entry)
 {
     ACPI_STATUS             Status;
 
@@ -250,9 +250,9 @@ AcpiNsLoadTable (
 
     DEBUG_PRINT (ACPI_INFO, ("NsLoadTable: **** Loading table into namespace ****\n"));
 
-    AcpiCmAcquireMutex (MTX_NAMESPACE);
-    Status = AcpiNsParseTable (TableDesc, Entry->Scope);
-    AcpiCmReleaseMutex (MTX_NAMESPACE);
+    AcpiCmAcquireMutex (ACPI_MTX_NAMESPACE);
+    Status = AcpiNsParseTable (TableDesc, Entry->ChildTable);
+    AcpiCmReleaseMutex (ACPI_MTX_NAMESPACE);
 
     if (ACPI_FAILURE (Status))
     {
@@ -302,7 +302,7 @@ AcpiNsLoadTableByType (
     FUNCTION_TRACE ("NsLoadTableByType");
 
 
-    AcpiCmAcquireMutex (MTX_TABLES);
+    AcpiCmAcquireMutex (ACPI_MTX_TABLES);
 
 
     /*
@@ -313,11 +313,11 @@ AcpiNsLoadTableByType (
     switch (TableType)
     {
 
-    case TABLE_DSDT:
+    case ACPI_TABLE_DSDT:
 
         DEBUG_PRINT (ACPI_INFO, ("NsLoadTableByType: Loading DSDT\n"));
 
-        TableDesc = &AcpiGbl_AcpiTables[TABLE_DSDT];
+        TableDesc = &AcpiGbl_AcpiTables[ACPI_TABLE_DSDT];
 
         /* If table already loaded into namespace, just return */
 
@@ -347,17 +347,17 @@ AcpiNsLoadTableByType (
         break;
 
 
-    case TABLE_SSDT:
+    case ACPI_TABLE_SSDT:
 
         DEBUG_PRINT (ACPI_INFO, ("NsLoadTableByType: Loading %d SSDTs\n",
-                        AcpiGbl_AcpiTables[TABLE_SSDT].Count));
+                        AcpiGbl_AcpiTables[ACPI_TABLE_SSDT].Count));
 
         /*
          * Traverse list of SSDT tables
          */
 
-        TableDesc = &AcpiGbl_AcpiTables[TABLE_SSDT];
-        for (i = 0; i < AcpiGbl_AcpiTables[TABLE_SSDT].Count; i++)
+        TableDesc = &AcpiGbl_AcpiTables[ACPI_TABLE_SSDT];
+        for (i = 0; i < AcpiGbl_AcpiTables[ACPI_TABLE_SSDT].Count; i++)
         {
             TablePtr = TableDesc->Pointer;
 
@@ -380,17 +380,17 @@ AcpiNsLoadTableByType (
         break;
 
 
-    case TABLE_PSDT:
+    case ACPI_TABLE_PSDT:
 
         DEBUG_PRINT (ACPI_INFO, ("NsLoadTableByType: Loading %d PSDTs\n",
-                        AcpiGbl_AcpiTables[TABLE_PSDT].Count));
+                        AcpiGbl_AcpiTables[ACPI_TABLE_PSDT].Count));
 
         /*
          * Traverse list of PSDT tables
          */
 
-        TableDesc = &AcpiGbl_AcpiTables[TABLE_PSDT];
-        for (i = 0; i < AcpiGbl_AcpiTables[TABLE_PSDT].Count ; i++)
+        TableDesc = &AcpiGbl_AcpiTables[ACPI_TABLE_PSDT];
+        for (i = 0; i < AcpiGbl_AcpiTables[ACPI_TABLE_PSDT].Count; i++)
         {
             TablePtr = TableDesc->Pointer;
 
@@ -420,7 +420,7 @@ AcpiNsLoadTableByType (
 
 UnlockAndExit:
 
-    AcpiCmReleaseMutex (MTX_TABLES);
+    AcpiCmReleaseMutex (ACPI_MTX_TABLES);
 
     return_ACPI_STATUS (Status);
 
@@ -442,7 +442,7 @@ UnlockAndExit:
 
 void
 AcpiNsFreeTableEntry (
-    NAME_TABLE_ENTRY        *Entry)
+    ACPI_NAMED_OBJECT       *Entry)
 {
     FUNCTION_TRACE ("NsFreeTableEntry");
 
@@ -458,10 +458,10 @@ AcpiNsFreeTableEntry (
      * 2) An attached object, if any
      */
 
-    if (Entry->Scope)
+    if (Entry->ChildTable)
     {
-        AcpiCmFree (Entry->Scope);
-        Entry->Scope = NULL;
+        AcpiCmFree (Entry->ChildTable);
+        Entry->ChildTable = NULL;
     }
 
     if (Entry->Object)
@@ -469,20 +469,6 @@ AcpiNsFreeTableEntry (
         AcpiNsDetachObject (Entry->Object);
         Entry->Object = NULL;
     }
-
-
-    /* Unlink the NTE from the table */
-
-    if (Entry->PrevEntry)
-    {
-        Entry->PrevEntry->NextEntry = Entry->NextEntry;
-    }
-
-    if (Entry->NextEntry)
-    {
-        Entry->NextEntry->PrevEntry = Entry->PrevEntry;
-    }
-
 
     /* Mark the entry unallocated */
 
@@ -578,7 +564,7 @@ AcpiNsDeleteSubtree (
 
     /* Now delete the starting object, and we are done */
 
-    AcpiNsFreeTableEntry ((NAME_TABLE_ENTRY *) ChildHandle);
+    AcpiNsFreeTableEntry ((ACPI_NAMED_OBJECT*) ChildHandle);
 
 
     return_ACPI_STATUS (AE_OK);
@@ -611,7 +597,7 @@ AcpiNsUnloadNamespace (
 
     /* Parameter validation */
 
-    if (!AcpiGbl_RootObject->Scope)
+    if (!AcpiGbl_RootObject->ChildTable)
     {
         return_ACPI_STATUS (AE_NO_NAMESPACE);
     }

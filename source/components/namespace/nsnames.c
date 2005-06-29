@@ -130,7 +130,7 @@
  *
  * FUNCTION:    AcpiNsNameOfScope
  *
- * PARAMETERS:  *EntryToSearch          - Scope whose name is needed
+ * PARAMETERS:  Scope           - Scope whose name is needed
  *
  * RETURN:      Pointer to storage containing the fully qualified name of
  *              the scope, in Label format (all segments strung together
@@ -144,18 +144,19 @@
 
 char *
 AcpiNsNameOfScope (
-    NAME_TABLE_ENTRY        *EntryToSearch)
+    ACPI_NAME_TABLE         *Scope)
 {
-    NAME_TABLE_ENTRY        *Temp = NULL;
     char                    *NameBuffer;
     ACPI_SIZE               Size;
     ACPI_NAME               Name;
+    ACPI_NAMED_OBJECT       *EntryToSearch;
+    ACPI_NAMED_OBJECT       *ParentEntry;
 
 
     FUNCTION_TRACE ("NsNameOfScope");
 
 
-    if (!AcpiGbl_RootObject->Scope || !EntryToSearch)
+    if (!AcpiGbl_RootObject->ChildTable || !Scope)
     {
         /*
          * If the name space has not been initialized,
@@ -164,13 +165,20 @@ AcpiNsNameOfScope (
         return_PTR (NULL);
     }
 
+    EntryToSearch = Scope->Entries;
+
+
     /* Calculate required buffer size based on depth below root NT */
 
-    for (Size = 1, Temp = EntryToSearch;
-            Temp->ParentEntry;
-            Temp = Temp->ParentEntry)
-    {
-        Size += ACPI_NAME_SIZE;
+    Size = 1;
+    ParentEntry = EntryToSearch;
+    while (ParentEntry)
+    {            
+        ParentEntry = AcpiNsGetParentEntry (ParentEntry);
+        if (ParentEntry)
+        {
+            Size += ACPI_NAME_SIZE;
+        }
     }
 
 
@@ -187,7 +195,7 @@ AcpiNsNameOfScope (
     /* Store terminator byte, then build name backwards */
 
     NameBuffer[Size] = '\0';
-    while ((Size > ACPI_NAME_SIZE) && EntryToSearch->ParentEntry)
+    while ((Size > ACPI_NAME_SIZE) && AcpiNsGetParentEntry (EntryToSearch))
     {
         Size -= ACPI_NAME_SIZE;
         Name = AcpiNsFindParentName (EntryToSearch);
@@ -195,7 +203,7 @@ AcpiNsNameOfScope (
         /* Put the name into the buffer */
 
         MOVE_UNALIGNED32_TO_32 ((NameBuffer + Size), &Name);
-        EntryToSearch = EntryToSearch->ParentEntry;
+        EntryToSearch = AcpiNsGetParentEntry (EntryToSearch);
     }
 
     NameBuffer[--Size] = AML_ROOT_PREFIX;
@@ -231,7 +239,7 @@ AcpiNsNameOfCurrentScope (
 
     if (WalkState && WalkState->ScopeInfo)
     {
-        ScopeName = AcpiNsNameOfScope (WalkState->ScopeInfo->Scope.Entry);
+        ScopeName = AcpiNsNameOfScope (WalkState->ScopeInfo->Scope.NameTable);
         return_PTR (ScopeName);
     }
 
@@ -264,8 +272,8 @@ AcpiNsHandleToPathname (
     char                    *UserBuffer)
 {
     ACPI_STATUS             Status = AE_OK;
-    NAME_TABLE_ENTRY        *EntryToSearch = NULL;
-    NAME_TABLE_ENTRY        *Temp = NULL;
+    ACPI_NAMED_OBJECT       *EntryToSearch = NULL;
+    ACPI_NAMED_OBJECT       *Temp = NULL;
     ACPI_SIZE               PathLength = 0;
     ACPI_SIZE               Size;
     UINT32                  UserBufSize;
@@ -276,7 +284,7 @@ AcpiNsHandleToPathname (
     FUNCTION_TRACE_PTR ("NsHandleToPathname", TargetHandle);
 
 
-    if (!AcpiGbl_RootObject->Scope || !TargetHandle)
+    if (!AcpiGbl_RootObject->ChildTable || !TargetHandle)
     {
         /*
          * If the name space has not been initialized,
@@ -286,10 +294,10 @@ AcpiNsHandleToPathname (
         return_ACPI_STATUS (AE_NO_NAMESPACE);
     }
 
-    NamespaceWasLocked = AcpiGbl_AcpiMutexInfo[MTX_NAMESPACE].Locked;
+    NamespaceWasLocked = AcpiGbl_AcpiMutexInfo[ACPI_MTX_NAMESPACE].Locked;
     if (!NamespaceWasLocked)
     {
-        AcpiCmAcquireMutex (MTX_NAMESPACE);
+        AcpiCmAcquireMutex (ACPI_MTX_NAMESPACE);
     }
 
     EntryToSearch = AcpiNsConvertHandleToEntry (TargetHandle);
@@ -303,8 +311,8 @@ AcpiNsHandleToPathname (
      * Go back up the parent tree to the root
      */
     for (Size = 0, Temp = EntryToSearch;
-          Temp->ParentEntry;
-          Temp = Temp->ParentEntry)
+          AcpiNsGetParentEntry (Temp);
+          Temp = AcpiNsGetParentEntry (Temp))
     {
         Size += PATH_SEGMENT_LENGTH;
     }
@@ -325,7 +333,7 @@ AcpiNsHandleToPathname (
 
     /* Store null terminator */
 
-    UserBuffer[Size] = '\0';
+    UserBuffer[Size] = 0;
     Size -= ACPI_NAME_SIZE;
 
     /* Put the original ACPI name at the end of the path */
@@ -342,7 +350,7 @@ AcpiNsHandleToPathname (
         MOVE_UNALIGNED32_TO_32 ((UserBuffer + Size), &Name);
 
         UserBuffer[--Size] = PATH_SEPARATOR;
-        EntryToSearch = EntryToSearch->ParentEntry;
+        EntryToSearch = AcpiNsGetParentEntry (EntryToSearch);
     }
 
     /* Overlay the "." preceding the first segment with the root name "\" */
@@ -357,7 +365,7 @@ UnlockAndExit:
 
     if (!NamespaceWasLocked)
     {
-        AcpiCmReleaseMutex (MTX_NAMESPACE);
+        AcpiCmReleaseMutex (ACPI_MTX_NAMESPACE);
     }
 
     return_ACPI_STATUS (Status);
@@ -379,7 +387,7 @@ UnlockAndExit:
 
 BOOLEAN
 AcpiNsPatternMatch (
-    NAME_TABLE_ENTRY        *ObjEntry,
+    ACPI_NAMED_OBJECT       *ObjEntry,
     char                    *SearchFor)
 {
     INT32                   i;
@@ -428,14 +436,14 @@ AcpiNsNameCompare (
 
     /* Match, yes or no? */
 
-    if (AcpiNsPatternMatch ((NAME_TABLE_ENTRY *) ObjHandle, Find->SearchFor))
+    if (AcpiNsPatternMatch ((ACPI_NAMED_OBJECT*) ObjHandle, Find->SearchFor))
     {
         /* Name matches pattern */
 
         if (Find->List)
         {
             DEBUG_PRINT (TRACE_NAMES, ("FindName: Match found: %.4s\n",
-                            &((NAME_TABLE_ENTRY *) ObjHandle)->Name));
+                            &((ACPI_NAMED_OBJECT*) ObjHandle)->Name));
 
             Find->List[*(Find->Count)] = ObjHandle;
         }
@@ -470,7 +478,7 @@ AcpiNsNameCompare (
 
 void
 AcpiNsLowFindNames (
-    NAME_TABLE_ENTRY        *ThisEntry,
+    ACPI_NAMED_OBJECT       *ThisEntry,
     char                    *SearchFor,
     INT32                   *Count,
     ACPI_HANDLE             List[],
@@ -550,7 +558,7 @@ AcpiNsFindNames (
     FUNCTION_TRACE ("NsFindNames");
 
 
-    if (!AcpiGbl_RootObject->Scope)
+    if (!AcpiGbl_RootObject->ChildTable)
     {
         /*
          * If the name space has not been initialized,
@@ -566,11 +574,11 @@ AcpiNsFindNames (
         StartHandle = AcpiGbl_RootObject;
     }
 
-    else if (((NAME_TABLE_ENTRY *) StartHandle)->Scope)
+    else if (((ACPI_NAMED_OBJECT *) StartHandle)->ChildTable)
     {
         /* base has children to search */
 
-        StartHandle = ((NAME_TABLE_ENTRY *) StartHandle)->Scope;
+        StartHandle = ((ACPI_NAMED_OBJECT *) StartHandle)->ChildTable->Entries;
     }
 
     else
