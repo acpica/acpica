@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exstorob - AML Interpreter object store support, store to object
- *              $Revision: 1.46 $
+ *              $Revision: 1.47 $
  *
  *****************************************************************************/
 
@@ -157,10 +157,11 @@ AcpiExStoreBufferToBuffer (
     Length = SourceDesc->Buffer.Length;
 
     /*
-     * If target is a buffer of length zero, allocate a new
-     * buffer of the proper length
+     * If target is a buffer of length zero or is a static buffer,
+     * allocate a new buffer of the proper length
      */
-    if (TargetDesc->Buffer.Length == 0)
+    if ((TargetDesc->Buffer.Length == 0) ||
+        (TargetDesc->Common.Flags & AOPOBJ_STATIC_POINTER))
     {
         TargetDesc->Buffer.Pointer = ACPI_MEM_ALLOCATE (Length);
         if (!TargetDesc->Buffer.Pointer)
@@ -168,6 +169,7 @@ AcpiExStoreBufferToBuffer (
             return (AE_NO_MEMORY);
         }
 
+        TargetDesc->Common.Flags &= ~AOPOBJ_STATIC_POINTER;
         TargetDesc->Buffer.Length = Length;
     }
 
@@ -233,12 +235,14 @@ AcpiExStoreStringToString (
     Length = SourceDesc->String.Length;
 
     /*
-     * Setting a string value replaces the old string
+     * Replace existing string value if it will fit and the string
+     * pointer is not a static pointer (part of an ACPI table)
      */
-    if (Length < TargetDesc->String.Length)
+    if ((Length < TargetDesc->String.Length) &&
+       (!(TargetDesc->Common.Flags & AOPOBJ_STATIC_POINTER)))
     {
         /* 
-         * String will fit in existing buffer.
+         * String will fit in existing non-static buffer.
          * Clear old string and copy in the new one 
          */
         ACPI_MEMSET (TargetDesc->String.Pointer, 0, (ACPI_SIZE) TargetDesc->String.Length + 1);
@@ -265,6 +269,7 @@ AcpiExStoreStringToString (
             return (AE_NO_MEMORY);
         }
 
+        TargetDesc->Common.Flags &= ~AOPOBJ_STATIC_POINTER;
         ACPI_MEMCPY (TargetDesc->String.Pointer, Buffer, Length);
     }
 
