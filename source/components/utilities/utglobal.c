@@ -670,6 +670,11 @@ AcpiCmInitGlobals (ACPI_INIT_DATA *InitData)
     AcpiGbl_ParseCacheRequests          = 0;
     AcpiGbl_ParseCacheHits              = 0;
 
+    AcpiGbl_ExtParseCache               = NULL;
+    AcpiGbl_ExtParseCacheDepth          = 0;
+    AcpiGbl_ExtParseCacheRequests       = 0;
+    AcpiGbl_ExtParseCacheHits           = 0;
+
     AcpiGbl_ObjectCache                 = NULL;
     AcpiGbl_ObjectCacheDepth            = 0;
     AcpiGbl_ObjectCacheRequests         = 0;
