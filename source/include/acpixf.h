@@ -1,7 +1,7 @@
 
 /******************************************************************************
  *
- * Name: acapi.h - external interfaces to the ACPI subsystem
+ * Name: acxface.h - External interfaces to the ACPI subsystem
  *
  *****************************************************************************/
 
@@ -115,8 +115,8 @@
  *****************************************************************************/
 
 
-#ifndef __ACAPI_H__
-#define __ACAPI_H__
+#ifndef __ACXFACE_H__
+#define __ACXFACE_H__
 
 #include "actypes.h"
 #include "actables.h"
@@ -387,4 +387,4 @@ AcpiProcessorSleep (
     UINT32                  *PmTimerTicks);
 
 
-#endif /* __ACAPI_H__ */
+#endif /* __ACXFACE_H__ */
