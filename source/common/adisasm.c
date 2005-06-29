@@ -184,7 +184,7 @@ AcpiDsMethodDataInitArgs (
     return (AE_OK);
 }
 
-void *
+ACPI_OPERAND_OBJECT *
 AcpiNsGetAttachedObject (
     ACPI_NAMESPACE_NODE     *Node)
 {
