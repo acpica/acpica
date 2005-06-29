@@ -204,6 +204,14 @@ AcpiGetContainingScope (
     NsHandle            Handle,
     NsHandle            *OutHandle);
 
+ACPI_STATUS
+AcpiWalkNamespace (
+    NsType              Type, 
+    NsHandle            StartHandle, 
+    UINT32              MaxDepth,
+    void *              (* UserFunction)(NsHandle,UINT32,void *), 
+    void                *Context, 
+    void *              *ReturnValue);
 
 /*
  * Device/hardware interfaces
