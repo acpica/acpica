@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asllength - Tree walk to determine package and opcode lengths
- *              $Revision: 1.2 $
+ *              $Revision: 1.4 $
  *
  *****************************************************************************/
 
@@ -119,8 +119,11 @@
 #include "AslCompiler.h"
 #include "AslCompiler.y.h"
 #include "amlcode.h"
+#include "acnamesp.h"
 
 
+#define _COMPONENT          MISCELLANEOUS
+        MODULE_NAME         ("asllength")
 
 /*******************************************************************************
  *
@@ -143,7 +146,7 @@ CgAmlPackageLengthWalk (
 
 
 
-    /* TBD Do an "init nodes" walk */
+    /* TBD Do an "init nodes" walk ?? */
 /*
     Node->AmlLength = 0;
     Node->AmlOpcodeLength = 0;
@@ -180,7 +183,7 @@ CgAmlPackageLengthWalk (
  ******************************************************************************/
 
 BOOLEAN
-AcpiNsValidRootPrefix (
+xxxAcpiNsValidRootPrefix (
     NATIVE_CHAR             Prefix)
 {
 
@@ -201,7 +204,7 @@ AcpiNsValidRootPrefix (
  ******************************************************************************/
 
 BOOLEAN
-AcpiNsValidPathSeparator (
+xxxAcpiNsValidPathSeparator (
     NATIVE_CHAR             Sep)
 {
 
@@ -222,7 +225,7 @@ AcpiNsValidPathSeparator (
  ******************************************************************************/
 
 ACPI_STATUS
-AcpiNsInternalizeName (
+xxxAcpiNsInternalizeName (
     NATIVE_CHAR             *ExternalName,
     NATIVE_CHAR             **ConvertedName)
 {
@@ -292,12 +295,7 @@ AcpiNsInternalizeName (
 
     /* We need a segment to store the internal version of the name */
 
-    InternalName = calloc ((ACPI_NAME_SIZE * NumSegments) + 4 + NumCarats, 1);
-    if (!InternalName)
-    {
-        DbgPrint ("Error - insufficient memory\n");
-        return_ACPI_STATUS (AE_NO_MEMORY);
-    }
+    InternalName = UtLocalCalloc ((ACPI_NAME_SIZE * NumSegments) + 4 + NumCarats);
 
     /* Setup the correct prefixes, counts, and pointers */
 
@@ -436,6 +434,7 @@ AcpiNsInternalizeName (
 
 UINT8
 CgGetPackageLenByteCount (
+    ASL_PARSE_NODE          *Node,
     UINT32                  PackageLength)
 {
 
@@ -464,7 +463,7 @@ CgGetPackageLenByteCount (
     {
         /* Fatal error - the package length is too large to encode */
 
-        AslError (ASL_ERROR_ENCODING_LENGTH );
+        AslError (ASL_ERROR_ENCODING_LENGTH, Node->LineNumber);
     }
 
     return (0);
@@ -507,7 +506,7 @@ CgGenerateAmlOpcodeLength (
     Node->AmlPkgLenBytes = 0;
     if (Node->Flags & NODE_AML_PACKAGE)
     {
-        Node->AmlPkgLenBytes = CgGetPackageLenByteCount (Node->AmlSubtreeLength);
+        Node->AmlPkgLenBytes = CgGetPackageLenByteCount (Node, Node->AmlSubtreeLength);
     }
 
     switch (Node->AmlOpcode)
@@ -588,6 +587,7 @@ CgGenerateAmlLengths (
     case NAMESEG:
         Node->AmlOpcodeLength = 0;
         Node->AmlLength = 4;
+        Node->ExternalName = Node->Value.String;
         break;
 
     case NAMESTRING:
@@ -599,7 +599,7 @@ CgGenerateAmlLengths (
             break;
         }
 
-        free (Node->Value.String);
+        Node->ExternalName = Node->Value.String;
         Node->Value.String = Buffer;
 
         Node->AmlLength = strlen (Buffer);
@@ -621,7 +621,7 @@ CgGenerateAmlLengths (
 
     case PACKAGE_LENGTH:
         Node->AmlOpcodeLength = 0;
-        Node->AmlPkgLenBytes = CgGetPackageLenByteCount (Node->Value.Integer32);
+        Node->AmlPkgLenBytes = CgGetPackageLenByteCount (Node, Node->Value.Integer32);
         break;
 
     case RAW_DATA:
