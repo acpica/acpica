@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dsmethod - Parser/Interpreter interface - control method parsing
- *              $Revision: 1.67 $
+ *              $Revision: 1.68 $
  *
  *****************************************************************************/
 
@@ -222,7 +222,7 @@ AcpiDsParseMethod (
     }
 
     Status = AcpiDsInitAmlWalk (WalkState, Op, Node, ObjDesc->Method.AmlStart, 
-                    ObjDesc->Method.AmlLength, 1);
+                    ObjDesc->Method.AmlLength, NULL, NULL, 1);
     if (ACPI_FAILURE (Status))
     {
         /* TBD: delete walk state */
@@ -411,8 +411,9 @@ AcpiDsCallControlMethod (
         goto Cleanup;
     }
 
-    Status = AcpiDsInitAmlWalk (NextWalkState, Op, MethodNode, ObjDesc->Method.AmlStart, 
-                    ObjDesc->Method.AmlLength, 1);
+    Status = AcpiDsInitAmlWalk (NextWalkState, Op, MethodNode, 
+                    ObjDesc->Method.AmlStart,  ObjDesc->Method.AmlLength, 
+                    NULL, NULL, 1);
     if (ACPI_FAILURE (Status))
     {
         /* TBD: delete walk state */
@@ -435,20 +436,17 @@ AcpiDsCallControlMethod (
         goto Cleanup;
     }
 
-    Status = AcpiDsInitAmlWalk (NextWalkState, NULL, MethodNode, ObjDesc->Method.AmlStart,
-                    ObjDesc->Method.AmlLength, 3);
-
     /*
-     * Initialize the arguments for the method.  The resolved
-     * arguments were put on the previous walk state's operand
+     * The resolved arguments were put on the previous walk state's operand
      * stack.  Operands on the previous walk state stack always
      * start at index 0.
-     *
-     * TBD: make common code between Params (external) and internal call!
+     * Null terminate the list of arguments 
      */
-    Status = AcpiDsMethodDataInitArgs (&ThisWalkState->Operands[0],
-                                        ThisWalkState->NumOperands,
-                                        NextWalkState);
+    ThisWalkState->Operands [ThisWalkState->NumOperands] = NULL;
+
+    Status = AcpiDsInitAmlWalk (NextWalkState, NULL, MethodNode, 
+                    ObjDesc->Method.AmlStart, ObjDesc->Method.AmlLength, 
+                    &ThisWalkState->Operands[0], NULL, 3);
     if (ACPI_FAILURE (Status))
     {
         goto Cleanup;
