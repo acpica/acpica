@@ -187,7 +187,7 @@ NsGetType (
         /*  Handle invalid  */
 
         REPORT_WARNING ("NsGetType: Null handle");
-        return_VALUE (TYPE_Any);
+        return_VALUE (ACPI_TYPE_Any);
     }
 
     return_VALUE (((NAME_TABLE_ENTRY *) handle)->Type);
@@ -274,7 +274,7 @@ NsInternalizeName (
         DottedName++;
     }
 
-    Length = strlen (DottedName);
+    Length = STRLEN (DottedName);
     NumSegments = (Length + 1) / PATH_SEGMENT_LENGTH;    /* Number of NameSegs in the path */
 
     /* Name must be at least 4 characters */
@@ -324,7 +324,7 @@ NsInternalizeName (
 
     for (; NumSegments; NumSegments--)
     {
-        strncpy (Result, DottedName, ACPI_NAME_SIZE);
+        STRNCPY (Result, DottedName, ACPI_NAME_SIZE);
         Result += ACPI_NAME_SIZE;
         DottedName += PATH_SEGMENT_LENGTH;
     }
@@ -384,11 +384,15 @@ NsConvertHandleToEntry (
         return Gbl_RootObject;
     }
 
+
+/* TBD: No longer needed ???
+
     if (Handle == ACPI_ROOT_SCOPE)
     {
         return (NAME_TABLE_ENTRY *) Gbl_RootObject->Scope;
     }
 
+*/
 
     return (NAME_TABLE_ENTRY *) Handle;
 }
@@ -427,10 +431,15 @@ NsConvertEntryToHandle(NAME_TABLE_ENTRY *Nte)
         return ACPI_ROOT_OBJECT;
     }
 
+
+/* TBD: no longer needed ??
+
     if (Nte == Gbl_RootObject->Scope)
     {
         return ACPI_ROOT_SCOPE;
     }
+*/
+
 
     return (ACPI_HANDLE) Nte;
 }
