@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: actbl1.h - ACPI 1.0 tables
- *       $Revision: 1.14 $
+ *       $Revision: 1.15 $
  *
  *****************************************************************************/
 
@@ -119,8 +119,10 @@
 
 #pragma pack(1)
 
-/* ACPI V1.0 Root System Description Table */
-
+/*************************************/
+/* ACPI Specification Rev 1.0 for    */
+/* the Root System Description Table */
+/*************************************/
 typedef struct
 {
     ACPI_TABLE_HEADER       header;                 /* Table header */
@@ -129,8 +131,10 @@ typedef struct
 } RSDT_DESCRIPTOR_REV1;
 
 
-/* ACPI V1.0 Firmware ACPI Control Structure */
-
+/***************************************/
+/* ACPI Specification Rev 1.0 for      */
+/* the Firmware ACPI Control Structure */
+/***************************************/
 typedef struct
 {
     NATIVE_CHAR             Signature[4];           /* signature "FACS" */
@@ -145,29 +149,31 @@ typedef struct
 } FACS_DESCRIPTOR_REV1;
 
 
-/* ACPI V1.0 Fixed ACPI Description Table */
-
+/************************************/
+/* ACPI Specification Rev 1.0 for   */
+/* the Fixed ACPI Description Table */
+/************************************/
 typedef struct
 {
     ACPI_TABLE_HEADER       header;                 /* table header */
-    ACPI_TBLPTR             FirmwareCtrl;           /* Physical address of FACS */
-    ACPI_TBLPTR             Dsdt;                   /* Physical address of DSDT */
+    UINT32                  FirmwareCtrl;           /* Physical address of FACS */
+    UINT32                  Dsdt;                   /* Physical address of DSDT */
     UINT8                   Model;                  /* System Interrupt Model */
     UINT8                   Reserved1;              /* reserved */
     UINT16                  SciInt;                 /* System vector of SCI interrupt */
-    ACPI_IO_ADDRESS         SmiCmd;                 /* Port address of SMI command port */
+    UINT32                  SmiCmd;                 /* Port address of SMI command port */
     UINT8                   AcpiEnable;             /* value to write to smi_cmd to enable ACPI */
     UINT8                   AcpiDisable;            /* value to write to smi_cmd to disable ACPI */
     UINT8                   S4BiosReq;              /* Value to write to SMI CMD to enter S4BIOS state */
     UINT8                   Reserved2;              /* reserved - must be zero */
-    ACPI_IO_ADDRESS         Pm1aEvtBlk;             /* Port address of Power Mgt 1a AcpiEvent Reg Blk */
-    ACPI_IO_ADDRESS         Pm1bEvtBlk;             /* Port address of Power Mgt 1b AcpiEvent Reg Blk */
-    ACPI_IO_ADDRESS         Pm1aCntBlk;             /* Port address of Power Mgt 1a Control Reg Blk */
-    ACPI_IO_ADDRESS         Pm1bCntBlk;             /* Port address of Power Mgt 1b Control Reg Blk */
-    ACPI_IO_ADDRESS         Pm2CntBlk;              /* Port address of Power Mgt 2 Control Reg Blk */
-    ACPI_IO_ADDRESS         PmTmrBlk;               /* Port address of Power Mgt Timer Ctrl Reg Blk */
-    ACPI_IO_ADDRESS         Gpe0Blk;                /* Port addr of General Purpose AcpiEvent 0 Reg Blk */
-    ACPI_IO_ADDRESS         Gpe1Blk;                /* Port addr of General Purpose AcpiEvent 1 Reg Blk */
+    UINT32                  Pm1aEvtBlk;             /* Port address of Power Mgt 1a AcpiEvent Reg Blk */
+    UINT32                  Pm1bEvtBlk;             /* Port address of Power Mgt 1b AcpiEvent Reg Blk */
+    UINT32                  Pm1aCntBlk;             /* Port address of Power Mgt 1a Control Reg Blk */
+    UINT32                  Pm1bCntBlk;             /* Port address of Power Mgt 1b Control Reg Blk */
+    UINT32                  Pm2CntBlk;              /* Port address of Power Mgt 2 Control Reg Blk */
+    UINT32                  PmTmrBlk;               /* Port address of Power Mgt Timer Ctrl Reg Blk */
+    UINT32                  Gpe0Blk;                /* Port addr of General Purpose AcpiEvent 0 Reg Blk */
+    UINT32                  Gpe1Blk;                /* Port addr of General Purpose AcpiEvent 1 Reg Blk */
     UINT8                   Pm1EvtLen;              /* Byte Length of ports at pm1X_evt_blk */
     UINT8                   Pm1CntLen;              /* Byte Length of ports at pm1X_cnt_blk */
     UINT8                   Pm2CntLen;              /* Byte Length of ports at pm2_cnt_blk */
