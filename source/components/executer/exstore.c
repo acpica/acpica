@@ -121,6 +121,7 @@
 #include <interp.h>
 #include <amlcode.h>
 #include <namesp.h>
+#include <tables.h>
 
 
 #define _COMPONENT          INTERPRETER
