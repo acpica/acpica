@@ -363,16 +363,22 @@ typedef struct /* MUTEX */
 
 } ACPI_OBJECT_Mutex;
 
+/*  Flags for Region */
+
+#define INITIAL_REGION_FLAGS        0x0000  /* value set when the region is created */
+#define REGION_AGRUMENT_DATA_VALID  0x0001  /* Addr/Len are set */
+#define REGION_INITIALIZED          0x0002  /* region init handler has been called */
+                                            /* this includes _REG method, if any */
 
 typedef struct /* REGION */
 {
     ACPI_OBJECT_COMMON
 
     UINT16                  SpaceId;
-    UINT16                  DataValid;          /* 1 => Addr/Len are set */
+    UINT16                  RegionFlags;        /* bits defined above */
     UINT32                  Address;
     UINT32                  Length;
-    UINT32                  RegionData;         /* Region Specific data (PCI _ADR) */
+    UINT32                  Reserved4;          /* Region Specific data (PCI _ADR) */
 
     union AcpiObjInternal  *Method;             /* Associated control method */
     union AcpiObjInternal  *AddrHandler;        /* Handler for system notifies */
@@ -514,7 +520,7 @@ typedef struct /* NOTIFY HANDLER */
 
 /* Flags for address handler */
 
-#define AH_DEFAULT_HANDLER  0x1
+#define ADDR_HANDLER_DEFAULT_INSTALLED  0x1
 
 typedef struct /* ADDRESS HANDLER */
 {
@@ -523,7 +529,7 @@ typedef struct /* ADDRESS HANDLER */
     UINT16                  SpaceId;
     UINT16                  Hflags;
     ADDRESS_SPACE_HANDLER   Handler;
-    REGION_INIT_ROUTINE     RegionStartStopFunction;
+    REGION_SETUP_FUNCTION   RegionSetupFunction;
     UINT32                  Reserved4;
 
     NAME_TABLE_ENTRY        *Nte;               /* Parent device */
@@ -560,8 +566,6 @@ typedef struct /* Reference - Local object type */
 } ACPI_OBJECT_Reference;
 
 
-
-
 /******************************************************************************
  * 
  * ACPI_OBJECT_INTERNAL Descriptor - a giant union of all of the above
@@ -592,8 +596,5 @@ typedef union AcpiObjInternal
     ACPI_OBJECT_AddrHandler     AddrHandler;
 
 } ACPI_OBJECT_INTERNAL;
-
-
-
 
 #endif /* _ACOBJECT_H */
