@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dswload - Dispatcher namespace load callbacks
- *              $Revision: 1.93 $
+ *              $Revision: 1.94 $
  *
  *****************************************************************************/
 
@@ -606,7 +606,7 @@ AcpiDsLoad2BeginOp (
                 }
                 else
                 {
-                    ACPI_DEBUG_PRINT ((ACPI_DB_DISPATCH, 
+                    ACPI_DEBUG_PRINT ((ACPI_DB_DISPATCH,
                         "Begin/EXEC: %s (fl %8.8X)\n", WalkState->OpInfo->Name,
                         WalkState->OpInfo->Flags));
 
@@ -620,7 +620,7 @@ AcpiDsLoad2BeginOp (
         }
 
         /* Get the name we are going to enter or lookup in the namespace */
-        
+
         if (WalkState->Opcode == AML_INT_NAMEPATH_OP)
         {
             /* For Namepath op, get the path string */
@@ -878,7 +878,7 @@ AcpiDsLoad2EndOp (
         {
             if (AcpiGbl_EnableInterpreterSlack)
             {
-                ACPI_DEBUG_PRINT ((ACPI_DB_DISPATCH, 
+                ACPI_DEBUG_PRINT ((ACPI_DB_DISPATCH,
                     "End/EXEC:   %s (fl %8.8X)\n", WalkState->OpInfo->Name,
                     WalkState->OpInfo->Flags));
 
@@ -889,7 +889,7 @@ AcpiDsLoad2EndOp (
             }
         }
 #endif
-        return_ACPI_STATUS (AE_OK);        
+        return_ACPI_STATUS (AE_OK);
     }
 
     if (Op->Common.AmlOpcode == AML_SCOPE_OP)
@@ -1166,11 +1166,5 @@ Cleanup:
     WalkState->NumOperands = 0;
     return_ACPI_STATUS (Status);
 }
-
-
-
-
-
-
 
 
