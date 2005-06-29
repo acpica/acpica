@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: actypes.h - Common data types for the entire ACPI subsystem
- *       $Revision: 1.243 $
+ *       $Revision: 1.245 $
  *
  *****************************************************************************/
 
@@ -276,6 +276,11 @@ typedef UINT8                           u8;
 typedef UINT16                          u16;
 typedef UINT32                          u32;
 typedef UINT64                          u64;
+typedef ACPI_PHYSICAL_ADDRESS           acpi_physical_address;
+typedef ACPI_IO_ADDRESS                 acpi_io_address;
+typedef ACPI_SIZE                       acpi_size;
+typedef ACPI_TBLPTR                     acpi_tblptr;
+
 #endif
 /*! [End] no source code translation !*/
 
@@ -720,7 +725,7 @@ typedef union AcpiObj
     {
         ACPI_OBJECT_TYPE            Type;
         UINT32                      Length;     /* # of bytes in string, excluding trailing null */
-        NATIVE_CHAR                 *Pointer;   /* points to the string value */
+        char                        *Pointer;   /* points to the string value */
     } String;
 
     struct
@@ -926,8 +931,8 @@ typedef struct
     ACPI_COMMON_OBJ_INFO;
 
     UINT32                      Valid;              /*  Are the next bits legit? */
-    NATIVE_CHAR                 HardwareId[9];      /*  _HID value if any */
-    NATIVE_CHAR                 UniqueId[9];        /*  _UID value if any */
+    char                        HardwareId[9];      /*  _HID value if any */
+    char                        UniqueId[9];        /*  _UID value if any */
     ACPI_INTEGER                Address;            /*  _ADR value if any */
     UINT32                      CurrentStatus;      /*  _STA value */
 } ACPI_DEVICE_INFO;
@@ -1161,7 +1166,7 @@ typedef struct
 {
     UINT32                      Index;
     UINT32                      StringLength;
-    NATIVE_CHAR                 *StringPtr;
+    char                        *StringPtr;
 
 } ACPI_RESOURCE_SOURCE;
 
@@ -1300,7 +1305,7 @@ typedef struct acpi_pci_routing_table
     UINT32                      Pin;
     ACPI_INTEGER                Address;        /* here for 64-bit alignment */
     UINT32                      SourceIndex;
-    NATIVE_CHAR                 Source[4];      /* pad to 64 bits so sizeof() works in all cases */
+    char                        Source[4];      /* pad to 64 bits so sizeof() works in all cases */
 
 } ACPI_PCI_ROUTING_TABLE;
 
