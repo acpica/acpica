@@ -3,7 +3,7 @@
  *
  * Module Name: hwregs - Read/write access functions for the various ACPI
  *                       control and status registers.
- *              $Revision: 1.90 $
+ *              $Revision: 1.92 $
  *
  ******************************************************************************/
 
@@ -122,7 +122,7 @@
 #include "achware.h"
 #include "acnamesp.h"
 
-#define _COMPONENT          HARDWARE
+#define _COMPONENT          ACPI_HARDWARE
         MODULE_NAME         ("hwregs")
 
 
@@ -946,7 +946,7 @@ AcpiHwRegisterWrite (
 UINT32
 AcpiHwLowLevelRead (
     UINT32                  Width,
-    ACPI_GAS                *Reg,
+    ACPI_GENERIC_ADDRESS    *Reg,
     UINT32                  Offset)
 {
     UINT32                  Value = 0;
@@ -1056,7 +1056,7 @@ void
 AcpiHwLowLevelWrite (
     UINT32                  Width,
     UINT32                  Value,
-    ACPI_GAS                *Reg,
+    ACPI_GENERIC_ADDRESS    *Reg,
     UINT32                  Offset)
 {
     ACPI_PHYSICAL_ADDRESS   MemAddress;
