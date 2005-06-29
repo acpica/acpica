@@ -128,7 +128,7 @@
 
 ACPI_STATUS
 AcpiInitialize (
-    void);
+    ACPI_INIT_DATA          *InitData);
 
 ACPI_STATUS
 AcpiTerminate (
