@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslutils -- compiler utilities
- *              $Revision: 1.52 $
+ *              $Revision: 1.53 $
  *
  *****************************************************************************/
 
@@ -655,6 +655,101 @@ UtInternalizeName (
 
 /*******************************************************************************
  *
+ * FUNCTION:    UtPadNameWithUnderscores
+ *
+ * PARAMETERS:  NameSeg         - Input nameseg
+ *              PaddedNameSeg   - Output padded nameseg
+ *
+ * RETURN:      Padded nameseg.
+ *
+ * DESCRIPTION: Pads a NameSeg with underscores if necessary to form a full
+ *              ACPI_NAME.
+ *
+ ******************************************************************************/
+
+void
+UtPadNameWithUnderscores (
+    char                    *NameSeg,
+    char                    *PaddedNameSeg)
+{
+    UINT32                  i;
+
+
+    for (i = 0; (i < ACPI_NAME_SIZE); i++)
+    {
+        if (*NameSeg)
+        {
+            *PaddedNameSeg = *NameSeg;
+            NameSeg++;
+        }
+        else
+        {
+            *PaddedNameSeg = '_';
+        }
+        PaddedNameSeg++;
+    }
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    UtAttachNameseg
+ *
+ * PARAMETERS:  Op              - Parent parse node
+ *              Name            - Full ExternalName
+ *
+ * RETURN:      Sets the NameSeg field in parent node
+ *
+ * DESCRIPTION: Extract the last nameseg of the ExternalName and store it
+ *              in the NameSeg field of the Op.
+ *
+ ******************************************************************************/
+
+void
+UtAttachNameseg (
+    ACPI_PARSE_OBJECT       *Op,
+    char                    *Name)
+{
+    char                    *NameSeg;
+    char                    PaddedNameSeg[4];
+
+
+    if (!Name)
+    {
+        return;
+    }
+
+    /* Look for the last dot in the namepath */
+
+    NameSeg = strrchr (Name, '.');
+    if (NameSeg)
+    {
+        /* Found last dot, we have also found the final nameseg */
+
+        NameSeg++;
+        UtPadNameWithUnderscores (NameSeg, PaddedNameSeg);
+    }
+    else
+    {
+        /* No dots in the namepath, there is only a single nameseg. */
+        /* Handle prefixes */
+
+        while ((*Name == '\\') || (*Name == '^'))
+        {
+            Name++;
+        }
+
+        /* Remaing string should be one single nameseg */
+
+        UtPadNameWithUnderscores (Name, PaddedNameSeg);
+    }
+
+    strncpy (Op->Asl.NameSeg, PaddedNameSeg, 4);
+}
+
+
+/*******************************************************************************
+ *
  * FUNCTION:    UtAttachNamepathToOwner
  *
  * PARAMETERS:  Op            - Parent parse node
@@ -676,7 +771,15 @@ UtAttachNamepathToOwner (
     ACPI_STATUS             Status;
 
 
+    /* Full external path */
+
     Op->Asl.ExternalName = NameOp->Asl.Value.String;
+
+    /* Last nameseg of the path */
+
+    UtAttachNameseg (Op, Op->Asl.ExternalName);
+
+    /* Create internalized path */
 
     Status = UtInternalizeName (NameOp->Asl.Value.String, &Op->Asl.Namepath);
     if (ACPI_FAILURE (Status))
