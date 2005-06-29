@@ -352,7 +352,6 @@ AcpiNsSearchNameTable (
  *
  ***************************************************************************/
 
-
 ACPI_STATUS
 AcpiNsSearchParentTree (
     UINT32                  EntryName,
@@ -552,12 +551,11 @@ AcpiNsInitializeTable (
  *
  * FUNCTION:    AcpiNsInitializeEntry
  *
- * PARAMETERS:  NameTable       - The containing table for the new NTE
+ * PARAMETERS:  WalkState       - Current state of the walk
+ *              NameTable       - The containing table for the new NTE
  *              Position        - Position (index) of the new NTE in the table
  *              EntryName       - ACPI name of the new entry
  *              Type            - ACPI object type of the new entry
- *              PreviousEntry   - Link back to the previous entry (can span
- *                                multiple tables)
  *
  * RETURN:      None
  *
@@ -664,10 +662,12 @@ AcpiNsInitializeEntry (
  * FUNCTION:    AcpiNsSearchAndEnter
  *
  * PARAMETERS:  EntryName           - Ascii ACPI name to search for (4 chars)
+ *              WalkState           - Current state of the walk
  *              *NameTable          - Starting table where search will begin
  *              InterpreterMode     - Add names only in MODE_LoadPassX.  Otherwise,
  *                                    search only.
  *              Type                - Object type to match
+ *              Flags               - Flags describing the search restrictions
  *              **RetEntry          - Where the matched NTE is returned
  *
  * RETURN:      Status
