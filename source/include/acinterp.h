@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acinterp.h - Interpreter subcomponent prototypes and defines
- *       $Revision: 1.84 $
+ *       $Revision: 1.85 $
  *
  *****************************************************************************/
 
@@ -580,7 +580,7 @@ AcpiAmlBuildCopyInternalPackageObject (
 ACPI_STATUS
 AcpiAmlSystemMemorySpaceHandler (
     UINT32                  Function,
-    UINT64                  Address,
+    ACPI_PHYSICAL_ADDRESS   Address,
     UINT32                  BitWidth,
     UINT32                  *Value,
     void                    *HandlerContext,
@@ -589,7 +589,7 @@ AcpiAmlSystemMemorySpaceHandler (
 ACPI_STATUS
 AcpiAmlSystemIoSpaceHandler (
     UINT32                  Function,
-    ACPI_INTEGER            Address,
+    ACPI_PHYSICAL_ADDRESS   Address,
     UINT32                  BitWidth,
     UINT32                  *Value,
     void                    *HandlerContext,
@@ -598,7 +598,7 @@ AcpiAmlSystemIoSpaceHandler (
 ACPI_STATUS
 AcpiAmlPciConfigSpaceHandler (
     UINT32                  Function,
-    UINT64                  Address,
+    ACPI_PHYSICAL_ADDRESS   Address,
     UINT32                  BitWidth,
     UINT32                  *Value,
     void                    *HandlerContext,
@@ -607,7 +607,7 @@ AcpiAmlPciConfigSpaceHandler (
 ACPI_STATUS
 AcpiAmlEmbeddedControllerSpaceHandler (
     UINT32                  Function,
-    UINT64                  Address,
+    ACPI_PHYSICAL_ADDRESS   Address,
     UINT32                  BitWidth,
     UINT32                  *Value,
     void                    *HandlerContext,
@@ -616,7 +616,7 @@ AcpiAmlEmbeddedControllerSpaceHandler (
 ACPI_STATUS
 AcpiAmlSmBusSpaceHandler (
     UINT32                  Function,
-    UINT64                  Address,
+    ACPI_PHYSICAL_ADDRESS   Address,
     UINT32                  BitWidth,
     UINT32                  *Value,
     void                    *HandlerContext,
