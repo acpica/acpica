@@ -180,8 +180,6 @@ PsDeleteParseTree (
     ACPI_GENERIC_OP         *Root)
 {
     ACPI_GENERIC_OP         *Op;
-    ACPI_GENERIC_OP         *PrevOp;
-    ACPI_GENERIC_OP         *NextOp = (ACPI_GENERIC_OP *) -1;
     ACPI_WALK_STATE         WalkState;
 
 
@@ -198,11 +196,12 @@ PsDeleteParseTree (
 
     /* Save the root until last, so that we know when the tree has been walked */
 
-    while (NextOp)
-    {
-        PsGetNextWalkOp (&WalkState, Op, PsDeleteCompletedOp, &PrevOp, &NextOp);
+    WalkState.NextOp = Op;
+    WalkState.NextOpInfo = NEXT_OP_DOWNWARD;
 
-        Op = NextOp;
+    while (WalkState.NextOp)
+    {
+        PsGetNextWalkOp (&WalkState, WalkState.NextOp, PsDeleteCompletedOp);
     }
 }
 
