@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: psparse - Parser top level AML parse routines
- *              $Revision: 1.98 $
+ *              $Revision: 1.99 $
  *
  *****************************************************************************/
 
@@ -1209,14 +1209,13 @@ AcpiPsParseAml (
     ACPI_STATUS             Status;
     ACPI_WALK_LIST          WalkList;
     ACPI_WALK_LIST          *PrevWalkList = AcpiGbl_CurrentWalkList;
-    ACPI_PARSE_STATE        *ParserState = &WalkState->ParserState;
     ACPI_WALK_STATE         *PreviousWalkState;
 
 
     FUNCTION_TRACE ("PsParseAml");
 
-    ACPI_DEBUG_PRINT ((ACPI_DB_PARSE, "Entered with ParserState=%p Aml=%p size=%lX\n",
-        ParserState, ParserState->Aml, ParserState->AmlSize));
+    ACPI_DEBUG_PRINT ((ACPI_DB_PARSE, "Entered with WalkState=%p Aml=%p size=%lX\n",
+        WalkState, WalkState->ParserState.Aml, WalkState->ParserState.AmlSize));
 
 
     /* Create and initialize a new walk list */
