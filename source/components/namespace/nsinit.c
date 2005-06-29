@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: nsinit - namespace initialization
- *              $Revision: 1.61 $
+ *              $Revision: 1.64 $
  *
  *****************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2004, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2005, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -451,7 +451,7 @@ AcpiNsInitOneDevice (
         return_ACPI_STATUS (AE_OK);
     }
 
-    if ((AcpiDbgLevel <= ACPI_LV_ALL_EXCEPTIONS) && 
+    if ((AcpiDbgLevel <= ACPI_LV_ALL_EXCEPTIONS) &&
         (!(AcpiDbgLevel & ACPI_LV_INFO)))
     {
         ACPI_DEBUG_PRINT_RAW ((ACPI_DB_INIT, "."));
@@ -515,6 +515,13 @@ AcpiNsInitOneDevice (
     }
     else
     {
+        /* Delete any return object (especially if ImplicitReturn is enabled) */
+
+        if (Pinfo.ReturnObject)
+        {
+            AcpiUtRemoveReference (Pinfo.ReturnObject);
+        }
+
         /* Count of successful INIs */
 
         Info->Num_INI++;
