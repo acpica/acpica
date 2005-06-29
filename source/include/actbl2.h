@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: actbl2.h - ACPI Specification Revision 2.0 Tables
- *       $Revision: 1.17 $
+ *       $Revision: 1.19 $
  *
  *****************************************************************************/
 
@@ -134,6 +134,8 @@
 #define BAF_LEGACY_DEVICES             0x0001
 #define BAF_8042_KEYBOARD_CONTROLLER   0x0002
 
+#define FADT2_REVISION_ID     3
+
 #pragma pack(1)
 
 /*************************************/
@@ -201,8 +203,8 @@ typedef struct
 typedef struct
 {
     ACPI_TABLE_HEADER   header;            /* table header */
-    UINT32              FirmwareCtrl;      /* 32-bit physical address of FACS */
-    UINT32              Dsdt;              /* 32-bit physical address of DSDT */
+    UINT32              V1_FirmwareCtrl;   /* 32-bit physical address of FACS */
+    UINT32              V1_Dsdt;           /* 32-bit physical address of DSDT */
     UINT8               Reserved1;         /* System Interrupt Model isn't used in ACPI 2.0*/
     UINT8               Prefer_PM_Profile; /* Conveys preferred power management profile to OSPM. */
     UINT16              SciInt;            /* System vector of SCI interrupt */
@@ -211,14 +213,14 @@ typedef struct
     UINT8               AcpiDisable;       /* value to write to smi_cmd to disable ACPI */
     UINT8               S4BiosReq;         /* Value to write to SMI CMD to enter S4BIOS state */
     UINT8               PstateCnt;         /* processor performance state control*/
-    UINT32              Pm1aEvtBlk;        /* Port address of Power Mgt 1a AcpiEvent Reg Blk */
-    UINT32              Pm1bEvtBlk;        /* Port address of Power Mgt 1b AcpiEvent Reg Blk */
-    UINT32              Pm1aCntBlk;        /* Port address of Power Mgt 1a Control Reg Blk */
-    UINT32              Pm1bCntBlk;        /* Port address of Power Mgt 1b Control Reg Blk */
-    UINT32              Pm2CntBlk;         /* Port address of Power Mgt 2 Control Reg Blk */
-    UINT32              PmTmrBlk;          /* Port address of Power Mgt Timer Ctrl Reg Blk */
-    UINT32              Gpe0Blk;           /* Port addr of General Purpose AcpiEvent 0 Reg Blk */
-    UINT32              Gpe1Blk;           /* Port addr of General Purpose AcpiEvent 1 Reg Blk */
+    UINT32              V1_Pm1aEvtBlk;     /* Port address of Power Mgt 1a AcpiEvent Reg Blk */
+    UINT32              V1_Pm1bEvtBlk;     /* Port address of Power Mgt 1b AcpiEvent Reg Blk */
+    UINT32              V1_Pm1aCntBlk;     /* Port address of Power Mgt 1a Control Reg Blk */
+    UINT32              V1_Pm1bCntBlk;     /* Port address of Power Mgt 1b Control Reg Blk */
+    UINT32              V1_Pm2CntBlk;      /* Port address of Power Mgt 2 Control Reg Blk */
+    UINT32              V1_PmTmrBlk;       /* Port address of Power Mgt Timer Ctrl Reg Blk */
+    UINT32              V1_Gpe0Blk;        /* Port addr of General Purpose AcpiEvent 0 Reg Blk */
+    UINT32              V1_Gpe1Blk;        /* Port addr of General Purpose AcpiEvent 1 Reg Blk */
     UINT8               Pm1EvtLen;         /* Byte Length of ports at pm1X_evt_blk */
     UINT8               Pm1CntLen;         /* Byte Length of ports at pm1X_cnt_blk */
     UINT8               Pm2CntLen;         /* Byte Length of ports at pm2_cnt_blk */
