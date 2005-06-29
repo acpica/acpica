@@ -870,6 +870,9 @@ AmlExecStore (
                     Status = AE_AML_OPERAND_TYPE;
                 }
 
+                /* Add a ref for being part of the parent package */
+
+                CmAddReference (TmpDesc);               
             }
 
             break;
