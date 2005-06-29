@@ -336,7 +336,7 @@ FunctionValueExit (
     INT32                   LineNumber, 
     INT32                   ComponentId, 
     ACPI_STRING             FunctionName,
-    UINT32                  Value);
+    NATIVE_UINT             Value);
 
 void
 DebugPrintPrefix (
