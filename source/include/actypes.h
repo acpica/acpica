@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: actypes.h - Common data types for the entire ACPI subsystem
- *       $Revision: 1.270 $
+ *       $Revision: 1.271 $
  *
  *****************************************************************************/
 
@@ -882,11 +882,11 @@ typedef struct acpi_system_info
  */
 
 typedef UINT32
-(ACPI_SYSTEM_XFACE *OSD_HANDLER) (
+(ACPI_SYSTEM_XFACE *ACPI_OSD_HANDLER) (
     void                    *Context);
 
 typedef void
-(ACPI_SYSTEM_XFACE *OSD_EXECUTION_CALLBACK) (
+(ACPI_SYSTEM_XFACE *ACPI_OSD_EXEC_CALLBACK) (
     void                    *Context);
 
 /*
