@@ -500,25 +500,11 @@ NsExecuteControlMethod (
 
 
     /* TBD: Should we unlock the namespace during control method execution ? */
+
     /* 
      * Excecute the method via the interpreter
      */
     Status = AmlExecuteMethod (MethodEntry, Params, ReturnObjDesc);
-
-    /*
-     * Cleanup.  We must delete everything in the namespace that was created by
-     * the execution of this method.
-     */
-
-    /* TBD: what about called methods? */
-
-    if (MethodEntry->Scope)
-    {
-        CmReleaseMutex (MTX_NAMESPACE);
-        NsDeleteNamespaceSubtree (MethodEntry);
-        NsDeleteNamespaceByOwner (ObjDesc->Method.OwningId);
-        CmAcquireMutex (MTX_NAMESPACE);
-    }
 
     return_ACPI_STATUS (Status);
 }
