@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslopcode - AML opcode generation
- *              $Revision: 1.59 $
+ *              $Revision: 1.61 $
  *
  *****************************************************************************/
 
@@ -419,7 +419,6 @@ OpcDoUnicode (
  *
  * RETURN:      None
  *
- *
  * DESCRIPTION: Convert a string EISA ID to numeric representation.  See the
  *              Pnp BIOS Specification for details.  Here is an excerpt:
  *
@@ -535,6 +534,102 @@ OpcDoEisaId (
 
 /*******************************************************************************
  *
+ * FUNCTION:    OpcDoUiId
+ *
+ * PARAMETERS:  Op        - Parse node
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: 
+ *
+ ******************************************************************************/
+
+static UINT8 OpcMapToUUID[16] = {6,4,2,0,11,9,16,14,19,21,24,26,28,30,32,34};
+
+void
+OpcDoUuId (
+    ACPI_PARSE_OBJECT       *Op)
+{
+    char                    *InString;
+    char                    *Buffer;
+    ACPI_STATUS             Status = AE_OK;
+    ACPI_NATIVE_UINT        i;
+    ACPI_PARSE_OBJECT       *NewOp;
+
+
+    InString = (char *) Op->Asl.Value.String;
+
+    if (ACPI_STRLEN (InString) != 36)
+    {
+        Status = AE_BAD_PARAMETER;
+    }
+    else
+    {
+        /* Check all 36 characters for correct format */
+
+        for (i = 0; i < 36; i++)
+        {
+            if ((i == 8) || (i == 13) || (i == 18) || (i == 23))
+            {
+                if (InString[i] != '-')
+                {
+                    Status = AE_BAD_PARAMETER;
+                }
+            }
+            else
+            {
+                if (!isxdigit (InString[i]))
+                {
+                    Status = AE_BAD_PARAMETER;
+                }
+            }
+        }
+    }
+
+    Buffer = UtLocalCalloc (16);
+
+    if (ACPI_FAILURE (Status))
+    {
+        AslError (ASL_ERROR, ASL_MSG_INVALID_UUID, Op, Op->Asl.Value.String);
+    }
+    else for (i = 0; i < 16; i++)
+    {
+        Buffer[i]  = (char) (UtHexCharToValue (InString[OpcMapToUUID[i]]) << 4);
+        Buffer[i] |= (char)  UtHexCharToValue (InString[OpcMapToUUID[i] + 1]);
+    }
+
+    /* Change Op to a Buffer */
+
+    Op->Asl.ParseOpcode = PARSEOP_BUFFER;
+    Op->Common.AmlOpcode = AML_BUFFER_OP;
+    Op->Asl.CompileFlags &= ~NODE_COMPILE_TIME_CONST;   /* Disable further optimization */
+    UtSetParseOpName (Op);
+
+    /* Child node is the buffer length */
+
+    NewOp = TrAllocateNode (PARSEOP_INTEGER);
+
+    NewOp->Asl.AmlOpcode     = AML_BYTE_OP;
+    NewOp->Asl.Value.Integer = 16;
+    NewOp->Asl.Parent        = Op;
+
+    Op->Asl.Child = NewOp;
+    Op = NewOp;
+
+    /* Peer to the child is the raw buffer data */
+
+    NewOp = TrAllocateNode (PARSEOP_RAW_DATA);
+    NewOp->Asl.AmlOpcode     = AML_RAW_DATA_BUFFER;
+    NewOp->Asl.AmlLength     = 16;
+    NewOp->Asl.Value.String  = (char *) Buffer;
+    NewOp->Asl.Parent        = Op->Asl.Parent;
+
+    Op->Asl.Next = NewOp;
+}
+
+
+/*******************************************************************************
+ *
  * FUNCTION:    OpcGenerateAmlOpcode
  *
  * PARAMETERS:  Op        - Parse node
@@ -590,6 +685,11 @@ OpcGenerateAmlOpcode (
     case PARSEOP_EISAID:
 
         OpcDoEisaId (Op);
+        break;
+
+    case PARSEOP_TOUUID:
+
+        OpcDoUuId (Op);
         break;
 
     case PARSEOP_UNICODE:
