@@ -1,9 +1,8 @@
-
 /******************************************************************************
  *
- * Module Name: dsopcode - Dispatcher Op Region support and handling of 
+ * Module Name: dsopcode - Dispatcher Op Region support and handling of
  *                         "control" opcodes
- *              $Revision: 1.13 $
+ *              $Revision: 1.17 $
  *
  *****************************************************************************/
 
@@ -128,7 +127,7 @@
 #include "actables.h"
 
 #define _COMPONENT          DISPATCHER
-        MODULE_NAME         ("dsopcode");
+        MODULE_NAME         ("dsopcode")
 
 
 /*****************************************************************************
@@ -146,12 +145,12 @@
 
 ACPI_STATUS
 AcpiDsGetRegionArguments (
-    ACPI_OBJECT_INTERNAL    *RgnDesc)
+    ACPI_OPERAND_OBJECT     *RgnDesc)
 {
-    ACPI_OBJECT_INTERNAL    *MethodDesc;
-    ACPI_NAMED_OBJECT       *Entry;
-    ACPI_GENERIC_OP         *Op;
-    ACPI_GENERIC_OP         *RegionOp;
+    ACPI_OPERAND_OBJECT     *MethodDesc;
+    ACPI_NAMESPACE_NODE     *Node;
+    ACPI_PARSE_OBJECT       *Op;
+    ACPI_PARSE_OBJECT       *RegionOp;
     ACPI_STATUS             Status;
     ACPI_TABLE_DESC         *TableDesc;
 
@@ -159,14 +158,14 @@ AcpiDsGetRegionArguments (
     FUNCTION_TRACE_PTR ("DsGetRegionArguments", RgnDesc);
 
 
-    if (RgnDesc->Region.RegionFlags & REGION_AGRUMENT_DATA_VALID)
+    if (RgnDesc->Region.Flags & AOPOBJ_DATA_VALID)
     {
         return_ACPI_STATUS (AE_OK);
     }
 
 
     MethodDesc = RgnDesc->Region.Method;
-    Entry = RgnDesc->Region.Nte;
+    Node = RgnDesc->Region.Node;
 
 
     /*
@@ -180,13 +179,13 @@ AcpiDsGetRegionArguments (
         return (AE_NO_MEMORY);
     }
 
-    /* Save the NTE for use in AcpiPsParseAml */
+    /* Save the Node for use in AcpiPsParseAml */
 
-    Op->AcpiNamedObject = AcpiNsGetParentEntry (Entry);
+    Op->Node = AcpiNsGetParentObject (Node);
 
     /* Get a handle to the parent ACPI table */
 
-    Status = AcpiTbHandleToObject (Entry->OwnerId, &TableDesc);
+    Status = AcpiTbHandleToObject (Node->OwnerId, &TableDesc);
     if (ACPI_FAILURE (Status))
     {
         return_ACPI_STATUS (Status);
@@ -208,11 +207,11 @@ AcpiDsGetRegionArguments (
     /* Get and init the actual RegionOp created above */
 
 /*    RegionOp = Op->Value.Arg;
-    Op->AcpiNamedObject = Entry;*/
+    Op->Node = Node;*/
 
 
     RegionOp = Op->Value.Arg;
-    RegionOp->AcpiNamedObject = Entry;
+    RegionOp->Node = Node;
     AcpiPsDeleteParseTree (Op);
 
     /* AcpiEvaluate the address and length arguments for the OpRegion */
@@ -223,10 +222,10 @@ AcpiDsGetRegionArguments (
         return (AE_NO_MEMORY);
     }
 
-    Op->AcpiNamedObject = AcpiNsGetParentEntry (Entry);
+    Op->Node = AcpiNsGetParentObject (Node);
 
     Status = AcpiPsParseAml (Op, MethodDesc->Method.Pcode,
-                                MethodDesc->Method.PcodeLength, 
+                                MethodDesc->Method.PcodeLength,
                                 ACPI_PARSE_EXECUTE | ACPI_PARSE_DELETE_TREE,
                                 NULL /*MethodDesc*/, NULL, NULL,
                                 AcpiDsExecBeginOp, AcpiDsExecEndOp);
@@ -259,7 +258,7 @@ ACPI_STATUS
 AcpiDsInitializeRegion (
     ACPI_HANDLE             ObjHandle)
 {
-    ACPI_OBJECT_INTERNAL    *ObjDesc;
+    ACPI_OPERAND_OBJECT     *ObjDesc;
     ACPI_STATUS             Status;
 
 
@@ -289,13 +288,13 @@ AcpiDsInitializeRegion (
 ACPI_STATUS
 AcpiDsEvalRegionOperands (
     ACPI_WALK_STATE         *WalkState,
-    ACPI_GENERIC_OP         *Op)
+    ACPI_PARSE_OBJECT       *Op)
 {
     ACPI_STATUS             Status;
-    ACPI_OBJECT_INTERNAL    *ObjDesc;
-    ACPI_OBJECT_INTERNAL    *RegionDesc;
-    ACPI_NAMED_OBJECT       *Entry;
-    ACPI_GENERIC_OP         *NextOp;
+    ACPI_OPERAND_OBJECT     *ObjDesc;
+    ACPI_OPERAND_OBJECT     *RegionDesc;
+    ACPI_NAMESPACE_NODE     *Node;
+    ACPI_PARSE_OBJECT       *NextOp;
 
 
     FUNCTION_TRACE_PTR ("DsEvalRegionOperands", Op);
@@ -305,7 +304,7 @@ AcpiDsEvalRegionOperands (
      * This is where we evaluate the address and length fields of the OpRegion declaration
      */
 
-    Entry =  Op->AcpiNamedObject;
+    Node =  Op->Node;
 
     /* NextOp points to the op that holds the SpaceID */
     NextOp = Op->Value.Arg;
@@ -321,7 +320,7 @@ AcpiDsEvalRegionOperands (
         return_ACPI_STATUS (Status);
     }
 
-    RegionDesc = AcpiNsGetAttachedObject (Entry);
+    RegionDesc = AcpiNsGetAttachedObject (Node);
     if (!RegionDesc)
     {
         return_ACPI_STATUS (AE_NOT_EXIST);
@@ -350,7 +349,7 @@ AcpiDsEvalRegionOperands (
 
     /* Now the address and length are valid for this opregion */
 
-    RegionDesc->Region.RegionFlags |= REGION_AGRUMENT_DATA_VALID;
+    RegionDesc->Region.Flags |= AOPOBJ_DATA_VALID;
 
     return_ACPI_STATUS (Status);
 }
@@ -373,7 +372,7 @@ AcpiDsEvalRegionOperands (
 ACPI_STATUS
 AcpiDsExecBeginControlOp (
     ACPI_WALK_STATE         *WalkState,
-    ACPI_GENERIC_OP         *Op)
+    ACPI_PARSE_OBJECT       *Op)
 {
     ACPI_STATUS             Status = AE_OK;
     ACPI_GENERIC_STATE      *ControlState;
@@ -403,11 +402,11 @@ AcpiDsExecBeginControlOp (
 
         AcpiCmPushGenericState (&WalkState->ControlState, ControlState);
 
-        /* 
+        /*
          * Save a pointer to the predicate for multiple executions
          * of a loop
          */
-        WalkState->ControlState->Control.AmlPredicateStart = 
+        WalkState->ControlState->Control.AmlPredicateStart =
                     WalkState->ParserState->Aml - 1;
                     /*AcpiPsPkgLengthEncodingSize (GET8 (WalkState->ParserState->Aml));*/
         break;
@@ -457,7 +456,7 @@ AcpiDsExecBeginControlOp (
 ACPI_STATUS
 AcpiDsExecEndControlOp (
     ACPI_WALK_STATE         *WalkState,
-    ACPI_GENERIC_OP         *Op)
+    ACPI_PARSE_OBJECT       *Op)
 {
     ACPI_STATUS             Status = AE_OK;
     ACPI_GENERIC_STATE      *ControlState;
@@ -531,7 +530,7 @@ AcpiDsExecEndControlOp (
             ("EndControlOp: [RETURN_OP] Op=%p Arg=%p\n",Op, Op->Value.Arg));
 
 
-        /* 
+        /*
          * One optional operand -- the return value
          * It can be either an immediate operand or a result that
          * has been bubbled up the tree
@@ -571,7 +570,7 @@ AcpiDsExecEndControlOp (
         {
             /*
              * The return value has come from a previous calculation.
-             * 
+             *
              * If value being returned is a Reference (such as
              * an arg or local), resolve it now because it may
              * cease to exist at the end of the method.
