@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exresop - AML Interpreter operand/object resolution
- *              $Revision: 1.45 $
+ *              $Revision: 1.48 $
  *
  *****************************************************************************/
 
@@ -10,7 +10,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -128,7 +128,7 @@
 
 
 #define _COMPONENT          ACPI_EXECUTER
-        MODULE_NAME         ("exresop")
+        ACPI_MODULE_NAME    ("exresop")
 
 
 /*******************************************************************************
@@ -151,7 +151,7 @@ AcpiExCheckObjectType (
     ACPI_OBJECT_TYPE        ThisType,
     void                    *Object)
 {
-    PROC_NAME ("ExCheckObjectType");
+    ACPI_FUNCTION_NAME ("ExCheckObjectType");
 
 
     if (TypeNeeded == ACPI_TYPE_ANY)
@@ -163,7 +163,7 @@ AcpiExCheckObjectType (
 
     if (TypeNeeded != ThisType)
     {
-        ACPI_DEBUG_PRINT ((ACPI_DB_INFO,
+        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
             "Needed [%s], found [%s] %p\n",
             AcpiUtGetTypeName (TypeNeeded),
             AcpiUtGetTypeName (ThisType), Object));
@@ -180,7 +180,7 @@ AcpiExCheckObjectType (
  * FUNCTION:    AcpiExResolveOperands
  *
  * PARAMETERS:  Opcode              - Opcode being interpreted
- *              StackPtr            - Pointer to the operand stack to be 
+ *              StackPtr            - Pointer to the operand stack to be
  *                                    resolved
  *              WalkState           - Current stateu
  *
@@ -192,7 +192,7 @@ AcpiExCheckObjectType (
  *      Each nibble (actually 5 bits)  in ArgTypes represents one required
  *      operand and indicates the required Type:
  *
- *      The corresponding operand will be converted to the required type if 
+ *      The corresponding operand will be converted to the required type if
  *      possible, otherwise we abort with an exception.
  *
  ******************************************************************************/
@@ -213,7 +213,7 @@ AcpiExResolveOperands (
     ACPI_OBJECT_TYPE        TypeNeeded;
 
 
-    FUNCTION_TRACE_U32 ("ExResolveOperands", Opcode);
+    ACPI_FUNCTION_TRACE_U32 ("ExResolveOperands", Opcode);
 
 
     OpInfo = AcpiPsGetOpcodeInfo (Opcode);
@@ -231,8 +231,8 @@ AcpiExResolveOperands (
         return_ACPI_STATUS (AE_AML_INTERNAL);
     }
 
-    ACPI_DEBUG_PRINT ((ACPI_DB_EXEC, "Opcode %X OperandTypes=%X \n",
-        Opcode, ArgTypes));
+    ACPI_DEBUG_PRINT ((ACPI_DB_EXEC, "Opcode %X [%s] OperandTypes=%X \n",
+        Opcode, OpInfo->Name, ArgTypes));
 
     /*
      * Normal exit is with (ArgTypes == 0) at end of argument list.
@@ -306,7 +306,7 @@ AcpiExResolveOperands (
                 case AML_LOCAL_OP:
                 case AML_REVISION_OP:
 
-                    DEBUG_ONLY_MEMBERS (ACPI_DEBUG_PRINT ((ACPI_DB_INFO,
+                    ACPI_DEBUG_ONLY_MEMBERS (ACPI_DEBUG_PRINT ((ACPI_DB_EXEC,
                         "Reference Opcode: %s\n", OpInfo->Name)));
                     break;
 
@@ -350,7 +350,7 @@ AcpiExResolveOperands (
             if ((ACPI_GET_DESCRIPTOR_TYPE (ObjDesc) == ACPI_DESC_TYPE_INTERNAL) &&
                 (ACPI_GET_OBJECT_TYPE (ObjDesc) == ACPI_TYPE_STRING))
             {
-                /* 
+                /*
                  * String found - the string references a named object and must be
                  * resolved to a node
                  */
@@ -554,7 +554,7 @@ AcpiExResolveOperands (
             case ACPI_TYPE_INTEGER:
             case ACPI_TYPE_STRING:
             case ACPI_TYPE_BUFFER:
- 
+
                 /* Valid operand */
                break;
 
@@ -574,7 +574,7 @@ AcpiExResolveOperands (
              * Need a buffer, string, package, or Node reference.
              *
              * The only reference allowed here is a direct reference to
-             * a namespace node.  
+             * a namespace node.
              */
             if ((*StackPtr)->Common.Type == INTERNAL_TYPE_REFERENCE)
             {
