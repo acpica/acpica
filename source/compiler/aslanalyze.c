@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslanalyze.c - check for semantic errors
- *              $Revision: 1.39 $
+ *              $Revision: 1.40 $
  *
  *****************************************************************************/
 
@@ -693,7 +693,9 @@ AnMethodAnalysisWalkBegin (
 
         if (!MethodInfo)
         {
-            AslError (ASL_ERROR, ASL_MSG_INTERNAL, Node, "No parent method");
+            /* Probably was an error in the method declaration, no additional error here */
+
+            DEBUG_PRINT (ACPI_WARN, ("%X, No parent method\n", Node));
             return (AE_ERROR);
         }
 
@@ -732,7 +734,9 @@ AnMethodAnalysisWalkBegin (
 
         if (!MethodInfo)
         {
-            AslError (ASL_ERROR, ASL_MSG_INTERNAL, Node, "No parent method");
+            /* Probably was an error in the method declaration, no additional error here */
+
+            DEBUG_PRINT (ACPI_WARN, ("%X, No parent method\n", Node));
             return (AE_ERROR);
         }
 
@@ -773,7 +777,9 @@ AnMethodAnalysisWalkBegin (
 
         if (!MethodInfo)
         {
-            AslError (ASL_ERROR, ASL_MSG_INTERNAL, Node, "No parent method");
+            /* Probably was an error in the method declaration, no additional error here */
+
+            DEBUG_PRINT (ACPI_WARN, ("%X, No parent method\n", Node));
             return (AE_ERROR);
         }
 
@@ -866,7 +872,7 @@ AnMethodAnalysisWalkEnd (
         if (!MethodInfo)
         {
             printf ("No method info for method! [%s]\n", Node->Namepath);
-            AslError (ASL_ERROR, ASL_MSG_INTERNAL, Node, "No method info for this method");
+            AslError (ASL_ERROR, ASL_MSG_COMPILER_INTERNAL, Node, "No method info for this method");
             CmCleanupAndExit ();
         }
         break;
