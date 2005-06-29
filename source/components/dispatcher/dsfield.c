@@ -118,9 +118,9 @@
 
 #include "acpi.h"
 #include "amlcode.h"
-#include "dispatch.h"
-#include "interp.h"
-#include "namesp.h"
+#include "acdispat.h"
+#include "acinterp.h"
+#include "acnamesp.h"
 
 
 #define _COMPONENT          DISPATCHER
@@ -136,6 +136,8 @@
 #define FIELD_ACCESS_TYPE_MASK      0x0F
 #define FIELD_LOCK_RULE_MASK        0x10
 #define FIELD_UPDATE_RULE_MASK      0x60
+
+
 
 
 /*****************************************************************************
@@ -171,6 +173,18 @@ AcpiDsCreateField (
     /* First arg is the name of the parent OpRegion */
 
     Arg = Op->Value.Arg;
+    if (!Region)
+    {
+        Status = AcpiNsLookup (WalkState->ScopeInfo, Arg->Value.Name,
+                                ACPI_TYPE_REGION, IMODE_EXECUTE,
+                                NS_SEARCH_PARENT, WalkState,
+                                &((ACPI_NAMED_OBJECT *)Region));
+
+        if (ACPI_FAILURE (Status))
+        {
+            return_ACPI_STATUS (Status);
+        }
+    }
 
     /* Second arg is the field flags */
 

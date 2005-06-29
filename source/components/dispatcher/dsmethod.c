@@ -117,13 +117,13 @@
 #define __DSMETHOD_C__
 
 #include "acpi.h"
-#include "parser.h"
+#include "acparser.h"
 #include "amlcode.h"
-#include "dispatch.h"
-#include "interp.h"
-#include "namesp.h"
-#include "tables.h"
-#include "debugger.h"
+#include "acdispat.h"
+#include "acinterp.h"
+#include "acnamesp.h"
+#include "actables.h"
+#include "acdebug.h"
 
 
 #define _COMPONENT          DISPATCHER
@@ -227,7 +227,8 @@ AcpiDsParseMethod (
      */
 
     Status = AcpiPsParseAml (Op, ObjDesc->Method.Pcode,
-                                ObjDesc->Method.PcodeLength, 0);
+                                ObjDesc->Method.PcodeLength, 0,
+                                AcpiDsLoad1BeginOp, AcpiDsLoad1EndOp);
 
     if (ACPI_FAILURE (Status))
     {
