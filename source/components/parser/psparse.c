@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: psparse - Parser top level AML parse routines
- *              $Revision: 1.52 $
+ *              $Revision: 1.53 $
  *
  *****************************************************************************/
 
@@ -701,16 +701,34 @@ AcpiPsParseLoop (
 
     ParserState = WalkState->ParserState;
 
-    if (WalkState->PrevOp)
+    if (WalkState->WalkType & WALK_METHOD_RESTART)
     {
-        Op = WalkState->PrevOp;
-        ArgTypes = WalkState->PrevArgTypes;
+        if (AcpiPsHasCompletedScope (ParserState))
+        {
+            AcpiPsPopScope (ParserState, &Op, &ArgTypes, &ArgCount);
+            DEBUG_PRINT (TRACE_PARSE, ("ParseLoop:  Popped scope, Op=%p\n", Op));
+        }
+
+        else if (WalkState->PrevOp)
+        {
+            /* We were in the middle of an op */
+
+            Op = WalkState->PrevOp;
+            ArgTypes = WalkState->PrevArgTypes;
+        }
+
+        else
+        {
+            /* We had just completed an op, get the previous one */
+
+//            AcpiPsPopScope (ParserState, &Op, &ArgTypes, &ArgCount);
+        }
     }
 
     /*
      * Iterative parsing loop, while there is more aml to process:
      */
-    while (ParserState->Aml < ParserState->AmlEnd)
+    while ((ParserState->Aml < ParserState->AmlEnd) || (Op))
     {
         if (!Op)
         {
@@ -718,7 +736,7 @@ AcpiPsParseLoop (
 
             AmlOffset = ParserState->Aml - ParserState->AmlStart;
             Opcode    = AcpiPsPeekOpcode (ParserState);
-
+    
             /*
              * First cut to determine what we have found:
              * 1) A valid AML opcode
@@ -759,6 +777,11 @@ AcpiPsParseLoop (
                 ParserState->Aml += AcpiPsGetOpcodeSize (Opcode);
                 continue;
             }
+
+
+
+
+
 
 
             /* Create Op structure and append to parent's argument list */
@@ -833,10 +856,12 @@ AcpiPsParseLoop (
 
             }
 
+
+
+
+
             else
             {
-
-
                 /* Not a named opcode, just allocate Op and append to parent */
 
                 Op = AcpiPsAllocOp (Opcode);
@@ -892,13 +917,19 @@ AcpiPsParseLoop (
             if (OpInfo)
             {
                 DEBUG_PRINT (TRACE_PARSE,
-                    ("ParseLoop:  Op=%p Opcode=%4.4lX Offset=%5.5lX\n",
-                     Op, Op->Opcode, Op->AmlOffset));
+                    ("ParseLoop:  Op=%p Opcode=%4.4lX Aml %p Oft=%5.5lX\n",
+                     Op, Op->Opcode, ParserState->Aml, Op->AmlOffset));
             }
         }
 
 
-        ArgCount = 0;
+
+
+        /* Start ArgCount at zero because we don't know if there are any args yet */
+
+        ArgCount  = 0;
+
+
         if (ArgTypes)   /* Are there any arguments that must be processed? */
         {
             /* get arguments */
@@ -933,13 +964,12 @@ AcpiPsParseLoop (
                     Arg = AcpiPsGetNextArg (ParserState,
                                             GET_CURRENT_ARG_TYPE (ArgTypes),
                                             &ArgCount);
-
                     if (Arg)
                     {
                         Arg->AmlOffset = AmlOffset;
+                        AcpiPsAppendArg (Op, Arg);
                     }
 
-                    AcpiPsAppendArg (Op, Arg);
                     INCREMENT_ARG_LIST (ArgTypes);
                 }
 
@@ -975,6 +1005,12 @@ AcpiPsParseLoop (
             }
         }
 
+
+
+
+        /*
+         * Zero ArgCount means that all arguments for this op have been processed
+         */
         if (!ArgCount)
         {
             /* completed Op, prepare for next */
@@ -1041,7 +1077,16 @@ AcpiPsParseLoop (
 
 CloseThisOp:
 
-            ParserState->Scope->ParseScope.ArgCount--;
+            /*
+             * Finished one argument of the containing scope
+             *
+             * Don't allow ArgCount to go below zero.  This allows for
+             * methods to be restarted
+             */
+            if (ParserState->Scope->ParseScope.ArgCount)
+            {
+                ParserState->Scope->ParseScope.ArgCount--;
+            }
 
             /* Close this Op (may result in parse subtree deletion) */
 
@@ -1051,9 +1096,26 @@ CloseThisOp:
             }
 
 
-            if (Status == AE_CTRL_END)
+            if (Status == AE_CTRL_TRANSFER)
             {
-                AcpiPsPopScope (ParserState, &Op, &ArgTypes);
+                /*
+                 * We are about to transfer to a called method.
+                 *
+                 * If
+                 */
+//                if (ParserState->Scope->ParseScope.ArgList)
+//                {
+//                    AcpiPsPopScope (ParserState, &Op, &ArgTypes, &ArgCount);
+//                }
+                WalkState->PrevOp = Op;
+                WalkState->PrevArgTypes = ArgTypes;
+                return_ACPI_STATUS (Status);
+            }
+
+            else if (Status == AE_CTRL_END)
+            {
+                AcpiPsPopScope (ParserState, &Op, &ArgTypes, &ArgCount);
+
                 Status = WalkState->AscendingCallback (WalkState, Op);
                 Status = AcpiPsNextParseState (WalkState, Op, Status);
                 AcpiPsCompleteThisOp (WalkState, Op);
@@ -1061,11 +1123,29 @@ CloseThisOp:
                 Status = AE_OK;
             }
 
+            else if (Status == AE_CTRL_TERMINATE)
+            {
+                Status = AE_OK;
+
+                /* Clean up */
+                do
+                {
+                    if (Op)
+                    {
+                        AcpiPsCompleteThisOp (WalkState, Op);
+                    }
+
+                    AcpiPsPopScope (ParserState, &Op, &ArgTypes, &ArgCount);
+                } while (Op);
+
+                return_ACPI_STATUS (Status);
+           }
+
             else if (ACPI_FAILURE (Status))
             {
                 if (Op == NULL)
                 {
-                    AcpiPsPopScope (ParserState, &Op, &ArgTypes);
+                    AcpiPsPopScope (ParserState, &Op, &ArgTypes, &ArgCount);
                 }
                 WalkState->PrevOp = Op;
                 WalkState->PrevArgTypes = ArgTypes;
@@ -1074,21 +1154,6 @@ CloseThisOp:
                  * TEMP:
                  */
 
-                if (Status == AE_CTRL_TERMINATE)
-                {
-                    Status = AE_OK;
-
-                    /* Clean up */
-                    do
-                    {
-                        if (Op)
-                        {
-                            AcpiPsCompleteThisOp (WalkState, Op);
-                        }
-
-                        AcpiPsPopScope (ParserState, &Op, &ArgTypes);
-                    } while (Op);
-                }
                 return_ACPI_STATUS (Status);
             }
 
@@ -1097,7 +1162,7 @@ CloseThisOp:
 
             if (AcpiPsHasCompletedScope (ParserState))
             {
-                AcpiPsPopScope (ParserState, &Op, &ArgTypes);
+                AcpiPsPopScope (ParserState, &Op, &ArgTypes, &ArgCount);
                 DEBUG_PRINT (TRACE_PARSE, ("ParseLoop:  Popped scope, Op=%p\n", Op));
             }
 
@@ -1107,6 +1172,9 @@ CloseThisOp:
             }
 
         }
+
+
+        /* ArgCount is non-zero */
 
         else
         {
@@ -1153,7 +1221,7 @@ CloseThisOp:
                             AcpiPsCompleteThisOp (WalkState, Op);
                         }
 
-                        AcpiPsPopScope (ParserState, &Op, &ArgTypes);
+                        AcpiPsPopScope (ParserState, &Op, &ArgTypes, &ArgCount);
 
                     } while (Op);
 
@@ -1170,7 +1238,7 @@ CloseThisOp:
             AcpiPsCompleteThisOp (WalkState, Op);
         }
 
-        AcpiPsPopScope (ParserState, &Op, &ArgTypes);
+        AcpiPsPopScope (ParserState, &Op, &ArgTypes, &ArgCount);
 
     } while (Op);
 
@@ -1394,6 +1462,7 @@ AcpiPsParseAml (
              */
 
             AcpiDsRestartControlMethod (WalkState, ReturnDesc);
+            WalkState->WalkType |= WALK_METHOD_RESTART;
         }
 
         /*
