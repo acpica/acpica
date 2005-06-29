@@ -24,10 +24,6 @@
 #define _THIS_MODULE        "iesystem.c"
 #define _COMPONENT          INTERPRETER
 
-/* Global Variables */
-
-ACPI_EXTERN FIRMWARE_ACPI_CONTROL_STRUCTURE * FACS;
-
 
 static ST_KEY_DESC_TABLE KDT[] = {
     {"0000", 'W', "NOT IMPLEMENTED", "NOT IMPLEMENTED"},
