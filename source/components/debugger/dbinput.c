@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dbinput - user front-end to the AML debugger
- *              $Revision: 1.69 $
+ *              $Revision: 1.73 $
  *
  ******************************************************************************/
 
@@ -138,10 +138,9 @@ NATIVE_CHAR                 AcpiGbl_DbParsedBuf[80];
 NATIVE_CHAR                 AcpiGbl_DbScopeBuf[40];
 NATIVE_CHAR                 AcpiGbl_DbDebugFilename[40];
 NATIVE_CHAR                 *AcpiGbl_DbArgs[DB_MAX_ARGS];
-NATIVE_CHAR                 *AcpiGbl_DbBuffer;
+NATIVE_CHAR                 *AcpiGbl_DbBuffer = NULL;
 NATIVE_CHAR                 *AcpiGbl_DbFilename = NULL;
 BOOLEAN                     AcpiGbl_DbOutputToFile = FALSE;
-
 
 UINT32                      AcpiGbl_DbDebugLevel = ACPI_LV_VERBOSITY2;
 UINT32                      AcpiGbl_DbConsoleDebugLevel = NORMAL_DEFAULT | ACPI_LV_TABLES;
@@ -694,7 +693,6 @@ AcpiDbCommandDispatch (
             Status = AE_CTRL_TRUE;
         }
         return (Status);
-        break;
 
     case CMD_HISTORY_LAST:
         CommandLine = AcpiDbGetFromHistory (NULL);
@@ -816,7 +814,6 @@ AcpiDbCommandDispatch (
 
     case CMD_STOP:
         return (AE_AML_ERROR);
-        break;
 
     case CMD_TABLES:
         AcpiDbDisplayTableInfo (AcpiGbl_DbArgs[1]);
@@ -927,7 +924,7 @@ void
 AcpiDbSingleThread (
     void)
 {
-    ACPI_STATUS             Status = AE_OK;
+    ACPI_STATUS             Status;
 
 
     AcpiGbl_MethodExecuting = FALSE;
@@ -1009,7 +1006,6 @@ AcpiDbUserCommands (
      * because all the semaphores are deleted during termination
      */
     AcpiTerminate ();
-
     return (Status);
 }
 
