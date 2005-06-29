@@ -3,7 +3,7 @@
  * Name: amlcode.h - Definitions for AML, as included in "definition blocks"
  *                   Declarations and definitions contained herein are derived
  *                   directly from the ACPI specification.
- *       $Revision: 1.50 $
+ *       $Revision: 1.51 $
  *
  *****************************************************************************/
 
@@ -268,14 +268,14 @@
  * any valid ACPI ASCII values (A-Z, 0-9, '-')
  */
 
-#define AML_NAMEPATH_OP             (UINT16) 0x002d
-#define AML_NAMEDFIELD_OP           (UINT16) 0x0030
-#define AML_RESERVEDFIELD_OP        (UINT16) 0x0031
-#define AML_ACCESSFIELD_OP          (UINT16) 0x0032
-#define AML_BYTELIST_OP             (UINT16) 0x0033
-#define AML_STATICSTRING_OP         (UINT16) 0x0034
-#define AML_METHODCALL_OP           (UINT16) 0x0035
-#define AML_RETURN_VALUE_OP         (UINT16) 0x0036
+#define AML_INT_NAMEPATH_OP         (UINT16) 0x002d
+#define AML_INT_NAMEDFIELD_OP       (UINT16) 0x0030
+#define AML_INT_RESERVEDFIELD_OP    (UINT16) 0x0031
+#define AML_INT_ACCESSFIELD_OP      (UINT16) 0x0032
+#define AML_INT_BYTELIST_OP         (UINT16) 0x0033
+#define AML_INT_STATICSTRING_OP     (UINT16) 0x0034
+#define AML_INT_METHODCALL_OP       (UINT16) 0x0035
+#define AML_INT_RETURN_VALUE_OP     (UINT16) 0x0036
 
 
 #define ARG_NONE                    0x0
@@ -502,7 +502,7 @@ typedef enum
 
 #ifdef DEFINE_AML_GLOBALS
 
-/* External declarations of the AML tables */
+/* External declarations for the AML tables */
 
 extern UINT8                    AcpiGbl_Aml             [NUM_OPCODES];
 extern UINT16                   AcpiGbl_Pfx             [NUM_OPCODES];
