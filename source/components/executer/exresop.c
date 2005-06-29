@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: amresop - AML Interpreter operand/object resolution
- *              $Revision: 1.25 $
+ *              $Revision: 1.26 $
  *
  *****************************************************************************/
 
@@ -235,12 +235,12 @@ AcpiAmlResolveOperands (
         Opcode, ArgTypes));
 
 
-   /*
-     * Normal exit is with *Types == '\0' at end of string.
+    /*
+     * Normal exit is with (ArgTypes == 0) at end of argument list.
      * Function will return an exception from within the loop upon
-     * finding an entry which is not, and cannot be converted
-     * to, the required type; if stack underflows; or upon
-     * finding a NULL stack entry (which "should never happen").
+     * finding an entry which is not (or cannot be converted
+     * to) the required type; if stack underflows; or upon
+     * finding a NULL stack entry (which should not happen).
      */
 
     while (GET_CURRENT_ARG_TYPE (ArgTypes))

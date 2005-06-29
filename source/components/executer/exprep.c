@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: amprep - ACPI AML (p-code) execution - field prep utilities
- *              $Revision: 1.77 $
+ *              $Revision: 1.78 $
  *
  *****************************************************************************/
 
@@ -318,7 +318,7 @@ AcpiAmlPrepDefFieldValue (
 
     /* Allocate a new object */
 
-    ObjDesc = AcpiCmCreateInternalObject (INTERNAL_TYPE_DEF_FIELD);
+    ObjDesc = AcpiCmCreateInternalObject (INTERNAL_TYPE_FIELD);
     if (!ObjDesc)
     {
         return_ACPI_STATUS (AE_NO_MEMORY);

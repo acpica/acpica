@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: amstore - AML Interpreter object store support
- *              $Revision: 1.130 $
+ *              $Revision: 1.131 $
  *
  *****************************************************************************/
 
@@ -602,7 +602,7 @@ AcpiAmlStoreObjectToNode (
      */
     switch (TargetType)
     {
-    case INTERNAL_TYPE_DEF_FIELD:
+    case INTERNAL_TYPE_FIELD:
 
         /* Raw data copy for target types Integer/String/Buffer */
 

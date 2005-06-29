@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: amresnte - AML Interpreter object resolution
- *              $Revision: 1.31 $
+ *              $Revision: 1.32 $
  *
  *****************************************************************************/
 
@@ -359,7 +359,7 @@ AcpiAmlResolveNodeToValue (
         break;
 
 
-    case INTERNAL_TYPE_DEF_FIELD:
+    case INTERNAL_TYPE_FIELD:
 
         /*
          * TBD: [Investigate] Is this the correct solution?
@@ -626,8 +626,7 @@ AcpiAmlResolveNodeToValue (
 
     /*
      * The only named references allowed are named constants
-     *
-     * e.g.     Name (\OSFL, Ones)
+     *   e.g. -- Name (\OSFL, Ones)
      */
     case INTERNAL_TYPE_REFERENCE:
 
@@ -639,18 +638,15 @@ AcpiAmlResolveNodeToValue (
             TempVal = 0;
             break;
 
-
         case AML_ONE_OP:
 
             TempVal = 1;
             break;
 
-
         case AML_ONES_OP:
 
             TempVal = ACPI_INTEGER_MAX;
             break;
-
 
         default:
 
