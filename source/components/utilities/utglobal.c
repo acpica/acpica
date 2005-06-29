@@ -1,7 +1,7 @@
 /******************************************************************************
  *
- * Module Name: cmglobal - Global variables for the ACPI subsystem
- *              $Revision: 1.120 $
+ * Module Name: utglobal - Global variables for the ACPI subsystem
+ *              $Revision: 1.127 $
  *
  *****************************************************************************/
 
@@ -114,7 +114,7 @@
  *
  *****************************************************************************/
 
-#define __CMGLOBAL_C__
+#define __UTGLOBAL_C__
 #define DEFINE_ACPI_GLOBALS
 
 #include "acpi.h"
@@ -125,7 +125,82 @@
 
 
 #define _COMPONENT          ACPI_UTILITIES
-        MODULE_NAME         ("cmglobal")
+        MODULE_NAME         ("utglobal")
+
+
+
+/******************************************************************************
+ *
+ * FUNCTION:    AcpiFormatException
+ *
+ * PARAMETERS:  Status       - The ACPI_STATUS code to be formatted
+ *
+ * RETURN:      A string containing the exception  text
+ *
+ * DESCRIPTION: This function translates an ACPI exception into an ASCII string.
+ *
+ ******************************************************************************/
+
+const char *
+AcpiFormatException (
+    ACPI_STATUS             Status)
+{
+    char                    *Exception = "UNKNOWN_STATUS_CODE";
+    ACPI_STATUS             SubStatus;
+
+
+    SubStatus = (Status & ~AE_CODE_MASK);
+
+
+    switch (Status & AE_CODE_MASK)
+    {
+    case AE_CODE_ENVIRONMENTAL:
+
+        if (SubStatus <= AE_CODE_ENV_MAX)
+        {
+            Exception = AcpiGbl_ExceptionNames_Env [SubStatus];
+        }
+        break;
+
+    case AE_CODE_PROGRAMMER:
+
+        if (SubStatus <= AE_CODE_PGM_MAX)
+        {
+            Exception = AcpiGbl_ExceptionNames_Pgm [SubStatus -1];
+        }
+        break;
+
+    case AE_CODE_ACPI_TABLES:
+
+        if (SubStatus <= AE_CODE_TBL_MAX)
+        {
+            Exception = AcpiGbl_ExceptionNames_Tbl [SubStatus -1];
+        }
+        break;
+
+    case AE_CODE_AML:
+
+        if (SubStatus <= AE_CODE_AML_MAX)
+        {
+            Exception = AcpiGbl_ExceptionNames_Aml [SubStatus -1];
+        }
+        break;
+
+    case AE_CODE_CONTROL:
+
+        if (SubStatus <= AE_CODE_CTRL_MAX)
+        {
+            Exception = AcpiGbl_ExceptionNames_Ctrl [SubStatus -1];
+        }
+        break;
+
+    default:
+        break;
+    }
+
+
+    return ((const char *) Exception);
+}
 
 
 /******************************************************************************
@@ -235,17 +310,18 @@ UINT8                       AcpiGbl_NsProperties[] =
     NSP_NORMAL,                 /* 21 Alias            */
     NSP_NORMAL,                 /* 22 Notify           */
     NSP_NORMAL,                 /* 23 Address Handler  */
-    NSP_NEWSCOPE | NSP_LOCAL,   /* 24 Resource         */
-    NSP_NORMAL,                 /* 25 DefFieldDefn     */
-    NSP_NORMAL,                 /* 26 BankFieldDefn    */
-    NSP_NORMAL,                 /* 27 IndexFieldDefn   */
-    NSP_NORMAL,                 /* 28 If               */
-    NSP_NORMAL,                 /* 29 Else             */
-    NSP_NORMAL,                 /* 30 While            */
-    NSP_NEWSCOPE,               /* 31 Scope            */
-    NSP_LOCAL,                  /* 32 DefAny           */
-    NSP_NORMAL,                 /* 33 Extra            */
-    NSP_NORMAL                  /* 34 Invalid          */
+    NSP_NEWSCOPE | NSP_LOCAL,   /* 24 Resource Desc    */
+    NSP_NEWSCOPE | NSP_LOCAL,   /* 25 Resource Field   */
+    NSP_NORMAL,                 /* 26 DefFieldDefn     */
+    NSP_NORMAL,                 /* 27 BankFieldDefn    */
+    NSP_NORMAL,                 /* 28 IndexFieldDefn   */
+    NSP_NORMAL,                 /* 29 If               */
+    NSP_NORMAL,                 /* 30 Else             */
+    NSP_NORMAL,                 /* 31 While            */
+    NSP_NEWSCOPE,               /* 32 Scope            */
+    NSP_LOCAL,                  /* 33 DefAny           */
+    NSP_NORMAL,                 /* 34 Extra            */
+    NSP_NORMAL                  /* 35 Invalid          */
 };
 
 
@@ -255,6 +331,14 @@ NATIVE_CHAR                 AcpiGbl_HexToAscii[] =
                                 {'0','1','2','3','4','5','6','7',
                                 '8','9','A','B','C','D','E','F'};
 
+UINT8
+AcpiUtHexToAsciiChar (
+    ACPI_INTEGER            Integer,
+    UINT32                  Position)
+{
+
+    return (AcpiGbl_HexToAscii[(Integer >> Position) & 0xF]);
+}
 
 /******************************************************************************
  *
@@ -297,7 +381,7 @@ NATIVE_CHAR                 *MsgAcpiErrorBreak = "*** Break on ACPI_ERROR ***\n"
 
 /*****************************************************************************
  *
- * FUNCTION:    AcpiCmGetMutexName
+ * FUNCTION:    AcpiUtGetMutexName
  *
  * PARAMETERS:  None.
  *
@@ -308,7 +392,7 @@ NATIVE_CHAR                 *MsgAcpiErrorBreak = "*** Break on ACPI_ERROR ***\n"
  ****************************************************************************/
 
 NATIVE_CHAR *
-AcpiCmGetMutexName (
+AcpiUtGetMutexName (
     UINT32                  MutexId)
 {
 
@@ -349,7 +433,7 @@ static NATIVE_CHAR          *AcpiGbl_NsTypeNames[] =    /* printable names of AC
     /* 11 */ "Power",
     /* 12 */ "Processor",
     /* 13 */ "Thermal",
-    /* 14 */ "BufrField",
+    /* 14 */ "BuffField",
     /* 15 */ "DdbHandle",
     /* 16 */ "DebugObj",
     /* 17 */ "RegnField",
@@ -359,23 +443,24 @@ static NATIVE_CHAR          *AcpiGbl_NsTypeNames[] =    /* printable names of AC
     /* 21 */ "Alias",
     /* 22 */ "Notify",
     /* 23 */ "AddrHndlr",
-    /* 24 */ "Resource",
-    /* 25 */ "DefFldDfn",
-    /* 26 */ "BnkFldDfn",
-    /* 27 */ "IdxFldDfn",
-    /* 28 */ "If",
-    /* 29 */ "Else",
-    /* 30 */ "While",
-    /* 31 */ "Scope",
-    /* 32 */ "DefAny",
-    /* 33 */ "Extra",
-    /* 34 */ "Invalid"
+    /* 24 */ "RsrcDesc",
+    /* 25 */ "RsrcField",
+    /* 26 */ "RgnFldDfn",
+    /* 27 */ "BnkFldDfn",
+    /* 28 */ "IdxFldDfn",
+    /* 29 */ "If",
+    /* 30 */ "Else",
+    /* 31 */ "While",
+    /* 32 */ "Scope",
+    /* 33 */ "DefAny",
+    /* 34 */ "Extra",
+    /* 35 */ "Invalid"
 };
 
 
 /*****************************************************************************
  *
- * FUNCTION:    AcpiCmGetTypeName
+ * FUNCTION:    AcpiUtGetTypeName
  *
  * PARAMETERS:  None.
  *
@@ -386,7 +471,7 @@ static NATIVE_CHAR          *AcpiGbl_NsTypeNames[] =    /* printable names of AC
  ****************************************************************************/
 
 NATIVE_CHAR *
-AcpiCmGetTypeName (
+AcpiUtGetTypeName (
     UINT32                  Type)
 {
 
@@ -415,7 +500,7 @@ NATIVE_CHAR *AcpiGbl_RegionTypes[NUM_REGION_TYPES] =
 
 /*****************************************************************************
  *
- * FUNCTION:    AcpiCmGetRegionName
+ * FUNCTION:    AcpiUtGetRegionName
  *
  * PARAMETERS:  None.
  *
@@ -426,7 +511,7 @@ NATIVE_CHAR *AcpiGbl_RegionTypes[NUM_REGION_TYPES] =
  ****************************************************************************/
 
 NATIVE_CHAR *
-AcpiCmGetRegionName (
+AcpiUtGetRegionName (
     UINT8                   SpaceId)
 {
 
@@ -493,7 +578,7 @@ NATIVE_CHAR *AcpiGbl_UpdateRules[NUM_UPDATE_RULES] =
 
 /*****************************************************************************
  *
- * FUNCTION:    AcpiCmValidObjectType
+ * FUNCTION:    AcpiUtValidObjectType
  *
  * PARAMETERS:  None.
  *
@@ -504,7 +589,7 @@ NATIVE_CHAR *AcpiGbl_UpdateRules[NUM_UPDATE_RULES] =
  ****************************************************************************/
 
 BOOLEAN
-AcpiCmValidObjectType (
+AcpiUtValidObjectType (
     UINT32                  Type)
 {
 
@@ -521,83 +606,9 @@ AcpiCmValidObjectType (
 }
 
 
-/*****************************************************************************
- *
- * FUNCTION:    AcpiCmFormatException
- *
- * PARAMETERS:  Status              - Acpi status to be formatted
- *
- * RETURN:      Formatted status string
- *
- * DESCRIPTION: Convert an ACPI exception to a string
- *
- ****************************************************************************/
-
-NATIVE_CHAR *
-AcpiCmFormatException (
-    ACPI_STATUS             Status)
-{
-    NATIVE_CHAR             *Exception = "UNKNOWN_STATUS";
-    ACPI_STATUS             SubStatus;
-
-
-    SubStatus = (Status & ~AE_CODE_MASK);
-
-
-    switch (Status & AE_CODE_MASK)
-    {
-    case AE_CODE_ENVIRONMENTAL:
-
-        if (SubStatus <= AE_CODE_ENV_MAX)
-        {
-            Exception = AcpiGbl_ExceptionNames_Env [SubStatus];
-        }
-        break;
-
-    case AE_CODE_PROGRAMMER:
-
-        if (SubStatus <= AE_CODE_PGM_MAX)
-        {
-            Exception = AcpiGbl_ExceptionNames_Pgm [SubStatus -1];
-        }
-        break;
-
-    case AE_CODE_ACPI_TABLES:
-
-        if (SubStatus <= AE_CODE_TBL_MAX)
-        {
-            Exception = AcpiGbl_ExceptionNames_Tbl [SubStatus -1];
-        }
-        break;
-
-    case AE_CODE_AML:
-
-        if (SubStatus <= AE_CODE_AML_MAX)
-        {
-            Exception = AcpiGbl_ExceptionNames_Aml [SubStatus -1];
-        }
-        break;
-
-    case AE_CODE_CONTROL:
-
-        if (SubStatus <= AE_CODE_CTRL_MAX)
-        {
-            Exception = AcpiGbl_ExceptionNames_Ctrl [SubStatus -1];
-        }
-        break;
-
-    default:
-        break;
-    }
-
-
-    return (Exception);
-}
-
-
 /****************************************************************************
  *
- * FUNCTION:    AcpiCmAllocateOwnerId
+ * FUNCTION:    AcpiUtAllocateOwnerId
  *
  * PARAMETERS:  IdType          - Type of ID (method or table)
  *
@@ -606,16 +617,16 @@ AcpiCmFormatException (
  ***************************************************************************/
 
 ACPI_OWNER_ID
-AcpiCmAllocateOwnerId (
+AcpiUtAllocateOwnerId (
     UINT32                  IdType)
 {
     ACPI_OWNER_ID           OwnerId = 0xFFFF;
 
 
-    FUNCTION_TRACE ("CmAllocateOwnerId");
+    FUNCTION_TRACE ("UtAllocateOwnerId");
 
 
-    AcpiCmAcquireMutex (ACPI_MTX_CACHES);
+    AcpiUtAcquireMutex (ACPI_MTX_CACHES);
 
     switch (IdType)
     {
@@ -644,7 +655,7 @@ AcpiCmAllocateOwnerId (
     }
 
 
-    AcpiCmReleaseMutex (ACPI_MTX_CACHES);
+    AcpiUtReleaseMutex (ACPI_MTX_CACHES);
 
     return_VALUE (OwnerId);
 }
@@ -652,7 +663,7 @@ AcpiCmAllocateOwnerId (
 
 /****************************************************************************
  *
- * FUNCTION:    AcpiCmInitGlobals
+ * FUNCTION:    AcpiUtInitGlobals
  *
  * PARAMETERS:  none
  *
@@ -662,14 +673,48 @@ AcpiCmAllocateOwnerId (
  ***************************************************************************/
 
 void
-AcpiCmInitGlobals (
+AcpiUtInitGlobals (
     void)
 {
     UINT32                  i;
 
 
-    FUNCTION_TRACE ("CmInitGlobals");
+    FUNCTION_TRACE ("UtInitGlobals");
 
+
+
+    /* Memory allocation and cache lists */
+
+    MEMSET (AcpiGbl_MemoryLists, 0, 
+            sizeof (ACPI_MEMORY_LIST) * ACPI_NUM_MEM_LISTS);
+
+    AcpiGbl_MemoryLists[ACPI_MEM_LIST_STATE].LinkOffset      = (UINT16) (NATIVE_UINT) &(((ACPI_GENERIC_STATE *) NULL)->Common.Next);
+    AcpiGbl_MemoryLists[ACPI_MEM_LIST_PSNODE].LinkOffset     = (UINT16) (NATIVE_UINT) &(((ACPI_PARSE_OBJECT *) NULL)->Next);
+    AcpiGbl_MemoryLists[ACPI_MEM_LIST_PSNODE_EXT].LinkOffset = (UINT16) (NATIVE_UINT) &(((ACPI_PARSE2_OBJECT *) NULL)->Next);
+    AcpiGbl_MemoryLists[ACPI_MEM_LIST_OPERAND].LinkOffset    = (UINT16) (NATIVE_UINT) &(((ACPI_OPERAND_OBJECT *) NULL)->Cache.Next);
+    AcpiGbl_MemoryLists[ACPI_MEM_LIST_WALK].LinkOffset       = (UINT16) (NATIVE_UINT) &(((ACPI_WALK_STATE *) NULL)->Next);
+
+    AcpiGbl_MemoryLists[ACPI_MEM_LIST_NSNODE].ObjectSize     = sizeof (ACPI_NAMESPACE_NODE);
+    AcpiGbl_MemoryLists[ACPI_MEM_LIST_STATE].ObjectSize      = sizeof (ACPI_GENERIC_STATE);
+    AcpiGbl_MemoryLists[ACPI_MEM_LIST_PSNODE].ObjectSize     = sizeof (ACPI_PARSE_OBJECT);
+    AcpiGbl_MemoryLists[ACPI_MEM_LIST_PSNODE_EXT].ObjectSize = sizeof (ACPI_PARSE2_OBJECT);
+    AcpiGbl_MemoryLists[ACPI_MEM_LIST_OPERAND].ObjectSize    = sizeof (ACPI_OPERAND_OBJECT);
+    AcpiGbl_MemoryLists[ACPI_MEM_LIST_WALK].ObjectSize       = sizeof (ACPI_WALK_STATE);
+
+    AcpiGbl_MemoryLists[ACPI_MEM_LIST_STATE].MaxCacheDepth      = MAX_STATE_CACHE_DEPTH;
+    AcpiGbl_MemoryLists[ACPI_MEM_LIST_PSNODE].MaxCacheDepth     = MAX_PARSE_CACHE_DEPTH;
+    AcpiGbl_MemoryLists[ACPI_MEM_LIST_PSNODE_EXT].MaxCacheDepth = MAX_EXTPARSE_CACHE_DEPTH;
+    AcpiGbl_MemoryLists[ACPI_MEM_LIST_OPERAND].MaxCacheDepth    = MAX_OBJECT_CACHE_DEPTH;
+    AcpiGbl_MemoryLists[ACPI_MEM_LIST_WALK].MaxCacheDepth       = MAX_WALK_CACHE_DEPTH;
+
+
+    ACPI_MEM_TRACKING (AcpiGbl_MemoryLists[ACPI_MEM_LIST_GLOBAL].ListName          = "Global Memory Allocation");
+    ACPI_MEM_TRACKING (AcpiGbl_MemoryLists[ACPI_MEM_LIST_NSNODE].ListName          = "Namespace Nodes");
+    ACPI_MEM_TRACKING (AcpiGbl_MemoryLists[ACPI_MEM_LIST_STATE].ListName           = "State Object Cache");
+    ACPI_MEM_TRACKING (AcpiGbl_MemoryLists[ACPI_MEM_LIST_PSNODE].ListName          = "Parse Node Cache");
+    ACPI_MEM_TRACKING (AcpiGbl_MemoryLists[ACPI_MEM_LIST_PSNODE_EXT].ListName      = "Extended Parse Node Cache");
+    ACPI_MEM_TRACKING (AcpiGbl_MemoryLists[ACPI_MEM_LIST_OPERAND].ListName         = "Operand Object Cache");
+    ACPI_MEM_TRACKING (AcpiGbl_MemoryLists[ACPI_MEM_LIST_WALK].ListName            = "Tree Walk Node Cache");
 
     /* ACPI table structure */
 
@@ -697,7 +742,7 @@ AcpiCmInitGlobals (
     for (i = 0; i < NUM_MTX; i++)
     {
         AcpiGbl_AcpiMutexInfo[i].Mutex      = NULL;
-        AcpiGbl_AcpiMutexInfo[i].Locked     = FALSE;
+        AcpiGbl_AcpiMutexInfo[i].OwnerId    = ACPI_MUTEX_NOT_ACQUIRED;
         AcpiGbl_AcpiMutexInfo[i].UseCount   = 0;
     }
 
@@ -735,32 +780,6 @@ AcpiCmInitGlobals (
     AcpiGbl_NextMethodOwnerId           = FIRST_METHOD_ID;
     AcpiGbl_DebuggerConfiguration       = DEBUGGER_THREADING;
 
-    /* Cache of small "state" objects */
-
-    AcpiGbl_GenericStateCache           = NULL;
-    AcpiGbl_GenericStateCacheDepth      = 0;
-    AcpiGbl_StateCacheRequests          = 0;
-    AcpiGbl_StateCacheHits              = 0;
-
-    AcpiGbl_ParseCache                  = NULL;
-    AcpiGbl_ParseCacheDepth             = 0;
-    AcpiGbl_ParseCacheRequests          = 0;
-    AcpiGbl_ParseCacheHits              = 0;
-
-    AcpiGbl_ExtParseCache               = NULL;
-    AcpiGbl_ExtParseCacheDepth          = 0;
-    AcpiGbl_ExtParseCacheRequests       = 0;
-    AcpiGbl_ExtParseCacheHits           = 0;
-
-    AcpiGbl_ObjectCache                 = NULL;
-    AcpiGbl_ObjectCacheDepth            = 0;
-    AcpiGbl_ObjectCacheRequests         = 0;
-    AcpiGbl_ObjectCacheHits             = 0;
-
-    AcpiGbl_WalkStateCache              = NULL;
-    AcpiGbl_WalkStateCacheDepth         = 0;
-    AcpiGbl_WalkStateCacheRequests      = 0;
-    AcpiGbl_WalkStateCacheHits          = 0;
 
     /* Hardware oriented */
 
@@ -782,9 +801,6 @@ AcpiCmInitGlobals (
     AcpiGbl_RootNodeStruct.Object       = NULL;
     AcpiGbl_RootNodeStruct.Flags        = ANOBJ_END_OF_PEER_LIST;
 
-    /* Memory allocation metrics - compiled out in non-debug mode. */
-
-    INITIALIZE_ALLOCATION_METRICS();
 
     return_VOID;
 }
