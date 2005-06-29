@@ -208,6 +208,17 @@ PsxParseMethod (
     }
 
 
+	/*
+	 * Make a first pass walk to add newly declared items to the namespace.
+	 * (The first pass only adds the names, it does not evaluate them)
+	 * The second pass occurs during the actual execution of the method
+	 * so that operands are evaluated dynamically.
+	 */
+
+    PsWalkParsedAml (PsGetChild (Op), Op, NULL, NULL, NULL,
+                        PsxLoad1BeginOp, PsxLoad1EndOp);
+
+
     NsScopeStackPop (ACPI_TYPE_Any);
 
 
