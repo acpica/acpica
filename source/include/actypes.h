@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: actypes.h - Common data types for the entire ACPI subsystem
- *       $Revision: 1.233 $
+ *       $Revision: 1.234 $
  *
  *****************************************************************************/
 
@@ -854,6 +854,13 @@ void (*ACPI_OBJECT_HANDLER) (
     ACPI_HANDLE                 Object,
     UINT32                      Function,
     void                        *Data);
+
+typedef
+ACPI_STATUS (*ACPI_INIT_HANDLER) (
+    ACPI_HANDLE                 Object,
+    UINT32                      Function);
+
+#define ACPI_INIT_DEVICE_INI        1
 
 
 /* Address Spaces (Operation Regions */
