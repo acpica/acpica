@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: cmalloc - local memory allocation routines
- *              $Revision: 1.87 $
+ *              $Revision: 1.88 $
  *
  *****************************************************************************/
 
@@ -150,11 +150,11 @@
  *
  ****************************************************************************/
 
-ALLOCATION_INFO *
+ACPI_ALLOCATION_INFO *
 AcpiCmSearchAllocList (
     void                    *Address)
 {
-    ALLOCATION_INFO         *Element = AcpiGbl_HeadAllocPtr;
+    ACPI_ALLOCATION_INFO    *Element = AcpiGbl_HeadAllocPtr;
 
 
     /* Search for the address. */
@@ -199,7 +199,7 @@ AcpiCmAddElementToAllocList (
     NATIVE_CHAR             *Module,
     UINT32                  Line)
 {
-    ALLOCATION_INFO         *Element;
+    ACPI_ALLOCATION_INFO    *Element;
     ACPI_STATUS             Status = AE_OK;
 
 
@@ -230,9 +230,7 @@ AcpiCmAddElementToAllocList (
 
     if (NULL == AcpiGbl_HeadAllocPtr)
     {
-        AcpiGbl_HeadAllocPtr =
-                (ALLOCATION_INFO *) AcpiOsCallocate (sizeof (ALLOCATION_INFO));
-
+        AcpiGbl_HeadAllocPtr = AcpiOsCallocate (sizeof (ACPI_ALLOCATION_INFO));
         if (!AcpiGbl_HeadAllocPtr)
         {
             DEBUG_PRINT (ACPI_ERROR,
@@ -246,8 +244,7 @@ AcpiCmAddElementToAllocList (
 
     else
     {
-        AcpiGbl_TailAllocPtr->Next =
-                (ALLOCATION_INFO *) AcpiOsCallocate (sizeof (ALLOCATION_INFO));
+        AcpiGbl_TailAllocPtr->Next = AcpiOsCallocate (sizeof (ACPI_ALLOCATION_INFO));
         if (!AcpiGbl_TailAllocPtr->Next)
         {
             DEBUG_PRINT (ACPI_ERROR,
@@ -317,7 +314,7 @@ AcpiCmDeleteElementFromAllocList (
     NATIVE_CHAR             *Module,
     UINT32                  Line)
 {
-    ALLOCATION_INFO         *Element;
+    ACPI_ALLOCATION_INFO    *Element;
     UINT32                  *DwordPtr;
     UINT32                  DwordLen;
     UINT32                  Size;
@@ -419,7 +416,7 @@ AcpiCmDeleteElementFromAllocList (
 
         Size = Element->Size;
 
-        MEMSET (Element, 0xEA, sizeof (ALLOCATION_INFO));
+        MEMSET (Element, 0xEA, sizeof (ACPI_ALLOCATION_INFO));
 
 
         if (Size == sizeof (ACPI_OPERAND_OBJECT))
@@ -536,7 +533,7 @@ AcpiCmDumpCurrentAllocations (
     UINT32                  Component,
     NATIVE_CHAR             *Module)
 {
-    ALLOCATION_INFO         *Element = AcpiGbl_HeadAllocPtr;
+    ACPI_ALLOCATION_INFO    *Element = AcpiGbl_HeadAllocPtr;
     UINT32                  i;
 
 
@@ -725,7 +722,6 @@ _CmCallocate (
 
 
     Address = AcpiOsCallocate (Size);
-
     if (!Address)
     {
         /* Report allocation error */
