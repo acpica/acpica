@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslstubs - Stubs used to link to Aml interpreter
- *              $Revision: 1.11 $
+ *              $Revision: 1.13 $
  *
  *****************************************************************************/
 
@@ -10,7 +10,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2003, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2004, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -207,6 +207,13 @@ ACPI_STATUS
 AcpiEvInitializeRegion (
     ACPI_OPERAND_OBJECT     *RegionObj,
     BOOLEAN                 AcpiNsLocked)
+{
+    return (AE_OK);
+}
+
+ACPI_STATUS
+AcpiEvCheckForWakeOnlyGpe (
+    ACPI_GPE_EVENT_INFO     *GpeEventInfo)
 {
     return (AE_OK);
 }
