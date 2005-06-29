@@ -306,7 +306,7 @@ AcpiEvGlobalLockHandler (
      */
 
     GlobalLock = &AcpiGbl_FACS->GlobalLock;
-    ASM_AcquireGL (GlobalLock, Acquired);
+    ACPI_ACQUIRE_GLOBAL_LOCK (GlobalLock, Acquired);
     if (Acquired)
     {
         /* Got the lock, now wake all threads waiting for it */
@@ -341,8 +341,7 @@ AcpiEvInitGlobalLockHandler (void)
     FUNCTION_TRACE ("EvInitGlobalLockHandler");
 
 
-
-    Status = AcpiInstallFixedEventHandler (EVENT_GLOBAL, AcpiEvGlobalLockHandler, NULL);
+    Status = AcpiInstallFixedEventHandler (ACPI_EVENT_GLOBAL, AcpiEvGlobalLockHandler, NULL);
 
     return_ACPI_STATUS (Status);
 }
@@ -392,7 +391,7 @@ AcpiEvAcquireGlobalLock(void)
     /* We must acquire the actualy hardware lock */
 
     GlobalLock = &AcpiGbl_FACS->GlobalLock;
-    ASM_AcquireGL (GlobalLock, Acquired);
+    ACPI_ACQUIRE_GLOBAL_LOCK (GlobalLock, Acquired);
     if (Acquired)
     {
        /* We got the lock */
@@ -461,7 +460,7 @@ AcpiEvReleaseGlobalLock (void)
         /* No more threads holding lock, we can do the actual hardware release */
 
         GlobalLock = &AcpiGbl_FACS->GlobalLock;
-        ASM_ReleaseGL (GlobalLock, Pending);
+        ACPI_RELEASE_GLOBAL_LOCK (GlobalLock, Pending);
         AcpiGbl_GlobalLockAcquired = FALSE;
 
         /*
