@@ -3,7 +3,7 @@
 /******************************************************************************
  *
  * Module Name: aslcompiler.y - Bison input file (ASL grammar and actions)
- *              $Revision: 1.84 $
+ *              $Revision: 1.85 $
  *
  *****************************************************************************/
 
@@ -756,6 +756,7 @@ AslLocalAllocate (unsigned int Size);
 %type <n> OptionalParameterTypePackage
 %type <n> OptionalParameterTypesPackage
 %type <n> OptionalReference
+%type <n> OptionalAccessSize
 
 
 %type <n> TermArgItem
@@ -2834,7 +2835,8 @@ RegisterTerm
         ',' ByteConstExpr
         ',' ByteConstExpr
         ',' QWordConstExpr
-        ')'                         {$$ = TrLinkChildren ($<n>3,4,$4,$6,$8,$10);}
+        OptionalAccessSize
+        ')'                         {$$ = TrLinkChildren ($<n>3,5,$4,$6,$8,$10,$11);}
     | PARSEOP_REGISTER '('
         error ')'                   {$$ = AslDoError(); yyclearin;}
     ;
@@ -2969,6 +2971,12 @@ OptionalAccessAttribTerm
     | ','                           {$$ = NULL;}
     | ',' ByteConstExpr             {$$ = $2;}
     | ',' AccessAttribKeyword       {$$ = $2;}
+    ;
+
+OptionalAccessSize
+    :                               {$$ = TrCreateValuedLeafNode (PARSEOP_BYTECONST, 0);}
+    | ','                           {$$ = TrCreateValuedLeafNode (PARSEOP_BYTECONST, 0);}
+    | ',' ByteConstExpr             {$$ = $2;}
     ;
 
 OptionalAddressRange
