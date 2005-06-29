@@ -496,7 +496,10 @@ PsGetNextSimpleArg (
     case ARGP_WORDDATA:
 
         PsInitOp (Arg, AML_WordOp);
-        Arg->Value.Integer = (UINT32) GET16 (ParserState->Aml);
+
+        /* Get 2 bytes from the AML stream */
+
+        STORE16TO32 (&Arg->Value.Integer, ParserState->Aml);
         ParserState->Aml += 2;
         break;
 
@@ -504,7 +507,10 @@ PsGetNextSimpleArg (
     case ARGP_DWORDDATA:
 
         PsInitOp (Arg, AML_DWordOp);
-        Arg->Value.Integer = (UINT32) GET32 (ParserState->Aml);
+
+        /* Get 4 bytes from the AML stream */
+
+        STORE32TO32 (&Arg->Value.Integer, ParserState->Aml);
         ParserState->Aml += 4;
         break;
 
@@ -553,6 +559,7 @@ PsGetNextField (
     ACPI_PTRDIFF            AmlOffset = ParserState->Aml - ParserState->AmlStart;
     ACPI_GENERIC_OP         *Field;
     UINT16                  Opcode;
+    UINT32                  Name;
 
 
     FUNCTION_TRACE ("PsGetNextField");
@@ -597,9 +604,10 @@ PsGetNextField (
         {
         case AML_NAMEDFIELD_OP:
 
-            /* Get the name */
+            /* Get the 4-character name */
 
-            PsSetName (Field, GET32 (ParserState->Aml));
+            STORE32TO32 (&Name, ParserState->Aml);
+            PsSetName (Field, Name);
             ParserState->Aml += 4;
 
             /* Get the length which is encoded as a package length */
