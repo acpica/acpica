@@ -27,7 +27,7 @@
  * Code in any form, with the right to sublicense such rights; and
  *
  * 2.3. Intel grants Licensee a non-exclusive and non-transferable patent
- * license (without the right to sublicense), under only those claims of Intel
+ * license (with the right to sublicense), under only those claims of Intel
  * patents that are infringed by the Original Intel Code, to make, use, sell,
  * offer to sell, and import the Covered Code and derivative works thereof
  * solely to the minimum extent necessary to exercise the above copyright
@@ -142,7 +142,7 @@
  * RETURN:      Status
  *
  * DESCRIPTION: Construct an ACPI_OBJECT_INTERNAL of type DefField and connect
- *              it to the nte whose handle is at ObjStack[ObjStackTop]
+ *              it to the nte whose handle is at the object stack top.
  *
  ****************************************************************************/
 
@@ -164,98 +164,100 @@ AmlPrepDefFieldValue (
     if (!Region)
     {
         DEBUG_PRINT (ACPI_ERROR, ("AmlPrepDefFieldValue: null Region\n"));
-        Status = AE_AML_ERROR;
+        return_ACPI_STATUS (AE_AML_ERROR);
     }
 
     /* Region typecheck */
 
-    else if (TYPE_Region != (Type = NsGetType (Region)))
+    if (TYPE_Region != (Type = NsGetType (Region)))
     {
         DEBUG_PRINT (ACPI_ERROR, ("AmlPrepDefFieldValue: Needed Region, found %d %s\n",
                     Type, NsTypeNames[Type]));
-        Status = AE_AML_ERROR;
+        return_ACPI_STATUS (AE_AML_ERROR);
     }
 
-    else if (!(ObjDesc = AllocateObjectDesc ()))
+    /* Allocate a new object */
+
+    ObjDesc = CmCreateInternalObject (TYPE_DefField);
+    if (!ObjDesc)
     {   
         /* Unable to allocate new object descriptor    */
 
-        Status = AE_NO_MEMORY;
+        return_ACPI_STATUS (AE_NO_MEMORY);
     }
 
 
-    if (AE_OK == Status)
-    {   
-        /* ObjDesc and Region valid */
+    /* ObjDesc and Region valid */
 
-        DUMP_STACK (MODE_Exec, "AmlPrepDefFieldValue", 2, "case DefField");
+    DUMP_STACK (MODE_Exec, "AmlPrepDefFieldValue", 2, "case DefField");
 
-
-        ObjDesc->Type = (UINT8) TYPE_DefField;
-        if (TYPE_DefField != ObjDesc->Field.Type)
-        {
-            /* 
-             * The C implementation has done something which is technically legal
-             * but unexpected:  the Type field which was defined as a UINT8 did
-             * not map to the same structure offset as the one which was defined
-             * as a WORD_BIT -- see comments in the definition of the FieldUnit
-             * variant of ACPI_OBJECT_INTERNAL
-             *
-             * Log some evidence to facilitate porting the code.
-             */
-            ObjDesc->Field.Type = 0x005a;
-            DEBUG_PRINT (ACPI_ERROR, (
-                    "AmlPrepDefFieldValue: **** Internal Failure %p %02x %02x %02x %02x\n",
-                    ObjDesc, ((UINT8 *) ObjDesc)[0], ((UINT8 *) ObjDesc)[1], ((UINT8 *) ObjDesc)[2],
-                    ((UINT8 *) ObjDesc)[3]));
-            OsdFree (ObjDesc);
-            ObjDesc = NULL;
-            Status = AE_AML_ERROR;
-        }
-    }
-
-    if (AE_OK == Status)
-    {   
-        /* ObjDesc, Region, and ObjDesc->Field.Type valid    */
-
-        ObjDesc->Field.Access     = (FldFlg & ACCESS_TYPE_MASK) >> ACCESS_TYPE_SHIFT;
-        ObjDesc->Field.LockRule   = (FldFlg & LOCK_RULE_MASK) >> LOCK_RULE_SHIFT;
-        ObjDesc->Field.UpdateRule = (FldFlg & UPDATE_RULE_MASK) >> UPDATE_RULE_SHIFT;
-        ObjDesc->Field.Length     = (UINT16) FldLen;
-
-        /* TBD: - should use width of data register, not hardcoded 8 */
-
-        DEBUG_PRINT (ACPI_INFO, ("AmlPrepDefFieldValue: hardcoded 8 **\n"));
-
-        ObjDesc->Field.BitOffset  = (UINT16) FldPos % 8;
-        ObjDesc->Field.Offset     = (UINT32) FldPos / 8;
-        ObjDesc->Field.Container  = NsGetValue (Region);
-
-        DEBUG_PRINT (ACPI_INFO, ("AmlPrepDefFieldValue: set nte %p (%4.4s) val = %p\n",
-                        ObjStack[ObjStackTop], ObjStack[ObjStackTop], ObjDesc));
-
-        DUMP_STACK_ENTRY (ObjDesc);
-        DUMP_ENTRY (Region);
-        DEBUG_PRINT (ACPI_INFO, ("\t%p \n", ObjDesc->Field.Container));
-
-        if (ObjDesc->Field.Container)
-        {
-            DUMP_STACK_ENTRY (ObjDesc->Field.Container);
-        }
-
-        DEBUG_PRINT (ACPI_INFO,
-                    ("============================================================\n"));
-
+    if (TYPE_DefField != ObjDesc->Field.Type)
+    {
         /* 
-         * Store the constructed descriptor (ObjDesc) into the nte whose
-         * handle is on TOS, preserving the current type of that nte.
+         * The C implementation has done something which is technically legal
+         * but unexpected:  the Type field which was defined as a UINT8 did
+         * not map to the same structure offset as the one which was defined
+         * as a WORD_BIT -- see comments in the definition of the FieldUnit
+         * variant of ACPI_OBJECT_INTERNAL
+         *
+         * Log some evidence to facilitate porting the code.
          */
-        NsSetValue ((ACPI_HANDLE) ObjStack[ObjStackTop], ObjDesc,
-                    (UINT8) NsGetType ((ACPI_HANDLE) ObjStack[ObjStackTop]));
+        ObjDesc->Field.Type = 0x005a;
+        DEBUG_PRINT (ACPI_ERROR, (
+                "AmlPrepDefFieldValue: **** Internal Failure %p %02x %02x %02x %02x\n",
+                ObjDesc, ((UINT8 *) ObjDesc)[0], ((UINT8 *) ObjDesc)[1], ((UINT8 *) ObjDesc)[2],
+                ((UINT8 *) ObjDesc)[3]));
+
+        CmDeleteInternalObject (ObjDesc);
+        ObjDesc = NULL;
+        return_ACPI_STATUS (AE_AML_ERROR);
     }
 
-    FUNCTION_STATUS_EXIT (Status);
-    return Status;
+    /* ObjDesc, Region, and ObjDesc->Field.Type valid    */
+
+    ObjDesc->Field.Access     = (FldFlg & ACCESS_TYPE_MASK) >> ACCESS_TYPE_SHIFT;
+    ObjDesc->Field.LockRule   = (FldFlg & LOCK_RULE_MASK) >> LOCK_RULE_SHIFT;
+    ObjDesc->Field.UpdateRule = (FldFlg & UPDATE_RULE_MASK) >> UPDATE_RULE_SHIFT;
+    ObjDesc->Field.Length     = (UINT16) FldLen;
+
+    /* TBD: - should use width of data register, not hardcoded 8 */
+
+    DEBUG_PRINT (ACPI_INFO, ("AmlPrepDefFieldValue: hardcoded 8 **\n"));
+
+    ObjDesc->Field.BitOffset  = (UINT16) FldPos % 8;
+    ObjDesc->Field.Offset     = (UINT32) FldPos / 8;
+    ObjDesc->Field.Container  = NsGetAttachedObject (Region);
+
+    /* An additional reference for the container */
+
+    CmUpdateObjectReference (ObjDesc->Field.Container, REF_INCREMENT);
+
+
+    /* Debug output only */
+
+    DEBUG_PRINT (ACPI_INFO, ("AmlPrepDefFieldValue: set nte %p (%4.4s) val = %p\n",
+                    AmlObjStackGetValue (0), AmlObjStackGetValue (0), ObjDesc));
+
+    DUMP_STACK_ENTRY (ObjDesc);
+    DUMP_ENTRY (Region);
+    DEBUG_PRINT (ACPI_INFO, ("\t%p \n", ObjDesc->Field.Container));
+
+    if (ObjDesc->Field.Container)
+    {
+        DUMP_STACK_ENTRY (ObjDesc->Field.Container);
+    }
+
+    DEBUG_PRINT (ACPI_INFO,
+                ("============================================================\n"));
+
+    /* 
+     * Store the constructed descriptor (ObjDesc) into the nte whose
+     * handle is on TOS, preserving the current type of that nte.
+     */
+    NsAttachObject ((ACPI_HANDLE) AmlObjStackGetValue (0), ObjDesc,
+                (UINT8) NsGetType ((ACPI_HANDLE) AmlObjStackGetValue (0)));
+
+    return_ACPI_STATUS (AE_OK);
 }
 
 
@@ -273,7 +275,7 @@ AmlPrepDefFieldValue (
  * RETURN:      Status
  *
  * DESCRIPTION: Construct an ACPI_OBJECT_INTERNAL of type BankField and connect
- *              it to the nte whose handle is at ObjStack[ObjStackTop]
+ *              it to the nte whose handle is at the object stack top
  *
  ****************************************************************************/
 
@@ -297,86 +299,88 @@ AmlPrepBankFieldValue (
     if (!Region)
     {
         DEBUG_PRINT (ACPI_ERROR, ("AmlPrepBankFieldValue: null Region\n"));
-        Status = AE_AML_ERROR;
+        return_ACPI_STATUS (AE_AML_ERROR);
     }
-    else if (Region != (ACPI_HANDLE) (Type = NsGetType (Region)))
+
+    if (Region != (ACPI_HANDLE) (Type = NsGetType (Region)))
     {
         DEBUG_PRINT (ACPI_ERROR, ("AmlPrepBankFieldValue: Needed Region, found %d %s\n",
                         Type, NsTypeNames[Type]));
-        Status = AE_AML_ERROR;
+        return_ACPI_STATUS (AE_AML_ERROR);
     }
-    else if (!(ObjDesc = AllocateObjectDesc ()))
+
+    /* Allocate a new object */
+
+    ObjDesc = CmCreateInternalObject (TYPE_BankField);
+    if (!ObjDesc)
     {   
-        /*  unable to allocate new object descriptor    */
+        /* Unable to allocate new object descriptor    */
         
-        Status = AE_NO_MEMORY;
+        return_ACPI_STATUS (AE_NO_MEMORY);
     }
 
+    /*  ObjDesc and Region valid    */
 
-    if (AE_OK == Status)
-    {   
-        /*  ObjDesc and Region valid    */
+    DUMP_STACK (MODE_Exec, "AmlPrepBankFieldValue", 2, "case BankField");
 
-        DUMP_STACK (MODE_Exec, "AmlPrepBankFieldValue", 2, "case BankField");
+    if (TYPE_BankField != ObjDesc->BankField.Type)
+    {
+        /* See comments in AmlPrepDefFieldValue() re: unexpected C behavior */
 
-        ObjDesc->Type = (UINT8) TYPE_BankField;
-        if (TYPE_BankField != ObjDesc->BankField.Type)
-        {
-            /* See comments in AmlPrepDefFieldValue() re unexpected C behavior */
+        ObjDesc->BankField.Type = 0x005a;
+        DEBUG_PRINT (ACPI_ERROR, (
+                "AmlPrepBankFieldValue: internal failure %p %02x %02x %02x %02x\n",
+                ObjDesc, ((UINT8 *) ObjDesc)[0], ((UINT8 *) ObjDesc)[1], ((UINT8 *) ObjDesc)[2],
+                ((UINT8 *) ObjDesc)[3]));
 
-            ObjDesc->BankField.Type = 0x005a;
-            DEBUG_PRINT (ACPI_ERROR, (
-                    "AmlPrepBankFieldValue: internal failure %p %02x %02x %02x %02x\n",
-                    ObjDesc, ((UINT8 *) ObjDesc)[0], ((UINT8 *) ObjDesc)[1], ((UINT8 *) ObjDesc)[2],
-                    ((UINT8 *) ObjDesc)[3]));
-            OsdFree (ObjDesc);
+        CmDeleteInternalObject (ObjDesc);
 
-            FUNCTION_STATUS_EXIT (AE_AML_ERROR);
-            return AE_AML_ERROR;
-        }
+        return_ACPI_STATUS (AE_AML_ERROR);
     }
 
-    if (AE_OK == Status)
-    {   
-        /*  ObjDesc, Region, and ObjDesc->BankField.ValTyp valid    */
+    /*  ObjDesc, Region, and ObjDesc->BankField.ValTyp valid    */
 
-        ObjDesc->BankField.Access     = (FldFlg & ACCESS_TYPE_MASK) >> ACCESS_TYPE_SHIFT;
-        ObjDesc->BankField.LockRule   = (FldFlg & LOCK_RULE_MASK) >> LOCK_RULE_SHIFT;
-        ObjDesc->BankField.UpdateRule = (FldFlg & UPDATE_RULE_MASK) >> UPDATE_RULE_SHIFT;
-        ObjDesc->BankField.Length     = (UINT16) FldLen;
+    ObjDesc->BankField.Access     = (FldFlg & ACCESS_TYPE_MASK) >> ACCESS_TYPE_SHIFT;
+    ObjDesc->BankField.LockRule   = (FldFlg & LOCK_RULE_MASK) >> LOCK_RULE_SHIFT;
+    ObjDesc->BankField.UpdateRule = (FldFlg & UPDATE_RULE_MASK) >> UPDATE_RULE_SHIFT;
+    ObjDesc->BankField.Length     = (UINT16) FldLen;
 
-        /* XXX - should use width of data register, not hardcoded 8 */
+    /* XXX - should use width of data register, not hardcoded 8 */
 
-        DEBUG_PRINT (ACPI_INFO, (" ** AmlPrepBankFieldValue: hard 8 **\n"));
+    DEBUG_PRINT (ACPI_INFO, (" ** AmlPrepBankFieldValue: hard 8 **\n"));
 
-        ObjDesc->BankField.BitOffset  = (UINT16) FldPos % 8;
-        ObjDesc->BankField.Offset     = (UINT32) FldPos / 8;
-        ObjDesc->BankField.Value      = BankVal;
-        ObjDesc->BankField.Container  = NsGetValue (Region);
-        ObjDesc->BankField.BankSelect = NsGetValue (BankReg);
+    ObjDesc->BankField.BitOffset  = (UINT16) FldPos % 8;
+    ObjDesc->BankField.Offset     = (UINT32) FldPos / 8;
+    ObjDesc->BankField.Value      = BankVal;
+    ObjDesc->BankField.Container  = NsGetAttachedObject (Region);
+    ObjDesc->BankField.BankSelect = NsGetAttachedObject (BankReg);
 
+    /* An additional reference for the container and bank select */
+    /* TBD: is "BankSelect" ever a real internal object?? */
 
-        DEBUG_PRINT (ACPI_INFO, ("AmlPrepBankFieldValue: set nte %p (%4.4s) val = %p\n",
-                        ObjStack[ObjStackTop], ObjStack[ObjStackTop], ObjDesc));
-        
-        DUMP_STACK_ENTRY (ObjDesc);
-        DUMP_ENTRY (Region);
-        DUMP_ENTRY (BankReg);
-
-        DEBUG_PRINT (ACPI_INFO,
-                    ("============================================================\n"));
-
-        /* 
-         * Store the constructed descriptor (ObjDesc) into the nte whose
-         * handle is on TOS, preserving the current type of that nte.
-         */
-        NsSetValue ((ACPI_HANDLE) ObjStack[ObjStackTop], ObjDesc,
-                    (UINT8) NsGetType ((ACPI_HANDLE) ObjStack[ObjStackTop]));
-    }
+    CmUpdateObjectReference (ObjDesc->BankField.Container, REF_INCREMENT);
+    CmUpdateObjectReference (ObjDesc->BankField.BankSelect, REF_INCREMENT);
 
 
-    FUNCTION_STATUS_EXIT (Status);
-    return Status;
+    DEBUG_PRINT (ACPI_INFO, ("AmlPrepBankFieldValue: set nte %p (%4.4s) val = %p\n",
+                    AmlObjStackGetValue (0), AmlObjStackGetValue (0), ObjDesc));
+    
+    DUMP_STACK_ENTRY (ObjDesc);
+    DUMP_ENTRY (Region);
+    DUMP_ENTRY (BankReg);
+
+    DEBUG_PRINT (ACPI_INFO,
+                ("============================================================\n"));
+
+    /* 
+     * Store the constructed descriptor (ObjDesc) into the nte whose
+     * handle is on TOS, preserving the current type of that nte.
+     */
+    NsAttachObject ((ACPI_HANDLE) AmlObjStackGetValue (0), ObjDesc,
+                (UINT8) NsGetType ((ACPI_HANDLE) AmlObjStackGetValue (0)));
+
+
+    return_ACPI_STATUS (AE_OK);
 }
 
 
@@ -393,7 +397,7 @@ AmlPrepBankFieldValue (
  * RETURN:      Status
  *
  * DESCRIPTION: Construct an ACPI_OBJECT_INTERNAL of type IndexField and connect
- *              it to the nte whose handle is at ObjStack[ObjStackTop]
+ *              it to the nte whose handle is at the object stack top
  *
  ****************************************************************************/
 
@@ -415,74 +419,69 @@ AmlPrepIndexFieldValue (
     if (!IndexReg || !DataReg)
     {
         DEBUG_PRINT (ACPI_ERROR, ("AmlPrepIndexFieldValue: null handle\n"));
-        Status = AE_AML_ERROR;
+        return_ACPI_STATUS (AE_AML_ERROR);
     }
 
-    else if (!(ObjDesc = AllocateObjectDesc ()))
+    /* Allocate a new object descriptor */
+
+    ObjDesc = CmCreateInternalObject (TYPE_IndexField);
+    if (!ObjDesc)
     {   
-        /*  unable to allocate new object descriptor    */
-
-        Status = AE_NO_MEMORY;
-    }
-
-    if (AE_OK == Status)
-    {   
-        /* ObjDesc, IndexRegion, and DataReg valid  */
-
-        ObjDesc->Type = (UINT8) TYPE_IndexField;
-        if (TYPE_IndexField != ObjDesc->IndexField.Type)
-        {
-            /* See comments in AmlPrepDefFieldValue() re unexpected C behavior */
+        /* Unable to allocate new object descriptor    */
         
-            ObjDesc->IndexField.Type = 0x005a;
-            DEBUG_PRINT (ACPI_ERROR, (
-                    "AmlPrepIndexFieldValue: internal failure %p %02x %02x %02x %02x\n",
-                    ObjDesc, ((UINT8 *) ObjDesc)[0], ((UINT8 *) ObjDesc)[1], ((UINT8 *) ObjDesc)[2],
-                    ((UINT8 *) ObjDesc)[3]));
-            OsdFree (ObjDesc);
-            FUNCTION_STATUS_EXIT (AE_AML_ERROR);
-            return AE_AML_ERROR;
-        }
+        return_ACPI_STATUS (AE_NO_MEMORY);
     }
 
+    /* ObjDesc, IndexRegion, and DataReg valid  */
 
-    if (AE_OK == Status)
-    {   
-        /*  ObjDesc, IndexRegion, and DataReg, and ObjDesc->IndexField.ValTyp valid */
+    if (TYPE_IndexField != ObjDesc->IndexField.Type)
+    {
+        /* See comments in AmlPrepDefFieldValue() re unexpected C behavior */
     
-        ObjDesc->IndexField.Access        = (FldFlg & ACCESS_TYPE_MASK) >> ACCESS_TYPE_SHIFT;
-        ObjDesc->IndexField.LockRule      = (FldFlg & LOCK_RULE_MASK) >> LOCK_RULE_SHIFT;
-        ObjDesc->IndexField.UpdateRule    = (FldFlg & UPDATE_RULE_MASK) >> UPDATE_RULE_SHIFT;
-        ObjDesc->IndexField.Length        = (UINT16) FldLen;
+        ObjDesc->IndexField.Type = 0x005a;
+        DEBUG_PRINT (ACPI_ERROR, (
+                "AmlPrepIndexFieldValue: internal failure %p %02x %02x %02x %02x\n",
+                ObjDesc, ((UINT8 *) ObjDesc)[0], ((UINT8 *) ObjDesc)[1], ((UINT8 *) ObjDesc)[2],
+                ((UINT8 *) ObjDesc)[3]));
 
-        /* XXX - should use width of data register, not hardcoded 8 */
-
-        DEBUG_PRINT (ACPI_INFO, (" ** AmlPrepIndexFieldValue: hard 8 **\n"));
-
-        ObjDesc->IndexField.BitOffset = (UINT16) FldPos % 8;
-        ObjDesc->IndexField.Value     = (UINT32) FldPos / 8;
-        ObjDesc->IndexField.Index     = IndexReg;
-        ObjDesc->IndexField.Data      = DataReg;
-
-        DEBUG_PRINT (ACPI_INFO, ("AmlPrepIndexFieldValue: set nte %p (%4.4s) val = %p\n",
-                        ObjStack[ObjStackTop], ObjStack[ObjStackTop], ObjDesc));
-
-        DUMP_STACK_ENTRY (ObjDesc);
-        DUMP_ENTRY (IndexReg);
-        DUMP_ENTRY (DataReg);
-
-        DEBUG_PRINT (ACPI_INFO,
-                    ("============================================================\n"));
-
-        /* 
-         * Store the constructed descriptor (ObjDesc) into the nte whose
-         * handle is on TOS, preserving the current type of that nte.
-         */
-        NsSetValue ((ACPI_HANDLE) ObjStack[ObjStackTop], ObjDesc,
-                    (UINT8) NsGetType ((ACPI_HANDLE) ObjStack[ObjStackTop]));
+        CmDeleteInternalObject (ObjDesc);
+        return_ACPI_STATUS (AE_AML_ERROR);
     }
 
-    FUNCTION_STATUS_EXIT (Status);
-    return Status;
+
+    /*  ObjDesc, IndexRegion, and DataReg, and ObjDesc->IndexField.ValTyp valid */
+
+    ObjDesc->IndexField.Access        = (FldFlg & ACCESS_TYPE_MASK) >> ACCESS_TYPE_SHIFT;
+    ObjDesc->IndexField.LockRule      = (FldFlg & LOCK_RULE_MASK) >> LOCK_RULE_SHIFT;
+    ObjDesc->IndexField.UpdateRule    = (FldFlg & UPDATE_RULE_MASK) >> UPDATE_RULE_SHIFT;
+    ObjDesc->IndexField.Length        = (UINT16) FldLen;
+
+    /* XXX - should use width of data register, not hardcoded 8 */
+
+    DEBUG_PRINT (ACPI_INFO, (" ** AmlPrepIndexFieldValue: hard 8 **\n"));
+
+    ObjDesc->IndexField.BitOffset = (UINT16) FldPos % 8;
+    ObjDesc->IndexField.Value     = (UINT32) FldPos / 8;
+    ObjDesc->IndexField.Index     = IndexReg;
+    ObjDesc->IndexField.Data      = DataReg;
+
+    DEBUG_PRINT (ACPI_INFO, ("AmlPrepIndexFieldValue: set nte %p (%4.4s) val = %p\n",
+                    AmlObjStackGetValue (0), AmlObjStackGetValue (0), ObjDesc));
+
+    DUMP_STACK_ENTRY (ObjDesc);
+    DUMP_ENTRY (IndexReg);
+    DUMP_ENTRY (DataReg);
+
+    DEBUG_PRINT (ACPI_INFO,
+                ("============================================================\n"));
+
+    /* 
+     * Store the constructed descriptor (ObjDesc) into the nte whose
+     * handle is on TOS, preserving the current type of that nte.
+     */
+    NsAttachObject ((ACPI_HANDLE) AmlObjStackGetValue (0), ObjDesc,
+                    (UINT8) NsGetType ((ACPI_HANDLE) AmlObjStackGetValue (0)));
+
+    return_ACPI_STATUS (AE_OK);
 }
 
