@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: nsdump - table dumping routines for debug
- *              $Revision: 1.156 $
+ *              $Revision: 1.158 $
  *
  *****************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2003, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2004, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -447,6 +447,7 @@ AcpiNsDumpOneObject (
 
 
         case ACPI_TYPE_LOCAL_ALIAS:
+        case ACPI_TYPE_LOCAL_METHOD_ALIAS:
 
             AcpiOsPrintf ("Target %4.4s (%p)\n", AcpiUtGetNodeName (ObjDesc), ObjDesc);
             break;
