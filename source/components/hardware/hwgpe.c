@@ -150,7 +150,7 @@ HwEnableGpe (
 
     /* Translate Gpe number to index into tables */
 
-    GpeIndex = GpeValid[GpeNumber];
+    GpeIndex = Gbl_GpeValid[GpeNumber];
 
     /*
      * Calculate the register number and bit position in that register.
@@ -166,15 +166,15 @@ HwEnableGpe (
      * and write out the new register value to enable the GPE.
      */
 
-    InByte = OsdIn8 (GpeRegisters[RegIndex].EnableAddr);
+    InByte = OsdIn8 (Gbl_GpeRegisters[RegIndex].EnableAddr);
     
     DEBUG_PRINT (VERBOSE_EVENTS,
         ("Enabling GPE %d by writing byte %08x to port %08x\n",
-    	GpeNumber, (UINT8)(InByte | GpeBit), GpeRegisters[RegIndex].EnableAddr));
+    	GpeNumber, (UINT8)(InByte | GpeBit), Gbl_GpeRegisters[RegIndex].EnableAddr));
     
-    OsdOut8 (GpeRegisters[RegIndex].EnableAddr, (UINT8)(InByte | GpeBit));
+    OsdOut8 (Gbl_GpeRegisters[RegIndex].EnableAddr, (UINT8)(InByte | GpeBit));
     
-    if (OsdIn8 (GpeRegisters[RegIndex].EnableAddr) != (UINT8)(InByte | GpeBit))
+    if (OsdIn8 (Gbl_GpeRegisters[RegIndex].EnableAddr) != (UINT8)(InByte | GpeBit))
     {
         DEBUG_PRINT (ACPI_WARN, ("Enabling the GPE %d didn't stick...\n", GpeNumber));
     }
@@ -205,7 +205,7 @@ HwDisableGpe (
 
     /* Translate Gpe number to index into tables */
 
-    GpeIndex = GpeValid[GpeNumber];
+    GpeIndex = Gbl_GpeValid[GpeNumber];
 
 
     /*
@@ -222,8 +222,8 @@ HwDisableGpe (
      * and write out the new register value to disable the GPE.
      */
 
-    InByte = OsdIn8 (GpeRegisters[RegIndex].EnableAddr);
-    OsdOut8 (GpeRegisters[RegIndex].EnableAddr, (UINT8)(InByte & ~GpeBit));
+    InByte = OsdIn8 (Gbl_GpeRegisters[RegIndex].EnableAddr);
+    OsdOut8 (Gbl_GpeRegisters[RegIndex].EnableAddr, (UINT8)(InByte & ~GpeBit));
 }
 
 
@@ -250,7 +250,7 @@ HwClearGpe (
 
     /* Translate Gpe number to index into tables */
 
-    GpeIndex = GpeValid[GpeNumber];
+    GpeIndex = Gbl_GpeValid[GpeNumber];
 
 
     /*
@@ -266,7 +266,7 @@ HwClearGpe (
      * Write a one to the appropriate status bit
      */
 
-    OsdOut8 (GpeRegisters[RegIndex].StatusAddr, GpeBit);
+    OsdOut8 (Gbl_GpeRegisters[RegIndex].StatusAddr, GpeBit);
 }
 
 
