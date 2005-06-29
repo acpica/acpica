@@ -238,9 +238,9 @@ CmGetTableRsdt (
     /* Save the table pointers and allocation info */
 
     RSDT = (ROOT_SYSTEM_DESCRIPTION_TABLE *) TableInfo.Pointer;
-    AcpiTables[TABLE_RSDP].Pointer = TableInfo.Pointer;
-    AcpiTables[TABLE_RSDP].Length = TableInfo.Length;
-    AcpiTables[TABLE_RSDP].Allocation = TableInfo.Allocation;
+    AcpiTables[TABLE_RSDT].Pointer = TableInfo.Pointer;
+    AcpiTables[TABLE_RSDT].Length = TableInfo.Length;
+    AcpiTables[TABLE_RSDT].Allocation = TableInfo.Allocation;
 
     /* Valid RSDT pointer */
 
