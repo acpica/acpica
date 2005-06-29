@@ -141,6 +141,8 @@
  *              name whose ACPI_HANDLE is passed.  If Object is NULL 
  *              and Type is ACPI_TYPE_Any, set the name as having no value.
  *
+ * MUTEX:       Assumes namespace is locked
+ *
  ***************************************************************************/
 
 ACPI_STATUS
@@ -329,7 +331,7 @@ NsAttachObject (
                 DEBUG_PRINT (ACPI_ERROR, ("AML Opcode/Type [%x] not supported in attach\n",
                                *(UINT16 *) Object));
 
-                return_ACPI_STATUS (AE_AML_ERROR);
+                return_ACPI_STATUS (AE_TYPE);
 
                 break;
             }
@@ -377,21 +379,17 @@ NsAttachObject (
 
     /* Must increment the new value's reference count (if it is an internal object) */
 
-    CmUpdateObjectReference (ObjDesc, REF_INCREMENT);
+    CmAddReference (ObjDesc);
 
-    CmAcquireMutex (MTX_NAMESPACE);
-    {
-        /* Save the existing object (if any) for deletion later */
+    /* Save the existing object (if any) for deletion later */
 
-        PreviousObjDesc = ThisEntry->Object;
+    PreviousObjDesc = ThisEntry->Object;
 
-        /* Install the object and set the type, flags */
+    /* Install the object and set the type, flags */
 
-        ThisEntry->Object = ObjDesc;
-        ThisEntry->Type = (UINT8) ObjType;
-        ThisEntry->Flags = Flags;
-    }
-    CmReleaseMutex (MTX_NAMESPACE);
+    ThisEntry->Object   = ObjDesc;
+    ThisEntry->Type     = (UINT8) ObjType;
+    ThisEntry->Flags    = Flags;
 
 
     /* 
@@ -400,8 +398,8 @@ NsAttachObject (
 
     if (PreviousObjDesc)
     {
-        CmUpdateObjectReference (PreviousObjDesc, REF_DECREMENT);
-        CmDeleteInternalObject (PreviousObjDesc);
+        CmRemoveReference (PreviousObjDesc);    /* One for the attach to the NTE */
+        CmRemoveReference (PreviousObjDesc);    /* Now delete */
     }
 
     return_ACPI_STATUS (AE_OK);
@@ -418,6 +416,8 @@ NsAttachObject (
  *
  * DESCRIPTION: Record the given offset and p-code length of the method
  *              whose handle is passed
+ *
+ * MUTEX:       Assumes namespace is locked
  *
  ***************************************************************************/
 
@@ -472,14 +472,10 @@ NsAttachMethod (
 
     /* Update reference count and install */
 
-    CmUpdateObjectReference (ObjDesc, REF_INCREMENT);
+    CmAddReference (ObjDesc);
 
-    CmAcquireMutex (MTX_NAMESPACE);
-    {
-        PreviousObjDesc = ThisEntry->Object;
-        ThisEntry->Object = ObjDesc;
-    }
-    CmReleaseMutex (MTX_NAMESPACE);
+    PreviousObjDesc = ThisEntry->Object;
+    ThisEntry->Object = ObjDesc;
 
 
     /* 
@@ -491,7 +487,7 @@ NsAttachMethod (
                                     Handle, PreviousObjDesc, PreviousObjDesc->Method.Pcode, PreviousObjDesc->Method.PcodeLength));
 
         CmUpdateObjectReference (PreviousObjDesc, REF_DECREMENT);
-        CmDeleteInternalObject (PreviousObjDesc);
+        CmRemoveReference (PreviousObjDesc);
     }
 
     DEBUG_PRINT (ACPI_INFO, ("NsAttachMethod: %p Obj %p Pcode %p Len 0x%X\n",
@@ -546,7 +542,7 @@ NsDetachObject (
     {
         /* Attempt to delete the object (and all subobjects) */
 
-        CmDeleteInternalObject (ObjDesc);
+        CmRemoveReference (ObjDesc);
     }
 
     return_VOID;
@@ -721,7 +717,7 @@ NsFindAttachedObject (
      * Either the matching object is returned, or NULL in case
      * of no match.
      */
-    Status = AcpiWalkNamespace (ACPI_TYPE_Any, StartHandle, MaxDepth, NsCompareObject, 
+    Status = NsWalkNamespace (ACPI_TYPE_Any, StartHandle, MaxDepth, NS_WALK_NO_UNLOCK, NsCompareObject, 
                                 ObjDesc, &RetObject);
     if (ACPI_FAILURE (Status))
     {
