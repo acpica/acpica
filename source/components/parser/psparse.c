@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: psparse - Parser top level AML parse routines
- *              $Revision: 1.54 $
+ *              $Revision: 1.55 $
  *
  *****************************************************************************/
 
@@ -729,7 +729,7 @@ AcpiPsParseLoop (
 
             AmlOffset = ParserState->Aml - ParserState->AmlStart;
             Opcode    = AcpiPsPeekOpcode (ParserState);
-    
+
             /*
              * First cut to determine what we have found:
              * 1) A valid AML opcode
@@ -770,11 +770,6 @@ AcpiPsParseLoop (
                 ParserState->Aml += AcpiPsGetOpcodeSize (Opcode);
                 continue;
             }
-
-
-
-
-
 
 
             /* Create Op structure and append to parent's argument list */
@@ -850,9 +845,6 @@ AcpiPsParseLoop (
             }
 
 
-
-
-
             else
             {
                 /* Not a named opcode, just allocate Op and append to parent */
@@ -914,8 +906,6 @@ AcpiPsParseLoop (
                      Op, Op->Opcode, ParserState->Aml, Op->AmlOffset));
             }
         }
-
-
 
 
         /* Start ArgCount at zero because we don't know if there are any args yet */
@@ -999,8 +989,6 @@ AcpiPsParseLoop (
         }
 
 
-
-
         /*
          * Zero ArgCount means that all arguments for this op have been processed
          */
@@ -1029,7 +1017,7 @@ AcpiPsParseLoop (
                          * know the length.
                          */
 
-                        DeferredOp->Length = ParserState->Aml - 
+                        DeferredOp->Length = ParserState->Aml -
                                                 DeferredOp->Data;
                     }
                 }
