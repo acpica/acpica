@@ -1,7 +1,7 @@
 /******************************************************************************
  *
- * Module Name: amconvrt - Object conversion routines
- *              $Revision: 1.10 $
+ * Module Name: exconvrt - Object conversion routines
+ *              $Revision: 1.15 $
  *
  *****************************************************************************/
 
@@ -115,7 +115,7 @@
  *****************************************************************************/
 
 
-#define __AMCONVRT_C__
+#define __EXCONVRT_C__
 
 #include "acpi.h"
 #include "acparser.h"
@@ -127,12 +127,12 @@
 
 
 #define _COMPONENT          ACPI_EXECUTER
-        MODULE_NAME         ("amconvrt")
+        MODULE_NAME         ("exconvrt")
 
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiAmlConvertToInteger
+ * FUNCTION:    AcpiExConvertToInteger
  *
  * PARAMETERS:  *ObjDesc        - Object to be converted.  Must be an
  *                                Integer, Buffer, or String
@@ -145,8 +145,9 @@
  ******************************************************************************/
 
 ACPI_STATUS
-AcpiAmlConvertToInteger (
-    ACPI_OPERAND_OBJECT     **ObjDesc,
+AcpiExConvertToInteger (
+    ACPI_OPERAND_OBJECT     *ObjDesc,
+    ACPI_OPERAND_OBJECT     **ResultDesc,
     ACPI_WALK_STATE         *WalkState)
 {
     UINT32                  i;
@@ -157,19 +158,20 @@ AcpiAmlConvertToInteger (
     UINT32                  IntegerSize = sizeof (ACPI_INTEGER);
 
 
-    switch ((*ObjDesc)->Common.Type)
+    switch (ObjDesc->Common.Type)
     {
     case ACPI_TYPE_INTEGER:
+        *ResultDesc = ObjDesc;
         return (AE_OK);
 
     case ACPI_TYPE_STRING:
-        Pointer = (*ObjDesc)->String.Pointer;
-        Count = (*ObjDesc)->String.Length;
+        Pointer = ObjDesc->String.Pointer;
+        Count   = ObjDesc->String.Length;
         break;
 
     case ACPI_TYPE_BUFFER:
-        Pointer = (char *) (*ObjDesc)->Buffer.Pointer;
-        Count = (*ObjDesc)->Buffer.Length;
+        Pointer = (char *) ObjDesc->Buffer.Pointer;
+        Count   = ObjDesc->Buffer.Length;
         break;
 
     default:
@@ -179,7 +181,7 @@ AcpiAmlConvertToInteger (
     /*
      * Create a new integer
      */
-    RetDesc = AcpiCmCreateInternalObject (ACPI_TYPE_INTEGER);
+    RetDesc = AcpiUtCreateInternalObject (ACPI_TYPE_INTEGER);
     if (!RetDesc)
     {
         return (AE_NO_MEMORY);
@@ -219,7 +221,7 @@ AcpiAmlConvertToInteger (
     /*
      * String conversion is different than Buffer conversion
      */
-    switch ((*ObjDesc)->Common.Type)
+    switch (ObjDesc->Common.Type)
     {
     case ACPI_TYPE_STRING:
 
@@ -257,20 +259,22 @@ AcpiAmlConvertToInteger (
 
     RetDesc->Integer.Value = Result;
 
-    if (WalkState->Opcode != AML_STORE_OP)
+    if (*ResultDesc == ObjDesc)
     {
-        AcpiCmRemoveReference (*ObjDesc);
+        if (WalkState->Opcode != AML_STORE_OP)
+        {
+            AcpiUtRemoveReference (ObjDesc);
+        }
     }
 
-    *ObjDesc = RetDesc;
-
+    *ResultDesc = RetDesc;
     return (AE_OK);
 }
 
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiAmlConvertToBuffer
+ * FUNCTION:    AcpiExConvertToBuffer
  *
  * PARAMETERS:  *ObjDesc        - Object to be converted.  Must be an
  *                                Integer, Buffer, or String
@@ -283,8 +287,9 @@ AcpiAmlConvertToInteger (
  ******************************************************************************/
 
 ACPI_STATUS
-AcpiAmlConvertToBuffer (
-    ACPI_OPERAND_OBJECT     **ObjDesc,
+AcpiExConvertToBuffer (
+    ACPI_OPERAND_OBJECT     *ObjDesc,
+    ACPI_OPERAND_OBJECT     **ResultDesc,
     ACPI_WALK_STATE         *WalkState)
 {
     ACPI_OPERAND_OBJECT     *RetDesc;
@@ -293,14 +298,14 @@ AcpiAmlConvertToBuffer (
     UINT8                   *NewBuf;
 
 
-    switch ((*ObjDesc)->Common.Type)
+    switch (ObjDesc->Common.Type)
     {
     case ACPI_TYPE_INTEGER:
 
         /*
          * Create a new Buffer
          */
-        RetDesc = AcpiCmCreateInternalObject (ACPI_TYPE_BUFFER);
+        RetDesc = AcpiUtCreateInternalObject (ACPI_TYPE_BUFFER);
         if (!RetDesc)
         {
             return (AE_NO_MEMORY);
@@ -321,12 +326,12 @@ AcpiAmlConvertToBuffer (
         /* Need enough space for one integers */
 
         RetDesc->Buffer.Length = IntegerSize;
-        NewBuf = AcpiCmCallocate (IntegerSize);
+        NewBuf = ACPI_MEM_CALLOCATE (IntegerSize);
         if (!NewBuf)
         {
             REPORT_ERROR
-                (("AmlExecDyadic2R/ConcatOp: Buffer allocation failure\n"));
-            AcpiCmRemoveReference (RetDesc);
+                (("ExDyadic2R/ConcatOp: Buffer allocation failure\n"));
+            AcpiUtRemoveReference (RetDesc);
             return (AE_NO_MEMORY);
         }
 
@@ -334,25 +339,31 @@ AcpiAmlConvertToBuffer (
 
         for (i = 0; i < IntegerSize; i++)
         {
-            NewBuf[i] = (UINT8) ((*ObjDesc)->Integer.Value >> (i * 8));
+            NewBuf[i] = (UINT8) (ObjDesc->Integer.Value >> (i * 8));
         }
         RetDesc->Buffer.Pointer = NewBuf;
 
         /* Return the new buffer descriptor */
 
-        if (WalkState->Opcode != AML_STORE_OP)
+        if (*ResultDesc == ObjDesc)
         {
-            AcpiCmRemoveReference (*ObjDesc);
+            if (WalkState->Opcode != AML_STORE_OP)
+            {
+                AcpiUtRemoveReference (ObjDesc);
+            }
         }
-        *ObjDesc = RetDesc;
+
+        *ResultDesc = RetDesc;
         break;
 
 
     case ACPI_TYPE_STRING:
+        *ResultDesc = ObjDesc;
         break;
 
 
     case ACPI_TYPE_BUFFER:
+        *ResultDesc = ObjDesc;
         break;
 
 
@@ -367,7 +378,7 @@ AcpiAmlConvertToBuffer (
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiAmlConvertToString
+ * FUNCTION:    AcpiExConvertToString
  *
  * PARAMETERS:  *ObjDesc        - Object to be converted.  Must be an
  *                                Integer, Buffer, or String
@@ -380,8 +391,9 @@ AcpiAmlConvertToBuffer (
  ******************************************************************************/
 
 ACPI_STATUS
-AcpiAmlConvertToString (
-    ACPI_OPERAND_OBJECT     **ObjDesc,
+AcpiExConvertToString (
+    ACPI_OPERAND_OBJECT     *ObjDesc,
+    ACPI_OPERAND_OBJECT     **ResultDesc,
     ACPI_WALK_STATE         *WalkState)
 {
     ACPI_OPERAND_OBJECT     *RetDesc;
@@ -392,14 +404,14 @@ AcpiAmlConvertToString (
     UINT8                   *Pointer;
 
 
-    switch ((*ObjDesc)->Common.Type)
+    switch (ObjDesc->Common.Type)
     {
     case ACPI_TYPE_INTEGER:
 
         /*
          * Create a new String
          */
-        RetDesc = AcpiCmCreateInternalObject (ACPI_TYPE_STRING);
+        RetDesc = AcpiUtCreateInternalObject (ACPI_TYPE_STRING);
         if (!RetDesc)
         {
             return (AE_NO_MEMORY);
@@ -420,12 +432,12 @@ AcpiAmlConvertToString (
         /* Need enough space for one ASCII integer plus null terminator */
 
         RetDesc->String.Length = (IntegerSize * 2) + 1;
-        NewBuf = AcpiCmCallocate (RetDesc->String.Length);
+        NewBuf = ACPI_MEM_CALLOCATE (RetDesc->String.Length);
         if (!NewBuf)
         {
             REPORT_ERROR
-                (("AmlExecDyadic2R/ConcatOp: Buffer allocation failure\n"));
-            AcpiCmRemoveReference (RetDesc);
+                (("ExConvertToString: Buffer allocation failure\n"));
+            AcpiUtRemoveReference (RetDesc);
             return (AE_NO_MEMORY);
         }
 
@@ -433,7 +445,7 @@ AcpiAmlConvertToString (
 
         for (i = 0; i < (IntegerSize * 2); i++)
         {
-            NewBuf[i] = AcpiGbl_HexToAscii [((*ObjDesc)->Integer.Value >> (i * 4)) & 0xF];
+            NewBuf[i] = AcpiGbl_HexToAscii [(ObjDesc->Integer.Value >> (i * 4)) & 0xF];
         }
 
         /* Null terminate */
@@ -443,18 +455,21 @@ AcpiAmlConvertToString (
 
         /* Return the new buffer descriptor */
 
-        if (WalkState->Opcode != AML_STORE_OP)
+        if (*ResultDesc == ObjDesc)
         {
-            AcpiCmRemoveReference (*ObjDesc);
+            if (WalkState->Opcode != AML_STORE_OP)
+            {
+                AcpiUtRemoveReference (ObjDesc);
+            }
         }
-        *ObjDesc = RetDesc;
 
-        return (AE_OK);
+        *ResultDesc = RetDesc;
+        break;
 
 
     case ACPI_TYPE_BUFFER:
 
-        if (((*ObjDesc)->Buffer.Length * 3) > ACPI_MAX_STRING_CONVERSION)
+        if ((ObjDesc->Buffer.Length * 3) > ACPI_MAX_STRING_CONVERSION)
         {
             return (AE_AML_STRING_LIMIT);
         }
@@ -462,7 +477,7 @@ AcpiAmlConvertToString (
         /*
          * Create a new String
          */
-        RetDesc = AcpiCmCreateInternalObject (ACPI_TYPE_STRING);
+        RetDesc = AcpiUtCreateInternalObject (ACPI_TYPE_STRING);
         if (!RetDesc)
         {
             return (AE_NO_MEMORY);
@@ -470,22 +485,22 @@ AcpiAmlConvertToString (
 
         /* Need enough space for one ASCII integer plus null terminator */
 
-        RetDesc->String.Length = (*ObjDesc)->Buffer.Length * 3;
-        NewBuf = AcpiCmCallocate (RetDesc->String.Length + 1);
+        RetDesc->String.Length = ObjDesc->Buffer.Length * 3;
+        NewBuf = ACPI_MEM_CALLOCATE (RetDesc->String.Length + 1);
         if (!NewBuf)
         {
             REPORT_ERROR
-                (("AmlExecDyadic2R/ConcatOp: Buffer allocation failure\n"));
-            AcpiCmRemoveReference (RetDesc);
+                (("ExConvertToString: Buffer allocation failure\n"));
+            AcpiUtRemoveReference (RetDesc);
             return (AE_NO_MEMORY);
         }
 
         /*
          * Convert each byte of the buffer to two ASCII characters plus a space.
          */
-        Pointer = (*ObjDesc)->Buffer.Pointer;
+        Pointer = ObjDesc->Buffer.Pointer;
         Index = 0;
-        for (i = 0; i < (*ObjDesc)->Buffer.Length; i++)
+        for (i = 0; i < ObjDesc->Buffer.Length; i++)
         {
             NewBuf[Index + 0] = AcpiGbl_HexToAscii [Pointer[i] & 0x0F];
             NewBuf[Index + 1] = AcpiGbl_HexToAscii [(Pointer[i] >> 4) & 0x0F];
@@ -500,15 +515,20 @@ AcpiAmlConvertToString (
 
         /* Return the new buffer descriptor */
 
-        if (WalkState->Opcode != AML_STORE_OP)
+        if (*ResultDesc == ObjDesc)
         {
-            AcpiCmRemoveReference (*ObjDesc);
+            if (WalkState->Opcode != AML_STORE_OP)
+            {
+                AcpiUtRemoveReference (ObjDesc);
+            }
         }
-        *ObjDesc = RetDesc;
+
+        *ResultDesc = RetDesc;
         break;
 
 
     case ACPI_TYPE_STRING:
+        *ResultDesc = ObjDesc;
         break;
 
 
@@ -523,7 +543,7 @@ AcpiAmlConvertToString (
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiAmlConvertToTargetType
+ * FUNCTION:    AcpiExConvertToTargetType
  *
  * PARAMETERS:  *ObjDesc        - Object to be converted.
  *              WalkState       - Current method state
@@ -535,15 +555,15 @@ AcpiAmlConvertToString (
  ******************************************************************************/
 
 ACPI_STATUS
-AcpiAmlConvertToTargetType (
-    OBJECT_TYPE_INTERNAL    DestinationType,
+AcpiExConvertToTargetType (
+    ACPI_OBJECT_TYPE8       DestinationType,
     ACPI_OPERAND_OBJECT     **ObjDesc,
     ACPI_WALK_STATE         *WalkState)
 {
     ACPI_STATUS             Status = AE_OK;
 
 
-    FUNCTION_TRACE ("AmlConvertToTargetType");
+    FUNCTION_TRACE ("ExConvertToTargetType");
 
 
     /*
@@ -570,10 +590,10 @@ AcpiAmlConvertToTargetType (
 
             if (DestinationType != (*ObjDesc)->Common.Type)
             {
-                DEBUG_PRINT (ACPI_ERROR,
-                    ("AmlConvertToTargetType: Target does not allow conversion of type %s to %s\n",
-                    AcpiCmGetTypeName ((*ObjDesc)->Common.Type),
-                    AcpiCmGetTypeName (DestinationType)));
+                DEBUG_PRINTP (ACPI_ERROR,
+                    ("Target does not allow conversion of type %s to %s\n",
+                    AcpiUtGetTypeName ((*ObjDesc)->Common.Type),
+                    AcpiUtGetTypeName (DestinationType)));
                 Status = AE_TYPE;
             }
         }
@@ -592,7 +612,7 @@ AcpiAmlConvertToTargetType (
              * These types require an Integer operand.  We can convert
              * a Buffer or a String to an Integer if necessary.
              */
-            Status = AcpiAmlConvertToInteger (ObjDesc, WalkState);
+            Status = AcpiExConvertToInteger (*ObjDesc, ObjDesc, WalkState);
             break;
 
 
@@ -602,7 +622,7 @@ AcpiAmlConvertToTargetType (
              * The operand must be a String.  We can convert an
              * Integer or Buffer if necessary
              */
-            Status = AcpiAmlConvertToString (ObjDesc, WalkState);
+            Status = AcpiExConvertToString (*ObjDesc, ObjDesc, WalkState);
             break;
 
 
@@ -612,7 +632,7 @@ AcpiAmlConvertToTargetType (
              * The operand must be a String.  We can convert an
              * Integer or Buffer if necessary
              */
-            Status = AcpiAmlConvertToBuffer (ObjDesc, WalkState);
+            Status = AcpiExConvertToBuffer (*ObjDesc, ObjDesc, WalkState);
             break;
         }
         break;
@@ -626,11 +646,10 @@ AcpiAmlConvertToTargetType (
 
 
     default:
-        DEBUG_PRINT (ACPI_ERROR,
-            ("AmlConvertToTargetType: Unknown Target type ID 0x%X Op %s DestType %s\n",
+        DEBUG_PRINTP (ACPI_ERROR,
+            ("Unknown Target type ID 0x%X Op %s DestType %s\n",
             GET_CURRENT_ARG_TYPE (WalkState->OpInfo->RuntimeArgs),
-            WalkState->OpInfo->Name,
-            AcpiCmGetTypeName (DestinationType)));
+            WalkState->OpInfo->Name, AcpiUtGetTypeName (DestinationType)));
 
         Status = AE_AML_INTERNAL;
     }
