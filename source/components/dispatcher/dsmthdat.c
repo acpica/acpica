@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dsmthdat - control method arguments and local variables
- *              $Revision: 1.71 $
+ *              $Revision: 1.73 $
  *
  ******************************************************************************/
 
@@ -410,7 +410,7 @@ AcpiDsMethodDataSetValue (
         return_ACPI_STATUS (Status);
     }
 
-    /* 
+    /*
      * Increment ref count so object can't be deleted while installed.
      * NOTE: We do not copy the object in order to preserve the call by
      * reference semantics of ACPI Control Method invocation.
@@ -725,8 +725,8 @@ AcpiDsStoreObjectToLocal (
              */
             if (ACPI_GET_DESCRIPTOR_TYPE (CurrentObjDesc) != ACPI_DESC_TYPE_OPERAND)
             {
-                ACPI_REPORT_ERROR (("Invalid descriptor type while storing to method arg: %X\n",
-                    CurrentObjDesc->Common.Type));
+                ACPI_REPORT_ERROR (("Invalid descriptor type while storing to method arg: [%s]\n",
+                        AcpiUtGetDescriptorName (CurrentObjDesc)));
                 return_ACPI_STATUS (AE_AML_INTERNAL);
             }
 
@@ -738,8 +738,8 @@ AcpiDsStoreObjectToLocal (
                 (CurrentObjDesc->Reference.Opcode == AML_REF_OF_OP))
             {
                 ACPI_DEBUG_PRINT ((ACPI_DB_EXEC,
-                    "Arg (%p) is an ObjRef(Node), storing in node %p\n",
-                    ObjDesc, CurrentObjDesc));
+                        "Arg (%p) is an ObjRef(Node), storing in node %p\n",
+                        ObjDesc, CurrentObjDesc));
 
                 /*
                  * Store this object to the Node
