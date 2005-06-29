@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Name: hwsleep.c - ACPI Hardware Sleep/Wake Interface
- *              $Revision: 1.64 $
+ *              $Revision: 1.65 $
  *
  *****************************************************************************/
 
@@ -643,6 +643,13 @@ AcpiLeaveSleepState (
     {
         return_ACPI_STATUS (Status);
     }
+
+    /* Enable power button */
+
+    AcpiSetRegister(AcpiGbl_FixedEventInfo[ACPI_EVENT_POWER_BUTTON].EnableRegisterId,
+            1, ACPI_MTX_DO_NOT_LOCK);
+    AcpiSetRegister(AcpiGbl_FixedEventInfo[ACPI_EVENT_POWER_BUTTON].StatusRegisterId,
+            1, ACPI_MTX_DO_NOT_LOCK);
 
     /* Enable BM arbitration */
 
