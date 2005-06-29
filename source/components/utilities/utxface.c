@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: cmxface - External interfaces for "global" ACPI functions
- *              $Revision: 1.47 $
+ *              $Revision: 1.49 $
  *
  *****************************************************************************/
 
@@ -145,7 +145,7 @@
 
 ACPI_STATUS
 AcpiInitializeSubsystem (
-    ACPI_INIT_DATA          *InitData)
+    void)
 {
     ACPI_STATUS             Status;
 
@@ -159,16 +159,15 @@ AcpiInitializeSubsystem (
 
     /* Initialize all globals used by the subsystem */
 
-    AcpiCmInitGlobals (InitData);
+    AcpiCmInitGlobals ();
 
     /* Initialize the OS-Dependent layer */
 
     Status = AcpiOsInitialize ();
     if (ACPI_FAILURE (Status))
     {
-        DEBUG_PRINT (ACPI_ERROR,
-            ("OSD failed to initialize, %s\n", AcpiCmFormatException (Status)));
-        REPORT_ERROR ("OSD Initialization Failure");
+        REPORT_ERROR (("OSD failed to initialize, %s\n", 
+            AcpiCmFormatException (Status)));
         return_ACPI_STATUS (Status);
     }
 
@@ -177,9 +176,8 @@ AcpiInitializeSubsystem (
     Status = AcpiCmMutexInitialize ();
     if (ACPI_FAILURE (Status))
     {
-        DEBUG_PRINT (ACPI_ERROR,
-            ("Global mutex creation failure, %s\n", AcpiCmFormatException (Status)));
-        REPORT_ERROR ("Global Mutex Initialization Failure");
+        REPORT_ERROR (("Global mutex creation failure, %s\n", 
+            AcpiCmFormatException (Status)));
         return_ACPI_STATUS (Status);
     }
 
@@ -191,9 +189,8 @@ AcpiInitializeSubsystem (
     Status = AcpiNsRootInitialize ();
     if (ACPI_FAILURE (Status))
     {
-        DEBUG_PRINT (ACPI_ERROR,
-            ("Namespace initialization failure, %s\n", AcpiCmFormatException (Status)));
-        REPORT_ERROR ("Namespace initialization failure");
+        REPORT_ERROR (("Namespace initialization failure, %s\n", 
+            AcpiCmFormatException (Status)));
         return_ACPI_STATUS (Status);
     }
 
@@ -229,9 +226,13 @@ AcpiEnableSubsystem (
     FUNCTION_TRACE ("AcpiEnableSubsystem");
 
 
-    /* This simply sanity checks the FACP, and prints error messages */
+    /* Sanity check the FACP for valid values */
 
-    AcpiCmValidateFacp ();
+    Status = AcpiCmValidateFacp ();
+    if (ACPI_FAILURE (Status))
+    {
+        return_ACPI_STATUS (Status);
+    }
 
     /*
      * Install the default OpRegion handlers.  These are
@@ -241,7 +242,13 @@ AcpiEnableSubsystem (
 
     if (!(Flags & ACPI_NO_ADDRESS_SPACE_INIT))
     {
-        AcpiEvInstallDefaultAddressSpaceHandlers ();
+        DEBUG_PRINT (TRACE_EXEC, ("[Init] Installing default address space handlers\n"));
+
+        Status = AcpiEvInstallDefaultAddressSpaceHandlers ();
+        if (ACPI_FAILURE (Status))
+        {
+            return_ACPI_STATUS (Status);
+        }
     }
 
     /*
@@ -250,7 +257,13 @@ AcpiEnableSubsystem (
 
     if (!(Flags & ACPI_NO_HARDWARE_INIT))
     {
+        DEBUG_PRINT (TRACE_EXEC, ("[Init] Initializing ACPI hardware\n"));
+
         Status = AcpiHwInitialize ();
+        if (ACPI_FAILURE (Status))
+        {
+            return_ACPI_STATUS (Status);
+        }
     }
 
     /*
@@ -262,7 +275,13 @@ AcpiEnableSubsystem (
 
     if (!(Flags & ACPI_NO_EVENT_INIT))
     {
+        DEBUG_PRINT (TRACE_EXEC, ("[Init] Initializing ACPI events\n"));
+
         Status = AcpiEvInitialize ();
+        if (ACPI_FAILURE (Status))
+        {
+            return_ACPI_STATUS (Status);
+        }
     }
 
 
@@ -272,6 +291,8 @@ AcpiEnableSubsystem (
 
     if (!(Flags & ACPI_NO_ACPI_ENABLE))
     {
+        DEBUG_PRINT (TRACE_EXEC, ("[Init] Going into ACPI mode\n"));
+
         AcpiEnable ();
     }
 
@@ -284,7 +305,13 @@ AcpiEnableSubsystem (
 
     if (!(Flags & ACPI_NO_DEVICE_INIT))
     {
+        DEBUG_PRINT (TRACE_EXEC, ("[Init] Initializing ACPI Devices\n"));
+
         Status = AcpiNsInitializeDevices (Flags & ACPI_NO_PCI_INIT);
+        if (ACPI_FAILURE (Status))
+        {
+            return_ACPI_STATUS (Status);
+        }
     }
 
 
@@ -296,8 +323,15 @@ AcpiEnableSubsystem (
 
     if (!(Flags & ACPI_NO_OBJECT_INIT))
     {
+        DEBUG_PRINT (TRACE_EXEC, ("[Init] Initializing ACPI Objects\n"));
+
         Status = AcpiNsInitializeObjects ();
+        if (ACPI_FAILURE (Status))
+        {
+            return_ACPI_STATUS (Status);
+        }
     }
+
 
     return_ACPI_STATUS (Status);
 }
