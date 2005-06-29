@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: actypes.h - Common data types for the entire ACPI subsystem
- *       $Revision: 1.230 $
+ *       $Revision: 1.231 $
  *
  *****************************************************************************/
 
@@ -334,6 +334,13 @@ typedef union
     UINT64_STRUCT               Part;
 
 } UINT64_OVERLAY;
+
+typedef struct
+{
+    UINT32                      Lo;
+    UINT32                      Hi;
+
+} UINT32_STRUCT;
 
 
 /*
