@@ -406,7 +406,7 @@ AmlDoSeg (
 
             if (NameString)
             {
-                strcat (NameString, CharBuf);
+                STRCAT (NameString, CharBuf);
                 DEBUG_PRINT (TRACE_NAMES, ("AmlDoSeg: Appended to - %s \n", NameString));
             }
 
