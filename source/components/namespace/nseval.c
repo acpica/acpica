@@ -184,7 +184,7 @@ NsEvaluateRelative (
 
     /* Lookup the name in the namespace */
 
-    Status = NsLookup (RelObjEntry->Scope, InternalPath, TYPE_Any, MODE_Exec, 
+    Status = NsLookup (RelObjEntry->Scope, InternalPath, TYPE_Any, IMODE_Execute, 
                                 NS_NO_UPSEARCH, &ObjEntry);
     if (Status != AE_OK)
     {
@@ -264,7 +264,7 @@ NsEvaluateByName (
 
     /* Lookup the name in the namespace */
 
-    Status = NsLookup (NULL, InternalPath, TYPE_Any, MODE_Exec, 
+    Status = NsLookup (NULL, InternalPath, TYPE_Any, IMODE_Execute, 
                                 NS_NO_UPSEARCH, &ObjEntry);
     if (Status != AE_OK)
     {
@@ -527,7 +527,7 @@ NsExecuteControlMethod (
             DEBUG_PRINT (ACPI_ERROR, ("Object Stack [-%d]: %p\n", i, AmlObjStackGetValue (i)));
         }
 
-        AmlDumpObjStack (MODE_Exec, "Remaining Object Stack entries", -1, "");
+        AmlDumpObjStack (IMODE_Execute, "Remaining Object Stack entries", -1, "");
     }
 
     return_ACPI_STATUS (Status);
