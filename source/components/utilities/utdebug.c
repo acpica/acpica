@@ -34,7 +34,7 @@
 char        * Why;
 char        WhyBuf [WHYBUF_SIZE];
 INT32       AcpiHook = 0;
-INT32       __AcpiLibInitStatus = 0;
+INT32       AcpiLibInitStatus = 0;
 
 
 /* Debug switch - level mask */
