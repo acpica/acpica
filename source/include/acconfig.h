@@ -144,14 +144,13 @@
 #define AML_EXPR_MAX_NEST           100     /* Max stack depth parsing expressions */
 
 /* 
- * Method Stack, containing locals and args
- * per level, 0-7 are Local# and 8-14 are Arg#
+ * Method Stack, containing local variables and argumetns
  */
-#define MTH_LOCAL_BASE              0
 #define MTH_NUM_LOCALS              8
-#define MTH_ARG_BASE                (MTH_LOCAL_BASE + MTH_NUM_LOCALS)
+#define MTH_MAX_LOCAL               7
+
 #define MTH_NUM_ARGS                7
-#define MTH_ENTRY_SIZE              (MTH_NUM_LOCALS + MTH_NUM_ARGS)
+#define MTH_MAX_ARG                 6
 
 
 
