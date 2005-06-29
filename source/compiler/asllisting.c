@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asllisting - Listing file generation
- *              $Revision: 1.39 $
+ *              $Revision: 1.41 $
  *
  *****************************************************************************/
 
@@ -144,7 +144,7 @@ LsAmlListingWalk (
     UINT32                  Level,
     void                    *Context)
 {
-    char                    FileByte;
+    UINT8                   FileByte;
     UINT32                  i;
     UINT32                  FileId = (UINT32) Context;
 
@@ -155,7 +155,11 @@ LsAmlListingWalk (
 
     for (i = 0; i < Op->Asl.FinalAmlLength; i++)
     {
-        FlReadFile (ASL_FILE_AML_OUTPUT, &FileByte, 1);
+        if (ACPI_FAILURE (FlReadFile (ASL_FILE_AML_OUTPUT, &FileByte, 1)))
+        {
+            FlFileError (ASL_FILE_AML_OUTPUT, ASL_MSG_READ);
+            AslAbort ();
+        }
         LsWriteListingHexBytes (&FileByte, 1, FileId);
     }
 
@@ -437,6 +441,10 @@ LsFlushListingBuffer (
 
         FlPrintFile (FileId, "    /* %8.8X \"", Gbl_CurrentAmlOffset);
         break;
+
+    default:
+        /* No other types supported */
+        return;
     }
 
     /* Write the ASCII character associated with each of the bytes */
@@ -484,7 +492,7 @@ LsFlushListingBuffer (
 
 void
 LsWriteListingHexBytes (
-    char                    *Buffer,
+    UINT8                   *Buffer,
     UINT32                  Length,
     UINT32                  FileId)
 {
@@ -520,6 +528,10 @@ LsWriteListingHexBytes (
 
                 FlPrintFile (FileId, "        ");
                 break;
+
+            default:
+                /* No other types supported */
+                return;
             }
         }
 
@@ -593,7 +605,7 @@ LsWriteOneSourceLine (
 
     while (FlReadFile (ASL_FILE_SOURCE_OUTPUT, &FileByte, 1) == AE_OK)
     {
-        if (FileId == FileId)
+        if (FileId == ASL_FILE_C_SOURCE_OUTPUT)
         {
             if (FileByte == '/')
             {
@@ -805,9 +817,13 @@ LsWriteNodeToListing (
                     break;
                 }
                 break;
+
+            default:
+                /* Don't care about other objects */
+                break;
             }
             break;
-       }
+        }
     }
 
 
@@ -870,6 +886,11 @@ LsWriteNodeToListing (
 
     case PARSEOP_DEFAULT_ARG:
         return;
+
+
+    default:
+        /* All other opcodes have and AML opcode */
+        break;
     }
 
     /*
@@ -943,6 +964,10 @@ LsWriteNodeToListing (
                     }
                     ACPI_MEM_FREE (Pathname);
                 }
+                break;
+
+            default:
+                /* Nothing to do for listing file */
                 break;
             }
         }
@@ -1028,6 +1053,10 @@ LsDoHexOutput (void)
     case HEX_OUTPUT_ASM:
 
         LsDoHexOutputAsm ();
+        break;
+
+    default:
+        /* No other output types supported */
         break;
     }
 }
@@ -1121,7 +1150,8 @@ LsDoHexOutputC (void)
 
 
 void
-LsDoHexOutputAsm (void)
+LsDoHexOutputAsm (
+    void)
 {
     UINT32                  j;
     UINT8                   FileByte[HEX_CHARS_PER_LINE];

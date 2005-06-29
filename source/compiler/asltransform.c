@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asltransform - Parse tree transforms
- *              $Revision: 1.13 $
+ *              $Revision: 1.15 $
  *
  *****************************************************************************/
 
@@ -213,7 +213,7 @@ TrAmlInitNode (
 {
 
     Op->Asl.ParseOpcode = ParseOpcode;
-    strncpy (Op->Asl.ParseOpName, UtGetOpName (ParseOpcode), 12);
+    UtSetParseOpName (Op);
 }
 
 
@@ -332,6 +332,10 @@ TrTransformSubtree (
 
     case PARSEOP_SWITCH:
         TrDoSwitch (Op);
+        break;
+
+    default:
+        /* Nothing to do here for other opcodes */
         break;
     }
 }
@@ -481,7 +485,7 @@ TrDoSwitch (
              * Case->Child->Peer is the beginning of the case block
              */
             NewOp = TrCreateValuedLeafNode (PARSEOP_NAMESTRING,
-                            ACPI_TO_INTEGER (PredicateValuePath));
+                            (ACPI_INTEGER) ACPI_TO_INTEGER (PredicateValuePath));
 
             Predicate = Case->Asl.Child;
             Predicate->Asl.Next = NewOp;
@@ -574,9 +578,9 @@ TrDoSwitch (
     NewOp->Asl.Parent = Gbl_FirstLevelInsertionNode->Asl.Parent;
 
     NewOp2            = TrCreateValuedLeafNode (PARSEOP_NAMESTRING,
-                                ACPI_TO_INTEGER (PredicateValueName));
+                                (ACPI_INTEGER) ACPI_TO_INTEGER (PredicateValueName));
     NewOp->Asl.Child  = NewOp2;
-    NewOp2->Asl.Next  = TrCreateValuedLeafNode (PARSEOP_INTEGER, 0);
+    NewOp2->Asl.Next  = TrCreateValuedLeafNode (PARSEOP_INTEGER, (ACPI_INTEGER) 0);
 
     TrAmlSetSubtreeParent (NewOp2, NewOp);
 
@@ -596,7 +600,7 @@ TrDoSwitch (
     Predicate->Asl.Child = NULL;
 
     NewOp                = TrCreateValuedLeafNode (PARSEOP_NAMESTRING,
-                                    ACPI_TO_INTEGER (PredicateValuePath));
+                                    (ACPI_INTEGER) ACPI_TO_INTEGER (PredicateValuePath));
     NewOp->Asl.Parent    = StartNode;
     Predicate->Asl.Next  = NewOp;
 }

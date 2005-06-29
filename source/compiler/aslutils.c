@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslutils -- compiler utilities
- *              $Revision: 1.43 $
+ *              $Revision: 1.45 $
  *
  *****************************************************************************/
 
@@ -186,7 +186,7 @@ UtBeginEvent (
     char                    *Name)
 {
 
-    AslGbl_Events[Event].StartTime = AcpiOsGetTimer();
+    AslGbl_Events[Event].StartTime = (time_t) AcpiOsGetTimer();
     AslGbl_Events[Event].EventName = Name;
     AslGbl_Events[Event].Valid = TRUE;
 }
@@ -209,7 +209,7 @@ UtEndEvent (
     UINT32                  Event)
 {
 
-    AslGbl_Events[Event].EndTime = AcpiOsGetTimer();
+    AslGbl_Events[Event].EndTime = (time_t) AcpiOsGetTimer();
 }
 
 
@@ -365,13 +365,33 @@ UtPrintFormattedName (
 
     DbgPrint (ASL_TREE_OUTPUT,
         "%*s %-16.16s", (3 * Level), " ",
-        yytname[ParseOpcode-255]);
+        UtGetOpName (ParseOpcode));
 
     if (Level < TEXT_OFFSET)
     {
         DbgPrint (ASL_TREE_OUTPUT,
             "%*s", (TEXT_OFFSET - Level) * 3, " ");
     }
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    UtSetParseOpName
+ *
+ * PARAMETERS:  Op
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Insert the ascii name of the parse opcode
+ *
+ ******************************************************************************/
+
+void
+UtSetParseOpName (
+    ACPI_PARSE_OBJECT       *Op)
+{
+    strncpy (Op->Asl.ParseOpName, UtGetOpName (Op->Asl.ParseOpcode), 12);
 }
 
 
@@ -392,7 +412,7 @@ UtGetOpName (
     UINT32                  ParseOpcode)
 {
 
-    return (char *) yytname [ParseOpcode - 255];
+    return ((char *) yytname [ParseOpcode - 255] + 8);
 }
 
 
@@ -421,12 +441,6 @@ UtDisplaySummary (
             CompilerId, CompilerVersion, __DATE__);
     }
 
-    /* Error summary */
-
-    FlPrintFile (FileId,
-        "Compilation complete. %d Errors %d Warnings\n",
-        Gbl_ExceptionCount[ASL_ERROR], Gbl_ExceptionCount[ASL_WARNING]);
-
     /* Input/Output summary */
 
     FlPrintFile (FileId,
@@ -443,6 +457,12 @@ UtDisplaySummary (
             Gbl_Files[ASL_FILE_AML_OUTPUT].Filename, Gbl_TableLength,
             TotalNamedObjects, TotalExecutableOpcodes);
     }
+
+    /* Error summary */
+
+    FlPrintFile (FileId,
+        "Compilation complete. %d Errors %d Warnings\n",
+        Gbl_ExceptionCount[ASL_ERROR], Gbl_ExceptionCount[ASL_WARNING]);
 }
 
 
@@ -673,8 +693,8 @@ UtStrtoul64 (
     UINT32                  Base,
     ACPI_INTEGER            *RetInteger)
 {
-    UINT32                  index;
-    UINT32                  sign;
+    UINT32                  Index;
+    UINT32                  Sign;
     ACPI_INTEGER            ReturnValue = 0;
     ACPI_STATUS             Status = AE_OK;
 
@@ -711,17 +731,17 @@ UtStrtoul64 (
      */
     if (*String == '-')
     {
-        sign = NEGATIVE;
+        Sign = NEGATIVE;
         ++String;
     }
     else if (*String == '+')
     {
         ++String;
-        sign = POSITIVE;
+        Sign = POSITIVE;
     }
     else
     {
-        sign = POSITIVE;
+        Sign = POSITIVE;
     }
 
     /*
@@ -770,14 +790,14 @@ UtStrtoul64 (
     {
         if (isdigit (*String))
         {
-            index = *String - '0';
+            Index = ((UINT8) *String) - '0';
         }
         else
         {
-            index = toupper (*String);
-            if (isupper (index))
+            Index = (UINT8) toupper (*String);
+            if (isupper ((char) Index))
             {
-                index = index - 'A' + 10;
+                Index = Index - 'A' + 10;
             }
             else
             {
@@ -785,14 +805,14 @@ UtStrtoul64 (
             }
         }
 
-        if (index >= Base)
+        if (Index >= Base)
         {
             goto ErrorExit;
         }
 
         /* Check to see if value is out of range: */
 
-        if (ReturnValue > ((ACPI_INTEGER_MAX - (ACPI_INTEGER) index) /
+        if (ReturnValue > ((ACPI_INTEGER_MAX - (ACPI_INTEGER) Index) /
                             (ACPI_INTEGER) Base))
         {
             goto ErrorExit;
@@ -800,7 +820,7 @@ UtStrtoul64 (
         else
         {
             ReturnValue *= Base;
-            ReturnValue += index;
+            ReturnValue += Index;
         }
 
         ++String;
@@ -810,7 +830,7 @@ UtStrtoul64 (
     /*
      * If a minus sign was present, then "the conversion is negated":
      */
-    if (sign == NEGATIVE)
+    if (Sign == NEGATIVE)
     {
         ReturnValue = (ACPI_UINT32_MAX - ReturnValue) + 1;
     }

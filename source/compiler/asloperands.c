@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asloperands - AML operand processing
- *              $Revision: 1.35 $
+ *              $Revision: 1.38 $
  *
  *****************************************************************************/
 
@@ -138,16 +138,16 @@
 
 void
 OpnDoMethod (
-    ACPI_PARSE_OBJECT           *Op)
+    ACPI_PARSE_OBJECT       *Op)
 {
-    ACPI_PARSE_OBJECT           *Next;
+    ACPI_PARSE_OBJECT       *Next;
 
     /* Optional arguments for this opcode with defaults */
 
-    UINT8                       NumArgs = 0;
-    UINT8                       Serialized = 0;
-    UINT8                       Concurrency = 0;
-    UINT8                       MethodFlags;
+    UINT8                   NumArgs = 0;
+    UINT8                   Serialized = 0;
+    UINT8                   Concurrency = 0;
+    UINT8                   MethodFlags;
 
 
     /* Opcode and package length first */
@@ -216,17 +216,18 @@ OpnDoMethod (
 
 void
 OpnDoFieldCommon (
-    ACPI_PARSE_OBJECT           *FieldOp,
-    ACPI_PARSE_OBJECT           *Op)
+    ACPI_PARSE_OBJECT       *FieldOp,
+    ACPI_PARSE_OBJECT       *Op)
 {
-    ACPI_PARSE_OBJECT           *Next;
-    ACPI_PARSE_OBJECT           *PkgLengthNode;
-    UINT32                      CurrentBitOffset;
-    UINT32                      NewBitOffset;
-    UINT8                       AccessType;
-    UINT8                       LockRule;
-    UINT8                       UpdateRule;
-    UINT8                       FieldFlags;
+    ACPI_PARSE_OBJECT       *Next;
+    ACPI_PARSE_OBJECT       *PkgLengthNode;
+    UINT32                  CurrentBitOffset;
+    UINT32                  NewBitOffset;
+    UINT8                   AccessType;
+    UINT8                   LockRule;
+    UINT8                   UpdateRule;
+    UINT8                   FieldFlags;
+    UINT32                  MinimumLength;
 
 
     /* AccessType -- not optional, so no need to check for DEFAULT_ARG */
@@ -279,6 +280,9 @@ OpnDoFieldCommon (
         switch (Next->Asl.ParseOpcode)
         {
         case PARSEOP_ACCESSAS:
+
+            PkgLengthNode = Next->Asl.Child;
+            AccessType = PkgLengthNode->Asl.Value.Integer8;
 
             /* Nothing additional to do */
             break;
@@ -334,6 +338,36 @@ OpnDoFieldCommon (
             PkgLengthNode     = Next->Asl.Child;
             NewBitOffset      = PkgLengthNode->Asl.Value.Integer32;
             CurrentBitOffset += NewBitOffset;
+
+            /* Save the current AccessAs value for error checking later */
+
+            switch (AccessType)
+            {
+                case AML_FIELD_ACCESS_ANY:
+                case AML_FIELD_ACCESS_BYTE:
+                case AML_FIELD_ACCESS_BUFFER:
+                default:
+                    MinimumLength = 8;
+                    break;
+
+                case AML_FIELD_ACCESS_WORD:
+                    MinimumLength = 16;
+                    break;
+
+                case AML_FIELD_ACCESS_DWORD:
+                    MinimumLength = 32;
+                    break;
+
+                case AML_FIELD_ACCESS_QWORD:
+                    MinimumLength = 64;
+                    break;
+            }
+
+            PkgLengthNode->Asl.ExtraValue = MinimumLength;
+            break;
+
+        default:
+            /* All supported field opcodes must appear above */
             break;
         }
 
@@ -358,9 +392,9 @@ OpnDoFieldCommon (
 
 void
 OpnDoField (
-    ACPI_PARSE_OBJECT           *Op)
+    ACPI_PARSE_OBJECT       *Op)
 {
-    ACPI_PARSE_OBJECT           *Next;
+    ACPI_PARSE_OBJECT       *Next;
 
 
     /* Opcode is parent node */
@@ -388,9 +422,9 @@ OpnDoField (
 
 void
 OpnDoIndexField (
-    ACPI_PARSE_OBJECT           *Op)
+    ACPI_PARSE_OBJECT       *Op)
 {
-    ACPI_PARSE_OBJECT           *Next;
+    ACPI_PARSE_OBJECT       *Next;
 
 
     /* Opcode is parent node */
@@ -422,9 +456,9 @@ OpnDoIndexField (
 
 void
 OpnDoBankField (
-    ACPI_PARSE_OBJECT           *Op)
+    ACPI_PARSE_OBJECT       *Op)
 {
-    ACPI_PARSE_OBJECT           *Next;
+    ACPI_PARSE_OBJECT       *Next;
 
 
     /* Opcode is parent node */
@@ -461,9 +495,9 @@ OpnDoBankField (
 
 void
 OpnDoRegion (
-    ACPI_PARSE_OBJECT           *Op)
+    ACPI_PARSE_OBJECT       *Op)
 {
-    ACPI_PARSE_OBJECT           *Next;
+    ACPI_PARSE_OBJECT       *Next;
 
 
     /* Opcode is parent node */
@@ -509,14 +543,14 @@ OpnDoRegion (
 
 void
 OpnDoBuffer (
-    ACPI_PARSE_OBJECT           *Op)
+    ACPI_PARSE_OBJECT       *Op)
 {
-    ACPI_PARSE_OBJECT           *InitializerOp;
-    ACPI_PARSE_OBJECT           *BufferLengthNode;
+    ACPI_PARSE_OBJECT       *InitializerOp;
+    ACPI_PARSE_OBJECT       *BufferLengthNode;
 
     /* Optional arguments for this opcode with defaults */
 
-    UINT32                      BufferLength = 0;
+    UINT32                  BufferLength = 0;
 
 
     /* Opcode and package length first */
@@ -539,7 +573,7 @@ OpnDoBuffer (
     /*
      * We want to count the number of items in the initializer list, because if
      * it is larger than the buffer length, we will define the buffer size
-     * to be the size of the initializer list (Per ACPI Spec)
+     * to be the size of the initializer list (as per the ACPI Specification)
      */
     switch (InitializerOp->Asl.ParseOpcode)
     {
@@ -612,7 +646,7 @@ OpnDoBuffer (
     BufferLengthNode->Asl.AmlOpcode     = AML_DWORD_OP;
     BufferLengthNode->Asl.Value.Integer = BufferLength;
 
-    OpcSetOptimalIntegerSize (BufferLengthNode);
+    (void) OpcSetOptimalIntegerSize (BufferLengthNode);
 
     /* Remaining nodes are handled via the tree walk */
 }
@@ -632,10 +666,10 @@ OpnDoBuffer (
 
 void
 OpnDoPackage (
-    ACPI_PARSE_OBJECT           *Op)
+    ACPI_PARSE_OBJECT       *Op)
 {
-    ACPI_PARSE_OBJECT           *InitializerOp;
-    ACPI_PARSE_OBJECT           *PackageLengthNode;
+    ACPI_PARSE_OBJECT       *InitializerOp;
+    ACPI_PARSE_OBJECT       *PackageLengthNode;
 
     /* Optional arguments for this opcode with defaults */
 
@@ -720,9 +754,9 @@ OpnDoPackage (
 
 void
 OpnDoLoadTable (
-    ACPI_PARSE_OBJECT           *Op)
+    ACPI_PARSE_OBJECT       *Op)
 {
-    ACPI_PARSE_OBJECT           *Next;
+    ACPI_PARSE_OBJECT       *Next;
 
 
     /* Opcode is parent node */
@@ -787,11 +821,11 @@ OpnDoLoadTable (
 
 void
 OpnDoDefinitionBlock (
-    ACPI_PARSE_OBJECT           *Op)
+    ACPI_PARSE_OBJECT       *Op)
 {
-    ACPI_PARSE_OBJECT           *Child;
-    ACPI_SIZE                   Length;
-    NATIVE_UINT                 i;
+    ACPI_PARSE_OBJECT       *Child;
+    ACPI_SIZE               Length;
+    NATIVE_UINT             i;
 
 
     /*
@@ -836,6 +870,10 @@ OpnDoDefinitionBlock (
 
     Child = Child->Asl.Next;
     Child->Asl.ParseOpcode = PARSEOP_DEFAULT_ARG;
+
+    /* Use the revision to set the integer width */
+
+    AcpiUtSetIntegerWidth (Child->Asl.Value.Integer8);
 
     /* OEMID */
 
@@ -1002,7 +1040,7 @@ OpnAttachNameToNode (
 
 void
 OpnGenerateAmlOperands (
-    ACPI_PARSE_OBJECT           *Op)
+    ACPI_PARSE_OBJECT       *Op)
 {
 
 

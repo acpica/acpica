@@ -3,7 +3,7 @@
 /******************************************************************************
  *
  * Module Name: aslcompiler.y - Bison input file (ASL grammar and actions)
- *              $Revision: 1.56 $
+ *              $Revision: 1.57 $
  *
  *****************************************************************************/
 
@@ -802,9 +802,9 @@ DataObject
     ;
 
 BufferData
-    : Type5Opcode                   {}
-    | Type2BufferOrStringOpcode     {}
-    | Type2BufferOpcode             {}
+    : Type5Opcode                   {$$ = TrSetNodeFlags ($1, NODE_COMPILE_TIME_CONST);}
+    | Type2BufferOrStringOpcode     {$$ = TrSetNodeFlags ($1, NODE_COMPILE_TIME_CONST);}
+    | Type2BufferOpcode             {$$ = TrSetNodeFlags ($1, NODE_COMPILE_TIME_CONST);}
     | BufferTerm                    {}
     ;
 
@@ -813,14 +813,14 @@ PackageData
     ;
 
 IntegerData
-    : Type2IntegerOpcode            {}
-    | Type3Opcode                   {}
+    : Type2IntegerOpcode            {$$ = TrSetNodeFlags ($1, NODE_COMPILE_TIME_CONST);}
+    | Type3Opcode                   {$$ = TrSetNodeFlags ($1, NODE_COMPILE_TIME_CONST);}
     | Integer                       {}
     | ConstTerm                     {}
     ;
 
 StringData
-    : Type2StringOpcode             {}
+    : Type2StringOpcode             {$$ = TrSetNodeFlags ($1, NODE_COMPILE_TIME_CONST);}
     | String                        {}
     ;
 
@@ -868,20 +868,20 @@ ArgListTail
     ;
 
 TermArg
-    : Type2Opcode                   {}
-    | Type2IntegerOpcode            {}
-    | Type2StringOpcode             {}
-    | Type2BufferOpcode             {}
-    | Type2BufferOrStringOpcode     {}
-    | DataObject                    {}
-    | NameString                    {}
-    | ArgTerm                       {}
-    | LocalTerm                     {}
+    : Type2Opcode                   {$$ = TrSetNodeFlags ($1, NODE_IS_TERM_ARG);}
+    | Type2IntegerOpcode            {$$ = TrSetNodeFlags ($1, NODE_IS_TERM_ARG);}
+    | Type2StringOpcode             {$$ = TrSetNodeFlags ($1, NODE_IS_TERM_ARG);}
+    | Type2BufferOpcode             {$$ = TrSetNodeFlags ($1, NODE_IS_TERM_ARG);}
+    | Type2BufferOrStringOpcode     {$$ = TrSetNodeFlags ($1, NODE_IS_TERM_ARG);}
+    | DataObject                    {$$ = TrSetNodeFlags ($1, NODE_IS_TERM_ARG);}
+    | NameString                    {$$ = TrSetNodeFlags ($1, NODE_IS_TERM_ARG);}
+    | ArgTerm                       {$$ = TrSetNodeFlags ($1, NODE_IS_TERM_ARG);}
+    | LocalTerm                     {$$ = TrSetNodeFlags ($1, NODE_IS_TERM_ARG);}
     ;
 
 Target
-    :                               {$$ = TrCreateLeafNode (PARSEOP_ZERO);}       /* Placeholder is a ZeroOp object */
-    | ','                           {$$ = TrCreateLeafNode (PARSEOP_ZERO);}       /* Placeholder is a ZeroOp object */
+    :                               {$$ = TrSetNodeFlags (TrCreateLeafNode (PARSEOP_ZERO), NODE_IS_TARGET | NODE_COMPILE_TIME_CONST);} /* Placeholder is a ZeroOp object */
+    | ','                           {$$ = TrSetNodeFlags (TrCreateLeafNode (PARSEOP_ZERO), NODE_IS_TARGET | NODE_COMPILE_TIME_CONST);} /* Placeholder is a ZeroOp object */
     | ',' SuperName                 {$$ = TrSetNodeFlags ($2, NODE_IS_TARGET);}
     ;
 
@@ -1676,10 +1676,10 @@ LGreaterTerm
     ;
 
 LGreaterEqualTerm
-    : PARSEOP_LGREATEREQUAL '('		{$$ = TrCreateLeafNode (PARSEOP_LGREATEREQUAL);}
+    : PARSEOP_LGREATEREQUAL '('		{$$ = TrCreateLeafNode (PARSEOP_LLESS);}
         TermArg
         TermArgItem
-        ')'                         {$$ = TrLinkChildren ($<n>3,2,$4,$5);}
+        ')'                         {$$ = TrCreateNode (PARSEOP_LNOT, 1, TrLinkChildren ($<n>3,2,$4,$5));}
     | PARSEOP_LGREATEREQUAL '('
         error ')'                   {$$ = AslDoError(); yyerrok;}
     ;
@@ -1694,10 +1694,10 @@ LLessTerm
     ;
 
 LLessEqualTerm
-    : PARSEOP_LLESSEQUAL '('		{$$ = TrCreateLeafNode (PARSEOP_LLESSEQUAL);}
+    : PARSEOP_LLESSEQUAL '('		{$$ = TrCreateLeafNode (PARSEOP_LGREATER);}
         TermArg
         TermArgItem
-        ')'                         {$$ = TrLinkChildren ($<n>3,2,$4,$5);}
+        ')'                         {$$ = TrCreateNode (PARSEOP_LNOT, 1, TrLinkChildren ($<n>3,2,$4,$5));}
     | PARSEOP_LLESSEQUAL '('
         error ')'                   {$$ = AslDoError(); yyerrok;}
     ;
@@ -1711,10 +1711,10 @@ LNotTerm
     ;
 
 LNotEqualTerm
-    : PARSEOP_LNOTEQUAL '('			{$$ = TrCreateLeafNode (PARSEOP_LNOTEQUAL);}
+    : PARSEOP_LNOTEQUAL '('			{$$ = TrCreateLeafNode (PARSEOP_LEQUAL);}
         TermArg
         TermArgItem
-        ')'                         {$$ = TrLinkChildren ($<n>3,2,$4,$5);}
+        ')'                         {$$ = TrCreateNode (PARSEOP_LNOT, 1, TrLinkChildren ($<n>3,2,$4,$5));}
     | PARSEOP_LNOTEQUAL '('
         error ')'                   {$$ = AslDoError(); yyerrok;}
     ;

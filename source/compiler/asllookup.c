@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: asllookup- Namespace lookup
- *              $Revision: 1.54 $
+ *              $Revision: 1.59 $
  *
  *****************************************************************************/
 
@@ -159,7 +159,7 @@ LsDoOneNamespaceObject (
                         &Node->Name,
                         AcpiUtGetTypeName (Node->Type));
 
-    Op = (ACPI_PARSE_OBJECT *) Node->Object;
+    Op = ACPI_CAST_PTR (ACPI_PARSE_OBJECT, Node->Object);
 
     if (Op)
     {
@@ -240,7 +240,8 @@ LsDoOneNamespaceObject (
  ****************************************************************************/
 
 ACPI_STATUS
-LsDisplayNamespace (void)
+LsDisplayNamespace (
+    void)
 {
     ACPI_STATUS             Status;
 
@@ -260,7 +261,7 @@ LsDisplayNamespace (void)
     Status = AcpiNsWalkNamespace (ACPI_TYPE_ANY, ACPI_ROOT_OBJECT,
                                 ACPI_UINT32_MAX, FALSE, LsDoOneNamespaceObject,
                                 NULL, NULL);
-    return (AE_OK);
+    return (Status);
 }
 
 
@@ -355,7 +356,8 @@ LkObjectExists (
  ****************************************************************************/
 
 ACPI_STATUS
-LkCrossReferenceNamespace (void)
+LkCrossReferenceNamespace (
+    void)
 {
     ACPI_WALK_STATE         *WalkState;
 
@@ -377,6 +379,64 @@ LkCrossReferenceNamespace (void)
     TrWalkParseTree (RootNode, ASL_WALK_VISIT_TWICE, LkNamespaceLocateBegin,
                         LkNamespaceLocateEnd, WalkState);
     return AE_OK;
+}
+
+
+/*****************************************************************************
+ *
+ * FUNCTION:    LkCheckFieldRange
+ *
+ * PARAMETERS:  RegionBitLength     - Length of entire parent region
+ *              FieldBitOffset      - Start of the field unit (within region)
+ *              FieldBitLength      - Entire length of field unit
+ *              AccessBitWidth      - Access width of the field unit
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Check one field unit to make sure it fits in the parent
+ *              op region.
+ *
+ * Note: AccessBitWidth must be either 8,16,32, or 64
+ *
+ ****************************************************************************/
+
+void
+LkCheckFieldRange (
+    ACPI_PARSE_OBJECT       *Op,
+    UINT32                  RegionBitLength,
+    UINT32                  FieldBitOffset, 
+    UINT32                  FieldBitLength,
+    UINT32                  AccessBitWidth)
+{
+    UINT32                  FieldEndBitOffset;
+
+    /*
+     * Check each field unit against the region size.  The entire
+     * field unit (start offset plus length) must fit within the
+     * region.
+     */
+    FieldEndBitOffset = FieldBitOffset + FieldBitLength;
+
+    if (FieldEndBitOffset > RegionBitLength)
+    {
+        /* Field definition itself is beyond the end-of-region */
+
+        AslError (ASL_ERROR, ASL_MSG_FIELD_UNIT_OFFSET, Op, NULL);
+        return;
+    }
+
+    /* 
+     * Now check that the field plus AccessWidth doesn't go beyond
+     * the end-of-region.  Assumes AccessBitWidth is a power of 2
+     */
+    FieldEndBitOffset = ACPI_ROUND_UP (FieldEndBitOffset, AccessBitWidth);
+
+    if (FieldEndBitOffset > RegionBitLength)
+    {
+        /* Field definition combined with the access is beyond EOR */
+
+        AslError (ASL_ERROR, ASL_MSG_FIELD_UNIT_ACCESS_WIDTH, Op, NULL);
+    }
 }
 
 
@@ -411,9 +471,9 @@ LkNamespaceLocateBegin (
     ACPI_OBJECT_TYPE        ObjectType;
     NATIVE_CHAR             *Path;
     UINT8                   PassedArgs;
-    ACPI_PARSE_OBJECT       *Next;
-    ACPI_PARSE_OBJECT       *OwningPsNode;
-    ACPI_PARSE_OBJECT       *SpaceIdNode;
+    ACPI_PARSE_OBJECT       *NextOp;
+    ACPI_PARSE_OBJECT       *OwningOp;
+    ACPI_PARSE_OBJECT       *SpaceIdOp;
     UINT32                  MinimumLength;
     UINT32                  Temp;
     const ACPI_OPCODE_INFO  *OpInfo;
@@ -445,7 +505,7 @@ LkNamespaceLocateBegin (
     }
 
     ObjectType = AslMapNamedOpcodeToDataType (Op->Asl.AmlOpcode);
-    ACPI_DEBUG_PRINT ((ACPI_DB_DISPATCH, "NamespaceLocateBegin: Type=%x\n", ObjectType));
+    ACPI_DEBUG_PRINT ((ACPI_DB_DISPATCH, "NamespaceLocateBegin: Type=%X\n", ObjectType));
 
     /*
      * Lookup the name in the namespace.  Name must exist at this point, or it
@@ -501,6 +561,8 @@ LkNamespaceLocateBegin (
                     AslError (ASL_WARNING, ASL_MSG_NOT_FOUND, Op, Op->Asl.ExternalName);
                 }
             }
+
+            Status = AE_OK;
         }
         return (Status);
     }
@@ -610,12 +672,12 @@ LkNamespaceLocateBegin (
          */
         Op->Asl.ParseOpcode = PARSEOP_METHODCALL;
         PassedArgs          = 0;
-        Next                = Op->Asl.Child;
+        NextOp              = Op->Asl.Child;
 
-        while (Next)
+        while (NextOp)
         {
             PassedArgs++;
-            Next = Next->Asl.Next;
+            NextOp = NextOp->Asl.Next;
         }
 
         if (Node->OwnerId != ASL_EXTERNAL_METHOD)
@@ -653,15 +715,15 @@ LkNamespaceLocateBegin (
             {
                 /* 1) The result from the method is used (the method is a TermArg) */
 
-                OwningPsNode = (ACPI_PARSE_OBJECT *) Node->Object;
-                if (OwningPsNode->Asl.CompileFlags & NODE_METHOD_NO_RETVAL)
+                OwningOp = ACPI_CAST_PTR (ACPI_PARSE_OBJECT, Node->Object);
+                if (OwningOp->Asl.CompileFlags & NODE_METHOD_NO_RETVAL)
                 {
                     /*
                      * 2) Method NEVER returns a value
                      */
                     AslError (ASL_ERROR, ASL_MSG_NO_RETVAL, Op, Op->Asl.ExternalName);
                 }
-                else if (OwningPsNode->Asl.CompileFlags & NODE_METHOD_SOME_NO_RETVAL)
+                else if (OwningOp->Asl.CompileFlags & NODE_METHOD_SOME_NO_RETVAL)
                 {
                     /*
                      * 2) Method SOMETIMES returns a value, SOMETIMES not
@@ -696,8 +758,8 @@ LkNamespaceLocateBegin (
              * the name of the region.  Get the parse node for the
              * region -- which contains the length of the region.
              */
-            OwningPsNode = (ACPI_PARSE_OBJECT *) Node->Object;
-            Op->Asl.Parent->Asl.ExtraValue = ACPI_MUL_8 (OwningPsNode->Asl.Value.Integer32);
+            OwningOp = ACPI_CAST_PTR (ACPI_PARSE_OBJECT, Node->Object);
+            Op->Asl.Parent->Asl.ExtraValue = ACPI_MUL_8 (OwningOp->Asl.Value.Integer32);
 
             /* Examine the field access width */
 
@@ -727,8 +789,8 @@ LkNamespaceLocateBegin (
              * Is the region at least as big as the access width?
              * Note: DataTableRegions have 0 length
              */
-            if ((OwningPsNode->Asl.Value.Integer32) &&
-                (OwningPsNode->Asl.Value.Integer32 < MinimumLength))
+            if ((OwningOp->Asl.Value.Integer32) &&
+                (OwningOp->Asl.Value.Integer32 < MinimumLength))
             {
                 AslError (ASL_ERROR, ASL_MSG_FIELD_ACCESS_WIDTH, Op, NULL);
             }
@@ -737,8 +799,8 @@ LkNamespaceLocateBegin (
              * Check EC/CMOS/SMBUS fields to make sure that the correct
              * access type is used (BYTE for EC/CMOS, BUFFER for SMBUS)
              */
-            SpaceIdNode = OwningPsNode->Asl.Child->Asl.Next;
-            switch (SpaceIdNode->Asl.Value.Integer32)
+            SpaceIdOp = OwningOp->Asl.Child->Asl.Next;
+            switch (SpaceIdOp->Asl.Value.Integer32)
             {
             case REGION_EC:
             case REGION_CMOS:
@@ -765,21 +827,24 @@ LkNamespaceLocateBegin (
         }
         else
         {
+
             /*
-             * This is one element of the field list
+             * This is one element of the field list.  Check to make sure
+             * that it does not go beyond the end of the parent operation region.
+             *
+             * In the code below:
+             *    Op->Asl.Parent->Asl.ExtraValue      - Region Length (bits)
+             *    Op->Asl.ExtraValue                  - Field start offset (bits)
+             *    Op->Asl.Child->Asl.Value.Integer32  - Field length (bits)
+             *    Op->Asl.Child->Asl.ExtraValue       - Field access width (bits)
              */
             if (Op->Asl.Parent->Asl.ExtraValue && Op->Asl.Child)
             {
-                /*
-                 * Check each field unit against the region size.  The entire
-                 * field unit (start offset plus length) must fit within the
-                 * region.
-                 */
-                if (Op->Asl.Parent->Asl.ExtraValue <
-                   (Op->Asl.ExtraValue + Op->Asl.Child->Asl.Value.Integer32))
-                {
-                    AslError (ASL_ERROR, ASL_MSG_FIELD_UNIT_OFFSET, Op, NULL);
-                }
+                LkCheckFieldRange (Op,
+                            Op->Asl.Parent->Asl.ExtraValue,
+                            Op->Asl.ExtraValue,
+                            Op->Asl.Child->Asl.Value.Integer32,
+                            Op->Asl.Child->Asl.ExtraValue);
             }
         }
     }

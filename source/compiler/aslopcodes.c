@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslopcode - AML opcode generation
- *              $Revision: 1.37 $
+ *              $Revision: 1.39 $
  *
  *****************************************************************************/
 
@@ -120,6 +120,8 @@
 #include "aslcompiler.y.h"
 #include "amlcode.h"
 
+#include "acdispat.h"
+#include "acparser.h"
 
 #define _COMPONENT          ACPI_COMPILER
         ACPI_MODULE_NAME    ("aslopcodes")
@@ -174,18 +176,40 @@ OpcSetOptimalIntegerSize (
     ACPI_PARSE_OBJECT       *Op)
 {
 
+    /* Check for the special AML integers first */
+
+    if (Op->Asl.Value.Integer == 0)
+    {
+        Op->Asl.AmlOpcode = AML_ZERO_OP;
+        return 1;
+    }
+    if (Op->Asl.Value.Integer == 1)
+    {
+        Op->Asl.AmlOpcode = AML_ONE_OP;
+        return 1;
+    }
+
+    /* TBD: add check for table width (32 or 64) */
+
+    if (Op->Asl.Value.Integer == ACPI_INTEGER_MAX)
+    {
+        Op->Asl.AmlOpcode = AML_ONES_OP;
+        return 1;
+    }
+  
+    /* Find the best fit */
 
     if (Op->Asl.Value.Integer <= ACPI_UINT8_MAX)
     {
         Op->Asl.AmlOpcode = AML_BYTE_OP;
         return 1;
     }
-    else if (Op->Asl.Value.Integer <= ACPI_UINT16_MAX)
+    if (Op->Asl.Value.Integer <= ACPI_UINT16_MAX)
     {
         Op->Asl.AmlOpcode = AML_WORD_OP;
         return 2;
     }
-    else if (Op->Asl.Value.Integer <= ACPI_UINT32_MAX)
+    if (Op->Asl.Value.Integer <= ACPI_UINT32_MAX)
     {
         Op->Asl.AmlOpcode = AML_DWORD_OP;
         return 4;
@@ -246,7 +270,10 @@ OpcDoAccessAs (
  * RETURN:      None
  *
  * DESCRIPTION: Implement the UNICODE ASL "macro".  Convert the input string
- *              to a unicode buffer.
+ *              to a unicode buffer.  There is no Unicode AML opcode.
+ *
+ * Note:  The Unicode string is 16 bits per character, no leading signature,
+ *        with a 16-bit terminating NULL.
  *
  ******************************************************************************/
 
@@ -258,29 +285,36 @@ OpcDoUnicode (
     UINT32                      Length;
     UINT32                      Count;
     UINT32                      i;
-    char                        *AsciiString;
+    UINT8                       *AsciiString;
     UINT16                      *UnicodeString;
     ACPI_PARSE_OBJECT           *BufferLengthOp;
 
 
-    /* Opcode and package length first */
-    /* Buffer Length is next, followed by the initializer list */
+    /* Change op into a buffer object */
+
+    Op->Asl.CompileFlags &= ~NODE_COMPILE_TIME_CONST;
+    Op->Asl.ParseOpcode = PARSEOP_BUFFER;
+    UtSetParseOpName (Op);
+
+    /* Buffer Length is first, followed by the string */
 
     BufferLengthOp = Op->Asl.Child;
     InitializerOp = BufferLengthOp->Asl.Next;
 
-    AsciiString = InitializerOp->Asl.Value.String;
+    AsciiString = (UINT8 *) InitializerOp->Asl.Value.String;
 
-    Count = strlen (AsciiString);
-    Length = (Count * 2)  + sizeof (UINT16);
+    /* Create a new buffer for the Unicode string */
+
+    Count = strlen (InitializerOp->Asl.Value.String) + 1;
+    Length = Count * sizeof (UINT16);
     UnicodeString = UtLocalCalloc (Length);
+
+    /* Convert to Unicode string (including null terminator) */
 
     for (i = 0; i < Count; i++)
     {
-        UnicodeString[i] = AsciiString[i];
+        UnicodeString[i] = (UINT16) AsciiString[i];
     }
-
-    ACPI_MEM_FREE (AsciiString);
 
     /*
      * Just set the buffer size node to be the buffer length, regardless
@@ -289,13 +323,17 @@ OpcDoUnicode (
     BufferLengthOp->Asl.ParseOpcode   = PARSEOP_INTEGER;
     BufferLengthOp->Asl.AmlOpcode     = AML_DWORD_OP;
     BufferLengthOp->Asl.Value.Integer = Length;
+    UtSetParseOpName (BufferLengthOp);
 
-    OpcSetOptimalIntegerSize (BufferLengthOp);
+    (void) OpcSetOptimalIntegerSize (BufferLengthOp);
+
+    /* The Unicode string is a raw data buffer */
 
     InitializerOp->Asl.Value.Buffer   = (UINT8 *) UnicodeString;
     InitializerOp->Asl.AmlOpcode      = AML_RAW_DATA_BUFFER;
     InitializerOp->Asl.AmlLength      = Length;
     InitializerOp->Asl.ParseOpcode    = PARSEOP_RAW_DATA;
+    UtSetParseOpName (InitializerOp);
 }
 
 
@@ -318,36 +356,38 @@ OpcDoEisaId (
 {
     UINT32                  id;
     UINT32                  SwappedId;
-    NATIVE_CHAR             *InString;
+    UINT8                   *InString;
 
 
-    InString = Op->Asl.Value.String;
+    InString = (UINT8 *) Op->Asl.Value.String;
 
     /* Create ID big-endian first */
 
     id = 0;
-    id |= (InString[0] - '@') << 26;
-    id |= (InString[1] - '@') << 21;
-    id |= (InString[2] - '@') << 16;
+    id |= (UINT32) (InString[0] - '@') << 26;
+    id |= (UINT32) (InString[1] - '@') << 21;
+    id |= (UINT32) (InString[2] - '@') << 16;
 
     id |= (UtHexCharToValue (InString[3])) << 12;
     id |= (UtHexCharToValue (InString[4])) << 8;
     id |= (UtHexCharToValue (InString[5])) << 4;
-    id |= UtHexCharToValue (InString[6]);
+    id |=  UtHexCharToValue (InString[6]);
 
     /* swap to little-endian  */
 
-    SwappedId = (id & 0xFF) << 24;
+    SwappedId  =  (id & 0xFF) << 24;
     SwappedId |= ((id >> 8) & 0xFF) << 16;
     SwappedId |= ((id >> 16) & 0xFF) << 8;
-    SwappedId |= (id >> 24) & 0xFF;
+    SwappedId |=  (id >> 24) & 0xFF;
 
     Op->Asl.Value.Integer32 = SwappedId;
 
     /* Op is now an integer */
 
+    Op->Asl.CompileFlags &= ~NODE_COMPILE_TIME_CONST;
     Op->Asl.ParseOpcode = PARSEOP_INTEGER;
-    OpcSetOptimalIntegerSize (Op);
+    (void) OpcSetOptimalIntegerSize (Op);
+    UtSetParseOpName (Op);
 }
 
 
@@ -392,7 +432,7 @@ OpcGenerateAmlOpcode (
         /*
          * Set the opcode based on the size of the integer
          */
-        OpcSetOptimalIntegerSize (Op);
+        (void) OpcSetOptimalIntegerSize (Op);
         break;
 
     case PARSEOP_OFFSET:
@@ -437,6 +477,11 @@ OpcGenerateAmlOpcode (
         {
             Op->Asl.AmlOpcode = AML_VAR_PACKAGE_OP;
         }
+        break;
+
+    default:
+        /* Nothing to do for other opcodes */
+        break;
     }
 
     return;

@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslmain - compiler main and utilities
- *              $Revision: 1.46 $
+ *              $Revision: 1.48 $
  *
  *****************************************************************************/
 
@@ -127,10 +127,12 @@
 #define _COMPONENT          ACPI_COMPILER
         ACPI_MODULE_NAME    ("aslmain")
 
+int                     optind;
+NATIVE_CHAR             *optarg;
 
-UINT32                   Gbl_ExceptionCount[2] = {0,0};
-char                     hex[] = {'0','1','2','3','4','5','6','7',
-                                  '8','9','A','B','C','D','E','F'};
+UINT32                  Gbl_ExceptionCount[2] = {0,0};
+char                    hex[] = {'0','1','2','3','4','5','6','7',
+                                 '8','9','A','B','C','D','E','F'};
 
 
 /*******************************************************************************
@@ -153,11 +155,15 @@ Options (
     printf ("Options:\n");
     printf ("    -a               Create AML in a assembler source code file (*.asm)\n");
     printf ("    -c               Create AML in a C source code file (*.c)\n");
+    printf ("    -d               Disassemble AML file\n");
+    printf ("    -e               Less verbose errors and warnings for IDE\n");
+    printf ("    -f               Disable constant folding\n");
     printf ("    -h               Additional help and compiler debug options\n");
     printf ("    -l               Create listing file (mixed ASL source and AML) (*.lst)\n");
     printf ("    -n               Create namespace file (*.nsp)\n");
     printf ("    -o <name>        Specify filename prefix for all output files\n");
     printf ("                             (including the .aml file)\n");
+    printf ("    -r               Display ACPI reserved method names\n");
     printf ("    -s               Create combined (w/includes) ASL file (*.src)\n");
     printf ("    -t <a|c>         Create AML hex table in assembler or C (*.hex)\n");
 }
@@ -192,7 +198,7 @@ HelpMessage (
     Options ();
 
     printf ("\nCompiler Debug Options:\n");
-    printf ("    -d <p|t|b>       Create compiler debug/trace file (*.txt)\n");
+    printf ("    -b <p|t|b>       Create compiler debug/trace file (*.txt)\n");
     printf ("                             Types: Parse/Tree/Both\n");
     printf ("    -i               Ignore errors, always create AML output file(s)\n");
     printf ("    -p               Parse only, no output generation\n");
@@ -297,7 +303,7 @@ main (
 
     /* Get the command line options */
 
-    while ((j = getopt (argc, argv, "acd:hilno:pst:vx")) != EOF) switch (j)
+    while ((j = getopt (argc, argv, "ab:cdefhilno:prst:vx")) != EOF) switch (j)
     {
     case 'a':
 
@@ -306,14 +312,7 @@ main (
         Gbl_AsmOutputFlag = TRUE;
         break;
 
-    case 'c':
-
-        /* Produce C hex output file */
-
-        Gbl_C_OutputFlag = TRUE;
-        break;
-
-    case 'd':
+    case 'b':
 
         switch (optarg[0])
         {
@@ -336,6 +335,32 @@ main (
         /* Produce debug output file */
 
         Gbl_DebugFlag = TRUE;
+        break;
+
+    case 'c':
+
+        /* Produce C hex output file */
+
+        Gbl_C_OutputFlag = TRUE;
+        break;
+
+    case 'd':
+        printf ("AML Disassembly not yet supported\n");
+        return (0);
+        break;
+
+    case 'e':
+
+        /* Less verbose error messages */
+
+        Gbl_VerboseErrors = FALSE;
+        break;
+
+    case 'f':
+
+        /* Disable folding on "normal" expressions */
+
+        Gbl_FoldConstants = FALSE;
         break;
 
     case 'h':
@@ -378,6 +403,13 @@ main (
 
         Gbl_ParseOnlyFlag = TRUE;
         break;
+
+    case 'r':
+
+        /* reserved names */
+
+        MpDisplayReservedNames ();
+        return (0);
 
     case 's':
 
