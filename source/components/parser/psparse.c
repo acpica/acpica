@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: psparse - Parser top level AML parse routines
- *              $Revision: 1.108 $
+ *              $Revision: 1.109 $
  *
  *****************************************************************************/
 
@@ -702,9 +702,6 @@ AcpiPsParseLoop (
                     WalkState->Op = NULL;
 
                     Status = WalkState->DescendingCallback (WalkState, &Op);
-
-                    /* TBD: check status here? */
-
                     if (ACPI_FAILURE (Status))
                     {
                         ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "During name lookup/catalog, %s\n",
