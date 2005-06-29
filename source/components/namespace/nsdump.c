@@ -178,8 +178,8 @@ NsDumpOneObject (NsHandle ObjHandle, UINT32 Level, void *Context)
     INT32               LevelTmp;
     NsType              Type;
     UINT32              WhichBit;
-    nte                 *Appendage = NULL;
-    nte                 *ThisEntry = (nte *) ObjHandle;
+    NAME_TABLE_ENTRY    *Appendage = NULL;
+    NAME_TABLE_ENTRY    *ThisEntry = (NAME_TABLE_ENTRY *) ObjHandle;
     size_t              Size = 0;
 
 
@@ -274,8 +274,8 @@ NsDumpOneObject (NsHandle ObjHandle, UINT32 Level, void *Context)
         /* name is a Method and its AML offset/length are set */
         
         DEBUG_PRINT_RAW (TRACE_TABLES, (" @%04x(%04lx)\n",
-                    ((meth *) ThisEntry->Value)->Offset,
-                    ((meth *) ThisEntry->Value)->Length));                
+                    ((METHOD_INFO *) ThisEntry->Value)->Offset,
+                    ((METHOD_INFO *) ThisEntry->Value)->Length));                
     }
     
     else

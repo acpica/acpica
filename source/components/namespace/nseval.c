@@ -1,616 +1,571 @@
-/*******************************************************************************
- *
+
+/******************************************************************************
+ * 
  * Module Name: nseval - Object evaluation interfaces -- includes control
  *                       method lookup and execution.
- *              $Revision: 1.133 $
  *
- ******************************************************************************/
+ *****************************************************************************/
 
 /******************************************************************************
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2005, Intel Corp.
- * All rights reserved.
+ * Some or all of this work - Copyright (c) 1999, Intel Corp.  All rights 
+ * reserved.
  *
  * 2. License
+ * 
+ * 2.1. Intel grants, free of charge, to any person ("Licensee") obtaining a 
+ * copy of the source code appearing in this file ("Covered Code") a license 
+ * under Intel's copyrights in the base code distributed originally by Intel 
+ * ("Original Intel Code") to copy, make derivatives, distribute, use and 
+ * display any portion of the Covered Code in any form; and
  *
- * 2.1. This is your license from Intel Corp. under its intellectual property
- * rights.  You may have additional license terms from the party that provided
- * you this software, covering your right to use that party's intellectual
- * property rights.
+ * 2.2. Intel grants Licensee a non-exclusive and non-transferable patent 
+ * license (without the right to sublicense), under only those claims of Intel
+ * patents that are infringed by the Original Intel Code, to make, use, sell, 
+ * offer to sell, and import the Covered Code and derivative works thereof 
+ * solely to the minimum extent necessary to exercise the above copyright 
+ * license, and in no event shall the patent license extend to any additions to
+ * or modifications of the Original Intel Code.  No other license or right is 
+ * granted directly or by implication, estoppel or otherwise;
  *
- * 2.2. Intel grants, free of charge, to any person ("Licensee") obtaining a
- * copy of the source code appearing in this file ("Covered Code") an
- * irrevocable, perpetual, worldwide license under Intel's copyrights in the
- * base code distributed originally by Intel ("Original Intel Code") to copy,
- * make derivatives, distribute, use and display any portion of the Covered
- * Code in any form, with the right to sublicense such rights; and
- *
- * 2.3. Intel grants Licensee a non-exclusive and non-transferable patent
- * license (with the right to sublicense), under only those claims of Intel
- * patents that are infringed by the Original Intel Code, to make, use, sell,
- * offer to sell, and import the Covered Code and derivative works thereof
- * solely to the minimum extent necessary to exercise the above copyright
- * license, and in no event shall the patent license extend to any additions
- * to or modifications of the Original Intel Code.  No other license or right
- * is granted directly or by implication, estoppel or otherwise;
- *
- * The above copyright and patent license is granted only if the following
+ * the above copyright and patent license is granted only if the following 
  * conditions are met:
  *
- * 3. Conditions
+ * 3. Conditions 
  *
- * 3.1. Redistribution of Source with Rights to Further Distribute Source.
- * Redistribution of source code of any substantial portion of the Covered
- * Code or modification with rights to further distribute source must include
- * the above Copyright Notice, the above License, this list of Conditions,
- * and the following Disclaimer and Export Compliance provision.  In addition,
- * Licensee must cause all Covered Code to which Licensee contributes to
- * contain a file documenting the changes Licensee made to create that Covered
- * Code and the date of any change.  Licensee must include in that file the
- * documentation of any changes made by any predecessor Licensee.  Licensee
- * must include a prominent statement that the modification is derived,
- * directly or indirectly, from Original Intel Code.
+ * 3.1. Redistribution of source code of any substantial portion of the Covered 
+ * Code or modification must include the above Copyright Notice, the above 
+ * License, this list of Conditions, and the following Disclaimer and Export 
+ * Compliance provision.  In addition, Licensee must cause all Covered Code to 
+ * which Licensee contributes to contain a file documenting the changes 
+ * Licensee made to create that Covered Code and the date of any change.  
+ * Licensee must include in that file the documentation of any changes made by
+ * any predecessor Licensee.  Licensee must include a prominent statement that
+ * the modification is derived, directly or indirectly, from Original Intel 
+ * Code.
  *
- * 3.2. Redistribution of Source with no Rights to Further Distribute Source.
- * Redistribution of source code of any substantial portion of the Covered
- * Code or modification without rights to further distribute source must
- * include the following Disclaimer and Export Compliance provision in the
- * documentation and/or other materials provided with distribution.  In
- * addition, Licensee may not authorize further sublicense of source of any
- * portion of the Covered Code, and must include terms to the effect that the
- * license from Licensee to its licensee is limited to the intellectual
- * property embodied in the software Licensee provides to its licensee, and
- * not to intellectual property embodied in modifications its licensee may
- * make.
-
+ * 3.2. Redistribution in binary form of any substantial portion of the Covered 
+ * Code or modification must reproduce the above Copyright Notice, and the 
+ * following Disclaimer and Export Compliance provision in the documentation 
+ * and/or other materials provided with the distribution.
  *
- * 3.3. Redistribution of Executable. Redistribution in executable form of any
- * substantial portion of the Covered Code or modification must reproduce the
- * above Copyright Notice, and the following Disclaimer and Export Compliance
- * provision in the documentation and/or other materials provided with the
- * distribution.
- *
- * 3.4. Intel retains all right, title, and interest in and to the Original
+ * 3.3. Intel retains all right, title, and interest in and to the Original 
  * Intel Code.
  *
- * 3.5. Neither the name Intel nor any other trademark owned or controlled by
- * Intel shall be used in advertising or otherwise to promote the sale, use or
- * other dealings in products derived from or relating to the Covered Code
+ * 3.4. Neither the name Intel nor any other trademark owned or controlled by 
+ * Intel shall be used in advertising or otherwise to promote the sale, use or 
+ * other dealings in products derived from or relating to the Covered Code 
  * without prior written authorization from Intel.
  *
  * 4. Disclaimer and Export Compliance
  *
- * 4.1. INTEL MAKES NO WARRANTY OF ANY KIND REGARDING ANY SOFTWARE PROVIDED
- * HERE.  ANY SOFTWARE ORIGINATING FROM INTEL OR DERIVED FROM INTEL SOFTWARE
- * IS PROVIDED "AS IS," AND INTEL WILL NOT PROVIDE ANY SUPPORT,  ASSISTANCE,
- * INSTALLATION, TRAINING OR OTHER SERVICES.  INTEL WILL NOT PROVIDE ANY
- * UPDATES, ENHANCEMENTS OR EXTENSIONS.  INTEL SPECIFICALLY DISCLAIMS ANY
- * IMPLIED WARRANTIES OF MERCHANTABILITY, NONINFRINGEMENT AND FITNESS FOR A
- * PARTICULAR PURPOSE.
+ * 4.1. INTEL MAKES NO WARRANTY OF ANY KIND REGARDING ANY SOFTWARE PROVIDED 
+ * HERE.  ANY SOFTWARE ORIGINATING FROM INTEL OR DERIVED FROM INTEL SOFTWARE 
+ * IS PROVIDED "AS IS," AND INTEL WILL NOT PROVIDE ANY SUPPORT,  ASSISTANCE, 
+ * INSTALLATION, TRAINING OR OTHER SERVICES.  INTEL WILL NOT PROVIDE ANY 
+ * UPDATES, ENHANCEMENTS OR EXTENSIONS.  INTEL SPECIFICALLY DISCLAIMS ANY 
+ * IMPLIED WARRANTIES OF MERCHANTABILITY, NONINFRINGEMENT AND FITNESS FOR A 
+ * PARTICULAR PURPOSE. 
  *
- * 4.2. IN NO EVENT SHALL INTEL HAVE ANY LIABILITY TO LICENSEE, ITS LICENSEES
- * OR ANY OTHER THIRD PARTY, FOR ANY LOST PROFITS, LOST DATA, LOSS OF USE OR
- * COSTS OF PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES, OR FOR ANY INDIRECT,
- * SPECIAL OR CONSEQUENTIAL DAMAGES ARISING OUT OF THIS AGREEMENT, UNDER ANY
- * CAUSE OF ACTION OR THEORY OF LIABILITY, AND IRRESPECTIVE OF WHETHER INTEL
- * HAS ADVANCE NOTICE OF THE POSSIBILITY OF SUCH DAMAGES.  THESE LIMITATIONS
- * SHALL APPLY NOTWITHSTANDING THE FAILURE OF THE ESSENTIAL PURPOSE OF ANY
+ * 4.2. IN NO EVENT SHALL INTEL HAVE ANY LIABILITY TO LICENSEE, ITS LICENSEES 
+ * OR ANY OTHER THIRD PARTY, FOR ANY LOST PROFITS, LOST DATA, LOSS OF USE OR 
+ * COSTS OF PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES, OR FOR ANY INDIRECT, 
+ * SPECIAL OR CONSEQUENTIAL DAMAGES ARISING OUT OF THIS AGREEMENT, UNDER ANY 
+ * CAUSE OF ACTION OR THEORY OF LIABILITY, AND IRRESPECTIVE OF WHETHER INTEL 
+ * HAS ADVANCE NOTICE OF THE POSSIBILITY OF SUCH DAMAGES.  THESE LIMITATIONS 
+ * SHALL APPLY NOTWITHSTANDING THE FAILURE OF THE ESSENTIAL PURPOSE OF ANY 
  * LIMITED REMEDY.
  *
- * 4.3. Licensee shall not export, either directly or indirectly, any of this
- * software or system incorporating such software without first obtaining any
- * required license or other approval from the U. S. Department of Commerce or
- * any other agency or department of the United States Government.  In the
- * event Licensee exports any such software from the United States or
- * re-exports any such software from a foreign destination, Licensee shall
- * ensure that the distribution and export/re-export of the software is in
- * compliance with all laws, regulations, orders, or other restrictions of the
- * U.S. Export Administration Regulations. Licensee agrees that neither it nor
- * any of its subsidiaries will export/re-export any technical data, process,
- * software, or service, directly or indirectly, to any country for which the
- * United States government or any agency thereof requires an export license,
- * other governmental approval, or letter of assurance, without first obtaining
- * such license, approval or letter.
+ * 4.3. Licensee shall not export, either directly or indirectly, any of this 
+ * software or system incorporating such software without first obtaining any 
+ * required license or other approval from the U. S. Department of Commerce or 
+ * any other agency or department of the United States Government.  In the 
+ * event Licensee exports any such software from the United States or re-
+ * exports any such software from a foreign destination, Licensee shall ensure
+ * that the distribution and export/re-export of the software is in compliance 
+ * with all laws, regulations, orders, or other restrictions of the U.S. Export 
+ * Administration Regulations. Licensee agrees that neither it nor any of its 
+ * subsidiaries will export/re-export any technical data, process, software, or 
+ * service, directly or indirectly, to any country for which the United States 
+ * government or any agency thereof requires an export license, other 
+ * governmental approval, or letter of assurance, without first obtaining such
+ * license, approval or letter.
  *
  *****************************************************************************/
 
+
 #define __NSEVAL_C__
 
-#include "acpi.h"
-#include "acparser.h"
-#include "acinterp.h"
-#include "acnamesp.h"
+#include <acpi.h>
+#include <amlcode.h>
+#include <interpreter.h>
+#include <namespace.h>
+#include <string.h>
 
 
-#define _COMPONENT          ACPI_NAMESPACE
-        ACPI_MODULE_NAME    ("nseval")
-
-/* Local prototypes */
-
-static ACPI_STATUS
-AcpiNsExecuteControlMethod (
-    ACPI_PARAMETER_INFO     *Info);
-
-static ACPI_STATUS
-AcpiNsGetObjectValue (
-    ACPI_PARAMETER_INFO     *Info);
+#define _THIS_MODULE        "nseval.c"
+#define _COMPONENT          NAMESPACE
 
 
-/*******************************************************************************
+static ST_KEY_DESC_TABLE KDT[] = {
+    {"0000", 'I', "Package stack not empty at method exit", "Package stack not empty at method exit"},
+    {"0001", '1', "Method stack not empty at method exit", "Method stack not empty at method exit"},
+    {"0002", 'I', "Object stack not empty at method exit", "Object stack not empty at method exit"},
+    {"0003", '1', "Descriptor Allocation Failure", "Descriptor Allocation Failure"},
+    {NULL, 'I', NULL, NULL}
+};
+
+
+
+/****************************************************************************
  *
- * FUNCTION:    AcpiNsEvaluateRelative
+ * FUNCTION:    NsEvaluateRelative
  *
- * PARAMETERS:  Pathname        - Name of method to execute, If NULL, the
- *                                handle is the object to execute
- *              Info            - Method info block, contains:
- *                  ReturnObject    - Where to put method's return value (if
+ * PARAMETERS:  ObjEntry            - NTE of containing object
+ *              *Pathname           - Name of method to execute, If NULL, the
+ *                                    handle is the object to execute
+ *              *ReturnObject       - Where to put method's return value (if 
  *                                    any).  If NULL, no value is returned.
- *                  Params          - List of parameters to pass to the method,
- *                                    terminated by NULL.  Params itself may be
- *                                    NULL if no parameters are being passed.
+ *              **Params            - List of parameters to pass to
+ *                                    method, terminated by NULL.
+ *                                    Params itself may be NULL
+ *                                    if no parameters are being
+ *                                    passed.
  *
  * RETURN:      Status
  *
- * DESCRIPTION: Evaluate the object or find and execute the requested method
+ * DESCRIPTION: Find and execute the requested method using the handle as a
+ *              scope
  *
- * MUTEX:       Locks Namespace
- *
- ******************************************************************************/
+ ****************************************************************************/
 
 ACPI_STATUS
-AcpiNsEvaluateRelative (
-    char                    *Pathname,
-    ACPI_PARAMETER_INFO     *Info)
+NsEvaluateRelative (NAME_TABLE_ENTRY *ObjEntry, char *Pathname, 
+                    OBJECT_DESCRIPTOR *ReturnObject, OBJECT_DESCRIPTOR **Params)
 {
-    ACPI_STATUS             Status;
-    ACPI_NAMESPACE_NODE     *Node = NULL;
-    ACPI_GENERIC_STATE      *ScopeInfo;
-    char                    *InternalPath = NULL;
+    char                NameBuffer[PATHNAME_MAX];
+    ACPI_STATUS         Status;
+    UINT32              MaxObjectPathLength = PATHNAME_MAX - 1;
 
 
-    ACPI_FUNCTION_TRACE ("NsEvaluateRelative");
-
+    FUNCTION_TRACE ("NsEvaluateRelative");
 
     /*
-     * Must have a valid object handle
+     *  Must have a valid object NTE
      */
-    if (!Info || !Info->Node)
+    if (!ObjEntry) 
     {
-        return_ACPI_STATUS (AE_BAD_PARAMETER);
-    }
-
-    /* Build an internal name string for the method */
-
-    Status = AcpiNsInternalizeName (Pathname, &InternalPath);
-    if (ACPI_FAILURE (Status))
-    {
-        return_ACPI_STATUS (Status);
-    }
-
-    ScopeInfo = AcpiUtCreateGenericState ();
-    if (!ScopeInfo)
-    {
-        goto Cleanup1;
-    }
-
-    /* Get the prefix handle and Node */
-
-    Status = AcpiUtAcquireMutex (ACPI_MTX_NAMESPACE);
-    if (ACPI_FAILURE (Status))
-    {
-        goto Cleanup;
-    }
-
-    Info->Node = AcpiNsMapHandleToNode (Info->Node);
-    if (!Info->Node)
-    {
-        (void) AcpiUtReleaseMutex (ACPI_MTX_NAMESPACE);
-        Status = AE_BAD_PARAMETER;
-        goto Cleanup;
-    }
-
-    /* Lookup the name in the namespace */
-
-    ScopeInfo->Scope.Node = Info->Node;
-    Status = AcpiNsLookup (ScopeInfo, InternalPath, ACPI_TYPE_ANY,
-                            ACPI_IMODE_EXECUTE, ACPI_NS_NO_UPSEARCH, NULL,
-                            &Node);
-
-    (void) AcpiUtReleaseMutex (ACPI_MTX_NAMESPACE);
-
-    if (ACPI_FAILURE (Status))
-    {
-        ACPI_DEBUG_PRINT ((ACPI_DB_NAMES, "Object [%s] not found [%s]\n",
-            Pathname, AcpiFormatException (Status)));
-        goto Cleanup;
+        FUNCTION_EXIT;
+        return AE_BAD_PARAMETER;
     }
 
     /*
-     * Now that we have a handle to the object, we can attempt to evaluate it.
+     *  If the caller specified a method then it must be a path relative to
+     *  the object indicated by the handle we need to reserve space in the
+     *  buffer to append the CM name later
      */
-    ACPI_DEBUG_PRINT ((ACPI_DB_NAMES, "%s [%p] Value %p\n",
-        Pathname, Node, AcpiNsGetAttachedObject (Node)));
+    if (Pathname) 
+    {
+        /*
+         *  We will append the method name to the device pathname
+         */
+        MaxObjectPathLength -= (strlen (Pathname) + 1);
+    }
 
-    Info->Node = Node;
-    Status = AcpiNsEvaluateByHandle (Info);
+    /*
+     *  Get the device pathname
+     */
+    Status = NsHandleToPathname (ObjEntry, MaxObjectPathLength, NameBuffer);
+    if (Status != AE_OK) 
+    {
+        /*
+         *  Failed the conversion
+         */
+        FUNCTION_EXIT;
+        return Status;
+    }
 
-    ACPI_DEBUG_PRINT ((ACPI_DB_NAMES, "*** Completed eval of object %s ***\n",
-        Pathname));
+    /*
+     *  If the caller specified a method then it must be a path relative to
+     *  the object indicated by the handle
+     */
+    if (Pathname) 
+    {
+        /*
+         * Append the method name to the device pathname
+         * (Path separator is a period) 
+         */
+        strcat (NameBuffer, ".");
+        strcat (NameBuffer, Pathname);
+    }
 
-Cleanup:
-    AcpiUtDeleteGenericState (ScopeInfo);
+    /*
+     *  Execute the method
+     */
+    Status = NsEvaluateByName (NameBuffer, ReturnObject, Params);
 
-Cleanup1:
-    ACPI_MEM_FREE (InternalPath);
-    return_ACPI_STATUS (Status);
+    FUNCTION_EXIT;
+    return Status;
 }
 
 
-/*******************************************************************************
+/****************************************************************************
  *
- * FUNCTION:    AcpiNsEvaluateByName
+ * FUNCTION:    NsEvaluateByName
  *
- * PARAMETERS:  Pathname        - Fully qualified pathname to the object
- *              Info                - Method info block, contains:
- *                  ReturnObject    - Where to put method's return value (if
+ * PARAMETERS:  Pathname            - Fully qualified pathname to the object
+ *              *ReturnObject       - Where to put method's return value (if 
  *                                    any).  If NULL, no value is returned.
- *                  Params          - List of parameters to pass to the method,
- *                                    terminated by NULL.  Params itself may be
- *                                    NULL if no parameters are being passed.
+ *              **Params            - List of parameters to pass to
+ *                                    method, terminated by NULL.
+ *                                    Params itself may be NULL
+ *                                    if no parameters are being
+ *                                    passed.
  *
  * RETURN:      Status
  *
- * DESCRIPTION: Evaluate the object or rind and execute the requested method
- *              passing the given parameters
+ * DESCRIPTION: Find and execute the requested method passing the given
+ *              parameters
  *
- * MUTEX:       Locks Namespace
- *
- ******************************************************************************/
+ ****************************************************************************/
 
-ACPI_STATUS
-AcpiNsEvaluateByName (
-    char                    *Pathname,
-    ACPI_PARAMETER_INFO     *Info)
+ACPI_STATUS;
+NsEvaluateByName (char *Pathname, OBJECT_DESCRIPTOR *ReturnObject,
+                    OBJECT_DESCRIPTOR **Params)
 {
-    ACPI_STATUS             Status;
-    char                    *InternalPath = NULL;
+    ACPI_STATUS         Status = AE_ERROR;
+    NAME_TABLE_ENTRY    *MethodEntry = NULL;
 
-
-    ACPI_FUNCTION_TRACE ("NsEvaluateByName");
+    
+    FUNCTION_TRACE ("NsEvaluateByName");
 
 
     /* Build an internal name string for the method */
 
-    Status = AcpiNsInternalizeName (Pathname, &InternalPath);
-    if (ACPI_FAILURE (Status))
+    if (Pathname[0] != '\\' || Pathname[1] != '/')
     {
-        return_ACPI_STATUS (Status);
+        Pathname = NsInternalizeName (Pathname);
     }
 
-    Status = AcpiUtAcquireMutex (ACPI_MTX_NAMESPACE);
-    if (ACPI_FAILURE (Status))
-    {
-        goto Cleanup;
-    }
 
     /* Lookup the name in the namespace */
 
-    Status = AcpiNsLookup (NULL, InternalPath, ACPI_TYPE_ANY,
-                            ACPI_IMODE_EXECUTE, ACPI_NS_NO_UPSEARCH, NULL,
-                            &Info->Node);
+    Status = NsEnter (Pathname, TYPE_Any, MODE_Exec, (NsHandle *) &MethodEntry);
 
-    (void) AcpiUtReleaseMutex (ACPI_MTX_NAMESPACE);
-
-    if (ACPI_FAILURE (Status))
+    if (Status != AE_OK)
     {
-        ACPI_DEBUG_PRINT ((ACPI_DB_NAMES,
-            "Object at [%s] was not found, status=%.4X\n",
-            Pathname, Status));
-        goto Cleanup;
+        DEBUG_PRINT (ACPI_INFO, ("Method [%s] was not found, status=%.4X\n",
+                        Pathname, Status));
+        return Status;
     }
+
 
     /*
-     * Now that we have a handle to the object, we can attempt to evaluate it.
+     * Now that we have a handle to the object, we can attempt
+     * to evaluate it.
      */
-    ACPI_DEBUG_PRINT ((ACPI_DB_NAMES, "%s [%p] Value %p\n",
-        Pathname, Info->Node, AcpiNsGetAttachedObject (Info->Node)));
 
-    Status = AcpiNsEvaluateByHandle (Info);
+    DEBUG_PRINT (ACPI_INFO, ("[%s Method %p Value %p\n",
+                                Pathname, MethodEntry, MethodEntry->Value));
 
-    ACPI_DEBUG_PRINT ((ACPI_DB_NAMES, "*** Completed eval of object %s ***\n",
-        Pathname));
+    Status = NsEvaluateByHandle (MethodEntry, ReturnObject, Params);
 
+    DEBUG_PRINT (ACPI_INFO, ("*** Completed execution of method %s ***\n",
+                                Pathname));
 
-Cleanup:
-
-    /* Cleanup */
-
-    if (InternalPath)
-    {
-        ACPI_MEM_FREE (InternalPath);
-    }
-
-    return_ACPI_STATUS (Status);
+    FUNCTION_EXIT;
+    return Status;
 }
 
 
-/*******************************************************************************
+/****************************************************************************
  *
- * FUNCTION:    AcpiNsEvaluateByHandle
+ * FUNCTION:    NsEvaluateByHandle
  *
- * PARAMETERS:  Info            - Method info block, contains:
- *                  Node            - Method/Object Node to execute
- *                  Parameters      - List of parameters to pass to the method,
- *                                    terminated by NULL. Params itself may be
- *                                    NULL if no parameters are being passed.
- *                  ReturnObject    - Where to put method's return value (if
- *                                    any). If NULL, no value is returned.
- *                  ParameterType   - Type of Parameter list
- *                  ReturnObject    - Where to put method's return value (if
- *                                    any). If NULL, no value is returned.
- *
- * RETURN:      Status
- *
- * DESCRIPTION: Evaluate object or execute the requested method passing the
- *              given parameters
- *
- * MUTEX:       Locks Namespace
- *
- ******************************************************************************/
-
-ACPI_STATUS
-AcpiNsEvaluateByHandle (
-    ACPI_PARAMETER_INFO     *Info)
-{
-    ACPI_STATUS             Status;
-
-
-    ACPI_FUNCTION_TRACE ("NsEvaluateByHandle");
-
-
-    /* Check if namespace has been initialized */
-
-    if (!AcpiGbl_RootNode)
-    {
-        return_ACPI_STATUS (AE_NO_NAMESPACE);
-    }
-
-    /* Parameter Validation */
-
-    if (!Info)
-    {
-        return_ACPI_STATUS (AE_BAD_PARAMETER);
-    }
-
-    /* Initialize the return value to an invalid object */
-
-    Info->ReturnObject = NULL;
-
-    /* Get the prefix handle and Node */
-
-    Status = AcpiUtAcquireMutex (ACPI_MTX_NAMESPACE);
-    if (ACPI_FAILURE (Status))
-    {
-        return_ACPI_STATUS (Status);
-    }
-
-    Info->Node = AcpiNsMapHandleToNode (Info->Node);
-    if (!Info->Node)
-    {
-        (void) AcpiUtReleaseMutex (ACPI_MTX_NAMESPACE);
-        return_ACPI_STATUS (AE_BAD_PARAMETER);
-    }
-
-    /*
-     * For a method alias, we must grab the actual method node so that proper
-     * scoping context will be established before execution.
-     */
-    if (AcpiNsGetType (Info->Node) == ACPI_TYPE_LOCAL_METHOD_ALIAS)
-    {
-        Info->Node = ACPI_CAST_PTR (ACPI_NAMESPACE_NODE, Info->Node->Object);
-    }
-
-    /*
-     * Two major cases here:
-     * 1) The object is an actual control method -- execute it.
-     * 2) The object is not a method -- just return it's current value
-     *
-     * In both cases, the namespace is unlocked by the AcpiNs* procedure
-     */
-    if (AcpiNsGetType (Info->Node) == ACPI_TYPE_METHOD)
-    {
-        /*
-         * Case 1) We have an actual control method to execute
-         */
-        Status = AcpiNsExecuteControlMethod (Info);
-    }
-    else
-    {
-        /*
-         * Case 2) Object is NOT a method, just return its current value
-         */
-        Status = AcpiNsGetObjectValue (Info);
-    }
-
-    /*
-     * Check if there is a return value on the stack that must be dealt with
-     */
-    if (Status == AE_CTRL_RETURN_VALUE)
-    {
-        /* Map AE_CTRL_RETURN_VALUE to AE_OK, we are done with it */
-
-        Status = AE_OK;
-    }
-
-    /*
-     * Namespace was unlocked by the handling AcpiNs* function, so we
-     * just return
-     */
-    return_ACPI_STATUS (Status);
-}
-
-
-/*******************************************************************************
- *
- * FUNCTION:    AcpiNsExecuteControlMethod
- *
- * PARAMETERS:  Info            - Method info block, contains:
- *                  Node            - Method Node to execute
- *                  Parameters      - List of parameters to pass to the method,
- *                                    terminated by NULL. Params itself may be
- *                                    NULL if no parameters are being passed.
- *                  ReturnObject    - Where to put method's return value (if
- *                                    any). If NULL, no value is returned.
- *                  ParameterType   - Type of Parameter list
- *                  ReturnObject    - Where to put method's return value (if
- *                                    any). If NULL, no value is returned.
+ * PARAMETERS:  ObjEntry            - NTE of method to execute
+ *              *ReturnObject       - Where to put method's return value (if 
+ *                                    any).  If NULL, no value is returned.
+ *              **Params            - List of parameters to pass to
+ *                                    method, terminated by NULL.
+ *                                    Params itself may be NULL
+ *                                    if no parameters are being
+ *                                    passed.
  *
  * RETURN:      Status
  *
  * DESCRIPTION: Execute the requested method passing the given parameters
  *
- * MUTEX:       Assumes namespace is locked
- *
- ******************************************************************************/
+ ****************************************************************************/
 
-static ACPI_STATUS
-AcpiNsExecuteControlMethod (
-    ACPI_PARAMETER_INFO     *Info)
+ACPI_STATUS
+NsEvaluateByHandle (NAME_TABLE_ENTRY *ObjEntry, OBJECT_DESCRIPTOR *ReturnObject,
+                            OBJECT_DESCRIPTOR **Params)
 {
-    ACPI_STATUS             Status;
-    ACPI_OPERAND_OBJECT     *ObjDesc;
+    NAME_TABLE_ENTRY    *MethodEntry;
+    ACPI_STATUS         Status = AE_ERROR;
 
 
-    ACPI_FUNCTION_TRACE ("NsExecuteControlMethod");
+    FUNCTION_TRACE ("NsEvaluateByHandle");
+
+
+    /* Parameter Validation */
+
+    if (!RootObject->Scope)
+    {
+        /* 
+         * If the name space has not been initialized, the Method has surely
+         * not been defined and there is nothing to execute.
+         */
+
+        DEBUG_PRINT (ACPI_ERROR, ("Name space not initialized ==> method not defined\n"));
+        FUNCTION_EXIT;
+        return AE_NO_NAMESPACE;
+    }
+
+    if (!ObjEntry)
+    {
+        FUNCTION_EXIT;
+        return AE_BAD_PARAMETER;
+    }
+
+    if (ReturnObject)
+    {
+        /* Initialize the return value */
+
+        memset (ReturnObject, 0, sizeof (OBJECT_DESCRIPTOR));
+    }
+
+
+    /*
+     * Two major cases here:
+     * 1) The object is an actual control method -- execute it.
+     * 2) The object is not a method -- just return it's current value
+     */
+
+    if (NsGetType (MethodEntry) == TYPE_Method)
+    {
+        /* Case 1) We have an actual control method to execute */
+
+        Status = NsExecuteControlMethod (ObjEntry, Params);
+    }
+
+    else
+    {
+        /* Case 2) Object is NOT a method, just return its current value */
+    
+        Status = NsGetObjectValue (ObjEntry);
+    }
+
+
+    /* TBD: Unecessary mapping? */
+
+    if (AE_AML_ERROR == Status)
+    {
+        Status = AE_ERROR;
+    }
+
+
+    /*
+     * Check if there is a return value on the stack that must be dealt with 
+     */
+
+    if (AE_RETURN_VALUE == Status)
+    {
+        /* 
+         * If the Method returned a value and the caller provided a place
+         * to store a returned value, Copy the returned value to the object
+         * descriptor provided by the caller.
+         */
+
+        if (ReturnObject)
+        {
+            (*ReturnObject) = *((OBJECT_DESCRIPTOR *) ObjStack[ObjStackTop]);            
+        }
+    
+        /* 
+         * TBD: do we ever want to delete this??? 
+         * There are clearly cases that we don't and this will fault
+         */
+
+        /* OsdFree (ObjStack[ObjStackTop]); */
+
+        Status = AE_OK;
+    }
+
+    FUNCTION_EXIT;
+    return Status;
+}
+
+
+/****************************************************************************
+ *
+ * FUNCTION:    NsExecuteControlMethod
+ *
+ * PARAMETERS:  MethodEntry         - The Nte of the object/method
+ *              **Params            - List of parameters to pass to
+ *                                    method, terminated by NULL.
+ *                                    Params itself may be NULL
+ *                                    if no parameters are being
+ *                                    passed.
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: execute the requested method passing the given parameters
+ *
+ ****************************************************************************/
+
+ACPI_STATUS
+NsExecuteControlMethod (NAME_TABLE_ENTRY *MethodEntry, OBJECT_DESCRIPTOR **Params)
+{
+    ACPI_STATUS         Status;
+
+
+    FUNCTION_TRACE ("NsExecuteControlMethod");
 
 
     /* Verify that there is a method associated with this object */
 
-    ObjDesc = AcpiNsGetAttachedObject (Info->Node);
-    if (!ObjDesc)
+    if (!MethodEntry->Value)
     {
-        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "No attached method object\n"));
-
-        (void) AcpiUtReleaseMutex (ACPI_MTX_NAMESPACE);
-        return_ACPI_STATUS (AE_NULL_OBJECT);
+        DEBUG_PRINT (ACPI_ERROR, ("Method is undefined\n"));
+        FUNCTION_EXIT;
+        return AE_ERROR;
     }
 
-    ACPI_DUMP_PATHNAME (Info->Node, "Execute Method:",
-        ACPI_LV_INFO, _COMPONENT);
-
-    ACPI_DEBUG_PRINT ((ACPI_DB_EXEC, "Method at AML address %p Length %X\n",
-        ObjDesc->Method.AmlStart + 1, ObjDesc->Method.AmlLength - 1));
-
-    /*
-     * Unlock the namespace before execution.  This allows namespace access
-     * via the external Acpi* interfaces while a method is being executed.
-     * However, any namespace deletion must acquire both the namespace and
-     * interpreter locks to ensure that no thread is using the portion of the
-     * namespace that is being deleted.
+    /* 
+     * Valid method, Set the current scope to that of the Method, and execute it.
      */
-    Status = AcpiUtReleaseMutex (ACPI_MTX_NAMESPACE);
-    if (ACPI_FAILURE (Status))
-    {
-        return_ACPI_STATUS (Status);
-    }
 
-    /*
-     * Execute the method via the interpreter.  The interpreter is locked
-     * here before calling into the AML parser
+    DEBUG_PRINT (ACPI_INFO,
+                ("Control method at Offset %x Length %lx]\n",
+                ((METHOD_INFO *) MethodEntry->Value)->Offset + 1,
+                ((METHOD_INFO *) MethodEntry->Value)->Length - 1));
+
+    NsDumpPathname (MethodEntry->Scope, "NsEvaluateByHandle: Setting scope to", 
+                    TRACE_NAMES, _COMPONENT);
+
+    /* Reset the current scope to the beginning of scope stack */
+
+    CurrentScope = &ScopeStack[0];
+
+    /* Push current scope on scope stack and make Method->Scope current  */
+
+    NsPushCurrentScope (MethodEntry->Scope, TYPE_Method);
+
+    NsDumpPathname (MethodEntry, "NsEvaluateByHandle: Executing", 
+                    TRACE_NAMES, _COMPONENT);
+
+    DEBUG_PRINT (TRACE_NAMES, ("At offset %8XH\n",
+                      ((METHOD_INFO *) MethodEntry->Value)->Offset + 1));
+
+    AmlClearPkgStack ();
+    ObjStackTop = 0;    /* Clear object stack */
+    
+
+    /* 
+     * Excecute the method via the interpreter
      */
-    Status = AcpiExEnterInterpreter ();
-    if (ACPI_FAILURE (Status))
+    Status = AmlExecuteMethod (
+                     ((METHOD_INFO *) MethodEntry->Value)->Offset + 1,
+                     ((METHOD_INFO *) MethodEntry->Value)->Length - 1,
+                     Params);
+
+    if (AmlPackageNested ())
     {
-        return_ACPI_STATUS (Status);
+        /*  Package stack not empty at method exit and should be  */
+
+        REPORT_INFO (&KDT[0]);
     }
 
-    Status = AcpiPsxExecute (Info);
-    AcpiExExitInterpreter ();
+    if (AmlGetMethodDepth () > -1)
+    {
+        /*  Method stack not empty at method exit and should be */
 
-    return_ACPI_STATUS (Status);
+        REPORT_ERROR (&KDT[1]);
+    }
+
+    if (ObjStackTop)
+    {
+        /* Object stack is not empty at method exit and should be */
+
+        REPORT_INFO (&KDT[2]);
+        AmlDumpStack (MODE_Exec, "Remaining Object Stack entries", -1, "");
+    }
+
+    FUNCTION_EXIT;
+    return Status;
 }
 
 
-/*******************************************************************************
+/****************************************************************************
  *
- * FUNCTION:    AcpiNsGetObjectValue
+ * FUNCTION:    NsGetObjectValue
  *
- * PARAMETERS:  Info            - Method info block, contains:
- *                  Node            - Object's NS node
- *                  ReturnObject    - Where to put object value (if
- *                                    any). If NULL, no value is returned.
+ * PARAMETERS:  ObjectEntry         - The Nte of the object
+ *              **Params            - List of parameters to pass to
+ *                                    method, terminated by NULL.
+ *                                    Params itself may be NULL
+ *                                    if no parameters are being
+ *                                    passed.
  *
  * RETURN:      Status
  *
- * DESCRIPTION: Return the current value of the object
+ * DESCRIPTION: return the current value of the object
  *
- * MUTEX:       Assumes namespace is locked, leaves namespace unlocked
- *
- ******************************************************************************/
+ ****************************************************************************/
 
-static ACPI_STATUS
-AcpiNsGetObjectValue (
-    ACPI_PARAMETER_INFO     *Info)
+ACPI_STATUS
+NsGetObjectValue (NAME_TABLE_ENTRY *ObjectEntry)
 {
-    ACPI_STATUS             Status = AE_OK;
-    ACPI_NAMESPACE_NODE     *ResolvedNode = Info->Node;
+    ACPI_STATUS             Status;
+    OBJECT_DESCRIPTOR       *ObjDesc;
 
 
-    ACPI_FUNCTION_TRACE ("NsGetObjectValue");
+    FUNCTION_TRACE ("NsGetObjectValue");
 
 
-    /*
-     * Objects require additional resolution steps (e.g., the Node may be a
-     * field that must be read, etc.) -- we can't just grab the object out of
-     * the node.
-     */
-
-    /*
-     * Use ResolveNodeToValue() to get the associated value.  This call always
-     * deletes ObjDesc (allocated above).
-     *
-     * NOTE: we can get away with passing in NULL for a walk state because
-     * ObjDesc is guaranteed to not be a reference to either a method local or
-     * a method argument (because this interface can only be called from the
-     * AcpiEvaluate external interface, never called from a running method.)
-     *
-     * Even though we do not directly invoke the interpreter for this, we must
-     * enter it because we could access an opregion. The opregion access code
-     * assumes that the interpreter is locked.
-     *
-     * We must release the namespace lock before entering the intepreter.
-     */
-    Status = AcpiUtReleaseMutex (ACPI_MTX_NAMESPACE);
-    if (ACPI_FAILURE (Status))
+    ObjDesc = AllocateObjectDesc (&KDT[3]);
+    if (!ObjDesc)
     {
-        return_ACPI_STATUS (Status);
+        /* Descriptor allocation failure */
+
+        FUNCTION_EXIT;
+        return AE_NO_MEMORY;
     }
 
-    Status = AcpiExEnterInterpreter ();
-    if (ACPI_SUCCESS (Status))
-    {
-        Status = AcpiExResolveNodeToValue (&ResolvedNode, NULL);
-        /*
-         * If AcpiExResolveNodeToValue() succeeded, the return value was placed
-         * in ResolvedNode.
-         */
-        AcpiExExitInterpreter ();
+    /* Construct a descriptor pointing to the name */
 
-        if (ACPI_SUCCESS (Status))
-        {
-            Status = AE_CTRL_RETURN_VALUE;
-            Info->ReturnObject = ACPI_CAST_PTR
-                                    (ACPI_OPERAND_OBJECT, ResolvedNode);
-            ACPI_DEBUG_PRINT ((ACPI_DB_NAMES, "Returning object %p [%s]\n",
-                Info->ReturnObject,
-                AcpiUtGetObjectTypeName (Info->ReturnObject)));
-        }
+    ObjDesc->Lvalue.ValType = (UINT8) TYPE_Lvalue;
+    ObjDesc->Lvalue.OpCode  = (UINT8) AML_NameOp;
+    ObjDesc->Lvalue.Ref     = (void *) ObjectEntry;
+
+
+    /* 
+     * Put the ObjDesc on the stack, and use AmlGetRvalue() to get 
+     * the associated value.  Note that ObjStackTop points to the 
+     * top valid entry, not to the first unused position.
+     */
+
+    LocalDeleteObject ((OBJECT_DESCRIPTOR **) &ObjStack[ObjStackTop]);
+    ObjStack[ObjStackTop] = (void *) ObjDesc;
+
+    /* This causes ObjDesc (allocated above) to always be deleted */
+
+    Status = AmlGetRvalue ((OBJECT_DESCRIPTOR **) &ObjStack[ObjStackTop]);
+
+    /* 
+     * If AmlGetRvalue() succeeded, treat the top stack entry as
+     * a return value.
+     */
+
+    if (Status == AE_OK)
+    {
+        Status = AE_RETURN_VALUE;
     }
 
-    /* Namespace is unlocked */
 
-    return_ACPI_STATUS (Status);
+    FUNCTION_EXIT;
+    return Status;
 }
-
