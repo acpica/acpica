@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dsobject - Dispatcher object management routines
- *              $Revision: 1.45 $
+ *              $Revision: 1.46 $
  *
  *****************************************************************************/
 
@@ -510,6 +510,10 @@ AcpiDsBuildInternalSimpleObj (
     ACPI_OPERAND_OBJECT     *ObjDesc;
     OBJECT_TYPE_INTERNAL    Type;
     ACPI_STATUS             Status;
+    UINT32                  Length;
+    char                    *Name;
+
+
 
 
     FUNCTION_TRACE ("DsBuildInternalSimpleObj");
@@ -534,6 +538,26 @@ AcpiDsBuildInternalSimpleObj (
 
             if (ACPI_FAILURE (Status))
             {
+                if (Status == AE_NOT_FOUND)
+                {
+                    Name = NULL;
+                    AcpiNsExternalizeName (ACPI_UINT32_MAX, Op->Value.String, &Length, &Name);
+
+                    if (Name)
+                    {
+                        REPORT_WARNING (("Reference %s AML 0x%X not found\n", 
+                                    Name, Op->AmlOffset));
+                        AcpiCmFree (Name);
+                    }
+                    else
+                    {
+                        REPORT_WARNING (("Reference %s AML 0x%X not found\n", 
+                                   Op->Value.String, Op->AmlOffset));
+                    }
+                    *ObjDescPtr = NULL;
+                    return_ACPI_STATUS (AE_OK);
+                }
+
                 return_ACPI_STATUS (Status);
             }
         }
@@ -628,7 +652,7 @@ AcpiDsBuildInternalPackageObj (
     {
         /* Package vector allocation failure   */
 
-        REPORT_ERROR ("DsBuildInternalPackageObj: Package vector allocation failure");
+        REPORT_ERROR (("DsBuildInternalPackageObj: Package vector allocation failure\n"));
 
         AcpiCmDeleteObjectDesc (ObjDesc);
         return_ACPI_STATUS (AE_NO_MEMORY);
