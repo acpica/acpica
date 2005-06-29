@@ -193,6 +193,9 @@ OsAcquireOpRqst (
     ACPI_STATUS             Status = AE_OK;
 
 
+
+    FUNCTION_TRACE ("OsAcquireOpRqst");
+
     if (ObjDesc)
     {
         if (ObjDesc->Mutex.LockCount == 0)
@@ -213,7 +216,7 @@ OsAcquireOpRqst (
         }
     }
 
-    return (Status);
+    return_ACPI_STATUS (Status);
 }
 
 
@@ -240,6 +243,9 @@ OsReleaseOpRqst (
     ACPI_STATUS             Status = AE_OK;
 
 
+    FUNCTION_TRACE ("OsReleaseOpRqst");
+
+    
     if (ObjDesc)
     {
         if (ObjDesc->Mutex.LockCount == 0)
@@ -261,7 +267,7 @@ OsReleaseOpRqst (
         }
     }
 
-    return (Status);
+    return_ACPI_STATUS (Status);
 }
 
 
