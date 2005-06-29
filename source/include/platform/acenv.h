@@ -353,7 +353,7 @@ typedef char *va_list;
         __asm mov           edx, eax                \
         __asm and           edx, 0xFFFFFFFC         \
         __asm lock cmpxchg  dword ptr [ecx], edx    \
-        __asm jnz           rel10                   \
+        __asm jnz           Rel10                   \
                                                     \
         __asm cmp           dl, 3                   \
         __asm and           eax, 1                  \
