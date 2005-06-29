@@ -117,9 +117,10 @@
 #define __IEXECUTE_C__
 
 #include <acpi.h>
-#include <interpreter.h>
+#include <parser.h>
+#include <interp.h>
 #include <amlcode.h>
-#include <namespace.h>
+#include <namesp.h>
 
 
 #define _COMPONENT          INTERPRETER
@@ -215,7 +216,7 @@ AmlExecStore (
 
         DUMP_STACK_ENTRY (ValDesc);
         DUMP_STACK_ENTRY (DestDesc);
-        DUMP_STACK (IMODE_Execute, "AmlExecStore", 2, "target not Lvalue");
+        DUMP_OPERANDS (&DestDesc, IMODE_Execute, "AmlExecStore", 2, "target not Lvalue");
 
         return_ACPI_STATUS (AE_AML_ERROR);
     }
@@ -628,24 +629,13 @@ AmlExecStore (
             
             /* 
              * All other types than Alias and the various Fields come here.
-             * Store a copy of ValDesc as the new value of the Name, and set
+             * Store ValDesc as the new value of the Name, and set
              * the Name's type to that of the value being stored in it.
+             * ValDesc reference count is incremented by AttachObject.
              */
-            CmCopyInternalObject (ValDesc, DestDesc);
-            if (ACPI_FAILURE (Status))
-            {
-                return_ACPI_STATUS (Status);
-            }
-            
-            if (ACPI_TYPE_Buffer == DestDesc->Common.Type)
-            {
-                /* Assign a new sequence number */
 
-                DestDesc->Buffer.Sequence = AmlBufSeq ();
-            }
-
-
-            NsAttachObject (TempHandle, DestDesc, DestDesc->Common.Type);
+            NsAttachObject (TempHandle, ValDesc, ValDesc->Common.Type);
+            DeleteDestDesc = DestDesc;
             break;
         }
 
@@ -733,7 +723,9 @@ AmlExecStore (
         break;
 
 
-    case AML_ZeroOp: case AML_OneOp: case AML_OnesOp:
+    case AML_ZeroOp: 
+    case AML_OneOp: 
+    case AML_OnesOp:
 
         /* 
          * Storing to a constant is a no-op -- see spec sec 15.2.3.3.1.
@@ -744,23 +736,21 @@ AmlExecStore (
         break;
 
 
-    case AML_Local0: case AML_Local1: case AML_Local2: case AML_Local3:
-    case AML_Local4: case AML_Local5: case AML_Local6: case AML_Local7:
+    case AML_LocalOp:
 
-        Status = AmlMthStackSetValue (MTH_TYPE_LOCAL, (DestDesc->Lvalue.OpCode - AML_Local0),
-                                        ValDesc, DestDesc);
+        Status = PsxMthStackSetValue (MTH_TYPE_LOCAL, (DestDesc->Lvalue.Offset), ValDesc);
+        DeleteDestDesc = DestDesc;
         break;
 
 
-    case AML_Arg0: case AML_Arg1: case AML_Arg2: case AML_Arg3:
-    case AML_Arg4: case AML_Arg5: case AML_Arg6:
+    case AML_ArgOp:
 
-        Status = AmlMthStackSetValue (MTH_TYPE_ARG, (DestDesc->Lvalue.OpCode - AML_Arg0), 
-                                        ValDesc, DestDesc);
+        Status = PsxMthStackSetValue (MTH_TYPE_ARG, (DestDesc->Lvalue.Offset), ValDesc);
+        DeleteDestDesc = DestDesc;
         break;
 
 
-    case Debug1:
+    case AML_DebugOp:
 
         /* 
          * Storing to the Debug object causes the value stored to be
