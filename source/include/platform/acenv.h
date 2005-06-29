@@ -1,7 +1,7 @@
 
 /******************************************************************************
  * 
- * Name: environment.h - Generation environment specific items
+ * Name: acenv.h - Generation environment specific items
  *
  *****************************************************************************/
 
@@ -114,8 +114,8 @@
  *
  *****************************************************************************/
 
-#ifndef __ENVIRONMENT_H__
-#define __ENVIRONMENT_H__
+#ifndef __ACENV_H__
+#define __ACENV_H__
 
 
 /* 
@@ -278,4 +278,4 @@ typedef char *va_list;
 #endif
 
 
-#endif /* __ENVIRONMENT_H__ */
+#endif /* __ACENV_H__ */
