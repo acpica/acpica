@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: cmeval - Object evaluation
- *              $Revision: 1.17 $
+ *              $Revision: 1.18 $
  *
  *****************************************************************************/
 
@@ -146,7 +146,7 @@ ACPI_STATUS
 AcpiCmEvaluateNumericObject (
     NATIVE_CHAR             *ObjectName,
     ACPI_NAMESPACE_NODE     *DeviceNode,
-    UINT32                  *Address)
+    ACPI_INTEGER            *Address)
 {
     ACPI_OPERAND_OBJECT     *ObjDesc;
     ACPI_STATUS             Status;
@@ -293,7 +293,7 @@ AcpiCmExecute_HID (
         {
             /* Convert the Numeric HID to string */
 
-            AcpiAmlEisaIdToString (ObjDesc->Number.Value, Hid->Buffer);
+            AcpiAmlEisaIdToString ((UINT32) ObjDesc->Number.Value, Hid->Buffer);
         }
 
         else
@@ -390,7 +390,7 @@ AcpiCmExecute_UID (
         {
             /* Convert the Numeric UID to string */
 
-            AcpiUnsignedIntegerToString(ObjDesc->Number.Value, Uid->Buffer);
+            AcpiAmlUnsignedIntegerToString (ObjDesc->Number.Value, Uid->Buffer);
         }
 
         else
@@ -445,10 +445,11 @@ AcpiCmExecute_STA (
         DEBUG_PRINT (ACPI_INFO,
             ("_STA on %4.4s was not found, assuming present.\n",
             &DeviceNode->Name));
-        
+
         *Flags = 0x0F;
-	Status = AE_OK;
+        Status = AE_OK;
     }
+
     else if (ACPI_FAILURE (Status))
     {
         DEBUG_PRINT (ACPI_ERROR,
@@ -456,31 +457,32 @@ AcpiCmExecute_STA (
             &DeviceNode->Name,
             AcpiCmFormatException (Status)));
     }
+
     else /* success */
     {
         /* Did we get a return object? */
 
         if (!ObjDesc)
         {
-	    DEBUG_PRINT (ACPI_ERROR, ("No object was returned from _STA\n"));
-	    return_ACPI_STATUS (AE_TYPE);
+            DEBUG_PRINT (ACPI_ERROR, ("No object was returned from _STA\n"));
+            return_ACPI_STATUS (AE_TYPE);
         }
 
         /* Is the return object of the correct type? */
 
         if (ObjDesc->Common.Type != ACPI_TYPE_NUMBER)
         {
-	    Status = AE_TYPE;
-	    DEBUG_PRINT (ACPI_ERROR,
-	        ("Type returned from _STA was not a number: %d \n",
-	        ObjDesc->Common.Type));
+            Status = AE_TYPE;
+            DEBUG_PRINT (ACPI_ERROR,
+                ("Type returned from _STA was not a number: %d \n",
+                ObjDesc->Common.Type));
         }
 
         else
         {
-	    /* Extract the status flags */
+            /* Extract the status flags */
 
-	    *Flags = ObjDesc->Number.Value;
+            *Flags = (UINT32) ObjDesc->Number.Value;
         }
 
         /* On exit, we must delete the return object */

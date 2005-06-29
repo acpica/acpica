@@ -1,7 +1,7 @@
 /******************************************************************************
  *
- * Module Name: utxface - External interfaces for "global" ACPI functions
- *              $Revision: 1.94 $
+ * Module Name: cmxface - External interfaces for "global" ACPI functions
+ *              $Revision: 1.51 $
  *
  *****************************************************************************/
 
@@ -9,8 +9,8 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
- * All rights reserved.
+ * Some or all of this work - Copyright (c) 1999, Intel Corp.  All rights
+ * reserved.
  *
  * 2. License
  *
@@ -115,17 +115,19 @@
  *****************************************************************************/
 
 
-#define __UTXFACE_C__
+#define __CMXFACE_C__
 
 #include "acpi.h"
 #include "acevents.h"
+#include "achware.h"
 #include "acnamesp.h"
-#include "acparser.h"
-#include "acdispat.h"
+#include "acinterp.h"
+#include "amlcode.h"
 #include "acdebug.h"
 
-#define _COMPONENT          ACPI_UTILITIES
-        ACPI_MODULE_NAME    ("utxface")
+
+#define _COMPONENT          MISCELLANEOUS
+        MODULE_NAME         ("cmxface")
 
 
 /*******************************************************************************
@@ -147,33 +149,35 @@ AcpiInitializeSubsystem (
 {
     ACPI_STATUS             Status;
 
-    ACPI_FUNCTION_TRACE ("AcpiInitializeSubsystem");
 
+    FUNCTION_TRACE ("AcpiInitializeSubsystem");
 
-    ACPI_DEBUG_EXEC (AcpiUtInitStackPtrTrace ());
+    DEBUG_PRINT_RAW (ACPI_OK,
+        ("ACPI Subsystem version [%s]\n", ACPI_CA_VERSION));
+    DEBUG_PRINT (ACPI_INFO, ("Initializing ACPI Subsystem...\n"));
 
 
     /* Initialize all globals used by the subsystem */
 
-    AcpiUtInitGlobals ();
+    AcpiCmInitGlobals ();
 
     /* Initialize the OS-Dependent layer */
 
     Status = AcpiOsInitialize ();
     if (ACPI_FAILURE (Status))
     {
-        ACPI_REPORT_ERROR (("OSD failed to initialize, %s\n",
-            AcpiFormatException (Status)));
+        REPORT_ERROR (("OSD failed to initialize, %s\n",
+            AcpiCmFormatException (Status)));
         return_ACPI_STATUS (Status);
     }
 
     /* Create the default mutex objects */
 
-    Status = AcpiUtMutexInitialize ();
+    Status = AcpiCmMutexInitialize ();
     if (ACPI_FAILURE (Status))
     {
-        ACPI_REPORT_ERROR (("Global mutex creation failure, %s\n",
-            AcpiFormatException (Status)));
+        REPORT_ERROR (("Global mutex creation failure, %s\n",
+            AcpiCmFormatException (Status)));
         return_ACPI_STATUS (Status);
     }
 
@@ -185,15 +189,15 @@ AcpiInitializeSubsystem (
     Status = AcpiNsRootInitialize ();
     if (ACPI_FAILURE (Status))
     {
-        ACPI_REPORT_ERROR (("Namespace initialization failure, %s\n",
-            AcpiFormatException (Status)));
+        REPORT_ERROR (("Namespace initialization failure, %s\n",
+            AcpiCmFormatException (Status)));
         return_ACPI_STATUS (Status);
     }
 
 
     /* If configured, initialize the AML debugger */
 
-    ACPI_DEBUGGER_EXEC (Status = AcpiDbInitialize ());
+    DEBUGGER_EXEC (AcpiDbInitialize ());
 
     return_ACPI_STATUS (Status);
 }
@@ -219,17 +223,26 @@ AcpiEnableSubsystem (
     ACPI_STATUS             Status = AE_OK;
 
 
-    ACPI_FUNCTION_TRACE ("AcpiEnableSubsystem");
+    FUNCTION_TRACE ("AcpiEnableSubsystem");
 
+
+    /* Sanity check the FACP for valid values */
+
+    Status = AcpiCmValidateFacp ();
+    if (ACPI_FAILURE (Status))
+    {
+        return_ACPI_STATUS (Status);
+    }
 
     /*
-     * Install the default OpRegion handlers.  These are installed unless
-     * other handlers have already been installed via the
-     * InstallAddressSpaceHandler interface
+     * Install the default OpRegion handlers.  These are
+     * installed unless other handlers have already been
+     * installed via the InstallAddressSpaceHandler interface
      */
+
     if (!(Flags & ACPI_NO_ADDRESS_SPACE_INIT))
     {
-        ACPI_DEBUG_PRINT ((ACPI_DB_EXEC, "[Init] Installing default address space handlers\n"));
+        DEBUG_PRINT (TRACE_EXEC, ("[Init] Installing default address space handlers\n"));
 
         Status = AcpiEvInstallDefaultAddressSpaceHandlers ();
         if (ACPI_FAILURE (Status))
@@ -240,11 +253,11 @@ AcpiEnableSubsystem (
 
     /*
      * We must initialize the hardware before we can enable ACPI.
-     * FADT values are validated here.
      */
+
     if (!(Flags & ACPI_NO_HARDWARE_INIT))
     {
-        ACPI_DEBUG_PRINT ((ACPI_DB_EXEC, "[Init] Initializing ACPI hardware\n"));
+        DEBUG_PRINT (TRACE_EXEC, ("[Init] Initializing ACPI hardware\n"));
 
         Status = AcpiHwInitialize ();
         if (ACPI_FAILURE (Status))
@@ -256,16 +269,12 @@ AcpiEnableSubsystem (
     /*
      * Enable ACPI on this platform
      */
+
     if (!(Flags & ACPI_NO_ACPI_ENABLE))
     {
-        ACPI_DEBUG_PRINT ((ACPI_DB_EXEC, "[Init] Going into ACPI mode\n"));
+        DEBUG_PRINT (TRACE_EXEC, ("[Init] Going into ACPI mode\n"));
 
-        Status = AcpiEnable ();
-        if (ACPI_FAILURE (Status))
-        {
-            ACPI_DEBUG_PRINT ((ACPI_DB_WARN, "AcpiEnable failed.\n"));
-            return_ACPI_STATUS (Status);
-        }
+        AcpiEnable ();
     }
 
     /*
@@ -274,9 +283,10 @@ AcpiEnableSubsystem (
      * ANY control methods SAFELY.  Any control method can require ACPI hardware
      * support, so the hardware MUST be initialized before execution!
      */
+
     if (!(Flags & ACPI_NO_EVENT_INIT))
     {
-        ACPI_DEBUG_PRINT ((ACPI_DB_EXEC, "[Init] Initializing ACPI events\n"));
+        DEBUG_PRINT (TRACE_EXEC, ("[Init] Initializing ACPI events\n"));
 
         Status = AcpiEvInitialize ();
         if (ACPI_FAILURE (Status))
@@ -285,42 +295,34 @@ AcpiEnableSubsystem (
         }
     }
 
-    /* Install SCI handler, Global Lock handler, GPE handlers */
-
-    if (!(Flags & ACPI_NO_HANDLER_INIT))
-    {
-        ACPI_DEBUG_PRINT ((ACPI_DB_EXEC, "[Init] Installing SCI/GL/GPE handlers\n"));
-
-        Status = AcpiEvHandlerInitialize ();
-        if (ACPI_FAILURE (Status))
-        {
-            return_ACPI_STATUS (Status);
-        }
-    }
 
     /*
      * Initialize all device objects in the namespace
-     * This runs the _STA and _INI methods.
+     * This runs the _STA, _INI, and _HID methods, and detects
+     * the PCI root bus(es)
      */
+
     if (!(Flags & ACPI_NO_DEVICE_INIT))
     {
-        ACPI_DEBUG_PRINT ((ACPI_DB_EXEC, "[Init] Initializing ACPI Devices\n"));
+        DEBUG_PRINT (TRACE_EXEC, ("[Init] Initializing ACPI Devices\n"));
 
-        Status = AcpiNsInitializeDevices ();
+        Status = AcpiNsInitializeDevices (Flags & ACPI_NO_PCI_INIT);
         if (ACPI_FAILURE (Status))
         {
             return_ACPI_STATUS (Status);
         }
     }
 
+
     /*
-     * Initialize the objects that remain uninitialized.  This
+     * Initialize the objects that remain unitialized.  This
      * runs the executable AML that is part of the declaration of OpRegions
      * and Fields.
      */
+
     if (!(Flags & ACPI_NO_OBJECT_INIT))
     {
-        ACPI_DEBUG_PRINT ((ACPI_DB_EXEC, "[Init] Initializing ACPI Objects\n"));
+        DEBUG_PRINT (TRACE_EXEC, ("[Init] Initializing ACPI Objects\n"));
 
         Status = AcpiNsInitializeObjects ();
         if (ACPI_FAILURE (Status))
@@ -329,14 +331,7 @@ AcpiEnableSubsystem (
         }
     }
 
-    /*
-     * Empty the caches (delete the cached objects) on the assumption that
-     * the table load filled them up more than they will be at runtime --
-     * thus wasting non-paged memory.
-     */
-    Status = AcpiPurgeCachedObjects ();
 
-    AcpiGbl_StartupFlags |= ACPI_INITIALIZED_OK;
     return_ACPI_STATUS (Status);
 }
 
@@ -356,65 +351,32 @@ AcpiEnableSubsystem (
 ACPI_STATUS
 AcpiTerminate (void)
 {
-    ACPI_STATUS         Status;
 
+    FUNCTION_TRACE ("AcpiTerminate");
 
-    ACPI_FUNCTION_TRACE ("AcpiTerminate");
+    /* Terminate the AML Debuger if present */
 
+    AcpiGbl_DbTerminateThreads = TRUE;
 
-    /* Terminate the AML Debugger if present */
+    /* TBD: [Investigate] This is no longer needed?*/
+/*    AcpiCmReleaseMutex (ACPI_MTX_DEBUG_CMD_READY); */
 
-    ACPI_DEBUGGER_EXEC(AcpiGbl_DbTerminateThreads = TRUE);
 
     /* Shutdown and free all resources */
 
-    AcpiUtSubsystemShutdown ();
+    AcpiCmSubsystemShutdown ();
 
 
     /* Free the mutex objects */
 
-    AcpiUtMutexTerminate ();
+    AcpiCmMutexTerminate ();
 
-
-#ifdef ENABLE_DEBUGGER
-
-    /* Shut down the debugger */
-
-    AcpiDbTerminate ();
-#endif
 
     /* Now we can shutdown the OS-dependent layer */
 
-    Status = AcpiOsTerminate ();
-    return_ACPI_STATUS (Status);
-}
+    AcpiOsTerminate ();
 
-
-/*****************************************************************************
- *
- * FUNCTION:    AcpiSubsystemStatus
- *
- * PARAMETERS:  None
- *
- * RETURN:      Status of the ACPI subsystem
- *
- * DESCRIPTION: Other drivers that use the ACPI subsystem should call this
- *              before making any other calls, to ensure the subsystem initial-
- *              ized successfully.
- *
- ****************************************************************************/
-
-ACPI_STATUS
-AcpiSubsystemStatus (void)
-{
-    if (AcpiGbl_StartupFlags & ACPI_INITIALIZED_OK)
-    {
-        return (AE_OK);
-    }
-    else
-    {
-        return (AE_ERROR);
-    }
+    return_ACPI_STATUS (AE_OK);
 }
 
 
@@ -443,53 +405,47 @@ AcpiGetSystemInfo (
 {
     ACPI_SYSTEM_INFO        *InfoPtr;
     UINT32                  i;
-    ACPI_STATUS             Status;
 
 
-    ACPI_FUNCTION_TRACE ("AcpiGetSystemInfo");
+    FUNCTION_TRACE ("AcpiGetSystemInfo");
 
-
-    /* Parameter validation */
-
-    Status = AcpiUtValidateBuffer (OutBuffer);
-    if (ACPI_FAILURE (Status))
-    {
-        return_ACPI_STATUS (Status);
-    }
-
-    /* Validate/Allocate/Clear caller buffer */
-
-    Status = AcpiUtInitializeBuffer (OutBuffer, sizeof (ACPI_SYSTEM_INFO));
-    if (ACPI_FAILURE (Status))
-    {
-        return_ACPI_STATUS (Status);
-    }
 
     /*
-     * Populate the return buffer
+     *  Must have a valid buffer
      */
+    if ((!OutBuffer)          ||
+        (!OutBuffer->Pointer))
+    {
+        return_ACPI_STATUS (AE_BAD_PARAMETER);
+    }
+
+    if (OutBuffer->Length < sizeof (ACPI_SYSTEM_INFO))
+    {
+        /*
+         *  Caller's buffer is too small
+         */
+        OutBuffer->Length = sizeof (ACPI_SYSTEM_INFO);
+
+        return_ACPI_STATUS (AE_BUFFER_OVERFLOW);
+    }
+
+
+    /*
+     *  Set return length and get data
+     */
+    OutBuffer->Length = sizeof (ACPI_SYSTEM_INFO);
     InfoPtr = (ACPI_SYSTEM_INFO *) OutBuffer->Pointer;
 
-    InfoPtr->AcpiCaVersion      = ACPI_CA_VERSION;
+    /* TBD [Future]: need a version number, or use the version string */
+    InfoPtr->AcpiCaVersion      = 0x1234;
 
     /* System flags (ACPI capabilities) */
 
-    InfoPtr->Flags              = ACPI_SYS_MODE_ACPI;
+    InfoPtr->Flags              = AcpiGbl_SystemFlags;
 
     /* Timer resolution - 24 or 32 bits  */
 
-    if (!AcpiGbl_FADT)
-    {
-        InfoPtr->TimerResolution = 0;
-    }
-    else if (AcpiGbl_FADT->TmrValExt == 0)
-    {
-        InfoPtr->TimerResolution = 24;
-    }
-    else
-    {
-        InfoPtr->TimerResolution = 32;
-    }
+    InfoPtr->TimerResolution    = AcpiHwPmtResolution ();
 
     /* Clear the reserved fields */
 
@@ -513,28 +469,61 @@ AcpiGetSystemInfo (
 }
 
 
-/*****************************************************************************
+/******************************************************************************
  *
- * FUNCTION:    AcpiPurgeCachedObjects
+ * FUNCTION:    AcpiFormatException
  *
- * PARAMETERS:  None
+ * PARAMETERS:  OutBuffer       - a pointer to a buffer to receive the
+ *                                exception name
  *
- * RETURN:      Status
+ * RETURN:      Status          - the status of the call
  *
- * DESCRIPTION: Empty all caches (delete the cached objects)
+ * DESCRIPTION: This function translates an ACPI exception into an ASCII string.
  *
- ****************************************************************************/
+ ******************************************************************************/
 
 ACPI_STATUS
-AcpiPurgeCachedObjects (void)
+AcpiFormatException (
+    ACPI_STATUS             Exception,
+    ACPI_BUFFER             *OutBuffer)
 {
-    ACPI_FUNCTION_TRACE ("AcpiPurgeCachedObjects");
+    UINT32                  Length;
+    NATIVE_CHAR             *FormattedException;
 
 
-    AcpiUtDeleteGenericStateCache ();
-    AcpiUtDeleteObjectCache ();
-    AcpiDsDeleteWalkStateCache ();
-    AcpiPsDeleteParseCache ();
+    FUNCTION_TRACE ("AcpiFormatException");
+
+
+    /*
+     *  Must have a valid buffer
+     */
+    if ((!OutBuffer)          ||
+        (!OutBuffer->Pointer))
+    {
+        return_ACPI_STATUS (AE_BAD_PARAMETER);
+    }
+
+
+    /* Convert the exception code (Handles bad exception codes) */
+
+    FormattedException = AcpiCmFormatException (Exception);
+
+    /*
+     * Get length of string and check if it will fit in caller's buffer
+     */
+
+    Length = STRLEN (FormattedException);
+    if (OutBuffer->Length < Length)
+    {
+        OutBuffer->Length = Length;
+        return_ACPI_STATUS (AE_BUFFER_OVERFLOW);
+    }
+
+
+    /* Copy the string, all done */
+
+    STRCPY (OutBuffer->Pointer, FormattedException);
 
     return_ACPI_STATUS (AE_OK);
 }
+
