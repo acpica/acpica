@@ -158,7 +158,15 @@ DsParseMethod (
     ACPI_OWNER_ID           OwnerId;
 
 
-    FUNCTION_TRACE ("DsParseMethod");
+    FUNCTION_TRACE_PTR ("DsParseMethod", ObjHandle);
+
+
+    /* Parameter Validation */
+
+    if (!ObjHandle)
+    {
+        return_ACPI_STATUS (AE_NULL_ENTRY);
+    }
 
     DEBUG_PRINT (ACPI_INFO, ("DsParseMethod: **** Parsing [%4.4s] **** Nte=%p\n", 
                     &((NAME_TABLE_ENTRY *)ObjHandle)->Name, ObjHandle));
@@ -168,8 +176,12 @@ DsParseMethod (
 
     Entry = (NAME_TABLE_ENTRY *) ObjHandle;
     ObjDesc = Entry->Object;
+    if (!ObjDesc)
+    {
+        return_ACPI_STATUS (AE_NULL_OBJECT);
+    }
 
-    /* Create a mutex for the method if there is a concurrency limit */
+     /* Create a mutex for the method if there is a concurrency limit */
 
     if ((ObjDesc->Method.Concurrency != INFINITE_CONCURRENCY) &&
         (!ObjDesc->Method.Semaphore))
@@ -225,7 +237,6 @@ DsParseMethod (
 
     DEBUG_EXEC (DbGenerateStatistics (Op, 1));
 
-
     DEBUG_PRINT (ACPI_INFO, ("DsParseMethod: **** [%4.4s] Parsed **** Nte=%p Op=%p\n", 
                     &((NAME_TABLE_ENTRY *)ObjHandle)->Name, ObjHandle, Op));
 
@@ -276,7 +287,11 @@ DsCallControlMethod (
      */
 
     MethodNte   = (ThisWalkState->PrevOp->Value.Arg)->NameTableEntry;
-    ObjDesc  = NsGetAttachedObject (MethodNte);
+    ObjDesc     = NsGetAttachedObject (MethodNte);
+    if (!ObjDesc)
+    {
+        return_ACPI_STATUS (AE_NULL_OBJECT);
+    }
 
     /*
      * If the method isn't parsed yet (no parse tree), we must parse it.
