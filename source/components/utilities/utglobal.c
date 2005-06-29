@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: utglobal - Global variables for the ACPI subsystem
- *              $Revision: 1.146 $
+ *              $Revision: 1.147 $
  *
  *****************************************************************************/
 
@@ -389,6 +389,137 @@ ACPI_TABLE_SUPPORT          AcpiGbl_AcpiTableData[NUM_ACPI_TABLES] =
 };
 
 
+/******************************************************************************
+ *
+ * Event and Hardware globals
+ *
+ ******************************************************************************/
+
+ACPI_BIT_REGISTER_INFO      AcpiGbl_BitRegisterInfo[ACPI_NUM_BITREG] =
+{
+    /* Name                                     Parent Register             Register Bit Position                   Register Bit Mask       */
+
+    /* ACPI_BITREG_TIMER_STATUS         */   ACPI_REGISTER_PM1_STATUS,   ACPI_BITPOSITION_TIMER_STATUS,          ACPI_BITMASK_TIMER_STATUS,
+    /* ACPI_BITREG_BUS_MASTER_STATUS    */   ACPI_REGISTER_PM1_STATUS,   ACPI_BITPOSITION_BUS_MASTER_STATUS,     ACPI_BITMASK_BUS_MASTER_STATUS,
+    /* ACPI_BITREG_GLOBAL_LOCK_STATUS   */   ACPI_REGISTER_PM1_STATUS,   ACPI_BITPOSITION_GLOBAL_LOCK_STATUS,    ACPI_BITMASK_GLOBAL_LOCK_STATUS,
+    /* ACPI_BITREG_POWER_BUTTON_STATUS  */   ACPI_REGISTER_PM1_STATUS,   ACPI_BITPOSITION_POWER_BUTTON_STATUS,   ACPI_BITMASK_POWER_BUTTON_STATUS,
+    /* ACPI_BITREG_SLEEP_BUTTON_STATUS  */   ACPI_REGISTER_PM1_STATUS,   ACPI_BITPOSITION_SLEEP_BUTTON_STATUS,   ACPI_BITMASK_SLEEP_BUTTON_STATUS,
+    /* ACPI_BITREG_RT_CLOCK_STATUS      */   ACPI_REGISTER_PM1_STATUS,   ACPI_BITPOSITION_RT_CLOCK_STATUS,       ACPI_BITMASK_RT_CLOCK_STATUS,
+    /* ACPI_BITREG_WAKE_STATUS          */   ACPI_REGISTER_PM1_STATUS,   ACPI_BITPOSITION_WAKE_STATUS,           ACPI_BITMASK_WAKE_STATUS,
+
+    /* ACPI_BITREG_TIMER_ENABLE         */   ACPI_REGISTER_PM1_ENABLE,   ACPI_BITPOSITION_TIMER_ENABLE,          ACPI_BITMASK_TIMER_ENABLE,
+    /* ACPI_BITREG_GLOBAL_LOCK_ENABLE   */   ACPI_REGISTER_PM1_ENABLE,   ACPI_BITPOSITION_GLOBAL_LOCK_ENABLE,    ACPI_BITMASK_GLOBAL_LOCK_ENABLE,
+    /* ACPI_BITREG_POWER_BUTTON_ENABLE  */   ACPI_REGISTER_PM1_ENABLE,   ACPI_BITPOSITION_POWER_BUTTON_ENABLE,   ACPI_BITMASK_POWER_BUTTON_ENABLE,
+    /* ACPI_BITREG_SLEEP_BUTTON_ENABLE  */   ACPI_REGISTER_PM1_ENABLE,   ACPI_BITPOSITION_SLEEP_BUTTON_ENABLE,   ACPI_BITMASK_SLEEP_BUTTON_ENABLE,
+    /* ACPI_BITREG_RT_CLOCK_ENABLE      */   ACPI_REGISTER_PM1_ENABLE,   ACPI_BITPOSITION_RT_CLOCK_ENABLE,       ACPI_BITMASK_RT_CLOCK_ENABLE,
+    /* ACPI_BITREG_WAKE_ENABLE          */   ACPI_REGISTER_PM1_ENABLE,   0,                                      0,
+
+    /* ACPI_BITREG_SCI_ENABLE           */   ACPI_REGISTER_PM1_CONTROL,  ACPI_BITPOSITION_SCI_ENABLE,            ACPI_BITMASK_SCI_ENABLE,
+    /* ACPI_BITREG_BUS_MASTER_RLD       */   ACPI_REGISTER_PM1_CONTROL,  ACPI_BITPOSITION_BUS_MASTER_RLD,        ACPI_BITMASK_BUS_MASTER_RLD,
+    /* ACPI_BITREG_GLOBAL_LOCK_RELEASE  */   ACPI_REGISTER_PM1_CONTROL,  ACPI_BITPOSITION_GLOBAL_LOCK_RELEASE,   ACPI_BITMASK_GLOBAL_LOCK_RELEASE,
+    /* ACPI_BITREG_SLEEP_TYPE_A         */   ACPI_REGISTER_PM1_CONTROL,  ACPI_BITPOSITION_SLEEP_TYPE_X,          ACPI_BITMASK_SLEEP_TYPE_X,
+    /* ACPI_BITREG_SLEEP_TYPE_B         */   ACPI_REGISTER_PM1_CONTROL,  ACPI_BITPOSITION_SLEEP_TYPE_X,          ACPI_BITMASK_SLEEP_TYPE_X,
+    /* ACPI_BITREG_SLEEP_ENABLE         */   ACPI_REGISTER_PM1_CONTROL,  ACPI_BITPOSITION_SLEEP_ENABLE,          ACPI_BITMASK_SLEEP_ENABLE,
+
+    /* ACPI_BITREG_ARB_DIS              */   ACPI_REGISTER_PM2_CONTROL,  ACPI_BITPOSITION_ARB_DISABLE,           ACPI_BITMASK_ARB_DISABLE
+};
+
+
+ACPI_FIXED_EVENT_INFO       AcpiGbl_FixedEventInfo[ACPI_NUM_FIXED_EVENTS] =
+{
+    /* ACPI_EVENT_PMTIMER       */  ACPI_BITREG_TIMER_STATUS,          ACPI_BITREG_TIMER_ENABLE,        ACPI_BITMASK_TIMER_STATUS,          ACPI_BITMASK_TIMER_ENABLE,
+    /* ACPI_EVENT_GLOBAL        */  ACPI_BITREG_GLOBAL_LOCK_STATUS,    ACPI_BITREG_GLOBAL_LOCK_ENABLE,  ACPI_BITMASK_GLOBAL_LOCK_STATUS,    ACPI_BITMASK_GLOBAL_LOCK_ENABLE,
+    /* ACPI_EVENT_POWER_BUTTON  */  ACPI_BITREG_POWER_BUTTON_STATUS,   ACPI_BITREG_POWER_BUTTON_ENABLE, ACPI_BITMASK_POWER_BUTTON_STATUS,   ACPI_BITMASK_POWER_BUTTON_ENABLE,
+    /* ACPI_EVENT_SLEEP_BUTTON  */  ACPI_BITREG_SLEEP_BUTTON_STATUS,   ACPI_BITREG_SLEEP_BUTTON_ENABLE, ACPI_BITMASK_SLEEP_BUTTON_STATUS,   ACPI_BITMASK_SLEEP_BUTTON_ENABLE,
+    /* ACPI_EVENT_RTC           */  ACPI_BITREG_RT_CLOCK_STATUS,       ACPI_BITREG_RT_CLOCK_ENABLE,     0,                                  0,
+};
+
+/*****************************************************************************
+ *
+ * FUNCTION:    AcpiUtGetRegionName
+ *
+ * PARAMETERS:  None.
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Translate a Space ID into a name string (Debug only)
+ *
+ ****************************************************************************/
+
+/* Region type decoding */
+
+const NATIVE_CHAR *AcpiGbl_RegionTypes[ACPI_NUM_PREDEFINED_REGIONS] =
+{
+    "SystemMemory",
+    "SystemIO",
+    "PCIConfig",
+    "EmbeddedControl",
+    "SMBus",
+    "CMOS",
+    "PCIBarTarget",
+    "DataTable",
+};
+
+
+NATIVE_CHAR *
+AcpiUtGetRegionName (
+    UINT8                   SpaceId)
+{
+
+    if (SpaceId >= ACPI_USER_REGION_BEGIN)
+    {
+        return ("UserDefinedRegion");
+    }
+
+    else if (SpaceId >= ACPI_NUM_PREDEFINED_REGIONS)
+    {
+        return ("InvalidSpaceID");
+    }
+
+    return ((NATIVE_CHAR *) AcpiGbl_RegionTypes[SpaceId]);
+}
+
+
+/*****************************************************************************
+ *
+ * FUNCTION:    AcpiUtGetEventName
+ *
+ * PARAMETERS:  None.
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Translate a Event ID into a name string (Debug only)
+ *
+ ****************************************************************************/
+
+/* Event type decoding */
+
+const NATIVE_CHAR *AcpiGbl_EventTypes[ACPI_NUM_FIXED_EVENTS] =
+{
+    "PM_Timer",
+    "GlobalLock",
+    "PowerButton",
+    "SleepButton",
+    "RealTimeClock",
+};
+
+
+NATIVE_CHAR *
+AcpiUtGetEventName (
+    UINT32                  EventId)
+{
+
+    if (EventId > ACPI_EVENT_MAX)
+    {
+        return ("InvalidEventID");
+    }
+
+    return ((NATIVE_CHAR *) AcpiGbl_EventTypes[EventId]);
+}
+
+
+
+
 #ifdef ACPI_DEBUG
 
 /*
@@ -502,91 +633,6 @@ AcpiUtGetTypeName (
     return ((NATIVE_CHAR *) AcpiGbl_NsTypeNames[Type]);
 }
 
-
-/*****************************************************************************
- *
- * FUNCTION:    AcpiUtGetRegionName
- *
- * PARAMETERS:  None.
- *
- * RETURN:      Status
- *
- * DESCRIPTION: Translate a Space ID into a name string (Debug only)
- *
- ****************************************************************************/
-
-/* Region type decoding */
-
-const NATIVE_CHAR *AcpiGbl_RegionTypes[ACPI_NUM_PREDEFINED_REGIONS] =
-{
-    "SystemMemory",
-    "SystemIO",
-    "PCIConfig",
-    "EmbeddedControl",
-    "SMBus",
-    "CMOS",
-    "PCIBarTarget",
-    "DataTable",
-};
-
-
-NATIVE_CHAR *
-AcpiUtGetRegionName (
-    UINT8                   SpaceId)
-{
-
-    if (SpaceId >= ACPI_USER_REGION_BEGIN)
-    {
-        return ("UserDefinedRegion");
-    }
-
-    else if (SpaceId >= ACPI_NUM_PREDEFINED_REGIONS)
-    {
-        return ("InvalidSpaceID");
-    }
-
-    return ((NATIVE_CHAR *) AcpiGbl_RegionTypes[SpaceId]);
-}
-
-
-/*****************************************************************************
- *
- * FUNCTION:    AcpiUtGetEventName
- *
- * PARAMETERS:  None.
- *
- * RETURN:      Status
- *
- * DESCRIPTION: Translate a Event ID into a name string (Debug only)
- *
- ****************************************************************************/
-
-/* Event type decoding */
-
-const NATIVE_CHAR *AcpiGbl_EventTypes[ACPI_NUM_FIXED_EVENTS] =
-{
-    "PM_Timer",
-    "InvalidEventID",
-    "GlobalLock",
-    "PowerButton",
-    "SleepButton",
-    "RealTimeClock",
-    "General"
-};
-
-
-NATIVE_CHAR *
-AcpiUtGetEventName (
-    UINT32                  EventId)
-{
-
-    if (EventId > ACPI_EVENT_MAX)
-    {
-        return ("InvalidEventID");
-    }
-
-    return ((NATIVE_CHAR *) AcpiGbl_EventTypes[EventId]);
-}
 
 
 /* Data used in keeping track of fields */
