@@ -1,7 +1,7 @@
 
 /******************************************************************************
- * 
- * Module Name: nsapiobj - Public interfaces to the ACPI subsystem
+ *
+ * Module Name: nsxfobj - Public interfaces to the ACPI subsystem
  *                         ACPI Object oriented interfaces
  *
  *****************************************************************************/
@@ -10,104 +10,121 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, Intel Corp.  All rights 
+ * Some or all of this work - Copyright (c) 1999, Intel Corp.  All rights
  * reserved.
  *
  * 2. License
- * 
- * 2.1. Intel grants, free of charge, to any person ("Licensee") obtaining a 
- * copy of the source code appearing in this file ("Covered Code") a license 
- * under Intel's copyrights in the base code distributed originally by Intel 
- * ("Original Intel Code") to copy, make derivatives, distribute, use and 
- * display any portion of the Covered Code in any form; and
  *
- * 2.2. Intel grants Licensee a non-exclusive and non-transferable patent 
- * license (without the right to sublicense), under only those claims of Intel
- * patents that are infringed by the Original Intel Code, to make, use, sell, 
- * offer to sell, and import the Covered Code and derivative works thereof 
- * solely to the minimum extent necessary to exercise the above copyright 
- * license, and in no event shall the patent license extend to any additions to
- * or modifications of the Original Intel Code.  No other license or right is 
- * granted directly or by implication, estoppel or otherwise;
+ * 2.1. This is your license from Intel Corp. under its intellectual property
+ * rights.  You may have additional license terms from the party that provided
+ * you this software, covering your right to use that party's intellectual
+ * property rights.
  *
- * the above copyright and patent license is granted only if the following 
+ * 2.2. Intel grants, free of charge, to any person ("Licensee") obtaining a
+ * copy of the source code appearing in this file ("Covered Code") an
+ * irrevocable, perpetual, worldwide license under Intel's copyrights in the
+ * base code distributed originally by Intel ("Original Intel Code") to copy,
+ * make derivatives, distribute, use and display any portion of the Covered
+ * Code in any form, with the right to sublicense such rights; and
+ *
+ * 2.3. Intel grants Licensee a non-exclusive and non-transferable patent
+ * license (with the right to sublicense), under only those claims of Intel
+ * patents that are infringed by the Original Intel Code, to make, use, sell,
+ * offer to sell, and import the Covered Code and derivative works thereof
+ * solely to the minimum extent necessary to exercise the above copyright
+ * license, and in no event shall the patent license extend to any additions
+ * to or modifications of the Original Intel Code.  No other license or right
+ * is granted directly or by implication, estoppel or otherwise;
+ *
+ * The above copyright and patent license is granted only if the following
  * conditions are met:
  *
- * 3. Conditions 
+ * 3. Conditions
  *
- * 3.1. Redistribution of source code of any substantial portion of the Covered 
- * Code or modification must include the above Copyright Notice, the above 
- * License, this list of Conditions, and the following Disclaimer and Export 
- * Compliance provision.  In addition, Licensee must cause all Covered Code to 
- * which Licensee contributes to contain a file documenting the changes 
- * Licensee made to create that Covered Code and the date of any change.  
- * Licensee must include in that file the documentation of any changes made by
- * any predecessor Licensee.  Licensee must include a prominent statement that
- * the modification is derived, directly or indirectly, from Original Intel 
- * Code.
+ * 3.1. Redistribution of Source with Rights to Further Distribute Source.
+ * Redistribution of source code of any substantial portion of the Covered
+ * Code or modification with rights to further distribute source must include
+ * the above Copyright Notice, the above License, this list of Conditions,
+ * and the following Disclaimer and Export Compliance provision.  In addition,
+ * Licensee must cause all Covered Code to which Licensee contributes to
+ * contain a file documenting the changes Licensee made to create that Covered
+ * Code and the date of any change.  Licensee must include in that file the
+ * documentation of any changes made by any predecessor Licensee.  Licensee
+ * must include a prominent statement that the modification is derived,
+ * directly or indirectly, from Original Intel Code.
  *
- * 3.2. Redistribution in binary form of any substantial portion of the Covered 
- * Code or modification must reproduce the above Copyright Notice, and the 
- * following Disclaimer and Export Compliance provision in the documentation 
- * and/or other materials provided with the distribution.
+ * 3.2. Redistribution of Source with no Rights to Further Distribute Source.
+ * Redistribution of source code of any substantial portion of the Covered
+ * Code or modification without rights to further distribute source must
+ * include the following Disclaimer and Export Compliance provision in the
+ * documentation and/or other materials provided with distribution.  In
+ * addition, Licensee may not authorize further sublicense of source of any
+ * portion of the Covered Code, and must include terms to the effect that the
+ * license from Licensee to its licensee is limited to the intellectual
+ * property embodied in the software Licensee provides to its licensee, and
+ * not to intellectual property embodied in modifications its licensee may
+ * make.
  *
- * 3.3. Intel retains all right, title, and interest in and to the Original 
+ * 3.3. Redistribution of Executable. Redistribution in executable form of any
+ * substantial portion of the Covered Code or modification must reproduce the
+ * above Copyright Notice, and the following Disclaimer and Export Compliance
+ * provision in the documentation and/or other materials provided with the
+ * distribution.
+ *
+ * 3.4. Intel retains all right, title, and interest in and to the Original
  * Intel Code.
  *
- * 3.4. Neither the name Intel nor any other trademark owned or controlled by 
- * Intel shall be used in advertising or otherwise to promote the sale, use or 
- * other dealings in products derived from or relating to the Covered Code 
+ * 3.5. Neither the name Intel nor any other trademark owned or controlled by
+ * Intel shall be used in advertising or otherwise to promote the sale, use or
+ * other dealings in products derived from or relating to the Covered Code
  * without prior written authorization from Intel.
  *
  * 4. Disclaimer and Export Compliance
  *
- * 4.1. INTEL MAKES NO WARRANTY OF ANY KIND REGARDING ANY SOFTWARE PROVIDED 
- * HERE.  ANY SOFTWARE ORIGINATING FROM INTEL OR DERIVED FROM INTEL SOFTWARE 
- * IS PROVIDED "AS IS," AND INTEL WILL NOT PROVIDE ANY SUPPORT,  ASSISTANCE, 
- * INSTALLATION, TRAINING OR OTHER SERVICES.  INTEL WILL NOT PROVIDE ANY 
- * UPDATES, ENHANCEMENTS OR EXTENSIONS.  INTEL SPECIFICALLY DISCLAIMS ANY 
- * IMPLIED WARRANTIES OF MERCHANTABILITY, NONINFRINGEMENT AND FITNESS FOR A 
- * PARTICULAR PURPOSE. 
+ * 4.1. INTEL MAKES NO WARRANTY OF ANY KIND REGARDING ANY SOFTWARE PROVIDED
+ * HERE.  ANY SOFTWARE ORIGINATING FROM INTEL OR DERIVED FROM INTEL SOFTWARE
+ * IS PROVIDED "AS IS," AND INTEL WILL NOT PROVIDE ANY SUPPORT,  ASSISTANCE,
+ * INSTALLATION, TRAINING OR OTHER SERVICES.  INTEL WILL NOT PROVIDE ANY
+ * UPDATES, ENHANCEMENTS OR EXTENSIONS.  INTEL SPECIFICALLY DISCLAIMS ANY
+ * IMPLIED WARRANTIES OF MERCHANTABILITY, NONINFRINGEMENT AND FITNESS FOR A
+ * PARTICULAR PURPOSE.
  *
- * 4.2. IN NO EVENT SHALL INTEL HAVE ANY LIABILITY TO LICENSEE, ITS LICENSEES 
- * OR ANY OTHER THIRD PARTY, FOR ANY LOST PROFITS, LOST DATA, LOSS OF USE OR 
- * COSTS OF PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES, OR FOR ANY INDIRECT, 
- * SPECIAL OR CONSEQUENTIAL DAMAGES ARISING OUT OF THIS AGREEMENT, UNDER ANY 
- * CAUSE OF ACTION OR THEORY OF LIABILITY, AND IRRESPECTIVE OF WHETHER INTEL 
- * HAS ADVANCE NOTICE OF THE POSSIBILITY OF SUCH DAMAGES.  THESE LIMITATIONS 
- * SHALL APPLY NOTWITHSTANDING THE FAILURE OF THE ESSENTIAL PURPOSE OF ANY 
+ * 4.2. IN NO EVENT SHALL INTEL HAVE ANY LIABILITY TO LICENSEE, ITS LICENSEES
+ * OR ANY OTHER THIRD PARTY, FOR ANY LOST PROFITS, LOST DATA, LOSS OF USE OR
+ * COSTS OF PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES, OR FOR ANY INDIRECT,
+ * SPECIAL OR CONSEQUENTIAL DAMAGES ARISING OUT OF THIS AGREEMENT, UNDER ANY
+ * CAUSE OF ACTION OR THEORY OF LIABILITY, AND IRRESPECTIVE OF WHETHER INTEL
+ * HAS ADVANCE NOTICE OF THE POSSIBILITY OF SUCH DAMAGES.  THESE LIMITATIONS
+ * SHALL APPLY NOTWITHSTANDING THE FAILURE OF THE ESSENTIAL PURPOSE OF ANY
  * LIMITED REMEDY.
  *
- * 4.3. Licensee shall not export, either directly or indirectly, any of this 
- * software or system incorporating such software without first obtaining any 
- * required license or other approval from the U. S. Department of Commerce or 
- * any other agency or department of the United States Government.  In the 
- * event Licensee exports any such software from the United States or re-
- * exports any such software from a foreign destination, Licensee shall ensure
- * that the distribution and export/re-export of the software is in compliance 
- * with all laws, regulations, orders, or other restrictions of the U.S. Export 
- * Administration Regulations. Licensee agrees that neither it nor any of its 
- * subsidiaries will export/re-export any technical data, process, software, or 
- * service, directly or indirectly, to any country for which the United States 
- * government or any agency thereof requires an export license, other 
- * governmental approval, or letter of assurance, without first obtaining such
- * license, approval or letter.
+ * 4.3. Licensee shall not export, either directly or indirectly, any of this
+ * software or system incorporating such software without first obtaining any
+ * required license or other approval from the U. S. Department of Commerce or
+ * any other agency or department of the United States Government.  In the
+ * event Licensee exports any such software from the United States or
+ * re-exports any such software from a foreign destination, Licensee shall
+ * ensure that the distribution and export/re-export of the software is in
+ * compliance with all laws, regulations, orders, or other restrictions of the
+ * U.S. Export Administration Regulations. Licensee agrees that neither it nor
+ * any of its subsidiaries will export/re-export any technical data, process,
+ * software, or service, directly or indirectly, to any country for which the
+ * United States government or any agency thereof requires an export license,
+ * other governmental approval, or letter of assurance, without first obtaining
+ * such license, approval or letter.
  *
  *****************************************************************************/
 
 
-#define __NSAPIOBJ_C__
+#define __NSXFOBJ_C__
 
-#include <acpi.h>
-#include <interpreter.h>
-#include <namespace.h>
-#include <methods.h>
-#include <acpiobj.h>
-#include <pnp.h>
+#include "acpi.h"
+#include "interp.h"
+#include "namesp.h"
 
 
-#define _THIS_MODULE        "nsapiobj.c"
 #define _COMPONENT          NAMESPACE
+        MODULE_NAME         ("nsxfobj");
 
 
 /****************************************************************************
@@ -116,13 +133,13 @@
  *
  * PARAMETERS:  Handle              - Object handle (optional)
  *              *Pathname           - Object pathname (optional)
- *              *ReturnObject       - Where to put method's return value (if 
- *                                    any).  If NULL, no value is returned.
  *              **Params            - List of parameters to pass to
  *                                    method, terminated by NULL.
  *                                    Params itself may be NULL
  *                                    if no parameters are being
  *                                    passed.
+ *              *ReturnObject       - Where to put method's return value (if
+ *                                    any).  If NULL, no value is returned.
  *
  * RETURN:      Status
  *
@@ -134,66 +151,256 @@
 
 ACPI_STATUS
 AcpiEvaluateObject (
-    ACPI_HANDLE             Handle, 
-    char                    *Pathname, 
-    ACPI_OBJECT             *ReturnObject,
-    ACPI_OBJECT             **Params)
+    ACPI_HANDLE             Handle,
+    ACPI_STRING             Pathname,
+    ACPI_OBJECT_LIST        *ParamObjects,
+    ACPI_BUFFER             *ReturnBuffer)
 {
     ACPI_STATUS             Status;
-    NAME_TABLE_ENTRY        *ObjEntry;
+    ACPI_OBJECT_INTERNAL    **ParamPtr = NULL;
+    ACPI_OBJECT_INTERNAL    *ReturnObj = NULL;
+    ACPI_OBJECT_INTERNAL    *ObjectPtr = NULL;
+    UINT32                  BufferSpaceNeeded;
+    UINT32                  UserBufferLength;
+    UINT32                  Count;
+    UINT32                  i;
+    UINT32                  ParamLength;
+    UINT32                  ObjectLength;
 
 
     FUNCTION_TRACE ("AcpiEvaluateObject");
 
 
-    /* Parameter validation */
+    /*
+     * If there are parameters to be passed to the object
+     * (which must be a control method), the external objects
+     * must be converted to internal objects
+     */
 
-    if (!Handle && !Pathname)
+    if (ParamObjects && ParamObjects->Count)
     {
-        DEBUG_PRINT (ACPI_ERROR, ("AcpiEvaluateObject: Both Handle and Pathname are NULL\n"));
-        FUNCTION_EXIT;
-        return AE_BAD_PARAMETER;
+        /*
+         * Allocate a new parameter block for the internal objects
+         * Add 1 to count to allow for null terminated internal list
+         * TBD: [Restructure] merge into single allocation!
+         */
+
+        Count           = ParamObjects->Count;
+        ParamLength     = (Count + 1) * sizeof (void *);
+        ObjectLength    = Count * sizeof (ACPI_OBJECT_INTERNAL);
+
+        ParamPtr = AcpiCmCallocate (ParamLength +   /* Parameter List part */
+                                    ObjectLength);  /* Actual objects */
+        if (!ParamPtr)
+        {
+            return_ACPI_STATUS (AE_NO_MEMORY);
+        }
+
+        ObjectPtr = (ACPI_OBJECT_INTERNAL *) ((UINT8 *) ParamPtr +
+                        ParamLength);
+
+        /*
+         * Init the param array of pointers and NULL terminate
+         * the list
+         */
+
+        for (i = 0; i < Count; i++)
+        {
+            ParamPtr[i] = &ObjectPtr[i];
+            AcpiCmInitStaticObject (&ObjectPtr[i]);
+        }
+        ParamPtr[Count] = NULL;
+
+        /*
+         * Convert each external object in the list to an
+         * internal object
+         */
+        for (i = 0; i < Count; i++)
+        {
+            Status =
+                AcpiCmBuildInternalObject (&ParamObjects->Pointer[i],
+                                            ParamPtr[i]);
+
+            if (ACPI_FAILURE (Status))
+            {
+                AcpiCmDeleteInternalObjectList (ParamPtr);
+                return_ACPI_STATUS (Status);
+            }
+        }
     }
 
 
-    /* The null handle case means that the pathname is fully qualified */
+    /*
+     * Three major cases:
+     * 1) Fully qualified pathname
+     * 2) No handle, not fully qualified pathname (error)
+     * 3) Valid handle
+     */
 
-    if (!Handle)
+    if ((Pathname) &&
+        (AcpiNsValidRootPrefix (Pathname[0])))
     {
-        Status = NsEvaluateByName (Pathname, ReturnObject, Params);
+        /*
+         *  The path is fully qualified, just evaluate by name
+         */
+        Status = AcpiNsEvaluateByName (Pathname, ParamPtr, &ReturnObj);
+    }
+
+    else if (!Handle)
+    {
+        /*
+         * A handle is optional iff a fully qualified pathname
+         * is specified.  Since we've already handled fully
+         * qualified names above, this is an error
+         */
+
+        if (!Pathname)
+        {
+            DEBUG_PRINT (ACPI_ERROR,
+                ("AcpiEvaluateObject: Both Handle and Pathname are NULL\n"));
+        }
+
+        else
+        {
+            DEBUG_PRINT (ACPI_ERROR,
+                ("AcpiEvaluateObject: Handle is NULL and Pathname is relative\n"));
+        }
+
+        Status = AE_BAD_PARAMETER;
     }
 
     else
     {
-        /* These cases require a valid handle */
-
-        if (!(ObjEntry = NsConvertHandleToEntry (Handle)))
-        {
-            FUNCTION_EXIT;
-            return AE_BAD_PARAMETER;
-        }
-
-        /* The null pathname case means the handle is for the object */
+        /*
+         * We get here if we have a handle -- and if we have a
+         * pathname it is relative.  The handle will be validated
+         * in the lower procedures
+         */
 
         if (!Pathname)
         {
-            Status = NsEvaluateByHandle (ObjEntry, ReturnObject, Params);
+            /*
+             * The null pathname case means the handle is for
+             * the actual object to be evaluated
+             */
+            Status = AcpiNsEvaluateByHandle (Handle,
+                                            ParamPtr,
+                                            &ReturnObj);
         }
-
-
-        /* Both Handle and Pathname means we have a path relative to the handle */
 
         else
         {
-            Status = NsEvaluateRelative (ObjEntry, Pathname, ReturnObject, Params);
+           /*
+            * Both a Handle and a relative Pathname
+            */
+            Status = AcpiNsEvaluateRelative (Handle, Pathname,
+                                            ParamPtr,
+                                            &ReturnObj);
         }
     }
 
 
-    FUNCTION_EXIT;
-    return Status;
-}
+    /*
+     * If we are expecting a return value, and all went well above,
+     * copy the return value to an external object.
+     */
 
+    if (ReturnBuffer)
+    {
+        UserBufferLength = ReturnBuffer->Length;
+        ReturnBuffer->Length = 0;
+
+        if (ReturnObj)
+        {
+            if (VALID_DESCRIPTOR_TYPE (ReturnObj,
+                                        ACPI_DESC_TYPE_NAMED))
+            {
+                /*
+                 * If we got an NTE as a return object,
+                 * this means the object we are evaluating
+                 * has nothing interesting to return (such
+                 * as a mutex, etc.)  We return an error
+                 * because these types are essentially
+                 * unsupported by this interface.  We
+                 * don't check up front because this makes
+                 * it easier to add support for various
+                 * types at a later date if necessary.
+                 */
+                Status = AE_TYPE;
+                ReturnObj = NULL;   /* No need to delete an NTE */
+            }
+
+            if (ACPI_SUCCESS (Status))
+            {
+                /*
+                 * Find out how large a buffer is needed
+                 * to contain the returned object
+                 */
+                Status = AcpiCmGetObjectSize (ReturnObj,
+                                                &BufferSpaceNeeded);
+                if (ACPI_SUCCESS (Status))
+                {
+                    /*
+                     * Check if there is enough room in the
+                     * caller's buffer
+                     */
+
+                    if (UserBufferLength < BufferSpaceNeeded)
+                    {
+                        /*
+                         * Caller's buffer is too small, can't
+                         * give him partial results fail the call
+                         * but return the buffer size needed
+                         */
+
+                        DEBUG_PRINT (ACPI_ERROR,
+                            ("AcpiEvaluateObject: Needed buffer size %d, received %d\n",
+                            BufferSpaceNeeded, UserBufferLength));
+
+                        ReturnBuffer->Length = BufferSpaceNeeded;
+                        Status = AE_BUFFER_OVERFLOW;
+                    }
+
+                    else
+                    {
+                        /*
+                         *  We have enough space for the object, build it
+                         */
+                        Status =
+                            AcpiCmBuildExternalObject (ReturnObj,
+                                                        ReturnBuffer);
+                        ReturnBuffer->Length = BufferSpaceNeeded;
+                    }
+                }
+            }
+        }
+    }
+
+
+    /* Delete the return and parameter objects */
+
+    if (ReturnObj)
+    {
+        /*
+         * Delete the internal return object. (Or at least
+         * decrement the reference count by one)
+         */
+        AcpiCmRemoveReference (ReturnObj);
+    }
+
+    /*
+     * Free the input parameter list (if we created one),
+     */
+
+    if (ParamPtr)
+    {
+        /* Free the allocated parameter block */
+
+        AcpiCmDeleteInternalObjectList (ParamPtr);
+    }
+
+    return_ACPI_STATUS (Status);
+}
 
 
 /****************************************************************************
@@ -201,115 +408,148 @@ AcpiEvaluateObject (
  * FUNCTION:    AcpiGetNextObject
  *
  * PARAMETERS:  Type            - Type of object to be searched for
- *              Scope           - Scope to search in (only if Handle is null)
- *              Handle          - Current object to search from
+ *              Parent          - Parent object whose children we are getting
+ *              LastChild       - Previous child that was found.
+ *                                The NEXT child will be returned
  *              RetHandle       - Where handle to the next object is placed
  *
  * RETURN:      Status
  *
  * DESCRIPTION: Return the next peer object within the namespace.  If Handle is
- *              valid, Scope is ignored.  Otherwise, the first object within 
+ *              valid, Scope is ignored.  Otherwise, the first object within
  *              Scope is returned.
  *
  ******************************************************************************/
 
 ACPI_STATUS
 AcpiGetNextObject (
-    ACPI_OBJECT_TYPE        Type, 
-    ACPI_HANDLE             Scope, 
-    ACPI_HANDLE             Handle, 
+    ACPI_OBJECT_TYPE        Type,
+    ACPI_HANDLE             Parent,
+    ACPI_HANDLE             Child,
     ACPI_HANDLE             *RetHandle)
 {
-    NAME_TABLE_ENTRY        *ThisEntry;
+    ACPI_STATUS             Status = AE_OK;
+    ACPI_NAMED_OBJECT       *Entry;
+    ACPI_NAMED_OBJECT       *ParentEntry = NULL;
+    ACPI_NAMED_OBJECT       *ChildEntry = NULL;
 
 
-    if (!RetHandle)
+    /* Parameter validation */
+
+    if (Type > ACPI_TYPE_MAX)
     {
         return AE_BAD_PARAMETER;
     }
-    *RetHandle = NULL;
 
+    AcpiCmAcquireMutex (ACPI_MTX_NAMESPACE);
 
-    if (OUTRANGE (Type, NsTypeNames))
+    /* If null handle, use the parent */
+
+    if (!Child)
     {
-        return AE_BAD_PARAMETER;
-    }
-
-
-    /* If null handle, use the scope */
-
-    if (!Handle)
-    {
-        if (!Scope)
-        {
-            return AE_NOT_FOUND;
-        }
-
         /* Start search at the beginning of the specified scope */
 
-        if (!(ThisEntry = NsConvertHandleToEntry (Scope)))
+        ParentEntry = AcpiNsConvertHandleToEntry (Parent);
+        if (!ParentEntry)
         {
-            return AE_BAD_PARAMETER;
+            Status = AE_BAD_PARAMETER;
+            goto UnlockAndExit;
         }
     }
 
-    /* Non-null handle, ignore the scope */
+    /* Non-null handle, ignore the parent */
 
     else
     {
         /* Convert and validate the handle */
 
-        if (!(ThisEntry = NsConvertHandleToEntry (Handle)))
+        ChildEntry = AcpiNsConvertHandleToEntry (Child);
+        if (!ChildEntry)
         {
-            return AE_BAD_PARAMETER;
+            Status = AE_BAD_PARAMETER;
+            goto UnlockAndExit;
         }
-
-        /* Start search at the NEXT object */
-
-        ThisEntry = ThisEntry->NextEntry;
     }
 
 
-    /* If any type is OK, we are done */
+    /* Internal function does the real work */
 
-    if (Type == TYPE_Any)
+    Entry = AcpiNsGetNextObject ((OBJECT_TYPE_INTERNAL) Type,
+                                    ParentEntry, ChildEntry);
+    if (!Entry)
     {
-        /* Make sure this is valid entry first */
+        Status = AE_NOT_FOUND;
+        goto UnlockAndExit;
+    }
 
-        if (!ThisEntry)
-        {
-            return AE_NOT_FOUND;
-        }
+    if (RetHandle)
+    {
+        *RetHandle = AcpiNsConvertEntryToHandle (Entry);
+    }
 
-        if (!ThisEntry->Name)
-        {
-            return AE_NOT_FOUND;
-        }
 
-        *RetHandle = ThisEntry;
+UnlockAndExit:
+
+    AcpiCmReleaseMutex (ACPI_MTX_NAMESPACE);
+    return Status;
+}
+
+
+/****************************************************************************
+ *
+ * FUNCTION:    AcpiGetType
+ *
+ * PARAMETERS:  Handle          - Handle of object whose type is desired
+ *              *RetType        - Where the type will be placed
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: This routine returns the type associatd with a particular handle
+ *
+ ******************************************************************************/
+
+ACPI_STATUS
+AcpiGetType (
+    ACPI_HANDLE             Handle,
+    ACPI_OBJECT_TYPE        *RetType)
+{
+    ACPI_NAMED_OBJECT       *Object;
+
+
+    /* Parameter Validation */
+
+    if (!RetType)
+    {
+        return AE_BAD_PARAMETER;
+    }
+
+    /*
+     * Special case for the predefined Root Object
+     * (return type ANY)
+     */
+
+    if (Handle == ACPI_ROOT_OBJECT)
+    {
+        *RetType = ACPI_TYPE_ANY;
         return AE_OK;
     }
 
+    AcpiCmAcquireMutex (ACPI_MTX_NAMESPACE);
 
-    /* Must search -- entries within this scope only */
+    /* Convert and validate the handle */
 
-    while (ThisEntry)
+    Object = AcpiNsConvertHandleToEntry (Handle);
+    if (!Object)
     {
-        /* If type matches, we are done */
-
-        if (ThisEntry->Type == Type)
-        {
-            *RetHandle = ThisEntry;
-            return AE_OK;
-        }
-
-        /* Otherwise, move on to the next object */
-
-        ThisEntry = ThisEntry->NextEntry;
+        AcpiCmReleaseMutex (ACPI_MTX_NAMESPACE);
+        return AE_BAD_PARAMETER;
     }
 
+    *RetType = Object->Type;
 
-    return AE_NOT_FOUND;
+
+    AcpiCmReleaseMutex (ACPI_MTX_NAMESPACE);
+    return AE_OK;
 }
 
 
@@ -329,10 +569,14 @@ AcpiGetNextObject (
 
 ACPI_STATUS
 AcpiGetParent (
-    ACPI_HANDLE             Handle, 
+    ACPI_HANDLE             Handle,
     ACPI_HANDLE             *RetHandle)
 {
-    NAME_TABLE_ENTRY        *Object;
+    ACPI_NAMED_OBJECT       *Object;
+    ACPI_STATUS             Status = AE_OK;
+
+
+    /* No trace macro, too verbose */
 
 
     if (!RetHandle)
@@ -340,133 +584,44 @@ AcpiGetParent (
         return AE_BAD_PARAMETER;
     }
 
-    /* Convert and validate the handle */
+    /* Special case for the predefined Root Object (no parent) */
 
-    if (!(Object = NsConvertHandleToEntry (Handle)))
+    if (Handle == ACPI_ROOT_OBJECT)
     {
-        *RetHandle = INVALID_HANDLE;
-        return AE_BAD_PARAMETER;
+        return AE_NULL_ENTRY;
     }
 
-   
+
+    AcpiCmAcquireMutex (ACPI_MTX_NAMESPACE);
+
+    /* Convert and validate the handle */
+
+    Object = AcpiNsConvertHandleToEntry (Handle);
+    if (!Object)
+    {
+        Status = AE_BAD_PARAMETER;
+        goto UnlockAndExit;
+    }
+
+
     /* Get the parent entry */
 
-    *RetHandle = Object->ParentEntry;
+    *RetHandle =
+        AcpiNsConvertEntryToHandle (AcpiNsGetParentEntry (Object));
 
     /* Return exeption if parent is null */
 
-    if (!Object->ParentEntry)
+    if (!AcpiNsGetParentEntry (Object))
     {
-        return AE_NULL_ENTRY;
+        Status = AE_NULL_ENTRY;
     }
 
+
+UnlockAndExit:
+
+    AcpiCmReleaseMutex (ACPI_MTX_NAMESPACE);
     return AE_OK;
 }
-
-
-/****************************************************************************
- *
- * FUNCTION:    AcpiGetScope
- *
- * PARAMETERS:  Handle          - Handle of object whose scope is desired
- *              RetScope        - Where the scope handle is returned
- *
- * RETURN:      Status
- *
- * DESCRIPTION: Returns a handle to the scope that is owned by the object
- *              represented by handle.  NOTE: this is NOT the scope that
- *              contains the object (i.e., not the scope that the object is
- *              defined within.)
- *
- ******************************************************************************/
-
-ACPI_STATUS
-AcpiGetScope (
-    ACPI_HANDLE             Handle, 
-    ACPI_HANDLE             *RetScope)
-{
-    NAME_TABLE_ENTRY        *Object;
-
-
-    if (!RetScope)
-    {
-        return AE_BAD_PARAMETER;
-    }
-
-    /* Convert and validate the handle */
-
-    if (!(Object = NsConvertHandleToEntry (Handle)))
-    {
-        *RetScope = INVALID_HANDLE;
-        return AE_BAD_PARAMETER;
-    }
-
-    /* Get the scope entry */
-
-    *RetScope = Object->Scope;
-
-    /* Return exception in the case of no scope */
-
-    if (!Object->Scope)
-    {
-        return AE_NULL_ENTRY;
-    }
-
-    return AE_OK;
-}
-
-
-
-/****************************************************************************
- *
- * FUNCTION:    AcpiGetContainingScope
- *
- * PARAMETERS:  Handle          - Handle to object whose containing scope is desired
- *              RetHandle       - Where the containing scope handle is placed.
- *
- * RETURN:      Status
- *
- * DESCRIPTION: Returns a handle for the scope that contains the object represented
- *              by Handle.  This is essentially the scope of the objects parent,
- *              and is the scope where the object is defined in the ASL.
- *
- ******************************************************************************/
-
-ACPI_STATUS
-AcpiGetContainingScope (
-    ACPI_HANDLE             Handle, 
-    ACPI_HANDLE             *RetHandle)
-{
-    NAME_TABLE_ENTRY        *Object;
-
-
-    if (!RetHandle)
-    {
-        return AE_BAD_PARAMETER;
-    }
-
-    /* Convert and validate the handle */
-
-    if (!(Object = NsConvertHandleToEntry (Handle)))
-    {
-        *RetHandle = INVALID_HANDLE;
-        return AE_BAD_PARAMETER;
-    }
-
-    /* If no parent, we are in the root scope */
-
-    if (!Object->ParentEntry)
-    {
-        *RetHandle = RootObject->Scope;
-    }
-    else
-    {
-        *RetHandle = Object->ParentEntry->Scope;
-    }
-
-    return AE_OK;
-}
-
 
 
 /******************************************************************************
@@ -474,7 +629,7 @@ AcpiGetContainingScope (
  * FUNCTION:    AcpiWalkNamespace
  *
  * PARAMETERS:  Type                - ACPI_OBJECT_TYPE to search for
- *              StartHandle         - Handle in namespace where search begins
+ *              StartObject         - Handle in namespace where search begins
  *              MaxDepth            - Depth to which search is to reach
  *              UserFunction        - Called when an object of "Type" is found
  *              Context             - Passed to user function
@@ -490,27 +645,23 @@ AcpiGetContainingScope (
  *              value is returned to the caller.
  *
  *              The point of this procedure is to provide a generic namespace
- *              walk routine that can be called from multiple places to 
+ *              walk routine that can be called from multiple places to
  *              provide multiple services;  the User Function can be tailored
- *              to each task, whether it is a print function, a compare 
+ *              to each task, whether it is a print function, a compare
  *              function, etc.
  *
  ******************************************************************************/
 
 ACPI_STATUS
 AcpiWalkNamespace (
-    ACPI_OBJECT_TYPE        Type, 
-    ACPI_HANDLE             StartHandle, 
+    ACPI_OBJECT_TYPE        Type,
+    ACPI_HANDLE             StartObject,
     UINT32                  MaxDepth,
-    WALK_CALLBACK           UserFunction, 
-    void                    *Context, 
+    WALK_CALLBACK           UserFunction,
+    void                    *Context,
     void                    **ReturnValue)
 {
-    ACPI_HANDLE             ObjHandle = 0;
-    ACPI_HANDLE             Scope;
-    ACPI_HANDLE             NewScope;
-    void                    *UserReturnVal;
-    UINT32                  Level = 1;
+    ACPI_STATUS             Status;
 
 
     FUNCTION_TRACE ("AcpiWalkNamespace");
@@ -518,271 +669,30 @@ AcpiWalkNamespace (
 
     /* Parameter validation */
 
-    if (OUTRANGE (Type, NsTypeNames))
+    if ((Type > ACPI_TYPE_MAX)  ||
+        (!MaxDepth)             ||
+        (!UserFunction))
     {
-        FUNCTION_EXIT;
-        return AE_BAD_PARAMETER;
+        return_ACPI_STATUS (AE_BAD_PARAMETER);
     }
 
-    if ((!MaxDepth) || (!UserFunction))
-    {
-        FUNCTION_EXIT;
-        return AE_BAD_PARAMETER;
-    }
-
-    /* Begin search in the scope owned by the starting object */
-    /* Failure could be bad scope or simply *no* scope */
-
-    if (ACPI_FAILURE (AcpiGetScope (StartHandle, &Scope)))
-    {
-        FUNCTION_EXIT;
-        return AE_BAD_PARAMETER;
-    }
-
-    /* Init return value, if any */
-
-    if (ReturnValue)
-        *ReturnValue = NULL;
-
-    /* 
-     * Traverse the tree of objects until we bubble back up 
-     * to where we started.
+    /*
+     * Lock the namespace around the walk.
+     * The namespace will be unlocked/locked around each call
+     * to the user function - since this function
+     * must be allowed to make Acpi calls itself.
      */
 
-    while (ObjHandle != StartHandle)
-    {
-        /* Get the next typed object in this scope.  Null returned if not found */
+    AcpiCmAcquireMutex (ACPI_MTX_NAMESPACE);
+    Status = AcpiNsWalkNamespace ((OBJECT_TYPE_INTERNAL) Type,
+                                    StartObject, MaxDepth,
+                                    NS_WALK_UNLOCK,
+                                    UserFunction, Context,
+                                    ReturnValue);
 
-        if (ACPI_SUCCESS (AcpiGetNextObject (Type, Scope, ObjHandle, &ObjHandle)))
-        {
-            /* Found an object - process by calling the user function */
+    AcpiCmReleaseMutex (ACPI_MTX_NAMESPACE);
 
-            if ((UserReturnVal = UserFunction (ObjHandle, Level, Context)) != 0)
-            {
-                /* Non-zero from user function means "exit now" */
-
-                if (ReturnValue)
-                    *ReturnValue = UserReturnVal;
-
-                FUNCTION_EXIT;
-                return AE_OK;
-            }
-
-            /* Go down another level if we are allowed to */
-
-            if (Level < MaxDepth)
-            {
-                /* Check for a valid scope for this object */
-
-                if (ACPI_SUCCESS (AcpiGetScope (ObjHandle, &NewScope)))
-                {
-                    /* There is a valid scope, we will check for child objects */
-
-                    Level++;
-                    ObjHandle = 0;
-                    Scope = NewScope;
-                }
-            }
-        }
-
-        else
-        {
-            /* 
-             * No more objects in this scope, go back up to the parent and the 
-             * parent's scope (But only back up to where we started the search)
-             */
-            Level--;
-            AcpiGetParent (Scope, &ObjHandle);
-            AcpiGetContainingScope (ObjHandle, &Scope);
-        }
-    }
-
-    FUNCTION_EXIT;
-    return AE_OK; /* Complete walk, not terminated by user function */
+    return_ACPI_STATUS (Status);
 }
 
-
-
-/* NON-IMPLEMENTED FUNCTIONS */
-
-
-/****************************************************************************
- *
- * FUNCTION:    AcpiGetObject
- *
- * PARAMETERS:  
- *
- * RETURN:      Status
- *
- * DESCRIPTION: TBD: Not completely defined, not implemented!
- *
- ******************************************************************************/
-
-ACPI_STATUS
-AcpiGetObject (
-    char                    *Pathname, 
-    ACPI_HANDLE             *RetHandle)
-{
-
-    if (!RetHandle)
-    {
-        return AE_BAD_PARAMETER;
-    }
-
-
-    *RetHandle = RootObject->Scope;
-    return AE_OK;
-}
-
-
-/****************************************************************************
- *
- * FUNCTION:    AcpiGetParentHandle
- *
- * PARAMETERS:  ChildHandle     - the handle of the object for which the 
- *                                parent is to be found
- *
- * RETURN:      Parent handle
- *
- * DESCRIPTION: This routine returns the handle for the parent of an object.
- *
- ******************************************************************************/
-
-ACPI_HANDLE 
-AcpiGetParentHandle (
-    ACPI_HANDLE             ChildHandle)
-{
-
-    return ((ACPI_HANDLE) NULL);
-}
-
-
-/****************************************************************************
- *
- * FUNCTION:    ACPI_OBJECT_TYPE AcpiValueType
- *
- * PARAMETERS:  Handle          - the handle of the object to find the type of
- *
- * RETURN:      ACPI_OBJECT_TYPE - type of the Handle
- *
- * DESCRIPTION: This routine returns the type associatd with a particular handle
- *
- ******************************************************************************/
-
-ACPI_OBJECT_TYPE 
-AcpiValueType (
-    ACPI_HANDLE             Handle)
-{
-
-    return (TYPE_Any);
-}
-
-/****************************************************************************
- *
- * FUNCTION:    AcpiCurrentScopeName
- *
- * PARAMETERS:  none
- *
- * RETURN:      pointer to an ascii string with the absolute name of the scope
- *
- * DESCRIPTION: 
- *
- ******************************************************************************/
-
-char * 
-AcpiCurrentScopeName (void)
-{
-    return ((char *) NULL);
-}
-
-
-/****************************************************************************
- *
- * FUNCTION:    AcpiIsNameSpaceHandle
- *
- * PARAMETERS:  QueryHandle     - handle to be verified
- *
- * RETURN:      BOOLEAN -   TRUE if QueryHandle is a NameSpace handle
- *                          FALSE otherwise
- *
- * DESCRIPTION: This routine verifies the validity of a namespace handle
- *
- ******************************************************************************/
-
-BOOLEAN 
-AcpiIsNameSpaceHandle (
-    ACPI_HANDLE             QueryHandle)
-{
-    return (TRUE);
-}
-
-
-/****************************************************************************
- *
- * FUNCTION:    AcpiIsNameSpaceValue
- *
- * PARAMETERS:  Value
- *
- * RETURN:      TRUE if the value is a valid NS vakue, FALSE otherwise
- *
- * DESCRIPTION: This routine verifies the value is valid for ACPI_OBJECT_TYPE  what is the utility of this? RLM
- *
- ******************************************************************************/
-
-BOOLEAN 
-AcpiIsNameSpaceValue (
-    ACPI_OBJECT_TYPE        Value)
-{
-    return (TRUE);
-}
-
-
-/******************************************************************************
- *
- * FUNCTION:    AcpiSetFirmwareWakingVector
- *
- * PARAMETERS:  PhysicalAddress     - Physical address of ACPI real mode
- *                                          entry point.
- *
- * RETURN:      AE_OK or AE_ERROR
- *
- * DESCRIPTION: Access function for dFirmwareWakingVector field in FACS
- *
- ******************************************************************************/
-
-INT32
-AcpiSetFirmwareWakingVector (
-    UINT32                  PhysicalAddress)
-{
-    FUNCTION_TRACE ("AcpiSetFirmwareWakingVector");
-    
-    FUNCTION_EXIT;
-    return (AE_OK);
-}
-
-
-/******************************************************************************
- *
- * FUNCTION:    AcpiGetFirmwareWakingVector
- *
- * PARAMETERS:  *PhysicalAddress    - Output buffer where contents of
- *                                          the dFirmwareWakingVector field of 
- *                                          the FACS will be stored.
- *
- * RETURN:      Status
- *
- * DESCRIPTION: Access function for dFirmwareWakingVector field in FACS
- *
- ******************************************************************************/
-
-ACPI_STATUS
-AcpiGetFirmwareWakingVector (
-    UINT32                  *PhysicalAddress)
-{
-    FUNCTION_TRACE ("AcpiGetFirmwareWakingVector");
-
-    
-    FUNCTION_EXIT;
-    return (AE_OK);
-}
 
