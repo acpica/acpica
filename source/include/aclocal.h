@@ -147,17 +147,18 @@ typedef UINT32              ACPI_MUTEX_HANDLE;
  * NOTE: any changes here must be reflected in the Gbl_MutexNames table also!
  */
 
-#define MTX_EXECUTE         0
-#define MTX_INTERPRETER     1
-#define MTX_TABLES          2
-#define MTX_NAMESPACE       3
-#define MTX_MEMORY          4
-#define MTX_EVENTS          5
-#define MTX_OP_REGIONS      6
-#define MTX_DEBUG_COMMAND   7
-#define MTX_DEBUGGER        8
+#define MTX_MEMORY          0
+#define MTX_TABLES          1
+#define MTX_DISPATCHER      2
+#define MTX_INTERPRETER     3
+#define MTX_EXECUTE         4
+#define MTX_NAMESPACE       5
+#define MTX_EVENTS          6
+#define MTX_OP_REGIONS      7
+#define MTX_DEBUG_COMMAND   8
+#define MTX_DEBUGGER        9
 
-#define MAX_MTX             8
+#define MAX_MTX             9
 #define NUM_MTX             MAX_MTX+1
 
 
