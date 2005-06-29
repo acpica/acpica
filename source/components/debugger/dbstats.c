@@ -254,6 +254,7 @@ DbDisplayStatistics (
         OsdPrintf ("State Cache size............% 7ld\n", Gbl_GenericStateCacheDepth * sizeof (ACPI_GENERIC_STATE));
         OsdPrintf ("Parse Cache size............% 7ld\n", Gbl_ParseCacheDepth * sizeof (ACPI_GENERIC_OP));
         OsdPrintf ("Object Cache size...........% 7ld\n", Gbl_ObjectCacheDepth * sizeof (ACPI_OBJECT_INTERNAL));
+        OsdPrintf ("WalkState Cache size........% 7ld\n", Gbl_WalkStateCacheDepth * sizeof (ACPI_WALK_STATE));
 
         OsdPrintf ("\n");
 
@@ -267,6 +268,9 @@ DbDisplayStatistics (
         OsdPrintf ("Object Cache requests.......% 7ld\n", Gbl_ObjectCacheRequests);
         OsdPrintf ("Object Cache hits...........% 7ld\n", Gbl_ObjectCacheHits);
         OsdPrintf ("Object Cache depth..........% 7ld\n", Gbl_ObjectCacheDepth);
+        OsdPrintf ("WalkState Cache requests....% 7ld\n", Gbl_WalkStateCacheRequests);
+        OsdPrintf ("WalkState Cache hits........% 7ld\n", Gbl_WalkStateCacheHits);
+        OsdPrintf ("WalkState Cache depth.......% 7ld\n", Gbl_WalkStateCacheDepth);
         break;
 
     case CMD_MISC:
