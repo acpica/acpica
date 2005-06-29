@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dbdisply - debug display commands
- *              $Revision: 1.37 $
+ *              $Revision: 1.38 $
  *
  ******************************************************************************/
 
@@ -777,7 +777,7 @@ AcpiDbDisplayResults (void)
     UINT32                  i;
     ACPI_WALK_STATE         *WalkState;
     ACPI_OPERAND_OBJECT     *ObjDesc;
-    UINT32                  NumResults;
+    UINT32                  NumResults = 0;
     ACPI_NAMESPACE_NODE     *Node;
 
 
@@ -790,13 +790,17 @@ AcpiDbDisplayResults (void)
 
     ObjDesc = WalkState->MethodDesc;
     Node = WalkState->MethodNode;
-    NumResults = WalkState->NumResults - WalkState->CurrentResult;
+
+    if (WalkState->Results)
+    {
+        NumResults = WalkState->Results->Results.NumResults;
+    }
 
     AcpiOsPrintf ("Method [%4.4s] has %X stacked result objects\n", &Node->Name, NumResults);
 
-    for (i = WalkState->CurrentResult; i < WalkState->NumResults; i++)
+    for (i = 0; i < NumResults; i++)
     {
-        ObjDesc = WalkState->Results[i];
+        ObjDesc = WalkState->Results->Results.ObjDesc[i];
         AcpiOsPrintf ("Result%d: ", i);
         AcpiDbDisplayInternalObject (ObjDesc, WalkState);
     }
