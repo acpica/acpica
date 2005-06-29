@@ -662,10 +662,10 @@ AmlGetRvalue (
             else
             {
                 /* 
-                 * nte type is Number, but it does not point to a Number,
+                 * The NTE type is TYPE_Number, but it does not point to a Number,
                  * so it had better point to a Literal in the AML stream.
                  */
-                if (!AmlIsInPCodeBlock ((UINT8 *) ValDesc))
+                if (!NsIsInSystemTable (ValDesc))
                 {
                     DEBUG_PRINT (ACPI_ERROR, ("AmlGetRvalue/Number: internal error - not a Number\n"));
                     return_ACPI_STATUS (AE_AML_ERROR);
@@ -723,12 +723,12 @@ AmlGetRvalue (
 
                 default:
 
-                    CmDeleteInternalObject (ObjDesc);
                     DEBUG_PRINT (ACPI_ERROR, (
                             "AmlGetRvalue/Number: internal error - expected AML number, found %02x\n",
                             *(UINT8 *) ValDesc));
+
+                    CmDeleteInternalObject (ObjDesc);
                     return_ACPI_STATUS (AE_AML_ERROR);
-                
 
                 }   /* switch */
             }
@@ -749,6 +749,7 @@ AmlGetRvalue (
                 return_ACPI_STATUS (AE_AML_ERROR);
             }
 
+BREAKPOINT3;
             ObjDesc = CmCreateInternalObject (TYPE_Number);
             if (!ObjDesc)
             {   
