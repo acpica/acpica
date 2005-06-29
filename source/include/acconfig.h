@@ -118,40 +118,59 @@
 #define _CONFIG_H
 
 
-/*
- * Configuration constants for the ACPI subsystem
+
+/******************************************************************************
  * 
- * TBD: Some of these should be fixed or at least made run-time configurable.
+ * Compile-time options
  *
+ *****************************************************************************/
+
+/*
+ * ACPI_DEBUG           - This switch enables all the debug facilities of the ACPI
+ *                          subsystem.  This includes the DEBUG_PRINT output statements
+ *                          When disabled, all DEBUG_PRINT statements are compiled out.
+ *
+ * ACPI_APPLICATION     - Use this switch if the subsystem is going to be run
+ *                          at the application level.  
+ * 
  */
+
+
+
+/******************************************************************************
+ * 
+ * Subsystem Constants
+ *
+ *****************************************************************************/
+
 
 /* Name of operating system (returned by _OS_) */
 
 #define ACPI_OS_NAME                "Intel ACPI/CA Core Subsystem"
 
-/* String size constants */
-
-#define MAX_STRING_LENGTH           512
-#define PATHNAME_MAX                256     /* A full namespace pathname */
-
-
-/* 
- * Method info (in WALK_STATE), containing local variables and argumetns
- */
-
-#define MTH_NUM_LOCALS              8
-#define MTH_MAX_LOCAL               7
-
-#define MTH_NUM_ARGS                7
-#define MTH_MAX_ARG                 6
-
 
 /*
- * Operand Stack (in WALK_STATE), Must be large enough to contain MTH_MAX_ARG
+ * How and when control methods will be parsed
+ * The default action is to parse all methods at table load time to verify them, but delete the parse trees
+ * to conserve memory.  Methods are parsed just in time before execution and the parse tree is deleted 
+ * when execution completes.
  */
+#define METHOD_PARSE_AT_INIT        0x0     /* Parse at table init, never delete the method parse tree */
+#define METHOD_PARSE_JUST_IN_TIME   0x1     /* Parse only when a method is invoked */
+#define METHOD_DELETE_AT_COMPLETION 0x2     /* Delete parse tree on method completion */
 
-#define OBJ_NUM_OPERANDS            8
-#define OBJ_MAX_OPERAND             7
+/* Default parsing configuration */
+
+#define METHOD_PARSE_CONFIGURATION  (METHOD_PARSE_JUST_IN_TIME | METHOD_DELETE_AT_COMPLETION)
+
+
+/* Max number of objects in the state object cache */
+
+#define MAX_STATE_CACHE_DEPTH       24
+
+/* Max number of parse objects in the parse cache */
+
+#define MAX_PARSE_CACHE_DEPTH       512
 
 
 /* 
@@ -164,6 +183,65 @@
 
 #define NS_TABLE_SIZE               16
 
+/* String size constants */
+
+#define MAX_STRING_LENGTH           512
+#define PATHNAME_MAX                256     /* A full namespace pathname */
+
+
+/* Maximum count for a semaphore object */
+
+#define MAX_SEMAPHORE_COUNT         256 
+
+
+/* Max reference count (for debug only) */
+
+#define MAX_REFERENCE_COUNT         0x200
+
+
+/* 
+ * Debugger threading model
+ * Use single threaded if the entire subsystem is contained in an application
+ * Use multiple threaded when the the subsystem is running in the kernel.
+ *
+ * By default the model is single threaded if ACPI_APPLICATION is set,
+ * multi-threaded if ACPI_APPLICATION is not set.
+ */
+
+#define DEBUGGER_SINGLE_THREADED    0
+#define DEBUGGER_MULTI_THREADED     1
+
+#ifdef ACPI_APPLICATION
+#define DEBUGGER_THREADING          DEBUGGER_SINGLE_THREADED
+
+#else
+#define DEBUGGER_THREADING          DEBUGGER_MULTI_THREADED
+#endif
+
+
+
+/******************************************************************************
+ * 
+ * ACPI Specification constants (Do not change unless the specification changes)
+ *
+ *****************************************************************************/
+
+/* 
+ * Method info (in WALK_STATE), containing local variables and argumetns
+ */
+
+#define MTH_NUM_LOCALS              8
+#define MTH_MAX_LOCAL               7
+
+#define MTH_NUM_ARGS                7
+#define MTH_MAX_ARG                 6
+
+/*
+ * Operand Stack (in WALK_STATE), Must be large enough to contain MTH_MAX_ARG
+ */
+
+#define OBJ_NUM_OPERANDS            8
+#define OBJ_MAX_OPERAND             7
 
 /* Names within the namespace are 4 bytes long */
 
@@ -186,19 +264,6 @@
 #define MAX_PACKAGE_DEPTH           16
 
 
-/* Maximum count for a semaphore object */
-
-#define MAX_SEMAPHORE_COUNT         256 
-
-
-/* Max reference count (for debug only) */
-
-#define MAX_REFERENCE_COUNT         0x200
-
-/* Max number of objects in the state object cache */
-
-#define MAX_STATE_CACHE_DEPTH       24
-#define MAX_PARSE_CACHE_DEPTH       512
 
 #endif /* _CONFIG_H */
 
