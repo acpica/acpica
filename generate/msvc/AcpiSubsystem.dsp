@@ -693,10 +693,6 @@ SOURCE=..\..\Subsystem\Include\dispatch.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\Subsystem\Include\errata.h
-# End Source File
-# Begin Source File
-
 SOURCE=..\..\Subsystem\Include\events.h
 # End Source File
 # Begin Source File
