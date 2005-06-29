@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: exfldio - Aml Field I/O
- *              $Revision: 1.51 $
+ *              $Revision: 1.52 $
  *
  *****************************************************************************/
 
@@ -261,7 +261,7 @@ AcpiExSetupField (
  * FUNCTION:    AcpiExReadFieldDatum
  *
  * PARAMETERS:  *ObjDesc            - Field to be read
- *              *Value              - Where to store value
+ *              *Value              - Where to store value (must be 32 bits)
  *              FieldBitWidth       - Field Width in bits (8, 16, or 32)
  *
  * RETURN:      Status
@@ -288,11 +288,16 @@ AcpiExReadFieldDatum (
 
 
     FieldByteWidth = DIV_8 (FieldBitWidth);
+
     if (!Value)
     {
         LocalValue = 0;
         Value = &LocalValue;    /*  support reads without saving value  */
     }
+
+    /* Clear the entire return buffer first, [Very Important!] */
+
+    *Value = 0;
 
 
     /*
@@ -378,6 +383,49 @@ AcpiExReadFieldDatum (
 }
 
 
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiExStoreDatum 
+ *
+ * PARAMETERS:  MergedDatum         - Value to store
+ *              Buffer              - Receiving buffer
+ *              ByteGranularity     - 1/2/4 Granularity of the field 
+ *                                    (aka Datum Size)
+ *              Offset              - Datum offset into the buffer
+ *              
+ * RETURN:      none
+ *
+ * DESCRIPTION: Store the merged datum to the buffer according to the
+ *              byte granularity
+ *
+ ******************************************************************************/
+
+void
+AcpiExStoreDatum (
+    UINT32                  MergedDatum,
+    void                    *Buffer,
+    UINT32                  ByteGranularity,
+    UINT32                  Offset)
+{
+
+    switch (ByteGranularity)
+    {
+    case ACPI_FIELD_BYTE_GRANULARITY:
+        ((UINT8 *) Buffer) [Offset] = (UINT8) MergedDatum;
+        break;
+
+    case ACPI_FIELD_WORD_GRANULARITY:
+        MOVE_UNALIGNED16_TO_16 (&(((UINT16 *) Buffer)[Offset]), &MergedDatum);
+        break;
+
+    case ACPI_FIELD_DWORD_GRANULARITY:
+        MOVE_UNALIGNED32_TO_32 (&(((UINT32 *) Buffer)[Offset]), &MergedDatum);
+        break;
+    }
+}
+
+
 /*******************************************************************************
  *
  * FUNCTION:    AcpiExExtractFromField
@@ -431,8 +479,9 @@ AcpiExExtractFromField (
                     BitGranularity, &PreviousRawDatum);
     if (ACPI_FAILURE (Status))
     {
-        goto Cleanup;
+        return_ACPI_STATUS (Status);
     }
+
 
     /* We might actually be done if the request fits in one datum */
 
@@ -440,8 +489,12 @@ AcpiExExtractFromField (
         ((ObjDesc->CommonField.BitOffset + ObjDesc->CommonField.BitLength) <=
             (UINT16) BitGranularity))
     {
+        /* 1) Shift the valid data bits down to start at bit 0 */
+
         MergedDatum = PreviousRawDatum;
         MergedDatum = (MergedDatum >> ObjDesc->CommonField.BitOffset);
+
+        /* 2) Mask off any upper unused bits (bits not part of the field) */
 
         ValidFieldBits = ObjDesc->CommonField.BitLength % BitGranularity;
         if (ValidFieldBits)
@@ -451,145 +504,108 @@ AcpiExExtractFromField (
         }
 
 
+        /* Store the datum to the caller buffer */
+
+        AcpiExStoreDatum (MergedDatum, Buffer, ByteGranularity, 
+                ThisFieldDatumOffset);
+
+        return_ACPI_STATUS (AE_OK);
+    }
+
+
+    /* We need to get more raw data to complete one or more field data */
+
+    while (ThisFieldDatumOffset < DatumLength)
+    {
         /*
-         * Place the MergedDatum into the proper format and return buffer
-         * field
+         * If the field is aligned on a byte boundary, we don't want
+         * to perform a final read, since this would potentially read
+         * past the end of the region.
+         *
+         * TBD: [Investigate] It may make more sense to just split the aligned
+         * and non-aligned cases since the aligned case is so very simple,
          */
-        switch (ByteGranularity)
+        if ((ObjDesc->CommonField.BitOffset != 0)       ||
+            ((ObjDesc->CommonField.BitOffset == 0)      &&
+            (ThisFieldDatumOffset < (DatumLength -1))))
         {
-        case 1:
-            ((UINT8 *) Buffer) [ThisFieldDatumOffset] = (UINT8) MergedDatum;
-            break;
-
-        case 2:
-            MOVE_UNALIGNED16_TO_16 (&(((UINT16 *) Buffer)[ThisFieldDatumOffset]), &MergedDatum);
-            break;
-
-        case 4:
-            MOVE_UNALIGNED32_TO_32 (&(((UINT32 *) Buffer)[ThisFieldDatumOffset]), &MergedDatum);
-            break;
+            /*
+             * Get the next raw datum, it contains some or all bits
+             * of the current field datum
+             */
+            Status = AcpiExReadFieldDatum (ObjDesc,
+                            ThisFieldByteOffset + ByteGranularity,
+                            BitGranularity, &ThisRawDatum);
+            if (ACPI_FAILURE (Status))
+            {
+                return_ACPI_STATUS (Status);
+            }
         }
 
-        ThisFieldByteOffset = 1;
-        ThisFieldDatumOffset = 1;
-    }
 
-    else
-    {
-        /* We need to get more raw data to complete one or more field data */
+        /*
+         * Create the (possibly) merged datum to be stored to the caller buffer
+         */
+        if (ObjDesc->CommonField.BitOffset == 0)
+        {
+            /* Field is not skewed and we can just copy the datum */
 
-        while (ThisFieldDatumOffset < DatumLength)
+            MergedDatum = PreviousRawDatum;
+        }
+
+        else
         {
             /*
-             * If the field is aligned on a byte boundary, we don't want
-             * to perform a final read, since this would potentially read
-             * past the end of the region.
+             * Put together the appropriate bits of the two raw data to make a 
+             * single complete field datum
              *
-             * TBD: [Investigate] It may make more sense to just split the aligned
-             * and non-aligned cases since the aligned case is so very simple,
+             * 1) Normalize the first datum down to bit 0 
              */
-            if ((ObjDesc->CommonField.BitOffset != 0) ||
-                ((ObjDesc->CommonField.BitOffset == 0) &&
-                (ThisFieldDatumOffset < (DatumLength -1))))
+            MergedDatum = (PreviousRawDatum >> ObjDesc->CommonField.BitOffset);
+
+            /* 2) Insert the second datum "above" the first datum */
+
+            MergedDatum |= (ThisRawDatum << 
+                            (BitGranularity - ObjDesc->CommonField.BitOffset));
+        
+            if ((ThisFieldDatumOffset >= (DatumLength -1)))
             {
                 /*
-                 * Get the next raw datum, it contains some or all bits
-                 * of the current field datum
+                 * This is the last iteration of the loop.  We need to clear
+                 * any unused bits (bits that are not part of this field) that 
+                 * came from the last raw datum before we store the final 
+                 * merged datum into the caller buffer.
                  */
-
-                Status = AcpiExReadFieldDatum (ObjDesc,
-                                ThisFieldByteOffset + ByteGranularity,
-                                BitGranularity, &ThisRawDatum);
-                if (ACPI_FAILURE (Status))
+                ValidFieldBits = ObjDesc->CommonField.BitLength % 
+                                 BitGranularity;
+                if (ValidFieldBits)
                 {
-                    goto Cleanup;
-                }
-
-                /* Before merging the data, make sure the unused bits are clear */
-
-                switch (ByteGranularity)
-                {
-                case 1:
-                    ThisRawDatum &= 0x000000FF;
-                    PreviousRawDatum &= 0x000000FF;
-                    break;
-
-                case 2:
-                    ThisRawDatum &= 0x0000FFFF;
-                    PreviousRawDatum &= 0x0000FFFF;
-                    break;
+                    Mask = (((UINT32) 1 << ValidFieldBits) - (UINT32) 1);
+                    MergedDatum &= Mask;
                 }
             }
+        }
 
 
-            /*
-             * Put together bits of the two raw data to make a complete
-             * field datum
-             */
-            if (ObjDesc->CommonField.BitOffset != 0)
-            {
-                MergedDatum =
-                    (PreviousRawDatum >> ObjDesc->CommonField.BitOffset) |
-                    (ThisRawDatum << (BitGranularity - ObjDesc->CommonField.BitOffset));
-            }
+        /*
+         * Store the merged field datum in the caller's buffer, according to
+         * the granularity of the field (size of each datum).
+         */
+        AcpiExStoreDatum (MergedDatum, Buffer, ByteGranularity, 
+                ThisFieldDatumOffset);
 
-            else
-            {
-                MergedDatum = PreviousRawDatum;
-            }
+        /*
+         * Save the raw datum that was just acquired since it may contain bits 
+         * of the *next* field datum
+         */
+        PreviousRawDatum = ThisRawDatum;
 
-            /*
-             * Prepare the merged datum for storing into the caller's
-             * buffer.  It is possible to have a 32-bit buffer
-             * (ByteGranularity == 4), but a ObjDesc->CommonField.BitLength
-             * of 8 or 16, meaning that the upper bytes of merged data
-             * are undesired.  This section fixes that.
-             */
-            switch (ObjDesc->CommonField.BitLength)
-            {
-            case 8:
-                MergedDatum &= 0x000000FF;
-                break;
-
-            case 16:
-                MergedDatum &= 0x0000FFFF;
-                break;
-            }
-
-            /*
-             * Now store the datum in the caller's buffer, according to
-             * the data type
-             */
-            switch (ByteGranularity)
-            {
-            case 1:
-                ((UINT8 *) Buffer) [ThisFieldDatumOffset] = (UINT8) MergedDatum;
-                break;
-
-            case 2:
-                MOVE_UNALIGNED16_TO_16 (&(((UINT16 *) Buffer) [ThisFieldDatumOffset]), &MergedDatum);
-                break;
-
-            case 4:
-                MOVE_UNALIGNED32_TO_32 (&(((UINT32 *) Buffer) [ThisFieldDatumOffset]), &MergedDatum);
-                break;
-            }
-
-            /*
-             * Save the most recent datum since it contains bits of
-             * the *next* field datum
-             */
-            PreviousRawDatum = ThisRawDatum;
-
-            ThisFieldByteOffset += ByteGranularity;
-            ThisFieldDatumOffset++;
-
-        }  /* while */
+        ThisFieldByteOffset += ByteGranularity;
+        ThisFieldDatumOffset++;
     }
 
-Cleanup:
 
-    return_ACPI_STATUS (Status);
+    return_ACPI_STATUS (AE_OK);
 }
 
 
@@ -851,16 +867,16 @@ AcpiExInsertIntoField (
 
     switch (ByteGranularity)
     {
-    case 1:
+    case ACPI_FIELD_BYTE_GRANULARITY:
         PreviousRawDatum = ((UINT8 *) Buffer) [ThisFieldDatumOffset];
         break;
 
-    case 2:
+    case ACPI_FIELD_WORD_GRANULARITY:
         MOVE_UNALIGNED16_TO_32 (&PreviousRawDatum,
                 &(((UINT16 *) Buffer) [ThisFieldDatumOffset]));
         break;
 
-    case 4:
+    case ACPI_FIELD_DWORD_GRANULARITY:
         MOVE_UNALIGNED32_TO_32 (&PreviousRawDatum,
                 &(((UINT32 *) Buffer) [ThisFieldDatumOffset]));
         break;
@@ -928,16 +944,16 @@ AcpiExInsertIntoField (
 
         switch (ByteGranularity)
         {
-        case 1:
+        case ACPI_FIELD_BYTE_GRANULARITY:
             ThisRawDatum = ((UINT8 *) Buffer) [ThisFieldDatumOffset];
             break;
 
-        case 2:
+        case ACPI_FIELD_WORD_GRANULARITY:
             MOVE_UNALIGNED16_TO_32 (&ThisRawDatum,
                     &(((UINT16 *) Buffer) [ThisFieldDatumOffset]));
             break;
 
-        case 4:
+        case ACPI_FIELD_DWORD_GRANULARITY:
             MOVE_UNALIGNED32_TO_32 (&ThisRawDatum,
                     &(((UINT32 *) Buffer) [ThisFieldDatumOffset]));
             break;
@@ -995,16 +1011,16 @@ AcpiExInsertIntoField (
     {
         switch (ByteGranularity)
         {
-        case 1:
+        case ACPI_FIELD_BYTE_GRANULARITY:
             ThisRawDatum = ((UINT8 *) Buffer) [ThisFieldDatumOffset];
             break;
 
-        case 2:
+        case ACPI_FIELD_WORD_GRANULARITY:
             MOVE_UNALIGNED16_TO_32 (&ThisRawDatum,
                     &(((UINT16 *) Buffer) [ThisFieldDatumOffset]));
             break;
 
-        case 4:
+        case ACPI_FIELD_DWORD_GRANULARITY:
             MOVE_UNALIGNED32_TO_32 (&ThisRawDatum,
                     &(((UINT32 *) Buffer) [ThisFieldDatumOffset]));
             break;
