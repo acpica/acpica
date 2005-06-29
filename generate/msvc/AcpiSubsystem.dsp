@@ -751,6 +751,10 @@ SOURCE=..\..\Subsystem\Include\output.h
 
 SOURCE=..\..\Subsystem\Include\pnp.h
 # End Source File
+# Begin Source File
+
+SOURCE=..\..\Subsystem\Include\resource.h
+# End Source File
 # End Group
 # Begin Source File
 
