@@ -118,13 +118,13 @@
 #define __AMCONFIG_C__
 
 #include "acpi.h"
-#include "parser.h"
-#include "interp.h"
+#include "acparser.h"
+#include "acinterp.h"
 #include "amlcode.h"
-#include "namesp.h"
-#include "events.h"
-#include "tables.h"
-#include "dispatch.h"
+#include "acnamesp.h"
+#include "acevents.h"
+#include "actables.h"
+#include "acdispat.h"
 
 
 #define _COMPONENT          INTERPRETER
@@ -151,8 +151,8 @@ AcpiAmlExecLoadTable (
 {
     ACPI_STATUS             Status;
     ACPI_OBJECT_INTERNAL    *TableDesc = NULL;
-    char                    *TablePtr;
-    char                    *TableDataPtr;
+    INT8                    *TablePtr;
+    INT8                    *TableDataPtr;
     ACPI_TABLE_HEADER       TableHeader;
     ACPI_TABLE_DESC         TableInfo;
     UINT32                  i;
@@ -169,7 +169,7 @@ AcpiAmlExecLoadTable (
     for (i = 0; i < sizeof (ACPI_TABLE_HEADER); i++)
     {
         Status = AcpiEvAddressSpaceDispatch (RgnDesc, ADDRESS_SPACE_READ,
-                        i, 8, (UINT32 *) ((char *) &TableHeader + i));
+                        i, 8, (UINT32 *) ((INT8 *) &TableHeader + i));
         if (ACPI_FAILURE (Status))
         {
             return_ACPI_STATUS (Status);
@@ -298,7 +298,10 @@ AcpiAmlExecUnloadTable (
 
 
     /* Validate the handle */
-    /* TBD: [Errors] Wasn't this done earlier? */
+    /* Although the handle is partially validated in AcpiAmlExecReconfiguration(),
+     *  when it calls AcpiAmlResolveOperands(), the handle is more completely
+     *  validated here.
+     */
 
     if ((!DdbHandle) ||
         (!VALID_DESCRIPTOR_TYPE (DdbHandle, ACPI_DESC_TYPE_INTERNAL)) ||
@@ -381,24 +384,29 @@ AcpiAmlExecReconfiguration (
         /* Get the region or field descriptor */
 
         Status |= AcpiDsObjStackPopObject (&RegionDesc, WalkState);
-        if (Status != AE_OK)
+        if (ACPI_FAILURE (Status))
         {
-            AcpiAmlAppendOperandDiag (_THIS_MODULE, __LINE__, Opcode,
-                                        WALK_OPERANDS, 2);
-            goto Cleanup2;
+            DEBUG_PRINT (ACPI_ERROR, 
+                ("ExecReconfiguration/AML_LOAD_OP: bad operand(s) (0x%X)\n",
+                Status));
+
+            AcpiCmRemoveReference (RegionDesc);
+            return_ACPI_STATUS (Status);
         }
 
         Status = AcpiAmlExecLoadTable (RegionDesc, DdbHandle);
         break;
 
 
-    case AML_UN_LOAD_OP:
+    case AML_UNLOAD_OP:
 
-        if (Status != AE_OK)
+        if (ACPI_FAILURE (Status))
         {
-            AcpiAmlAppendOperandDiag (_THIS_MODULE, __LINE__, Opcode,
-                                        WALK_OPERANDS, 1);
-            goto Cleanup1;
+            DEBUG_PRINT (ACPI_ERROR, 
+                ("ExecReconfiguration/AML_UNLOAD_OP: bad operand(s) (0x%X)\n",
+                Status));
+
+            return_ACPI_STATUS (Status);
         }
 
         Status = AcpiAmlExecUnloadTable (DdbHandle);
@@ -415,10 +423,6 @@ AcpiAmlExecReconfiguration (
     }
 
 
-Cleanup2:
-    AcpiCmRemoveReference (RegionDesc);
-
-Cleanup1:
     return_ACPI_STATUS (Status);
 }
 
