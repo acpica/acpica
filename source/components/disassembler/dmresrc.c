@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dmresrc.c - Resource Descriptor disassembly
- *              $Revision: 1.13 $
+ *              $Revision: 1.14 $
  *
  ******************************************************************************/
 
@@ -370,6 +370,12 @@ AcpiDmResourceDescriptor (
             break;
 
 
+        case ACPI_RDESC_TYPE_EXTENDED_ADDRESS_SPACE:
+
+            AcpiDmExtendedDescriptor (DescriptorBody, Length, Level);
+            break;
+
+
         default:
             /*
              * Anything else is unrecognized.
@@ -499,6 +505,7 @@ AcpiDmIsResourceDescriptor (
         case ACPI_RDESC_TYPE_WORD_ADDRESS_SPACE:
         case ACPI_RDESC_TYPE_EXTENDED_XRUPT:
         case ACPI_RDESC_TYPE_QWORD_ADDRESS_SPACE:
+        case ACPI_RDESC_TYPE_EXTENDED_ADDRESS_SPACE:
 
             /* Valid descriptor ID, keep going */
 
