@@ -3,7 +3,7 @@
  *
  * Module Name: hwregs - Read/write access functions for the various ACPI
  *                       control and status registers.
- *              $Revision: 1.117 $
+ *              $Revision: 1.118 $
  *
  ******************************************************************************/
 
@@ -123,7 +123,7 @@
 #include "acnamesp.h"
 
 #define _COMPONENT          ACPI_HARDWARE
-        MODULE_NAME         ("hwregs")
+        ACPI_MODULE_NAME    ("hwregs")
 
 
 
@@ -146,7 +146,7 @@ AcpiHwClearAcpiStatus (void)
     NATIVE_UINT             GpeBlock;
 
 
-    FUNCTION_TRACE ("HwClearAcpiStatus");
+    ACPI_FUNCTION_TRACE ("HwClearAcpiStatus");
 
 
     ACPI_DEBUG_PRINT ((ACPI_DB_IO, "About to write %04X to %04X\n",
@@ -210,7 +210,7 @@ AcpiHwGetSleepTypeData (
     ACPI_OPERAND_OBJECT     *ObjDesc;
 
 
-    FUNCTION_TRACE ("HwGetSleepTypeData");
+    ACPI_FUNCTION_TRACE ("HwGetSleepTypeData");
 
 
     /*
@@ -234,7 +234,7 @@ AcpiHwGetSleepTypeData (
 
     if (!ObjDesc)
     {
-        REPORT_ERROR (("Missing Sleep State object\n"));
+        ACPI_REPORT_ERROR (("Missing Sleep State object\n"));
         return_ACPI_STATUS (AE_NOT_EXIST);
     }
 
@@ -253,7 +253,7 @@ AcpiHwGetSleepTypeData (
     {
         /* Must have at least two elements */
 
-        REPORT_ERROR (("Sleep State package does not have at least two elements\n"));
+        ACPI_REPORT_ERROR (("Sleep State package does not have at least two elements\n"));
         Status = AE_AML_NO_OPERAND;
     }
     else if (((ObjDesc->Package.Elements[0])->Common.Type != ACPI_TYPE_INTEGER) ||
@@ -261,7 +261,7 @@ AcpiHwGetSleepTypeData (
     {
         /* Must have two  */
 
-        REPORT_ERROR (("Sleep State package elements are not both of type Number\n"));
+        ACPI_REPORT_ERROR (("Sleep State package elements are not both of type Number\n"));
         Status = AE_AML_OPERAND_TYPE;
     }
     else
@@ -300,7 +300,7 @@ ACPI_BIT_REGISTER_INFO *
 AcpiHwGetBitRegisterInfo (
     UINT32                  RegisterId)
 {
-    PROC_NAME ("HwGetBitRegisterInfo");
+    ACPI_FUNCTION_NAME ("HwGetBitRegisterInfo");
 
 
     if (RegisterId > ACPI_BITREG_MAX)
@@ -336,7 +336,7 @@ AcpiHwBitRegisterRead (
     ACPI_BIT_REGISTER_INFO  *BitRegInfo;
 
 
-    FUNCTION_TRACE ("HwBitRegisterRead");
+    ACPI_FUNCTION_TRACE ("HwBitRegisterRead");
 
 
     if (Flags & ACPI_MTX_LOCK)
@@ -394,7 +394,7 @@ AcpiHwBitRegisterWrite (
     ACPI_BIT_REGISTER_INFO  *BitRegInfo;
 
 
-    FUNCTION_TRACE_U32 ("HwBitRegisterWrite", RegisterId);
+    ACPI_FUNCTION_TRACE_U32 ("HwBitRegisterWrite", RegisterId);
 
 
     if (Flags & ACPI_MTX_LOCK)
@@ -470,15 +470,15 @@ AcpiHwBitRegisterWrite (
         RegisterValue = AcpiHwRegisterRead (ACPI_MTX_DO_NOT_LOCK, ACPI_REGISTER_PM2_CONTROL);
 
         ACPI_DEBUG_PRINT ((ACPI_DB_IO, "PM2 control: Read %X from %8.8X%8.8X\n",
-            RegisterValue, HIDWORD (AcpiGbl_FADT->XPm2CntBlk.Address),
-            LODWORD(AcpiGbl_FADT->XPm2CntBlk.Address)));
+            RegisterValue, ACPI_HIDWORD (AcpiGbl_FADT->XPm2CntBlk.Address),
+            ACPI_LODWORD (AcpiGbl_FADT->XPm2CntBlk.Address)));
 
         ACPI_REGISTER_INSERT_VALUE (RegisterValue, BitRegInfo->BitPosition, BitRegInfo->AccessBitMask, Value);
 
         ACPI_DEBUG_PRINT ((ACPI_DB_IO, "About to write %04X to %8.8X%8.8X\n",
             RegisterValue,
-            HIDWORD (AcpiGbl_FADT->XPm2CntBlk.Address),
-            LODWORD (AcpiGbl_FADT->XPm2CntBlk.Address)));
+            ACPI_HIDWORD (AcpiGbl_FADT->XPm2CntBlk.Address),
+            ACPI_LODWORD (AcpiGbl_FADT->XPm2CntBlk.Address)));
 
         AcpiHwRegisterWrite (ACPI_MTX_DO_NOT_LOCK,
                             ACPI_REGISTER_PM2_CONTROL, (UINT8) (RegisterValue));
@@ -526,7 +526,7 @@ AcpiHwRegisterRead (
     UINT32                  BankOffset;
 
 
-    FUNCTION_TRACE ("HwRegisterRead");
+    ACPI_FUNCTION_TRACE ("HwRegisterRead");
 
 
     if (ACPI_MTX_LOCK == UseLock)
@@ -545,7 +545,7 @@ AcpiHwRegisterRead (
 
     case ACPI_REGISTER_PM1_ENABLE:           /* 16-bit access*/
 
-        BankOffset  = DIV_2 (AcpiGbl_FADT->Pm1EvtLen);
+        BankOffset  = ACPI_DIV_2 (AcpiGbl_FADT->Pm1EvtLen);
         Value =  AcpiHwLowLevelRead (16, &AcpiGbl_FADT->XPm1aEvtBlk, BankOffset);
         Value |= AcpiHwLowLevelRead (16, &AcpiGbl_FADT->XPm1bEvtBlk, BankOffset);
         break;
@@ -611,7 +611,7 @@ AcpiHwRegisterWrite (
     UINT32                  BankOffset;
 
 
-    FUNCTION_TRACE ("HwRegisterWrite");
+    ACPI_FUNCTION_TRACE ("HwRegisterWrite");
 
 
     if (ACPI_MTX_LOCK == UseLock)
@@ -630,7 +630,7 @@ AcpiHwRegisterWrite (
 
     case ACPI_REGISTER_PM1_ENABLE:           /* 16-bit access*/
 
-        BankOffset = DIV_2 (AcpiGbl_FADT->Pm1EvtLen);
+        BankOffset = ACPI_DIV_2 (AcpiGbl_FADT->Pm1EvtLen);
         AcpiHwLowLevelWrite (16, Value, &AcpiGbl_FADT->XPm1aEvtBlk, BankOffset);
         AcpiHwLowLevelWrite (16, Value, &AcpiGbl_FADT->XPm1bEvtBlk, BankOffset);
         break;
@@ -716,7 +716,7 @@ AcpiHwLowLevelRead (
     UINT16                  PciRegister;
 
 
-    FUNCTION_ENTRY ();
+    ACPI_FUNCTION_ENTRY ();
 
 
     /*
@@ -796,7 +796,7 @@ AcpiHwLowLevelWrite (
     UINT16                  PciRegister;
 
 
-    FUNCTION_ENTRY ();
+    ACPI_FUNCTION_ENTRY ();
 
 
     /*

@@ -1,7 +1,8 @@
+
 /******************************************************************************
  *
- * Module Name: exfield - ACPI AML (p-code) execution - field manipulation
- *              $Revision: 1.104 $
+ * Module Name: exoparg3 - AML execution - opcodes with 3 arguments
+ *              $Revision: 1.8 $
  *
  *****************************************************************************/
 
@@ -84,6 +85,7 @@
  * HERE.  ANY SOFTWARE ORIGINATING FROM INTEL OR DERIVED FROM INTEL SOFTWARE
  * IS PROVIDED "AS IS," AND INTEL WILL NOT PROVIDE ANY SUPPORT,  ASSISTANCE,
  * INSTALLATION, TRAINING OR OTHER SERVICES.  INTEL WILL NOT PROVIDE ANY
+
  * UPDATES, ENHANCEMENTS OR EXTENSIONS.  INTEL SPECIFICALLY DISCLAIMS ANY
  * IMPLIED WARRANTIES OF MERCHANTABILITY, NONINFRINGEMENT AND FITNESS FOR A
  * PARTICULAR PURPOSE.
@@ -114,150 +116,105 @@
  *
  *****************************************************************************/
 
-
-#define __EXFIELD_C__
+#define __EXOPARG3_C__
 
 #include "acpi.h"
-#include "acdispat.h"
 #include "acinterp.h"
+#include "acparser.h"
 #include "amlcode.h"
-#include "acnamesp.h"
-#include "achware.h"
-#include "acevents.h"
 
 
 #define _COMPONENT          ACPI_EXECUTER
-        ACPI_MODULE_NAME    ("exfield")
+        ACPI_MODULE_NAME    ("exoparg3")
+
+
+/*!
+ * Naming convention for AML interpreter execution routines.
+ *
+ * The routines that begin execution of AML opcodes are named with a common
+ * convention based upon the number of arguments, the number of target operands,
+ * and whether or not a value is returned:
+ *
+ *      AcpiExOpcode_xA_yT_zR
+ *
+ * Where:
+ *
+ * xA - ARGUMENTS:    The number of arguments (input operands) that are
+ *                    required for this opcode type (1 through 6 args).
+ * yT - TARGETS:      The number of targets (output operands) that are required
+ *                    for this opcode type (0, 1, or 2 targets).
+ * zR - RETURN VALUE: Indicates whether this opcode type returns a value
+ *                    as the function return (0 or 1).
+ *
+ * The AcpiExOpcode* functions are called via the Dispatcher component with
+ * fully resolved operands.
+!*/
 
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiExReadDataFromField
+ * FUNCTION:    AcpiExOpcode_3A_0T_0R
  *
- * PARAMETERS:  ObjDesc             - The named field
- *              RetBufferDesc       - Where the return data object is stored
+ * PARAMETERS:  WalkState           - Current walk state
  *
  * RETURN:      Status
  *
- * DESCRIPTION: Read from a named field.  Returns either an Integer or a
- *              Buffer, depending on the size of the field.
+ * DESCRIPTION: Execute Triadic operator (3 operands)
  *
  ******************************************************************************/
 
 ACPI_STATUS
-AcpiExReadDataFromField (
-    ACPI_OPERAND_OBJECT     *ObjDesc,
-    ACPI_OPERAND_OBJECT     **RetBufferDesc)
+AcpiExOpcode_3A_0T_0R (
+    ACPI_WALK_STATE         *WalkState)
 {
-    ACPI_STATUS             Status;
-    ACPI_OPERAND_OBJECT     *BufferDesc;
-    UINT32                  Length;
-    void                    *Buffer;
-    BOOLEAN                 Locked;
+    ACPI_OPERAND_OBJECT     **Operand = &WalkState->Operands[0];
+    ACPI_SIGNAL_FATAL_INFO  *Fatal;
+    ACPI_STATUS             Status = AE_OK;
 
 
-    ACPI_FUNCTION_TRACE_PTR ("ExReadDataFromField", ObjDesc);
+    ACPI_FUNCTION_TRACE_STR ("ExOpcode_3A_0T_0R", AcpiPsGetOpcodeName (WalkState->Opcode));
 
 
-    /* Parameter validation */
-
-    if (!ObjDesc)
+    switch (WalkState->Opcode)
     {
-        return_ACPI_STATUS (AE_AML_NO_OPERAND);
-    }
 
-    if (ObjDesc->Common.Type == ACPI_TYPE_BUFFER_FIELD)
-    {
+    case AML_FATAL_OP:          /* Fatal (FatalType  FatalCode  FatalArg)    */
+
+        ACPI_DEBUG_PRINT ((ACPI_DB_INFO,
+            "FatalOp: Type %x Code %x Arg %x <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<\n",
+            (UINT32) Operand[0]->Integer.Value, (UINT32) Operand[1]->Integer.Value,
+            (UINT32) Operand[2]->Integer.Value));
+
+
+        Fatal = ACPI_MEM_ALLOCATE (sizeof (ACPI_SIGNAL_FATAL_INFO));
+        if (Fatal)
+        {
+            Fatal->Type     = (UINT32) Operand[0]->Integer.Value;
+            Fatal->Code     = (UINT32) Operand[1]->Integer.Value;
+            Fatal->Argument = (UINT32) Operand[2]->Integer.Value;
+        }
+
         /*
-         * If the BufferField arguments have not been previously evaluated,
-         * evaluate them now and save the results.
+         * Always signal the OS!
          */
-        if (!(ObjDesc->Common.Flags & AOPOBJ_DATA_VALID))
-        {
-            Status = AcpiDsGetBufferFieldArguments (ObjDesc);
-            if (ACPI_FAILURE (Status))
-            {
-                return_ACPI_STATUS (Status);
-            }
-        }
+        AcpiOsSignal (ACPI_SIGNAL_FATAL, Fatal);
+
+        /* Might return while OS is shutting down, just continue */
+
+        ACPI_MEM_FREE (Fatal);
+        break;
+
+
+    default:
+
+        ACPI_REPORT_ERROR (("AcpiExOpcode_3A_0T_0R: Unknown opcode %X\n",
+                WalkState->Opcode));
+        Status = AE_AML_BAD_OPCODE;
+        goto Cleanup;
     }
 
-    /*
-     * Allocate a buffer for the contents of the field.
-     *
-     * If the field is larger than the size of an ACPI_INTEGER, create
-     * a BUFFER to hold it.  Otherwise, use an INTEGER.  This allows
-     * the use of arithmetic operators on the returned value if the
-     * field size is equal or smaller than an Integer.
-     *
-     * Note: Field.length is in bits.
-     */
-    Length = ACPI_ROUND_BITS_UP_TO_BYTES (ObjDesc->Field.BitLength);
 
-    if (Length > sizeof (ACPI_INTEGER))
-    {
-        /* Field is too large for an Integer, create a Buffer instead */
-
-        BufferDesc = AcpiUtCreateInternalObject (ACPI_TYPE_BUFFER);
-        if (!BufferDesc)
-        {
-            return_ACPI_STATUS (AE_NO_MEMORY);
-        }
-
-        /* Create the actual read buffer */
-
-        BufferDesc->Buffer.Pointer = ACPI_MEM_CALLOCATE (Length);
-        if (!BufferDesc->Buffer.Pointer)
-        {
-            AcpiUtRemoveReference (BufferDesc);
-            return_ACPI_STATUS (AE_NO_MEMORY);
-        }
-
-        BufferDesc->Buffer.Length = Length;
-        Buffer = BufferDesc->Buffer.Pointer;
-    }
-    else
-    {
-        /* Field will fit within an Integer (normal case) */
-
-        BufferDesc = AcpiUtCreateInternalObject (ACPI_TYPE_INTEGER);
-        if (!BufferDesc)
-        {
-            return_ACPI_STATUS (AE_NO_MEMORY);
-        }
-
-        Length = sizeof (BufferDesc->Integer.Value);
-        Buffer = &BufferDesc->Integer.Value;
-    }
-
-    ACPI_DEBUG_PRINT ((ACPI_DB_INFO,
-        "Obj=%p Type=%X Buf=%p Len=%X\n",
-        ObjDesc, ObjDesc->Common.Type, Buffer, Length));
-    ACPI_DEBUG_PRINT ((ACPI_DB_INFO,
-        "FieldWrite: BitLen=%X BitOff=%X ByteOff=%X\n",
-        ObjDesc->CommonField.BitLength,
-        ObjDesc->CommonField.StartFieldBitOffset,
-        ObjDesc->CommonField.BaseByteOffset));
-
-    Locked = AcpiExAcquireGlobalLock (ObjDesc->CommonField.FieldFlags);
-
-    /* Read from the field */
-
-    Status = AcpiExExtractFromField (ObjDesc, Buffer, Length);
-
-    /*
-     * Release global lock if we acquired it earlier
-     */
-    AcpiExReleaseGlobalLock (Locked);
-
-    if (ACPI_FAILURE (Status))
-    {
-        AcpiUtRemoveReference (BufferDesc);
-    }
-    else if (RetBufferDesc)
-    {
-        *RetBufferDesc = BufferDesc;
-    }
+Cleanup:
 
     return_ACPI_STATUS (Status);
 }
@@ -265,137 +222,113 @@ AcpiExReadDataFromField (
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiExWriteDataToField
+ * FUNCTION:    AcpiExOpcode_3A_1T_1R
  *
- * PARAMETERS:  SourceDesc          - Contains data to write
- *              ObjDesc             - The named field
+ * PARAMETERS:  WalkState           - Current walk state
  *
  * RETURN:      Status
  *
- * DESCRIPTION: Write to a named field
+ * DESCRIPTION: Execute Triadic operator (3 operands)
  *
  ******************************************************************************/
 
 ACPI_STATUS
-AcpiExWriteDataToField (
-    ACPI_OPERAND_OBJECT     *SourceDesc,
-    ACPI_OPERAND_OBJECT     *ObjDesc)
+AcpiExOpcode_3A_1T_1R (
+    ACPI_WALK_STATE         *WalkState)
 {
-    ACPI_STATUS             Status;
+    ACPI_OPERAND_OBJECT     **Operand = &WalkState->Operands[0];
+    ACPI_OPERAND_OBJECT     *ReturnDesc = NULL;
+    char                    *Buffer;
+    ACPI_STATUS             Status = AE_OK;
+    UINT32                  Index;
     UINT32                  Length;
-    UINT32                  RequiredLength;
-    void                    *Buffer;
-    void                    *NewBuffer;
-    BOOLEAN                 Locked;
 
 
-    ACPI_FUNCTION_TRACE_PTR ("ExWriteDataToField", ObjDesc);
+    ACPI_FUNCTION_TRACE_STR ("ExOpcode_3A_1T_1R", AcpiPsGetOpcodeName (WalkState->Opcode));
 
 
-    /* Parameter validation */
-
-    if (!SourceDesc || !ObjDesc)
+    switch (WalkState->Opcode)
     {
-        return_ACPI_STATUS (AE_AML_NO_OPERAND);
-    }
+    case AML_MID_OP:        /* Mid  (Source[0], Index[1], Length[2], Result[3]) */
 
-    if (ObjDesc->Common.Type == ACPI_TYPE_BUFFER_FIELD)
-    {
         /*
-         * If the BufferField arguments have not been previously evaluated,
-         * evaluate them now and save the results.
+         * Create the return object.  The Source operand is guaranteed to be
+         * either a String or a Buffer, so just use its type.
          */
-        if (!(ObjDesc->Common.Flags & AOPOBJ_DATA_VALID))
+        ReturnDesc = AcpiUtCreateInternalObject (Operand[0]->Common.Type);
+        if (!ReturnDesc)
         {
-            Status = AcpiDsGetBufferFieldArguments (ObjDesc);
-            if (ACPI_FAILURE (Status))
-            {
-                return_ACPI_STATUS (Status);
-            }
+            Status = AE_NO_MEMORY;
+            goto Cleanup;
         }
-    }
 
-    /*
-     * Get a pointer to the data to be written
-     */
-    switch (SourceDesc->Common.Type)
-    {
-    case ACPI_TYPE_INTEGER:
-        Buffer = &SourceDesc->Integer.Value;
-        Length = sizeof (SourceDesc->Integer.Value);
+        /* Get the Integer values from the objects */
+
+        Index = (UINT32) Operand[1]->Integer.Value;
+        Length = (UINT32) Operand[2]->Integer.Value;
+
+        /*
+         * If the index is beyond the length of the String/Buffer, or if the
+         * requested length is zero, return a zero-length String/Buffer
+         */
+        if ((Index < Operand[0]->String.Length) &&
+            (Length > 0))
+        {
+            /* Truncate request if larger than the actual String/Buffer */
+
+            if ((Index + Length) >
+                Operand[0]->String.Length)
+            {
+                Length = Operand[0]->String.Length - Index;
+            }
+
+            /* Allocate a new buffer for the String/Buffer */
+
+            Buffer = ACPI_MEM_CALLOCATE (Length + 1);
+            if (!Buffer)
+            {
+                Status = AE_NO_MEMORY;
+                goto Cleanup;
+            }
+
+            /* Copy the portion requested */
+
+            MEMCPY (Buffer, Operand[0]->String.Pointer + Index,
+                    Length);
+
+            /* Set the length of the new String/Buffer */
+
+            ReturnDesc->String.Pointer = Buffer;
+            ReturnDesc->String.Length = Length;
+        }
+
         break;
 
-    case ACPI_TYPE_BUFFER:
-        Buffer = SourceDesc->Buffer.Pointer;
-        Length = SourceDesc->Buffer.Length;
-        break;
-
-    case ACPI_TYPE_STRING:
-        Buffer = SourceDesc->String.Pointer;
-        Length = SourceDesc->String.Length;
-        break;
 
     default:
-        return_ACPI_STATUS (AE_AML_OPERAND_TYPE);
+
+        ACPI_REPORT_ERROR (("AcpiExOpcode_3A_0T_0R: Unknown opcode %X\n",
+                WalkState->Opcode));
+        Status = AE_AML_BAD_OPCODE;
+        goto Cleanup;
     }
 
-    /*
-     * We must have a buffer that is at least as long as the field
-     * we are writing to.  This is because individual fields are
-     * indivisible and partial writes are not supported -- as per
-     * the ACPI specification.
-     */
-    NewBuffer = NULL;
-    RequiredLength = ACPI_ROUND_BITS_UP_TO_BYTES (ObjDesc->CommonField.BitLength);
+    /* Store the result in the target */
 
-    if (Length < RequiredLength)
+    Status = AcpiExStore (ReturnDesc, Operand[3], WalkState);
+
+Cleanup:
+
+    /* Delete return object on error */
+
+    if (ACPI_FAILURE (Status))
     {
-        /* We need to create a new buffer */
-
-        NewBuffer = ACPI_MEM_CALLOCATE (RequiredLength);
-        if (!NewBuffer)
-        {
-            return_ACPI_STATUS (AE_NO_MEMORY);
-        }
-
-        /*
-         * Copy the original data to the new buffer, starting
-         * at Byte zero.  All unused (upper) bytes of the
-         * buffer will be 0.
-         */
-        MEMCPY ((char *) NewBuffer, (char *) Buffer, Length);
-        Buffer = NewBuffer;
-        Length = RequiredLength;
+        AcpiUtRemoveReference (ReturnDesc);
     }
 
-    ACPI_DEBUG_PRINT ((ACPI_DB_INFO,
-        "Obj=%p Type=%X Buf=%p Len=%X\n",
-        ObjDesc, ObjDesc->Common.Type, Buffer, Length));
-    ACPI_DEBUG_PRINT ((ACPI_DB_INFO,
-        "FieldRead: BitLen=%X BitOff=%X ByteOff=%X\n",
-        ObjDesc->CommonField.BitLength,
-        ObjDesc->CommonField.StartFieldBitOffset,
-        ObjDesc->CommonField.BaseByteOffset));
+    /* Set the return object and exit */
 
-    Locked = AcpiExAcquireGlobalLock (ObjDesc->CommonField.FieldFlags);
-
-    /*
-     * Write to the field
-     */
-    Status = AcpiExInsertIntoField (ObjDesc, Buffer, Length);
-
-    /*
-     * Release global lock if we acquired it earlier
-     */
-    AcpiExReleaseGlobalLock (Locked);
-
-    /* Free temporary buffer if we used one */
-
-    if (NewBuffer)
-    {
-        ACPI_MEM_FREE (NewBuffer);
-    }
-
+    WalkState->ResultObj = ReturnDesc;
     return_ACPI_STATUS (Status);
 }
 
