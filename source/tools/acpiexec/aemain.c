@@ -139,7 +139,7 @@
  */
 
 FADT_DESCRIPTOR             LocalFADT;
-
+ACPI_COMMON_FACS            LocalFACS;
 
 
 /******************************************************************************
@@ -276,6 +276,7 @@ main (
         LocalFADT.PmTmLen       = 8;
 
         AcpiGbl_FADT = &LocalFADT;
+        AcpiGbl_FACS = &LocalFACS;
 
 
 
