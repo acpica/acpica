@@ -535,11 +535,11 @@ typedef struct /* ADDRESS HANDLER */
 
 
 /*
- * Local object type is used for these opcodes:
+ * The Reference object type is used for these opcodes:
  * Arg[0-6], Local[0-7], IndexOp, NameOp, ZeroOp, OneOp, OnesOp, DebugOp
  */
 
-typedef struct /* Lvalue - Local object type */
+typedef struct /* Reference - Local object type */
 {
     ACPI_OBJECT_COMMON
 
@@ -556,7 +556,7 @@ typedef struct /* Lvalue - Local object type */
     void                    *Reserved_p4;
     void                    *Reserved_p5;
 
-} ACPI_OBJECT_Lvalue;
+} ACPI_OBJECT_Reference;
 
 
 
@@ -586,7 +586,7 @@ typedef union AcpiObjInternal
     ACPI_OBJECT_Field           Field;
     ACPI_OBJECT_BankField       BankField;
     ACPI_OBJECT_IndexField      IndexField;
-    ACPI_OBJECT_Lvalue          Lvalue;
+    ACPI_OBJECT_Reference       Reference;
     ACPI_OBJECT_NotifyHandler   NotifyHandler;
     ACPI_OBJECT_AddrHandler     AddrHandler;
 
