@@ -120,9 +120,9 @@
 
 #include "acpi.h"
 #include "amlcode.h"
-#include "parser.h"
-#include "interp.h"
-#include "namesp.h"
+#include "acparser.h"
+#include "acinterp.h"
+#include "acnamesp.h"
 
 
 #define _COMPONENT          NAMESPACE
@@ -154,14 +154,14 @@
 ACPI_STATUS
 AcpiNsEvaluateRelative (
     ACPI_NAMED_OBJECT       *Handle,
-    char                    *Pathname,
+    INT8                    *Pathname,
     ACPI_OBJECT_INTERNAL    **Params,
     ACPI_OBJECT_INTERNAL    **ReturnObject)
 {
     ACPI_NAMED_OBJECT       *RelObjEntry;
     ACPI_STATUS             Status;
     ACPI_NAMED_OBJECT       *ObjEntry = NULL;
-    char                    *InternalPath = NULL;
+    INT8                    *InternalPath = NULL;
     ACPI_GENERIC_STATE      ScopeInfo;
 
 
@@ -206,7 +206,7 @@ AcpiNsEvaluateRelative (
 
     AcpiCmReleaseMutex (ACPI_MTX_NAMESPACE);
 
-    if (Status != AE_OK)
+    if (ACPI_FAILURE (Status))
     {
         DEBUG_PRINT (ACPI_INFO,
             ("NsEvaluateRelative: Object [%s] not found [%.4X]\n",
@@ -261,13 +261,13 @@ Cleanup:
 
 ACPI_STATUS
 AcpiNsEvaluateByName (
-    char                    *Pathname,
+    INT8                    *Pathname,
     ACPI_OBJECT_INTERNAL    **Params,
     ACPI_OBJECT_INTERNAL    **ReturnObject)
 {
     ACPI_STATUS             Status;
     ACPI_NAMED_OBJECT       *ObjEntry = NULL;
-    char                    *InternalPath = NULL;
+    INT8                    *InternalPath = NULL;
 
 
     FUNCTION_TRACE ("NsEvaluateByName");
@@ -275,13 +275,10 @@ AcpiNsEvaluateByName (
 
     /* Build an internal name string for the method */
 
-    if (Pathname[0] != '\\' || Pathname[1] != '/')
+    Status = AcpiNsInternalizeName (Pathname, &InternalPath);
+    if (ACPI_FAILURE (Status))
     {
-        Status = AcpiNsInternalizeName (Pathname, &InternalPath);
-        if (ACPI_FAILURE (Status))
-        {
-            return_ACPI_STATUS (Status);
-        }
+        return_ACPI_STATUS (Status);
     }
 
     AcpiCmAcquireMutex (ACPI_MTX_NAMESPACE);
@@ -295,7 +292,7 @@ AcpiNsEvaluateByName (
 
     AcpiCmReleaseMutex (ACPI_MTX_NAMESPACE);
 
-    if (Status != AE_OK)
+    if (ACPI_FAILURE (Status))
     {
         DEBUG_PRINT (ACPI_INFO,
             ("NsEvaluateByName: Object at [%s] was not found, status=%.4X\n",
@@ -487,6 +484,8 @@ UnlockAndExit:
  *              **Params            - List of parameters to pass to the method,
  *                                    terminated by NULL.  Params itself may be
  *                                    NULL if no parameters are being passed.
+ *              **ReturnObjDesc     - List of result objects to be returned
+ *                                    from the method.
  *
  * RETURN:      Status
  *
@@ -519,10 +518,6 @@ AcpiNsExecuteControlMethod (
         return_ACPI_STATUS (AE_ERROR);
     }
 
-    /*
-     * Valid method, Set the current scope to that of the Method,
-     * and execute it.
-     */
 
     DEBUG_PRINT (ACPI_INFO, ("Control method at Offset %x Length %lx]\n",
                     ObjDesc->Method.Pcode + 1,
@@ -539,7 +534,7 @@ AcpiNsExecuteControlMethod (
      * Unlock the namespace before execution.  This allows namespace access
      * via the external Acpi* interfaces while a method is being executed.
      * However, any namespace deletion must acquire both the namespace and
-     * interpter locks to ensure that no thread is using the portion of the
+     * interpreter locks to ensure that no thread is using the portion of the
      * namespace that is being deleted.
      */
 
@@ -645,9 +640,13 @@ AcpiNsGetObjectValue (
          * Use AcpiAmlResolveToValue() to get the associated value.
          * The call to AcpiAmlResolveToValue causes
          * ObjDesc (allocated above) to always be deleted.
+         *
+         * NOTE: we can get away with passing in NULL for a walk state
+         * because ObjDesc is guaranteed to not be a reference to either
+         * a method local or a method argument
          */
 
-        Status = AcpiAmlResolveToValue (&ObjDesc);
+        Status = AcpiAmlResolveToValue (&ObjDesc, NULL);
     }
 
     /*
@@ -655,7 +654,7 @@ AcpiNsGetObjectValue (
      * placed in ObjDesc.
      */
 
-    if (Status == AE_OK)
+    if (ACPI_SUCCESS (Status))
     {
         Status = AE_CTRL_RETURN_VALUE;
 
