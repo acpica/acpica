@@ -279,24 +279,27 @@ ACPI_STATUS
 AcpiInstallNotifyHandler (
     ACPI_HANDLE             Device, 
     NOTIFY_HANDLER          Handler, 
-    void                    *Context);
+    void                    *Context,
+    UINT32                  Type);
 
 ACPI_STATUS
 AcpiRemoveNotifyHandler (
     ACPI_HANDLE             Device, 
-    NOTIFY_HANDLER          Handler);
+    NOTIFY_HANDLER          Handler,
+    UINT32                  Type);
 
 ACPI_STATUS
 AcpiInstallAddressSpaceHandler (
+    ACPI_HANDLE             Device, 
     UINT32                  SpaceId, 
     ADDRESS_SPACE_HANDLER   Handler, 
     void                    *Context);
 
 ACPI_STATUS
 AcpiRemoveAddressSpaceHandler (
+    ACPI_HANDLE             Device, 
     UINT32                  SpaceId, 
     ADDRESS_SPACE_HANDLER   Handler);
-
 
 /*
  * Resource interfaces
