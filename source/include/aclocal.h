@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: aclocal.h - Internal data types used across the ACPI subsystem
- *       $Revision: 1.112 $
+ *       $Revision: 1.114 $
  *
  *****************************************************************************/
 
@@ -188,7 +188,7 @@ static NATIVE_CHAR          *AcpiGbl_MutexNames[] =
     "ACPI_MTX_Hardware",
     "ACPI_MTX_Caches",
     "ACPI_MTX_Memory",
-    "ACPI_MTX_DebugCmdComplete"
+    "ACPI_MTX_DebugCmdComplete",
     "ACPI_MTX_DebugCmdReady",
 };
 
@@ -203,9 +203,12 @@ typedef struct AcpiMutexInfo
     ACPI_MUTEX                  Mutex;
     UINT32                      UseCount;
     UINT32                      OwnerId;
-    BOOLEAN                     Locked;
 
 } ACPI_MUTEX_INFO;
+
+/* This owner ID means that the mutex is not in use (unlocked) */
+    
+#define ACPI_MUTEX_NOT_ACQUIRED         (UINT32) (-1)
 
 
 /* Lock flag parameter for various interfaces */
