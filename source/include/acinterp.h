@@ -231,6 +231,11 @@ AmlExecCreateField (
     ACPI_WALK_STATE         *WalkState);
 
 ACPI_STATUS
+AmlExecReconfiguration (
+    UINT16                  Opcode,
+    ACPI_WALK_STATE         *WalkState);
+
+ACPI_STATUS
 AmlExecFatal (    
     ACPI_WALK_STATE         *WalkState);
 
@@ -288,7 +293,7 @@ AmlExecCreateMethod (
  */
 
 ACPI_STATUS
-AmlGetRvalue (
+AmlResolveToValue (
     ACPI_OBJECT_INTERNAL    **StackPtr);
 
 
