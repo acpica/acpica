@@ -178,9 +178,9 @@
 
 #define ACPI_USE_SYSTEM_CLIBRARY
 
-/* The compiler of choice */
+/* Special functions */
 
-#define __GNUC__
+#define strtoul             simple_strtoul
 
 #else
 
@@ -310,6 +310,8 @@ typedef char *va_list;
 
 #ifdef WIN32   /* MS VC */
 
+/*! [Begin] no source code translation  */
+
 #define ACPI_ASM_MACROS
 #define causeinterrupt(level)   __asm {int level}
 #define BREAKPOINT3             __asm {int 3}
@@ -319,7 +321,7 @@ typedef char *va_list;
 #define wbinvd()                __asm {WBINVD}
 
 
-#define ASM_AcquireGL(GLptr, Acq)       __asm {     \
+#define ACPI_ACQUIRE_GLOBAL_LOCK(GLptr, Acq)       __asm {     \
         __asm mov           ecx, GLptr              \
                                                     \
         __asm acq10:                                \
@@ -336,7 +338,7 @@ typedef char *va_list;
         __asm mov           Acq, al                 \
 }
 
-#define ASM_ReleaseGL(GLptr, Pnd)       __asm {     \
+#define ACPI_RELEASE_GLOBAL_LOCK(GLptr, Pnd)       __asm {     \
         __asm mov           ecx, GLptr              \
                                                     \
         __asm Rel10:                                \
@@ -350,6 +352,9 @@ typedef char *va_list;
         __asm and           eax, 1                  \
         __asm mov           Pnd, al                 \
 }
+
+/*! [End] no source code translation !*/
+
 
 #endif /* WIN32 */
 
@@ -367,7 +372,8 @@ typedef char *va_list;
 
 
 
-/*
+/*! [Begin] no source code translation 
+ *
  * A brief explanation as GNU inline assembly is a bit hairy
  *  %0 is the output parameter in EAX ("=a")
  *  %1 and %2 are the input parameters in ECX ("c") and an immediate value ("i") respectively
@@ -375,7 +381,7 @@ typedef char *va_list;
  *  Immediate values in the assembly are preceded by "$" as in "$0x1"
  *  The final asm parameter is the non-output registers altered by the operation
  */
-#define ASM_AcquireGL(GLptr, Acq)           \
+#define ACPI_ACQUIRE_GLOBAL_LOCK(GLptr, Acq)           \
   asm("1: movl              (%1),%%eax;"    \
          "movl              %%eax,%%edx;"   \
          "andl              %2,%%edx;"      \
@@ -388,7 +394,7 @@ typedef char *va_list;
          "sbbl              %%eax,%%eax"    \
          :"=a"(Acq):"c"(GLptr),"i"(~1L):"cx","dx")
 
-#define ASM_ReleaseGL(GLptr, Acq)           \
+#define ACPI_RELEASE_GLOBAL_LOCK(GLptr, Acq)           \
   asm("1: movl              (%1),%%eax;"    \
          "movl              %%eax,%%edx;"   \
          "andl              %2,%%edx;"      \
@@ -397,6 +403,7 @@ typedef char *va_list;
                                             \
          "andl              $0x1,%%eax"     \
          :"=a"(Acq):"c"(GLptr),"i"(~3L):"cx","dx")
+/*! [End] no source code translation !*/
 
 #endif /* __GNUC__ */
 
@@ -412,8 +419,8 @@ typedef char *va_list;
 #define enable()
 #define halt()
 
-#define ASM_AcquireGL(GLptr, Acq)
-#define ASM_ReleaseGL(GLptr, Acq)
+#define ACPI_ACQUIRE_GLOBAL_LOCK(GLptr, Acq)
+#define ACPI_RELEASE_GLOBAL_LOCK(GLptr, Acq)
 
 #endif /* ACPI_ASM_MACROS */
 
