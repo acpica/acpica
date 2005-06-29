@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: amstore - AML Interpreter object store support
- *              $Revision: 1.135 $
+ *              $Revision: 1.136 $
  *
  *****************************************************************************/
 
@@ -259,7 +259,7 @@ AcpiAmlExecStore (
         {
             /* TBD: print known object types "prettier". */
 
-            DEBUG_PRINT_RAW (ACPI_DEBUG_OBJECT, ("Debug Object: %s 0x%X\n", 
+            DEBUG_PRINT_RAW (ACPI_DEBUG_OBJECT, ("Debug Object: %s 0x%X\n",
                             AcpiCmGetTypeName (ValDesc->Common.Type),
                             ValDesc));
             DUMP_STACK_ENTRY (ValDesc);
