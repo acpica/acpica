@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acglobal.h - Declarations for global variables
- *       $Revision: 1.94 $
+ *       $Revision: 1.98 $
  *
  *****************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, 2000, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -241,19 +241,19 @@ ACPI_EXTERN UINT16                      AcpiGbl_NextMethodOwnerId;
 
 ACPI_EXTERN UINT8                       AcpiGbl_DebuggerConfiguration;
 ACPI_EXTERN BOOLEAN                     AcpiGbl_GlobalLockAcquired;
-ACPI_EXTERN BOOLEAN                     AcpiGbl_GlobalLockSet; /* TBD: [Restructure] OBSOLETE?? */
 ACPI_EXTERN BOOLEAN                     AcpiGbl_StepToNextCall;
 ACPI_EXTERN BOOLEAN                     AcpiGbl_AcpiHardwarePresent;
-
+ACPI_EXTERN BOOLEAN                     AcpiGbl_GlobalLockPresent;
 
 ACPI_EXTERN ACPI_OBJECT_NOTIFY_HANDLER  AcpiGbl_DrvNotify;
 ACPI_EXTERN ACPI_OBJECT_NOTIFY_HANDLER  AcpiGbl_SysNotify;
 
 
-extern      BOOLEAN                     AcpiGbl_Shutdown;
-extern      UINT32                      AcpiGbl_SystemFlags;
-extern      UINT32                      AcpiGbl_StartupFlags;
-extern      UINT8                       AcpiGbl_DecodeTo8bit[8];
+extern BOOLEAN                          AcpiGbl_Shutdown;
+extern UINT32                           AcpiGbl_SystemFlags;
+extern UINT32                           AcpiGbl_StartupFlags;
+extern UINT8                            AcpiGbl_DecodeTo8bit[8];
+extern NATIVE_CHAR                      AcpiGbl_HexToAscii[16];
 
 
 /*****************************************************************************
@@ -269,8 +269,8 @@ extern      UINT8                       AcpiGbl_DecodeTo8bit[8];
 ACPI_EXTERN ACPI_NAMESPACE_NODE         AcpiGbl_RootNodeStruct;
 ACPI_EXTERN ACPI_NAMESPACE_NODE        *AcpiGbl_RootNode;
 
-extern      UINT8                       AcpiGbl_NsProperties[NUM_NS_TYPES];
-extern      PREDEFINED_NAMES            AcpiGbl_PreDefinedNames [NUM_PREDEFINED_NAMES];
+extern UINT8                            AcpiGbl_NsProperties[NUM_NS_TYPES];
+extern PREDEFINED_NAMES                 AcpiGbl_PreDefinedNames [NUM_PREDEFINED_NAMES];
 
 
 /* Used to detect memory leaks (DEBUG ONLY) */
