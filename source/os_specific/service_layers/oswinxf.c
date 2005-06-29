@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: oswinxf - Windows OSL
- *              $Revision: 1.55 $
+ *              $Revision: 1.56 $
  *
  *****************************************************************************/
 
@@ -1177,22 +1177,20 @@ AcpiOsStall (
  *
  * FUNCTION:    AcpiOsSleep
  *
- * PARAMETERS:  seconds             To sleep
- *              milliseconds        To sleep
+ * PARAMETERS:  milliseconds        To sleep
  *
  * RETURN:      Blocks until sleep is completed.
  *
- * DESCRIPTION: Sleep at second/millisecond granularity
+ * DESCRIPTION: Sleep at millisecond granularity
  *
  *****************************************************************************/
 
 void
 AcpiOsSleep (
-    UINT32                  seconds,
-    UINT32                  milliseconds)
+    ACPI_INTEGER            milliseconds)
 {
 
-    Sleep ((seconds * 1000) + milliseconds);
+    Sleep ((unsigned long) milliseconds);
     return;
 }
 

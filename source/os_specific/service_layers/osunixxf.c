@@ -778,7 +778,7 @@ AcpiOsBreakpoint (
 
 /******************************************************************************
  *
- * FUNCTION:    AcpiOsSleepUsec
+ * FUNCTION:    AcpiOsStall
  *
  * PARAMETERS:  microseconds        To sleep
  *
@@ -805,22 +805,20 @@ AcpiOsStall (
  *
  * FUNCTION:    AcpiOsSleep
  *
- * PARAMETERS:  seconds             To sleep
- *              milliseconds        To sleep
+ * PARAMETERS:  milliseconds        To sleep
  *
  * RETURN:      Blocks until sleep is completed.
  *
- * DESCRIPTION: Sleep at second/millisecond granularity
+ * DESCRIPTION: Sleep at millisecond granularity
  *
  *****************************************************************************/
 
 void
 AcpiOsSleep (
-    UINT32                  seconds,
-    UINT32                  milliseconds)
+    ACPI_INTEGER            milliseconds)
 {
 
-    sleep (seconds + (milliseconds / 1000));    /* Sleep for whole seconds */
+    sleep (milliseconds / 1000);    /* Sleep for whole seconds */
 
     /*
      * Arg to usleep() must be less than 1,000,000 (1 second)
