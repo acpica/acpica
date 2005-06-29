@@ -96,11 +96,11 @@ GetMasterLogHandle (void)
  ****************************************************************************/
 
 void
-FunctionTrace (INT32 LineNumber, char *ModuleName, char * FunctionName)
+FunctionTrace (char *ModuleName, INT32 LineNumber, char * FunctionName)
 {
 
-    DebugPrint (LineNumber, ModuleName, TRACE_FUNCTIONS,
-                    "Entered Function: %s\n", FunctionName);
+    DebugPrint (ModuleName, LineNumber, TRACE_FUNCTIONS,
+                "Entered Function: %s\n", FunctionName);
 }
 
 
@@ -113,25 +113,38 @@ FunctionTrace (INT32 LineNumber, char *ModuleName, char * FunctionName)
  ****************************************************************************/
 
 void
-DebugPrint (INT32 LineNumber, char *ModuleName, INT32 PrintLevels, char *Format, ...)
+DebugPrint (char *ModuleName, INT32 LineNumber, INT32 PrintLevel, char *Format, ...)
 {
     va_list         args;
 
 
-    /* Print only if requested level has been enabled globally */
 
-    if (PrintLevels & DebugLevel)
+    if (PrintLevel & DebugLevel)
     {
-
         va_start (args, Format);
-
-        /* Need a case statement here, switch on the Debug level */
 
         OsdPrintf (NULL, "%10s(%04d): ", ModuleName, LineNumber);
         OsdVprintf (NULL, Format, args);
 
         va_end (args);
     }
+}
+
+
+/*****************************************************************************
+ * 
+ * FUNCTION:    DebugPrintPrefix
+ *
+ * DESCRIPTION: Print error message 
+ *
+ ****************************************************************************/
+
+void
+DebugPrintPrefix (char *ModuleName, INT32 LineNumber)
+{
+
+
+    OsdPrintf (NULL, "%10s(%04d): ", ModuleName, LineNumber);
 }
 
 
@@ -144,23 +157,16 @@ DebugPrint (INT32 LineNumber, char *ModuleName, INT32 PrintLevels, char *Format,
  ****************************************************************************/
 
 void
-DebugPrintRaw (INT32 PrintLevels, char *Format, ...)
+DebugPrintRaw (char *Format, ...)
 {
     va_list         args;
 
 
-    /* Print only if requested level has been enabled globally */
+    va_start (args, Format);
 
-    if (PrintLevels & DebugLevel)
-    {
-        va_start (args, Format);
+    OsdVprintf (NULL, Format, args);
 
-        /* Need a case statement here, switch on the Debug level */
-
-        OsdVprintf (NULL, Format, args);
-
-        va_end (args);
-    }
+    va_end (args);
 }
 
 
@@ -173,10 +179,10 @@ DebugPrintRaw (INT32 PrintLevels, char *Format, ...)
  ****************************************************************************/
 
 void
-_ReportError (ST_KEY_DESC_TABLE *KdtEntry, INT32 LineNumber, char *ModuleName)
+_ReportError (char *ModuleName, INT32 LineNumber, ST_KEY_DESC_TABLE *KdtEntry)
 {
 
-    DebugPrint (LineNumber, ModuleName, GLOBAL_FATAL, 
+    DebugPrint (ModuleName, LineNumber, GLOBAL_ERROR, 
                 "*** %s\n", KdtEntry->Description);
 
     _Kinc_error (KdtEntry->Key, 
@@ -194,10 +200,31 @@ _ReportError (ST_KEY_DESC_TABLE *KdtEntry, INT32 LineNumber, char *ModuleName)
  ****************************************************************************/
 
 void
-_ReportWarning (ST_KEY_DESC_TABLE *KdtEntry, INT32 LineNumber, char *ModuleName)
+_ReportWarning (char *ModuleName, INT32 LineNumber, ST_KEY_DESC_TABLE *KdtEntry)
 {
 
-    DebugPrint (LineNumber, ModuleName, GLOBAL_WARN, 
+    DebugPrint (ModuleName, LineNumber, GLOBAL_WARN, 
+                "*** %s\n", KdtEntry->Description);
+
+    _Kinc_warning (KdtEntry->Key, 
+                    PACRLF, LineNumber, ModuleName, 0, 0);
+    Why = KdtEntry->Description;
+}
+
+
+/*****************************************************************************
+ * 
+ * FUNCTION:    _ReportSuccess
+ *
+ * DESCRIPTION: Print warning message from KD table
+ *
+ ****************************************************************************/
+
+void
+_ReportSuccess (char *ModuleName, INT32 LineNumber, ST_KEY_DESC_TABLE *KdtEntry)
+{
+
+    DebugPrint (ModuleName, LineNumber, GLOBAL_SUCCESS, 
                 "*** %s\n", KdtEntry->Description);
 
     _Kinc_warning (KdtEntry->Key, 
@@ -215,10 +242,10 @@ _ReportWarning (ST_KEY_DESC_TABLE *KdtEntry, INT32 LineNumber, char *ModuleName)
  ****************************************************************************/
 
 void
-_ReportInfo (ST_KEY_DESC_TABLE *KdtEntry, INT32 LineNumber, char *ModuleName)
+_ReportInfo (char *ModuleName, INT32 LineNumber, ST_KEY_DESC_TABLE *KdtEntry)
 {
 
-    DebugPrint (LineNumber, ModuleName, GLOBAL_INFO, 
+    DebugPrint (ModuleName, LineNumber, GLOBAL_INFO, 
                 "*** %s\n", KdtEntry->Description);
 
     _Kinc_info (KdtEntry->Key, 
@@ -239,7 +266,7 @@ _ReportInfo (ST_KEY_DESC_TABLE *KdtEntry, INT32 LineNumber, char *ModuleName)
  ****************************************************************************/
 
 void *
-_AllocateObjectDesc (ST_KEY_DESC_TABLE *KdtEntry, INT32 LineNumber, char *ModuleName)
+_AllocateObjectDesc (char *ModuleName, INT32 LineNumber, ST_KEY_DESC_TABLE *KdtEntry)
 {
     OBJECT_DESCRIPTOR       *NewDesc;
 
@@ -251,7 +278,7 @@ _AllocateObjectDesc (ST_KEY_DESC_TABLE *KdtEntry, INT32 LineNumber, char *Module
     {
         /* Allocation failed */
         
-        _REPORT_ERROR (KdtEntry, LineNumber, ModuleName);
+        _REPORT_ERROR (ModuleName, LineNumber, KdtEntry);
         OutOfMemory = TRUE;
     }
 
@@ -271,7 +298,7 @@ _AllocateObjectDesc (ST_KEY_DESC_TABLE *KdtEntry, INT32 LineNumber, char *Module
  ****************************************************************************/
 
 void *
-_LocalAllocate (INT32 AllocSize, INT32 LineNumber, char *ModuleName)
+_LocalAllocate (char *ModuleName, INT32 LineNumber, INT32 AllocSize)
 {
     ST_KEY_DESC_TABLE   AKDT = {"0000", '1', "LocalAllocate: Memory allocation failure", 
                                               "LocalAllocate: Memory allocation failure"};
@@ -283,7 +310,7 @@ _LocalAllocate (INT32 AllocSize, INT32 LineNumber, char *ModuleName)
     {
         /* Report allocation error */
 
-        _REPORT_ERROR (&AKDT, LineNumber, ModuleName);
+        _REPORT_ERROR (ModuleName, LineNumber, &AKDT);
         OutOfMemory = TRUE;
     }
 
@@ -303,7 +330,7 @@ _LocalAllocate (INT32 AllocSize, INT32 LineNumber, char *ModuleName)
  ****************************************************************************/
 
 void *
-_LocalCallocate (INT32 AllocSize, INT32 LineNumber, char *ModuleName)
+_LocalCallocate (char *ModuleName, INT32 LineNumber, INT32 AllocSize)
 {
     ST_KEY_DESC_TABLE   AKDT = {"0000", '1', "LocalCallocate: Memory allocation failure", 
                                               "LocalCallocate: Memory allocation failure"};
@@ -315,7 +342,7 @@ _LocalCallocate (INT32 AllocSize, INT32 LineNumber, char *ModuleName)
     {
         /* Report allocation error */
 
-        _REPORT_ERROR (&AKDT, LineNumber, ModuleName);
+        _REPORT_ERROR (ModuleName, LineNumber, &AKDT);
         OutOfMemory = TRUE;
     }
 
