@@ -120,9 +120,6 @@
 #include <acpi.h>
 #include <interp.h>
 #include <namesp.h>
-#include <methods.h>
-#include <acobject.h>
-#include <pnp.h>
 
 
 #define _COMPONENT          NAMESPACE
