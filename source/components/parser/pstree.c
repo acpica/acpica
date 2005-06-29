@@ -1,6 +1,8 @@
+
 /******************************************************************************
  *
  * Module Name: pstree - Parser op tree manipulation/traversal/search
+ *              $Revision: 1.21 $
  *
  *****************************************************************************/
 
@@ -413,7 +415,7 @@ AcpiPsGetDepthNext (
 ACPI_GENERIC_OP *
 AcpiPsFetchPrefix (
     ACPI_GENERIC_OP         *Scope,
-    INT8                    **Path,
+    NATIVE_CHAR             **Path,
     UINT32                  io)
 {
     UINT32                  prefix = io ? GET8 (*Path):**Path;
@@ -469,13 +471,13 @@ AcpiPsFetchPrefix (
 
 UINT32
 AcpiPsFetchName (
-    INT8                    **Path,
+    NATIVE_CHAR             **Path,
     UINT32                  io)
 {
     UINT32                  Name = 0;
-    INT8                    *nm;
+    NATIVE_CHAR             *nm;
     UINT32                  i;
-    INT8                    ch;
+    NATIVE_CHAR             ch;
 
 
     if (io)
@@ -493,7 +495,7 @@ AcpiPsFetchName (
             *Path += 1;
         }
 
-        nm = (char*) &Name;
+        nm = (NATIVE_CHAR *) &Name;
         for (i = 0; i < 4; i++)
         {
             ch = **Path;

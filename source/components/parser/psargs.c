@@ -1,6 +1,8 @@
+
 /******************************************************************************
  *
  * Module Name: psargs - Parse AML opcode arguments
+ *              $Revision: 1.32 $
  *
  *****************************************************************************/
 
@@ -207,14 +209,14 @@ UINT32
 AcpiPsGetNextPackageLength (
     ACPI_PARSE_STATE        *ParserState)
 {
-    INT32                   EncodedLength;
-    INT32                   Length = 0;
+    UINT32                  EncodedLength;
+    UINT32                  Length = 0;
 
 
     FUNCTION_TRACE ("PsGetNextPackageLength");
 
 
-    EncodedLength = (INT32) GET8 (ParserState->Aml);
+    EncodedLength = (UINT32) GET8 (ParserState->Aml);
     ParserState->Aml++;
 
 
@@ -301,13 +303,13 @@ AcpiPsGetNextPackageEnd (
  *
  ******************************************************************************/
 
-INT8 *
+NATIVE_CHAR *
 AcpiPsGetNextNamestring (
     ACPI_PARSE_STATE        *ParserState)
 {
-    INT8                    *Start = (INT8 *) ParserState->Aml;
-    INT8                    *End = (INT8 *) ParserState->Aml;
-    INT32                   Length;
+    UINT8                    *Start = ParserState->Aml;
+    UINT8                    *End = ParserState->Aml;
+    UINT32                  Length;
 
 
     FUNCTION_TRACE ("PsGetNextNamestring");
@@ -350,7 +352,7 @@ AcpiPsGetNextNamestring (
 
         /* multiple name segments */
 
-        Length = (INT32) GET8 (End + 1) * 4;
+        Length = (UINT32) GET8 (End + 1) * 4;
         End += 2 + Length;
         break;
 
@@ -366,7 +368,7 @@ AcpiPsGetNextNamestring (
 
     ParserState->Aml = (UINT8*) End;
 
-    return_PTR (Start);
+    return_PTR ((NATIVE_CHAR *) Start);
 }
 
 
@@ -401,7 +403,7 @@ AcpiPsGetNextNamepath (
     UINT32                  *ArgCount,
     BOOLEAN                 MethodCall)
 {
-    INT8                    *Path;
+    NATIVE_CHAR             *Path;
     ACPI_GENERIC_OP         *Name;
     ACPI_GENERIC_OP         *Op;
     ACPI_GENERIC_OP         *Count;
@@ -503,7 +505,7 @@ AcpiPsGetNextNamepath (
     UINT32                  *ArgCount,
     BOOLEAN                 MethodCall)
 {
-    INT8                    *Path;
+    NATIVE_CHAR             *Path;
     ACPI_GENERIC_OP         *Name;
     ACPI_STATUS             Status;
     ACPI_NAMED_OBJECT       *Method = NULL;
@@ -616,7 +618,7 @@ AcpiPsGetNextNamepath (
 void
 AcpiPsGetNextSimpleArg (
     ACPI_PARSE_STATE        *ParserState,
-    INT32                   ArgType,
+    UINT32                  ArgType,
     ACPI_GENERIC_OP         *Arg)
 {
 
@@ -801,13 +803,13 @@ AcpiPsGetNextField (
 ACPI_GENERIC_OP *
 AcpiPsGetNextArg (
     ACPI_PARSE_STATE        *ParserState,
-    INT32                   ArgType,
+    UINT32                  ArgType,
     UINT32                  *ArgCount)
 {
     ACPI_GENERIC_OP         *Arg = NULL;
     ACPI_GENERIC_OP         *Prev = NULL;
     ACPI_GENERIC_OP         *Field;
-    INT32                   Subop;
+    UINT32                  Subop;
 
 
     FUNCTION_TRACE_PTR ("PsGetNextArg", ParserState);

@@ -2,6 +2,7 @@
 /******************************************************************************
  *
  * Module Name: psxface - Parser external interfaces
+ *              $Revision: 1.32 $
  *
  *****************************************************************************/
 
@@ -216,7 +217,6 @@ AcpiPsxExecute (
                                 AcpiDsLoad1BeginOp, AcpiDsLoad1EndOp);
     AcpiPsDeleteParseTree (Op);
 
-
     /* Create and init a root object */
 
     Op = AcpiPsAllocOp (AML_SCOPE_OP);
@@ -229,14 +229,6 @@ AcpiPsxExecute (
                                 ObjDesc->Method.PcodeLength, PARSE_DELETE_TREE,
                                 MethodEntry, Params, ReturnObjDesc,
                                 AcpiDsExecBeginOp, AcpiDsExecEndOp);
-/*
-    Status = AcpiPsWalkParsedAml (ObjDesc->Method.ParserOp,
-                    ObjDesc->Method.ParserOp, ObjDesc,
-                    MethodEntry->ChildTable, Params, ReturnObjDesc,
-                    ObjDesc->Method.OwningId, AcpiDsExecBeginOp,
-                    AcpiDsExecEndOp);
-*/
-
     AcpiPsDeleteParseTree (Op);
 
     if (Params)
