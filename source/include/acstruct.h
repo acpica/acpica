@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acstruct.h - Internal structs
- *       $Revision: 1.2 $
+ *       $Revision: 1.4 $
  *
  *****************************************************************************/
 
@@ -159,7 +159,7 @@ typedef struct acpi_walk_state
     ACPI_GENERIC_STATE      *ScopeInfo;                         /* Stack of nested scopes */
     ACPI_PARSE_STATE        *ParserState;                       /* Current state of parser */
     UINT8                   *AmlLastWhile;
-    ACPI_OPCODE_INFO        *OpInfo;                            /* Info on current opcode */
+    const ACPI_OPCODE_INFO  *OpInfo;                            /* Info on current opcode */
     ACPI_PARSE_DOWNWARDS    DescendingCallback;
     ACPI_PARSE_UPWARDS      AscendingCallback;
 
@@ -238,7 +238,7 @@ typedef struct acpi_walk_info
 
 typedef struct acpi_get_devices_info
 {
-    WALK_CALLBACK           UserFunction;
+    ACPI_WALK_CALLBACK      UserFunction;
     void                    *Context;
     NATIVE_CHAR             *Hid;
 
