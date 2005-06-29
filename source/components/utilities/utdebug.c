@@ -1,13 +1,30 @@
-
 /*
- *  Common stuff that may move later
- */
+  __________________________________________________________________________
+ |
+ |
+ |           Copyright (C) Intel Corporation 1994-1998
+ |
+ | All rights reserved. No part of this program or publication may be
+ | reproduced, transmitted, transcribed, stored in a retrieval system, or
+ | translated into any language or computer language, in any form or by any
+ | means, electronic, mechanical, magnetic, optical, chemical, manual, or
+ | otherwise, without the prior written permission of Intel Corporation.
+ |__________________________________________________________________________
+ |
+ | excommon.c - Debug and error reporting routines
+ | 
+ |__________________________________________________________________________
 
+*/
 
-#pragma pack(1)
-#include <bu.h>
+#define __EXCOMMON_C__
+#define _THIS_MODULE        "excommon.c"
+
 #include <acpi.h>
-#include "acpiosd.h"
+#include <acpiobj.h>
+#include <amlexec.h>
+
+#include <stdarg.h>
 
 
 #define WIN_DS_REGISTER     0x0030
@@ -22,29 +39,263 @@ INT32       __AcpiLibInitStatus = 0;
 
 /* Debug switch */
 
-INT32 DebugLevel = 0x7FFFFFFF;
+#ifdef _DEBUG
+INT32 DebugLevel = 0xFFFFFFFF;
+#else
+INT32 DebugLevel = 0;
+#endif
+
+
+/*****************************************************************************
+ * 
+ * FUNCTION:    Get/Set debug level
+ *
+ * DESCRIPTION: Get or set value of the debug flag
+ *
+ ****************************************************************************/
 
 
 INT32
-debug_level (void)
+GetDebugLevel (void)
 {
 
     return DebugLevel;
 }
 
 void
-set_debug_level (INT32 dl)
+SetDebugLevel (INT32 dl)
 {
 
     DebugLevel = dl;
 }
+
+void 
+DisplayTable (void *Header, INT32 DisplayBitFlags)
+{
+    OsdPrintf (NULL, "DisplayTable called, not supported **********\n");
+    return;
+}
+
+LogHandle
+GetMasterLogHandle (void)
+{
+
+/*  return NO_LOG_HANDLE; */
+
+    return 1; /* stdout; TEMPORARY!!! */
+}
+
+
+
+/*****************************************************************************
+ * 
+ * FUNCTION:    FunctionTrace
+ *
+ * DESCRIPTION: Function entry trace
+ *
+ ****************************************************************************/
+
+void
+FunctionTrace (INT32 LineNumber, char *ModuleName, char * FunctionName)
+{
+
+    DebugPrint (LineNumber, ModuleName, TRACE_FUNCTIONS,
+                    "Entered Function: %s\n", FunctionName);
+}
+
+
+/*****************************************************************************
+ * 
+ * FUNCTION:    DebugPrint
+ *
+ * DESCRIPTION: Print error message 
+ *
+ ****************************************************************************/
+
+void
+DebugPrint (INT32 LineNumber, char *ModuleName, INT32 DebugLevel, char *Format, ...)
+{
+    va_list         args;
+
+
+    va_start (args, Format);
+
+    /* Need a case statement here, switch on the Debug level */
+
+    OsdPrintf (NULL, "%10s(%04d): ", ModuleName, LineNumber);
+    OsdVprintf ((OSD_FILE *) 1, Format, args);
+
+    va_end (args);
+}
+
+
+/*****************************************************************************
+ * 
+ * FUNCTION:    DebugPrintRaw
+ *
+ * DESCRIPTION: Print error message -- without module/line indentifiers 
+ *
+ ****************************************************************************/
+
+void
+DebugPrintRaw (INT32 DebugLevel, char *Format, ...)
+{
+    va_list         args;
+
+
+    va_start (args, Format);
+
+    /* Need a case statement here, switch on the Debug level */
+
+    OsdVprintf ((OSD_FILE *) 1, Format, args);
+
+    va_end (args);
+}
+
+
+/*****************************************************************************
+ * 
+ * FUNCTION:    _ReportError
+ *
+ * DESCRIPTION: Print error message from KD table
+ *
+ ****************************************************************************/
+
+void
+_ReportError (ST_KEY_DESC_TABLE *KdtEntry, INT32 LineNumber, char *ModuleName)
+{
+
+    DebugPrint (LineNumber, ModuleName, GLOBAL_FATAL, 
+                "*** %s\n", KdtEntry->Description);
+
+    _Kinc_error (KdtEntry->Key, 
+                    PACRLF, LineNumber, ModuleName, 0, 0);
+    Why = KdtEntry->Description;
+}
+
+
+/*****************************************************************************
+ * 
+ * FUNCTION:    _ReportWarning
+ *
+ * DESCRIPTION: Print warning message from KD table
+ *
+ ****************************************************************************/
+
+void
+_ReportWarning (ST_KEY_DESC_TABLE *KdtEntry, INT32 LineNumber, char *ModuleName)
+{
+
+    DebugPrint (LineNumber, ModuleName, GLOBAL_WARN, 
+                "*** %s\n", KdtEntry->Description);
+
+    _Kinc_warning (KdtEntry->Key, 
+                    PACRLF, LineNumber, ModuleName, 0, 0);
+    Why = KdtEntry->Description;
+}
+
+
+/*****************************************************************************
+ * 
+ * FUNCTION:    _ReportInfo
+ *
+ * DESCRIPTION: Print information message from KD table
+ *
+ ****************************************************************************/
+
+void
+_ReportInfo (ST_KEY_DESC_TABLE *KdtEntry, INT32 LineNumber, char *ModuleName)
+{
+
+    DebugPrint (LineNumber, ModuleName, GLOBAL_INFO, 
+                "*** %s\n", KdtEntry->Description);
+
+    _Kinc_info (KdtEntry->Key, 
+                    PACRLF, LineNumber, ModuleName, 0, 0);
+    Why = KdtEntry->Description;
+}
+
+
+/*****************************************************************************
+ * 
+ * FUNCTION:    _AllocateObjectDesc
+ *
+ * RETURN:      Pointer to newly allocated object descriptor
+ *
+ * DESCRIPTION: Allocate a new object descriptor.  Gracefully handle
+ *              error conditions.
+ *
+ ****************************************************************************/
+
+void *
+_AllocateObjectDesc (ST_KEY_DESC_TABLE *KdtEntry, INT32 LineNumber, char *ModuleName)
+{
+    OBJECT_DESCRIPTOR       *NewDesc;
+
+
+    /* Attempt to allocate new descriptor */
+
+    NewDesc = NEW (OBJECT_DESCRIPTOR);
+    if (!NewDesc)
+    {
+        /* Allocation failed */
+        
+        _REPORT_ERROR (KdtEntry, LineNumber, ModuleName);
+        OutOfMemory = TRUE;
+    }
+
+    return NewDesc;
+}
+
+
+/*****************************************************************************
+ * 
+ * FUNCTION:    _LocalAllocate 
+ *
+ * RETURN:      Pointer to newly allocated memory
+ *
+ * DESCRIPTION: Allocate memory.  Gracefully handle
+ *              error conditions.
+ *
+ ****************************************************************************/
+
+void *
+_LocalAllocate (INT32 AllocSize, INT32 LineNumber, char *ModuleName)
+{
+    ST_KEY_DESC_TABLE   AKDT = {"0000", '1', "LocalAllocate: Memory allocation failure", 
+                                              "LocalAllocate: Memory allocation failure"};
+    void                *Block;
+
+
+    Block = OsdAllocate ((size_t) AllocSize);
+    if (!Block)
+    {
+        /* Report allocation error */
+
+        _REPORT_ERROR (&AKDT, LineNumber, ModuleName);
+        OutOfMemory = TRUE;
+    }
+
+    return Block;
+}
+
+
+/*****************************************************************************
+ * 
+ * FUNCTION:    Kinc functions
+ *
+ * RETURN:      none
+ *
+ * DESCRIPTION: Print error messages, perhaps increment global counters ?? TBD
+ *
+ ****************************************************************************/
 
 
 void
 _Kinc_error (char *a, INT32 b, INT32 c, char * d, INT32 e, INT32 f)
 {
 
-    OsdPrintf (NULL, "*** Error %s at line %d, file %s\n", a, c, d); 
+    OsdPrintf (NULL, "%10s(%04d): *** Error %s\n", d, c, a); 
     return;
 }
 
@@ -62,7 +313,7 @@ void
 _Kinc_info (char *a, INT32 b, INT32 c, char * d, INT32 e, INT32 f)
 {
 
-    OsdPrintf (NULL, "*** Info %s at line %d, file %s\n", a, c, d); 
+    OsdPrintf (NULL, "%10s(%04d): *** Info %s\n", d, c, a); 
     return;
 }
 
@@ -70,7 +321,7 @@ void
 Kinc_info (char *a, INT32 b, INT32 c, char * d, INT32 e, INT32 f)
 {
 
-    OsdPrintf (NULL, "*** Info %s at line %d, file %s\n", a, c, d); 
+    OsdPrintf (NULL, "%10s(%04d): *** Info %s\n", d, c, a); 
     return;
 }
 
@@ -78,7 +329,7 @@ void
 _Kinc_warning (char *a, INT32 b, INT32 c, char * d, INT32 e, INT32 f)
 {
 
-    OsdPrintf (NULL, "*** Warning %s at line %d, file %s\n", a, c, d); 
+    OsdPrintf (NULL, "%10s(%04d): *** Warning %s\n", d, c, a); 
     return;
 }
 
@@ -99,6 +350,18 @@ KFatalError (char * a, char * b, ...)
     OsdPrintf (NULL, "*** Fatal Error %s: %s\n", a, b);
     return;
 }
+
+
+
+/*****************************************************************************
+ * 
+ * FUNCTION:    OFT functions
+ *
+ * RETURN:      none
+ *
+ * DESCRIPTION: Purpose unknown ?? TBD
+ *
+ ****************************************************************************/
 
 void
 CloseOFT (void)
@@ -123,30 +386,16 @@ SetNotSupported (void)
     return;
 }
 
-void 
-DisplayTable (void *Header, INT32 DisplayBitFlags)
-{
-    OsdPrintf (NULL, "DisplayTable called, not supported **********\n");
-    return;
-}
 
-void
-FunctionTrace (char * FileName, char * FunctionName)
-{
-
-    OsdPrintf (NULL, "Enter Module: %10s, Function: %s\n", FileName, FunctionName);
-}
-
-
-LogHandle
-GetMasterLogHandle (void)
-{
-
-/*  return NO_LOG_HANDLE; */
-
-    return 1; /* stdout; TEMPORARY!!! */
-}
-
+/*****************************************************************************
+ * 
+ * FUNCTION:    Interrupt functions
+ *
+ * RETURN:      none
+ *
+ * DESCRIPTION: Install/deinstall
+ *
+ ****************************************************************************/
 
 /* Interrupt handlers */
 
@@ -158,7 +407,7 @@ InstallInterruptHandler (
     UINT32 *            ExceptPtr)
 {
 
-	UINT32 RetVal;
+    UINT32 RetVal;
 
 
     OsdPrintf (NULL, "InstallInterruptHandler called, not supported **********\n");
@@ -166,8 +415,8 @@ InstallInterruptHandler (
     RetVal = (UINT32) OsdInstallInterruptHandler ((UINT32) InterruptNumber, 
                                                     Isr, ExceptPtr);
 
-	
-	return(RetVal);
+    
+    return(RetVal);
 
 }
 
@@ -180,8 +429,18 @@ RemoveInterruptHandler (UINT32 Key)
 }
 
 
+/*****************************************************************************
+ * 
+ * FUNCTION:    DumpBuf
+ *
+ * RETURN:      none
+ *
+ * DESCRIPTION: Generic dump buffer in hex and ascii.
+ *
+ ****************************************************************************/
+
 void
-DumpBuf (UINT8 *Buffer, size_t Count, INT32 Flags, LogHandle LogFile,
+DumpBuf (UINT8 *Buffer, UINT32 Count, INT32 Flags, LogHandle LogFile,
             INT32 iLogFlags)
 {
     UINT32      i = 0;
