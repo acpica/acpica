@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asmain - Main module for the acpi source processor utility
- *              $Revision: 1.74 $
+ *              $Revision: 1.76 $
  *
  *****************************************************************************/
 
@@ -277,6 +277,7 @@ ACPI_TYPED_IDENTIFIER_TABLE           AcpiIdentifiers[] = {
     {"ACPI_BIT_REGISTER_INFO",           SRC_TYPE_STRUCT},
     {"ACPI_BUFFER",                      SRC_TYPE_STRUCT},
     {"ACPI_BUS_ATTRIBUTE",               SRC_TYPE_STRUCT},
+    {"ACPI_CACHE_T",                     SRC_TYPE_SIMPLE},
     {"ACPI_COMMON_FACS",                 SRC_TYPE_STRUCT},
     {"ACPI_COMMON_STATE",                SRC_TYPE_STRUCT},
     {"ACPI_COMPATIBLE_ID",               SRC_TYPE_STRUCT},
@@ -607,7 +608,8 @@ ACPI_CONVERSION_TABLE       StatsConversionTable = {
     NULL,
     NULL,
     NULL,
-    (CVT_COUNT_TABS | CVT_COUNT_NON_ANSI_COMMENTS | CVT_COUNT_LINES),
+    (CVT_COUNT_TABS | CVT_COUNT_NON_ANSI_COMMENTS | CVT_COUNT_LINES |
+     CVT_COUNT_SHORTMULTILINE_COMMENTS),
 
     /* C header files */
 
@@ -616,7 +618,8 @@ ACPI_CONVERSION_TABLE       StatsConversionTable = {
     NULL,
     NULL,
     NULL,
-    (CVT_COUNT_TABS | CVT_COUNT_NON_ANSI_COMMENTS | CVT_COUNT_LINES),
+    (CVT_COUNT_TABS | CVT_COUNT_NON_ANSI_COMMENTS | CVT_COUNT_LINES |
+     CVT_COUNT_SHORTMULTILINE_COMMENTS),
 };
 
 
