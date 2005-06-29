@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: evregion - ACPI AddressSpace (OpRegion) handler dispatch
- *              $Revision: 1.104 $
+ *              $Revision: 1.105 $
  *
  *****************************************************************************/
 
@@ -355,7 +355,7 @@ AcpiEvAddressSpaceDispatch (
         if (ACPI_FAILURE (Status))
         {
             DEBUG_PRINTP (ACPI_ERROR, ("Region Init: %s [%s]\n",
-                AcpiUtFormatException (Status),
+                AcpiFormatException (Status),
                 AcpiUtGetRegionName (RegionObj->Region.SpaceId)));
             return_ACPI_STATUS(Status);
         }
@@ -398,7 +398,7 @@ AcpiEvAddressSpaceDispatch (
     if (ACPI_FAILURE (Status))
     {
         DEBUG_PRINTP (ACPI_ERROR, ("Region handler: %s [%s]\n",
-            AcpiUtFormatException (Status),
+            AcpiFormatException (Status),
             AcpiUtGetRegionName (RegionObj->Region.SpaceId)));
     }
 
@@ -509,7 +509,7 @@ AcpiEvDisassociateRegionFromHandler(
             if (ACPI_FAILURE (Status))
             {
                 DEBUG_PRINTP (ACPI_ERROR, ("%s from region init, [%s]\n",
-                    AcpiUtFormatException (Status),
+                    AcpiFormatException (Status),
                     AcpiUtGetRegionName (RegionObj->Region.SpaceId)));
             }
 
