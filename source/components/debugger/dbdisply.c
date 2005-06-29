@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dbdisply - debug display commands
- *              $Revision: 1.82 $
+ *              $Revision: 1.85 $
  *
  ******************************************************************************/
 
@@ -220,14 +220,14 @@ AcpiDbDumpParserDescriptor (
 
 void
 AcpiDbDecodeAndDisplayObject (
-    NATIVE_CHAR             *Target,
-    NATIVE_CHAR             *OutputType)
+    char                    *Target,
+    char                    *OutputType)
 {
     void                    *ObjPtr;
     ACPI_NAMESPACE_NODE     *Node;
     ACPI_OPERAND_OBJECT     *ObjDesc;
     UINT32                  Display = DB_BYTE_DISPLAY;
-    NATIVE_CHAR             Buffer[80];
+    char                    Buffer[80];
     ACPI_BUFFER             RetBuf;
     ACPI_STATUS             Status;
     UINT32                  Size;
@@ -793,9 +793,15 @@ AcpiDbDisplayLocals (void)
 
     ObjDesc = WalkState->MethodDesc;
     Node = WalkState->MethodNode;
+    if (!Node)
+    {
+        AcpiOsPrintf ("No method node (Executing subtree for buffer or opregion)\n");
+        return;
+    }
+
     AcpiOsPrintf ("Local Variables for method [%4.4s]:\n", Node->Name.Ascii);
 
-    for (i = 0; i < MTH_NUM_LOCALS; i++)
+    for (i = 0; i < ACPI_METHOD_NUM_LOCALS; i++)
     {
         ObjDesc = WalkState->LocalVariables[i].Object;
         AcpiOsPrintf ("Local%d: ", i);
@@ -836,6 +842,11 @@ AcpiDbDisplayArguments (void)
 
     ObjDesc = WalkState->MethodDesc;
     Node    = WalkState->MethodNode;
+    if (!Node)
+    {
+        AcpiOsPrintf ("No method node (Executing subtree for buffer or opregion)\n");
+        return;
+    }
 
     NumArgs     = ObjDesc->Method.ParamCount;
     Concurrency = ObjDesc->Method.Concurrency;
@@ -843,7 +854,7 @@ AcpiDbDisplayArguments (void)
     AcpiOsPrintf ("Method [%4.4s] has %X arguments, max concurrency = %X\n",
             Node->Name.Ascii, NumArgs, Concurrency);
 
-    for (i = 0; i < MTH_NUM_ARGS; i++)
+    for (i = 0; i < ACPI_METHOD_NUM_ARGS; i++)
     {
         ObjDesc = WalkState->Arguments[i].Object;
         AcpiOsPrintf ("Arg%d: ", i);
