@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dmobject - ACPI object decode and display
- *              $Revision: 1.11 $
+ *              $Revision: 1.13 $
  *
  ******************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2004, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2005, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -171,6 +171,17 @@ AcpiDmDumpMethodInfo (
         return;
     }
 
+    /* 
+     * If there is no Thread, we are not actually executing a method.
+     * This can happen when the iASL compiler calls the interpreter
+     * to perform constant folding.
+     */
+    Thread = WalkState->Thread;
+    if (!Thread)
+    {
+        return;
+    }
+
     /* Display exception and method name */
 
     AcpiOsPrintf ("\n**** Exception %s during execution of method ",
@@ -178,9 +189,8 @@ AcpiDmDumpMethodInfo (
     AcpiNsPrintNodePathname (WalkState->MethodNode, NULL);
 
     /* Display stack of executing methods */
-
+    
     AcpiOsPrintf ("\n\nMethod Execution Stack:\n");
-    Thread = WalkState->Thread;
     NextWalkState = Thread->WalkStateList;
 
     /* Walk list of linked walk states */
