@@ -379,7 +379,7 @@ AfRecognizeTable (
 
             TableType       = i;
             TableGlobalPtr  = AcpiGbl_AcpiTableData[i].GlobalPtr;
-            Status          = AcpiGbl_AcpiTableData[i].Status;
+            Status          = AE_OK;
             break;
         }
     }
