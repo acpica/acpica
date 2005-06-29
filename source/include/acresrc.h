@@ -178,10 +178,11 @@ RsDumpResourceList (
 	);
 
 
-UINT32
+ACPI_STATUS
 RsGetByteStreamStart (
     UINT8     * ByteStreamBuffer,
-    UINT8    ** ByteStreamStart
+    UINT8    ** ByteStreamStart,
+    UINT32    * Size
     );
 
 ACPI_STATUS
