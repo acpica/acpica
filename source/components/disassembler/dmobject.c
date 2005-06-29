@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dmobject - ACPI object decode and display
- *              $Revision: 1.7 $
+ *              $Revision: 1.8 $
  *
  ******************************************************************************/
 
@@ -265,7 +265,7 @@ AcpiDmDecodeInternalObject (
     {
     case ACPI_TYPE_INTEGER:
 
-        AcpiOsPrintf (" %8.8X%8.8X", 
+        AcpiOsPrintf (" %8.8X%8.8X",
                 ACPI_FORMAT_UINT64 (ObjDesc->Integer.Value));
         break;
 
@@ -493,7 +493,7 @@ AcpiDmDisplayInternalObject (
 
     default:
 
-        AcpiOsPrintf ("<Not a valid ACPI Object Descriptor> [%s]", 
+        AcpiOsPrintf ("<Not a valid ACPI Object Descriptor> [%s]",
                 AcpiUtGetDescriptorName (ObjDesc));
         break;
     }
