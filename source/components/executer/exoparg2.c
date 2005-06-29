@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: exdyadic - ACPI AML execution for dyadic (2-operand) operators
- *              $Revision: 1.93 $
+ *              $Revision: 1.94 $
  *
  *****************************************************************************/
 
@@ -148,13 +148,13 @@ ACPI_STATUS
 AcpiExDoConcatenate (
     ACPI_OPERAND_OBJECT     *ObjDesc,
     ACPI_OPERAND_OBJECT     *ObjDesc2,
-    ACPI_OPERAND_OBJECT     **ActualRetDesc,
+    ACPI_OPERAND_OBJECT     **ActualReturnDesc,
     ACPI_WALK_STATE         *WalkState)
 {
     ACPI_STATUS             Status;
     UINT32                  i;
     ACPI_INTEGER            ThisInteger;
-    ACPI_OPERAND_OBJECT     *RetDesc;
+    ACPI_OPERAND_OBJECT     *ReturnDesc;
     NATIVE_CHAR             *NewBuf;
     UINT32                  IntegerSize = sizeof (ACPI_INTEGER);
 
@@ -186,16 +186,16 @@ AcpiExDoConcatenate (
 
         /* Result of two integers is a buffer */
 
-        RetDesc = AcpiUtCreateInternalObject (ACPI_TYPE_BUFFER);
-        if (!RetDesc)
+        ReturnDesc = AcpiUtCreateInternalObject (ACPI_TYPE_BUFFER);
+        if (!ReturnDesc)
         {
             return (AE_NO_MEMORY);
         }
 
         /* Need enough space for two integers */
 
-        RetDesc->Buffer.Length = IntegerSize * 2;
-        NewBuf = ACPI_MEM_CALLOCATE (RetDesc->Buffer.Length);
+        ReturnDesc->Buffer.Length = IntegerSize * 2;
+        NewBuf = ACPI_MEM_CALLOCATE (ReturnDesc->Buffer.Length);
         if (!NewBuf)
         {
             REPORT_ERROR
@@ -204,7 +204,7 @@ AcpiExDoConcatenate (
             goto Cleanup;
         }
 
-        RetDesc->Buffer.Pointer = (UINT8 *) NewBuf;
+        ReturnDesc->Buffer.Pointer = (UINT8 *) NewBuf;
 
         /* Convert the first integer */
 
@@ -229,8 +229,8 @@ AcpiExDoConcatenate (
 
     case ACPI_TYPE_STRING:
 
-        RetDesc = AcpiUtCreateInternalObject (ACPI_TYPE_STRING);
-        if (!RetDesc)
+        ReturnDesc = AcpiUtCreateInternalObject (ACPI_TYPE_STRING);
+        if (!ReturnDesc)
         {
             return (AE_NO_MEMORY);
         }
@@ -253,8 +253,8 @@ AcpiExDoConcatenate (
 
         /* Point the return object to the new string */
 
-        RetDesc->String.Pointer = NewBuf;
-        RetDesc->String.Length = ObjDesc->String.Length +=
+        ReturnDesc->String.Pointer = NewBuf;
+        ReturnDesc->String.Length = ObjDesc->String.Length +=
                                  ObjDesc2->String.Length;
         break;
 
@@ -263,8 +263,8 @@ AcpiExDoConcatenate (
 
         /* Operand0 is a buffer */
 
-        RetDesc = AcpiUtCreateInternalObject (ACPI_TYPE_BUFFER);
-        if (!RetDesc)
+        ReturnDesc = AcpiUtCreateInternalObject (ACPI_TYPE_BUFFER);
+        if (!ReturnDesc)
         {
             return (AE_NO_MEMORY);
         }
@@ -282,31 +282,31 @@ AcpiExDoConcatenate (
         MEMCPY (NewBuf, ObjDesc->Buffer.Pointer,
                         ObjDesc->Buffer.Length);
         MEMCPY (NewBuf + ObjDesc->Buffer.Length, ObjDesc2->Buffer.Pointer,
-                        ObjDesc2->Buffer.Length);
+                         ObjDesc2->Buffer.Length);
 
         /*
          * Point the return object to the new buffer
          */
 
-        RetDesc->Buffer.Pointer     = (UINT8 *) NewBuf;
-        RetDesc->Buffer.Length      = ObjDesc->Buffer.Length +
+        ReturnDesc->Buffer.Pointer     = (UINT8 *) NewBuf;
+        ReturnDesc->Buffer.Length      = ObjDesc->Buffer.Length +
                                       ObjDesc2->Buffer.Length;
         break;
 
 
     default:
         Status = AE_AML_INTERNAL;
-        RetDesc = NULL;
+        ReturnDesc = NULL;
     }
 
 
-    *ActualRetDesc = RetDesc;
+    *ActualReturnDesc = ReturnDesc;
     return (AE_OK);
 
 
 Cleanup:
 
-    AcpiUtRemoveReference (RetDesc);
+    AcpiUtRemoveReference (ReturnDesc);
     return (Status);
 }
 
@@ -383,7 +383,7 @@ AcpiExOpcode_2A_0T_0R (
 
     default:
 
-        REPORT_ERROR (("AcpiExOpcode_2A_0T_0R: Unknown dyadic opcode %X\n", WalkState->Opcode));
+        REPORT_ERROR (("AcpiExOpcode_2A_0T_0R: Unknown opcode %X\n", WalkState->Opcode));
         Status = AE_AML_BAD_OPCODE;
     }
 
@@ -416,8 +416,8 @@ AcpiExOpcode_2A_2T_1R (
     ACPI_WALK_STATE         *WalkState)
 {
     ACPI_OPERAND_OBJECT     **Operand = &WalkState->Operands[0];
-    ACPI_OPERAND_OBJECT     *RetDesc1 = NULL;
-    ACPI_OPERAND_OBJECT     *RetDesc2 = NULL;
+    ACPI_OPERAND_OBJECT     *ReturnDesc1 = NULL;
+    ACPI_OPERAND_OBJECT     *ReturnDesc2 = NULL;
     ACPI_STATUS             Status;
 
 
@@ -430,24 +430,24 @@ AcpiExOpcode_2A_2T_1R (
     {
     case AML_DIVIDE_OP:             /* Divide (Dividend, Divisor, RemainderResult QuotientResult) */
 
-        RetDesc1 = AcpiUtCreateInternalObject (ACPI_TYPE_INTEGER);
-        if (!RetDesc1)
+        ReturnDesc1 = AcpiUtCreateInternalObject (ACPI_TYPE_INTEGER);
+        if (!ReturnDesc1)
         {
             Status = AE_NO_MEMORY;
             break;
         }
 
-        RetDesc2 = AcpiUtCreateInternalObject (ACPI_TYPE_INTEGER);
-        if (!RetDesc2)
+        ReturnDesc2 = AcpiUtCreateInternalObject (ACPI_TYPE_INTEGER);
+        if (!ReturnDesc2)
         {
             Status = AE_NO_MEMORY;
             break;
         }
 
-        /* Quotient to RetDesc1, remainder to RetDesc2 */
+        /* Quotient to ReturnDesc1, remainder to ReturnDesc2 */
 
         Status = AcpiUtDivide (&Operand[0]->Integer.Value, &Operand[1]->Integer.Value,
-                               &RetDesc1->Integer.Value,   &RetDesc2->Integer.Value);
+                               &ReturnDesc1->Integer.Value, &ReturnDesc2->Integer.Value);
         break;
 
 
@@ -459,25 +459,23 @@ AcpiExOpcode_2A_2T_1R (
         break;
     }
 
-
     /* 
      * Always delete the input operands 
      */
     AcpiUtRemoveReference (Operand[0]);
     AcpiUtRemoveReference (Operand[1]);
 
-
     if (ACPI_SUCCESS (Status))
     {
         /* Store the results to the target reference operands */
 
-        Status = AcpiExStore (RetDesc2, Operand[2], WalkState);
+        Status = AcpiExStore (ReturnDesc2, Operand[2], WalkState);
         if (ACPI_FAILURE (Status))
         {
             goto ErrorExit;
         }
 
-        Status = AcpiExStore (RetDesc1, Operand[3], WalkState);
+        Status = AcpiExStore (ReturnDesc1, Operand[3], WalkState);
         if (ACPI_FAILURE (Status))
         {
             goto ErrorExit;
@@ -487,8 +485,8 @@ AcpiExOpcode_2A_2T_1R (
          * Since the remainder is not returned indirectly, remove a reference to
          * it. Only the quotient is returned indirectly.
          */
-        AcpiUtRemoveReference (RetDesc2);
-        WalkState->ResultObj = RetDesc1;
+        AcpiUtRemoveReference (ReturnDesc2);
+        WalkState->ResultObj = ReturnDesc1;
 
         return_ACPI_STATUS (Status);
     }
@@ -503,8 +501,8 @@ ErrorExit:
 
     /* And delete the return objects */
 
-    AcpiUtRemoveReference (RetDesc1);
-    AcpiUtRemoveReference (RetDesc2);
+    AcpiUtRemoveReference (ReturnDesc1);
+    AcpiUtRemoveReference (ReturnDesc2);
 
     return_ACPI_STATUS (Status);
 }
@@ -692,8 +690,10 @@ ACPI_STATUS
 AcpiExOpcode_2A_1T_1R (
     ACPI_WALK_STATE         *WalkState)
 {
-    ACPI_OPERAND_OBJECT     **Operand = &WalkState->Operands[0];
-    ACPI_OPERAND_OBJECT     *RetDesc    = NULL;
+    ACPI_OPERAND_OBJECT     **Operand   = &WalkState->Operands[0];
+    ACPI_OPERAND_OBJECT     *ReturnDesc = NULL;
+    ACPI_OPERAND_OBJECT     *TempDesc;
+    UINT32                  Index;
     ACPI_STATUS             Status      = AE_OK;
 
 
@@ -716,14 +716,14 @@ AcpiExOpcode_2A_1T_1R (
     case AML_SHIFT_RIGHT_OP:
     case AML_SUBTRACT_OP:
 
-        RetDesc = AcpiUtCreateInternalObject (ACPI_TYPE_INTEGER);
-        if (!RetDesc)
+        ReturnDesc = AcpiUtCreateInternalObject (ACPI_TYPE_INTEGER);
+        if (!ReturnDesc)
         {
             Status = AE_NO_MEMORY;
             goto Cleanup;
         }
 
-        RetDesc->Integer.Value = AcpiExDoMathOp (WalkState->Opcode, 
+        ReturnDesc->Integer.Value = AcpiExDoMathOp (WalkState->Opcode, 
                                                 Operand[0]->Integer.Value, 
                                                 Operand[1]->Integer.Value);
         break;
@@ -731,17 +731,17 @@ AcpiExOpcode_2A_1T_1R (
 
     case AML_MOD_OP:                /* Mod (Dividend, Divisor, RemainderResult (ACPI 2.0) */
 
-        RetDesc = AcpiUtCreateInternalObject (ACPI_TYPE_INTEGER);
-        if (!RetDesc)
+        ReturnDesc = AcpiUtCreateInternalObject (ACPI_TYPE_INTEGER);
+        if (!ReturnDesc)
         {
             Status = AE_NO_MEMORY;
             goto Cleanup;
         }
 
-        /* RetDesc will contain the remainder */
+        /* ReturnDesc will contain the remainder */
 
         Status = AcpiUtDivide (&Operand[0]->Integer.Value, &Operand[1]->Integer.Value,
-                        NULL, &RetDesc->Integer.Value);
+                        NULL, &ReturnDesc->Integer.Value);
 
         break;
 
@@ -780,14 +780,14 @@ AcpiExOpcode_2A_1T_1R (
              * (Both are Integer, String, or Buffer), and we can now perform the
              * concatenation.
              */
-            Status = AcpiExDoConcatenate (Operand[0], Operand[1], &RetDesc, WalkState);
+            Status = AcpiExDoConcatenate (Operand[0], Operand[1], &ReturnDesc, WalkState);
         }
         break;
 
 
     case AML_TO_STRING_OP:          /* ToString (Buffer, Length, Result) (ACPI 2.0) */
 
-        Status = AcpiExConvertToString (Operand[0], &RetDesc, 16,
+        Status = AcpiExConvertToString (Operand[0], &ReturnDesc, 16,
                         (UINT32) Operand[1]->Integer.Value, WalkState);
         break;
 
@@ -795,6 +795,92 @@ AcpiExOpcode_2A_1T_1R (
     case AML_CONCAT_RES_OP:         /* ConcatenateResTemplate (Buffer, Buffer, Result) (ACPI 2.0) */
 
         Status = AE_NOT_IMPLEMENTED;
+        break;
+
+
+    case AML_INDEX_OP:              /* Index (Source Index Result) */
+
+        /* Create the internal return object */
+
+        ReturnDesc = AcpiUtCreateInternalObject (INTERNAL_TYPE_REFERENCE);
+        if (!ReturnDesc)
+        {
+            Status = AE_NO_MEMORY;
+            goto Cleanup;
+        }
+
+        Index = (UINT32) Operand[1]->Integer.Value;
+
+        /*
+         * At this point, the Source operand is either a Package or a Buffer
+         */
+        if (Operand[0]->Common.Type == ACPI_TYPE_PACKAGE)
+        {
+            /* Object to be indexed is a Package */
+
+            if (Index >= Operand[0]->Package.Count)
+            {
+                ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Index value beyond package end\n"));
+                Status = AE_AML_PACKAGE_LIMIT;
+                goto Cleanup;
+            }
+
+            if ((Operand[2]->Common.Type == INTERNAL_TYPE_REFERENCE) &&
+                (Operand[2]->Reference.Opcode == AML_ZERO_OP))
+            {
+                /*
+                 * There is no actual result descriptor (the ZeroOp Result
+                 * descriptor is a placeholder), so just delete the placeholder and
+                 * return a reference to the package element
+                 */
+                AcpiUtRemoveReference (Operand[2]);
+            }
+
+            else
+            {
+                /*
+                 * Each element of the package is an internal object.  Get the one
+                 * we are after.
+                 */
+                TempDesc                         = Operand[0]->Package.Elements [Index];
+                ReturnDesc->Reference.Opcode     = AML_INDEX_OP;
+                ReturnDesc->Reference.TargetType = TempDesc->Common.Type;
+                ReturnDesc->Reference.Object     = TempDesc;
+
+                Status = AcpiExStore (ReturnDesc, Operand[2], WalkState);
+                ReturnDesc->Reference.Object     = NULL;
+            }
+
+            /*
+             * The local return object must always be a reference to the package element,
+             * not the element itself.
+             */
+            ReturnDesc->Reference.Opcode     = AML_INDEX_OP;
+            ReturnDesc->Reference.TargetType = ACPI_TYPE_PACKAGE;
+            ReturnDesc->Reference.Where      = &Operand[0]->Package.Elements [Index];
+        }
+
+        else
+        {
+            /* Object to be indexed is a Buffer */
+
+            if (Index >= Operand[0]->Buffer.Length)
+            {
+                ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Index value beyond end of buffer\n"));
+                Status = AE_AML_BUFFER_LIMIT;
+                goto Cleanup;
+            }
+
+            ReturnDesc->Reference.Opcode       = AML_INDEX_OP;
+            ReturnDesc->Reference.TargetType   = ACPI_TYPE_BUFFER_FIELD;
+            ReturnDesc->Reference.Object       = Operand[0];
+            ReturnDesc->Reference.Offset       = Index;
+
+            Status = AcpiExStore (ReturnDesc, Operand[2], WalkState);
+        }
+
+        WalkState->ResultObj = ReturnDesc;
+        goto Cleanup;
         break;
 
 
@@ -807,30 +893,28 @@ AcpiExOpcode_2A_1T_1R (
     }
 
 
-    /* Always delete the operands */
-
-    AcpiUtRemoveReference (Operand[0]);
-    AcpiUtRemoveReference (Operand[1]);
-
-
     if (ACPI_SUCCESS (Status))
     {
         /*
-         * Store the result of the operation (which is now in Operand[0]) into
-         * the result descriptor, or the location pointed to by the result
-         * descriptor (Operand[2]).
+         * Store the result of the operation (which is now in ReturnDesc) into
+         * the Target descriptor.
          */
-        Status = AcpiExStore (RetDesc, Operand[2], WalkState);
+        Status = AcpiExStore (ReturnDesc, Operand[2], WalkState);
         if (ACPI_FAILURE (Status))
         {
             goto Cleanup;
         }
 
-        WalkState->ResultObj = RetDesc;
+        WalkState->ResultObj = ReturnDesc;
     }
 
 
 Cleanup:
+
+    /* Always delete the operands */
+
+    AcpiUtRemoveReference (Operand[0]);
+    AcpiUtRemoveReference (Operand[1]);
 
     /* Delete return object on error */
 
@@ -842,7 +926,7 @@ Cleanup:
 
         /* And delete the internal return object */
 
-        AcpiUtRemoveReference (RetDesc);
+        AcpiUtRemoveReference (ReturnDesc);
     }
 
     /* Set the return object and exit */
@@ -868,7 +952,7 @@ AcpiExOpcode_2A_0T_1R (
     ACPI_WALK_STATE         *WalkState)
 {
     ACPI_OPERAND_OBJECT     **Operand = &WalkState->Operands[0];
-    ACPI_OPERAND_OBJECT     *RetDesc = NULL;
+    ACPI_OPERAND_OBJECT     *ReturnDesc = NULL;
     ACPI_STATUS             Status = AE_OK;
     BOOLEAN                 LogicalResult = FALSE;
 
@@ -878,8 +962,8 @@ AcpiExOpcode_2A_0T_1R (
 
     /* Create the internal return object */
 
-    RetDesc = AcpiUtCreateInternalObject (ACPI_TYPE_INTEGER);
-    if (!RetDesc)
+    ReturnDesc = AcpiUtCreateInternalObject (ACPI_TYPE_INTEGER);
+    if (!ReturnDesc)
     {
         Status = AE_NO_MEMORY;
         goto Cleanup;
@@ -934,7 +1018,7 @@ AcpiExOpcode_2A_0T_1R (
 
     default:
 
-        REPORT_ERROR (("AcpiExOpcode_2A_0T_1R: Unknown dyadic opcode %X\n", WalkState->Opcode));
+        REPORT_ERROR (("AcpiExOpcode_2A_0T_1R: Unknown opcode %X\n", WalkState->Opcode));
         Status = AE_AML_BAD_OPCODE;
         goto Cleanup;
         break;
@@ -947,7 +1031,7 @@ AcpiExOpcode_2A_0T_1R (
      */
     if (LogicalResult)
     {
-        RetDesc->Integer.Value = ACPI_INTEGER_MAX;
+        ReturnDesc->Integer.Value = ACPI_INTEGER_MAX;
     }
 
 
@@ -962,16 +1046,16 @@ Cleanup:
     /* Delete return object on error */
 
     if (ACPI_FAILURE (Status) &&
-        (RetDesc))
+        (ReturnDesc))
     {
-        AcpiUtRemoveReference (RetDesc);
-        RetDesc = NULL;
+        AcpiUtRemoveReference (ReturnDesc);
+        ReturnDesc = NULL;
     }
 
 
     /* Set the return object and exit */
 
-    WalkState->ResultObj = RetDesc;
+    WalkState->ResultObj = ReturnDesc;
     return_ACPI_STATUS (Status);
 }
 
