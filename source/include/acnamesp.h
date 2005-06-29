@@ -432,6 +432,13 @@ NsInternalizeName (
     char                    *DottedName,
     char                    **ConvertedName);
 
+ACPI_STATUS
+NsExternalizeName (
+    UINT32                  InternalNameLength,
+    char                    *InternalName,
+    UINT32                  *ConvertedNameLength,
+    char                    **ConvertedName);
+
 INT32
 IsNsObject (
     ACPI_OBJECT_INTERNAL    *pOD);
