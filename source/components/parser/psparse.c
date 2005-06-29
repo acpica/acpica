@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: psparse - Parser top level AML parse routines
- *              $Revision: 1.62 $
+ *              $Revision: 1.63 $
  *
  *****************************************************************************/
 
@@ -700,7 +700,6 @@ AcpiPsParseLoop (
     ACPI_PARSE_STATE        *ParserState;
 
 
-
     FUNCTION_TRACE_PTR ("PsParseLoop", WalkState);
 
 
@@ -726,7 +725,7 @@ AcpiPsParseLoop (
             {
 
                 /*
-                 * A predicate was just completed, get the value of the 
+                 * A predicate was just completed, get the value of the
                  * predicate and branch based on that value
                  */
 
@@ -734,7 +733,7 @@ AcpiPsParseLoop (
                 if (Status == AE_AML_NO_OPERAND)
                 {
                     DEBUG_PRINT (ACPI_ERROR,
-                        ("PsParseLoop: Invoked method did not return a value, %s\n", 
+                        ("PsParseLoop: Invoked method did not return a value, %s\n",
                         AcpiCmFormatException (Status)));
 
                 }
