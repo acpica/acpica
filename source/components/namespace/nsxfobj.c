@@ -173,7 +173,6 @@ AcpiEvaluateObject (
 
 
     FUNCTION_TRACE ("AcpiEvaluateObject");
-    DEBUG_MEMSTAT;
 
 
     /* 
@@ -316,7 +315,7 @@ Cleanup:
     {
         /* Check if the return object is valid */
 
-        if (ReturnPtr->Type != TYPE_Invalid)
+        if (ReturnPtr->Common.Type != TYPE_Invalid)
         {
             /*
              *  Find out how large a buffer is needed to contain the
@@ -379,7 +378,6 @@ Cleanup:
         }
     }
 
-    DEBUG_MEMSTAT;
     return_ACPI_STATUS (Status);
 }
 
@@ -671,7 +669,7 @@ AcpiWalkNamespace (
 
     if (StartObject == ACPI_ROOT_OBJECT)
     {
-        StartObject = RootObject;
+        StartObject = Gbl_RootObject;
     }
 
     /* Init return value, if any */
@@ -777,7 +775,7 @@ AcpiGetObject (
     }
 
 
-    *RetHandle = RootObject->Scope;
+    *RetHandle = Gbl_RootObject->Scope;
     return AE_OK;
 }
 
