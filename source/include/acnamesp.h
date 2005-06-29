@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acnamesp.h - Namespace subcomponent prototypes and defines
- *       $Revision: 1.100 $
+ *       $Revision: 1.102 $
  *
  *****************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, 2000, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -163,7 +163,7 @@ AcpiNsInitializeObjects (
 
 ACPI_STATUS
 AcpiNsInitializeDevices (
-    UINT32                  Flags);
+    void);
 
 
 /* Namespace init - nsxfinit */
