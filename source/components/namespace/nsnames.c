@@ -246,8 +246,6 @@ AcpiNsHandleToPathname (
     UINT32                  Size;
     UINT32                  UserBufSize;
     ACPI_NAME               Name;
-    BOOLEAN                 NamespaceWasLocked;
-
 
     FUNCTION_TRACE_PTR ("NsHandleToPathname", TargetHandle);
 
@@ -290,7 +288,7 @@ AcpiNsHandleToPathname (
     if (PathLength > UserBufSize)
     {
         Status = AE_BUFFER_OVERFLOW;
-        goto UnlockAndExit;
+        goto Exit;
     }
 
     /* Store null terminator */
@@ -328,14 +326,7 @@ AcpiNsHandleToPathname (
         ("NsHandleToPathname: Len=%d, %s \n",
         PathLength, UserBuffer));
 
-
-UnlockAndExit:
-
-    if (!NamespaceWasLocked)
-    {
-        AcpiCmReleaseMutex (ACPI_MTX_NAMESPACE);
-    }
-
+Exit:
     return_ACPI_STATUS (Status);
 }
 
