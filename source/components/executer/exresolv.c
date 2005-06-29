@@ -478,13 +478,13 @@ AmlGetRvalue (
                  * Convert it to an object.
                  */
 
-                if (AE_OK != (Status = AmlObjStackPushIfExec (MODE_Exec)))             /* ObjStack */
+                if (AE_OK != (Status = AmlObjStackPush ()))             /* ObjStack */
                 {
                     return_ACPI_STATUS (Status);
                 }
 
                 if (AE_OK == (Status = AmlPkgPushExec ((UINT8 *) ValDesc + 1, 0L)) && /*PkgStack*/
-                    AE_OK == (Status = AmlDoPkg (TYPE_Package, MODE_Exec)) &&
+                    AE_OK == (Status = AmlDoPkg (TYPE_Package, IMODE_Execute)) &&
                     AE_OK == (Status = AmlPkgPopExec ()))                 /* PkgStack */
                 {
                     NsAttachObject ((ACPI_HANDLE) *StackPtr, AmlObjStackGetValue (0),
@@ -572,13 +572,13 @@ AmlGetRvalue (
                  * points to a buffer definition in the AML stream.
                  * Convert it to an object.
                  */
-                if (AE_OK != (Status = AmlObjStackPushIfExec (MODE_Exec)))                /* ObjStack */
+                if (AE_OK != (Status = AmlObjStackPush ()))                /* ObjStack */
                 {
                     return_ACPI_STATUS (Status);
                 }
 
                 if (AE_OK == (Status = AmlPkgPushExec ((UINT8 *) ValDesc + 1, 0L)) &&   /*PkgStack*/
-                    AE_OK == (Status = AmlDoPkg (TYPE_Buffer, MODE_Exec)) &&
+                    AE_OK == (Status = AmlDoPkg (TYPE_Buffer, IMODE_Execute)) &&
                     AE_OK == (Status = AmlPkgPopExec ()))                     /* PkgStack */
                 {
                     NsAttachObject ((ACPI_HANDLE) *StackPtr, AmlObjStackGetValue (0),
