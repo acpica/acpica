@@ -242,8 +242,7 @@ AmlAcquireGlobalLock (
         }
     }
 
-    FUNCTION_EXIT;
-    return Locked;
+    return_VALUE (Locked);
 }
 
 
@@ -291,8 +290,7 @@ AmlReleaseGlobalLock (
     }
 
 
-    FUNCTION_EXIT;
-    return AE_OK;
+    return_ACPI_STATUS (AE_OK);
 }
 
 /******************************************************************************
@@ -330,8 +328,7 @@ AmlDigitsNeeded (
         { ; }
     }
 
-    FUNCTION_EXIT;
-    return NumDigits;
+    return_VALUE (NumDigits);
 }
 
 
