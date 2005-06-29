@@ -179,7 +179,7 @@ AcpiDbDumpBuffer (
     UINT32                  Address)
 {
 
-    AcpiOsdPrintf ("\nLocation 0x%X:\n", Address);
+    AcpiOsPrintf ("\nLocation 0x%X:\n", Address);
 
     AcpiDbgLevel |= TRACE_TABLES;
     AcpiCmDumpBuffer ((char *) Address, 64, DB_BYTE_DISPLAY, ACPI_UINT32_MAX);
@@ -209,49 +209,49 @@ AcpiDbDumpObject (
 
     if (!ObjDesc)
     {
-        AcpiOsdPrintf ("[Null Object]\n");
+        AcpiOsPrintf ("[Null Object]\n");
         return;
     }
 
     for (i = 0; i < Level; i++)
     {
-        AcpiOsdPrintf ("  ");
+        AcpiOsPrintf ("  ");
     }
 
     switch (ObjDesc->Type)
     {
     case ACPI_TYPE_ANY:
 
-        AcpiOsdPrintf ("[Object Reference]  Value: %p\n", ObjDesc->Reference.Handle);
+        AcpiOsPrintf ("[Object Reference]  Value: %p\n", ObjDesc->Reference.Handle);
         break;
 
 
     case ACPI_TYPE_NUMBER:
-        AcpiOsdPrintf ("[Number]  Value: %ld (0x%lX)\n", ObjDesc->Number.Value, ObjDesc->Number.Value);
+        AcpiOsPrintf ("[Number]  Value: %ld (0x%lX)\n", ObjDesc->Number.Value, ObjDesc->Number.Value);
         break;
 
 
     case ACPI_TYPE_STRING:
 
-        AcpiOsdPrintf ("[String]  Value: ");
+        AcpiOsPrintf ("[String]  Value: ");
         for (i = 0; i < ObjDesc->String.Length; i++)
         {
-            AcpiOsdPrintf ("%c", ObjDesc->String.Pointer[i]);
+            AcpiOsPrintf ("%c", ObjDesc->String.Pointer[i]);
         }
-        AcpiOsdPrintf ("\n");
+        AcpiOsPrintf ("\n");
         break;
 
 
     case ACPI_TYPE_BUFFER:
 
-        AcpiOsdPrintf ("[Buffer]  Value: ");
+        AcpiOsPrintf ("[Buffer]  Value: ");
         AcpiCmDumpBuffer ((char *) ObjDesc->Buffer.Pointer, ObjDesc->Buffer.Length, DB_DWORD_DISPLAY, _COMPONENT);
         break;
 
 
     case ACPI_TYPE_PACKAGE:
 
-        AcpiOsdPrintf ("[Package]  Contains %d Elements: \n", ObjDesc->Package.Count);
+        AcpiOsPrintf ("[Package]  Contains %d Elements: \n", ObjDesc->Package.Count);
 
         for (i = 0; i < ObjDesc->Package.Count; i++)
         {
@@ -262,11 +262,10 @@ AcpiDbDumpObject (
 
     default:
 
-        AcpiOsdPrintf ("[Unknown Type] 0x%X \n", ObjDesc->Type);
+        AcpiOsPrintf ("[Unknown Type] 0x%X \n", ObjDesc->Type);
         break;
     }
 }
-
 
 
 /******************************************************************************
@@ -347,7 +346,7 @@ AcpiDbSecondPassParse (
     UINT32                  BaseAmlOffset;
 
 
-    AcpiOsdPrintf ("Pass two parse ....\n");
+    AcpiOsPrintf ("Pass two parse ....\n");
 
     while (Op)
     {
@@ -403,13 +402,13 @@ AcpiDbSecondPassParse (
  *
  *****************************************************************************/
 
-NAME_TABLE_ENTRY *
+ACPI_NAMED_OBJECT*
 AcpiDbLocalNsLookup (
     char                    *Name)
 {
     char                    *InternalPath;
     ACPI_STATUS             Status;
-    NAME_TABLE_ENTRY        *Entry = NULL;
+    ACPI_NAMED_OBJECT       *Entry = NULL;
 
 
     AcpiDbPrepNamestring (Name);
@@ -419,7 +418,7 @@ AcpiDbLocalNsLookup (
     Status = AcpiNsInternalizeName (Name, &InternalPath);
     if (ACPI_FAILURE (Status))
     {
-        AcpiOsdPrintf ("Invalid namestring: %s\n", Name);
+        AcpiOsPrintf ("Invalid namestring: %s\n", Name);
         return NULL;
     }
 
@@ -433,7 +432,7 @@ AcpiDbLocalNsLookup (
 
     if (ACPI_FAILURE (Status))
     {
-        AcpiOsdPrintf ("Could not locate name: %s %s\n", Name, AcpiCmFormatException (Status));
+        AcpiOsPrintf ("Could not locate name: %s %s\n", Name, AcpiCmFormatException (Status));
     }
 
 
@@ -441,8 +440,6 @@ AcpiDbLocalNsLookup (
 
     return Entry;
 }
-
-
 
 
 #endif /* ENABLE_DEBUGGER */

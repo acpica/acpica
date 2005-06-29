@@ -114,10 +114,7 @@
  *****************************************************************************/
 
 
-
 #include "acpi.h"
-#include "acxface.h"
-#include "amlcode.h"
 #include "parser.h"
 #include "tables.h"
 #include "namesp.h"
@@ -156,7 +153,6 @@ BOOLEAN                 opt_disasm      = FALSE;
 BOOLEAN                 opt_stats       = FALSE;
 BOOLEAN                 opt_parse_jit   = FALSE;
 BOOLEAN                 opt_verbose     = TRUE;
-
 
 
 /* This list of commands must match the string table below it */
@@ -198,6 +194,7 @@ enum AcpiAmlDebuggerCommands
     CMD_OWNER,
     CMD_PREFIX,
     CMD_QUIT,
+    CMD_REFERENCES,
     CMD_RESULTS,
     CMD_SET,
     CMD_STATS,
@@ -249,6 +246,7 @@ COMMAND_INFO                Commands[] =
     {"OWNER",        1},
     {"PREFIX",       0},
     {"QUIT",         0},
+    {"REFERENCES",   1},
     {"RESULTS",      0},
     {"SET",          3},
     {"STATS",        0},
@@ -260,8 +258,6 @@ COMMAND_INFO                Commands[] =
     {"UNLOAD",       0},
     {NULL,           0}
 };
-
-
 
 
 /******************************************************************************
@@ -286,13 +282,13 @@ AcpiDbDisplayHelp (
 
     if (!HelpType)
     {
-        AcpiOsdPrintf ("ACPI CA Debugger Commands\n\n");
-        AcpiOsdPrintf ("The following classes of commands are available.  Help is available for\n");
-        AcpiOsdPrintf ("each class by entering \"Help <ClassName>\"\n\n");
-        AcpiOsdPrintf ("    [GENERAL]       General-Purpose Commands\n");
-        AcpiOsdPrintf ("    [NAMESPACE]     Namespace Access Commands\n");
-        AcpiOsdPrintf ("    [METHOD]        Control Method Execution Commands\n");
-        AcpiOsdPrintf ("    [FILE]          File I/O Commands\n");
+        AcpiOsPrintf ("ACPI CA Debugger Commands\n\n");
+        AcpiOsPrintf ("The following classes of commands are available.  Help is available for\n");
+        AcpiOsPrintf ("each class by entering \"Help <ClassName>\"\n\n");
+        AcpiOsPrintf ("    [GENERAL]       General-Purpose Commands\n");
+        AcpiOsPrintf ("    [NAMESPACE]     Namespace Access Commands\n");
+        AcpiOsPrintf ("    [METHOD]        Control Method Execution Commands\n");
+        AcpiOsPrintf ("    [FILE]          File I/O Commands\n");
         return;
 
     }
@@ -307,65 +303,66 @@ AcpiDbDisplayHelp (
     switch (HelpType[0])
     {
     case 'G':
-        AcpiOsdPrintf ("\nGeneral-Purpose Commands\n\n");
-        AcpiOsdPrintf ("Allocations                         Display list of current memory allocations\n");
-        AcpiOsdPrintf ("Dump <Address>|<Namepath>\n");
-        AcpiOsdPrintf ("     [Byte|Word|Dword|Qword]        Display ACPI objects or memory\n");
-        AcpiOsdPrintf ("EnableAcpi                          Enable ACPI (hardware) mode\n");
-        AcpiOsdPrintf ("Help                                This help screen\n");
-        AcpiOsdPrintf ("History                             Display command history buffer\n");
-        AcpiOsdPrintf ("Level [<DebugLevel>] [console]      Get/Set debug level for file or console\n");
-        AcpiOsdPrintf ("Quit or Exit                        Exit this command\n");
-        AcpiOsdPrintf ("Stats [Allocations|Memory|Misc\n");
-        AcpiOsdPrintf ("       |Objects|Tables]             Display namespace and memory statistics\n");
-        AcpiOsdPrintf ("Tables                              Display info about loaded ACPI tables\n");
-        AcpiOsdPrintf ("Unload                              Unload an ACPI table\n");
-        AcpiOsdPrintf ("! <CommandNumber>                   Execute command from history buffer\n");
-        AcpiOsdPrintf ("!!                                  Execute last command again\n");
+        AcpiOsPrintf ("\nGeneral-Purpose Commands\n\n");
+        AcpiOsPrintf ("Allocations                         Display list of current memory allocations\n");
+        AcpiOsPrintf ("Dump <Address>|<Namepath>\n");
+        AcpiOsPrintf ("     [Byte|Word|Dword|Qword]        Display ACPI objects or memory\n");
+        AcpiOsPrintf ("EnableAcpi                          Enable ACPI (hardware) mode\n");
+        AcpiOsPrintf ("Help                                This help screen\n");
+        AcpiOsPrintf ("History                             Display command history buffer\n");
+        AcpiOsPrintf ("Level [<DebugLevel>] [console]      Get/Set debug level for file or console\n");
+        AcpiOsPrintf ("Quit or Exit                        Exit this command\n");
+        AcpiOsPrintf ("Stats [Allocations|Memory|Misc\n");
+        AcpiOsPrintf ("       |Objects|Tables]             Display namespace and memory statistics\n");
+        AcpiOsPrintf ("Tables                              Display info about loaded ACPI tables\n");
+        AcpiOsPrintf ("Unload                              Unload an ACPI table\n");
+        AcpiOsPrintf ("! <CommandNumber>                   Execute command from history buffer\n");
+        AcpiOsPrintf ("!!                                  Execute last command again\n");
         return;
 
     case 'N':
-        AcpiOsdPrintf ("\nNamespace Access Commands\n\n");
-        AcpiOsdPrintf ("Debug <Namepath> [Arguments]        Single Step a control method\n");
-        AcpiOsdPrintf ("Event <F|G> <Value>                 Generate AcpiEvent (Fixed/GPE)\n");
-        AcpiOsdPrintf ("Execute <Namepath> [Arguments]      Execute control method\n");
-        AcpiOsdPrintf ("Find <Name>   (? is wildcard)       Find ACPI name(s) with wildcards\n");
-        AcpiOsdPrintf ("Method                              Display list of loaded control methods\n");
-        AcpiOsdPrintf ("Namespace [<Addr>|<Path>] [Depth]   Display loaded namespace tree/subtree\n");
-        AcpiOsdPrintf ("Notify <NamePath> <Value>           Send a notification\n");
-        AcpiOsdPrintf ("Objects <ObjectType>                Display all objects of the given type\n");
-        AcpiOsdPrintf ("Owner <OwnerId> [Depth]             Display loaded namespace by object owner\n");
-        AcpiOsdPrintf ("Prefix [<NamePath>]                 Set or Get current execution prefix\n");
-        AcpiOsdPrintf ("Terminate                           Delete namespace and all internal objects\n");
-        AcpiOsdPrintf ("Thread <Threads><Loops><NamePath>   Spawn threads to execute method(s)\n");
+        AcpiOsPrintf ("\nNamespace Access Commands\n\n");
+        AcpiOsPrintf ("Debug <Namepath> [Arguments]        Single Step a control method\n");
+        AcpiOsPrintf ("Event <F|G> <Value>                 Generate AcpiEvent (Fixed/GPE)\n");
+        AcpiOsPrintf ("Execute <Namepath> [Arguments]      Execute control method\n");
+        AcpiOsPrintf ("Find <Name>   (? is wildcard)       Find ACPI name(s) with wildcards\n");
+        AcpiOsPrintf ("Method                              Display list of loaded control methods\n");
+        AcpiOsPrintf ("Namespace [<Addr>|<Path>] [Depth]   Display loaded namespace tree/subtree\n");
+        AcpiOsPrintf ("Notify <NamePath> <Value>           Send a notification\n");
+        AcpiOsPrintf ("Objects <ObjectType>                Display all objects of the given type\n");
+        AcpiOsPrintf ("Owner <OwnerId> [Depth]             Display loaded namespace by object owner\n");
+        AcpiOsPrintf ("Prefix [<NamePath>]                 Set or Get current execution prefix\n");
+        AcpiOsPrintf ("References <Addr>                   Find all references to object at addr\n");
+        AcpiOsPrintf ("Terminate                           Delete namespace and all internal objects\n");
+        AcpiOsPrintf ("Thread <Threads><Loops><NamePath>   Spawn threads to execute method(s)\n");
         return;
 
     case 'M':
-        AcpiOsdPrintf ("\nControl Method Execution Commands\n\n");
-        AcpiOsdPrintf ("Arguments (or Args)                 Display method arguments\n");
-        AcpiOsdPrintf ("Breakpoint <AmlOffset>              Set an AML execution breakpoint\n");
-        AcpiOsdPrintf ("Call                                Run to next control method invocation\n");
-        AcpiOsdPrintf ("Go                                  Allow method to run to completion\n");
-        AcpiOsdPrintf ("Information                         Display info about the current method\n");
-        AcpiOsdPrintf ("Into                                Step into (not over) a method call\n");
-        AcpiOsdPrintf ("List [# of AcpiAml Opcodes]             Display method ASL statements\n");
-        AcpiOsdPrintf ("Locals                              Display method local variables\n");
-        AcpiOsdPrintf ("Results                             Display method result stack\n");
-        AcpiOsdPrintf ("Set <A|L> <#> <Value>               Set method data (Arguments/Locals)\n");
-        AcpiOsdPrintf ("Stop                                Terminate control method\n");
-        AcpiOsdPrintf ("Tree                                Display control method calling tree\n");
-        AcpiOsdPrintf ("<Enter>                             Single step next AML opcode (over calls)\n");
+        AcpiOsPrintf ("\nControl Method Execution Commands\n\n");
+        AcpiOsPrintf ("Arguments (or Args)                 Display method arguments\n");
+        AcpiOsPrintf ("Breakpoint <AmlOffset>              Set an AML execution breakpoint\n");
+        AcpiOsPrintf ("Call                                Run to next control method invocation\n");
+        AcpiOsPrintf ("Go                                  Allow method to run to completion\n");
+        AcpiOsPrintf ("Information                         Display info about the current method\n");
+        AcpiOsPrintf ("Into                                Step into (not over) a method call\n");
+        AcpiOsPrintf ("List [# of AcpiAml Opcodes]             Display method ASL statements\n");
+        AcpiOsPrintf ("Locals                              Display method local variables\n");
+        AcpiOsPrintf ("Results                             Display method result stack\n");
+        AcpiOsPrintf ("Set <A|L> <#> <Value>               Set method data (Arguments/Locals)\n");
+        AcpiOsPrintf ("Stop                                Terminate control method\n");
+        AcpiOsPrintf ("Tree                                Display control method calling tree\n");
+        AcpiOsPrintf ("<Enter>                             Single step next AML opcode (over calls)\n");
         return;
 
     case 'F':
-        AcpiOsdPrintf ("\nFile I/O Commands\n\n");
-        AcpiOsdPrintf ("Close                               Close debug output file\n");
-        AcpiOsdPrintf ("Open <Output Filename>              Open a file for debug output\n");
-        AcpiOsdPrintf ("Load <Input Filename>               Load ACPI table from a file\n");
+        AcpiOsPrintf ("\nFile I/O Commands\n\n");
+        AcpiOsPrintf ("Close                               Close debug output file\n");
+        AcpiOsPrintf ("Open <Output Filename>              Open a file for debug output\n");
+        AcpiOsPrintf ("Load <Input Filename>               Load ACPI table from a file\n");
         return;
 
     default:
-        AcpiOsdPrintf ("Unrecognized Command Class: %x\n", HelpType);
+        AcpiOsPrintf ("Unrecognized Command Class: %x\n", HelpType);
         return;
     }
 }
@@ -459,7 +456,6 @@ AcpiDbGetLine (
     INT32                   Count;
     char                    *Next;
     char                    *This;
-
 
 
     STRCPY (ParsedBuf, InputBuffer);
@@ -571,7 +567,7 @@ AcpiDbCommandDispatch (
 
     if (ParamCount < Commands[CommandIndex].MinArgs)
     {
-        AcpiOsdPrintf ("%d parameters entered, [%s] requires %d parameters\n",
+        AcpiOsPrintf ("%d parameters entered, [%s] requires %d parameters\n",
                         ParamCount, Commands[CommandIndex].Name, Commands[CommandIndex].MinArgs);
         return (AE_CTRL_TRUE);
     }
@@ -621,13 +617,13 @@ AcpiDbCommandDispatch (
         Status = AcpiEnable();
         if (ACPI_FAILURE(Status))
         {
-            AcpiOsdPrintf("AcpiEnable failed (0x%x)\n", Status);
+            AcpiOsPrintf("AcpiEnable failed (0x%x)\n", Status);
             return Status;
         }
         break;
 
     case CMD_EVENT:
-        AcpiOsdPrintf ("Event command not implemented\n");
+        AcpiOsPrintf ("Event command not implemented\n");
         break;
 
     case CMD_EXECUTE:
@@ -692,20 +688,20 @@ AcpiDbCommandDispatch (
     case CMD_LEVEL:
         if (ParamCount == 0)
         {
-            AcpiOsdPrintf ("Current debug level for file output is:    %8.8lX\n", AcpiGbl_DbDebugLevel);
-            AcpiOsdPrintf ("Current debug level for console output is: %8.8lX\n", AcpiGbl_DbConsoleDebugLevel);
+            AcpiOsPrintf ("Current debug level for file output is:    %8.8lX\n", AcpiGbl_DbDebugLevel);
+            AcpiOsPrintf ("Current debug level for console output is: %8.8lX\n", AcpiGbl_DbConsoleDebugLevel);
         }
         else if (ParamCount == 2)
         {
             Temp = AcpiGbl_DbConsoleDebugLevel;
             AcpiGbl_DbConsoleDebugLevel = STRTOUL (Args[1], NULL, 16);
-            AcpiOsdPrintf ("Debug Level for console output was %8.8lX, now %8.8lX\n", Temp, AcpiGbl_DbConsoleDebugLevel);
+            AcpiOsPrintf ("Debug Level for console output was %8.8lX, now %8.8lX\n", Temp, AcpiGbl_DbConsoleDebugLevel);
         }
         else
         {
             Temp = AcpiGbl_DbDebugLevel;
             AcpiGbl_DbDebugLevel = STRTOUL (Args[1], NULL, 16);
-            AcpiOsdPrintf ("Debug Level for file output was %8.8lX, now %8.8lX\n", Temp, AcpiGbl_DbDebugLevel);
+            AcpiOsPrintf ("Debug Level for file output was %8.8lX, now %8.8lX\n", Temp, AcpiGbl_DbDebugLevel);
         }
         break;
 
@@ -761,6 +757,10 @@ AcpiDbCommandDispatch (
 
     case CMD_PREFIX:
         AcpiDbSetScope (Args[1]);
+        break;
+
+    case CMD_REFERENCES:
+        AcpiDbFindReferences (Args[1]);
         break;
 
     case CMD_RESULTS:
@@ -826,7 +826,7 @@ AcpiDbCommandDispatch (
         return (AE_CTRL_TERMINATE);
 
     case CMD_NOT_FOUND:
-        AcpiOsdPrintf ("Unknown Command\n");
+        AcpiOsPrintf ("Unknown Command\n");
         return (AE_CTRL_TRUE);
     }
 
@@ -863,9 +863,9 @@ AcpiDbExecuteThread (
         AcpiGbl_MethodExecuting = FALSE;
         AcpiGbl_StepToNextCall = FALSE;
 
-        AcpiCmAcquireMutex (MTX_DEBUG_CMD_READY);
+        AcpiCmAcquireMutex (ACPI_MTX_DEBUG_CMD_READY);
         Status = AcpiDbCommandDispatch (LineBuf, NULL, NULL);
-        AcpiCmReleaseMutex (MTX_DEBUG_CMD_COMPLETE);
+        AcpiCmReleaseMutex (ACPI_MTX_DEBUG_CMD_COMPLETE);
     }
 }
 
@@ -895,8 +895,6 @@ AcpiDbSingleThread (
 
     Status = AcpiDbCommandDispatch (LineBuf, NULL, NULL);
 }
-
-
 
 
 /******************************************************************************
@@ -932,16 +930,16 @@ AcpiDbUserCommands (
 
         if (!AcpiGbl_MethodExecuting)
         {
-            AcpiOsdPrintf ("%1c ", DB_COMMAND_PROMPT);
+            AcpiOsPrintf ("%1c ", DB_COMMAND_PROMPT);
         }
         else
         {
-            AcpiOsdPrintf ("%1c ", DB_EXECUTE_PROMPT);
+            AcpiOsPrintf ("%1c ", DB_EXECUTE_PROMPT);
         }
 
         /* Get the user input line */
 
-        AcpiOsdGetLine (LineBuf);
+        AcpiOsGetLine (LineBuf);
 
 
         /* Check for single or multithreaded debug */
@@ -953,8 +951,8 @@ AcpiDbUserCommands (
              * and wait for the command to complete.
              */
 
-            AcpiCmReleaseMutex (MTX_DEBUG_CMD_READY);
-            AcpiCmAcquireMutex (MTX_DEBUG_CMD_COMPLETE);
+            AcpiCmReleaseMutex (ACPI_MTX_DEBUG_CMD_READY);
+            AcpiCmAcquireMutex (ACPI_MTX_DEBUG_CMD_COMPLETE);
         }
 
         else
@@ -974,7 +972,6 @@ AcpiDbUserCommands (
 
     return Status;
 }
-
 
 
 #endif  /* ENABLE_DEBUGGER */
