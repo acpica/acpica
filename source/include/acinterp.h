@@ -586,7 +586,7 @@ AmlDumpObjectDescriptor (
 
 
 /*
- * isdoexp - interpreter/scanner expression load/execute
+ * idoexpr - interpreter/scanner expression load/execute
  */
 
 ACPI_STATUS
@@ -599,12 +599,13 @@ AmlDoCode (
 
 ACPI_STATUS
 AmlDoDefinitionBlock (
-    UINT8                   *addr, 
+    UINT8                   *Address, 
     INT32                   Length);
     
 ACPI_STATUS
 AmlDoFieldElement (
     ACPI_OBJECT_TYPE        DataType, 
+    FIELD_INFO              *FieldInfo,
     OPERATING_MODE          LoadExecMode);
 
 
@@ -644,6 +645,7 @@ AmlDoProcessorPkg (
 ACPI_STATUS
 AmlDoMethodPkg (
     ACPI_OBJECT_TYPE        DataType, 
+    UINT32                  PkgLength,
     OPERATING_MODE          LoadExecMode);
 
 ACPI_STATUS
@@ -707,6 +709,7 @@ AmlDoNamedObject (
 
 ACPI_STATUS 
 AmlDoFieldFlag (
+    FIELD_INFO              *FieldInfo,
     OPERATING_MODE          LoadExecMode);
 
 ACPI_STATUS
@@ -796,6 +799,7 @@ AmlShowHexValue (
 ACPI_STATUS
 AmlDoPkgLength (
     INT32                   DoPush, 
+    UINT32                  *ReturnLength,
     OPERATING_MODE          LoadExecMode);
 
 ACPI_STATUS
