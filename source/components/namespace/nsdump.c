@@ -208,12 +208,18 @@ NsDumpOneObject (
     NAME_TABLE_ENTRY        *ThisEntry = (NAME_TABLE_ENTRY *) ObjHandle;
     ACPI_SIZE               Size = 0;
     UINT8                   *Value;
-
+    UINT32                  DbLevel = (UINT32) Context;
 
     LevelTmp    = Level;
     Type        = ThisEntry->Type;
     WhichBit    = 1;
 
+
+    if (!(DebugLevel & DbLevel))
+    {
+        return NULL;
+    }
+    
 
     /* Indent the object according to the level */
 
@@ -372,7 +378,8 @@ NsDumpObjects (
     ACPI_HANDLE             StartHandle)
 {
 
-    AcpiWalkNamespace (Type, StartHandle, MaxDepth, NsDumpOneObject, NULL, NULL);
+    AcpiWalkNamespace (Type, StartHandle, MaxDepth, NsDumpOneObject, 
+                        (void *) TRACE_TABLES, NULL);
 }
 
 
@@ -503,6 +510,7 @@ NsDumpTables (
  * FUNCTION:    NsDumpEntry    
  *
  * PARAMETERS:  Handle              - Entry to be dumped
+ *              DebugLevel          - Output level
  *
  * DESCRIPTION: Dump a single nte
  *
@@ -510,13 +518,14 @@ NsDumpTables (
 
 void
 NsDumpEntry (
-    ACPI_HANDLE             Handle)
+    ACPI_HANDLE             Handle,
+    UINT32                  DebugLevel)
 {
 
     FUNCTION_TRACE ("NsDumpEntry");
 
 
-    NsDumpOneObject (Handle, 1, NULL);
+    NsDumpOneObject (Handle, 1, (void *) DebugLevel);
     
     DEBUG_PRINT (TRACE_EXEC, ("leave NsDumpEntry %p\n", Handle));
     return_VOID;
