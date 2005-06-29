@@ -136,6 +136,11 @@
 
 #ifdef ACPI_DEBUG
 
+static UINT32				Gbl_CurrentAllocSize;
+static UINT32				Gbl_CurrentAllocCount;
+static UINT32				Gbl_RunningAllocSize;
+static UINT32				Gbl_RunningAllocCount;
+
 /*****************************************************************************
  * 
  * FUNCTION:    CmSearchAllocList
@@ -209,6 +214,13 @@ CmAddElementToAllocList (
 
     CmAcquireMutex (MTX_MEMORY);
     
+    /* Keep track of the running total of all allocations. */
+    Gbl_CurrentAllocCount++;
+    Gbl_RunningAllocCount++;
+    
+    Gbl_CurrentAllocSize += Size;
+    Gbl_RunningAllocSize += Size;
+    
     /* If the head pointer is null, create the first element and fill it in. */
 
     if (NULL == Gbl_HeadAllocPtr)
@@ -281,6 +293,7 @@ CmDeleteElementFromAllocList (
     INT32                   Line)
 {
     ALLOCATION_INFO         *Element;
+    UINT32					Size;
     
 
     FUNCTION_TRACE ("CmDeleteElementFromAllocList");
@@ -299,6 +312,10 @@ CmDeleteElementFromAllocList (
 
     
     CmAcquireMutex (MTX_MEMORY);
+    
+    /* Keep track of the amount of memory allocated. */
+    Size = 0;
+    Gbl_CurrentAllocCount--;
 
     if (Gbl_HeadAllocPtr == Gbl_TailAllocPtr)
     {   
@@ -309,6 +326,8 @@ CmDeleteElementFromAllocList (
 
             goto Cleanup;
         }
+        
+        Size = Gbl_HeadAllocPtr->Size;
         
         OsdFree (Gbl_HeadAllocPtr);
         Gbl_HeadAllocPtr = NULL;
@@ -356,6 +375,7 @@ CmDeleteElementFromAllocList (
             *((void **) Element->Address) = (void *) 0x00DEAD00;
         }
 
+        Size = Element->Size;
         OsdFree (Element);
     }
             
@@ -370,9 +390,42 @@ CmDeleteElementFromAllocList (
 
 
 Cleanup:
+    
+    Gbl_CurrentAllocSize -= Size;
     CmReleaseMutex (MTX_MEMORY);
 
     return_VOID;
+}
+
+
+/*****************************************************************************
+ * 
+ * FUNCTION:    CmDumpCurrentAllocationInfo
+ *
+ * PARAMETERS:  
+ *
+ * RETURN:      None  
+ *
+ * DESCRIPTION: Print some info about the outstanding allocations.
+ *
+ ****************************************************************************/
+
+void
+CmDumpAllocationInfo (
+	void)
+{
+    FUNCTION_TRACE ("CmDumpAllocationInfo");
+    
+    DEBUG_PRINT (TRACE_ALLOCATIONS | TRACE_TABLES,
+    	("Current outstanding allocations: %d\n", Gbl_CurrentAllocCount));
+    DEBUG_PRINT (TRACE_ALLOCATIONS | TRACE_TABLES,
+    	("Current allocation size: %d\n", Gbl_CurrentAllocSize));
+    DEBUG_PRINT (TRACE_ALLOCATIONS | TRACE_TABLES,
+    	("Total number of allocations: %d\n", Gbl_RunningAllocCount));
+    DEBUG_PRINT (TRACE_ALLOCATIONS | TRACE_TABLES,
+    	("Total size of all allocations: %d\n", Gbl_RunningAllocSize));
+
+	return_VOID;
 }
 
 
@@ -422,7 +475,7 @@ CmDumpCurrentAllocations (
             ((Module == NULL) || (0 == STRCMP (Module, Element->Module))))
         {
             DEBUG_PRINT (TRACE_ALLOCATIONS | TRACE_TABLES,
-                ("%p: Length %04x %10.10s-%04d",
+                ("%p: Length %04x %10.10s Line %d",
                 Element->Address, Element->Size, Element->Module, Element->Line));
 
             /* Most of the elements will be internal objects. */
