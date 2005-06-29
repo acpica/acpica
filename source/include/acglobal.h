@@ -181,8 +181,7 @@ ACPI_EXTERN ACPI_TABLE_HEADER                   *Gbl_SBST;
  * ACPI Table info arrays
  */
 extern      ACPI_TABLE_DESC     Gbl_AcpiTables[NUM_ACPI_TABLES];
-extern      UINT8               Gbl_AcpiTableFlags[NUM_ACPI_TABLES];
-extern      char               *Gbl_AcpiTableNames[NUM_ACPI_TABLES];
+extern      ACPI_TABLE_SUPPORT  Gbl_AcpiTableData[NUM_ACPI_TABLES];
 
 /*
  * Predefined mutex objects.  This array contains the 
@@ -257,7 +256,7 @@ ACPI_EXTERN	ALLOCATION_INFO	   *Gbl_TailAllocPtr;
 
 ACPI_EXTERN INT32               Gbl_PkgStackLevel;
 ACPI_EXTERN INT32               Gbl_PkgStack_Len[AML_PKG_MAX_NEST];
-ACPI_EXTERN UINT8               *Gbl_PkgStack_Code[AML_PKG_MAX_NEST];
+ACPI_EXTERN UINT8              *Gbl_PkgStack_Code[AML_PKG_MAX_NEST];
 
 /* Object stack */
 
