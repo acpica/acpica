@@ -506,7 +506,7 @@ CmDumpCurrentAllocations (
                 if (((ACPI_OBJECT_INTERNAL *)(Element->Address))->Common.DataType == DESC_TYPE_ACPI_OBJ)
                 {
                     DEBUG_PRINT_RAW (TRACE_ALLOCATIONS | TRACE_TABLES, (" Type %s", 
-                        Gbl_NsTypeNames[((ACPI_OBJECT_INTERNAL *)(Element->Address))->Common.Type]));
+                        CmGetTypeName (((ACPI_OBJECT_INTERNAL *)(Element->Address))->Common.Type)));
                 }
             }
 
