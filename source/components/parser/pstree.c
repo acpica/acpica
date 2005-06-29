@@ -1,7 +1,6 @@
 /******************************************************************************
- *
- * Module Name: pstree - Parser op tree manipulation/traversal/search
- *              $Revision: 1.35 $
+ * 
+ * Module Name: pstree - Parser op tree manipulation/traversal/search 
  *
  *****************************************************************************/
 
@@ -9,8 +8,8 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
- * All rights reserved.
+ * Some or all of this work - Copyright (c) 1999, Intel Corp.  All rights
+ * reserved.
  *
  * 2. License
  *
@@ -38,9 +37,9 @@
  * The above copyright and patent license is granted only if the following
  * conditions are met:
  *
- * 3. Conditions
+ * 3. Conditions 
  *
- * 3.1. Redistribution of Source with Rights to Further Distribute Source.
+ * 3.1. Redistribution of Source with Rights to Further Distribute Source.  
  * Redistribution of source code of any substantial portion of the Covered
  * Code or modification with rights to further distribute source must include
  * the above Copyright Notice, the above License, this list of Conditions,
@@ -48,11 +47,11 @@
  * Licensee must cause all Covered Code to which Licensee contributes to
  * contain a file documenting the changes Licensee made to create that Covered
  * Code and the date of any change.  Licensee must include in that file the
- * documentation of any changes made by any predecessor Licensee.  Licensee
+ * documentation of any changes made by any predecessor Licensee.  Licensee 
  * must include a prominent statement that the modification is derived,
  * directly or indirectly, from Original Intel Code.
  *
- * 3.2. Redistribution of Source with no Rights to Further Distribute Source.
+ * 3.2. Redistribution of Source with no Rights to Further Distribute Source.  
  * Redistribution of source code of any substantial portion of the Covered
  * Code or modification without rights to further distribute source must
  * include the following Disclaimer and Export Compliance provision in the
@@ -86,7 +85,7 @@
  * INSTALLATION, TRAINING OR OTHER SERVICES.  INTEL WILL NOT PROVIDE ANY
  * UPDATES, ENHANCEMENTS OR EXTENSIONS.  INTEL SPECIFICALLY DISCLAIMS ANY
  * IMPLIED WARRANTIES OF MERCHANTABILITY, NONINFRINGEMENT AND FITNESS FOR A
- * PARTICULAR PURPOSE.
+ * PARTICULAR PURPOSE. 
  *
  * 4.2. IN NO EVENT SHALL INTEL HAVE ANY LIABILITY TO LICENSEE, ITS LICENSEES
  * OR ANY OTHER THIRD PARTY, FOR ANY LOST PROFITS, LOST DATA, LOSS OF USE OR
@@ -117,56 +116,55 @@
 
 #define __PSTREE_C__
 
-#include "acpi.h"
-#include "acparser.h"
+#include <acpi.h>
+#include <parser.h>
 #include "amlcode.h"
 
-#define _COMPONENT          ACPI_PARSER
-        MODULE_NAME         ("pstree")
+#define _COMPONENT          PARSER
+        MODULE_NAME         ("pstree");
+
 
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiPsGetArg
+ * FUNCTION:    PsGetArg
  *
  * PARAMETERS:  Op              - Get an argument for this op
  *              Argn            - Nth argument to get
  *
- * RETURN:      The argument (as an Op object).  NULL if argument does not exist
+ * RETURN:      The argument (as an Op object).  NULL if argument does not exist.
  *
  * DESCRIPTION: Get the specified op's argument.
  *
  ******************************************************************************/
 
-ACPI_PARSE_OBJECT *
-AcpiPsGetArg (
-    ACPI_PARSE_OBJECT       *Op,
+ACPI_GENERIC_OP *
+PsGetArg (
+    ACPI_GENERIC_OP         *Op, 
     UINT32                  Argn)
 {
-    ACPI_PARSE_OBJECT       *Arg = NULL;
-    const ACPI_OPCODE_INFO  *OpInfo;
+    ACPI_GENERIC_OP         *Arg = NULL;
+    ACPI_OP_INFO            *OpInfo;
 
-
-    FUNCTION_ENTRY ();
 
 
     /* Get the info structure for this opcode */
 
-    OpInfo = AcpiPsGetOpcodeInfo (Op->Opcode);
-    if (OpInfo->Class == AML_CLASS_UNKNOWN)
+    OpInfo = PsGetOpcodeInfo (Op->Opcode);
+    if (!OpInfo)
     {
-        /* Invalid opcode or ASCII character */
+        /* Invalid opcode */
 
-        return (NULL);
+        return NULL;
     }
 
     /* Check if this opcode requires argument sub-objects */
 
-    if (!(OpInfo->Flags & AML_HAS_ARGS))
+    if (!OpInfo->HasArgs)
     {
         /* Has no linked argument objects */
 
-        return (NULL);
+        return NULL;
     }
 
     /* Get the requested argument object */
@@ -178,13 +176,13 @@ AcpiPsGetArg (
         Arg = Arg->Next;
     }
 
-    return (Arg);
+    return Arg;
 }
 
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiPsAppendArg
+ * FUNCTION:    PsAppendArg
  *
  * PARAMETERS:  Op              - Append an argument to this Op.
  *              Arg             - Argument Op to append
@@ -196,42 +194,35 @@ AcpiPsGetArg (
  ******************************************************************************/
 
 void
-AcpiPsAppendArg (
-    ACPI_PARSE_OBJECT       *Op,
-    ACPI_PARSE_OBJECT       *Arg)
+PsAppendArg (
+    ACPI_GENERIC_OP         *Op, 
+    ACPI_GENERIC_OP         *Arg)
 {
-    ACPI_PARSE_OBJECT       *PrevArg;
-    const ACPI_OPCODE_INFO  *OpInfo;
+    ACPI_GENERIC_OP         *PrevArg;
+    ACPI_OP_INFO            *OpInfo;
 
 
-    FUNCTION_ENTRY ();
-
-
-    if (!Op)
-    {
-        return;
-    }
 
     /* Get the info structure for this opcode */
 
-    OpInfo = AcpiPsGetOpcodeInfo (Op->Opcode);
-    if (OpInfo->Class == AML_CLASS_UNKNOWN)
+    OpInfo = PsGetOpcodeInfo (Op->Opcode);
+    if (!OpInfo)
     {
         /* Invalid opcode */
 
-        REPORT_ERROR (("PsAppendArg: Invalid AML Opcode: 0x%2.2X\n", Op->Opcode));
         return;
     }
 
     /* Check if this opcode requires argument sub-objects */
 
-    if (!(OpInfo->Flags & AML_HAS_ARGS))
+    if (!OpInfo->HasArgs)
     {
         /* Has no linked argument objects */
 
         return;
     }
 
+            
 
     /* Append the argument to the linked argument list */
 
@@ -267,7 +258,7 @@ AcpiPsAppendArg (
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiPsGetChild
+ * FUNCTION:    PsGetChild
  *
  * PARAMETERS:  Op              - Get the child of this Op
  *
@@ -277,61 +268,100 @@ AcpiPsAppendArg (
  *
  ******************************************************************************/
 
-ACPI_PARSE_OBJECT *
-AcpiPsGetChild (
-    ACPI_PARSE_OBJECT       *Op)
+ACPI_GENERIC_OP *
+PsGetChild (
+    ACPI_GENERIC_OP         *Op)
 {
-    ACPI_PARSE_OBJECT       *Child = NULL;
-
-
-    FUNCTION_ENTRY ();
+    ACPI_GENERIC_OP         *Child = NULL;
 
 
     switch (Op->Opcode)
     {
-    case AML_SCOPE_OP:
-    case AML_ELSE_OP:
-    case AML_DEVICE_OP:
-    case AML_THERMAL_ZONE_OP:
-    case AML_INT_METHODCALL_OP:
+    case AML_ScopeOp:
+    case AML_ElseOp:
+    case AML_DeviceOp:
+    case AML_ThermalZoneOp:
+    case AML_METHODCALL:
 
-        Child = AcpiPsGetArg (Op, 0);
+        Child = PsGetArg (Op, 0);
         break;
 
 
-    case AML_BUFFER_OP:
-    case AML_PACKAGE_OP:
-    case AML_METHOD_OP:
-    case AML_IF_OP:
-    case AML_WHILE_OP:
-    case AML_FIELD_OP:
+    case AML_BufferOp:
+    case AML_PackageOp:
+    case AML_MethodOp:
+    case AML_IfOp:
+    case AML_WhileOp:
+    case AML_DefFieldOp:
 
-        Child = AcpiPsGetArg (Op, 1);
+        Child = PsGetArg (Op, 1);
         break;
 
 
-    case AML_POWER_RES_OP:
-    case AML_INDEX_FIELD_OP:
+    case AML_PowerResOp:
+    case AML_IndexFieldOp:
 
-        Child = AcpiPsGetArg (Op, 2);
+        Child = PsGetArg (Op, 2);
         break;
 
 
-    case AML_PROCESSOR_OP:
-    case AML_BANK_FIELD_OP:
+    case AML_ProcessorOp:
+    case AML_BankFieldOp:
 
-        Child = AcpiPsGetArg (Op, 3);
+        Child = PsGetArg (Op, 3);
         break;
 
     }
 
-    return (Child);
+    return Child;
 }
 
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiPsGetDepthNext
+ * FUNCTION:    PsGetParent
+ *
+ * PARAMETERS:  Op              - Get the parent of this Op
+ *
+ * RETURN:      The Parent op.
+ *
+ * DESCRIPTION: Get op's parent
+ *
+ ******************************************************************************/
+
+ACPI_GENERIC_OP*
+PsGetParent (
+    ACPI_GENERIC_OP         *Op)
+{
+    ACPI_GENERIC_OP         *Parent = Op;
+
+
+    /* Traverse the tree upward (to root if necessary) */
+
+    while (Parent)
+    {
+        switch (Parent->Opcode)
+        {
+        case AML_ScopeOp:
+        case AML_PackageOp:
+        case AML_MethodOp:
+        case AML_DeviceOp:
+        case AML_PowerResOp:
+        case AML_ThermalZoneOp:
+
+            return Parent->Parent;
+        }
+
+        Parent = Parent->Parent;
+    }
+
+    return Parent;
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    PsGetDepthNext 
  *
  * PARAMETERS:  Origin          - Root of subtree to search
  *              Op              - Last (previous) Op that was found
@@ -343,30 +373,27 @@ AcpiPsGetChild (
  *
  ******************************************************************************/
 
-ACPI_PARSE_OBJECT *
-AcpiPsGetDepthNext (
-    ACPI_PARSE_OBJECT       *Origin,
-    ACPI_PARSE_OBJECT       *Op)
+ACPI_GENERIC_OP *
+PsGetDepthNext (
+    ACPI_GENERIC_OP         *Origin, 
+    ACPI_GENERIC_OP         *Op)
 {
-    ACPI_PARSE_OBJECT       *Next = NULL;
-    ACPI_PARSE_OBJECT       *Parent;
-    ACPI_PARSE_OBJECT       *Arg;
-
-
-    FUNCTION_ENTRY ();
+    ACPI_GENERIC_OP         *Next = NULL;
+    ACPI_GENERIC_OP         *Parent;
+    ACPI_GENERIC_OP         *Arg;
 
 
     if (!Op)
     {
-        return (NULL);
+        return NULL;
     }
 
     /* look for an argument or child */
 
-    Next = AcpiPsGetArg (Op, 0);
+    Next = PsGetArg (Op, 0);
     if (Next)
     {
-        return (Next);
+        return Next;
     }
 
     /* look for a sibling */
@@ -374,7 +401,7 @@ AcpiPsGetDepthNext (
     Next = Op->Next;
     if (Next)
     {
-        return (Next);
+        return Next;
     }
 
     /* look for a sibling of parent */
@@ -383,7 +410,7 @@ AcpiPsGetDepthNext (
 
     while (Parent)
     {
-        Arg = AcpiPsGetArg (Parent, 0);
+        Arg = PsGetArg (Parent, 0);
         while (Arg && (Arg != Origin) && (Arg != Op))
         {
             Arg = Arg->Next;
@@ -393,20 +420,363 @@ AcpiPsGetDepthNext (
         {
             /* reached parent of origin, end search */
 
-            return (NULL);
+            return NULL;
         }
 
         if (Parent->Next)
         {
             /* found sibling of parent */
-            return (Parent->Next);
+            return Parent->Next;
         }
 
         Op = Parent;
         Parent = Parent->Parent;
     }
 
-    return (Next);
+    return Next;
 }
 
+
+/*******************************************************************************
+ *
+ * FUNCTION:    PsFetchPrefix
+ *
+ * PARAMETERS:  Scope           - Op to fetch prefix for
+ *              Path            - A namestring containing the prefix
+ *              io              - Direction flag
+ *
+ * RETURN:      Op referenced by the prefix
+ *
+ * DESCRIPTION: Fetch and handle path prefix ('\\' or '^')
+ *
+ ******************************************************************************/
+
+ACPI_GENERIC_OP *
+PsFetchPrefix (
+    ACPI_GENERIC_OP         *Scope, 
+    char                    **Path, 
+    UINT32                  io)
+{
+    UINT32                  prefix = io ? GET8 (*Path):**Path;
+
+
+    switch (prefix)
+    {
+    case '\\':
+    case '/':
+
+        /* go to the root */
+
+        *Path += 1;
+        while (Scope->Parent)
+        {
+            Scope = Scope->Parent;
+        }
+        break;
+
+
+    case '^':
+
+        /* go up one level */
+
+        *Path += 1;
+        Scope = Scope->Parent;
+        break;
+    }
+
+    if (Scope && !Scope->Parent)
+    {
+        /* searching from the root, start with its children */
+
+        Scope = PsGetChild (Scope);
+    }
+
+    return Scope;
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    PsFetchName
+ *
+ * PARAMETERS:  Path            - A string containing the name segment
+ *              io              - Direction flag
+ *
+ * RETURN:      The 4-char ASCII ACPI Name as a UINT32
+ *
+ * DESCRIPTION: Fetch ACPI name segment (dot-delimited)
+ *
+ ******************************************************************************/
+
+UINT32
+PsFetchName (
+    char                    **Path, 
+    UINT32                  io)
+{
+    UINT32                  Name = 0;
+    char                    *nm;
+    UINT32                  i;
+    char                    ch;
+
+
+    if (io)
+    {
+        Name = GET32 (*Path);
+        *Path += 4;
+    }
+
+    else
+    {      
+        if (**Path == '.')
+        {
+            *Path += 1;
+        }
+        
+        nm = (char*) &Name;
+        for (i = 0; i < 4; i++)
+        {
+            ch = **Path;
+            if (ch && ch != '.')
+            {
+                *nm = ch;
+                *Path += 1;
+            }
+
+            else
+            {
+                *nm = '_';
+            }
+            nm++;
+        }
+    }
+
+    return Name;
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    PsFindName
+ *
+ * PARAMETERS:  Scope           - Scope to search
+ *              Name            - ACPI name to search for
+ *              Opcode          - Opcode to search for
+ *
+ * RETURN:      Op containing the name
+ *
+ * DESCRIPTION: Find name segment from a list of acpi_ops.  Searches a single
+ *              scope, no more.
+ *
+ ******************************************************************************/
+
+ACPI_GENERIC_OP *
+PsFindName (
+    ACPI_GENERIC_OP         *Scope, 
+    UINT32                  Name,
+    UINT32                  Opcode)
+{
+    ACPI_GENERIC_OP         *Op;
+    ACPI_GENERIC_OP         *Field;
+
+
+    /* search scope level for matching name segment */
+
+    Op = PsGetChild (Scope);
+
+    while (Op)
+    {
+        if (PsIsFieldOp (Op->Opcode))
+        {
+            /* Field, search named fields */
+
+            Field = PsGetChild (Op);
+            while (Field)
+            {
+                if (PsIsNamedOp (Field->Opcode) 
+                   && PsGetName (Field) == Name
+                   && (!Opcode || Field->Opcode == Opcode))
+                {
+                    return Field;
+                }
+
+                Field = Field->Next;
+            }
+        }
+
+        else if (PsIsNamedOp (Op->Opcode)
+                && PsGetName (Op) == Name
+                && (!Opcode || Op->Opcode == Opcode))
+        {
+            break;
+        }
+        
+        Op = Op->Next;
+    }
+
+    return Op;
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    PsFind
+ *
+ * PARAMETERS:  Scope           - Where to begin the search
+ *              Path            - ACPI Path to the named object
+ *              Opcode          - Opcode associated with the object
+ *              Create          - if TRUE, create the object if not found.
+ *
+ * RETURN:      Op if found, NULL otherwise.
+ *
+ * DESCRIPTION: Find object within scope
+ *
+ ******************************************************************************/
+
+ACPI_GENERIC_OP*
+PsFind (
+    ACPI_GENERIC_OP         *Scope, 
+    UINT8                   *Path,
+    UINT32                  Opcode,
+    UINT32                  Create)
+{
+    UINT32                  segCount;
+    UINT32                  unprefixed = 1;
+    UINT32                  Name;
+    UINT32                  NameOp;
+    ACPI_GENERIC_OP         *Op = NULL;
+
+
+    FUNCTION_TRACE_PTR ("PsFind", Scope);
+
+
+
+    if (!Scope || !Path)
+    {
+        return_VALUE (NULL);
+    }
+
+    /* Handle all prefixes in the name path */
+
+    while (PsIsPrefixChar (GET8 (Path)))
+    {
+        switch (GET8 (Path))
+        {
+
+        case '\\':
+            
+            /* Could just use a global for "root scope" here */
+
+            while (Scope->Parent)
+            {
+                Scope = Scope->Parent;
+            }
+
+            /* get first object within the scope */
+            /* TBD: OR - set next in root scope to point to the same value as arg */
+
+            /* Scope = Scope->Value.Arg; */
+
+            break;
+
+
+        case '^':
+
+            /* Go up to the next valid scoping Op (method, scope, etc.) */
+
+            if (PsGetParent (Scope))
+            {
+                Scope = PsGetParent (Scope);
+            }
+
+            break;
+        }
+
+        unprefixed = 0;
+        Path++;
+    }
+
+    /* get name segment count */
+
+    switch (GET8 (Path))
+    {
+    case '\0':
+        segCount = 0;
+        break;
+
+    case AML_DualNamePrefix:
+        segCount = 2;
+        Path++;
+        break;
+
+    case AML_MultiNamePrefixOp:
+        segCount = GET8 (Path + 1);
+        Path += 2;
+        break;
+
+    default:
+        segCount = 1;
+        break;
+    }
+        
+    /* match each name segment */
+
+    while (Scope && segCount)
+    {
+        Name = GET32 (Path);
+        Path += 4;
+        segCount --;
+
+        if (segCount)
+        {
+            NameOp = 0;
+        }
+        else
+        {
+            NameOp = Opcode;
+        }
+
+        Op = PsFindName (Scope, Name, NameOp);
+        if (Op)
+        {
+            DEBUG_PRINT (TRACE_PARSE, ("PsFind: [%4.4s] Found! Op=%X Opcode=%4.4X\n", &Name, Op, Op->Opcode));
+        }
+
+        if (!Op)
+        {
+            if (Create)
+            {
+                /* Create a new Scope level */
+
+                Op = PsAllocOp (segCount ? AML_ScopeOp : Opcode);
+                if (Op)
+                {
+                    PsSetName (Op, Name);
+                    PsAppendArg (Scope, Op);
+
+                    DEBUG_PRINT (TRACE_PARSE, ("PsFind: [%4.4s] Not found, created Op=%X Opcode=%4.4X\n", &Name, Op, Opcode));
+                }
+            }
+
+            else if (unprefixed)
+            {
+                /* Search higher scopes for unprefixed name */
+
+                while (!Op && Scope->Parent)
+                {
+                    Scope = Scope->Parent;
+                    Op = PsFindName (Scope, Name, Opcode);
+                    if (Op)
+                    {
+                        DEBUG_PRINT (TRACE_PARSE, ("PsFind: [%4.4s] Found in parent tree! Op=%X Opcode=%4.4X\n", &Name, Op, Op->Opcode));
+                    }
+                }
+            }
+        }
+
+        unprefixed = 0;
+        Scope = Op;
+    }
+
+    return_PTR (Op);
+}
 

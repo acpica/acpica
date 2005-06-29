@@ -126,7 +126,7 @@
 #include <acpi.h>
 #include <parser.h>
 #include <amlcode.h>
-#include <namespace.h>
+#include <namesp.h>
 
 #define _COMPONENT          PARSER
         MODULE_NAME         ("psparse");
@@ -325,7 +325,7 @@ PsCreateState (
     ParserState->AmlStart  = Aml;
 
 
-    return_VALUE (ParserState);
+    return_PTR (ParserState);
 }
 
 
@@ -422,7 +422,7 @@ PsParseLoop (
             {
                 /* The opcode is unrecognized.  We simply skip unknown opcodes */
 
-                DEBUG_PRINT (TRACE_PARSE, ("ParseLoop: Found unknown opcode %X, skipping\n", Opcode));
+                DEBUG_PRINT (TRACE_PARSE, ("ParseLoop: Found unknown opcode %lX, skipping\n", Opcode));
 
                 ParserState->Aml += PsGetOpcodeSize (Opcode);
                 continue;
@@ -441,18 +441,40 @@ PsParseLoop (
                     Args++;
                 }
 
-                Args++;
       
+                if (Opcode == AML_AliasOp)
+                {
+                    Arg = PsGetNextArg (ParserState, *Args, &ArgCount);
+                
+                    if (Arg)
+                    {
+                        Arg->AmlOffset = AmlOffset;
+                    }
+
+                    AmlOffset   = ParserState->Aml - ParserState->AmlStart;
+                    Args = NULL;
+                }
+
+                else
+                    Args++;
+
                 /* TBD: Should be NsLookup after parsed NS is deleted? */
 
                 Op = PsFind (PsGetParentScope (ParserState),
                              PsGetNextNamestring (ParserState), Opcode, 1);
+
                 if (!Op)
                 {
                     return_ACPI_STATUS (AE_NO_MEMORY);
                 }
 
                 Gbl_Depth++;
+
+                if (Opcode == AML_AliasOp)
+                {
+                    PsAppendArg (Op, Arg);
+                }
+
 
                 if (Op->Opcode == AML_RegionOp)
                 {
@@ -486,6 +508,12 @@ PsParseLoop (
             }
         
             Op->AmlOffset = AmlOffset;
+
+            if (Opc)
+            {
+                DEBUG_PRINT (TRACE_PARSE, ("ParseLoop:  Op=%p (%s) Opcode=%4.4lX Offset=%5.5lX\n",
+                                Op, Opc->Name, Op->Opcode, Op->AmlOffset));
+            }
         }
 
 
@@ -642,7 +670,7 @@ PsParseAml (
 
     FUNCTION_TRACE ("PsParseAml");
 
-    DEBUG_PRINT (TRACE_PARSE, ("PsParseAml: Entered with Scope=%p Aml=%p size=%X\n", StartScope, Aml, AmlSize));
+    DEBUG_PRINT (TRACE_PARSE, ("PsParseAml: Entered with Scope=%p Aml=%p size=%lX\n", StartScope, Aml, AmlSize));
 
 
     /* Initialize parser state and scope */

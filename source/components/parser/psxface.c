@@ -118,9 +118,9 @@
 
 #include <acpi.h>
 #include <parser.h>
-#include <interpreter.h>
+#include <interp.h>
 #include <amlcode.h>
-#include <namespace.h>
+#include <namesp.h>
 
 
 #define _COMPONENT          PARSER
@@ -193,12 +193,12 @@ BREAKPOINT3;
    {
 */
 
-    DEBUG_PRINT (ACPI_INFO, ("PsxLoadTable: **** Begin Method Parsing ****\n"));
+    DEBUG_PRINT (ACPI_INFO, ("PsxLoadTable: **** Begin Object Initialization ****\n"));
 BREAKPOINT3;
 
-    Status = PsxParseAllMethods ();
+    Status = PsxInitializeObjects ();
 
-    DEBUG_PRINT (ACPI_INFO, ("PsxLoadTable: **** Completed Method Parsing ****\n"));
+    DEBUG_PRINT (ACPI_INFO, ("PsxLoadTable: **** Completed Object Initialization ****\n"));
 BREAKPOINT3;
 
     return_ACPI_STATUS (Status);
@@ -258,10 +258,12 @@ BREAKPOINT3;
      * or with Status == AE_PENDING at end of AML block (end of Method code)
      */
 
-    if (AE_RETURN_VALUE == Status)
+    if (*ReturnObjDesc)
     {
         DEBUG_PRINT (ACPI_INFO, ("Method returned ObjDesc=%X\n", *ReturnObjDesc));
         DUMP_STACK_ENTRY (*ReturnObjDesc);
+
+        Status = AE_RETURN_VALUE;
     }
 
     else
