@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: acpisrc.h - Include file for AcpiSrc utility
- *              $Revision: 1.25 $
+ *              $Revision: 1.26 $
  *
  *****************************************************************************/
 
@@ -122,12 +122,34 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <fcntl.h>
-#include <io.h>
 #include <ctype.h>
+#ifdef WIN32
+#include <io.h>
 #include <direct.h>
+#endif
 #include <errno.h>
 
 #include "acpi.h"
+
+
+/* Fixups for non-Win32 compilation
+#ifndef WIN32
+
+static inline int
+max (int a, int b)
+{
+	return (a > b ? a : b);
+}
+
+#define O_BINARY    0x0
+#define O_TEXT      0x0
+
+#define mkdir(x) mkdir(x, 0)
+#define stricmp strcasecmp
+
+char * strlwr(char* str);
+
+#endif
 
 
 /* Constants */

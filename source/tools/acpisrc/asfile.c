@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asfile - Main module for the acpi source processor utility
- *              $Revision: 1.26 $
+ *              $Revision: 1.27 $
  *
  *****************************************************************************/
 
@@ -151,7 +151,7 @@ AsDoWildcard (
     {
         /* Get all of the files that match the wildcard */
 
-        while (Filename = AcpiOsGetNextFilename (DirInfo))
+        while ((Filename = AcpiOsGetNextFilename (DirInfo)))
         {
             /* Looking for directory files, must check file type */
 
