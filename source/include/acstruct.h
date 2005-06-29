@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acstruct.h - Internal structs
- *       $Revision: 1.10 $
+ *       $Revision: 1.11 $
  *
  *****************************************************************************/
 
@@ -188,7 +188,6 @@ typedef struct acpi_walk_state
     struct acpi_walk_state  *Next;                              /* Next WalkState in list */
 
 
-
 } ACPI_WALK_STATE;
 
 
@@ -256,8 +255,6 @@ typedef struct acpi_get_devices_info
 } ACPI_GET_DEVICES_INFO;
 
 
-
-
 typedef union acpi_aml_operands
 {
     ACPI_OPERAND_OBJECT         *Operands[7];
@@ -288,7 +285,6 @@ typedef union acpi_aml_operands
     } Mid;
 
 } ACPI_AML_OPERANDS;
-
 
 
 #endif
