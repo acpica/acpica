@@ -2,7 +2,7 @@
  *
  * Module Name: dbfileio - Debugger file I/O commands.  These can't usually
  *              be used when running the debugger in Ring 0 (Kernel mode)
- *              $Revision: 1.55 $
+ *              $Revision: 1.56 $
  *
  ******************************************************************************/
 
@@ -155,7 +155,7 @@ ACPI_TABLE_HEADER           *AcpiGbl_DbTablePtr = NULL;
  *
  ******************************************************************************/
 
-ACPI_OBJECT_TYPE8
+ACPI_OBJECT_TYPE
 AcpiDbMatchArgument (
     NATIVE_CHAR             *UserArgument,
     ARGUMENT_INFO           *Arguments)
@@ -172,7 +172,7 @@ AcpiDbMatchArgument (
     {
         if (STRSTR (Arguments[i].Name, UserArgument) == Arguments[i].Name)
         {
-            return ((ACPI_OBJECT_TYPE8) i);
+            return (i);
         }
     }
 
