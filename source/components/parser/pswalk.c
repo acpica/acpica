@@ -481,6 +481,7 @@ ACPI_STATUS
 PsWalkParsedAml (
     ACPI_GENERIC_OP         *StartOp,
     ACPI_GENERIC_OP         *EndOp,
+    ACPI_OBJECT_INTERNAL    *MthDesc,
     ACPI_OBJECT_INTERNAL    **Params,
     ACPI_OBJECT_INTERNAL    **CallerReturnDesc,
     INTERPRETER_CALLBACK    DescendingCallback,
@@ -508,7 +509,7 @@ PsWalkParsedAml (
 
     WalkList.WalkState = NULL;
 
-    WalkState = PsCreateWalkState (EndOp, &WalkList);
+    WalkState = PsCreateWalkState (EndOp, MthDesc, &WalkList);
     if (!WalkState)
     {
         return_ACPI_STATUS (AE_NO_MEMORY);
@@ -556,11 +557,23 @@ PsWalkParsedAml (
         
         PsxMthStackDeleteArgs (WalkState);      /* Delete all arguments and locals (if a method completed) */
 
-        /* Delete this walk state and all linked control states */
+
+        /* Delete the parse tree upon method completion if asked to */
+
+        if (Gbl_WhenToParseMethods & METHOD_DELETE_AT_COMPLETION)
+        {
+            if (WalkState->MethodDesc)
+            {
+                PsDeleteParseTree (WalkState->MethodDesc->Method.ParserOp);
+                WalkState->MethodDesc->Method.ParserOp = NULL;
+            }
+        }
+
+         /* Delete this walk state and all linked control states */
 
         PsDeleteWalkState (WalkState);
 
-        /* Check if we have restarted a preempted walk */
+       /* Check if we have restarted a preempted walk */
 
         WalkState = PsGetCurrentWalkState (&WalkList);
         if (WalkState &&
