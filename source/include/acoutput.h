@@ -137,7 +137,7 @@
 #define MISCELLANEOUS               0x00000200
 #define OS_DEPENDENT                0x00000400
 
-#define DEVICE_MANAGER              0x00000800
+#define BUS_MANAGER                 0x00000800
 
 #define EMBEDDED_CONTROLLER         0x00001000
 #define PROCESSOR_CONTROL           0x00002000
