@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: exconfig - Namespace reconfiguration (Load/Unload opcodes)
- *              $Revision: 1.51 $
+ *              $Revision: 1.52 $
  *
  *****************************************************************************/
 
@@ -182,7 +182,7 @@ AcpiTbFindTable (
     if ((OemId[0]      && STRCMP (OemId, Table->OemId)) ||
         (OemTableId[0] && STRCMP (OemTableId, Table->OemTableId)))
     {
-        return_ACPI_STATUS (AE_AML_NAME_NOT_FOUND)
+        return_ACPI_STATUS (AE_AML_NAME_NOT_FOUND);
     }
 
     *TablePtr = Table;
@@ -194,11 +194,13 @@ AcpiTbFindTable (
  *
  * FUNCTION:    AcpiNsAddTable
  *
- * PARAMETERS:  
+ * PARAMETERS:  Table               - Pointer to raw table
+ *              ParentNode          - Where to load the table (scope)
+ *              DdbHandle           - Where to return the table handle.
  *
  * RETURN:      Status
  *
- * DESCRIPTION: 
+ * DESCRIPTION: Install and Load and ACPI table
  *
  ****************************************************************************/
 
