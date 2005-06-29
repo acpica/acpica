@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dbcmds - debug commands and output routines
- *              $Revision: 1.58 $
+ *              $Revision: 1.60 $
  *
  ******************************************************************************/
 
@@ -260,7 +260,7 @@ AcpiDbDisplayLocks (void)
 
     for (i = 0; i < MAX_MTX; i++)
     {
-        AcpiOsPrintf ("%26s : %s\n", AcpiCmGetMutexName (i),
+        AcpiOsPrintf ("%26s : %s\n", AcpiUtGetMutexName (i),
                     AcpiGbl_AcpiMutexInfo[i].OwnerId == ACPI_MUTEX_NOT_ACQUIRED
                         ? "Locked" : "Unlocked");
     }
@@ -337,7 +337,7 @@ AcpiDbUnloadAcpiTable (
             }
             else
             {
-                AcpiOsPrintf ("%s, while unloading [%s]\n", AcpiCmFormatException (Status), TableArg);
+                AcpiOsPrintf ("%s, while unloading [%s]\n", AcpiUtFormatException (Status), TableArg);
             }
 
             return;
@@ -688,7 +688,7 @@ AcpiDbSetMethodData (
 
     /* Create and initialize the new object */
 
-    ObjDesc = AcpiCmCreateInternalObject (ACPI_TYPE_INTEGER);
+    ObjDesc = AcpiUtCreateInternalObject (ACPI_TYPE_INTEGER);
     if (!ObjDesc)
     {
         AcpiOsPrintf ("Could not create an internal object\n");
@@ -843,7 +843,6 @@ AcpiDbDisplayObjects (
 
     /* Get the object type */
 
-    STRUPR (ObjTypeArg);
     Type = AcpiDbMatchArgument (ObjTypeArg, AcpiDbObjectTypes);
     if (Type == ACPI_TYPE_NOT_FOUND)
     {
@@ -852,7 +851,7 @@ AcpiDbDisplayObjects (
     }
 
     AcpiDbSetOutputDestination (DB_DUPLICATE_OUTPUT);
-    AcpiOsPrintf ("Objects of type [%s] defined in the current ACPI Namespace: \n", AcpiCmGetTypeName (Type));
+    AcpiOsPrintf ("Objects of type [%s] defined in the current ACPI Namespace: \n", AcpiUtGetTypeName (Type));
 
     AcpiDbSetOutputDestination (DB_REDIRECTABLE_OUTPUT);
 
@@ -922,7 +921,7 @@ AcpiDbWalkAndMatchName (
     else
     {
         AcpiOsPrintf ("%32s (%p) - %s\n", Buffer, ObjHandle,
-            AcpiCmGetTypeName (((ACPI_NAMESPACE_NODE *) ObjHandle)->Type));
+            AcpiUtGetTypeName (((ACPI_NAMESPACE_NODE *) ObjHandle)->Type));
     }
 
     return (AE_OK);
@@ -1047,7 +1046,7 @@ AcpiDbDisplayResources (
     Status = AcpiEvaluateObject (ObjDesc, "_PRT", NULL, &ReturnObj);
     if (ACPI_FAILURE (Status))
     {
-        AcpiOsPrintf ("Could not obtain _PRT: %s\n", AcpiCmFormatException (Status));
+        AcpiOsPrintf ("Could not obtain _PRT: %s\n", AcpiUtFormatException (Status));
         goto GoCRS;
     }
 
@@ -1057,7 +1056,7 @@ AcpiDbDisplayResources (
     Status = AcpiGetIrqRoutingTable (ObjDesc, &ReturnObj);
     if (ACPI_FAILURE (Status))
     {
-        AcpiOsPrintf ("GetIrqRoutingTable failed: %s\n", AcpiCmFormatException (Status));
+        AcpiOsPrintf ("GetIrqRoutingTable failed: %s\n", AcpiUtFormatException (Status));
         goto GoCRS;
     }
 
@@ -1074,7 +1073,7 @@ GoCRS:
     Status = AcpiEvaluateObject (ObjDesc, "_CRS", NULL, &ReturnObj);
     if (ACPI_FAILURE (Status))
     {
-        AcpiOsPrintf ("Could not obtain _CRS: %s\n", AcpiCmFormatException (Status));
+        AcpiOsPrintf ("Could not obtain _CRS: %s\n", AcpiUtFormatException (Status));
         goto GoPRS;
     }
 
@@ -1084,7 +1083,7 @@ GoCRS:
     Status = AcpiGetCurrentResources (ObjDesc, &ReturnObj);
     if (ACPI_FAILURE (Status))
     {
-        AcpiOsPrintf ("AcpiGetCurrentResources failed: %s\n", AcpiCmFormatException (Status));
+        AcpiOsPrintf ("AcpiGetCurrentResources failed: %s\n", AcpiUtFormatException (Status));
         goto GoPRS;
     }
 
@@ -1100,7 +1099,7 @@ GoPRS:
     Status = AcpiEvaluateObject (ObjDesc, "_PRS", NULL, &ReturnObj);
     if (ACPI_FAILURE (Status))
     {
-        AcpiOsPrintf ("Could not obtain _PRS: %s\n", AcpiCmFormatException (Status));
+        AcpiOsPrintf ("Could not obtain _PRS: %s\n", AcpiUtFormatException (Status));
         goto Cleanup;
     }
 
@@ -1110,7 +1109,7 @@ GoPRS:
     Status = AcpiGetPossibleResources (ObjDesc, &ReturnObj);
     if (ACPI_FAILURE (Status))
     {
-        AcpiOsPrintf ("AcpiGetPossibleResources failed: %s\n", AcpiCmFormatException (Status));
+        AcpiOsPrintf ("AcpiGetPossibleResources failed: %s\n", AcpiUtFormatException (Status));
         goto Cleanup;
     }
 
