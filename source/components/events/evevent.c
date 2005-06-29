@@ -2,7 +2,7 @@
  *
  * Module Name: evevent - Fixed and General Purpose AcpiEvent
  *                          handling and dispatch
- *              $Revision: 1.61 $
+ *              $Revision: 1.62 $
  *
  *****************************************************************************/
 
@@ -482,7 +482,8 @@ AcpiEvGpeInitialize (void)
     /* 
      * Allocate the GPE number-to-index translation table 
      */
-    AcpiGbl_GpeNumberToIndex = ACPI_MEM_CALLOCATE (AcpiGbl_GpeNumberMax);
+    AcpiGbl_GpeNumberToIndex = ACPI_MEM_CALLOCATE (sizeof (ACPI_GPE_INDEX_INFO) * 
+                                    (AcpiGbl_GpeNumberMax + 1));
     if (!AcpiGbl_GpeNumberToIndex)
     {
         ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
@@ -492,7 +493,8 @@ AcpiEvGpeInitialize (void)
 
     /* Set the Gpe index table to GPE_INVALID */
 
-    MEMSET (AcpiGbl_GpeNumberToIndex, (int) ACPI_GPE_INVALID, AcpiGbl_GpeNumberMax + 1);
+    MEMSET (AcpiGbl_GpeNumberToIndex, (int) ACPI_GPE_INVALID, 
+            sizeof (ACPI_GPE_INDEX_INFO) * (AcpiGbl_GpeNumberMax + 1));
 
     /*
      * Allocate the GPE register information block
@@ -549,8 +551,7 @@ AcpiEvGpeInitialize (void)
             for (j = 0; j < 8; j++)
             {
                 GpeNumber = GpeRegisterInfo->BaseGpeNumber + j;
-                AcpiGbl_GpeNumberToIndex[GpeNumber].RegisterIndex = (UINT8) GpeRegisterIndex;
-                AcpiGbl_GpeNumberToIndex[GpeNumber].NumberIndex   = (UINT8) GpeNumberIndex;
+                AcpiGbl_GpeNumberToIndex[GpeNumber].NumberIndex = (UINT8) GpeNumberIndex;
                 GpeNumberIndex++;
             }
 

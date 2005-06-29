@@ -2,7 +2,7 @@
  *
  * Module Name: evmisc - ACPI device notification handler dispatch
  *                       and ACPI Global Lock support
- *              $Revision: 1.39 $
+ *              $Revision: 1.40 $
  *
  *****************************************************************************/
 
@@ -148,7 +148,7 @@ AcpiEvGetGpeRegisterIndex (
         return (ACPI_GPE_INVALID);
     }
 
-    return (AcpiGbl_GpeNumberToIndex[GpeNumber].RegisterIndex);
+    return (DIV_8 (AcpiGbl_GpeNumberToIndex[GpeNumber].NumberIndex));
 }
 
 
