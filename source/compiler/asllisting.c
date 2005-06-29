@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asllisting - Listing file generation
- *              $Revision: 1.40 $
+ *              $Revision: 1.44 $
  *
  *****************************************************************************/
 
@@ -348,9 +348,7 @@ LsCheckException (
         while (Gbl_NextError &&
               (LineNumber >= Gbl_NextError->LogicalLineNumber))
         {
-            FlPrintFile (FileId, "\n[****AslException****]\n");
-
-            AePrintException (FileId, Gbl_NextError);
+            AePrintException (FileId, Gbl_NextError, "\n[****AslException****]\n");
 
             Gbl_NextError = Gbl_NextError->Next;
         }
@@ -605,7 +603,7 @@ LsWriteOneSourceLine (
 
     while (FlReadFile (ASL_FILE_SOURCE_OUTPUT, &FileByte, 1) == AE_OK)
     {
-        if (FileId == FileId)
+        if (FileId == ASL_FILE_C_SOURCE_OUTPUT)
         {
             if (FileByte == '/')
             {
@@ -614,8 +612,6 @@ LsWriteOneSourceLine (
         }
 
         FlWriteFile (FileId, &FileByte, 1);
-        DbgPrint (ASL_PARSE_OUTPUT, "%c", FileByte);
-
         if (FileByte == '\n')
         {
             /*
@@ -651,7 +647,6 @@ void
 LsFinishSourceListing (
     UINT32                  FileId)
 {
-
 
     LsFlushListingBuffer (FileId);
     Gbl_CurrentAmlOffset = 0;
@@ -839,7 +834,7 @@ LsWriteNodeToListing (
 
         if (FileId == ASL_FILE_ASM_SOURCE_OUTPUT)
         {
-            FlPrintFile (FileId, "%s_%s_Header \\\n", 
+            FlPrintFile (FileId, "%s_%s_Header \\\n",
                 Gbl_TableSignature, Gbl_TableId);
         }
         if (FileId == ASL_FILE_C_SOURCE_OUTPUT)
@@ -953,12 +948,12 @@ LsWriteNodeToListing (
 
                         if (FileId == ASL_FILE_ASM_SOURCE_OUTPUT)
                         {
-                            FlPrintFile (FileId, "%s_%s_%s  \\\n", 
+                            FlPrintFile (FileId, "%s_%s_%s  \\\n",
                                 Gbl_TableSignature, Gbl_TableId, &Pathname[1]);
                         }
                         if (FileId == ASL_FILE_C_SOURCE_OUTPUT)
                         {
-                            FlPrintFile (FileId, "    unsigned char    %s_%s_%s [] = \n    {\n", 
+                            FlPrintFile (FileId, "    unsigned char    %s_%s_%s [] = \n    {\n",
                                 Gbl_TableSignature, Gbl_TableId, &Pathname[1]);
                         }
                     }

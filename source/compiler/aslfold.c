@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslfold - Constant folding
- *              $Revision: 1.17 $
+ *              $Revision: 1.5 $
  *
  *****************************************************************************/
 
@@ -10,7 +10,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2005, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -126,26 +126,6 @@
 #define _COMPONENT          ACPI_COMPILER
         ACPI_MODULE_NAME    ("aslfold")
 
-/* Local prototypes */
-
-static ACPI_STATUS
-OpcAmlEvaluationWalk1 (
-    ACPI_PARSE_OBJECT       *Op,
-    UINT32                  Level,
-    void                    *Context);
-
-static ACPI_STATUS
-OpcAmlEvaluationWalk2 (
-    ACPI_PARSE_OBJECT       *Op,
-    UINT32                  Level,
-    void                    *Context);
-
-static ACPI_STATUS
-OpcAmlCheckForConstant (
-    ACPI_PARSE_OBJECT       *Op,
-    UINT32                  Level,
-    void                    *Context);
-
 
 /*******************************************************************************
  *
@@ -159,7 +139,7 @@ OpcAmlCheckForConstant (
  *
  ******************************************************************************/
 
-static ACPI_STATUS
+ACPI_STATUS
 OpcAmlEvaluationWalk1 (
     ACPI_PARSE_OBJECT       *Op,
     UINT32                  Level,
@@ -206,7 +186,7 @@ OpcAmlEvaluationWalk1 (
  *
  ******************************************************************************/
 
-static ACPI_STATUS
+ACPI_STATUS
 OpcAmlEvaluationWalk2 (
     ACPI_PARSE_OBJECT       *Op,
     UINT32                  Level,
@@ -252,7 +232,7 @@ OpcAmlEvaluationWalk2 (
  *
  ******************************************************************************/
 
-static ACPI_STATUS
+ACPI_STATUS
 OpcAmlCheckForConstant (
     ACPI_PARSE_OBJECT       *Op,
     UINT32                  Level,
@@ -274,13 +254,11 @@ OpcAmlCheckForConstant (
 
         if (Op->Asl.CompileFlags & NODE_IS_TARGET)
         {
-            DbgPrint (ASL_PARSE_OUTPUT,
-                "**** Valid Target, cannot reduce ****\n");
+            DbgPrint (ASL_PARSE_OUTPUT, "**** Valid Target, cannot reduce ****\n");
         }
         else
         {
-            DbgPrint (ASL_PARSE_OUTPUT,
-                "**** Not a Type 3/4/5 opcode ****\n");
+            DbgPrint (ASL_PARSE_OUTPUT, "**** Not a Type 3/4/5 opcode ****\n");
         }
 
         if (WalkState->WalkType == ACPI_WALK_CONST_OPTIONAL)
@@ -298,13 +276,11 @@ OpcAmlCheckForConstant (
          */
         if (Op->Asl.CompileFlags & NODE_IS_TARGET)
         {
-            AslError (ASL_ERROR, ASL_MSG_INVALID_TARGET, Op,
-                Op->Asl.ParseOpName);
+            AslError (ASL_ERROR, ASL_MSG_INVALID_TARGET, Op, Op->Asl.ParseOpName);
         }
         else
         {
-            AslError (ASL_ERROR, ASL_MSG_INVALID_CONSTANT_OP, Op,
-                Op->Asl.ParseOpName);
+            AslError (ASL_ERROR, ASL_MSG_INVALID_CONSTANT_OP, Op, Op->Asl.ParseOpName);
         }
 
         return (AE_TYPE);
@@ -323,42 +299,6 @@ OpcAmlCheckForConstant (
         DbgPrint (ASL_PARSE_OUTPUT, " TERMARG");
     }
     DbgPrint (ASL_PARSE_OUTPUT, "\n");
-
-    return (AE_OK);
-}
-
-
-/*******************************************************************************
- *
- * FUNCTION:    OpcAmlConstantWalkUp
- *
- * PARAMETERS:  ASL_WALK_CALLBACK
- *
- * RETURN:      Status
- *
- * DESCRIPTION: Constant walk, ascending callback
- *
- ******************************************************************************/
-
-ACPI_STATUS
-OpcAmlConstantWalkUp (
-    ACPI_PARSE_OBJECT       *Op,
-    UINT32                  Level,
-    void                    *Context)
-{
-
-    /*
-     * Handle the Package() case where the actual opcode cannot be determined
-     * until the PackageLength operand has been folded and minimized.
-     *
-     * Note: Rather than perform another entire pass through the parse tree,
-     * this lone case is handled here. It is (as of ACPI 3.0) the only case
-     * where the AML opcode can change based upon the value of a parameter.
-     */
-    if (Op->Asl.ParseOpcode == PARSEOP_VAR_PACKAGE)
-    {
-        OpnDoPackage (Op);
-    }
 
     return (AE_OK);
 }
@@ -400,8 +340,9 @@ OpcAmlConstantWalk (
         return (AE_OK);
     }
 
-    /* Set the walk type based on the reduction used for this op */
-
+    /*
+     * Set the walk type based on the reduction used for this op
+     */
     if (Op->Asl.CompileFlags & NODE_IS_TERM_ARG)
     {
         /* Op is a TermArg, constant folding is merely optional */
@@ -422,7 +363,7 @@ OpcAmlConstantWalk (
 
     /* Create a new walk state */
 
-    WalkState = AcpiDsCreateWalkState (0, NULL, NULL, NULL);
+    WalkState = AcpiDsCreateWalkState (TABLE_ID_DSDT, NULL, NULL, NULL);
     if (!WalkState)
     {
         return AE_NO_MEMORY;
@@ -433,10 +374,8 @@ OpcAmlConstantWalk (
     WalkState->CallerReturnDesc     = &ObjDesc;
     WalkState->WalkType             = WalkType;
 
-    /*
-     * Examine the entire subtree -- all nodes must be constants
-     * or type 3/4/5 opcodes
-     */
+    /* Examine the entire subtree -- all nodes must be constants or type 3/4/5 opcodes */
+
     Status = TrWalkParseTree (Op, ASL_WALK_VISIT_DOWNWARD,
                 OpcAmlCheckForConstant, NULL, WalkState);
 
@@ -475,10 +414,10 @@ OpcAmlConstantWalk (
         OriginalParentOp = Op->Common.Parent;
         Op->Common.Parent = RootOp;
 
-        /* Hand off the subtree to the AML interpreter */
-
-        Status = TrWalkParseTree (Op, ASL_WALK_VISIT_TWICE,
-                    OpcAmlEvaluationWalk1, OpcAmlEvaluationWalk2, WalkState);
+        /*
+         * Hand off the subtree to the AML interpreter
+         */
+        Status = TrWalkParseTree (Op, ASL_WALK_VISIT_TWICE, OpcAmlEvaluationWalk1, OpcAmlEvaluationWalk2, WalkState);
         Op->Common.Parent = OriginalParentOp;
 
         /* TBD: we really *should* release the RootOp node */
@@ -497,10 +436,7 @@ OpcAmlConstantWalk (
     {
         /* We could not resolve the subtree for some reason */
 
-        AslCoreSubsystemError (Op, Status,
-            "Failure during constant evaluation", FALSE);
-        AslError (ASL_ERROR, ASL_MSG_CONSTANT_EVALUATION, Op,
-            Op->Asl.ParseOpName);
+        AslError (ASL_ERROR, ASL_MSG_CONSTANT_EVALUATION, Op, Op->Asl.ParseOpName);
 
         /* Set the subtree value to ZERO anyway.  Eliminates further errors */
 
@@ -510,8 +446,7 @@ OpcAmlConstantWalk (
     }
     else
     {
-        AslError (ASL_OPTIMIZATION, ASL_MSG_CONSTANT_FOLDED, Op,
-            Op->Asl.ParseOpName);
+        AslError (ASL_OPTIMIZATION, ASL_MSG_CONSTANT_FOLDED, Op, Op->Asl.ParseOpName);
 
         /*
          * Because we know we executed type 3/4/5 opcodes above, we know that
@@ -525,9 +460,9 @@ OpcAmlConstantWalk (
             Op->Common.Value.Integer = ObjDesc->Integer.Value;
             OpcSetOptimalIntegerSize (Op);
 
-            DbgPrint (ASL_PARSE_OUTPUT,
-                "Constant expression reduced to (INTEGER) %8.8X%8.8X\n",
-                ACPI_FORMAT_UINT64 (ObjDesc->Integer.Value));
+            DbgPrint (ASL_PARSE_OUTPUT, "Constant expression reduced to (INTEGER) %8.8X%8.8X\n",
+                ACPI_HIDWORD (ObjDesc->Integer.Value),
+                ACPI_LODWORD (ObjDesc->Integer.Value));
             break;
 
 
@@ -538,8 +473,7 @@ OpcAmlConstantWalk (
             Op->Asl.AmlLength       = ACPI_STRLEN (ObjDesc->String.Pointer) + 1;
             Op->Common.Value.String = ObjDesc->String.Pointer;
 
-            DbgPrint (ASL_PARSE_OUTPUT,
-                "Constant expression reduced to (STRING) %s\n",
+            DbgPrint (ASL_PARSE_OUTPUT, "Constant expression reduced to (STRING) %s\n",
                 Op->Common.Value.String);
 
             break;
@@ -549,7 +483,6 @@ OpcAmlConstantWalk (
 
             Op->Asl.ParseOpcode     = PARSEOP_BUFFER;
             Op->Common.AmlOpcode    = AML_BUFFER_OP;
-            Op->Asl.CompileFlags    = NODE_AML_PACKAGE;
             UtSetParseOpName (Op);
 
             /* Child node is the buffer length */
@@ -577,8 +510,7 @@ OpcAmlConstantWalk (
             Op->Asl.Next = RootOp;
             Op = RootOp;
 
-            DbgPrint (ASL_PARSE_OUTPUT,
-                "Constant expression reduced to (BUFFER) length %X\n",
+            DbgPrint (ASL_PARSE_OUTPUT, "Constant expression reduced to (BUFFER) length %X\n",
                 ObjDesc->Buffer.Length);
             break;
 

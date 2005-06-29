@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: asllookup- Namespace lookup
- *              $Revision: 1.63 $
+ *              $Revision: 1.64 $
  *
  *****************************************************************************/
 
@@ -594,7 +594,7 @@ LkOptimizeNamedReference (
             NewPath = ACPI_MEM_CALLOCATE (ACPI_NAME_SIZE + 1);
             ACPI_STRCPY (NewPath, NewPathExternal);
 
-            AslError (ASL_REMARK, ASL_MSG_SINGLE_NAME_OPTIMIZATION, Op, 
+            AslError (ASL_OPTIMIZATION, ASL_MSG_SINGLE_NAME_OPTIMIZATION, Op, 
                 NewPathExternal);
         }
         else
@@ -690,7 +690,7 @@ LkOptimizeNamedReference (
                         /* The lookup matched the node, accept this optimization */
 
                         OptCount = (AmlNameStringLength - ACPI_STRLEN (NewPath));
-                        AslError (ASL_REMARK, ASL_MSG_NAME_OPTIMIZATION, Op, NewPathExternal);
+                        AslError (ASL_OPTIMIZATION, ASL_MSG_NAME_OPTIMIZATION, Op, NewPathExternal);
                     }
                     else
                     {

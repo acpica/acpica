@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslerror - Error handling and statistics
- *              $Revision: 1.75 $
+ *              $Revision: 1.76 $
  *
  *****************************************************************************/
 
@@ -198,18 +198,19 @@ char                        *AslMessages [] = {
     "Missing StartDependentFn() macro in dependent resource list",
     "Dependent function macros cannot be nested",\
     "NamePath optimized",
-    "NamePath optimized to NameSeg (uses run-time search path)"
-
+    "NamePath optimized to NameSeg (uses run-time search path)",
+    "Integer optimized to single-byte AML opcode"
 };
 
 
-char                        *AslErrorLevel [] = {
-    "Error  ",
-    "Warning",
-    "Remark ",
+char                        *AslErrorLevel [ASL_NUM_REPORT_LEVELS] = {
+    "Error   ",
+    "Warning ",
+    "Remark  ",
+    "Optimize"
 };
 
-#define ASL_ERROR_LEVEL_LENGTH          7
+#define ASL_ERROR_LEVEL_LENGTH          8
 
 
 /*******************************************************************************
@@ -279,8 +280,9 @@ AeAddToErrorLog (
  *
  * FUNCTION:    AePrintException
  *
- * PARAMETERS:  Where       - Where to send the message
- *              Enode       - Error node to print
+ * PARAMETERS:  Where           - Where to send the message
+ *              Enode           - Error node to print
+ *              Header          - Additional text before each message
  *
  * RETURN:      None
  *
@@ -296,7 +298,8 @@ AeAddToErrorLog (
 void
 AePrintException (
     UINT32                  FileId,
-    ASL_ERROR_MSG           *Enode)
+    ASL_ERROR_MSG           *Enode,
+    char                    *Header)
 {
     UINT8                   SourceByte;
     UINT32                  Actual;
@@ -309,16 +312,42 @@ AePrintException (
     FILE                    *SourceFile;
 
 
-    /* Ignore remarks if requested */
+    /* Only listing files have a header, and remarks/optimizations are always output */
 
-    if (!Gbl_DisplayRemarks && Enode->Level == ASL_REMARK)
+    if (!Header)
     {
-        return;
+        /* Ignore remarks if requested */
+
+        switch (Enode->Level)
+        {
+        case ASL_REMARK:
+            if (!Gbl_DisplayRemarks)
+            {
+                return;
+            }
+            break;
+
+        case ASL_OPTIMIZATION:
+            if (!Gbl_DisplayOptimizations)
+            {
+                return;
+            }
+            break;
+
+        default:
+            break;
+        }
     }
+
+    /* Get the file handles */
 
     OutputFile = Gbl_Files[FileId].Handle;
     SourceFile = Gbl_Files[ASL_FILE_SOURCE_OUTPUT].Handle;
 
+    if (Header)
+    {
+        fprintf (OutputFile, "%s", Header);
+    }
 
     /* Print filename and line number if present and valid */
 
@@ -454,7 +483,7 @@ AePrintErrorLog (
 
     while (Enode)
     {
-        AePrintException (FileId, Enode);
+        AePrintException (FileId, Enode, NULL);
         Enode = Enode->Next;
     }
 }
@@ -538,7 +567,7 @@ AslCommonError (
     {
         /* stderr is a file, send error to it immediately */
 
-        AePrintException (ASL_FILE_STDERR, Enode);
+        AePrintException (ASL_FILE_STDERR, Enode, NULL);
     }
 
     Gbl_ExceptionCount[Level]++;

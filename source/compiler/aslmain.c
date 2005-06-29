@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslmain - compiler main and utilities
- *              $Revision: 1.62 $
+ *              $Revision: 1.64 $
  *
  *****************************************************************************/
 
@@ -120,7 +120,7 @@
 
 #include "aslcompiler.h"
 #include "acnamesp.h"
-#include "adisasm.h"
+#include "acapps.h"
 
 #ifdef _DEBUG
 #include <crtdbg.h>
@@ -129,8 +129,6 @@
 #define _COMPONENT          ACPI_COMPILER
         ACPI_MODULE_NAME    ("aslmain")
 
-int                     optind;
-NATIVE_CHAR             *optarg;
 BOOLEAN                 AslToFile = TRUE;
 BOOLEAN                 DoCompile = TRUE;
 BOOLEAN                 DoSignon = TRUE;
@@ -161,7 +159,8 @@ Options (
     printf ("General Output:\n");
     printf ("  -o<prefix>     Specify filename prefix for all output files (including .aml)\n");
     printf ("  -vi            Less verbose errors and warnings for use with IDEs\n");
-    printf ("  -vr            Disable generation of remarks\n");
+    printf ("  -vo            Enable optimization comments\n");
+    printf ("  -vr            Disable remarks\n");
     printf ("  -vs            Disable signon\n");
 
     printf ("\nAML Output:\n");
@@ -174,19 +173,19 @@ Options (
     printf ("  -cn            Disable named reference string optimization\n");
 
     printf ("\nListings:\n");
-    printf ("  -lm            Create mixed listing file (ASL source and AML) (*.lst)\n");
+    printf ("  -l             Create mixed listing file (ASL source and AML) (*.lst)\n");
     printf ("  -ln            Create namespace file (*.nsp)\n");
     printf ("  -ls            Create combined source file (expanded includes) (*.src)\n");
 
     printf ("\nAML Disassembler:\n");
-    printf ("  -da [file]     Disassemble AML to ASL source code file (*.dsl)\n");
-    printf ("  -dc [file]     Disassemble AML (to *.dsl) and compile it\n");
+    printf ("  -d  <file>     Disassemble AML to ASL source code file (*.dsl)\n");
+    printf ("  -dc <file>     Disassemble AML (to *.dsl) and compile it\n");
     printf ("                 (Obtain AML from current system if no input file)\n");
 
     printf ("\nHelp:\n");
     printf ("  -h             Additional help and compiler debug options\n");
-    printf ("  -qc            Display operators allowed in constant expressions\n");
-    printf ("  -qr            Display ACPI reserved method names\n");
+    printf ("  -hc            Display operators allowed in constant expressions\n");
+    printf ("  -hr            Display ACPI reserved method names\n");
 }
 
 
@@ -319,11 +318,11 @@ AslCommandLine (
 
     /* Get the command line options */
 
-    while ((j = getopt (argc, argv, "b:c:d:hil:o:pq:rs:t:v:x:")) != EOF) switch (j)
+    while ((j = AcpiGetopt (argc, argv, "b:c:d^h^il^o:prs:t:v:x:")) != EOF) switch (j)
     {
     case 'b':
 
-        switch (optarg[0])
+        switch (AcpiGbl_Optarg[0])
         {
         case 'b':
             AslCompilerdebug = 1; /* same as yydebug */
@@ -337,7 +336,7 @@ AslCommandLine (
             break;
 
         default:
-            printf ("Unknown option: -b%s\n", optarg);
+            printf ("Unknown option: -b%s\n", AcpiGbl_Optarg);
             BadCommandLine = TRUE;
             break;
         }
@@ -350,7 +349,7 @@ AslCommandLine (
 
     case 'c':
 
-        switch (optarg[0])
+        switch (AcpiGbl_Optarg[0])
         {
         case 'f':
 
@@ -381,7 +380,7 @@ AslCommandLine (
             break;
 
         default:
-            printf ("Unknown option: -c%s\n", optarg);
+            printf ("Unknown option: -c%s\n", AcpiGbl_Optarg);
             BadCommandLine = TRUE;
             break;
         }
@@ -389,10 +388,9 @@ AslCommandLine (
 
 
     case 'd':
-
-        switch (optarg[0])
+        switch (AcpiGbl_Optarg[0])
         {
-        case 'a':
+        case '^':
             DoCompile = FALSE;
             break;
 
@@ -400,7 +398,7 @@ AslCommandLine (
             break;
 
         default:
-            printf ("Unknown option: -d%s\n", optarg);
+            printf ("Unknown option: -d%s\n", AcpiGbl_Optarg);
             BadCommandLine = TRUE;
             break;
         }
@@ -411,8 +409,28 @@ AslCommandLine (
 
     case 'h':
 
-        HelpMessage ();
-        exit (0);
+        switch (AcpiGbl_Optarg[0])
+        {
+        case '^':
+            HelpMessage ();
+            exit (0);
+
+        case 'c':
+            UtDisplayConstantOpcodes ();
+            exit (0);
+
+        case 'r':
+            /* reserved names */
+
+            MpDisplayReservedNames ();
+            exit (0);
+
+        default:
+            printf ("Unknown option: -h%s\n", AcpiGbl_Optarg);
+            BadCommandLine = TRUE;
+            break;
+        }
+        break;
 
 
     case 'i':
@@ -425,9 +443,9 @@ AslCommandLine (
 
     case 'l':
 
-        switch (optarg[0])
+        switch (AcpiGbl_Optarg[0])
         {
-        case 'm':
+        case '^':
             /* Produce listing file (Mixed source/aml) */
 
             Gbl_ListingFlag = TRUE;
@@ -446,7 +464,7 @@ AslCommandLine (
             break;
 
         default:
-            printf ("Unknown option: -l%s\n", optarg);
+            printf ("Unknown option: -l%s\n", AcpiGbl_Optarg);
             BadCommandLine = TRUE;
             break;
         }
@@ -457,7 +475,7 @@ AslCommandLine (
 
         /* Override default AML output filename */
 
-        Gbl_OutputFilenamePrefix = optarg;
+        Gbl_OutputFilenamePrefix = AcpiGbl_Optarg;
         Gbl_UseDefaultAmlFilename = FALSE;
         break;
 
@@ -470,28 +488,6 @@ AslCommandLine (
         break;
 
 
-    case 'q':
-
-        switch (optarg[0])
-        {
-        case 'c':
-            UtDisplayConstantOpcodes ();
-            exit (0);
-
-        case 'r':
-            /* reserved names */
-
-            MpDisplayReservedNames ();
-            exit (0);
-
-        default:
-            printf ("Unknown option: -q%s\n", optarg);
-            BadCommandLine = TRUE;
-            break;
-        }
-        break;
-
-
     case 'r':
         AslToFile = FALSE;
         break;
@@ -499,7 +495,7 @@ AslCommandLine (
 
     case 's':
 
-        switch (optarg[0])
+        switch (AcpiGbl_Optarg[0])
         {
         case 'a':
 
@@ -516,7 +512,7 @@ AslCommandLine (
             break;
 
         default:
-            printf ("Unknown option: -s%s\n", optarg);
+            printf ("Unknown option: -s%s\n", AcpiGbl_Optarg);
             BadCommandLine = TRUE;
             break;
         }
@@ -527,7 +523,7 @@ AslCommandLine (
 
         /* Produce hex table output file */
 
-        switch (optarg[0])
+        switch (AcpiGbl_Optarg[0])
         {
         case 'a':
             Gbl_HexOutputFlag = HEX_OUTPUT_ASM;
@@ -538,7 +534,7 @@ AslCommandLine (
             break;
 
         default:
-            printf ("Unknown option: -t%s\n", optarg);
+            printf ("Unknown option: -t%s\n", AcpiGbl_Optarg);
             BadCommandLine = TRUE;
             break;
         }
@@ -547,12 +543,16 @@ AslCommandLine (
 
     case 'v':
 
-        switch (optarg[0])
+        switch (AcpiGbl_Optarg[0])
         {
         case 'i':
             /* Less verbose error messages */
 
             Gbl_VerboseErrors = FALSE;
+            break;
+
+        case 'o':
+            Gbl_DisplayOptimizations = TRUE;
             break;
 
         case 'r':
@@ -564,7 +564,7 @@ AslCommandLine (
             break;
 
         default:
-            printf ("Unknown option: -v%s\n", optarg);
+            printf ("Unknown option: -v%s\n", AcpiGbl_Optarg);
             BadCommandLine = TRUE;
             break;
         }
@@ -573,7 +573,7 @@ AslCommandLine (
 
     case 'x':
 
-        AcpiDbgLevel = strtoul (optarg, NULL, 16);
+        AcpiDbgLevel = strtoul (AcpiGbl_Optarg, NULL, 16);
         break;
 
 
@@ -585,7 +585,7 @@ AslCommandLine (
 
     /* Next parameter must be the input filename */
 
-    Gbl_Files[ASL_FILE_INPUT].Filename = argv[optind];
+    Gbl_Files[ASL_FILE_INPUT].Filename = argv[AcpiGbl_Optind];
     if (!Gbl_Files[ASL_FILE_INPUT].Filename && !Gbl_DisasmFlag)
     {
         printf ("Missing input filename\n");
@@ -601,10 +601,10 @@ AslCommandLine (
         exit (1);
     }
 
-    if ((optind + 1) < argc)
+    if ((AcpiGbl_Optind + 1) < argc)
     {
         printf ("Warning: extra arguments (%d) after input filename are ignored\n\n",
-            argc - optind - 1);
+            argc - AcpiGbl_Optind - 1);
     }
 }
 
