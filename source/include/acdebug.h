@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acdebug.h - ACPI/AML debugger
- *       $Revision: 1.69 $
+ *       $Revision: 1.70 $
  *
  *****************************************************************************/
 
@@ -286,6 +286,10 @@ AcpiDbWalkForSpecificObjects (
     void                    *Context,
     void                    **ReturnValue);
 
+void
+AcpiDbGenerateGpe (
+    char                    *GpeArg,
+    char                    *BlockArg);
 
 /*
  * dbdisply - debug display commands
