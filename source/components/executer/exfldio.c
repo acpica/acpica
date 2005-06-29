@@ -117,9 +117,9 @@
 #define __IEFREAD_C__
 
 #include <acpi.h>
-#include <interpreter.h>
+#include <interp.h>
 #include <amlcode.h>
-#include <namespace.h>
+#include <namesp.h>
 #include <hardware.h>
 #include <events.h>
 
@@ -351,7 +351,8 @@ AmlReadField (
 
     /* Cleanup the last datum if necessary by zeroing the bits that aren't part of the field */
 
-    if (ValidFieldBits = ((ObjDesc->FieldUnit.Length % BitGranularity) + ObjDesc->Field.BitOffset))
+    ValidFieldBits = ((ObjDesc->FieldUnit.Length % BitGranularity) + ObjDesc->Field.BitOffset);
+    if (ValidFieldBits)
     {
         MergedDatum &= (((UINT32) 1 << ValidFieldBits) - (UINT32) 1);
     }
