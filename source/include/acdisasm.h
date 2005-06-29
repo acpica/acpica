@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acdisasm.h - AML disassembler
- *       $Revision: 1.16 $
+ *       $Revision: 1.17 $
  *
  *****************************************************************************/
 
@@ -152,8 +152,6 @@ extern const char               *AcpiGbl_SIZDecode[4];
 extern const char               *AcpiGbl_TTPDecode[2];
 extern const char               *AcpiGbl_MTPDecode[4];
 extern const char               *AcpiGbl_TRSDecode[2];
-
-
 
 
 extern const char               *AcpiGbl_LockRule[ACPI_NUM_LOCK_RULES];
