@@ -2,6 +2,7 @@
  *
  * Module Name: evsci - System Control Interrupt configuration and
  *                      legacy to ACPI mode state transition functions
+ *              $Revision: 1.61 $
  *
  ******************************************************************************/
 
@@ -122,15 +123,15 @@
 
 
 #define _COMPONENT          EVENT_HANDLING
-        MODULE_NAME         ("evsci");
+        MODULE_NAME         ("evsci")
 
 
 /*
  * Elements correspond to counts for TMR, NOT_USED, GBL, PWR_BTN, SLP_BTN, RTC,
- * and GENERAL respectively.  These counts are modified by the ACPI interrupt 
- * handler.  
+ * and GENERAL respectively.  These counts are modified by the ACPI interrupt
+ * handler.
  *
- * TBD: [Investigate] Note that GENERAL should probably be split out into 
+ * TBD: [Investigate] Note that GENERAL should probably be split out into
  * one element for each bit in the GPE registers
  */
 
@@ -139,7 +140,7 @@
  *
  * FUNCTION:    AcpiEvSciHandler
  *
- * PARAMETERS:  none
+ * PARAMETERS:  Context   - Calling Context
  *
  * RETURN:      Status code indicates whether interrupt was handled.
  *
@@ -162,7 +163,7 @@ AcpiEvSciHandler (void *Context)
      * Make sure that ACPI is enabled by checking SCI_EN.  Note that we are
      * required to treat the SCI interrupt as sharable, level, active low.
      */
-    if (!AcpiHwRegisterAccess (ACPI_READ, ACPI_MTX_DO_NOT_LOCK, (INT32) SCI_EN))
+    if (!AcpiHwRegisterAccess (ACPI_READ, ACPI_MTX_DO_NOT_LOCK, SCI_EN))
     {
         /* ACPI is not enabled;  this interrupt cannot be for us */
 
@@ -281,7 +282,7 @@ AcpiEvRemoveSciHandler (void)
  *
  * PARAMETERS:  Event       Event that generated an SCI.
  *
- * RETURN:      Number of SCI's for requested event since last time 
+ * RETURN:      Number of SCI's for requested event since last time
  *              SciOccured() was called for this event.
  *
  * DESCRIPTION: Checks to see if SCI has been generated from requested source
@@ -291,11 +292,11 @@ AcpiEvRemoveSciHandler (void)
 
 #ifdef ACPI_DEBUG
 
-INT32
+UINT32
 AcpiEvSciCount (
     UINT32                  Event)
 {
-    INT32                   Count;
+    UINT32                  Count;
 
     FUNCTION_TRACE ("EvSciCount");
 
@@ -306,7 +307,7 @@ AcpiEvSciCount (
 
     if (Event >= NUM_FIXED_EVENTS)
     {
-        Count = -1;
+        Count = (UINT32) -1;
     }
     else
     {
@@ -334,7 +335,7 @@ AcpiEvSciCount (
 void
 AcpiEvRestoreAcpiState (void)
 {
-    INT32                   Index;
+    UINT32                  Index;
 
 
     FUNCTION_TRACE ("EvRestoreAcpiState");
