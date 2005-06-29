@@ -563,6 +563,10 @@ SOURCE=..\..\subsystem\Include\acdispat.h
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\subsystem\Include\acefi.h
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\Subsystem\Include\acenv.h
 # End Source File
 # Begin Source File
@@ -572,6 +576,14 @@ SOURCE=..\..\subsystem\Include\acevents.h
 # Begin Source File
 
 SOURCE=..\..\Subsystem\Include\acexcep.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\subsystem\Include\acfreebsd.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\subsystem\Include\acgcc.h
 # End Source File
 # Begin Source File
 
@@ -587,11 +599,19 @@ SOURCE=..\..\subsystem\Include\acinterp.h
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\subsystem\Include\aclinux.h
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\subsystem\Include\aclocal.h
 # End Source File
 # Begin Source File
 
 SOURCE=..\..\subsystem\Include\acmacros.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\subsystem\Include\acmsvc.h
 # End Source File
 # Begin Source File
 
@@ -644,6 +664,10 @@ SOURCE=..\..\Subsystem\Include\actbl64.h
 # Begin Source File
 
 SOURCE=..\..\Subsystem\Include\actypes.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\subsystem\Include\acwin.h
 # End Source File
 # Begin Source File
 
