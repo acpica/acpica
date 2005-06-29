@@ -151,7 +151,7 @@ FILE                    *DebugFile = NULL;
  *
  *****************************************************************************/
 
-ACPI_OBJECT_TYPE
+OBJECT_TYPE_INTERNAL
 DbMatchArgument (
     char                    *UserArgument,
     ARGUMENT_INFO           *Arguments)
@@ -168,7 +168,7 @@ DbMatchArgument (
     {
         if (STRSTR (Arguments[i].Name, UserArgument) == Arguments[i].Name)
         {
-            return ((ACPI_OBJECT_TYPE) i);
+            return ((OBJECT_TYPE_INTERNAL) i);
         }
     }
 
