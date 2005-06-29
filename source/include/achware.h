@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: achware.h -- hardware specific interfaces
- *       $Revision: 1.59 $
+ *       $Revision: 1.60 $
  *
  *****************************************************************************/
 
@@ -156,18 +156,6 @@ AcpiHwGetBitRegisterInfo (
     UINT32                  RegisterId);
 
 ACPI_STATUS
-AcpiHwBitRegisterRead (
-    UINT32                  RegisterId,
-    UINT32                  *ReturnValue,
-    UINT32                  Flags);
-
-ACPI_STATUS
-AcpiHwBitRegisterWrite (
-    UINT32                  RegisterId,
-    UINT32                  Value,
-    UINT32                  Flags);
-
-ACPI_STATUS
 AcpiHwRegisterRead (
     BOOLEAN                 UseLock,
     UINT32                  RegisterId,
@@ -236,15 +224,6 @@ AcpiHwDisableNonWakeupGpes (
 ACPI_STATUS
 AcpiHwEnableNonWakeupGpes (
     void);
-
-
-/* Sleep Prototypes */
-
-ACPI_STATUS
-AcpiHwGetSleepTypeData (
-    UINT8                   SleepState,
-    UINT8                   *Slp_TypA,
-    UINT8                   *Slp_TypB);
 
 
 /* ACPI Timer prototypes */
