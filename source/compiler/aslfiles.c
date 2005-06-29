@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslfiles - file I/O suppoert
- *              $Revision: 1.23 $
+ *              $Revision: 1.26 $
  *
  *****************************************************************************/
 
@@ -10,7 +10,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -114,7 +114,6 @@
  * such license, approval or letter.
  *
  *****************************************************************************/
-
 
 #include "aslcompiler.h"
 
@@ -382,7 +381,7 @@ FlPrintFile (
 ACPI_STATUS
 FlSeekFile (
     UINT32                  FileId,
-    UINT32                  Offset)
+    long                    Offset)
 {
     UINT32                  Error;
 
@@ -693,6 +692,26 @@ FlOpenMiscOutputFiles (
     }
 
 
+    /* Create/Open a assembly code source output file if asked */
+
+    if (Gbl_AsmOutputFlag)
+    {
+        Filename = FlGenerateFilename (FilenamePrefix, FILE_SUFFIX_ASM_SOURCE);
+        if (!Filename)
+        {
+            AslCommonError (ASL_ERROR, ASL_MSG_LISTING_FILENAME, 0, 0, 0, 0, NULL, NULL);
+            return (AE_ERROR);
+        }
+
+        /* Open the assembly code source file, text mode */
+
+        FlOpenFile (ASL_FILE_ASM_SOURCE_OUTPUT, Filename, "w+");
+
+        AslCompilerSignon (ASL_FILE_ASM_SOURCE_OUTPUT);
+        AslCompilerFileHeader (ASL_FILE_ASM_SOURCE_OUTPUT);
+    }
+
+
     /* Create/Open a hex output file if asked */
 
     if (Gbl_HexOutputFlag)
@@ -708,6 +727,7 @@ FlOpenMiscOutputFiles (
 
         FlOpenFile (ASL_FILE_HEX_OUTPUT, Filename, "w+");
 
+        FlPrintFile (ASL_FILE_HEX_OUTPUT, "/*\n");
         AslCompilerSignon (ASL_FILE_HEX_OUTPUT);
         AslCompilerFileHeader (ASL_FILE_HEX_OUTPUT);
     }
