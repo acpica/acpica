@@ -367,37 +367,37 @@ AcpiEnterSystemSleepState (
 
 ACPI_STATUS
 AcpiSetProcessorThrottlingState(
-                            ACPI_HANDLE ProcessorHandle,
-                            UINT32 ThrottleState);
+    ACPI_HANDLE             ProcessorHandle,
+    UINT32                  ThrottleState);
 
 ACPI_STATUS
 AcpiGetProcessorThrottlingState(
-                            ACPI_HANDLE ProcessorHandle,
-                            UINT32 *ThrottleState);
+    ACPI_HANDLE             ProcessorHandle,
+    UINT32                  *ThrottleState);
 
 ACPI_STATUS
 AcpiGetProcessorThrottlingInfo(
-                            ACPI_HANDLE ProcessorHandle,
-                            ACPI_BUFFER *UserBuffer);
+    ACPI_HANDLE             ProcessorHandle,
+    ACPI_BUFFER             *UserBuffer);
 
 ACPI_STATUS
 AcpiSetProcessorCxState(
-                            ACPI_HANDLE ProcessorHandle,
-                            UINT32 CxState);
+    ACPI_HANDLE             ProcessorHandle,
+    UINT32                  CxState);
 
 ACPI_STATUS
 AcpiSetCxHandler(
-                            UINT32 State,
-                            ACPI_SET_C_STATE_HANDLER Handler);
+    UINT32                  State,
+    ACPI_SET_C_STATE_HANDLER Handler);
 
 ACPI_STATUS
 AcpiGetCxHandler(
-                            UINT32 State,
-                            ACPI_SET_C_STATE_HANDLER *ReturnHandler);
+    UINT32                  State,
+    ACPI_SET_C_STATE_HANDLER *ReturnHandler);
 
 ACPI_STATUS
 AcpiGetCxLatencies(
-                            ACPI_BUFFER *UserBuffer);
+    ACPI_BUFFER             *UserBuffer);
 
 
 #endif /* __ACAPI_H__ */
