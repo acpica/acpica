@@ -259,7 +259,7 @@ AcpiPathnameToHandle (char *Pathname, NsHandle *RetHandle)
  * FUNCTION:    AcpiHandleToPathname
  *
  * PARAMETERS:  Handle          - Handle to be converted to a pathname
- *              RetPathPtr      - APICBuffer for returned path
+ *              RetPathPtr      - Buffer for returned path
  *
  * RETURN:      pointer to a string containing the fully qualified Name.
  *
@@ -271,7 +271,7 @@ AcpiPathnameToHandle (char *Pathname, NsHandle *RetHandle)
 
 
 ACPI_STATUS 
-AcpiHandleToPathname (NsHandle Handle, APIBuffer *RetPathPtr)
+AcpiHandleToPathname (NsHandle Handle, ACPI_BUFFER *RetPathPtr)
 {
     if ((!RetPathPtr->BufferPtr)    ||
         (!RetPathPtr->Length)       ||
