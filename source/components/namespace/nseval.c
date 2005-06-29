@@ -473,7 +473,8 @@ NsExecuteControlMethod (
 
     /* Verify that there is a method associated with this object */
 
-    if (!(ObjDesc = NsGetAttachedObject ((ACPI_HANDLE) MethodEntry)))
+    ObjDesc = NsGetAttachedObject ((ACPI_HANDLE) MethodEntry);
+    if (!ObjDesc)
     {
         DEBUG_PRINT (ACPI_ERROR, ("Control method is undefined (nil value)\n"));
         return_ACPI_STATUS (AE_ERROR);
@@ -516,7 +517,7 @@ NsExecuteControlMethod (
     /* 
      * Excecute the method via the interpreter
      */
-    Status = AmlExecuteMethod (ObjDesc, Params, ReturnObjDesc);
+    Status = AmlExecuteMethod (MethodEntry, Params, ReturnObjDesc);
 
     /*
      * Cleanup.  We must delete everything in the namespace that was created by
