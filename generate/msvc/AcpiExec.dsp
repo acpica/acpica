@@ -429,43 +429,39 @@ SOURCE=..\..\source\Tools\AcpiExec\aemain.c
 # PROP Default_Filter ".c"
 # Begin Source File
 
-SOURCE=..\..\source\components\interpreter\debugger\dbcmds.c
+SOURCE=..\..\source\COMPONENTS\DEBUGGER\dbcmds.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\source\components\interpreter\debugger\dbdisasm.c
+SOURCE=..\..\source\COMPONENTS\DEBUGGER\dbdisply.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\source\components\interpreter\debugger\dbdisply.c
+SOURCE=..\..\source\COMPONENTS\DEBUGGER\dbexec.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\source\components\interpreter\debugger\dbexec.c
+SOURCE=..\..\source\COMPONENTS\DEBUGGER\dbfileio.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\source\components\interpreter\debugger\dbfileio.c
+SOURCE=..\..\source\COMPONENTS\DEBUGGER\dbhistry.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\source\components\interpreter\debugger\dbhistry.c
+SOURCE=..\..\source\COMPONENTS\DEBUGGER\dbinput.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\source\components\interpreter\debugger\dbinput.c
+SOURCE=..\..\source\COMPONENTS\DEBUGGER\dbstats.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\source\components\interpreter\debugger\dbstats.c
+SOURCE=..\..\source\COMPONENTS\DEBUGGER\dbutils.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\source\components\interpreter\debugger\dbutils.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\source\components\interpreter\debugger\dbxface.c
+SOURCE=..\..\source\COMPONENTS\DEBUGGER\dbxface.c
 # End Source File
 # End Group
 # Begin Group "Dispatcher"
@@ -546,15 +542,6 @@ SOURCE=..\..\source\components\tables\tbxface.c
 # Begin Source File
 
 SOURCE=..\..\source\components\tables\tbxfroot.c
-
-!IF  "$(CFG)" == "AcpiExec - Win32 Release"
-
-!ELSEIF  "$(CFG)" == "AcpiExec - Win32 Debug"
-
-# SUBTRACT CPP /FA<none>
-
-!ENDIF 
-
 # End Source File
 # End Group
 # Begin Group "Common"
@@ -616,6 +603,42 @@ SOURCE=..\..\source\components\resources\rsutils.c
 # Begin Source File
 
 SOURCE=..\..\source\components\resources\rsxface.c
+# End Source File
+# End Group
+# Begin Group "Disassembler"
+
+# PROP Default_Filter ""
+# Begin Source File
+
+SOURCE=..\..\source\COMPONENTS\Disassembler\dmbuffer.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\COMPONENTS\Disassembler\dmnames.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\COMPONENTS\Disassembler\dmopcode.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\COMPONENTS\Disassembler\dmresrc.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\COMPONENTS\Disassembler\dmresrcl.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\COMPONENTS\Disassembler\dmresrcs.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\COMPONENTS\Disassembler\dmutils.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\COMPONENTS\Disassembler\dmwalk.c
 # End Source File
 # End Group
 # End Group
