@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acdebug.h - ACPI/AML debugger
- *       $Revision: 1.61 $
+ *       $Revision: 1.62 $
  *
  *****************************************************************************/
 
@@ -303,6 +303,10 @@ AcpiDbDisplayOpcode (
 void
 AcpiDbDecodeInternalObject (
     ACPI_OPERAND_OBJECT     *ObjDesc);
+
+void
+AcpiDbDecodeNode (
+    ACPI_NAMESPACE_NODE     *Node);
 
 UINT32
 AcpiDbBlockType (
