@@ -125,6 +125,10 @@ SOURCE=..\..\Subsystem\Common\cmdebug.c
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\Subsystem\Common\cmdelete.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\Subsystem\Common\cmerror.c
 
 !IF  "$(CFG)" == "Subsystem - Win32 Release"
@@ -156,6 +160,10 @@ SOURCE=..\..\Subsystem\Common\cminit.c
 # Begin Source File
 
 SOURCE=..\..\Subsystem\Common\cmobject.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\Subsystem\Common\cmsize.c
 # End Source File
 # End Group
 # Begin Group "Events"
