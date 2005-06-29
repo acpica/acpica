@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: utxface - External interfaces for "global" ACPI functions
- *              $Revision: 1.73 $
+ *              $Revision: 1.75 $
  *
  *****************************************************************************/
 
@@ -124,6 +124,7 @@
 #include "acinterp.h"
 #include "amlcode.h"
 #include "acdebug.h"
+#include "acexcep.h"
 
 
 #define _COMPONENT          ACPI_UTILITIES
@@ -530,122 +531,73 @@ AcpiGetSystemInfo (
  *
  * FUNCTION:    AcpiFormatException
  *
- * PARAMETERS:  OutBuffer       - a pointer to a buffer to receive the
- *                                exception name
+ * PARAMETERS:  Status       - The ACPI_STATUS code to be formatted
  *
- * RETURN:      Status          - the status of the call
+ * RETURN:      A string containing the exception  text
  *
  * DESCRIPTION: This function translates an ACPI exception into an ASCII string.
  *
  ******************************************************************************/
 
-ACPI_STATUS
+const char *
 AcpiFormatException (
-    ACPI_STATUS             Exception,
-    ACPI_BUFFER             *OutBuffer)
+    ACPI_STATUS             Status)
 {
-    UINT32                  Length;
-    NATIVE_CHAR             *FormattedException;
+    char                    *Exception = "UNKNOWN_STATUS_CODE";
+    ACPI_STATUS             SubStatus;
 
 
-    FUNCTION_TRACE ("AcpiFormatException");
+    SubStatus = (Status & ~AE_CODE_MASK);
 
 
-    /*
-     *  Must have a valid buffer
-     */
-    if ((!OutBuffer)          ||
-        (!OutBuffer->Pointer))
+    switch (Status & AE_CODE_MASK)
     {
-        return_ACPI_STATUS (AE_BAD_PARAMETER);
+    case AE_CODE_ENVIRONMENTAL:
+
+        if (SubStatus <= AE_CODE_ENV_MAX)
+        {
+            Exception = AcpiGbl_ExceptionNames_Env [SubStatus];
+        }
+        break;
+
+    case AE_CODE_PROGRAMMER:
+
+        if (SubStatus <= AE_CODE_PGM_MAX)
+        {
+            Exception = AcpiGbl_ExceptionNames_Pgm [SubStatus -1];
+        }
+        break;
+
+    case AE_CODE_ACPI_TABLES:
+
+        if (SubStatus <= AE_CODE_TBL_MAX)
+        {
+            Exception = AcpiGbl_ExceptionNames_Tbl [SubStatus -1];
+        }
+        break;
+
+    case AE_CODE_AML:
+
+        if (SubStatus <= AE_CODE_AML_MAX)
+        {
+            Exception = AcpiGbl_ExceptionNames_Aml [SubStatus -1];
+        }
+        break;
+
+    case AE_CODE_CONTROL:
+
+        if (SubStatus <= AE_CODE_CTRL_MAX)
+        {
+            Exception = AcpiGbl_ExceptionNames_Ctrl [SubStatus -1];
+        }
+        break;
+
+    default:
+        break;
     }
 
 
-    /* Convert the exception code (Handles bad exception codes) */
-
-    FormattedException = AcpiUtFormatException (Exception);
-
-    /*
-     * Get length of string and check if it will fit in caller's buffer
-     */
-
-    Length = STRLEN (FormattedException);
-    if (OutBuffer->Length < Length)
-    {
-        OutBuffer->Length = Length;
-        return_ACPI_STATUS (AE_BUFFER_OVERFLOW);
-    }
-
-
-    /* Copy the string, all done */
-
-    STRCPY (OutBuffer->Pointer, FormattedException);
-
-    return_ACPI_STATUS (AE_OK);
+    return ((const char *) Exception);
 }
 
 
-/*****************************************************************************
- *
- * FUNCTION:    AcpiAllocate
- *
- * PARAMETERS:  Size                - Size of the allocation
- *
- * RETURN:      Address of the allocated memory on success, NULL on failure.
- *
- * DESCRIPTION: The subsystem's equivalent of malloc.
- *              External front-end to the Ut* memory manager
- *
- ****************************************************************************/
-
-void *
-AcpiAllocate (
-    UINT32                  Size)
-{
-
-    return (AcpiUtAllocate (Size));
-}
-
-
-/*****************************************************************************
- *
- * FUNCTION:    AcpiCallocate
- *
- * PARAMETERS:  Size                - Size of the allocation
- *
- * RETURN:      Address of the allocated memory on success, NULL on failure.
- *
- * DESCRIPTION: The subsystem's equivalent of calloc.
- *              External front-end to the Ut* memory manager
- *
- ****************************************************************************/
-
-void *
-AcpiCallocate (
-    UINT32                  Size)
-{
-
-    return (AcpiUtCallocate (Size));
-}
-
-
-/*****************************************************************************
- *
- * FUNCTION:    AcpiFree
- *
- * PARAMETERS:  Address             - Address of the memory to deallocate
- *
- * RETURN:      None
- *
- * DESCRIPTION: Frees the memory at Address
- *              External front-end to the Ut* memory manager
- *
- ****************************************************************************/
-
-void
-AcpiFree (
-    void                    *Address)
-{
-
-    AcpiUtFree (Address);
-}
