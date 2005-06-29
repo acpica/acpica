@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: evregion - ACPI AddressSpace / OpRegion handler dispatch
- *              $Revision: 1.86 $
+ *              $Revision: 1.87 $
  *
  *****************************************************************************/
 
@@ -211,7 +211,7 @@ AcpiEvInstallDefaultAddressSpaceHandlers (
  *
  *************************************************************************/
 
-ACPI_STATUS
+static ACPI_STATUS
 AcpiEvExecuteRegMethod (
     ACPI_OPERAND_OBJECT    *RegionObj,
     UINT32                  Function)
