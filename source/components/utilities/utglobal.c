@@ -466,7 +466,7 @@ CmInitGlobals (void)
     Gbl_RootObject->DataType    = DESC_TYPE_NTE;
     Gbl_RootObject->Type        = ACPI_TYPE_Any;
     Gbl_RootObject->Fill1       = 0;
-    Gbl_RootObject->Name        = NS_ROOT;
+    Gbl_RootObject->Name        = * (UINT32 *) NS_ROOT;
     Gbl_RootObject->Scope       = NULL;
     Gbl_RootObject->ParentScope = NULL;
     Gbl_RootObject->ParentEntry = NULL;
