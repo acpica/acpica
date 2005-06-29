@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: amnames - interpreter/scanner name load/execute
- *              $Revision: 1.76 $
+ *              $Revision: 1.77 $
  *
  *****************************************************************************/
 
@@ -355,7 +355,7 @@ AcpiAmlExecNameSegment (
 
 ACPI_STATUS
 AcpiAmlGetNameString (
-    OBJECT_TYPE_INTERNAL    DataType,
+    ACPI_OBJECT_TYPE8       DataType,
     UINT8                   *InAmlAddress,
     NATIVE_CHAR             **OutNameString,
     UINT32                  *OutNameLength)
