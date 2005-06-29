@@ -290,7 +290,7 @@
 
 /* Buffer dump macros */
 
-#define DUMP_BUFFER(a,b)                CmDumpBuffer((char *)a,b,_COMPONENT)
+#define DUMP_BUFFER(a,b)                CmDumpBuffer((char *)a,b,DB_BYTE_DISPLAY,_COMPONENT)
 
 /*
  * Debug macros that are conditionally compiled

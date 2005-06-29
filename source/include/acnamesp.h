@@ -138,10 +138,7 @@
 
 /* Definitions of the predefined namespace names  */
 
-#define ACPI_UNKNOWN_NAME       (UINT32) 0x3F3F3F3F     /* Unknown name is  "????" */
-#define ACPI_ROOT_NAME          (UINT32) 0x2F202020     /* Root name is     "/   " */
-#define ACPI_SYS_BUS_NAME       (UINT32) 0x5F53425F     /* Sys bus name is  "_SB_" */
-
+#define NS_ROOT                 "/   "
 #define NS_ROOT_PATH            "/"
 #define NS_SYSTEM_BUS           "_SB_"
 
@@ -151,60 +148,6 @@
 #define NS_NO_UPSEARCH          0
 #define NS_SEARCH_PARENT        0x01
 #define NS_DONT_OPEN_SCOPE      0x02
-#define NS_NO_PEER_SEARCH       0x04
-
-#define NS_WALK_UNLOCK          TRUE
-#define NS_WALK_NO_UNLOCK       FALSE
-
-
-
-
-
-ACPI_STATUS
-NsWalkNamespace (
-    ACPI_OBJECT_TYPE        Type, 
-    ACPI_HANDLE             StartObject, 
-    UINT32                  MaxDepth,
-    BOOLEAN                 UnlockBeforeCallback,
-    WALK_CALLBACK           UserFunction, 
-    void                    *Context, 
-    void                    **ReturnValue);
-
-
-NAME_TABLE_ENTRY *
-NsGetNextObject (
-    ACPI_OBJECT_TYPE        Type, 
-    NAME_TABLE_ENTRY        *Parent, 
-    NAME_TABLE_ENTRY        *Child);
-
-
-ACPI_STATUS
-NsDeleteNamespaceByOwner (
-    UINT16                  TableId);
-
-void
-NsFreeTableEntry (
-    NAME_TABLE_ENTRY        *Entry);
-
-
-
-/* Namespace loading - nsload */
-
-ACPI_STATUS
-NsParseTable (
-    ACPI_TABLE_DESC         *TableDesc,
-    NAME_TABLE_ENTRY        *Scope);
-
-ACPI_STATUS
-NsLoadTable (
-    ACPI_TABLE_DESC         *TableDesc,
-    NAME_TABLE_ENTRY        *Entry);
-
-ACPI_STATUS
-NsLoadTableByType (
-    ACPI_TABLE_TYPE         TableType);
-
-
 
 /*
  * Top-level namespace access - nsaccess
@@ -212,17 +155,16 @@ NsLoadTableByType (
 
 
 ACPI_STATUS
-NsRootInitialize (
+NsSetup (
     void);
 
 ACPI_STATUS
 NsLookup (
-    ACPI_GENERIC_STATE      *ScopeInfo,
+    NAME_TABLE_ENTRY        *PrefixEntry,
     char                    *Name, 
     ACPI_OBJECT_TYPE        Type, 
-    OPERATING_MODE          InterpreterMode,
-	UINT32					Flags,
-    ACPI_WALK_STATE			*WalkState,
+    OPERATING_MODE          LoadMode,
+    UINT32                  Flags,
     NAME_TABLE_ENTRY        **RetEntry);
 
 
@@ -235,8 +177,8 @@ NsAllocateNameTable (
     INT32                   NteEntries);
 
 ACPI_STATUS
-NsDeleteNamespaceSubtree (
-    NAME_TABLE_ENTRY        *ParentHandle);
+NsDeleteNamespace (
+    ACPI_HANDLE             ParentHandle);
 
 void
 NsDetachObject (
@@ -288,8 +230,7 @@ NsDumpRootDevices (
 void
 NsDumpObjects (
     ACPI_OBJECT_TYPE        Type, 
-    UINT32                  MaxDepth, 
-    UINT32                  OwnderId,
+    INT32                   MaxDepth, 
     ACPI_HANDLE             StartHandle);
 
 
@@ -357,7 +298,7 @@ NsNameOfScope (
 
 char *
 NsNameOfCurrentScope (
-    ACPI_WALK_STATE         *WalkState);
+    void);
 
 ACPI_STATUS
 NsHandleToPathname (
@@ -434,9 +375,8 @@ NsFindAttachedObject (
 ACPI_STATUS
 NsSearchAndEnter (
     UINT32                  EntryName, 
-    ACPI_WALK_STATE			*WalkState,
     NAME_TABLE_ENTRY        *NameTable,
-    OPERATING_MODE          InterpreterMode, 
+    OPERATING_MODE          LoadMode, 
     ACPI_OBJECT_TYPE        Type, 
     UINT32                  Flags,
     NAME_TABLE_ENTRY        **RetEntry);
@@ -448,7 +388,7 @@ NsInitializeTable (
     NAME_TABLE_ENTRY        *ParentEntry);
 
 ACPI_STATUS
-NsSearchOneScope (
+NsSearchOnly (
     UINT32                  EntryName, 
     NAME_TABLE_ENTRY        *NameTable, 
     ACPI_OBJECT_TYPE        Type, 
@@ -457,16 +397,29 @@ NsSearchOneScope (
 
 
 /*
- * Utility functions - nsutils
+ * Scope Stack manipulation - nsstack
  */
 
-BOOLEAN
-NsValidRootPrefix (
-    char                    Prefix);
+ACPI_STATUS
+NsScopeStackPush (
+    NAME_TABLE_ENTRY        *NewScope, 
+    ACPI_OBJECT_TYPE        Type);
 
-BOOLEAN
-NsValidPathSeparator (
-    char                    Sep);
+ACPI_STATUS
+NsScopeStackPushEntry (
+    ACPI_HANDLE             NewScope);
+
+INT32
+NsScopeStackPop (
+    ACPI_OBJECT_TYPE        Type);
+
+void
+NsScopeStackClear (
+    void);
+
+/*
+ * Utility functions - nsutils
+ */
 
 ACPI_OBJECT_TYPE
 NsGetType (
