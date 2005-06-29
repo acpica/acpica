@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: amfldio - Aml Field I/O
- *              $Revision: 1.27 $
+ *              $Revision: 1.29 $
  *
  *****************************************************************************/
 
@@ -152,7 +152,7 @@ AcpiAmlReadFieldData (
 {
     ACPI_STATUS             Status;
     ACPI_OPERAND_OBJECT     *RgnDesc = NULL;
-    UINT32                  Address;
+    ACPI_PHYSICAL_ADDRESS   Address;
     UINT32                  LocalValue = 0;
     UINT32                  FieldByteWidth;
 
@@ -463,7 +463,7 @@ AcpiAmlWriteFieldData (
 {
     ACPI_STATUS             Status = AE_OK;
     ACPI_OPERAND_OBJECT     *RgnDesc = NULL;
-    UINT32                  Address;
+    ACPI_PHYSICAL_ADDRESS   Address;
     UINT32                  FieldByteWidth;
 
 
@@ -497,13 +497,13 @@ AcpiAmlWriteFieldData (
     if (RgnDesc->Region.SpaceId >= NUM_REGION_TYPES)
     {
         DEBUG_PRINT (TRACE_OPREGION,
-            ("AmlWriteField: **** Store %lx in unknown OpRegion SpaceID %d at %08lx width %d ** \n",
+            ("AmlWriteField: **** Store %lx in unknown OpRegion SpaceID %d at %p width %d ** \n",
             Value, RgnDesc->Region.SpaceId, Address, FieldBitWidth));
     }
     else
     {
         DEBUG_PRINT (TRACE_OPREGION,
-            ("AmlWriteField: Store %lx in OpRegion %s at %08lx width %d\n",
+            ("AmlWriteField: Store %lx in OpRegion %s at %p width %d\n",
             Value, AcpiGbl_RegionTypes[RgnDesc->Region.SpaceId], Address,
             FieldBitWidth));
     }
