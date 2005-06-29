@@ -1,8 +1,8 @@
 
 /******************************************************************************
  *
- * Module Name: asllength - Tree walk to determine package and opcode lengths
- *              $Revision: 1.5 $
+ * Module Name: aslutils -- compiler utilities
+ *              $Revision: 1.8 $
  *
  *****************************************************************************/
 
@@ -348,8 +348,8 @@ UtDisplaySummary (
 
 void
 UtAttachNamepathToOwner (
-    ASL_PARSE_NODE              *Node,
-    ASL_PARSE_NODE              *NameNode)
+    ASL_PARSE_NODE          *Node,
+    ASL_PARSE_NODE          *NameNode)
 {
     ACPI_STATUS             Status;
 
@@ -365,6 +365,44 @@ UtAttachNamepathToOwner (
 
 }
 
+
+/*******************************************************************************
+ *
+ * FUNCTION:    
+ *
+ * PARAMETERS:  
+ *
+ * RETURN:      
+ *
+ * DESCRIPTION: 
+ *
+ ******************************************************************************/
+
+void
+_UtOpenIncludeFile (
+    ASL_PARSE_NODE          *Node)
+{
+    FILE                    *IncFile;
+
+    if (!Node)
+    {
+        AslErrorMsg (ASL_ERROR_INCLUDE_FILE_OPEN, 0, "Null parse node");
+        return;
+    }
+
+
+    DbgPrint ("\nOpen include file: path %s\n\n", Node->Value.String);
+
+    IncFile = fopen (Node->Value.String, "r");
+    if (!IncFile)
+    {
+        AslErrorMsg (ASL_ERROR_INCLUDE_FILE_OPEN, Node->LineNumber, Node->Value.String);
+        return;
+    }
+
+
+    AslPushInputFileStack (IncFile, Node->Value.String);
+}
 
 
 /*******************************************************************************
@@ -420,7 +458,7 @@ AslGenerateFilename (
  ******************************************************************************/
 
 ACPI_STATUS
-UtOpenAllFiles (
+UtOpenInputFile (
     char                    *InputFilename)
 {
 
@@ -431,20 +469,45 @@ UtOpenAllFiles (
     AslCompilerin = Gbl_AslInputFile;
     if (!Gbl_AslInputFile)
     {
-        AslError (ASL_ERROR_INPUT_FILE_OPEN, 0);
+        AslErrorMsg (ASL_ERROR_INPUT_FILE_OPEN, 0, InputFilename);
         return (AE_ERROR);
     }
 
+    return (AE_OK);
+}
 
-    /* Create the output AML filename */
 
-    Gbl_OutputFilename = AslGenerateFilename (InputFilename, ".aml");
+/*******************************************************************************
+ *
+ * FUNCTION:    
+ *
+ * PARAMETERS:  
+ *
+ * RETURN:      
+ *
+ * DESCRIPTION: 
+ *
+ ******************************************************************************/
+
+ACPI_STATUS
+UtOpenAmlOutputFile (
+    char                    *InputFilename)
+{
+
+
+    /* Output filename usually comes from the ASL itself */
+
     if (!Gbl_OutputFilename)
     {
-        AslError (ASL_ERROR_OUTPUT_FILENAME, 0);
-        return (AE_ERROR);
-    }
+        /* Create the output AML filename */
 
+        Gbl_OutputFilename = AslGenerateFilename (InputFilename, ".aml");
+        if (!Gbl_OutputFilename)
+        {
+            AslError (ASL_ERROR_OUTPUT_FILENAME, 0);
+            return (AE_ERROR);
+        }
+    }
 
     /* Open the output AML file in binary mode */
 
@@ -455,6 +518,48 @@ UtOpenAllFiles (
         return (AE_ERROR);
     }
 
+    return (AE_OK);
+}
+
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    
+ *
+ * PARAMETERS:  
+ *
+ * RETURN:      
+ *
+ * DESCRIPTION: 
+ *
+ ******************************************************************************/
+
+ACPI_STATUS
+UtOpenMiscOutputFiles (
+    char                    *InputFilename)
+{
+
+    /* Create/Open a combined source output file if asked */
+
+    if (Gbl_SourceOutputFlag)
+    {
+        Gbl_SourceOutputFilename = AslGenerateFilename (InputFilename, ".src");
+        if (!Gbl_SourceOutputFilename)
+        {
+            AslError (ASL_ERROR_LISTING_FILENAME, 0);
+            return (AE_ERROR);
+        }
+
+        /* Open the debug file, text mode */
+
+	    Gbl_SourceOutputFile = fopen (Gbl_SourceOutputFilename, "w+");
+        if (!Gbl_SourceOutputFile)
+        {
+            AslError (ASL_ERROR_LISTING_FILE_OPEN, 0);
+            return (AE_ERROR);
+        }
+    }
 
     /* Create/Open a listing output file if asked */
 
@@ -476,6 +581,51 @@ UtOpenAllFiles (
             return (AE_ERROR);
         }
     }
+
+
+    /* Create/Open a hex output file if asked */
+
+    if (Gbl_HexOutputFlag)
+    {
+        Gbl_HexFilename = AslGenerateFilename (InputFilename, ".hex");
+        if (!Gbl_HexFilename)
+        {
+            AslError (ASL_ERROR_LISTING_FILENAME, 0);
+            return (AE_ERROR);
+        }
+
+        /* Open the debug file, text mode */
+
+	    Gbl_HexFile = fopen (Gbl_HexFilename, "w+");
+        if (!Gbl_HexFile)
+        {
+            AslError (ASL_ERROR_LISTING_FILE_OPEN, 0);
+            return (AE_ERROR);
+        }
+    }
+
+
+    /* Create a namespace output file if asked */
+
+    if (Gbl_NsOutputFlag)
+    {
+        Gbl_NsFilename = AslGenerateFilename (InputFilename, ".nsp");
+        if (!Gbl_NsFilename)
+        {
+            AslError (ASL_ERROR_LISTING_FILENAME, 0);
+            return (AE_ERROR);
+        }
+
+        /* Open the debug file, text mode */
+
+	    Gbl_NsFile = fopen (Gbl_NsFilename, "w+");
+        if (!Gbl_NsFile)
+        {
+            AslError (ASL_ERROR_LISTING_FILE_OPEN, 0);
+            return (AE_ERROR);
+        }
+    }
+
 
     /* Create/Open a debug output file if asked */
 
