@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: nsdump - table dumping routines for debug
- *              $Revision: 1.135 $
+ *              $Revision: 1.136 $
  *
  *****************************************************************************/
 
@@ -633,7 +633,7 @@ AcpiNsDumpOneObject (
 
         case ACPI_DESC_TYPE_OPERAND:
 
-            ObjType = ObjDesc->Common.Type;
+            ObjType = ACPI_GET_OBJECT_TYPE (ObjDesc);
 
             if (ObjType > INTERNAL_TYPE_MAX)
             {
