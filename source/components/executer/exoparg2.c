@@ -101,20 +101,10 @@
 #include <interpreter.h>
 #include <events.h>
 #include <amlcode.h>
-#include <string.h>
 
 
 #define _THIS_MODULE        "iedyadic.c"
 #define _COMPONENT          INTERPRETER
-
-
-static ST_KEY_DESC_TABLE KDT[] = {
-    {"0000", '1', "AmlExecDyadic2R: Descriptor Allocation Failure", "AmlExecDyadic2R: Descriptor Allocation Failure"},
-    {"0001", '1', "AmlExecDyadic2R/ConcatOp: String allocation failure", "AmlExecDyadic2R/ConcatOp: String allocation failure"},
-    {"0002", '1', "AmlExecDyadic2R/ConcatOp: Buffer allocation failure", "AmlExecDyadic2R/ConcatOp: Buffer allocation failure"},
-    {NULL, 'I', NULL, NULL}
-};
-
 
 
 /*****************************************************************************
@@ -133,10 +123,11 @@ static ST_KEY_DESC_TABLE KDT[] = {
  ****************************************************************************/
 
 ACPI_STATUS
-AmlExecDyadic1 (UINT16 opcode)
+AmlExecDyadic1 (
+    UINT16                  opcode)
 {
-    OBJECT_DESCRIPTOR       *ObjDesc = NULL;
-    OBJECT_DESCRIPTOR       *ValDesc = NULL;
+    ACPI_OBJECT             *ObjDesc = NULL;
+    ACPI_OBJECT             *ValDesc = NULL;
     ACPI_STATUS             Status;
 
 
@@ -156,8 +147,8 @@ AmlExecDyadic1 (UINT16 opcode)
 
     AmlDumpStack (MODE_Exec, ShortOps[opcode], 2, "after AmlPrepStack");
 
-    ValDesc = (OBJECT_DESCRIPTOR *) ObjStack[ObjStackTop];
-    ObjDesc = (OBJECT_DESCRIPTOR *) ObjStack[ObjStackTop - 1];
+    ValDesc = (ACPI_OBJECT *) ObjStack[ObjStackTop];
+    ObjDesc = (ACPI_OBJECT *) ObjStack[ObjStackTop - 1];
 
     switch (opcode)
     {
@@ -167,6 +158,7 @@ AmlExecDyadic1 (UINT16 opcode)
 
     case AML_NotifyOp:
 
+BREAKPOINT3;
         /* Object must be a device or thermal zone */
 
         if (ObjDesc && ValDesc)
@@ -232,15 +224,17 @@ AmlExecDyadic1 (UINT16 opcode)
  ****************************************************************************/
 
 ACPI_STATUS
-AmlExecDyadic2R (UINT16 opcode)
+AmlExecDyadic2R (
+    UINT16                  opcode)
 {
-    OBJECT_DESCRIPTOR       *ObjDesc = NULL;
-    OBJECT_DESCRIPTOR       *ObjDesc2 = NULL;
-    OBJECT_DESCRIPTOR       *ResDesc = NULL;
-    OBJECT_DESCRIPTOR       *ResDesc2 = NULL;
+    ACPI_OBJECT             *ObjDesc = NULL;
+    ACPI_OBJECT             *ObjDesc2 = NULL;
+    ACPI_OBJECT             *ResDesc = NULL;
+    ACPI_OBJECT             *ResDesc2 = NULL;
     ACPI_STATUS             Status;
     UINT32                  remain;
     INT32                   NumOperands;
+    char                    *NewBuf;
 
 
     FUNCTION_TRACE ("AmlExecDyadic2R");
@@ -285,12 +279,12 @@ AmlExecDyadic2R (UINT16 opcode)
 
     if (AML_DivideOp == opcode)
     {
-        ResDesc2 = (OBJECT_DESCRIPTOR *) ObjStack[ObjStackTop--];
+        ResDesc2 = (ACPI_OBJECT *) ObjStack[ObjStackTop--];
     }
 
-    ResDesc     = (OBJECT_DESCRIPTOR *) ObjStack[ObjStackTop--];
-    ObjDesc2    = (OBJECT_DESCRIPTOR *) ObjStack[ObjStackTop--];
-    ObjDesc     = (OBJECT_DESCRIPTOR *) ObjStack[ObjStackTop];
+    ResDesc     = (ACPI_OBJECT *) ObjStack[ObjStackTop--];
+    ObjDesc2    = (ACPI_OBJECT *) ObjStack[ObjStackTop--];
+    ObjDesc     = (ACPI_OBJECT *) ObjStack[ObjStackTop];
     ObjStackTop += NumOperands - 1;
 
     switch (opcode)
@@ -401,11 +395,11 @@ AmlExecDyadic2R (UINT16 opcode)
         {
             /*  Operand1 is string  */
 
-            char *NewBuf = OsdAllocate ((size_t) (ObjDesc->String.StrLen
+            NewBuf = OsdAllocate ((ACPI_SIZE) (ObjDesc->String.StrLen
                                                 + ObjDesc2->String.StrLen + 1));
             if (!NewBuf)
             {
-                REPORT_ERROR (&KDT[1]);
+                REPORT_ERROR ("AmlExecDyadic2R/ConcatOp: String allocation failure");
                 FUNCTION_EXIT;
                 return AE_AML_ERROR;
             }
@@ -424,7 +418,7 @@ AmlExecDyadic2R (UINT16 opcode)
         {
             /*  Operand1 is not string ==> buffer   */
 
-            char *NewBuf = OsdAllocate ((size_t) (ObjDesc->Buffer.BufLen
+            NewBuf = OsdAllocate ((ACPI_SIZE) (ObjDesc->Buffer.BufLen
                                                 + ObjDesc2->Buffer.BufLen));
             if (!NewBuf)
             {
@@ -432,7 +426,7 @@ AmlExecDyadic2R (UINT16 opcode)
                 
                 if (ObjDesc->Buffer.BufLen + ObjDesc2->Buffer.BufLen < 1024)
                 {
-                    REPORT_ERROR (&KDT[0]);
+                    REPORT_ERROR ("AmlExecDyadic2R/ConcatOp: Buffer allocation failure");
                     FUNCTION_EXIT;
                     return AE_AML_ERROR;
                 }
@@ -444,9 +438,9 @@ AmlExecDyadic2R (UINT16 opcode)
                 return AE_AML_ERROR;
             }
 
-            memcpy (NewBuf, ObjDesc->Buffer.Buffer, (size_t) ObjDesc->Buffer.BufLen);
+            memcpy (NewBuf, ObjDesc->Buffer.Buffer, (ACPI_SIZE) ObjDesc->Buffer.BufLen);
             memcpy (NewBuf + ObjDesc->Buffer.BufLen, ObjDesc2->Buffer.Buffer,
-                    (size_t) ObjDesc2->Buffer.BufLen);
+                    (ACPI_SIZE) ObjDesc2->Buffer.BufLen);
             
             /* Don't free old ObjDesc->Buffer.Buffer; the operand still exists */
             
@@ -501,11 +495,12 @@ AmlExecDyadic2R (UINT16 opcode)
  ****************************************************************************/
 
 ACPI_STATUS
-AmlExecDyadic2S (UINT16 opcode)
+AmlExecDyadic2S (
+    UINT16                  opcode)
 {
-    OBJECT_DESCRIPTOR       *ObjDesc = NULL;
-    OBJECT_DESCRIPTOR       *TimeDesc = NULL;
-    OBJECT_DESCRIPTOR       *ResDesc = NULL;
+    ACPI_OBJECT             *ObjDesc = NULL;
+    ACPI_OBJECT             *TimeDesc = NULL;
+    ACPI_OBJECT             *ResDesc = NULL;
     ACPI_STATUS             Status;
 
 
@@ -525,8 +520,8 @@ AmlExecDyadic2S (UINT16 opcode)
     {
         AmlDumpStack (MODE_Exec, LongOps[opcode & 0x00ff], 2, "after AmlPrepStack");
 
-        TimeDesc = (OBJECT_DESCRIPTOR *) ObjStack[ObjStackTop];
-        ObjDesc = (OBJECT_DESCRIPTOR *) ObjStack[ObjStackTop - 1];
+        TimeDesc = (ACPI_OBJECT *) ObjStack[ObjStackTop];
+        ObjDesc = (ACPI_OBJECT *) ObjStack[ObjStackTop - 1];
 
         switch (opcode)
         {
@@ -604,10 +599,11 @@ AmlExecDyadic2S (UINT16 opcode)
  ****************************************************************************/
 
 ACPI_STATUS
-AmlExecDyadic2 (UINT16 opcode)
+AmlExecDyadic2 (
+    UINT16                  opcode)
 {
-    OBJECT_DESCRIPTOR       *ObjDesc;
-    OBJECT_DESCRIPTOR       *ObjDesc2;
+    ACPI_OBJECT             *ObjDesc;
+    ACPI_OBJECT             *ObjDesc2;
     ACPI_STATUS             Status;
 
 
@@ -627,8 +623,8 @@ AmlExecDyadic2 (UINT16 opcode)
 
     AmlDumpStack (MODE_Exec, ShortOps[opcode], 2, "after AmlPrepStack");
 
-    ObjDesc2 = (OBJECT_DESCRIPTOR *) ObjStack[ObjStackTop];
-    ObjDesc = (OBJECT_DESCRIPTOR *) ObjStack[ObjStackTop - 1];
+    ObjDesc2 = (ACPI_OBJECT *) ObjStack[ObjStackTop];
+    ObjDesc = (ACPI_OBJECT *) ObjStack[ObjStackTop - 1];
 
     Status = AE_OK;      /* Make sure AE_OK */
     switch (opcode)
