@@ -468,7 +468,7 @@ NsLookup (
          * Type is significant only at the last level.
          */
 
-        Status = NsSearchAndEnter (Name, EntryToSearch, InterpreterMode,
+        Status = NsSearchAndEnter (*(UINT32 *) Name, EntryToSearch, InterpreterMode,
                                     NumSegments == 0 ? Type : TYPE_Any, Flags, &ThisEntry);
         if (Status != AE_OK)
         {
