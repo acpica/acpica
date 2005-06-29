@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: actbl.h - Table data structures defined in ACPI specification
- *       $Revision: 1.39 $
+ *       $Revision: 1.40 $
  *
  *****************************************************************************/
 
@@ -122,31 +122,44 @@
  *  Values for description table header signatures
  */
 
-#define RSDP_SIG            "RSD PTR "              /* RSDT Pointer signature */
-#define APIC_SIG            "APIC"                  /* Multiple APIC Description Table */
-#define DSDT_SIG            "DSDT"                  /* Differentiated System Description Table */
-#define FADT_SIG            "FACP"                  /* Fixed ACPI Description Table */
-#define FACS_SIG            "FACS"                  /* Firmware ACPI Control Structure */
-#define PSDT_SIG            "PSDT"                  /* Persistent System Description Table */
-#define RSDT_SIG            "RSDT"                  /* Root System Description Table */
-#define XSDT_SIG            "XSDT"                  /* Extended  System Description Table */
-#define SSDT_SIG            "SSDT"                  /* Secondary System Description Table */
-#define SBST_SIG            "SBST"                  /* Smart Battery Specification Table */
-#define SPIC_SIG            "SPIC"                  /* iosapic table */
-#define BOOT_SIG            "BOOT"                  /* Boot table */
+#define RSDP_NAME               "RSDP"
+#define RSDP_SIG                "RSD PTR "  /* RSDT Pointer signature */
+#define APIC_SIG                "APIC"      /* Multiple APIC Description Table */
+#define DSDT_SIG                "DSDT"      /* Differentiated System Description Table */
+#define FADT_SIG                "FACP"      /* Fixed ACPI Description Table */
+#define FACS_SIG                "FACS"      /* Firmware ACPI Control Structure */
+#define PSDT_SIG                "PSDT"      /* Persistent System Description Table */
+#define RSDT_SIG                "RSDT"      /* Root System Description Table */
+#define XSDT_SIG                "XSDT"      /* Extended  System Description Table */
+#define SSDT_SIG                "SSDT"      /* Secondary System Description Table */
+#define SBST_SIG                "SBST"      /* Smart Battery Specification Table */
+#define SPIC_SIG                "SPIC"      /* iosapic table */
+#define BOOT_SIG                "BOOT"      /* Boot table */
 
 
-#define GL_OWNED            0x02                    /* Ownership of global lock is bit 1 */
+#define GL_OWNED                0x02        /* Ownership of global lock is bit 1 */
 
 /* values of Mapic.Model */
 
-#define DUAL_PIC            0
-#define MULTIPLE_APIC       1
+#define DUAL_PIC                0
+#define MULTIPLE_APIC           1
 
 /* values of Type in APIC_HEADER */
 
-#define APIC_PROC           0
-#define APIC_IO             1
+#define APIC_PROC               0
+#define APIC_IO                 1
+
+
+
+/*
+ * Common table types.  The base code can remain
+ * constant if the underlying tables are changed
+ */
+#define RSDT_DESCRIPTOR         RSDT_DESCRIPTOR_REV2
+#define XSDT_DESCRIPTOR         XSDT_DESCRIPTOR_REV2
+#define FACS_DESCRIPTOR         FACS_DESCRIPTOR_REV2
+#define FADT_DESCRIPTOR         FADT_DESCRIPTOR_REV2
+
 
 #pragma pack(1)
 
