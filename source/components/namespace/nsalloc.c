@@ -361,7 +361,7 @@ NsRemoveReference (
 
 ACPI_STATUS
 NsDeleteNamespaceByOwner (
-    UINT16                  TableId)
+    UINT16                  OwnerId)
 {
     NAME_TABLE_ENTRY        *ChildHandle;
     UINT32                  Level;
@@ -388,7 +388,7 @@ NsDeleteNamespaceByOwner (
         ChildHandle = NsGetNextObject (ACPI_TYPE_Any, ParentHandle, ChildHandle);
         if (ChildHandle)
         {
-            if (ChildHandle->TableId == TableId)
+            if (ChildHandle->OwnerId == OwnerId)
             {
                 /* Found an object - delete the object within the Value field */
 
@@ -411,7 +411,7 @@ NsDeleteNamespaceByOwner (
                 ChildHandle     = 0;
             }
 
-            else if (ChildHandle->TableId == TableId)
+            else if (ChildHandle->OwnerId == OwnerId)
             {
                 NsRemoveReference (ChildHandle);
             }
@@ -432,7 +432,7 @@ NsDeleteNamespaceByOwner (
 
             if (Level != 0)
             {
-                if (ParentHandle->TableId == TableId)
+                if (ParentHandle->OwnerId == OwnerId)
                 {
                     NsRemoveReference (ParentHandle);
                 }
