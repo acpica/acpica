@@ -3,7 +3,7 @@
 /******************************************************************************
  *
  * Module Name: aslcompiler.y - Bison input file (ASL grammar and actions)
- *              $Revision: 1.88 $
+ *              $Revision: 1.89 $
  *
  *****************************************************************************/
 
@@ -1156,7 +1156,7 @@ BankFieldTerm
         ')' '{'
             FieldUnitList '}'       {$$ = TrLinkChildren ($<n>3,7,$4,$5,$6,$8,$10,$12,$15);}
     | PARSEOP_BANKFIELD '('
-        error ')'                   {$$ = AslDoError(); yyclearin;}
+        error ')' '{' error '}'     {$$ = AslDoError(); yyclearin;}
     ;
 
 FieldUnitList
@@ -1299,7 +1299,7 @@ FieldTerm
         ')' '{'
             FieldUnitList '}'       {$$ = TrLinkChildren ($<n>3,5,$4,$6,$8,$10,$13);}
     | PARSEOP_FIELD '('
-        error ')'                   {$$ = AslDoError(); yyclearin;}
+        error ')' '{' error '}'     {$$ = AslDoError(); yyclearin;}
     ;
 
 FunctionTerm
@@ -1326,7 +1326,7 @@ IndexFieldTerm
         ')' '{'
             FieldUnitList '}'       {$$ = TrLinkChildren ($<n>3,6,$4,$5,$7,$9,$11,$14);}
     | PARSEOP_INDEXFIELD '('
-        error ')'                   {$$ = AslDoError(); yyclearin;}
+        error ')' '{' error '}'     {$$ = AslDoError(); yyclearin;}
     ;
 
 MethodTerm
