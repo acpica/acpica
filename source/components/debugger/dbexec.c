@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dbexec - debugger control method execution
- *              $Revision: 1.27 $
+ *              $Revision: 1.30 $
  *
  ******************************************************************************/
 
@@ -159,7 +159,7 @@ AcpiDbExecuteMethod (
     UINT32                  i;
 
 
-    if (OutputToFile && !AcpiDbgLevel)
+    if (AcpiGbl_DbOutputToFile && !AcpiDbgLevel)
     {
         AcpiOsPrintf ("Warning: debug output is not enabled!\n");
     }
@@ -195,7 +195,7 @@ AcpiDbExecuteMethod (
 
     /* Prepare for a return object of arbitrary size */
 
-    ReturnObj->Pointer           = Buffer;
+    ReturnObj->Pointer           = AcpiGbl_DbBuffer;
     ReturnObj->Length            = BUFFER_SIZE;
 
 
@@ -233,7 +233,7 @@ AcpiDbExecuteSetup (
     if ((Info->Name[0] != '\\') &&
         (Info->Name[0] != '/'))
     {
-        STRCAT (Info->Pathname, ScopeBuf);
+        STRCAT (Info->Pathname, AcpiGbl_DbScopeBuf);
     }
 
     STRCAT (Info->Pathname, Info->Name);
@@ -254,6 +254,40 @@ AcpiDbExecuteSetup (
 
         AcpiDbSetOutputDestination (DB_REDIRECTABLE_OUTPUT);
     }
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiDbGetOutstandingAllocations
+ *
+ * PARAMETERS:  None
+ *
+ * RETURN:      Current global allocation count minus cache entries
+ *
+ * DESCRIPTION: Determine the current number of "outstanding" allocations --
+ *              those allocations that have not been freed and also are not
+ *              in one of the various object caches.
+ *
+ ******************************************************************************/
+
+UINT32
+AcpiDbGetOutstandingAllocations (void)
+{
+    UINT32                  i;
+    UINT32                  Outstanding = 0;
+
+#ifdef ACPI_DBG_TRACK_ALLOCATIONS
+
+    for (i = ACPI_MEM_LIST_FIRST_CACHE_LIST; i < ACPI_NUM_MEM_LISTS; i++)
+    {
+        Outstanding += (AcpiGbl_MemoryLists[i].TotalAllocated - 
+                        AcpiGbl_MemoryLists[i].TotalFreed - 
+                        AcpiGbl_MemoryLists[i].CacheDepth);
+    }
+#endif
+
+    return (Outstanding);
 }
 
 
@@ -284,15 +318,12 @@ AcpiDbExecute (
 
 #ifdef ACPI_DEBUG
     UINT32                  PreviousAllocations;
-    UINT32                  PreviousSize;
     UINT32                  Allocations;
-    UINT32                  Size;
 
 
     /* Memory allocation tracking */
 
-    PreviousAllocations = AcpiGbl_CurrentAllocCount;
-    PreviousSize = AcpiGbl_CurrentAllocSize;
+    PreviousAllocations = AcpiDbGetOutstandingAllocations ();
 #endif
 
     Info.Name = Name;
@@ -302,20 +333,25 @@ AcpiDbExecute (
     AcpiDbExecuteSetup (&Info);
     Status = AcpiDbExecuteMethod (&Info, &ReturnObj);
 
+    /*
+     * Allow any handlers in separate threads to complete.
+     * (Such as Notify handlers invoked from AML executed above).
+     */
+    AcpiOsSleep (0, 10);
+
 
 #ifdef ACPI_DEBUG
 
     /* Memory allocation tracking */
 
-    Allocations = AcpiGbl_CurrentAllocCount - PreviousAllocations;
-    Size = AcpiGbl_CurrentAllocSize - PreviousSize;
+    Allocations = AcpiDbGetOutstandingAllocations () - PreviousAllocations;
 
     AcpiDbSetOutputDestination (DB_DUPLICATE_OUTPUT);
 
     if (Allocations > 0)
     {
-        AcpiOsPrintf ("Outstanding: %ld allocations of total size %ld after execution\n",
-                        Allocations, Size);
+        AcpiOsPrintf ("Outstanding: %ld allocations after execution\n",
+                        Allocations);
     }
 #endif
 

@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dbxface - AML Debugger external interfaces
- *              $Revision: 1.35 $
+ *              $Revision: 1.39 $
  *
  ******************************************************************************/
 
@@ -180,7 +180,7 @@ AcpiDbSingleStep (
      * namely, opcodes that have arguments
      */
 
-    if (Op->Opcode == AML_NAMEDFIELD_OP)
+    if (Op->Opcode == AML_INT_NAMEDFIELD_OP)
     {
         return (AE_OK);
     }
@@ -199,7 +199,7 @@ AcpiDbSingleStep (
     case OPTYPE_NAMED_OBJECT:
         switch (Op->Opcode)
         {
-        case AML_NAMEPATH_OP:
+        case AML_INT_NAMEPATH_OP:
             return (AE_OK);
             break;
         }
@@ -210,12 +210,12 @@ AcpiDbSingleStep (
      * Under certain debug conditions, display this opcode and its operands
      */
 
-    if ((OutputToFile)                      ||
+    if ((AcpiGbl_DbOutputToFile)            ||
         (AcpiGbl_CmSingleStep)              ||
-        (AcpiDbgLevel & TRACE_PARSE))
+        (AcpiDbgLevel & ACPI_LV_PARSE))
     {
-        if ((OutputToFile)                  ||
-            (AcpiDbgLevel & TRACE_PARSE))
+        if ((AcpiGbl_DbOutputToFile)        ||
+            (AcpiDbgLevel & ACPI_LV_PARSE))
         {
             AcpiOsPrintf ("\n[AmlDebug] Next AML Opcode to execute:\n");
         }
@@ -227,7 +227,7 @@ AcpiDbSingleStep (
          */
 
         OriginalDebugLevel = AcpiDbgLevel;
-        AcpiDbgLevel &= ~(TRACE_PARSE | TRACE_FUNCTIONS);
+        AcpiDbgLevel &= ~(ACPI_LV_PARSE | ACPI_LV_FUNCTIONS);
         Next = Op->Next;
         Op->Next = NULL;
 
@@ -288,7 +288,7 @@ AcpiDbSingleStep (
 
     if (AcpiGbl_StepToNextCall)
     {
-        if (Op->Opcode != AML_METHODCALL_OP)
+        if (Op->Opcode != AML_INT_METHODCALL_OP)
         {
             /* Not a method call, just keep executing */
 
@@ -306,7 +306,7 @@ AcpiDbSingleStep (
      * by default.
      */
 
-    if (Op->Opcode == AML_METHODCALL_OP)
+    if (Op->Opcode == AML_INT_METHODCALL_OP)
     {
         AcpiGbl_CmSingleStep = FALSE;  /* No more single step while executing called method */
 
@@ -320,7 +320,7 @@ AcpiDbSingleStep (
 
     /* TBD: [Investigate] what are the namespace locking issues here */
 
-    /* AcpiCmReleaseMutex (ACPI_MTX_NAMESPACE); */
+    /* AcpiUtReleaseMutex (ACPI_MTX_NAMESPACE); */
 
     /* Go into the command loop and await next user command */
 
@@ -332,8 +332,8 @@ AcpiDbSingleStep (
         {
             /* Handshake with the front-end that gets user command lines */
 
-            AcpiCmReleaseMutex (ACPI_MTX_DEBUG_CMD_COMPLETE);
-            AcpiCmAcquireMutex (ACPI_MTX_DEBUG_CMD_READY);
+            AcpiUtReleaseMutex (ACPI_MTX_DEBUG_CMD_COMPLETE);
+            AcpiUtAcquireMutex (ACPI_MTX_DEBUG_CMD_READY);
         }
 
         else
@@ -357,13 +357,13 @@ AcpiDbSingleStep (
 
             /* Get the user input line */
 
-            AcpiOsGetLine (LineBuf);
+            AcpiOsGetLine (AcpiGbl_DbLineBuf);
         }
 
-        Status = AcpiDbCommandDispatch (LineBuf, WalkState, Op);
+        Status = AcpiDbCommandDispatch (AcpiGbl_DbLineBuf, WalkState, Op);
     }
 
-    /* AcpiCmAcquireMutex (ACPI_MTX_NAMESPACE); */
+    /* AcpiUtAcquireMutex (ACPI_MTX_NAMESPACE); */
 
 
     /* User commands complete, continue execution of the interrupted method */
@@ -391,12 +391,12 @@ AcpiDbInitialize (void)
 
     /* Init globals */
 
-    Buffer = AcpiOsAllocate (BUFFER_SIZE);
+    AcpiGbl_DbBuffer = AcpiOsAllocate (BUFFER_SIZE);
 
     /* Initial scope is the root */
 
-    ScopeBuf [0] = '\\';
-    ScopeBuf [1] =  0;
+    AcpiGbl_DbScopeBuf [0] = '\\';
+    AcpiGbl_DbScopeBuf [1] =  0;
 
 
     /*
@@ -409,19 +409,19 @@ AcpiDbInitialize (void)
     {
         /* These were created with one unit, grab it */
 
-        AcpiCmAcquireMutex (ACPI_MTX_DEBUG_CMD_COMPLETE);
-        AcpiCmAcquireMutex (ACPI_MTX_DEBUG_CMD_READY);
+        AcpiUtAcquireMutex (ACPI_MTX_DEBUG_CMD_COMPLETE);
+        AcpiUtAcquireMutex (ACPI_MTX_DEBUG_CMD_READY);
 
         /* Create the debug execution thread to execute commands */
 
         AcpiOsQueueForExecution (0, AcpiDbExecuteThread, NULL);
     }
 
-    if (!opt_verbose)
+    if (!AcpiGbl_DbOpt_verbose)
     {
-        INDENT_STRING = "    ";
-        opt_disasm = TRUE;
-        opt_stats = FALSE;
+        AcpiGbl_DbDisasmIndent = "    ";
+        AcpiGbl_DbOpt_disasm = TRUE;
+        AcpiGbl_DbOpt_stats = FALSE;
     }
 
 

@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dbutils - AML debugger utilities
- *              $Revision: 1.36 $
+ *              $Revision: 1.42 $
  *
  ******************************************************************************/
 
@@ -154,7 +154,7 @@ AcpiDbSetOutputDestination (
 
     if (OutputFlags & DB_REDIRECTABLE_OUTPUT)
     {
-        if (OutputToFile)
+        if (AcpiGbl_DbOutputToFile)
         {
             AcpiDbgLevel = AcpiGbl_DbDebugLevel;
         }
@@ -185,8 +185,8 @@ AcpiDbDumpBuffer (
 
     AcpiOsPrintf ("\nLocation %X:\n", Address);
 
-    AcpiDbgLevel |= TRACE_TABLES;
-    AcpiCmDumpBuffer ((UINT8 *) Address, 64, DB_BYTE_DISPLAY, ACPI_UINT32_MAX);
+    AcpiDbgLevel |= ACPI_LV_TABLES;
+    AcpiUtDumpBuffer ((UINT8 *) Address, 64, DB_BYTE_DISPLAY, ACPI_UINT32_MAX);
 }
 
 
@@ -226,12 +226,14 @@ AcpiDbDumpObject (
     {
     case ACPI_TYPE_ANY:
 
-        AcpiOsPrintf ("[Object Reference]  Value: %p\n", ObjDesc->Reference.Handle);
+        AcpiOsPrintf ("[Object Reference] = %p\n", ObjDesc->Reference.Handle);
         break;
 
 
     case ACPI_TYPE_INTEGER:
-        AcpiOsPrintf ("[Number]  Value: %ld (%lX)\n", ObjDesc->Integer.Value, ObjDesc->Integer.Value);
+
+        AcpiOsPrintf ("[Integer] = %X%8.8X\n", HIDWORD (ObjDesc->Integer.Value), 
+                                               LODWORD (ObjDesc->Integer.Value));
         break;
 
 
@@ -248,8 +250,8 @@ AcpiDbDumpObject (
 
     case ACPI_TYPE_BUFFER:
 
-        AcpiOsPrintf ("[Buffer]  Value: ");
-        AcpiCmDumpBuffer ((UINT8 *) ObjDesc->Buffer.Pointer, ObjDesc->Buffer.Length, DB_DWORD_DISPLAY, _COMPONENT);
+        AcpiOsPrintf ("[Buffer] = ");
+        AcpiUtDumpBuffer ((UINT8 *) ObjDesc->Buffer.Pointer, ObjDesc->Buffer.Length, DB_DWORD_DISPLAY, _COMPONENT);
         break;
 
 
@@ -265,16 +267,22 @@ AcpiDbDumpObject (
 
 
     case INTERNAL_TYPE_REFERENCE:
-        AcpiOsPrintf ("[Object Reference]  Value: %p\n", ObjDesc->Reference.Handle);
+
+        AcpiOsPrintf ("[Object Reference] = %p\n", ObjDesc->Reference.Handle);
         break;
 
+
     case ACPI_TYPE_PROCESSOR:
+
         AcpiOsPrintf ("[Processor]\n");
         break;
 
+
     case ACPI_TYPE_POWER:
+
         AcpiOsPrintf ("[Power Resource]\n");
         break;
+
 
     default:
 
@@ -450,11 +458,11 @@ AcpiDbLocalNsLookup (
 
     if (ACPI_FAILURE (Status))
     {
-        AcpiOsPrintf ("Could not locate name: %s %s\n", Name, AcpiCmFormatException (Status));
+        AcpiOsPrintf ("Could not locate name: %s %s\n", Name, AcpiFormatException (Status));
     }
 
 
-    AcpiCmFree (InternalPath);
+    ACPI_MEM_FREE (InternalPath);
 
     return (Node);
 }

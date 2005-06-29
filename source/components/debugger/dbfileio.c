@@ -2,7 +2,7 @@
  *
  * Module Name: dbfileio - Debugger file I/O commands.  These can't usually
  *              be used when running the debugger in Ring 0 (Kernel mode)
- *              $Revision: 1.43 $
+ *              $Revision: 1.45 $
  *
  ******************************************************************************/
 
@@ -205,8 +205,8 @@ AcpiDbCloseDebugFile (
     {
        fclose (DebugFile);
        DebugFile = NULL;
-       OutputToFile = FALSE;
-       AcpiOsPrintf ("Debug output file %s closed\n", DebugFilename);
+       AcpiGbl_DbOutputToFile = FALSE;
+       AcpiOsPrintf ("Debug output file %s closed\n", AcpiGbl_DbDebugFilename);
     }
 #endif
 
@@ -237,8 +237,8 @@ AcpiDbOpenDebugFile (
     if (DebugFile)
     {
         AcpiOsPrintf ("Debug output file %s opened\n", Name);
-        STRCPY (DebugFilename, Name);
-        OutputToFile = TRUE;
+        STRCPY (AcpiGbl_DbDebugFilename, Name);
+        AcpiGbl_DbOutputToFile = TRUE;
     }
     else
     {
@@ -314,7 +314,8 @@ AcpiDbLoadTable(
     *TablePtr = ACPI_MEM_ALLOCATE ((size_t) *TableLength);
     if (!*TablePtr)
     {
-        AcpiOsPrintf ("Could not allocate memory for the table (size=%X)\n", TableHeader.Length);
+        AcpiOsPrintf ("Could not allocate memory for ACPI table %4.4s (size=%X)\n", 
+                    TableHeader.Signature, TableHeader.Length);
         return (AE_NO_MEMORY);
     }
 

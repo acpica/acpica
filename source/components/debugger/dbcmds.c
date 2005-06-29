@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dbcmds - debug commands and output routines
- *              $Revision: 1.61 $
+ *              $Revision: 1.62 $
  *
  ******************************************************************************/
 
@@ -984,7 +984,7 @@ AcpiDbSetScope (
 
     if (!Name || Name[0] == 0)
     {
-        AcpiOsPrintf ("Current scope: %s\n", ScopeBuf);
+        AcpiOsPrintf ("Current scope: %s\n", AcpiGbl_DbScopeBuf);
         return;
     }
 
@@ -994,17 +994,17 @@ AcpiDbSetScope (
 
     if (Name[0] == '\\')
     {
-        STRCPY (ScopeBuf, Name);
-        STRCAT (ScopeBuf, "\\");
+        STRCPY (AcpiGbl_DbScopeBuf, Name);
+        STRCAT (AcpiGbl_DbScopeBuf, "\\");
     }
 
     else
     {
-        STRCAT (ScopeBuf, Name);
-        STRCAT (ScopeBuf, "\\");
+        STRCAT (AcpiGbl_DbScopeBuf, Name);
+        STRCAT (AcpiGbl_DbScopeBuf, "\\");
     }
 
-    AcpiOsPrintf ("New scope: %s\n", ScopeBuf);
+    AcpiOsPrintf ("New scope: %s\n", AcpiGbl_DbScopeBuf);
 }
 
 
@@ -1038,7 +1038,7 @@ AcpiDbDisplayResources (
 
     /* Prepare for a return object of arbitrary size */
 
-    ReturnObj.Pointer           = Buffer;
+    ReturnObj.Pointer           = AcpiGbl_DbBuffer;
     ReturnObj.Length            = BUFFER_SIZE;
 
     /* _PRT */
@@ -1052,7 +1052,7 @@ AcpiDbDisplayResources (
         goto GoCRS;
     }
 
-    ReturnObj.Pointer           = Buffer;
+    ReturnObj.Pointer           = AcpiGbl_DbBuffer;
     ReturnObj.Length            = BUFFER_SIZE;
 
     Status = AcpiGetIrqRoutingTable (ObjDesc, &ReturnObj);
@@ -1063,13 +1063,13 @@ AcpiDbDisplayResources (
     }
 
 
-    AcpiRsDumpIrqList((UINT8 *)Buffer);
+    AcpiRsDumpIrqList ((UINT8 *) AcpiGbl_DbBuffer);
 
     /* _CRS */
 GoCRS:
     AcpiOsPrintf ("Evaluating _CRS\n");
 
-    ReturnObj.Pointer           = Buffer;
+    ReturnObj.Pointer           = AcpiGbl_DbBuffer;
     ReturnObj.Length            = BUFFER_SIZE;
 
     Status = AcpiEvaluateObject (ObjDesc, "_CRS", NULL, &ReturnObj);
@@ -1079,7 +1079,7 @@ GoCRS:
         goto GoPRS;
     }
 
-    ReturnObj.Pointer           = Buffer;
+    ReturnObj.Pointer           = AcpiGbl_DbBuffer;
     ReturnObj.Length            = BUFFER_SIZE;
 
     Status = AcpiGetCurrentResources (ObjDesc, &ReturnObj);
@@ -1089,13 +1089,13 @@ GoCRS:
         goto GoPRS;
     }
 
-    AcpiRsDumpResourceList ((ACPI_RESOURCE *) Buffer);
+    AcpiRsDumpResourceList ((ACPI_RESOURCE *) AcpiGbl_DbBuffer);
 
     /* _PRS */
 GoPRS:
     AcpiOsPrintf ("Evaluating _PRS\n");
 
-    ReturnObj.Pointer           = Buffer;
+    ReturnObj.Pointer           = AcpiGbl_DbBuffer;
     ReturnObj.Length            = BUFFER_SIZE;
 
     Status = AcpiEvaluateObject (ObjDesc, "_PRS", NULL, &ReturnObj);
@@ -1105,7 +1105,7 @@ GoPRS:
         goto Cleanup;
     }
 
-    ReturnObj.Pointer           = Buffer;
+    ReturnObj.Pointer           = AcpiGbl_DbBuffer;
     ReturnObj.Length            = BUFFER_SIZE;
 
     Status = AcpiGetPossibleResources (ObjDesc, &ReturnObj);
@@ -1115,7 +1115,7 @@ GoPRS:
         goto Cleanup;
     }
 
-    AcpiRsDumpResourceList ((ACPI_RESOURCE *) Buffer);
+    AcpiRsDumpResourceList ((ACPI_RESOURCE *) AcpiGbl_DbBuffer);
 
 
 Cleanup:

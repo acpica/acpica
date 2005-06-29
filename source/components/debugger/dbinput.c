@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dbinput - user front-end to the AML debugger
- *              $Revision: 1.58 $
+ *              $Revision: 1.65 $
  *
  ******************************************************************************/
 
@@ -133,28 +133,43 @@
  * Globals that are specific to the debugger
  */
 
-NATIVE_CHAR             LineBuf[80];
-NATIVE_CHAR             ParsedBuf[80];
-NATIVE_CHAR             ScopeBuf[40];
-NATIVE_CHAR             DebugFilename[40];
-NATIVE_CHAR             *Args[DB_MAX_ARGS];
-NATIVE_CHAR             *Buffer;
-NATIVE_CHAR             *Filename = NULL;
-BOOLEAN                 OutputToFile = FALSE;
+NATIVE_CHAR             AcpiGbl_DbLineBuf[80];
+NATIVE_CHAR             AcpiGbl_DbParsedBuf[80];
+NATIVE_CHAR             AcpiGbl_DbScopeBuf[40];
+NATIVE_CHAR             AcpiGbl_DbDebugFilename[40];
+NATIVE_CHAR             *AcpiGbl_DbArgs[DB_MAX_ARGS];
+NATIVE_CHAR             *AcpiGbl_DbBuffer;
+NATIVE_CHAR             *AcpiGbl_DbFilename = NULL;
+BOOLEAN                 AcpiGbl_DbOutputToFile = FALSE;
 
 
 UINT32                  AcpiGbl_DbDebugLevel = 0x0FFFFFFF;
-UINT32                  AcpiGbl_DbConsoleDebugLevel = NORMAL_DEFAULT | TRACE_TABLES;
+UINT32                  AcpiGbl_DbConsoleDebugLevel = NORMAL_DEFAULT | ACPI_LV_TABLES;
 UINT8                   AcpiGbl_DbOutputFlags = DB_CONSOLE_OUTPUT;
 
 
-BOOLEAN                 opt_tables      = FALSE;
-BOOLEAN                 opt_disasm      = FALSE;
-BOOLEAN                 opt_stats       = FALSE;
-BOOLEAN                 opt_parse_jit   = FALSE;
-BOOLEAN                 opt_verbose     = TRUE;
-BOOLEAN                 opt_ini_methods = TRUE;
+BOOLEAN                 AcpiGbl_DbOpt_tables      = FALSE;
+BOOLEAN                 AcpiGbl_DbOpt_disasm      = FALSE;
+BOOLEAN                 AcpiGbl_DbOpt_stats       = FALSE;
+BOOLEAN                 AcpiGbl_DbOpt_parse_jit   = FALSE;
+BOOLEAN                 AcpiGbl_DbOpt_verbose     = TRUE;
+BOOLEAN                 AcpiGbl_DbOpt_ini_methods = TRUE;
 
+/*
+ * Statistic globals
+ */
+UINT16                      AcpiGbl_ObjTypeCount[INTERNAL_TYPE_NODE_MAX+1];
+UINT16                      AcpiGbl_NodeTypeCount[INTERNAL_TYPE_NODE_MAX+1];
+UINT16                      AcpiGbl_ObjTypeCountMisc;
+UINT16                      AcpiGbl_NodeTypeCountMisc;
+UINT32                      AcpiGbl_NumNodes;
+UINT32                      AcpiGbl_NumObjects;
+
+
+UINT32                      AcpiGbl_SizeOfParseTree;
+UINT32                      AcpiGbl_SizeOfMethodTrees;
+UINT32                      AcpiGbl_SizeOfNodeEntries;
+UINT32                      AcpiGbl_SizeOfAcpiObjects;
 
 /*
  * Top-level debugger commands.
@@ -162,7 +177,7 @@ BOOLEAN                 opt_ini_methods = TRUE;
  * This list of commands must match the string table below it
  */
 
-enum AcpiAmlDebuggerCommands
+enum AcpiExDebuggerCommands
 {
     CMD_NOT_FOUND = 0,
     CMD_NULL,
@@ -264,7 +279,7 @@ COMMAND_INFO                Commands[] =
     {"TERMINATE",    0},
     {"THREADS",      3},
     {"TREE",         0},
-    {"UNLOAD",       0},
+    {"UNLOAD",       1},
     {NULL,           0}
 };
 
@@ -325,7 +340,7 @@ AcpiDbDisplayHelp (
         AcpiOsPrintf ("Stats [Allocations|Memory|Misc\n");
         AcpiOsPrintf ("       |Objects|Tables]             Display namespace and memory statistics\n");
         AcpiOsPrintf ("Tables                              Display info about loaded ACPI tables\n");
-        AcpiOsPrintf ("Unload                              Unload an ACPI table\n");
+        AcpiOsPrintf ("Unload <TableSig> [Instance]        Unload an ACPI table\n");
         AcpiOsPrintf ("! <CommandNumber>                   Execute command from history buffer\n");
         AcpiOsPrintf ("!!                                  Execute last command again\n");
         return;
@@ -356,7 +371,7 @@ AcpiDbDisplayHelp (
         AcpiOsPrintf ("Go                                  Allow method to run to completion\n");
         AcpiOsPrintf ("Information                         Display info about the current method\n");
         AcpiOsPrintf ("Into                                Step into (not over) a method call\n");
-        AcpiOsPrintf ("List [# of AcpiAml Opcodes]             Display method ASL statements\n");
+        AcpiOsPrintf ("List [# of Aml Opcodes]             Display method ASL statements\n");
         AcpiOsPrintf ("Locals                              Display method local variables\n");
         AcpiOsPrintf ("Results                             Display method result stack\n");
         AcpiOsPrintf ("Set <A|L> <#> <Value>               Set method data (Arguments/Locals)\n");
@@ -470,14 +485,14 @@ AcpiDbGetLine (
     NATIVE_CHAR             *This;
 
 
-    STRCPY (ParsedBuf, InputBuffer);
-    STRUPR (ParsedBuf);
+    STRCPY (AcpiGbl_DbParsedBuf, InputBuffer);
+    STRUPR (AcpiGbl_DbParsedBuf);
 
-    This = ParsedBuf;
+    This = AcpiGbl_DbParsedBuf;
     for (i = 0; i < DB_MAX_ARGS; i++)
     {
-        Args[i] = AcpiDbGetNextToken (This, &Next);
-        if (!Args[i])
+        AcpiGbl_DbArgs[i] = AcpiDbGetNextToken (This, &Next);
+        if (!AcpiGbl_DbArgs[i])
         {
             break;
         }
@@ -488,9 +503,9 @@ AcpiDbGetLine (
 
     /* Uppercase the actual command */
 
-    if (Args[0])
+    if (AcpiGbl_DbArgs[0])
     {
-        STRUPR (Args[0]);
+        STRUPR (AcpiGbl_DbArgs[0]);
     }
 
     Count = i;
@@ -576,7 +591,7 @@ AcpiDbCommandDispatch (
     }
 
     ParamCount = AcpiDbGetLine (InputBuffer);
-    CommandIndex = AcpiDbMatchCommand (Args[0]);
+    CommandIndex = AcpiDbMatchCommand (AcpiGbl_DbArgs[0]);
     Temp = 0;
 
     /* Verify that we have the minimum number of params */
@@ -600,7 +615,9 @@ AcpiDbCommandDispatch (
         break;
 
     case CMD_ALLOCATIONS:
-        AcpiCmDumpCurrentAllocations ((UINT32) -1, NULL);
+#ifdef ACPI_DBG_TRACK_ALLOCATIONS
+        AcpiUtDumpCurrentAllocations ((UINT32) -1, NULL);
+#endif
         break;
 
     case CMD_ARGS:
@@ -609,7 +626,7 @@ AcpiDbCommandDispatch (
         break;
 
     case CMD_BREAKPOINT:
-        AcpiDbSetMethodBreakpoint (Args[1], WalkState, Op);
+        AcpiDbSetMethodBreakpoint (AcpiGbl_DbArgs[1], WalkState, Op);
         break;
 
     case CMD_CALL:
@@ -622,11 +639,11 @@ AcpiDbCommandDispatch (
         break;
 
     case CMD_DEBUG:
-        AcpiDbExecute (Args[1], &Args[2], EX_SINGLE_STEP);
+        AcpiDbExecute (AcpiGbl_DbArgs[1], &AcpiGbl_DbArgs[2], EX_SINGLE_STEP);
         break;
 
     case CMD_DUMP:
-        AcpiDbDecodeAndDisplayObject (Args[1], Args[2]);
+        AcpiDbDecodeAndDisplayObject (AcpiGbl_DbArgs[1], AcpiGbl_DbArgs[2]);
         break;
 
     case CMD_ENABLEACPI:
@@ -643,11 +660,11 @@ AcpiDbCommandDispatch (
         break;
 
     case CMD_EXECUTE:
-        AcpiDbExecute (Args[1], &Args[2], EX_NO_SINGLE_STEP);
+        AcpiDbExecute (AcpiGbl_DbArgs[1], &AcpiGbl_DbArgs[2], EX_NO_SINGLE_STEP);
         break;
 
     case CMD_FIND:
-        AcpiDbFindNameInNamespace (Args[1]);
+        AcpiDbFindNameInNamespace (AcpiGbl_DbArgs[1]);
         break;
 
     case CMD_GO:
@@ -656,7 +673,7 @@ AcpiDbCommandDispatch (
 
     case CMD_HELP:
     case CMD_HELP2:
-        AcpiDbDisplayHelp (Args[1]);
+        AcpiDbDisplayHelp (AcpiGbl_DbArgs[1]);
         break;
 
     case CMD_HISTORY:
@@ -664,7 +681,7 @@ AcpiDbCommandDispatch (
         break;
 
     case CMD_HISTORY_EXE:
-        CommandLine = AcpiDbGetFromHistory (Args[1]);
+        CommandLine = AcpiDbGetFromHistory (AcpiGbl_DbArgs[1]);
         if (!CommandLine)
         {
             return (AE_CTRL_TRUE);
@@ -672,7 +689,9 @@ AcpiDbCommandDispatch (
 
         Status = AcpiDbCommandDispatch (CommandLine, WalkState, Op);
         if (ACPI_SUCCESS (Status))
+        {
             Status = AE_CTRL_TRUE;
+        }
         return (Status);
         break;
 
@@ -685,7 +704,9 @@ AcpiDbCommandDispatch (
 
         Status = AcpiDbCommandDispatch (CommandLine, WalkState, Op);
         if (ACPI_SUCCESS (Status))
+        {
             Status = AE_CTRL_TRUE;
+        }
         return (Status);
 
     case CMD_INFORMATION:
@@ -712,23 +733,23 @@ AcpiDbCommandDispatch (
         else if (ParamCount == 2)
         {
             Temp = AcpiGbl_DbConsoleDebugLevel;
-            AcpiGbl_DbConsoleDebugLevel = STRTOUL (Args[1], NULL, 16);
+            AcpiGbl_DbConsoleDebugLevel = STRTOUL (AcpiGbl_DbArgs[1], NULL, 16);
             AcpiOsPrintf ("Debug Level for console output was %8.8lX, now %8.8lX\n", Temp, AcpiGbl_DbConsoleDebugLevel);
         }
         else
         {
             Temp = AcpiGbl_DbDebugLevel;
-            AcpiGbl_DbDebugLevel = STRTOUL (Args[1], NULL, 16);
+            AcpiGbl_DbDebugLevel = STRTOUL (AcpiGbl_DbArgs[1], NULL, 16);
             AcpiOsPrintf ("Debug Level for file output was %8.8lX, now %8.8lX\n", Temp, AcpiGbl_DbDebugLevel);
         }
         break;
 
     case CMD_LIST:
-        AcpiDbDisassembleAml (Args[1], Op);
+        AcpiDbDisassembleAml (AcpiGbl_DbArgs[1], Op);
         break;
 
     case CMD_LOAD:
-        Status = AcpiDbLoadAcpiTable (Args[1]);
+        Status = AcpiDbLoadAcpiTable (AcpiGbl_DbArgs[1]);
         if (ACPI_FAILURE (Status))
         {
             return (Status);
@@ -744,40 +765,40 @@ AcpiDbCommandDispatch (
         break;
 
     case CMD_METHODS:
-        AcpiDbDisplayObjects ("METHOD", Args[1]);
+        AcpiDbDisplayObjects ("METHOD", AcpiGbl_DbArgs[1]);
         break;
 
     case CMD_NAMESPACE:
-        AcpiDbDumpNamespace (Args[1], Args[2]);
+        AcpiDbDumpNamespace (AcpiGbl_DbArgs[1], AcpiGbl_DbArgs[2]);
         break;
 
     case CMD_NOTIFY:
-        Temp = STRTOUL (Args[2], NULL, 0);
-        AcpiDbSendNotify (Args[1], Temp);
+        Temp = STRTOUL (AcpiGbl_DbArgs[2], NULL, 0);
+        AcpiDbSendNotify (AcpiGbl_DbArgs[1], Temp);
         break;
 
     case CMD_OBJECT:
-        AcpiDbDisplayObjects (Args[1], Args[2]);
+        AcpiDbDisplayObjects (STRUPR (AcpiGbl_DbArgs[1]), AcpiGbl_DbArgs[2]);
         break;
 
     case CMD_OPEN:
-        AcpiDbOpenDebugFile (Args[1]);
+        AcpiDbOpenDebugFile (AcpiGbl_DbArgs[1]);
         break;
 
     case CMD_OWNER:
-        AcpiDbDumpNamespaceByOwner (Args[1], Args[2]);
+        AcpiDbDumpNamespaceByOwner (AcpiGbl_DbArgs[1], AcpiGbl_DbArgs[2]);
         break;
 
     case CMD_PREFIX:
-        AcpiDbSetScope (Args[1]);
+        AcpiDbSetScope (AcpiGbl_DbArgs[1]);
         break;
 
     case CMD_REFERENCES:
-        AcpiDbFindReferences (Args[1]);
+        AcpiDbFindReferences (AcpiGbl_DbArgs[1]);
         break;
 
     case CMD_RESOURCES:
-        AcpiDbDisplayResources (Args[1]);
+        AcpiDbDisplayResources (AcpiGbl_DbArgs[1]);
         break;
 
     case CMD_RESULTS:
@@ -785,11 +806,11 @@ AcpiDbCommandDispatch (
         break;
 
     case CMD_SET:
-        AcpiDbSetMethodData (Args[1], Args[2], Args[3]);
+        AcpiDbSetMethodData (AcpiGbl_DbArgs[1], AcpiGbl_DbArgs[2], AcpiGbl_DbArgs[3]);
         break;
 
     case CMD_STATS:
-        AcpiDbDisplayStatistics (Args[1]);
+        AcpiDbDisplayStatistics (AcpiGbl_DbArgs[1]);
         break;
 
     case CMD_STOP:
@@ -797,12 +818,12 @@ AcpiDbCommandDispatch (
         break;
 
     case CMD_TABLES:
-        AcpiDbDisplayTableInfo (Args[1]);
+        AcpiDbDisplayTableInfo (AcpiGbl_DbArgs[1]);
         break;
 
     case CMD_TERMINATE:
         AcpiDbSetOutputDestination (DB_REDIRECTABLE_OUTPUT);
-        AcpiCmSubsystemShutdown ();
+        AcpiUtSubsystemShutdown ();
 
         /* TBD: [Restructure] Need some way to re-initialize without re-creating the semaphores! */
 
@@ -810,7 +831,7 @@ AcpiDbCommandDispatch (
         break;
 
     case CMD_THREADS:
-        AcpiDbCreateExecutionThreads (Args[1], Args[2], Args[3]);
+        AcpiDbCreateExecutionThreads (AcpiGbl_DbArgs[1], AcpiGbl_DbArgs[2], AcpiGbl_DbArgs[3]);
         break;
 
     case CMD_TREE:
@@ -818,7 +839,7 @@ AcpiDbCommandDispatch (
         break;
 
     case CMD_UNLOAD:
-        AcpiDbUnloadAcpiTable (Args[1], Args[2]);
+        AcpiDbUnloadAcpiTable (AcpiGbl_DbArgs[1], AcpiGbl_DbArgs[2]);
         break;
 
     case CMD_EXIT:
@@ -829,14 +850,14 @@ AcpiDbCommandDispatch (
             return (AE_CTRL_TERMINATE);
         }
 
-        if (!OutputToFile)
+        if (!AcpiGbl_DbOutputToFile)
         {
             AcpiDbgLevel = DEBUG_DEFAULT;
         }
 
         /* Shutdown */
 
-        /* AcpiCmSubsystemShutdown (); */
+        /* AcpiUtSubsystemShutdown (); */
         AcpiDbCloseDebugFile ();
 
         AcpiGbl_DbTerminateThreads = TRUE;
@@ -881,9 +902,9 @@ AcpiDbExecuteThread (
         AcpiGbl_MethodExecuting = FALSE;
         AcpiGbl_StepToNextCall = FALSE;
 
-        AcpiCmAcquireMutex (ACPI_MTX_DEBUG_CMD_READY);
-        Status = AcpiDbCommandDispatch (LineBuf, NULL, NULL);
-        AcpiCmReleaseMutex (ACPI_MTX_DEBUG_CMD_COMPLETE);
+        AcpiUtAcquireMutex (ACPI_MTX_DEBUG_CMD_READY);
+        Status = AcpiDbCommandDispatch (AcpiGbl_DbLineBuf, NULL, NULL);
+        AcpiUtReleaseMutex (ACPI_MTX_DEBUG_CMD_COMPLETE);
     }
 }
 
@@ -911,7 +932,7 @@ AcpiDbSingleThread (
     AcpiGbl_MethodExecuting = FALSE;
     AcpiGbl_StepToNextCall = FALSE;
 
-    Status = AcpiDbCommandDispatch (LineBuf, NULL, NULL);
+    Status = AcpiDbCommandDispatch (AcpiGbl_DbLineBuf, NULL, NULL);
 }
 
 
@@ -958,7 +979,7 @@ AcpiDbUserCommands (
 
         /* Get the user input line */
 
-        AcpiOsGetLine (LineBuf);
+        AcpiOsGetLine (AcpiGbl_DbLineBuf);
 
 
         /* Check for single or multithreaded debug */
@@ -970,8 +991,8 @@ AcpiDbUserCommands (
              * and wait for the command to complete.
              */
 
-            AcpiCmReleaseMutex (ACPI_MTX_DEBUG_CMD_READY);
-            AcpiCmAcquireMutex (ACPI_MTX_DEBUG_CMD_COMPLETE);
+            AcpiUtReleaseMutex (ACPI_MTX_DEBUG_CMD_READY);
+            AcpiUtAcquireMutex (ACPI_MTX_DEBUG_CMD_COMPLETE);
         }
 
         else
