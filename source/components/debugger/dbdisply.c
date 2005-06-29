@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dbdisply - debug display commands
- *              $Revision: 1.54 $
+ *              $Revision: 1.55 $
  *
  ******************************************************************************/
 
@@ -356,7 +356,7 @@ DumpNte:
 
     else
     {
-        AcpiOsPrintf ("Object Pathname:  %s\n", RetBuf.Pointer);
+        AcpiOsPrintf ("Object (%p) Pathname:  %s\n", Node, RetBuf.Pointer);
     }
 
     if (!AcpiOsReadable (Node, sizeof (ACPI_NAMESPACE_NODE)))
