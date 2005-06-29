@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: aclocal.h - Internal data types used across the ACPI subsystem
- *       $Revision: 1.174 $
+ *       $Revision: 1.175 $
  *
  *****************************************************************************/
 
@@ -127,7 +127,6 @@ typedef UINT32                          ACPI_MUTEX_HANDLE;
 /* Total number of aml opcodes defined */
 
 #define AML_NUM_OPCODES                 0x7E
-
 
 
 /*****************************************************************************
@@ -776,7 +775,6 @@ typedef union acpi_parse_obj
     ACPI_PARSE_OBJ_ASL          Asl;
 
 } ACPI_PARSE_OBJECT;
-
 
 
 /*
