@@ -25,7 +25,7 @@ CFG=AcpiSubsystem - Win32 Debug
 # PROP AllowPerConfigDependencies 0
 # PROP Scc_ProjName ""$/Acpi Components/Subsystem", CQBAAAAA"
 # PROP Scc_LocalPath "..\.."
-CPP=xicl6.exe
+CPP=cl.exe
 RSC=rc.exe
 
 !IF  "$(CFG)" == "AcpiSubsystem - Win32 Release"
@@ -48,7 +48,7 @@ RSC=rc.exe
 BSC32=bscmake.exe
 # ADD BASE BSC32 /nologo
 # ADD BSC32 /nologo
-LIB32=xilink6.exe -lib
+LIB32=link.exe -lib
 # ADD BASE LIB32 /nologo
 # ADD LIB32 /nologo /out:"bin\acpica.lib"
 # Begin Special Build Tool
@@ -78,7 +78,7 @@ PostBuild_Cmds=copy bin\acpica.lib ..\..\libraries\acpica.lib	dir ..\..\librarie
 BSC32=bscmake.exe
 # ADD BASE BSC32 /nologo
 # ADD BSC32 /nologo
-LIB32=xilink6.exe -lib
+LIB32=link.exe -lib
 # ADD BASE LIB32 /nologo
 # ADD LIB32 /nologo /out:"bin\acpica.lib"
 # Begin Special Build Tool
@@ -232,10 +232,6 @@ SOURCE=..\..\source\components\interpreter\executer\exdump.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\source\components\interpreter\executer\exdyadic.c
-# End Source File
-# Begin Source File
-
 SOURCE=..\..\source\components\interpreter\executer\exfield.c
 # End Source File
 # Begin Source File
@@ -248,15 +244,27 @@ SOURCE=..\..\source\components\interpreter\executer\exmisc.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\source\components\interpreter\executer\exmonad.c
-# End Source File
-# Begin Source File
-
 SOURCE=..\..\source\components\interpreter\executer\exmutex.c
 # End Source File
 # Begin Source File
 
 SOURCE=..\..\source\components\interpreter\executer\exnames.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\components\interpreter\executer\exoparg1.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\components\interpreter\executer\exoparg2.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\components\interpreter\executer\exoparg3.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\components\interpreter\executer\exoparg6.c
 # End Source File
 # Begin Source File
 
