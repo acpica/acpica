@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Name: hwtimer.c - ACPI Power Management Timer Interface
- *              $Revision: 1.6 $
+ *              $Revision: 1.12 $
  *
  *****************************************************************************/
 
@@ -118,7 +118,7 @@
 #include "acpi.h"
 #include "achware.h"
 
-#define _COMPONENT          HARDWARE
+#define _COMPONENT          ACPI_HARDWARE
         MODULE_NAME         ("hwtimer")
 
 
@@ -138,7 +138,19 @@ ACPI_STATUS
 AcpiGetTimerResolution (
     UINT32                  *Resolution)
 {
+    ACPI_STATUS             Status;
+
+
     FUNCTION_TRACE ("AcpiGetTimerResolution");
+
+
+    /* Ensure that ACPI has been initialized */
+
+    ACPI_IS_INITIALIZATION_COMPLETE (Status);
+    if (ACPI_FAILURE (Status))
+    {
+        return_ACPI_STATUS (Status);
+    }
 
     if (!Resolution)
     {
@@ -149,6 +161,7 @@ AcpiGetTimerResolution (
     {
         *Resolution = 24;
     }
+
     else
     {
         *Resolution = 32;
@@ -174,14 +187,27 @@ ACPI_STATUS
 AcpiGetTimer (
     UINT32                  *Ticks)
 {
+    ACPI_STATUS             Status;
+
+
     FUNCTION_TRACE ("AcpiGetTimer");
+
+
+    /* Ensure that ACPI has been initialized */
+
+    ACPI_IS_INITIALIZATION_COMPLETE (Status);
+    if (ACPI_FAILURE (Status))
+    {
+        return_ACPI_STATUS (Status);
+    }
 
     if (!Ticks)
     {
         return_ACPI_STATUS (AE_BAD_PARAMETER);
     }
 
-    *Ticks = AcpiOsIn32 ((ACPI_IO_ADDRESS) ACPI_GET_ADDRESS (AcpiGbl_FADT->XPmTmrBlk.Address));
+    AcpiOsReadPort ((ACPI_IO_ADDRESS)
+        ACPI_GET_ADDRESS (AcpiGbl_FADT->XPmTmrBlk.Address), Ticks, 32);
 
     return_ACPI_STATUS (AE_OK);
 }
@@ -225,7 +251,9 @@ AcpiGetTimerDuration (
     UINT32                  Microseconds = 0;
     UINT32                  Remainder = 0;
 
+
     FUNCTION_TRACE ("AcpiGetTimerDuration");
+
 
     if (!TimeElapsed)
     {
@@ -241,19 +269,24 @@ AcpiGetTimerDuration (
     {
         DeltaTicks = EndTicks - StartTicks;
     }
+
     else if (StartTicks > EndTicks)
     {
         /* 24-bit Timer */
+
         if (0 == AcpiGbl_FADT->TmrValExt)
         {
             DeltaTicks = (((0x00FFFFFF - StartTicks) + EndTicks) & 0x00FFFFFF);
         }
+
         /* 32-bit Timer */
+
         else
         {
             DeltaTicks = (0xFFFFFFFF - StartTicks) + EndTicks;
         }
     }
+
     else
     {
         *TimeElapsed = 0;
@@ -267,7 +300,7 @@ AcpiGetTimerDuration (
      * divides in kernel-space we have to do some trickery to preserve
      * accuracy while using 32-bit math.
      *
-     * TODO: Change to use 64-bit math when supported.
+     * TBD: Change to use 64-bit math when supported.
      *
      * The process is as follows:
      *  1. Compute the number of seconds by dividing Delta Ticks by
@@ -286,17 +319,21 @@ AcpiGetTimerDuration (
      */
 
     /* Step #1 */
+
     Seconds = DeltaTicks / PM_TIMER_FREQUENCY;
     Remainder = DeltaTicks % PM_TIMER_FREQUENCY;
 
     /* Step #2 */
+
     Milliseconds = (Remainder * 1000) / PM_TIMER_FREQUENCY;
     Remainder = (Remainder * 1000) % PM_TIMER_FREQUENCY;
 
     /* Step #3 */
+
     Microseconds = (Remainder * 1000) / PM_TIMER_FREQUENCY;
 
     /* Step #4 */
+
     *TimeElapsed = Seconds * 1000000;
     *TimeElapsed += Milliseconds * 1000;
     *TimeElapsed += Microseconds;

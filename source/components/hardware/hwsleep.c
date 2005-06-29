@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Name: hwsleep.c - ACPI Hardware Sleep/Wake Interface
- *              $Revision: 1.17 $
+ *              $Revision: 1.20 $
  *
  *****************************************************************************/
 
@@ -245,7 +245,6 @@ AcpiEnterSleepState (
     /*
      * _PSW methods could be run here to enable wake-on keyboard, LAN, etc.
      */
-
     Status = AcpiHwObtainSleepTypeRegisterData (SleepState, &TypeA, &TypeB);
     if (!ACPI_SUCCESS (Status))
     {
@@ -262,60 +261,67 @@ AcpiEnterSleepState (
     Arg.Type = ACPI_TYPE_INTEGER;
     Arg.Integer.Value = SleepState;
 
-    AcpiEvaluateObject(NULL, "\\_PTS", &ArgList, NULL);
-    AcpiEvaluateObject(NULL, "\\_GTS", &ArgList, NULL);
+    AcpiEvaluateObject (NULL, "\\_PTS", &ArgList, NULL);
+    AcpiEvaluateObject (NULL, "\\_GTS", &ArgList, NULL);
 
     /* clear wake status */
 
-    AcpiHwRegisterBitAccess(ACPI_WRITE, ACPI_MTX_LOCK, WAK_STS, 1);
+    AcpiHwRegisterBitAccess (ACPI_WRITE, ACPI_MTX_LOCK, WAK_STS, 1);
 
-    disable();
+    disable ();
 
     /* TODO: disable all non-wake GPEs here */
 
-    PM1AControl = (UINT16) AcpiHwRegisterRead(ACPI_MTX_LOCK, PM1_CONTROL);
+    PM1AControl = (UINT16) AcpiHwRegisterRead (ACPI_MTX_LOCK, PM1_CONTROL);
 
-    DEBUG_PRINT(ACPI_OK, ("Entering S%d\n", SleepState));
+    ACPI_DEBUG_PRINT ((ACPI_DB_OK, "Entering S%d\n", SleepState));
 
     /* mask off SLP_EN and SLP_TYP fields */
+
     PM1AControl &= ~(SLP_TYPE_X_MASK | SLP_EN_MASK);
     PM1BControl = PM1AControl;
 
     /* mask in SLP_TYP */
+
     PM1AControl |= (TypeA << AcpiHwGetBitShift (SLP_TYPE_X_MASK));
     PM1BControl |= (TypeB << AcpiHwGetBitShift (SLP_TYPE_X_MASK));
 
     /* write #1: fill in SLP_TYP data */
-    AcpiHwRegisterWrite(ACPI_MTX_LOCK, PM1A_CONTROL, PM1AControl);
-    AcpiHwRegisterWrite(ACPI_MTX_LOCK, PM1B_CONTROL, PM1BControl);
+
+    AcpiHwRegisterWrite (ACPI_MTX_LOCK, PM1A_CONTROL, PM1AControl);
+    AcpiHwRegisterWrite (ACPI_MTX_LOCK, PM1B_CONTROL, PM1BControl);
 
     /* mask in SLP_EN */
+
     PM1AControl |= (1 << AcpiHwGetBitShift (SLP_EN_MASK));
     PM1BControl |= (1 << AcpiHwGetBitShift (SLP_EN_MASK));
 
     /* flush caches */
+
     wbinvd();
 
     /* write #2: SLP_TYP + SLP_EN */
-    AcpiHwRegisterWrite(ACPI_MTX_LOCK, PM1A_CONTROL, PM1AControl);
-    AcpiHwRegisterWrite(ACPI_MTX_LOCK, PM1B_CONTROL, PM1BControl);
 
-    /* 
+    AcpiHwRegisterWrite (ACPI_MTX_LOCK, PM1A_CONTROL, PM1AControl);
+    AcpiHwRegisterWrite (ACPI_MTX_LOCK, PM1B_CONTROL, PM1BControl);
+
+    /*
      * Wait a second, then try again. This is to get S4/5 to work on all machines.
      */
     if (SleepState > ACPI_STATE_S3)
     {
         AcpiOsStall(1000000);
 
-        AcpiHwRegisterWrite(ACPI_MTX_LOCK, PM1_CONTROL,
+        AcpiHwRegisterWrite (ACPI_MTX_LOCK, PM1_CONTROL,
             (1 << AcpiHwGetBitShift (SLP_EN_MASK)));
     }
 
     /* wait until we enter sleep state */
-    while (!AcpiHwRegisterBitAccess(ACPI_READ,ACPI_MTX_LOCK,WAK_STS))
-        {  }
 
-    enable();
+    while (!AcpiHwRegisterBitAccess (ACPI_READ,ACPI_MTX_LOCK,WAK_STS))
+    {  }
+
+    enable ();
 
     return_ACPI_STATUS (AE_OK);
 }
@@ -339,19 +345,21 @@ AcpiLeaveSleepState (
     ACPI_OBJECT_LIST    ArgList;
     ACPI_OBJECT         Arg;
 
+
     FUNCTION_TRACE ("AcpiLeaveSleepState");
 
 
-    MEMSET(&ArgList, 0, sizeof(ArgList));
+    MEMSET (&ArgList, 0, sizeof(ArgList));
     ArgList.Count = 1;
     ArgList.Pointer = &Arg;
 
-    MEMSET(&Arg, 0, sizeof(Arg));
+    MEMSET (&Arg, 0, sizeof(Arg));
     Arg.Type = ACPI_TYPE_INTEGER;
     Arg.Integer.Value = SleepState;
 
-    AcpiEvaluateObject(NULL, "\\_BFS", &ArgList, NULL);
-    AcpiEvaluateObject(NULL, "\\_WAK", &ArgList, NULL);
+    AcpiEvaluateObject (NULL, "\\_BFS", &ArgList, NULL);
+    AcpiEvaluateObject (NULL, "\\_WAK", &ArgList, NULL);
+
     /* _WAK returns stuff - do we want to look at it? */
 
     /* Re-enable GPEs */
