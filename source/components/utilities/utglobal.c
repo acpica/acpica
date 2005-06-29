@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: utglobal - Global variables for the ACPI subsystem
- *              $Revision: 1.149 $
+ *              $Revision: 1.150 $
  *
  *****************************************************************************/
 
@@ -869,6 +869,7 @@ AcpiUtInitGlobals (
     AcpiGbl_NextTableOwnerId            = FIRST_TABLE_ID;
     AcpiGbl_NextMethodOwnerId           = FIRST_METHOD_ID;
     AcpiGbl_DebuggerConfiguration       = DEBUGGER_THREADING;
+    AcpiGbl_DbOutputFlags               = DB_CONSOLE_OUTPUT;
 
     /* Hardware oriented */
 
