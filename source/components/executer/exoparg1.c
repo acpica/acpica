@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exoparg1 - AML execution - opcodes with 1 argument
- *              $Revision: 1.131 $
+ *              $Revision: 1.135 $
  *
  *****************************************************************************/
 
@@ -10,7 +10,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -126,7 +126,7 @@
 
 
 #define _COMPONENT          ACPI_EXECUTER
-        MODULE_NAME         ("exoparg1")
+        ACPI_MODULE_NAME    ("exoparg1")
 
 
 /*!
@@ -173,7 +173,7 @@ AcpiExOpcode_1A_0T_0R (
     ACPI_STATUS             Status = AE_OK;
 
 
-    FUNCTION_TRACE_STR ("ExOpcode_1A_0T_0R", AcpiPsGetOpcodeName (WalkState->Opcode));
+    ACPI_FUNCTION_TRACE_STR ("ExOpcode_1A_0T_0R", AcpiPsGetOpcodeName (WalkState->Opcode));
 
 
     /* Examine the AML opcode */
@@ -218,7 +218,7 @@ AcpiExOpcode_1A_0T_0R (
 
     default:                /*  Unknown opcode  */
 
-        REPORT_ERROR (("AcpiExOpcode_1A_0T_0R: Unknown opcode %X\n",
+        ACPI_REPORT_ERROR (("AcpiExOpcode_1A_0T_0R: Unknown opcode %X\n",
             WalkState->Opcode));
         Status = AE_AML_BAD_OPCODE;
         break;
@@ -249,7 +249,7 @@ AcpiExOpcode_1A_1T_0R (
     ACPI_OPERAND_OBJECT     **Operand = &WalkState->Operands[0];
 
 
-    FUNCTION_TRACE_STR ("ExOpcode_1A_1T_0R", AcpiPsGetOpcodeName (WalkState->Opcode));
+    ACPI_FUNCTION_TRACE_STR ("ExOpcode_1A_1T_0R", AcpiPsGetOpcodeName (WalkState->Opcode));
 
 
     /* Examine the AML opcode */
@@ -263,7 +263,7 @@ AcpiExOpcode_1A_1T_0R (
 
     default:                        /* Unknown opcode */
 
-        REPORT_ERROR (("AcpiExOpcode_1A_1T_0R: Unknown opcode %X\n",
+        ACPI_REPORT_ERROR (("AcpiExOpcode_1A_1T_0R: Unknown opcode %X\n",
             WalkState->Opcode));
         Status = AE_AML_BAD_OPCODE;
         goto Cleanup;
@@ -303,7 +303,7 @@ AcpiExOpcode_1A_1T_1R (
     ACPI_INTEGER            Digit;
 
 
-    FUNCTION_TRACE_STR ("ExOpcode_1A_1T_1R", AcpiPsGetOpcodeName (WalkState->Opcode));
+    ACPI_FUNCTION_TRACE_STR ("ExOpcode_1A_1T_1R", AcpiPsGetOpcodeName (WalkState->Opcode));
 
 
     /* Create a return object of type Integer for most opcodes */
@@ -416,7 +416,8 @@ AcpiExOpcode_1A_1T_1R (
         if (Operand[0]->Integer.Value > ACPI_MAX_BCD_VALUE)
         {
             ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "BCD overflow: %8.8X%8.8X\n",
-                HIDWORD(Operand[0]->Integer.Value), LODWORD(Operand[0]->Integer.Value)));
+                ACPI_HIDWORD(Operand[0]->Integer.Value),
+                ACPI_LODWORD(Operand[0]->Integer.Value)));
             Status = AE_AML_NUMERIC_OVERFLOW;
             goto Cleanup;
         }
@@ -553,7 +554,7 @@ AcpiExOpcode_1A_1T_1R (
 
     default:                        /* Unknown opcode */
 
-        REPORT_ERROR (("AcpiExOpcode_1A_1T_1R: Unknown opcode %X\n",
+        ACPI_REPORT_ERROR (("AcpiExOpcode_1A_1T_1R: Unknown opcode %X\n",
             WalkState->Opcode));
         Status = AE_AML_BAD_OPCODE;
         goto Cleanup;
@@ -604,7 +605,7 @@ AcpiExOpcode_1A_0T_1R (
     ACPI_INTEGER            Value;
 
 
-    FUNCTION_TRACE_STR ("ExOpcode_1A_0T_0R", AcpiPsGetOpcodeName (WalkState->Opcode));
+    ACPI_FUNCTION_TRACE_STR ("ExOpcode_1A_0T_0R", AcpiPsGetOpcodeName (WalkState->Opcode));
 
 
     /* Examine the AML opcode */
@@ -727,7 +728,7 @@ AcpiExOpcode_1A_0T_1R (
 
             default:
 
-                REPORT_ERROR (("AcpiExOpcode_1A_0T_1R/TypeOp: Internal error - Unknown Reference subtype %X\n",
+                ACPI_REPORT_ERROR (("AcpiExOpcode_1A_0T_1R/TypeOp: Internal error - Unknown Reference subtype %X\n",
                     Operand[0]->Reference.Opcode));
                 Status = AE_AML_INTERNAL;
                 goto Cleanup;
@@ -873,7 +874,7 @@ AcpiExOpcode_1A_0T_1R (
 
 
             case ACPI_TYPE_STRING:
-    
+
                 /*
                  * This is a DerefOf (String).  The string is a reference to a named ACPI object.
                  *
@@ -881,8 +882,8 @@ AcpiExOpcode_1A_0T_1R (
                  * 2) Dereference the node to an actual object.  Could be a Field, so we nee
                  *    to resolve the node to a value.
                  */
-                Status = AcpiNsGetNodeByPath (Operand[0]->String.Pointer, WalkState->ScopeInfo->Scope.Node, 
-                                NS_SEARCH_PARENT, (ACPI_NAMESPACE_NODE **) &ReturnDesc);
+                Status = AcpiNsGetNodeByPath (Operand[0]->String.Pointer, WalkState->ScopeInfo->Scope.Node,
+                                ACPI_NS_SEARCH_PARENT, (ACPI_NAMESPACE_NODE **) &ReturnDesc);
                 if (ACPI_FAILURE (Status))
                 {
                     goto Cleanup;
@@ -913,7 +914,7 @@ AcpiExOpcode_1A_0T_1R (
         else
         {
             /*
-             * This must be a reference object produced by either the Index() or 
+             * This must be a reference object produced by either the Index() or
              * RefOf() operator
              */
             switch (Operand[0]->Reference.Opcode)
@@ -927,10 +928,22 @@ AcpiExOpcode_1A_0T_1R (
                 switch (Operand[0]->Reference.TargetType)
                 {
                 case ACPI_TYPE_BUFFER_FIELD:
+
+                    /* Ensure that the Buffer arguments are evaluated */
+
+                    TempDesc = Operand[0]->Reference.Object;
+#if 0
+                    
+                    Status = AcpiDsGetBufferArguments (TempDesc);
+                    if (ACPI_FAILURE (Status))
+                    {
+                        goto Cleanup;
+                    }
+#endif
+
                     /*
-                     * The target is a buffer, we must create a new object that
-                     * contains one element of the buffer, the element pointed
-                     * to by the index.
+                     * Create a new object that contains one element of the 
+                     * buffer -- the element pointed to by the index.
                      *
                      * NOTE: index into a buffer is NOT a pointer to a
                      * sub-buffer of the main buffer, it is only a pointer to a
@@ -943,23 +956,30 @@ AcpiExOpcode_1A_0T_1R (
                         goto Cleanup;
                     }
 
-                    /* 
+                    /*
                      * Since we are returning the value of the buffer at the
                      * indexed location, we don't need to add an additional
                      * reference to the buffer itself.
                      */
-                    TempDesc = Operand[0]->Reference.Object;
                     ReturnDesc->Integer.Value =
                         TempDesc->Buffer.Pointer[Operand[0]->Reference.Offset];
                     break;
-                
+
 
                 case ACPI_TYPE_PACKAGE:
 
+#if 0
+                    /* Ensure that the Package arguments are evaluated */
+
+                    Status = AcpiDsGetPackageArguments (Operand[0]->Reference.Object);
+                    if (ACPI_FAILURE (Status))
+                    {
+                        goto Cleanup;
+                    }
+#endif
                     /*
-                     * The target is a package, we want to return the referenced
-                     * element of the package.  We must add another reference to
-                     * this object, however.
+                     * Return the referenced element of the package.  We must add 
+                     * another reference to the referenced object, however.
                      */
                     ReturnDesc = *(Operand[0]->Reference.Where);
                     if (!ReturnDesc)
@@ -1012,7 +1032,7 @@ AcpiExOpcode_1A_0T_1R (
 
     default:
 
-        REPORT_ERROR (("AcpiExOpcode_1A_0T_1R: Unknown opcode %X\n",
+        ACPI_REPORT_ERROR (("AcpiExOpcode_1A_0T_1R: Unknown opcode %X\n",
             WalkState->Opcode));
         Status = AE_AML_BAD_OPCODE;
         goto Cleanup;
