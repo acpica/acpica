@@ -159,8 +159,8 @@ AmlExecStore (
     ACPI_OBJECT_INTERNAL    *TmpDesc;
     NAME_TABLE_ENTRY        *Entry = NULL;
     UINT8                   Value = 0;
-	UINT32					Length;
-	UINT32					i;
+    UINT32                  Length;
+    UINT32                  i;
 
 
     FUNCTION_TRACE ("AmlExecStore");
@@ -266,7 +266,7 @@ AmlExecStore (
                  * If the Destination element is a package, we will delete
                  *  that object and construct a new one.
                  *
-                 * TBD: Should both the src and dest be required to be packages?
+                 * TBD: [Investigate] Should both the src and dest be required to be packages?
                  *       && (ValDesc->Common.Type == ACPI_TYPE_Package)
                  */
                 if (TmpDesc->Common.Type == ACPI_TYPE_Package)
@@ -350,12 +350,12 @@ AmlExecStore (
         
         /* 
          * Storing into a buffer at a location defined by an Index.
-		 *
-		 * Each 8-bit element of the source object is written to the
-		 *	8-bit Buffer Field of the Index destination object.
+         *
+         * Each 8-bit element of the source object is written to the
+         *  8-bit Buffer Field of the Index destination object.
          */
 
-		/*
+        /*
          * Set the TmpDesc to the destination object and type check.
          */
         TmpDesc = DestDesc->Reference.Object;
@@ -366,51 +366,51 @@ AmlExecStore (
             break;
         }
 
-		/*
-		 * The assignment of the individual elements will be slightly
-		 *	different for each source type.
-		 */
+        /*
+         * The assignment of the individual elements will be slightly
+         *  different for each source type.
+         */
         
-		switch (ValDesc->Common.Type) 
+        switch (ValDesc->Common.Type) 
         {
         /*
          * If the type is Integer, the Length is 4.
-		 * This loop to assign each of the elements is somewhat
-		 *	backward because of the Big Endian-ness of IA-64
+         * This loop to assign each of the elements is somewhat
+         *  backward because of the Big Endian-ness of IA-64
          */
         case ACPI_TYPE_Number:
-			Length = 4;
-			for (i = Length; i != 0; i--)
-			{
-				Value = (UINT8)(ValDesc->Number.Value >> ((i - 1) * 8));
-				TmpDesc->Buffer.Pointer[DestDesc->Reference.Offset] = Value;
-			}
+            Length = 4;
+            for (i = Length; i != 0; i--)
+            {
+                Value = (UINT8)(ValDesc->Number.Value >> (MUL_8 (i - 1)));
+                TmpDesc->Buffer.Pointer[DestDesc->Reference.Offset] = Value;
+            }
             break;
 
         /*
          * If the type is Buffer, the Length is in the structure.
-		 * Just loop through the elements and assign each one in turn.
+         * Just loop through the elements and assign each one in turn.
          */
         case ACPI_TYPE_Buffer:
-			Length = ValDesc->Buffer.Length;
+            Length = ValDesc->Buffer.Length;
             for (i = 0; i < Length; i++)
-			{
-				Value = *(ValDesc->Buffer.Pointer + i);
-				TmpDesc->Buffer.Pointer[DestDesc->Reference.Offset] = Value;
-			}
+            {
+                Value = *(ValDesc->Buffer.Pointer + i);
+                TmpDesc->Buffer.Pointer[DestDesc->Reference.Offset] = Value;
+            }
             break;
 
         /*
          * If the type is String, the Length is in the structure.
-		 * Just loop through the elements and assign each one in turn.
+         * Just loop through the elements and assign each one in turn.
          */
         case ACPI_TYPE_String:
-			Length = ValDesc->String.Length;
+            Length = ValDesc->String.Length;
             for (i = 0; i < Length; i++)
-			{
-	            Value = *(ValDesc->String.Pointer + i);
-				TmpDesc->Buffer.Pointer[DestDesc->Reference.Offset] = Value;
-			}
+            {
+                Value = *(ValDesc->String.Pointer + i);
+                TmpDesc->Buffer.Pointer[DestDesc->Reference.Offset] = Value;
+            }
             break;
 
         /*
@@ -432,9 +432,9 @@ AmlExecStore (
         }
 
         /*
-		 * Set the return pointer
-		 */
-		DestDesc = TmpDesc;
+         * Set the return pointer
+         */
+        DestDesc = TmpDesc;
 
         break;
 
@@ -490,7 +490,7 @@ AmlExecStore (
         DEBUG_PRINT (ACPI_ERROR, ("AmlExecStore: Internal error - Unknown Reference subtype %02x\n",
                         DestDesc->Reference.OpCode));
         
-        /* TBD:  use object dump routine !! */
+        /* TBD: [Restructure] use object dump routine !! */
 
         DUMP_BUFFER (DestDesc, sizeof (ACPI_OBJECT_INTERNAL));
 
