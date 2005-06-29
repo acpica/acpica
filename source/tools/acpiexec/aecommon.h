@@ -127,7 +127,7 @@ extern UINT32                   AcpiDsdtLength;
 extern int                      optind;
 extern char                     *optarg;
 extern UINT8                    *AmlPtr;
-extern UINT32                   AcpiAmlLength;
+extern UINT32                   AmlLength;
 
 extern char                     LineBuf[80];
 extern char                     CommandBuf[40];

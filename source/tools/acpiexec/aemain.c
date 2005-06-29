@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: aemain - Main routine for the AcpiExec utility
- *              $Revision: 1.29 $
+ *              $Revision: 1.34 $
  *
  *****************************************************************************/
 
@@ -142,6 +142,15 @@
 FADT_DESCRIPTOR             LocalFADT;
 ACPI_COMMON_FACS            LocalFACS;
 
+#ifdef _IA16
+ACPI_STATUS
+AcpiGetIrqRoutingTable  (
+    ACPI_HANDLE             DeviceHandle,
+    ACPI_BUFFER             *RetBuffer)
+{
+    return AE_NOT_IMPLEMENTED;
+}
+#endif
 
 /******************************************************************************
  *
@@ -158,14 +167,16 @@ ACPI_COMMON_FACS            LocalFACS;
 void
 usage (void)
 {
-    printf ("Usage: acpiexec [-dgjs] [-l DebugLevel] [-o OutputFile] [AcpiTableFile]\n");
+    printf ("Usage: acpiexec [-?dgis] [-l DebugLevel] [-o OutputFile] [AcpiTableFile]\n");
     printf ("Where:\n");
     printf ("    Input Options\n");
     printf ("        AcpiTableFile       Get ACPI tables from this file\n");
     printf ("    Output Options\n");
     printf ("    Miscellaneous Options\n");
-    printf ("        -j                  Just-in-time method parsing\n");
+    printf ("        -?                  Display this message\n");
+    printf ("        -i                  Do not run INI methods\n");
     printf ("        -l DebugLevel       Specify debug output level\n");
+    printf ("        -v                  Verbose init output\n");
 }
 
 
@@ -188,6 +199,7 @@ main (
 {
     int                     j;
     ACPI_STATUS             Status;
+    UINT32                  InitFlags;
 
 
     /* Init globals */
@@ -209,7 +221,7 @@ main (
 
     /* Get the command line options */
 
-    while ((j = getopt (argc, argv, "dgjl:o:s")) != EOF) switch(j)
+    while ((j = getopt (argc, argv, "?dgijl:o:sv")) != EOF) switch(j)
     {
     case 'd':
         opt_disasm = TRUE;
@@ -221,12 +233,17 @@ main (
         Filename = NULL;
         break;
 
+    case 'i':
+        opt_ini_methods = FALSE;
+        break;
+
     case 'j':
         opt_parse_jit = TRUE;
         break;
 
     case 'l':
         AcpiDbgLevel = strtoul (optarg, NULL, 0);
+        AcpiGbl_DbConsoleDebugLevel = AcpiDbgLevel;
         printf ("Debug Level: %lX\n", AcpiDbgLevel);
         break;
 
@@ -238,6 +255,11 @@ main (
         opt_stats = TRUE;
         break;
 
+    case 'v':
+        AcpiDbgLevel |= TRACE_INIT;
+        break;
+
+    case '?':
     default:
         usage();
         return -1;
@@ -248,6 +270,13 @@ main (
 
     AcpiInitializeSubsystem ();
 
+
+    InitFlags = (ACPI_NO_HARDWARE_INIT | ACPI_NO_ACPI_ENABLE | ACPI_NO_EVENT_INIT);
+
+    if (!opt_ini_methods)
+    {
+        InitFlags |= (ACPI_NO_DEVICE_INIT | ACPI_NO_OBJECT_INIT);
+    }
 
     /* Standalone filename is the only argument */
 
@@ -260,7 +289,7 @@ main (
         Status = AcpiDbLoadAcpiTable (Filename);
         if (ACPI_FAILURE (Status))
         {
-            printf ("**** Could not load input table, %s\n", AcpiCmFormatException (Status));
+            printf ("**** Could not load input table, %s\n", AcpiUtFormatException (Status));
             goto enterloop;
         }
 
@@ -286,12 +315,10 @@ main (
          */
         AeInstallHandlers ();
 
-        Status = AcpiEnableSubsystem (ACPI_NO_HARDWARE_INIT   |
-                                        ACPI_NO_ACPI_ENABLE   |
-                                        ACPI_NO_EVENT_INIT);
+        Status = AcpiEnableSubsystem (InitFlags);
         if (ACPI_FAILURE (Status))
         {
-            printf ("**** Could not EnableSubsystem, %s\n", AcpiCmFormatException (Status));
+            printf ("**** Could not EnableSubsystem, %s\n", AcpiUtFormatException (Status));
             goto enterloop;
         }
 
@@ -311,7 +338,7 @@ main (
 
         if (ACPI_FAILURE (Status))
         {
-            printf ("**** Could not load ACPI tables, %s\n", AcpiCmFormatException (Status));
+            printf ("**** Could not load ACPI tables, %s\n", AcpiUtFormatException (Status));
             goto enterloop;
         }
 
@@ -319,7 +346,7 @@ main (
         Status = AcpiNsLoadNamespace ();
         if (ACPI_FAILURE (Status))
         {
-            printf ("**** Could not load ACPI namespace, %s\n", AcpiCmFormatException (Status));
+            printf ("**** Could not load ACPI namespace, %s\n", AcpiUtFormatException (Status));
             goto enterloop;
         }
 
@@ -328,12 +355,10 @@ main (
          */
         AeInstallHandlers ();
 
-        Status = AcpiEnableSubsystem (ACPI_NO_HARDWARE_INIT   |
-                                        ACPI_NO_ACPI_ENABLE   |
-                                        ACPI_NO_EVENT_INIT);
+        Status = AcpiEnableSubsystem (InitFlags);
         if (ACPI_FAILURE (Status))
         {
-            printf ("**** Could not EnableSubsystem, %s\n", AcpiCmFormatException (Status));
+            printf ("**** Could not EnableSubsystem, %s\n", AcpiUtFormatException (Status));
             goto enterloop;
         }
      }

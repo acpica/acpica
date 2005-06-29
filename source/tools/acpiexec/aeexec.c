@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: aeexec - Top level parse and execute routines
- *              $Revision: 1.35 $
+ *              $Revision: 1.38 $
  *
  *****************************************************************************/
 
@@ -125,14 +125,14 @@
 #include <stdio.h>
 
 
-#define _COMPONENT          PARSER
+#define _COMPONENT          ACPI_TOOLS
         MODULE_NAME         ("aeexec")
 
 
 ACPI_PARSE_OBJECT           *AcpiGbl_ParsedNamespaceRoot;
 ACPI_PARSE_OBJECT           *root;
 UINT8                       *AmlPtr;
-UINT32                      AcpiAmlLength;
+UINT32                      AmlLength;
 UINT8                       *DsdtPtr;
 UINT32                      AcpiDsdtLength;
 
@@ -152,7 +152,7 @@ static char                 *AcpiGbl_RegionNames[] =    /* printable names of AC
 
 /*****************************************************************************
  *
- * FUNCTION:    AcpiCmFormatSpaceId
+ * FUNCTION:    AcpiUtFormatSpaceId
  *
  * PARAMETERS:  Status              - Acpi status to be formatted
  *
@@ -163,7 +163,7 @@ static char                 *AcpiGbl_RegionNames[] =    /* printable names of AC
  ****************************************************************************/
 
 char *
-AcpiCmFormatSpaceId (
+AcpiUtFormatSpaceId (
     UINT32                  SpaceId)
 {
 
@@ -217,7 +217,7 @@ RegionHandler (
     }
 
     DEBUG_PRINT (TRACE_OPREGION, ("Operation Region request on %s at 0x%X\n",
-            AcpiCmFormatSpaceId (RegionObject->Region.SpaceId),
+            AcpiUtFormatSpaceId (RegionObject->Region.SpaceId),
             Address));
 
 
@@ -329,14 +329,14 @@ RegionHandler (
      */
     switch (Function)
     {
-    case ADDRESS_SPACE_READ:
+    case ACPI_READ_ADR_SPACE:
         /*
          * Set the pointer Value to whatever is in the buffer
          */
         MEMCPY (Value, BufferValue, ByteWidth);
         break;
 
-    case ADDRESS_SPACE_WRITE:
+    case ACPI_WRITE_ADR_SPACE:
         /*
          * Write the contents of Value to the buffer
          */
@@ -471,13 +471,13 @@ AeInstallHandlers (void)
     for (i = 0; i < 3; i++)
     {
         Status = AcpiRemoveAddressSpaceHandler (AcpiGbl_RootNode,
-                        (ACPI_ADDRESS_SPACE_TYPE) i, RegionHandler);
+                        (ACPI_ADR_SPACE_TYPE) i, RegionHandler);
 
         /* Install handler at the root object.
          * TBD: all default handlers should be installed here!
          */
         Status = AcpiInstallAddressSpaceHandler (AcpiGbl_RootNode,
-                        (ACPI_ADDRESS_SPACE_TYPE) i, RegionHandler, RegionInit, NULL);
+                        (ACPI_ADR_SPACE_TYPE) i, RegionHandler, RegionInit, NULL);
         if (ACPI_FAILURE (Status))
         {
             printf ("Could not install an OpRegion handler\n");

@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: abcompare - compare AML files
- *              $Revision: 1.7 $
+ *              $Revision: 1.8 $
  *
  *****************************************************************************/
 
@@ -138,7 +138,7 @@ AbValidateHeader (
     ACPI_TABLE_HEADER       *Header)
 {
 
-    if (!AcpiCmValidAcpiName (* (UINT32 *) &Header->Signature))
+    if (!AcpiUtValidAcpiName (* (UINT32 *) &Header->Signature))
     {
         printf ("Header signature is invalid\n");
         return FALSE;
@@ -367,7 +367,7 @@ AbDumpAmlFile (
 
 
     AcpiDbgLevel = ACPI_UINT32_MAX;
-    AcpiCmDumpBuffer (FileBuffer, FileSize, DB_BYTE_DISPLAY, ACPI_UINT32_MAX);
+    AcpiUtDumpBuffer (FileBuffer, FileSize, DB_BYTE_DISPLAY, ACPI_UINT32_MAX);
 
     return 0;
 }
@@ -379,7 +379,7 @@ UINT8                       AcpiGbl_DbOutputFlags = DB_CONSOLE_OUTPUT ;
 
 
 void *
-_CmCallocate (
+_UtCallocate (
     UINT32                  Size,
     UINT32                  Component,
     NATIVE_CHAR             *Module,
@@ -390,7 +390,7 @@ _CmCallocate (
 }
 
 void
-_CmFree (
+_UtFree (
     void                    *Address,
     UINT32                  Component,
     NATIVE_CHAR             *Module,
@@ -401,7 +401,7 @@ _CmFree (
 
 
 void *
-AcpiCmMemset (
+AcpiUtMemset (
     void                    *Dest,
     UINT32                  Value,
     NATIVE_UINT             Count)
