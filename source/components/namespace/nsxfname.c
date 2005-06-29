@@ -121,6 +121,7 @@
 #include <interpreter.h>
 #include <namespace.h>
 #include <methods.h>
+#include <amlcode.h>
 #include <acpiobj.h>
 #include <pnp.h>
 
@@ -154,7 +155,7 @@ AcpiLoadNamespace (
 
     /* Are the tables loaded yet? */
 
-    if (DSDT == NULL)
+    if (Gbl_DSDT == NULL)
     {
         DEBUG_PRINT (ACPI_ERROR, ("DSDT is not in memory\n"));
         return_ACPI_STATUS (AE_NO_ACPI_TABLES);
@@ -204,9 +205,13 @@ BREAKPOINT3;
     DUMP_TABLES (NS_ALL, ACPI_INT_MAX);
 
     DEBUG_PRINT (ACPI_OK, ("**** ACPI Namespace successfully loaded! [%p]\n", 
-                    RootObject->Scope));
+                    Gbl_RootObject->Scope));
 
 BREAKPOINT3;
+
+    AcpiInstallAddressSpaceHandler (Gbl_RootObject, REGION_SystemMemory, AmlSystemMemorySpaceHandler, NULL);
+    AcpiInstallAddressSpaceHandler (Gbl_RootObject, REGION_SystemIO, AmlSystemIoSpaceHandler, NULL);
+
     return_ACPI_STATUS (Status);
 }
 
@@ -247,7 +252,7 @@ AcpiNameToHandle (
 
     if (Name == NS_ROOT)
     {
-        *RetHandle = RootObject;
+        *RetHandle = Gbl_RootObject;
         return AE_OK;
     }
 
@@ -255,7 +260,7 @@ AcpiNameToHandle (
 
     if (!Parent)
     {
-        LocalParent = RootObject;
+        LocalParent = Gbl_RootObject;
     }
 
     /* Validate the Parent handle */
@@ -364,7 +369,7 @@ AcpiPathnameToHandle (
 
     if (strcmp (Pathname, NS_ROOT_PATH) == 0)
     {
-        *RetHandle = RootObject;
+        *RetHandle = Gbl_RootObject;
         return AE_OK;
     }
 
