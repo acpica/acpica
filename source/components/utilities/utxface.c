@@ -151,8 +151,7 @@ AcpiInitialize (ACPI_INIT_DATA *InitData)
 
     FUNCTION_TRACE ("AcpiInitialize");
 
-    DEBUG_PRINT (ACPI_INFO, ("ACPI Subsystem version %d using the %s\n", 
-                                Gbl_AcpiCaVersion, Gbl_ParserId));
+    DEBUG_PRINT_RAW (ACPI_OK, ("ACPI Subsystem version [%s]\n", ACPI_CA_VERSION));
     DEBUG_PRINT (ACPI_INFO, ("Initializing ACPI Subsystem...\n"));
 
 
@@ -160,9 +159,25 @@ AcpiInitialize (ACPI_INIT_DATA *InitData)
 
     CmInitGlobals (InitData);
 
+    /* Initialize the OS-Dependent layer */
+
+    Status = OsdInitialize ();
+    if (ACPI_FAILURE (Status))
+    {
+        DEBUG_PRINT (ACPI_ERROR, ("OSD failed to initialize, %s\n", CmFormatException (Status)));
+        REPORT_ERROR ("OSD Initialization Failure");
+        return_ACPI_STATUS (Status);
+    }
+
     /* Create the default mutex objects */
 
     Status = CmMutexInitialize ();
+    if (ACPI_FAILURE (Status))
+    {
+        DEBUG_PRINT (ACPI_ERROR, ("Global mutex creation failure, %s\n", CmFormatException (Status)));
+        REPORT_ERROR ("Global Mutex Initialization Failure");
+        return_ACPI_STATUS (Status);
+    }
 
     /* If configured, initialize the AML debugger */
 
@@ -201,10 +216,14 @@ AcpiTerminate (void)
     CmSubsystemShutdown ();
 
 
-    /* Free the mutex objects last */
+    /* Free the mutex objects */
 
     CmMutexTerminate ();
 
+
+    /* Now we can shutdown the OS-dependent layer */
+
+    OsdTerminate ();
 
     return_ACPI_STATUS (AE_OK);
 }
@@ -267,7 +286,7 @@ AcpiGetSystemInfo (
     OutBuffer->Length = sizeof (ACPI_SYSTEM_INFO);
     InfoPtr = (ACPI_SYSTEM_INFO *) OutBuffer->Pointer;
 
-    InfoPtr->AcpiCAVersion = Gbl_AcpiCaVersion;
+    InfoPtr->AcpiCAVersion      = 0x1234;   /* TBD: need a version number, or use the version string */
 
     /* System flags (ACPI capabilities) */
 
