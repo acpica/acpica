@@ -198,7 +198,7 @@ BREAKPOINT3;
 
         for (i = 0; Params[i]; i++)
         {
-            CmUpdateObjectReference (Params[i], REF_INCREMENT);
+            CmAddReference (Params[i]);
         }
     }
 
@@ -222,7 +222,7 @@ BREAKPOINT3;
     /* This is where we really execute the method */
 
     Status = PsWalkParsedAml (ObjDesc->Method.ParserOp, ObjDesc->Method.ParserOp, ObjDesc, MethodEntry->Scope, Params,
-                                ReturnObjDesc, NULL, DsExecBeginOp, DsExecEndOp);
+                                ReturnObjDesc, ObjDesc->Method.OwningId, DsExecBeginOp, DsExecEndOp);
     
     /* Signal completion of the execution of this method if necessary */
 
