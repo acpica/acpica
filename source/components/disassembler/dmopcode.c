@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dbdisasm - parser op tree display routines
- *              $Revision: 1.65 $
+ *              $Revision: 1.66 $
  *
  ******************************************************************************/
 
@@ -387,10 +387,10 @@ AcpiDbDisplayOp (
 
         else if (DepthCount < LastDepth)
         {
-            for (j = 0; j < (LastDepth - DepthCount); j++)
+            for (j = LastDepth; j >= (DepthCount + 1); j--)
             {
-                VERBOSE_PRINT ((DB_NO_OP_INFO, LastDepth - j));
-                for (i = 0; i < (LastDepth - (j - 1)); i++)
+                VERBOSE_PRINT ((DB_NO_OP_INFO, (j - 1)));
+                for (i = 1; i < j; i++)
                 {
                     AcpiOsPrintf ("%s", AcpiGbl_DbDisasmIndent);
                 }
