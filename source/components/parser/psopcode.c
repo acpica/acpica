@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: psopcode - Parser opcode information table
- *              $Revision: 1.36 $
+ *              $Revision: 1.37 $
  *
  *****************************************************************************/
 
@@ -539,7 +539,7 @@
  */
 
 
-static ACPI_OPCODE_INFO    AmlOpInfo[] =
+static const ACPI_OPCODE_INFO    AmlOpInfo[] =
 {
 /* Index           Name                 Parser Args               Interpreter Args              Flags */
 
@@ -783,7 +783,7 @@ AcpiPsGetOpcodeInfo (
 
     /* Default is "unknown opcode" */
 
-    OpInfo = &AmlOpInfo [_UNK];
+    OpInfo = (ACPI_OPCODE_INFO *) &AmlOpInfo [_UNK];
 
 
     /*
@@ -796,7 +796,7 @@ AcpiPsGetOpcodeInfo (
 
         /* Simple (8-bit) opcode: 0-255, can't index beyond table  */
 
-        OpInfo = &AmlOpInfo [AmlShortOpInfoIndex [LowerOpcode]];
+        OpInfo = (ACPI_OPCODE_INFO *) &AmlOpInfo [AmlShortOpInfoIndex [LowerOpcode]];
         break;
 
 
@@ -806,7 +806,7 @@ AcpiPsGetOpcodeInfo (
 
         if (LowerOpcode <= MAX_EXTENDED_OPCODE)
         {
-            OpInfo = &AmlOpInfo [AmlLongOpInfoIndex [LowerOpcode]];
+            OpInfo = (ACPI_OPCODE_INFO *) &AmlOpInfo [AmlLongOpInfoIndex [LowerOpcode]];
         }
         break;
 
