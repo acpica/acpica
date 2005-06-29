@@ -160,6 +160,10 @@ SOURCE=..\..\source\components\events\evevent.c
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\source\COMPONENTS\EVENTS\evgpe.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\source\components\events\evmisc.c
 # End Source File
 # Begin Source File
@@ -349,6 +353,10 @@ SOURCE=..\..\source\components\namespace\nsobject.c
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\source\COMPONENTS\NAMESPACE\nsparse.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\source\components\namespace\nssearch.c
 # End Source File
 # Begin Source File
@@ -498,6 +506,10 @@ SOURCE=..\..\source\components\interpreter\parser\psxface.c
 # Begin Source File
 
 SOURCE=..\..\source\components\interpreter\dispatcher\dsfield.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\COMPONENTS\INTERPRETER\DISPATCHER\dsinit.c
 # End Source File
 # Begin Source File
 

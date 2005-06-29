@@ -133,6 +133,10 @@ SOURCE=..\..\source_linux\components\interpreter\dispatcher\dsfield.c
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\source\COMPONENTS\INTERPRETER\DISPATCHER\dsinit.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\source_linux\components\interpreter\dispatcher\dsmethod.c
 # End Source File
 # Begin Source File
@@ -170,6 +174,10 @@ SOURCE=..\..\source_linux\components\interpreter\dispatcher\dswstate.c
 # Begin Source File
 
 SOURCE=..\..\source_linux\components\events\evevent.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\COMPONENTS\EVENTS\evgpe.c
 # End Source File
 # Begin Source File
 
@@ -343,6 +351,10 @@ SOURCE=..\..\source_linux\components\namespace\nsnames.c
 # Begin Source File
 
 SOURCE=..\..\source_linux\components\namespace\nsobject.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\COMPONENTS\NAMESPACE\nsparse.c
 # End Source File
 # Begin Source File
 
