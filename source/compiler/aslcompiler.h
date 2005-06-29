@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslcompiler.h - common include file
- *              $Revision: 1.69 $
+ *              $Revision: 1.71 $
  *
  *****************************************************************************/
 
@@ -451,6 +451,34 @@ CgCloseTable (void);
 
 void
 CgWriteNode (
+    ASL_PARSE_NODE          *Node);
+
+
+/* 
+ * asltransform - parse tree transformations
+ */
+
+ACPI_STATUS
+TrAmlTransformWalk (
+    ASL_PARSE_NODE          *Node,
+    UINT32                  Level,
+    void                    *Context);
+
+
+void
+TrTransformSubtree (
+    ASL_PARSE_NODE          *Node);
+
+void
+TrDoSwitch (
+    ASL_PARSE_NODE          *Node);
+
+void
+TrDoDefinitionBlock (
+    ASL_PARSE_NODE          *Node);
+
+void
+TrDoElseif (
     ASL_PARSE_NODE          *Node);
 
 
