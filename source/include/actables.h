@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: actables.h - ACPI table management
- *       $Revision: 1.45 $
+ *       $Revision: 1.48 $
  *
  *****************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2003, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2005, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -123,11 +123,6 @@
 #define SIZE_IN_HEADER          0
 
 
-ACPI_STATUS
-AcpiTbHandleToObject (
-    UINT16                  TableId,
-    ACPI_TABLE_DESC         **TableDesc);
-
 /*
  * tbconvrt - Table conversion routines
  */
@@ -148,6 +143,22 @@ UINT32
 AcpiTbGetTableCount (
     RSDP_DESCRIPTOR         *RSDP,
     ACPI_TABLE_HEADER       *RSDT);
+
+static void
+AcpiTbInitGenericAddress (
+    ACPI_GENERIC_ADDRESS    *NewGasStruct,
+    UINT8                   RegisterBitWidth,
+    ACPI_PHYSICAL_ADDRESS   Address);
+
+static void
+AcpiTbConvertFadt1 (
+    FADT_DESCRIPTOR_REV2   *LocalFadt,
+    FADT_DESCRIPTOR_REV1   *OriginalFadt);
+
+static void
+AcpiTbConvertFadt2 (
+    FADT_DESCRIPTOR_REV2   *LocalFadt,
+    FADT_DESCRIPTOR_REV2   *OriginalFadt);
 
 /*
  * tbget - Table "get" routines
@@ -170,17 +181,6 @@ AcpiTbGetTableBody (
     ACPI_TABLE_DESC         *TableInfo);
 
 ACPI_STATUS
-AcpiTbGetThisTable (
-    ACPI_POINTER            *Address,
-    ACPI_TABLE_HEADER       *Header,
-    ACPI_TABLE_DESC         *TableInfo);
-
-ACPI_STATUS
-AcpiTbTableOverride (
-    ACPI_TABLE_HEADER       *Header,
-    ACPI_TABLE_DESC         *TableInfo);
-
-ACPI_STATUS
 AcpiTbGetTablePtr (
     ACPI_TABLE_TYPE         TableType,
     UINT32                  Instance,
@@ -198,20 +198,36 @@ ACPI_STATUS
 AcpiTbValidateRsdt (
     ACPI_TABLE_HEADER       *TablePtr);
 
+static ACPI_STATUS
+AcpiTbGetThisTable (
+    ACPI_POINTER            *Address,
+    ACPI_TABLE_HEADER       *Header,
+    ACPI_TABLE_DESC         *TableInfo);
+
+static ACPI_STATUS
+AcpiTbTableOverride (
+    ACPI_TABLE_HEADER       *Header,
+    ACPI_TABLE_DESC         *TableInfo);
+
+/*
+ * tbgetall - get multiple required tables
+ */
+
 ACPI_STATUS
 AcpiTbGetRequiredTables (
     void);
 
-ACPI_STATUS
+static ACPI_STATUS
 AcpiTbGetPrimaryTable (
     ACPI_POINTER            *Address,
     ACPI_TABLE_DESC         *TableInfo);
 
-ACPI_STATUS
+static ACPI_STATUS
 AcpiTbGetSecondaryTable (
     ACPI_POINTER            *Address,
     ACPI_STRING             Signature,
     ACPI_TABLE_DESC         *TableInfo);
+
 
 /*
  * tbinstall - Table installation
@@ -221,7 +237,7 @@ ACPI_STATUS
 AcpiTbInstallTable (
     ACPI_TABLE_DESC         *TableInfo);
 
-ACPI_STATUS
+static ACPI_STATUS
 AcpiTbMatchSignature (
     char                    *Signature,
     ACPI_TABLE_DESC         *TableInfo,
@@ -260,26 +276,7 @@ AcpiTbUninstallTable (
 
 
 /*
- * tbrsd - RSDP, RSDT utilities
- */
-
-ACPI_STATUS
-AcpiTbGetTableRsdt (
-    void);
-
-UINT8 *
-AcpiTbScanMemoryForRsdp (
-    UINT8                   *StartAddress,
-    UINT32                  Length);
-
-ACPI_STATUS
-AcpiTbFindRsdp (
-    ACPI_TABLE_DESC         *TableInfo,
-    UINT32                  Flags);
-
-
-/*
- * tbutils - common table utilities
+ * tbxfroot - RSDP, RSDT utilities
  */
 
 ACPI_STATUS
@@ -288,6 +285,25 @@ AcpiTbFindTable (
     char                    *OemId,
     char                    *OemTableId,
     ACPI_TABLE_HEADER       **TablePtr);
+
+ACPI_STATUS
+AcpiTbGetTableRsdt (
+    void);
+
+static ACPI_STATUS
+AcpiTbFindRsdp (
+    ACPI_TABLE_DESC         *TableInfo,
+    UINT32                  Flags);
+
+static UINT8 *
+AcpiTbScanMemoryForRsdp (
+    UINT8                   *StartAddress,
+    UINT32                  Length);
+
+
+/*
+ * tbutils - common table utilities
+ */
 
 ACPI_STATUS
 AcpiTbVerifyTableChecksum (
@@ -302,5 +318,11 @@ ACPI_STATUS
 AcpiTbValidateTableHeader (
     ACPI_TABLE_HEADER       *TableHeader);
 
+#ifdef ACPI_OBSOLETE_FUNCTIONS
+ACPI_STATUS
+AcpiTbHandleToObject (
+    UINT16                  TableId,
+    ACPI_TABLE_DESC         **TableDesc);
+#endif
 
 #endif /* __ACTABLES_H__ */
