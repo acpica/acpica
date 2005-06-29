@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslmain - compiler main and utilities
- *              $Revision: 1.79 $
+ *              $Revision: 1.85 $
  *
  *****************************************************************************/
 
@@ -133,9 +133,39 @@ BOOLEAN                 AslToFile = TRUE;
 BOOLEAN                 DoCompile = TRUE;
 BOOLEAN                 DoSignon = TRUE;
 
-char                    hex[] = {'0','1','2','3','4','5','6','7',
-                                 '8','9','A','B','C','D','E','F'};
+char                    hex[] =
+{
+    '0','1','2','3','4','5','6','7','8','9','A','B','C','D','E','F'
+};
 
+/* Local prototypes */
+
+static void
+Options (
+    void);
+
+static void
+HelpMessage (
+    void);
+
+static void
+Usage (
+    void);
+
+static void 
+AslInitialize (
+    void);
+
+static void
+AslCommandLine (
+    int                     argc,
+    char                    **argv);
+
+#ifdef _DEBUG
+#if ACPI_MACHINE_WIDTH != 16
+#include <crtdbg.h>
+#endif
+#endif
 
 /*******************************************************************************
  *
@@ -149,7 +179,7 @@ char                    hex[] = {'0','1','2','3','4','5','6','7',
  *
  ******************************************************************************/
 
-void
+static void
 Options (
     void)
 {
@@ -197,7 +227,7 @@ Options (
 
 /*******************************************************************************
  *
- * FUNCTION:    Usage
+ * FUNCTION:    HelpMessage
  *
  * PARAMETERS:  None
  *
@@ -207,7 +237,7 @@ Options (
  *
  ******************************************************************************/
 
-void
+static void
 HelpMessage (
     void)
 {
@@ -245,7 +275,7 @@ HelpMessage (
  *
  ******************************************************************************/
 
-void
+static void
 Usage (
     void)
 {
@@ -267,8 +297,9 @@ Usage (
  *
  ******************************************************************************/
 
-void
-AslInitialize (void)
+static void
+AslInitialize (
+    void)
 {
     UINT32                  i;
 
@@ -305,13 +336,13 @@ AslInitialize (void)
  *
  ******************************************************************************/
 
-void
+static void
 AslCommandLine (
     int                     argc,
     char                    **argv)
 {
     BOOLEAN                 BadCommandLine = FALSE;
-    ACPI_NATIVE_UINT        j;
+    ACPI_NATIVE_INT         j;
 
 
     /* Minimum command line contains at least one option or an input file */
@@ -650,7 +681,10 @@ AslCommandLine (
     /* Next parameter must be the input filename */
 
     Gbl_Files[ASL_FILE_INPUT].Filename = argv[AcpiGbl_Optind];
-    if (!Gbl_Files[ASL_FILE_INPUT].Filename && !Gbl_DisasmFlag && !Gbl_GetAllTables)
+
+    if (!Gbl_Files[ASL_FILE_INPUT].Filename &&
+        !Gbl_DisasmFlag &&
+        !Gbl_GetAllTables)
     {
         printf ("Missing input filename\n");
         BadCommandLine = TRUE;
@@ -700,6 +734,13 @@ main (
     char                    *Prefix;
 
 
+#ifdef _DEBUG
+#if ACPI_MACHINE_WIDTH != 16
+    _CrtSetDbgFlag (_CRTDBG_CHECK_ALWAYS_DF | _CRTDBG_LEAK_CHECK_DF |
+                    _CrtSetDbgFlag(_CRTDBG_REPORT_FLAG));
+#endif
+#endif
+
     /* Init and command line */
 
     AslInitialize ();
@@ -709,17 +750,20 @@ main (
      * If -p not specified, we will use the input filename as the
      * output filename prefix
      */
-    FlSplitInputPathname (Gbl_Files[ASL_FILE_INPUT].Filename,
+    Status = FlSplitInputPathname (Gbl_Files[ASL_FILE_INPUT].Filename,
         &Gbl_DirectoryPath, &Prefix);
+    if (ACPI_FAILURE (Status))
+    {
+        return -1;
+    }
 
     if (Gbl_UseDefaultAmlFilename)
     {
         Gbl_OutputFilenamePrefix = Prefix;
     }
 
-    /*
-     * AML Disassembly (Optional)
-     */
+    /* AML Disassembly (Optional) */
+
     if (Gbl_DisasmFlag || Gbl_GetAllTables)
     {
         /* ACPI CA subsystem initialization */
@@ -771,8 +815,12 @@ main (
          * If -p not specified, we will use the input filename as the
          * output filename prefix
          */
-        FlSplitInputPathname (Gbl_Files[ASL_FILE_INPUT].Filename,
+        Status = FlSplitInputPathname (Gbl_Files[ASL_FILE_INPUT].Filename,
             &Gbl_DirectoryPath, &Prefix);
+        if (ACPI_FAILURE (Status))
+        {
+            return -1;
+        }
 
         if (Gbl_UseDefaultAmlFilename)
         {
