@@ -252,6 +252,35 @@ AcpiOsGetPhysicalAddress (
 
 
 /*
+ * Memory/Object Cache
+ */
+ACPI_STATUS
+AcpiOsCreateCache (
+    char                    *CacheName,
+    UINT16                  ObjectSize,
+    UINT16                  MaxDepth,
+    ACPI_HANDLE             *ReturnCache);
+
+ACPI_STATUS
+AcpiOsDeleteCache (
+    ACPI_HANDLE             Cache);
+
+ACPI_STATUS
+AcpiOsPurgeCache (
+    ACPI_HANDLE             Cache);
+
+ACPI_STATUS
+AcpiOsAcquireObject (
+    ACPI_HANDLE             Cache,
+    void                    **ReturnObject);
+
+ACPI_STATUS
+AcpiOsReleaseObject (
+    ACPI_HANDLE             Cache,
+    void                    *Object);
+
+
+/*
  * Interrupt handlers
  */
 ACPI_STATUS
