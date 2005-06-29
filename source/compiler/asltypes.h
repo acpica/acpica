@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asltypes.h - compiler data types and struct definitions
- *              $Revision: 1.74 $
+ *              $Revision: 1.75 $
  *
  *****************************************************************************/
 
@@ -403,7 +403,8 @@ typedef enum
     ASL_MSG_RESOURCE_INDEX,
     ASL_MSG_RESOURCE_SOURCE,
     ASL_MSG_LIST_LENGTH,
-    ASL_MSG_INTEGER_LENGTH
+    ASL_MSG_INTEGER_LENGTH,
+    ASL_MSG_SYNC_LEVEL
 
 } ASL_MESSAGE_IDS;
 
@@ -506,7 +507,8 @@ char                        *AslMessages [] = {
 /*    ASL_MSG_RESOURCE_INDEX */             "Missing ResourceSourceIndex (required)",
 /*    ASL_MSG_RESOURCE_SOURCE */            "Missing ResourceSource string (required)",
 /*    ASL_MSG_LIST_LENGTH */                "Initializer list too long",
-/*    ASL_MSG_INTEGER_LENGTH */             "64-bit integer in 32-bit table, truncating"
+/*    ASL_MSG_INTEGER_LENGTH */             "64-bit integer in 32-bit table, truncating",
+/*    ASL_MSG_SYNC_LEVEL */                 "SyncLevel must be in the range 0-15"
 
 };
 
