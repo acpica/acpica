@@ -121,10 +121,6 @@
 #include <datatypes.h>
 #include <acpitables.h>
 
-#define ACPI_MODE               1
-#define LEGACY_MODE             2
-
-
 
 /*
  * Global interfaces
@@ -151,7 +147,7 @@ AcpiGetSystemInfo(
 ACPI_STATUS
 AcpiEvaluateObject (
     ACPI_HANDLE             Handle, 
-    ACPI_STRING             *Pathname, 
+    ACPI_STRING             Pathname, 
     ACPI_OBJECT_LIST        *ParameterObjects,
     ACPI_BUFFER             *ReturnObjectBuffer);
 
@@ -207,7 +203,7 @@ AcpiHandleToName (
 
 ACPI_STATUS
 AcpiPathnameToHandle (
-    ACPI_STRING             *Pathname,
+    ACPI_STRING             Pathname,
     ACPI_HANDLE             *OutHandle);
 
 ACPI_STATUS
