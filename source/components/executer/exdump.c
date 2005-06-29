@@ -120,7 +120,7 @@
 #include <interpreter.h>
 #include <amlcode.h>
 #include <namespace.h>
-
+#include <acpiosd.h>
 
 #define _THIS_MODULE        "isdump.c"
 #define _COMPONENT          INTERPRETER
@@ -362,6 +362,7 @@ AmlDumpObjStackEntry (
 
                 if (TYPE_Number == EntryDesc->Type)
                 {
+
                     /* Value is a Number */
                 
                     DEBUG_PRINT_RAW (ACPI_INFO, (" value is [%ld]", 
@@ -731,165 +732,169 @@ void
 AmlDumpObjectDescriptor (
     ACPI_OBJECT_INTERNAL    *Object)
 {
-	
 	FUNCTION_TRACE ("AmlDumpObjectDescriptor");
-		
+	
+	if (!((TRACE_OBJECTS & DebugLevel) && (_COMPONENT & DebugLayer)))
+    {
+        return;
+    }	
+	
 	switch (Object->Type)
 	{
 	case TYPE_Number:
 
-		DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %s\n", "Type", "Number"));
-        DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "Value", Object->Number.Value));
+		OsdPrintf ("%20s : %s\n", "Type", "Number");
+        OsdPrintf ("%20s : %x\n", "Value", Object->Number.Value);
 		break;
  
         
 	case TYPE_String:
 
-	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %s\n", "Type", "String"));
-        DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "Length", Object->String.Length));
-        DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "Pointer", Object->String.Pointer));
+	    OsdPrintf ("%20s : %s\n", "Type", "String");
+        OsdPrintf ("%20s : %x\n", "Length", Object->String.Length);
+        OsdPrintf ("%20s : %x\n", "Pointer", Object->String.Pointer);
 		break;
 
 
 	case TYPE_Buffer:
 
-		DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %s\n", "Type", "Buffer"));
-		DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "Length", Object->Buffer.Length));
-        DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "Sequence", Object->Buffer.Sequence));
-        DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "Pointer", Object->Buffer.Pointer));
+		OsdPrintf ("%20s : %s\n", "Type", "Buffer");
+		OsdPrintf ("%20s : %x\n", "Length", Object->Buffer.Length);
+        OsdPrintf ("%20s : %x\n", "Sequence", Object->Buffer.Sequence);
+        OsdPrintf ("%20s : %x\n", "Pointer", Object->Buffer.Pointer);
 		break;
         
         
 	case TYPE_Package:
 
-		DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %s\n", "Type", "Package"));
-	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "Count", Object->Package.Count));
-	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "Elements", Object->Package.Elements));
-	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "NextElement", Object->Package.NextElement));
+		OsdPrintf ("%20s : %s\n", "Type", "Package");
+	    OsdPrintf ("%20s : %x\n", "Count", Object->Package.Count);
+	    OsdPrintf ("%20s : %x\n", "Elements", Object->Package.Elements);
+	    OsdPrintf ("%20s : %x\n", "NextElement", Object->Package.NextElement);
 		break;
         
 
 	case TYPE_FieldUnit:
 
-		DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %s\n", "Type", "FieldUnit"));
-		DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "Access", Object->FieldUnit.Access));
-	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "LockRule", Object->FieldUnit.LockRule));
-	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "UpdateRule", Object->FieldUnit.UpdateRule));
-	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "Length", Object->FieldUnit.Length));
-	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "BitOffset", Object->FieldUnit.BitOffset));
-	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "Offset", Object->FieldUnit.Offset));
-	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "Sequence", Object->FieldUnit.Sequence));
-	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "Container", Object->FieldUnit.Container));
+		OsdPrintf ("%20s : %s\n", "Type", "FieldUnit");
+		OsdPrintf ("%20s : %x\n", "Access", Object->FieldUnit.Access);
+	    OsdPrintf ("%20s : %x\n", "LockRule", Object->FieldUnit.LockRule);
+	    OsdPrintf ("%20s : %x\n", "UpdateRule", Object->FieldUnit.UpdateRule);
+	    OsdPrintf ("%20s : %x\n", "Length", Object->FieldUnit.Length);
+	    OsdPrintf ("%20s : %x\n", "BitOffset", Object->FieldUnit.BitOffset);
+	    OsdPrintf ("%20s : %x\n", "Offset", Object->FieldUnit.Offset);
+	    OsdPrintf ("%20s : %x\n", "Sequence", Object->FieldUnit.Sequence);
+	    OsdPrintf ("%20s : %x\n", "Container", Object->FieldUnit.Container);
 	    break;
         
 
 	case TYPE_Device:
 
-		DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %s\n", "Type", "Device"));
-	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "Handle", Object->Device.Handle));
-	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %p\n", "Handler", Object->Device.Handler));
-	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %p\n", "Context", Object->Device.Context));
+		OsdPrintf ("%20s : %s\n", "Type", "Device");
+	    OsdPrintf ("%20s : %x\n", "Handle", Object->Device.Handle);
+	    OsdPrintf ("%20s : %p\n", "Handler", Object->Device.Handler);
+	    OsdPrintf ("%20s : %p\n", "Context", Object->Device.Context);
         break;
 
 
 	case TYPE_Event:
 
-		DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %s\n", "Type", "Event"));
-	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "SignalCount", Object->Event.SignalCount));
-	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "Semaphore", Object->Event.Semaphore));
-	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "LockCount", Object->Event.LockCount));
-	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "ThreadId", Object->Event.ThreadId));
+		OsdPrintf ("%20s : %s\n", "Type", "Event");
+	    OsdPrintf ("%20s : %x\n", "SignalCount", Object->Event.SignalCount);
+	    OsdPrintf ("%20s : %x\n", "Semaphore", Object->Event.Semaphore);
+	    OsdPrintf ("%20s : %x\n", "LockCount", Object->Event.LockCount);
+	    OsdPrintf ("%20s : %x\n", "ThreadId", Object->Event.ThreadId);
 	    break;
 
 
 	case TYPE_Method:
 
-		DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %s\n", "Type", "Method"));
-	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "ParamCount", Object->Method.ParamCount));
-	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "Length", Object->Method.Length));
-	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "AmlOffset", Object->Method.AmlOffset));
-	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "AmlBase", Object->Method.AmlBase));
+		OsdPrintf ("%20s : %s\n", "Type", "Method");
+	    OsdPrintf ("%20s : %x\n", "ParamCount", Object->Method.ParamCount);
+	    OsdPrintf ("%20s : %x\n", "Length", Object->Method.Length);
+	    OsdPrintf ("%20s : %x\n", "AmlOffset", Object->Method.AmlOffset);
+	    OsdPrintf ("%20s : %x\n", "AmlBase", Object->Method.AmlBase);
 	    break;
 	
 
 	case TYPE_Mutex:
 
-		DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %s\n", "Type", "Mutex"));
-	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "SyncLevel", Object->Mutex.SyncLevel));
-	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "Semaphore", Object->Mutex.Semaphore));
-	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "LockCount", Object->Mutex.LockCount));
-	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "ThreadId", Object->Mutex.ThreadId));
+		OsdPrintf ("%20s : %s\n", "Type", "Mutex");
+	    OsdPrintf ("%20s : %x\n", "SyncLevel", Object->Mutex.SyncLevel);
+	    OsdPrintf ("%20s : %x\n", "Semaphore", Object->Mutex.Semaphore);
+	    OsdPrintf ("%20s : %x\n", "LockCount", Object->Mutex.LockCount);
+	    OsdPrintf ("%20s : %x\n", "ThreadId", Object->Mutex.ThreadId);
 	    break;
 
 
 	case TYPE_Region:
 
-		DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %s\n", "Type", "Region"));
-	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "SpaceId", Object->Region.SpaceId));
-	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "DataValid", Object->Region.DataValid));
-	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "Address", Object->Region.Address));
-	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "Length", Object->Region.Length));
-	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "AddressLocation", Object->Region.AddressLocation));
+		OsdPrintf ("%20s : %s\n", "Type", "Region");
+	    OsdPrintf ("%20s : %x\n", "SpaceId", Object->Region.SpaceId);
+	    OsdPrintf ("%20s : %x\n", "DataValid", Object->Region.DataValid);
+	    OsdPrintf ("%20s : %x\n", "Address", Object->Region.Address);
+	    OsdPrintf ("%20s : %x\n", "Length", Object->Region.Length);
+	    OsdPrintf ("%20s : %x\n", "AddressLocation", Object->Region.AddressLocation);
 	    break;
 
 
 	case TYPE_Power:
 
-		DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %s\n", "Type", "PowerResource"));
-	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "Handle", Object->PowerResource.Handle));
+		OsdPrintf ("%20s : %s\n", "Type", "PowerResource");
+	    OsdPrintf ("%20s : %x\n", "Handle", Object->PowerResource.Handle);
 	    break;
 
 
 	case TYPE_Processor:
 
-		DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %s\n", "Type", "Processor"));
-	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "Handle", Object->Processor.Handle));
+		OsdPrintf ("%20s : %s\n", "Type", "Processor");
+	    OsdPrintf ("%20s : %x\n", "Handle", Object->Processor.Handle);
 	    break;
 
 
 	case TYPE_Thermal:
 
-		DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %s\n", "Type", "ThermalZone"));
-	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "Handle", Object->ThermalZone.Handle));
-	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %p\n", "Handler", Object->ThermalZone.Handler));
-	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %p\n", "Context", Object->ThermalZone.Context));
+		OsdPrintf ("%20s : %s\n", "Type", "ThermalZone");
+	    OsdPrintf ("%20s : %x\n", "Handle", Object->ThermalZone.Handle);
+	    OsdPrintf ("%20s : %p\n", "Handler", Object->ThermalZone.Handler);
+	    OsdPrintf ("%20s : %p\n", "Context", Object->ThermalZone.Context);
 	    break;
 
 
 	case TYPE_BankField:
 
-		DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %s\n", "Type", "BankField"));
-	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "Access", Object->BankField.Access));
-	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "LockRule", Object->BankField.LockRule));
-	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "UpdateRule", Object->BankField.UpdateRule));
-	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "Length", Object->BankField.Length));
-	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "BitOffset", Object->BankField.BitOffset));
-	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "Offset", Object->BankField.Offset));
-	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "Value", Object->BankField.Value));
-		DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "Container", Object->BankField.Container));
-	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "BankSelect", Object->BankField.BankSelect));
+		OsdPrintf ("%20s : %s\n", "Type", "BankField");
+	    OsdPrintf ("%20s : %x\n", "Access", Object->BankField.Access);
+	    OsdPrintf ("%20s : %x\n", "LockRule", Object->BankField.LockRule);
+	    OsdPrintf ("%20s : %x\n", "UpdateRule", Object->BankField.UpdateRule);
+	    OsdPrintf ("%20s : %x\n", "Length", Object->BankField.Length);
+	    OsdPrintf ("%20s : %x\n", "BitOffset", Object->BankField.BitOffset);
+	    OsdPrintf ("%20s : %x\n", "Offset", Object->BankField.Offset);
+	    OsdPrintf ("%20s : %x\n", "Value", Object->BankField.Value);
+		OsdPrintf ("%20s : %x\n", "Container", Object->BankField.Container);
+	    OsdPrintf ("%20s : %x\n", "BankSelect", Object->BankField.BankSelect);
 	    break;
 
 
 	case TYPE_IndexField:
 
-		DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %s\n", "Type", "IndexField"));
-	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "Access", Object->IndexField.Access));
-	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "LockRule", Object->IndexField.LockRule));
-	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "UpdateRule", Object->IndexField.UpdateRule));
-	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "Length", Object->IndexField.Length));
-	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "BitOffset", Object->IndexField.BitOffset));
-	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "Value", Object->IndexField.Value));
-		DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "Index", Object->IndexField.Index));
-	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "Data", Object->IndexField.Data));
+		OsdPrintf ("%20s : %s\n", "Type", "IndexField");
+	    OsdPrintf ("%20s : %x\n", "Access", Object->IndexField.Access);
+	    OsdPrintf ("%20s : %x\n", "LockRule", Object->IndexField.LockRule);
+	    OsdPrintf ("%20s : %x\n", "UpdateRule", Object->IndexField.UpdateRule);
+	    OsdPrintf ("%20s : %x\n", "Length", Object->IndexField.Length);
+	    OsdPrintf ("%20s : %x\n", "BitOffset", Object->IndexField.BitOffset);
+	    OsdPrintf ("%20s : %x\n", "Value", Object->IndexField.Value);
+		OsdPrintf ("%20s : %x\n", "Index", Object->IndexField.Index);
+	    OsdPrintf ("%20s : %x\n", "Data", Object->IndexField.Data);
 	    break;
 
 
 	case TYPE_Lvalue:
 
-		DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %s\n", "Type", "Lvalue"));
-	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "OpCode", Object->Lvalue.OpCode));
-	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "Object", Object->Lvalue.Object));
+		OsdPrintf ("%20s : %s\n", "Type", "Lvalue");
+	    OsdPrintf ("%20s : %x\n", "OpCode", Object->Lvalue.OpCode);
+	    OsdPrintf ("%20s : %x\n", "Object", Object->Lvalue.Object);
 		break;
 	
 
@@ -904,14 +909,14 @@ AmlDumpObjectDescriptor (
 	case TYPE_Scope:
 	case TYPE_DefAny:
 
-		DEBUG_PRINT (ACPI_ERROR, ("*** Structure display not implemented for type %d! ***\n",
-                        Object->Type));
+		OsdPrintf ("*** Structure display not implemented for type %d! ***\n",
+        	Object->Type);
 		break;
 
 
 	default:
 
-		DEBUG_PRINT (ACPI_ERROR, ("*** Cannot display unknown type %d! ***\n", Object->Type));
+		OsdPrintf ("*** Cannot display unknown type %d! ***\n", Object->Type);
 		break;
 	}
 
