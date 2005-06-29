@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: cmalloc - local memory allocation routines
- *              $Revision: 1.73 $
+ *              $Revision: 1.74 $
  *
  *****************************************************************************/
 
@@ -145,7 +145,7 @@
  *
  * RETURN:      A list element if found; NULL otherwise.
  *
- * DESCRIPTION: Inserts an element into the global allocation tracking list.
+ * DESCRIPTION: Searches for an element in the global allocation tracking list.
  *
  ****************************************************************************/
 
@@ -156,15 +156,10 @@ AcpiCmSearchAllocList (
     ALLOCATION_INFO         *Element = AcpiGbl_HeadAllocPtr;
 
 
-    /* Search for the address. note - this always searches the entire list...*/
+    /* Search for the address. */
 
-    while (1)
+    while (Element)
     {
-        if (Element == NULL)
-        {
-            return (NULL);
-        }
-
         if (Element->Address == Address)
         {
             return (Element);
@@ -172,6 +167,8 @@ AcpiCmSearchAllocList (
 
         Element = Element->Next;
     }
+
+    return (NULL);
 }
 
 
@@ -185,7 +182,6 @@ AcpiCmSearchAllocList (
  *              Component           - Component type of caller
  *              Module              - Source file name of caller
  *              Line                - Line number of caller
- *              Function            - Calling function name
  *
  * RETURN:      None.
  *
@@ -309,7 +305,7 @@ UnlockAndExit:
  *
  * RETURN:
  *
- * DESCRIPTION: Inserts an element into the global allocation tracking list.
+ * DESCRIPTION: Deletes an element from the global allocation tracking list.
  *
  ****************************************************************************/
 
@@ -328,8 +324,6 @@ AcpiCmDeleteElementFromAllocList (
 
 
     FUNCTION_TRACE ("CmDeleteElementFromAllocList");
-
-    /* cases: none, one, multiple. */
 
     if (NULL == AcpiGbl_HeadAllocPtr)
     {
