@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: utdebug - Debug print routines
- *              $Revision: 1.115 $
+ *              $Revision: 1.116 $
  *
  *****************************************************************************/
 
@@ -630,7 +630,7 @@ AcpiUtDumpBuffer (
                 /* Dump fill spaces */
 
                 AcpiOsPrintf ("%*s", ((Display * 2) + 1), " ");
-                j += Display;
+                j += (ACPI_NATIVE_UINT) Display;
                 continue;
             }
 
@@ -666,7 +666,7 @@ AcpiUtDumpBuffer (
                 break;
             }
 
-            j += Display;
+            j += (ACPI_NATIVE_UINT) Display;
         }
 
         /*
