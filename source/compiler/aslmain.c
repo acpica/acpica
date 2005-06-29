@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslmain - compiler main and utilities
- *              $Revision: 1.65 $
+ *              $Revision: 1.66 $
  *
  *****************************************************************************/
 
@@ -176,10 +176,11 @@ Options (
     printf ("  -ln            Create namespace file (*.nsp)\n");
     printf ("  -ls            Create combined source file (expanded includes) (*.src)\n");
 
-    printf ("\nAML Disassembler:\n");
+    printf ("\nACPI Tables and AML Disassembler:\n");
     printf ("  -d  [file]     Disassemble AML to ASL source code file (*.dsl)\n");
     printf ("  -dc [file]     Disassemble AML and immediately compile it\n");
-    printf ("                 (Obtain AML from current system if no input file)\n");
+    printf ("                 (Obtain DSDT from current system if no input file)\n");
+    printf ("  -g             Get ACPI tables and write to files (*.dat)\n");
 
     printf ("\nHelp:\n");
     printf ("  -h             Additional help and compiler debug options\n");
@@ -220,7 +221,7 @@ HelpMessage (
     printf ("  -b<p|t|b>      Create compiler debug/trace file (*.txt)\n");
     printf ("                   Types: Parse/Tree/Both\n");
     printf ("  -i             Ignore errors, always create AML output file(s)\n");
-    printf ("  -g             Parse only, no output generation\n");
+    printf ("  -c             Parse only, no output generation\n");
     printf ("  -ot            Display compile times\n");
     printf ("  -x<level>      Set debug level for trace output\n");
 }
@@ -318,7 +319,7 @@ AslCommandLine (
 
     /* Get the command line options */
 
-    while ((j = AcpiGetopt (argc, argv, "b:d^gh^il^o:p:rs:t:v:x:")) != EOF) switch (j)
+    while ((j = AcpiGetopt (argc, argv, "b:cd^gh^il^o:p:rs:t:v:x:")) != EOF) switch (j)
     {
     case 'b':
 
@@ -347,6 +348,14 @@ AslCommandLine (
         break;
 
 
+    case 'c':
+
+        /* Parse only */
+
+        Gbl_ParseOnlyFlag = TRUE;
+        break;
+
+
     case 'd':
         switch (AcpiGbl_Optarg[0])
         {
@@ -369,9 +378,10 @@ AslCommandLine (
 
     case 'g':
 
-        /* Parse only */
+        /* Get all ACPI tables */
 
-        Gbl_ParseOnlyFlag = TRUE;
+        Gbl_GetAllTables = TRUE;
+        DoCompile = FALSE;
         break;
 
 
@@ -595,7 +605,7 @@ AslCommandLine (
     /* Next parameter must be the input filename */
 
     Gbl_Files[ASL_FILE_INPUT].Filename = argv[AcpiGbl_Optind];
-    if (!Gbl_Files[ASL_FILE_INPUT].Filename && !Gbl_DisasmFlag)
+    if (!Gbl_Files[ASL_FILE_INPUT].Filename && !Gbl_DisasmFlag && !Gbl_GetAllTables)
     {
         printf ("Missing input filename\n");
         BadCommandLine = TRUE;
@@ -661,7 +671,7 @@ main (
     /*
      * AML Disassembly
      */
-    if (Gbl_DisasmFlag)
+    if (Gbl_DisasmFlag || Gbl_GetAllTables)
     {
         /* ACPI CA subsystem initialization */
 
@@ -679,8 +689,10 @@ main (
         }
 
         AcpiGbl_DbOpt_disasm = TRUE;
-        Status = AdAmlDisassemble (AslToFile, Gbl_Files[ASL_FILE_INPUT].Filename,
-                                             &Gbl_Files[ASL_FILE_INPUT].Filename);
+        Status = AdAmlDisassemble (AslToFile, 
+                        Gbl_Files[ASL_FILE_INPUT].Filename,
+                        &Gbl_Files[ASL_FILE_INPUT].Filename,
+                        Gbl_GetAllTables);
         if (ACPI_FAILURE (Status))
         {
             return -1;
