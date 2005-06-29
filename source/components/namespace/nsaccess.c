@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: nsaccess - Top-level functions for accessing ACPI namespace
- *              $Revision: 1.141 $
+ *              $Revision: 1.142 $
  *
  ******************************************************************************/
 
@@ -474,7 +474,7 @@ AcpiNsLookup (
 
                 /* Backup to the parent's scope  */
 
-                ThisNode = AcpiNsGetParentObject (CurrentNode);
+                ThisNode = AcpiNsGetParentNode (CurrentNode);
                 if (!ThisNode)
                 {
                     /* Current scope has no parent scope */
