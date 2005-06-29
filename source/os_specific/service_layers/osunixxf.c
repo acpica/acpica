@@ -847,7 +847,9 @@ AcpiOsGetTimer (void)
 
     gettimeofday(&time, NULL);
 
-    return (((UINT64)(time.tv_sec/1000) + (time.tv_usec*1000)) * 10000);
+    /* Seconds * 10^7 = 100ns(10^-7), Microseconds(10^-6) * 10^1 = 100ns */
+
+    return (((UINT64) time.tv_sec * 10000000) + ((UINT64) time.tv_usec * 10));
 }
 
 
