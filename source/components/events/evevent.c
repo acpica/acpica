@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: evevent - Fixed and General Purpose Even handling and dispatch
- *              $Revision: 1.84 $
+ *              $Revision: 1.85 $
  *
  *****************************************************************************/
 
@@ -271,7 +271,7 @@ AcpiEvFixedEventInitialize (
 
         if (AcpiGbl_FixedEventInfo[i].EnableRegisterId != 0xFF)
         {
-            Status = AcpiPutRegister (AcpiGbl_FixedEventInfo[i].EnableRegisterId,
+            Status = AcpiSetRegister (AcpiGbl_FixedEventInfo[i].EnableRegisterId,
                                     0, ACPI_MTX_LOCK);
             if (ACPI_FAILURE (Status))
             {
@@ -364,7 +364,7 @@ AcpiEvFixedEventDispatch (
 
     /* Clear the status bit */
 
-    (void) AcpiPutRegister (AcpiGbl_FixedEventInfo[Event].StatusRegisterId,
+    (void) AcpiSetRegister (AcpiGbl_FixedEventInfo[Event].StatusRegisterId,
                 1, ACPI_MTX_DO_NOT_LOCK);
 
     /*
@@ -373,7 +373,7 @@ AcpiEvFixedEventDispatch (
      */
     if (NULL == AcpiGbl_FixedEventHandlers[Event].Handler)
     {
-        (void) AcpiPutRegister (AcpiGbl_FixedEventInfo[Event].EnableRegisterId,
+        (void) AcpiSetRegister (AcpiGbl_FixedEventInfo[Event].EnableRegisterId,
                 0, ACPI_MTX_DO_NOT_LOCK);
 
         ACPI_REPORT_ERROR (
