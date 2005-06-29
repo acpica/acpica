@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: tbxfroot - Find the root ACPI table (RSDT)
- *              $Revision: 1.75 $
+ *              $Revision: 1.76 $
  *
  *****************************************************************************/
 
@@ -167,7 +167,7 @@ AcpiTbFindTable (
         /*
          * The DSDT pointer is contained in the FADT, not the RSDT.
          * This code should suffice, because the only code that would perform
-         * a "find" on the DSDT is the DataTableRegion() AML opcode -- in 
+         * a "find" on the DSDT is the DataTableRegion() AML opcode -- in
          * which case, the DSDT is guaranteed to be already loaded.
          * If this becomes insufficient, the FADT will have to be found first.
          */
@@ -217,7 +217,7 @@ AcpiTbFindTable (
  *
  * RETURN:      Status
  *
- * DESCRIPTION: This function is called to get an ACPI table. A buffer is 
+ * DESCRIPTION: This function is called to get an ACPI table. A buffer is
  *              allocated for the table and returned in TablePointer.
  *              This table will be a complete table including the header.
  *
