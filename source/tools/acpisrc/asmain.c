@@ -1,8 +1,7 @@
 
 /******************************************************************************
- *
+ * 
  * Module Name: asmain - Main module for the acpi source processor utility
- *              $Revision: 1.39 $
  *
  *****************************************************************************/
 
@@ -10,8 +9,8 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
- * All rights reserved.
+ * Some or all of this work - Copyright (c) 1999, Intel Corp.  All rights
+ * reserved.
  *
  * 2. License
  *
@@ -39,9 +38,9 @@
  * The above copyright and patent license is granted only if the following
  * conditions are met:
  *
- * 3. Conditions
+ * 3. Conditions 
  *
- * 3.1. Redistribution of Source with Rights to Further Distribute Source.
+ * 3.1. Redistribution of Source with Rights to Further Distribute Source.  
  * Redistribution of source code of any substantial portion of the Covered
  * Code or modification with rights to further distribute source must include
  * the above Copyright Notice, the above License, this list of Conditions,
@@ -49,11 +48,11 @@
  * Licensee must cause all Covered Code to which Licensee contributes to
  * contain a file documenting the changes Licensee made to create that Covered
  * Code and the date of any change.  Licensee must include in that file the
- * documentation of any changes made by any predecessor Licensee.  Licensee
+ * documentation of any changes made by any predecessor Licensee.  Licensee 
  * must include a prominent statement that the modification is derived,
  * directly or indirectly, from Original Intel Code.
  *
- * 3.2. Redistribution of Source with no Rights to Further Distribute Source.
+ * 3.2. Redistribution of Source with no Rights to Further Distribute Source.  
  * Redistribution of source code of any substantial portion of the Covered
  * Code or modification without rights to further distribute source must
  * include the following Disclaimer and Export Compliance provision in the
@@ -87,7 +86,7 @@
  * INSTALLATION, TRAINING OR OTHER SERVICES.  INTEL WILL NOT PROVIDE ANY
  * UPDATES, ENHANCEMENTS OR EXTENSIONS.  INTEL SPECIFICALLY DISCLAIMS ANY
  * IMPLIED WARRANTIES OF MERCHANTABILITY, NONINFRINGEMENT AND FITNESS FOR A
- * PARTICULAR PURPOSE.
+ * PARTICULAR PURPOSE. 
  *
  * 4.2. IN NO EVENT SHALL INTEL HAVE ANY LIABILITY TO LICENSEE, ITS LICENSEES
  * OR ANY OTHER THIRD PARTY, FOR ANY LOST PROFITS, LOST DATA, LOSS OF USE OR
@@ -118,65 +117,18 @@
 
 #include "acpisrc.h"
 
-
 /* Globals */
 
-UINT32                  Gbl_Tabs = 0;
-UINT32                  Gbl_MissingBraces = 0;
-UINT32                  Gbl_NonAnsiComments = 0;
-UINT32                  Gbl_Files = 0;
-UINT32                  Gbl_WhiteLines = 0;
-UINT32                  Gbl_CommentLines = 0;
-UINT32                  Gbl_SourceLines = 0;
-UINT32                  Gbl_LongLines = 0;
-UINT32                  Gbl_TotalLines = 0;
+UINT32                      Gbl_Tabs = 0;
+UINT32                      Gbl_NonAnsiComments = 0;
+UINT32                      Gbl_Files = 0;
+UINT32                      Gbl_WhiteLines = 0;
+UINT32                      Gbl_CommentLines = 0;
+UINT32                      Gbl_SourceLines = 0;
 
-struct stat             Gbl_StatBuf;
-char                    *Gbl_FileBuffer;
-UINT32                  Gbl_FileSize;
-BOOLEAN                 Gbl_VerboseMode = FALSE;
-BOOLEAN                 Gbl_BatchMode = FALSE;
-BOOLEAN                 Gbl_DebugStatementsMode = FALSE;
-BOOLEAN                 Gbl_MadeChanges = FALSE;
-BOOLEAN                 Gbl_Overwrite = FALSE;
-
-
-/******************************************************************************
- *
- * Standard/Common translation tables
- *
- ******************************************************************************/
-
-
-ACPI_STRING_TABLE           StandardDataTypes[] = {
-
-    /* Declarations first */
-
-    "UINT32_BIT  ",     "unsigned int",     REPLACE_SUBSTRINGS,
-
-    "UINT32      ",     "unsigned int",     REPLACE_SUBSTRINGS,
-    "UINT16        ",   "unsigned short",   REPLACE_SUBSTRINGS,
-    "UINT8        ",    "unsigned char",    REPLACE_SUBSTRINGS,
-    "BOOLEAN      ",    "unsigned char",    REPLACE_SUBSTRINGS,
-
-    /* Now do embedded typecasts */
-
-    "UINT32",           "unsigned int",     REPLACE_SUBSTRINGS,
-    "UINT16",           "unsigned short",   REPLACE_SUBSTRINGS,
-    "UINT8",            "unsigned char",    REPLACE_SUBSTRINGS,
-    "BOOLEAN",          "unsigned char",    REPLACE_SUBSTRINGS,
-
-    "INT32  ",          "int    ",          REPLACE_SUBSTRINGS,
-    "INT32",            "int",              REPLACE_SUBSTRINGS,
-    "INT16",            "short",            REPLACE_SUBSTRINGS,
-    "INT8",             "char",             REPLACE_SUBSTRINGS,
-
-    /* Put back anything we broke (such as anything with _INT32_ in it) */
-
-    "_int_",            "_INT32_",          REPLACE_SUBSTRINGS,
-    "_unsigned int_",   "_UINT32_",         REPLACE_SUBSTRINGS,
-    NULL,               NULL,               0
-};
+struct stat                 Gbl_StatBuf;
+char                        *Gbl_FileBuffer;
+UINT32                      Gbl_FileSize;
 
 
 /******************************************************************************
@@ -185,9 +137,9 @@ ACPI_STRING_TABLE           StandardDataTypes[] = {
  *
  ******************************************************************************/
 
-char                        LinuxHeader[] =
+char                        LinuxHeader[] = 
 "/*\n"
-" *  Copyright (C) 2000 - 2002, R. Byron Moore\n"
+" *  Copyright (C) 2000 R. Byron Moore\n"
 " *\n"
 " *  This program is free software; you can redistribute it and/or modify\n"
 " *  it under the terms of the GNU General Public License as published by\n"
@@ -205,205 +157,65 @@ char                        LinuxHeader[] =
 " */\n";
 
 
-ACPI_STRING_TABLE           LinuxDataTypes[] = {
+
+ACPI_STRING_TABLE           LinuxReplacementStrings[] = {
 
     /* Declarations first */
 
-    "UINT32_BIT  ",             "u32         ",             REPLACE_WHOLE_WORD,
+    "UINT32_BIT  ",     "unsigned int",
 
-    "UINT64      ",             "u64         ",             REPLACE_WHOLE_WORD,
-    "UINT32      ",             "u32         ",             REPLACE_WHOLE_WORD,
-    "UINT16      ",             "u16         ",             REPLACE_WHOLE_WORD,
-    "UINT8       ",             "u8          ",             REPLACE_WHOLE_WORD,
-    "BOOLEAN     ",             "u8          ",             REPLACE_WHOLE_WORD,
+    "UINT32      ",     "unsigned int",
+    "UINT16        ",   "unsigned short",
+    "UINT8        ",    "unsigned char",
+    "BOOLEAN      ",    "unsigned char",
 
     /* Now do embedded typecasts */
 
-    "UINT64",                   "u64",                      REPLACE_WHOLE_WORD,
-    "UINT32",                   "u32",                      REPLACE_WHOLE_WORD,
-    "UINT16",                   "u16",                      REPLACE_WHOLE_WORD,
-    "UINT8",                    "u8",                       REPLACE_WHOLE_WORD,
-    "BOOLEAN",                  "u8",                       REPLACE_WHOLE_WORD,
+    "UINT32",           "unsigned int",
+    "UINT16",           "unsigned short",
+    "UINT8",            "unsigned char",
+    "BOOLEAN",          "unsigned char",
 
-    "INT64  ",                  "s64    ",                  REPLACE_WHOLE_WORD,
-    "INT64",                    "s64",                      REPLACE_WHOLE_WORD,
-    "INT32  ",                  "s32    ",                  REPLACE_WHOLE_WORD,
-    "INT32",                    "s32",                      REPLACE_WHOLE_WORD,
-    "INT16  ",                  "s16    ",                  REPLACE_WHOLE_WORD,
-    "INT8   ",                  "s8     ",                  REPLACE_WHOLE_WORD,
-    "INT16",                    "s16",                      REPLACE_WHOLE_WORD,
-    "INT8",                     "s8",                       REPLACE_WHOLE_WORD,
+    "INT32  ",          "int    ",
+    "INT32",            "int",
+    "INT16",            "short",
+    "INT8",             "char", 
 
-    /* Put back anything we broke (such as anything with _INTxx_ in it) */
+    /* Put back anything we broke (such as anything with _INT32_ in it) */
 
-/* No longer needed?
-
-    "_s32_",                    "_INT32_",          REPLACE_SUBSTRINGS,
-    "_u32_",                    "_UINT32_",          REPLACE_SUBSTRINGS,
-    "_s16_",                    "_INT16_",          REPLACE_SUBSTRINGS,
-    "_u16_",                    "_UINT16_",          REPLACE_SUBSTRINGS,
-    "_s8_",                     "_INT8_",          REPLACE_SUBSTRINGS,
-    "_u8_",                     "_UINT8_",          REPLACE_SUBSTRINGS,
-*/
-
-NULL,                       NULL,                       0};
-
-ACPI_IDENTIFIER_TABLE           LinuxLowerCase[] = {
-
-    /*"ACPI_IO_ADDRESS  ",        "acpi_io_address  ",*/
-    /*"ACPI_PHYSICAL_ADDRESS  ",  "acpi_physical_address  ",*/
-    /*"NATIVE_UINT  ",            "native_uint  ",*/
-    /*"NATIVE_INT  ",             "native_int  ",*/
-    /*"NATIVE_CHAR  ",            "native_char  ",*/
-
-    "ACPI_ADR_SPACE_HANDLER",
-    "ACPI_ADR_SPACE_SETUP",
-    "ACPI_BUFFER",
-    "ACPI_BUS_ATTRIBUTE",
-    "ACPI_COMMON_FACS",
-    "ACPI_COMMON_STATE",
-    "ACPI_CONTROL_STATE",
-    "ACPI_DEBUG_MEM_BLOCK",
-    "ACPI_DEBUG_MEM_HEADER",
-    "ACPI_DEBUG_PRINT_INFO",
-    "ACPI_DEVICE_ID",
-    "ACPI_DEVICE_INFO",
-    "ACPI_DEVICE_WALK_INFO",
-    "ACPI_EVENT_HANDLER",
-    "ACPI_EVENT_STATUS",
-    "ACPI_EVENT_TYPE",
-    "ACPI_FIELD_INFO",
-    "ACPI_FIXED_EVENT_INFO",
-    "ACPI_GENERIC_ADDRESS",
-    "ACPI_GENERIC_STATE",
-    "ACPI_GET_DEVICES_INFO",
-    "ACPI_GPE_HANDLER",
-    "ACPI_GPE_LEVEL_INFO",
-    "ACPI_GPE_REGISTERS",
-    "ACPI_HANDLE",
-    "ACPI_INTEGER",
-    "ACPI_INIT_WALK_INFO",
-    "ACPI_IO_ATTRIBUTE",
-    "ACPI_MEM_SPACE_CONTEXT",
-    "ACPI_MEMORY_ATTRIBUTE",
-    "ACPI_MUTEX",
-    "ACPI_MUTEX_INFO",
-    "ACPI_NAME",
-    "ACPI_NAMESPACE_NODE",
-    "ACPI_NAMESTRING_INFO",
-    "ACPI_NOTIFY_HANDLER",
-    "ACPI_NOTIFY_INFO",
-    "ACPI_OBJ_INFO_HEADER",
-    "ACPI_OBJECT",
-    "ACPI_OBJECT_LIST",
-    "ACPI_OBJECT_TYPE",
-    "ACPI_OBJECT_TYPE8",
-    "ACPI_OPCODE_INFO",
-    "ACPI_OPERAND_OBJECT",
-    "ACPI_OWNER_ID",
-    "ACPI_PARSE_DOWNWARDS",
-    "ACPI_PARSE_OBJECT",
-    "ACPI_PARSE_STATE",
-    "ACPI_PARSE_UPWARDS",
-    "ACPI_PARSE_VALUE",
-    "ACPI_PARSE2_OBJECT",
-    "ACPI_PCI_ID",
-    "ACPI_PKG_INFO",
-    "ACPI_PKG_STATE",
-    "ACPI_PSCOPE_STATE",
-    "ACPI_RESOURCE",
-    "ACPI_RESOURCE_ADDRESS16",
-    "ACPI_RESOURCE_ADDRESS32",
-    "ACPI_RESOURCE_ADDRESS64",
-    "ACPI_RESOURCE_ATTRIBUTE",
-    "ACPI_RESOURCE_DATA",
-    "ACPI_RESOURCE_DMA",
-    "ACPI_RESOURCE_EXT_IRQ",
-    "ACPI_RESOURCE_FIXED_IO",
-    "ACPI_RESOURCE_FIXED_MEM32",
-    "ACPI_RESOURCE_IO",
-    "ACPI_RESOURCE_IRQ",
-    "ACPI_RESOURCE_MEM24",
-    "ACPI_RESOURCE_MEM32",
-    "ACPI_RESOURCE_SOURCE",
-    "ACPI_RESOURCE_START_DPF",
-    "ACPI_RESOURCE_TYPE",
-    "ACPI_RESOURCE_VENDOR",
-    "ACPI_RESULT_VALUES",
-    "ACPI_SCOPE_STATE",
-    "ACPI_STATUS",
-    "ACPI_STRING",
-    "ACPI_SYSTEM_INFO",
-    "ACPI_TABLE_DESC",
-    "ACPI_TABLE_HEADER",
-    "ACPI_TABLE_INFO",
-    "ACPI_TABLE_TYPE",
-    "ACPI_TABLE_TYPE",
-    "ACPI_UPDATE_STATE",
-    "ACPI_WALK_CALLBACK",
-    "ACPI_WALK_INFO",
-    "ACPI_WALK_LIST",
-    "ACPI_WALK_STATE",
-    "ACPI_DB_METHOD_INFO",
-    "FACS_DESCRIPTOR_REV071",
-    "FACS_DESCRIPTOR_REV1",
-    "FACS_DESCRIPTOR_REV2",
-    "FADT_DESCRIPTOR_REV071",
-    "FADT_DESCRIPTOR_REV1",
-    "FADT_DESCRIPTOR_REV2",
-    "ACPI_FIND_CONTEXT",
-    "ACPI_NS_SEARCH_DATA",
-    "ACPI_INTERPRETER_MODE",
-    "ACPI_PCI_ROUTING_TABLE",
-    "ACPI_PREDEFINED_NAMES",
-    "UINT64_OVERLAY",
-    "UINT64_STRUCT",
-    "XSDT_DESCRIPTOR",
-
-    NULL,
+    "_int_",            "_INT32_",
+    "_unsigned int_",   "_UINT32_",
+    NULL,               NULL
 };
 
 
-ACPI_IDENTIFIER_TABLE       LinuxLineIdentifiers[] = {
+ACPI_LINE_TABLE             LinuxLineIdentifiers[] = {
 
     "#define __",
     NULL
 };
 
 
-ACPI_IDENTIFIER_TABLE       LinuxConditionalIdentifiers[] = {
-
-//    "ACPI_USE_STANDARD_HEADERS",
-    "WIN32",
-    "_MSC_VER",
-    NULL
-};
-
 ACPI_CONVERSION_TABLE       LinuxConversionTable = {
 
     LinuxHeader,
-    FLG_NO_CARRIAGE_RETURNS | FLG_LOWERCASE_DIRNAMES,
-
-    LinuxLowerCase,
+    FLG_NO_CARRIAGE_RETURNS,
 
     /* C source files */
 
-    LinuxDataTypes,
+    LinuxReplacementStrings,
     LinuxLineIdentifiers,
-    NULL,
-    (CVT_COUNT_TABS | CVT_COUNT_NON_ANSI_COMMENTS | CVT_COUNT_LINES | CVT_CHECK_BRACES | CVT_TRIM_LINES | CVT_BRACES_ON_SAME_LINE |
-     CVT_MIXED_CASE_TO_UNDERSCORES | CVT_LOWER_CASE_IDENTIFIERS | CVT_REMOVE_DEBUG_MACROS | CVT_TRIM_WHITESPACE |
-     CVT_REMOVE_EMPTY_BLOCKS | CVT_SPACES_TO_TABS8),
+    (CVT_COUNT_TABS | CVT_COUNT_NON_ANSI_COMMENTS | CVT_COUNT_LINES | CVT_TRIM_LINES | CVT_BRACES_ON_SAME_LINE | 
+     CVT_MIXED_CASE_TO_UNDERSCORES | CVT_LOWER_CASE_IDENTIFIERS | CVT_REMOVE_DEBUG_MACROS | CVT_TRIM_WHITESPACE),
 
     /* C header files */
 
-    LinuxDataTypes,
+    LinuxReplacementStrings,
     NULL,
-    LinuxConditionalIdentifiers,
     (CVT_COUNT_TABS | CVT_COUNT_NON_ANSI_COMMENTS | CVT_COUNT_LINES | CVT_TRIM_LINES | CVT_MIXED_CASE_TO_UNDERSCORES |
-     CVT_LOWER_CASE_IDENTIFIERS | CVT_TRIM_WHITESPACE |
-     CVT_REMOVE_EMPTY_BLOCKS| CVT_SPACES_TO_TABS8),
+     CVT_LOWER_CASE_IDENTIFIERS | CVT_TRIM_WHITESPACE),
 };
+
 
 
 /******************************************************************************
@@ -417,162 +229,23 @@ ACPI_CONVERSION_TABLE       CleanupConversionTable = {
 
     NULL,
     FLG_DEFAULT_FLAGS,
-    NULL,
-    /* C source files */
-
-    NULL,
-    NULL,
-    NULL,
-    (CVT_COUNT_TABS | CVT_COUNT_NON_ANSI_COMMENTS | CVT_COUNT_LINES | CVT_CHECK_BRACES | CVT_TRIM_LINES | CVT_TRIM_WHITESPACE),
-
-    /* C header files */
-
-    NULL,
-    NULL,
-    NULL,
-    (CVT_COUNT_TABS | CVT_COUNT_NON_ANSI_COMMENTS | CVT_COUNT_LINES | CVT_TRIM_LINES | CVT_TRIM_WHITESPACE),
-};
-
-
-ACPI_CONVERSION_TABLE       StatsConversionTable = {
-
-    NULL,
-    FLG_NO_FILE_OUTPUT,
-    NULL,
 
     /* C source files */
 
-    NULL,
-    NULL,
-    NULL,
-    (CVT_COUNT_TABS | CVT_COUNT_NON_ANSI_COMMENTS | CVT_COUNT_LINES),
-
-    /* C header files */
-
-    NULL,
-    NULL,
-    NULL,
-    (CVT_COUNT_TABS | CVT_COUNT_NON_ANSI_COMMENTS | CVT_COUNT_LINES),
-};
-
-
-/******************************************************************************
- *
- * Customizable translation tables
- *
- ******************************************************************************/
-
-ACPI_STRING_TABLE           CustomReplacements[] = {
-
-
-    "1999 - 2002, Intel Corp",      "1999 - 2002, Intel Corp",     REPLACE_WHOLE_WORD,
-    "1999, Intel Corp",             "1999 - 2002, Intel Corp",     REPLACE_WHOLE_WORD,
-    "  All rights\n * reserved.",    "\n * All rights reserved.",     REPLACE_WHOLE_WORD,
-    "Copyright (C) 2000, 2001",     "Copyright (C) 2000 - 2002",      REPLACE_WHOLE_WORD,
-    NULL,                   NULL, 0
-};
-
-
-ACPI_CONVERSION_TABLE       CustomConversionTable = {
-
-    NULL,
-    FLG_DEFAULT_FLAGS,
-    NULL,
-
-    /* C source files */
-
-    CustomReplacements,
     NULL,
     NULL,
     (CVT_COUNT_TABS | CVT_COUNT_NON_ANSI_COMMENTS | CVT_COUNT_LINES | CVT_TRIM_LINES | CVT_TRIM_WHITESPACE),
 
     /* C header files */
 
-    CustomReplacements,
     NULL,
     NULL,
     (CVT_COUNT_TABS | CVT_COUNT_NON_ANSI_COMMENTS | CVT_COUNT_LINES | CVT_TRIM_LINES | CVT_TRIM_WHITESPACE),
 };
 
 
-/******************************************************************************
- *
- * FUNCTION:    AsExaminePaths
- *
- * DESCRIPTION: Source and Target pathname verification and handling
- *
- ******************************************************************************/
-
-int
-AsExaminePaths (
-    ACPI_CONVERSION_TABLE   *ConversionTable,
-    char                    *Source,
-    char                    *Target,
-    UINT32                  *SourceFileType)
-{
-    int                     Status;
-    int                     Response;
 
 
-    Status = stat (Source, &Gbl_StatBuf);
-    if (Status)
-    {
-        printf ("Source path \"%s\" does not exist\n", Source);
-        return -1;
-    }
-
-    /* Return the filetype -- file or a directory */
-
-    *SourceFileType = 0;
-    if (Gbl_StatBuf.st_mode & _S_IFDIR)
-    {
-        *SourceFileType = _S_IFDIR;
-    }
-
-    /*
-     * If we are in no-output mode or in batch mode, we are done
-     */
-    if ((ConversionTable->Flags & FLG_NO_FILE_OUTPUT) ||
-        (Gbl_BatchMode))
-    {
-        return 0;
-    }
-
-
-    if (!stricmp (Source, Target))
-    {
-        printf ("Target path is the same as the source path, overwrite?\n");
-        scanf ("%c", &Response);
-
-        /* Check response */
-
-        if ((char) Response != 'y')
-        {
-            return -1;
-        }
-
-        Gbl_Overwrite = TRUE;
-    }
-
-    else
-    {
-        Status = stat (Target, &Gbl_StatBuf);
-        if (!Status)
-        {
-            printf ("Target path already exists, overwrite?\n");
-            scanf ("%c", &Response);
-
-            /* Check response */
-
-            if ((char) Response != 'y')
-            {
-                return -1;
-            }
-        }
-    }
-
-    return 0;
-}
 
 
 /******************************************************************************
@@ -587,18 +260,14 @@ void
 AsDisplayStats (void)
 {
 
-    printf ("\nAcpiSrc statistics:\n\n");
-    printf ("%6d Files processed\n", Gbl_Files);
-    printf ("%6d Tabs found\n", Gbl_Tabs);
-    printf ("%6d Missing if/else braces\n", Gbl_MissingBraces);
-    printf ("%6d Non-ANSI comments found\n", Gbl_NonAnsiComments);
-    printf ("%6d Total Lines\n", Gbl_TotalLines);
-    printf ("%6d Lines of code\n", Gbl_SourceLines);
-    printf ("%6d Lines of non-comment whitespace\n", Gbl_WhiteLines);
-    printf ("%6d Lines of comments\n", Gbl_CommentLines);
-    printf ("%6d Long lines found\n", Gbl_LongLines);
-    printf ("%6.1f Ratio of code to whitespace\n", ((float) Gbl_SourceLines / (float) Gbl_WhiteLines));
-    printf ("%6.1f Ratio of code to comments\n", ((float) Gbl_SourceLines / (float) Gbl_CommentLines));
+    printf ("%d Files processed\n", Gbl_Files);
+    printf ("%d Tabs found\n", Gbl_Tabs);
+    printf ("%d Non-ANSI comments found\n", Gbl_NonAnsiComments);
+    printf ("%d Lines of code\n", Gbl_SourceLines);
+    printf ("%d Lines of non-comment whitespace\n", Gbl_WhiteLines);
+    printf ("%d Lines of comments\n", Gbl_CommentLines);
+    printf ("%f Ratio of code to whitespace\n", ((float) Gbl_SourceLines / (float) Gbl_WhiteLines));
+    printf ("%f Ratio of code to comments\n", ((float) Gbl_SourceLines / (float) Gbl_CommentLines));
 
     return;
 }
@@ -606,7 +275,7 @@ AsDisplayStats (void)
 
 /******************************************************************************
  *
- * FUNCTION:    AsDisplayUsage
+ * FUNCTION:    AsDisplayUsage  
  *
  * DESCRIPTION: Usage message
  *
@@ -617,15 +286,9 @@ AsDisplayUsage (void)
 {
 
     printf ("\n");
-    printf ("Usage: acpisrc [-c|l|u] [-dsvy] <SourceDir> <DestinationDir>\n\n");
-    printf ("Where: -c          Generate cleaned version of the source\n");
-    printf ("       -l          Generate Linux version of the source\n");
-    printf ("       -u          Generate Custom source translation\n");
-    printf ("\n");
-    printf ("       -d          Leave debug statements in code\n");
-    printf ("       -s          Generate source statistics only\n");
-    printf ("       -v          Verbose mode\n");
-    printf ("       -y          Suppress file overwrite prompts\n");
+    printf ("Usage: acpisrc [-cl] <SourceDir> <DestinationDir>\n\n");
+    printf ("Where: -l            Generate Linux version of the source\n");
+    printf ("       -c            Generate cleaned version of the source\n");
     printf ("\n");
     return;
 }
@@ -639,18 +302,16 @@ AsDisplayUsage (void)
  *
  ******************************************************************************/
 
-int ACPI_SYSTEM_XFACE
+int 
 main (
-    NATIVE_UINT             argc,
+    NATIVE_UINT             argc, 
     char                    *argv[])
 {
     int                     j;
-    ACPI_CONVERSION_TABLE   *ConversionTable = NULL;
-    char                    *SourcePath;
-    char                    *TargetPath;
-    UINT32                  FileType;
+    ACPI_CONVERSION_TABLE   *ConversionTable;
+    UINT32                  i = 1;
 
-
+    
     printf ("ACPI Source Code Conversion Utility ");
     printf ("version [%s]\n", __DATE__);
 
@@ -662,117 +323,40 @@ main (
 
     /* Command line options */
 
-    while ((j = getopt (argc, argv, "lcsuvyd")) != EOF) switch(j)
+    while ((j = getopt (argc, argv, "lc")) != EOF) switch(j) 
     {
     case 'l':
-        /* Linux code generation */
-
         printf ("Creating Linux source code\n");
         ConversionTable = &LinuxConversionTable;
+        i++;
         break;
 
     case 'c':
-        /* Cleanup code */
-
         printf ("Code cleanup\n");
         ConversionTable = &CleanupConversionTable;
+        i++;
         break;
 
-    case 's':
-        /* Statistics only */
-
-        break;
-
-    case 'u':
-        /* custom conversion  */
-
-        printf ("Custom source translation\n");
-        ConversionTable = &CustomConversionTable;
-        break;
-
-    case 'v':
-        /* Verbose mode */
-
-        Gbl_VerboseMode = TRUE;
-        break;
-
-    case 'y':
-        /* Batch mode */
-
-        Gbl_BatchMode = TRUE;
-        break;
-
-    case 'd':
-        /* Leave debug statements in */
-
-        Gbl_DebugStatementsMode = TRUE;
-        break;
-
-    default:
+    default:    
         AsDisplayUsage ();
         return -1;
     }
-
-
-    SourcePath = argv[optind];
-    if (!SourcePath)
-    {
-        printf ("Missing source path\n");
-        AsDisplayUsage ();
-        return -1;
-    }
-
-    TargetPath = argv[optind+1];
 
     if (!ConversionTable)
     {
-        /* Just generate statistics.  Ignore target path */
-
-        TargetPath = SourcePath;
-
-        printf ("Source code statistics only\n");
-        ConversionTable = &StatsConversionTable;
-    }
-
-    else if (!TargetPath)
-    {
-        TargetPath = SourcePath;
-    }
-
-    if (Gbl_DebugStatementsMode)
-    {
-        ConversionTable->SourceFunctions &= ~CVT_REMOVE_DEBUG_MACROS;
+        printf ("Code cleanup\n");
+        ConversionTable = &CleanupConversionTable;
+        i++;
     }
 
 
-    /* Check source and target paths and files */
+    /* Process the directory tree */
 
-    if (AsExaminePaths (ConversionTable, SourcePath, TargetPath, &FileType))
-    {
-        return -1;
-    }
-
-    /* Source/target can be either directories or a files */
-
-    if (FileType == _S_IFDIR)
-    {
-        /* Process the directory tree */
-
-        AsProcessTree (ConversionTable, SourcePath, TargetPath);
-    }
-
-    else
-    {
-        /* Process a single file */
-
-        /* TBD: Need to differentiate between source and header files !! */
-
-        AsProcessOneFile (ConversionTable, NULL, TargetPath, 0, SourcePath, FILE_TYPE_SOURCE);
-    }
-
-    /* Always display final summary and stats */
+    AsProcessTree (ConversionTable, argv[i], argv[i+1]);
 
     AsDisplayStats ();
 
-    return 0;
+	return 0;
 }
+
+

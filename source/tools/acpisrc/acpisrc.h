@@ -1,8 +1,7 @@
 
 /******************************************************************************
- *
- * Module Name: acpisrc.h - Include file for AcpiSrc utility
- *              $Revision: 1.30 $
+ * 
+ * Module Name: 
  *
  *****************************************************************************/
 
@@ -10,8 +9,8 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2003, Intel Corp.
- * All rights reserved.
+ * Some or all of this work - Copyright (c) 1999, Intel Corp.  All rights
+ * reserved.
  *
  * 2. License
  *
@@ -39,9 +38,9 @@
  * The above copyright and patent license is granted only if the following
  * conditions are met:
  *
- * 3. Conditions
+ * 3. Conditions 
  *
- * 3.1. Redistribution of Source with Rights to Further Distribute Source.
+ * 3.1. Redistribution of Source with Rights to Further Distribute Source.  
  * Redistribution of source code of any substantial portion of the Covered
  * Code or modification with rights to further distribute source must include
  * the above Copyright Notice, the above License, this list of Conditions,
@@ -49,11 +48,11 @@
  * Licensee must cause all Covered Code to which Licensee contributes to
  * contain a file documenting the changes Licensee made to create that Covered
  * Code and the date of any change.  Licensee must include in that file the
- * documentation of any changes made by any predecessor Licensee.  Licensee
+ * documentation of any changes made by any predecessor Licensee.  Licensee 
  * must include a prominent statement that the modification is derived,
  * directly or indirectly, from Original Intel Code.
  *
- * 3.2. Redistribution of Source with no Rights to Further Distribute Source.
+ * 3.2. Redistribution of Source with no Rights to Further Distribute Source.  
  * Redistribution of source code of any substantial portion of the Covered
  * Code or modification without rights to further distribute source must
  * include the following Disclaimer and Export Compliance provision in the
@@ -87,7 +86,7 @@
  * INSTALLATION, TRAINING OR OTHER SERVICES.  INTEL WILL NOT PROVIDE ANY
  * UPDATES, ENHANCEMENTS OR EXTENSIONS.  INTEL SPECIFICALLY DISCLAIMS ANY
  * IMPLIED WARRANTIES OF MERCHANTABILITY, NONINFRINGEMENT AND FITNESS FOR A
- * PARTICULAR PURPOSE.
+ * PARTICULAR PURPOSE. 
  *
  * 4.2. IN NO EVENT SHALL INTEL HAVE ANY LIABILITY TO LICENSEE, ITS LICENSEES
  * OR ANY OTHER THIRD PARTY, FOR ANY LOST PROFITS, LOST DATA, LOSS OF USE OR
@@ -118,37 +117,17 @@
 #define LINES_IN_LEGAL_HEADER               105 /* See above */
 
 
+
 #include <stdio.h>
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <fcntl.h>
-#include <ctype.h>
-#ifdef WIN32
 #include <io.h>
+#include <ctype.h>
 #include <direct.h>
-#endif
 #include <errno.h>
 
 #include "acpi.h"
-
-
-/* Fixups for non-Win32 compilation */
-#ifndef WIN32
-
-static inline int
-max (int a, int b)
-{
-    return (a > b ? a : b);
-}
-
-#define O_BINARY    0x0
-
-#define mkdir(x) mkdir(x, 0)
-#define stricmp strcasecmp
-
-char * strlwr(char* str);
-
-#endif
 
 
 /* Constants */
@@ -158,63 +137,38 @@ char * strlwr(char* str);
 
 #define FILE_TYPE_SOURCE                    1
 #define FILE_TYPE_HEADER                    2
-#define FILE_TYPE_DIRECTORY                 3
 
 
-#define CVT_COUNT_TABS                      0x00000001
+#define CVT_COUNT_TABS                      0x00000001    
 #define CVT_COUNT_NON_ANSI_COMMENTS         0x00000002
 #define CVT_TRIM_LINES                      0x00000004
-#define CVT_CHECK_BRACES                    0x00000008
-#define CVT_COUNT_LINES                     0x00000010
-#define CVT_BRACES_ON_SAME_LINE             0x00000020
-#define CVT_MIXED_CASE_TO_UNDERSCORES       0x00000040
-#define CVT_LOWER_CASE_IDENTIFIERS          0x00000080
-#define CVT_REMOVE_DEBUG_MACROS             0x00000100
-#define CVT_TRIM_WHITESPACE                 0x00000200  /* Should be after all line removal */
-#define CVT_REMOVE_EMPTY_BLOCKS             0x00000400  /* Should be after trimming lines */
-#define CVT_REDUCE_TYPEDEFS                 0x00000800
-#define CVT_SPACES_TO_TABS4                 0x40000000  /* Tab conversion should be last */
-#define CVT_SPACES_TO_TABS8                 0x80000000  /* Tab conversion should be last */
+#define CVT_COUNT_LINES                     0x00000008            
+#define CVT_BRACES_ON_SAME_LINE             0x00000010
+#define CVT_MIXED_CASE_TO_UNDERSCORES       0x00000020
+#define CVT_LOWER_CASE_IDENTIFIERS          0x00000040
+#define CVT_REMOVE_DEBUG_MACROS             0x00000080
+#define CVT_TRIM_WHITESPACE                 0x00000100  /* Should be after all line removal */
 
 
 #define FLG_DEFAULT_FLAGS                   0x00000000
 #define FLG_NO_CARRIAGE_RETURNS             0x00000001
-#define FLG_NO_FILE_OUTPUT                  0x00000002
-#define FLG_LOWERCASE_DIRNAMES              0x00000004
 
 
 /* Globals */
 
 extern UINT32                   Gbl_Files;
-extern UINT32                   Gbl_MissingBraces;
 extern UINT32                   Gbl_Tabs;
 extern UINT32                   Gbl_NonAnsiComments;
 extern UINT32                   Gbl_SourceLines;
 extern UINT32                   Gbl_WhiteLines;
 extern UINT32                   Gbl_CommentLines;
-extern UINT32                   Gbl_LongLines;
-extern UINT32                   Gbl_TotalLines;
 extern struct stat              Gbl_StatBuf;
 extern char                     *Gbl_FileBuffer;
 extern UINT32                   Gbl_FileSize;
-extern UINT32                   Gbl_FileType;
-extern BOOLEAN                  Gbl_VerboseMode;
-extern BOOLEAN                  Gbl_BatchMode;
-extern BOOLEAN                  Gbl_MadeChanges;
-extern BOOLEAN                  Gbl_Overwrite;
-extern BOOLEAN                  Gbl_WidenDeclarations;
-
-#define PARAM_LIST(pl)          pl
-#define TERSE_PRINT(a)          if (!Gbl_VerboseMode) printf PARAM_LIST(a)
-#define VERBOSE_PRINT(a)        if (Gbl_VerboseMode) printf PARAM_LIST(a)
 
 
-#define REPLACE_WHOLE_WORD      0x00
-#define REPLACE_SUBSTRINGS      0x01
-#define REPLACE_MASK            0x01
-
-#define EXTRA_INDENT_C          0x02
-#define INDENT_MASK             0x02
+extern int                      optind;
+extern char                     *optarg;
 
 
 /* Conversion table structs */
@@ -223,54 +177,41 @@ typedef struct acpi_string_table
 {
     char                        *Target;
     char                        *Replacement;
-    UINT8                       Type;
 
 } ACPI_STRING_TABLE;
 
 
-typedef struct acpi_typed_identifier_table
-{
-    char                        *Identifier;
-    UINT8                       Type;
-
-} ACPI_TYPED_IDENTIFIER_TABLE;
-
-#define SRC_TYPE_SIMPLE         0
-#define SRC_TYPE_STRUCT         1
-#define SRC_TYPE_UNION          2
-
-
-typedef struct acpi_identifier_table
+typedef struct acpi_line_table
 {
     char                        *Identifier;
 
-} ACPI_IDENTIFIER_TABLE;
+} ACPI_LINE_TABLE;
+
 
 typedef struct acpi_conversion_table
 {
     char                        *NewHeader;
     UINT32                      Flags;
 
-    ACPI_TYPED_IDENTIFIER_TABLE *LowerCaseTable;
-
     ACPI_STRING_TABLE           *SourceStringTable;
-    ACPI_IDENTIFIER_TABLE       *SourceLineTable;
-    ACPI_IDENTIFIER_TABLE       *SourceConditionalTable;
-    ACPI_IDENTIFIER_TABLE       *SourceMacroTable;
-    ACPI_TYPED_IDENTIFIER_TABLE *SourceStructTable;
+    ACPI_LINE_TABLE             *SourceLineTable;
     UINT32                      SourceFunctions;
 
     ACPI_STRING_TABLE           *HeaderStringTable;
-    ACPI_IDENTIFIER_TABLE       *HeaderLineTable;
-    ACPI_IDENTIFIER_TABLE       *HeaderConditionalTable;
-    ACPI_IDENTIFIER_TABLE       *HeaderMacroTable;
-    ACPI_TYPED_IDENTIFIER_TABLE *HeaderStructTable;
+    ACPI_LINE_TABLE             *HeaderLineTable;
     UINT32                      HeaderFunctions;
 
 } ACPI_CONVERSION_TABLE;
 
 
+
 /* Prototypes */
+
+int 
+getopt (
+    int                     argc, 
+    char                    **argv, 
+    char                    *opts);
 
 char *
 AsSkipUntilChar (
@@ -289,16 +230,11 @@ AsReplaceData (
     char                    *BufferToAdd,
     UINT32                  LengthToAdd);
 
+
 int
 AsReplaceString (
     char                    *Target,
     char                    *Replacement,
-    UINT8                   Type,
-    char                    *Buffer);
-
-int
-AsLowerCaseString (
-    char                    *Target,
     char                    *Buffer);
 
 void
@@ -307,19 +243,8 @@ AsRemoveLine (
     char                    *Keyword);
 
 void
-AsRemoveMacro (
-    char                    *Buffer,
-    char                    *Keyword);
-
-void
-AsCheckForBraces (
-    char                    *Buffer,
-    char                    *Filename);
-
-void
 AsTrimLines (
-    char                    *Buffer,
-    char                    *Filename);
+    char                    *Buffer);
 
 void
 AsMixedCaseToUnderscores (
@@ -327,8 +252,7 @@ AsMixedCaseToUnderscores (
 
 void
 AsCountTabs (
-    char                    *Buffer,
-    char                    *Filename);
+    char                    *Buffer);
 
 void
 AsBracesOnSameLine (
@@ -339,47 +263,23 @@ AsLowerCaseIdentifiers (
     char                    *Buffer);
 
 void
-AsReduceTypedefs (
-    char                    *Buffer,
-    char                    *Keyword);
-
-void
 AsRemoveDebugMacros (
     char                    *Buffer);
 
 void
-AsRemoveEmptyBlocks (
-    char                    *Buffer,
-    char                    *Filename);
-
-void
 AsCountSourceLines (
-    char                    *Buffer,
-    char                    *Filename);
+    char                    *Buffer);
 
 void
 AsCountNonAnsiComments (
-    char                    *Buffer,
-    char                    *Filename);
+    char                    *Buffer);
 
 void
 AsTrimWhitespace (
     char                    *Buffer);
 
-void
-AsTabify4 (
-    char                    *Buffer);
 
-void
-AsTabify8 (
-    char                    *Buffer);
-
-void
-AsRemoveConditionalCompile (
-    char                    *Buffer,
-    char                    *Keyword);
-
-ACPI_NATIVE_INT
+NATIVE_INT
 AsProcessTree (
     ACPI_CONVERSION_TABLE   *ConversionTable,
     char                    *SourcePath,
@@ -406,60 +306,21 @@ void
 AsConvertFile (
     ACPI_CONVERSION_TABLE   *ConversionTable,
     char                    *FileBuffer,
-    char                    *Filename,
-    ACPI_NATIVE_INT         FileType);
+    NATIVE_INT              FileType);
 
-ACPI_NATIVE_INT
+NATIVE_INT
 AsProcessOneFile (
     ACPI_CONVERSION_TABLE   *ConversionTable,
     char                    *SourcePath,
     char                    *TargetPath,
     int                     MaxPathLength,
     char                    *Filename,
-    ACPI_NATIVE_INT         FileType);
+    NATIVE_INT              FileType);
 
-ACPI_NATIVE_INT
+NATIVE_INT
 AsCheckForDirectory (
     char                    *SourceDirPath,
     char                    *TargetDirPath,
-    char                    *Filename,
+    struct _finddata_t      *FindInfo,
     char                    **SourcePath,
     char                    **TargetPath);
-
-BOOLEAN
-AsMatchExactWord (
-    char                    *Word,
-    UINT32                  WordLength);
-
-void
-AsPrint (
-    char                    *Message,
-    UINT32                  Count,
-    char                    *Filename);
-
-void
-AsInsertPrefix (
-    char                    *Buffer,
-    char                    *Keyword,
-    UINT8                   Type);
-
-char *
-AsInsertData (
-    char                    *Buffer,
-    char                    *BufferToAdd,
-    UINT32                  LengthToAdd);
-
-char *
-AsRemoveData (
-    char                    *StartPointer,
-    char                    *EndPointer);
-
-void
-AsInsertCarriageReturns (
-    char                    *Buffer);
-
-void
-AsConvertToLineFeeds (
-    char                    *Buffer);
-
-
