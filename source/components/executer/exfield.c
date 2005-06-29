@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: exfield - ACPI AML (p-code) execution - field manipulation
- *              $Revision: 1.101 $
+ *              $Revision: 1.102 $
  *
  *****************************************************************************/
 
@@ -337,7 +337,6 @@ AcpiExWriteDataToField (
 
     default:
         return_ACPI_STATUS (AE_AML_OPERAND_TYPE);
-        break;
     }
 
     /*
