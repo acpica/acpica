@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acdisasm.h - AML disassembler
- *       $Revision: 1.20 $
+ *       $Revision: 1.21 $
  *
  *****************************************************************************/
 
@@ -286,7 +286,7 @@ AcpiDmByteList (
     ACPI_PARSE_OBJECT       *Op);
 
 void
-AcpiIsEisaId (
+AcpiDmIsEisaId (
     ACPI_PARSE_OBJECT       *Op);
 
 void
