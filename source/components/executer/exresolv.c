@@ -859,6 +859,11 @@ AmlGetRvalue (
 
         case TYPE_IndexField:
 
+            /* TBD: NOT SUPPORTED at this time */
+
+            FUNCTION_STATUS_EXIT (AE_NOT_IMPLEMENTED);
+            return AE_NOT_IMPLEMENTED;
+
             if (!ValDesc)
             {
                 DEBUG_PRINT (ACPI_ERROR, ("AmlGetRvalue: internal error - null IndexField ValuePtr\n"));
@@ -876,6 +881,13 @@ AmlGetRvalue (
                 FUNCTION_STATUS_EXIT (AE_AML_ERROR);
                 return AE_AML_ERROR;
             }
+
+
+            /* 
+             * TBD: What is this?
+             * ObjDesc is not initialized at this point!!! 
+             */
+
 
             /* Set Index value to select proper Data register */
             /* Get the global lock if needed */
