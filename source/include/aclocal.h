@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: aclocal.h - Internal data types used across the ACPI subsystem
- *       $Revision: 1.196 $
+ *       $Revision: 1.197 $
  *
  *****************************************************************************/
 
@@ -418,7 +418,7 @@ typedef struct acpi_gpe_register_info
 
 } ACPI_GPE_REGISTER_INFO;
 
-/* 
+/*
  * Information about a GPE register block, one per each installed block --
  * GPE0, GPE1, and one per each installed GPE Block Device.
  */
@@ -960,7 +960,6 @@ typedef struct acpi_bit_register_info
 #define ACPI_RDESC_TYPE_WORD_ADDRESS_SPACE      0x88
 #define ACPI_RDESC_TYPE_EXTENDED_XRUPT          0x89
 #define ACPI_RDESC_TYPE_QWORD_ADDRESS_SPACE     0x8A
-
 
 
 /*****************************************************************************
