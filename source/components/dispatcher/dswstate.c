@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dswstate - Dispatcher parse tree walk management routines
- *              $Revision: 1.81 $
+ *              $Revision: 1.83 $
  *
  *****************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2004, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2005, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -1195,6 +1195,7 @@ AcpiDsDeleteWalkState (
 }
 
 
+#ifdef ACPI_ENABLE_OBJECT_CACHE
 /******************************************************************************
  *
  * FUNCTION:    AcpiDsDeleteWalkStateCache
@@ -1218,5 +1219,6 @@ AcpiDsDeleteWalkStateCache (
     AcpiUtDeleteGenericCache (ACPI_MEM_LIST_WALK);
     return_VOID;
 }
+#endif
 
 
