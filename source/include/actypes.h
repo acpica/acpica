@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: actypes.h - Common data types for the entire ACPI subsystem
- *       $Revision: 1.197 $
+ *       $Revision: 1.198 $
  *
  *****************************************************************************/
 
@@ -382,6 +382,12 @@ typedef UINT64                          ACPI_INTEGER;
 #define ACPI_STATE_D3                   (UINT8) 3
 #define ACPI_D_STATES_MAX               ACPI_STATE_D3
 #define ACPI_D_STATE_COUNT              4
+
+/*
+ * Sleep type invalid value
+ */
+#define ACPI_SLEEP_TYPE_MAX             0x7
+#define ACPI_SLEEP_TYPE_INVALID         0xFF
 
 /*
  * Standard notify values
