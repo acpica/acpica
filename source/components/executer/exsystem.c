@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: amsystem - Interface to OS services
- *              $Revision: 1.52 $
+ *              $Revision: 1.55 $
  *
  *****************************************************************************/
 
@@ -10,8 +10,8 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, Intel Corp.  All rights
- * reserved.
+ * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
+ * All rights reserved.
  *
  * 2. License
  *
@@ -307,7 +307,7 @@ AcpiAmlSystemAcquireMutex (
     }
 
     Status = AcpiAmlSystemWaitSemaphore (ObjDesc->Mutex.Semaphore,
-                                         (UINT32) TimeDesc->Number.Value);
+                                         (UINT32) TimeDesc->Integer.Value);
     return_ACPI_STATUS (Status);
 }
 
@@ -417,7 +417,7 @@ AcpiAmlSystemWaitEvent (
     if (ObjDesc)
     {
         Status = AcpiAmlSystemWaitSemaphore (ObjDesc->Event.Semaphore,
-                                             (UINT32) TimeDesc->Number.Value);
+                                             (UINT32) TimeDesc->Integer.Value);
     }
 
 
@@ -433,8 +433,7 @@ AcpiAmlSystemWaitEvent (
  *
  * RETURN:      Status
  *
- * DESCRIPTION: Provides an access point to perform synchronization operations
- *              within the AML.
+ * DESCRIPTION: Reset an event to a known state.
  *
  ******************************************************************************/
 
@@ -454,8 +453,8 @@ AcpiAmlSystemResetEvent (
     Status = AcpiOsCreateSemaphore (ACPI_NO_UNIT_LIMIT, 0, &TempSemaphore);
     if (ACPI_SUCCESS (Status))
     {
-        AcpiOsDeleteSemaphore (ObjDesc->Mutex.Semaphore);
-        ObjDesc->Mutex.Semaphore = TempSemaphore;
+        AcpiOsDeleteSemaphore (ObjDesc->Event.Semaphore);
+        ObjDesc->Event.Semaphore = TempSemaphore;
     }
 
     return (Status);
