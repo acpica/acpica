@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: acpibinh - Include file for AcpiBin utility
- *              $Revision: 1.7 $
+ *              $Revision: 1.6 $
  *
  *****************************************************************************/
 
@@ -144,6 +144,9 @@
 #endif
 
 
+extern int                      optind;
+extern char                     *optarg;
+
 /* Globals */
 
 EXTERN BOOLEAN              INIT_GLOBAL (Gbl_TerseMode, FALSE);
@@ -152,6 +155,12 @@ EXTERN BOOLEAN              INIT_GLOBAL (Gbl_DumpMode, FALSE);
 
 
 /* Prototypes */
+
+int
+getopt (
+    int                     argc,
+    char                    **argv,
+    char                    *opts);
 
 int
 AbCompareAmlFiles (
