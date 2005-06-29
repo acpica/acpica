@@ -2,7 +2,7 @@
  *
  * Module Name: nsxfobj - Public interfaces to the ACPI subsystem
  *                         ACPI Object oriented interfaces
- *              $Revision: 1.107 $
+ *              $Revision: 1.108 $
  *
  ******************************************************************************/
 
@@ -176,7 +176,7 @@ AcpiEvaluateObject (
          * Allocate a new parameter block for the internal objects
          * Add 1 to count to allow for null terminated internal list
          */
-        InternalParams = ACPI_MEM_CALLOCATE ((ExternalParams->Count + 1) * 
+        InternalParams = ACPI_MEM_CALLOCATE ((ExternalParams->Count + 1) *
                                                 sizeof (void *));
         if (!InternalParams)
         {
@@ -212,7 +212,7 @@ AcpiEvaluateObject (
         /*
          *  The path is fully qualified, just evaluate by name
          */
-        Status = AcpiNsEvaluateByName (Pathname, InternalParams, 
+        Status = AcpiNsEvaluateByName (Pathname, InternalParams,
                     &InternalReturnObj);
     }
     else if (!Handle)
@@ -224,12 +224,12 @@ AcpiEvaluateObject (
          */
         if (!Pathname)
         {
-            ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, 
+            ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
                 "Both Handle and Pathname are NULL\n"));
         }
         else
         {
-            ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, 
+            ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
                 "Handle is NULL and Pathname is relative\n"));
         }
 
@@ -248,7 +248,7 @@ AcpiEvaluateObject (
              * The null pathname case means the handle is for
              * the actual object to be evaluated
              */
-            Status = AcpiNsEvaluateByHandle (Handle, InternalParams, 
+            Status = AcpiNsEvaluateByHandle (Handle, InternalParams,
                             &InternalReturnObj);
         }
         else
@@ -726,7 +726,7 @@ AcpiNsGetDeviceCallback (
             return (AE_CTRL_DEPTH);
         }
 
-        if (STRNCMP (Hid.Buffer, Info->Hid, sizeof (Hid.Buffer)) != 0)
+        if (ACPI_STRNCMP (Hid.Buffer, Info->Hid, sizeof (Hid.Buffer)) != 0)
         {
             Status = AcpiUtExecute_CID (Node, &Cid);
             if (Status == AE_NOT_FOUND)
@@ -740,7 +740,7 @@ AcpiNsGetDeviceCallback (
 
             /* TBD: Handle CID packages */
 
-            if (STRNCMP (Cid.Buffer, Info->Hid, sizeof (Cid.Buffer)) != 0)
+            if (ACPI_STRNCMP (Cid.Buffer, Info->Hid, sizeof (Cid.Buffer)) != 0)
             {
                 return (AE_OK);
             }

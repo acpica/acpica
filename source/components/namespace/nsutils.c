@@ -2,7 +2,7 @@
  *
  * Module Name: nsutils - Utilities for accessing ACPI namespace, accessing
  *                        parents and siblings and Scope manipulation
- *              $Revision: 1.103 $
+ *              $Revision: 1.104 $
  *
  *****************************************************************************/
 
@@ -409,7 +409,7 @@ AcpiNsBuildInternalName (
             {
                 /* Convert the character to uppercase and save it */
 
-                Result[i] = (char) TOUPPER (*ExternalName);
+                Result[i] = (char) ACPI_TOUPPER (*ExternalName);
                 ExternalName++;
             }
         }
@@ -965,7 +965,8 @@ AcpiNsFindParentName (
         if (ParentNode)
         {
             ACPI_DEBUG_PRINT ((ACPI_DB_EXEC, "Parent of %p [%4.4s] is %p [%4.4s]\n",
-                ChildNode, (char*)&ChildNode->Name, ParentNode, (char*)&ParentNode->Name));
+                ChildNode,  (char *) &ChildNode->Name,
+                ParentNode, (char *) &ParentNode->Name));
 
             if (ParentNode->Name)
             {
@@ -974,7 +975,7 @@ AcpiNsFindParentName (
         }
 
         ACPI_DEBUG_PRINT ((ACPI_DB_EXEC, "unable to find parent of %p (%4.4s)\n",
-            ChildNode, (char*)&ChildNode->Name));
+            ChildNode, (char *) &ChildNode->Name));
     }
 
     return_VALUE (ACPI_UNKNOWN_NAME);

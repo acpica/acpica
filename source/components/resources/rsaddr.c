@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: rsaddr - Address resource descriptors (16/32/64)
- *              $Revision: 1.27 $
+ *              $Revision: 1.24 $
  *
  ******************************************************************************/
 
@@ -152,8 +152,8 @@ AcpiRsAddress16Resource (
     ACPI_SIZE               *StructureSize)
 {
     UINT8                   *Buffer = ByteStreamBuffer;
-    ACPI_RESOURCE           *OutputStruct = (void *) *OutputBuffer;
-    UINT8                   *TempPtr;
+    ACPI_RESOURCE           *OutputStruct = (ACPI_RESOURCE *) *OutputBuffer;
+    NATIVE_CHAR             *TempPtr;
     ACPI_SIZE               StructSize = ACPI_SIZEOF_RESOURCE (ACPI_RESOURCE_ADDRESS16);
     UINT32                  Index;
     UINT16                  Temp16;
@@ -296,9 +296,9 @@ AcpiRsAddress16Resource (
         /* Point the String pointer to the end of this structure */
 
         OutputStruct->Data.Address16.ResourceSource.StringPtr =
-                (char *)((UINT8 * )OutputStruct + StructSize);
+                (NATIVE_CHAR *)((UINT8 * )OutputStruct + StructSize);
 
-        TempPtr = (UINT8 *) OutputStruct->Data.Address16.ResourceSource.StringPtr;
+        TempPtr = OutputStruct->Data.Address16.ResourceSource.StringPtr;
 
         /* Copy the string into the buffer */
 
@@ -338,7 +338,7 @@ AcpiRsAddress16Resource (
     /*
      * Set the Length parameter
      */
-    OutputStruct->Length = (UINT32) StructSize;
+    OutputStruct->Length = StructSize;
 
     /*
      * Return the final size of the structure
@@ -373,7 +373,7 @@ AcpiRsAddress16Stream (
     UINT8                   *Buffer = *OutputBuffer;
     UINT8                   *LengthField;
     UINT8                   Temp8;
-    char                    *TempPointer = NULL;
+    NATIVE_CHAR             *TempPointer = NULL;
     ACPI_SIZE               ActualBytes;
 
 
@@ -481,7 +481,7 @@ AcpiRsAddress16Stream (
         *Buffer = Temp8;
         Buffer += 1;
 
-        TempPointer = (char *) Buffer;
+        TempPointer = (NATIVE_CHAR *) Buffer;
 
         /*
          * Copy the string
@@ -493,7 +493,8 @@ AcpiRsAddress16Stream (
          * Buffer needs to be set to the length of the sting + one for the
          *  terminating null
          */
-        Buffer += (ACPI_STRLEN (LinkedList->Data.Address16.ResourceSource.StringPtr) + 1);
+        Buffer += (ACPI_STRLEN (LinkedList->Data.Address16.ResourceSource.StringPtr)
+                    + 1);
     }
 
     /*
@@ -541,10 +542,10 @@ AcpiRsAddress32Resource (
     ACPI_SIZE               *StructureSize)
 {
     UINT8                   *Buffer;
-    ACPI_RESOURCE           *OutputStruct= (void *) *OutputBuffer;
+    ACPI_RESOURCE           *OutputStruct;
     UINT16                  Temp16;
     UINT8                   Temp8;
-    UINT8                   *TempPtr;
+    NATIVE_CHAR             *TempPtr;
     ACPI_SIZE               StructSize;
     UINT32                  Index;
 
@@ -553,6 +554,8 @@ AcpiRsAddress32Resource (
 
 
     Buffer = ByteStreamBuffer;
+    OutputStruct = (ACPI_RESOURCE *) *OutputBuffer;
+
     StructSize = ACPI_SIZEOF_RESOURCE (ACPI_RESOURCE_ADDRESS32);
 
     /*
@@ -692,9 +695,9 @@ AcpiRsAddress32Resource (
         /* Point the String pointer to the end of this structure */
 
         OutputStruct->Data.Address32.ResourceSource.StringPtr =
-                (char *)((UINT8 *)OutputStruct + StructSize);
+                (NATIVE_CHAR *)((UINT8 *)OutputStruct + StructSize);
 
-        TempPtr = (UINT8 *) OutputStruct->Data.Address32.ResourceSource.StringPtr;
+        TempPtr = OutputStruct->Data.Address32.ResourceSource.StringPtr;
 
         /* Copy the string into the buffer */
 
@@ -732,7 +735,7 @@ AcpiRsAddress32Resource (
     /*
      * Set the Length parameter
      */
-    OutputStruct->Length = (UINT32) StructSize;
+    OutputStruct->Length = StructSize;
 
     /*
      * Return the final size of the structure
@@ -767,7 +770,7 @@ AcpiRsAddress32Stream (
     UINT8                   *Buffer;
     UINT16                  *LengthField;
     UINT8                   Temp8;
-    char                    *TempPointer;
+    NATIVE_CHAR             *TempPointer;
 
 
     ACPI_FUNCTION_TRACE ("RsAddress32Stream");
@@ -784,7 +787,7 @@ AcpiRsAddress32Stream (
     /*
      * Set a pointer to the Length field - to be filled in later
      */
-    LengthField = ACPI_CAST_PTR (UINT16, Buffer);
+    LengthField = (UINT16 *) Buffer;
     Buffer += 2;
 
     /*
@@ -876,7 +879,7 @@ AcpiRsAddress32Stream (
         *Buffer = Temp8;
         Buffer += 1;
 
-        TempPointer = (char *) Buffer;
+        TempPointer = (NATIVE_CHAR *) Buffer;
 
         /*
          * Copy the string
@@ -934,10 +937,10 @@ AcpiRsAddress64Resource (
     ACPI_SIZE               *StructureSize)
 {
     UINT8                   *Buffer;
-    ACPI_RESOURCE           *OutputStruct = (void *) *OutputBuffer;
+    ACPI_RESOURCE           *OutputStruct;
     UINT16                  Temp16;
     UINT8                   Temp8;
-    UINT8                   *TempPtr;
+    NATIVE_CHAR             *TempPtr;
     ACPI_SIZE               StructSize;
     UINT32                  Index;
 
@@ -946,6 +949,8 @@ AcpiRsAddress64Resource (
 
 
     Buffer = ByteStreamBuffer;
+    OutputStruct = (ACPI_RESOURCE *) *OutputBuffer;
+
     StructSize = ACPI_SIZEOF_RESOURCE (ACPI_RESOURCE_ADDRESS64);
 
     /*
@@ -1088,9 +1093,9 @@ AcpiRsAddress64Resource (
         /* Point the String pointer to the end of this structure */
 
         OutputStruct->Data.Address64.ResourceSource.StringPtr =
-                (char *)((UINT8 *)OutputStruct + StructSize);
+                (NATIVE_CHAR *)((UINT8 *)OutputStruct + StructSize);
 
-        TempPtr = (UINT8 *) OutputStruct->Data.Address64.ResourceSource.StringPtr;
+        TempPtr = OutputStruct->Data.Address64.ResourceSource.StringPtr;
 
         /* Copy the string into the buffer */
 
@@ -1129,7 +1134,7 @@ AcpiRsAddress64Resource (
     /*
      * Set the Length parameter
      */
-    OutputStruct->Length = (UINT32) StructSize;
+    OutputStruct->Length = StructSize;
 
     /*
      * Return the final size of the structure
@@ -1164,7 +1169,7 @@ AcpiRsAddress64Stream (
     UINT8                   *Buffer;
     UINT16                  *LengthField;
     UINT8                   Temp8;
-    char                    *TempPointer;
+    NATIVE_CHAR             *TempPointer;
 
 
     ACPI_FUNCTION_TRACE ("RsAddress64Stream");
@@ -1182,7 +1187,7 @@ AcpiRsAddress64Stream (
      * Set a pointer to the Length field - to be filled in later
      */
 
-    LengthField = ACPI_CAST_PTR (UINT16, Buffer);
+    LengthField = (UINT16 *)Buffer;
     Buffer += 2;
 
     /*
@@ -1274,7 +1279,7 @@ AcpiRsAddress64Stream (
         *Buffer = Temp8;
         Buffer += 1;
 
-        TempPointer = (char *) Buffer;
+        TempPointer = (NATIVE_CHAR *) Buffer;
 
         /*
          * Copy the string

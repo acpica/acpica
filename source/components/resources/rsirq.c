@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: rsirq - IRQ resource descriptors
- *              $Revision: 1.31 $
+ *              $Revision: 1.24 $
  *
  ******************************************************************************/
 
@@ -152,7 +152,7 @@ AcpiRsIrqResource (
     ACPI_SIZE               *StructureSize)
 {
     UINT8                   *Buffer = ByteStreamBuffer;
-    ACPI_RESOURCE           *OutputStruct = (void *) *OutputBuffer;
+    ACPI_RESOURCE           *OutputStruct = (ACPI_RESOURCE *) *OutputBuffer;
     UINT16                  Temp16 = 0;
     UINT8                   Temp8 = 0;
     UINT8                   Index;
@@ -183,23 +183,18 @@ AcpiRsIrqResource (
 
     for (i = 0, Index = 0; Index < 16; Index++)
     {
-        if ((Temp16 >> Index) & 0x01)
+        if((Temp16 >> Index) & 0x01)
         {
             OutputStruct->Data.Irq.Interrupts[i] = Index;
             i++;
         }
     }
-
-    /* Zero interrupts is valid */
-
     OutputStruct->Data.Irq.NumberOfInterrupts = i;
-    if (i > 0)
-    {
-        /*
-         * Calculate the structure size based upon the number of interrupts
-         */
-        StructSize += ((ACPI_SIZE) i - 1) * 4;
-    }
+
+    /*
+     * Calculate the structure size based upon the number of interrupts
+     */
+    StructSize += (OutputStruct->Data.Irq.NumberOfInterrupts - 1) * 4;
 
     /*
      * Point to Byte 3 if it is used
@@ -231,7 +226,6 @@ AcpiRsIrqResource (
                  * are allowed (ACPI spec v1.0b ection 6.4.2.1),
                  * so an error will occur if we reach this point
                  */
-                ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Invalid interrupt polarity/trigger in resource list\n"));
                 return_ACPI_STATUS (AE_BAD_DATA);
             }
         }
@@ -255,7 +249,7 @@ AcpiRsIrqResource (
     /*
      * Set the Length parameter
      */
-    OutputStruct->Length = (UINT32) StructSize;
+    OutputStruct->Length = StructSize;
 
     /*
      * Return the final size of the structure
@@ -391,10 +385,10 @@ AcpiRsExtendedIrqResource (
     ACPI_SIZE               *StructureSize)
 {
     UINT8                   *Buffer = ByteStreamBuffer;
-    ACPI_RESOURCE           *OutputStruct = (void *) *OutputBuffer;
+    ACPI_RESOURCE           *OutputStruct = (ACPI_RESOURCE *) *OutputBuffer;
     UINT16                  Temp16 = 0;
     UINT8                   Temp8 = 0;
-    UINT8                   *TempPtr;
+    NATIVE_CHAR             *TempPtr;
     UINT8                   Index;
     ACPI_SIZE               StructSize = ACPI_SIZEOF_RESOURCE (ACPI_RESOURCE_EXT_IRQ);
 
@@ -464,8 +458,8 @@ AcpiRsExtendedIrqResource (
      */
     for (Index = 0; Index < Temp8; Index++)
     {
-        ACPI_MOVE_UNALIGNED32_TO_32 (
-            &OutputStruct->Data.ExtendedIrq.Interrupts[Index], Buffer);
+        OutputStruct->Data.ExtendedIrq.Interrupts[Index] =
+                (UINT32)*Buffer;
 
         /* Point to the next IRQ */
 
@@ -480,7 +474,7 @@ AcpiRsExtendedIrqResource (
      * stream that are default.
      */
     if (*BytesConsumed >
-        ((ACPI_SIZE) OutputStruct->Data.ExtendedIrq.NumberOfInterrupts * 4) + 5)
+        (UINT32)(OutputStruct->Data.ExtendedIrq.NumberOfInterrupts * 4) + 5)
     {
         /* Dereference the Index */
 
@@ -495,9 +489,9 @@ AcpiRsExtendedIrqResource (
          * Point the String pointer to the end of this structure.
          */
         OutputStruct->Data.ExtendedIrq.ResourceSource.StringPtr =
-                (char *)(OutputStruct + StructSize);
+                (NATIVE_CHAR *)(OutputStruct + StructSize);
 
-        TempPtr = (UINT8 *) OutputStruct->Data.ExtendedIrq.ResourceSource.StringPtr;
+        TempPtr = OutputStruct->Data.ExtendedIrq.ResourceSource.StringPtr;
 
         /* Copy the string into the buffer */
 
@@ -535,7 +529,7 @@ AcpiRsExtendedIrqResource (
     /*
      * Set the Length parameter
      */
-    OutputStruct->Length = (UINT32) StructSize;
+    OutputStruct->Length = StructSize;
 
     /*
      * Return the final size of the structure
@@ -571,7 +565,7 @@ AcpiRsExtendedIrqStream (
     UINT16                  *LengthField;
     UINT8                   Temp8 = 0;
     UINT8                   Index;
-    char                    *TempPointer = NULL;
+    NATIVE_CHAR             *TempPointer = NULL;
 
 
     ACPI_FUNCTION_TRACE ("RsExtendedIrqStream");
@@ -586,7 +580,7 @@ AcpiRsExtendedIrqStream (
     /*
      * Set a pointer to the Length field - to be filled in later
      */
-    LengthField = ACPI_CAST_PTR (UINT16, Buffer);
+    LengthField = (UINT16 *)Buffer;
     Buffer += 2;
 
     /*
@@ -641,7 +635,7 @@ AcpiRsExtendedIrqStream (
         *Buffer = (UINT8) LinkedList->Data.ExtendedIrq.ResourceSource.Index;
         Buffer += 1;
 
-        TempPointer = (char *) Buffer;
+        TempPointer = (NATIVE_CHAR *) Buffer;
 
         /*
          * Copy the string

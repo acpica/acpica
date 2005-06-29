@@ -2,7 +2,7 @@
  *
  * Module Name: nsxfname - Public interfaces to the ACPI subsystem
  *                         ACPI Namespace oriented interfaces
- *              $Revision: 1.88 $
+ *              $Revision: 1.89 $
  *
  *****************************************************************************/
 
@@ -195,7 +195,7 @@ AcpiGetHandle (
 
     /* Special case for root, since we can't search for it */
 
-    if (STRCMP (Pathname, ACPI_NS_ROOT_PATH) == 0)
+    if (ACPI_STRCMP (Pathname, ACPI_NS_ROOT_PATH) == 0)
     {
         *RetHandle = AcpiNsConvertEntryToHandle (AcpiGbl_RootNode);
         return (AE_OK);
@@ -290,7 +290,7 @@ AcpiGetName (
 
     /* Just copy the ACPI name from the Node and zero terminate it */
 
-    STRNCPY (Buffer->Pointer, (NATIVE_CHAR *) &Node->Name,
+    ACPI_STRNCPY (Buffer->Pointer, (NATIVE_CHAR *) &Node->Name,
                 ACPI_NAME_SIZE);
     ((NATIVE_CHAR *) Buffer->Pointer) [ACPI_NAME_SIZE] = 0;
     Status = AE_OK;
@@ -383,8 +383,7 @@ AcpiGetObjectInfo (
     Status = AcpiUtExecute_HID (Node, &Hid);
     if (ACPI_SUCCESS (Status))
     {
-        STRNCPY (Info->HardwareId, Hid.Buffer, sizeof(Info->HardwareId));
-
+        ACPI_STRNCPY (Info->HardwareId, Hid.Buffer, sizeof(Info->HardwareId));
         Info->Valid |= ACPI_VALID_HID;
     }
 
@@ -393,8 +392,7 @@ AcpiGetObjectInfo (
     Status = AcpiUtExecute_UID (Node, &Uid);
     if (ACPI_SUCCESS (Status))
     {
-        STRCPY (Info->UniqueId, Uid.Buffer);
-
+        ACPI_STRCPY (Info->UniqueId, Uid.Buffer);
         Info->Valid |= ACPI_VALID_UID;
     }
 

@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: rsdump - Functions to display the resource structures.
- *              $Revision: 1.39 $
+ *              $Revision: 1.29 $
  *
  ******************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2005, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -124,7 +124,7 @@
         ACPI_MODULE_NAME    ("rsdump")
 
 
-#if defined(ACPI_DEBUG_OUTPUT) || defined(ACPI_DEBUGGER)
+#ifdef ACPI_DEBUG
 
 /*******************************************************************************
  *
@@ -269,9 +269,9 @@ AcpiRsDumpDma (
 
 void
 AcpiRsDumpStartDependFns (
-    ACPI_RESOURCE_DATA      *Data)
+    ACPI_RESOURCE_DATA          *Data)
 {
-    ACPI_RESOURCE_START_DPF *SdfData = (ACPI_RESOURCE_START_DPF *) Data;
+    ACPI_RESOURCE_START_DPF     *SdfData = (ACPI_RESOURCE_START_DPF *) Data;
 
 
     ACPI_FUNCTION_ENTRY ();
@@ -655,11 +655,6 @@ AcpiRsDumpAddress16 (
                             "Invalid range attribute\n");
             break;
         }
-
-        AcpiOsPrintf ("  Type Specific: %s Translation\n",
-            ACPI_SPARSE_TRANSLATION ==
-            Address16Data->Attribute.Io.TranslationAttribute ?
-            "Sparse" : "Dense");
         break;
 
     case ACPI_BUS_NUMBER_RANGE:
@@ -785,32 +780,27 @@ AcpiRsDumpAddress32 (
         AcpiOsPrintf ("    Resource Type: Io Range\n");
 
         switch (Address32Data->Attribute.Io.RangeAttribute)
-        {
-        case ACPI_NON_ISA_ONLY_RANGES:
-            AcpiOsPrintf ("    Type Specific: "
-                            "Non-ISA Io Addresses\n");
-            break;
+            {
+            case ACPI_NON_ISA_ONLY_RANGES:
+                AcpiOsPrintf ("    Type Specific: "
+                                "Non-ISA Io Addresses\n");
+                break;
 
-        case ACPI_ISA_ONLY_RANGES:
-            AcpiOsPrintf ("    Type Specific: "
-                            "ISA Io Addresses\n");
-            break;
+            case ACPI_ISA_ONLY_RANGES:
+                AcpiOsPrintf ("    Type Specific: "
+                                "ISA Io Addresses\n");
+                break;
 
-        case ACPI_ENTIRE_RANGE:
-            AcpiOsPrintf ("    Type Specific: "
-                            "ISA and non-ISA Io Addresses\n");
-            break;
+            case ACPI_ENTIRE_RANGE:
+                AcpiOsPrintf ("    Type Specific: "
+                                "ISA and non-ISA Io Addresses\n");
+                break;
 
-        default:
-            AcpiOsPrintf ("    Type Specific: "
-                            "Invalid Range attribute");
-            break;
-        }
-
-        AcpiOsPrintf ("  Type Specific: %s Translation\n",
-            ACPI_SPARSE_TRANSLATION ==
-            Address32Data->Attribute.Io.TranslationAttribute ?
-            "Sparse" : "Dense");
+            default:
+                AcpiOsPrintf ("    Type Specific: "
+                                "Invalid Range attribute");
+                break;
+            }
         break;
 
     case ACPI_BUS_NUMBER_RANGE:
@@ -936,32 +926,27 @@ AcpiRsDumpAddress64 (
         AcpiOsPrintf ("    Resource Type: Io Range\n");
 
         switch (Address64Data->Attribute.Io.RangeAttribute)
-        {
-        case ACPI_NON_ISA_ONLY_RANGES:
-            AcpiOsPrintf ("    Type Specific: "
-                            "Non-ISA Io Addresses\n");
-            break;
+            {
+            case ACPI_NON_ISA_ONLY_RANGES:
+                AcpiOsPrintf ("    Type Specific: "
+                                "Non-ISA Io Addresses\n");
+                break;
 
-        case ACPI_ISA_ONLY_RANGES:
-            AcpiOsPrintf ("    Type Specific: "
-                            "ISA Io Addresses\n");
-            break;
+            case ACPI_ISA_ONLY_RANGES:
+                AcpiOsPrintf ("    Type Specific: "
+                                "ISA Io Addresses\n");
+                break;
 
-        case ACPI_ENTIRE_RANGE:
-            AcpiOsPrintf ("    Type Specific: "
-                            "ISA and non-ISA Io Addresses\n");
-            break;
+            case ACPI_ENTIRE_RANGE:
+                AcpiOsPrintf ("    Type Specific: "
+                                "ISA and non-ISA Io Addresses\n");
+                break;
 
-        default:
-            AcpiOsPrintf ("    Type Specific: "
-                            "Invalid Range attribute");
-            break;
-        }
-
-        AcpiOsPrintf ("  Type Specific: %s Translation\n",
-            ACPI_SPARSE_TRANSLATION ==
-            Address64Data->Attribute.Io.TranslationAttribute ?
-            "Sparse" : "Dense");
+            default:
+                AcpiOsPrintf ("    Type Specific: "
+                                "Invalid Range attribute");
+                break;
+            }
         break;
 
     case ACPI_BUS_NUMBER_RANGE:
@@ -991,20 +976,20 @@ AcpiRsDumpAddress64 (
                 ACPI_ADDRESS_FIXED == Address64Data->MaxAddressFixed ?
                 "" : "not ");
 
-    AcpiOsPrintf ("    Granularity: %8.8X%8.8X\n",
-                ACPI_FORMAT_UINT64 (Address64Data->Granularity));
+    AcpiOsPrintf ("    Granularity: %16X\n",
+                Address64Data->Granularity);
 
-    AcpiOsPrintf ("    Address range min: %8.8X%8.8X\n",
-                ACPI_FORMAT_UINT64 (Address64Data->MinAddressRange));
+    AcpiOsPrintf ("    Address range min: %16X\n",
+                Address64Data->MinAddressRange);
 
-    AcpiOsPrintf ("    Address range max: %8.8X%8.8X\n",
-                ACPI_FORMAT_UINT64 (Address64Data->MaxAddressRange));
+    AcpiOsPrintf ("    Address range max: %16X\n",
+                Address64Data->MaxAddressRange);
 
-    AcpiOsPrintf ("    Address translation offset: %8.8X%8.8X\n",
-                ACPI_FORMAT_UINT64 (Address64Data->AddressTranslationOffset));
+    AcpiOsPrintf ("    Address translation offset: %16X\n",
+                Address64Data->AddressTranslationOffset);
 
-    AcpiOsPrintf ("    Address Length: %8.8X%8.8X\n",
-                ACPI_FORMAT_UINT64 (Address64Data->AddressLength));
+    AcpiOsPrintf ("    Address Length: %16X\n",
+                Address64Data->AddressLength);
 
     if(0xFF != Address64Data->ResourceSource.Index)
     {
@@ -1108,7 +1093,7 @@ AcpiRsDumpResourceList (
     {
         while (!Done)
         {
-            AcpiOsPrintf ("Resource structure %X.\n", Count++);
+            AcpiOsPrintf ("Resource structure %x.\n", Count++);
 
             switch (Resource->Id)
             {
@@ -1215,14 +1200,15 @@ AcpiRsDumpIrqList (
 
     if (AcpiDbgLevel & ACPI_LV_RESOURCES && _COMPONENT & AcpiDbgLayer)
     {
-        PrtElement = ACPI_CAST_PTR (ACPI_PCI_ROUTING_TABLE, Buffer);
+        PrtElement = (ACPI_PCI_ROUTING_TABLE *) Buffer;
 
         while (!Done)
         {
             AcpiOsPrintf ("PCI IRQ Routing Table structure %X.\n", Count++);
 
             AcpiOsPrintf ("    Address: %8.8X%8.8X\n",
-                        ACPI_FORMAT_UINT64 (PrtElement->Address));
+                        ACPI_HIDWORD (PrtElement->Address),
+                        ACPI_LODWORD (PrtElement->Address));
 
             AcpiOsPrintf ("    Pin: %X\n", PrtElement->Pin);
 
@@ -1233,7 +1219,7 @@ AcpiRsDumpIrqList (
 
             Buffer += PrtElement->Length;
 
-            PrtElement = ACPI_CAST_PTR (ACPI_PCI_ROUTING_TABLE, Buffer);
+            PrtElement = (ACPI_PCI_ROUTING_TABLE *) Buffer;
 
             if(0 == PrtElement->Length)
             {
