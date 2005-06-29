@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: exdump - Interpreter debug output routines
- *              $Revision: 1.145 $
+ *              $Revision: 1.146 $
  *
  *****************************************************************************/
 
@@ -852,7 +852,6 @@ AcpiExDumpObjectDescriptor (
         AcpiExOutInteger ("Flags",           ObjDesc->Package.Flags);
         AcpiExOutInteger ("Count",           ObjDesc->Package.Count);
         AcpiExOutPointer ("Elements",        ObjDesc->Package.Elements);
-        AcpiExOutPointer ("NextElement",     ObjDesc->Package.NextElement);
 
         /* Dump the package contents */
 

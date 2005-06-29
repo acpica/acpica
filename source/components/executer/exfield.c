@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: exfield - ACPI AML (p-code) execution - field manipulation
- *              $Revision: 1.105 $
+ *              $Revision: 1.106 $
  *
  *****************************************************************************/
 
@@ -213,6 +213,7 @@ AcpiExReadDataFromField (
             return_ACPI_STATUS (AE_NO_MEMORY);
         }
 
+        BufferDesc->Common.Flags = AOPOBJ_DATA_VALID;
         BufferDesc->Buffer.Length = Length;
         Buffer = BufferDesc->Buffer.Pointer;
     }
