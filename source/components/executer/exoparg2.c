@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: exoparg2 - AML execution - opcodes with 2 arguments
- *              $Revision: 1.96 $
+ *              $Revision: 1.97 $
  *
  *****************************************************************************/
 
@@ -181,7 +181,6 @@ AcpiExOpcode_2A_0T_0R (
     FUNCTION_TRACE_STR ("ExOpcode_2A_0T_0R", AcpiPsGetOpcodeName (WalkState->Opcode));
 
 
-
     /* Examine the opcode */
 
     switch (WalkState->Opcode)
@@ -192,11 +191,10 @@ AcpiExOpcode_2A_0T_0R (
         /* The first operand is a namespace node */
 
         Node = (ACPI_NAMESPACE_NODE *) Operand[0];
-        Operand[0] = NULL;
 
         /* The node must refer to a device or thermal zone */
 
-        if (Node && Operand[1])
+        if (Node && Operand[1])     /* TBD: is this check necessary? */
         {
             switch (Node->Type)
             {
@@ -230,13 +228,6 @@ AcpiExOpcode_2A_0T_0R (
         Status = AE_AML_BAD_OPCODE;
     }
 
-
-    /* Always delete both operands */
-
-    AcpiUtRemoveReference (Operand[1]);
-    AcpiUtRemoveReference (Operand[0]);
-
-
     return_ACPI_STATUS (Status);
 }
 
@@ -266,6 +257,7 @@ AcpiExOpcode_2A_2T_1R (
 
     FUNCTION_TRACE_STR ("ExOpcode_2A_2T_1R", AcpiPsGetOpcodeName (WalkState->Opcode));
 
+
     /*
      * Execute the opcode
      */
@@ -277,20 +269,24 @@ AcpiExOpcode_2A_2T_1R (
         if (!ReturnDesc1)
         {
             Status = AE_NO_MEMORY;
-            break;
+            goto Cleanup;
         }
 
         ReturnDesc2 = AcpiUtCreateInternalObject (ACPI_TYPE_INTEGER);
         if (!ReturnDesc2)
         {
             Status = AE_NO_MEMORY;
-            break;
+            goto Cleanup;
         }
 
         /* Quotient to ReturnDesc1, remainder to ReturnDesc2 */
 
         Status = AcpiUtDivide (&Operand[0]->Integer.Value, &Operand[1]->Integer.Value,
                                &ReturnDesc1->Integer.Value, &ReturnDesc2->Integer.Value);
+        if (ACPI_FAILURE (Status))
+        {
+            goto Cleanup;
+        }
         break;
 
 
@@ -299,221 +295,46 @@ AcpiExOpcode_2A_2T_1R (
         REPORT_ERROR (("AcpiExOpcode_2A_2T_1R: Unknown opcode %X\n",
                 WalkState->Opcode));
         Status = AE_AML_BAD_OPCODE;
+        goto Cleanup;
         break;
     }
 
-    /* 
-     * Always delete the input operands 
-     */
-    AcpiUtRemoveReference (Operand[0]);
-    AcpiUtRemoveReference (Operand[1]);
 
-    if (ACPI_SUCCESS (Status))
+    /* Store the results to the target reference operands */
+
+    Status = AcpiExStore (ReturnDesc2, Operand[2], WalkState);
+    if (ACPI_FAILURE (Status))
     {
-        /* Store the results to the target reference operands */
-
-        Status = AcpiExStore (ReturnDesc2, Operand[2], WalkState);
-        if (ACPI_FAILURE (Status))
-        {
-            goto ErrorExit;
-        }
-
-        Status = AcpiExStore (ReturnDesc1, Operand[3], WalkState);
-        if (ACPI_FAILURE (Status))
-        {
-            goto ErrorExit;
-        }
-
-        /*
-         * Since the remainder is not returned indirectly, remove a reference to
-         * it. Only the quotient is returned indirectly.
-         */
-        AcpiUtRemoveReference (ReturnDesc2);
-        WalkState->ResultObj = ReturnDesc1;
-
-        return_ACPI_STATUS (Status);
+        goto Cleanup;
     }
 
+    Status = AcpiExStore (ReturnDesc1, Operand[3], WalkState);
+    if (ACPI_FAILURE (Status))
+    {
+        goto Cleanup;
+    }
 
-ErrorExit:
+    /* Return the remainder */
 
-    /* On failure, delete the target reference operands */
+    WalkState->ResultObj = ReturnDesc1;
 
-    AcpiUtRemoveReference (Operand[2]);
-    AcpiUtRemoveReference (Operand[3]);
 
-    /* And delete the return objects */
-
-    AcpiUtRemoveReference (ReturnDesc1);
+Cleanup:
+    /*
+     * Since the remainder is not returned indirectly, remove a reference to
+     * it. Only the quotient is returned indirectly.
+     */
     AcpiUtRemoveReference (ReturnDesc2);
+
+    if (ACPI_FAILURE (Status))
+    {
+        /* Delete the return object */
+
+        AcpiUtRemoveReference (ReturnDesc1);
+    }
 
     return_ACPI_STATUS (Status);
 }
-
-
-/*******************************************************************************
- *
- * FUNCTION:    AcpiExDoMathOp
- *
- * PARAMETERS:  Opcode              - AML opcode
- *              Operand0            - Integer operand #0
- *              Operand0            - Integer operand #1
- *
- * RETURN:      Integer result of the operation
- *
- * DESCRIPTION: Execute a math AML opcode. The purpose of having all of the
- *              math functions here is to prevent a lot of pointer dereferencing
- *              to obtain the operands.
- *
- ******************************************************************************/
-
-ACPI_INTEGER
-AcpiExDoMathOp (
-    UINT16                  Opcode,
-    ACPI_INTEGER            Operand0,
-    ACPI_INTEGER            Operand1)
-{
-
-
-    switch (Opcode)
-    {
-    case AML_ADD_OP:                /* Add (Operand0, Operand1, Result) */
-
-        return (Operand0 + Operand1);
-
-
-    case AML_BIT_AND_OP:            /* And (Operand0, Operand1, Result) */
-
-        return (Operand0 & Operand1);
-
-
-    case AML_BIT_NAND_OP:           /* NAnd (Operand0, Operand1, Result) */
-
-        return (~(Operand0 & Operand1));
-
-
-    case AML_BIT_OR_OP:             /* Or (Operand0, Operand1, Result) */
-
-        return (Operand0 | Operand1);
-
-
-    case AML_BIT_NOR_OP:            /* NOr (Operand0, Operand1, Result) */
-
-        return (~(Operand0 | Operand1));
-
-
-    case AML_BIT_XOR_OP:            /* XOr (Operand0, Operand1, Result) */
-
-        return (Operand0 ^ Operand1);
-
-
-    case AML_MULTIPLY_OP:           /* Multiply (Operand0, Operand1, Result) */
-
-        return (Operand0 * Operand1);
-
-
-    case AML_SHIFT_LEFT_OP:         /* ShiftLeft (Operand, ShiftCount, Result) */
-
-        return (Operand0 << Operand1);
-
-
-    case AML_SHIFT_RIGHT_OP:        /* ShiftRight (Operand, ShiftCount, Result) */
-
-        return (Operand0 >> Operand1);
-
-
-    case AML_SUBTRACT_OP:           /* Subtract (Operand0, Operand1, Result) */
-
-        return (Operand0 - Operand1);
-
-    default:
-
-        return (0);
-    }
-}
-
-
-
-/*******************************************************************************
- *
- * FUNCTION:    AcpiExDoLogicalOp
- *
- * PARAMETERS:  Opcode              - AML opcode
- *              Operand0            - Integer operand #0
- *              Operand0            - Integer operand #1
- *
- * RETURN:      TRUE/FALSE result of the operation
- *
- * DESCRIPTION: Execute a logical AML opcode. The purpose of having all of the
- *              functions here is to prevent a lot of pointer dereferencing
- *              to obtain the operands and to simplify the generation of the
- *              logical value.
- *
- *              Note: cleanest machine code seems to be produced by the code
- *              below, rather than using statements of the form:
- *                  Result = (Operand0 == Operand1);
- *
- ******************************************************************************/
-
-BOOLEAN
-AcpiExDoLogicalOp (
-    UINT16                  Opcode,
-    ACPI_INTEGER            Operand0,
-    ACPI_INTEGER            Operand1)
-{
-
-
-    switch (Opcode)
-    {
-
-    case AML_LAND_OP:               /* LAnd (Operand0, Operand1) */
-
-        if (Operand0 && Operand1)
-        {
-            return (TRUE);
-        }
-        break;
-
-
-    case AML_LEQUAL_OP:             /* LEqual (Operand0, Operand1) */
-
-        if (Operand0 == Operand1)
-        {
-            return (TRUE);
-        }
-        break;
-
-
-    case AML_LGREATER_OP:           /* LGreater (Operand0, Operand1) */
-
-        if (Operand0 > Operand1)
-        {
-            return (TRUE);
-        }
-        break;
-
-
-    case AML_LLESS_OP:              /* LLess (Operand0, Operand1) */
-
-        if (Operand0 < Operand1)
-        {
-            return (TRUE);
-        }
-        break;
-
-
-    case AML_LOR_OP:                 /* LOr (Operand0, Operand1) */
-
-        if (Operand0 || Operand1)
-        {
-            return (TRUE);
-        }
-        break;
-    }
-
-    return (FALSE);
-}
-
 
 
 /*******************************************************************************
@@ -546,18 +367,9 @@ AcpiExOpcode_2A_1T_1R (
     /*
      * Execute the opcode
      */
-    switch (WalkState->Opcode)
+    if (WalkState->OpInfo->Flags & AML_MATH)
     {
-    case AML_ADD_OP:
-    case AML_BIT_AND_OP:
-    case AML_BIT_NAND_OP:
-    case AML_BIT_OR_OP:
-    case AML_BIT_NOR_OP:
-    case AML_BIT_XOR_OP:
-    case AML_MULTIPLY_OP:
-    case AML_SHIFT_LEFT_OP:
-    case AML_SHIFT_RIGHT_OP:
-    case AML_SUBTRACT_OP:
+        /* All simple math opcodes (add, etc.) */
 
         ReturnDesc = AcpiUtCreateInternalObject (ACPI_TYPE_INTEGER);
         if (!ReturnDesc)
@@ -569,9 +381,12 @@ AcpiExOpcode_2A_1T_1R (
         ReturnDesc->Integer.Value = AcpiExDoMathOp (WalkState->Opcode, 
                                                 Operand[0]->Integer.Value, 
                                                 Operand[1]->Integer.Value);
-        break;
+        goto StoreResultToTarget;
+    }
 
 
+    switch (WalkState->Opcode)
+    {
     case AML_MOD_OP:                /* Mod (Dividend, Divisor, RemainderResult (ACPI 2.0) */
 
         ReturnDesc = AcpiUtCreateInternalObject (ACPI_TYPE_INTEGER);
@@ -616,15 +431,17 @@ AcpiExOpcode_2A_1T_1R (
             Status = AE_AML_INTERNAL;
         }
 
-        if (ACPI_SUCCESS (Status))
+        if (ACPI_FAILURE (Status))
         {
-            /*
-             * Both operands are now known to be the same object type
-             * (Both are Integer, String, or Buffer), and we can now perform the
-             * concatenation.
-             */
-            Status = AcpiExDoConcatenate (Operand[0], Operand[1], &ReturnDesc, WalkState);
+            goto Cleanup;
         }
+
+        /*
+         * Both operands are now known to be the same object type
+         * (Both are Integer, String, or Buffer), and we can now perform the
+         * concatenation.
+         */
+        Status = AcpiExDoConcatenate (Operand[0], Operand[1], &ReturnDesc, WalkState);
         break;
 
 
@@ -736,6 +553,8 @@ AcpiExOpcode_2A_1T_1R (
     }
 
 
+StoreResultToTarget:
+
     if (ACPI_SUCCESS (Status))
     {
         /*
@@ -754,25 +573,12 @@ AcpiExOpcode_2A_1T_1R (
 
 Cleanup:
 
-    /* Always delete the operands */
-
-    AcpiUtRemoveReference (Operand[0]);
-    AcpiUtRemoveReference (Operand[1]);
-
     /* Delete return object on error */
 
     if (ACPI_FAILURE (Status))
     {
-        /* On failure, delete the result op */
-
-        AcpiUtRemoveReference (Operand[2]);
-
-        /* And delete the internal return object */
-
         AcpiUtRemoveReference (ReturnDesc);
     }
-
-    /* Set the return object and exit */
 
     return_ACPI_STATUS (Status);
 }
@@ -815,28 +621,17 @@ AcpiExOpcode_2A_0T_1R (
     /*
      * Execute the Opcode
      */
-    switch (WalkState->Opcode)
+    if (WalkState->OpInfo->Flags & AML_LOGICAL) /* LogicalOp  (Operand0, Operand1) */
     {
-
-    case AML_LAND_OP:               /* LAnd     (Operand0, Operand1) */
-    case AML_LEQUAL_OP:             /* LEqual   (Operand0, Operand1) */
-    case AML_LGREATER_OP:           /* LGreater (Operand0, Operand1) */
-    case AML_LLESS_OP:              /* LLess    (Operand0, Operand1) */
-    case AML_LOR_OP:                /* LOr      (Operand0, Operand1) */
-
         LogicalResult = AcpiExDoLogicalOp (WalkState->Opcode, 
                                             Operand[0]->Integer.Value,
                                             Operand[1]->Integer.Value);
-        break;
+        goto StoreLogicalResult;
+    }
 
 
-    case AML_COPY_OP:               /* Copy (Source, Target) (ACPI 2.0) */
-
-        Status = AE_NOT_IMPLEMENTED;
-        goto Cleanup;
-        break;
-
-
+    switch (WalkState->Opcode)
+    {
     case AML_ACQUIRE_OP:            /* Acquire (MutexObject, Timeout) */
 
         Status = AcpiExAcquireMutex (Operand[1], Operand[0], WalkState);
@@ -868,6 +663,7 @@ AcpiExOpcode_2A_0T_1R (
     }
 
 
+StoreLogicalResult:
     /* 
      * Set return value to according to LogicalResult. logical TRUE (all ones)
      * Default is FALSE (zero) 
@@ -877,28 +673,18 @@ AcpiExOpcode_2A_0T_1R (
         ReturnDesc->Integer.Value = ACPI_INTEGER_MAX;
     }
 
+    WalkState->ResultObj = ReturnDesc;
+
 
 Cleanup:
 
-    /* Always delete operands */
-
-    AcpiUtRemoveReference (Operand[0]);
-    AcpiUtRemoveReference (Operand[1]);
-
-
     /* Delete return object on error */
 
-    if (ACPI_FAILURE (Status) &&
-        (ReturnDesc))
+    if (ACPI_FAILURE (Status))
     {
         AcpiUtRemoveReference (ReturnDesc);
-        ReturnDesc = NULL;
     }
 
-
-    /* Set the return object and exit */
-
-    WalkState->ResultObj = ReturnDesc;
     return_ACPI_STATUS (Status);
 }
 

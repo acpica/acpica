@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exoparg1 - AML execution - opcodes with 1 argument
- *              $Revision: 1.118 $
+ *              $Revision: 1.119 $
  *
  *****************************************************************************/
 
@@ -225,11 +225,6 @@ AcpiExOpcode_1A_0T_0R (
         break;
     }
 
-
-    /* Always delete the operand */
-
-    AcpiUtRemoveReference (Operand[0]);
-
     return_ACPI_STATUS (Status);
 }
 
@@ -274,8 +269,8 @@ AcpiExOpcode_1A_1T_0R (
         goto Cleanup;
     }
 
+
 Cleanup:
-    AcpiUtRemoveReference (Operand[0]);
 
     return_ACPI_STATUS (Status);
 }
@@ -499,9 +494,6 @@ AcpiExOpcode_1A_1T_1R (
         Status = AcpiExStore (Operand[0], Operand[1], WalkState);
         if (ACPI_FAILURE (Status))
         {
-            /* On failure, just delete the Operand[0] */
-
-            AcpiUtRemoveReference (Operand[0]);
             return_ACPI_STATUS (Status);
         }
 
@@ -512,6 +504,7 @@ AcpiExOpcode_1A_1T_1R (
          * and we simply don't do anything.
          */
         WalkState->ResultObj = Operand[0];
+        WalkState->Operands[0] = NULL;  /* Prevent deletion */
         return_ACPI_STATUS (Status);
         break;
 
@@ -519,6 +512,13 @@ AcpiExOpcode_1A_1T_1R (
     /*
      * ACPI 2.0 Opcodes
      */
+    case AML_COPY_OP:               /* Copy (Source, Target) */
+
+        Status = AE_NOT_IMPLEMENTED;
+        goto Cleanup;
+        break;
+
+
     case AML_TO_DECSTRING_OP:       /* ToDecimalString (Data, Result) */
 
         Status = AcpiExConvertToString (Operand[0], &ReturnDesc, 10, ACPI_UINT32_MAX, WalkState);
@@ -567,31 +567,22 @@ AcpiExOpcode_1A_1T_1R (
 
 
     /*
-     * Store the return value computed above into the result object 
+     * Store the return value computed above into the target object 
      */
     Status = AcpiExStore (ReturnDesc, Operand[1], WalkState);
 
 
 Cleanup:
-    /* Always delete the operand object */
 
-    AcpiUtRemoveReference (Operand[0]);
+    WalkState->ResultObj = ReturnDesc;
 
-    /* Delete return object(s) on error */
+    /* Delete return object on error */
 
     if (ACPI_FAILURE (Status))
     {
-        AcpiUtRemoveReference (Operand[1]);     /* Result descriptor */
-        if (ReturnDesc)
-        {
-            AcpiUtRemoveReference (ReturnDesc);
-            ReturnDesc = NULL;
-        }
+        AcpiUtRemoveReference (ReturnDesc);
     }
 
-    /* Set the return object and exit */
-
-    WalkState->ResultObj = ReturnDesc;
     return_ACPI_STATUS (Status);
 }
 
@@ -647,38 +638,19 @@ AcpiExOpcode_1A_0T_1R (
 
         /*
          * Since we are expecting a Reference operand, it
-         * can be either an Node or an internal object.
-         *
-         * TBD: [Future] This may be the prototype code for all cases where
-         * a Reference is expected!! 10/99
+         * can be either a Node or an internal object.
          */
-        if (VALID_DESCRIPTOR_TYPE (Operand[0], ACPI_DESC_TYPE_NAMED))
+        ReturnDesc = Operand[0];
+        if (VALID_DESCRIPTOR_TYPE (Operand[0], ACPI_DESC_TYPE_INTERNAL))
         {
-            ReturnDesc = Operand[0];
+            /* Internal reference object - prevent deletion */
+
+            AcpiUtAddReference (ReturnDesc);
         }
-
-        else
-        {
-            /*
-             * Duplicate the Reference in a new object so that we can resolve it
-             * without destroying the original Reference object
-             */
-            ReturnDesc = AcpiUtCreateInternalObject (INTERNAL_TYPE_REFERENCE);
-            if (!ReturnDesc)
-            {
-                Status = AE_NO_MEMORY;
-                goto Cleanup;
-            }
-
-            ReturnDesc->Reference.Opcode = Operand[0]->Reference.Opcode;
-            ReturnDesc->Reference.Offset = Operand[0]->Reference.Offset;
-            ReturnDesc->Reference.Object = Operand[0]->Reference.Object;
-        }
-
 
         /*
          * Convert the ReturnDesc Reference to a Number
-         * (This deletes the original ReturnDesc object)
+         * (This removes a reference on the ReturnDesc object)
          */
         Status = AcpiExResolveOperands (AML_LNOT_OP, &ReturnDesc, WalkState);
         if (ACPI_FAILURE (Status))
@@ -689,8 +661,10 @@ AcpiExOpcode_1A_0T_1R (
             goto Cleanup;
         }
 
-        /* Do the actual increment or decrement */
-
+        /* 
+         * ReturnDesc is now guaranteed to be an Integer object
+         * Do the actual increment or decrement 
+         */
         if (AML_INCREMENT_OP == WalkState->Opcode)
         {
             ReturnDesc->Integer.Value++;
@@ -703,11 +677,6 @@ AcpiExOpcode_1A_0T_1R (
         /* Store the result back in the original descriptor */
 
         Status = AcpiExStore (ReturnDesc, Operand[0], WalkState);
-
-        /* Objdesc was just deleted (because it is an Reference) */
-
-        Operand[0] = NULL;
-
         break;
 
 
@@ -1039,18 +1008,11 @@ AcpiExOpcode_1A_0T_1R (
 
 Cleanup:
 
-    if (Operand[0])
-    {
-        AcpiUtRemoveReference (Operand[0]);
-    }
-
     /* Delete return object on error */
 
-    if (ACPI_FAILURE (Status) &&
-        (ReturnDesc))
+    if (ACPI_FAILURE (Status))
     {
         AcpiUtRemoveReference (ReturnDesc);
-        ReturnDesc = NULL;
     }
 
     WalkState->ResultObj = ReturnDesc;

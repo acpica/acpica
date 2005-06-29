@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exoparg6 - AML execution - opcodes with 6 arguments
- *              $Revision: 1.2 $
+ *              $Revision: 1.3 $
  *
  *****************************************************************************/
 
@@ -372,16 +372,6 @@ AcpiExOpcode_6A_0T_1R (
 
 
 Cleanup:
-
-    /* Free the operands */
-
-    AcpiUtRemoveReference (Operand[5]);
-    AcpiUtRemoveReference (Operand[4]);
-    AcpiUtRemoveReference (Operand[3]);
-    AcpiUtRemoveReference (Operand[2]);
-    AcpiUtRemoveReference (Operand[1]);
-    AcpiUtRemoveReference (Operand[0]);
-
 
     /* Delete return object on error */
 

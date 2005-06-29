@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exoparg3 - AML execution - opcodes with 3 arguments
- *              $Revision: 1.2 $
+ *              $Revision: 1.3 $
  *
  *****************************************************************************/
 
@@ -219,12 +219,6 @@ AcpiExOpcode_3A_0T_0R (
 
 Cleanup:
 
-    /* Always delete operands */
-
-    AcpiUtRemoveReference (Operand[0]);
-    AcpiUtRemoveReference (Operand[1]);
-    AcpiUtRemoveReference (Operand[2]);
-
     return_ACPI_STATUS (Status);
 }
 
@@ -323,18 +317,11 @@ AcpiExOpcode_3A_1T_1R (
         break;
     }
 
-
     /* Store the result in the target */
 
     Status = AcpiExStore (ReturnDesc, Operand[3], WalkState);
 
 Cleanup:
-
-    /* Always delete operands */
-
-    AcpiUtRemoveReference (Operand[0]);
-    AcpiUtRemoveReference (Operand[1]);
-    AcpiUtRemoveReference (Operand[2]);
 
     /* Delete return object on error */
 
