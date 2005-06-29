@@ -126,8 +126,8 @@
 #include <pnp.h>
 
 
-#define _THIS_MODULE        "nsapiobj.c"
 #define _COMPONENT          NAMESPACE
+        MODULE_NAME         ("nsapiobj");
 
 
 /****************************************************************************
@@ -420,9 +420,9 @@ AcpiGetNextObject (
 
     if (!Child)
     {
-        if (!Parent)
+        if (Parent == ACPI_ROOT_OBJECT)
         {
-            return AE_NOT_FOUND;
+            ThisEntry = (NAME_TABLE_ENTRY *) Gbl_RootObject;
         }
 
         /* Start search at the beginning of the specified scope */
