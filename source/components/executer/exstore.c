@@ -224,8 +224,8 @@ AmlExecuteMethod (
             if (AE_RETURN_VALUE == Status)
             {
                 DEBUG_PRINT (ACPI_INFO, ("Method returned: \n"));
-                DUMP_STACK_ENTRY ((ACPI_OBJECT_INTERNAL *) ObjStack[ObjStackTop]);
-                DEBUG_PRINT (ACPI_INFO, (" at stack level %d\n", ObjStackTop));
+                DUMP_STACK_ENTRY (AmlObjStackGetValue (STACK_TOP));
+                DEBUG_PRINT (ACPI_INFO, (" at stack level %d\n", AmlObjStackLevel()));
             }
 
             AmlPkgPopExec ();            /* package stack -- inverse of AmlPrepExec() */
@@ -235,10 +235,10 @@ AmlExecuteMethod (
 
     }
 
-    if (ObjStackTop)
+    if (AmlObjStackLevel())
     {
-        DEBUG_PRINT (ACPI_INFO, ("AmlExecuteMethod: Obj stack at exit %p, idx=%d\n",
-                        ObjStack, ObjStackTop));
+        DEBUG_PRINT (ACPI_INFO, ("AmlExecuteMethod: Obj TOS at exit=%d\n",
+                        AmlObjStackLevel()));
     }
 
     FUNCTION_STATUS_EXIT (Status);
@@ -313,11 +313,11 @@ AmlExecStore (
             DestDesc->Lvalue.Object = TempHandle;
 
             /* 
-             * Push the descriptor on TOS temporarily
+             * Push the descriptor on the object stack temporarily
              * to protect it from garbage collection
              */
 
-            Status = AmlObjPushIfExec (MODE_Exec);
+            Status = AmlObjStackPushIfExec (MODE_Exec);
             if (AE_OK != Status)
             {
                 CmFree (DestDesc);
@@ -325,7 +325,7 @@ AmlExecStore (
             }
             else
             {
-                ObjStack[ObjStackTop] = DestDesc;
+                AmlObjStackSetValue (STACK_TOP, DestDesc);
                 Stacked = TRUE;
             }
         }
@@ -425,7 +425,7 @@ AmlExecStore (
                 {
                     /* Must clear the top of the stack or it will get deleted twice */
 
-                    ObjStack[ObjStackTop] = NULL;
+                    AmlObjStackClearTop ();
                 }
 
                 DestDesc = NsGetValue (TempHandle);
@@ -512,7 +512,7 @@ AmlExecStore (
                 {
                     /* Must clear the top of the stack or it will get deleted twice */
 
-                    ObjStack[ObjStackTop] = NULL;
+                    AmlObjStackClearTop ();
                 }
 
                 DestDesc = NsGetValue (TempHandle);
@@ -582,7 +582,7 @@ AmlExecStore (
                 {
                     /* Must clear the top of the stack or it will get deleted twice */
 
-                    ObjStack[ObjStackTop] = NULL;
+                    AmlObjStackClearTop ();
                 }
 
                 DestDesc = NsGetValue (TempHandle);
@@ -666,7 +666,7 @@ AmlExecStore (
                 {
                     /* Must clear the top of the stack or it will get deleted twice */
 
-                    ObjStack[ObjStackTop] = NULL;
+                    AmlObjStackClearTop ();
                 }
 
                 DestDesc = NsGetValue (TempHandle);
@@ -679,7 +679,7 @@ AmlExecStore (
                 else
                 {
                     DEBUG_PRINT (ACPI_INFO,
-                        ("AmlExecStore: FieldUnit: name's value DestDesc=%p, DestDesc->Type=%02Xh\n",
+                        ("AmlExecStore: FieldUnit: Name's value DestDesc=%p, DestDesc->Type=%02Xh\n",
                         DestDesc, DestDesc->Type));
                 }
             }
@@ -688,7 +688,7 @@ AmlExecStore (
                 (DestDesc->Type != (UINT8) NsGetType (TempHandle)))
             {
                 DEBUG_PRINT (ACPI_ERROR, (
-                        "AmlExecStore/FieldUnit:internal error: Name %4.4s type %d does not match value-type %d at %p\n",
+                        "AmlExecStore/FieldUnit: Internal error - Name %4.4s type %d does not match value-type %d at %p\n",
                           TempHandle, NsGetType(TempHandle), DestDesc->Type, DestDesc));
 
                 Status = AE_AML_ERROR;
@@ -700,9 +700,20 @@ AmlExecStore (
                 DestDesc->FieldUnit.Sequence
                     != DestDesc->FieldUnit.Container->Buffer.Sequence))
             {
-                NsDumpPathname (TempHandle, "AmlExecStore/FieldUnit: bad container in: ", 
+                NsDumpPathname (TempHandle, "AmlExecStore/FieldUnit: Bad container in ", 
                                 ACPI_ERROR, _COMPONENT);
                 DUMP_ENTRY (TempHandle);
+
+                DEBUG_PRINT (ACPI_ERROR, ("Container: %p", DestDesc->FieldUnit.Container));
+                if (DestDesc->FieldUnit.Container)
+                {
+                    DEBUG_PRINT_RAW (ACPI_ERROR, (" Type %d, FuSeq %x BufSeq %x",
+                        DestDesc->FieldUnit.Container->Type,
+                        DestDesc->FieldUnit.Sequence,
+                        DestDesc->FieldUnit.Container->Buffer.Sequence));
+                }
+                DEBUG_PRINT_RAW (ACPI_ERROR, ("\n"));
+
                 Status = AE_AML_ERROR;
             }
 
@@ -859,7 +870,7 @@ AmlExecStore (
     if (DeleteDestDesc)
     {
         CmFree (DeleteDestDesc);
-        if (ObjStack[ObjStackTop] == DeleteDestDesc)
+        if (AmlObjStackGetValue (STACK_TOP) == DeleteDestDesc)
         {
             /* 
              * Clear the object from the stack entry so that it won't be used
@@ -867,15 +878,15 @@ AmlExecStore (
              */
 
             DEBUG_PRINT (ACPI_ERROR, ("AmlExecStore - Deleted desc was at stack top %p (idx %d)\n",
-                            &ObjStack[ObjStackTop], ObjStackTop));
-            ObjStack[ObjStackTop] = NULL;
+                            AmlObjStackGetTopPtr (), AmlObjStackLevel ()));
+            
+            AmlObjStackClearTop ();
         }
     }
 
     if (Stacked)
     {
-        ObjStack[ObjStackTop] = NULL;
-        ObjStackTop--;
+        AmlObjStackPop (1);
     }
 
     FUNCTION_STATUS_EXIT (Status);

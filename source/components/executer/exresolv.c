@@ -532,7 +532,7 @@ AmlGetRvalue (
                  * Convert it to an object.
                  */
 
-                if (AE_OK != (Status = AmlObjPushIfExec (MODE_Exec)))             /* ObjStack */
+                if (AE_OK != (Status = AmlObjStackPushIfExec (MODE_Exec)))             /* ObjStack */
                 {
                     FUNCTION_STATUS_EXIT (Status);
                     return Status;
@@ -542,18 +542,18 @@ AmlGetRvalue (
                     AE_OK == (Status = AmlDoPkg (TYPE_Package, MODE_Exec)) &&
                     AE_OK == (Status = AmlPkgPopExec ()))                 /* PkgStack */
                 {
-                    NsSetValue ((ACPI_HANDLE)* StackPtr, ObjStack[ObjStackTop],
+                    NsSetValue ((ACPI_HANDLE) *StackPtr, AmlObjStackGetValue (0),
                                     (UINT8) TYPE_Package);
 
                     /* Refresh local value pointer to reflect newly set value */
                     
                     ValDesc = (ACPI_OBJECT_INTERNAL *) NsGetValue ((ACPI_HANDLE)* StackPtr);
-                    ObjStackTop--;
+                    AmlObjStackPop (1);
                 }
                 
                 else
                 {
-                    ObjStackTop--;
+                    AmlObjStackPop (1);
                     FUNCTION_STATUS_EXIT (Status);
                     return Status;
                 }
@@ -619,7 +619,7 @@ AmlGetRvalue (
                  * points to a buffer definition in the AML stream.
                  * Convert it to an object.
                  */
-                if (AE_OK != (Status = AmlObjPushIfExec (MODE_Exec)))                /* ObjStack */
+                if (AE_OK != (Status = AmlObjStackPushIfExec (MODE_Exec)))                /* ObjStack */
                 {
                     FUNCTION_STATUS_EXIT (Status);
                     return Status;
@@ -629,18 +629,18 @@ AmlGetRvalue (
                     AE_OK == (Status = AmlDoPkg (TYPE_Buffer, MODE_Exec)) &&
                     AE_OK == (Status = AmlPkgPopExec ()))                     /* PkgStack */
                 {
-                    NsSetValue ((ACPI_HANDLE) *StackPtr, ObjStack[ObjStackTop],
+                    NsSetValue ((ACPI_HANDLE) *StackPtr, AmlObjStackGetValue (0),
                                     (UINT8) TYPE_Buffer);
                     
                     /* Refresh local value pointer to reflect newly set value */
                     
                     ValDesc = (ACPI_OBJECT_INTERNAL *) NsGetValue ((ACPI_HANDLE)* StackPtr);
-                    ObjStackTop--;
+                    AmlObjStackPop (1);
                 }
                 
                 else
                 {
-                    ObjStackTop--;
+                    AmlObjStackPop (1);
                     FUNCTION_STATUS_EXIT (Status);
                     return Status;
                 }
@@ -783,7 +783,6 @@ AmlGetRvalue (
 
 
         case TYPE_DefField:
-
 
             /* 
              * XXX - Implementation limitation: Fields are implemented as type
