@@ -265,7 +265,7 @@ DumpStackEntry (OBJECT_DESCRIPTOR *EntryDesc)
             DEBUG_PRINT (ACPI_INFO, ("Package[%d] @ %p\n",
                         EntryDesc->Package.PkgCount, EntryDesc->Package.PackageElems));
 
-#ifdef VERBOSE_DEBUG
+
             /* 
              * If elements exist, package vector pointer is valid,
              * and debug_level exceeds 1, dump package's elements.
@@ -288,7 +288,7 @@ DumpStackEntry (OBJECT_DESCRIPTOR *EntryDesc)
            
                 DecIndent ();
             }
-#endif
+
             DEBUG_PRINT (ACPI_INFO, ("\n"));
 
             break;
