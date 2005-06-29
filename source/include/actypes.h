@@ -168,6 +168,7 @@ typedef unsigned int        ACPI_SIZE;
 
 
 
+
 /* 
  * Local datatypes 
  */
@@ -317,6 +318,7 @@ typedef union AcpiObj
     } Buffer;
 
     struct
+
     {
         ACPI_OBJECT_TYPE            Type;
         UINT32                      Count;      /* # of elements in package */
@@ -356,6 +358,7 @@ typedef struct
  * Structure and flags for AcpiGetSystemInfo
  */
 
+#define SYS_MODE_UNKNOWN    0x0000
 #define SYS_MODE_ACPI       0x0001
 #define SYS_MODE_LEGACY     0x0002
 #define SYS_MODES_MASK      0x0003
@@ -364,6 +367,7 @@ typedef struct
 typedef struct _AcpiSysInfo 
 {
     UINT32                  Flags;
+
     UINT32                  TimerResolution;
     UINT32                  Reserved1;
     UINT32                  Reserved2;
@@ -792,6 +796,7 @@ typedef struct
     UINT32          SharedExclusive;
     UINT32          ResourceSourceIndex;
     UINT8           * ResourceSource;
+
     UINT32          NumberOfInterrupts;
     UINT32          Interrupts[1];
 } EXTENDED_IRQ_RESOURCE;
