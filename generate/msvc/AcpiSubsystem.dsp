@@ -90,6 +90,9 @@ PostBuild_Cmds=copy bin\acpilib.lib ..\..\libraries\acpilib.lib
 # Begin Group "Source Files"
 
 # PROP Default_Filter "cpp;c;cxx;rc;def;r;odl;idl;hpj;bat"
+# Begin Group "Common"
+
+# PROP Default_Filter ".c"
 # Begin Source File
 
 SOURCE=..\..\Subsystem\Common\cmalloc.c
@@ -154,6 +157,10 @@ SOURCE=..\..\Subsystem\Common\cminit.c
 
 SOURCE=..\..\Subsystem\Common\cmobject.c
 # End Source File
+# End Group
+# Begin Group "Events"
+
+# PROP Default_Filter ".c"
 # Begin Source File
 
 SOURCE=..\..\Subsystem\Events\evapi.c
@@ -178,6 +185,10 @@ SOURCE=..\..\Subsystem\Events\evregion.c
 
 SOURCE=..\..\Subsystem\Events\evsci.c
 # End Source File
+# End Group
+# Begin Group "Hardware"
+
+# PROP Default_Filter ".c"
 # Begin Source File
 
 SOURCE=..\..\Subsystem\Hardware\hwapi.c
@@ -198,6 +209,10 @@ SOURCE=..\..\Subsystem\Hardware\hwregs.c
 
 SOURCE=..\..\Subsystem\Hardware\hwtimer.c
 # End Source File
+# End Group
+# Begin Group "Interpreter"
+
+# PROP Default_Filter ".c"
 # Begin Source File
 
 SOURCE=..\..\Subsystem\Interpreter\iedyadic.c
@@ -419,6 +434,10 @@ SOURCE=..\..\Subsystem\Interpreter\isutils.c
 !ENDIF 
 
 # End Source File
+# End Group
+# Begin Group "Methods"
+
+# PROP Default_Filter ".c"
 # Begin Source File
 
 SOURCE=..\..\Subsystem\Methods\mtadr.c
@@ -447,6 +466,10 @@ SOURCE=..\..\Subsystem\Methods\mtuid.c
 
 SOURCE=..\..\Subsystem\Methods\mtwak.c
 # End Source File
+# End Group
+# Begin Group "Namespace"
+
+# PROP Default_Filter ".c"
 # Begin Source File
 
 SOURCE=..\..\Subsystem\NameSpace\nsaccess.c
@@ -579,6 +602,10 @@ SOURCE=..\..\Subsystem\NameSpace\nsutils.c
 !ENDIF 
 
 # End Source File
+# End Group
+# Begin Group "Resources"
+
+# PROP Default_Filter ".c"
 # Begin Source File
 
 SOURCE=..\..\Subsystem\Resources\rsaddr16.c
@@ -667,6 +694,7 @@ SOURCE=..\..\Subsystem\Resources\rsutils.c
 
 SOURCE=..\..\Subsystem\Resources\rsvendor.c
 # End Source File
+# End Group
 # End Group
 # Begin Group "Header Files"
 
