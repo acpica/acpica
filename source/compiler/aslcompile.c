@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslcompile - top level compile module
- *              $Revision: 1.70 $
+ *              $Revision: 1.71 $
  *
  *****************************************************************************/
 
@@ -313,7 +313,8 @@ FlCheckForAscii (
     ASL_FILE_INFO           *FileInfo)
 {
     UINT8                   Byte;
-    UINT32                  BadBytes = 0;
+    ACPI_SIZE               BadBytes = 0;
+    ACPI_SIZE               Offset = 0;
 
 
     /* Read the entire file */
@@ -324,8 +325,13 @@ FlCheckForAscii (
 
         if (!isascii (Byte))
         {
+            if (BadBytes < 10)
+            {
+                AcpiOsPrintf ("Non-ASCII character: 0x%2.2X at offset 0x%X\n", Byte, Offset);
+            }
             BadBytes++;
         }
+        Offset++;
     }
 
     /* Were there any non-ASCII characters in the file? */
