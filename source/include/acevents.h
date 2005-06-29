@@ -120,17 +120,19 @@
 
 /* Status bits. */
 
-#define STATUS_PMTIMER                  1
-#define STATUS_GLOBAL                   32
-#define STATUS_POWER_BUTTON             256
-#define STATUS_SLEEP_BUTTON             512
+#define STATUS_PMTIMER                  0x0001
+#define STATUS_GLOBAL                   0x0020
+#define STATUS_POWER_BUTTON             0x0100
+#define STATUS_SLEEP_BUTTON             0x0200
+#define STATUS_RTC_ALARM                0x0400
 
 /* Enable bits. */
 
-#define ENABLE_PMTIMER                  1
-#define ENABLE_GLOBAL                   32
-#define ENABLE_POWER_BUTTON             256
-#define ENABLE_SLEEP_BUTTON             512
+#define ENABLE_PMTIMER                  0x0001
+#define ENABLE_GLOBAL                   0x0020
+#define ENABLE_POWER_BUTTON             0x0100
+#define ENABLE_SLEEP_BUTTON             0x0200
+#define ENABLE_RTC_ALARM                0x0400
 
 
 /* SCI handling - evsci */
@@ -157,6 +159,10 @@ EvTerminate (
 
 
 /* Fixed event handling - evfixed */
+
+ACPI_STATUS
+EvFixedEventInitialize (
+    void);
 
 UINT32
 EvFixedEventDetect (
