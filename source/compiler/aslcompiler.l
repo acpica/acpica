@@ -3,7 +3,7 @@
 /******************************************************************************
  *
  * Module Name: aslcompiler.l - Flex input file
- *              $Revision: 1.35 $
+ *              $Revision: 1.37 $
  *
  *****************************************************************************/
 
@@ -550,7 +550,7 @@ AslPopInputFileStack (void)
 
     /* Reset global line counter and filename */
 
-    Gbl_InputFilename = Fnode->Filename;
+    Gbl_Files[ASL_FILE_INPUT].Filename = Fnode->Filename;
     Gbl_CurrentLineNumber = Fnode->CurrentLineNumber;
 
     /* Point the parser to the popped file */
@@ -598,7 +598,7 @@ AslPushInputFileStack (
     Fnode->Next                 = InputStack;
     Fnode->State                = YY_CURRENT_BUFFER;
     Fnode->CurrentLineNumber    = Gbl_CurrentLineNumber;
-    Fnode->Filename             = Gbl_InputFilename;
+    Fnode->Filename             = Gbl_Files[ASL_FILE_INPUT].Filename;
 
     /* Push it on the stack */
 
@@ -614,7 +614,7 @@ AslPushInputFileStack (
 
     /* Reset the global line count and filename */
 
-    Gbl_InputFilename = Filename;
+    Gbl_Files[ASL_FILE_INPUT].Filename = Filename;
     Gbl_CurrentLineNumber = 1;
     yyin = InputFile;
 }
@@ -639,7 +639,7 @@ ResetCurrentLineBuffer (
 
     if (Gbl_Files[ASL_FILE_SOURCE_OUTPUT].Handle)
     {
-        FlWriteFile (ASL_FILE_SOURCE_OUTPUT, Gbl_CurrentLineBuffer, 
+        FlWriteFile (ASL_FILE_SOURCE_OUTPUT, Gbl_CurrentLineBuffer,
             Gbl_LineBufPtr - Gbl_CurrentLineBuffer);
     }
 
@@ -701,8 +701,10 @@ InsertLineBuffer (
         if (Gbl_LineBufPtr > (Gbl_CurrentLineBuffer + (ASL_LINE_BUFFER_SIZE - 1)))
         {
             sprintf (MsgBuffer, "Max %d", ASL_LINE_BUFFER_SIZE);
-            AslCommonError (ASL_WARNING, ASL_MSG_LONG_LINE, Gbl_CurrentLineNumber, Gbl_LogicalLineNumber,
-                    Gbl_CurrentLineOffset, Gbl_CurrentColumn, Gbl_InputFilename, MsgBuffer);
+            AslCommonError (ASL_WARNING, ASL_MSG_LONG_LINE,
+                            Gbl_CurrentLineNumber, Gbl_LogicalLineNumber,
+                            Gbl_CurrentLineOffset, Gbl_CurrentColumn,
+                            Gbl_Files[ASL_FILE_INPUT].Filename, MsgBuffer);
 
 
             ResetCurrentLineBuffer ();
@@ -832,8 +834,9 @@ loop:
     if ((c1 == '/') && (c == '*'))
     {
         AslCommonError (ASL_WARNING, ASL_MSG_NESTED_COMMENT,
-                    Gbl_CurrentLineNumber, Gbl_LogicalLineNumber,
-                    Gbl_InputByteCount, Gbl_CurrentColumn, Gbl_InputFilename, NULL);
+                        Gbl_CurrentLineNumber, Gbl_LogicalLineNumber,
+                        Gbl_InputByteCount, Gbl_CurrentColumn,
+                        Gbl_Files[ASL_FILE_INPUT].Filename, NULL);
     }
 
 

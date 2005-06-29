@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslcompiler.h - common include file
- *              $Revision: 1.54 $
+ *              $Revision: 1.60 $
  *
  *****************************************************************************/
 
@@ -119,13 +119,39 @@
 #ifndef __ASLCOMPILER_H
 #define __ASLCOMPILER_H
 
+
+/* Microsoft-specific */
+
+#ifdef WIN32
+
+/* warn : used #pragma pack */
 #pragma warning(disable:4103)
+
+/* warn : named type definition in parentheses */
+#pragma warning(disable:4115)
+
+/* MS doesn't have getopt, but we implement it */
+int
+getopt (
+    int                     argc,
+    char                    **argv,
+    char                    *opts);
+
+#endif
+
+#ifdef _LINUX
+
+/* includes native getopt definition */
+#include <unistd.h>
+
+#endif
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdarg.h>
 #include <string.h>
 #include <errno.h>
+#include <ctype.h>
 
 
 #include "acpi.h"
@@ -196,13 +222,6 @@
 #define FILE_SUFFIX_NAMESPACE       "nsp"
 
 
-#ifdef WIN32
-
-/* warn : named type definition in parentheses */
-#pragma warning(disable:4115)
-
-#endif
-
 /*******************************************************************************
  *
  * Compiler prototypes
@@ -229,7 +248,8 @@ AslCompilererror(
     char                    *s);
 
 int
-AslCompilerlex();
+AslCompilerlex(
+    void);
 
 char
 *AslCompilertext;
@@ -273,12 +293,6 @@ DbgPrint (
     UINT32                  Type,
     char                    *Format,
     ...);
-
-int
-getopt (
-    int                     argc,
-    char                    **argv,
-    char                    *opts);
 
 void
 ErrorContext (void);
@@ -572,12 +586,12 @@ FlWriteFile (
     void                    *Buffer,
     UINT32                  Length);
 
-ACPI_STATUS 
+ACPI_STATUS
 FlSeekFile (
     UINT32                  FileId,
     UINT32                  Offset);
 
-ACPI_STATUS 
+ACPI_STATUS
 FlCloseFile (
     UINT32                  FileId);
 
@@ -603,7 +617,6 @@ FlOpenAmlOutputFile (
 ACPI_STATUS
 FlOpenMiscOutputFiles (
     char                    *InputFilename);
-
 
 
 /* Load */

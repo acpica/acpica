@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslerror - Error handling and statistics
- *              $Revision: 1.38 $
+ *              $Revision: 1.45 $
  *
  *****************************************************************************/
 
@@ -118,7 +118,7 @@
 
 #include "aslcompiler.h"
 
-#define _COMPONENT          COMPILER
+#define _COMPONENT          ACPI_COMPILER
         MODULE_NAME         ("aslerror")
 
 
@@ -165,6 +165,11 @@ char                        *AslMessages [] = {
     "Splitting long input line",
     "Recursive method call",
     "Not a parameter, used as local only",
+    "Could not open file",
+    "Could not read file",
+    "Could not write file",
+    "Could not seek file",
+    "Could not close file",
 };
 
 
@@ -252,11 +257,16 @@ AeAddToErrorLog (
  *
  * DESCRIPTION: Print the contents of an error node.
  *
+ * NOTE:        We don't use the FlxxxFile I/O functions here because on error
+ *              they abort the compiler and call this function!  Since we
+ *              are reporting errors here, we ignore most output errors and
+ *              just try to get out as much as we can.
+ *
  ******************************************************************************/
 
 void
 AePrintException (
-    FILE                    *Where,
+    UINT32                  FileId,
     ASL_ERROR_MSG           *Enode)
 {
     UINT8                   SourceByte;
@@ -266,33 +276,38 @@ AePrintException (
     char                    *ExtraMessage;
     UINT32                  SourceColumn;
     UINT32                  ErrorColumn;
+    FILE                    *OutputFile;
+    FILE                    *SourceFile;
+
+
+    OutputFile = Gbl_Files[FileId].Handle;
+    SourceFile = Gbl_Files[ASL_FILE_SOURCE_OUTPUT].Handle;
 
 
     /* Print filename and line number if present and valid */
 
     if (Enode->Filename)
     {
-        fprintf (Where, "%6s", Enode->Filename);
+        fprintf (OutputFile, "%6s", Enode->Filename);
 
         if (Enode->LineNumber)
         {
-            fprintf (Where, "%6d: ", Enode->LineNumber);
+            fprintf (OutputFile, "%6d: ", Enode->LineNumber);
 
             /*
              * Seek to the offset in the combined source file, read the source
              * line, and write it to the output.
              */
-            fseek (Gbl_SourceOutputFile, Enode->LogicalByteOffset, SEEK_SET);
+            fseek (SourceFile, Enode->LogicalByteOffset, SEEK_SET);
 
-
-            Actual = fread (&SourceByte, 1, 1, Gbl_SourceOutputFile);
+            Actual = fread (&SourceByte, 1, 1, SourceFile);
             while (Actual && SourceByte && (SourceByte != '\n'))
             {
-                fwrite (&SourceByte, 1, 1, Where);
-                Actual = fread (&SourceByte, 1, 1, Gbl_SourceOutputFile);
+                fwrite (&SourceByte, 1, 1, OutputFile);
+                Actual = fread (&SourceByte, 1, 1, SourceFile);
             }
 
-            fprintf (Where, "\n");
+            fprintf (OutputFile, "\n");
         }
     }
 
@@ -301,15 +316,14 @@ AePrintException (
 
     if (Enode->MessageId == 0)
     {
-        fprintf (Where, "%s\n",
-                    Enode->Message);
+        fprintf (OutputFile, "%s\n", Enode->Message);
     }
 
     /* Decode the message ID */
 
     else
     {
-        fprintf (Where, "%s %04.4d -",
+        fprintf (OutputFile, "%s %4.4d -",
                     AslErrorLevel[Enode->Level],
                     Enode->MessageId + ((Enode->Level+1) * 1000));
 
@@ -335,21 +349,21 @@ AePrintException (
             {
                 if ((MsgLength + ErrorColumn) < (SourceColumn - 1))
                 {
-                    fprintf (Where, "%*s%s",
+                    fprintf (OutputFile, "%*s%s",
                         (SourceColumn - 1) - ErrorColumn,
                         MainMessage, " ^ ");
                 }
 
                 else
                 {
-                    fprintf (Where, "%*s %s",
+                    fprintf (OutputFile, "%*s %s",
                         (SourceColumn - ErrorColumn) + 1, "^",
                         MainMessage);
                 }
             }
             else
             {
-                fprintf (Where, " ^ %s   %s\n\n",
+                fprintf (OutputFile, " ^ %s   %s\n\n",
                             MainMessage,
                             ExtraMessage);
             }
@@ -358,15 +372,15 @@ AePrintException (
 
             if (ExtraMessage)
             {
-                fprintf (Where, " (%s)", ExtraMessage);
+                fprintf (OutputFile, " (%s)", ExtraMessage);
             }
 
-            fprintf (Where, "\n\n");
+            fprintf (OutputFile, "\n\n");
         }
 
         else
         {
-            fprintf (Where, " %s %s\n\n",
+            fprintf (OutputFile, " %s %s\n\n",
                         MainMessage,
                         ExtraMessage);
         }
@@ -388,14 +402,14 @@ AePrintException (
 
 void
 AePrintErrorLog (
-    FILE                    *Where)
+    UINT32                  FileId)
 {
     ASL_ERROR_MSG           *Enode = Gbl_ErrorLog;
 
 
     while (Enode)
     {
-        AePrintException (Where, Enode);
+        AePrintException (FileId, Enode);
         Enode = Enode->Next;
     }
 }
@@ -482,7 +496,7 @@ AslCommonError (
     {
         /* stderr is a file, send error to it immediately */
 
-        AePrintException (stderr, Enode);
+        AePrintException (ASL_FILE_STDERR, Enode);
     }
 
 
@@ -491,12 +505,12 @@ AslCommonError (
     if (Gbl_ExceptionCount[ASL_ERROR] > ASL_MAX_ERROR_COUNT)
     {
 
-        AePrintErrorLog (stdout);
+        AePrintErrorLog (ASL_FILE_STDOUT);
         if (Gbl_DebugFlag)
         {
             /* Print error summary to the debug file */
 
-            AePrintErrorLog (stderr);
+            AePrintErrorLog (ASL_FILE_STDERR);
         }
         printf ("\nMaximum error count (%d) exceeded.\n", ASL_MAX_ERROR_COUNT);
         CmCleanupAndExit ();
@@ -569,7 +583,7 @@ AslCompilererror (
 
     AslCommonError (ASL_ERROR, ASL_MSG_SYNTAX, Gbl_CurrentLineNumber,
                     Gbl_LogicalLineNumber, Gbl_CurrentLineOffset,
-                    Gbl_CurrentColumn, Gbl_InputFilename,
+                    Gbl_CurrentColumn, Gbl_Files[ASL_FILE_INPUT].Filename,
                     CompilerMessage /*MsgBuffer*/);
 
     return 0;

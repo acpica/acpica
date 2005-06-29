@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslanalyze.c - check for semantic errors
- *              $Revision: 1.29 $
+ *              $Revision: 1.30 $
  *
  *****************************************************************************/
 
@@ -1334,6 +1334,5 @@ AnSemanticAnalysisWalkEnd (
 
     return (AE_OK);
 }
-
 
 
