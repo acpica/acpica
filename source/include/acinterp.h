@@ -179,6 +179,11 @@ ACPI_STATUS
 AmlExecMatch (
     void);
 
+
+/*
+ * ievalue - ACPI AML (p-code) execution - get value functions
+ */
+
 INT32
 AmlGetRvalue (
     OBJECT_DESCRIPTOR   **StackPtr);
@@ -293,9 +298,20 @@ OsReleaseGlobalLock(
  */
 
 ACPI_STATUS
+AmlExecuteMethod (
+    INT32               Offset, 
+    INT32               Len, 
+    OBJECT_DESCRIPTOR   **Params);
+
+ACPI_STATUS
 AmlExecStore (
     OBJECT_DESCRIPTOR   *op1, 
     OBJECT_DESCRIPTOR   *res);
+
+
+/*
+ * iemonadic - ACPI AML (p-code) execution, monadic operators
+ */
 
 ACPI_STATUS
 AmlExecMonadic1 (
@@ -308,6 +324,11 @@ AmlExecMonadic2R (
 ACPI_STATUS
 AmlExecMonadic2 (
     UINT16              op);
+
+
+/*
+ * iedyadic - ACPI AML (p-code) execution, dyadic operators
+ */
 
 ACPI_STATUS
 AmlExecDyadic1 (
@@ -324,12 +345,6 @@ AmlExecDyadic2S (
 ACPI_STATUS
 AmlExecDyadic2 (
     UINT16              op);
-
-ACPI_STATUS
-AmlExecuteMethod (
-    INT32               Offset, 
-    INT32               Len, 
-    OBJECT_DESCRIPTOR   **Params);
 
 
 /*
@@ -454,11 +469,6 @@ AmlDoDefinitionBlock (
     LogHandle           iLstHandle, 
     OSD_FILE            *fAsmF);
 
-
-ACPI_STATUS
-AmlDoNamedObject (
-    OpMode              LoadExecMode);
-
 ACPI_STATUS
 AmlDoFieldElement (
     NsType              DataType, 
@@ -466,13 +476,26 @@ AmlDoFieldElement (
 
 
 /*
- * isdokg - interpreter/scanner AML package load/execute
+ * isdopkg - interpreter/scanner AML package load/execute
  */
 
 ACPI_STATUS
 AmlDoPkg (
     NsType              Type, 
     OpMode              iLE);
+
+
+/*
+ * isdoname - interpreter/scanner named object load/execute
+ */
+
+ACPI_STATUS
+AmlDoNameSpaceModifier (
+    OpMode              LoadExecMode);
+
+ACPI_STATUS
+AmlDoNamedObject (
+    OpMode              LoadExecMode);
 
 
 /*
@@ -518,7 +541,7 @@ AmlDoName (
 
 
 /*
- * isopcode - interpreter/scanner expression(opcode) load/execute
+ * isdoop - interpreter/scanner expression(opcode) load/execute
  */
 
 ACPI_STATUS
@@ -529,9 +552,19 @@ ACPI_STATUS
 AmlDoRefOpCode (
     OpMode              LoadExecMode);
 
+
+/*
+ * isdoopt1 - interpreter/scanner expression(opcode) load/execute
+ */
+
 ACPI_STATUS
 AmlDoType1OpCode (
     OpMode              LoadExecMode);
+
+
+/*
+ * isdoopt2 - interpreter/scanner expression(opcode) load/execute
+ */
 
 ACPI_STATUS 
 AmlDoType2OpCode (
@@ -617,7 +650,6 @@ AmlPackageNested (
 /*
  * isutils - interpreter/scanner utilities
  */
-
 
 BOOLEAN
 AmlAcquireGlobalLock (
