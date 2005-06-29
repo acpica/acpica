@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acexcep.h - Exception codes returned by the ACPI subsystem
- *       $Revision: 1.59 $
+ *       $Revision: 1.60 $
  *
  *****************************************************************************/
 
@@ -229,8 +229,9 @@
 #define AE_AML_INVALID_INDEX            (ACPI_STATUS) (0x001A | AE_CODE_AML)
 #define AE_AML_REGISTER_LIMIT           (ACPI_STATUS) (0x001B | AE_CODE_AML)
 #define AE_AML_NO_WHILE                 (ACPI_STATUS) (0x001C | AE_CODE_AML)
+#define AE_AML_ALIGNMENT                (ACPI_STATUS) (0x001D | AE_CODE_AML)
 
-#define AE_CODE_AML_MAX                 0x001C
+#define AE_CODE_AML_MAX                 0x001D
 
 /*
  * Internal exceptions used for control
@@ -338,7 +339,8 @@ NATIVE_CHAR const   *AcpiGbl_ExceptionNames_Aml[] =
     "AE_AML_INVALID_RESOURCE_TYPE",
     "AE_AML_INVALID_INDEX",
     "AE_AML_REGISTER_LIMIT",
-    "AE_AML_NO_WHILE"
+    "AE_AML_NO_WHILE".
+    "AE_AML_ALIGNMENT"
 };
 
 NATIVE_CHAR const   *AcpiGbl_ExceptionNames_Ctrl[] =
