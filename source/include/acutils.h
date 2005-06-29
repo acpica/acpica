@@ -318,28 +318,25 @@ _CmAllocate (
 	UINT32					Size,
 	UINT32                  Component,
 	ACPI_STRING				Module,
-	INT32                   Line,
-	ACPI_STRING				Function);
+	INT32                   Line);
 
 void *
 _CmCallocate (
 	UINT32					Size,
 	UINT32                  Component,
 	ACPI_STRING             Module,
-	INT32                   Line,
-	ACPI_STRING             Function);
+	INT32                   Line);
 
 void
 _CmFree (
 	void					*Address,
 	UINT32                  Component,
 	ACPI_STRING             Module,
-	INT32                   Line,
-	ACPI_STRING             Function);
+	INT32                   Line);
 
-#define CmAllocate(a)		_CmAllocate(a,_COMPONENT,_THIS_MODULE,__LINE__,ThisProc)
-#define CmCallocate(a)		_CmCallocate(a, _COMPONENT,_THIS_MODULE, __LINE__,ThisProc)
-#define CmFree(a)			_CmFree(a,_COMPONENT,_THIS_MODULE,__LINE__,ThisProc)
+#define CmAllocate(a)		_CmAllocate(a,_COMPONENT,_THIS_MODULE,__LINE__)
+#define CmCallocate(a)		_CmCallocate(a, _COMPONENT,_THIS_MODULE,__LINE__)
+#define CmFree(a)			_CmFree(a,_COMPONENT,_THIS_MODULE,__LINE__)
 
 #define AllocateObjectDesc() _AllocateObjectDesc(_THIS_MODULE,__LINE__,_COMPONENT)
 
