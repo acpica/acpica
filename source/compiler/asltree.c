@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asltree - parse tree management
- *              $Revision: 1.48 $
+ *              $Revision: 1.50 $
  *
  *****************************************************************************/
 
@@ -357,6 +357,9 @@ TrGetNodeFlagName (
     case NODE_WAS_ONES_OP:
         return ("NODE_WAS_ONES_OP");
 
+    case NODE_IS_NAME_DECLARATION:
+        return ("NODE_IS_NAME_DECLARATION");
+
     default:
         return ("Multiple Flags (or unknown flag) set");
     }
@@ -390,7 +393,8 @@ TrSetNodeFlags (
         return NULL;
     }
 
-    Op->Asl.CompileFlags |= (UINT16) Flags;
+    Op->Asl.CompileFlags |= Flags;
+
     return Op;
 }
 
@@ -481,7 +485,7 @@ TrCreateValuedLeafNode (
 
     DbgPrint (ASL_PARSE_OUTPUT,
         "\nCreateValuedLeafNode  Line %d NewNode %p  Op %s  Value %8.8X%8.8X  ",
-        Op->Asl.LineNumber, Op, UtGetOpName(ParseOpcode), 
+        Op->Asl.LineNumber, Op, UtGetOpName(ParseOpcode),
         ACPI_HIDWORD (Value), ACPI_LODWORD (Value));
     Op->Asl.Value.Integer = Value;
 

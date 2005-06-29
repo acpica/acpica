@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asltypes.h - compiler data types and struct definitions
- *              $Revision: 1.44 $
+ *              $Revision: 1.49 $
  *
  *****************************************************************************/
 
@@ -130,26 +130,25 @@
  ******************************************************************************/
 
 
-
-
 /* Op flags for the ACPI_PARSE_OBJECT */
 
-#define NODE_VISITED                0x0001
-#define NODE_AML_PACKAGE            0x0002
-#define NODE_IS_TARGET              0x0004
-#define NODE_IS_RESOURCE_DESC       0x0008
-#define NODE_IS_RESOURCE_FIELD      0x0010
-#define NODE_HAS_NO_EXIT            0x0020
-#define NODE_IF_HAS_NO_EXIT         0x0040
-#define NODE_NAME_INTERNALIZED      0x0080
-#define NODE_METHOD_NO_RETVAL       0x0100
-#define NODE_METHOD_SOME_NO_RETVAL  0x0200
-#define NODE_RESULT_NOT_USED        0x0400
-#define NODE_METHOD_TYPED           0x0800
-#define NODE_IS_BIT_OFFSET          0x1000
-#define NODE_COMPILE_TIME_CONST     0x2000
-#define NODE_IS_TERM_ARG            0x4000
-#define NODE_WAS_ONES_OP            0x8000
+#define NODE_VISITED                0x00000001
+#define NODE_AML_PACKAGE            0x00000002
+#define NODE_IS_TARGET              0x00000004
+#define NODE_IS_RESOURCE_DESC       0x00000008
+#define NODE_IS_RESOURCE_FIELD      0x00000010
+#define NODE_HAS_NO_EXIT            0x00000020
+#define NODE_IF_HAS_NO_EXIT         0x00000040
+#define NODE_NAME_INTERNALIZED      0x00000080
+#define NODE_METHOD_NO_RETVAL       0x00000100
+#define NODE_METHOD_SOME_NO_RETVAL  0x00000200
+#define NODE_RESULT_NOT_USED        0x00000400
+#define NODE_METHOD_TYPED           0x00000800
+#define NODE_IS_BIT_OFFSET          0x00001000
+#define NODE_COMPILE_TIME_CONST     0x00002000
+#define NODE_IS_TERM_ARG            0x00004000
+#define NODE_WAS_ONES_OP            0x00008000
+#define NODE_IS_NAME_DECLARATION    0x00010000
 
 /* Keeps information about individual control methods */
 
@@ -297,7 +296,8 @@ typedef struct
 #define ASL_ERROR               0
 #define ASL_WARNING             1
 #define ASL_REMARK              2
-#define ASL_NUM_REPORT_LEVELS   3
+#define ASL_OPTIMIZATION        3
+#define ASL_NUM_REPORT_LEVELS   4
 
 
 typedef enum
@@ -372,7 +372,14 @@ typedef enum
     ASL_MSG_RESERVED_METHOD,
     ASL_MSG_ALPHANUMERIC_STRING,
     ASL_MSG_RESERVED_USE,
-    ASL_MSG_INVALID_OPERAND
+    ASL_MSG_INVALID_OPERAND,
+    ASL_MSG_MISSING_ENDDEPENDENT,
+    ASL_MSG_MISSING_STARTDEPENDENT,
+    ASL_MSG_DEPENDENT_NESTING,
+    ASL_MSG_NAME_OPTIMIZATION,
+    ASL_MSG_SINGLE_NAME_OPTIMIZATION,
+    ASL_MSG_INTEGER_OPTIMIZATION,
+    ASL_MSG_SCOPE_TYPE
 
 } ASL_MESSAGE_IDS;
 
