@@ -1,9 +1,9 @@
-/******************************************************************************
+/*******************************************************************************
  *
  * Module Name: dbinput - user front-end to the AML debugger
- *              $Revision: 1.44 $
+ *              $Revision: 1.48 $
  *
- *****************************************************************************/
+ ******************************************************************************/
 
 /******************************************************************************
  *
@@ -126,7 +126,7 @@
 #ifdef ENABLE_DEBUGGER
 
 #define _COMPONENT          DEBUGGER
-        MODULE_NAME         ("dbinput");
+        MODULE_NAME         ("dbinput")
 
 
 /*
@@ -155,7 +155,11 @@ BOOLEAN                 opt_parse_jit   = FALSE;
 BOOLEAN                 opt_verbose     = TRUE;
 
 
-/* This list of commands must match the string table below it */
+/* 
+ * Top-level debugger commands.
+ *
+ * This list of commands must match the string table below it 
+ */
 
 enum AcpiAmlDebuggerCommands
 {
@@ -260,17 +264,17 @@ COMMAND_INFO                Commands[] =
 };
 
 
-/******************************************************************************
+/*******************************************************************************
  *
  * FUNCTION:    AcpiDbDisplayHelp
  *
- * PARAMETERS:  None
+ * PARAMETERS:  HelpType        - Subcommand (optional)
  *
  * RETURN:      None
  *
- * DESCRIPTION: Print a usage message
+ * DESCRIPTION: Print a usage message.
  *
- *****************************************************************************/
+ ******************************************************************************/
 
 void
 AcpiDbDisplayHelp (
@@ -368,17 +372,18 @@ AcpiDbDisplayHelp (
 }
 
 
-/******************************************************************************
+/*******************************************************************************
  *
  * FUNCTION:    AcpiDbGetNextToken
  *
- * PARAMETERS:  None
+ * PARAMETERS:  String          - Command buffer
+ *              Next            - Return value, end of next token
  *
- * RETURN:      None
+ * RETURN:      Pointer to the start of the next token. 
  *
- * DESCRIPTION: Command line parsing
+ * DESCRIPTION: Command line parsing.  Get the next token on the command line
  *
- *****************************************************************************/
+ ******************************************************************************/
 
 NATIVE_CHAR *
 AcpiDbGetNextToken (
@@ -435,18 +440,18 @@ AcpiDbGetNextToken (
 }
 
 
-/******************************************************************************
+/*******************************************************************************
  *
  * FUNCTION:    AcpiDbGetLine
  *
- * PARAMETERS:  None
+ * PARAMETERS:  InputBuffer         - Command line buffer
  *
  * RETURN:      None
  *
  * DESCRIPTION: Get the next command line from the user.  Gets entire line
  *              up to the next newline
  *
- *****************************************************************************/
+ ******************************************************************************/
 
 UINT32
 AcpiDbGetLine (
@@ -483,13 +488,15 @@ AcpiDbGetLine (
 
     Count = i;
     if (Count)
+    {
         Count--;  /* Number of args only */
+    }
 
     return (Count);
 }
 
 
-/******************************************************************************
+/*******************************************************************************
  *
  * FUNCTION:    AcpiDbMatchCommand
  *
@@ -499,7 +506,7 @@ AcpiDbGetLine (
  *
  * DESCRIPTION: Search command array for a command match
  *
- *****************************************************************************/
+ ******************************************************************************/
 
 UINT32
 AcpiDbMatchCommand (
@@ -527,23 +534,25 @@ AcpiDbMatchCommand (
 }
 
 
-/******************************************************************************
+/*******************************************************************************
  *
  * FUNCTION:    AcpiDbCommandDispatch
  *
- * PARAMETERS:
- *
+ * PARAMETERS:  InputBuffer         - Command line buffer
+ *              WalkState           - Current walk
+ *              Op                  - Current (executing) parse op
+ *  
  * RETURN:      Status
  *
  * DESCRIPTION: Command dispatcher.  Called from two places:
  *
- *****************************************************************************/
+ ******************************************************************************/
 
 ACPI_STATUS
 AcpiDbCommandDispatch (
     NATIVE_CHAR             *InputBuffer,
     ACPI_WALK_STATE         *WalkState,
-    ACPI_GENERIC_OP         *Op)
+    ACPI_PARSE_OBJECT       *Op)
 {
     UINT32                  Temp;
     UINT32                  CommandIndex;
@@ -840,18 +849,18 @@ AcpiDbCommandDispatch (
 }
 
 
-/******************************************************************************
+/*******************************************************************************
  *
  * FUNCTION:    AcpiDbExecuteThread
  *
- * PARAMETERS:  None
+ * PARAMETERS:  Context         - Not used
  *
  * RETURN:      None
  *
  * DESCRIPTION: Debugger execute thread.  Waits for a command line, then
  *              simply dispatches it.
  *
- *****************************************************************************/
+ ******************************************************************************/
 
 void
 AcpiDbExecuteThread (
@@ -872,7 +881,7 @@ AcpiDbExecuteThread (
 }
 
 
-/******************************************************************************
+/*******************************************************************************
  *
  * FUNCTION:    AcpiDbSingleThread
  *
@@ -883,7 +892,7 @@ AcpiDbExecuteThread (
  * DESCRIPTION: Debugger execute thread.  Waits for a command line, then
  *              simply dispatches it.
  *
- *****************************************************************************/
+ ******************************************************************************/
 
 void
 AcpiDbSingleThread (
@@ -899,23 +908,24 @@ AcpiDbSingleThread (
 }
 
 
-/******************************************************************************
+/*******************************************************************************
  *
  * FUNCTION:    AcpiDbUserCommands
  *
- * PARAMETERS:  None
+ * PARAMETERS:  Prompt              - User prompt (depends on mode)
+ *              Op                  - Current executing parse op
  *
  * RETURN:      None
  *
  * DESCRIPTION: Command line execution for the AML debugger.  Commands are
  *              matched and dispatched here.
  *
- *****************************************************************************/
+ ******************************************************************************/
 
 ACPI_STATUS
 AcpiDbUserCommands (
     NATIVE_CHAR             Prompt,
-    ACPI_GENERIC_OP         *Op)
+    ACPI_PARSE_OBJECT       *Op)
 {
     ACPI_STATUS             Status = AE_OK;
 

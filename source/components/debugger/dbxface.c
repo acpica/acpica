@@ -1,8 +1,9 @@
-/******************************************************************************
+/*******************************************************************************
  *
  * Module Name: dbxface - AML Debugger external interfaces
+ *              $Revision: 1.30 $
  *
- *****************************************************************************/
+ ******************************************************************************/
 
 /******************************************************************************
  *
@@ -127,28 +128,30 @@
 #ifdef ENABLE_DEBUGGER
 
 #define _COMPONENT          DEBUGGER
-        MODULE_NAME         ("dbxface");
+        MODULE_NAME         ("dbxface")
 
 
-/******************************************************************************
+/*******************************************************************************
  *
  * FUNCTION:    AcpiDbSingleStep
  *
- * PARAMETERS:
+ * PARAMETERS:  WalkState       - Current walk
+ *              Op              - Current executing op
+ *              OpType          - Type of the current AML Opcode
  *
- * RETURN:      None
+ * RETURN:      Status
  *
  * DESCRIPTION: Called just before execution of an AML opcode.
  *
- *****************************************************************************/
+ ******************************************************************************/
 
 ACPI_STATUS
 AcpiDbSingleStep (
     ACPI_WALK_STATE         *WalkState,
-    ACPI_GENERIC_OP         *Op,
+    ACPI_PARSE_OBJECT       *Op,
     UINT8                   OpType)
 {
-    ACPI_GENERIC_OP         *Next;
+    ACPI_PARSE_OBJECT       *Next;
     ACPI_STATUS             Status = AE_OK;
     UINT32                  OriginalDebugLevel;
 
@@ -246,6 +249,7 @@ AcpiDbSingleStep (
 
         else if (Op->Opcode == AML_ELSE_OP)
         {
+            /* TBD */
         }
 
 
@@ -302,7 +306,9 @@ AcpiDbSingleStep (
     }
 
 
-    AcpiCmReleaseMutex (ACPI_MTX_NAMESPACE);
+    /* TBD: [Investigate] what are the namespace locking issues here */
+
+    /* AcpiCmReleaseMutex (ACPI_MTX_NAMESPACE); */
 
     /* Go into the command loop and await next user command */
 
@@ -345,7 +351,7 @@ AcpiDbSingleStep (
         Status = AcpiDbCommandDispatch (LineBuf, WalkState, Op);
     }
 
-    AcpiCmAcquireMutex (ACPI_MTX_NAMESPACE);
+    /* AcpiCmAcquireMutex (ACPI_MTX_NAMESPACE); */
 
 
     /* User commands complete, continue execution of the interrupted method */
@@ -354,17 +360,17 @@ AcpiDbSingleStep (
 }
 
 
-/******************************************************************************
+/*******************************************************************************
  *
  * FUNCTION:    AcpiDbInitialize
  *
- * PARAMETERS:
+ * PARAMETERS:  None
  *
  * RETURN:      Status
  *
  * DESCRIPTION: Init and start debugger
  *
- *****************************************************************************/
+ ******************************************************************************/
 
 int
 AcpiDbInitialize (void)
