@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acgcc.h - GCC specific defines, etc.
- *       $Revision: 1.15 $
+ *       $Revision: 1.20 $
  *
  *****************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -122,14 +122,31 @@
 #define _IA64
 
 #define COMPILER_DEPENDENT_UINT64   unsigned long
+
+/*
+ * Calling conventions:
+ *
+ * ACPI_SYSTEM_XFACE        - Interfaces to host OS (handlers, threads)
+ * ACPI_EXTERNAL_XFACE      - External ACPI interfaces 
+ * ACPI_INTERNAL_XFACE      - Internal ACPI interfaces
+ * ACPI_INTERNAL_VAR_XFACE  - Internal variable-parameter list interfaces
+ */
+#define ACPI_SYSTEM_XFACE
+#define ACPI_EXTERNAL_XFACE
+#define ACPI_INTERNAL_XFACE
+#define ACPI_INTERNAL_VAR_XFACE
+
 /* Single threaded */
+
 #define ACPI_APPLICATION
+
+/* Asm macros */
 
 #define ACPI_ASM_MACROS
 #define causeinterrupt(level)
 #define BREAKPOINT3
-#define disable() __cli()
-#define enable()  __sti()
+#define acpi_disable_irqs() __cli()
+#define acpi_enable_irqs()  __sti()
 
 /*! [Begin] no source code translation */
 
@@ -186,11 +203,27 @@
 #else /* DO IA32 */
 
 #define COMPILER_DEPENDENT_UINT64   unsigned long long
+
+/*
+ * Calling conventions:
+ *
+ * ACPI_SYSTEM_XFACE        - Interfaces to host OS (handlers, threads)
+ * ACPI_EXTERNAL_XFACE      - External ACPI interfaces 
+ * ACPI_INTERNAL_XFACE      - Internal ACPI interfaces
+ * ACPI_INTERNAL_VAR_XFACE  - Internal variable-parameter list interfaces
+ */
+#define ACPI_SYSTEM_XFACE
+#define ACPI_EXTERNAL_XFACE
+#define ACPI_INTERNAL_XFACE
+#define ACPI_INTERNAL_VAR_XFACE
+
+/* Asm macros */
+
 #define ACPI_ASM_MACROS
 #define causeinterrupt(level)
 #define BREAKPOINT3
-#define disable() __cli()
-#define enable()  __sti()
+#define acpi_disable_irqs() __cli()
+#define acpi_enable_irqs()  __sti()
 #define halt()    __asm__ __volatile__ ("sti; hlt":::"memory")
 
 /*! [Begin] no source code translation
@@ -246,6 +279,8 @@
         "rcrl   $1,%3;"             \
         :"=r"(n_hi), "=r"(n_lo)     \
         :"0"(n_hi), "1"(n_lo))
+
+#define ACPI_WBINVD()	wbinvd()
 
 /*! [End] no source code translation !*/
 
