@@ -778,8 +778,8 @@ AcpiOsReadPciConfiguration (
 ACPI_STATUS
 AcpiOsWritePciConfiguration (
     ACPI_PCI_ID             *PciId,
-    ACPI_INTEGER            Register,
-    NATIVE_UINT             Value,
+    UINT32                  Register,
+    ACPI_INTEGER            Value,
     UINT32                  Width)
 {
 
