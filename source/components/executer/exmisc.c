@@ -1,492 +1,509 @@
-
-/******************************************************************************
- *
- * Module Name: ammisc - ACPI AML (p-code) execution - specific opcodes
- *              $Revision: 1.73 $
- *
- *****************************************************************************/
-
-/******************************************************************************
- *
- * 1. Copyright Notice
- *
- * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
- * All rights reserved.
- *
- * 2. License
- *
- * 2.1. This is your license from Intel Corp. under its intellectual property
- * rights.  You may have additional license terms from the party that provided
- * you this software, covering your right to use that party's intellectual
- * property rights.
- *
- * 2.2. Intel grants, free of charge, to any person ("Licensee") obtaining a
- * copy of the source code appearing in this file ("Covered Code") an
- * irrevocable, perpetual, worldwide license under Intel's copyrights in the
- * base code distributed originally by Intel ("Original Intel Code") to copy,
- * make derivatives, distribute, use and display any portion of the Covered
- * Code in any form, with the right to sublicense such rights; and
- *
- * 2.3. Intel grants Licensee a non-exclusive and non-transferable patent
- * license (with the right to sublicense), under only those claims of Intel
- * patents that are infringed by the Original Intel Code, to make, use, sell,
- * offer to sell, and import the Covered Code and derivative works thereof
- * solely to the minimum extent necessary to exercise the above copyright
- * license, and in no event shall the patent license extend to any additions
- * to or modifications of the Original Intel Code.  No other license or right
- * is granted directly or by implication, estoppel or otherwise;
- *
- * The above copyright and patent license is granted only if the following
- * conditions are met:
- *
- * 3. Conditions
- *
- * 3.1. Redistribution of Source with Rights to Further Distribute Source.
- * Redistribution of source code of any substantial portion of the Covered
- * Code or modification with rights to further distribute source must include
- * the above Copyright Notice, the above License, this list of Conditions,
- * and the following Disclaimer and Export Compliance provision.  In addition,
- * Licensee must cause all Covered Code to which Licensee contributes to
- * contain a file documenting the changes Licensee made to create that Covered
- * Code and the date of any change.  Licensee must include in that file the
- * documentation of any changes made by any predecessor Licensee.  Licensee
- * must include a prominent statement that the modification is derived,
- * directly or indirectly, from Original Intel Code.
- *
- * 3.2. Redistribution of Source with no Rights to Further Distribute Source.
- * Redistribution of source code of any substantial portion of the Covered
- * Code or modification without rights to further distribute source must
- * include the following Disclaimer and Export Compliance provision in the
- * documentation and/or other materials provided with distribution.  In
- * addition, Licensee may not authorize further sublicense of source of any
- * portion of the Covered Code, and must include terms to the effect that the
- * license from Licensee to its licensee is limited to the intellectual
- * property embodied in the software Licensee provides to its licensee, and
- * not to intellectual property embodied in modifications its licensee may
- * make.
- *
- * 3.3. Redistribution of Executable. Redistribution in executable form of any
- * substantial portion of the Covered Code or modification must reproduce the
- * above Copyright Notice, and the following Disclaimer and Export Compliance
- * provision in the documentation and/or other materials provided with the
- * distribution.
- *
- * 3.4. Intel retains all right, title, and interest in and to the Original
- * Intel Code.
- *
- * 3.5. Neither the name Intel nor any other trademark owned or controlled by
- * Intel shall be used in advertising or otherwise to promote the sale, use or
- * other dealings in products derived from or relating to the Covered Code
- * without prior written authorization from Intel.
- *
- * 4. Disclaimer and Export Compliance
- *
- * 4.1. INTEL MAKES NO WARRANTY OF ANY KIND REGARDING ANY SOFTWARE PROVIDED
- * HERE.  ANY SOFTWARE ORIGINATING FROM INTEL OR DERIVED FROM INTEL SOFTWARE
- * IS PROVIDED "AS IS," AND INTEL WILL NOT PROVIDE ANY SUPPORT,  ASSISTANCE,
- * INSTALLATION, TRAINING OR OTHER SERVICES.  INTEL WILL NOT PROVIDE ANY
-
- * UPDATES, ENHANCEMENTS OR EXTENSIONS.  INTEL SPECIFICALLY DISCLAIMS ANY
- * IMPLIED WARRANTIES OF MERCHANTABILITY, NONINFRINGEMENT AND FITNESS FOR A
- * PARTICULAR PURPOSE.
- *
- * 4.2. IN NO EVENT SHALL INTEL HAVE ANY LIABILITY TO LICENSEE, ITS LICENSEES
- * OR ANY OTHER THIRD PARTY, FOR ANY LOST PROFITS, LOST DATA, LOSS OF USE OR
- * COSTS OF PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES, OR FOR ANY INDIRECT,
- * SPECIAL OR CONSEQUENTIAL DAMAGES ARISING OUT OF THIS AGREEMENT, UNDER ANY
- * CAUSE OF ACTION OR THEORY OF LIABILITY, AND IRRESPECTIVE OF WHETHER INTEL
- * HAS ADVANCE NOTICE OF THE POSSIBILITY OF SUCH DAMAGES.  THESE LIMITATIONS
- * SHALL APPLY NOTWITHSTANDING THE FAILURE OF THE ESSENTIAL PURPOSE OF ANY
- * LIMITED REMEDY.
- *
- * 4.3. Licensee shall not export, either directly or indirectly, any of this
- * software or system incorporating such software without first obtaining any
- * required license or other approval from the U. S. Department of Commerce or
- * any other agency or department of the United States Government.  In the
- * event Licensee exports any such software from the United States or
- * re-exports any such software from a foreign destination, Licensee shall
- * ensure that the distribution and export/re-export of the software is in
- * compliance with all laws, regulations, orders, or other restrictions of the
- * U.S. Export Administration Regulations. Licensee agrees that neither it nor
- * any of its subsidiaries will export/re-export any technical data, process,
- * software, or service, directly or indirectly, to any country for which the
- * United States government or any agency thereof requires an export license,
- * other governmental approval, or letter of assurance, without first obtaining
- * such license, approval or letter.
- *
- *****************************************************************************/
-
-#define __AMMISC_C__
-
-#include "acpi.h"
-#include "acparser.h"
-#include "acinterp.h"
-#include "amlcode.h"
-#include "acdispat.h"
+/*__________________________________________________________________________
+ |
+ |
+ |           Copyright (C) Intel Corporation 1994-1996
+ |
+ | All rights reserved.  No part of this program or publication may be
+ | reproduced, transmitted, transcribed, stored in a retrieval system, or
+ | translated into any language or computer language, in any form or by any
+ | means, electronic, mechanical, magnetic, optical, chemical, manual, or
+ | otherwise, without the prior written permission of Intel Corporation.
+ |__________________________________________________________________________
+ |
+ | ModuleName: ieopexec - ACPI AML (p-code) execution - specific opcodes
+ |__________________________________________________________________________
+*/
 
 
+#define __IEOPEXEC_C__
+
+#include <acpi.h>
+#include <interpreter.h>
+#include <amlcode.h>
+#include <namespace.h>
+#include <string.h>
+
+
+#define _THIS_MODULE        "ieopexec.c"
 #define _COMPONENT          INTERPRETER
-        MODULE_NAME         ("ammisc")
+
+static ST_KEY_DESC_TABLE KDT[] = {
+    {"0000", '1', "ExecStore: Descriptor Allocation Failure", "ExecStore: Descriptor Allocation Failure"},
+    {"0001", '1', "GetRvalue: Descriptor Allocation Failure", "GetRvalue: Descriptor Allocation Failure"},
+    {NULL, 'I', NULL, NULL}
+};
 
 
-/*******************************************************************************
- *
- * FUNCTION:    AcpiAmlExecFatal
- *
- * PARAMETERS:  none
- *
- * RETURN:      Status.  If the OS returns from the OSD call, we just keep
- *              on going.
- *
- * DESCRIPTION: Execute Fatal operator
- *
- * ACPI SPECIFICATION REFERENCES:
- *  DefFatal    :=  FatalOp FatalType   FatalCode   FatalArg
- *  FatalType   :=  ByteData
- *  FatalCode   :=  DWordData
- *  FatalArg    :=  TermArg=>Integer
- *
- ******************************************************************************/
 
-ACPI_STATUS
-AcpiAmlExecFatal (
-    ACPI_WALK_STATE         *WalkState)
+/*****************************************************************************
+ * 
+ * FUNCTION:    ExecCreateField
+ *
+ * PARAMETERS:  UINT16  opcode      The opcode to be executed
+ *
+ * RETURN:      S_SUCCESS or S_ERROR
+ *
+ * DESCRIPTION: Execute CreateField operators: CreateBitFieldOp,
+ *              CreateByteFieldOp, CreateWordFieldOp, CreateDWordFieldOp,
+ *              CreateFieldOp (which define fields in buffers)
+ *
+ * ALLOCATION:  Deletes CreateFieldOp's count operand descriptor
+ *
+ *
+ *  ACPI SPECIFICATION REFERENCES:
+ *  16.2.4.2    DefCreateBitField   :=  CreateBitFieldOp    SourceBuff  BitIndex    NameString
+ *  16.2.4.2    DefCreateByteField  :=  CreateByteFieldOp   SourceBuff  ByteIndex   NameString
+ *  16.2.4.2    DefCreateDWordField :=  CreateDWordFieldOp  SourceBuff  ByteIndex   NameString
+ *  16.2.4.2    DefCreateField      :=  CreateFieldOp       SourceBuff  BitIndex    NumBits     NameString
+ *  16.2.4.2    DefCreateWordField  :=  CreateWordFieldOp   SourceBuff  ByteIndex   NameString
+ *  16.2.4.2    BitIndex            :=  TermArg=>Integer
+ *  16.2.4.2    ByteIndex           :=  TermArg=>Integer
+ *  16.2.4.2    NumBits             :=  TermArg=>Integer
+ *  16.2.4.2    SourceBuff          :=  TermArg=>Buffer
+ *
+ ****************************************************************************/
+
+INT32
+ExecCreateField (UINT16 opcode)
 {
-    ACPI_OPERAND_OBJECT     *TypeDesc;
-    ACPI_OPERAND_OBJECT     *CodeDesc;
-    ACPI_OPERAND_OBJECT     *ArgDesc;
-    ACPI_STATUS             Status;
+    OBJECT_DESCRIPTOR       *ResDesc = NULL;
+    OBJECT_DESCRIPTOR       *CntDesc = NULL;
+    OBJECT_DESCRIPTOR       *OffDesc = NULL;
+    OBJECT_DESCRIPTOR       *SrcDesc = NULL;
+    char                    *OpName = NULL;
+    INT32                   NumOperands;
+    UINT16                  BitCount;
+    UINT32                  BitOffset;
+    INT32                   Excep;
 
 
-    FUNCTION_TRACE ("AmlExecFatal");
+    FUNCTION_TRACE ("ExecCreateField");
 
 
-    /* Resolve operands */
+    /*  DefCreateField := CreateFieldOp SourceBuff BitIndex NumBits NameString  */
 
-    Status = AcpiAmlResolveOperands (AML_FATAL_OP, WALK_OPERANDS, WalkState);
-    DUMP_OPERANDS (WALK_OPERANDS, IMODE_EXECUTE,
-                    AcpiPsGetOpcodeName (AML_FATAL_OP),
-                    3, "after AcpiAmlResolveOperands");
-
-    /* Get operands */
-
-    Status |= AcpiDsObjStackPopObject (&ArgDesc, WalkState);
-    Status |= AcpiDsObjStackPopObject (&CodeDesc, WalkState);
-    Status |= AcpiDsObjStackPopObject (&TypeDesc, WalkState);
-    if (ACPI_FAILURE (Status))
+    if (CreateFieldOp == opcode)
     {
-        /* Invalid parameters on object stack  */
-
-        DEBUG_PRINT (ACPI_ERROR,
-            ("AcpiAmlExecFatal/AML_FATAL_OP: bad operand(s) (Status=%X)\n",
-            Status));
-
-        goto Cleanup;
+        Excep = PrepStack ("lnnb");
+        NumOperands = 4;
+        OpName = LongOps[opcode & 0x00ff];
     }
 
+    
+    /*  Create[Bit|Byte|DWord|Word]Field    */
+    /*  DefCreate*Field := Create*FieldOp SourceBuff [Bit|Byte]Index NameString */
 
-    /* DefFatal    :=  FatalOp FatalType   FatalCode   FatalArg    */
+    else
+    {
+        Excep = PrepStack ("lnb");
+        NumOperands = 3;
+        OpName = ShortOps[opcode];
+    }
+
+    if (Excep != S_SUCCESS)
+    {
+        /*  invalid parameters on object stack  */
+
+        AmlAppendOperandDiag (__FILE__, __LINE__, opcode, NumOperands);
+        return Excep;
+    }
+
+    DumpStack (Exec, OpName, NumOperands, "after PrepStack");
+
+    ResDesc = (OBJECT_DESCRIPTOR *) ObjStack[ObjStackTop--];        /* result */
+    
+    if (CreateFieldOp == opcode)
+    {
+        CntDesc = (OBJECT_DESCRIPTOR *) ObjStack[ObjStackTop--];        /* count */
+    }
+
+    OffDesc = (OBJECT_DESCRIPTOR *) ObjStack[ObjStackTop--];        /* offset */
+    SrcDesc = (OBJECT_DESCRIPTOR *) ObjStack[ObjStackTop];          /* source */
+    ObjStackTop += NumOperands - 1;
+
+    /* If ResDesc is a Name, it will be a direct name pointer after PrepStack() */
+    
+    if (!IsNsHandle (ResDesc))
+    {
+        sprintf (WhyBuf, "%s: destination must be a Name", OpName);
+        Why = WhyBuf;
+        return S_ERROR;
+    }
+
+    switch (opcode)
+    {
 
 
-    DEBUG_PRINT (ACPI_INFO,
-        ("FatalOp: Type %x Code %x Arg %x <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<\n",
-        TypeDesc->Integer.Value, CodeDesc->Integer.Value, ArgDesc->Integer.Value));
+    /*  DefCreateBitField   :=  CreateBitFieldOp    SourceBuff  BitIndex    NameString  */
+
+    case BitFieldOp:
+        BitOffset = OffDesc->Number.Number;             /* offset is in bits */
+        BitCount = 1;                                   /* field is a bit */
+        break;
 
 
-    /*
-     * TBD: [Unhandled] call OSD interface to notify OS of fatal error
-     * requiring shutdown!
+    /*  DefCreateByteField  :=  CreateByteFieldOp   SourceBuff  ByteIndex   NameString  */
+
+    case ByteFieldOp:
+        BitOffset = 8 * OffDesc->Number.Number;         /* offset is in bytes */
+        BitCount = 8;                                   /* field is a Byte */
+        break;
+
+
+    /*  DefCreateWordField  :=  CreateWordFieldOp   SourceBuff  ByteIndex   NameString  */
+
+    case WordFieldOp:
+        BitOffset = 8 * OffDesc->Number.Number;         /* offset is in bytes */
+        BitCount = 16;                                  /* field is a Word */
+        break;
+
+
+    /*  DefCreateDWordField :=  CreateDWordFieldOp  SourceBuff  ByteIndex   NameString  */
+
+    case DWordFieldOp:
+        BitOffset = 8 * OffDesc->Number.Number;         /* offset is in bytes */
+        BitCount = 32;                                  /* field is a DWord */
+        break;
+
+
+    /*  DefCreateField  :=  CreateFieldOp   SourceBuff  BitIndex    NumBits NameString  */
+
+    case CreateFieldOp:
+        BitOffset = OffDesc->Number.Number;             /* offset is in bits */
+        BitCount = (UINT16) CntDesc->Number.Number;       /* as is count */
+        break;
+
+    default:
+        sprintf (WhyBuf,
+                "ExecCreateField:internal error: Unknown field creation opcode %02x",
+                opcode);
+        Why = WhyBuf;
+        return S_ERROR;
+
+    } /* switch */
+
+
+    switch (SrcDesc->ValType)
+    {
+        UINT8       bTypeFound;
+        char        TypeFound[20];
+        char        *TypeFoundPtr = NULL;
+
+
+    /*  SourceBuff  :=  TermArg=>Buffer */
+
+    case Buffer:
+        if (BitOffset + (UINT32) BitCount > 8 * (UINT32) SrcDesc->Buffer.BufLen)
+        {
+            sprintf (WhyBuf, "ExecCreateField: Field exceeds Buffer %d > %d",
+                    BitOffset + (UINT32)BitCount,
+                    8 * (UINT32)SrcDesc->Buffer.BufLen);
+            Why = WhyBuf;
+            return S_ERROR;
+        }
+
+        /* Reuse "OffDesc" descriptor to build result */
+        
+        OffDesc->ValType                = (UINT8) FieldUnit;
+        OffDesc->FieldUnit.Access       = (UINT16) AnyAcc;
+        OffDesc->FieldUnit.LockRule     = (UINT16) NoLock;
+        OffDesc->FieldUnit.UpdateRule   = (UINT16) Preserve;
+        OffDesc->FieldUnit.DatLen       = BitCount;
+        OffDesc->FieldUnit.BitOffset    = (UINT16) BitOffset % 8;
+        OffDesc->FieldUnit.Offset       = BitOffset / 8;
+        OffDesc->FieldUnit.Container    = SrcDesc;
+        OffDesc->FieldUnit.ConSeq       = SrcDesc->Buffer.Sequence;
+        break;
+
+    default:
+        bTypeFound = SrcDesc->ValType;
+
+        if ((bTypeFound > (UINT8) Lvalue) ||
+            (BadType == NsTypeNames[bTypeFound]))
+        {
+            sprintf (TypeFound, "encoding %d", bTypeFound);
+            TypeFoundPtr = TypeFound;
+        }
+        else
+        {
+            TypeFoundPtr = NsTypeNames[bTypeFound];
+        }
+
+        sprintf (WhyBuf,
+                "ExecCreateField: Tried to create field in improper object type %s",
+                TypeFoundPtr);
+        Why = WhyBuf;
+        return S_ERROR;
+    
+    } /* switch */
+
+
+    if (CreateFieldOp == opcode)
+    {
+        /*  delete object descriptor unique to CreateField  */
+
+        DELETE (CntDesc);
+    }
+
+    /* 
+     * This operation is supposed to cause the destination Name to refer
+     * to the defined FieldUnit -- it must not store the constructed
+     * FieldUnit object (or its current value) in some location that the
+     * Name may already be pointing to.  So, if the Name currently contains
+     * a reference which would cause ExecStore() to perform an indirect
+     * store rather than setting the value of the Name itself, clobber that
+     * reference before calling ExecStore().
      */
 
+    switch (NsValType (ResDesc))                /* Type of Name's existing value */
+    {
+    case Alias:
+    case BankField:
+    case DefField:
+    case FieldUnit:
+    case IndexField:
 
-Cleanup:
+        DEBUG_PRINT (TRACE_BFIELD, ("ExecCreateField: clobber %s (%p) \n",
+                     NsFullyQualifiedName (ResDesc), ResDesc));
 
-    /* Free the operands */
+        DUMP_ENTRY (ResDesc);
+        DUMP_STACK_ENTRY (NsValPtr (ResDesc));
+        
+        NsSetValue (ResDesc, NULL, Any);
+        break;
 
-    AcpiCmRemoveReference (ArgDesc);
-    AcpiCmRemoveReference (CodeDesc);
-    AcpiCmRemoveReference (TypeDesc);
+    default:
+        break;
+    }
 
-
-    /* If we get back from the OS call, we might as well keep going. */
-
-    REPORT_WARNING (("An AML \"Fatal\" Opcode (FatalOp) was executed\n"));
-    return_ACPI_STATUS (AE_OK);
+    /* Store constructed field descriptor in result location */
+    
+    Excep = ExecStore (OffDesc, ResDesc);
+    ObjStackTop -= NumOperands - 1;
+    
+    return Excep;
 }
 
 
-/*******************************************************************************
- *
- * FUNCTION:    AcpiAmlExecIndex
+/*****************************************************************************
+ * 
+ * FUNCTION:    ExecFatal
  *
  * PARAMETERS:  none
  *
- * RETURN:      Status
+ * RETURN:      S_ERROR
+ *
+ * DESCRIPTION: Execute Fatal operator
+ *
+ *  ACPI SPECIFICATION REFERENCES:
+ *  16.2.4.3    DefFatal    :=  FatalOp FatalType   FatalCode   FatalArg
+ *  16.2.4.3    FatalType   :=  ByteData
+ *  16.2.4.3    FatalCode   :=  DWordData
+ *  16.2.4.3    FatalArg    :=  TermArg=>Integer
+ *
+ ****************************************************************************/
+
+INT32
+ExecFatal (void)
+{
+    OBJECT_DESCRIPTOR       *TypeDesc;
+    OBJECT_DESCRIPTOR       *CodeDesc;
+    OBJECT_DESCRIPTOR       *ArgDesc;
+    INT32                   Excep;
+
+
+    FUNCTION_TRACE ("ExecFatal");
+
+
+    Excep = PrepStack ("nnn");
+
+    if (Excep != S_SUCCESS)
+    {
+        /*  invalid parameters on object stack  */
+
+        AmlAppendOperandDiag (__FILE__, __LINE__, (UINT16) FatalOp, 3);
+        return Excep;
+    }
+
+    DumpStack (Exec, LongOps[FatalOp & 0x00ff], 3, "after PrepStack");
+
+
+    /*  DefFatal    :=  FatalOp FatalType   FatalCode   FatalArg    */
+
+    ArgDesc  = (OBJECT_DESCRIPTOR *) ObjStack[ObjStackTop];
+    CodeDesc = (OBJECT_DESCRIPTOR *) ObjStack[ObjStackTop - 1];
+    TypeDesc = (OBJECT_DESCRIPTOR *) ObjStack[ObjStackTop - 2];
+
+    DEBUG_PRINT (ACPI_INFO,
+                ("FatalOp: Type %x Code %x Arg %x <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<\n",
+                TypeDesc->Number.Number, CodeDesc->Number.Number,
+                ArgDesc->Number.Number));
+
+    Why = "ExecFatal: FatalOp executed";
+    return S_ERROR;
+}
+
+
+/*****************************************************************************
+ * 
+ * FUNCTION:    ExecIndex
+ *
+ * PARAMETERS:  none
+ *
+ * RETURN:      S_SUCCESS or S_ERROR
  *
  * DESCRIPTION: Execute Index operator
  *
  * ALLOCATION:  Deletes one operand descriptor -- other remains on stack
  *
  *  ACPI SPECIFICATION REFERENCES:
- *  DefIndex    :=  IndexOp BuffPkgObj IndexValue Result
- *  IndexValue  :=  TermArg=>Integer
- *  NameString  :=  <RootChar NamePath> | <PrefixPath NamePath>
- *  Result      :=  SuperName
- *  SuperName   :=  NameString | ArgObj | LocalObj | DebugObj | DefIndex
- *                             Local4Op | Local5Op | Local6Op | Local7Op
+ *  16.2.4.4    DefIndex    :=  IndexOp BuffPkgObj IndexValue Result
+ *  16.2.4.4    IndexValue  :=  TermArg=>Integer
+ *  16.2.1      NameString  :=  <RootChar NamePath> | <PrefixPath NamePath>
+ *  16.2.4.4    Result      :=  SuperName
+ *  16.2.1      SuperName   :=  NameString | ArgObj | LocalObj | DebugObj | DefIndex
+ *                              Local4Op | Local5Op | Local6Op | Local7Op
  *
- ******************************************************************************/
+ ****************************************************************************/
 
-ACPI_STATUS
-AcpiAmlExecIndex (
-    ACPI_WALK_STATE         *WalkState,
-    ACPI_OPERAND_OBJECT     **ReturnDesc)
+INT32
+ExecIndex (void)
 {
-    ACPI_OPERAND_OBJECT     *ObjDesc;
-    ACPI_OPERAND_OBJECT     *IdxDesc;
-    ACPI_OPERAND_OBJECT     *ResDesc;
-    ACPI_OPERAND_OBJECT     *RetDesc = NULL;
-    ACPI_OPERAND_OBJECT     *TmpDesc;
-    ACPI_STATUS             Status;
+    OBJECT_DESCRIPTOR       *PkgDesc;
+    OBJECT_DESCRIPTOR       *IdxDesc;
+    OBJECT_DESCRIPTOR       *ResDesc;
+    INT32                   Excep;
 
 
-    FUNCTION_TRACE ("AmlExecIndex");
+    FUNCTION_TRACE ("ExecIndex");
 
 
-    /* Resolve operands */
-    /* First operand can be either a package or a buffer */
+    Excep = PrepStack ("lnp");
 
-    Status = AcpiAmlResolveOperands (AML_INDEX_OP, WALK_OPERANDS, WalkState);
-    DUMP_OPERANDS (WALK_OPERANDS, IMODE_EXECUTE,
-                    AcpiPsGetOpcodeName (AML_INDEX_OP),
-                    3, "after AcpiAmlResolveOperands");
-
-    /* Get all operands */
-
-    Status |= AcpiDsObjStackPopObject (&ResDesc, WalkState);
-    Status |= AcpiDsObjStackPopObject (&IdxDesc, WalkState);
-    Status |= AcpiDsObjStackPopObject (&ObjDesc, WalkState);
-    if (ACPI_FAILURE (Status))
+    if (Excep != S_SUCCESS)
     {
-        /* Invalid parameters on object stack  */
+        /*  invalid parameters on object stack  */
 
-        DEBUG_PRINT (ACPI_ERROR,
-            ("AcpiAmlExecIndex/AML_INDEX_OP: bad operand(s) (Status=%X)\n",
-            Status));
-
-        goto Cleanup;
-    }
-
-
-    /* Create the internal return object */
-
-    RetDesc = AcpiCmCreateInternalObject (INTERNAL_TYPE_REFERENCE);
-    if (!RetDesc)
-    {
-        Status = AE_NO_MEMORY;
-        goto Cleanup;
-    }
-
-
-    /*
-     * At this point, the ObjDesc operand is either a Package or a Buffer
-     */
-
-    if (ObjDesc->Common.Type == ACPI_TYPE_PACKAGE)
-    {
-        /* Object to be indexed is a Package */
-
-        if (IdxDesc->Integer.Value >= ObjDesc->Package.Count)
-        {
-            DEBUG_PRINT (ACPI_ERROR,
-                ("AmlExecIndex: Index value out of range\n"));
-            Status = AE_AML_PACKAGE_LIMIT;
-            goto Cleanup;
-        }
-
-        if ((ResDesc->Common.Type == INTERNAL_TYPE_REFERENCE) &&
-            (ResDesc->Reference.OpCode == AML_ZERO_OP))
-        {
-            /*
-             * There is no actual result descriptor (the ZeroOp Result
-             * descriptor is a placeholder), so just delete the placeholder and
-             * return a reference to the package element
-             */
-
-            AcpiCmRemoveReference (ResDesc);
-        }
-
-        else
-        {
-            /*
-             * Each element of the package is an internal object.  Get the one
-             * we are after.
-             */
-
-            TmpDesc                       = ObjDesc->Package.Elements[IdxDesc->Integer.Value];
-            RetDesc->Reference.OpCode     = AML_INDEX_OP;
-            RetDesc->Reference.TargetType = TmpDesc->Common.Type;
-            RetDesc->Reference.Object     = TmpDesc;
-
-            Status = AcpiAmlExecStore (RetDesc, ResDesc, WalkState);
-            RetDesc->Reference.Object     = NULL;
-        }
-
-        /*
-         * The local return object must always be a reference to the package element,
-         * not the element itself.
-         */
-        RetDesc->Reference.OpCode     = AML_INDEX_OP;
-        RetDesc->Reference.TargetType = ACPI_TYPE_PACKAGE;
-        RetDesc->Reference.Where      = &ObjDesc->Package.Elements[IdxDesc->Integer.Value];
+        AmlAppendOperandDiag (__FILE__, __LINE__, (UINT16)IndexOp, 3);
     }
 
     else
     {
-        /* Object to be indexed is a Buffer */
+        DumpStack (Exec, ShortOps[IndexOp], 3, "after PrepStack");
 
-        if (IdxDesc->Integer.Value >= ObjDesc->Buffer.Length)
+        ResDesc = (OBJECT_DESCRIPTOR *) ObjStack[ObjStackTop];
+        IdxDesc = (OBJECT_DESCRIPTOR *) ObjStack[ObjStackTop - 1];
+        PkgDesc = (OBJECT_DESCRIPTOR *) ObjStack[ObjStackTop - 2];
+
+        if (IdxDesc->Number.Number < 0 || 
+            IdxDesc->Number.Number >= (UINT32) PkgDesc->Package.PkgCount)
         {
-            DEBUG_PRINT (ACPI_ERROR,
-                ("AmlExecIndex: Index value out of range\n"));
-            Status = AE_AML_BUFFER_LIMIT;
-            goto Cleanup;
+            Why = "ExecIndex: Index value out of range";
+            Excep = S_ERROR;
         }
 
-        RetDesc->Reference.OpCode       = AML_INDEX_OP;
-        RetDesc->Reference.TargetType   = ACPI_TYPE_BUFFER_FIELD;
-        RetDesc->Reference.Object       = ObjDesc;
-        RetDesc->Reference.Offset       = (UINT32) IdxDesc->Integer.Value;
-
-        Status = AcpiAmlExecStore (RetDesc, ResDesc, WalkState);
-    }
-
-
-Cleanup:
-
-    /* Always delete operands */
-
-    AcpiCmRemoveReference (ObjDesc);
-    AcpiCmRemoveReference (IdxDesc);
-
-    /* Delete return object on error */
-
-    if (ACPI_FAILURE (Status))
-    {
-        AcpiCmRemoveReference (ResDesc);
-
-        if (RetDesc)
+        else
         {
-            AcpiCmRemoveReference (RetDesc);
-            RetDesc = NULL;
+            /* 
+             * XXX - possible dangling reference: if the package vector changes
+             * XXX - before this pointer is used, the results may be surprising.
+             */
+            PkgDesc->Lvalue.Ref     = (void *) &PkgDesc->Package.PackageElems[IdxDesc->Number.Number];
+            PkgDesc->ValType        = (UINT8) Lvalue;
+            PkgDesc->Lvalue.OpCode  = IndexOp;
+
+            Excep = ExecStore (PkgDesc, ResDesc);
         }
+
+        if (S_SUCCESS == Excep)
+        {
+            DELETE (IdxDesc);
+        }
+
+        ObjStackTop -= 2;
     }
 
-    /* Set the return object and exit */
-
-    *ReturnDesc = RetDesc;
-    return_ACPI_STATUS (Status);
+    return Excep;
 }
 
 
-/*******************************************************************************
- *
- * FUNCTION:    AcpiAmlExecMatch
+/*****************************************************************************
+ * 
+ * FUNCTION:    ExecMatch
  *
  * PARAMETERS:  none
  *
- * RETURN:      Status
+ * RETURN:      S_SUCCESS or S_ERROR
  *
  * DESCRIPTION: Execute Match operator
  *
- * ACPI SPECIFICATION REFERENCES:
- *  DefMatch    :=  MatchOp SearchPkg   Opcode1     Operand1
- *                              Opcode2 Operand2    StartIndex
- *  Opcode1     :=  ByteData: MTR, MEQ, MLE, MLT, MGE, or MGT
- *  Opcode2     :=  ByteData: MTR, MEQ, MLE, MLT, MGE, or MGT
- *  Operand1    :=  TermArg=>Integer
- *  Operand2    :=  TermArg=>Integer
- *  SearchPkg   :=  TermArg=>PackageObject
- *  StartIndex  :=  TermArg=>Integer
+ * ALLOCATION:  Deletes 5 operands
  *
- ******************************************************************************/
+ *  ACPI SPECIFICATION REFERENCES:
+ *  16.2.4.4    DefMatch    :=  MatchOp SearchPkg   Opcode1     Operand1
+ *                              Opcode2 Operand2    StartIndex
+ *  16.2.4.4    Opcode1     :=  ByteData: MTR, MEQ, MLE, MLT, MGE, or MGT
+ *  16.2.4.4    Opcode2     :=  ByteData: MTR, MEQ, MLE, MLT, MGE, or MGT
+ *  16.2.4.4    Operand1    :=  TermArg=>Integer
+ *  16.2.4.4    Operand2    :=  TermArg=>Integer
+ *  16.2.4.4    SearchPkg   :=  TermArg=>PackageObject
+ *  16.2.4.4    StartIndex  :=  TermArg=>Integer
+ *
+ ****************************************************************************/
 
-ACPI_STATUS
-AcpiAmlExecMatch (
-    ACPI_WALK_STATE         *WalkState,
-    ACPI_OPERAND_OBJECT     **ReturnDesc)
+INT32
+ExecMatch (void)
 {
-    ACPI_OPERAND_OBJECT     *PkgDesc;
-    ACPI_OPERAND_OBJECT     *Op1Desc;
-    ACPI_OPERAND_OBJECT     *V1Desc;
-    ACPI_OPERAND_OBJECT     *Op2Desc;
-    ACPI_OPERAND_OBJECT     *V2Desc;
-    ACPI_OPERAND_OBJECT     *StartDesc;
-    ACPI_OPERAND_OBJECT     *RetDesc = NULL;
-    ACPI_STATUS             Status;
-    UINT32                  Index;
+    OBJECT_DESCRIPTOR       *PkgDesc;
+    OBJECT_DESCRIPTOR       *Op1Desc;
+    OBJECT_DESCRIPTOR       *V1Desc;
+    OBJECT_DESCRIPTOR       *Op2Desc;
+    OBJECT_DESCRIPTOR       *V2Desc;
+    OBJECT_DESCRIPTOR       *StartDesc;
+    UINT32                  Look;
     UINT32                  MatchValue = (UINT32) -1;
+    INT32                   Excep;
 
 
-    FUNCTION_TRACE ("AmlExecMatch");
+    FUNCTION_TRACE ("ExecMatch");
 
 
-    /* Resolve all operands */
+    Excep = PrepStack ("nnnnnp");
 
-    Status = AcpiAmlResolveOperands (AML_MATCH_OP, WALK_OPERANDS, WalkState);
-    DUMP_OPERANDS (WALK_OPERANDS, IMODE_EXECUTE,
-                    AcpiPsGetOpcodeName (AML_MATCH_OP),
-                    6, "after AcpiAmlResolveOperands");
-
-    /* Get all operands */
-
-    Status |= AcpiDsObjStackPopObject (&StartDesc, WalkState);
-    Status |= AcpiDsObjStackPopObject (&V2Desc, WalkState);
-    Status |= AcpiDsObjStackPopObject (&Op2Desc, WalkState);
-    Status |= AcpiDsObjStackPopObject (&V1Desc, WalkState);
-    Status |= AcpiDsObjStackPopObject (&Op1Desc, WalkState);
-    Status |= AcpiDsObjStackPopObject (&PkgDesc, WalkState);
-
-    if (ACPI_FAILURE (Status))
+    if (Excep != S_SUCCESS)
     {
-        /* Invalid parameters on object stack  */
+        /*  invalid parameters on object stack  */
 
-        DEBUG_PRINT (ACPI_ERROR,
-            ("ExecMatch/AML_MATCH_OP: bad operand(s) (Status=%X)\n",
-            Status));
-
-        goto Cleanup;
+        AmlAppendOperandDiag (__FILE__, __LINE__, (UINT16) MatchOp, 6);
+        return Excep;
     }
+
+    DumpStack (Exec, ShortOps[MatchOp], 6, "after PrepStack");
+
+    StartDesc = (OBJECT_DESCRIPTOR *) ObjStack[ObjStackTop];
+    V2Desc    = (OBJECT_DESCRIPTOR *) ObjStack[ObjStackTop - 1];
+    Op2Desc   = (OBJECT_DESCRIPTOR *) ObjStack[ObjStackTop - 2];
+    V1Desc    = (OBJECT_DESCRIPTOR *) ObjStack[ObjStackTop - 3];
+    Op1Desc   = (OBJECT_DESCRIPTOR *) ObjStack[ObjStackTop - 4];
+    PkgDesc   = (OBJECT_DESCRIPTOR *) ObjStack[ObjStackTop - 5];
 
     /* Validate match comparison sub-opcodes */
-
-    if ((Op1Desc->Integer.Value > MAX_MATCH_OPERATOR) ||
-        (Op2Desc->Integer.Value > MAX_MATCH_OPERATOR))
+    
+    if (Op1Desc->Number.Number < 0 || Op1Desc->Number.Number > 5 || 
+        Op2Desc->Number.Number < 0 || Op2Desc->Number.Number > 5)
     {
-        DEBUG_PRINT (ACPI_ERROR,
-            ("AmlExecMatch: operation encoding out of range\n"));
-        Status = AE_AML_OPERAND_VALUE;
-        goto Cleanup;
+        Why = "ExecMatch: operation encoding out of range";
+        return S_ERROR;
     }
 
-    Index = (UINT32) StartDesc->Integer.Value;
-    if (Index >= (UINT32) PkgDesc->Package.Count)
+    Look = StartDesc->Number.Number;
+    if (Look < 0 || Look >= (UINT32) PkgDesc->Package.PkgCount)
     {
-        DEBUG_PRINT (ACPI_ERROR,
-            ("AmlExecMatch: start position value out of range\n"));
-        Status = AE_AML_PACKAGE_LIMIT;
-        goto Cleanup;
+        Why = "ExecMatch: start position value out of range";
+        return S_ERROR;
     }
 
-    RetDesc = AcpiCmCreateInternalObject (ACPI_TYPE_INTEGER);
-    if (!RetDesc)
-    {
-        Status = AE_NO_MEMORY;
-        goto Cleanup;
-
-    }
-
-    /*
+    /* 
      * Examine each element until a match is found.  Within the loop,
      * "continue" signifies that the current element does not match
      * and the next should be examined.
@@ -496,187 +513,1042 @@ AcpiAmlExecMatch (
      * returned as a Number, this will produce the Ones value as specified.
      */
 
-    for ( ; Index < PkgDesc->Package.Count; ++Index)
+    for ( ; Look < (UINT32) PkgDesc->Package.PkgCount ; ++Look)
     {
-        /*
+        /* 
          * Treat any NULL or non-numeric elements as non-matching.
-         * TBD [Unhandled] - if an element is a Name,
-         *      should we examine its value?
+         * XXX - if an element is a Name, should we examine its value?
          */
-        if (!PkgDesc->Package.Elements[Index] ||
-            ACPI_TYPE_INTEGER != PkgDesc->Package.Elements[Index]->Common.Type)
+        if (!PkgDesc->Package.PackageElems[Look] ||
+            Number != PkgDesc->Package.PackageElems[Look]->ValType)
         {
             continue;
         }
 
-        /*
+        /* 
          * Within these switch statements:
          *      "break" (exit from the switch) signifies a match;
          *      "continue" (proceed to next iteration of enclosing
          *          "for" loop) signifies a non-match.
          */
-        switch (Op1Desc->Integer.Value)
+        switch (Op1Desc->Number.Number)
         {
-
-        case MATCH_MTR:   /* always true */
-
+        case MTR:   /*  always true */
             break;
 
-
-        case MATCH_MEQ:   /* true if equal   */
-
-            if (PkgDesc->Package.Elements[Index]->Integer.Value
-                 != V1Desc->Integer.Value)
+        case MEQ:   /*  true if equal   */
+            if (PkgDesc->Package.PackageElems[Look]->Number.Number
+                 != V1Desc->Number.Number)
             {
                 continue;
             }
             break;
 
-
-        case MATCH_MLE:   /* true if less than or equal  */
-
-            if (PkgDesc->Package.Elements[Index]->Integer.Value
-                 > V1Desc->Integer.Value)
+        case MLE:   /*  true if less than or equal  */
+            if (PkgDesc->Package.PackageElems[Look]->Number.Number
+                 > V1Desc->Number.Number)
             {
                 continue;
             }
             break;
 
-
-        case MATCH_MLT:   /* true if less than   */
-
-            if (PkgDesc->Package.Elements[Index]->Integer.Value
-                 >= V1Desc->Integer.Value)
+        case MLT:   /*  true if less than   */
+            if (PkgDesc->Package.PackageElems[Look]->Number.Number
+                 >= V1Desc->Number.Number)
             {
                 continue;
             }
             break;
 
-
-        case MATCH_MGE:   /* true if greater than or equal   */
-
-            if (PkgDesc->Package.Elements[Index]->Integer.Value
-                 < V1Desc->Integer.Value)
+        case MGE:   /*  true if greater than or equal   */
+            if (PkgDesc->Package.PackageElems[Look]->Number.Number
+                 < V1Desc->Number.Number)
             {
                 continue;
             }
             break;
 
-
-        case MATCH_MGT:   /* true if greater than    */
-
-            if (PkgDesc->Package.Elements[Index]->Integer.Value
-                 <= V1Desc->Integer.Value)
+        case MGT:   /*  true if greater than    */
+            if (PkgDesc->Package.PackageElems[Look]->Number.Number
+                 <= V1Desc->Number.Number)
             {
                 continue;
             }
             break;
 
-
-        default:    /* undefined   */
-
+        default:    /*  undefined   */
             continue;
         }
-
-
-        switch(Op2Desc->Integer.Value)
+ 
+        
+        switch(Op2Desc->Number.Number)
         {
-
-        case MATCH_MTR:
-
+        case MTR:
             break;
 
-
-        case MATCH_MEQ:
-
-            if (PkgDesc->Package.Elements[Index]->Integer.Value
-                 != V2Desc->Integer.Value)
+        case MEQ:
+            if (PkgDesc->Package.PackageElems[Look]->Number.Number
+                 != V2Desc->Number.Number)
             {
                 continue;
             }
             break;
 
-
-        case MATCH_MLE:
-
-            if (PkgDesc->Package.Elements[Index]->Integer.Value
-                 > V2Desc->Integer.Value)
+        case MLE:
+            if (PkgDesc->Package.PackageElems[Look]->Number.Number
+                 > V2Desc->Number.Number)
             {
                 continue;
             }
             break;
 
-
-        case MATCH_MLT:
-
-            if (PkgDesc->Package.Elements[Index]->Integer.Value
-                 >= V2Desc->Integer.Value)
+        case MLT:
+            if (PkgDesc->Package.PackageElems[Look]->Number.Number
+                 >= V2Desc->Number.Number)
             {
                 continue;
             }
             break;
 
-
-        case MATCH_MGE:
-
-            if (PkgDesc->Package.Elements[Index]->Integer.Value
-                 < V2Desc->Integer.Value)
+        case MGE:
+            if (PkgDesc->Package.PackageElems[Look]->Number.Number
+                 < V2Desc->Number.Number)
             {
                 continue;
             }
             break;
 
-
-        case MATCH_MGT:
-
-            if (PkgDesc->Package.Elements[Index]->Integer.Value
-                 <= V2Desc->Integer.Value)
+        case MGT:
+            if (PkgDesc->Package.PackageElems[Look]->Number.Number
+                 <= V2Desc->Number.Number)
             {
                 continue;
             }
             break;
-
 
         default:
-
             continue;
         }
 
         /* Match found: exit from loop */
-
-        MatchValue = Index;
+        
+        MatchValue = Look;
         break;
     }
 
-    /* MatchValue is the return value */
+    PkgDesc->ValType = (UINT8) Number;
+    PkgDesc->Number.Number = MatchValue;
 
-    RetDesc->Integer.Value = MatchValue;
+    DELETE (StartDesc);
+    DELETE (V2Desc);
+    DELETE (Op2Desc);
+    DELETE (V1Desc);
+    DELETE (Op1Desc);
+    
+    ObjStackTop -= 5;          /* Remove operands */
+    return S_SUCCESS;
+}
+
+/*****************************************************************************
+ * 
+ * FUNCTION:    GetFieldUnitValue
+ *
+ * PARAMETERS:  OBJECT_DESCRIPTOR * FieldDesc   points to a FIeldUnit
+ *              OBJECT_DESCRIPTOR * ResultDesc  points to an empty descriptor
+ *                                              which will become a Number
+ *                                              containing the field's value.
+ *
+ * RETURN:      S_SUCCESS or S_ERROR
+ *
+ * DESCRIPTION: Retrieve the value from a FieldUnit
+ *
+ * ALLOCATION:  none
+ *
+ ****************************************************************************/
+
+static INT32
+GetFieldUnitValue (OBJECT_DESCRIPTOR *FieldDesc, OBJECT_DESCRIPTOR *ResultDesc)
+{
+    UINT8           *Location = NULL;
+    UINT32          Mask;
+    INT32           Locked = FALSE;
+    INT32           Excep = S_ERROR;
 
 
-Cleanup:
-
-    /* Free the operands */
-
-    AcpiCmRemoveReference (StartDesc);
-    AcpiCmRemoveReference (V2Desc);
-    AcpiCmRemoveReference (Op2Desc);
-    AcpiCmRemoveReference (V1Desc);
-    AcpiCmRemoveReference (Op1Desc);
-    AcpiCmRemoveReference (PkgDesc);
+    FUNCTION_TRACE ("GetFieldUnitValue");
 
 
-    /* Delete return object on error */
-
-    if (ACPI_FAILURE (Status) &&
-        (RetDesc))
+    if (!FieldDesc)
     {
-        AcpiCmRemoveReference (RetDesc);
-        RetDesc = NULL;
+        Why = "GetFieldUnitValue: internal error: null field pointer";
+    }
+
+    else if (!FieldDesc->FieldUnit.Container)
+    {
+        Why = "GetFieldUnitValue: internal error: null container pointer";
+    }
+
+    else if (Buffer != FieldDesc->FieldUnit.Container->ValType)
+    {
+        Why = "GetFieldUnitValue: internal error: container is not a Buffer";
+    }
+
+    else if (FieldDesc->FieldUnit.ConSeq
+                != FieldDesc->FieldUnit.Container->Buffer.Sequence)
+    {
+        sprintf (WhyBuf,
+                "GetFieldUnitValue: internal error: stale Buffer [%lx != %lx]",
+                FieldDesc->FieldUnit.ConSeq,
+                FieldDesc->FieldUnit.Container->Buffer.Sequence);
+        Why = WhyBuf;
+    }
+
+    else if (!ResultDesc)
+    {
+        Why = "GetFieldUnitValue: internal error: null result pointer";
+    }
+
+    else 
+    {
+        /*  input parameters valid  */
+
+        Excep = S_SUCCESS;
+
+        /* Check lock rule prior to modifing the field */
+
+        if (FieldDesc->FieldUnit.LockRule == (UINT16) Lock)
+        {
+            /* Lock Rule is Lock */
+        
+            if (GetGlobalLock () == S_ERROR)
+            {
+                /* the ownship failed - Bad Bad Bad, this is a single threaded */
+                /* implementation so there is no way some other process should */
+                /* own this.  This means something grabbed it and did not */
+                /* release the Global Lock! (Why will already be set) */
+            
+                Excep = S_ERROR;
+            }
+
+            else
+            {
+                /* set the Locked Flag */
+
+                Locked = TRUE;
+            }
+        }
     }
 
 
-    /* Set the return object and exit */
+    if (S_SUCCESS == Excep)
+    {   
+        /*  input parameters valid and global lock possibly acquired    */
 
-    *ReturnDesc = RetDesc;
-    return_ACPI_STATUS (Status);
+        if (FieldDesc->FieldUnit.DatLen + FieldDesc->FieldUnit.BitOffset > 32)
+        {
+            Why = "GetFieldUnitValue: implementation limitation: Field exceeds UINT32";
+            Excep = S_ERROR;
+        }
+    }
+
+    if (S_SUCCESS == Excep)
+    {   
+        /* Field location is (base of buffer) + (byte offset) */
+    
+        Location = FieldDesc->FieldUnit.Container->Buffer.Buffer
+                    + FieldDesc->FieldUnit.Offset;
+
+        /* Construct Mask with as many 1 bits as the field width */
+    
+        Mask = ((UINT32) 1 << FieldDesc->FieldUnit.DatLen) - (UINT32) 1;
+
+        ResultDesc->Number.ValType = (UINT8) Number;
+
+        /* Shift the word containing the field, and mask the value */
+    
+        ResultDesc->Number.Number
+            = *(UINT32 *) Location >> FieldDesc->FieldUnit.BitOffset & Mask;
+
+        DEBUG_PRINT (ACPI_INFO,
+            ("** Read from buffer %p byte %ld bit %d width %d addr %p mask %08lx val %08lx\n",
+            FieldDesc->FieldUnit.Container->Buffer.Buffer,
+            FieldDesc->FieldUnit.Offset,
+            FieldDesc->FieldUnit.BitOffset,
+            FieldDesc->FieldUnit.DatLen,
+            Location, Mask, ResultDesc->Number.Number));
+    }
+
+    if (Locked)
+    {
+        /* Release the Global Lock */
+        
+        ReleaseGlobalLock ();
+    }
+
+    return Excep;
 }
+
+
+/*****************************************************************************
+ * 
+ * FUNCTION:    GetRvalue
+ *
+ * PARAMETERS:  OBJECT_DESCRIPTOR **StackPtr    points to entry on ObjStack,
+ *                                              which can be either an
+ *                                              (OBJECT_DESCRIPTOR *)
+ *                                              or an NsHandle.
+ *
+ * RETURN:      S_SUCCESS or S_ERROR
+ *
+ * DESCRIPTION: Convert Lvalue entries on ObjStack to rvalues
+ *
+ * ALLOCATION:
+ *  Reference   Size                    Pool    Owner       Description
+ *  *StackPtr   s(OBJECT_DESCRIPTOR)    bu      amlexec     Value
+ *
+ ****************************************************************************/
+
+INT32
+GetRvalue (OBJECT_DESCRIPTOR **StackPtr)
+{
+    NsHandle            TempHandle;
+    OBJECT_DESCRIPTOR * ObjDesc = NULL;
+    INT32               Excep = S_SUCCESS;
+
+
+    FUNCTION_TRACE ("GetRvalue");
+
+
+    if (!StackPtr || !*StackPtr)
+    {
+        Why = "GetRvalue: internal error: null pointer";
+        return S_ERROR;
+    }
+
+    switch ((*StackPtr)->ValType)
+    {
+    case Lvalue:
+
+        switch ((*StackPtr)->Lvalue.OpCode)
+        {
+            UINT8       MvIndex;
+
+        case NameOp:
+            
+            /* Convert indirect name ptr to direct name ptr */
+            
+            TempHandle = (*StackPtr)->Lvalue.Ref;
+            DELETE (*StackPtr);
+            (*StackPtr) = TempHandle;
+            Excep = S_SUCCESS;
+            break;
+
+        case Local0: case Local1: case Local2: case Local3:
+        case Local4: case Local5: case Local6: case Local7:
+
+            MvIndex = (*StackPtr)->Lvalue.OpCode - Local0;
+
+            DEBUG_PRINT (ACPI_INFO,
+                        ("GetRvalue:Lcl%d: before GetMethodValue %p %p %08lx \n",
+                        MvIndex,
+                        StackPtr, *StackPtr, *(UINT32 *)* StackPtr));
+
+            Excep = GetMethodValue (LCLBASE + (*StackPtr)->Lvalue.OpCode - Local0,
+                                    *StackPtr);
+
+            DEBUG_PRINT (ACPI_INFO,
+                        ("GetRvalue:Lcl%d: iGMV Excep=%s %p %p %08lx \n",
+                        MvIndex, RV[Excep], StackPtr, *StackPtr,
+                        *(UINT32 *)* StackPtr));
+            
+            if (Number == (*StackPtr)->ValType)
+            {
+                /* Value is a Number */
+                
+                DEBUG_PRINT (ACPI_INFO,
+                            ("[%ld] \n", (*StackPtr)->Number.Number));
+            }
+            break;
+
+        case Arg0: case Arg1: case Arg2: case Arg3:
+        case Arg4: case Arg5: case Arg6:
+
+            DEBUG_PRINT (TRACE_EXEC,
+                        ("GetRvalue:Arg%d: before GetMethodValue %p %p %08lx \n",
+                        MvIndex = (*StackPtr)->Lvalue.OpCode - Arg0,
+                        StackPtr, *StackPtr, *(UINT32 *)* StackPtr));
+
+            Excep = GetMethodValue (ARGBASE + (*StackPtr)->Lvalue.OpCode - Arg0,
+                                    *StackPtr);
+        
+            DEBUG_PRINT (TRACE_EXEC,
+                        ("GetRvalue:Arg%d: iGMV returned %s %p %p %08lx \n",
+                        MvIndex, RV[Excep], StackPtr, *StackPtr,
+                        *(UINT32 *)* StackPtr));
+
+            if (Number == (*StackPtr)->ValType)
+            {
+                /* Value is a Number */
+                
+                DEBUG_PRINT (ACPI_INFO,
+                            ("[%ld] \n", (*StackPtr)->Number.Number));
+            }
+
+            break;
+
+        case ZeroOp:
+            (*StackPtr)->ValType = (UINT8) Number;
+            (*StackPtr)->Number.Number = 0;
+            Excep = S_SUCCESS;
+            break;
+
+        case OneOp:
+            (*StackPtr)->ValType = (UINT8) Number;
+            (*StackPtr)->Number.Number = 1;
+            Excep = S_SUCCESS;
+            break;
+
+        case OnesOp:
+            (*StackPtr)->ValType = (UINT8) Number;
+            (*StackPtr)->Number.Number = 0xFFFFFFFF;
+            Excep = S_SUCCESS;
+            break;
+
+        default:
+            sprintf (WhyBuf, "GetRvalue: Unknown Lvalue subtype %02x",
+                    (*StackPtr)->Lvalue.OpCode);
+            Why = WhyBuf;
+            Excep = S_ERROR;
+
+        }   /* switch ((*StackPtr)->Lvalue.OpCode) */
+
+        if (S_SUCCESS != Excep)
+        {
+            return Excep;
+        }
+
+        break;
+
+    case FieldUnit:
+        ObjDesc = AllocateObjectDesc (&KDT[1]);
+        if (!ObjDesc)
+        {   
+            /*  descriptor allocation failure   */
+            
+            return S_ERROR;
+        }
+
+        if ((Excep = GetFieldUnitValue (*StackPtr, ObjDesc)) != S_SUCCESS)
+        {
+            DELETE (ObjDesc);
+        }
+        
+        *StackPtr = (void *) ObjDesc;
+        return Excep;
+
+    case BankField:
+        ObjDesc = AllocateObjectDesc (&KDT[1]);
+        if (!ObjDesc)
+        {   
+            /*  descriptor allocation failure   */
+            
+            return S_ERROR;
+        }
+
+        if ((Excep = GetFieldUnitValue (*StackPtr, ObjDesc)) != S_SUCCESS)
+        {
+            DELETE(ObjDesc);
+        }
+
+        *StackPtr = (void *) ObjDesc;
+        return Excep;
+        break;
+
+    /* XXX - may need to handle IndexField, and DefField someday */
+
+    default:
+        break;
+
+    }   /* switch ((*StackPtr)->ValType) */
+
+
+
+    if (IsNsHandle (*StackPtr))       /* direct name ptr */
+    {
+        OBJECT_DESCRIPTOR   *ValDesc = NULL;
+                
+            
+
+        DEBUG_PRINT (TRACE_EXEC,
+                    ("GetRvalue: found direct name ptr \n"));
+
+        ValDesc = (OBJECT_DESCRIPTOR *) NsValPtr ((NsHandle)* StackPtr);
+
+        DEBUG_PRINT (TRACE_EXEC,
+                    ("GetRvalue: NsValPtr(%p) returned Val=%p\n", *StackPtr, ValDesc));
+
+        switch (NsValType ((NsHandle)* StackPtr))
+        {
+            UINT32          TempVal;
+
+        case Package:
+
+            /* 
+             * ValDesc should point to either an OBJECT_DESCRIPTOR of
+             * type Package, or an initialization in the AML stream.
+             */
+            if (!ValDesc)
+            {
+                Why = "GetRvalue/Package:internal error: null ValPtr";
+                DEBUG_PRINT (TRACE_EXEC,
+                            ("leave iGetRvalue: NULL Package ValuePtr ==> S_ERROR\n"));
+
+                return S_ERROR;
+            }
+
+            if (PackageOp == *(UINT8 *) ValDesc)
+            {
+                /* 
+                 * The value pointer in the name table entry
+                 * points to a package definition in the AML stream.
+                 * Convert it to an object.
+                 */
+
+                if (S_SUCCESS != (Excep = PushIfExec (Exec)))             /* ObjStack */
+                {
+                    return Excep;
+                }
+
+                if (S_SUCCESS == (Excep = PushExec ((UINT8 *) ValDesc + 1, 0L)) && /*PkgStack*/
+                    S_SUCCESS == (Excep = DoPkg (Package, Exec)) &&
+                    S_SUCCESS == (Excep = PopExec ()))                 /* PkgStack */
+                {
+                    NsSetValue ((NsHandle)* StackPtr,
+                                    ObjStack[ObjStackTop],
+                                    (UINT8) Package);
+
+                    /* Refresh local value pointer to reflect newly set value */
+                    
+                    ValDesc = (OBJECT_DESCRIPTOR *) NsValPtr ((NsHandle)* StackPtr);
+                    ObjStackTop--;
+                }
+                
+                else
+                {
+                    ObjStackTop--;
+                    return Excep;
+                }
+            }
+            
+            if (!ValDesc || (Package != ValDesc->ValType))
+            {
+                Why = "GetRvalue:internal error: Bad package value";
+                return S_ERROR;
+            }
+
+            ObjDesc = AllocateObjectDesc (&KDT[1]);
+            if (!ObjDesc)
+            {   
+                /*  descriptor allocation failure   */
+                
+                return S_ERROR;
+            }
+
+            memcpy ((void *) ObjDesc, (void *) ValDesc, sizeof (*ObjDesc));
+            break;
+
+        case String:
+
+            /* XXX - Is there a problem here if the nte points to an AML definition? */
+            
+            if (String != ValDesc->ValType)
+            {
+                Why = "GetRvalue:internal error: Bad string value";
+                return S_ERROR;
+            }
+
+            ObjDesc = AllocateObjectDesc (&KDT[1]);
+            if (!ObjDesc)
+            {   
+                /*  descriptor allocation failure   */
+
+                return S_ERROR;
+            }
+
+            memcpy ((void *) ObjDesc, (void *) ValDesc, sizeof (*ObjDesc));
+            break;
+
+        case Buffer:
+            if (!ValDesc)
+            {
+                Why = "GetRvalue: internal error: null Buffer ValuePtr";
+                return S_ERROR;
+            }
+
+            if (BufferOp == *(UINT8 *) ValDesc)
+            {
+                /* 
+                 * The value pointer in the name table entry
+                 * points to a buffer definition in the AML stream.
+                 * Convert it to an object.
+                 */
+                if (S_SUCCESS != (Excep = PushIfExec (Exec)))                /* ObjStack */
+                {
+                    return Excep;
+                }
+
+                if (S_SUCCESS == (Excep = PushExec ((UINT8 *) ValDesc + 1, 0L)) &&   /*PkgStack*/
+                    S_SUCCESS == (Excep = DoPkg (Buffer, Exec)) &&
+                    S_SUCCESS == (Excep = PopExec ()))                     /* PkgStack */
+                {
+                    NsSetValue ((NsHandle) *StackPtr,
+                                    ObjStack[ObjStackTop],
+                                    (UINT8) Buffer);
+                    
+                    /* Refresh local value pointer to reflect newly set value */
+                    
+                    ValDesc = (OBJECT_DESCRIPTOR *) NsValPtr ((NsHandle)* StackPtr);
+                    ObjStackTop--;
+                }
+                
+                else
+                {
+                    ObjStackTop--;
+                    return Excep;
+                }
+            }
+            
+            if (!ValDesc || (Buffer != ValDesc->ValType))
+            {
+                Why = "GetRvalue: Bad buffer value";
+                return S_ERROR;
+            }
+
+            ObjDesc = AllocateObjectDesc (&KDT[1]);
+            if (!ObjDesc)
+            {   
+                /*  descriptor allocation failure   */
+                
+                return S_ERROR;
+            }
+
+            memcpy ((void *) ObjDesc, (void *) ValDesc, sizeof (*ObjDesc));
+
+            /* Assign a new sequence number */
+            
+            ObjDesc->Buffer.Sequence = AmlBufSeq();
+            
+            DEBUG_PRINT (TRACE_BFIELD,
+                        ("GetRvalue: new Buffer descriptor seq %ld @ %p \n",
+                        ObjDesc->Buffer.Sequence, ObjDesc));
+
+            break;
+
+        case Number:
+            DEBUG_PRINT (TRACE_EXEC, ("GetRvalue: case Number \n"));
+
+            if (!ValDesc)
+            {
+                Why = "GetRvalue: internal error: null Number ValuePtr";
+                return S_ERROR;
+            }
+
+            if (Number == ValDesc->ValType)
+            {
+                ObjDesc = AllocateObjectDesc (&KDT[1]);
+                if (!ObjDesc)
+                {   
+                    /*  descriptor allocation failure   */
+                    
+                    return S_ERROR;
+                }
+                
+                memcpy ((void *) ObjDesc, (void *) ValDesc, sizeof (*ObjDesc));
+            }
+            
+            else
+            {
+                /* 
+                 * nte type is Number, but it does not point to a Number,
+                 * so it had better point to a Literal in the AML stream.
+                 */
+                if (!IsInPCodeBlock ((UINT8 *) ValDesc))
+                {
+                    Why = "GetRvalue/Number: internal error: not a Number";
+                    return S_ERROR;
+                }
+
+                ObjDesc = AllocateObjectDesc (&KDT[1]);
+                if (!ObjDesc)
+                {   
+                    /*  descriptor allocation failure   */
+                    
+                    return S_ERROR;
+                }
+                
+                switch (*(UINT8 *) ValDesc)
+                {
+                case ZeroOp:
+                    ObjDesc->Number.Number = 0;
+                    break;
+
+                case OneOp:
+                    ObjDesc->Number.Number = 1;
+                    break;
+
+                case OnesOp:
+                    ObjDesc->Number.Number = 0xFFFFFFFF;
+                    break;
+
+                case ByteOp:
+                    ObjDesc->Number.Number = (UINT32)((UINT8 *) ValDesc)[1];
+                    break;
+
+                /* 
+                 *  XXX - WordOp and DWordOp will not work properly if the
+                 *  XXX - processor's endianness does not match the AML's.
+                 */
+                case WordOp:
+                    ObjDesc->Number.Number = (UINT32)*(UINT16 *)&((UINT8 *) ValDesc)[1];
+                    break;
+
+                case DWordOp:
+                    ObjDesc->Number.Number = *(UINT32 *)&((UINT8 *) ValDesc)[1];
+                    break;
+
+                default:
+                    DELETE (ObjDesc);
+                    sprintf (WhyBuf,
+                            "GetRvalue/Number: internal error: Expected AML number, found %02x",
+                            *(UINT8 *) ValDesc);
+                    Why = WhyBuf;
+                    return S_ERROR;
+                
+                }   /* switch */
+                
+                ObjDesc->Number.ValType = (UINT8) Number;
+            }
+            break;
+
+        case DefField:
+
+            /* 
+             * XXX - Implementation limitation: Fields are implemented as type
+             * XXX - Number, but they really are supposed to be type Buffer.
+             * XXX - The two are interchangeable only for lengths <= 32 bits.
+             */
+            Excep = GetNamedFieldValue ((NsHandle)* StackPtr, &TempVal);
+            if (S_SUCCESS != Excep)
+            {
+                return S_ERROR;
+            }
+
+            ObjDesc = AllocateObjectDesc (&KDT[1]);
+            if (!ObjDesc)
+            {   
+                /*  descriptor allocation failure   */
+                
+                return S_ERROR;
+            }
+
+            ObjDesc->Number.ValType = (UINT8) Number;
+            ObjDesc->Number.Number = TempVal;
+            break;
+
+        case BankField:
+            if (!ValDesc)
+            {
+                Why = "GetRvalue: internal error: null BankField ValuePtr";
+                return S_ERROR;
+            }
+
+            if (BankField != ValDesc->ValType)
+            {
+                sprintf (WhyBuf,
+                        "GetRvalue/BankField:internal error: Name %4.4s type %d does not match value-type %d at %p",
+                        *StackPtr, BankField, ValDesc->ValType, ValDesc);
+                
+                Why = WhyBuf;
+                AmlAppendBlockOwner (ValDesc);
+                return S_ERROR;
+            }
+
+            /* Set Index value to select proper Data register */
+            /* Check lock rule prior to modifing the field */
+            
+            if (ObjDesc->FieldUnit.LockRule == (UINT16) Lock)
+            {
+                /* Lock Rule is Lock */
+                
+                if (GetGlobalLock () == S_ERROR)
+                {
+                    /* the ownship failed - Bad Bad Bad, this is a single threaded */
+                    /* implementation so there is no way some other process should */
+                    /* own this.  This means something grabbed it and did not */
+                    /* release the Global Lock! (Why will already be set) */
+                    
+                    return (S_ERROR);
+                }
+            }
+
+
+            /* perform the update */
+            
+            Excep = SetNamedFieldValue (ValDesc->BankField.BankSelect,
+                                        ValDesc->BankField.BankVal);
+
+
+            if ((UINT16) Lock == ObjDesc->FieldUnit.LockRule)   /*  Lock Rule is Lock   */
+            {
+                ReleaseGlobalLock ();
+            }
+
+            if (S_SUCCESS != Excep)
+            {
+                return S_ERROR;
+            }
+            
+            /* Read Data value */
+            
+            Excep = GetNamedFieldValue ((NsHandle) ValDesc->BankField.Container, &TempVal);
+            if (S_SUCCESS != Excep)
+            {
+                return S_ERROR;
+            }
+
+            ObjDesc = AllocateObjectDesc (&KDT[1]);
+            if (!ObjDesc)
+            {
+                /*  descriptor allocation failure   */
+
+                return S_ERROR;
+            }
+
+            ObjDesc->Number.ValType = (UINT8) Number;
+            ObjDesc->Number.Number = TempVal;
+            break;
+
+
+        case IndexField:
+            if (!ValDesc)
+            {
+                Why = "GetRvalue: internal error: null IndexField ValuePtr";
+                return S_ERROR;
+            }
+
+            if (IndexField != ValDesc->ValType)
+            {
+                sprintf (WhyBuf,
+                        "GetRvalue/IndexField: internal error: Name %4.4s type %d does not match value-type %d at %p",
+                        *StackPtr, IndexField, ValDesc->ValType, ValDesc);
+                
+                Why = WhyBuf;
+                AmlAppendBlockOwner (ValDesc);
+                return S_ERROR;
+            }
+
+            /* Set Index value to select proper Data register */
+            /* Check lock rule prior to modifing the field */
+            
+            if (ObjDesc->FieldUnit.LockRule == (UINT16) Lock)
+            {
+                /* Lock Rule is Lock */
+                
+                if (GetGlobalLock () == S_ERROR)
+                {
+                    /* the ownship failed - Bad Bad Bad, this is a single threaded */
+                    /* implementation so there is no way some other process should */
+                    /* own this.  This means something grabbed it and did not */
+                    /* release the Global Lock! (Why will already be set) */
+                    
+                    return (S_ERROR);
+                }
+                
+                else
+                {
+                    /* perform the update */
+                    
+                    Excep = SetNamedFieldValue (ValDesc->IndexField.Index,
+                                                ValDesc->IndexField.IndexVal);
+                }
+                
+                /* Release the Global Lock */
+                
+                ReleaseGlobalLock ();
+            }
+            
+            else
+            {
+                /* Lock Rule is NoLock */
+                /* perform the update */
+                
+                Excep = SetNamedFieldValue (ValDesc->IndexField.Index,
+                                            ValDesc->IndexField.IndexVal);
+            }
+
+            if (S_SUCCESS != Excep)
+            {
+                return S_ERROR;
+            }
+
+            /* Read Data value */
+            
+            Excep = GetNamedFieldValue (ValDesc->IndexField.Data, &TempVal);
+            if (S_SUCCESS != Excep)
+            {
+                return S_ERROR;
+            }
+
+            ObjDesc = AllocateObjectDesc (&KDT[1]);
+            if (!ObjDesc)
+            {
+                /*  descriptor allocation failure   */
+
+                return S_ERROR;
+            }
+
+            ObjDesc->Number.ValType = (UINT8) Number;
+            ObjDesc->Number.Number = TempVal;
+            break;
+
+        case FieldUnit:
+            if (!ValDesc)
+            {
+                Why = "GetRvalue: internal error: null FieldUnit ValuePtr";
+                return S_ERROR;
+            }
+
+            if (ValDesc->ValType != (UINT8) NsValType ((NsHandle)* StackPtr))
+            {
+                sprintf (WhyBuf,
+                        "GetRvalue/FieldUnit:internal error: Name %4.4s type %d does not match value-type %d at %p",
+                          *StackPtr, NsValType ((NsHandle)* StackPtr),
+                          ValDesc->ValType, ValDesc);
+                
+                Why = WhyBuf;
+                AmlAppendBlockOwner (ValDesc);
+                return S_ERROR;
+                break;
+            }
+
+            ObjDesc = AllocateObjectDesc (&KDT[1]);
+            if (!ObjDesc)
+            {
+                /*  descriptor allocation failure   */
+
+                return S_ERROR;
+            }
+
+            if ((Excep = GetFieldUnitValue (ValDesc, ObjDesc)) != S_SUCCESS)
+            {
+                DELETE (ObjDesc);
+                return Excep;
+            }
+
+            break;
+
+        /* cases which just return the name as the rvalue */
+        
+        case Device:
+            return S_SUCCESS;
+            break;
+
+
+
+        case Method:        /* XXX - unimplemented, handled elsewhere */
+        case Power:         /* XXX - unimplemented, may not be needed */
+        case Processor:     /* XXX - unimplemented, may not be needed */
+        case Thermal:       /* XXX - unimplemented, may not be needed */
+        case Event:         /* XXX - unimplemented, may not be needed */
+        case Mutex:         /* XXX - unimplemented, may not be needed */
+        case Region:        /* XXX - unimplemented, may not be needed */
+
+        case Any:
+            DEBUG_PRINT (TRACE_EXEC, ("case %s \n",
+                        NsTypeNames[NsValType ((NsHandle)* StackPtr)]));
+          
+#ifdef HACK
+            DEBUG_PRINT (ACPI_WARN,
+                        ("** GetRvalue: Fetch from %s not implemented, using value 0\n",
+                        NsTypeNames[NsValType ((NsHandle)* StackPtr)]));
+            
+            ObjDesc = AllocateObjectDesc (&KDT[1]);
+            if (!ObjDesc)
+            {
+                /*  descriptor allocation failure   */
+                
+                return S_ERROR;
+            }
+
+            ObjDesc->Number.ValType = (UINT8) Number;
+            ObjDesc->Number.Number = 0x0;
+            break;
+#else
+            sprintf (WhyBuf,
+                    "GetRvalue: Fetch from %s not implemented",
+                    NsTypeNames[NsValType ((NsHandle)* StackPtr)]);
+            
+            Why = WhyBuf;
+            return S_ERROR;
+#endif /* HACK */
+
+        default:
+
+            DEBUG_PRINT (TRACE_EXEC, 
+                        ("GetRvalue: case default handle type unexpected: S_ERROR \n"));
+
+            sprintf (WhyBuf, "GetRvalue: Unknown NsType %d",
+                    NsValType ((NsHandle)* StackPtr));
+            Why = WhyBuf;
+            return S_ERROR;
+        }
+
+        *StackPtr = (void *) ObjDesc;
+    }
+
+    DEBUG_PRINT (TRACE_EXEC, ("leave GetRvalue: S_SUCCESS\n"));
+
+    return S_SUCCESS;
+}
+
+
+/*****************************************************************************
+ * 
+ * FUNCTION:    IsMethodValue
+ *
+ * PARAMETERS:  OBJECT_DESCRIPTOR *ObjDesc
+ *
+ * RETURN:      TRUE if the passed descriptor is the value of an Arg or
+ *              Local in a currently-active Method, else FALSE
+ *
+ ****************************************************************************/
+
+INT32
+IsMethodValue (OBJECT_DESCRIPTOR *ObjDesc)
+{
+    INT32           MethodNestLevel;
+    INT32           Index;
+
+
+    FUNCTION_TRACE ("IsMethodValue");
+
+
+    /* For each active Method */
+    
+    for (MethodNestLevel = MethodStackTop; MethodNestLevel >= 0; --MethodNestLevel)
+    {
+        /* For each possible Arg and Local */
+        
+        for (Index = 0; Index < (ARGBASE + NUMARG); ++Index)
+        {
+            if (ObjDesc == MethodStack[MethodNestLevel][Index])
+            {
+                return TRUE;
+            }
+        }
+    }
+
+    return FALSE;
+}
+
+
