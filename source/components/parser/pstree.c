@@ -652,8 +652,13 @@ PsFind (
 
     if (!Scope || !Path)
     {
+        DEBUG_PRINT (TRACE_PARSE, ("PsFind: Null path (%p) or scope (%p)!\n", Path, Scope));
         return_VALUE (NULL);
     }
+
+
+    Gbl_PsFindCount++;
+
 
     /* Handle all prefixes in the name path */
 
@@ -701,6 +706,21 @@ PsFind (
     {
     case '\0':
         segCount = 0;
+
+        /* Null name case */
+
+        if (unprefixed)
+        {
+            Op = NULL;
+        }
+        else
+        {
+            Op = Scope;
+        }
+
+
+        DEBUG_PRINT (TRACE_PARSE, ("PsFind: Null path, returning current root scope Op=%p\n", Op));
+        return_PTR (Op);
         break;
 
     case AML_DualNamePrefix:
@@ -718,6 +738,8 @@ PsFind (
         break;
     }
         
+    DEBUG_PRINT (TRACE_PARSE, ("PsFind: Search scope %p Segs=%d Opcode=%4.4X Create=%d\n", Scope, segCount, Opcode, Create));
+
     /* match each name segment */
 
     while (Scope && segCount)
@@ -778,6 +800,11 @@ PsFind (
                         DEBUG_PRINT (TRACE_PARSE, ("PsFind: [%4.4s] Found in parent tree! Op=%X Opcode=%4.4X\n", &Name, Op, Op->Opcode));
                     }
                 }
+            }
+
+            else
+            {
+                DEBUG_PRINT (TRACE_PARSE, ("PsFind: Segment [%4.4s] Not Found in scope %p!\n", &Name, Scope));
             }
         }
 

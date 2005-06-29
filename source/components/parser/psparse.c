@@ -127,6 +127,7 @@
 #include <parser.h>
 #include <amlcode.h>
 #include <namesp.h>
+#include <debugger.h>
 
 #define _COMPONENT          PARSER
         MODULE_NAME         ("psparse");
@@ -192,6 +193,7 @@ PsDeleteParseTree (
 
     if (Op == Gbl_ParsedNamespaceRoot)
     {
+        DEBUG_EXEC (DbGenerateStatistics ());
         Op = PsGetChild (Op);
     }
 
@@ -760,6 +762,11 @@ PsParseTable (
 
     DEBUG_PRINT (TRACE_PARSE, ("PsParseTable: Building Internal Namespace\n"));
 BREAKPOINT3;
+
+
+    PsWalkParsedAml (PsGetChild (Gbl_ParsedNamespaceRoot), Gbl_ParsedNamespaceRoot, NULL, NULL, NULL,
+                        PsxLoad1BeginOp, PsxLoad1EndOp);
+
 
     PsWalkParsedAml (PsGetChild (Gbl_ParsedNamespaceRoot), Gbl_ParsedNamespaceRoot, NULL, NULL, NULL,
                         DescendingCallback, AscendingCallback);
