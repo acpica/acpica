@@ -377,7 +377,7 @@ AcpiOsWritable (
     void                    *Pointer,
     ACPI_SIZE               Length);
 
-UINT32
+UINT64
 AcpiOsGetTimer (
     void);
 
