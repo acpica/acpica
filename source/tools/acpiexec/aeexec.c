@@ -138,6 +138,43 @@ UINT32                      AcpiDsdtLength;
 DEBUG_REGIONS               Regions;
 
 
+static char                 *AcpiGbl_RegionNames[] =    /* printable names of ACPI region types */
+{
+    "SystemMemory",
+    "SystemIO",
+    "PciConfig",
+    "EmbeddedControl",
+    "SMBus"
+};
+
+#define ACPI_MAX_SPACE_ID   4
+
+/*****************************************************************************
+ *
+ * FUNCTION:    AcpiCmFormatSpaceId
+ *
+ * PARAMETERS:  Status              - Acpi status to be formatted
+ *
+ * RETURN:      Formatted status string
+ *
+ * DESCRIPTION: Convert an ACPI exception to a string
+ *
+ ****************************************************************************/
+
+char *
+AcpiCmFormatSpaceId (
+    UINT32                  SpaceId)
+{
+
+    if (SpaceId > ACPI_MAX_SPACE_ID)
+    {
+        return "UNKNOWN_REGION_SPACE_ID";
+    }
+
+    return (AcpiGbl_RegionNames [SpaceId]);
+}
+
+
 /******************************************************************************
  *
  * FUNCTION:    RegionHandler
@@ -168,7 +205,6 @@ RegionHandler (
     void                    *BufferValue;
     UINT32                  ByteWidth;
 
-    printf ("Received an OpRegion request\n");
 
     /*
      * If the object is not a region, simply return
@@ -177,6 +213,11 @@ RegionHandler (
     {
         return AE_OK;
     }
+
+    printf ("Operation Region request on %s at 0x%X\n", 
+            AcpiCmFormatSpaceId (RegionObject->Region.SpaceId),
+            Address);
+
 
     /*
      * Find the region's address space and length before searching
