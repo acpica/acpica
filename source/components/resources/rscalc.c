@@ -1,8 +1,7 @@
 /*******************************************************************************
  *
- * Module Name: rscalc - AcpiRsCalculateByteStreamLength
- *                       AcpiRsCalculateListLength
- *              $Revision: 1.29 $
+ * Module Name: rscalc - Calculate stream and list lengths
+ *              $Revision: 1.30 $
  *
  ******************************************************************************/
 
@@ -134,7 +133,7 @@
  *              SizeNeeded          - UINT32 pointer of the size buffer needed
  *                                    to properly return the parsed data
  *
- * RETURN:      Status  AE_OK if okay, else a valid ACPI_STATUS code
+ * RETURN:      Status
  *
  * DESCRIPTION: Takes the resource byte stream and parses it once, calculating
  *              the size buffer needed to hold the linked list that conveys
@@ -144,12 +143,12 @@
 
 ACPI_STATUS
 AcpiRsCalculateByteStreamLength (
-    RESOURCE                *LinkedList,
+    ACPI_RESOURCE           *LinkedList,
     UINT32                  *SizeNeeded)
 {
     UINT32                  ByteStreamSizeNeeded = 0;
     UINT32                  SegmentSize;
-    EXTENDED_IRQ_RESOURCE   *ExIrq = NULL;
+    ACPI_RESOURCE_EXT_IRQ   *ExIrq = NULL;
     BOOLEAN                 Done = FALSE;
 
 
@@ -158,7 +157,6 @@ AcpiRsCalculateByteStreamLength (
 
     while (!Done)
     {
-
         /*
          * Init the variable that will hold the size to add to the total.
          */
@@ -166,7 +164,7 @@ AcpiRsCalculateByteStreamLength (
 
         switch (LinkedList->Id)
         {
-        case Irq:
+        case ACPI_RSTYPE_IRQ:
             /*
              * IRQ Resource
              * For an IRQ Resource, Byte 3, although optional, will
@@ -175,7 +173,7 @@ AcpiRsCalculateByteStreamLength (
             SegmentSize = 4;
             break;
 
-        case Dma:
+        case ACPI_RSTYPE_DMA:
             /*
              * DMA Resource
              * For this resource the size is static
@@ -183,7 +181,7 @@ AcpiRsCalculateByteStreamLength (
             SegmentSize = 3;
             break;
 
-        case StartDependentFunctions:
+        case ACPI_RSTYPE_START_DPF:
             /*
              * Start Dependent Functions Resource
              * For a StartDependentFunctions Resource, Byte 1,
@@ -192,7 +190,7 @@ AcpiRsCalculateByteStreamLength (
             SegmentSize = 2;
             break;
 
-        case EndDependentFunctions:
+        case ACPI_RSTYPE_END_DPF:
             /*
              * End Dependent Functions Resource
              * For this resource the size is static
@@ -200,7 +198,7 @@ AcpiRsCalculateByteStreamLength (
             SegmentSize = 1;
             break;
 
-        case Io:
+        case ACPI_RSTYPE_IO:
             /*
              * IO Port Resource
              * For this resource the size is static
@@ -208,7 +206,7 @@ AcpiRsCalculateByteStreamLength (
             SegmentSize = 8;
             break;
 
-        case FixedIo:
+        case ACPI_RSTYPE_FIXED_IO:
             /*
              * Fixed IO Port Resource
              * For this resource the size is static
@@ -216,7 +214,7 @@ AcpiRsCalculateByteStreamLength (
             SegmentSize = 4;
             break;
 
-        case VendorSpecific:
+        case ACPI_RSTYPE_VENDOR:
             /*
              * Vendor Defined Resource
              * For a Vendor Specific resource, if the Length is
@@ -235,7 +233,7 @@ AcpiRsCalculateByteStreamLength (
             SegmentSize += LinkedList->Data.VendorSpecific.Length;
             break;
 
-        case EndTag:
+        case ACPI_RSTYPE_END_TAG:
             /*
              * End Tag
              * For this resource the size is static
@@ -244,7 +242,7 @@ AcpiRsCalculateByteStreamLength (
             Done = TRUE;
             break;
 
-        case Memory24:
+        case ACPI_RSTYPE_MEM24:
             /*
              * 24-Bit Memory Resource
              * For this resource the size is static
@@ -252,7 +250,7 @@ AcpiRsCalculateByteStreamLength (
             SegmentSize = 12;
             break;
 
-        case Memory32:
+        case ACPI_RSTYPE_MEM32:
             /*
              * 32-Bit Memory Range Resource
              * For this resource the size is static
@@ -260,7 +258,7 @@ AcpiRsCalculateByteStreamLength (
             SegmentSize = 20;
             break;
 
-        case FixedMemory32:
+        case ACPI_RSTYPE_FIXED_MEM32:
             /*
              * 32-Bit Fixed Memory Resource
              * For this resource the size is static
@@ -268,7 +266,7 @@ AcpiRsCalculateByteStreamLength (
             SegmentSize = 12;
             break;
 
-        case Address16:
+        case ACPI_RSTYPE_ADDRESS16:
             /*
              * 16-Bit Address Resource
              * The base size of this byte stream is 16. If a
@@ -285,7 +283,7 @@ AcpiRsCalculateByteStreamLength (
             }
             break;
 
-        case Address32:
+        case ACPI_RSTYPE_ADDRESS32:
             /*
              * 32-Bit Address Resource
              * The base size of this byte stream is 26. If a Resource
@@ -302,7 +300,7 @@ AcpiRsCalculateByteStreamLength (
             }
             break;
 
-        case Address64:
+        case ACPI_RSTYPE_ADDRESS64:
             /*
              * 64-Bit Address Resource
              * The base size of this byte stream is 46. If a Resource
@@ -319,7 +317,7 @@ AcpiRsCalculateByteStreamLength (
             }
             break;
 
-        case ExtendedIrq:
+        case ACPI_RSTYPE_EXT_IRQ:
             /*
              * Extended IRQ Resource
              * The base size of this byte stream is 9. This is for an
@@ -344,7 +342,7 @@ AcpiRsCalculateByteStreamLength (
              * If we get here, everything is out of sync,
              * so exit with an error
              */
-            return_ACPI_STATUS (AE_AML_ERROR);
+            return_ACPI_STATUS (AE_AML_INVALID_RESOURCE_TYPE);
             break;
 
         } /* switch (LinkedList->Id) */
@@ -357,15 +355,14 @@ AcpiRsCalculateByteStreamLength (
         /*
          * Point to the next object
          */
-        LinkedList = (RESOURCE *) ((NATIVE_UINT) LinkedList +
-                     (NATIVE_UINT) LinkedList->Length);
+        LinkedList = POINTER_ADD (ACPI_RESOURCE, 
+                        LinkedList, LinkedList->Length);
     }
 
     /*
      * This is the data the caller needs
      */
     *SizeNeeded = ByteStreamSizeNeeded;
-
     return_ACPI_STATUS (AE_OK);
 }
 
@@ -380,7 +377,7 @@ AcpiRsCalculateByteStreamLength (
  *                                        needed to properly return the
  *                                        parsed data
  *
- * RETURN:      Status  AE_OK if okay, else a valid ACPI_STATUS code
+ * RETURN:      Status
  *
  * DESCRIPTION: Takes the resource byte stream and parses it once, calculating
  *              the size buffer needed to hold the linked list that conveys
@@ -426,8 +423,7 @@ AcpiRsCalculateListLength (
              */
             BytesConsumed = 12;
 
-            StructureSize = sizeof (MEMORY24_RESOURCE) + 
-                                RESOURCE_LENGTH_NO_DATA;
+            StructureSize = SIZEOF_RESOURCE (ACPI_RESOURCE_MEM24);
             break;
 
 
@@ -446,8 +442,7 @@ AcpiRsCalculateListLength (
              */
             Temp16 = (UINT16) ROUND_UP_TO_32BITS (Temp16);
 
-            StructureSize = sizeof (VENDOR_RESOURCE) + 
-                                RESOURCE_LENGTH_NO_DATA +
+            StructureSize = SIZEOF_RESOURCE (ACPI_RESOURCE_VENDOR) +
                                 (Temp16 * sizeof (UINT8));
             break;
 
@@ -459,8 +454,7 @@ AcpiRsCalculateListLength (
 
             BytesConsumed = 20;
 
-            StructureSize = sizeof (MEMORY32_RESOURCE) + 
-                                RESOURCE_LENGTH_NO_DATA;
+            StructureSize = SIZEOF_RESOURCE (ACPI_RESOURCE_MEM32);
             break;
 
 
@@ -470,8 +464,7 @@ AcpiRsCalculateListLength (
              */
             BytesConsumed = 12;
 
-            StructureSize = sizeof (FIXED_MEMORY32_RESOURCE) + 
-                                RESOURCE_LENGTH_NO_DATA;
+            StructureSize = SIZEOF_RESOURCE (ACPI_RESOURCE_FIXED_MEM32);
             break;
 
 
@@ -510,8 +503,7 @@ AcpiRsCalculateListLength (
              */
             Temp8 = (UINT8) ROUND_UP_TO_64BITS (Temp8);
 
-            StructureSize = sizeof (ADDRESS64_RESOURCE) +
-                                RESOURCE_LENGTH_NO_DATA +
+            StructureSize = SIZEOF_RESOURCE (ACPI_RESOURCE_ADDRESS64) +
                                 (Temp8 * sizeof (UINT8));
             break;
 
@@ -551,8 +543,7 @@ AcpiRsCalculateListLength (
              */
             Temp8 = (UINT8) ROUND_UP_TO_32BITS (Temp8);
 
-            StructureSize = sizeof (ADDRESS32_RESOURCE) +
-                                RESOURCE_LENGTH_NO_DATA +
+            StructureSize = SIZEOF_RESOURCE (ACPI_RESOURCE_ADDRESS32) +
                                 (Temp8 * sizeof (UINT8));
             break;
 
@@ -592,8 +583,7 @@ AcpiRsCalculateListLength (
              */
             Temp8 = (UINT8) ROUND_UP_TO_32BITS (Temp8);
 
-            StructureSize = sizeof (ADDRESS16_RESOURCE) +
-                                RESOURCE_LENGTH_NO_DATA +
+            StructureSize = SIZEOF_RESOURCE (ACPI_RESOURCE_ADDRESS16) +
                                 (Temp8 * sizeof (UINT8));
             break;
 
@@ -648,8 +638,7 @@ AcpiRsCalculateListLength (
              */
             Temp8 = (UINT8) ROUND_UP_TO_32BITS (Temp8);
 
-            StructureSize = sizeof (EXTENDED_IRQ_RESOURCE) +
-                                RESOURCE_LENGTH_NO_DATA +
+            StructureSize = SIZEOF_RESOURCE (ACPI_RESOURCE_EXT_IRQ) +
                                 (AdditionalBytes * sizeof (UINT8)) +
                                 (Temp8 * sizeof (UINT8));
             break;
@@ -693,8 +682,7 @@ AcpiRsCalculateListLength (
                 Temp16 >>= 1;
             }
 
-            StructureSize = sizeof (IO_RESOURCE) +
-                                RESOURCE_LENGTH_NO_DATA +
+            StructureSize = SIZEOF_RESOURCE (ACPI_RESOURCE_IO) +
                                 (NumberOfInterrupts * sizeof (UINT32));
             break;
 
@@ -726,8 +714,7 @@ AcpiRsCalculateListLength (
                 Temp8 >>= 1;
             }
 
-            StructureSize = sizeof (DMA_RESOURCE) +
-                                RESOURCE_LENGTH_NO_DATA +
+            StructureSize = SIZEOF_RESOURCE (ACPI_RESOURCE_DMA) +
                                 (NumberOfChannels * sizeof (UINT32));
             break;
 
@@ -749,9 +736,7 @@ AcpiRsCalculateListLength (
                 BytesConsumed = 1;
             }
 
-
-            StructureSize = sizeof (START_DEPENDENT_FUNCTIONS_RESOURCE) +
-                                RESOURCE_LENGTH_NO_DATA;
+            StructureSize = SIZEOF_RESOURCE (ACPI_RESOURCE_START_DPF);
             break;
 
 
@@ -760,7 +745,7 @@ AcpiRsCalculateListLength (
              * End Dependent Functions Resource
              */
             BytesConsumed = 1;
-            StructureSize = RESOURCE_LENGTH;
+            StructureSize = ACPI_RESOURCE_LENGTH;
             break;
 
 
@@ -769,8 +754,7 @@ AcpiRsCalculateListLength (
              * IO Port Resource
              */
             BytesConsumed = 8;
-            StructureSize = sizeof (IO_RESOURCE) +
-                                RESOURCE_LENGTH_NO_DATA;
+            StructureSize = SIZEOF_RESOURCE (ACPI_RESOURCE_IO);
             break;
 
 
@@ -779,8 +763,7 @@ AcpiRsCalculateListLength (
              * Fixed IO Port Resource
              */
             BytesConsumed = 4;
-            StructureSize = sizeof (FIXED_IO_RESOURCE) +
-                                RESOURCE_LENGTH_NO_DATA;
+            StructureSize = SIZEOF_RESOURCE (ACPI_RESOURCE_FIXED_IO);
             break;
 
 
@@ -798,8 +781,7 @@ AcpiRsCalculateListLength (
              * Ensure a 32-bit boundary for the structure
              */
             Temp8 = (UINT8) ROUND_UP_TO_32BITS (Temp8);
-            StructureSize = sizeof (VENDOR_RESOURCE) +
-                                RESOURCE_LENGTH_NO_DATA +
+            StructureSize = SIZEOF_RESOURCE (ACPI_RESOURCE_VENDOR) +
                                 (Temp8 * sizeof (UINT8));
             break;
 
@@ -809,7 +791,7 @@ AcpiRsCalculateListLength (
              * End Tag
              */
             BytesConsumed = 2;
-            StructureSize = RESOURCE_LENGTH;
+            StructureSize = ACPI_RESOURCE_LENGTH;
             ByteStreamBufferLength = BytesParsed;
             break;
 
@@ -819,7 +801,7 @@ AcpiRsCalculateListLength (
              * If we get here, everything is out of sync,
              *  so exit with an error
              */
-            return_ACPI_STATUS (AE_AML_ERROR);
+            return_ACPI_STATUS (AE_AML_INVALID_RESOURCE_TYPE);
             break;
         }
 
@@ -841,7 +823,6 @@ AcpiRsCalculateListLength (
      * This is the data the caller needs
      */
     *SizeNeeded = BufferSize;
-
     return_ACPI_STATUS (AE_OK);
 }
 
@@ -855,7 +836,7 @@ AcpiRsCalculateListLength (
  *                                        needed to properly return the
  *                                        parsed data
  *
- * RETURN:      Status  AE_OK
+ * RETURN:      Status
  *
  * DESCRIPTION: Given a package representing a PCI routing table, this
  *              calculates the size of the corresponding linked list of
@@ -889,9 +870,7 @@ AcpiRsCalculatePciRoutingTableLength (
      * structures.  Additional space for the strings is added below.
      * The minus one is to subtract the size of the UINT8 Source[1]
      * member because it is added below.
-     */
-
-    /*
+     *
      * But each PRT_ENTRY structure has a pointer to a string and
      * the size of that string must be found.
      */
@@ -948,6 +927,7 @@ AcpiRsCalculatePciRoutingTableLength (
                  */
                 TempSizeNeeded += (*SubObjectList)->String.Length;
             }
+
             else
             {
                 TempSizeNeeded += AcpiNsGetPathnameLength (
@@ -961,9 +941,8 @@ AcpiRsCalculatePciRoutingTableLength (
              * If no name was found, then this is a NULL, which is
              * translated as a UINT32 zero.
              */
-            TempSizeNeeded += sizeof(UINT32);
+            TempSizeNeeded += sizeof (UINT32);
         }
-
 
         /* Round up the size since each element must be aligned */
 
@@ -980,6 +959,5 @@ AcpiRsCalculatePciRoutingTableLength (
      * Adding an extra element to the end of the list, essentially a NULL terminator
      */
     *BufferSizeNeeded = TempSizeNeeded + sizeof (PCI_ROUTING_TABLE);
-
     return_ACPI_STATUS (AE_OK);
 }

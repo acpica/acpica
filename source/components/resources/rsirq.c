@@ -1,10 +1,7 @@
 /*******************************************************************************
  *
- * Module Name: rsirq - AcpiRsIrqResource,
- *                      AcpiRsIrqStream
- *                      AcpiRsExtendedIrqResource
- *                      AcpiRsExtendedIrqStream
- *              $Revision: 1.16 $
+ * Module Name: rsirq - IRQ resource descriptors
+ *              $Revision: 1.17 $
  *
  ******************************************************************************/
 
@@ -140,7 +137,7 @@
  *                                        the number of bytes in the filled
  *                                        in structure
  *
- * RETURN:      Status  AE_OK if okay, else a valid ACPI_STATUS code
+ * RETURN:      Status
  *
  * DESCRIPTION: Take the resource byte stream and fill out the appropriate
  *              structure pointed to by the OutputBuffer.  Return the
@@ -156,13 +153,12 @@ AcpiRsIrqResource (
     UINT32                  *StructureSize)
 {
     UINT8                   *Buffer = ByteStreamBuffer;
-    RESOURCE                *OutputStruct = (RESOURCE *) * OutputBuffer;
+    ACPI_RESOURCE           *OutputStruct = (ACPI_RESOURCE *) *OutputBuffer;
     UINT16                  Temp16 = 0;
     UINT8                   Temp8 = 0;
     UINT8                   Index;
     UINT8                   i;
-    UINT32                  StructSize = sizeof (IRQ_RESOURCE) +
-                                         RESOURCE_LENGTH_NO_DATA;
+    UINT32                  StructSize = SIZEOF_RESOURCE (ACPI_RESOURCE_IRQ);
 
 
     FUNCTION_TRACE ("RsIrqResource");
@@ -174,7 +170,7 @@ AcpiRsIrqResource (
      */
     Temp8 = *Buffer;
     *BytesConsumed = (Temp8 & 0x03) + 1;
-    OutputStruct->Id = Irq;
+    OutputStruct->Id = ACPI_RSTYPE_IRQ;
 
     /*
      * Point to the 16-bits of Bytes 1 and 2
@@ -263,7 +259,6 @@ AcpiRsIrqResource (
      * Return the final size of the structure
      */
     *StructureSize = StructSize;
-
     return_ACPI_STATUS (AE_OK);
 }
 
@@ -278,7 +273,7 @@ AcpiRsIrqResource (
  *                                        the number of bytes of the
  *                                        OutputBuffer used
  *
- * RETURN:      Status  AE_OK if okay, else a valid ACPI_STATUS code
+ * RETURN:      Status
  *
  * DESCRIPTION: Take the linked list resource structure and fills in the
  *              the appropriate bytes in a byte stream
@@ -287,7 +282,7 @@ AcpiRsIrqResource (
 
 ACPI_STATUS
 AcpiRsIrqStream (
-    RESOURCE                *LinkedList,
+    ACPI_RESOURCE           *LinkedList,
     UINT8                   **OutputBuffer,
     UINT32                  *BytesConsumed)
 {
@@ -312,6 +307,7 @@ AcpiRsIrqStream (
         *Buffer = 0x22;
         IRQInfoByteNeeded = FALSE;
     }
+
     else
     {
         *Buffer = 0x23;
@@ -362,9 +358,7 @@ AcpiRsIrqStream (
     /*
      * Return the number of bytes consumed in this operation
      */
-    *BytesConsumed = (UINT32) ((NATIVE_UINT) Buffer -
-                               (NATIVE_UINT) *OutputBuffer);
-
+    *BytesConsumed = POINTER_DIFF (Buffer, *OutputBuffer);
     return_ACPI_STATUS (AE_OK);
 }
 
@@ -383,7 +377,7 @@ AcpiRsIrqStream (
  *                                        the number of bytes in the filled
  *                                        in structure
  *
- * RETURN:      Status  AE_OK if okay, else a valid ACPI_STATUS code
+ * RETURN:      Status
  *
  * DESCRIPTION: Take the resource byte stream and fill out the appropriate
  *              structure pointed to by the OutputBuffer.  Return the
@@ -399,13 +393,12 @@ AcpiRsExtendedIrqResource (
     UINT32                  *StructureSize)
 {
     UINT8                   *Buffer = ByteStreamBuffer;
-    RESOURCE                *OutputStruct = (RESOURCE *) * OutputBuffer;
+    ACPI_RESOURCE           *OutputStruct = (ACPI_RESOURCE *) *OutputBuffer;
     UINT16                  Temp16 = 0;
     UINT8                   Temp8 = 0;
     NATIVE_CHAR             *TempPtr;
     UINT8                   Index;
-    UINT32                  StructSize = sizeof (EXTENDED_IRQ_RESOURCE) +
-                                            RESOURCE_LENGTH_NO_DATA;
+    UINT32                  StructSize = SIZEOF_RESOURCE (ACPI_RESOURCE_EXT_IRQ);
 
 
     FUNCTION_TRACE ("RsExtendedIrqResource");
@@ -418,7 +411,7 @@ AcpiRsExtendedIrqResource (
     MOVE_UNALIGNED16_TO_16 (&Temp16, Buffer);
 
     *BytesConsumed = Temp16 + 3;
-    OutputStruct->Id = ExtendedIrq;
+    OutputStruct->Id = ACPI_RSTYPE_EXT_IRQ;
 
     /*
      * Point to the Byte3
@@ -459,8 +452,7 @@ AcpiRsExtendedIrqResource (
     /*
      * Check for sharable
      */
-    OutputStruct->Data.ExtendedIrq.SharedExclusive =
-            (Temp8 >> 3) & 0x01;
+    OutputStruct->Data.ExtendedIrq.SharedExclusive = (Temp8 >> 3) & 0x01;
 
     /*
      * Point to Byte4 (IRQ Table length)
@@ -507,8 +499,7 @@ AcpiRsExtendedIrqResource (
         /* Dereference the Index */
 
         Temp8 = *Buffer;
-        OutputStruct->Data.ExtendedIrq.ResourceSource.Index =
-                (UINT32) Temp8;
+        OutputStruct->Data.ExtendedIrq.ResourceSource.Index = (UINT32) Temp8;
 
         /* Point to the String */
 
@@ -549,6 +540,7 @@ AcpiRsExtendedIrqResource (
         Temp8 = (UINT8) (Index + 1);
         StructSize += ROUND_UP_TO_32BITS (Temp8);
     }
+
     else
     {
         OutputStruct->Data.ExtendedIrq.ResourceSource.Index = 0x00;
@@ -565,7 +557,6 @@ AcpiRsExtendedIrqResource (
      * Return the final size of the structure
      */
     *StructureSize = StructSize;
-
     return_ACPI_STATUS (AE_OK);
 }
 
@@ -580,7 +571,7 @@ AcpiRsExtendedIrqResource (
  *                                        the number of bytes of the
  *                                        OutputBuffer used
  *
- * RETURN:      Status  AE_OK if okay, else a valid ACPI_STATUS code
+ * RETURN:      Status
  *
  * DESCRIPTION: Take the linked list resource structure and fills in the
  *              the appropriate bytes in a byte stream
@@ -589,7 +580,7 @@ AcpiRsExtendedIrqResource (
 
 ACPI_STATUS
 AcpiRsExtendedIrqStream (
-    RESOURCE                *LinkedList,
+    ACPI_RESOURCE           *LinkedList,
     UINT8                   **OutputBuffer,
     UINT32                  *BytesConsumed)
 {
@@ -619,7 +610,6 @@ AcpiRsExtendedIrqStream (
      * Set the Interrupt vector flags
      */
     Temp8 = (UINT8)(LinkedList->Data.ExtendedIrq.ProducerConsumer & 0x01);
-
     Temp8 |= ((LinkedList->Data.ExtendedIrq.SharedExclusive & 0x01) << 3);
 
     if (LEVEL_SENSITIVE == LinkedList->Data.ExtendedIrq.EdgeLevel &&
@@ -677,15 +667,13 @@ AcpiRsExtendedIrqStream (
     /*
      * Return the number of bytes consumed in this operation
      */
-    *BytesConsumed = (UINT32) ((NATIVE_UINT) Buffer -
-                               (NATIVE_UINT) *OutputBuffer);
+    *BytesConsumed = POINTER_DIFF (Buffer, *OutputBuffer);
 
     /*
      * Set the length field to the number of bytes consumed
      * minus the header size (3 bytes)
      */
     *LengthField = (UINT16) (*BytesConsumed - 3);
-
     return_ACPI_STATUS (AE_OK);
 }
 
