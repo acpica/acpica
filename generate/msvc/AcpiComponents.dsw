@@ -47,6 +47,10 @@ Project: "app"=..\..\Test\app\Wdm\app.dsp - Package Owner=<4>
 
 Package=<5>
 {{{
+    begin source code control
+    "$/Acpi Components/test/app/wdm", GECAAAAA
+    ..\..\test\app\wdm
+    end source code control
 }}}
 
 Package=<4>
