@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: tbinstal - ACPI table installation and removal
- *              $Revision: 1.49 $
+ *              $Revision: 1.51 $
  *
  *****************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -173,9 +173,8 @@ AcpiTbMatchSignature (
         }
     }
 
-    return_ACPI_STATUS (AE_NOT_FOUND);
+    return_ACPI_STATUS (AE_TABLE_NOT_SUPPORTED);
 }
-
 
 
 /*******************************************************************************
@@ -336,7 +335,6 @@ AcpiTbInitTableDescriptor (
     ListHead    = &AcpiGbl_AcpiTables[TableType];
     TableDesc   = ListHead;
 
-
     /*
      * Two major types of tables:  1) Only one instance is allowed.  This
      * includes most ACPI tables such as the DSDT.  2) Multiple instances of
@@ -355,8 +353,6 @@ AcpiTbInitTableDescriptor (
 
         TableDesc->Count = 1;
     }
-
-
     else
     {
         /*
@@ -386,16 +382,15 @@ AcpiTbInitTableDescriptor (
 
             ListHead->Prev = TableDesc;
         }
-
         else
         {
             TableDesc->Count = 1;
         }
     }
 
-
     /* Common initialization of the table descriptor */
 
+    TableDesc->Type                 = TableInfo->Type;
     TableDesc->Pointer              = TableInfo->Pointer;
     TableDesc->BasePointer          = TableInfo->BasePointer;
     TableDesc->Length               = TableInfo->Length;
@@ -414,7 +409,6 @@ AcpiTbInitTableDescriptor (
     {
         *(AcpiGbl_AcpiTableData[TableType].GlobalPtr) = TableInfo->Pointer;
     }
-
 
     /* Return Data */
 
@@ -451,7 +445,6 @@ AcpiTbDeleteAcpiTables (void)
     {
         AcpiTbDeleteAcpiTable (Type);
     }
-
 }
 
 
@@ -472,6 +465,7 @@ void
 AcpiTbDeleteAcpiTable (
     ACPI_TABLE_TYPE             Type)
 {
+
     FUNCTION_TRACE_U32 ("TbDeleteAcpiTable", Type);
 
 
@@ -480,13 +474,11 @@ AcpiTbDeleteAcpiTable (
         return_VOID;
     }
 
-
     AcpiUtAcquireMutex (ACPI_MTX_TABLES);
 
     /* Free the table */
 
     AcpiTbFreeAcpiTablesOfType (&AcpiGbl_AcpiTables[Type]);
-
 
     /* Clear the appropriate "typed" global table pointer */
 
@@ -519,7 +511,6 @@ AcpiTbDeleteAcpiTable (
     }
 
     AcpiUtReleaseMutex (ACPI_MTX_TABLES);
-
     return_VOID;
 }
 
@@ -596,16 +587,13 @@ AcpiTbDeleteSingleTable (
 
         switch (TableDesc->Allocation)
         {
-
         case ACPI_MEM_NOT_ALLOCATED:
             break;
-
 
         case ACPI_MEM_ALLOCATED:
 
             ACPI_MEM_FREE (TableDesc->BasePointer);
             break;
-
 
         case ACPI_MEM_MAPPED:
 
@@ -645,7 +633,6 @@ AcpiTbUninstallTable (
         return_PTR (NULL);
     }
 
-
     /* Unlink the descriptor */
 
     if (TableDesc->Prev)
@@ -658,17 +645,14 @@ AcpiTbUninstallTable (
         TableDesc->Next->Prev = TableDesc->Prev;
     }
 
-
     /* Free the memory allocated for the table itself */
 
     AcpiTbDeleteSingleTable (TableDesc);
-
 
     /* Free the table descriptor (Don't delete the list head, tho) */
 
     if ((TableDesc->Prev) == (TableDesc->Next))
     {
-
         NextDesc = NULL;
 
         /* Clear the list head */
@@ -676,9 +660,7 @@ AcpiTbUninstallTable (
         TableDesc->Pointer   = NULL;
         TableDesc->Length    = 0;
         TableDesc->Count     = 0;
-
     }
-
     else
     {
         /* Free the table descriptor */
@@ -686,7 +668,6 @@ AcpiTbUninstallTable (
         NextDesc = TableDesc->Next;
         ACPI_MEM_FREE (TableDesc);
     }
-
 
     return_PTR (NextDesc);
 }

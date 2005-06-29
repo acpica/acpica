@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: tbutils - Table manipulation utilities
- *              $Revision: 1.42 $
+ *              $Revision: 1.47 $
  *
  *****************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -174,87 +174,6 @@ AcpiTbHandleToObject (
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiTbSystemTablePointer
- *
- * PARAMETERS:  *Where              - Pointer to be examined
- *
- * RETURN:      TRUE if Where is within the AML stream (in one of the ACPI
- *              system tables such as the DSDT or an SSDT.)
- *              FALSE otherwise
- *
- ******************************************************************************/
-
-BOOLEAN
-AcpiTbSystemTablePointer (
-    void                    *Where)
-{
-    UINT32                  i;
-    ACPI_TABLE_DESC         *TableDesc;
-    ACPI_TABLE_HEADER       *Table;
-
-
-    /* No function trace, called too often! */
-
-
-    /* Ignore null pointer */
-
-    if (!Where)
-    {
-        return (FALSE);
-    }
-
-
-    /* Check for a pointer within the DSDT */
-
-    if ((AcpiGbl_DSDT) &&
-        (IS_IN_ACPI_TABLE (Where, AcpiGbl_DSDT)))
-    {
-        return (TRUE);
-    }
-
-
-    /* Check each of the loaded SSDTs (if any)*/
-
-    TableDesc = &AcpiGbl_AcpiTables[ACPI_TABLE_SSDT];
-
-    for (i = 0; i < AcpiGbl_AcpiTables[ACPI_TABLE_SSDT].Count; i++)
-    {
-        Table = TableDesc->Pointer;
-
-        if (IS_IN_ACPI_TABLE (Where, Table))
-        {
-            return (TRUE);
-        }
-
-        TableDesc = TableDesc->Next;
-    }
-
-
-    /* Check each of the loaded PSDTs (if any)*/
-
-    TableDesc = &AcpiGbl_AcpiTables[ACPI_TABLE_PSDT];
-
-    for (i = 0; i < AcpiGbl_AcpiTables[ACPI_TABLE_PSDT].Count; i++)
-    {
-        Table = TableDesc->Pointer;
-
-        if (IS_IN_ACPI_TABLE (Where, Table))
-        {
-            return (TRUE);
-        }
-
-        TableDesc = TableDesc->Next;
-    }
-
-
-    /* Pointer does not point into any system table */
-
-    return (FALSE);
-}
-
-
-/*******************************************************************************
- *
  * FUNCTION:    AcpiTbValidateTableHeader
  *
  * PARAMETERS:  TableHeader         - Logical pointer to the table
@@ -302,7 +221,7 @@ AcpiTbValidateTableHeader (
             "Table signature at %p [%p] has invalid characters\n",
             TableHeader, &Signature));
 
-        REPORT_WARNING (("Invalid table signature %4.4s found\n", (char*)&Signature));
+        REPORT_WARNING (("Invalid table signature %4.4s found\n", (char *) &Signature));
         DUMP_BUFFER (TableHeader, sizeof (ACPI_TABLE_HEADER));
         return (AE_BAD_SIGNATURE);
     }
@@ -314,9 +233,9 @@ AcpiTbValidateTableHeader (
     {
         ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
             "Invalid length in table header %p name %4.4s\n",
-            TableHeader, (char*)&Signature));
+            TableHeader, (char *) &Signature));
 
-        REPORT_WARNING (("Invalid table header length found\n"));
+        REPORT_WARNING (("Invalid table header length (0x%X) found\n", TableHeader->Length));
         DUMP_BUFFER (TableHeader, sizeof (ACPI_TABLE_HEADER));
         return (AE_BAD_HEADER);
     }
@@ -443,7 +362,7 @@ AcpiTbVerifyTableChecksum (
     if (Checksum)
     {
         REPORT_WARNING (("Invalid checksum (%X) in table %4.4s\n",
-            Checksum, (char*)&TableHeader->Signature));
+            Checksum, (char *) &TableHeader->Signature));
 
         Status = AE_BAD_CHECKSUM;
     }
