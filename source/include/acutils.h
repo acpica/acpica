@@ -145,12 +145,32 @@ CmTerminate (
 
 
 /*
- * CmInit - miscellaneous initialization
+ * CmInit - miscellaneous initialization and shutdown
  */
 
 ACPI_STATUS
 CmHardwareInitialize (
     void);
+
+ACPI_STATUS
+CmSubsystemShutdown (
+    void);
+
+/*
+ * CmGlobal - Global data structures and procedures
+ */
+
+char *
+CmGetMutexName (
+    UINT32                  MutexId);
+
+char *
+CmGetTypeName (
+    UINT32                  Type);
+
+BOOLEAN
+CmValidObjectType (
+    UINT32                  Type);
 
 
 /* Object construction and conversion interfaces - cmobject */
@@ -276,6 +296,14 @@ ACPI_STATUS
 CmReleaseMutex (
     ACPI_MUTEX_HANDLE       MutexId);
 
+
+/*
+ * CmError - exception interfaces
+ */
+
+char *
+CmFormatException (
+    ACPI_STATUS             Status);
 
 
 /* 
@@ -411,70 +439,76 @@ CmDumpBuffer (
  */
 
 ACPI_SIZE
-_strlen (
+CmStrlen (
     const char              *String);
 
 char *
-_strcpy (
+CmStrcpy (
     char                    *DstString, 
     const char              *SrcString);
 
 char *
-_strncpy (
+CmStrncpy (
     char                    *DstString, 
     const char              *SrcString, 
     ACPI_SIZE               Count);
 
 UINT32
-_strncmp (
+CmStrncmp (
     const char              *String1, 
     const char              *String2, 
     ACPI_SIZE               Count);
 
 UINT32
-_strcmp (
+CmStrcmp (
     const char              *String1, 
     const char              *String2);
 
 char *
-_strcat (
+CmStrcat (
     char                    *DstString,
     const char              *SrcString);
 
 char *
-_strncat (
+CmStrncat (
     char                    *DstString, 
     const char              *SrcString, 
     ACPI_SIZE               Count);
 
 UINT32
-_strtoul (
+CmStrtoul (
     const char              *String, 
     char                    **Terminator, 
     INT32                   Base);
 
 char *
-_strstr (
+CmStrstr (
     char                    *String1,
     char                    *String2);
 
 char *
-__strupr (
+CmStrupr (
     char                    *SrcString);
 
 void *
-_memcpy (
+CmMemcpy (
     void                    *Dest, 
     const void              *Src, 
     ACPI_SIZE               Count);
 
 void *
-_memset (
+CmMemset (
     void                    *Dest,
     INT32                   Value,
     ACPI_SIZE               Count);
 
+INT32
+CmToUpper (
+    INT32                   c);
 
+INT32
+CmToLower (
+    INT32                   c);
 
 
 /*
