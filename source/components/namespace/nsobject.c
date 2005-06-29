@@ -132,30 +132,35 @@
  *
  * FUNCTION:    NsAttachObject
  *
- * PARAMETERS:  handle              - Handle of nte
+ * PARAMETERS:  Handle              - Handle of nte
  *              Object              - Object to be attached
- *              Type                - Type of object, or TYPE_Any if not known
+ *              Type                - Type of object, or ACPI_TYPE_Any if not known
  *
  * DESCRIPTION: Record the given object as the value associated with the
  *              name whose ACPI_HANDLE is passed.  If Object is NULL 
- *              and Type is TYPE_Any, set the name as having no value.
+ *              and Type is ACPI_TYPE_Any, set the name as having no value.
  *
  ***************************************************************************/
 
 ACPI_STATUS
 NsAttachObject (
-    ACPI_HANDLE             handle, 
+    ACPI_HANDLE             Handle, 
     ACPI_HANDLE             Object, 
     UINT8                   Type)
 {
-    NAME_TABLE_ENTRY        *ThisEntry = (NAME_TABLE_ENTRY *) handle;
+    NAME_TABLE_ENTRY        *ThisEntry = (NAME_TABLE_ENTRY *) Handle;
     ACPI_OBJECT_INTERNAL    *ObjDesc;
     ACPI_OBJECT_INTERNAL    *PreviousObjDesc;
-    ACPI_OBJECT_TYPE        ObjType = TYPE_Any;
+    ACPI_OBJECT_TYPE        ObjType = ACPI_TYPE_Any;
+    UINT8                   Flags;
 
 
     FUNCTION_TRACE ("NsAttachObject");
 
+
+    /*
+     * Parameter validation
+     */
 
     if (!Gbl_RootObject->Scope)
     {
@@ -165,7 +170,7 @@ NsAttachObject (
         return_ACPI_STATUS (AE_NO_NAMESPACE);
     }
     
-    if (!handle)
+    if (!Handle)
     {
         /* Invalid handle */
 
@@ -173,15 +178,15 @@ NsAttachObject (
         return_ACPI_STATUS (AE_BAD_PARAMETER);
     }
     
-    if (!Object && (TYPE_Any != Type))
+    if (!Object && (ACPI_TYPE_Any != Type))
     {
         /* Null object */
 
-        REPORT_ERROR ("NsAttachObject: Null object, but type not TYPE_Any");
+        REPORT_ERROR ("NsAttachObject: Null object, but type not ACPI_TYPE_Any");
         return_ACPI_STATUS (AE_BAD_PARAMETER);
     }
     
-    if (!IS_NS_HANDLE (handle))
+    if (!IS_NS_HANDLE (Handle))
     {
         /* Not a name handle */
 
@@ -194,12 +199,16 @@ NsAttachObject (
     if (ThisEntry->Object == Object)
     {
         DEBUG_PRINT (TRACE_EXEC,("NsAttachObject: Obj %p already installed in NTE %p\n",
-                        Object, handle));
+                        Object, Handle));
     
         return_ACPI_STATUS (AE_OK);
     }
 
 
+    /* Get the current flags field of the NTE */
+
+    Flags = ThisEntry->Flags;
+    Flags &= ~NTE_AML_ATTACHMENT;
 
     /*
      * If the object is an NTE with an attached object, we will use that object
@@ -215,6 +224,15 @@ NsAttachObject (
 
         ObjDesc = ((NAME_TABLE_ENTRY *) Object)->Object;
         ObjType = ((NAME_TABLE_ENTRY *) Object)->Type;
+
+        /*
+         * Copy appropriate flags
+         */
+
+        if (((NAME_TABLE_ENTRY *) Object)->Flags & NTE_AML_ATTACHMENT)
+        {
+            Flags |= NTE_AML_ATTACHMENT;
+        }
     }
 
 
@@ -229,14 +247,14 @@ NsAttachObject (
 
         /* Set the type if given, or if it can be discerned */
 
-        if (TYPE_Any != Type)
+        if (ACPI_TYPE_Any != Type)
         {
             ObjType = (ACPI_OBJECT_TYPE) Type;
         }
 
         else if (!Object)
         {
-            ObjType = TYPE_Any;
+            ObjType = ACPI_TYPE_Any;
         }
 
         /*
@@ -244,8 +262,13 @@ NsAttachObject (
          */
         else if (NsIsInSystemTable (Object))
         {
-            /* Object points into the AML stream.  Check for a recognized OpCode */
+            /* Object points into the AML stream.  Set a flag bit in the NTE to indicate this */
     
+            Flags |= NTE_AML_ATTACHMENT;
+
+
+            /* Check for a recognized OpCode */
+
             switch (*(UINT8 *) Object)
             {
 
@@ -264,35 +287,40 @@ NsAttachObject (
             case AML_ZeroOp: case AML_OnesOp: case AML_OneOp:
             case AML_ByteOp: case AML_WordOp: case AML_DWordOp:
 
-                ObjType = TYPE_Number;
+                ObjType = ACPI_TYPE_Number;
                 break;
 
 
             case AML_StringOp:
 
-                ObjType = TYPE_String;
+                ObjType = ACPI_TYPE_String;
                 break;
 
 
             case AML_BufferOp:
 
-                ObjType = TYPE_Buffer;
+                ObjType = ACPI_TYPE_Buffer;
                 break;
 
 
             case AML_MutexOp:
 
-                ObjType = TYPE_Mutex;
+                ObjType = ACPI_TYPE_Mutex;
                 break;
 
 
             case AML_PackageOp:
 
-                ObjType = TYPE_Package;
+                ObjType = ACPI_TYPE_Package;
                 break;
 
 
             default:
+
+                DEBUG_PRINT (ACPI_ERROR, ("AML Opcode/Type [%x] not supported in attach\n",
+                               *(UINT16 *) Object));
+
+                return_ACPI_STATUS (AE_AML_ERROR);
 
                 break;
             }
@@ -307,7 +335,7 @@ NsAttachObject (
 
             if (GetDebugLevel () > 0)
             {
-                NsDumpPathname (handle, "NsAttachObject confused: setting bogus type for  ", 
+                NsDumpPathname (Handle, "NsAttachObject confused: setting bogus type for  ", 
                                 ACPI_INFO, _COMPONENT);
 
                 if (NsIsInSystemTable (Object))
@@ -328,15 +356,14 @@ NsAttachObject (
                 }
             }
 
-            ObjType = TYPE_DefAny;
+            ObjType = INTERNAL_TYPE_DefAny;
         }
     }
 
 
 
-
     DEBUG_PRINT (TRACE_EXEC,("NsAttachObject: Installing obj %p into NTE %p\n",
-                    ObjDesc, handle));
+                    ObjDesc, Handle));
     
 
     /* Must increment the new value's reference count (if it is an internal object) */
@@ -349,10 +376,11 @@ NsAttachObject (
 
         PreviousObjDesc = ThisEntry->Object;
 
-        /* Install the object and set the type */
+        /* Install the object and set the type, flags */
 
         ThisEntry->Object = ObjDesc;
         ThisEntry->Type = ObjType;
+        ThisEntry->Flags = Flags;
     }
     CmReleaseMutex (MTX_NAMESPACE);
 
@@ -419,7 +447,7 @@ NsAttachMethod (
     
     /* Allocate a method descriptor */
 
-    ObjDesc = CmCreateInternalObject (TYPE_Method);
+    ObjDesc = CmCreateInternalObject (ACPI_TYPE_Method);
     if (!ObjDesc)
     {
         /* Method allocation failure  */
@@ -531,12 +559,12 @@ NsDetachObject (
 
 void *
 NsGetAttachedObject (
-    ACPI_HANDLE             handle)
+    ACPI_HANDLE             Handle)
 {
-    FUNCTION_TRACE_PTR ("NsGetAttachedObject", handle);
+    FUNCTION_TRACE_PTR ("NsGetAttachedObject", Handle);
 
 
-    if (!handle)
+    if (!Handle)
     {
         /* handle invalid */
 
@@ -544,7 +572,7 @@ NsGetAttachedObject (
         return_VALUE (NULL);
     }
 
-    return_VALUE (((NAME_TABLE_ENTRY *) handle)->Object);
+    return_VALUE (((NAME_TABLE_ENTRY *) Handle)->Object);
 }
 
 
@@ -680,7 +708,7 @@ NsFindAttachedObject (
      * Either the matching object is returned, or NULL in case
      * of no match.
      */
-    Status = AcpiWalkNamespace (TYPE_Any, StartHandle, MaxDepth, NsCompareObject, 
+    Status = AcpiWalkNamespace (ACPI_TYPE_Any, StartHandle, MaxDepth, NsCompareObject, 
                                 ObjDesc, &RetObject);
     if (ACPI_FAILURE (Status))
     {

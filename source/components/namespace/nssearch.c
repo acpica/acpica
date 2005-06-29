@@ -146,7 +146,7 @@
 
 ACPI_STATUS
 NsSearchOnly (
-    char                    *EntryName, 
+    UINT32                  EntryName, 
     NAME_TABLE_ENTRY        *NameTable, 
     ACPI_OBJECT_TYPE        Type, 
     NAME_TABLE_ENTRY        **RetEntry, 
@@ -165,7 +165,7 @@ NsSearchOnly (
         DEBUG_PRINT (TRACE_NAMES, ("NsSearchOnly: Searching %s [%p]\n",
                             ScopeName, NameTable));
         DEBUG_PRINT (TRACE_NAMES, ("NsSearchOnly: For %4.4s (type %d)\n",
-                            EntryName, Type));
+                            &EntryName, Type));
         DEBUG_EXEC (CmFree (ScopeName));
     }
 
@@ -202,7 +202,7 @@ NsSearchOnly (
     {
         /* Search for name in table */
 
-        if (NameTable[Position].Name == *(UINT32 *) EntryName)
+        if (NameTable[Position].Name == EntryName)
         {
             /* 
              * Found matching entry.  Capture type if appropriate before
@@ -214,9 +214,10 @@ NsSearchOnly (
              * looking up the Region in which the field will be defined
              */
 
-            if (TYPE_DefFieldDefn == Type || TYPE_BankFieldDefn == Type)
+            if ((INTERNAL_TYPE_DefFieldDefn == Type) || 
+                (INTERNAL_TYPE_BankFieldDefn == Type))
             {
-                Type = TYPE_Region;
+                Type = ACPI_TYPE_Region;
             }
 
             /* 
@@ -226,16 +227,16 @@ NsSearchOnly (
              * stored in the entry is Any (i.e. unknown), save the actual type.
              */
 
-            if (Type != TYPE_Scope && 
-                Type != TYPE_DefAny &&
-                Type != TYPE_IndexFieldDefn && 
-                NameTable[Position].Type == TYPE_Any)
+            if (Type != INTERNAL_TYPE_Scope && 
+                Type != INTERNAL_TYPE_DefAny &&
+                Type != INTERNAL_TYPE_IndexFieldDefn && 
+                NameTable[Position].Type == ACPI_TYPE_Any)
             {
                 NameTable[Position].Type = Type;
             }
 
             DEBUG_PRINT (TRACE_NAMES, ("NsSearchOnly: Name %4.4s (actual type %d) found at %p\n", 
-                            EntryName, NameTable[Position].Type, &NameTable[Position]));
+                            &EntryName, NameTable[Position].Type, &NameTable[Position]));
             
             *RetEntry = &NameTable[Position];
             return_ACPI_STATUS (AE_OK);
@@ -275,7 +276,7 @@ NsSearchOnly (
     /* Searched entire table, not found */
 
     DEBUG_PRINT (TRACE_NAMES, ("NsSearchOnly: Name %4.4s (type %d) not found at %p\n", 
-                                EntryName, Type, &NameTable[Position]));
+                                &EntryName, Type, &NameTable[Position]));
 
 
     if (RetInfo)
@@ -319,7 +320,7 @@ NsSearchOnly (
 
 ACPI_STATUS
 NsSearchParentTree (
-    char                    *EntryName, 
+    UINT32                  EntryName, 
     NAME_TABLE_ENTRY        *NameTable, 
     ACPI_OBJECT_TYPE        Type, 
     NAME_TABLE_ENTRY        **RetEntry)
@@ -342,16 +343,17 @@ NsSearchParentTree (
         NameTable[0].ParentScope)
     {
         ParentScope = NameTable[0].ParentScope;
-        DEBUG_PRINT (TRACE_NAMES, ("NsSearchParentTree: Searching parent for %.4s\n", EntryName));
+        DEBUG_PRINT (TRACE_NAMES, ("NsSearchParentTree: Searching parent for %4.4s\n", 
+                                    &EntryName));
 
         /* Search parents until found or we have backed up to the root */
 
         while (ParentScope)
         {
             /* Search parent scope */
-            /* TBD: Why TYPE_Any? */
+            /* TBD: Why ACPI_TYPE_Any? */
 
-            Status = NsSearchOnly (EntryName, ParentScope, TYPE_Any, RetEntry, NULL);
+            Status = NsSearchOnly (EntryName, ParentScope, ACPI_TYPE_Any, RetEntry, NULL);
             if (Status == AE_OK)
             {
                 return_ACPI_STATUS (Status);
@@ -373,13 +375,14 @@ NsSearchParentTree (
 
         if (!NameTable[0].ParentScope)
         {
-            DEBUG_PRINT (TRACE_NAMES, ("NsSearchParentTree: [%.4s] has no parent\n", EntryName));
+            DEBUG_PRINT (TRACE_NAMES, ("NsSearchParentTree: [%4.4s] has no parent\n", 
+                                        &EntryName));
         }
 
         else if (NsLocal (Type))
         {
-            DEBUG_PRINT (TRACE_NAMES, ("NsSearchParentTree: [%.4s] (type %d) is local (no search)\n", 
-                                        EntryName, Type));
+            DEBUG_PRINT (TRACE_NAMES, ("NsSearchParentTree: [%4.4s] (type %d) is local (no search)\n", 
+                                        &EntryName, Type));
         }
     }
 
@@ -516,7 +519,7 @@ void
 NsInitializeEntry (
     NAME_TABLE_ENTRY        *NameTable, 
     UINT32                  Position, 
-    char                    *EntryName, 
+    UINT32                  EntryName, 
     ACPI_OBJECT_TYPE        Type, 
     NAME_TABLE_ENTRY        *PreviousEntry)
 {
@@ -530,7 +533,8 @@ NsInitializeEntry (
     
     /*  first or second pass load mode, NameTable valid   */
 
-    NewEntry->Name          = *(UINT32 *) EntryName;
+    NewEntry->DataType      = DESC_TYPE_NTE;
+    NewEntry->Name          = EntryName;
     NewEntry->ParentScope   = NameTable[0].ParentScope;
     NewEntry->ParentEntry   = NameTable[0].ParentEntry;
 
@@ -553,9 +557,9 @@ NsInitializeEntry (
      * order to define fields in it, we have a forward reference.
      */
 
-    if ((TYPE_Any == Type) || 
-        (TYPE_DefFieldDefn == Type) || 
-        (TYPE_BankFieldDefn == Type))
+    if ((ACPI_TYPE_Any == Type) || 
+        (INTERNAL_TYPE_DefFieldDefn == Type) || 
+        (INTERNAL_TYPE_BankFieldDefn == Type))
     {
         /* 
          * We don't want to abort here, however!
@@ -564,7 +568,7 @@ NsInitializeEntry (
          */
 
         DEBUG_PRINT (ACPI_INFO, ("[%4.4s] is a forward reference into the namespace\n",
-                        EntryName));
+                        &EntryName));
 
     }
 
@@ -573,9 +577,10 @@ NsInitializeEntry (
      * looking up the Region in which the field will be defined
      */
 
-    if ((TYPE_DefFieldDefn == Type) || (TYPE_BankFieldDefn == Type))
+    if ((INTERNAL_TYPE_DefFieldDefn == Type) || 
+        (INTERNAL_TYPE_BankFieldDefn == Type))
     {
-        Type = TYPE_Region;
+        Type = ACPI_TYPE_Region;
     }
 
     /* 
@@ -585,15 +590,15 @@ NsInitializeEntry (
      * the entry.
      */
 
-    if ((Type != TYPE_Scope) && 
-        (Type != TYPE_DefAny) && 
-        (Type != TYPE_IndexFieldDefn))
+    if ((Type != INTERNAL_TYPE_Scope) && 
+        (Type != INTERNAL_TYPE_DefAny) && 
+        (Type != INTERNAL_TYPE_IndexFieldDefn))
     {
         NewEntry->Type = Type;
     }
 
-    DEBUG_PRINT (TRACE_NAMES, ("NsInitializeEntry: %.4s added to %p at %p\n", 
-                                EntryName, NameTable, NewEntry));
+    DEBUG_PRINT (TRACE_NAMES, ("NsInitializeEntry: %4.4s added to %p at %p\n", 
+                                &EntryName, NameTable, NewEntry));
     
     return_VOID;
 }
@@ -603,9 +608,9 @@ NsInitializeEntry (
  *
  * FUNCTION:    NsSearchAndEnter
  *
- * PARAMETERS:  *EntryName          - Ascii ACPI name to search for
+ * PARAMETERS:  EntryName           - Ascii ACPI name to search for (4 chars)
  *              *NameTable          - Starting table where search will begin
- *              LoadMode            - Add names only in MODE_Loadx.  Otherwise,
+ *              InterpreterMode     - Add names only in MODE_LoadPassX.  Otherwise,
  *                                    search only.
  *              Type                - Object type to match
  *              **RetEntry          - Where the matched NTE is returned
@@ -617,16 +622,16 @@ NsInitializeEntry (
  *              Type is not Any and the type previously stored in the
  *              entry was Any (i.e. unknown), update the stored type.
  *
- *              In MODE_Exec, search only.
+ *              In IMODE_Execute, search only.
  *              In other modes, search and add if not found.
  *
  ***************************************************************************/
 
 ACPI_STATUS
 NsSearchAndEnter (
-    char                    *EntryName, 
+    UINT32                  EntryName, 
     NAME_TABLE_ENTRY        *NameTable,
-    OPERATING_MODE          LoadMode, 
+    OPERATING_MODE          InterpreterMode, 
     ACPI_OBJECT_TYPE        Type, 
     UINT32                  Flags,
     NAME_TABLE_ENTRY        **RetEntry)
@@ -650,13 +655,10 @@ NsSearchAndEnter (
 
     /* Name must consist of printable characters */
 
-    if (!AmlGoodChar ((INT32) EntryName[0]) || 
-        !AmlGoodChar ((INT32) EntryName[1]) || 
-        !AmlGoodChar ((INT32) EntryName[2]) || 
-        !AmlGoodChar ((INT32) EntryName[3]))
+    if (!AmlGoodName (EntryName))
     {
-        DEBUG_PRINT (ACPI_ERROR, ("NsSearchAndEnter:  *** bad name %08lx *** \n", 
-                                    *(UINT32 *) EntryName));
+        DEBUG_PRINT (ACPI_ERROR, ("NsSearchAndEnter:  *** Bad char in name: %08lx *** \n", 
+                                    EntryName));
 
         return_ACPI_STATUS (AE_BAD_CHARACTER);
     }
@@ -682,7 +684,7 @@ NsSearchAndEnter (
      * and during the execution phase.
      */
 
-    if ((LoadMode != MODE_Load1) &&
+    if ((InterpreterMode != IMODE_LoadPass1) &&
         (Flags == NS_SEARCH_PARENT))
     {
         /* Not found in table - search parent tree according to ACPI specification */
@@ -699,10 +701,10 @@ NsSearchAndEnter (
      * In execute mode, just search, never add names.  Exit now.
      */
 
-    if (LoadMode == MODE_Exec)
+    if (InterpreterMode == IMODE_Execute)
     {
-        DEBUG_PRINT (TRACE_NAMES, ("NsSearchAndEnter: %.4s Not found in %p [Not adding]\n", 
-                                    EntryName, NameTable));
+        DEBUG_PRINT (TRACE_NAMES, ("NsSearchAndEnter: %4.4s Not found in %p [Not adding]\n", 
+                                    &EntryName, NameTable));
     
         return_ACPI_STATUS (AE_NOT_FOUND);
     }

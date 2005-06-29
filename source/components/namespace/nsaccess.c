@@ -182,7 +182,7 @@ NsSetup (void)
     /* Push the root name table on the scope stack */
     
     Gbl_ScopeStack[0].Scope = Gbl_RootObject->Scope;
-    Gbl_ScopeStack[0].Type = TYPE_Any;
+    Gbl_ScopeStack[0].Type = ACPI_TYPE_Any;
     Gbl_CurrentScope = &Gbl_ScopeStack[0];
 
     /* Enter the pre-defined names in the name table */
@@ -217,12 +217,12 @@ NsSetup (void)
             switch (InitVal->Type)
             {
 
-            case TYPE_Number:
+            case ACPI_TYPE_Number:
                 ObjDesc->Number.Value = (UINT32) strtoul (InitVal->Val, NULL, 10);
                 break;
 
 
-            case TYPE_String:
+            case ACPI_TYPE_String:
                 ObjDesc->String.Length = (UINT16) strlen (InitVal->Val);
 
                 /* 
@@ -241,7 +241,7 @@ NsSetup (void)
                 break;
 
 
-            case TYPE_Mutex:
+            case ACPI_TYPE_Mutex:
                 ObjDesc->Mutex.SyncLevel = (UINT16) strtoul (InitVal->Val, NULL, 10);
                 ObjDesc->Mutex.Semaphore = 0;
                 ObjDesc->Mutex.LockCount = 0;
@@ -336,9 +336,10 @@ NsLookup (
 
     /* DefFieldDefn and BankFieldDefn define fields in a Region */
 
-    if (TYPE_DefFieldDefn == Type || TYPE_BankFieldDefn == Type)
+    if (INTERNAL_TYPE_DefFieldDefn == Type ||
+        INTERNAL_TYPE_BankFieldDefn == Type)
     {
-        TypeToCheckFor = TYPE_Region;
+        TypeToCheckFor = ACPI_TYPE_Region;
     }
     else
     {
@@ -469,7 +470,7 @@ NsLookup (
          */
 
         Status = NsSearchAndEnter (*(UINT32 *) Name, EntryToSearch, InterpreterMode,
-                                    NumSegments == 0 ? Type : TYPE_Any, Flags, &ThisEntry);
+                                    NumSegments == 0 ? Type : ACPI_TYPE_Any, Flags, &ThisEntry);
         if (Status != AE_OK)
         {
             if (Status == AE_NOT_FOUND)
@@ -491,14 +492,14 @@ NsLookup (
             return_ACPI_STATUS (Status);
         }
 
-        if (NumSegments         == 0  &&                    /* If last segment                  */
-            TypeToCheckFor      != TYPE_Any &&              /* and looking for a specific type  */
-            TypeToCheckFor      != TYPE_DefAny &&           /* which is not a phoney type       */
-            TypeToCheckFor      != TYPE_Scope &&            /*   "   "   "  "   "     "         */
-            TypeToCheckFor      != TYPE_IndexFieldDefn &&   /*   "   "   "  "   "     "         */
-            ThisEntry->Type     != TYPE_Any &&              /* and type of entry is known       */
-            ThisEntry->Type     != TypeToCheckFor)          /* and entry does not match request */
-        {                                                   /* complain.                        */
+        if (NumSegments         == 0  &&                            /* If last segment                  */
+            TypeToCheckFor      != ACPI_TYPE_Any &&                 /* and looking for a specific type  */
+            TypeToCheckFor      != INTERNAL_TYPE_DefAny &&          /* which is not a local type        */
+            TypeToCheckFor      != INTERNAL_TYPE_Scope &&           /*   "   "   "  "   "     "         */
+            TypeToCheckFor      != INTERNAL_TYPE_IndexFieldDefn &&  /*   "   "   "  "   "     "         */
+            ThisEntry->Type     != ACPI_TYPE_Any &&                 /* and type of entry is known       */
+            ThisEntry->Type     != TypeToCheckFor)                  /* and entry does not match request */
+        {                                                           /* complain.                        */
             /* Complain about type mismatch */
 
             REPORT_WARNING ("Type mismatch");
@@ -509,7 +510,7 @@ NsLookup (
          * found entry is known, use that type to see if it opens a scope.
          */
 
-        if ((0 == NumSegments) && (TYPE_Any == Type))
+        if ((0 == NumSegments) && (ACPI_TYPE_Any == Type))
         {
             Type = ThisEntry->Type;
         }

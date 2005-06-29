@@ -147,14 +147,14 @@ NsIsInSystemTable (
     ACPI_TABLE_HEADER       *Table;
 
 
-    FUNCTION_TRACE ("NsIsInSystemTable");
+    /* No function trace, called too often! */
 
 
     /* Ignore null pointer */
 
     if (!Where)
     {
-        return_VALUE (FALSE);
+        return (FALSE);
     }
 
 
@@ -162,7 +162,7 @@ NsIsInSystemTable (
 
     if (IS_IN_ACPI_TABLE (Where, Gbl_DSDT))
     {
-        return_VALUE (TRUE);
+        return (TRUE);
     }
 
 
@@ -174,14 +174,9 @@ NsIsInSystemTable (
     {
         Table = TableDesc->Pointer;
 
-
-//        if ((Where >= (void *) (Table + 1)) &&
-//            (Where < (void *) (Table + Table->Length)))
-
-
         if (IS_IN_ACPI_TABLE (Where, Table))
         {
-            return_VALUE (TRUE);
+            return (TRUE);
         }
 
         TableDesc = TableDesc->Next;
@@ -191,7 +186,7 @@ NsIsInSystemTable (
     /* TBD: Need to check the PSDTs? */
 
 
-    return_VALUE (FALSE);
+    return (FALSE);
 }
 
 
@@ -282,7 +277,7 @@ NsDeleteNamespace (void)
     {
         /* Get the next typed object in this scope.  Null returned if not found */
 
-        if (ACPI_SUCCESS (AcpiGetNextObject (TYPE_Any, ParentHandle, ChildHandle, &ChildHandle)))
+        if (ACPI_SUCCESS (AcpiGetNextObject (ACPI_TYPE_Any, ParentHandle, ChildHandle, &ChildHandle)))
         {
             /* Found an object - delete the object within the Value field */
 
@@ -290,7 +285,7 @@ NsDeleteNamespace (void)
 
             /* Check if this object has any children */
 
-            if (ACPI_SUCCESS (AcpiGetNextObject (TYPE_Any, ChildHandle, 0, &Dummy)))
+            if (ACPI_SUCCESS (AcpiGetNextObject (ACPI_TYPE_Any, ChildHandle, 0, &Dummy)))
             {
                 /* There is at least one child of this object, visit the object */
 
@@ -330,9 +325,12 @@ NsDeleteNamespace (void)
         }
     }
 
+    /* Detach any object(s) attached to the root */
+    
+    NsDetachObject (Gbl_RootObject);
+    Gbl_RootObject->Scope = NULL;
 
     REPORT_SUCCESS ("Entire namespace and objects deleted");
-    Gbl_RootObject->Scope = NULL;
 
     return_ACPI_STATUS (AE_OK); 
 }

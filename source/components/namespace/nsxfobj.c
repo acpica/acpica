@@ -315,7 +315,7 @@ Cleanup:
     {
         /* Check if the return object is valid */
 
-        if (ReturnPtr->Type != TYPE_Invalid)
+        if (ReturnPtr->Common.Type != INTERNAL_TYPE_Invalid)
         {
             /*
              *  Find out how large a buffer is needed to contain the
@@ -460,9 +460,10 @@ AcpiGetNextObject (
     }
 
 
+
     /* If any type is OK, we are done */
 
-    if (Type == TYPE_Any)
+    if (Type == ACPI_TYPE_Any)
     {
         /* Make sure this is valid entry first */
 
@@ -476,7 +477,7 @@ AcpiGetNextObject (
             return AE_NOT_FOUND;
         }
 
-        *RetHandle = ThisEntry;
+        *RetHandle = NsConvertEntryToHandle(ThisEntry);
         return AE_OK;
     }
 
@@ -489,7 +490,7 @@ AcpiGetNextObject (
 
         if (ThisEntry->Type == Type)
         {
-            *RetHandle = ThisEntry;
+            *RetHandle = NsConvertEntryToHandle(ThisEntry);
             return AE_OK;
         }
 
@@ -533,7 +534,7 @@ AcpiGetType (
 
     if (Handle == ACPI_ROOT_OBJECT)
     {
-        *RetType = TYPE_Any;
+        *RetType = ACPI_TYPE_Any;
         return AE_OK;
     }
 
@@ -596,7 +597,7 @@ AcpiGetParent (
    
     /* Get the parent entry */
 
-    *RetHandle = Object->ParentEntry;
+    *RetHandle = NsConvertEntryToHandle(Object->ParentEntry);
 
     /* Return exeption if parent is null */
 
@@ -658,7 +659,7 @@ AcpiWalkNamespace (
 
     /* Parameter validation */
 
-    if ((Type > ACPI_TABLE_MAX) ||
+    if ((Type > ACPI_TYPE_MAX) ||
         (!MaxDepth)             || 
         (!UserFunction))
     {
@@ -696,50 +697,40 @@ AcpiWalkNamespace (
     {
         /* Get the next typed object in this scope.  Null returned if not found */
 
-        if (ACPI_SUCCESS (AcpiGetNextObject (Type, ParentHandle, ChildHandle, &ChildHandle))) 
+        if (ACPI_SUCCESS (AcpiGetNextObject (Type, ParentHandle, ChildHandle, &ChildHandle)) &&
+        	0 != (UserReturnVal = UserFunction (ChildHandle, Level, Context)))
         {
-            /* Found an object - process by calling the user function */
+            /* Non-zero from user function means "exit now" */
 
-            if ((UserReturnVal = UserFunction (ChildHandle, Level, Context)) != 0)
+            if (ReturnValue)
             {
-                /* Non-zero from user function means "exit now" */
+                /* Pass return value back to the caller */
 
-                if (ReturnValue)
-                {
-                    /* Pass return value back to the caller */
-
-                    *ReturnValue = UserReturnVal;
-                }
-
-                return_ACPI_STATUS (AE_OK);
+                *ReturnValue = UserReturnVal;
             }
 
-            /* Go down another level in the namespace if we are allowed to */
-
-            if (Level < MaxDepth)
-            {
-                /* Check if this object has any children */
-
-                if (ACPI_SUCCESS (AcpiGetNextObject (Type, ChildHandle, 0, &Dummy)))
-                {
-                    /* There is at least one child of this object, visit the object */
-
-                    Level++;
-                    ParentHandle    = ChildHandle;
-                    ChildHandle     = 0;
-                }
-            }
+            return_ACPI_STATUS (AE_OK);
         }
 
-        else
+        /* Go down another level in the namespace if we are allowed to */
+
+        if (Level < MaxDepth &&
+        	ACPI_SUCCESS (AcpiGetNextObject (ACPI_TYPE_Any, ChildHandle, 0, &Dummy)))
         {
-            /* 
-             * No more children in this object, go back up to the object's parent
-             */
-            Level--;
-            ChildHandle = ParentHandle;
-            AcpiGetParent (ParentHandle, &ParentHandle);
+            /* There is at least one child of this object, visit the object */
+
+            Level++;
+            ParentHandle    = ChildHandle;
+            ChildHandle     = 0;
+   			continue;
         }
+        
+        /* 
+         * No more children in this object, go back up to the object's parent
+         */
+        Level--;
+        ChildHandle = ParentHandle;
+        AcpiGetParent (ParentHandle, &ParentHandle);
     }
 
 
@@ -777,88 +768,6 @@ AcpiGetObject (
 
     *RetHandle = Gbl_RootObject->Scope;
     return AE_OK;
-}
-
-
-/****************************************************************************
- *
- * FUNCTION:    AcpiGetParentHandle
- *
- * PARAMETERS:  ChildHandle     - the handle of the object for which the 
- *                                parent is to be found
- *
- * RETURN:      Parent handle
- *
- * DESCRIPTION: This routine returns the handle for the parent of an object.
- *
- ******************************************************************************/
-
-ACPI_HANDLE 
-AcpiGetParentHandle (
-    ACPI_HANDLE             ChildHandle)
-{
-
-    return ((ACPI_HANDLE) NULL);
-}
-
-
-/****************************************************************************
- *
- * FUNCTION:    AcpiCurrentScopeName
- *
- * PARAMETERS:  none
- *
- * RETURN:      pointer to an ascii string with the absolute name of the scope
- *
- * DESCRIPTION: 
- *
- ******************************************************************************/
-
-char * 
-AcpiCurrentScopeName (void)
-{
-    return ((char *) NULL);
-}
-
-
-/****************************************************************************
- *
- * FUNCTION:    AcpiIsNamespaceHandle
- *
- * PARAMETERS:  QueryHandle     - handle to be verified
- *
- * RETURN:      BOOLEAN -   TRUE if QueryHandle is a NameSpace handle
- *                          FALSE otherwise
- *
- * DESCRIPTION: This routine verifies the validity of a namespace handle
- *
- ******************************************************************************/
-
-BOOLEAN 
-AcpiIsNamesaceHandle (
-    ACPI_HANDLE             QueryHandle)
-{
-    return (TRUE);
-}
-
-
-/****************************************************************************
- *
- * FUNCTION:    AcpiIsNamesaceValue
- *
- * PARAMETERS:  Value
- *
- * RETURN:      TRUE if the value is a valid NS vakue, FALSE otherwise
- *
- * DESCRIPTION: This routine verifies the value is valid for ACPI_OBJECT_TYPE  what is the utility of this? RLM
- *
- ******************************************************************************/
-
-BOOLEAN 
-AcpiIsNamesaceValue (
-    ACPI_OBJECT_TYPE        Value)
-{
-    return (TRUE);
 }
 
 

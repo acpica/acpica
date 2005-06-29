@@ -474,7 +474,7 @@ NsLowFindNames (
 
     /* Walk the namespace and find all matches */
 
-    AcpiWalkNamespace (TYPE_Any, (ACPI_HANDLE) ThisEntry, MaxDepth, NsNameCompare, &Find, NULL);
+    AcpiWalkNamespace (ACPI_TYPE_Any, (ACPI_HANDLE) ThisEntry, MaxDepth, NsNameCompare, &Find, NULL);
 
     if (List)
     {
