@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: exoparg2 - AML execution - opcodes with 2 arguments
- *              $Revision: 1.111 $
+ *              $Revision: 1.113 $
  *
  *****************************************************************************/
 
@@ -344,11 +344,11 @@ ACPI_STATUS
 AcpiExOpcode_2A_1T_1R (
     ACPI_WALK_STATE         *WalkState)
 {
-    ACPI_OPERAND_OBJECT     **Operand   = &WalkState->Operands[0];
+    ACPI_OPERAND_OBJECT     **Operand = &WalkState->Operands[0];
     ACPI_OPERAND_OBJECT     *ReturnDesc = NULL;
     ACPI_OPERAND_OBJECT     *TempDesc = NULL;
     UINT32                  Index;
-    ACPI_STATUS             Status      = AE_OK;
+    ACPI_STATUS             Status = AE_OK;
     ACPI_SIZE               Length;
 
 
@@ -493,7 +493,7 @@ AcpiExOpcode_2A_1T_1R (
 
         /* Set the string length */
 
-        ReturnDesc->String.Length = Length;
+        ReturnDesc->String.Length = (UINT32) Length;
         break;
 
 
@@ -507,7 +507,7 @@ AcpiExOpcode_2A_1T_1R (
 
         /* Create the internal return object */
 
-        ReturnDesc = AcpiUtCreateInternalObject (INTERNAL_TYPE_REFERENCE);
+        ReturnDesc = AcpiUtCreateInternalObject (ACPI_TYPE_LOCAL_REFERENCE);
         if (!ReturnDesc)
         {
             Status = AE_NO_MEMORY;
