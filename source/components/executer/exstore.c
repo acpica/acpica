@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exstore - AML Interpreter object store support
- *              $Revision: 1.159 $
+ *              $Revision: 1.162 $
  *
  *****************************************************************************/
 
@@ -10,7 +10,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -127,7 +127,7 @@
 
 
 #define _COMPONENT          ACPI_EXECUTER
-        MODULE_NAME         ("exstore")
+        ACPI_MODULE_NAME    ("exstore")
 
 
 /*******************************************************************************
@@ -160,7 +160,7 @@ AcpiExStore (
     ACPI_OPERAND_OBJECT     *RefDesc = DestDesc;
 
 
-    FUNCTION_TRACE_PTR ("ExStore", DestDesc);
+    ACPI_FUNCTION_TRACE_PTR ("ExStore", DestDesc);
 
 
     /* Validate parameters */
@@ -194,9 +194,9 @@ AcpiExStore (
         ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
             "Destination is not a ReferenceObj [%p]\n", DestDesc));
 
-        DUMP_STACK_ENTRY (SourceDesc);
-        DUMP_STACK_ENTRY (DestDesc);
-        DUMP_OPERANDS (&DestDesc, IMODE_EXECUTE, "ExStore",
+        ACPI_DUMP_STACK_ENTRY (SourceDesc);
+        ACPI_DUMP_STACK_ENTRY (DestDesc);
+        ACPI_DUMP_OPERANDS (&DestDesc, ACPI_IMODE_EXECUTE, "ExStore",
                         2, "Target is not a ReferenceObj");
 
         return_ACPI_STATUS (AE_AML_OPERAND_TYPE);
@@ -256,7 +256,8 @@ AcpiExStore (
         case ACPI_TYPE_INTEGER:
 
             ACPI_DEBUG_PRINT_RAW ((ACPI_DB_DEBUG_OBJECT, "%8.8X%8.8X\n",
-                    HIWORD (SourceDesc->Integer.Value), LOWORD (SourceDesc->Integer.Value)));
+                    ACPI_HIWORD (SourceDesc->Integer.Value),
+                    ACPI_LOWORD (SourceDesc->Integer.Value)));
             break;
 
 
@@ -297,7 +298,7 @@ AcpiExStore (
     case AML_REVISION_OP:
 
         /*
-         * Storing to a constant is a no-op according to the  ACPI 
+         * Storing to a constant is a no-op according to the  ACPI
          * Specification. (Delete the reference descriptor, however.)
          */
         break;
@@ -307,7 +308,7 @@ AcpiExStore (
 
         ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Unknown Reference subtype %02x\n",
             RefDesc->Reference.Opcode));
-        DUMP_ENTRY (RefDesc, ACPI_LV_ERROR);
+        ACPI_DUMP_ENTRY (RefDesc, ACPI_LV_ERROR);
 
         Status = AE_AML_INTERNAL;
         break;
@@ -344,7 +345,7 @@ AcpiExStoreObjectToIndex (
     UINT8                   Value = 0;
 
 
-    FUNCTION_TRACE ("ExStoreObjectToIndex");
+    ACPI_FUNCTION_TRACE ("ExStoreObjectToIndex");
 
 
     /*
@@ -392,7 +393,7 @@ AcpiExStoreObjectToIndex (
     case ACPI_TYPE_BUFFER_FIELD:
 
         /*
-         * Store into a Buffer (not actually a real BufferField) at a 
+         * Store into a Buffer (not actually a real BufferField) at a
          * location defined by an Index.
          *
          * The first 8-bit element of the source object is written to the
@@ -449,7 +450,7 @@ AcpiExStoreObjectToIndex (
 
 
     default:
-        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, 
+        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
             "Target is not a Package or BufferField\n"));
         Status = AE_AML_OPERAND_TYPE;
         break;
@@ -496,7 +497,7 @@ AcpiExStoreObjectToNode (
     ACPI_OBJECT_TYPE        TargetType;
 
 
-    FUNCTION_TRACE_PTR ("ExStoreObjectToNode", SourceDesc);
+    ACPI_FUNCTION_TRACE_PTR ("ExStoreObjectToNode", SourceDesc);
 
 
     /*
