@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dswload - Dispatcher namespace load callbacks
- *              $Revision: 1.81 $
+ *              $Revision: 1.85 $
  *
  *****************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2003, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -201,7 +201,7 @@ AcpiDsLoad1BeginOp (
     ACPI_NAMESPACE_NODE     *Node;
     ACPI_STATUS             Status;
     ACPI_OBJECT_TYPE        ObjectType;
-    NATIVE_CHAR             *Path;
+    char                    *Path;
     UINT32                  Flags;
 
 
@@ -246,7 +246,7 @@ AcpiDsLoad1BeginOp (
     ObjectType = WalkState->OpInfo->ObjectType;
 
     ACPI_DEBUG_PRINT ((ACPI_DB_DISPATCH,
-        "State=%p Op=%p [%s] ", WalkState, Op, AcpiUtGetTypeName (ObjectType)));
+        "State=%p Op=%p [%s]\n", WalkState, Op, AcpiUtGetTypeName (ObjectType)));
 
     switch (WalkState->Opcode)
     {
@@ -330,16 +330,27 @@ AcpiDsLoad1BeginOp (
          *       BufferField, or Package), the name of the object is already
          *       in the namespace.
          */
+        if (WalkState->DeferredNode)
+        {
+            /* This name is already in the namespace, get the node */
+
+            Node = WalkState->DeferredNode;
+            Status = AE_OK;
+            break;
+        }
+
         Flags = ACPI_NS_NO_UPSEARCH;
         if ((WalkState->Opcode != AML_SCOPE_OP) &&
             (!(WalkState->ParseFlags & ACPI_PARSE_DEFERRED_OP)))
         {
             Flags |= ACPI_NS_ERROR_IF_FOUND;
-            ACPI_DEBUG_PRINT_RAW ((ACPI_DB_DISPATCH, "Cannot already exist\n"));
+            ACPI_DEBUG_PRINT ((ACPI_DB_DISPATCH, "[%s] Cannot already exist\n",
+                    AcpiUtGetTypeName (ObjectType)));
         }
         else
         {
-            ACPI_DEBUG_PRINT_RAW ((ACPI_DB_DISPATCH, "Both Find or Create allowed\n"));
+            ACPI_DEBUG_PRINT ((ACPI_DB_DISPATCH, "[%s] Both Find or Create allowed\n",
+                    AcpiUtGetTypeName (ObjectType)));
         }
 
         /*
@@ -540,7 +551,7 @@ AcpiDsLoad2BeginOp (
     ACPI_NAMESPACE_NODE     *Node;
     ACPI_STATUS             Status;
     ACPI_OBJECT_TYPE        ObjectType;
-    NATIVE_CHAR             *BufferPtr;
+    char                    *BufferPtr;
 
 
     ACPI_FUNCTION_TRACE ("DsLoad2BeginOp");
@@ -578,7 +589,7 @@ AcpiDsLoad2BeginOp (
         {
             /* Get name from the op */
 
-            BufferPtr = (NATIVE_CHAR *) &Op->Named.Name;
+            BufferPtr = (char *) &Op->Named.Name;
         }
     }
     else
@@ -700,7 +711,18 @@ AcpiDsLoad2BeginOp (
          * Enter the named type into the internal namespace.  We enter the name
          * as we go downward in the parse tree.  Any necessary subobjects that involve
          * arguments to the opcode must be created as we go back up the parse tree later.
+         *
+         * Note: Name may already exist if we are executing a deferred opcode.
          */
+        if (WalkState->DeferredNode)
+        {
+            /* This name is already in the namespace, get the node */
+
+            Node = WalkState->DeferredNode;
+            Status = AE_OK;
+            break;
+        }
+
         Status = AcpiNsLookup (WalkState->ScopeInfo, BufferPtr, ObjectType,
                         ACPI_IMODE_EXECUTE, ACPI_NS_NO_UPSEARCH, WalkState, &(Node));
         break;
