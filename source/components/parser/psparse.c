@@ -369,7 +369,7 @@ PsFindObject (
 {
     char                    *Path;
     ACPI_GENERIC_OP         *Op;
-    ACPI_OBJECT_TYPE        DataType; 
+    OBJECT_TYPE_INTERNAL    DataType; 
     ACPI_STATUS             Status;
     NAME_TABLE_ENTRY        *Nte = NULL;
 
@@ -467,7 +467,7 @@ PsParseLoop (
 
 
 #ifndef PARSER_ONLY
-    ACPI_OBJECT_TYPE        DataType; 
+    OBJECT_TYPE_INTERNAL    DataType; 
 #endif
 
     FUNCTION_TRACE_PTR ("PsParseLoop", ParserState);
