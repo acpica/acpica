@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: aclocal.h - Internal data types used across the ACPI subsystem
- *       $Revision: 1.178 $
+ *       $Revision: 1.180 $
  *
  *****************************************************************************/
 
@@ -118,7 +118,7 @@
 #define __ACLOCAL_H__
 
 
-#define WAIT_FOREVER                    ((UINT32) -1)
+#define ACPI_WAIT_FOREVER               0xFFFF  /* UINT16, as per ACPI spec */
 
 typedef void*                           ACPI_MUTEX;
 typedef UINT32                          ACPI_MUTEX_HANDLE;
@@ -421,7 +421,7 @@ typedef struct
 
 typedef struct
 {
-    ACPI_HANDLE             MethodHandle;   /* Method handle for direct (fast) execution */
+    ACPI_NAMESPACE_NODE     *MethodNode;    /* Method node for this GPE level */
     ACPI_GPE_HANDLER        Handler;        /* Address of handler, if any */
     void                    *Context;       /* Context to be passed to handler */
     UINT8                   Type;           /* Level or Edge */
