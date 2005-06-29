@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exstore - AML Interpreter object store support
- *              $Revision: 1.145 $
+ *              $Revision: 1.148 $
  *
  *****************************************************************************/
 
@@ -214,7 +214,6 @@ AcpiExStore (
      * 4) Store to the debug object
      * 5) Store to a constant -- a noop
      */
-
     switch (RefDesc->Reference.Opcode)
     {
 
@@ -260,14 +259,14 @@ AcpiExStore (
         {
         case ACPI_TYPE_INTEGER:
 
-            ACPI_DEBUG_PRINT_RAW ((ACPI_DB_DEBUG_OBJECT, "0x%X (%d)\n", 
+            ACPI_DEBUG_PRINT_RAW ((ACPI_DB_DEBUG_OBJECT, "0x%X (%d)\n",
                 (UINT32) ValDesc->Integer.Value, (UINT32) ValDesc->Integer.Value));
             break;
 
 
         case ACPI_TYPE_BUFFER:
 
-            ACPI_DEBUG_PRINT_RAW ((ACPI_DB_DEBUG_OBJECT, "Length 0x%X\n", 
+            ACPI_DEBUG_PRINT_RAW ((ACPI_DB_DEBUG_OBJECT, "Length 0x%X\n",
                 (UINT32) ValDesc->Buffer.Length));
             break;
 
@@ -280,7 +279,7 @@ AcpiExStore (
 
         case ACPI_TYPE_PACKAGE:
 
-            ACPI_DEBUG_PRINT_RAW ((ACPI_DB_DEBUG_OBJECT, "Elements - 0x%X\n", 
+            ACPI_DEBUG_PRINT_RAW ((ACPI_DB_DEBUG_OBJECT, "Elements - 0x%X\n",
                 (UINT32) ValDesc->Package.Elements));
             break;
 
@@ -366,7 +365,6 @@ AcpiExStoreObjectToIndex (
      * Destination must be a reference pointer, and
      * must point to either a buffer or a package
      */
-
     switch (DestDesc->Reference.TargetType)
     {
     case ACPI_TYPE_PACKAGE:
@@ -438,7 +436,6 @@ AcpiExStoreObjectToIndex (
                  * reference to the newly created descriptor for now being
                  * part of the parent package
                  */
-
                 *(DestDesc->Reference.Where) = ObjDesc;
                 AcpiUtAddReference (ObjDesc);
             }
@@ -492,7 +489,6 @@ AcpiExStoreObjectToIndex (
          * The assignment of the individual elements will be slightly
          * different for each source type.
          */
-
         switch (ValDesc->Common.Type)
         {
         case ACPI_TYPE_INTEGER:
@@ -602,10 +598,10 @@ AcpiExStoreObjectToNode (
 
     FUNCTION_TRACE ("ExStoreObjectToNode");
 
+
     /*
      * Assuming the parameters were already validated
      */
-
 
     /*
      * Get current type of the node, and object attached to Node
@@ -677,14 +673,14 @@ AcpiExStoreObjectToNode (
 
     default:
 
+        ACPI_DEBUG_PRINT ((ACPI_DB_INFO,
+            "Storing %s (%p) directly into node (%p), no implicit conversion\n",
+            AcpiUtGetTypeName (SourceDesc->Common.Type), SourceDesc, Node));
+
         /* No conversions for all other types.  Just attach the source object */
 
         Status = AcpiNsAttachObject (Node, SourceDesc, SourceDesc->Common.Type);
 
-        ACPI_DEBUG_PRINT ((ACPI_DB_INFO,
-            "Store %s into %s via Attach only\n",
-            AcpiUtGetTypeName (SourceDesc->Common.Type),
-            AcpiUtGetTypeName (SourceDesc->Common.Type)));
         break;
     }
 
@@ -735,7 +731,6 @@ AcpiExStoreObjectToObject (
     /*
      *  Assuming the parameters are valid!
      */
-
     ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "Storing %p(%s) to %p(%s)\n",
                     SourceDesc, AcpiUtGetTypeName (SourceDesc->Common.Type),
                     DestDesc, AcpiUtGetTypeName (DestDesc->Common.Type)));
