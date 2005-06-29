@@ -427,6 +427,8 @@ CmDumpCurrentAllocations (
 
     CmAcquireMutex (MTX_MEMORY);
 
+    DEBUG_PRINT (TRACE_ALLOCATIONS | TRACE_TABLES, ("Outstanding allocations:\n"));
+
     for (i = 1; ; i++)  /* Just a counter */
     {
         if ((Element->Component & Component) &&
@@ -441,7 +443,7 @@ CmDumpCurrentAllocations (
             if (Element->Size == sizeof (ACPI_OBJECT_INTERNAL))
             {
                 DEBUG_PRINT_RAW (TRACE_ALLOCATIONS | TRACE_TABLES, (" Type %s", 
-                    NsTypeNames[((ACPI_OBJECT_INTERNAL *)(Element->Address))->Type]));
+                    Gbl_NsTypeNames[((ACPI_OBJECT_INTERNAL *)(Element->Address))->Type]));
             }
 
             DEBUG_PRINT_RAW (TRACE_ALLOCATIONS | TRACE_TABLES, ("\n")); 
