@@ -1,7 +1,7 @@
 
 /******************************************************************************
  *
- * Name: globals.h - Declarations for global variables
+ * Name: acglobal.h - Declarations for global variables
  *
  *****************************************************************************/
 
@@ -114,12 +114,15 @@
  *
  *****************************************************************************/
 
-#ifndef __GLOBALS_H__
-#define __GLOBALS_H__
+#ifndef __ACGLOBAL_H__
+#define __ACGLOBAL_H__
 
 
 /*
- * Ensure that the globals are actually defined only once
+ * Ensure that the globals are actually defined only once.
+ * 
+ * The use of these defines allows a single list of globals (here) in order
+ * to simplify maintenance of the code.
  */
 #ifdef DEFINE_ACPI_GLOBALS
 #define ACPI_EXTERN
@@ -326,7 +329,6 @@ ACPI_EXTERN ACPI_GENERIC_OP             *AcpiGbl_ParsedNamespaceRoot;
 
 extern ACPI_OP_INFO                     AcpiGbl_AmlOpInfo[];
 extern UINT8                            AcpiGbl_AmlOpInfoIndex[256];
-extern char                             *AcpiGbl_ParserId;
 
 
 /*****************************************************************************
@@ -399,4 +401,4 @@ ACPI_EXTERN UINT32                      AcpiGbl_RunningObjectSize;
 #endif
 
 
-#endif /* __GLOBALS_H__ */
+#endif /* __ACGLOBAL_H__ */
