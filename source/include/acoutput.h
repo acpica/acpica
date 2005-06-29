@@ -48,7 +48,7 @@
 #define ACPI_WARN                   0x00000004
 #define ACPI_ERROR                  0x00000008
 #define ACPI_FATAL                  0x00000010
-#define ACPI_ALL                    0x0000002F
+#define ACPI_ALL                    0x0000001F
 
 #define TRACE_LOAD                  0x00000100
 #define TRACE_OPCODE                0x00000200
@@ -62,13 +62,19 @@
 #define TRACE_FUNCTIONS             0x00020000
 #define TRACE_VALUES                0x00040000
 #define TRACE_OBJECTS               0x00080000
-#define TRACE_ALL                   0x000FFF00
+#define TRACE_IO                    0x00100000
+#define TRACE_INTERRUPTS            0x00800000
+#define TRACE_ALL                   0x001FFF00
 
 /* Exceptionally verbose output -- used in the global "DebugLevel"  */
 
 #define VERBOSE_INFO                0x01000000
 #define VERBOSE_TABLES              0x02000000
 
+/* Defaults for DebugLevel, debug and normal */
+
+#define DEBUG_DEFAULT               0x0011001D  /* Tables, I/O, errors, success */
+#define NORMAL_DEFAULT              0x0000001D  /* errors, warnings, success */
 
 /* Misc defines */
 
