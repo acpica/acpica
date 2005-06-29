@@ -202,6 +202,7 @@ ACPI_EXTERN INT32       AcpiHook;           /* strong link that lives in acpilib
  * Namespace globals 
  */
 
+ACPI_EXTERN INT32       NamedObjectErr;     /* Use to indicate if inc_error should be called */
 ACPI_EXTERN nte         RootObjStruct;
 ACPI_EXTERN nte         *RootObject;
 
@@ -230,6 +231,7 @@ ACPI_EXTERN INT32       PCodeLen;
  * Interpreter globals 
  */
 
+ACPI_EXTERN UINT32      BufSeq;         /* Counts allocated Buffer descriptors */
 ACPI_EXTERN INT32       SkipField;
 ACPI_EXTERN INT32       LastPkgLen;
 ACPI_EXTERN UINT8       LastFieldFlag;
