@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Name: hwsleep.c - ACPI Hardware Sleep/Wake Interface
- *              $Revision: 1.27 $
+ *              $Revision: 1.28 $
  *
  *****************************************************************************/
 
@@ -427,5 +427,5 @@ AcpiLeaveSleepState (
 
     AcpiHwEnableNonWakeupGpes();
 
-    return_ACPI_STATUS (Status);
+    return_ACPI_STATUS (AE_OK);
 }
