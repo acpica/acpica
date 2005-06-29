@@ -967,7 +967,7 @@ AmlExecMonadic2 (
             {
             case AML_IndexOp:
 
-                if (ObjDesc->Reference.TargetType == ACPI_TYPE_Buffer)
+                if (ObjDesc->Reference.TargetType == ACPI_TYPE_BufferField)
                 {
                     RetDesc = CmCreateInternalObject (ACPI_TYPE_Number);
                     if (!RetDesc)

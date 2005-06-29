@@ -347,7 +347,7 @@ AmlExecIndex (
          * TBD - before this pointer is used, the results may be surprising.
          */
         RetDesc->Reference.OpCode       = AML_IndexOp;
-        RetDesc->Reference.TargetType   = ACPI_TYPE_Buffer;
+        RetDesc->Reference.TargetType   = ACPI_TYPE_BufferField;
         RetDesc->Reference.Object       = ObjDesc;
         RetDesc->Reference.Offset       = IdxDesc->Number.Value;
 
