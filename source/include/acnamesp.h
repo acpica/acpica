@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acnamesp.h - Namespace subcomponent prototypes and defines
- *       $Revision: 1.109 $
+ *       $Revision: 1.110 $
  *
  *****************************************************************************/
 
@@ -313,6 +313,7 @@ AcpiNsDumpRootDevices (
 void
 AcpiNsDumpObjects (
     ACPI_OBJECT_TYPE8       Type,
+    UINT8                   DisplayType,
     UINT32                  MaxDepth,
     UINT32                  OwnderId,
     ACPI_HANDLE             StartHandle);
