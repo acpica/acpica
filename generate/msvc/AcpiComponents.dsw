@@ -19,7 +19,7 @@ Package=<4>
 
 ###############################################################################
 
-Project: "Subsystem"=..\..\Subsystem\Subsystem.dsp - Package Owner=<4>
+Project: "Subsystem"=.\Subsystem\Subsystem.dsp - Package Owner=<4>
 
 Package=<5>
 {{{
@@ -35,7 +35,7 @@ Package=<4>
 
 ###############################################################################
 
-Project: "app"=..\..\TEST\app\app.dsp - Package Owner=<4>
+Project: "app"=..\..\Test\App\Wdm\app.dsp - Package Owner=<4>
 
 Package=<5>
 {{{
@@ -61,22 +61,6 @@ Package=<5>
     begin source code control
     "$/Acpi Components/OsDependent/Wdm", DBDAAAAA
     ..\..\cadriver\wdm
-    end source code control
-}}}
-
-Package=<4>
-{{{
-}}}
-
-###############################################################################
-
-Project: "wdmlib"=..\..\Test\App\Wdm\wdmlib.dsp - Package Owner=<4>
-
-Package=<5>
-{{{
-    begin source code control
-    "$/Acpi Components/Test/App/Wdm", DICAAAAA
-    ..\..\Test\App\Wdm
     end source code control
 }}}
 
