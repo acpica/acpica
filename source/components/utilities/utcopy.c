@@ -1,4 +1,3 @@
-
 /******************************************************************************
  *
  * Module Name: cmcopy - Internal to external object translation utilities
@@ -148,7 +147,8 @@ PKG_SEARCH_INFO                 Level[MAX_PACKAGE_DEPTH];
  *
  * RETURN:      Status          - the status of the call
  *
- * DESCRIPTION: This function is called to place a simple object in a user buffer.
+ * DESCRIPTION: This function is called to place a simple object in a user
+ *                  buffer.
  *
  *              The buffer is assumed to have sufficient space for the object.
  *
@@ -180,7 +180,10 @@ AcpiCmBuildExternalSimpleObject (
 
     MEMSET (ExternalObj, 0, sizeof (ACPI_OBJECT));
 
-    /* In general, the external object will be the same type as the internal object */
+    /*
+     * In general, the external object will be the same type as the internal
+     *  object
+     */
 
     ExternalObj->Type = InternalObj->Common.Type;
 
@@ -235,8 +238,11 @@ AcpiCmBuildExternalSimpleObject (
 
     case ACPI_TYPE_POWER:
 
-        ExternalObj->PowerResource.SystemLevel = InternalObj->PowerResource.SystemLevel;
-        ExternalObj->PowerResource.ResourceOrder = InternalObj->PowerResource.ResourceOrder;
+        ExternalObj->PowerResource.SystemLevel =
+            InternalObj->PowerResource.SystemLevel;
+
+        ExternalObj->PowerResource.ResourceOrder =
+            InternalObj->PowerResource.ResourceOrder;
         break;
 
     default:
@@ -335,18 +341,24 @@ AcpiCmBuildExternalPackageObject (
      * and move the free space past it
      */
 
-    FreeSpace += ExternalObj->Package.Count * ROUND_UP_TO_NATIVE_WORD (sizeof (ACPI_OBJECT));
+    FreeSpace += ExternalObj->Package.Count *
+                 ROUND_UP_TO_NATIVE_WORD (sizeof (ACPI_OBJECT));
 
 
     while (1)
     {
         ThisIndex       = LevelPtr->Index;
-        ThisInternalObj = (ACPI_OBJECT_INTERNAL *) LevelPtr->InternalObj->Package.Elements[ThisIndex];
-        ThisExternalObj = (ACPI_OBJECT *) &LevelPtr->ExternalObj->Package.Elements[ThisIndex];
+        ThisInternalObj =
+                (ACPI_OBJECT_INTERNAL *)
+                LevelPtr->InternalObj->Package.Elements[ThisIndex];
+        ThisExternalObj =
+                (ACPI_OBJECT *)
+                &LevelPtr->ExternalObj->Package.Elements[ThisIndex];
 
 
         /*
-         * Check for 1) Null object -- OK, this can happen if package element never initialized
+         * Check for 1) Null object -- OK, this can happen if package element
+         *              is never initialized
          *           2) Not an internal object - can be an NTE instead
          *           3) Any internal object other than a package.
          *
@@ -354,14 +366,17 @@ AcpiCmBuildExternalPackageObject (
          */
 
         if ((!ThisInternalObj) ||
-            (!VALID_DESCRIPTOR_TYPE (ThisInternalObj, ACPI_DESC_TYPE_INTERNAL)) ||
+            (!VALID_DESCRIPTOR_TYPE (ThisInternalObj,
+                ACPI_DESC_TYPE_INTERNAL)) ||
             (!IS_THIS_OBJECT_TYPE (ThisInternalObj, ACPI_TYPE_PACKAGE)))
         {
             /*
              * This is a simple or null object -- get the size
              */
 
-            Status = AcpiCmBuildExternalSimpleObject (ThisInternalObj, ThisExternalObj, FreeSpace, &ObjectSpace);
+            Status = AcpiCmBuildExternalSimpleObject (ThisInternalObj,
+                                                      ThisExternalObj,
+                                                      FreeSpace, &ObjectSpace);
             if (ACPI_FAILURE (Status))
             {
                 return_ACPI_STATUS (Status);
@@ -374,15 +389,16 @@ AcpiCmBuildExternalPackageObject (
             while (LevelPtr->Index >= LevelPtr->InternalObj->Package.Count)
             {
                 /*
-                 * We've handled all of the objects at this level,  This means that we
-                 * have just completed a package.  That package may have contained one
-                 * or more packages itself
+                 * We've handled all of the objects at this level,  This means
+                 * that we have just completed a package.  That package may
+                 * have contained one or more packages itself
                  */
                 if (CurrentDepth == 0)
                 {
                     /*
-                     * We have handled all of the objects in the top level package
-                     * just add the length of the package objects and get out
+                     * We have handled all of the objects in the top level
+                     * package just add the length of the package objects and
+                     * get out
                      */
                     *SpaceUsed = Length;
                     return_ACPI_STATUS (AE_OK);
@@ -409,8 +425,9 @@ AcpiCmBuildExternalPackageObject (
                 /*
                  * Too many nested levels of packages for us to handle
                  */
-                DEBUG_PRINT (ACPI_ERROR, ("CmBuildPackageObject: Pkg nested too deep (max %d)\n",
-                                            MAX_PACKAGE_DEPTH));
+                DEBUG_PRINT (ACPI_ERROR,
+                    ("CmBuildPackageObject: Pkg nested too deep (max %d)\n",
+                    MAX_PACKAGE_DEPTH));
                 return_ACPI_STATUS (AE_LIMIT);
             }
 
@@ -425,7 +442,9 @@ AcpiCmBuildExternalPackageObject (
              * Save space for the array of objects (Package elements)
              * update the buffer length counter
              */
-            ObjectSpace             = (UINT32) ROUND_UP_TO_NATIVE_WORD (ThisExternalObj->Package.Count * sizeof (ACPI_OBJECT));
+            ObjectSpace             = (UINT32)
+                ROUND_UP_TO_NATIVE_WORD (ThisExternalObj->Package.Count *
+                sizeof (ACPI_OBJECT));
             FreeSpace               += ObjectSpace;
             Length                  += ObjectSpace;
 
@@ -472,7 +491,9 @@ AcpiCmBuildExternalObject (
          * Package objects contain other objects (which can be objects)
          * buildpackage does it all
          */
-        Status = AcpiCmBuildExternalPackageObject (InternalObj, RetBuffer->Pointer, &RetBuffer->Length);
+        Status = AcpiCmBuildExternalPackageObject (InternalObj,
+                                                   RetBuffer->Pointer,
+                                                   &RetBuffer->Length);
     }
 
     else
@@ -480,8 +501,11 @@ AcpiCmBuildExternalObject (
         /*
          * Build a simple object (no nested objects)
          */
-        Status = AcpiCmBuildExternalSimpleObject (InternalObj, (ACPI_OBJECT *) RetBuffer->Pointer,
-                    ((UINT8 *) RetBuffer->Pointer + ROUND_UP_TO_NATIVE_WORD (sizeof (ACPI_OBJECT))), &RetBuffer->Length);
+        Status = AcpiCmBuildExternalSimpleObject (InternalObj,
+                                (ACPI_OBJECT *) RetBuffer->Pointer,
+                                ((UINT8 *) RetBuffer->Pointer +
+                                ROUND_UP_TO_NATIVE_WORD (sizeof (ACPI_OBJECT))),
+                                &RetBuffer->Length);
         /*
          * build simple does not include the object size in the length
          * so we add it in here
@@ -633,8 +657,10 @@ AcpiCmBuildInternalPackageObject (
     while (1)
     {
         ThisIndex       = LevelPtr->Index;
-        ThisInternalObj = (ACPI_OBJECT_INTERNAL *) &LevelPtr->InternalObj->Package.Elements[ThisIndex];
-        ThisExternalObj = (ACPI_OBJECT *) &LevelPtr->ExternalObj->Package.Elements[ThisIndex];
+        ThisInternalObj = (ACPI_OBJECT_INTERNAL *)
+                          &LevelPtr->InternalObj->Package.Elements[ThisIndex];
+        ThisExternalObj = (ACPI_OBJECT *)
+                          &LevelPtr->ExternalObj->Package.Elements[ThisIndex];
 
         if (IS_THIS_OBJECT_TYPE (ThisInternalObj, ACPI_TYPE_PACKAGE))
         {
@@ -646,23 +672,25 @@ AcpiCmBuildInternalPackageObject (
                 /*
                  * Too many nested levels of packages for us to handle
                  */
-                DEBUG_PRINT (ACPI_ERROR, ("CmBuildPackageObject: Pkg nested too deep (max %d)\n",
-                                            MAX_PACKAGE_DEPTH));
+                DEBUG_PRINT (ACPI_ERROR,
+                    ("CmBuildPackageObject: Pkg nested too deep (max %d)\n",
+                    MAX_PACKAGE_DEPTH));
                 return_ACPI_STATUS (AE_LIMIT);
             }
 
             /*
              * Build the package object
              */
-            ThisExternalObj->Type               = ACPI_TYPE_PACKAGE;
-            ThisExternalObj->Package.Count      = ThisInternalObj->Package.Count;
-            ThisExternalObj->Package.Elements   = (ACPI_OBJECT *) FreeSpace;
+            ThisExternalObj->Type             = ACPI_TYPE_PACKAGE;
+            ThisExternalObj->Package.Count    = ThisInternalObj->Package.Count;
+            ThisExternalObj->Package.Elements = (ACPI_OBJECT *) FreeSpace;
 
             /*
              * Save space for the array of objects (Package elements)
              * update the buffer length counter
              */
-            ObjectSpace             = ThisExternalObj->Package.Count * sizeof (ACPI_OBJECT);
+            ObjectSpace             = ThisExternalObj->Package.Count *
+                                      sizeof (ACPI_OBJECT);
             FreeSpace               += ObjectSpace;
             Length                  += ObjectSpace;
 
@@ -676,7 +704,9 @@ AcpiCmBuildInternalPackageObject (
 
         else
         {
-/*            Status = AcpiCmBuildSimpleObject(ThisInternalObj, ThisExternalObj, FreeSpace, &ObjectSpace);
+/*            Status = AcpiCmBuildSimpleObject(ThisInternalObj,
+                                               ThisExternalObj, FreeSpace,
+                                               &ObjectSpace);
 */
             if (Status != AE_OK)
             {
@@ -693,23 +723,24 @@ AcpiCmBuildInternalPackageObject (
             while (LevelPtr->Index >= LevelPtr->InternalObj->Package.Count)
             {
                 /*
-                 * We've handled all of the objects at this level,  This means that we
-                 * have just completed a package.  That package may have contained one
-                 * or more packages itself
+                 * We've handled all of the objects at this level,  This means
+                 * that we have just completed a package.  That package may
+                 * have contained one or more packages itself
                  */
                 if (CurrentDepth == 0)
                 {
                     /*
-                     * We have handled all of the objects in the top level package
-                     * just add the length of the package objects and get out
+                     * We have handled all of the objects in the top level
+                     * package just add the length of the package objects and
+                     * get out
                      */
                     *SpaceUsed = Length;
                     return_ACPI_STATUS (AE_OK);
                 }
 
                 /*
-                 * go back up a level and move the index past the just completed
-                 * package object.
+                 * go back up a level and move the index past the just
+                 * completed package object.
                  */
                 CurrentDepth--;
                 LevelPtr = &Level[CurrentDepth];
@@ -757,10 +788,12 @@ AcpiCmBuildInternalObject (
          * buildpackage does it all
          */
 /*
-        Status = AcpiCmBuildInternalPackageObject(InternalObj, RetBuffer->Pointer,
-                        &RetBuffer->Length);
+        Status = AcpiCmBuildInternalPackageObject(InternalObj,
+                                                  RetBuffer->Pointer,
+                                                  &RetBuffer->Length);
 */
-        DEBUG_PRINT (ACPI_ERROR, ("CmBuildInternalObject: Packages as parameters not implemented!\n"));
+        DEBUG_PRINT (ACPI_ERROR,
+            ("CmBuildInternalObject: Packages as parameters not implemented!\n"));
 
         return_ACPI_STATUS (AE_NOT_IMPLEMENTED);
     }

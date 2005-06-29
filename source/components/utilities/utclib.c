@@ -1,4 +1,3 @@
-
 /******************************************************************************
  *
  * Module Name: cmclib - Local implementation of C library functions
@@ -315,7 +314,8 @@ AcpiCmStrncmp (
         }
     }
 
-    return (Count == -1) ? 0 : ((unsigned char) *String1 - (unsigned char) *String2);
+    return (Count == -1) ? 0 : ((unsigned char) *String1 -
+        (unsigned char) *String2);
 }
 
 

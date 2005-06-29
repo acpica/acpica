@@ -232,10 +232,13 @@ AcpiCmAddElementToAllocList (
 
     if (NULL == AcpiGbl_HeadAllocPtr)
     {
-        AcpiGbl_HeadAllocPtr = (ALLOCATION_INFO *) AcpiOsCallocate (sizeof (ALLOCATION_INFO));
+        AcpiGbl_HeadAllocPtr =
+                (ALLOCATION_INFO *) AcpiOsCallocate (sizeof (ALLOCATION_INFO));
+
         if (!AcpiGbl_HeadAllocPtr)
         {
-            DEBUG_PRINT (ACPI_ERROR, ("Could not allocate memory info block\n"));
+            DEBUG_PRINT (ACPI_ERROR,
+                ("Could not allocate memory info block\n"));
             Status = AE_NO_MEMORY;
             goto UnlockAndExit;
         }
@@ -245,10 +248,12 @@ AcpiCmAddElementToAllocList (
 
     else
     {
-        AcpiGbl_TailAllocPtr->Next = (ALLOCATION_INFO *) AcpiOsCallocate (sizeof (ALLOCATION_INFO));
+        AcpiGbl_TailAllocPtr->Next =
+                (ALLOCATION_INFO *) AcpiOsCallocate (sizeof (ALLOCATION_INFO));
         if (!AcpiGbl_TailAllocPtr->Next)
         {
-            DEBUG_PRINT (ACPI_ERROR, ("Could not allocate memory info block\n"));
+            DEBUG_PRINT (ACPI_ERROR,
+                ("Could not allocate memory info block\n"));
             Status = AE_NO_MEMORY;
             goto UnlockAndExit;
         }
@@ -267,7 +272,9 @@ AcpiCmAddElementToAllocList (
     Element = AcpiCmSearchAllocList (Address);
     if (Element)
     {
-        REPORT_ERROR ("CmAddElementToAllocList: Address already present in list!");
+        REPORT_ERROR
+                ("CmAddElementToAllocList: Address already present in list!");
+
         DEBUG_PRINT (ACPI_ERROR, ("Element %p Address %p\n", Element, Address));
 
         BREAKPOINT3;
@@ -327,7 +334,8 @@ AcpiCmDeleteElementFromAllocList (
     {
         /* Boy we got problems. */
 
-        _REPORT_ERROR (Module, Line, Component, "CmDeleteElementFromAllocList: Empty allocation list, nothing to free!");
+        _REPORT_ERROR (Module, Line, Component,
+                "CmDeleteElementFromAllocList: Empty allocation list, nothing to free!");
 
         return_VOID;
     }
@@ -344,7 +352,8 @@ AcpiCmDeleteElementFromAllocList (
     {
         if (Address != AcpiGbl_HeadAllocPtr->Address)
         {
-            _REPORT_ERROR (Module, Line, Component, "CmDeleteElementFromAllocList: Deleting non-allocated memory...");
+            _REPORT_ERROR (Module, Line, Component,
+                "CmDeleteElementFromAllocList: Deleting non-allocated memory...");
 
             goto Cleanup;
         }
@@ -355,7 +364,8 @@ AcpiCmDeleteElementFromAllocList (
         AcpiGbl_HeadAllocPtr = NULL;
         AcpiGbl_TailAllocPtr = NULL;
 
-        DEBUG_PRINT (TRACE_ALLOCATIONS, ("_CmFree: Allocation list deleted.  There are no outstanding allocations.\n"));
+        DEBUG_PRINT (TRACE_ALLOCATIONS,
+            ("_CmFree: Allocation list deleted.  There are no outstanding allocations.\n"));
 
         goto Cleanup;
     }
@@ -419,8 +429,11 @@ AcpiCmDeleteElementFromAllocList (
 
     else
     {
-        _REPORT_ERROR (Module, Line, Component, "_CmFree: Entry not found in list");
-        DEBUG_PRINT (TRACE_ALLOCATIONS, ("_CmFree: Entry %p was not found in allocation list\n", Address));
+        _REPORT_ERROR (Module, Line, Component,
+                "_CmFree: Entry not found in list");
+        DEBUG_PRINT (TRACE_ALLOCATIONS,
+                ("_CmFree: Entry %p was not found in allocation list\n",
+                Address));
     }
 
 
@@ -454,27 +467,38 @@ AcpiCmDumpAllocationInfo (
 
     DEBUG_PRINT (TRACE_ALLOCATIONS | TRACE_TABLES,
                     ("Current outstanding allocations: %d (%d b, %d Kb)\n",
-                    AcpiGbl_CurrentAllocCount, AcpiGbl_CurrentAllocSize, AcpiGbl_CurrentAllocSize / 1024));
+                    AcpiGbl_CurrentAllocCount, AcpiGbl_CurrentAllocSize,
+                    AcpiGbl_CurrentAllocSize / 1024));
 
     DEBUG_PRINT (TRACE_ALLOCATIONS | TRACE_TABLES,
                     ("Maximum concurrent allocations thus far: %d (%d b, %d Kb)\n",
-                    AcpiGbl_MaxConcurrentAllocCount, AcpiGbl_MaxConcurrentAllocSize, AcpiGbl_MaxConcurrentAllocSize / 1024));
+                    AcpiGbl_MaxConcurrentAllocCount,
+                    AcpiGbl_MaxConcurrentAllocSize,
+                    AcpiGbl_MaxConcurrentAllocSize / 1024));
 
     DEBUG_PRINT (TRACE_ALLOCATIONS | TRACE_TABLES,
                     ("Current number of allocated internal objects: %d (%d b, %d Kb)\n",
-                    AcpiGbl_CurrentObjectCount, AcpiGbl_CurrentObjectSize, AcpiGbl_CurrentObjectSize / 1024));
+                    AcpiGbl_CurrentObjectCount,
+                    AcpiGbl_CurrentObjectSize,
+                    AcpiGbl_CurrentObjectSize / 1024));
 
     DEBUG_PRINT (TRACE_ALLOCATIONS | TRACE_TABLES,
                     ("Maximum concurrent number of allocated internal objects: %d (%d b, %d Kb)\n",
-                    AcpiGbl_MaxConcurrentObjectCount, AcpiGbl_MaxConcurrentObjectSize, AcpiGbl_MaxConcurrentObjectSize / 1024));
+                    AcpiGbl_MaxConcurrentObjectCount,
+                    AcpiGbl_MaxConcurrentObjectSize,
+                    AcpiGbl_MaxConcurrentObjectSize / 1024));
 
     DEBUG_PRINT (TRACE_ALLOCATIONS | TRACE_TABLES,
                     ("Total number of allocated internal objects: %d (%d b, %d Kb)\n",
-                    AcpiGbl_RunningObjectCount, AcpiGbl_RunningObjectSize, AcpiGbl_RunningObjectSize / 1024));
+                    AcpiGbl_RunningObjectCount,
+                    AcpiGbl_RunningObjectSize,
+                    AcpiGbl_RunningObjectSize / 1024));
 
     DEBUG_PRINT (TRACE_ALLOCATIONS | TRACE_TABLES,
                     ("Total number of allocations: %d (%d b, %d Kb)\n",
-                    AcpiGbl_RunningAllocCount, AcpiGbl_RunningAllocSize, AcpiGbl_RunningAllocSize / 1024));
+                    AcpiGbl_RunningAllocCount,
+                    AcpiGbl_RunningAllocSize,
+                    AcpiGbl_RunningAllocSize / 1024));
 
     return_VOID;
 }
@@ -507,7 +531,8 @@ AcpiCmDumpCurrentAllocations (
 
     if (Element == NULL)
     {
-        DEBUG_PRINT (TRACE_ALLOCATIONS | TRACE_TABLES, ("No outstanding allocations.\n"));
+        DEBUG_PRINT (TRACE_ALLOCATIONS | TRACE_TABLES,
+                ("No outstanding allocations.\n"));
         return_VOID;
     }
 
@@ -518,37 +543,45 @@ AcpiCmDumpCurrentAllocations (
 
     AcpiCmAcquireMutex (ACPI_MTX_MEMORY);
 
-    DEBUG_PRINT (TRACE_ALLOCATIONS | TRACE_TABLES, ("Outstanding allocations:\n"));
+    DEBUG_PRINT (TRACE_ALLOCATIONS | TRACE_TABLES,
+        ("Outstanding allocations:\n"));
 
     for (i = 1; ; i++)  /* Just a counter */
     {
         if ((Element->Component & Component) &&
             ((Module == NULL) || (0 == STRCMP (Module, Element->Module))))
         {
-            DEBUG_PRINT (TRACE_ALLOCATIONS | TRACE_TABLES, ("%p Len %04lX %9.9s-%ld",
-                            Element->Address, Element->Size, Element->Module, Element->Line));
+            DEBUG_PRINT (TRACE_ALLOCATIONS | TRACE_TABLES,
+                        ("%p Len %04lX %9.9s-%ld",
+                        Element->Address, Element->Size, Element->Module,
+                        Element->Line));
 
             /* Most of the elements will be internal objects. */
 
-            switch (((ACPI_OBJECT_INTERNAL *)(Element->Address))->Common.DataType)
+            switch (((ACPI_OBJECT_INTERNAL *)
+                (Element->Address))->Common.DataType)
             {
             case ACPI_DESC_TYPE_INTERNAL:
-                DEBUG_PRINT_RAW (TRACE_ALLOCATIONS | TRACE_TABLES, (" ObjType %s",
-                                    AcpiCmGetTypeName (((ACPI_OBJECT_INTERNAL *)(Element->Address))->Common.Type)));
+                DEBUG_PRINT_RAW (TRACE_ALLOCATIONS | TRACE_TABLES,
+                        (" ObjType %s",
+                        AcpiCmGetTypeName (((ACPI_OBJECT_INTERNAL *)(Element->Address))->Common.Type)));
                 break;
 
             case ACPI_DESC_TYPE_PARSER:
-                DEBUG_PRINT_RAW (TRACE_ALLOCATIONS | TRACE_TABLES, (" ParseObj Opcode %04X",
-                                    ((ACPI_GENERIC_OP *)(Element->Address))->Opcode));
+                DEBUG_PRINT_RAW (TRACE_ALLOCATIONS | TRACE_TABLES,
+                        (" ParseObj Opcode %04X",
+                        ((ACPI_GENERIC_OP *)(Element->Address))->Opcode));
                 break;
 
             case ACPI_DESC_TYPE_NAMED:
-                DEBUG_PRINT_RAW (TRACE_ALLOCATIONS | TRACE_TABLES, (" NTE Name %4.4s",
-                                    &((ACPI_NAMED_OBJECT*)(Element->Address))->Name));
+                DEBUG_PRINT_RAW (TRACE_ALLOCATIONS | TRACE_TABLES,
+                        (" NTE Name %4.4s",
+                        &((ACPI_NAMED_OBJECT*)(Element->Address))->Name));
                 break;
 
             case ACPI_DESC_TYPE_STATE:
-                DEBUG_PRINT_RAW (TRACE_ALLOCATIONS | TRACE_TABLES, (" StateObj"));
+                DEBUG_PRINT_RAW (TRACE_ALLOCATIONS | TRACE_TABLES,
+                        (" StateObj"));
                 break;
             }
 
@@ -565,7 +598,8 @@ AcpiCmDumpCurrentAllocations (
 
     AcpiCmReleaseMutex (ACPI_MTX_MEMORY);
 
-    DEBUG_PRINT (TRACE_ALLOCATIONS | TRACE_TABLES, ("Total number of unfreed allocations = %d\n", i));
+    DEBUG_PRINT (TRACE_ALLOCATIONS | TRACE_TABLES,
+        ("Total number of unfreed allocations = %d\n", i));
 
     return_VOID;
 }
@@ -607,8 +641,9 @@ _CmAllocate (
 
     if (!Size)
     {
-        DEBUG_PRINT (ACPI_ERROR, ("CmAllocate: ** ERROR: Attempt to allocate zero bytes! (%s line %d)\n",
-                                    Module, Line));
+        DEBUG_PRINT (ACPI_ERROR,
+                ("CmAllocate: ** ERROR: Attempt to allocate zero bytes! (%s line %d)\n",
+                Module, Line));
         REPORT_ERROR ("CmAllocate: Attempt to allocate zero bytes");
         Size = 1;
     }
@@ -621,20 +656,23 @@ _CmAllocate (
         _REPORT_ERROR (Module, Line, Component,
             "CmAllocate: Memory allocation failure");
 
-        DEBUG_PRINT (ACPI_ERROR, ("CmAllocate: Could not allocate size 0x%x\n", Size));
+        DEBUG_PRINT (ACPI_ERROR,
+                ("CmAllocate: Could not allocate size 0x%x\n", Size));
 
         return_VALUE (NULL);
     }
 
 #ifdef ACPI_DEBUG
-    Status = AcpiCmAddElementToAllocList (Address, Size, MEM_MALLOC, Component, Module, Line);
+    Status = AcpiCmAddElementToAllocList (Address, Size, MEM_MALLOC, Component,
+                                          Module, Line);
     if (ACPI_FAILURE (Status))
     {
         AcpiOsFree (Address);
         return_PTR (NULL);
     }
 
-    DEBUG_PRINT (TRACE_ALLOCATIONS, ("CmAllocate: %p Size 0x%x\n", Address, Size));
+    DEBUG_PRINT (TRACE_ALLOCATIONS,
+        ("CmAllocate: %p Size 0x%x\n", Address, Size));
 #endif
 
     return_PTR (Address);
@@ -675,8 +713,9 @@ _CmCallocate (
 
     if (!Size)
     {
-        DEBUG_PRINT (ACPI_ERROR, ("CmCallocate: ** ERROR: Attempt to allocate zero bytes! (%s line %d)\n",
-                                    Module, Line));
+        DEBUG_PRINT (ACPI_ERROR,
+                ("CmCallocate: ** ERROR: Attempt to allocate zero bytes! (%s line %d)\n",
+                Module, Line));
         REPORT_ERROR ("CmCallocate: Attempt to allocate zero bytes");
         return_VALUE (NULL);
     }
@@ -691,13 +730,15 @@ _CmCallocate (
         _REPORT_ERROR (Module, Line, Component,
             "CmCallocate: Memory allocation failure");
 
-        DEBUG_PRINT (ACPI_ERROR, ("CmCallocate: Could not allocate size 0x%x\n", Size));
+        DEBUG_PRINT (ACPI_ERROR,
+                ("CmCallocate: Could not allocate size 0x%x\n", Size));
 
         return_VALUE (NULL);
     }
 
 #ifdef ACPI_DEBUG
-    Status = AcpiCmAddElementToAllocList (Address, Size, MEM_CALLOC, Component, Module, Line);
+    Status = AcpiCmAddElementToAllocList (Address, Size, MEM_CALLOC, Component,
+                                          Module, Line);
     if (ACPI_FAILURE (Status))
     {
         AcpiOsFree (Address);
@@ -705,7 +746,8 @@ _CmCallocate (
     }
 #endif
 
-    DEBUG_PRINT (TRACE_ALLOCATIONS, ("CmCallocate: %p Size 0x%x\n", Address, Size));
+    DEBUG_PRINT (TRACE_ALLOCATIONS,
+        ("CmCallocate: %p Size 0x%x\n", Address, Size));
 
     return_PTR (Address);
 }

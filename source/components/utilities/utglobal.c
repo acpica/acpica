@@ -161,7 +161,9 @@ BOOLEAN                     AcpiGbl_MethodExecuting = FALSE;
 
 UINT32                      AcpiGbl_SystemFlags = 0;
 UINT32                      AcpiGbl_StartupFlags = 0;
-BOOLEAN                     AcpiGbl_Shutdown = TRUE;        /* System starts unitialized! */
+
+/* System starts unitialized! */
+BOOLEAN                     AcpiGbl_Shutdown = TRUE;
 
 
 /******************************************************************************
@@ -211,7 +213,7 @@ UINT8                       AcpiGbl_NsProperties[] =
     NSP_LOCAL,                  /* 04 Package          */
     NSP_NORMAL,                 /* 05 FieldUnit        */
     NSP_NEWSCOPE | NSP_LOCAL,   /* 06 Device           */
-    NSP_LOCAL,                  /* 07 AcpiEvent            */
+    NSP_LOCAL,                  /* 07 AcpiEvent        */
     NSP_NEWSCOPE | NSP_LOCAL,   /* 08 Method           */
     NSP_LOCAL,                  /* 09 Mutex            */
     NSP_LOCAL,                  /* 10 Region           */
@@ -240,7 +242,7 @@ UINT8                       AcpiGbl_NsProperties[] =
     NSP_NORMAL,                 /* 33 While            */
     NSP_NEWSCOPE,               /* 34 Scope            */
     NSP_LOCAL,                  /* 35 DefAny           */
-    NSP_NORMAL,                 /* 36 Reference           */
+    NSP_NORMAL,                 /* 36 Reference        */
     NSP_NORMAL,                 /* 37 Alias            */
     NSP_NORMAL,                 /* 38 Notify           */
     NSP_NORMAL,                 /* 39 Address Handler  */

@@ -211,7 +211,8 @@ AcpiCmValidInternalObject (
 
     if (!Object)
     {
-        DEBUG_PRINT (ACPI_INFO, ("CmValidInternalObject: **** Null Object Ptr\n"));
+        DEBUG_PRINT (ACPI_INFO,
+            ("CmValidInternalObject: **** Null Object Ptr\n"));
         return FALSE;
     }
 
@@ -219,33 +220,36 @@ AcpiCmValidInternalObject (
 
     if (AcpiTbSystemTablePointer (Object))
     {
-        DEBUG_PRINT (ACPI_INFO, ("CmValidInternalObject: **** Object %p is a Pcode Ptr\n",
-                        Object));
+        DEBUG_PRINT (ACPI_INFO,
+            ("CmValidInternalObject: **** Object %p is a Pcode Ptr\n", Object));
         return FALSE;
     }
 
     /* Check the descriptor type field */
 
-    if (!VALID_DESCRIPTOR_TYPE (Object, DESC_TYPE_ACPI_OBJ))
+    if (!VALID_DESCRIPTOR_TYPE (Object, ACPI_DESC_TYPE_INTERNAL))
     {
         /* Not an ACPI internal object, do some further checking */
 
-        if (VALID_DESCRIPTOR_TYPE (Object, DESC_TYPE_NTE))
+        if (VALID_DESCRIPTOR_TYPE (Object, ACPI_DESC_TYPE_NAMED))
         {
-            DEBUG_PRINT (ACPI_INFO, ("CmValidInternalObject: **** Obj %p is NTE, not ACPI obj\n",
-                            Object));
+            DEBUG_PRINT (ACPI_INFO,
+                ("CmValidInternalObject: **** Obj %p is NTE, not ACPI obj\n",
+                Object));
         }
 
-        else if (VALID_DESCRIPTOR_TYPE (Object, DESC_TYPE_PARSER))
+        else if (VALID_DESCRIPTOR_TYPE (Object, ACPI_DESC_TYPE_PARSER))
         {
-            DEBUG_PRINT (ACPI_INFO, ("CmValidInternalObject: **** Obj %p is a parser obj, not ACPI obj\n",
-                            Object));
+            DEBUG_PRINT (ACPI_INFO,
+                ("CmValidInternalObject: **** Obj %p is a parser obj, not ACPI obj\n",
+                Object));
         }
 
         else
         {
-            DEBUG_PRINT (ACPI_INFO, ("CmValidInternalObject: **** Obj %p is of unknown type\n",
-                            Object));
+            DEBUG_PRINT (ACPI_INFO,
+                ("CmValidInternalObject: **** Obj %p is of unknown type\n",
+                Object));
         }
 
         return FALSE;
@@ -286,7 +290,7 @@ _CmAllocateObjectDesc (
     FUNCTION_TRACE ("_AllocateObjectDesc");
 
 
-    AcpiCmAcquireMutex (MTX_CACHES);
+    AcpiCmAcquireMutex (ACPI_MTX_CACHES);
 
     AcpiGbl_ObjectCacheRequests++;
 
@@ -303,14 +307,14 @@ _CmAllocateObjectDesc (
         AcpiGbl_ObjectCacheHits++;
         AcpiGbl_ObjectCacheDepth--;
 
-        AcpiCmReleaseMutex (MTX_CACHES);
+        AcpiCmReleaseMutex (ACPI_MTX_CACHES);
     }
 
     else
     {
         /* The cache is empty, create a new object */
 
-        AcpiCmReleaseMutex (MTX_CACHES);
+        AcpiCmReleaseMutex (ACPI_MTX_CACHES);
 
         /* Attempt to allocate new descriptor */
 
@@ -330,7 +334,7 @@ _CmAllocateObjectDesc (
 
     /* Mark the descriptor type */
 
-    Object->Common.DataType = DESC_TYPE_ACPI_OBJ;
+    Object->Common.DataType = ACPI_DESC_TYPE_INTERNAL;
 
     DEBUG_PRINT (TRACE_ALLOCATIONS, ("AllocateObjectDesc: %p Size 0x%x\n",
                     Object, sizeof (ACPI_OBJECT_INTERNAL)));
@@ -359,9 +363,10 @@ AcpiCmDeleteObjectDesc (
 
     /* Object must be an ACPI_OBJECT_INTERNAL */
 
-    if (Object->Common.DataType != DESC_TYPE_ACPI_OBJ)
+    if (Object->Common.DataType != ACPI_DESC_TYPE_INTERNAL)
     {
-        DEBUG_PRINT (ACPI_ERROR, ("CmDeleteObjectDesc: Obj %p is not an ACPI object\n", Object));
+        DEBUG_PRINT (ACPI_ERROR,
+            ("CmDeleteObjectDesc: Obj %p is not an ACPI object\n", Object));
         return;
     }
 
@@ -369,7 +374,9 @@ AcpiCmDeleteObjectDesc (
 
     if (Object->Common.Next)
     {
-        DEBUG_PRINT (ACPI_ERROR, ("CmDeleteObjectDesc: Obj %p is already in the object cache\n", Object));
+        DEBUG_PRINT (ACPI_ERROR,
+            ("CmDeleteObjectDesc: Obj %p is already in the object cache\n",
+            Object));
         return;
     }
 
@@ -388,12 +395,12 @@ AcpiCmDeleteObjectDesc (
         return;
     }
 
-    AcpiCmAcquireMutex (MTX_CACHES);
+    AcpiCmAcquireMutex (ACPI_MTX_CACHES);
 
     /* Clear the entire object.  This is important! */
 
     MEMSET (Object, 0, sizeof (ACPI_OBJECT_INTERNAL));
-    Object->Common.DataType = DESC_TYPE_ACPI_OBJ;
+    Object->Common.DataType = ACPI_DESC_TYPE_INTERNAL;
 
     /* Put the object at the head of the global cache list */
 
@@ -402,7 +409,7 @@ AcpiCmDeleteObjectDesc (
     AcpiGbl_ObjectCacheDepth++;
 
 
-    AcpiCmReleaseMutex (MTX_CACHES);
+    AcpiCmReleaseMutex (ACPI_MTX_CACHES);
 }
 
 
@@ -495,7 +502,7 @@ AcpiCmInitStaticObject (
      *    object can't be deleted, but keeps everything sane)
      */
 
-    ObjDesc->Common.DataType        = DESC_TYPE_ACPI_OBJ;
+    ObjDesc->Common.DataType        = ACPI_DESC_TYPE_INTERNAL;
     ObjDesc->Common.Size            = sizeof (ACPI_OBJECT_INTERNAL);
     ObjDesc->Common.Flags           = AO_STATIC_ALLOCATION;
     ObjDesc->Common.ReferenceCount  = 1;
@@ -546,7 +553,7 @@ AcpiCmGetSimpleObjectSize (
 
     Length = sizeof (ACPI_OBJECT);
 
-    if (VALID_DESCRIPTOR_TYPE (InternalObj, DESC_TYPE_NTE))
+    if (VALID_DESCRIPTOR_TYPE (InternalObj, ACPI_DESC_TYPE_NAMED))
     {
         /* Object is an NTE (reference), just return the length */
 
@@ -596,8 +603,9 @@ AcpiCmGetSimpleObjectSize (
          */
         if (InternalObj->Reference.OpCode != AML_NAMEPATH_OP)
         {
-            DEBUG_PRINT (ACPI_ERROR, ("CmGetSimpleObjectSize: Unsupported Reference opcode=0x%X in object %p\n",
-                                        InternalObj->Reference.OpCode, InternalObj));
+            DEBUG_PRINT (ACPI_ERROR,
+                ("CmGetSimpleObjectSize: Unsupported Reference opcode=0x%X in object %p\n",
+                InternalObj->Reference.OpCode, InternalObj));
             Status = AE_TYPE;
         }
         break;
@@ -605,17 +613,19 @@ AcpiCmGetSimpleObjectSize (
 
     default:
 
-        DEBUG_PRINT (ACPI_ERROR, ("CmGetSimpleObjectSize: Unsupported type=0x%X in object %p\n",
-                                    InternalObj->Common.Type, InternalObj));
+        DEBUG_PRINT (ACPI_ERROR,
+            ("CmGetSimpleObjectSize: Unsupported type=0x%X in object %p\n",
+            InternalObj->Common.Type, InternalObj));
         Status = AE_TYPE;
         break;
     }
 
 
     /*
-     * Account for the space required by the object rounded up to the next multiple
-     * of the machine word size.  This keeps each object aligned on a machine word
-     * boundary. (preventing alignment faults on some machines.)
+     * Account for the space required by the object rounded up to the next
+     * multiple of the machine word size.  This keeps each object aligned
+     * on a machine word boundary. (preventing alignment faults on some
+     * machines.)
      */
     *ObjLength = (UINT32) ROUND_UP_TO_NATIVE_WORD (Length);
 
@@ -673,14 +683,16 @@ AcpiCmGetPackageObjectSize (
         /*
          * Check for 1) An unitialized package element.  It is completely
          *              legal to declare a package and leave it uninitialized
-         *           2) Any type other than a package.  Packages are handled below.
+         *           2) Any type other than a package.  Packages are handled
+         *              below.
          */
 
         if ((!ThisInternalObj) ||
             (!IS_THIS_OBJECT_TYPE (ThisInternalObj, ACPI_TYPE_PACKAGE)))
         {
             /*
-             * Simple object - just get the size (Null object/entry handled also)
+             * Simple object - just get the size (Null object/entry handled
+             *  also)
              */
 
             Status = AcpiCmGetSimpleObjectSize (ThisInternalObj, &ObjectSpace);
@@ -692,29 +704,31 @@ AcpiCmGetPackageObjectSize (
             Length += ObjectSpace;
 
             Index[CurrentDepth]++;
-            while (Index[CurrentDepth] >= ParentObj[CurrentDepth]->Package.Count)
+            while (Index[CurrentDepth] >=
+                ParentObj[CurrentDepth]->Package.Count)
             {
                 /*
-                 * We've handled all of the objects at this level,  This means that we
-                 * have just completed a package.  That package may have contained one
-                 * or more packages itself.
+                 * We've handled all of the objects at this level,  This means
+                 * that we have just completed a package.  That package may
+                 * have contained one or more packages itself.
                  */
                 if (CurrentDepth == 0)
                 {
                     /*
-                     * We have handled all of the objects in the top level package
-                     * just add the length of the package objects and get out.
-                     * Round up to the next machine word.
+                     * We have handled all of the objects in the top level
+                     * package just add the length of the package objects and
+                     * get out. Round up to the next machine word.
                      */
-                    Length += ROUND_UP_TO_NATIVE_WORD (sizeof (ACPI_OBJECT)) * PackageCount;
+                    Length += ROUND_UP_TO_NATIVE_WORD (sizeof (ACPI_OBJECT)) *
+                                                       PackageCount;
                     *ObjLength = Length;
 
                     return_ACPI_STATUS (AE_OK);
                 }
 
                 /*
-                 * Go back up a level and move the index past the just completed
-                 * package object.
+                 * Go back up a level and move the index past the just
+                 * completed package object.
                  */
                 CurrentDepth--;
                 Index[CurrentDepth]++;
@@ -740,8 +754,9 @@ AcpiCmGetPackageObjectSize (
                  * Too many nested levels of packages for us to handle
                  */
 
-                DEBUG_PRINT (ACPI_ERROR, ("CmGetPackageObjectSize: Pkg nested too deep (max %d)\n",
-                                            MAX_PACKAGE_DEPTH));
+                DEBUG_PRINT (ACPI_ERROR,
+                    ("CmGetPackageObjectSize: Pkg nested too deep (max %d)\n",
+                    MAX_PACKAGE_DEPTH));
                 return_ACPI_STATUS (AE_LIMIT);
             }
         }
@@ -773,7 +788,7 @@ AcpiCmGetObjectSize(
     ACPI_STATUS             Status;
 
 
-    if ((VALID_DESCRIPTOR_TYPE (InternalObj, DESC_TYPE_ACPI_OBJ)) &&
+    if ((VALID_DESCRIPTOR_TYPE (InternalObj, ACPI_DESC_TYPE_INTERNAL)) &&
         (IS_THIS_OBJECT_TYPE (InternalObj, ACPI_TYPE_PACKAGE)))
     {
         Status = AcpiCmGetPackageObjectSize (InternalObj, ObjLength);

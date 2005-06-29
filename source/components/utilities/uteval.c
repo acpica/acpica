@@ -161,13 +161,15 @@ AcpiCmEvaluateNumericObject (
     {
         if (Status == AE_NOT_FOUND)
         {
-            DEBUG_PRINT (ACPI_INFO, ("%s on %4.4s was not found\n", ObjectName,
-                                        &((ACPI_NAMED_OBJECT*) AcpiDevice)->Name));
+            DEBUG_PRINT (ACPI_INFO,
+                ("%s on %4.4s was not found\n", ObjectName,
+                &((ACPI_NAMED_OBJECT*) AcpiDevice)->Name));
         }
         else
         {
-            DEBUG_PRINT (ACPI_ERROR, ("%s on %4.4s failed with status %4.4x\n", ObjectName,
-                                        &((ACPI_NAMED_OBJECT*) AcpiDevice)->Name, Status));
+            DEBUG_PRINT (ACPI_ERROR,
+                ("%s on %4.4s failed with status %4.4x\n", ObjectName,
+                &((ACPI_NAMED_OBJECT*) AcpiDevice)->Name, Status));
         }
 
         return_ACPI_STATUS (Status);
@@ -178,7 +180,8 @@ AcpiCmEvaluateNumericObject (
 
     if (!ObjDesc)
     {
-        DEBUG_PRINT (ACPI_ERROR, ("No object was returned from %s\n", ObjectName));
+        DEBUG_PRINT (ACPI_ERROR,
+            ("No object was returned from %s\n", ObjectName));
         return_ACPI_STATUS (AE_TYPE);
     }
 
@@ -187,8 +190,9 @@ AcpiCmEvaluateNumericObject (
     if (ObjDesc->Common.Type != ACPI_TYPE_NUMBER)
     {
         Status = AE_TYPE;
-        DEBUG_PRINT (ACPI_ERROR, ("Type returned from %s was not a number: %d \n",
-                                    ObjectName, ObjDesc->Common.Type));
+        DEBUG_PRINT (ACPI_ERROR,
+            ("Type returned from %s was not a number: %d \n",
+            ObjectName, ObjDesc->Common.Type));
     }
     else
     {
@@ -237,19 +241,22 @@ AcpiCmExecute_HID (
 
     /* Execute the method */
 
-    Status = AcpiNsEvaluateRelative (AcpiDevice, METHOD_NAME__HID, NULL, &ObjDesc);
+    Status = AcpiNsEvaluateRelative (AcpiDevice,
+                                     METHOD_NAME__HID, NULL, &ObjDesc);
     if (ACPI_FAILURE (Status))
     {
         if (Status == AE_NOT_FOUND)
         {
-            DEBUG_PRINT (ACPI_INFO, ("_HID on %4.4s was not found\n",
-                                        &((ACPI_NAMED_OBJECT*) AcpiDevice)->Name));
+            DEBUG_PRINT (ACPI_INFO,
+                ("_HID on %4.4s was not found\n",
+                &((ACPI_NAMED_OBJECT*) AcpiDevice)->Name));
         }
 
         else
         {
-            DEBUG_PRINT (ACPI_ERROR, ("_HID on %4.4s failed with status %4.4x\n",
-                                        &((ACPI_NAMED_OBJECT*) AcpiDevice)->Name, Status));
+            DEBUG_PRINT (ACPI_ERROR,
+                ("_HID on %4.4s failed with status %4.4x\n",
+                &((ACPI_NAMED_OBJECT*) AcpiDevice)->Name, Status));
         }
 
         return_ACPI_STATUS (Status);
@@ -264,15 +271,17 @@ AcpiCmExecute_HID (
     }
 
     /*
-     *  A _HID can return either a Number (32 bit compressed EISA ID) or a string
+     *  A _HID can return either a Number (32 bit compressed EISA ID) or
+     *  a string
      */
 
     if ((ObjDesc->Common.Type != ACPI_TYPE_NUMBER) &&
         (ObjDesc->Common.Type != ACPI_TYPE_STRING))
     {
         Status = AE_TYPE;
-        DEBUG_PRINT (ACPI_ERROR, ("Type returned from _HID was not a number or string: [0x%X] \n",
-                                    ObjDesc->Common.Type));
+        DEBUG_PRINT (ACPI_ERROR,
+            ("Type returned from _HID was not a number or string: [0x%X] \n",
+            ObjDesc->Common.Type));
     }
 
     else
@@ -330,19 +339,22 @@ AcpiCmExecute_UID (
 
     /* Execute the method */
 
-    Status = AcpiNsEvaluateRelative (AcpiDevice, METHOD_NAME__UID, NULL, &ObjDesc);
+    Status = AcpiNsEvaluateRelative (AcpiDevice,
+                                     METHOD_NAME__UID, NULL, &ObjDesc);
     if (ACPI_FAILURE (Status))
     {
         if (Status == AE_NOT_FOUND)
         {
-            DEBUG_PRINT (ACPI_INFO, ("_UID on %4.4s was not found\n",
-                                        &((ACPI_NAMED_OBJECT*) AcpiDevice)->Name));
+            DEBUG_PRINT (ACPI_INFO,
+                ("_UID on %4.4s was not found\n",
+                &((ACPI_NAMED_OBJECT*) AcpiDevice)->Name));
         }
 
         else
         {
-            DEBUG_PRINT (ACPI_ERROR, ("_UID on %4.4s failed with status %4.4x\n",
-                                        &((ACPI_NAMED_OBJECT*) AcpiDevice)->Name, Status));
+            DEBUG_PRINT (ACPI_ERROR,
+                ("_UID on %4.4s failed with status %4.4x\n",
+                &((ACPI_NAMED_OBJECT*) AcpiDevice)->Name, Status));
         }
 
         return (Status);
@@ -357,15 +369,17 @@ AcpiCmExecute_UID (
     }
 
     /*
-     *  A _UID can return either a Number (32 bit compressed EISA ID) or a string
+     *  A _UID can return either a Number (32 bit compressed EISA ID) or
+     *  a string
      */
 
     if ((ObjDesc->Common.Type != ACPI_TYPE_NUMBER) &&
         (ObjDesc->Common.Type != ACPI_TYPE_STRING))
     {
         Status = AE_TYPE;
-        DEBUG_PRINT (ACPI_ERROR, ("Type returned from _UID was not a number or string: %d \n",
-                                    ObjDesc->Common.Type));
+        DEBUG_PRINT (ACPI_ERROR,
+            ("Type returned from _UID was not a number or string: %d \n",
+            ObjDesc->Common.Type));
     }
 
     else
@@ -424,19 +438,22 @@ AcpiCmExecute_STA (
 
     /* Execute the method */
 
-    Status = AcpiNsEvaluateRelative (AcpiDevice, METHOD_NAME__STA, NULL, &ObjDesc);
+    Status = AcpiNsEvaluateRelative (AcpiDevice,
+                                     METHOD_NAME__STA, NULL, &ObjDesc);
     if (ACPI_FAILURE (Status))
     {
         if (Status == AE_NOT_FOUND)
         {
-            DEBUG_PRINT (ACPI_INFO, ("_STA on %4.4s was not found\n",
-                                        &((ACPI_NAMED_OBJECT*) AcpiDevice)->Name));
+            DEBUG_PRINT (ACPI_INFO,
+                ("_STA on %4.4s was not found\n",
+                &((ACPI_NAMED_OBJECT*) AcpiDevice)->Name));
         }
 
         else
         {
-            DEBUG_PRINT (ACPI_ERROR, ("_STA on %4.4s failed with status %4.4x\n",
-                                        &((ACPI_NAMED_OBJECT*) AcpiDevice)->Name, Status));
+            DEBUG_PRINT (ACPI_ERROR,
+                ("_STA on %4.4s failed with status %4.4x\n",
+                &((ACPI_NAMED_OBJECT*) AcpiDevice)->Name, Status));
         }
 
         return_ACPI_STATUS (Status);
@@ -456,8 +473,9 @@ AcpiCmExecute_STA (
     if (ObjDesc->Common.Type != ACPI_TYPE_NUMBER)
     {
         Status = AE_TYPE;
-        DEBUG_PRINT (ACPI_ERROR, ("Type returned from _STA was not a number: %d \n",
-                                    ObjDesc->Common.Type));
+        DEBUG_PRINT (ACPI_ERROR,
+            ("Type returned from _STA was not a number: %d \n",
+            ObjDesc->Common.Type));
     }
 
     else

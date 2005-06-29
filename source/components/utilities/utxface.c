@@ -1,7 +1,6 @@
-
 /******************************************************************************
  *
- * Module Name: cmapi - External interfaces for "global" ACPI functions
+ * Module Name: cmxface - External interfaces for "global" ACPI functions
  *
  *****************************************************************************/
 
@@ -115,7 +114,7 @@
  *****************************************************************************/
 
 
-#define __CMAPI_C__
+#define __CMXFACE_C__
 
 #include "acpi.h"
 #include "events.h"
@@ -127,7 +126,7 @@
 
 
 #define _COMPONENT          MISCELLANEOUS
-        MODULE_NAME         ("cmapi");
+        MODULE_NAME         ("cmxface");
 
 
 /*******************************************************************************
@@ -151,7 +150,8 @@ AcpiInitialize (ACPI_INIT_DATA *InitData)
 
     FUNCTION_TRACE ("AcpiInitialize");
 
-    DEBUG_PRINT_RAW (ACPI_OK, ("ACPI Subsystem version [%s]\n", ACPI_CA_VERSION));
+    DEBUG_PRINT_RAW (ACPI_OK,
+        ("ACPI Subsystem version [%s]\n", ACPI_CA_VERSION));
     DEBUG_PRINT (ACPI_INFO, ("Initializing ACPI Subsystem...\n"));
 
 
@@ -161,10 +161,11 @@ AcpiInitialize (ACPI_INIT_DATA *InitData)
 
     /* Initialize the OS-Dependent layer */
 
-    Status = AcpiOsdInitialize ();
+    Status = AcpiOsInitialize ();
     if (ACPI_FAILURE (Status))
     {
-        DEBUG_PRINT (ACPI_ERROR, ("OSD failed to initialize, %s\n", AcpiCmFormatException (Status)));
+        DEBUG_PRINT (ACPI_ERROR,
+            ("OSD failed to initialize, %s\n", AcpiCmFormatException (Status)));
         REPORT_ERROR ("OSD Initialization Failure");
         return_ACPI_STATUS (Status);
     }
@@ -174,7 +175,8 @@ AcpiInitialize (ACPI_INIT_DATA *InitData)
     Status = AcpiCmMutexInitialize ();
     if (ACPI_FAILURE (Status))
     {
-        DEBUG_PRINT (ACPI_ERROR, ("Global mutex creation failure, %s\n", AcpiCmFormatException (Status)));
+        DEBUG_PRINT (ACPI_ERROR,
+            ("Global mutex creation failure, %s\n", AcpiCmFormatException (Status)));
         REPORT_ERROR ("Global Mutex Initialization Failure");
         return_ACPI_STATUS (Status);
     }
@@ -208,7 +210,7 @@ AcpiTerminate (void)
     /* Terminate the AML Debuger if present */
 
     AcpiGbl_DbTerminateThreads = TRUE;
-    AcpiCmReleaseMutex (MTX_DEBUG_CMD_READY);
+    AcpiCmReleaseMutex (ACPI_MTX_DEBUG_CMD_READY);
 
 
     /* Shutdown and free all resources */
@@ -223,7 +225,7 @@ AcpiTerminate (void)
 
     /* Now we can shutdown the OS-dependent layer */
 
-    AcpiOsdTerminate ();
+    AcpiOsTerminate ();
 
     return_ACPI_STATUS (AE_OK);
 }
@@ -285,7 +287,8 @@ AcpiGetSystemInfo (
     OutBuffer->Length = sizeof (ACPI_SYSTEM_INFO);
     InfoPtr = (ACPI_SYSTEM_INFO *) OutBuffer->Pointer;
 
-    InfoPtr->AcpiCAVersion      = 0x1234;   /* TBD [Future]: need a version number, or use the version string */
+    /* TBD [Future]: need a version number, or use the version string */
+    InfoPtr->AcpiCaVersion      = 0x1234;
 
     /* System flags (ACPI capabilities) */
 
@@ -302,8 +305,8 @@ AcpiGetSystemInfo (
 
     /* Current debug levels */
 
-    InfoPtr->DebugLayer         = DebugLayer;
-    InfoPtr->DebugLevel         = DebugLevel;
+    InfoPtr->DebugLayer         = AcpiDbgLayer;
+    InfoPtr->DebugLevel         = AcpiDbgLevel;
 
     /* Current status of the ACPI tables, per table type */
 

@@ -151,8 +151,9 @@ AcpiCmFacpRegisterError (
 
     REPORT_ERROR ("Invalid FACP register value");
 
-    DEBUG_PRINT (ACPI_ERROR, ("Invalid FACP register value, %s = 0x%X (FACP=0x%X)\n",
-                    RegisterName, Value, AcpiGbl_FACP));
+    DEBUG_PRINT (ACPI_ERROR,
+        ("Invalid FACP register value, %s = 0x%X (FACP=0x%X)\n",
+        RegisterName, Value, AcpiGbl_FACP));
 }
 
 
@@ -204,7 +205,8 @@ AcpiCmHardwareInitialize (void)
     {
         RestoreAcpiChipset = FALSE;
 
-        DEBUG_PRINT (ACPI_ERROR, ("CmHardwareInitialize: Supported modes uninitialized!\n"));
+        DEBUG_PRINT (ACPI_ERROR,
+            ("CmHardwareInitialize: Supported modes uninitialized!\n"));
         return_ACPI_STATUS (AE_ERROR);
     }
 
@@ -226,7 +228,7 @@ AcpiCmHardwareInitialize (void)
 
         AcpiGbl_OriginalMode = SYS_MODE_LEGACY;
         DEBUG_PRINT (ACPI_INFO,
-                    ("Tables loaded from buffer, hardware assumed to support LEGACY mode only.\n"));
+            ("Tables loaded from buffer, hardware assumed to support LEGACY mode only.\n"));
         break;
 
 
@@ -241,10 +243,12 @@ AcpiCmHardwareInitialize (void)
             AcpiGbl_OriginalMode = SYS_MODE_LEGACY;
         }
 
-        DEBUG_PRINT (ACPI_INFO, ("System supports both ACPI and LEGACY modes.\n"));
+        DEBUG_PRINT (ACPI_INFO,
+            ("System supports both ACPI and LEGACY modes.\n"));
 
-        DEBUG_PRINT (ACPI_INFO, ("System is currently in %s mode.\n",
-                                (AcpiGbl_OriginalMode == SYS_MODE_ACPI) ? "ACPI" : "LEGACY"));
+        DEBUG_PRINT (ACPI_INFO,
+            ("System is currently in %s mode.\n",
+            (AcpiGbl_OriginalMode == SYS_MODE_ACPI) ? "ACPI" : "LEGACY"));
         break;
     }
 
@@ -268,10 +272,12 @@ AcpiCmHardwareInitialize (void)
          * be modified. The PM1bEvtBlk behaves as expected.
          */
 
-        AcpiGbl_Pm1EnableRegisterSave = AcpiOsdIn16 ((AcpiGbl_FACP->Pm1aEvtBlk + 2));
+        AcpiGbl_Pm1EnableRegisterSave =
+            AcpiOsIn16 ((AcpiGbl_FACP->Pm1aEvtBlk + 2));
         if (AcpiGbl_FACP->Pm1bEvtBlk)
         {
-            AcpiGbl_Pm1EnableRegisterSave |= AcpiOsdIn16 ((AcpiGbl_FACP->Pm1bEvtBlk + 2));
+            AcpiGbl_Pm1EnableRegisterSave |=
+                AcpiOsIn16 ((AcpiGbl_FACP->Pm1bEvtBlk + 2));
         }
 
 
@@ -284,7 +290,8 @@ AcpiCmHardwareInitialize (void)
         {
             /* GPE0 specified in FACP  */
 
-            AcpiGbl_Gpe0EnableRegisterSave = AcpiCmAllocate (DIV_2 (AcpiGbl_FACP->Gpe0BlkLen));
+            AcpiGbl_Gpe0EnableRegisterSave =
+                AcpiCmAllocate (DIV_2 (AcpiGbl_FACP->Gpe0BlkLen));
             if (!AcpiGbl_Gpe0EnableRegisterSave)
             {
                 return_ACPI_STATUS (AE_NO_MEMORY);
@@ -295,7 +302,8 @@ AcpiCmHardwareInitialize (void)
             for (Index = 0; Index < DIV_2 (AcpiGbl_FACP->Gpe0BlkLen); Index++)
             {
                 AcpiGbl_Gpe0EnableRegisterSave[Index] =
-                    AcpiOsdIn8 (AcpiGbl_FACP->Gpe0Blk + DIV_2 (AcpiGbl_FACP->Gpe0BlkLen));
+                    AcpiOsIn8 (AcpiGbl_FACP->Gpe0Blk +
+                    DIV_2 (AcpiGbl_FACP->Gpe0BlkLen));
             }
         }
 
@@ -308,7 +316,8 @@ AcpiCmHardwareInitialize (void)
         {
             /* GPE1 defined */
 
-            AcpiGbl_Gpe1EnableRegisterSave = AcpiCmAllocate (DIV_2 (AcpiGbl_FACP->Gpe1BlkLen));
+            AcpiGbl_Gpe1EnableRegisterSave =
+                AcpiCmAllocate (DIV_2 (AcpiGbl_FACP->Gpe1BlkLen));
             if (!AcpiGbl_Gpe1EnableRegisterSave)
             {
                 return_ACPI_STATUS (AE_NO_MEMORY);
@@ -319,7 +328,8 @@ AcpiCmHardwareInitialize (void)
             for (Index = 0; Index < DIV_2 (AcpiGbl_FACP->Gpe1BlkLen); Index++)
             {
                 AcpiGbl_Gpe1EnableRegisterSave[Index] =
-                    AcpiOsdIn8 (AcpiGbl_FACP->Gpe1Blk + DIV_2 (AcpiGbl_FACP->Gpe1BlkLen));
+                    AcpiOsIn8 (AcpiGbl_FACP->Gpe1Blk +
+                    DIV_2 (AcpiGbl_FACP->Gpe1BlkLen));
             }
         }
 
@@ -336,12 +346,14 @@ AcpiCmHardwareInitialize (void)
 
         if (AcpiGbl_FACP->Pm1EvtLen < 4)
         {
-            AcpiCmFacpRegisterError ("PM1_EVT_LEN", (UINT32) AcpiGbl_FACP->Pm1EvtLen);
+            AcpiCmFacpRegisterError ("PM1_EVT_LEN",
+                                    (UINT32) AcpiGbl_FACP->Pm1EvtLen);
         }
 
         if (!AcpiGbl_FACP->Pm1CntLen)
         {
-            AcpiCmFacpRegisterError ("PM1_CNT_LEN", (UINT32) AcpiGbl_FACP->Pm1CntLen);
+            AcpiCmFacpRegisterError ("PM1_CNT_LEN",
+                                    (UINT32) AcpiGbl_FACP->Pm1CntLen);
         }
 
         if (!AcpiGbl_FACP->Pm1aEvtBlk)
@@ -361,22 +373,28 @@ AcpiCmHardwareInitialize (void)
 
         if (AcpiGbl_FACP->Pm2CntBlk && !AcpiGbl_FACP->Pm2CntLen)
         {
-            AcpiCmFacpRegisterError ("PM2_CNT_LEN", (UINT32) AcpiGbl_FACP->Pm2CntLen);
+            AcpiCmFacpRegisterError ("PM2_CNT_LEN",
+                                    (UINT32) AcpiGbl_FACP->Pm2CntLen);
         }
 
         if (AcpiGbl_FACP->PmTmLen < 4)
         {
-            AcpiCmFacpRegisterError ("PM_TM_LEN", (UINT32) AcpiGbl_FACP->PmTmLen);
+            AcpiCmFacpRegisterError ("PM_TM_LEN",
+                                    (UINT32) AcpiGbl_FACP->PmTmLen);
         }
 
-        if (AcpiGbl_FACP->Gpe0Blk && (AcpiGbl_FACP->Gpe0BlkLen & 1))    /* length not multiple of 2    */
+        /* length not multiple of 2    */
+        if (AcpiGbl_FACP->Gpe0Blk && (AcpiGbl_FACP->Gpe0BlkLen & 1))
         {
-            AcpiCmFacpRegisterError ("GPE0_BLK_LEN", (UINT32) AcpiGbl_FACP->Gpe0BlkLen);
+            AcpiCmFacpRegisterError ("GPE0_BLK_LEN",
+                                    (UINT32) AcpiGbl_FACP->Gpe0BlkLen);
         }
 
-        if (AcpiGbl_FACP->Gpe1Blk && (AcpiGbl_FACP->Gpe1BlkLen & 1))    /* length not multiple of 2    */
+        /* length not multiple of 2    */
+        if (AcpiGbl_FACP->Gpe1Blk && (AcpiGbl_FACP->Gpe1BlkLen & 1))
         {
-            AcpiCmFacpRegisterError ("GPE1_BLK_LEN", (UINT32) AcpiGbl_FACP->Gpe1BlkLen);
+            AcpiCmFacpRegisterError ("GPE1_BLK_LEN",
+                                    (UINT32) AcpiGbl_FACP->Gpe1BlkLen);
         }
     }
 
