@@ -1,6 +1,7 @@
 /******************************************************************************
  *
  * Module Name: amfield - ACPI AML (p-code) execution - field manipulation
+ *              $Revision: 1.72 $
  *
  *****************************************************************************/
 
@@ -126,7 +127,7 @@
 
 
 #define _COMPONENT          INTERPRETER
-        MODULE_NAME         ("amfield");
+        MODULE_NAME         ("amfield")
 
 
 /*******************************************************************************
@@ -160,12 +161,12 @@
 
 ACPI_STATUS
 AcpiAmlSetupField (
-    ACPI_OBJECT_INTERNAL    *ObjDesc,
-    ACPI_OBJECT_INTERNAL    *RgnDesc,
-    INT32                   FieldBitWidth)
+    ACPI_OPERAND_OBJECT     *ObjDesc,
+    ACPI_OPERAND_OBJECT     *RgnDesc,
+    UINT32                  FieldBitWidth)
 {
     ACPI_STATUS             Status = AE_OK;
-    INT32                   FieldByteWidth;
+    UINT32                  FieldByteWidth;
 
 
     FUNCTION_TRACE ("AmlSetupField");
@@ -209,10 +210,10 @@ AcpiAmlSetupField (
 
 
     /*
-     * If the address and length have not been previously evaluated,
+     * If the Region Address and Length have not been previously evaluated,
      * evaluate them and save the results.
      */
-    if (!(RgnDesc->Region.RegionFlags & REGION_AGRUMENT_DATA_VALID))
+    if (!(RgnDesc->Region.Flags & AOPOBJ_DATA_VALID))
     {
 
         Status = AcpiDsGetRegionArguments (RgnDesc);
@@ -220,6 +221,17 @@ AcpiAmlSetupField (
         {
             return_ACPI_STATUS (Status);
         }
+    }
+
+
+    if ((ObjDesc->Common.Type == ACPI_TYPE_FIELD_UNIT) &&
+        (!(ObjDesc->Common.Flags & AOPOBJ_DATA_VALID)))
+    {
+        /*
+         * Field Buffer and Index have not been previously evaluated,
+         */
+        DEBUG_PRINT (ACPI_ERROR, ("Uninitialized field!\n"));
+        return_ACPI_STATUS (AE_AML_INTERNAL);
     }
 
     if (RgnDesc->Region.Length <
@@ -263,12 +275,12 @@ AcpiAmlSetupField (
 
 ACPI_STATUS
 AcpiAmlAccessNamedField (
-    INT32                   Mode,
+    UINT32                  Mode,
     ACPI_HANDLE             NamedField,
     void                    *Buffer,
     UINT32                  BufferLength)
 {
-    ACPI_OBJECT_INTERNAL    *ObjDesc = NULL;
+    ACPI_OPERAND_OBJECT     *ObjDesc = NULL;
     ACPI_STATUS             Status = AE_OK;
     BOOLEAN                 Locked = FALSE;
     UINT32                  BitGranularity = 0;
@@ -288,7 +300,7 @@ AcpiAmlAccessNamedField (
             ("AcpiAmlAccessNamedField: Internal error - null parameter\n"));
         return_ACPI_STATUS (AE_AML_INTERNAL);
     }
-    
+
     /* Get the attached field object */
 
     ObjDesc = AcpiNsGetAttachedObject (NamedField);
@@ -305,7 +317,7 @@ AcpiAmlAccessNamedField (
     {
         DEBUG_PRINT (ACPI_ERROR,
             ("AmlAccessNamedField: Name %4.4s type %x is not a defined field\n",
-            &(((ACPI_NAMED_OBJECT*) NamedField)->Name),
+            &(((ACPI_NAMESPACE_NODE *) NamedField)->Name),
             AcpiNsGetType (NamedField)));
         return_ACPI_STATUS (AE_AML_OPERAND_TYPE);
     }
@@ -327,7 +339,7 @@ AcpiAmlAccessNamedField (
     {
         DEBUG_PRINT (ACPI_ERROR,
             ("AmlAccessNamedField: Internal error - Name %4.4s type %x does not match value-type %x at %p\n",
-            &(((ACPI_NAMED_OBJECT*) NamedField)->Name),
+            &(((ACPI_NAMESPACE_NODE *) NamedField)->Name),
             AcpiNsGetType (NamedField), ObjDesc->Common.Type, ObjDesc));
         return_ACPI_STATUS (AE_AML_OPERAND_TYPE);
     }
@@ -354,11 +366,24 @@ AcpiAmlAccessNamedField (
     ActualByteLength = BufferLength;
     if (BufferLength > ByteFieldLength)
     {
-        ActualByteLength = ByteFieldLength;
-
         DEBUG_PRINT (ACPI_INFO,
-            ("AmlAccessNamedField: Byte length too large, truncated to %x\n",
-            ActualByteLength));
+            ("AmlAccessNamedField: Byte length %d too large, truncated to %x\n",
+	     ActualByteLength, ByteFieldLength));
+
+        ActualByteLength = ByteFieldLength;
+    }
+    /* TBD: should these round down to a power of 2? */
+    if (DIV_8(BitGranularity) > ByteFieldLength) {
+        DEBUG_PRINT (ACPI_INFO,
+            ("AmlAccessNamedField: Bit granularity %d too large, truncated to %x\n",
+	     BitGranularity, MUL_8(ByteFieldLength)));
+	BitGranularity = MUL_8(ByteFieldLength);
+    }
+    if (ByteGranularity > ByteFieldLength) {
+        DEBUG_PRINT (ACPI_INFO,
+            ("AmlAccessNamedField: Byte granularity %d too large, truncated to %x\n",
+	     ByteGranularity, ByteFieldLength));
+	ByteGranularity = ByteFieldLength;
     }
 
 
