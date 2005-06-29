@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: utglobal - Global variables for the ACPI subsystem
- *              $Revision: 1.138 $
+ *              $Revision: 1.139 $
  *
  *****************************************************************************/
 
@@ -701,11 +701,11 @@ AcpiUtInitGlobals (
 
     MEMSET (AcpiGbl_MemoryLists, 0, sizeof (ACPI_MEMORY_LIST) * ACPI_NUM_MEM_LISTS);
 
-    AcpiGbl_MemoryLists[ACPI_MEM_LIST_STATE].LinkOffset         = (UINT16) (NATIVE_UINT) &(((ACPI_GENERIC_STATE *) NULL)->Common.Next);
-    AcpiGbl_MemoryLists[ACPI_MEM_LIST_PSNODE].LinkOffset        = (UINT16) (NATIVE_UINT) &(((ACPI_PARSE_OBJECT *) NULL)->Next);
-    AcpiGbl_MemoryLists[ACPI_MEM_LIST_PSNODE_EXT].LinkOffset    = (UINT16) (NATIVE_UINT) &(((ACPI_PARSE2_OBJECT *) NULL)->Next);
-    AcpiGbl_MemoryLists[ACPI_MEM_LIST_OPERAND].LinkOffset       = (UINT16) (NATIVE_UINT) &(((ACPI_OPERAND_OBJECT *) NULL)->Cache.Next);
-    AcpiGbl_MemoryLists[ACPI_MEM_LIST_WALK].LinkOffset          = (UINT16) (NATIVE_UINT) &(((ACPI_WALK_STATE *) NULL)->Next);
+    AcpiGbl_MemoryLists[ACPI_MEM_LIST_STATE].LinkOffset         = (UINT16) (ACPI_SIZE) &(((ACPI_GENERIC_STATE *) NULL)->Common.Next);
+    AcpiGbl_MemoryLists[ACPI_MEM_LIST_PSNODE].LinkOffset        = (UINT16) (ACPI_SIZE) &(((ACPI_PARSE_OBJECT *) NULL)->Next);
+    AcpiGbl_MemoryLists[ACPI_MEM_LIST_PSNODE_EXT].LinkOffset    = (UINT16) (ACPI_SIZE) &(((ACPI_PARSE2_OBJECT *) NULL)->Next);
+    AcpiGbl_MemoryLists[ACPI_MEM_LIST_OPERAND].LinkOffset       = (UINT16) (ACPI_SIZE) &(((ACPI_OPERAND_OBJECT *) NULL)->Cache.Next);
+    AcpiGbl_MemoryLists[ACPI_MEM_LIST_WALK].LinkOffset          = (UINT16) (ACPI_SIZE) &(((ACPI_WALK_STATE *) NULL)->Next);
 
     AcpiGbl_MemoryLists[ACPI_MEM_LIST_NSNODE].ObjectSize        = sizeof (ACPI_NAMESPACE_NODE);
     AcpiGbl_MemoryLists[ACPI_MEM_LIST_STATE].ObjectSize         = sizeof (ACPI_GENERIC_STATE);
