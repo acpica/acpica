@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: utglobal - Global variables for the ACPI subsystem
- *              $Revision: 1.182 $
+ *              $Revision: 1.184 $
  *
  *****************************************************************************/
 
@@ -380,10 +380,10 @@ AcpiUtHexToAsciiChar (
  ******************************************************************************/
 
 
-ACPI_TABLE_DESC             AcpiGbl_AcpiTables[NUM_ACPI_TABLES];
+ACPI_TABLE_LIST             AcpiGbl_TableLists[NUM_ACPI_TABLE_TYPES];
 
 
-ACPI_TABLE_SUPPORT          AcpiGbl_AcpiTableData[NUM_ACPI_TABLES] =
+ACPI_TABLE_SUPPORT          AcpiGbl_TableData[NUM_ACPI_TABLE_TYPES] =
 {
     /***********    Name,   Signature, Global typed pointer     Signature size,      Type                  How many allowed?,    Contains valid AML? */
 
@@ -616,11 +616,9 @@ AcpiUtGetObjectTypeName (
 
 
 #if defined(ACPI_DEBUG_OUTPUT) || defined(ACPI_DEBUGGER)
-
 /*
  * Strings and procedures used for debug only
  */
-
 
 /*****************************************************************************
  *
@@ -639,14 +637,13 @@ AcpiUtGetMutexName (
     UINT32                  MutexId)
 {
 
-    if (MutexId > MAX_MTX)
+    if (MutexId > MAX_MUTEX)
     {
         return ("Invalid Mutex ID");
     }
 
     return (AcpiGbl_MutexNames[MutexId]);
 }
-
 
 #endif
 
@@ -791,23 +788,19 @@ AcpiUtInitGlobals (
 
     /* ACPI table structure */
 
-    for (i = 0; i < NUM_ACPI_TABLES; i++)
+    for (i = 0; i < NUM_ACPI_TABLE_TYPES; i++)
     {
-        AcpiGbl_AcpiTables[i].Prev          = &AcpiGbl_AcpiTables[i];
-        AcpiGbl_AcpiTables[i].Next          = &AcpiGbl_AcpiTables[i];
-        AcpiGbl_AcpiTables[i].Pointer       = NULL;
-        AcpiGbl_AcpiTables[i].Length        = 0;
-        AcpiGbl_AcpiTables[i].Allocation    = ACPI_MEM_NOT_ALLOCATED;
-        AcpiGbl_AcpiTables[i].Count         = 0;
+        AcpiGbl_TableLists[i].Next          = NULL;
+        AcpiGbl_TableLists[i].Count         = 0;
     }
 
     /* Mutex locked flags */
 
-    for (i = 0; i < NUM_MTX; i++)
+    for (i = 0; i < NUM_MUTEX; i++)
     {
-        AcpiGbl_AcpiMutexInfo[i].Mutex      = NULL;
-        AcpiGbl_AcpiMutexInfo[i].OwnerId    = ACPI_MUTEX_NOT_ACQUIRED;
-        AcpiGbl_AcpiMutexInfo[i].UseCount   = 0;
+        AcpiGbl_MutexInfo[i].Mutex          = NULL;
+        AcpiGbl_MutexInfo[i].OwnerId        = ACPI_MUTEX_NOT_ACQUIRED;
+        AcpiGbl_MutexInfo[i].UseCount       = 0;
     }
 
     /* GPE support */
@@ -818,8 +811,8 @@ AcpiUtInitGlobals (
 
     /* Global notify handlers */
 
-    AcpiGbl_SysNotify.Handler           = NULL;
-    AcpiGbl_DrvNotify.Handler           = NULL;
+    AcpiGbl_SystemNotify.Handler        = NULL;
+    AcpiGbl_DeviceNotify.Handler        = NULL;
     AcpiGbl_InitHandler                 = NULL;
 
     /* Global "typed" ACPI table pointers */
