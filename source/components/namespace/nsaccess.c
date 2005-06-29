@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: nsaccess - Top-level functions for accessing ACPI namespace
- *              $Revision: 1.108 $
+ *              $Revision: 1.109 $
  *
  ******************************************************************************/
 
@@ -638,21 +638,23 @@ AcpiNsLookup (
          * If 1) This is the last segment (NumSegments == 0)
          *    2) and looking for a specific type
          *       (Not checking for TYPE_ANY)
-         *    3) which is not a local type (TYPE_DEF_ANY)
-         *    4) which is not a local type (TYPE_SCOPE)
-         *    5) which is not a local type (TYPE_INDEX_FIELD_DEFN)
-         *    6) and type of object is known (not TYPE_ANY)
-         *    7) and object does not match request
+         *    3) Which is not an alias
+         *    4) which is not a local type (TYPE_DEF_ANY)
+         *    5) which is not a local type (TYPE_SCOPE)
+         *    6) which is not a local type (TYPE_INDEX_FIELD_DEFN)
+         *    7) and type of object is known (not TYPE_ANY)
+         *    8) and object does not match request
          *
          * Then we have a type mismatch.  Just warn and ignore it.
          */
         if ((NumSegments        == 0)                               &&
             (TypeToCheckFor     != ACPI_TYPE_ANY)                   &&
+            (TypeToCheckFor     != INTERNAL_TYPE_ALIAS)             &&
             (TypeToCheckFor     != INTERNAL_TYPE_DEF_ANY)           &&
             (TypeToCheckFor     != INTERNAL_TYPE_SCOPE)             &&
             (TypeToCheckFor     != INTERNAL_TYPE_INDEX_FIELD_DEFN)  &&
-            (ThisNode->Type != ACPI_TYPE_ANY)                   &&
-            (ThisNode->Type != TypeToCheckFor))
+            (ThisNode->Type     != ACPI_TYPE_ANY)                   &&
+            (ThisNode->Type     != TypeToCheckFor))
         {
             /* Complain about a type mismatch */
 
