@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslcompiler.h - common include file
- *              $Revision: 1.91 $
+ *              $Revision: 1.93 $
  *
  *****************************************************************************/
 
@@ -164,8 +164,8 @@ getopt (
  * Compiler versions and names
  */
 
-#define CompilerVersion             "X2038"
-#define CompilerCreatorRevision     0x02002038  /* Acpi 2.0, Version # */
+#define CompilerVersion             "X2039"
+#define CompilerCreatorRevision     0x02002039  /* Acpi 2.0, Version # */
 
 #define CompilerId                  "Intel ACPI Component Architecture ASL Compiler"
 #define CompilerCopyright           "Copyright (C) 2000 - 2002 Intel Corporation"
@@ -805,11 +805,15 @@ UtCheckIntegerRange (
     UINT32                  LowValue,
     UINT32                  HighValue);
 
-ACPI_INTEGER
+ACPI_STATUS
 UtStrtoul64 (
     NATIVE_CHAR             *String,
-    NATIVE_CHAR             **Terminator,
-    UINT32                  Base);
+    UINT32                  Base,
+    ACPI_INTEGER            *RetInteger);
+
+ACPI_INTEGER
+UtDoConstant (
+    NATIVE_CHAR             *String);
 
 
 /* Find */

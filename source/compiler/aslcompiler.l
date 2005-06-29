@@ -3,7 +3,7 @@
 /******************************************************************************
  *
  * Module Name: aslcompiler.l - Flex input file
- *              $Revision: 1.41 $
+ *              $Revision: 1.53 $
  *
  *****************************************************************************/
 
@@ -11,7 +11,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -134,7 +134,7 @@ YYSTYPE AslCompilerlval;
  */
 
 #define _COMPONENT          ACPI_COMPILER
-        MODULE_NAME         ("aslscan")
+        ACPI_MODULE_NAME    ("aslscan")
 void
 comment (void);
 void
@@ -180,7 +180,7 @@ NamePathTail                [.]{NameSeg}
 
 
 0[xX]{HexDigitChar}+ |
-{DigitChar}+                { AslCompilerlval.i = UtStrtoul64 ((char *) AslCompilertext, NULL, 0);
+{DigitChar}+                { AslCompilerlval.i = UtDoConstant ((char *) AslCompilertext);
                                 count (1); return (INTEGER); }
 
 "Include"                   { count (1); return (INCLUDE); }
@@ -465,7 +465,7 @@ NamePathTail                [.]{NameSeg}
                                 if (strcmp (AslCompilertext, "\\"))
                                 {
                                     strcpy (s, "____");
-                                    STRUPR (AslCompilertext);
+                                    ACPI_STRUPR (AslCompilertext);
                                 }
                                 memcpy (s, AslCompilertext, strlen (AslCompilertext));
                                 AslCompilerlval.s = s;
@@ -475,7 +475,7 @@ NamePathTail                [.]{NameSeg}
 {NameString}                { char *s;
                                 count (0);
                                 s=malloc (strlen (AslCompilertext)+1);
-                                STRUPR (AslCompilertext);
+                                ACPI_STRUPR (AslCompilertext);
                                 strcpy (s, AslCompilertext);
                                 s[strlen (AslCompilertext)] = 0;
                                 AslCompilerlval.s = s;
@@ -541,7 +541,6 @@ AslPopInputFileStack (void)
         return -1;
     }
 
-
     /* Close the current include file */
 
     fclose (yyin);
@@ -559,12 +558,11 @@ AslPopInputFileStack (void)
     /* Point the parser to the popped file */
 
     yy_delete_buffer (YY_CURRENT_BUFFER);
-
     yy_switch_to_buffer (Fnode->State);
 
     /* All done with this node */
 
-    AcpiUtFree (Fnode);
+    ACPI_MEM_FREE (Fnode);
     return 0;
 }
 
@@ -606,7 +604,6 @@ AslPushInputFileStack (
     /* Push it on the stack */
 
     InputStack = Fnode;
-
 
     /* Point the parser to this file */
 
@@ -686,7 +683,6 @@ InsertLineBuffer (
 
     Gbl_InputByteCount++;
 
-
     /* Handle tabs.  Convert to spaces */
 
     if (SourceChar == '\t')
@@ -708,16 +704,20 @@ InsertLineBuffer (
 
         if (Gbl_LineBufPtr > (Gbl_CurrentLineBuffer + (ASL_LINE_BUFFER_SIZE - 1)))
         {
+#if 0
+            /*
+             * Warning if we have split a long source line.
+             * <Probably overkill>
+             */
             sprintf (MsgBuffer, "Max %d", ASL_LINE_BUFFER_SIZE);
             AslCommonError (ASL_WARNING, ASL_MSG_LONG_LINE,
                             Gbl_CurrentLineNumber, Gbl_LogicalLineNumber,
                             Gbl_CurrentLineOffset, Gbl_CurrentColumn,
                             Gbl_Files[ASL_FILE_INPUT].Filename, MsgBuffer);
-
+#endif
 
             ResetCurrentLineBuffer ();
         }
-
         else if (SourceChar == '\n')
         {
             /* End of line */
@@ -758,12 +758,12 @@ count (
         TotalKeywords++;
         TotalNamedObjects++;
         break;
+
     case 3:
         TotalKeywords++;
         TotalExecutableOpcodes++;
         break;
     }
-
 
     for (i = 0; (yytext[i] != 0) && (yytext[i] != EOF); i++)
     {
@@ -771,7 +771,6 @@ count (
         *Gbl_LineBufPtr = 0;
     }
 }
-
 
 
 /*******************************************************************************
@@ -818,7 +817,6 @@ loop:
                         Gbl_Files[ASL_FILE_INPUT].Filename, NULL);
     }
 
-
     /* Comment is closed only if the NEXT character is a slash */
 
     InsertLineBuffer (c);
@@ -850,6 +848,7 @@ comment2 (void)
 {
     char                c;
 
+
     InsertLineBuffer ('/');
     InsertLineBuffer ('/');
 
@@ -874,56 +873,217 @@ comment2 (void)
  *
  ******************************************************************************/
 
+#define ASL_NORMAL_CHAR         0
+#define ASL_ESCAPE_SEQUENCE     1
+#define ASL_OCTAL_CONSTANT      2
+#define ASL_HEX_CONSTANT        3
+
 void
 literal (void)
 {
     char                *s = MsgBuffer;
     char                *CleanString;
-    char                Escape = FALSE;
+    char                StringChar;
+    UINT32              State = ASL_NORMAL_CHAR;
+    UINT32              i;
+    UINT8               Digit;
+    char                ConvertBuffer[4];
 
 
-    /* Eat chars until end-of-literal */
-
-    while ((*s = (char) input()) != '\"' && *s != EOF)
+    /*
+     * Eat chars until end-of-literal.
+     * NOTE:  Put back the original surrounding quotes into the
+     * source line buffer.
+     */
+    InsertLineBuffer ('\"');
+    while ((StringChar = (char) input()) != EOF)
     {
-        InsertLineBuffer (*s);
+        InsertLineBuffer (StringChar);
 
-        /* Special handling for backslash-escape sequence */
+DoCharacter:
 
-        if (*s == '\\')
+        switch (State)
         {
-            /* Toss this backslash, get next char */
+        case ASL_NORMAL_CHAR:
 
-            *s = (char) input();
-            if (*s == EOF)
+            switch (StringChar)
             {
-                break;
+            case '\\':
+                /*
+                 * Special handling for backslash-escape sequence.  We will
+                 * toss the backslash and translate the escape char(s).
+                 */
+                State = ASL_ESCAPE_SEQUENCE;
+                continue;
+
+            case '\"':
+
+                /* String terminator */
+
+                goto CompletedString;
             }
+            break;
 
-            InsertLineBuffer (*s);
 
-            /* Weed out "special" chars */
+        case ASL_ESCAPE_SEQUENCE:
 
-            switch (*s)
+            State = ASL_NORMAL_CHAR;
+            switch (StringChar)
             {
+            case 'a':
+                StringChar = 0x07;      /* BELL */
+                break;
+
+            case 'b':
+                StringChar = 0x08;      /* BACKSPACE */
+                break;
+
+            case 'f':
+                StringChar = 0x0C;      /* FORMFEED */
+                break;
+
             case 'n':
-                *s = 0x0A;      /* LF */
+                StringChar = 0x0A;      /* LINEFEED */
                 break;
 
-            case 't':           /* TAB */
-                *s = 0x20;
+            case 'r':
+                StringChar = 0x0D;      /* CARRIAGE RETURN*/
                 break;
 
-            default:            /* Just keep the char */
+            case 't':
+                StringChar = 0x09;      /* HORIZONTAL TAB */
+                break;
+
+            case 'v':
+                StringChar = 0x0B;      /* VERTICAL TAB */
+                break;
+
+            case 'x':
+                State = ASL_HEX_CONSTANT;
+                i = 0;
+                continue;
+
+            case '\'':                  /* Single Quote */
+            case '\"':                  /* Double Quote */
+            case '\\':                  /* Backslash */
+                break;
+
+            default:
+
+                /* Check for an octal digit (0-7) */
+
+                if (ACPI_IS_OCTAL_DIGIT (StringChar))
+                {
+                    State = ASL_OCTAL_CONSTANT;
+                    ConvertBuffer[0] = StringChar;
+                    i = 1;
+                    continue;
+                }
+
+                /* Unknown escape sequence */
+
+                AslCommonError (ASL_ERROR, ASL_MSG_INVALID_ESCAPE,
+                                Gbl_CurrentLineNumber, Gbl_LogicalLineNumber,
+                                Gbl_CurrentLineOffset, Gbl_CurrentColumn,
+                                Gbl_Files[ASL_FILE_INPUT].Filename, NULL);
+                continue;
+            }
+            break;
+
+
+        case ASL_OCTAL_CONSTANT:
+
+            /* Up to three octal digits allowed */
+
+            if (!ACPI_IS_OCTAL_DIGIT (StringChar) ||
+                (i > 2))
+            {
+                /*
+                 * Reached end of the constant.  Convert the assembled ASCII
+                 * string and resume processing of the next character
+                 */
+                ConvertBuffer[i] = 0;
+                Digit = (UINT8) ACPI_STRTOUL (ConvertBuffer, NULL, 8);
+
+                /* Check for NULL or non-ascii character (ignore if so) */
+
+                if ((Digit == 0) || (Digit > ACPI_ASCII_MAX))
+                {
+                    AslCommonError (ASL_WARNING, ASL_MSG_INVALID_STRING,
+                                    Gbl_CurrentLineNumber, Gbl_LogicalLineNumber,
+                                    Gbl_CurrentLineOffset, Gbl_CurrentColumn,
+                                    Gbl_Files[ASL_FILE_INPUT].Filename, NULL);
+                }
+                else
+                {
+                    *s = (char) Digit;
+                    s++;
+                }
+
+                State = ASL_NORMAL_CHAR;
+                goto DoCharacter;
                 break;
             }
+
+            /* Append another digit of the constant */
+
+            ConvertBuffer[i] = StringChar;
+            i++;
+            continue;
+
+
+        case ASL_HEX_CONSTANT:
+
+            /* Up to two hex digits allowed */
+
+            if (!ACPI_IS_XDIGIT (StringChar) ||
+                (i > 1))
+            {
+                /*
+                 * Reached end of the constant.  Convert the assembled ASCII
+                 * string and resume processing of the next character
+                 */
+                ConvertBuffer[i] = 0;
+                Digit = (UINT8) ACPI_STRTOUL (ConvertBuffer, NULL, 16);
+
+                /* Check for NULL or non-ascii character (ignore if so) */
+
+                if ((Digit == 0) || (Digit > ACPI_ASCII_MAX))
+                {
+                    AslCommonError (ASL_WARNING, ASL_MSG_INVALID_STRING,
+                                    Gbl_CurrentLineNumber, Gbl_LogicalLineNumber,
+                                    Gbl_CurrentLineOffset, Gbl_CurrentColumn,
+                                    Gbl_Files[ASL_FILE_INPUT].Filename, NULL);
+                }
+                else
+                {
+                    *s = (char) Digit;
+                    s++;
+                }
+
+                State = ASL_NORMAL_CHAR;
+                goto DoCharacter;
+                break;
+            }
+
+            /* Append another digit of the constant */
+
+            ConvertBuffer[i] = StringChar;
+            i++;
+            continue;
         }
 
+        /* Save the finished character */
+
+        *s = StringChar;
         s++;
     }
 
-    /* Null terminate and copy string to a new buffer */
 
+CompletedString:
+    /*
+     * Null terminate the input string and copy string to a new buffer
+     */
     *s = 0;
 
     CleanString = UtGetStringBuffer (strlen (MsgBuffer) + 1);
@@ -931,12 +1091,12 @@ literal (void)
     {
         AslCommonError (ASL_ERROR, ASL_MSG_MEMORY_ALLOCATION,
                         Gbl_CurrentLineNumber, Gbl_LogicalLineNumber,
-                        Gbl_InputByteCount, Gbl_CurrentColumn,
+                        Gbl_CurrentLineOffset, Gbl_CurrentColumn,
                         Gbl_Files[ASL_FILE_INPUT].Filename, NULL);
         return;
     }
 
-    STRCPY (CleanString, MsgBuffer);
+    ACPI_STRCPY (CleanString, MsgBuffer);
     AslCompilerlval.s = CleanString;
 }
 
