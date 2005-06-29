@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dbcmds - debug commands and output routines
- *              $Revision: 1.79 $
+ *              $Revision: 1.80 $
  *
  ******************************************************************************/
 
@@ -377,9 +377,9 @@ AcpiDbSetMethodBreakpoint (
     /* Get and verify the breakpoint address */
 
     Address = ACPI_STRTOUL (Location, NULL, 16);
-    if (Address <= Op->AmlOffset)
+    if (Address <= Op->Common.AmlOffset)
     {
-        AcpiOsPrintf ("Breakpoint %X is beyond current address %X\n", Address, Op->AmlOffset);
+        AcpiOsPrintf ("Breakpoint %X is beyond current address %X\n", Address, Op->Common.AmlOffset);
     }
 
     /* Save breakpoint in current walk */
@@ -1155,5 +1155,97 @@ Cleanup:
 
 }
 
+
+
+
+typedef struct 
+{
+    UINT32              Nodes;
+    UINT32              Objects;
+} ACPI_INTEGRITY_INFO;
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiDbIntegrityWalk
+ *
+ * PARAMETERS:  Callback from WalkNamespace
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Examine one NS node for valid values.
+ *
+ ******************************************************************************/
+
+ACPI_STATUS
+AcpiDbIntegrityWalk (
+    ACPI_HANDLE             ObjHandle,
+    UINT32                  NestingLevel,
+    void                    *Context,
+    void                    **ReturnValue)
+{
+    ACPI_INTEGRITY_INFO     *Info = (ACPI_INTEGRITY_INFO *) Context;
+    ACPI_NAMESPACE_NODE     *Node = (ACPI_NAMESPACE_NODE *) ObjHandle;
+    ACPI_OPERAND_OBJECT     *Object;
+
+
+    Info->Nodes++;
+    if (ACPI_GET_DESCRIPTOR_TYPE (Node) != ACPI_DESC_TYPE_NAMED)
+    {
+        AcpiOsPrintf ("Invalid Descriptor Type for Node %p, Type = %X\n",
+            Node, ACPI_GET_DESCRIPTOR_TYPE (Node));
+    }
+
+    if (Node->Type > INTERNAL_TYPE_MAX)
+    {
+        AcpiOsPrintf ("Invalid Object Type for Node %p, Type = %X\n",
+            Node, Node->Type);
+    }
+
+    if (!AcpiUtValidAcpiName (Node->Name.Integer))
+    {
+        AcpiOsPrintf ("Invalid AcpiName for Node %p\n", Node);
+    }
+
+    Object = AcpiNsGetAttachedObject (Node);
+    if (Object)
+    {
+        Info->Objects++;
+        if (ACPI_GET_DESCRIPTOR_TYPE (Object) != ACPI_DESC_TYPE_INTERNAL)
+        {
+            AcpiOsPrintf ("Invalid Descriptor Type for Object %p, Type = %X\n",
+                Object, ACPI_GET_DESCRIPTOR_TYPE (Object));
+        }
+    }
+
+
+    return (AE_OK);
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiDbCheckIntegrity
+ *
+ * PARAMETERS:  None
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Check entire namespace for data structure integrity
+ *
+ ******************************************************************************/
+
+void
+AcpiDbCheckIntegrity (void)
+{
+    ACPI_INTEGRITY_INFO     Info = {0,0};
+
+    /* Search all nodes in namespace */
+
+    AcpiWalkNamespace (ACPI_TYPE_ANY, ACPI_ROOT_OBJECT, ACPI_UINT32_MAX,
+                    AcpiDbIntegrityWalk, (void **) &Info, NULL);
+
+    AcpiOsPrintf ("Verified %d namespace nodes with %d Objects\n", Info.Nodes, Info.Objects);
+
+}
 
 #endif /* ENABLE_DEBUGGER */

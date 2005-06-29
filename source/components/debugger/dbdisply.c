@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dbdisply - debug display commands
- *              $Revision: 1.66 $
+ *              $Revision: 1.68 $
  *
  ******************************************************************************/
 
@@ -193,16 +193,16 @@ AcpiDbDumpParserDescriptor (
     const ACPI_OPCODE_INFO  *Info;
 
 
-    Info = AcpiPsGetOpcodeInfo (Op->Opcode);
+    Info = AcpiPsGetOpcodeInfo (Op->Common.AmlOpcode);
 
     AcpiOsPrintf ("Parser Op Descriptor:\n");
-    AcpiOsPrintf ("%20.20s : %4.4X\n", "Opcode", Op->Opcode);
+    AcpiOsPrintf ("%20.20s : %4.4X\n", "Opcode", Op->Common.AmlOpcode);
 
     ACPI_DEBUG_ONLY_MEMBERS (AcpiOsPrintf ("%20.20s : %s\n", "Opcode Name", Info->Name));
 
-    AcpiOsPrintf ("%20.20s : %p\n", "Value/ArgList", Op->Value);
-    AcpiOsPrintf ("%20.20s : %p\n", "Parent", Op->Parent);
-    AcpiOsPrintf ("%20.20s : %p\n", "NextOp", Op->Next);
+    AcpiOsPrintf ("%20.20s : %p\n", "Value/ArgList", Op->Common.Value);
+    AcpiOsPrintf ("%20.20s : %p\n", "Parent", Op->Common.Parent);
+    AcpiOsPrintf ("%20.20s : %p\n", "NextOp", Op->Common.Next);
 }
 
 
@@ -409,6 +409,7 @@ AcpiDbDecodeInternalObject (
 
     if (!ObjDesc)
     {
+        AcpiOsPrintf (" Uninitialized\n");
         return;
     }
 
@@ -540,21 +541,21 @@ AcpiDbDisplayInternalObject (
                 break;
 
             case AML_LOCAL_OP:
-                AcpiOsPrintf ("[Local%d]", ObjDesc->Reference.Offset);
+                AcpiOsPrintf ("[Local%d] ", ObjDesc->Reference.Offset);
                 if (WalkState)
                 {
                     ObjDesc = WalkState->LocalVariables[ObjDesc->Reference.Offset].Object;
-                    AcpiOsPrintf (" %p", ObjDesc);
+                    AcpiOsPrintf ("%p", ObjDesc);
                     AcpiDbDecodeInternalObject (ObjDesc);
                 }
                 break;
 
             case AML_ARG_OP:
-                AcpiOsPrintf ("[Arg%d]  ", ObjDesc->Reference.Offset);
+                AcpiOsPrintf ("[Arg%d]   ", ObjDesc->Reference.Offset);
                 if (WalkState)
                 {
                     ObjDesc = WalkState->Arguments[ObjDesc->Reference.Offset].Object;
-                    AcpiOsPrintf (" %p", ObjDesc);
+                    AcpiOsPrintf ("%p", ObjDesc);
                     AcpiDbDecodeInternalObject (ObjDesc);
                 }
                 break;
@@ -588,7 +589,6 @@ AcpiDbDisplayInternalObject (
         AcpiOsPrintf ("<Not a valid ACPI Object Descriptor> ");
         break;
     }
-
 
     AcpiOsPrintf ("\n");
 }
@@ -645,9 +645,9 @@ AcpiDbDisplayMethodInfo (
 
 
     RootOp = StartOp;
-    while (RootOp->Parent)
+    while (RootOp->Common.Parent)
     {
-        RootOp = RootOp->Parent;
+        RootOp = RootOp->Common.Parent;
     }
 
     Op = RootOp;
@@ -667,7 +667,7 @@ AcpiDbDisplayMethodInfo (
 
         /* Decode the opcode */
 
-        OpInfo = AcpiPsGetOpcodeInfo (Op->Opcode);
+        OpInfo = AcpiPsGetOpcodeInfo (Op->Common.AmlOpcode);
         switch (OpInfo->Class)
         {
         case AML_CLASS_ARGUMENT:
