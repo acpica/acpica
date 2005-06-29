@@ -3,7 +3,7 @@
 /******************************************************************************
  *
  * Module Name: aslcompiler.l - Flex input file
- *              $Revision: 1.66 $
+ *              $Revision: 1.68 $
  *
  *****************************************************************************/
 
@@ -11,7 +11,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2003, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2004, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -886,14 +886,9 @@ comment2 (void)
 
     if (c == EOF)
     {
-        /*
-         * Premature End-Of-File
-         */
-        AslCommonError (ASL_ERROR, ASL_MSG_EARLY_EOF,
-                        Gbl_CurrentLineNumber, Gbl_LogicalLineNumber,
-                        Gbl_CurrentLineOffset, Gbl_CurrentColumn,
-                        Gbl_Files[ASL_FILE_INPUT].Filename, NULL);
-        return (FALSE);
+        /* End of file is OK, change to newline. Let parser detect EOF later */
+
+        c = '\n';
     }
 
     InsertLineBuffer (c);
