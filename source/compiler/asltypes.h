@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asltypes.h - compiler data types and struct definitions
- *              $Revision: 1.65 $
+ *              $Revision: 1.66 $
  *
  *****************************************************************************/
 
@@ -393,7 +393,8 @@ typedef enum
     ASL_MSG_INVALID_TIME,
     ASL_MSG_DUPLICATE_CASE,
     ASL_MSG_NO_CASES,
-    ASL_MSG_INVALID_UUID
+    ASL_MSG_INVALID_UUID,
+    ASL_MSG_INTERRUPT_LIST
 
 } ASL_MESSAGE_IDS;
 
@@ -486,10 +487,8 @@ char                        *AslMessages [] = {
 /*    ASL_MSG_INVALID_TIME */               "Time parameter too long (255 max)",
 /*    ASL_MSG_DUPLICATE_CASE */             "Case value already specified",
 /*    ASL_MSG_NO_CASES */                   "No Case() statements under Switch()",
-/*    ASL_MSG_INVALID_UUID */               "UUID string must be of the form \"aabbccdd-eeff-gghh-iijj-kkllmmnnoopp\""
-
-
-
+/*    ASL_MSG_INVALID_UUID */               "UUID string must be of the form \"aabbccdd-eeff-gghh-iijj-kkllmmnnoopp\"",
+/*    ASL_MSG_INTERRUPT_LIST */             "Too many interrupts (255 max)"
 };
 
 
