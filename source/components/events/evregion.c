@@ -770,7 +770,7 @@ EvInitializeRegion (
     /*
      *  Find any "_REG" associated with this region definition
      */
-    Status = NsSearchOnly (*RegNamePtr, Nte->Scope, ACPI_TYPE_Method, &RegEntry, NULL);
+    Status = NsSearchOneScope (*RegNamePtr, Nte->Scope, ACPI_TYPE_Method, &RegEntry, NULL);
     if (Status == AE_OK)
     {
         /*
