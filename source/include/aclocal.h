@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: aclocal.h - Internal data types used across the ACPI subsystem
- *       $Revision: 1.81 $
+ *       $Revision: 1.82 $
  *
  *****************************************************************************/
 
@@ -729,12 +729,20 @@ typedef struct acpi_device_walk_info
 
 /* TBD: [Restructure] Merge with struct above */
 
-typedef struct AcpiWalkInfo
+typedef struct acpi_walk_info
 {
     UINT32                  DebugLevel;
     UINT32                  OwnerId;
 
 } ACPI_WALK_INFO;
+
+typedef struct acpi_get_devices_info
+{
+    WALK_CALLBACK           UserFunction;
+    void                    *Context;
+    NATIVE_CHAR             *Hid;
+
+} ACPI_GET_DEVICES_INFO;
 
 
 /*****************************************************************************
@@ -913,24 +921,11 @@ enum
 
 /* MUST HAVES */
 
-
-typedef enum
-{
-    DWORD_DEVICE_ID,
-    STRING_PTR_DEVICE_ID,
-    STRING_DEVICE_ID
-
-}   DEVICE_ID_TYPE;
+#define DEVICE_ID_LENGTH                0x09
 
 typedef struct
 {
-    DEVICE_ID_TYPE      Type;
-    union
-    {
-        UINT32              Number;
-        NATIVE_CHAR         *StringPtr;
-        NATIVE_CHAR         Buffer[9];
-    } Data;
+        NATIVE_CHAR         Buffer[DEVICE_ID_LENGTH];
 
 } DEVICE_ID;
 
