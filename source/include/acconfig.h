@@ -172,6 +172,7 @@
 
 #define ACPI_NAME_SIZE              4
 #define PATH_SEGMENT_LENGTH         5       /* 4 chars for name + 1 char for separator */
+#define PATH_SEPARATOR              '.'
 
 
 /* Constants used in searching for the RSDP in low memory */
