@@ -1,7 +1,8 @@
-
 /******************************************************************************
- * 
- * Module Name: nsutils - Utilities for accessing ACPI namespace
+ *
+ * Module Name: nsutils - Utilities for accessing ACPI namespace, accessing
+ *                        parents and siblings and Scope manipulation
+ *              $Revision: 1.70 $
  *
  *****************************************************************************/
 
@@ -38,9 +39,9 @@
  * The above copyright and patent license is granted only if the following
  * conditions are met:
  *
- * 3. Conditions 
+ * 3. Conditions
  *
- * 3.1. Redistribution of Source with Rights to Further Distribute Source.  
+ * 3.1. Redistribution of Source with Rights to Further Distribute Source.
  * Redistribution of source code of any substantial portion of the Covered
  * Code or modification with rights to further distribute source must include
  * the above Copyright Notice, the above License, this list of Conditions,
@@ -48,11 +49,11 @@
  * Licensee must cause all Covered Code to which Licensee contributes to
  * contain a file documenting the changes Licensee made to create that Covered
  * Code and the date of any change.  Licensee must include in that file the
- * documentation of any changes made by any predecessor Licensee.  Licensee 
+ * documentation of any changes made by any predecessor Licensee.  Licensee
  * must include a prominent statement that the modification is derived,
  * directly or indirectly, from Original Intel Code.
  *
- * 3.2. Redistribution of Source with no Rights to Further Distribute Source.  
+ * 3.2. Redistribution of Source with no Rights to Further Distribute Source.
  * Redistribution of source code of any substantial portion of the Covered
  * Code or modification without rights to further distribute source must
  * include the following Disclaimer and Export Compliance provision in the
@@ -86,7 +87,7 @@
  * INSTALLATION, TRAINING OR OTHER SERVICES.  INTEL WILL NOT PROVIDE ANY
  * UPDATES, ENHANCEMENTS OR EXTENSIONS.  INTEL SPECIFICALLY DISCLAIMS ANY
  * IMPLIED WARRANTIES OF MERCHANTABILITY, NONINFRINGEMENT AND FITNESS FOR A
- * PARTICULAR PURPOSE. 
+ * PARTICULAR PURPOSE.
  *
  * 4.2. IN NO EVENT SHALL INTEL HAVE ANY LIABILITY TO LICENSEE, ITS LICENSEES
  * OR ANY OTHER THIRD PARTY, FOR ANY LOST PROFITS, LOST DATA, LOSS OF USE OR
@@ -116,21 +117,19 @@
 
 #define __NSUTILS_C__
 
-#include <acpi.h>
-#include <namesp.h>
-#include <interp.h>
-#include <amlcode.h>
-#include <tables.h>
-
+#include "acpi.h"
+#include "acnamesp.h"
+#include "acinterp.h"
+#include "amlcode.h"
+#include "actables.h"
 
 #define _COMPONENT          NAMESPACE
-        MODULE_NAME         ("nsutils");
-
+        MODULE_NAME         ("nsutils")
 
 
 /****************************************************************************
  *
- * FUNCTION:    NsValidRootPrefix
+ * FUNCTION:    AcpiNsValidRootPrefix
  *
  * PARAMETERS:  Prefix          - Character to be checked
  *
@@ -141,8 +140,8 @@
  ***************************************************************************/
 
 BOOLEAN
-NsValidRootPrefix (
-    char                    Prefix)
+AcpiNsValidRootPrefix (
+    NATIVE_CHAR             Prefix)
 {
 
     return ((BOOLEAN) (Prefix == '\\'));
@@ -151,7 +150,7 @@ NsValidRootPrefix (
 
 /****************************************************************************
  *
- * FUNCTION:    NsValidPathSeparator
+ * FUNCTION:    AcpiNsValidPathSeparator
  *
  * PARAMETERS:  Sep              - Character to be checked
  *
@@ -162,8 +161,8 @@ NsValidRootPrefix (
  ***************************************************************************/
 
 BOOLEAN
-NsValidPathSeparator (
-    char                    Sep)
+AcpiNsValidPathSeparator (
+    NATIVE_CHAR             Sep)
 {
 
     return ((BOOLEAN) (Sep == '.'));
@@ -172,16 +171,16 @@ NsValidPathSeparator (
 
 /****************************************************************************
  *
- * FUNCTION:    NsGetType
+ * FUNCTION:    AcpiNsGetType
  *
- * PARAMETERS:  Handle              - Handle of nte to be examined
+ * PARAMETERS:  Handle              - Parent Node to be examined
  *
- * RETURN:      Type field from nte whose handle is passed
+ * RETURN:      Type field from Node whose handle is passed
  *
  ***************************************************************************/
 
-ACPI_OBJECT_TYPE
-NsGetType (
+OBJECT_TYPE_INTERNAL
+AcpiNsGetType (
     ACPI_HANDLE             handle)
 {
     FUNCTION_TRACE ("NsGetType");
@@ -189,19 +188,17 @@ NsGetType (
 
     if (!handle)
     {
-        /*  Handle invalid  */
-
-        REPORT_WARNING ("NsGetType: Null handle");
-        return_VALUE (ACPI_TYPE_Any);
+        REPORT_WARNING (("NsGetType: Null handle\n"));
+        return_VALUE (ACPI_TYPE_ANY);
     }
 
-    return_VALUE (((NAME_TABLE_ENTRY *) handle)->Type);
+    return_VALUE (((ACPI_NAMESPACE_NODE *) handle)->Type);
 }
 
 
 /****************************************************************************
  *
- * FUNCTION:    NsLocal
+ * FUNCTION:    AcpiNsLocal
  *
  * PARAMETERS:  Type            - A namespace object type
  *
@@ -210,30 +207,28 @@ NsGetType (
  *
  ***************************************************************************/
 
-INT32
-NsLocal (
-    ACPI_OBJECT_TYPE        Type)
+UINT32
+AcpiNsLocal (
+    OBJECT_TYPE_INTERNAL    Type)
 {
     FUNCTION_TRACE ("NsLocal");
 
 
-    if (Type > INTERNAL_TYPE_MAX)
+    if (!AcpiCmValidObjectType (Type))
     {
-        /*  type code out of range  */
+        /* Type code out of range  */
 
-        REPORT_WARNING ("NsLocal: Type code out of range");
-        return_VALUE (0);
+        REPORT_WARNING (("NsLocal: Invalid Object Type\n"));
+        return_VALUE (NSP_NORMAL);
     }
 
-    return_VALUE ((INT32) Gbl_NsProperties[Type] & NSP_LOCAL);
+    return_VALUE ((UINT32) AcpiGbl_NsProperties[Type] & NSP_LOCAL);
 }
-
-
 
 
 /****************************************************************************
  *
- * FUNCTION:    NsInternalizeName
+ * FUNCTION:    AcpiNsInternalizeName
  *
  * PARAMETERS:  *ExternalName             - External representation of name
  *              **Converted Name        - Where to return the resulting
@@ -247,13 +242,13 @@ NsLocal (
  ****************************************************************************/
 
 ACPI_STATUS
-NsInternalizeName (
-    char                    *ExternalName,
-    char                    **ConvertedName)
+AcpiNsInternalizeName (
+    NATIVE_CHAR             *ExternalName,
+    NATIVE_CHAR             **ConvertedName)
 {
-    char                    *Result = NULL;
-    char                    *InternalName;
-    ACPI_SIZE               NumSegments;
+    NATIVE_CHAR             *Result = NULL;
+    NATIVE_CHAR             *InternalName;
+    UINT32                  NumSegments;
     BOOLEAN                 FullyQualified = FALSE;
     UINT32                  i;
 
@@ -261,7 +256,7 @@ NsInternalizeName (
     FUNCTION_TRACE ("NsInternalizeName");
 
 
-    if ((!ExternalName)      || 
+    if ((!ExternalName)      ||
         (*ExternalName == 0) ||
         (!ConvertedName))
     {
@@ -269,41 +264,43 @@ NsInternalizeName (
     }
 
 
-    /* 
-     * For the internal name, the required length is 4 bytes per segment, 
-     * plus 1 each for RootPrefix, MultiNamePrefixOp, segment count, trailing null 
-     * (which is not really needed, but no there's harm in putting it there)
+    /*
+     * For the internal name, the required length is 4 bytes
+     * per segment, plus 1 each for RootPrefix, MultiNamePrefixOp,
+     * segment count, trailing null (which is not really needed,
+     * but no there's harm in putting it there)
      *
-     * strlen() + 1 covers the first NameSeg, which has no path separator
+     * strlen() + 1 covers the first NameSeg, which has no
+     * path separator
      */
 
-    if (NsValidRootPrefix (ExternalName[0]))
+    if (AcpiNsValidRootPrefix (ExternalName[0]))
     {
         FullyQualified = TRUE;
         ExternalName++;
     }
 
 
-    /* 
-     * Determine the number of ACPI name "segments" by counting the number
-     * of path separators within the string.  Start with one segment since
-     * the segment count is (# separators) + 1, and zero separators is ok.
+    /*
+     * Determine the number of ACPI name "segments" by counting
+     * the number of path separators within the string.  Start
+     * with one segment since the segment count is (# separators)
+     * + 1, and zero separators is ok.
      */
 
-    NumSegments = 1;    
+    NumSegments = 1;
     for (i = 0; ExternalName[i]; i++)
     {
-        if (NsValidPathSeparator (ExternalName[i]))
+        if (AcpiNsValidPathSeparator (ExternalName[i]))
         {
             NumSegments++;
         }
     }
 
 
-
     /* We need a segment to store the internal version of the name */
 
-    InternalName = CmCallocate ((ACPI_NAME_SIZE * NumSegments) + 4);
+    InternalName = AcpiCmCallocate ((ACPI_NAME_SIZE * NumSegments) + 4);
     if (!InternalName)
     {
         return_ACPI_STATUS (AE_NO_MEMORY);
@@ -315,13 +312,13 @@ NsInternalizeName (
     if (FullyQualified)
     {
         InternalName[0] = '\\';
-        InternalName[1] = AML_MultiNamePrefixOp;
+        InternalName[1] = AML_MULTI_NAME_PREFIX_OP;
         InternalName[2] = (char) NumSegments;
         Result = &InternalName[3];
     }
     else
     {
-        InternalName[0] = AML_MultiNamePrefixOp;
+        InternalName[0] = AML_MULTI_NAME_PREFIX_OP;
         InternalName[1] = (char) NumSegments;
         Result = &InternalName[2];
     }
@@ -331,19 +328,22 @@ NsInternalizeName (
 
     for (; NumSegments; NumSegments--)
     {
-        for (i = 0; i < ACPI_NAME_SIZE; i++) //STRNCPY (Result, ExternalName, ACPI_NAME_SIZE);
+        for (i = 0; i < ACPI_NAME_SIZE; i++)
         {
-            if (NsValidPathSeparator (*ExternalName) ||
+            if (AcpiNsValidPathSeparator (*ExternalName) ||
                (*ExternalName == 0))
             {
-                /* Pad the segment with underscore(s) if segment is short */
+                /*
+                 * Pad the segment with underscore(s) if
+                 * segment is short
+                 */
 
                 Result[i] = '_';
             }
 
             else
             {
-                /* Convert char to uppercase and save it */
+                /* Convert INT8 to uppercase and save it */
 
                 Result[i] = (char) TOUPPER (*ExternalName);
                 ExternalName++;
@@ -353,10 +353,10 @@ NsInternalizeName (
 
         /* Now we must have a path separator, or the pathname is bad */
 
-        if (!NsValidPathSeparator (*ExternalName) &&
+        if (!AcpiNsValidPathSeparator (*ExternalName) &&
             (*ExternalName != 0))
         {
-            CmFree (InternalName);
+            AcpiCmFree (InternalName);
             return_ACPI_STATUS (AE_BAD_PARAMETER);
         }
 
@@ -366,22 +366,25 @@ NsInternalizeName (
         Result += ACPI_NAME_SIZE;
     }
 
-    
+
     /* Return the completed name */
 
-    *Result = 0;                     /* Terminate the string! */
+    /* Terminate the string! */
+    *Result = 0;
     *ConvertedName = InternalName;
 
 
     if (FullyQualified)
     {
-        DEBUG_PRINT (TRACE_EXEC,("NsInternalizeName: returning [%p] (abs) \"\\%s\"\n", 
-                                InternalName, &InternalName[3])); 
+        DEBUG_PRINT (TRACE_EXEC,
+            ("NsInternalizeName: returning [%p] (abs) \"\\%s\"\n",
+            InternalName, &InternalName[3]));
     }
     else
     {
-        DEBUG_PRINT (TRACE_EXEC,("NsInternalizeName: returning [%p] (rel) \"%s\"\n", 
-                                InternalName, &InternalName[2])); 
+        DEBUG_PRINT (TRACE_EXEC,
+            ("NsInternalizeName: returning [%p] (rel) \"%s\"\n",
+            InternalName, &InternalName[2]));
     }
 
     return_ACPI_STATUS (AE_OK);
@@ -390,7 +393,7 @@ NsInternalizeName (
 
 /****************************************************************************
  *
- * FUNCTION:    NsExternalizeName
+ * FUNCTION:    AcpiNsExternalizeName
  *
  * PARAMETERS:  *InternalName          - Internal representation of name
  *              **ConvertedName        - Where to return the resulting
@@ -404,7 +407,7 @@ NsInternalizeName (
  ****************************************************************************/
 
 ACPI_STATUS
-NsExternalizeName (
+AcpiNsExternalizeName (
     UINT32                  InternalNameLength,
     char                    *InternalName,
     UINT32                  *ConvertedNameLength,
@@ -416,12 +419,18 @@ NsExternalizeName (
     UINT32                  i = 0;
     UINT32                  j = 0;
 
+
     FUNCTION_TRACE ("NsExternalizeName");
 
-    if (InternalNameLength < 0 || !InternalName || !ConvertedNameLength || !ConvertedName)
+  
+    if (!InternalNameLength     ||
+        !InternalName           ||
+        !ConvertedNameLength    ||
+        !ConvertedName)
     {
         return_ACPI_STATUS (AE_BAD_PARAMETER);
     }
+
 
     /*
      * Check for a prefix (one '\' | one or more '^').
@@ -450,7 +459,7 @@ NsExternalizeName (
     }
 
     /*
-     * Check for object names.  Note that there could be 0-255 of these 
+     * Check for object names.  Note that there could be 0-255 of these
      * 4-byte elements.
      */
     if (PrefixLength < InternalNameLength)
@@ -460,7 +469,7 @@ NsExternalizeName (
 
         /* <count> 4-byte names */
 
-        case AML_MultiNamePrefixOp:
+        case AML_MULTI_NAME_PREFIX_OP:
             NamesIndex = PrefixLength + 2;
             NamesCount = (UINT32) InternalName[PrefixLength + 1];
             break;
@@ -468,7 +477,7 @@ NsExternalizeName (
 
         /* two 4-byte names */
 
-        case AML_DualNamePrefix:
+        case AML_DUAL_NAME_PREFIX:
             NamesIndex = PrefixLength + 1;
             NamesCount = 2;
             break;
@@ -491,28 +500,29 @@ NsExternalizeName (
         }
     }
 
-    /* 
+    /*
      * Calculate the length of ConvertedName, which equals the length
-     * of the prefix, length of all object names, length of any required 
+     * of the prefix, length of all object names, length of any required
      * punctuation ('.') between object names, plus the NULL terminator.
      */
-    *ConvertedNameLength = PrefixLength + (4 * NamesCount) + ((NamesCount > 0) ? (NamesCount - 1) : 0) + 1;
+    *ConvertedNameLength = PrefixLength + (4 * NamesCount) +
+                        ((NamesCount > 0) ? (NamesCount - 1) : 0) + 1;
 
     /*
      * Check to see if we're still in bounds.  If not, there's a problem
      * with InternalName (invalid format).
-     */ 
+     */
     if (*ConvertedNameLength > InternalNameLength)
     {
-        REPORT_ERROR ("NsExternalizeName: Invalid internal name.\n");
+        REPORT_ERROR (("NsExternalizeName: Invalid internal name\n"));
         return_ACPI_STATUS (AE_BAD_PATHNAME);
     }
 
-    /* 
+    /*
      * Build ConvertedName...
      */
 
-    (*ConvertedName) = CmCallocate (*ConvertedNameLength);
+    (*ConvertedName) = AcpiCmCallocate (*ConvertedNameLength);
     if (!(*ConvertedName))
     {
         return_ACPI_STATUS (AE_NO_MEMORY);
@@ -547,99 +557,97 @@ NsExternalizeName (
 
 /****************************************************************************
  *
- * FUNCTION:    NsConvertHandleToEntry
+ * FUNCTION:    AcpiNsConvertHandleToEntry
  *
- * PARAMETERS:  Handle          - Handle to be converted to an NTE
+ * PARAMETERS:  Handle          - Handle to be converted to an Node
  *
  * RETURN:      A Name table entry pointer
  *
- * DESCRIPTION: Convert a namespace handle to a real NTE
+ * DESCRIPTION: Convert a namespace handle to a real Node
  *
  ****************************************************************************/
 
-NAME_TABLE_ENTRY *
-NsConvertHandleToEntry (
+ACPI_NAMESPACE_NODE *
+AcpiNsConvertHandleToEntry (
     ACPI_HANDLE             Handle)
 {
 
-    /* 
+    /*
      * Simple implementation for now;
-     * TBD: Real integer handles allow for more verification 
+     * TBD: [Future] Real integer handles allow for more verification
      * and keep all pointers within this subsystem!
      */
 
     if (!Handle)
     {
-        return NULL;
+        return (NULL);
     }
 
     if (Handle == ACPI_ROOT_OBJECT)
     {
-        return Gbl_RootObject;
+        return (AcpiGbl_RootNode);
     }
 
 
     /* We can at least attempt to verify the handle */
 
-    if (!VALID_DESCRIPTOR_TYPE (Handle, DESC_TYPE_NTE))
+    if (!VALID_DESCRIPTOR_TYPE (Handle, ACPI_DESC_TYPE_NAMED))
     {
-        return NULL;
+        return (NULL);
     }
 
-    return (NAME_TABLE_ENTRY *) Handle;
+    return ((ACPI_NAMESPACE_NODE *) Handle);
 }
+
 
 /****************************************************************************
  *
- * FUNCTION:    NsConvertEntryToHandle
+ * FUNCTION:    AcpiNsConvertEntryToHandle
  *
- * PARAMETERS:  Nte          - NTE to be converted to a Handle
+ * PARAMETERS:  Node          - Node to be converted to a Handle
  *
  * RETURN:      An USER ACPI_HANDLE
  *
- * DESCRIPTION: Convert a real NTE to a namespace handle
+ * DESCRIPTION: Convert a real Node to a namespace handle
  *
  ****************************************************************************/
 
 ACPI_HANDLE
-NsConvertEntryToHandle(NAME_TABLE_ENTRY *Nte)
+AcpiNsConvertEntryToHandle (
+    ACPI_NAMESPACE_NODE         *Node)
 {
 
-    return (ACPI_HANDLE) Nte;
 
-    /* 
+    /*
      * Simple implementation for now;
-     * TBD: Real integer handles allow for more verification 
+     * TBD: [Future] Real integer handles allow for more verification
      * and keep all pointers within this subsystem!
      */
 
-    if (!Nte)
+    return ((ACPI_HANDLE) Node);
+
+
+/* ---------------------------------------------------
+
+    if (!Node)
     {
-        return NULL;
+        return (NULL);
     }
 
-    if (Nte == Gbl_RootObject)
+    if (Node == AcpiGbl_RootNode)
     {
-        return ACPI_ROOT_OBJECT;
+        return (ACPI_ROOT_OBJECT);
     }
 
 
-/* TBD: no longer needed ??
-
-    if (Nte == Gbl_RootObject->Scope)
-    {
-        return ACPI_ROOT_SCOPE;
-    }
-*/
-
-
-    return (ACPI_HANDLE) Nte;
+    return ((ACPI_HANDLE) Node);
+------------------------------------------------------*/
 }
 
 
 /******************************************************************************
  *
- * FUNCTION:    NsTerminate
+ * FUNCTION:    AcpiNsTerminate
  *
  * PARAMETERS:  none
  *
@@ -650,51 +658,344 @@ NsConvertEntryToHandle(NAME_TABLE_ENTRY *Nte)
  ******************************************************************************/
 
 void
-NsTerminate (void)
+AcpiNsTerminate (void)
 {
-    ACPI_OBJECT_INTERNAL    *ObjDesc;
+    ACPI_OPERAND_OBJECT     *ObjDesc;
+    ACPI_NAMESPACE_NODE     *ThisNode;
 
 
     FUNCTION_TRACE ("NsTerminate");
 
 
+    ThisNode = AcpiGbl_RootNode;
+
     /*
      * 1) Free the entire namespace -- all objects, tables, and stacks
      */
+    /*
+     * Delete all objects linked to the root
+     * (additional table descriptors)
+     */
 
-    NsDeleteNamespace (Gbl_RootObject);
+    AcpiNsDeleteNamespaceSubtree (ThisNode);
 
     /* Detach any object(s) attached to the root */
-    
-    ObjDesc = NsGetAttachedObject (Gbl_RootObject);
+
+    ObjDesc = AcpiNsGetAttachedObject (ThisNode);
     if (ObjDesc)
     {
-        NsDetachObject (Gbl_RootObject);
-        CmDeleteInternalObject (ObjDesc);
+        AcpiNsDetachObject (ThisNode);
+        AcpiCmRemoveReference (ObjDesc);
     }
 
-    NsDeleteScope (Gbl_RootObject->Scope);
-    Gbl_RootObject->Scope = NULL;
-
-    REPORT_SUCCESS ("Entire namespace and objects deleted");
-
-
-    NsScopeStackClear ();
-    CmFree (Gbl_CurrentScope);      /* Free the root scope */
+    AcpiNsDeleteChildren (ThisNode);
 
     DEBUG_PRINT (ACPI_INFO, ("NsTerminate: Namespace freed\n"));
 
 
-    /* 
-     * 2) Now we can delete the ACPI tables 
+    /*
+     * 2) Now we can delete the ACPI tables
      */
 
-    TbDeleteAcpiTables ();
+    AcpiTbDeleteAcpiTables ();
 
     DEBUG_PRINT (ACPI_INFO, ("NsTerminate: ACPI Tables freed\n"));
 
-	return_VOID;
+    return_VOID;
 }
 
- 
+
+/****************************************************************************
+ *
+ * FUNCTION:    AcpiNsOpensScope
+ *
+ * PARAMETERS:  Type        - A valid namespace type
+ *
+ * RETURN:      NEWSCOPE if the passed type "opens a name scope" according
+ *              to the ACPI specification, else 0
+ *
+ ***************************************************************************/
+
+UINT32
+AcpiNsOpensScope (
+    OBJECT_TYPE_INTERNAL    Type)
+{
+    FUNCTION_TRACE_U32 ("NsOpensScope", Type);
+
+
+    if (!AcpiCmValidObjectType (Type))
+    {
+        /* type code out of range  */
+
+        REPORT_WARNING (("NsOpensScope: Invalid Object Type\n"));
+        return_VALUE (NSP_NORMAL);
+    }
+
+    return_VALUE (((UINT32) AcpiGbl_NsProperties[Type]) & NSP_NEWSCOPE);
+}
+
+
+/****************************************************************************
+ *
+ * FUNCTION:    AcpiNsGetNode
+ *
+ * PARAMETERS:  *Pathname   - Name to be found, in external (ASL) format. The
+ *                            \ (backslash) and ^ (carat) prefixes, and the
+ *                            . (period) to separate segments are supported.
+ *              StartNode   - Root of subtree to be searched, or NS_ALL for the
+ *                            root of the name space.  If Name is fully
+ *                            qualified (first INT8 is '\'), the passed value
+ *                            of Scope will not be accessed.
+ *              ReturnNode  - Where the Node is returned
+ *
+ * DESCRIPTION: Look up a name relative to a given scope and return the
+ *              corresponding Node.  NOTE: Scope can be null.
+ *
+ * MUTEX:       Locks namespace
+ *
+ ***************************************************************************/
+
+ACPI_STATUS
+AcpiNsGetNode (
+    NATIVE_CHAR             *Pathname,
+    ACPI_NAMESPACE_NODE     *StartNode,
+    ACPI_NAMESPACE_NODE     **ReturnNode)
+{
+    ACPI_GENERIC_STATE      ScopeInfo;
+    ACPI_STATUS             Status;
+    NATIVE_CHAR             *InternalPath = NULL;
+
+
+    FUNCTION_TRACE_PTR ("NsGetNte", Pathname);
+
+
+    ScopeInfo.Scope.Node = StartNode;
+
+    /* Ensure that the namespace has been initialized */
+
+    if (!AcpiGbl_RootNode)
+    {
+        return_ACPI_STATUS (AE_NO_NAMESPACE);
+    }
+
+    if (!Pathname)
+    {
+        return_ACPI_STATUS (AE_BAD_PARAMETER);
+    }
+
+
+    /* Convert path to internal representation */
+
+    Status = AcpiNsInternalizeName (Pathname, &InternalPath);
+    if (ACPI_FAILURE (Status))
+    {
+        return_ACPI_STATUS (Status);
+    }
+
+
+    AcpiCmAcquireMutex (ACPI_MTX_NAMESPACE);
+
+    /* NS_ALL means start from the root */
+
+    if (NS_ALL == ScopeInfo.Scope.Node)
+    {
+        ScopeInfo.Scope.Node = AcpiGbl_RootNode;
+    }
+
+    else
+    {
+        ScopeInfo.Scope.Node = StartNode;
+        if (!ScopeInfo.Scope.Node)
+        {
+            Status = AE_BAD_PARAMETER;
+            goto UnlockAndExit;
+        }
+    }
+
+    /* Lookup the name in the namespace */
+
+    Status = AcpiNsLookup (&ScopeInfo, InternalPath,
+                            ACPI_TYPE_ANY, IMODE_EXECUTE,
+                            NS_NO_UPSEARCH | NS_DONT_OPEN_SCOPE,
+                            NULL, ReturnNode);
+
+    if (ACPI_FAILURE (Status))
+    {
+        DEBUG_PRINT (ACPI_INFO, ("NsGetNte: %s, %s\n",
+                        InternalPath, AcpiCmFormatException (Status)));
+    }
+
+
+UnlockAndExit:
+
+    AcpiCmReleaseMutex (ACPI_MTX_NAMESPACE);
+
+    /* Cleanup */
+
+    AcpiCmFree (InternalPath);
+
+    return_ACPI_STATUS (Status);
+}
+
+
+/****************************************************************************
+ *
+ * FUNCTION:    AcpiNsFindParentName
+ *
+ * PARAMETERS:  *ChildNode             - Named Obj whose name is to be found
+ *
+ * RETURN:      The ACPI name
+ *
+ * DESCRIPTION: Search for the given obj in its parent scope and return the
+ *              name segment, or "????" if the parent name can't be found
+ *              (which "should not happen").
+ *
+ ***************************************************************************/
+
+ACPI_NAME
+AcpiNsFindParentName (
+    ACPI_NAMESPACE_NODE     *ChildNode)
+{
+    ACPI_NAMESPACE_NODE     *ParentNode;
+
+
+    FUNCTION_TRACE ("FindParentName");
+
+
+    if (ChildNode)
+    {
+        /* Valid entry.  Get the parent Node */
+
+        ParentNode = AcpiNsGetParentObject (ChildNode);
+        if (ParentNode)
+        {
+            DEBUG_PRINT (TRACE_EXEC,
+                ("Parent of %p [%4.4s] is %p [%4.4s]\n",
+                ChildNode, &ChildNode->Name, ParentNode,
+                &ParentNode->Name));
+
+            if (ParentNode->Name)
+            {
+                return_VALUE (ParentNode->Name);
+            }
+        }
+
+        DEBUG_PRINT (TRACE_EXEC,
+            ("FindParentName: unable to find parent of %p (%4.4s)\n",
+            ChildNode, &ChildNode->Name));
+    }
+
+
+    return_VALUE (ACPI_UNKNOWN_NAME);
+}
+
+
+#ifdef ACPI_DEBUG
+
+/****************************************************************************
+ *
+ * FUNCTION:    AcpiNsExistDownstreamSibling
+ *
+ * PARAMETERS:  *Node          - pointer to first Node to examine
+ *
+ * RETURN:      TRUE if sibling is found, FALSE otherwise
+ *
+ * DESCRIPTION: Searches remainder of scope being processed to determine
+ *              whether there is a downstream sibling to the current
+ *              object.  This function is used to determine what type of
+ *              line drawing character to use when displaying namespace
+ *              trees.
+ *
+ ***************************************************************************/
+
+BOOLEAN
+AcpiNsExistDownstreamSibling (
+    ACPI_NAMESPACE_NODE     *Node)
+{
+
+    if (!Node)
+    {
+        return (FALSE);
+    }
+
+    if (Node->Name)
+    {
+        return (TRUE);
+    }
+
+    return (FALSE);
+}
+
+#endif /* ACPI_DEBUG */
+
+
+/****************************************************************************
+ *
+ * FUNCTION:    AcpiNsGetParentObject
+ *
+ * PARAMETERS:  Node       - Current table entry
+ *
+ * RETURN:      Parent entry of the given entry
+ *
+ * DESCRIPTION: Obtain the parent entry for a given entry in the namespace.
+ *
+ ***************************************************************************/
+
+
+ACPI_NAMESPACE_NODE *
+AcpiNsGetParentObject (
+    ACPI_NAMESPACE_NODE     *Node)
+{
+
+
+    /*
+     * Walk to the end of this peer list.
+     * The last entry is marked with a flag and the peer
+     * pointer is really a pointer back to the parent.
+     * This saves putting a parent back pointer in each and
+     * every named object!
+     */
+
+    while (!(Node->Flags & ANOBJ_END_OF_PEER_LIST))
+    {
+        Node = Node->Peer;
+    }
+
+
+    return (Node->Peer);
+}
+
+
+/****************************************************************************
+ *
+ * FUNCTION:    AcpiNsGetNextValidObject
+ *
+ * PARAMETERS:  Node       - Current table entry
+ *
+ * RETURN:      Next valid object in the table.  NULL if no more valid
+ *              objects
+ *
+ * DESCRIPTION: Find the next valid object within a name table.
+ *              Useful for implementing NULL-end-of-list loops.
+ *
+ ***************************************************************************/
+
+
+ACPI_NAMESPACE_NODE *
+AcpiNsGetNextValidObject (
+    ACPI_NAMESPACE_NODE     *Node)
+{
+
+    /* If we are at the end of this peer list, return NULL */
+
+    if (Node->Flags & ANOBJ_END_OF_PEER_LIST)
+    {
+        return NULL;
+    }
+
+    /* Otherwise just return the next peer */
+
+    return (Node->Peer);
+}
+
 
