@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: aemain - Main routine for the AcpiExec utility
- *              $Revision: 1.91 $
+ *              $Revision: 1.93 $
  *
  *****************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2004, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2005, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -228,14 +228,14 @@ AfInstallGpeBlock (void)
 void
 usage (void)
 {
-    printf ("Usage: acpiexec [-?dgis] [-x DebugLevel] [-o OutputFile] [-b Method] [AcpiTableFile]\n");
+    printf ("Usage: acpiexec [-?dgis] [-x DebugLevel] [-o OutputFile] [-b [Method]] [AcpiTableFile]\n");
     printf ("Where:\n");
     printf ("    Input Options\n");
     printf ("        AcpiTableFile       Get ACPI tables from this file\n");
     printf ("    Output Options\n");
     printf ("    Miscellaneous Options\n");
     printf ("        -?                  Display this message\n");
-    printf ("        -b Method           Batch mode method execution\n");
+    printf ("        -b [Method]         Batch mode method execution\n");
     printf ("        -i                  Do not run STA/INI methods\n");
     printf ("        -x DebugLevel       Specify debug output level\n");
     printf ("        -v                  Verbose init output\n");
@@ -297,11 +297,19 @@ main (
 
     /* Get the command line options */
 
-    while ((j = AcpiGetopt (argc, argv, "?b:dgio:svx:")) != EOF) switch(j)
+    while ((j = AcpiGetopt (argc, argv, "?b^dgio:svx:")) != EOF) switch(j)
     {
     case 'b':
         AcpiGbl_BatchMode = TRUE;
-        AcpiGbl_BatchMethodName = AcpiGbl_Optarg;
+        switch (AcpiGbl_Optarg[0])
+        {
+        case '^':
+            AcpiGbl_BatchMethodName = "MAIN";
+            break;
+        default:
+            AcpiGbl_BatchMethodName = AcpiGbl_Optarg;
+            break;
+        }
         break;
 
     case 'd':
