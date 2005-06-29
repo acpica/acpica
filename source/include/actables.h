@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: actables.h - ACPI table management
- *       $Revision: 1.31 $
+ *       $Revision: 1.33 $
  *
  *****************************************************************************/
 
@@ -210,6 +210,11 @@ AcpiTbInstallTable (
     ACPI_TABLE_DESC         *TableInfo);
 
 ACPI_STATUS
+AcpiTbMatchSignature (
+    NATIVE_CHAR             *Signature,
+    ACPI_TABLE_DESC         *TableInfo);
+
+ACPI_STATUS
 AcpiTbRecognizeTable (
     ACPI_TABLE_HEADER       *TablePtr,
     ACPI_TABLE_DESC         *TableInfo);
@@ -267,10 +272,6 @@ AcpiTbFindRsdp (
 /*
  * tbutils - common table utilities
  */
-
-BOOLEAN
-AcpiTbSystemTablePointer (
-    void                    *Where);
 
 ACPI_STATUS
 AcpiTbMapAcpiTable (
