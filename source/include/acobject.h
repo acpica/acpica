@@ -29,8 +29,8 @@
 
 typedef struct
 {
-   ptrdiff_t   iOffset;    /* offset to MethodFlags in AML pcode block */
-   long        lLength;    /* length of method code including MethodFlags */
+   ptrdiff_t   Offset;      /* offset to MethodFlags in AML pcode block */
+   long        Length;      /* length of method code including MethodFlags */
 } meth;
 
 /* NsHandle is actually an nte *, which is private to acpinmsp.c */
@@ -98,56 +98,56 @@ typedef enum {
 
 typedef union od                /* OBJECT DESCRIPTOR */
 {
-    BYTE            bValTyp;        /* See NsType in acpinmsp.h for values */
+    BYTE            ValType;        /* See NsType in acpinmsp.h for values */
 
     struct
     {
-        BYTE        bValTyp;
-        BYTE        bReserved1;
-        WORD        wReserved2;
-        DWORD       dNumber;
-        DWORD       dReserved3;
-        void        *pvReserved4;
-        void        *pvReserved5;
-    } sNumber;
+        BYTE        ValType;
+        BYTE        Reserved1;
+        WORD        Reserved2;
+        DWORD       Number;
+        DWORD       Reserved3;
+        void        *Reserved4;
+        void        *Reserved5;
+    } Number;
 
     struct
     {
-        BYTE        bValTyp;
-        BYTE        bReserved1;
-        WORD        wStrLen;        /* # of bytes in string, excluding trailing null */
-        DWORD       dReserved2;
-        DWORD       dReserved3;
-        BYTE        *pbString;      /* points to the string value in the AML stream
+        BYTE        ValType;
+        BYTE        Reserved1;
+        WORD        StrLen;         /* # of bytes in string, excluding trailing null */
+        DWORD       Reserved2;
+        DWORD       Reserved3;
+        BYTE        *String;        /* points to the string value in the AML stream
                                      * or in allocated space
                                      */
-        void        *pvReserved4;
-    } sString;
+        void        *Reserved4;
+    } String;
 
     struct
     {
-        BYTE        bValTyp;
-        BYTE        bReserved1;
-        WORD        wBufLen;        /* # of bytes in buffer */
-        DWORD       dReserved2;
-        DWORD       dSequence;      /* Sequential count of buffers created */
-        BYTE        *pbBuffer;      /* points to the buffer in allocated space */
-        void        *pvReserved4;
-    } sBuffer;
+        BYTE        ValType;
+        BYTE        Reserved1;
+        WORD        BufLen;         /* # of bytes in buffer */
+        DWORD       Reserved2;
+        DWORD       Sequence;       /* Sequential count of buffers created */
+        BYTE        *Buffer;        /* points to the buffer in allocated space */
+        void        *Reserved4;
+    } Buffer;
 
     struct
     {
-        BYTE        bValTyp;
-        BYTE        bReserved1;
-        WORD        wPkgCount;      /* # of elements in package */
-        DWORD       dReserved2;
-        DWORD       dReserved3;
-        union od    **ppPackage;    /* Addr of an allocated array of pointers
+        BYTE        ValType;
+        BYTE        Reserved1;
+        WORD        PkgCount;       /* # of elements in package */
+        DWORD       Reserved2;
+        DWORD       Reserved3;
+        union od    **PackageElems; /* Addr of an allocated array of pointers
                                      * to the OBJECT_DESCRIPTORs representing
                                      * the elements
                                      */
-        union od    **ppNextElement;/* used only while initializing */
-    } sPackage;
+        union od    **NextElement;  /* used only while initializing */
+    } Package;
 
     struct
     {
@@ -157,181 +157,181 @@ typedef union od                /* OBJECT DESCRIPTOR */
          * amlexec.c:iPrep*FieldValue() -- but it works properly in IC386
          * and in MS Visual C++
          */
-        WORD_BIT    bValTyp     : 8;
-        WORD_BIT    wAccess     : 4;
-        WORD_BIT    wLockRule   : 1;
-        WORD_BIT    wUpdateRule : 2;
-        WORD_BIT    wReserved1  : 1;
-        WORD_BIT    wDatLen     :13;    /* # of bits in buffer */
-        WORD_BIT    wBitOffset  : 3;
-        DWORD       dOffset;        /* Byte offset within containing object */
-        DWORD       dConSeq;        /* Container's sequence number */
-        union od    *pContainer;    /* Containing object (Buffer) */
-        void        *pvReserved3;
-    } sFieldUnit;
+        WORD_BIT    ValType     : 8;
+        WORD_BIT    Access      : 4;
+        WORD_BIT    LockRule    : 1;
+        WORD_BIT    UpdateRule  : 2;
+        WORD_BIT    Reserved1   : 1;
+        WORD_BIT    DatLen      :13;    /* # of bits in buffer */
+        WORD_BIT    BitOffset   : 3;
+        DWORD       Offset;         /* Byte offset within containing object */
+        DWORD       ConSeq;         /* Container's sequence number */
+        union od    *Container;     /* Containing object (Buffer) */
+        void        *Reserved3;
+    } FieldUnit;
 
     struct
     {
-        BYTE        bValTyp;
-        BYTE        bReserved1;
-        WORD        wReserved2;
-        DWORD       dReserved3;
-        DWORD       dReserved4;
-        NsHandle    nDevice;
-        void        *pvReserved5;
-    } sDevice;
+        BYTE        ValType;
+        BYTE        Reserved1;
+        WORD        Reserved2;
+        DWORD       Reserved3;
+        DWORD       Reserved4;
+        NsHandle    Device;
+        void        *Reserved5;
+    } Device;
 
     struct
     {
-        BYTE        bValTyp;
-        BYTE        bReserved1;
-        WORD        wSignalCount;
-        DWORD       dSemaphore;
-        WORD        wLockCount;
-        WORD        wThreadId;
-        void        *pvReserved4;
-        void        *pvReserved5;
-    } sEvent;
+        BYTE        ValType;
+        BYTE        Reserved1;
+        WORD        SignalCount;
+        DWORD       Semaphore;
+        WORD        LockCount;
+        WORD        ThreadId;
+        void        *Reserved4;
+        void        *Reserved5;
+    } Event;
 
     struct
     {
-        BYTE        bValTyp;
-        BYTE        bNumParam;
-        WORD        wLength;
-        DWORD       dAmlOffset;
-        DWORD       dReserved3;
-        BYTE        *pbAmlBase;
-        void        *pvReserved4;
-    } sMethod;
+        BYTE        ValType;
+        BYTE        NumParam;
+        WORD        Length;
+        DWORD       AmlOffset;
+        DWORD       Reserved3;
+        BYTE        *AmlBase;
+        void        *Reserved4;
+    } Method;
 
     struct
     {
-        BYTE        bValTyp;
-        BYTE        bSyncLevel;
-        WORD        wReserved2;
-        DWORD       dSemaphore;
-        WORD        wLockCount;
-        WORD        wThreadId;
-        void        *pvReserved4;
-        void        *pvReserved5;
-    } sMutex;
+        BYTE        ValType;
+        BYTE        SyncLevel;
+        WORD        Reserved2;
+        DWORD       Semaphore;
+        WORD        LockCount;
+        WORD        ThreadId;
+        void        *Reserved4;
+        void        *Reserved5;
+    } Mutex;
 
     struct
     {
-        BYTE        bValTyp;
-        BYTE        bSpaceId;
-        WORD        wAdrLenValid;   /* 1 => dAddress & dLength have been set
+        BYTE        ValType;
+        BYTE        SpaceId;
+        WORD        AdrLenValid;    /* 1 => dAddress & dLength have been set
                                      * 0 => dAddress & dLength have not been set,
                                      *        and should be obtained via sAdrLoc
                                      */
-        DWORD       dAddress;
-        DWORD       dLength;
-        meth        sAdrLoc;        /* Loc of 1st (address) OpCode in AML stream */
-    } sRegion;
+        DWORD       Address;
+        DWORD       Length;
+        meth        AdrLoc;         /* Loc of 1st (address) OpCode in AML stream */
+    } Region;
 
     struct
     {
-        BYTE        bValTyp;
-        BYTE        bReserved1;
-        WORD        wReserved2;
-        DWORD       dReserved3;
-        DWORD       dReserved4;
-        NsHandle    nPowerResource;
-        void        *pvReserved5;
-    } sPowerResource;
+        BYTE        ValType;
+        BYTE        Reserved1;
+        WORD        Reserved2;
+        DWORD       Reserved3;
+        DWORD       Reserved4;
+        NsHandle    PowerResource;
+        void        *Reserved5;
+    } PowerResource;
 
     struct
     {
-        BYTE        bValTyp;
-        BYTE        bReserved1;
-        WORD        wReserved2;
-        DWORD       dReserved3;
-        DWORD       dReserved4;
-        NsHandle    nProcessor;
-        void        *pvReserved5;
-    } sProcessor;
+        BYTE        ValType;
+        BYTE        Reserved1;
+        WORD        Reserved2;
+        DWORD       Reserved3;
+        DWORD       Reserved4;
+        NsHandle    Processor;
+        void        *Reserved5;
+    } Processor;
 
     struct
     {
-        BYTE        bValTyp;
-        BYTE        bReserved1;
-        WORD        wReserved2;
-        DWORD       dReserved3;
-        DWORD       dReserved4;
-        NsHandle    nThermalZone;
-        void        *pvReserved5;
-    } sThermalZone;
+        BYTE        ValType;
+        BYTE        Reserved1;
+        WORD        Reserved2;
+        DWORD       Reserved3;
+        DWORD       Reserved4;
+        NsHandle    ThermalZone;
+        void        *Reserved5;
+    } ThermalZone;
 
     struct
     {
         /* See comments in sFieldUnit re use of WORD_BIT */
 
-        WORD_BIT    bValTyp     : 8;
-        WORD_BIT    wAccess     : 4;
-        WORD_BIT    wLockRule   : 1;
-        WORD_BIT    wUpdateRule : 2;
-        WORD_BIT    wReserved1  : 1;
-        WORD_BIT    wDatLen     :13;    /* # of bits in buffer */
-        WORD_BIT    wBitOffset  : 3;
-        DWORD       dOffset;        /* Byte offset within containing object */
+        WORD_BIT    ValType     : 8;
+        WORD_BIT    Access      : 4;
+        WORD_BIT    LockRule    : 1;
+        WORD_BIT    UpdateRule  : 2;
+        WORD_BIT    Reserved1   : 1;
+        WORD_BIT    DatLen      :13;    /* # of bits in buffer */
+        WORD_BIT    BitOffset   : 3;
+        DWORD       Offset;         /* Byte offset within containing object */
         DWORD       dReserved2;
         union od    *pContainer;     /* Containing object */
         void        *pvReserved3;
-    } sField;
+    } Field;
 
     struct
     {
         /* See comments in sFieldUnit re use of WORD_BIT */
 
-        WORD_BIT    bValTyp     : 8;
-        WORD_BIT    wAccess     : 4;
-        WORD_BIT    wLockRule   : 1;
-        WORD_BIT    wUpdateRule : 2;
-        WORD_BIT    wReserved1  : 1;
-        WORD_BIT    wDatLen     :13;    /* # of bits in buffer */
-        WORD_BIT    wBitOffset  : 3;
-        DWORD       dOffset;        /* Byte offset within containing object */
-        DWORD       dBankVal;       /* Value to store into pBankSelect */
-        union od    *pContainer;    /* Containing object */
-        NsHandle    hBankSelect;    /* Bank select register */
-    } sBankField;
+        WORD_BIT    ValType     : 8;
+        WORD_BIT    Access      : 4;
+        WORD_BIT    LockRule    : 1;
+        WORD_BIT    UpdateRule  : 2;
+        WORD_BIT    Reserved1   : 1;
+        WORD_BIT    DatLen      :13;    /* # of bits in buffer */
+        WORD_BIT    BitOffset   : 3;
+        DWORD       Offset;         /* Byte offset within containing object */
+        DWORD       BankVal;        /* Value to store into pBankSelect */
+        union od    *Container;     /* Containing object */
+        NsHandle    BankSelect;     /* Bank select register */
+    } BankField;
 
     struct
     {
         /* See comments in sFieldUnit re use of WORD_BIT */
 
-        WORD_BIT    bValTyp     : 8;
-        WORD_BIT    wAccess     : 4;
-        WORD_BIT    wLockRule   : 1;
-        WORD_BIT    wUpdateRule : 2;
-        WORD_BIT    wReserved1  : 1;
-        WORD_BIT    wDatLen     :13;    /* # of bits in buffer */
-        WORD_BIT    wBitOffset  : 3;
-        DWORD       dIndexVal;      /* Value to store into Index register */
-        DWORD       dReserved2;     /* No container pointer needed since the index
+        WORD_BIT    ValType     : 8;
+        WORD_BIT    Access      : 4;
+        WORD_BIT    LockRule    : 1;
+        WORD_BIT    UpdateRule  : 2;
+        WORD_BIT    Reserved1   : 1;
+        WORD_BIT    DatLen      :13;    /* # of bits in buffer */
+        WORD_BIT    BitOffset   : 3;
+        DWORD       IndexVal;       /* Value to store into Index register */
+        DWORD       Reserved2;      /* No container pointer needed since the index
                                      * and data register definitions will define
                                      * how to access the respective registers
                                      */
-        NsHandle    hIndex;         /* Index register */
-        NsHandle    hData;          /* Data register */
-    } sIndexField;
+        NsHandle    Index;          /* Index register */
+        NsHandle    Data;           /* Data register */
+    } IndexField;
 
     struct
     {
-        BYTE        bValTyp;
-        BYTE        bOpCode;        /* Arg#, Local#, IndexOp, NameOp,
+        BYTE        ValType;
+        BYTE        OpCode;         /* Arg#, Local#, IndexOp, NameOp,
                                      * ZeroOp, OneOp, OnesOp, Debug1 => DebugOp
                                      */
-        WORD        wReserved1;
-        DWORD       dReserved2;
-        DWORD       dReserved3;
-        void        *pvRef;         /* bOpCode  Use of pvRef field
+        WORD        Reserved1;
+        DWORD       Reserved2;
+        DWORD       Reserved3;
+        void        *Ref;           /* bOpCode  Use of pvRef field
                                      * -------  ----------------------------
                                      * NameOp   NsHandle for referenced name
                                      * IndexOp  OBJECT_DESCRIPTOR **
                                      */
-        void        *pvReserved4;
-    } sLvalue;
+        void        *Reserved4;
+    } Lvalue;
 
 } OBJECT_DESCRIPTOR;
 
