@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslmain - compiler main and utilities
- *              $Revision: 1.32 $
+ *              $Revision: 1.36 $
  *
  *****************************************************************************/
 
@@ -124,7 +124,6 @@
         MODULE_NAME         ("aslmain")
 
 
-
 UINT32                   Gbl_ExceptionCount[2] = {0,0};
 char                     hex[] = {'0','1','2','3','4','5','6','7',
                                   '8','9','A','B','C','D','E','F'};
@@ -147,18 +146,20 @@ Usage (
     void)
 {
     printf ("Usage:    %s <Options> <InputFile>\n\n", CompilerName);
-    printf ("Options:  -d <p|t|b>       Create compiler debug/trace file (*.txt)\n");
-    printf ("                             Types: Parse/Tree/Both\n");
-    printf ("          -h               Create ascii hex file (*.hex)\n");
+    printf ("Options:  -h               Create ascii hex file (*.hex)\n");
     printf ("          -i               Ignore errors, always create AML file\n");
     printf ("          -l               Create listing (mixed source/AML) file (*.lst)\n");
     printf ("          -n               Create namespace file (*.nsp)\n");
     printf ("          -o <name>        Specify filename prefix for all output files\n");
     printf ("                             (including the .aml file)\n");
-    printf ("          -p               Parse only, no output generation\n");
     printf ("          -s               Create combined (w/includes) ASL file (*.src)\n");
+    printf ("\nCompiler Debug Options:\n");
+    printf ("          -a <trace level> Set debug level for trace output\n");
+    printf ("          -d <p|t|b>       Create compiler debug/trace file (*.txt)\n");
+    printf ("                             Types: Parse/Tree/Both\n");
+    printf ("          -p               Parse only, no output generation\n");
+    printf ("          -t               Display compile times\n");
 }
-
 
 
 /*******************************************************************************
@@ -213,10 +214,9 @@ main (
     int                 argc,
     char                **argv)
 {
-    UINT32              j;
+    int                 j;
     BOOLEAN             BadCommandLine = FALSE;
     int                 Status;
-
 
 
     AslInitialize ();
@@ -231,10 +231,9 @@ main (
     }
 
 
-
     /* Get the command line options */
 
-    while ((j = getopt (argc, argv, "a:d:hilno:ps")) != EOF) switch (j)
+    while ((j = getopt (argc, argv, "a:d:hilno:pst")) != EOF) switch (j)
     {
     case 'a':
         AcpiDbgLevel = strtoul (optarg, NULL, 16);
@@ -303,6 +302,12 @@ main (
         Gbl_SourceOutputFlag = TRUE;
         break;
 
+    case 't':
+        /* Display compile time(s) */
+
+        Gbl_CompileTimesFlag = TRUE;
+        break;
+
     default:
         BadCommandLine = TRUE;
         break;
@@ -333,7 +338,7 @@ main (
     }
 
     /*
-     * If -o not specified, we will use the input filename as the 
+     * If -o not specified, we will use the input filename as the
      * output filename prefix
      */
     if (Gbl_UseDefaultAmlFilename)
