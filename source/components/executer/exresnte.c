@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exresnte - AML Interpreter object resolution
- *              $Revision: 1.37 $
+ *              $Revision: 1.48 $
  *
  *****************************************************************************/
 
@@ -10,7 +10,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -135,14 +135,15 @@
  *
  * FUNCTION:    AcpiExResolveNodeToValue
  *
- * PARAMETERS:  StackPtr        - Pointer to a location on a stack that contains
- *                                a pointer to a Node
- *              WalkState       - Current state
+ * PARAMETERS:  ObjectPtr       - Pointer to a location that contains
+ *                                a pointer to a NS node, and will recieve a
+ *                                pointer to the resolved object.
+ *              WalkState       - Current state.  Valid only if executing AML
+ *                                code.  NULL if simply resolving an object
  *
  * RETURN:      Status
  *
- * DESCRIPTION: Resolve a Namespace node (AKA a "direct name pointer") to
- *              a valued object
+ * DESCRIPTION: Resolve a Namespace node to a valued object
  *
  * Note: for some of the data types, the pointer attached to the Node
  * can be either a pointer to an actual internal object or a pointer into the
@@ -158,19 +159,16 @@
 
 ACPI_STATUS
 AcpiExResolveNodeToValue (
-    ACPI_NAMESPACE_NODE     **StackPtr,
+    ACPI_NAMESPACE_NODE     **ObjectPtr,
     ACPI_WALK_STATE         *WalkState)
 
 {
     ACPI_STATUS             Status = AE_OK;
-    ACPI_OPERAND_OBJECT     *ValDesc;
+    ACPI_OPERAND_OBJECT     *SourceDesc;
     ACPI_OPERAND_OBJECT     *ObjDesc = NULL;
     ACPI_NAMESPACE_NODE     *Node;
-    UINT8                   *AmlPointer = NULL;
-    ACPI_OBJECT_TYPE8       EntryType;
+    ACPI_OBJECT_TYPE        EntryType;
     ACPI_INTEGER            TempVal;
-    BOOLEAN                 AttachedAmlPointer = FALSE;
-    UINT8                   AmlOpcode = 0;
 
 
     FUNCTION_TRACE ("ExResolveNodeToValue");
@@ -180,39 +178,17 @@ AcpiExResolveNodeToValue (
      * The stack pointer points to a ACPI_NAMESPACE_NODE (Node).  Get the
      * object that is attached to the Node.
      */
+    Node       = *ObjectPtr;
+    SourceDesc = AcpiNsGetAttachedObject (Node);
+    EntryType  = AcpiNsGetType ((ACPI_HANDLE) Node);
 
-    Node      = *StackPtr;
-    ValDesc   = AcpiNsGetAttachedObject (Node);
-    EntryType = AcpiNsGetType ((ACPI_HANDLE) Node);
-
-    DEBUG_PRINTP (TRACE_EXEC, ("Entry=%p ValDesc=%p Type=%X\n",
-         Node, ValDesc, EntryType));
-
-    /*
-     * The ValDesc attached to the Node can be either:
-     * 1) An internal ACPI object
-     * 2) A pointer into the AML stream (into one of the ACPI system tables)
-     */
-
-    if (AcpiTbSystemTablePointer (ValDesc))
-    {
-        /* CAN THIS EVERY HAPPEN NOW?  TBD!!! */
-
-        AttachedAmlPointer = TRUE;
-        AmlOpcode  = *((UINT8 *) ValDesc);
-        AmlPointer =  ((UINT8 *) ValDesc) + 1;
-
-        DEBUG_PRINTP (TRACE_EXEC, ("Unparsed AML: %p Len=%X\n",
-            AmlOpcode, AmlPointer));
-    }
-
+    ACPI_DEBUG_PRINT ((ACPI_DB_EXEC, "Entry=%p SourceDesc=%p Type=%X\n",
+         Node, SourceDesc, EntryType));
 
     /*
-     * Several EntryTypes do not require further processing, so
-     *  we will return immediately
-     */
-    /* Devices rarely have an attached object, return the Node
-     *  and Method locals and arguments have a pseudo-Node
+     * Several object types require no further processing:
+     * 1) Devices rarely have an attached object, return the Node
+     * 2) Method locals and arguments have a pseudo-Node
      */
     if (EntryType == ACPI_TYPE_DEVICE ||
         (Node->Flags & (ANOBJ_METHOD_ARG | ANOBJ_METHOD_LOCAL)))
@@ -220,9 +196,9 @@ AcpiExResolveNodeToValue (
         return_ACPI_STATUS (AE_OK);
     }
 
-    if (!ValDesc)
+    if (!SourceDesc)
     {
-        DEBUG_PRINTP (ACPI_ERROR, ("No object attached to node %p\n",
+        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "No object attached to node %p\n",
             Node));
         return_ACPI_STATUS (AE_AML_NO_OPERAND);
     }
@@ -233,118 +209,66 @@ AcpiExResolveNodeToValue (
      */
     switch (EntryType)
     {
-
     case ACPI_TYPE_PACKAGE:
 
-        if (AttachedAmlPointer)
+        if (ACPI_TYPE_PACKAGE != SourceDesc->Common.Type)
         {
-            /*
-             * This means that the package initialization is not parsed
-             * -- should not happen
-             */
-            DEBUG_PRINTP (ACPI_ERROR, ("Unparsed Packages not supported!\n"));
-            return_ACPI_STATUS (AE_NOT_IMPLEMENTED);
-        }
-
-        /* ValDesc is an internal object in all cases by the time we get here */
-
-        if (ACPI_TYPE_PACKAGE != ValDesc->Common.Type)
-        {
-            DEBUG_PRINTP (ACPI_ERROR, ("Object not a package, type %X\n",
-                ValDesc->Common.Type));
+            ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Object not a Package, type %s\n",
+                AcpiUtGetTypeName (SourceDesc->Common.Type)));
             return_ACPI_STATUS (AE_AML_OPERAND_TYPE);
         }
 
         /* Return an additional reference to the object */
 
-        ObjDesc = ValDesc;
+        ObjDesc = SourceDesc;
         AcpiUtAddReference (ObjDesc);
         break;
 
 
     case ACPI_TYPE_BUFFER:
 
-        if (AttachedAmlPointer)
+        if (ACPI_TYPE_BUFFER != SourceDesc->Common.Type)
         {
-            /*
-             * This means that the buffer initialization is not parsed
-             * -- should not happen
-             */
-            DEBUG_PRINTP (ACPI_ERROR, ("Unparsed Buffers not supported!\n"));
-            return_ACPI_STATUS (AE_NOT_IMPLEMENTED);
-        }
-
-        /* ValDesc is an internal object in all cases by the time we get here */
-
-        if (ACPI_TYPE_BUFFER != ValDesc->Common.Type)
-        {
-            DEBUG_PRINTP (ACPI_ERROR, ("Object not a buffer, type %X\n",
-                ValDesc->Common.Type));
+            ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Object not a Buffer, type %s\n",
+                AcpiUtGetTypeName (SourceDesc->Common.Type)));
             return_ACPI_STATUS (AE_AML_OPERAND_TYPE);
         }
 
         /* Return an additional reference to the object */
 
-        ObjDesc = ValDesc;
+        ObjDesc = SourceDesc;
         AcpiUtAddReference (ObjDesc);
         break;
 
 
     case ACPI_TYPE_STRING:
 
-        if (AttachedAmlPointer)
+        if (ACPI_TYPE_STRING != SourceDesc->Common.Type)
         {
-            /* Allocate a new string object */
-
-            ObjDesc = AcpiUtCreateInternalObject (ACPI_TYPE_STRING);
-            if (!ObjDesc)
-            {
-                return_ACPI_STATUS (AE_NO_MEMORY);
-            }
-
-            /* Init the internal object */
-
-            ObjDesc->String.Pointer = (NATIVE_CHAR *) AmlPointer;
-            ObjDesc->String.Length = STRLEN (ObjDesc->String.Pointer);
-        }
-
-        else
-        {
-            if (ACPI_TYPE_STRING != ValDesc->Common.Type)
-            {
-                DEBUG_PRINTP (ACPI_ERROR, ("Object not a string, type %X\n",
-                    ValDesc->Common.Type));
-                return_ACPI_STATUS (AE_AML_OPERAND_TYPE);
-            }
-
-            /* Return an additional reference to the object */
-
-            ObjDesc = ValDesc;
-            AcpiUtAddReference (ObjDesc);
-        }
-
-        break;
-
-
-    case ACPI_TYPE_INTEGER:
-
-        DEBUG_PRINTP (TRACE_EXEC, ("case Integer \n"));
-
-        /*
-         * The Node has an attached internal object, make sure that it's a
-         * number
-         */
-
-        if (ACPI_TYPE_INTEGER != ValDesc->Common.Type)
-        {
-            DEBUG_PRINTP (ACPI_ERROR, ("Object not a Number, type %X\n",
-                ValDesc->Common.Type));
+            ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Object not a String, type %s\n",
+                AcpiUtGetTypeName (SourceDesc->Common.Type)));
             return_ACPI_STATUS (AE_AML_OPERAND_TYPE);
         }
 
         /* Return an additional reference to the object */
 
-        ObjDesc = ValDesc;
+        ObjDesc = SourceDesc;
+        AcpiUtAddReference (ObjDesc);
+        break;
+
+
+    case ACPI_TYPE_INTEGER:
+
+        if (ACPI_TYPE_INTEGER != SourceDesc->Common.Type)
+        {
+            ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Object not a Integer, type %s\n",
+                AcpiUtGetTypeName (SourceDesc->Common.Type)));
+            return_ACPI_STATUS (AE_AML_OPERAND_TYPE);
+        }
+
+        /* Return an additional reference to the object */
+
+        ObjDesc = SourceDesc;
         AcpiUtAddReference (ObjDesc);
         break;
 
@@ -354,17 +278,15 @@ AcpiExResolveNodeToValue (
     case INTERNAL_TYPE_BANK_FIELD:
     case INTERNAL_TYPE_INDEX_FIELD:
 
-        DEBUG_PRINTP (TRACE_EXEC, ("FieldRead Node=%p ValDesc=%p Type=%X\n",
-            Node, ValDesc, EntryType));
+        ACPI_DEBUG_PRINT ((ACPI_DB_EXEC, "FieldRead Node=%p SourceDesc=%p Type=%X\n",
+            Node, SourceDesc, EntryType));
 
-        Status = AcpiExReadDataFromField (ValDesc, &ObjDesc);
+        Status = AcpiExReadDataFromField (SourceDesc, &ObjDesc);
         break;
-
 
     /*
      * For these objects, just return the object attached to the Node
      */
-
     case ACPI_TYPE_MUTEX:
     case ACPI_TYPE_METHOD:
     case ACPI_TYPE_POWER:
@@ -373,10 +295,9 @@ AcpiExResolveNodeToValue (
     case ACPI_TYPE_EVENT:
     case ACPI_TYPE_REGION:
 
-
         /* Return an additional reference to the object */
 
-        ObjDesc = ValDesc;
+        ObjDesc = SourceDesc;
         AcpiUtAddReference (ObjDesc);
         break;
 
@@ -385,11 +306,10 @@ AcpiExResolveNodeToValue (
 
     case ACPI_TYPE_ANY:
 
-        DEBUG_PRINTP (ACPI_ERROR, ("Untyped entry %p, no attached object!\n",
+        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Untyped entry %p, no attached object!\n",
             Node));
 
         return_ACPI_STATUS (AE_AML_OPERAND_TYPE);  /* Cannot be AE_TYPE */
-        break;
 
 
     /*
@@ -398,7 +318,7 @@ AcpiExResolveNodeToValue (
      */
     case INTERNAL_TYPE_REFERENCE:
 
-        switch (ValDesc->Reference.Opcode)
+        switch (SourceDesc->Reference.Opcode)
         {
 
         case AML_ZERO_OP:
@@ -416,10 +336,15 @@ AcpiExResolveNodeToValue (
             TempVal = ACPI_INTEGER_MAX;
             break;
 
+        case AML_REVISION_OP:
+
+            TempVal = ACPI_CA_SUPPORT_LEVEL;
+            break;
+
         default:
 
-            DEBUG_PRINTP (ACPI_ERROR, ("Unsupported reference opcode %X\n",
-                ValDesc->Reference.Opcode));
+            ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Unsupported reference opcode %X\n",
+                SourceDesc->Reference.Opcode));
 
             return_ACPI_STATUS (AE_AML_BAD_OPCODE);
         }
@@ -434,9 +359,16 @@ AcpiExResolveNodeToValue (
 
         ObjDesc->Integer.Value = TempVal;
 
-        /* Truncate value if we are executing from a 32-bit ACPI table */
-
-        AcpiExTruncateFor32bitTable (ObjDesc, WalkState);
+        /*
+         * Truncate value if we are executing from a 32-bit ACPI table
+         * AND actually executing AML code.  If we are resolving
+         * an object in the namespace via an external call to the
+         * subsystem, we will have a null WalkState
+         */
+        if (WalkState)
+        {
+            AcpiExTruncateFor32bitTable (ObjDesc, WalkState);
+        }
         break;
 
 
@@ -444,7 +376,7 @@ AcpiExResolveNodeToValue (
 
     default:
 
-        DEBUG_PRINTP (ACPI_ERROR, ("Node %p - Unknown object type %X\n",
+        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Node %p - Unknown object type %X\n",
             Node, EntryType));
 
         return_ACPI_STATUS (AE_AML_OPERAND_TYPE);
@@ -454,7 +386,7 @@ AcpiExResolveNodeToValue (
 
     /* Put the object descriptor on the stack */
 
-    *StackPtr = (void *) ObjDesc;
+    *ObjectPtr = (void *) ObjDesc;
     return_ACPI_STATUS (Status);
 }
 

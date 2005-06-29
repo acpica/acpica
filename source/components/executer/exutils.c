@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exutils - interpreter/scanner utilities
- *              $Revision: 1.79 $
+ *              $Revision: 1.91 $
  *
  *****************************************************************************/
 
@@ -10,7 +10,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -117,12 +117,29 @@
 
 #define __EXUTILS_C__
 
+/*
+ * DEFINE_AML_GLOBALS is tested in amlcode.h
+ * to determine whether certain global names should be "defined" or only
+ * "declared" in the current compilation.  This enhances maintainability
+ * by enabling a single header file to embody all knowledge of the names
+ * in question.
+ *
+ * Exactly one module of any executable should #define DEFINE_GLOBALS
+ * before #including the header files which use this convention.  The
+ * names in question will be defined and initialized in that module,
+ * and declared as extern in all other modules which #include those
+ * header files.
+ */
+
+#define DEFINE_AML_GLOBALS
+
 #include "acpi.h"
 #include "acparser.h"
 #include "acinterp.h"
 #include "amlcode.h"
 #include "acnamesp.h"
 #include "acevents.h"
+#include "acparser.h"
 
 #define _COMPONENT          ACPI_EXECUTER
         MODULE_NAME         ("exutils")
@@ -134,8 +151,8 @@
  *
  * PARAMETERS:  None
  *
- * DESCRIPTION: Enter the interpreter execution region
- *              TBD: should be a macro
+ * DESCRIPTION: Enter the interpreter execution region.  Failure to enter
+ *              the interpreter region is a fatal system error
  *
  ******************************************************************************/
 
@@ -148,6 +165,11 @@ AcpiExEnterInterpreter (void)
 
 
     Status = AcpiUtAcquireMutex (ACPI_MTX_EXECUTE);
+    if (ACPI_FAILURE (Status))
+    {
+        REPORT_ERROR (("Fatal - Could not acquire interpreter lock\n"));
+    }
+
     return_ACPI_STATUS (Status);
 }
 
@@ -169,8 +191,6 @@ AcpiExEnterInterpreter (void)
  *      6) Method blocked to execute a serialized control method that is
  *          already executing
  *      7) About to invoke a user-installed opregion handler
- *
- *              TBD: should be a macro
  *
  ******************************************************************************/
 
@@ -200,6 +220,9 @@ BOOLEAN
 AcpiExValidateObjectType (
     ACPI_OBJECT_TYPE        Type)
 {
+
+    FUNCTION_ENTRY ();
+
 
     if ((Type > ACPI_TYPE_MAX && Type < INTERNAL_TYPE_BEGIN) ||
         (Type > INTERNAL_TYPE_MAX))
@@ -232,11 +255,13 @@ AcpiExTruncateFor32bitTable (
     ACPI_WALK_STATE         *WalkState)
 {
 
+    FUNCTION_ENTRY ();
+
+
     /*
      * Object must be a valid number and we must be executing
      * a control method
      */
-
     if ((!ObjDesc) ||
         (ObjDesc->Common.Type != ACPI_TYPE_INTEGER) ||
         (!WalkState->MethodNode))
@@ -259,7 +284,8 @@ AcpiExTruncateFor32bitTable (
  *
  * FUNCTION:    AcpiExAcquireGlobalLock
  *
- * PARAMETERS:  Rule            - Lock rule: AlwaysLock, NeverLock
+ * PARAMETERS:  FieldFlags            - Flags with Lock rule:
+ *                                      AlwaysLock or NeverLock
  *
  * RETURN:      TRUE/FALSE indicating whether the lock was actually acquired
  *
@@ -271,7 +297,7 @@ AcpiExTruncateFor32bitTable (
 
 BOOLEAN
 AcpiExAcquireGlobalLock (
-    UINT32                  Rule)
+    UINT32                  FieldFlags)
 {
     BOOLEAN                 Locked = FALSE;
     ACPI_STATUS             Status;
@@ -280,22 +306,21 @@ AcpiExAcquireGlobalLock (
     FUNCTION_TRACE ("ExAcquireGlobalLock");
 
 
-    /* Only attempt lock if the Rule says so */
+    /* Only attempt lock if the AlwaysLock bit is set */
 
-    if (Rule == (UINT32) GLOCK_ALWAYS_LOCK)
+    if (FieldFlags & AML_FIELD_LOCK_RULE_MASK)
     {
-        /* We should attempt to get the lock */
+        /* We should attempt to get the lock, wait forever */
 
-        Status = AcpiEvAcquireGlobalLock ();
+        Status = AcpiEvAcquireGlobalLock (ACPI_UINT32_MAX);
         if (ACPI_SUCCESS (Status))
         {
             Locked = TRUE;
         }
-
         else
         {
-            DEBUG_PRINTP (ACPI_ERROR, ("Could not acquire Global Lock, %s\n",
-                AcpiUtFormatException (Status)));
+            ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Could not acquire Global Lock, %s\n",
+                AcpiFormatException (Status)));
         }
     }
 
@@ -333,7 +358,6 @@ AcpiExReleaseGlobalLock (
         AcpiEvReleaseGlobalLock ();
     }
 
-
     return_ACPI_STATUS (AE_OK);
 }
 
@@ -342,17 +366,17 @@ AcpiExReleaseGlobalLock (
  *
  * FUNCTION:    AcpiExDigitsNeeded
  *
- * PARAMETERS:  val             - Value to be represented
- *              base            - Base of representation
+ * PARAMETERS:  Value           - Value to be represented
+ *              Base            - Base of representation
  *
- * RETURN:      the number of digits needed to represent val in base
+ * RETURN:      the number of digits needed to represent Value in Base
  *
  ******************************************************************************/
 
 UINT32
 AcpiExDigitsNeeded (
-    ACPI_INTEGER            val,
-    UINT32                  base)
+    ACPI_INTEGER            Value,
+    UINT32                  Base)
 {
     UINT32                  NumDigits = 0;
 
@@ -360,17 +384,18 @@ AcpiExDigitsNeeded (
     FUNCTION_TRACE ("ExDigitsNeeded");
 
 
-    if (base < 1)
+    if (Base < 1)
     {
         REPORT_ERROR (("ExDigitsNeeded: Internal error - Invalid base\n"));
     }
-
     else
     {
         /*
-         * ACPI_INTEGER is unsigned, which is why we don't worry about the '-'
+         * ACPI_INTEGER is unsigned, which is why we don't worry about a '-'
          */
-        for (NumDigits = 1; (val = ACPI_DIVIDE (val,base)); ++NumDigits)
+        for (NumDigits = 1;
+            (AcpiUtShortDivide (&Value, Base, &Value, NULL));
+            ++NumDigits)
         { ; }
     }
 
@@ -405,6 +430,9 @@ _ntohl (
     } In;
 
 
+    FUNCTION_ENTRY ();
+
+
     In.Value = Value;
 
     Out.Bytes[0] = In.Bytes[3];
@@ -434,6 +462,10 @@ AcpiExEisaIdToString (
 {
     UINT32                  id;
 
+
+    FUNCTION_ENTRY ();
+
+
     /* swap to big-endian to get contiguous bits */
 
     id = _ntohl (NumericId);
@@ -441,10 +473,10 @@ AcpiExEisaIdToString (
     OutString[0] = (char) ('@' + ((id >> 26) & 0x1f));
     OutString[1] = (char) ('@' + ((id >> 21) & 0x1f));
     OutString[2] = (char) ('@' + ((id >> 16) & 0x1f));
-    OutString[3] = AcpiGbl_HexToAscii[(id >> 12) & 0xf];
-    OutString[4] = AcpiGbl_HexToAscii[(id >> 8) & 0xf];
-    OutString[5] = AcpiGbl_HexToAscii[(id >> 4) & 0xf];
-    OutString[6] = AcpiGbl_HexToAscii[id & 0xf];
+    OutString[3] = AcpiUtHexToAsciiChar (id, 12);
+    OutString[4] = AcpiUtHexToAsciiChar (id, 8);
+    OutString[5] = AcpiUtHexToAsciiChar (id, 4);
+    OutString[6] = AcpiUtHexToAsciiChar (id, 0);
     OutString[7] = 0;
 
     return (AE_OK);
@@ -469,16 +501,19 @@ AcpiExUnsignedIntegerToString (
 {
     UINT32                  Count;
     UINT32                  DigitsNeeded;
+    UINT32                  Remainder;
+
+
+    FUNCTION_ENTRY ();
 
 
     DigitsNeeded = AcpiExDigitsNeeded (Value, 10);
-
-    OutString[DigitsNeeded] = '\0';
+    OutString[DigitsNeeded] = 0;
 
     for (Count = DigitsNeeded; Count > 0; Count--)
     {
-        OutString[Count-1] = (NATIVE_CHAR) ('0' + (ACPI_MODULO (Value, 10)));
-        Value = ACPI_DIVIDE (Value, 10);
+        AcpiUtShortDivide (&Value, 10, &Value, &Remainder);
+        OutString[Count-1] = (NATIVE_CHAR) ('0' + Remainder);
     }
 
     return (AE_OK);

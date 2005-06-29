@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exoparg6 - AML execution - opcodes with 6 arguments
- *              $Revision: 1.10 $
+ *              $Revision: 1.9 $
  *
  *****************************************************************************/
 
@@ -125,7 +125,7 @@
 
 
 #define _COMPONENT          ACPI_EXECUTER
-        ACPI_MODULE_NAME    ("exoparg6")
+        MODULE_NAME         ("exoparg6")
 
 
 /*!
@@ -257,7 +257,7 @@ AcpiExOpcode_6A_0T_1R (
     ACPI_OPERAND_OBJECT     *ThisElement;
 
 
-    ACPI_FUNCTION_TRACE_STR ("ExOpcode_6A_0T_1R", AcpiPsGetOpcodeName (WalkState->Opcode));
+    FUNCTION_TRACE_STR ("ExOpcode_6A_0T_1R", AcpiPsGetOpcodeName (WalkState->Opcode));
 
 
     switch (WalkState->Opcode)
@@ -354,7 +354,7 @@ AcpiExOpcode_6A_0T_1R (
 
     default:
 
-        ACPI_REPORT_ERROR (("AcpiExOpcode_3A_0T_0R: Unknown opcode %X\n",
+        REPORT_ERROR (("AcpiExOpcode_3A_0T_0R: Unknown opcode %X\n",
                 WalkState->Opcode));
         Status = AE_AML_BAD_OPCODE;
         goto Cleanup;

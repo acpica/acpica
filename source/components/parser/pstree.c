@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: pstree - Parser op tree manipulation/traversal/search
- *              $Revision: 1.28 $
+ *              $Revision: 1.36 $
  *
  *****************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -144,13 +144,16 @@ AcpiPsGetArg (
     UINT32                  Argn)
 {
     ACPI_PARSE_OBJECT       *Arg = NULL;
-    ACPI_OPCODE_INFO        *OpInfo;
+    const ACPI_OPCODE_INFO  *OpInfo;
+
+
+    FUNCTION_ENTRY ();
 
 
     /* Get the info structure for this opcode */
 
     OpInfo = AcpiPsGetOpcodeInfo (Op->Opcode);
-    if (ACPI_GET_OP_TYPE (OpInfo) != ACPI_OP_TYPE_OPCODE)
+    if (OpInfo->Class == AML_CLASS_UNKNOWN)
     {
         /* Invalid opcode or ASCII character */
 
@@ -159,7 +162,7 @@ AcpiPsGetArg (
 
     /* Check if this opcode requires argument sub-objects */
 
-    if (!(ACPI_GET_OP_ARGS (OpInfo)))
+    if (!(OpInfo->Flags & AML_HAS_ARGS))
     {
         /* Has no linked argument objects */
 
@@ -198,7 +201,10 @@ AcpiPsAppendArg (
     ACPI_PARSE_OBJECT       *Arg)
 {
     ACPI_PARSE_OBJECT       *PrevArg;
-    ACPI_OPCODE_INFO        *OpInfo;
+    const ACPI_OPCODE_INFO  *OpInfo;
+
+
+    FUNCTION_ENTRY ();
 
 
     if (!Op)
@@ -209,16 +215,17 @@ AcpiPsAppendArg (
     /* Get the info structure for this opcode */
 
     OpInfo = AcpiPsGetOpcodeInfo (Op->Opcode);
-    if (ACPI_GET_OP_TYPE (OpInfo) != ACPI_OP_TYPE_OPCODE)
+    if (OpInfo->Class == AML_CLASS_UNKNOWN)
     {
         /* Invalid opcode */
 
+        REPORT_ERROR (("PsAppendArg: Invalid AML Opcode: 0x%2.2X\n", Op->Opcode));
         return;
     }
 
     /* Check if this opcode requires argument sub-objects */
 
-    if (!(ACPI_GET_OP_ARGS (OpInfo)))
+    if (!(OpInfo->Flags & AML_HAS_ARGS))
     {
         /* Has no linked argument objects */
 
@@ -277,13 +284,16 @@ AcpiPsGetChild (
     ACPI_PARSE_OBJECT       *Child = NULL;
 
 
+    FUNCTION_ENTRY ();
+
+
     switch (Op->Opcode)
     {
     case AML_SCOPE_OP:
     case AML_ELSE_OP:
     case AML_DEVICE_OP:
     case AML_THERMAL_ZONE_OP:
-    case AML_METHODCALL_OP:
+    case AML_INT_METHODCALL_OP:
 
         Child = AcpiPsGetArg (Op, 0);
         break;
@@ -294,7 +304,7 @@ AcpiPsGetChild (
     case AML_METHOD_OP:
     case AML_IF_OP:
     case AML_WHILE_OP:
-    case AML_DEF_FIELD_OP:
+    case AML_FIELD_OP:
 
         Child = AcpiPsGetArg (Op, 1);
         break;
@@ -341,6 +351,9 @@ AcpiPsGetDepthNext (
     ACPI_PARSE_OBJECT       *Next = NULL;
     ACPI_PARSE_OBJECT       *Parent;
     ACPI_PARSE_OBJECT       *Arg;
+
+
+    FUNCTION_ENTRY ();
 
 
     if (!Op)

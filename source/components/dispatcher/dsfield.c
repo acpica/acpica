@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dsfield - Dispatcher field routines
- *              $Revision: 1.60 $
+ *              $Revision: 1.61 $
  *
  *****************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -311,7 +311,7 @@ AcpiDsGetFieldNames (
         {
         case AML_INT_RESERVEDFIELD_OP:
 
-            if (((ACPI_INTEGER) Info->FieldBitPosition + Arg->Value.Size) > 
+            if (((ACPI_INTEGER) Info->FieldBitPosition + Arg->Value.Size) >
                 ACPI_UINT32_MAX)
             {
                 REPORT_ERROR (("Bit offset within field too large (> 0xFFFFFFFF)\n"));
@@ -371,10 +371,10 @@ AcpiDsGetFieldNames (
 
             /* Keep track of bit position for the next field */
 
-            if (((ACPI_INTEGER) Info->FieldBitPosition + Arg->Value.Size) > 
+            if (((ACPI_INTEGER) Info->FieldBitPosition + Arg->Value.Size) >
                 ACPI_UINT32_MAX)
             {
-                REPORT_ERROR (("Field [%4.4s] bit offset too large (> 0xFFFFFFFF)\n", 
+                REPORT_ERROR (("Field [%4.4s] bit offset too large (> 0xFFFFFFFF)\n",
                     &Info->FieldNode->Name));
                 return_ACPI_STATUS (AE_SUPPORT);
             }

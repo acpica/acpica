@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dswscope - Scope stack manipulation
- *              $Revision: 1.48 $
+ *              $Revision: 1.51 $
  *
  *****************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -177,7 +177,7 @@ AcpiDsScopeStackClear (
 ACPI_STATUS
 AcpiDsScopeStackPush (
     ACPI_NAMESPACE_NODE     *Node,
-    ACPI_OBJECT_TYPE8       Type,
+    ACPI_OBJECT_TYPE        Type,
     ACPI_WALK_STATE         *WalkState)
 {
     ACPI_GENERIC_STATE      *ScopeInfo;
@@ -212,8 +212,9 @@ AcpiDsScopeStackPush (
 
     /* Init new scope object */
 
-    ScopeInfo->Scope.Node  = Node;
-    ScopeInfo->Common.Value = (UINT16) Type;
+    ScopeInfo->Common.DataType  = ACPI_DESC_TYPE_STATE_WSCOPE;
+    ScopeInfo->Scope.Node       = Node;
+    ScopeInfo->Common.Value     = (UINT16) Type;
 
     /* Push new scope object onto stack */
 

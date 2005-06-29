@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: psscope - Parser scope stack management routines
- *              $Revision: 1.27 $
+ *              $Revision: 1.33 $
  *
  *****************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -195,6 +195,7 @@ AcpiPsInitScope (
         return_ACPI_STATUS (AE_NO_MEMORY);
     }
 
+    Scope->Common.DataType      = ACPI_DESC_TYPE_STATE_RPSCOPE;
     Scope->ParseScope.Op        = RootOp;
     Scope->ParseScope.ArgCount  = ACPI_VAR_ARGS;
     Scope->ParseScope.ArgEnd    = ParserState->AmlEnd;
@@ -238,10 +239,11 @@ AcpiPsPushScope (
     Scope = AcpiUtCreateGenericState ();
     if (!Scope)
     {
-        return (AE_NO_MEMORY);
+        return_ACPI_STATUS (AE_NO_MEMORY);
     }
 
 
+    Scope->Common.DataType         = ACPI_DESC_TYPE_STATE_PSCOPE;
     Scope->ParseScope.Op           = Op;
     Scope->ParseScope.ArgList      = RemainingArgs;
     Scope->ParseScope.ArgCount     = ArgCount;
@@ -263,7 +265,7 @@ AcpiPsPushScope (
     {
         /* single argument */
 
-        Scope->ParseScope.ArgEnd = ACPI_MAX_AML;
+        Scope->ParseScope.ArgEnd = ACPI_TO_POINTER (ACPI_MAX_AML);
     }
 
     return_ACPI_STATUS (AE_OK);
@@ -298,13 +300,13 @@ AcpiPsPopScope (
 
     FUNCTION_TRACE ("PsPopScope");
 
+
     /*
      * Only pop the scope if there is in fact a next scope
      */
     if (Scope->Common.Next)
     {
         Scope = AcpiUtPopGenericState (&ParserState->Scope);
-
 
         /* return to parsing previous op */
 
@@ -328,7 +330,7 @@ AcpiPsPopScope (
     }
 
 
-    DEBUG_PRINTP (TRACE_PARSE, ("Popped Op %p Args %X\n", *Op, *ArgCount));
+    ACPI_DEBUG_PRINT ((ACPI_DB_PARSE, "Popped Op %p Args %X\n", *Op, *ArgCount));
     return_VOID;
 }
 

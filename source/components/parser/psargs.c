@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: psargs - Parse AML opcode arguments
- *              $Revision: 1.47 $
+ *              $Revision: 1.56 $
  *
  *****************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -362,7 +362,6 @@ AcpiPsGetNextNamepath (
         /*
          * Lookup the name in the parsed namespace
          */
-
         Op = NULL;
         if (MethodCall)
         {
@@ -380,7 +379,6 @@ AcpiPsGetNextNamepath (
                  * associated with this method, and 2) Change the NAMEPATH
                  * object into a METHODCALL object.
                  */
-
                 Count = AcpiPsGetArg (Op, 0);
                 if (Count && Count->Opcode == AML_BYTE_OP)
                 {
@@ -398,7 +396,7 @@ AcpiPsGetNextNamepath (
                         NameOp->Node = (ACPI_NAMESPACE_NODE *) Op;
                         AcpiPsAppendArg (Arg, NameOp);
 
-                        *ArgCount = Count->Value.Integer &
+                        *ArgCount = (UINT32) Count->Value.Integer &
                                     METHOD_FLAGS_ARG_COUNT;
                     }
                 }
@@ -414,13 +412,11 @@ AcpiPsGetNextNamepath (
         }
     }
 
-
     /*
      * Either we didn't find the object in the namespace, or the object is
      * something other than a control method.  Just initialize the Op with the
      * pathname
      */
-
     AcpiPsInitOp (Arg, AML_INT_NAMEPATH_OP);
     Arg->Value.Name = Path;
 
@@ -479,7 +475,6 @@ AcpiPsGetNextNamepath (
          * parent tree, but don't open a new scope -- we just want to lookup the
          * object  (MUST BE mode EXECUTE to perform upsearch)
          */
-
         Status = AcpiNsLookup (&ScopeInfo, Path, ACPI_TYPE_ANY, IMODE_EXECUTE,
                                 NS_SEARCH_PARENT | NS_DONT_OPEN_SCOPE, NULL,
                                 &Node);
@@ -488,7 +483,7 @@ AcpiPsGetNextNamepath (
             if (Node->Type == ACPI_TYPE_METHOD)
             {
                 MethodNode = Node;
-                DEBUG_PRINTP (TRACE_PARSE, ("method - %p Path=%p\n",
+                ACPI_DEBUG_PRINT ((ACPI_DB_PARSE, "method - %p Path=%p\n",
                     MethodNode, Path));
 
                 NameOp = AcpiPsAllocOp (AML_INT_NAMEPATH_OP);
@@ -505,12 +500,12 @@ AcpiPsGetNextNamepath (
                     NameOp->Node = MethodNode;
                     AcpiPsAppendArg (Arg, NameOp);
 
-                    if (!(ACPI_OPERAND_OBJECT  *) MethodNode->Object)
+                    if (!AcpiNsGetAttachedObject (MethodNode))
                     {
                         return_VOID;
                     }
 
-                    *ArgCount = ((ACPI_OPERAND_OBJECT  *) MethodNode->Object)->Method.ParamCount;
+                    *ArgCount = (AcpiNsGetAttachedObject (MethodNode))->Method.ParamCount;
                 }
 
                 return_VOID;
@@ -529,7 +524,6 @@ AcpiPsGetNextNamepath (
      * something other than a control method.  Just initialize the Op with the
      * pathname.
      */
-
     AcpiPsInitOp (Arg, AML_INT_NAMEPATH_OP);
     Arg->Value.Name = Path;
 
@@ -559,7 +553,6 @@ AcpiPsGetNextSimpleArg (
     UINT32                  ArgType,
     ACPI_PARSE_OBJECT       *Arg)
 {
-
 
     FUNCTION_TRACE_U32 ("PsGetNextSimpleArg", ArgType);
 
@@ -594,6 +587,17 @@ AcpiPsGetNextSimpleArg (
 
         MOVE_UNALIGNED32_TO_32 (&Arg->Value.Integer, ParserState->Aml);
         ParserState->Aml += 4;
+        break;
+
+
+    case ARGP_QWORDDATA:
+
+        AcpiPsInitOp (Arg, AML_QWORD_OP);
+
+        /* Get 8 bytes from the AML stream */
+
+        MOVE_UNALIGNED64_TO_64 (&Arg->Value.Integer, ParserState->Aml);
+        ParserState->Aml += 8;
         break;
 
 
@@ -709,11 +713,14 @@ AcpiPsGetNextField (
 
         case AML_INT_ACCESSFIELD_OP:
 
-            /* Get AccessType and AccessAtrib and merge into the field Op */
-
-            Field->Value.Integer = ((GET8 (ParserState->Aml) << 8) |
-                                     GET8 (ParserState->Aml));
-            ParserState->Aml += 2;
+            /*
+             * Get AccessType and AccessAttrib and merge into the field Op
+             * AccessType is first operand, AccessAttribute is second
+             */
+            Field->Value.Integer32 = (GET8 (ParserState->Aml) << 8);
+            ParserState->Aml++;
+            Field->Value.Integer32 |= GET8 (ParserState->Aml);
+            ParserState->Aml++;
             break;
         }
     }
@@ -838,6 +845,7 @@ AcpiPsGetNextArg (
 
     case ARGP_TARGET:
     case ARGP_SUPERNAME:
+    case ARGP_SIMPLENAME:
         {
             Subop = AcpiPsPeekOpcode (ParserState);
             if (Subop == 0              ||

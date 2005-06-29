@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: pswalk - Parser routines to walk parsed op tree(s)
- *              $Revision: 1.55 $
+ *              $Revision: 1.62 $
  *
  *****************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -173,16 +173,18 @@ AcpiPsGetNextWalkOp (
             return_ACPI_STATUS (AE_OK);
         }
 
-
         /*
          * No more children, this Op is complete.  Save Next and Parent
          * in case the Op object gets deleted by the callback routine
          */
-
         Next    = Op->Next;
         Parent  = Op->Parent;
 
-        Status = AscendingCallback (WalkState, Op);
+        WalkState->Op     = Op;
+        WalkState->OpInfo = AcpiPsGetOpcodeInfo (Op->Opcode);
+        WalkState->Opcode = Op->Opcode;
+
+        Status = AscendingCallback (WalkState);
 
         /*
          * If we are back to the starting point, the walk is complete.
@@ -201,7 +203,6 @@ AcpiPsGetNextWalkOp (
          * Check for a sibling to the current op.  A sibling means
          * we are still going "downward" in the tree.
          */
-
         if (Next)
         {
             /* There is a sibling, it will be next */
@@ -215,23 +216,19 @@ AcpiPsGetNextWalkOp (
             return_ACPI_STATUS (Status);
         }
 
-
         /*
          * Drop into the loop below because we are moving upwards in
          * the tree
          */
     }
-
     else
     {
         /*
          * We are resuming a walk, and we were (are) going upward in the tree.
          * So, we want to drop into the parent loop below.
          */
-
         Parent = Op;
     }
-
 
     /*
      * Look for a sibling of the current Op's parent
@@ -245,7 +242,11 @@ AcpiPsGetNextWalkOp (
         GrandParent = Parent->Parent;
         Next        = Parent->Next;
 
-        Status = AscendingCallback (WalkState, Parent);
+        WalkState->Op     = Parent;
+        WalkState->OpInfo = AcpiPsGetOpcodeInfo (Parent->Opcode);
+        WalkState->Opcode = Parent->Opcode;
+
+        Status = AscendingCallback (WalkState);
 
         /*
          * If we are back to the starting point, the walk is complete.
@@ -283,9 +284,10 @@ AcpiPsGetNextWalkOp (
     }
 
 
-    /* Got all the way to the top of the tree, we must be done! */
-    /* However, the code should have terminated in the loop above */
-
+    /*
+     * Got all the way to the top of the tree, we must be done!
+     * However, the code should have terminated in the loop above
+     */
     WalkState->NextOp       = NULL;
 
     return_ACPI_STATUS (AE_OK);
@@ -307,13 +309,12 @@ AcpiPsGetNextWalkOp (
  *
  ******************************************************************************/
 
-static ACPI_STATUS
+ACPI_STATUS
 AcpiPsDeleteCompletedOp (
-    ACPI_WALK_STATE         *State,
-    ACPI_PARSE_OBJECT       *Op)
+    ACPI_WALK_STATE         *WalkState)
 {
 
-    AcpiPsFreeOp (Op);
+    AcpiPsFreeOp (WalkState->Op);
     return (AE_OK);
 }
 
@@ -335,7 +336,7 @@ AcpiPsDeleteParseTree (
     ACPI_PARSE_OBJECT       *SubtreeRoot)
 {
     ACPI_WALK_STATE         *WalkState;
-    ACPI_WALK_LIST          WalkList;
+    ACPI_THREAD_STATE       *Thread;
 
 
     FUNCTION_TRACE_PTR ("PsDeleteParseTree", SubtreeRoot);
@@ -348,25 +349,25 @@ AcpiPsDeleteParseTree (
 
     /* Create and initialize a new walk list */
 
-    WalkList.WalkState = NULL;
-    WalkList.AcquiredMutexList.Prev = NULL;
-    WalkList.AcquiredMutexList.Next = NULL;
+    Thread = AcpiUtCreateThreadState ();
+    if (!Thread)
+    {
+        return_VOID;
+    }
 
-    WalkState = AcpiDsCreateWalkState (TABLE_ID_DSDT, NULL, NULL, &WalkList);
+
+    WalkState = AcpiDsCreateWalkState (TABLE_ID_DSDT, NULL, NULL, Thread);
     if (!WalkState)
     {
         return_VOID;
     }
 
-    WalkState->ParserState          = NULL;
     WalkState->ParseFlags           = 0;
     WalkState->DescendingCallback   = NULL;
     WalkState->AscendingCallback    = NULL;
 
-
     WalkState->Origin = SubtreeRoot;
     WalkState->NextOp = SubtreeRoot;
-
 
     /* Head downward in the tree */
 
@@ -382,7 +383,7 @@ AcpiPsDeleteParseTree (
 
     /* We are done with this walk */
 
-    AcpiExReleaseAllMutexes ((ACPI_OPERAND_OBJECT *) &WalkList.AcquiredMutexList);
+    AcpiUtDeleteGenericState ((ACPI_GENERIC_STATE *) Thread);
     AcpiDsDeleteWalkState (WalkState);
 
     return_VOID;

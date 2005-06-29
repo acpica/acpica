@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dsmthdat - control method arguments and local variables
- *              $Revision: 1.55 $
+ *              $Revision: 1.57 $
  *
  ******************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -429,7 +429,7 @@ AcpiDsMethodDataSetValue (
  *
  ******************************************************************************/
 
-ACPI_OBJECT_TYPE8
+ACPI_OBJECT_TYPE
 AcpiDsMethodDataGetType (
     UINT16                  Opcode,
     UINT32                  Index,
@@ -718,7 +718,7 @@ AcpiDsStoreObjectToLocal (
              * Store this object into the Node
              * (perform the indirect store)
              */
-            Status = AcpiNsAttachObject ((ACPI_NAMESPACE_NODE *) CurrentObjDesc, 
+            Status = AcpiNsAttachObject ((ACPI_NAMESPACE_NODE *) CurrentObjDesc,
                             ObjDesc, ObjDesc->Common.Type);
             return_ACPI_STATUS (Status);
         }

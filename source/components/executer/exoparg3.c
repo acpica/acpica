@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exoparg3 - AML execution - opcodes with 3 arguments
- *              $Revision: 1.8 $
+ *              $Revision: 1.7 $
  *
  *****************************************************************************/
 
@@ -125,7 +125,7 @@
 
 
 #define _COMPONENT          ACPI_EXECUTER
-        ACPI_MODULE_NAME    ("exoparg3")
+        MODULE_NAME         ("exoparg3")
 
 
 /*!
@@ -172,7 +172,7 @@ AcpiExOpcode_3A_0T_0R (
     ACPI_STATUS             Status = AE_OK;
 
 
-    ACPI_FUNCTION_TRACE_STR ("ExOpcode_3A_0T_0R", AcpiPsGetOpcodeName (WalkState->Opcode));
+    FUNCTION_TRACE_STR ("ExOpcode_3A_0T_0R", AcpiPsGetOpcodeName (WalkState->Opcode));
 
 
     switch (WalkState->Opcode)
@@ -207,7 +207,7 @@ AcpiExOpcode_3A_0T_0R (
 
     default:
 
-        ACPI_REPORT_ERROR (("AcpiExOpcode_3A_0T_0R: Unknown opcode %X\n",
+        REPORT_ERROR (("AcpiExOpcode_3A_0T_0R: Unknown opcode %X\n",
                 WalkState->Opcode));
         Status = AE_AML_BAD_OPCODE;
         goto Cleanup;
@@ -244,7 +244,7 @@ AcpiExOpcode_3A_1T_1R (
     UINT32                  Length;
 
 
-    ACPI_FUNCTION_TRACE_STR ("ExOpcode_3A_1T_1R", AcpiPsGetOpcodeName (WalkState->Opcode));
+    FUNCTION_TRACE_STR ("ExOpcode_3A_1T_1R", AcpiPsGetOpcodeName (WalkState->Opcode));
 
 
     switch (WalkState->Opcode)
@@ -307,7 +307,7 @@ AcpiExOpcode_3A_1T_1R (
 
     default:
 
-        ACPI_REPORT_ERROR (("AcpiExOpcode_3A_0T_0R: Unknown opcode %X\n",
+        REPORT_ERROR (("AcpiExOpcode_3A_0T_0R: Unknown opcode %X\n",
                 WalkState->Opcode));
         Status = AE_AML_BAD_OPCODE;
         goto Cleanup;

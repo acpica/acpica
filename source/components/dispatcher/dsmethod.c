@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dsmethod - Parser/Interpreter interface - control method parsing
- *              $Revision: 1.76 $
+ *              $Revision: 1.77 $
  *
  *****************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -211,7 +211,7 @@ AcpiDsParseMethod (
     AcpiPsSetName (Op, Node->Name);
     Op->Node = Node;
 
-    /* 
+    /*
      * Get a new OwnerId for objects created by this method.  Namespace
      * objects (such as Operation Regions) can be created during the
      * first pass parse.

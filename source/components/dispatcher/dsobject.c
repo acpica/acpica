@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dsobject - Dispatcher object management routines
- *              $Revision: 1.85 $
+ *              $Revision: 1.88 $
  *
  *****************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -154,7 +154,7 @@ AcpiDsInitOneObject (
     void                    *Context,
     void                    **ReturnValue)
 {
-    ACPI_OBJECT_TYPE8       Type;
+    ACPI_OBJECT_TYPE        Type;
     ACPI_STATUS             Status;
     ACPI_INIT_WALK_INFO     *Info = (ACPI_INIT_WALK_INFO *) Context;
     UINT8                   TableRevision;
@@ -183,7 +183,6 @@ AcpiDsInitOneObject (
 
     switch (Type)
     {
-
     case ACPI_TYPE_REGION:
 
         AcpiDsInitializeRegion (ObjHandle);
@@ -218,7 +217,7 @@ AcpiDsInitOneObject (
         if (ACPI_FAILURE (Status))
         {
             ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Method %p [%4.4s] - parse failure, %s\n",
-                ObjHandle, (char*)&((ACPI_NAMESPACE_NODE *)ObjHandle)->Name,
+                ObjHandle, (char *) &((ACPI_NAMESPACE_NODE *) ObjHandle)->Name,
                 AcpiFormatException (Status)));
 
             /* This parse failed, but we will continue parsing more methods */
@@ -231,6 +230,7 @@ AcpiDsInitOneObject (
          * for every execution since there isn't much overhead
          */
         AcpiNsDeleteNamespaceSubtree (ObjHandle);
+        AcpiNsDeleteNamespaceByOwner (((ACPI_NAMESPACE_NODE *) ObjHandle)->Object->Method.OwningId);
         break;
 
     default:
@@ -534,7 +534,6 @@ AcpiDsBuildInternalSimpleObj (
 {
     ACPI_OPERAND_OBJECT     *ObjDesc;
     ACPI_STATUS             Status;
-    UINT32                  Length;
     char                    *Name;
 
 
@@ -553,14 +552,14 @@ AcpiDsBuildInternalSimpleObj (
             Status = AcpiNsLookup (WalkState->ScopeInfo, Op->Value.String,
                             ACPI_TYPE_ANY, IMODE_EXECUTE,
                             NS_SEARCH_PARENT | NS_DONT_OPEN_SCOPE, NULL,
-                            (ACPI_NAMESPACE_NODE **)&(Op->Node));
+                            (ACPI_NAMESPACE_NODE **) &(Op->Node));
 
             if (ACPI_FAILURE (Status))
             {
                 if (Status == AE_NOT_FOUND)
                 {
                     Name = NULL;
-                    AcpiNsExternalizeName (ACPI_UINT32_MAX, Op->Value.String, &Length, &Name);
+                    AcpiNsExternalizeName (ACPI_UINT32_MAX, Op->Value.String, NULL, &Name);
 
                     if (Name)
                     {
@@ -797,7 +796,7 @@ AcpiDsCreateNode (
 
     /* Init obj */
 
-    Status = AcpiNsAttachObject (Node, ObjDesc, (UINT8) Node->Type);
+    Status = AcpiNsAttachObject (Node, ObjDesc, Node->Type);
 
     /* Remove local reference to the object */
 
