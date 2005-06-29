@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslutils -- compiler utilities
- *              $Revision: 1.41 $
+ *              $Revision: 1.42 $
  *
  *****************************************************************************/
 
@@ -413,14 +413,28 @@ UtDisplaySummary (
     UINT32                  FileId)
 {
 
+    if (FileId != ASL_FILE_STDOUT)
+    {
+        /* Compiler name and version number */
+
+        FlPrintFile (FileId, "%s %s [%s]\n",
+            CompilerId, CompilerVersion, __DATE__);
+    }
+
+    /* Error summary */
+
     FlPrintFile (FileId,
         "Compilation complete. %d Errors %d Warnings\n",
-         Gbl_ExceptionCount[ASL_ERROR], Gbl_ExceptionCount[ASL_WARNING]);
+        Gbl_ExceptionCount[ASL_ERROR], Gbl_ExceptionCount[ASL_WARNING]);
+
+    /* Input/Output summary */
 
     FlPrintFile (FileId,
         "ASL Input: %s - %d lines, %d bytes, %d keywords\n",
         Gbl_Files[ASL_FILE_INPUT].Filename, Gbl_CurrentLineNumber,
         Gbl_InputByteCount, TotalKeywords);
+
+    /* AML summary */
 
     if ((Gbl_ExceptionCount[ASL_ERROR] == 0) || (Gbl_IgnoreErrors))
     {
