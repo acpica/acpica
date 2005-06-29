@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exoparg1 - AML execution - opcodes with 1 argument
- *              $Revision: 1.139 $
+ *              $Revision: 1.140 $
  *
  *****************************************************************************/
 
@@ -464,7 +464,7 @@ AcpiExOpcode_1A_1T_1R (
                 goto Cleanup;
             }
 
-            /* Get the object reference and store it */
+            /* Get the object reference, store it, and remove our reference */
 
             Status = AcpiExGetObjectReference (Operand[0], &ReturnDesc2, WalkState);
             if (ACPI_FAILURE (Status))
@@ -473,6 +473,7 @@ AcpiExOpcode_1A_1T_1R (
             }
 
             Status = AcpiExStore (ReturnDesc2, Operand[1], WalkState);
+            AcpiUtRemoveReference (ReturnDesc2);
 
             /* The object exists in the namespace, return TRUE */
 
@@ -863,6 +864,15 @@ AcpiExOpcode_1A_0T_1R (
                      * Delete our reference to the input object and
                      * point to the object just retrieved
                      */
+                    AcpiUtRemoveReference (Operand[0]);
+                    Operand[0] = TempDesc;
+                    break;
+
+                case AML_REF_OF_OP:
+
+                    /* Get the object to which the reference refers */
+
+                    TempDesc = Operand[0]->Reference.Object;
                     AcpiUtRemoveReference (Operand[0]);
                     Operand[0] = TempDesc;
                     break;
