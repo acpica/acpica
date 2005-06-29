@@ -20,14 +20,14 @@
  | These interfaces must be implemented by the OS-dependent front-end
  | to the ACPI subsystem.
  |
- | $Revision: 1.11 $
- | $Date: 2005/06/29 19:59:47 $
+ | $Revision: 1.12 $
+ | $Date: 2005/06/29 19:59:48 $
  | $Log: acpiosxf.h,v $
- | Revision 1.11  2005/06/29 19:59:47  aystarik
+ | Revision 1.12  2005/06/29 19:59:48  aystarik
  |
  |
  | 
- | date	99.04.02.17.53.00;	author rmoore1;	state Exp;
+ | date	99.04.05.22.08.00;	author grsmith1;	state Exp;
  |
  * 
  * 11    4/02/99 9:53a Rmoore1
