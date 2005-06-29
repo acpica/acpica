@@ -120,9 +120,9 @@
 
 #include "acpi.h"
 #include "amlcode.h"
-#include "parser.h"
-#include "interp.h"
-#include "namesp.h"
+#include "acparser.h"
+#include "acinterp.h"
+#include "acnamesp.h"
 
 
 #define _COMPONENT          NAMESPACE
@@ -199,14 +199,18 @@ AcpiNsEvaluateRelative (
     /* Lookup the name in the namespace */
 
     ScopeInfo.Scope.NameTable = RelObjEntry->ChildTable;
-    Status = AcpiNsLookup (&ScopeInfo, InternalPath, ACPI_TYPE_ANY, IMODE_EXECUTE,
-                                NS_NO_UPSEARCH, NULL, &ObjEntry);
+    Status = AcpiNsLookup (&ScopeInfo, InternalPath, ACPI_TYPE_ANY,
+                            IMODE_EXECUTE,
+                            NS_NO_UPSEARCH, NULL,
+                            &ObjEntry);
+
     AcpiCmReleaseMutex (ACPI_MTX_NAMESPACE);
 
     if (Status != AE_OK)
     {
-        DEBUG_PRINT (ACPI_INFO, ("NsEvaluateRelative: Object [%s] not found [%.4X]\n",
-                        InternalPath, Status));
+        DEBUG_PRINT (ACPI_INFO,
+            ("NsEvaluateRelative: Object [%s] not found [%.4X]\n",
+            InternalPath, Status));
         goto Cleanup;
     }
 
@@ -215,13 +219,15 @@ AcpiNsEvaluateRelative (
      * to evaluate it.
      */
 
-    DEBUG_PRINT (ACPI_INFO, ("NsEvaluateRelative: %s [%p] Value %p\n",
-                                Pathname, ObjEntry, ObjEntry->Object));
+    DEBUG_PRINT (ACPI_INFO,
+        ("NsEvaluateRelative: %s [%p] Value %p\n",
+        Pathname, ObjEntry, ObjEntry->Object));
 
     Status = AcpiNsEvaluateByHandle (ObjEntry, Params, ReturnObject);
 
-    DEBUG_PRINT (ACPI_INFO, ("NsEvaluateRelative: *** Completed eval of object %s ***\n",
-                                Pathname));
+    DEBUG_PRINT (ACPI_INFO,
+        ("NsEvaluateRelative: *** Completed eval of object %s ***\n",
+        Pathname));
 
 Cleanup:
 
@@ -282,14 +288,18 @@ AcpiNsEvaluateByName (
 
     /* Lookup the name in the namespace */
 
-    Status = AcpiNsLookup (NULL, InternalPath, ACPI_TYPE_ANY, IMODE_EXECUTE,
-                                NS_NO_UPSEARCH, NULL, &ObjEntry);
+    Status = AcpiNsLookup (NULL, InternalPath, ACPI_TYPE_ANY,
+                            IMODE_EXECUTE,
+                            NS_NO_UPSEARCH, NULL,
+                            &ObjEntry);
+
     AcpiCmReleaseMutex (ACPI_MTX_NAMESPACE);
 
     if (Status != AE_OK)
     {
-        DEBUG_PRINT (ACPI_INFO, ("NsEvaluateByName: Object at [%s] was not found, status=%.4X\n",
-                        InternalPath, Status));
+        DEBUG_PRINT (ACPI_INFO,
+            ("NsEvaluateByName: Object at [%s] was not found, status=%.4X\n",
+            InternalPath, Status));
         goto Cleanup;
     }
 
@@ -298,13 +308,15 @@ AcpiNsEvaluateByName (
      * to evaluate it.
      */
 
-    DEBUG_PRINT (ACPI_INFO, ("NsEvaluateByName: %s [%p] Value %p\n",
-                                Pathname, ObjEntry, ObjEntry->Object));
+    DEBUG_PRINT (ACPI_INFO,
+        ("NsEvaluateByName: %s [%p] Value %p\n",
+        Pathname, ObjEntry, ObjEntry->Object));
 
     Status = AcpiNsEvaluateByHandle (ObjEntry, Params, ReturnObject);
 
-    DEBUG_PRINT (ACPI_INFO, ("NsEvaluateByName: *** Completed eval of object %s ***\n",
-                                Pathname));
+    DEBUG_PRINT (ACPI_INFO,
+        ("NsEvaluateByName: *** Completed eval of object %s ***\n",
+        Pathname));
 
 
 Cleanup:
@@ -389,41 +401,56 @@ AcpiNsEvaluateByHandle (
     /*
      * Two major cases here:
      * 1) The object is an actual control method -- execute it.
-     * 2) The object is not a method -- just return it's current value
+     * 2) The object is not a method -- just return it's current
+     *      value
      *
-     * In both cases, the namespace is unlocked by the AcpiNs* procedure
+     * In both cases, the namespace is unlocked by the
+     *  AcpiNs* procedure
      */
 
     if (AcpiNsGetType (ObjEntry) == ACPI_TYPE_METHOD)
     {
-        /* Case 1) We have an actual control method to execute */
+        /*
+         * Case 1) We have an actual control method to execute
+         */
 
-        Status = AcpiNsExecuteControlMethod (ObjEntry, Params, &LocalReturnObject);
+        Status = AcpiNsExecuteControlMethod (ObjEntry,
+                                            Params,
+                                            &LocalReturnObject);
     }
 
     else
     {
-        /* Case 2) Object is NOT a method, just return its current value */
+        /*
+         * Case 2) Object is NOT a method, just return its
+         * current value
+         */
 
-        Status = AcpiNsGetObjectValue (ObjEntry, &LocalReturnObject);
+        Status = AcpiNsGetObjectValue (ObjEntry,
+                                        &LocalReturnObject);
     }
 
 
     /*
-     * Check if there is a return value on the stack that must be dealt with
+     * Check if there is a return value on the stack that must
+     * be dealt with
      */
 
     if (Status == AE_CTRL_RETURN_VALUE)
     {
         /*
-         * If the Method returned a value and the caller provided a place
-         * to store a returned value, Copy the returned value to the object
-         * descriptor provided by the caller.
+         * If the Method returned a value and the caller
+         * provided a place to store a returned value, Copy
+         * the returned value to the object descriptor provided
+         * by the caller.
          */
 
         if (ReturnObject)
         {
-            /* Valid return object, copy the pointer to the returned object */
+            /*
+             * Valid return object, copy the pointer to
+             * the returned object
+             */
 
             *ReturnObject = LocalReturnObject;
         }
@@ -437,7 +464,10 @@ AcpiNsEvaluateByHandle (
         }
     }
 
-    /* Namespace was unlocked by the handling AcpiNs* function, so we just return */
+    /*
+     * Namespace was unlocked by the handling AcpiNs* function,
+     * so we just return
+     */
 
     return_ACPI_STATUS (Status);
 
@@ -484,12 +514,14 @@ AcpiNsExecuteControlMethod (
     ObjDesc = AcpiNsGetAttachedObject ((ACPI_HANDLE) MethodEntry);
     if (!ObjDesc)
     {
-        DEBUG_PRINT (ACPI_ERROR, ("Control method is undefined (nil value)\n"));
+        DEBUG_PRINT (ACPI_ERROR,
+            ("Control method is undefined (nil value)\n"));
         return_ACPI_STATUS (AE_ERROR);
     }
 
     /*
-     * Valid method, Set the current scope to that of the Method, and execute it.
+     * Valid method, Set the current scope to that of the Method,
+     * and execute it.
      */
 
     DEBUG_PRINT (ACPI_INFO, ("Control method at Offset %x Length %lx]\n",
@@ -499,7 +531,8 @@ AcpiNsExecuteControlMethod (
     DUMP_PATHNAME (MethodEntry, "NsExecuteControlMethod: Executing",
                     TRACE_NAMES, _COMPONENT);
 
-    DEBUG_PRINT (TRACE_NAMES, ("At offset %8XH\n", ObjDesc->Method.Pcode + 1));
+    DEBUG_PRINT (TRACE_NAMES,
+        ("At offset %8XH\n", ObjDesc->Method.Pcode + 1));
 
 
     /*
@@ -581,13 +614,16 @@ AcpiNsGetObjectValue (
          *  Just copy from the original to the return object
          */
 
-        MEMCPY (&ObjDesc->Common.FirstNonCommonByte, &ValDesc->Common.FirstNonCommonByte,
-                (sizeof(ACPI_OBJECT_COMMON) - sizeof(ObjDesc->Common.FirstNonCommonByte)));
+        MEMCPY (&ObjDesc->Common.FirstNonCommonByte,
+                &ValDesc->Common.FirstNonCommonByte,
+                (sizeof(ACPI_OBJECT_COMMON) -
+                sizeof(ObjDesc->Common.FirstNonCommonByte)));
     }
 
 
     /*
-     * Other objects require a reference object wrapper which we then attempt to resolve.
+     * Other objects require a reference object wrapper which we
+     * then attempt to resolve.
      */
     else
     {
@@ -606,7 +642,8 @@ AcpiNsGetObjectValue (
         ObjDesc->Reference.Object  = (void *) ObjectEntry;
 
         /*
-         * Use AcpiAmlResolveToValue() to get the associated value.  The call to AcpiAmlResolveToValue causes
+         * Use AcpiAmlResolveToValue() to get the associated value.
+         * The call to AcpiAmlResolveToValue causes
          * ObjDesc (allocated above) to always be deleted.
          */
 
@@ -614,7 +651,8 @@ AcpiNsGetObjectValue (
     }
 
     /*
-     * If AcpiAmlResolveToValue() succeeded, the return value was placed in ObjDesc.
+     * If AcpiAmlResolveToValue() succeeded, the return value was
+     * placed in ObjDesc.
      */
 
     if (Status == AE_OK)
@@ -622,7 +660,8 @@ AcpiNsGetObjectValue (
         Status = AE_CTRL_RETURN_VALUE;
 
         *ReturnObjDesc = ObjDesc;
-        DEBUG_PRINT (ACPI_INFO, ("NsGetObjectValue: Returning obj %p\n", *ReturnObjDesc));
+        DEBUG_PRINT (ACPI_INFO,
+            ("NsGetObjectValue: Returning obj %p\n", *ReturnObjDesc));
     }
 
 

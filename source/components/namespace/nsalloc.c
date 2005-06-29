@@ -118,8 +118,8 @@
 #define __NSALLOC_C__
 
 #include "acpi.h"
-#include "namesp.h"
-#include "interp.h"
+#include "acnamesp.h"
+#include "acinterp.h"
 
 
 #define _COMPONENT          NAMESPACE

@@ -118,9 +118,9 @@
 
 #include "acpi.h"
 #include "amlcode.h"
-#include "interp.h"
-#include "namesp.h"
-#include "dispatch.h"
+#include "acinterp.h"
+#include "acnamesp.h"
+#include "acdispat.h"
 
 
 #define _COMPONENT          NAMESPACE
@@ -499,7 +499,7 @@ AcpiNsLookup (
         NumSegments = 0;
         ThisEntry = AcpiGbl_RootObject;
 
-        DEBUG_PRINT (TRACE_NAMES, 
+        DEBUG_PRINT (TRACE_NAMES,
             ("NsLookup: Null Pathname (Zero segments),  Flags=%x\n", Flags));
     }
 

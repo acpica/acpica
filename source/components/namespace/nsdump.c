@@ -118,9 +118,9 @@
 #define __NSDUMP_C__
 
 #include "acpi.h"
-#include "interp.h"
-#include "namesp.h"
-#include "tables.h"
+#include "acinterp.h"
+#include "acnamesp.h"
+#include "actables.h"
 
 
 #define _COMPONENT          NAMESPACE
