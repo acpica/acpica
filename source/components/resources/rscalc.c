@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: rscalc - Calculate stream and list lengths
- *              $Revision: 1.34 $
+ *              $Revision: 1.38 $
  *
  ******************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -144,10 +144,10 @@
 ACPI_STATUS
 AcpiRsCalculateByteStreamLength (
     ACPI_RESOURCE           *LinkedList,
-    UINT32                  *SizeNeeded)
+    ACPI_SIZE               *SizeNeeded)
 {
-    UINT32                  ByteStreamSizeNeeded = 0;
-    UINT32                  SegmentSize;
+    ACPI_SIZE               ByteStreamSizeNeeded = 0;
+    ACPI_SIZE               SegmentSize;
     ACPI_RESOURCE_EXT_IRQ   *ExIrq = NULL;
     BOOLEAN                 Done = FALSE;
 
@@ -343,7 +343,6 @@ AcpiRsCalculateByteStreamLength (
              * so exit with an error
              */
             return_ACPI_STATUS (AE_AML_INVALID_RESOURCE_TYPE);
-            break;
 
         } /* switch (LinkedList->Id) */
 
@@ -355,7 +354,7 @@ AcpiRsCalculateByteStreamLength (
         /*
          * Point to the next object
          */
-        LinkedList = POINTER_ADD (ACPI_RESOURCE,
+        LinkedList = ACPI_PTR_ADD (ACPI_RESOURCE,
                         LinkedList, LinkedList->Length);
     }
 
@@ -389,7 +388,7 @@ ACPI_STATUS
 AcpiRsCalculateListLength (
     UINT8                   *ByteStreamBuffer,
     UINT32                  ByteStreamBufferLength,
-    UINT32                  *SizeNeeded)
+    ACPI_SIZE               *SizeNeeded)
 {
     UINT32                  BufferSize = 0;
     UINT32                  BytesParsed = 0;
@@ -800,13 +799,12 @@ AcpiRsCalculateListLength (
              *  so exit with an error
              */
             return_ACPI_STATUS (AE_AML_INVALID_RESOURCE_TYPE);
-            break;
         }
 
         /*
          * Update the return value and counter
          */
-        BufferSize += StructureSize;
+        BufferSize += ALIGN_RESOURCE_SIZE(StructureSize);
         BytesParsed += BytesConsumed;
 
         /*
@@ -843,7 +841,7 @@ AcpiRsCalculateListLength (
 ACPI_STATUS
 AcpiRsCalculatePciRoutingTableLength (
     ACPI_OPERAND_OBJECT     *PackageObject,
-    UINT32                  *BufferSizeNeeded)
+    ACPI_SIZE               *BufferSizeNeeded)
 {
     UINT32                  NumberOfElements;
     UINT32                  TempSizeNeeded = 0;
