@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dsobject - Dispatcher object management routines
- *              $Revision: 1.113 $
+ *              $Revision: 1.118 $
  *
  *****************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2003, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2004, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -271,7 +271,7 @@ AcpiDsBuildInternalBufferObj (
             return (AE_TYPE);
         }
 
-        ByteListLength = ByteList->Common.Value.Integer32;
+        ByteListLength = (UINT32) ByteList->Common.Value.Integer;
     }
 
     /*
@@ -290,7 +290,8 @@ AcpiDsBuildInternalBufferObj (
     if (ObjDesc->Buffer.Length == 0)
     {
         ObjDesc->Buffer.Pointer = NULL;
-        ACPI_REPORT_WARNING (("Buffer created with zero length in AML\n"));
+        ACPI_DEBUG_PRINT ((ACPI_DB_EXEC,
+            "Buffer defined with zero length in AML, creating\n"));
     }
     else
     {
@@ -498,7 +499,7 @@ AcpiDsCreateNode (
         return_ACPI_STATUS (Status);
     }
 
-    /* Re-type the object according to it's argument */
+    /* Re-type the object according to its argument */
 
     Node->Type = ACPI_GET_OBJECT_TYPE (ObjDesc);
 
