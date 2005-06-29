@@ -784,6 +784,16 @@ AmlExecMonadic2 (
                 /* Get the type of this reference (index into another object) */
 
                 Type = ObjDesc->Reference.TargetType;
+                if (Type == ACPI_TYPE_Package)
+                {
+                    /*
+                     * The main object is a package, we want to get the type
+                     * of the individual package element that is referenced by
+                     * the index.
+                     */
+                    Type = (*(ObjDesc->Reference.Where))->Common.Type;
+                }
+
                 break;
 
 
