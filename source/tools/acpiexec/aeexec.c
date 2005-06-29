@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: aeexec - Support routines for AcpiExec utility
- *              $Revision: 1.69 $
+ *              $Revision: 1.70 $
  *
  *****************************************************************************/
 
@@ -141,6 +141,26 @@ UINT32                      AcpiDsdtLength;
 DEBUG_REGIONS               AeRegions;
 RSDP_DESCRIPTOR             LocalRsdp;
 
+unsigned char Ssdt1Code[] = 
+{
+    0x53,0x53,0x44,0x54,0x30,0x00,0x00,0x00,  /* 00000000    "SSDT0..." */
+    0x01,0xB8,0x49,0x6E,0x74,0x65,0x6C,0x00,  /* 00000008    "..Intel." */
+    0x4D,0x61,0x6E,0x79,0x00,0x00,0x00,0x00,  /* 00000010    "Many...." */
+    0x01,0x00,0x00,0x00,0x49,0x4E,0x54,0x4C,  /* 00000018    "....INTL" */
+    0x24,0x04,0x03,0x20,0x14,0x0B,0x5F,0x54,  /* 00000020    "$.. .._T" */
+    0x39,0x38,0x00,0x70,0x0A,0x04,0x60,0xA4,  /* 00000028    "98.p..`." */
+};
+
+unsigned char Ssdt2Code[] = 
+{
+    0x53,0x53,0x44,0x54,0x30,0x00,0x00,0x00,  /* 00000000    "SSDT0..." */
+    0x01,0xB7,0x49,0x6E,0x74,0x65,0x6C,0x00,  /* 00000008    "..Intel." */
+    0x4D,0x61,0x6E,0x79,0x00,0x00,0x00,0x00,  /* 00000010    "Many...." */
+    0x01,0x00,0x00,0x00,0x49,0x4E,0x54,0x4C,  /* 00000018    "....INTL" */
+    0x24,0x04,0x03,0x20,0x14,0x0B,0x5F,0x54,  /* 00000020    "$.. .._T" */
+    0x39,0x39,0x00,0x70,0x0A,0x04,0x60,0xA4,  /* 00000028    "99.p..`." */
+};
+
 
 /*
  * We need a local FADT so that the hardware subcomponent will function,
@@ -156,7 +176,7 @@ ACPI_TABLE_HEADER           LocalBADTABLE;
 
 RSDT_DESCRIPTOR_REV1        *LocalRSDT;
 
-#define RSDT_TABLES         4
+#define RSDT_TABLES         6
 #define RSDT_SIZE           (sizeof (RSDT_DESCRIPTOR_REV1) + ((RSDT_TABLES -1) * sizeof (UINT32)))
 
 
@@ -223,10 +243,16 @@ AeBuildLocalTables (
     ACPI_STRNCPY (LocalRSDT->Header.Signature, RSDT_SIG, 4);
     LocalRSDT->Header.Length = RSDT_SIZE;
 
-    LocalRSDT->TableOffsetEntry[3] = ACPI_PTR_TO_PHYSADDR (&LocalTEST);  /* Just a placeholder for a user SSDT */
-    LocalRSDT->TableOffsetEntry[2] = ACPI_PTR_TO_PHYSADDR (&LocalFADT);
-    LocalRSDT->TableOffsetEntry[1] = ACPI_PTR_TO_PHYSADDR (&LocalBADTABLE);
     LocalRSDT->TableOffsetEntry[0] = ACPI_PTR_TO_PHYSADDR (&LocalTEST);
+    LocalRSDT->TableOffsetEntry[1] = ACPI_PTR_TO_PHYSADDR (&LocalBADTABLE);
+    LocalRSDT->TableOffsetEntry[2] = ACPI_PTR_TO_PHYSADDR (&LocalFADT);
+    LocalRSDT->TableOffsetEntry[3] = ACPI_PTR_TO_PHYSADDR (&LocalTEST);  /* Just a placeholder for a user SSDT */
+
+    /* Install two SSDTs to test multiple table support */
+
+    LocalRSDT->TableOffsetEntry[4] = ACPI_PTR_TO_PHYSADDR (&Ssdt1Code);
+    LocalRSDT->TableOffsetEntry[5] = ACPI_PTR_TO_PHYSADDR (&Ssdt2Code);
+
 
     /* Build an RSDP */
 
