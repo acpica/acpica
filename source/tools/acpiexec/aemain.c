@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: aemain - Main routine for the AcpiExec utility
- *              $Revision: 1.55 $
+ *              $Revision: 1.56 $
  *
  *****************************************************************************/
 
@@ -298,7 +298,7 @@ main (
 
     /* Get the command line options */
 
-    while ((j = getopt (argc, argv, "?dgijl:o:sv")) != EOF) switch(j)
+    while ((j = getopt (argc, argv, "?dgil:o:sv")) != EOF) switch(j)
     {
     case 'd':
         AcpiGbl_DbOpt_disasm = TRUE;
@@ -312,10 +312,6 @@ main (
 
     case 'i':
         AcpiGbl_DbOpt_ini_methods = FALSE;
-        break;
-
-    case 'j':
-        AcpiGbl_DbOpt_parse_jit = TRUE;
         break;
 
     case 'l':
@@ -490,7 +486,7 @@ enterloop:
 
     /* Enter the debugger command loop */
 
-    AcpiDbUserCommands (DB_COMMAND_PROMPT, NULL);
+    AcpiDbUserCommands (ACPI_DEBUGGER_COMMAND_PROMPT, NULL);
 
     return 0;
 }
