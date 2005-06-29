@@ -350,7 +350,7 @@ AcpiExecuteMethod (char * MethodName, OBJECT_DESCRIPTOR *ReturnObject,
 
             else
             {
-                NsDumpPathname (MethodPtr->Scope, "Set scope: ", 
+                NsDumpPathname (MethodPtr->Scope, "AcpiExecuteMethod: Setting scope to", 
                                 TRACE_NAMES, _COMPONENT);
 
                 /*  reset current scope to beginning of scope stack */
@@ -361,7 +361,7 @@ AcpiExecuteMethod (char * MethodName, OBJECT_DESCRIPTOR *ReturnObject,
 
                 NsPushCurrentScope (MethodPtr->Scope, TYPE_Method);
 
-                NsDumpPathname (MethodPtr, "Exec Method: ", 
+                NsDumpPathname (MethodPtr, "AcpiExecuteMethod: Executing", 
                                 TRACE_NAMES, _COMPONENT);
 
                 DEBUG_PRINT (TRACE_NAMES, ("At offset %8XH\n",
