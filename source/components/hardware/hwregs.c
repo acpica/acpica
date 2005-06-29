@@ -3,7 +3,7 @@
  *
  * Module Name: hwregs - Read/write access functions for the various ACPI
  *                       control and status registers.
- *              $Revision: 1.138 $
+ *              $Revision: 1.139 $
  *
  ******************************************************************************/
 
@@ -140,8 +140,8 @@
 ACPI_STATUS
 AcpiHwClearAcpiStatus (void)
 {
-    NATIVE_UINT_MAX32       i;
-    NATIVE_UINT             GpeBlock;
+    ACPI_NATIVE_UINT        i;
+    ACPI_NATIVE_UINT        GpeBlock;
     ACPI_STATUS             Status;
 
 
@@ -185,7 +185,7 @@ AcpiHwClearAcpiStatus (void)
         for (i = 0; i < AcpiGbl_GpeBlockInfo[GpeBlock].RegisterCount; i++)
         {
             Status = AcpiHwLowLevelWrite (8, 0xFF,
-                        AcpiGbl_GpeBlockInfo[GpeBlock].BlockAddress, i);
+                        AcpiGbl_GpeBlockInfo[GpeBlock].BlockAddress, (UINT32) i);
             if (ACPI_FAILURE (Status))
             {
                 goto UnlockAndExit;
