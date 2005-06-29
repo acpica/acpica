@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslerror - Error handling and statistics
- *              $Revision: 1.48 $
+ *              $Revision: 1.49 $
  *
  *****************************************************************************/
 
@@ -173,8 +173,8 @@ char                        *AslMessages [] = {
     "Access width is greater than region size",
     "Field unit extends beyond region limit",
     "Resource field name cannot be used as a target",
-    "Byte Offset converted to Bit Offset",
-    "Bit Offset converted to Byte Offset",
+    "Invalid Byte Offset, Bit Offset required",
+    "Invalid Bit Offset, Byte Offset required",
 };
 
 

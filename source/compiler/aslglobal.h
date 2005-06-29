@@ -3,7 +3,7 @@
 /******************************************************************************
  *
  * Module Name: aslglobal.h - Global variable definitions
- *              $Revision: 1.10 $
+ *              $Revision: 1.16 $
  *
  *****************************************************************************/
 
@@ -145,10 +145,7 @@ extern char                     *AslCompilertext;
 extern FILE                     *AslCompilerin;
 extern int                      optind;
 extern char                     *optarg;
-
-
 extern char                     hex[];
-extern char                     MsgBuffer[];
 
 #define ASL_LINE_BUFFER_SIZE    512
 #define ASL_MSG_BUFFER_SIZE     (ASL_LINE_BUFFER_SIZE * 2)
@@ -163,11 +160,13 @@ EXTERN int                      INIT_GLOBAL (Gbl_LogicalLineNumber, 1);
 EXTERN int                      INIT_GLOBAL (Gbl_CurrentLineOffset, 0);
 EXTERN char                     INIT_GLOBAL (*Gbl_LineBufPtr, Gbl_CurrentLineBuffer);
 
+
 /* Exception reporting */
 
 EXTERN ASL_ERROR_MSG            INIT_GLOBAL (*Gbl_ErrorLog,NULL);
 EXTERN ASL_ERROR_MSG            INIT_GLOBAL (*Gbl_NextError,NULL);
 extern UINT32                   Gbl_ExceptionCount[];
+
 
 /* Option flags */
 
@@ -179,25 +178,19 @@ EXTERN BOOLEAN                  INIT_GLOBAL (Gbl_ListingFlag, FALSE);
 EXTERN BOOLEAN                  INIT_GLOBAL (Gbl_IgnoreErrors, FALSE);
 EXTERN BOOLEAN                  INIT_GLOBAL (Gbl_SourceOutputFlag, FALSE);
 EXTERN BOOLEAN                  INIT_GLOBAL (Gbl_ParseOnlyFlag, FALSE);
+EXTERN BOOLEAN                  INIT_GLOBAL (Gbl_CompileTimesFlag, FALSE);
+
 
 /* Files */
 
-EXTERN char                     *Gbl_DirectoryPath;
-
-
 EXTERN ASL_FILE_INFO            Gbl_Files [ASL_NUM_FILES];
 
-
-EXTERN char                     INIT_GLOBAL (*Gbl_InputFilename, NULL);
+EXTERN char                     *Gbl_DirectoryPath;
 EXTERN char                     INIT_GLOBAL (*Gbl_IncludeFilename, NULL);
-EXTERN char                     INIT_GLOBAL (*Gbl_OutputFilename, NULL);
 EXTERN char                     INIT_GLOBAL (*Gbl_OutputFilenamePrefix, NULL);
-
-
+EXTERN char                     *Gbl_CurrentInputFilename;
 
 EXTERN BOOLEAN                  INIT_GLOBAL (Gbl_HasIncludeFiles, FALSE);
-
-EXTERN char                     *Gbl_CurrentInputFilename;
 
 
 /* Statistics */
@@ -207,14 +200,23 @@ EXTERN UINT32                   INIT_GLOBAL (Gbl_NsLookupCount, 0);
 EXTERN UINT32                   INIT_GLOBAL (TotalKeywords, 0);
 EXTERN UINT32                   INIT_GLOBAL (TotalNamedObjects, 0);
 EXTERN UINT32                   INIT_GLOBAL (TotalExecutableOpcodes, 0);
+EXTERN UINT32                   INIT_GLOBAL (TotalParseNodes, 0);
+EXTERN UINT32                   INIT_GLOBAL (TotalMethods, 0);
+EXTERN UINT32                   INIT_GLOBAL (TotalAllocations, 0);
+EXTERN UINT32                   INIT_GLOBAL (TotalAllocated, 0);
+
 
 /* Misc */
-
 
 EXTERN ASL_PARSE_NODE           INIT_GLOBAL (*RootNode, NULL);
 EXTERN UINT32                   INIT_GLOBAL (Gbl_TableLength, 0);
 EXTERN UINT32                   INIT_GLOBAL (Gbl_SourceLine, 0);
 EXTERN ASL_LISTING_NODE         INIT_GLOBAL (*Gbl_ListingNode, NULL);
+EXTERN ASL_PARSE_NODE           INIT_GLOBAL (*Gbl_NodeCacheNext, NULL);
+EXTERN ASL_PARSE_NODE           INIT_GLOBAL (*Gbl_NodeCacheLast, NULL);
+EXTERN NATIVE_CHAR              INIT_GLOBAL (*Gbl_StringCacheNext, NULL);
+EXTERN NATIVE_CHAR              INIT_GLOBAL (*Gbl_StringCacheLast, NULL);
+
 
 
 EXTERN UINT32                   INIT_GLOBAL (Gbl_CurrentHexColumn, 0);
@@ -226,11 +228,13 @@ EXTERN UINT32                   INIT_GLOBAL (Gbl_ReservedMethods, 0);
 EXTERN UINT8                    INIT_GLOBAL (AcpiGbl_DbOutputFlags, DB_CONSOLE_OUTPUT);
 EXTERN FILE                     *DebugFile; /* Placeholder for oswinxf only */
 
+
 /* Static structures */
 
 EXTERN ASL_ANALYSIS_WALK_INFO   AnalysisWalkInfo;
 EXTERN ACPI_TABLE_HEADER        TableHeader;
 extern ASL_RESERVED_INFO        ReservedMethods[];
+EXTERN ASL_EVENT_INFO           AslGbl_Events[20];
 
 
 /* Scratch buffers */
