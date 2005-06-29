@@ -183,7 +183,7 @@ AcpiExecuteRelativeMethod (NsHandle Handle,
         /*
          *  Append the method name to the device pathname
          */
-        MaxObjectPathLength -= strlen(MethodName);
+        MaxObjectPathLength -= (strlen(MethodName) + 1);
     }
 
     /*
@@ -209,6 +209,7 @@ AcpiExecuteRelativeMethod (NsHandle Handle,
         /*
          *  Append the method name to the device pathname
          */
+        (void) strcat( NameBuffer, ".");
         (void) strcat( NameBuffer, MethodName);
     }
 
