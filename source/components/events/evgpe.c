@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: evgpe - General Purpose Event handling and dispatch
- *              $Revision: 1.23 $
+ *              $Revision: 1.24 $
  *
  *****************************************************************************/
 
@@ -149,7 +149,7 @@ AcpiEvGetGpeEventInfo (
     ACPI_NATIVE_UINT        i;
 
 
-    ACPI_FUNCTION_NAME ("EvGetGpeEventInfo");
+    ACPI_FUNCTION_ENTRY ();
 
 
     /* A NULL GpeBlock means use the FADT-defined GPE block(s) */
