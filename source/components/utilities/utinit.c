@@ -295,12 +295,16 @@ CmInstallTable (
     ACPI_TABLE_INFO         *TableInfo)
 {
     ACPI_TABLE_HEADER       *TableHeader = NULL;
-    ACPI_TABLE_INFO         LocalTableInfo;
     ACPI_STATUS             Status = AE_OK;
+    ACPI_TABLE_TYPE         TableType;
+    char                    *TableName;
+    void                    **TableGlobalPtr;
 
 
     FUNCTION_TRACE ("CmInstallTable");
 
+
+    /* Ensure that we have a valid table pointer */
 
     TableHeader = (ACPI_TABLE_HEADER *) TableInfo->Pointer;
     if (!TableHeader)
@@ -310,187 +314,74 @@ CmInstallTable (
     }
 
 
-    /* TableHeader valid   */
+    /* 
+     * Determine the table type from the 4-character signature 
+     */
 
     if (!strncmp (TableHeader->Signature, FACP_SIG, 4))
     {
-        /* Delete existing table if there is one */
-
-        NsDeleteAcpiTable (TABLE_FACP);
-
-        /* Save the table pointers and allocation info */
-
-        NsDeleteAcpiTable (TABLE_FACP);
-        FACP = (FIXED_ACPI_DESCRIPTION_TABLE *) TableInfo->Pointer;
-        AcpiTables [TABLE_FACP] = *TableInfo;
-
-        DEBUG_PRINT (ACPI_INFO, ("FACP located at %p\n", FACP));
-
-        NsVerifyTableChecksum (FACP);
-
-        /* Now that we have the FACP, we can get the FACS */
-
-        Status = NsGetTableFacs (TablePtr, &LocalTableInfo);
-        if (ACPI_FAILURE (Status))
-        {
-            FUNCTION_STATUS_EXIT (Status);
-            return Status;
-        }
-
-        /* Install the FACS */
-
-        Status = CmInstallTable (TablePtr, &LocalTableInfo);
-        if (ACPI_FAILURE (Status))
-        {
-            FUNCTION_STATUS_EXIT (Status);
-            return Status;
-        }
+        TableType       = TABLE_FACP;
+        TableName       = FACP_SIG;
+        TableGlobalPtr  = &FACP;
     }
 
     else if (!strncmp (TableHeader->Signature, FACS_SIG, 4))
     {
-        /* Delete existing table if there is one */
-
-        NsDeleteAcpiTable (TABLE_FACS);
-
-
-        /* Save the table pointers and allocation info */
-
-        FACS = (FIRMWARE_ACPI_CONTROL_STRUCTURE *) TableInfo->Pointer;
-        AcpiTables [TABLE_FACS] = *TableInfo;
-
-        DEBUG_PRINT (ACPI_INFO, ("FACS located at %p, physical address %lXh\n", 
-                                    FACS, FACP->FirmwareCtrl));
-
-        /* TBD: original code used separate file for the DSDT */
-
-        /* Now that we have the FACP, we can get the DSDT */
-
-        Status = NsGetTable ((void *) FACP->Dsdt, TablePtr, &LocalTableInfo);
-        if (ACPI_FAILURE (Status))
-        {
-            FUNCTION_STATUS_EXIT (Status);
-            return Status;
-        }
-
-        /* Install the DSDT */
-
-        Status = CmInstallTable (TablePtr, &LocalTableInfo);
-        if (ACPI_FAILURE (Status))
-        {
-            FUNCTION_STATUS_EXIT (Status);
-            return Status;
-        }
+        TableType       = TABLE_FACS;
+        TableName       = FACS_SIG;
+        TableGlobalPtr  = &FACS;
     }
 
     else if (!strncmp (TableHeader->Signature, DSDT_SIG, 4))
     {
-        /* Delete existing table if there is one */
-
-        NsDeleteAcpiTable (TABLE_DSDT);
-
-        /* Save the table pointers and allocation info */
-
-        DSDT = (ACPI_TABLE_HEADER *) TableInfo->Pointer;
-        AcpiTables [TABLE_DSDT] = *TableInfo;
-
-        /* Found the DSDT - Verify the table checksum */
-
-        DEBUG_PRINT (ACPI_INFO, ("DSDT located at %p, physical address %lXh\n", 
-                                DSDT, FACP->Dsdt));
-        NsVerifyTableChecksum (DSDT);
-        
-        /* Dump the DSDT Header */
-
-        DEBUG_PRINT (TRACE_TABLES, ("Hex dump of DSDT Header:\n"));
-        DUMP_BUFFER ((UINT8 *) DSDT,
-                        (ACPI_SIZE) sizeof (ACPI_TABLE_HEADER), HEX | ASCII);
-        
-        /* Dump the entire DSDT */
-
-        DEBUG_PRINT (TRACE_TABLES,
-                    ("Hex dump of DSDT (After header), size %d (0x%x)\n",
-                    (ACPI_SIZE)DSDT->Length, (ACPI_SIZE)DSDT->Length));
-        DUMP_BUFFER ((UINT8 *) (DSDT + 1),
-                        (ACPI_SIZE)DSDT->Length, HEX | ASCII);
+        TableType       = TABLE_DSDT;
+        TableName       = DSDT_SIG;
+        TableGlobalPtr  = &DSDT;
     }
     
     else if (!strncmp (TableHeader->Signature, APIC_SIG, 4))
     {
         /* APIC table */
-        /* Delete existing table if there is one */
 
-        NsDeleteAcpiTable (TABLE_APIC);
-
-        /* Save the table pointers and allocation info */
-
-        APIC = (APIC_TABLE *) TableInfo->Pointer;
-        AcpiTables [TABLE_APIC] = *TableInfo;
-
-        DEBUG_PRINT (ACPI_INFO, ("APIC Table located at %p\n", APIC));
-
-        NsVerifyTableChecksum (APIC);
+        TableType       = TABLE_APIC;
+        TableName       = APIC_SIG;
+        TableGlobalPtr  = &APIC;
     }
 
     else if (!strncmp (TableHeader->Signature, PSDT_SIG, 4))
     {
         /* PSDT table */
-        /* Delete existing table if there is one */
 
-        NsDeleteAcpiTable (TABLE_PSDT);
-
-        /* Save the table pointers and allocation info */
-
-        PSDT = (ACPI_TABLE_HEADER *) TableInfo->Pointer;
-        AcpiTables [TABLE_PSDT] = *TableInfo;
-        
-        DEBUG_PRINT (ACPI_INFO, ("PSDT located at %p\n", PSDT));
-
-        NsVerifyTableChecksum (PSDT);
+        TableType       = TABLE_PSDT;
+        TableName       = PSDT_SIG;
+        TableGlobalPtr  = &PSDT;
     }
 
     else if (!strncmp (TableHeader->Signature, SSDT_SIG, 4))
     {
         /* SSDT table */
-        /* Delete existing table if there is one */
-
-        NsDeleteAcpiTable (TABLE_SSDT);
-
         /* TBD - need to be able to deal with multiple SSDTs */
-        /* Save the table pointers and allocation info */
 
-        SSDT = (ACPI_TABLE_HEADER *) TableInfo->Pointer;
-        AcpiTables [TABLE_SSDT] = *TableInfo;
-             
-        DEBUG_PRINT (ACPI_INFO, ("SSDT located at %p\n", SSDT));
-
-        NsVerifyTableChecksum (SSDT);
+        TableType       = TABLE_SSDT;
+        TableName       = SSDT_SIG;
+        TableGlobalPtr  = &SSDT;
     }
 
     else if (!strncmp (TableHeader->Signature, SBDT_SIG, 4))
     {
         /* SBDT table */
-        /* Delete existing table if there is one */
 
-        NsDeleteAcpiTable (TABLE_SBDT);
-
-        /* Save the table pointers and allocation info */
-
-        SBDT = (ACPI_TABLE_HEADER *) TableInfo->Pointer;
-        AcpiTables [TABLE_SBDT] = *TableInfo;
-        
-        DEBUG_PRINT (ACPI_INFO, ("SBDT located at %p\n", SBDT));
-
-        NsVerifyTableChecksum (SBDT);
+        TableType       = TABLE_SBDT;
+        TableName       = SBDT_SIG;
+        TableGlobalPtr  = &SBDT;
     }
 
     else
     {
         /* Unknown table */
 
-        DEBUG_PRINT (ACPI_ERROR, ("Unknown table %x in RSDT with signature '%4.4s' at %p\n",
-                                TableHeader, TableHeader->Signature, 
-                                TableInfo->Pointer));
+        DEBUG_PRINT (ACPI_ERROR, ("Unknown table at %x in RSDT with signature '%4.4s'\n",
+                                TableHeader, TableHeader->Signature));
         REPORT_ERROR ("Unknown table in the RSDT");
 
         NsVerifyTableChecksum (TableHeader);
@@ -503,6 +394,32 @@ CmInstallTable (
         DUMP_BUFFER (&RSDT->header, 32, 0);
 
         Status = AE_BAD_HEADER;
+    }
+
+
+    /* 
+     * Common table installation code 
+     */
+
+    if (ACPI_SUCCESS (Status))
+    {
+        /* Delete existing table if there is one */
+
+        NsDeleteAcpiTable (TableType);
+
+        /* Save the table pointers and allocation info */
+
+        *TableGlobalPtr = TableHeader;
+        AcpiTables [TableType] = *TableInfo;
+
+        DEBUG_PRINT (ACPI_INFO, ("%s located at %p\n", TableName, TableHeader));
+
+        /* Validate checksum for _most_ tables */
+
+        if (TableType != TABLE_FACS)
+        {
+            NsVerifyTableChecksum (TableHeader);
+        }
     }
 
 
@@ -537,9 +454,14 @@ CmGetAllTables (
     
     FUNCTION_TRACE ("CmGetAllTables");
 
-    /* loop through all table pointers found in RSDT   */
-
     DEBUG_PRINT (ACPI_INFO, ("Number of tables: %d\n", NumberOfTables));
+
+
+    /* 
+     * Loop through all table pointers found in RSDT.
+     * This will NOT include the FACS and DSDT - we must get 
+     * them after the loop
+     */
 
     for (Index = 0; Index < NumberOfTables; Index++)
     {
@@ -563,8 +485,62 @@ CmGetAllTables (
         }
 
     }
-      
+
+
+    /* 
+     * Get the FACS (must have the FACP first, from loop above)
+     * NsGetTableFacs will fail if FACP pointer is not valid
+     */
+
+    Status = NsGetTableFacs (TablePtr, &TableInfo);
+    if (ACPI_FAILURE (Status))
+    {
+        FUNCTION_STATUS_EXIT (Status);
+        return Status;
+    }
+
+    /* Install the FACS */
+
+    Status = CmInstallTable (TablePtr, &TableInfo);
+    if (ACPI_FAILURE (Status))
+    {
+        FUNCTION_STATUS_EXIT (Status);
+        return Status;
+    }
+
+
+    /* Get the DSDT (must have the FACP first, from loop above) */
+
+    Status = NsGetTable ((void *) FACP->Dsdt, TablePtr, &TableInfo);
+    if (ACPI_FAILURE (Status))
+    {
+        FUNCTION_STATUS_EXIT (Status);
+        return Status;
+    }
+
+    /* Install the DSDT */
+
+    Status = CmInstallTable (TablePtr, &TableInfo);
+    if (ACPI_FAILURE (Status))
+    {
+        FUNCTION_STATUS_EXIT (Status);
+        return Status;
+    }
+
+    /* Dump the DSDT Header */
+
+    DEBUG_PRINT (TRACE_TABLES, ("Hex dump of DSDT Header:\n"));
+    DUMP_BUFFER ((UINT8 *) DSDT,
+                    (ACPI_SIZE) sizeof (ACPI_TABLE_HEADER), HEX | ASCII);
     
+    /* Dump the entire DSDT */
+
+    DEBUG_PRINT (TRACE_TABLES,
+                ("Hex dump of DSDT (After header), size %d (0x%x)\n",
+                (ACPI_SIZE)DSDT->Length, (ACPI_SIZE)DSDT->Length));
+    DUMP_BUFFER ((UINT8 *) (DSDT + 1),
+                    (ACPI_SIZE)DSDT->Length, HEX | ASCII);
+
     /* 
      * Initialize the capabilities flags.
      * Assumes that platform supports ACPI_MODE since we have tables!
@@ -735,7 +711,7 @@ CmHardwareInitialize (void)
                 return AE_NO_MEMORY;
             }
 
-            /* save state of GPE0 enable bits */
+            /* Save state of GPE0 enable bits */
 
             for (Index = 0; Index < FACP->Gpe0BlkLen / 2; Index++)
             {
