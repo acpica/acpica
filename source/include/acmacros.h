@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acmacros.h - C macros for the entire subsystem.
- *       $Revision: 1.144 $
+ *       $Revision: 1.146 $
  *
  *****************************************************************************/
 
@@ -167,10 +167,15 @@
 #endif
 #endif
 
- /*
-  * Extract a byte of data using a pointer.  Any more than a byte and we
-  * get into potential aligment issues -- see the STORE macros below
-  */
+/*
+ * printf() format helpers
+ */
+#define ACPI_FORMAT_UINT64(i)           ACPI_HIDWORD(i),ACPI_LODWORD(i)
+
+/*
+ * Extract a byte of data using a pointer.  Any more than a byte and we
+ * get into potential aligment issues -- see the STORE macros below
+ */
 #define ACPI_GET8(addr)                 (*(UINT8*)(addr))
 
 /* Pointer arithmetic */
@@ -212,7 +217,7 @@
 
 #define ACPI_BUFFER_INDEX(BufLen,BufOffset,ByteGran)  ((BufLen) - (((BufOffset)+1) * (ByteGran)))
 
-/* These macros reverse the bytes during the move, converting little-endian to big endian */     
+/* These macros reverse the bytes during the move, converting little-endian to big endian */
 
                                                      /* Big Endian      <==        Little Endian */
                                                      /*  Hi...Lo                     Lo...Hi     */
@@ -279,7 +284,7 @@
 #define ACPI_MOVE_16_TO_16(d,s)         *(UINT16 *)(void *)(d) = *(UINT16 *)(void *)(s)
 #define ACPI_MOVE_16_TO_32(d,s)         *(UINT32 *)(void *)(d) = *(UINT16 *)(void *)(s)
 #define ACPI_MOVE_16_TO_64(d,s)         ACPI_MOVE_16_TO_32(d,s)
- 
+
 /* 32-bit source, 16/32/64 destination */
 
 #define ACPI_MOVE_32_TO_16(d,s)         ACPI_MOVE_16_TO_16(d,s)    /* Truncate to 16 */
