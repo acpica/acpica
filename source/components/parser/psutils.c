@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: psutils - Parser miscellaneous utilities (Parser only)
- *              $Revision: 1.42 $
+ *              $Revision: 1.45 $
  *
  *****************************************************************************/
 
@@ -125,8 +125,8 @@
 
 #define PARSEOP_GENERIC     0x01
 #define PARSEOP_NAMED       0x02
-#define PARSEOP_DEFERRED    0x03
-#define PARSEOP_BYTELIST    0x04
+#define PARSEOP_DEFERRED    0x04
+#define PARSEOP_BYTELIST    0x08
 #define PARSEOP_IN_CACHE    0x80
 
 
@@ -149,15 +149,13 @@ AcpiPsInitOp (
     ACPI_PARSE_OBJECT       *Op,
     UINT16                  Opcode)
 {
-    const ACPI_OPCODE_INFO  *AmlOp;
+    FUNCTION_ENTRY ();
 
 
     Op->DataType = ACPI_DESC_TYPE_PARSER;
     Op->Opcode = Opcode;
 
-    AmlOp = AcpiPsGetOpcodeInfo (Opcode);
-
-    DEBUG_ONLY_MEMBERS (STRNCPY (Op->OpName, AmlOp->Name,
+    DEBUG_ONLY_MEMBERS (STRNCPY (Op->OpName, (AcpiPsGetOpcodeInfo (Opcode))->Name,
                         sizeof (Op->OpName)));
 }
 
@@ -184,6 +182,9 @@ AcpiPsAllocOp (
     UINT32                  Size;
     UINT8                   Flags;
     const ACPI_OPCODE_INFO  *OpInfo;
+
+
+    FUNCTION_ENTRY ();
 
 
     OpInfo = AcpiPsGetOpcodeInfo (Opcode);
@@ -215,7 +216,6 @@ AcpiPsAllocOp (
     }
 
 
-
     if (Size == sizeof (ACPI_PARSE_OBJECT))
     {
         /*
@@ -228,7 +228,6 @@ AcpiPsAllocOp (
     {
         Op = AcpiUtAcquireFromCache (ACPI_MEM_LIST_PSNODE_EXT);
     }
-
 
     /* Initialize the Op */
 

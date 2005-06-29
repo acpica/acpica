@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: psopcode - Parser/Interpreter opcode information table
- *              $Revision: 1.58 $
+ *              $Revision: 1.59 $
  *
  *****************************************************************************/
 
@@ -822,6 +822,8 @@ NATIVE_CHAR *
 AcpiPsGetOpcodeName (
     UINT16                  Opcode)
 {
+#ifdef ACPI_DEBUG
+
     const ACPI_OPCODE_INFO  *Op;
 
 
@@ -829,10 +831,11 @@ AcpiPsGetOpcodeName (
 
     /* Always guaranteed to return a valid pointer */
 
-#ifdef ACPI_DEBUG
     return (Op->Name);
+
 #else
     return ("AE_NOT_CONFIGURED");
+
 #endif
 }
 
