@@ -42,7 +42,7 @@ RSC=rc.exe
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_CONSOLE" /D "_MBCS" /YX /FD /c
-# ADD CPP /nologo /MT /W4 /GX /O2 /I "..\..\Subsystem\Include" /D "NDEBUG" /D "WIN32" /D "_CONSOLE" /D "_MBCS" /D "_ACPI_EXEC_APP" /D "_MULTI_THREADED" /FD /c
+# ADD CPP /nologo /MT /W4 /GX /O2 /I "..\..\components\include" /D "NDEBUG" /D "WIN32" /D "_CONSOLE" /D "_MBCS" /D "_ACPI_EXEC_APP" /D "_MULTI_THREADED" /FD /c
 # SUBTRACT CPP /YX
 # ADD BASE RSC /l 0x409 /d "NDEBUG"
 # ADD RSC /l 0x409 /d "NDEBUG"
@@ -69,12 +69,12 @@ PostBuild_Cmds=copy bin\acpiexec.exe ..\..\libraries\acpiexec.exe	dir ..\..\libr
 # PROP BASE Target_Dir ""
 # PROP Use_MFC 0
 # PROP Use_Debug_Libraries 1
-# PROP Output_Dir "\Acpi\Components\Generate\VC\AcpiExec"
-# PROP Intermediate_Dir "\Acpi\Components\Generate\VC\AcpiExec"
+# PROP Output_Dir "\Acpi\generate\msvc\AcpiExec"
+# PROP Intermediate_Dir "\Acpi\generate\msvc\AcpiExec"
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_CONSOLE" /D "_MBCS" /YX /FD /GZ /c
-# ADD CPP /nologo /MT /W4 /Gm /GX /ZI /Od /I "..\..\Subsystem\Include" /D "_DEBUG" /D "WIN32" /D "WIN32_LEAN_AND_MEAN" /D "_CONSOLE" /D "_MBCS" /D "_ACPI_EXEC_APP" /D "_MULTI_THREADED" /FR /FD /GZ /c
+# ADD CPP /nologo /MT /W4 /Gm /GX /ZI /Od /I "..\..\components\include" /D "_DEBUG" /D "WIN32" /D "WIN32_LEAN_AND_MEAN" /D "_CONSOLE" /D "_MBCS" /D "_ACPI_EXEC_APP" /D "_MULTI_THREADED" /FR /FD /GZ /c
 # SUBTRACT CPP /YX
 # ADD BASE RSC /l 0x409 /d "_DEBUG"
 # ADD RSC /l 0x409 /d "_DEBUG"
@@ -101,48 +101,48 @@ PostBuild_Cmds=copy bin\acpiexec.exe ..\..\libraries\acpiexec.exe	dir ..\..\libr
 # Begin Group "Source Files"
 
 # PROP Default_Filter "cpp;c;cxx;rc;def;r;odl;idl;hpj;bat"
-# Begin Group "SubsystemCommon"
+# Begin Group "Utilities"
 
 # PROP Default_Filter ".c"
 # Begin Source File
 
-SOURCE=..\..\Subsystem\Common\cmalloc.c
+SOURCE=..\..\components\core\utils\cmalloc.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\Subsystem\Common\cmcopy.c
+SOURCE=..\..\components\core\utils\cmcopy.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\Subsystem\Common\cmdebug.c
+SOURCE=..\..\components\core\utils\cmdebug.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\Subsystem\Common\cmdelete.c
+SOURCE=..\..\components\core\utils\cmdelete.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\Subsystem\Common\cmeval.c
+SOURCE=..\..\components\core\utils\cmeval.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\Subsystem\Common\cmglobal.c
+SOURCE=..\..\components\core\utils\cmglobal.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\Subsystem\Common\cminit.c
+SOURCE=..\..\components\core\utils\cminit.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\Subsystem\Common\cmobject.c
+SOURCE=..\..\components\core\utils\cmobject.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\Subsystem\Common\cmutils.c
+SOURCE=..\..\components\core\utils\cmutils.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\subsystem\Common\cmxface.c
+SOURCE=..\..\components\core\utils\cmxface.c
 # End Source File
 # End Group
 # Begin Group "Interpreter"
@@ -150,91 +150,91 @@ SOURCE=..\..\subsystem\Common\cmxface.c
 # PROP Default_Filter ""
 # Begin Source File
 
-SOURCE=..\..\subsystem\Interpreter\amconfig.c
+SOURCE=..\..\components\interpreter\executer\amconfig.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\Subsystem\Interpreter\amconvrt.c
+SOURCE=..\..\components\interpreter\executer\amconvrt.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\subsystem\Interpreter\amcreate.c
+SOURCE=..\..\components\interpreter\executer\amcreate.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\subsystem\Interpreter\amdump.c
+SOURCE=..\..\components\interpreter\executer\amdump.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\subsystem\Interpreter\amdyadic.c
+SOURCE=..\..\components\interpreter\executer\amdyadic.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\subsystem\Interpreter\amfield.c
+SOURCE=..\..\components\interpreter\executer\amfield.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\subsystem\Interpreter\amfldio.c
+SOURCE=..\..\components\interpreter\executer\amfldio.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\subsystem\Interpreter\ammisc.c
+SOURCE=..\..\components\interpreter\executer\ammisc.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\subsystem\Interpreter\ammonad.c
+SOURCE=..\..\components\interpreter\executer\ammonad.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\Subsystem\Interpreter\ammutex.c
+SOURCE=..\..\components\interpreter\executer\ammutex.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\subsystem\Interpreter\amnames.c
+SOURCE=..\..\components\interpreter\executer\amnames.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\subsystem\Interpreter\amprep.c
+SOURCE=..\..\components\interpreter\executer\amprep.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\subsystem\Interpreter\amregion.c
+SOURCE=..\..\components\interpreter\executer\amregion.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\subsystem\Interpreter\amresnte.c
+SOURCE=..\..\components\interpreter\executer\amresnte.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\subsystem\Interpreter\amresolv.c
+SOURCE=..\..\components\interpreter\executer\amresolv.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\subsystem\Interpreter\amresop.c
+SOURCE=..\..\components\interpreter\executer\amresop.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\subsystem\Interpreter\amstore.c
+SOURCE=..\..\components\interpreter\executer\amstore.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\subsystem\Interpreter\amstoren.c
+SOURCE=..\..\components\interpreter\executer\amstoren.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\subsystem\Interpreter\amstorob.c
+SOURCE=..\..\components\interpreter\executer\amstorob.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\subsystem\Interpreter\amsystem.c
+SOURCE=..\..\components\interpreter\executer\amsystem.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\subsystem\Interpreter\amutils.c
+SOURCE=..\..\components\interpreter\executer\amutils.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\subsystem\Interpreter\amxface.c
+SOURCE=..\..\components\interpreter\executer\amxface.c
 # End Source File
 # End Group
 # Begin Group "Namespace"
@@ -242,55 +242,55 @@ SOURCE=..\..\subsystem\Interpreter\amxface.c
 # PROP Default_Filter ""
 # Begin Source File
 
-SOURCE=..\..\subsystem\Namespace\nsaccess.c
+SOURCE=..\..\components\core\namespace\nsaccess.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\subsystem\Namespace\nsalloc.c
+SOURCE=..\..\components\core\namespace\nsalloc.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\subsystem\Namespace\nsdump.c
+SOURCE=..\..\components\core\namespace\nsdump.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\subsystem\Namespace\nseval.c
+SOURCE=..\..\components\core\namespace\nseval.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\subsystem\Namespace\nsinit.c
+SOURCE=..\..\components\core\namespace\nsinit.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\subsystem\Namespace\nsload.c
+SOURCE=..\..\components\core\namespace\nsload.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\subsystem\Namespace\nsnames.c
+SOURCE=..\..\components\core\namespace\nsnames.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\subsystem\Namespace\nsobject.c
+SOURCE=..\..\components\core\namespace\nsobject.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\subsystem\Namespace\nssearch.c
+SOURCE=..\..\components\core\namespace\nssearch.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\subsystem\Namespace\nsutils.c
+SOURCE=..\..\components\core\namespace\nsutils.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\subsystem\Namespace\nswalk.c
+SOURCE=..\..\components\core\namespace\nswalk.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\subsystem\Namespace\nsxfname.c
+SOURCE=..\..\components\core\namespace\nsxfname.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\subsystem\Namespace\nsxfobj.c
+SOURCE=..\..\components\core\namespace\nsxfobj.c
 # End Source File
 # End Group
 # Begin Group "Parser"
@@ -298,35 +298,35 @@ SOURCE=..\..\subsystem\Namespace\nsxfobj.c
 # PROP Default_Filter ""
 # Begin Source File
 
-SOURCE=..\..\Subsystem\Parser\psargs.c
+SOURCE=..\..\components\interpreter\parser\psargs.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\Subsystem\Parser\psopcode.c
+SOURCE=..\..\components\interpreter\parser\psopcode.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\Subsystem\Parser\psparse.c
+SOURCE=..\..\components\interpreter\parser\psparse.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\Subsystem\Parser\psscope.c
+SOURCE=..\..\components\interpreter\parser\psscope.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\Subsystem\Parser\pstree.c
+SOURCE=..\..\components\interpreter\parser\pstree.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\Subsystem\Parser\psutils.c
+SOURCE=..\..\components\interpreter\parser\psutils.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\subsystem\Parser\pswalk.c
+SOURCE=..\..\components\interpreter\parser\pswalk.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\subsystem\Parser\psxface.c
+SOURCE=..\..\components\interpreter\parser\psxface.c
 # End Source File
 # End Group
 # Begin Group "Hardware"
@@ -334,15 +334,15 @@ SOURCE=..\..\subsystem\Parser\psxface.c
 # PROP Default_Filter ""
 # Begin Source File
 
-SOURCE=..\..\subsystem\Hardware\hwacpi.c
+SOURCE=..\..\components\core\hardware\hwacpi.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\Subsystem\Hardware\hwgpe.c
+SOURCE=..\..\components\core\hardware\hwgpe.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\Subsystem\Hardware\hwregs.c
+SOURCE=..\..\components\core\hardware\hwregs.c
 # End Source File
 # End Group
 # Begin Group "Events"
@@ -350,35 +350,35 @@ SOURCE=..\..\Subsystem\Hardware\hwregs.c
 # PROP Default_Filter ""
 # Begin Source File
 
-SOURCE=..\..\subsystem\Events\evevent.c
+SOURCE=..\..\components\core\events\evevent.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\subsystem\Events\evmisc.c
+SOURCE=..\..\components\core\events\evmisc.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\subsystem\Events\evregion.c
+SOURCE=..\..\components\core\events\evregion.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\subsystem\Events\evrgnini.c
+SOURCE=..\..\components\core\events\evrgnini.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\subsystem\Events\evsci.c
+SOURCE=..\..\components\core\events\evsci.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\subsystem\Events\evxface.c
+SOURCE=..\..\components\core\events\evxface.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\subsystem\Events\evxfevnt.c
+SOURCE=..\..\components\core\events\evxfevnt.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\subsystem\Events\evxfregn.c
+SOURCE=..\..\components\core\events\evxfregn.c
 # End Source File
 # End Group
 # Begin Group "AcpiExec"
@@ -386,12 +386,12 @@ SOURCE=..\..\subsystem\Events\evxfregn.c
 # PROP Default_Filter ""
 # Begin Source File
 
-SOURCE=..\..\Tools\AcpiExec\aeexec.c
+SOURCE=..\..\components\Tools\AcpiExec\aeexec.c
 # ADD CPP /Ze
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\Tools\AcpiExec\aemain.c
+SOURCE=..\..\components\Tools\AcpiExec\aemain.c
 
 !IF  "$(CFG)" == "AcpiExec - Win32 Release"
 
@@ -410,43 +410,43 @@ SOURCE=..\..\Tools\AcpiExec\aemain.c
 # PROP Default_Filter ".c"
 # Begin Source File
 
-SOURCE=..\..\Subsystem\Debugger\dbcmds.c
+SOURCE=..\..\components\interpreter\debugger\dbcmds.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\Subsystem\Debugger\dbdisasm.c
+SOURCE=..\..\components\interpreter\debugger\dbdisasm.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\Subsystem\Debugger\dbdisply.c
+SOURCE=..\..\components\interpreter\debugger\dbdisply.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\Subsystem\Debugger\dbexec.c
+SOURCE=..\..\components\interpreter\debugger\dbexec.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\Subsystem\Debugger\dbfileio.c
+SOURCE=..\..\components\interpreter\debugger\dbfileio.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\Subsystem\Debugger\dbhistry.c
+SOURCE=..\..\components\interpreter\debugger\dbhistry.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\Subsystem\Debugger\dbinput.c
+SOURCE=..\..\components\interpreter\debugger\dbinput.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\Subsystem\Debugger\dbstats.c
+SOURCE=..\..\components\interpreter\debugger\dbstats.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\Subsystem\Debugger\dbutils.c
+SOURCE=..\..\components\interpreter\debugger\dbutils.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\subsystem\Debugger\dbxface.c
+SOURCE=..\..\components\interpreter\debugger\dbxface.c
 # End Source File
 # End Group
 # Begin Group "Dispatcher"
@@ -454,43 +454,43 @@ SOURCE=..\..\subsystem\Debugger\dbxface.c
 # PROP Default_Filter ""
 # Begin Source File
 
-SOURCE=..\..\subsystem\Dispatcher\dsfield.c
+SOURCE=..\..\components\interpreter\dispatcher\dsfield.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\subsystem\Dispatcher\dsmethod.c
+SOURCE=..\..\components\interpreter\dispatcher\dsmethod.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\subsystem\Dispatcher\dsmthdat.c
+SOURCE=..\..\components\interpreter\dispatcher\dsmthdat.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\subsystem\Dispatcher\dsobject.c
+SOURCE=..\..\components\interpreter\dispatcher\dsobject.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\subsystem\Dispatcher\dsopcode.c
+SOURCE=..\..\components\interpreter\dispatcher\dsopcode.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\subsystem\Dispatcher\dsutils.c
+SOURCE=..\..\components\interpreter\dispatcher\dsutils.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\subsystem\Dispatcher\dswexec.c
+SOURCE=..\..\components\interpreter\dispatcher\dswexec.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\subsystem\Dispatcher\dswload.c
+SOURCE=..\..\components\interpreter\dispatcher\dswload.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\subsystem\Dispatcher\dswscope.c
+SOURCE=..\..\components\interpreter\dispatcher\dswscope.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\subsystem\Dispatcher\dswstate.c
+SOURCE=..\..\components\interpreter\dispatcher\dswstate.c
 # End Source File
 # End Group
 # Begin Group "Tables"
@@ -498,23 +498,23 @@ SOURCE=..\..\subsystem\Dispatcher\dswstate.c
 # PROP Default_Filter ".c"
 # Begin Source File
 
-SOURCE=..\..\subsystem\Tables\tbconvrt.c
+SOURCE=..\..\components\core\tables\tbconvrt.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\Subsystem\Tables\tbget.c
+SOURCE=..\..\components\core\tables\tbget.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\Subsystem\Tables\tbinstal.c
+SOURCE=..\..\components\core\tables\tbinstal.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\Subsystem\Tables\tbutils.c
+SOURCE=..\..\components\core\tables\tbutils.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\subsystem\Tables\tbxface.c
+SOURCE=..\..\components\core\tables\tbxface.c
 # End Source File
 # End Group
 # Begin Group "Common"
@@ -522,11 +522,11 @@ SOURCE=..\..\subsystem\Tables\tbxface.c
 # PROP Default_Filter ".c"
 # Begin Source File
 
-SOURCE=..\..\Common\getopt.c
+SOURCE=..\..\components\common\getopt.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\Common\oswinxf.c
+SOURCE=..\..\components\os_interfaces\oswinxf.c
 # End Source File
 # End Group
 # Begin Group "Resources"
@@ -534,47 +534,47 @@ SOURCE=..\..\Common\oswinxf.c
 # PROP Default_Filter ""
 # Begin Source File
 
-SOURCE=..\..\Subsystem\Resources\rsaddr.c
+SOURCE=..\..\components\services\resource\rsaddr.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\Subsystem\Resources\rscalc.c
+SOURCE=..\..\components\services\resource\rscalc.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\Subsystem\Resources\rscreate.c
+SOURCE=..\..\components\services\resource\rscreate.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\Subsystem\Resources\rsdump.c
+SOURCE=..\..\components\services\resource\rsdump.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\Subsystem\Resources\rsio.c
+SOURCE=..\..\components\services\resource\rsio.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\Subsystem\Resources\rsirq.c
+SOURCE=..\..\components\services\resource\rsirq.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\Subsystem\Resources\rslist.c
+SOURCE=..\..\components\services\resource\rslist.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\Subsystem\Resources\rsmemory.c
+SOURCE=..\..\components\services\resource\rsmemory.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\Subsystem\Resources\rsmisc.c
+SOURCE=..\..\components\services\resource\rsmisc.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\Subsystem\Resources\rsutils.c
+SOURCE=..\..\components\services\resource\rsutils.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\Subsystem\Resources\rsxface.c
+SOURCE=..\..\components\services\resource\rsxface.c
 # End Source File
 # End Group
 # End Group
@@ -583,11 +583,11 @@ SOURCE=..\..\Subsystem\Resources\rsxface.c
 # PROP Default_Filter "h;hpp;hxx;hm;inl"
 # Begin Source File
 
-SOURCE=..\..\Subsystem\Include\acstruct.h
+SOURCE=..\..\components\include\acstruct.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\Tools\AcpiExec\aecommon.h
+SOURCE=..\..\components\Tools\AcpiExec\aecommon.h
 # End Source File
 # End Group
 # Begin Group "Resource Files"
