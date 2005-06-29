@@ -382,7 +382,7 @@ ACPI_STATUS
 OsGetGlobalLock(void)
 {
     UINT32              GlobalLockReg;
-    ACPI_STATUS         Status;
+    ACPI_STATUS         Status = AE_OK;
 
 
     if (FACS)
