@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: oswinxf - Windows OSL
- *              $Revision: 1.28 $
+ *              $Revision: 1.29 $
  *
  *****************************************************************************/
 
@@ -560,7 +560,7 @@ AcpiOsCreateSemaphore (
     AcpiGbl_Semaphores[AcpiGbl_NextSemaphore].CurrentUnits = (UINT16) InitialUnits;
     AcpiGbl_Semaphores[AcpiGbl_NextSemaphore].OsHandle = Mutex;
 
-    ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "Handle=%d, Max=%d, Current=%d, OsHandle=%p\n",
+    ACPI_DEBUG_PRINT ((ACPI_LV_MUTEX, "Handle=%d, Max=%d, Current=%d, OsHandle=%p\n",
             AcpiGbl_NextSemaphore, MaxUnits, InitialUnits, Mutex));
 
     *OutHandle = (void *) AcpiGbl_NextSemaphore;
