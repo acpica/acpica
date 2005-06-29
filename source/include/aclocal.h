@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: aclocal.h - Internal data types used across the ACPI subsystem
- *       $Revision: 1.207 $
+ *       $Revision: 1.208 $
  *
  *****************************************************************************/
 
@@ -453,7 +453,7 @@ typedef struct acpi_gpe_xrupt_info
     struct acpi_gpe_xrupt_info      *Previous;
     struct acpi_gpe_xrupt_info      *Next;
     ACPI_GPE_BLOCK_INFO             *GpeBlockListHead;  /* List of GPE blocks for this xrupt */
-    UINT32                          InterruptLevel;     /* System interrupt level */
+    UINT32                          InterruptNumber;    /* System interrupt number */
 
 } ACPI_GPE_XRUPT_INFO;
 
