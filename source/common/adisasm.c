@@ -130,7 +130,7 @@
 
 ACPI_PARSE_OBJECT       *AcpiGbl_ParsedNamespaceRoot;
 ACPI_PARSE_OBJECT       *root;
-UINT8                   *AmlPtr;
+UINT8                   *AmlStart;
 UINT32                  AmlLength;
 UINT8                   *DsdtPtr;
 UINT32                  DsdtLength;
@@ -278,7 +278,7 @@ AdDisplayTables (void)
     AcpiUtDumpBuffer ((UINT8 *) AcpiGbl_DSDT, sizeof (ACPI_TABLE_HEADER), DB_BYTE_DISPLAY, ACPI_UINT32_MAX);
 
     AcpiOsPrintf ("DSDT Body (Length 0x%X)\n", AmlLength);
-    AcpiUtDumpBuffer ((UINT8 *) AmlPtr, AmlLength, DB_BYTE_DISPLAY, ACPI_UINT32_MAX);
+    AcpiUtDumpBuffer ((UINT8 *) AmlStart, AmlLength, DB_BYTE_DISPLAY, ACPI_UINT32_MAX);
 
     return AE_OK;
 }
@@ -304,7 +304,7 @@ AdLoadDsdt(
     UINT32                  *DsdtLength)
 {
     ACPI_TABLE_HEADER       dsdt_hdr;
-    UINT8                   *AmlPtr;
+    UINT8                   *AmlStart;
     UINT32                   AmlLength;
 
 
@@ -318,11 +318,11 @@ AdLoadDsdt(
 
             if (*DsdtPtr)
             {
-                AmlPtr = *DsdtPtr + sizeof (dsdt_hdr);
+                AmlStart = *DsdtPtr + sizeof (dsdt_hdr);
                 AmlLength = *DsdtLength - sizeof (dsdt_hdr);
 
                 memcpy (*DsdtPtr, &dsdt_hdr, sizeof (dsdt_hdr));
-                if ((UINT32) fread (AmlPtr, 1, (size_t) AmlLength, fp) == AmlLength)
+                if ((UINT32) fread (AmlStart, 1, (size_t) AmlLength, fp) == AmlLength)
                 {
                     return AE_OK;
                 }
@@ -528,9 +528,9 @@ AdParseTables (void)
 
     DsdtLength = AcpiGbl_DSDT->Length;
     AmlLength = DsdtLength  - sizeof (ACPI_TABLE_HEADER);
-    AmlPtr = ((UINT8 *) AcpiGbl_DSDT + sizeof (ACPI_TABLE_HEADER));
+    AmlStart = ((UINT8 *) AcpiGbl_DSDT + sizeof (ACPI_TABLE_HEADER));
 
-    Status = AcpiPsParseAml (AcpiGbl_ParsedNamespaceRoot, AmlPtr, AmlLength, 0,
+    Status = AcpiPsParseAml (AcpiGbl_ParsedNamespaceRoot, AmlStart, AmlLength, 0,
                                 NULL, NULL, NULL, AcpiPsFindObject, NULL);
     if (ACPI_FAILURE (Status))
     {
