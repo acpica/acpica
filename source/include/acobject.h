@@ -118,7 +118,6 @@
 #define _ACPIOBJ_H
 
 #include <acpitypes.h>
-#include <internal.h>
 
 /* 
  * TBD: This wastes memory.
