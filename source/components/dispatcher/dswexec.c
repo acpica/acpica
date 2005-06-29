@@ -181,22 +181,20 @@ DsExecBeginOp (
         WalkState->ControlState->Control.PredicateOp    = Op;         /* Save start of predicate */
     }
 
-/*
-    if (Op->Opcode != AML_MethodOp)
-    {
-        return_ACPI_STATUS (AE_OK);
-    }
-    
-*/
 
     OpInfo = PsGetOpcodeInfo (Op->Opcode);
 
-    /* We want to send name paths to the load code */
+    /* We want to send namepaths to the load code */
 
     if (Op->Opcode == AML_NAMEPATH_OP)
     {
         OpInfo->Flags = OPTYPE_NAMED_OBJECT;
     }
+
+
+    /*
+     * Handle the opcode based upon the opcode type 
+     */
 
     switch (OpInfo->Flags & OP_INFO_TYPE)
     {
@@ -205,20 +203,21 @@ DsExecBeginOp (
         Status = DsExecBeginControlOp (WalkState, Op);
         break;
 
+
     case OPTYPE_NAMED_OBJECT:
 
         if (WalkState->Origin->Opcode == AML_MethodOp)
         {
             /*
              * Found a named object declaration during method execution;  we must enter
-             * this object into the namespace.
-             *
-             * TBD: make this a temporary namespace object
+             * this object into the namespace.  The created object is temporary and 
+             * will be deleted upon completion of the execution of this method.
              */
 
             Status = DsLoad2BeginOp (WalkState, Op);
         }
         break;
+
 
     default:
         break;
@@ -573,7 +572,6 @@ DsExecEndOp (
 
 
         case AML_MethodOp:
-            
 
             break;
 
@@ -586,7 +584,7 @@ DsExecEndOp (
 
 
         default:
-            /* TBD: Nothing to do here at this time */
+            /* Nothing needs to be done */
 
             Status = AE_OK;
             break;
@@ -616,8 +614,6 @@ DsExecEndOp (
         /* Completed the predicate, the result must be a number */
 
         WalkState->ControlState->Common.State = 0;
-
-/* TBD: REDO now that we have the resultobj mechanism */
 
         if (ResultObj)
         {
@@ -702,7 +698,8 @@ Cleanup:
 
         DEBUG_EXEC (DbDisplayResultObject (ResultObj));
 
-        /* Delete the result op IFF:
+        /* 
+         * Delete the result op if and only if:
          * Parent will not use the result -- such as any non-nested type2 op in a method (parent will be method)
          */
         DsDeleteResultIfNotUsed (Op, ResultObj, WalkState);
