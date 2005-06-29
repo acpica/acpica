@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: nsaccess - Top-level functions for accessing ACPI namespace
- *              $Revision: 1.107 $
+ *              $Revision: 1.113 $
  *
  ******************************************************************************/
 
@@ -187,8 +187,7 @@ AcpiNsRootInitialize (void)
                                 IMODE_LOAD_PASS2, NS_NO_UPSEARCH,
                                 NULL, &NewNode);
 
-        if (ACPI_FAILURE (Status) ||
-            (!NewNode))
+        if (ACPI_FAILURE (Status) || (!NewNode)) /* Must be on same line for code converter */
         {
             DEBUG_PRINT (ACPI_ERROR,
                 ("Could not create predefined name %s, %s\n",
@@ -229,7 +228,7 @@ AcpiNsRootInitialize (void)
             case ACPI_TYPE_NUMBER:
 
                 ObjDesc->Number.Value =
-                        (UINT32) STRTOUL (InitVal->Val, NULL, 10);
+                        (ACPI_INTEGER) STRTOUL (InitVal->Val, NULL, 10);
                 break;
 
 
@@ -245,12 +244,8 @@ AcpiNsRootInitialize (void)
                  */
                 ObjDesc->String.Pointer = AcpiCmAllocate (
                                                 (ObjDesc->String.Length + 1));
-
                 if (!ObjDesc->String.Pointer)
                 {
-                    REPORT_ERROR ("Initial value string"
-                                    "allocation failure");
-
                     AcpiCmRemoveReference (ObjDesc);
                     Status = AE_NO_MEMORY;
                     goto UnlockAndExit;
@@ -298,16 +293,12 @@ AcpiNsRootInitialize (void)
                         goto UnlockAndExit;
                     }
                 }
-
-                /* TBD: [Restructure] These fields may be obsolete */
-
-                ObjDesc->Mutex.LockCount = 0;
-                ObjDesc->Mutex.ThreadId  = 0;
                 break;
 
 
             default:
-                REPORT_ERROR ("Unsupported initial type value");
+                REPORT_ERROR (("Unsupported initial type value %X\n",
+                    InitVal->Type));
                 AcpiCmRemoveReference (ObjDesc);
                 ObjDesc = NULL;
                 continue;
@@ -370,7 +361,8 @@ AcpiNsLookup (
     BOOLEAN                 NullNamePath = FALSE;
     OBJECT_TYPE_INTERNAL    TypeToCheckFor;
     OBJECT_TYPE_INTERNAL    ThisSearchType;
-    DEBUG_EXEC              (UINT32 i)
+
+    DEBUG_ONLY_MEMBERS      (UINT32 i)
 
 
     FUNCTION_TRACE ("NsLookup");
@@ -524,8 +516,7 @@ AcpiNsLookup (
                 {
                     /* Current scope has no parent scope */
 
-                    REPORT_ERROR ("Too many parent prefixes (^) - reached root");
-
+                    REPORT_ERROR (("Too many parent prefixes (^) - reached root\n"));
                     return_ACPI_STATUS (AE_NOT_FOUND);
                 }
 
@@ -643,26 +634,27 @@ AcpiNsLookup (
          * If 1) This is the last segment (NumSegments == 0)
          *    2) and looking for a specific type
          *       (Not checking for TYPE_ANY)
-         *    3) which is not a local type (TYPE_DEF_ANY)
-         *    4) which is not a local type (TYPE_SCOPE)
-         *    5) which is not a local type (TYPE_INDEX_FIELD_DEFN)
-         *    6) and type of object is known (not TYPE_ANY)
-         *    7) and object does not match request
+         *    3) Which is not an alias
+         *    4) which is not a local type (TYPE_DEF_ANY)
+         *    5) which is not a local type (TYPE_SCOPE)
+         *    6) which is not a local type (TYPE_INDEX_FIELD_DEFN)
+         *    7) and type of object is known (not TYPE_ANY)
+         *    8) and object does not match request
          *
          * Then we have a type mismatch.  Just warn and ignore it.
          */
         if ((NumSegments        == 0)                               &&
             (TypeToCheckFor     != ACPI_TYPE_ANY)                   &&
+            (TypeToCheckFor     != INTERNAL_TYPE_ALIAS)             &&
             (TypeToCheckFor     != INTERNAL_TYPE_DEF_ANY)           &&
             (TypeToCheckFor     != INTERNAL_TYPE_SCOPE)             &&
             (TypeToCheckFor     != INTERNAL_TYPE_INDEX_FIELD_DEFN)  &&
-            (ThisNode->Type != ACPI_TYPE_ANY)                   &&
-            (ThisNode->Type != TypeToCheckFor))
+            (ThisNode->Type     != ACPI_TYPE_ANY)                   &&
+            (ThisNode->Type     != TypeToCheckFor))
         {
             /* Complain about a type mismatch */
 
-            REPORT_WARNING ("Type mismatch");
-            DEBUG_PRINT (ACPI_WARN,
+            REPORT_WARNING (
                 ("NsLookup: %4.4s, type 0x%X, checking for type 0x%X\n",
                 &SimpleName, ThisNode->Type, TypeToCheckFor));
         }

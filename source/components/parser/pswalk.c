@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: pswalk - Parser routines to walk parsed op tree(s)
- *              $Revision: 1.49 $
+ *              $Revision: 1.50 $
  *
  *****************************************************************************/
 
@@ -383,6 +383,5 @@ AcpiPsDeleteParseTree (
 
     return_VOID;
 }
-
 
 
