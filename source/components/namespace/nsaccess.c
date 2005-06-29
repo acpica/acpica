@@ -903,8 +903,8 @@ NsEnter (char *Name, NsType Type, OpMode LoadMode, NsHandle *RetHandle)
          * Type is significant only at the last level.
          */
 
-        Status = NsSearchTable (Name, EntryToSearch, Size, LoadMode,
-                                NumSegments == 0 ? Type : TYPE_Any, &ThisEntry);
+        Status = NsSearchAndEnter (Name, EntryToSearch, LoadMode,
+                                    NumSegments == 0 ? Type : TYPE_Any, &ThisEntry);
         CheckTrash ("after NsSearchTable");
 
         if (Status != AE_OK)
