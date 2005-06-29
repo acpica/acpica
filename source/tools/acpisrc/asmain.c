@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asmain - Main module for the acpi source processor utility
- *              $Revision: 1.21 $
+ *              $Revision: 1.25 $
  *
  *****************************************************************************/
 
@@ -209,36 +209,161 @@ ACPI_STRING_TABLE           LinuxDataTypes[] = {
 
     /* Declarations first */
 
-    "UINT32_BIT  ",     "u32         ",
+    "UINT32_BIT  ",             "u32         ",
 
-    "UINT32      ",     "u32         ",
-    "UINT16      ",     "u16         ",
-    "UINT8       ",     "u8          ",
-    "BOOLEAN     ",     "u8          ",
+    "UINT32      ",             "u32         ",
+    "UINT16      ",             "u16         ",
+    "UINT8       ",             "u8          ",
+    "BOOLEAN     ",             "u8          ",
 
     /* Now do embedded typecasts */
 
-    "UINT32",           "u32",
-    "UINT16",           "u16",
-    "UINT8",            "u8",
-    "BOOLEAN",          "u8",
+    "UINT32",                   "u32",
+    "UINT16",                   "u16",
+    "UINT8",                    "u8",
+    "BOOLEAN",                  "u8",
 
-    "INT32  ",          "s32    ",
-    "INT32",            "s32",
-    "INT16  ",          "s16    ",
-    "INT8   ",          "s8     ",
-    "INT16",            "s16",
-    "INT8",             "s8",
+    "INT32  ",                  "s32    ",
+    "INT32",                    "s32",
+    "INT16  ",                  "s16    ",
+    "INT8   ",                  "s8     ",
+    "INT16",                    "s16",
+    "INT8",                     "s8",
 
     /* Put back anything we broke (such as anything with _INTxx_ in it) */
 
-    "_s32_",            "_INT32_",
-    "_u32_",            "_UINT32_",
-    "_s16_",            "_INT16_",
-    "_u16_",            "_UINT16_",
-    "_s8_",             "_INT8_",
-    "_u8_",             "_UINT8_",
-    NULL,               NULL
+    "_s32_",                    "_INT32_",
+    "_u32_",                    "_UINT32_",
+    "_s16_",                    "_INT16_",
+    "_u16_",                    "_UINT16_",
+    "_s8_",                     "_INT8_",
+    "_u8_",                     "_UINT8_",
+
+    /*"ACPI_STATUS  ",            "acpi_status  ",*/
+    /*"ACPI_IO_ADDRESS  ",        "acpi_io_address  ",*/
+    /*"ACPI_PHYSICAL_ADDRESS  ",  "acpi_physical_address  ",*/
+    /*"NATIVE_UINT  ",            "native_uint  ",*/
+    /*"NATIVE_INT  ",             "native_int  ",*/
+    /*"NATIVE_CHAR  ",            "native_char  ",*/
+    "ACPI_NAME  ",              "acpi_name  ",
+    "ACPI_STRING  ",            "acpi_string  ",
+    "ACPI_HANDLE  ",            "acpi_handle  ",
+    "ACPI_INTEGER  ",           "acpi_integer  ",
+    "ACPI_OBJECT_TYPE  ",       "acpi_object_type  ",
+    "ACPI_OBJECT_TYPE8  ",      "acpi_object_type8  ",
+    "OPERATING_MODE  ",         "operating_mode  ",
+    "ACPI_EVENT_STATUS  ",      "acpi_event_status  ",
+    "ACPI_OWNER_ID  ",          "acpi_owner_id  ",
+    "ACPI_TABLE_TYPE  ",        "acpi_table_type  ",
+
+    "ACPI_NAMESPACE_NODE",      "acpi_namespace_node",
+    "ACPI_OPERAND_OBJECT",      "acpi_operand_object",
+    "ACPI_GENERIC_STATE",       "acpi_generic_state",
+    "ACPI_WALK_STATE",          "acpi_walk_state",
+    "ACPI_GPE_LEVEL_INFO",      "acpi_gpe_level_info",
+    "ACPI_PARSE_OBJECT",        "acpi_parse_object",
+    "ACPI_WALK_LIST",           "acpi_walk_list",
+    "ACPI_PARSE_STATE",         "acpi_parse_state",
+    "ACPI_BUFFER",              "acpi_buffer",
+    "ACPI_OBJECT_LIST",         "acpi_object_list",
+    "ACPI_OPCODE_INFO",         "acpi_opcode_info",
+    "PREDEFINED_NAMES",         "predefined_names",
+    "DB_METHOD_INFO",           "db_method_info",
+    "ACPI_PARSE2_OBJECT",       "acpi_parse2_object",
+    "ACPI_PARSE_DOWNWARDS",     "acpi_parse_downwards",
+    "ACPI_PARSE_UPWARDS",       "acpi_parse_upwards",
+    "ACPI_GENERIC_ADDRESS",     "acpi_generic_address",
+    "PCI_ROUTING_TABLE",        "pci_routing_table",
+    "ACPI_RESOURCE_DATA",       "acpi_resource_data",
+    "ACPI_RESOURCE_IRQ",        "acpi_resource_irq",
+    "ACPI_RESOURCE_DMA",        "acpi_resource_dma",
+    "ACPI_RESOURCE_START_DPF",  "acpi_resource_start_dpf",
+    "ACPI_RESOURCE_IO",         "acpi_resource_io",
+    "ACPI_RESOURCE_FIXED_IO",   "acpi_resource_fixed_io",
+    "ACPI_RESOURCE_VENDOR",     "acpi_resource_vendor",
+    "ACPI_RESOURCE_MEM24",      "acpi_resource_mem24",
+    "ACPI_RESOURCE_MEM32",      "acpi_resource_mem32",
+    "ACPI_RESOURCE_FIXED_MEM32","acpi_resource_fixed_mem32",
+    "ACPI_RESOURCE_TYPE",       "acpi_resource_type",
+    "ACPI_MEMORY_ATTRIBUTE",	"acpi_memory_attribute",
+    "ACPI_IO_ATTRIBUTE",	"acpi_io_attribute",
+    "ACPI_BUS_ATTRIBUTE",	"acpi_bus_attribute",
+    "ACPI_RESOURCE_ATTRIBUTE",	"acpi_resource_attribute",
+    "ACPI_RESOURCE_SOURCE",	"acpi_resource_source",
+    "ACPI_RESOURCE_ADDRESS16",  "acpi_resource_address16",
+    "ACPI_RESOURCE_ADDRESS32",  "acpi_resource_address32",
+    "ACPI_RESOURCE_ADDRESS64",  "acpi_resource_address64",
+    "ACPI_RESOURCE_EXT_IRQ",    "acpi_resource_ext_irq",
+    "ACPI_RESOURCE",            "acpi_resource",    /* Must be last resource desc */
+    "ACPI_SYSTEM_INFO",         "acpi_system_info",
+    "ACPI_TABLE_DESC",          "acpi_table_desc",
+    "XSDT_DESCRIPTOR",          "xsdt_descriptor",
+    "FADT_DESCRIPTOR_REV071",   "fadt_descriptor_rev071",
+    "FADT_DESCRIPTOR_REV1",     "fadt_descriptor_rev1",
+    "FADT_DESCRIPTOR_REV2",     "fadt_descriptor_rev2",
+    "ACPI_COMMON_FACS",         "acpi_common_facs",
+    "FACS_DESCRIPTOR_REV071",   "facs_descriptor_rev071",
+    "FACS_DESCRIPTOR_REV1",     "facs_descriptor_rev1",
+    "FACS_DESCRIPTOR_REV2",     "facs_descriptor_rev2",
+    "ACPI_TABLE_HEADER",        "acpi_table_header",
+    "ACPI_PKG_INFO",            "acpi_pkg_info",
+    "ACPI_EVENT_TYPE",          "acpi_event_type",
+    "ACPI_DEVICE_INFO",         "acpi_device_info",
+    "ACPI_PCI_ID",              "acpi_pci_id",
+    "ACPI_MEM_SPACE_CONTEXT",   "acpi_mem_space_context",
+    "ACPI_OBJ_INFO_HEADER",     "acpi_obj_info_header",
+
+    /* Typecasts */
+
+    "ACPI_STATUS",              "acpi_status",
+
+    /*"ACPI_IO_ADDRESS)",         "acpi_io_address)",*/
+    /*"ACPI_PHYSICAL_ADDRESS)",   "acpi_physical_address)",*/
+    /*"NATIVE_UINT)",             "native_uint)",*/
+    /*"NATIVE_INT)",              "native_int)",*/
+    /*"NATIVE_CHAR)",             "native_char)",*/
+    "ACPI_NAME)",               "acpi_name)",
+    "ACPI_STRING)",             "acpi_string)",
+    "ACPI_HANDLE)",             "acpi_handle)",
+    "ACPI_INTEGER)",            "acpi_integer)",
+    "ACPI_OBJECT_TYPE)",        "acpi_object_type)",
+    "ACPI_OBJECT_TYPE8)",       "acpi_object_type8)",
+    "OPERATING_MODE)",          "operating_mode)",
+    "ACPI_EVENT_STATUS)",       "acpi_event_status)",
+    "ACPI_OWNER_ID)",           "acpi_owner_id)",
+    "ACPI_TABLE_TYPE)",         "acpi_table_type)",
+    "ACPI_RESOURCE)",           "acpi_resource)",
+
+    /*"ACPI_IO_ADDRESS;",         "acpi_io_address;",*/
+    /*"ACPI_PHYSICAL_ADDRESS;",   "acpi_physical_address;",*/
+    /*"NATIVE_UINT;",             "native_uint;",*/
+    /*"NATIVE_INT;",              "native_int;",*/
+    /*"NATIVE_CHAR;",             "native_char;",*/
+    "ACPI_NAME;",               "acpi_name;",
+    "ACPI_STRING;",             "acpi_string;",
+    "ACPI_HANDLE;",             "acpi_handle;",
+    "ACPI_INTEGER;",            "acpi_integer;",
+    "ACPI_OBJECT_TYPE;",        "acpi_object_type;",
+    "ACPI_OBJECT_TYPE8;",       "acpi_object_type8;",
+    "OPERATING_MODE;",          "operating_mode;",
+    "ACPI_EVENT_STATUS;",       "acpi_event_status;",
+    "ACPI_OWNER_ID;",           "acpi_owner_id;",
+    "ACPI_TABLE_TYPE;",         "acpi_table_type;",
+    "ACPI_RESOURCE;",           "acpi_resource;",
+
+    /*
+     * Function return values.
+     * This is fragile. We have to put these in to get it to compile, BUT
+     * we can't put all tokens here, because that will break strings where
+     * we want to convert FOO but not FOO_MAX_LEN, for example.
+     */
+    "ACPI_OWNER_ID",           "acpi_owner_id",
+    "ACPI_OBJECT_TYPE8",       "acpi_object_type8",
+    "ACPI_HANDLE",             "acpi_handle",
+    "ACPI_NAME",               "acpi_name",
+    "ACPI_OBJECT",             "acpi_object",
+
+    NULL,                       NULL
 };
 
 

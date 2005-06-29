@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asconvrt - Source conversion code
- *              $Revision: 1.19 $
+ *              $Revision: 1.20 $
  *
  *****************************************************************************/
 
@@ -1517,7 +1517,7 @@ AsRemoveDebugMacros (
     AsReplaceString ("return_VOID",         "return", Buffer);
     AsReplaceString ("return_PTR",          "return", Buffer);
     AsReplaceString ("return_ACPI_STATUS",  "return", Buffer);
-    AsReplaceString ("return_acpi_status_t",  "return", Buffer);
+    AsReplaceString ("return_acpi_status",  "return", Buffer);
     AsReplaceString ("return_VALUE",        "return", Buffer);
 }
 
