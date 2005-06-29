@@ -3,7 +3,7 @@
  *
  * Module Name: hwregs - Read/write access functions for the various ACPI
  *                       control and status registers.
- *              $Revision: 1.159 $
+ *              $Revision: 1.160 $
  *
  ******************************************************************************/
 
@@ -826,6 +826,7 @@ AcpiHwLowLevelRead (
     UINT32                  *Value,
     ACPI_GENERIC_ADDRESS    *Reg)
 {
+    UINT64                  Address;
     ACPI_STATUS             Status;
 
 
@@ -837,8 +838,15 @@ AcpiHwLowLevelRead (
      * a non-zero address within. However, don't return an error
      * because the PM1A/B code must not fail if B isn't present.
      */
-    if ((!Reg) ||
-        (!ACPI_VALID_ADDRESS (Reg->Address)))
+    if (!Reg)
+    {
+        return (AE_OK);
+    }
+
+    /* Get a local copy of the address.  Handles possible alignment issues */
+
+    Address = ACPI_MOVE_64_TO_64 (&Address, &Reg->Address);
+    if (!ACPI_VALID_ADDRESS (Address))
     {
         return (AE_OK);
     }
@@ -853,14 +861,14 @@ AcpiHwLowLevelRead (
     case ACPI_ADR_SPACE_SYSTEM_MEMORY:
 
         Status = AcpiOsReadMemory (
-                    (ACPI_PHYSICAL_ADDRESS) ACPI_GET_ADDRESS (Reg->Address),
+                    (ACPI_PHYSICAL_ADDRESS) ACPI_GET_ADDRESS (Address),
                     Value, Width);
         break;
 
 
     case ACPI_ADR_SPACE_SYSTEM_IO:
 
-        Status = AcpiOsReadPort ((ACPI_IO_ADDRESS) ACPI_GET_ADDRESS (Reg->Address),
+        Status = AcpiOsReadPort ((ACPI_IO_ADDRESS) ACPI_GET_ADDRESS (Address),
                     Value, Width);
         break;
 
@@ -873,7 +881,7 @@ AcpiHwLowLevelRead (
 
     ACPI_DEBUG_PRINT ((ACPI_DB_IO, "Read:  %8.8X width %2d from %8.8X%8.8X (%s)\n",
             *Value, Width,
-            ACPI_FORMAT_UINT64 (ACPI_GET_ADDRESS (Reg->Address)),
+            ACPI_FORMAT_UINT64 (ACPI_GET_ADDRESS (Address)),
             AcpiUtGetRegionName (Reg->AddressSpaceId)));
 
     return (Status);
@@ -900,6 +908,7 @@ AcpiHwLowLevelWrite (
     UINT32                  Value,
     ACPI_GENERIC_ADDRESS    *Reg)
 {
+    UINT64                  Address;
     ACPI_STATUS             Status;
 
 
@@ -911,8 +920,15 @@ AcpiHwLowLevelWrite (
      * a non-zero address within. However, don't return an error
      * because the PM1A/B code must not fail if B isn't present.
      */
-    if ((!Reg) ||
-        (!ACPI_VALID_ADDRESS (Reg->Address)))
+    if (!Reg)
+    {
+        return (AE_OK);
+    }
+
+    /* Get a local copy of the address.  Handles possible alignment issues */
+
+    Address = ACPI_MOVE_64_TO_64 (&Address, &Reg->Address);
+    if (!ACPI_VALID_ADDRESS (Address))
     {
         return (AE_OK);
     }
@@ -926,14 +942,14 @@ AcpiHwLowLevelWrite (
     case ACPI_ADR_SPACE_SYSTEM_MEMORY:
 
         Status = AcpiOsWriteMemory (
-                    (ACPI_PHYSICAL_ADDRESS) ACPI_GET_ADDRESS (Reg->Address),
+                    (ACPI_PHYSICAL_ADDRESS) ACPI_GET_ADDRESS (Address),
                     Value, Width);
         break;
 
 
     case ACPI_ADR_SPACE_SYSTEM_IO:
 
-        Status = AcpiOsWritePort ((ACPI_IO_ADDRESS) ACPI_GET_ADDRESS (Reg->Address),
+        Status = AcpiOsWritePort ((ACPI_IO_ADDRESS) ACPI_GET_ADDRESS (Address),
                     Value, Width);
         break;
 
@@ -946,7 +962,7 @@ AcpiHwLowLevelWrite (
 
     ACPI_DEBUG_PRINT ((ACPI_DB_IO, "Wrote: %8.8X width %2d   to %8.8X%8.8X (%s)\n",
             Value, Width,
-            ACPI_FORMAT_UINT64 (ACPI_GET_ADDRESS (Reg->Address)),
+            ACPI_FORMAT_UINT64 (ACPI_GET_ADDRESS (Address)),
             AcpiUtGetRegionName (Reg->AddressSpaceId)));
 
     return (Status);
