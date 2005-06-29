@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: cmutils - common utility procedures
- *              $Revision: 1.23 $
+ *              $Revision: 1.33 $
  *
  ******************************************************************************/
 
@@ -126,7 +126,7 @@
 #include "acdebug.h"
 
 
-#define _COMPONENT          MISCELLANEOUS
+#define _COMPONENT          ACPI_UTILITIES
         MODULE_NAME         ("cmutils")
 
 
@@ -358,10 +358,9 @@ AcpiCmAcquireMutex (
     ACPI_MUTEX_HANDLE       MutexId)
 {
     ACPI_STATUS             Status;
+    UINT32                  i;
+    UINT32                  ThisThreadId;
 
-
-    DEBUG_PRINT (TRACE_MUTEX,
-                ("Acquiring Mutex [%s]\n", AcpiCmGetMutexName (MutexId)));
 
     if (MutexId > MAX_MTX)
     {
@@ -369,16 +368,53 @@ AcpiCmAcquireMutex (
     }
 
 
+    ThisThreadId = AcpiOsGetThreadId ();
+
+    /*
+     * Deadlock prevention.  Check if this thread owns any mutexes of value
+     * greater than or equal to this one.  If so, the thread has violated
+     * the mutex ordering rule.  This indicates a coding error somewhere in
+     * the ACPI subsystem code.
+     */
+    for (i = MutexId; i < MAX_MTX; i++)
+    {
+        if (AcpiGbl_AcpiMutexInfo[i].OwnerId == ThisThreadId)
+        {
+            if (i == MutexId)
+            {
+                DEBUG_PRINT (ACPI_ERROR,
+                        ("Mutex [%s] already acquired by this thread [%X]\n",
+                        AcpiCmGetMutexName (MutexId), ThisThreadId));
+
+                return (AE_ALREADY_ACQUIRED);
+            }
+
+            DEBUG_PRINT (ACPI_ERROR,
+                    ("Invalid acquire order: Thread %X owns [%s], wants [%s]\n",
+                    ThisThreadId, AcpiCmGetMutexName (i), 
+                    AcpiCmGetMutexName (MutexId)));
+
+            return (AE_ACQUIRE_DEADLOCK);
+        }
+    }
+
+
+    DEBUG_PRINT (TRACE_MUTEX,
+                ("Thread %X acquiring Mutex [%s]\n", 
+                ThisThreadId, AcpiCmGetMutexName (MutexId)));
+
     Status = AcpiOsWaitSemaphore (AcpiGbl_AcpiMutexInfo[MutexId].Mutex,
                                     1, WAIT_FOREVER);
 
-    DEBUG_PRINT (TRACE_MUTEX, ("Acquired Mutex  [%s] Status %s\n",
-                AcpiCmGetMutexName (MutexId), AcpiCmFormatException (Status)));
+    DEBUG_PRINT (TRACE_MUTEX, ("Thread %X acquired Mutex [%s] Status %s\n",
+                ThisThreadId, AcpiCmGetMutexName (MutexId), 
+                AcpiCmFormatException (Status)));
 
     if (ACPI_SUCCESS (Status))
     {
         AcpiGbl_AcpiMutexInfo[MutexId].Locked = TRUE;
         AcpiGbl_AcpiMutexInfo[MutexId].UseCount++;
+        AcpiGbl_AcpiMutexInfo[MutexId].OwnerId = ThisThreadId;
     }
 
     return (Status);
@@ -402,6 +438,8 @@ AcpiCmReleaseMutex (
     ACPI_MUTEX_HANDLE       MutexId)
 {
     ACPI_STATUS             Status;
+    UINT32                  i;
+    UINT32                  ThisThreadId;
 
 
     DEBUG_PRINT (TRACE_MUTEX,
@@ -413,7 +451,45 @@ AcpiCmReleaseMutex (
     }
 
 
+    /*
+     * Mutex must be acquired in order to release it!
+     */
+    if (!AcpiGbl_AcpiMutexInfo[MutexId].Locked)
+    {
+        DEBUG_PRINT (ACPI_ERROR,
+                ("Mutex [%s] is not acquired, cannot release\n",
+                AcpiCmGetMutexName (MutexId)));
+
+        return (AE_NOT_ACQUIRED);
+    }
+
+
+    /*
+     * Deadlock prevention.  Check if this thread owns any mutexes of value
+     * greater than this one.  If so, the thread has violated
+     * the mutex ordering rule.  This indicates a coding error somewhere in
+     * the ACPI subsystem code.
+     */
+    ThisThreadId = AcpiOsGetThreadId ();
+    for (i = MutexId; i < MAX_MTX; i++)
+    {
+        if (AcpiGbl_AcpiMutexInfo[i].OwnerId == ThisThreadId)
+        {
+            if (i == MutexId)
+            {
+                continue;
+            }
+
+            DEBUG_PRINT (ACPI_ERROR,
+                    ("Invalid release order: owns [%s], releasing [%s]\n",
+                    AcpiCmGetMutexName (i), AcpiCmGetMutexName (MutexId)));
+
+            return (AE_RELEASE_DEADLOCK);
+        }
+    }
+
     AcpiGbl_AcpiMutexInfo[MutexId].Locked = FALSE;  /* Mark before unlocking */
+    AcpiGbl_AcpiMutexInfo[MutexId].OwnerId = 0;
 
     Status = AcpiOsSignalSemaphore (AcpiGbl_AcpiMutexInfo[MutexId].Mutex, 1);
 
@@ -463,6 +539,42 @@ AcpiCmCreateUpdateStateAndPush (
     }
 
     State = AcpiCmCreateUpdateState (Object, Action);
+    if (!State)
+    {
+        return (AE_NO_MEMORY);
+    }
+
+
+    AcpiCmPushGenericState (StateList, State);
+    return (AE_OK);
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiCmCreatePkgStateAndPush
+ *
+ * PARAMETERS:  *Object         - Object to be added to the new state
+ *              Action          - Increment/Decrement
+ *              StateList       - List the state will be added to
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Create a new state and push it
+ *
+ ******************************************************************************/
+
+ACPI_STATUS
+AcpiCmCreatePkgStateAndPush (
+    void                    *InternalObject,
+    void                    *ExternalObject,
+    UINT16                  Index,
+    ACPI_GENERIC_STATE      **StateList)
+{
+    ACPI_GENERIC_STATE       *State;
+
+
+    State = AcpiCmCreatePkgState (InternalObject, ExternalObject, Index);
     if (!State)
     {
         return (AE_NO_MEMORY);
@@ -650,6 +762,53 @@ AcpiCmCreateUpdateState (
 
 /*******************************************************************************
  *
+ * FUNCTION:    AcpiCmCreatePkgState
+ *
+ * PARAMETERS:  Object              - Initial Object to be installed in the
+ *                                    state
+ *              Action              - Update action to be performed
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Create an "Update State" - a flavor of the generic state used
+ *              to update reference counts and delete complex objects such
+ *              as packages.
+ *
+ ******************************************************************************/
+
+ACPI_GENERIC_STATE *
+AcpiCmCreatePkgState (
+    void                    *InternalObject,
+    void                    *ExternalObject,
+    UINT16                  Index)
+{
+    ACPI_GENERIC_STATE      *State;
+
+
+    FUNCTION_TRACE_PTR ("CmCreatePkgState", InternalObject);
+
+
+    /* Create the generic state object */
+
+    State = AcpiCmCreateGenericState ();
+    if (!State)
+    {
+        return (NULL);
+    }
+
+    /* Init fields specific to the update struct */
+
+    State->Pkg.SourceObject = (ACPI_OPERAND_OBJECT *) InternalObject;
+    State->Pkg.DestObject   = ExternalObject;
+    State->Pkg.Index        = Index;
+    State->Pkg.NumPackages  = 1;
+
+    return_PTR (State);
+}
+
+
+/*******************************************************************************
+ *
  * FUNCTION:    AcpiCmCreateControlState
  *
  * PARAMETERS:  None
@@ -793,18 +952,23 @@ ACPI_STATUS
 AcpiCmResolvePackageReferences (
     ACPI_OPERAND_OBJECT     *ObjDesc)
 {
-    UINT32              Count;
-    ACPI_OPERAND_OBJECT *SubObject;
+    UINT32                  Count;
+    ACPI_OPERAND_OBJECT     *SubObject;
+
 
     FUNCTION_TRACE ("AcpiCmResolvePackageReferences");
 
+
     if (ObjDesc->Common.Type != ACPI_TYPE_PACKAGE)
     {
-        /* Must be a package */
+        /* The object must be a package */
 
         REPORT_ERROR (("Must resolve Package Refs on a Package\n"));
         return_ACPI_STATUS(AE_ERROR);
     }
+
+    /*
+     * TBD: what about nested packages? */
 
     for (Count = 0; Count < ObjDesc->Package.Count; Count++)
     {
@@ -812,17 +976,19 @@ AcpiCmResolvePackageReferences (
 
         if (SubObject->Common.Type == INTERNAL_TYPE_REFERENCE)
         {
-            if (SubObject->Reference.OpCode == AML_ZERO_OP)
+            if (SubObject->Reference.Opcode == AML_ZERO_OP)
             {
                 SubObject->Common.Type  = ACPI_TYPE_INTEGER;
                 SubObject->Integer.Value = 0;
             }
-            else if (SubObject->Reference.OpCode == AML_ONE_OP)
+
+            else if (SubObject->Reference.Opcode == AML_ONE_OP)
             {
                 SubObject->Common.Type  = ACPI_TYPE_INTEGER;
                 SubObject->Integer.Value = 1;
             }
-            else if (SubObject->Reference.OpCode == AML_ONES_OP)
+
+            else if (SubObject->Reference.Opcode == AML_ONES_OP)
             {
                 SubObject->Common.Type  = ACPI_TYPE_INTEGER;
                 SubObject->Integer.Value = ACPI_INTEGER_MAX;
@@ -831,6 +997,184 @@ AcpiCmResolvePackageReferences (
     }
 
     return_ACPI_STATUS(AE_OK);
+}
+
+#ifdef ACPI_DEBUG
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiCmDisplayInitPathname
+ *
+ * PARAMETERS:  ObjHandle           - Handle whose pathname will be displayed
+ *              Path                - Additional path string to be appended
+ *
+ * RETURN:      ACPI_STATUS
+ *
+ * DESCRIPTION: Display full pathnbame of an object, DEBUG ONLY
+ *
+ ******************************************************************************/
+
+void
+AcpiCmDisplayInitPathname (
+    ACPI_HANDLE             ObjHandle,
+    char                    *Path)
+{
+    ACPI_STATUS             Status;
+    UINT32                  Length = 128;
+    char                    Buffer[128];
+
+
+    Status = AcpiNsHandleToPathname (ObjHandle, &Length, Buffer);
+    if (ACPI_SUCCESS (Status))
+    {
+        if (Path)
+        {
+            DEBUG_PRINT (TRACE_INIT, ("%s.%s\n", Buffer, Path))
+        }
+        else
+        {
+            DEBUG_PRINT (TRACE_INIT, ("%s\n", Buffer))
+        }
+    }
+}
+#endif
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiCmWalkPackageTree
+ *
+ * PARAMETERS:  ObjDesc         - The Package object on which to resolve refs
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Walk through a package
+ *
+ ******************************************************************************/
+
+ACPI_STATUS
+AcpiCmWalkPackageTree (
+    ACPI_OPERAND_OBJECT     *SourceObject,
+    void                    *TargetObject,
+    ACPI_PKG_CALLBACK       WalkCallback,
+    void                    *Context)
+{
+    ACPI_STATUS             Status = AE_OK;
+    ACPI_GENERIC_STATE      *StateList = NULL;
+    ACPI_GENERIC_STATE      *State;
+    UINT32                  ThisIndex;
+    ACPI_OPERAND_OBJECT     *ThisSourceObj;
+
+
+    FUNCTION_TRACE ("AcpiCmWalkPackageTree");
+
+
+    State = AcpiCmCreatePkgState (SourceObject, TargetObject, 0);
+    if (!State)
+    {
+        return_ACPI_STATUS (AE_NO_MEMORY);
+    }
+
+    while (State)
+    {
+        ThisIndex     = State->Pkg.Index;
+        ThisSourceObj = (ACPI_OPERAND_OBJECT *)
+                        State->Pkg.SourceObject->Package.Elements[ThisIndex];
+
+        /*
+         * Check for
+         * 1) An uninitialized package element.  It is completely
+         *      legal to declare a package and leave it uninitialized
+         * 2) Not an internal object - can be a namespace node instead
+         * 3) Any type other than a package.  Packages are handled in else 
+         *      case below.
+         */
+        if ((!ThisSourceObj) ||
+            (!VALID_DESCRIPTOR_TYPE (
+                    ThisSourceObj, ACPI_DESC_TYPE_INTERNAL)) ||
+            (!IS_THIS_OBJECT_TYPE (
+                    ThisSourceObj, ACPI_TYPE_PACKAGE)))
+        {
+
+            Status = WalkCallback (ACPI_COPY_TYPE_SIMPLE, ThisSourceObj, 
+                                    State, Context);
+            if (ACPI_FAILURE (Status))
+            {
+                /* TBD: must delete package created up to this point */
+
+                return_ACPI_STATUS (Status);
+            }
+
+            State->Pkg.Index++;
+            while (State->Pkg.Index >= State->Pkg.SourceObject->Package.Count)
+            {
+                /*
+                 * We've handled all of the objects at this level,  This means
+                 * that we have just completed a package.  That package may
+                 * have contained one or more packages itself.
+                 *
+                 * Delete this state and pop the previous state (package).
+                 */
+                AcpiCmDeleteGenericState (State);
+                State = AcpiCmPopGenericState (&StateList);
+
+
+                /* Finished when there are no more states */
+
+                if (!State)
+                {
+                    /*
+                     * We have handled all of the objects in the top level
+                     * package just add the length of the package objects
+                     * and exit
+                     */
+                    return_ACPI_STATUS (AE_OK);
+                }
+
+                /*
+                 * Go back up a level and move the index past the just
+                 * completed package object.
+                 */
+                State->Pkg.Index++;
+            }
+        }
+
+        else
+        {
+            /* This is a sub-object of type package */
+
+            Status = WalkCallback (ACPI_COPY_TYPE_PACKAGE, ThisSourceObj, 
+                                        State, Context);
+            if (ACPI_FAILURE (Status))
+            {
+                /* TBD: must delete package created up to this point */
+
+                return_ACPI_STATUS (Status);
+            }
+
+
+            /*
+             * The callback above returned a new target package object.
+             */
+
+            /*
+             * Push the current state and create a new one
+             */
+            AcpiCmPushGenericState (&StateList, State);
+            State = AcpiCmCreatePkgState (ThisSourceObj, 
+                                            State->Pkg.ThisTargetObj, 0);
+            if (!State)
+            {
+                /* TBD: must delete package created up to this point */
+
+                return_ACPI_STATUS (AE_NO_MEMORY);
+            }
+        }
+    }
+
+    /* We should never get here */
+
+    return (AE_AML_INTERNAL);
+
 }
 
 
@@ -845,7 +1189,7 @@ AcpiCmResolvePackageReferences (
  *
  * RETURN:      None
  *
- * DESCRIPTION: Print error message from KD table
+ * DESCRIPTION: Print error message
  *
  ******************************************************************************/
 
@@ -872,7 +1216,7 @@ _ReportError (
  *
  * RETURN:      None
  *
- * DESCRIPTION: Print warning message from KD table
+ * DESCRIPTION: Print warning message
  *
  ******************************************************************************/
 
@@ -898,7 +1242,7 @@ _ReportWarning (
  *
  * RETURN:      None
  *
- * DESCRIPTION: Print information message from KD table
+ * DESCRIPTION: Print information message
  *
  ******************************************************************************/
 

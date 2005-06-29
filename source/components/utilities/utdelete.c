@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: cmdelete - object deletion and reference count utilities
- *              $Revision: 1.62 $
+ *              $Revision: 1.64 $
  *
  ******************************************************************************/
 
@@ -122,7 +122,7 @@
 #include "actables.h"
 #include "acparser.h"
 
-#define _COMPONENT          MISCELLANEOUS
+#define _COMPONENT          ACPI_UTILITIES
         MODULE_NAME         ("cmdelete")
 
 
@@ -210,6 +210,7 @@ AcpiCmDeleteInternalObj (
             ("CmDeleteInternalObj: ***** Mutex %p, Semaphore %p\n",
             Object, Object->Mutex.Semaphore));
 
+        AcpiAmlUnlinkMutex (Object);
         AcpiOsDeleteSemaphore (Object->Mutex.Semaphore);
         break;
 

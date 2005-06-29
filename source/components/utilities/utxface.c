@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: cmxface - External interfaces for "global" ACPI functions
- *              $Revision: 1.58 $
+ *              $Revision: 1.68 $
  *
  *****************************************************************************/
 
@@ -126,7 +126,7 @@
 #include "acdebug.h"
 
 
-#define _COMPONENT          MISCELLANEOUS
+#define _COMPONENT          ACPI_UTILITIES
         MODULE_NAME         ("cmxface")
 
 
@@ -149,12 +149,7 @@ AcpiInitializeSubsystem (
 {
     ACPI_STATUS             Status;
 
-
     FUNCTION_TRACE ("AcpiInitializeSubsystem");
-
-    DEBUG_PRINT_RAW (ACPI_OK,
-        ("ACPI: Core Subsystem version [%s]\n", ACPI_CA_VERSION));
-    DEBUG_PRINT (ACPI_INFO, ("Initializing ACPI Subsystem...\n"));
 
 
     /* Initialize all globals used by the subsystem */
@@ -277,9 +272,8 @@ AcpiEnableSubsystem (
         Status = AcpiEnable ();
         if (ACPI_FAILURE (Status))
         {
-            /* TBD: workaround. Old Lions don't enable properly */
             DEBUG_PRINT(ACPI_WARN, ("AcpiEnable failed.\n"));
-            /*return_ACPI_STATUS (Status);*/
+            return_ACPI_STATUS (Status);
         }
     }
 
@@ -304,15 +298,14 @@ AcpiEnableSubsystem (
 
     /*
      * Initialize all device objects in the namespace
-     * This runs the _STA, _INI, and _HID methods, and detects
-     * the PCI root bus(es)
+     * This runs the _STA and _INI methods.
      */
 
     if (!(Flags & ACPI_NO_DEVICE_INIT))
     {
         DEBUG_PRINT (TRACE_EXEC, ("[Init] Initializing ACPI Devices\n"));
 
-        Status = AcpiNsInitializeDevices (Flags & ACPI_NO_PCI_INIT);
+        Status = AcpiNsInitializeDevices ();
         if (ACPI_FAILURE (Status))
         {
             return_ACPI_STATUS (Status);
@@ -321,7 +314,7 @@ AcpiEnableSubsystem (
 
 
     /*
-     * Initialize the objects that remain unitialized.  This
+     * Initialize the objects that remain uninitialized.  This
      * runs the executable AML that is part of the declaration of OpRegions
      * and Fields.
      */
@@ -442,16 +435,25 @@ AcpiGetSystemInfo (
     OutBuffer->Length = sizeof (ACPI_SYSTEM_INFO);
     InfoPtr = (ACPI_SYSTEM_INFO *) OutBuffer->Pointer;
 
-    /* TBD [Future]: need a version number, or use the version string */
-    InfoPtr->AcpiCaVersion      = 0x1234;
+    InfoPtr->AcpiCaVersion      = ACPI_CA_VERSION;
 
     /* System flags (ACPI capabilities) */
 
     InfoPtr->Flags              = AcpiGbl_SystemFlags;
 
     /* Timer resolution - 24 or 32 bits  */
-
-    InfoPtr->TimerResolution    = AcpiHwPmtResolution ();
+    if (!AcpiGbl_FADT)
+    {
+        InfoPtr->TimerResolution = 0;
+    }
+    else if (AcpiGbl_FADT->TmrValExt == 0)
+    {
+        InfoPtr->TimerResolution = 24;
+    }
+    else
+    {
+        InfoPtr->TimerResolution = 32;
+    }
 
     /* Clear the reserved fields */
 
@@ -493,7 +495,7 @@ AcpiFormatException (
     ACPI_STATUS             Exception,
     ACPI_BUFFER             *OutBuffer)
 {
-    UINT32                  Length;
+    NATIVE_UINT             Length;
     NATIVE_CHAR             *FormattedException;
 
 
@@ -533,3 +535,68 @@ AcpiFormatException (
     return_ACPI_STATUS (AE_OK);
 }
 
+
+/*****************************************************************************
+ *
+ * FUNCTION:    AcpiAllocate
+ *
+ * PARAMETERS:  Size                - Size of the allocation
+ *
+ * RETURN:      Address of the allocated memory on success, NULL on failure.
+ *
+ * DESCRIPTION: The subsystem's equivalent of malloc.
+ *              External front-end to the Cm* memory manager
+ *
+ ****************************************************************************/
+
+void *
+AcpiAllocate (
+    UINT32                  Size)
+{
+
+    return (AcpiCmAllocate (Size));
+}
+
+
+/*****************************************************************************
+ *
+ * FUNCTION:    AcpiCallocate
+ *
+ * PARAMETERS:  Size                - Size of the allocation
+ *
+ * RETURN:      Address of the allocated memory on success, NULL on failure.
+ *
+ * DESCRIPTION: The subsystem's equivalent of calloc.
+ *              External front-end to the Cm* memory manager
+ *
+ ****************************************************************************/
+
+void *
+AcpiCallocate (
+    UINT32                  Size)
+{
+
+    return (AcpiCmCallocate (Size));
+}
+
+
+/*****************************************************************************
+ *
+ * FUNCTION:    AcpiFree
+ *
+ * PARAMETERS:  Address             - Address of the memory to deallocate
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Frees the memory at Address
+ *              External front-end to the Cm* memory manager
+ *
+ ****************************************************************************/
+
+void
+AcpiFree (
+    void                    *Address)
+{
+
+    AcpiCmFree (Address);
+}

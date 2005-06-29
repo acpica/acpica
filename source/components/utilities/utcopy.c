@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: cmcopy - Internal to external object translation utilities
- *              $Revision: 1.68 $
+ *              $Revision: 1.71 $
  *
  *****************************************************************************/
 
@@ -122,7 +122,7 @@
 #include "amlcode.h"
 
 
-#define _COMPONENT          MISCELLANEOUS
+#define _COMPONENT          ACPI_UTILITIES
         MODULE_NAME         ("cmcopy")
 
 
@@ -241,6 +241,10 @@ AcpiCmCopyIsimpleToEsimple (
             ExternalObject->String.Pointer = (NATIVE_CHAR *) DataSpace;
             Status = AcpiNsHandleToPathname ((ACPI_HANDLE *) InternalObject->Reference.Node,
                         &Length, (char *) DataSpace);
+
+            /* Converted (external) string length is returned from above */
+
+            ExternalObject->String.Length = Length;
             break;
 
         default:
@@ -321,7 +325,7 @@ AcpiCmCopyIelementToEelement (
 
     switch (ObjectType)
     {
-    case 0:
+    case ACPI_COPY_TYPE_SIMPLE:
 
         /*
          * This is a simple or null object -- get the size
@@ -336,7 +340,7 @@ AcpiCmCopyIelementToEelement (
 
         break;
 
-    case 1:
+    case ACPI_COPY_TYPE_PACKAGE:
 
         /*
          * Build the package object
