@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: aclinux.h - OS specific defines, etc.
- *       $Revision: 1.29 $
+ *       $Revision: 1.31 $
  *
  *****************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2003, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -120,6 +120,7 @@
 #define ACPI_OS_NAME                "Linux"
 
 #define ACPI_USE_SYSTEM_CLIBRARY
+#define ACPI_USE_DO_WHILE_0
 
 #ifdef __KERNEL__
 
