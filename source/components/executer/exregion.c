@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: amregion - ACPI default OpRegion (address space) handlers
- *              $Revision: 1.34 $
+ *              $Revision: 1.45 $
  *
  *****************************************************************************/
 
@@ -10,8 +10,8 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, Intel Corp.  All rights
- * reserved.
+ * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
+ * All rights reserved.
  *
  * 2. License
  *
@@ -126,7 +126,7 @@
 #include "acevents.h"
 
 
-#define _COMPONENT          INTERPRETER
+#define _COMPONENT          ACPI_EXECUTER
         MODULE_NAME         ("amregion")
 
 
@@ -139,7 +139,7 @@
  *              BitWidth            - Field width in bits (8, 16, or 32)
  *              Value               - Pointer to in or out value
  *              HandlerContext      - Pointer to Handler's context
- *              RegionContext       - Pointer to context specific to the 
+ *              RegionContext       - Pointer to context specific to the
  *                                      accessed region
  *
  * RETURN:      Status
@@ -151,7 +151,7 @@
 ACPI_STATUS
 AcpiAmlSystemMemorySpaceHandler (
     UINT32                  Function,
-    UINT32                  Address, /* TBD: [Future] Should this be A POINTER for 64-bit support? */
+    ACPI_PHYSICAL_ADDRESS   Address,
     UINT32                  BitWidth,
     UINT32                  *Value,
     void                    *HandlerContext,
@@ -197,9 +197,9 @@ AcpiAmlSystemMemorySpaceHandler (
      *    2) Address beyond the current mapping?
      */
 
-    if (((UINT8 *) Address < MemInfo->MappedPhysicalAddress) ||
-        (((UINT8 *) Address + Length) >
-            (MemInfo->MappedPhysicalAddress + MemInfo->MappedLength)))
+    if ((Address < MemInfo->MappedPhysicalAddress) ||
+        (((ACPI_INTEGER) Address + Length) >
+            ((ACPI_INTEGER) MemInfo->MappedPhysicalAddress + MemInfo->MappedLength)))
     {
         /*
          * The request cannot be resolved by the current memory mapping;
@@ -218,14 +218,16 @@ AcpiAmlSystemMemorySpaceHandler (
 
         /* Create a new mapping starting at the address given */
 
-        Status = AcpiOsMapMemory ((void *) Address, SYSMEM_REGION_WINDOW_SIZE,
+        Status = AcpiOsMapMemory (Address, SYSMEM_REGION_WINDOW_SIZE,
                                     (void **) &MemInfo->MappedLogicalAddress);
         if (ACPI_FAILURE (Status))
         {
             return_ACPI_STATUS (Status);
         }
 
-        MemInfo->MappedPhysicalAddress = (UINT8 *) Address;
+        /* TBD: should these pointers go to 64-bit in all cases ? */
+
+        MemInfo->MappedPhysicalAddress = Address;
         MemInfo->MappedLength = SYSMEM_REGION_WINDOW_SIZE;
     }
 
@@ -235,8 +237,10 @@ AcpiAmlSystemMemorySpaceHandler (
      * access
      */
 
+    /* TBD: should these pointers go to 64-bit in all cases ? */
+
     LogicalAddrPtr = MemInfo->MappedLogicalAddress +
-                    ((UINT8 *) Address - MemInfo->MappedPhysicalAddress);
+                    ((ACPI_INTEGER) Address - (ACPI_INTEGER) MemInfo->MappedPhysicalAddress);
 
     /* Perform the memory read or write */
 
@@ -246,7 +250,7 @@ AcpiAmlSystemMemorySpaceHandler (
     case ADDRESS_SPACE_READ:
 
         DEBUG_PRINT ((TRACE_OPREGION | VERBOSE_INFO),
-            ("Read (%d width) Address:0x%X\n", BitWidth, Address));
+            ("Read (%d width) Address=%p\n", BitWidth, Address));
 
         switch (BitWidth)
         {
@@ -269,7 +273,7 @@ AcpiAmlSystemMemorySpaceHandler (
     case ADDRESS_SPACE_WRITE:
 
         DEBUG_PRINT ((TRACE_OPREGION | VERBOSE_INFO),
-            ("Write (%d width) Address:0x%p Value 0x%X\n",
+            ("Write (%d width) Address=%p Value %X\n",
             BitWidth, Address, *Value));
 
         switch (BitWidth)
@@ -308,7 +312,7 @@ AcpiAmlSystemMemorySpaceHandler (
  *              BitWidth            - Field width in bits (8, 16, or 32)
  *              Value               - Pointer to in or out value
  *              HandlerContext      - Pointer to Handler's context
- *              RegionContext       - Pointer to context specific to the 
+ *              RegionContext       - Pointer to context specific to the
  *                                      accessed region
  *
  * RETURN:      Status
@@ -320,7 +324,7 @@ AcpiAmlSystemMemorySpaceHandler (
 ACPI_STATUS
 AcpiAmlSystemIoSpaceHandler (
     UINT32                  Function,
-    UINT32                  Address,
+    ACPI_PHYSICAL_ADDRESS   Address,
     UINT32                  BitWidth,
     UINT32                  *Value,
     void                    *HandlerContext,
@@ -340,7 +344,7 @@ AcpiAmlSystemIoSpaceHandler (
     case ADDRESS_SPACE_READ:
 
         DEBUG_PRINT ((TRACE_OPREGION | VERBOSE_INFO),
-            ("Read(%d width) Address:0x%08x\n", BitWidth, Address));
+            ("Read(%d width) Address=%p\n", BitWidth, Address));
 
         switch (BitWidth)
         {
@@ -371,7 +375,7 @@ AcpiAmlSystemIoSpaceHandler (
     case ADDRESS_SPACE_WRITE:
 
         DEBUG_PRINT ((TRACE_OPREGION | VERBOSE_INFO),
-            ("Write(%d width) Address:0x%08x Value 0x%08x\n",
+            ("Write(%d width) Address=%p Value %X\n",
             BitWidth, Address, *Value));
 
         switch (BitWidth)
@@ -416,7 +420,7 @@ AcpiAmlSystemIoSpaceHandler (
  *              BitWidth            - Field width in bits (8, 16, or 32)
  *              Value               - Pointer to in or out value
  *              HandlerContext      - Pointer to Handler's context
- *              RegionContext       - Pointer to context specific to the 
+ *              RegionContext       - Pointer to context specific to the
  *                                      accessed region
  *
  * RETURN:      Status
@@ -428,7 +432,7 @@ AcpiAmlSystemIoSpaceHandler (
 ACPI_STATUS
 AcpiAmlPciConfigSpaceHandler (
     UINT32                  Function,
-    UINT32                  Address,
+    ACPI_PHYSICAL_ADDRESS   Address,
     UINT32                  BitWidth,
     UINT32                  *Value,
     void                    *HandlerContext,

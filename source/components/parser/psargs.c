@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: psargs - Parse AML opcode arguments
- *              $Revision: 1.49 $
+ *              $Revision: 1.44 $
  *
  *****************************************************************************/
 
@@ -351,7 +351,7 @@ AcpiPsGetNextNamepath (
     {
         /* Null name case, create a null namepath object */
 
-        AcpiPsInitOp (Arg, AML_INT_NAMEPATH_OP);
+        AcpiPsInitOp (Arg, AML_NAMEPATH_OP);
         Arg->Value.Name = Path;
         return_VOID;
     }
@@ -384,12 +384,12 @@ AcpiPsGetNextNamepath (
                 Count = AcpiPsGetArg (Op, 0);
                 if (Count && Count->Opcode == AML_BYTE_OP)
                 {
-                    NameOp = AcpiPsAllocOp (AML_INT_NAMEPATH_OP);
+                    NameOp = AcpiPsAllocOp (AML_NAMEPATH_OP);
                     if (NameOp)
                     {
                         /* Change arg into a METHOD CALL and attach the name */
 
-                        AcpiPsInitOp (Arg, AML_INT_METHODCALL_OP);
+                        AcpiPsInitOp (Arg, AML_METHODCALL_OP);
 
                         NameOp->Value.Name = Path;
 
@@ -421,7 +421,7 @@ AcpiPsGetNextNamepath (
      * pathname
      */
 
-    AcpiPsInitOp (Arg, AML_INT_NAMEPATH_OP);
+    AcpiPsInitOp (Arg, AML_NAMEPATH_OP);
     Arg->Value.Name = Path;
 
 
@@ -455,7 +455,7 @@ AcpiPsGetNextNamepath (
     {
         /* Null name case, create a null namepath object */
 
-        AcpiPsInitOp (Arg, AML_INT_NAMEPATH_OP);
+        AcpiPsInitOp (Arg, AML_NAMEPATH_OP);
         Arg->Value.Name = Path;
         return_VOID;
     }
@@ -488,15 +488,16 @@ AcpiPsGetNextNamepath (
             if (Node->Type == ACPI_TYPE_METHOD)
             {
                 MethodNode = Node;
-                ACPI_DEBUG_PRINT ((ACPI_DB_PARSE, "method - %p Path=%p\n",
+                DEBUG_PRINT (TRACE_PARSE,
+                    ("PsGetNextNamepath: method - %p Path=%p\n",
                     MethodNode, Path));
 
-                NameOp = AcpiPsAllocOp (AML_INT_NAMEPATH_OP);
+                NameOp = AcpiPsAllocOp (AML_NAMEPATH_OP);
                 if (NameOp)
                 {
                     /* Change arg into a METHOD CALL and attach name to it */
 
-                    AcpiPsInitOp (Arg, AML_INT_METHODCALL_OP);
+                    AcpiPsInitOp (Arg, AML_METHODCALL_OP);
 
                     NameOp->Value.Name = Path;
 
@@ -530,7 +531,7 @@ AcpiPsGetNextNamepath (
      * pathname.
      */
 
-    AcpiPsInitOp (Arg, AML_INT_NAMEPATH_OP);
+    AcpiPsInitOp (Arg, AML_NAMEPATH_OP);
     Arg->Value.Name = Path;
 
 
@@ -597,17 +598,6 @@ AcpiPsGetNextSimpleArg (
         break;
 
 
-    case ARGP_QWORDDATA:
-
-        AcpiPsInitOp (Arg, AML_QWORD_OP);
-
-        /* Get 8 bytes from the AML stream */
-
-        MOVE_UNALIGNED64_TO_64 (&Arg->Value.Integer, ParserState->Aml);
-        ParserState->Aml += 8;
-        break;
-
-
     case ARGP_CHARLIST:
 
         AcpiPsInitOp (Arg, AML_STRING_OP);
@@ -624,7 +614,7 @@ AcpiPsGetNextSimpleArg (
     case ARGP_NAME:
     case ARGP_NAMESTRING:
 
-        AcpiPsInitOp (Arg, AML_INT_NAMEPATH_OP);
+        AcpiPsInitOp (Arg, AML_NAMEPATH_OP);
         Arg->Value.Name = AcpiPsGetNextNamestring (ParserState);
         break;
     }
@@ -649,7 +639,7 @@ ACPI_PARSE_OBJECT *
 AcpiPsGetNextField (
     ACPI_PARSE_STATE        *ParserState)
 {
-    UINT32                  AmlOffset = ParserState->Aml -
+    ACPI_PTRDIFF            AmlOffset = ParserState->Aml -
                                         ParserState->AmlStart;
     ACPI_PARSE_OBJECT       *Field;
     UINT16                  Opcode;
@@ -666,20 +656,20 @@ AcpiPsGetNextField (
 
     default:
 
-        Opcode = AML_INT_NAMEDFIELD_OP;
+        Opcode = AML_NAMEDFIELD_OP;
         break;
 
 
     case 0x00:
 
-        Opcode = AML_INT_RESERVEDFIELD_OP;
+        Opcode = AML_RESERVEDFIELD_OP;
         ParserState->Aml++;
         break;
 
 
     case 0x01:
 
-        Opcode = AML_INT_ACCESSFIELD_OP;
+        Opcode = AML_ACCESSFIELD_OP;
         ParserState->Aml++;
         break;
     }
@@ -696,7 +686,7 @@ AcpiPsGetNextField (
 
         switch (Opcode)
         {
-        case AML_INT_NAMEDFIELD_OP:
+        case AML_NAMEDFIELD_OP:
 
             /* Get the 4-character name */
 
@@ -710,7 +700,7 @@ AcpiPsGetNextField (
             break;
 
 
-        case AML_INT_RESERVEDFIELD_OP:
+        case AML_RESERVEDFIELD_OP:
 
             /* Get the length which is encoded as a package length */
 
@@ -718,7 +708,7 @@ AcpiPsGetNextField (
             break;
 
 
-        case AML_INT_ACCESSFIELD_OP:
+        case AML_ACCESSFIELD_OP:
 
             /* Get AccessType and AccessAtrib and merge into the field Op */
 
@@ -831,7 +821,7 @@ AcpiPsGetNextArg (
         {
             /* non-empty list */
 
-            Arg = AcpiPsAllocOp (AML_INT_BYTELIST_OP);
+            Arg = AcpiPsAllocOp (AML_BYTELIST_OP);
             if (Arg)
             {
                 /* fill in bytelist data */
@@ -857,7 +847,7 @@ AcpiPsGetNextArg (
             {
                 /* NullName or NameString */
 
-                Arg = AcpiPsAllocOp (AML_INT_NAMEPATH_OP);
+                Arg = AcpiPsAllocOp (AML_NAMEPATH_OP);
                 if (Arg)
                 {
                     AcpiPsGetNextNamepath (ParserState, Arg, ArgCount, 0);

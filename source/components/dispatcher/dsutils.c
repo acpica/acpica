@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dsutils - Dispatcher utilities
- *              $Revision: 1.52 $
+ *              $Revision: 1.53 $
  *
  ******************************************************************************/
 
@@ -124,7 +124,7 @@
 #include "acnamesp.h"
 #include "acdebug.h"
 
-#define _COMPONENT          PARSER
+#define _COMPONENT          ACPI_DISPATCHER
         MODULE_NAME         ("dsutils")
 
 

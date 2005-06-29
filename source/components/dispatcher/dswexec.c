@@ -2,7 +2,7 @@
  *
  * Module Name: dswexec - Dispatcher method execution callbacks;
  *                        dispatch to interpreter.
- *              $Revision: 1.53 $
+ *              $Revision: 1.56 $
  *
  *****************************************************************************/
 
@@ -126,7 +126,7 @@
 #include "acdebug.h"
 
 
-#define _COMPONENT          DISPATCHER
+#define _COMPONENT          ACPI_DISPATCHER
         MODULE_NAME         ("dswexec")
 
 
@@ -138,7 +138,7 @@
  *
  * RETURN:      Status
  *
- * DESCRIPTION:
+ * DESCRIPTION: Get the result of a predicate evaluation
  *
  ****************************************************************************/
 
@@ -163,7 +163,7 @@ AcpiDsGetPredicateValue (
         if (ACPI_FAILURE (Status))
         {
             DEBUG_PRINT (ACPI_ERROR,
-                ("DsGetPredicateValue: Missing or null operand, %s\n",
+                ("DsGetPredicateValue: Could not get result from predicate evaluation, %s\n",
                 AcpiCmFormatException (Status)));
 
             return_ACPI_STATUS (Status);
@@ -471,6 +471,8 @@ AcpiDsExecEndOp (
 
     WalkState->NumOperands = 0;
     WalkState->ReturnDesc = NULL;
+    WalkState->OpInfo = OpInfo;
+    WalkState->Opcode = Opcode;
 
 
     /* Call debugger for single step support (DEBUG build only) */

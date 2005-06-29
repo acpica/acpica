@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: psscope - Parser scope stack management routines
- *              $Revision: 1.28 $
+ *              $Revision: 1.25 $
  *
  *****************************************************************************/
 
@@ -189,7 +189,7 @@ AcpiPsInitScope (
     FUNCTION_TRACE_PTR ("PsInitScope", RootOp);
 
 
-    Scope = AcpiUtCreateGenericState ();
+    Scope = AcpiCmCreateGenericState ();
     if (!Scope)
     {
         return_ACPI_STATUS (AE_NO_MEMORY);
@@ -235,7 +235,7 @@ AcpiPsPushScope (
     FUNCTION_TRACE_PTR ("PsPushScope", Op);
 
 
-    Scope = AcpiUtCreateGenericState ();
+    Scope = AcpiCmCreateGenericState ();
     if (!Scope)
     {
         return (AE_NO_MEMORY);
@@ -249,7 +249,7 @@ AcpiPsPushScope (
 
     /* Push onto scope stack */
 
-    AcpiUtPushGenericState (&ParserState->Scope, Scope);
+    AcpiCmPushGenericState (&ParserState->Scope, Scope);
 
 
     if (ArgCount == ACPI_VAR_ARGS)
@@ -303,7 +303,7 @@ AcpiPsPopScope (
      */
     if (Scope->Common.Next)
     {
-        Scope = AcpiUtPopGenericState (&ParserState->Scope);
+        Scope = AcpiCmPopGenericState (&ParserState->Scope);
 
 
         /* return to parsing previous op */
@@ -315,7 +315,7 @@ AcpiPsPopScope (
 
         /* All done with this scope state structure */
 
-        AcpiUtDeleteGenericState (Scope);
+        AcpiCmDeleteGenericState (Scope);
     }
 
     else
@@ -328,7 +328,8 @@ AcpiPsPopScope (
     }
 
 
-    ACPI_DEBUG_PRINT ((ACPI_DB_PARSE, "Popped Op %p Args %X\n", *Op, *ArgCount));
+    DEBUG_PRINT (TRACE_PARSE,
+        ("PsPopScope:  Popped Op %p Args %X\n", *Op, *ArgCount));
     return_VOID;
 }
 
@@ -365,8 +366,8 @@ AcpiPsCleanupScope (
 
     while (ParserState->Scope)
     {
-        Scope = AcpiUtPopGenericState (&ParserState->Scope);
-        AcpiUtDeleteGenericState (Scope);
+        Scope = AcpiCmPopGenericState (&ParserState->Scope);
+        AcpiCmDeleteGenericState (Scope);
     }
 
     return_VOID;

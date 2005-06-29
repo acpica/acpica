@@ -1,8 +1,8 @@
 
 /******************************************************************************
  *
- * Module Name: exutils - interpreter/scanner utilities
- *              $Revision: 1.82 $
+ * Module Name: amutils - interpreter/scanner utilities
+ *              $Revision: 1.73 $
  *
  *****************************************************************************/
 
@@ -115,7 +115,7 @@
  *
  *****************************************************************************/
 
-#define __EXUTILS_C__
+#define __AMUTILS_C__
 
 #include "acpi.h"
 #include "acparser.h"
@@ -125,12 +125,12 @@
 #include "acevents.h"
 
 #define _COMPONENT          ACPI_EXECUTER
-        MODULE_NAME         ("exutils")
+        MODULE_NAME         ("amutils")
 
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiExEnterInterpreter
+ * FUNCTION:    AcpiAmlEnterInterpreter
  *
  * PARAMETERS:  None
  *
@@ -140,21 +140,21 @@
  ******************************************************************************/
 
 ACPI_STATUS
-AcpiExEnterInterpreter (void)
+AcpiAmlEnterInterpreter (void)
 {
     ACPI_STATUS             Status;
 
-    FUNCTION_TRACE ("ExEnterInterpreter");
+    FUNCTION_TRACE ("AmlEnterInterpreter");
 
 
-    Status = AcpiUtAcquireMutex (ACPI_MTX_EXECUTE);
+    Status = AcpiCmAcquireMutex (ACPI_MTX_EXECUTE);
     return_ACPI_STATUS (Status);
 }
 
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiExExitInterpreter
+ * FUNCTION:    AcpiAmlExitInterpreter
  *
  * PARAMETERS:  None
  *
@@ -175,12 +175,12 @@ AcpiExEnterInterpreter (void)
  ******************************************************************************/
 
 void
-AcpiExExitInterpreter (void)
+AcpiAmlExitInterpreter (void)
 {
-    FUNCTION_TRACE ("ExExitInterpreter");
+    FUNCTION_TRACE ("AmlExitInterpreter");
 
 
-    AcpiUtReleaseMutex (ACPI_MTX_EXECUTE);
+    AcpiCmReleaseMutex (ACPI_MTX_EXECUTE);
 
     return_VOID;
 }
@@ -188,7 +188,7 @@ AcpiExExitInterpreter (void)
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiExValidateObjectType
+ * FUNCTION:    AcpiAmlValidateObjectType
  *
  * PARAMETERS:  Type            Object type to validate
  *
@@ -197,7 +197,7 @@ AcpiExExitInterpreter (void)
  ******************************************************************************/
 
 BOOLEAN
-AcpiExValidateObjectType (
+AcpiAmlValidateObjectType (
     ACPI_OBJECT_TYPE        Type)
 {
 
@@ -213,7 +213,7 @@ AcpiExValidateObjectType (
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiExTruncateFor32bitTable
+ * FUNCTION:    AcpiAmlTruncateFor32bitTable
  *
  * PARAMETERS:  ObjDesc         - Object to be truncated
  *              WalkState       - Current walk state
@@ -227,7 +227,7 @@ AcpiExValidateObjectType (
  ******************************************************************************/
 
 void
-AcpiExTruncateFor32bitTable (
+AcpiAmlTruncateFor32bitTable (
     ACPI_OPERAND_OBJECT     *ObjDesc,
     ACPI_WALK_STATE         *WalkState)
 {
@@ -257,7 +257,7 @@ AcpiExTruncateFor32bitTable (
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiExAcquireGlobalLock
+ * FUNCTION:    AcpiAmlAcquireGlobalLock
  *
  * PARAMETERS:  Rule            - Lock rule: AlwaysLock, NeverLock
  *
@@ -270,14 +270,14 @@ AcpiExTruncateFor32bitTable (
  ******************************************************************************/
 
 BOOLEAN
-AcpiExAcquireGlobalLock (
+AcpiAmlAcquireGlobalLock (
     UINT32                  Rule)
 {
     BOOLEAN                 Locked = FALSE;
     ACPI_STATUS             Status;
 
 
-    FUNCTION_TRACE ("ExAcquireGlobalLock");
+    FUNCTION_TRACE ("AmlAcquireGlobalLock");
 
 
     /* Only attempt lock if the Rule says so */
@@ -287,15 +287,17 @@ AcpiExAcquireGlobalLock (
         /* We should attempt to get the lock */
 
         Status = AcpiEvAcquireGlobalLock ();
-        if (ACPI_SUCCESS (Status))
+        if (ACPI_FAILURE (Status))
         {
-            Locked = TRUE;
+            DEBUG_PRINT (ACPI_ERROR, 
+                ("Could not acquire Global Lock, %s\n",
+                AcpiCmFormatException (Status)));
         }
 
         else
         {
-            ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Could not acquire Global Lock, %s\n",
-                AcpiFormatException (Status)));
+            AcpiGbl_GlobalLockSet = TRUE;
+            Locked = TRUE;
         }
     }
 
@@ -305,7 +307,7 @@ AcpiExAcquireGlobalLock (
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiExReleaseGlobalLock
+ * FUNCTION:    AcpiAmlReleaseGlobalLock
  *
  * PARAMETERS:  LockedByMe      - Return value from corresponding call to
  *                                AcquireGlobalLock.
@@ -317,20 +319,31 @@ AcpiExAcquireGlobalLock (
  ******************************************************************************/
 
 ACPI_STATUS
-AcpiExReleaseGlobalLock (
+AcpiAmlReleaseGlobalLock (
     BOOLEAN                 LockedByMe)
 {
 
-    FUNCTION_TRACE ("ExReleaseGlobalLock");
+    FUNCTION_TRACE ("AmlReleaseGlobalLock");
 
 
     /* Only attempt unlock if the caller locked it */
 
     if (LockedByMe)
     {
-        /* OK, now release the lock */
+        /* Double check against the global flag */
 
-        AcpiEvReleaseGlobalLock ();
+        if (AcpiGbl_GlobalLockSet)
+        {
+            /* OK, now release the lock */
+
+            AcpiEvReleaseGlobalLock ();
+            AcpiGbl_GlobalLockSet = FALSE;
+        }
+
+        else
+        {
+            DEBUG_PRINT (ACPI_ERROR, ("Global lock was not set\n"));
+        }
     }
 
 
@@ -340,7 +353,7 @@ AcpiExReleaseGlobalLock (
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiExDigitsNeeded
+ * FUNCTION:    AcpiAmlDigitsNeeded
  *
  * PARAMETERS:  val             - Value to be represented
  *              base            - Base of representation
@@ -350,27 +363,24 @@ AcpiExReleaseGlobalLock (
  ******************************************************************************/
 
 UINT32
-AcpiExDigitsNeeded (
+AcpiAmlDigitsNeeded (
     ACPI_INTEGER            val,
     UINT32                  base)
 {
     UINT32                  NumDigits = 0;
 
 
-    FUNCTION_TRACE ("ExDigitsNeeded");
+    FUNCTION_TRACE ("AmlDigitsNeeded");
 
 
     if (base < 1)
     {
-        REPORT_ERROR (("ExDigitsNeeded: Internal error - Invalid base\n"));
+        REPORT_ERROR (("AmlDigitsNeeded: Internal error - Invalid base\n"));
     }
 
     else
     {
-        /*
-         * ACPI_INTEGER is unsigned, which is why we don't worry about the '-'
-         */
-        for (NumDigits = 1; (val = ACPI_DIVIDE (val,base)); ++NumDigits)
+        for (NumDigits = 1 + (val < 0); (val = ACPI_DIVIDE (val,base)); ++NumDigits)
         { ; }
     }
 
@@ -418,7 +428,7 @@ _ntohl (
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiExEisaIdToString
+ * FUNCTION:    AcpiAmlEisaIdToString
  *
  * PARAMETERS:  NumericId       - EISA ID to be converted
  *              OutString       - Where to put the converted string (8 bytes)
@@ -428,7 +438,7 @@ _ntohl (
  ******************************************************************************/
 
 ACPI_STATUS
-AcpiExEisaIdToString (
+AcpiAmlEisaIdToString (
     UINT32                  NumericId,
     NATIVE_CHAR             *OutString)
 {
@@ -441,10 +451,10 @@ AcpiExEisaIdToString (
     OutString[0] = (char) ('@' + ((id >> 26) & 0x1f));
     OutString[1] = (char) ('@' + ((id >> 21) & 0x1f));
     OutString[2] = (char) ('@' + ((id >> 16) & 0x1f));
-    OutString[3] = AcpiUtHexToAsciiChar (id, 12);
-    OutString[4] = AcpiUtHexToAsciiChar (id, 8);
-    OutString[5] = AcpiUtHexToAsciiChar (id, 4);
-    OutString[6] = AcpiUtHexToAsciiChar (id, 0);
+    OutString[3] = AcpiGbl_HexToAscii[(id >> 12) & 0xf];
+    OutString[4] = AcpiGbl_HexToAscii[(id >> 8) & 0xf];
+    OutString[5] = AcpiGbl_HexToAscii[(id >> 4) & 0xf];
+    OutString[6] = AcpiGbl_HexToAscii[id & 0xf];
     OutString[7] = 0;
 
     return (AE_OK);
@@ -453,7 +463,7 @@ AcpiExEisaIdToString (
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiExUnsignedIntegerToString
+ * FUNCTION:    AcpiAmlUnsignedIntegerToString
  *
  * PARAMETERS:  Value           - Value to be converted
  *              OutString       - Where to put the converted string (8 bytes)
@@ -463,7 +473,7 @@ AcpiExEisaIdToString (
  ******************************************************************************/
 
 ACPI_STATUS
-AcpiExUnsignedIntegerToString (
+AcpiAmlUnsignedIntegerToString (
     ACPI_INTEGER            Value,
     NATIVE_CHAR             *OutString)
 {
@@ -471,7 +481,7 @@ AcpiExUnsignedIntegerToString (
     UINT32                  DigitsNeeded;
 
 
-    DigitsNeeded = AcpiExDigitsNeeded (Value, 10);
+    DigitsNeeded = AcpiAmlDigitsNeeded (Value, 10);
 
     OutString[DigitsNeeded] = '\0';
 

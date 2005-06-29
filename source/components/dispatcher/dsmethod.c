@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dsmethod - Parser/Interpreter interface - control method parsing
- *              $Revision: 1.55 $
+ *              $Revision: 1.60 $
  *
  *****************************************************************************/
 
@@ -126,7 +126,7 @@
 #include "acdebug.h"
 
 
-#define _COMPONENT          DISPATCHER
+#define _COMPONENT          ACPI_DISPATCHER
         MODULE_NAME         ("dsmethod")
 
 
@@ -188,7 +188,8 @@ AcpiDsParseMethod (
     if ((ObjDesc->Method.Concurrency != INFINITE_CONCURRENCY) &&
         (!ObjDesc->Method.Semaphore))
     {
-        Status = AcpiOsCreateSemaphore (1,ObjDesc->Method.Concurrency,
+        Status = AcpiOsCreateSemaphore (ObjDesc->Method.Concurrency,
+                                        ObjDesc->Method.Concurrency,
                                         &ObjDesc->Method.Semaphore);
         if (ACPI_FAILURE (Status))
         {
@@ -200,7 +201,6 @@ AcpiDsParseMethod (
      * Allocate a new parser op to be the root of the parsed
      * method tree
      */
-
     Op = AcpiPsAllocOp (AML_METHOD_OP);
     if (!Op)
     {
@@ -224,7 +224,6 @@ AcpiDsParseMethod (
      * method so that operands to the named objects can
      * take on dynamic run-time values.
      */
-
     Status = AcpiPsParseAml (Op, ObjDesc->Method.Pcode,
                         ObjDesc->Method.PcodeLength,
                         ACPI_PARSE_LOAD_PASS1 | ACPI_PARSE_DELETE_TREE,
@@ -259,8 +258,9 @@ AcpiDsParseMethod (
  *
  * FUNCTION:    AcpiDsBeginMethodExecution
  *
- * PARAMETERS:  MethodNode         - Node of the method
+ * PARAMETERS:  MethodNode          - Node of the method
  *              ObjDesc             - The method object
+ *              CallingMethodNode   - Caller of this method (if non-null)
  *
  * RETURN:      Status
  *
@@ -275,7 +275,8 @@ AcpiDsParseMethod (
 ACPI_STATUS
 AcpiDsBeginMethodExecution (
     ACPI_NAMESPACE_NODE     *MethodNode,
-    ACPI_OPERAND_OBJECT     *ObjDesc)
+    ACPI_OPERAND_OBJECT     *ObjDesc,
+    ACPI_NAMESPACE_NODE     *CallingMethodNode)
 {
     ACPI_STATUS             Status = AE_OK;
 
@@ -288,35 +289,43 @@ AcpiDsBeginMethodExecution (
         return_ACPI_STATUS (AE_NULL_ENTRY);
     }
 
-    ObjDesc = AcpiNsGetAttachedObject (MethodNode);
-    if (!ObjDesc)
-    {
-        return_ACPI_STATUS (AE_NULL_OBJECT);
-    }
-
 
     /*
      * If there is a concurrency limit on this method, we need to
-     * obtain a unit from the method semaphore.  This releases the
-     * interpreter if we block
+     * obtain a unit from the method semaphore.
      */
-
     if (ObjDesc->Method.Semaphore)
     {
+        /*
+         * Allow recursive method calls, up to the reentrancy/concurrency
+         * limit imposed by the SERIALIZED rule and the SyncLevel method
+         * parameter.
+         *
+         * The point of this code is to avoid permanently blocking a
+         * thread that is making recursive method calls.
+         */
+        if (MethodNode == CallingMethodNode)
+        {
+            if (ObjDesc->Method.ThreadCount >= ObjDesc->Method.Concurrency)
+            {
+                return_ACPI_STATUS (AE_AML_METHOD_LIMIT);
+            }
+        }
+
+        /*
+         * Get a unit from the method semaphore. This releases the
+         * interpreter if we block
+         */
         Status = AcpiAmlSystemWaitSemaphore (ObjDesc->Method.Semaphore,
                                             WAIT_FOREVER);
     }
 
 
     /*
-     * Increment the method parse tree thread count since there
-     * is one additional thread executing in it.  If configured
-     * for deletion-on-exit, the parse tree will be deleted when
-     * the last thread completes execution of the method
+     * Increment the method parse tree thread count since it has been
+     * reentered one more time (even if it is the same thread)
      */
-
     ObjDesc->Method.ThreadCount++;
-
 
     return_ACPI_STATUS (Status);
 }
@@ -358,7 +367,6 @@ AcpiDsCallControlMethod (
     /*
      * Get the namespace entry for the control method we are about to call
      */
-
     MethodNode = ThisWalkState->MethodCallNode;
     if (!MethodNode)
     {
@@ -374,12 +382,12 @@ AcpiDsCallControlMethod (
 
     /* Init for new method, wait on concurrency semaphore */
 
-    Status = AcpiDsBeginMethodExecution (MethodNode, ObjDesc);
+    Status = AcpiDsBeginMethodExecution (MethodNode, ObjDesc,
+                    ThisWalkState->MethodNode);
     if (ACPI_FAILURE (Status))
     {
         return_ACPI_STATUS (Status);
     }
-
 
     /* Create and initialize a new parser state */
 
@@ -433,7 +441,6 @@ AcpiDsCallControlMethod (
      * stack.  Operands on the previous walk state stack always
      * start at index 0.
      */
-
     Status = AcpiDsMethodDataInitArgs (&ThisWalkState->Operands[0],
                                         ThisWalkState->NumOperands,
                                         NextWalkState);
@@ -463,7 +470,6 @@ AcpiDsCallControlMethod (
      * Delete the operands on the previous walkstate operand stack
      * (they were copied to new objects)
      */
-
     for (i = 0; i < ObjDesc->Method.ParamCount; i++)
     {
         AcpiCmRemoveReference (ThisWalkState->Operands [i]);
@@ -523,7 +529,6 @@ AcpiDsRestartControlMethod (
              * Get the return value (if any) from the previous method.
              * NULL if no return value
              */
-
             Status = AcpiDsResultPush (ReturnDesc, WalkState);
             if (ACPI_FAILURE (Status))
             {
@@ -544,8 +549,9 @@ AcpiDsRestartControlMethod (
     }
 
     DEBUG_PRINT (TRACE_DISPATCH,
-        ("DsRestart: Method=%p Return=%p State=%p\n",
-        WalkState->MethodCallOp, ReturnDesc, WalkState));
+        ("DsRestart: Method=%p Return=%p ReturnUsed?=%X ResStack=%p State=%p\n",
+        WalkState->MethodCallOp, ReturnDesc, WalkState->ReturnUsed,
+        WalkState->Results, WalkState));
 
 
     return_ACPI_STATUS (AE_OK);
@@ -595,7 +601,6 @@ AcpiDsTerminateControlMethod (
      * If this is the last thread executing the method,
      * we have additional cleanup to perform
      */
-
     AcpiCmAcquireMutex (ACPI_MTX_PARSER);
 
 
@@ -619,6 +624,7 @@ AcpiDsTerminateControlMethod (
          * The method Node is stored in the walk state
          */
         MethodNode = WalkState->MethodNode;
+
         /*
          * Delete any namespace entries created immediately underneath
          * the method

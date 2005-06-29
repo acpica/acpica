@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: amfldio - Aml Field I/O
- *              $Revision: 1.25 $
+ *              $Revision: 1.41 $
  *
  *****************************************************************************/
 
@@ -9,8 +9,8 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, Intel Corp.  All rights
- * reserved.
+ * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
+ * All rights reserved.
  *
  * 2. License
  *
@@ -125,7 +125,7 @@
 #include "acevents.h"
 
 
-#define _COMPONENT          INTERPRETER
+#define _COMPONENT          ACPI_EXECUTER
         MODULE_NAME         ("amfldio")
 
 
@@ -145,14 +145,14 @@
 
 ACPI_STATUS
 AcpiAmlReadFieldData (
-    ACPI_OBJECT_INTERNAL    *ObjDesc,
+    ACPI_OPERAND_OBJECT     *ObjDesc,
     UINT32                  FieldByteOffset,
     UINT32                  FieldBitWidth,
     UINT32                  *Value)
 {
     ACPI_STATUS             Status;
-    ACPI_OBJECT_INTERNAL    *RgnDesc = NULL;
-    UINT32                  Address;
+    ACPI_OPERAND_OBJECT     *RgnDesc = NULL;
+    ACPI_PHYSICAL_ADDRESS   Address;
     UINT32                  LocalValue = 0;
     UINT32                  FieldByteWidth;
 
@@ -184,28 +184,18 @@ AcpiAmlReadFieldData (
 
 
     /*
-     * Set offset to next multiple of field width, 
+     * Set offset to next multiple of field width,
      *  add region base address and offset within the field
      */
     Address = RgnDesc->Region.Address +
               (ObjDesc->Field.Offset * FieldByteWidth) +
               FieldByteOffset;
 
-
-    if (RgnDesc->Region.SpaceId >= NUM_REGION_TYPES)
-    {
-        DEBUG_PRINT (TRACE_OPREGION,
-            ("AmlReadFieldData: **** Unknown OpRegion SpaceID %d at %08lx width %d\n",
-            RgnDesc->Region.SpaceId, Address, FieldBitWidth));
-    }
-
-    else
-    {
-        DEBUG_PRINT (TRACE_OPREGION,
-            ("AmlReadFieldData: OpRegion %s at %08lx width %d\n",
-            AcpiGbl_RegionTypes[RgnDesc->Region.SpaceId], Address,
-            FieldBitWidth));
-    }
+    DEBUG_PRINT (TRACE_OPREGION,
+        ("AmlReadFieldData: Region %s(%X) at %08lx width %X\n",
+        AcpiCmGetRegionName (RgnDesc->Region.SpaceId),
+        RgnDesc->Region.SpaceId, Address,
+        FieldBitWidth));
 
 
     /* Invoke the appropriate AddressSpace/OpRegion handler */
@@ -216,14 +206,16 @@ AcpiAmlReadFieldData (
     if (Status == AE_NOT_IMPLEMENTED)
     {
         DEBUG_PRINT (ACPI_ERROR,
-            ("AmlReadFieldData: **** OpRegion type %s not implemented\n",
-            AcpiGbl_RegionTypes[RgnDesc->Region.SpaceId]));
+            ("AmlReadFieldData: **** Region %s(%X) not implemented\n",
+            AcpiCmGetRegionName (RgnDesc->Region.SpaceId),
+            RgnDesc->Region.SpaceId));
     }
 
-    else if (Status == AE_EXIST)
+    else if (Status == AE_NOT_EXIST)
     {
         DEBUG_PRINT (ACPI_ERROR,
-            ("AmlReadFieldData: **** Unknown OpRegion SpaceID %d\n",
+            ("AmlReadFieldData: **** Region %s(%X) has no handler\n",
+            AcpiCmGetRegionName (RgnDesc->Region.SpaceId),
             RgnDesc->Region.SpaceId));
     }
 
@@ -250,7 +242,7 @@ AcpiAmlReadFieldData (
 
 ACPI_STATUS
 AcpiAmlReadField (
-    ACPI_OBJECT_INTERNAL    *ObjDesc,
+    ACPI_OPERAND_OBJECT     *ObjDesc,
     void                    *Buffer,
     UINT32                  BufferLength,
     UINT32                  ByteLength,
@@ -262,7 +254,7 @@ AcpiAmlReadField (
     UINT32                  ThisFieldByteOffset;
     UINT32                  ThisFieldDatumOffset;
     UINT32                  PreviousRawDatum;
-    UINT32                  ThisRawDatum;
+    UINT32                  ThisRawDatum = 0;
     UINT32                  ValidFieldBits;
     UINT32                  Mask;
     UINT32                  MergedDatum = 0;
@@ -339,32 +331,46 @@ AcpiAmlReadField (
         while (ThisFieldDatumOffset < DatumLength)
         {
             /*
-             * Get the next raw datum, it contains bits of the current
-             * field datum
+             * If the field is aligned on a byte boundary, we don't want
+             * to perform a final read, since this would potentially read
+             * past the end of the region.
+             *
+             * TBD: [Investigate] It may make more sense to just split the aligned
+             * and non-aligned cases since the aligned case is so very simple,
              */
-
-            Status = AcpiAmlReadFieldData (ObjDesc,
-                            ThisFieldByteOffset + ByteGranularity,
-                            BitGranularity, &ThisRawDatum);
-            if (ACPI_FAILURE (Status))
+            if ((ObjDesc->Field.BitOffset != 0) ||
+                ((ObjDesc->Field.BitOffset == 0) &&
+                (ThisFieldDatumOffset < (DatumLength -1))))
             {
-                goto Cleanup;
+                /*
+                 * Get the next raw datum, it contains some or all bits
+                 * of the current field datum
+                 */
+
+                Status = AcpiAmlReadFieldData (ObjDesc,
+                                ThisFieldByteOffset + ByteGranularity,
+                                BitGranularity, &ThisRawDatum);
+                if (ACPI_FAILURE (Status))
+                {
+                    goto Cleanup;
+                }
+
+                /* Before merging the data, make sure the unused bits are clear */
+
+                switch (ByteGranularity)
+                {
+                case 1:
+                    ThisRawDatum &= 0x000000FF;
+                    PreviousRawDatum &= 0x000000FF;
+                    break;
+
+                case 2:
+                    ThisRawDatum &= 0x0000FFFF;
+                    PreviousRawDatum &= 0x0000FFFF;
+                    break;
+                }
             }
 
-            /* Before merging the data, make sure the unused bits are clear */
-
-            switch (ByteGranularity)
-            {
-            case 1:
-                ThisRawDatum &= 0x000000FF;
-                PreviousRawDatum &= 0x000000FF;
-                break;
-
-            case 2:
-                ThisRawDatum &= 0x0000FFFF;
-                PreviousRawDatum &= 0x0000FFFF;
-                break;
-            }
 
             /*
              * Put together bits of the two raw data to make a complete
@@ -454,16 +460,16 @@ Cleanup:
  *
  ******************************************************************************/
 
-ACPI_STATUS
+static ACPI_STATUS
 AcpiAmlWriteFieldData (
-    ACPI_OBJECT_INTERNAL    *ObjDesc,
+    ACPI_OPERAND_OBJECT     *ObjDesc,
     UINT32                  FieldByteOffset,
     UINT32                  FieldBitWidth,
     UINT32                  Value)
 {
     ACPI_STATUS             Status = AE_OK;
-    ACPI_OBJECT_INTERNAL    *RgnDesc = NULL;
-    UINT32                  Address;
+    ACPI_OPERAND_OBJECT     *RgnDesc = NULL;
+    ACPI_PHYSICAL_ADDRESS   Address;
     UINT32                  FieldByteWidth;
 
 
@@ -486,27 +492,18 @@ AcpiAmlWriteFieldData (
 
 
     /*
-     * Set offset to next multiple of field width, 
+     * Set offset to next multiple of field width,
      *  add region base address and offset within the field
      */
     Address = RgnDesc->Region.Address +
               (ObjDesc->Field.Offset * FieldByteWidth) +
               FieldByteOffset;
 
-
-    if (RgnDesc->Region.SpaceId >= NUM_REGION_TYPES)
-    {
-        DEBUG_PRINT (TRACE_OPREGION,
-            ("AmlWriteField: **** Store %lx in unknown OpRegion SpaceID %d at %08lx width %d ** \n",
-            Value, RgnDesc->Region.SpaceId, Address, FieldBitWidth));
-    }
-    else
-    {
-        DEBUG_PRINT (TRACE_OPREGION,
-            ("AmlWriteField: Store %lx in OpRegion %s at %08lx width %d\n",
-            Value, AcpiGbl_RegionTypes[RgnDesc->Region.SpaceId], Address,
-            FieldBitWidth));
-    }
+    DEBUG_PRINT (TRACE_OPREGION,
+        ("AmlWriteField: Store %lx in Region %s(%X) at %p width %X\n",
+        Value, AcpiCmGetRegionName (RgnDesc->Region.SpaceId),
+        RgnDesc->Region.SpaceId, Address,
+        FieldBitWidth));
 
     /* Invoke the appropriate AddressSpace/OpRegion handler */
 
@@ -516,14 +513,16 @@ AcpiAmlWriteFieldData (
     if (Status == AE_NOT_IMPLEMENTED)
     {
         DEBUG_PRINT (ACPI_ERROR,
-            ("AmlWriteField: **** OpRegion type %s not implemented\n",
-            AcpiGbl_RegionTypes[RgnDesc->Region.SpaceId]));
+            ("AmlWriteField: **** Region type %s(%X) not implemented\n",
+            AcpiCmGetRegionName (RgnDesc->Region.SpaceId),
+            RgnDesc->Region.SpaceId));
     }
 
-    else if (Status == AE_EXIST)
+    else if (Status == AE_NOT_EXIST)
     {
         DEBUG_PRINT (ACPI_ERROR,
-            ("AmlWriteField: **** Unknown OpRegion SpaceID %x\n",
+            ("AmlWriteField: **** Region type %s(%X) does not have a handler\n",
+            AcpiCmGetRegionName (RgnDesc->Region.SpaceId),
             RgnDesc->Region.SpaceId));
     }
 
@@ -545,9 +544,9 @@ AcpiAmlWriteFieldData (
  *
  ****************************************************************************/
 
-ACPI_STATUS
+static ACPI_STATUS
 AcpiAmlWriteFieldDataWithUpdateRule (
-    ACPI_OBJECT_INTERNAL    *ObjDesc,
+    ACPI_OPERAND_OBJECT     *ObjDesc,
     UINT32                  Mask,
     UINT32                  FieldValue,
     UINT32                  ThisFieldByteOffset,
@@ -562,8 +561,6 @@ AcpiAmlWriteFieldDataWithUpdateRule (
 
     MergedValue = FieldValue;
 
-    /* Check if update rule needs to be applied (not if mask is all ones) */
-
 
     /* Decode the update rule */
 
@@ -572,13 +569,19 @@ AcpiAmlWriteFieldDataWithUpdateRule (
 
     case UPDATE_PRESERVE:
 
-        /*
-         * Read the current contents of the byte/word/dword containing
-         * the field, and merge with the new field value.
-         */
-        Status = AcpiAmlReadFieldData (ObjDesc, ThisFieldByteOffset,
-                                        BitGranularity, &CurrentValue);
-        MergedValue |= (CurrentValue & ~Mask);
+        /* Check if update rule needs to be applied (not if mask is all ones) */
+
+        /* The left shift drops the bits we want to ignore. */
+        if ((~Mask << (sizeof(Mask)*8 - BitGranularity)) != 0)
+        {
+            /*
+             * Read the current contents of the byte/word/dword containing
+             * the field, and merge with the new field value.
+             */
+            Status = AcpiAmlReadFieldData (ObjDesc, ThisFieldByteOffset,
+                                            BitGranularity, &CurrentValue);
+            MergedValue |= (CurrentValue & ~Mask);
+        }
         break;
 
 
@@ -634,7 +637,7 @@ AcpiAmlWriteFieldDataWithUpdateRule (
 
 ACPI_STATUS
 AcpiAmlWriteField (
-    ACPI_OBJECT_INTERNAL    *ObjDesc,
+    ACPI_OPERAND_OBJECT     *ObjDesc,
     void                    *Buffer,
     UINT32                  BufferLength,
     UINT32                  ByteLength,
@@ -839,7 +842,7 @@ AcpiAmlWriteField (
         FieldValue = (PreviousRawDatum >>
                         (BitGranularity - ObjDesc->Field.BitOffset)) & Mask;
 
-        Status = AcpiAmlWriteFieldDataWithUpdateRule (ObjDesc, Mask, FieldValue, 
+        Status = AcpiAmlWriteFieldDataWithUpdateRule (ObjDesc, Mask, FieldValue,
                                                         ThisFieldByteOffset + ByteGranularity,
                                                         BitGranularity);
         if (ACPI_FAILURE (Status))

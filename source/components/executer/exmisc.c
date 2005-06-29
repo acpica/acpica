@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: ammisc - ACPI AML (p-code) execution - specific opcodes
- *              $Revision: 1.66 $
+ *              $Revision: 1.75 $
  *
  *****************************************************************************/
 
@@ -10,8 +10,8 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, Intel Corp.  All rights
- * reserved.
+ * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
+ * All rights reserved.
  *
  * 2. License
  *
@@ -125,7 +125,7 @@
 #include "acdispat.h"
 
 
-#define _COMPONENT          INTERPRETER
+#define _COMPONENT          ACPI_EXECUTER
         MODULE_NAME         ("ammisc")
 
 
@@ -152,9 +152,9 @@ ACPI_STATUS
 AcpiAmlExecFatal (
     ACPI_WALK_STATE         *WalkState)
 {
-    ACPI_OBJECT_INTERNAL    *TypeDesc;
-    ACPI_OBJECT_INTERNAL    *CodeDesc;
-    ACPI_OBJECT_INTERNAL    *ArgDesc;
+    ACPI_OPERAND_OBJECT     *TypeDesc;
+    ACPI_OPERAND_OBJECT     *CodeDesc;
+    ACPI_OPERAND_OBJECT     *ArgDesc;
     ACPI_STATUS             Status;
 
 
@@ -177,8 +177,8 @@ AcpiAmlExecFatal (
     {
         /* Invalid parameters on object stack  */
 
-        DEBUG_PRINT (ACPI_ERROR, 
-            ("AcpiAmlExecFatal/AML_FATAL_OP: bad operand(s) (0x%X)\n",
+        DEBUG_PRINT (ACPI_ERROR,
+            ("AcpiAmlExecFatal/AML_FATAL_OP: bad operand(s) (Status=%X)\n",
             Status));
 
         goto Cleanup;
@@ -190,7 +190,7 @@ AcpiAmlExecFatal (
 
     DEBUG_PRINT (ACPI_INFO,
         ("FatalOp: Type %x Code %x Arg %x <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<\n",
-        TypeDesc->Number.Value, CodeDesc->Number.Value, ArgDesc->Number.Value));
+        TypeDesc->Integer.Value, CodeDesc->Integer.Value, ArgDesc->Integer.Value));
 
 
     /*
@@ -210,7 +210,7 @@ Cleanup:
 
     /* If we get back from the OS call, we might as well keep going. */
 
-    DEBUG_PRINT (ACPI_ERROR, ("AmlExecFatal: FatalOp executed\n"));
+    REPORT_WARNING (("An AML \"Fatal\" Opcode (FatalOp) was executed\n"));
     return_ACPI_STATUS (AE_OK);
 }
 
@@ -240,13 +240,13 @@ Cleanup:
 ACPI_STATUS
 AcpiAmlExecIndex (
     ACPI_WALK_STATE         *WalkState,
-    ACPI_OBJECT_INTERNAL    **ReturnDesc)
+    ACPI_OPERAND_OBJECT     **ReturnDesc)
 {
-    ACPI_OBJECT_INTERNAL    *ObjDesc;
-    ACPI_OBJECT_INTERNAL    *IdxDesc;
-    ACPI_OBJECT_INTERNAL    *ResDesc;
-    ACPI_OBJECT_INTERNAL    *RetDesc = NULL;
-    ACPI_OBJECT_INTERNAL    *TmpDesc;
+    ACPI_OPERAND_OBJECT     *ObjDesc;
+    ACPI_OPERAND_OBJECT     *IdxDesc;
+    ACPI_OPERAND_OBJECT     *ResDesc;
+    ACPI_OPERAND_OBJECT     *RetDesc = NULL;
+    ACPI_OPERAND_OBJECT     *TmpDesc;
     ACPI_STATUS             Status;
 
 
@@ -270,8 +270,8 @@ AcpiAmlExecIndex (
     {
         /* Invalid parameters on object stack  */
 
-        DEBUG_PRINT (ACPI_ERROR, 
-            ("AcpiAmlExecIndex/AML_INDEX_OP: bad operand(s) (0x%X)\n",
+        DEBUG_PRINT (ACPI_ERROR,
+            ("AcpiAmlExecIndex/AML_INDEX_OP: bad operand(s) (Status=%X)\n",
             Status));
 
         goto Cleanup;
@@ -296,7 +296,7 @@ AcpiAmlExecIndex (
     {
         /* Object to be indexed is a Package */
 
-        if (IdxDesc->Number.Value >= ObjDesc->Package.Count)
+        if (IdxDesc->Integer.Value >= ObjDesc->Package.Count)
         {
             DEBUG_PRINT (ACPI_ERROR,
                 ("AmlExecIndex: Index value out of range\n"));
@@ -305,7 +305,7 @@ AcpiAmlExecIndex (
         }
 
         if ((ResDesc->Common.Type == INTERNAL_TYPE_REFERENCE) &&
-            (ResDesc->Reference.OpCode == AML_ZERO_OP))
+            (ResDesc->Reference.Opcode == AML_ZERO_OP))
         {
             /*
              * There is no actual result descriptor (the ZeroOp Result
@@ -323,8 +323,8 @@ AcpiAmlExecIndex (
              * we are after.
              */
 
-            TmpDesc                       = ObjDesc->Package.Elements[IdxDesc->Number.Value];
-            RetDesc->Reference.OpCode     = AML_INDEX_OP;
+            TmpDesc                       = ObjDesc->Package.Elements[IdxDesc->Integer.Value];
+            RetDesc->Reference.Opcode     = AML_INDEX_OP;
             RetDesc->Reference.TargetType = TmpDesc->Common.Type;
             RetDesc->Reference.Object     = TmpDesc;
 
@@ -336,16 +336,16 @@ AcpiAmlExecIndex (
          * The local return object must always be a reference to the package element,
          * not the element itself.
          */
-        RetDesc->Reference.OpCode     = AML_INDEX_OP;
+        RetDesc->Reference.Opcode     = AML_INDEX_OP;
         RetDesc->Reference.TargetType = ACPI_TYPE_PACKAGE;
-        RetDesc->Reference.Where      = &ObjDesc->Package.Elements[IdxDesc->Number.Value];
+        RetDesc->Reference.Where      = &ObjDesc->Package.Elements[IdxDesc->Integer.Value];
     }
 
     else
     {
         /* Object to be indexed is a Buffer */
 
-        if (IdxDesc->Number.Value >= ObjDesc->Buffer.Length)
+        if (IdxDesc->Integer.Value >= ObjDesc->Buffer.Length)
         {
             DEBUG_PRINT (ACPI_ERROR,
                 ("AmlExecIndex: Index value out of range\n"));
@@ -353,10 +353,10 @@ AcpiAmlExecIndex (
             goto Cleanup;
         }
 
-        RetDesc->Reference.OpCode       = AML_INDEX_OP;
+        RetDesc->Reference.Opcode       = AML_INDEX_OP;
         RetDesc->Reference.TargetType   = ACPI_TYPE_BUFFER_FIELD;
         RetDesc->Reference.Object       = ObjDesc;
-        RetDesc->Reference.Offset       = IdxDesc->Number.Value;
+        RetDesc->Reference.Offset       = (UINT32) IdxDesc->Integer.Value;
 
         Status = AcpiAmlExecStore (RetDesc, ResDesc, WalkState);
     }
@@ -414,15 +414,15 @@ Cleanup:
 ACPI_STATUS
 AcpiAmlExecMatch (
     ACPI_WALK_STATE         *WalkState,
-    ACPI_OBJECT_INTERNAL    **ReturnDesc)
+    ACPI_OPERAND_OBJECT     **ReturnDesc)
 {
-    ACPI_OBJECT_INTERNAL    *PkgDesc;
-    ACPI_OBJECT_INTERNAL    *Op1Desc;
-    ACPI_OBJECT_INTERNAL    *V1Desc;
-    ACPI_OBJECT_INTERNAL    *Op2Desc;
-    ACPI_OBJECT_INTERNAL    *V2Desc;
-    ACPI_OBJECT_INTERNAL    *StartDesc;
-    ACPI_OBJECT_INTERNAL    *RetDesc = NULL;
+    ACPI_OPERAND_OBJECT     *PkgDesc;
+    ACPI_OPERAND_OBJECT     *Op1Desc;
+    ACPI_OPERAND_OBJECT     *V1Desc;
+    ACPI_OPERAND_OBJECT     *Op2Desc;
+    ACPI_OPERAND_OBJECT     *V2Desc;
+    ACPI_OPERAND_OBJECT     *StartDesc;
+    ACPI_OPERAND_OBJECT     *RetDesc = NULL;
     ACPI_STATUS             Status;
     UINT32                  Index;
     UINT32                  MatchValue = (UINT32) -1;
@@ -451,8 +451,8 @@ AcpiAmlExecMatch (
     {
         /* Invalid parameters on object stack  */
 
-        DEBUG_PRINT (ACPI_ERROR, 
-            ("ExecMatch/AML_MATCH_OP: bad operand(s) (0x%X)\n",
+        DEBUG_PRINT (ACPI_ERROR,
+            ("ExecMatch/AML_MATCH_OP: bad operand(s) (Status=%X)\n",
             Status));
 
         goto Cleanup;
@@ -460,8 +460,8 @@ AcpiAmlExecMatch (
 
     /* Validate match comparison sub-opcodes */
 
-    if ((Op1Desc->Number.Value > MAX_MATCH_OPERATOR) ||
-        (Op2Desc->Number.Value > MAX_MATCH_OPERATOR))
+    if ((Op1Desc->Integer.Value > MAX_MATCH_OPERATOR) ||
+        (Op2Desc->Integer.Value > MAX_MATCH_OPERATOR))
     {
         DEBUG_PRINT (ACPI_ERROR,
             ("AmlExecMatch: operation encoding out of range\n"));
@@ -469,7 +469,7 @@ AcpiAmlExecMatch (
         goto Cleanup;
     }
 
-    Index = StartDesc->Number.Value;
+    Index = (UINT32) StartDesc->Integer.Value;
     if (Index >= (UINT32) PkgDesc->Package.Count)
     {
         DEBUG_PRINT (ACPI_ERROR,
@@ -478,7 +478,7 @@ AcpiAmlExecMatch (
         goto Cleanup;
     }
 
-    RetDesc = AcpiCmCreateInternalObject (ACPI_TYPE_NUMBER);
+    RetDesc = AcpiCmCreateInternalObject (ACPI_TYPE_INTEGER);
     if (!RetDesc)
     {
         Status = AE_NO_MEMORY;
@@ -504,7 +504,7 @@ AcpiAmlExecMatch (
          *      should we examine its value?
          */
         if (!PkgDesc->Package.Elements[Index] ||
-            ACPI_TYPE_NUMBER != PkgDesc->Package.Elements[Index]->Common.Type)
+            ACPI_TYPE_INTEGER != PkgDesc->Package.Elements[Index]->Common.Type)
         {
             continue;
         }
@@ -515,7 +515,7 @@ AcpiAmlExecMatch (
          *      "continue" (proceed to next iteration of enclosing
          *          "for" loop) signifies a non-match.
          */
-        switch (Op1Desc->Number.Value)
+        switch (Op1Desc->Integer.Value)
         {
 
         case MATCH_MTR:   /* always true */
@@ -525,8 +525,8 @@ AcpiAmlExecMatch (
 
         case MATCH_MEQ:   /* true if equal   */
 
-            if (PkgDesc->Package.Elements[Index]->Number.Value
-                 != V1Desc->Number.Value)
+            if (PkgDesc->Package.Elements[Index]->Integer.Value
+                 != V1Desc->Integer.Value)
             {
                 continue;
             }
@@ -535,8 +535,8 @@ AcpiAmlExecMatch (
 
         case MATCH_MLE:   /* true if less than or equal  */
 
-            if (PkgDesc->Package.Elements[Index]->Number.Value
-                 > V1Desc->Number.Value)
+            if (PkgDesc->Package.Elements[Index]->Integer.Value
+                 > V1Desc->Integer.Value)
             {
                 continue;
             }
@@ -545,8 +545,8 @@ AcpiAmlExecMatch (
 
         case MATCH_MLT:   /* true if less than   */
 
-            if (PkgDesc->Package.Elements[Index]->Number.Value
-                 >= V1Desc->Number.Value)
+            if (PkgDesc->Package.Elements[Index]->Integer.Value
+                 >= V1Desc->Integer.Value)
             {
                 continue;
             }
@@ -555,8 +555,8 @@ AcpiAmlExecMatch (
 
         case MATCH_MGE:   /* true if greater than or equal   */
 
-            if (PkgDesc->Package.Elements[Index]->Number.Value
-                 < V1Desc->Number.Value)
+            if (PkgDesc->Package.Elements[Index]->Integer.Value
+                 < V1Desc->Integer.Value)
             {
                 continue;
             }
@@ -565,8 +565,8 @@ AcpiAmlExecMatch (
 
         case MATCH_MGT:   /* true if greater than    */
 
-            if (PkgDesc->Package.Elements[Index]->Number.Value
-                 <= V1Desc->Number.Value)
+            if (PkgDesc->Package.Elements[Index]->Integer.Value
+                 <= V1Desc->Integer.Value)
             {
                 continue;
             }
@@ -579,7 +579,7 @@ AcpiAmlExecMatch (
         }
 
 
-        switch(Op2Desc->Number.Value)
+        switch(Op2Desc->Integer.Value)
         {
 
         case MATCH_MTR:
@@ -589,8 +589,8 @@ AcpiAmlExecMatch (
 
         case MATCH_MEQ:
 
-            if (PkgDesc->Package.Elements[Index]->Number.Value
-                 != V2Desc->Number.Value)
+            if (PkgDesc->Package.Elements[Index]->Integer.Value
+                 != V2Desc->Integer.Value)
             {
                 continue;
             }
@@ -599,8 +599,8 @@ AcpiAmlExecMatch (
 
         case MATCH_MLE:
 
-            if (PkgDesc->Package.Elements[Index]->Number.Value
-                 > V2Desc->Number.Value)
+            if (PkgDesc->Package.Elements[Index]->Integer.Value
+                 > V2Desc->Integer.Value)
             {
                 continue;
             }
@@ -609,8 +609,8 @@ AcpiAmlExecMatch (
 
         case MATCH_MLT:
 
-            if (PkgDesc->Package.Elements[Index]->Number.Value
-                 >= V2Desc->Number.Value)
+            if (PkgDesc->Package.Elements[Index]->Integer.Value
+                 >= V2Desc->Integer.Value)
             {
                 continue;
             }
@@ -619,8 +619,8 @@ AcpiAmlExecMatch (
 
         case MATCH_MGE:
 
-            if (PkgDesc->Package.Elements[Index]->Number.Value
-                 < V2Desc->Number.Value)
+            if (PkgDesc->Package.Elements[Index]->Integer.Value
+                 < V2Desc->Integer.Value)
             {
                 continue;
             }
@@ -629,8 +629,8 @@ AcpiAmlExecMatch (
 
         case MATCH_MGT:
 
-            if (PkgDesc->Package.Elements[Index]->Number.Value
-                 <= V2Desc->Number.Value)
+            if (PkgDesc->Package.Elements[Index]->Integer.Value
+                 <= V2Desc->Integer.Value)
             {
                 continue;
             }
@@ -650,7 +650,7 @@ AcpiAmlExecMatch (
 
     /* MatchValue is the return value */
 
-    RetDesc->Number.Value = MatchValue;
+    RetDesc->Integer.Value = MatchValue;
 
 
 Cleanup:

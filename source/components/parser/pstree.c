@@ -1,9 +1,7 @@
-
 /******************************************************************************
  *
- * Module Name: amstoren - AML Interpreter object store support,
- *                        Store to Node (namespace object)
- *              $Revision: 1.30 $
+ * Module Name: pstree - Parser op tree manipulation/traversal/search
+ *              $Revision: 1.28 $
  *
  *****************************************************************************/
 
@@ -116,257 +114,286 @@
  *
  *****************************************************************************/
 
-#define __AMSTOREN_C__
+
+#define __PSTREE_C__
 
 #include "acpi.h"
 #include "acparser.h"
-#include "acdispat.h"
-#include "acinterp.h"
 #include "amlcode.h"
-#include "acnamesp.h"
-#include "actables.h"
 
-
-#define _COMPONENT          ACPI_EXECUTER
-        MODULE_NAME         ("amstoren")
+#define _COMPONENT          ACPI_PARSER
+        MODULE_NAME         ("pstree")
 
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiAmlResolveObject
+ * FUNCTION:    AcpiPsGetArg
  *
- * PARAMETERS:  SourceDescPtr       - Pointer to the source object
- *              TargetType          - Current type of the target
- *              WalkState           - Current walk state
+ * PARAMETERS:  Op              - Get an argument for this op
+ *              Argn            - Nth argument to get
  *
- * RETURN:      Status, resolved object in SourceDescPtr.
+ * RETURN:      The argument (as an Op object).  NULL if argument does not exist
  *
- * DESCRIPTION: Resolve an object.  If the object is a reference, dereference
- *              it and return the actual object in the SourceDescPtr.
+ * DESCRIPTION: Get the specified op's argument.
  *
  ******************************************************************************/
 
-ACPI_STATUS
-AcpiAmlResolveObject (
-    ACPI_OPERAND_OBJECT     **SourceDescPtr,
-    OBJECT_TYPE_INTERNAL    TargetType,
-    ACPI_WALK_STATE         *WalkState)
+ACPI_PARSE_OBJECT *
+AcpiPsGetArg (
+    ACPI_PARSE_OBJECT       *Op,
+    UINT32                  Argn)
 {
-    ACPI_OPERAND_OBJECT     *SourceDesc = *SourceDescPtr;
-    ACPI_STATUS             Status = AE_OK;
+    ACPI_PARSE_OBJECT       *Arg = NULL;
+    ACPI_OPCODE_INFO        *OpInfo;
 
 
-    FUNCTION_TRACE ("AmlResolveObject");
+    /* Get the info structure for this opcode */
 
-
-    /*
-     * Ensure we have a Source that can be stored in the target
-     */
-    switch (TargetType)
+    OpInfo = AcpiPsGetOpcodeInfo (Op->Opcode);
+    if (ACPI_GET_OP_TYPE (OpInfo) != ACPI_OP_TYPE_OPCODE)
     {
+        /* Invalid opcode or ASCII character */
 
-    /* This case handles the "interchangeable" types Integer, String, and Buffer. */
-
-    /*
-     * These cases all require only Integers or values that
-     * can be converted to Integers (Strings or Buffers)
-     */
-    case ACPI_TYPE_INTEGER:
-    case ACPI_TYPE_FIELD_UNIT:
-    case INTERNAL_TYPE_BANK_FIELD:
-    case INTERNAL_TYPE_INDEX_FIELD:
-
-    /*
-     * Stores into a Field/Region or into a Buffer/String
-     * are all essentially the same.
-     */
-    case ACPI_TYPE_STRING:
-    case ACPI_TYPE_BUFFER:
-    case INTERNAL_TYPE_DEF_FIELD:
-
-        /*
-         * If SourceDesc is not a valid type, try to resolve it to one.
-         */
-        if ((SourceDesc->Common.Type != ACPI_TYPE_INTEGER)     &&
-            (SourceDesc->Common.Type != ACPI_TYPE_BUFFER)      &&
-            (SourceDesc->Common.Type != ACPI_TYPE_STRING))
-        {
-            /*
-             * Initially not a valid type, convert
-             */
-            Status = AcpiAmlResolveToValue (SourceDescPtr, WalkState);
-            if (ACPI_SUCCESS (Status) &&
-                (SourceDesc->Common.Type != ACPI_TYPE_INTEGER)     &&
-                (SourceDesc->Common.Type != ACPI_TYPE_BUFFER)      &&
-                (SourceDesc->Common.Type != ACPI_TYPE_STRING))
-            {
-                /*
-                 * Conversion successful but still not a valid type
-                 */
-                DEBUG_PRINT (ACPI_ERROR,
-                    ("AmlResolveObject: Cannot assign type %s to %s (must be type Int/Str/Buf)\n",
-                    AcpiCmGetTypeName ((*SourceDescPtr)->Common.Type),
-                    AcpiCmGetTypeName (TargetType)));
-                Status = AE_AML_OPERAND_TYPE;
-            }
-        }
-        break;
-
-
-    case INTERNAL_TYPE_ALIAS:
-
-        /*
-         * Aliases are resolved by AcpiAmlPrepOperands
-         */
-        DEBUG_PRINT (ACPI_WARN,
-            ("AmlResolveObject: Store into Alias - should never happen\n"));
-
-        Status = AE_AML_INTERNAL;
-        break;
-
-
-    case ACPI_TYPE_PACKAGE:
-    default:
-
-        /*
-         * All other types than Alias and the various Fields come here,
-         * including the untyped case - ACPI_TYPE_ANY.
-         */
-        break;
+        return (NULL);
     }
 
-    return_ACPI_STATUS (Status);
+    /* Check if this opcode requires argument sub-objects */
+
+    if (!(ACPI_GET_OP_ARGS (OpInfo)))
+    {
+        /* Has no linked argument objects */
+
+        return (NULL);
+    }
+
+    /* Get the requested argument object */
+
+    Arg = Op->Value.Arg;
+    while (Arg && Argn)
+    {
+        Argn--;
+        Arg = Arg->Next;
+    }
+
+    return (Arg);
 }
 
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiAmlStoreObject
+ * FUNCTION:    AcpiPsAppendArg
  *
- * PARAMETERS:  SourceDesc          - Object to store
- *              TargetType          - Current type of the target
- *              TargetDescPtr       - Pointer to the target
- *              WalkState           - Current walk state
+ * PARAMETERS:  Op              - Append an argument to this Op.
+ *              Arg             - Argument Op to append
  *
- * RETURN:      Status
+ * RETURN:      None.
  *
- * DESCRIPTION: "Store" an object to another object.  This may include
- *              converting the source type to the target type (implicit
- *              conversion), and a copy of the value of the source to
- *              the target.
+ * DESCRIPTION: Append an argument to an op's argument list (a NULL arg is OK)
  *
  ******************************************************************************/
 
-ACPI_STATUS
-AcpiAmlStoreObject (
-    ACPI_OPERAND_OBJECT     *SourceDesc,
-    OBJECT_TYPE_INTERNAL    TargetType,
-    ACPI_OPERAND_OBJECT     **TargetDescPtr,
-    ACPI_WALK_STATE         *WalkState)
+void
+AcpiPsAppendArg (
+    ACPI_PARSE_OBJECT       *Op,
+    ACPI_PARSE_OBJECT       *Arg)
 {
-    ACPI_OPERAND_OBJECT     *TargetDesc = *TargetDescPtr;
-    ACPI_STATUS             Status;
+    ACPI_PARSE_OBJECT       *PrevArg;
+    ACPI_OPCODE_INFO        *OpInfo;
 
 
-    FUNCTION_TRACE ("AmlStoreObject");
-
-
-    /*
-     * Perform the "implicit conversion" of the source to the current type
-     * of the target - As per the ACPI specification.
-     *
-     * If no conversion performed, SourceDesc is left alone, otherwise it
-     * is updated with a new object.
-     */
-    Status = AcpiAmlConvertToTargetType (TargetType, &SourceDesc, WalkState);
-    if (ACPI_FAILURE (Status))
+    if (!Op)
     {
-        return_ACPI_STATUS (Status);
+        return;
+    }
+
+    /* Get the info structure for this opcode */
+
+    OpInfo = AcpiPsGetOpcodeInfo (Op->Opcode);
+    if (ACPI_GET_OP_TYPE (OpInfo) != ACPI_OP_TYPE_OPCODE)
+    {
+        /* Invalid opcode */
+
+        return;
+    }
+
+    /* Check if this opcode requires argument sub-objects */
+
+    if (!(ACPI_GET_OP_ARGS (OpInfo)))
+    {
+        /* Has no linked argument objects */
+
+        return;
     }
 
 
-    /*
-     * We now have two objects of identical types, and we can perform a
-     * copy of the *value* of the source object.
-     */
-    switch (TargetType)
+    /* Append the argument to the linked argument list */
+
+    if (Op->Value.Arg)
     {
-    case ACPI_TYPE_ANY:
-    case INTERNAL_TYPE_DEF_ANY:
+        /* Append to existing argument list */
 
-        /*
-         * The target namespace node is uninitialized (has no target object),
-         * and will take on the type of the source object
-         */
+        PrevArg = Op->Value.Arg;
+        while (PrevArg->Next)
+        {
+            PrevArg = PrevArg->Next;
+        }
+        PrevArg->Next = Arg;
+    }
 
-        *TargetDescPtr = SourceDesc;
-        break;
+    else
+    {
+        /* No argument list, this will be the first argument */
 
-
-    case ACPI_TYPE_INTEGER:
-
-        TargetDesc->Integer.Value = SourceDesc->Integer.Value;
-
-        /* Truncate value if we are executing from a 32-bit ACPI table */
-
-        AcpiAmlTruncateFor32bitTable (TargetDesc, WalkState);
-        break;
-
-
-    case ACPI_TYPE_FIELD_UNIT:
-
-        Status = AcpiAmlCopyIntegerToFieldUnit (SourceDesc, TargetDesc);
-        break;
-
-
-    case INTERNAL_TYPE_BANK_FIELD:
-
-        Status = AcpiAmlCopyIntegerToBankField (SourceDesc, TargetDesc);
-        break;
-
-
-    case INTERNAL_TYPE_INDEX_FIELD:
-
-        Status = AcpiAmlCopyIntegerToIndexField (SourceDesc, TargetDesc);
-        break;
-
-
-    case ACPI_TYPE_STRING:
-
-        Status = AcpiAmlCopyStringToString (SourceDesc, TargetDesc);
-        break;
-
-
-    case ACPI_TYPE_BUFFER:
-
-        Status = AcpiAmlCopyBufferToBuffer (SourceDesc, TargetDesc);
-        break;
-
-
-    case ACPI_TYPE_PACKAGE:
-
-        /*
-         * TBD: [Unhandled] Not real sure what to do here
-         */
-        Status = AE_NOT_IMPLEMENTED;
-        break;
-
-
-    default:
-
-        /*
-         * All other types come here.
-         */
-        DEBUG_PRINT (ACPI_WARN,
-            ("AmlStoreObject: Store into type %s not implemented\n",
-            AcpiCmGetTypeName (TargetType)));
-
-        Status = AE_NOT_IMPLEMENTED;
-        break;
+        Op->Value.Arg = Arg;
     }
 
 
-    return_ACPI_STATUS (Status);
+    /* Set the parent in this arg and any args linked after it */
+
+    while (Arg)
+    {
+        Arg->Parent = Op;
+        Arg = Arg->Next;
+    }
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiPsGetChild
+ *
+ * PARAMETERS:  Op              - Get the child of this Op
+ *
+ * RETURN:      Child Op, Null if none is found.
+ *
+ * DESCRIPTION: Get op's children or NULL if none
+ *
+ ******************************************************************************/
+
+ACPI_PARSE_OBJECT *
+AcpiPsGetChild (
+    ACPI_PARSE_OBJECT       *Op)
+{
+    ACPI_PARSE_OBJECT       *Child = NULL;
+
+
+    switch (Op->Opcode)
+    {
+    case AML_SCOPE_OP:
+    case AML_ELSE_OP:
+    case AML_DEVICE_OP:
+    case AML_THERMAL_ZONE_OP:
+    case AML_METHODCALL_OP:
+
+        Child = AcpiPsGetArg (Op, 0);
+        break;
+
+
+    case AML_BUFFER_OP:
+    case AML_PACKAGE_OP:
+    case AML_METHOD_OP:
+    case AML_IF_OP:
+    case AML_WHILE_OP:
+    case AML_DEF_FIELD_OP:
+
+        Child = AcpiPsGetArg (Op, 1);
+        break;
+
+
+    case AML_POWER_RES_OP:
+    case AML_INDEX_FIELD_OP:
+
+        Child = AcpiPsGetArg (Op, 2);
+        break;
+
+
+    case AML_PROCESSOR_OP:
+    case AML_BANK_FIELD_OP:
+
+        Child = AcpiPsGetArg (Op, 3);
+        break;
+
+    }
+
+    return (Child);
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiPsGetDepthNext
+ *
+ * PARAMETERS:  Origin          - Root of subtree to search
+ *              Op              - Last (previous) Op that was found
+ *
+ * RETURN:      Next Op found in the search.
+ *
+ * DESCRIPTION: Get next op in tree (walking the tree in depth-first order)
+ *              Return NULL when reaching "origin" or when walking up from root
+ *
+ ******************************************************************************/
+
+ACPI_PARSE_OBJECT *
+AcpiPsGetDepthNext (
+    ACPI_PARSE_OBJECT       *Origin,
+    ACPI_PARSE_OBJECT       *Op)
+{
+    ACPI_PARSE_OBJECT       *Next = NULL;
+    ACPI_PARSE_OBJECT       *Parent;
+    ACPI_PARSE_OBJECT       *Arg;
+
+
+    if (!Op)
+    {
+        return (NULL);
+    }
+
+    /* look for an argument or child */
+
+    Next = AcpiPsGetArg (Op, 0);
+    if (Next)
+    {
+        return (Next);
+    }
+
+    /* look for a sibling */
+
+    Next = Op->Next;
+    if (Next)
+    {
+        return (Next);
+    }
+
+    /* look for a sibling of parent */
+
+    Parent = Op->Parent;
+
+    while (Parent)
+    {
+        Arg = AcpiPsGetArg (Parent, 0);
+        while (Arg && (Arg != Origin) && (Arg != Op))
+        {
+            Arg = Arg->Next;
+        }
+
+        if (Arg == Origin)
+        {
+            /* reached parent of origin, end search */
+
+            return (NULL);
+        }
+
+        if (Parent->Next)
+        {
+            /* found sibling of parent */
+            return (Parent->Next);
+        }
+
+        Op = Parent;
+        Parent = Parent->Parent;
+    }
+
+    return (Next);
 }
 
 

@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dsobject - Dispatcher object management routines
- *              $Revision: 1.56 $
+ *              $Revision: 1.59 $
  *
  *****************************************************************************/
 
@@ -123,7 +123,7 @@
 #include "acinterp.h"
 #include "acnamesp.h"
 
-#define _COMPONENT          DISPATCHER
+#define _COMPONENT          ACPI_DISPATCHER
         MODULE_NAME         ("dsobject")
 
 
@@ -194,7 +194,10 @@ AcpiDsInitOneObject (
 
         Info->MethodCount++;
 
-        DEBUG_PRINT_RAW (ACPI_OK, ("."));
+        if (!(AcpiDbgLevel & TRACE_INIT))
+        {
+            DEBUG_PRINT_RAW (ACPI_OK, ("."));
+        }
 
         /*
          * Set the execution data width (32 or 64) based upon the
@@ -462,7 +465,7 @@ AcpiDsInitObjectFromOp (
 
             /* Split the opcode into a base opcode + offset */
 
-            (*ObjDesc)->Reference.OpCode = AML_LOCAL_OP;
+            (*ObjDesc)->Reference.Opcode = AML_LOCAL_OP;
             (*ObjDesc)->Reference.Offset = Opcode - AML_LOCAL_OP;
             break;
 
@@ -470,7 +473,7 @@ AcpiDsInitObjectFromOp (
 
             /* Split the opcode into a base opcode + offset */
 
-            (*ObjDesc)->Reference.OpCode = AML_ARG_OP;
+            (*ObjDesc)->Reference.Opcode = AML_ARG_OP;
             (*ObjDesc)->Reference.Offset = Opcode - AML_ARG_OP;
             break;
 
@@ -483,7 +486,7 @@ AcpiDsInitObjectFromOp (
                 (*ObjDesc)->Reference.Node = Op->Node;
             }
 
-            (*ObjDesc)->Reference.OpCode = Opcode;
+            (*ObjDesc)->Reference.Opcode = Opcode;
             break;
         }
 
