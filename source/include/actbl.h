@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: actbl.h - Table data structures defined in ACPI specification
- *       $Revision: 1.51 $
+ *       $Revision: 1.52 $
  *
  *****************************************************************************/
 
@@ -197,8 +197,6 @@ typedef struct  /* ACPI common table header */
 
 typedef struct  /* Common FACS for internal use */
 {
-    NATIVE_CHAR             Signature[4];           /* ACPI signature */
-    UINT32                  Length;                 /* Length of structure, in bytes */
     UINT32                  *GlobalLock;
     UINT64                  *FirmwareWakingVector;
     UINT8                   VectorWidth;
