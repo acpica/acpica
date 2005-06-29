@@ -2,7 +2,7 @@
  *
  * Module Name: dsopcode - Dispatcher Op Region support and handling of
  *                         "control" opcodes
- *              $Revision: 1.46 $
+ *              $Revision: 1.47 $
  *
  *****************************************************************************/
 
@@ -802,8 +802,9 @@ AcpiDsEvalRegionOperands (
     AcpiUtRemoveReference (OperandDesc);
 
 
-    DEBUG_PRINTP (TRACE_EXEC, ("RgnObj %p Addr %X Len %X\n",
-        ObjDesc, ObjDesc->Region.Address, ObjDesc->Region.Length));
+    DEBUG_PRINTP (TRACE_EXEC, ("RgnObj %p Addr %8.8lX%8.8lX Len %X\n",
+        ObjDesc, HIDWORD(ObjDesc->Region.Address), LODWORD(ObjDesc->Region.Address),
+        ObjDesc->Region.Length));
 
     /* Now the address and length are valid for this opregion */
 
