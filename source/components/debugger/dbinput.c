@@ -501,14 +501,14 @@ DbCommandDispatch (
     INT32                   CommandIndex;
     INT32                   ParamCount;
     char                    *CommandLine;
-    ACPI_STATUS             Status = AE_TRUE;
+    ACPI_STATUS             Status = AE_CTRL_TRUE;
 
 
     /* If AcpiTerminate has been called, terminate this thread */
 
     if (Gbl_DbTerminateThreads)
     {
-        return (AE_TERMINATE);
+        return (AE_CTRL_TERMINATE);
     }
    
     ParamCount = DbGetLine (InputBuffer);
@@ -521,7 +521,7 @@ DbCommandDispatch (
     {
         OsdPrintf ("%d parameters entered, [%s] requires %d parameters\n", 
                         ParamCount, Commands[CommandIndex].Name, Commands[CommandIndex].MinArgs);
-        return (AE_TRUE);
+        return (AE_CTRL_TRUE);
     }
 
     /* Decode and dispatch the command */
@@ -594,12 +594,12 @@ DbCommandDispatch (
         CommandLine = DbGetFromHistory (Args[1]);
         if (!CommandLine)
         {
-            return AE_TRUE;
+            return AE_CTRL_TRUE;
         }
 
         Status = DbCommandDispatch (CommandLine, WalkState, Op);
         if (Status == AE_OK)
-            Status = AE_TRUE;
+            Status = AE_CTRL_TRUE;
         return Status;
         break;
 
@@ -607,12 +607,12 @@ DbCommandDispatch (
         CommandLine = DbGetFromHistory (NULL);
         if (!CommandLine)
         {
-            return AE_TRUE;
+            return AE_CTRL_TRUE;
         }
 
         Status = DbCommandDispatch (CommandLine, WalkState, Op);
         if (Status == AE_OK)
-            Status = AE_TRUE;
+            Status = AE_CTRL_TRUE;
         return Status;
 
     case CMD_INFORMATION:
@@ -744,11 +744,11 @@ DbCommandDispatch (
 
         Gbl_DbTerminateThreads = TRUE;
 
-        return (AE_TERMINATE);
+        return (AE_CTRL_TERMINATE);
 
     case CMD_NOT_FOUND:
         OsdPrintf ("Unknown Command\n");
-        return (AE_TRUE);
+        return (AE_CTRL_TRUE);
     }
 
 
@@ -779,7 +779,7 @@ DbExecuteThread (
     ACPI_STATUS             Status = AE_OK;
 
 
-    while (Status != AE_TERMINATE)
+    while (Status != AE_CTRL_TERMINATE)
     {
         Gbl_MethodExecuting = FALSE;
         Gbl_StepToNextCall = FALSE;
