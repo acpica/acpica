@@ -726,8 +726,11 @@ PsxMthStackDeleteValue (
     /* 
      * Undefine the Arg or Local by setting its descriptor pointer to NULL.
      * If it is currently defined, delete the old descriptor first.
+     *
+     * Locals/Args can contain both ACPI_OBJECT_INTERNALs and NAME_TABLE_ENTRYs
      */
-    if (Object)
+    if ((Object) &&
+        (VALID_DESCRIPTOR_TYPE (Object, DESC_TYPE_ACPI_OBJ)))
     {
         /*
          * There is a valid object in this slot, go ahead and delete
