@@ -2,7 +2,7 @@
  *
  * Module Name: evevent - Fixed and General Purpose AcpiEvent
  *                          handling and dispatch
- *              $Revision: 1.18 $
+ *              $Revision: 1.19 $
  *
  *****************************************************************************/
 
@@ -241,16 +241,11 @@ AcpiEvFixedEventInitialize(void)
         AcpiGbl_FixedEventHandlers[i].Context = NULL;
     }
 
-    AcpiHwRegisterAccess (ACPI_WRITE, ACPI_MTX_LOCK, ACPI_EVENT_PMTIMER +
-                            TMR_EN, 0);
-    AcpiHwRegisterAccess (ACPI_WRITE, ACPI_MTX_LOCK, ACPI_EVENT_GLOBAL +
-                            TMR_EN, 0);
-    AcpiHwRegisterAccess (ACPI_WRITE, ACPI_MTX_LOCK, ACPI_EVENT_POWER_BUTTON +
-                            TMR_EN, 0);
-    AcpiHwRegisterAccess (ACPI_WRITE, ACPI_MTX_LOCK, ACPI_EVENT_SLEEP_BUTTON +
-                            TMR_EN, 0);
-    AcpiHwRegisterAccess (ACPI_WRITE, ACPI_MTX_LOCK, ACPI_EVENT_RTC +
-                            TMR_EN, 0);
+    AcpiHwRegisterWrite (ACPI_MTX_LOCK, ACPI_EVENT_PMTIMER + TMR_EN,        0);
+    AcpiHwRegisterWrite (ACPI_MTX_LOCK, ACPI_EVENT_GLOBAL + TMR_EN,         0);
+    AcpiHwRegisterWrite (ACPI_MTX_LOCK, ACPI_EVENT_POWER_BUTTON + TMR_EN,   0);
+    AcpiHwRegisterWrite (ACPI_MTX_LOCK, ACPI_EVENT_SLEEP_BUTTON + TMR_EN,   0);
+    AcpiHwRegisterWrite (ACPI_MTX_LOCK, ACPI_EVENT_RTC + TMR_EN,            0);
 
     return (AE_OK);
 }
@@ -353,7 +348,7 @@ AcpiEvFixedEventDispatch (
 {
     /* Clear the status bit */
 
-    AcpiHwRegisterAccess (ACPI_WRITE, ACPI_MTX_DO_NOT_LOCK, TMR_STS +
+    AcpiHwRegisterWrite (ACPI_MTX_DO_NOT_LOCK, TMR_STS +
                             Event, 1);
 
     /*
@@ -362,7 +357,7 @@ AcpiEvFixedEventDispatch (
      */
     if (NULL == AcpiGbl_FixedEventHandlers[Event].Handler)
     {
-        AcpiHwRegisterAccess (ACPI_WRITE, ACPI_MTX_DO_NOT_LOCK,
+        AcpiHwRegisterWrite (ACPI_MTX_DO_NOT_LOCK,
                                 TMR_EN + Event, 0);
 
         REPORT_ERROR (
