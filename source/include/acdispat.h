@@ -163,6 +163,7 @@ DsGetRegionArguments (
 
 /* dsctrl - Parser/Interpreter interface, control stack routines */
 
+/*
 ACPI_CTRL_STATE *
 DsCreateControlState (void);
 
@@ -174,6 +175,7 @@ DsPushControlState (
 ACPI_CTRL_STATE *
 DsPopControlState (
     ACPI_WALK_STATE         *WalkState);
+*/
 
 ACPI_STATUS 
 DsExecBeginControlOp (
