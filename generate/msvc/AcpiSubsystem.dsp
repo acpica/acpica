@@ -177,10 +177,6 @@ SOURCE=..\..\Subsystem\Common\cmobject.c
 
 SOURCE=..\..\Subsystem\Common\cmsize.c
 # End Source File
-# Begin Source File
-
-SOURCE=..\..\Subsystem\Common\cmtables.c
-# End Source File
 # End Group
 # Begin Group "Events"
 
@@ -528,10 +524,6 @@ SOURCE=..\..\Subsystem\Namespace\nsapiobj.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\Subsystem\Namespace\nsapitbl.c
-# End Source File
-# Begin Source File
-
 SOURCE=..\..\Subsystem\NameSpace\nsdump.c
 
 !IF  "$(CFG)" == "Subsystem - Win32 Release"
@@ -601,19 +593,6 @@ SOURCE=..\..\Subsystem\Namespace\nssearch.c
 # Begin Source File
 
 SOURCE=..\..\Subsystem\NameSpace\nsstack.c
-
-!IF  "$(CFG)" == "Subsystem - Win32 Release"
-
-!ELSEIF  "$(CFG)" == "Subsystem - Win32 Debug"
-
-# ADD CPP /W3 /Z7
-
-!ENDIF 
-
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\Subsystem\NameSpace\nstables.c
 
 !IF  "$(CFG)" == "Subsystem - Win32 Release"
 
@@ -730,6 +709,42 @@ SOURCE=..\..\Subsystem\Resources\rsutils.c
 SOURCE=..\..\Subsystem\Resources\rsvendor.c
 # End Source File
 # End Group
+# Begin Group "Tables"
+
+# PROP Default_Filter ""
+# Begin Source File
+
+SOURCE=..\..\Subsystem\Tables\tbapi.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\Subsystem\Tables\tbfac.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\Subsystem\Tables\tbget.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\Subsystem\Tables\tbgetall.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\Subsystem\Tables\tbinstal.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\Subsystem\Tables\tbremove.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\Subsystem\Tables\tbrsd.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\Subsystem\Tables\tbutils.c
+# End Source File
+# End Group
 # End Group
 # Begin Group "Header Files"
 
@@ -825,6 +840,10 @@ SOURCE=..\..\Subsystem\Include\pnp.h
 # Begin Source File
 
 SOURCE=..\..\Subsystem\Include\resource.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\Subsystem\Include\tables.h
 # End Source File
 # End Group
 # Begin Source File
