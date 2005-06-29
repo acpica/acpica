@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acinterp.h - Interpreter subcomponent prototypes and defines
- *       $Revision: 1.100 $
+ *       $Revision: 1.119 $
  *
  *****************************************************************************/
 
@@ -139,7 +139,7 @@
 
 
 ACPI_STATUS
-AcpiAmlResolveOperands (
+AcpiExResolveOperands (
     UINT16                  Opcode,
     ACPI_OPERAND_OBJECT     **StackPtr,
     ACPI_WALK_STATE         *WalkState);
@@ -150,11 +150,11 @@ AcpiAmlResolveOperands (
  */
 
 ACPI_STATUS
-AcpiAmlLoadTable (
+AcpiExLoadTable (
     ACPI_TABLE_TYPE         TableId);
 
 ACPI_STATUS
-AcpiAmlExecuteMethod (
+AcpiExExecuteMethod (
     ACPI_NAMESPACE_NODE     *MethodNode,
     ACPI_OPERAND_OBJECT     **Params,
     ACPI_OPERAND_OBJECT     **ReturnObjDesc);
@@ -165,22 +165,27 @@ AcpiAmlExecuteMethod (
  */
 
 ACPI_STATUS
-AcpiAmlConvertToInteger (
-    ACPI_OPERAND_OBJECT     **ObjDesc,
+AcpiExConvertToInteger (
+    ACPI_OPERAND_OBJECT     *ObjDesc,
+    ACPI_OPERAND_OBJECT     **ResultDesc,
     ACPI_WALK_STATE         *WalkState);
 
 ACPI_STATUS
-AcpiAmlConvertToBuffer (
-    ACPI_OPERAND_OBJECT     **ObjDesc,
+AcpiExConvertToBuffer (
+    ACPI_OPERAND_OBJECT     *ObjDesc,
+    ACPI_OPERAND_OBJECT     **ResultDesc,
     ACPI_WALK_STATE         *WalkState);
 
 ACPI_STATUS
-AcpiAmlConvertToString (
-    ACPI_OPERAND_OBJECT     **ObjDesc,
+AcpiExConvertToString (
+    ACPI_OPERAND_OBJECT     *ObjDesc,
+    ACPI_OPERAND_OBJECT     **ResultDesc,
+    UINT32                  Base,
+    UINT32                  MaxLength,
     ACPI_WALK_STATE         *WalkState);
 
 ACPI_STATUS
-AcpiAmlConvertToTargetType (
+AcpiExConvertToTargetType (
     ACPI_OBJECT_TYPE8       DestinationType,
     ACPI_OPERAND_OBJECT     **ObjDesc,
     ACPI_WALK_STATE         *WalkState);
@@ -191,82 +196,69 @@ AcpiAmlConvertToTargetType (
  */
 
 ACPI_STATUS
-AcpiAmlExtractFromField (
-    ACPI_OPERAND_OBJECT     *ObjDesc,
-    void                    *Buffer,
-    UINT32                  BufferLength,
-    UINT32                  ByteLength,
-    UINT32                  DatumLength,
-    UINT32                  BitGranularity,
-    UINT32                  ByteGranularity);
-
-ACPI_STATUS
-AcpiAmlInsertIntoField (
-    ACPI_OPERAND_OBJECT     *ObjDesc,
-    void                    *Buffer,
-    UINT32                  BufferLength,
-    UINT32                  ByteLength,
-    UINT32                  DatumLength,
-    UINT32                  BitGranularity,
-    UINT32                  ByteGranularity);
-
-ACPI_STATUS
-AcpiAmlSetupField (
-    ACPI_OPERAND_OBJECT     *ObjDesc,
-    ACPI_OPERAND_OBJECT     *RgnDesc,
-    UINT32                  FieldBitWidth);
-
-ACPI_STATUS
-AcpiAmlReadFieldDatum (
-    ACPI_OPERAND_OBJECT     *ObjDesc,
-    UINT32                  FieldByteOffset,
-    UINT32                  FieldBitWidth,
-    UINT32                  *Value);
-
-ACPI_STATUS
-AcpiAmlCommonAccessField (
-    UINT32                  Mode,
-    ACPI_OPERAND_OBJECT     *ObjDesc,
-    void                    *Buffer,
-    UINT32                  BufferLength);
-
-
-ACPI_STATUS
-AcpiAmlAccessIndexField (
-    UINT32                  Mode,
+AcpiExExtractFromField (
     ACPI_OPERAND_OBJECT     *ObjDesc,
     void                    *Buffer,
     UINT32                  BufferLength);
 
 ACPI_STATUS
-AcpiAmlAccessBankField (
-    UINT32                  Mode,
+AcpiExInsertIntoField (
     ACPI_OPERAND_OBJECT     *ObjDesc,
     void                    *Buffer,
     UINT32                  BufferLength);
 
 ACPI_STATUS
-AcpiAmlAccessRegionField (
-    UINT32                  Mode,
+AcpiExSetupRegion (
     ACPI_OPERAND_OBJECT     *ObjDesc,
-    void                    *Buffer,
-    UINT32                  BufferLength);
-
+    UINT32                  FieldDatumByteOffset);
 
 ACPI_STATUS
-AcpiAmlAccessBufferField (
-    UINT32                  Mode,
+AcpiExAccessRegion (
     ACPI_OPERAND_OBJECT     *ObjDesc,
-    void                    *Buffer,
-    UINT32                  BufferLength);
+    UINT32                  FieldDatumByteOffset,
+    ACPI_INTEGER            *Value,
+    UINT32                  ReadWrite);
+
+BOOLEAN
+AcpiExRegisterOverflow (
+    ACPI_OPERAND_OBJECT     *ObjDesc,
+    ACPI_INTEGER            Value);
 
 ACPI_STATUS
-AcpiAmlReadDataFromField (
+AcpiExFieldDatumIo (
+    ACPI_OPERAND_OBJECT     *ObjDesc,
+    UINT32                  FieldDatumByteOffset,
+    ACPI_INTEGER            *Value,
+    UINT32                  ReadWrite);
+
+ACPI_STATUS
+AcpiExWriteWithUpdateRule (
+    ACPI_OPERAND_OBJECT     *ObjDesc,
+    ACPI_INTEGER            Mask,
+    ACPI_INTEGER            FieldValue,
+    UINT32                  FieldDatumByteOffset);
+
+void
+AcpiExGetBufferDatum(
+    ACPI_INTEGER            *Datum,
+    void                    *Buffer,
+    UINT32                  ByteGranularity,
+    UINT32                  Offset);
+
+void
+AcpiExSetBufferDatum (
+    ACPI_INTEGER            MergedDatum,
+    void                    *Buffer,
+    UINT32                  ByteGranularity,
+    UINT32                  Offset);
+
+ACPI_STATUS
+AcpiExReadDataFromField (
     ACPI_OPERAND_OBJECT     *ObjDesc,
     ACPI_OPERAND_OBJECT     **RetBufferDesc);
 
 ACPI_STATUS
-AcpiAmlWriteDataToField (
+AcpiExWriteDataToField (
     ACPI_OPERAND_OBJECT     *SourceDesc,
     ACPI_OPERAND_OBJECT     *ObjDesc);
 
@@ -275,66 +267,87 @@ AcpiAmlWriteDataToField (
  */
 
 ACPI_STATUS
-AcpiAmlCreateBufferField (
-    UINT8                   *AmlPtr,
-    UINT32                  AmlLength,
-    ACPI_NAMESPACE_NODE     *Node,
+AcpiExOpcode_3A_0T_0R (
     ACPI_WALK_STATE         *WalkState);
 
 ACPI_STATUS
-AcpiAmlExecReconfiguration (
+AcpiExOpcode_3A_1T_1R (
+    ACPI_WALK_STATE         *WalkState);
+
+ACPI_STATUS
+AcpiExOpcode_6A_0T_1R (
+    ACPI_WALK_STATE         *WalkState);
+
+ACPI_STATUS
+AcpiExGetObjectReference (
+    ACPI_OPERAND_OBJECT     *ObjDesc,
+    ACPI_OPERAND_OBJECT     **ReturnDesc,
+    ACPI_WALK_STATE         *WalkState);
+
+ACPI_STATUS
+AcpiExDoConcatenate (
+    ACPI_OPERAND_OBJECT     *ObjDesc,
+    ACPI_OPERAND_OBJECT     *ObjDesc2,
+    ACPI_OPERAND_OBJECT     **ActualReturnDesc,
+    ACPI_WALK_STATE         *WalkState);
+
+BOOLEAN
+AcpiExDoLogicalOp (
     UINT16                  Opcode,
+    ACPI_INTEGER            Operand0,
+    ACPI_INTEGER            Operand1);
+
+ACPI_INTEGER
+AcpiExDoMathOp (
+    UINT16                  Opcode,
+    ACPI_INTEGER            Operand0,
+    ACPI_INTEGER            Operand1);
+
+ACPI_STATUS
+AcpiExLoadOp (
+    ACPI_OPERAND_OBJECT     *RgnDesc,
+    ACPI_OPERAND_OBJECT     *DdbHandle);
+
+ACPI_STATUS
+AcpiExUnloadTable (
+    ACPI_OPERAND_OBJECT     *DdbHandle);
+
+ACPI_STATUS
+AcpiExCreateMutex (
     ACPI_WALK_STATE         *WalkState);
 
 ACPI_STATUS
-AcpiAmlExecFatal (
+AcpiExCreateProcessor (
     ACPI_WALK_STATE         *WalkState);
 
 ACPI_STATUS
-AcpiAmlExecIndex (
-    ACPI_WALK_STATE         *WalkState,
-    ACPI_OPERAND_OBJECT     **ReturnDesc);
-
-ACPI_STATUS
-AcpiAmlExecMatch (
-    ACPI_WALK_STATE         *WalkState,
-    ACPI_OPERAND_OBJECT     **ReturnDesc);
-
-ACPI_STATUS
-AcpiAmlExecCreateMutex (
+AcpiExCreatePowerResource (
     ACPI_WALK_STATE         *WalkState);
 
 ACPI_STATUS
-AcpiAmlExecCreateProcessor (
-    ACPI_PARSE_OBJECT       *Op,
-    ACPI_NAMESPACE_NODE     *ProcessorNode);
-
-ACPI_STATUS
-AcpiAmlExecCreatePowerResource (
-    ACPI_PARSE_OBJECT       *Op,
-    ACPI_NAMESPACE_NODE     *PowerNode);
-
-ACPI_STATUS
-AcpiAmlExecCreateRegion (
-    UINT8                   *AmlPtr,
-    UINT32                  AcpiAmlLength,
+AcpiExCreateRegion (
+    UINT8                   *AmlStart,
+    UINT32                  AmlLength,
     UINT8                   RegionSpace,
     ACPI_WALK_STATE         *WalkState);
 
 ACPI_STATUS
-AcpiAmlExecCreateEvent (
+AcpiExCreateTableRegion (
     ACPI_WALK_STATE         *WalkState);
 
 ACPI_STATUS
-AcpiAmlExecCreateAlias (
+AcpiExCreateEvent (
     ACPI_WALK_STATE         *WalkState);
 
 ACPI_STATUS
-AcpiAmlExecCreateMethod (
-    UINT8                   *AmlPtr,
-    UINT32                  AcpiAmlLength,
-    UINT32                  MethodFlags,
-    ACPI_NAMESPACE_NODE     *Method);
+AcpiExCreateAlias (
+    ACPI_WALK_STATE         *WalkState);
+
+ACPI_STATUS
+AcpiExCreateMethod (
+    UINT8                   *AmlStart,
+    UINT32                  AmlLength,
+    ACPI_WALK_STATE         *WalkState);
 
 
 /*
@@ -342,38 +355,42 @@ AcpiAmlExecCreateMethod (
  */
 
 ACPI_STATUS
-AcpiAmlAcquireMutex (
+AcpiExAcquireMutex (
     ACPI_OPERAND_OBJECT     *TimeDesc,
     ACPI_OPERAND_OBJECT     *ObjDesc,
     ACPI_WALK_STATE         *WalkState);
 
 ACPI_STATUS
-AcpiAmlReleaseMutex (
+AcpiExReleaseMutex (
     ACPI_OPERAND_OBJECT     *ObjDesc,
     ACPI_WALK_STATE         *WalkState);
 
 ACPI_STATUS
-AcpiAmlReleaseAllMutexes (
-    ACPI_OPERAND_OBJECT     *MutexList);
+AcpiExReleaseAllMutexes (
+    ACPI_THREAD_STATE       *Thread);
 
 void
-AcpiAmlUnlinkMutex (
+AcpiExUnlinkMutex (
     ACPI_OPERAND_OBJECT     *ObjDesc);
 
+void
+AcpiExLinkMutex (
+    ACPI_OPERAND_OBJECT     *ObjDesc,
+    ACPI_THREAD_STATE       *Thread);
 
 /*
  * amprep - ACPI AML (p-code) execution - prep utilities
  */
 
 ACPI_STATUS
-AcpiAmlPrepCommonFieldObject (
+AcpiExPrepCommonFieldObject (
     ACPI_OPERAND_OBJECT     *ObjDesc,
     UINT8                   FieldFlags,
     UINT32                  FieldPosition,
     UINT32                  FieldLength);
 
 ACPI_STATUS
-AcpiAmlPrepRegionFieldValue (
+AcpiExPrepRegionFieldValue (
     ACPI_NAMESPACE_NODE     *Node,
     ACPI_HANDLE             Region,
     UINT8                   FieldFlags,
@@ -381,7 +398,7 @@ AcpiAmlPrepRegionFieldValue (
     UINT32                  FieldLength);
 
 ACPI_STATUS
-AcpiAmlPrepBankFieldValue (
+AcpiExPrepBankFieldValue (
     ACPI_NAMESPACE_NODE     *Node,
     ACPI_NAMESPACE_NODE     *RegionNode,
     ACPI_NAMESPACE_NODE     *BankRegisterNode,
@@ -391,7 +408,7 @@ AcpiAmlPrepBankFieldValue (
     UINT32                  FieldLength);
 
 ACPI_STATUS
-AcpiAmlPrepIndexFieldValue (
+AcpiExPrepIndexFieldValue (
     ACPI_NAMESPACE_NODE     *Node,
     ACPI_NAMESPACE_NODE     *IndexReg,
     ACPI_NAMESPACE_NODE     *DataReg,
@@ -399,48 +416,51 @@ AcpiAmlPrepIndexFieldValue (
     UINT32                  FieldPosition,
     UINT32                  FieldLength);
 
+ACPI_STATUS
+AcpiExPrepFieldValue (
+    ACPI_CREATE_FIELD_INFO  *Info);
 
 /*
  * amsystem - Interface to OS services
  */
 
 ACPI_STATUS
-AcpiAmlSystemDoNotifyOp (
+AcpiExSystemDoNotifyOp (
     ACPI_OPERAND_OBJECT     *Value,
     ACPI_OPERAND_OBJECT     *ObjDesc);
 
 void
-AcpiAmlSystemDoSuspend(
+AcpiExSystemDoSuspend(
     UINT32                  Time);
 
 void
-AcpiAmlSystemDoStall (
+AcpiExSystemDoStall (
     UINT32                  Time);
 
 ACPI_STATUS
-AcpiAmlSystemAcquireMutex(
+AcpiExSystemAcquireMutex(
     ACPI_OPERAND_OBJECT     *Time,
     ACPI_OPERAND_OBJECT     *ObjDesc);
 
 ACPI_STATUS
-AcpiAmlSystemReleaseMutex(
+AcpiExSystemReleaseMutex(
     ACPI_OPERAND_OBJECT     *ObjDesc);
 
 ACPI_STATUS
-AcpiAmlSystemSignalEvent(
+AcpiExSystemSignalEvent(
     ACPI_OPERAND_OBJECT     *ObjDesc);
 
 ACPI_STATUS
-AcpiAmlSystemWaitEvent(
+AcpiExSystemWaitEvent(
     ACPI_OPERAND_OBJECT     *Time,
     ACPI_OPERAND_OBJECT     *ObjDesc);
 
 ACPI_STATUS
-AcpiAmlSystemResetEvent(
+AcpiExSystemResetEvent(
     ACPI_OPERAND_OBJECT     *ObjDesc);
 
 ACPI_STATUS
-AcpiAmlSystemWaitSemaphore (
+AcpiExSystemWaitSemaphore (
     ACPI_HANDLE             Semaphore,
     UINT32                  Timeout);
 
@@ -450,49 +470,40 @@ AcpiAmlSystemWaitSemaphore (
  */
 
 ACPI_STATUS
-AcpiAmlExecMonadic1 (
-    UINT16                  Opcode,
+AcpiExOpcode_1A_0T_0R (
     ACPI_WALK_STATE         *WalkState);
 
 ACPI_STATUS
-AcpiAmlExecMonadic2 (
-    UINT16                  Opcode,
-    ACPI_WALK_STATE         *WalkState,
-    ACPI_OPERAND_OBJECT     **ReturnDesc);
+AcpiExOpcode_1A_0T_1R (
+    ACPI_WALK_STATE         *WalkState);
 
 ACPI_STATUS
-AcpiAmlExecMonadic2R (
-    UINT16                  Opcode,
-    ACPI_WALK_STATE         *WalkState,
-    ACPI_OPERAND_OBJECT     **ReturnDesc);
+AcpiExOpcode_1A_1T_1R (
+    ACPI_WALK_STATE         *WalkState);
 
+ACPI_STATUS
+AcpiExOpcode_1A_1T_0R (
+    ACPI_WALK_STATE         *WalkState);
 
 /*
  * amdyadic - ACPI AML (p-code) execution, dyadic operators
  */
 
 ACPI_STATUS
-AcpiAmlExecDyadic1 (
-    UINT16                  Opcode,
+AcpiExOpcode_2A_0T_0R (
     ACPI_WALK_STATE         *WalkState);
 
 ACPI_STATUS
-AcpiAmlExecDyadic2 (
-    UINT16                  Opcode,
-    ACPI_WALK_STATE         *WalkState,
-    ACPI_OPERAND_OBJECT     **ReturnDesc);
+AcpiExOpcode_2A_0T_1R (
+    ACPI_WALK_STATE         *WalkState);
 
 ACPI_STATUS
-AcpiAmlExecDyadic2R (
-    UINT16                  Opcode,
-    ACPI_WALK_STATE         *WalkState,
-    ACPI_OPERAND_OBJECT     **ReturnDesc);
+AcpiExOpcode_2A_1T_1R (
+    ACPI_WALK_STATE         *WalkState);
 
 ACPI_STATUS
-AcpiAmlExecDyadic2S (
-    UINT16                  Opcode,
-    ACPI_WALK_STATE         *WalkState,
-    ACPI_OPERAND_OBJECT     **ReturnDesc);
+AcpiExOpcode_2A_2T_1R (
+    ACPI_WALK_STATE         *WalkState);
 
 
 /*
@@ -500,22 +511,22 @@ AcpiAmlExecDyadic2S (
  */
 
 ACPI_STATUS
-AcpiAmlResolveToValue (
+AcpiExResolveToValue (
     ACPI_OPERAND_OBJECT     **StackPtr,
     ACPI_WALK_STATE         *WalkState);
 
 ACPI_STATUS
-AcpiAmlResolveNodeToValue (
+AcpiExResolveNodeToValue (
     ACPI_NAMESPACE_NODE     **StackPtr,
     ACPI_WALK_STATE         *WalkState);
 
 ACPI_STATUS
-AcpiAmlResolveObjectToValue (
+AcpiExResolveObjectToValue (
     ACPI_OPERAND_OBJECT     **StackPtr,
     ACPI_WALK_STATE         *WalkState);
 
 ACPI_STATUS
-AcpiAmlGetBufferFieldValue (
+AcpiExGetBufferFieldValue (
     ACPI_OPERAND_OBJECT     *FieldDesc,
     ACPI_OPERAND_OBJECT     *ResultDesc);
 
@@ -525,18 +536,18 @@ AcpiAmlGetBufferFieldValue (
  */
 
 void
-AcpiAmlShowHexValue (
+AcpiExShowHexValue (
     UINT32                  ByteCount,
-    UINT8                   *AmlPtr,
+    UINT8                   *AmlStart,
     UINT32                  LeadSpace);
 
 
 ACPI_STATUS
-AcpiAmlDumpOperand (
+AcpiExDumpOperand (
     ACPI_OPERAND_OBJECT     *EntryDesc);
 
 void
-AcpiAmlDumpOperands (
+AcpiExDumpOperands (
     ACPI_OPERAND_OBJECT     **Operands,
     OPERATING_MODE          InterpreterMode,
     NATIVE_CHAR             *Ident,
@@ -546,13 +557,13 @@ AcpiAmlDumpOperands (
     UINT32                  LineNumber);
 
 void
-AcpiAmlDumpObjectDescriptor (
+AcpiExDumpObjectDescriptor (
     ACPI_OPERAND_OBJECT     *Object,
     UINT32                  Flags);
 
 
 void
-AcpiAmlDumpNode (
+AcpiExDumpNode (
     ACPI_NAMESPACE_NODE     *Node,
     UINT32                  Flags);
 
@@ -562,28 +573,28 @@ AcpiAmlDumpNode (
  */
 
 NATIVE_CHAR *
-AcpiAmlAllocateNameString (
+AcpiExAllocateNameString (
     UINT32                  PrefixCount,
     UINT32                  NumNameSegs);
 
 UINT32
-AcpiAmlGoodChar (
+AcpiExGoodChar (
     UINT32                  Character);
 
 ACPI_STATUS
-AcpiAmlExecNameSegment (
+AcpiExNameSegment (
     UINT8                   **InAmlAddress,
     NATIVE_CHAR             *NameString);
 
 ACPI_STATUS
-AcpiAmlGetNameString (
+AcpiExGetNameString (
     ACPI_OBJECT_TYPE8       DataType,
     UINT8                   *InAmlAddress,
     NATIVE_CHAR             **OutNameString,
     UINT32                  *OutNameLength);
 
 ACPI_STATUS
-AcpiAmlDoName (
+AcpiExDoName (
     ACPI_OBJECT_TYPE        DataType,
     OPERATING_MODE          LoadExecMode);
 
@@ -593,25 +604,25 @@ AcpiAmlDoName (
  */
 
 ACPI_STATUS
-AcpiAmlExecStore (
+AcpiExStore (
     ACPI_OPERAND_OBJECT     *ValDesc,
     ACPI_OPERAND_OBJECT     *DestDesc,
     ACPI_WALK_STATE         *WalkState);
 
 ACPI_STATUS
-AcpiAmlStoreObjectToIndex (
+AcpiExStoreObjectToIndex (
     ACPI_OPERAND_OBJECT     *ValDesc,
     ACPI_OPERAND_OBJECT     *DestDesc,
     ACPI_WALK_STATE         *WalkState);
 
 ACPI_STATUS
-AcpiAmlStoreObjectToNode (
+AcpiExStoreObjectToNode (
     ACPI_OPERAND_OBJECT     *SourceDesc,
     ACPI_NAMESPACE_NODE     *Node,
     ACPI_WALK_STATE         *WalkState);
 
 ACPI_STATUS
-AcpiAmlStoreObjectToObject (
+AcpiExStoreObjectToObject (
     ACPI_OPERAND_OBJECT     *SourceDesc,
     ACPI_OPERAND_OBJECT     *DestDesc,
     ACPI_WALK_STATE         *WalkState);
@@ -622,13 +633,13 @@ AcpiAmlStoreObjectToObject (
  */
 
 ACPI_STATUS
-AcpiAmlResolveObject (
+AcpiExResolveObject (
     ACPI_OPERAND_OBJECT     **SourceDescPtr,
     ACPI_OBJECT_TYPE8       TargetType,
     ACPI_WALK_STATE         *WalkState);
 
 ACPI_STATUS
-AcpiAmlStoreObject (
+AcpiExStoreObject (
     ACPI_OPERAND_OBJECT     *SourceDesc,
     ACPI_OBJECT_TYPE8       TargetType,
     ACPI_OPERAND_OBJECT     **TargetDescPtr,
@@ -640,32 +651,32 @@ AcpiAmlStoreObject (
  */
 
 ACPI_STATUS
-AcpiAmlCopyBufferToBuffer (
+AcpiExCopyBufferToBuffer (
     ACPI_OPERAND_OBJECT     *SourceDesc,
     ACPI_OPERAND_OBJECT     *TargetDesc);
 
 ACPI_STATUS
-AcpiAmlCopyStringToString (
+AcpiExCopyStringToString (
     ACPI_OPERAND_OBJECT     *SourceDesc,
     ACPI_OPERAND_OBJECT     *TargetDesc);
 
 ACPI_STATUS
-AcpiAmlCopyIntegerToIndexField (
+AcpiExCopyIntegerToIndexField (
     ACPI_OPERAND_OBJECT     *SourceDesc,
     ACPI_OPERAND_OBJECT     *TargetDesc);
 
 ACPI_STATUS
-AcpiAmlCopyIntegerToBankField (
+AcpiExCopyIntegerToBankField (
     ACPI_OPERAND_OBJECT     *SourceDesc,
     ACPI_OPERAND_OBJECT     *TargetDesc);
 
 ACPI_STATUS
-AcpiAmlCopyDataToNamedField (
+AcpiExCopyDataToNamedField (
     ACPI_OPERAND_OBJECT     *SourceDesc,
     ACPI_NAMESPACE_NODE     *Node);
 
 ACPI_STATUS
-AcpiAmlCopyIntegerToBufferField (
+AcpiExCopyIntegerToBufferField (
     ACPI_OPERAND_OBJECT     *SourceDesc,
     ACPI_OPERAND_OBJECT     *TargetDesc);
 
@@ -674,42 +685,42 @@ AcpiAmlCopyIntegerToBufferField (
  */
 
 ACPI_STATUS
-AcpiAmlEnterInterpreter (
+AcpiExEnterInterpreter (
     void);
 
 void
-AcpiAmlExitInterpreter (
+AcpiExExitInterpreter (
     void);
 
 void
-AcpiAmlTruncateFor32bitTable (
+AcpiExTruncateFor32bitTable (
     ACPI_OPERAND_OBJECT     *ObjDesc,
     ACPI_WALK_STATE         *WalkState);
 
 BOOLEAN
-AcpiAmlValidateObjectType (
+AcpiExValidateObjectType (
     ACPI_OBJECT_TYPE        Type);
 
 BOOLEAN
-AcpiAmlAcquireGlobalLock (
+AcpiExAcquireGlobalLock (
     UINT32                  Rule);
 
 ACPI_STATUS
-AcpiAmlReleaseGlobalLock (
+AcpiExReleaseGlobalLock (
     BOOLEAN                 Locked);
 
 UINT32
-AcpiAmlDigitsNeeded (
+AcpiExDigitsNeeded (
     ACPI_INTEGER            Value,
     UINT32                  Base);
 
 ACPI_STATUS
-AcpiAmlEisaIdToString (
+AcpiExEisaIdToString (
     UINT32                  NumericId,
     NATIVE_CHAR             *OutString);
 
 ACPI_STATUS
-AcpiAmlUnsignedIntegerToString (
+AcpiExUnsignedIntegerToString (
     ACPI_INTEGER            Value,
     NATIVE_CHAR             *OutString);
 
@@ -719,47 +730,65 @@ AcpiAmlUnsignedIntegerToString (
  */
 
 ACPI_STATUS
-AcpiAmlSystemMemorySpaceHandler (
+AcpiExSystemMemorySpaceHandler (
     UINT32                  Function,
     ACPI_PHYSICAL_ADDRESS   Address,
     UINT32                  BitWidth,
-    UINT32                  *Value,
+    ACPI_INTEGER            *Value,
     void                    *HandlerContext,
     void                    *RegionContext);
 
 ACPI_STATUS
-AcpiAmlSystemIoSpaceHandler (
+AcpiExSystemIoSpaceHandler (
     UINT32                  Function,
     ACPI_PHYSICAL_ADDRESS   Address,
     UINT32                  BitWidth,
-    UINT32                  *Value,
+    ACPI_INTEGER            *Value,
     void                    *HandlerContext,
     void                    *RegionContext);
 
 ACPI_STATUS
-AcpiAmlPciConfigSpaceHandler (
+AcpiExPciConfigSpaceHandler (
     UINT32                  Function,
     ACPI_PHYSICAL_ADDRESS   Address,
     UINT32                  BitWidth,
-    UINT32                  *Value,
+    ACPI_INTEGER            *Value,
     void                    *HandlerContext,
     void                    *RegionContext);
 
 ACPI_STATUS
-AcpiAmlEmbeddedControllerSpaceHandler (
+AcpiExCmosSpaceHandler (
     UINT32                  Function,
     ACPI_PHYSICAL_ADDRESS   Address,
     UINT32                  BitWidth,
-    UINT32                  *Value,
+    ACPI_INTEGER            *Value,
     void                    *HandlerContext,
     void                    *RegionContext);
 
 ACPI_STATUS
-AcpiAmlSmBusSpaceHandler (
+AcpiExPciBarSpaceHandler (
     UINT32                  Function,
     ACPI_PHYSICAL_ADDRESS   Address,
     UINT32                  BitWidth,
-    UINT32                  *Value,
+    ACPI_INTEGER            *Value,
+    void                    *HandlerContext,
+    void                    *RegionContext);
+
+ACPI_STATUS
+AcpiExEmbeddedControllerSpaceHandler (
+    UINT32                  Function,
+    ACPI_PHYSICAL_ADDRESS   Address,
+    UINT32                  BitWidth,
+    ACPI_INTEGER            *Value,
+    void                    *HandlerContext,
+    void                    *RegionContext);
+
+ACPI_STATUS
+AcpiExSmBusSpaceHandler (
+    UINT32                  Function,
+    ACPI_PHYSICAL_ADDRESS   Address,
+    UINT32                  BitWidth,
+    ACPI_INTEGER            *Value,
     void                    *HandlerContext,
     void                    *RegionContext);
 
