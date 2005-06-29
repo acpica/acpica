@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslcompile - top level compile module
- *              $Revision: 1.52 $
+ *              $Revision: 1.53 $
  *
  *****************************************************************************/
 
@@ -129,15 +129,34 @@
  * TBD: These functions should be split out so
  * that these stubs are no longer needed.
  */
-void
-AcpiExUnlinkMutex (
-    ACPI_OPERAND_OBJECT     *ObjDesc)
+
+ACPI_STATUS
+AcpiEvAcquireGlobalLock(
+    UINT32                  Timeout)
 {
+    return (AE_OK);
 }
 
-void
-AcpiTbDeleteAcpiTables (void)
+ACPI_STATUS
+AcpiEvReleaseGlobalLock(
+    void)
 {
+    return (AE_OK);
+}
+
+ACPI_STATUS
+AcpiDsLoad2BeginOp (
+    ACPI_WALK_STATE         *WalkState,
+    ACPI_PARSE_OBJECT       **OutOp)
+{
+    return (AE_OK);
+}
+
+ACPI_STATUS
+AcpiDsLoad2EndOp (
+    ACPI_WALK_STATE         *WalkState)
+{
+    return (AE_OK);
 }
 
 ACPI_STATUS
@@ -148,25 +167,205 @@ AeLocalGetRootPointer (
     return AE_ERROR;
 }
 
-void
-AcpiExDumpOperands (
-    ACPI_OPERAND_OBJECT     **Operands,
-    ACPI_INTERPRETER_MODE   InterpreterMode,
-    NATIVE_CHAR             *Ident,
-    UINT32                  NumLevels,
-    NATIVE_CHAR             *Note,
-    NATIVE_CHAR             *ModuleName,
-    UINT32                  LineNumber)
+ACPI_STATUS
+AcpiNsLoadTable (
+    ACPI_TABLE_DESC         *TableDesc,
+    ACPI_NAMESPACE_NODE     *Node)
 {
+    return (AE_OK);
 }
 
 ACPI_STATUS
-AcpiExDumpOperand (
-    ACPI_OPERAND_OBJECT     *EntryDesc)
+AcpiEvAddressSpaceDispatch (
+    ACPI_OPERAND_OBJECT    *RegionObj,
+    UINT32                  Function,
+    ACPI_PHYSICAL_ADDRESS   Address,
+    UINT32                  BitWidth,
+    void                    *Value)
 {
-    return AE_OK;
+    return (AE_OK);
 }
 
+ACPI_STATUS
+AcpiEvInitializeRegion (
+    ACPI_OPERAND_OBJECT     *RegionObj,
+    BOOLEAN                 AcpiNsLocked)
+{
+    return (AE_OK);
+}
+
+ACPI_STATUS
+AcpiDsMethodDataGetValue (
+    UINT16                  Opcode,
+    UINT32                  Index,
+    ACPI_WALK_STATE         *WalkState,
+    ACPI_OPERAND_OBJECT     **DestDesc)
+{
+    return (AE_OK);
+}
+
+
+ACPI_STATUS
+AcpiDsMethodDataGetNode (
+    UINT16                  Opcode,
+    UINT32                  Index,
+    ACPI_WALK_STATE         *WalkState,
+    ACPI_NAMESPACE_NODE     **Node)
+{
+    return (AE_OK);
+}
+
+ACPI_OBJECT_TYPE
+AcpiDsMethodDataGetType (
+    UINT16                  Opcode,
+    UINT32                  Index,
+    ACPI_WALK_STATE         *WalkState)
+{
+    return (AE_OK);
+}
+
+ACPI_STATUS
+AcpiNsLoadNamespace (
+    void)
+{
+    return (AE_OK);
+}
+
+ACPI_STATUS
+AcpiEvQueueNotifyRequest (
+    ACPI_NAMESPACE_NODE     *Node,
+    UINT32                  NotifyValue)
+{
+    return (AE_OK);
+}
+
+BOOLEAN
+AcpiEvIsNotifyObject (
+    ACPI_NAMESPACE_NODE     *Node)
+{
+    return (FALSE);
+}
+
+ACPI_STATUS
+AcpiDsStoreObjectToLocal (
+    UINT16                  Opcode,
+    UINT32                  Index,
+    ACPI_OPERAND_OBJECT     *SrcDesc,
+    ACPI_WALK_STATE         *WalkState)
+{
+    return (AE_OK);
+}
+
+ACPI_STATUS
+AcpiDsInitAmlWalk (
+    ACPI_WALK_STATE         *WalkState,
+    ACPI_PARSE_OBJECT       *Op,
+    ACPI_NAMESPACE_NODE     *MethodNode,
+    UINT8                   *AmlStart,
+    UINT32                  AmlLength,
+    ACPI_OPERAND_OBJECT     **Params,
+    ACPI_OPERAND_OBJECT     **ReturnObjDesc,
+    UINT32                  PassNumber)
+{
+    return (AE_OK);
+}
+
+ACPI_STATUS
+AcpiDsParseMethod (
+    ACPI_HANDLE             ObjHandle)
+{
+    return (AE_OK);
+}
+
+
+void
+AcpiPsDeleteParseTree (
+    ACPI_PARSE_OBJECT       *root)
+{
+    return;
+}
+
+ACPI_STATUS
+AcpiPsParseAml (
+    ACPI_WALK_STATE         *WalkState)
+{
+    return (AE_OK);
+}
+
+ACPI_STATUS
+AcpiWalkNamespace (
+    ACPI_OBJECT_TYPE        Type,
+    ACPI_HANDLE             StartObject,
+    UINT32                  MaxDepth,
+    ACPI_WALK_CALLBACK      UserFunction,
+    void                    *Context,
+    void *                  *ReturnValue)
+{
+    return (AE_OK);
+}
+
+ACPI_PARSE_OBJECT *
+AcpiPsGetArg(
+    ACPI_PARSE_OBJECT       *op,
+    UINT32                   argn)
+{
+    return NULL;
+}
+
+
+
+void
+AcpiTbDeleteAcpiTables (
+    void)
+{
+    return;
+}
+
+
+ACPI_TABLE_DESC *
+AcpiTbUninstallTable (
+    ACPI_TABLE_DESC         *TableDesc)
+{
+    return NULL;
+}
+
+ACPI_STATUS
+AcpiTbInstallTable (
+    ACPI_TABLE_HEADER       *TablePtr,
+    ACPI_TABLE_DESC         *TableInfo)
+{
+    return (AE_OK);
+}
+
+ACPI_STATUS
+AcpiTbFindTable (
+    NATIVE_CHAR             *Signature,
+    NATIVE_CHAR             *OemId,
+    NATIVE_CHAR             *OemTableId,
+    ACPI_TABLE_HEADER       **TablePtr)
+{
+    return (AE_OK);
+}
+
+ACPI_STATUS
+AcpiTbMatchSignature (
+    NATIVE_CHAR             *Signature,
+    ACPI_TABLE_DESC         *TableInfo)
+{
+    return (AE_OK);
+}
+
+
+
+
+
+/*
+void
+AcpiTbDeleteAcpiTables (void)
+{
+}
+
+*/
 
 /*******************************************************************************
  *
@@ -381,6 +580,13 @@ CmDoCompile (void)
     TrWalkParseTree (RootNode, ASL_WALK_VISIT_UPWARD, NULL, OpcAmlOpcodeWalk, NULL);
     UtEndEvent (i++);
 
+    /* Interpret and generate all compile-time constants */
+
+    UtBeginEvent (i, "Constant folding via AML interpreter");
+    DbgPrint (ASL_DEBUG_OUTPUT, "\nInterpreting compile-time constant expressions\n\n");
+    TrWalkParseTree (RootNode, ASL_WALK_VISIT_DOWNWARD, OpcAmlConstantWalk, NULL, NULL);
+    UtEndEvent (i++);
+
     /* Calculate all AML package lengths */
 
     UtBeginEvent (i, "Generate AML package lengths");
@@ -567,6 +773,7 @@ CmCleanupAndExit (void)
         printf ("%11u : %s\n", TotalMethods, "Control methods");
         printf ("%11u : %s\n", TotalAllocations, "Memory Allocations");
         printf ("%11u : %s\n", TotalAllocated, "Total allocated memory");
+        printf ("%11u : %s\n", TotalFolds, "Constant subtrees folded");
         printf ("\n");
     }
 
