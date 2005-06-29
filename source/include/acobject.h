@@ -149,12 +149,12 @@
  */
 
 
-#define ACPI_OBJECT_COMMON \
-    UINT8                   DataType;       /* To differentiate various internal objs */\
-    UINT8                   Type;           /* ACPI_OBJECT_TYPE */\
-    UINT8                   Size;           /* Size of entire descriptor */\
+#define ACPI_OBJECT_COMMON                  /* Two 32-bit fields */\
+    UINT8                   DataType;           /* To differentiate various internal objs */\
+    UINT8                   Type;               /* ACPI_OBJECT_TYPE */\
+    UINT8                   Size;               /* Size of entire descriptor */\
     UINT8                   Flags;\
-    UINT16                  ReferenceCount; /* For object deletion management */\
+    UINT16                  ReferenceCount;     /* For object deletion management */\
     UINT16                  CmFill2;\
 
 /* Defines for flag byte above */
@@ -166,11 +166,11 @@
 /* 
  * Common bitfield for the field objects
  */
-#define ACPI_COMMON_FIELD_INFO                  /* Three 32-bit values */\
-    UINT32                  Offset;                     /* Byte offset within containing object */\
-    UINT16                  Length;                     /* # of bits in buffer */ \
+#define ACPI_COMMON_FIELD_INFO              /* Three 32-bit values */\
+    UINT32                  Offset;             /* Byte offset within containing object */\
+    UINT16                  Length;             /* # of bits in buffer */ \
     UINT8                   Granularity;\
-    UINT8                   BitOffset;                  /* Bit offset within min read/write data unit */\
+    UINT8                   BitOffset;          /* Bit offset within min read/write data unit */\
     UINT8                   Access;\
     UINT8                   LockRule;\
     UINT8                   UpdateRule;\
@@ -331,7 +331,7 @@ typedef struct /* METHOD */
 
     UINT8                   *Pcode;
     UINT8                   *AcpiTable;
-    void                    *Reserved_p3;
+    void                    *ParserOp;
     void                    *Reserved_p4;
     void                    *Reserved_p5;
 
@@ -586,11 +586,9 @@ typedef union AcpiObjInternal
 
 
 /* 
- * The sLvalue case of ACPI_OBJECT_INTERNAL includes a one-byte field which
+ * The Lvalue case of ACPI_OBJECT_INTERNAL includes a one-byte field which
  * contains an AML opcode identifying the type of lvalue.  Debug1 is used
- * in this field as a stand-in for the (two-byte) AML encoding of DebugOp.
- *
- * TBD: Obsolete?
+ * in this field as a stand-in for the (two-byte) AML encoding of DebugOp (0x5B31)
  */
 
 #define Debug1          0x31
