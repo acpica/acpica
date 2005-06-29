@@ -320,7 +320,7 @@ AmlGetRvalueFromObject (
             StackDesc = *StackPtr;
 
             DEBUG_PRINT (ACPI_INFO, ("AmlGetRvalueFromObject: [Local%d] after MSGV Status=%s %p %p %08lx \n",
-                            MvIndex, Gbl_ExceptionNames[Status], StackPtr, StackDesc,
+                            MvIndex, CmFormatException (Status), StackPtr, StackDesc,
                             *(UINT32 *) StackDesc));
         
             if (ACPI_TYPE_Number == StackDesc->Common.Type)
@@ -346,7 +346,7 @@ AmlGetRvalueFromObject (
             StackDesc = *StackPtr;
    
             DEBUG_PRINT (TRACE_EXEC, ("AmlGetRvalueFromObject: [Arg%d] MSGV returned %s %p %p %08lx \n",
-                            MvIndex, Gbl_ExceptionNames[Status], StackPtr, StackDesc,
+                            MvIndex, CmFormatException (Status), StackPtr, StackDesc,
                             *(UINT32 *) StackDesc));
 
             if (ACPI_TYPE_Number == StackDesc->Common.Type)
