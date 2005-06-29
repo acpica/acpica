@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: psargs - Parse AML opcode arguments
- *              $Revision: 1.32 $
+ *              $Revision: 1.33 $
  *
  *****************************************************************************/
 
@@ -459,7 +459,7 @@ AcpiPsGetNextNamepath (
 
                         Name->Value.Name = Path;
 
-                        /* Point METHODCALL/NAME to the METHOD NTE */
+                        /* Point METHODCALL/NAME to the METHOD Named Object */
 
                         Name->AcpiNamedObject = Op;
                         AcpiPsAppendArg (Arg, Name);
@@ -509,7 +509,7 @@ AcpiPsGetNextNamepath (
     ACPI_GENERIC_OP         *Name;
     ACPI_STATUS             Status;
     ACPI_NAMED_OBJECT       *Method = NULL;
-    ACPI_NAMED_OBJECT       *Entry;
+    ACPI_NAMED_OBJECT       *NameDesc;
     ACPI_GENERIC_STATE      ScopeInfo;
 
 
@@ -533,10 +533,10 @@ AcpiPsGetNextNamepath (
          * Lookup the name in the internal namespace
          */
         ScopeInfo.Scope.NameTable = NULL;
-        Entry = ParserState->StartEntry;
-        if (Entry)
+        NameDesc = ParserState->StartEntry;
+        if (NameDesc)
         {
-            ScopeInfo.Scope.NameTable = Entry->ChildTable;
+            ScopeInfo.Scope.NameTable = NameDesc;
         }
 
         /*
@@ -548,12 +548,12 @@ AcpiPsGetNextNamepath (
 
         Status = AcpiNsLookup (&ScopeInfo, Path, ACPI_TYPE_ANY, IMODE_EXECUTE,
                                 NS_SEARCH_PARENT | NS_DONT_OPEN_SCOPE, NULL,
-                                &Entry);
+                                &NameDesc);
         if (ACPI_SUCCESS (Status))
         {
-            if (Entry->Type == ACPI_TYPE_METHOD)
+            if (NameDesc->Type == ACPI_TYPE_METHOD)
             {
-                Method = Entry;
+                Method = NameDesc;
                 DEBUG_PRINT (TRACE_PARSE,
                     ("PsGetNextNamepath: method - %p Path=%p\n",
                     Method, Path));
@@ -567,7 +567,7 @@ AcpiPsGetNextNamepath (
 
                     Name->Value.Name        = Path;
 
-                    /* Point METHODCALL/NAME to the METHOD NTE */
+                    /* Point METHODCALL/NAME to the METHOD Named Object */
 
                     Name->AcpiNamedObject    = Method;
                     AcpiPsAppendArg (Arg, Name);
