@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: nsinit - namespace initialization
- *              $Revision: 1.56 $
+ *              $Revision: 1.59 $
  *
  *****************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2003, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2004, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -381,7 +381,8 @@ AcpiNsInitOneObject (
         ACPI_DEBUG_PRINT_RAW ((ACPI_DB_ERROR, "\n"));
         ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
                 "Could not execute arguments for [%4.4s] (%s), %s\n",
-                Node->Name.Ascii, AcpiUtGetTypeName (Type), AcpiFormatException (Status)));
+                AcpiUtGetNodeName (Node), AcpiUtGetTypeName (Type),
+                AcpiFormatException (Status)));
     }
 
     /* Print a dot for each object unless we are going to print the entire pathname */
@@ -421,17 +422,20 @@ AcpiNsInitOneDevice (
     void                    *Context,
     void                    **ReturnValue)
 {
-    ACPI_STATUS             Status;
-    ACPI_NAMESPACE_NODE    *Node;
-    UINT32                  Flags;
     ACPI_DEVICE_WALK_INFO  *Info = (ACPI_DEVICE_WALK_INFO *) Context;
+    ACPI_PARAMETER_INFO     Pinfo;
+    UINT32                  Flags;
+    ACPI_STATUS             Status;
 
 
     ACPI_FUNCTION_TRACE ("NsInitOneDevice");
 
 
-    Node = AcpiNsMapHandleToNode (ObjHandle);
-    if (!Node)
+    Pinfo.Parameters = NULL;
+    Pinfo.ParameterType = ACPI_PARAM_ARGS;
+
+    Pinfo.Node = AcpiNsMapHandleToNode (ObjHandle);
+    if (!Pinfo.Node)
     {
         return_ACPI_STATUS (AE_BAD_PARAMETER);
     }
@@ -439,8 +443,8 @@ AcpiNsInitOneDevice (
     /*
      * We will run _STA/_INI on Devices and Processors only
      */
-    if ((Node->Type != ACPI_TYPE_DEVICE) &&
-        (Node->Type != ACPI_TYPE_PROCESSOR))
+    if ((Pinfo.Node->Type != ACPI_TYPE_DEVICE) &&
+        (Pinfo.Node->Type != ACPI_TYPE_PROCESSOR))
     {
         return_ACPI_STATUS (AE_OK);
     }
@@ -455,12 +459,12 @@ AcpiNsInitOneDevice (
     /*
      * Run _STA to determine if we can run _INI on the device.
      */
-    ACPI_DEBUG_EXEC (AcpiUtDisplayInitPathname (ACPI_TYPE_METHOD, Node, "_STA"));
-    Status = AcpiUtExecute_STA (Node, &Flags);
+    ACPI_DEBUG_EXEC (AcpiUtDisplayInitPathname (ACPI_TYPE_METHOD, Pinfo.Node, "_STA"));
+    Status = AcpiUtExecute_STA (Pinfo.Node, &Flags);
 
     if (ACPI_FAILURE (Status))
     {
-        if (Node->Type == ACPI_TYPE_DEVICE)
+        if (Pinfo.Node->Type == ACPI_TYPE_DEVICE)
         {
             /* Ignore error and move on to next device */
 
@@ -484,8 +488,8 @@ AcpiNsInitOneDevice (
     /*
      * The device is present. Run _INI.
      */
-    ACPI_DEBUG_EXEC (AcpiUtDisplayInitPathname (ACPI_TYPE_METHOD, ObjHandle, "_INI"));
-    Status = AcpiNsEvaluateRelative (ObjHandle, "_INI", NULL, NULL);
+    ACPI_DEBUG_EXEC (AcpiUtDisplayInitPathname (ACPI_TYPE_METHOD, Pinfo.Node, "_INI"));
+    Status = AcpiNsEvaluateRelative ("_INI", &Pinfo);
     if (ACPI_FAILURE (Status))
     {
         /* No _INI (AE_NOT_FOUND) means device requires no initialization */
@@ -495,7 +499,7 @@ AcpiNsInitOneDevice (
             /* Ignore error and move on to next device */
 
     #ifdef ACPI_DEBUG_OUTPUT
-            char        *ScopeName = AcpiNsGetExternalPathname (ObjHandle);
+            char        *ScopeName = AcpiNsGetExternalPathname (Pinfo.Node);
 
             ACPI_DEBUG_PRINT ((ACPI_DB_WARN, "%s._INI failed: %s\n",
                     ScopeName, AcpiFormatException (Status)));
@@ -517,7 +521,7 @@ AcpiNsInitOneDevice (
     {
         /* External initialization handler is present, call it */
 
-        Status = AcpiGbl_InitHandler (ObjHandle, ACPI_INIT_DEVICE_INI);
+        Status = AcpiGbl_InitHandler (Pinfo.Node, ACPI_INIT_DEVICE_INI);
     }
 
 
