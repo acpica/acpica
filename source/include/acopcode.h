@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acopcode.h - AML opcode information for the AML parser and interpreter
- *       $Revision: 1.1 $
+ *       $Revision: 1.3 $
  *
  *****************************************************************************/
 
@@ -137,7 +137,7 @@
 
 
 /*
- * All AML opcodes and the parse-time arguments for each.  Used by the AML 
+ * All AML opcodes and the parse-time arguments for each.  Used by the AML
  * parser  Each list is compressed into a 32-bit number and stored in the
  * master opcode table (in psopcode.c).
  */
@@ -266,8 +266,8 @@
 
 
 /*
- * All AML opcodes and the runtime arguments for each.  Used by the AML 
- * interpreter  Each list is compressed into a 32-bit number and stored 
+ * All AML opcodes and the runtime arguments for each.  Used by the AML
+ * interpreter  Each list is compressed into a 32-bit number and stored
  * in the master opcode table (in psopcode.c).
  *
  * (Used by PrepOperands procedure and the ASL Compiler)
@@ -319,7 +319,7 @@
 #define ARGI_FIELD_OP                   ARGI_INVALID_OPCODE
 #define ARGI_FIND_SET_LEFT_BIT_OP       ARGI_LIST2 (ARGI_INTEGER,    ARGI_TARGETREF)
 #define ARGI_FIND_SET_RIGHT_BIT_OP      ARGI_LIST2 (ARGI_INTEGER,    ARGI_TARGETREF)
-#define ARGI_FROM_BCD_OP                ARGI_LIST2 (ARGI_INTEGER,    ARGI_TARGETREF)
+#define ARGI_FROM_BCD_OP                ARGI_LIST2 (ARGI_INTEGER,    ARGI_FIXED_TARGET)
 #define ARGI_IF_OP                      ARGI_INVALID_OPCODE
 #define ARGI_INCREMENT_OP               ARGI_LIST1 (ARGI_INTEGER_REF)
 #define ARGI_INDEX_FIELD_OP             ARGI_INVALID_OPCODE
