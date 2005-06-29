@@ -198,26 +198,17 @@ AcpiWalkNamespace (
     void                    *Context, 
     void *                  *ReturnValue);
 
-ACPI_STATUS
-AcpiNameToHandle (
+ACPI_STATUS 
+AcpiGetName (
+    ACPI_HANDLE             Handle, 
+    UINT32                  NameType,
+    ACPI_BUFFER             *RetPathPtr);
+
+ACPI_STATUS 
+AcpiGetHandle (
     ACPI_HANDLE             Parent, 
-    ACPI_NAME               Name,
-    ACPI_HANDLE             *OutHandle);
-
-ACPI_STATUS
-AcpiHandleToName (
-    ACPI_HANDLE             Handle,
-    ACPI_NAME               *RetName);
-
-ACPI_STATUS
-AcpiPathnameToHandle (
-    ACPI_STRING             Pathname,
-    ACPI_HANDLE             *OutHandle);
-
-ACPI_STATUS
-AcpiHandleToPathname (
-    ACPI_HANDLE             Handle,
-    ACPI_BUFFER             *OutPathBuffer);
+    ACPI_STRING             Pathname, 
+    ACPI_HANDLE             *RetHandle);
 
 
 /* 
