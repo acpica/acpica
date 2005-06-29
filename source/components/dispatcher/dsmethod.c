@@ -130,6 +130,15 @@
         MODULE_NAME         ("dsmethod");
 
 
+
+/* TBD: move to acparser.h */
+
+ACPI_PARSE_STATE *
+AcpiPsCreateState (
+    UINT8                   *Aml,
+    INT32                   AmlSize);
+
+
 /*******************************************************************************
  *
  * FUNCTION:    AcpiDsParseMethod
@@ -188,8 +197,7 @@ AcpiDsParseMethod (
     if ((ObjDesc->Method.Concurrency != INFINITE_CONCURRENCY) &&
         (!ObjDesc->Method.Semaphore))
     {
-        Status = AcpiOsCreateSemaphore (1,
-                                        ObjDesc->Method.Concurrency,
+        Status = AcpiOsCreateSemaphore (1,ObjDesc->Method.Concurrency,
                                         &ObjDesc->Method.Semaphore);
         if (ACPI_FAILURE (Status))
         {
@@ -227,8 +235,9 @@ AcpiDsParseMethod (
      */
 
     Status = AcpiPsParseAml (Op, ObjDesc->Method.Pcode,
-                                ObjDesc->Method.PcodeLength, 0,
-                                AcpiDsLoad1BeginOp, AcpiDsLoad1EndOp);
+                        ObjDesc->Method.PcodeLength, PARSE_DELETE_TREE,
+                        NULL, NULL, NULL, 
+                        AcpiDsLoad1BeginOp, AcpiDsLoad1EndOp);
 
     if (ACPI_FAILURE (Status))
     {
@@ -238,11 +247,12 @@ AcpiDsParseMethod (
     /* Get a new OwnerId for objects created by this method */
 
     OwnerId = AcpiCmAllocateOwnerId (OWNER_TYPE_METHOD);
+    ObjDesc->Method.OwningId = OwnerId;
 
     /* Install the parsed tree in the method object */
+    /* TBD: [Restructure] Obsolete field? */
 
     ObjDesc->Method.ParserOp = Op;
-    ObjDesc->Method.OwningId = OwnerId;
 
     DEBUG_EXEC (AcpiDbGenerateStatistics (Op, 1));
 
@@ -303,6 +313,7 @@ AcpiDsBeginMethodExecution (
 
     /* If method is not parsed at this time, we must parse it first */
 
+/* TBD: REMOVE 
     if (!ObjDesc->Method.ParserOp)
     {
 
@@ -316,6 +327,7 @@ AcpiDsBeginMethodExecution (
             return_ACPI_STATUS (Status);
         }
     }
+*/
 
 
     /*
@@ -325,7 +337,9 @@ AcpiDsBeginMethodExecution (
      * the last thread completes execution of the method
      */
 
+/* TBD: REMOVE
     ((ACPI_DEFERRED_OP *) ObjDesc->Method.ParserOp)->ThreadCount++;
+*/
 
     /*
      * Parsing is complete, we can unlock the parser.  Parse tree
@@ -376,6 +390,7 @@ AcpiDsCallControlMethod (
     ACPI_NAMED_OBJECT       *MethodEntry;
     ACPI_OBJECT_INTERNAL    *ObjDesc;
     ACPI_WALK_STATE         *NextWalkState;
+    ACPI_PARSE_STATE        *ParserState;
     UINT32                  i;
 
 
@@ -386,12 +401,10 @@ AcpiDsCallControlMethod (
         ThisWalkState->PrevOp, ThisWalkState));
 
     /*
-     * PrevOp points to the METHOD_CALL Op.
-     * Get the NTE entry (in the METHOD_CALL->NAME Op) and the
-     * corresponding METHOD Op
+     * Get the namespace entry for this control method
      */
 
-    MethodEntry = (ThisWalkState->PrevOp->Value.Arg)->AcpiNamedObject;
+    MethodEntry = ThisWalkState->MethodEntry;
     if (!MethodEntry)
     {
         return_ACPI_STATUS (AE_NULL_ENTRY);
@@ -403,6 +416,7 @@ AcpiDsCallControlMethod (
         return_ACPI_STATUS (AE_NULL_OBJECT);
     }
 
+
     /* Parse method if necessary, wait on concurrency semaphore */
 
     Status = AcpiDsBeginMethodExecution (MethodEntry, ObjDesc);
@@ -413,9 +427,24 @@ AcpiDsCallControlMethod (
 
     /* Save the (current) Op for when this walk is restarted */
 
-    ThisWalkState->MethodCallOp = ThisWalkState->PrevOp;
-    ThisWalkState->PrevOp       = Op;
+//    ThisWalkState->MethodCallOp = ThisWalkState->PrevOp;
+//    ThisWalkState->PrevOp       = Op;
     Method                      = ObjDesc->Method.ParserOp;
+
+
+
+    /* Create and initialize a new parser state */
+
+    ParserState = AcpiPsCreateState (ObjDesc->Method.Pcode, 
+                        ObjDesc->Method.PcodeLength);
+    if (!ParserState)
+    {
+        return_ACPI_STATUS (AE_NO_MEMORY);
+    }
+
+    AcpiPsInitScope (ParserState, (ACPI_GENERIC_OP *) Method);
+    ParserState->StartEntry = MethodEntry;
+
 
     /* Create a new state for the preempting walk */
 
@@ -424,8 +453,16 @@ AcpiDsCallControlMethod (
                                             ObjDesc, WalkList);
     if (!NextWalkState)
     {
+        /* TBD: delete parser state */
+
         return_ACPI_STATUS (AE_NO_MEMORY);
     }
+
+    NextWalkState->WalkType             = WALK_METHOD;
+    NextWalkState->ParserState          = ParserState;
+    NextWalkState->ParseFlags           = ThisWalkState->ParseFlags;
+    NextWalkState->DescendingCallback   = ThisWalkState->DescendingCallback;
+    NextWalkState->AscendingCallback    = ThisWalkState->AscendingCallback;
 
     /* The NextOp of the NextWalk will be the beginning of the method */
 
@@ -449,11 +486,33 @@ AcpiDsCallControlMethod (
      */
 
     Status = AcpiDsMethodDataInitArgs (&ThisWalkState->Operands[0],
-                                        ThisWalkState->NumOperands);
+                                        ThisWalkState->NumOperands, 
+                                        NextWalkState);
     if (ACPI_FAILURE (Status))
     {
         goto Cleanup;
     }
+
+
+
+    /* Create and init a root object */
+
+    Op = AcpiPsAllocOp (AML_SCOPE_OP);
+    if (!Op)
+    {
+        return_ACPI_STATUS (AE_NO_MEMORY);
+    }
+
+    Status = AcpiPsParseAml (Op, ObjDesc->Method.Pcode,
+                                ObjDesc->Method.PcodeLength, PARSE_DELETE_TREE,
+                                MethodEntry, NULL, NULL,
+                                AcpiDsLoad1BeginOp, AcpiDsLoad1EndOp);
+    AcpiPsDeleteParseTree (Op);
+
+
+
+
+
 
     /*
      * Delete the operands on the previous walkstate operand stack
@@ -463,6 +522,7 @@ AcpiDsCallControlMethod (
     for (i = 0; i < ObjDesc->Method.ParamCount; i++)
     {
         AcpiCmRemoveReference (ThisWalkState->Operands [i]);
+        ThisWalkState->Operands [i] = NULL;
     }
 
     /* Clear the operand stack */
@@ -512,25 +572,30 @@ AcpiDsRestartControlMethod (
 
     if (ReturnDesc)
     {
-        /*
-         * Get the return value (if any) from the previous method.
-         * NULL if no return value
-         */
-
-        Status = AcpiDsResultStackPush (ReturnDesc, WalkState);
-        if (ACPI_FAILURE (Status))
+        if (WalkState->ReturnUsed)
         {
+            /*
+             * Get the return value (if any) from the previous method.
+             * NULL if no return value
+             */
+
+            Status = AcpiDsResultStackPush (ReturnDesc, WalkState);
+            if (ACPI_FAILURE (Status))
+            {
+                AcpiCmRemoveReference (ReturnDesc);
+                return_ACPI_STATUS (Status);
+            }
+        }
+    
+        else
+        {
+            /*
+             * Delete the return value if it will not be used by the
+             * calling method
+             */
             AcpiCmRemoveReference (ReturnDesc);
-            return_ACPI_STATUS (Status);
         }
 
-        /*
-         * Delete the return value if it will not be used by the
-         * calling method
-         */
-
-        AcpiDsDeleteResultIfNotUsed (WalkState->MethodCallOp,
-                                        ReturnDesc, WalkState);
     }
 
     DEBUG_PRINT (TRACE_DISPATCH,
@@ -605,7 +670,7 @@ AcpiDsTerminateControlMethod (
     if (WalkState->MethodDesc->Method.Semaphore)
     {
         Status = AcpiOsSignalSemaphore (
-            WalkState->MethodDesc->Method.Semaphore, 1);
+                    WalkState->MethodDesc->Method.Semaphore, 1);
     }
 
     /* Decrement the thread count on the method parse tree */
@@ -636,22 +701,20 @@ AcpiDsTerminateControlMethod (
          * the namespace
          */
 
-        AcpiNsDeleteNamespaceByOwner (
-                    WalkState->MethodDesc->Method.OwningId);
+        AcpiNsDeleteNamespaceByOwner (WalkState->MethodDesc->Method.OwningId);
 
         AcpiCmReleaseMutex (ACPI_MTX_NAMESPACE);
 
         /*
-         * Delete the method's parse tree if asked to
+         * Delete the method's parse tree
          */
-        if (AcpiGbl_WhenToParseMethods & METHOD_DELETE_AT_COMPLETION)
-        {
-            AcpiPsDeleteParseTree (
-                    WalkState->MethodDesc->Method.ParserOp);
+        AcpiPsDeleteParseTree (WalkState->MethodDesc->Method.ParserOp);
 
-            WalkState->MethodDesc->Method.ParserOp = NULL;
-        }
+        WalkState->MethodDesc->Method.ParserOp = NULL;
     }
+
+
+
 
 UnlockAndExit:
 

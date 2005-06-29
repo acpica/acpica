@@ -117,12 +117,12 @@
 #define __DSWEXEC_C__
 
 #include "acpi.h"
-#include "parser.h"
+#include "acparser.h"
 #include "amlcode.h"
-#include "dispatch.h"
-#include "interp.h"
-#include "namesp.h"
-#include "debugger.h"
+#include "acdispat.h"
+#include "acinterp.h"
+#include "acnamesp.h"
+#include "acdebug.h"
 
 
 #define _COMPONENT          DISPATCHER
@@ -147,8 +147,10 @@
 
 ACPI_STATUS
 AcpiDsExecBeginOp (
+    UINT16                  Opcode,
+    ACPI_GENERIC_OP         *Op,
     ACPI_WALK_STATE         *WalkState,
-    ACPI_GENERIC_OP         *Op)
+    ACPI_GENERIC_OP         **OutOp)
 {
     ACPI_OP_INFO            *OpInfo;
     ACPI_STATUS             Status = AE_OK;
@@ -157,8 +159,24 @@ AcpiDsExecBeginOp (
     FUNCTION_TRACE_PTR ("DsExecBeginOp", Op);
 
 
+    if (!Op)
+    {
+        Status = AcpiDsLoad2BeginOp (Opcode, NULL, WalkState, OutOp);
+        if (ACPI_FAILURE (Status))
+        {
+            return_ACPI_STATUS (Status);
+        }
+
+        Op = *OutOp;
+    }
+
     if (Op == WalkState->Origin)
     {
+        if (OutOp)
+        {
+            *OutOp = Op;
+        }
+
         return_ACPI_STATUS (AE_OK);
     }
 
@@ -197,7 +215,7 @@ AcpiDsExecBeginOp (
      * Handle the opcode based upon the opcode type
      */
 
-    switch (OpInfo->Flags & OP_INFO_TYPE)
+    switch (ACPI_GET_OP_CLASS (OpInfo))
     {
     case OPTYPE_CONTROL:
 
@@ -207,7 +225,7 @@ AcpiDsExecBeginOp (
 
     case OPTYPE_NAMED_OBJECT:
 
-        if (WalkState->Origin->Opcode == AML_METHOD_OP)
+        if (WalkState->WalkType == WALK_METHOD)
         {
             /*
              * Found a named object declaration during method
@@ -217,7 +235,7 @@ AcpiDsExecBeginOp (
              * of this method.
              */
 
-            Status = AcpiDsLoad2BeginOp (WalkState, Op);
+            Status = AcpiDsLoad2BeginOp (Op->Opcode, Op, WalkState, NULL);
         }
         break;
 
@@ -272,7 +290,7 @@ AcpiDsExecEndOp (
 
 
     OpInfo = AcpiPsGetOpcodeInfo (Op->Opcode);
-    if (!OpInfo)
+    if (ACPI_GET_OP_TYPE (OpInfo) != ACPI_OP_TYPE_OPCODE)
     {
         DEBUG_PRINT (ACPI_ERROR, ("ExecEndOp: Unknown opcode. Op=%X\n",
                         Op));
@@ -280,7 +298,7 @@ AcpiDsExecEndOp (
         return_ACPI_STATUS (AE_NOT_IMPLEMENTED);
     }
 
-    Optype = (UINT8) (OpInfo->Flags & OP_INFO_TYPE);
+    Optype = (UINT8) ACPI_GET_OP_CLASS (OpInfo);
     FirstArg = Op->Value.Arg;
 
     /* Init the walk state */
@@ -292,7 +310,7 @@ AcpiDsExecEndOp (
     /* Call debugger for single step support (DEBUG build only) */
 
     DEBUG_EXEC (Status = AcpiDbSingleStep (WalkState, Op, Optype));
-    DEBUG_EXEC (if (Status != AE_OK) {return_ACPI_STATUS (Status);});
+    DEBUG_EXEC (if (ACPI_FAILURE (Status)) {return_ACPI_STATUS (Status);});
 
 
     /* Decode the opcode */
@@ -335,6 +353,7 @@ AcpiDsExecEndOp (
     case OPTYPE_MATCH:
     case OPTYPE_CREATE_FIELD:
     case OPTYPE_FATAL:
+
 
         Status = AcpiDsCreateOperands (WalkState, FirstArg);
         if (ACPI_FAILURE (Status))
@@ -551,7 +570,7 @@ AcpiDsExecEndOp (
         /* Tell the walk loop to preempt this running method and
         execute the new method */
 
-        Status = AE_CTRL_PENDING;
+        Status = AE_CTRL_TRANSFER;
 
         /* Return now; we don't want to disturb anything,
         especially the operand count! */
@@ -563,6 +582,12 @@ AcpiDsExecEndOp (
     case OPTYPE_NAMED_OBJECT:
 
 
+        Status = AcpiDsLoad2EndOp (WalkState, Op);
+        if (ACPI_FAILURE (Status))
+        {
+            break;
+        }
+/*
         if ((WalkState->Origin->Opcode == AML_METHOD_OP) &&
             (WalkState->Origin != Op))
         {
@@ -572,6 +597,7 @@ AcpiDsExecEndOp (
                 break;
             }
         }
+*/
 
         switch (Op->Opcode)
         {
@@ -649,7 +675,7 @@ AcpiDsExecEndOp (
                 goto Cleanup;
             }
 
-            Status = AcpiAmlResolveToValue (&WalkState->Operands [0]);
+            Status = AcpiAmlResolveToValue (&WalkState->Operands [0], WalkState);
             if (ACPI_FAILURE (Status))
             {
                 goto Cleanup;
@@ -671,8 +697,8 @@ AcpiDsExecEndOp (
         if (ObjDesc->Common.Type != ACPI_TYPE_NUMBER)
         {
             DEBUG_PRINT (ACPI_ERROR,
-                ("ExecEndOp: Bad predicate ObjDesc=%X State=%X\n",
-                ObjDesc, WalkState));
+                ("ExecEndOp: Bad predicate (not a number) ObjDesc=%X State=%X Type=%X\n",
+                ObjDesc, WalkState, ObjDesc->Common.Type));
 
             Status = AE_AML_OPERAND_TYPE;
             goto Cleanup;
@@ -699,7 +725,7 @@ AcpiDsExecEndOp (
 
          /* Break to debugger to display result */
 
-        DEBUG_EXEC (AcpiDbDisplayResultObject (ObjDesc));
+        DEBUG_EXEC (AcpiDbDisplayResultObject (ObjDesc, WalkState));
 
         /* Delete the predicate result object (we know that
         we don't need it anymore) and cleanup the stack */
@@ -717,7 +743,7 @@ Cleanup:
     {
         /* Break to debugger to display result */
 
-        DEBUG_EXEC (AcpiDbDisplayResultObject (ResultObj));
+        DEBUG_EXEC (AcpiDbDisplayResultObject (ResultObj, WalkState));
 
         /*
          * Delete the result op if and only if:

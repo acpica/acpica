@@ -138,9 +138,7 @@
 #define FIELD_UPDATE_RULE_MASK      0x60
 
 
-
-
-/*****************************************************************************
+/*******************************************************************************
  *
  * FUNCTION:    AcpiDsCreateField
  *
@@ -151,7 +149,7 @@
  *
  * DESCRIPTION: Create a new field in the specified operation region
  *
- ****************************************************************************/
+ ******************************************************************************/
 
 ACPI_STATUS
 AcpiDsCreateField (
@@ -221,7 +219,7 @@ AcpiDsCreateField (
         case AML_NAMEDFIELD_OP:
 
             Status = AcpiNsLookup (WalkState->ScopeInfo,
-                            (char *) &((ACPI_NAMED_OP *)Arg)->Name,
+                            (INT8 *) &((ACPI_NAMED_OP *)Arg)->Name,
                             INTERNAL_TYPE_DEF_FIELD,
                             IMODE_LOAD_PASS1,
                             NS_NO_UPSEARCH | NS_DONT_OPEN_SCOPE,
@@ -237,18 +235,15 @@ AcpiDsCreateField (
              * the object stack
              */
 
-            Status = AcpiAmlPrepDefFieldValue (Entry, Region,
-                                                FieldFlags,
-                                                AccessAttribute,
-                                                FieldBitPosition,
-                                                Arg->Value.Size);
+            Status = AcpiAmlPrepDefFieldValue (Entry, Region, FieldFlags, 
+                            AccessAttribute, FieldBitPosition, Arg->Value.Size);
 
             if (ACPI_FAILURE (Status))
             {
                 return_ACPI_STATUS (Status);
             }
 
-            /* Keep track of bit position for the *next* field */
+            /* Keep track of bit position for *next* field */
 
             FieldBitPosition += Arg->Value.Size;
             break;
@@ -261,7 +256,7 @@ AcpiDsCreateField (
 }
 
 
-/*****************************************************************************
+/*******************************************************************************
  *
  * FUNCTION:    AcpiDsCreateBankField
  *
@@ -272,7 +267,7 @@ AcpiDsCreateField (
  *
  * DESCRIPTION: Create a new bank field in the specified operation region
  *
- ****************************************************************************/
+ ******************************************************************************/
 
 ACPI_STATUS
 AcpiDsCreateBankField (
@@ -293,11 +288,24 @@ AcpiDsCreateBankField (
     FUNCTION_TRACE_PTR ("DsCreateBankField", Op);
 
 
+
     /* First arg is the name of the parent OpRegion */
 
     Arg = Op->Value.Arg;
+    if (!Region)
+    {
+        Status = AcpiNsLookup (WalkState->ScopeInfo, Arg->Value.Name,
+                                ACPI_TYPE_REGION, IMODE_EXECUTE,
+                                NS_SEARCH_PARENT, WalkState,
+                                &((ACPI_NAMED_OBJECT *)Region));
 
-    /* Socond arg is the Bank Register */
+        if (ACPI_FAILURE (Status))
+        {
+            return_ACPI_STATUS (Status);
+        }
+    }
+
+    /* Second arg is the Bank Register */
 
     Arg = Arg->Next;
 
@@ -353,7 +361,7 @@ AcpiDsCreateBankField (
         case AML_NAMEDFIELD_OP:
 
             Status = AcpiNsLookup (WalkState->ScopeInfo,
-                            (char *) &((ACPI_NAMED_OP *)Arg)->Name,
+                            (INT8 *) &((ACPI_NAMED_OP *)Arg)->Name,
                             INTERNAL_TYPE_DEF_FIELD,
                             IMODE_LOAD_PASS1,
                             NS_NO_UPSEARCH | NS_DONT_OPEN_SCOPE,
@@ -369,12 +377,9 @@ AcpiDsCreateBankField (
              * the object stack
              */
 
-            Status = AcpiAmlPrepBankFieldValue (Entry, Region,
-                                                BankReg, BankValue,
-                                                FieldFlags,
-                                                AccessAttribute,
-                                                FieldBitPosition,
-                                                Arg->Value.Size);
+            Status = AcpiAmlPrepBankFieldValue (Entry, Region, BankReg, 
+                            BankValue, FieldFlags, AccessAttribute,
+                            FieldBitPosition, Arg->Value.Size);
 
             if (ACPI_FAILURE (Status))
             {
@@ -395,7 +400,7 @@ AcpiDsCreateBankField (
 }
 
 
-/*****************************************************************************
+/*******************************************************************************
  *
  * FUNCTION:    AcpiDsCreateIndexField
  *
@@ -406,7 +411,7 @@ AcpiDsCreateBankField (
  *
  * DESCRIPTION: Create a new index field in the specified operation region
  *
- ****************************************************************************/
+ ******************************************************************************/
 
 ACPI_STATUS
 AcpiDsCreateIndexField (
@@ -493,7 +498,7 @@ AcpiDsCreateIndexField (
         case AML_NAMEDFIELD_OP:
 
             Status = AcpiNsLookup (WalkState->ScopeInfo,
-                                    (char *) &((ACPI_NAMED_OP *)Arg)->Name,
+                                    (INT8 *) &((ACPI_NAMED_OP *)Arg)->Name,
                                     INTERNAL_TYPE_INDEX_FIELD,
                                     IMODE_LOAD_PASS1,
                                     NS_NO_UPSEARCH | NS_DONT_OPEN_SCOPE,
@@ -509,11 +514,9 @@ AcpiDsCreateIndexField (
              * the object stack
              */
 
-            Status = AcpiAmlPrepIndexFieldValue (Entry, IndexReg,
-                                                DataReg, FieldFlags,
-                                                AccessAttribute,
-                                                FieldBitPosition,
-                                                Arg->Value.Size);
+            Status = AcpiAmlPrepIndexFieldValue (Entry, IndexReg, DataReg, 
+                            FieldFlags, AccessAttribute,
+                            FieldBitPosition, Arg->Value.Size);
 
             if (ACPI_FAILURE (Status))
             {
