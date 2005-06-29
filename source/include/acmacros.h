@@ -154,12 +154,49 @@
 #define HI_LIMIT(b)                     ((UINT8) (((b) & 0x00FF0000) >> 16))
 
 
- /* Extract data using a pointer */
-
+ /* 
+  * Extract a byte of data using a pointer.  Any more than a byte and we
+  * get into potential aligment issues -- see the STORE macros below
+  */
 #define GET8(addr)                      (*(UINT8*)(addr))
-#define GET16(addr)                     (*(UINT16*)(addr))
-#define GET32(addr)                     (*(UINT32*)(addr))
 
+
+/*
+ * Macros for moving data around to/from buffers that are possibly unaligned.
+ * If the hardware supports the transfer of unaligned data, just do the store.
+ * Otherwise, we have to move one byte at a time.
+ */
+
+//#define _HW_ALIGNMENT_SUPPORT
+#ifdef _HW_ALIGNMENT_SUPPORT
+
+/* The hardware supports unaligned transfers, just do the move */
+
+#define STORE16(d,s)                    *(UINT16*)(d) = *(UINT16*)(s)
+#define STORE32(d,s)                    *(UINT32*)(d) = *(UINT32*)(s)
+
+#else
+/*
+ * The hardware does not support unaligned transfers.  We must move the
+ * data one byte at a time.  These macros work whether the source or
+ * the destination (or both) is/are unaligned.
+ */
+
+#define STORE16(d,s)                    {((char *)(d))[0] = ((char *)(s))[0];\
+                                         ((char *)(d))[1] = ((char *)(s))[1];}
+
+#define STORE32(d,s)                    {((char *)(d))[0] = ((char *)(s))[0];\
+                                         ((char *)(d))[1] = ((char *)(s))[1];\
+                                         ((char *)(d))[2] = ((char *)(s))[2];\
+                                         ((char *)(d))[3] = ((char *)(s))[3];}
+
+#endif
+
+/* Helper macros */
+
+#define STORE16TO16(d,s)                STORE16(d,s)
+#define STORE16TO32(d,s)                {(*(UINT32*)(d)) = 0; STORE16(d,s);}
+#define STORE32TO32(d,s)                STORE32(d,s)
 
 
 
@@ -184,6 +221,20 @@
 #define MOD_16(a)                       ((a)&0x0F)
 
 
+/*
+ * Rounding macros
+ */
+
+#define ROUND_DOWN_TO_32_BITS(a)        ((a) & (~3))
+#define ROUND_DOWN_TO_NATIVE_WORD(a)    ((a) & (~(ALIGNED_ADDRESS_BOUNDARY-1)))
+
+#define ROUND_UP_TO_32BITS(a)           (((a)+3) & (~3))
+#define ROUND_UP_TO_NATIVE_WORD(a)      (((a)+(ALIGNED_ADDRESS_BOUNDARY-1)) & (~(ALIGNED_ADDRESS_BOUNDARY-1)))
+
+
+
+
+/* TBD: what is this for? */
 
 #ifdef IA64
 #define ALIGN64(bc)                     char Align[bc];
