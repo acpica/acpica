@@ -262,14 +262,14 @@ typedef void*                           ACPI_HANDLE;    /* Actually a ptr to an 
 /*
  * Sleep state constants
  */
-#define S0					            (UINT8) 0
-#define S1					            (UINT8) 1
-#define S2					            (UINT8) 2
-#define S3					            (UINT8) 3
-#define S4					            (UINT8) 4
-#define S4BIOS				            (UINT8) 5
-#define S5					            (UINT8) 6
-#define ACPI_S_STATES_MAX	            S5
+#define S0                              (UINT8) 0
+#define S1                              (UINT8) 1
+#define S2                              (UINT8) 2
+#define S3                              (UINT8) 3
+#define S4                              (UINT8) 4
+#define S4BIOS                          (UINT8) 5
+#define S5                              (UINT8) 6
+#define ACPI_S_STATES_MAX               S5
 
 
 /*

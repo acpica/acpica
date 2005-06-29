@@ -656,32 +656,32 @@ CmValidAcpiCharacter (
 
 void *
 _CmAllocate (
-	UINT32					Size,
-	UINT32                  Component,
-	ACPI_STRING				Module,
-	INT32                   Line);
+    UINT32                  Size,
+    UINT32                  Component,
+    ACPI_STRING             Module,
+    INT32                   Line);
 
 void *
 _CmCallocate (
-	UINT32					Size,
-	UINT32                  Component,
-	ACPI_STRING             Module,
-	INT32                   Line);
+    UINT32                  Size,
+    UINT32                  Component,
+    ACPI_STRING             Module,
+    INT32                   Line);
 
 void
 _CmFree (
-	void					*Address,
-	UINT32                  Component,
-	ACPI_STRING             Module,
-	INT32                   Line);
+    void                    *Address,
+    UINT32                  Component,
+    ACPI_STRING             Module,
+    INT32                   Line);
 
 void
 CmInitStaticObject (
     ACPI_OBJECT_INTERNAL    *ObjDesc);
 
-#define CmAllocate(a)		        _CmAllocate(a,_COMPONENT,_THIS_MODULE,__LINE__)
-#define CmCallocate(a)		        _CmCallocate(a, _COMPONENT,_THIS_MODULE,__LINE__)
-#define CmFree(a)			        _CmFree(a,_COMPONENT,_THIS_MODULE,__LINE__)
+#define CmAllocate(a)               _CmAllocate(a,_COMPONENT,_THIS_MODULE,__LINE__)
+#define CmCallocate(a)              _CmCallocate(a, _COMPONENT,_THIS_MODULE,__LINE__)
+#define CmFree(a)                   _CmFree(a,_COMPONENT,_THIS_MODULE,__LINE__)
 
 #ifndef ACPI_DEBUG
 
@@ -697,46 +697,46 @@ CmInitStaticObject (
 #else
 
 #define INITIALIZE_ALLOCATION_METRICS() \
-	Gbl_CurrentObjectCount = 0; \
-	Gbl_CurrentObjectSize = 0; \
-	Gbl_RunningObjectCount = 0; \
-	Gbl_RunningObjectSize = 0; \
-	Gbl_MaxConcurrentObjectCount = 0; \
-	Gbl_MaxConcurrentObjectSize = 0; \
-	Gbl_CurrentAllocSize = 0; \
-	Gbl_CurrentAllocCount = 0; \
-	Gbl_RunningAllocSize = 0; \
-	Gbl_RunningAllocCount = 0; \
-	Gbl_MaxConcurrentAllocSize = 0; \
-	Gbl_MaxConcurrentAllocCount = 0
+    Gbl_CurrentObjectCount = 0; \
+    Gbl_CurrentObjectSize = 0; \
+    Gbl_RunningObjectCount = 0; \
+    Gbl_RunningObjectSize = 0; \
+    Gbl_MaxConcurrentObjectCount = 0; \
+    Gbl_MaxConcurrentObjectSize = 0; \
+    Gbl_CurrentAllocSize = 0; \
+    Gbl_CurrentAllocCount = 0; \
+    Gbl_RunningAllocSize = 0; \
+    Gbl_RunningAllocCount = 0; \
+    Gbl_MaxConcurrentAllocSize = 0; \
+    Gbl_MaxConcurrentAllocCount = 0
 
 #define DECREMENT_OBJECT_METRICS(a) \
-	Gbl_CurrentObjectCount--; \
-	Gbl_CurrentObjectSize -= a
+    Gbl_CurrentObjectCount--; \
+    Gbl_CurrentObjectSize -= a
 
 #define INCREMENT_OBJECT_METRICS(a) \
-	Gbl_CurrentObjectCount++; \
-	Gbl_RunningObjectCount++; \
-	if (Gbl_MaxConcurrentObjectCount < Gbl_CurrentObjectCount) \
-	{ \
-		Gbl_MaxConcurrentObjectCount = Gbl_CurrentObjectCount; \
-	} \
-	Gbl_RunningObjectSize += a; \
-	Gbl_CurrentObjectSize += a; \
-	if (Gbl_MaxConcurrentObjectSize < Gbl_CurrentObjectSize) \
-	{ \
-		Gbl_MaxConcurrentObjectSize = Gbl_CurrentObjectSize; \
-	}
-	
+    Gbl_CurrentObjectCount++; \
+    Gbl_RunningObjectCount++; \
+    if (Gbl_MaxConcurrentObjectCount < Gbl_CurrentObjectCount) \
+    { \
+        Gbl_MaxConcurrentObjectCount = Gbl_CurrentObjectCount; \
+    } \
+    Gbl_RunningObjectSize += a; \
+    Gbl_CurrentObjectSize += a; \
+    if (Gbl_MaxConcurrentObjectSize < Gbl_CurrentObjectSize) \
+    { \
+        Gbl_MaxConcurrentObjectSize = Gbl_CurrentObjectSize; \
+    }
+    
 
 void
 CmDumpAllocationInfo (
-	void);
-	
+    void);
+    
 void
 CmDumpCurrentAllocations (
-	UINT32					Component,
-	ACPI_STRING				Module);
+    UINT32                  Component,
+    ACPI_STRING             Module);
 
 #endif
 
