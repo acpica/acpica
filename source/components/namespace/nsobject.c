@@ -2,7 +2,7 @@
  *
  * Module Name: nsobject - Utilities for objects attached to namespace
  *                         table entries
- *              $Revision: 1.72 $
+ *              $Revision: 1.73 $
  *
  ******************************************************************************/
 
@@ -363,7 +363,8 @@ AcpiNsGetAttachedObject (
     }
 
     if (!Node->Object ||
-        (!(VALID_DESCRIPTOR_TYPE (Node->Object, ACPI_DESC_TYPE_INTERNAL))) ||
+       ((!(VALID_DESCRIPTOR_TYPE (Node->Object, ACPI_DESC_TYPE_INTERNAL))) &&
+        (!(VALID_DESCRIPTOR_TYPE (Node->Object, ACPI_DESC_TYPE_NAMED))))   ||
         (Node->Object->Common.Type == INTERNAL_TYPE_DATA))
     {
         return_PTR (NULL);
