@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: acparser.h - AML Parser subcomponent prototypes and defines
- *       $Revision: 1.55 $
+ *       $Revision: 1.56 $
  *
  *****************************************************************************/
 
@@ -127,7 +127,7 @@
 
 /* maximum virtual address */
 
-#define ACPI_MAX_AML                    ((UINT8 *)(~0UL))
+#define ACPI_MAX_AML                    (~0UL)
 
 
 #define ACPI_PARSE_DELETE_TREE          0x0001
