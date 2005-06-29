@@ -2,6 +2,7 @@
 /******************************************************************************
  *
  * Module Name: dsmethod - Parser/Interpreter interface - control method parsing
+ *              $Revision: 1.46 $
  *
  *****************************************************************************/
 
@@ -136,7 +137,7 @@
 ACPI_PARSE_STATE *
 AcpiPsCreateState (
     UINT8                   *Aml,
-    INT32                   AmlSize);
+    UINT32                  AmlSize);
 
 
 /*******************************************************************************
@@ -223,10 +224,10 @@ AcpiDsParseMethod (
 
 
     /*
-     * Parse the method, creating a parse tree.
+     * Parse the method, first pass
      *
-     * The parse also includes a first pass load of the
-     * namespace where newly declared named objects are
+     * The first pass load is
+     * where newly declared named objects are
      * added into the namespace.  Actual evaluation of
      * the named objects (what would be called a "second
      * pass") happens during the actual execution of the
@@ -235,7 +236,8 @@ AcpiDsParseMethod (
      */
 
     Status = AcpiPsParseAml (Op, ObjDesc->Method.Pcode,
-                        ObjDesc->Method.PcodeLength, PARSE_DELETE_TREE,
+                        ObjDesc->Method.PcodeLength, 
+                        ACPI_PARSE_LOAD_PASS1 | ACPI_PARSE_DELETE_TREE,
                         Entry, NULL, NULL, 
                         AcpiDsLoad1BeginOp, AcpiDsLoad1EndOp);
 
@@ -249,16 +251,18 @@ AcpiDsParseMethod (
     OwnerId = AcpiCmAllocateOwnerId (OWNER_TYPE_METHOD);
     ObjDesc->Method.OwningId = OwnerId;
 
-    /* Install the parsed tree in the method object */
-    /* TBD: [Restructure] Obsolete field? */
-
-    ObjDesc->Method.ParserOp = Op;
-
     DEBUG_EXEC (AcpiDbGenerateStatistics (Op, 1));
 
     DEBUG_PRINT (ACPI_INFO,
         ("DsParseMethod: **** [%4.4s] Parsed **** Nte=%p Op=%p\n",
         &((ACPI_NAMED_OBJECT*)ObjHandle)->Name, ObjHandle, Op));
+
+    /* Install the parsed tree in the method object */
+    /* TBD: [Restructure] Obsolete field? */
+
+
+    AcpiPsDeleteParseTree (Op);
+
 
     return_ACPI_STATUS (Status);
 }
@@ -303,50 +307,6 @@ AcpiDsBeginMethodExecution (
         return_ACPI_STATUS (AE_NULL_OBJECT);
     }
 
-    /*
-     * Lock the parser while we check for and possibly parse the
-     * control method
-     */
-
-    AcpiCmAcquireMutex (ACPI_MTX_PARSER);
-
-
-    /* If method is not parsed at this time, we must parse it first */
-
-/* TBD: REMOVE 
-    if (!ObjDesc->Method.ParserOp)
-    {
-
-        DEBUG_PRINT (ACPI_INFO,
-            ("PsxExecute: **** Parsing Method **** obj=%p\n", ObjDesc));
-
-        Status = AcpiDsParseMethod (MethodEntry);
-        if (ACPI_FAILURE (Status))
-        {
-            AcpiCmReleaseMutex (ACPI_MTX_PARSER);
-            return_ACPI_STATUS (Status);
-        }
-    }
-*/
-
-
-    /*
-     * Increment the method parse tree thread count since there
-     * is one additional thread executing in it.  If configured
-     * for deletion-on-exit, the parse tree will be deleted when
-     * the last thread completes execution of the method
-     */
-
-/* TBD: REMOVE
-    ((ACPI_DEFERRED_OP *) ObjDesc->Method.ParserOp)->ThreadCount++;
-*/
-
-    /*
-     * Parsing is complete, we can unlock the parser.  Parse tree
-     * cannot be deleted at least until this thread completes.
-     */
-
-    AcpiCmReleaseMutex (ACPI_MTX_PARSER);
 
     /*
      * If there is a concurrency limit on this method, we need to
@@ -361,8 +321,17 @@ AcpiDsBeginMethodExecution (
     }
 
 
-    return_ACPI_STATUS (Status);
+    /*
+     * Increment the method parse tree thread count since there
+     * is one additional thread executing in it.  If configured
+     * for deletion-on-exit, the parse tree will be deleted when
+     * the last thread completes execution of the method
+     */
 
+    ObjDesc->Method.ThreadCount++;
+
+
+    return_ACPI_STATUS (Status);
 }
 
 
@@ -386,7 +355,6 @@ AcpiDsCallControlMethod (
     ACPI_GENERIC_OP         *Op)
 {
     ACPI_STATUS             Status;
-    ACPI_DEFERRED_OP        *Method;
     ACPI_NAMED_OBJECT       *MethodEntry;
     ACPI_OBJECT_INTERNAL    *ObjDesc;
     ACPI_WALK_STATE         *NextWalkState;
@@ -401,10 +369,10 @@ AcpiDsCallControlMethod (
         ThisWalkState->PrevOp, ThisWalkState));
 
     /*
-     * Get the namespace entry for this control method
+     * Get the namespace entry for the control method we are about to call
      */
 
-    MethodEntry = ThisWalkState->MethodEntry;
+    MethodEntry = ThisWalkState->MethodCallEntry;
     if (!MethodEntry)
     {
         return_ACPI_STATUS (AE_NULL_ENTRY);
@@ -417,20 +385,13 @@ AcpiDsCallControlMethod (
     }
 
 
-    /* Parse method if necessary, wait on concurrency semaphore */
+    /* Init for new method, wait on concurrency semaphore */
 
     Status = AcpiDsBeginMethodExecution (MethodEntry, ObjDesc);
     if (ACPI_FAILURE (Status))
     {
         return_ACPI_STATUS (Status);
     }
-
-    /* Save the (current) Op for when this walk is restarted */
-
-/*    ThisWalkState->MethodCallOp = ThisWalkState->PrevOp;
-    ThisWalkState->PrevOp       = Op;*/
-    Method                      = ObjDesc->Method.ParserOp;
-
 
 
     /* Create and initialize a new parser state */
@@ -442,15 +403,14 @@ AcpiDsCallControlMethod (
         return_ACPI_STATUS (AE_NO_MEMORY);
     }
 
-    AcpiPsInitScope (ParserState, (ACPI_GENERIC_OP *) Method);
+    AcpiPsInitScope (ParserState, NULL);
     ParserState->StartEntry = MethodEntry;
 
 
     /* Create a new state for the preempting walk */
 
     NextWalkState = AcpiDsCreateWalkState (ObjDesc->Method.OwningId,
-                                            (ACPI_GENERIC_OP *) Method,
-                                            ObjDesc, WalkList);
+                                            NULL, ObjDesc, WalkList);
     if (!NextWalkState)
     {
         /* TBD: delete parser state */
@@ -459,14 +419,16 @@ AcpiDsCallControlMethod (
     }
 
     NextWalkState->WalkType             = WALK_METHOD;
+    NextWalkState->MethodEntry          = MethodEntry;
     NextWalkState->ParserState          = ParserState;
     NextWalkState->ParseFlags           = ThisWalkState->ParseFlags;
     NextWalkState->DescendingCallback   = ThisWalkState->DescendingCallback;
     NextWalkState->AscendingCallback    = ThisWalkState->AscendingCallback;
 
     /* The NextOp of the NextWalk will be the beginning of the method */
+    /* TBD: [Restructure] -- obsolete? */
 
-    NextWalkState->NextOp = (ACPI_GENERIC_OP *) Method;
+    NextWalkState->NextOp = NULL;
 
     /* Open a new scope */
 
@@ -504,13 +466,11 @@ AcpiDsCallControlMethod (
     }
 
     Status = AcpiPsParseAml (Op, ObjDesc->Method.Pcode,
-                                ObjDesc->Method.PcodeLength, PARSE_DELETE_TREE,
+                                ObjDesc->Method.PcodeLength, 
+                                ACPI_PARSE_LOAD_PASS1 | ACPI_PARSE_DELETE_TREE,
                                 MethodEntry, NULL, NULL,
                                 AcpiDsLoad1BeginOp, AcpiDsLoad1EndOp);
     AcpiPsDeleteParseTree (Op);
-
-
-
 
 
 
@@ -627,7 +587,6 @@ AcpiDsTerminateControlMethod (
 {
     ACPI_STATUS             Status;
     ACPI_OBJECT_INTERNAL    *ObjDesc;
-    ACPI_DEFERRED_OP        *Op;
     ACPI_NAMED_OBJECT       *MethodEntry;
 
 
@@ -654,16 +613,6 @@ AcpiDsTerminateControlMethod (
 
     AcpiCmAcquireMutex (ACPI_MTX_PARSER);
 
-    /*
-     * The root of the method parse tree should be stored
-     * in the method object
-     */
-
-    Op = ObjDesc->Method.ParserOp;
-    if (!Op)
-    {
-        goto UnlockAndExit;
-    }
 
     /* Signal completion of the execution of this method if necessary */
 
@@ -675,17 +624,16 @@ AcpiDsTerminateControlMethod (
 
     /* Decrement the thread count on the method parse tree */
 
-    Op->ThreadCount--;
-    if (!Op->ThreadCount)
+    WalkState->MethodDesc->Method.ThreadCount--;
+    if (!WalkState->MethodDesc->Method.ThreadCount)
     {
         /*
          * There are no more threads executing this method.  Perform
          * additional cleanup.
          *
-         * The method NTE is stored in the method Op
+         * The method NTE is stored in the walk state
          */
-        MethodEntry = Op->AcpiNamedObject;
-
+        MethodEntry = WalkState->MethodEntry;
         /*
          * Delete any namespace entries created immediately underneath
          * the method
@@ -700,23 +648,9 @@ AcpiDsTerminateControlMethod (
          * Delete any namespace entries created anywhere else within
          * the namespace
          */
-
         AcpiNsDeleteNamespaceByOwner (WalkState->MethodDesc->Method.OwningId);
-
         AcpiCmReleaseMutex (ACPI_MTX_NAMESPACE);
-
-        /*
-         * Delete the method's parse tree
-         */
-        AcpiPsDeleteParseTree (WalkState->MethodDesc->Method.ParserOp);
-
-        WalkState->MethodDesc->Method.ParserOp = NULL;
     }
-
-
-
-
-UnlockAndExit:
 
     AcpiCmReleaseMutex (ACPI_MTX_PARSER);
     return_ACPI_STATUS (AE_OK);
