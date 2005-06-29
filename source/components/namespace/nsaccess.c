@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: nsaccess - Top-level functions for accessing ACPI namespace
- *              $Revision: 1.130 $
+ *              $Revision: 1.131 $
  *
  ******************************************************************************/
 
@@ -145,7 +145,7 @@ ACPI_STATUS
 AcpiNsRootInitialize (void)
 {
     ACPI_STATUS             Status = AE_OK;
-    PREDEFINED_NAMES        *InitVal = NULL;
+    const PREDEFINED_NAMES  *InitVal = NULL;
     ACPI_NAMESPACE_NODE     *NewNode;
     ACPI_OPERAND_OBJECT     *ObjDesc;
 
