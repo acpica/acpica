@@ -1,557 +1,889 @@
-
-/******************************************************************************
- *
- * Module Name: exnames - interpreter/scanner name load/execute
- *              $Revision: 1.99 $
- *
- *****************************************************************************/
-
-/******************************************************************************
- *
- * 1. Copyright Notice
- *
- * Some or all of this work - Copyright (c) 1999 - 2005, Intel Corp.
- * All rights reserved.
- *
- * 2. License
- *
- * 2.1. This is your license from Intel Corp. under its intellectual property
- * rights.  You may have additional license terms from the party that provided
- * you this software, covering your right to use that party's intellectual
- * property rights.
- *
- * 2.2. Intel grants, free of charge, to any person ("Licensee") obtaining a
- * copy of the source code appearing in this file ("Covered Code") an
- * irrevocable, perpetual, worldwide license under Intel's copyrights in the
- * base code distributed originally by Intel ("Original Intel Code") to copy,
- * make derivatives, distribute, use and display any portion of the Covered
- * Code in any form, with the right to sublicense such rights; and
- *
- * 2.3. Intel grants Licensee a non-exclusive and non-transferable patent
- * license (with the right to sublicense), under only those claims of Intel
- * patents that are infringed by the Original Intel Code, to make, use, sell,
- * offer to sell, and import the Covered Code and derivative works thereof
- * solely to the minimum extent necessary to exercise the above copyright
- * license, and in no event shall the patent license extend to any additions
- * to or modifications of the Original Intel Code.  No other license or right
- * is granted directly or by implication, estoppel or otherwise;
- *
- * The above copyright and patent license is granted only if the following
- * conditions are met:
- *
- * 3. Conditions
- *
- * 3.1. Redistribution of Source with Rights to Further Distribute Source.
- * Redistribution of source code of any substantial portion of the Covered
- * Code or modification with rights to further distribute source must include
- * the above Copyright Notice, the above License, this list of Conditions,
- * and the following Disclaimer and Export Compliance provision.  In addition,
- * Licensee must cause all Covered Code to which Licensee contributes to
- * contain a file documenting the changes Licensee made to create that Covered
- * Code and the date of any change.  Licensee must include in that file the
- * documentation of any changes made by any predecessor Licensee.  Licensee
- * must include a prominent statement that the modification is derived,
- * directly or indirectly, from Original Intel Code.
- *
- * 3.2. Redistribution of Source with no Rights to Further Distribute Source.
- * Redistribution of source code of any substantial portion of the Covered
- * Code or modification without rights to further distribute source must
- * include the following Disclaimer and Export Compliance provision in the
- * documentation and/or other materials provided with distribution.  In
- * addition, Licensee may not authorize further sublicense of source of any
- * portion of the Covered Code, and must include terms to the effect that the
- * license from Licensee to its licensee is limited to the intellectual
- * property embodied in the software Licensee provides to its licensee, and
- * not to intellectual property embodied in modifications its licensee may
- * make.
- *
- * 3.3. Redistribution of Executable. Redistribution in executable form of any
- * substantial portion of the Covered Code or modification must reproduce the
- * above Copyright Notice, and the following Disclaimer and Export Compliance
- * provision in the documentation and/or other materials provided with the
- * distribution.
- *
- * 3.4. Intel retains all right, title, and interest in and to the Original
- * Intel Code.
- *
- * 3.5. Neither the name Intel nor any other trademark owned or controlled by
- * Intel shall be used in advertising or otherwise to promote the sale, use or
- * other dealings in products derived from or relating to the Covered Code
- * without prior written authorization from Intel.
- *
- * 4. Disclaimer and Export Compliance
- *
- * 4.1. INTEL MAKES NO WARRANTY OF ANY KIND REGARDING ANY SOFTWARE PROVIDED
- * HERE.  ANY SOFTWARE ORIGINATING FROM INTEL OR DERIVED FROM INTEL SOFTWARE
- * IS PROVIDED "AS IS," AND INTEL WILL NOT PROVIDE ANY SUPPORT,  ASSISTANCE,
- * INSTALLATION, TRAINING OR OTHER SERVICES.  INTEL WILL NOT PROVIDE ANY
- * UPDATES, ENHANCEMENTS OR EXTENSIONS.  INTEL SPECIFICALLY DISCLAIMS ANY
- * IMPLIED WARRANTIES OF MERCHANTABILITY, NONINFRINGEMENT AND FITNESS FOR A
- * PARTICULAR PURPOSE.
- *
- * 4.2. IN NO EVENT SHALL INTEL HAVE ANY LIABILITY TO LICENSEE, ITS LICENSEES
- * OR ANY OTHER THIRD PARTY, FOR ANY LOST PROFITS, LOST DATA, LOSS OF USE OR
- * COSTS OF PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES, OR FOR ANY INDIRECT,
- * SPECIAL OR CONSEQUENTIAL DAMAGES ARISING OUT OF THIS AGREEMENT, UNDER ANY
- * CAUSE OF ACTION OR THEORY OF LIABILITY, AND IRRESPECTIVE OF WHETHER INTEL
- * HAS ADVANCE NOTICE OF THE POSSIBILITY OF SUCH DAMAGES.  THESE LIMITATIONS
- * SHALL APPLY NOTWITHSTANDING THE FAILURE OF THE ESSENTIAL PURPOSE OF ANY
- * LIMITED REMEDY.
- *
- * 4.3. Licensee shall not export, either directly or indirectly, any of this
- * software or system incorporating such software without first obtaining any
- * required license or other approval from the U. S. Department of Commerce or
- * any other agency or department of the United States Government.  In the
- * event Licensee exports any such software from the United States or
- * re-exports any such software from a foreign destination, Licensee shall
- * ensure that the distribution and export/re-export of the software is in
- * compliance with all laws, regulations, orders, or other restrictions of the
- * U.S. Export Administration Regulations. Licensee agrees that neither it nor
- * any of its subsidiaries will export/re-export any technical data, process,
- * software, or service, directly or indirectly, to any country for which the
- * United States government or any agency thereof requires an export license,
- * other governmental approval, or letter of assurance, without first obtaining
- * such license, approval or letter.
- *
- *****************************************************************************/
-
-#define __EXNAMES_C__
-
-#include "acpi.h"
-#include "acinterp.h"
-#include "amlcode.h"
-
-#define _COMPONENT          ACPI_EXECUTER
-        ACPI_MODULE_NAME    ("exnames")
-
-/* Local prototypes */
-
-static void
-AcpiExDoDebugObject (
-    ACPI_OPERAND_OBJECT     *SourceDesc,
-    UINT32                  Level,
-    UINT32                  Index);
-
-static char *
-AcpiExAllocateNameString (
-    UINT32                  PrefixCount,
-    UINT32                  NumNameSegs);
-
-static ACPI_STATUS
-AcpiExNameSegment (
-    UINT8                   **InAmlAddress,
-    char                    *NameString);
+/*__________________________________________________________________________
+ |
+ |           Copyright (C) Intel Corporation 1994-1998
+ |
+ | All rights reserved.  No part of this program or publication may be
+ | reproduced, transmitted, transcribed, stored in a retrieval system, or
+ | translated into any language or computer language, in any form or by any
+ | means, electronic, mechanical, magnetic, optical, chemical, manual, or
+ | otherwise, without the prior written permission of Intel Corporation.
+ |__________________________________________________________________________
+ |
+ | ModuleName: isnames - interpreter/scanner name load/execute
+ |__________________________________________________________________________
+*/
 
 
-/*******************************************************************************
- *
- * FUNCTION:    AcpiExAllocateNameString
- *
- * PARAMETERS:  PrefixCount         - Count of parent levels. Special cases:
- *                                    (-1)==root,  0==none
- *              NumNameSegs         - count of 4-character name segments
- *
- * RETURN:      A pointer to the allocated string segment.  This segment must
- *              be deleted by the caller.
- *
- * DESCRIPTION: Allocate a buffer for a name string. Ensure allocated name
- *              string is long enough, and set up prefix if any.
- *
- ******************************************************************************/
+#define __ISNAMES_C__
 
-static char *
-AcpiExAllocateNameString (
-    UINT32                  PrefixCount,
-    UINT32                  NumNameSegs)
+#include <acpi.h>
+#include <interpreter.h>
+#include <amlcode.h>
+#include <namespace.h>
+#include <string.h>
+
+#define _THIS_MODULE        "isnames.c"
+#define _COMPONENT          INTERPRETER
+
+
+static ST_KEY_DESC_TABLE KDT[] = {
+   {"0000", '1', "LastFQN: Allocation failure requesting", "LastFQN: Allocation failure requesting"},
+   {"0001", '1', "AllocateNameString: name allocation failure", "AllocateNameString: name allocation failure"},
+   {"0002", '1', "NamedObject/NameSpaceModifier Failure with at least one more byte available in package", "NamedObject/NameSpaceModifier Failure with at least one more byte available in package"},
+   {"0003", '1', "During LOAD this segment started with one or more valid characters, but fewer than 4", "During LOAD this segment started with one or more valid characters, but fewer than 4"},
+   {"0004", '1', "*UNEXPECTED END* [Name]", "*UNEXPECTED END* [Name]"},
+   {"0005", '1', "Ran out of segments after processing a prefix", "Ran out of segments after processing a prefix (See Log for details)"},
+   {NULL, 'I', NULL, NULL}
+};
+
+
+/* |-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|
+ *
+ * Functions that Load/Dump/Execute Names
+ *
+ * |-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|
+ */
+
+/*****************************************************************************
+ *
+ * FUNCTION:    LastFullyQualifiedName
+ *
+ * PARAMETERS:  none
+ *
+ * RETURN:      A pointer to storage containing the last name encountered,
+ *              in fully qualified form.  Used to create labels when
+ *              generating an assembly output file.
+ *
+ * ALLOCATION:
+ * Reference   Size                 Pool  Owner                  Description
+ * FQN_ptr{sl} FQN_Length{sl:HWM}   bu    LastFullyQualifiedName Last Name seen
+ *
+ ****************************************************************************/
+
+char *
+LastFullyQualifiedName (void)
 {
-    char                    *TempPtr;
-    char                    *NameString;
-    UINT32                   SizeNeeded;
+    char                *CurrentScope;
+    char                *TempPtr;
+    size_t              MaxLength;
+    size_t              Length;
+    static  char        *FQN_ptr = NULL;
+    static  size_t      FQN_Length = 0;
 
-    ACPI_FUNCTION_TRACE ("ExAllocateNameString");
+
+    FUNCTION_TRACE ("LastFullyQualifiedName");
 
 
-    /*
-     * Allow room for all \ and ^ prefixes, all segments and a MultiNamePrefix.
-     * Also, one byte for the null terminator.
+    /* If NameString is fully qualified, just return a pointer to it. */
+
+    if (RootPrefix == NameString[0])
+    {
+        return NameString;
+    }
+
+    /* Get the current scope */
+
+    CurrentScope = NsNameOfCurrentScope();
+
+    if (CurrentScope)
+    {
+
+        /* Max length of FQN = length of scope + length of name + trailing null */
+
+        MaxLength = strlen (CurrentScope) + strlen (NameString) + 1;
+
+
+        /* 
+         * TBD: FIX WEIRD CODE:  both FQN_Length and FQN_ptr are locals 
+         * initialized to zero (null)
+         */
+        if (FQN_Length < MaxLength)
+        {
+            if (FQN_ptr)
+            {
+                OsdFree (FQN_ptr);
+            }
+            else
+            {
+                RegisterStaticBlockPtr (&FQN_ptr);
+            }
+
+            FQN_ptr = LocalCallocate (MaxLength);
+            if (!FQN_ptr)
+            {
+                /* allocation failed */
+
+                REPORT_ERROR (&KDT[0]);
+            }
+        
+            FQN_Length = MaxLength;
+        }
+
+        if (FQN_ptr)
+        {
+            /* Copy scope into FQN_ptr string; set Length to its length */
+
+            strcpy (FQN_ptr, CurrentScope);
+            Length = strlen (FQN_ptr);
+
+            /* 
+             * For each ParentPrefix at the front of NameString,
+             * remove one segment (4 bytes) from the end of the scope.
+             */
+            for (TempPtr = NameString ; ParentPrefix == *TempPtr ; ++TempPtr )
+            {
+                Length -= 4;
+                if (Length < 0)
+                {
+                    Length = 0;
+                }
+
+                FQN_ptr[Length] = '\0';
+            }
+
+            /* 
+             * Append NameString (with ParentPrefixes removed)
+             * to what is left of the scope.
+             */
+            strcat (FQN_ptr, TempPtr);
+        }
+    }
+
+    return FQN_ptr;
+
+}
+
+
+/*****************************************************************************
+ *
+ * FUNCTION:    AllocateNameString
+ *
+ * PARAMETERS:  INT32 PrefixCount   -1  => root
+ *                                  0   => none
+ *                                  else count of parent levels
+ *              INT32 NumNameSegs   count of 4-character name segments
+ *
+ * DESCRIPTION: Ensure allocated name string is long enough,
+ *              and set up prefix if any.
+ *
+ * ALLOCATION:
+ * Reference    Size                 Pool  Owner       Description
+ * NameString   NameStringSize{HWM}  bu    amlscan     Last AML Name seen
+ *
+ ****************************************************************************/
+
+void 
+AllocateNameString (INT32 PrefixCount, INT32 NumNameSegs)
+{
+    char            *TempPtr;
+    INT32           SizeNeeded;
+
+
+    FUNCTION_TRACE ("AllocateNameString");
+
+    /* 
+     * Room for all \ and ^ prefixes, all segments, and a MultiNamePrefix.
      * This may actually be somewhat longer than needed.
      */
-    if (PrefixCount == ACPI_UINT32_MAX)
-    {
-        /* Special case for root */
 
-        SizeNeeded = 1 + (ACPI_NAME_SIZE * NumNameSegs) + 2 + 1;
+    /* !!!Commented out for now, until we link INT32 a library with ABS
+     * Fix below may or may not be sufficient !!!
+
+    SizeNeeded = abs(PrefixCount) + 4 * NumNameSegs + 2;
+    */
+
+    if (PrefixCount < 0)
+    {
+        SizeNeeded = 1 /* root */ +  4 * NumNameSegs + 2;
     }
     else
     {
-        SizeNeeded = PrefixCount + (ACPI_NAME_SIZE * NumNameSegs) + 2 + 1;
+        SizeNeeded = PrefixCount + 4 * NumNameSegs + 2;
     }
 
-    /*
-     * Allocate a buffer for the name.
-     * This buffer must be deleted by the caller!
-     */
-    NameString = ACPI_MEM_ALLOCATE (SizeNeeded);
-    if (!NameString)
+#if 0
+    if (2 == PrefixCount)
     {
-        ACPI_REPORT_ERROR ((
-            "ExAllocateNameString: Could not allocate size %d\n", SizeNeeded));
-        return_PTR (NULL);
+        Trace |= TraceNames;
+    }
+    else
+    {
+        Trace &= ~TraceNames;
+    }
+#endif
+
+    if (SizeNeeded < INITIAL_NAME_BUF_SIZE)
+    {
+        SizeNeeded = INITIAL_NAME_BUF_SIZE;
+    }
+
+    /* If need > current size, free and allocate a new one. */
+    
+    if (SizeNeeded > NameStringSize)
+    {
+        if (NameString)
+        {
+            OsdFree (NameString);
+        }
+        else
+        {
+            RegisterStaticBlockPtr (&NameString);
+        }
+
+        NameString = OsdAllocate ((size_t) SizeNeeded);
+
+        if (NameString)
+        {
+            NameStringSize = SizeNeeded;
+        }
+        else
+        {
+            /*  allocation failure  */
+
+            REPORT_ERROR (&KDT[1]);
+            OutOfMemory = TRUE;
+            NameStringSize = 0;
+            return;
+        }
     }
 
     TempPtr = NameString;
 
     /* Set up Root or Parent prefixes if needed */
 
-    if (PrefixCount == ACPI_UINT32_MAX)
+    if (PrefixCount < 0)
     {
-        *TempPtr++ = AML_ROOT_PREFIX;
+        *TempPtr++ = RootPrefix;
     }
     else
     {
         while (PrefixCount--)
         {
-            *TempPtr++ = AML_PARENT_PREFIX;
+            *TempPtr++ = ParentPrefix;
         }
     }
 
-
     /* Set up Dual or Multi prefixes if needed */
-
+    
     if (NumNameSegs > 2)
     {
-        /* Set up multi prefixes   */
+        /*  set up multi prefixes   */
 
-        *TempPtr++ = AML_MULTI_NAME_PREFIX_OP;
+        *TempPtr++ = MultiNamePrefixOp;
         *TempPtr++ = (char) NumNameSegs;
     }
+
     else if (2 == NumNameSegs)
     {
         /* Set up dual prefixes */
 
-        *TempPtr++ = AML_DUAL_NAME_PREFIX;
+        *TempPtr++ = DualNamePrefix;
     }
 
-    /*
-     * Terminate string following prefixes. AcpiExNameSegment() will
-     * append the segment(s)
-     */
+    /*  Terminate string following prefixes. DoSeg() will append the segment(s) */
+
     *TempPtr = 0;
 
-    return_PTR (NameString);
+    if (LstFileHandle != NO_LOG_HANDLE)
+    {
+        DEBUG_PRINT (TRACE_NAMES, ("AllocateNameString: "));
+        
+        for (TempPtr = NameString; *TempPtr; ++TempPtr)
+        {
+            DEBUG_PRINT_RAW (TRACE_NAMES, ("%02x ", *TempPtr));
+        }
+
+        DEBUG_PRINT_RAW (TRACE_NAMES, (" %s\n", NameString));
+    }
 }
 
-/*******************************************************************************
- *
- * FUNCTION:    AcpiExNameSegment
- *
- * PARAMETERS:  InAmlAddress    - Pointer to the name in the AML code
- *              NameString      - Where to return the name. The name is appended
- *                                to any existing string to form a namepath
- *
- * RETURN:      Status
- *
- * DESCRIPTION: Extract an ACPI name (4 bytes) from the AML byte stream
- *
- ******************************************************************************/
 
-static ACPI_STATUS
-AcpiExNameSegment (
-    UINT8                   **InAmlAddress,
-    char                    *NameString)
+/*****************************************************************************
+ *
+ * FUNCTION:    NcOK
+ *
+ * PARAMETERS:  INT32   Character       the character to be examined
+ *
+ * RETURN:      1 if Character may appear in a name, else 0
+ *
+ ****************************************************************************/
+
+INT32 
+NcOK (INT32 Character)
 {
-    char                    *AmlAddress = (void *) *InAmlAddress;
-    ACPI_STATUS             Status = AE_OK;
-    UINT32                  Index;
-    char                    CharBuf[5];
+
+    return ((Character == '_') || (Character >= 'A' && Character <= 'Z') ||
+                (Character >= '0' && Character <= '9'));
+}
 
 
-    ACPI_FUNCTION_TRACE ("ExNameSegment");
+/*****************************************************************************
+ * 
+ * FUNCTION:    GetEncodedPkgLen
+ *
+ * PARAMETERS:  long    LastPkgLen  latest value decoded by DoPkgLength() for
+ *                                  most recently examined package or field
+ *
+ * RETURN:      int NumBytes        Number of bytes contained in package length encoding
+ *
+ * DESCRIPTION: Decodes the Package Length. Upper 2 bits are are used to
+ *              tell if type 1, 2, 3, or 4.
+ *                  0x3F = Max 1 byte encoding,
+ *                  0xFFF = Max 2 byte encoding,
+ *                  0xFFFFF = Max 3 Byte encoding,
+ *                  0xFFFFFFFFF = Max 4 Byte encoding.
+ *
+ ****************************************************************************/
 
 
-    /*
-     * If first character is a digit, then we know that we aren't looking at a
-     * valid name segment
-     */
-    CharBuf[0] = *AmlAddress;
+#define Type1   64              /*  or 0x40 Max encoding size = 0x3F    */
+#define Type2   16384           /*  or 0x4000 Max encoding size = 0xFFF */
+#define Type3   4194304         /*  or 0x400000 Max encoding size = 0xFFFFF */
+#define Type4   1073741824      /*  or 0x40000000 Max encoding size = 0xFFFFFFF */
+
+
+INT32 
+GetEncodedPkgLen (INT32 LastPkgLen)
+{
+    INT32           NumBytes = 0;
+
+    FUNCTION_TRACE ("GetEncodedPkgLen");
+
+
+    if (LastPkgLen < Type1)
+        NumBytes = 1;
+    
+    else if (LastPkgLen < Type2)
+        NumBytes = 2;
+    
+    else if (LastPkgLen < Type3)
+        NumBytes = 3;
+    
+    else if (LastPkgLen < Type4)
+        NumBytes = 4;
+
+    return NumBytes;
+}
+
+
+/*****************************************************************************
+ *
+ * FUNCTION:    DoSeg
+ *
+ * PARAMETERS:  OpMode      LoadExecMode      Load or Exec
+ *
+ * RETURN:      S_SUCCESS, S_FAILURE, or S_ERROR
+ *
+ * DESCRIPTION: Print/exec a name segment (4 bytes)
+ *
+ ****************************************************************************/
+
+static INT32 
+DoSeg (OpMode LoadExecMode)
+{
+    INT32           Index;
+    INT32           Excep = S_SUCCESS;
+    char            CharBuf[5];
+
+
+    FUNCTION_TRACE ("DoSeg");
+
+
+    LINE_SET (4, LoadExecMode);
+
+    /*  If first character is a digit, we aren't looking at a valid name segment    */
+
+    CharBuf[0] = Peek ();
 
     if ('0' <= CharBuf[0] && CharBuf[0] <= '9')
     {
-        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "leading digit: %c\n", CharBuf[0]));
-        return_ACPI_STATUS (AE_CTRL_PENDING);
+        DEBUG_PRINT (ACPI_ERROR, ("DoSeg: leading digit: %c\n", CharBuf[0]));
+        Excep = S_FAILURE;
     }
 
-    ACPI_DEBUG_PRINT ((ACPI_DB_LOAD, "Bytes from stream:\n"));
-
-    for (Index = 0;
-        (Index < ACPI_NAME_SIZE) && (AcpiUtValidAcpiCharacter (*AmlAddress));
-        Index++)
+    else 
     {
-        CharBuf[Index] = *AmlAddress++;
-        ACPI_DEBUG_PRINT ((ACPI_DB_LOAD, "%c\n", CharBuf[Index]));
-    }
+        DEBUG_PRINT (TRACE_LOAD, ("DoSeg: \n"));
 
-
-    /* Valid name segment  */
-
-    if (Index == 4)
-    {
-        /* Found 4 valid characters */
-
-        CharBuf[4] = '\0';
-
-        if (NameString)
+        for (Index = 4; Index > 0 && NcOK (Peek ()); --Index)
         {
-            ACPI_STRCAT (NameString, CharBuf);
-            ACPI_DEBUG_PRINT ((ACPI_DB_NAMES,
-                "Appended to - %s \n", NameString));
+            ConsumeAMLStreamBytes (1, (UINT8 *) &CharBuf[4 - Index]);
+            DEBUG_PRINT (TRACE_LOAD, ("%c\n", CharBuf[4 - Index]));
         }
+    }
+
+
+    if (S_SUCCESS == Excep)
+    {
+        /*  valid name segment  */
+
+        if (0 == Index)
+        {
+            /* Found 4 valid characters */
+        
+            CharBuf[4] = '\0';
+
+            if (NameStringSize)
+            {
+                strcat (NameString, CharBuf);
+            }
+
+            if (fAsmFile && Load1 != LoadExecMode)
+            {
+                OsdPrintf (fAsmFile, " \"%s\",", CharBuf);
+            }
+
+            DEBUG_PRINT (TRACE_NAMES, ("DoSeg: %s \n", CharBuf));
+        }
+
+        else if (4 == Index)
+        {
+            /* 
+             * First character was not a valid name character,
+             * so we are looking at something other than a name.
+             */
+            DEBUG_PRINT (ACPI_ERROR, ("Leading char not alpha: %02Xh (not a name)\n", CharBuf[0]));
+            Excep = S_FAILURE;
+        }
+
         else
         {
-            ACPI_DEBUG_PRINT ((ACPI_DB_NAMES,
-                "No Name string - %s \n", CharBuf));
+            /* Segment started with one or more valid characters, but fewer than 4 */
+        
+            Excep = S_ERROR;
+            LINE_SET (22, LoadExecMode);
+            DEBUG_PRINT (TRACE_LOAD, (" *Bad char %02x in name*\n", Peek ()));
+
+            if (Load == LoadExecMode)
+            {
+                /*  second pass load mode   */
+
+                LINE_SET (strlen (KDT[3].Description), LoadExecMode);
+                REPORT_ERROR (&KDT[3]);
+                LINE_SET (0, LoadExecMode);
+            }
+
+            else
+            {
+                DEBUG_PRINT (ACPI_ERROR, ("DoSeg: Bad char %02x in name\n", Peek ()));
+            }
         }
-    }
-    else if (Index == 0)
-    {
-        /*
-         * First character was not a valid name character,
-         * so we are looking at something other than a name.
-         */
-        ACPI_DEBUG_PRINT ((ACPI_DB_INFO,
-            "Leading character is not alpha: %02Xh (not a name)\n",
-            CharBuf[0]));
-        Status = AE_CTRL_PENDING;
-    }
-    else
-    {
-        /*
-         * Segment started with one or more valid characters, but fewer than
-         * the required 4
-         */
-        Status = AE_AML_BAD_NAME;
-        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
-            "Bad character %02x in name, at %p\n",
-            *AmlAddress, AmlAddress));
+    
     }
 
-    *InAmlAddress = (UINT8 *) AmlAddress;
-    return_ACPI_STATUS (Status);
+    DEBUG_PRINT (TRACE_EXEC, ("Leave DoSeg %s \n", RV[Excep]));
+
+    return Excep;
 }
 
 
-/*******************************************************************************
+/*****************************************************************************
  *
- * FUNCTION:    AcpiExGetNameString
+ * FUNCTION:    DoName
  *
- * PARAMETERS:  DataType            - Object type to be associated with this
- *                                    name
- *              InAmlAddress        - Pointer to the namestring in the AML code
- *              OutNameString       - Where the namestring is returned
- *              OutNameLength       - Length of the returned string
+ * PARAMETERS:  NsType  DataType        Data type to be associated with this name
+ *              OpMode  LoadExecMode    Load or Exec
  *
- * RETURN:      Status, namestring and length
+ * RETURN:      S_SUCCESS, S_FAILURE, or S_ERROR
  *
- * DESCRIPTION: Extract a full namepath from the AML byte stream,
- *              including any prefixes.
+ * DESCRIPTION: Print a name, including any prefixes, enter it in the
+ *              name space, and put its handle on the stack.
  *
- ******************************************************************************/
+ * ALLOCATION:
+ * Reference   Size                 Pool  Owner       Description
+ * ObjStack    s(OBJECT_DESCRIPTOR) bu    amlexec     Name(Lvalue)
+ *
+ ****************************************************************************/
 
-ACPI_STATUS
-AcpiExGetNameString (
-    ACPI_OBJECT_TYPE        DataType,
-    UINT8                   *InAmlAddress,
-    char                    **OutNameString,
-    UINT32                  *OutNameLength)
+INT32 
+DoName (NsType DataType, OpMode LoadExecMode)
 {
-    ACPI_STATUS             Status = AE_OK;
-    UINT8                   *AmlAddress = InAmlAddress;
-    char                    *NameString = NULL;
-    UINT32                  NumSegments;
-    UINT32                  PrefixCount = 0;
-    BOOLEAN                 HasPrefix = FALSE;
+    INT32           NumSegments;
+    INT32           PrefixCount = 0;
+    INT32           Excep = S_SUCCESS;
+    UINT8           Prefix = 0;
 
 
-    ACPI_FUNCTION_TRACE_PTR ("ExGetNameString", AmlAddress);
+    FUNCTION_TRACE ("DoName");
 
 
-    if (ACPI_TYPE_LOCAL_REGION_FIELD == DataType   ||
-        ACPI_TYPE_LOCAL_BANK_FIELD == DataType     ||
-        ACPI_TYPE_LOCAL_INDEX_FIELD == DataType)
-    {
-        /* Disallow prefixes for types associated with FieldUnit names */
+BREAKPOINT3;
 
-        NameString = AcpiExAllocateNameString (0, 1);
-        if (!NameString)
-        {
-            Status = AE_NO_MEMORY;
-        }
-        else
-        {
-            Status = AcpiExNameSegment (&AmlAddress, NameString);
-        }
+    CheckTrash ("enter DoName");
+    LINE_SET (1, LoadExecMode);
+/*     DEBUG_PRINT (TRACE_LOAD, (" ")); REMOVE !! */
+
+    if (DefField == DataType || 
+        BankField == DataType || 
+        IndexField == DataType)
+    {   
+        /*  Disallow prefixes for types associated with field names */
+
+        AllocateNameString (0, 1);
+        Excep = DoSeg (LoadExecMode);
     }
+
     else
-    {
-        /*
-         * DataType is not a field name.
-         * Examine first character of name for root or parent prefix operators
-         */
-        switch (*AmlAddress)
-        {
-        case AML_ROOT_PREFIX:
+    {   
+        /*  DataType is not a field name   */
 
-            ACPI_DEBUG_PRINT ((ACPI_DB_LOAD, "RootPrefix(\\) at %p\n",
-                AmlAddress));
+        switch (PeekOp ())
+        {   
+            /*  examine first character of name for root or parent prefix operators */
 
-            /*
+        case RootPrefix:
+            LINE_SET (1, LoadExecMode);
+            ConsumeAMLStreamBytes (1, &Prefix);
+            DEBUG_PRINT (TRACE_LOAD, ("RootPrefix: %x\n", Prefix));
+
+            /* 
              * Remember that we have a RootPrefix --
-             * see comment in AcpiExAllocateNameString()
+             * see comment in AllocateNameString()
              */
-            AmlAddress++;
-            PrefixCount = ACPI_UINT32_MAX;
-            HasPrefix = TRUE;
+            PrefixCount = -1;
+            if (fAsmFile && Load1 != LoadExecMode)
+            {
+                OsdPrintf (fAsmFile, " \"%c\",", RootPrefix);
+            }
+
             break;
 
-
-        case AML_PARENT_PREFIX:
-
-            /* Increment past possibly multiple parent prefixes */
-
+        case ParentPrefix:
             do
             {
-                ACPI_DEBUG_PRINT ((ACPI_DB_LOAD, "ParentPrefix (^) at %p\n",
-                    AmlAddress));
+                LINE_SET (1, LoadExecMode);
+                ConsumeAMLStreamBytes (1, &Prefix);
+                DEBUG_PRINT (TRACE_LOAD, ("ParentPrefix: %x\n", Prefix));
 
-                AmlAddress++;
-                PrefixCount++;
+                ++PrefixCount;
+                if (fAsmFile && Load1 != LoadExecMode)
+                {
+                    OsdPrintf (fAsmFile, " \"%c\",", ParentPrefix);
+                }
 
-            } while (*AmlAddress == AML_PARENT_PREFIX);
-
-            HasPrefix = TRUE;
+            } while (PeekOp () == ParentPrefix);
+            
             break;
 
-
         default:
-
-            /* Not a prefix character */
-
             break;
         }
 
-        /* Examine first character of name for name segment prefix operator */
-
-        switch (*AmlAddress)
+        switch (PeekOp ())
         {
-        case AML_DUAL_NAME_PREFIX:
+            /* examine first character of name for name segment prefix operator */
+            
+        case DualNamePrefix:
+            LINE_SET (1, LoadExecMode);
+            ConsumeAMLStreamBytes (1, &Prefix);
+            DEBUG_PRINT (TRACE_LOAD, ("DualNamePrefix: %x\n", Prefix));
 
-            ACPI_DEBUG_PRINT ((ACPI_DB_LOAD, "DualNamePrefix at %p\n",
-                AmlAddress));
-
-            AmlAddress++;
-            NameString = AcpiExAllocateNameString (PrefixCount, 2);
-            if (!NameString)
+            if (fAsmFile && Load1 != LoadExecMode)
             {
-                Status = AE_NO_MEMORY;
-                break;
+                OsdPrintf (fAsmFile, " \"%c\",", DualNamePrefix);
             }
 
-            /* Indicate that we processed a prefix */
+            AllocateNameString (PrefixCount, 2);
 
-            HasPrefix = TRUE;
+            /* Ensure PrefixCount != 0 to remember processing a prefix */
+            
+            PrefixCount += 2;
 
-            Status = AcpiExNameSegment (&AmlAddress, NameString);
-            if (ACPI_SUCCESS (Status))
+            if ((Excep = DoSeg (LoadExecMode)) == S_SUCCESS)
             {
-                Status = AcpiExNameSegment (&AmlAddress, NameString);
-            }
-            break;
-
-
-        case AML_MULTI_NAME_PREFIX_OP:
-
-            ACPI_DEBUG_PRINT ((ACPI_DB_LOAD, "MultiNamePrefix at %p\n",
-                AmlAddress));
-
-            /* Fetch count of segments remaining in name path */
-
-            AmlAddress++;
-            NumSegments = *AmlAddress;
-
-            NameString = AcpiExAllocateNameString (PrefixCount, NumSegments);
-            if (!NameString)
-            {
-                Status = AE_NO_MEMORY;
-                break;
-            }
-
-            /* Indicate that we processed a prefix */
-
-            AmlAddress++;
-            HasPrefix = TRUE;
-
-            while (NumSegments &&
-                    (Status = AcpiExNameSegment (&AmlAddress, NameString)) ==
-                        AE_OK)
-            {
-                NumSegments--;
+                Excep = DoSeg (LoadExecMode);
             }
 
             break;
 
+        case MultiNamePrefixOp:
+            LINE_SET (1, LoadExecMode);
+            ConsumeAMLStreamBytes (1, &Prefix);
+            DEBUG_PRINT (TRACE_LOAD, ("MultiNamePrefix: %x\n", Prefix));
 
-        case 0:
-
-            /* NullName valid as of 8-12-98 ASL/AML Grammar Update */
-
-            if (PrefixCount == ACPI_UINT32_MAX)
+            if (fAsmFile && Load1 != LoadExecMode)
             {
-                ACPI_DEBUG_PRINT ((ACPI_DB_EXEC,
-                    "NameSeg is \"\\\" followed by NULL\n"));
+                OsdPrintf (fAsmFile, " \"%c\",", MultiNamePrefixOp);
             }
 
-            /* Consume the NULL byte */
+            NumSegments = Peek ();                      /* fetch count of segments */
 
-            AmlAddress++;
-            NameString = AcpiExAllocateNameString (PrefixCount, 0);
-            if (!NameString)
+            if (DoByteConst (Load, 0) != S_SUCCESS)
             {
-                Status = AE_NO_MEMORY;
+                /* unexpected end of AML */
+
+                LINE_SET (23, LoadExecMode);
+                REPORT_ERROR (&KDT[4]);
+                
+                LINE_SET (0, LoadExecMode);
+                Excep = S_ERROR;
                 break;
+            }
+
+            AllocateNameString (PrefixCount, NumSegments);
+
+            /* Ensure PrefixCount != 0 to remember processing a prefix */
+            
+            PrefixCount += 2;
+
+            while (NumSegments && (Excep = DoSeg (LoadExecMode)) == S_SUCCESS)
+            {
+                --NumSegments;
             }
 
             break;
 
+        case 0: 
+            
+            /*  NullName valid as of 8-12-98 ASL/AML Grammar Update */
+            
+            if (-1 == PrefixCount)  
+            {
+                /*  RootPrefix followed by NULL */
+            
+                DEBUG_PRINT (TRACE_EXEC,
+                                ("DoName: NameSeg is \"\\\" followed by NULL\n"));
+            }
+
+            ConsumeAMLStreamBytes (1, NULL);    /*  consume NULL byte   */
+            
+            if (fAsmFile && (Load1 != LoadExecMode))
+            {
+                /* This is probably not the right thing to do!! */
+
+                OsdWrite (" \"00\",", 1, 4, fAsmFile);
+            }
+
+            AllocateNameString (PrefixCount, 0);
+            break;
 
         default:
 
-            /* Name segment string */
+            /*  name segment string */
 
-            NameString = AcpiExAllocateNameString (PrefixCount, 1);
-            if (!NameString)
-            {
-                Status = AE_NO_MEMORY;
-                break;
-            }
-
-            Status = AcpiExNameSegment (&AmlAddress, NameString);
+            AllocateNameString (PrefixCount, 1);
+            Excep = DoSeg (LoadExecMode);
             break;
-        }
+
+        }   /*  switch (PeekOp ())    */
     }
 
-    if (AE_CTRL_PENDING == Status && HasPrefix)
+    if (S_SUCCESS == Excep)
+    {
+        NsHandle        handle;
+
+        /* All prefixes have been handled, and the name is in NameString */
+
+        DeleteObject ((OBJECT_DESCRIPTOR **) &ObjStack[ObjStackTop]);
+        ObjStack[ObjStackTop] = NsEnter (NameString, DataType, LoadExecMode);
+
+        /* Help view ObjStack during debugging */
+
+        handle = ObjStack[ObjStackTop];
+
+        /* Globally set this handle for use later */
+
+        if (Load1 == LoadExecMode)
+        {
+            LastMethod = handle;
+        }
+
+        if (Exec == LoadExecMode && !ObjStack[ObjStackTop])
+        {
+            DEBUG_PRINT (ACPI_ERROR, ("DoName: Name Lookup Failure\n"));
+            Excep = S_ERROR;
+        }
+
+        else if (Load1 != LoadExecMode)
+        {   
+            /*  not first pass load */
+
+            if (Any == DataType && Method == NsValType (ObjStack[ObjStackTop]))
+            {   
+                /* 
+                 * Method reference call 
+                 * The name just looked up is a Method that was already
+                 * defined, so this is a reference (call).  Scan the args.
+                 * The arg count is in the MethodFlags, which is the first
+                 * byte of the Method's AML.
+                 */
+                meth        *MethodPtr = (meth *) NsValPtr (ObjStack[ObjStackTop]);
+
+                if (MethodPtr)
+                {   
+                    /*  MethodPtr valid   */
+                    
+                    INT32       MethodFlags;
+
+                    MethodFlags = GetPCodeByte (MethodPtr->Offset);
+
+                    if (AML_END_OF_BLOCK == MethodFlags)
+                    {
+                        DEBUG_PRINT (ACPI_ERROR, ("DoName: invoked Method %s has no AML\n",
+                                        NameString));
+                        Excep = S_ERROR;
+                    }
+
+                    else
+                    {   
+                        /*  MethodPtr points at valid method  */
+                        
+                        INT32       ArgCount = (MethodFlags & METHOD_ARG_COUNT_MASK)
+                                                >> METHOD_ARG_COUNT_SHIFT;
+                        INT32       StackBeforeArgs = ObjStackTop;
+
+
+                        if (((Excep = PushIfExec (Exec)) == S_SUCCESS) &&
+                             (ArgCount > 0))
+                        {   
+                            /*  get arguments   */
+                            
+                            Indent (3); /*  increment log display indentation level */
+                            
+                            while (ArgCount-- && (S_SUCCESS == Excep))
+                            {   
+                                /*  get each argument   */
+                                
+                                if (S_SUCCESS == (Excep = DoOpCode (LoadExecMode)))    /*  get argument    */
+                                {   
+                                    /*  argument on object stack    */
+                                    
+                                    /*  
+                                     * Arguments (e.g., local variables and control
+                                     * method arguments) passed to control methods
+                                     * are values, not references.
+                                     * TBD:    RefOf problem with iGetRvalue() conversion.
+                                     */
+                                    if (Exec == LoadExecMode)
+                                    {
+                                        Excep = GetRvalue ((OBJECT_DESCRIPTOR **)
+                                            &ObjStack[ObjStackTop]);
+                                    }
+
+                                    if (S_SUCCESS == Excep)
+                                    {
+                                        Excep = PushIfExec (LoadExecMode);    /*  inc iObjStackTop    */
+                                    }
+                                } 
+                            }
+
+                            Indent (-3);    /*  decrement log display indentation level */
+                        } 
+
+                        if ((S_SUCCESS == Excep) && (Exec == LoadExecMode))
+                        {   
+                            /* execution mode  */
+                            /* Mark end of arg list */
+
+                            DeleteObject ((OBJECT_DESCRIPTOR **) &ObjStack[ObjStackTop]);
+                            ObjStack[ObjStackTop] = NULL;
+
+                            /* Establish Method's scope as current */
+
+                            NsPushMethodScope ((NsHandle) ObjStack[StackBeforeArgs]);
+
+                            DEBUG_PRINT (TRACE_LOAD,
+                                        ("Calling %4.4s, StackBeforeArgs %d  ObjStackTop %d\n",
+                                        ObjStack[StackBeforeArgs], StackBeforeArgs,
+                                        ObjStackTop));
+
+                            /* Execute the Method, passing the stacked args */
+                            
+                            Excep = AmlExec (
+                                        MethodPtr->Offset + 1, MethodPtr->Length - 1,
+                                        (OBJECT_DESCRIPTOR **)&ObjStack[StackBeforeArgs + 1]);
+
+                            DEBUG_PRINT (TRACE_LOAD,
+                                    ("AmlExec Excep=%s, StackBeforeArgs %d  ObjStackTop %d\n",
+                                    RV[Excep], StackBeforeArgs, ObjStackTop));
+
+                            if (S_RETURN == Excep)
+                            {
+                                /* recover returned value */
+
+                                if (StackBeforeArgs < ObjStackTop)
+                                {
+                                    DeleteObject ((OBJECT_DESCRIPTOR **) &ObjStack[StackBeforeArgs]);
+                                    ObjStack[StackBeforeArgs] = ObjStack[ObjStackTop--];
+                                }
+
+                                Excep = S_SUCCESS;
+                            }
+
+                            /* Pop scope stack */
+                            
+                            NsPopCurrent (Any);
+
+                        }   /*  execution mode  */
+
+                        /* Clean up object stack */
+                        
+                        while (ObjStackTop > StackBeforeArgs)
+                        {
+                            DeleteObject ((OBJECT_DESCRIPTOR **) &ObjStack[ObjStackTop]);
+
+                            /* Zero out the slot and move on */
+
+                            ObjStack[ObjStackTop] = NULL;
+                            ObjStackTop--;
+                        }
+                    }
+                } 
+            }
+        } 
+    }
+
+    else if (S_FAILURE == Excep && PrefixCount != 0)
     {
         /* Ran out of segments after processing a prefix */
 
-        ACPI_REPORT_ERROR (
-            ("ExDoName: Malformed Name at %p\n", NameString));
-        Status = AE_AML_BAD_NAME;
+        if (Load1 == LoadExecMode || Load == LoadExecMode)
+        {
+            LINE_SET (16, LoadExecMode);
+            DEBUG_PRINT (ACPI_ERROR, ("***Malformed Name***\n"));
+
+            REPORT_ERROR (&KDT[5]);
+            LINE_SET (0, LoadExecMode);
+        }
+
+        else
+        {
+            DEBUG_PRINT (ACPI_ERROR, ("DoName: Malformed Name\n"));
+        }
+
+        Excep = S_ERROR;
     }
 
-    *OutNameString = NameString;
-    *OutNameLength = (UINT32) (AmlAddress - InAmlAddress);
+    CheckTrash ("leave DoName");
 
-    return_ACPI_STATUS (Status);
+    DEBUG_PRINT (TRACE_EXEC, ("Leave DoName %s \n", RV[Excep]));
+
+    return Excep;
 }
 
+
+/*****************************************************************************
+ *
+ * FUNCTION:    GenLabel
+ *
+ * PARAMETERS:  char    *Name     The name to be generated
+ *
+ * DESCRIPTION: If generating assembly output, generate a label.
+ *              As of 3/5/97, this generates a comment instead so we don't
+ *              need to worry about multiple definitions.
+ *
+ ****************************************************************************/
+
+void 
+GenLabel (char *Name)
+{
+    FUNCTION_TRACE ("GenLabel");
+
+
+    if (fAsmFile)
+    {
+        OsdPrintf (fAsmFile, "\n; %s", Name);
+    }
+
+}
 
