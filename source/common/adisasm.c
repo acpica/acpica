@@ -118,6 +118,7 @@
 #include <parser.h>
 #include <amlcode.h>
 #include <debugger.h>
+#include <namesp.h>
 #include "adcommon.h"
 
 #include <stdio.h>
@@ -210,7 +211,7 @@ AdDisplayTables (void)
 {
 
 
-    if (!DsdtPtr || !Gbl_ParsedNamespaceRoot)
+    if (!Gbl_DSDT || !Gbl_ParsedNamespaceRoot)
     {
         return AE_NOT_EXIST;
     }
@@ -224,7 +225,7 @@ AdDisplayTables (void)
     DbDisplayOp (PsGetChild (Gbl_ParsedNamespaceRoot), ACPI_UINT32_MAX);
 
     OsdPrintf ("\n\nDSDT Header:\n");
-    CmDumpBuffer ((char *) DsdtPtr, sizeof (ACPI_TABLE_HEADER), DB_BYTE_DISPLAY, ACPI_UINT32_MAX);
+    CmDumpBuffer ((char *) Gbl_DSDT, sizeof (ACPI_TABLE_HEADER), DB_BYTE_DISPLAY, ACPI_UINT32_MAX);
 
     OsdPrintf ("DSDT Body (Length 0x%X)\n", AmlLength);
     CmDumpBuffer ((char *) AmlPtr, AmlLength, DB_BYTE_DISPLAY, ACPI_UINT32_MAX);
@@ -426,23 +427,41 @@ AdGetTables (
 ACPI_STATUS
 AdParseTables (void)
 {
-    ACPI_STATUS             Status;
+    ACPI_STATUS             Status = AE_OK;
 
 
-    if (!DsdtPtr)
+    if (!Gbl_DSDT)
     {
         return AE_NOT_EXIST;
     }
 
+    /* Create the root object */
 
-    AmlPtr = DsdtPtr + sizeof (ACPI_TABLE_HEADER);
-    AmlLength = DsdtLength - sizeof (ACPI_TABLE_HEADER);
-
-    Status = PsParseTable (AmlPtr, AmlLength, NULL, NULL, &root);
-    if (ACPI_SUCCESS (Status))
+    Gbl_ParsedNamespaceRoot = PsAllocOp (AML_ScopeOp);
+    if (!Gbl_ParsedNamespaceRoot)
     {
-        Status = AdSecondPassParse (root);
+        return AE_NO_MEMORY;
     }
+
+    /* Initialize the root object */
+
+    ((ACPI_NAMED_OP *) Gbl_ParsedNamespaceRoot)->Name = * (UINT32 *) NS_ROOT;
+
+    /* Pass 1:  Parse everything except control method bodies */
+
+    DsdtLength = Gbl_DSDT->Length;
+    AmlLength = DsdtLength  - sizeof (ACPI_TABLE_HEADER);
+    AmlPtr = ((UINT8 *) Gbl_DSDT + sizeof (ACPI_TABLE_HEADER));
+
+    Status = PsParseAml (Gbl_ParsedNamespaceRoot, AmlPtr, AmlLength); 
+    if (ACPI_FAILURE (Status))
+    {
+        return Status;
+    }
+
+    /* Pass 2: Parse control methods and link their parse trees into the main parse tree */
+
+    Status = AdSecondPassParse (Gbl_ParsedNamespaceRoot);
 
     return Status;
 }
