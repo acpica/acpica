@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dsmethod - Parser/Interpreter interface - control method parsing
- *              $Revision: 1.52 $
+ *              $Revision: 1.53 $
  *
  *****************************************************************************/
 
@@ -524,7 +524,7 @@ AcpiDsRestartControlMethod (
              * NULL if no return value
              */
 
-            Status = AcpiDsResultStackPush (ReturnDesc, WalkState);
+            Status = AcpiDsResultPush (ReturnDesc, WalkState);
             if (ACPI_FAILURE (Status))
             {
                 AcpiCmRemoveReference (ReturnDesc);
