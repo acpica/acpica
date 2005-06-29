@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: aclocal.h - Internal data types used across the ACPI subsystem
- *       $Revision: 1.96 $
+ *       $Revision: 1.98 $
  *
  *****************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, 2000, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -165,7 +165,7 @@ typedef UINT32                      ACPI_MUTEX_HANDLE;
 #define NUM_MTX                     MAX_MTX+1
 
 
-#ifdef ACPI_DEBUG
+#if defined(ACPI_DEBUG) || defined(ENABLE_DEBUGGER)
 #ifdef DEFINE_ACPI_GLOBALS
 
 /* Names for the mutexes used in the subsystem */
