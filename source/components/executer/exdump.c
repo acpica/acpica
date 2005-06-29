@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: exdump - Interpreter debug output routines
- *              $Revision: 1.162 $
+ *              $Revision: 1.163 $
  *
  *****************************************************************************/
 
@@ -711,6 +711,7 @@ AcpiExDumpObjectDescriptor (
 
         AcpiExOutInteger ("Length",          ObjDesc->Buffer.Length);
         AcpiExOutPointer ("Pointer",         ObjDesc->Buffer.Pointer);
+        ACPI_DUMP_BUFFER (ObjDesc->Buffer.Pointer, ObjDesc->Buffer.Length);
         break;
 
 
