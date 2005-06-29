@@ -130,11 +130,14 @@ static ST_KEY_DESC_TABLE KDT[] = {
  *****************************************************************************/
 
 ACPI_STATUS
-AmlExecuteMethod (INT32 Offset, INT32 Length, ACPI_OBJECT **Params)
+AmlExecuteMethod (
+    INT32                   Offset, 
+    INT32                   Length, 
+    ACPI_OBJECT             **Params)
 {
-    ACPI_STATUS     Status;
-    INT32           i1;
-    INT32           i2;
+    ACPI_STATUS             Status;
+    INT32                   i1;
+    INT32                   i2;
 
 
     FUNCTION_TRACE ("AmlExecuteMethod");
@@ -243,12 +246,14 @@ AmlExecuteMethod (INT32 Offset, INT32 Length, ACPI_OBJECT **Params)
  ****************************************************************************/
 
 ACPI_STATUS
-AmlExecStore (ACPI_OBJECT *ValDesc, ACPI_OBJECT *DestDesc)
+AmlExecStore (
+    ACPI_OBJECT             *ValDesc, 
+    ACPI_OBJECT             *DestDesc)
 {
-    ACPI_HANDLE     TempHandle;
-    ACPI_STATUS     Status = AE_AML_ERROR;
-    INT32           Stacked = FALSE;
-    BOOLEAN         Locked = FALSE;
+    ACPI_HANDLE             TempHandle;
+    ACPI_STATUS             Status = AE_AML_ERROR;
+    INT32                   Stacked = FALSE;
+    BOOLEAN                 Locked = FALSE;
 
 
     FUNCTION_TRACE ("AmlExecStore");

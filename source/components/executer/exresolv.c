@@ -128,10 +128,11 @@ static ST_KEY_DESC_TABLE KDT[] = {
  ****************************************************************************/
 
 BOOLEAN
-AmlIsMethodValue (ACPI_OBJECT *ObjDesc)
+AmlIsMethodValue (
+    ACPI_OBJECT             *ObjDesc)
 {
-    INT32           MethodNestLevel;
-    INT32           Index;
+    INT32                   MethodNestLevel;
+    INT32                   Index;
 
 
     FUNCTION_TRACE ("AmlIsMethodValue");
@@ -174,12 +175,14 @@ AmlIsMethodValue (ACPI_OBJECT *ObjDesc)
  ****************************************************************************/
 
 ACPI_STATUS
-AmlGetFieldUnitValue (ACPI_OBJECT *FieldDesc, ACPI_OBJECT *ResultDesc)
+AmlGetFieldUnitValue (
+    ACPI_OBJECT             *FieldDesc, 
+    ACPI_OBJECT             *ResultDesc)
 {
-    ACPI_STATUS         Status = AE_AML_ERROR;
-    UINT32              Mask;
-    UINT8               *Location = NULL;
-    BOOLEAN             Locked = FALSE;
+    ACPI_STATUS             Status = AE_AML_ERROR;
+    UINT32                  Mask;
+    UINT8                   *Location = NULL;
+    BOOLEAN                 Locked = FALSE;
 
 
     FUNCTION_TRACE ("AmlGetFieldUnitValue");
@@ -288,13 +291,14 @@ AmlGetFieldUnitValue (ACPI_OBJECT *FieldDesc, ACPI_OBJECT *ResultDesc)
  ****************************************************************************/
 
 ACPI_STATUS
-AmlGetRvalue (ACPI_OBJECT **StackPtr)
+AmlGetRvalue (
+    ACPI_OBJECT             **StackPtr)
 {
-    ACPI_HANDLE         TempHandle = NULL;
-    ACPI_OBJECT         *ObjDesc = NULL;
-    ACPI_STATUS         Status = AE_OK;
-    UINT8				MvIndex = 0;
-    BOOLEAN             Locked;
+    ACPI_HANDLE             TempHandle = NULL;
+    ACPI_OBJECT             *ObjDesc = NULL;
+    ACPI_STATUS             Status = AE_OK;
+    UINT8				    MvIndex = 0;
+    BOOLEAN                 Locked;
 
 
     FUNCTION_TRACE ("AmlGetRvalue");
