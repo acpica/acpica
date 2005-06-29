@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: actypes.h - Common data types for the entire ACPI subsystem
- *       $Revision: 1.222 $
+ *       $Revision: 1.223 $
  *
  *****************************************************************************/
 
@@ -1211,7 +1211,7 @@ typedef struct AcpiResource
 #ifdef _HW_ALIGNMENT_SUPPORT
 #define ACPI_ALIGN_RESOURCE_SIZE(Length)    (Length)
 #else
-#define ACPI_ALIGN_RESOURCE_SIZE(Length)    ROUND_UP_TO_NATIVE_WORD(Length)
+#define ACPI_ALIGN_RESOURCE_SIZE(Length)    ACPI_ROUND_UP_TO_NATIVE_WORD(Length)
 #endif
 
 /*
