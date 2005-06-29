@@ -3,7 +3,7 @@
 /******************************************************************************
  *
  * Module Name: aslcompiler.l - Flex input file
- *              $Revision: 1.44 $
+ *              $Revision: 1.48 $
  *
  *****************************************************************************/
 
@@ -11,7 +11,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -704,12 +704,17 @@ InsertLineBuffer (
 
         if (Gbl_LineBufPtr > (Gbl_CurrentLineBuffer + (ASL_LINE_BUFFER_SIZE - 1)))
         {
+#if 0
+            /*
+             * Warning if we have split a long source line.
+             * <Probably overkill>
+             */
             sprintf (MsgBuffer, "Max %d", ASL_LINE_BUFFER_SIZE);
             AslCommonError (ASL_WARNING, ASL_MSG_LONG_LINE,
                             Gbl_CurrentLineNumber, Gbl_LogicalLineNumber,
                             Gbl_CurrentLineOffset, Gbl_CurrentColumn,
                             Gbl_Files[ASL_FILE_INPUT].Filename, MsgBuffer);
-
+#endif
 
             ResetCurrentLineBuffer ();
         }
@@ -766,7 +771,6 @@ count (
         *Gbl_LineBufPtr = 0;
     }
 }
-
 
 
 /*******************************************************************************
@@ -885,7 +889,7 @@ literal (void)
     char                ConvertBuffer[4];
 
 
-    /* 
+    /*
      * Eat chars until end-of-literal.
      * NOTE:  Put back the original surrounding quotes into the
      * source line buffer.
@@ -904,7 +908,7 @@ DoCharacter:
             switch (StringChar)
             {
             case '\\':
-                /* 
+                /*
                  * Special handling for backslash-escape sequence.  We will
                  * toss the backslash and translate the escape char(s).
                  */
@@ -945,15 +949,15 @@ DoCharacter:
                 StringChar = 0x0D;      /* CARRIAGE RETURN*/
                 break;
 
-            case 't':           
+            case 't':
                 StringChar = 0x09;      /* HORIZONTAL TAB */
                 break;
 
-            case 'v':           
+            case 'v':
                 StringChar = 0x0B;      /* VERTICAL TAB */
                 break;
 
-            case 'x':   
+            case 'x':
                 State = ASL_HEX_CONSTANT;
                 i = 0;
                 continue;
@@ -963,8 +967,8 @@ DoCharacter:
             case '\\':                  /* Backslash */
                 break;
 
-            default:            
-            
+            default:
+
                 /* Check for an octal digit (0-7) */
 
                 if (IS_OCTAL_DIGIT (StringChar))
@@ -987,18 +991,29 @@ DoCharacter:
 
 
         case ASL_OCTAL_CONSTANT:
-           
+
             /* Up to three octal digits allowed */
 
             if (!IS_OCTAL_DIGIT (StringChar) ||
                 (i > 2))
             {
-                /* 
-                 * Reached end of the constant.  Convert the assembled ASCII 
+                /*
+                 * Reached end of the constant.  Convert the assembled ASCII
                  * string and resume processing of the next character
                  */
                 ConvertBuffer[i] = 0;
                 *s = (char) STRTOUL (ConvertBuffer, NULL, 8);
+
+                /*
+                 * Check for a NULL, this terminates the string
+                 */
+                if (*s == 0)
+                {
+                    AslCommonError (ASL_WARNING, ASL_MSG_STRING_TERMINATION,
+                                    Gbl_CurrentLineNumber, Gbl_LogicalLineNumber,
+                                    Gbl_CurrentLineOffset, Gbl_CurrentColumn,
+                                    Gbl_Files[ASL_FILE_INPUT].Filename, NULL);
+                }
                 s++;
 
                 State = ASL_NORMAL_CHAR;
@@ -1020,12 +1035,23 @@ DoCharacter:
             if (!IS_XDIGIT (StringChar) ||
                 (i > 1))
             {
-                /* 
-                 * Reached end of the constant.  Convert the assembled ASCII 
+                /*
+                 * Reached end of the constant.  Convert the assembled ASCII
                  * string and resume processing of the next character
                  */
                 ConvertBuffer[i] = 0;
                 *s = (char) STRTOUL (ConvertBuffer, NULL, 16);
+
+                /*
+                 * Check for a NULL, this terminates the string
+                 */
+                if (*s == 0)
+                {
+                    AslCommonError (ASL_WARNING, ASL_MSG_STRING_TERMINATION,
+                                    Gbl_CurrentLineNumber, Gbl_LogicalLineNumber,
+                                    Gbl_CurrentLineOffset, Gbl_CurrentColumn,
+                                    Gbl_Files[ASL_FILE_INPUT].Filename, NULL);
+                }
                 s++;
 
                 State = ASL_NORMAL_CHAR;
@@ -1048,8 +1074,8 @@ DoCharacter:
 
 
 CompletedString:
-    /* 
-     * Null terminate the input string and copy string to a new buffer 
+    /*
+     * Null terminate the input string and copy string to a new buffer
      */
     *s = 0;
 
