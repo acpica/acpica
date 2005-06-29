@@ -124,8 +124,8 @@
 #include <events.h>
 
 
-#define _THIS_MODULE        "iefield.c"
 #define _COMPONENT          INTERPRETER
+        MODULE_NAME         ("iefield");
 
 
 /*****************************************************************************
@@ -523,7 +523,8 @@ AmlWriteField (
  *
  * PARAMETERS:  Mode                - ACPI_READ or ACPI_WRITE
  *              NamedField          - Handle for field to be accessed
- *              *Value              - Value to be read or written
+ *              *Buffer             - Value(s) to be read or written
+ *              Length              - Number of bytes to transfer
  *
  * RETURN:      Status
  *
@@ -535,7 +536,8 @@ ACPI_STATUS
 AmlAccessNamedField (
     INT32                   Mode, 
     ACPI_HANDLE             NamedField, 
-    UINT32                  *Value)
+    UINT8                   *Buffer,
+    UINT32                  Length)
 {
     ACPI_OBJECT_INTERNAL    *ObjDesc = NULL;
     ACPI_STATUS             Status = AE_OK;
@@ -546,10 +548,13 @@ AmlAccessNamedField (
     UINT32                  dValue = 0;
     UINT32                  OldVal = 0;
     BOOLEAN                 Locked = FALSE;
+    UINT32                  *Value;
 
 
 
     FUNCTION_TRACE ("AmlAccessNamedField");
+
+    /* Get the attached field object */
 
     ObjDesc = NsGetAttachedObject (NamedField);
     if (!ObjDesc)
@@ -557,6 +562,8 @@ AmlAccessNamedField (
         DEBUG_PRINT (ACPI_ERROR, ("AmlAccessNamedField: Internal error - null value pointer\n"));
         return_ACPI_STATUS (AE_AML_ERROR);
     }
+
+    /* Check the type */
 
     if (INTERNAL_TYPE_DefField != NsGetType (NamedField))
     {
@@ -568,13 +575,14 @@ AmlAccessNamedField (
 
     /* ObjDesc valid and NamedField is a defined field  */
 
-    DEBUG_PRINT (ACPI_INFO, ("AmlAccessNamedField: DefField type and ValPtr OK in nte \n"));
+    DEBUG_PRINT (ACPI_INFO, ("AmlAccessNamedField: ObjDesc=%p, Type=%x Buf=%p Len=%x\n",
+                    ObjDesc, ObjDesc->Common.Type, Buffer, Length));
+    DEBUG_PRINT (ACPI_INFO, ("AmlAccessNamedField: FieldLen=%d, BitOffset=%d\n",
+                    ObjDesc->FieldUnit.Length, ObjDesc->FieldUnit.BitOffset));
     DUMP_ENTRY (NamedField, ACPI_INFO);
 
-    DEBUG_PRINT (ACPI_INFO, ("AmlAccessNamedField: ObjDesc=%p, Type=%x\n",
-                    ObjDesc, ObjDesc->Common.Type));
-    DEBUG_PRINT (ACPI_INFO, ("AmlAccessNamedField: DatLen=%d, BitOffset=%d\n",
-                    ObjDesc->FieldUnit.Length, ObjDesc->FieldUnit.BitOffset));
+
+    /* Double-check that the attached object is also a field */
 
     if (INTERNAL_TYPE_DefField != ObjDesc->Common.Type)
     {
@@ -584,6 +592,8 @@ AmlAccessNamedField (
         return_ACPI_STATUS (AE_AML_ERROR);
     }
 
+
+    /* Decode and validate the field access type */
 
     switch (ObjDesc->Field.Access)
     {
@@ -621,11 +631,12 @@ AmlAccessNamedField (
     }
 
 
-    /* Field has valid access type */
+    /* Validate length/offset/width combination */
 
     if ((UINT32) (ObjDesc->FieldUnit.Length + ObjDesc->FieldUnit.BitOffset) > MaxW)
     {
-        DEBUG_PRINT (ACPI_ERROR, ("AmlAccessNamedField: Field exceeds %s\n", Type));
+        DEBUG_PRINT (ACPI_ERROR, ("AmlAccessNamedField: Field exceeds %s (Len=%d Off=%d)\n", 
+                        Type, ObjDesc->FieldUnit.Length, ObjDesc->FieldUnit.BitOffset));
         return_ACPI_STATUS (AE_AML_ERROR);
     }
 
@@ -646,6 +657,19 @@ AmlAccessNamedField (
         MaxW /= 2;
     }
 
+
+    /* TBD: Temp until fully implemented */
+
+    if (Length > 4)
+    {
+        DEBUG_PRINT (ACPI_ERROR, ("AmlAccessNamedField: Length > 4 not implemented (%d)\n", Length));
+        return_ACPI_STATUS (AE_NOT_IMPLEMENTED);
+    }
+
+
+
+    Value = (UINT32 *) Buffer;
+
     if (ACPI_WRITE == Mode)
     {
         /* Write access */
@@ -653,7 +677,7 @@ AmlAccessNamedField (
 
         Mask = (((UINT32) 1 << ObjDesc->FieldUnit.Length) - (UINT32) 1)
                             << ObjDesc->Field.BitOffset;
-        
+    
         if (Value)
         {
             /* Shift and mask the value into the field position */
@@ -669,6 +693,7 @@ AmlAccessNamedField (
 
             switch (ObjDesc->Field.UpdateRule)
             {
+
             case UPDATE_Preserve:
 
                 /* 
@@ -679,12 +704,14 @@ AmlAccessNamedField (
                 dValue |= OldVal & ~Mask;
                 break;
 
+
             case UPDATE_WriteAsOnes:
 
                 /* Set positions outside the field to 1's */
 
                 dValue |= ~Mask;
                 break;
+
 
             case UPDATE_WriteAsZeros:
 
@@ -693,6 +720,7 @@ AmlAccessNamedField (
                  * due to "& Mask" above
                  */
                 break;
+
 
             default:
                 DEBUG_PRINT (ACPI_ERROR, (
@@ -728,6 +756,8 @@ AmlAccessNamedField (
         }
     }
 
+
+
     /* Release global lock if we acquired it earlier */
 
     AmlReleaseGlobalLock (Locked);
@@ -741,7 +771,8 @@ AmlAccessNamedField (
  * FUNCTION:    AmlSetNamedFieldValue
  *
  * PARAMETERS:  NamedField          - Handle for field to be set
- *              Value               - Value to be stored in field
+ *              Buffer              - Bytes to be stored
+ *              Length              - Number of bytes to be stored
  *
  * RETURN:      Status
  *
@@ -751,8 +782,9 @@ AmlAccessNamedField (
 
 ACPI_STATUS
 AmlSetNamedFieldValue (
-    ACPI_HANDLE             NamedField, 
-    UINT32                  Value)
+    ACPI_HANDLE             NamedField,
+    void                    *Buffer,
+    UINT32                  Length)
 {
     ACPI_STATUS             Status = AE_AML_ERROR;
 
@@ -767,7 +799,7 @@ AmlSetNamedFieldValue (
 
     else
     {
-        Status = AmlAccessNamedField (ACPI_WRITE, NamedField, &Value);
+        Status = AmlAccessNamedField (ACPI_WRITE, NamedField, Buffer, Length);
     }
 
     return_ACPI_STATUS (Status);
@@ -779,7 +811,8 @@ AmlSetNamedFieldValue (
  * FUNCTION:    AmlGetNamedFieldValue
  *
  * PARAMETERS:  NamedField          - Handle for field to be read
- *              *Value              - Where to store value read froom field
+ *              *Buffer             - Where to store value read from field
+ *              Length              - Max length to read
  *
  * RETURN:      Status
  *
@@ -788,10 +821,10 @@ AmlSetNamedFieldValue (
  ****************************************************************************/
 
 ACPI_STATUS
-
 AmlGetNamedFieldValue (
     ACPI_HANDLE             NamedField, 
-    UINT32                  *Value)
+    void                    *Buffer,
+    UINT32                  Length)
 {
     ACPI_STATUS             Status = AE_AML_ERROR;
 
@@ -804,14 +837,14 @@ AmlGetNamedFieldValue (
         DEBUG_PRINT (ACPI_ERROR, ("AmlGetNamedFieldValue: Internal error - null handle\n"));
     }
 
-    else if (!Value)
+    else if (!Buffer)
     {
         DEBUG_PRINT (ACPI_ERROR, ("AmlGetNamedFieldValue: Internal error - null pointer\n"));
     }
 
     else
     {
-        Status = AmlAccessNamedField (ACPI_READ, NamedField, Value);
+        Status = AmlAccessNamedField (ACPI_READ, NamedField, Buffer, Length);
     }
 
     return_ACPI_STATUS (Status);
