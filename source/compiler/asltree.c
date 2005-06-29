@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asltree - parse tree management
- *              $Revision: 1.13 $
+ *              $Revision: 1.14 $
  *
  *****************************************************************************/
 
@@ -142,8 +142,9 @@ TgAllocateNode (
 
 
     Node = UtLocalCalloc (sizeof (ASL_PARSE_NODE));
-    Node->ParseOpcode = ParseOpcode;
-    Node->LineNumber = Gbl_CurrentLineNumber;
+    Node->ParseOpcode       = ParseOpcode;
+    Node->Filename          = Gbl_InputFilename;
+    Node->LineNumber        = Gbl_CurrentLineNumber;
     Node->LogicalLineNumber = Gbl_LogicalLineNumber;
 
     strncpy (Node->ParseOpName, UtGetOpName (ParseOpcode), 12);

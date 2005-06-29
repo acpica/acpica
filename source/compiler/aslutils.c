@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslutils -- compiler utilities
- *              $Revision: 1.11 $
+ *              $Revision: 1.12 $
  *
  *****************************************************************************/
 
@@ -147,7 +147,7 @@ UtLocalCalloc (
     if (!Allocated)
     {
         AslCommonError (ASL_ERROR, ASL_MSG_MEMORY_ALLOCATION, 
-            Gbl_CurrentLineNumber, Gbl_LogicalLineNumber, NULL);
+            Gbl_CurrentLineNumber, Gbl_LogicalLineNumber, Gbl_InputFilename, NULL);
         exit (1);
     }
 
@@ -180,7 +180,7 @@ UtLocalRealloc (
     if (!Allocated)
     {
         AslCommonError (ASL_ERROR, ASL_MSG_MEMORY_ALLOCATION, 
-            Gbl_CurrentLineNumber, Gbl_LogicalLineNumber, NULL);
+            Gbl_CurrentLineNumber, Gbl_LogicalLineNumber, Gbl_InputFilename, NULL);
         exit (1);
     }
 
