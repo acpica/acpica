@@ -3,7 +3,7 @@
  *
  * Module Name: exstoren - AML Interpreter object store support,
  *                        Store to Node (namespace object)
- *              $Revision: 1.41 $
+ *              $Revision: 1.42 $
  *
  *****************************************************************************/
 
@@ -240,11 +240,11 @@ AcpiExResolveObject (
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiExStoreObject
+ * FUNCTION:    AcpiExStoreObjectToObject
  *
  * PARAMETERS:  SourceDesc          - Object to store
- *              TargetType          - Current type of the target
- *              TargetDescPtr       - Pointer to the target
+ *              DestDesc            - Object to recieve a copy of the source
+ *              NewDesc             - New object if DestDesc is obsoleted
  *              WalkState           - Current walk state
  *
  * RETURN:      Status
@@ -254,95 +254,119 @@ AcpiExResolveObject (
  *              conversion), and a copy of the value of the source to
  *              the target.
  *
+ *              The Assignment of an object to another (not named) object
+ *              is handled here.
+ *              The Source passed in will replace the current value (if any)
+ *              with the input value.
+ *
+ *              When storing into an object the data is converted to the
+ *              target object type then stored in the object.  This means
+ *              that the target object type (for an initialized target) will
+ *              not be changed by a store operation.
+ *
+ *              This module allows destination types of Number, String,
+ *              Buffer, and Package.
+ *
+ *              Assumes parameters are already validated.  NOTE: SourceDesc
+ *              resolution (from a reference object) must be performed by
+ *              the caller if necessary.
+ *
  ******************************************************************************/
 
 ACPI_STATUS
-AcpiExStoreObject (
+AcpiExStoreObjectToObject (
     ACPI_OPERAND_OBJECT     *SourceDesc,
-    ACPI_OBJECT_TYPE8       TargetType,
-    ACPI_OPERAND_OBJECT     **TargetDescPtr,
+    ACPI_OPERAND_OBJECT     *DestDesc,
+    ACPI_OPERAND_OBJECT     **NewDesc,
     ACPI_WALK_STATE         *WalkState)
 {
-    ACPI_OPERAND_OBJECT     *TargetDesc = *TargetDescPtr;
+    ACPI_OPERAND_OBJECT     *ActualSrcDesc;
     ACPI_STATUS             Status = AE_OK;
 
 
-    FUNCTION_TRACE ("ExStoreObject");
+    FUNCTION_TRACE_PTR ("AcpiExStoreObjectToObject", SourceDesc);
 
 
-    /*
-     * Perform the "implicit conversion" of the source to the current type
-     * of the target - As per the ACPI specification.
-     *
-     * If no conversion performed, SourceDesc is left alone, otherwise it
-     * is updated with a new object.
-     */
-    Status = AcpiExConvertToTargetType (TargetType, &SourceDesc, WalkState);
-    if (ACPI_FAILURE (Status))
+    ActualSrcDesc = SourceDesc;
+    if (!DestDesc)
     {
+        /*
+         * There is no destination object (An uninitialized node or
+         * package element), so we can simply copy the source object
+         * creating a new destination object
+         */
+        Status = AcpiUtCopyIobjectToIobject (ActualSrcDesc, NewDesc, WalkState);
         return_ACPI_STATUS (Status);
+    }
+
+    if (SourceDesc->Common.Type != DestDesc->Common.Type)
+    {
+        /*
+         * The source type does not match the type of the destination.
+         * Perform the "implicit conversion" of the source to the current type
+         * of the target as per the ACPI specification.
+         *
+         * If no conversion performed, ActualSrcDesc = SourceDesc.  
+         * Otherwise, ActualSrcDesc is a temporary object to hold the 
+         * converted object.
+         */
+        Status = AcpiExConvertToTargetType (DestDesc->Common.Type, SourceDesc, 
+                        &ActualSrcDesc, WalkState);
+        if (ACPI_FAILURE (Status))
+        {
+            return_ACPI_STATUS (Status);
+        }
     }
 
     /*
      * We now have two objects of identical types, and we can perform a
      * copy of the *value* of the source object.
      */
-    switch (TargetType)
+    switch (DestDesc->Common.Type)
     {
-    case ACPI_TYPE_ANY:
-    case INTERNAL_TYPE_DEF_ANY:
-
-        /*
-         * The target namespace node is uninitialized (has no target object),
-         * and will take on the type of the source object
-         */
-        *TargetDescPtr = SourceDesc;
-        break;
-
-
     case ACPI_TYPE_INTEGER:
 
-        TargetDesc->Integer.Value = SourceDesc->Integer.Value;
+        DestDesc->Integer.Value = ActualSrcDesc->Integer.Value;
 
         /* Truncate value if we are executing from a 32-bit ACPI table */
 
-        AcpiExTruncateFor32bitTable (TargetDesc, WalkState);
+        AcpiExTruncateFor32bitTable (DestDesc, WalkState);
         break;
 
     case ACPI_TYPE_STRING:
 
-        Status = AcpiExCopyStringToString (SourceDesc, TargetDesc);
+        Status = AcpiExStoreStringToString (ActualSrcDesc, DestDesc);
         break;
-
 
     case ACPI_TYPE_BUFFER:
 
-        Status = AcpiExCopyBufferToBuffer (SourceDesc, TargetDesc);
+        Status = AcpiExStoreBufferToBuffer (ActualSrcDesc, DestDesc);
         break;
-
 
     case ACPI_TYPE_PACKAGE:
 
-        /*
-         * TBD: [Unhandled] Not real sure what to do here
-         */
-        Status = AE_NOT_IMPLEMENTED;
+        Status = AcpiUtCopyIobjectToIobject (ActualSrcDesc, &DestDesc, WalkState);
         break;
 
-
     default:
-
         /*
          * All other types come here.
          */
         ACPI_DEBUG_PRINT ((ACPI_DB_WARN, "Store into type %s not implemented\n",
-            AcpiUtGetTypeName (TargetType)));
+            AcpiUtGetTypeName (DestDesc->Common.Type)));
 
         Status = AE_NOT_IMPLEMENTED;
         break;
     }
 
+    if (ActualSrcDesc != SourceDesc)
+    {
+        /* Delete the intermediate (temporary) source object */
 
+        AcpiUtRemoveReference (ActualSrcDesc);
+    }
+
+    *NewDesc = DestDesc;
     return_ACPI_STATUS (Status);
 }
 
