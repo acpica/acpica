@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslmap - parser to AML opcode mapping table
- *              $Revision: 1.75 $
+ *              $Revision: 1.76 $
  *
  *****************************************************************************/
 
@@ -544,12 +544,16 @@ const ASL_MAPPING_ENTRY     AslKeywordMapping [] =
 /* DWORDCONST */                OP_TABLE_ENTRY (AML_RAW_DATA_DWORD,         0,                              0,                  ACPI_BTYPE_INTEGER),
 /* DWORDIO */                   OP_TABLE_ENTRY (AML_DEFAULT_ARG_OP,         0,                              0,                  0),
 /* DWORDMEMORY */               OP_TABLE_ENTRY (AML_DEFAULT_ARG_OP,         0,                              0,                  0),
+/* DWORDSPACE */                OP_TABLE_ENTRY (AML_BYTE_OP,                0,                              0,                  0),
 /* EISAID */                    OP_TABLE_ENTRY (AML_DWORD_OP,               0,                              0,                  ACPI_BTYPE_INTEGER),
 /* ELSE */                      OP_TABLE_ENTRY (AML_ELSE_OP,                0,                              NODE_AML_PACKAGE,   0),
 /* ELSEIF */                    OP_TABLE_ENTRY (AML_DEFAULT_ARG_OP,         0,                              NODE_AML_PACKAGE,   0),
 /* ENDDEPENDENTFN */            OP_TABLE_ENTRY (AML_DEFAULT_ARG_OP,         0,                              0,                  0),
 /* ERRORNODE */                 OP_TABLE_ENTRY (AML_NOOP_OP,                0,                              0,                  0),
 /* EVENT */                     OP_TABLE_ENTRY (AML_EVENT_OP,               0,                              0,                  0),
+/* EXTENDEDIO */                OP_TABLE_ENTRY (AML_BYTE_OP,                0,                              0,                  0),
+/* EXTENDEDMEMORY */            OP_TABLE_ENTRY (AML_BYTE_OP,                0,                              0,                  0),
+/* EXTENDEDSPACE */             OP_TABLE_ENTRY (AML_RAW_DATA_QWORD,         0,                              0,                  ACPI_BTYPE_INTEGER),
 /* EXTERNAL */                  OP_TABLE_ENTRY (AML_DEFAULT_ARG_OP,         0,                              0,                  0),
 /* FATAL */                     OP_TABLE_ENTRY (AML_FATAL_OP,               0,                              0,                  0),
 /* FIELD */                     OP_TABLE_ENTRY (AML_FIELD_OP,               0,                              NODE_AML_PACKAGE,   0),
@@ -557,6 +561,7 @@ const ASL_MAPPING_ENTRY     AslKeywordMapping [] =
 /* FINDSETRIGHTBIT */           OP_TABLE_ENTRY (AML_FIND_SET_RIGHT_BIT_OP,  0,                              0,                  ACPI_BTYPE_INTEGER),
 /* FIXEDIO */                   OP_TABLE_ENTRY (AML_DEFAULT_ARG_OP,         0,                              0,                  0),
 /* FROMBCD */                   OP_TABLE_ENTRY (AML_FROM_BCD_OP,            0,                              0,                  ACPI_BTYPE_INTEGER),
+/* FUNCTION */                  OP_TABLE_ENTRY (AML_METHOD_OP,              0,                              NODE_AML_PACKAGE,   0),
 /* IF */                        OP_TABLE_ENTRY (AML_IF_OP,                  0,                              NODE_AML_PACKAGE,   0),
 /* INCLUDE */                   OP_TABLE_ENTRY (AML_DEFAULT_ARG_OP,         0,                              0,                  0),
 /* INCLUDE_CSTYLE */            OP_TABLE_ENTRY (AML_DEFAULT_ARG_OP,         0,                              0,                  0),
@@ -657,6 +662,7 @@ const ASL_MAPPING_ENTRY     AslKeywordMapping [] =
 /* QWORDCONST */                OP_TABLE_ENTRY (AML_RAW_DATA_QWORD,         0,                              0,                  ACPI_BTYPE_INTEGER),
 /* QWORDIO */                   OP_TABLE_ENTRY (AML_BYTE_OP,                0,                              0,                  0),
 /* QWORDMEMORY */               OP_TABLE_ENTRY (AML_BYTE_OP,                0,                              0,                  0),
+/* QWORDSPACE */                OP_TABLE_ENTRY (AML_BYTE_OP,                0,                              0,                  0),
 /* RANGE_TYPE_ENTIRE */         OP_TABLE_ENTRY (AML_BYTE_OP,                3,                              0,                  0),
 /* RANGE_TYPE_ISAONLY */        OP_TABLE_ENTRY (AML_BYTE_OP,                2,                              0,                  0),
 /* RANGE_TYPE_NONISAONLY */     OP_TABLE_ENTRY (AML_BYTE_OP,                1,                              0,                  0),
@@ -705,6 +711,7 @@ const ASL_MAPPING_ENTRY     AslKeywordMapping [] =
 /* TOHEXSTRING */               OP_TABLE_ENTRY (AML_TO_HEXSTRING_OP,        0,                              0,                  ACPI_BTYPE_STRING),
 /* TOINTEGER */                 OP_TABLE_ENTRY (AML_TO_INTEGER_OP,          0,                              0,                  ACPI_BTYPE_INTEGER),
 /* TOSTRING */                  OP_TABLE_ENTRY (AML_TO_STRING_OP,           0,                              0,                  ACPI_BTYPE_STRING),
+/* TOUUID */                    OP_TABLE_ENTRY (AML_DWORD_OP,               0,                              NODE_AML_PACKAGE,   ACPI_BTYPE_INTEGER),
 /* TRANSLATIONTYPE_DENSE */     OP_TABLE_ENTRY (AML_BYTE_OP,                0,                              0,                  0),
 /* TRANSLATIONTYPE_SPARSE */    OP_TABLE_ENTRY (AML_BYTE_OP,                1,                              0,                  0),
 /* TYPE_STATIC */               OP_TABLE_ENTRY (AML_BYTE_OP,                0,                              0,                  0),
@@ -722,6 +729,7 @@ const ASL_MAPPING_ENTRY     AslKeywordMapping [] =
 /* WORDBUSNUMBER */             OP_TABLE_ENTRY (AML_BYTE_OP,                0,                              0,                  0),
 /* WORDCONST */                 OP_TABLE_ENTRY (AML_RAW_DATA_WORD,          0,                              0,                  ACPI_BTYPE_INTEGER),
 /* WORDIO */                    OP_TABLE_ENTRY (AML_BYTE_OP,                0,                              0,                  0),
+/* WORDSPACE */                 OP_TABLE_ENTRY (AML_BYTE_OP,                0,                              0,                  0),
 /* XFERTYPE_8 */                OP_TABLE_ENTRY (AML_BYTE_OP,                0,                              0,                  0),
 /* XFERTYPE_8_16 */             OP_TABLE_ENTRY (AML_BYTE_OP,                1,                              0,                  0),
 /* XFERTYPE_16 */               OP_TABLE_ENTRY (AML_BYTE_OP,                2,                              0,                  0),
