@@ -178,20 +178,22 @@ typedef enum
  * be the first byte in this structure.
  */
 
-typedef struct NAME_TABLE_ENTRY
+typedef struct NameTableEntry
 {
     UINT8                   DataType;
     UINT8                   Type;           /* Type associated with this name */
     UINT8                   Fill1;
     UINT8                   Flags;
-
-    struct NAME_TABLE_ENTRY *ParentScope;   /* Previous level of names */
-    struct NAME_TABLE_ENTRY *ParentEntry;   /* Actual parent NTE */
-    struct NAME_TABLE_ENTRY *Scope;         /* Scope owned by this name */
     UINT32                  Name;           /* ACPI Name, always 4 chars per ACPI spec */
-    void                    *Object;        /* Pointer to attached ACPI object */
-    struct NAME_TABLE_ENTRY *NextEntry;     /* Next within this scope */
-    struct NAME_TABLE_ENTRY *PrevEntry;     /* Previous within this scope */
+
+    void                    *Object;        /* Pointer to attached ACPI object (optional) */
+    struct NameTableEntry   *Scope;         /* Scope owned by this name (optional) */
+
+    struct NameTableEntry   *NextEntry;     /* Next NTE within this scope */
+    struct NameTableEntry   *PrevEntry;     /* Previous NTE within this scope */
+
+    struct NameTableEntry   *ParentEntry;   /* Actual parent NTE */
+    struct NameTableEntry   *ParentScope;   /* Previous level of names */
 
 } NAME_TABLE_ENTRY;
 
@@ -328,6 +330,169 @@ typedef struct
     UINT32                  PkgLength;
 
 } FIELD_INFO;
+
+
+
+
+
+
+/*
+ * AML opcode, name, and argument layout
+ */
+typedef struct acpi_op_info
+{
+    UINT16                  Opcode;         /* AML opcode */
+    UINT8                   Type;
+    char                    *Name;          /* op name */
+    char                    *Args;          /* argument format */
+
+} ACPI_OP_INFO;
+
+
+typedef union acpi_op_value
+{
+    UINT32                  Integer;        /* integer constant */
+    UINT32                  Size;           /* bytelist or field size */
+    char                    *String;        /* NULL terminated string */
+    char                    *Name;          /* NULL terminated string */
+    struct acpi_generic_op  *Arg;           /* arguments and contained ops */
+
+} ACPI_OP_VALUE;
+
+
+#define ACPI_COMMON_OP \
+    UINT16                  Opcode;         /* AML opcode */\
+    char                    OpName[14];         /* TBD: debug Only! */\
+    ACPI_OP_VALUE           Value;          /* Value or args associated with the opcode */\
+    ACPI_PTRDIFF            AmlOffset;      /* offset of declaration in AML */\
+    struct acpi_generic_op  *Next;          /* next op */\
+    struct acpi_generic_op  *Parent;        /* parent op */\
+    void                    *Entry;         /* for use by interpreter */\
+
+
+/*
+ * generic operation (eg. If, While, Store)
+ */
+typedef struct acpi_generic_op
+{
+    ACPI_COMMON_OP
+} ACPI_GENERIC_OP;
+
+
+/*
+ * operation with a name (eg. Scope, Method, Name, NamedField, ...)
+ */
+typedef struct acpi_named_op
+{
+    ACPI_COMMON_OP
+    UINT32                  Name;           /* 4-byte name or 0 if none */
+
+} ACPI_NAMED_OP;
+
+
+/*
+ * special operation for methods and regions (parsing must be deferred
+ * until a first pass parse is completed)
+ */
+typedef struct acpi_deferred_op
+{
+    ACPI_COMMON_OP
+    UINT32                  Name;           /* 4-byte name or 0 if none */
+    UINT8                   *Body;          /* AML body */
+    INT32                   BodyLength;     /* AML body size */
+
+} ACPI_DEFERRED_OP;
+
+
+/*
+ * special operation for bytelists (ByteList only)
+ */
+typedef struct acpi_bytelist_op
+{
+    ACPI_COMMON_OP
+    UINT8                   *Data;          /* bytelist data */
+
+} ACPI_BYTELIST_OP;
+
+
+
+/*
+ * Parse state - one state per parser invocation and each control
+ * method.
+ */
+
+typedef struct acpi_parse_state
+{
+    UINT8                   *AmlStart;      /* first AML byte */
+    UINT8                   *Aml;           /* next AML byte */
+    UINT8                   *AmlEnd;        /* (last + 1) AML byte */
+    UINT8                   *PkgEnd;        /* current package end */
+    struct acpi_parse_scope *Scope;         /* current scope */
+    struct acpi_parse_scope *ScopeAvail;    /* unused (extra) scope structs */
+    struct acpi_parse_state *Next;
+
+} ACPI_PARSE_STATE;
+
+
+/*
+ * Parse scope - one per ACPI scope
+ */
+
+typedef struct acpi_parse_scope
+{
+    ACPI_GENERIC_OP         *Op;            /* current op being parsed */
+    char                    *NextArg;       /* next argument to parse */
+    UINT8                   *ArgEnd;        /* current argument end */
+    UINT8                   *PkgEnd;        /* current package end */
+    struct acpi_parse_scope *Parent;        /* parent scope */
+    UINT32                  ArgCount;       /* Number of fixed arguments */
+
+} ACPI_PARSE_SCOPE;
+
+
+
+
+#define CONTROL_NORMAL                        0xC0
+#define CONTROL_CONDITIONAL_EXECUTING         0xC1
+#define CONTROL_PREDICATE_EXECUTING           0xC2
+#define CONTROL_PREDICATE_FALSE               0xC3
+#define CONTROL_PREDICATE_TRUE                0xC4 
+
+
+
+typedef struct acpi_ctrl_state
+{
+    UINT8                   Exec;           /* Execution state */
+    BOOLEAN                 Predicate;      /* Result of predicate evaluation */
+    ACPI_GENERIC_OP         *PredicateOp;   /* Start of if/while predicate */
+    struct acpi_ctrl_state  *Next;
+
+} ACPI_CTRL_STATE;
+
+
+typedef struct acpi_walk_state
+{
+    ACPI_GENERIC_OP         *Origin;        /* Start of walk */
+    ACPI_GENERIC_OP         *NextOp;        /* next op to be processed */
+    ACPI_CTRL_STATE         *ControlState;  /* List of control states (nested IFs) */
+    struct acpi_walk_state  *Next;
+    BOOLEAN                 LastPredicate;  /* Result of last predicate */
+
+} ACPI_WALK_STATE;
+
+typedef struct acpi_walk_list
+{
+
+    ACPI_WALK_STATE         *WalkState;
+
+} ACPI_WALK_LIST;
+
+
+
+typedef
+ACPI_STATUS (*INTERPRETER_CALLBACK) (
+    ACPI_WALK_STATE         *State,
+    ACPI_GENERIC_OP         *Op);
 
 
 
