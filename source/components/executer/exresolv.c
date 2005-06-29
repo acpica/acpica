@@ -313,14 +313,12 @@ AmlGetRvalueFromObject (
 
             MvIndex = Opcode - AML_Local0;
 
-            DEBUG_PRINT (ACPI_INFO,
-                            ("AmlGetRvalueFromObject: [Local%d] before PsxMthStackGetValue %p %p %08lx \n",
+            DEBUG_PRINT (ACPI_INFO, ("AmlGetRvalueFromObject: [Local%d] before PsxMthStackGetValue %p %p %08lx \n",
                             MvIndex, StackPtr, StackDesc, *(UINT32 *) StackDesc));
 
             Status = PsxMthStackGetValue (MTH_TYPE_LOCAL, MvIndex, StackDesc);
 
-            DEBUG_PRINT (ACPI_INFO,
-                        ("AmlGetRvalueFromObject: [Local%d] after MSGV Status=%s %p %p %08lx \n",
+            DEBUG_PRINT (ACPI_INFO, ("AmlGetRvalueFromObject: [Local%d] after MSGV Status=%s %p %p %08lx \n",
                             MvIndex, Gbl_ExceptionNames[Status], StackPtr, StackDesc,
                             *(UINT32 *) StackDesc));
         
@@ -340,14 +338,12 @@ AmlGetRvalueFromObject (
 
             MvIndex = Opcode - AML_Arg0;
 
-            DEBUG_PRINT (TRACE_EXEC,
-                            ("AmlGetRvalueFromObject: [Arg%d] before PsxMthStackGetValue %p %p %08lx \n",
+            DEBUG_PRINT (TRACE_EXEC, ("AmlGetRvalueFromObject: [Arg%d] before PsxMthStackGetValue %p %p %08lx \n",
                             MvIndex, StackPtr, StackDesc, *(UINT32 *) StackDesc));
 
             Status = PsxMthStackGetValue (MTH_TYPE_ARG, MvIndex, StackDesc);
     
-            DEBUG_PRINT (TRACE_EXEC,
-                            ("AmlGetRvalueFromObject: [Arg%d] MSGV returned %s %p %p %08lx \n",
+            DEBUG_PRINT (TRACE_EXEC, ("AmlGetRvalueFromObject: [Arg%d] MSGV returned %s %p %p %08lx \n",
                             MvIndex, Gbl_ExceptionNames[Status], StackPtr, StackDesc,
                             *(UINT32 *) StackDesc));
 
@@ -942,9 +938,8 @@ AmlGetRvalueFromEntry (
         }
 
 
-    DEBUG_PRINT (TRACE_EXEC, ("AmlGetRvalueFromEntry: at DefField Entry=%p ValDesc=%p Type=%X\n", 
-                    StackEntry, ValDesc, EntryType));
-BREAKPOINT3;
+        DEBUG_PRINT (TRACE_EXEC, ("AmlGetRvalueFromEntry: at DefField Entry=%p ValDesc=%p Type=%X\n", 
+                        StackEntry, ValDesc, EntryType));
 
         ObjDesc->Number.Value = TempVal;
         break;
@@ -1194,7 +1189,7 @@ ACPI_STATUS
 AmlGetRvalue (
     ACPI_OBJECT_INTERNAL    **StackPtr)
 {
-    ACPI_STATUS             Status;
+    ACPI_STATUS             Status = AE_OK;
 
 
     FUNCTION_TRACE_PTR ("AmlGetRvalue", StackPtr);
@@ -1228,8 +1223,6 @@ AmlGetRvalue (
     {
         Status = AmlGetRvalueFromEntry ((NAME_TABLE_ENTRY **) StackPtr);
     }
-
-
 
 
     return_ACPI_STATUS (Status);
