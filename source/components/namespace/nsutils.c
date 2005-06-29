@@ -187,7 +187,7 @@ NsValType (NsHandle handle)
         /*  Handle invalid  */
 
         REPORT_WARNING (&KDT[0]);
-        return Any;
+        return TYPE_Any;
     }
 
     return ((nte *) handle)->NtType;
