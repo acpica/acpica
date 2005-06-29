@@ -600,7 +600,6 @@ AcpiRsCalculateListLength (
                 AdditionalBytes = (UINT8) ((Temp8 - 1) * 4);
 
                 /*
-                /*
                  * Resource Source Index and Resource Source are
                  *  optional elements.  Check the length of the
                  *  Bytestream.  If it is greater than 9, that
