@@ -347,7 +347,6 @@ AmlExecMonadic2R (
     ACPI_OBJECT_INTERNAL    *RetDesc2 = NULL;
     UINT32                  ResVal;
     ACPI_STATUS             Status;
-    UINT32                  ReferenceCount;
     INT32                   d0;
     INT32                   d1;
     INT32                   d2;
@@ -527,18 +526,24 @@ AmlExecMonadic2R (
          * since the object itself may have been stored.
          */
         
-        ReferenceCount = ObjDesc->Common.ReferenceCount;
         Status = AmlExecStore (ObjDesc, ResDesc);
+        if (ACPI_FAILURE (Status))
+        {
+            /* On failure, just delete the ObjDesc */
 
+            CmRemoveReference (ObjDesc);
+        }
 
-        /*
-         * Normally, we would remove a reference on the ObjDesc parameter;  But since it
-         * is being used as the internal return object (meaning we would normally increment it),
-         * the two cancel out, and we simply don't do anything.
-         */
+        else
+        {
+            /*
+             * Normally, we would remove a reference on the ObjDesc parameter;  But since it
+             * is being used as the internal return object (meaning we would normally increment it),
+             * the two cancel out, and we simply don't do anything.
+             */
+            *ReturnDesc = ObjDesc;
+        }
 
-
-        *ReturnDesc = ObjDesc;
         ObjDesc = NULL;
         return_ACPI_STATUS (Status);
 
