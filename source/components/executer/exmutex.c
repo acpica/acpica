@@ -1,8 +1,8 @@
 
 /******************************************************************************
  *
- * Module Name: exmutex - ASL Mutex Acquire/Release functions
- *              $Revision: 1.12 $
+ * Module Name: ammutex - ASL Mutex Acquire/Release functions
+ *              $Revision: 1.1 $
  *
  *****************************************************************************/
 
@@ -10,7 +10,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -115,18 +115,21 @@
  *
  *****************************************************************************/
 
-#define __EXMUTEX_C__
+#define __AMMUTEX_C__
 
 #include "acpi.h"
 #include "acinterp.h"
+#include "acnamesp.h"
+#include "achware.h"
+#include "acevents.h"
 
-#define _COMPONENT          ACPI_EXECUTER
-        ACPI_MODULE_NAME    ("exmutex")
+#define _COMPONENT          INTERPRETER
+        MODULE_NAME         ("ammutex")
 
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiExUnlinkMutex
+ * FUNCTION:    AcpiAmlUnlinkMutex
  *
  * PARAMETERS:  *ObjDesc            - The mutex to be unlinked
  *
@@ -137,36 +140,25 @@
  ******************************************************************************/
 
 void
-AcpiExUnlinkMutex (
+AcpiAmlUnlinkMutex (
     ACPI_OPERAND_OBJECT     *ObjDesc)
 {
-    ACPI_THREAD_STATE       *Thread = ObjDesc->Mutex.OwnerThread;
-
-
-    if (!Thread)
-    {
-        return;
-    }
 
     if (ObjDesc->Mutex.Next)
     {
         (ObjDesc->Mutex.Next)->Mutex.Prev = ObjDesc->Mutex.Prev;
     }
-
     if (ObjDesc->Mutex.Prev)
     {
         (ObjDesc->Mutex.Prev)->Mutex.Next = ObjDesc->Mutex.Next;
     }
-    else
-    {
-        Thread->AcquiredMutexList = ObjDesc->Mutex.Next;
-    }
 }
+
 
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiExLinkMutex
+ * FUNCTION:    AcpiAmlLinkMutex
  *
  * PARAMETERS:  *ObjDesc            - The mutex to be linked
  *              *ListHead           - head of the "AcquiredMutex" list
@@ -178,36 +170,32 @@ AcpiExUnlinkMutex (
  ******************************************************************************/
 
 void
-AcpiExLinkMutex (
+AcpiAmlLinkMutex (
     ACPI_OPERAND_OBJECT     *ObjDesc,
-    ACPI_THREAD_STATE       *Thread)
+    ACPI_OPERAND_OBJECT     *ListHead)
 {
-    ACPI_OPERAND_OBJECT     *ListHead;
-
-
-    ListHead = Thread->AcquiredMutexList;
 
     /* This object will be the first object in the list */
 
-    ObjDesc->Mutex.Prev = NULL;
-    ObjDesc->Mutex.Next = ListHead;
+    ObjDesc->Mutex.Prev = ListHead;
+    ObjDesc->Mutex.Next = ListHead->Mutex.Next;
 
     /* Update old first object to point back to this object */
 
-    if (ListHead)
+    if (ListHead->Mutex.Next)
     {
-        ListHead->Mutex.Prev = ObjDesc;
+        (ListHead->Mutex.Next)->Mutex.Prev = ObjDesc;
     }
 
     /* Update list head */
 
-    Thread->AcquiredMutexList = ObjDesc;
+    ListHead->Mutex.Next = ObjDesc;
 }
 
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiExAcquireMutex
+ * FUNCTION:    AcpiAmlAcquireMutex
  *
  * PARAMETERS:  *TimeDesc           - The 'time to delay' object descriptor
  *              *ObjDesc            - The object descriptor for this op
@@ -219,7 +207,7 @@ AcpiExLinkMutex (
  ******************************************************************************/
 
 ACPI_STATUS
-AcpiExAcquireMutex (
+AcpiAmlAcquireMutex (
     ACPI_OPERAND_OBJECT     *TimeDesc,
     ACPI_OPERAND_OBJECT     *ObjDesc,
     ACPI_WALK_STATE         *WalkState)
@@ -227,7 +215,7 @@ AcpiExAcquireMutex (
     ACPI_STATUS             Status;
 
 
-    ACPI_FUNCTION_TRACE_PTR ("ExAcquireMutex", ObjDesc);
+    FUNCTION_TRACE_PTR ("AcpiAmlAcquireMutex", ObjDesc);
 
     if (!ObjDesc)
     {
@@ -238,27 +226,24 @@ AcpiExAcquireMutex (
      * Current Sync must be less than or equal to the sync level of the
      * mutex.  This mechanism provides some deadlock prevention
      */
-    if (WalkState->Thread->CurrentSyncLevel > ObjDesc->Mutex.SyncLevel)
+    if (WalkState->CurrentSyncLevel > ObjDesc->Mutex.SyncLevel)
     {
         return_ACPI_STATUS (AE_AML_MUTEX_ORDER);
     }
 
     /*
-     * Support for multiple acquires by the owning thread
+     * If the mutex is already owned by this thread,
+     * just increment the acquisition depth
      */
-    if (ObjDesc->Mutex.OwnerThread == WalkState->Thread)
+    if (ObjDesc->Mutex.Owner == WalkState) 
     {
-        /*
-         * The mutex is already owned by this thread,
-         * just increment the acquisition depth
-         */
         ObjDesc->Mutex.AcquisitionDepth++;
         return_ACPI_STATUS (AE_OK);
     }
 
     /* Acquire the mutex, wait if necessary */
 
-    Status = AcpiExSystemAcquireMutex (TimeDesc, ObjDesc);
+    Status = AcpiAmlSystemAcquireMutex (TimeDesc, ObjDesc);
     if (ACPI_FAILURE (Status))
     {
         /* Includes failure from a timeout on TimeDesc */
@@ -268,14 +253,14 @@ AcpiExAcquireMutex (
 
     /* Have the mutex, update mutex and walk info */
 
-    ObjDesc->Mutex.OwnerThread      = WalkState->Thread;
+    ObjDesc->Mutex.Owner = WalkState;
     ObjDesc->Mutex.AcquisitionDepth = 1;
+    WalkState->CurrentSyncLevel = ObjDesc->Mutex.SyncLevel;
 
-    WalkState->Thread->CurrentSyncLevel = ObjDesc->Mutex.SyncLevel;
+    /* Link the mutex to the walk state for force-unlock at method exit */
 
-    /* Link the mutex to the current thread for force-unlock at method exit */
-
-    AcpiExLinkMutex (ObjDesc, WalkState->Thread);
+    AcpiAmlLinkMutex (ObjDesc, (ACPI_OPERAND_OBJECT *) 
+                &(WalkState->WalkList->AcquiredMutexList));
 
     return_ACPI_STATUS (AE_OK);
 }
@@ -283,25 +268,25 @@ AcpiExAcquireMutex (
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiExReleaseMutex
+ * FUNCTION:    AcpiAmlReleaseMutex
  *
  * PARAMETERS:  *ObjDesc            - The object descriptor for this op
  *
  * RETURN:      Status
  *
- * DESCRIPTION: Release a previously acquired Mutex.
+ * DESCRIPTION: Release a previously acquired Mutex.  
  *
  ******************************************************************************/
 
 ACPI_STATUS
-AcpiExReleaseMutex (
+AcpiAmlReleaseMutex (
     ACPI_OPERAND_OBJECT     *ObjDesc,
     ACPI_WALK_STATE         *WalkState)
 {
     ACPI_STATUS             Status;
 
 
-    ACPI_FUNCTION_TRACE ("ExReleaseMutex");
+    FUNCTION_TRACE ("AcpiAmlReleaseMutex");
 
 
     if (!ObjDesc)
@@ -309,25 +294,25 @@ AcpiExReleaseMutex (
         return_ACPI_STATUS (AE_BAD_PARAMETER);
     }
 
-    /* The mutex must have been previously acquired in order to release it */
-
-    if (!ObjDesc->Mutex.OwnerThread)
+    /*  The mutex must have been previously acquired in order to release it */
+    
+    if (!ObjDesc->Mutex.Owner)
     {
         return_ACPI_STATUS (AE_AML_MUTEX_NOT_ACQUIRED);
     }
 
     /* The Mutex is owned, but this thread must be the owner */
 
-    if (ObjDesc->Mutex.OwnerThread != WalkState->Thread)
+    if (ObjDesc->Mutex.Owner != WalkState)
     {
         return_ACPI_STATUS (AE_AML_NOT_OWNER);
     }
 
-    /*
+    /* 
      * The sync level of the mutex must be less than or
      * equal to the current sync level
      */
-    if (ObjDesc->Mutex.SyncLevel > WalkState->Thread->CurrentSyncLevel)
+    if (ObjDesc->Mutex.SyncLevel > WalkState->CurrentSyncLevel)
     {
         return_ACPI_STATUS (AE_AML_MUTEX_ORDER);
     }
@@ -343,26 +328,28 @@ AcpiExReleaseMutex (
         return_ACPI_STATUS (AE_OK);
     }
 
-    /* Unlink the mutex from the owner's list */
-
-    AcpiExUnlinkMutex (ObjDesc);
 
     /* Release the mutex */
 
-    Status = AcpiExSystemReleaseMutex (ObjDesc);
+    Status = AcpiAmlSystemReleaseMutex (ObjDesc);
 
     /* Update the mutex and walk state */
 
-    ObjDesc->Mutex.OwnerThread = NULL;
-    WalkState->Thread->CurrentSyncLevel = ObjDesc->Mutex.SyncLevel;
+    ObjDesc->Mutex.Owner = NULL;
+    WalkState->CurrentSyncLevel = ObjDesc->Mutex.SyncLevel;
 
-    return_ACPI_STATUS (Status);
+    /* Unlink the mutex from the owner's list */
+
+    AcpiAmlUnlinkMutex (ObjDesc);
+
+    return_ACPI_STATUS (AE_OK);
 }
+
 
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiExReleaseAllMutexes
+ * FUNCTION:    AcpiAmlReleaseAllMutexes
  *
  * PARAMETERS:  *MutexList            - Head of the mutex list
  *
@@ -373,16 +360,12 @@ AcpiExReleaseMutex (
  ******************************************************************************/
 
 ACPI_STATUS
-AcpiExReleaseAllMutexes (
-    ACPI_THREAD_STATE       *Thread)
+AcpiAmlReleaseAllMutexes (
+    ACPI_OPERAND_OBJECT     *ListHead)
 {
-    ACPI_OPERAND_OBJECT     *Next = Thread->AcquiredMutexList;
+    ACPI_OPERAND_OBJECT     *Next = ListHead->Mutex.Next;
     ACPI_OPERAND_OBJECT     *This;
-    ACPI_STATUS             Status;
-
-
-    ACPI_FUNCTION_ENTRY ();
-
+    
 
     /*
      * Traverse the list of owned mutexes, releasing each one.
@@ -392,21 +375,16 @@ AcpiExReleaseAllMutexes (
         This = Next;
         Next = This->Mutex.Next;
 
-        This->Mutex.AcquisitionDepth = 1;
-        This->Mutex.Prev             = NULL;
-        This->Mutex.Next             = NULL;
+        /* Mark mutex un-owned */
+
+        This->Mutex.Owner = NULL;
+        This->Mutex.Prev = NULL;
+        This->Mutex.Next = NULL;
+        This->Mutex.AcquisitionDepth = 0;
 
          /* Release the mutex */
 
-        Status = AcpiExSystemReleaseMutex (This);
-        if (ACPI_FAILURE (Status))
-        {
-            continue;
-        }
-
-        /* Mark mutex unowned */
-
-        This->Mutex.OwnerThread      = NULL;
+        AcpiAmlSystemReleaseMutex (This);
     }
 
     return (AE_OK);
