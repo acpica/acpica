@@ -191,7 +191,7 @@ AmlSetupField (
              * save PCode and PCodeLen on package stack
              */
 
-            Status = AmlPushExecLength (0L);
+            Status = AmlPkgPushExecLength (0L);
 
             if (AE_OK == Status)
             {   
@@ -267,7 +267,7 @@ AmlSetupField (
             {
                 /*  restore PCode and PCodeLen  */
 
-                Status = AmlPopExec ();
+                Status = AmlPkgPopExec ();
             }
         }
     }

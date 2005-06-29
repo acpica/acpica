@@ -163,7 +163,7 @@ AmlExecCreateField (
 
     if (AML_CreateFieldOp == opcode)
     {
-        Status = AmlPrepStack ("lnnb");
+        Status = AmlPrepObjStack ("lnnb");
         NumOperands = 4;
         OpName = LongOps[opcode & 0x00ff];
     }
@@ -174,7 +174,7 @@ AmlExecCreateField (
 
     else
     {
-        Status = AmlPrepStack ("lnb");
+        Status = AmlPrepObjStack ("lnb");
         NumOperands = 3;
         OpName = ShortOps[opcode];
     }
@@ -188,7 +188,7 @@ AmlExecCreateField (
         return Status;
     }
 
-    AmlDumpStack (MODE_Exec, OpName, NumOperands, "after AmlPrepStack");
+    AmlDumpObjStack (MODE_Exec, OpName, NumOperands, "after AmlPrepObjStack");
 
     ResDesc = (ACPI_OBJECT *) ObjStack[ObjStackTop--];        /* result */
     
@@ -201,7 +201,7 @@ AmlExecCreateField (
     SrcDesc = (ACPI_OBJECT *) ObjStack[ObjStackTop];          /* source */
     ObjStackTop += NumOperands - 1;
 
-    /* If ResDesc is a Name, it will be a direct name pointer after AmlPrepStack() */
+    /* If ResDesc is a Name, it will be a direct name pointer after AmlPrepObjStack() */
     
     if (!IS_NS_HANDLE (ResDesc))
     {
@@ -392,7 +392,7 @@ AmlExecFatal (void)
     FUNCTION_TRACE ("AmlExecFatal");
 
 
-    Status = AmlPrepStack ("nnn");
+    Status = AmlPrepObjStack ("nnn");
 
     if (Status != AE_OK)
     {
@@ -403,7 +403,7 @@ AmlExecFatal (void)
         return Status;
     }
 
-    AmlDumpStack (MODE_Exec, LongOps[AML_FatalOp & 0x00ff], 3, "after AmlPrepStack");
+    AmlDumpObjStack (MODE_Exec, LongOps[AML_FatalOp & 0x00ff], 3, "after AmlPrepObjStack");
 
 
     /*  DefFatal    :=  FatalOp FatalType   FatalCode   FatalArg    */
@@ -457,7 +457,7 @@ AmlExecIndex (void)
     FUNCTION_TRACE ("AmlExecIndex");
 
 
-    Status = AmlPrepStack ("lnp");
+    Status = AmlPrepObjStack ("lnp");
 
     if (Status != AE_OK)
     {
@@ -468,7 +468,7 @@ AmlExecIndex (void)
 
     else
     {
-        AmlDumpStack (MODE_Exec, ShortOps[AML_IndexOp], 3, "after AmlPrepStack");
+        AmlDumpObjStack (MODE_Exec, ShortOps[AML_IndexOp], 3, "after AmlPrepObjStack");
 
         ResDesc = (ACPI_OBJECT *) ObjStack[ObjStackTop];
         IdxDesc = (ACPI_OBJECT *) ObjStack[ObjStackTop - 1];
@@ -548,7 +548,7 @@ AmlExecMatch (void)
     FUNCTION_TRACE ("AmlExecMatch");
 
 
-    Status = AmlPrepStack ("nnnnnp");
+    Status = AmlPrepObjStack ("nnnnnp");
 
     if (Status != AE_OK)
     {
@@ -559,7 +559,7 @@ AmlExecMatch (void)
         return Status;
     }
 
-    AmlDumpStack (MODE_Exec, ShortOps[AML_MatchOp], 6, "after AmlPrepStack");
+    AmlDumpObjStack (MODE_Exec, ShortOps[AML_MatchOp], 6, "after AmlPrepObjStack");
 
     StartDesc = (ACPI_OBJECT *) ObjStack[ObjStackTop];
     V2Desc    = (ACPI_OBJECT *) ObjStack[ObjStackTop - 1];

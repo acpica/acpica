@@ -106,23 +106,10 @@
 #define _COMPONENT          INTERPRETER
 
 
-static ST_KEY_DESC_TABLE KDT[] = {
-   {"0000", '1', "LastFQN: Allocation failure requesting", "LastFQN: Allocation failure requesting"},
-   {"0001", '1', "AmlAllocateNameString: name allocation failure", "AmlAllocateNameString: name allocation failure"},
-   {"0002", '1', "NamedObject/NameSpaceModifier Failure with at least one more byte available in package", "NamedObject/NameSpaceModifier Failure with at least one more byte available in package"},
-   {"0003", '1', "During LOAD this segment started with one or more valid characters, but fewer than 4", "During LOAD this segment started with one or more valid characters, but fewer than 4"},
-   {"0004", '1', "*UNEXPECTED END* [Name]", "*UNEXPECTED END* [Name]"},
-   {"0005", '1', "Ran out of segments after processing a prefix", "Ran out of segments after processing a prefix (See Log for details)"},
-   {NULL, 'I', NULL, NULL}
-};
-
-
-/* |-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|
- *
- * Functions that Load/Dump/Execute Names
- *
- * |-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|
- */
+#define PKG_Type1   64              /*  or 0x40 Max encoding size = 0x3F    */
+#define PKG_Type2   16384           /*  or 0x4000 Max encoding size = 0xFFF */
+#define PKG_Type3   4194304         /*  or 0x400000 Max encoding size = 0xFFFFF */
+#define PKG_Type4   1073741824      /*  or 0x40000000 Max encoding size = 0xFFFFFFF */
 
 
 /*****************************************************************************
@@ -139,27 +126,22 @@ static ST_KEY_DESC_TABLE KDT[] = {
  *
  ****************************************************************************/
 
-void 
+char *
 AmlAllocateNameString (
     INT32                   PrefixCount, 
     INT32                   NumNameSegs)
 {
     char                    *TempPtr;
+    char                    *NameString;
     INT32                   SizeNeeded;
 
 
     FUNCTION_TRACE ("AmlAllocateNameString");
 
     /* 
-     * Room for all \ and ^ prefixes, all segments, and a MultiNamePrefix.
+     * Allow room for all \ and ^ prefixes, all segments, and a MultiNamePrefix.
      * This may actually be somewhat longer than needed.
      */
-
-    /* !!!Commented out for now, until we link INT32 a library with ABS
-     * Fix below may or may not be sufficient !!!
-
-    SizeNeeded = abs(PrefixCount) + 4 * NumNameSegs + 2;
-    */
 
     if (PrefixCount < 0)
     {
@@ -170,50 +152,20 @@ AmlAllocateNameString (
         SizeNeeded = PrefixCount + 4 * NumNameSegs + 2;
     }
 
-#if 0
-    if (2 == PrefixCount)
-    {
-        Trace |= TraceNames;
-    }
-    else
-    {
-        Trace &= ~TraceNames;
-    }
-#endif
-
     if (SizeNeeded < INITIAL_NAME_BUF_SIZE)
     {
         SizeNeeded = INITIAL_NAME_BUF_SIZE;
     }
 
-    /* If need > current size, free and allocate a new one. */
-    
-    if (SizeNeeded > NameStringSize)
+
+    NameString = OsdAllocate ((ACPI_SIZE) SizeNeeded);
+    if (!NameString)
     {
-        if (NameString)
-        {
-            OsdFree (NameString);
-        }
-        else
-        {
-            RegisterStaticBlockPtr (&NameString);
-        }
+        /* Allocation failure  */
 
-        NameString = OsdAllocate ((size_t) SizeNeeded);
-
-        if (NameString)
-        {
-            NameStringSize = SizeNeeded;
-        }
-        else
-        {
-            /*  allocation failure  */
-
-            REPORT_ERROR (&KDT[1]);
-            NameStringSize = 0;
-            FUNCTION_EXIT;
-            return;
-        }
+        REPORT_ERROR ("AmlAllocateNameString: name allocation failure");
+        FUNCTION_EXIT;
+        return NULL;
     }
 
     TempPtr = NameString;
@@ -232,11 +184,12 @@ AmlAllocateNameString (
         }
     }
 
+
     /* Set up Dual or Multi prefixes if needed */
     
     if (NumNameSegs > 2)
     {
-        /*  set up multi prefixes   */
+        /* Set up multi prefixes   */
 
         *TempPtr++ = AML_MultiNamePrefixOp;
         *TempPtr++ = (char) NumNameSegs;
@@ -249,20 +202,12 @@ AmlAllocateNameString (
         *TempPtr++ = AML_DualNamePrefix;
     }
 
-    /*  Terminate string following prefixes. AmlDoSeg() will append the segment(s) */
+    /* Terminate string following prefixes. AmlDoSeg() will append the segment(s) */
 
-
-    DEBUG_PRINT (TRACE_NAMES, ("AmlAllocateNameString: "));
-        
     *TempPtr = 0;
-    for (TempPtr = NameString; *TempPtr; ++TempPtr)
-    {
-        DEBUG_PRINT_RAW (TRACE_NAMES, ("%02x ", *TempPtr));
-    }
-
-    DEBUG_PRINT_RAW (TRACE_NAMES, (" %s\n", NameString));
 
     FUNCTION_EXIT;
+    return NameString;
 }
 
 
@@ -299,19 +244,12 @@ AmlGoodChar (
  *
  * DESCRIPTION: Decodes the Package Length. Upper 2 bits are are used to
  *              tell if type 1, 2, 3, or 4.
- *                  0x3F = Max 1 byte encoding,
- *                  0xFFF = Max 2 byte encoding,
- *                  0xFFFFF = Max 3 Byte encoding,
+ *                  0x3F        = Max 1 byte encoding,
+ *                  0xFFF       = Max 2 byte encoding,
+ *                  0xFFFFF     = Max 3 Byte encoding,
  *                  0xFFFFFFFFF = Max 4 Byte encoding.
  *
  ****************************************************************************/
-
-
-#define Type1   64              /*  or 0x40 Max encoding size = 0x3F    */
-#define Type2   16384           /*  or 0x4000 Max encoding size = 0xFFF */
-#define Type3   4194304         /*  or 0x400000 Max encoding size = 0xFFFFF */
-#define Type4   1073741824      /*  or 0x40000000 Max encoding size = 0xFFFFFFF */
-
 
 INT32 
 AmlDecodePackageLength (
@@ -322,16 +260,16 @@ AmlDecodePackageLength (
     FUNCTION_TRACE ("AmlDecodePackageLength");
 
 
-    if (LastPkgLen < Type1)
+    if (LastPkgLen < PKG_Type1)
         NumBytes = 1;
     
-    else if (LastPkgLen < Type2)
+    else if (LastPkgLen < PKG_Type2)
         NumBytes = 2;
     
-    else if (LastPkgLen < Type3)
+    else if (LastPkgLen < PKG_Type3)
         NumBytes = 3;
     
-    else if (LastPkgLen < Type4)
+    else if (LastPkgLen < PKG_Type4)
         NumBytes = 4;
 
     FUNCTION_EXIT;
@@ -353,6 +291,7 @@ AmlDecodePackageLength (
 
 ACPI_STATUS
 AmlDoSeg (
+    char                    *NameString,
     OPERATING_MODE          LoadExecMode)
 {
     ACPI_STATUS             Status = AE_OK;
@@ -363,7 +302,7 @@ AmlDoSeg (
     FUNCTION_TRACE ("AmlDoSeg");
 
 
-    /*  If first character is a digit, we aren't looking at a valid name segment    */
+    /* If first character is a digit, we aren't looking at a valid name segment    */
 
     CharBuf[0] = AmlPeek ();
 
@@ -375,7 +314,7 @@ AmlDoSeg (
 
     else 
     {
-        DEBUG_PRINT (TRACE_LOAD, ("AmlDoSeg: \n"));
+        DEBUG_PRINT (TRACE_LOAD, ("AmlDoSeg: Bytes from stream:\n"));
 
         for (Index = 4; Index > 0 && AmlGoodChar (AmlPeek ()); --Index)
         {
@@ -387,7 +326,7 @@ AmlDoSeg (
 
     if (AE_OK == Status)
     {
-        /*  valid name segment  */
+        /* Valid name segment  */
 
         if (0 == Index)
         {
@@ -395,12 +334,16 @@ AmlDoSeg (
         
             CharBuf[4] = '\0';
 
-            if (NameStringSize)
+            if (NameString)
             {
                 strcat (NameString, CharBuf);
+                DEBUG_PRINT (TRACE_NAMES, ("AmlDoSeg: Appended to - %s \n", NameString));
             }
 
-            DEBUG_PRINT (TRACE_NAMES, ("AmlDoSeg: %s \n", CharBuf));
+            else
+            {
+                DEBUG_PRINT (TRACE_NAMES, ("AmlDoSeg: No Name string - %s \n", CharBuf));
+            }
         }
 
         else if (4 == Index)
@@ -409,7 +352,7 @@ AmlDoSeg (
              * First character was not a valid name character,
              * so we are looking at something other than a name.
              */
-            DEBUG_PRINT (ACPI_ERROR, ("Leading char not alpha: %02Xh (not a name)\n", CharBuf[0]));
+            DEBUG_PRINT (ACPI_INFO, ("AmlDoSeg: Leading char not alpha: %02Xh (not a name)\n", CharBuf[0]));
             Status = AE_PENDING;
         }
 
@@ -418,26 +361,25 @@ AmlDoSeg (
             /* Segment started with one or more valid characters, but fewer than 4 */
         
             Status = AE_AML_ERROR;
-            DEBUG_PRINT (TRACE_LOAD, (" *Bad char %02x in name*\n", AmlPeek ()));
+            DEBUG_PRINT (TRACE_LOAD, ("AmlDoSeg: Bad char %02x in name\n", AmlPeek ()));
 
             if (MODE_Load == LoadExecMode)
             {
-                /*  second pass load mode   */
+                /* Second pass load mode   */
 
-                REPORT_ERROR (&KDT[3]);
+                REPORT_ERROR ("During LOAD this segment started with one or more valid characters, but fewer than 4");
             }
 
             else
             {
                 DEBUG_PRINT (ACPI_ERROR, ("AmlDoSeg: Bad char %02x in name\n", AmlPeek ()));
             }
-        }
-    
+        }   
     }
 
     DEBUG_PRINT (TRACE_EXEC, ("Leave AmlDoSeg %s \n", ExceptionNames[Status]));
 
-    FUNCTION_EXIT;
+    FUNCTION_STATUS_EXIT (Status);
     return Status;
 }
 
@@ -466,6 +408,11 @@ AmlDoName (
     INT32                   PrefixCount = 0;
     UINT8                   Prefix = 0;
     ACPI_HANDLE             handle;
+    INT32                   MethodFlags;
+    INT32                   ArgCount;
+    INT32                   StackBeforeArgs;
+    METHOD_INFO             *MethodPtr;
+    char                    *NameString = NULL;
 
 
     FUNCTION_TRACE ("AmlDoName");
@@ -479,19 +426,26 @@ BREAKPOINT3;
         TYPE_BankField == DataType || 
         TYPE_IndexField == DataType)
     {   
-        /*  Disallow prefixes for types associated with field names */
+        /* Disallow prefixes for types associated with field names */
 
-        AmlAllocateNameString (0, 1);
-        Status = AmlDoSeg (LoadExecMode);
+        NameString = AmlAllocateNameString (0, 1);
+        if (!NameString)
+        {
+            Status = AE_NO_MEMORY;
+        }
+        else
+        {
+            Status = AmlDoSeg (NameString, LoadExecMode);
+        }
     }
 
     else
     {   
-        /*  DataType is not a field name   */
+        /* DataType is not a field name   */
 
         switch (AmlPeekOp ())
         {   
-            /*  examine first character of name for root or parent prefix operators */
+            /* Examine first character of name for root or parent prefix operators */
 
         case AML_RootPrefix:
             AmlConsumeStreamBytes (1, &Prefix);
@@ -521,21 +475,26 @@ BREAKPOINT3;
 
         switch (AmlPeekOp ())
         {
-            /* examine first character of name for name segment prefix operator */
+            /* Examine first character of name for name segment prefix operator */
             
         case AML_DualNamePrefix:
             AmlConsumeStreamBytes (1, &Prefix);
             DEBUG_PRINT (TRACE_LOAD, ("DualNamePrefix: %x\n", Prefix));
 
-            AmlAllocateNameString (PrefixCount, 2);
+            NameString = AmlAllocateNameString (PrefixCount, 2);
+            if (!NameString)
+            {
+                Status = AE_NO_MEMORY;
+                break;
+            }
 
             /* Ensure PrefixCount != 0 to remember processing a prefix */
             
             PrefixCount += 2;
 
-            if ((Status = AmlDoSeg (LoadExecMode)) == AE_OK)
+            if ((Status = AmlDoSeg (NameString, LoadExecMode)) == AE_OK)
             {
-                Status = AmlDoSeg (LoadExecMode);
+                Status = AmlDoSeg (NameString, LoadExecMode);
             }
 
             break;
@@ -548,21 +507,26 @@ BREAKPOINT3;
 
             if (AmlDoByteConst (MODE_Load, 0) != AE_OK)
             {
-                /* unexpected end of AML */
+                /* Unexpected end of AML */
 
-                REPORT_ERROR (&KDT[4]);
+                REPORT_ERROR ("*UNEXPECTED END* [Name]");
                 
                 Status = AE_AML_ERROR;
                 break;
             }
 
-            AmlAllocateNameString (PrefixCount, NumSegments);
+            NameString = AmlAllocateNameString (PrefixCount, NumSegments);
+            if (!NameString)
+            {
+                Status = AE_NO_MEMORY;
+                break;
+            }
 
             /* Ensure PrefixCount != 0 to remember processing a prefix */
             
             PrefixCount += 2;
 
-            while (NumSegments && (Status = AmlDoSeg (LoadExecMode)) == AE_OK)
+            while (NumSegments && (Status = AmlDoSeg (NameString, LoadExecMode)) == AE_OK)
             {
                 --NumSegments;
             }
@@ -571,29 +535,41 @@ BREAKPOINT3;
 
         case 0: 
             
-            /*  NullName valid as of 8-12-98 ASL/AML Grammar Update */
+            /* NullName valid as of 8-12-98 ASL/AML Grammar Update */
             
             if (-1 == PrefixCount)  
             {
-                /*  RootPrefix followed by NULL */
+                /* RootPrefix followed by NULL */
             
                 DEBUG_PRINT (TRACE_EXEC,
                                 ("AmlDoName: NameSeg is \"\\\" followed by NULL\n"));
             }
 
             AmlConsumeStreamBytes (1, NULL);    /*  consume NULL byte   */
-            AmlAllocateNameString (PrefixCount, 0);
+            NameString = AmlAllocateNameString (PrefixCount, 0);
+            if (!NameString)
+            {
+                Status = AE_NO_MEMORY;
+                break;
+            }
+
             break;
 
         default:
 
-            /*  name segment string */
+            /* Name segment string */
 
-            AmlAllocateNameString (PrefixCount, 1);
-            Status = AmlDoSeg (LoadExecMode);
+            NameString = AmlAllocateNameString (PrefixCount, 1);
+            if (!NameString)
+            {
+                Status = AE_NO_MEMORY;
+                break;
+            }
+
+            Status = AmlDoSeg (NameString, LoadExecMode);
             break;
 
-        }   /*  switch (PeekOp ())    */
+        }   /* Switch (PeekOp ())    */
     }
 
     if (AE_OK == Status)
@@ -601,13 +577,15 @@ BREAKPOINT3;
         /* All prefixes have been handled, and the name is in NameString */
 
         LocalDeleteObject ((ACPI_OBJECT **) &ObjStack[ObjStackTop]);
-        Status = NsEnter (NameString, DataType, LoadExecMode, 
-                            (NAME_TABLE_ENTRY **) &ObjStack[ObjStackTop]);
+
+        Status = NsLookup (CurrentScope->Scope, NameString, DataType, LoadExecMode, 
+                                    NS_SEARCH_PARENT, (NAME_TABLE_ENTRY **) &ObjStack[ObjStackTop]);
 
         /* Help view ObjStack during debugging */
 
         handle = ObjStack[ObjStackTop];
 
+        /* TBD: another global to remove!! */
         /* Globally set this handle for use later */
 
         if (MODE_Load1 == LoadExecMode)
@@ -623,7 +601,7 @@ BREAKPOINT3;
 
         else if (MODE_Load1 != LoadExecMode)
         {   
-            /*  not first pass load */
+            /* Not first pass load */
 
             if (TYPE_Any == DataType && 
                 TYPE_Method == NsGetType (ObjStack[ObjStackTop]))
@@ -635,14 +613,12 @@ BREAKPOINT3;
                  * The arg count is in the MethodFlags, which is the first
                  * byte of the Method's AML.
                  */
-                METHOD_INFO     *MethodPtr = (METHOD_INFO *) NsGetValue (ObjStack[ObjStackTop]);
 
+                MethodPtr = (METHOD_INFO *) NsGetValue (ObjStack[ObjStackTop]);
                 if (MethodPtr)
                 {   
-                    /*  MethodPtr valid   */
+                    /* MethodPtr valid   */
                     
-                    INT32       MethodFlags;
-
                     MethodFlags = AmlGetPCodeByte (MethodPtr->Offset);
 
                     if (AML_END_OF_BLOCK == MethodFlags)
@@ -654,31 +630,33 @@ BREAKPOINT3;
 
                     else
                     {   
-                        /*  MethodPtr points at valid method  */
+                        /* MethodPtr points at valid method  */
                         
-                        INT32       ArgCount = (MethodFlags & METHOD_ARG_COUNT_MASK)
+                        ArgCount = (MethodFlags & METHOD_ARG_COUNT_MASK)
                                                 >> METHOD_ARG_COUNT_SHIFT;
-                        INT32       StackBeforeArgs = ObjStackTop;
+                        StackBeforeArgs = ObjStackTop;
 
-
-                        if (((Status = AmlPushIfExec (MODE_Exec)) == AE_OK) &&
+                        if (((Status = AmlObjPushIfExec (MODE_Exec)) == AE_OK) &&
                              (ArgCount > 0))
                         {   
-                            /*  get arguments   */
-                            
+                            /* Get all arguments */
+
                             while (ArgCount-- && (AE_OK == Status))
                             {   
-                                /*  get each argument   */
+                                /* Get each argument */
                                 
-                                if (AE_OK == (Status = AmlDoOpCode (LoadExecMode)))    /*  get argument    */
+                                if (AE_OK == (Status = AmlDoOpCode (LoadExecMode)))
                                 {   
-                                    /*  argument on object stack    */
+                                    /* Argument is now on the object stack */
                                     
                                     /*  
                                      * Arguments (e.g., local variables and control
                                      * method arguments) passed to control methods
                                      * are values, not references.
-                                     * TBD:    RefOf problem with iGetRvalue() conversion.
+                                     */
+                                    
+                                    /*
+                                     * TBD: RefOf problem with AmlGetRvalue() conversion.
                                      */
                                     if (MODE_Exec == LoadExecMode)
                                     {
@@ -688,7 +666,9 @@ BREAKPOINT3;
 
                                     if (AE_OK == Status)
                                     {
-                                        Status = AmlPushIfExec (LoadExecMode);    /*  inc iObjStackTop    */
+                                        /* Make room for the next argument */
+
+                                        Status = AmlObjPushIfExec (LoadExecMode);
                                     }
                                 } 
                             }
@@ -696,7 +676,7 @@ BREAKPOINT3;
 
                         if ((AE_OK == Status) && (MODE_Exec == LoadExecMode))
                         {   
-                            /* execution mode  */
+                            /* Execution mode  */
                             /* Mark end of arg list */
 
                             LocalDeleteObject ((ACPI_OBJECT **) &ObjStack[ObjStackTop]);
@@ -711,11 +691,13 @@ BREAKPOINT3;
                                         ObjStack[StackBeforeArgs], StackBeforeArgs,
                                         ObjStackTop));
 
+                            AmlDumpObjStack (LoadExecMode, "AmlDoName", ACPI_INT_MAX, "Method Arguments");
+
                             /* Execute the Method, passing the stacked args */
                             
                             Status = AmlExecuteMethod (
                                         MethodPtr->Offset + 1, MethodPtr->Length - 1,
-                                        (ACPI_OBJECT **)&ObjStack[StackBeforeArgs + 1]);
+                                        (ACPI_OBJECT **) &ObjStack[StackBeforeArgs + 1]);
 
                             DEBUG_PRINT (TRACE_LOAD,
                                     ("AmlExec Status=%s, StackBeforeArgs %d  ObjStackTop %d\n",
@@ -723,12 +705,13 @@ BREAKPOINT3;
 
                             if (AE_RETURN_VALUE == Status)
                             {
-                                /* recover returned value */
+                                /* Recover returned value */
 
                                 if (StackBeforeArgs < ObjStackTop)
                                 {
                                     LocalDeleteObject ((ACPI_OBJECT **) &ObjStack[StackBeforeArgs]);
-                                    ObjStack[StackBeforeArgs] = ObjStack[ObjStackTop--];
+                                    ObjStack[StackBeforeArgs] = ObjStack[ObjStackTop];
+                                    ObjStackTop--;
                                 }
 
                                 Status = AE_OK;
@@ -738,10 +721,15 @@ BREAKPOINT3;
                             
                             NsPopCurrent (TYPE_Any);
 
-                        }   /*  execution mode  */
+                        } /* Execution mode  */
+
 
                         /* Clean up object stack */
                         
+                        DEBUG_PRINT (TRACE_LOAD,
+                                ("AmlDoName: Cleaning up object stack (%d elements)\n",
+                                ObjStackTop - StackBeforeArgs));
+
                         while (ObjStackTop > StackBeforeArgs)
                         {
                             LocalDeleteObject ((ACPI_OBJECT **) &ObjStack[ObjStackTop]);
@@ -763,9 +751,9 @@ BREAKPOINT3;
 
         if (MODE_Load1 == LoadExecMode || MODE_Load == LoadExecMode)
         {
-            DEBUG_PRINT (ACPI_ERROR, ("***Malformed Name***\n"));
+            DEBUG_PRINT (ACPI_ERROR, ("AmlDoName: ***Malformed Name***\n"));
 
-            REPORT_ERROR (&KDT[5]);
+            REPORT_ERROR ("Ran out of segments after processing a prefix");
         }
 
         else
@@ -778,9 +766,12 @@ BREAKPOINT3;
 
     CheckTrash ("leave AmlDoName");
 
-    DEBUG_PRINT (TRACE_EXEC, ("Leave AmlDoName %s \n", ExceptionNames[Status]));
+    if (NameString)
+    {
+        OsdFree (NameString);
+    }
 
-    FUNCTION_EXIT;
+    FUNCTION_STATUS_EXIT (Status);
     return Status;
 }
 

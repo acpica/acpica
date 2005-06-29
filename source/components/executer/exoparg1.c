@@ -136,11 +136,11 @@ AmlExecMonadic1 (
 
     if (AML_SleepOp == opcode || AML_StallOp == opcode)
     {
-        Status = AmlPrepStack ("n");                 /* operand should be a Number */
+        Status = AmlPrepObjStack ("n");                 /* operand should be a Number */
     }
     else
     {
-        Status = AmlPrepStack ("l");                 /* operand should be an Lvalue */
+        Status = AmlPrepObjStack ("l");                 /* operand should be an Lvalue */
     }
 
     if (Status != AE_OK)
@@ -151,7 +151,7 @@ AmlExecMonadic1 (
     }
 
 
-    AmlDumpStack (MODE_Exec, LongOps[opcode & 0x00ff], 1, "after AmlPrepStack");
+    AmlDumpObjStack (MODE_Exec, LongOps[opcode & 0x00ff], 1, "after AmlPrepObjStack");
 
     ObjDesc = (ACPI_OBJECT *) ObjStack[ObjStackTop];
 
@@ -263,7 +263,7 @@ AmlExecMonadic2R (
     FUNCTION_TRACE ("AmlExecMonadic2R");
 
 
-    Status = AmlPrepStack ("ln");
+    Status = AmlPrepObjStack ("ln");
 
     if (Status != AE_OK)
     {
@@ -272,7 +272,7 @@ AmlExecMonadic2R (
         /* ln is a local and a number and that will fail.  lb is a local */
         /* and a buffer which will pass.  */
         
-        Status = AmlPrepStack ("lb");
+        Status = AmlPrepObjStack ("lb");
 
         if (Status != AE_OK)
         {
@@ -282,7 +282,7 @@ AmlExecMonadic2R (
         }
     }
 
-    AmlDumpStack (MODE_Exec, ShortOps[opcode], 2, "after AmlPrepStack");
+    AmlDumpObjStack (MODE_Exec, ShortOps[opcode], 2, "after AmlPrepObjStack");
 
     ResDesc = (ACPI_OBJECT *) ObjStack[ObjStackTop];
     ObjDesc = (ACPI_OBJECT *) ObjStack[ObjStackTop - 1];
@@ -423,11 +423,11 @@ AmlExecMonadic2 (
 
     if (AML_LNotOp == opcode)
     {
-        Status = AmlPrepStack ("n");
+        Status = AmlPrepObjStack ("n");
     }
     else
     {
-        Status = AmlPrepStack ("l");
+        Status = AmlPrepObjStack ("l");
     }
 
     if (Status != AE_OK)
@@ -437,7 +437,7 @@ AmlExecMonadic2 (
         return Status;
     }
 
-    AmlDumpStack (MODE_Exec, ShortOps[opcode], 1, "after AmlPrepStack");
+    AmlDumpObjStack (MODE_Exec, ShortOps[opcode], 1, "after AmlPrepObjStack");
 
     ObjDesc = (ACPI_OBJECT *) ObjStack[ObjStackTop];
 
@@ -458,7 +458,7 @@ AmlExecMonadic2 (
     case AML_DecrementOp:
     case AML_IncrementOp:
 
-        if ((Status = AmlPushIfExec (MODE_Exec)) != AE_OK)
+        if ((Status = AmlObjPushIfExec (MODE_Exec)) != AE_OK)
         {
             REPORT_ERROR ("AmlExecMonadic2/IncDec: stack overflow");
             FUNCTION_STATUS_EXIT (AE_AML_ERROR);
@@ -485,7 +485,7 @@ AmlExecMonadic2 (
 
         /* Convert the top copy to a Number */
         
-        Status = AmlPrepStack ("n");
+        Status = AmlPrepObjStack ("n");
         if (Status != AE_OK)
         {
             AmlAppendOperandDiag (_THIS_MODULE, __LINE__, opcode, 1);
@@ -532,7 +532,7 @@ AmlExecMonadic2 (
         {
             /* 
              * Not a Name -- an indirect name pointer would have
-             * been converted to a direct name pointer in AmlPrepStack
+             * been converted to a direct name pointer in AmlPrepObjStack
              */
             switch (ObjDesc->Lvalue.OpCode)
             {
@@ -557,12 +557,12 @@ AmlExecMonadic2 (
 
             case AML_Local0: case AML_Local1: case AML_Local2: case AML_Local3:
             case AML_Local4: case AML_Local5: case AML_Local6: case AML_Local7:
-                Status = (INT32) AmlGetMethodType (LCLBASE + ObjDesc->Lvalue.OpCode - AML_Local0);
+                Status = (INT32) AmlMthStackGetType (LCLBASE + ObjDesc->Lvalue.OpCode - AML_Local0);
                 break;
 
             case AML_Arg0: case AML_Arg1: case AML_Arg2: case AML_Arg3:
             case AML_Arg4: case AML_Arg5: case AML_Arg6:
-                Status = (INT32) AmlGetMethodType (ARGBASE + ObjDesc->Lvalue.OpCode - AML_Arg0);
+                Status = (INT32) AmlMthStackGetType (ARGBASE + ObjDesc->Lvalue.OpCode - AML_Arg0);
                 break;
 
             default:
@@ -577,7 +577,7 @@ AmlExecMonadic2 (
         else
         {
             /* 
-             * Since we passed AmlPrepStack("l") and it's not an Lvalue,
+             * Since we passed AmlPrepObjStack("l") and it's not an Lvalue,
              * it must be a direct name pointer.  Allocate a descriptor
              * to hold the type.
              */

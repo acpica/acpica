@@ -231,7 +231,7 @@ AmlDumpBuffer (
 
 /*****************************************************************************
  * 
- * FUNCTION:    AmlDumpStackEntry
+ * FUNCTION:    AmlDumpObjStackEntry
  *
  * PARAMETERS:  *EntryDesc          - Pointer to entry to be dumped
  *
@@ -242,7 +242,7 @@ AmlDumpBuffer (
  ****************************************************************************/
 
 ACPI_STATUS
-AmlDumpStackEntry (
+AmlDumpObjStackEntry (
     ACPI_OBJECT             *EntryDesc)
 {
     char                    *OutString = NULL;
@@ -250,19 +250,19 @@ AmlDumpStackEntry (
     UINT16                  Length;
 
 
-    FUNCTION_TRACE ("AmlDumpStackEntry");
+    FUNCTION_TRACE ("AmlDumpObjStackEntry");
 
 
     if (!EntryDesc)
     {
-        DEBUG_PRINT (ACPI_ERROR, ("AmlDumpStackEntry: ***NULL stack entry pointer***\n"));
+        DEBUG_PRINT (ACPI_ERROR, ("AmlDumpObjStackEntry: ***NULL stack entry pointer***\n"));
         FUNCTION_STATUS_EXIT (AE_AML_ERROR);
         return AE_AML_ERROR;
     }
 
     else if (IS_NS_HANDLE (EntryDesc))
     {
-        DEBUG_PRINT (ACPI_INFO, ("AmlDumpStackEntry: Name \n"));
+        DEBUG_PRINT (ACPI_INFO, ("AmlDumpObjStackEntry: Name \n"));
         DUMP_ENTRY (EntryDesc);
     }
 
@@ -270,7 +270,7 @@ AmlDumpStackEntry (
     {
         /*  EntryDesc is valid  */
 
-        DEBUG_PRINT (ACPI_INFO, ("AmlDumpStackEntry: Entry %p - ", EntryDesc));
+        DEBUG_PRINT (ACPI_INFO, ("AmlDumpObjStackEntry: Entry %p - ", EntryDesc));
 
         switch (EntryDesc->ValType)
         {
@@ -320,7 +320,7 @@ AmlDumpStackEntry (
             default:
                 /*  unknown opcode  */
 
-                REPORT_ERROR ("AmlDumpStackEntry: Unknown AML Opcode");
+                REPORT_ERROR ("AmlDumpObjStackEntry: Unknown AML Opcode");
                 break;
 
             }
@@ -388,7 +388,7 @@ AmlDumpStackEntry (
                       ElementIndex < EntryDesc->Package.PkgCount;
                       ++ElementIndex, ++Element)
                 {
-                    AmlDumpStackEntry (*Element);
+                    AmlDumpObjStackEntry (*Element);
                 }
             }
 
@@ -506,12 +506,12 @@ AmlDumpStackEntry (
         default:
             /*  unknown EntryDesc->ValType value    */
 
-            REPORT_ERROR ("AmlDumpStackEntry: Unknown ValType");
+            REPORT_ERROR ("AmlDumpObjStackEntry: Unknown ValType");
             
             if (AML_UNASSIGNED != Aml[(INT32) EntryDesc->ValType])
             {
                 DEBUG_PRINT_RAW (ACPI_ERROR,
-                              ("AmlDumpStackEntry: Unhandled opcode (AML %s) \n", 
+                              ("AmlDumpObjStackEntry: Unhandled opcode (AML %s) \n", 
                               ShortOps[Aml[(INT32) EntryDesc->ValType]]));
             }
 
@@ -554,7 +554,7 @@ AmlDumpStackEntry (
 
 /*****************************************************************************
  * 
- * FUNCTION:    AmlDumpStack
+ * FUNCTION:    AmlDumpObjStack
  *
  * PARAMETERS:  LoadExecMode        - Load or Exec
  *              *Ident              - Identification
@@ -566,7 +566,7 @@ AmlDumpStackEntry (
  ****************************************************************************/
 
 void
-AmlDumpStack (
+AmlDumpObjStack (
     OPERATING_MODE          LoadExecMode, 
     char                    *Ident, 
     INT32                   NumLevels, 
@@ -575,7 +575,7 @@ AmlDumpStack (
     ACPI_OBJECT             **EntryDesc;
 
     
-    FUNCTION_TRACE ("AmlDumpStack");
+    FUNCTION_TRACE ("AmlDumpObjStack");
 
 
     if (!Ident)
@@ -589,7 +589,7 @@ AmlDumpStack (
     }
 
     DEBUG_PRINT (ACPI_INFO,
-                ("*******************AmlDumpStack***********************\n"));
+                ("*******************AmlDumpObjStack***********************\n"));
     DEBUG_PRINT (ACPI_INFO, ("%s: %s\n", Ident, Note));
 
     for (EntryDesc = (ACPI_OBJECT **) &ObjStack[ObjStackTop] ;
@@ -609,10 +609,10 @@ AmlDumpStack (
 
         /* 
          * Stop dumping when
-         *  - AmlDumpStackEntry fails on an entry other than the first, or
+         *  - AmlDumpObjStackEntry fails on an entry other than the first, or
          *  - the entire stack has been dumped.
          */
-        if ((AE_OK != AmlDumpStackEntry (*EntryDesc) &&
+        if ((AE_OK != AmlDumpObjStackEntry (*EntryDesc) &&
             (ACPI_OBJECT **) &ObjStack[ObjStackTop] != EntryDesc) || 
             (ACPI_OBJECT **) &ObjStack[0] == EntryDesc)
         {

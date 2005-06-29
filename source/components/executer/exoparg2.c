@@ -134,7 +134,7 @@ AmlExecDyadic1 (
     FUNCTION_TRACE ("AmlExecDyadic1");
 
 
-    Status = AmlPrepStack ("nl");
+    Status = AmlPrepObjStack ("nl");
 
     if (Status != AE_OK)
     {
@@ -145,7 +145,7 @@ AmlExecDyadic1 (
         return Status;
     }
 
-    AmlDumpStack (MODE_Exec, ShortOps[opcode], 2, "after AmlPrepStack");
+    AmlDumpObjStack (MODE_Exec, ShortOps[opcode], 2, "after AmlPrepObjStack");
 
     ValDesc = (ACPI_OBJECT *) ObjStack[ObjStackTop];
     ObjDesc = (ACPI_OBJECT *) ObjStack[ObjStackTop - 1];
@@ -247,7 +247,7 @@ AmlExecDyadic2R (
     /*  DefConcat   :=  ConcatOp    Data1   Data2   Result  */
 
     case AML_ConcatOp:
-        Status = AmlPrepStack ("lss");
+        Status = AmlPrepObjStack ("lss");
         NumOperands = 3;
         break;
 
@@ -255,7 +255,7 @@ AmlExecDyadic2R (
     /*  DefDivide   :=  DivideOp Dividend Divisor Remainder Quotient    */
 
     case AML_DivideOp:
-        Status = AmlPrepStack ("llnn");
+        Status = AmlPrepObjStack ("llnn");
         NumOperands = 4;
         break;
 
@@ -263,7 +263,7 @@ AmlExecDyadic2R (
     /*  DefX    :=  XOp Operand1    Operand2    Result  */
 
     default:
-        Status = AmlPrepStack ("lnn");
+        Status = AmlPrepObjStack ("lnn");
         NumOperands = 3;
         break;
     }
@@ -275,7 +275,7 @@ AmlExecDyadic2R (
         return Status;
     }
 
-    AmlDumpStack (MODE_Exec, ShortOps[opcode], NumOperands, "after AmlPrepStack");
+    AmlDumpObjStack (MODE_Exec, ShortOps[opcode], NumOperands, "after AmlPrepObjStack");
 
     if (AML_DivideOp == opcode)
     {
@@ -507,7 +507,7 @@ AmlExecDyadic2S (
     FUNCTION_TRACE ("AmlExecDyadic2S");
 
 
-    Status = AmlPrepStack ("nl");
+    Status = AmlPrepObjStack ("nl");
 
     if (Status != AE_OK)
     {   
@@ -518,7 +518,7 @@ AmlExecDyadic2S (
 
     else
     {
-        AmlDumpStack (MODE_Exec, LongOps[opcode & 0x00ff], 2, "after AmlPrepStack");
+        AmlDumpObjStack (MODE_Exec, LongOps[opcode & 0x00ff], 2, "after AmlPrepObjStack");
 
         TimeDesc = (ACPI_OBJECT *) ObjStack[ObjStackTop];
         ObjDesc = (ACPI_OBJECT *) ObjStack[ObjStackTop - 1];
@@ -610,7 +610,7 @@ AmlExecDyadic2 (
     FUNCTION_TRACE ("AmlExecDyadic2");
 
 
-    Status = AmlPrepStack ("nn");
+    Status = AmlPrepObjStack ("nn");
 
     if (Status != AE_OK)
     {
@@ -621,7 +621,7 @@ AmlExecDyadic2 (
         return Status;
     }
 
-    AmlDumpStack (MODE_Exec, ShortOps[opcode], 2, "after AmlPrepStack");
+    AmlDumpObjStack (MODE_Exec, ShortOps[opcode], 2, "after AmlPrepObjStack");
 
     ObjDesc2 = (ACPI_OBJECT *) ObjStack[ObjStackTop];
     ObjDesc = (ACPI_OBJECT *) ObjStack[ObjStackTop - 1];
@@ -686,7 +686,7 @@ AmlExecDyadic2 (
         return AE_AML_ERROR;
     }
 
-    /* ObjDesc->ValType == Number was assured by AmlPrepStack("nn") call */
+    /* ObjDesc->ValType == Number was assured by AmlPrepObjStack("nn") call */
     
     if (Status == AE_PENDING)
     {
