@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exmisc - ACPI AML (p-code) execution - specific opcodes
- *              $Revision: 1.84 $
+ *              $Revision: 1.85 $
  *
  *****************************************************************************/
 
@@ -408,9 +408,8 @@ AcpiExHexadic (
              *      "continue" (proceed to next iteration of enclosing
              *          "for" loop) signifies a non-match.
              */
-            switch (Op1Desc->Integer.Value)
+            switch ((NATIVE_UINT) Op1Desc->Integer.Value)
             {
-
             case MATCH_MTR:   /* always true */
 
                 break;
@@ -472,9 +471,8 @@ AcpiExHexadic (
             }
 
 
-            switch(Op2Desc->Integer.Value)
+            switch ((NATIVE_UINT) Op2Desc->Integer.Value)
             {
-
             case MATCH_MTR:
 
                 break;
