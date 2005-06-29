@@ -352,30 +352,20 @@ char                        *Gbl_NsTypeNames[] =  /* printable names of types */
 ACPI_TABLE_DESC             Gbl_AcpiTables[NUM_ACPI_TABLES];
 
 
-UINT8                       Gbl_AcpiTableFlags[NUM_ACPI_TABLES] =
+ACPI_TABLE_SUPPORT          Gbl_AcpiTableData[NUM_ACPI_TABLES] =
 {
-    ACPI_TABLE_SINGLE,      /* RSDP */
-    ACPI_TABLE_SINGLE,      /* APIC */
-    ACPI_TABLE_SINGLE,      /* DSDT */
-    ACPI_TABLE_SINGLE,      /* FACP */
-    ACPI_TABLE_SINGLE,      /* FACS */
-    ACPI_TABLE_MULTIPLE,    /* PSDT */
-    ACPI_TABLE_SINGLE,      /* RSDT */
-    ACPI_TABLE_MULTIPLE,    /* SSDT */
-    ACPI_TABLE_SINGLE       /* SBST */
-};
+               /* Name,   Signature,  Signature size,    How many allowed?,   Supported?  Global typed pointer */
 
-char                        *Gbl_AcpiTableNames[] = 
-{
-    "RSDP",
-    APIC_SIG,
-    DSDT_SIG,
-    FACP_SIG,
-    FACS_SIG,
-    PSDT_SIG,
-    RSDT_SIG,
-    SSDT_SIG,
-    SBST_SIG
+    /* RSDP */ {"RSDP",   RSDP_SIG, sizeof (RSDP_SIG)-1, ACPI_TABLE_SINGLE,   AE_OK,      NULL},
+    /* APIC */ {APIC_SIG, APIC_SIG, sizeof (APIC_SIG)-1, ACPI_TABLE_SINGLE,   AE_OK,      (void **) &Gbl_APIC},
+    /* DSDT */ {DSDT_SIG, DSDT_SIG, sizeof (DSDT_SIG)-1, ACPI_TABLE_SINGLE,   AE_OK,      (void **) &Gbl_DSDT},
+    /* FACP */ {FACP_SIG, FACP_SIG, sizeof (FACP_SIG)-1, ACPI_TABLE_SINGLE,   AE_OK,      (void **) &Gbl_FACP},
+    /* FACS */ {FACS_SIG, FACS_SIG, sizeof (FACS_SIG)-1, ACPI_TABLE_SINGLE,   AE_OK,      (void **) &Gbl_FACS},
+    /* PSDT */ {PSDT_SIG, PSDT_SIG, sizeof (PSDT_SIG)-1, ACPI_TABLE_MULTIPLE, AE_OK,      NULL},
+    /* RSDT */ {RSDT_SIG, RSDT_SIG, sizeof (RSDT_SIG)-1, ACPI_TABLE_SINGLE,   AE_OK,      NULL},
+    /* SSDT */ {SSDT_SIG, SSDT_SIG, sizeof (SSDT_SIG)-1, ACPI_TABLE_MULTIPLE, AE_OK,      NULL},
+    /* SBST */ {SBST_SIG, SBST_SIG, sizeof (SBST_SIG)-1, ACPI_TABLE_SINGLE,   AE_OK,      (void **) &Gbl_SBST},
+    /* BOOT */ {BOOT_SIG, BOOT_SIG, sizeof (BOOT_SIG)-1, ACPI_TABLE_SINGLE,   AE_SUPPORT, NULL}
 };
 
 
