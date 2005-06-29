@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acglobal.h - Declarations for global variables
- *       $Revision: 1.159 $
+ *       $Revision: 1.161 $
  *
  *****************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2004, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2005, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -169,6 +169,7 @@ extern      UINT32                      AcpiGbl_NestingLevel;
  * 1) Allow "implicit return" of last value in a control method
  * 2) Allow access beyond end of operation region
  * 3) Allow access to uninitialized locals/args (auto-init to integer 0)
+ * 4) Allow ANY object type to be a source operand for the Store() operator
  */
 ACPI_EXTERN UINT8       ACPI_INIT_GLOBAL (AcpiGbl_EnableInterpreterSlack, FALSE);
 
