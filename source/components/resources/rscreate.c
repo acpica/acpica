@@ -352,8 +352,8 @@ AcpiRsCreatePciRoutingTable (
              * The length String.Length field includes the
              * terminating NULL
              */
-            BufferSizeNeeded += 
-                ROUND_UP_TO_32BITS (((*SubObjectList)->String.Length));
+            BufferSizeNeeded += (*SubObjectList)->String.Length;
+            BufferSizeNeeded = ROUND_UP_TO_32BITS (BufferSizeNeeded);
         }
 
         else
@@ -471,8 +471,9 @@ AcpiRsCreatePciRoutingTable (
                 /*
                  * Add to the Length field the length of the string
                  */
-                UserPrt->Length += 
-                    ROUND_UP_TO_32BITS ((*SubObjectList)->String.Length);
+                UserPrt->Length += (*SubObjectList)->String.Length;
+                UserPrt->Length = 
+                    ROUND_UP_TO_32BITS (UserPrt->Length);
             }
 
             else
