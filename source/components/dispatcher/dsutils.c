@@ -187,7 +187,7 @@ DsDeleteResultIfNotUsed (
             return;
         }
 
-        CmDeleteInternalObject (ObjDesc);
+        CmRemoveReference (ResultObj);
 
         return_VOID;
     }
@@ -243,7 +243,7 @@ DsDeleteResultIfNotUsed (
             return_VOID;
         }
 
-        CmDeleteInternalObject (ObjDesc);
+        CmRemoveReference (ResultObj);
         break;
 
     /* 
@@ -375,7 +375,11 @@ DsCreateOperand (
 
         /* Put the resulting object onto the current object stack */
 
-        DsObjStackPush (ObjDesc, WalkState);
+        Status = DsObjStackPush (ObjDesc, WalkState);
+        if (ACPI_FAILURE (Status))
+        {
+            return_ACPI_STATUS (Status);
+        }
         DEBUG_EXEC (DbDisplayArgumentObject (ObjDesc));
     }
 
@@ -388,7 +392,7 @@ DsCreateOperand (
         {
             /*
              * If the name is null, this means that this is an optional result parameter that was
-             * not specified in the original ASL.  Create an Lvalue for a placeholder 
+             * not specified in the original ASL.  Create an Reference for a placeholder 
              */
             Opcode = AML_ZeroOp;        /* Has no arguments! */
 
@@ -413,7 +417,9 @@ DsCreateOperand (
 
         if (Flags & OP_HAS_RETURN_VALUE)
         {
-            DEBUG_PRINT (TRACE_DISPATCH, ("DsCreateOperand: Argument already created, getting from result stack \n"));
+            DEBUG_PRINT (TRACE_DISPATCH, ("DsCreateOperand: Argument previously created, already stacked \n"));
+
+//            DEBUG_EXEC (DbDisplayArgumentObject (WalkState->Operands [WalkState->NumOperands - 1]));
 
             /* 
              * Use value that was already previously returned by the evaluation of this argument
@@ -423,19 +429,12 @@ DsCreateOperand (
             if (ACPI_FAILURE (Status))
             {
                 /*
-                 * Only error is underflow, and this indicates a missing operand!
+                 * Only error is underflow, and this indicates a missing or null operand!
                  */
                 DEBUG_PRINT (ACPI_ERROR, ("DsCreateOperand: Could not pop result\n"));
-                return_ACPI_STATUS (AE_AML_NO_OPERAND);
+                return_ACPI_STATUS (Status);
             }
 
-            /* There must be a valid value on the stack or something is seriously wrong */
-
-            if (!ObjDesc)
-            {
-                DEBUG_PRINT (ACPI_ERROR, ("DsCreateOperand: But result obj is null! Arg=%X\n", Arg));
-                return_ACPI_STATUS (AE_AML_NO_OPERAND);
-            }
         }
 
         else
@@ -456,13 +455,18 @@ DsCreateOperand (
                 CmFree (ObjDesc);
                 return_ACPI_STATUS (Status);
             }
-        }
-
+       }
 
         /* Put the operand object on the object stack */
 
-        DsObjStackPush (ObjDesc, WalkState);
+        Status = DsObjStackPush (ObjDesc, WalkState);
+        if (ACPI_FAILURE (Status))
+        {
+            return_ACPI_STATUS (Status);
+        }
+
         DEBUG_EXEC (DbDisplayArgumentObject (ObjDesc));
+
     }
 
 
@@ -569,12 +573,12 @@ DsResolveOperands (
     /*
      * TBD: Note from previous parser:
      *
-     * TBD: RefOf problem with AmlGetRvalue() conversion.
+     * TBD: RefOf problem with AmlResolveToValue() conversion.
      */
 
     for (i = 0; i < WalkState->NumOperands; i++)
     {
-        Status = AmlGetRvalue (&WalkState->Operands[i]);
+        Status = AmlResolveToValue (&WalkState->Operands[i]);
         if (ACPI_FAILURE (Status))
         {
             break;
@@ -668,7 +672,7 @@ DsMapOpcodeToDataType (
     case OPTYPE_METHOD_ARGUMENT:
     case OPTYPE_LOCAL_VARIABLE:
 
-        DataType = INTERNAL_TYPE_Lvalue;
+        DataType = INTERNAL_TYPE_Reference;
         break;
 
 
