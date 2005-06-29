@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dsutils - Dispatcher utilities
- *              $Revision: 1.102 $
+ *              $Revision: 1.103 $
  *
  ******************************************************************************/
 
@@ -134,11 +134,10 @@
  *
  * FUNCTION:    AcpiDsIsResultUsed
  *
- * PARAMETERS:  Op
- *              ResultObj
- *              WalkState
+ * PARAMETERS:  Op                  - Current Op
+ *              WalkState           - Current State
  *
- * RETURN:      Status
+ * RETURN:      TRUE if result is used, FALSE otherwise
  *
  * DESCRIPTION: Check if a result object will be used by the parent
  *
@@ -164,19 +163,39 @@ AcpiDsIsResultUsed (
     }
 
     /*
-     * If there is no parent, the result can't possibly be used!
-     * (An executing method typically has no parent, since each
-     * method is parsed separately)  However, a method that is
-     * invoked from another method has a parent.
+     * If there is no parent, we are executing at the method level. 
+     * An executing method typically has no parent, since each method
+     * is parsed separately.
      */
     if (!Op->Common.Parent)
     {
+        /*
+         * If this is the last statement in the method, we know it is not a
+         * Return() operator (would not come here.) The following code is the
+         * optional support for a so-called "implicit return". Some AML code 
+         * assumes that the last value of the method is "implicitly" returned
+         * to the caller. Just save the last result as the return value.
+         */
+        if ((AcpiGbl_EnableInterpeterSlack) &&
+            (WalkState->ParserState.Aml >= WalkState->ParserState.AmlEnd))
+        {
+            ACPI_DEBUG_PRINT ((ACPI_DB_DISPATCH, 
+                    "Result of [%s] will be implicitly returned\n",
+                    AcpiPsGetOpcodeName (Op->Common.AmlOpcode)));
+
+            /* Use the top of the result stack as the implicit return value */
+
+            WalkState->ReturnDesc = WalkState->Results->Results.ObjDesc[0];
+            return_VALUE (TRUE);
+        }
+
+        /* No parent, the return value cannot possibly be used */
+
         return_VALUE (FALSE);
     }
 
-    /*
-     * Get info on the parent.  The root Op is AML_SCOPE
-     */
+    /* Get info on the parent. The RootOp is AML_SCOPE */
+
     ParentInfo = AcpiPsGetOpcodeInfo (Op->Common.Parent->Common.AmlOpcode);
     if (ParentInfo->Class == AML_CLASS_UNKNOWN)
     {
