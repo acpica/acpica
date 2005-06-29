@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asltransform - Parse tree transforms
- *              $Revision: 1.25 $
+ *              $Revision: 1.17 $
  *
  *****************************************************************************/
 
@@ -10,7 +10,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2004, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -131,7 +131,7 @@
  *
  * RETURN:      A pointer to the second character of the name
  *
- * DESCRIPTION: Generate an ACPI name of the form _T_x.  These names are
+ * DESCRIPTION: Generate an ACPI name of the form _Txx.  These names are
  *              reserved for use by the ASL compiler.
  *
  ******************************************************************************/
@@ -143,7 +143,7 @@ TrAmlGetNextTempName (
     char                    *TempName;
 
 
-    if (Gbl_TempCount > (9+26+26))
+    if (Gbl_TempCount > 255)
     {
         /* Too many temps */
         /* TBD: issue eror message */
@@ -152,27 +152,14 @@ TrAmlGetNextTempName (
     }
 
     TempName = UtLocalCalloc (6);
-
-    if (Gbl_TempCount < 9)
-    {
-        TempName[4] = (char) (Gbl_TempCount + 0x30);
-    }
-    else if (Gbl_TempCount < (9 + 26))
-    {
-        TempName[4] = (char) (Gbl_TempCount + 0x41);
-    }
-    else
-    {
-        TempName[4] = (char) (Gbl_TempCount + 0x61);
-    }
+    UtConvertByteToHex ((UINT8) Gbl_TempCount, (UINT8 *) &TempName [1]);
     Gbl_TempCount++;
 
-    /* First four characters are always "\_T_" */
+    /* First three characters are always "\_T" */
 
     TempName[0] = '\\';
     TempName[1] = '_';
     TempName[2] = 'T';
-    TempName[3] = '_';
 
     *NamePath = TempName;
     return (&TempName[1]);
@@ -279,7 +266,7 @@ TrAmlInsertPeer (
     ACPI_PARSE_OBJECT       *NewPeer)
 {
 
-    NewPeer->Asl.Next = Op->Asl.Next;
+    NewPeer->Asl.Next   = Op->Asl.Next;
     Op->Asl.Next      = NewPeer;
 }
 
@@ -339,6 +326,10 @@ TrTransformSubtree (
         TrDoDefinitionBlock (Op);
         break;
 
+    case PARSEOP_ELSEIF:
+        TrDoElseif (Op);
+        break;
+
     case PARSEOP_SWITCH:
         TrDoSwitch (Op);
         break;
@@ -384,6 +375,44 @@ TrDoDefinitionBlock (
 
 /*******************************************************************************
  *
+ * FUNCTION:    TrDoElseif
+ *
+ * PARAMETERS:  Op        - Parse node for ELSEIF
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Transform an Elseif into an Else and If AML opcode
+ *
+ ******************************************************************************/
+
+void
+TrDoElseif (
+    ACPI_PARSE_OBJECT       *Op)
+{
+    ACPI_PARSE_OBJECT       *IfNode;
+
+
+    /* Change the ELSEIF into an ELSE */
+
+    TrAmlInitNode (Op, PARSEOP_ELSE);
+
+    /* Create a new IF node */
+
+    IfNode              = TrCreateLeafNode (PARSEOP_IF);
+    IfNode->Asl.Parent      = Op;
+    TrAmlInitLineNumbers (IfNode, Op);
+
+    /* Insert the the IF node first in the ELSE child list */
+
+    IfNode->Asl.Child       = Op->Asl.Child;
+    Op->Asl.Child         = IfNode;
+
+    TrAmlSetSubtreeParent (IfNode->Asl.Child, IfNode);
+}
+
+
+/*******************************************************************************
+ *
  * FUNCTION:    TrDoSwitch
  *
  * PARAMETERS:  StartNode        - Parse node for SWITCH
@@ -414,7 +443,7 @@ TrDoSwitch (
     char                    *PredicateValuePath;
 
 
-    CurrentParentNode  = StartNode;
+    CurrentParentNode = StartNode;
     PredicateValueName = TrAmlGetNextTempName (&PredicateValuePath);
 
     /* First child is the predicate */
@@ -442,103 +471,41 @@ TrDoSwitch (
                 /* Link ELSE node as a peer to the previous IF */
 
                 TrAmlInsertPeer (Conditional, NewOp);
-                CurrentParentNode = NewOp;
+                CurrentParentNode   = NewOp;
             }
 
-            CaseOp      = Next;
+            CaseOp = Next;
             Conditional = CaseOp;
-            CaseBlock   = CaseOp->Asl.Child->Asl.Next;
+            CaseBlock = CaseOp->Asl.Child->Asl.Next;
             Conditional->Asl.Child->Asl.Next = NULL;
+
+            /*
+             * change CaseOp() to:  If (PredicateValue == CaseValue) {...}
+             * CaseOp->Child is the case value
+             * CaseOp->Child->Peer is the beginning of the case block
+             */
+            NewOp = TrCreateValuedLeafNode (PARSEOP_NAMESTRING,
+                            (ACPI_INTEGER) ACPI_TO_INTEGER (PredicateValuePath));
+
             Predicate = CaseOp->Asl.Child;
+            Predicate->Asl.Next = NewOp;
+            TrAmlInitLineNumbers (NewOp, Predicate);
 
-            if (Predicate->Asl.ParseOpcode == PARSEOP_PACKAGE)
-            {
-                AcpiOsPrintf ("Package\n");
+            NewOp2              = TrCreateLeafNode (PARSEOP_LEQUAL);
+            NewOp2->Asl.Parent  = Conditional;
+            NewOp2->Asl.Child   = Predicate;
+            TrAmlInitLineNumbers (NewOp2, Conditional);
 
-                /*
-                 * Convert the package declaration to this form:
-                 *
-                 * If (LNotEqual (Match (Package(){4}, MEQ, _Txx, MTR, 0, 0), Ones))
-                 */
-                NewOp2              = TrCreateLeafNode (PARSEOP_MATCHTYPE_MEQ);
-                Predicate->Asl.Next = NewOp2;
-                TrAmlInitLineNumbers (NewOp2, Conditional);
+            TrAmlSetSubtreeParent (Predicate, NewOp2);
 
-                NewOp               = NewOp2;
-                NewOp2              = TrCreateValuedLeafNode (PARSEOP_NAMESTRING,
-                                        (ACPI_INTEGER) ACPI_TO_INTEGER (PredicateValuePath));
-                NewOp->Asl.Next     = NewOp2;
-                TrAmlInitLineNumbers (NewOp2, Predicate);
+            Predicate           = NewOp2;
+            Predicate->Asl.Next = CaseBlock;
 
-                NewOp               = NewOp2;
-                NewOp2              = TrCreateLeafNode (PARSEOP_MATCHTYPE_MTR);
-                NewOp->Asl.Next     = NewOp2;
-                TrAmlInitLineNumbers (NewOp2, Predicate);
-
-                NewOp               = NewOp2;
-                NewOp2              = TrCreateLeafNode (PARSEOP_ZERO);
-                NewOp->Asl.Next     = NewOp2;
-                TrAmlInitLineNumbers (NewOp2, Predicate);
-
-                NewOp               = NewOp2;
-                NewOp2              = TrCreateLeafNode (PARSEOP_ZERO);
-                NewOp->Asl.Next     = NewOp2;
-                TrAmlInitLineNumbers (NewOp2, Predicate);
-
-                NewOp2              = TrCreateLeafNode (PARSEOP_MATCH);
-                NewOp2->Asl.Child   = Predicate;  /* PARSEOP_PACKAGE */
-                TrAmlInitLineNumbers (NewOp2, Conditional);
-                TrAmlSetSubtreeParent (Predicate, NewOp2);
-
-                NewOp               = NewOp2;
-                NewOp2              = TrCreateLeafNode (PARSEOP_ONES);
-                NewOp->Asl.Next     = NewOp2;
-                TrAmlInitLineNumbers (NewOp2, Conditional);
-
-                NewOp2              = TrCreateLeafNode (PARSEOP_LEQUAL);
-                NewOp2->Asl.Child   = NewOp;
-                NewOp->Asl.Parent   = NewOp2;
-                TrAmlInitLineNumbers (NewOp2, Conditional);
-                TrAmlSetSubtreeParent (NewOp, NewOp2);
-
-                NewOp               = NewOp2;
-                NewOp2              = TrCreateLeafNode (PARSEOP_LNOT);
-                NewOp2->Asl.Child   = NewOp;
-                NewOp2->Asl.Parent  = Conditional;
-                NewOp->Asl.Parent   = NewOp2;
-                TrAmlInitLineNumbers (NewOp2, Conditional);
-
-                Conditional->Asl.Child = NewOp2;
-                NewOp2->Asl.Next = CaseBlock;
-            }
-            else
-            {
-                /*
-                 * Change CaseOp() to:  If (PredicateValue == CaseValue) {...}
-                 * CaseOp->Child is the case value
-                 * CaseOp->Child->Peer is the beginning of the case block
-                 */
-                NewOp = TrCreateValuedLeafNode (PARSEOP_NAMESTRING,
-                                (ACPI_INTEGER) ACPI_TO_INTEGER (PredicateValuePath));
-                Predicate->Asl.Next = NewOp;
-                TrAmlInitLineNumbers (NewOp, Predicate);
-
-                NewOp2              = TrCreateLeafNode (PARSEOP_LEQUAL);
-                NewOp2->Asl.Parent  = Conditional;
-                NewOp2->Asl.Child   = Predicate;
-                TrAmlInitLineNumbers (NewOp2, Conditional);
-
-                TrAmlSetSubtreeParent (Predicate, NewOp2);
-
-                Predicate           = NewOp2;
-                Predicate->Asl.Next = CaseBlock;
-
-                TrAmlSetSubtreeParent (Predicate, Conditional);
-                Conditional->Asl.Child = Predicate;
-            }
+            TrAmlSetSubtreeParent (Predicate, Conditional);
 
             /* Reinitialize the CASE node to an IF node */
 
+            Conditional->Asl.Child = Predicate;
             TrAmlInitNode (Conditional, PARSEOP_IF);
 
             /*
@@ -568,12 +535,7 @@ TrDoSwitch (
         {
             if (DefaultOp)
             {
-                /*
-                 * More than one Default
-                 * (Parser should catch this, should not get here)
-                 */
-                AslError (ASL_ERROR, ASL_MSG_COMPILER_INTERNAL, Next,
-                    "Found more than one Default()");
+                /* More than one Default */
             }
 
             /* Save the DEFAULT node for later, after CASEs */
@@ -582,7 +544,7 @@ TrDoSwitch (
         }
         else
         {
-            /* Unknown peer opcode */
+            /* Unkown peer opcode */
 
             printf ("Unknown parse opcode for switch statement: %s (%d)\n",
                         Next->Asl.ParseOpName, Next->Asl.ParseOpcode);
@@ -590,28 +552,23 @@ TrDoSwitch (
     }
 
     /*
-     * Add the default case at the end of the if/else construct
+     * Add the default at the end of the if/else construct
      */
     if (DefaultOp)
     {
-        /* If no CASE statements, this is an error - see below */
-
         if (CaseOp)
         {
-            /* Convert the DEFAULT node to an ELSE */
+            /* Add an ELSE first */
 
             TrAmlInitNode (DefaultOp, PARSEOP_ELSE);
             DefaultOp->Asl.Parent = Conditional->Asl.Parent;
-
-            /* Link ELSE node as a peer to the previous IF */
-
-            TrAmlInsertPeer (Conditional, DefaultOp);
         }
-    }
+        else
+        {
+            /* There were no CASE statements, no ELSE needed */
 
-    if (!CaseOp)
-    {
-        AslError (ASL_ERROR, ASL_MSG_NO_CASES, StartNode, NULL);
+            TrAmlInsertPeer (CurrentParentNode, DefaultOp->Asl.Child);
+        }
     }
 
     /*
@@ -619,7 +576,6 @@ TrDoSwitch (
      */
     NewOp             = TrCreateLeafNode (PARSEOP_NAME);
     NewOp->Asl.Parent = Gbl_FirstLevelInsertionNode->Asl.Parent;
-    NewOp->Asl.CompileFlags |= NODE_COMPILER_EMITTED;
 
     NewOp2            = TrCreateValuedLeafNode (PARSEOP_NAMESTRING,
                                 (ACPI_INTEGER) ACPI_TO_INTEGER (PredicateValueName));
@@ -641,6 +597,8 @@ TrDoSwitch (
     TrAmlInitNode (StartNode, PARSEOP_STORE);
 
     Predicate            = StartNode->Asl.Child;
+    Predicate->Asl.Child = NULL;
+
     NewOp                = TrCreateValuedLeafNode (PARSEOP_NAMESTRING,
                                     (ACPI_INTEGER) ACPI_TO_INTEGER (PredicateValuePath));
     NewOp->Asl.Parent    = StartNode;
