@@ -156,7 +156,6 @@ AcpiDsInitOneObject (
 {
     OBJECT_TYPE_INTERNAL    Type;
     ACPI_STATUS             Status;
-    ACPI_OBJECT_INTERNAL    *ObjDesc;
     INIT_WALK_INFO          *Info = (INIT_WALK_INFO *) Context;
 
 
@@ -219,12 +218,7 @@ AcpiDsInitOneObject (
 
         if (AcpiGbl_WhenToParseMethods != METHOD_PARSE_AT_INIT)
         {
-
             AcpiNsDeleteNamespaceSubtree (ObjHandle);
-
-            ObjDesc = ((ACPI_NAMED_OBJECT*)ObjHandle)->Object;
-            AcpiPsDeleteParseTree (ObjDesc->Method.ParserOp);
-            ObjDesc->Method.ParserOp = NULL;
         }
 
         break;
@@ -323,7 +317,7 @@ AcpiDsInitObjectFromOp (
 {
     ACPI_STATUS             Status;
     ACPI_GENERIC_OP         *Arg;
-    ACPI_BYTELIST_OP        *ByteList;
+    ACPI_EXTENDED_OP        *ByteList;
     ACPI_OBJECT_INTERNAL    *ArgDesc;
     ACPI_OP_INFO            *OpInfo;
 
@@ -392,7 +386,7 @@ AcpiDsInitObjectFromOp (
 
         /* skip first arg */
         Arg = Op->Value.Arg;
-        ByteList = (ACPI_BYTELIST_OP *) Arg->Next;
+        ByteList = (ACPI_EXTENDED_OP *) Arg->Next;
         if (ByteList)
         {
             if (ByteList->Opcode != AML_BYTELIST_OP)
