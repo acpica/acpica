@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: utalloc - local cache and memory allocation routines
- *              $Revision: 1.142 $
+ *              $Revision: 1.143 $
  *
  *****************************************************************************/
 
@@ -464,7 +464,7 @@ AcpiUtInitializeBuffer (
  *
  ******************************************************************************/
 
-static void *
+void *
 AcpiUtAllocate (
     ACPI_SIZE               Size,
     UINT32                  Component,
@@ -516,7 +516,7 @@ AcpiUtAllocate (
  *
  ******************************************************************************/
 
-static void *
+void *
 AcpiUtCallocate (
     ACPI_SIZE               Size,
     UINT32                  Component,
