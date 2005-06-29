@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslcompiler.h - common include file
- *              $Revision: 1.94 $
+ *              $Revision: 1.96 $
  *
  *****************************************************************************/
 
@@ -164,8 +164,8 @@ getopt (
  * Compiler versions and names
  */
 
-#define CompilerVersion             "X2040"
-#define CompilerCreatorRevision     0x02002040  /* Acpi 2.0, Version # */
+#define CompilerVersion             "X2041"
+#define CompilerCreatorRevision     0x02002041  /* Acpi 2.0, Version # */
 
 #define CompilerId                  "Intel ACPI Component Architecture ASL Compiler"
 #define CompilerCopyright           "Copyright (C) 2000 - 2002 Intel Corporation"
@@ -193,7 +193,7 @@ getopt (
 #define OP_TABLE_ENTRY(a,b,c,d)     {b,d,a,c}
 
 
-#define ASL_PARSE_OPCODE_BASE       ACCESSAS        /* First Lex type */
+#define ASL_PARSE_OPCODE_BASE       PARSEOP_ACCESSAS        /* First Lex type */
 
 
 /* Internal AML opcodes */
