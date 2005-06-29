@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: utmisc - common utility procedures
- *              $Revision: 1.45 $
+ *              $Revision: 1.47 $
  *
  ******************************************************************************/
 
@@ -415,15 +415,15 @@ AcpiUtAcquireMutex (
         {
             if (i == MutexId)
             {
-                DEBUG_PRINTP (ACPI_ERROR,
-                        ("Mutex [%s] already acquired by this thread [%X]\n",
+                ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
+                        "Mutex [%s] already acquired by this thread [%X]\n",
                         AcpiUtGetMutexName (MutexId), ThisThreadId));
 
                 return (AE_ALREADY_ACQUIRED);
             }
 
-            DEBUG_PRINTP (ACPI_ERROR,
-                    ("Invalid acquire order: Thread %X owns [%s], wants [%s]\n",
+            ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
+                    "Invalid acquire order: Thread %X owns [%s], wants [%s]\n",
                     ThisThreadId, AcpiUtGetMutexName (i),
                     AcpiUtGetMutexName (MutexId)));
 
@@ -432,8 +432,8 @@ AcpiUtAcquireMutex (
     }
 
 
-    DEBUG_PRINTP (TRACE_MUTEX,
-                ("Thread %X attempting to acquire Mutex [%s]\n",
+    ACPI_DEBUG_PRINT ((ACPI_DB_MUTEX,
+                "Thread %X attempting to acquire Mutex [%s]\n",
                 ThisThreadId, AcpiUtGetMutexName (MutexId)));
 
     Status = AcpiOsWaitSemaphore (AcpiGbl_AcpiMutexInfo[MutexId].Mutex,
@@ -441,7 +441,7 @@ AcpiUtAcquireMutex (
 
     if (ACPI_SUCCESS (Status))
     {
-        DEBUG_PRINTP (TRACE_MUTEX, ("Thread %X acquired Mutex [%s]\n",
+        ACPI_DEBUG_PRINT ((ACPI_DB_MUTEX, "Thread %X acquired Mutex [%s]\n",
                     ThisThreadId, AcpiUtGetMutexName (MutexId)));
 
         AcpiGbl_AcpiMutexInfo[MutexId].UseCount++;
@@ -450,7 +450,7 @@ AcpiUtAcquireMutex (
 
     else
     {
-        DEBUG_PRINTP (ACPI_ERROR, ("Thread %X could not acquire Mutex [%s] %s\n",
+        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Thread %X could not acquire Mutex [%s] %s\n",
                     ThisThreadId, AcpiUtGetMutexName (MutexId),
                     AcpiFormatException (Status)));
     }
@@ -484,8 +484,8 @@ AcpiUtReleaseMutex (
 
 
     ThisThreadId = AcpiOsGetThreadId ();
-    DEBUG_PRINTP (TRACE_MUTEX,
-        ("Thread %X releasing Mutex [%s]\n", ThisThreadId,
+    ACPI_DEBUG_PRINT ((ACPI_DB_MUTEX,
+        "Thread %X releasing Mutex [%s]\n", ThisThreadId,
         AcpiUtGetMutexName (MutexId)));
 
     if (MutexId > MAX_MTX)
@@ -499,8 +499,8 @@ AcpiUtReleaseMutex (
      */
     if (AcpiGbl_AcpiMutexInfo[MutexId].OwnerId == ACPI_MUTEX_NOT_ACQUIRED)
     {
-        DEBUG_PRINTP (ACPI_ERROR,
-                ("Mutex [%s] is not acquired, cannot release\n",
+        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
+                "Mutex [%s] is not acquired, cannot release\n",
                 AcpiUtGetMutexName (MutexId)));
 
         return (AE_NOT_ACQUIRED);
@@ -522,8 +522,8 @@ AcpiUtReleaseMutex (
                 continue;
             }
 
-            DEBUG_PRINTP (ACPI_ERROR,
-                    ("Invalid release order: owns [%s], releasing [%s]\n",
+            ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
+                    "Invalid release order: owns [%s], releasing [%s]\n",
                     AcpiUtGetMutexName (i), AcpiUtGetMutexName (MutexId)));
 
             return (AE_RELEASE_DEADLOCK);
@@ -539,13 +539,13 @@ AcpiUtReleaseMutex (
 
     if (ACPI_FAILURE (Status))
     {
-        DEBUG_PRINTP (ACPI_ERROR, ("Thread %X could not release Mutex [%s] %s\n",
+        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Thread %X could not release Mutex [%s] %s\n",
                     ThisThreadId, AcpiUtGetMutexName (MutexId),
                     AcpiFormatException (Status)));
     }
     else
     {
-        DEBUG_PRINTP (TRACE_MUTEX, ("Thread %X released Mutex [%s]\n",
+        ACPI_DEBUG_PRINT ((ACPI_DB_MUTEX, "Thread %X released Mutex [%s]\n",
                     ThisThreadId, AcpiUtGetMutexName (MutexId)));
     }
 
@@ -679,7 +679,7 @@ AcpiUtPopGenericState (
     ACPI_GENERIC_STATE      *State;
 
 
-    FUNCTION_TRACE ("DsPopGenericState");
+    FUNCTION_TRACE ("UtPopGenericState");
 
 
     /* Remove the state object at the head of the list (stack) */
@@ -928,7 +928,7 @@ AcpiUtResolvePackageReferences (
     ACPI_OPERAND_OBJECT     *SubObject;
 
 
-    FUNCTION_TRACE ("AcpiUtResolvePackageReferences");
+    FUNCTION_TRACE ("UtResolvePackageReferences");
 
 
     if (ObjDesc->Common.Type != ACPI_TYPE_PACKAGE)
@@ -996,16 +996,19 @@ AcpiUtDisplayInitPathname (
     char                    Buffer[128];
 
 
+    PROC_NAME ("UtDisplayInitPathname");
+
+
     Status = AcpiNsHandleToPathname (ObjHandle, &Length, Buffer);
     if (ACPI_SUCCESS (Status))
     {
         if (Path)
         {
-            DEBUG_PRINT (TRACE_INIT, ("%s.%s\n", Buffer, Path))
+            ACPI_DEBUG_PRINT ((ACPI_DB_INIT, "%s.%s\n", Buffer, Path));
         }
         else
         {
-            DEBUG_PRINT (TRACE_INIT, ("%s\n", Buffer))
+            ACPI_DEBUG_PRINT ((ACPI_DB_INIT, "%s\n", Buffer));
         }
     }
 }
@@ -1037,7 +1040,7 @@ AcpiUtWalkPackageTree (
     ACPI_OPERAND_OBJECT     *ThisSourceObj;
 
 
-    FUNCTION_TRACE ("AcpiUtWalkPackageTree");
+    FUNCTION_TRACE ("UtWalkPackageTree");
 
 
     State = AcpiUtCreatePkgState (SourceObject, TargetObject, 0);

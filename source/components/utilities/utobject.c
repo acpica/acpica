@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: utobject - ACPI object create/delete/size/cache routines
- *              $Revision: 1.50 $
+ *              $Revision: 1.52 $
  *
  *****************************************************************************/
 
@@ -208,8 +208,8 @@ AcpiUtValidInternalObject (
 
     if (!Object)
     {
-        DEBUG_PRINT (ACPI_INFO,
-            ("**** Null Object Ptr\n"));
+        ACPI_DEBUG_PRINT ((ACPI_DB_INFO,
+            "**** Null Object Ptr\n"));
         return (FALSE);
     }
 
@@ -217,7 +217,7 @@ AcpiUtValidInternalObject (
 
     if (AcpiTbSystemTablePointer (Object))
     {
-        DEBUG_PRINTP (ACPI_INFO, ("**** Object %p is a Pcode Ptr\n", Object));
+        ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "**** Object %p is a Pcode Ptr\n", Object));
         return (FALSE);
     }
 
@@ -229,20 +229,20 @@ AcpiUtValidInternalObject (
 
         if (VALID_DESCRIPTOR_TYPE (Object, ACPI_DESC_TYPE_NAMED))
         {
-            DEBUG_PRINTP (ACPI_INFO,
-                ("**** Obj %p is a named obj, not ACPI obj\n", Object));
+            ACPI_DEBUG_PRINT ((ACPI_DB_INFO,
+                "**** Obj %p is a named obj, not ACPI obj\n", Object));
         }
 
         else if (VALID_DESCRIPTOR_TYPE (Object, ACPI_DESC_TYPE_PARSER))
         {
-            DEBUG_PRINTP (ACPI_INFO,
-                ("**** Obj %p is a parser obj, not ACPI obj\n", Object));
+            ACPI_DEBUG_PRINT ((ACPI_DB_INFO,
+                "**** Obj %p is a parser obj, not ACPI obj\n", Object));
         }
 
         else
         {
-            DEBUG_PRINTP (ACPI_INFO,
-                ("**** Obj %p is of unknown type\n", Object));
+            ACPI_DEBUG_PRINT ((ACPI_DB_INFO,
+                "**** Obj %p is of unknown type\n", Object));
         }
 
         return (FALSE);
@@ -280,7 +280,7 @@ _UtAllocateObjectDesc (
     ACPI_OPERAND_OBJECT     *Object;
 
 
-    FUNCTION_TRACE ("_AllocateObjectDesc");
+    FUNCTION_TRACE ("UtAllocateObjectDesc");
 
 
     Object = AcpiUtAcquireFromCache (ACPI_MEM_LIST_OPERAND);
@@ -297,7 +297,7 @@ _UtAllocateObjectDesc (
 
     Object->Common.DataType = ACPI_DESC_TYPE_INTERNAL;
 
-    DEBUG_PRINTP (TRACE_ALLOCATIONS, ("%p Size %X\n",
+    ACPI_DEBUG_PRINT ((ACPI_DB_ALLOCATIONS, "%p Size %X\n",
             Object, sizeof (ACPI_OPERAND_OBJECT)));
 
     return_PTR (Object);
@@ -320,15 +320,15 @@ void
 AcpiUtDeleteObjectDesc (
     ACPI_OPERAND_OBJECT     *Object)
 {
-    FUNCTION_TRACE_PTR ("AcpiUtDeleteObjectDesc", Object);
+    FUNCTION_TRACE_PTR ("UtDeleteObjectDesc", Object);
 
 
     /* Object must be an ACPI_OPERAND_OBJECT  */
 
     if (Object->Common.DataType != ACPI_DESC_TYPE_INTERNAL)
     {
-        DEBUG_PRINTP (ACPI_ERROR,
-            ("Obj %p is not an ACPI object\n", Object));
+        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
+            "Obj %p is not an ACPI object\n", Object));
         return_VOID;
     }
 
@@ -505,8 +505,8 @@ AcpiUtGetSimpleObjectSize (
          */
         if (InternalObject->Reference.Opcode != AML_INT_NAMEPATH_OP)
         {
-            DEBUG_PRINTP (ACPI_ERROR,
-                ("Unsupported Reference opcode=%X in object %p\n",
+            ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
+                "Unsupported Reference opcode=%X in object %p\n",
                 InternalObject->Reference.Opcode, InternalObject));
             Status = AE_TYPE;
         }
@@ -524,7 +524,7 @@ AcpiUtGetSimpleObjectSize (
 
     default:
 
-        DEBUG_PRINTP (ACPI_ERROR, ("Unsupported type=%X in object %p\n",
+        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Unsupported type=%X in object %p\n",
             InternalObject->Common.Type, InternalObject));
         Status = AE_TYPE;
         break;
