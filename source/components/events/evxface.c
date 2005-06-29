@@ -158,7 +158,7 @@ AcpiEnable (void)
 
     /*  ACPI tables are available or not required */
 
-    if (LEGACY_MODE == AcpiGetModeCapabilities ())
+    if (LEGACY_MODE == HwGetModeCapabilities ())
     {   
         /*
          * No ACPI mode support provided by BIOS
