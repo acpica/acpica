@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: tbxfroot - Find the root ACPI table (RSDT)
- *              $Revision: 1.60 $
+ *              $Revision: 1.61 $
  *
  *****************************************************************************/
 
@@ -333,7 +333,7 @@ AcpiGetFirmwareTable (
         else
         {
             Address.Pointer.Value = ACPI_GET_ADDRESS (
-            						((XSDT_DESCRIPTOR *) RsdtPtr)->TableOffsetEntry[i]);
+                ((XSDT_DESCRIPTOR *) RsdtPtr)->TableOffsetEntry[i]);
         }
 
         /* Get addressibility if necessary */
