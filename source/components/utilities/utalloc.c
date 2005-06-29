@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: utalloc - local cache and memory allocation routines
- *              $Revision: 1.97 $
+ *              $Revision: 1.100 $
  *
  *****************************************************************************/
 
@@ -126,7 +126,6 @@
         MODULE_NAME         ("utalloc")
 
 
-
 /******************************************************************************
  *
  * FUNCTION:    AcpiUtReleaseToCache
@@ -147,6 +146,9 @@ AcpiUtReleaseToCache (
     void                    *Object)
 {
     ACPI_MEMORY_LIST        *CacheInfo;
+
+
+    FUNCTION_ENTRY ();
 
 
     /* If walk cache is full, just free this wallkstate object */
@@ -185,7 +187,7 @@ AcpiUtReleaseToCache (
  *
  * PARAMETERS:  ListId              - Memory list ID
  *
- * RETURN:      A requested object.  NULL if the object could not be 
+ * RETURN:      A requested object.  NULL if the object could not be
  *              allocated.
  *
  * DESCRIPTION: Get an object from the specified cache.  If cache is empty,
@@ -203,6 +205,7 @@ AcpiUtAcquireFromCache (
 
     PROC_NAME ("UtAcquireFromCache");
 
+
     CacheInfo = &AcpiGbl_MemoryLists[ListId];
     AcpiUtAcquireMutex (ACPI_MTX_CACHES);
     ACPI_MEM_TRACKING (CacheInfo->CacheRequests++);
@@ -219,8 +222,10 @@ AcpiUtAcquireFromCache (
         ACPI_MEM_TRACKING (CacheInfo->CacheHits++);
         CacheInfo->CacheDepth--;
 
-        ACPI_DEBUG_PRINT ((ACPI_DB_EXEC, "Object %p from %s\n", 
+#ifdef ACPI_DBG_TRACK_ALLOCATIONS
+        ACPI_DEBUG_PRINT ((ACPI_DB_EXEC, "Object %p from %s\n",
             Object, AcpiGbl_MemoryLists[ListId].ListName));
+#endif
 
         AcpiUtReleaseMutex (ACPI_MTX_CACHES);
 
@@ -265,6 +270,9 @@ AcpiUtDeleteGenericCache (
     char                    *Next;
 
 
+    FUNCTION_ENTRY ();
+
+
     CacheInfo = &AcpiGbl_MemoryLists[ListId];
     while (CacheInfo->ListHead)
     {
@@ -279,7 +287,6 @@ AcpiUtDeleteGenericCache (
 }
 
 
-
 #ifdef ACPI_DBG_TRACK_ALLOCATIONS
 
 
@@ -289,8 +296,8 @@ AcpiUtDeleteGenericCache (
  *
  * Each memory allocation is tracked via a doubly linked list.  Each
  * element contains the caller's component, module name, function name, and
- * line number.  AcpiUtAllocate and AcpiUtCallocate call 
- * AcpiUtAddElementToAllocList to add an element to the list; deletion 
+ * line number.  AcpiUtAllocate and AcpiUtCallocate call
+ * AcpiUtAddElementToAllocList to add an element to the list; deletion
  * occurs in the body of AcpiUtFree.
  */
 
@@ -313,6 +320,9 @@ AcpiUtSearchAllocList (
     void                    *Address)
 {
     ACPI_DEBUG_MEM_BLOCK    *Element;
+
+
+    FUNCTION_ENTRY ();
 
 
     if (ListId > ACPI_MEM_LIST_MAX)
@@ -415,7 +425,7 @@ AcpiUtAddElementToAllocList (
 
     Address->Next = MemList->ListHead;
     Address->Previous = NULL;
-    
+
     MemList->ListHead = Address;
 
 
@@ -472,7 +482,7 @@ AcpiUtDeleteElementFromAllocList (
 
 
     AcpiUtAcquireMutex (ACPI_MTX_MEMORY);
-    
+
     /* Unlink */
 
     if (Address->Previous)
@@ -584,8 +594,8 @@ AcpiUtDumpCurrentAllocations (
 
     FUNCTION_TRACE ("UtDumpCurrentAllocations");
 
-    Element = AcpiGbl_MemoryLists[0].ListHead;
 
+    Element = AcpiGbl_MemoryLists[0].ListHead;
     if (Element == NULL)
     {
         ACPI_DEBUG_PRINT ((ACPI_DB_ALLOCATIONS,
@@ -712,7 +722,7 @@ AcpiUtAllocate (
         return_PTR (NULL);
     }
 
-    Status = AcpiUtAddElementToAllocList (ACPI_MEM_LIST_GLOBAL, Address, Size, 
+    Status = AcpiUtAddElementToAllocList (ACPI_MEM_LIST_GLOBAL, Address, Size,
                     MEM_MALLOC, Component, Module, Line);
     if (ACPI_FAILURE (Status))
     {
@@ -778,7 +788,7 @@ AcpiUtCallocate (
         return_PTR (NULL);
     }
 
-    Status = AcpiUtAddElementToAllocList (ACPI_MEM_LIST_GLOBAL, Address, Size, 
+    Status = AcpiUtAddElementToAllocList (ACPI_MEM_LIST_GLOBAL, Address, Size,
                         MEM_CALLOC, Component, Module, Line);
     if (ACPI_FAILURE (Status))
     {
@@ -830,13 +840,13 @@ AcpiUtFree (
         return_VOID;
     }
 
-    DebugBlock = (ACPI_DEBUG_MEM_BLOCK *) 
+    DebugBlock = (ACPI_DEBUG_MEM_BLOCK *)
                     (((char *) Address) - sizeof (ACPI_DEBUG_MEM_HEADER));
 
     AcpiGbl_MemoryLists[ACPI_MEM_LIST_GLOBAL].TotalFreed++;
     AcpiGbl_MemoryLists[ACPI_MEM_LIST_GLOBAL].CurrentTotalSize -= DebugBlock->Size;
 
-    AcpiUtDeleteElementFromAllocList (ACPI_MEM_LIST_GLOBAL, DebugBlock, 
+    AcpiUtDeleteElementFromAllocList (ACPI_MEM_LIST_GLOBAL, DebugBlock,
             Component, Module, Line);
     AcpiOsFree (DebugBlock);
 
