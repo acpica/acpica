@@ -453,17 +453,34 @@ void * (*WALK_CALLBACK) (
 #define ACPI_VALID_ADR          0x4
 #define ACPI_VALID_STA          0x8
 
+
+#define ACPI_COMMON_OBJ_INFO \
+    ACPI_OBJECT_TYPE        Type;           /* ACPI object type */\
+    ACPI_NAME               Name;           /* ACPI object Name */\
+    /*\
+     *  BUGBUG:Do we want or need these next two??\
+     */\
+    ACPI_HANDLE             Parent;         /* Parent object */\
+    ACPI_HANDLE             Children;       /* Linked list of children */\
+    UINT32                  Valid           /* ?????    */
+
 typedef struct 
 {
-    UINT32                  Valid;
-    UINT32                  HardwareId;
-    UINT32                  UniqueId;
-    UINT32                  Address;
-    UINT32                  CurrentStatus;
+    ACPI_COMMON_OBJ_INFO;
+} ACPI_OBJ_INFO_HEADER;
 
+typedef struct 
+{
+    ACPI_COMMON_OBJ_INFO;
+
+    /*
+     *  BUGBUG: a HID or a _UID can return either a number or a string
+     */
+    UINT32                  HardwareId;     /*  _HID value if any */
+    UINT32                  UniqueId;       /*  _UID value if any */
+    UINT32                  Address;        /*  _ADR value if any */
+    UINT32                  CurrentStatus;  /*  _STA value */
 } ACPI_DEVICE_INFO;
-
-
 /*
  * data type ranges
  */
