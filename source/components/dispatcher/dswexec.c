@@ -2,7 +2,7 @@
  *
  * Module Name: dswexec - Dispatcher method execution callbacks;
  *                        dispatch to interpreter.
- *              $Revision: 1.54 $
+ *              $Revision: 1.55 $
  *
  *****************************************************************************/
 
@@ -471,6 +471,8 @@ AcpiDsExecEndOp (
 
     WalkState->NumOperands = 0;
     WalkState->ReturnDesc = NULL;
+    WalkState->OpInfo = OpInfo;
+    WalkState->Opcode = Opcode;
 
 
     /* Call debugger for single step support (DEBUG build only) */
