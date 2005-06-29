@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: excreate - Named object creation
- *              $Revision: 1.67 $
+ *              $Revision: 1.68 $
  *
  *****************************************************************************/
 
@@ -136,6 +136,7 @@
  *
  * PARAMETERS:  Opcode              - The opcode to be executed
  *              Operands            - List of operands for the opcode
+ *              WalkState           - Current state
  *
  * RETURN:      Status
  *
@@ -257,7 +258,6 @@ AcpiExCreateBufferField (
         break;
     }
 
-
     /* Store constructed field descriptor in result location */
 
     Status = AcpiExStore (ObjDesc, (ACPI_OPERAND_OBJECT *) Node,
@@ -271,7 +271,6 @@ AcpiExCreateBufferField (
     {
         AcpiUtRemoveReference (ObjDesc);
     }
-
 
     return_ACPI_STATUS (AE_OK);
 
@@ -355,7 +354,7 @@ AcpiExCreateAlias (
  *
  * FUNCTION:    AcpiExCreateEvent
  *
- * PARAMETERS:  None
+ * PARAMETERS:  WalkState           - Current state
  *
  * RETURN:      Status
  *
@@ -415,8 +414,7 @@ Cleanup:
  *
  * FUNCTION:    AcpiExCreateMutex
  *
- * PARAMETERS:  InterpreterMode     - Current running mode (load1/Load2/Exec)
- *              Operands            - List of operands for the opcode
+ * PARAMETERS:  WalkState           - Current state
  *
  * RETURN:      Status
  *
@@ -487,10 +485,10 @@ Cleanup:
  *
  * FUNCTION:    AcpiExCreateRegion
  *
- * PARAMETERS:  AmlStart              - Pointer to the region declaration AML
+ * PARAMETERS:  AmlStart            - Pointer to the region declaration AML
  *              AmlLength           - Max length of the declaration AML
  *              Operands            - List of operands for the opcode
- *              InterpreterMode     - Load1/Load2/Execute
+ *              WalkState           - Current state
  *
  * RETURN:      Status
  *
@@ -611,6 +609,44 @@ Cleanup:
             ObjDesc = NULL;
         }
     }
+
+    return_ACPI_STATUS (Status);
+}
+
+
+/*****************************************************************************
+ *
+ * FUNCTION:    AcpiExCreateTableRegion
+ *
+ * PARAMETERS:  WalkState           - Current state
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Create a new DataTableRegion object
+ *
+ ****************************************************************************/
+
+ACPI_STATUS
+AcpiExCreateTableRegion (
+    ACPI_WALK_STATE         *WalkState)
+{
+    ACPI_STATUS             Status = AE_OK;
+
+
+    FUNCTION_TRACE ("ExCreateTableRegion");
+
+/*
+    ACPI_OPERAND_OBJECT     *ObjDesc;
+    ObjDesc = AcpiUtCreateInternalObject (ACPI_TYPE_REGION);
+    if (!ObjDesc)
+    {
+        Status = AE_NO_MEMORY;
+        goto Cleanup;
+    }
+
+
+Cleanup:
+*/
 
     return_ACPI_STATUS (Status);
 }
@@ -773,7 +809,7 @@ AcpiExCreatePowerResource (
  *
  * FUNCTION:    AcpiExCreateMethod
  *
- * PARAMETERS:  AmlStart          - First byte of the method's AML
+ * PARAMETERS:  AmlStart        - First byte of the method's AML
  *              AmlLength       - AML byte count for this method
  *              MethodFlags     - AML method flag byte
  *              Method          - Method Node
