@@ -130,6 +130,7 @@ typedef UINT32              ACPI_MUTEX_HANDLE;
 
 #define DESC_TYPE_NTE       0xEE
 #define DESC_TYPE_ACPI_OBJ  0xAA
+#define DESC_TYPE_PARSER    0xBB
 
 
 /*
@@ -144,8 +145,10 @@ typedef UINT32              ACPI_MUTEX_HANDLE;
 #define MTX_GP_EVENT        4
 #define MTX_FIXED_EVENT     5
 #define MTX_OP_REGIONS      6
+#define MTX_DEBUG_COMMAND   7
+#define MTX_DEBUGGER        8
 
-#define MAX_MTX             6
+#define MAX_MTX             8
 #define NUM_MTX             MAX_MTX+1
 
 
@@ -380,15 +383,17 @@ typedef union acpi_op_value
 
 
 #define ACPI_COMMON_OP \
+    UINT8                   DataType;       /* To differentiate various internal objs */\
+    UINT8                   Flags;          /* Not used */\
+    UINT16                  Opcode;         /* AML opcode */\
+    UINT32                  AmlOffset;      /* offset of declaration in AML */\
+    struct acpi_generic_op  *Parent;        /* parent op */\
+    struct acpi_generic_op  *Next;          /* next op */\
     DEBUG_ONLY_MEMBERS (\
     char                    OpName[16])     /* op name (debug only) */\
                                             /* NON-DEBUG members below: */\
-    struct acpi_generic_op  *Parent;        /* parent op */\
-    struct acpi_generic_op  *Next;          /* next op */\
     void                    *ResultObj;     /* for use by interpreter */\
     ACPI_OP_VALUE           Value;          /* Value or args associated with the opcode */\
-    UINT32                  AmlOffset;      /* offset of declaration in AML */\
-    UINT16                  Opcode;         /* AML opcode */\
 
 
 /*
