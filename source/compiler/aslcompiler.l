@@ -3,7 +3,7 @@
 /******************************************************************************
  *
  * Module Name: aslcompiler.l - Flex input file
- *              $Revision: 1.42 $
+ *              $Revision: 1.43 $
  *
  *****************************************************************************/
 
@@ -564,7 +564,7 @@ AslPopInputFileStack (void)
 
     /* All done with this node */
 
-    AcpiUtFree (Fnode);
+    ACPI_MEM_FREE (Fnode);
     return 0;
 }
 
