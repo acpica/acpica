@@ -1,9 +1,37 @@
-
 /*
- * acpiosd - OS dependent interfaces
- *
- * These interfaces must be implemented by the OS-dependent front-end
- * to the ACPI subsystem.
+  __________________________________________________________________________
+ |
+ |
+ |           Copyright (C) Intel Corporation 1994-1996
+ |
+ | All rights reserved.  No part of this program or publication may be
+ | reproduced, transmitted, transcribed, stored in a retrieval system, or
+ | translated into any language or computer language, in any form or by any
+ | means, electronic, mechanical, magnetic, optical, chemical, manual, or
+ | otherwise, without the prior written permission of Intel Corporation.
+ |__________________________________________________________________________
+ |
+ | FILENAME: acpiosd.h - OS Dependant 
+ |__________________________________________________________________________
+ |
+ |
+ | acpiosd - OS dependent interfaces
+ |
+ | These interfaces must be implemented by the OS-dependent front-end
+ | to the ACPI subsystem.
+ |
+ | $Revision: 1.8 $
+ | $Date: 2005/06/29 19:59:43 $
+ | $Log: acpiosxf.h,v $
+ | Revision 1.8  2005/06/29 19:59:43  aystarik
+ | Added File header
+ |
+ | 
+ | date	99.02.12.18.29.00;	author rmosgrov;	state Exp;
+ |
+ * 
+ * 8     2/12/99 10:29a Rmosgrov
+ * Added File header
  */
 
 #include "acpiasm.h"
