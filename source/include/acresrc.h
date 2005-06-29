@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acresrc.h - Resource Manager function prototypes
- *       $Revision: 1.40 $
+ *       $Revision: 1.42 $
  *
  *****************************************************************************/
 
@@ -122,7 +122,6 @@
 /*
  *  Function prototypes called from Acpi* APIs
  */
-
 ACPI_STATUS
 AcpiRsGetPrtMethodData (
     ACPI_HANDLE             Handle,
@@ -177,61 +176,10 @@ void
 AcpiRsDumpIrqList (
     UINT8                   *RouteTable);
 
-static void
-AcpiRsDumpIrq (
-    ACPI_RESOURCE_DATA      *Data);
 
-static void
-AcpiRsDumpAddress16 (
-    ACPI_RESOURCE_DATA      *Data);
-
-static void
-AcpiRsDumpAddress32 (
-    ACPI_RESOURCE_DATA      *Data);
-
-static void
-AcpiRsDumpAddress64 (
-    ACPI_RESOURCE_DATA      *Data);
-
-static void
-AcpiRsDumpDma (
-    ACPI_RESOURCE_DATA      *Data);
-
-static void
-AcpiRsDumpIo (
-    ACPI_RESOURCE_DATA      *Data);
-
-static void
-AcpiRsDumpExtendedIrq (
-    ACPI_RESOURCE_DATA      *Data);
-
-static void
-AcpiRsDumpFixedIo (
-    ACPI_RESOURCE_DATA      *Data);
-
-static void
-AcpiRsDumpFixedMemory32 (
-    ACPI_RESOURCE_DATA      *Data);
-
-static void
-AcpiRsDumpMemory24 (
-    ACPI_RESOURCE_DATA      *Data);
-
-static void
-AcpiRsDumpMemory32 (
-    ACPI_RESOURCE_DATA      *Data);
-
-static void
-AcpiRsDumpStartDependFns (
-    ACPI_RESOURCE_DATA      *Data);
-
-static void
-AcpiRsDumpVendorSpecific (
-    ACPI_RESOURCE_DATA      *Data);
-
-
-/* rscalc */
-
+/*
+ * rscalc
+ */
 ACPI_STATUS
 AcpiRsGetByteStreamStart (
     UINT8                   *ByteStreamBuffer,
