@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acinterp.h - Interpreter subcomponent prototypes and defines
- *       $Revision: 1.152 $
+ *       $Revision: 1.153 $
  *
  *****************************************************************************/
 
@@ -498,6 +498,10 @@ AcpiExSystemWaitSemaphore (
 /*
  * exmonadic - ACPI AML (p-code) execution, monadic operators
  */
+
+ACPI_STATUS
+AcpiExOpcode_0A_0T_1R (
+    ACPI_WALK_STATE         *WalkState);
 
 ACPI_STATUS
 AcpiExOpcode_1A_0T_0R (
