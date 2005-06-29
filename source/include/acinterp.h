@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acinterp.h - Interpreter subcomponent prototypes and defines
- *       $Revision: 1.93 $
+ *       $Revision: 1.94 $
  *
  *****************************************************************************/
 
@@ -361,10 +361,6 @@ AcpiAmlPrepIndexFieldValue (
 /*
  * amsystem - Interface to OS services
  */
-
-UINT16
-AcpiAmlSystemThreadId (
-    void);
 
 ACPI_STATUS
 AcpiAmlSystemDoNotifyOp (

@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: aclocal.h - Internal data types used across the ACPI subsystem
- *       $Revision: 1.106 $
+ *       $Revision: 1.107 $
  *
  *****************************************************************************/
 
@@ -144,22 +144,26 @@ typedef UINT32                      ACPI_MUTEX_HANDLE;
 /*
  * Predefined handles for the mutex objects used within the subsystem
  * All mutex objects are automatically created by AcpiCmMutexInitialize.
+ *
+ * The acquire/release ordering protocol is implied via this list.  Mutexes 
+ * with a lower value must be acquired before mutexes with a higher value.
+ *
  * NOTE: any changes here must be reflected in the AcpiGbl_MutexNames table also!
  */
 
-#define ACPI_MTX_HARDWARE           0
-#define ACPI_MTX_MEMORY             1
-#define ACPI_MTX_CACHES             2
-#define ACPI_MTX_TABLES             3
-#define ACPI_MTX_PARSER             4
-#define ACPI_MTX_DISPATCHER         5
-#define ACPI_MTX_INTERPRETER        6
-#define ACPI_MTX_EXECUTE            7
-#define ACPI_MTX_NAMESPACE          8
-#define ACPI_MTX_EVENTS             9
-#define ACPI_MTX_OP_REGIONS         10
-#define ACPI_MTX_DEBUG_CMD_READY    11
-#define ACPI_MTX_DEBUG_CMD_COMPLETE 12
+#define ACPI_MTX_EXECUTE            0
+#define ACPI_MTX_INTERPRETER        1
+#define ACPI_MTX_PARSER             2
+#define ACPI_MTX_DISPATCHER         3
+#define ACPI_MTX_TABLES             4
+#define ACPI_MTX_OP_REGIONS         5
+#define ACPI_MTX_NAMESPACE          6
+#define ACPI_MTX_EVENTS             7
+#define ACPI_MTX_HARDWARE           8
+#define ACPI_MTX_CACHES             9
+#define ACPI_MTX_MEMORY             10
+#define ACPI_MTX_DEBUG_CMD_COMPLETE 11
+#define ACPI_MTX_DEBUG_CMD_READY    12
 
 #define MAX_MTX                     12
 #define NUM_MTX                     MAX_MTX+1
@@ -172,19 +176,19 @@ typedef UINT32                      ACPI_MUTEX_HANDLE;
 
 static NATIVE_CHAR          *AcpiGbl_MutexNames[] =
 {
-    "ACPI_MTX_Hardware",
-    "ACPI_MTX_Memory",
-    "ACPI_MTX_Caches",
-    "ACPI_MTX_Tables",
+    "ACPI_MTX_Execute",
+    "ACPI_MTX_Interpreter",
     "ACPI_MTX_Parser",
     "ACPI_MTX_Dispatcher",
-    "ACPI_MTX_Interpreter",
-    "ACPI_MTX_Execute",
+    "ACPI_MTX_Tables",
+    "ACPI_MTX_OpRegions",
     "ACPI_MTX_Namespace",
     "ACPI_MTX_Events",
-    "ACPI_MTX_OpRegions",
-    "ACPI_MTX_DebugCmdReady",
+    "ACPI_MTX_Hardware",
+    "ACPI_MTX_Caches",
+    "ACPI_MTX_Memory",
     "ACPI_MTX_DebugCmdComplete"
+    "ACPI_MTX_DebugCmdReady",
 };
 
 #endif
@@ -197,6 +201,7 @@ typedef struct AcpiMutexInfo
 {
     ACPI_MUTEX                  Mutex;
     UINT32                      UseCount;
+    UINT32                      OwnerId;
     BOOLEAN                     Locked;
 
 } ACPI_MUTEX_INFO;
