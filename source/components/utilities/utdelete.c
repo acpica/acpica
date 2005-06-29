@@ -120,6 +120,7 @@
 #include <acpiobj.h>
 #include <interpreter.h>
 #include <namespace.h>
+#include <tables.h>
 
 
 #define _THIS_MODULE        "cmdelete.c"
@@ -258,7 +259,7 @@ CmUpdateObjectReference (
         return_ACPI_STATUS (AE_OK);
     }
 
-    if (NsIsInSystemTable (Object))
+    if (TbSystemTablePointer (Object))
     {
         DEBUG_PRINT (ACPI_INFO, ("CmUpdateObjectReference: **** Object %p is Pcode Ptr\n",
                         Object));
@@ -549,7 +550,7 @@ CmDeleteInternalObj (
 
     if (ObjPointer)
     {
-        if (!NsIsInSystemTable (ObjPointer))
+        if (!TbSystemTablePointer (ObjPointer))
         {
             DEBUG_PRINT (ACPI_INFO, ("CmDeleteInternalObj: Deleting Obj Ptr %p \n", 
                                     ObjPointer));
@@ -610,7 +611,7 @@ CmDeleteInternalObject (
         return_VOID;
     }
 
-    if (NsIsInSystemTable (Object))
+    if (TbSystemTablePointer (Object))
     {
         DEBUG_PRINT (ACPI_INFO, ("CmDeleteInternalObject: **** Object %p is Pcode Ptr\n",
                         Object));
