@@ -1,24 +1,24 @@
-# Microsoft Developer Studio Project File - Name="Subsystem" - Package Owner=<4>
+# Microsoft Developer Studio Project File - Name="AcpiSubsystem" - Package Owner=<4>
 # Microsoft Developer Studio Generated Build File, Format Version 6.00
 # ** DO NOT EDIT **
 
 # TARGTYPE "Win32 (x86) Static Library" 0x0104
 
-CFG=Subsystem - Win32 Debug
+CFG=AcpiSubsystem - Win32 Debug
 !MESSAGE This is not a valid makefile. To build this project using NMAKE,
 !MESSAGE use the Export Makefile command and run
 !MESSAGE 
-!MESSAGE NMAKE /f "Subsystem.mak".
+!MESSAGE NMAKE /f "AcpiSubsystem.mak".
 !MESSAGE 
 !MESSAGE You can specify a configuration when running NMAKE
 !MESSAGE by defining the macro CFG on the command line. For example:
 !MESSAGE 
-!MESSAGE NMAKE /f "Subsystem.mak" CFG="Subsystem - Win32 Debug"
+!MESSAGE NMAKE /f "AcpiSubsystem.mak" CFG="AcpiSubsystem - Win32 Debug"
 !MESSAGE 
 !MESSAGE Possible choices for configuration are:
 !MESSAGE 
-!MESSAGE "Subsystem - Win32 Release" (based on "Win32 (x86) Static Library")
-!MESSAGE "Subsystem - Win32 Debug" (based on "Win32 (x86) Static Library")
+!MESSAGE "AcpiSubsystem - Win32 Release" (based on "Win32 (x86) Static Library")
+!MESSAGE "AcpiSubsystem - Win32 Debug" (based on "Win32 (x86) Static Library")
 !MESSAGE 
 
 # Begin Project
@@ -28,7 +28,7 @@ CFG=Subsystem - Win32 Debug
 CPP=cl.exe
 RSC=rc.exe
 
-!IF  "$(CFG)" == "Subsystem - Win32 Release"
+!IF  "$(CFG)" == "AcpiSubsystem - Win32 Release"
 
 # PROP BASE Use_MFC 0
 # PROP BASE Use_Debug_Libraries 0
@@ -37,8 +37,8 @@ RSC=rc.exe
 # PROP BASE Target_Dir ""
 # PROP Use_MFC 0
 # PROP Use_Debug_Libraries 0
-# PROP Output_Dir "bin"
-# PROP Intermediate_Dir "bin"
+# PROP Output_Dir "AcpiSubsystem"
+# PROP Intermediate_Dir "AcpiSubsystem"
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_MBCS" /D "_LIB" /YX /FD /c
 # ADD CPP /nologo /Gz /MT /W4 /GX /O2 /I "..\..\Subsystem\Include" /I "\98ddk\inc\win98" /D "NDEBUG" /D "ACPILIB_GEN" /D "DRIVER" /D "_WINDOWS" /D PROCESSOR_ARCHITECTURE=x86 /D "WIN32" /YX /FD /c
@@ -49,14 +49,16 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LIB32=link.exe -lib
 # ADD BASE LIB32 /nologo
-# ADD LIB32 /nologo /out:"Release\acpilib.lib"
+# ADD LIB32 /nologo /out:"bin\acpica.lib"
 # Begin Special Build Tool
 SOURCE="$(InputPath)"
-PostBuild_Desc=Copy Library
-PostBuild_Cmds=copy bin\acpilib.lib ..\..\libraries\acpilib.lib
+PreLink_Desc=Checking existence of acpi/components/libraries directory
+PreLink_Cmds=if NOT EXIST ..\..\libraries mkdir ..\..\libraries
+PostBuild_Desc=Copy library to acpi/components/libraries
+PostBuild_Cmds=copy bin\acpica.lib ..\..\libraries\acpica.lib	dir ..\..\libraries\acpica.lib
 # End Special Build Tool
 
-!ELSEIF  "$(CFG)" == "Subsystem - Win32 Debug"
+!ELSEIF  "$(CFG)" == "AcpiSubsystem - Win32 Debug"
 
 # PROP BASE Use_MFC 0
 # PROP BASE Use_Debug_Libraries 1
@@ -65,8 +67,8 @@ PostBuild_Cmds=copy bin\acpilib.lib ..\..\libraries\acpilib.lib
 # PROP BASE Target_Dir ""
 # PROP Use_MFC 0
 # PROP Use_Debug_Libraries 1
-# PROP Output_Dir "bin"
-# PROP Intermediate_Dir "bin"
+# PROP Output_Dir "AcpiSubsystem"
+# PROP Intermediate_Dir "AcpiSubsystem"
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_MBCS" /D "_LIB" /YX /FD /GZ /c
 # ADD CPP /nologo /Gz /MT /W4 /GX /Z7 /Od /I "..\..\Subsystem\Include" /I "\98ddk\inc\win98" /D "ACPI_DEBUG" /D "_DEBUG" /D "_WINDOWS" /D PROCESSOR_ARCHITECTURE=x86 /D "WIN32" /FR /FD /c
@@ -77,21 +79,21 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LIB32=link.exe -lib
 # ADD BASE LIB32 /nologo
-# ADD LIB32 /nologo /out:"bin\acpilib.lib"
+# ADD LIB32 /nologo /out:"bin\acpica.lib"
 # Begin Special Build Tool
 SOURCE="$(InputPath)"
-PreLink_Desc=deleting old library
-PreLink_Cmds=mkdir ..\..\libraries	del ..\..\libraries\acpilib.lib
-PostBuild_Desc=Copy Library
-PostBuild_Cmds=copy bin\acpilib.lib ..\..\libraries\acpilib.lib
+PreLink_Desc=Checking existence of acpi/components/libraries directory
+PreLink_Cmds=if NOT EXIST ..\..\libraries mkdir ..\..\libraries
+PostBuild_Desc=Copy library to acpi/components/libraries
+PostBuild_Cmds=copy bin\acpica.lib ..\..\libraries\acpica.lib	dir ..\..\libraries\acpica.lib
 # End Special Build Tool
 
 !ENDIF 
 
 # Begin Target
 
-# Name "Subsystem - Win32 Release"
-# Name "Subsystem - Win32 Debug"
+# Name "AcpiSubsystem - Win32 Release"
+# Name "AcpiSubsystem - Win32 Debug"
 # Begin Group "Source Files"
 
 # PROP Default_Filter "cpp;c;cxx;rc;def;r;odl;idl;hpj;bat"
@@ -774,7 +776,7 @@ SOURCE=..\..\Subsystem\Include\tables.h
 # End Group
 # Begin Source File
 
-SOURCE=.\Subsystem.plg
+SOURCE=.\AcpiSubsystem.plg
 # End Source File
 # End Target
 # End Project
