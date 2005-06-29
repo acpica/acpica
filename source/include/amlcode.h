@@ -3,7 +3,7 @@
  * Name: amlcode.h - Definitions for AML, as included in "definition blocks"
  *                   Declarations and definitions contained herein are derived
  *                   directly from the ACPI specification.
- *       $Revision: 1.47 $
+ *       $Revision: 1.48 $
  *
  *****************************************************************************/
 
@@ -409,7 +409,8 @@ typedef enum
     REGION_EC,
     REGION_SMBUS,
     REGION_CMOS,
-    REGION_PCI_BAR
+    REGION_PCI_BAR,
+    REGION_FIXED_HW             = 0x7F,
 
 } AML_REGION_TYPES;
 
