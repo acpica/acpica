@@ -214,7 +214,7 @@ NsSetup (void)
 
             else
             {
-                ObjDesc->ValType = (UINT8) InitVal->Type;
+                ObjDesc->Type = (UINT8) InitVal->Type;
 
                 /* 
                  * Convert value string from table entry to internal representation.
@@ -224,11 +224,11 @@ NsSetup (void)
                 switch (InitVal->Type)
                 {
                 case TYPE_Number:
-                    ObjDesc->Number.Number = (UINT32) strtoul (InitVal->Val, NULL, 10);
+                    ObjDesc->Number.Value = (UINT32) strtoul (InitVal->Val, NULL, 10);
                     break;
 
                 case TYPE_String:
-                    ObjDesc->String.StrLen = (UINT16) strlen (InitVal->Val);
+                    ObjDesc->String.Length = (UINT16) strlen (InitVal->Val);
 
                     /* 
                      * XXX - if this OsdAllocate() causes a garbage collection pass,
@@ -236,8 +236,8 @@ NsSetup (void)
                      * XXX - This "should not happen" during initialization.
                      */
 
-                    ObjDesc->String.String = OsdAllocate ((ACPI_SIZE) (ObjDesc->String.StrLen + 1));
-                    if (!ObjDesc->String.String)
+                    ObjDesc->String.Pointer = OsdAllocate ((ACPI_SIZE) (ObjDesc->String.Length + 1));
+                    if (!ObjDesc->String.Pointer)
                     {
                         REPORT_ERROR ("Initial value string allocation failure");
                         FUNCTION_STATUS_EXIT (AE_NO_MEMORY);
@@ -245,7 +245,7 @@ NsSetup (void)
                     }
                     else
                     {
-                        strcpy ((char *) ObjDesc->String.String, InitVal->Val);
+                        strcpy ((char *) ObjDesc->String.Pointer, InitVal->Val);
                     }
                     
                     break;
@@ -258,7 +258,7 @@ NsSetup (void)
 
                 /* Store pointer to value descriptor in nte */
             
-                NsSetValue (NewEntry, ObjDesc, ObjDesc->ValType);
+                NsSetValue (NewEntry, ObjDesc, ObjDesc->Type);
             }
         }
     }
