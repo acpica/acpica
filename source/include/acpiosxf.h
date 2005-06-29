@@ -352,6 +352,14 @@ OsdVprintf (
     const char              *Format, 
     va_list                 Args);
 
+/*
+ * Debug input
+ */
+
+UINT32
+OsdGetLine (
+    char                    *Buffer);
+
 
 /*
  * Debug 
