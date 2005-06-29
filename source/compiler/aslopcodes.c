@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslopcode - AML opcode generation
- *              $Revision: 1.58 $
+ *              $Revision: 1.59 $
  *
  *****************************************************************************/
 
@@ -207,7 +207,7 @@ OpcSetOptimalIntegerSize (
 {
 
 /*
-    TBD: - we don't want to optimize integers in the block header, but the 
+    TBD: - we don't want to optimize integers in the block header, but the
     code below does not work correctly.
 
     if (Op->Asl.Parent &&
