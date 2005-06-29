@@ -191,7 +191,7 @@ AcpiCmFormatSpaceId (
 ACPI_STATUS
 RegionHandler (
     UINT32                      Function,
-    UINT32                      Address,
+    ACPI_PHYSICAL_ADDRESS       Address,
     UINT32                      BitWidth,
     UINT32                      *Value,
     void                        *HandlerContext,
@@ -199,7 +199,7 @@ RegionHandler (
 {
 
     ACPI_OPERAND_OBJECT     *RegionObject = (ACPI_OPERAND_OBJECT*)RegionContext;
-    UINT32                  BaseAddress;
+    ACPI_PHYSICAL_ADDRESS   BaseAddress;
     UINT32                  Length;
     BOOLEAN                 BufferExists;
     REGION                  *RegionElement;
@@ -467,12 +467,14 @@ AeInstallHandlers (void)
 
     for (i = 0; i < 3; i++)
     {
-        Status = AcpiRemoveAddressSpaceHandler (AcpiGbl_RootNode, i, RegionHandler);
+        Status = AcpiRemoveAddressSpaceHandler (AcpiGbl_RootNode, 
+                        (ACPI_ADDRESS_SPACE_TYPE) i, RegionHandler);
 
         /* Install handler at the root object.
          * TBD: all default handlers should be installed here!
          */
-        Status = AcpiInstallAddressSpaceHandler (AcpiGbl_RootNode, i, RegionHandler, RegionInit, NULL);
+        Status = AcpiInstallAddressSpaceHandler (AcpiGbl_RootNode, 
+                        (ACPI_ADDRESS_SPACE_TYPE) i, RegionHandler, RegionInit, NULL);
         if (ACPI_FAILURE (Status))
         {
             printf ("Could not install an OpRegion handler\n");
