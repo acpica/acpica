@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dmobject - ACPI object decode and display
- *              $Revision: 1.2 $
+ *              $Revision: 1.3 $
  *
  ******************************************************************************/
 
@@ -119,6 +119,7 @@
 #include "amlcode.h"
 #include "acnamesp.h"
 #include "acdisasm.h"
+#include "acparser.h"
 
 
 #ifdef ACPI_DISASSEMBLER
@@ -444,7 +445,13 @@ AcpiDmDisplayInternalObject (
                 break;
 
 
-            case AML_REF_OF_OP:
+            case AML_LOAD_OP:
+
+                AcpiOsPrintf ("[DdbHandle]  ");
+                break;
+
+
+           case AML_REF_OF_OP:
 
                 AcpiOsPrintf ("[RefOf]          ");
 
@@ -468,8 +475,9 @@ AcpiDmDisplayInternalObject (
 
             default:
 
-                AcpiOsPrintf ("Unknown Reference opcode %X\n",
-                    ObjDesc->Reference.Opcode);
+                AcpiOsPrintf ("Unknown Reference opcode %X (%s)\n",
+                    ObjDesc->Reference.Opcode,
+                    AcpiPsGetOpcodeName (ObjDesc->Reference.Opcode));
                 break;
             }
             break;
