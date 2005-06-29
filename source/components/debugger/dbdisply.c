@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dbdisply - debug display commands
- *              $Revision: 1.52 $
+ *              $Revision: 1.53 $
  *
  ******************************************************************************/
 
@@ -527,7 +527,7 @@ AcpiDbDisplayInternalObject (
                 break;
 
             case AML_REVISION_OP:
-                AcpiOsPrintf ("[Const]           Revision (%X)", ACPI_CA_VERSION);
+                AcpiOsPrintf ("[Const]           Revision (%X)", ACPI_CA_SUPPORT_LEVEL);
                 break;
 
             case AML_LOCAL_OP:
