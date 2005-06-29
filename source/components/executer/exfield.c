@@ -183,7 +183,7 @@ AmlSetupField (
     if (ACPI_TYPE_Region != RgnDesc->Common.Type)
     {
         DEBUG_PRINT (ACPI_ERROR, ("AmlSetupField: Needed Region, found type %x %s\n",
-                        RgnDesc->Common.Type, Gbl_NsTypeNames[RgnDesc->Common.Type]));
+                        RgnDesc->Common.Type, CmGetTypeName (RgnDesc->Common.Type)));
         return_ACPI_STATUS (AE_AML_ERROR);
     }
 
