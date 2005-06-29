@@ -406,6 +406,12 @@ AcpiGetEventStatus (
     ACPI_EVENT_STATUS       *EventStatus);
 
 ACPI_STATUS
+AcpiSetGpeType (
+    ACPI_HANDLE             GpeDevice,
+    UINT32                  GpeNumber,
+    UINT8                   Type);
+
+ACPI_STATUS
 AcpiEnableGpe (
     ACPI_HANDLE             GpeDevice,
     UINT32                  GpeNumber,
