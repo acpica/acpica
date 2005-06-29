@@ -386,7 +386,7 @@ PsGetNextNamepath (
         }
     }
 
-#ifndef RING3_APPLICATION
+#ifndef PARSER_ONLY
     else
     {
         /* 
