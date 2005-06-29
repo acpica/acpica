@@ -2,7 +2,7 @@
  *
  * Module Name: dsopcode - Dispatcher Op Region support and handling of
  *                         "control" opcodes
- *              $Revision: 1.69 $
+ *              $Revision: 1.70 $
  *
  *****************************************************************************/
 
@@ -233,7 +233,6 @@ AcpiDsExecuteArguments (
 
     Status = AcpiPsParseAml (WalkState);
     AcpiPsDeleteParseTree (Op);
-
     return_ACPI_STATUS (Status);
 }
 
@@ -331,7 +330,6 @@ AcpiDsGetRegionArguments (
 
 
     Status = AcpiDsExecuteArguments (Node, RegionObj2);
-
     return_ACPI_STATUS (Status);
 }
 
@@ -361,7 +359,6 @@ AcpiDsInitializeRegion (
     /* Namespace is NOT locked */
 
     Status = AcpiEvInitializeRegion (ObjDesc, FALSE);
-
     return (Status);
 }
 
@@ -473,7 +470,6 @@ AcpiDsEvalBufferFieldOperands (
      */
     switch (Op->Opcode)
     {
-
     case AML_CREATE_FIELD_OP:
 
         /* Offset is in bits, count is in bits */
@@ -587,7 +583,6 @@ AcpiDsEvalBufferFieldOperands (
                 "Tried to create field in invalid object type %X\n",
                 SrcDesc->Common.Type));
         }
-
         else
         {
             ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
@@ -627,7 +622,6 @@ Cleanup:
     {
         AcpiUtRemoveReference (ResDesc);     /* Result descriptor */
     }
-
     else
     {
         /* Now the address and length are valid for this BufferField */
@@ -700,7 +694,6 @@ AcpiDsEvalRegionOperands (
                     AcpiPsGetOpcodeName (Op->Opcode),
                     1, "after AcpiExResolveOperands");
 
-
     ObjDesc = AcpiNsGetAttachedObject (Node);
     if (!ObjDesc)
     {
@@ -724,7 +717,6 @@ AcpiDsEvalRegionOperands (
 
     ObjDesc->Region.Address = (ACPI_PHYSICAL_ADDRESS) OperandDesc->Integer.Value;
     AcpiUtRemoveReference (OperandDesc);
-
 
     ACPI_DEBUG_PRINT ((ACPI_DB_EXEC, "RgnObj %p Addr %8.8X%8.8X Len %X\n",
         ObjDesc, HIDWORD(ObjDesc->Region.Address), LODWORD(ObjDesc->Region.Address),
@@ -934,7 +926,6 @@ AcpiDsExecEndControlOp (
              */
             WalkState->ReturnDesc = WalkState->Operands[0];
         }
-
         else if ((WalkState->Results) &&
                  (WalkState->Results->Results.NumResults > 0))
         {
@@ -960,7 +951,6 @@ AcpiDsExecEndControlOp (
 
             WalkState->ReturnDesc = WalkState->Results->Results.ObjDesc [0];
         }
-
         else
         {
             /* No return operand */
@@ -1022,8 +1012,10 @@ AcpiDsExecEndControlOp (
         {
             return (AE_AML_NO_WHILE);
         }
+
+        /* Was: WalkState->AmlLastWhile = WalkState->ControlState->Control.AmlPredicateStart; */
+
         WalkState->AmlLastWhile = WalkState->ControlState->Control.PackageEnd;
-/*   TBD: why not this?    WalkState->AmlLastWhile = WalkState->ControlState->Control.AmlPredicateStart; */
 
         /* Return status depending on opcode */
 
@@ -1036,6 +1028,7 @@ AcpiDsExecEndControlOp (
             Status = AE_CTRL_CONTINUE;
         }
         break;
+
 
     default:
 
