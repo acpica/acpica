@@ -129,7 +129,6 @@
         MODULE_NAME         ("dswload");
 
 
-
 /*****************************************************************************
  *
  * FUNCTION:    AcpiDsLoad1BeginOp
@@ -237,7 +236,6 @@ AcpiDsLoad1EndOp (
     OBJECT_TYPE_INTERNAL    DataType;
 
 
-
     DEBUG_PRINT (TRACE_DISPATCH, ("Load1EndOp: Op=%p State=%p\n", Op, WalkState));
 
     /* We are only interested in opcodes that have an associated name */
@@ -301,7 +299,6 @@ AcpiDsLoad2BeginOp (
     OBJECT_TYPE_INTERNAL    DataType;
     char                    *BufferPtr;
     void                    *Original = NULL;
-
 
 
     DEBUG_PRINT (TRACE_DISPATCH, ("Load2BeginOp: Op=%p State=%p\n", Op, WalkState));
@@ -443,7 +440,6 @@ AcpiDsLoad2EndOp (
     NAME_TABLE_ENTRY        *NewEntry;
 
 
-
     DEBUG_PRINT (TRACE_DISPATCH, ("Load2EndOp: Op=%p State=%p\n", Op, WalkState));
 
     if (!AcpiPsIsNamespaceObjectOp (Op->Opcode))
@@ -472,7 +468,6 @@ AcpiDsLoad2EndOp (
 
     /* Put the NTE on the object stack (Contains the ACPI Name of this object) */
 
-//    Status = AcpiDsObjStackPush (Entry, WalkState);
     WalkState->Operands[0] = (void *) Entry;
     WalkState->NumOperands = 1;
 
@@ -485,7 +480,6 @@ AcpiDsLoad2EndOp (
                                         AcpiCmGetTypeName (DataType), Op));
         AcpiDsScopeStackPop (WalkState);
     }
-
 
 
     /*
@@ -642,12 +636,6 @@ AcpiDsLoad2EndOp (
                                 WalkState, Op, Entry));
 
         Arg = Op->Value.Arg;
-        if (!Arg->NameTableEntry)
-        {
-        DEBUG_PRINT (TRACE_DISPATCH, ("LOADING-Field: State=%p Op=%p nte=%p\n",
-                                WalkState, Op, Entry));
-
-        }
 
         Status = AcpiDsCreateField (Op, (ACPI_HANDLE) Arg->NameTableEntry, WalkState);
         break;
