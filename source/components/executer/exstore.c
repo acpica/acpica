@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exstore - AML Interpreter object store support
- *              $Revision: 1.186 $
+ *              $Revision: 1.188 $
  *
  *****************************************************************************/
 
@@ -10,7 +10,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2004, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2005, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -122,10 +122,137 @@
 #include "acinterp.h"
 #include "amlcode.h"
 #include "acnamesp.h"
+#include "acparser.h"
 
 
 #define _COMPONENT          ACPI_EXECUTER
         ACPI_MODULE_NAME    ("exstore")
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiExDoDebugObject
+ *
+ * PARAMETERS:  SourceDesc          - Value to be stored
+ *              Level               - Indentation level (used for packages)
+ *              Index               - Current package element, zero if not pkg
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Handles stores to the Debug Object.
+ *
+ ******************************************************************************/
+
+void
+AcpiExDoDebugObject (
+    ACPI_OPERAND_OBJECT     *SourceDesc,
+    UINT32                  Level,
+    UINT32                  Index)
+{
+    UINT32                  i;
+
+
+    ACPI_FUNCTION_TRACE_PTR ("ExDoDebugObject", SourceDesc);
+
+
+    ACPI_DEBUG_PRINT_RAW ((ACPI_DB_DEBUG_OBJECT, "[ACPI Debug] %*s",
+        Level, " "));
+
+    if (Index > 0)
+    {
+       ACPI_DEBUG_PRINT_RAW ((ACPI_DB_DEBUG_OBJECT,
+           "(%.2u) ", Index));
+    }
+
+    if (!SourceDesc)
+    {
+        ACPI_DEBUG_PRINT_RAW ((ACPI_DB_DEBUG_OBJECT, "<Null Object>\n",
+            Level, " "));
+        return_VOID;
+    }
+
+    ACPI_DEBUG_PRINT_RAW ((ACPI_DB_DEBUG_OBJECT, "%s: ",
+        AcpiUtGetObjectTypeName (SourceDesc)));
+
+    if (!AcpiUtValidInternalObject (SourceDesc))
+    {
+       ACPI_DEBUG_PRINT_RAW ((ACPI_DB_DEBUG_OBJECT,
+           "%p, Invalid Internal Object!\n", SourceDesc));
+       return_VOID;
+    }
+
+    switch (ACPI_GET_OBJECT_TYPE (SourceDesc))
+    {
+    case ACPI_TYPE_INTEGER:
+
+        if (AcpiGbl_IntegerByteWidth == 4)
+        {
+            ACPI_DEBUG_PRINT_RAW ((ACPI_DB_DEBUG_OBJECT, "0x%8.8X\n",
+                (UINT32) SourceDesc->Integer.Value));
+        }
+        else
+        {
+            ACPI_DEBUG_PRINT_RAW ((ACPI_DB_DEBUG_OBJECT, "0x%8.8X%8.8X\n",
+                ACPI_FORMAT_UINT64 (SourceDesc->Integer.Value)));
+        }
+        break;
+
+
+    case ACPI_TYPE_BUFFER:
+
+        ACPI_DEBUG_PRINT_RAW ((ACPI_DB_DEBUG_OBJECT, "[0x%.2X]",
+            (UINT32) SourceDesc->Buffer.Length));
+        ACPI_DUMP_BUFFER (SourceDesc->Buffer.Pointer,
+            (SourceDesc->Buffer.Length < 32) ? SourceDesc->Buffer.Length : 32);
+        break;
+
+
+    case ACPI_TYPE_STRING:
+
+        ACPI_DEBUG_PRINT_RAW ((ACPI_DB_DEBUG_OBJECT, "[0x%.2X] \"%s\"\n",
+            SourceDesc->String.Length, SourceDesc->String.Pointer));
+        break;
+
+
+    case ACPI_TYPE_PACKAGE:
+
+        ACPI_DEBUG_PRINT_RAW ((ACPI_DB_DEBUG_OBJECT, "[0x%.2X Elements]\n",
+            SourceDesc->Package.Count));
+
+        /* Output the entire contents of the package */
+
+        for (i = 0; i < SourceDesc->Package.Count; i++)
+        {
+            AcpiExDoDebugObject (SourceDesc->Package.Elements[i], Level+4, i+1);
+        }
+        break;
+
+
+    case ACPI_TYPE_LOCAL_REFERENCE:
+
+        ACPI_DEBUG_PRINT_RAW ((ACPI_DB_DEBUG_OBJECT, "[%s]\n",
+            AcpiPsGetOpcodeName (SourceDesc->Reference.Opcode)));
+
+        if (SourceDesc->Reference.Object)
+        {
+            AcpiExDoDebugObject (SourceDesc->Reference.Object, Level+4, 0);
+        }
+        else if (SourceDesc->Reference.Node)
+        {
+            AcpiExDoDebugObject ((SourceDesc->Reference.Node)->Object, Level+4, 0);
+        }
+        break;
+
+    default:
+
+        ACPI_DEBUG_PRINT_RAW ((ACPI_DB_DEBUG_OBJECT, "%p\n",
+            SourceDesc));
+        break;
+    }
+
+    ACPI_DEBUG_PRINT_RAW ((ACPI_DB_EXEC, "\n"));
+    return_VOID;
+}
 
 
 /*******************************************************************************
@@ -266,64 +393,7 @@ AcpiExStore (
             "**** Write to Debug Object: Object %p %s ****:\n\n",
             SourceDesc, AcpiUtGetObjectTypeName (SourceDesc)));
 
-        ACPI_DEBUG_PRINT_RAW ((ACPI_DB_DEBUG_OBJECT, "[ACPI Debug] %s: ",
-            AcpiUtGetObjectTypeName (SourceDesc)));
-
-        if (!AcpiUtValidInternalObject (SourceDesc))
-        {
-           ACPI_DEBUG_PRINT_RAW ((ACPI_DB_DEBUG_OBJECT,
-               "%p, Invalid Internal Object!\n", SourceDesc));
-           break;
-        }
-
-        switch (ACPI_GET_OBJECT_TYPE (SourceDesc))
-        {
-        case ACPI_TYPE_INTEGER:
-
-            if (AcpiGbl_IntegerByteWidth == 4)
-            {
-                ACPI_DEBUG_PRINT_RAW ((ACPI_DB_DEBUG_OBJECT, "0x%8.8X\n",
-                    (UINT32) SourceDesc->Integer.Value));
-            }
-            else
-            {
-                ACPI_DEBUG_PRINT_RAW ((ACPI_DB_DEBUG_OBJECT, "0x%8.8X%8.8X\n",
-                    ACPI_FORMAT_UINT64 (SourceDesc->Integer.Value)));
-            }
-            break;
-
-
-        case ACPI_TYPE_BUFFER:
-
-            ACPI_DEBUG_PRINT_RAW ((ACPI_DB_DEBUG_OBJECT, "[0x%.2X]",
-                (UINT32) SourceDesc->Buffer.Length));
-            ACPI_DUMP_BUFFER (SourceDesc->Buffer.Pointer,
-                (SourceDesc->Buffer.Length < 32) ? SourceDesc->Buffer.Length : 32);
-            break;
-
-
-        case ACPI_TYPE_STRING:
-
-            ACPI_DEBUG_PRINT_RAW ((ACPI_DB_DEBUG_OBJECT, "[0x%.2X] \"%s\"\n",
-                SourceDesc->String.Length, SourceDesc->String.Pointer));
-            break;
-
-
-        case ACPI_TYPE_PACKAGE:
-
-            ACPI_DEBUG_PRINT_RAW ((ACPI_DB_DEBUG_OBJECT, "[0x%.2X] Elements Ptr - %p\n",
-                SourceDesc->Package.Count, SourceDesc->Package.Elements));
-            break;
-
-
-        default:
-
-            ACPI_DEBUG_PRINT_RAW ((ACPI_DB_DEBUG_OBJECT, "%p\n",
-                SourceDesc));
-            break;
-        }
-
-        ACPI_DEBUG_PRINT_RAW ((ACPI_DB_EXEC, "\n"));
+        AcpiExDoDebugObject (SourceDesc, 0, 0);
         break;
 
 
@@ -404,7 +474,7 @@ AcpiExStoreObjectToIndex (
                 AcpiUtRemoveReference (ObjDesc);
             }
         }
-        
+
         *(IndexDesc->Reference.Where) = NewDesc;
 
         /* Increment reference count by the ref count of the parent package -1 */
@@ -413,7 +483,7 @@ AcpiExStoreObjectToIndex (
         {
             AcpiUtAddReference (NewDesc);
         }
-        
+
         break;
 
 
