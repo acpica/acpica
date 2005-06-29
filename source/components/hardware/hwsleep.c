@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Name: hwsleep.c - ACPI Hardware Sleep/Wake Interface
- *              $Revision: 1.41 $
+ *              $Revision: 1.42 $
  *
  *****************************************************************************/
 
@@ -391,7 +391,7 @@ AcpiEnterSleepState (
          * We wait so long to allow chipsets that poll this reg very slowly to
          * still read the right value. Ideally, this entire block would go
          * away entirely.
-	 */
+         */
         AcpiOsStall (10000000);
 
         Status = AcpiHwRegisterWrite (ACPI_MTX_LOCK, ACPI_REGISTER_PM1_CONTROL,
