@@ -123,8 +123,8 @@
 #include <tables.h>
 
 
-#define _THIS_MODULE        "ievalue.c"
 #define _COMPONENT          INTERPRETER
+        MODULE_NAME         ("ievalue");
 
 
 
@@ -1094,8 +1094,22 @@ BREAKPOINT3;
         break;
 
 
-    /* Cases which just return the name as the rvalue */
+
+    /* 
+     * Cases which just return the name as the rvalue
+     * 
+     * TBD: The first group used to be in the unimplemented list, but
+     * perhaps it makes more sense to just return the name in these cases
+     */
     
+    case ACPI_TYPE_Mutex:
+    case ACPI_TYPE_Method:
+    case ACPI_TYPE_Power:
+    case ACPI_TYPE_Processor:
+    case ACPI_TYPE_Thermal:
+    case ACPI_TYPE_Event:
+    case ACPI_TYPE_Region: 
+
     case ACPI_TYPE_Device:
 
         return_ACPI_STATUS (AE_OK);
@@ -1104,14 +1118,6 @@ BREAKPOINT3;
 
 
     /* TBD: Unimplemented cases */
-
-    case ACPI_TYPE_Method:        /* XXX - unimplemented, handled elsewhere */
-    case ACPI_TYPE_Power:         /* XXX - unimplemented, may not be needed */
-    case ACPI_TYPE_Processor:     /* XXX - unimplemented, may not be needed */
-    case ACPI_TYPE_Thermal:       /* XXX - unimplemented, may not be needed */
-    case ACPI_TYPE_Event:         /* XXX - unimplemented, may not be needed */
-    case ACPI_TYPE_Mutex:         /* XXX - unimplemented, may not be needed */
-    case ACPI_TYPE_Region:        /* XXX - unimplemented, may not be needed */
 
     case ACPI_TYPE_Any:
 
