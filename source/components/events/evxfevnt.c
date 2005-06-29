@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: evxfevnt - External Interfaces, ACPI event disable/enable
- *              $Revision: 1.22 $
+ *              $Revision: 1.25 $
  *
  *****************************************************************************/
 
@@ -287,7 +287,7 @@ AcpiEnableEvent (
          * enable register bit)
          */
 
-        AcpiHwRegisterAccess (ACPI_WRITE, TRUE, RegisterId, 1);
+        AcpiHwRegisterBitAccess (ACPI_WRITE, ACPI_MTX_LOCK, RegisterId, 1);
         break;
 
 
@@ -384,7 +384,7 @@ AcpiDisableEvent (
          * enable register bit)
          */
 
-        AcpiHwRegisterAccess (ACPI_WRITE, TRUE, RegisterId, 0);
+        AcpiHwRegisterBitAccess (ACPI_WRITE, ACPI_MTX_LOCK, RegisterId, 0);
         break;
 
 
@@ -478,7 +478,7 @@ AcpiClearEvent (
          * status register bit)
          */
 
-        AcpiHwRegisterAccess (ACPI_WRITE, TRUE, RegisterId, 1);
+        AcpiHwRegisterBitAccess (ACPI_WRITE, ACPI_MTX_LOCK, RegisterId, 1);
         break;
 
 
@@ -579,7 +579,7 @@ AcpiGetEventStatus (
 
         /* Get the status of the requested fixed event */
 
-        *EventStatus = AcpiHwRegisterAccess (ACPI_READ, TRUE, RegisterId);
+        *EventStatus = AcpiHwRegisterBitAccess (ACPI_READ, ACPI_MTX_LOCK, RegisterId);
         break;
 
 
