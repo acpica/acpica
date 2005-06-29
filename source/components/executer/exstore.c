@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exstore - AML Interpreter object store support
- *              $Revision: 1.190 $
+ *              $Revision: 1.195 $
  *
  *****************************************************************************/
 
@@ -128,6 +128,20 @@
 #define _COMPONENT          ACPI_EXECUTER
         ACPI_MODULE_NAME    ("exstore")
 
+/* Local prototypes */
+
+static void
+AcpiExDoDebugObject (
+    ACPI_OPERAND_OBJECT     *SourceDesc,
+    UINT32                  Level,
+    UINT32                  Index);
+
+static ACPI_STATUS
+AcpiExStoreObjectToIndex (
+    ACPI_OPERAND_OBJECT     *ValDesc,
+    ACPI_OPERAND_OBJECT     *DestDesc,
+    ACPI_WALK_STATE         *WalkState);
+
 
 /*******************************************************************************
  *
@@ -168,19 +182,32 @@ AcpiExDoDebugObject (
 
     if (!SourceDesc)
     {
-        ACPI_DEBUG_PRINT_RAW ((ACPI_DB_DEBUG_OBJECT, "<Null Object>\n",
-            Level, " "));
+        ACPI_DEBUG_PRINT_RAW ((ACPI_DB_DEBUG_OBJECT, "<Null Object>\n"));
         return_VOID;
     }
 
-    ACPI_DEBUG_PRINT_RAW ((ACPI_DB_DEBUG_OBJECT, "%s: ",
-        AcpiUtGetObjectTypeName (SourceDesc)));
-
-    if (!AcpiUtValidInternalObject (SourceDesc))
+    if (ACPI_GET_DESCRIPTOR_TYPE (SourceDesc) == ACPI_DESC_TYPE_OPERAND)
     {
-       ACPI_DEBUG_PRINT_RAW ((ACPI_DB_DEBUG_OBJECT,
-           "%p, Invalid Internal Object!\n", SourceDesc));
-       return_VOID;
+        ACPI_DEBUG_PRINT_RAW ((ACPI_DB_DEBUG_OBJECT, "%s: ",
+            AcpiUtGetObjectTypeName (SourceDesc)));
+
+        if (!AcpiUtValidInternalObject (SourceDesc))
+        {
+           ACPI_DEBUG_PRINT_RAW ((ACPI_DB_DEBUG_OBJECT,
+               "%p, Invalid Internal Object!\n", SourceDesc));
+           return_VOID;
+        }
+    }
+    else if (ACPI_GET_DESCRIPTOR_TYPE (SourceDesc) == ACPI_DESC_TYPE_NAMED)
+    {
+        ACPI_DEBUG_PRINT_RAW ((ACPI_DB_DEBUG_OBJECT, "%s: %p\n",
+            AcpiUtGetTypeName (((ACPI_NAMESPACE_NODE *) SourceDesc)->Type),
+            SourceDesc));
+        return_VOID;
+    }
+    else
+    {
+        return_VOID;
     }
 
     switch (ACPI_GET_OBJECT_TYPE (SourceDesc))
@@ -246,9 +273,11 @@ AcpiExDoDebugObject (
 
         if (SourceDesc->Reference.Object)
         {
-            if (ACPI_GET_DESCRIPTOR_TYPE (SourceDesc->Reference.Object) == ACPI_DESC_TYPE_NAMED)
+            if (ACPI_GET_DESCRIPTOR_TYPE (SourceDesc->Reference.Object) ==
+                    ACPI_DESC_TYPE_NAMED)
             {
-                AcpiExDoDebugObject (((ACPI_NAMESPACE_NODE *) SourceDesc->Reference.Object)->Object,
+                AcpiExDoDebugObject (((ACPI_NAMESPACE_NODE *)
+                    SourceDesc->Reference.Object)->Object,
                     Level+4, 0);
             }
             else
@@ -490,7 +519,10 @@ AcpiExStoreObjectToIndex (
         {
             /* Decrement reference count by the ref count of the parent package */
 
-            for (i = 0; i < ((ACPI_OPERAND_OBJECT *) IndexDesc->Reference.Object)->Common.ReferenceCount; i++)
+            for (i = 0;
+                 i < ((ACPI_OPERAND_OBJECT *)
+                        IndexDesc->Reference.Object)->Common.ReferenceCount;
+                 i++)
             {
                 AcpiUtRemoveReference (ObjDesc);
             }
@@ -498,9 +530,12 @@ AcpiExStoreObjectToIndex (
 
         *(IndexDesc->Reference.Where) = NewDesc;
 
-        /* Increment reference count by the ref count of the parent package -1 */
+        /* Increment ref count by the ref count of the parent package-1 */
 
-        for (i = 1; i < ((ACPI_OPERAND_OBJECT *) IndexDesc->Reference.Object)->Common.ReferenceCount; i++)
+        for (i = 1;
+             i < ((ACPI_OPERAND_OBJECT *)
+                    IndexDesc->Reference.Object)->Common.ReferenceCount;
+             i++)
         {
             AcpiUtAddReference (NewDesc);
         }
@@ -621,9 +656,8 @@ AcpiExStoreObjectToNode (
     ACPI_FUNCTION_TRACE_PTR ("ExStoreObjectToNode", SourceDesc);
 
 
-    /*
-     * Get current type of the node, and object attached to Node
-     */
+    /* Get current type of the node, and object attached to Node */
+
     TargetType = AcpiNsGetType (Node);
     TargetDesc = AcpiNsGetAttachedObject (Node);
 
@@ -643,16 +677,15 @@ AcpiExStoreObjectToNode (
 
     /* If no implicit conversion, drop into the default case below */
 
-    if (!ImplicitConversion)
+    if ((!ImplicitConversion) || (WalkState->Opcode == AML_COPY_OP))
     {
         /* Force execution of default (no implicit conversion) */
 
         TargetType = ACPI_TYPE_ANY;
     }
 
-    /*
-     * Do the actual store operation
-     */
+    /* Do the actual store operation */
+
     switch (TargetType)
     {
     case ACPI_TYPE_BUFFER_FIELD:
@@ -660,9 +693,8 @@ AcpiExStoreObjectToNode (
     case ACPI_TYPE_LOCAL_BANK_FIELD:
     case ACPI_TYPE_LOCAL_INDEX_FIELD:
 
-        /*
-         * For fields, copy the source data to the target field.
-         */
+        /* For fields, copy the source data to the target field. */
+
         Status = AcpiExWriteDataToField (SourceDesc, TargetDesc,
                     &WalkState->ResultObj);
         break;
@@ -709,7 +741,7 @@ AcpiExStoreObjectToNode (
     default:
 
         ACPI_DEBUG_PRINT ((ACPI_DB_EXEC,
-            "Storing %s (%p) directly into node (%p), no implicit conversion\n",
+            "Storing %s (%p) directly into node (%p) with no implicit conversion\n",
             AcpiUtGetObjectTypeName (SourceDesc), SourceDesc, Node));
 
         /* No conversions for all other types.  Just attach the source object */
