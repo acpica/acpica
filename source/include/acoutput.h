@@ -128,24 +128,25 @@
 #define GLOBAL                      0x00000001
 #define COMMON                      0x00000002
 #define PARSER                      0x00000004
-#define INTERPRETER                 0x00000008
-#define NAMESPACE                   0x00000010
-#define RESOURCE_MANAGER            0x00000020
-#define TABLE_MANAGER               0x00000040
-#define EVENT_HANDLING              0x00000080
-#define HARDWARE                    0x00000100
-#define MISCELLANEOUS               0x00000200
-#define OS_DEPENDENT                0x00000400
+#define DISPATCHER                  0x00000008
+#define INTERPRETER                 0x00000010
+#define NAMESPACE                   0x00000020
+#define RESOURCE_MANAGER            0x00000040
+#define TABLE_MANAGER               0x00000080
+#define EVENT_HANDLING              0x00000100
+#define HARDWARE                    0x00000200
+#define MISCELLANEOUS               0x00000400
+#define OS_DEPENDENT                0x00000800
 
-#define BUS_MANAGER                 0x00000800
+#define BUS_MANAGER                 0x00001000
 
-#define PROCESSOR_CONTROL           0x00001000
-#define SYSTEM_CONTROL              0x00002000
-#define THERMAL_CONTROL             0x00004000
-#define POWER_CONTROL               0x00008000
+#define PROCESSOR_CONTROL           0x00002000
+#define SYSTEM_CONTROL              0x00004000
+#define THERMAL_CONTROL             0x00008000
+#define POWER_CONTROL               0x00010000
 
-#define EMBEDDED_CONTROLLER         0x00010000
-#define BATTERY                     0x00020000
+#define EMBEDDED_CONTROLLER         0x00020000
+#define BATTERY                     0x00040000
 
 #define DEBUGGER                    0x00100000
 #define ALL_COMPONENTS              0x001FFFFF
@@ -165,25 +166,24 @@
 /* Trace level -- also used in the global "DebugLevel" */
 
 #define TRACE_PARSE                 0x00000100
-#define TRACE_LOAD                  0x00000200
-#define TRACE_OPCODE                0x00000400
-#define TRACE_STACK                 0x00000800
-#define TRACE_EXEC                  0x00001000
-#define TRACE_NAMES                 0x00002000
-#define TRACE_OPREGION              0x00004000
-#define TRACE_BFIELD                0x00008000
-#define TRACE_TRASH                 0x00010000
-#define TRACE_TABLES                0x00020000
-#define TRACE_FUNCTIONS             0x00040000
-#define TRACE_VALUES                0x00080000
-#define TRACE_OBJECTS               0x00100000
-#define TRACE_ALLOCATIONS           0x00200000
-#define TRACE_RESOURCES             0x00400000
-#define TRACE_IO                    0x00800000
-#define TRACE_INTERRUPTS            0x01000000
-#define TRACE_USER_REQUESTS         0x02000000
-#define TRACE_PACKAGE               0x04000000
-#define TRACE_MUTEX                 0x08000000
+#define TRACE_DISPATCH              0x00000200
+#define TRACE_LOAD                  0x00000400
+#define TRACE_EXEC                  0x00000800
+#define TRACE_NAMES                 0x00001000
+#define TRACE_OPREGION              0x00002000
+#define TRACE_BFIELD                0x00004000
+#define TRACE_TRASH                 0x00008000
+#define TRACE_TABLES                0x00010000
+#define TRACE_FUNCTIONS             0x00020000
+#define TRACE_VALUES                0x00040000
+#define TRACE_OBJECTS               0x00080000
+#define TRACE_ALLOCATIONS           0x00100000
+#define TRACE_RESOURCES             0x00200000
+#define TRACE_IO                    0x00400000
+#define TRACE_INTERRUPTS            0x00800000
+#define TRACE_USER_REQUESTS         0x01000000
+#define TRACE_PACKAGE               0x02000000
+#define TRACE_MUTEX                 0x04000000
 
 #define TRACE_ALL                   0x0FFFFF00
 
