@@ -2,7 +2,7 @@
  *
  * Module Name: nsutils - Utilities for accessing ACPI namespace, accessing
  *                        parents and siblings and Scope manipulation
- *              $Revision: 1.114 $
+ *              $Revision: 1.115 $
  *
  *****************************************************************************/
 
@@ -1033,45 +1033,6 @@ AcpiNsFindParentName (
 
     return_VALUE (ACPI_UNKNOWN_NAME);
 }
-
-
-#if defined(ACPI_DEBUG_OUTPUT) || defined(ACPI_DEBUGGER)
-
-/*******************************************************************************
- *
- * FUNCTION:    AcpiNsExistDownstreamSibling
- *
- * PARAMETERS:  *Node          - pointer to first Node to examine
- *
- * RETURN:      TRUE if sibling is found, FALSE otherwise
- *
- * DESCRIPTION: Searches remainder of scope being processed to determine
- *              whether there is a downstream sibling to the current
- *              object.  This function is used to determine what type of
- *              line drawing character to use when displaying namespace
- *              trees.
- *
- ******************************************************************************/
-
-BOOLEAN
-AcpiNsExistDownstreamSibling (
-    ACPI_NAMESPACE_NODE     *Node)
-{
-
-    if (!Node)
-    {
-        return (FALSE);
-    }
-
-    if (Node->Name.Integer)
-    {
-        return (TRUE);
-    }
-
-    return (FALSE);
-}
-
-#endif /* ACPI_DEBUG_OUTPUT */
 
 
 /*******************************************************************************
