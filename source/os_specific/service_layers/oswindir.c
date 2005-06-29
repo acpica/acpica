@@ -1,7 +1,8 @@
 
 /******************************************************************************
  *
- * Module Name: osunixdir - Unix directory access interfaces
+ * Module Name: oswindir - Windows directory access interfaces
+ *              $Revision: 1.4 $
  *
  *****************************************************************************/
 
@@ -118,19 +119,16 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <dirent.h>
-#include <fnmatch.h>
-#include <ctype.h>
-#include <sys/stat.h>
+#include <io.h>
 
-#include "acpisrc.h"
+#include <acpi.h>
 
 typedef struct ExternalFindInfo
 {
-    char                        *DirPathname;
-    DIR				*DirPtr;
-    char                        temp_buffer[128];
-    char                        *WildcardSpec;
+    struct _finddata_t          DosInfo;
+    char                        *FullWildcardSpec;
+    long                        FindHandle;
+    char                        State;
     char                        RequestedFileType;
 
 } EXTERNAL_FIND_INFO;
@@ -142,6 +140,7 @@ typedef struct ExternalFindInfo
  *
  * PARAMETERS:  DirPathname         - Full pathname to the directory
  *              WildcardSpec        - string of the form "*.c", etc.
+ *              RequestedFileType   - Either a directory or normal file
  *
  * RETURN:      A directory "handle" to be used in subsequent search operations.
  *              NULL returned on failure.
@@ -156,34 +155,53 @@ AcpiOsOpenDirectory (
     char                    *WildcardSpec,
     char                    RequestedFileType)
 {
-    EXTERNAL_FIND_INFO      *ExternalInfo;
-    DIR			    *dir;
+    long                    FindHandle;
+    char                    *FullWildcardSpec;
+    EXTERNAL_FIND_INFO      *SearchInfo;
 
 
     /* Allocate the info struct that will be returned to the caller */
 
-    ExternalInfo = calloc (sizeof (EXTERNAL_FIND_INFO), 1);
-    if (!ExternalInfo)
+    SearchInfo = calloc (sizeof (EXTERNAL_FIND_INFO), 1);
+    if (!SearchInfo)
     {
         return NULL;
     }
 
-    /* Get the directory stream */
+    /* Allocate space for the full wildcard path */
 
-    dir = opendir(DirPathname);
-    if (!dir)
+    FullWildcardSpec = calloc (strlen (DirPathname) + strlen (WildcardSpec) + 2, 1);
+    if (!FullWildcardSpec)
     {
-	free(ExternalInfo);
+        printf ("Could not allocate buffer for wildcard pathname\n");
+        return NULL;
+    }
+
+    /* Create the full wildcard path */
+
+    strcpy (FullWildcardSpec, DirPathname);
+    strcat (FullWildcardSpec, "/");
+    strcat (FullWildcardSpec, WildcardSpec);
+
+    /* Initialize the find functions, get first match */
+
+    FindHandle = _findfirst (FullWildcardSpec, &SearchInfo->DosInfo);
+    if (FindHandle == -1)
+    {
+        /* Failure means that no match was found */
+
+        free (FullWildcardSpec);
+        free (SearchInfo);
         return NULL;
     }
 
     /* Save the info in the return structure */
 
-    ExternalInfo->WildcardSpec = WildcardSpec;
-    ExternalInfo->RequestedFileType = RequestedFileType;
-    ExternalInfo->DirPathname = DirPathname;
-    ExternalInfo->DirPtr = dir;
-    return (ExternalInfo);
+    SearchInfo->RequestedFileType = RequestedFileType;
+    SearchInfo->FullWildcardSpec = FullWildcardSpec;
+    SearchInfo->FindHandle = FindHandle;
+    SearchInfo->State = 0;
+    return (SearchInfo);
 }
 
 
@@ -204,56 +222,71 @@ char *
 AcpiOsGetNextFilename (
     void                    *DirHandle)
 {
-    EXTERNAL_FIND_INFO      *ExternalInfo = DirHandle;
-    struct dirent           *dir_entry;
+    EXTERNAL_FIND_INFO      *SearchInfo = DirHandle;
+    int                     Status;
+    char                    FileTypeNotMatched = 1;
 
-    while((dir_entry = readdir(ExternalInfo->DirPtr)))
+
+    /*
+     * Loop while we have matched files but not found any files of
+     * the requested type.
+     */
+    while (FileTypeNotMatched)
     {
-        if (!fnmatch(ExternalInfo->WildcardSpec, dir_entry->d_name, 0))
+        /* On the first call, we already have the first match */
+
+        if (SearchInfo->State == 0)
         {
-            char *temp_str;
-            int str_len;
-            struct stat temp_stat;
-            int err;
+            /* No longer the first match */
 
-            if (dir_entry->d_name[0] == '.')
-                continue;
+            SearchInfo->State = 1;
+        }
+        else
+        {
+            /* Get the next match */
 
-            str_len = strlen(dir_entry->d_name) + strlen (ExternalInfo->DirPathname) + 2;
-
-            temp_str = calloc(str_len, 1);
-            if (!temp_str)
+            Status = _findnext (SearchInfo->FindHandle, &SearchInfo->DosInfo);
+            if (Status != 0)
             {
-                printf ("Could not allocate buffer for temporary string\n");
                 return NULL;
             }
+        }
 
-            strcpy(temp_str, ExternalInfo->DirPathname);
-            strcat(temp_str, "/");
-            strcat(temp_str, dir_entry->d_name);
+        /*
+         * Found a match, now check to make sure that the file type
+         * matches the requested file type (directory or normal file)
+         *
+         * NOTE: use of the attrib field saves us from doing a very
+         * expensive stat() on the file!
+         */
+        switch (SearchInfo->RequestedFileType)
+        {
+        case REQUEST_FILE_ONLY:
 
-            err = stat(temp_str, &temp_stat);
-            free (temp_str);
-            if (err == -1)
+            /* Anything other than A_SUBDIR is OK */
+
+            if (!(SearchInfo->DosInfo.attrib & _A_SUBDIR))
             {
-                printf ("stat() error - should not happen\n");
-                return NULL;
+                FileTypeNotMatched = 0;
             }
+            break;
 
-            if ((S_ISDIR(temp_stat.st_mode)
-                && (ExternalInfo->RequestedFileType == REQUEST_DIR_ONLY))
-               ||
-               ((!S_ISDIR(temp_stat.st_mode)
-                && ExternalInfo->RequestedFileType == REQUEST_FILE_ONLY)))
+        case REQUEST_DIR_ONLY:
+
+            /* Must have A_SUBDIR bit set */
+
+            if (SearchInfo->DosInfo.attrib & _A_SUBDIR)
             {
-                /* copy to a temp buffer because dir_entry struct is on the stack */
-                strcpy(ExternalInfo->temp_buffer, dir_entry->d_name);
-                return (ExternalInfo->temp_buffer);
+                FileTypeNotMatched = 0;
             }
+            break;
+
+        default:
+            return NULL;
         }
     }
 
-    return NULL;
+    return (SearchInfo->DosInfo.name);
 }
 
 
@@ -273,31 +306,13 @@ void
 AcpiOsCloseDirectory (
     void                    *DirHandle)
 {
-    EXTERNAL_FIND_INFO      *ExternalInfo = DirHandle;
+    EXTERNAL_FIND_INFO      *SearchInfo = DirHandle;
 
 
     /* Close the directory and free allocations */
 
-    closedir(ExternalInfo->DirPtr);
+    _findclose (SearchInfo->FindHandle);
+    free (SearchInfo->FullWildcardSpec);
     free (DirHandle);
 }
 
-/* Other functions acpisrc uses but that aren't standard on Unix */
-
-/* lowercase a string */
-char*
-strlwr  (
-   char   *str)
-{
-    int length;
-    int i;
-
-    length = strlen(str);
-
-    for (i = 0; i < length; i++)
-    {
-        str[i] = tolower(str[i]);
-    }
-
-    return str;
-}
