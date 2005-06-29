@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: exfldio - Aml Field I/O
- *              $Revision: 1.54 $
+ *              $Revision: 1.55 $
  *
  *****************************************************************************/
 
@@ -214,8 +214,9 @@ AcpiExSetupField (
          * exceeds region length, indicate an error
          */
         DEBUG_PRINTP (ACPI_ERROR,
-            ("Field base+offset %X+%X exceeds region size (%X bytes) field=%p region=%p\n",
+            ("Field base+offset+width %X+%X+%X exceeds region size (%X bytes) field=%p region=%p\n",
             ObjDesc->CommonField.BaseByteOffset, FieldDatumByteOffset, 
+            ObjDesc->CommonField.AccessByteWidth,
             RgnDesc->Region.Length, ObjDesc, RgnDesc));
 
         return_ACPI_STATUS (AE_AML_REGION_LIMIT);
