@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: exoparg2 - AML execution - opcodes with 2 arguments
- *              $Revision: 1.127 $
+ *              $Revision: 1.129 $
  *
  *****************************************************************************/
 
@@ -305,7 +305,7 @@ AcpiExOpcode_2A_2T_1R (
 
         /* Quotient to ReturnDesc1, remainder to ReturnDesc2 */
 
-        Status = AcpiUtDivide (Operand[0]->Integer.Value, 
+        Status = AcpiUtDivide (Operand[0]->Integer.Value,
                                Operand[1]->Integer.Value,
                                &ReturnDesc1->Integer.Value,
                                &ReturnDesc2->Integer.Value);
@@ -424,7 +424,7 @@ AcpiExOpcode_2A_1T_1R (
 
         /* ReturnDesc will contain the remainder */
 
-        Status = AcpiUtDivide (Operand[0]->Integer.Value, 
+        Status = AcpiUtDivide (Operand[0]->Integer.Value,
                                Operand[1]->Integer.Value,
                                NULL,
                                &ReturnDesc->Integer.Value);
@@ -451,7 +451,7 @@ AcpiExOpcode_2A_1T_1R (
          * 2) Max length as specified in the ToString operator
          * 3) Length of input buffer up to a zero byte (null terminator)
          *
-         * NOTE: A length of zero is ok, and will create a zero-length, null 
+         * NOTE: A length of zero is ok, and will create a zero-length, null
          *       terminated string.
          */
         Length = 0;
@@ -485,7 +485,7 @@ AcpiExOpcode_2A_1T_1R (
 
     case AML_CONCAT_RES_OP:         /* ConcatenateResTemplate (Buffer, Buffer, Result) (ACPI 2.0) */
 
-        Status = AcpiExConcatTemplate (Operand[0], Operand[1], 
+        Status = AcpiExConcatTemplate (Operand[0], Operand[1],
                     &ReturnDesc, WalkState);
         break;
 
@@ -504,7 +504,7 @@ AcpiExOpcode_2A_1T_1R (
         Index = (UINT32) Operand[1]->Integer.Value;
 
         /*
-         * At this point, the Source operand is either a Package or a Buffer
+         * At this point, the Source operand is a Package, Buffer, or String
          */
         if (ACPI_GET_OBJECT_TYPE (Operand[0]) == ACPI_TYPE_PACKAGE)
         {
@@ -525,7 +525,7 @@ AcpiExOpcode_2A_1T_1R (
         }
         else
         {
-            /* Object to be indexed is a Buffer */
+            /* Object to be indexed is a Buffer/String */
 
             if (Index >= Operand[0]->Buffer.Length)
             {
