@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: exconvrt - Object conversion routines
- *              $Revision: 1.57 $
+ *              $Revision: 1.58 $
  *
  *****************************************************************************/
 
@@ -191,13 +191,6 @@ AcpiExConvertToInteger (
      */
     Result = 0;
 
-    /* Transfer no more than an integer's worth of data */
-
-    if (Count > AcpiGbl_IntegerByteWidth)
-    {
-        Count = AcpiGbl_IntegerByteWidth;
-    }
-
     /*
      * String conversion is different than Buffer conversion
      */
@@ -220,6 +213,13 @@ AcpiExConvertToInteger (
 
 
     case ACPI_TYPE_BUFFER:
+
+        /* Transfer no more than an integer's worth of data */
+
+        if (Count > AcpiGbl_IntegerByteWidth)
+        {
+            Count = AcpiGbl_IntegerByteWidth;
+        }
 
         /*
          * Convert buffer to an integer - we simply grab enough raw data
@@ -254,6 +254,7 @@ AcpiExConvertToInteger (
     /* Save the Result */
 
     ReturnDesc->Integer.Value = Result;
+    AcpiExTruncateFor32bitTable (ReturnDesc);
     *ResultDesc = ReturnDesc;
     return_ACPI_STATUS (AE_OK);
 }
