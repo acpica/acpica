@@ -144,19 +144,20 @@
 #else
 
 enum {
-	MALLOC = 0,
-	CALLOC
+    MALLOC = 0,
+    CALLOC
 };
 
-typedef struct ALLOCATION_INFO {
-	void					*Address;
-	UINT32					Size;
-	UINT8					AllocType;
-	UINT32 					Component;
-	char					Module[32];
-	INT32					Line;
-	struct ALLOCATION_INFO	*Previous;
-	struct ALLOCATION_INFO	*Next;
+typedef struct ALLOCATION_INFO 
+{
+    void                    *Address;
+    UINT32                  Size;
+    UINT8                   AllocType;
+    UINT32                  Component;
+    char                    Module[32];
+    INT32                   Line;
+    struct ALLOCATION_INFO  *Previous;
+    struct ALLOCATION_INFO  *Next;
 } ALLOCATION_INFO;
 
 ALLOCATION_INFO *HeadAllocPtr;
@@ -166,13 +167,13 @@ ALLOCATION_INFO *TailAllocPtr;
  * 
  * FUNCTION:    CmAddElementToAllocList
  *
- * PARAMETERS:  Address				Address of allocated memory
- *              Size				Size of the allocation
- *              AllocType			MALLOC or CALLOC
- *              Component			Component type of caller
- *              Module				Source file name of caller
- *              Line				Line number of caller
- *              Function			Calling function name
+ * PARAMETERS:  Address             Address of allocated memory
+ *              Size                Size of the allocation
+ *              AllocType           MALLOC or CALLOC
+ *              Component           Component type of caller
+ *              Module              Source file name of caller
+ *              Line                Line number of caller
+ *              Function            Calling function name
  *
  * RETURN:      
  *
@@ -182,46 +183,50 @@ ALLOCATION_INFO *TailAllocPtr;
 
 void
 CmAddElementToAllocList (
-	void 					*Address,
-	UINT32					Size,
-	UINT8					AllocType,
-	UINT32					Component,
-	ACPI_STRING				Module,
-	INT32                   Line)
+    void                    *Address,
+    UINT32                  Size,
+    UINT8                   AllocType,
+    UINT32                  Component,
+    ACPI_STRING             Module,
+    INT32                   Line)
 {
-	FUNCTION_TRACE ("CmAddElementToAllocList");
-	
-	/* Any list locking should be done right here. */
-	
-	/* If the head pointer is null, create the first element and fill it in. */
-	if (NULL == HeadAllocPtr)
-	{
-		HeadAllocPtr = (ALLOCATION_INFO *) OsdCallocate (sizeof (ALLOCATION_INFO));
-		
-		/* error check */
-		
-		TailAllocPtr = HeadAllocPtr;
-	}
-	else
-	{
-		TailAllocPtr->Next = (ALLOCATION_INFO *) OsdCallocate (sizeof (ALLOCATION_INFO));
-		
-		/* error check */
-		
-		TailAllocPtr->Next->Previous = TailAllocPtr;
-		TailAllocPtr = TailAllocPtr->Next;
-	}
+    FUNCTION_TRACE ("CmAddElementToAllocList");
+    
 
-	/* Fill in the instance data. */		
-	TailAllocPtr->Address = Address;
-	TailAllocPtr->Size = Size;
-	TailAllocPtr->AllocType = AllocType;
-	TailAllocPtr->Component = Component;
-	strcpy (TailAllocPtr->Module, Module);
-	TailAllocPtr->Line = Line;
-	
-	FUNCTION_EXIT;
-	return;
+    /* Any list locking should be done right here. */
+    
+    /* If the head pointer is null, create the first element and fill it in. */
+
+    if (NULL == HeadAllocPtr)
+    {
+        HeadAllocPtr = (ALLOCATION_INFO *) OsdCallocate (sizeof (ALLOCATION_INFO));
+        
+        /* error check */
+        
+        TailAllocPtr = HeadAllocPtr;
+    }
+
+    else
+    {
+        TailAllocPtr->Next = (ALLOCATION_INFO *) OsdCallocate (sizeof (ALLOCATION_INFO));
+        
+        /* error check */
+        
+        TailAllocPtr->Next->Previous = TailAllocPtr;
+        TailAllocPtr = TailAllocPtr->Next;
+    }
+
+    /* Fill in the instance data. */    
+    
+    TailAllocPtr->Address   = Address;
+    TailAllocPtr->Size      = Size;
+    TailAllocPtr->AllocType = AllocType;
+    TailAllocPtr->Component = Component;
+    TailAllocPtr->Line      = Line;
+    strcpy (TailAllocPtr->Module, Module);
+    
+    FUNCTION_EXIT;
+    return;
 }
 
 
@@ -229,13 +234,13 @@ CmAddElementToAllocList (
  * 
  * FUNCTION:    CmDeleteElementFromAllocList
  *
- * PARAMETERS:  Address				Address of allocated memory
- *              Size				Size of the allocation
- *              AllocType			MALLOC or CALLOC
- *              Component			Component type of caller
- *              Module				Source file name of caller
- *              Line				Line number of caller
- *              Function			Calling function name
+ * PARAMETERS:  Address             Address of allocated memory
+ *              Size                Size of the allocation
+ *              AllocType           MALLOC or CALLOC
+ *              Component           Component type of caller
+ *              Module              Source file name of caller
+ *              Line                Line number of caller
+ *              Function            Calling function name
  *
  * RETURN:      
  *
@@ -245,90 +250,98 @@ CmAddElementToAllocList (
 
 void
 CmDeleteElementFromAllocList (
-	void 					*Address,
-	UINT32					Component,
-	ACPI_STRING				Module,
-	INT32                   Line)
+    void                    *Address,
+    UINT32                  Component,
+    ACPI_STRING             Module,
+    INT32                   Line)
 {
-	ALLOCATION_INFO 	*Element = HeadAllocPtr;
-	
-	FUNCTION_TRACE ("CmDeleteElementFromAllocList");
+    ALLOCATION_INFO         *Element = HeadAllocPtr;
+    
 
-	/* cases: none, one, multiple. */
-	if (NULL == HeadAllocPtr)
-	{
-		/* Boy we got problems. */
-		_REPORT_ERROR (Module, Line, Component,
-       		"CmDeleteElementFromAllocList: Empty allocation list and someone's calling CmFree.");
-		
-		FUNCTION_EXIT;
-		return;
-	}
-	
-	if (HeadAllocPtr == TailAllocPtr)
-	{	
-		if (Address != HeadAllocPtr->Address)
-		{
-			_REPORT_ERROR (Module, Line, Component,
-				"CmDeleteElementFromAllocList: Deleting non-allocated memory...");
-			FUNCTION_EXIT;
-			return;
-		}
-		
-		OsdFree (HeadAllocPtr);
-		HeadAllocPtr = NULL;
-		TailAllocPtr = NULL;
-		
-		DEBUG_PRINT (TRACE_ALLOCATIONS,
-			("_CmFree: Allocation list deleted.  No more outstanding allocations.\n"));
-	
-		FUNCTION_EXIT;
-		return;
-	}
-	
-	/* search and destroy. note - this always searches the entire list...*/
-	for (;;)
-	{		
-		if (Element->Address == Address)
-		{
-			/* cases: head, tail, other */
-			if (Element == HeadAllocPtr)
-			{
-				Element->Next->Previous = NULL;
-				HeadAllocPtr = Element->Next;
-			}
-			else
-			{
-				if (Element == TailAllocPtr)
-				{
-					Element->Previous->Next = NULL;
-					TailAllocPtr = Element->Previous;
-				}
-				else
-				{
-					Element->Previous->Next = Element->Next;
-					Element->Next->Previous = Element->Previous;
-				}
-			}		
-			
-			OsdFree (Element);
-			FUNCTION_EXIT;
-			return;
-		}
-			
-		if (Element->Next == NULL)
-		{
-			_REPORT_ERROR (Module, Line, Component,
-				"_CmFree: Reached the end of the list without finding the entry.");
-			FUNCTION_EXIT;
-			return;
-		}
-		
-		Element = Element->Next;
-		
-	}
-	
-	FUNCTION_EXIT;
+    FUNCTION_TRACE ("CmDeleteElementFromAllocList");
+
+    /* cases: none, one, multiple. */
+
+    if (NULL == HeadAllocPtr)
+    {
+        /* Boy we got problems. */
+
+        _REPORT_ERROR (Module, Line, Component,
+            "CmDeleteElementFromAllocList: Empty allocation list and someone's calling CmFree.");
+        
+        FUNCTION_EXIT;
+        return;
+    }
+    
+    if (HeadAllocPtr == TailAllocPtr)
+    {   
+        if (Address != HeadAllocPtr->Address)
+        {
+            _REPORT_ERROR (Module, Line, Component,
+                "CmDeleteElementFromAllocList: Deleting non-allocated memory...");
+
+            FUNCTION_EXIT;
+            return;
+        }
+        
+        OsdFree (HeadAllocPtr);
+        HeadAllocPtr = NULL;
+        TailAllocPtr = NULL;
+        
+        DEBUG_PRINT (TRACE_ALLOCATIONS,
+            ("_CmFree: Allocation list deleted.  No more outstanding allocations.\n"));
+    
+        FUNCTION_EXIT;
+        return;
+    }
+    
+    /* search and destroy. note - this always searches the entire list...*/
+
+    for (;;)
+    {       
+        if (Element->Address == Address)
+        {
+            /* cases: head, tail, other */
+
+            if (Element == HeadAllocPtr)
+            {
+                Element->Next->Previous = NULL;
+                HeadAllocPtr = Element->Next;
+            }
+
+            else
+            {
+                if (Element == TailAllocPtr)
+                {
+                    Element->Previous->Next = NULL;
+                    TailAllocPtr = Element->Previous;
+                }
+
+                else
+                {
+                    Element->Previous->Next = Element->Next;
+                    Element->Next->Previous = Element->Previous;
+                }
+            }       
+            
+            OsdFree (Element);
+            FUNCTION_EXIT;
+            return;
+        }
+            
+        if (Element->Next == NULL)
+        {
+            _REPORT_ERROR (Module, Line, Component,
+                "_CmFree: Reached the end of the list without finding the entry.");
+
+            FUNCTION_EXIT;
+            return;
+        }
+        
+        Element = Element->Next; 
+    }
+    
+    FUNCTION_EXIT;
 }
 
 
@@ -336,8 +349,8 @@ CmDeleteElementFromAllocList (
  * 
  * FUNCTION:    CmDumpCurrentAllocations
  *
- * PARAMETERS:  Component			Componet(s) to dump info for.
- *              Module				Module to dump info for.  NULL means all.
+ * PARAMETERS:  Component           Componet(s) to dump info for.
+ *              Module              Module to dump info for.  NULL means all.
  *
  * RETURN:      
  *
@@ -347,41 +360,43 @@ CmDeleteElementFromAllocList (
 
 void
 CmDumpCurrentAllocations (
-	UINT32					Component,
-	ACPI_STRING				Module)
+    UINT32                  Component,
+    ACPI_STRING             Module)
 {
-	ALLOCATION_INFO		*Element = HeadAllocPtr;
-	
-	FUNCTION_TRACE ("CmDumpCurrentAllocations");
-	
-	if (Element == NULL)
-	{
-		DEBUG_PRINT (TRACE_ALLOCATIONS, ("No outstanding allocations.\n"));
-		FUNCTION_EXIT;
-		return;
-	}
-	
-	for (;;)
-	{
-		if ((Element->Component & Component) &&
-			((Module == NULL) || (0 == strcmp (Module, Element->Module))))
-		{
-			DEBUG_PRINT (TRACE_ALLOCATIONS,
-				("%08x bytes at %p from file %s (line %d)\n",
-				Element->Size, Element->Address, Element->Module, Element->Line));
-		}
-		
-		if (Element->Next == NULL)
-		{
-			FUNCTION_EXIT;
-			return;
-		}
-		
-		Element = Element->Next;
-	}
+    ALLOCATION_INFO         *Element = HeadAllocPtr;
+    
 
-	/* won't ever get here. */
-}	
+    FUNCTION_TRACE ("CmDumpCurrentAllocations");
+    
+
+    if (Element == NULL)
+    {
+        DEBUG_PRINT (TRACE_ALLOCATIONS, ("No outstanding allocations.\n"));
+        FUNCTION_EXIT;
+        return;
+    }
+    
+    for (;;)
+    {
+        if ((Element->Component & Component) &&
+            ((Module == NULL) || (0 == strcmp (Module, Element->Module))))
+        {
+            DEBUG_PRINT (TRACE_ALLOCATIONS,
+                ("%08x bytes at %p from file %s (line %d)\n",
+                Element->Size, Element->Address, Element->Module, Element->Line));
+        }
+        
+        if (Element->Next == NULL)
+        {
+            FUNCTION_EXIT;
+            return;
+        }
+        
+        Element = Element->Next;
+    }
+
+    /* won't ever get here. */
+}   
 
 
 #endif
@@ -391,11 +406,11 @@ CmDumpCurrentAllocations (
  * 
  * FUNCTION:    _CmAllocate
  *
- * PARAMETERS:  Size				Size of the allocation
- *              Component			Component type of caller
- *              Module				Source file name of caller
- *              Line				Line number of caller
- *              Function			Calling function name
+ * PARAMETERS:  Size                Size of the allocation
+ *              Component           Component type of caller
+ *              Module              Source file name of caller
+ *              Line                Line number of caller
+ *              Function            Calling function name
  *
  * RETURN:      Address of the allocated memory on success, NULL on failure.
  *
@@ -405,33 +420,36 @@ CmDumpCurrentAllocations (
 
 void *
 _CmAllocate (
-	UINT32					Size,
-	UINT32					Component,
-	ACPI_STRING				Module,
-	INT32                   Line)
+    UINT32                  Size,
+    UINT32                  Component,
+    ACPI_STRING             Module,
+    INT32                   Line)
 {
-	void *Address = NULL;
+    void                    *Address = NULL;
 
-	FUNCTION_TRACE ("_CmAllocate");
-	
-	Address = OsdAllocate (Size);
-	
+
+    FUNCTION_TRACE ("_CmAllocate");
+    
+
+    Address = OsdAllocate (Size);
+    
     if (!Address)
     {
-       	/* Report allocation error */
-       	_REPORT_ERROR (Module, Line, Component,
-       		"CmAllocate: Memory allocation failure");
+        /* Report allocation error */
+
+        _REPORT_ERROR (Module, Line, Component,
+            "CmAllocate: Memory allocation failure");
     }
     else
     {
         DEBUG_PRINT (TRACE_ALLOCATIONS, ("CmAllocate: %x Size 0x%x\n",
-        	Address, Size));
+            Address, Size));
     }
     
     CmAddElementToAllocList (Address, Size, MALLOC, Component, Module, Line);
 
-	FUNCTION_EXIT;	
-	return Address;
+    FUNCTION_EXIT;  
+    return Address;
 }
 
 
@@ -439,11 +457,11 @@ _CmAllocate (
  * 
  * FUNCTION:    _CmCallocate
  *
- * PARAMETERS:  Size				Size of the allocation
- *              Component			Component type of caller
- *              Module				Source file name of caller
- *              Line				Line number of caller
- *              Function			Calling function name
+ * PARAMETERS:  Size                Size of the allocation
+ *              Component           Component type of caller
+ *              Module              Source file name of caller
+ *              Line                Line number of caller
+ *              Function            Calling function name
  *
  * RETURN:      Address of the allocated memory on success, NULL on failure.
  *
@@ -453,33 +471,36 @@ _CmAllocate (
 
 void *
 _CmCallocate (
-	UINT32					Size,
-	UINT32					Component,
-	ACPI_STRING				Module,
-	INT32                   Line)
+    UINT32                  Size,
+    UINT32                  Component,
+    ACPI_STRING             Module,
+    INT32                   Line)
 {
-	void *Address = NULL;
+    void                    *Address = NULL;
 
-	FUNCTION_TRACE ("_CmCallocate");
-		
-	Address = OsdCallocate (Size);
-	
+
+    FUNCTION_TRACE ("_CmCallocate");
+       
+    
+    Address = OsdCallocate (Size);
+    
     if (!Address)
     {
-       	/* Report allocation error */
-       	_REPORT_ERROR (Module, Line, Component,
-       		"CmCallocate: Memory allocation failure");
+        /* Report allocation error */
+
+        _REPORT_ERROR (Module, Line, Component,
+            "CmCallocate: Memory allocation failure");
     }
     else
     {
         DEBUG_PRINT (TRACE_ALLOCATIONS, ("CmCallocate: %x Size 0x%x\n",
-        	Address, Size));
+            Address, Size));
     }
 
     CmAddElementToAllocList (Address, Size, CALLOC, Component, Module, Line);
-	
-	FUNCTION_EXIT;
-	return Address;
+    
+    FUNCTION_EXIT;
+    return Address;
 }
 
 
@@ -487,11 +508,11 @@ _CmCallocate (
  * 
  * FUNCTION:    _CmFree
  *
- * PARAMETERS:  Address				Address of the memory to deallocate
- *              Component			Component type of caller
- *              Module				Source file name of caller
- *              Line				Line number of caller
- *              Function			Calling function name
+ * PARAMETERS:  Address             Address of the memory to deallocate
+ *              Component           Component type of caller
+ *              Module              Source file name of caller
+ *              Line                Line number of caller
+ *              Function            Calling function name
  *
  * RETURN:      
  *
@@ -501,28 +522,30 @@ _CmCallocate (
 
 void
 _CmFree (
-	void					*Address,
-	UINT32					Component,
-	ACPI_STRING				Module,
-	INT32                   Line)
+    void                    *Address,
+    UINT32                  Component,
+    ACPI_STRING             Module,
+    INT32                   Line)
 {
-	FUNCTION_TRACE ("_CmFree");
-	
-	if (NULL == Address)
-	{
-		_REPORT_ERROR (Module, Line, Component,
-    		"_CmFree: Trying to delete a NULL address.");
-    	FUNCTION_EXIT;
-    	return;
+    FUNCTION_TRACE ("_CmFree");
     
-    }	
-	
-	CmDeleteElementFromAllocList (Address, Component, Module, Line);
-	OsdFree (Address);
-	
+
+    if (NULL == Address)
+    {
+        _REPORT_ERROR (Module, Line, Component,
+            "_CmFree: Trying to delete a NULL address.");
+
+        FUNCTION_EXIT;
+        return;
+    
+    }   
+    
+    CmDeleteElementFromAllocList (Address, Component, Module, Line);
+    OsdFree (Address);
+    
     DEBUG_PRINT (TRACE_ALLOCATIONS, ("CmFree: %x\n", Address));
 
-	FUNCTION_EXIT;
+    FUNCTION_EXIT;
 }
 
 
@@ -550,15 +573,15 @@ _AllocateObjectDesc (
 {
     ACPI_OBJECT_INTERNAL    *NewDesc;
     
+
     FUNCTION_TRACE ("_AllocateObjectDesc");
+
 
     /* Attempt to allocate new descriptor */
 
-    NewDesc = _CmCallocate (sizeof (ACPI_OBJECT_INTERNAL),
-    	ComponentId,
-    	ModuleName,
-    	LineNumber);
-    	
+    NewDesc = _CmCallocate (sizeof (ACPI_OBJECT_INTERNAL), ComponentId,
+                                ModuleName, LineNumber);
+        
     if (!NewDesc)
     {
         /* Allocation failed */
@@ -573,7 +596,7 @@ _AllocateObjectDesc (
                         NewDesc, sizeof (ACPI_OBJECT_INTERNAL)));
     }
 
-	FUNCTION_EXIT;
+    FUNCTION_EXIT;
     return NewDesc;
 }
 
