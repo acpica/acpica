@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: utmisc - common utility procedures
- *              $Revision: 1.63 $
+ *              $Revision: 1.64 $
  *
  ******************************************************************************/
 
@@ -169,7 +169,8 @@ AcpiUtDisplayInitPathname (
         {
             ACPI_DEBUG_PRINT ((ACPI_DB_INIT, "%s\n", (char *) Buffer.Pointer));
         }
-        AcpiOsFree (Buffer.Pointer);
+
+        ACPI_MEM_FREE (Buffer.Pointer);
     }
 }
 #endif
