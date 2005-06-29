@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: actypes.h - Common data types for the entire ACPI subsystem
- *       $Revision: 1.141 $
+ *       $Revision: 1.142 $
  *
  *****************************************************************************/
 
@@ -739,11 +739,8 @@ ACPI_STATUS (*WALK_CALLBACK) (
 
 #define ACPI_COMMON_OBJ_INFO \
     ACPI_OBJECT_TYPE            Type;           /* ACPI object type */ \
-    ACPI_NAME                   Name;           /* ACPI object Name */ \
-    /*  TBD: [Restructure] Do we want or need these next two??*/ \
-    ACPI_HANDLE                 Parent;         /* Parent object */ \
-    ACPI_HANDLE                 Children;       /* Linked list of children */ \
-    UINT32                      Valid           /* ?????    */
+    ACPI_NAME                   Name            /* ACPI object Name */
+    
 
 typedef struct
 {
@@ -755,9 +752,7 @@ typedef struct
 {
     ACPI_COMMON_OBJ_INFO;
 
-    /*
-     *  TBD: [Restructure]: a HID or a _UID can return either a number or a string
-     */
+    UINT32                      Valid;              /*  Are the next bits legit? */
     NATIVE_CHAR                 HardwareId [9];     /*  _HID value if any */
     NATIVE_CHAR                 UniqueId[9];        /*  _UID value if any */
     ACPI_INTEGER                Address;            /*  _ADR value if any */
