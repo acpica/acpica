@@ -189,7 +189,6 @@ AcpiLoadNamespace (
      * but the SSDT and PSDT tables are optional.
      */
 
-
     Status = AmlLoadTable (TABLE_DSDT);
     if (ACPI_FAILURE (Status))
     {
@@ -487,7 +486,7 @@ AcpiGetObjectInfo (
     Status = Execute_HID (DeviceEntry, &Hid);
     if (ACPI_SUCCESS (Status))
     {
-        Info->HardwareId = Hid.Data.Number;
+        STRCPY (Info->HardwareId, Hid.Data.String);
         Info->Valid |= ACPI_VALID_HID;
     }
 
@@ -496,7 +495,7 @@ AcpiGetObjectInfo (
     Status = Execute_UID (DeviceEntry, &Uid);
     if (ACPI_SUCCESS (Status))
     {
-        Info->UniqueId = Uid.Data.Number;
+        STRCPY (Info->UniqueId, Uid.Data.String);
         Info->Valid |= ACPI_VALID_UID;
     }
 
