@@ -770,7 +770,7 @@ AcpiDsLoad2EndOp (
 
         Arg = Op->Value.Arg;
         Status = AcpiDsCreateBankField (Op,
-                                        (ACPI_HANDLE) Arg->AcpiNamedObject,
+                                        Arg->AcpiNamedObject,
                                         WalkState);
         break;
 
