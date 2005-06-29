@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acmacros.h - C macros for the entire subsystem.
- *       $Revision: 1.86 $
+ *       $Revision: 1.88 $
  *
  *****************************************************************************/
 
@@ -395,9 +395,9 @@
  * Macros for the master AML opcode table
  */
 #ifdef ACPI_DEBUG
-#define OP_INFO_ENTRY(Flags,Name,PArgs,IArgs)     {Flags,PArgs,IArgs,Name}
+#define ACPI_OP(Name,PArgs,IArgs,Flags)     {PArgs,IArgs,Flags,Name}
 #else
-#define OP_INFO_ENTRY(Flags,Name,PArgs,IArgs)     {Flags,PArgs,IArgs}
+#define ACPI_OP(Name,PArgs,IArgs,Flags)     {PArgs,IArgs,Flags}
 #endif
 
 #define ARG_TYPE_WIDTH                  5
@@ -507,13 +507,13 @@
 
 #define PROC_NAME(a)                    char * _ProcName = a;
 #define FUNCTION_TRACE(a)               char * _ProcName = a;\
-                                        FunctionTrace(_THIS_MODULE,__LINE__,_COMPONENT,a)
+                                        AcpiUtTrace(_THIS_MODULE,__LINE__,_COMPONENT,a)
 #define FUNCTION_TRACE_PTR(a,b)         char * _ProcName = a;\
-                                        FunctionTracePtr(_THIS_MODULE,__LINE__,_COMPONENT,a,(void *)b)
+                                        AcpiUtTracePtr(_THIS_MODULE,__LINE__,_COMPONENT,a,(void *)b)
 #define FUNCTION_TRACE_U32(a,b)         char * _ProcName = a;\
-                                        FunctionTraceU32(_THIS_MODULE,__LINE__,_COMPONENT,a,(UINT32)b)
+                                        AcpiUtTraceU32(_THIS_MODULE,__LINE__,_COMPONENT,a,(UINT32)b)
 #define FUNCTION_TRACE_STR(a,b)         char * _ProcName = a;\
-                                        FunctionTraceStr(_THIS_MODULE,__LINE__,_COMPONENT,a,(NATIVE_CHAR *)b)
+                                        AcpiUtTraceStr(_THIS_MODULE,__LINE__,_COMPONENT,a,(NATIVE_CHAR *)b)
 /*
  * Function exit tracing.
  * WARNING: These macros include a return statement.  This is usually considered
@@ -521,10 +521,10 @@
  * One of the FUNCTION_TRACE macros above must be used in conjunction with these macros
  * so that "_ProcName" is defined.
  */
-#define return_VOID                     {FunctionExit(_THIS_MODULE,__LINE__,_COMPONENT,_ProcName);return;}
-#define return_ACPI_STATUS(s)           {FunctionStatusExit(_THIS_MODULE,__LINE__,_COMPONENT,_ProcName,s);return(s);}
-#define return_VALUE(s)                 {FunctionValueExit(_THIS_MODULE,__LINE__,_COMPONENT,_ProcName,s);return(s);}
-#define return_PTR(s)                   {FunctionPtrExit(_THIS_MODULE,__LINE__,_COMPONENT,_ProcName,(UINT8 *)s);return(s);}
+#define return_VOID                     {AcpiUtExit(_THIS_MODULE,__LINE__,_COMPONENT,_ProcName);return;}
+#define return_ACPI_STATUS(s)           {AcpiUtStatusExit(_THIS_MODULE,__LINE__,_COMPONENT,_ProcName,s);return(s);}
+#define return_VALUE(s)                 {AcpiUtValueExit(_THIS_MODULE,__LINE__,_COMPONENT,_ProcName,s);return(s);}
+#define return_PTR(s)                   {AcpiUtPtrExit(_THIS_MODULE,__LINE__,_COMPONENT,_ProcName,(UINT8 *)s);return(s);}
 
 
 /* Conditional execution */
