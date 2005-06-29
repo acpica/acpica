@@ -211,12 +211,16 @@ DsCreateField (
                                         NS_NO_UPSEARCH | NS_DONT_OPEN_SCOPE, NULL, &Entry);
             if (ACPI_FAILURE (Status))
             {
-                break;
+                return_ACPI_STATUS (Status);
             }
 
             /* Initialize an object for the new NTE that is on the object stack */
 
             Status = AmlPrepDefFieldValue (Entry, Region, FieldFlags, AccessAttribute, FieldBitPosition, Arg->Value.Size);
+            if (ACPI_FAILURE (Status))
+            {
+                return_ACPI_STATUS (Status);
+            }
 
             /* Keep track of bit position for the *next* field */
 
@@ -321,12 +325,16 @@ DsCreateBankField (
                                         NS_NO_UPSEARCH | NS_DONT_OPEN_SCOPE, NULL, &Entry);
             if (ACPI_FAILURE (Status))
             {
-                break;
+                return_ACPI_STATUS (Status);
             }
 
             /* Initialize an object for the new NTE that is on the object stack */
 
             Status = AmlPrepBankFieldValue (Entry, Region, BankReg, BankValue, FieldFlags, AccessAttribute, FieldBitPosition, Arg->Value.Size);
+            if (ACPI_FAILURE (Status))
+            {
+                return_ACPI_STATUS (Status);
+            }
 
             /* Keep track of bit position for the *next* field */
 
@@ -437,12 +445,16 @@ DsCreateIndexField (
                                         NS_NO_UPSEARCH | NS_DONT_OPEN_SCOPE, NULL, &Entry);
             if (ACPI_FAILURE (Status))
             {
-                break;
+                return_ACPI_STATUS (Status);
             }
 
             /* Initialize an object for the new NTE that is on the object stack */
 
             Status = AmlPrepIndexFieldValue (Entry, IndexReg, DataReg, FieldFlags, AccessAttribute, FieldBitPosition, Arg->Value.Size);
+            if (ACPI_FAILURE (Status))
+            {
+                return_ACPI_STATUS (Status);
+            }
 
             /* Keep track of bit position for the *next* field */
 
