@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acstruct.h - Internal structs
- *       $Revision: 1.18 $
+ *       $Revision: 1.19 $
  *
  *****************************************************************************/
 
@@ -195,6 +195,7 @@ typedef struct acpi_walk_state
 typedef struct acpi_init_walk_info
 {
     UINT16                  MethodCount;
+    UINT16                  DeviceCount;
     UINT16                  OpRegionCount;
     UINT16                  FieldCount;
     UINT16                  BufferCount;
