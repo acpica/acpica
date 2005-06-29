@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acconfig.h - Global configuration constants
- *       $Revision: 1.86 $
+ *       $Revision: 1.87 $
  *
  *****************************************************************************/
 
@@ -264,6 +264,20 @@
 
 #define ACPI_RSDP_CHECKSUM_LENGTH   20
 #define ACPI_RSDP_XCHECKSUM_LENGTH  36
+
+
+/******************************************************************************
+ *
+ * ACPI AML Debugger
+ *
+ *****************************************************************************/
+
+
+#define ACPI_DEBUGGER_MAX_ARGS             8  /* Must be max method args + 1 */
+
+#define ACPI_DEBUGGER_COMMAND_PROMPT      '-'
+#define ACPI_DEBUGGER_EXECUTE_PROMPT      '%'
+
 
 
 #endif /* _ACCONFIG_H */
