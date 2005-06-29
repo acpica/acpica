@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dbinput - user front-end to the AML debugger
- *              $Revision: 1.103 $
+ *              $Revision: 1.107 $
  *
  ******************************************************************************/
 
@@ -124,6 +124,29 @@
 #define _COMPONENT          ACPI_CA_DEBUGGER
         ACPI_MODULE_NAME    ("dbinput")
 
+/* Local prototypes */
+
+static char *
+AcpiDbGetNextToken (
+    char                    *String,
+    char                    **Next);
+
+static UINT32
+AcpiDbGetLine (
+    char                    *InputBuffer);
+
+static UINT32
+AcpiDbMatchCommand (
+    char                    *UserCommand);
+
+static void
+AcpiDbSingleThread (
+    void);
+
+static void
+AcpiDbDisplayHelp (
+    char                    *HelpType);
+
 
 /*
  * Top-level debugger commands.
@@ -188,7 +211,6 @@ enum AcpiExDebuggerCommands
 };
 
 #define CMD_FIRST_VALID     2
-
 
 static const COMMAND_INFO       AcpiGbl_DbCommands[] =
 {
@@ -261,11 +283,10 @@ static const COMMAND_INFO       AcpiGbl_DbCommands[] =
  *
  ******************************************************************************/
 
-void
+static void
 AcpiDbDisplayHelp (
     char                    *HelpType)
 {
-
 
     /* No parameter, just give the overview */
 
@@ -387,7 +408,7 @@ AcpiDbDisplayHelp (
  *
  ******************************************************************************/
 
-char *
+static char *
 AcpiDbGetNextToken (
     char                    *String,
     char                    **Next)
@@ -446,14 +467,14 @@ AcpiDbGetNextToken (
  *
  * PARAMETERS:  InputBuffer         - Command line buffer
  *
- * RETURN:      None
+ * RETURN:      Count of arguments to the command
  *
  * DESCRIPTION: Get the next command line from the user.  Gets entire line
  *              up to the next newline
  *
  ******************************************************************************/
 
-UINT32
+static UINT32
 AcpiDbGetLine (
     char                    *InputBuffer)
 {
@@ -464,7 +485,7 @@ AcpiDbGetLine (
 
 
     ACPI_STRCPY (AcpiGbl_DbParsedBuf, InputBuffer);
-    ACPI_STRUPR (AcpiGbl_DbParsedBuf);
+    AcpiUtStrupr (AcpiGbl_DbParsedBuf);
 
     This = AcpiGbl_DbParsedBuf;
     for (i = 0; i < ACPI_DEBUGGER_MAX_ARGS; i++)
@@ -482,7 +503,7 @@ AcpiDbGetLine (
 
     if (AcpiGbl_DbArgs[0])
     {
-        ACPI_STRUPR (AcpiGbl_DbArgs[0]);
+        AcpiUtStrupr (AcpiGbl_DbArgs[0]);
     }
 
     Count = i;
@@ -507,7 +528,7 @@ AcpiDbGetLine (
  *
  ******************************************************************************/
 
-UINT32
+static UINT32
 AcpiDbMatchCommand (
     char                    *UserCommand)
 {
@@ -544,7 +565,7 @@ AcpiDbMatchCommand (
  *
  * RETURN:      Status
  *
- * DESCRIPTION: Command dispatcher.  Called from two places:
+ * DESCRIPTION: Command dispatcher.
  *
  ******************************************************************************/
 
@@ -577,7 +598,9 @@ AcpiDbCommandDispatch (
     if (ParamCount < AcpiGbl_DbCommands[CommandIndex].MinArgs)
     {
         AcpiOsPrintf ("%d parameters entered, [%s] requires %d parameters\n",
-                        ParamCount, AcpiGbl_DbCommands[CommandIndex].Name, AcpiGbl_DbCommands[CommandIndex].MinArgs);
+            ParamCount, AcpiGbl_DbCommands[CommandIndex].Name,
+            AcpiGbl_DbCommands[CommandIndex].MinArgs);
+
         return (AE_CTRL_TRUE);
     }
 
@@ -643,7 +666,8 @@ AcpiDbCommandDispatch (
         break;
 
     case CMD_EXECUTE:
-        AcpiDbExecute (AcpiGbl_DbArgs[1], &AcpiGbl_DbArgs[2], EX_NO_SINGLE_STEP);
+        AcpiDbExecute (AcpiGbl_DbArgs[1],
+            &AcpiGbl_DbArgs[2], EX_NO_SINGLE_STEP);
         break;
 
     case CMD_FIND:
@@ -710,20 +734,27 @@ AcpiDbCommandDispatch (
     case CMD_LEVEL:
         if (ParamCount == 0)
         {
-            AcpiOsPrintf ("Current debug level for file output is:    %8.8lX\n", AcpiGbl_DbDebugLevel);
-            AcpiOsPrintf ("Current debug level for console output is: %8.8lX\n", AcpiGbl_DbConsoleDebugLevel);
+            AcpiOsPrintf ("Current debug level for file output is:    %8.8lX\n",
+                AcpiGbl_DbDebugLevel);
+            AcpiOsPrintf ("Current debug level for console output is: %8.8lX\n",
+                AcpiGbl_DbConsoleDebugLevel);
         }
         else if (ParamCount == 2)
         {
             Temp = AcpiGbl_DbConsoleDebugLevel;
-            AcpiGbl_DbConsoleDebugLevel = ACPI_STRTOUL (AcpiGbl_DbArgs[1], NULL, 16);
-            AcpiOsPrintf ("Debug Level for console output was %8.8lX, now %8.8lX\n", Temp, AcpiGbl_DbConsoleDebugLevel);
+            AcpiGbl_DbConsoleDebugLevel = ACPI_STRTOUL (AcpiGbl_DbArgs[1],
+                                            NULL, 16);
+            AcpiOsPrintf (
+                "Debug Level for console output was %8.8lX, now %8.8lX\n",
+                Temp, AcpiGbl_DbConsoleDebugLevel);
         }
         else
         {
             Temp = AcpiGbl_DbDebugLevel;
             AcpiGbl_DbDebugLevel = ACPI_STRTOUL (AcpiGbl_DbArgs[1], NULL, 16);
-            AcpiOsPrintf ("Debug Level for file output was %8.8lX, now %8.8lX\n", Temp, AcpiGbl_DbDebugLevel);
+            AcpiOsPrintf (
+                "Debug Level for file output was %8.8lX, now %8.8lX\n",
+                Temp, AcpiGbl_DbDebugLevel);
         }
         break;
 
@@ -757,7 +788,7 @@ AcpiDbCommandDispatch (
         break;
 
     case CMD_OBJECT:
-        ACPI_STRUPR (AcpiGbl_DbArgs[1]);
+        AcpiUtStrupr (AcpiGbl_DbArgs[1]);
         Status = AcpiDbDisplayObjects (AcpiGbl_DbArgs[1], AcpiGbl_DbArgs[2]);
         break;
 
@@ -786,7 +817,8 @@ AcpiDbCommandDispatch (
         break;
 
     case CMD_SET:
-        AcpiDbSetMethodData (AcpiGbl_DbArgs[1], AcpiGbl_DbArgs[2], AcpiGbl_DbArgs[3]);
+        AcpiDbSetMethodData (AcpiGbl_DbArgs[1], AcpiGbl_DbArgs[2],
+            AcpiGbl_DbArgs[3]);
         break;
 
     case CMD_SLEEP:
@@ -808,13 +840,17 @@ AcpiDbCommandDispatch (
         AcpiDbSetOutputDestination (ACPI_DB_REDIRECTABLE_OUTPUT);
         AcpiUtSubsystemShutdown ();
 
-        /* TBD: [Restructure] Need some way to re-initialize without re-creating the semaphores! */
+        /*
+         * TBD: [Restructure] Need some way to re-initialize without
+         * re-creating the semaphores!
+         */
 
         /*  AcpiInitialize (NULL);  */
         break;
 
     case CMD_THREADS:
-        AcpiDbCreateExecutionThreads (AcpiGbl_DbArgs[1], AcpiGbl_DbArgs[2], AcpiGbl_DbArgs[3]);
+        AcpiDbCreateExecutionThreads (AcpiGbl_DbArgs[1], AcpiGbl_DbArgs[2],
+            AcpiGbl_DbArgs[3]);
         break;
 
     case CMD_TREE:
@@ -842,13 +878,8 @@ AcpiDbCommandDispatch (
             AcpiDbgLevel = ACPI_DEBUG_DEFAULT;
         }
 
-        /* Shutdown */
-
-        /* AcpiUtSubsystemShutdown (); */
         AcpiDbCloseDebugFile ();
-
         AcpiGbl_DbTerminateThreads = TRUE;
-
         return (AE_CTRL_TERMINATE);
 
     case CMD_NOT_FOUND:
@@ -925,7 +956,7 @@ AcpiDbExecuteThread (
  *
  ******************************************************************************/
 
-void
+static void
 AcpiDbSingleThread (
     void)
 {
@@ -1011,13 +1042,12 @@ AcpiDbUserCommands (
     }
 
     /*
-     * Only this thread (the original thread) should actually terminate the subsystem,
-     * because all the semaphores are deleted during termination
+     * Only this thread (the original thread) should actually terminate the
+     * subsystem, because all the semaphores are deleted during termination
      */
     Status = AcpiTerminate ();
     return (Status);
 }
-
 
 #endif  /* ACPI_DEBUGGER */
 
