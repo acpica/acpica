@@ -2,7 +2,7 @@
  *
  * Module Name: nsxfname - Public interfaces to the ACPI subsystem
  *                         ACPI Namespace oriented interfaces
- *              $Revision: 1.86 $
+ *              $Revision: 1.92 $
  *
  *****************************************************************************/
 
@@ -118,16 +118,11 @@
 #define __NSXFNAME_C__
 
 #include "acpi.h"
-#include "acinterp.h"
 #include "acnamesp.h"
-#include "amlcode.h"
-#include "acparser.h"
-#include "acdispat.h"
-#include "acevents.h"
 
 
 #define _COMPONENT          ACPI_NAMESPACE
-        MODULE_NAME         ("nsxfname")
+        ACPI_MODULE_NAME    ("nsxfname")
 
 
 /****************************************************************************
@@ -159,7 +154,7 @@ AcpiGetHandle (
     ACPI_NAMESPACE_NODE     *PrefixNode = NULL;
 
 
-    FUNCTION_ENTRY ();
+    ACPI_FUNCTION_ENTRY ();
 
 
     /* Parameter Validation */
@@ -173,21 +168,29 @@ AcpiGetHandle (
 
     if (Parent)
     {
-        AcpiUtAcquireMutex (ACPI_MTX_NAMESPACE);
+        Status = AcpiUtAcquireMutex (ACPI_MTX_NAMESPACE);
+        if (ACPI_FAILURE (Status))
+        {
+            return (Status);
+        }
 
         PrefixNode = AcpiNsMapHandleToNode (Parent);
         if (!PrefixNode)
         {
-            AcpiUtReleaseMutex (ACPI_MTX_NAMESPACE);
+            (void) AcpiUtReleaseMutex (ACPI_MTX_NAMESPACE);
             return (AE_BAD_PARAMETER);
         }
 
-        AcpiUtReleaseMutex (ACPI_MTX_NAMESPACE);
+        Status = AcpiUtReleaseMutex (ACPI_MTX_NAMESPACE);
+        if (ACPI_FAILURE (Status))
+        {
+            return (Status);
+        }
     }
 
     /* Special case for root, since we can't search for it */
 
-    if (STRCMP (Pathname, NS_ROOT_PATH) == 0)
+    if (ACPI_STRCMP (Pathname, ACPI_NS_ROOT_PATH) == 0)
     {
         *RetHandle = AcpiNsConvertEntryToHandle (AcpiGbl_RootNode);
         return (AE_OK);
@@ -196,7 +199,7 @@ AcpiGetHandle (
     /*
      *  Find the Node and convert to a handle
      */
-    Status = AcpiNsGetNodeByPath (Pathname, PrefixNode, NS_NO_UPSEARCH, &Node);
+    Status = AcpiNsGetNodeByPath (Pathname, PrefixNode, ACPI_NS_NO_UPSEARCH, &Node);
 
     *RetHandle = NULL;
     if (ACPI_SUCCESS (Status))
@@ -259,7 +262,12 @@ AcpiGetName (
      * Wants the single segment ACPI name.
      * Validate handle and convert to a namespace Node
      */
-    AcpiUtAcquireMutex (ACPI_MTX_NAMESPACE);
+    Status = AcpiUtAcquireMutex (ACPI_MTX_NAMESPACE);
+    if (ACPI_FAILURE (Status))
+    {
+        return (Status);
+    }
+
     Node = AcpiNsMapHandleToNode (Handle);
     if (!Node)
     {
@@ -269,7 +277,7 @@ AcpiGetName (
 
     /* Validate/Allocate/Clear caller buffer */
 
-    Status = AcpiUtInitializeBuffer (Buffer, PATH_SEGMENT_LENGTH);
+    Status = AcpiUtInitializeBuffer (Buffer, ACPI_PATH_SEGMENT_LENGTH);
     if (ACPI_FAILURE (Status))
     {
         goto UnlockAndExit;
@@ -277,7 +285,7 @@ AcpiGetName (
 
     /* Just copy the ACPI name from the Node and zero terminate it */
 
-    STRNCPY (Buffer->Pointer, (NATIVE_CHAR *) &Node->Name,
+    ACPI_STRNCPY (Buffer->Pointer, Node->Name.Ascii,
                 ACPI_NAME_SIZE);
     ((NATIVE_CHAR *) Buffer->Pointer) [ACPI_NAME_SIZE] = 0;
     Status = AE_OK;
@@ -285,7 +293,7 @@ AcpiGetName (
 
 UnlockAndExit:
 
-    AcpiUtReleaseMutex (ACPI_MTX_NAMESPACE);
+    (void) AcpiUtReleaseMutex (ACPI_MTX_NAMESPACE);
     return (Status);
 }
 
@@ -325,19 +333,27 @@ AcpiGetObjectInfo (
         return (AE_BAD_PARAMETER);
     }
 
-    AcpiUtAcquireMutex (ACPI_MTX_NAMESPACE);
+    Status = AcpiUtAcquireMutex (ACPI_MTX_NAMESPACE);
+    if (ACPI_FAILURE (Status))
+    {
+        return (Status);
+    }
 
     Node = AcpiNsMapHandleToNode (Handle);
     if (!Node)
     {
-        AcpiUtReleaseMutex (ACPI_MTX_NAMESPACE);
+        (void) AcpiUtReleaseMutex (ACPI_MTX_NAMESPACE);
         return (AE_BAD_PARAMETER);
     }
 
-    Info->Type      = Node->Type;
-    Info->Name      = Node->Name;
+    Info->Type = Node->Type;
+    Info->Name = Node->Name.Integer;
 
-    AcpiUtReleaseMutex (ACPI_MTX_NAMESPACE);
+    Status = AcpiUtReleaseMutex (ACPI_MTX_NAMESPACE);
+    if (ACPI_FAILURE (Status))
+    {
+        return (Status);
+    }
 
     /*
      * If not a device, we are all done.
@@ -362,8 +378,7 @@ AcpiGetObjectInfo (
     Status = AcpiUtExecute_HID (Node, &Hid);
     if (ACPI_SUCCESS (Status))
     {
-        STRNCPY (Info->HardwareId, Hid.Buffer, sizeof(Info->HardwareId));
-
+        ACPI_STRNCPY (Info->HardwareId, Hid.Buffer, sizeof(Info->HardwareId));
         Info->Valid |= ACPI_VALID_HID;
     }
 
@@ -372,8 +387,7 @@ AcpiGetObjectInfo (
     Status = AcpiUtExecute_UID (Node, &Uid);
     if (ACPI_SUCCESS (Status))
     {
-        STRCPY (Info->UniqueId, Uid.Buffer);
-
+        ACPI_STRCPY (Info->UniqueId, Uid.Buffer);
         Info->Valid |= ACPI_VALID_UID;
     }
 
