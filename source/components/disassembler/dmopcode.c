@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dbdisasm - parser op tree display routines
- *              $Revision: 1.39 $
+ *              $Revision: 1.41 $
  *
  ******************************************************************************/
 
@@ -385,7 +385,7 @@ AcpiDbDisplayOp (
 
             /* Resolve a name reference */
 
-            if ((Op->Opcode == AML_NAMEPATH_OP && Op->Value.Name)  &&
+            if ((Op->Opcode == AML_INT_NAMEPATH_OP && Op->Value.Name)  &&
                 (Op->Parent) &&
                 (opt_verbose))
             {
@@ -658,12 +658,12 @@ AcpiDbDisplayOpcode (
 
         if (opt_verbose)
         {
-            AcpiOsPrintf ("(UINT8)  0x%2.2X", Op->Value.Integer & ACPI_UINT8_MAX);
+            AcpiOsPrintf ("(UINT8)  0x%2.2X", Op->Value.Integer8);
         }
 
         else
         {
-            AcpiOsPrintf ("0x%2.2X", Op->Value.Integer & ACPI_UINT8_MAX);
+            AcpiOsPrintf ("0x%2.2X", Op->Value.Integer8);
         }
 
         break;
@@ -673,12 +673,12 @@ AcpiDbDisplayOpcode (
 
         if (opt_verbose)
         {
-            AcpiOsPrintf ("(UINT16) 0x%4.4X", Op->Value.Integer & ACPI_UINT16_MAX);
+            AcpiOsPrintf ("(UINT16) 0x%4.4X", Op->Value.Integer16);
         }
 
         else
         {
-            AcpiOsPrintf ("0x%4.4X", Op->Value.Integer & ACPI_UINT16_MAX);
+            AcpiOsPrintf ("0x%4.4X", Op->Value.Integer16);
         }
 
         break;
@@ -688,12 +688,29 @@ AcpiDbDisplayOpcode (
 
         if (opt_verbose)
         {
-            AcpiOsPrintf ("(UINT32) 0x%8.8X", Op->Value.Integer);
+            AcpiOsPrintf ("(UINT32) 0x%8.8X", Op->Value.Integer32);
         }
 
         else
         {
-            AcpiOsPrintf ("0x%8.8X", Op->Value.Integer);
+            AcpiOsPrintf ("0x%8.8X", Op->Value.Integer32);
+        }
+
+        break;
+
+
+    case AML_QWORD_OP:
+
+        if (opt_verbose)
+        {
+            AcpiOsPrintf ("(UINT32) 0x%8.8X%8.8X", Op->Value.Integer64.Hi, 
+                                                   Op->Value.Integer64.Lo);
+        }
+
+        else
+        {
+            AcpiOsPrintf ("0x%8.8X%8.8X", Op->Value.Integer64.Hi, 
+                                          Op->Value.Integer64.Lo);
         }
 
         break;
@@ -714,7 +731,7 @@ AcpiDbDisplayOpcode (
         break;
 
 
-    case AML_STATICSTRING_OP:
+    case AML_INT_STATICSTRING_OP:
 
         if (Op->Value.String)
         {
@@ -729,42 +746,42 @@ AcpiDbDisplayOpcode (
         break;
 
 
-    case AML_NAMEPATH_OP:
+    case AML_INT_NAMEPATH_OP:
 
         AcpiDbDisplayNamestring (Op->Value.Name);
         break;
 
 
-    case AML_NAMEDFIELD_OP:
+    case AML_INT_NAMEDFIELD_OP:
 
-        AcpiOsPrintf ("NamedField    (Length 0x%8.8X)  ", Op->Value.Integer);
+        AcpiOsPrintf ("NamedField    (Length 0x%8.8X)  ", Op->Value.Integer32);
         break;
 
 
-    case AML_RESERVEDFIELD_OP:
+    case AML_INT_RESERVEDFIELD_OP:
 
-        AcpiOsPrintf ("ReservedField (Length 0x%8.8X)  ", Op->Value.Integer);
+        AcpiOsPrintf ("ReservedField (Length 0x%8.8X)  ", Op->Value.Integer32);
         break;
 
 
-    case AML_ACCESSFIELD_OP:
+    case AML_INT_ACCESSFIELD_OP:
 
-        AcpiOsPrintf ("AccessField   (Length 0x%8.8X)  ", Op->Value.Integer);
+        AcpiOsPrintf ("AccessField   (Length 0x%8.8X)  ", Op->Value.Integer32);
         break;
 
 
-    case AML_BYTELIST_OP:
+    case AML_INT_BYTELIST_OP:
 
         if (opt_verbose)
         {
-            AcpiOsPrintf ("ByteList      (Length 0x%8.8X)  ", Op->Value.Integer);
+            AcpiOsPrintf ("ByteList      (Length 0x%8.8X)  ", Op->Value.Integer32);
         }
 
         else
         {
-            AcpiOsPrintf ("0x%2.2X", Op->Value.Integer);
+            AcpiOsPrintf ("0x%2.2X", Op->Value.Integer32);
 
-            ByteCount = Op->Value.Integer;
+            ByteCount = Op->Value.Integer32;
             ByteData = ((ACPI_PARSE2_OBJECT *) Op)->Data;
 
             for (i = 0; i < ByteCount; i++)
@@ -785,7 +802,7 @@ AcpiDbDisplayOpcode (
 
 
 #ifndef PARSER_ONLY
-        if ((Op->Opcode == AML_RETURN_VALUE_OP) &&
+        if ((Op->Opcode == AML_INT_RETURN_VALUE_OP) &&
             (WalkState->Results) &&
             (WalkState->Results->Results.NumResults))
         {
