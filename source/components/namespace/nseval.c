@@ -2,7 +2,7 @@
  *
  * Module Name: nseval - Object evaluation interfaces -- includes control
  *                       method lookup and execution.
- *              $Revision: 1.78 $
+ *              $Revision: 1.79 $
  *
  ******************************************************************************/
 
@@ -633,9 +633,17 @@ AcpiNsGetObjectValue (
          * NOTE: we can get away with passing in NULL for a walk state
          * because ObjDesc is guaranteed to not be a reference to either
          * a method local or a method argument
+         *
+         * Even though we do not technically need to use the interpreter
+         * for this, we must enter it because we could hit an opregion.
+         * The opregion access code assumes it is in the interpreter.
          */
 
+        AcpiAmlEnterInterpreter();
+
         Status = AcpiAmlResolveToValue (&ObjDesc, NULL);
+
+        AcpiAmlExitInterpreter();
     }
 
     /*
