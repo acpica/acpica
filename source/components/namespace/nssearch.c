@@ -146,7 +146,7 @@
 
 ACPI_STATUS
 NsSearchOnly (
-    char                    *EntryName, 
+    UINT32                  EntryName, 
     NAME_TABLE_ENTRY        *NameTable, 
     ACPI_OBJECT_TYPE        Type, 
     NAME_TABLE_ENTRY        **RetEntry, 
@@ -165,7 +165,7 @@ NsSearchOnly (
         DEBUG_PRINT (TRACE_NAMES, ("NsSearchOnly: Searching %s [%p]\n",
                             ScopeName, NameTable));
         DEBUG_PRINT (TRACE_NAMES, ("NsSearchOnly: For %4.4s (type %d)\n",
-                            EntryName, Type));
+                            &EntryName, Type));
         DEBUG_EXEC (CmFree (ScopeName));
     }
 
@@ -202,7 +202,7 @@ NsSearchOnly (
     {
         /* Search for name in table */
 
-        if (NameTable[Position].Name == *(UINT32 *) EntryName)
+        if (NameTable[Position].Name == EntryName)
         {
             /* 
              * Found matching entry.  Capture type if appropriate before
@@ -235,7 +235,7 @@ NsSearchOnly (
             }
 
             DEBUG_PRINT (TRACE_NAMES, ("NsSearchOnly: Name %4.4s (actual type %d) found at %p\n", 
-                            EntryName, NameTable[Position].Type, &NameTable[Position]));
+                            &EntryName, NameTable[Position].Type, &NameTable[Position]));
             
             *RetEntry = &NameTable[Position];
             return_ACPI_STATUS (AE_OK);
@@ -275,7 +275,7 @@ NsSearchOnly (
     /* Searched entire table, not found */
 
     DEBUG_PRINT (TRACE_NAMES, ("NsSearchOnly: Name %4.4s (type %d) not found at %p\n", 
-                                EntryName, Type, &NameTable[Position]));
+                                &EntryName, Type, &NameTable[Position]));
 
 
     if (RetInfo)
@@ -319,7 +319,7 @@ NsSearchOnly (
 
 ACPI_STATUS
 NsSearchParentTree (
-    char                    *EntryName, 
+    UINT32                  EntryName, 
     NAME_TABLE_ENTRY        *NameTable, 
     ACPI_OBJECT_TYPE        Type, 
     NAME_TABLE_ENTRY        **RetEntry)
@@ -342,7 +342,8 @@ NsSearchParentTree (
         NameTable[0].ParentScope)
     {
         ParentScope = NameTable[0].ParentScope;
-        DEBUG_PRINT (TRACE_NAMES, ("NsSearchParentTree: Searching parent for %.4s\n", EntryName));
+        DEBUG_PRINT (TRACE_NAMES, ("NsSearchParentTree: Searching parent for %4.4s\n", 
+                                    &EntryName));
 
         /* Search parents until found or we have backed up to the root */
 
@@ -373,13 +374,14 @@ NsSearchParentTree (
 
         if (!NameTable[0].ParentScope)
         {
-            DEBUG_PRINT (TRACE_NAMES, ("NsSearchParentTree: [%.4s] has no parent\n", EntryName));
+            DEBUG_PRINT (TRACE_NAMES, ("NsSearchParentTree: [%4.4s] has no parent\n", 
+                                        &EntryName));
         }
 
         else if (NsLocal (Type))
         {
-            DEBUG_PRINT (TRACE_NAMES, ("NsSearchParentTree: [%.4s] (type %d) is local (no search)\n", 
-                                        EntryName, Type));
+            DEBUG_PRINT (TRACE_NAMES, ("NsSearchParentTree: [%4.4s] (type %d) is local (no search)\n", 
+                                        &EntryName, Type));
         }
     }
 
@@ -516,7 +518,7 @@ void
 NsInitializeEntry (
     NAME_TABLE_ENTRY        *NameTable, 
     UINT32                  Position, 
-    char                    *EntryName, 
+    UINT32                  EntryName, 
     ACPI_OBJECT_TYPE        Type, 
     NAME_TABLE_ENTRY        *PreviousEntry)
 {
@@ -530,7 +532,8 @@ NsInitializeEntry (
     
     /*  first or second pass load mode, NameTable valid   */
 
-    NewEntry->Name          = *(UINT32 *) EntryName;
+    NewEntry->DataType      = DESC_TYPE_NTE;
+    NewEntry->Name          = EntryName;
     NewEntry->ParentScope   = NameTable[0].ParentScope;
     NewEntry->ParentEntry   = NameTable[0].ParentEntry;
 
@@ -564,7 +567,7 @@ NsInitializeEntry (
          */
 
         DEBUG_PRINT (ACPI_INFO, ("[%4.4s] is a forward reference into the namespace\n",
-                        EntryName));
+                        &EntryName));
 
     }
 
@@ -592,8 +595,8 @@ NsInitializeEntry (
         NewEntry->Type = Type;
     }
 
-    DEBUG_PRINT (TRACE_NAMES, ("NsInitializeEntry: %.4s added to %p at %p\n", 
-                                EntryName, NameTable, NewEntry));
+    DEBUG_PRINT (TRACE_NAMES, ("NsInitializeEntry: %4.4s added to %p at %p\n", 
+                                &EntryName, NameTable, NewEntry));
     
     return_VOID;
 }
@@ -603,7 +606,7 @@ NsInitializeEntry (
  *
  * FUNCTION:    NsSearchAndEnter
  *
- * PARAMETERS:  *EntryName          - Ascii ACPI name to search for
+ * PARAMETERS:  EntryName           - Ascii ACPI name to search for (4 chars)
  *              *NameTable          - Starting table where search will begin
  *              InterpreterMode     - Add names only in MODE_LoadPassX.  Otherwise,
  *                                    search only.
@@ -624,7 +627,7 @@ NsInitializeEntry (
 
 ACPI_STATUS
 NsSearchAndEnter (
-    char                    *EntryName, 
+    UINT32                  EntryName, 
     NAME_TABLE_ENTRY        *NameTable,
     OPERATING_MODE          InterpreterMode, 
     ACPI_OBJECT_TYPE        Type, 
@@ -650,13 +653,10 @@ NsSearchAndEnter (
 
     /* Name must consist of printable characters */
 
-    if (!AmlGoodChar ((INT32) EntryName[0]) || 
-        !AmlGoodChar ((INT32) EntryName[1]) || 
-        !AmlGoodChar ((INT32) EntryName[2]) || 
-        !AmlGoodChar ((INT32) EntryName[3]))
+    if (!AmlGoodName (EntryName))
     {
-        DEBUG_PRINT (ACPI_ERROR, ("NsSearchAndEnter:  *** bad name %08lx *** \n", 
-                                    *(UINT32 *) EntryName));
+        DEBUG_PRINT (ACPI_ERROR, ("NsSearchAndEnter:  *** Bad char in name: %08lx *** \n", 
+                                    EntryName));
 
         return_ACPI_STATUS (AE_BAD_CHARACTER);
     }
@@ -701,8 +701,8 @@ NsSearchAndEnter (
 
     if (InterpreterMode == IMODE_Execute)
     {
-        DEBUG_PRINT (TRACE_NAMES, ("NsSearchAndEnter: %.4s Not found in %p [Not adding]\n", 
-                                    EntryName, NameTable));
+        DEBUG_PRINT (TRACE_NAMES, ("NsSearchAndEnter: %4.4s Not found in %p [Not adding]\n", 
+                                    &EntryName, NameTable));
     
         return_ACPI_STATUS (AE_NOT_FOUND);
     }
