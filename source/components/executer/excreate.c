@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: excreate - Named object creation
- *              $Revision: 1.78 $
+ *              $Revision: 1.79 $
  *
  *****************************************************************************/
 
@@ -208,11 +208,11 @@ AcpiExCreateEvent (
         goto Cleanup;
     }
 
-    /* Create the actual OS semaphore */
-
-    /* TBD: [Investigate] should be created with 0 or 1 units? */
-
-    Status = AcpiOsCreateSemaphore (ACPI_NO_UNIT_LIMIT, 1,
+    /* 
+     * Create the actual OS semaphore, with zero initial units -- meaning
+     * that the event is created in an unsignalled state
+     */
+    Status = AcpiOsCreateSemaphore (ACPI_NO_UNIT_LIMIT, 0,
                                     &ObjDesc->Event.Semaphore);
     if (ACPI_FAILURE (Status))
     {
