@@ -207,6 +207,16 @@ typedef struct ArgumentInfo
 #define EX_SINGLE_STEP          2
 
 
+void
+DbCreateExecutionThreads (
+    char                    *NumThreadsArg,
+    char                    *NumLoopsArg,
+    char                    *MethodNameArg);
+
+INT32
+DbMatchArgument (
+    char                    *UserArgument,
+    ARGUMENT_INFO           *Arguments);
 
 void
 DbDumpNamespaceByOwner (
@@ -320,7 +330,7 @@ DbDisplayResultObject (
 
 ACPI_STATUS
 DbDisplayStatistics (
-    void);
+    char                    *TypeArg);
 
 void
 DbSetMethodBreakpoint (

@@ -131,6 +131,7 @@
 
 
 
+
 /* Common interfaces */
 
 ACPI_STATUS
@@ -157,12 +158,13 @@ DsObjStackPopObject (
 /* dsregion - Op region support */
 
 ACPI_STATUS
-DsGetRegionData (
+DsGetRegionArguments (
     ACPI_OBJECT_INTERNAL    *RgnDesc);
 
 
 /* dsctrl - Parser/Interpreter interface, control stack routines */
 
+/*
 ACPI_CTRL_STATE *
 DsCreateControlState (void);
 
@@ -174,6 +176,7 @@ DsPushControlState (
 ACPI_CTRL_STATE *
 DsPopControlState (
     ACPI_WALK_STATE         *WalkState);
+*/
 
 ACPI_STATUS 
 DsExecBeginControlOp (
@@ -244,11 +247,11 @@ DsLoad2EndOp (
     ACPI_GENERIC_OP         *Op);
 
 
-/* dsmargs - method stack utilities */
+/* dsmthdat - method data (locals/args) */
 
 
 ACPI_STATUS
-DsMethodDataDeleteArgs (
+DsMethodDataDeleteAll (
     ACPI_WALK_STATE         *WalkState);
 
 BOOLEAN
@@ -271,14 +274,6 @@ DsMethodDataSetValue (
     UINT32                  Type,
     UINT32                  Index, 
     ACPI_OBJECT_INTERNAL    *ObjDesc); 
-
-ACPI_STATUS
-DsMethodDataPop (
-    void);
-
-ACPI_STATUS
-DsMethodDataPush (
-    ACPI_OBJECT_INTERNAL    **Params);
 
 ACPI_STATUS
 DsMethodDataDeleteValue (
@@ -316,6 +311,15 @@ ACPI_STATUS
 DsRestartControlMethod (
     ACPI_WALK_STATE         *WalkState,
     ACPI_OBJECT_INTERNAL    *ReturnDesc);
+
+ACPI_STATUS
+DsTerminateControlMethod (
+    ACPI_WALK_STATE         *WalkState);
+
+ACPI_STATUS
+DsBeginMethodExecution (
+    NAME_TABLE_ENTRY        *MethodEntry,
+    ACPI_OBJECT_INTERNAL    *ObjDesc);
 
 
 /* dsobj - Parser/Interpreter interface - object initialization and conversion */
@@ -464,6 +468,10 @@ DsResultStackClear (
 ACPI_WALK_STATE *
 DsGetCurrentWalkState (
     ACPI_WALK_LIST          *WalkList);
+
+void
+DsDeleteWalkStateCache (
+    void);
 
 
 
