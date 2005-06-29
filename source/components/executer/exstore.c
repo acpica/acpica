@@ -320,7 +320,7 @@ AmlExecStore (
             Status = AmlObjPushIfExec (MODE_Exec);
             if (AE_OK != Status)
             {
-                OsdFree (DestDesc);
+                CmFree (DestDesc);
                 DestDesc = NULL;
             }
             else
@@ -776,6 +776,7 @@ AmlExecStore (
                 DestDesc->Buffer.Sequence = AmlBufSeq ();
             }
 
+
             NsSetValue (TempHandle, DestDesc, DestDesc->Type);
 
             if (Stacked)
@@ -857,7 +858,7 @@ AmlExecStore (
 
     if (DeleteDestDesc)
     {
-        OsdFree (DeleteDestDesc);
+        CmFree (DeleteDestDesc);
         if (ObjStack[ObjStackTop] == DeleteDestDesc)
         {
             /* 

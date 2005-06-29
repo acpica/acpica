@@ -339,7 +339,7 @@ AmlGetRvalue (
             /* Convert indirect name ptr to direct name ptr */
             
             TempHandle = (*StackPtr)->Lvalue.Object;
-            OsdFree (*StackPtr);
+            CmFree (*StackPtr);
             (*StackPtr) = TempHandle;
             Status = AE_OK;
             break;
@@ -453,7 +453,7 @@ AmlGetRvalue (
 
         if ((Status = AmlGetFieldUnitValue (*StackPtr, ObjDesc)) != AE_OK)
         {
-            OsdFree (ObjDesc);
+            CmFree (ObjDesc);
             ObjDesc = NULL;
         }
         
@@ -475,7 +475,7 @@ AmlGetRvalue (
 
         if ((Status = AmlGetFieldUnitValue (*StackPtr, ObjDesc)) != AE_OK)
         {
-            OsdFree(ObjDesc);
+            CmFree(ObjDesc);
             ObjDesc = NULL;
         }
 
@@ -766,7 +766,7 @@ AmlGetRvalue (
 
                 default:
 
-                    OsdFree (ObjDesc);
+                    CmFree (ObjDesc);
                     DEBUG_PRINT (ACPI_ERROR, (
                             "AmlGetRvalue/Number: internal error - expected AML number, found %02x\n",
                             *(UINT8 *) ValDesc));
@@ -783,6 +783,7 @@ AmlGetRvalue (
 
 
         case TYPE_DefField:
+
 
             /* 
              * XXX - Implementation limitation: Fields are implemented as type
@@ -968,7 +969,7 @@ AmlGetRvalue (
 
             if ((Status = AmlGetFieldUnitValue (ValDesc, ObjDesc)) != AE_OK)
             {
-                OsdFree (ObjDesc);
+                CmFree (ObjDesc);
                 FUNCTION_STATUS_EXIT (Status);
                 return Status;
             }
