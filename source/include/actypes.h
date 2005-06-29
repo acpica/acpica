@@ -140,6 +140,9 @@ typedef unsigned char   UINT8_BIT;
 typedef unsigned short  UINT16_BIT;
 typedef unsigned long   UINT32_BIT;
 
+typedef int             BIT32;
+typedef short int       BIT16;
+typedef char            BIT8;
 
 /* 
  * Data manipulation macros 
@@ -354,5 +357,12 @@ typedef struct
 } FIND_CONTEXT;
 
 
+typedef struct
+{
+    nte             *PreviousEntry;
+    nte             *NameTbl;
+    UINT32          Position;
+    BOOLEAN         TableFull;
+} NS_SEARCH_DATA;
 
 #endif /* DATATYPES_H */
