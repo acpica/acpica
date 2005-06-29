@@ -117,7 +117,7 @@
 
 #include <acpi.h>
 #include <parser.h>
-#include <psopcode.h>
+#include <amlcode.h>
 #include <namespace.h>
 
 #define _COMPONENT          PARSER
@@ -272,7 +272,7 @@ PsGetNextNamestring (
         break;
 
 
-    case AML_DUALNAMEPATH:
+    case AML_DualNamePrefix:
 
         /* two name segments */
 
@@ -280,7 +280,7 @@ PsGetNextNamestring (
         break;
 
 
-    case AML_MULTINAMEPATH:
+    case AML_MultiNamePrefixOp:
 
         /* multiple name segments */
 
@@ -336,7 +336,6 @@ PsGetNextNamepath (
     ACPI_GENERIC_OP         *Count;
     ACPI_GENERIC_OP         *Name;
     ACPI_STATUS             Status;
-    BOOLEAN                 IsMethod = FALSE;
 
 
 
@@ -360,13 +359,13 @@ PsGetNextNamepath (
          * Lookup the name in the parsed namespace 
          */
 
-        MethodOp = PsFind (PsGetParentScope (ParserState), Path, AML_METHOD, 0);
+        MethodOp = PsFind (PsGetParentScope (ParserState), Path, AML_MethodOp, 0);
         if (MethodOp)
         {
             DEBUG_PRINT (TRACE_PARSE, ("PsGetNextNamepath: Found a method while parsed namespace still valid!\n"));
 
             Count = PsGetArg (MethodOp, 0);
-            if (Count && Count->Opcode == AML_BYTECONST)
+            if (Count && Count->Opcode == AML_ByteOp)
             {
                 Name = PsAllocOp (AML_NAMEPATH);
                 if (Name)
@@ -464,7 +463,7 @@ PsGetNextSimpleArg (
 
     case AML_BYTEDATA_ARG:
 
-        PsInitOp (Arg, AML_BYTECONST);
+        PsInitOp (Arg, AML_ByteOp);
         Arg->Value.Integer = (UINT32) GET8 (ParserState->Aml);
         ParserState->Aml++;
         break;
@@ -472,7 +471,7 @@ PsGetNextSimpleArg (
 
     case AML_WORDDATA_ARG:
 
-        PsInitOp (Arg, AML_WORDCONST);
+        PsInitOp (Arg, AML_WordOp);
         Arg->Value.Integer = (UINT32) GET16 (ParserState->Aml);
         ParserState->Aml += 2;
         break;
@@ -480,7 +479,7 @@ PsGetNextSimpleArg (
 
     case AML_DWORDDATA_ARG:
 
-        PsInitOp (Arg, AML_DWORDCONST);
+        PsInitOp (Arg, AML_DWordOp);
         Arg->Value.Integer = (UINT32) GET32 (ParserState->Aml);
         ParserState->Aml += 4;
         break;
@@ -488,7 +487,7 @@ PsGetNextSimpleArg (
 
     case AML_ASCIICHARLIST_ARG:
 
-        PsInitOp (Arg, AML_STRING);
+        PsInitOp (Arg, AML_StringOp);
         Arg->Value.String = (char*) ParserState->Aml;
 
         while (GET8 (ParserState->Aml) != '\0')
@@ -649,7 +648,7 @@ PsGetNextArg (
 
         /* constants, strings, and namestrings are all the same size */
 
-        Arg = PsAllocOp (AML_BYTECONST);
+        Arg = PsAllocOp (AML_ByteOp);
         if (Arg)
         {
             PsGetNextSimpleArg (ParserState, ArgType, Arg);
