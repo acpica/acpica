@@ -579,8 +579,8 @@ AcpiPsNextParseState (
              * execution.  Go back to the start of the loop and reevaluate the
              * predicate.
              */
-//            WalkState->ControlState->Common.State = 
-//                    CONTROL_PREDICATE_EXECUTING;
+/*            WalkState->ControlState->Common.State = 
+                    CONTROL_PREDICATE_EXECUTING;*/
 
         /* TBD: How to handle a break within a while. */
         /* This code attempts it */
@@ -1317,8 +1317,8 @@ AcpiPsParseAml (
          * there's lots of cleanup to do
          */
 
-        if (WalkState->MethodDesc) // &&
-//            WalkState->MethodDesc->Method.ParserOp)
+        if (WalkState->MethodDesc)  /*&&
+            WalkState->MethodDesc->Method.ParserOp)*/
         {
             AcpiDsTerminateControlMethod (WalkState);
         }
