@@ -132,7 +132,16 @@
 
 ACPI_STATUS
 AcpiInitialize (
-    char                    *AcpiFile);
+    void);
+
+ACPI_STATUS
+AcpiTerminate (
+    void);
+
+ACPI_STATUS
+AcpiGetSystemInfo(
+    ACPI_BUFFER             *RetBuffer);
+
 
 
 /*
@@ -148,12 +157,12 @@ AcpiEvaluateObject (
 
 
 /*
- * Namespace and enumeration interfaces
+ * ACPI table interfaces
  */
 
 ACPI_STATUS
-AcpiLoadNamespace (
-    void);
+AcpiLoadTables (
+    ACPI_BUFFER             *TableBuffer);
 
 ACPI_STATUS
 AcpiLoadTable (
@@ -165,19 +174,25 @@ AcpiUnloadTable (
     ACPI_HANDLE             TableHandle);
 
 ACPI_STATUS
-AcpiLoadTableFromFile (
-    ACPI_STRING             *FileName,
-    ACPI_HANDLE             *OutTableHandle);
+AcpiGetTable (
+    ACPI_TABLE_TYPE         TableType,
+    ACPI_BUFFER             *RetBuffer);
 
 ACPI_STATUS
 AcpiGetTableHeader (
     ACPI_TABLE_TYPE         TableType,
     UINT8                   *OutTableHeader);
 
+
+
+/*
+ * Namespace and enumeration interfaces
+ */
+
+
 ACPI_STATUS
-AcpiGetTable (
-    ACPI_TABLE_TYPE         TableType,
-    ACPI_BUFFER             *RetBuffer);
+AcpiLoadNamespace (
+    void);
 
 ACPI_STATUS
 AcpiNameToHandle (
@@ -329,11 +344,6 @@ AcpiGetIRQRoutingTable  (
     ACPI_HANDLE             BusDeviceHandle, 
     ACPI_BUFFER             *RetBuffer);
 
-ACPI_STATUS
-AcpiGetSystemInfo(
-    ACPI_BUFFER             *RetBuffer);
-
-
 /*
  * Hardware (ACPI device) interfaces
  */
@@ -344,10 +354,6 @@ AcpiSetMode (
 
 INT32
 AcpiGetMode (
-    void);
-
-INT32
-AcpiGetModeCapabilities (
     void);
 
 ACPI_STATUS
