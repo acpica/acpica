@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: cmxface - External interfaces for "global" ACPI functions
- *              $Revision: 1.43 $
+ *              $Revision: 1.56 $
  *
  *****************************************************************************/
 
@@ -9,8 +9,8 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, Intel Corp.  All rights
- * reserved.
+ * Some or all of this work - Copyright (c) 1999, 2000, Intel Corp.
+ * All rights reserved.
  *
  * 2. License
  *
@@ -132,7 +132,7 @@
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiInitialize
+ * FUNCTION:    AcpiInitializeSubsystem
  *
  * PARAMETERS:  None
  *
@@ -144,12 +144,13 @@
  ******************************************************************************/
 
 ACPI_STATUS
-AcpiInitialize (ACPI_INIT_DATA *InitData)
+AcpiInitializeSubsystem (
+    void)
 {
     ACPI_STATUS             Status;
 
 
-    FUNCTION_TRACE ("AcpiInitialize");
+    FUNCTION_TRACE ("AcpiInitializeSubsystem");
 
     DEBUG_PRINT_RAW (ACPI_OK,
         ("ACPI Subsystem version [%s]\n", ACPI_CA_VERSION));
@@ -158,16 +159,15 @@ AcpiInitialize (ACPI_INIT_DATA *InitData)
 
     /* Initialize all globals used by the subsystem */
 
-    AcpiCmInitGlobals (InitData);
+    AcpiCmInitGlobals ();
 
     /* Initialize the OS-Dependent layer */
 
     Status = AcpiOsInitialize ();
     if (ACPI_FAILURE (Status))
     {
-        DEBUG_PRINT (ACPI_ERROR,
-            ("OSD failed to initialize, %s\n", AcpiCmFormatException (Status)));
-        REPORT_ERROR ("OSD Initialization Failure");
+        REPORT_ERROR (("OSD failed to initialize, %s\n",
+            AcpiCmFormatException (Status)));
         return_ACPI_STATUS (Status);
     }
 
@@ -176,15 +176,167 @@ AcpiInitialize (ACPI_INIT_DATA *InitData)
     Status = AcpiCmMutexInitialize ();
     if (ACPI_FAILURE (Status))
     {
-        DEBUG_PRINT (ACPI_ERROR,
-            ("Global mutex creation failure, %s\n", AcpiCmFormatException (Status)));
-        REPORT_ERROR ("Global Mutex Initialization Failure");
+        REPORT_ERROR (("Global mutex creation failure, %s\n",
+            AcpiCmFormatException (Status)));
         return_ACPI_STATUS (Status);
     }
+
+    /*
+     * Initialize the namespace manager and
+     * the root of the namespace tree
+     */
+
+    Status = AcpiNsRootInitialize ();
+    if (ACPI_FAILURE (Status))
+    {
+        REPORT_ERROR (("Namespace initialization failure, %s\n",
+            AcpiCmFormatException (Status)));
+        return_ACPI_STATUS (Status);
+    }
+
 
     /* If configured, initialize the AML debugger */
 
     DEBUGGER_EXEC (AcpiDbInitialize ());
+
+    return_ACPI_STATUS (Status);
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiEnableSubsystem
+ *
+ * PARAMETERS:  Flags           - Init/enable Options
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Completes the subsystem initialization including hardware.
+ *              Puts system into ACPI mode if it isn't already.
+ *
+ ******************************************************************************/
+
+ACPI_STATUS
+AcpiEnableSubsystem (
+    UINT32                  Flags)
+{
+    ACPI_STATUS             Status = AE_OK;
+
+
+    FUNCTION_TRACE ("AcpiEnableSubsystem");
+
+
+    /* Sanity check the FADT for valid values */
+
+    Status = AcpiCmValidateFadt ();
+    if (ACPI_FAILURE (Status))
+    {
+        return_ACPI_STATUS (Status);
+    }
+
+    /*
+     * Install the default OpRegion handlers.  These are
+     * installed unless other handlers have already been
+     * installed via the InstallAddressSpaceHandler interface
+     */
+
+    if (!(Flags & ACPI_NO_ADDRESS_SPACE_INIT))
+    {
+        DEBUG_PRINT (TRACE_EXEC, ("[Init] Installing default address space handlers\n"));
+
+        Status = AcpiEvInstallDefaultAddressSpaceHandlers ();
+        if (ACPI_FAILURE (Status))
+        {
+            return_ACPI_STATUS (Status);
+        }
+    }
+
+    /*
+     * We must initialize the hardware before we can enable ACPI.
+     */
+
+    if (!(Flags & ACPI_NO_HARDWARE_INIT))
+    {
+        DEBUG_PRINT (TRACE_EXEC, ("[Init] Initializing ACPI hardware\n"));
+
+        Status = AcpiHwInitialize ();
+        if (ACPI_FAILURE (Status))
+        {
+            return_ACPI_STATUS (Status);
+        }
+    }
+
+    /*
+     * Enable ACPI on this platform
+     */
+
+    if (!(Flags & ACPI_NO_ACPI_ENABLE))
+    {
+        DEBUG_PRINT (TRACE_EXEC, ("[Init] Going into ACPI mode\n"));
+
+        Status = AcpiEnable ();
+        if (ACPI_FAILURE (Status))
+        {
+            /* TBD: workaround. Old Lions don't enable properly */
+            DEBUG_PRINT(ACPI_WARN, ("AcpiEnable failed.\n"));
+            /*return_ACPI_STATUS (Status);*/
+        }
+    }
+
+    /*
+     * Note:
+     * We must have the hardware AND events initialized before we can execute
+     * ANY control methods SAFELY.  Any control method can require ACPI hardware
+     * support, so the hardware MUST be initialized before execution!
+     */
+
+    if (!(Flags & ACPI_NO_EVENT_INIT))
+    {
+        DEBUG_PRINT (TRACE_EXEC, ("[Init] Initializing ACPI events\n"));
+
+        Status = AcpiEvInitialize ();
+        if (ACPI_FAILURE (Status))
+        {
+            return_ACPI_STATUS (Status);
+        }
+    }
+
+
+    /*
+     * Initialize all device objects in the namespace
+     * This runs the _STA, _INI, and _HID methods, and detects
+     * the PCI root bus(es)
+     */
+
+    if (!(Flags & ACPI_NO_DEVICE_INIT))
+    {
+        DEBUG_PRINT (TRACE_EXEC, ("[Init] Initializing ACPI Devices\n"));
+
+        Status = AcpiNsInitializeDevices (Flags & ACPI_NO_PCI_INIT);
+        if (ACPI_FAILURE (Status))
+        {
+            return_ACPI_STATUS (Status);
+        }
+    }
+
+
+    /*
+     * Initialize the objects that remain unitialized.  This
+     * runs the executable AML that is part of the declaration of OpRegions
+     * and Fields.
+     */
+
+    if (!(Flags & ACPI_NO_OBJECT_INIT))
+    {
+        DEBUG_PRINT (TRACE_EXEC, ("[Init] Initializing ACPI Objects\n"));
+
+        Status = AcpiNsInitializeObjects ();
+        if (ACPI_FAILURE (Status))
+        {
+            return_ACPI_STATUS (Status);
+        }
+    }
+
 
     return_ACPI_STATUS (Status);
 }
@@ -210,7 +362,7 @@ AcpiTerminate (void)
 
     /* Terminate the AML Debuger if present */
 
-    AcpiGbl_DbTerminateThreads = TRUE;
+    DEBUGGER_EXEC(AcpiGbl_DbTerminateThreads = TRUE);
 
     /* TBD: [Investigate] This is no longer needed?*/
 /*    AcpiCmReleaseMutex (ACPI_MTX_DEBUG_CMD_READY); */
@@ -314,7 +466,7 @@ AcpiGetSystemInfo (
     /* Current status of the ACPI tables, per table type */
 
     InfoPtr->NumTableTypes = NUM_ACPI_TABLES;
-    for (i = 0; i < NUM_ACPI_TABLES; i++);
+    for (i = 0; i < NUM_ACPI_TABLES; i++)
     {
         InfoPtr->TableInfo[i].Count = AcpiGbl_AcpiTables[i].Count;
     }

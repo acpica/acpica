@@ -1,6 +1,7 @@
 /******************************************************************************
  *
  * Name: acdebug.h - ACPI/AML debugger
+ *       $Revision: 1.38 $
  *
  *****************************************************************************/
 
@@ -8,8 +9,8 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, Intel Corp.  All rights
- * reserved.
+ * Some or all of this work - Copyright (c) 1999, 2000, Intel Corp.
+ * All rights reserved.
  *
  * 2. License
  *
@@ -155,7 +156,7 @@ extern UINT32                   NumAliases;
 extern UINT32                   NumDevices;
 extern UINT32                   NumFieldDefs;
 extern UINT32                   NumThermalZones;
-extern UINT32                   NumNamedObjects;
+extern UINT32                   NumNodes;
 extern UINT32                   NumGrammarElements;
 extern UINT32                   NumMethodElements ;
 extern UINT32                   NumMutexes;
@@ -217,7 +218,7 @@ AcpiDbInitialize (
 ACPI_STATUS
 AcpiDbSingleStep (
     ACPI_WALK_STATE         *WalkState,
-    ACPI_GENERIC_OP         *Op,
+    ACPI_PARSE_OBJECT       *Op,
     UINT8                   OpType);
 
 
@@ -239,16 +240,16 @@ void
 AcpiDbSetMethodBreakpoint (
     NATIVE_CHAR             *Location,
     ACPI_WALK_STATE         *WalkState,
-    ACPI_GENERIC_OP         *Op);
+    ACPI_PARSE_OBJECT       *Op);
 
 void
 AcpiDbSetMethodCallBreakpoint (
-    ACPI_GENERIC_OP         *Op);
+    ACPI_PARSE_OBJECT       *Op);
 
 void
 AcpiDbDisassembleAml (
     NATIVE_CHAR             *Statements,
-    ACPI_GENERIC_OP         *Op);
+    ACPI_PARSE_OBJECT       *Op);
 
 void
 AcpiDbDumpNamespace (
@@ -295,7 +296,8 @@ AcpiDbFindReferences (
 
 void
 AcpiDbDisplayOp (
-    ACPI_GENERIC_OP         *origin,
+    ACPI_WALK_STATE         *WalkState,
+    ACPI_PARSE_OBJECT       *Origin,
     UINT32                  NumOpcodes);
 
 void
@@ -304,11 +306,16 @@ AcpiDbDisplayNamestring (
 
 void
 AcpiDbDisplayPath (
-    ACPI_GENERIC_OP         *Op);
+    ACPI_PARSE_OBJECT       *Op);
 
 void
 AcpiDbDisplayOpcode (
-    ACPI_GENERIC_OP         *Op);
+    ACPI_WALK_STATE         *WalkState,
+    ACPI_PARSE_OBJECT       *Op);
+
+void
+AcpiDbDecodeInternalObject (
+    ACPI_OPERAND_OBJECT     *ObjDesc);
 
 
 /*
@@ -318,7 +325,7 @@ AcpiDbDisplayOpcode (
 
 void
 AcpiDbDisplayMethodInfo (
-    ACPI_GENERIC_OP         *Op);
+    ACPI_PARSE_OBJECT       *Op);
 
 void
 AcpiDbDecodeAndDisplayObject (
@@ -327,7 +334,7 @@ AcpiDbDecodeAndDisplayObject (
 
 void
 AcpiDbDisplayResultObject (
-    ACPI_OBJECT_INTERNAL    *ObjDesc,
+    ACPI_OPERAND_OBJECT     *ObjDesc,
     ACPI_WALK_STATE         *WalkState);
 
 ACPI_STATUS
@@ -336,7 +343,7 @@ AcpiDbDisplayAllMethods (
 
 void
 AcpiDbDisplayInternalObject (
-    ACPI_OBJECT_INTERNAL    *ObjDesc,
+    ACPI_OPERAND_OBJECT     *ObjDesc,
     ACPI_WALK_STATE         *WalkState);
 
 void
@@ -357,7 +364,7 @@ AcpiDbDisplayCallingTree (
 
 void
 AcpiDbDisplayArgumentObject (
-    ACPI_OBJECT_INTERNAL    *ObjDesc,
+    ACPI_OPERAND_OBJECT     *ObjDesc,
     ACPI_WALK_STATE         *WalkState);
 
 
@@ -425,7 +432,7 @@ ACPI_STATUS
 AcpiDbCommandDispatch (
     NATIVE_CHAR             *InputBuffer,
     ACPI_WALK_STATE         *WalkState,
-    ACPI_GENERIC_OP         *Op);
+    ACPI_PARSE_OBJECT       *Op);
 
 void
 AcpiDbExecuteThread (
@@ -434,7 +441,7 @@ AcpiDbExecuteThread (
 ACPI_STATUS
 AcpiDbUserCommands (
     NATIVE_CHAR             Prompt,
-    ACPI_GENERIC_OP         *Op);
+    ACPI_PARSE_OBJECT       *Op);
 
 
 /*
@@ -443,7 +450,7 @@ AcpiDbUserCommands (
 
 void
 AcpiDbGenerateStatistics (
-    ACPI_GENERIC_OP         *Root,
+    ACPI_PARSE_OBJECT       *Root,
     BOOLEAN                 IsMethod);
 
 
@@ -476,9 +483,9 @@ AcpiDbPrepNamestring (
 
 ACPI_STATUS
 AcpiDbSecondPassParse (
-    ACPI_GENERIC_OP         *Root);
+    ACPI_PARSE_OBJECT       *Root);
 
-ACPI_NAMED_OBJECT*
+ACPI_NAMESPACE_NODE *
 AcpiDbLocalNsLookup (
     NATIVE_CHAR             *Name);
 

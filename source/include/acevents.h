@@ -1,6 +1,7 @@
 /******************************************************************************
  *
  * Name: acevents.h - Event subcomponent prototypes and defines
+ *       $Revision: 1.61 $
  *
  *****************************************************************************/
 
@@ -8,8 +9,8 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, Intel Corp.  All rights
- * reserved.
+ * Some or all of this work - Copyright (c) 1999, 2000, Intel Corp.
+ * All rights reserved.
  *
  * 2. License
  *
@@ -117,6 +118,11 @@
 #define __ACEVENTS_H__
 
 
+ACPI_STATUS
+AcpiEvInitialize (
+    void);
+
+
 /*
  * AcpiEvfixed - Fixed event handling
  */
@@ -192,9 +198,9 @@ AcpiEvInstallDefaultAddressSpaceHandlers (
 
 ACPI_STATUS
 AcpiEvAddressSpaceDispatch (
-    ACPI_OBJECT_INTERNAL   *RegionObj,
+    ACPI_OPERAND_OBJECT    *RegionObj,
     UINT32                  Function,
-    UINT32                  Address,
+    ACPI_PHYSICAL_ADDRESS   Address,
     UINT32                  BitWidth,
     UINT32                  *Value);
 
@@ -208,13 +214,13 @@ AcpiEvAddrHandlerHelper (
 
 void
 AcpiEvDisassociateRegionFromHandler(
-    ACPI_OBJECT_INTERNAL   *RegionObj);
+    ACPI_OPERAND_OBJECT    *RegionObj);
 
 
 ACPI_STATUS
 AcpiEvAssociateRegionAndHandler (
-    ACPI_OBJECT_INTERNAL    *HandlerObj,
-    ACPI_OBJECT_INTERNAL    *RegionObj,
+    ACPI_OPERAND_OBJECT     *HandlerObj,
+    ACPI_OPERAND_OBJECT     *RegionObj,
     BOOLEAN                 AcpiNsIsLocked);
 
 
@@ -252,7 +258,7 @@ AcpiEvDefaultRegionSetup (
 
 ACPI_STATUS
 AcpiEvInitializeRegion (
-    ACPI_OBJECT_INTERNAL    *RegionObj,
+    ACPI_OPERAND_OBJECT     *RegionObj,
     BOOLEAN                 AcpiNsLocked);
 
 
