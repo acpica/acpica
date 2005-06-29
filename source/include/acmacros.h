@@ -204,32 +204,39 @@
  * Fast power-of-two math macros for non-optimized compilers
  */
 
-#define DIV_2(a)                        ((a)>>1)
-#define MUL_2(a)                        ((a)<<1)
-#define MOD_2(a)                        ((a)&0x01)
+#define _DIV(value,PowerOf2)            ((value) >> (PowerOf2))
+#define _MUL(value,PowerOf2)            ((value) << (PowerOf2))
+#define _MOD(value,Divisor)             ((value) & ((Divisor) -1))
 
-#define DIV_4(a)                        ((a)>>2)
-#define MUL_4(a)                        ((a)<<2)
-#define MOD_4(a)                        ((a)&0x03)
+#define DIV_2(a)                        _DIV(a,1)
+#define MUL_2(a)                        _MUL(a,1)
+#define MOD_2(a)                        _MOD(a,2)
 
-#define DIV_8(a)                        ((a)>>3)
-#define MUL_8(a)                        ((a)<<3)
-#define MOD_8(a)                        ((a)&0x07)
+#define DIV_4(a)                        _DIV(a,2)
+#define MUL_4(a)                        _MUL(a,2)
+#define MOD_4(a)                        _MOD(a,4)
 
-#define DIV_16(a)                       ((a)>>4)
-#define MUL_16(a)                       ((a)<<4)
-#define MOD_16(a)                       ((a)&0x0F)
+#define DIV_8(a)                        _DIV(a,3)
+#define MUL_8(a)                        _MUL(a,3)
+#define MOD_8(a)                        _MOD(a,8)
+
+#define DIV_16(a)                       _DIV(a,4)
+#define MUL_16(a)                       _MUL(a,4)
+#define MOD_16(a)                       _MOD(a,16)
 
 
 /*
- * Rounding macros
+ * Rounding macros (Power of two boundaries only)
  */
 
-#define ROUND_DOWN_TO_32_BITS(a)        ((a) & (~3))
-#define ROUND_DOWN_TO_NATIVE_WORD(a)    ((a) & (~(ALIGNED_ADDRESS_BOUNDARY-1)))
+#define ROUND_DOWN(value,boundary)      ((value) & (~((boundary)-1)))
+#define ROUND_UP(value,boundary)        (((value) + ((boundary)-1)) & (~((boundary)-1)))
 
-#define ROUND_UP_TO_32BITS(a)           (((a)+3) & (~3))
-#define ROUND_UP_TO_NATIVE_WORD(a)      (((a)+(ALIGNED_ADDRESS_BOUNDARY-1)) & (~(ALIGNED_ADDRESS_BOUNDARY-1)))
+#define ROUND_DOWN_TO_32_BITS(a)        ROUND_DOWN(a,4)
+#define ROUND_DOWN_TO_NATIVE_WORD(a)    ROUND_DOWN(a,ALIGNED_ADDRESS_BOUNDARY)
+
+#define ROUND_UP_TO_32BITS(a)           ROUND_UP(a,4)
+#define ROUND_UP_TO_NATIVE_WORD(a)      ROUND_UP(a,ALIGNED_ADDRESS_BOUNDARY)
 
 
 

@@ -138,7 +138,10 @@
 
 /* Definitions of the predefined namespace names  */
 
-#define NS_ROOT                 "/   "
+#define ACPI_UNKNOWN_NAME       (UINT32) 0x3F3F3F3F     /* Unknown name is  "????" */
+#define ACPI_ROOT_NAME          (UINT32) 0x2F202020     /* Root name is     "/   " */
+#define ACPI_SYS_BUS_NAME       (UINT32) 0x5F53425F     /* Sys bus name is  "_SB_" */
+
 #define NS_ROOT_PATH            "/"
 #define NS_SYSTEM_BUS           "_SB_"
 
@@ -148,6 +151,60 @@
 #define NS_NO_UPSEARCH          0
 #define NS_SEARCH_PARENT        0x01
 #define NS_DONT_OPEN_SCOPE      0x02
+#define NS_NO_PEER_SEARCH       0x04
+
+#define NS_WALK_UNLOCK          TRUE
+#define NS_WALK_NO_UNLOCK       FALSE
+
+
+
+
+
+ACPI_STATUS
+NsWalkNamespace (
+    OBJECT_TYPE_INTERNAL    Type, 
+    ACPI_HANDLE             StartObject, 
+    UINT32                  MaxDepth,
+    BOOLEAN                 UnlockBeforeCallback,
+    WALK_CALLBACK           UserFunction, 
+    void                    *Context, 
+    void                    **ReturnValue);
+
+
+NAME_TABLE_ENTRY *
+NsGetNextObject (
+    OBJECT_TYPE_INTERNAL    Type, 
+    NAME_TABLE_ENTRY        *Parent, 
+    NAME_TABLE_ENTRY        *Child);
+
+
+ACPI_STATUS
+NsDeleteNamespaceByOwner (
+    UINT16                  TableId);
+
+void
+NsFreeTableEntry (
+    NAME_TABLE_ENTRY        *Entry);
+
+
+
+/* Namespace loading - nsload */
+
+ACPI_STATUS
+NsParseTable (
+    ACPI_TABLE_DESC         *TableDesc,
+    NAME_TABLE_ENTRY        *Scope);
+
+ACPI_STATUS
+NsLoadTable (
+    ACPI_TABLE_DESC         *TableDesc,
+    NAME_TABLE_ENTRY        *Entry);
+
+ACPI_STATUS
+NsLoadTableByType (
+    ACPI_TABLE_TYPE         TableType);
+
+
 
 /*
  * Top-level namespace access - nsaccess
@@ -155,16 +212,17 @@
 
 
 ACPI_STATUS
-NsSetup (
+NsRootInitialize (
     void);
 
 ACPI_STATUS
 NsLookup (
-    NAME_TABLE_ENTRY        *PrefixEntry,
+    ACPI_GENERIC_STATE      *ScopeInfo,
     char                    *Name, 
-    ACPI_OBJECT_TYPE        Type, 
-    OPERATING_MODE          LoadMode,
-    UINT32                  Flags,
+    OBJECT_TYPE_INTERNAL    Type, 
+    OPERATING_MODE          InterpreterMode,
+	UINT32					Flags,
+    ACPI_WALK_STATE			*WalkState,
     NAME_TABLE_ENTRY        **RetEntry);
 
 
@@ -177,8 +235,8 @@ NsAllocateNameTable (
     INT32                   NteEntries);
 
 ACPI_STATUS
-NsDeleteNamespace (
-    ACPI_HANDLE             ParentHandle);
+NsDeleteNamespaceSubtree (
+    NAME_TABLE_ENTRY        *ParentHandle);
 
 void
 NsDetachObject (
@@ -229,8 +287,9 @@ NsDumpRootDevices (
 
 void
 NsDumpObjects (
-    ACPI_OBJECT_TYPE        Type, 
-    INT32                   MaxDepth, 
+    OBJECT_TYPE_INTERNAL    Type, 
+    UINT32                  MaxDepth, 
+    UINT32                  OwnderId,
     ACPI_HANDLE             StartHandle);
 
 
@@ -290,7 +349,7 @@ NsExistDownstreamSibling (
 
 INT32
 NsOpensScope (
-    ACPI_OBJECT_TYPE        Type);
+    OBJECT_TYPE_INTERNAL    Type);
 
 char *
 NsNameOfScope (
@@ -298,7 +357,7 @@ NsNameOfScope (
 
 char *
 NsNameOfCurrentScope (
-    void);
+    ACPI_WALK_STATE         *WalkState);
 
 ACPI_STATUS
 NsHandleToPathname (
@@ -352,7 +411,7 @@ ACPI_STATUS
 NsAttachObject (
     ACPI_HANDLE             ObjHandle, 
     ACPI_HANDLE             Value, 
-    UINT8                   ValTyp);
+    OBJECT_TYPE_INTERNAL    Type);
 
 
 void *
@@ -375,9 +434,10 @@ NsFindAttachedObject (
 ACPI_STATUS
 NsSearchAndEnter (
     UINT32                  EntryName, 
+    ACPI_WALK_STATE			*WalkState,
     NAME_TABLE_ENTRY        *NameTable,
-    OPERATING_MODE          LoadMode, 
-    ACPI_OBJECT_TYPE        Type, 
+    OPERATING_MODE          InterpreterMode, 
+    OBJECT_TYPE_INTERNAL    Type, 
     UINT32                  Flags,
     NAME_TABLE_ENTRY        **RetEntry);
 
@@ -388,34 +448,13 @@ NsInitializeTable (
     NAME_TABLE_ENTRY        *ParentEntry);
 
 ACPI_STATUS
-NsSearchOnly (
+NsSearchOneScope (
     UINT32                  EntryName, 
     NAME_TABLE_ENTRY        *NameTable, 
-    ACPI_OBJECT_TYPE        Type, 
+    OBJECT_TYPE_INTERNAL    Type, 
     NAME_TABLE_ENTRY        **RetEntry, 
     NS_SEARCH_DATA          *RetInfo);
 
-
-/*
- * Scope Stack manipulation - nsstack
- */
-
-ACPI_STATUS
-NsScopeStackPush (
-    NAME_TABLE_ENTRY        *NewScope, 
-    ACPI_OBJECT_TYPE        Type);
-
-ACPI_STATUS
-NsScopeStackPushEntry (
-    ACPI_HANDLE             NewScope);
-
-INT32
-NsScopeStackPop (
-    ACPI_OBJECT_TYPE        Type);
-
-void
-NsScopeStackClear (
-    void);
 
 /*
  * Utility functions - nsutils
@@ -429,7 +468,7 @@ BOOLEAN
 NsValidPathSeparator (
     char                    Sep);
 
-ACPI_OBJECT_TYPE
+OBJECT_TYPE_INTERNAL
 NsGetType (
     ACPI_HANDLE             ObjHandle);
 
@@ -439,7 +478,7 @@ NsGetAttachedObject (
 
 INT32
 NsLocal (
-    ACPI_OBJECT_TYPE        Type);
+    OBJECT_TYPE_INTERNAL    Type);
 
 ACPI_STATUS
 NsInternalizeName (
