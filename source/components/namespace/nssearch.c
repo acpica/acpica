@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: nssearch - Namespace search
- *              $Revision: 1.98 $
+ *              $Revision: 1.101 $
  *
  ******************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2003, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2004, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -191,13 +191,20 @@ AcpiNsSearchNode (
 
         if (NextNode->Name.Integer == TargetName)
         {
+            /* Resolve a control method alias if any */
+
+            if (AcpiNsGetType (NextNode) == ACPI_TYPE_LOCAL_METHOD_ALIAS)
+            {
+                NextNode = ACPI_CAST_PTR (ACPI_NAMESPACE_NODE, NextNode->Object);
+            }
+
             /*
              * Found matching entry.
              */
             ACPI_DEBUG_PRINT ((ACPI_DB_NAMES,
                 "Name [%4.4s] (%s) %p found in scope [%4.4s] %p\n",
                 (char *) &TargetName, AcpiUtGetTypeName (NextNode->Type),
-                NextNode, Node->Name.Ascii, Node));
+                NextNode, AcpiUtGetNodeName (Node), Node));
 
             *ReturnNode = NextNode;
             return_ACPI_STATUS (AE_OK);
@@ -224,7 +231,7 @@ AcpiNsSearchNode (
     ACPI_DEBUG_PRINT ((ACPI_DB_NAMES,
         "Name [%4.4s] (%s) not found in search in scope [%4.4s] %p first child %p\n",
         (char *) &TargetName, AcpiUtGetTypeName (Type),
-        Node->Name.Ascii, Node, Node->Child));
+        AcpiUtGetNodeName (Node), Node, Node->Child));
 
     return_ACPI_STATUS (AE_NOT_FOUND);
 }
