@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: tbutils - Table manipulation utilities
- *              $Revision: 1.27 $
+ *              $Revision: 1.31 $
  *
  *****************************************************************************/
 
@@ -164,7 +164,7 @@ AcpiTbHandleToObject (
     }
 
 
-    DEBUG_PRINT (ACPI_ERROR, ("TableId=0x%X does not exist\n", TableId));
+    DEBUG_PRINT (ACPI_ERROR, ("TableId=%X does not exist\n", TableId));
     return (AE_BAD_PARAMETER);
 }
 
@@ -296,7 +296,7 @@ AcpiTbValidateTableHeader (
             ("Table signature at %p [%X] has invalid characters\n",
             TableHeader, &Signature));
 
-        REPORT_WARNING ("Invalid table signature found");
+        REPORT_WARNING (("Invalid table signature found\n"));
         DUMP_BUFFER (TableHeader, sizeof (ACPI_TABLE_HEADER));
         return (AE_BAD_SIGNATURE);
     }
@@ -310,7 +310,7 @@ AcpiTbValidateTableHeader (
             ("Invalid length in table header %p name %4.4s\n",
             TableHeader, &Signature));
 
-        REPORT_WARNING ("Invalid table header length found");
+        REPORT_WARNING (("Invalid table header length found\n"));
         DUMP_BUFFER (TableHeader, sizeof (ACPI_TABLE_HEADER));
         return (AE_BAD_HEADER);
     }
@@ -337,7 +337,7 @@ AcpiTbValidateTableHeader (
 
 ACPI_STATUS
 AcpiTbMapAcpiTable (
-    void                    *PhysicalAddress,
+    ACPI_PHYSICAL_ADDRESS   PhysicalAddress,
     UINT32                  *Size,
     void                    **LogicalAddress)
 {
@@ -392,7 +392,7 @@ AcpiTbMapAcpiTable (
     }
 
     DEBUG_PRINT (ACPI_INFO,
-        ("Mapped memory for ACPI table, length=%d(0x%X) at %p\n",
+        ("Mapped memory for ACPI table, length=%d(%X) at %p\n",
         TableSize, TableSize, Table));
 
     *Size = TableSize;
@@ -419,7 +419,7 @@ ACPI_STATUS
 AcpiTbVerifyTableChecksum (
     ACPI_TABLE_HEADER       *TableHeader)
 {
-    UINT8                   CheckSum;
+    UINT8                   Checksum;
     ACPI_STATUS             Status = AE_OK;
 
 
@@ -428,16 +428,14 @@ AcpiTbVerifyTableChecksum (
 
     /* Compute the checksum on the table */
 
-    CheckSum = AcpiTbChecksum (TableHeader, TableHeader->Length);
+    Checksum = AcpiTbChecksum (TableHeader, TableHeader->Length);
 
     /* Return the appropriate exception */
 
-    if (CheckSum)
+    if (Checksum)
     {
-        REPORT_ERROR ("Invalid ACPI table checksum");
-        DEBUG_PRINT (ACPI_INFO,
-            ("TbVerifyTableChecksum: Invalid checksum (%X) in %4.4s\n",
-            CheckSum, &TableHeader->Signature));
+        REPORT_WARNING (("Invalid checksum (%X) in table %4.4s\n",
+            Checksum, &TableHeader->Signature));
 
         Status = AE_BAD_CHECKSUM;
     }
