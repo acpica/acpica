@@ -131,7 +131,6 @@
         MODULE_NAME         ("dbcmds");
 
 
-
 /* These object types map directly to the ACPI_TYPES */
 
 
@@ -176,7 +175,6 @@ AcpiDbDisplayTableInfo (
     UINT32                  i;
 
 
-
     for (i = 0; i < NUM_ACPI_TABLES; i++)
     {
         if (AcpiGbl_AcpiTables[i].Pointer)
@@ -207,7 +205,6 @@ AcpiDbUnloadAcpiTable (
 {
     UINT32                  i;
     ACPI_STATUS             Status;
-
 
 
     for (i = 0; i < NUM_ACPI_TABLES; i++)
@@ -308,7 +305,6 @@ AcpiDbSetMethodCallBreakpoint (
 }
 
 
-
 /******************************************************************************
  *
  * FUNCTION:    AcpiDbDisassembleAml
@@ -346,7 +342,6 @@ AcpiDbDisassembleAml (
 }
 
 
-
 /******************************************************************************
  *
  * FUNCTION:    AcpiDbDumpNamespace
@@ -366,7 +361,6 @@ AcpiDbDumpNamespace (
 {
     ACPI_HANDLE             SubtreeEntry = AcpiGbl_RootObject;
     UINT32                  MaxDepth = ACPI_UINT32_MAX;
-
 
 
     /* No argument given, just start at the root and dump entire namespace */
@@ -448,7 +442,6 @@ AcpiDbDumpNamespaceByOwner (
     UINT16                  OwnerId;
 
 
-
     OwnerId = (UINT16) STRTOUL (OwnerArg, NULL, 0);
 
 
@@ -489,7 +482,6 @@ AcpiDbSendNotify (
     UINT32                  Value)
 {
     NAME_TABLE_ENTRY        *Entry;
-
 
 
     /* Translate name to an NTE */
@@ -563,7 +555,6 @@ AcpiDbSetMethodData (
         AcpiOsdPrintf ("There is no method currently executing\n");
         return;
     }
-
 
 
     ObjDesc = AcpiCmCreateInternalObject (ACPI_TYPE_NUMBER);

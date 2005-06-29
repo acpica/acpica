@@ -286,7 +286,6 @@ AcpiDbSingleStep (
     }
 
 
-
     AcpiCmReleaseMutex (MTX_NAMESPACE);
 
     /* Go into the command loop and await next user command */

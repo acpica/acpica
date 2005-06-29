@@ -268,7 +268,6 @@ AcpiDbDumpObject (
 }
 
 
-
 /******************************************************************************
  *
  * FUNCTION:    AcpiDbPrepNamestring
@@ -372,9 +371,11 @@ AcpiDbSecondPassParse (
         if (Op->Opcode == AML_REGION_OP)
         {
             /* TBD: [Investigate] this isn't quite the right thing to do! */
-
-            // Method = (ACPI_DEFERRED_OP *) Op;
-            // Status = AcpiPsParseAml (Op, Method->Body, Method->BodyLength);
+            /*
+             *
+             * Method = (ACPI_DEFERRED_OP *) Op;
+             * Status = AcpiPsParseAml (Op, Method->Body, Method->BodyLength);
+             */
         }
 
         if (ACPI_FAILURE (Status))
@@ -439,8 +440,6 @@ AcpiDbLocalNsLookup (
 
     return Entry;
 }
-
-
 
 
 #endif /* ENABLE_DEBUGGER */

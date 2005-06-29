@@ -136,7 +136,6 @@ FILE                    *DebugFile = NULL;
 #endif
 
 
-
 /* NOTE: this is here for lack of a better place.  It is used in all flavors of the debugger, need LCD file */
 
 /******************************************************************************
@@ -176,8 +175,6 @@ AcpiDbMatchArgument (
 
     return ACPI_TYPE_NOT_FOUND;
 }
-
-
 
 
 /******************************************************************************

@@ -114,7 +114,6 @@
  *****************************************************************************/
 
 
-
 #include "acpi.h"
 #include "acxface.h"
 #include "amlcode.h"
@@ -156,7 +155,6 @@ BOOLEAN                 opt_disasm      = FALSE;
 BOOLEAN                 opt_stats       = FALSE;
 BOOLEAN                 opt_parse_jit   = FALSE;
 BOOLEAN                 opt_verbose     = TRUE;
-
 
 
 /* This list of commands must match the string table below it */
@@ -260,8 +258,6 @@ COMMAND_INFO                Commands[] =
     {"UNLOAD",       0},
     {NULL,           0}
 };
-
-
 
 
 /******************************************************************************
@@ -459,7 +455,6 @@ AcpiDbGetLine (
     INT32                   Count;
     char                    *Next;
     char                    *This;
-
 
 
     STRCPY (ParsedBuf, InputBuffer);
@@ -789,7 +784,7 @@ AcpiDbCommandDispatch (
 
         /* TBD: [Restructure] Need some way to re-initialize without re-creating the semaphores! */
 
-//        AcpiInitialize (NULL);
+        /*  AcpiInitialize (NULL);  */
         break;
 
     case CMD_THREADS:
@@ -818,7 +813,7 @@ AcpiDbCommandDispatch (
 
         /* Shutdown */
 
-//        AcpiCmSubsystemShutdown ();
+        /* AcpiCmSubsystemShutdown (); */
         AcpiDbCloseDebugFile ();
 
         AcpiGbl_DbTerminateThreads = TRUE;
@@ -897,8 +892,6 @@ AcpiDbSingleThread (
 }
 
 
-
-
 /******************************************************************************
  *
  * FUNCTION:    AcpiDbUserCommands
@@ -974,7 +967,6 @@ AcpiDbUserCommands (
 
     return Status;
 }
-
 
 
 #endif  /* ENABLE_DEBUGGER */

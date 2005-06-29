@@ -131,8 +131,6 @@
         MODULE_NAME         ("dbhistry");
 
 
-
-
 typedef struct HistoryInfo
 {
     char                    Command[80];

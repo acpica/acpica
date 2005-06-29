@@ -232,7 +232,6 @@ AcpiDbDecodeAndDisplayObject (
     UINT32                  Size;
 
 
-
     if (!Target)
     {
         return;
@@ -560,7 +559,6 @@ AcpiDbDisplayMethodInfo (
     BOOLEAN                 CountRemaining = FALSE;
 
 
-
     WalkState = AcpiDsGetCurrentWalkState (AcpiGbl_CurrentWalkList);
     if (!WalkState)
     {
@@ -660,7 +658,6 @@ AcpiDbDisplayLocals (void)
     NAME_TABLE_ENTRY        *Entry;
 
 
-
     WalkState = AcpiDsGetCurrentWalkState (AcpiGbl_CurrentWalkList);
     if (!WalkState)
     {
@@ -681,7 +678,6 @@ AcpiDbDisplayLocals (void)
         AcpiDbDisplayInternalObject (ObjDesc);
     }
 }
-
 
 
 /******************************************************************************
@@ -731,7 +727,6 @@ AcpiDbDisplayArguments (void)
 }
 
 
-
 /******************************************************************************
  *
  * FUNCTION:    AcpiDbDisplayResults
@@ -774,7 +769,6 @@ AcpiDbDisplayResults (void)
         AcpiDbDisplayInternalObject (ObjDesc);
     }
 }
-
 
 
 /******************************************************************************
@@ -820,7 +814,6 @@ AcpiDbDisplayCallingTree (void)
         WalkState = WalkState->Next;
     }
 }
-
 
 
 /******************************************************************************

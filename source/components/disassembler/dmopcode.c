@@ -133,7 +133,6 @@
 char                        *INDENT_STRING = "....";
 
 
-
 /*******************************************************************************
  *
  * FUNCTION:    AcpiDbBlockType
@@ -261,7 +260,6 @@ AcpiPsDisplayObjectPathname (
 }
 
 #endif
-
 
 
 /*******************************************************************************
@@ -609,7 +607,6 @@ AcpiDbDisplayPath (
 }
 
 
-
 /*******************************************************************************
  *
  * FUNCTION:    AcpiDbDisplayOpcode
@@ -634,7 +631,6 @@ AcpiDbDisplayOpcode (
     UINT32                  i;
     ACPI_OP_INFO            *Opc = NULL;
     UINT32                  Name;
-
 
 
     if (!Op)

@@ -131,7 +131,6 @@
         MODULE_NAME         ("dbexec");
 
 
-
 typedef struct dbmethodinfo
 {
     ACPI_HANDLE             ThreadGate;
@@ -145,7 +144,6 @@ typedef struct dbmethodinfo
 
 
 DB_METHOD_INFO              Info;
-
 
 
 /******************************************************************************
@@ -219,7 +217,6 @@ AcpiDbExecuteMethod (
 
     return Status;
 }
-
 
 
 /******************************************************************************
@@ -296,7 +293,6 @@ AcpiDbExecute (
     UINT32                  Allocations;
     UINT32                  Size;
     ACPI_BUFFER             ReturnObj;
-
 
 
     /* Memory allocation tracking */
@@ -390,7 +386,6 @@ AcpiDbMethodThread (
 }
 
 
-
 /******************************************************************************
  *
  * FUNCTION:    AcpiDbCreateExecutionThreads
@@ -478,6 +473,5 @@ AcpiDbCreateExecutionThreads (
 
 
 #endif /* ENABLE_DEBUGGER */
-
 
 

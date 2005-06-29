@@ -167,8 +167,6 @@ UINT32                      SizeOfNameTableEntries;
 UINT32                      SizeOfAcpiObjects;
 
 
-
-
 /*****************************************************************************
  *
  * FUNCTION:    AcpiDbDisplayStatistics
@@ -322,7 +320,6 @@ AcpiDbGenerateStatistics (
     ACPI_GENERIC_OP         *Op;
 
 
-
     Op = AcpiPsGetChild (Root);
 
     while (Op)
@@ -395,7 +392,6 @@ AcpiDbGenerateStatistics (
         NumGrammarElements++;
         Op = AcpiPsGetDepthNext (Root, Op);
     }
-
 
 
     SizeOfParseTree             = (NumGrammarElements - NumMethodElements) * (UINT32) sizeof (ACPI_GENERIC_OP);
