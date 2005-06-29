@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exprep - ACPI AML (p-code) execution - field prep utilities
- *              $Revision: 1.102 $
+ *              $Revision: 1.103 $
  *
  *****************************************************************************/
 
@@ -423,19 +423,19 @@ AcpiExPrepFieldValue (
 
     case INTERNAL_TYPE_BANK_FIELD:
 
-        ObjDesc->BankField.Value           = Info->BankValue;
-        ObjDesc->BankField.RegionObj       = AcpiNsGetAttachedObject (Info->RegionNode);
-        ObjDesc->BankField.BankRegisterObj = AcpiNsGetAttachedObject (Info->RegisterNode);
+        ObjDesc->BankField.Value        = Info->BankValue;
+        ObjDesc->BankField.RegionObj    = AcpiNsGetAttachedObject (Info->RegionNode);
+        ObjDesc->BankField.BankObj      = AcpiNsGetAttachedObject (Info->RegisterNode);
 
         /* An additional reference for the attached objects */
 
         AcpiUtAddReference (ObjDesc->BankField.RegionObj);
-        AcpiUtAddReference (ObjDesc->BankField.BankRegisterObj);
+        AcpiUtAddReference (ObjDesc->BankField.BankObj);
 
         ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "Bank Field: BitOff=%X Off=%X Gran=%X Region %p BankReg %p\n",
             ObjDesc->BankField.StartFieldBitOffset, ObjDesc->BankField.BaseByteOffset,
             ObjDesc->Field.AccessBitWidth, ObjDesc->BankField.RegionObj,
-            ObjDesc->BankField.BankRegisterObj));
+            ObjDesc->BankField.BankObj));
         break;
 
 
