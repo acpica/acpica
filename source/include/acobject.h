@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Name: acobject.h - Definition of ACPI_OPERAND_OBJECT  (Internal object only)
- *       $Revision: 1.107 $
+ *       $Revision: 1.108 $
  *
  *****************************************************************************/
 
@@ -192,6 +192,15 @@
     UINT32                      Length;
 
 
+/*
+ * Common fields for objects that support ASL notifications
+ */
+#define ACPI_COMMON_NOTIFY_INFO \
+    union acpi_operand_obj      *SysHandler;         /* Handler for system notifies */\
+    union acpi_operand_obj      *DrvHandler;         /* Handler for driver notifies */\
+    union acpi_operand_obj      *AddrHandler;        /* Handler for Address space */
+
+
 /******************************************************************************
  *
  * Individual Object Descriptors
@@ -257,17 +266,6 @@ typedef struct /* PACKAGE - has count, elements, next element */
 } ACPI_OBJECT_PACKAGE;
 
 
-typedef struct /* DEVICE - has handle and notification handler/context */
-{
-    ACPI_OBJECT_COMMON_HEADER
-
-    union acpi_operand_obj      *SysHandler;         /* Handler for system notifies */
-    union acpi_operand_obj      *DrvHandler;         /* Handler for driver notifies */
-    union acpi_operand_obj      *AddrHandler;        /* Handler for Address space */
-
-} ACPI_OBJECT_DEVICE;
-
-
 typedef struct /* EVENT */
 {
     ACPI_OBJECT_COMMON_HEADER
@@ -315,51 +313,64 @@ typedef struct /* REGION */
     ACPI_OBJECT_COMMON_HEADER
 
     UINT8                       SpaceId;
-    UINT32                      Length;
-    ACPI_PHYSICAL_ADDRESS       Address;
 
     union acpi_operand_obj      *AddrHandler;       /* Handler for system notifies */
     ACPI_NAMESPACE_NODE         *Node;              /* containing object */
     union acpi_operand_obj      *Next;
+    UINT32                      Length;
+    ACPI_PHYSICAL_ADDRESS       Address;
 
 } ACPI_OBJECT_REGION;
 
 
-typedef struct /* POWER RESOURCE - has Handle and notification handler/context*/
+/*
+ * Objects that can be notified.  All share a common NotifyInfo area.
+ */
+
+typedef struct /* COMMON NOTIFY (for POWER, PROCESSOR, DEVICE, and THERMAL */
 {
     ACPI_OBJECT_COMMON_HEADER
+    ACPI_COMMON_NOTIFY_INFO
+
+} ACPI_OBJECT_NOTIFY_COMMON;
+
+
+typedef struct /* DEVICE */
+{
+    ACPI_OBJECT_COMMON_HEADER
+    ACPI_COMMON_NOTIFY_INFO
+
+} ACPI_OBJECT_DEVICE;
+
+
+typedef struct /* POWER RESOURCE */
+{
+    ACPI_OBJECT_COMMON_HEADER
+    ACPI_COMMON_NOTIFY_INFO
 
     UINT32                      SystemLevel;
     UINT32                      ResourceOrder;
 
-    union acpi_operand_obj      *SysHandler;        /* Handler for system notifies */
-    union acpi_operand_obj      *DrvHandler;        /* Handler for driver notifies */
-
 } ACPI_OBJECT_POWER_RESOURCE;
 
 
-typedef struct /* PROCESSOR - has Handle and notification handler/context*/
+typedef struct /* PROCESSOR */
 {
     ACPI_OBJECT_COMMON_HEADER
+    ACPI_COMMON_NOTIFY_INFO
 
     UINT32                      ProcId;
     UINT32                      Length;
     ACPI_IO_ADDRESS             Address;
 
-    union acpi_operand_obj      *SysHandler;        /* Handler for system notifies */
-    union acpi_operand_obj      *DrvHandler;        /* Handler for driver notifies */
-    union acpi_operand_obj      *AddrHandler;       /* Handler for Address space */
-
 } ACPI_OBJECT_PROCESSOR;
 
 
-typedef struct /* THERMAL ZONE - has Handle and Handler/Context */
+typedef struct /* THERMAL ZONE */
 {
     ACPI_OBJECT_COMMON_HEADER
+    ACPI_COMMON_NOTIFY_INFO
 
-    union acpi_operand_obj      *SysHandler;        /* Handler for system notifies */
-    union acpi_operand_obj      *DrvHandler;        /* Handler for driver notifies */
-    union acpi_operand_obj      *AddrHandler;       /* Handler for Address space */
 
 } ACPI_OBJECT_THERMAL_ZONE;
 
@@ -527,18 +538,22 @@ typedef union acpi_operand_obj
     ACPI_OBJECT_BUFFER          Buffer;
     ACPI_OBJECT_PACKAGE         Package;
     ACPI_OBJECT_BUFFER_FIELD    BufferField;
-    ACPI_OBJECT_DEVICE          Device;
     ACPI_OBJECT_EVENT           Event;
     ACPI_OBJECT_METHOD          Method;
     ACPI_OBJECT_MUTEX           Mutex;
     ACPI_OBJECT_REGION          Region;
+
+    ACPI_OBJECT_NOTIFY_COMMON   CommonNotify;
+    ACPI_OBJECT_DEVICE          Device;
     ACPI_OBJECT_POWER_RESOURCE  PowerResource;
     ACPI_OBJECT_PROCESSOR       Processor;
     ACPI_OBJECT_THERMAL_ZONE    ThermalZone;
+
     ACPI_OBJECT_FIELD_COMMON    CommonField;
     ACPI_OBJECT_REGION_FIELD    Field;
     ACPI_OBJECT_BANK_FIELD      BankField;
     ACPI_OBJECT_INDEX_FIELD     IndexField;
+
     ACPI_OBJECT_REFERENCE       Reference;
     ACPI_OBJECT_NOTIFY_HANDLER  NotifyHandler;
     ACPI_OBJECT_ADDR_HANDLER    AddrHandler;
