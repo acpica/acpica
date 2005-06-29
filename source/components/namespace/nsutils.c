@@ -571,6 +571,9 @@ NsConvertEntryToHandle(NAME_TABLE_ENTRY *Nte)
 void
 NsTerminate (void)
 {
+    ACPI_OBJECT_INTERNAL    *ObjDesc;
+
+
     FUNCTION_TRACE ("NsTerminate");
 
 
@@ -582,12 +585,17 @@ NsTerminate (void)
 
     /* Detach any object(s) attached to the root */
     
-    NsDetachObject (Gbl_RootObject);
+    ObjDesc = NsGetAttachedObject (Gbl_RootObject);
+    if (ObjDesc)
+    {
+        NsDetachObject (Gbl_RootObject);
+        CmDeleteInternalObject (ObjDesc);
+    }
+
     NsDeleteScope (Gbl_RootObject->Scope);
     Gbl_RootObject->Scope = NULL;
 
     REPORT_SUCCESS ("Entire namespace and objects deleted");
-
 
 
     NsScopeStackClear ();
