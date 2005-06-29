@@ -123,13 +123,16 @@
 
 
 ACPI_STATUS
-AcpiHwInitialize();
+AcpiHwInitialize(
+    void);
 
 ACPI_STATUS
-AcpiHwShutdown();
+AcpiHwShutdown(
+    void);
 
 ACPI_STATUS
-AcpiHwInitializeSystemInfo();
+AcpiHwInitializeSystemInfo(
+    void);
 
 ACPI_STATUS
 AcpiHwSetMode (
