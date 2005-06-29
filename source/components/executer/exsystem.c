@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exsystem - Interface to OS services
- *              $Revision: 1.78 $
+ *              $Revision: 1.79 $
  *
  *****************************************************************************/
 
@@ -213,10 +213,10 @@ AcpiExSystemDoStall (
 
     if (HowLong > 255) /* 255 microseconds */
     {
-        /* 
+        /*
          * Longer than 255 usec, this is an error
          *
-         * (ACPI specifies 100 usec as max, but this gives some slack in 
+         * (ACPI specifies 100 usec as max, but this gives some slack in
          * order to support existing BIOSs)
          */
         ACPI_REPORT_ERROR (("Stall: Time parameter is too large (%d)\n", HowLong));
@@ -235,7 +235,7 @@ AcpiExSystemDoStall (
  *
  * FUNCTION:    AcpiExSystemDoSuspend
  *
- * PARAMETERS:  HowLong             - The amount of time to suspend, 
+ * PARAMETERS:  HowLong             - The amount of time to suspend,
  *                                    in milliseconds
  *
  * RETURN:      None
