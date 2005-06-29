@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asmain - Main module for the acpi source processor utility
- *              $Revision: 1.24 $
+ *              $Revision: 1.26 $
  *
  *****************************************************************************/
 
@@ -239,22 +239,22 @@ ACPI_STRING_TABLE           LinuxDataTypes[] = {
     "_s8_",                     "_INT8_",
     "_u8_",                     "_UINT8_",
 
-    "ACPI_STATUS  ",            "acpi_status_t",
-    /*"ACPI_IO_ADDRESS  ",        "acpi_io_address_t",*/
-    /*"ACPI_PHYSICAL_ADDRESS  ",  "acpi_physical_address_t",*/
-    /*"NATIVE_UINT  ",            "native_uint_t",*/
-    /*"NATIVE_INT  ",             "native_int_t",*/
-    /*"NATIVE_CHAR  ",            "native_char_t",*/
-    "ACPI_NAME  ",              "acpi_name_t",
-    "ACPI_STRING  ",            "acpi_string_t",
-    "ACPI_HANDLE  ",            "acpi_handle_t",
-    "ACPI_INTEGER  ",           "acpi_integer_t",
-    "ACPI_OBJECT_TYPE  ",       "acpi_object_type_t",
-    "ACPI_OBJECT_TYPE8  ",      "acpi_object_type8_t",
-    "OPERATING_MODE  ",         "operating_mode_t",
-    "ACPI_EVENT_STATUS  ",      "acpi_event_status_t",
-    "ACPI_OWNER_ID  ",          "acpi_owner_id_t",
-    "ACPI_TABLE_TYPE  ",        "acpi_table_type_t",
+    "ACPI_STATUS ",            "acpi_status ",
+    /*"ACPI_IO_ADDRESS  ",        "acpi_io_address  ",*/
+    /*"ACPI_PHYSICAL_ADDRESS  ",  "acpi_physical_address  ",*/
+    /*"NATIVE_UINT  ",            "native_uint  ",*/
+    /*"NATIVE_INT  ",             "native_int  ",*/
+    /*"NATIVE_CHAR  ",            "native_char  ",*/
+    "ACPI_NAME  ",              "acpi_name  ",
+    "ACPI_STRING  ",            "acpi_string  ",
+    "ACPI_HANDLE  ",            "acpi_handle  ",
+    "ACPI_INTEGER  ",           "acpi_integer  ",
+    "ACPI_OBJECT_TYPE  ",       "acpi_object_type  ",
+    "ACPI_OBJECT_TYPE8  ",      "acpi_object_type8  ",
+    "OPERATING_MODE  ",         "operating_mode  ",
+    "ACPI_EVENT_STATUS  ",      "acpi_event_status  ",
+    "ACPI_OWNER_ID  ",          "acpi_owner_id  ",
+    "ACPI_TABLE_TYPE  ",        "acpi_table_type  ",
 
     "ACPI_NAMESPACE_NODE",      "acpi_namespace_node",
     "ACPI_OPERAND_OBJECT",      "acpi_operand_object",
@@ -284,6 +284,12 @@ ACPI_STRING_TABLE           LinuxDataTypes[] = {
     "ACPI_RESOURCE_MEM24",      "acpi_resource_mem24",
     "ACPI_RESOURCE_MEM32",      "acpi_resource_mem32",
     "ACPI_RESOURCE_FIXED_MEM32","acpi_resource_fixed_mem32",
+    "ACPI_RESOURCE_TYPE",       "acpi_resource_type",
+    "ACPI_MEMORY_ATTRIBUTE",	"acpi_memory_attribute",
+    "ACPI_IO_ATTRIBUTE",	"acpi_io_attribute",
+    "ACPI_BUS_ATTRIBUTE",	"acpi_bus_attribute",
+    "ACPI_RESOURCE_ATTRIBUTE",	"acpi_resource_attribute",
+    "ACPI_RESOURCE_SOURCE",	"acpi_resource_source",
     "ACPI_RESOURCE_ADDRESS16",  "acpi_resource_address16",
     "ACPI_RESOURCE_ADDRESS32",  "acpi_resource_address32",
     "ACPI_RESOURCE_ADDRESS64",  "acpi_resource_address64",
@@ -301,42 +307,54 @@ ACPI_STRING_TABLE           LinuxDataTypes[] = {
     "FACS_DESCRIPTOR_REV2",     "facs_descriptor_rev2",
     "ACPI_TABLE_HEADER",        "acpi_table_header",
     "ACPI_PKG_INFO",            "acpi_pkg_info",
+    "ACPI_EVENT_TYPE",          "acpi_event_type",
+    "ACPI_DEVICE_INFO",         "acpi_device_info",
+    "ACPI_PCI_ID",              "acpi_pci_id",
+    "ACPI_MEM_SPACE_CONTEXT",   "acpi_mem_space_context",
+    "ACPI_OBJ_INFO_HEADER",     "acpi_obj_info_header",
+    "UINT64_STRUCT",            "uint64_struct",
 
     /* Typecasts */
 
-    "ACPI_STATUS",              "acpi_status_t",
+    "ACPI_STATUS\n",              "acpi_status\n",
+    "ACPI_STATUS\t",              "acpi_status\t",
 
-    /*"ACPI_IO_ADDRESS)",         "acpi_io_address_t)",*/
-    /*"ACPI_PHYSICAL_ADDRESS)",   "acpi_physical_address_t)",*/
-    /*"NATIVE_UINT)",             "native_uint_t)",*/
-    /*"NATIVE_INT)",              "native_int_t)",*/
-    /*"NATIVE_CHAR)",             "native_char_t)",*/
-    "ACPI_NAME)",               "acpi_name_t)",
-    "ACPI_STRING)",             "acpi_string_t)",
-    "ACPI_HANDLE)",             "acpi_handle_t)",
-    "ACPI_INTEGER)",            "acpi_integer_t)",
-    "ACPI_OBJECT_TYPE)",        "acpi_object_type_t)",
-    "ACPI_OBJECT_TYPE8)",       "acpi_object_type8_t)",
-    "OPERATING_MODE)",          "operating_mode_t)",
-    "ACPI_EVENT_STATUS)",       "acpi_event_status_t)",
-    "ACPI_OWNER_ID)",           "acpi_owner_id_t)",
-    "ACPI_TABLE_TYPE)",         "acpi_table_type_t)",
+    "ACPI_STATUS)",              "acpi_status)",
+    "ACPI_STATUS(",              "acpi_status(",
+    /*"ACPI_IO_ADDRESS)",         "acpi_io_address)",*/
+    /*"ACPI_PHYSICAL_ADDRESS)",   "acpi_physical_address)",*/
+    /*"NATIVE_UINT)",             "native_uint)",*/
+    /*"NATIVE_INT)",              "native_int)",*/
+    /*"NATIVE_CHAR)",             "native_char)",*/
+    "ACPI_NAME)",               "acpi_name)",
+    "ACPI_STRING)",             "acpi_string)",
+    "ACPI_HANDLE)",             "acpi_handle)",
+    "ACPI_INTEGER)",            "acpi_integer)",
+    "ACPI_OBJECT_TYPE)",        "acpi_object_type)",
+    "ACPI_OBJECT_TYPE8)",       "acpi_object_type8)",
+    "OPERATING_MODE)",          "operating_mode)",
+    "ACPI_EVENT_STATUS)",       "acpi_event_status)",
+    "ACPI_OWNER_ID)",           "acpi_owner_id)",
+    "ACPI_TABLE_TYPE)",         "acpi_table_type)",
+    "ACPI_RESOURCE)",           "acpi_resource)",
 
-    /*"ACPI_IO_ADDRESS;",         "acpi_io_address_t;",*/
-    /*"ACPI_PHYSICAL_ADDRESS;",   "acpi_physical_address_t;",*/
-    /*"NATIVE_UINT;",             "native_uint_t;",*/
-    /*"NATIVE_INT;",              "native_int_t;",*/
-    /*"NATIVE_CHAR;",             "native_char_t;",*/
-    "ACPI_NAME;",               "acpi_name_t;",
-    "ACPI_STRING;",             "acpi_string_t;",
-    "ACPI_HANDLE;",             "acpi_handle_t;",
-    "ACPI_INTEGER;",            "acpi_integer_t;",
-    "ACPI_OBJECT_TYPE;",        "acpi_object_type_t;",
-    "ACPI_OBJECT_TYPE8;",       "acpi_object_type8_t;",
-    "OPERATING_MODE;",          "operating_mode_t;",
-    "ACPI_EVENT_STATUS;",       "acpi_event_status_t;",
-    "ACPI_OWNER_ID;",           "acpi_owner_id_t;",
-    "ACPI_TABLE_TYPE;",         "acpi_table_type_t;",
+    "ACPI_STATUS;",              "acpi_status;",
+    /*"ACPI_IO_ADDRESS;",         "acpi_io_address;",*/
+    /*"ACPI_PHYSICAL_ADDRESS;",   "acpi_physical_address;",*/
+    /*"NATIVE_UINT;",             "native_uint;",*/
+    /*"NATIVE_INT;",              "native_int;",*/
+    /*"NATIVE_CHAR;",             "native_char;",*/
+    "ACPI_NAME;",               "acpi_name;",
+    "ACPI_STRING;",             "acpi_string;",
+    "ACPI_HANDLE;",             "acpi_handle;",
+    "ACPI_INTEGER;",            "acpi_integer;",
+    "ACPI_OBJECT_TYPE;",        "acpi_object_type;",
+    "ACPI_OBJECT_TYPE8;",       "acpi_object_type8;",
+    "OPERATING_MODE;",          "operating_mode;",
+    "ACPI_EVENT_STATUS;",       "acpi_event_status;",
+    "ACPI_OWNER_ID;",           "acpi_owner_id;",
+    "ACPI_TABLE_TYPE;",         "acpi_table_type;",
+    "ACPI_RESOURCE;",           "acpi_resource;",
 
     /*
      * Function return values.
@@ -344,10 +362,11 @@ ACPI_STRING_TABLE           LinuxDataTypes[] = {
      * we can't put all tokens here, because that will break strings where
      * we want to convert FOO but not FOO_MAX_LEN, for example.
      */
-    "ACPI_OWNER_ID",           "acpi_owner_id_t",
-    "ACPI_OBJECT_TYPE8",       "acpi_object_type8_t",
-    "ACPI_NAME",               "acpi_name_t",
-    "ACPI_HANDLE",             "acpi_handle_t",
+    "ACPI_OWNER_ID",           "acpi_owner_id",
+    "ACPI_OBJECT_TYPE8",       "acpi_object_type8",
+    "ACPI_HANDLE",             "acpi_handle",
+    "ACPI_NAME",               "acpi_name",
+    "ACPI_OBJECT",             "acpi_object",
 
     NULL,                       NULL
 };
