@@ -97,14 +97,9 @@ PostBuild_Cmds=copy bin\acpibin.exe ..\..\libraries\acpibin.exe
 # Begin Group "Source Files"
 
 # PROP Default_Filter "cpp;c;cxx;rc;def;r;odl;idl;hpj;bat"
-# Begin Source File
+# Begin Group "Subsystem"
 
-SOURCE=..\..\Tools\AcpiBin\abcompare.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\Tools\AcpiBin\abmain.c
-# End Source File
+# PROP Default_Filter ""
 # Begin Source File
 
 SOURCE=..\..\Subsystem\Common\cmdebug.c
@@ -117,15 +112,31 @@ SOURCE=..\..\Subsystem\Common\cmglobal.c
 
 SOURCE=..\..\Subsystem\Common\cmutils.c
 # End Source File
+# End Group
+# Begin Group "AcpiBin"
+
+# PROP Default_Filter ""
 # Begin Source File
 
-SOURCE=..\..\Tools\Common\getopt.c
+SOURCE=..\..\Tools\AcpiBin\abcompare.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\OsInterface\WinApp\oswinxf.c
-# ADD CPP /Ze
+SOURCE=..\..\Tools\AcpiBin\abmain.c
 # End Source File
+# End Group
+# Begin Group "Common"
+
+# PROP Default_Filter ""
+# Begin Source File
+
+SOURCE=..\..\Common\getopt.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\Common\oswinxf.c
+# End Source File
+# End Group
 # End Group
 # Begin Group "Header Files"
 
