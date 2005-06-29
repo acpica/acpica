@@ -119,18 +119,15 @@
 
 #include <acpi.h>
 #include <hardware.h>
-
+#include <namespace.h>
 
 #define _THIS_MODULE        "hwregs.c"
 #define _COMPONENT          DEVICE_MANAGER
 
 
-/* TBD: Is this needed? #pragma check_stack (off) */
-
-
 /******************************************************************************
  *
- * FUNCTION:    GetBitShift
+ * FUNCTION:    HwGetBitShift
  *
  * PARAMETERS:  Mask            - Input mask to determine bit shift from.  Must
  *                                have at least 1 bit set.
@@ -142,13 +139,13 @@
  ******************************************************************************/
 
 INT32
-GetBitShift (
+HwGetBitShift (
     UINT32                  Mask)
 {
     INT32                   Shift;
 
 
-    FUNCTION_TRACE ("GetBitShift");
+    FUNCTION_TRACE ("HwGetBitShift");
 
 
     for (Shift = 0; ((Mask >> Shift) & 1) == 0; Shift++)
@@ -161,7 +158,194 @@ GetBitShift (
 
 /******************************************************************************
  *
- * FUNCTION:    AcpiRegisterIO
+ * FUNCTION:    HwClearAcpiStatus
+ *
+ * PARAMETERS:  none
+ *
+ * RETURN:      none
+ *
+ * DESCRIPTION: Clears all fixed and general purpose status bits
+ *
+ ******************************************************************************/
+
+void 
+HwClearAcpiStatus (void)
+{
+    UINT16                  GpeLength;
+    UINT16                  Index;
+
+
+    FUNCTION_TRACE ("HwClearAcpiStatus");
+
+
+    DEBUG_PRINT (TRACE_IO, ("About to write %04X to %04X\n", 
+                    ALL_FIXED_STS_BITS, (UINT16) FACP->Pm1aEvtBlk));
+
+    OsdOut16 ((UINT16) FACP->Pm1aEvtBlk, (UINT16) ALL_FIXED_STS_BITS);
+    
+    if (FACP->Pm1bEvtBlk)
+    {
+        OsdOut16 ((UINT16) FACP->Pm1bEvtBlk, (UINT16) ALL_FIXED_STS_BITS);
+    }
+
+    /* now clear the GPE Bits */
+    
+    if (FACP->Gpe0BlkLen)
+    {
+        GpeLength = FACP->Gpe0BlkLen / 2;
+
+        for (Index = 0; Index < GpeLength; Index++)
+        {
+            OsdOut8 ((UINT16) (FACP->Gpe0Blk + Index), (UINT8) 0xff);
+        }
+    }
+
+    if (FACP->Gpe1BlkLen)
+    {
+        GpeLength = FACP->Gpe1BlkLen / 2;
+
+        for (Index = 0; Index < GpeLength; Index++)
+        {
+            OsdOut8 ((UINT16) (FACP->Gpe1Blk + Index), (UINT8) 0xff);
+        }
+    }
+
+    FUNCTION_EXIT;
+}
+
+
+/****************************************************************************
+ *
+ * FUNCTION:    HwObtainSleepTypeRegisterData
+ *
+ * PARAMETERS:  *SleepStateReq    - Pointer to string indicating requested
+ *                                          sleep state
+ *              *Slp_TypA         - Pointer to byte to receive SLP_TYPa value
+ *              *Slp_TypB         - Pointer to byte to receive SLP_TYPb value
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: HwObtainSleepTypeRegisterData() obtains the SLP_TYP and 
+ *              SLP_TYPb values for the sleep state specified by *SleepStateReq.
+ *              Returns AE_OK if successful; AE_ERROR otherwise.
+ *
+ ***************************************************************************/
+
+ACPI_STATUS
+HwObtainSleepTypeRegisterData (
+    char                    *SleepStateReq, 
+    UINT8                   *Slp_TypA,
+    UINT8                   *Slp_TypB)
+{
+    ACPI_STATUS             Status = AE_OK;
+    char                    SleepState[6] = {'\\','\0','\0','\0','\0','\0'};
+    ACPI_OBJECT_INTERNAL    *ObjDesc;
+
+
+    FUNCTION_TRACE ("HwObtainSleepTypeRegisterData");
+
+
+    ObjDesc = AllocateObjectDesc ();
+    if (!ObjDesc)
+    {
+        FUNCTION_EXIT;
+        return AE_NO_MEMORY;
+    }
+
+    if (!SleepStateReq || !Slp_TypA || !Slp_TypB)
+    {   
+        /* NULL pointer input parameter */
+        
+        DEBUG_PRINT (ACPI_ERROR, ("Invalid (NULL) parameter\n"));
+        Status = AE_BAD_PARAMETER;
+    }
+    
+    else
+    {   
+        /* Sleep state value specified in ACPI namespace tables */
+        
+        strncat (SleepState, SleepStateReq, 4);
+        Status = NsEvaluateByName (SleepState, NULL, ObjDesc);
+
+        if (AE_OK == Status)
+        {   
+            /* AcpiEvaluateObject() located and processed the specified object */
+            
+            if (4 != ObjDesc->Package.Count)
+            {   
+                /* 
+                 * Incorrect _Sx_ package size
+                 * This is not critical as a value except if the count is less
+                 * than 2. There are two reserved bytes at the end of the
+                 * package.
+                 */
+                
+                if (ObjDesc->Package.Count < 2)
+                {
+                    REPORT_ERROR ("Incorrect _Sx_ package size");
+                    Status = AE_ERROR;
+                }
+                else
+                {
+                    REPORT_WARNING ("Incorrect _Sx_ package size");
+                }
+            }
+
+            if (ObjDesc->Type != TYPE_Package ||
+                 (ObjDesc->Package.Elements[0])->Type != TYPE_Number ||
+                 (ObjDesc->Package.Elements[1])->Type != TYPE_Number)
+            {   
+                /* Invalid _Sx_ package type or value  */
+                
+                REPORT_ERROR ("Object type returned from interpreter differs from expected value");
+
+                DEBUG_PRINT (ACPI_INFO,  ("Expected Values:"));
+                DEBUG_PRINT (ACPI_INFO,
+                            ("  Package == %02x", TYPE_Package));
+                DEBUG_PRINT (ACPI_INFO,
+                            ("  Number  == %02x", TYPE_Number));
+
+                DEBUG_PRINT (ACPI_INFO, ("Actual Values:"));
+                DEBUG_PRINT (ACPI_INFO,
+                            ("  ObjDesc->ValTyp == %02x", ObjDesc->Type));
+                DEBUG_PRINT (ACPI_INFO,
+                            ("  (ObjDesc->Package.Elements[0])->Type == %02x",
+                            (ObjDesc->Package.Elements[0])->Type));
+                DEBUG_PRINT (ACPI_INFO,
+                            ("  (ObjDesc->Package.Elements[1])->Type == %02x",
+                            (ObjDesc->Package.Elements[1])->Type));
+
+                Status = AE_ERROR;
+            }
+                
+            else if (AE_OK == Status)
+            {   
+                /* Valid _Sx_ package size, type, and value    */
+               
+                *Slp_TypA = (UINT8) (ObjDesc->Package.Elements[0])->Number.Value;
+                *Slp_TypB = (UINT8) (ObjDesc->Package.Elements[1])->Number.Value;
+            }
+        }
+        
+        else
+        {   
+            /* AcpiEvaluateObject() was unable to locate and process the specified object  */
+            
+            REPORT_ERROR ("Interpreter returned ERROR when evaluating the object");
+            Status = AE_ERROR;
+
+        }
+    }
+
+    CmFree (ObjDesc);
+    FUNCTION_EXIT;
+    return (Status);
+}
+
+
+/******************************************************************************
+ *
+ * FUNCTION:    HwRegisterIO
  *
  * PARAMETERS:  ReadWrite       - Either ACPI_READ or ACPI_WRITE.
  *              RegisterId      - index of ACPI register to access
@@ -176,7 +360,7 @@ GetBitShift (
  ******************************************************************************/
 
 UINT32
-AcpiRegisterIO (
+HwRegisterIO (
     INT32                   ReadWrite, 
     INT32                   RegisterId, 
     ...)
@@ -187,7 +371,7 @@ AcpiRegisterIO (
     UINT32                  GpeReg = 0;
 
 
-    FUNCTION_TRACE ("AcpiRegisterIO");
+    FUNCTION_TRACE ("HwRegisterIO");
 
     
     if (ReadWrite == ACPI_WRITE)
@@ -259,7 +443,7 @@ AcpiRegisterIO (
                  * unchanged 
                  */
                 
-                Value <<= GetBitShift (Mask);
+                Value <<= HwGetBitShift (Mask);
                 Value &= Mask;
                 
                 if (Value)
@@ -321,7 +505,7 @@ AcpiRegisterIO (
             if (ReadWrite == ACPI_WRITE)
             {
                 RegisterValue  &= ~Mask;
-                Value          <<= GetBitShift (Mask);
+                Value          <<= HwGetBitShift (Mask);
                 Value          &= Mask;
                 RegisterValue  |= Value;
 
@@ -393,7 +577,7 @@ AcpiRegisterIO (
         if (ReadWrite == ACPI_WRITE)
         {
             RegisterValue  &= ~Mask;
-            Value          <<= GetBitShift (Mask);
+            Value          <<= HwGetBitShift (Mask);
             Value          &= Mask;
             RegisterValue  |= Value;
             
@@ -449,7 +633,7 @@ AcpiRegisterIO (
         if (ReadWrite == ACPI_WRITE)
         {
             RegisterValue  &= ~Mask;
-            Value          <<= GetBitShift (Mask);
+            Value          <<= HwGetBitShift (Mask);
             Value          &= Mask;
             RegisterValue  |= Value;
 
@@ -518,11 +702,12 @@ AcpiRegisterIO (
         if (ReadWrite == ACPI_WRITE)
         {               
             RegisterValue  &= ~Mask;
-            Value          <<= GetBitShift (Mask);
+            Value          <<= HwGetBitShift (Mask);
             Value          &= Mask;
             RegisterValue  |= Value;
            
             /* This write will put the iAction state into the General Purpose */
+
             /* Enable Register indexed by the value in Mask */
 
             DEBUG_PRINT (TRACE_IO, ("About to write %04X to %04X\n", (UINT16) RegisterValue, 
@@ -540,69 +725,9 @@ AcpiRegisterIO (
     }
 
     RegisterValue &= Mask;
-    RegisterValue >>= GetBitShift (Mask);
+    RegisterValue >>= HwGetBitShift (Mask);
 
     DEBUG_PRINT (TRACE_IO, ("Register I/O: returning 0x%X\n", RegisterValue));
     FUNCTION_EXIT;
     return (RegisterValue);
 }
-
-/* Is this needed? #pragma check_stack () */
-
-
-/******************************************************************************
- *
- * FUNCTION:    HwClearAcpiStatus
- *
- * PARAMETERS:  none
- *
- * RETURN:      none
- *
- * DESCRIPTION: Clears all fixed and general purpose status bits
- *
- ******************************************************************************/
-
-void 
-HwClearAcpiStatus (void)
-{
-    UINT16                  GpeLength;
-    UINT16                  Index;
-
-
-    FUNCTION_TRACE ("HwClearAcpiStatus");
-
-
-    DEBUG_PRINT (TRACE_IO, ("About to write %04X to %04X\n", 
-                    ALL_FIXED_STS_BITS, (UINT16) FACP->Pm1aEvtBlk));
-
-    OsdOut16 ((UINT16) FACP->Pm1aEvtBlk, (UINT16) ALL_FIXED_STS_BITS);
-    
-    if (FACP->Pm1bEvtBlk)
-    {
-        OsdOut16 ((UINT16) FACP->Pm1bEvtBlk, (UINT16) ALL_FIXED_STS_BITS);
-    }
-
-    /* now clear the GPE Bits */
-    
-    if (FACP->Gpe0BlkLen)
-    {
-        GpeLength = FACP->Gpe0BlkLen / 2;
-
-        for (Index = 0; Index < GpeLength; Index++)
-        {
-            OsdOut8 ((UINT16) (FACP->Gpe0Blk + Index), (UINT8) 0xff);
-        }
-    }
-
-    if (FACP->Gpe1BlkLen)
-    {
-        GpeLength = FACP->Gpe1BlkLen / 2;
-
-        for (Index = 0; Index < GpeLength; Index++)
-        {
-            OsdOut8 ((UINT16) (FACP->Gpe1Blk + Index), (UINT8) 0xff);
-        }
-    }
-
-    FUNCTION_EXIT;
-}   
