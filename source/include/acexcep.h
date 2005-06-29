@@ -156,8 +156,10 @@
 #define AE_TIME             (ACPI_STATUS) 0x001C
 #define AE_TERMINATE        (ACPI_STATUS) 0x001D
 #define AE_DEPTH            (ACPI_STATUS) 0x001E
-#define AE_UNKNOWN_STATUS   (ACPI_STATUS) 0x001F
-#define ACPI_MAX_STATUS     (ACPI_STATUS) 0x001F
+#define AE_TRUE             (ACPI_STATUS) 0x001F
+#define AE_FALSE            (ACPI_STATUS) 0x0020
+#define AE_UNKNOWN_STATUS   (ACPI_STATUS) 0x0021
+#define ACPI_MAX_STATUS     (ACPI_STATUS) 0x0021
 
 
 
