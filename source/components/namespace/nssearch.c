@@ -133,12 +133,16 @@ static ST_KEY_DESC_TABLE KDT[] = {
  ***************************************************************************/
 
 ACPI_STATUS
-NsSearchOnly (char *EntryName, NAME_TABLE_ENTRY *NameTable, ACPI_OBJECT_TYPE Type, 
-              NAME_TABLE_ENTRY **RetEntry, NS_SEARCH_DATA *RetInfo)
+NsSearchOnly (
+    char                    *EntryName, 
+    NAME_TABLE_ENTRY        *NameTable, 
+    ACPI_OBJECT_TYPE        Type, 
+    NAME_TABLE_ENTRY        **RetEntry, 
+    NS_SEARCH_DATA          *RetInfo)
 {
-    UINT32              Position;
-    UINT32              Tries;
-    char                *ScopeName;
+    UINT32                  Position;
+    UINT32                  Tries;
+    char                    *ScopeName;
 
 
     FUNCTION_TRACE ("NsSearchOnly");
@@ -305,11 +309,14 @@ NsSearchOnly (char *EntryName, NAME_TABLE_ENTRY *NameTable, ACPI_OBJECT_TYPE Typ
 
 
 ACPI_STATUS
-NsSearchParentTree (char *EntryName, NAME_TABLE_ENTRY *NameTable, 
-                    ACPI_OBJECT_TYPE Type, NAME_TABLE_ENTRY **RetEntry)
+NsSearchParentTree (
+    char                    *EntryName, 
+    NAME_TABLE_ENTRY        *NameTable, 
+    ACPI_OBJECT_TYPE        Type, 
+    NAME_TABLE_ENTRY        **RetEntry)
 {
-    ACPI_STATUS         Status;
-    NAME_TABLE_ENTRY    *ParentScope;
+    ACPI_STATUS             Status;
+    NAME_TABLE_ENTRY        *ParentScope;
 
 
     FUNCTION_TRACE ("NsSearchParentTree");
@@ -392,12 +399,13 @@ NsSearchParentTree (char *EntryName, NAME_TABLE_ENTRY *NameTable,
  ***************************************************************************/
 
 ACPI_STATUS
-NsCreateAndLinkNewTable (NAME_TABLE_ENTRY *NameTable)
+NsCreateAndLinkNewTable (
+    NAME_TABLE_ENTRY        *NameTable)
 {
-    NAME_TABLE_ENTRY    *NewTable;
-    NAME_TABLE_ENTRY    *ParentScope;
-    NAME_TABLE_ENTRY    *ParentEntry;
-    ACPI_STATUS         Status = AE_OK;
+    NAME_TABLE_ENTRY        *NewTable;
+    NAME_TABLE_ENTRY        *ParentScope;
+    NAME_TABLE_ENTRY        *ParentEntry;
+    ACPI_STATUS             Status = AE_OK;
 
 
     FUNCTION_TRACE ("NsCreateAndLinkNewTable");
@@ -467,8 +475,10 @@ NsCreateAndLinkNewTable (NAME_TABLE_ENTRY *NameTable)
  ***************************************************************************/
 
 void
-NsInitializeTable (NAME_TABLE_ENTRY *NewTable, NAME_TABLE_ENTRY *ParentScope, 
-                   NAME_TABLE_ENTRY *ParentEntry)
+NsInitializeTable (
+    NAME_TABLE_ENTRY        *NewTable, 
+    NAME_TABLE_ENTRY        *ParentScope, 
+    NAME_TABLE_ENTRY        *ParentEntry)
 {
 
 
@@ -498,10 +508,14 @@ NsInitializeTable (NAME_TABLE_ENTRY *NewTable, NAME_TABLE_ENTRY *ParentScope,
  ***************************************************************************/
 
 void
-NsInitializeEntry (NAME_TABLE_ENTRY *NameTable, UINT32 Position, char *EntryName, ACPI_OBJECT_TYPE Type, 
-                   NAME_TABLE_ENTRY *PreviousEntry)
+NsInitializeEntry (
+    NAME_TABLE_ENTRY        *NameTable, 
+    UINT32                  Position, 
+    char                    *EntryName, 
+    ACPI_OBJECT_TYPE        Type, 
+    NAME_TABLE_ENTRY        *PreviousEntry)
 {
-    NAME_TABLE_ENTRY    *NewEntry;
+    NAME_TABLE_ENTRY        *NewEntry;
 
 
     FUNCTION_TRACE ("NsInitializeEntry");
@@ -608,12 +622,16 @@ NsInitializeEntry (NAME_TABLE_ENTRY *NameTable, UINT32 Position, char *EntryName
  ***************************************************************************/
 
 ACPI_STATUS
-NsSearchAndEnter (char *EntryName, NAME_TABLE_ENTRY *NameTable,
-                    OPERATING_MODE LoadMode, ACPI_OBJECT_TYPE Type, NAME_TABLE_ENTRY **RetEntry)
+NsSearchAndEnter (
+    char                    *EntryName, 
+    NAME_TABLE_ENTRY        *NameTable,
+    OPERATING_MODE          LoadMode, 
+    ACPI_OBJECT_TYPE        Type, 
+    NAME_TABLE_ENTRY        **RetEntry)
 {
-    UINT32              Position;       /* position in table */
-    ACPI_STATUS         Status;
-    NS_SEARCH_DATA      SearchInfo;
+    UINT32                  Position;       /* position in table */
+    ACPI_STATUS             Status;
+    NS_SEARCH_DATA          SearchInfo;
 
 
     FUNCTION_TRACE ("NsSearchAndEnter");

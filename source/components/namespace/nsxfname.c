@@ -129,10 +129,13 @@
  ******************************************************************************/
 
 ACPI_STATUS 
-AcpiNameToHandle (ACPI_HANDLE Scope, UINT32 Name, ACPI_HANDLE *RetHandle)
+AcpiNameToHandle (
+    ACPI_HANDLE             Scope, 
+    UINT32                  Name, 
+    ACPI_HANDLE             *RetHandle)
 {
-    NAME_TABLE_ENTRY    *ThisEntry;
-    ACPI_HANDLE         LocalScope = Scope;
+    NAME_TABLE_ENTRY        *ThisEntry;
+    ACPI_HANDLE             LocalScope = Scope;
 
 
     if (!RetHandle)
@@ -199,9 +202,11 @@ AcpiNameToHandle (ACPI_HANDLE Scope, UINT32 Name, ACPI_HANDLE *RetHandle)
  ******************************************************************************/
 
 ACPI_STATUS 
-AcpiHandleToName (ACPI_HANDLE Handle, UINT32 *RetName)
+AcpiHandleToName (
+    ACPI_HANDLE             Handle, 
+    UINT32                  *RetName)
 {
-    NAME_TABLE_ENTRY    *ObjEntry;
+    NAME_TABLE_ENTRY        *ObjEntry;
 
 
     if (!RetName)
@@ -241,7 +246,9 @@ AcpiHandleToName (ACPI_HANDLE Handle, UINT32 *RetName)
  ******************************************************************************/
 
 ACPI_STATUS 
-AcpiPathnameToHandle (char *Pathname, ACPI_HANDLE *RetHandle)
+AcpiPathnameToHandle (
+    char                    *Pathname, 
+    ACPI_HANDLE             *RetHandle)
 {
 
     if (!RetHandle || !Pathname)
@@ -279,7 +286,9 @@ AcpiPathnameToHandle (char *Pathname, ACPI_HANDLE *RetHandle)
 
 
 ACPI_STATUS 
-AcpiHandleToPathname (ACPI_HANDLE Handle, ACPI_BUFFER *RetPathPtr)
+AcpiHandleToPathname (
+    ACPI_HANDLE             Handle, 
+    ACPI_BUFFER             *RetPathPtr)
 {
     if ((!RetPathPtr->BufferPtr)    ||
         (!RetPathPtr->Length))

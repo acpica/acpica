@@ -133,8 +133,11 @@
  ****************************************************************************/
 
 ACPI_STATUS
-AcpiEvaluateObject (ACPI_HANDLE Handle, char *Pathname, ACPI_OBJECT *ReturnObject,
-                    ACPI_OBJECT **Params)
+AcpiEvaluateObject (
+    ACPI_HANDLE             Handle, 
+    char                    *Pathname, 
+    ACPI_OBJECT             *ReturnObject,
+    ACPI_OBJECT             **Params)
 {
     ACPI_STATUS             Status;
     NAME_TABLE_ENTRY        *ObjEntry;
@@ -211,9 +214,13 @@ AcpiEvaluateObject (ACPI_HANDLE Handle, char *Pathname, ACPI_OBJECT *ReturnObjec
  ******************************************************************************/
 
 ACPI_STATUS
-AcpiGetNextObject (ACPI_OBJECT_TYPE Type, ACPI_HANDLE Scope, ACPI_HANDLE Handle, ACPI_HANDLE *RetHandle)
+AcpiGetNextObject (
+    ACPI_OBJECT_TYPE        Type, 
+    ACPI_HANDLE             Scope, 
+    ACPI_HANDLE             Handle, 
+    ACPI_HANDLE             *RetHandle)
 {
-    NAME_TABLE_ENTRY    *ThisEntry;
+    NAME_TABLE_ENTRY        *ThisEntry;
 
 
     if (!RetHandle)
@@ -321,9 +328,11 @@ AcpiGetNextObject (ACPI_OBJECT_TYPE Type, ACPI_HANDLE Scope, ACPI_HANDLE Handle,
  ******************************************************************************/
 
 ACPI_STATUS
-AcpiGetParent (ACPI_HANDLE Handle, ACPI_HANDLE *RetHandle)
+AcpiGetParent (
+    ACPI_HANDLE             Handle, 
+    ACPI_HANDLE             *RetHandle)
 {
-    NAME_TABLE_ENTRY    *Object;
+    NAME_TABLE_ENTRY        *Object;
 
 
     if (!RetHandle)
@@ -372,9 +381,11 @@ AcpiGetParent (ACPI_HANDLE Handle, ACPI_HANDLE *RetHandle)
  ******************************************************************************/
 
 ACPI_STATUS
-AcpiGetScope (ACPI_HANDLE Handle, ACPI_HANDLE *RetScope)
+AcpiGetScope (
+    ACPI_HANDLE             Handle, 
+    ACPI_HANDLE             *RetScope)
 {
-    NAME_TABLE_ENTRY    *Object;
+    NAME_TABLE_ENTRY        *Object;
 
 
     if (!RetScope)
@@ -422,9 +433,11 @@ AcpiGetScope (ACPI_HANDLE Handle, ACPI_HANDLE *RetScope)
  ******************************************************************************/
 
 ACPI_STATUS
-AcpiGetContainingScope (ACPI_HANDLE Handle, ACPI_HANDLE *RetHandle)
+AcpiGetContainingScope (
+    ACPI_HANDLE             Handle, 
+    ACPI_HANDLE             *RetHandle)
 {
-    NAME_TABLE_ENTRY    *Object;
+    NAME_TABLE_ENTRY        *Object;
 
 
     if (!RetHandle)
@@ -485,15 +498,19 @@ AcpiGetContainingScope (ACPI_HANDLE Handle, ACPI_HANDLE *RetHandle)
  ******************************************************************************/
 
 ACPI_STATUS
-AcpiWalkNamespace (ACPI_OBJECT_TYPE Type, ACPI_HANDLE StartHandle, UINT32 MaxDepth,
-                    WALK_CALLBACK UserFunction, 
-                    void *Context, void **ReturnValue)
+AcpiWalkNamespace (
+    ACPI_OBJECT_TYPE        Type, 
+    ACPI_HANDLE             StartHandle, 
+    UINT32                  MaxDepth,
+    WALK_CALLBACK           UserFunction, 
+    void                    *Context, 
+    void                    **ReturnValue)
 {
-    ACPI_HANDLE         ObjHandle = 0;
-    ACPI_HANDLE         Scope;
-    ACPI_HANDLE         NewScope;
-    void                *UserReturnVal;
-    UINT32              Level = 1;
+    ACPI_HANDLE             ObjHandle = 0;
+    ACPI_HANDLE             Scope;
+    ACPI_HANDLE             NewScope;
+    void                    *UserReturnVal;
+    UINT32                  Level = 1;
 
 
     FUNCTION_TRACE ("AcpiWalkNamespace");
@@ -602,7 +619,9 @@ AcpiWalkNamespace (ACPI_OBJECT_TYPE Type, ACPI_HANDLE StartHandle, UINT32 MaxDep
  ******************************************************************************/
 
 ACPI_STATUS
-AcpiGetObject (char *Pathname, ACPI_HANDLE *RetHandle)
+AcpiGetObject (
+    char                    *Pathname, 
+    ACPI_HANDLE             *RetHandle)
 {
 
     if (!RetHandle)
@@ -630,7 +649,8 @@ AcpiGetObject (char *Pathname, ACPI_HANDLE *RetHandle)
  ******************************************************************************/
 
 ACPI_HANDLE 
-AcpiGetParentHandle (ACPI_HANDLE ChildHandle)
+AcpiGetParentHandle (
+    ACPI_HANDLE             ChildHandle)
 {
 
     return ((ACPI_HANDLE) NULL);
@@ -650,7 +670,8 @@ AcpiGetParentHandle (ACPI_HANDLE ChildHandle)
  ******************************************************************************/
 
 ACPI_OBJECT_TYPE 
-AcpiValueType (ACPI_HANDLE Handle)
+AcpiValueType (
+    ACPI_HANDLE             Handle)
 {
 
     return (TYPE_Any);
@@ -689,7 +710,8 @@ AcpiCurrentScopeName (void)
  ******************************************************************************/
 
 BOOLEAN 
-AcpiIsNameSpaceHandle (ACPI_HANDLE QueryHandle)
+AcpiIsNameSpaceHandle (
+    ACPI_HANDLE             QueryHandle)
 {
     return (TRUE);
 }
@@ -708,7 +730,8 @@ AcpiIsNameSpaceHandle (ACPI_HANDLE QueryHandle)
  ******************************************************************************/
 
 BOOLEAN 
-AcpiIsNameSpaceValue (ACPI_OBJECT_TYPE Value)
+AcpiIsNameSpaceValue (
+    ACPI_OBJECT_TYPE        Value)
 {
     return (TRUE);
 }
@@ -728,7 +751,8 @@ AcpiIsNameSpaceValue (ACPI_OBJECT_TYPE Value)
  ******************************************************************************/
 
 INT32
-AcpiSetFirmwareWakingVector (UINT32 PhysicalAddress)
+AcpiSetFirmwareWakingVector (
+    UINT32                  PhysicalAddress)
 {
     FUNCTION_TRACE ("AcpiSetFirmwareWakingVector");
     
@@ -752,7 +776,8 @@ AcpiSetFirmwareWakingVector (UINT32 PhysicalAddress)
  ******************************************************************************/
 
 ACPI_STATUS
-AcpiGetFirmwareWakingVector (UINT32 * PhysicalAddress)
+AcpiGetFirmwareWakingVector (
+    UINT32                  *PhysicalAddress)
 {
     FUNCTION_TRACE ("AcpiGetFirmwareWakingVector");
 

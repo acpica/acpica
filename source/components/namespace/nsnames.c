@@ -133,11 +133,12 @@ static ST_KEY_DESC_TABLE KDT[] = {
  ***************************************************************************/
 
 char *
-NsNameOfScope (NAME_TABLE_ENTRY *EntryToSearch)
+NsNameOfScope (
+    NAME_TABLE_ENTRY        *EntryToSearch)
 {
-    NAME_TABLE_ENTRY    *Temp = NULL;
-    char                *NameBuffer;
-    size_t              Size;
+    NAME_TABLE_ENTRY        *Temp = NULL;
+    char                    *NameBuffer;
+    size_t                  Size;
 
 
     FUNCTION_TRACE ("NsNameOfScope");
@@ -239,13 +240,16 @@ NsNameOfCurrentScope (void)
  ***************************************************************************/
 
 ACPI_STATUS
-NsHandleToPathname (ACPI_HANDLE TargetHandle, UINT32 BufSize, char *UserBuffer)
+NsHandleToPathname (
+    ACPI_HANDLE             TargetHandle, 
+    UINT32                  BufSize, 
+    char                    *UserBuffer)
 {
-    NAME_TABLE_ENTRY    *EntryToSearch = NULL;
-    NAME_TABLE_ENTRY    *Temp = NULL;
-    static size_t       FqnSize = 0;
-    size_t              Size;
-    INT32               TraceFQN = 0;
+    NAME_TABLE_ENTRY        *EntryToSearch = NULL;
+    NAME_TABLE_ENTRY        *Temp = NULL;
+    size_t                  FqnSize = 0;
+    size_t                  Size;
+    INT32                   TraceFQN = 0;
 
 
     FUNCTION_TRACE ("NsHandleToPathname");
@@ -342,9 +346,11 @@ NsHandleToPathname (ACPI_HANDLE TargetHandle, UINT32 BufSize, char *UserBuffer)
  ***************************************************************************/
 
 BOOLEAN
-NsPatternMatch (NAME_TABLE_ENTRY *ObjEntry, char *SearchFor)
+NsPatternMatch (
+    NAME_TABLE_ENTRY        *ObjEntry, 
+    char                    *SearchFor)
 {
-    INT32           i;
+    INT32                   i;
 
 
     for (i = 0; i < ACPI_NAME_SIZE; i++)
@@ -379,9 +385,12 @@ NsPatternMatch (NAME_TABLE_ENTRY *ObjEntry, char *SearchFor)
  ***************************************************************************/
 
 void *
-NsNameCompare (ACPI_HANDLE ObjHandle, UINT32 Level, void *Context)
+NsNameCompare (
+    ACPI_HANDLE             ObjHandle, 
+    UINT32                  Level, 
+    void                    *Context)
 {
-    FIND_CONTEXT        *Find = Context;
+    FIND_CONTEXT            *Find = Context;
 
 
     /* Match, yes or no? */
@@ -427,10 +436,14 @@ NsNameCompare (ACPI_HANDLE ObjHandle, UINT32 Level, void *Context)
  ***************************************************************************/
 
 void
-NsLowFindNames (NAME_TABLE_ENTRY *ThisEntry, char *SearchFor,
-                        INT32 *Count, ACPI_HANDLE List[], INT32 MaxDepth)
+NsLowFindNames (
+    NAME_TABLE_ENTRY        *ThisEntry, 
+    char                    *SearchFor,
+    INT32                   *Count, 
+    ACPI_HANDLE             List[], 
+    INT32                   MaxDepth)
 {
-    FIND_CONTEXT        Find;
+    FIND_CONTEXT            Find;
 
 
 
@@ -493,10 +506,13 @@ NsLowFindNames (NAME_TABLE_ENTRY *ThisEntry, char *SearchFor,
  ***************************************************************************/
 
 ACPI_HANDLE *
-NsFindNames (char *SearchFor, ACPI_HANDLE StartHandle, INT32 MaxDepth)
+NsFindNames (
+    char                    *SearchFor, 
+    ACPI_HANDLE             StartHandle, 
+    INT32                   MaxDepth)
 {
-    ACPI_HANDLE         *List = NULL;
-    INT32               Count;
+    ACPI_HANDLE             *List = NULL;
+    INT32                   Count;
 
 
     FUNCTION_TRACE ("NsFindNames");

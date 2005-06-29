@@ -141,12 +141,15 @@ static ST_KEY_DESC_TABLE KDT[] = {
  ****************************************************************************/
 
 ACPI_STATUS
-NsEvaluateRelative (NAME_TABLE_ENTRY *ObjEntry, char *Pathname, 
-                    ACPI_OBJECT *ReturnObject, ACPI_OBJECT **Params)
+NsEvaluateRelative (
+    NAME_TABLE_ENTRY        *ObjEntry, 
+    char                    *Pathname, 
+    ACPI_OBJECT             *ReturnObject, 
+    ACPI_OBJECT             **Params)
 {
-    char                NameBuffer[PATHNAME_MAX];
-    ACPI_STATUS         Status;
-    UINT32              MaxObjectPathLength = PATHNAME_MAX - 1;
+    char                    NameBuffer[PATHNAME_MAX];
+    ACPI_STATUS             Status;
+    UINT32                  MaxObjectPathLength = PATHNAME_MAX - 1;
 
 
     FUNCTION_TRACE ("NsEvaluateRelative");
@@ -231,11 +234,13 @@ NsEvaluateRelative (NAME_TABLE_ENTRY *ObjEntry, char *Pathname,
  ****************************************************************************/
 
 ACPI_STATUS
-NsEvaluateByName (char *Pathname, ACPI_OBJECT *ReturnObject,
-                    ACPI_OBJECT **Params)
+NsEvaluateByName (
+    char                    *Pathname, 
+    ACPI_OBJECT             *ReturnObject,
+    ACPI_OBJECT             **Params)
 {
-    ACPI_STATUS         Status = AE_ERROR;
-    NAME_TABLE_ENTRY    *ObjEntry = NULL;
+    ACPI_STATUS             Status = AE_ERROR;
+    NAME_TABLE_ENTRY        *ObjEntry = NULL;
 
     
     FUNCTION_TRACE ("NsEvaluateByName");
@@ -299,10 +304,12 @@ NsEvaluateByName (char *Pathname, ACPI_OBJECT *ReturnObject,
  ****************************************************************************/
 
 ACPI_STATUS
-NsEvaluateByHandle (NAME_TABLE_ENTRY *ObjEntry, ACPI_OBJECT *ReturnObject,
-                            ACPI_OBJECT **Params)
+NsEvaluateByHandle (
+    NAME_TABLE_ENTRY        *ObjEntry, 
+    ACPI_OBJECT             *ReturnObject,
+    ACPI_OBJECT             **Params)
 {
-    ACPI_STATUS         Status = AE_ERROR;
+    ACPI_STATUS             Status = AE_ERROR;
 
 
     FUNCTION_TRACE ("NsEvaluateByHandle");
@@ -415,9 +422,11 @@ NsEvaluateByHandle (NAME_TABLE_ENTRY *ObjEntry, ACPI_OBJECT *ReturnObject,
  ****************************************************************************/
 
 ACPI_STATUS
-NsExecuteControlMethod (NAME_TABLE_ENTRY *MethodEntry, ACPI_OBJECT **Params)
+NsExecuteControlMethod (
+    NAME_TABLE_ENTRY        *MethodEntry, 
+    ACPI_OBJECT             **Params)
 {
-    ACPI_STATUS         Status;
+    ACPI_STATUS             Status;
 
 
     FUNCTION_TRACE ("NsExecuteControlMethod");
@@ -514,7 +523,8 @@ NsExecuteControlMethod (NAME_TABLE_ENTRY *MethodEntry, ACPI_OBJECT **Params)
  ****************************************************************************/
 
 ACPI_STATUS
-NsGetObjectValue (NAME_TABLE_ENTRY *ObjectEntry)
+NsGetObjectValue (
+    NAME_TABLE_ENTRY        *ObjectEntry)
 {
     ACPI_STATUS             Status;
     ACPI_OBJECT             *ObjDesc;

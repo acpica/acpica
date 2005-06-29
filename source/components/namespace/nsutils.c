@@ -129,11 +129,13 @@ static ST_KEY_DESC_TABLE KDT[] = {
  ******************************************************************************/
 
 UINT8
-NsChecksum (void *Buffer, UINT32 Length)
+NsChecksum (
+    void                    *Buffer, 
+    UINT32                  Length)
 {
-    UINT8       *limit;
-    UINT8       *rover;
-    UINT8       sum = 0;
+    UINT8                   *limit;
+    UINT8                   *rover;
+    UINT8                   sum = 0;
 
 
     if (Buffer && Length)
@@ -164,10 +166,11 @@ NsChecksum (void *Buffer, UINT32 Length)
  ***************************************************************************/
 
 NAME_TABLE_ENTRY *
-NsAllocateNteDesc (INT32 NteCount)
+NsAllocateNteDesc (
+    INT32                   NteCount)
 {
-    NAME_TABLE_ENTRY    *NewNteDesc = NULL;
-    size_t              AllocSize;
+    NAME_TABLE_ENTRY        *NewNteDesc = NULL;
+    size_t                  AllocSize;
 
 
     FUNCTION_TRACE ("AllocateNteDesc");
@@ -209,7 +212,8 @@ NsAllocateNteDesc (INT32 NteCount)
  ***************************************************************************/
 
 ACPI_OBJECT_TYPE
-NsGetType (ACPI_HANDLE handle)
+NsGetType (
+    ACPI_HANDLE             handle)
 {
     FUNCTION_TRACE ("NsGetType");
 
@@ -239,7 +243,8 @@ NsGetType (ACPI_HANDLE handle)
  ***************************************************************************/
 
 void *
-NsGetValue (ACPI_HANDLE handle)
+NsGetValue (
+    ACPI_HANDLE             handle)
 {
     FUNCTION_TRACE ("NsGetValue");
 
@@ -270,9 +275,10 @@ NsGetValue (ACPI_HANDLE handle)
  ****************************************************************************/
 
 INT32
-IsNsValue (ACPI_OBJECT *ObjDesc)
+IsNsValue (
+    ACPI_OBJECT             *ObjDesc)
 {
-    ACPI_HANDLE     RetHandle;
+    ACPI_HANDLE             RetHandle;
 
 
     FUNCTION_TRACE ("IsNsValue");
@@ -296,7 +302,8 @@ IsNsValue (ACPI_OBJECT *ObjDesc)
  ***************************************************************************/
 
 INT32
-NsLocal (ACPI_OBJECT_TYPE Type)
+NsLocal (
+    ACPI_OBJECT_TYPE        Type)
 {
     FUNCTION_TRACE ("NsLocal");
 
@@ -329,13 +336,16 @@ NsLocal (ACPI_OBJECT_TYPE Type)
  ****************************************************************************/
 
 char *
-NsInternalizeName (char *DottedName)
+NsInternalizeName (
+    char                    *DottedName)
 {
-    char            *Result = NULL;
-    static char     *IN = NULL;
-    static size_t   INsize = 0;
-    size_t          i;
+    char                    *Result = NULL;
+    static char             *IN = NULL;
+    static size_t           INsize = 0;
+    size_t                  i;
 
+
+    /* TBD: remove static variables above !! */
 
     FUNCTION_TRACE ("NsInternalizeName");
 
@@ -403,7 +413,8 @@ NsInternalizeName (char *DottedName)
  ****************************************************************************/
 
 NAME_TABLE_ENTRY *
-NsConvertHandleToEntry (ACPI_HANDLE Handle)
+NsConvertHandleToEntry (
+    ACPI_HANDLE             Handle)
 {
 
     /* 
@@ -446,7 +457,8 @@ static INT32    NumStaticBlocks = 0;
  ***************************************************************************/
 
 void
-RegisterStaticBlockPtr (void **BlkPtr)
+RegisterStaticBlockPtr (
+    void                    **BlkPtr)
 {
 
 
@@ -473,9 +485,10 @@ RegisterStaticBlockPtr (void **BlkPtr)
  ***************************************************************************/
 
 void
-MarkStaticBlocks (INT32 *Count)
+MarkStaticBlocks (
+    INT32                   *Count)
 {
-    INT32           i;
+    INT32                   i;
 
 
     for (i = 0; i < NumStaticBlocks; i++)
@@ -509,7 +522,10 @@ MarkStaticBlocks (INT32 *Count)
  ***************************************************************************/
 
 static void
-NsMarkNT (nte *ThisEntry, INT32 Size, INT32 *Count)
+NsMarkNT (
+    nte                 *ThisEntry, 
+    INT32               Size, 
+    INT32               *Count)
 {
     nte                 *Appendage;
 

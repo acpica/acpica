@@ -127,9 +127,13 @@ static ST_KEY_DESC_TABLE KDT[] = {
  ***************************************************************************/
 
 ACPI_STATUS
-NsDumpPathname (ACPI_HANDLE Handle, char *Msg, UINT32 Level, UINT32 Component)
+NsDumpPathname (
+    ACPI_HANDLE             Handle, 
+    char                    *Msg, 
+    UINT32                  Level, 
+    UINT32                  Component)
 {
-    char            *Buffer;
+    char                    *Buffer;
 
 
     /* Do this only if the requested debug level and component are enabled */
@@ -172,15 +176,18 @@ BREAKPOINT3;
  ***************************************************************************/
 
 void *
-NsDumpOneObject (ACPI_HANDLE ObjHandle, UINT32 Level, void *Context)
+NsDumpOneObject (
+    ACPI_HANDLE             ObjHandle, 
+    UINT32                  Level, 
+    void                    *Context)
 {
-    UINT32              DownstreamSiblingMask = 0;
-    INT32               LevelTmp;
-    ACPI_OBJECT_TYPE    Type;
-    UINT32              WhichBit;
-    NAME_TABLE_ENTRY    *Appendage = NULL;
-    NAME_TABLE_ENTRY    *ThisEntry = (NAME_TABLE_ENTRY *) ObjHandle;
-    size_t              Size = 0;
+    UINT32                  DownstreamSiblingMask = 0;
+    INT32                   LevelTmp;
+    ACPI_OBJECT_TYPE        Type;
+    UINT32                  WhichBit;
+    NAME_TABLE_ENTRY        *Appendage = NULL;
+    NAME_TABLE_ENTRY        *ThisEntry = (NAME_TABLE_ENTRY *) ObjHandle;
+    size_t                  Size = 0;
 
 
     LevelTmp    = Level;
@@ -341,8 +348,12 @@ NsDumpOneObject (ACPI_HANDLE ObjHandle, UINT32 Level, void *Context)
  ***************************************************************************/
 
 void
-NsDumpObjects (ACPI_OBJECT_TYPE Type, INT32 MaxDepth, ACPI_HANDLE StartHandle)
+NsDumpObjects (
+    ACPI_OBJECT_TYPE        Type, 
+    INT32                   MaxDepth, 
+    ACPI_HANDLE             StartHandle)
 {
+
     AcpiWalkNamespace (Type, StartHandle, MaxDepth, NsDumpOneObject, NULL, NULL);
 }
 
@@ -361,12 +372,15 @@ NsDumpObjects (ACPI_OBJECT_TYPE Type, INT32 MaxDepth, ACPI_HANDLE StartHandle)
  ***************************************************************************/
 
 void *
-NsDumpOneDevice (ACPI_HANDLE ObjHandle, UINT32 Level, void *Context)
+NsDumpOneDevice (
+    ACPI_HANDLE             ObjHandle, 
+    UINT32                  Level, 
+    void                    *Context)
 {
-    void                *RetVal;
-    ACPI_DEVICE_INFO    Info;
-    ACPI_STATUS         Status;
-    UINT32              i;
+    void                    *RetVal;
+    ACPI_DEVICE_INFO        Info;
+    ACPI_STATUS             Status;
+    UINT32                  i;
 
 
     RetVal = NsDumpOneObject (ObjHandle, Level, Context);
@@ -400,7 +414,8 @@ NsDumpOneDevice (ACPI_HANDLE ObjHandle, UINT32 Level, void *Context)
 void
 NsDumpRootDevices (void)
 {
-    ACPI_HANDLE         SysBusHandle;
+    ACPI_HANDLE             SysBusHandle;
+
 
     /* Only dump the table if tracing is enabled */
 
@@ -430,9 +445,11 @@ NsDumpRootDevices (void)
  ***************************************************************************/
 
 void
-NsDumpTables (ACPI_HANDLE SearchBase, INT32 MaxDepth)
+NsDumpTables (
+    ACPI_HANDLE             SearchBase, 
+    INT32                   MaxDepth)
 {
-    ACPI_HANDLE         SearchHandle = SearchBase;
+    ACPI_HANDLE             SearchHandle = SearchBase;
 
 
     FUNCTION_TRACE ("NsDumpTables");
@@ -474,7 +491,8 @@ NsDumpTables (ACPI_HANDLE SearchBase, INT32 MaxDepth)
  ***************************************************************************/
 
 void
-NsDumpEntry (ACPI_HANDLE Handle)
+NsDumpEntry (
+    ACPI_HANDLE             Handle)
 {
 
     FUNCTION_TRACE ("NsDumpEntry");
