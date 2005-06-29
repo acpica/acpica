@@ -607,6 +607,11 @@ ACPI_STATUS
 PsxObjStackDeleteAll (
     ACPI_WALK_STATE         *WalkState);
 
+ACPI_STATUS
+PsxObjStackPopAndDelete (
+    UINT32                  PopCount,
+    ACPI_WALK_STATE         *WalkState);
+
 void
 PsDeleteWalkState (
     ACPI_WALK_STATE         *WalkState);
