@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exmutex - ASL Mutex Acquire/Release functions
- *              $Revision: 1.14 $
+ *              $Revision: 1.15 $
  *
  *****************************************************************************/
 
@@ -325,8 +325,11 @@ AcpiExReleaseMutex (
 
     if (ObjDesc->Mutex.OwnerThread != WalkState->Thread)
     {
-        ACPI_REPORT_ERROR (("Thread %X owns Mutex [%4.4s], but thread %X is attempting to release it\n",
-            ObjDesc->Mutex.OwnerThread, ObjDesc->Mutex.Node->Name.Ascii, WalkState->Thread));
+        ACPI_REPORT_ERROR ((
+            "Thread %X cannot release Mutex [%4.4s] acquired by thread %X\n",
+            WalkState->Thread->ThreadId,
+            ObjDesc->Mutex.Node->Name.Ascii, 
+            ObjDesc->Mutex.OwnerThread->ThreadId));
         return_ACPI_STATUS (AE_AML_NOT_OWNER);
     }
 
