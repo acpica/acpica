@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dswload - Dispatcher namespace load callbacks
- *              $Revision: 1.30 $
+ *              $Revision: 1.31 $
  *
  *****************************************************************************/
 
@@ -306,7 +306,7 @@ LdLoadResourceElements (
         {
             Status = AcpiNsLookup (WalkState->ScopeInfo,
                             InitializerNode->ExternalName,
-                            INTERNAL_TYPE_RESOURCE,
+                            INTERNAL_TYPE_RESOURCE_FIELD,
                             IMODE_LOAD_PASS1,
                             NS_NO_UPSEARCH | NS_DONT_OPEN_SCOPE,
                             NULL, &NsNode);
@@ -324,7 +324,9 @@ LdLoadResourceElements (
             InitializerNode->NsNode = NsNode;
             NsNode->Object = InitializerNode;
 
-            if (PsNode->Flags & NODE_IS_BIT_OFFSET)
+            /* Pass thru the field type (Bitfield or Bytefield) */
+
+            if (InitializerNode->Flags & NODE_IS_BIT_OFFSET)
             {
                 NsNode->Flags |= ANOBJ_IS_BIT_OFFSET;
             }

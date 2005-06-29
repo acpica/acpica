@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: asllookup- Namespace lookup
- *              $Revision: 1.36 $
+ *              $Revision: 1.37 $
  *
  *****************************************************************************/
 
@@ -422,6 +422,7 @@ LkNamespaceLocateBegin (
     ASL_PARSE_NODE          *Next;
     ASL_PARSE_NODE          *OwningPsNode;
     UINT32                  MinimumLength;
+    UINT32                  Temp;
 
 
     DEBUG_PRINT (TRACE_DISPATCH, ("NamespaceLocateBegin: PsNode %p\n", PsNode));
@@ -519,7 +520,8 @@ LkNamespaceLocateBegin (
 
     /* 1) Check for a reference to a resource descriptor */
 
-    if (NsNode->Type == INTERNAL_TYPE_RESOURCE)
+    if ((NsNode->Type == INTERNAL_TYPE_RESOURCE_FIELD) ||
+        (NsNode->Type == INTERNAL_TYPE_RESOURCE))
     {
         /*
          * This was a reference to a field within a resource descriptor.  Extract
@@ -527,17 +529,59 @@ LkNamespaceLocateBegin (
          * the field type) and change the named reference into an integer for
          * AML code generation
          */
-        PsNode->ParseOpcode     = INTEGER;
-        PsNode->Value.Integer   = (UINT64) NsNode->OwnerId;
-
-        OpcGenerateAmlOpcode (PsNode);
-        PsNode->AmlLength = OpcSetOptimalIntegerSize (PsNode);
-
+        Temp = (UINT32) NsNode->OwnerId;
         if (NsNode->Flags & ANOBJ_IS_BIT_OFFSET)
         {
             PsNode->Flags |= NODE_IS_BIT_OFFSET;
         }
 
+
+        /* Perform BitOffset <--> ByteOffset conversion if necessary */
+
+        switch (PsNode->Parent->AmlOpcode)
+        {
+        /* Ops that require Bit Offsets */
+
+        case AML_CREATE_BIT_FIELD_OP:
+        case AML_CREATE_FIELD_OP:
+
+            if (!(PsNode->Flags & NODE_IS_BIT_OFFSET))
+            {
+                sprintf (MsgBuffer, "byte %d to bit %d", Temp,
+                            MUL_8 (Temp));
+
+                Temp = MUL_8 (Temp);
+                AslError (ASL_WARNING, ASL_MSG_BYTES_TO_BITS, PsNode, MsgBuffer);
+            }
+            break;
+
+        /* Ops that require Byte offsets */
+
+        case AML_CREATE_BYTE_FIELD_OP:
+        case AML_CREATE_WORD_FIELD_OP:
+        case AML_CREATE_DWORD_FIELD_OP:
+        case AML_CREATE_QWORD_FIELD_OP:
+        case AML_INDEX_OP:
+
+            if (PsNode->Flags & NODE_IS_BIT_OFFSET)
+            {
+                sprintf (MsgBuffer, "bit %d to byte %d", Temp,
+                            ROUND_BITS_DOWN_TO_BYTES (Temp));
+
+                Temp = ROUND_BITS_DOWN_TO_BYTES (Temp);
+                AslError (ASL_WARNING, ASL_MSG_BITS_TO_BYTES, PsNode, MsgBuffer);
+            }
+            break;
+        }
+
+        /* Now convert this node to an integer whose value is the field offset */
+
+        PsNode->ParseOpcode     = INTEGER;
+        PsNode->Value.Integer   = (UINT64) Temp;
+        PsNode->Flags           |= NODE_IS_RESOURCE_FIELD;
+
+        OpcGenerateAmlOpcode (PsNode);
+        PsNode->AmlLength = OpcSetOptimalIntegerSize (PsNode);
     }
 
 
@@ -560,7 +604,9 @@ LkNamespaceLocateBegin (
 
         if (NsNode->Type != ACPI_TYPE_METHOD)
         {
-            AslError (ASL_ERROR, ASL_MSG_NOT_METHOD, PsNode, PsNode->ExternalName);
+            sprintf (MsgBuffer, "%s is a %s", PsNode->ExternalName, AcpiUtGetTypeName (NsNode->Type));
+
+            AslError (ASL_ERROR, ASL_MSG_NOT_METHOD, PsNode, MsgBuffer);
             return (AE_OK);
         }
 
