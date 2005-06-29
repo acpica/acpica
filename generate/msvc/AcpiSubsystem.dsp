@@ -112,7 +112,7 @@ SOURCE=..\..\Subsystem\Common\cmclib.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\Subsystem\Common\cmcreate.c
+SOURCE=..\..\Subsystem\Common\cmcopy.c
 # End Source File
 # Begin Source File
 
@@ -144,6 +144,10 @@ SOURCE=..\..\Subsystem\Common\cmobject.c
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\Subsystem\Common\cmrefcnt.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\Subsystem\Common\cmsize.c
 # End Source File
 # Begin Source File
@@ -164,6 +168,14 @@ SOURCE=..\..\Subsystem\Events\evapi.c
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\Subsystem\Events\evapievt.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\Subsystem\Events\evapirgn.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\Subsystem\Events\evfixed.c
 # End Source File
 # Begin Source File
@@ -181,6 +193,10 @@ SOURCE=..\..\Subsystem\Events\evnotify.c
 # Begin Source File
 
 SOURCE=..\..\Subsystem\Events\evregion.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\Subsystem\Events\evrgnini.c
 # End Source File
 # Begin Source File
 
@@ -228,6 +244,10 @@ SOURCE=..\..\Subsystem\Interpreter\iapi.c
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\Subsystem\Interpreter\icopy.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\Subsystem\Interpreter\ieconfig.c
 # End Source File
 # Begin Source File
@@ -272,11 +292,19 @@ SOURCE=..\..\Subsystem\Interpreter\iesystem.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\Subsystem\Interpreter\ievalue.c
+SOURCE=..\..\Subsystem\Interpreter\iresnte.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\Subsystem\Interpreter\iexecute.c
+SOURCE=..\..\Subsystem\Interpreter\iresobj.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\Subsystem\Interpreter\iresolve.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\Subsystem\Interpreter\iresop.c
 # End Source File
 # Begin Source File
 
@@ -289,6 +317,18 @@ SOURCE=..\..\Subsystem\Interpreter\isdump.c
 # Begin Source File
 
 SOURCE=..\..\Subsystem\Interpreter\isnames.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\Subsystem\Interpreter\istore.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\Subsystem\Interpreter\istorent.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\Subsystem\Interpreter\istoreob.c
 # End Source File
 # Begin Source File
 
