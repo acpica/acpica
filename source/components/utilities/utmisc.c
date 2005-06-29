@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: utmisc - common utility procedures
- *              $Revision: 1.58 $
+ *              $Revision: 1.59 $
  *
  ******************************************************************************/
 
@@ -1241,6 +1241,94 @@ AcpiUtWalkPackageTree (
     /* We should never get here */
 
     return_ACPI_STATUS (AE_AML_INTERNAL);
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiUtGenerateChecksum
+ *
+ * PARAMETERS:  Buffer          - Buffer to be scanned
+ *              Length          - number of bytes to examine
+ *
+ * RETURN:      checksum
+ *
+ * DESCRIPTION: Generate a checksum on a raw buffer
+ *
+ ******************************************************************************/
+
+UINT8
+AcpiUtGenerateChecksum (
+    UINT8                   *Buffer,
+    UINT32                  Length)
+{
+    UINT32                  i;
+    signed char             Sum = 0;
+
+    for (i = 0; i < Length; i++)
+    {
+        Sum = (signed char) (Sum + Buffer[i]);
+    }
+
+    return ((UINT8) (0 - Sum));
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiUtGetResourceEndTag
+ *
+ * PARAMETERS:  ObjDesc         - The resource template buffer object
+ *
+ * RETURN:      Pointer to the end tag
+ *
+ * DESCRIPTION: Find the END_TAG resource descriptor in a resource template
+ *
+ ******************************************************************************/
+
+
+UINT8 *
+AcpiUtGetResourceEndTag (
+    ACPI_OPERAND_OBJECT     *ObjDesc)
+{
+    UINT8                   BufferByte;
+    UINT8                   *Buffer;
+    UINT8                   *EndBuffer;
+
+
+
+    Buffer    = ObjDesc->Buffer.Pointer;
+    EndBuffer = Buffer + ObjDesc->Buffer.Length;
+
+    while (Buffer < EndBuffer)
+    {
+        BufferByte = *Buffer;
+        if (BufferByte & RESOURCE_DESC_TYPE_MASK)
+        {
+            /* Large Descriptor - Length is next 2 bytes */
+
+            Buffer += ((*(Buffer+1) | (*(Buffer+2) << 8)) + 3);
+        }
+        else
+        {
+            /* Small Descriptor.  End Tag will be found here */
+
+            if ((BufferByte & RESOURCE_DESC_SMALL_MASK) == RESOURCE_DESC_END_TAG)
+            {
+                /* Found the end tag descriptor, all done. */
+
+                return (Buffer);
+            }
+
+            /* Length is in the header */
+
+            Buffer += ((BufferByte & 0x07) + 1);
+        }
+    }
+
+    /* End tag not found */
+
+    return (NULL);
 }
 
 
