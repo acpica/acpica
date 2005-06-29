@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslcompiler.h - common include file
- *              $Revision: 1.124 $
+ *              $Revision: 1.125 $
  *
  *****************************************************************************/
 
@@ -975,7 +975,7 @@ RsSetFlagBits (
     UINT8                   *Flags,
     ACPI_PARSE_OBJECT       *Op,
     UINT8                   Position,
-    UINT8                   Default);
+    UINT8                   DefaultBit);
 
 ACPI_PARSE_OBJECT *
 RsCompleteNodeAndGetNext (
