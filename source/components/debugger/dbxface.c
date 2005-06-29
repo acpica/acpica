@@ -1,16 +1,15 @@
-/*******************************************************************************
+/******************************************************************************
  *
- * Module Name: dbxface - AML Debugger external interfaces
- *              $Revision: 1.59 $
+ * Module Name: dbapi - AML Debugger external interfaces
  *
- ******************************************************************************/
+ *****************************************************************************/
 
 /******************************************************************************
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
- * All rights reserved.
+ * Some or all of this work - Copyright (c) 1999, Intel Corp.  All rights
+ * reserved.
  *
  * 2. License
  *
@@ -116,68 +115,60 @@
 
 
 #include "acpi.h"
+#include "parser.h"
 #include "amlcode.h"
-#include "acdebug.h"
+#include "namesp.h"
+#include "parser.h"
+#include "events.h"
+#include "interp.h"
+#include "debugger.h"
 
 
-#ifdef ENABLE_DEBUGGER
+#ifdef ACPI_DEBUG
 
-#define _COMPONENT          ACPI_DEBUGGER
-        ACPI_MODULE_NAME    ("dbxface")
+#define _COMPONENT          DEBUGGER
+        MODULE_NAME         ("dbcmds");
 
 
-/*******************************************************************************
+/******************************************************************************
  *
  * FUNCTION:    AcpiDbSingleStep
  *
- * PARAMETERS:  WalkState       - Current walk
- *              Op              - Current executing op
- *              OpcodeClass     - Class of the current AML Opcode
+ * PARAMETERS:
  *
- * RETURN:      Status
+ * RETURN:      None
  *
  * DESCRIPTION: Called just before execution of an AML opcode.
  *
- ******************************************************************************/
+ *****************************************************************************/
 
 ACPI_STATUS
 AcpiDbSingleStep (
     ACPI_WALK_STATE         *WalkState,
-    ACPI_PARSE_OBJECT       *Op,
-    UINT32                  OpcodeClass)
+    ACPI_GENERIC_OP         *Op,
+    UINT8                   OpType)
 {
-    ACPI_PARSE_OBJECT       *Next;
+    ACPI_GENERIC_OP         *Next;
     ACPI_STATUS             Status = AE_OK;
     UINT32                  OriginalDebugLevel;
-    ACPI_PARSE_OBJECT       *DisplayOp;
-    ACPI_PARSE_OBJECT       *ParentOp;
 
 
-    ACPI_FUNCTION_ENTRY ();
+    /* Is there a breakpoint set? */
 
-    /* Check for single-step breakpoint */
-
-    if (WalkState->MethodBreakpoint && 
-       (WalkState->MethodBreakpoint <= Op->Common.AmlOffset))
+    if (AcpiGbl_MethodBreakpoint)
     {
         /* Check if the breakpoint has been reached or passed */
-        /* Hit the breakpoint, resume single step, reset breakpoint */
 
-        AcpiOsPrintf ("***Break*** at AML offset %X\n", Op->Common.AmlOffset);
-        AcpiGbl_CmSingleStep = TRUE;
-        AcpiGbl_StepToNextCall = FALSE;
-        WalkState->MethodBreakpoint = 0;
-    }
+        if ((AcpiGbl_BreakpointWalk == WalkState) &&
+            (AcpiGbl_MethodBreakpoint <= Op->AmlOffset))
+        {
+            /* Hit the breakpoint, resume single step, reset breakpoint */
 
-    /* Check for user breakpoint (Must be on exact Aml offset) */
-
-    else if (WalkState->UserBreakpoint && 
-            (WalkState->UserBreakpoint == Op->Common.AmlOffset))
-    {
-        AcpiOsPrintf ("***UserBreakpoint*** at AML offset %X\n", Op->Common.AmlOffset);
-        AcpiGbl_CmSingleStep = TRUE;
-        AcpiGbl_StepToNextCall = FALSE;
-        WalkState->MethodBreakpoint = 0;
+            AcpiOsdPrintf ("***Break*** at AML offset 0x%X\n", Op->AmlOffset);
+            AcpiGbl_CmSingleStep = TRUE;
+            AcpiGbl_StepToNextCall = FALSE;
+            AcpiGbl_MethodBreakpoint = 0;
+        }
     }
 
 
@@ -185,33 +176,45 @@ AcpiDbSingleStep (
      * Check if this is an opcode that we are interested in --
      * namely, opcodes that have arguments
      */
-    if (Op->Common.AmlOpcode == AML_INT_NAMEDFIELD_OP)
+
+    if (Op->Opcode == AML_NAMEDFIELD_OP)
     {
-        return (AE_OK);
+        return AE_OK;
     }
 
-    switch (OpcodeClass)
+    switch (OpType)
     {
-    case AML_CLASS_UNKNOWN:
-    case AML_CLASS_ARGUMENT:    /* constants, literals, etc.  do nothing */
+    case OPTYPE_UNDEFINED:
+    case OPTYPE_CONSTANT:           /* argument type only */
+    case OPTYPE_LITERAL:            /* argument type only */
+    case OPTYPE_DATA_TERM:          /* argument type only */
+    case OPTYPE_LOCAL_VARIABLE:     /* argument type only */
+    case OPTYPE_METHOD_ARGUMENT:    /* argument type only */
         return (AE_OK);
-
-    default:
-        /* All other opcodes -- continue */
         break;
+
+    case OPTYPE_NAMED_OBJECT:
+        switch (Op->Opcode)
+        {
+        case AML_NAMEPATH_OP:
+            return (AE_OK);
+            break;
+        }
     }
+
 
     /*
      * Under certain debug conditions, display this opcode and its operands
      */
-    if ((AcpiGbl_DbOutputToFile)            ||
+
+    if ((OutputToFile)                      ||
         (AcpiGbl_CmSingleStep)              ||
-        (AcpiDbgLevel & ACPI_LV_PARSE))
+        (AcpiDbgLevel & TRACE_PARSE))
     {
-        if ((AcpiGbl_DbOutputToFile)        ||
-            (AcpiDbgLevel & ACPI_LV_PARSE))
+        if ((OutputToFile)                  ||
+            (AcpiDbgLevel & TRACE_PARSE))
         {
-            AcpiOsPrintf ("\n[AmlDebug] Next AML Opcode to execute:\n");
+            AcpiOsdPrintf ("\n[AmlDebug] Next AML Opcode to execute:\n");
         }
 
         /*
@@ -219,81 +222,23 @@ AcpiDbSingleStep (
          * and disable parser trace output for the duration of the display because
          * we don't want the extraneous debug output)
          */
+
         OriginalDebugLevel = AcpiDbgLevel;
-        AcpiDbgLevel &= ~(ACPI_LV_PARSE | ACPI_LV_FUNCTIONS);
-        Next = Op->Common.Next;
-        Op->Common.Next = NULL;
-
-
-        DisplayOp = Op;
-        ParentOp = Op->Common.Parent;
-        if (ParentOp)
-        {
-            if ((WalkState->ControlState) &&
-                (WalkState->ControlState->Common.State == ACPI_CONTROL_PREDICATE_EXECUTING))
-            {
-                /*
-                 * We are executing the predicate of an IF or WHILE statement
-                 * Search upwards for the containing IF or WHILE so that the
-                 * entire predicate can be displayed.
-                 */
-                while (ParentOp)
-                {
-                    if ((ParentOp->Common.AmlOpcode == AML_IF_OP) ||
-                        (ParentOp->Common.AmlOpcode == AML_WHILE_OP))
-                    {
-                        DisplayOp = ParentOp;
-                        break;
-                    }
-                    ParentOp = ParentOp->Common.Parent;
-                }
-            }
-            else
-            {
-                while (ParentOp)
-                {
-                    if ((ParentOp->Common.AmlOpcode == AML_IF_OP)     ||
-                        (ParentOp->Common.AmlOpcode == AML_ELSE_OP)   ||
-                        (ParentOp->Common.AmlOpcode == AML_SCOPE_OP)  ||
-                        (ParentOp->Common.AmlOpcode == AML_METHOD_OP) ||
-                        (ParentOp->Common.AmlOpcode == AML_WHILE_OP))
-                    {
-                        break;
-                    }
-                    DisplayOp = ParentOp;
-                    ParentOp = ParentOp->Common.Parent;
-                }
-            }
-        }
+        AcpiDbgLevel &= ~(TRACE_PARSE | TRACE_FUNCTIONS);
+        Next = Op->Next;
+        Op->Next = NULL;
 
         /* Now we can display it */
 
-        AcpiDbDisplayOp (WalkState, DisplayOp, ACPI_UINT32_MAX);
-
-        if ((Op->Common.AmlOpcode == AML_IF_OP) ||
-            (Op->Common.AmlOpcode == AML_WHILE_OP))
-        {
-            if (WalkState->ControlState->Common.Value)
-            {
-                AcpiOsPrintf ("Predicate = [True], IF block was executed\n");
-            }
-            else
-            {
-                AcpiOsPrintf ("Predicate = [False], Skipping IF block\n");
-            }
-        }
-
-        else if (Op->Common.AmlOpcode == AML_ELSE_OP)
-        {
-            AcpiOsPrintf ("Predicate = [False], ELSE block was executed\n");
-        }
+        AcpiDbDisplayOp (Op, ACPI_UINT32_MAX);
 
         /* Restore everything */
 
-        Op->Common.Next = Next;
-        AcpiOsPrintf ("\n");
+        Op->Next = Next;
+        AcpiOsdPrintf ("\n");
         AcpiDbgLevel = OriginalDebugLevel;
-    }
+   }
+
 
     /* If we are not single stepping, just continue executing the method */
 
@@ -302,13 +247,15 @@ AcpiDbSingleStep (
         return (AE_OK);
     }
 
+
     /*
      * If we are executing a step-to-call command,
      * Check if this is a method call.
      */
+
     if (AcpiGbl_StepToNextCall)
     {
-        if (Op->Common.AmlOpcode != AML_INT_METHODCALL_OP)
+        if (Op->Opcode != AML_METHODCALL_OP)
         {
             /* Not a method call, just keep executing */
 
@@ -320,23 +267,27 @@ AcpiDbSingleStep (
         AcpiGbl_StepToNextCall = FALSE;
     }
 
+
     /*
      * If the next opcode is a method call, we will "step over" it
      * by default.
      */
-    if (Op->Common.AmlOpcode == AML_INT_METHODCALL_OP)
+
+    if (Op->Opcode == AML_METHODCALL_OP)
     {
         AcpiGbl_CmSingleStep = FALSE;  /* No more single step while executing called method */
 
-        /* Set the breakpoint on/before the call, it will stop execution as soon as we return */
+        /* Set the breakpoint on the call, it will stop execution as soon as we return */
 
-        WalkState->MethodBreakpoint = 1;  /* Must be non-zero! */
+        /* TBD: [Future] don't kill the user breakpoint! */
+
+        AcpiGbl_MethodBreakpoint = Op->AmlOffset + 1;  /* Must be non-zero! */
+        AcpiGbl_BreakpointWalk = WalkState;
     }
 
 
-    /* TBD: [Investigate] what are the namespace locking issues here */
 
-    /* AcpiUtReleaseMutex (ACPI_MTX_NAMESPACE); */
+    AcpiCmReleaseMutex (MTX_NAMESPACE);
 
     /* Go into the command loop and await next user command */
 
@@ -348,16 +299,8 @@ AcpiDbSingleStep (
         {
             /* Handshake with the front-end that gets user command lines */
 
-            Status = AcpiUtReleaseMutex (ACPI_MTX_DEBUG_CMD_COMPLETE);
-            if (ACPI_FAILURE (Status))
-            {
-                return (Status);
-            }
-            Status = AcpiUtAcquireMutex (ACPI_MTX_DEBUG_CMD_READY);
-            if (ACPI_FAILURE (Status))
-            {
-                return (Status);
-            }
+            AcpiCmReleaseMutex (MTX_DEBUG_CMD_COMPLETE);
+            AcpiCmAcquireMutex (MTX_DEBUG_CMD_READY);
         }
 
         else
@@ -366,150 +309,91 @@ AcpiDbSingleStep (
 
             /* Force output to console until a command is entered */
 
-            AcpiDbSetOutputDestination (ACPI_DB_CONSOLE_OUTPUT);
+            AcpiDbSetOutputDestination (DB_CONSOLE_OUTPUT);
 
             /* Different prompt if method is executing */
 
             if (!AcpiGbl_MethodExecuting)
             {
-                AcpiOsPrintf ("%1c ", ACPI_DEBUGGER_COMMAND_PROMPT);
+                AcpiOsdPrintf ("%1c ", DB_COMMAND_PROMPT);
             }
             else
             {
-                AcpiOsPrintf ("%1c ", ACPI_DEBUGGER_EXECUTE_PROMPT);
+                AcpiOsdPrintf ("%1c ", DB_EXECUTE_PROMPT);
             }
 
             /* Get the user input line */
 
-            (void) AcpiOsGetLine (AcpiGbl_DbLineBuf);
+            AcpiOsdGetLine (LineBuf);
         }
 
-        Status = AcpiDbCommandDispatch (AcpiGbl_DbLineBuf, WalkState, Op);
+        Status = AcpiDbCommandDispatch (LineBuf, WalkState, Op);
     }
 
-    /* AcpiUtAcquireMutex (ACPI_MTX_NAMESPACE); */
+    AcpiCmAcquireMutex (MTX_NAMESPACE);
+
 
     /* User commands complete, continue execution of the interrupted method */
 
-    return (Status);
+    return Status;
 }
 
 
-/*******************************************************************************
+/******************************************************************************
  *
  * FUNCTION:    AcpiDbInitialize
  *
- * PARAMETERS:  None
+ * PARAMETERS:
  *
  * RETURN:      Status
  *
  * DESCRIPTION: Init and start debugger
  *
- ******************************************************************************/
+ *****************************************************************************/
 
-ACPI_STATUS
+int
 AcpiDbInitialize (void)
 {
-    ACPI_STATUS             Status;
 
 
     /* Init globals */
 
-    AcpiGbl_DbBuffer            = NULL;
-    AcpiGbl_DbFilename          = NULL;
-    AcpiGbl_DbOutputToFile      = FALSE;
-
-    AcpiGbl_DbDebugLevel        = ACPI_LV_VERBOSITY2;
-    AcpiGbl_DbConsoleDebugLevel = NORMAL_DEFAULT | ACPI_LV_TABLES;
-    AcpiGbl_DbOutputFlags       = ACPI_DB_CONSOLE_OUTPUT;
-
-    AcpiGbl_DbOpt_tables        = FALSE;
-    AcpiGbl_DbOpt_disasm        = FALSE;
-    AcpiGbl_DbOpt_stats         = FALSE;
-    AcpiGbl_DbOpt_verbose       = TRUE;
-    AcpiGbl_DbOpt_ini_methods   = TRUE;
-
-    AcpiGbl_DbBuffer = AcpiOsAllocate (ACPI_DEBUG_BUFFER_SIZE);
-    if (!AcpiGbl_DbBuffer)
-    {
-        return (AE_NO_MEMORY);
-    }
-    ACPI_MEMSET (AcpiGbl_DbBuffer, 0, ACPI_DEBUG_BUFFER_SIZE);
+    Buffer = AcpiOsdAllocate (BUFFER_SIZE);
 
     /* Initial scope is the root */
 
-    AcpiGbl_DbScopeBuf [0] = '\\';
-    AcpiGbl_DbScopeBuf [1] =  0;
-    AcpiGbl_DbScopeNode = AcpiGbl_RootNode;
+    ScopeBuf [0] = '\\';
+    ScopeBuf [1] =  0;
+
 
     /*
      * If configured for multi-thread support, the debug executor runs in
      * a separate thread so that the front end can be in another address
      * space, environment, or even another machine.
      */
+
     if (AcpiGbl_DebuggerConfiguration & DEBUGGER_MULTI_THREADED)
     {
         /* These were created with one unit, grab it */
 
-        Status = AcpiUtAcquireMutex (ACPI_MTX_DEBUG_CMD_COMPLETE);
-        if (ACPI_FAILURE (Status))
-        {
-            AcpiOsPrintf ("Could not get debugger mutex\n");
-            return (Status);
-        }
-        Status = AcpiUtAcquireMutex (ACPI_MTX_DEBUG_CMD_READY);
-        if (ACPI_FAILURE (Status))
-        {
-            AcpiOsPrintf ("Could not get debugger mutex\n");
-            return (Status);
-        }
+        AcpiCmAcquireMutex (MTX_DEBUG_CMD_COMPLETE);
+        AcpiCmAcquireMutex (MTX_DEBUG_CMD_READY);
 
         /* Create the debug execution thread to execute commands */
 
-        Status = AcpiOsQueueForExecution (0, AcpiDbExecuteThread, NULL);
-        if (ACPI_FAILURE (Status))
-        {
-            AcpiOsPrintf ("Could not start debugger thread\n");
-            return (Status);
-        }
+        AcpiOsdQueueForExecution (0, AcpiDbExecuteThread, NULL);
     }
 
-    if (!AcpiGbl_DbOpt_verbose)
+    if (!opt_verbose)
     {
-        AcpiGbl_DbDisasmIndent = "    ";
-        AcpiGbl_DbOpt_disasm = TRUE;
-        AcpiGbl_DbOpt_stats = FALSE;
+        INDENT_STRING = "    ";
+        opt_disasm = TRUE;
+        opt_stats = FALSE;
     }
 
-    return (AE_OK);
+
+    return 0;
 }
 
 
-/*******************************************************************************
- *
- * FUNCTION:    AcpiDbTerminate
- *
- * PARAMETERS:  None
- *
- * RETURN:      Status
- *
- * DESCRIPTION: Stop debugger
- *
- ******************************************************************************/
-
-void
-AcpiDbTerminate (void)
-{
-
-    if (AcpiGbl_DbTablePtr)
-    {
-        AcpiOsFree (AcpiGbl_DbTablePtr);
-    }
-    if (AcpiGbl_DbBuffer)
-    {
-        AcpiOsFree (AcpiGbl_DbBuffer);
-    }
-}
-
-
-#endif /* ENABLE_DEBUGGER */
+#endif /* ACPI_DEBUG */

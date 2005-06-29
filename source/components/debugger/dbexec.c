@@ -1,5 +1,5 @@
 /******************************************************************************
- * 
+ *
  * Module Name: dbexec - debugger control method execution
  *
  *****************************************************************************/
@@ -37,9 +37,9 @@
  * The above copyright and patent license is granted only if the following
  * conditions are met:
  *
- * 3. Conditions 
+ * 3. Conditions
  *
- * 3.1. Redistribution of Source with Rights to Further Distribute Source.  
+ * 3.1. Redistribution of Source with Rights to Further Distribute Source.
  * Redistribution of source code of any substantial portion of the Covered
  * Code or modification with rights to further distribute source must include
  * the above Copyright Notice, the above License, this list of Conditions,
@@ -47,11 +47,11 @@
  * Licensee must cause all Covered Code to which Licensee contributes to
  * contain a file documenting the changes Licensee made to create that Covered
  * Code and the date of any change.  Licensee must include in that file the
- * documentation of any changes made by any predecessor Licensee.  Licensee 
+ * documentation of any changes made by any predecessor Licensee.  Licensee
  * must include a prominent statement that the modification is derived,
  * directly or indirectly, from Original Intel Code.
  *
- * 3.2. Redistribution of Source with no Rights to Further Distribute Source.  
+ * 3.2. Redistribution of Source with no Rights to Further Distribute Source.
  * Redistribution of source code of any substantial portion of the Covered
  * Code or modification without rights to further distribute source must
  * include the following Disclaimer and Export Compliance provision in the
@@ -85,7 +85,7 @@
  * INSTALLATION, TRAINING OR OTHER SERVICES.  INTEL WILL NOT PROVIDE ANY
  * UPDATES, ENHANCEMENTS OR EXTENSIONS.  INTEL SPECIFICALLY DISCLAIMS ANY
  * IMPLIED WARRANTIES OF MERCHANTABILITY, NONINFRINGEMENT AND FITNESS FOR A
- * PARTICULAR PURPOSE. 
+ * PARTICULAR PURPOSE.
  *
  * 4.2. IN NO EVENT SHALL INTEL HAVE ANY LIABILITY TO LICENSEE, ITS LICENSEES
  * OR ANY OTHER THIRD PARTY, FOR ANY LOST PROFITS, LOST DATA, LOSS OF USE OR
@@ -114,16 +114,16 @@
  *****************************************************************************/
 
 
-#include <acpi.h>
-#include <parser.h>
-#include <dispatch.h>
-#include <amlcode.h>
-#include <namesp.h>
-#include <parser.h>
-#include <events.h>
-#include <interp.h>
-#include <debugger.h>
-#include <tables.h>
+#include "acpi.h"
+#include "parser.h"
+#include "dispatch.h"
+#include "amlcode.h"
+#include "namesp.h"
+#include "parser.h"
+#include "events.h"
+#include "interp.h"
+#include "debugger.h"
+#include "tables.h"
 
 #ifdef ACPI_DEBUG
 
@@ -149,20 +149,20 @@ DB_METHOD_INFO              Info;
 
 
 /******************************************************************************
- * 
- * FUNCTION:    DbExecuteMethod
+ *
+ * FUNCTION:    AcpiDbExecuteMethod
  *
  * PARAMETERS:  Info            - Valid info segment
  *              ReturnObj       - Where to put return object
  *
  * RETURN:      Status
  *
- * DESCRIPTION: Execute a control method.  
+ * DESCRIPTION: Execute a control method.
  *
  *****************************************************************************/
 
 ACPI_STATUS
-DbExecuteMethod (
+AcpiDbExecuteMethod (
     DB_METHOD_INFO          *Info,
     ACPI_BUFFER             *ReturnObj)
 {
@@ -172,16 +172,16 @@ DbExecuteMethod (
     UINT32                  i;
 
 
-    if (OutputToFile && !DebugLevel)
+    if (OutputToFile && !AcpiDbgLevel)
     {
-        OsdPrintf ("Warning: debug output is not enabled!\n");
+        AcpiOsdPrintf ("Warning: debug output is not enabled!\n");
     }
 
     if (Info->Args && Info->Args[0])
     {
         for (i = 0; Info->Args[i] && i < MTH_NUM_ARGS; i++)
         {
-            Params[i].Type              = ACPI_TYPE_Number;
+            Params[i].Type              = ACPI_TYPE_NUMBER;
             Params[i].Number.Value      = STRTOUL (Info->Args[i], NULL, 16);
         }
 
@@ -193,10 +193,10 @@ DbExecuteMethod (
     {
         /* Setup default parameters */
 
-        Params[0].Type              = ACPI_TYPE_Number;
+        Params[0].Type              = ACPI_TYPE_NUMBER;
         Params[0].Number.Value      = 0x01020304;
 
-        Params[1].Type              = ACPI_TYPE_String;
+        Params[1].Type              = ACPI_TYPE_STRING;
         Params[1].String.Length     = 12;
         Params[1].String.Pointer    = "AML Debugger";
 
@@ -214,8 +214,8 @@ DbExecuteMethod (
 
     Status = AcpiEvaluateObject (NULL, Info->Pathname, &ParamObjects, ReturnObj);
 
-    Gbl_CmSingleStep = FALSE;
-    Gbl_MethodExecuting = FALSE;
+    AcpiGbl_CmSingleStep = FALSE;
+    AcpiGbl_MethodExecuting = FALSE;
 
     return Status;
 }
@@ -223,8 +223,8 @@ DbExecuteMethod (
 
 
 /******************************************************************************
- * 
- * FUNCTION:    DbExecuteSetup
+ *
+ * FUNCTION:    AcpiDbExecuteSetup
  *
  * PARAMETERS:  Info            - Valid method info
  *
@@ -235,7 +235,7 @@ DbExecuteMethod (
  *****************************************************************************/
 
 void
-DbExecuteSetup (
+AcpiDbExecuteSetup (
     DB_METHOD_INFO          *Info)
 {
 
@@ -249,29 +249,29 @@ DbExecuteSetup (
     }
 
     STRCAT (Info->Pathname, Info->Name);
-    DbPrepNamestring (Info->Pathname);
+    AcpiDbPrepNamestring (Info->Pathname);
 
-    DbSetOutputDestination (DB_DUPLICATE_OUTPUT);
-    OsdPrintf ("Executing %s\n", Info->Pathname);
+    AcpiDbSetOutputDestination (DB_DUPLICATE_OUTPUT);
+    AcpiOsdPrintf ("Executing %s\n", Info->Pathname);
 
     if (Info->Flags & EX_SINGLE_STEP)
     {
-        Gbl_CmSingleStep = TRUE;
-        DbSetOutputDestination (DB_CONSOLE_OUTPUT);
+        AcpiGbl_CmSingleStep = TRUE;
+        AcpiDbSetOutputDestination (DB_CONSOLE_OUTPUT);
     }
 
     else
     {
         /* No single step, allow redirection to a file */
 
-        DbSetOutputDestination (DB_REDIRECTABLE_OUTPUT);
+        AcpiDbSetOutputDestination (DB_REDIRECTABLE_OUTPUT);
     }
 }
 
 
 /******************************************************************************
- * 
- * FUNCTION:    DbExecute
+ *
+ * FUNCTION:    AcpiDbExecute
  *
  * PARAMETERS:  Name                - Name of method to execute
  *              Args                - Parameters to the method
@@ -285,7 +285,7 @@ DbExecuteSetup (
  *****************************************************************************/
 
 void
-DbExecute (
+AcpiDbExecute (
     char                    *Name,
     char                    **Args,
     UINT32                  Flags)
@@ -297,39 +297,39 @@ DbExecute (
     UINT32                  Size;
     ACPI_BUFFER             ReturnObj;
 
-    
+
 
     /* Memory allocation tracking */
 
-    PreviousAllocations = Gbl_CurrentAllocCount;
-    PreviousSize = Gbl_CurrentAllocSize;
+    PreviousAllocations = AcpiGbl_CurrentAllocCount;
+    PreviousSize = AcpiGbl_CurrentAllocSize;
 
 
     Info.Name = Name;
     Info.Args = Args;
     Info.Flags = Flags;
 
-    DbExecuteSetup (&Info);
-    Status = DbExecuteMethod (&Info, &ReturnObj);
+    AcpiDbExecuteSetup (&Info);
+    Status = AcpiDbExecuteMethod (&Info, &ReturnObj);
 
 
     /* Memory allocation tracking */
 
-    Allocations = Gbl_CurrentAllocCount - PreviousAllocations;
-    Size = Gbl_CurrentAllocSize - PreviousSize;
+    Allocations = AcpiGbl_CurrentAllocCount - PreviousAllocations;
+    Size = AcpiGbl_CurrentAllocSize - PreviousSize;
 
-    DbSetOutputDestination (DB_DUPLICATE_OUTPUT);
+    AcpiDbSetOutputDestination (DB_DUPLICATE_OUTPUT);
 
     if (Allocations > 0)
     {
-        OsdPrintf ("Outstanding: %ld allocations of total size %ld after execution\n",
+        AcpiOsdPrintf ("Outstanding: %ld allocations of total size %ld after execution\n",
                         Allocations, Size);
     }
 
 
     if (ACPI_FAILURE (Status))
     {
-        OsdPrintf ("Execution of %s failed with status %s\n", Info.Pathname, CmFormatException (Status));
+        AcpiOsdPrintf ("Execution of %s failed with status %s\n", Info.Pathname, AcpiCmFormatException (Status));
     }
 
     else
@@ -338,18 +338,18 @@ DbExecute (
 
         if (ReturnObj.Length)
         {
-            OsdPrintf ("Execution of %s returned object %p\n", Info.Pathname, ReturnObj.Pointer);
-            DbDumpObject (ReturnObj.Pointer, 1);
+            AcpiOsdPrintf ("Execution of %s returned object %p\n", Info.Pathname, ReturnObj.Pointer);
+            AcpiDbDumpObject (ReturnObj.Pointer, 1);
         }
     }
 
-    DbSetOutputDestination (DB_CONSOLE_OUTPUT);
+    AcpiDbSetOutputDestination (DB_CONSOLE_OUTPUT);
 }
 
 
 /******************************************************************************
- * 
- * FUNCTION:    DbMethodThread
+ *
+ * FUNCTION:    AcpiDbMethodThread
  *
  * PARAMETERS:  None
  *
@@ -361,7 +361,7 @@ DbExecute (
  *****************************************************************************/
 
 void
-DbMethodThread (
+AcpiDbMethodThread (
     void                    *Context)
 {
     ACPI_STATUS             Status;
@@ -372,13 +372,13 @@ DbMethodThread (
 
     for (i = 0; i < Info->NumLoops; i++)
     {
-        Status = DbExecuteMethod (Info, &ReturnObj);
+        Status = AcpiDbExecuteMethod (Info, &ReturnObj);
         if (ACPI_SUCCESS (Status))
         {
             if (ReturnObj.Length)
             {
-                OsdPrintf ("Execution of %s returned object %p\n", Info->Pathname, ReturnObj.Pointer);
-                DbDumpObject (ReturnObj.Pointer, 1);
+                AcpiOsdPrintf ("Execution of %s returned object %p\n", Info->Pathname, ReturnObj.Pointer);
+                AcpiDbDumpObject (ReturnObj.Pointer, 1);
             }
         }
     }
@@ -386,16 +386,16 @@ DbMethodThread (
 
     /* Signal our completion */
 
-    OsdSignalSemaphore (Info->ThreadGate, 1);
+    AcpiOsdSignalSemaphore (Info->ThreadGate, 1);
 }
 
 
 
 /******************************************************************************
- * 
- * FUNCTION:    DbCreateExecutionThreads
  *
- * PARAMETERS:  
+ * FUNCTION:    AcpiDbCreateExecutionThreads
+ *
+ * PARAMETERS:
  *
  * RETURN:      None
  *
@@ -404,7 +404,7 @@ DbMethodThread (
  *****************************************************************************/
 
 void
-DbCreateExecutionThreads (
+AcpiDbCreateExecutionThreads (
     char                    *NumThreadsArg,
     char                    *NumLoopsArg,
     char                    *MethodNameArg)
@@ -423,17 +423,17 @@ DbCreateExecutionThreads (
 
     if (!NumThreads || !NumLoops)
     {
-        OsdPrintf ("Bad argument: Threads %d, Loops %d\n", NumThreads, NumLoops);
+        AcpiOsdPrintf ("Bad argument: Threads %d, Loops %d\n", NumThreads, NumLoops);
         return;
     }
 
 
     /* Create the synchronization semaphore */
 
-    Status = OsdCreateSemaphore (0, &ThreadGate);
+    Status = AcpiOsdCreateSemaphore (0, &ThreadGate);
     if (ACPI_FAILURE (Status))
     {
-        OsdPrintf ("Could not create semaphore, %s\n", CmFormatException (Status));
+        AcpiOsdPrintf ("Could not create semaphore, %s\n", AcpiCmFormatException (Status));
         return;
     }
 
@@ -445,16 +445,16 @@ DbCreateExecutionThreads (
     Info.NumLoops = NumLoops;
     Info.ThreadGate = ThreadGate;
 
-    DbExecuteSetup (&Info);
+    AcpiDbExecuteSetup (&Info);
 
 
     /* Create the threads */
 
-    OsdPrintf ("Creating %d threads to execute %d times each\n", NumThreads, NumLoops);
+    AcpiOsdPrintf ("Creating %d threads to execute %d times each\n", NumThreads, NumLoops);
 
     for (i = 0; i < (NumThreads); i++)
     {
-        OsdQueueForExecution (OSD_PRIORITY_MED, DbMethodThread, &Info);
+        AcpiOsdQueueForExecution (OSD_PRIORITY_MED, AcpiDbMethodThread, &Info);
     }
 
 
@@ -463,17 +463,17 @@ DbCreateExecutionThreads (
     i = NumThreads;
     while (i)   /* Brain damage for OSD implementations that only support wait of 1 unit */
     {
-        Status = OsdWaitSemaphore (ThreadGate, 1, WAIT_FOREVER);
+        Status = AcpiOsdWaitSemaphore (ThreadGate, 1, WAIT_FOREVER);
         i--;
     }
 
     /* Cleanup and exit */
 
-    OsdDeleteSemaphore (ThreadGate);
+    AcpiOsdDeleteSemaphore (ThreadGate);
 
-    DbSetOutputDestination (DB_DUPLICATE_OUTPUT);
-    OsdPrintf ("All threads (%d) have completed\n", NumThreads);
-    DbSetOutputDestination (DB_CONSOLE_OUTPUT);
+    AcpiDbSetOutputDestination (DB_DUPLICATE_OUTPUT);
+    AcpiOsdPrintf ("All threads (%d) have completed\n", NumThreads);
+    AcpiDbSetOutputDestination (DB_CONSOLE_OUTPUT);
 }
 
 
