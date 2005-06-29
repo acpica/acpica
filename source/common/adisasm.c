@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: adisasm - Application-level disassembler routines
- *              $Revision: 1.73 $
+ *              $Revision: 1.74 $
  *
  *****************************************************************************/
 
@@ -465,7 +465,7 @@ FlSplitInputPathname (
  *              Prefix          - Path prefix for output
  *              OutFilename     - where the filename is returned
  *              GetAllTables    - TRUE if all tables are desired
- *              
+ *
  * RETURN:      Status
  *
  * DESCRIPTION: Disassemble an entire ACPI table
