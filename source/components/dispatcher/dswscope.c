@@ -117,8 +117,8 @@
 #define __NSSTACK_C__
 
 #include <acpi.h>
-#include <interpreter.h>
-#include <namespace.h>
+#include <interp.h>
+#include <namesp.h>
 
 
 #define _COMPONENT          NAMESPACE
@@ -141,23 +141,17 @@
  ***************************************************************************/
 
 void
-NsScopeStackClear (void)
+NsScopeStackClear (
+	ACPI_WALK_STATE			*WalkState)
 {
-    SCOPE_STACK             *ScopeInfo;
+	ACPI_STATUS				Status = AE_OK;
 
 
-    ScopeInfo = Gbl_CurrentScope;
-
-    /* Pop everything except the root scope */
-
-    while (ScopeInfo->Next)
+    while (Status == AE_OK)
     {
-        /* Pop this scope off the stack */
+        /* Pop a scope off the stack */
 
-        Gbl_CurrentScope = ScopeInfo->Next;
-        CmFree (ScopeInfo);
-
-        ScopeInfo = Gbl_CurrentScope;
+		Status = NsScopeStackPop (WalkState);
     }
 }
 
@@ -177,7 +171,8 @@ NsScopeStackClear (void)
 ACPI_STATUS
 NsScopeStackPush (
     NAME_TABLE_ENTRY        *NewScope, 
-    ACPI_OBJECT_TYPE        Type)
+    ACPI_OBJECT_TYPE        Type,
+	ACPI_WALK_STATE			*WalkState)
 {
     SCOPE_STACK             *ScopeInfo;
 
@@ -216,46 +211,10 @@ NsScopeStackPush (
 
     /* Push new scope object onto stack */
 
-    ScopeInfo->Next = Gbl_CurrentScope;
-    Gbl_CurrentScope = ScopeInfo;   
+    ScopeInfo->Next = WalkState->ScopeInfo;
+    WalkState->ScopeInfo = ScopeInfo;   
 
     return_ACPI_STATUS (AE_OK);
-}
-
-
-/****************************************************************************
- *
- * FUNCTION:    NsScopeStackPushEntry
- *
- * PARAMETERS:  NewScope,               - Name to be made current
- *
- * DESCRIPTION: Push the current scope on the scope stack, and make the
- *              passed nte current.
- *
- ***************************************************************************/
-
-ACPI_STATUS
-NsScopeStackPushEntry (
-    ACPI_HANDLE             NewScope)
-{
-    ACPI_STATUS             Status;
-
-
-    FUNCTION_TRACE_PTR ("NsScopeStackPushEntry", NewScope);
-
-
-    if (!NewScope || 
-       !((NAME_TABLE_ENTRY *) NewScope)->Scope)
-    {
-        /* NewScope or NewScope->Scope invalid */
-
-        REPORT_ERROR ("NsScopeStackPushEntry: null scope passed");
-        return_ACPI_STATUS (AE_BAD_PARAMETER);
-    }
-
-    Status = NsScopeStackPush (((NAME_TABLE_ENTRY *) NewScope)->Scope, ACPI_TYPE_Method);
-
-    return_ACPI_STATUS (Status);
 }
 
 
@@ -276,63 +235,33 @@ NsScopeStackPushEntry (
  *
  ***************************************************************************/
 
-INT32
+ACPI_STATUS
 NsScopeStackPop (
-    ACPI_OBJECT_TYPE        Type)
+	ACPI_WALK_STATE			*WalkState)
 {
-    INT32                   Count = 0;
     SCOPE_STACK             *ScopeInfo;
-    ACPI_OBJECT_TYPE        ThisType;
 
 
     FUNCTION_TRACE ("NsScopeStackPop");
 
-
-    /* Validate type */
-
-    if (!AmlValidateObjectType (Type))
-    {
-        REPORT_WARNING ("NsScopeStackPop: type code out of range");
-    }
-
-    DEBUG_PRINT (TRACE_EXEC, ("Popping Scope until type (%d) is found\n", Type));
-
-
     /*
-     * Pop scope info objects off the stack until a scope of the
-     * requested type is found, or the stack becomes empty.  
-     * (Empty means only one scope remains, the root scope.)
+     * Pop scope info object off the stack.
      */
 
-    ScopeInfo = Gbl_CurrentScope;
-    while (ScopeInfo->Next)
-    {
-        /* Pop this scope off the stack */
+    if (!WalkState->ScopeInfo)
+	{
+		return_ACPI_STATUS (AE_STACK_UNDERFLOW);
+	}
 
-        Count++;
-        Gbl_CurrentScope = ScopeInfo->Next;
 
-        ThisType = ScopeInfo->Type;
-        CmFree (ScopeInfo);
+	ScopeInfo = WalkState->ScopeInfo;
+	WalkState->ScopeInfo = ScopeInfo->Next;
 
-        DEBUG_PRINT (TRACE_EXEC, ("Popped object type (%d)\n", ThisType));
+    DEBUG_PRINT (TRACE_EXEC, ("Popped object type 0x%X\n", ScopeInfo->Type));
+    CmFree (ScopeInfo);
 
-        /* Terminate if Type is found */
 
-        if ((ACPI_TYPE_Any == Type) || 
-            (Type == ThisType))
-        {
-            DEBUG_PRINT (TRACE_EXEC, ("Found object type (%d)\n", Type));
-            return_VALUE (Count);
-        }
-
-        /* Type not found, keep popping the stack */
-
-        ScopeInfo = Gbl_CurrentScope;
-    }
-
-    DEBUG_PRINT (TRACE_EXEC,("Object type (%d) not found on scope stack\n", Type));
-    return_VALUE (-Count);
+	return_ACPI_STATUS (AE_OK);
 }
 
 
