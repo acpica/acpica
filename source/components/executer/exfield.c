@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: exfield - ACPI AML (p-code) execution - field manipulation
- *              $Revision: 1.114 $
+ *              $Revision: 1.115 $
  *
  *****************************************************************************/
 
@@ -120,8 +120,6 @@
 #include "acpi.h"
 #include "acdispat.h"
 #include "acinterp.h"
-#include "acevents.h"
-#include "amlcode.h"
 
 
 #define _COMPONENT          ACPI_EXECUTER
@@ -203,7 +201,7 @@ AcpiExReadDataFromField (
          * Note: Smbus protocol value is passed in upper 16-bits of Function
          */
         Status = AcpiExAccessRegion (ObjDesc, 0, 
-                        (ACPI_INTEGER *) BufferDesc->Buffer.Pointer,
+                        ACPI_CAST_PTR (ACPI_INTEGER, BufferDesc->Buffer.Pointer),
                         ACPI_READ | (ObjDesc->Field.Attribute << 16));
         AcpiExReleaseGlobalLock (Locked);
         goto Exit;
