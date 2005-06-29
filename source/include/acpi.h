@@ -11,18 +11,21 @@
  | otherwise, without the prior written permission of Intel Corporation.
  |__________________________________________________________________________
  |
- | FILENAME: acpi.h - Publics and external data for ACPI.LIB
+ | FILENAME: acpi.h - Master include file, Publics and external data for ACPI.LIB
  |__________________________________________________________________________
  |
- | $Revision: 1.6 $
- | $Date: 2005/06/29 19:58:22 $
+ | $Revision: 1.7 $
+ | $Date: 2005/06/29 19:58:23 $
  | $Log: acpi.h,v $
- | Revision 1.6  2005/06/29 19:58:22  aystarik
- | Moved major table-size constants to here
+ | Revision 1.7  2005/06/29 19:58:23  aystarik
+ | Integrated with 03/99 OPSD code
  |
  | 
- | date	99.03.12.00.17.00;	author rmoore1;	state Exp;
+ | date	99.03.31.22.34.00;	author rmoore1;	state Exp;
  |
+ * 
+ * 7     3/31/99 2:34p Rmoore1
+ * Integrated with 03/99 OPSD code
  * 
  * 6     3/11/99 4:17p Rmoore1
  * Moved major table-size constants to here
@@ -39,49 +42,6 @@
  * 2     1/11/99 4:15p Grsmith1
  * 
  * 1     1/11/99 2:10p Rmoore1
- * Subsystem headers
-// 
-//    Rev 1.12   12 Aug 1998 15:55:12   jkreinem
-// added inclusion of scilast.h
-// 
-//    Rev 1.11   02 Feb 1998 10:07:16   kdbranno
-// Moved ACPI_EXTERN declarations for the global table pointers
-// (pRSDP, pRSDT, pFACS, ...) from acpipriv.h to acpi.h.  These
-// pointers are to be available to applications so they must be
-// declared publicly.
-// 
-//    Rev 1.10   16 Oct 1997 09:34:00   kdbranno
-// Removed ability for an acpi library module to get any meaningful inclusion of
-// acpi.h.  This header is intended for application use only.  Library modules
-// should include the specific acpilib headers they need.
-// 
-//    Rev 1.9   03 Sep 1997 14:45:56   kdbranno
-// Added #include for debuglvl.h and device.h
-// 
-//    Rev 1.8   17 Jul 1997 12:09:08   kdbranno
-// Removed references to dossuprt.h. This support has been moved to BU.
-// 
-//    Rev 1.7   19 Jun 1997 16:10:56   kdbranno
-// Fixed problem with #include after ACPIPATH was removed from acpilib
-// generation makefile
-// 
-//    Rev 1.6   12 Jun 1997 15:50:50   kdbranno
-// Modified so it correctly includes headers depending on library generation...
-//
-//    Rev 1.5   10 Jun 1997 10:57:52   kdbranno
-// Added check for library generation for #include's
-//
-//    Rev 1.4   09 Jun 1997 13:15:38   kdbranno
-// Added #include <acpirio.h> to acpi.h
-//
-//    Rev 1.3   Mar 24 1997 17:47:28   KBRANNOC
-// Added #include <amlscan.h> and conditional #include <dossuprt.h>
-//
-//    Rev 1.2   Mar 20 1997 17:59:08   KBRANNOC
-// Added #include for display.h
-//
-//    Rev 1.1   Mar 05 1997 16:43:48   KBRANNOC
-// Removed #include of BU.H, moved #include of ACPITYPE.H to top.
 //
 //    Rev 1.0   Feb 28 1997 08:59:22   KBRANNOC
 // Initial revision.
@@ -92,52 +52,33 @@
 #ifndef __ACPI_H__
 #define __ACPI_H__
 
-/* 
- * All scary-looking constants should go here!!! 
- * 
- * Some of these should be fixed or at least made run-time configurable.
- *
- */
-
 /*
- * AML Interpreter
+ * Standard C library headers.
+ * We want to keep these to a minimum.
  */
+#include <stdio.h>
 
-#define MAX_ACPI_TABLE_SIZE         49152   /* For phys to logical mapping */
-#define AML_PKG_MAX_NEST            100     /* Max depth of package nesting */
-#define AML_METHOD_MAX_NEST         10      /* Max depth of nested method calls */
-#define INITIAL_NAME_BUF_SIZE       32
 
 /* 
- * NameSpace Table sizes
- * 
- * If USE_HASHING is #defined, these must be prime numbers and
- * should be large enough that the tables never get terribly full.
- *
- * The root NT was made bigger than others in the possibly erroneous
- * expectation that there might be quite a few entries in the root.
+ * Common includes for all ACPI driver files
+ * We put them here because we don't want to duplicate them
+ * in the rest of the source again and again.
  */
+#include <datatypes.h>      /* Fundamental data types */
+#include <excep.h>          /* Local exception codes */
+#include <config.h>         /* Configuration constants */
+#include <output.h>         /* Error output and Debug macros */
+#include <acpiasm.h>        /* Assembly macros */
+#include <acpitype.h>       /* Common ACPI types */
+#include <acpiosd.h>        /* Interfaces to OS-dependent part (OSD) */
 
-#ifdef USE_HASHING
-#define ROOTSIZE                    101     /* # of slots in root table */
-#define TABLSIZE                    53      /* # of slots per table below the root */
-
-#else
-#define ROOTSIZE                    40      /* initial # of slots in root table */
-#define TABLSIZE                    20      /* initial # of slots per table below the root */
-#endif
-
-#define MAXNEST                     15      /* Max nesting of name scopes, used for sizing stacks */
-
-
-
-#include "acpitype.h"
 
 #ifdef DEFINE_ACPI_GLOBALS
-    #define ACPI_EXTERN
-    #pragma message ("ACPI_EXTERN variables defined in this module.")
+#define ACPI_EXTERN
+#pragma message ("ACPI_EXTERN variables defined in this module.")
+
 #else
-    #define ACPI_EXTERN extern
+#define ACPI_EXTERN extern
 #endif
 
 
@@ -164,11 +105,22 @@ ACPI_EXTERN ACPI_TABLE_HEADER                   * PSDT;
 ACPI_EXTERN ACPI_TABLE_HEADER                   * SSDT;
 ACPI_EXTERN ACPI_TABLE_HEADER                   * SBDT;
 
-
-/*
- * Common macros
+/*  
+ * OutOfMemory is initialized to FALSE and is set to TRUE whenever
+ * an ACPI.LIB allocation failure is encountered.
  */
+ACPI_EXTERN INT32                               OutOfMemory;
 
+/* Runtime error message communication */
+
+extern char WhyBuf[WHYBUF_SIZE];
+extern char *Why;
+
+
+
+
+#define	ACPI_CHAPTER						3
+#define	ACPI_TABLE_NAMESPACE_SECTION	    23
 
 
 #endif /* __ACPI_H__ */
