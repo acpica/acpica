@@ -131,8 +131,9 @@
  * Elements of NsProperties are bit significant
  * and should be one-to-one with values of ACPI_OBJECT_TYPE
  */
-#define NEWSCOPE                1   /* a definition of this type opens a name scope */
-#define LOCAL                   2   /* suppress search of enclosing scopes */
+#define NSP_NORMAL              0
+#define NSP_NEWSCOPE            1   /* a definition of this type opens a name scope */
+#define NSP_LOCAL               2   /* suppress search of enclosing scopes */
 
 
 /* Definitions of the predefined namespace names  */
@@ -392,19 +393,22 @@ NsSearchOnly (
  * Scope Stack manipulation - nsstack
  */
 
-void
-NsPushCurrentScope (
+ACPI_STATUS
+NsScopeStackPush (
     NAME_TABLE_ENTRY        *NewScope, 
     ACPI_OBJECT_TYPE        Type);
 
-void
-NsPushMethodScope (
+ACPI_STATUS
+NsScopeStackPushEntry (
     ACPI_HANDLE             NewScope);
 
 INT32
-NsPopCurrent (
+NsScopeStackPop (
     ACPI_OBJECT_TYPE        Type);
 
+void
+NsScopeStackClear (
+    void);
 
 /*
  * Utility functions - nsutils
