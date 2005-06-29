@@ -151,9 +151,9 @@ AcpiInstallAddressSpaceHandler (
     ADDRESS_SPACE_SETUP     Setup,
     void                    *Context)
 {
-    ACPI_OBJECT_INTERNAL   *ObjDesc;
-    ACPI_OBJECT_INTERNAL   *HandlerObj;
-    NAME_TABLE_ENTRY       *ObjEntry;
+    ACPI_OBJECT_INTERNAL    *ObjDesc;
+    ACPI_OBJECT_INTERNAL    *HandlerObj;
+    NAME_TABLE_ENTRY        *ObjEntry;
     ACPI_STATUS             Status = AE_OK;
     ACPI_OBJECT_TYPE        Type;
     UINT16                  Flags = 0;
@@ -311,13 +311,13 @@ AcpiInstallAddressSpaceHandler (
         }
     }
 
-    DEBUG_PRINT (TRACE_OPREGION, ("Installing address handler for %s on Device 0x%X (0x%X)\n", 
+    DEBUG_PRINT (TRACE_OPREGION, ("Installing address handler for %s on Device 0x%p (0x%p)\n", 
                     Gbl_RegionTypes[SpaceId], ObjEntry, ObjDesc));
 
     /* 
      *  Now we can install the handler
      *
-     *  At this point we know that the handler we are installing DNE. 
+     *  At this point we know that there is no existing handler.
      *  So, we just allocate the object for the handler and link it
      *  into the list.
      */
@@ -334,8 +334,7 @@ AcpiInstallAddressSpaceHandler (
     HandlerObj->AddrHandler.RegionList          = NULL;
     HandlerObj->AddrHandler.Nte                 = ObjEntry;
     HandlerObj->AddrHandler.Handler             = Handler;
-    HandlerObj->AddrHandler.Context             = NULL;
-    HandlerObj->AddrHandler.InstallTimeContext  = Context;
+    HandlerObj->AddrHandler.Context             = Context;
     HandlerObj->AddrHandler.Setup               = Setup;
 
     /*
@@ -448,10 +447,12 @@ AcpiRemoveAddressSpaceHandler (
             /*
              *  Got it, first dereference this in the Regions
              */
-            DEBUG_PRINT (TRACE_OPREGION, ("Removing address handler 0x%X (0x%X) for %s on Device 0x%X (0x%X)\n", 
+            DEBUG_PRINT (TRACE_OPREGION, ("Removing address handler 0x%p (0x%p) for %s on Device 0x%p (0x%p)\n", 
                             HandlerObj, Handler, Gbl_RegionTypes[SpaceId], ObjEntry, ObjDesc));
 
             RegionObj = HandlerObj->AddrHandler.RegionList;
+
+            /* Walk the handler's region list */
 
             while (RegionObj)
             {
@@ -471,7 +472,7 @@ AcpiRemoveAddressSpaceHandler (
                  */
                 RegionObj = HandlerObj->AddrHandler.RegionList;
 
-            } /* walk the handler's region list */
+            }
 
             /*
              *  Remove this Handler object from the list
@@ -485,8 +486,7 @@ AcpiRemoveAddressSpaceHandler (
             CmRemoveReference (HandlerObj);
 
             goto UnlockAndExit;
-
-        } /* found the right handler */
+        } 
 
         /*
          *  Move through the linked list of handlers
@@ -495,13 +495,13 @@ AcpiRemoveAddressSpaceHandler (
         HandlerObj = HandlerObj->AddrHandler.Link;
     }
 
+
     /*
-     *  If we get here the handler DNE, get out with error
+     *  The handler does not exist
      */
     DEBUG_PRINT (TRACE_OPREGION,
-        ("Unable to remove address handler xxxx (0x%X) for %s on Device 0x%X (0x%X)\n", 
+        ("Unable to remove address handler 0x%p for %s on Device nte 0x%p, obj 0x%p\n", 
         Handler, Gbl_RegionTypes[SpaceId], ObjEntry, ObjDesc));
-
 
     Status = AE_NOT_EXIST;
 
