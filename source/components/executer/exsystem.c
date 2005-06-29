@@ -156,8 +156,8 @@ DoNotifyOp (OBJECT_DESCRIPTOR *ValDesc, OBJECT_DESCRIPTOR *ObjDesc)
         if (ObjDesc)
         {
             DEBUG_PRINT (ACPI_INFO, 
-                        ("NotifyOp: %s %s \n", NsTypeNames[ObjDesc->ValType],
-                        NsFullyQualifiedName (ObjDesc->Device.Device)));
+                        ("NotifyOp: %s\n", NsTypeNames[ObjDesc->ValType]));
+            NsDumpPathname (ObjDesc->Device.Device, "NotifyOp: ", ACPI_INFO, _COMPONENT);
         }
     
         switch (ValDesc->Number.Number)
