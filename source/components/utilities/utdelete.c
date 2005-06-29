@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: cmdelete - object deletion and reference count utilities
- *              $Revision: 1.67 $
+ *              $Revision: 1.68 $
  *
  ******************************************************************************/
 
@@ -677,6 +677,25 @@ AcpiCmUpdateObjectReference (
                 return_ACPI_STATUS (Status);
             }
             break;
+
+
+        case INTERNAL_TYPE_INDEX_FIELD:
+
+            Status = AcpiCmCreateUpdateStateAndPush (
+                        Object->IndexField.IndexObj, Action, &StateList);
+            if (ACPI_FAILURE (Status))
+            {
+                return_ACPI_STATUS (Status);
+            }
+
+            Status = AcpiCmCreateUpdateStateAndPush (
+                        Object->IndexField.DataObj, Action, &StateList);
+            if (ACPI_FAILURE (Status))
+            {
+                return_ACPI_STATUS (Status);
+            }
+            break;
+
 
 
         case ACPI_TYPE_REGION:
