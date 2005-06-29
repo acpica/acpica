@@ -97,8 +97,6 @@
 #include <hardware.h>
 #include <namespace.h>
 #include <events.h>
-#include <string.h>
-#include <stdarg.h>
 
 #define _THIS_MODULE        "evapi.c"
 #define _COMPONENT          EVENT_HANDLING
