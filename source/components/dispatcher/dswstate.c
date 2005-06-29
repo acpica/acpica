@@ -1,6 +1,6 @@
 /******************************************************************************
  * 
- * Module Name: dswalk - Dispatcher parse tree walk management routines
+ * Module Name: dswstate - Dispatcher parse tree walk management routines
  *
  *****************************************************************************/
 
@@ -114,7 +114,7 @@
  *****************************************************************************/
 
 
-#define __DSWALK_C__
+#define __DSWSTATE_C__
 
 #include <acpi.h>
 #include <amlcode.h>
@@ -124,7 +124,7 @@
 #include <interp.h>
 
 #define _COMPONENT          DISPATCHER
-        MODULE_NAME         ("dswalk");
+        MODULE_NAME         ("dswstate");
 
 
 
