@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acexcep.h - Exception codes returned by the ACPI subsystem
- *       $Revision: 1.35 $
+ *       $Revision: 1.42 $
  *
  *****************************************************************************/
 
@@ -9,8 +9,8 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, Intel Corp.  All rights
- * reserved.
+ * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
+ * All rights reserved.
  *
  * 2. License
  *
@@ -180,6 +180,7 @@
 #define AE_BAD_SIGNATURE                (ACPI_STATUS) (0x0001 | AE_CODE_ACPI_TABLES)
 #define AE_BAD_HEADER                   (ACPI_STATUS) (0x0002 | AE_CODE_ACPI_TABLES)
 #define AE_BAD_CHECKSUM                 (ACPI_STATUS) (0x0003 | AE_CODE_ACPI_TABLES)
+#define AE_BAD_VALUE                    (ACPI_STATUS) (0x0004 | AE_CODE_ACPI_TABLES)
 
 #define AE_CODE_TBL_MAX                 0x0003
 
@@ -205,8 +206,12 @@
 #define AE_AML_BAD_NAME                 (ACPI_STATUS) (0x000F | AE_CODE_AML)
 #define AE_AML_NAME_NOT_FOUND           (ACPI_STATUS) (0x0010 | AE_CODE_AML)
 #define AE_AML_INTERNAL                 (ACPI_STATUS) (0x0011 | AE_CODE_AML)
+#define AE_AML_INVALID_SPACE_ID         (ACPI_STATUS) (0x0012 | AE_CODE_AML)
+#define AE_AML_STRING_LIMIT             (ACPI_STATUS) (0x0013 | AE_CODE_AML)
+#define AE_AML_NO_RETURN_VALUE          (ACPI_STATUS) (0x0014 | AE_CODE_AML)
+#define AE_AML_METHOD_LIMIT             (ACPI_STATUS) (0x0015 | AE_CODE_AML)
 
-#define AE_CODE_AML_MAX                 0x0011
+#define AE_CODE_AML_MAX                 0x0015
 
 /*
  * Internal exceptions used for control
@@ -268,6 +273,7 @@ static NATIVE_CHAR          *AcpiGbl_ExceptionNames_Tbl[] =
     "AE_BAD_SIGNATURE",
     "AE_BAD_HEADER",
     "AE_BAD_CHECKSUM",
+    "AE_BAD_VALUE",
 };
 
 static NATIVE_CHAR          *AcpiGbl_ExceptionNames_Aml[] =
@@ -289,6 +295,10 @@ static NATIVE_CHAR          *AcpiGbl_ExceptionNames_Aml[] =
     "AE_AML_BAD_NAME",
     "AE_AML_NAME_NOT_FOUND",
     "AE_AML_INTERNAL",
+    "AE_AML_INVALID_SPACE_ID",
+    "AE_AML_STRING_LIMIT",
+    "AE_AML_NO_RETURN_VALUE",
+    "AE_AML_METHOD_LIMIT",
 };
 
 static NATIVE_CHAR          *AcpiGbl_ExceptionNames_Ctrl[] =
