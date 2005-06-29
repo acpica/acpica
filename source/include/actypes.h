@@ -374,6 +374,17 @@ typedef UINT32                          ACPI_EVENT_TYPE;
 #define MAX_SYS_NOTIFY                  0x7f
 
 
+/* Address Space (Operation Region) Types */
+
+typedef UINT32                          ACPI_ADDRESS_SPACE_TYPE;
+
+#define ADDRESS_SPACE_SYSTEM_MEMORY     (ACPI_ADDRESS_SPACE_TYPE) 0
+#define ADDRESS_SPACE_SYSTEM_IO         (ACPI_ADDRESS_SPACE_TYPE) 1
+#define ADDRESS_SPACE_PCI_CONFIG        (ACPI_ADDRESS_SPACE_TYPE) 2
+#define ADDRESS_SPACE_EC                (ACPI_ADDRESS_SPACE_TYPE) 3
+#define ADDRESS_SPACE_SMBUS             (ACPI_ADDRESS_SPACE_TYPE) 4
+
+
 /* 
  * External ACPI object definition 
  */
