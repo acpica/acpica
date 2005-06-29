@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: oswinxf - Windows OSL
- *              $Revision: 1.52 $
+ *              $Revision: 1.62 $
  *
  *****************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2004, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2005, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -145,7 +145,6 @@
         ACPI_MODULE_NAME    ("oswinxf")
 
 
-UINT32                      AcpiGbl_NextSemaphore = 0;
 #define NUM_SEMAPHORES      128
 
 typedef struct semaphore_entry
@@ -165,10 +164,12 @@ AeLocalGetRootPointer (
     ACPI_POINTER            *Address);
 
 FILE                        *AcpiGbl_OutputFile;
-
+UINT64                      TimerFrequency2;
 
 #ifndef _ACPI_EXEC_APP
 /* Used by both iASL and AcpiDump applications */
+
+CHAR                s[500];
 
 /******************************************************************************
  *
@@ -178,7 +179,7 @@ FILE                        *AcpiGbl_OutputFile;
  *
  * RETURN:      Pointer to the table.  NULL if failure
  *
- * DESCRIPTION: Get the DSDT from the Windows registry.
+ * DESCRIPTION: Get an ACPI table from the Windows registry.
  *
  *****************************************************************************/
 
@@ -186,8 +187,7 @@ ACPI_TABLE_HEADER *
 OsGetTable (
     char                *TableName)
 {
-    HKEY                Handle;
-    CHAR                s[500];
+    HKEY                Handle = NULL;
     ULONG               i;
     LONG                Status;
     ULONG               Type;
@@ -195,23 +195,46 @@ OsGetTable (
     ULONG               DataSize;
     HKEY                SubKey;
     ACPI_TABLE_HEADER   *Buffer;
+    char                *Signature = TableName;
 
 
     /* Get a handle to the DSDT key */
 
-    ACPI_STRCPY (s, "HARDWARE\\ACPI\\");
-    ACPI_STRCAT (s, TableName);
-
-    Status = RegOpenKeyEx (HKEY_LOCAL_MACHINE, s,
-                0L, KEY_ALL_ACCESS, &Handle);
-
-    if (Status != ERROR_SUCCESS)
+    while (1)
     {
-        AcpiOsPrintf ("Could not find %s in registry at %s\n", TableName, s);
-        return (NULL);
+        ACPI_STRCPY (s, "HARDWARE\\ACPI\\");
+        ACPI_STRCAT (s, Signature);
+
+        Status = RegOpenKeyEx (HKEY_LOCAL_MACHINE, s,
+                    0L, KEY_ALL_ACCESS, &Handle);
+
+        if (Status != ERROR_SUCCESS)
+        {
+            /*
+             * Somewhere along the way, MS changed the registry entry for
+             * the FADT from
+             * HARDWARE/ACPI/FACP  to
+             * HARDWARE/ACPI/FADT.
+             *
+             * This code allows for both.
+             */
+            if (!ACPI_STRNCMP (Signature, "FACP", 4))
+            {
+                Signature = "FADT";
+            }
+            else
+            {
+                AcpiOsPrintf ("Could not find %s in registry at %s\n", TableName, s);
+                return (NULL);
+            }
+        }
+        else
+        {
+            break;
+        }
     }
 
-    /* Actual DSDT is down a couple of levels */
+    /* Actual table is down a couple of levels */
 
     for (i = 0; ;)
     {
@@ -234,7 +257,7 @@ OsGetTable (
         i = 0;
     }
 
-    /* Find the DSDT entry */
+    /* Find the table entry */
 
     for (i = 0; ;)
     {
@@ -254,7 +277,7 @@ OsGetTable (
         i += 1;
     }
 
-    /* Get the size of the DSDT */
+    /* Get the size of the table */
 
     Status = RegQueryValueEx (Handle, s, NULL, NULL, NULL, &DataSize);
     if (Status != ERROR_SUCCESS)
@@ -263,7 +286,7 @@ OsGetTable (
         return (NULL);
     }
 
-    /* Allocate a new buffer for the DSDT */
+    /* Allocate a new buffer for the table */
 
     Buffer = AcpiOsAllocate (DataSize);
     if (!Buffer)
@@ -271,7 +294,7 @@ OsGetTable (
         goto Cleanup;
     }
 
-    /* Get the actual DSDT */
+    /* Get the actual table from the registry */
 
     Status = RegQueryValueEx (Handle, s, NULL, NULL, (UCHAR *) Buffer, &DataSize);
     if (Status != ERROR_SUCCESS)
@@ -287,7 +310,6 @@ Cleanup:
 
 #endif
 
-
 /******************************************************************************
  *
  * FUNCTION:    AcpiOsInitialize, AcpiOsTerminate
@@ -296,7 +318,7 @@ Cleanup:
  *
  * RETURN:      Status
  *
- * DESCRIPTION: Init and terminate.  Nothing to do.
+ * DESCRIPTION: Init this OSL
  *
  *****************************************************************************/
 
@@ -304,6 +326,7 @@ ACPI_STATUS
 AcpiOsInitialize (void)
 {
     UINT32                  i;
+    LARGE_INTEGER           TimerFrequency;
 
 
     AcpiGbl_OutputFile = stdout;
@@ -311,6 +334,14 @@ AcpiOsInitialize (void)
     for (i = 0; i < NUM_SEMAPHORES; i++)
     {
         AcpiGbl_Semaphores[i].OsHandle = NULL;
+    }
+
+    TimerFrequency2 = 0;
+    if (QueryPerformanceFrequency (&TimerFrequency))
+    {
+        /* Convert ticks/sec to ticks/100nsec */
+
+        TimerFrequency2 = TimerFrequency.QuadPart / 10000;
     }
 
     return AE_OK;
@@ -449,23 +480,37 @@ AcpiOsTableOverride (
  *
  * PARAMETERS:  None
  *
- * RETURN:      Current time in milliseconds
+ * RETURN:      Current ticks in 100-nanosecond units
  *
- * DESCRIPTION: Get the current system time (in milliseconds).
+ * DESCRIPTION: Get the value of a system timer
  *
- *****************************************************************************/
+ ******************************************************************************/
 
-UINT32
-AcpiOsGetTimer (void)
+UINT64
+AcpiOsGetTimer (
+    void)
 {
-    SYSTEMTIME              SysTime;
+    LARGE_INTEGER           Timer;
 
 
-    GetSystemTime (&SysTime);
+    /* Attempt to use hi-granularity timer first */
 
-    return ((SysTime.wMinute * 60000) +
-            (SysTime.wSecond * 1000) +
-             SysTime.wMilliseconds);
+    if (TimerFrequency2 &&
+        QueryPerformanceCounter (&Timer))
+    {
+        /* Convert to 100 nanosecond ticks */
+
+        return ((UINT64) (Timer.QuadPart / TimerFrequency2));
+    }
+
+    /* Fall back to the lo-granularity timer */
+
+    else
+    {
+        /* Convert milliseconds to 100 nanosecond ticks */
+
+        return ((UINT64) GetTickCount() * 10000);
+    }
 }
 
 
@@ -775,6 +820,7 @@ AcpiOsCreateSemaphore (
 {
 #ifdef _MULTI_THREADED
     void                *Mutex;
+    UINT32              i;
 
     ACPI_FUNCTION_NAME ("OsCreateSemaphore");
 #endif
@@ -797,6 +843,20 @@ AcpiOsCreateSemaphore (
 
 #ifdef _MULTI_THREADED
 
+    /* Find an empty slot */
+
+    for (i = 0; i < NUM_SEMAPHORES; i++)
+    {
+        if (!AcpiGbl_Semaphores[i].OsHandle)
+        {
+            break;
+        }
+    }
+    if (i >= NUM_SEMAPHORES)
+    {
+        return AE_LIMIT;
+    }
+
     /* Create an OS semaphore */
 
     Mutex = CreateSemaphore (NULL, InitialUnits, MaxUnits, NULL);
@@ -807,15 +867,14 @@ AcpiOsCreateSemaphore (
         return AE_NO_MEMORY;
     }
 
-    AcpiGbl_Semaphores[AcpiGbl_NextSemaphore].MaxUnits = (UINT16) MaxUnits;
-    AcpiGbl_Semaphores[AcpiGbl_NextSemaphore].CurrentUnits = (UINT16) InitialUnits;
-    AcpiGbl_Semaphores[AcpiGbl_NextSemaphore].OsHandle = Mutex;
+    AcpiGbl_Semaphores[i].MaxUnits = (UINT16) MaxUnits;
+    AcpiGbl_Semaphores[i].CurrentUnits = (UINT16) InitialUnits;
+    AcpiGbl_Semaphores[i].OsHandle = Mutex;
 
     ACPI_DEBUG_PRINT ((ACPI_DB_MUTEX, "Handle=%d, Max=%d, Current=%d, OsHandle=%p\n",
-            AcpiGbl_NextSemaphore, MaxUnits, InitialUnits, Mutex));
+            i, MaxUnits, InitialUnits, Mutex));
 
-    *OutHandle = (void *) AcpiGbl_NextSemaphore;
-    AcpiGbl_NextSemaphore++;
+    *OutHandle = (void *) i;
 #endif
 
     return AE_OK;
@@ -911,7 +970,9 @@ AcpiOsWaitSemaphore (
         OsTimeout = INFINITE;
     }
 
-    WaitStatus = WaitForSingleObject (AcpiGbl_Semaphores[Index].OsHandle, OsTimeout);
+    /* Add 10ms to account for clock tick granularity */
+
+    WaitStatus = WaitForSingleObject (AcpiGbl_Semaphores[Index].OsHandle, OsTimeout+10);
     if (WaitStatus == WAIT_TIMEOUT)
     {
 /* Make optional -- wait of 0 is used to detect if unit is available
@@ -1047,7 +1108,7 @@ AcpiOsReleaseLock (
 UINT32
 AcpiOsInstallInterruptHandler (
     UINT32                  InterruptNumber,
-    OSD_HANDLER             ServiceRoutine,
+    ACPI_OSD_HANDLER        ServiceRoutine,
     void                    *Context)
 {
 
@@ -1070,7 +1131,7 @@ AcpiOsInstallInterruptHandler (
 ACPI_STATUS
 AcpiOsRemoveInterruptHandler (
     UINT32                  InterruptNumber,
-    OSD_HANDLER             ServiceRoutine)
+    ACPI_OSD_HANDLER        ServiceRoutine)
 {
 
     return AE_OK;
@@ -1115,7 +1176,7 @@ AcpiOsGetThreadId (
 ACPI_STATUS
 AcpiOsQueueForExecution (
     UINT32                  Priority,
-    OSD_EXECUTION_CALLBACK  Function,
+    ACPI_OSD_EXEC_CALLBACK  Function,
     void                    *Context)
 {
 
@@ -1153,22 +1214,22 @@ AcpiOsStall (
  *
  * FUNCTION:    AcpiOsSleep
  *
- * PARAMETERS:  seconds             To sleep
- *              milliseconds        To sleep
+ * PARAMETERS:  milliseconds        To sleep
  *
  * RETURN:      Blocks until sleep is completed.
  *
- * DESCRIPTION: Sleep at second/millisecond granularity
+ * DESCRIPTION: Sleep at millisecond granularity
  *
  *****************************************************************************/
 
 void
 AcpiOsSleep (
-    UINT32                  seconds,
-    UINT32                  milliseconds)
+    ACPI_INTEGER            milliseconds)
 {
 
-    Sleep ((seconds * 1000) + milliseconds);
+    /* Add 10ms to account for clock tick granularity */
+
+    Sleep (((unsigned long) milliseconds) + 10);
     return;
 }
 

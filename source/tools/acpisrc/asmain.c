@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asmain - Main module for the acpi source processor utility
- *              $Revision: 1.66 $
+ *              $Revision: 1.73 $
  *
  *****************************************************************************/
 
@@ -10,7 +10,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2004, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2005, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -191,7 +191,7 @@ ACPI_STRING_TABLE           StandardDataTypes[] = {
 
 char                        LinuxHeader[] =
 "/*\n"
-" * Copyright (C) 2000 - 2004, R. Byron Moore\n"
+" * Copyright (C) 2000 - 2005, R. Byron Moore\n"
 " * All rights reserved.\n"
 " *\n"
 " * Redistribution and use in source and binary forms, with or without\n"
@@ -295,6 +295,8 @@ ACPI_TYPED_IDENTIFIER_TABLE           AcpiIdentifiers[] = {
     {"ACPI_EVENT_HANDLER",               SRC_TYPE_SIMPLE},
     {"ACPI_EVENT_STATUS",                SRC_TYPE_SIMPLE},
     {"ACPI_EVENT_TYPE",                  SRC_TYPE_SIMPLE},
+    {"ACPI_EXCEPTION_HANDLER",           SRC_TYPE_SIMPLE},
+    {"ACPI_EXTERNAL_LIST",               SRC_TYPE_STRUCT},
     {"ACPI_FIELD_INFO",                  SRC_TYPE_STRUCT},
     {"ACPI_FIND_CONTEXT",                SRC_TYPE_STRUCT},
     {"ACPI_FIXED_EVENT_HANDLER",         SRC_TYPE_STRUCT},
@@ -308,7 +310,9 @@ ACPI_TYPED_IDENTIFIER_TABLE           AcpiIdentifiers[] = {
     {"ACPI_GPE_HANDLER",                 SRC_TYPE_SIMPLE},
     {"ACPI_GPE_INDEX_INFO",              SRC_TYPE_STRUCT},
     {"ACPI_GPE_REGISTER_INFO",           SRC_TYPE_STRUCT},
+    {"ACPI_GPE_WALK_INFO",               SRC_TYPE_STRUCT},
     {"ACPI_HANDLE",                      SRC_TYPE_SIMPLE},
+    {"ACPI_HANDLER_INFO",                SRC_TYPE_STRUCT},
     {"ACPI_INIT_HANDLER",                SRC_TYPE_SIMPLE},
     {"ACPI_IDENTIFIER_TABLE",            SRC_TYPE_STRUCT},
     {"ACPI_INIT_WALK_INFO",              SRC_TYPE_STRUCT},
@@ -366,7 +370,10 @@ ACPI_TYPED_IDENTIFIER_TABLE           AcpiIdentifiers[] = {
     {"ACPI_OP_WALK_INFO",                SRC_TYPE_STRUCT},
     {"ACPI_OPCODE_INFO",                 SRC_TYPE_STRUCT},
     {"ACPI_OPERAND_OBJECT",              SRC_TYPE_UNION},
+    {"ACPI_OSD_HANDLER",                 SRC_TYPE_SIMPLE},
+    {"ACPI_OSD_EXEC_CALLBACK",           SRC_TYPE_SIMPLE},
     {"ACPI_OWNER_ID",                    SRC_TYPE_SIMPLE},
+    {"ACPI_PARAMETER_INFO",              SRC_TYPE_STRUCT},
     {"ACPI_PARSE_DOWNWARDS",             SRC_TYPE_SIMPLE},
     {"ACPI_PARSE_OBJ_ASL",               SRC_TYPE_STRUCT},
     {"ACPI_PARSE_OBJ_COMMON",            SRC_TYPE_STRUCT},
@@ -434,6 +441,7 @@ ACPI_TYPED_IDENTIFIER_TABLE           AcpiIdentifiers[] = {
     {"ASL_END_TAG_DESC",                 SRC_TYPE_STRUCT},
     {"ASL_ERROR_MSG",                    SRC_TYPE_STRUCT},
     {"ASL_EVENT_INFO",                   SRC_TYPE_STRUCT},
+    {"ASL_EXTENDED_ADDRESS_DESC",        SRC_TYPE_STRUCT},
     {"ASL_EXTENDED_XRUPT_DESC",          SRC_TYPE_STRUCT},
     {"ASL_FILE_INFO",                    SRC_TYPE_STRUCT},
     {"ASL_FIXED_IO_PORT_DESC",           SRC_TYPE_STRUCT},
@@ -619,7 +627,7 @@ ACPI_CONVERSION_TABLE       StatsConversionTable = {
 
 ACPI_STRING_TABLE           CustomReplacements[] = {
 
-    {"(c) 1999 - 2003",      "(c) 1999 - 2004",          REPLACE_WHOLE_WORD},
+    {"(c) 1999 - 2005",      "(c) 1999 - 2005",         REPLACE_WHOLE_WORD},
 
 #if 0
     "ACPI_NATIVE_UINT",     "ACPI_NATIVE_UINT",         REPLACE_WHOLE_WORD,

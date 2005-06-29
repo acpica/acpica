@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: aeexec - Support routines for AcpiExec utility
- *              $Revision: 1.76 $
+ *              $Revision: 1.83 $
  *
  *****************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2004, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2005, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -318,18 +318,18 @@ AeBuildLocalTables (
     LocalFADT.Dsdt              = ACPI_PTR_TO_PHYSADDR (AcpiGbl_DSDT);
     LocalFADT.Revision          = 1;
     LocalFADT.Length            = sizeof (FADT_DESCRIPTOR_REV1);
-    LocalFADT.Gpe0BlkLen        = 4;
+    LocalFADT.Gpe0BlkLen        = 16;
     LocalFADT.Gpe1BlkLen        = 6;
-    LocalFADT.Gpe1Base          = 61;
+    LocalFADT.Gpe1Base          = 96;
 
     LocalFADT.Pm1EvtLen         = 4;
     LocalFADT.Pm1CntLen         = 4;
     LocalFADT.PmTmLen           = 8;
 
     LocalFADT.Gpe0Blk           = 0x12340000;
-    LocalFADT.Gpe1Blk           = 0x5678AAA0;
+    LocalFADT.Gpe1Blk           = 0x56780000;
 
-    LocalFADT.Pm1aEvtBlk        = 0x1234aaa0;
+    LocalFADT.Pm1aEvtBlk        = 0x1aaa0000;
     LocalFADT.Pm1bEvtBlk        = 0;
     LocalFADT.PmTmrBlk          = 0xA0;
     LocalFADT.Pm1aCntBlk        = 0xB0;
@@ -770,6 +770,73 @@ AeNotifyHandler (
 
 /******************************************************************************
  *
+ * FUNCTION:    AeExceptionHandler
+ *
+ * PARAMETERS:  Standard exception handler parameters
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: System exception handler for AcpiExec utility.
+ *
+ *****************************************************************************/
+
+ACPI_STATUS
+AeExceptionHandler (
+    ACPI_STATUS             AmlStatus,
+    ACPI_NAME               Name,
+    UINT16                  Opcode,
+    UINT32                  AmlOffset,
+    void                    *Context)
+{
+    ACPI_STATUS             Status;
+    ACPI_BUFFER             ReturnObj;
+    ACPI_OBJECT_LIST        ArgList;
+    ACPI_OBJECT             Arg[2];
+    const char              *Exception;
+
+
+    Exception = AcpiFormatException (AmlStatus);
+    AcpiOsPrintf (
+        "**** AcpiExec Exception: %s during execution of method [%4.4s] Opcode [%s] @%X\n",
+        Exception, &Name, AcpiPsGetOpcodeName (Opcode), AmlOffset);
+
+    /*
+     * Invoke the _ERR method if present
+     *
+     * Setup parameter object
+     */
+    ArgList.Count = 2;
+    ArgList.Pointer = Arg;
+
+    Arg[0].Type = ACPI_TYPE_INTEGER;
+    Arg[0].Integer.Value = AmlStatus;
+
+    Arg[1].Type = ACPI_TYPE_STRING;
+    Arg[1].String.Pointer = (char *) Exception;
+    Arg[1].String.Length = ACPI_STRLEN (Exception);
+
+    /* Setup return buffer */
+
+    ReturnObj.Pointer = NULL;
+    ReturnObj.Length = ACPI_ALLOCATE_BUFFER;
+
+    Status = AcpiEvaluateObject (NULL, "\\_ERR", &ArgList, &ReturnObj);
+    if (ACPI_SUCCESS (Status) &&
+        ReturnObj.Pointer)
+    {
+        /* Override original status */
+
+        AmlStatus = (ACPI_STATUS)
+            ((ACPI_OBJECT *) ReturnObj.Pointer)->Integer.Value;
+
+        AcpiOsFree (ReturnObj.Pointer);
+    }
+    return (AmlStatus);
+}
+
+
+/******************************************************************************
+ *
  * FUNCTION:    AeInstallHandlers
  *
  * PARAMETERS:  None
@@ -795,6 +862,13 @@ AeInstallHandlers (void)
     ACPI_FUNCTION_NAME ("AeInstallHandlers");
 
 
+    Status = AcpiInstallExceptionHandler (AeExceptionHandler);
+    if (ACPI_FAILURE (Status))
+    {
+        printf ("Could not install exception handler, %s\n",
+            AcpiFormatException (Status));
+    }
+
     Status = AcpiInstallNotifyHandler (ACPI_ROOT_OBJECT, ACPI_SYSTEM_NOTIFY,
                                         AeNotifyHandler, NULL);
     if (ACPI_FAILURE (Status))
@@ -808,10 +882,32 @@ AeInstallHandlers (void)
     {
         Status = AcpiInstallNotifyHandler (Handle, ACPI_SYSTEM_NOTIFY,
                                             AeNotifyHandler, NULL);
+        if (ACPI_FAILURE (Status))
+        {
+            printf ("Could not install a notify handler, %s\n",
+                AcpiFormatException (Status));
+        }
+
         Status = AcpiRemoveNotifyHandler (Handle, ACPI_SYSTEM_NOTIFY,
                                             AeNotifyHandler);
-        Status = AcpiInstallNotifyHandler (Handle, ACPI_SYSTEM_NOTIFY,
+        if (ACPI_FAILURE (Status))
+        {
+            printf ("Could not remove a notify handler, %s\n",
+                AcpiFormatException (Status));
+        }
+
+        Status = AcpiInstallNotifyHandler (Handle, ACPI_ALL_NOTIFY,
                                             AeNotifyHandler, NULL);
+        Status = AcpiRemoveNotifyHandler (Handle, ACPI_ALL_NOTIFY,
+                                            AeNotifyHandler);
+        Status = AcpiInstallNotifyHandler (Handle, ACPI_ALL_NOTIFY,
+                                            AeNotifyHandler, NULL);
+        if (ACPI_FAILURE (Status))
+        {
+            printf ("Could not install a notify handler, %s\n",
+                AcpiFormatException (Status));
+        }
+
     }
 
     for (i = 0; i < AEXEC_NUM_REGIONS; i++)

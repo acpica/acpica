@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: aemain - Main routine for the AcpiExec utility
- *              $Revision: 1.85 $
+ *              $Revision: 1.92 $
  *
  *****************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2004, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2005, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -139,6 +139,9 @@
         ACPI_MODULE_NAME    ("aemain")
 
 
+UINT8 AcpiGbl_BatchMode = FALSE;
+char  *AcpiGbl_BatchMethodName;
+
 #if ACPI_MACHINE_WIDTH == 16
 
 ACPI_STATUS
@@ -151,13 +154,14 @@ AcpiGetIrqRoutingTable  (
 #endif
 
 
-void
+UINT32
 AeGpeHandler (
     void                        *Context)
 {
 
 
     AcpiOsPrintf ("Received a GPE at handler\n");
+    return (0);
 }
 
 void
@@ -177,14 +181,24 @@ AfInstallGpeBlock (void)
     }
 
     BlockAddress.AddressSpaceId = 0;
-    ACPI_STORE_ADDRESS (BlockAddress.Address, 0x87654321);
+#if ACPI_MACHINE_WIDTH != 16
+    ACPI_STORE_ADDRESS (BlockAddress.Address, 0x8000000076540000);
+#else
+    ACPI_STORE_ADDRESS (BlockAddress.Address, 0x76540000);
+#endif
 
-    Status = AcpiInstallGpeBlock (Handle, &BlockAddress, 4, 8);
+//    Status = AcpiInstallGpeBlock (Handle, &BlockAddress, 4, 8);
+
+    /* Above should fail, ignore */
 
     Status = AcpiGetHandle (NULL, "\\GPE2", &Handle2);
     if (ACPI_SUCCESS (Status))
     {
         Status = AcpiInstallGpeBlock (Handle2, &BlockAddress, 8, 8);
+
+        AcpiInstallGpeHandler (Handle2, 8, ACPI_GPE_LEVEL_TRIGGERED, AeGpeHandler, NULL);
+        AcpiSetGpeType (Handle2, 8, ACPI_GPE_TYPE_WAKE);
+        AcpiEnableGpe (Handle2, 8, 0);
     }
 
     Status = AcpiGetHandle (NULL, "\\GPE3", &Handle3);
@@ -214,14 +228,15 @@ AfInstallGpeBlock (void)
 void
 usage (void)
 {
-    printf ("Usage: acpiexec [-?dgis] [-l DebugLevel] [-o OutputFile] [AcpiTableFile]\n");
+    printf ("Usage: acpiexec [-?dgis] [-x DebugLevel] [-o OutputFile] [-b Method] [AcpiTableFile]\n");
     printf ("Where:\n");
     printf ("    Input Options\n");
     printf ("        AcpiTableFile       Get ACPI tables from this file\n");
     printf ("    Output Options\n");
     printf ("    Miscellaneous Options\n");
     printf ("        -?                  Display this message\n");
-    printf ("        -i                  Do not run INI methods\n");
+    printf ("        -b Method           Batch mode method execution\n");
+    printf ("        -i                  Do not run STA/INI methods\n");
     printf ("        -x DebugLevel       Specify debug output level\n");
     printf ("        -v                  Verbose init output\n");
 }
@@ -282,8 +297,13 @@ main (
 
     /* Get the command line options */
 
-    while ((j = AcpiGetopt (argc, argv, "?dgio:svx:")) != EOF) switch(j)
+    while ((j = AcpiGetopt (argc, argv, "?b:dgio:svx:")) != EOF) switch(j)
     {
+    case 'b':
+        AcpiGbl_BatchMode = TRUE;
+        AcpiGbl_BatchMethodName = AcpiGbl_Optarg;
+        break;
+
     case 'd':
         AcpiGbl_DbOpt_disasm = TRUE;
         AcpiGbl_DbOpt_stats = TRUE;
@@ -375,13 +395,42 @@ main (
             goto enterloop;
         }
 
-        AcpiInstallGpeHandler (NULL, 0, 0, AeGpeHandler, NULL);
 
         ReturnBuf.Length = 32;
         ReturnBuf.Pointer = Buffer;
         AcpiGetName (AcpiGbl_RootNode, ACPI_FULL_PATHNAME, &ReturnBuf);
         AcpiEnableEvent (ACPI_EVENT_GLOBAL, 0);
-        AcpiEnableGpe (NULL, 0, 0);
+
+        AcpiInstallGpeHandler (NULL, 0, ACPI_GPE_LEVEL_TRIGGERED, AeGpeHandler, NULL);
+        AcpiSetGpeType (NULL, 0, ACPI_GPE_TYPE_WAKE_RUN);
+        AcpiEnableGpe (NULL, 0, ACPI_NOT_ISR);
+        AcpiRemoveGpeHandler (NULL, 0, AeGpeHandler);
+
+        AcpiInstallGpeHandler (NULL, 0, ACPI_GPE_LEVEL_TRIGGERED, AeGpeHandler, NULL);
+        AcpiSetGpeType (NULL, 0, ACPI_GPE_TYPE_WAKE_RUN);
+        AcpiEnableGpe (NULL, 0, ACPI_NOT_ISR);
+
+        AcpiInstallGpeHandler (NULL, 1, ACPI_GPE_EDGE_TRIGGERED, AeGpeHandler, NULL);
+        AcpiSetGpeType (NULL, 1, ACPI_GPE_TYPE_RUNTIME);
+        AcpiEnableGpe (NULL, 1, ACPI_NOT_ISR);
+
+        AcpiInstallGpeHandler (NULL, 2, ACPI_GPE_LEVEL_TRIGGERED, AeGpeHandler, NULL);
+        AcpiSetGpeType (NULL, 2, ACPI_GPE_TYPE_WAKE);
+        AcpiEnableGpe (NULL, 2, ACPI_NOT_ISR);
+
+        AcpiInstallGpeHandler (NULL, 3, ACPI_GPE_EDGE_TRIGGERED, AeGpeHandler, NULL);
+        AcpiSetGpeType (NULL, 3, ACPI_GPE_TYPE_WAKE_RUN);
+
+        AcpiInstallGpeHandler (NULL, 4, ACPI_GPE_LEVEL_TRIGGERED, AeGpeHandler, NULL);
+        AcpiSetGpeType (NULL, 4, ACPI_GPE_TYPE_RUNTIME);
+
+        AcpiInstallGpeHandler (NULL, 5, ACPI_GPE_EDGE_TRIGGERED, AeGpeHandler, NULL);
+        AcpiSetGpeType (NULL, 5, ACPI_GPE_TYPE_WAKE);
+
+        AcpiInstallGpeHandler (NULL, 0x19, ACPI_GPE_LEVEL_TRIGGERED, AeGpeHandler, NULL);
+        AcpiSetGpeType (NULL, 0x19, ACPI_GPE_TYPE_WAKE_RUN);
+        AcpiEnableGpe (NULL, 0x19, ACPI_NOT_ISR);
+
 
         AfInstallGpeBlock ();
     }
@@ -440,9 +489,16 @@ main (
 
 enterloop:
 
-    /* Enter the debugger command loop */
+    if (AcpiGbl_BatchMode)
+    {
+        AcpiDbExecute (AcpiGbl_BatchMethodName, NULL, EX_NO_SINGLE_STEP);
+    }
+    else
+    {
+        /* Enter the debugger command loop */
 
-    AcpiDbUserCommands (ACPI_DEBUGGER_COMMAND_PROMPT, NULL);
+        AcpiDbUserCommands (ACPI_DEBUGGER_COMMAND_PROMPT, NULL);
+    }
 
     return 0;
 }
