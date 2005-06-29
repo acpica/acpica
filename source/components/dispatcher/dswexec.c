@@ -2,7 +2,7 @@
  *
  * Module Name: dswexec - Dispatcher method execution callbacks;
  *                        dispatch to interpreter.
- *              $Revision: 1.69 $
+ *              $Revision: 1.70 $
  *
  *****************************************************************************/
 
@@ -436,6 +436,7 @@ AcpiDsExecEndOp (
     ACPI_PARSE_OBJECT       *FirstArg;
     ACPI_OPERAND_OBJECT     *ResultObj = NULL;
     const ACPI_OPCODE_INFO  *OpInfo;
+    UINT32                  i;
 
 
     FUNCTION_TRACE_PTR ("DsExecEndOp", Op);
@@ -534,6 +535,19 @@ AcpiDsExecEndOp (
 
             ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "[%s]: Could not resolve operands, %s\n",
                 AcpiPsGetOpcodeName (Opcode), AcpiFormatException (Status)));
+
+            /*
+             * On error, we must delete all the operands and clear the 
+             * operand stack
+             */
+            for (i = 0; i < WalkState->NumOperands; i++)
+            {
+                AcpiUtRemoveReference (WalkState->Operands[i]);
+                WalkState->Operands[i] = NULL;
+            }
+
+            WalkState->NumOperands = 0;
+
             goto Cleanup;
         }
 
@@ -605,8 +619,10 @@ AcpiDsExecEndOp (
             Status = AcpiExTriadic (Opcode, WalkState, &ResultObj);
             break;
 
+
         case OPTYPE_QUADRADIC:  /* Opcode with 4 operands */
             break;
+
 
         case OPTYPE_HEXADIC:    /* Opcode with 6 operands */
 
@@ -623,6 +639,14 @@ AcpiDsExecEndOp (
             Status = AcpiExReconfiguration (Opcode, WalkState);
             break;
         }
+
+        /* Clear the operand stack */
+
+        for (i = 0; i < WalkState->NumOperands; i++)
+        {
+            WalkState->Operands[i] = NULL;
+        }
+        WalkState->NumOperands = 0;
 
         /*
          * If a result object was returned from above, push it on the
