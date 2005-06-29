@@ -117,6 +117,7 @@
 #ifndef __ACTABLES_H__
 #define __ACTABLES_H__
 
+typedef NATIVE_UINT         IO_ADDRESS;             /* Only for clarity in declarations */
 
 /*
  *  Values for description table header signatures
@@ -183,8 +184,9 @@ typedef struct  /* APIC Table */
 {                                           
     ACPI_TABLE_HEADER       header;                 /* table header */
     UINT32                  LocalApicAddress;       /* Physical address for accessing local APICs */
-    UINT32_BIT              PCATCompat      : 1;    /* a one indicates system also has dual 8259s */
-    UINT32_BIT              Reserved1       : 31;
+    UINT16_BIT              PCATCompat      : 1;    /* a one indicates system also has dual 8259s */
+    UINT16_BIT              Reserved1       : 15;
+    UINT16                  Reserved2;
 
 } APIC_TABLE;
 
@@ -202,8 +204,9 @@ typedef struct  /* Processor APIC */
     APIC_HEADER             header;
     UINT8                   ProcessorApicId;        /* ACPI processor id */
     UINT8                   LocalApicId;            /* processor's local APIC id */
-    UINT32_BIT              ProcessorEnabled: 1;    /* Processor is usable if set */
-    UINT32_BIT              Reserved1       : 32;
+    UINT16_BIT              ProcessorEnabled: 1;    /* Processor is usable if set */
+    UINT16_BIT              Reserved1       : 15;
+    UINT16                  Reserved2;
 
 } PROCESSOR_APIC;
 
@@ -253,6 +256,20 @@ typedef struct  /* Smart Battery Description Table */
 #define ACPI_TABLE_MULTIPLE     1
 
 
+/*
+ * ACPI Table Descriptor.  One per ACPI table
+ */
+typedef struct AcpiTableDesc
+{
+    struct AcpiTableDesc    *Prev;
+    struct AcpiTableDesc    *Next;
+    ACPI_TABLE_HEADER       *Pointer;
+    UINT32                  Length;
+    UINT32                  Allocation;
+    UINT32                  Count;
+    UINT8                   Type;
+
+} ACPI_TABLE_DESC;
 
 
 /* Data about each known table type */
@@ -275,9 +292,9 @@ typedef struct _AcpiTableSupport
  */
 
 #ifdef IA64
-#include "actbl64.h"
+#include <actbl64.h>
 #else
-#include "actbl32.h"
+#include <actbl32.h>
 #endif
 
 

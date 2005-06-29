@@ -1,7 +1,7 @@
 
 /******************************************************************************
  * 
- * Name: acpiexcep.h - Exception codes returned by the ACPI subsystem
+ * Name: acexcep.h - Exception codes returned by the ACPI subsystem
  *
  *****************************************************************************/
 
@@ -114,8 +114,8 @@
  *
  *****************************************************************************/
 
-#ifndef __ACPIEXCEP_H__
-#define __ACPIEXCEP_H__
+#ifndef __ACEXCEP_H__
+#define __ACEXCEP_H__
 
 
 /* 
@@ -160,7 +160,8 @@
 #define AE_FALSE            (ACPI_STATUS) 0x0020
 #define AE_UNKNOWN_STATUS   (ACPI_STATUS) 0x0021
 #define ACPI_MAX_STATUS     (ACPI_STATUS) 0x0021
+#define ACPI_NUM_STATUS     (ACPI_STATUS) 0x0022
 
 
 
-#endif /* __ACPIEXCEP_H__ */
+#endif /* __ACEXCEP_H__ */

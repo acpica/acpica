@@ -118,8 +118,6 @@
 #define __ACTBL64_H__
 
 
-typedef UINT64              IO_ADDRESS;             /* Only for clarity in declarations */
-
 
 /* IA64 Root System Description Table */
 
@@ -157,7 +155,7 @@ typedef struct
     ACPI_TABLE_HEADER       header;                 /* table header */
     UINT32                  ReservedPad;            /* IA64 alignment, must be 0 */
     ACPI_TBLPTR             FirmwareCtrl;           /* Physical address of FACS */
-    ACPI_TBLPTR             AcpiDsdt;                   /* Physical address of DSDT */
+    ACPI_TBLPTR             Dsdt;                   /* Physical address of DSDT */
     UINT8                   Model;                  /* System Interrupt Model */
     UINT8                   AddressSpace;           /* Address Space Bitmask */
     UINT16                  SciInt;                 /* System vector of SCI interrupt */
@@ -166,14 +164,14 @@ typedef struct
     UINT8                   S4BiosReq;              /* Value to write to SMI CMD to enter S4BIOS state */
     UINT8                   Reserved2;              /* reserved - must be zero */
     UINT64                  SmiCmd;                 /* Port address of SMI command port */
-    UINT64                  Pm1aEvtBlk;             /* Port address of Power Mgt 1a AcpiEvent Reg Blk */
-    UINT64                  Pm1bEvtBlk;             /* Port address of Power Mgt 1b AcpiEvent Reg Blk */
+    UINT64                  Pm1aEvtBlk;             /* Port address of Power Mgt 1a Event Reg Blk */
+    UINT64                  Pm1bEvtBlk;             /* Port address of Power Mgt 1b Event Reg Blk */
     UINT64                  Pm1aCntBlk;             /* Port address of Power Mgt 1a Control Reg Blk */
     UINT64                  Pm1bCntBlk;             /* Port address of Power Mgt 1b Control Reg Blk */
     UINT64                  Pm2CntBlk;              /* Port address of Power Mgt 2 Control Reg Blk */
     UINT64                  PmTmrBlk;               /* Port address of Power Mgt Timer Ctrl Reg Blk */
-    UINT64                  Gpe0Blk;                /* Port addr of General Purpose AcpiEvent 0 Reg Blk */
-    UINT64                  Gpe1Blk;                /* Port addr of General Purpose AcpiEvent 1 Reg Blk */
+    UINT64                  Gpe0Blk;                /* Port addr of General Purpose Event 0 Reg Blk */
+    UINT64                  Gpe1Blk;                /* Port addr of General Purpose Event 1 Reg Blk */
     UINT8                   Pm1EvtLen;              /* Byte Length of ports at pm1X_evt_blk */
     UINT8                   Pm1CntLen;              /* Byte Length of ports at pm1X_cnt_blk */
     UINT8                   Pm2CntLen;              /* Byte Length of ports at pm2_cnt_blk */

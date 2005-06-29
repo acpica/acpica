@@ -117,145 +117,143 @@
 #ifndef __TABLES_H__
 #define __TABLES_H__
 
-#include "actypes.h"
-#include "actables.h"
+#include <actypes.h>
+#include <actables.h>
 
 
 
-/* Used in AcpiTbMapAcpiTable for size parameter if table header is to be used */
+/* Used in TbMapAcpiTable for size parameter if table header is to be used */
 
 #define SIZE_IN_HEADER          0
 
 
+/* Used if RSDT is loaded from a buffer */
+/* TBD: is this obsolete? */
 
-ACPI_STATUS
-AcpiTbHandleToObject (
-    UINT16                  TableId,
-    ACPI_TABLE_DESC         **TableDesc);
+#define ACPILIB_DATA_FILE_VERSION "ADF-001"
+
 
 
 /*
- * AcpiTbfac - FACP, FACS utilities
+ * Tbfac - FACP, FACS utilities
  */
 
 ACPI_STATUS
-AcpiTbGetTableFacs (
+TbGetTableFacs (
     char                    *BufferPtr,
     ACPI_TABLE_DESC         *TableInfo);
 
 
 /*
- * AcpiTbget - Table "get" routines
+ * Tbget - Table "get" routines
  */
 
 ACPI_STATUS
-AcpiTbGetTablePtr (
+TbGetTablePtr (
     ACPI_TABLE_TYPE         TableType, 
     UINT32                  Instance,
     ACPI_TABLE_HEADER       **TablePtrLoc);
 
 ACPI_STATUS
-AcpiTbGetTable (
+TbGetTable (
     void                    *PhysicalAddress, 
     char                    *BufferPtr,
     ACPI_TABLE_DESC         *TableInfo);
 
 
 /* 
- * AcpiTbgetall - Get all firmware ACPI tables
+ * Tbgetall - Get all firmware ACPI tables
  */
 
 ACPI_STATUS
-AcpiTbGetAllTables (
+TbGetAllTables (
     UINT32                  NumberOfTables, 
     char                    *BufferPtr);
 
 
 /*
- * AcpiTbinstall - Table installation
+ * Tbinstall - Table installation
  */
 
 ACPI_STATUS
-AcpiTbInstallTable (
+TbInstallTable (
     char                    *TablePtr,
     ACPI_TABLE_DESC         *TableInfo);
 
 ACPI_STATUS
-AcpiTbRecognizeTable (
+TbRecognizeTable (
     char                    *TablePtr,
     ACPI_TABLE_DESC         *TableInfo);
 
 ACPI_STATUS
-AcpiTbInitTableDescriptor (
+TbInitTableDescriptor (
     ACPI_TABLE_TYPE         TableType,
     ACPI_TABLE_DESC         *TableInfo);
 
 
 /*
- * AcpiTbremove - Table removal and deletion
+ * Tbremove - Table removal and deletion
  */
 
 void
-AcpiTbDeleteAcpiTables (
+TbDeleteAcpiTables (
     void);
 
 void
-AcpiTbDeleteAcpiTable (
+TbDeleteAcpiTable (
     ACPI_TABLE_TYPE         Type);
 
-ACPI_TABLE_DESC *
-AcpiTbDeleteSingleTable (
+void
+TbDeleteSingleTable (
     ACPI_TABLE_DESC         *TableDesc);
 
 void
-AcpiTbFreeAcpiTablesOfType (
+TbFreeAcpiTable (
     ACPI_TABLE_DESC         *TableInfo);
 
 
 /*
- * AcpiTbrsd - RSDP, RSDT utilities
+ * Tbrsd - RSDP, RSDT utilities
  */
 
 ACPI_STATUS
-AcpiTbGetTableRsdt (
-    UINT32                  *NumberOfTables);
+TbGetTableRsdt (
+    UINT32                  *NumberOfTables, 
+    char                    *BufferPtr);
 
 char *
-AcpiTbScanMemoryForRsdp (
+TbScanMemoryForRsdp (
     char                    *StartAddress, 
     UINT32                  Length);
 
 ACPI_STATUS
-AcpiTbFindRsdp (
+TbFindRsdp (
+    char                    *BufferPtr,
     ACPI_TABLE_DESC         *TableInfo);
 
 
 /*
- * AcpiTbutils - common table utilities
+ * Tbutils - common table utilities
  */
 
 BOOLEAN
-AcpiTbSystemTablePointer (
+TbSystemTablePointer (
     void                    *Where);
 
-ACPI_STATUS
-AcpiTbMapAcpiTable (
+void *
+TbMapAcpiTable (
     void                    *PhysicalAddress,
-    UINT32                  *Size,
-    void                    **LogicalAddress);
+    UINT32                  *Size);
 
 ACPI_STATUS
-AcpiTbVerifyTableChecksum (
-    ACPI_TABLE_HEADER       *TableHeader); 
+TbVerifyTableChecksum (
+    void                    *TableHeader); 
 
 UINT8
-AcpiTbChecksum (
+TbChecksum (
     void                    *Buffer,
     UINT32                  Length);
 
-ACPI_STATUS
-AcpiTbValidateTableHeader (
-    ACPI_TABLE_HEADER       *TableHeader);
 
 
 #endif /* __TABLES_H__ */

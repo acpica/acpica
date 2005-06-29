@@ -1,8 +1,7 @@
 
 /******************************************************************************
- *
- * Name: acobject.h - Definition of ACPI_OPERAND_OBJECT  (Internal object only)
- *       $Revision: 1.69 $
+ * 
+ * Name: acobject.h - Definition of ACPI_OBJECT_INTERNAL (Internal object only)
  *
  *****************************************************************************/
 
@@ -39,9 +38,9 @@
  * The above copyright and patent license is granted only if the following
  * conditions are met:
  *
- * 3. Conditions
+ * 3. Conditions 
  *
- * 3.1. Redistribution of Source with Rights to Further Distribute Source.
+ * 3.1. Redistribution of Source with Rights to Further Distribute Source.  
  * Redistribution of source code of any substantial portion of the Covered
  * Code or modification with rights to further distribute source must include
  * the above Copyright Notice, the above License, this list of Conditions,
@@ -49,11 +48,11 @@
  * Licensee must cause all Covered Code to which Licensee contributes to
  * contain a file documenting the changes Licensee made to create that Covered
  * Code and the date of any change.  Licensee must include in that file the
- * documentation of any changes made by any predecessor Licensee.  Licensee
+ * documentation of any changes made by any predecessor Licensee.  Licensee 
  * must include a prominent statement that the modification is derived,
  * directly or indirectly, from Original Intel Code.
  *
- * 3.2. Redistribution of Source with no Rights to Further Distribute Source.
+ * 3.2. Redistribution of Source with no Rights to Further Distribute Source.  
  * Redistribution of source code of any substantial portion of the Covered
  * Code or modification without rights to further distribute source must
  * include the following Disclaimer and Export Compliance provision in the
@@ -87,7 +86,7 @@
  * INSTALLATION, TRAINING OR OTHER SERVICES.  INTEL WILL NOT PROVIDE ANY
  * UPDATES, ENHANCEMENTS OR EXTENSIONS.  INTEL SPECIFICALLY DISCLAIMS ANY
  * IMPLIED WARRANTIES OF MERCHANTABILITY, NONINFRINGEMENT AND FITNESS FOR A
- * PARTICULAR PURPOSE.
+ * PARTICULAR PURPOSE. 
  *
  * 4.2. IN NO EVENT SHALL INTEL HAVE ANY LIABILITY TO LICENSEE, ITS LICENSEES
  * OR ANY OTHER THIRD PARTY, FOR ANY LOST PROFITS, LOST DATA, LOSS OF USE OR
@@ -118,25 +117,27 @@
 #ifndef _ACOBJECT_H
 #define _ACOBJECT_H
 
+#include <actypes.h>
+#include <macros.h>
+#include <internal.h>
 
-/*
- * The ACPI_OPERAND_OBJECT  is used to pass AML operands from the dispatcher
- * to the interpreter, and to keep track of the various handlers such as
- * address space handlers and notify handlers.  The object is a constant
- * size in order to allow them to be cached and reused.
+/* 
+ * TBD: This wastes memory.
+ * TBD: Allow variable sized acpi objects
+ * TBD: Must find and fix all code that assumes constant sized object
  *
- * All variants of the ACPI_OPERAND_OBJECT  are defined with the same
+ * All variants of the ACPI_OBJECT_INTERNAL are defined with the same
  * sequence of field types, with fields that are not used in a particular
  * variant being named "Reserved".  This is not strictly necessary, but
  * may in some circumstances simplify understanding if these structures
  * need to be displayed in a debugger having limited (or no) support for
- * union types.  It also simplifies some debug code in DumpTable() which
+ * union types.  It also simplifies some debug code in NsDumpTable() which
  * dumps multi-level values: fetching Buffer.Pointer suffices to pick up
  * the value or next level for any of several types.
  */
 
 /******************************************************************************
- *
+ * 
  * Common Descriptors
  *
  *****************************************************************************/
@@ -149,21 +150,21 @@
  */
 
 
-#define ACPI_OBJECT_COMMON_HEADER           /* Two 32-bit fields */\
+#define ACPI_OBJECT_COMMON                  /* Two 32-bit fields */\
     UINT8                   DataType;           /* To differentiate various internal objs */\
     UINT8                   Type;               /* ACPI_OBJECT_TYPE */\
     UINT8                   Size;               /* Size of entire descriptor */\
     UINT8                   Flags;\
     UINT16                  ReferenceCount;     /* For object deletion management */\
-    UINT16                  AcpiCmFill2;\
-    union AcpiObjInternal  *Next; \
+    UINT16                  CmFill2;\
 
 /* Defines for flag byte above */
 
 #define AO_STATIC_ALLOCATION        0x1
 
 
-/*
+
+/* 
  * Common bitfield for the field objects
  */
 #define ACPI_COMMON_FIELD_INFO              /* Three 32-bit values */\
@@ -171,14 +172,15 @@
     UINT16                  Length;             /* # of bits in buffer */ \
     UINT8                   Granularity;\
     UINT8                   BitOffset;          /* Bit offset within min read/write data unit */\
-    UINT8                   Access;             /* AccessType */\
+    UINT8                   Access;\
     UINT8                   LockRule;\
     UINT8                   UpdateRule;\
-    UINT8                   AccessAttribute;
+    UINT8                   ReservedF1;
+
 
 
 /******************************************************************************
- *
+ * 
  * Individual Object Descriptors
  *
  *****************************************************************************/
@@ -186,15 +188,14 @@
 
 typedef struct /* COMMON */
 {
-    ACPI_OBJECT_COMMON_HEADER
-    UCHAR   FirstNonCommonByte;
+    ACPI_OBJECT_COMMON
 
-} ACPI_OBJECT_COMMON;
+} ACPI_OBJECT_Common;
 
 
 typedef struct /* NUMBER - has value */
 {
-    ACPI_OBJECT_COMMON_HEADER
+    ACPI_OBJECT_COMMON
 
     UINT32                  Value;
     UINT32                  Reserved2;
@@ -207,30 +208,30 @@ typedef struct /* NUMBER - has value */
     void                    *Reserved_p4;
     void                    *Reserved_p5;
 
-} ACPI_OBJECT_NUMBER;
+} ACPI_OBJECT_Number;
 
 
 typedef struct /* STRING - has length and pointer */
 {
-    ACPI_OBJECT_COMMON_HEADER
+    ACPI_OBJECT_COMMON
 
     UINT32                  Length;         /* # of bytes in string, excluding trailing null */
     UINT32                  Reserved2;
     UINT32                  Reserved3;
     UINT32                  Reserved4;
 
-    NATIVE_CHAR             *Pointer;       /* String value in AML stream or in allocated space */
+    UINT8                   *Pointer;       /* String value in AML stream or in allocated space */
     void                    *Reserved_p2;
     void                    *Reserved_p3;
     void                    *Reserved_p4;
     void                    *Reserved_p5;
 
-} ACPI_OBJECT_STRING;
+} ACPI_OBJECT_String;
 
 
 typedef struct /* BUFFER - has length, sequence, and pointer */
 {
-    ACPI_OBJECT_COMMON_HEADER
+    ACPI_OBJECT_COMMON
 
     UINT32                  Length;         /* # of bytes in buffer */
     UINT32                  Sequence;       /* Sequential count of buffers created */
@@ -243,12 +244,12 @@ typedef struct /* BUFFER - has length, sequence, and pointer */
     void                    *Reserved_p4;
     void                    *Reserved_p5;
 
-} ACPI_OBJECT_BUFFER;
+} ACPI_OBJECT_Buffer;
 
 
 typedef struct /* PACKAGE - has count, elements, next element */
 {
-    ACPI_OBJECT_COMMON_HEADER
+    ACPI_OBJECT_COMMON
 
     UINT32                  Count;          /* # of elements in package */
     UINT32                  Reserved2;
@@ -261,14 +262,14 @@ typedef struct /* PACKAGE - has count, elements, next element */
     void                    *Reserved_p4;
     void                    *Reserved_p5;
 
-} ACPI_OBJECT_PACKAGE;
+} ACPI_OBJECT_Package;
 
 
 typedef struct /* FIELD UNIT */
 {
-    ACPI_OBJECT_COMMON_HEADER
+    ACPI_OBJECT_COMMON
 
-    ACPI_COMMON_FIELD_INFO
+    ACPI_COMMON_FIELD_INFO        
     UINT32                  Sequence;           /* Container's sequence number */
 
     union AcpiObjInternal   *Container;         /* Containing object (Buffer) */
@@ -277,12 +278,12 @@ typedef struct /* FIELD UNIT */
     void                    *Reserved_p4;
     void                    *Reserved_p5;
 
-} ACPI_OBJECT_FIELD_UNIT;
+} ACPI_OBJECT_FieldUnit;
 
 
 typedef struct /* DEVICE - has handle and notification handler/context */
 {
-    ACPI_OBJECT_COMMON_HEADER
+    ACPI_OBJECT_COMMON
 
     UINT32                  Reserved1;
     UINT32                  Reserved2;
@@ -295,103 +296,92 @@ typedef struct /* DEVICE - has handle and notification handler/context */
     union AcpiObjInternal  *AddrHandler;        /* Handler for Address space */
     void                    *Reserved_p5;
 
-} ACPI_OBJECT_DEVICE;
+} ACPI_OBJECT_Device;
 
 
 typedef struct /* EVENT */
 {
-    ACPI_OBJECT_COMMON_HEADER
+    ACPI_OBJECT_COMMON
 
+    UINT32                  Semaphore;
     UINT16                  LockCount;
     UINT16                  ThreadId;
     UINT16                  SignalCount;
     UINT16                  Fill1;
-    UINT32                  Reserved3;
     UINT32                  Reserved4;
 
-    void                    *Semaphore;
+    void                    *Reserved_p1;
     void                    *Reserved_p2;
     void                    *Reserved_p3;
     void                    *Reserved_p4;
     void                    *Reserved_p5;
 
-} ACPI_OBJECT_EVENT;
+} ACPI_OBJECT_Event;
 
-
-#define INFINITE_CONCURRENCY        0xFF
 
 typedef struct /* METHOD */
 {
-    ACPI_OBJECT_COMMON_HEADER
+    ACPI_OBJECT_COMMON
 
+    UINT16                  ParamCount;
     UINT8                   MethodFlags;
-    UINT8                   ParamCount;
-    UINT8                   Concurrency;
-    UINT8                   ThreadCount;
+    UINT8                   Fill1;
     UINT32                  PcodeLength;
-    ACPI_OWNER_ID           OwningId;
-    UINT16                  Reserved3_16;
+    UINT32                  TableLength;
     UINT32                  Reserved4;
 
     UINT8                   *Pcode;
-    void                    *Semaphore;
-    void                    *Reserved_p3;
+    UINT8                   *AcpiTable;
+    void                    *ParserOp;
     void                    *Reserved_p4;
     void                    *Reserved_p5;
 
-} ACPI_OBJECT_METHOD;
+} ACPI_OBJECT_Method;
 
 
 typedef struct /* MUTEX */
 {
-    ACPI_OBJECT_COMMON_HEADER
+    ACPI_OBJECT_COMMON
 
+    UINT32                  Semaphore;
     UINT16                  LockCount;
     UINT16                  ThreadId;
     UINT16                  SyncLevel;
     UINT16                  Fill1;
-    UINT32                  Reserved3;
     UINT32                  Reserved4;
 
-    void                    *Semaphore;
+    void                    *Reserved_p1;
     void                    *Reserved_p2;
     void                    *Reserved_p3;
     void                    *Reserved_p4;
     void                    *Reserved_p5;
 
-} ACPI_OBJECT_MUTEX;
+} ACPI_OBJECT_Mutex;
 
-/*  Flags for Region */
-
-#define INITIAL_REGION_FLAGS        0x0000  /* value set when the region is created */
-#define REGION_AGRUMENT_DATA_VALID  0x0001  /* Addr/Len are set */
-#define REGION_INITIALIZED          0x0002  /* region init handler has been called */
-                                            /* this includes _REG method, if any */
 
 typedef struct /* REGION */
 {
-    ACPI_OBJECT_COMMON_HEADER
+    ACPI_OBJECT_COMMON
 
     UINT16                  SpaceId;
-    UINT16                  RegionFlags;        /* bits defined above */
+    UINT16                  DataValid;          /* 1 => Addr/Len are set */
     UINT32                  Address;
     UINT32                  Length;
-    void                   *RegionContext;      /* Region Specific data (Handler->Context
-                                                    optional things like PCI _ADR) */
+    UINT32                  RegionData;         /* Region Specific data (PCI _ADR) */
 
     union AcpiObjInternal  *Method;             /* Associated control method */
     union AcpiObjInternal  *AddrHandler;        /* Handler for system notifies */
     union AcpiObjInternal  *Link;               /* Link in list of regions */
                                                 /* list is owned by AddrHandler */
-    ACPI_NAMESPACE_NODE    *REGMethod;          /* _REG method for this region (if any) */
-    ACPI_NAMESPACE_NODE    *Node;           /* containing object */
+    NAME_TABLE_ENTRY       *REGMethod;          /* _REG method for this region (if any) */
+    NAME_TABLE_ENTRY       *Nte;                /* containing object */
 
-} ACPI_OBJECT_REGION;
+} ACPI_OBJECT_Region;
 
 
 typedef struct /* POWER RESOURCE - has Handle and notification handler/context*/
 {
-    ACPI_OBJECT_COMMON_HEADER
+    ACPI_OBJECT_COMMON
 
     UINT32                  SystemLevel;
     UINT32                  ResourceOrder;
@@ -404,17 +394,16 @@ typedef struct /* POWER RESOURCE - has Handle and notification handler/context*/
     void                    *Reserved_p4;
     void                    *Reserved_p5;
 
-} ACPI_OBJECT_POWER_RESOURCE;
+} ACPI_OBJECT_PowerResource;
 
 
 typedef struct /* PROCESSOR - has Handle and notification handler/context*/
 {
-    ACPI_OBJECT_COMMON_HEADER
+    ACPI_OBJECT_COMMON
 
     UINT32                  ProcId;
-    ACPI_IO_ADDRESS         PblkAddress;
-    UINT16                  Fill1;
-    UINT32                  PblkLength;
+    UINT32                  PBLKAddress;
+    UINT32                  PBLKLength;
     UINT32                  Reserved4;
 
     ACPI_HANDLE             Handle;
@@ -423,12 +412,12 @@ typedef struct /* PROCESSOR - has Handle and notification handler/context*/
     union AcpiObjInternal   *AddrHandler;       /* Handler for Address space */
     void                    *Reserved_p5;
 
-} ACPI_OBJECT_PROCESSOR;
+} ACPI_OBJECT_Processor;
 
 
 typedef struct /* THERMAL ZONE - has Handle and Handler/Context */
 {
-    ACPI_OBJECT_COMMON_HEADER
+    ACPI_OBJECT_COMMON
 
     UINT32                  Reserved1;
     UINT32                  Reserved2;
@@ -441,7 +430,7 @@ typedef struct /* THERMAL ZONE - has Handle and Handler/Context */
     union AcpiObjInternal   *AddrHandler;       /* Handler for Address space */
     void                    *Reserved_p5;
 
-} ACPI_OBJECT_THERMAL_ZONE;
+} ACPI_OBJECT_ThermalZone;
 
 
 /*
@@ -450,9 +439,9 @@ typedef struct /* THERMAL ZONE - has Handle and Handler/Context */
 
 typedef struct /* FIELD */
 {
-    ACPI_OBJECT_COMMON_HEADER
+    ACPI_OBJECT_COMMON
 
-    ACPI_COMMON_FIELD_INFO
+    ACPI_COMMON_FIELD_INFO        
     UINT32                  Reserved4;
 
     union AcpiObjInternal   *Container;         /* Containing object */
@@ -461,14 +450,14 @@ typedef struct /* FIELD */
     void                    *Reserved_p4;
     void                    *Reserved_p5;
 
-} ACPI_OBJECT_FIELD;
+} ACPI_OBJECT_Field;
 
 
 typedef struct /* BANK FIELD */
 {
-    ACPI_OBJECT_COMMON_HEADER
+    ACPI_OBJECT_COMMON
 
-    ACPI_COMMON_FIELD_INFO
+    ACPI_COMMON_FIELD_INFO        
     UINT32                  Value;              /* Value to store into BankSelect */
 
     ACPI_HANDLE             BankSelect;         /* Bank select register */
@@ -477,122 +466,134 @@ typedef struct /* BANK FIELD */
     void                    *Reserved_p4;
     void                    *Reserved_p5;
 
-} ACPI_OBJECT_BANK_FIELD;
+} ACPI_OBJECT_BankField;
 
 
 typedef struct /* INDEX FIELD */
 {
-    /*
+    /* 
      * No container pointer needed since the index and data register definitions
      * will define how to access the respective registers
      */
-    ACPI_OBJECT_COMMON_HEADER
+    ACPI_OBJECT_COMMON
 
     ACPI_COMMON_FIELD_INFO
     UINT32                  Value;              /* Value to store into Index register */
-
+    
     ACPI_HANDLE             Index;              /* Index register */
     ACPI_HANDLE             Data;               /* Data register */
     void                    *Reserved_p3;
     void                    *Reserved_p4;
     void                    *Reserved_p5;
 
-} ACPI_OBJECT_INDEX_FIELD;
+} ACPI_OBJECT_IndexField;
+
+
+typedef struct /* Lvalue - Local object type */
+{
+    ACPI_OBJECT_COMMON
+
+    UINT16                  OpCode;             /* Arg#, Local#, IndexOp, NameOp,
+                                                 * ZeroOp, OneOp, OnesOp, Debug1 => DebugOp
+                                                 */
+    UINT16                  Fill1;
+    UINT32                  Reserved2;
+    UINT32                  Reserved3;
+    UINT32                  Reserved4;
+
+    void                    *Object;            /* OpCode   Use of Object field
+                                                 * -------  ----------------------------
+                                                 * NameOp   ACPI_HANDLE for referenced name
+                                                 * IndexOp  ACPI_OBJECT_INTERNAL **
+                                                 */
+    void                    *Reserved_p2;
+    void                    *Reserved_p3;
+    void                    *Reserved_p4;
+    void                    *Reserved_p5;
+
+} ACPI_OBJECT_Lvalue;
 
 
 typedef struct /* NOTIFY HANDLER */
 {
-    ACPI_OBJECT_COMMON_HEADER
+    ACPI_OBJECT_COMMON
 
     UINT32                  Reserved1;
     UINT32                  Reserved2;
     UINT32                  Reserved3;
     UINT32                  Reserved4;
 
-    ACPI_NAMESPACE_NODE     *Node;               /* Parent device */
+    NAME_TABLE_ENTRY        *Nte;               /* Parent device */
     NOTIFY_HANDLER          Handler;
     void                    *Context;
     void                    *Reserved_p4;
     void                    *Reserved_p5;
 
-} ACPI_OBJECT_NOTIFY_HANDLER;
+} ACPI_OBJECT_NotifyHandler;
 
-
-/* Flags for address handler */
-
-#define ADDR_HANDLER_DEFAULT_INSTALLED  0x1
 
 typedef struct /* ADDRESS HANDLER */
 {
-    ACPI_OBJECT_COMMON_HEADER
+    ACPI_OBJECT_COMMON
 
     UINT16                  SpaceId;
-    UINT16                  Hflags;
-    ADDRESS_SPACE_HANDLER   Handler;
-
-    ACPI_NAMESPACE_NODE     *Node;               /* Parent device */
-    void                    *Context;
-    ADDRESS_SPACE_SETUP     Setup;
-    union AcpiObjInternal   *Link;              /* Link to next handler on device */
-    union AcpiObjInternal   *RegionList;        /* regions using this handler */
-
-} ACPI_OBJECT_ADDR_HANDLER;
-
-
-/*
- * The Reference object type is used for these opcodes:
- * Arg[0-6], Local[0-7], IndexOp, NameOp, ZeroOp, OneOp, OnesOp, DebugOp
- */
-
-typedef struct /* Reference - Local object type */
-{
-    ACPI_OBJECT_COMMON_HEADER
-
-    UINT16                  OpCode;
-    UINT8                   Fill1;
-    UINT8                   TargetType;         /* Used for IndexOp */
-    UINT32                  Offset;             /* Used for ArgOp, LocalOp, and IndexOp */
+    UINT16                  Fill1;
+    UINT32                  Reserved2;
     UINT32                  Reserved3;
     UINT32                  Reserved4;
 
-    void                    *Object;            /* NameOp=>HANDLE to obj, IndexOp=>ACPI_OPERAND_OBJECT  */
-    ACPI_NAMESPACE_NODE     *Node;
-    union AcpiObjInternal   **Where;
-    void                    *Reserved_p4;
-    void                    *Reserved_p5;
+    NAME_TABLE_ENTRY        *Nte;               /* Parent device */
+    ADDRESS_SPACE_HANDLER   Handler;
+    void                    *Context;
+    union AcpiObjInternal   *Link;              /* Link to next handler on device */
+    union AcpiObjInternal   *RegionList;        /* regions using this handler */
 
-} ACPI_OBJECT_REFERENCE;
+} ACPI_OBJECT_AddrHandler;
+
+
+
 
 
 /******************************************************************************
- *
- * ACPI_OPERAND_OBJECT  Descriptor - a giant union of all of the above
+ * 
+ * ACPI_OBJECT_INTERNAL Descriptor - a giant union of all of the above
  *
  *****************************************************************************/
 
-typedef union AcpiObjInternal
+typedef union AcpiObjInternal           
 {
-    ACPI_OBJECT_COMMON          Common;
-    ACPI_OBJECT_NUMBER          Number;
-    ACPI_OBJECT_STRING          String;
-    ACPI_OBJECT_BUFFER          Buffer;
-    ACPI_OBJECT_PACKAGE         Package;
-    ACPI_OBJECT_FIELD_UNIT      FieldUnit;
-    ACPI_OBJECT_DEVICE          Device;
-    ACPI_OBJECT_EVENT           Event;
-    ACPI_OBJECT_METHOD          Method;
-    ACPI_OBJECT_MUTEX           Mutex;
-    ACPI_OBJECT_REGION          Region;
-    ACPI_OBJECT_POWER_RESOURCE  PowerResource;
-    ACPI_OBJECT_PROCESSOR       Processor;
-    ACPI_OBJECT_THERMAL_ZONE    ThermalZone;
-    ACPI_OBJECT_FIELD           Field;
-    ACPI_OBJECT_BANK_FIELD      BankField;
-    ACPI_OBJECT_INDEX_FIELD     IndexField;
-    ACPI_OBJECT_REFERENCE       Reference;
-    ACPI_OBJECT_NOTIFY_HANDLER  NotifyHandler;
-    ACPI_OBJECT_ADDR_HANDLER    AddrHandler;
+    ACPI_OBJECT_Common          Common;
+    ACPI_OBJECT_Number          Number;
+    ACPI_OBJECT_String          String;
+    ACPI_OBJECT_Buffer          Buffer;
+    ACPI_OBJECT_Package         Package;
+    ACPI_OBJECT_FieldUnit       FieldUnit;
+    ACPI_OBJECT_Device          Device;
+    ACPI_OBJECT_Event           Event;
+    ACPI_OBJECT_Method          Method;
+    ACPI_OBJECT_Mutex           Mutex;
+    ACPI_OBJECT_Region          Region;
+    ACPI_OBJECT_PowerResource   PowerResource;
+    ACPI_OBJECT_Processor       Processor;
+    ACPI_OBJECT_ThermalZone     ThermalZone;
+    ACPI_OBJECT_Field           Field;
+    ACPI_OBJECT_BankField       BankField;
+    ACPI_OBJECT_IndexField      IndexField;
+    ACPI_OBJECT_Lvalue          Lvalue;
+    ACPI_OBJECT_NotifyHandler   NotifyHandler;
+    ACPI_OBJECT_AddrHandler     AddrHandler;
 
-} ACPI_OPERAND_OBJECT;
+} ACPI_OBJECT_INTERNAL;
+
+
+/* 
+ * The Lvalue case of ACPI_OBJECT_INTERNAL includes a one-byte field which
+ * contains an AML opcode identifying the type of lvalue.  Debug1 is used
+ * in this field as a stand-in for the (two-byte) AML encoding of DebugOp (0x5B31)
+ */
+
+#define Debug1          0x31
+
+
 
 #endif /* _ACOBJECT_H */

@@ -118,8 +118,9 @@
 #ifndef __ACAPI_H__
 #define __ACAPI_H__
 
-#include "actypes.h"
-#include "actables.h"
+#include <actypes.h>
+#include <actables.h>
+
 
 /*
  * Global interfaces
@@ -127,7 +128,7 @@
 
 ACPI_STATUS
 AcpiInitialize (
-    ACPI_INIT_DATA          *InitData);
+    void);
 
 ACPI_STATUS
 AcpiTerminate (
@@ -135,7 +136,7 @@ AcpiTerminate (
 
 ACPI_STATUS
 AcpiEnable (
-    void);
+	void);
 
 ACPI_STATUS
 AcpiDisable (
@@ -245,18 +246,18 @@ AcpiGetParent (
 
 
 /*
- * AcpiEvent handler interfaces
+ * Event handler interfaces
  */
 
 ACPI_STATUS
 AcpiInstallFixedEventHandler (
-    UINT32                  AcpiEvent,
+    ACPI_EVENT_TYPE         Event,
     FIXED_EVENT_HANDLER     Handler,
     void                    *Context);
     
 ACPI_STATUS
 AcpiRemoveFixedEventHandler (
-    UINT32                  AcpiEvent,
+    ACPI_EVENT_TYPE         Event,
     FIXED_EVENT_HANDLER     Handler);
 
 ACPI_STATUS
@@ -276,8 +277,7 @@ ACPI_STATUS
 AcpiInstallAddressSpaceHandler (
     ACPI_HANDLE             Device, 
     ACPI_ADDRESS_SPACE_TYPE SpaceId, 
-    ADDRESS_SPACE_HANDLER   Handler,
-    ADDRESS_SPACE_SETUP     Setup,
+    ADDRESS_SPACE_HANDLER   Handler, 
     void                    *Context);
 
 ACPI_STATUS
@@ -288,9 +288,8 @@ AcpiRemoveAddressSpaceHandler (
 
 ACPI_STATUS
 AcpiInstallGpeHandler (
-    UINT32                  GpeNumber,
-    UINT32                  Type,
-    GPE_HANDLER             Handler,
+    UINT32                  GpeNumber, 
+    GPE_HANDLER             Handler, 
     void                    *Context);
 
 ACPI_STATUS
@@ -300,24 +299,18 @@ AcpiRemoveGpeHandler (
 
 ACPI_STATUS
 AcpiEnableEvent (
-    UINT32                  AcpiEvent,
+    UINT32                  Event,
     UINT32                  Type);
 
 ACPI_STATUS
 AcpiDisableEvent (
-    UINT32                  AcpiEvent,
+    UINT32                  Event,
     UINT32                  Type);
 
 ACPI_STATUS
 AcpiClearEvent (
-    UINT32                  AcpiEvent,
+    UINT32                  Event,
     UINT32                  Type);
-
-ACPI_STATUS
-AcpiGetEventStatus (
-    UINT32                  AcpiEvent,
-    UINT32                  Type,
-    ACPI_EVENT_STATUS       *EventStatus);
 
 /*
  * Resource interfaces
@@ -356,35 +349,15 @@ ACPI_STATUS
 AcpiGetFirmwareWakingVector (
     void                    **PhysicalAddress);
 
-ACPI_STATUS
-AcpiGetProcessorThrottlingInfo (
-    ACPI_HANDLE             ProcessorHandle,
-    ACPI_BUFFER             *UserBuffer);
+ACPI_STATUS 
+AcpiSystemSleepStateSupported (
+    UINT8                   SleepState,
+    BOOLEAN					*Supported);
 
 ACPI_STATUS
-AcpiSetProcessorThrottlingState (
-    ACPI_HANDLE             ProcessorHandle,
-    UINT32                  ThrottleState);
+AcpiEnterSystemSleepState (
+    UINT8                   SleepState);
 
-ACPI_STATUS
-AcpiGetProcessorThrottlingState (
-    ACPI_HANDLE             ProcessorHandle,
-    UINT32                  *ThrottleState);
-
-ACPI_STATUS
-AcpiGetProcessorCxInfo (
-    ACPI_HANDLE             ProcessorHandle,
-    ACPI_BUFFER             *UserBuffer);
-
-ACPI_STATUS
-AcpiSetProcessorSleepState (
-    ACPI_HANDLE             ProcessorHandle,
-    UINT32                  CxState);
-
-ACPI_STATUS
-AcpiProcessorSleep (
-    ACPI_HANDLE             ProcessorHandle,
-    UINT32                  *PmTimerTicks);
 
 
 #endif /* __ACAPI_H__ */
