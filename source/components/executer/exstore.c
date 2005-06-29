@@ -14,15 +14,18 @@
  | FILENAME: amlexec.c - ACPI AML (p-code) execution
  |__________________________________________________________________________
  |
- | $Revision: 1.4 $
- | $Date: 2005/06/29 17:50:35 $
+ | $Revision: 1.5 $
+ | $Date: 2005/06/29 17:50:39 $
  | $Log: exstore.c,v $
- | Revision 1.4  2005/06/29 17:50:35  aystarik
- | Cleanup
+ | Revision 1.5  2005/06/29 17:50:39  aystarik
+ | Major cleanup
  |
  | 
- | date	99.01.14.23.53.00;	author rmoore1;	state Exp;
+ | date	99.01.20.17.40.00;	author rmoore1;	state Exp;
  |
+ * 
+ * 5     1/20/99 9:40a Rmoore1
+ * Major cleanup
  * 
  * 4     1/14/99 3:53p Rmoore1
  * Cleanup
@@ -260,7 +263,8 @@ static int                  iMethodStackTop = -1;
 
 
 /*****************************************************************************
- * FUNCTION:    int iGetMethodDepth(void)
+ * 
+ * FUNCTION:    iGetMethodDepth
  *
  * RETURN:      The current value of iMethodStackTop
  *
@@ -275,7 +279,8 @@ iGetMethodDepth (void)
 
 
 /*****************************************************************************
- * FUNCTION:    NsType iGetMethodValTyp(int iIndex)
+ * 
+ * FUNCTION:    iGetMethodValTyp
  *
  * PARAMETERS:  int iIndex      index in apMethodStack[iMethodStackTop]
  *
@@ -311,7 +316,8 @@ iGetMethodValTyp(int iIndex)
 
 
 /*****************************************************************************
- * FUNCTION:    int iGetMethodValue(int iIndex, OBJECT_DESCRIPTOR *pOD)
+ * 
+ * FUNCTION:    iGetMethodValue
  *
  * PARAMETERS:  int                 iIndex      index in apMethodStack[iMethodStackTop]
  *              OBJECT_DESCRIPTOR   *pOD        Descriptor into which selected Arg
@@ -374,6 +380,7 @@ iGetMethodValue (int iIndex, OBJECT_DESCRIPTOR *pOD)
         if (Buffer == pOD->bValTyp)
         {
             /* Assign a new sequence number */
+            
             pOD->sBuffer.dSequence = dAmlBufSeq();
         }
 
@@ -386,7 +393,8 @@ iGetMethodValue (int iIndex, OBJECT_DESCRIPTOR *pOD)
 
 
 /*****************************************************************************
-A* FUNCTION:    int iSetMethodValue(int iIndex, OBJECT_DESCRIPTOR *pOD, ...)
+ * 
+ * FUNCTION:    iSetMethodValue
  *
  * PARAMETERS:  int                 iIndex  index in apMethodStack[iMethodStackTop]
  *              OBJECT_DESCRIPTOR * pOD     Value to be stored
@@ -404,9 +412,9 @@ A* FUNCTION:    int iSetMethodValue(int iIndex, OBJECT_DESCRIPTOR *pOD, ...)
  *              To undefine an entry, pass pOD as NULL; the old descriptor
  *              will be deleted.
  *
- *  ALLOCATION:
-A*  Reference       Size                    Pool    Owner       Description
-A*  apMethodStack   s(OBJECT_DESCRIPTOR)    bu      amlexec     Object
+ * ALLOCATION:
+ *  Reference       Size                    Pool    Owner       Description
+ *  apMethodStack   s(OBJECT_DESCRIPTOR)    bu      amlexec     Object
  *
  ****************************************************************************/
 
@@ -431,7 +439,8 @@ iSetMethodValue (int iIndex, OBJECT_DESCRIPTOR *pOD, OBJECT_DESCRIPTOR *pSCR)
 
         if ((OBJECT_DESCRIPTOR *) 0 == pSCR && (OBJECT_DESCRIPTOR *)0 != pOD)
         {
-            /* No descriptor was provided in pSCR, and the currently-undefined
+            /* 
+             * No descriptor was provided in pSCR, and the currently-undefined
              * Local or Arg is to be defined.  Allocate a descriptor.
              */
             apMethodStack[iMethodStackTop][iIndex] = NEW(OBJECT_DESCRIPTOR);
@@ -444,7 +453,8 @@ iSetMethodValue (int iIndex, OBJECT_DESCRIPTOR *pOD, OBJECT_DESCRIPTOR *pSCR)
 
         else
         {
-            /* A descriptor was provided in pSCR; use it for the Arg/Local
+            /* 
+             * A descriptor was provided in pSCR; use it for the Arg/Local
              * new value (or delete it later if the new value is NULL).
              * We also come here if no descriptor was supplied and the
              * undefined Local or Arg is to remain undefined; in that case
@@ -456,7 +466,8 @@ iSetMethodValue (int iIndex, OBJECT_DESCRIPTOR *pOD, OBJECT_DESCRIPTOR *pSCR)
  
     else
     {
-        /* Arg or Local is currently defined, so that descriptor will be
+        /* 
+         * Arg or Local is currently defined, so that descriptor will be
          * reused for the new value.  Delete the spare descriptor if supplied.
          */
         if ((OBJECT_DESCRIPTOR *)0 != pSCR)
@@ -469,14 +480,16 @@ iSetMethodValue (int iIndex, OBJECT_DESCRIPTOR *pOD, OBJECT_DESCRIPTOR *pSCR)
 
     if ((OBJECT_DESCRIPTOR *)0 == pOD)
     {
-        /* Undefine the Arg or Local by setting its descriptor pointer to NULL.
+        /* 
+         * Undefine the Arg or Local by setting its descriptor pointer to NULL.
          * If it is currently defined, delete the old descriptor first.
          */
         if ((OBJECT_DESCRIPTOR *)0 != apMethodStack[iMethodStackTop][iIndex])
         {
             if (Buffer == apMethodStack[iMethodStackTop][iIndex]->bValTyp)
             {
-                /* Ensure the about-to-be-deleted Buffer's sequence number
+                /* 
+                 * Ensure the about-to-be-deleted Buffer's sequence number
                  * will no longer match any FieldUnits defined within it,
                  * by inverting its most-significant bit.
                  */
@@ -486,7 +499,8 @@ iSetMethodValue (int iIndex, OBJECT_DESCRIPTOR *pOD, OBJECT_DESCRIPTOR *pSCR)
 
             DELETE(apMethodStack[iMethodStackTop][iIndex]);
 
-            /* XXX - Should also delete any unshared storage pointed to by this
+            /* 
+             * XXX - Should also delete any unshared storage pointed to by this
              * XXX - descriptor, but lacking a convenient way to determine
              * XXX - whether the storage is shared or not we'll let GC handle it.
              */
@@ -496,10 +510,12 @@ iSetMethodValue (int iIndex, OBJECT_DESCRIPTOR *pOD, OBJECT_DESCRIPTOR *pSCR)
 
     else
     {
-        /* Copy the apObjStack descriptor (*pOD) into the descriptor for the
+        /* 
+         * Copy the apObjStack descriptor (*pOD) into the descriptor for the
          * Arg or Local.
          */
-        /* XXX - possible storage leak: if the old descriptor happens to be
+        /* 
+         * XXX - possible storage leak: if the old descriptor happens to be
          * XXX - for an aggregate (Buffer, String, Package, etc.), it points
          * XXX - to other storage which may or may not be shared; if unshared
          * XXX - it should be freed here.  (Good Luck figuring out whether it
@@ -522,7 +538,8 @@ iSetMethodValue (int iIndex, OBJECT_DESCRIPTOR *pOD, OBJECT_DESCRIPTOR *pSCR)
 
 
 /*****************************************************************************
-A* FUNCTION:    int iPrepDefFieldValue(NsHandle hRegion, ... )
+ * 
+ * FUNCTION:    iPrepDefFieldValue
  *
  * PARAMETERS:  NsHandle    hRegion     Region in which field is being defined
  *              BYTE        bFldFlg     Access, LockRule, UpdateRule
@@ -536,9 +553,9 @@ A* FUNCTION:    int iPrepDefFieldValue(NsHandle hRegion, ... )
  * DESCRIPTION: Construct an OBJECT_DESCRIPTOR of type DefField and connect
  *              it to the nte whose handle is at apObjStack[iObjStackTop]
  *
- *  ALLOCATION:
-A*  Reference   Size                    Pool    Owner       Description
-A*  nte.pVal    s(OBJECT_DESCRIPTOR)    bu      amlexec     Field descriptor
+ * ALLOCATION:
+ *  Reference   Size                    Pool    Owner       Description
+ *  nte.pVal    s(OBJECT_DESCRIPTOR)    bu      amlexec     Field descriptor
  *
  ****************************************************************************/
 
@@ -581,7 +598,8 @@ iPrepDefFieldValue (NsHandle hRegion, BYTE bFldFlg, long lFldPos, long lFldLen)
     pOD->bValTyp = (BYTE)DefField;
     if (DefField != pOD->sField.bValTyp)
     {
-        /* The C implementation has done something which is technically legal
+        /* 
+         * The C implementation has done something which is technically legal
          * but unexpected:  the bValTyp field which was defined as a BYTE did
          * not map to the same structure offset as the one which was defined
          * as a WORD_BIT -- see comments in the definition of the sFieldUnit
@@ -631,7 +649,8 @@ iPrepDefFieldValue (NsHandle hRegion, BYTE bFldFlg, long lFldPos, long lFldLen)
                     "============================================================");
     }
 
-    /* Store the constructed descriptor (pOD) into the nte whose
+    /* 
+     * Store the constructed descriptor (pOD) into the nte whose
      * handle is on TOS, preserving the current type of that nte.
      */
     vNsSetValue((NsHandle)apObjStack[iObjStackTop], pOD,
@@ -642,7 +661,8 @@ iPrepDefFieldValue (NsHandle hRegion, BYTE bFldFlg, long lFldPos, long lFldLen)
 
 
 /*****************************************************************************
-A* FUNCTION:    int iPrepBankFieldValue(NsHandle hIndexReg, ... )
+ * 
+ * FUNCTION:    iPrepBankFieldValue
  *
  * PARAMETERS:  NsHandle    hRegion     Region in which field is being defined
  *              NsHandle    hBankReg    Bank selection register
@@ -656,9 +676,9 @@ A* FUNCTION:    int iPrepBankFieldValue(NsHandle hIndexReg, ... )
  * DESCRIPTION: Construct an OBJECT_DESCRIPTOR of type BankField and connect
  *              it to the nte whose handle is at apObjStack[iObjStackTop]
  *
- *  ALLOCATION:
-A*  Reference   Size                    Pool    Owner       Description
-A*  nte.pVal    s(OBJECT_DESCRIPTOR)    bu      amlexec     Field descriptor
+ * ALLOCATION:
+ *  Reference   Size                    Pool    Owner       Description
+ *  nte.pVal    s(OBJECT_DESCRIPTOR)    bu      amlexec     Field descriptor
  *
  ****************************************************************************/
 
@@ -742,7 +762,8 @@ iPrepBankFieldValue (NsHandle hRegion, NsHandle hBankReg, DWORD dBankVal,
             "============================================================");
     }
 
-    /* Store the constructed descriptor (pOD) into the nte whose
+    /* 
+     * Store the constructed descriptor (pOD) into the nte whose
      * handle is on TOS, preserving the current type of that nte.
      */
     vNsSetValue((NsHandle)apObjStack[iObjStackTop], pOD,
@@ -753,7 +774,8 @@ iPrepBankFieldValue (NsHandle hRegion, NsHandle hBankReg, DWORD dBankVal,
 
 
 /*****************************************************************************
-A* FUNCTION:    int iPrepIndexFieldValue(hIndexReg, ... )
+ * 
+ * FUNCTION:    iPrepIndexFieldValue
  *
  * PARAMETERS:  NsHandle    hIndexReg   Index register
  *              NsHandle    hDataReg    Data register
@@ -766,9 +788,9 @@ A* FUNCTION:    int iPrepIndexFieldValue(hIndexReg, ... )
  * DESCRIPTION: Construct an OBJECT_DESCRIPTOR of type IndexField and connect
  *              it to the nte whose handle is at apObjStack[iObjStackTop]
  *
- *  ALLOCATION:
-A*  Reference   Size                    Pool    Owner       Description
-A*  nte.pVal    s(OBJECT_DESCRIPTOR)    bu      amlexec     Field descriptor
+ * ALLOCATION:
+ *  Reference   Size                    Pool    Owner       Description
+ *  nte.pVal    s(OBJECT_DESCRIPTOR)    bu      amlexec     Field descriptor
  *
  ****************************************************************************/
 
@@ -799,6 +821,7 @@ iPrepIndexFieldValue (NsHandle hIndexReg, NsHandle hDataReg,
     if (IndexField != pOD->sIndexField.bValTyp)
     {
         /* See comments in iPrepDefFieldValue() re unexpected C behavior */
+        
         pOD->sIndexField.bValTyp = 0x005a;
         sprintf (acWhyBuf,
                 "iPrepIndexFieldValue: internal failure %p %02x %02x %02x %02x",
@@ -823,32 +846,34 @@ iPrepIndexFieldValue (NsHandle hIndexReg, NsHandle hDataReg,
     pOD->sIndexField.hIndex     = hIndexReg;
     pOD->sIndexField.hData      = hDataReg;
 
-    if (debug_level() > 0)
+    if (debug_level () > 0)
     {
-        fprintf_bu(iLstFileHandle, LOGFILE,
+        fprintf_bu (iLstFileHandle, LOGFILE,
                     "iPrepIndexFieldValue: set nte %p (%4.4s) val = %p",
                     apObjStack[iObjStackTop], apObjStack[iObjStackTop], pOD);
 
-        iDumpStackEntry(pOD);
-        vNsDumpEntry(hIndexReg, LOGFILE);
-        vNsDumpEntry(hDataReg, LOGFILE);
+        iDumpStackEntry (pOD);
+        vNsDumpEntry (hIndexReg, LOGFILE);
+        vNsDumpEntry( hDataReg, LOGFILE);
 
-        fprintf_bu(iLstFileHandle, LOGFILE,
+        fprintf_bu (iLstFileHandle, LOGFILE,
             "============================================================");
     }
 
-    /* Store the constructed descriptor (pOD) into the nte whose
+    /* 
+     * Store the constructed descriptor (pOD) into the nte whose
      * handle is on TOS, preserving the current type of that nte.
      */
-    vNsSetValue((NsHandle)apObjStack[iObjStackTop], pOD,
-            (BYTE)iNsValType((NsHandle)apObjStack[iObjStackTop]));
+    vNsSetValue ((NsHandle) apObjStack[iObjStackTop], pOD,
+                (BYTE) iNsValType ((NsHandle) apObjStack[iObjStackTop]));
 
     return S_SUCCESS;
 }
 
 
 /*****************************************************************************
- * FUNCTION:    iSetupFld(OBJECT_DESCRIPTOR *pOD, OBJECT_DESCRIPTOR *pRgn)
+ * 
+ * FUNCTION:    iSetupFld
  *
  * PARAMETERS:  OBJECT_DESCRIPTOR * pOD     Field to be read or written
  *              OBJECT_DESCRIPTOR * pRgn    Region containing field
@@ -896,7 +921,8 @@ iSetupFld (OBJECT_DESCRIPTOR *pOD, OBJECT_DESCRIPTOR *pRgn, int iFldW)
         fprintf_bu (iLstFileHandle, LOGFILE, "iSetupFld: ");
     }
 
-    /* If the address and length have not been previously evaluated,
+    /* 
+     * If the address and length have not been previously evaluated,
      * evaluate them and save the results.
      */
     if (0 == pRgn->sRegion.wAdrLenValid)
@@ -926,19 +952,20 @@ iSetupFld (OBJECT_DESCRIPTOR *pOD, OBJECT_DESCRIPTOR *pRgn, int iFldW)
         {
             /* Capture the address */
 
-            OBJECT_DESCRIPTOR *pODval = apObjStack[iObjStackTop];
+            OBJECT_DESCRIPTOR       *pODval = apObjStack[iObjStackTop];
 
-            if ((OBJECT_DESCRIPTOR *)0 == pODval
+
+            if ((OBJECT_DESCRIPTOR *) 0 == pODval
                 || pODval->bValTyp != (BYTE) Number)
             {
                 pcWhy = "iSetupFld: Malformed Region/Address";
 
-                if (debug_level() > 2)
+                if (debug_level () > 2)
                 {
                     /* flow trace */
                     fprintf_bu (iLstFileHandle, LOGFILE, " Malformed Region/Address "
-                            "pODval = %p, pODval->bValTyp = %02Xh, Number = %02Xh",
-                            pODval, pODval->bValTyp, (BYTE) Number);
+                                "pODval = %p, pODval->bValTyp = %02Xh, Number = %02Xh",
+                                pODval, pODval->bValTyp, (BYTE) Number);
 
                 }
                 return S_ERROR;
@@ -948,8 +975,8 @@ iSetupFld (OBJECT_DESCRIPTOR *pOD, OBJECT_DESCRIPTOR *pRgn, int iFldW)
 
             /* Evaluate the Length opcode */
 
-            if ((iRv = DoOpCode(Exec)) == S_SUCCESS
-                && (iRv = iGetRvalue ((OBJECT_DESCRIPTOR **)&apObjStack[iObjStackTop]))
+            if ((iRv = DoOpCode (Exec)) == S_SUCCESS
+                && (iRv = iGetRvalue ((OBJECT_DESCRIPTOR **) &apObjStack[iObjStackTop]))
                  == S_SUCCESS)
             {
                 /* Capture the length */
@@ -960,7 +987,7 @@ iSetupFld (OBJECT_DESCRIPTOR *pOD, OBJECT_DESCRIPTOR *pRgn, int iFldW)
                     || pODval->bValTyp != (BYTE) Number)
                 {
                     pcWhy = "iSetupFld: Malformed Region/Length";
-                    if (debug_level() > 2)
+                    if (debug_level () > 2)
                     {
                         /* flow trace */
                         fprintf_bu (iLstFileHandle, LOGFILE,
@@ -971,12 +998,13 @@ iSetupFld (OBJECT_DESCRIPTOR *pOD, OBJECT_DESCRIPTOR *pRgn, int iFldW)
 
                 pRgn->sRegion.dLength = pODval->sNumber.dNumber;
 
-                /* Remember that both Address and Length
+                /* 
+                 * Remember that both Address and Length
                  * have been successfully evaluated and saved.
                  */
                 pRgn->sRegion.wAdrLenValid = 1;
             }
-        }   /* if ((iRv = DoOpCode (Exec)) == S_SUCCESS) */
+        }
 
         if (S_SUCCESS != iRv)
         {
@@ -1000,9 +1028,10 @@ iSetupFld (OBJECT_DESCRIPTOR *pOD, OBJECT_DESCRIPTOR *pRgn, int iFldW)
             }
             return iRv;
         }
-    }   /* if (0 == pRgn->sRegion.wAdrLenValid) */
+    }
 
-    /* If (offset rounded up to next multiple of field width)
+    /* 
+     * If (offset rounded up to next multiple of field width)
      * exceeds region length, indicate an error.
      */
     if (pRgn->sRegion.dLength
@@ -1038,7 +1067,8 @@ iSetupFld (OBJECT_DESCRIPTOR *pOD, OBJECT_DESCRIPTOR *pRgn, int iFldW)
 
 
 /*****************************************************************************
- * FUNCTION:    iReadFld(OBJECT_DESCRIPTOR *pOD, DWORD *pdVal)
+ * 
+ * FUNCTION:    iReadFld
  *
  * PARAMETERS:  OBJECT_DESCRIPTOR * pOD     Field to be read
  *              DWORD *             pdVal   Where to store value
@@ -1069,7 +1099,8 @@ iReadFld (OBJECT_DESCRIPTOR *pOD, DWORD *pdVal, int iFldW)
         return iRv;
     }
 
-    /* Round offset down to next multiple of
+    /* 
+     * Round offset down to next multiple of
      * field width, and add region base address.
      */
     dAdr = pRgn->sRegion.dAddress
@@ -1114,7 +1145,8 @@ iReadFld (OBJECT_DESCRIPTOR *pOD, DWORD *pdVal, int iFldW)
 
             /* XXX: was pvPhysPtr = PHYStoFP(dAdr); */
 
-            /* XXX: This may be too high an overhead to do every time.
+            /* 
+             * XXX: This may be too high an overhead to do every time.
              * Probably should have a mapping cached.
              */
 
@@ -1228,7 +1260,8 @@ iReadFld (OBJECT_DESCRIPTOR *pOD, DWORD *pdVal, int iFldW)
 
 
 /*****************************************************************************
- * FUNCTION:    iWriteFld(OBJECT_DESCRIPTOR *pOD, DWORD dVal)
+ * 
+ * FUNCTION:    iWriteFld
  *
  * PARAMETERS:  OBJECT_DESCRIPTOR * pOD     Field to be set
  *              DWORD               dVal    Value to store
@@ -1240,7 +1273,7 @@ iReadFld (OBJECT_DESCRIPTOR *pOD, DWORD *pdVal, int iFldW)
  *
  ****************************************************************************/
 
- static int
+static int
 iWriteFld (OBJECT_DESCRIPTOR *pOD, DWORD dVal, int iFldW)
 {
     /* pOD is validated by callers */
@@ -1406,7 +1439,8 @@ iWriteFld (OBJECT_DESCRIPTOR *pOD, DWORD dVal, int iFldW)
 
 
 /*****************************************************************************
- * FUNCTION:    static void vAmlAppendBlockOwner(void *pvB)
+ * 
+ * FUNCTION:    vAmlAppendBlockOwner
  *
  * PARAMETERS:  void *pvB
  *
@@ -1414,7 +1448,7 @@ iWriteFld (OBJECT_DESCRIPTOR *pOD, DWORD dVal, int iFldW)
  *
  ****************************************************************************/
 
- static void
+static void
 vAmlAppendBlockOwner (void *pvB)
 {
 
@@ -1438,7 +1472,8 @@ vAmlAppendBlockOwner (void *pvB)
 
 
 /*****************************************************************************
- * FUNCTION:    static int iAccessNamedField(int iMode, NsHandle hNamedField,
+ * 
+ * FUNCTION:    iAccessNamedField
  *
  * PARAMETERS:  int         iMode           ACPI_READ or ACPI_WRITE
  *              NsHandle    hNamedField     Handle for field to be accessed
@@ -1450,7 +1485,7 @@ vAmlAppendBlockOwner (void *pvB)
  *
  ****************************************************************************/
 
- static int
+static int
 iAccessNamedField (int iMode, NsHandle hNamedField, DWORD *pdVal)
 {
     OBJECT_DESCRIPTOR *     pOD = pvNsValPtr(hNamedField);
@@ -1480,7 +1515,7 @@ iAccessNamedField (int iMode, NsHandle hNamedField, DWORD *pdVal)
     {
         fprintf_bu (iLstFileHandle, LOGFILE,
                     "in iAccessNamedField: DefField type and ValPtr OK in nte ");
-        vNsDumpEntry(hNamedField, LOGFILE);
+        vNsDumpEntry (hNamedField, LOGFILE);
 
         fprintf_bu (iLstFileHandle, LOGFILE, "pOD = %p, pOD->bValTyp = %d",
                     pOD, pOD->bValTyp);
@@ -1494,7 +1529,7 @@ iAccessNamedField (int iMode, NsHandle hNamedField, DWORD *pdVal)
                 "iAccessNamedField:internal error: Name %4.4s type %d does not match value-type %d at %p",
                 hNamedField, iNsValType(hNamedField), pOD->bValTyp, pOD);
         pcWhy = acWhyBuf;
-        vAmlAppendBlockOwner(pOD);
+        vAmlAppendBlockOwner (pOD);
         return S_ERROR;
     }
 
@@ -1536,7 +1571,8 @@ iAccessNamedField (int iMode, NsHandle hNamedField, DWORD *pdVal)
         return S_ERROR;
     }
 
-    /* As long as iMaxW/2 is wide enough for the data and iMaxW > iGran,
+    /* 
+     * As long as iMaxW/2 is wide enough for the data and iMaxW > iGran,
      * divide iMaxW by 2.
      */
     while (iGran < iMaxW
@@ -1568,7 +1604,8 @@ iAccessNamedField (int iMode, NsHandle hNamedField, DWORD *pdVal)
 
                 case Preserve:
 
-                    /* Read the current contents of the byte/word/dword containing
+                    /* 
+                     * Read the current contents of the byte/word/dword containing
                      * the field, and merge with the new field value.
                      */
                     iRv = iReadFld(pOD, &dOldVal, iMaxW);
@@ -1589,7 +1626,8 @@ iAccessNamedField (int iMode, NsHandle hNamedField, DWORD *pdVal)
 
                 case WriteAsZeros:
 
-                    /* Positions outside the field are already 0
+                    /* 
+                     * Positions outside the field are already 0
                      * due to "& dMask" above
                      */
                     break;
@@ -1658,7 +1696,8 @@ iAccessNamedField (int iMode, NsHandle hNamedField, DWORD *pdVal)
 
 
 /*****************************************************************************
- * FUNCTION:    int iSetNamedFieldValue(NsHandle hNamedField, DWORD dValue)
+ * 
+ * FUNCTION:    iSetNamedFieldValue
  *
  * PARAMETERS:  NsHandle    hNamedField     Handle for field to be set
  *              DWORD       dValue          Value to be stored in field
@@ -1669,7 +1708,7 @@ iAccessNamedField (int iMode, NsHandle hNamedField, DWORD *pdVal)
  *
  ****************************************************************************/
 
- int
+int
 iSetNamedFieldValue (NsHandle hNamedField, DWORD dValue)
 {
     FUNCTION_TRACE ("iSetNamedFieldValue");
@@ -1686,7 +1725,8 @@ iSetNamedFieldValue (NsHandle hNamedField, DWORD dValue)
 
 
 /*****************************************************************************
- * FUNCTION:    int iGetNamedFieldValue(NsHandle hNamedField, DWORD *pdVal)
+ * 
+ * FUNCTION:    iGetNamedFieldValue
  *
  * PARAMETERS:  NsHandle    hNamedField     Handle for field to be read
  *              DWORD       *pdVal          Where to store value read froom field
@@ -1714,7 +1754,8 @@ iGetNamedFieldValue (NsHandle hNamedField, DWORD *pdVal)
 
 
 /*****************************************************************************
-A* FUNCTION:    iExecStore(OBJECT_DESCRIPTOR *pVal, OBJECT_DESCRIPTOR *pDest)
+ * 
+ * FUNCTION:    iExecStore
  *
  * PARAMETERS:  OBJECT_DESCRIPTOR *pVal     value to be stored
  *              OBJECT_DESCRIPTOR *pDest    where to store it -- must be
@@ -1730,9 +1771,9 @@ A* FUNCTION:    iExecStore(OBJECT_DESCRIPTOR *pVal, OBJECT_DESCRIPTOR *pDest)
  *              functions to store the result of an operation into
  *              the destination operand.
  *
- *  ALLOCATION:
-A*  Reference   Size                    Pool    Owner       Description
-A*  nte.pVal    s(OBJECT_DESCRIPTOR)    bu      amlexec     Name(Lvalue)
+ * ALLOCATION:
+ *  Reference   Size                    Pool    Owner       Description
+ *  nte.pVal    s(OBJECT_DESCRIPTOR)    bu      amlexec     Name(Lvalue)
  *
  ****************************************************************************/
 
@@ -1834,7 +1875,8 @@ iExecStore(OBJECT_DESCRIPTOR *pVal, OBJECT_DESCRIPTOR *pDest)
 
             case BankField:
 
-                /* Storing into a BankField.
+                /* 
+                 * Storing into a BankField.
                  * If value is not a Number, try to resolve it to one.
                  */
                 if (pVal->bValTyp != Number
@@ -1855,7 +1897,8 @@ iExecStore(OBJECT_DESCRIPTOR *pVal, OBJECT_DESCRIPTOR *pDest)
                     break;
                 }
 
-                /* Delete descriptor that points to name,
+                /* 
+                 * Delete descriptor that points to name,
                  * and point to descriptor for name's value instead.
                  */
 
@@ -1947,9 +1990,11 @@ iExecStore(OBJECT_DESCRIPTOR *pVal, OBJECT_DESCRIPTOR *pDest)
 
             case DefField:
 
-                /* Storing into a Field defined in a Region.
+                /* 
+                 * Storing into a Field defined in a Region.
                  * If value is not a Number, try to resolve it to one.
                  */
+
                 if (pVal->bValTyp != Number
                     && (iRv = iGetRvalue(&pVal)) != S_SUCCESS)
                 {
@@ -1968,9 +2013,11 @@ iExecStore(OBJECT_DESCRIPTOR *pVal, OBJECT_DESCRIPTOR *pDest)
                     break;
                 }
 
-                /* Delete descriptor that points to name,
+                /* 
+                 * Delete descriptor that points to name,
                  * and point to descriptor for name's value instead.
                  */
+
                 DELETE (pDest);
                 pDest = pvNsValPtr (nTemp);
                 
@@ -2032,7 +2079,8 @@ iExecStore(OBJECT_DESCRIPTOR *pVal, OBJECT_DESCRIPTOR *pDest)
 
             case IndexField:
                 
-                /* Storing into an IndexField.
+                /* 
+                 * Storing into an IndexField.
                  * If value is not a Number, try to resolve it to one.
                  */
                 
@@ -2054,9 +2102,11 @@ iExecStore(OBJECT_DESCRIPTOR *pVal, OBJECT_DESCRIPTOR *pDest)
                     break;
                 }
 
-                /* Delete descriptor that points to name,
+                /* 
+                 * Delete descriptor that points to name,
                  * and point to descriptor for name's value instead.
                  */
+
                 DELETE (pDest);
                 pDest = pvNsValPtr (nTemp);
                 
@@ -2145,7 +2195,8 @@ iExecStore(OBJECT_DESCRIPTOR *pVal, OBJECT_DESCRIPTOR *pDest)
 
             case FieldUnit:
                 
-                /* Storing into a FieldUnit (defined in a Buffer).
+                /* 
+                 * Storing into a FieldUnit (defined in a Buffer).
                  * If value is not a Number, try to resolve it to one.
                  */
                 if (pVal->bValTyp != Number
@@ -2166,7 +2217,8 @@ iExecStore(OBJECT_DESCRIPTOR *pVal, OBJECT_DESCRIPTOR *pDest)
                     break;
                 }
 
-                /* Delete descriptor that points to name,
+                /* 
+                 * Delete descriptor that points to name,
                  * and point to descriptor for name's value instead.
                  */
                 DELETE (pDest);
@@ -2257,7 +2309,8 @@ iExecStore(OBJECT_DESCRIPTOR *pVal, OBJECT_DESCRIPTOR *pDest)
                     BYTE *      pbLoc = pDest->sFieldUnit.pContainer->sBuffer.pbBuffer
                                         + pDest->sFieldUnit.dOffset;
                     
-                    /* Construct dMask with 1 bits where the field is,
+                    /* 
+                     * Construct dMask with 1 bits where the field is,
                      * 0 bits elsewhere
                      */
                     DWORD       dMask = ((DWORD)1 << pDest->sFieldUnit.wDatLen) - (DWORD)1
@@ -2279,7 +2332,8 @@ iExecStore(OBJECT_DESCRIPTOR *pVal, OBJECT_DESCRIPTOR *pDest)
                     
                     *(DWORD *) pbLoc &= ~dMask;
 
-                    /* Shift and mask the new value into position,
+                    /* 
+                     * Shift and mask the new value into position,
                      * and or it into the buffer.
                      */
                     *(DWORD *)pbLoc
@@ -2305,7 +2359,8 @@ iExecStore(OBJECT_DESCRIPTOR *pVal, OBJECT_DESCRIPTOR *pDest)
 
             default:
                 
-                /* All other types than Alias and the various Fields come here.
+                /* 
+                 * All other types than Alias and the various Fields come here.
                  * Store a copy of pVal as the new value of the Name, and set
                  * the Name's type to that of the value being stored in it.
                  */
@@ -2335,7 +2390,8 @@ iExecStore(OBJECT_DESCRIPTOR *pVal, OBJECT_DESCRIPTOR *pDest)
 
     case ZeroOp: case OneOp: case OnesOp:
 
-        /* Storing to a constant is a no-op -- see spec sec 15.2.3.3.1.
+        /* 
+         * Storing to a constant is a no-op -- see spec sec 15.2.3.3.1.
          * Delete the result descriptor.
          */
         DELETE (pDest);
@@ -2356,7 +2412,8 @@ iExecStore(OBJECT_DESCRIPTOR *pVal, OBJECT_DESCRIPTOR *pDest)
 
     case Debug1:
 
-        /* Storing to the Debug object causes the value stored to be
+        /* 
+         * Storing to the Debug object causes the value stored to be
          * displayed and otherwise has no effect -- see sec. 15.2.3.3.3.
          */
         fprintf_bu (iLstFileHandle, LOGFILE, "DebugOp: ");
@@ -2398,7 +2455,8 @@ iExecStore(OBJECT_DESCRIPTOR *pVal, OBJECT_DESCRIPTOR *pDest)
 
 
 /*****************************************************************************
- * FUNCTION:    static int iGetFieldUnitValue(OBJECT_DESCRIPTOR *pField ...)
+ * 
+ * FUNCTION:    iGetFieldUnitValue
  *
  * PARAMETERS:  OBJECT_DESCRIPTOR * pField      points to a FIeldUnit
  *              OBJECT_DESCRIPTOR * pResult     points to an empty descriptor
@@ -2537,7 +2595,8 @@ iGetFieldUnitValue (OBJECT_DESCRIPTOR *pField, OBJECT_DESCRIPTOR *pResult)
 
 
 /*****************************************************************************
-A* FUNCTION:    int iGetRvalue(OBJECT_DESCRIPTOR **ppStackPtr)
+ * 
+ * FUNCTION:    iGetRvalue
  *
  * PARAMETERS:  OBJECT_DESCRIPTOR **ppStackPtr  points to entry on ObjStack,
  *                                              which can be either an
@@ -2548,9 +2607,9 @@ A* FUNCTION:    int iGetRvalue(OBJECT_DESCRIPTOR **ppStackPtr)
  *
  * DESCRIPTION: Convert Lvalue entries on apObjStack to rvalues
  *
- *  ALLOCATION:
-A*  Reference   Size                    Pool    Owner       Description
-A*  *ppStackPtr s(OBJECT_DESCRIPTOR)    bu      amlexec     Value
+ * ALLOCATION:
+ *  Reference   Size                    Pool    Owner       Description
+ *  *ppStackPtr s(OBJECT_DESCRIPTOR)    bu      amlexec     Value
  *
  ****************************************************************************/
 
@@ -2742,7 +2801,8 @@ iGetRvalue (OBJECT_DESCRIPTOR **ppStackPtr)
 
             case Package:
 
-                /* pVal should point to either an OBJECT_DESCRIPTOR of
+                /* 
+                 * pVal should point to either an OBJECT_DESCRIPTOR of
                  * type Package, or an initialization in the AML stream.
                  */
                 if ((OBJECT_DESCRIPTOR *) 0 == pVal)
@@ -2753,7 +2813,8 @@ iGetRvalue (OBJECT_DESCRIPTOR **ppStackPtr)
 
                 if (PackageOp == *(BYTE *) pVal)
                 {
-                    /* The value pointer in the name table entry
+                    /* 
+                     * The value pointer in the name table entry
                      * points to a package definition in the AML stream.
                      * Convert it to an object.
                      */
@@ -2800,7 +2861,9 @@ iGetRvalue (OBJECT_DESCRIPTOR **ppStackPtr)
                 break;
 
             case String:
+
                 /* XXX - Is there a problem here if the nte points to an AML definition? */
+                
                 if (String != pVal->bValTyp)
                 {
                     pcWhy = "iGetRvalue:internal error: Bad string value";
@@ -2819,7 +2882,8 @@ iGetRvalue (OBJECT_DESCRIPTOR **ppStackPtr)
             case Buffer:
                 if (BufferOp == *(BYTE *) pVal)
                 {
-                    /* The value pointer in the name table entry
+                    /* 
+                     * The value pointer in the name table entry
                      * points to a buffer definition in the AML stream.
                      * Convert it to an object.
                      */
@@ -2895,7 +2959,8 @@ iGetRvalue (OBJECT_DESCRIPTOR **ppStackPtr)
                 
                 else
                 {
-                    /* nte type is Number, but it does not point to a Number,
+                    /* 
+                     * nte type is Number, but it does not point to a Number,
                      * so it had better point to a Literal in the AML stream.
                      */
                     if (!iIsInPCodeBlock ((BYTE *) pVal))
@@ -2928,7 +2993,8 @@ iGetRvalue (OBJECT_DESCRIPTOR **ppStackPtr)
                             pOD->sNumber.dNumber = (DWORD)((BYTE *) pVal)[1];
                             break;
 
-                        /* XXX - This case and DWordOp will not work properly
+                        /* 
+                         * XXX - This case and DWordOp will not work properly
                          * XXX - if the processor's endianness does not match
                          * XXX - that of the AML.
                          */
@@ -2954,7 +3020,8 @@ iGetRvalue (OBJECT_DESCRIPTOR **ppStackPtr)
 
             case DefField:
 
-                /* XXX - Implementation limitation: Fields are implemented as type
+                /* 
+                 * XXX - Implementation limitation: Fields are implemented as type
                  * XXX - Number, but they really are supposed to be type Buffer.
                  * XXX - The two are interchangeable only for lengths <= 32 bits.
                  */
@@ -3217,7 +3284,8 @@ iGetRvalue (OBJECT_DESCRIPTOR **ppStackPtr)
 
 
 /*****************************************************************************
- * FUNCTION:    int iPrepStack(char *pcTypes)
+ * 
+ * FUNCTION:    iPrepStack
  *
  * PARAMETERS:  char *pcTypes       String showing operand types needed
  *
@@ -3249,21 +3317,25 @@ iPrepStack (char *pcTypes)
     FUNCTION_TRACE ("iPrepStack");
 
 
-    /* Ensure room on stack for iGetRvalue() to operate
+    /* 
+     * Ensure room on stack for iGetRvalue() to operate
      * without clobbering top existing entry.
      */
+
     iRv = iPushIfExec (Exec);
     if (S_SUCCESS != iRv)
     {
         return iRv;
     }
 
-    /* Normal exit is with *pcTypes == '\0' at end of string.
+    /* 
+     * Normal exit is with *pcTypes == '\0' at end of string.
      * Function will return S_ERROR from within the loop upon
      * finding an entry which is not, and cannot be converted
      * to, the required type; if stack underflows; or upon
      * finding a NULL stack entry (which "should never happen").
      */
+
     while (*pcTypes)
     {
         BYTE        bTypeFound;
@@ -3489,7 +3561,8 @@ iPrepStack (char *pcTypes)
         }   /* switch (*pcTypes++) */
 
 
-        /* If more operands needed, decrement ppStackPtr to point
+        /* 
+         * If more operands needed, decrement ppStackPtr to point
          * to next operand on stack (after checking for underflow).
          */
         if (*pcTypes)
@@ -3514,7 +3587,8 @@ iPrepStack (char *pcTypes)
 
 
 /*****************************************************************************
- * FUNCTION:    void vAmlAppendOperandDiag(char *pcFN, int iLine ...)
+ * 
+ * FUNCTION:    AmlAppendOperandDiag
  *
  * PARAMETERS:  char *  pcFN        Name of source file
  *              int     iLine       Line Number in file
@@ -3568,7 +3642,8 @@ vAmlAppendOperandDiag(char *pcFN, int iLine, WORD wOpCode, int iNOperands)
 
 
 /*****************************************************************************
-A* FUNCTION:    int iExecMonadic1(WORD op)
+ * 
+ * FUNCTION:    iExecMonadic1
  *
  * PARAMETERS:  WORD    op      The opcode to be executed
  *
@@ -3577,7 +3652,7 @@ A* FUNCTION:    int iExecMonadic1(WORD op)
  * DESCRIPTION: Execute Type 1 monadic operator
  *              with numeric operand on object stack
  *
-A* ALLOCATION:  Deletes the operand
+ * ALLOCATION:  Deletes the operand
  *
  ****************************************************************************/
 
@@ -3660,7 +3735,8 @@ iExecMonadic1(WORD op)
             OsdSleepUsec (op1->sNumber.dNumber);
             break;
 #else
-            /* XXX - this is supposed to NOT yield the processor, so should
+            /* 
+             * XXX - this is supposed to NOT yield the processor, so should
              * XXX - busy-wait.  RMX has no corresponding service.
              */
             pcWhy = "iExecMonadic1: StallOp not implemented on RMX";
@@ -3679,7 +3755,8 @@ iExecMonadic1(WORD op)
 
 
 /*****************************************************************************
- * FUNCTION:    int iExecMonadic2R(WORD op)
+ * 
+ * FUNCTION:    iExecMonadic2R
  *
  * PARAMETERS:  WORD    op      The opcode to be executed
  *
@@ -3808,7 +3885,8 @@ iExecMonadic2R (WORD op)
 
 
 /*****************************************************************************
-A* FUNCTION:    int iExecMonadic2(WORD op)
+ * 
+ * FUNCTION:    iExecMonadic2
  *
  * PARAMETERS:  WORD    op      The opcode to be executed
  *
@@ -3818,9 +3896,9 @@ A* FUNCTION:    int iExecMonadic2(WORD op)
  *              DerefOfOp, RefOfOp, SizeOfOp, TypeOp, IncrementOp,
  *              DecrementOp, LNotOp,
  *
- *  ALLOCATION:
-A*  Reference   Size                    Pool    Owner       Description
-A*  apObjStack  s(OBJECT_DESCRIPTOR)    bu      amlexec     Number
+ * ALLOCATION:
+ *  Reference   Size                    Pool    Owner       Description
+ *  apObjStack  s(OBJECT_DESCRIPTOR)    bu      amlexec     Number
  *
  ****************************************************************************/
 
@@ -3926,7 +4004,8 @@ iExecMonadic2 (WORD op)
             
             if (Lvalue == op1->bValTyp)
             {
-                /* Not a Name -- an indirect name pointer would have
+                /* 
+                 * Not a Name -- an indirect name pointer would have
                  * been converted to a direct name pointer in iPrepStack
                  */
                 switch (op1->sLvalue.bOpCode)
@@ -3973,7 +4052,8 @@ iExecMonadic2 (WORD op)
             
             else
             {
-                /* Since we passed iPrepStack("l") and it's not an Lvalue,
+                /* 
+                 * Since we passed iPrepStack("l") and it's not an Lvalue,
                  * it must be a direct name pointer.  Allocate a descriptor
                  * to hold the type.
                  */
@@ -3985,9 +4065,11 @@ iExecMonadic2 (WORD op)
                     return S_ERROR;
                 }
 
-                /* Replace (NsHandle) on TOS with descriptor containing result.
+                /* 
+                 * Replace (NsHandle) on TOS with descriptor containing result.
                  * No need to vDeleteObject() first since TOS is an NsHandle.
                  */
+
                 apObjStack[iObjStackTop] = (void *) op1;
             }
             
@@ -4042,7 +4124,8 @@ iExecMonadic2 (WORD op)
 
 
 /*****************************************************************************
-A* FUNCTION:    int iExecDyadic1(WORD op)
+ * 
+ * FUNCTION:    iExecDyadic1
  *
  * PARAMETERS:  WORD op  The opcode to be executed
  *
@@ -4051,7 +4134,7 @@ A* FUNCTION:    int iExecDyadic1(WORD op)
  * DESCRIPTION: Execute Type 1 dyadic operator with numeric operands:
  *              NotifyOp
  *
-A* ALLOCATION:  Deletes both operands
+ * ALLOCATION:  Deletes both operands
  *
  ****************************************************************************/
 
@@ -4127,7 +4210,8 @@ iExecDyadic1(WORD op)
 
 
 /*****************************************************************************
-A* FUNCTION:    int iExecDyadic2R(WORD op)
+ * 
+ * FUNCTION:    iExecDyadic2R
  *
  * PARAMETERS:  WORD    op      The opcode to be executed
  *
@@ -4136,11 +4220,10 @@ A* FUNCTION:    int iExecDyadic2R(WORD op)
  * DESCRIPTION: Execute Type 2 dyadic operator with numeric operands and
  *              one or two result operands
  *
-A* ALLOCATION:  Deletes one operand descriptor -- other remains on stack
- *
-A*  Reference       Size        Pool    Owner   Description
-A*  sString.pbString varies     bu    amlexec   result of Concat
-A*  sBuffer.pbBuffer varies     bu    amlexec   result of Concat
+ * ALLOCATION:  Deletes one operand descriptor -- other remains on stack
+ *  Reference       Size        Pool    Owner   Description
+ *  sString.pbString varies     bu    amlexec   result of Concat
+ *  sBuffer.pbBuffer varies     bu    amlexec   result of Concat
  *
  ****************************************************************************/
 
@@ -4341,7 +4424,8 @@ iExecDyadic2R (WORD op)
 
 
 /*****************************************************************************
-A* FUNCTION:    int iExecDyadic2S(WORD op)
+ * 
+ * FUNCTION:    iExecDyadic2S
  *
  * PARAMETERS:  WORD    op      The opcode to be executed
  *
@@ -4349,7 +4433,7 @@ A* FUNCTION:    int iExecDyadic2S(WORD op)
  *
  * DESCRIPTION: Execute Type 2 dyadic synchronization operator
  *
-A* ALLOCATION:  Deletes one operand descriptor -- other remains on stack
+ * ALLOCATION:  Deletes one operand descriptor -- other remains on stack
  *
  ****************************************************************************/
 
@@ -4420,7 +4504,8 @@ iExecDyadic2S (WORD op)
 
 
 /*****************************************************************************
-A* FUNCTION:    int iExecDyadic2(WORD op)
+ * 
+ * FUNCTION:    iExecDyadic2
  *
  * PARAMETERS:  WORD    op      The opcode to be executed
  *
@@ -4429,8 +4514,8 @@ A* FUNCTION:    int iExecDyadic2(WORD op)
  * DESCRIPTION: Execute Type 2 dyadic operator with numeric operands and
  *              no result operands
  *
-A* ALLOCATION:  Deletes one operand descriptor -- other remains on stack
-A*              containing result value
+ * ALLOCATION:  Deletes one operand descriptor -- other remains on stack
+ *              containing result value
  *
  ****************************************************************************/
 
@@ -4515,7 +4600,8 @@ iExecDyadic2 (WORD op)
 
 
 /*****************************************************************************
-A* FUNCTION:    int iExecCreateField(WORD op)
+ * 
+ * FUNCTION:    iExecCreateField
  *
  * PARAMETERS:  WORD    op      The opcode to be executed
  *
@@ -4525,7 +4611,7 @@ A* FUNCTION:    int iExecCreateField(WORD op)
  *              CreateByteFieldOp, CreateWordFieldOp, CreateDWordFieldOp,
  *              CreateFieldOp (which define fields in buffers)
  *
-A* ALLOCATION:  Deletes CreateFieldOp's count operand descriptor
+ * ALLOCATION:  Deletes CreateFieldOp's count operand descriptor
  *
  ****************************************************************************/
 
@@ -4673,7 +4759,8 @@ iExecCreateField (WORD op)
         DELETE (count);
     }
 
-    /* This operation is supposed to cause the destination Name to refer
+    /* 
+     * This operation is supposed to cause the destination Name to refer
      * to the defined FieldUnit -- it must not store the constructed
      * FieldUnit object (or its current value) in some location that the
      * Name may already be pointing to.  So, if the Name currently contains
@@ -4681,6 +4768,7 @@ iExecCreateField (WORD op)
      * store rather than setting the value of the Name itself, clobber that
      * reference before calling iExecStore().
      */
+
     switch (iNsValType (res))                /* Type of Name's existing value */
     {
         case Alias:
@@ -4713,7 +4801,8 @@ iExecCreateField (WORD op)
 
 
 /*****************************************************************************
- * FUNCTION:    int iExecFatal()
+ * 
+ * FUNCTION:    iExecFatal
  *
  * PARAMETERS:  none
  *
@@ -4758,7 +4847,8 @@ iExecFatal (void)
 
 
 /*****************************************************************************
-A* FUNCTION:    int iExecIndex()
+ * 
+ * FUNCTION:    iExecIndex
  *
  * PARAMETERS:  none
  *
@@ -4766,7 +4856,7 @@ A* FUNCTION:    int iExecIndex()
  *
  * DESCRIPTION: Execute Index operator
  *
-A* ALLOCATION:  Deletes one operand descriptor -- other remains on stack
+ * ALLOCATION:  Deletes one operand descriptor -- other remains on stack
  *
  ****************************************************************************/
 
@@ -4822,7 +4912,8 @@ iExecIndex (void)
 
 
 /*****************************************************************************
-A* FUNCTION:    int iExecMatch()
+ * 
+ * FUNCTION:    iExecMatch
  *
  * PARAMETERS:  none
  *
@@ -4830,7 +4921,7 @@ A* FUNCTION:    int iExecMatch()
  *
  * DESCRIPTION: Execute Match operator
  *
-A* ALLOCATION:  Deletes 5 operands
+ * ALLOCATION:  Deletes 5 operands
  *
  ****************************************************************************/
 
@@ -4879,7 +4970,8 @@ iExecMatch (void)
         return S_ERROR;
     }
 
-    /* Examine each element until a match is found.  Within the loop,
+    /* 
+     * Examine each element until a match is found.  Within the loop,
      * "continue" signifies that the current element does not match
      * and the next should be examined.
      * Upon finding a match, the loop will terminate via "break" at
@@ -4887,9 +4979,11 @@ iExecMatch (void)
      * (its initial value) indicating that no match was found.  When
      * returned as a Number, this will produce the Ones value as specified.
      */
+
     for ( ; dLook < (DWORD) poPkg->sPackage.wPkgCount ; ++dLook)
     {
-        /* Treat any NULL or non-numeric elements as non-matching.
+        /* 
+         * Treat any NULL or non-numeric elements as non-matching.
          * XXX - if an element is a Name, should we examine its value?
          */
         if ((OBJECT_DESCRIPTOR *) 0 == poPkg->sPackage.ppPackage[dLook]
@@ -4898,7 +4992,8 @@ iExecMatch (void)
             continue;
         }
 
-        /* Within these switch statements:
+        /* 
+         * Within these switch statements:
          *      "break" (exit from the switch) signifies a match;
          *      "continue" (proceed to next iteration of enclosing
          *          "for" loop) signifies a non-match.
@@ -5002,7 +5097,8 @@ iExecMatch (void)
 
 
 /******************************************************************************
- * FUNCTION:    int iAmlExec(int iOffset, long lLen, ...)
+ * 
+ * FUNCTION:    iAmlExec
  *
  * PARAMETERS:  int                 iOffset     Offset to method in code block
  *              long                lLen        Length of method
@@ -5017,7 +5113,7 @@ iExecMatch (void)
  *
  *****************************************************************************/
 
- int
+int
 iAmlExec (int iOffset, long lLen, OBJECT_DESCRIPTOR **ppsParams)
 {
     int             iRv;
@@ -5077,9 +5173,12 @@ iAmlExec (int iOffset, long lLen, OBJECT_DESCRIPTOR **ppsParams)
 
     LineSet (0, Exec);
 
-    /* Normal exit is with iRv == S_RETURN when a ReturnOp has been executed,
+
+    /* 
+     * Normal exit is with iRv == S_RETURN when a ReturnOp has been executed,
      * or with iRv == S_FAILURE at end of AML block (end of Method code)
      */
+
     while ((iRv = DoCode (Exec)) == S_SUCCESS)
     {;}
 
@@ -5111,7 +5210,8 @@ iAmlExec (int iOffset, long lLen, OBJECT_DESCRIPTOR **ppsParams)
 #ifdef PLUMBER
 
 /*****************************************************************************
- * FUNCTION:    void    vMarkMethodValues(int *piCount)
+ * 
+ * FUNCTION:    vMarkMethodValues
  *
  * PARAMETERS:  int *   piCount        Count of blocks marked
  *
@@ -5151,7 +5251,8 @@ vMarkMethodValues (int *piCount)
 
 
 /*****************************************************************************
- * FUNCTION:    int iIsMethodValue(OBJECT_DESCRIPTOR *pOD)
+ * 
+ * FUNCTION:    iIsMethodValue
  *
  * PARAMETERS:  OBJECT_DESCRIPTOR *pOD
  *
