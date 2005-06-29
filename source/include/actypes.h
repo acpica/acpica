@@ -1,7 +1,7 @@
 
 /******************************************************************************
  * 
- * Name: datatypes.h - Common data types for the entire ACPI subsystem
+ * Name: acpitypes.h - Common data types for the entire ACPI subsystem
  *
  *****************************************************************************/
 
@@ -114,8 +114,8 @@
  *
  *****************************************************************************/
 
-#ifndef _DATATYPES_H
-#define _DATATYPES_H
+#ifndef _ACPITYPES_H
+#define _ACPITYPES_H
 
 #include <environment.h>
 
@@ -529,4 +529,4 @@ typedef struct
 #include <internal.h>
 
 
-#endif /* DATATYPES_H */
+#endif /* ACPITYPES_H */
