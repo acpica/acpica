@@ -28,9 +28,6 @@
 
 ACPI_EXTERN FIRMWARE_ACPI_CONTROL_STRUCTURE * FACS;
 
-extern char     *Why;
-
-
 
 static ST_KEY_DESC_TABLE KDT[] = {
     {"0000", 'W', "NOT IMPLEMENTED", "NOT IMPLEMENTED"},
@@ -171,9 +168,8 @@ AcquireOpRqst (OBJECT_DESCRIPTOR *TimeDesc, OBJECT_DESCRIPTOR *ObjDesc)
     
         else if (ObjDesc->Mutex.ThreadId != (CurrentId = ThreadId ()))
         {
-            sprintf (WhyBuf, "Thread %02Xh attemted to Aquire a resource owned "
-                    "by thread %02Xh", CurrentId, ObjDesc->Mutex.ThreadId);
-            Why = WhyBuf;
+            DEBUG_PRINT (ACPI_ERROR, ("Thread %02Xh attemted to Aquire a resource owned "
+                    "by thread %02Xh\n", CurrentId, ObjDesc->Mutex.ThreadId));
             Excep = S_ERROR;
         }
 
@@ -199,8 +195,7 @@ AcquireOpRqst (OBJECT_DESCRIPTOR *TimeDesc, OBJECT_DESCRIPTOR *ObjDesc)
  *              within the AML.  Current implementation is for single thread
  *              OS only.  This operation is a request to release a previously
  *              acquired Mutex.  If the Mutex variable is set then it will be
- *              decremented.  Otherwise S_ERROR will be returned with Why
- *              set to explain.
+ *              decremented.  Otherwise S_ERROR will be returned.
  *
  ******************************************************************************/
 
@@ -215,15 +210,14 @@ ReleaseOpRqst (OBJECT_DESCRIPTOR *ObjDesc)
     {
         if (ObjDesc->Mutex.LockCount == 0)
         {
-            Why = "Attempting to Release a Mutex that is not locked";
+            DEBUG_PRINT (ACPI_ERROR, ("Attempting to Release a Mutex that is not locked\n"));
             Excep == S_ERROR;
         }
     
         else if (ObjDesc->Mutex.ThreadId != (CurrentId = ThreadId ()))
         {
-            sprintf (WhyBuf, "Thread %02Xh attemted to Release a Mutex owned "
-                        "by thread %02Xh", CurrentId, ObjDesc->Mutex.ThreadId);
-            Why = WhyBuf;
+            DEBUG_PRINT (ACPI_ERROR, ("Thread %02Xh attemted to Release a Mutex owned "
+                        "by thread %02Xh\n", CurrentId, ObjDesc->Mutex.ThreadId));
             Excep = S_ERROR;
         }
     
@@ -300,8 +294,8 @@ WaitOpRqst (OBJECT_DESCRIPTOR *TimeDesc, OBJECT_DESCRIPTOR *ObjDesc)
         {
             /* Error for single threaded OS */
         
-            Why = "Waiting for a signal that has not occured.  In a single threaded"
-                    "\nOperating System the signal would never be received.";
+            DEBUG_PRINT (ACPI_ERROR, ("Waiting for a signal that has not occured.  In a single threaded"
+                    "\nOperating System the signal would never be received.\n"));
             Excep = S_ERROR;
         }
     
@@ -372,9 +366,9 @@ GetGlobalLock(void)
 
         if (GlobalLockReg & GL_OWNED)
         {
-            Why = "The Global Lock is owned by another process\n"\
+            DEBUG_PRINT (ACPI_ERROR, ("The Global Lock is owned by another process\n"\
                     "This is a single threaded implementation. There is no way some\n"\
-                    "other process can own the Global Lock!";
+                    "other process can own the Global Lock!\n"));
             Excep = S_ERROR;
         }
     
