@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: evregion - ACPI AddressSpace (OpRegion) handler dispatch
- *              $Revision: 1.111 $
+ *              $Revision: 1.112 $
  *
  *****************************************************************************/
 
@@ -663,7 +663,7 @@ AcpiEvAddrHandlerHelper (
 
     /* Convert and validate the device handle */
 
-    Node = AcpiNsConvertHandleToEntry (ObjHandle);
+    Node = AcpiNsMapHandleToNode (ObjHandle);
     if (!Node)
     {
         return (AE_BAD_PARAMETER);
