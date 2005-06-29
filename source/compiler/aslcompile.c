@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslcompile - top level compile module
- *              $Revision: 1.50 $
+ *              $Revision: 1.51 $
  *
  *****************************************************************************/
 
@@ -214,6 +214,10 @@ AslCompilerSignon (
 
         Prefix = " * ";
         break;
+
+    default:
+        /* No other output types supported */
+        break;
     }
 
     /* Compiler signon with copyright */
@@ -276,11 +280,15 @@ AslCompilerFileHeader (
 
         Prefix = " * ";
         break;
+
+    default:
+        /* No other output types supported */
+        break;
     }
 
     /* Compilation header with timestamp */
 
-    time (&Aclock);
+    (void) time (&Aclock);
     NewTime = localtime (&Aclock);
 
     FlPrintFile (FileId,
@@ -292,6 +300,11 @@ AslCompilerFileHeader (
     {
     case ASL_FILE_C_SOURCE_OUTPUT:
         FlPrintFile (FileId, " */\n");
+        break;
+
+    default:
+        /* Nothing to do for other output types */
+        break;
     }
 }
 
@@ -337,8 +350,17 @@ CmDoCompile (void)
     /* ACPI CA subsystem initialization */
 
     AcpiUtInitGlobals ();
-    AcpiUtMutexInitialize ();
-    AcpiNsRootInitialize ();
+    Status = AcpiUtMutexInitialize ();
+    if (ACPI_FAILURE (Status))
+    {
+        return -1;
+    }
+
+    Status = AcpiNsRootInitialize ();
+    if (ACPI_FAILURE (Status))
+    {
+        return -1;
+    }
     UtEndEvent (i++);
 
     /* Build the parse tree */
@@ -387,14 +409,23 @@ CmDoCompile (void)
     /* Namespace loading */
 
     UtBeginEvent (i, "Create ACPI Namespace");
-    LdLoadNamespace ();
+    Status = LdLoadNamespace ();
     UtEndEvent (i++);
+    if (ACPI_FAILURE (Status))
+    {
+        return -1;
+    }
 
     /* Namespace lookup */
 
     UtBeginEvent (i, "Cross reference parse tree and Namespace");
-    LkCrossReferenceNamespace ();
+    Status = LkCrossReferenceNamespace ();
     UtEndEvent (i++);
+    UtEndEvent (i++);
+    if (ACPI_FAILURE (Status))
+    {
+        return -1;
+    }
 
     /*
      * Semantic analysis.  This can happen only after the

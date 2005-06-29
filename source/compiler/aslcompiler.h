@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslcompiler.h - common include file
- *              $Revision: 1.97 $
+ *              $Revision: 1.98 $
  *
  *****************************************************************************/
 
@@ -257,6 +257,15 @@ void
 ResetCurrentLineBuffer (
     void);
 
+int
+AslPopInputFileStack (
+    void);
+
+void
+AslPushInputFileStack (
+    FILE                    *InputFile,
+    char                    *Filename);
+
 /* aslmain */
 
 void
@@ -270,14 +279,6 @@ AslCompilerFileHeader (
 void
 AslDoSourceOutputFile (
     char                    *Buffer);
-
-int
-AslPopInputFileStack (void);
-
-void
-AslPushInputFileStack (
-    FILE                    *InputFile,
-    char                    *Filename);
 
 #define ASL_DEBUG_OUTPUT    0
 #define ASL_PARSE_OUTPUT    1
@@ -331,12 +332,17 @@ void
 AePrintErrorLog (
     UINT32                  FileId);
 
+ACPI_STATUS
+AeLocalGetRootPointer (
+    UINT32                  Flags,
+    ACPI_PHYSICAL_ADDRESS   *RsdpPhysicalAddress);
+
 
 /* asllisting */
 
 void
 LsWriteListingHexBytes (
-    char                    *Buffer,
+    UINT8                   *Buffer,
     UINT32                  Length,
     UINT32                  FileId);
 
@@ -363,26 +369,29 @@ LsFlushListingBuffer (
     UINT32                  FileId);
 
 void
-LsDoHexOutput (void);
+LsDoHexOutput (
+    void);
 
 void
-LsDoHexOutputC (void);
+LsDoHexOutputC (
+    void);
 
 void
-LsDoHexOutputAsm (void);
+LsDoHexOutputAsm (
+    void);
 
 void
 LsPushNode (
     char                    *Filename);
 
 ASL_LISTING_NODE *
-LsPopNode (void);
+LsPopNode (
+    void);
 
 
 /*
  * aslopcodes - generate AML opcodes
  */
-
 
 ACPI_STATUS
 OpcAmlOpcodeWalk (
@@ -406,6 +415,48 @@ OpcSetOptimalIntegerSize (
 void
 OpnGenerateAmlOperands (
     ACPI_PARSE_OBJECT       *Op);
+
+void
+OpnDoField (
+    ACPI_PARSE_OBJECT       *Op);
+
+void
+OpnDoBankField (
+    ACPI_PARSE_OBJECT       *Op);
+
+void
+OpnDoBuffer (
+    ACPI_PARSE_OBJECT       *Op);
+
+void
+OpnDoDefinitionBlock (
+    ACPI_PARSE_OBJECT       *Op);
+
+void
+OpnDoFieldCommon (
+    ACPI_PARSE_OBJECT       *FieldOp,
+    ACPI_PARSE_OBJECT       *Op);
+
+void
+OpnDoIndexField (
+    ACPI_PARSE_OBJECT       *Op);
+
+void
+OpnDoLoadTable (
+    ACPI_PARSE_OBJECT       *Op);
+
+void
+OpnDoMethod (
+    ACPI_PARSE_OBJECT       *Op);
+
+void
+OpnDoPackage (
+    ACPI_PARSE_OBJECT       *Op);
+
+void
+OpnDoRegion (
+    ACPI_PARSE_OBJECT       *Op);
+
 
 
 /*
@@ -641,6 +692,23 @@ AnMethodTypingWalkEnd (
  */
 
 void
+AslAbort (void);
+
+FILE *
+FlOpenLocalFile (
+    char                    *LocalName,
+    char                    *Mode);
+
+void
+FlOpenIncludeFile (
+    ACPI_PARSE_OBJECT       *Op);
+
+void
+FlFileError (
+    UINT32                  FileId,
+    UINT8                   ErrorId);
+
+void
 FlOpenFile (
     UINT32                  FileId,
     char                    *Filename,
@@ -663,7 +731,7 @@ FlSeekFile (
     UINT32                  FileId,
     long                    Offset);
 
-ACPI_STATUS
+void
 FlCloseFile (
     UINT32                  FileId);
 
@@ -675,10 +743,6 @@ FlPrintFile (
 
 void
 FlSetLineNumber (
-    ACPI_PARSE_OBJECT       *Op);
-
-void
-FlOpenIncludeFile (
     ACPI_PARSE_OBJECT       *Op);
 
 ACPI_STATUS
@@ -731,7 +795,15 @@ LkNamespaceLocateEnd (
     void                    *Context);
 
 ACPI_STATUS
-LsDisplayNamespace (void);
+LsDisplayNamespace (
+    void);
+
+ACPI_STATUS
+LsCompareOneNamespaceObject (
+    ACPI_HANDLE             ObjHandle,
+    UINT32                  Level,
+    void                    *Context,
+    void                    **ReturnValue);
 
 
 /* Utils */

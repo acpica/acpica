@@ -3,7 +3,7 @@
 /******************************************************************************
  *
  * Module Name: aslcompiler.l - Flex input file
- *              $Revision: 1.55 $
+ *              $Revision: 1.56 $
  *
  *****************************************************************************/
 
@@ -527,7 +527,8 @@ ASL_FILE_NODE               *InputStack = NULL;
  ******************************************************************************/
 
 int
-AslPopInputFileStack (void)
+AslPopInputFileStack (
+    void)
 {
     ASL_FILE_NODE           *Fnode;
     FILE                    *InputFile = NULL;

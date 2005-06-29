@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslcodegen - AML code generation
- *              $Revision: 1.42 $
+ *              $Revision: 1.43 $
  *
  *****************************************************************************/
 
@@ -361,7 +361,7 @@ CgWriteAmlOpcode (
              * Encode the "bytes to follow" in the first byte, top two bits.
              * The low-order nybble of the length is in the bottom 4 bits
              */
-            PkgLenFirstByte = (UINT8) (((Op->Asl.AmlPkgLenBytes - 1) << 6) |
+            PkgLenFirstByte = (UINT8) (((UINT32) (Op->Asl.AmlPkgLenBytes - 1) << 6) |
                                         (PkgLen.LenBytes[0] & 0x0F));
 
             CgLocalWriteAmlData (Op, &PkgLenFirstByte, 1);
@@ -404,6 +404,10 @@ CgWriteAmlOpcode (
     case AML_STRING_OP:
 
         CgLocalWriteAmlData (Op, Op->Asl.Value.String, Op->Asl.AmlLength);
+        break;
+
+    default:
+        /* All data opcodes must appear above */
         break;
     }
 }
@@ -564,13 +568,17 @@ CgWriteNode (
 
     case AML_RAW_DATA_CHAIN:
 
-        Rnode = (ASL_RESOURCE_NODE *) Op->Asl.Value.Buffer;
+        Rnode = ACPI_CAST_PTR (ASL_RESOURCE_NODE, Op->Asl.Value.Buffer);
         while (Rnode)
         {
             CgLocalWriteAmlData (Op, Rnode->Buffer, Rnode->BufferLength);
             Rnode = Rnode->Next;
         }
         return;
+
+    default:
+        /* Internal data opcodes must all appear above */
+        break;
     }
 
     switch (Op->Asl.ParseOpcode)
