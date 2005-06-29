@@ -1,7 +1,7 @@
 
 /******************************************************************************
  * 
- * Name: acpitables.h - Table data structures defined in ACPI specification
+ * Name: actables.h - Table data structures defined in ACPI specification
  *
  *****************************************************************************/
 
@@ -114,8 +114,8 @@
  *
  *****************************************************************************/
 
-#ifndef __ACPITABLES_H__
-#define __ACPITABLES_H__
+#ifndef __ACTABLES_H__
+#define __ACTABLES_H__
 
 typedef NATIVE_UINT         IO_ADDRESS;             /* Only for clarity in declarations */
 
@@ -264,6 +264,7 @@ typedef struct AcpiTableDesc
     struct AcpiTableDesc    *Prev;
     struct AcpiTableDesc    *Next;
     ACPI_TABLE_HEADER       *Pointer;
+    void                    *BasePointer;
     UINT32                  Length;
     UINT32                  Allocation;
     UINT32                  Count;
@@ -292,10 +293,10 @@ typedef struct _AcpiTableSupport
  */
 
 #ifdef IA64
-#include <acpitbl64.h>
+#include <actbl64.h>
 #else
-#include <acpitbl32.h>
+#include <actbl32.h>
 #endif
 
 
-#endif /* __ACPITABLES_H__ */
+#endif /* __ACTABLES_H__ */
