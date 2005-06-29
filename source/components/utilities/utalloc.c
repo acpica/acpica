@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: utalloc - local cache and memory allocation routines
- *              $Revision: 1.132 $
+ *              $Revision: 1.133 $
  *
  *****************************************************************************/
 
@@ -1040,7 +1040,7 @@ AcpiUtDumpAllocations (
 
                 case ACPI_DESC_TYPE_NAMED:
                     AcpiOsPrintf ("Node %4.4s",
-                            Descriptor->Node.Name.Ascii);
+                            AcpiUtGetNodeName (&Descriptor->Node));
                     break;
 
                 case ACPI_DESC_TYPE_STATE:
