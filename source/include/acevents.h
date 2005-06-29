@@ -1,5 +1,4 @@
-/*
-  __________________________________________________________________________
+/*__________________________________________________________________________
  |
  |
  |           Copyright (C) Intel Corporation 1994-1998
@@ -14,16 +13,19 @@
  | FILENAME: events.h - System Control Interrupt configuration and
  |                      legacy to ACPI mode state transition functions
  |__________________________________________________________________________
- |
-// 
-//    Rev 1.0   12 Aug 1998 15:54:32   jkreinem
-// Initial revision.
- |__________________________________________________________________________
-
 */
 
 #ifndef __EVENTS_H__
 #define __EVENTS_H__
+
+
+/* Globals for event handling */
+
+extern INT32            EdgeLevelSave;
+extern INT32            IrqEnableSave;  /*  original SCI config */
+extern INT32            OriginalMode;   /*  stores the original ACPI/legacy mode    */
+
+
 
 /* Interrupt handler return values */
 
@@ -52,26 +54,14 @@
 
 #define SAVE_NOT_VALID                  -1
 
-#ifdef __EVSCI_C__
-INT32 EdgeLevelSave   = SAVE_NOT_VALID;
-INT32 IrqEnableSave   = SAVE_NOT_VALID;
-INT32 OriginalMode    = SAVE_NOT_VALID;   /*  original ACPI/legacy mode   */
-
-#else
-extern  INT32 EdgeLevelSave;
-extern  INT32 IrqEnableSave; /*  original SCI config */
-extern  INT32 OriginalMode;  /*  stores the original ACPI/legacy mode    */
-#endif
-
-
 /* identifier strings for fixed events */
 
-#define TMR_FIXED_EVENT         "TMR_FIXED_EVENT"
-#define NOT_USED_EVENT          "UNHANDLED_SCI"
-#define GBL_FIXED_EVENT         "GBL_FIXED_EVENT"
-#define PWR_BTN_FIXED_EVENT     "PWR_BTN_FIXED_EVENT"
-#define SLP_BTN_FIXED_EVENT     "SLP_BTN_FIXED_EVENT"
-#define RTC_FIXED_EVENT         "RTC_FIXED_EVENT"
+#define TMR_FIXED_EVENT                 "TMR_FIXED_EVENT"
+#define NOT_USED_EVENT                  "UNHANDLED_SCI"
+#define GBL_FIXED_EVENT                 "GBL_FIXED_EVENT"
+#define PWR_BTN_FIXED_EVENT             "PWR_BTN_FIXED_EVENT"
+#define SLP_BTN_FIXED_EVENT             "SLP_BTN_FIXED_EVENT"
+#define RTC_FIXED_EVENT                 "RTC_FIXED_EVENT"
 
 /* event index for types of events */
 
@@ -90,25 +80,30 @@ enum
     GENERAL_EVENT
 };
 
-#define DISABLE 0
-#define STATUS  0
-#define ENABLE  1
+
+/* Opcodes for event enable/disable functions */
+
+#define DISABLE                         0
+#define ENABLE                          1
+#define STATUS                          0
 
 /* 
- * Use the four macros below + the function iAcpiEventClearStatusBit for
+ * Use the macros below + the function AcpiClearStatusBit for
  * accessing and manipulating status/enable bits for various events.
  *  
- * IMPORTANT!! SCI handler must be installed or the enable bit will not be
+ * IMPORTANT: SCI handler must be installed or the enable bit will not be
  * modified. 
  */
-#define AcpiEventEnableEvent(name)                      AcpiEventEnableDisableEvent(name, ENABLE)
-#define AcpiEventDisableEvent(name)                     AcpiEventEnableDisableEvent(name, DISABLE)
-#define AcpiGenEventEnableEvent(name, offset)           AcpiEventEnableDisableEvent(name, ENABLE, offset)
-#define AcpiGenEventDisableEvent(name, offset)          AcpiEventEnableDisableEvent(name, DISABLE, offset)
-#define AcpiEventReadEnableBit(name, buf)               AcpiEventReadStatusEnableBit(name, ENABLE, buf)
-#define AcpiEventReadStatusBit(name, buf)               AcpiEventReadStatusEnableBit(name, STATUS, buf)
-#define AcpiGenEventReadEnableBit(name, buf, offset)    AcpiEventReadStatusEnableBit(name, ENABLE, buf, offset)
-#define AcpiGenEventReadStatusBit(name, buf, offset)    AcpiEventReadStatusEnableBit(name, STATUS, buf, offset)
+#define ENABLE_EVENT(name)                      AcpiEnableDisableEvent(name, ENABLE)
+#define DISABLE_EVENT(name)                     AcpiEnableDisableEvent(name, DISABLE)
+#define ENABLE_GEN_EVENT(name,offset)           AcpiEnableDisableEvent(name, ENABLE, offset)
+#define DISABLE_GEN_EVENT(name,offset)          AcpiEnableDisableEvent(name, DISABLE, offset)
+
+#define READ_ENABLE_BIT(name,buf)               AcpiReadStatusEnableBit(name, ENABLE, buf)
+#define READ_STATUS_BIT(name,buf)               AcpiReadStatusEnableBit(name, STATUS, buf)
+#define READ_GEN_ENABLE_BIT(name,buf,offset)    AcpiReadStatusEnableBit(name, ENABLE, buf, offset)
+#define READ_GEN_STATUS_BIT(name,buf,offset)    AcpiReadStatusEnableBit(name, STATUS, buf, offset)
+
 
 /* 
  * elements correspond to counts for
@@ -117,22 +112,22 @@ enum
  * by the ACPI interrupt handler... 
  */
 
-extern volatile UINT32 EventCount[];   
+extern volatile UINT32                  EventCount[];   
 
 
 /* Prototypes */
 
 INT32
-AcpiEventClearStatusBit (
+AcpiClearStatusBit (
     char *          EventName, ...);
 
 INT32
-AcpiEventEnableDisableEvent (
+AcpiEnableDisableEvent (
     char *          EventName, 
     INT32           Action, ...);
 
 INT32
-AcpiEventReadStatusEnableBit (
+AcpiReadStatusEnableBit (
     char *          EventName, 
     INT32           StatusOrEnable, 
     BOOLEAN *       OutBit, ...);
