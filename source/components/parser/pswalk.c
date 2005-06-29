@@ -295,7 +295,7 @@ PsGetNextWalkOp (
          */
         if (Parent == WalkState->Origin)
         {
-            /* reached point of origin, end search */
+            /* Reached the point of origin, the walk is complete */
 
             WalkState->PrevOp       = Parent;
             WalkState->NextOp       = NULL;
@@ -342,7 +342,8 @@ PsGetNextWalkOp (
     /* Got all the way to the top of the tree, we must be done! */
     /* However, the code should have terminated in the loop above */
 
-    WalkState->NextOp = NULL;
+    WalkState->NextOp       = NULL;
+
     return_ACPI_STATUS (AE_OK);
 }
 
@@ -521,7 +522,7 @@ PsWalkParsedAml (
         /* We are done with this walk, move on to the parent if any */
 
         WalkState = PsPopWalkState (&WalkList);
-        ReturnDesc = WalkState->Operands[0];    /* Extract return value before we delete WalkState */
+        ReturnDesc = WalkState->ReturnDesc;     /* Extract return value before we delete WalkState */
         PsxMthStackDeleteArgs (WalkState);      /* Delete all arguments and locals (if a method completed) */
 
         CmFree (WalkState);
@@ -545,10 +546,12 @@ PsWalkParsedAml (
 
         else if (CallerReturnDesc)
         {
-            if (ReturnDesc)
-                *CallerReturnDesc = ReturnDesc;
-            else
-                *CallerReturnDesc = NULL;
+            *CallerReturnDesc = ReturnDesc;         /* Will be NULL if no return value */
+        }
+
+        else if (ReturnDesc)
+        {
+            CmDeleteInternalObject (ReturnDesc);    /* Caller doesn't want it, must delete it */
         }
     }
 
