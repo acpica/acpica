@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: cmcopy - Internal to external object translation utilities
- *              $Revision: 1.70 $
+ *              $Revision: 1.72 $
  *
  *****************************************************************************/
 
@@ -122,7 +122,7 @@
 #include "amlcode.h"
 
 
-#define _COMPONENT          MISCELLANEOUS
+#define _COMPONENT          ACPI_UTILITIES
         MODULE_NAME         ("cmcopy")
 
 
@@ -231,7 +231,7 @@ AcpiCmCopyIsimpleToEsimple (
             ExternalObject->Integer.Value = ACPI_INTEGER_MAX;
             break;
 
-        case AML_NAMEPATH_OP:
+        case AML_INT_NAMEPATH_OP:
             /*
              * This is a named reference, get the string.  We already know that
              * we have room for it, use max length
