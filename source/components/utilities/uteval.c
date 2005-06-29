@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: uteval - Object evaluation
- *              $Revision: 1.53 $
+ *              $Revision: 1.54 $
  *
  *****************************************************************************/
 
@@ -170,7 +170,7 @@ AcpiUtOsiImplementation (
 
     for (i = 0; i < ACPI_NUM_OSI_STRINGS; i++)
     {
-        if (!ACPI_STRCMP (StringDesc->String.Pointer, 
+        if (!ACPI_STRCMP (StringDesc->String.Pointer,
                             (char *) AcpiGbl_ValidOsiStrings[i]))
         {
             /* This string is supported */
