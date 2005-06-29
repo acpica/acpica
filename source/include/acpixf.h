@@ -121,7 +121,6 @@
 #include <actypes.h>
 #include <actables.h>
 
-
 /*
  * Global interfaces
  */
@@ -355,15 +354,6 @@ AcpiSetFirmwareWakingVector (
 ACPI_STATUS
 AcpiGetFirmwareWakingVector (
     void                    **PhysicalAddress);
-
-ACPI_STATUS 
-AcpiSystemSleepStateSupported (
-    UINT8                   SleepState,
-    BOOLEAN					*Supported);
-
-ACPI_STATUS
-AcpiEnterSystemSleepState (
-    UINT8                   SleepState);
 
 ACPI_STATUS
 AcpiSetProcessorThrottlingState(
