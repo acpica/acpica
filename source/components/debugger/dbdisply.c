@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dbdisply - debug display commands
- *              $Revision: 1.48 $
+ *              $Revision: 1.49 $
  *
  ******************************************************************************/
 
@@ -898,7 +898,6 @@ AcpiDbDisplayResultObject (
      * For now, only display if single stepping
      * however, this output is very useful in other contexts also
      */
-
     if (!AcpiGbl_CmSingleStep)
     {
         return;

@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: hwacpi - ACPI Hardware Initialization/Mode Interface
- *              $Revision: 1.49 $
+ *              $Revision: 1.45 $
  *
  *****************************************************************************/
 
@@ -10,7 +10,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -159,75 +159,123 @@ AcpiHwInitialize (
         return_ACPI_STATUS (AE_NO_ACPI_TABLES);
     }
 
-    /*
-     * Save the initial state of the ACPI event enable registers, so
-     * we can restore them when we exit. We probably won't exit, though.
-     *
-     * The location of the PM1aEvtBlk enable registers is defined as the
-     * base of PM1aEvtBlk + DIV_2(PM1aEvtBlkLength). Since the spec further
-     * fully defines the PM1aEvtBlk to be a total of 4 bytes, the offset
-     * for the enable registers is always 2 from the base. It is hard
-     * coded here. If this changes in the spec, this code will need to
-     * be modified. The PM1bEvtBlk behaves as expected.
-     */
-    AcpiGbl_Pm1EnableRegisterSave = (UINT16) AcpiHwRegisterRead (
-                                                ACPI_MTX_LOCK, PM1_EN);
+    /* Identify current ACPI/legacy mode   */
 
-
-    /*
-     * The GPEs behave similarly, except that the length of the register
-     * block is not fixed, so the buffer must be allocated with malloc
-     */
-    if (ACPI_VALID_ADDRESS (AcpiGbl_FADT->XGpe0Blk.Address) &&
-        AcpiGbl_FADT->Gpe0BlkLen)
+    switch (AcpiGbl_SystemFlags & SYS_MODES_MASK)
     {
-        /* GPE0 specified in FADT  */
+    case (SYS_MODE_ACPI):
 
-        AcpiGbl_Gpe0EnableRegisterSave = ACPI_MEM_ALLOCATE (
-                                        DIV_2 (AcpiGbl_FADT->Gpe0BlkLen));
-        if (!AcpiGbl_Gpe0EnableRegisterSave)
+        AcpiGbl_OriginalMode = SYS_MODE_ACPI;
+        ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "System supports ACPI mode only.\n"));
+        break;
+
+
+    case (SYS_MODE_LEGACY):
+
+        AcpiGbl_OriginalMode = SYS_MODE_LEGACY;
+        ACPI_DEBUG_PRINT ((ACPI_DB_INFO,
+            "Tables loaded from buffer, hardware assumed to support LEGACY mode only.\n"));
+        break;
+
+
+    case (SYS_MODE_ACPI | SYS_MODE_LEGACY):
+
+        if (AcpiHwGetMode () == SYS_MODE_ACPI)
         {
-            return_ACPI_STATUS (AE_NO_MEMORY);
+            AcpiGbl_OriginalMode = SYS_MODE_ACPI;
+        }
+        else
+        {
+            AcpiGbl_OriginalMode = SYS_MODE_LEGACY;
         }
 
-        /* Save state of GPE0 enable bits */
+        ACPI_DEBUG_PRINT ((ACPI_DB_INFO,
+            "System supports both ACPI and LEGACY modes.\n"));
 
-        for (Index = 0; Index < DIV_2 (AcpiGbl_FADT->Gpe0BlkLen); Index++)
-        {
-            AcpiGbl_Gpe0EnableRegisterSave[Index] =
-                (UINT8) AcpiHwRegisterRead (ACPI_MTX_LOCK, GPE0_EN_BLOCK | Index);
-        }
+        ACPI_DEBUG_PRINT ((ACPI_DB_INFO,
+            "System is currently in %s mode.\n",
+            (AcpiGbl_OriginalMode == SYS_MODE_ACPI) ? "ACPI" : "LEGACY"));
+        break;
     }
 
-    else
-    {
-        AcpiGbl_Gpe0EnableRegisterSave = NULL;
-    }
 
-    if (ACPI_VALID_ADDRESS (AcpiGbl_FADT->XGpe1Blk.Address) &&
-        AcpiGbl_FADT->Gpe1BlkLen)
+    if (AcpiGbl_SystemFlags & SYS_MODE_ACPI)
     {
-        /* GPE1 defined */
+        /* Target system supports ACPI mode */
 
-        AcpiGbl_Gpe1EnableRegisterSave = ACPI_MEM_ALLOCATE (
-                                        DIV_2 (AcpiGbl_FADT->Gpe1BlkLen));
-        if (!AcpiGbl_Gpe1EnableRegisterSave)
+        /*
+         * The purpose of this code is to save the initial state
+         * of the ACPI event enable registers. An exit function will be
+         * registered which will restore this state when the application
+         * exits. The exit function will also clear all of the ACPI event
+         * status bits prior to restoring the original mode.
+         *
+         * The location of the PM1aEvtBlk enable registers is defined as the
+         * base of PM1aEvtBlk + DIV_2(PM1aEvtBlkLength). Since the spec further
+         * fully defines the PM1aEvtBlk to be a total of 4 bytes, the offset
+         * for the enable registers is always 2 from the base. It is hard
+         * coded here. If this changes in the spec, this code will need to
+         * be modified. The PM1bEvtBlk behaves as expected.
+         */
+        AcpiGbl_Pm1EnableRegisterSave = (UINT16) AcpiHwRegisterRead (
+                                                    ACPI_MTX_LOCK, PM1_EN);
+
+
+        /*
+         * The GPEs behave similarly, except that the length of the register
+         * block is not fixed, so the buffer must be allocated with malloc
+         */
+        if (ACPI_VALID_ADDRESS (AcpiGbl_FADT->XGpe0Blk.Address) &&
+            AcpiGbl_FADT->Gpe0BlkLen)
         {
-            return_ACPI_STATUS (AE_NO_MEMORY);
+            /* GPE0 specified in FADT  */
+
+            AcpiGbl_Gpe0EnableRegisterSave = ACPI_MEM_ALLOCATE (
+                                            DIV_2 (AcpiGbl_FADT->Gpe0BlkLen));
+            if (!AcpiGbl_Gpe0EnableRegisterSave)
+            {
+                return_ACPI_STATUS (AE_NO_MEMORY);
+            }
+
+            /* Save state of GPE0 enable bits */
+
+            for (Index = 0; Index < DIV_2 (AcpiGbl_FADT->Gpe0BlkLen); Index++)
+            {
+                AcpiGbl_Gpe0EnableRegisterSave[Index] =
+                    (UINT8) AcpiHwRegisterRead (ACPI_MTX_LOCK, GPE0_EN_BLOCK | Index);
+            }
         }
 
-        /* save state of GPE1 enable bits */
-
-        for (Index = 0; Index < DIV_2 (AcpiGbl_FADT->Gpe1BlkLen); Index++)
+        else
         {
-            AcpiGbl_Gpe1EnableRegisterSave[Index] =
-                (UINT8) AcpiHwRegisterRead (ACPI_MTX_LOCK, GPE1_EN_BLOCK | Index);
+            AcpiGbl_Gpe0EnableRegisterSave = NULL;
         }
-    }
 
-    else
-    {
-        AcpiGbl_Gpe1EnableRegisterSave = NULL;
+        if (ACPI_VALID_ADDRESS (AcpiGbl_FADT->XGpe1Blk.Address) &&
+            AcpiGbl_FADT->Gpe1BlkLen)
+        {
+            /* GPE1 defined */
+
+            AcpiGbl_Gpe1EnableRegisterSave = ACPI_MEM_ALLOCATE (
+                                            DIV_2 (AcpiGbl_FADT->Gpe1BlkLen));
+            if (!AcpiGbl_Gpe1EnableRegisterSave)
+            {
+                return_ACPI_STATUS (AE_NO_MEMORY);
+            }
+
+            /* save state of GPE1 enable bits */
+
+            for (Index = 0; Index < DIV_2 (AcpiGbl_FADT->Gpe1BlkLen); Index++)
+            {
+                AcpiGbl_Gpe1EnableRegisterSave[Index] =
+                    (UINT8) AcpiHwRegisterRead (ACPI_MTX_LOCK, GPE1_EN_BLOCK | Index);
+            }
+        }
+
+        else
+        {
+            AcpiGbl_Gpe1EnableRegisterSave = NULL;
+        }
     }
 
     return_ACPI_STATUS (Status);
@@ -242,7 +290,8 @@ AcpiHwInitialize (
  *
  * RETURN:      Status
  *
- * DESCRIPTION: Transitions the system into the requested mode.
+ * DESCRIPTION: Transitions the system into the requested mode or does nothing
+ *              if the system is already in that mode.
  *
  ******************************************************************************/
 
@@ -278,7 +327,7 @@ AcpiHwSetMode (
 
     /* Give the platform some time to react */
 
-    AcpiOsStall (20000);
+    AcpiOsStall (5000);
 
     if (AcpiHwGetMode () == Mode)
     {
@@ -319,3 +368,68 @@ AcpiHwGetMode (void)
         return_VALUE (SYS_MODE_LEGACY);
     }
 }
+
+
+/******************************************************************************
+ *
+ * FUNCTION:    AcpiHwGetModeCapabilities
+ *
+ * PARAMETERS:  none
+ *
+ * RETURN:      logical OR of SYS_MODE_ACPI and SYS_MODE_LEGACY determined at initial
+ *              system state.
+ *
+ * DESCRIPTION: Returns capablities of system
+ *
+ ******************************************************************************/
+
+UINT32
+AcpiHwGetModeCapabilities (void)
+{
+
+    FUNCTION_TRACE ("HwGetModeCapabilities");
+
+
+    if (!(AcpiGbl_SystemFlags & SYS_MODES_MASK))
+    {
+        if (AcpiHwGetMode () == SYS_MODE_LEGACY)
+        {
+            /*
+             * Assume that if this call is being made, AcpiInit has been called
+             * and ACPI support has been established by the presence of the
+             * tables.  Therefore since we're in SYS_MODE_LEGACY, the system
+             * must support both modes
+             */
+            AcpiGbl_SystemFlags |= (SYS_MODE_ACPI | SYS_MODE_LEGACY);
+        }
+
+        else
+        {
+            /* TBD: [Investigate] !!! this may be unsafe... */
+            /*
+             * system is is ACPI mode, so try to switch back to LEGACY to see if
+             * it is supported
+             */
+            AcpiHwSetMode (SYS_MODE_LEGACY);
+
+            if (AcpiHwGetMode () == SYS_MODE_LEGACY)
+            {
+                /* Now in SYS_MODE_LEGACY, so both are supported */
+
+                AcpiGbl_SystemFlags |= (SYS_MODE_ACPI | SYS_MODE_LEGACY);
+                AcpiHwSetMode (SYS_MODE_ACPI);
+            }
+
+            else
+            {
+                /* Still in SYS_MODE_ACPI so this must be an ACPI only system */
+
+                AcpiGbl_SystemFlags |= SYS_MODE_ACPI;
+            }
+        }
+    }
+
+    return_VALUE (AcpiGbl_SystemFlags & SYS_MODES_MASK);
+}
+
+

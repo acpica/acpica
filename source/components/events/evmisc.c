@@ -2,7 +2,7 @@
  *
  * Module Name: evmisc - ACPI device notification handler dispatch
  *                       and ACPI Global Lock support
- *              $Revision: 1.38 $
+ *              $Revision: 1.33 $
  *
  *****************************************************************************/
 
@@ -10,7 +10,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -180,7 +180,7 @@ AcpiEvQueueNotifyRequest (
         break;
 
     default:
-        ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "Unknown Notify Value: %X \n", NotifyValue));
+        ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "Unknown Notify Value: %lx \n", NotifyValue));
         break;
     }
 
@@ -220,6 +220,7 @@ AcpiEvQueueNotifyRequest (
         }
     }
 
+
     /* If there is any handler to run, schedule the dispatcher */
 
     if ((AcpiGbl_SysNotify.Handler && (NotifyValue <= MAX_SYS_NOTIFY)) ||
@@ -233,7 +234,6 @@ AcpiEvQueueNotifyRequest (
             return (AE_NO_MEMORY);
         }
 
-        NotifyInfo->Common.DataType   = ACPI_DESC_TYPE_STATE_NOTIFY;
         NotifyInfo->Notify.Node       = Node;
         NotifyInfo->Notify.Value      = (UINT16) NotifyValue;
         NotifyInfo->Notify.HandlerObj = HandlerObj;
@@ -297,6 +297,7 @@ AcpiEvNotifyDispatch (
             GlobalContext = AcpiGbl_SysNotify.Context;
         }
     }
+
     else
     {
         /* Global driver notification handler */
@@ -307,6 +308,7 @@ AcpiEvNotifyDispatch (
             GlobalContext = AcpiGbl_DrvNotify.Context;
         }
     }
+
 
     /* Invoke the system handler first, if present */
 
@@ -453,8 +455,7 @@ AcpiEvInitGlobalLockHandler (void)
  *****************************************************************************/
 
 ACPI_STATUS
-AcpiEvAcquireGlobalLock (
-    UINT32                  Timeout)
+AcpiEvAcquireGlobalLock(void)
 {
     ACPI_STATUS             Status = AE_OK;
     BOOLEAN                 Acquired = FALSE;
@@ -462,7 +463,6 @@ AcpiEvAcquireGlobalLock (
 
 
     FUNCTION_TRACE ("EvAcquireGlobalLock");
-
 
     /* Make sure that we actually have a global lock */
 
@@ -474,6 +474,7 @@ AcpiEvAcquireGlobalLock (
     /* One more thread wants the global lock */
 
     AcpiGbl_GlobalLockThreadCount++;
+
 
     /* If we (OS side) have the hardware lock already, we are done */
 
@@ -489,6 +490,7 @@ AcpiEvAcquireGlobalLock (
         return_ACPI_STATUS (AE_OK);
     }
 
+
     /* We must acquire the actual hardware lock */
 
     GlobalLock = AcpiGbl_FACS->GlobalLock;
@@ -503,6 +505,7 @@ AcpiEvAcquireGlobalLock (
         return_ACPI_STATUS (AE_OK);
     }
 
+
     /*
      * Did not get the lock.  The pending bit was set above, and we must now
      * wait until we get the global lock released interrupt.
@@ -514,7 +517,7 @@ AcpiEvAcquireGlobalLock (
       * Since this wait will block, we must release the interpreter
       */
     Status = AcpiExSystemWaitSemaphore (AcpiGbl_GlobalLockSemaphore,
-                                            Timeout);
+                                            ACPI_UINT32_MAX);
     return_ACPI_STATUS (Status);
 }
 

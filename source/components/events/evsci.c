@@ -2,7 +2,7 @@
  *
  * Module Name: evsci - System Control Interrupt configuration and
  *                      legacy to ACPI mode state transition functions
- *              $Revision: 1.77 $
+ *              $Revision: 1.74 $
  *
  ******************************************************************************/
 
@@ -10,7 +10,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -126,6 +126,16 @@
         MODULE_NAME         ("evsci")
 
 
+/*
+ * Elements correspond to counts for TMR, NOT_USED, GBL, PWR_BTN, SLP_BTN, RTC,
+ * and GENERAL respectively.  These counts are modified by the ACPI interrupt
+ * handler.
+ *
+ * TBD: [Investigate] Note that GENERAL should probably be split out into
+ * one element for each bit in the GPE registers
+ */
+
+
 /*******************************************************************************
  *
  * FUNCTION:    AcpiEvSciHandler
@@ -206,6 +216,7 @@ AcpiEvInstallSciHandler (void)
 
 
 /******************************************************************************
+
  *
  * FUNCTION:    AcpiEvRemoveSciHandler
  *
@@ -214,13 +225,8 @@ AcpiEvInstallSciHandler (void)
  * RETURN:      E_OK if handler uninstalled OK, E_ERROR if handler was not
  *              installed to begin with
  *
- * DESCRIPTION: Remove the SCI interrupt handler.  No further SCIs will be
- *              taken.
- *
- * Note:  It doesn't seem important to disable all events or set the event
- *        enable registers to their original values.  The OS should disable
- *        the SCI interrupt level when the handler is removed, so no more
- *        events will come in.
+ * DESCRIPTION: Restores original status of all fixed event enable bits and
+ *              removes SCI handler.
  *
  ******************************************************************************/
 
@@ -230,7 +236,37 @@ AcpiEvRemoveSciHandler (void)
     FUNCTION_TRACE ("EvRemoveSciHandler");
 
 
-    /* Just let the OS remove the handler and disable the level */
+#if 0
+    /* TBD:[Investigate] Figure this out!!  Disable all events first ???  */
+
+    if (OriginalFixedEnableBitStatus ^ 1 << AcpiEventIndex (TMR_FIXED_EVENT))
+    {
+        AcpiEventDisableEvent (TMR_FIXED_EVENT);
+    }
+
+    if (OriginalFixedEnableBitStatus ^ 1 << AcpiEventIndex (GBL_FIXED_EVENT))
+    {
+        AcpiEventDisableEvent (GBL_FIXED_EVENT);
+    }
+
+    if (OriginalFixedEnableBitStatus ^ 1 << AcpiEventIndex (PWR_BTN_FIXED_EVENT))
+    {
+        AcpiEventDisableEvent (PWR_BTN_FIXED_EVENT);
+    }
+
+    if (OriginalFixedEnableBitStatus ^ 1 << AcpiEventIndex (SLP_BTN_FIXED_EVENT))
+    {
+        AcpiEventDisableEvent (SLP_BTN_FIXED_EVENT);
+    }
+
+    if (OriginalFixedEnableBitStatus ^ 1 << AcpiEventIndex (RTC_FIXED_EVENT))
+    {
+        AcpiEventDisableEvent (RTC_FIXED_EVENT);
+    }
+
+    OriginalFixedEnableBitStatus = 0;
+
+#endif
 
     AcpiOsRemoveInterruptHandler ((UINT32) AcpiGbl_FADT->SciInt,
                                     AcpiEvSciHandler);
@@ -273,9 +309,11 @@ AcpiEvRestoreAcpiState (void)
                 AcpiGbl_Pm1EnableRegisterSave);
         }
 
+
         /* Ensure that all status bits are clear */
 
         AcpiHwClearAcpiStatus ();
+
 
         /* Now restore the GPEs */
 
@@ -289,7 +327,7 @@ AcpiEvRestoreAcpiState (void)
             }
         }
 
-        /* GPE Block 1 present? */
+        /* GPE 1 present? */
 
         if (AcpiGbl_FADT->Gpe1BlkLen)
         {

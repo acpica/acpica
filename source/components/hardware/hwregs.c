@@ -3,7 +3,7 @@
  *
  * Module Name: hwregs - Read/write access functions for the various ACPI
  *                       control and status registers.
- *              $Revision: 1.113 $
+ *              $Revision: 1.107 $
  *
  ******************************************************************************/
 
@@ -11,7 +11,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -126,6 +126,7 @@
         MODULE_NAME         ("hwregs")
 
 
+
 /*******************************************************************************
  *
  * FUNCTION:    AcpiHwGetBitShift
@@ -190,7 +191,7 @@ AcpiHwClearAcpiStatus (void)
 
     if (ACPI_VALID_ADDRESS (AcpiGbl_FADT->XPm1bEvtBlk.Address))
     {
-        AcpiOsWritePort ((ACPI_IO_ADDRESS)
+        AcpiOsWritePort ((ACPI_IO_ADDRESS) 
             ACPI_GET_ADDRESS (AcpiGbl_FADT->XPm1bEvtBlk.Address),
             ALL_FIXED_STS_BITS, 16);
     }
@@ -266,7 +267,7 @@ AcpiHwObtainSleepTypeRegisterData (
     /*
      *  AcpiEvaluate the namespace object containing the values for this state
      */
-    Status = AcpiNsEvaluateByName ((NATIVE_CHAR *) AcpiGbl_DbSleepStates[SleepState],
+    Status = AcpiNsEvaluateByName ((NATIVE_CHAR *) AcpiGbl_DbSleepStates[SleepState], 
                     NULL, &ObjDesc);
     if (ACPI_FAILURE (Status))
     {
@@ -286,7 +287,7 @@ AcpiHwObtainSleepTypeRegisterData (
      */
 
     /* Even though AcpiEvaluateObject resolves package references,
-     * NsEvaluate doesn't. So, we do it here.
+     * NsEvaluate dpesn't. So, we do it here.
      */
     Status = AcpiUtResolvePackageReferences(ObjDesc);
 
@@ -297,6 +298,7 @@ AcpiHwObtainSleepTypeRegisterData (
         REPORT_ERROR (("Sleep State package does not have at least two elements\n"));
         Status = AE_ERROR;
     }
+
     else if (((ObjDesc->Package.Elements[0])->Common.Type !=
                 ACPI_TYPE_INTEGER) ||
              ((ObjDesc->Package.Elements[1])->Common.Type !=
@@ -307,6 +309,7 @@ AcpiHwObtainSleepTypeRegisterData (
         REPORT_ERROR (("Sleep State package elements are not both of type Number\n"));
         Status = AE_ERROR;
     }
+
     else
     {
         /*
@@ -317,6 +320,7 @@ AcpiHwObtainSleepTypeRegisterData (
         *Slp_TypB = (UINT8) (ObjDesc->Package.Elements[1])->Integer.Value;
     }
 
+
     if (ACPI_FAILURE (Status))
     {
         ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Bad Sleep object %p type %X\n",
@@ -324,6 +328,7 @@ AcpiHwObtainSleepTypeRegisterData (
     }
 
     AcpiUtRemoveReference (ObjDesc);
+
     return_ACPI_STATUS (Status);
 }
 
@@ -440,6 +445,7 @@ AcpiHwRegisterBitAccess (
                 RegisterValue = 0;
             }
         }
+
         break;
 
 
@@ -483,6 +489,7 @@ AcpiHwRegisterBitAccess (
 
             AcpiHwRegisterWrite (ACPI_MTX_DO_NOT_LOCK, PM1_EN, (UINT16) RegisterValue);
         }
+
         break;
 
 
@@ -515,6 +522,7 @@ AcpiHwRegisterBitAccess (
             Mask = 0;
             break;
         }
+
 
         /*
          * Read the PM1 Control register.
@@ -562,9 +570,8 @@ AcpiHwRegisterBitAccess (
 
         RegisterValue = AcpiHwRegisterRead (ACPI_MTX_DO_NOT_LOCK, PM2_CONTROL);
 
-        ACPI_DEBUG_PRINT ((ACPI_DB_IO, "PM2 control: Read %X from %8.8X%8.8X\n",
-            RegisterValue, HIDWORD(AcpiGbl_FADT->XPm2CntBlk.Address),
-            LODWORD(AcpiGbl_FADT->XPm2CntBlk.Address)));
+        ACPI_DEBUG_PRINT ((ACPI_DB_IO, "PM2 control: Read %X from %p\n",
+            RegisterValue, ACPI_GET_ADDRESS (AcpiGbl_FADT->XPm2CntBlk.Address)));
 
         if (ReadWrite == ACPI_WRITE)
         {
@@ -573,10 +580,8 @@ AcpiHwRegisterBitAccess (
             Value          &= Mask;
             RegisterValue  |= Value;
 
-            ACPI_DEBUG_PRINT ((ACPI_DB_IO, "About to write %04X to %8.8X%8.8X\n",
-                RegisterValue,
-                HIDWORD(AcpiGbl_FADT->XPm2CntBlk.Address),
-                LODWORD(AcpiGbl_FADT->XPm2CntBlk.Address)));
+            ACPI_DEBUG_PRINT ((ACPI_DB_IO, "About to write %04X to %p\n", RegisterValue,
+                AcpiGbl_FADT->XPm2CntBlk.Address));
 
             AcpiHwRegisterWrite (ACPI_MTX_DO_NOT_LOCK,
                                 PM2_CONTROL, (UINT8) (RegisterValue));
@@ -589,10 +594,8 @@ AcpiHwRegisterBitAccess (
         Mask = TMR_VAL_MASK;
         RegisterValue = AcpiHwRegisterRead (ACPI_MTX_DO_NOT_LOCK,
                                             PM_TIMER);
-        ACPI_DEBUG_PRINT ((ACPI_DB_IO, "PM_TIMER: Read %X from %8.8X%8.8X\n",
-            RegisterValue,
-            HIDWORD(AcpiGbl_FADT->XPmTmrBlk.Address),
-            LODWORD(AcpiGbl_FADT->XPmTmrBlk.Address)));
+        ACPI_DEBUG_PRINT ((ACPI_DB_IO, "PM_TIMER: Read %X from %p\n",
+            RegisterValue, ACPI_GET_ADDRESS (AcpiGbl_FADT->XPmTmrBlk.Address)));
 
         break;
 
@@ -642,13 +645,12 @@ AcpiHwRegisterBitAccess (
             Value          &= Mask;
             RegisterValue  |= Value;
 
-            /*
+            /* 
              * This write will put the Action state into the General Purpose
              * Enable Register indexed by the value in Mask
              */
             ACPI_DEBUG_PRINT ((ACPI_DB_IO, "About to write %04X to %04X\n",
                 RegisterValue, RegisterId));
-
             AcpiHwRegisterWrite (ACPI_MTX_DO_NOT_LOCK, RegisterId,
                 (UINT8) RegisterValue);
             RegisterValue = AcpiHwRegisterRead (ACPI_MTX_DO_NOT_LOCK,
@@ -668,10 +670,10 @@ AcpiHwRegisterBitAccess (
         break;
     }
 
-    if (ACPI_MTX_LOCK == UseLock)
-    {
+    if (ACPI_MTX_LOCK == UseLock) {
         AcpiUtReleaseMutex (ACPI_MTX_HARDWARE);
     }
+
 
     RegisterValue &= Mask;
     RegisterValue >>= AcpiHwGetBitShift (Mask);
@@ -712,6 +714,7 @@ AcpiHwRegisterRead (
         AcpiUtAcquireMutex (ACPI_MTX_HARDWARE);
     }
 
+
     switch (REGISTER_BLOCK_ID(RegisterId))
     {
     case PM1_STS: /* 16-bit access */
@@ -747,14 +750,15 @@ AcpiHwRegisterRead (
         Value =  AcpiHwLowLevelRead (32, &AcpiGbl_FADT->XPmTmrBlk, 0);
         break;
 
+
     /*
-     * For the GPE? Blocks, the lower word of RegisterId contains the
-     * byte offset for which to read, as each part of each block may be
+     * For the GPE? Blocks, the lower word of RegisterId contains the 
+     * byte offset for which to read, as each part of each block may be 
      * several bytes long.
      */
     case GPE0_STS_BLOCK: /* 8-bit access */
 
-        BankOffset = REGISTER_BIT_ID(RegisterId);
+	BankOffset = REGISTER_BIT_ID(RegisterId);
         Value = AcpiHwLowLevelRead (8, &AcpiGbl_FADT->XGpe0Blk, BankOffset);
         break;
 
@@ -766,7 +770,7 @@ AcpiHwRegisterRead (
 
     case GPE1_STS_BLOCK: /* 8-bit access */
 
-        BankOffset = REGISTER_BIT_ID(RegisterId);
+	BankOffset = REGISTER_BIT_ID(RegisterId);
         Value = AcpiHwLowLevelRead (8, &AcpiGbl_FADT->XGpe1Blk, BankOffset);
         break;
 
@@ -785,6 +789,7 @@ AcpiHwRegisterRead (
         /* Value will be returned as 0 */
         break;
     }
+
 
     if (ACPI_MTX_LOCK == UseLock)
     {
@@ -825,6 +830,7 @@ AcpiHwRegisterWrite (
     {
         AcpiUtAcquireMutex (ACPI_MTX_HARDWARE);
     }
+
 
     switch (REGISTER_BLOCK_ID (RegisterId))
     {
@@ -876,7 +882,7 @@ AcpiHwRegisterWrite (
 
     case GPE0_STS_BLOCK: /* 8-bit access */
 
-        BankOffset = REGISTER_BIT_ID(RegisterId);
+	BankOffset = REGISTER_BIT_ID(RegisterId);
         AcpiHwLowLevelWrite (8, Value, &AcpiGbl_FADT->XGpe0Blk, BankOffset);
         break;
 
@@ -890,7 +896,7 @@ AcpiHwRegisterWrite (
 
     case GPE1_STS_BLOCK: /* 8-bit access */
 
-        BankOffset = REGISTER_BIT_ID(RegisterId);
+	BankOffset = REGISTER_BIT_ID(RegisterId);
         AcpiHwLowLevelWrite (8, Value, &AcpiGbl_FADT->XGpe1Blk, BankOffset);
         break;
 
@@ -904,7 +910,8 @@ AcpiHwRegisterWrite (
 
     case SMI_CMD_BLOCK: /* 8bit */
 
-        /* SMI_CMD is currently always in IO space */
+        /* For 2.0, SMI_CMD is always in IO space */
+        /* TBD: what about 1.0? 0.71? */
 
         AcpiOsWritePort (AcpiGbl_FADT->SmiCmd, Value, 8);
         break;
@@ -914,6 +921,7 @@ AcpiHwRegisterWrite (
         Value = 0;
         break;
     }
+
 
     if (ACPI_MTX_LOCK == UseLock)
     {
@@ -963,6 +971,7 @@ AcpiHwLowLevelRead (
     {
         return 0;
     }
+
 
     /*
      * Three address spaces supported:
@@ -1043,6 +1052,7 @@ AcpiHwLowLevelWrite (
     {
         return;
     }
+
 
     /*
      * Three address spaces supported:
