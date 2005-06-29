@@ -115,10 +115,10 @@
 
 #include <acpi.h>
 #include <hardware.h>
-#include <namespace.h>
+#include <namesp.h>
 #include <events.h>
 #include <amlcode.h>
-#include <interpreter.h>
+#include <interp.h>
 
 #define _COMPONENT          EVENT_HANDLING
         MODULE_NAME         ("evapi");
@@ -894,7 +894,7 @@ AcpiInstallAddressSpaceHandler (
      *  In either case we back up and search down the remainder
      *  of the branch
      */
-    Status = AcpiWalkNamespace (ACPI_TYPE_Any, Device, ACPI_INT_MAX, EvAddrHandlerHelper, 
+    Status = AcpiWalkNamespace (ACPI_TYPE_Any, Device, ACPI_INT32_MAX, EvAddrHandlerHelper, 
                                 HandlerObj, NULL);
 
     /*
@@ -1222,9 +1222,13 @@ AcpiEnableEvent (
         /* Ensure that we have a valid GPE number */
 
         if (Gbl_GpeValid[Event] == GPE_INVALID)
+        {
             Status = AE_BAD_PARAMETER;
+        }
         else
+        {
             HwEnableGpe (Event);
+        }
 
         break;
 
@@ -1272,9 +1276,13 @@ AcpiDisableEvent (
         /* Ensure that we have a valid GPE number */
 
         if (Gbl_GpeValid[Event] == GPE_INVALID)
+        {
             Status = AE_BAD_PARAMETER;
+        }
         else
+        {
             HwDisableGpe (Event);
+        }
 
         break;
 
@@ -1322,9 +1330,13 @@ AcpiClearEvent (
         /* Ensure that we have a valid GPE number */
 
         if (Gbl_GpeValid[Event] == GPE_INVALID)
+        {
             Status = AE_BAD_PARAMETER;
+        }
         else
+        {
             HwClearGpe (Event);
+        }
 
         break;
 
@@ -1334,3 +1346,65 @@ AcpiClearEvent (
 
     return_ACPI_STATUS (Status);
 }
+
+
+/******************************************************************************
+ *
+ * FUNCTION:    AcpiGetEventStatus
+ *
+ * PARAMETERS:  Event           - The fixed event or GPE to be enabled
+ *              Type            - The type of event
+ *              Status          - The current status of the event
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Computes the current status of the event
+ *
+ ******************************************************************************/
+
+ACPI_STATUS
+AcpiGetEventStatus (
+    UINT32                  Event,
+    UINT32                  Type,
+    ACPI_EVENT_STATUS       *EventStatus)
+{
+    ACPI_STATUS             Status = AE_OK;
+
+    FUNCTION_TRACE ("AcpiGetEventStatus");
+
+    if (!EventStatus)
+    {
+        return_ACPI_STATUS(AE_BAD_PARAMETER);
+    }
+
+    switch (Type)
+    {
+    case EVENT_FIXED:
+        /*
+         * TBD - Fixed events...
+         */
+        Status = AE_NOT_IMPLEMENTED;
+        break;
+
+    case EVENT_GPE:
+
+        /* Ensure that we have a valid GPE number */
+
+        if (Gbl_GpeValid[Event] == GPE_INVALID)
+        {
+            Status = AE_BAD_PARAMETER;
+        }
+        else
+        {
+            HwGetGpeStatus (Event, EventStatus);
+        }
+
+        break;
+
+    default:
+        Status = AE_BAD_PARAMETER;
+    }
+
+    return_ACPI_STATUS (Status);
+}
+
