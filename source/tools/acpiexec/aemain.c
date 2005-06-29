@@ -266,13 +266,14 @@ main (
 
         /* Need a fake FADT so that the hardware component is happy */
 
-        LocalFADT.Gpe0Blk       = 0x70;
+        LocalFADT.XGpe0Blk.Address       = 0x70; 
+        LocalFADT.XPm1aEvtBlk.Address    = 0x80;
+        LocalFADT.XPm1aCntBlk.Address    = 0x90;
+        LocalFADT.XPmTmrBlk.Address      = 0xA0;
+
         LocalFADT.Gpe0BlkLen    = 8;
         LocalFADT.Pm1EvtLen     = 4;
         LocalFADT.Pm1CntLen     = 4;
-        LocalFADT.Pm1aEvtBlk    = 0x80;
-        LocalFADT.Pm1aCntBlk    = 0x90;
-        LocalFADT.PmTmrBlk      = 0xA0;
         LocalFADT.PmTmLen       = 8;
 
         AcpiGbl_FADT = &LocalFADT;
