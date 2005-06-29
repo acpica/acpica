@@ -157,20 +157,20 @@ NsPushCurrentScope (
     else
     {
         if ((Type > INTERNAL_TYPE_MAX)     || 
-            (BadType == NsTypeNames[Type]))
+            (Gbl_BadType == Gbl_NsTypeNames[Type]))
         {
             /*  type code out of range  */
 
             REPORT_WARNING ("NsPushCurrentScope: type code out of range");
         }
 
-        if (CurrentScope < &ScopeStack[MAX_SCOPE_NESTING-1])   /* check for overflow */
+        if (Gbl_CurrentScope < &Gbl_ScopeStack[MAX_SCOPE_NESTING-1])   /* check for overflow */
         {
             /*  no Scope stack overflow */
 
-            CurrentScope++;
-            CurrentScope->Scope = NewScope;
-            CurrentScope->Type = Type;
+            Gbl_CurrentScope++;
+            Gbl_CurrentScope->Scope = NewScope;
+            Gbl_CurrentScope->Type = Type;
         }
     
         else
@@ -214,7 +214,7 @@ NsPushMethodScope (
 
     else
     {
-        if (CurrentScope < &ScopeStack[MAX_SCOPE_NESTING-1])   /* check for overflow */
+        if (Gbl_CurrentScope < &Gbl_ScopeStack[MAX_SCOPE_NESTING-1])   /* check for overflow */
         {
             NsPushCurrentScope (((NAME_TABLE_ENTRY *) NewScope)->Scope, TYPE_Method);
         }
@@ -258,7 +258,7 @@ NsPopCurrent (
 
 
     if ((Type > INTERNAL_TYPE_MAX)      || 
-        (BadType == NsTypeNames[Type]))
+        (Gbl_BadType == Gbl_NsTypeNames[Type]))
     {
         /*  type code out of range  */
 
@@ -267,14 +267,14 @@ NsPopCurrent (
 
     DEBUG_PRINT (TRACE_EXEC, ("Popping Scope till type (%d) is found\n", Type));
 
-    while (CurrentScope > &ScopeStack[0])
+    while (Gbl_CurrentScope > &Gbl_ScopeStack[0])
     {
-        CurrentScope--;
+        Gbl_CurrentScope--;
         Count++;
 
-        DEBUG_PRINT (TRACE_EXEC, ("Popped %d\n", (CurrentScope+1)->Type));
+        DEBUG_PRINT (TRACE_EXEC, ("Popped %d\n", (Gbl_CurrentScope+1)->Type));
 
-        if ((TYPE_Any == Type) || (Type == (CurrentScope + 1)->Type))
+        if ((TYPE_Any == Type) || (Type == (Gbl_CurrentScope + 1)->Type))
         {
             DEBUG_PRINT (TRACE_EXEC, ("Found %d\n", Type));
             return_VALUE (Count);
