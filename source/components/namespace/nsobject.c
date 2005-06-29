@@ -121,6 +121,7 @@
 #include <amlcode.h>
 #include <namespace.h>
 #include <interpreter.h>
+#include <tables.h>
 
 
 #define _THIS_MODULE        "nsobject.c"
@@ -268,7 +269,7 @@ NsAttachObject (
         /*
          * Check if value points into the AML code
          */
-        else if (NsIsInSystemTable (Object))
+        else if (TbSystemTablePointer (Object))
         {
             /* Object points into the AML stream.  Set a flag bit in the NTE to indicate this */
     
@@ -346,7 +347,7 @@ NsAttachObject (
                 NsDumpPathname (Handle, "NsAttachObject confused: setting bogus type for  ", 
                                 ACPI_INFO, _COMPONENT);
 
-                if (NsIsInSystemTable (Object))
+                if (TbSystemTablePointer (Object))
                 {
                     DEBUG_PRINT (ACPI_INFO,
                                 ("AML-stream code %02x\n", *(UINT8 *) Object));
@@ -541,7 +542,7 @@ NsDetachObject (
 
     /* Not every value is an object allocated via CmCallocate, must check */
 
-    if (!NsIsInSystemTable (ObjDesc)) /*&&
+    if (!TbSystemTablePointer (ObjDesc)) /*&&
         !VALID_DESCRIPTOR_TYPE      (ObjDesc, DESC_TYPE_NTE))*/
     {
 
