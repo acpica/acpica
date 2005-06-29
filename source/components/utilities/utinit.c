@@ -765,8 +765,6 @@ InitAcpiRegisters (void)
                     return AE_NO_MEMORY;
                 }
 
-                RegisterStaticBlockPtr ((void **) &Gpe0EnableRegisterSave);
-
                 /* save state of GPE0 enable bits */
 
                 for (Index = 0; Index < FACP->Gpe0BlkLen / 2; Index++)
@@ -790,8 +788,6 @@ InitAcpiRegisters (void)
                 {
                     return AE_NO_MEMORY;
                 }
-
-                RegisterStaticBlockPtr ((void **) &Gpe1EnableRegisterSave);
 
                 /* save state of GPE1 enable bits */
         
