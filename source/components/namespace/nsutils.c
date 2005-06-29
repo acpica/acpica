@@ -2,7 +2,7 @@
  *
  * Module Name: nsutils - Utilities for accessing ACPI namespace, accessing
  *                        parents and siblings and Scope manipulation
- *              $Revision: 1.91 $
+ *              $Revision: 1.93 $
  *
  *****************************************************************************/
 
@@ -690,6 +690,9 @@ AcpiNsExternalizeName (
  *
  * DESCRIPTION: Convert a namespace handle to a real Node
  *
+ * Note: Real integer handles allow for more verification
+ *       and keep all pointers within this subsystem.
+ *
  ******************************************************************************/
 
 ACPI_NAMESPACE_NODE *
@@ -701,9 +704,7 @@ AcpiNsMapHandleToNode (
 
 
     /*
-     * Simple implementation for now;
-     * TBD: [Future] Real integer handles allow for more verification
-     * and keep all pointers within this subsystem!
+     * Simple implementation.
      */
     if (!Handle)
     {
@@ -714,7 +715,6 @@ AcpiNsMapHandleToNode (
     {
         return (AcpiGbl_RootNode);
     }
-
 
     /* We can at least attempt to verify the handle */
 
@@ -747,8 +747,6 @@ AcpiNsConvertEntryToHandle (
 
     /*
      * Simple implementation for now;
-     * TBD: [Future] Real integer handles allow for more verification
-     * and keep all pointers within this subsystem!
      */
     return ((ACPI_HANDLE) Node);
 
@@ -973,7 +971,7 @@ AcpiNsFindParentName (
         if (ParentNode)
         {
             ACPI_DEBUG_PRINT ((ACPI_DB_EXEC, "Parent of %p [%4.4s] is %p [%4.4s]\n",
-                ChildNode, &ChildNode->Name, ParentNode, &ParentNode->Name));
+                ChildNode, (char*)&ChildNode->Name, ParentNode, (char*)&ParentNode->Name));
 
             if (ParentNode->Name)
             {
@@ -982,7 +980,7 @@ AcpiNsFindParentName (
         }
 
         ACPI_DEBUG_PRINT ((ACPI_DB_EXEC, "unable to find parent of %p (%4.4s)\n",
-            ChildNode, &ChildNode->Name));
+            ChildNode, (char*)&ChildNode->Name));
     }
 
     return_VALUE (ACPI_UNKNOWN_NAME);
