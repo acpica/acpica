@@ -624,13 +624,13 @@ DbCommandDispatch (
         else if (ParamCount == 2)
         {
             Temp = Gbl_DbConsoleDebugLevel;
-            Gbl_DbConsoleDebugLevel = STRTOUL (Args[1], NULL, 0);
+            Gbl_DbConsoleDebugLevel = STRTOUL (Args[1], NULL, 16);
             OsdPrintf ("Debug Level for console output was %8.8lX, now %8.8lX\n", Temp, Gbl_DbConsoleDebugLevel);
         }
         else
         {
             Temp = Gbl_DbDebugLevel;
-            Gbl_DbDebugLevel = STRTOUL (Args[1], NULL, 0);
+            Gbl_DbDebugLevel = STRTOUL (Args[1], NULL, 16);
             OsdPrintf ("Debug Level for file output was %8.8lX, now %8.8lX\n", Temp, Gbl_DbDebugLevel);
         }
         break;
@@ -690,6 +690,10 @@ DbCommandDispatch (
 
     case CMD_TERMINATE:
         CmSubsystemShutdown ();
+
+        /* Need some way to re-initialize without re-creating the semaphores! */
+
+//        AcpiInitialize (NULL);
         break;
 
     case CMD_TREE:
@@ -710,7 +714,7 @@ DbCommandDispatch (
 
         /* Shutdown */
 
-        CmSubsystemShutdown ();
+//        CmSubsystemShutdown ();
         DbCloseDebugFile ();
 
         Gbl_DbTerminateThreads = TRUE;
