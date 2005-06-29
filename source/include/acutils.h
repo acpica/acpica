@@ -104,6 +104,10 @@
 
 /* Global initialization interfaces */
 
+void 
+InitAcpiLibGlobals (
+    void);
+
 ACPI_STATUS
 InitAcpiGetRsdt (
     UINT32              *NumberOfTables, 
@@ -125,6 +129,13 @@ InitOpenFile (
 void
 InitCloseFile (
     OSD_FILE            *FilePtr);
+
+
+/* Exit interfaces */
+
+void
+AcpiLocalCleanup (
+    void);
 
 
 
