@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: evevent - Fixed and General Purpose Even handling and dispatch
- *              $Revision: 1.71 $
+ *              $Revision: 1.72 $
  *
  *****************************************************************************/
 
@@ -771,8 +771,8 @@ AcpiEvGpeDetect (void)
         ACPI_DEBUG_PRINT ((ACPI_DB_INTERRUPTS,
             "GPE block at %X - Enable %08X Status %08X\n",
             GpeRegisterInfo->EnableAddr,
-            GpeRegisterInfo->Status,
-            GpeRegisterInfo->Enable));
+            GpeRegisterInfo->Enable,
+            GpeRegisterInfo->Status));
 
         /* First check if there is anything active at all in this register */
 
