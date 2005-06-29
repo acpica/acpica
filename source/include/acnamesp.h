@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acnamesp.h - Namespace subcomponent prototypes and defines
- *       $Revision: 1.115 $
+ *       $Revision: 1.116 $
  *
  *****************************************************************************/
 
@@ -373,7 +373,7 @@ AcpiNsExistDownstreamSibling (
 
 
 /*
- * Scope manipulation - nsscope
+ * Name and Scope manipulation - nsnames
  */
 
 UINT32
@@ -381,7 +381,7 @@ AcpiNsOpensScope (
     ACPI_OBJECT_TYPE8       Type);
 
 NATIVE_CHAR *
-AcpiNsGetTablePathname (
+AcpiNsGetExternalPathname (
     ACPI_NAMESPACE_NODE     *Node);
 
 NATIVE_CHAR *
