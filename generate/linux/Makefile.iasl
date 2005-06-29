@@ -6,29 +6,28 @@ SRCS=	aslcompilerparse.c aslcompilerlex.c aslanalyze.c aslcodegen.c \
 	asllisting.c aslload.c asllookup.c aslmain.c aslmap.c aslopcodes.c \
 	asloperands.c aslresource.c aslrestype1.c aslrestype2.c \
 	asltree.c aslutils.c \
-	../Subsystem/Common/cmalloc.c \
-	../Subsystem/Common/cmdebug.c \
-	../Subsystem/Common/cmdelete.c \
-	../Subsystem/Common/cmglobal.c \
-	../Subsystem/Common/cmobject.c \
-	../Subsystem/Common/cmutils.c \
-	../Subsystem/Common/cmclib.c \
-	../Subsystem/Namespace/nsaccess.c \
-	../Subsystem/Namespace/nsalloc.c \
-	../Subsystem/Namespace/nsdump.c \
-	../Subsystem/Namespace/nsnames.c \
-	../Subsystem/Namespace/nsobject.c \
-	../Subsystem/Namespace/nssearch.c \
-	../Subsystem/Namespace/nsutils.c \
-	../Subsystem/Namespace/nswalk.c \
-	../Subsystem/Parser/psopcode.c \
-	../Subsystem/Parser/psutils.c \
-	../Subsystem/Dispatcher/dswscope.c \
-	../Subsystem/Dispatcher/dswstate.c \
-	../Common/osunixxf.c
+	../core/utils/cmalloc.c \
+	../core/utils/cmdebug.c \
+	../core/utils/cmdelete.c \
+	../core/utils/cmglobal.c \
+	../core/utils/cmobject.c \
+	../core/utils/cmutils.c \
+	../core/namespace/nsaccess.c \
+	../core/namespace/nsalloc.c \
+	../core/namespace/nsdump.c \
+	../core/namespace/nsnames.c \
+	../core/namespace/nsobject.c \
+	../core/namespace/nssearch.c \
+	../core/namespace/nsutils.c \
+	../core/namespace/nswalk.c \
+	../interpreter/parser/psopcode.c \
+	../interpreter/parser/psutils.c \
+	../interpreter/dispatcher/dswscope.c \
+	../interpreter/dispatcher/dswstate.c \
+	../os_interfaces/osunixxf.c
 
 NOMAN=	YES
-CFLAGS+= -D_LINUX -D_ACPI_ASL_COMPILER -I../Subsystem/Include 
+CFLAGS+= -Wall -Wno-unused -D_LINUX -D_ACPI_ASL_COMPILER -I../include 
 
 #YACC=	yacc
 YACC=	bison
