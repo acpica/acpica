@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: aemain - Main routine for the AcpiExec utility
- *              $Revision: 1.53 $
+ *              $Revision: 1.54 $
  *
  *****************************************************************************/
 
@@ -439,7 +439,7 @@ main (
         ReturnBuf.Pointer = Buffer;
         AcpiGetName (AcpiGbl_RootNode, ACPI_FULL_PATHNAME, &ReturnBuf);
         AcpiEnableEvent (ACPI_EVENT_GLOBAL, ACPI_EVENT_FIXED, 0);
-        AcpiEnableEvent (0, ACPI_EVENT_GPE, ACPI_EVENT_ENABLE);
+        AcpiEnableEvent (0, ACPI_EVENT_GPE, 0);
     }
 
 #ifdef _IA16
