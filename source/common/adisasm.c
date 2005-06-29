@@ -397,7 +397,7 @@ AdGetTables (
 
     else
     {
-#ifdef IA16
+#ifdef _IA16
         printf ("Scanning for DSDT\n");
 
         Status = AdFindDsdt (&DsdtPtr, &DsdtLength);
