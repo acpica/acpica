@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: amresolv - AML Interpreter object resolution
- *              $Revision: 1.85 $
+ *              $Revision: 1.86 $
  *
  *****************************************************************************/
 
@@ -136,9 +136,8 @@
  * FUNCTION:    AcpiAmlGetFieldUnitValue
  *
  * PARAMETERS:  *FieldDesc          - Pointer to a FieldUnit
- *              *ResultDesc         - Pointer to an empty descriptor
- *                                    which will become a Number
- *                                    containing the field's value.
+ *              *ResultDesc         - Pointer to an empty descriptor which will
+ *                                    become an Integer with the field's value
  *
  * RETURN:      Status
  *
@@ -151,20 +150,23 @@ AcpiAmlGetFieldUnitValue (
     ACPI_OPERAND_OBJECT     *FieldDesc,
     ACPI_OPERAND_OBJECT     *ResultDesc)
 {
-    ACPI_STATUS             Status = AE_OK;
+    ACPI_STATUS             Status;
     UINT32                  Mask;
-    UINT8                   *Location = NULL;
-    BOOLEAN                 Locked = FALSE;
+    UINT8                   *Location;
+    BOOLEAN                 Locked;
 
 
     FUNCTION_TRACE ("AmlGetFieldUnitValue");
 
 
+    /*
+     * Parameter validation 
+     */
     if (!FieldDesc)
     {
         DEBUG_PRINT (ACPI_ERROR,
             ("AmlGetFieldUnitValue: Internal error - null field pointer\n"));
-        Status = AE_AML_NO_OPERAND;
+        return_ACPI_STATUS (AE_AML_NO_OPERAND);
     }
 
     if (!(FieldDesc->Common.Flags & AOPOBJ_DATA_VALID))
@@ -180,30 +182,25 @@ AcpiAmlGetFieldUnitValue (
     {
         DEBUG_PRINT (ACPI_ERROR,
             ("AmlGetFieldUnitValue: Internal error - null container pointer\n"));
-        Status = AE_AML_INTERNAL;
+        return_ACPI_STATUS (AE_AML_INTERNAL);
     }
 
-    else if (ACPI_TYPE_BUFFER != FieldDesc->FieldUnit.Container->Common.Type)
+    if (ACPI_TYPE_BUFFER != FieldDesc->FieldUnit.Container->Common.Type)
     {
         DEBUG_PRINT (ACPI_ERROR,
             ("AmlGetFieldUnitValue: Internal error - container is not a Buffer\n"));
-        Status = AE_AML_OPERAND_TYPE;
+        return_ACPI_STATUS (AE_AML_OPERAND_TYPE);
     }
 
-    else if (!ResultDesc)
+    if (!ResultDesc)
     {
         DEBUG_PRINT (ACPI_ERROR,
             ("AmlGetFieldUnitValue: Internal error - null result pointer\n"));
-        Status = AE_AML_INTERNAL;
-    }
-
-    if (ACPI_FAILURE (Status))
-    {
-        return_ACPI_STATUS (Status);
+        return_ACPI_STATUS (AE_AML_INTERNAL);
     }
 
 
-        /* Get the global lock if needed */
+    /* Get the global lock if needed */
 
     Locked = AcpiAmlAcquireGlobalLock (FieldDesc->FieldUnit.LockRule);
 
@@ -218,7 +215,7 @@ AcpiAmlGetFieldUnitValue (
      * NOTE: Only the bottom 5 bits are valid for a shift operation, so
      *  special care must be taken for any shift greater than 31 bits.
      *
-     * TBD: [Unhandled] Fields greater than 32-bits will not work.
+     * TBD: [Unhandled] Fields greater than 32 bits will not work.
      */
 
     if (FieldDesc->FieldUnit.Length < 32)
@@ -256,7 +253,7 @@ AcpiAmlGetFieldUnitValue (
 
     AcpiAmlReleaseGlobalLock (Locked);
 
-    return_ACPI_STATUS (Status);
+    return_ACPI_STATUS (AE_OK);
 }
 
 
@@ -265,8 +262,9 @@ AcpiAmlGetFieldUnitValue (
  * FUNCTION:    AcpiAmlResolveToValue
  *
  * PARAMETERS:  **StackPtr          - Points to entry on ObjStack, which can
- *                                    be either an (ACPI_OPERAND_OBJECT  *)
+ *                                    be either an (ACPI_OPERAND_OBJECT *)
  *                                    or an ACPI_HANDLE.
+ *              WalkState           - Current method state
  *
  * RETURN:      Status
  *
@@ -279,7 +277,7 @@ AcpiAmlResolveToValue (
     ACPI_OPERAND_OBJECT     **StackPtr,
     ACPI_WALK_STATE         *WalkState)
 {
-    ACPI_STATUS             Status = AE_OK;
+    ACPI_STATUS             Status;
 
 
     FUNCTION_TRACE_PTR ("AmlResolveToValue", StackPtr);
@@ -301,7 +299,6 @@ AcpiAmlResolveToValue (
 
     if (VALID_DESCRIPTOR_TYPE (*StackPtr, ACPI_DESC_TYPE_INTERNAL))
     {
-
         Status = AcpiAmlResolveObjectToValue (StackPtr, WalkState);
         if (ACPI_FAILURE (Status))
         {
@@ -316,14 +313,19 @@ AcpiAmlResolveToValue (
 
     if (VALID_DESCRIPTOR_TYPE (*StackPtr, ACPI_DESC_TYPE_NAMED))
     {
-        Status = AcpiAmlResolveNodeToValue ((ACPI_NAMESPACE_NODE **) StackPtr, WalkState);
+        Status = AcpiAmlResolveNodeToValue ((ACPI_NAMESPACE_NODE **) StackPtr, 
+                        WalkState);
+        if (ACPI_FAILURE (Status))
+        {
+            return_ACPI_STATUS (Status);
+        }
     }
 
 
     DEBUG_PRINT (ACPI_INFO,
         ("AmlResolveToValue: Returning resolved object %p\n", *StackPtr));
 
-    return_ACPI_STATUS (Status);
+    return_ACPI_STATUS (AE_OK);
 }
 
 
@@ -333,6 +335,7 @@ AcpiAmlResolveToValue (
  *
  * PARAMETERS:  StackPtr        - Pointer to a stack location that contains a
  *                                ptr to an internal object.
+ *              WalkState       - Current method state
  *
  * RETURN:      Status
  *
@@ -480,7 +483,7 @@ AcpiAmlResolveObjectToValue (
                 {
                     /*
                      * A NULL object descriptor means an unitialized element of
-                     * the package, can't deref it
+                     * the package, can't dereference it
                      */
 
                     DEBUG_PRINT (ACPI_ERROR,
@@ -490,7 +493,7 @@ AcpiAmlResolveObjectToValue (
                 break;
 
             default:
-                /* Invalid reference OBJ*/
+                /* Invalid reference object */
 
                 DEBUG_PRINT (ACPI_ERROR,
                     ("AmlResolveObjectToValue: Unknown TargetType %X in Index/Reference obj %p\n",
@@ -531,8 +534,6 @@ AcpiAmlResolveObjectToValue (
         ObjDesc = AcpiCmCreateInternalObject (ACPI_TYPE_ANY);
         if (!ObjDesc)
         {
-            /* Descriptor allocation failure  */
-
             return_ACPI_STATUS (AE_NO_MEMORY);
         }
 
@@ -552,8 +553,6 @@ AcpiAmlResolveObjectToValue (
         ObjDesc = AcpiCmCreateInternalObject (ACPI_TYPE_ANY);
         if (!ObjDesc)
         {
-            /* Descriptor allocation failure */
-
             return_ACPI_STATUS (AE_NO_MEMORY);
         }
 
