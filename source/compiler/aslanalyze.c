@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslanalyze.c - check for semantic errors
- *              $Revision: 1.70 $
+ *              $Revision: 1.71 $
  *
  *****************************************************************************/
 
@@ -492,6 +492,19 @@ AnGetBtype (
 }
 
 
+/*******************************************************************************
+ *
+ * FUNCTION:    AnCheckForReservedName
+ *
+ * PARAMETERS:  Op              - A parse node
+ *              Name            - NameSeg to check
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Check a NameSeg against the reserved list.
+ *
+ ******************************************************************************/
+
 #define ACPI_VALID_RESERVED_NAME_MAX    0x80000000
 #define ACPI_NOT_RESERVED_NAME          ACPI_UINT32_MAX
 #define ACPI_PREDEFINED_NAME            (ACPI_UINT32_MAX - 1)
@@ -505,6 +518,12 @@ AnCheckForReservedName (
 {
     UINT32                  i;
 
+
+    if (Name[0] == 0)
+    {
+        AcpiOsPrintf ("Found a null name, external = %s\n", Op->Asl.ExternalName);
+    }
+
     /* All reserved names are prefixed with a single underscore */
 
     if (Name[0] != '_')
@@ -516,7 +535,7 @@ AnCheckForReservedName (
 
     for (i = 0; ReservedMethods[i].Name; i++)
     {
-        if (!ACPI_STRCMP (Name, ReservedMethods[i].Name))
+        if (!ACPI_STRNCMP (Name, ReservedMethods[i].Name, ACPI_NAME_SIZE))
         {
             if (ReservedMethods[i].Flags & ASL_RSVD_SCOPE)
             {
@@ -599,7 +618,7 @@ AnCheckForReservedMethod (
 
     /* Check for a match against the reserved name list */
 
-    Index = AnCheckForReservedName (Op, Op->Asl.ExternalName);
+    Index = AnCheckForReservedName (Op, Op->Asl.NameSeg);
 
     switch (Index)
     {
@@ -880,7 +899,7 @@ AnMethodAnalysisWalkBegin (
          * The first operand is a name to be created in the namespace.
          * Check against the reserved list.
          */
-        i = AnCheckForReservedName (Op, Op->Asl.ExternalName);
+        i = AnCheckForReservedName (Op, Op->Asl.NameSeg);
         if (i < ACPI_VALID_RESERVED_NAME_MAX)
         {
             AslError (ASL_ERROR, ASL_MSG_RESERVED_USE, Op, Op->Asl.ExternalName);
@@ -890,7 +909,7 @@ AnMethodAnalysisWalkBegin (
 
     case PARSEOP_NAME:
 
-        i = AnCheckForReservedName (Op, Op->Asl.ExternalName);
+        i = AnCheckForReservedName (Op, Op->Asl.NameSeg);
         if (i < ACPI_VALID_RESERVED_NAME_MAX)
         {
             if (ReservedMethods[i].NumArguments > 0)
