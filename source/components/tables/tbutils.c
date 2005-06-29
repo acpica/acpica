@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: tbutils - Table manipulation utilities
- *              $Revision: 1.44 $
+ *              $Revision: 1.45 $
  *
  *****************************************************************************/
 
@@ -123,66 +123,6 @@
 
 #define _COMPONENT          ACPI_TABLES
         MODULE_NAME         ("tbutils")
-
-
-/*******************************************************************************
- *
- * FUNCTION:    AcpiTbFindTable
- *
- * PARAMETERS:  Signature           - String with ACPI table signature
- *              OemId               - String with the table OEM ID
- *              OemTableId          - String with the OEM Table ID.
- *
- * RETURN:      Status
- *
- * DESCRIPTION: Find an ACPI table (in the RSDT/XSDT) that matches the 
- *              Signature, OEM ID and OEM Table ID.
- *
- ******************************************************************************/
-
-ACPI_STATUS
-AcpiTbFindTable (
-    NATIVE_CHAR             *Signature,
-    NATIVE_CHAR             *OemId,
-    NATIVE_CHAR             *OemTableId,
-    ACPI_TABLE_HEADER       **TablePtr)
-{
-    ACPI_STATUS             Status;
-    ACPI_TABLE_HEADER       *Table;
-
-
-    FUNCTION_TRACE ("TbFindTable");
-
-
-    /* Validate string lengths */
-
-    if ((STRLEN (Signature)  > 4) ||
-        (STRLEN (OemId)      > 6) ||
-        (STRLEN (OemTableId) > 8))
-    {
-        return_ACPI_STATUS (AE_AML_STRING_LIMIT);
-    }
-
-    /* Find the table */
-
-    Status = AcpiGetFirmwareTable (Signature, 1, 
-                        ACPI_LOGICAL_ADDRESSING, &Table);
-    if (ACPI_FAILURE (Status))
-    {
-        return_ACPI_STATUS (Status);
-    }
-
-    /* Check OemId and OemTableId */
-
-    if ((OemId[0]      && STRCMP (OemId, Table->OemId)) ||
-        (OemTableId[0] && STRCMP (OemTableId, Table->OemTableId)))
-    {
-        return_ACPI_STATUS (AE_AML_NAME_NOT_FOUND);
-    }
-
-    *TablePtr = Table;
-    return_ACPI_STATUS (AE_OK);
-}
 
 
 
