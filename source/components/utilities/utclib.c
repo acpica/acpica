@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: cmclib - Local implementation of C library functions
- * $Revision: 1.33 $
+ * $Revision: 1.34 $
  *
  *****************************************************************************/
 
@@ -149,11 +149,11 @@
  ******************************************************************************/
 
 
-NATIVE_UINT
+UINT32
 AcpiCmStrlen (
     const NATIVE_CHAR       *String)
 {
-    NATIVE_UINT             Length = 0;
+    UINT32                  Length = 0;
 
 
     /* Count the string until a null is encountered */
