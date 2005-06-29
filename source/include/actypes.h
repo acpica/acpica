@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: actypes.h - Common data types for the entire ACPI subsystem
- *       $Revision: 1.152 $
+ *       $Revision: 1.153 $
  *
  *****************************************************************************/
 
@@ -493,13 +493,15 @@ typedef UINT32                          ACPI_EVENT_STATUS;
 
 /* Address Space (Operation Region) Types */
 
-typedef UINT32                          ACPI_ADDRESS_SPACE_TYPE;
+typedef UINT8                           ACPI_ADDRESS_SPACE_TYPE;
 
 #define ADDRESS_SPACE_SYSTEM_MEMORY     (ACPI_ADDRESS_SPACE_TYPE) 0
 #define ADDRESS_SPACE_SYSTEM_IO         (ACPI_ADDRESS_SPACE_TYPE) 1
 #define ADDRESS_SPACE_PCI_CONFIG        (ACPI_ADDRESS_SPACE_TYPE) 2
 #define ADDRESS_SPACE_EC                (ACPI_ADDRESS_SPACE_TYPE) 3
 #define ADDRESS_SPACE_SMBUS             (ACPI_ADDRESS_SPACE_TYPE) 4
+#define ADDRESS_SPACE_CMOS              (ACPI_ADDRESS_SPACE_TYPE) 5
+#define ADDRESS_SPACE_PCI_BAR_TARGET    (ACPI_ADDRESS_SPACE_TYPE) 6
 
 
 /*

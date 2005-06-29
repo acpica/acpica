@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: accommon.h -- prototypes for the common (subsystem-wide) procedures
- *       $Revision: 1.80 $
+ *       $Revision: 1.82 $
  *
  *****************************************************************************/
 
@@ -154,12 +154,14 @@ AcpiCmSubsystemShutdown (
     void);
 
 ACPI_STATUS
-AcpiCmValidateFacp (
+AcpiCmValidateFadt (
     void);
 
 /*
  * CmGlobal - Global data structures and procedures
  */
+
+#ifdef ACPI_DEBUG
 
 NATIVE_CHAR *
 AcpiCmGetMutexName (
@@ -168,6 +170,13 @@ AcpiCmGetMutexName (
 NATIVE_CHAR *
 AcpiCmGetTypeName (
     UINT32                  Type);
+
+NATIVE_CHAR *
+AcpiCmGetRegionName (
+    UINT8                   SpaceId);
+
+#endif
+
 
 BOOLEAN
 AcpiCmValidObjectType (
