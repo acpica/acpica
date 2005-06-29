@@ -1,7 +1,7 @@
 /******************************************************************************
  *
- * Module Name: cmdebug - Debug print routines
- *              $Revision: 1.65 $
+ * Module Name: utdebug - Debug print routines
+ *              $Revision: 1.91 $
  *
  *****************************************************************************/
 
@@ -114,318 +114,87 @@
  *
  *****************************************************************************/
 
-#define __CMDEBUG_C__
+#define __UTDEBUG_C__
 
 #include "acpi.h"
 
 #define _COMPONENT          ACPI_UTILITIES
-        MODULE_NAME         ("cmdebug")
+        MODULE_NAME         ("utdebug")
+
+
+UINT32          AcpiGbl_PrevThreadId = 0xFFFFFFFF;
+char            *AcpiGbl_FnEntryStr = "----Entry";
+char            *AcpiGbl_FnExitStr  = "----Exit-";
+
+
+#ifdef ACPI_DEBUG
 
 
 /*****************************************************************************
  *
- * FUNCTION:    Get/Set debug level
+ * FUNCTION:    AcpiUtInitStackPtrTrace
  *
- * DESCRIPTION: Get or set value of the debug flag
- *
- *              These are used to allow user's to get/set the debug level
- *
- ****************************************************************************/
-
-
-UINT32
-GetDebugLevel (void)
-{
-
-    return (AcpiDbgLevel);
-}
-
-void
-SetDebugLevel (
-    UINT32                  NewDebugLevel)
-{
-
-    AcpiDbgLevel = NewDebugLevel;
-}
-
-
-/*****************************************************************************
- *
- * FUNCTION:    FunctionTrace
- *
- * PARAMETERS:  ModuleName          - Caller's module name (for error output)
- *              LineNumber          - Caller's line number (for error output)
- *              ComponentId         - Caller's component ID (for error output)
- *              FunctionName        - Name of Caller's function
+ * PARAMETERS:  None
  *
  * RETURN:      None
  *
- * DESCRIPTION: Function entry trace.  Prints only if TRACE_FUNCTIONS bit is
- *              set in DebugLevel
+ * DESCRIPTION: Save the current stack pointer
  *
  ****************************************************************************/
 
 void
-FunctionTrace (
-    NATIVE_CHAR             *ModuleName,
-    UINT32                  LineNumber,
-    UINT32                  ComponentId,
-    NATIVE_CHAR             *FunctionName)
+AcpiUtInitStackPtrTrace (
+    void)
 {
+    UINT32              CurrentSp;
 
-    AcpiGbl_NestingLevel++;
 
-    DebugPrint (ModuleName, LineNumber, ComponentId,
-                TRACE_FUNCTIONS,
-                " %2.2ld Entered Function: %s\n",
-                AcpiGbl_NestingLevel, FunctionName);
+    AcpiGbl_EntryStackPointer =  (UINT32) &CurrentSp;
 }
 
 
 /*****************************************************************************
  *
- * FUNCTION:    FunctionTracePtr
+ * FUNCTION:    AcpiUtTrackStackPtr
  *
- * PARAMETERS:  ModuleName          - Caller's module name (for error output)
- *              LineNumber          - Caller's line number (for error output)
- *              ComponentId         - Caller's component ID (for error output)
- *              FunctionName        - Name of Caller's function
- *              Pointer             - Pointer to display
+ * PARAMETERS:  None
  *
  * RETURN:      None
  *
- * DESCRIPTION: Function entry trace.  Prints only if TRACE_FUNCTIONS bit is
- *              set in DebugLevel
+ * DESCRIPTION: Save the current stack pointer
  *
  ****************************************************************************/
 
 void
-FunctionTracePtr (
-    NATIVE_CHAR             *ModuleName,
-    UINT32                  LineNumber,
-    UINT32                  ComponentId,
-    NATIVE_CHAR             *FunctionName,
-    void                    *Pointer)
+AcpiUtTrackStackPtr (
+    void)
 {
+    UINT32              CurrentSp;
 
-    AcpiGbl_NestingLevel++;
-    DebugPrint (ModuleName, LineNumber, ComponentId, TRACE_FUNCTIONS,
-                " %2.2ld Entered Function: %s, %p\n",
-                AcpiGbl_NestingLevel, FunctionName, Pointer);
+    CurrentSp = (UINT32) &CurrentSp;
+
+    if (CurrentSp < AcpiGbl_LowestStackPointer)
+    {
+        AcpiGbl_LowestStackPointer = CurrentSp;
+    }
+
+    if (AcpiGbl_NestingLevel > AcpiGbl_DeepestNesting)
+    {
+        AcpiGbl_DeepestNesting = AcpiGbl_NestingLevel;
+    }
 }
 
 
 /*****************************************************************************
  *
- * FUNCTION:    FunctionTraceStr
+ * FUNCTION:    AcpiUtDebugPrint
  *
- * PARAMETERS:  ModuleName          - Caller's module name (for error output)
+ * PARAMETERS:  DebugLevel          - Requested debug print level
+ *              ProcName            - Caller's procedure name
+ *              ModuleName          - Caller's module name (for error output)
  *              LineNumber          - Caller's line number (for error output)
  *              ComponentId         - Caller's component ID (for error output)
- *              FunctionName        - Name of Caller's function
- *              String              - Additional string to display
  *
- * RETURN:      None
- *
- * DESCRIPTION: Function entry trace.  Prints only if TRACE_FUNCTIONS bit is
- *              set in DebugLevel
- *
- ****************************************************************************/
-
-void
-FunctionTraceStr (
-    NATIVE_CHAR             *ModuleName,
-    UINT32                  LineNumber,
-    UINT32                  ComponentId,
-    NATIVE_CHAR             *FunctionName,
-    NATIVE_CHAR             *String)
-{
-
-    AcpiGbl_NestingLevel++;
-    DebugPrint (ModuleName, LineNumber, ComponentId, TRACE_FUNCTIONS,
-                " %2.2ld Entered Function: %s, %s\n",
-                AcpiGbl_NestingLevel, FunctionName, String);
-}
-
-
-/*****************************************************************************
- *
- * FUNCTION:    FunctionTraceU32
- *
- * PARAMETERS:  ModuleName          - Caller's module name (for error output)
- *              LineNumber          - Caller's line number (for error output)
- *              ComponentId         - Caller's component ID (for error output)
- *              FunctionName        - Name of Caller's function
- *              Integer             - Integer to display
- *
- * RETURN:      None
- *
- * DESCRIPTION: Function entry trace.  Prints only if TRACE_FUNCTIONS bit is
- *              set in DebugLevel
- *
- ****************************************************************************/
-
-void
-FunctionTraceU32 (
-    NATIVE_CHAR             *ModuleName,
-    UINT32                  LineNumber,
-    UINT32                  ComponentId,
-    NATIVE_CHAR             *FunctionName,
-    UINT32                  Integer)
-{
-
-    AcpiGbl_NestingLevel++;
-    DebugPrint (ModuleName, LineNumber, ComponentId, TRACE_FUNCTIONS,
-                " %2.2ld Entered Function: %s, %lX\n",
-                AcpiGbl_NestingLevel, FunctionName, Integer);
-}
-
-
-/*****************************************************************************
- *
- * FUNCTION:    FunctionExit
- *
- * PARAMETERS:  ModuleName          - Caller's module name (for error output)
- *              LineNumber          - Caller's line number (for error output)
- *              ComponentId         - Caller's component ID (for error output)
- *              FunctionName        - Name of Caller's function
- *
- * RETURN:      None
- *
- * DESCRIPTION: Function exit trace.  Prints only if TRACE_FUNCTIONS bit is
- *              set in DebugLevel
- *
- ****************************************************************************/
-
-void
-FunctionExit (
-    NATIVE_CHAR             *ModuleName,
-    UINT32                  LineNumber,
-    UINT32                  ComponentId,
-    NATIVE_CHAR             *FunctionName)
-{
-
-    DebugPrint (ModuleName, LineNumber, ComponentId, TRACE_FUNCTIONS,
-                " %2.2ld Exiting Function: %s\n",
-                AcpiGbl_NestingLevel, FunctionName);
-
-    AcpiGbl_NestingLevel--;
-}
-
-
-/*****************************************************************************
- *
- * FUNCTION:    FunctionStatusExit
- *
- * PARAMETERS:  ModuleName          - Caller's module name (for error output)
- *              LineNumber          - Caller's line number (for error output)
- *              ComponentId         - Caller's component ID (for error output)
- *              FunctionName        - Name of Caller's function
- *              Status              - Exit status code
- *
- * RETURN:      None
- *
- * DESCRIPTION: Function exit trace.  Prints only if TRACE_FUNCTIONS bit is
- *              set in DebugLevel.  Prints exit status also.
- *
- ****************************************************************************/
-
-void
-FunctionStatusExit (
-    NATIVE_CHAR             *ModuleName,
-    UINT32                  LineNumber,
-    UINT32                  ComponentId,
-    NATIVE_CHAR             *FunctionName,
-    ACPI_STATUS             Status)
-{
-
-    DebugPrint (ModuleName, LineNumber, ComponentId,
-        TRACE_FUNCTIONS,
-        " %2.2ld Exiting Function: %s, %s\n",
-        AcpiGbl_NestingLevel,
-        FunctionName,
-        AcpiCmFormatException (Status));
-
-    AcpiGbl_NestingLevel--;
-}
-
-
-/*****************************************************************************
- *
- * FUNCTION:    FunctionValueExit
- *
- * PARAMETERS:  ModuleName          - Caller's module name (for error output)
- *              LineNumber          - Caller's line number (for error output)
- *              ComponentId         - Caller's component ID (for error output)
- *              FunctionName        - Name of Caller's function
- *              Value               - Value to be printed with exit msg
- *
- * RETURN:      None
- *
- * DESCRIPTION: Function exit trace.  Prints only if TRACE_FUNCTIONS bit is
- *              set in DebugLevel.  Prints exit value also.
- *
- ****************************************************************************/
-
-void
-FunctionValueExit (
-    NATIVE_CHAR             *ModuleName,
-    UINT32                  LineNumber,
-    UINT32                  ComponentId,
-    NATIVE_CHAR             *FunctionName,
-    ACPI_INTEGER            Value)
-{
-
-    DebugPrint (ModuleName, LineNumber, ComponentId, TRACE_FUNCTIONS,
-                " %2.2ld Exiting Function: %s, %X\n",
-                AcpiGbl_NestingLevel, FunctionName, Value);
-
-    AcpiGbl_NestingLevel--;
-}
-
-
-/*****************************************************************************
- *
- * FUNCTION:    FunctionPtrExit
- *
- * PARAMETERS:  ModuleName          - Caller's module name (for error output)
- *              LineNumber          - Caller's line number (for error output)
- *              ComponentId         - Caller's component ID (for error output)
- *              FunctionName        - Name of Caller's function
- *              Value               - Value to be printed with exit msg
- *
- * RETURN:      None
- *
- * DESCRIPTION: Function exit trace.  Prints only if TRACE_FUNCTIONS bit is
- *              set in DebugLevel.  Prints exit value also.
- *
- ****************************************************************************/
-
-void
-FunctionPtrExit (
-    NATIVE_CHAR             *ModuleName,
-    UINT32                  LineNumber,
-    UINT32                  ComponentId,
-    NATIVE_CHAR             *FunctionName,
-    UINT8                   *Ptr)
-{
-
-    DebugPrint (ModuleName, LineNumber, ComponentId, TRACE_FUNCTIONS,
-                " %2.2ld Exiting Function: %s, %p\n",
-                AcpiGbl_NestingLevel, FunctionName, Ptr);
-
-    AcpiGbl_NestingLevel--;
-}
-
-
-/*****************************************************************************
- *
- * FUNCTION:    DebugPrint
- *
- * PARAMETERS:  ModuleName          - Caller's module name (for error output)
- *              LineNumber          - Caller's line number (for error output)
- *              ComponentId         - Caller's component ID (for error output)
- *              PrintLevel          - Requested debug print level
  *              Format              - Printf format field
  *              ...                 - Optional printf arguments
  *
@@ -437,91 +206,379 @@ FunctionPtrExit (
  ****************************************************************************/
 
 void
-DebugPrint (
-    NATIVE_CHAR             *ModuleName,
+AcpiUtDebugPrint (
+    UINT32                  RequestedDebugLevel,
     UINT32                  LineNumber,
-    UINT32                  ComponentId,
-    UINT32                  PrintLevel,
-    NATIVE_CHAR             *Format,
+    ACPI_DEBUG_PRINT_INFO   *DbgInfo,
+    char                    *Format,
     ...)
 {
+    UINT32                  ThreadId;
     va_list                 args;
 
 
-    /* Both the level and the component must be enabled */
-
-    if ((PrintLevel & AcpiDbgLevel) &&
-        (ComponentId & AcpiDbgLayer))
+    /*
+     * Stay silent if the debug level or component ID is disabled
+     */
+    if (!(RequestedDebugLevel & AcpiDbgLevel) ||
+        !(DbgInfo->ComponentId & AcpiDbgLayer))
     {
-        va_start (args, Format);
-
-        AcpiOsPrintf ("%8s-%04d: ", ModuleName, LineNumber);
-        AcpiOsVprintf (Format, args);
+        return;
     }
+
+
+    /*
+     * Thread tracking and context switch notification
+     */
+    ThreadId = AcpiOsGetThreadId ();
+
+    if (ThreadId != AcpiGbl_PrevThreadId)
+    {
+        if (ACPI_LV_THREADS & AcpiDbgLevel)
+        {
+            AcpiOsPrintf ("\n**** Context Switch from TID %X to TID %X ****\n\n",
+                AcpiGbl_PrevThreadId, ThreadId);
+        }
+
+        AcpiGbl_PrevThreadId = ThreadId;
+    }
+
+    /*
+     * Display the module name, current line number, thread ID (if requested),
+     * current procedure nesting level, and the current procedure name
+     */
+    AcpiOsPrintf ("%8s-%04d ", DbgInfo->ModuleName, LineNumber);
+
+    if (ACPI_LV_THREADS & AcpiDbgLevel)
+    {
+        AcpiOsPrintf ("[%04X] ", ThreadId, AcpiGbl_NestingLevel, DbgInfo->ProcName);
+    }
+
+    AcpiOsPrintf ("[%02d] %-22.22s: ", AcpiGbl_NestingLevel, DbgInfo->ProcName);
+
+
+    va_start (args, Format);
+    AcpiOsVprintf (Format, args);
 }
 
 
 /*****************************************************************************
  *
- * FUNCTION:    DebugPrintPrefix
+ * FUNCTION:    AcpiUtDebugPrintRaw
  *
- * PARAMETERS:  ModuleName          - Caller's module name (for error output)
- *              LineNumber          - Caller's line number (for error output)
- *              ComponentId         - Caller's component ID (for error output)
- *
- * RETURN:      None
- *
- * DESCRIPTION: Print the prefix part of an error message, consisting of the
- *              module name, and line number
- *
- ****************************************************************************/
-
-void
-DebugPrintPrefix (
-    NATIVE_CHAR             *ModuleName,
-    UINT32                  LineNumber)
-{
-
-
-    AcpiOsPrintf ("%8s-%04d: ", ModuleName, LineNumber);
-}
-
-
-/*****************************************************************************
- *
- * FUNCTION:    DebugPrintRaw
- *
- * PARAMETERS:  Format              - Printf format field
+ * PARAMETERS:  RequestedDebugLevel - Requested debug print level
+ *              LineNumber          - Caller's line number
+ *              DbgInfo             - Contains:
+ *                  ProcName            - Caller's procedure name
+ *                  ModuleName          - Caller's module name
+ *                  ComponentId         - Caller's component ID
+ *              Format              - Printf format field
  *              ...                 - Optional printf arguments
  *
  * RETURN:      None
  *
- * DESCRIPTION: Print error message -- without module/line indentifiers
+ * DESCRIPTION: Print message with no headers.  Has same interface as
+ *              DebugPrint so that the same macros can be used.
  *
  ****************************************************************************/
 
 void
-DebugPrintRaw (
-    NATIVE_CHAR             *Format,
+AcpiUtDebugPrintRaw (
+    UINT32                  RequestedDebugLevel,
+    UINT32                  LineNumber,
+    ACPI_DEBUG_PRINT_INFO   *DbgInfo,
+    char                    *Format,
     ...)
 {
     va_list                 args;
 
 
+    if (!(RequestedDebugLevel & AcpiDbgLevel) ||
+        !(DbgInfo->ComponentId & AcpiDbgLayer))
+    {
+        return;
+    }
+
     va_start (args, Format);
 
     AcpiOsVprintf (Format, args);
-
-    va_end (args);
 }
 
 
 /*****************************************************************************
  *
- * FUNCTION:    AcpiCmDumpBuffer
+ * FUNCTION:    AcpiUtTrace
+ *
+ * PARAMETERS:  LineNumber          - Caller's line number
+ *              DbgInfo             - Contains:
+ *                  ProcName            - Caller's procedure name
+ *                  ModuleName          - Caller's module name
+ *                  ComponentId         - Caller's component ID
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Function entry trace.  Prints only if TRACE_FUNCTIONS bit is
+ *              set in DebugLevel
+ *
+ ****************************************************************************/
+
+void
+AcpiUtTrace (
+    UINT32                  LineNumber,
+    ACPI_DEBUG_PRINT_INFO   *DbgInfo)
+{
+
+    AcpiGbl_NestingLevel++;
+    AcpiUtTrackStackPtr ();
+
+    AcpiUtDebugPrint (ACPI_LV_FUNCTIONS, LineNumber, DbgInfo,
+            "%s\n", AcpiGbl_FnEntryStr);
+}
+
+
+/*****************************************************************************
+ *
+ * FUNCTION:    AcpiUtTracePtr
+ *
+ * PARAMETERS:  LineNumber          - Caller's line number
+ *              DbgInfo             - Contains:
+ *                  ProcName            - Caller's procedure name
+ *                  ModuleName          - Caller's module name
+ *                  ComponentId         - Caller's component ID
+ *              Pointer             - Pointer to display
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Function entry trace.  Prints only if TRACE_FUNCTIONS bit is
+ *              set in DebugLevel
+ *
+ ****************************************************************************/
+
+void
+AcpiUtTracePtr (
+    UINT32                  LineNumber,
+    ACPI_DEBUG_PRINT_INFO   *DbgInfo,
+    void                    *Pointer)
+{
+    AcpiGbl_NestingLevel++;
+    AcpiUtTrackStackPtr ();
+
+    AcpiUtDebugPrint (ACPI_LV_FUNCTIONS, LineNumber, DbgInfo,
+            "%s %p\n", AcpiGbl_FnEntryStr, Pointer);
+}
+
+
+/*****************************************************************************
+ *
+ * FUNCTION:    AcpiUtTraceStr
+ *
+ * PARAMETERS:  LineNumber          - Caller's line number
+ *              DbgInfo             - Contains:
+ *                  ProcName            - Caller's procedure name
+ *                  ModuleName          - Caller's module name
+ *                  ComponentId         - Caller's component ID
+ *              String              - Additional string to display
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Function entry trace.  Prints only if TRACE_FUNCTIONS bit is
+ *              set in DebugLevel
+ *
+ ****************************************************************************/
+
+void
+AcpiUtTraceStr (
+    UINT32                  LineNumber,
+    ACPI_DEBUG_PRINT_INFO   *DbgInfo,
+    NATIVE_CHAR             *String)
+{
+
+    AcpiGbl_NestingLevel++;
+    AcpiUtTrackStackPtr ();
+
+    AcpiUtDebugPrint (ACPI_LV_FUNCTIONS, LineNumber, DbgInfo,
+            "%s %s\n", AcpiGbl_FnEntryStr, String);
+}
+
+
+/*****************************************************************************
+ *
+ * FUNCTION:    AcpiUtTraceU32
+ *
+ * PARAMETERS:  LineNumber          - Caller's line number
+ *              DbgInfo             - Contains:
+ *                  ProcName            - Caller's procedure name
+ *                  ModuleName          - Caller's module name
+ *                  ComponentId         - Caller's component ID
+ *              Integer             - Integer to display
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Function entry trace.  Prints only if TRACE_FUNCTIONS bit is
+ *              set in DebugLevel
+ *
+ ****************************************************************************/
+
+void
+AcpiUtTraceU32 (
+    UINT32                  LineNumber,
+    ACPI_DEBUG_PRINT_INFO   *DbgInfo,
+    UINT32                  Integer)
+{
+
+    AcpiGbl_NestingLevel++;
+    AcpiUtTrackStackPtr ();
+
+    AcpiUtDebugPrint (ACPI_LV_FUNCTIONS, LineNumber, DbgInfo,
+            "%s %08X\n", AcpiGbl_FnEntryStr, Integer);
+}
+
+
+/*****************************************************************************
+ *
+ * FUNCTION:    AcpiUtExit
+ *
+ * PARAMETERS:  LineNumber          - Caller's line number
+ *              DbgInfo             - Contains:
+ *                  ProcName            - Caller's procedure name
+ *                  ModuleName          - Caller's module name
+ *                  ComponentId         - Caller's component ID
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Function exit trace.  Prints only if TRACE_FUNCTIONS bit is
+ *              set in DebugLevel
+ *
+ ****************************************************************************/
+
+void
+AcpiUtExit (
+    UINT32                  LineNumber,
+    ACPI_DEBUG_PRINT_INFO   *DbgInfo)
+{
+
+    AcpiUtDebugPrint (ACPI_LV_FUNCTIONS, LineNumber, DbgInfo,
+            "%s\n", AcpiGbl_FnExitStr);
+
+    AcpiGbl_NestingLevel--;
+}
+
+
+/*****************************************************************************
+ *
+ * FUNCTION:    AcpiUtStatusExit
+ *
+ * PARAMETERS:  LineNumber          - Caller's line number
+ *              DbgInfo             - Contains:
+ *                  ProcName            - Caller's procedure name
+ *                  ModuleName          - Caller's module name
+ *                  ComponentId         - Caller's component ID
+ *              Status              - Exit status code
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Function exit trace.  Prints only if TRACE_FUNCTIONS bit is
+ *              set in DebugLevel.  Prints exit status also.
+ *
+ ****************************************************************************/
+
+void
+AcpiUtStatusExit (
+    UINT32                  LineNumber,
+    ACPI_DEBUG_PRINT_INFO   *DbgInfo,
+    ACPI_STATUS             Status)
+{
+
+    if (ACPI_SUCCESS (Status))
+    {
+        AcpiUtDebugPrint (ACPI_LV_FUNCTIONS, LineNumber, DbgInfo,
+                "%s %s\n", AcpiGbl_FnExitStr,
+                AcpiFormatException (Status));
+    }
+    else
+    {
+        AcpiUtDebugPrint (ACPI_LV_FUNCTIONS, LineNumber, DbgInfo,
+                "%s ****Exception****: %s\n", AcpiGbl_FnExitStr,
+                AcpiFormatException (Status));
+    }
+
+    AcpiGbl_NestingLevel--;
+}
+
+
+/*****************************************************************************
+ *
+ * FUNCTION:    AcpiUtValueExit
+ *
+ * PARAMETERS:  LineNumber          - Caller's line number
+ *              DbgInfo             - Contains:
+ *                  ProcName            - Caller's procedure name
+ *                  ModuleName          - Caller's module name
+ *                  ComponentId         - Caller's component ID
+ *              Value               - Value to be printed with exit msg
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Function exit trace.  Prints only if TRACE_FUNCTIONS bit is
+ *              set in DebugLevel.  Prints exit value also.
+ *
+ ****************************************************************************/
+
+void
+AcpiUtValueExit (
+    UINT32                  LineNumber,
+    ACPI_DEBUG_PRINT_INFO   *DbgInfo,
+    ACPI_INTEGER            Value)
+{
+
+    AcpiUtDebugPrint (ACPI_LV_FUNCTIONS, LineNumber, DbgInfo,
+            "%s %8.8X%8.8X\n", AcpiGbl_FnExitStr, HIDWORD(Value), LODWORD(Value));
+
+    AcpiGbl_NestingLevel--;
+}
+
+
+/*****************************************************************************
+ *
+ * FUNCTION:    AcpiUtPtrExit
+ *
+ * PARAMETERS:  LineNumber          - Caller's line number
+ *              DbgInfo             - Contains:
+ *                  ProcName            - Caller's procedure name
+ *                  ModuleName          - Caller's module name
+ *                  ComponentId         - Caller's component ID
+ *              Value               - Value to be printed with exit msg
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Function exit trace.  Prints only if TRACE_FUNCTIONS bit is
+ *              set in DebugLevel.  Prints exit value also.
+ *
+ ****************************************************************************/
+
+void
+AcpiUtPtrExit (
+    UINT32                  LineNumber,
+    ACPI_DEBUG_PRINT_INFO   *DbgInfo,
+    UINT8                   *Ptr)
+{
+
+    AcpiUtDebugPrint (ACPI_LV_FUNCTIONS, LineNumber, DbgInfo,
+            "%s %p\n", AcpiGbl_FnExitStr, Ptr);
+
+    AcpiGbl_NestingLevel--;
+}
+
+#endif
+
+
+/*****************************************************************************
+ *
+ * FUNCTION:    AcpiUtDumpBuffer
  *
  * PARAMETERS:  Buffer              - Buffer to dump
  *              Count               - Amount to dump, in bytes
+ *              Display             - BYTE, WORD, DWORD, or QWORD display
  *              ComponentID         - Caller's component ID
  *
  * RETURN:      None
@@ -531,7 +588,7 @@ DebugPrintRaw (
  ****************************************************************************/
 
 void
-AcpiCmDumpBuffer (
+AcpiUtDumpBuffer (
     UINT8                   *Buffer,
     UINT32                  Count,
     UINT32                  Display,
@@ -545,7 +602,7 @@ AcpiCmDumpBuffer (
 
     /* Only dump the buffer if tracing is enabled */
 
-    if (!((TRACE_TABLES & AcpiDbgLevel) &&
+    if (!((ACPI_LV_TABLES & AcpiDbgLevel) &&
         (ComponentId & AcpiDbgLayer)))
     {
         return;
@@ -653,5 +710,4 @@ AcpiCmDumpBuffer (
 
     return;
 }
-
 
