@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslcompiler.h - common include file
- *              $Revision: 1.116 $
+ *              $Revision: 1.118 $
  *
  *****************************************************************************/
 
@@ -290,6 +290,9 @@ int
 CmDoCompile (void);
 
 void
+CmDoOutputFiles (void);
+
+void
 CmCleanupAndExit (void);
 
 
@@ -456,6 +459,18 @@ OpnDoPackage (
 void
 OpnDoRegion (
     ACPI_PARSE_OBJECT       *Op);
+
+/*
+ * aslopt - optmization
+ */
+
+void
+LkOptimizeNamePath (
+    ACPI_PARSE_OBJECT       *Op,
+    UINT32                  Flags,
+    ACPI_WALK_STATE         *WalkState,
+    NATIVE_CHAR             *AmlNameString,
+    ACPI_NAMESPACE_NODE     *TargetNode);
 
 
 /*
