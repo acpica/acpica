@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dswload - Dispatcher namespace load callbacks
- *              $Revision: 1.79 $
+ *              $Revision: 1.80 $
  *
  *****************************************************************************/
 
@@ -820,10 +820,9 @@ AcpiDsLoad2EndOp (
         Status = AcpiDsScopeStackPop (WalkState);
         if (ACPI_FAILURE (Status))
         {
-            return_ACPI_STATUS (Status);
+            goto Cleanup;
         }
     }
-
 
     /*
      * Named operations are as follows:
@@ -1052,6 +1051,7 @@ AcpiDsLoad2EndOp (
         break;
     }
 
+Cleanup:
 
     /* Remove the Node pushed at the very beginning */
 
