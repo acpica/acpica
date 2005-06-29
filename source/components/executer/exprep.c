@@ -747,7 +747,7 @@ AmlPrepDefFieldValue (
 
     /* An additional reference for the container */
 
-    CmUpdateObjectReference (ObjDesc->Field.Container, REF_INCREMENT);
+    CmAddReference (ObjDesc->Field.Container);
 
 
     /* Debug info */
@@ -862,8 +862,8 @@ AmlPrepBankFieldValue (
     /* An additional reference for the container and bank select */
     /* TBD: is "BankSelect" ever a real internal object?? */
 
-    CmUpdateObjectReference (ObjDesc->BankField.Container, REF_INCREMENT);
-    CmUpdateObjectReference (ObjDesc->BankField.BankSelect, REF_INCREMENT);
+    CmAddReference (ObjDesc->BankField.Container);
+    CmAddReference (ObjDesc->BankField.BankSelect);
 
     /* Debug info */
 
