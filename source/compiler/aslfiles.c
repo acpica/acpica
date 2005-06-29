@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslfiles - file I/O suppoert
- *              $Revision: 1.41 $
+ *              $Revision: 1.42 $
  *
  *****************************************************************************/
 
@@ -504,30 +504,30 @@ FlOpenIncludeFile (
 
 /*******************************************************************************
  *
- * FUNCTION:    FlOpenInputFile
+ * FUNCTION:    FlParseInputPathname
  *
  * PARAMETERS:  InputFilename       - The user-specified ASL source file to be
  *                                    compiled
  *
  * RETURN:      Status
  *
- * DESCRIPTION: Open the specified input file, and save the directory path to
- *              the file so that include files and new files can be opened in
- *              the same directory.
+ * DESCRIPTION: Split the input path into a directory and filename part
+ *              1) Directory part used to open include files
+ *              2) Filename part used to generate output filenames
  *
  ******************************************************************************/
 
 ACPI_STATUS
-FlOpenInputFile (
+FlParseInputPathname (
     char                    *InputFilename)
 {
     char                    *Substring;
 
 
-    /* Open the input ASL file, text mode */
-
-    FlOpenFile (ASL_FILE_INPUT, InputFilename, "r");
-    AslCompilerin = Gbl_Files[ASL_FILE_INPUT].Handle;
+    if (!InputFilename)
+    {
+        return (AE_OK);
+    }
 
     /* Get the path to the input filename's directory */
 
@@ -550,10 +550,56 @@ FlOpenInputFile (
     if (!Substring)
     {
         Gbl_DirectoryPath[0] = 0;
+        if (Gbl_UseDefaultAmlFilename)
+        {
+            Gbl_OutputFilenamePrefix = strdup (InputFilename);
+        }
     }
     else
     {
+        if (Gbl_UseDefaultAmlFilename)
+        {
+            Gbl_OutputFilenamePrefix = strdup (Substring + 1);
+        }
         *(Substring+1) = 0;
+    }
+
+    return (AE_OK);
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    FlOpenInputFile
+ *
+ * PARAMETERS:  InputFilename       - The user-specified ASL source file to be
+ *                                    compiled
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Open the specified input file, and save the directory path to
+ *              the file so that include files can be opened in
+ *              the same directory.
+ *
+ ******************************************************************************/
+
+ACPI_STATUS
+FlOpenInputFile (
+    char                    *InputFilename)
+{
+
+
+    /* Open the input ASL file, text mode */
+
+    FlOpenFile (ASL_FILE_INPUT, InputFilename, "r");
+    AslCompilerin = Gbl_Files[ASL_FILE_INPUT].Handle;
+
+    /* Get the path to the input filename's directory */
+
+    Gbl_DirectoryPath = strdup (InputFilename);
+    if (!Gbl_DirectoryPath)
+    {
+        return (AE_NO_MEMORY);
     }
 
     return (AE_OK);
