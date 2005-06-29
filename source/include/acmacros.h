@@ -353,7 +353,7 @@
 
 #define ERROR_BREAK
 #ifdef  ERROR_BREAK
-#define BREAK_ON_ERROR(lvl)             if ((lvl)&ACPI_ERROR & DebugLevel) OsdBreakpoint("Fatal error encountered\n")
+#define BREAK_ON_ERROR(lvl)             if ((lvl)&ACPI_ERROR) OsdBreakpoint("Fatal error encountered\n")
 #else
 #define BREAK_ON_ERROR(lvl) 
 #endif
