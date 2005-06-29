@@ -536,6 +536,7 @@ void
 CmDumpBuffer (
     char                    *Buffer, 
     UINT32                  Count, 
+    UINT32                  Display,
     INT32                   ComponentId)
 {
     UINT32                  i = 0;
@@ -563,17 +564,43 @@ CmDumpBuffer (
 
         /* Print 16 hex chars */
 
-        for (j = 0; j < 16; j++)
+        for (j = 0; j < 16;)
         {
             if (i + j >= Count)
-                goto cleanup;
-
+            {
+                OsdPrintf ("\n");
+                return;
+            }
 
             /* Make sure that the char doesn't get sign-extended! */
 
-            BufChar = Buffer[i + j];
-            OsdPrintf ("%02X ", BufChar);
+            switch (Display)
+            {
+            /* Default is BYTE display */
+
+            default:
+                OsdPrintf ("%02X ", *((UINT8 *) &Buffer[i + j]));
+                j += 1;
+                break;
+
+            case DB_WORD_DISPLAY:
+                OsdPrintf ("%04X ", *((UINT16 *) &Buffer[i + j]));
+                j += 2;
+                break;
+
+            case DB_DWORD_DISPLAY:
+                OsdPrintf ("%08X ", *((UINT32 *) &Buffer[i + j]));
+                j += 4;
+                break;
+
+            case DB_QWORD_DISPLAY:
+                OsdPrintf ("%08X", *((UINT32 *) &Buffer[i + j]));
+                OsdPrintf ("%08X ", *((UINT32 *) &Buffer[i + j + 4]));
+                j += 8;
+                break;
+            }
         }
+
 
         /* 
          * Print the ASCII equivalent characters
@@ -583,17 +610,22 @@ CmDumpBuffer (
         for (j = 0; j < 16; j++)
         {
             if (i + j >= Count)
-                goto cleanup;
+            {
+                OsdPrintf ("\n");
+                return;
+            }
 
             BufChar = Buffer[i + j];
             if ((BufChar > 0x1F && BufChar < 0x2E) ||
                 (BufChar > 0x2F && BufChar < 0x61) ||
                 (BufChar > 0x60 && BufChar < 0x7F))
-
+            {
                 OsdPrintf ("%c", BufChar);
+            }
             else
+            {
                 OsdPrintf (".");
-                
+            }
         }
 
         /* Done with that line. */
@@ -603,11 +635,6 @@ CmDumpBuffer (
     }
 
     return;
-
-cleanup:
-    OsdPrintf ("\n");
-    return;
-
 }
 
 
