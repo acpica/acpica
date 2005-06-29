@@ -613,7 +613,52 @@ DbDumpNamespace (
     /* Display the subtree */
 
     DbSetOutputDestination (DB_REDIRECTABLE_OUTPUT);
-    NsDumpObjects (ACPI_TYPE_Any, MaxDepth, SubtreeEntry);
+    NsDumpObjects (ACPI_TYPE_Any, MaxDepth, ACPI_UINT32_MAX, SubtreeEntry);
+    DbSetOutputDestination (DB_CONSOLE_OUTPUT);
+}
+
+
+/******************************************************************************
+ * 
+ * FUNCTION:    DbDumpNamespaceByOwner
+ *
+ * PARAMETERS:  
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Dump entire namespace or a subtree
+ *
+ *****************************************************************************/
+
+void
+DbDumpNamespaceByOwner (
+    char                    *OwnerArg,
+    char                    *DepthArg)
+{
+    ACPI_HANDLE             SubtreeEntry = Gbl_RootObject;
+    UINT32                  MaxDepth = ACPI_UINT32_MAX;
+    UINT16                  OwnerId;
+
+
+
+    OwnerId = (UINT16) STRTOUL (OwnerArg, NULL, 0);
+
+
+    /* Now we can check for the depth argument */
+
+    if (DepthArg)
+    {
+        MaxDepth = STRTOUL (DepthArg, NULL, 0);
+    }
+
+
+    DbSetOutputDestination (DB_DUPLICATE_OUTPUT);
+    OsdPrintf ("ACPI Namespace by owner 0x%X:\n", OwnerId);
+
+    /* Display the subtree */
+
+    DbSetOutputDestination (DB_REDIRECTABLE_OUTPUT);
+    NsDumpObjects (ACPI_TYPE_Any, MaxDepth, OwnerId, SubtreeEntry);
     DbSetOutputDestination (DB_CONSOLE_OUTPUT);
 }
 
