@@ -162,7 +162,7 @@ AmlAppendOperandDiag(
 
     if (GetDebugLevel () > 0)
     {
-        DUMP_STACK (MODE_Exec,
+        DUMP_STACK (IMODE_Execute,
                       (OpCode > ACPI_UCHAR_MAX)
                       ? LongOps[OpCode & 0x00ff]
                       : ShortOps[OpCode],
