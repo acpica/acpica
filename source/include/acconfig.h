@@ -144,7 +144,12 @@
  *****************************************************************************/
 
 
-/* Name of operating system (returned by _OS_) */
+
+/* Version string */
+
+#define ACPI_CA_VERSION             __DATE__
+
+/* Name of host operating system (returned by the _OS_ namespace object) */
 
 #define ACPI_OS_NAME                "Intel ACPI/CA Core Subsystem"
 
