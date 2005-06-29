@@ -15,15 +15,17 @@
  | legacy to ACPI mode state transition functions
  |__________________________________________________________________________
  |
- | $Revision: 1.6 $
- | $Date: 2005/06/29 16:43:44 $
+ | $Revision: 1.7 $
+ | $Date: 2005/06/29 16:43:45 $
  | $Log: evsci.c,v $
- | Revision 1.6  2005/06/29 16:43:44  aystarik
- | Took out Hungarian Notation
+ | Revision 1.7  2005/06/29 16:43:45  aystarik
+ |
  |
  | 
- | date	99.02.12.01.27.00;	author grsmith1;	state Exp;
+ | date	99.02.16.17.56.00;	author rmosgrov;	state Exp;
  |
+ * 
+ * 7     2/16/99 9:56a Rmosgrov
  * 
  * 6     2/11/99 5:27p Grsmith1
  * Took out Hungarian Notation
@@ -71,6 +73,7 @@
 #include "acpilgcy.h"
 #include "hwoverrd.h"
 #include "evsci.h"
+#include "acpitbls.h"
 
 extern int  __AcpiLibInitStatus;
 
