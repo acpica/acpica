@@ -725,13 +725,6 @@ AmlDoType2OpCode (
  * isrdata - interpreter/scanner raw data load/execute
  */
 
-void 
-AmlShowHexValue (
-    INT32                   ByteCount, 
-    UINT8                   *AmlPtr, 
-    OPERATING_MODE          LoadExecMode, 
-    INT32                   LeadSpace);
-
 ACPI_STATUS
 AmlDoPkgLength (
     INT32                   DoPush, 
