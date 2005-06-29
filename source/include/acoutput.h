@@ -180,6 +180,7 @@
 #define VERBOSE_INFO                0x10000000
 #define VERBOSE_TABLES              0x20000000
 #define VERBOSE_EVENTS              0x80000000
+#define VERBOSE_ALL                 0xB0000000
 
 /* Defaults for DebugLevel, debug and normal */
 
