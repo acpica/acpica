@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Name: hwsleep.c - ACPI Hardware Sleep/Wake Interface
- *              $Revision: 1.44 $
+ *              $Revision: 1.50 $
  *
  *****************************************************************************/
 
@@ -10,7 +10,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2003, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -146,12 +146,12 @@ AcpiSetFirmwareWakingVector (
 
     if (AcpiGbl_CommonFACS.VectorWidth == 32)
     {
-        *(ACPI_CAST_PTR (UINT32, AcpiGbl_CommonFACS.FirmwareWakingVector)) 
+        *(ACPI_CAST_PTR (UINT32, AcpiGbl_CommonFACS.FirmwareWakingVector))
                 = (UINT32) PhysicalAddress;
     }
     else
     {
-        *AcpiGbl_CommonFACS.FirmwareWakingVector 
+        *AcpiGbl_CommonFACS.FirmwareWakingVector
                 = PhysicalAddress;
     }
 
@@ -190,12 +190,12 @@ AcpiGetFirmwareWakingVector (
 
     if (AcpiGbl_CommonFACS.VectorWidth == 32)
     {
-        *PhysicalAddress = (ACPI_PHYSICAL_ADDRESS) 
+        *PhysicalAddress = (ACPI_PHYSICAL_ADDRESS)
             *(ACPI_CAST_PTR (UINT32, AcpiGbl_CommonFACS.FirmwareWakingVector));
     }
     else
     {
-        *PhysicalAddress = 
+        *PhysicalAddress =
             *AcpiGbl_CommonFACS.FirmwareWakingVector;
     }
 
@@ -320,7 +320,13 @@ AcpiEnterSleepState (
         return_ACPI_STATUS (Status);
     }
 
-    /* TBD: Disable arbitration here? */
+    /* Disable BM arbitration */
+
+    Status = AcpiSetRegister (ACPI_BITREG_ARB_DISABLE, 1, ACPI_MTX_LOCK);
+    if (ACPI_FAILURE (Status))
+    {
+        return_ACPI_STATUS (Status);
+    }
 
     Status = AcpiHwDisableNonWakeupGpes();
     if (ACPI_FAILURE (Status))
@@ -335,7 +341,7 @@ AcpiEnterSleepState (
     {
         return_ACPI_STATUS (Status);
     }
-    ACPI_DEBUG_PRINT ((ACPI_DB_OK, "Entering S%d\n", SleepState));
+    ACPI_DEBUG_PRINT ((ACPI_DB_INIT, "Entering sleep state [S%d]\n", SleepState));
 
     /* Clear SLP_EN and SLP_TYP fields */
 
@@ -404,7 +410,7 @@ AcpiEnterSleepState (
 
     /* Wait until we enter sleep state */
 
-    do 
+    do
     {
         Status = AcpiGetRegister (ACPI_BITREG_WAKE_STATUS, &InValue, ACPI_MTX_LOCK);
         if (ACPI_FAILURE (Status))
@@ -416,8 +422,60 @@ AcpiEnterSleepState (
 
     } while (!InValue);
 
+    Status = AcpiSetRegister (ACPI_BITREG_ARB_DISABLE, 0, ACPI_MTX_LOCK);
+    if (ACPI_FAILURE (Status))
+    {
+        return_ACPI_STATUS (Status);
+    }
+
     return_ACPI_STATUS (AE_OK);
 }
+
+
+/******************************************************************************
+ *
+ * FUNCTION:    AcpiEnterSleepStateS4bios
+ *
+ * PARAMETERS:  None
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Perform a S4 bios request.
+ *              THIS FUNCTION MUST BE CALLED WITH INTERRUPTS DISABLED
+ *
+ ******************************************************************************/
+
+ACPI_STATUS
+AcpiEnterSleepStateS4bios (
+    void)
+{
+    UINT32                  InValue;
+    ACPI_STATUS             Status;
+
+
+    ACPI_FUNCTION_TRACE ("AcpiEnterSleepStateS4bios");
+    
+    AcpiSetRegister (ACPI_BITREG_WAKE_STATUS, 1, ACPI_MTX_LOCK);
+    AcpiHwClearAcpiStatus();
+
+    AcpiHwDisableNonWakeupGpes();
+
+    ACPI_FLUSH_CPU_CACHE();
+
+    Status = AcpiOsWritePort (AcpiGbl_FADT->SmiCmd, (ACPI_INTEGER) AcpiGbl_FADT->S4BiosReq, 8);
+
+    do {
+        AcpiOsStall(1000);
+        Status = AcpiGetRegister (ACPI_BITREG_WAKE_STATUS, &InValue, ACPI_MTX_LOCK);
+        if (ACPI_FAILURE (Status))
+        {
+            return_ACPI_STATUS (Status);
+        }
+    } while (!InValue);
+
+    return_ACPI_STATUS (AE_OK);
+}
+
 
 /******************************************************************************
  *
@@ -472,6 +530,13 @@ AcpiLeaveSleepState (
     /* _WAK returns stuff - do we want to look at it? */
 
     Status = AcpiHwEnableNonWakeupGpes();
+    if (ACPI_FAILURE (Status))
+    {
+        return_ACPI_STATUS (Status);
+    }
+
+    /* Disable BM arbitration */
+    Status = AcpiSetRegister (ACPI_BITREG_ARB_DISABLE, 0, ACPI_MTX_LOCK);
 
     return_ACPI_STATUS (Status);
 }
