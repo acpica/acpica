@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: exdump - Interpreter debug output routines
- *              $Revision: 1.126 $
+ *              $Revision: 1.127 $
  *
  *****************************************************************************/
 
@@ -748,6 +748,7 @@ AcpiExDumpObjectDescriptor (
     UINT32                  Flags)
 {
     const ACPI_OPCODE_INFO  *OpInfo;
+    UINT32                  i;
 
 
     FUNCTION_TRACE ("ExDumpObjectDescriptor");
@@ -807,6 +808,22 @@ AcpiExDumpObjectDescriptor (
         AcpiOsPrintf ("%20s : %X\n", "Count", ObjDesc->Package.Count);
         AcpiOsPrintf ("%20s : %p\n", "Elements", ObjDesc->Package.Elements);
         AcpiOsPrintf ("%20s : %p\n", "NextElement", ObjDesc->Package.NextElement);
+
+        /* Dump the package contents */
+
+        if (ObjDesc->Package.Count > 0)
+        {
+            AcpiOsPrintf ("\nPackage Contents:\n");
+            for (i = 0; i < ObjDesc->Package.Count; i++)
+            {
+                AcpiOsPrintf ("[%.3d] %p", i, ObjDesc->Package.Elements[i]);
+                if (ObjDesc->Package.Elements[i])
+                {
+                    AcpiOsPrintf (" %s", AcpiUtGetTypeName ((ObjDesc->Package.Elements[i])->Common.Type));
+                }
+                AcpiOsPrintf ("\n");
+            }
+        }
         break;
 
 
