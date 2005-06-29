@@ -375,6 +375,10 @@ SOURCE=..\..\source\components\hardware\hwgpe.c
 
 SOURCE=..\..\source\components\hardware\hwregs.c
 # End Source File
+# Begin Source File
+
+SOURCE=..\..\Source\components\hardware\hwsleep.c
+# End Source File
 # End Group
 # Begin Group "Events"
 
