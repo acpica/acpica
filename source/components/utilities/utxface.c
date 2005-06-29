@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: cmxface - External interfaces for "global" ACPI functions
- *              $Revision: 1.52 $
+ *              $Revision: 1.53 $
  *
  *****************************************************************************/
 
@@ -356,7 +356,7 @@ AcpiTerminate (void)
 
     /* Terminate the AML Debuger if present */
 
-    AcpiGbl_DbTerminateThreads = TRUE;
+    DEBUGGER_EXEC(AcpiGbl_DbTerminateThreads = TRUE);
 
     /* TBD: [Investigate] This is no longer needed?*/
 /*    AcpiCmReleaseMutex (ACPI_MTX_DEBUG_CMD_READY); */
