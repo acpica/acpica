@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acinterp.h - Interpreter subcomponent prototypes and defines
- *       $Revision: 1.130 $
+ *       $Revision: 1.133 $
  *
  *****************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -118,7 +118,7 @@
 #define __ACINTERP_H__
 
 
-#define WALK_OPERANDS       (&(WalkState->Operands [WalkState->NumOperands -1]))
+#define ACPI_WALK_OPERANDS       (&(WalkState->Operands [WalkState->NumOperands -1]))
 
 
 ACPI_STATUS
@@ -238,6 +238,7 @@ AcpiExSetBufferDatum (
 
 ACPI_STATUS
 AcpiExReadDataFromField (
+    ACPI_WALK_STATE         *WalkState,
     ACPI_OPERAND_OBJECT     *ObjDesc,
     ACPI_OPERAND_OBJECT     **RetBufferDesc);
 
@@ -526,7 +527,7 @@ AcpiExDumpOperand (
 void
 AcpiExDumpOperands (
     ACPI_OPERAND_OBJECT     **Operands,
-    OPERATING_MODE          InterpreterMode,
+    ACPI_INTERPRETER_MODE   InterpreterMode,
     NATIVE_CHAR             *Ident,
     UINT32                  NumLevels,
     NATIVE_CHAR             *Note,
@@ -573,7 +574,7 @@ AcpiExGetNameString (
 ACPI_STATUS
 AcpiExDoName (
     ACPI_OBJECT_TYPE        DataType,
-    OPERATING_MODE          LoadExecMode);
+    ACPI_INTERPRETER_MODE   LoadExecMode);
 
 
 /*
