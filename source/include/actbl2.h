@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: actbl2.h - ACPI Specification Revision 2.0 Tables
- *       $Revision: 1.13 $
+ *       $Revision: 1.15 $
  *
  *****************************************************************************/
 
@@ -117,7 +117,6 @@
 #ifndef __ACTBL2_H__
 #define __ACTBL2_H__
 
-
 #pragma pack(1)
 
 /*************************************/
@@ -163,6 +162,22 @@ typedef struct
 } FACS_DESCRIPTOR_REV2;
 
 
+/***************************************/
+/* ACPI Specification Rev 2.0 for      */
+/* the Generic Address Structure (GAS) */
+/***************************************/
+typedef struct
+{
+    UINT8               AddressSpaceId;     /* Address space where struct or register exists. */
+    UINT8               RegisterBitWidth;   /* Size in bits of given register */
+    UINT8               RegisterBitOffset;  /* Bit offset within the register */
+    UINT8               Reserved;           /* Must be 0 */
+    UINT64              Address;            /* 64-bit address of struct or register */
+
+} ACPI_GAS;
+
+
+
 /************************************/
 /* ACPI Specification Rev 2.0 for   */
 /* the Fixed ACPI Description Table */
@@ -170,8 +185,8 @@ typedef struct
 typedef struct
 {
     ACPI_TABLE_HEADER   header;            /* table header */
-    ACPI_TBLPTR         FirmwareCtrl;      /* 32-bit physical address of FACS */
-    ACPI_TBLPTR         Dsdt;              /* 32-bit physical address of DSDT */
+    UINT32              FirmwareCtrl;      /* 32-bit physical address of FACS */
+    UINT32              Dsdt;              /* 32-bit physical address of DSDT */
     UINT8               Reserved1;         /* System Interrupt Model isn't used in ACPI 2.0*/
     UINT8               Prefer_PM_Profile; /* Conveys preferred power management profile to OSPM. */
     UINT16              SciInt;            /* System vector of SCI interrupt */
@@ -223,6 +238,19 @@ typedef struct
     UINT32_BIT          CpuSwSleep  : 1;   /* Indicates to OSPM that a processor native instruction */
                                            /* must be executed after writing the SLP_TYPx register. */
     UINT32_BIT          Reserved6   : 18;  /* reserved - must be zero */
+    ACPI_GAS            ResetRegister;     /* Reset register address in GAS format */
+    UINT8               ResetValue;        /* Value to write to the ResetRegister port to reset the system. */
+    UINT8               Reserved7[3];      /* These three bytes must be zero */
+    UINT64              XFirmwareCtrl;      /* 64-bit physical address of FACS */
+    UINT64              XDsdt;              /* 64-bit physical address of DSDT */
+    ACPI_GAS            XPm1aEvtBlk;        /* Extended Power Mgt 1a AcpiEvent Reg Blk address */
+    ACPI_GAS            XPm1bEvtBlk;        /* Extended Power Mgt 1b AcpiEvent Reg Blk address */
+    ACPI_GAS            XPm1aCntBlk;        /* Extended Power Mgt 1a Control Reg Blk address */
+    ACPI_GAS            XPm1bCntBlk;        /* Extended Power Mgt 1b Control Reg Blk address */
+    ACPI_GAS            XPm2CntBlk;         /* Extended Power Mgt 2 Control Reg Blk address */
+    ACPI_GAS            XPmTmrBlk;          /* Extended Power Mgt Timer Ctrl Reg Blk address */
+    ACPI_GAS            XGpe0Blk;           /* Extended General Purpose AcpiEvent 0 Reg Blk address */
+    ACPI_GAS            XGpe1Blk;           /* Extended General Purpose AcpiEvent 1 Reg Blk address */
 
 }  FADT_DESCRIPTOR_REV2;
 
