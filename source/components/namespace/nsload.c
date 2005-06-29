@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: nsload - namespace loading/expanding/contracting procedures
- *              $Revision: 1.45 $
+ *              $Revision: 1.48 $
  *
  *****************************************************************************/
 
@@ -232,11 +232,11 @@ AcpiNsOneCompleteParse (
         return_ACPI_STATUS (AE_NO_MEMORY);
     }
 
-    Status = AcpiDsInitAmlWalk (WalkState, ParseRoot, NULL, TableDesc->AmlStart, 
-                    TableDesc->AmlLength, PassNumber);
+    Status = AcpiDsInitAmlWalk (WalkState, ParseRoot, NULL, TableDesc->AmlStart,
+                    TableDesc->AmlLength, NULL, NULL, PassNumber);
     if (ACPI_FAILURE (Status))
     {
-        /* TBD: delete walk state */
+        AcpiDsDeleteWalkState (WalkState);
         return_ACPI_STATUS (Status);
     }
 
@@ -315,7 +315,7 @@ AcpiNsParseTable (
  * FUNCTION:    AcpiNsLoadTable
  *
  * PARAMETERS:  TableDesc       - Descriptor for table to be loaded
- *              Node            - Owning NS node 
+ *              Node            - Owning NS node
  *
  * RETURN:      Status
  *

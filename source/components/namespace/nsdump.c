@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: nsdump - table dumping routines for debug
- *              $Revision: 1.111 $
+ *              $Revision: 1.112 $
  *
  *****************************************************************************/
 
@@ -312,7 +312,7 @@ AcpiNsDumpOneObject (
     /*
      * Now we can print out the pertinent information
      */
-    AcpiOsPrintf (" %4.4s %-12s %p", 
+    AcpiOsPrintf (" %4.4s %-12s %p",
             (char *) &ThisNode->Name, AcpiUtGetTypeName (Type), ThisNode);
 
     ObjDesc = ThisNode->Object;
@@ -379,7 +379,7 @@ AcpiNsDumpOneObject (
 
         case ACPI_TYPE_STRING:
             AcpiOsPrintf (" Len %.2X", ObjDesc->String.Length);
-                        
+
             if (ObjDesc->String.Length > 0)
             {
                  AcpiOsPrintf (" = \"%.32s\"...", ObjDesc->String.Pointer);
@@ -446,7 +446,7 @@ AcpiNsDumpOneObject (
         case INTERNAL_TYPE_BANK_FIELD:
         case INTERNAL_TYPE_INDEX_FIELD:
             AcpiOsPrintf (" Off %.2X Len %.2X Acc %.2d\n",
-                    (ObjDesc->CommonField.BaseByteOffset * 8) 
+                    (ObjDesc->CommonField.BaseByteOffset * 8)
                         + ObjDesc->CommonField.StartFieldBitOffset,
                     ObjDesc->CommonField.BitLength,
                     ObjDesc->CommonField.AccessBitWidth);
@@ -458,7 +458,7 @@ AcpiNsDumpOneObject (
 
     case ACPI_DISPLAY_OBJECTS:
 
-        AcpiOsPrintf ("%p O:%p",  
+        AcpiOsPrintf ("%p O:%p",
                 ThisNode, ObjDesc);
 
         if (!ObjDesc)
@@ -469,7 +469,7 @@ AcpiNsDumpOneObject (
             return (AE_OK);
         }
 
-        AcpiOsPrintf ("(R%d)",  
+        AcpiOsPrintf ("(R%d)",
                 ObjDesc->Common.ReferenceCount);
 
         switch (Type)
@@ -787,7 +787,7 @@ AcpiNsDumpTables (
     }
 
 
-    AcpiNsDumpObjects (ACPI_TYPE_ANY, ACPI_DISPLAY_OBJECTS, MaxDepth, 
+    AcpiNsDumpObjects (ACPI_TYPE_ANY, ACPI_DISPLAY_OBJECTS, MaxDepth,
             ACPI_UINT32_MAX, SearchHandle);
     return_VOID;
 }
