@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: exconvrt - Object conversion routines
- *              $Revision: 1.45 $
+ *              $Revision: 1.47 $
  *
  *****************************************************************************/
 
@@ -310,7 +310,7 @@ AcpiExConvertToBuffer (
 
         /*
          * Create a new Buffer object.
-         * Need enough space for one integer 
+         * Need enough space for one integer
          */
         RetDesc = AcpiUtCreateBufferObject (AcpiGbl_IntegerByteWidth);
         if (!RetDesc)
@@ -343,7 +343,7 @@ AcpiExConvertToBuffer (
         /* Copy the string to the buffer */
 
         NewBuf = RetDesc->Buffer.Pointer;
-        ACPI_STRNCPY ((char *) NewBuf, (char *) ObjDesc->String.Pointer, 
+        ACPI_STRNCPY ((char *) NewBuf, (char *) ObjDesc->String.Pointer,
             ObjDesc->String.Length);
         break;
 
@@ -381,6 +381,7 @@ AcpiExConvertToBuffer (
  * PARAMETERS:  Integer         - Value to be converted
  *              Base            - 10 or 16
  *              String          - Where the string is returned
+ *              DataWidth       - Size of data item to be converted
  *
  * RETURN:      Actual string length
  *
@@ -392,7 +393,8 @@ UINT32
 AcpiExConvertToAscii (
     ACPI_INTEGER            Integer,
     UINT32                  Base,
-    UINT8                   *String)
+    UINT8                   *String,
+    UINT8                   DataWidth)
 {
     UINT32                  i;
     UINT32                  j;
@@ -400,11 +402,22 @@ AcpiExConvertToAscii (
     char                    HexDigit;
     ACPI_INTEGER            Digit;
     UINT32                  Remainder;
-    UINT32                  Length = sizeof (ACPI_INTEGER);
-    BOOLEAN                 LeadingZero = TRUE;
+    UINT32                  Length;
+    BOOLEAN                 LeadingZero;
 
 
     ACPI_FUNCTION_ENTRY ();
+
+    if (DataWidth < sizeof (ACPI_INTEGER))
+    {
+        LeadingZero = FALSE;
+        Length = DataWidth;
+    }
+    else
+    {
+        LeadingZero = TRUE;
+        Length = sizeof (ACPI_INTEGER);
+    }
 
 
     switch (Base)
@@ -473,8 +486,8 @@ AcpiExConvertToAscii (
         String [0] = ACPI_ASCII_ZERO;
         k = 1;
     }
-    String [k] = 0;
 
+    String [k] = 0;
     return (k);
 }
 
@@ -559,7 +572,7 @@ AcpiExConvertToString (
 
         /* Convert */
 
-        i = AcpiExConvertToAscii (ObjDesc->Integer.Value, Base, NewBuf);
+        i = AcpiExConvertToAscii (ObjDesc->Integer.Value, Base, NewBuf, sizeof (ACPI_INTEGER));
 
         /* Null terminate at the correct place */
 
@@ -626,7 +639,7 @@ AcpiExConvertToString (
         Index = 0;
         for (i = 0, Index = 0; i < ObjDesc->Buffer.Length; i++)
         {
-            Index = AcpiExConvertToAscii ((ACPI_INTEGER) Pointer[i], Base, &NewBuf[Index]);
+            Index += AcpiExConvertToAscii ((ACPI_INTEGER) Pointer[i], Base, &NewBuf[Index], 1);
 
             NewBuf[Index] = ' ';
             Index++;
