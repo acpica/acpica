@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acefi.h - OS specific defines, etc.
- *       $Revision: 1.4 $
+ *       $Revision: 1.8 $
  *
  *****************************************************************************/
 
@@ -9,8 +9,8 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, Intel Corp.  All rights
- * reserved.
+ * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
+ * All rights reserved.
  *
  * 2. License
  *
@@ -127,6 +127,10 @@
 /* _int64 works for both IA32 and IA64 */
 
 #define COMPILER_DEPENDENT_UINT64   unsigned __int64
+
+/* Calling conventions */
+
+#define ACPI_SYSTEM_XFACE
 
 /* warn C4142: redefinition of type */
 
