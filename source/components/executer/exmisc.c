@@ -119,9 +119,9 @@
 
 #include <acpi.h>
 #include <parser.h>
-#include <interpreter.h>
+#include <interp.h>
 #include <amlcode.h>
-#include <namespace.h>
+#include <namesp.h>
 #include <events.h>
 
 
@@ -731,6 +731,81 @@ Cleanup:
     return_ACPI_STATUS (Status);
 }
 
+/*****************************************************************************
+ *
+ * FUNCTION:    AmlExecCreateProcessor 
+ *
+ * PARAMETERS:  Op           - Op containing the Processor definition and args
+ *              ProcessorNTE - NTE for the containing NTE
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Create a new processor object and populate the fields
+ *
+ ****************************************************************************/
+
+ACPI_STATUS
+AmlExecCreateProcessor (
+    ACPI_GENERIC_OP         *Op,
+    ACPI_HANDLE             ProcessorNTE)
+{
+    ACPI_STATUS             Status;
+    ACPI_GENERIC_OP         *Arg;
+    ACPI_OBJECT_INTERNAL    *ObjDesc;
+
+    FUNCTION_TRACE_PTR ("AmlExecCreateProcessor", Op);
+
+    ObjDesc = CmCreateInternalObject (ACPI_TYPE_Processor);
+    if (!ObjDesc)
+    {
+        Status = AE_NO_MEMORY;
+        return_ACPI_STATUS (Status);
+    }
+
+    /* Install the new processor object in the parent NTE */
+
+    Status = NsAttachObject (ProcessorNTE, ObjDesc, (UINT8) ACPI_TYPE_Processor);
+    if (ACPI_FAILURE (Status))
+    {
+        return_ACPI_STATUS(Status);
+    }
+
+    Arg = Op->Value.Arg;
+
+    /* check existance */
+    if (!Arg)
+    {
+        Status = AE_AML_ERROR;
+        return_ACPI_STATUS (Status);
+    }
+
+    /* First arg is the Processor ID */
+    ObjDesc->Processor.ProcId = (UINT8) Arg->Value.Integer;
+
+    /* Move to next arg and check existance */
+    Arg = Arg->Next;
+    if (!Arg)
+    {
+        Status = AE_AML_ERROR;
+        return_ACPI_STATUS (Status);
+    }
+
+    /* Second arg is the PBlock Address */
+    ObjDesc->Processor.PBLKAddress = (UINT32) Arg->Value.Integer;
+
+    /* Move to next arg and check existance */
+    Arg = Arg->Next;
+    if (!Arg)
+    {
+        Status = AE_AML_ERROR;
+        return_ACPI_STATUS (Status);
+    }
+
+    /* Third arg is the PBlock Length */
+    ObjDesc->Processor.PBLKLength = (UINT8) Arg->Value.Integer;
+
+    return_ACPI_STATUS (AE_OK);
+}
 
 /*****************************************************************************
  *
