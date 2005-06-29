@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslcompile - top level compile module
- *              $Revision: 1.47 $
+ *              $Revision: 1.49 $
  *
  *****************************************************************************/
 
@@ -121,14 +121,7 @@
 #include "acdebug.h"
 
 #define _COMPONENT          ACPI_COMPILER
-        MODULE_NAME         ("aslcompile")
-
-/*
-#undef HIWORD
-#undef LOWORD
-#undef HIBYTE
-#undef LOBYTE
-*/
+        ACPI_MODULE_NAME    ("aslcompile")
 
 
 /*
@@ -159,7 +152,7 @@ AeLocalGetRootPointer (
 void
 AcpiExDumpOperands (
     ACPI_OPERAND_OBJECT     **Operands,
-    OPERATING_MODE          InterpreterMode,
+    ACPI_INTERPRETER_MODE   InterpreterMode,
     NATIVE_CHAR             *Ident,
     UINT32                  NumLevels,
     NATIVE_CHAR             *Note,
@@ -295,6 +288,12 @@ AslCompilerFileHeader (
         "%sCompilation of \"%s\" - %s%s\n",
         Prefix, Gbl_Files[ASL_FILE_INPUT].Filename, asctime (NewTime),
         Prefix);
+
+    switch (FileId)
+    {
+    case ASL_FILE_C_SOURCE_OUTPUT:
+        FlPrintFile (FileId, " */\n");
+    }
 }
 
 
