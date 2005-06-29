@@ -710,6 +710,7 @@ DbCommandDispatch (
         break;
 
     case CMD_TERMINATE:
+        DbSetOutputDestination (DB_REDIRECTABLE_OUTPUT);
         CmSubsystemShutdown ();
 
         /* TBD: Need some way to re-initialize without re-creating the semaphores! */
