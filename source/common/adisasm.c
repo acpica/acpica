@@ -521,7 +521,7 @@ AdDoDeferredParse (
     }
 
     ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "Parsing %s [%4.4s]\n", 
-        Op->Common.AmlOpName, &Op->Named.Name));
+        Op->Common.AmlOpName, (char *) &Op->Named.Name));
 
     WalkState = AcpiDsCreateWalkState (TABLE_ID_DSDT, Op, NULL, NULL);
     if (!WalkState)
