@@ -162,7 +162,7 @@ AmlAppendOperandDiag(char *FileName, INT32 LineNum, UINT16 OpCode, INT32 NumOper
     meth            Method;
 
 
-    GetCurrentLoc (&Method);
+    AmlGetCurrentLocation (&Method);
 
     DEBUG_PRINT (ACPI_ERROR, (" [%s:%d, opcode = %s AML offset %04x]\n",
                     FileName, LineNum,
@@ -173,7 +173,7 @@ AmlAppendOperandDiag(char *FileName, INT32 LineNum, UINT16 OpCode, INT32 NumOper
 
     if (GetDebugLevel () > 0)
     {
-        DUMP_STACK (Exec,
+        DUMP_STACK (MODE_Exec,
                       (OpCode > UCHAR_MAX)
                       ? LongOps[OpCode & 0x00ff]
                       : ShortOps[OpCode],
@@ -195,13 +195,13 @@ AmlAppendOperandDiag(char *FileName, INT32 LineNum, UINT16 OpCode, INT32 NumOper
  *              are used to relate FieldUnit descriptors to the Buffers
  *              within which the fields are defined.
  *
+ *              Just increment the global counter and return it.
+ *
  ****************************************************************************/
 
 UINT32 
 AmlBufSeq (void)
 {
-    static UINT32        BufSeq = (UINT32) 0;   /* Counts allocated Buffer descriptors */
-    
     
     return ++BufSeq;
 }
@@ -243,9 +243,9 @@ DeleteObject (OBJECT_DESCRIPTOR **ObjDesc)
 
     if ((OBJECT_DESCRIPTOR **) 0 !=    ObjDesc  &&
         (OBJECT_DESCRIPTOR *) 0 !=    *ObjDesc  &&
-        !IsInPCodeBlock ((UINT8 *)    *ObjDesc) &&
-        !IsNsHandle                  (*ObjDesc) &&
-        !IsMethodValue               (*ObjDesc) &&
+        !AmlIsInPCodeBlock ((UINT8 *) *ObjDesc) &&
+        !IS_NS_HANDLE                  (*ObjDesc) &&
+        !AmlIsMethodValue            (*ObjDesc) &&
         !IsNsValue                   (*ObjDesc))
     {
 
@@ -415,7 +415,7 @@ MarkObjectStack (INT32 *Count)
         /*  For each entry on the stack */
 
         if (ObjStack[Index] &&
-            !IsNsHandle (ObjStack[Index]))
+            !IS_NS_HANDLE (ObjStack[Index]))
         {   
             /*  Mark value's storage    */
             
@@ -474,7 +474,8 @@ DigitsNeeded (INT32 val, INT32 base)
  *
  * PARAMETERS:  INT32   NumBytes        number of bytes needing to be printed
  *                                      0 => force a new line next time n != 0
- *              OpMode  LoadExecMode    Load or Exec (used in PRINT_L_D expansion)
+ *              OpMode  LoadExecMode    MODE_Load or MODE_Exec 
+ *                                      (used in PRINT_L_D expansion)
  *
  * DESCRIPTION: Ensure that there is enough room on the current output line
  *              to print at least n characters; start a new line if needed.
@@ -508,7 +509,7 @@ LineSet (INT32 NumBytes, OpMode LoadExecMode)
     FUNCTION_TRACE ("LineSet");
 
 
-    if ((Load1 == LoadExecMode) && (GetDebugLevel() < 1))
+    if ((MODE_Load1 == LoadExecMode) && (GetDebugLevel() < 1))
     {
         return;
     }
@@ -609,6 +610,6 @@ Indent (INT32 NumChars)
         LeftMarginChars[LeftMargin] = '\0';
     }
 
-    LINE_SET (0, Load);
+    LINE_SET (0, MODE_Load);
 }
 

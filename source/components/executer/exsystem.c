@@ -114,7 +114,7 @@ static ST_KEY_DESC_TABLE KDT[] = {
 
 /******************************************************************************
  * 
- * FUNCTION:    ThreadId
+ * FUNCTION:    OsThreadId
  *
  * PARAMETERS:  void
  *
@@ -127,7 +127,7 @@ static ST_KEY_DESC_TABLE KDT[] = {
  ******************************************************************************/
 
 UINT16 
-ThreadId (void)
+OsThreadId (void)
 {
     return (1);
 }
@@ -136,7 +136,7 @@ ThreadId (void)
 
 /******************************************************************************
  * 
- * FUNCTION:    DoNotifyOp 
+ * FUNCTION:    OsDoNotifyOp 
  *
  * PARAMETERS:  OBJECT_DESCRIPTOR *ValDesc -    The value of the opcode to be
  *                                          executed.
@@ -148,7 +148,7 @@ ThreadId (void)
  ******************************************************************************/
 
 INT32
-DoNotifyOp (OBJECT_DESCRIPTOR *ValDesc, OBJECT_DESCRIPTOR *ObjDesc)
+OsDoNotifyOp (OBJECT_DESCRIPTOR *ValDesc, OBJECT_DESCRIPTOR *ObjDesc)
 {
 
     if (ValDesc)
@@ -193,7 +193,7 @@ DoNotifyOp (OBJECT_DESCRIPTOR *ValDesc, OBJECT_DESCRIPTOR *ObjDesc)
 
 /******************************************************************************
  * 
- * FUNCTION:    DoSuspend
+ * FUNCTION:    OsDoSuspend
  *
  * PARAMETERS:  UINT32 HowLong - The amount of time to suspend
  *
@@ -206,7 +206,7 @@ DoNotifyOp (OBJECT_DESCRIPTOR *ValDesc, OBJECT_DESCRIPTOR *ObjDesc)
  ******************************************************************************/
 
 void
-DoSuspend (UINT32 HowLong)
+OsDoSuspend (UINT32 HowLong)
 {
     OsdSleep ((UINT16) (HowLong / (UINT32) 1000), (UINT16) (HowLong % (UINT32) 1000));
 }
@@ -214,7 +214,7 @@ DoSuspend (UINT32 HowLong)
 
 /******************************************************************************
  * 
- * FUNCTION:    AcquireOpRqst
+ * FUNCTION:    OsAcquireOpRqst
  *
  * PARAMETERS:  OBJECT_DESCRIPTOR *TimeDesc  - The 'time to delay' object descriptor
  *              OBJECT_DESCRIPTOR *ObjDesc   - The object descriptor for this op
@@ -230,7 +230,7 @@ DoSuspend (UINT32 HowLong)
  ******************************************************************************/
 
 INT32
-AcquireOpRqst (OBJECT_DESCRIPTOR *TimeDesc, OBJECT_DESCRIPTOR *ObjDesc)
+OsAcquireOpRqst (OBJECT_DESCRIPTOR *TimeDesc, OBJECT_DESCRIPTOR *ObjDesc)
 {
     UINT16      CurrentId;
     INT32       Excep = S_SUCCESS;
@@ -240,10 +240,10 @@ AcquireOpRqst (OBJECT_DESCRIPTOR *TimeDesc, OBJECT_DESCRIPTOR *ObjDesc)
     {
         if (ObjDesc->Mutex.LockCount == 0)
         {
-            ObjDesc->Mutex.ThreadId = ThreadId ();
+            ObjDesc->Mutex.ThreadId = OsThreadId ();
         }
     
-        else if (ObjDesc->Mutex.ThreadId != (CurrentId = ThreadId ()))
+        else if (ObjDesc->Mutex.ThreadId != (CurrentId = OsThreadId ()))
         {
             DEBUG_PRINT (ACPI_ERROR, ("Thread %02Xh attemted to Aquire a resource owned "
                     "by thread %02Xh\n", CurrentId, ObjDesc->Mutex.ThreadId));
@@ -262,7 +262,7 @@ AcquireOpRqst (OBJECT_DESCRIPTOR *TimeDesc, OBJECT_DESCRIPTOR *ObjDesc)
 
 /******************************************************************************
  * 
- * FUNCTION:    ReleaseOpRqst
+ * FUNCTION:    OsReleaseOpRqst
  *
  * PARAMETERS:  OBJECT_DESCRIPTOR *ObjDesc  - The object descriptor for this op
  *
@@ -277,7 +277,7 @@ AcquireOpRqst (OBJECT_DESCRIPTOR *TimeDesc, OBJECT_DESCRIPTOR *ObjDesc)
  ******************************************************************************/
 
 INT32
-ReleaseOpRqst (OBJECT_DESCRIPTOR *ObjDesc)
+OsReleaseOpRqst (OBJECT_DESCRIPTOR *ObjDesc)
 {
     UINT16      CurrentId;
     INT32       Excep = S_SUCCESS;
@@ -291,7 +291,7 @@ ReleaseOpRqst (OBJECT_DESCRIPTOR *ObjDesc)
             Excep == S_ERROR;
         }
     
-        else if (ObjDesc->Mutex.ThreadId != (CurrentId = ThreadId ()))
+        else if (ObjDesc->Mutex.ThreadId != (CurrentId = OsThreadId ()))
         {
             DEBUG_PRINT (ACPI_ERROR, ("Thread %02Xh attemted to Release a Mutex owned "
                         "by thread %02Xh\n", CurrentId, ObjDesc->Mutex.ThreadId));
@@ -310,7 +310,7 @@ ReleaseOpRqst (OBJECT_DESCRIPTOR *ObjDesc)
 
 /******************************************************************************
  * 
- * FUNCTION:    SignalOpRqst
+ * FUNCTION:    OsSignalOpRqst
  *
  * PARAMETERS:  OBJECT_DESCRIPTOR *ObjDesc  - The object descriptor for this op
  *
@@ -326,7 +326,7 @@ ReleaseOpRqst (OBJECT_DESCRIPTOR *ObjDesc)
  ******************************************************************************/
 
 INT32
-SignalOpRqst (OBJECT_DESCRIPTOR *ObjDesc)
+OsSignalOpRqst (OBJECT_DESCRIPTOR *ObjDesc)
 {
 
     if (ObjDesc)
@@ -340,7 +340,7 @@ SignalOpRqst (OBJECT_DESCRIPTOR *ObjDesc)
 
 /******************************************************************************
  * 
- * FUNCTION:    WaitOpRqst
+ * FUNCTION:    OsWaitOpRqst
  *
  * PARAMETERS:  OBJECT_DESCRIPTOR *TimeDesc - The 'time to delay' object descriptor
  *              OBJECT_DESCRIPTOR *ObjDesc   - The object descriptor for this op
@@ -360,7 +360,7 @@ SignalOpRqst (OBJECT_DESCRIPTOR *ObjDesc)
  ******************************************************************************/
 
 INT32
-WaitOpRqst (OBJECT_DESCRIPTOR *TimeDesc, OBJECT_DESCRIPTOR *ObjDesc)
+OsWaitOpRqst (OBJECT_DESCRIPTOR *TimeDesc, OBJECT_DESCRIPTOR *ObjDesc)
 {
     INT32       Excep = S_SUCCESS;
 
@@ -388,7 +388,7 @@ WaitOpRqst (OBJECT_DESCRIPTOR *TimeDesc, OBJECT_DESCRIPTOR *ObjDesc)
 
 /******************************************************************************
  * 
- * FUNCTION:    ResetOpRqst
+ * FUNCTION:    OsResetOpRqst
  *
  * PARAMETERS:  OBJECT_DESCRIPTOR *ObjDesc  - The object descriptor for this op
  *
@@ -402,7 +402,7 @@ WaitOpRqst (OBJECT_DESCRIPTOR *TimeDesc, OBJECT_DESCRIPTOR *ObjDesc)
  ******************************************************************************/
 
 INT32
-ResetOpRqst (OBJECT_DESCRIPTOR *ObjDesc)
+OsResetOpRqst (OBJECT_DESCRIPTOR *ObjDesc)
 {
     INT32       Excep = S_SUCCESS;
 
@@ -418,7 +418,7 @@ ResetOpRqst (OBJECT_DESCRIPTOR *ObjDesc)
 
 /***************************************************************************
  * 
- * FUNCTION:    GetGlobalLock
+ * FUNCTION:    OsGetGlobalLock
  *
  * RETURN:      S_SUCCESS/S_ERROR
  *
@@ -429,7 +429,7 @@ ResetOpRqst (OBJECT_DESCRIPTOR *ObjDesc)
  **************************************************************************/
 
 INT32
-GetGlobalLock(void)
+OsGetGlobalLock(void)
 {
     UINT32          GlobalLockReg;
     INT32           Excep = S_ERROR;
@@ -464,14 +464,14 @@ GetGlobalLock(void)
 
 /***************************************************************************
  * 
- * FUNCTION:    ReleaseGlobalLock
+ * FUNCTION:    OsReleaseGlobalLock
  *
  * DESCRIPTION: Releases the ownership of the Global Lock.
  *
  **************************************************************************/
 
 void
-ReleaseGlobalLock (void)
+OsReleaseGlobalLock (void)
 {
     
     if (FACS)
