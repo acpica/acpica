@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslcompile - top level compile module
- *              $Revision: 1.63 $
+ *              $Revision: 1.65 $
  *
  *****************************************************************************/
 
@@ -266,6 +266,35 @@ AslCompilerFileHeader (
 
 /*******************************************************************************
  *
+ * FUNCTION:    CmFlushSourceCode
+ *
+ * PARAMETERS:  None
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Read in any remaining source code after the parse tree
+ *              has been constructed.
+ *
+ ******************************************************************************/
+
+void
+CmFlushSourceCode (void)
+{
+    ACPI_STATUS             Status;
+    char                    Buffer;
+
+
+    while (Status = FlReadFile (ASL_FILE_INPUT, &Buffer, 1) != AE_ERROR)
+    {
+        InsertLineBuffer ((int) Buffer);
+    }
+
+    ResetCurrentLineBuffer ();
+}
+
+
+/*******************************************************************************
+ *
  * FUNCTION:    CmDoCompile
  *
  * PARAMETERS:  None
@@ -309,6 +338,10 @@ CmDoCompile (void)
     UtBeginEvent (i, "Parse source code and build parse tree");
     AslCompilerparse();
     UtEndEvent (i++);
+
+    /* Flush out any remaining source after parse tree is complete */
+
+    CmFlushSourceCode ();
 
     /* Did the parse tree get successfully constructed? */
 

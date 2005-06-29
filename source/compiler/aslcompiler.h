@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslcompiler.h - common include file
- *              $Revision: 1.117 $
+ *              $Revision: 1.120 $
  *
  *****************************************************************************/
 
@@ -213,6 +213,9 @@
 /* Misc */
 
 #define ASL_EXTERNAL_METHOD         255
+#define ASL_ABORT                   TRUE
+#define ASL_NO_ABORT                FALSE
+
 
 /*******************************************************************************
  *
@@ -246,6 +249,10 @@ AslCompilerlex(
 void
 ResetCurrentLineBuffer (
     void);
+
+void
+InsertLineBuffer (
+    int                     SourceChar);
 
 int
 AslPopInputFileStack (
@@ -304,6 +311,13 @@ AslError (
     UINT8                   MessageId,
     ACPI_PARSE_OBJECT       *Op,
     char                    *ExtraMessage);
+
+void
+AslCoreSubsystemError (
+    ACPI_PARSE_OBJECT       *Op,
+    ACPI_STATUS             Status,
+    char                    *ExtraMessage,
+    BOOLEAN                 Abort);
 
 void
 AslCommonError (
@@ -459,6 +473,18 @@ OpnDoPackage (
 void
 OpnDoRegion (
     ACPI_PARSE_OBJECT       *Op);
+
+/*
+ * aslopt - optmization
+ */
+
+void
+OptOptimizeNamePath (
+    ACPI_PARSE_OBJECT       *Op,
+    UINT32                  Flags,
+    ACPI_WALK_STATE         *WalkState,
+    NATIVE_CHAR             *AmlNameString,
+    ACPI_NAMESPACE_NODE     *TargetNode);
 
 
 /*
