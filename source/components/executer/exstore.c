@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exstore - AML Interpreter object store support
- *              $Revision: 1.183 $
+ *              $Revision: 1.184 $
  *
  *****************************************************************************/
 
@@ -207,7 +207,8 @@ AcpiExStore (
         /* Destination is not a Reference object */
 
         ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
-            "Destination is not a Reference or Constant object [%p]\n", DestDesc));
+            "Target is not a Reference or Constant object - %s [%p]\n",
+            AcpiUtGetObjectTypeName (DestDesc), DestDesc));
 
         ACPI_DUMP_STACK_ENTRY (SourceDesc);
         ACPI_DUMP_STACK_ENTRY (DestDesc);
@@ -261,10 +262,19 @@ AcpiExStore (
          * Storing to the Debug object causes the value stored to be
          * displayed and otherwise has no effect -- see ACPI Specification
          */
-        ACPI_DEBUG_PRINT ((ACPI_DB_EXEC, "**** Write to Debug Object: ****:\n\n"));
+        ACPI_DEBUG_PRINT ((ACPI_DB_EXEC,
+            "**** Write to Debug Object: Object %p %s ****:\n\n",
+            SourceDesc, AcpiUtGetObjectTypeName (SourceDesc)));
 
         ACPI_DEBUG_PRINT_RAW ((ACPI_DB_DEBUG_OBJECT, "[ACPI Debug] %s: ",
             AcpiUtGetObjectTypeName (SourceDesc)));
+
+        if (!AcpiUtValidInternalObject (SourceDesc))
+        {
+           ACPI_DEBUG_PRINT_RAW ((ACPI_DB_DEBUG_OBJECT,
+               "%X, Invalid Internal Object!\n", SourceDesc));
+           break;
+        }
 
         switch (ACPI_GET_OBJECT_TYPE (SourceDesc))
         {
