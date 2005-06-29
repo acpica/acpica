@@ -139,11 +139,12 @@
 void
 PsInitOp (
     ACPI_GENERIC_OP         *Op,
-    UINT32                  Opcode)
+    UINT16                  Opcode)
 {
     ACPI_OP_INFO             *AmlOp;
 
 
+    Op->DataType = DESC_TYPE_PARSER;
     Op->Opcode = Opcode;
 
 
@@ -171,7 +172,7 @@ PsInitOp (
 
 ACPI_GENERIC_OP*
 PsAllocOp (
-    UINT32                  Opcode)
+    UINT16                  Opcode)
 {
     ACPI_GENERIC_OP         *Op = NULL;
     UINT32                  Size;
@@ -233,7 +234,7 @@ BOOLEAN
 PsIsLeadingChar (
     INT32                   c)
 {
-    return (c == '_' || (c >= 'A' && c <= 'Z'));
+    return ((BOOLEAN) (c == '_' || (c >= 'A' && c <= 'Z')));
 }
 
 
@@ -244,7 +245,7 @@ BOOLEAN
 PsIsPrefixChar (
     INT32                   c)
 {
-    return (c == '\\' || c == '^');
+    return ((BOOLEAN) (c == '\\' || c == '^'));
 }
 
 
@@ -257,9 +258,10 @@ PsIsPrefixChar (
  */
 BOOLEAN
 PsIsNamedObjectOp (
-    UINT32                  Opcode)
+    UINT16                  Opcode)
 {
-    return (Opcode == AML_ScopeOp           || 
+    return ((BOOLEAN) 
+           (Opcode == AML_ScopeOp           || 
             Opcode == AML_DeviceOp          || 
             Opcode == AML_ThermalZoneOp     || 
             Opcode == AML_MethodOp          || 
@@ -282,7 +284,7 @@ PsIsNamedObjectOp (
             Opcode == AML_WordFieldOp       ||
             Opcode == AML_DWordFieldOp      ||
             Opcode == AML_METHODCALL        ||
-            Opcode == AML_NAMEPATH);
+            Opcode == AML_NAMEPATH));
 }
 
 
@@ -291,9 +293,10 @@ PsIsNamedObjectOp (
  */
 BOOLEAN
 PsIsNamedOp (
-    UINT32                   Opcode)
+    UINT16                  Opcode)
 {
-    return (Opcode == AML_ScopeOp           ||
+    return ((BOOLEAN) 
+           (Opcode == AML_ScopeOp           ||
             Opcode == AML_DeviceOp          ||
             Opcode == AML_ThermalZoneOp     ||
             Opcode == AML_MethodOp          ||
@@ -307,16 +310,17 @@ PsIsNamedOp (
             Opcode == AML_MutexOp           ||
             Opcode == AML_EventOp           ||
             Opcode == AML_RegionOp          ||
-            Opcode == AML_NAMEDFIELD); 
+            Opcode == AML_NAMEDFIELD)); 
 }
 
 
 BOOLEAN
 PsIsDeferredOp (
-    UINT32                  Opcode)
+    UINT16                  Opcode)
 {
-    return (Opcode == AML_MethodOp ||
-            Opcode == AML_RegionOp);
+    return ((BOOLEAN) 
+           (Opcode == AML_MethodOp ||
+            Opcode == AML_RegionOp));
 }
 
 
@@ -325,9 +329,9 @@ PsIsDeferredOp (
  */
 BOOLEAN
 PsIsBytelistOp (
-    UINT32                  Opcode)
+    UINT16                  Opcode)
 {
-    return (Opcode == AML_BYTELIST);
+    return ((BOOLEAN) (Opcode == AML_BYTELIST));
 }
 
 
@@ -336,12 +340,13 @@ PsIsBytelistOp (
  */
 BOOLEAN
 PsIsFieldOp (
-    UINT32                  Opcode)
+    UINT16                  Opcode)
 {
-    return (Opcode == AML_CreateFieldOp
+    return ((BOOLEAN) 
+              (Opcode == AML_CreateFieldOp
             || Opcode == AML_DefFieldOp
             || Opcode == AML_IndexFieldOp
-            || Opcode == AML_BankFieldOp);
+            || Opcode == AML_BankFieldOp));
 }
 
 
