@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asllisting - Listing file generation
- *              $Revision: 1.42 $
+ *              $Revision: 1.47 $
  *
  *****************************************************************************/
 
@@ -234,6 +234,16 @@ LsDoListings (void)
     {
         LsGenerateListing (ASL_FILE_ASM_SOURCE_OUTPUT);
     }
+
+    if (Gbl_C_IncludeOutputFlag)
+    {
+        LsGenerateListing (ASL_FILE_C_INCLUDE_OUTPUT);
+    }
+
+    if (Gbl_AsmIncludeOutputFlag)
+    {
+        LsGenerateListing (ASL_FILE_ASM_INCLUDE_OUTPUT);
+    }
 }
 
 
@@ -348,9 +358,7 @@ LsCheckException (
         while (Gbl_NextError &&
               (LineNumber >= Gbl_NextError->LogicalLineNumber))
         {
-            FlPrintFile (FileId, "\n[****AslException****]\n");
-
-            AePrintException (FileId, Gbl_NextError);
+            AePrintException (FileId, Gbl_NextError, "\n[****iasl****]\n");
 
             Gbl_NextError = Gbl_NextError->Next;
         }
@@ -650,6 +658,12 @@ LsFinishSourceListing (
     UINT32                  FileId)
 {
 
+    if ((FileId == ASL_FILE_ASM_INCLUDE_OUTPUT) ||
+        (FileId == ASL_FILE_C_INCLUDE_OUTPUT))
+    {
+        return;
+    }
+
     LsFlushListingBuffer (FileId);
     Gbl_CurrentAmlOffset = 0;
 
@@ -707,6 +721,12 @@ LsWriteSourceLines (
     UINT32                  ToLogicalLineNumber,
     UINT32                  FileId)
 {
+
+    if ((FileId == ASL_FILE_ASM_INCLUDE_OUTPUT) ||
+        (FileId == ASL_FILE_C_INCLUDE_OUTPUT))
+    {
+        return;
+    }
 
     Gbl_CurrentLine = ToLogicalLineNumber;
 
@@ -836,12 +856,22 @@ LsWriteNodeToListing (
 
         if (FileId == ASL_FILE_ASM_SOURCE_OUTPUT)
         {
-            FlPrintFile (FileId, "%s_%s_Header \\\n", 
+            FlPrintFile (FileId, "%s_%s_Header \\\n",
                 Gbl_TableSignature, Gbl_TableId);
         }
         if (FileId == ASL_FILE_C_SOURCE_OUTPUT)
         {
             FlPrintFile (FileId, "    unsigned char    %s_%s_Header [] = \n    {\n",
+                Gbl_TableSignature, Gbl_TableId);
+        }
+        if (FileId == ASL_FILE_ASM_INCLUDE_OUTPUT)
+        {
+            FlPrintFile (FileId, "extrn %s_%s_Header\n",
+                Gbl_TableSignature, Gbl_TableId);
+        }
+        if (FileId == ASL_FILE_C_INCLUDE_OUTPUT)
+        {
+            FlPrintFile (FileId, "extern unsigned char    %s_%s_Header [];\n",
                 Gbl_TableSignature, Gbl_TableId);
         }
         return;
@@ -933,6 +963,8 @@ LsWriteNodeToListing (
             {
             case ASL_FILE_ASM_SOURCE_OUTPUT:
             case ASL_FILE_C_SOURCE_OUTPUT:
+            case ASL_FILE_ASM_INCLUDE_OUTPUT:
+            case ASL_FILE_C_INCLUDE_OUTPUT:
 
                 if (Op->Asl.ExternalName)
                 {
@@ -950,12 +982,22 @@ LsWriteNodeToListing (
 
                         if (FileId == ASL_FILE_ASM_SOURCE_OUTPUT)
                         {
-                            FlPrintFile (FileId, "%s_%s_%s  \\\n", 
+                            FlPrintFile (FileId, "%s_%s_%s  \\\n",
                                 Gbl_TableSignature, Gbl_TableId, &Pathname[1]);
                         }
                         if (FileId == ASL_FILE_C_SOURCE_OUTPUT)
                         {
-                            FlPrintFile (FileId, "    unsigned char    %s_%s_%s [] = \n    {\n", 
+                            FlPrintFile (FileId, "    unsigned char    %s_%s_%s [] = \n    {\n",
+                                Gbl_TableSignature, Gbl_TableId, &Pathname[1]);
+                        }
+                        if (FileId == ASL_FILE_ASM_INCLUDE_OUTPUT)
+                        {
+                            FlPrintFile (FileId, "extrn %s_%s_%s\n",
+                                Gbl_TableSignature, Gbl_TableId, &Pathname[1]);
+                        }
+                        if (FileId == ASL_FILE_C_INCLUDE_OUTPUT)
+                        {
+                            FlPrintFile (FileId, "extern unsigned char    %s_%s_%s [];\n",
                                 Gbl_TableSignature, Gbl_TableId, &Pathname[1]);
                         }
                     }
