@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: rsdump - Functions to display the resource structures.
- *              $Revision: 1.28 $
+ *              $Revision: 1.35 $
  *
  ******************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2003, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -124,7 +124,7 @@
         ACPI_MODULE_NAME    ("rsdump")
 
 
-#ifdef ACPI_DEBUG
+#if defined(ACPI_DEBUG_OUTPUT) || defined(ACPI_DEBUGGER)
 
 /*******************************************************************************
  *
@@ -269,9 +269,9 @@ AcpiRsDumpDma (
 
 void
 AcpiRsDumpStartDependFns (
-    ACPI_RESOURCE_DATA          *Data)
+    ACPI_RESOURCE_DATA      *Data)
 {
-    ACPI_RESOURCE_START_DPF     *SdfData = (ACPI_RESOURCE_START_DPF *) Data;
+    ACPI_RESOURCE_START_DPF *SdfData = (ACPI_RESOURCE_START_DPF *) Data;
 
 
     ACPI_FUNCTION_ENTRY ();
@@ -976,20 +976,25 @@ AcpiRsDumpAddress64 (
                 ACPI_ADDRESS_FIXED == Address64Data->MaxAddressFixed ?
                 "" : "not ");
 
-    AcpiOsPrintf ("    Granularity: %16X\n",
-                Address64Data->Granularity);
+    AcpiOsPrintf ("    Granularity: %8.8X%8.8X\n",
+                ACPI_HIDWORD (Address64Data->Granularity),
+                ACPI_LODWORD (Address64Data->Granularity));
 
-    AcpiOsPrintf ("    Address range min: %16X\n",
-                Address64Data->MinAddressRange);
+    AcpiOsPrintf ("    Address range min: %8.8X%8.8X\n",
+                ACPI_HIDWORD (Address64Data->MinAddressRange),
+                ACPI_HIDWORD (Address64Data->MinAddressRange));
 
-    AcpiOsPrintf ("    Address range max: %16X\n",
-                Address64Data->MaxAddressRange);
+    AcpiOsPrintf ("    Address range max: %8.8X%8.8X\n",
+                ACPI_HIDWORD (Address64Data->MaxAddressRange),
+                ACPI_HIDWORD (Address64Data->MaxAddressRange));
 
-    AcpiOsPrintf ("    Address translation offset: %16X\n",
-                Address64Data->AddressTranslationOffset);
+    AcpiOsPrintf ("    Address translation offset: %8.8X%8.8X\n",
+                ACPI_HIDWORD (Address64Data->AddressTranslationOffset),
+                ACPI_HIDWORD (Address64Data->AddressTranslationOffset));
 
-    AcpiOsPrintf ("    Address Length: %16X\n",
-                Address64Data->AddressLength);
+    AcpiOsPrintf ("    Address Length: %8.8X%8.8X\n",
+                ACPI_HIDWORD (Address64Data->AddressLength),
+                ACPI_HIDWORD (Address64Data->AddressLength));
 
     if(0xFF != Address64Data->ResourceSource.Index)
     {
@@ -1093,7 +1098,7 @@ AcpiRsDumpResourceList (
     {
         while (!Done)
         {
-            AcpiOsPrintf ("Resource structure %x.\n", Count++);
+            AcpiOsPrintf ("Resource structure %X.\n", Count++);
 
             switch (Resource->Id)
             {
@@ -1200,14 +1205,14 @@ AcpiRsDumpIrqList (
 
     if (AcpiDbgLevel & ACPI_LV_RESOURCES && _COMPONENT & AcpiDbgLayer)
     {
-        PrtElement = (ACPI_PCI_ROUTING_TABLE *) Buffer;
+        PrtElement = ACPI_CAST_PTR (ACPI_PCI_ROUTING_TABLE, Buffer);
 
         while (!Done)
         {
             AcpiOsPrintf ("PCI IRQ Routing Table structure %X.\n", Count++);
 
             AcpiOsPrintf ("    Address: %8.8X%8.8X\n",
-                        ACPI_HIDWORD (PrtElement->Address), 
+                        ACPI_HIDWORD (PrtElement->Address),
                         ACPI_LODWORD (PrtElement->Address));
 
             AcpiOsPrintf ("    Pin: %X\n", PrtElement->Pin);
@@ -1219,7 +1224,7 @@ AcpiRsDumpIrqList (
 
             Buffer += PrtElement->Length;
 
-            PrtElement = (ACPI_PCI_ROUTING_TABLE *) Buffer;
+            PrtElement = ACPI_CAST_PTR (ACPI_PCI_ROUTING_TABLE, Buffer);
 
             if(0 == PrtElement->Length)
             {

@@ -2,7 +2,7 @@
  *
  * Module Name: tbxface - Public interfaces to the ACPI subsystem
  *                         ACPI table oriented interfaces
- *              $Revision: 1.50 $
+ *              $Revision: 1.61 $
  *
  *****************************************************************************/
 
@@ -10,7 +10,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2003, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -119,7 +119,6 @@
 
 #include "acpi.h"
 #include "acnamesp.h"
-#include "acinterp.h"
 #include "actables.h"
 
 
@@ -143,9 +142,8 @@
 ACPI_STATUS
 AcpiLoadTables (void)
 {
-    ACPI_PHYSICAL_ADDRESS   RsdpPhysicalAddress;
+    ACPI_POINTER            RsdpAddress;
     ACPI_STATUS             Status;
-    UINT32                  NumberOfTables = 0;
 
 
     ACPI_FUNCTION_TRACE ("AcpiLoadTables");
@@ -154,7 +152,7 @@ AcpiLoadTables (void)
     /* Get the RSDP */
 
     Status = AcpiOsGetRootPointer (ACPI_LOGICAL_ADDRESSING,
-                    &RsdpPhysicalAddress);
+                    &RsdpAddress);
     if (ACPI_FAILURE (Status))
     {
         ACPI_REPORT_ERROR (("AcpiLoadTables: Could not get RSDP, %s\n",
@@ -164,7 +162,9 @@ AcpiLoadTables (void)
 
     /* Map and validate the RSDP */
 
-    Status = AcpiTbVerifyRsdp (RsdpPhysicalAddress);
+    AcpiGbl_TableFlags = RsdpAddress.PointerType;
+
+    Status = AcpiTbVerifyRsdp (&RsdpAddress);
     if (ACPI_FAILURE (Status))
     {
         ACPI_REPORT_ERROR (("AcpiLoadTables: RSDP Failed validation: %s\n",
@@ -174,7 +174,7 @@ AcpiLoadTables (void)
 
     /* Get the RSDT via the RSDP */
 
-    Status = AcpiTbGetTableRsdt (&NumberOfTables);
+    Status = AcpiTbGetTableRsdt ();
     if (ACPI_FAILURE (Status))
     {
         ACPI_REPORT_ERROR (("AcpiLoadTables: Could not load RSDT: %s\n",
@@ -182,9 +182,9 @@ AcpiLoadTables (void)
         goto ErrorExit;
     }
 
-    /* Now get the rest of the tables */
+    /* Now get the tables needed by this subsystem (FADT, DSDT, etc.) */
 
-    Status = AcpiTbGetAllTables (NumberOfTables, NULL);
+    Status = AcpiTbGetRequiredTables ();
     if (ACPI_FAILURE (Status))
     {
         ACPI_REPORT_ERROR (("AcpiLoadTables: Error getting required tables (DSDT/FADT/FACS): %s\n",
@@ -192,7 +192,7 @@ AcpiLoadTables (void)
         goto ErrorExit;
     }
 
-    ACPI_DEBUG_PRINT ((ACPI_DB_OK, "ACPI Tables successfully loaded\n"));
+    ACPI_DEBUG_PRINT ((ACPI_DB_INIT, "ACPI Tables successfully acquired\n"));
 
 
     /* Load the namespace from the tables */
@@ -238,6 +238,7 @@ AcpiLoadTable (
 {
     ACPI_STATUS             Status;
     ACPI_TABLE_DESC         TableInfo;
+    ACPI_POINTER            Address;
 
 
     ACPI_FUNCTION_TRACE ("AcpiLoadTable");
@@ -250,7 +251,10 @@ AcpiLoadTable (
 
     /* Copy the table to a local buffer */
 
-    Status = AcpiTbGetTable (0, TablePtr, &TableInfo);
+    Address.PointerType     = ACPI_LOGICAL_POINTER | ACPI_LOGICAL_ADDRESSING;
+    Address.Pointer.Logical = TablePtr;
+
+    Status = AcpiTbGetTableBody (&Address, TablePtr, &TableInfo);
     if (ACPI_FAILURE (Status))
     {
         return_ACPI_STATUS (Status);
@@ -258,10 +262,10 @@ AcpiLoadTable (
 
     /* Install the new table into the local data structures */
 
-    Status = AcpiTbInstallTable (NULL, &TableInfo);
+    Status = AcpiTbInstallTable (&TableInfo);
     if (ACPI_FAILURE (Status))
     {
-        /* Free table allocated by AcpiTbGetTable */
+        /* Free table allocated by AcpiTbGetTableBody */
 
         AcpiTbDeleteSingleTable (&TableInfo);
         return_ACPI_STATUS (Status);
@@ -292,7 +296,7 @@ AcpiLoadTable (
     {
         /* Uninstall table and free the buffer */
 
-        AcpiTbUninstallTable (TableInfo.InstalledDesc);
+        (void) AcpiTbUninstallTable (TableInfo.InstalledDesc);
     }
 
     return_ACPI_STATUS (Status);
@@ -422,7 +426,7 @@ AcpiGetTableHeader (
     /*
      * Copy the header to the caller's buffer
      */
-    MEMCPY ((void *) OutTableHeader, (void *) TblPtr,
+    ACPI_MEMCPY ((void *) OutTableHeader, (void *) TblPtr,
                 sizeof (ACPI_TABLE_HEADER));
 
     return_ACPI_STATUS (Status);
@@ -460,7 +464,7 @@ AcpiGetTable (
 {
     ACPI_TABLE_HEADER       *TblPtr;
     ACPI_STATUS             Status;
-    UINT32                  TableLength;
+    ACPI_SIZE               TableLength;
 
 
     ACPI_FUNCTION_TRACE ("AcpiGetTable");
@@ -517,7 +521,7 @@ AcpiGetTable (
     }
     else
     {
-        TableLength = TblPtr->Length;
+        TableLength = (ACPI_SIZE) TblPtr->Length;
     }
 
     /* Validate/Allocate/Clear caller buffer */
@@ -530,7 +534,7 @@ AcpiGetTable (
 
     /* Copy the table to the buffer */
 
-    MEMCPY ((void *) RetBuffer->Pointer, (void *) TblPtr, TableLength);
+    ACPI_MEMCPY ((void *) RetBuffer->Pointer, (void *) TblPtr, TableLength);
     return_ACPI_STATUS (AE_OK);
 }
 

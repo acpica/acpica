@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: utxface - External interfaces for "global" ACPI functions
- *              $Revision: 1.91 $
+ *              $Revision: 1.101 $
  *
  *****************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2003, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -119,15 +119,10 @@
 
 #include "acpi.h"
 #include "acevents.h"
-#include "achware.h"
 #include "acnamesp.h"
-#include "acinterp.h"
-#include "amlcode.h"
-#include "acdebug.h"
-#include "acexcep.h"
 #include "acparser.h"
 #include "acdispat.h"
-
+#include "acdebug.h"
 
 #define _COMPONENT          ACPI_UTILITIES
         ACPI_MODULE_NAME    ("utxface")
@@ -198,7 +193,7 @@ AcpiInitializeSubsystem (
 
     /* If configured, initialize the AML debugger */
 
-    ACPI_DEBUGGER_EXEC (AcpiDbInitialize ());
+    ACPI_DEBUGGER_EXEC (Status = AcpiDbInitialize ());
 
     return_ACPI_STATUS (Status);
 }
@@ -229,14 +224,14 @@ AcpiEnableSubsystem (
 
     /*
      * Install the default OpRegion handlers.  These are installed unless
-     * other handlers have already been installed via the 
+     * other handlers have already been installed via the
      * InstallAddressSpaceHandler interface
      */
     if (!(Flags & ACPI_NO_ADDRESS_SPACE_INIT))
     {
         ACPI_DEBUG_PRINT ((ACPI_DB_EXEC, "[Init] Installing default address space handlers\n"));
 
-        Status = AcpiEvInstallDefaultAddressSpaceHandlers ();
+        Status = AcpiEvInitAddressSpaces ();
         if (ACPI_FAILURE (Status))
         {
             return_ACPI_STATUS (Status);
@@ -264,6 +259,8 @@ AcpiEnableSubsystem (
     if (!(Flags & ACPI_NO_ACPI_ENABLE))
     {
         ACPI_DEBUG_PRINT ((ACPI_DB_EXEC, "[Init] Going into ACPI mode\n"));
+
+        AcpiGbl_OriginalMode = AcpiHwGetMode();
 
         Status = AcpiEnable ();
         if (ACPI_FAILURE (Status))
@@ -302,6 +299,31 @@ AcpiEnableSubsystem (
             return_ACPI_STATUS (Status);
         }
     }
+
+    return_ACPI_STATUS (Status);
+}
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiInitializeObjects
+ *
+ * PARAMETERS:  Flags           - Init/enable Options
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Completes namespace initialization by initializing device
+ *              objects and executing AML code for Regions, buffers, etc.
+ *
+ ******************************************************************************/
+
+ACPI_STATUS
+AcpiInitializeObjects (
+    UINT32                  Flags)
+{
+    ACPI_STATUS             Status = AE_OK;
+
+
+    ACPI_FUNCTION_TRACE ("AcpiInitializeObjects");
 
     /*
      * Initialize all device objects in the namespace
@@ -361,6 +383,9 @@ AcpiEnableSubsystem (
 ACPI_STATUS
 AcpiTerminate (void)
 {
+    ACPI_STATUS         Status;
+
+
     ACPI_FUNCTION_TRACE ("AcpiTerminate");
 
 
@@ -378,7 +403,7 @@ AcpiTerminate (void)
     AcpiUtMutexTerminate ();
 
 
-#ifdef ENABLE_DEBUGGER
+#ifdef ACPI_DEBUGGER
 
     /* Shut down the debugger */
 
@@ -387,10 +412,8 @@ AcpiTerminate (void)
 
     /* Now we can shutdown the OS-dependent layer */
 
-    AcpiOsTerminate ();
-
-
-    return_ACPI_STATUS (AE_OK);
+    Status = AcpiOsTerminate ();
+    return_ACPI_STATUS (Status);
 }
 
 
@@ -514,6 +537,41 @@ AcpiGetSystemInfo (
     }
 
     return_ACPI_STATUS (AE_OK);
+}
+
+
+/*****************************************************************************
+ *
+ * FUNCTION:    AcpiInstallInitializationHandler
+ *
+ * PARAMETERS:  Handler             - Callback procedure
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Install an initialization handler
+ *
+ * TBD: When a second function is added, must save the Function also.
+ *
+ ****************************************************************************/
+
+ACPI_STATUS
+AcpiInstallInitializationHandler (
+    ACPI_INIT_HANDLER       Handler,
+    UINT32                  Function)
+{
+
+    if (!Handler)
+    {
+        return (AE_BAD_PARAMETER);
+    }
+
+    if (AcpiGbl_InitHandler)
+    {
+        return (AE_ALREADY_EXISTS);
+    }
+
+    AcpiGbl_InitHandler = Handler;
+    return AE_OK;
 }
 
 

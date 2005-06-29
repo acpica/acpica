@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: utmisc - common utility procedures
- *              $Revision: 1.65 $
+ *              $Revision: 1.93 $
  *
  ******************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2003, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -118,60 +118,253 @@
 #define __UTMISC_C__
 
 #include "acpi.h"
-#include "acevents.h"
-#include "achware.h"
 #include "acnamesp.h"
-#include "acinterp.h"
-#include "amlcode.h"
-#include "acdebug.h"
 
 
 #define _COMPONENT          ACPI_UTILITIES
         ACPI_MODULE_NAME    ("utmisc")
 
 
-#ifdef ACPI_DEBUG
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiUtPrintString
+ *
+ * PARAMETERS:  String          - Null terminated ASCII string
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Dump an ASCII string with support for ACPI-defined escape
+ *              sequences.
+ *
+ ******************************************************************************/
+
+void
+AcpiUtPrintString (
+    char                    *String,
+    UINT8                   MaxLength)
+{
+    UINT32                  i;
+
+
+    if (!String)
+    {
+        AcpiOsPrintf ("<\"NULL STRING PTR\">");
+        return;
+    }
+
+    AcpiOsPrintf ("\"");
+    for (i = 0; String[i] && (i < MaxLength); i++)
+    {
+        /* Escape sequences */
+
+        switch (String[i])
+        {
+        case 0x07:
+            AcpiOsPrintf ("\\a");        /* BELL */
+            break;
+
+        case 0x08:
+            AcpiOsPrintf ("\\b");       /* BACKSPACE */
+            break;
+
+        case 0x0C:
+            AcpiOsPrintf ("\\f");       /* FORMFEED */
+            break;
+
+        case 0x0A:
+            AcpiOsPrintf ("\\n");       /* LINEFEED */
+            break;
+
+        case 0x0D:
+            AcpiOsPrintf ("\\r");       /* CARRIAGE RETURN*/
+            break;
+
+        case 0x09:
+            AcpiOsPrintf ("\\t");       /* HORIZONTAL TAB */
+            break;
+
+        case 0x0B:
+            AcpiOsPrintf ("\\v");       /* VERTICAL TAB */
+            break;
+
+        case '\'':                      /* Single Quote */
+        case '\"':                      /* Double Quote */
+        case '\\':                      /* Backslash */
+            AcpiOsPrintf ("\\%c", (int) String[i]);
+            break;
+
+        default:
+
+            /* Check for printable character or hex escape */
+
+            if (ACPI_IS_PRINT (String[i]))
+            {
+                /* This is a normal character */
+
+                AcpiOsPrintf ("%c", (int) String[i]);
+            }
+            else
+            {
+                /* All others will be Hex escapes */
+
+                AcpiOsPrintf ("\\x%2.2X", (INT32) String[i]);
+            }
+            break;
+        }
+    }
+    AcpiOsPrintf ("\"");
+
+    if (i == MaxLength && String[i])
+    {
+        AcpiOsPrintf ("...");
+    }
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiUtDwordByteSwap
+ *
+ * PARAMETERS:  Value           - Value to be converted
+ *
+ * DESCRIPTION: Convert a 32-bit value to big-endian (swap the bytes)
+ *
+ ******************************************************************************/
+
+UINT32
+AcpiUtDwordByteSwap (
+    UINT32                  Value)
+{
+    union
+    {
+        UINT32              Value;
+        UINT8               Bytes[4];
+    } Out;
+
+    union
+    {
+        UINT32              Value;
+        UINT8               Bytes[4];
+    } In;
+
+
+    ACPI_FUNCTION_ENTRY ();
+
+
+    In.Value = Value;
+
+    Out.Bytes[0] = In.Bytes[3];
+    Out.Bytes[1] = In.Bytes[2];
+    Out.Bytes[2] = In.Bytes[1];
+    Out.Bytes[3] = In.Bytes[0];
+
+    return (Out.Value);
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiUtSetIntegerWidth
+ *
+ * PARAMETERS:  Revision            From DSDT header
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Set the global integer bit width based upon the revision
+ *              of the DSDT.  For Revision 1 and 0, Integers are 32 bits.
+ *              For Revision 2 and above, Integers are 64 bits.  Yes, this
+ *              makes a difference.
+ *
+ ******************************************************************************/
+
+void
+AcpiUtSetIntegerWidth (
+    UINT8                   Revision)
+{
+
+    if (Revision <= 1)
+    {
+        AcpiGbl_IntegerBitWidth  = 32;
+        AcpiGbl_IntegerByteWidth = 4;
+    }
+    else
+    {
+        AcpiGbl_IntegerBitWidth  = 64;
+        AcpiGbl_IntegerByteWidth = 8;
+    }
+}
+
+
+#ifdef ACPI_DEBUG_OUTPUT
 /*******************************************************************************
  *
  * FUNCTION:    AcpiUtDisplayInitPathname
  *
  * PARAMETERS:  ObjHandle           - Handle whose pathname will be displayed
- *              Path                - Additional path string to be appended
+ *              Path                - Additional path string to be appended.
+ *                                      (NULL if no extra path)
  *
  * RETURN:      ACPI_STATUS
  *
- * DESCRIPTION: Display full pathnbame of an object, DEBUG ONLY
+ * DESCRIPTION: Display full pathname of an object, DEBUG ONLY
  *
  ******************************************************************************/
 
 void
 AcpiUtDisplayInitPathname (
-    ACPI_HANDLE             ObjHandle,
+    UINT8                   Type,
+    ACPI_NAMESPACE_NODE     *ObjHandle,
     char                    *Path)
 {
     ACPI_STATUS             Status;
     ACPI_BUFFER             Buffer;
 
 
-    ACPI_FUNCTION_NAME ("UtDisplayInitPathname");
+    ACPI_FUNCTION_ENTRY ();
 
+
+    /* Only print the path if the appropriate debug level is enabled */
+
+    if (!(AcpiDbgLevel & ACPI_LV_INIT_NAMES))
+    {
+        return;
+    }
+
+    /* Get the full pathname to the node */
 
     Buffer.Length = ACPI_ALLOCATE_LOCAL_BUFFER;
-
     Status = AcpiNsHandleToPathname (ObjHandle, &Buffer);
-    if (ACPI_SUCCESS (Status))
+    if (ACPI_FAILURE (Status))
     {
-        if (Path)
-        {
-            ACPI_DEBUG_PRINT ((ACPI_DB_INIT, "%s.%s\n", (char *) Buffer.Pointer, Path));
-        }
-        else
-        {
-            ACPI_DEBUG_PRINT ((ACPI_DB_INIT, "%s\n", (char *) Buffer.Pointer));
-        }
-
-        ACPI_MEM_FREE (Buffer.Pointer);
+        return;
     }
+
+    /* Print what we're doing */
+
+    switch (Type)
+    {
+    case ACPI_TYPE_METHOD:
+        AcpiOsPrintf ("Executing    ");
+        break;
+
+    default:
+        AcpiOsPrintf ("Initializing ");
+        break;
+    }
+
+    /* Print the object type and pathname */
+
+    AcpiOsPrintf ("%-12s  %s", AcpiUtGetTypeName (Type), (char *) Buffer.Pointer);
+
+    /* Extra path is used to append names like _STA, _INI, etc. */
+
+    if (Path)
+    {
+        AcpiOsPrintf (".%s", Path);
+    }
+    AcpiOsPrintf ("\n");
+
+    ACPI_MEM_FREE (Buffer.Pointer);
 }
 #endif
 
@@ -195,7 +388,7 @@ BOOLEAN
 AcpiUtValidAcpiName (
     UINT32                  Name)
 {
-    NATIVE_CHAR             *NamePtr = (NATIVE_CHAR *) &Name;
+    char                    *NamePtr = (char *) &Name;
     UINT32                  i;
 
 
@@ -230,7 +423,7 @@ AcpiUtValidAcpiName (
 
 BOOLEAN
 AcpiUtValidAcpiCharacter (
-    NATIVE_CHAR             Character)
+    char                    Character)
 {
 
     ACPI_FUNCTION_ENTRY ();
@@ -238,6 +431,169 @@ AcpiUtValidAcpiCharacter (
     return ((BOOLEAN)   ((Character == '_') ||
                         (Character >= 'A' && Character <= 'Z') ||
                         (Character >= '0' && Character <= '9')));
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiUtStrtoul64
+ *
+ * PARAMETERS:  String          - Null terminated string
+ *              Terminater      - Where a pointer to the terminating byte is returned
+ *              Base            - Radix of the string
+ *
+ * RETURN:      Converted value
+ *
+ * DESCRIPTION: Convert a string into an unsigned value.
+ *
+ ******************************************************************************/
+#define NEGATIVE    1
+#define POSITIVE    0
+
+ACPI_STATUS
+AcpiUtStrtoul64 (
+    char                    *String,
+    UINT32                  Base,
+    ACPI_INTEGER            *RetInteger)
+{
+    UINT32                  Index;
+    ACPI_INTEGER            ReturnValue = 0;
+    ACPI_STATUS             Status = AE_OK;
+    ACPI_INTEGER            Dividend;
+    ACPI_INTEGER            Quotient;
+
+
+    *RetInteger = 0;
+
+    switch (Base)
+    {
+    case 0:
+    case 8:
+    case 10:
+    case 16:
+        break;
+
+    default:
+        /*
+         * The specified Base parameter is not in the domain of
+         * this function:
+         */
+        return (AE_BAD_PARAMETER);
+    }
+
+    /*
+     * skip over any white space in the buffer:
+     */
+    while (ACPI_IS_SPACE (*String) || *String == '\t')
+    {
+        ++String;
+    }
+
+    /*
+     * If the input parameter Base is zero, then we need to
+     * determine if it is octal, decimal, or hexadecimal:
+     */
+    if (Base == 0)
+    {
+        if (*String == '0')
+        {
+            if (ACPI_TOLOWER (*(++String)) == 'x')
+            {
+                Base = 16;
+                ++String;
+            }
+            else
+            {
+                Base = 8;
+            }
+        }
+        else
+        {
+            Base = 10;
+        }
+    }
+
+    /*
+     * For octal and hexadecimal bases, skip over the leading
+     * 0 or 0x, if they are present.
+     */
+    if (Base == 8 && *String == '0')
+    {
+        String++;
+    }
+
+    if (Base == 16 &&
+        *String == '0' &&
+        ACPI_TOLOWER (*(++String)) == 'x')
+    {
+        String++;
+    }
+
+    /* Main loop: convert the string to an unsigned long */
+
+    while (*String)
+    {
+        if (ACPI_IS_DIGIT (*String))
+        {
+            Index = ((UINT8) *String) - '0';
+        }
+        else
+        {
+            Index = (UINT8) ACPI_TOUPPER (*String);
+            if (ACPI_IS_UPPER ((char) Index))
+            {
+                Index = Index - 'A' + 10;
+            }
+            else
+            {
+                goto ErrorExit;
+            }
+        }
+
+        if (Index >= Base)
+        {
+            goto ErrorExit;
+        }
+
+        /* Check to see if value is out of range: */
+
+        Dividend = ACPI_INTEGER_MAX - (ACPI_INTEGER) Index;
+        (void) AcpiUtShortDivide (&Dividend, Base, &Quotient, NULL);
+        if (ReturnValue > Quotient)
+        {
+            goto ErrorExit;
+        }
+
+        ReturnValue *= Base;
+        ReturnValue += Index;
+        ++String;
+    }
+
+    *RetInteger = ReturnValue;
+    return (Status);
+
+
+ErrorExit:
+    switch (Base)
+    {
+    case 8:
+        Status = AE_BAD_OCTAL_CONSTANT;
+        break;
+
+    case 10:
+        Status = AE_BAD_DECIMAL_CONSTANT;
+        break;
+
+    case 16:
+        Status = AE_BAD_HEX_CONSTANT;
+        break;
+
+    default:
+        /* Base validated above */
+        break;
+    }
+
+    return (Status);
 }
 
 
@@ -253,11 +609,11 @@ AcpiUtValidAcpiCharacter (
  *
  ******************************************************************************/
 
-NATIVE_CHAR *
+char *
 AcpiUtStrupr (
-    NATIVE_CHAR             *SrcString)
+    char                    *SrcString)
 {
-    NATIVE_CHAR             *String;
+    char                    *String;
 
 
     ACPI_FUNCTION_ENTRY ();
@@ -267,10 +623,9 @@ AcpiUtStrupr (
 
     for (String = SrcString; *String; )
     {
-        *String = (char) TOUPPER (*String);
+        *String = (char) ACPI_TOUPPER (*String);
         String++;
     }
-
 
     return (SrcString);
 }
@@ -341,7 +696,7 @@ AcpiUtMutexTerminate (
      */
     for (i = 0; i < NUM_MTX; i++)
     {
-        AcpiUtDeleteMutex (i);
+        (void) AcpiUtDeleteMutex (i);
     }
 
     return_VOID;
@@ -374,7 +729,6 @@ AcpiUtCreateMutex (
     {
         return_ACPI_STATUS (AE_BAD_PARAMETER);
     }
-
 
     if (!AcpiGbl_AcpiMutexInfo[MutexId].Mutex)
     {
@@ -415,7 +769,6 @@ AcpiUtDeleteMutex (
         return_ACPI_STATUS (AE_BAD_PARAMETER);
     }
 
-
     Status = AcpiOsDeleteSemaphore (AcpiGbl_AcpiMutexInfo[MutexId].Mutex);
 
     AcpiGbl_AcpiMutexInfo[MutexId].Mutex = NULL;
@@ -454,7 +807,6 @@ AcpiUtAcquireMutex (
         return (AE_BAD_PARAMETER);
     }
 
-
     ThisThreadId = AcpiOsGetThreadId ();
 
     /*
@@ -485,14 +837,12 @@ AcpiUtAcquireMutex (
         }
     }
 
-
     ACPI_DEBUG_PRINT ((ACPI_DB_MUTEX,
                 "Thread %X attempting to acquire Mutex [%s]\n",
                 ThisThreadId, AcpiUtGetMutexName (MutexId)));
 
     Status = AcpiOsWaitSemaphore (AcpiGbl_AcpiMutexInfo[MutexId].Mutex,
-                                    1, WAIT_FOREVER);
-
+                                    1, ACPI_WAIT_FOREVER);
     if (ACPI_SUCCESS (Status))
     {
         ACPI_DEBUG_PRINT ((ACPI_DB_MUTEX, "Thread %X acquired Mutex [%s]\n",
@@ -501,7 +851,6 @@ AcpiUtAcquireMutex (
         AcpiGbl_AcpiMutexInfo[MutexId].UseCount++;
         AcpiGbl_AcpiMutexInfo[MutexId].OwnerId = ThisThreadId;
     }
-
     else
     {
         ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Thread %X could not acquire Mutex [%s] %s\n",
@@ -547,7 +896,6 @@ AcpiUtReleaseMutex (
         return (AE_BAD_PARAMETER);
     }
 
-
     /*
      * Mutex must be acquired in order to release it!
      */
@@ -559,7 +907,6 @@ AcpiUtReleaseMutex (
 
         return (AE_NOT_ACQUIRED);
     }
-
 
     /*
      * Deadlock prevention.  Check if this thread owns any mutexes of value
@@ -583,7 +930,6 @@ AcpiUtReleaseMutex (
             return (AE_RELEASE_DEADLOCK);
         }
     }
-
 
     /* Mark unlocked FIRST */
 
@@ -646,7 +992,6 @@ AcpiUtCreateUpdateStateAndPush (
         return (AE_NO_MEMORY);
     }
 
-
     AcpiUtPushGenericState (StateList, State);
     return (AE_OK);
 }
@@ -684,7 +1029,6 @@ AcpiUtCreatePkgStateAndPush (
     {
         return (AE_NO_MEMORY);
     }
-
 
     AcpiUtPushGenericState (StateList, State);
     return (AE_OK);
@@ -954,7 +1298,6 @@ AcpiUtCreateControlState (
         return_PTR (NULL);
     }
 
-
     /* Init fields specific to the control struct */
 
     State->Common.DataType  = ACPI_DESC_TYPE_STATE_CONTROL;
@@ -1016,116 +1359,6 @@ AcpiUtDeleteGenericStateCache (
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiUtResolveReference
- *
- * PARAMETERS:  ACPI_PKG_CALLBACK
- *
- * RETURN:      Status          - the status of the call
- *
- * DESCRIPTION: Resolve a reference object to an actual value
- *
- ******************************************************************************/
-
-ACPI_STATUS
-AcpiUtResolveReference (
-    UINT8                   ObjectType,
-    ACPI_OPERAND_OBJECT     *SourceObject,
-    ACPI_GENERIC_STATE      *State,
-    void                    *Context)
-{
-    ACPI_PKG_INFO           *Info = (ACPI_PKG_INFO *) Context;
-
-
-    switch (ObjectType)
-    {
-    case ACPI_COPY_TYPE_SIMPLE:
-
-        /*
-         * Simple object - check for a reference
-         */
-        if (SourceObject->Common.Type == INTERNAL_TYPE_REFERENCE)
-        {
-            switch (SourceObject->Reference.Opcode)
-            {
-            case AML_ZERO_OP:
-
-                SourceObject->Common.Type  = ACPI_TYPE_INTEGER;
-                SourceObject->Integer.Value = 0;
-                break;
-
-            case AML_ONE_OP:
-
-                SourceObject->Common.Type  = ACPI_TYPE_INTEGER;
-                SourceObject->Integer.Value = 1;
-                break;
-
-            case AML_ONES_OP:
-
-                SourceObject->Common.Type  = ACPI_TYPE_INTEGER;
-                SourceObject->Integer.Value = ACPI_INTEGER_MAX;
-                break;
-            }
-        }
-        break;
-
-
-    case ACPI_COPY_TYPE_PACKAGE:
-
-        /* Package object - nothing much to do here, let the walk handle it */
-
-        Info->NumPackages++;
-        State->Pkg.ThisTargetObj = NULL;
-        break;
-    }
-
-    return (AE_OK);
-}
-
-
-/*******************************************************************************
- *
- * FUNCTION:    AcpiUtResolvePackageReferences
- *
- * PARAMETERS:  ObjDesc         - The Package object on which to resolve refs
- *
- * RETURN:      Status
- *
- * DESCRIPTION: Walk through a package and turn internal references into values
- *
- ******************************************************************************/
-
-ACPI_STATUS
-AcpiUtResolvePackageReferences (
-    ACPI_OPERAND_OBJECT     *ObjDesc)
-{
-    ACPI_PKG_INFO           Info;
-    ACPI_STATUS             Status;
-
-
-    ACPI_FUNCTION_TRACE ("UtResolvePackageReferences");
-
-
-    if (ObjDesc->Common.Type != ACPI_TYPE_PACKAGE)
-    {
-        /* The object must be a package */
-
-        ACPI_REPORT_ERROR (("Expecting a Package object\n"));
-        return_ACPI_STATUS (AE_TYPE);
-    }
-
-    Info.Length      = 0;
-    Info.ObjectSpace = 0;
-    Info.NumPackages = 1;
-
-    Status = AcpiUtWalkPackageTree (ObjDesc, NULL,
-                            AcpiUtResolveReference, &Info);
-
-    return_ACPI_STATUS (Status);
-}
-
-
-/*******************************************************************************
- *
  * FUNCTION:    AcpiUtWalkPackageTree
  *
  * PARAMETERS:  ObjDesc         - The Package object on which to resolve refs
@@ -1161,6 +1394,8 @@ AcpiUtWalkPackageTree (
 
     while (State)
     {
+        /* Get one element of the package */
+
         ThisIndex     = State->Pkg.Index;
         ThisSourceObj = (ACPI_OPERAND_OBJECT *)
                         State->Pkg.SourceObject->Package.Elements[ThisIndex];
@@ -1174,8 +1409,8 @@ AcpiUtWalkPackageTree (
          *    case below.
          */
         if ((!ThisSourceObj) ||
-            (ACPI_GET_DESCRIPTOR_TYPE (ThisSourceObj) != ACPI_DESC_TYPE_INTERNAL) ||
-            (ThisSourceObj->Common.Type != ACPI_TYPE_PACKAGE))
+            (ACPI_GET_DESCRIPTOR_TYPE (ThisSourceObj) != ACPI_DESC_TYPE_OPERAND) ||
+            (ACPI_GET_OBJECT_TYPE (ThisSourceObj) != ACPI_TYPE_PACKAGE))
         {
             Status = WalkCallback (ACPI_COPY_TYPE_SIMPLE, ThisSourceObj,
                                     State, Context);
@@ -1268,6 +1503,7 @@ AcpiUtGenerateChecksum (
     UINT32                  i;
     signed char             Sum = 0;
 
+
     for (i = 0; i < Length; i++)
     {
         Sum = (signed char) (Sum + Buffer[i]);
@@ -1351,7 +1587,7 @@ AcpiUtGetResourceEndTag (
 
 void
 AcpiUtReportError (
-    NATIVE_CHAR             *ModuleName,
+    char                    *ModuleName,
     UINT32                  LineNumber,
     UINT32                  ComponentId)
 {
@@ -1378,7 +1614,7 @@ AcpiUtReportError (
 
 void
 AcpiUtReportWarning (
-    NATIVE_CHAR             *ModuleName,
+    char                    *ModuleName,
     UINT32                  LineNumber,
     UINT32                  ComponentId)
 {
@@ -1404,7 +1640,7 @@ AcpiUtReportWarning (
 
 void
 AcpiUtReportInfo (
-    NATIVE_CHAR             *ModuleName,
+    char                    *ModuleName,
     UINT32                  LineNumber,
     UINT32                  ComponentId)
 {

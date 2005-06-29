@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: rsxface - Public interfaces to the resource manager
- *              $Revision: 1.18 $
+ *              $Revision: 1.20 $
  *
  ******************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2003, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -118,8 +118,6 @@
 #define __RSXFACE_C__
 
 #include "acpi.h"
-#include "acinterp.h"
-#include "acnamesp.h"
 #include "acresrc.h"
 
 #define _COMPONENT          ACPI_RESOURCES

@@ -2,7 +2,7 @@
  *
  * Module Name: nsobject - Utilities for objects attached to namespace
  *                         table entries
- *              $Revision: 1.81 $
+ *              $Revision: 1.87 $
  *
  ******************************************************************************/
 
@@ -10,7 +10,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2003, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -227,16 +227,9 @@ AcpiNsAttachObject (
     {
         ObjDesc = (ACPI_OPERAND_OBJECT  *) Object;
 
-        /* If a valid type (non-ANY) was given, just use it */
+        /* Use the given type */
 
-        if (ACPI_TYPE_ANY != Type)
-        {
-            ObjectType = Type;
-        }
-        else
-        {
-            ObjectType = INTERNAL_TYPE_DEF_ANY;
-        }
+        ObjectType = Type;
     }
 
     ACPI_DEBUG_PRINT ((ACPI_DB_EXEC, "Installing %p into Node %p [%4.4s]\n",
@@ -283,13 +276,13 @@ AcpiNsAttachObject (
  *
  * FUNCTION:    AcpiNsDetachObject
  *
- * PARAMETERS:  Node           - An object whose Value will be deleted
+ * PARAMETERS:  Node           - An node whose object will be detached
  *
  * RETURN:      None.
  *
- * DESCRIPTION: Delete the Value associated with a namespace object.  If the
- *              Value is an allocated object, it is freed.  Otherwise, the
- *              field is simply cleared.
+ * DESCRIPTION: Detach/delete an object associated with a namespace node.
+ *              if the object is an allocated object, it is freed.
+ *              Otherwise, the field is simply cleared.
  *
  ******************************************************************************/
 
@@ -304,8 +297,9 @@ AcpiNsDetachObject (
 
 
     ObjDesc = Node->Object;
-    if (!ObjDesc    ||
-        (ObjDesc->Common.Type == INTERNAL_TYPE_DATA))
+
+    if (!ObjDesc ||
+        (ACPI_GET_OBJECT_TYPE (ObjDesc) == ACPI_TYPE_LOCAL_DATA))
     {
         return_VOID;
     }
@@ -313,11 +307,11 @@ AcpiNsDetachObject (
     /* Clear the entry in all cases */
 
     Node->Object = NULL;
-    if (ACPI_GET_DESCRIPTOR_TYPE (ObjDesc) == ACPI_DESC_TYPE_INTERNAL)
+    if (ACPI_GET_DESCRIPTOR_TYPE (ObjDesc) == ACPI_DESC_TYPE_OPERAND)
     {
         Node->Object = ObjDesc->Common.NextObject;
         if (Node->Object &&
-           (Node->Object->Common.Type != INTERNAL_TYPE_DATA))
+           (ACPI_GET_OBJECT_TYPE (Node->Object) != ACPI_TYPE_LOCAL_DATA))
         {
             Node->Object = Node->Object->Common.NextObject;
         }
@@ -346,6 +340,8 @@ AcpiNsDetachObject (
  * RETURN:      Current value of the object field from the Node whose
  *              handle is passed
  *
+ * DESCRIPTION: Obtain the object attached to a namespace node.
+ *
  ******************************************************************************/
 
 ACPI_OPERAND_OBJECT *
@@ -362,9 +358,9 @@ AcpiNsGetAttachedObject (
     }
 
     if (!Node->Object ||
-            ((ACPI_GET_DESCRIPTOR_TYPE (Node->Object) != ACPI_DESC_TYPE_INTERNAL)  &&
-             (ACPI_GET_DESCRIPTOR_TYPE (Node->Object) != ACPI_DESC_TYPE_NAMED))    ||
-        (Node->Object->Common.Type == INTERNAL_TYPE_DATA))
+            ((ACPI_GET_DESCRIPTOR_TYPE (Node->Object) != ACPI_DESC_TYPE_OPERAND) &&
+             (ACPI_GET_DESCRIPTOR_TYPE (Node->Object) != ACPI_DESC_TYPE_NAMED))  ||
+        (ACPI_GET_OBJECT_TYPE (Node->Object) == ACPI_TYPE_LOCAL_DATA))
     {
         return_PTR (NULL);
     }
@@ -380,7 +376,9 @@ AcpiNsGetAttachedObject (
  * PARAMETERS:  Node             - Parent Node to be examined
  *
  * RETURN:      Current value of the object field from the Node whose
- *              handle is passed
+ *              handle is passed.
+ *
+ * DESCRIPTION: Obtain a secondary object associated with a namespace node.
  *
  ******************************************************************************/
 
@@ -391,10 +389,10 @@ AcpiNsGetSecondaryObject (
     ACPI_FUNCTION_TRACE_PTR ("NsGetSecondaryObject", ObjDesc);
 
 
-    if ((!ObjDesc)                                   ||
-        (ObjDesc->Common.Type == INTERNAL_TYPE_DATA) ||
-        (!ObjDesc->Common.NextObject)                ||
-        (ObjDesc->Common.NextObject->Common.Type == INTERNAL_TYPE_DATA))
+    if ((!ObjDesc)                                                ||
+        (ACPI_GET_OBJECT_TYPE (ObjDesc) == ACPI_TYPE_LOCAL_DATA)  ||
+        (!ObjDesc->Common.NextObject)                             ||
+        (ACPI_GET_OBJECT_TYPE (ObjDesc->Common.NextObject) == ACPI_TYPE_LOCAL_DATA))
     {
         return_PTR (NULL);
     }
@@ -407,11 +405,13 @@ AcpiNsGetSecondaryObject (
  *
  * FUNCTION:    AcpiNsAttachData
  *
- * PARAMETERS:
+ * PARAMETERS:  Node            - Namespace node
+ *              Handler         - Handler to be associated with the data
+ *              Data            - Data to be attached
  *
  * RETURN:      Status
  *
- * DESCRIPTION:
+ * DESCRIPTION: Low-level attach data.  Create and attach a Data object.
  *
  ******************************************************************************/
 
@@ -426,12 +426,13 @@ AcpiNsAttachData (
     ACPI_OPERAND_OBJECT     *DataDesc;
 
 
-    /* */
+    /* We only allow one attachment per handler */
+
     PrevObjDesc = NULL;
     ObjDesc = Node->Object;
     while (ObjDesc)
     {
-        if ((ObjDesc->Common.Type == INTERNAL_TYPE_DATA) &&
+        if ((ACPI_GET_OBJECT_TYPE (ObjDesc) == ACPI_TYPE_LOCAL_DATA) &&
             (ObjDesc->Data.Handler == Handler))
         {
             return (AE_ALREADY_EXISTS);
@@ -441,10 +442,9 @@ AcpiNsAttachData (
         ObjDesc = ObjDesc->Common.NextObject;
     }
 
-
     /* Create an internal object for the data */
 
-    DataDesc = AcpiUtCreateInternalObject (INTERNAL_TYPE_DATA);
+    DataDesc = AcpiUtCreateInternalObject (ACPI_TYPE_LOCAL_DATA);
     if (!DataDesc)
     {
         return (AE_NO_MEMORY);
@@ -452,7 +452,6 @@ AcpiNsAttachData (
 
     DataDesc->Data.Handler = Handler;
     DataDesc->Data.Pointer = Data;
-
 
     /* Install the data object */
 
@@ -473,11 +472,13 @@ AcpiNsAttachData (
  *
  * FUNCTION:    AcpiNsDetachData
  *
- * PARAMETERS:
+ * PARAMETERS:  Node            - Namespace node
+ *              Handler         - Handler associated with the data
  *
  * RETURN:      Status
  *
- * DESCRIPTION:
+ * DESCRIPTION: Low-level detach data.  Delete the data node, but the caller
+ *              is responsible for the actual data.
  *
  ******************************************************************************/
 
@@ -494,7 +495,7 @@ AcpiNsDetachData (
     ObjDesc = Node->Object;
     while (ObjDesc)
     {
-        if ((ObjDesc->Common.Type == INTERNAL_TYPE_DATA) &&
+        if ((ACPI_GET_OBJECT_TYPE (ObjDesc) == ACPI_TYPE_LOCAL_DATA) &&
             (ObjDesc->Data.Handler == Handler))
         {
             if (PrevObjDesc)
@@ -522,11 +523,14 @@ AcpiNsDetachData (
  *
  * FUNCTION:    AcpiNsGetAttachedData
  *
- * PARAMETERS:
+ * PARAMETERS:  Node            - Namespace node
+ *              Handler         - Handler associated with the data
+ *              Data            - Where the data is returned
  *
  * RETURN:      Status
  *
- * DESCRIPTION:
+ * DESCRIPTION: Low level interface to obtain data previously associated with
+ *              a namespace node.
  *
  ******************************************************************************/
 
@@ -542,7 +546,7 @@ AcpiNsGetAttachedData (
     ObjDesc = Node->Object;
     while (ObjDesc)
     {
-        if ((ObjDesc->Common.Type == INTERNAL_TYPE_DATA) &&
+        if ((ACPI_GET_OBJECT_TYPE (ObjDesc) == ACPI_TYPE_LOCAL_DATA) &&
             (ObjDesc->Data.Handler == Handler))
         {
             *Data = ObjDesc->Data.Pointer;

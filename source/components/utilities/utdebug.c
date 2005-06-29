@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: utdebug - Debug print routines
- *              $Revision: 1.94 $
+ *              $Revision: 1.108 $
  *
  *****************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2003, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -122,12 +122,11 @@
         ACPI_MODULE_NAME    ("utdebug")
 
 
-UINT32          AcpiGbl_PrevThreadId = 0xFFFFFFFF;
-char            *AcpiGbl_FnEntryStr = "----Entry";
-char            *AcpiGbl_FnExitStr  = "----Exit-";
+#ifdef ACPI_DEBUG_OUTPUT
 
-
-#ifdef ACPI_DEBUG
+static UINT32   AcpiGbl_PrevThreadId = 0xFFFFFFFF;
+static char     *AcpiGbl_FnEntryStr = "----Entry";
+static char     *AcpiGbl_FnExitStr  = "----Exit-";
 
 
 /*****************************************************************************
@@ -206,7 +205,7 @@ AcpiUtTrackStackPtr (
  *
  ****************************************************************************/
 
-void
+void  ACPI_INTERNAL_VAR_XFACE
 AcpiUtDebugPrint (
     UINT32                  RequestedDebugLevel,
     UINT32                  LineNumber,
@@ -226,7 +225,6 @@ AcpiUtDebugPrint (
     {
         return;
     }
-
 
     /*
      * Thread tracking and context switch notification
@@ -248,15 +246,14 @@ AcpiUtDebugPrint (
      * Display the module name, current line number, thread ID (if requested),
      * current procedure nesting level, and the current procedure name
      */
-    AcpiOsPrintf ("%8s-%04d ", DbgInfo->ModuleName, LineNumber);
+    AcpiOsPrintf ("%8s-%04ld ", DbgInfo->ModuleName, LineNumber);
 
     if (ACPI_LV_THREADS & AcpiDbgLevel)
     {
-        AcpiOsPrintf ("[%04X] ", ThreadId, AcpiGbl_NestingLevel, DbgInfo->ProcName);
+        AcpiOsPrintf ("[%04lX] ", ThreadId);
     }
 
-    AcpiOsPrintf ("[%02d] %-22.22s: ", AcpiGbl_NestingLevel, DbgInfo->ProcName);
-
+    AcpiOsPrintf ("[%02ld] %-22.22s: ", AcpiGbl_NestingLevel, DbgInfo->ProcName);
 
     va_start (args, Format);
     AcpiOsVprintf (Format, args);
@@ -283,7 +280,7 @@ AcpiUtDebugPrint (
  *
  ****************************************************************************/
 
-void
+void  ACPI_INTERNAL_VAR_XFACE
 AcpiUtDebugPrintRaw (
     UINT32                  RequestedDebugLevel,
     UINT32                  LineNumber,
@@ -301,7 +298,6 @@ AcpiUtDebugPrintRaw (
     }
 
     va_start (args, Format);
-
     AcpiOsVprintf (Format, args);
 }
 
@@ -391,7 +387,7 @@ void
 AcpiUtTraceStr (
     UINT32                  LineNumber,
     ACPI_DEBUG_PRINT_INFO   *DbgInfo,
-    NATIVE_CHAR             *String)
+    char                    *String)
 {
 
     AcpiGbl_NestingLevel++;
@@ -533,7 +529,7 @@ AcpiUtValueExit (
 {
 
     AcpiUtDebugPrint (ACPI_LV_FUNCTIONS, LineNumber, DbgInfo,
-            "%s %8.8X%8.8X\n", AcpiGbl_FnExitStr, 
+            "%s %8.8X%8.8X\n", AcpiGbl_FnExitStr,
             ACPI_HIDWORD (Value), ACPI_LODWORD (Value));
 
     AcpiGbl_NestingLevel--;
@@ -596,8 +592,8 @@ AcpiUtDumpBuffer (
     UINT32                  Display,
     UINT32                  ComponentId)
 {
-    UINT32                  i = 0;
-    UINT32                  j;
+    ACPI_NATIVE_UINT        i = 0;
+    ACPI_NATIVE_UINT        j;
     UINT32                  Temp32;
     UINT8                   BufChar;
 
@@ -610,6 +606,12 @@ AcpiUtDumpBuffer (
         return;
     }
 
+    if ((Count < 4) || (Count & 0x01))
+    {
+        Display = DB_BYTE_DISPLAY;
+    }
+
+    AcpiOsPrintf ("\nOffset   Value\n");
 
     /*
      * Nasty little dump buffer routine!
@@ -618,8 +620,7 @@ AcpiUtDumpBuffer (
     {
         /* Print current offset */
 
-        AcpiOsPrintf ("%05X    ", i);
-
+        AcpiOsPrintf ("%05X    ", (UINT32) i);
 
         /* Print 16 hex chars */
 
@@ -677,12 +678,10 @@ AcpiUtDumpBuffer (
             }
         }
 
-
         /*
          * Print the ASCII equivalent characters
          * But watch out for the bad unprintable ones...
          */
-
         for (j = 0; j < 16; j++)
         {
             if (i + j >= Count)

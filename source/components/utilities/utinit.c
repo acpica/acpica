@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: utinit - Common ACPI subsystem initialization
- *              $Revision: 1.108 $
+ *              $Revision: 1.116 $
  *
  *****************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2003, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -118,13 +118,11 @@
 #define __UTINIT_C__
 
 #include "acpi.h"
-#include "achware.h"
 #include "acnamesp.h"
 #include "acevents.h"
 
 #define _COMPONENT          ACPI_UTILITIES
         ACPI_MODULE_NAME    ("utinit")
-
 
 
 /*******************************************************************************
@@ -144,14 +142,14 @@
 
 static void
 AcpiUtFadtRegisterError (
-    NATIVE_CHAR             *RegisterName,
+    char                    *RegisterName,
     UINT32                  Value,
     ACPI_SIZE               Offset)
 {
 
     ACPI_REPORT_WARNING (
-        ("Invalid FADT value %s=%lX at offset %lX FADT=%p\n",
-        RegisterName, Value, Offset, AcpiGbl_FADT));
+        ("Invalid FADT value %s=%X at offset %X FADT=%p\n",
+        RegisterName, Value, (UINT32) Offset, AcpiGbl_FADT));
 }
 
 
@@ -284,7 +282,7 @@ AcpiUtTerminate (void)
  *
  ******************************************************************************/
 
-ACPI_STATUS
+void
 AcpiUtSubsystemShutdown (void)
 {
 
@@ -295,7 +293,7 @@ AcpiUtSubsystemShutdown (void)
     if (AcpiGbl_Shutdown)
     {
         ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "ACPI Subsystem is already terminated\n"));
-        return_ACPI_STATUS (AE_OK);
+        return_VOID;
     }
 
     /* Subsystem appears active, go ahead and shut it down */
@@ -303,13 +301,13 @@ AcpiUtSubsystemShutdown (void)
     AcpiGbl_Shutdown = TRUE;
     ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "Shutting down ACPI Subsystem...\n"));
 
-    /* Close the Namespace */
-
-    AcpiNsTerminate ();
-
     /* Close the AcpiEvent Handling */
 
     AcpiEvTerminate ();
+
+    /* Close the Namespace */
+
+    AcpiNsTerminate ();
 
     /* Close the globals */
 
@@ -317,7 +315,7 @@ AcpiUtSubsystemShutdown (void)
 
     /* Purge the local caches */
 
-    AcpiPurgeCachedObjects ();
+    (void) AcpiPurgeCachedObjects ();
 
     /* Debug only - display leftover memory allocation, if any */
 
@@ -325,7 +323,7 @@ AcpiUtSubsystemShutdown (void)
     AcpiUtDumpAllocations (ACPI_UINT32_MAX, NULL);
 #endif
 
-    return_ACPI_STATUS (AE_OK);
+    return_VOID;
 }
 
 

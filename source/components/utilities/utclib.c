@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: cmclib - Local implementation of C library functions
- * $Revision: 1.43 $
+ * $Revision: 1.51 $
  *
  *****************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2003, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -118,11 +118,6 @@
 #define __CMCLIB_C__
 
 #include "acpi.h"
-#include "acevents.h"
-#include "achware.h"
-#include "acnamesp.h"
-#include "acinterp.h"
-#include "amlcode.h"
 
 /*
  * These implementations of standard C Library routines can optionally be
@@ -130,7 +125,7 @@
  * than an inline or assembly implementation
  */
 
-#define _COMPONENT          MISCELLANEOUS
+#define _COMPONENT          ACPI_UTILITIES
         ACPI_MODULE_NAME    ("cmclib")
 
 
@@ -149,9 +144,9 @@
  ******************************************************************************/
 
 
-UINT32
+ACPI_SIZE
 AcpiUtStrlen (
-    const NATIVE_CHAR       *String)
+    const char              *String)
 {
     UINT32                  Length = 0;
 
@@ -181,12 +176,12 @@ AcpiUtStrlen (
  *
  ******************************************************************************/
 
-NATIVE_CHAR *
+char *
 AcpiUtStrcpy (
-    NATIVE_CHAR             *DstString,
-    const NATIVE_CHAR       *SrcString)
+    char                    *DstString,
+    const char              *SrcString)
 {
-    NATIVE_CHAR             *String = DstString;
+    char                    *String = DstString;
 
 
     /* Move bytes brute force */
@@ -220,13 +215,13 @@ AcpiUtStrcpy (
  *
  ******************************************************************************/
 
-NATIVE_CHAR *
+char *
 AcpiUtStrncpy (
-    NATIVE_CHAR             *DstString,
-    const NATIVE_CHAR       *SrcString,
-    NATIVE_UINT             Count)
+    char                    *DstString,
+    const char              *SrcString,
+    ACPI_SIZE               Count)
 {
-    NATIVE_CHAR             *String = DstString;
+    char                    *String = DstString;
 
 
     /* Copy the string */
@@ -262,10 +257,10 @@ AcpiUtStrncpy (
  *
  ******************************************************************************/
 
-UINT32
+int
 AcpiUtStrcmp (
-    const NATIVE_CHAR       *String1,
-    const NATIVE_CHAR       *String2)
+    const char              *String1,
+    const char              *String2)
 {
 
 
@@ -295,11 +290,11 @@ AcpiUtStrcmp (
  *
  ******************************************************************************/
 
-UINT32
+int
 AcpiUtStrncmp (
-    const NATIVE_CHAR       *String1,
-    const NATIVE_CHAR       *String2,
-    NATIVE_UINT             Count)
+    const char              *String1,
+    const char              *String2,
+    ACPI_SIZE               Count)
 {
 
 
@@ -311,7 +306,7 @@ AcpiUtStrncmp (
         }
     }
 
-    return ((Count == ACPI_INTEGER_MAX) ? 0 : ((unsigned char) *String1 -
+    return ((Count == ACPI_SIZE_MAX) ? 0 : ((unsigned char) *String1 -
         (unsigned char) *String2));
 }
 
@@ -329,12 +324,12 @@ AcpiUtStrncmp (
  *
  ******************************************************************************/
 
-NATIVE_CHAR *
+char *
 AcpiUtStrcat (
-    NATIVE_CHAR             *DstString,
-    const NATIVE_CHAR       *SrcString)
+    char                    *DstString,
+    const char              *SrcString)
 {
-    NATIVE_CHAR             *String;
+    char                    *String;
 
 
     /* Find end of the destination string */
@@ -366,13 +361,13 @@ AcpiUtStrcat (
  *
  ******************************************************************************/
 
-NATIVE_CHAR *
+char *
 AcpiUtStrncat (
-    NATIVE_CHAR             *DstString,
-    const NATIVE_CHAR       *SrcString,
-    NATIVE_UINT             Count)
+    char                    *DstString,
+    const char              *SrcString,
+    ACPI_SIZE               Count)
 {
-    NATIVE_CHAR             *String;
+    char                    *String;
 
 
     if (Count)
@@ -417,10 +412,10 @@ void *
 AcpiUtMemcpy (
     void                    *Dest,
     const void              *Src,
-    NATIVE_UINT             Count)
+    ACPI_SIZE               Count)
 {
-    NATIVE_CHAR             *New = (NATIVE_CHAR *) Dest;
-    NATIVE_CHAR             *Old = (NATIVE_CHAR *) Src;
+    char                    *New = (char *) Dest;
+    char                    *Old = (char *) Src;
 
 
     while (Count)
@@ -452,10 +447,10 @@ AcpiUtMemcpy (
 void *
 AcpiUtMemset (
     void                    *Dest,
-    NATIVE_UINT             Value,
-    NATIVE_UINT             Count)
+    ACPI_NATIVE_UINT        Value,
+    ACPI_SIZE               Count)
 {
-    NATIVE_CHAR             *New = (NATIVE_CHAR *) Dest;
+    char                    *New = (char *) Dest;
 
 
     while (Count)
@@ -472,19 +467,7 @@ AcpiUtMemset (
 #define NEGATIVE    1
 #define POSITIVE    0
 
-
-#define _ACPI_XA     0x00    /* extra alphabetic - not supported */
-#define _ACPI_XS     0x40    /* extra space */
-#define _ACPI_BB     0x00    /* BEL, BS, etc. - not supported */
-#define _ACPI_CN     0x20    /* CR, FF, HT, NL, VT */
-#define _ACPI_DI     0x04    /* '0'-'9' */
-#define _ACPI_LO     0x02    /* 'a'-'z' */
-#define _ACPI_PU     0x10    /* punctuation */
-#define _ACPI_SP     0x08    /* space */
-#define _ACPI_UP     0x01    /* 'A'-'Z' */
-#define _ACPI_XD     0x80    /* '0'-'9', 'A'-'F', 'a'-'f' */
-
-static const UINT8 _acpi_ctype[257] = {
+const UINT8 _acpi_ctype[257] = {
     _ACPI_CN,            /* 0x0      0.     */
     _ACPI_CN,            /* 0x1      1.     */
     _ACPI_CN,            /* 0x2      2.     */
@@ -643,9 +626,9 @@ static const UINT8 _acpi_ctype[257] = {
  *
  ******************************************************************************/
 
-UINT32
+int
 AcpiUtToUpper (
-    UINT32                  c)
+    int                     c)
 {
 
     return (IS_LOWER(c) ? ((c)-0x20) : (c));
@@ -664,9 +647,9 @@ AcpiUtToUpper (
  *
  ******************************************************************************/
 
-UINT32
+int
 AcpiUtToLower (
-    UINT32                  c)
+    int                     c)
 {
 
     return (IS_UPPER(c) ? ((c)+0x20) : (c));
@@ -688,12 +671,12 @@ AcpiUtToLower (
  *
  ******************************************************************************/
 
-NATIVE_CHAR *
+char *
 AcpiUtStrstr (
-    NATIVE_CHAR             *String1,
-    NATIVE_CHAR             *String2)
+    char                    *String1,
+    char                    *String2)
 {
-    NATIVE_CHAR             *String;
+    char                    *String;
 
 
     if (AcpiUtStrlen (String2) > AcpiUtStrlen (String1))
@@ -734,14 +717,14 @@ AcpiUtStrstr (
 
 UINT32
 AcpiUtStrtoul (
-    const NATIVE_CHAR       *String,
-    NATIVE_CHAR             **Terminator,
+    const char              *String,
+    char                    **Terminator,
     UINT32                  Base)
 {
     UINT32                  converted = 0;
     UINT32                  index;
     UINT32                  sign;
-    const NATIVE_CHAR       *StringStart;
+    const char              *StringStart;
     UINT32                  ReturnValue = 0;
     ACPI_STATUS             Status = AE_OK;
 
@@ -832,11 +815,11 @@ AcpiUtStrtoul (
     {
         if (IS_DIGIT (*String))
         {
-            index = *String - '0';
+            index = (UINT32) ((UINT8) *String - '0');
         }
         else
         {
-            index = AcpiUtToUpper (*String);
+            index = (UINT32) AcpiUtToUpper (*String);
             if (IS_UPPER (index))
             {
                 index = index - 'A' + 10;
@@ -860,7 +843,7 @@ AcpiUtStrtoul (
                             (UINT32) Base))
         {
             Status = AE_ERROR;
-            ReturnValue = 0L;           /* reset */
+            ReturnValue = 0;           /* reset */
         }
         else
         {
@@ -879,13 +862,13 @@ done:
      */
     if (Terminator)
     {
-        if (converted == 0 && ReturnValue == 0L && String != NULL)
+        if (converted == 0 && ReturnValue == 0 && String != NULL)
         {
-            *Terminator = (NATIVE_CHAR *) StringStart;
+            *Terminator = (char *) StringStart;
         }
         else
         {
-            *Terminator = (NATIVE_CHAR *) String;
+            *Terminator = (char *) String;
         }
     }
 

@@ -2,7 +2,7 @@
  *
  * Module Name: nseval - Object evaluation interfaces -- includes control
  *                       method lookup and execution.
- *              $Revision: 1.113 $
+ *              $Revision: 1.121 $
  *
  ******************************************************************************/
 
@@ -10,7 +10,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2003, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -133,12 +133,12 @@
  * FUNCTION:    AcpiNsEvaluateRelative
  *
  * PARAMETERS:  Handle              - The relative containing object
- *              *Pathname           - Name of method to execute, If NULL, the
+ *              Pathname            - Name of method to execute, If NULL, the
  *                                    handle is the object to execute
- *              **Params            - List of parameters to pass to the method,
+ *              Params              - List of parameters to pass to the method,
  *                                    terminated by NULL.  Params itself may be
  *                                    NULL if no parameters are being passed.
- *              *ReturnObject       - Where to put method's return value (if
+ *              ReturnObject        - Where to put method's return value (if
  *                                    any).  If NULL, no value is returned.
  *
  * RETURN:      Status
@@ -153,14 +153,14 @@
 ACPI_STATUS
 AcpiNsEvaluateRelative (
     ACPI_NAMESPACE_NODE     *Handle,
-    NATIVE_CHAR             *Pathname,
+    char                    *Pathname,
     ACPI_OPERAND_OBJECT     **Params,
     ACPI_OPERAND_OBJECT     **ReturnObject)
 {
     ACPI_NAMESPACE_NODE     *PrefixNode;
     ACPI_STATUS             Status;
     ACPI_NAMESPACE_NODE     *Node = NULL;
-    NATIVE_CHAR             *InternalPath = NULL;
+    char                    *InternalPath = NULL;
     ACPI_GENERIC_STATE      ScopeInfo;
 
 
@@ -239,9 +239,9 @@ Cleanup:
  * FUNCTION:    AcpiNsEvaluateByName
  *
  * PARAMETERS:  Pathname            - Fully qualified pathname to the object
- *              *ReturnObject       - Where to put method's return value (if
+ *              ReturnObject        - Where to put method's return value (if
  *                                    any).  If NULL, no value is returned.
- *              **Params            - List of parameters to pass to the method,
+ *              Params              - List of parameters to pass to the method,
  *                                    terminated by NULL.  Params itself may be
  *                                    NULL if no parameters are being passed.
  *
@@ -256,13 +256,13 @@ Cleanup:
 
 ACPI_STATUS
 AcpiNsEvaluateByName (
-    NATIVE_CHAR             *Pathname,
+    char                    *Pathname,
     ACPI_OPERAND_OBJECT     **Params,
     ACPI_OPERAND_OBJECT     **ReturnObject)
 {
     ACPI_STATUS             Status;
     ACPI_NAMESPACE_NODE     *Node = NULL;
-    NATIVE_CHAR             *InternalPath = NULL;
+    char                    *InternalPath = NULL;
 
 
     ACPI_FUNCTION_TRACE ("NsEvaluateByName");
@@ -328,10 +328,10 @@ Cleanup:
  * FUNCTION:    AcpiNsEvaluateByHandle
  *
  * PARAMETERS:  Handle              - Method Node to execute
- *              **Params            - List of parameters to pass to the method,
+ *              Params              - List of parameters to pass to the method,
  *                                    terminated by NULL.  Params itself may be
  *                                    NULL if no parameters are being passed.
- *              *ReturnObject       - Where to put method's return value (if
+ *              ReturnObject        - Where to put method's return value (if
  *                                    any).  If NULL, no value is returned.
  *
  * RETURN:      Status
@@ -392,7 +392,6 @@ AcpiNsEvaluateByHandle (
         return_ACPI_STATUS (AE_BAD_PARAMETER);
     }
 
-
     /*
      * Two major cases here:
      * 1) The object is an actual control method -- execute it.
@@ -410,7 +409,6 @@ AcpiNsEvaluateByHandle (
         Status = AcpiNsExecuteControlMethod (Node, Params,
                                             &LocalReturnObject);
     }
-
     else
     {
         /*
@@ -419,7 +417,6 @@ AcpiNsEvaluateByHandle (
          */
         Status = AcpiNsGetObjectValue (Node, &LocalReturnObject);
     }
-
 
     /*
      * Check if there is a return value on the stack that must
@@ -459,11 +456,11 @@ AcpiNsEvaluateByHandle (
  *
  * FUNCTION:    AcpiNsExecuteControlMethod
  *
- * PARAMETERS:  MethodNode      - The object/method
- *              **Params            - List of parameters to pass to the method,
+ * PARAMETERS:  MethodNode          - The method to execute
+ *              Params              - List of parameters to pass to the method,
  *                                    terminated by NULL.  Params itself may be
  *                                    NULL if no parameters are being passed.
- *              **ReturnObjDesc     - List of result objects to be returned
+ *              ReturnObjDesc       - List of result objects to be returned
  *                                    from the method.
  *
  * RETURN:      Status
@@ -498,10 +495,10 @@ AcpiNsExecuteControlMethod (
         return_ACPI_STATUS (AE_NULL_OBJECT);
     }
 
-    ACPI_DUMP_PATHNAME (MethodNode, "NsExecuteControlMethod: Executing",
+    ACPI_DUMP_PATHNAME (MethodNode, "Execute Method:",
         ACPI_LV_INFO, _COMPONENT);
 
-    ACPI_DEBUG_PRINT ((ACPI_DB_EXEC, "Method at AML address %p Length %x\n",
+    ACPI_DEBUG_PRINT ((ACPI_DB_EXEC, "Method at AML address %p Length %X\n",
         ObjDesc->Method.AmlStart + 1, ObjDesc->Method.AmlLength - 1));
 
     /*
@@ -538,7 +535,8 @@ AcpiNsExecuteControlMethod (
  *
  * FUNCTION:    AcpiNsGetObjectValue
  *
- * PARAMETERS:  Node         - The object
+ * PARAMETERS:  Node                - The object
+ *              ReturnObjDesc       - Where the objects value is returned
  *
  * RETURN:      Status
  *
@@ -604,7 +602,8 @@ AcpiNsGetObjectValue (
         {
             Status = AE_CTRL_RETURN_VALUE;
             *ReturnObjDesc = ACPI_CAST_PTR (ACPI_OPERAND_OBJECT, ResolvedNode);
-            ACPI_DEBUG_PRINT ((ACPI_DB_NAMES, "Returning obj %p\n", ResolvedNode));
+            ACPI_DEBUG_PRINT ((ACPI_DB_NAMES, "Returning object %p [%s]\n",
+                *ReturnObjDesc, AcpiUtGetObjectTypeName (*ReturnObjDesc)));
         }
     }
 

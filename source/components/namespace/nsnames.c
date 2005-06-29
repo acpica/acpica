@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: nsnames - Name manipulation and search
- *              $Revision: 1.75 $
+ *              $Revision: 1.82 $
  *
  ******************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2003, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -144,9 +144,9 @@ void
 AcpiNsBuildExternalPath (
     ACPI_NAMESPACE_NODE     *Node,
     ACPI_SIZE               Size,
-    NATIVE_CHAR             *NameBuffer)
+    char                    *NameBuffer)
 {
-    UINT32                  Index;
+    ACPI_SIZE               Index;
     ACPI_NAMESPACE_NODE     *ParentNode;
 
 
@@ -180,7 +180,7 @@ AcpiNsBuildExternalPath (
         /* Prefix name with the path separator */
 
         Index--;
-        NameBuffer[Index] = PATH_SEPARATOR;
+        NameBuffer[Index] = ACPI_PATH_SEPARATOR;
     }
 
     /* Overwrite final separator with the root prefix character */
@@ -191,14 +191,14 @@ AcpiNsBuildExternalPath (
     {
         ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
             "Could not construct pathname; index=%X, size=%X, Path=%s\n",
-            Index, Size, &NameBuffer[Size]));
+            (UINT32) Index, (UINT32) Size, &NameBuffer[Size]));
     }
 
     return;
 }
 
 
-#ifdef ACPI_DEBUG
+#ifdef ACPI_DEBUG_OUTPUT
 /*******************************************************************************
  *
  * FUNCTION:    AcpiNsGetExternalPathname
@@ -213,11 +213,11 @@ AcpiNsBuildExternalPath (
  *
  ******************************************************************************/
 
-NATIVE_CHAR *
+char *
 AcpiNsGetExternalPathname (
     ACPI_NAMESPACE_NODE     *Node)
 {
-    NATIVE_CHAR             *NameBuffer;
+    char                    *NameBuffer;
     ACPI_SIZE               Size;
 
 
@@ -275,9 +275,9 @@ AcpiNsGetPathnameLength (
     Size = 0;
     NextNode = Node;
 
-    while (NextNode != AcpiGbl_RootNode)
+    while (NextNode && (NextNode != AcpiGbl_RootNode))
     {
-        Size += PATH_SEGMENT_LENGTH;
+        Size += ACPI_PATH_SEGMENT_LENGTH;
         NextNode = AcpiNsGetParentNode (NextNode);
     }
 
@@ -334,7 +334,7 @@ AcpiNsHandleToPathname (
 
     AcpiNsBuildExternalPath (Node, RequiredSize, Buffer->Pointer);
 
-    ACPI_DEBUG_PRINT ((ACPI_DB_EXEC, "%s [%X] \n", (char *) Buffer->Pointer, RequiredSize));
+    ACPI_DEBUG_PRINT ((ACPI_DB_EXEC, "%s [%X] \n", (char *) Buffer->Pointer, (UINT32) RequiredSize));
     return_ACPI_STATUS (AE_OK);
 }
 
