@@ -281,9 +281,6 @@ ACPI_EXTERN UINT32              Gbl_PCodeBlockLen;
 ACPI_EXTERN UINT32              Gbl_PCodeLen;
 
 ACPI_EXTERN UINT32              Gbl_BufSeq;             /* Counts allocated Buffer descriptors */
-ACPI_EXTERN INT32               Gbl_SkipField;
-ACPI_EXTERN UINT32              Gbl_LastPkgLen;
-ACPI_EXTERN UINT8               Gbl_LastFieldFlag;
 ACPI_EXTERN INT32               Gbl_NamedObjectErr;     /* Indicate if inc_error should be called */
 
 /* 
