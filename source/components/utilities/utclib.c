@@ -117,10 +117,10 @@
 #define __CMCLIB_C__
 
 #include "acpi.h"
-#include "events.h"
-#include "hardware.h"
-#include "namesp.h"
-#include "interp.h"
+#include "acevents.h"
+#include "achware.h"
+#include "acnamesp.h"
+#include "acinterp.h"
 #include "amlcode.h"
 
 /*
@@ -151,11 +151,11 @@
  ******************************************************************************/
 
 
-ACPI_SIZE
+NATIVE_UINT
 AcpiCmStrlen (
     const char              *String)
 {
-    UINT32                  Length = 0;
+    NATIVE_UINT             Length = 0;
 
 
     /* Count the string until a null is encountered */
@@ -227,14 +227,15 @@ char *
 AcpiCmStrncpy (
     char                    *DstString,
     const char              *SrcString,
-    ACPI_SIZE               Count)
+    NATIVE_UINT             Count)
 {
     char                    *String = DstString;
 
 
     /* Copy the string */
 
-    for (String = DstString; Count && (Count--, (*String++ = *SrcString++)); )
+    for (String = DstString;
+        Count && (Count--, (*String++ = *SrcString++)); )
     {;}
 
     /* Pad with nulls if necessary */
@@ -302,7 +303,7 @@ UINT32
 AcpiCmStrncmp (
     const char              *String1,
     const char              *String2,
-    ACPI_SIZE               Count)
+    NATIVE_UINT             Count)
 {
 
 
@@ -373,7 +374,7 @@ char *
 AcpiCmStrncat (
     char                    *DstString,
     const char              *SrcString,
-    ACPI_SIZE               Count)
+    NATIVE_UINT             Count)
 {
     char                    *String;
 
@@ -420,7 +421,7 @@ void *
 AcpiCmMemcpy (
     void                    *Dest,
     const void              *Src,
-    ACPI_SIZE               Count)
+    NATIVE_UINT             Count)
 {
     char                    *New = (char *) Dest;
     char                    *Old = (char *) Src;
@@ -456,7 +457,7 @@ void *
 AcpiCmMemset (
     void                    *Dest,
     INT32                   Value,
-    ACPI_SIZE               Count)
+    NATIVE_UINT             Count)
 {
     char                    *New = (char *) Dest;
 
@@ -857,7 +858,9 @@ AcpiCmStrtoul (
         String++;
     }
 
-    if (Base == 16 && *String == '0' && AcpiCmToLower (*(++String)) == 'x')
+    if (Base == 16 &&
+        *String == '0' &&
+        AcpiCmToLower (*(++String)) == 'x')
     {
         String++;
     }

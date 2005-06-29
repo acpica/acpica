@@ -117,10 +117,10 @@
 #define __CMDELETE_C__
 
 #include "acpi.h"
-#include "interp.h"
-#include "namesp.h"
-#include "tables.h"
-#include "parser.h"
+#include "acinterp.h"
+#include "acnamesp.h"
+#include "actables.h"
+#include "acparser.h"
 
 #define _COMPONENT          MISCELLANEOUS
         MODULE_NAME         ("cmdelete");

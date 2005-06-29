@@ -116,10 +116,10 @@
 #define __CMALLOC_C__
 
 #include "acpi.h"
-#include "parser.h"
-#include "interp.h"
-#include "namesp.h"
-#include "globals.h"
+#include "acparser.h"
+#include "acinterp.h"
+#include "acnamesp.h"
+#include "acglobal.h"
 
 #define _COMPONENT          MISCELLANEOUS
         MODULE_NAME         ("cmalloc");
