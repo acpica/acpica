@@ -141,7 +141,7 @@
 #define ACPI_SIGNAL_FATAL           0
 #define ACPI_SIGNAL_BREAKPOINT      1
 
-typedef struct AcpiFatalInfo
+typedef struct acpi_signal_fatal_info
 {
     UINT32                  Type;
     UINT32                  Code;
@@ -376,12 +376,12 @@ AcpiOsSignal (
 
 void ACPI_INTERNAL_VAR_XFACE
 AcpiOsPrintf (
-    const NATIVE_CHAR       *Format,
+    const char              *Format,
     ...);
 
 void
 AcpiOsVprintf (
-    const NATIVE_CHAR       *Format,
+    const char              *Format,
     va_list                 Args);
 
 void
@@ -395,7 +395,7 @@ AcpiOsRedirectOutput (
 
 UINT32
 AcpiOsGetLine (
-    NATIVE_CHAR             *Buffer);
+    char                    *Buffer);
 
 
 /*
@@ -407,7 +407,7 @@ AcpiOsDbgAssert(
     void                    *FailedAssertion,
     void                    *FileName,
     UINT32                  LineNumber,
-    NATIVE_CHAR             *Message);
+    char                    *Message);
 
 
 #endif /* __ACPIOSXF_H__ */
