@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dsobject - Dispatcher object management routines
- *              $Revision: 1.82 $
+ *              $Revision: 1.83 $
  *
  *****************************************************************************/
 
@@ -351,6 +351,8 @@ AcpiDsInitObjectFromOp (
     switch (ObjDesc->Common.Type)
     {
     case ACPI_TYPE_BUFFER:
+
+        ObjDesc->Buffer.Node = (ACPI_NAMESPACE_NODE *) WalkState->Operands[0];
 
         /* First arg is a number */
 
