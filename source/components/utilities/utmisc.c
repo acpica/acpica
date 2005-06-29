@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: utmisc - common utility procedures
- *              $Revision: 1.46 $
+ *              $Revision: 1.49 $
  *
  ******************************************************************************/
 
@@ -130,6 +130,7 @@
         MODULE_NAME         ("utmisc")
 
 
+
 /*******************************************************************************
  *
  * FUNCTION:    AcpiUtValidAcpiName
@@ -153,6 +154,9 @@ AcpiUtValidAcpiName (
     UINT32                  i;
 
 
+    FUNCTION_ENTRY ();
+
+
     for (i = 0; i < ACPI_NAME_SIZE; i++)
     {
         if (!((NamePtr[i] == '_') ||
@@ -162,7 +166,6 @@ AcpiUtValidAcpiName (
             return (FALSE);
         }
     }
-
 
     return (TRUE);
 }
@@ -185,10 +188,13 @@ AcpiUtValidAcpiCharacter (
     NATIVE_CHAR             Character)
 {
 
+    FUNCTION_ENTRY ();
+
     return ((BOOLEAN)   ((Character == '_') ||
                         (Character >= 'A' && Character <= 'Z') ||
                         (Character >= '0' && Character <= '9')));
 }
+
 
 /*******************************************************************************
  *
@@ -207,6 +213,9 @@ AcpiUtStrupr (
     NATIVE_CHAR             *SrcString)
 {
     NATIVE_CHAR             *String;
+
+
+    FUNCTION_ENTRY ();
 
 
     /* Walk entire string, uppercasing the letters */
@@ -576,6 +585,9 @@ AcpiUtCreateUpdateStateAndPush (
     ACPI_GENERIC_STATE       *State;
 
 
+    FUNCTION_ENTRY ();
+
+
     /* Ignore null objects; these are expected */
 
     if (!Object)
@@ -619,6 +631,9 @@ AcpiUtCreatePkgStateAndPush (
     ACPI_GENERIC_STATE       *State;
 
 
+    FUNCTION_ENTRY ();
+
+
     State = AcpiUtCreatePkgState (InternalObject, ExternalObject, Index);
     if (!State)
     {
@@ -651,6 +666,7 @@ AcpiUtPushGenericState (
 {
     FUNCTION_TRACE ("UtPushGenericState");
 
+
     /* Push the state object onto the front of the list (stack) */
 
     State->Common.Next = *ListHead;
@@ -679,7 +695,7 @@ AcpiUtPopGenericState (
     ACPI_GENERIC_STATE      *State;
 
 
-    FUNCTION_TRACE ("DsPopGenericState");
+    FUNCTION_TRACE ("UtPopGenericState");
 
 
     /* Remove the state object at the head of the list (stack) */
@@ -713,6 +729,9 @@ ACPI_GENERIC_STATE *
 AcpiUtCreateGenericState (void)
 {
     ACPI_GENERIC_STATE      *State;
+
+
+    FUNCTION_ENTRY ();
 
 
     State = AcpiUtAcquireFromCache (ACPI_MEM_LIST_STATE);
@@ -841,6 +860,7 @@ AcpiUtCreateControlState (
 
     FUNCTION_TRACE ("UtCreateControlState");
 
+
     /* Create the generic state object */
 
     State = AcpiUtCreateGenericState ();
@@ -928,7 +948,7 @@ AcpiUtResolvePackageReferences (
     ACPI_OPERAND_OBJECT     *SubObject;
 
 
-    FUNCTION_TRACE ("AcpiUtResolvePackageReferences");
+    FUNCTION_TRACE ("UtResolvePackageReferences");
 
 
     if (ObjDesc->Common.Type != ACPI_TYPE_PACKAGE)
@@ -996,7 +1016,7 @@ AcpiUtDisplayInitPathname (
     char                    Buffer[128];
 
 
-    PROC_NAME ("AcpiUtDisplayInitPathname");
+    PROC_NAME ("UtDisplayInitPathname");
 
 
     Status = AcpiNsHandleToPathname (ObjHandle, &Length, Buffer);
@@ -1040,7 +1060,7 @@ AcpiUtWalkPackageTree (
     ACPI_OPERAND_OBJECT     *ThisSourceObj;
 
 
-    FUNCTION_TRACE ("AcpiUtWalkPackageTree");
+    FUNCTION_TRACE ("UtWalkPackageTree");
 
 
     State = AcpiUtCreatePkgState (SourceObject, TargetObject, 0);
@@ -1149,13 +1169,12 @@ AcpiUtWalkPackageTree (
     /* We should never get here */
 
     return (AE_AML_INTERNAL);
-
 }
 
 
 /*******************************************************************************
  *
- * FUNCTION:    _ReportError
+ * FUNCTION:    AcpiUtReportError
  *
  * PARAMETERS:  ModuleName          - Caller's module name (for error output)
  *              LineNumber          - Caller's line number (for error output)
@@ -1169,7 +1188,7 @@ AcpiUtWalkPackageTree (
  ******************************************************************************/
 
 void
-_ReportError (
+AcpiUtReportError (
     NATIVE_CHAR             *ModuleName,
     UINT32                  LineNumber,
     UINT32                  ComponentId)
@@ -1182,7 +1201,7 @@ _ReportError (
 
 /*******************************************************************************
  *
- * FUNCTION:    _ReportWarning
+ * FUNCTION:    AcpiUtReportWarning
  *
  * PARAMETERS:  ModuleName          - Caller's module name (for error output)
  *              LineNumber          - Caller's line number (for error output)
@@ -1196,7 +1215,7 @@ _ReportError (
  ******************************************************************************/
 
 void
-_ReportWarning (
+AcpiUtReportWarning (
     NATIVE_CHAR             *ModuleName,
     UINT32                  LineNumber,
     UINT32                  ComponentId)
@@ -1208,7 +1227,7 @@ _ReportWarning (
 
 /*******************************************************************************
  *
- * FUNCTION:    _ReportInfo
+ * FUNCTION:    AcpiUtReportInfo
  *
  * PARAMETERS:  ModuleName          - Caller's module name (for error output)
  *              LineNumber          - Caller's line number (for error output)
@@ -1222,7 +1241,7 @@ _ReportWarning (
  ******************************************************************************/
 
 void
-_ReportInfo (
+AcpiUtReportInfo (
     NATIVE_CHAR             *ModuleName,
     UINT32                  LineNumber,
     UINT32                  ComponentId)

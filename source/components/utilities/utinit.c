@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: utinit - Common ACPI subsystem initialization
- *              $Revision: 1.99 $
+ *              $Revision: 1.100 $
  *
  *****************************************************************************/
 
@@ -131,6 +131,8 @@
 #define ACPI_OFFSET(d,o)    ((UINT32) &(((d *)0)->o))
 #define ACPI_FADT_OFFSET(o) ACPI_OFFSET (FADT_DESCRIPTOR, o)
 
+
+
 /*******************************************************************************
  *
  * FUNCTION:    AcpiUtFadtRegisterError
@@ -185,7 +187,6 @@ AcpiUtValidateFadt (
      * Verify Fixed ACPI Description Table fields,
      * but don't abort on any problems, just display error
      */
-
     if (AcpiGbl_FADT->Pm1EvtLen < 4)
     {
         Status = AcpiUtFadtRegisterError ("PM1_EVT_LEN",
@@ -233,7 +234,6 @@ AcpiUtValidateFadt (
     }
 
     /* length of GPE blocks must be a multiple of 2 */
-
 
     if (ACPI_VALID_ADDRESS (AcpiGbl_FADT->XGpe0Blk.Address) &&
         (AcpiGbl_FADT->Gpe0BlkLen & 1))
