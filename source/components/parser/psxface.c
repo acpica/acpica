@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: psxface - Parser external interfaces
- *              $Revision: 1.56 $
+ *              $Revision: 1.57 $
  *
  *****************************************************************************/
 
@@ -211,9 +211,16 @@ AcpiPsxExecute (
         return_ACPI_STATUS (AE_NO_MEMORY);
     }
 
+    /* 
+     * Get a new OwnerId for objects created by this method.  Namespace
+     * objects (such as Operation Regions) can be created during the
+     * first pass parse.
+     */
+    ObjDesc->Method.OwningId = AcpiUtAllocateOwnerId (OWNER_TYPE_METHOD);
+
     /* Create and initialize a new walk state */
 
-    WalkState = AcpiDsCreateWalkState (TABLE_ID_DSDT,
+    WalkState = AcpiDsCreateWalkState (ObjDesc->Method.OwningId,
                                     NULL, NULL, NULL);
     if (!WalkState)
     {
@@ -285,15 +292,6 @@ AcpiPsxExecute (
         {
             AcpiUtUpdateObjectReference (Params[i], REF_DECREMENT);
         }
-    }
-
-    /* Now check status from the method execution */
-
-    if (ACPI_FAILURE (Status))
-    {
-        REPORT_ERROR (("Method execution failed, %s\n", AcpiFormatException (Status)));
-        DUMP_PATHNAME (MethodNode, "Method pathname: ",
-            ACPI_LV_ERROR, _COMPONENT);
     }
 
     /*
