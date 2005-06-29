@@ -136,6 +136,64 @@
 
 
 
+/*
+ * iemstack - method stack utilities
+ */
+
+/* For PsxMthStackSetValue */
+
+#define MTH_TYPE_LOCAL              0
+#define MTH_TYPE_ARG                1
+
+
+ACPI_STATUS
+PsxMthStackDeleteArgs (
+    ACPI_WALK_STATE         *WalkState);
+
+BOOLEAN
+PsxIsMethodValue (
+    ACPI_OBJECT_INTERNAL    *ObjDesc);
+
+INT32
+PsxMthStackLevel (
+    void);
+
+ACPI_OBJECT_TYPE
+PsxMthStackGetType (
+    UINT32                  Type,
+    UINT32                  Index);
+
+ACPI_STATUS
+PsxMthStackGetValue (
+    UINT32                  Type,
+    UINT32                  Index, 
+    ACPI_OBJECT_INTERNAL    *ObjDesc);
+
+ACPI_STATUS
+PsxMthStackSetValue (
+    UINT32                  Type,
+    UINT32                  Index, 
+    ACPI_OBJECT_INTERNAL    *ObjDesc, 
+    ACPI_OBJECT_INTERNAL    *ObjDesc2);
+
+ACPI_STATUS
+PsxMthStackPop (
+    void);
+
+ACPI_STATUS
+PsxMthStackPush (
+    ACPI_OBJECT_INTERNAL    **Params);
+
+ACPI_STATUS
+PsxMthStackDeleteValue (
+    UINT32                  Type,
+    UINT32                  Index);
+
+ACPI_STATUS
+PsxMthStackInitArgs (
+    ACPI_OBJECT_INTERNAL    **Params,
+    UINT32                  ParamCount);
+
 
 /* psapi - Parser external interfaces */
 
@@ -147,7 +205,8 @@ PsxLoadTable (
 ACPI_STATUS
 PsxExecute (
     ACPI_OBJECT_INTERNAL    *MthDesc,
-    ACPI_OBJECT_INTERNAL    **Params);
+    ACPI_OBJECT_INTERNAL    **Params,
+    ACPI_OBJECT_INTERNAL    **ReturnObjDesc);
 
 ACPI_STATUS
 PsxGetRegionData (
@@ -165,6 +224,22 @@ PsGetOpcodeName (
  * Parser to Interpreter interface layer
  *
  *****************************************************************************/
+
+
+ACPI_STATUS
+PsxObjStackPush (
+    void                    *Object,
+    ACPI_WALK_STATE         *WalkState);
+
+ACPI_STATUS
+PsxObjStackPop (
+    UINT32                  PopCount,
+    ACPI_WALK_STATE         *WalkState);
+
+void *
+PsxObjStackGetValue (
+    UINT32                  Index,
+    ACPI_WALK_STATE         *WalkState);
 
 
 /* psxctrl - Parser/Interpreter interface, control stack routines */
@@ -274,6 +349,7 @@ PsxBuildInternalObject (
 
 ACPI_STATUS
 PsxEvalRegionOperands (
+    ACPI_WALK_STATE         *WalkState,
     ACPI_GENERIC_OP         *Op);
 
 
@@ -286,8 +362,13 @@ PsxInitObjectFromOp (
     UINT32                  Opcode,
     ACPI_OBJECT_INTERNAL    *ObjDesc);
 
+void
+PsxSaveOrDeleteResult (
+    ACPI_GENERIC_OP         *Op);
+
 ACPI_STATUS
 PsxCreateOperands (
+    ACPI_WALK_STATE         *WalkState,
     ACPI_GENERIC_OP         *FirstArg);
 
 ACPI_OBJECT_TYPE
@@ -452,6 +533,8 @@ ACPI_STATUS
 PsWalkParsedAml (
     ACPI_GENERIC_OP         *StartOp,
     ACPI_GENERIC_OP         *EndOp,
+    ACPI_OBJECT_INTERNAL    **Params,
+    ACPI_OBJECT_INTERNAL    **CallerReturnDesc,
     INTERPRETER_CALLBACK    DescendingCallback,
     INTERPRETER_CALLBACK    AscendingCallback);
 
@@ -462,6 +545,10 @@ PsGetNextWalkOp (
     INTERPRETER_CALLBACK    AscendingCallback,
     ACPI_GENERIC_OP         **PrevOp,
     ACPI_GENERIC_OP         **NextOp);
+
+ACPI_WALK_STATE *
+PsGetCurrentWalkState (
+    ACPI_WALK_LIST          *WalkList);
 
 
 /* psutils - parser utilities */
@@ -560,6 +647,20 @@ PsShow (
  * TBD: Remove when the parser is obsoleted
  *
  *****************************************************************************/
+
+/*
+ * idoatoms - interpreter/scanner atom load/execute
+ */
+
+ACPI_STATUS 
+AmlDoSuperName (
+    OPERATING_MODE          LoadExecMode, 
+    ACPI_OBJECT_TYPE        Define);
+
+ACPI_STATUS
+AmlDoLiteral (
+    OPERATING_MODE          LoadExecMode);
+
 
 /*
  * idoexpr - interpreter/scanner expression load/execute
@@ -757,6 +858,131 @@ ACPI_STATUS
 AmlDoDWordConst (
     OPERATING_MODE          LoadExecMode, 
     INT32                   LeadSpace);
+
+
+/*
+ * ixface - parser/interpreter interface
+ */
+
+ACPI_STATUS
+PsExecMonadic1 (
+    UINT16                  Opcode);
+
+ACPI_STATUS
+PsExecMonadic2 (
+    UINT16                  Opcode);
+
+ACPI_STATUS
+PsExecMonadic2R (
+    UINT16                  Opcode);
+
+ACPI_STATUS
+PsExecDyadic1 (
+    UINT16                  Opcode);
+
+ACPI_STATUS
+PsExecDyadic2 (
+    UINT16                  Opcode);
+
+ACPI_STATUS
+PsExecDyadic2R (
+    UINT16                  Opcode);
+
+ACPI_STATUS
+PsExecDyadic2S (
+    UINT16                  Opcode);
+
+ACPI_STATUS
+PsExecCreateField (
+    UINT16                  Opcode);
+
+ACPI_STATUS
+PsExecFatal (
+    void);
+
+ACPI_STATUS
+PsExecIndex (
+    void);
+
+ACPI_STATUS
+PsExecMatch (
+    void);
+
+ACPI_STATUS
+PsExecCreateMutex (
+    OPERATING_MODE          InterpreterMode);
+
+ACPI_STATUS
+PsExecCreateEvent (
+    void);
+
+ACPI_STATUS
+PsExecCreateAlias (
+    void);
+
+
+/*
+ * ieostack - object stack utilities
+ */
+
+UINT32
+PsxObjStackLevel (
+     void);
+void
+PsxObjStackClearAll (
+    void);
+
+ACPI_STATUS
+PsxObjStackPushIfExec (
+    OPERATING_MODE          LoadExecMode);
+
+ACPI_STATUS
+PsxObjStackPush (
+    void);
+
+void *
+PsxObjStackPopValue (
+    void);
+
+ACPI_STATUS
+PsxObjStackPop (
+    UINT32                  StackEntries);
+
+ACPI_OBJECT_INTERNAL **
+PsxObjStackGetPtr (
+    UINT32                  OffsetFromStackTop);
+
+void *
+PsxObjStackGetValue (
+    UINT32                  OffsetFromStackTop);
+
+void
+PsxObjStackSetValue (
+    UINT32                  OffsetFromStackTop,
+    void                    *StackEntry);
+
+void *
+PsxObjStackRemoveValue (
+    UINT32                  OffsetFromStackTop);
+
+void
+PsxObjStackDeleteValue (
+    UINT32                  OffsetFromStackTop);
+
+ACPI_STATUS
+PsxObjStackClearUntil (
+    ACPI_OBJECT_TYPE        Type);
+
+
+ACPI_OBJECT_INTERNAL **
+PsxObjStackGetTopPtr (
+    void);
+
+void
+PsxObjStackClearTop (
+    void);
+
+
 
 #endif
 
