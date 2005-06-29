@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acutils.h -- prototypes for the common (subsystem-wide) procedures
- *       $Revision: 1.154 $
+ *       $Revision: 1.156 $
  *
  *****************************************************************************/
 
@@ -197,6 +197,10 @@ AcpiUtGetMutexName (
 char *
 AcpiUtGetTypeName (
     ACPI_OBJECT_TYPE        Type);
+
+char *
+AcpiUtGetNodeName (
+    void                    *Object);
 
 char *
 AcpiUtGetObjectTypeName (
@@ -562,7 +566,7 @@ AcpiUtExecute_HID (
 ACPI_STATUS
 AcpiUtExecute_CID (
     ACPI_NAMESPACE_NODE     *DeviceNode,
-    ACPI_DEVICE_ID          *Cid);
+    ACPI_COMPATIBLE_ID_LIST **ReturnCidList);
 
 ACPI_STATUS
 AcpiUtExecute_STA (
