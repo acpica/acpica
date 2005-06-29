@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: uteval - Object evaluation
- *              $Revision: 1.55 $
+ *              $Revision: 1.57 $
  *
  *****************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2004, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2005, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -280,6 +280,18 @@ AcpiUtEvaluateObject (
     default:
         ReturnBtype = 0;
         break;
+    }
+
+    if ((AcpiGbl_EnableInterpreterSlack) &&
+        (!ExpectedReturnBtypes))
+    {
+        /*
+         * We received a return object, but one was not expected.  This can
+         * happen frequently if the "implicit return" feature is enabled.
+         * Just delete the return object and return AE_OK.
+         */
+        AcpiUtRemoveReference (Info.ReturnObject);
+        return_ACPI_STATUS (AE_OK);
     }
 
     /* Is the return object one of the expected types? */
