@@ -3,7 +3,7 @@
  * Name: amlcode.h - Definitions for AML, as included in "definition blocks"
  *                   Declarations and definitions contained herein are derived
  *                   directly from the ACPI specification.
- *       $Revision: 1.49 $
+ *       $Revision: 1.50 $
  *
  *****************************************************************************/
 
@@ -442,6 +442,7 @@ typedef enum
     ACCESS_BYTE_ACC                 = 1,
     ACCESS_WORD_ACC                 = 2,
     ACCESS_DWORD_ACC                = 3,
+    ACCESS_QWORD_ACC                = 4,    /* ACPI 2.0 */
     ACCESS_BLOCK_ACC                = 4,
     ACCESS_SMBSEND_RECV_ACC         = 5,
     ACCESS_SMBQUICK_ACC             = 6
