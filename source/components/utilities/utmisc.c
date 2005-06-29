@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: cmutils - common utility procedures
- *              $Revision: 1.28 $
+ *              $Revision: 1.29 $
  *
  ******************************************************************************/
 
@@ -358,16 +358,48 @@ AcpiCmAcquireMutex (
     ACPI_MUTEX_HANDLE       MutexId)
 {
     ACPI_STATUS             Status;
+    UINT32                  i;
+    UINT32                  ThisThreadId;
 
-
-    DEBUG_PRINT (TRACE_MUTEX,
-                ("Acquiring Mutex [%s]\n", AcpiCmGetMutexName (MutexId)));
 
     if (MutexId > MAX_MTX)
     {
         return (AE_BAD_PARAMETER);
     }
 
+
+    ThisThreadId = AcpiOsGetThreadId ();
+
+    /*
+     * Deadlock prevention.  Check if this thread owns any mutexes of value
+     * greater than or equal to this one.  If so, the thread has violated
+     * the mutex ordering rule.  This indicates a coding error somewhere in
+     * the ACPI subsystem code.
+     */
+    for (i = MutexId; i < MAX_MTX; i++)
+    {
+        if (AcpiGbl_AcpiMutexInfo[i].OwnerId == ThisThreadId)
+        {
+            if (i == MutexId)
+            {
+                DEBUG_PRINT (ACPI_ERROR,
+                        ("Mutex [%s] already acquired by this thread\n", 
+                        AcpiCmGetMutexName (MutexId)));
+
+                return (AE_ALREADY_ACQUIRED);
+            }
+
+            DEBUG_PRINT (ACPI_ERROR,
+                    ("Invalid acquire order: owns [%s], wants [%s]\n", 
+                    AcpiCmGetMutexName (i), AcpiCmGetMutexName (MutexId)));
+
+            return (AE_ACQUIRE_DEADLOCK);
+        }
+    }
+
+
+    DEBUG_PRINT (TRACE_MUTEX,
+                ("Acquiring Mutex [%s]\n", AcpiCmGetMutexName (MutexId)));
 
     Status = AcpiOsWaitSemaphore (AcpiGbl_AcpiMutexInfo[MutexId].Mutex,
                                     1, WAIT_FOREVER);
@@ -379,6 +411,7 @@ AcpiCmAcquireMutex (
     {
         AcpiGbl_AcpiMutexInfo[MutexId].Locked = TRUE;
         AcpiGbl_AcpiMutexInfo[MutexId].UseCount++;
+        AcpiGbl_AcpiMutexInfo[MutexId].OwnerId = ThisThreadId;
     }
 
     return (Status);
@@ -402,6 +435,8 @@ AcpiCmReleaseMutex (
     ACPI_MUTEX_HANDLE       MutexId)
 {
     ACPI_STATUS             Status;
+    UINT32                  i;
+    UINT32                  ThisThreadId;
 
 
     DEBUG_PRINT (TRACE_MUTEX,
@@ -413,7 +448,45 @@ AcpiCmReleaseMutex (
     }
 
 
+    /*
+     * Mutex must be acquired in order to release it! 
+     */
+    if (!AcpiGbl_AcpiMutexInfo[MutexId].Locked)
+    {
+        DEBUG_PRINT (ACPI_ERROR,
+                ("Mutex [%s] is not acquired, cannot release\n", 
+                AcpiCmGetMutexName (MutexId)));
+
+        return (AE_NOT_ACQUIRED);
+    }
+
+
+    /*
+     * Deadlock prevention.  Check if this thread owns any mutexes of value
+     * greater than this one.  If so, the thread has violated
+     * the mutex ordering rule.  This indicates a coding error somewhere in
+     * the ACPI subsystem code.
+     */
+    ThisThreadId = AcpiOsGetThreadId ();
+    for (i = MutexId; i < MAX_MTX; i++)
+    {
+        if (AcpiGbl_AcpiMutexInfo[i].OwnerId == ThisThreadId)
+        {
+            if (i == MutexId)
+            {
+                continue;
+            }
+
+            DEBUG_PRINT (ACPI_ERROR,
+                    ("Invalid release order: owns [%s], releasing [%s]\n", 
+                    AcpiCmGetMutexName (i), AcpiCmGetMutexName (MutexId)));
+
+            return (AE_RELEASE_DEADLOCK);
+        }
+    }
+
     AcpiGbl_AcpiMutexInfo[MutexId].Locked = FALSE;  /* Mark before unlocking */
+    AcpiGbl_AcpiMutexInfo[MutexId].OwnerId = 0;
 
     Status = AcpiOsSignalSemaphore (AcpiGbl_AcpiMutexInfo[MutexId].Mutex, 1);
 
