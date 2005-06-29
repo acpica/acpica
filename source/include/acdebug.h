@@ -192,6 +192,19 @@ extern UINT32                   SizeOfAcpiObjects;
 #define EX_NO_SINGLE_STEP       1
 #define EX_SINGLE_STEP          2
 
+
+void
+DbDisplayArgumentObject (
+    ACPI_OBJECT_INTERNAL    *ObjDesc);
+
+ACPI_STATUS
+DbDisplayObjects (
+    char                    *ObjTypeArg,
+    char                    *DisplayCountArg);
+
+ACPI_STATUS
+DbFindNameInNamespace (
+    char                    *NameArg);
 void
 DbSetOutputDestination (
     INT32                   Where);
