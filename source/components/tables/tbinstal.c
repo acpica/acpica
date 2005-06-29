@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: tbinstal - ACPI table installation and removal
- *              $Revision: 1.30 $
+ *              $Revision: 1.33 $
  *
  *****************************************************************************/
 
@@ -430,7 +430,7 @@ AcpiTbDeleteAcpiTables (void)
      * Memory can either be mapped or allocated
      */
 
-    for (Type = 0; Type < ACPI_TABLE_MAX; Type++)
+    for (Type = 0; Type < NUM_ACPI_TABLES; Type++)
     {
         AcpiTbDeleteAcpiTable (Type);
     }
@@ -479,35 +479,24 @@ AcpiTbDeleteAcpiTable (
         AcpiGbl_RSDP = NULL;
         break;
 
-    case ACPI_TABLE_APIC:
-        AcpiGbl_APIC = NULL;
-        break;
-
     case ACPI_TABLE_DSDT:
         AcpiGbl_DSDT = NULL;
         break;
 
-    case ACPI_TABLE_FACP:
-        AcpiGbl_FACP = NULL;
+    case ACPI_TABLE_FADT:
+        AcpiGbl_FADT = NULL;
         break;
 
     case ACPI_TABLE_FACS:
         AcpiGbl_FACS = NULL;
         break;
 
-    case ACPI_TABLE_PSDT:
-        break;
-
-    case ACPI_TABLE_RSDT:
-        AcpiGbl_RSDT = NULL;
+    case ACPI_TABLE_XSDT:
+        AcpiGbl_XSDT = NULL;
         break;
 
     case ACPI_TABLE_SSDT:
-        break;
-
-    case ACPI_TABLE_SBST:
-        AcpiGbl_SBST = NULL;
-
+    case ACPI_TABLE_PSDT:
     default:
         break;
     }
