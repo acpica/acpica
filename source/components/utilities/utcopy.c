@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: utcopy - Internal to external object translation utilities
- *              $Revision: 1.100 $
+ *              $Revision: 1.101 $
  *
  *****************************************************************************/
 
@@ -174,11 +174,11 @@ AcpiUtCopyIsimpleToEsimple (
      * In general, the external object will be the same type as
      * the internal object
      */
-    ExternalObject->Type = InternalObject->Common.Type;
+    ExternalObject->Type = ACPI_GET_OBJECT_TYPE (InternalObject);
 
     /* However, only a limited number of external types are supported */
 
-    switch (InternalObject->Common.Type)
+    switch (ACPI_GET_OBJECT_TYPE (InternalObject))
     {
     case ACPI_TYPE_STRING:
 
@@ -388,7 +388,7 @@ AcpiUtCopyIpackageToEpackage (
     Info.NumPackages = 1;
     Info.FreeSpace   = Buffer + ACPI_ROUND_UP_TO_NATIVE_WORD (sizeof (ACPI_OBJECT));
 
-    ExternalObject->Type               = InternalObject->Common.Type;
+    ExternalObject->Type               = ACPI_GET_OBJECT_TYPE (InternalObject);
     ExternalObject->Package.Count      = InternalObject->Package.Count;
     ExternalObject->Package.Elements   = ACPI_CAST_PTR (ACPI_OBJECT, Info.FreeSpace);
 
@@ -432,7 +432,7 @@ AcpiUtCopyIobjectToEobject (
     ACPI_FUNCTION_TRACE ("UtCopyIobjectToEobject");
 
 
-    if (InternalObject->Common.Type == ACPI_TYPE_PACKAGE)
+    if (ACPI_GET_OBJECT_TYPE (InternalObject) == ACPI_TYPE_PACKAGE)
     {
         /*
          * Package object:  Copy all subobjects (including
@@ -617,7 +617,7 @@ AcpiUtCopyEpackageToIpackage (
     FreeSpace = Buffer + sizeof(ACPI_OBJECT);
 
 
-    ExternalObject->Type               = InternalObject->Common.Type;
+    ExternalObject->Type               = ACPI_GET_OBJECT_TYPE (InternalObject);
     ExternalObject->Package.Count      = InternalObject->Package.Count;
     ExternalObject->Package.Elements   = (ACPI_OBJECT *)FreeSpace;
 
@@ -722,7 +722,7 @@ AcpiUtCopySimpleObject (
 
     /* Handle the objects with extra data */
 
-    switch (DestDesc->Common.Type)
+    switch (ACPI_GET_OBJECT_TYPE (DestDesc))
     {
     case ACPI_TYPE_BUFFER:
 
@@ -802,7 +802,7 @@ AcpiUtCopyIelementToIelement (
         /*
          * This is a simple object, just copy it
          */
-        TargetObject = AcpiUtCreateInternalObject (SourceObject->Common.Type);
+        TargetObject = AcpiUtCreateInternalObject (ACPI_GET_OBJECT_TYPE (SourceObject));
         if (!TargetObject)
         {
             return (AE_NO_MEMORY);
@@ -879,7 +879,7 @@ AcpiUtCopyIpackageToIpackage (
     ACPI_FUNCTION_TRACE ("UtCopyIpackageToIpackage");
 
 
-    DestObj->Common.Type    = SourceObj->Common.Type;
+    DestObj->Common.Type    = ACPI_GET_OBJECT_TYPE (SourceObj);
     DestObj->Common.Flags   = SourceObj->Common.Flags;
     DestObj->Package.Count  = SourceObj->Package.Count;
 
@@ -941,7 +941,7 @@ AcpiUtCopyIobjectToIobject (
 
     /* Create the top level object */
 
-    *DestDesc = AcpiUtCreateInternalObject (SourceDesc->Common.Type);
+    *DestDesc = AcpiUtCreateInternalObject (ACPI_GET_OBJECT_TYPE (SourceDesc));
     if (!*DestDesc)
     {
         return_ACPI_STATUS (AE_NO_MEMORY);
@@ -949,7 +949,7 @@ AcpiUtCopyIobjectToIobject (
 
     /* Copy the object and possible subobjects */
 
-    if (SourceDesc->Common.Type == ACPI_TYPE_PACKAGE)
+    if (ACPI_GET_OBJECT_TYPE (SourceDesc) == ACPI_TYPE_PACKAGE)
     {
         Status = AcpiUtCopyIpackageToIpackage (SourceDesc, *DestDesc,
                         WalkState);
