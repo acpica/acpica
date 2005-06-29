@@ -375,7 +375,7 @@ AcpiInit (char *FileName)
                      *  displayed when tables is displayed,  Displaying it here for now 
                      */
                 
-                    DisplayTable (&RSDT->header, OUTPUT_DATA | OUTPUT_ERRORS);
+                    DUMP_BUFFER (&RSDT->header, 32, 0);
                 }
             }
         }
