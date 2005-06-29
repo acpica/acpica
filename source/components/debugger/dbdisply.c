@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dbdisply - debug display commands
- *              $Revision: 1.99 $
+ *              $Revision: 1.101 $
  *
  ******************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2003, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2004, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -677,7 +677,9 @@ AcpiDbDisplayObjectType (
     if (ACPI_SUCCESS (Status))
     {
         Info = Buffer.Pointer;
-        AcpiOsPrintf ("HID: %s, ADR: %8.8X%8.8X, Status %8.8X\n",
+        AcpiOsPrintf ("S1D-%2.2X S2D-%2.2X S3D-%2.2X S4D-%2.2X    HID: %s, ADR: %8.8X%8.8X, Status %8.8X\n",
+                        Info->HighestDstates[0], Info->HighestDstates[1],
+                        Info->HighestDstates[2], Info->HighestDstates[3],
                         Info->HardwareId.Value,
                         ACPI_FORMAT_UINT64 (Info->Address),
                         Info->CurrentStatus);
