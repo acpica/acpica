@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dsfield - Dispatcher field routines
- *              $Revision: 1.47 $
+ *              $Revision: 1.48 $
  *
  *****************************************************************************/
 
@@ -320,26 +320,35 @@ AcpiDsGetFieldNames (
 
         case AML_INT_NAMEDFIELD_OP:
 
-            /* Enter a new field name into the namespace */
+            /* Lookup the name */
 
             Status = AcpiNsLookup (WalkState->ScopeInfo,
                             (NATIVE_CHAR *) &((ACPI_PARSE2_OBJECT *)Arg)->Name,
-                            Info->FieldType, IMODE_LOAD_PASS1,
-                            NS_NO_UPSEARCH | NS_DONT_OPEN_SCOPE | NS_ERROR_IF_FOUND,
+                            Info->FieldType, IMODE_EXECUTE,
+                            NS_DONT_OPEN_SCOPE,
                             NULL, &Info->FieldNode);
             if (ACPI_FAILURE (Status))
             {
-                return_ACPI_STATUS (Status);
+                if (Status != AE_ALREADY_EXISTS)
+                {
+                    return_ACPI_STATUS (Status);
+                }
+
+                REPORT_ERROR (("Field name [%4.4s] already exists in current scope\n",
+                                &((ACPI_PARSE2_OBJECT *)Arg)->Name));
             }
-
-            /* Create and initialize an object for the new Field Node */
-
-            Info->FieldBitLength = Arg->Value.Size;
-
-            Status = AcpiExPrepFieldValue (Info);
-            if (ACPI_FAILURE (Status))
+            else
             {
-                return_ACPI_STATUS (Status);
+                Arg->Node = Info->FieldNode;
+                Info->FieldBitLength = Arg->Value.Size;
+
+                /* Create and initialize an object for the new Field Node */
+
+                Status = AcpiExPrepFieldValue (Info);
+                if (ACPI_FAILURE (Status))
+                {
+                    return_ACPI_STATUS (Status);
+                }
             }
 
             /* Keep track of bit position for the next field */
@@ -419,6 +428,87 @@ AcpiDsCreateField (
 
     return_ACPI_STATUS (Status);
 }
+
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    
+ *
+ * PARAMETERS:  Op              - Op containing the Field definition and args
+ *              RegionNode      - Object for the containing Operation Region
+ *  `           WalkState       - Current method state
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: 
+ *
+ ******************************************************************************/
+
+ACPI_STATUS
+AcpiDsInitFieldObjects (
+    ACPI_PARSE_OBJECT       *Op,
+    ACPI_WALK_STATE         *WalkState)
+{
+    ACPI_STATUS             Status = AE_AML_ERROR;
+    ACPI_PARSE_OBJECT       *Arg = NULL;
+    ACPI_NAMESPACE_NODE     *Node;
+    UINT8                   Type = 0;
+
+
+
+    FUNCTION_TRACE_PTR ("DsInitFieldObjects", Op);
+
+    switch (WalkState->Opcode)
+    {
+    case AML_FIELD_OP:
+        Arg = AcpiPsGetArg (Op, 2);
+        Type = INTERNAL_TYPE_REGION_FIELD;
+        break;
+
+    case AML_BANK_FIELD_OP:
+        Arg = AcpiPsGetArg (Op, 4);
+        Type = INTERNAL_TYPE_BANK_FIELD;
+        break;
+
+    case AML_INDEX_FIELD_OP:
+        Arg = AcpiPsGetArg (Op, 3);
+        Type = INTERNAL_TYPE_INDEX_FIELD;
+        break;
+    }
+
+
+    while (Arg)
+    {
+        if (Arg->Opcode == AML_INT_NAMEDFIELD_OP)
+        {
+            Status = AcpiNsLookup (WalkState->ScopeInfo,
+                            (NATIVE_CHAR *) &((ACPI_PARSE2_OBJECT *)Arg)->Name,
+                            Type, IMODE_LOAD_PASS1,
+                            NS_NO_UPSEARCH | NS_DONT_OPEN_SCOPE | NS_ERROR_IF_FOUND,
+                            NULL, &Node);
+            if (ACPI_FAILURE (Status))
+            {
+                if (Status != AE_ALREADY_EXISTS)
+                {
+                    return_ACPI_STATUS (Status);
+                }
+
+                REPORT_ERROR (("Field name [%4.4s] already exists in current scope\n",
+                                &((ACPI_PARSE2_OBJECT *)Arg)->Name));
+            }
+
+            Arg->Node = Node;
+        }
+
+        /* Move on to next field in the list */
+
+        Arg = Arg->Next;
+    }
+
+    return_ACPI_STATUS (Status);
+}
+
 
 
 /*******************************************************************************
