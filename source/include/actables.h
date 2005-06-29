@@ -134,6 +134,12 @@
 
 
 
+ACPI_STATUS
+TbHandleToObject (
+    UINT16                  TableId,
+    ACPI_TABLE_DESC         **TableDesc);
+
+
 /*
  * Tbfac - FACP, FACS utilities
  */
