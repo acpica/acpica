@@ -101,16 +101,19 @@
 
 #define VERBOSE_DEBUG /* TEMP!!! */
 
+
 /*
  * Configuration constants for the ACPI subsystem
- *
- * All scary-looking constants should go here!!! 
  * 
- * Some of these should be fixed or at least made run-time configurable.
+ * TBD: Some of these should be fixed or at least made run-time configurable.
  *
  */
+
+/* String size constants */
+
 #define MAX_STRING_LENGTH           512
 #define PATHNAME_MAX                256     /* A full namespace pathname */
+
 
 /*
  * AML Interpreter
@@ -140,11 +143,14 @@
 #define ACPI_NAME_SIZE              4
 
 
-/* 
- * Defining FETCH_VALUES enables AcpiExecuteMethod() to "execute"
- * a name which is not a Method by fetching and returning its value.
- */
-#define FETCH_VALUES
+/* Constants used in searching for the RSDP in low memory */
+
+#define LO_RSDP_WINDOW_BASE         0
+#define LO_RSDP_WINDOW_SIZE         0x400           
+#define HI_RSDP_WINDOW_BASE         0xE0000
+#define HI_RSDP_WINDOW_SIZE         0x20000
+#define RSDP_SCAN_STEP              16
+
 
 #endif /* _CONFIG_H */
 
