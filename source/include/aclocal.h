@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: aclocal.h - Internal data types used across the ACPI subsystem
- *       $Revision: 1.120 $
+ *       $Revision: 1.122 $
  *
  *****************************************************************************/
 
@@ -226,6 +226,13 @@ typedef UINT16                          ACPI_OWNER_ID;
 
 #define TABLE_ID_DSDT                   (ACPI_OWNER_ID) 0x8000
 
+
+/* Field access granularities */
+
+#define ACPI_FIELD_BYTE_GRANULARITY     1
+#define ACPI_FIELD_WORD_GRANULARITY     2
+#define ACPI_FIELD_DWORD_GRANULARITY    4
+#define ACPI_FIELD_QWORD_GRANULARITY    8
 
 /*****************************************************************************
  *
@@ -912,6 +919,26 @@ typedef struct
     NATIVE_CHAR             Buffer[ACPI_DEVICE_ID_LENGTH];
 
 } ACPI_DEVICE_ID;
+
+
+
+/*****************************************************************************
+ *
+ * Debugger
+ *
+ ****************************************************************************/
+
+typedef struct dbmethodinfo
+{
+    ACPI_HANDLE             ThreadGate;
+    NATIVE_CHAR             *Name;
+    NATIVE_CHAR             **Args;
+    UINT32                  Flags;
+    UINT32                  NumLoops;
+    NATIVE_CHAR             Pathname[128];
+
+} DB_METHOD_INFO;
+
 
 
 /*****************************************************************************
