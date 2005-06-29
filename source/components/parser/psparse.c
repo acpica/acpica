@@ -524,19 +524,19 @@ PsParseLoop (
 
             switch (Op->Opcode)
             {
-            case AML_ByteOp:  /* AML_BYTEDATA_ARG */
-            case AML_WordOp:  /* AML_WORDDATA_ARG */
-            case AML_DWordOp: /* AML_DWORDATA_ARG */
-            case AML_StringOp:     /* AML_ASCIICHARLIST_ARG */
+            case AML_ByteOp:        /* AML_BYTEDATA_ARG */
+            case AML_WordOp:        /* AML_WORDDATA_ARG */
+            case AML_DWordOp:       /* AML_DWORDATA_ARG */
+            case AML_StringOp:      /* AML_ASCIICHARLIST_ARG */
 
                 /* fill in constant or string argument directly */
 
                 PsGetNextSimpleArg (ParserState, *Args, Op);
                 break;
 
-            case AML_NAMEPATH:   /* AML_NAMESTRING_ARG */
+            case AML_NAMEPATH:      /* AML_NAMESTRING_ARG */
 
-                PsGetNextNamepath (ParserState, Op, &ArgCount);
+                PsGetNextNamepath (ParserState, Op, &ArgCount, 1);
                 Args = NULL;
                 break;
 
