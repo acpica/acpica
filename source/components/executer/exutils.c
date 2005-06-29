@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exutils - interpreter/scanner utilities
- *              $Revision: 1.97 $
+ *              $Revision: 1.98 $
  *
  *****************************************************************************/
 
@@ -415,47 +415,6 @@ AcpiExDigitsNeeded (
 
 /*******************************************************************************
  *
- * FUNCTION:    ntohl
- *
- * PARAMETERS:  Value           - Value to be converted
- *
- * DESCRIPTION: Convert a 32-bit value to big-endian (swap the bytes)
- *
- ******************************************************************************/
-
-static UINT32
-_ntohl (
-    UINT32                  Value)
-{
-    union
-    {
-        UINT32              Value;
-        UINT8               Bytes[4];
-    } Out;
-
-    union
-    {
-        UINT32              Value;
-        UINT8               Bytes[4];
-    } In;
-
-
-    ACPI_FUNCTION_ENTRY ();
-
-
-    In.Value = Value;
-
-    Out.Bytes[0] = In.Bytes[3];
-    Out.Bytes[1] = In.Bytes[2];
-    Out.Bytes[2] = In.Bytes[1];
-    Out.Bytes[3] = In.Bytes[0];
-
-    return (Out.Value);
-}
-
-
-/*******************************************************************************
- *
  * FUNCTION:    AcpiExEisaIdToString
  *
  * PARAMETERS:  NumericId       - EISA ID to be converted
@@ -470,23 +429,23 @@ AcpiExEisaIdToString (
     UINT32                  NumericId,
     NATIVE_CHAR             *OutString)
 {
-    UINT32                  id;
+    UINT32                  EisaId;
 
 
     ACPI_FUNCTION_ENTRY ();
 
 
-    /* swap to big-endian to get contiguous bits */
+    /* Swap ID to big-endian to get contiguous bits */
 
-    id = _ntohl (NumericId);
+    EisaId = AcpiUtDwordByteSwap (NumericId);
 
-    OutString[0] = (char) ('@' + ((id >> 26) & 0x1f));
-    OutString[1] = (char) ('@' + ((id >> 21) & 0x1f));
-    OutString[2] = (char) ('@' + ((id >> 16) & 0x1f));
-    OutString[3] = AcpiUtHexToAsciiChar ((ACPI_INTEGER) id, 12);
-    OutString[4] = AcpiUtHexToAsciiChar ((ACPI_INTEGER) id, 8);
-    OutString[5] = AcpiUtHexToAsciiChar ((ACPI_INTEGER) id, 4);
-    OutString[6] = AcpiUtHexToAsciiChar ((ACPI_INTEGER) id, 0);
+    OutString[0] = (char) ('@' + ((EisaId >> 26) & 0x1f));
+    OutString[1] = (char) ('@' + ((EisaId >> 21) & 0x1f));
+    OutString[2] = (char) ('@' + ((EisaId >> 16) & 0x1f));
+    OutString[3] = AcpiUtHexToAsciiChar ((ACPI_INTEGER) EisaId, 12);
+    OutString[4] = AcpiUtHexToAsciiChar ((ACPI_INTEGER) EisaId, 8);
+    OutString[5] = AcpiUtHexToAsciiChar ((ACPI_INTEGER) EisaId, 4);
+    OutString[6] = AcpiUtHexToAsciiChar ((ACPI_INTEGER) EisaId, 0);
     OutString[7] = 0;
 }
 
