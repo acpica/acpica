@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: evxfevnt - External Interfaces, ACPI event disable/enable
- *              $Revision: 1.19 $
+ *              $Revision: 1.20 $
  *
  *****************************************************************************/
 
@@ -128,13 +128,104 @@
         MODULE_NAME         ("evxfevnt")
 
 
-ACPI_STATUS
-AcpiEvFindPciRootBuses (
-    void);
+
+/**************************************************************************
+ *
+ * FUNCTION:    AcpiInitializeHardware
+ *
+ * PARAMETERS:  None
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Ensures that the system control interrupt (SCI) is properly
+ *              configured, disables SCI event sources, installs the SCI
+ *              handler
+ *
+ *************************************************************************/
 
 ACPI_STATUS
-AcpiEvInitDevices (
-    void);
+AcpiInitializeHardware (void)
+{
+    ACPI_STATUS             Status;
+
+
+    FUNCTION_TRACE ("AcpiInitializeHardware");
+
+
+    /* Make sure we've got ACPI tables */
+
+    if (!AcpiGbl_DSDT)
+    {
+        DEBUG_PRINT (ACPI_WARN, ("InitHW: No ACPI tables present!\n"));
+        return_ACPI_STATUS (AE_NO_ACPI_TABLES);
+    }
+
+    /* Init the ACPI hardware */
+
+    Status = AcpiCmHardwareInitialize ();
+    if (ACPI_FAILURE (Status))
+    {
+        return_ACPI_STATUS (Status);
+    }
+
+
+    /* Make sure the BIOS supports ACPI mode */
+
+    if (SYS_MODE_LEGACY == AcpiHwGetModeCapabilities())
+    {
+        DEBUG_PRINT (ACPI_WARN, 
+            ("InitHW: Only legacy mode supported!\n"));
+        return_ACPI_STATUS (AE_ERROR);
+    }
+
+
+    AcpiGbl_OriginalMode = AcpiHwGetMode();
+
+    /*
+     * Initialize the Fixed and General Purpose AcpiEvents prior.  This is
+     * done prior to enabling SCIs to prevent interrupts from occuring
+     * before handers are installed.
+     */
+
+    Status = AcpiEvFixedEventInitialize ();
+    if (ACPI_FAILURE (Status))
+    {
+        DEBUG_PRINT (ACPI_FATAL, 
+            ("InitHW: Unable to initialize fixed events.\n"));
+        return_ACPI_STATUS (Status);
+    }
+
+    Status = AcpiEvGpeInitialize ();
+    if (ACPI_FAILURE (Status))
+    {
+        DEBUG_PRINT (ACPI_FATAL,
+            ("InitHW: Unable to initialize general purpose events.\n"));
+        return_ACPI_STATUS (Status);
+    }
+
+    /* Install the SCI handler */
+
+    Status = AcpiEvInstallSciHandler ();
+    if (ACPI_FAILURE (Status))
+    {
+        DEBUG_PRINT (ACPI_FATAL,
+            ("InitHW: Unable to install System Control Interrupt Handler\n"));
+        return_ACPI_STATUS (Status);
+    }
+
+
+    /* Install handlers for control method GPE handlers (_Lxx, _Exx) */
+
+    AcpiEvInitGpeControlMethods ();
+
+    /* Install the handler for the Global Lock */
+
+    Status = AcpiEvInitGlobalLockHandler ();
+
+
+    return_ACPI_STATUS (Status);
+}
+
 
 /**************************************************************************
  *
@@ -144,9 +235,7 @@ AcpiEvInitDevices (
  *
  * RETURN:      Status
  *
- * DESCRIPTION: Ensures that the system control interrupt (SCI) is properly
- *              configured, disables SCI event sources, installs the SCI
- *              handler, and transfers the system into ACPI mode.
+ * DESCRIPTION: Transfers the system into ACPI mode.
  *
  *************************************************************************/
 
@@ -167,63 +256,6 @@ AcpiEnable (void)
         return_ACPI_STATUS (AE_NO_ACPI_TABLES);
     }
 
-    /* Init the hardware */
-
-    /*
-     * With the advent of a 3-pass parser, we need to be
-     *  prepared to execute on initialized HW before the
-     *  namespace has completed its load.
-     */
-
-    Status = AcpiCmHardwareInitialize ();
-    if (ACPI_FAILURE (Status))
-    {
-        return_ACPI_STATUS (Status);
-    }
-
-
-    /* Make sure the BIOS supports ACPI mode */
-
-    if (SYS_MODE_LEGACY == AcpiHwGetModeCapabilities())
-    {
-        DEBUG_PRINT (ACPI_WARN, ("Only legacy mode supported!\n"));
-        return_ACPI_STATUS (AE_ERROR);
-    }
-
-
-    AcpiGbl_OriginalMode = AcpiHwGetMode();
-
-    /*
-     * Initialize the Fixed and General Purpose AcpiEvents prior.  This is
-     * done prior to enabling SCIs to prevent interrupts from occuring
-     * before handers are installed.
-     */
-
-    Status = AcpiEvFixedEventInitialize ();
-    if (ACPI_FAILURE (Status))
-    {
-        DEBUG_PRINT (ACPI_FATAL, ("Unable to initialize fixed events.\n"));
-        return_ACPI_STATUS (Status);
-    }
-
-    Status = AcpiEvGpeInitialize ();
-    if (ACPI_FAILURE (Status))
-    {
-        DEBUG_PRINT (ACPI_FATAL,
-            ("Unable to initialize general purpose events.\n"));
-        return_ACPI_STATUS (Status);
-    }
-
-    /* Install the SCI handler */
-
-    Status = AcpiEvInstallSciHandler ();
-    if (ACPI_FAILURE (Status))
-    {
-        DEBUG_PRINT (ACPI_FATAL,
-            ("Unable to install System Control Interrupt Handler\n"));
-        return_ACPI_STATUS (Status);
-    }
-
     /* Transition to ACPI mode */
 
     Status = AcpiHwSetMode (SYS_MODE_ACPI);
@@ -234,32 +266,6 @@ AcpiEnable (void)
     }
 
     DEBUG_PRINT (ACPI_OK, ("Transition to ACPI mode successful\n"));
-
-    /* Install handlers for control method GPE handlers (_Lxx, _Exx) */
-
-    AcpiEvInitGpeControlMethods ();
-
-    Status = AcpiEvInitGlobalLockHandler ();
-
-    /*
-     * Perform additional initialization that may cause control methods
-     * to be executed
-     *
-     * It may be wise to move this code to a new interface
-     */
-
-
-    /*
-     *  Install PCI config space handler for all PCI root bridges.  A PCI root
-     *  bridge is found by searching for devices containing a HID with the value
-     *  EISAID("PNP0A03")
-     */
-
-    AcpiEvFindPciRootBuses ();
-
-    /* Call _INI on all devices */
-
-    AcpiEvInitDevices ();
 
     return_ACPI_STATUS (Status);
 }
