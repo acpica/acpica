@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: rsutils - Utilities for the resource manager
- *              $Revision: 1.27 $
+ *              $Revision: 1.31 $
  *
  ******************************************************************************/
 
@@ -123,7 +123,7 @@
 
 
 #define _COMPONENT          ACPI_RESOURCES
-        MODULE_NAME         ("rsutils")
+        ACPI_MODULE_NAME    ("rsutils")
 
 
 /*******************************************************************************
@@ -153,7 +153,7 @@ AcpiRsGetPrtMethodData (
     ACPI_STATUS             Status;
 
 
-    FUNCTION_TRACE ("RsGetPrtMethodData");
+    ACPI_FUNCTION_TRACE ("RsGetPrtMethodData");
 
 
     /* Parameters guaranteed valid by caller */
@@ -176,20 +176,20 @@ AcpiRsGetPrtMethodData (
     }
 
     /*
-     * The return object will be a package, so check the parameters.  If the 
-     * return object is not a package, then the underlying AML code is corrupt 
+     * The return object will be a package, so check the parameters.  If the
+     * return object is not a package, then the underlying AML code is corrupt
      * or improperly written.
      */
     if (ACPI_TYPE_PACKAGE != RetObj->Common.Type)
     {
-        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "_PRT did not return a Package, returned %s\n", 
+        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "_PRT did not return a Package, returned %s\n",
                 AcpiUtGetTypeName (RetObj->Common.Type)));
         Status = AE_AML_OPERAND_TYPE;
         goto Cleanup;
     }
 
     /*
-     * Create a resource linked list from the byte stream buffer that comes 
+     * Create a resource linked list from the byte stream buffer that comes
      * back from the _CRS method execution.
      */
     Status = AcpiRsCreatePciRoutingTable (RetObj, RetBuffer);
@@ -230,7 +230,7 @@ AcpiRsGetCrsMethodData (
     ACPI_STATUS             Status;
 
 
-    FUNCTION_TRACE ("RsGetCrsMethodData");
+    ACPI_FUNCTION_TRACE ("RsGetCrsMethodData");
 
 
     /* Parameters guaranteed valid by caller */
@@ -260,7 +260,7 @@ AcpiRsGetCrsMethodData (
      */
     if (ACPI_TYPE_BUFFER != RetObj->Common.Type)
     {
-        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "_CRS did not return a Buffer, returned %s\n", 
+        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "_CRS did not return a Buffer, returned %s\n",
                 AcpiUtGetTypeName (RetObj->Common.Type)));
         Status = AE_AML_OPERAND_TYPE;
         goto Cleanup;
@@ -309,7 +309,7 @@ AcpiRsGetPrsMethodData (
     ACPI_STATUS             Status;
 
 
-    FUNCTION_TRACE ("RsGetPrsMethodData");
+    ACPI_FUNCTION_TRACE ("RsGetPrsMethodData");
 
 
     /* Parameters guaranteed valid by caller */
@@ -339,7 +339,7 @@ AcpiRsGetPrsMethodData (
      */
     if (ACPI_TYPE_BUFFER != RetObj->Common.Type)
     {
-        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "_PRS did not return a Buffer, returned %s\n", 
+        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "_PRS did not return a Buffer, returned %s\n",
                 AcpiUtGetTypeName (RetObj->Common.Type)));
         Status = AE_AML_OPERAND_TYPE;
         goto Cleanup;
@@ -389,7 +389,7 @@ AcpiRsSetSrsMethodData (
     ACPI_BUFFER             Buffer;
 
 
-    FUNCTION_TRACE ("RsSetSrsMethodData");
+    ACPI_FUNCTION_TRACE ("RsSetSrsMethodData");
 
 
     /* Parameters guaranteed valid by caller */
@@ -421,8 +421,9 @@ AcpiRsSetSrsMethodData (
     /*
      * Set up the parameter object
      */
-    Params[0]->Buffer.Length  = Buffer.Length;
+    Params[0]->Buffer.Length  = (UINT32) Buffer.Length;
     Params[0]->Buffer.Pointer = Buffer.Pointer;
+    Params[0]->Common.Flags   = AOPOBJ_DATA_VALID;
     Params[1] = NULL;
 
     /*
