@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: utglobal - Global variables for the ACPI subsystem
- *              $Revision: 1.184 $
+ *              $Revision: 1.185 $
  *
  *****************************************************************************/
 
@@ -708,9 +708,12 @@ AcpiUtAllocateOwnerId (
         OwnerId = AcpiGbl_NextTableOwnerId;
         AcpiGbl_NextTableOwnerId++;
 
+        /* Check for wraparound */
+
         if (AcpiGbl_NextTableOwnerId == ACPI_FIRST_METHOD_ID)
         {
             AcpiGbl_NextTableOwnerId = ACPI_FIRST_TABLE_ID;
+            ACPI_REPORT_WARNING (("Table owner ID wraparound\n"));
         }
         break;
 
@@ -722,6 +725,8 @@ AcpiUtAllocateOwnerId (
 
         if (AcpiGbl_NextMethodOwnerId == ACPI_FIRST_TABLE_ID)
         {
+            /* Check for wraparound */
+
             AcpiGbl_NextMethodOwnerId = ACPI_FIRST_METHOD_ID;
         }
         break;
