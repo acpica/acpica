@@ -122,7 +122,6 @@
         MODULE_NAME         ("cmdebug");
 
 
-
 /*****************************************************************************
  *
  * FUNCTION:    Get/Set debug level
@@ -456,8 +455,8 @@ DebugPrint (
     {
         va_start (args, Format);
 
-        AcpiOsdPrintf ("%8s-%04d: ", ModuleName, LineNumber);
-        AcpiOsdVprintf (Format, args);
+        AcpiOsPrintf ("%8s-%04d: ", ModuleName, LineNumber);
+        AcpiOsVprintf (Format, args);
     }
 }
 
@@ -484,7 +483,7 @@ DebugPrintPrefix (
 {
 
 
-    AcpiOsdPrintf ("%8s-%04d: ", ModuleName, LineNumber);
+    AcpiOsPrintf ("%8s-%04d: ", ModuleName, LineNumber);
 }
 
 
@@ -511,11 +510,10 @@ DebugPrintRaw (
 
     va_start (args, Format);
 
-    AcpiOsdVprintf (Format, args);
+    AcpiOsVprintf (Format, args);
 
     va_end (args);
 }
-
 
 
 /*****************************************************************************
@@ -560,7 +558,7 @@ AcpiCmDumpBuffer (
     {
         /* Print current offset */
 
-        AcpiOsdPrintf ("%05X    ", i);
+        AcpiOsPrintf ("%05X    ", i);
 
 
         /* Print 16 hex chars */
@@ -569,7 +567,7 @@ AcpiCmDumpBuffer (
         {
             if (i + j >= Count)
             {
-                AcpiOsdPrintf ("\n");
+                AcpiOsPrintf ("\n");
                 return;
             }
 
@@ -581,34 +579,34 @@ AcpiCmDumpBuffer (
 
             default:
 
-                AcpiOsdPrintf ("%02X ", *((UINT8 *) &Buffer[i + j]));
+                AcpiOsPrintf ("%02X ", *((UINT8 *) &Buffer[i + j]));
                 j += 1;
                 break;
 
 
             case DB_WORD_DISPLAY:
 
-                STORE16TO32 (&Temp32, &Buffer[i + j]);
-                AcpiOsdPrintf ("%04X ", Temp32);
+                MOVE_UNALIGNED16_TO_32 (&Temp32, &Buffer[i + j]);
+                AcpiOsPrintf ("%04X ", Temp32);
                 j += 2;
                 break;
 
 
             case DB_DWORD_DISPLAY:
 
-                STORE32TO32 (&Temp32, &Buffer[i + j]);
-                AcpiOsdPrintf ("%08X ", Temp32);
+                MOVE_UNALIGNED32_TO_32 (&Temp32, &Buffer[i + j]);
+                AcpiOsPrintf ("%08X ", Temp32);
                 j += 4;
                 break;
 
 
             case DB_QWORD_DISPLAY:
 
-                STORE32TO32 (&Temp32, &Buffer[i + j]);
-                AcpiOsdPrintf ("%08X", Temp32);
+                MOVE_UNALIGNED32_TO_32 (&Temp32, &Buffer[i + j]);
+                AcpiOsPrintf ("%08X", Temp32);
 
-                STORE32TO32 (&Temp32, &Buffer[i + j + 4]);
-                AcpiOsdPrintf ("%08X ", Temp32);
+                MOVE_UNALIGNED32_TO_32 (&Temp32, &Buffer[i + j + 4]);
+                AcpiOsPrintf ("%08X ", Temp32);
                 j += 8;
                 break;
             }
@@ -624,7 +622,7 @@ AcpiCmDumpBuffer (
         {
             if (i + j >= Count)
             {
-                AcpiOsdPrintf ("\n");
+                AcpiOsPrintf ("\n");
                 return;
             }
 
@@ -633,24 +631,21 @@ AcpiCmDumpBuffer (
                 (BufChar > 0x2F && BufChar < 0x61) ||
                 (BufChar > 0x60 && BufChar < 0x7F))
             {
-                AcpiOsdPrintf ("%c", BufChar);
+                AcpiOsPrintf ("%c", BufChar);
             }
             else
             {
-                AcpiOsdPrintf (".");
+                AcpiOsPrintf (".");
             }
         }
 
         /* Done with that line. */
 
-        AcpiOsdPrintf ("\n");
+        AcpiOsPrintf ("\n");
         i += 16;
     }
 
     return;
 }
-
-
-
 
 

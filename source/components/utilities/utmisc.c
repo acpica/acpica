@@ -1,3 +1,4 @@
+
 /******************************************************************************
  *
  * Module Name: cmutils - common utility procedures
@@ -117,12 +118,12 @@
 #define __CMUTILS_C__
 
 #include "acpi.h"
-#include "acevents.h"
-#include "achware.h"
-#include "acnamesp.h"
-#include "acinterp.h"
+#include "events.h"
+#include "hardware.h"
+#include "namesp.h"
+#include "interp.h"
 #include "amlcode.h"
-#include "acdebug.h"
+#include "debugger.h"
 
 
 #define _COMPONENT          MISCELLANEOUS
@@ -148,7 +149,7 @@ BOOLEAN
 AcpiCmValidAcpiName (
     UINT32                  Name)
 {
-    INT8                    *NamePtr = (INT8 *) &Name;
+    char                    *NamePtr = (char *) &Name;
     UINT32                  i;
 
 
@@ -181,7 +182,7 @@ AcpiCmValidAcpiName (
 
 BOOLEAN
 AcpiCmValidAcpiCharacter (
-    INT8                    Character)
+    char                    Character)
 {
 
     return ((BOOLEAN)   ((Character == '_') ||
@@ -293,8 +294,7 @@ AcpiCmCreateMutex (
 
     if (!AcpiGbl_AcpiMutexInfo[MutexId].Mutex)
     {
-        Status = AcpiOsCreateSemaphore (1, 1,
-                                        &AcpiGbl_AcpiMutexInfo[MutexId].Mutex);
+        Status = AcpiOsCreateSemaphore (1, 1, &AcpiGbl_AcpiMutexInfo[MutexId].Mutex);
         AcpiGbl_AcpiMutexInfo[MutexId].Locked = FALSE;
         AcpiGbl_AcpiMutexInfo[MutexId].UseCount = 0;
     }
@@ -359,8 +359,7 @@ AcpiCmAcquireMutex (
     ACPI_STATUS             Status;
 
 
-    DEBUG_PRINT (TRACE_MUTEX,
-                ("Acquiring Mutex [%s]\n", AcpiCmGetMutexName (MutexId)));
+    DEBUG_PRINT (TRACE_MUTEX, ("Acquiring Mutex [%s]\n", AcpiCmGetMutexName (MutexId)));
 
     if (MutexId > MAX_MTX)
     {
@@ -368,12 +367,10 @@ AcpiCmAcquireMutex (
     }
 
 
-    Status =
-        AcpiOsWaitSemaphore (AcpiGbl_AcpiMutexInfo[MutexId].Mutex,
-                            1, WAIT_FOREVER);
+    Status = AcpiOsWaitSemaphore (AcpiGbl_AcpiMutexInfo[MutexId].Mutex, 1, WAIT_FOREVER);
 
     DEBUG_PRINT (TRACE_MUTEX, ("Acquired Mutex  [%s] Status %s\n",
-                AcpiCmGetMutexName (MutexId), AcpiCmFormatException (Status)));
+                    AcpiCmGetMutexName (MutexId), AcpiCmFormatException (Status)));
 
     if (ACPI_SUCCESS (Status))
     {
@@ -414,11 +411,10 @@ AcpiCmReleaseMutex (
 
     AcpiGbl_AcpiMutexInfo[MutexId].Locked = FALSE;  /* Mark before unlocking */
 
-    Status =
-        AcpiOsSignalSemaphore (AcpiGbl_AcpiMutexInfo[MutexId].Mutex, 1);
+    Status = AcpiOsSignalSemaphore (AcpiGbl_AcpiMutexInfo[MutexId].Mutex, 1);
 
     DEBUG_PRINT (TRACE_MUTEX, ("Released Mutex  [%s] Status %s\n",
-                AcpiCmGetMutexName (MutexId), AcpiCmFormatException (Status)));
+                    AcpiCmGetMutexName (MutexId), AcpiCmFormatException (Status)));
 
     return (Status);
 }
@@ -550,7 +546,7 @@ AcpiCmCreateGenericState (void)
     ACPI_GENERIC_STATE      *State;
 
 
-    AcpiCmAcquireMutex (ACPI_MTX_CACHES);
+    AcpiCmAcquireMutex (MTX_CACHES);
 
     AcpiGbl_StateCacheRequests++;
 
@@ -567,14 +563,14 @@ AcpiCmCreateGenericState (void)
         AcpiGbl_StateCacheHits++;
         AcpiGbl_GenericStateCacheDepth--;
 
-        AcpiCmReleaseMutex (ACPI_MTX_CACHES);
+        AcpiCmReleaseMutex (MTX_CACHES);
     }
 
     else
     {
         /* The cache is empty, create a new object */
 
-        AcpiCmReleaseMutex (ACPI_MTX_CACHES);
+        AcpiCmReleaseMutex (MTX_CACHES);
 
         State = AcpiCmCallocate (sizeof (ACPI_GENERIC_STATE));
     }
@@ -583,7 +579,7 @@ AcpiCmCreateGenericState (void)
 
     if (State)
     {
-        State->Common.DataType = ACPI_DESC_TYPE_STATE;
+        State->Common.DataType = DESC_TYPE_STATE;
     }
 
     return State;
@@ -703,12 +699,12 @@ AcpiCmDeleteGenericState (
 
     else
     {
-        AcpiCmAcquireMutex (ACPI_MTX_CACHES);
+        AcpiCmAcquireMutex (MTX_CACHES);
 
         /* Clear the state */
 
         MEMSET (State, 0, sizeof (ACPI_GENERIC_STATE));
-        State->Common.DataType = ACPI_DESC_TYPE_STATE;
+        State->Common.DataType = DESC_TYPE_STATE;
 
         /* Put the object at the head of the global cache list */
 
@@ -717,7 +713,7 @@ AcpiCmDeleteGenericState (
         AcpiGbl_GenericStateCacheDepth++;
 
 
-        AcpiCmReleaseMutex (ACPI_MTX_CACHES);
+        AcpiCmReleaseMutex (MTX_CACHES);
     }
     return_VOID;
 }
@@ -755,7 +751,6 @@ AcpiCmDeleteGenericStateCache (
         Next = AcpiGbl_GenericStateCache->Common.Next;
         AcpiCmFree (AcpiGbl_GenericStateCache);
         AcpiGbl_GenericStateCache = Next;
-        AcpiGbl_GenericStateCacheDepth--;
     }
 
     return_VOID;
@@ -779,10 +774,10 @@ AcpiCmDeleteGenericStateCache (
 
 void
 _ReportError (
-    INT8                    *ModuleName,
+    char                    *ModuleName,
     INT32                   LineNumber,
     INT32                   ComponentId,
-    INT8                    *Message)
+    char                    *Message)
 {
 
     DebugPrint (ModuleName, LineNumber, ComponentId, ACPI_ERROR,
@@ -808,15 +803,43 @@ _ReportError (
 
 void
 _ReportWarning (
-    INT8                    *ModuleName,
+    char                    *ModuleName,
     INT32                   LineNumber,
     INT32                   ComponentId,
-    INT8                    *Message)
+    char                    *Message)
 {
 
     DebugPrint (ModuleName, LineNumber, ComponentId, ACPI_WARN,
                 "*** Warning: %s\n", Message);
 
+}
+
+
+/*****************************************************************************
+ *
+ * FUNCTION:    _ReportSuccess
+ *
+ * PARAMETERS:  ModuleName          - Caller's module name (for error output)
+ *              LineNumber          - Caller's line number (for error output)
+ *              ComponentId         - Caller's component ID (for error output)
+ *              Message             - Error message to use on failure
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Print warning message from KD table
+ *
+ ****************************************************************************/
+
+void
+_ReportSuccess (
+    char                    *ModuleName,
+    INT32                   LineNumber,
+    INT32                   ComponentId,
+    char                    *Message)
+{
+
+    DebugPrint (ModuleName, LineNumber, ComponentId, ACPI_OK,
+                "*** Success: %s\n", Message);
 }
 
 
@@ -837,10 +860,10 @@ _ReportWarning (
 
 void
 _ReportInfo (
-    INT8                    *ModuleName,
+    char                    *ModuleName,
     INT32                   LineNumber,
     INT32                   ComponentId,
-    INT8                    *Message)
+    char                    *Message)
 {
 
     DebugPrint (ModuleName, LineNumber, ComponentId, ACPI_INFO,
