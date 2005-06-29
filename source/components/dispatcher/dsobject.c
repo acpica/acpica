@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dsobject - Dispatcher object management routines
- *              $Revision: 1.70 $
+ *              $Revision: 1.72 $
  *
  *****************************************************************************/
 
@@ -197,9 +197,9 @@ AcpiDsInitOneObject (
 
         Info->MethodCount++;
 
-        if (!(AcpiDbgLevel & TRACE_INIT))
+        if (!(AcpiDbgLevel & ACPI_LV_INIT))
         {
-            DEBUG_PRINT_RAW (ACPI_OK, ("."));
+            ACPI_DEBUG_PRINT_RAW ((ACPI_DB_OK, "."));
         }
 
         /*
@@ -223,7 +223,7 @@ AcpiDsInitOneObject (
 
         if (ACPI_FAILURE (Status))
         {
-            DEBUG_PRINTP (ACPI_ERROR, ("Method %p [%4.4s] parse failed! %s\n",
+            ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Method %p [%4.4s] parse failed! %s\n",
                 ObjHandle, &((ACPI_NAMESPACE_NODE *)ObjHandle)->Name,
                 AcpiFormatException (Status)));
             break;
@@ -273,9 +273,9 @@ AcpiDsInitializeObjects (
     FUNCTION_TRACE ("DsInitializeObjects");
 
 
-    DEBUG_PRINTP (TRACE_DISPATCH,
-        ("**** Starting initialization of namespace objects ****\n"));
-    DEBUG_PRINT_RAW (ACPI_OK, ("Parsing Methods:"));
+    ACPI_DEBUG_PRINT ((ACPI_DB_DISPATCH,
+        "**** Starting initialization of namespace objects ****\n"));
+    ACPI_DEBUG_PRINT_RAW ((ACPI_DB_OK, "Parsing Methods:"));
 
 
     Info.MethodCount    = 0;
@@ -290,16 +290,16 @@ AcpiDsInitializeObjects (
                     AcpiDsInitOneObject, &Info, NULL);
     if (ACPI_FAILURE (Status))
     {
-        DEBUG_PRINTP (ACPI_ERROR, ("WalkNamespace failed! %x\n", Status));
+        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "WalkNamespace failed! %x\n", Status));
     }
 
-    DEBUG_PRINT_RAW (ACPI_OK,
-        ("\n%d Control Methods found and parsed (%d nodes total)\n",
+    ACPI_DEBUG_PRINT_RAW ((ACPI_DB_OK,
+        "\n%d Control Methods found and parsed (%d nodes total)\n",
         Info.MethodCount, Info.ObjectCount));
-    DEBUG_PRINTP (TRACE_DISPATCH,
-        ("%d Control Methods found\n", Info.MethodCount));
-    DEBUG_PRINTP (TRACE_DISPATCH,
-        ("%d Op Regions found\n", Info.OpRegionCount));
+    ACPI_DEBUG_PRINT ((ACPI_DB_DISPATCH,
+        "%d Control Methods found\n", Info.MethodCount));
+    ACPI_DEBUG_PRINT ((ACPI_DB_DISPATCH,
+        "%d Op Regions found\n", Info.OpRegionCount));
 
     return_ACPI_STATUS (AE_OK);
 }
@@ -332,7 +332,7 @@ AcpiDsInitObjectFromOp (
     ACPI_PARSE_OBJECT       *Arg;
     ACPI_PARSE2_OBJECT      *ByteList;
     ACPI_OPERAND_OBJECT     *ArgDesc;
-    ACPI_OPCODE_INFO        *OpInfo;
+    const ACPI_OPCODE_INFO  *OpInfo;
     ACPI_OPERAND_OBJECT     *ObjDesc;
 
 
@@ -374,8 +374,8 @@ AcpiDsInitObjectFromOp (
 
         if (ArgDesc->Common.Type != ACPI_TYPE_INTEGER)
         {
-            DEBUG_PRINTP (ACPI_ERROR, 
-                ("Expecting number, got obj: %p type %X\n",
+            ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, 
+                "Expecting number, got obj: %p type %X\n",
                 ArgDesc, ArgDesc->Common.Type));
             AcpiUtRemoveReference (ArgDesc);
             return (AE_TYPE);
@@ -418,7 +418,7 @@ AcpiDsInitObjectFromOp (
         {
             if (ByteList->Opcode != AML_INT_BYTELIST_OP)
             {
-                DEBUG_PRINTP (ACPI_ERROR, ("Expecting bytelist, got: %x\n",
+                ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Expecting bytelist, got: %x\n",
                     ByteList));
                 return (AE_TYPE);
             }
@@ -552,7 +552,7 @@ AcpiDsInitObjectFromOp (
 
     default:
 
-        DEBUG_PRINTP (ACPI_ERROR, ("Unimplemented data type: %x\n",
+        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Unimplemented data type: %x\n",
             ObjDesc->Common.Type));
 
         break;
