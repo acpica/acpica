@@ -1,5 +1,5 @@
 /******************************************************************************
- * 
+ *
  * Module Name: adexec - AcpiDump utility, top level parse and execute routines
  *
  *****************************************************************************/
@@ -37,9 +37,9 @@
  * The above copyright and patent license is granted only if the following
  * conditions are met:
  *
- * 3. Conditions 
+ * 3. Conditions
  *
- * 3.1. Redistribution of Source with Rights to Further Distribute Source.  
+ * 3.1. Redistribution of Source with Rights to Further Distribute Source.
  * Redistribution of source code of any substantial portion of the Covered
  * Code or modification with rights to further distribute source must include
  * the above Copyright Notice, the above License, this list of Conditions,
@@ -47,11 +47,11 @@
  * Licensee must cause all Covered Code to which Licensee contributes to
  * contain a file documenting the changes Licensee made to create that Covered
  * Code and the date of any change.  Licensee must include in that file the
- * documentation of any changes made by any predecessor Licensee.  Licensee 
+ * documentation of any changes made by any predecessor Licensee.  Licensee
  * must include a prominent statement that the modification is derived,
  * directly or indirectly, from Original Intel Code.
  *
- * 3.2. Redistribution of Source with no Rights to Further Distribute Source.  
+ * 3.2. Redistribution of Source with no Rights to Further Distribute Source.
  * Redistribution of source code of any substantial portion of the Covered
  * Code or modification without rights to further distribute source must
  * include the following Disclaimer and Export Compliance provision in the
@@ -85,7 +85,7 @@
  * INSTALLATION, TRAINING OR OTHER SERVICES.  INTEL WILL NOT PROVIDE ANY
  * UPDATES, ENHANCEMENTS OR EXTENSIONS.  INTEL SPECIFICALLY DISCLAIMS ANY
  * IMPLIED WARRANTIES OF MERCHANTABILITY, NONINFRINGEMENT AND FITNESS FOR A
- * PARTICULAR PURPOSE. 
+ * PARTICULAR PURPOSE.
  *
  * 4.2. IN NO EVENT SHALL INTEL HAVE ANY LIABILITY TO LICENSEE, ITS LICENSEES
  * OR ANY OTHER THIRD PARTY, FOR ANY LOST PROFITS, LOST DATA, LOSS OF USE OR
@@ -130,7 +130,7 @@
 
 
 
-ACPI_GENERIC_OP         *Acpi_GblParsedNamespaceRoot;
+ACPI_GENERIC_OP         *AcpiGbl_ParsedNamespaceRoot;
 ACPI_GENERIC_OP         *root;
 UINT8                   *AmlPtr;
 UINT32                  AmlLength;
@@ -140,14 +140,14 @@ UINT32                  DsdtLength;
 
 
 /******************************************************************************
- * 
+ *
  * FUNCTION:    AdCreateTableHeaders
  *
  * PARAMETERS:  None
  *
  * RETURN:      None
  *
- * DESCRIPTION: 
+ * DESCRIPTION:
  *
  *****************************************************************************/
 
@@ -161,14 +161,14 @@ AdCreateTableHeaders (void)
 
 
 /******************************************************************************
- * 
+ *
  * FUNCTION:    AdBlockType
  *
  * PARAMETERS:  None
  *
  * RETURN:      None
  *
- * DESCRIPTION: 
+ * DESCRIPTION:
  *
  *****************************************************************************/
 
@@ -195,7 +195,7 @@ c (
 }
 
 /******************************************************************************
- * 
+ *
  * FUNCTION:    AdDisplayTables
  *
  * PARAMETERS:  None
@@ -211,7 +211,7 @@ AdDisplayTables (void)
 {
 
 
-    if (!Acpi_GblDSDT || !Acpi_GblParsedNamespaceRoot)
+    if (!AcpiGbl_DSDT || !AcpiGbl_ParsedNamespaceRoot)
     {
         return AE_NOT_EXIST;
     }
@@ -222,10 +222,10 @@ AdDisplayTables (void)
         AdCreateTableHeaders ();
     }
 
-    AcpiDbDisplayOp (AcpiPsGetChild (Acpi_GblParsedNamespaceRoot), ACPI_UINT32_MAX);
+    AcpiDbDisplayOp (AcpiPsGetChild (AcpiGbl_ParsedNamespaceRoot), ACPI_UINT32_MAX);
 
     AcpiOsdPrintf ("\n\nDSDT Header:\n");
-    AcpiCmDumpBuffer ((char *) Acpi_GblDSDT, sizeof (ACPI_TABLE_HEADER), DB_BYTE_DISPLAY, ACPI_UINT32_MAX);
+    AcpiCmDumpBuffer ((char *) AcpiGbl_DSDT, sizeof (ACPI_TABLE_HEADER), DB_BYTE_DISPLAY, ACPI_UINT32_MAX);
 
     AcpiOsdPrintf ("DSDT Body (Length 0x%X)\n", AmlLength);
     AcpiCmDumpBuffer ((char *) AmlPtr, AmlLength, DB_BYTE_DISPLAY, ACPI_UINT32_MAX);
@@ -235,10 +235,10 @@ AdDisplayTables (void)
 
 
 /******************************************************************************
- * 
+ *
  * FUNCTION:    AdLoadDsdt
  *
- * PARAMETERS:  
+ * PARAMETERS:
  *
  * RETURN:      Status
  *
@@ -248,9 +248,9 @@ AdDisplayTables (void)
 
 ACPI_STATUS
 AdLoadDsdt(
-    FILE                    *fp, 
-    int                     seekable, 
-    UINT8                   **DsdtPtr, 
+    FILE                    *fp,
+    int                     seekable,
+    UINT8                   **DsdtPtr,
     UINT32                  *DsdtLength)
 {
     ACPI_TABLE_HEADER       dsdt_hdr;
@@ -291,7 +291,7 @@ AdLoadDsdt(
 
 
 /******************************************************************************
- * 
+ *
  * FUNCTION:    AdSecondPassParse
  *
  * PARAMETERS:  Root            - Root of the parse tree
@@ -323,7 +323,7 @@ AdSecondPassParse (
             printf (".");
 
             Method = (ACPI_DEFERRED_OP *) Op;
-            DEBUG_PRINT (ACPI_INFO, ("Parsing method [%4.4s]\n", &Method->Name)); 
+            DEBUG_PRINT (ACPI_INFO, ("Parsing method [%4.4s]\n", &Method->Name));
 
             /* Parse the method */
 
@@ -335,7 +335,7 @@ AdSecondPassParse (
              * within the ACPI table, at the BaseAmlOffset.  Walk the entire tree that
              * was just created and update the AmlOffset in each Op
              */
-          
+
             BaseAmlOffset = (Method->Value.Arg)->AmlOffset + 1;
             StartOp = (Method->Value.Arg)->Next;
             SearchOp = StartOp;
@@ -376,7 +376,7 @@ AdSecondPassParse (
 
 
 /******************************************************************************
- * 
+ *
  * FUNCTION:    AdGetTables
  *
  * PARAMETERS:  Filename        - Optional filename
@@ -431,7 +431,7 @@ AdGetTables (
 
 
 /******************************************************************************
- * 
+ *
  * FUNCTION:    AdParseTable
  *
  * PARAMETERS:  None
@@ -448,30 +448,30 @@ AdParseTables (void)
     ACPI_STATUS             Status = AE_OK;
 
 
-    if (!Acpi_GblDSDT)
+    if (!AcpiGbl_DSDT)
     {
         return AE_NOT_EXIST;
     }
 
     /* Create the root object */
 
-    Acpi_GblParsedNamespaceRoot = AcpiPsAllocOp (AML_SCOPE_OP);
-    if (!Acpi_GblParsedNamespaceRoot)
+    AcpiGbl_ParsedNamespaceRoot = AcpiPsAllocOp (AML_SCOPE_OP);
+    if (!AcpiGbl_ParsedNamespaceRoot)
     {
         return AE_NO_MEMORY;
     }
 
     /* Initialize the root object */
 
-    ((ACPI_NAMED_OP *) Acpi_GblParsedNamespaceRoot)->Name = ACPI_ROOT_NAME;
+    ((ACPI_NAMED_OP *) AcpiGbl_ParsedNamespaceRoot)->Name = ACPI_ROOT_NAME;
 
     /* Pass 1:  Parse everything except control method bodies */
 
-    DsdtLength = Acpi_GblDSDT->Length;
+    DsdtLength = AcpiGbl_DSDT->Length;
     AmlLength = DsdtLength  - sizeof (ACPI_TABLE_HEADER);
-    AmlPtr = ((UINT8 *) Acpi_GblDSDT + sizeof (ACPI_TABLE_HEADER));
+    AmlPtr = ((UINT8 *) AcpiGbl_DSDT + sizeof (ACPI_TABLE_HEADER));
 
-    Status = AcpiPsParseAml (Acpi_GblParsedNamespaceRoot, AmlPtr, AmlLength, 0); 
+    Status = AcpiPsParseAml (AcpiGbl_ParsedNamespaceRoot, AmlPtr, AmlLength, 0);
     if (ACPI_FAILURE (Status))
     {
         return Status;
@@ -479,7 +479,7 @@ AdParseTables (void)
 
     /* Pass 2: Parse control methods and link their parse trees into the main parse tree */
 
-    Status = AdSecondPassParse (Acpi_GblParsedNamespaceRoot);
+    Status = AdSecondPassParse (AcpiGbl_ParsedNamespaceRoot);
 
     return Status;
 }
