@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dbdisply - debug display commands
- *              $Revision: 1.88 $
+ *              $Revision: 1.91 $
  *
  ******************************************************************************/
 
@@ -804,7 +804,7 @@ AcpiDbDisplayLocals (void)
     for (i = 0; i < ACPI_METHOD_NUM_LOCALS; i++)
     {
         ObjDesc = WalkState->LocalVariables[i].Object;
-        AcpiOsPrintf ("Local%d: ", i);
+        AcpiOsPrintf ("    Local%X: ", i);
         AcpiDbDisplayInternalObject (ObjDesc, WalkState);
     }
 }
@@ -851,13 +851,13 @@ AcpiDbDisplayArguments (void)
     NumArgs     = ObjDesc->Method.ParamCount;
     Concurrency = ObjDesc->Method.Concurrency;
 
-    AcpiOsPrintf ("Method [%4.4s] has %X arguments, max concurrency = %X\n",
+    AcpiOsPrintf ("Arguments for Method [%4.4s]:  (%X arguments defined, max concurrency = %X)\n",
             Node->Name.Ascii, NumArgs, Concurrency);
 
     for (i = 0; i < ACPI_METHOD_NUM_ARGS; i++)
     {
         ObjDesc = WalkState->Arguments[i].Object;
-        AcpiOsPrintf ("Arg%d: ", i);
+        AcpiOsPrintf ("    Arg%d:   ", i);
         AcpiDbDisplayInternalObject (ObjDesc, WalkState);
     }
 }
@@ -1021,7 +1021,7 @@ AcpiDbDisplayArgumentObject (
  *
  * FUNCTION:    AcpiDbDisplayGpes
  *
- * PARAMETERS:  
+ * PARAMETERS:
  *
  * RETURN:      None
  *
@@ -1033,22 +1033,29 @@ void
 AcpiDbDisplayGpes (void)
 {
     ACPI_GPE_BLOCK_INFO     *GpeBlock;
+    ACPI_GPE_XRUPT_INFO     *GpeXruptInfo;
     UINT32                  i = 0;
 
 
-    GpeBlock = AcpiGbl_GpeBlockListHead;
-    while (GpeBlock)
+    GpeXruptInfo = AcpiGbl_GpeXruptListHead;
+    while (GpeXruptInfo)
     {
-        AcpiOsPrintf ("Block %d - %p\n", i, GpeBlock);
-        AcpiOsPrintf ("    Registers:    %d\n", GpeBlock->RegisterCount);
-        AcpiOsPrintf ("    GPE range:    %d to %d\n", GpeBlock->BlockBaseNumber, 
-                        GpeBlock->BlockBaseNumber + (GpeBlock->RegisterCount * 8) -1);
-        AcpiOsPrintf ("    RegisterInfo: %p\n", GpeBlock->RegisterInfo);
-        AcpiOsPrintf ("    EventInfo:    %p\n", GpeBlock->EventInfo);
-        i++;
+        GpeBlock = GpeXruptInfo->GpeBlockListHead;
+        while (GpeBlock)
+        {
+            AcpiOsPrintf ("Block %d - %p\n", i, GpeBlock);
+            AcpiOsPrintf ("    Registers:    %d\n", GpeBlock->RegisterCount);
+            AcpiOsPrintf ("    GPE range:    %d to %d\n", GpeBlock->BlockBaseNumber,
+                            GpeBlock->BlockBaseNumber + (GpeBlock->RegisterCount * 8) -1);
+            AcpiOsPrintf ("    RegisterInfo: %p\n", GpeBlock->RegisterInfo);
+            AcpiOsPrintf ("    EventInfo:    %p\n", GpeBlock->EventInfo);
+            i++;
 
-        GpeBlock = GpeBlock->Next;
-    }
+            GpeBlock = GpeBlock->Next;
+        }
+
+        GpeXruptInfo = GpeXruptInfo->Next;
+    }   
 }
 
 
