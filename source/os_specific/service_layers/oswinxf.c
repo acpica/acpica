@@ -1,7 +1,7 @@
 /******************************************************************************
  *
- * Module Name: oswinxf - Windows application interface
- *              $Revision: 1.17 $
+ * Module Name: oswinxf - Windows OSL
+ *              $Revision: 1.22 $
  *
  *****************************************************************************/
 
@@ -9,8 +9,8 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, Intel Corp.  All rights
- * reserved.
+ * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.  
+ * All rights reserved.
  *
  * 2. License
  *
@@ -121,11 +121,17 @@
  * map directly to Clibrary calls.
  */
 
-
+#ifdef WIN32
 #pragma warning(disable:4115)   /* warning C4115: named type definition in parentheses (caused by rpcasync.h> */
 
 #include <windows.h>
 #include <winbase.h>
+#endif
+
+#ifdef WIN64
+#include <windowsx.h>
+#endif
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdarg.h>
@@ -138,7 +144,7 @@
 #undef HIBYTE
 
 
-#include "acpi.h"           /* TBD: this should be acpixf.h */
+#include "acpi.h"
 #include "acdebug.h"
 
 #define _COMPONENT          ACPI_OS_SERVICES
@@ -160,6 +166,10 @@ SEMAPHORE_ENTRY             AcpiGbl_Semaphores[NUM_SEMAPHORES];
 
 
 extern FILE                 *AcpiGbl_DebugFile;
+ACPI_STATUS
+AeLocalGetRootPointer (
+    UINT32                  Flags,
+    ACPI_PHYSICAL_ADDRESS   *RsdpPhysicalAddress);
 
 
 /******************************************************************************
@@ -202,7 +212,7 @@ AcpiOsGetRootPointer (
     ACPI_PHYSICAL_ADDRESS   *RsdpPhysicalAddress)
 {
 
-    return (AE_NO_ACPI_TABLES);
+    return (AeLocalGetRootPointer (Flags, RsdpPhysicalAddress));
 }
 
 
@@ -227,8 +237,8 @@ AcpiOsGetTimer (void)
     GetSystemTime (&SysTime);
 
     return ((SysTime.wMinute * 60000) +
-        (SysTime.wSecond * 1000) +
-        SysTime.wMilliseconds);
+            (SysTime.wSecond * 1000) +
+             SysTime.wMilliseconds);
 
 }
 
@@ -376,7 +386,7 @@ UINT32
 AcpiOsGetLine (
     char                    *Buffer)
 {
-    UINT8                   Temp;
+    char                    Temp;
     UINT32                  i;
 
 
@@ -417,10 +427,10 @@ AcpiOsGetLine (
 ACPI_STATUS
 AcpiOsMapMemory (
     UINT64                  where,
-    UINT32                  length,
+    ACPI_SIZE               length,
     void                    **there)
 {
-    *there = (void *) (UINT32) where;
+    *there = ACPI_TO_POINTER ((NATIVE_UINT) where);
 
     return AE_OK;
 }
@@ -443,7 +453,7 @@ AcpiOsMapMemory (
 void
 AcpiOsUnmapMemory (
     void                    *where,
-    UINT32                  length)
+    ACPI_SIZE               length)
 {
 
     return;
@@ -464,7 +474,7 @@ AcpiOsUnmapMemory (
 
 void *
 AcpiOsAllocate (
-    UINT32                  size)
+    ACPI_SIZE               size)
 {
     void                    *Mem;
 
@@ -489,7 +499,7 @@ AcpiOsAllocate (
 
 void *
 AcpiOsCallocate (
-    UINT32                  size)
+    ACPI_SIZE               size)
 {
     void                    *Mem;
 
@@ -514,11 +524,11 @@ AcpiOsCallocate (
 
 void
 AcpiOsFree (
-    char                    *mem)
+    void                    *Mem)
 {
 
 
-    free ((void *) mem);
+    free (Mem);
 }
 
 
@@ -669,7 +679,7 @@ AcpiOsWaitSemaphore (
     }
 
 
-/* Make this a command line option so that we can catch
+/* TBD: Make this a command line option so that we can catch
  * synchronization deadlocks
  *
     if (Timeout == INFINITE)
@@ -688,8 +698,8 @@ AcpiOsWaitSemaphore (
 
     if (AcpiGbl_Semaphores[Index].CurrentUnits == 0)
     {
-        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "[%d] No units, Timeout %X, Status 0x%X\n",
-                    Index, Timeout, WaitStatus));
+        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "%s - No unit received. Timeout %X, OSstatus 0x%X\n",
+                    AcpiUtGetMutexName (Index), Timeout, WaitStatus));
 
         return AE_OK;
     }
@@ -750,9 +760,9 @@ AcpiOsSignalSemaphore (
         return (AE_LIMIT);
     }
 
+    AcpiGbl_Semaphores[Index].CurrentUnits++;
     ReleaseSemaphore (AcpiGbl_Semaphores[Index].OsHandle, Units, NULL);
 
-    AcpiGbl_Semaphores[Index].CurrentUnits++;
 #endif
 
 
@@ -953,7 +963,7 @@ ACPI_STATUS
 AcpiOsWritePciConfiguration (
     ACPI_PCI_ID             *PciId,
     UINT32                  Register,
-    NATIVE_UINT             Value,
+    ACPI_INTEGER            Value,
     UINT32                  Width)
 {
 
@@ -995,6 +1005,10 @@ AcpiOsReadPort (
     case 32:
         *((UINT32 *) Value) = 0;
         break;
+
+    case 64:
+        *((UINT64 *) Value) = 0;
+        break;
     }
 
     return (AE_OK);
@@ -1018,7 +1032,7 @@ AcpiOsReadPort (
 ACPI_STATUS
 AcpiOsWritePort (
     ACPI_IO_ADDRESS         Address,
-    NATIVE_UINT             Value,
+    ACPI_INTEGER            Value,
     UINT32                  Width)
 {
 
@@ -1060,7 +1074,12 @@ AcpiOsReadMemory (
     case 32:
         *((UINT32 *) Value) = 0;
         break;
+
+    case 64:
+        *((UINT64 *) Value) = 0;
+        break;
     }
+
     return (AE_OK);
 }
 
@@ -1082,7 +1101,7 @@ AcpiOsReadMemory (
 ACPI_STATUS
 AcpiOsWriteMemory (
     ACPI_PHYSICAL_ADDRESS   Address,
-    NATIVE_UINT             Value,
+    ACPI_INTEGER            Value,
     UINT32                  Width)
 {
 
