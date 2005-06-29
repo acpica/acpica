@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exutils - interpreter/scanner utilities
- *              $Revision: 1.90 $
+ *              $Revision: 1.95 $
  *
  *****************************************************************************/
 
@@ -10,7 +10,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -134,15 +134,12 @@
 #define DEFINE_AML_GLOBALS
 
 #include "acpi.h"
-#include "acparser.h"
 #include "acinterp.h"
 #include "amlcode.h"
-#include "acnamesp.h"
 #include "acevents.h"
-#include "acparser.h"
 
 #define _COMPONENT          ACPI_EXECUTER
-        MODULE_NAME         ("exutils")
+        ACPI_MODULE_NAME    ("exutils")
 
 
 /*******************************************************************************
@@ -161,13 +158,13 @@ AcpiExEnterInterpreter (void)
 {
     ACPI_STATUS             Status;
 
-    FUNCTION_TRACE ("ExEnterInterpreter");
+    ACPI_FUNCTION_TRACE ("ExEnterInterpreter");
 
 
     Status = AcpiUtAcquireMutex (ACPI_MTX_EXECUTE);
     if (ACPI_FAILURE (Status))
     {
-        REPORT_ERROR (("Fatal - Could not acquire interpreter lock\n"));
+        ACPI_REPORT_ERROR (("Could not acquire interpreter mutex\n"));
     }
 
     return_ACPI_STATUS (Status);
@@ -197,10 +194,17 @@ AcpiExEnterInterpreter (void)
 void
 AcpiExExitInterpreter (void)
 {
-    FUNCTION_TRACE ("ExExitInterpreter");
+    ACPI_STATUS             Status;
 
 
-    AcpiUtReleaseMutex (ACPI_MTX_EXECUTE);
+    ACPI_FUNCTION_TRACE ("ExExitInterpreter");
+
+
+    Status = AcpiUtReleaseMutex (ACPI_MTX_EXECUTE);
+    if (ACPI_FAILURE (Status))
+    {
+        ACPI_REPORT_ERROR (("Could not release interpreter mutex\n"));
+    }
 
     return_VOID;
 }
@@ -221,7 +225,7 @@ AcpiExValidateObjectType (
     ACPI_OBJECT_TYPE        Type)
 {
 
-    FUNCTION_ENTRY ();
+    ACPI_FUNCTION_ENTRY ();
 
 
     if ((Type > ACPI_TYPE_MAX && Type < INTERNAL_TYPE_BEGIN) ||
@@ -255,7 +259,7 @@ AcpiExTruncateFor32bitTable (
     ACPI_WALK_STATE         *WalkState)
 {
 
-    FUNCTION_ENTRY ();
+    ACPI_FUNCTION_ENTRY ();
 
 
     /*
@@ -284,7 +288,7 @@ AcpiExTruncateFor32bitTable (
  *
  * FUNCTION:    AcpiExAcquireGlobalLock
  *
- * PARAMETERS:  FieldFlags            - Flags with Lock rule: 
+ * PARAMETERS:  FieldFlags            - Flags with Lock rule:
  *                                      AlwaysLock or NeverLock
  *
  * RETURN:      TRUE/FALSE indicating whether the lock was actually acquired
@@ -303,7 +307,7 @@ AcpiExAcquireGlobalLock (
     ACPI_STATUS             Status;
 
 
-    FUNCTION_TRACE ("ExAcquireGlobalLock");
+    ACPI_FUNCTION_TRACE ("ExAcquireGlobalLock");
 
 
     /* Only attempt lock if the AlwaysLock bit is set */
@@ -341,12 +345,14 @@ AcpiExAcquireGlobalLock (
  *
  ******************************************************************************/
 
-ACPI_STATUS
+void
 AcpiExReleaseGlobalLock (
     BOOLEAN                 LockedByMe)
 {
+    ACPI_STATUS             Status;
 
-    FUNCTION_TRACE ("ExReleaseGlobalLock");
+
+    ACPI_FUNCTION_TRACE ("ExReleaseGlobalLock");
 
 
     /* Only attempt unlock if the caller locked it */
@@ -355,10 +361,14 @@ AcpiExReleaseGlobalLock (
     {
         /* OK, now release the lock */
 
-        AcpiEvReleaseGlobalLock ();
-    }
+        Status = AcpiEvReleaseGlobalLock ();
+        if (ACPI_FAILURE (Status))
+        {
+            /* Report the error, but there isn't much else we can do */
 
-    return_ACPI_STATUS (AE_OK);
+            ACPI_REPORT_ERROR (("Could not release ACPI Global Lock\n"));
+        }
+    }
 }
 
 
@@ -381,12 +391,12 @@ AcpiExDigitsNeeded (
     UINT32                  NumDigits = 0;
 
 
-    FUNCTION_TRACE ("ExDigitsNeeded");
+    ACPI_FUNCTION_TRACE ("ExDigitsNeeded");
 
 
     if (Base < 1)
     {
-        REPORT_ERROR (("ExDigitsNeeded: Internal error - Invalid base\n"));
+        ACPI_REPORT_ERROR (("ExDigitsNeeded: Internal error - Invalid base\n"));
     }
     else
     {
@@ -430,7 +440,7 @@ _ntohl (
     } In;
 
 
-    FUNCTION_ENTRY ();
+    ACPI_FUNCTION_ENTRY ();
 
 
     In.Value = Value;
@@ -455,7 +465,7 @@ _ntohl (
  *
  ******************************************************************************/
 
-ACPI_STATUS
+void
 AcpiExEisaIdToString (
     UINT32                  NumericId,
     NATIVE_CHAR             *OutString)
@@ -463,7 +473,7 @@ AcpiExEisaIdToString (
     UINT32                  id;
 
 
-    FUNCTION_ENTRY ();
+    ACPI_FUNCTION_ENTRY ();
 
 
     /* swap to big-endian to get contiguous bits */
@@ -473,13 +483,11 @@ AcpiExEisaIdToString (
     OutString[0] = (char) ('@' + ((id >> 26) & 0x1f));
     OutString[1] = (char) ('@' + ((id >> 21) & 0x1f));
     OutString[2] = (char) ('@' + ((id >> 16) & 0x1f));
-    OutString[3] = AcpiUtHexToAsciiChar (id, 12);
-    OutString[4] = AcpiUtHexToAsciiChar (id, 8);
-    OutString[5] = AcpiUtHexToAsciiChar (id, 4);
-    OutString[6] = AcpiUtHexToAsciiChar (id, 0);
+    OutString[3] = AcpiUtHexToAsciiChar ((ACPI_INTEGER) id, 12);
+    OutString[4] = AcpiUtHexToAsciiChar ((ACPI_INTEGER) id, 8);
+    OutString[5] = AcpiUtHexToAsciiChar ((ACPI_INTEGER) id, 4);
+    OutString[6] = AcpiUtHexToAsciiChar ((ACPI_INTEGER) id, 0);
     OutString[7] = 0;
-
-    return (AE_OK);
 }
 
 
@@ -494,7 +502,7 @@ AcpiExEisaIdToString (
  *
  ******************************************************************************/
 
-ACPI_STATUS
+void
 AcpiExUnsignedIntegerToString (
     ACPI_INTEGER            Value,
     NATIVE_CHAR             *OutString)
@@ -504,7 +512,7 @@ AcpiExUnsignedIntegerToString (
     UINT32                  Remainder;
 
 
-    FUNCTION_ENTRY ();
+    ACPI_FUNCTION_ENTRY ();
 
 
     DigitsNeeded = AcpiExDigitsNeeded (Value, 10);
@@ -512,11 +520,9 @@ AcpiExUnsignedIntegerToString (
 
     for (Count = DigitsNeeded; Count > 0; Count--)
     {
-        AcpiUtShortDivide (&Value, 10, &Value, &Remainder);
+        (void) AcpiUtShortDivide (&Value, 10, &Value, &Remainder);
         OutString[Count-1] = (NATIVE_CHAR) ('0' + Remainder);
     }
-
-    return (AE_OK);
 }
 
 
