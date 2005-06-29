@@ -119,33 +119,27 @@
 
 #include "config.h"
 
-/*
- * ACPI Table information.  We save the table address, length,
- * and type of memory allocation (mapped or allocated) for each
- * table for 1) when we exit, and 2) if a new table is installed
- */
 
-#define ACPI_MEM_NOT_ALLOCATED  0
-#define ACPI_MEM_ALLOCATED      1
-#define ACPI_MEM_MAPPED         2
+#define WAIT_FOREVER        -1
 
-#define ACPI_TABLE_SINGLE       0
-#define ACPI_TABLE_MULTIPLE     1
+typedef void*               ACPI_MUTEX;
+typedef UINT32              ACPI_MUTEX_HANDLE;
 
 
 /*
- * ACPI Table Descriptor.  One per ACPI table
+ * Predefined handles for the mutex objects used within the subsystem
+ * All mutex objects are automatically created by CmMutexInitialize.
  */
-typedef struct AcpiTableDesc
-{
-    struct AcpiTableDesc    *Prev;
-    struct AcpiTableDesc    *Next;
-    void                    *Pointer;
-    UINT32                  Length;
-    UINT32                  Allocation;
-    UINT32                  Count;
 
-} ACPI_TABLE_DESC;
+#define MTX_INTERPRETER     0
+#define MTX_NAMESPACE       1
+#define MTX_MEMORY          2
+#define MTX_GP_EVENT        3
+#define MTX_FIXED_EVENT     4
+#define MTX_OP_REGIONS      5
+
+#define MAX_MTX             5
+#define NUM_MTX             MAX_MTX+1
 
 
 /* Operational modes of the AML interpreter/scanner */
