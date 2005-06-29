@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dbdisply - debug display commands
- *              $Revision: 1.55 $
+ *              $Revision: 1.56 $
  *
  ******************************************************************************/
 
@@ -656,7 +656,7 @@ AcpiDbDisplayMethodInfo (
         /* Decode the opcode */
 
         OpInfo = AcpiPsGetOpcodeInfo (Op->Opcode);
-        switch (ACPI_GET_OP_CLASS (OpInfo))
+        switch (OpInfo->Class)
         {
         case AML_CLASS_ARGUMENT:
             if (CountRemaining)
