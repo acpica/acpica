@@ -3,7 +3,7 @@
 /******************************************************************************
  *
  * Module Name: aslcompiler.y - Bison input file (ASL grammar and actions)
- *              $Revision: 1.45 $
+ *              $Revision: 1.46 $
  *
  *****************************************************************************/
 
@@ -2236,6 +2236,15 @@ ConstExprTerm
     | ONES                          {$$ = TrCreateLeafNode (ONES);}
     ;
 
+/* OptionalCount must appear before ByteList or an incorrect reduction will result */
+
+OptionalCount
+    :                               {$$ = TrCreateLeafNode (ONES);}       /* Placeholder is a OnesOp object */
+    | ','                           {$$ = TrCreateLeafNode (ONES);}       /* Placeholder is a OnesOp object */
+    | ',' TermArg                   {$$ = $2;}
+    ;
+
+
 BufferTerm
     : BUFFER '('                    {$$ = TrCreateLeafNode (BUFFER);}
         OptionalTermArg
@@ -2251,7 +2260,7 @@ BufferData
     ;
 
 ByteList
-    :     {$$ = NULL;}
+    :                               {$$ = NULL;}
     | ByteConstExpr
         ByteListTail                {$$ = TrLinkPeerNode ($1,$2);}
     ;
@@ -2697,11 +2706,6 @@ OptionalByteConstExpr
     :                               {$$ = NULL;}
     | ','                           {$$ = NULL;}
     | ',' ByteConstExpr             {$$ = $2;}
-    ;
-
-OptionalCount
-    :                               {$$ = TrCreateLeafNode (ONES);}       /* Placeholder is a OnesOp object */
-    | ',' TermArg                   {$$ = $2;}
     ;
 
 OptionalDecodeType
