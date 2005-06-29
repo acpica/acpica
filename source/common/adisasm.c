@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: adisasm - Application-level disassembler routines
- *              $Revision: 1.56 $
+ *              $Revision: 1.58 $
  *
  *****************************************************************************/
 
@@ -687,7 +687,7 @@ AdDeferredParse (
     ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "Parsing %s [%4.4s]\n",
         Op->Common.AmlOpName, (char *) &Op->Named.Name));
 
-    WalkState = AcpiDsCreateWalkState (TABLE_ID_DSDT, Op, NULL, NULL);
+    WalkState = AcpiDsCreateWalkState (0, Op, NULL, NULL);
     if (!WalkState)
     {
         return_ACPI_STATUS (AE_NO_MEMORY);
@@ -950,7 +950,11 @@ AdGetLocalTables (
         }
     }
 
-    return Status;
+#ifdef _HPET
+    AfGetHpet ();
+#endif
+
+    return AE_OK;
 }
 
 /******************************************************************************
@@ -998,7 +1002,7 @@ AdParseTable (
 
     /* Create and initialize a new walk state */
 
-    WalkState = AcpiDsCreateWalkState (TABLE_ID_DSDT,
+    WalkState = AcpiDsCreateWalkState (0,
                         AcpiGbl_ParsedNamespaceRoot, NULL, NULL);
     if (!WalkState)
     {
