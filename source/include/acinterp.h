@@ -197,25 +197,6 @@ AmlIsMethodValue (
  * ieprep - ACPI AML (p-code) execution - prep utilities
  */
 
-INT32
-AmlGetMethodDepth (
-    void);
-
-ACPI_OBJECT_TYPE
-AmlGetMethodType (
-    INT32                   Index);
-
-ACPI_STATUS
-AmlGetMethodValue (
-    INT32                   Index, 
-    ACPI_OBJECT             *ObjDesc);
-
-ACPI_STATUS
-AmlSetMethodValue (
-    INT32                   Index, 
-    ACPI_OBJECT             *ObjDesc, 
-    ACPI_OBJECT             *ObjDesc2);
-
 ACPI_STATUS
 AmlPrepDefFieldValue (
     ACPI_HANDLE             Region, 
@@ -240,9 +221,90 @@ AmlPrepIndexFieldValue(
     INT32                   FldPos, 
     INT32                   FldLen);
 
+
+/*
+ * iemstack - method stack utilities
+ */
+
+INT32
+AmlMthStackLevel (
+    void);
+
+ACPI_OBJECT_TYPE
+AmlMthStackGetType (
+    INT32                   Index);
+
 ACPI_STATUS
-AmlPrepStack (
+AmlMthStackGetValue (
+    INT32                   Index, 
+    ACPI_OBJECT             *ObjDesc);
+
+ACPI_STATUS
+AmlMthStackSetValue (
+    INT32                   Index, 
+    ACPI_OBJECT             *ObjDesc, 
+    ACPI_OBJECT             *ObjDesc2);
+
+
+/*
+ * ieostack - object stack utilities
+ */
+
+UINT32
+AmlObjStackLevel (
+     void);
+void
+AmlClearObjStack (
+    void);
+
+ACPI_STATUS
+AmlPrepObjStack (
     char                    *Types);
+
+ACPI_STATUS
+AmlObjPushIfExec (
+    OPERATING_MODE          LoadExecMode);
+
+
+
+/*
+ * iepstack - package stack utilities
+ */
+
+UINT32
+AmlPkgStackLevel (
+     void);
+
+void
+AmlClearPkgStack (
+    void);
+
+ACPI_STATUS
+AmlPkgPushLength (
+    INT32                   len, 
+    OPERATING_MODE          LoadExecMode);
+
+ACPI_STATUS
+AmlPkgPushExecLength (
+    INT32                   len);
+
+ACPI_STATUS
+AmlPkgPushExec (
+    UINT8                   *Code, 
+    INT32                   Len);
+
+ACPI_STATUS
+AmlPkgPopLength (
+    INT32                   NoErrUnder, 
+    OPERATING_MODE          LoadExecMode);
+
+ACPI_STATUS
+AmlPkgPopExecLength (
+    void);
+
+ACPI_STATUS
+AmlPkgPopExec (
+    void);
 
 
 /*
@@ -434,11 +496,11 @@ AmlDumpBuffer (
 
 
 ACPI_STATUS
-AmlDumpStackEntry (
+AmlDumpObjStackEntry (
     ACPI_OBJECT             *EntryDesc);
 
 void
-AmlDumpStack (
+AmlDumpObjStack (
     OPERATING_MODE          LoadExecMode, 
     char                    *pcIdent, 
     INT32                   NumLevels, 
@@ -604,49 +666,6 @@ AmlDoDWordConst (
     OPERATING_MODE          LoadExecMode, 
     INT32                   LeadSpace);
 
-
-/*
- * isstack - Scanner stack routines
- */
-
-void
-AmlClearPkgStack (
-    void);
-
-ACPI_STATUS
-AmlPushLength (
-    INT32                   len, 
-    OPERATING_MODE          LoadExecMode);
-
-ACPI_STATUS
-AmlPushExecLength (
-    INT32                   len);
-
-ACPI_STATUS
-AmlPushExec (
-    UINT8                   *Code, 
-    INT32                   Len);
-
-ACPI_STATUS
-AmlPopLength (
-    INT32                   NoErrUnder, 
-    OPERATING_MODE          LoadExecMode);
-
-ACPI_STATUS
-AmlPopExecLength (
-    void);
-
-ACPI_STATUS
-AmlPopExec (
-    void);
-
-ACPI_STATUS
-AmlPushIfExec (
-    OPERATING_MODE          LoadExecMode);
-
-INT32
-AmlPackageNested (
-     void);
 
 
 /*
