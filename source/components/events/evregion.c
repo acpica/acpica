@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: evregion - ACPI AddressSpace (OpRegion) handler dispatch
- *              $Revision: 1.112 $
+ *              $Revision: 1.114 $
  *
  *****************************************************************************/
 
@@ -161,14 +161,14 @@ AcpiEvInstallDefaultAddressSpaceHandlers (
      * space must be always available -- even though we are nowhere
      * near ready to find the PCI root buses at this point.
      *
-     * NOTE: We ignore AE_EXIST because this means that a handler has
-     * already been installed (via AcpiInstallAddressSpaceHandler)
+     * NOTE: We ignore AE_ALREADY_EXISTS because this means that a handler 
+     * has already been installed (via AcpiInstallAddressSpaceHandler)
      */
     Status = AcpiInstallAddressSpaceHandler (AcpiGbl_RootNode,
                                              ACPI_ADR_SPACE_SYSTEM_MEMORY,
                                              ACPI_DEFAULT_HANDLER, NULL, NULL);
     if ((ACPI_FAILURE (Status)) &&
-        (Status != AE_EXIST))
+        (Status != AE_ALREADY_EXISTS))
     {
         return_ACPI_STATUS (Status);
     }
@@ -177,7 +177,7 @@ AcpiEvInstallDefaultAddressSpaceHandlers (
                                              ACPI_ADR_SPACE_SYSTEM_IO,
                                              ACPI_DEFAULT_HANDLER, NULL, NULL);
     if ((ACPI_FAILURE (Status)) &&
-        (Status != AE_EXIST))
+        (Status != AE_ALREADY_EXISTS))
     {
         return_ACPI_STATUS (Status);
     }
@@ -186,7 +186,7 @@ AcpiEvInstallDefaultAddressSpaceHandlers (
                                              ACPI_ADR_SPACE_PCI_CONFIG,
                                              ACPI_DEFAULT_HANDLER, NULL, NULL);
     if ((ACPI_FAILURE (Status)) &&
-        (Status != AE_EXIST))
+        (Status != AE_ALREADY_EXISTS))
     {
         return_ACPI_STATUS (Status);
     }
@@ -379,7 +379,7 @@ AcpiEvAddressSpaceDispatch (
     Handler = HandlerDesc->AddrHandler.Handler;
 
     ACPI_DEBUG_PRINT ((ACPI_DB_OPREGION,
-        "Addrhandler %p (%p), Address %8.8lX%8.8lX\n",
+        "Addrhandler %p (%p), Address %8.8X%8.8X\n",
         &RegionObj->Region.AddrHandler->AddrHandler, Handler, HIDWORD(Address),
         LODWORD(Address)));
 
