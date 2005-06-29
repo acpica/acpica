@@ -258,7 +258,7 @@
 
 #define DUMP_STACK_ENTRY(a)             AmlDumpObjStackEntry(a)
 #define DUMP_STACK(a,b,c,d)             AmlDumpObjStack(a,b,c,d)
-#define DUMP_ENTRY(a)                   NsDumpEntry (a)
+#define DUMP_ENTRY(a,b)                 NsDumpEntry (a,b)
 #define DUMP_TABLES(a,b)                NsDumpTables(a,b)
 #define DEBUG_MEMSTAT                   DEBUG_PRINT (ACPI_INFO, ("Memory: %d/%d Mp/Unmp  %d/%d Al/Fr %d/%d Al/Cal\n",\
                                         Maps, Unmaps, Allocations, Deallocations, Allocs, Callocs))
@@ -293,12 +293,15 @@
 #define DEBUG_EXEC(a)  
 #define DEBUG_DEFINE(a)                     
 #define FUNCTION_TRACE(a)
+#define FUNCTION_TRACE_PTR(a,b)
+#define FUNCTION_TRACE_U32(a,b)
+#define FUNCTION_TRACE_STR(a,b)
 #define FUNCTION_EXIT
 #define FUNCTION_STATUS_EXIT(s)
 #define FUNCTION_VALUE_EXIT(s)
 #define DUMP_STACK_ENTRY(a)
 #define DUMP_STACK(a,b,c,d)
-#define DUMP_ENTRY(a)
+#define DUMP_ENTRY(a,b)
 #define DUMP_TABLES(a,b)
 #define DEBUG_MEMSTAT
 #define DEBUG_PRINT(l,f)
