@@ -197,7 +197,7 @@ typedef INT32                           NATIVE_INT;
 typedef NATIVE_UINT                     ACPI_TBLPTR;
 typedef UINT32                          ACPI_IO_ADDRESS;
 
-#define ALIGNED_ADDRESS_BOUNDARY        0x00000008
+#define ALIGNED_ADDRESS_BOUNDARY        0x00000004
 
 #endif
 
