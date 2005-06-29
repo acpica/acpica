@@ -3,7 +3,7 @@
 /******************************************************************************
  *
  * Module Name: aslcompiler.y - Bison input file (ASL grammar and actions)
- *              $Revision: 1.62 $
+ *              $Revision: 1.63 $
  *
  *****************************************************************************/
 
@@ -1225,11 +1225,11 @@ IndexFieldTerm
 MethodTerm
     : PARSEOP_METHOD  '('			{$$ = TrCreateLeafNode (PARSEOP_METHOD);}
         NameString
-        OptionalByteConstExpr
+        OptionalByteConstExpr       {$$ = UtCheckIntegerRange ($5, 0, 7);}
         OptionalSerializeRuleKeyword
         OptionalByteConstExpr
         ')' '{'
-            TermList '}'            {$$ = TrLinkChildren ($<n>3,5,TrSetNodeFlags ($4, NODE_IS_NAME_DECLARATION),$5,$6,$7,$10);}
+            TermList '}'            {$$ = TrLinkChildren ($<n>3,5,TrSetNodeFlags ($4, NODE_IS_NAME_DECLARATION),$5,$7,$8,$11);}
     | PARSEOP_METHOD '('
         error ')'                   {$$ = AslDoError(); yyerrok;}
     ;
