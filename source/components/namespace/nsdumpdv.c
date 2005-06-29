@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: nsdump - table dumping routines for debug
- *              $Revision: 1.7 $
+ *              $Revision: 1.8 $
  *
  *****************************************************************************/
 
@@ -169,7 +169,7 @@ AcpiNsDumpOneDevice (
         }
 
         ACPI_DEBUG_PRINT_RAW ((ACPI_DB_TABLES, "    HID: %s, ADR: %8.8X%8.8X, Status: %X\n",
-                        &Info->HardwareId,
+                        Info->HardwareId.Value,
                         ACPI_HIDWORD (Info->Address), ACPI_LODWORD (Info->Address),
                         Info->CurrentStatus));
         ACPI_MEM_FREE (Info);
