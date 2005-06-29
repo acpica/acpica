@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acresrc.h - Resource Manager function prototypes
- *       $Revision: 1.27 $
+ *       $Revision: 1.29 $
  *
  *****************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -147,24 +147,21 @@ AcpiRsSetSrsMethodData (
 ACPI_STATUS
 AcpiRsCreateResourceList (
     ACPI_OPERAND_OBJECT     *ByteStreamBuffer,
-    UINT8                   *OutputBuffer,
-    UINT32                  *OutputBufferLength);
+    ACPI_BUFFER             *OutputBuffer);
 
 ACPI_STATUS
 AcpiRsCreateByteStream (
     ACPI_RESOURCE           *LinkedListBuffer,
-    UINT8                   *OutputBuffer,
-    ACPI_SIZE               *OutputBufferLength);
+    ACPI_BUFFER             *OutputBuffer);
 
 ACPI_STATUS
 AcpiRsCreatePciRoutingTable (
-    ACPI_OPERAND_OBJECT     *MethodReturnObject,
-    UINT8                   *OutputBuffer,
-    UINT32                  *OutputBufferLength);
+    ACPI_OPERAND_OBJECT     *PackageObject,
+    ACPI_BUFFER             *OutputBuffer);
 
 
 /*
- *Function prototypes called from AcpiRsCreate*APIs
+ *Function prototypes called from AcpiRsCreate*
  */
 
 void
