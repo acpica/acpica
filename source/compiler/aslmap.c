@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslmap - parser to AML opcode mapping table
- *              $Revision: 1.66 $
+ *              $Revision: 1.69 $
  *
  *****************************************************************************/
 
@@ -10,7 +10,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2003, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -192,11 +192,23 @@ const ASL_RESERVED_INFO         ReservedMethods[] = {
     {"_AC1",     0,      ASL_RSVD_RETURN_VALUE},
     {"_AC2",     0,      ASL_RSVD_RETURN_VALUE},
     {"_AC3",     0,      ASL_RSVD_RETURN_VALUE},
+    {"_AC4",     0,      ASL_RSVD_RETURN_VALUE},
+    {"_AC5",     0,      ASL_RSVD_RETURN_VALUE},
+    {"_AC6",     0,      ASL_RSVD_RETURN_VALUE},
+    {"_AC7",     0,      ASL_RSVD_RETURN_VALUE},
+    {"_AC8",     0,      ASL_RSVD_RETURN_VALUE},
+    {"_AC9",     0,      ASL_RSVD_RETURN_VALUE},
     {"_ADR",     0,      ASL_RSVD_RETURN_VALUE},
     {"_AL0",     0,      ASL_RSVD_RETURN_VALUE},
     {"_AL1",     0,      ASL_RSVD_RETURN_VALUE},
     {"_AL2",     0,      ASL_RSVD_RETURN_VALUE},
     {"_AL3",     0,      ASL_RSVD_RETURN_VALUE},
+    {"_AL4",     0,      ASL_RSVD_RETURN_VALUE},
+    {"_AL5",     0,      ASL_RSVD_RETURN_VALUE},
+    {"_AL6",     0,      ASL_RSVD_RETURN_VALUE},
+    {"_AL7",     0,      ASL_RSVD_RETURN_VALUE},
+    {"_AL8",     0,      ASL_RSVD_RETURN_VALUE},
+    {"_AL9",     0,      ASL_RSVD_RETURN_VALUE},
     {"_ALN",     0,      ASL_RSVD_RESOURCE_NAME},
     {"_ASI",     0,      ASL_RSVD_RESOURCE_NAME},
     {"_BAS",     0,      ASL_RSVD_RESOURCE_NAME},
@@ -413,6 +425,8 @@ MpDisplayReservedNames (
 
 const ASL_MAPPING_ENTRY     AslKeywordMapping [] =
 {
+/*! [Begin] no source code translation (keep the table structure) */
+
 
 /* ACCESSAS */                  OP_TABLE_ENTRY (AML_INT_ACCESSFIELD_OP,     0,                              0,                  0),
 /* ACCESSATTRIB_BLOCK */        OP_TABLE_ENTRY (AML_BYTE_OP,                AML_FIELD_ATTRIB_SMB_BLOCK,     0,                  0),
@@ -664,6 +678,8 @@ const ASL_MAPPING_ENTRY     AslKeywordMapping [] =
 /* XFERTYPE_16 */               OP_TABLE_ENTRY (AML_BYTE_OP,                2,                              0,                  0),
 /* XOR */                       OP_TABLE_ENTRY (AML_BIT_XOR_OP,             0,                              0,                  ACPI_BTYPE_INTEGER),
 /* ZERO */                      OP_TABLE_ENTRY (AML_ZERO_OP,                0,                              0,                  ACPI_BTYPE_INTEGER),
+
+/*! [End] no source code translation !*/
 
 };
 
