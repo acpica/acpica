@@ -1,7 +1,7 @@
 
 /******************************************************************************
  * 
- * Name: acpisubsys.h - external interfaces to the ACPI subsystem
+ * Name: acapi.h - external interfaces to the ACPI subsystem
  *
  *****************************************************************************/
 
@@ -115,11 +115,11 @@
  *****************************************************************************/
 
 
-#ifndef __ACPISUBSYS_H__
-#define __ACPISUBSYS_H__
+#ifndef __ACAPI_H__
+#define __ACAPI_H__
 
-#include <acpitypes.h>
-#include <acpitables.h>
+#include <actypes.h>
+#include <actables.h>
 
 
 /*
@@ -312,6 +312,12 @@ AcpiClearEvent (
     UINT32                  Event,
     UINT32                  Type);
 
+ACPI_STATUS
+AcpiGetEventStatus (
+    UINT32                  Event,
+    UINT32                  Type,
+    ACPI_EVENT_STATUS       EventStatus);
+
 /*
  * Resource interfaces
  */
@@ -360,4 +366,4 @@ AcpiEnterSystemSleepState (
 
 
 
-#endif /* ACPISUBSYS_H */
+#endif /* __ACAPI_H__ */
