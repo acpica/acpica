@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: psparse - Parser top level AML parse routines
- *              $Revision: 1.134 $
+ *              $Revision: 1.135 $
  *
  *****************************************************************************/
 
@@ -1256,7 +1256,8 @@ AcpiPsParseAml (
         }
 
         ACPI_DEBUG_PRINT ((ACPI_DB_PARSE,
-            "Completed one call to walk loop, State=%p\n", WalkState));
+            "Completed one call to walk loop, %s State=%p\n", 
+            AcpiFormatException (Status), WalkState));
 
         if (Status == AE_CTRL_TRANSFER)
         {
@@ -1273,10 +1274,16 @@ AcpiPsParseAml (
             WalkState = AcpiDsGetCurrentWalkState (Thread);
             continue;
         }
-
         else if (Status == AE_CTRL_TERMINATE)
         {
             Status = AE_OK;
+        }
+        else if (Status != AE_OK)
+        {
+            ACPI_REPORT_ERROR (("Method execution failed, %s\n", 
+                AcpiFormatException (Status)));
+            ACPI_DUMP_PATHNAME (WalkState->MethodNode, "Method pathname: ",
+                ACPI_LV_ERROR, _COMPONENT);
         }
 
         /* We are done with this walk, move on to the parent if any */
@@ -1336,11 +1343,6 @@ AcpiPsParseAml (
                 /* On error, delete any return object */
 
                 AcpiUtRemoveReference (PreviousWalkState->ReturnDesc);
-
-                ACPI_REPORT_ERROR (("Method execution failed, %s\n", 
-                    AcpiFormatException (Status)));
-                ACPI_DUMP_PATHNAME (WalkState->MethodNode, "Method pathname: ",
-                    ACPI_LV_ERROR, _COMPONENT);
             }
         }
 
@@ -1352,7 +1354,6 @@ AcpiPsParseAml (
         {
             *(PreviousWalkState->CallerReturnDesc) = PreviousWalkState->ReturnDesc; /* NULL if no return value */
         }
-
         else if (PreviousWalkState->ReturnDesc)
         {
             /* Caller doesn't want it, must delete it */
