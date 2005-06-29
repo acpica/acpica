@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: amsystem - Interface to OS services
- *              $Revision: 1.55 $
+ *              $Revision: 1.56 $
  *
  *****************************************************************************/
 
@@ -126,26 +126,6 @@
 #define _COMPONENT          INTERPRETER
         MODULE_NAME         ("amsystem")
 
-
-/*******************************************************************************
- *
- * FUNCTION:    AcpiAmlSystemThreadId
- *
- * PARAMETERS:  None
- *
- * RETURN:      Current Thread ID (for this implementation a 1 is returned)
- *
- * DESCRIPTION: An invocation is identified by its Thread ID.  In a single
- *              threaded OS the Thread ID is undefined so a 1 will be
- *              returned.
- *
- ******************************************************************************/
-
-UINT16
-AcpiAmlSystemThreadId (void)
-{
-    return (1);
-}
 
 
 /*******************************************************************************
