@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dbexec - debugger control method execution
- *              $Revision: 1.49 $
+ *              $Revision: 1.50 $
  *
  ******************************************************************************/
 
@@ -192,6 +192,7 @@ AcpiDbExecuteMethod (
 
     /* Do the actual method execution */
 
+    AcpiGbl_MethodExecuting = TRUE;
     Status = AcpiEvaluateObject (NULL, Info->Pathname, &ParamObjects, ReturnObj);
 
     AcpiGbl_CmSingleStep = FALSE;
@@ -284,6 +285,19 @@ AcpiDbGetOutstandingAllocations (
 }
 
 
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiDbExecutionWalk
+ *
+ * PARAMETERS:  WALK_CALLBACK
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Execute a control method.  Name is relative to the current
+ *              scope.
+ *
+ ******************************************************************************/
 
 ACPI_STATUS
 AcpiDbExecutionWalk (
