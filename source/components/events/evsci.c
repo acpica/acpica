@@ -15,15 +15,18 @@
  | legacy to ACPI mode state transition functions
  |__________________________________________________________________________
  |
- | $Revision: 1.8 $
- | $Date: 2005/06/29 16:43:46 $
+ | $Revision: 1.9 $
+ | $Date: 2005/06/29 16:43:47 $
  | $Log: evsci.c,v $
- | Revision 1.8  2005/06/29 16:43:46  aystarik
- | 16/32/64-bit common data types
+ | Revision 1.9  2005/06/29 16:43:47  aystarik
+ | Integrated with 03/99 OPSD code
  |
  | 
- | date	99.03.10.00.05.00;	author rmoore1;	state Exp;
+ | date	99.03.31.22.32.00;	author rmoore1;	state Exp;
  |
+ * 
+ * 9     3/31/99 2:32p Rmoore1
+ * Integrated with 03/99 OPSD code
  * 
  * 8     3/09/99 4:05p Rmoore1
  * 16/32/64-bit common data types
@@ -70,16 +73,31 @@
 #define __EVSCI_C__
 #define _THIS_MODULE        "evsci.c"
 
-#include <bu.h>
-#include "acpi.h"
-#include "acpievnt.h"
-#include "acpilgcy.h"
-#include "hwoverrd.h"
-#include "evsci.h"
-#include "acpitbls.h"
+#include <acpi.h>
+#include <acpinmsp.h>
+#include <acpievnt.h>
+#include <acpilgcy.h>
+#include <evsci.h>
+#include <acpitbls.h>
 
 extern INT32         __AcpiLibInitStatus;
 
+
+static ST_KEY_DESC_TABLE KDT[] = {
+   {"0000", '1', "", ""},	/*	obsolete	*/
+   {"0001", 'W', "", ""},	/*	obsolete: SCI edge sensitivity in legacy mode	*/
+   {"0002", '1', "ACPI tables are required but not available", "ACPI tables are required but not available"},
+   {"0003", '1', "", ""},	/*	obsolete	*/
+   {"0004", '1', "", ""},	/*	obsolete	*/
+   {"0005", '1', "Unable to transition to ACPI Mode", "Unable to transition to ACPI Mode"},
+   {"0006", '1', "Unable to install System Control Interrupt Handler", "Unable to install System Control Interrupt Handler"},
+   {"0007", 'W', "Unable to restore interrupt to edge sensitivity", "Unable to restore interrupt to edge sensitivity"},
+   {"0008", 'W', "Unable to restore interrupt to disable", "Unable to restore interrupt to disable"},
+   {"0009", 'W', "Unable to transition to Original Mode", "Unable to transition to Original Mode"},
+   {"0010", '1', "ACPI namespace failed to load correctly", "ACPI namespace failed to load correctly"},
+   {"0011", '1', "Unable to enable SCI interrupt", "Unable to enable SCI interrupt"},
+   {NULL, 'I', NULL, NULL}
+};
 
 /**************************************************************************
  *
@@ -227,13 +245,11 @@ VerifyAcpiTablesPresent (char *TestName)
 
     if (__AcpiLibInitStatus == E_NO_ACPI_TBLS)
     {
-        printf_bu ("\nACPI tables are required for %s but not available",
-                    TestName);
-        Kinc_error ("0002", PRINT | APPEND_CRLF);
+        /*	ACPI tables are not available	*/
+
+        REPORT_ERROR (&KDT[2]);
 
         ErrorMask = NO_ACPI_TABLES_MASK;
-        printf_bu ("\nACPI tables can be loaded from an input file."
-                    "\nCommand line help is available with the '/?' switch.\n");
     }
 
     return ErrorMask;
@@ -244,14 +260,14 @@ VerifyAcpiTablesPresent (char *TestName)
  *
  * FUNCTION:    AcpiEnable
  *
- * PARAMETERS:  TestName      pointer to test name string for log messages
- *              Flags          flag bitmask (logical OR) to specify:
+ * PARAMETERS:  TestName        pointer to test name string for log messages
+ *              Flags           flag bitmask (logical OR) to specify:
  *                              ACPI_TABLES_REQUIRED, HW_OVERRIDE_SUPPORTED,
  *                              PROGRAM_SCI_LEVEL_SENSITIVITY, DISABLE_KNOWN_EVENTS
  *
  * RETURN:      0 if successful; non-zero if failure encountered
  *
- * DESCRIPTION: iInstallSCIHandlerXferToACPI() ensures that the system
+ * DESCRIPTION: Ensures that the system
  *              control interrupt (SCI) is properly configured, disables
  *              SCI event sources, installs the SCI handler, and
  *              transfers the system into ACPI mode.
@@ -260,7 +276,7 @@ VerifyAcpiTablesPresent (char *TestName)
  *************************************************************************/
 
 INT32        
-AcpiEnable (char *TestName, INT32        Flags)
+AcpiEnable (char *TestName, INT32 Flags)
 {
     INT32            ErrorMask = 0;
 
@@ -288,83 +304,80 @@ AcpiEnable (char *TestName, INT32        Flags)
              *  if we are running from an input file.
              */
 
-            if (Flags & HW_OVERRIDE_SUPPORTED)
-            {   
-                /*  hardware override supported    */
-
-                if (!HardwareOverrideStatus ())
-                {   
-                    /*  hardware override not specified    */
-                    
-                    printf_bu ("\n%s execution from input table requires HwOverride\n",
-                                TestName);
-                    Kinc_error ("0003", PRINT | APPEND_CRLF);
-                }
-            }
-
-            else
-            {   
-                /*  hardware override not supported    */
-                
-                printf_bu ("\n%s does NOT support execution from input table with HwOverride\n",
-                            TestName);
-                Kinc_error ("0004", PRINT | APPEND_CRLF);
-            }
+            /*	TBD:	verify input file specified	*/
         }
+
 
         OriginalMode = AcpiModeStatus ();
 
-        /*  do not change the SCI sensitivity while in legacy mode  */
-
-/* !!! TOO LOW LEVEL FOR OS-independent code!!
-
-      ErrorMask |= InitializeSCI (FALSE);
-*/
-        if (0 == ErrorMask)
+        if (Flags & DISABLE_KNOWN_EVENTS)
         {   
-            /*  SCI configured correctly    */
+            /*  disable any ACPI interrupt sources that may be enabled  */
 
-            if (Flags & DISABLE_KNOWN_EVENTS)
-            {   
-                /*  disable any ACPI interrupt sources that may be enabled  */
+            AcpiEventDisableEvent (TMR_FIXED_EVENT);
+            AcpiEventDisableEvent (GBL_FIXED_EVENT);
+            AcpiEventDisableEvent (PWR_BTN_FIXED_EVENT);
+            AcpiEventDisableEvent (SLP_BTN_FIXED_EVENT);
+            AcpiEventDisableEvent (RTC_FIXED_EVENT);
+        }
 
-                AcpiEventDisableEvent (TMR_FIXED_EVENT);
-                AcpiEventDisableEvent (GBL_FIXED_EVENT);
-                AcpiEventDisableEvent (PWR_BTN_FIXED_EVENT);
-                AcpiEventDisableEvent (SLP_BTN_FIXED_EVENT);
-                AcpiEventDisableEvent (RTC_FIXED_EVENT);
-            }
+        if (InstallSciHandler () == 0)
+        {   
+            /*	Unable to install SCI handler	*/
 
-            if (InstallSciHandler ())
-            {   
-                /*  SCI Interrupt Handler installed properly    */
+            REPORT_ERROR (&KDT[6]);
+			ErrorMask |= NO_SCI_HANDLER_MASK;
+		}
 
+        else
+        {
+            /*  SCI Interrupt Handler installed properly    */
+
+			if (ACPI_MODE != OriginalMode)
+			{	
+                /*	legacy mode	*/
+				
                 if (E_OK == AcpiSetMode (ACPI_MODE))
-                {   
-                    /*  in ACPI mode    */
-
-                    printf_bu ("\nTransition to ACPI mode successful\n");
-
-                    /*  verify SCI sensitivity while in ACPI mode   */
-/* !!! Nope, DON'T DO IT
-                    ErrorMask |= InitializeSCI (Flags & PROGRAM_SCI_LEVEL_SENSITIVITY);
-*/
-                }
-
-                else
                 {
-                    printf_bu ("\nUnable to transition to ACPI Mode");
-                    Kinc_error ("0005", PRINT | APPEND_CRLF);
-                    SetNotSupported ();
-                    ErrorMask |= NO_ACPI_TRANSITION_MASK;
+					DEBUG_PRINT (EV_INFO, "Transition to ACPI mode successful\n");
                 }
-            }
 
-            else
+				else
+				{	
+                    /*	Unable to transition to ACPI Mode	*/
+					
+                    REPORT_ERROR (&KDT[5]);
+					ErrorMask |= NO_ACPI_TRANSITION_MASK;
+				}
+			}
+
+			if (ACPI_MODE == AcpiModeStatus ())
+			{	
+                /*	verify SCI sensitivity while in ACPI mode	*/
+
+/* TOO LOW LEVEL?? !!! TBD                 
+                if (GlobalProgramSCI ||	
+					 (Flags & PROGRAM_SCI_LEVEL_SENSITIVITY))
+					ErrorMask |= iInitializeSCI (TRUE);
+				else
+					ErrorMask |= iInitializeSCI (FALSE);
+*/
+			}
+        }
+
+		if (LOAD_ACPI_NAMESPACE & Flags)
+		{	
+            /*	load ACPI namespace	*/
+
+            DEBUG_PRINT (EV_INFO, "Loading ACPI namespace\n");
+			if (AcpiLoadNameSpace (FALSE))
+			{
+                REPORT_ERROR (&KDT[10]);
+				ErrorMask |= UNABLE_TO_LOAD_NAMESPACE;
+			}
+			else
             {
-                printf_bu ("\nUnable to install the System Control Interrupt Handler");
-                Kinc_error ("0006", PRINT | APPEND_CRLF);
-                ErrorMask |= NO_SCI_HANDLER_MASK;
+				DEBUG_PRINT (EV_INFO, "ACPI namespace loaded\n");
             }
         }
     }
@@ -446,8 +459,7 @@ AcpiDisable ()
 
     if (E_OK != AcpiSetMode (OriginalMode))
     {
-        printf_bu ("\nUnable to transition to the Original Mode");
-        Kinc_warning ("0009", PRINT | APPEND_CRLF);
+        REPORT_WARNING (&KDT[9]);
         
         /*  ErrorMask |= NO_LEGACY_TRANSITION_MASK;    */
     }
