@@ -118,6 +118,7 @@
 #define _ACPIOBJ_H
 
 #include <acpitypes.h>
+#include <macros.h>
 #include <internal.h>
 
 /* 
