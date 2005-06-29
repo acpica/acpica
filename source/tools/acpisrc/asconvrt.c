@@ -408,6 +408,21 @@ AsMixedCaseToUnderscores (
             continue;
         }
 
+        /* Ignore format specification fields */
+
+        if (SubBuffer[0] == '%')
+        {
+            SubBuffer++;
+
+            while ((isalnum (*SubBuffer)) ||
+                   (*SubBuffer == '.'))
+            {
+                SubBuffer++;
+            }
+
+            continue;
+        }
+
 
         /*
          * Convert each pair of letters that matches the form:  
