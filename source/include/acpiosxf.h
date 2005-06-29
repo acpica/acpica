@@ -20,15 +20,17 @@
  | These interfaces must be implemented by the OS-dependent front-end
  | to the ACPI subsystem.
  |
- | $Revision: 1.10 $
- | $Date: 2005/06/29 19:59:46 $
+ | $Revision: 1.11 $
+ | $Date: 2005/06/29 19:59:47 $
  | $Log: acpiosxf.h,v $
- | Revision 1.10  2005/06/29 19:59:46  aystarik
- | Integrated with 03/99 OPSD code
+ | Revision 1.11  2005/06/29 19:59:47  aystarik
+ |
  |
  | 
- | date	99.03.31.22.30.00;	author rmoore1;	state Exp;
+ | date	99.04.02.17.53.00;	author rmoore1;	state Exp;
  |
+ * 
+ * 11    4/02/99 9:53a Rmoore1
  * 
  * 10    3/31/99 2:30p Rmoore1
  * Integrated with 03/99 OPSD code
@@ -95,9 +97,8 @@ void *
 OsdAllocate (
     UINT32          size);
 
-char *
+void *
 OsdCallocate (
-    UINT32          num, 
     UINT32          size);
 
 void 
