@@ -133,64 +133,6 @@ OsThreadId (void)
 }
 
 
-
-/******************************************************************************
- * 
- * FUNCTION:    OsDoNotifyOp 
- *
- * PARAMETERS:  *ValDesc            - The value of the opcode to be executed.
- *              *ObjDesc            - Device's object descriptor
- *
- * RETURN:      Status
- *
- * DESCRIPTION: Prints a message that these operations are not implemented
- *
- ******************************************************************************/
-
-ACPI_STATUS
-OsDoNotifyOp (OBJECT_DESCRIPTOR *ValDesc, OBJECT_DESCRIPTOR *ObjDesc)
-{
-
-    if (ValDesc)
-    {
-        if (ObjDesc)
-        {
-            DEBUG_PRINT (ACPI_INFO, 
-                        ("NotifyOp: %s\n", NsTypeNames[ObjDesc->ValType]));
-            NsDumpPathname (ObjDesc->Device.Device, "NotifyOp: ", ACPI_INFO, _COMPONENT);
-        }
-    
-        switch (ValDesc->Number.Number)
-        {
-        case 0:
-            DEBUG_PRINT (ACPI_INFO, ("Re-enumerate Devices \n"));
-            break;
-
-        case 1:
-            DEBUG_PRINT (ACPI_INFO, ("Ejection Request \n"));
-            break;
-
-        case 2:
-            DEBUG_PRINT (ACPI_INFO, ("Device Wake \n"));
-            break;
-
-        case 0x80:
-            DEBUG_PRINT (ACPI_INFO, ("Status Change \n"));
-            break;
-
-        default:
-            DEBUG_PRINT (ACPI_INFO, ("%lx \n",
-                    ValDesc->Number.Number));
-            break;
-        }
-
-        REPORT_WARNING (&KDT[0]);
-    }
-    
-    return AE_OK;
-}
-
-
 /******************************************************************************
  * 
  * FUNCTION:    OsDoSuspend
