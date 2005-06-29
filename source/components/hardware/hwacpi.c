@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: hwacpi - ACPI hardware functions - mode and timer
- *              $Revision: 1.30 $
+ *              $Revision: 1.31 $
  *
  *****************************************************************************/
 
@@ -243,7 +243,7 @@ AcpiHwInitialize (
         {
             /* GPE0 specified in FADT  */
 
-            AcpiGbl_Gpe0EnableRegisterSave = 
+            AcpiGbl_Gpe0EnableRegisterSave =
                 AcpiCmAllocate (DIV_2 (AcpiGbl_FADT->Gpe0BlkLen));
             if (!AcpiGbl_Gpe0EnableRegisterSave)
             {
