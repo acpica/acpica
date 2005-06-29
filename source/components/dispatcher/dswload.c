@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dswload - Dispatcher namespace load callbacks
- *              $Revision: 1.31 $
+ *              $Revision: 1.32 $
  *
  *****************************************************************************/
 
@@ -666,9 +666,9 @@ AcpiDsLoad2EndOp (
              * The Field definition is not fully parsed at this time.
              * (We must save the address of the AML for the buffer and index operands)
              */
-            Status = AcpiAmlExecCreateField (((ACPI_PARSE2_OBJECT *) Op)->Data,
-                                            ((ACPI_PARSE2_OBJECT *) Op)->Length,
-                                            NewNode, WalkState);
+            Status = AcpiAmlCreateBufferField (((ACPI_PARSE2_OBJECT *) Op)->Data,
+                                               ((ACPI_PARSE2_OBJECT *) Op)->Length,
+                                                NewNode, WalkState);
         }
         break;
 
