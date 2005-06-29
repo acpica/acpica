@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: aslopt- Compiler optimizations
- *              $Revision: 1.1 $
+ *              $Revision: 1.2 $
  *
  *****************************************************************************/
 
@@ -203,21 +203,7 @@ LkOptimizeNamePath (
         AcpiPsGetOpcodeName (Op->Common.Parent->Common.AmlOpcode), 
         AcpiPsGetOpcodeName (Op->Common.AmlOpcode)));
 
-    if (Flags & AML_NAMED)
-    {
-#if 0
-        if (Op->Common.AmlOpcode == AML_ALIAS_OP)
-        {
-            Flags &= ~AML_NAMED;
-        }
-#endif
-    }
-#if 0
-    else if (Flags & AML_CREATE)
-    {
-    }
-#endif
-    else
+    if (!(Flags & (AML_NAMED | AML_CREATE)))
     {
         /* We don't want to fuss with actual name declaration nodes here */
 
@@ -239,9 +225,15 @@ LkOptimizeNamePath (
         goto Exit;
     }
 
+    /*
+     * We need the node that represents the current scope -- where
+     * we are now in the namespace
+     */
     CurrentNode = AcpiGbl_RootNode;
     if (Flags & (AML_NAMED | AML_CREATE))
     {
+        /* This is the declaration of a new name */
+
         ACPI_DEBUG_PRINT_RAW ((ACPI_DB_OPTIMIZATIONS, "NAME"));
         if (WalkState->ScopeInfo)
         {
@@ -257,6 +249,8 @@ LkOptimizeNamePath (
     }
     else
     {
+        /* This is a reference to an existing named object */
+
         ACPI_DEBUG_PRINT_RAW ((ACPI_DB_OPTIMIZATIONS, "REF "));
         if (WalkState->ScopeInfo)
         {
@@ -355,6 +349,10 @@ LkOptimizeNamePath (
     }
     else
     {
+        /* 
+         * This is a named opcode and the namepath is a name declaration, not
+         * a reference.
+         */
         if (((CurrentNode == AcpiGbl_RootNode) || 
             (Op->Common.Parent->Asl.ParseOpcode == PARSEOP_DEFINITIONBLOCK)) && 
                 (AmlNameString[0] == '\\'))
