@@ -210,6 +210,10 @@ void
 CmDeleteInternalPackageObject (
     ACPI_OBJECT_INTERNAL    *Object);
 
+void
+CmDeleteInternalSimpleObject (
+    ACPI_OBJECT_INTERNAL    *Object);
+
 
 /* Debug interfaces */
 
