@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exoparg1 - AML execution - opcodes with 1 argument
- *              $Revision: 1.158 $
+ *              $Revision: 1.159 $
  *
  *****************************************************************************/
 
@@ -717,45 +717,66 @@ AcpiExOpcode_1A_0T_1R (
     case AML_INCREMENT_OP:          /* Increment (Operand)  */
 
         /*
-         * Since we are expecting a Reference operand, it
-         * can be either a NS Node or an internal object.
+         * Create a new integer.  Can't just get the base integer and
+         * increment it because it may be an Arg or Field.
          */
-        ReturnDesc = Operand[0];
-        if (ACPI_GET_DESCRIPTOR_TYPE (Operand[0]) == ACPI_DESC_TYPE_OPERAND)
+        ReturnDesc = AcpiUtCreateInternalObject (ACPI_TYPE_INTEGER);
+        if (!ReturnDesc)
         {
-            /* Internal reference object - prevent deletion */
-
-            AcpiUtAddReference (ReturnDesc);
+            Status = AE_NO_MEMORY;
+            goto Cleanup;
         }
 
         /*
-         * Convert the ReturnDesc Reference to a Number
-         * (This removes a reference on the ReturnDesc object)
+         * Since we are expecting a Reference operand, it can be either a
+         * NS Node or an internal object.
          */
-        Status = AcpiExResolveOperands (AML_LNOT_OP, &ReturnDesc, WalkState);
+        TempDesc = Operand[0];
+        if (ACPI_GET_DESCRIPTOR_TYPE (TempDesc) == ACPI_DESC_TYPE_OPERAND)
+        {
+            /* Internal reference object - prevent deletion */
+
+            AcpiUtAddReference (TempDesc);
+        }
+
+        /*
+         * Convert the Reference operand to an Integer (This removes a
+         * reference on the Operand[0] object)
+         *
+         * NOTE:  We use LNOT_OP here in order to force resolution of the
+         * reference operand to an actual integer.
+         */
+        Status = AcpiExResolveOperands (AML_LNOT_OP, &TempDesc, WalkState);
         if (ACPI_FAILURE (Status))
         {
             ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "%s: bad operand(s) %s\n",
-                AcpiPsGetOpcodeName (WalkState->Opcode), AcpiFormatException(Status)));
+                AcpiPsGetOpcodeName (WalkState->Opcode),
+                AcpiFormatException(Status)));
 
             goto Cleanup;
         }
 
         /*
-         * ReturnDesc is now guaranteed to be an Integer object
-         * Do the actual increment or decrement
+         * TempDesc is now guaranteed to be an Integer object --
+         * Perform the actual increment or decrement
          */
-        if (AML_INCREMENT_OP == WalkState->Opcode)
+        if (WalkState->Opcode == AML_INCREMENT_OP)
         {
-            ReturnDesc->Integer.Value++;
+            ReturnDesc->Integer.Value = TempDesc->Integer.Value +1;
         }
         else
         {
-            ReturnDesc->Integer.Value--;
+            ReturnDesc->Integer.Value = TempDesc->Integer.Value -1;
         }
 
-        /* Store the result back in the original descriptor */
+        /* Finished with this Integer object */
 
+        AcpiUtRemoveReference (TempDesc);
+
+        /* 
+         * Store the result back (indirectly) through the original 
+         * Reference object
+         */
         Status = AcpiExStore (ReturnDesc, Operand[0], WalkState);
         break;
 
