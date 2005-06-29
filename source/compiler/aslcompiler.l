@@ -3,7 +3,7 @@
 /******************************************************************************
  *
  * Module Name: aslcompiler.l - Flex input file
- *              $Revision: 1.62 $
+ *              $Revision: 1.63 $
  *
  *****************************************************************************/
 
@@ -382,7 +382,8 @@ NamePathTail                [.]{NameSeg}
 "SMBByte"                   { count (0); return (PARSEOP_ACCESSATTRIB_BYTE); }
 "SMBWord"                   { count (0); return (PARSEOP_ACCESSATTRIB_WORD); }
 "SMBBlock"                  { count (0); return (PARSEOP_ACCESSATTRIB_BLOCK); }
-"SMBProcessCall"            { count (0); return (PARSEOP_ACCESSATTRIB_CALL); }
+"SMBProcessCall"            { count (0); return (PARSEOP_ACCESSATTRIB_WORD_CALL); }
+"SMBBlockProcessCall"       { count (0); return (PARSEOP_ACCESSATTRIB_BLOCK_CALL); }
 
 "MTR"                       { count (0); return (PARSEOP_MATCHTYPE_MTR); }
 "MEQ"                       { count (0); return (PARSEOP_MATCHTYPE_MEQ); }
