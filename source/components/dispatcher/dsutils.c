@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dsutils - Dispatcher utilities
- *              $Revision: 1.105 $
+ *              $Revision: 1.106 $
  *
  ******************************************************************************/
 
@@ -421,7 +421,7 @@ AcpiDsClearOperands (
     UINT32                  i;
 
 
-    ACPI_FUNCTION_TRACE_PTR ("AcpiDsClearOperands", WalkState);
+    ACPI_FUNCTION_TRACE_PTR ("DsClearOperands", WalkState);
 
 
     /*
