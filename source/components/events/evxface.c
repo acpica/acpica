@@ -24,6 +24,7 @@
  * base code distributed originally by Intel ("Original Intel Code") to copy,
 
 
+
  * make derivatives, distribute, use and display any portion of the Covered
  * Code in any form, with the right to sublicense such rights; and
  *
@@ -643,7 +644,7 @@ AcpiInstallNotifyHandler (
      */
     CmUpdateObjectReference (ObjDesc, REF_INCREMENT);
 
-    if (Type = 0)
+    if (Type == 0)
     {
         ObjDesc->Device.SysHandler = NotifyObj;
     }
@@ -726,7 +727,7 @@ AcpiRemoveNotifyHandler (
      *  Make sure the handler is installed.
      */
 
-    if (Type = 0)
+    if (Type == 0)
     {
         NotifyObj = ObjDesc->Device.SysHandler;
     }
@@ -749,7 +750,7 @@ AcpiRemoveNotifyHandler (
 
     /* TBD: Mutex?? */
 
-    if (Type = 0)
+    if (Type == 0)
     {
         ObjDesc->Device.SysHandler = NULL;
     }
