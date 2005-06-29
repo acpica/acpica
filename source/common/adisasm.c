@@ -224,10 +224,10 @@ AdDisplayTables (void)
     DbDisplayOp (PsGetChild (Gbl_ParsedNamespaceRoot), ACPI_UINT32_MAX);
 
     OsdPrintf ("\n\nDSDT Header:\n");
-    CmDumpBuffer ((char *) DsdtPtr, sizeof (ACPI_TABLE_HEADER), DB_BYTE_DISPLAY, 0);
+    CmDumpBuffer ((char *) DsdtPtr, sizeof (ACPI_TABLE_HEADER), DB_BYTE_DISPLAY, ACPI_UINT32_MAX);
 
     OsdPrintf ("DSDT Body (Length 0x%X)\n", AmlLength);
-    CmDumpBuffer ((char *) AmlPtr, AmlLength, DB_BYTE_DISPLAY, 0);
+    CmDumpBuffer ((char *) AmlPtr, AmlLength, DB_BYTE_DISPLAY, ACPI_UINT32_MAX);
 
     return AE_OK;
 }
