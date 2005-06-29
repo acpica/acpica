@@ -132,7 +132,7 @@
 UINT32 
 EvSciHandler (void)
 {
-    INT32               InterruptHandled = INTERRUPT_NOT_HANDLED;
+    INT32                   InterruptHandled = INTERRUPT_NOT_HANDLED;
        
     
     /* 
@@ -190,7 +190,8 @@ EvSciHandler (void)
 UINT32 
 EvInstallSciHandler (void)
 {
-    UINT32 Except = AE_OK;
+    UINT32                  Except = AE_OK;
+
      
     FUNCTION_TRACE ("EvInstallSciHandler");
    
@@ -287,9 +288,11 @@ EvRemoveSciHandler (void)
 #ifdef _DEBUG
 
 INT32 
-EvSciCount (ACPI_EVENT_TYPE Event)
+EvSciCount (
+    ACPI_EVENT_TYPE         Event)
 {
-    INT32           Count;
+    INT32                   Count;
+
 
     FUNCTION_TRACE ("EvSciCount");
 
@@ -330,7 +333,7 @@ EvSciCount (ACPI_EVENT_TYPE Event)
 void
 EvRestoreAcpiState (void)
 {
-    INT32           Index;
+    INT32                   Index;
 
 
     FUNCTION_TRACE ("EvRestoreAcpiState");
