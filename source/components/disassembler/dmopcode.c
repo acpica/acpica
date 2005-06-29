@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dbdisasm - parser op tree display routines
- *              $Revision: 1.42 $
+ *              $Revision: 1.43 $
  *
  ******************************************************************************/
 
@@ -330,7 +330,7 @@ AcpiDbDisplayOp (
                 VERBOSE_PRINT ((DB_NO_OP_INFO, LastDepth));
                 for (i = 0; i < LastDepth; i++)
                 {
-                    AcpiOsPrintf (INDENT_STRING);
+                    AcpiOsPrintf ("%s", INDENT_STRING);
                 }
 
                 if (AcpiDbBlockType (Op) == BLOCK_PAREN)
@@ -352,7 +352,7 @@ AcpiDbDisplayOp (
                     VERBOSE_PRINT ((DB_NO_OP_INFO, LastDepth - j));
                     for (i = 0; i < (LastDepth - j - 1); i++)
                     {
-                        AcpiOsPrintf (INDENT_STRING);
+                        AcpiOsPrintf ("%s", INDENT_STRING);
                     }
 
                     if (AcpiDbBlockType (Op) == BLOCK_PAREN)
@@ -375,7 +375,7 @@ AcpiDbDisplayOp (
 
             for (i = 0; i < DepthCount; i++)
             {
-                AcpiOsPrintf (INDENT_STRING);
+                AcpiOsPrintf ("%s", INDENT_STRING);
             }
 
 
@@ -414,7 +414,7 @@ AcpiDbDisplayOp (
             VERBOSE_PRINT ((DB_NO_OP_INFO, LastDepth - i));
             for (j = 0; j < DepthCount; j++)
             {
-                AcpiOsPrintf (INDENT_STRING);
+                AcpiOsPrintf ("%s", INDENT_STRING);
             }
             AcpiOsPrintf ("}\n");
             DepthCount--;
