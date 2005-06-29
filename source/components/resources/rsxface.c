@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: rsxface - Public interfaces to the resource manager
- *              $Revision: 1.26 $
+ *              $Revision: 1.27 $
  *
  ******************************************************************************/
 
@@ -426,7 +426,6 @@ AcpiSetCurrentResources (
 }
 
 
-
 #define ACPI_COPY_FIELD(Out, In, Field)  ((Out)->Field = (In)->Field)
 #define ACPI_COPY_ADDRESS(Out, In)                      \
     ACPI_COPY_FIELD(Out, In, ResourceType);              \
@@ -485,7 +484,7 @@ AcpiResourceToAddress64 (
 
 
     case ACPI_RSTYPE_ADDRESS64:
-        
+
         /* Simple copy for 64 bit source */
 
         ACPI_MEMCPY (Out, &Resource->Data, sizeof (ACPI_RESOURCE_ADDRESS64));
