@@ -2,6 +2,7 @@
  *
  * Module Name: nsxfname - Public interfaces to the ACPI subsystem
  *                         ACPI Namespace oriented interfaces
+ *              $Revision: 1.93 $
  *
  *****************************************************************************/
 
@@ -9,8 +10,8 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, Intel Corp.  All rights
- * reserved.
+ * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
+ * All rights reserved.
  *
  * 2. License
  *
@@ -117,95 +118,11 @@
 #define __NSXFNAME_C__
 
 #include "acpi.h"
-#include "acinterp.h"
 #include "acnamesp.h"
-#include "amlcode.h"
-#include "acparser.h"
-#include "acdispat.h"
-#include "acevents.h"
 
 
-#define _COMPONENT          NAMESPACE
-        MODULE_NAME         ("nsxfname");
-
-
-/******************************************************************************
- *
- * FUNCTION:    AcpiLoadNamespace
- *
- * PARAMETERS:  DisplayAmlDuringLoad
- *
- * RETURN:      Status
- *
- * DESCRIPTION: Load the name space from what ever is pointed to by DSDT.
- *              (DSDT points to either the BIOS or a buffer.)
- *
- ******************************************************************************/
-
-ACPI_STATUS
-AcpiLoadNamespace (
-    void)
-{
-    ACPI_STATUS             Status;
-
-
-    FUNCTION_TRACE ("AcpiLoadNameSpace");
-
-
-    /* There must be at least a DSDT installed */
-
-    if (AcpiGbl_DSDT == NULL)
-    {
-        DEBUG_PRINT (ACPI_ERROR, ("DSDT is not in memory\n"));
-        return_ACPI_STATUS (AE_NO_ACPI_TABLES);
-    }
-
-
-    /* Init the hardware */
-
-    /*
-     * With the advent of a 3-pass parser, we need to be
-     *  prepared to execute on initialized HW before the
-     *  namespace has completed its load.
-     */
-
-    Status = AcpiCmHardwareInitialize ();
-    if (ACPI_FAILURE (Status))
-    {
-        return_ACPI_STATUS (Status);
-    }
-
-    /*
-     * Load the namespace.  The DSDT is required,
-     * but the SSDT and PSDT tables are optional.
-     */
-
-    Status = AcpiNsLoadTableByType (ACPI_TABLE_DSDT);
-    if (ACPI_FAILURE (Status))
-    {
-        return_ACPI_STATUS (Status);
-    }
-
-    /* Ignore exceptions from these */
-
-    AcpiNsLoadTableByType (ACPI_TABLE_SSDT);
-    AcpiNsLoadTableByType (ACPI_TABLE_PSDT);
-
-
-    DEBUG_PRINT_RAW (ACPI_OK,
-        ("ACPI Namespace successfully loaded at root 0x%p\n",
-        AcpiGbl_RootObject->ChildTable));
-
-
-    /*
-     * Install the default OpRegion handlers, ignore the return
-     * code right now.
-     */
-
-    AcpiEvInstallDefaultAddressSpaceHandlers ();
-
-    return_ACPI_STATUS (Status);
-}
+#define _COMPONENT          ACPI_NAMESPACE
+        ACPI_MODULE_NAME    ("nsxfname")
 
 
 /****************************************************************************
@@ -233,49 +150,61 @@ AcpiGetHandle (
     ACPI_HANDLE             *RetHandle)
 {
     ACPI_STATUS             Status;
-    ACPI_NAMED_OBJECT       *ThisEntry;
-    ACPI_NAME_TABLE         *Scope = NULL;
+    ACPI_NAMESPACE_NODE     *Node = NULL;
+    ACPI_NAMESPACE_NODE     *PrefixNode = NULL;
 
+
+    ACPI_FUNCTION_ENTRY ();
+
+
+    /* Parameter Validation */
 
     if (!RetHandle || !Pathname)
     {
         return (AE_BAD_PARAMETER);
     }
 
+    /* Convert a parent handle to a prefix node */
+
     if (Parent)
     {
-        AcpiCmAcquireMutex (ACPI_MTX_NAMESPACE);
-
-        ThisEntry = AcpiNsConvertHandleToEntry (Parent);
-        if (!ThisEntry)
+        Status = AcpiUtAcquireMutex (ACPI_MTX_NAMESPACE);
+        if (ACPI_FAILURE (Status))
         {
-            AcpiCmReleaseMutex (ACPI_MTX_NAMESPACE);
+            return (Status);
+        }
+
+        PrefixNode = AcpiNsMapHandleToNode (Parent);
+        if (!PrefixNode)
+        {
+            (void) AcpiUtReleaseMutex (ACPI_MTX_NAMESPACE);
             return (AE_BAD_PARAMETER);
         }
 
-        Scope = ThisEntry->ChildTable;
-        AcpiCmReleaseMutex (ACPI_MTX_NAMESPACE);
+        Status = AcpiUtReleaseMutex (ACPI_MTX_NAMESPACE);
+        if (ACPI_FAILURE (Status))
+        {
+            return (Status);
+        }
     }
 
     /* Special case for root, since we can't search for it */
-    /* TBD: [Investigate] Check for both forward and backslash?? */
 
-    if (STRCMP (Pathname, NS_ROOT_PATH) == 0)
+    if (ACPI_STRCMP (Pathname, ACPI_NS_ROOT_PATH) == 0)
     {
-        *RetHandle = AcpiNsConvertEntryToHandle (AcpiGbl_RootObject);
+        *RetHandle = AcpiNsConvertEntryToHandle (AcpiGbl_RootNode);
         return (AE_OK);
     }
 
     /*
-     *  Find the Nte and convert to the user format
+     *  Find the Node and convert to a handle
      */
-    ThisEntry = NULL;
-    Status = AcpiNsGetNamedObject (Pathname, Scope, &ThisEntry);
+    Status = AcpiNsGetNodeByPath (Pathname, PrefixNode, ACPI_NS_NO_UPSEARCH, &Node);
 
     *RetHandle = NULL;
-    if(ACPI_SUCCESS(Status))
+    if (ACPI_SUCCESS (Status))
     {
-        *RetHandle = AcpiNsConvertEntryToHandle (ThisEntry);
+        *RetHandle = AcpiNsConvertEntryToHandle (Node);
     }
 
     return (Status);
@@ -284,11 +213,11 @@ AcpiGetHandle (
 
 /****************************************************************************
  *
- * FUNCTION:    AcpiGetPathname
+ * FUNCTION:    AcpiGetName
  *
  * PARAMETERS:  Handle          - Handle to be converted to a pathname
  *              NameType        - Full pathname or single segment
- *              RetPathPtr      - Buffer for returned path
+ *              Buffer          - Buffer for returned path
  *
  * RETURN:      Pointer to a string containing the fully qualified Name.
  *
@@ -302,69 +231,69 @@ ACPI_STATUS
 AcpiGetName (
     ACPI_HANDLE             Handle,
     UINT32                  NameType,
-    ACPI_BUFFER             *RetPathPtr)
+    ACPI_BUFFER             *Buffer)
 {
     ACPI_STATUS             Status;
-    ACPI_NAMED_OBJECT       *ObjEntry;
+    ACPI_NAMESPACE_NODE     *Node;
 
 
-    /* Buffer pointer must be valid always */
+    /* Parameter validation */
 
-    if (!RetPathPtr || (NameType > ACPI_NAME_TYPE_MAX))
+    if (NameType > ACPI_NAME_TYPE_MAX)
     {
         return (AE_BAD_PARAMETER);
     }
 
-    /* Allow length to be zero and ignore the pointer */
-
-    if ((RetPathPtr->Length) &&
-       (!RetPathPtr->Pointer))
+    Status = AcpiUtValidateBuffer (Buffer);
+    if (ACPI_FAILURE (Status))
     {
-        return (AE_BAD_PARAMETER);
+        return (Status);
     }
 
     if (NameType == ACPI_FULL_PATHNAME)
     {
         /* Get the full pathname (From the namespace root) */
 
-        Status = AcpiNsHandleToPathname (Handle, &RetPathPtr->Length,
-                                        RetPathPtr->Pointer);
+        Status = AcpiNsHandleToPathname (Handle, Buffer);
         return (Status);
     }
 
     /*
      * Wants the single segment ACPI name.
-     * Validate handle and convert to an NTE
+     * Validate handle and convert to a namespace Node
      */
+    Status = AcpiUtAcquireMutex (ACPI_MTX_NAMESPACE);
+    if (ACPI_FAILURE (Status))
+    {
+        return (Status);
+    }
 
-    AcpiCmAcquireMutex (ACPI_MTX_NAMESPACE);
-    ObjEntry = AcpiNsConvertHandleToEntry (Handle);
-    if (!ObjEntry)
+    Node = AcpiNsMapHandleToNode (Handle);
+    if (!Node)
     {
         Status = AE_BAD_PARAMETER;
         goto UnlockAndExit;
     }
 
-    /* Check if name will fit in buffer */
+    /* Validate/Allocate/Clear caller buffer */
 
-    if (RetPathPtr->Length < PATH_SEGMENT_LENGTH)
+    Status = AcpiUtInitializeBuffer (Buffer, ACPI_PATH_SEGMENT_LENGTH);
+    if (ACPI_FAILURE (Status))
     {
-        RetPathPtr->Length = PATH_SEGMENT_LENGTH;
-        Status = AE_BUFFER_OVERFLOW;
         goto UnlockAndExit;
     }
 
-    /* Just copy the ACPI name from the NTE and zero terminate it */
+    /* Just copy the ACPI name from the Node and zero terminate it */
 
-    STRNCPY (RetPathPtr->Pointer, (UINT8 *) &ObjEntry->Name,
+    ACPI_STRNCPY (Buffer->Pointer, Node->Name.Ascii,
                 ACPI_NAME_SIZE);
-    ((NATIVE_CHAR *) RetPathPtr->Pointer) [ACPI_NAME_SIZE] = 0;
+    ((char *) Buffer->Pointer) [ACPI_NAME_SIZE] = 0;
     Status = AE_OK;
 
 
 UnlockAndExit:
 
-    AcpiCmReleaseMutex (ACPI_MTX_NAMESPACE);
+    (void) AcpiUtReleaseMutex (ACPI_MTX_NAMESPACE);
     return (Status);
 }
 
@@ -378,46 +307,53 @@ UnlockAndExit:
  *
  * RETURN:      Status
  *
- * DESCRIPTION: Returns information about an object as gleaned from running
- *              several standard control methods.
+ * DESCRIPTION: Returns information about an object as gleaned from the
+ *              namespace node and possibly by running several standard
+ *              control methods (Such as in the case of a device.)
  *
  ******************************************************************************/
 
 ACPI_STATUS
 AcpiGetObjectInfo (
-    ACPI_HANDLE             Device,
+    ACPI_HANDLE             Handle,
     ACPI_DEVICE_INFO        *Info)
 {
-    DEVICE_ID               Hid;
-    DEVICE_ID               Uid;
+    ACPI_DEVICE_ID          Hid;
+    ACPI_DEVICE_ID          Uid;
     ACPI_STATUS             Status;
     UINT32                  DeviceStatus = 0;
-    UINT32                  Address = 0;
-    ACPI_NAMED_OBJECT       *DeviceEntry;
+    ACPI_INTEGER            Address = 0;
+    ACPI_NAMESPACE_NODE     *Node;
 
 
     /* Parameter validation */
 
-    if (!Device || !Info)
+    if (!Handle || !Info)
     {
         return (AE_BAD_PARAMETER);
     }
 
-    AcpiCmAcquireMutex (ACPI_MTX_NAMESPACE);
-
-    DeviceEntry = AcpiNsConvertHandleToEntry (Device);
-    if (!DeviceEntry)
+    Status = AcpiUtAcquireMutex (ACPI_MTX_NAMESPACE);
+    if (ACPI_FAILURE (Status))
     {
-        AcpiCmReleaseMutex (ACPI_MTX_NAMESPACE);
+        return (Status);
+    }
+
+    Node = AcpiNsMapHandleToNode (Handle);
+    if (!Node)
+    {
+        (void) AcpiUtReleaseMutex (ACPI_MTX_NAMESPACE);
         return (AE_BAD_PARAMETER);
     }
 
-    Info->Type      = DeviceEntry->Type;
-    Info->Name      = DeviceEntry->Name;
-    Info->Parent    =
-        AcpiNsConvertEntryToHandle (AcpiNsGetParentEntry (DeviceEntry));
+    Info->Type = Node->Type;
+    Info->Name = Node->Name.Integer;
 
-    AcpiCmReleaseMutex (ACPI_MTX_NAMESPACE);
+    Status = AcpiUtReleaseMutex (ACPI_MTX_NAMESPACE);
+    if (ACPI_FAILURE (Status))
+    {
+        return (Status);
+    }
 
     /*
      * If not a device, we are all done.
@@ -428,41 +364,30 @@ AcpiGetObjectInfo (
     }
 
 
-    /* Get extra info for ACPI devices */
-
-    Info->Valid     = 0;
+    /*
+     * Get extra info for ACPI devices only.  Run the
+     * _HID, _UID, _STA, and _ADR methods.  Note: none
+     * of these methods are required, so they may or may
+     * not be present.  The Info->Valid bits are used
+     * to indicate which methods ran successfully.
+     */
+    Info->Valid = 0;
 
     /* Execute the _HID method and save the result */
 
-    Status = AcpiCmExecute_HID (DeviceEntry, &Hid);
+    Status = AcpiUtExecute_HID (Node, &Hid);
     if (ACPI_SUCCESS (Status))
     {
-        if (Hid.Type == STRING_PTR_DEVICE_ID)
-        {
-            STRCPY (Info->HardwareId, Hid.Data.StringPtr);
-        }
-        else
-        {
-            STRCPY (Info->HardwareId, Hid.Data.Buffer);
-        }
-
+        ACPI_STRNCPY (Info->HardwareId, Hid.Buffer, sizeof(Info->HardwareId));
         Info->Valid |= ACPI_VALID_HID;
     }
 
     /* Execute the _UID method and save the result */
 
-    Status = AcpiCmExecute_UID (DeviceEntry, &Uid);
+    Status = AcpiUtExecute_UID (Node, &Uid);
     if (ACPI_SUCCESS (Status))
     {
-        if (Hid.Type == STRING_PTR_DEVICE_ID)
-        {
-            STRCPY (Info->UniqueId, Uid.Data.StringPtr);
-        }
-        else
-        {
-            STRCPY (Info->UniqueId, Uid.Data.Buffer);
-        }
-
+        ACPI_STRCPY (Info->UniqueId, Uid.Buffer);
         Info->Valid |= ACPI_VALID_UID;
     }
 
@@ -470,8 +395,7 @@ AcpiGetObjectInfo (
      * Execute the _STA method and save the result
      * _STA is not always present
      */
-
-    Status = AcpiCmExecute_STA (DeviceEntry, &DeviceStatus);
+    Status = AcpiUtExecute_STA (Node, &DeviceStatus);
     if (ACPI_SUCCESS (Status))
     {
         Info->CurrentStatus = DeviceStatus;
@@ -482,9 +406,8 @@ AcpiGetObjectInfo (
      * Execute the _ADR method and save result if successful
      * _ADR is not always present
      */
-
-    Status = AcpiCmEvaluateNumericObject (METHOD_NAME__ADR,
-                                            DeviceEntry, &Address);
+    Status = AcpiUtEvaluateNumericObject (METHOD_NAME__ADR,
+                                            Node, &Address);
 
     if (ACPI_SUCCESS (Status))
     {
