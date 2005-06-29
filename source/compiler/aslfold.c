@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslfold - Constant folding
- *              $Revision: 1.8 $
+ *              $Revision: 1.11 $
  *
  *****************************************************************************/
 
@@ -10,7 +10,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2003, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2005, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -482,6 +482,7 @@ OpcAmlConstantWalk (
 
             Op->Asl.ParseOpcode     = PARSEOP_BUFFER;
             Op->Common.AmlOpcode    = AML_BUFFER_OP;
+            Op->Asl.CompileFlags    = NODE_AML_PACKAGE;
             UtSetParseOpName (Op);
 
             /* Child node is the buffer length */
