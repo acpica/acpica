@@ -25,7 +25,7 @@ CFG=AcpiSubsystem_Linux - Win32 Debug
 # PROP AllowPerConfigDependencies 0
 # PROP Scc_ProjName ""$/Acpi/generate/msvc", SVBAAAAA"
 # PROP Scc_LocalPath "."
-CPP=xicl6.exe
+CPP=cl.exe
 RSC=rc.exe
 
 !IF  "$(CFG)" == "AcpiSubsystem_Linux - Win32 Release"
@@ -47,7 +47,7 @@ RSC=rc.exe
 BSC32=bscmake.exe
 # ADD BASE BSC32 /nologo
 # ADD BSC32 /nologo
-LIB32=xilink6.exe -lib
+LIB32=link.exe -lib
 # ADD BASE LIB32 /nologo
 # ADD LIB32 /nologo /out:"\Acpi\Generate\msvc\AcpiSubsystem_Linux\AcpiCa_Linux.lib"
 
@@ -64,13 +64,13 @@ LIB32=xilink6.exe -lib
 # PROP Intermediate_Dir "\Acpi\Generate\msvc\AcpiSubsystem_Linux"
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_MBCS" /D "_LIB" /YX /FD /GZ /c
-# ADD CPP /nologo /Gz /Za /W4 /Gm /GX /ZI /Od /I "..\..\source_linux\Include" /D "ACPI_DEBUG" /D "_DEBUG" /D "ENABLE_DEBUGGER" /D "_WINDOWS" /D PROCESSOR_ARCHITECTURE=x86 /D "WIN32" /D "_WIN_VER" /D "DEFINE_ALTERNATE_TYPES" /FR /YX /FD /GZ /c
+# ADD CPP /nologo /Gz /Za /W4 /Gm /GX /ZI /Od /I "..\..\source_linux\Include" /D "ACPI_DEBUG_OUTPUT" /D "_DEBUG" /D "ACPI_DEBUGGER" /D "ACPI_DISASSEMBLER" /D "_WINDOWS" /D PROCESSOR_ARCHITECTURE=x86 /D "WIN32" /D "_WIN_VER" /D "DEFINE_ALTERNATE_TYPES" /FR /YX /FD /GZ /c
 # ADD BASE RSC /l 0x409 /d "_DEBUG"
 # ADD RSC /l 0x409 /d "_DEBUG"
 BSC32=bscmake.exe
 # ADD BASE BSC32 /nologo
 # ADD BSC32 /nologo
-LIB32=xilink6.exe -lib
+LIB32=link.exe -lib
 # ADD BASE LIB32 /nologo
 # ADD LIB32 /nologo /out:"\Acpi\Generate\msvc\AcpiSubsystem_Linux\AcpiCa_Linux.lib"
 
@@ -94,6 +94,10 @@ SOURCE=..\..\source_linux\components\interpreter\debugger\dbdisasm.c
 # Begin Source File
 
 SOURCE=..\..\source_linux\components\interpreter\debugger\dbdisply.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\COMPONENTS\INTERPRETER\DEBUGGER\dbdswalk.c
 # End Source File
 # Begin Source File
 
