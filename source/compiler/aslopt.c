@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: aslopt- Compiler optimizations
- *              $Revision: 1.5 $
+ *              $Revision: 1.6 $
  *
  *****************************************************************************/
 
@@ -748,8 +748,20 @@ OptOptimizeNamePath (
 
         if (Flags & AML_NAMED)
         {
-            Op->Asl.Child->Asl.Value.String = NewPath;
-            Op->Asl.Child->Asl.AmlLength = ACPI_STRLEN (NewPath);
+            if (Op->Asl.AmlOpcode == AML_ALIAS_OP)
+            {
+                /* 
+                 * ALIAS is the only oddball opcode, the name declaration
+                 * (alias name) is the second operand 
+                 */
+                Op->Asl.Child->Asl.Next->Asl.Value.String = NewPath;
+                Op->Asl.Child->Asl.Next->Asl.AmlLength = ACPI_STRLEN (NewPath);
+            }
+            else
+            {
+                Op->Asl.Child->Asl.Value.String = NewPath;
+                Op->Asl.Child->Asl.AmlLength = ACPI_STRLEN (NewPath);
+            }
         }
         else if (Flags & AML_CREATE)
         {
