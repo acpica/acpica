@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: oswinxf - Windows OSL
- *              $Revision: 1.42 $
+ *              $Revision: 1.44 $
  *
  *****************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2003, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -647,7 +647,7 @@ AcpiOsMapMemory (
     ACPI_SIZE               length,
     void                    **there)
 {
-    *there = ACPI_TO_POINTER ((NATIVE_UINT) where);
+    *there = ACPI_TO_POINTER ((ACPI_NATIVE_UINT) where);
 
     return AE_OK;
 }

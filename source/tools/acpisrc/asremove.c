@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asremove - Source conversion - removal functions
- *              $Revision: 1.7 $
+ *              $Revision: 1.4 $
  *
  *****************************************************************************/
 
@@ -10,7 +10,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2005, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2003, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -476,89 +476,6 @@ AsRemoveLine (
             }
 
             /* Remove the line */
-
-            SubBuffer = AsRemoveData (SubString, SubBuffer);
-        }
-    }
-}
-
-
-/******************************************************************************
- *
- * FUNCTION:    AsReduceTypedefs
- *
- * DESCRIPTION: Eliminate certain typedefs
- *
- ******************************************************************************/
-
-void
-AsReduceTypedefs (
-    char                    *Buffer,
-    char                    *Keyword)
-{
-    char                    *SubString;
-    char                    *SubBuffer;
-    int                     NestLevel;
-
-
-    SubBuffer = Buffer;
-    SubString = Buffer;
-
-
-    while (SubString)
-    {
-        SubString = strstr (SubBuffer, Keyword);
-
-        if (SubString)
-        {
-            /* Remove the typedef itself */
-
-            SubBuffer = SubString + strlen ("typedef") + 1;
-            SubBuffer = AsRemoveData (SubString, SubBuffer);
-
-            /* Find the opening brace of the struct or union */
-
-            while (*SubString != '{')
-            {
-                SubString++;
-            }
-            SubString++;
-
-            /* Find the closing brace.  Handles nested braces */
-
-            NestLevel = 1;
-            while (*SubString)
-            {
-                if (*SubString == '{')
-                {
-                    NestLevel++;
-                }
-                else if (*SubString == '}')
-                {
-                    NestLevel--;
-                }
-
-                SubString++;
-
-                if (NestLevel == 0)
-                {
-                    break;
-                }
-            }
-
-            /* Remove an extra line feed if present */
-
-            if (!strncmp (SubString - 3, "\n\n", 2))
-            {
-                *(SubString -2) = '}';
-                SubString--;
-            }
-
-            /* Find the end of the typedef name */
-
-            SubBuffer = AsSkipUntilChar (SubString, ';');
-
-            /* And remove the typedef name */
 
             SubBuffer = AsRemoveData (SubString, SubBuffer);
         }

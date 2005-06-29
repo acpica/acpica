@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asfile - Main module for the acpi source processor utility
- *              $Revision: 1.34 $
+ *              $Revision: 1.23 $
  *
  *****************************************************************************/
 
@@ -10,7 +10,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2005, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2003, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -120,91 +120,6 @@
 
 /******************************************************************************
  *
- * FUNCTION:    AsDoWildcard
- *
- * DESCRIPTION: Process files via wildcards
- *
- ******************************************************************************/
-
-void
-AsDoWildcard (
-    ACPI_CONVERSION_TABLE   *ConversionTable,
-    char                    *SourcePath,
-    char                    *TargetPath,
-    int                     MaxPathLength,
-    int                     FileType,
-    char                    *WildcardSpec)
-{
-    void                    *DirInfo;
-    char                    *Filename;
-    char                    *SourceDirPath;
-    char                    *TargetDirPath;
-    char                    RequestedFileType;
-
-
-    if (FileType == FILE_TYPE_DIRECTORY)
-    {
-        RequestedFileType = REQUEST_DIR_ONLY;
-    }
-    else
-    {
-        RequestedFileType = REQUEST_FILE_ONLY;
-    }
-
-    VERBOSE_PRINT (("Checking for %s source files in directory \"%s\"\n",
-            WildcardSpec, SourcePath));
-
-    /* Open the directory for wildcard search */
-
-    DirInfo = AcpiOsOpenDirectory (SourcePath, WildcardSpec, RequestedFileType);
-    if (DirInfo)
-    {
-        /*
-         * Get all of the files that match both the
-         * wildcard and the requested file type
-         */
-        while ((Filename = AcpiOsGetNextFilename (DirInfo)))
-        {
-            /* Looking for directory files, must check file type */
-
-            switch (RequestedFileType)
-            {
-            case REQUEST_DIR_ONLY:
-
-                /* If we actually have a dir, process the subtree */
-
-                if (!AsCheckForDirectory (SourcePath, TargetPath, Filename,
-                        &SourceDirPath, &TargetDirPath))
-                {
-                    VERBOSE_PRINT (("Subdirectory: %s\n", Filename));
-
-                    AsProcessTree (ConversionTable, SourceDirPath, TargetDirPath);
-                    free (SourceDirPath);
-                    free (TargetDirPath);
-                }
-                break;
-
-            case REQUEST_FILE_ONLY:
-
-                /* Otherwise, this is a file, not a directory */
-
-                VERBOSE_PRINT (("File: %s\n", Filename));
-
-                AsProcessOneFile (ConversionTable, SourcePath, TargetPath,
-                        MaxPathLength, Filename, FileType);
-                break;
-            }
-        }
-
-        /* Cleanup */
-
-        AcpiOsCloseDirectory (DirInfo);
-    }
-}
-
-
-/******************************************************************************
- *
  * FUNCTION:    AsProcessTree
  *
  * DESCRIPTION: Process the directory tree.  Files with the extension ".C" and
@@ -218,6 +133,11 @@ AsProcessTree (
     char                    *SourcePath,
     char                    *TargetPath)
 {
+    struct _finddata_t      FindInfo;
+    long                    FindHandle;
+    char                    *FileSpec;
+    char                    *SourceDirPath;
+    char                    *TargetDirPath;
     int                     MaxPathLength;
 
 
@@ -243,29 +163,130 @@ AsProcessTree (
 
     /* Do the C source files */
 
-    AsDoWildcard (ConversionTable, SourcePath, TargetPath, MaxPathLength,
-            FILE_TYPE_SOURCE, "*.c");
+    FileSpec = calloc (strlen (SourcePath) + 5, 1);
+    if (!FileSpec)
+    {
+        printf ("Could not allocate buffer for wildcard pathname\n");
+        return -1;
+    }
+
+    strcpy (FileSpec, SourcePath);
+    strcat (FileSpec, "/*.c");
+
+    VERBOSE_PRINT (("Checking for C source files in path \"%s\"\n", FileSpec));
+
+    FindHandle = _findfirst (FileSpec, &FindInfo);
+    if (FindHandle != -1)
+    {
+        VERBOSE_PRINT (("File: %s\n", FindInfo.name));
+        AsProcessOneFile (ConversionTable, SourcePath, TargetPath, MaxPathLength, FindInfo.name, FILE_TYPE_SOURCE);
+
+        while (_findnext (FindHandle, &FindInfo) == 0)
+        {
+            VERBOSE_PRINT (("File: %s\n", FindInfo.name));
+            AsProcessOneFile (ConversionTable, SourcePath, TargetPath, MaxPathLength, FindInfo.name, FILE_TYPE_SOURCE);
+        }
+
+        _findclose (FindHandle);
+    }
 
     /* Do the C header files */
 
-    AsDoWildcard (ConversionTable, SourcePath, TargetPath, MaxPathLength,
-            FILE_TYPE_HEADER, "*.h");
+    strcpy (FileSpec, SourcePath);
+    strcat (FileSpec, "/*.h");
 
-    /* Do the Lex file(s) */
+    VERBOSE_PRINT (("Checking for C header files in path \"%s\"\n", FileSpec));
 
-    AsDoWildcard (ConversionTable, SourcePath, TargetPath, MaxPathLength,
-            FILE_TYPE_SOURCE, "*.l");
+    FindHandle = _findfirst (FileSpec, &FindInfo);
+    if (FindHandle != -1)
+    {
+        VERBOSE_PRINT (("File: %s\n", FindInfo.name));
+        AsProcessOneFile (ConversionTable, SourcePath, TargetPath, MaxPathLength, FindInfo.name, FILE_TYPE_HEADER);
 
-    /* Do the yacc file(s) */
+        while (_findnext (FindHandle, &FindInfo) == 0)
+        {
+            VERBOSE_PRINT (("File: %s\n", FindInfo.name));
+            AsProcessOneFile (ConversionTable, SourcePath, TargetPath, MaxPathLength, FindInfo.name, FILE_TYPE_HEADER);
+        }
 
-    AsDoWildcard (ConversionTable, SourcePath, TargetPath, MaxPathLength,
-            FILE_TYPE_SOURCE, "*.y");
+        _findclose (FindHandle);
+    }
 
-    /* Do any subdirectories */
+    /* Do other files */
 
-    AsDoWildcard (ConversionTable, SourcePath, TargetPath, MaxPathLength,
-            FILE_TYPE_DIRECTORY, "*");
+    strcpy (FileSpec, SourcePath);
+    strcat (FileSpec, "/*.l");
 
+    VERBOSE_PRINT (("Checking for lex files in path \"%s\"\n", FileSpec));
+
+    FindHandle = _findfirst (FileSpec, &FindInfo);
+    if (FindHandle != -1)
+    {
+        VERBOSE_PRINT (("File: %s\n", FindInfo.name));
+        AsProcessOneFile (ConversionTable, SourcePath, TargetPath, MaxPathLength, FindInfo.name, FILE_TYPE_SOURCE);
+
+        while (_findnext (FindHandle, &FindInfo) == 0)
+        {
+            VERBOSE_PRINT (("File: %s\n", FindInfo.name));
+            AsProcessOneFile (ConversionTable, SourcePath, TargetPath, MaxPathLength, FindInfo.name, FILE_TYPE_SOURCE);
+        }
+
+        _findclose (FindHandle);
+    }
+
+    /* Do other files */
+
+    strcpy (FileSpec, SourcePath);
+    strcat (FileSpec, "/*.y");
+
+    VERBOSE_PRINT (("Checking for yacc files in path \"%s\"\n", FileSpec));
+
+    FindHandle = _findfirst (FileSpec, &FindInfo);
+    if (FindHandle != -1)
+    {
+        VERBOSE_PRINT (("File: %s\n", FindInfo.name));
+        AsProcessOneFile (ConversionTable, SourcePath, TargetPath, MaxPathLength, FindInfo.name, FILE_TYPE_SOURCE);
+
+        while (_findnext (FindHandle, &FindInfo) == 0)
+        {
+            VERBOSE_PRINT (("File: %s\n", FindInfo.name));
+            AsProcessOneFile (ConversionTable, SourcePath, TargetPath, MaxPathLength, FindInfo.name, FILE_TYPE_SOURCE);
+        }
+
+        _findclose (FindHandle);
+    }
+
+    /* Do the subdirectories */
+
+    strcpy (FileSpec, SourcePath);
+    strcat (FileSpec, "/*.*");
+
+    VERBOSE_PRINT (("Checking for subdirectories in path \"%s\"\n", FileSpec));
+
+    FindHandle = _findfirst (FileSpec, &FindInfo);
+    if (FindHandle != -1)
+    {
+        if (!AsCheckForDirectory (SourcePath, TargetPath, &FindInfo, &SourceDirPath, &TargetDirPath))
+        {
+            AsProcessTree (ConversionTable, SourceDirPath, TargetDirPath);
+            free (SourceDirPath);
+            free (TargetDirPath);
+        }
+
+        while (_findnext (FindHandle, &FindInfo) == 0)
+        {
+            if (!AsCheckForDirectory (SourcePath, TargetPath, &FindInfo, &SourceDirPath, &TargetDirPath))
+            {
+                AsProcessTree (ConversionTable, SourceDirPath, TargetDirPath);
+                free (SourceDirPath);
+                free (TargetDirPath);
+            }
+        }
+
+        _findclose (FindHandle);
+    }
+
+    free (FileSpec);
     return 0;
 }
 
@@ -285,7 +306,6 @@ AsDetectLoneLineFeeds (
 {
     UINT32                  i = 1;
     UINT32                  LfCount = 0;
-
 
     if (!Buffer[0])
     {
@@ -366,8 +386,11 @@ AsConvertFile (
         return;
     }
 
+
     Gbl_Files++;
     VERBOSE_PRINT (("Processing %d bytes\n", strlen (FileBuffer)));
+//    TERSE_PRINT (("."));
+
 
     if (ConversionTable->LowerCaseTable)
     {
@@ -384,8 +407,10 @@ AsConvertFile (
     {
         for (i = 0; StringTable[i].Target; i++)
         {
-            AsReplaceString (StringTable[i].Target, StringTable[i].Replacement,
-                    StringTable[i].Type, FileBuffer);
+            AsReplaceString (StringTable[i].Target,
+                                StringTable[i].Replacement,
+                                StringTable[i].Type,
+                                FileBuffer);
         }
     }
 
@@ -500,13 +525,6 @@ AsConvertFile (
             break;
 
 
-        case CVT_REDUCE_TYPEDEFS:
-
-            AsReduceTypedefs (FileBuffer, "typedef union");
-            AsReduceTypedefs (FileBuffer, "typedef struct");
-            break;
-
-
         case CVT_SPACES_TO_TABS4:
 
             AsTabify4 (FileBuffer);
@@ -526,10 +544,16 @@ AsConvertFile (
         }
     }
 
+
     if (ConversionTable->NewHeader)
     {
         AsReplaceHeader (FileBuffer, ConversionTable->NewHeader);
     }
+
+
+    /* Tabify should always be last */
+
+//    AsTabify (FileBuffer, 4);
 }
 
 
@@ -563,8 +587,6 @@ AsProcessOneFile (
         printf ("Could not allocate buffer for file pathnames\n");
         return -1;
     }
-
-    Gbl_FileType = FileType;
 
     /* Generate the source pathname and read the file */
 
@@ -625,9 +647,9 @@ AsProcessOneFile (
  *
  * FUNCTION:    AsCheckForDirectory
  *
- * DESCRIPTION: Check if the current file is a valid directory.  If not,
- *              construct the full pathname for the source and target paths.
- *              Checks for the dot and dot-dot files (they are ignored)
+ * DESCRIPTION: Check if the current file is a directory.  If not, construct
+ *              the full pathname for the source and target paths.  Checks
+ *              for the dot and dot-dot files as well (they are ignored)
  *
  ******************************************************************************/
 
@@ -635,7 +657,7 @@ ACPI_NATIVE_INT
 AsCheckForDirectory (
     char                    *SourceDirPath,
     char                    *TargetDirPath,
-    char                    *Filename,
+    struct _finddata_t      *FindInfo,
     char                    **SourcePath,
     char                    **TargetPath)
 {
@@ -643,20 +665,25 @@ AsCheckForDirectory (
     char                    *TgtPath;
 
 
-    if (!(strcmp (Filename, ".")) ||
-        !(strcmp (Filename, "..")))
+    if (!(FindInfo->attrib & _A_SUBDIR))
     {
         return -1;
     }
 
-    SrcPath = calloc (strlen (SourceDirPath) + strlen (Filename) + 2, 1);
+    if (!(strcmp (FindInfo->name, ".")) ||
+        !(strcmp (FindInfo->name, "..")))
+    {
+        return -1;
+    }
+
+    SrcPath = calloc (strlen (SourceDirPath) + strlen (FindInfo->name) + 2, 1);
     if (!SrcPath)
     {
         printf ("Could not allocate buffer for directory source pathname\n");
         return -1;
     }
 
-    TgtPath = calloc (strlen (TargetDirPath) + strlen (Filename) + 2, 1);
+    TgtPath = calloc (strlen (TargetDirPath) + strlen (FindInfo->name) + 2, 1);
     if (!TgtPath)
     {
         printf ("Could not allocate buffer for directory target pathname\n");
@@ -666,14 +693,15 @@ AsCheckForDirectory (
 
     strcpy (SrcPath, SourceDirPath);
     strcat (SrcPath, "/");
-    strcat (SrcPath, Filename);
+    strcat (SrcPath, FindInfo->name);
 
     strcpy (TgtPath, TargetDirPath);
     strcat (TgtPath, "/");
-    strcat (TgtPath, Filename);
+    strcat (TgtPath, FindInfo->name);
 
     *SourcePath = SrcPath;
     *TargetPath = TgtPath;
+
     return 0;
 }
 
@@ -715,13 +743,13 @@ AsGetFile (
 
     /*
      * Create a buffer for the entire file
-     * Add plenty extra buffer to accomodate string replacements
+     * Add 10% extra to accomodate string replacements
      */
     Size = Gbl_StatBuf.st_size;
     Buffer = calloc (Size * 2, 1);
     if (!Buffer)
     {
-        printf ("Could not allocate buffer of size %d\n", Size * 2);
+        printf ("Could not allocate buffer of size %d\n", Size + (Size / 10));
         goto ErrorExit;
     }
 
@@ -737,18 +765,42 @@ AsGetFile (
     Buffer [Size] = 0;         /* Null terminate the buffer */
     close (FileHandle);
 
+
     /* Check for unix contamination */
 
-    if (!Gbl_IgnoreLoneLineFeeds && AsDetectLoneLineFeeds (Filename, Buffer))
+    if (AsDetectLoneLineFeeds (Filename, Buffer))
     {
         return -1;
     }
 
-    /*
-     * Convert all CR/LF pairs to LF only.  We do this locally so that
-     * this code is portable across operating systems.
-     */
-    AsConvertToLineFeeds (Buffer);
+    /* Text mode translates CR/LF to LF only on input */
+
+    FileHandle = open (Filename, O_TEXT | O_RDONLY);
+    if (!FileHandle)
+    {
+        printf ("Could not open %s\n", Filename);
+        return -1;
+    }
+
+    if (fstat (FileHandle, &Gbl_StatBuf))
+    {
+        printf ("Could not get file status for %s\n", Filename);
+        goto ErrorExit;
+    }
+    Size = Gbl_StatBuf.st_size;
+
+    /* Read the entire file */
+
+    Size = read (FileHandle, Buffer, Size);
+    if (Size == -1)
+    {
+        printf ("Could not read the input file %s\n", Filename);
+        goto ErrorExit;
+    }
+
+    Buffer [Size] = 0;         /* Null terminate the buffer */
+    close (FileHandle);
+
 
     *FileBuffer = Buffer;
     *FileSize = Size;
@@ -785,16 +837,18 @@ AsPutFile (
 
     /* Create the target file */
 
-    OpenFlags = O_TRUNC | O_CREAT | O_WRONLY | O_BINARY;
+    OpenFlags = O_TRUNC | O_CREAT | O_WRONLY;
 
-    if (!(SystemFlags & FLG_NO_CARRIAGE_RETURNS))
+    if (SystemFlags & FLG_NO_CARRIAGE_RETURNS)
     {
-        /* Put back the CR before each LF */
-
-        AsInsertCarriageReturns (FileBuffer);
+        OpenFlags |= O_BINARY;
+    }
+    else
+    {
+        OpenFlags |= O_TEXT;
     }
 
-    DestHandle = open (Pathname, OpenFlags, S_IREAD | S_IWRITE);
+    DestHandle = open (Pathname, OpenFlags, _S_IREAD | _S_IWRITE);
     if (DestHandle == -1)
     {
         perror ("Could not create destination file");
