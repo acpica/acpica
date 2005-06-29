@@ -374,7 +374,7 @@ AmlExecNameSegment (
     if ('0' <= CharBuf[0] && CharBuf[0] <= '9')
     {
         DEBUG_PRINT (ACPI_ERROR, ("AmlExecNameSegment: leading digit: %c\n", CharBuf[0]));
-        return_ACPI_STATUS (AE_PENDING);
+        return_ACPI_STATUS (AE_CTRL_PENDING);
     }
 
     DEBUG_PRINT (TRACE_LOAD, ("AmlExecNameSegment: Bytes from stream:\n"));
@@ -413,14 +413,14 @@ AmlExecNameSegment (
          * so we are looking at something other than a name.
          */
         DEBUG_PRINT (ACPI_INFO, ("AmlExecNameSegment: Leading char not alpha: %02Xh (not a name)\n", CharBuf[0]));
-        Status = AE_PENDING;
+        Status = AE_CTRL_PENDING;
     }
 
     else
     {
         /* Segment started with one or more valid characters, but fewer than 4 */
     
-        Status = AE_AML_ERROR;
+        Status = AE_AML_BAD_NAME;
         DEBUG_PRINT (ACPI_ERROR, ("AmlExecNameSegment: Bad char %02x in name, at %p\n", *AmlAddress, AmlAddress));
     }   
 
@@ -617,14 +617,14 @@ AmlGetNameString (
     }
 
 
-    if (AE_PENDING == Status && PrefixCount != 0)
+    if (AE_CTRL_PENDING == Status && PrefixCount != 0)
     {
         /* Ran out of segments after processing a prefix */
 
         DEBUG_PRINT (ACPI_ERROR, ("AmlDoName: Malformed Name\n"));
         REPORT_ERROR ("Ran out of segments after processing a prefix");
 
-        Status = AE_AML_ERROR;
+        Status = AE_AML_BAD_NAME;
     }
 
 
