@@ -227,7 +227,7 @@ NsNameOfCurrentScope (
 
     if (WalkState && WalkState->ScopeInfo)
     {
-        ScopeName = NsNameOfScope (WalkState->ScopeInfo->Scope);
+        ScopeName = NsNameOfScope (WalkState->ScopeInfo->Scope.Entry);
         return_VALUE (ScopeName);
     }
     
@@ -495,7 +495,8 @@ NsLowFindNames (
 
     /* Walk the namespace and find all matches */
 
-    AcpiWalkNamespace (ACPI_TYPE_Any, (ACPI_HANDLE) ThisEntry, MaxDepth, NsNameCompare, &Find, NULL);
+    NsWalkNamespace (ACPI_TYPE_Any, (ACPI_HANDLE) ThisEntry, MaxDepth, NS_WALK_NO_UNLOCK, 
+                        NsNameCompare, &Find, NULL);
 
     if (List)
     {

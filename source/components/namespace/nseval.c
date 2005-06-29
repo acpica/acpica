@@ -163,7 +163,7 @@ NsEvaluateRelative (
     ACPI_STATUS             Status;
     NAME_TABLE_ENTRY        *ObjEntry = NULL;
     char                    *InternalPath = NULL;
-    SCOPE_STACK             ScopeInfo;
+    ACPI_GENERIC_STATE      ScopeInfo;
 
 
     FUNCTION_TRACE ("NsEvaluateRelative");
@@ -199,7 +199,7 @@ NsEvaluateRelative (
 
     /* Lookup the name in the namespace */
 
-    ScopeInfo.Scope = RelObjEntry->Scope;
+    ScopeInfo.Scope.Entry = RelObjEntry->Scope;
     Status = NsLookup (&ScopeInfo, InternalPath, ACPI_TYPE_Any, IMODE_Execute, 
                                 NS_NO_UPSEARCH, NULL, &ObjEntry);
     CmReleaseMutex (MTX_NAMESPACE);
