@@ -2,7 +2,7 @@
  *
  * Module Name: dsopcode - Dispatcher Op Region support and handling of
  *                         "control" opcodes
- *              $Revision: 1.45 $
+ *              $Revision: 1.46 $
  *
  *****************************************************************************/
 
@@ -936,7 +936,6 @@ AcpiDsExecEndControlOp (
          * Save the result of the predicate in case there is an
          * ELSE to come
          */
-
         WalkState->LastPredicate = 
             (BOOLEAN) WalkState->ControlState->Common.Value;
 
@@ -944,7 +943,6 @@ AcpiDsExecEndControlOp (
          * Pop the control state that was created at the start
          * of the IF and free it
          */
-
         ControlState = AcpiUtPopGenericState (&WalkState->ControlState);
         AcpiUtDeleteGenericState (ControlState);
         break;
@@ -1014,7 +1012,6 @@ AcpiDsExecEndControlOp (
              * value.  This is the only place where WalkState->ReturnDesc
              * is set to anything other than zero!
              */
-
             WalkState->ReturnDesc = WalkState->Operands[0];
         }
 
@@ -1065,6 +1062,7 @@ AcpiDsExecEndControlOp (
             WalkState, WalkState->ReturnDesc));
 
         /* End the control method execution right now */
+
         Status = AE_CTRL_TERMINATE;
         break;
 
@@ -1077,11 +1075,11 @@ AcpiDsExecEndControlOp (
 
     case AML_BREAK_POINT_OP:
 
-        /* Call up to the OS dependent layer to handle this */
+        /* Call up to the OS service layer to handle this */
 
-        AcpiOsBreakpoint (NULL);
+        AcpiOsSignal (ACPI_SIGNAL_BREAKPOINT, "Executed AML Breakpoint opcode");
 
-        /* If it returns, we are done! */
+        /* If and when it returns, all done. */
 
         break;
 
@@ -1104,7 +1102,6 @@ AcpiDsExecEndControlOp (
          * the current package, and execution will continue one
          * level up, starting with the completion of the parent Op.
          */
-
         Status = AE_CTRL_FALSE;
         break;
 
