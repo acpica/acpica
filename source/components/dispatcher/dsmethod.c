@@ -166,6 +166,18 @@ PsxParseMethod (
     Entry = (NAME_TABLE_ENTRY *) ObjHandle;
     ObjDesc = Entry->Object;
 
+    /* Create a mutex for the method if there is a concurrency limit */
+
+    if ((ObjDesc->Method.Concurrency != INFINITE_CONCURRENCY) &&
+        (!ObjDesc->Method.Semaphore))
+    {
+        Status = OsdCreateSemaphore (ObjDesc->Method.Concurrency, &ObjDesc->Method.Semaphore);
+        if (ACPI_FAILURE (Status))
+        {
+            return_ACPI_STATUS (Status);
+        }
+    }
+
     /* Allocate a new parser op to be the root of the parsed method tree */
 
     Op = PsAllocOp (AML_MethodOp);
@@ -232,7 +244,7 @@ PsxCallControlMethod (
     ACPI_STATUS             Status;
     ACPI_DEFERRED_OP        *Method;
     NAME_TABLE_ENTRY        *MethodNte;
-    ACPI_OBJECT_INTERNAL    *MethodDesc;
+    ACPI_OBJECT_INTERNAL    *ObjDesc;
     ACPI_WALK_STATE         *NextWalkState;
     UINT32                  NumArgs;
     UINT32                  i;
@@ -253,12 +265,12 @@ PsxCallControlMethod (
      */
 
     MethodNte   = (ThisWalkState->PrevOp->Value.Arg)->ResultObj;
-    MethodDesc  = NsGetAttachedObject (MethodNte);
+    ObjDesc  = NsGetAttachedObject (MethodNte);
 
     /*
      * If the method isn't parsed yet (no parse tree), we must parse it.
      */
-    if (!MethodDesc->Method.ParserOp)
+    if (!ObjDesc->Method.ParserOp)
     {
         DEBUG_PRINT (TRACE_PARSE, ("PsxCall, parsing control method\n"));
 
@@ -271,8 +283,8 @@ PsxCallControlMethod (
 
     /* Get the parse tree and parameter count */
 
-    Method      = MethodDesc->Method.ParserOp;
-    NumArgs     = MethodDesc->Method.ParamCount;
+    Method      = ObjDesc->Method.ParserOp;
+    NumArgs     = ObjDesc->Method.ParamCount;
 
     /* Save the (current) Op for when this walk is restarted */
 
@@ -280,7 +292,7 @@ PsxCallControlMethod (
 
     /* Create a new state for the preempting walk */
 
-    NextWalkState = PsCreateWalkState ((ACPI_GENERIC_OP *) Method, MethodDesc, WalkList);
+    NextWalkState = PsCreateWalkState ((ACPI_GENERIC_OP *) Method, ObjDesc, WalkList);
     if (!NextWalkState)
     {
         return_ACPI_STATUS (AE_NO_MEMORY);
@@ -315,7 +327,21 @@ PsxCallControlMethod (
 
     NextWalkState->NextOp = (ACPI_GENERIC_OP *) Method;
 
+    /* 
+     * If there is a concurrency limit on this method, we need to obtain a unit
+     * from the method semaphore.  This releases the interpreter if we block
+     */
 
+    if (ObjDesc->Method.Semaphore)
+    {
+        Status = OsLocalWaitSemaphore (ObjDesc->Method.Semaphore, WAIT_FOREVER);
+        if (ACPI_FAILURE (Status))
+        {
+            return_ACPI_STATUS (Status);
+        }
+    }
+
+ 
     DEBUG_PRINT (TRACE_PARSE, ("PsxCall, starting nested execution, newstate=%p\n", NextWalkState));
     BREAKPOINT3;
 
