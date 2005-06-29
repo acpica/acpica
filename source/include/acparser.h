@@ -168,7 +168,11 @@ UINT8 *
 AcpiPsGetNextPackageEnd (
     ACPI_PARSE_STATE        *ParserState);
 
-char *
+UINT32
+AcpiPsGetNextPackageLength (
+    ACPI_PARSE_STATE        *ParserState);
+
+INT8 *
 AcpiPsGetNextNamestring (
     ACPI_PARSE_STATE        *ParserState);
 
@@ -202,7 +206,7 @@ ACPI_OP_INFO *
 AcpiPsGetOpcodeInfo (
     UINT16                  Opcode);
 
-char *
+INT8 *
 AcpiPsGetOpcodeName (
     UINT16                  Opcode);
 
@@ -230,6 +234,9 @@ AcpiPsParseAml (
     UINT8                   *Aml,
     UINT32                  AmlSize,
     UINT32                  ParseFlags,
+    ACPI_NAMED_OBJECT       *MethodEntry,
+    ACPI_OBJECT_INTERNAL    **Params,
+    ACPI_OBJECT_INTERNAL    **CallerReturnDesc,
     ACPI_PARSE_DOWNWARDS    DescendingCallback,
     ACPI_PARSE_UPWARDS      AscendingCallback);
 
@@ -290,7 +297,7 @@ AcpiPsAppendArg(
 ACPI_GENERIC_OP*
 AcpiPsFind (
     ACPI_GENERIC_OP         *Scope,
-    char                    *Path,
+    INT8                    *Path,
     UINT16                  Opcode,
     UINT32                  Create);
 
@@ -407,13 +414,13 @@ AcpiPsSetName(
 
 INT32
 AcpiPsSprintPath (
-    char                    *BufferStart,
+    INT8                    *BufferStart,
     UINT32                  BufferSize,
     ACPI_GENERIC_OP         *Op);
 
 INT32
 AcpiPsSprintOp (
-    char                    *BufferStart,
+    INT8                    *BufferStart,
     UINT32                  BufferSize,
     ACPI_GENERIC_OP         *Op);
 
