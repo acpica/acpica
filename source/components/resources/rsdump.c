@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: rsdump - Functions to display the resource structures.
- *              $Revision: 1.20 $
+ *              $Revision: 1.22 $
  *
  ******************************************************************************/
 
@@ -123,6 +123,8 @@
 #define _COMPONENT          ACPI_RESOURCES
         MODULE_NAME         ("rsdump")
 
+
+#ifdef ACPI_DEBUG
 
 /*******************************************************************************
  *
@@ -1046,7 +1048,7 @@ AcpiRsDumpResourceList (
     BOOLEAN             Done = FALSE;
 
 
-    if (AcpiDbgLevel & TRACE_RESOURCES && _COMPONENT & AcpiDbgLayer)
+    if (AcpiDbgLevel & ACPI_LV_RESOURCES && _COMPONENT & AcpiDbgLayer)
     {
         while (!Done)
         {
@@ -1152,7 +1154,7 @@ AcpiRsDumpIrqList (
     PCI_ROUTING_TABLE   *PrtElement;
 
 
-    if (AcpiDbgLevel & TRACE_RESOURCES && _COMPONENT & AcpiDbgLayer)
+    if (AcpiDbgLevel & ACPI_LV_RESOURCES && _COMPONENT & AcpiDbgLayer)
     {
         PrtElement = (PCI_ROUTING_TABLE *) Buffer;
 
@@ -1183,4 +1185,6 @@ AcpiRsDumpIrqList (
 
     return;
 }
+
+#endif
 
