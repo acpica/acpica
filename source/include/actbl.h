@@ -342,10 +342,10 @@ typedef struct AcpiTableDesc
 /* 
  * Macro to check if a pointer is within an ACPI table.
  * Parameter (b) must be defined as a pointer to an
- * ACPI_TABLE_HEADER.
+ * ACPI_TABLE_HEADER.  (b+1) then points past the header.
  */
 
-#define IS_IN_TABLE(a,b)        ((a >= (UINT8 *) (b + 1)) &&\
-                                 (a < (UINT8 *)(b + b->Length)))
+#define IS_IN_ACPI_TABLE(a,b)   (((UINT8 *)(a) >= (UINT8 *)(b + 1)) &&\
+                                 ((UINT8 *)(a) < (UINT8 *)(b + b->Length)))
 
 #endif /* __ACPITYPE_H__ */
