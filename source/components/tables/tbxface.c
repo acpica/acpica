@@ -127,7 +127,7 @@
         MODULE_NAME         ("tbxface");
 
 
-/****************************************************************************
+/*******************************************************************************
  *
  * FUNCTION:    AcpiLoadFirmwareTables
  *
@@ -173,13 +173,15 @@ AcpiLoadFirmwareTables (void)
 
 
 ErrorExit:
-    DEBUG_PRINT (ACPI_ERROR, ("Failure during ACPI Table Init: %s\n", AcpiCmFormatException (Status)));
+    DEBUG_PRINT (ACPI_ERROR,
+        ("Failure during ACPI Table Init: %s\n",
+        AcpiCmFormatException (Status)));
 
     return_ACPI_STATUS (Status);
 }
 
 
-/****************************************************************************
+/*******************************************************************************
  *
  * FUNCTION:    AcpiLoadTable
  *
@@ -232,7 +234,7 @@ AcpiLoadTable (
 }
 
 
-/****************************************************************************
+/*******************************************************************************
  *
  * FUNCTION:    AcpiUnloadTable
  *
@@ -281,7 +283,7 @@ AcpiUnloadTable (
 }
 
 
-/****************************************************************************
+/*******************************************************************************
  *
  * FUNCTION:    AcpiGetTableHeader
  *
@@ -355,13 +357,14 @@ AcpiGetTableHeader (
     /*
      * Copy the header to the caller's buffer
      */
-    MEMCPY ((void *) OutTableHeader, (void *) TblPtr, sizeof (ACPI_TABLE_HEADER));
+    MEMCPY ((void *) OutTableHeader, (void *) TblPtr,
+                sizeof (ACPI_TABLE_HEADER));
 
     return_ACPI_STATUS (Status);
 }
 
 
-/****************************************************************************
+/*******************************************************************************
  *
  * FUNCTION:    AcpiGetTable
  *
