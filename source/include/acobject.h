@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Name: acobject.h - Definition of ACPI_OPERAND_OBJECT  (Internal object only)
- *       $Revision: 1.104 $
+ *       $Revision: 1.107 $
  *
  *****************************************************************************/
 
@@ -10,7 +10,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -238,6 +238,8 @@ typedef struct /* BUFFER - has length and pointer - not null terminated */
     ACPI_COMMON_BUFFER_INFO
     UINT8                       *Pointer;           /* Buffer value in AML stream or in allocated space */
     ACPI_NAMESPACE_NODE         *Node;              /* Link back to parent node */
+    UINT8                       *AmlStart;
+    UINT32                      AmlLength;
 
 } ACPI_OBJECT_BUFFER;
 
@@ -247,8 +249,10 @@ typedef struct /* PACKAGE - has count, elements, next element */
     ACPI_OBJECT_COMMON_HEADER
 
     UINT32                      Count;              /* # of elements in package */
+    UINT32                      AmlLength;
+    UINT8                       *AmlStart;
+    ACPI_NAMESPACE_NODE         *Node;              /* Link back to parent node */
     union acpi_operand_obj      **Elements;         /* Array of pointers to AcpiObjects */
-    union acpi_operand_obj      **NextElement;      /* used only while initializing */
 
 } ACPI_OBJECT_PACKAGE;
 
@@ -438,7 +442,7 @@ typedef struct /* NOTIFY HANDLER */
 
 /* Flags for address handler */
 
-#define ADDR_HANDLER_DEFAULT_INSTALLED  0x1
+#define ACPI_ADDR_HANDLER_DEFAULT_INSTALLED  0x1
 
 
 typedef struct /* ADDRESS HANDLER */
