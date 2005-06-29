@@ -171,19 +171,19 @@ DsCreateField (
     {
         switch (Arg->Opcode)
         {
-        case AML_RESERVEDFIELD:
+        case AML_RESERVEDFIELD_OP:
 
             FieldBitPosition += Arg->Value.Size;
             break;
 
 
-        case AML_ACCESSFIELD:
+        case AML_ACCESSFIELD_OP:
 
             /* TBD: Arg->Value.Integer contains both AccessType and AccessAttrib */
             break;
 
 
-        case AML_NAMEDFIELD:
+        case AML_NAMEDFIELD_OP:
 
             *(UINT32 *) Buffer = (((ACPI_NAMED_OP *)Arg)->Name);
             Buffer[4] = 0;
@@ -273,19 +273,19 @@ DsCreateBankField (
     {
         switch (Arg->Opcode)
         {
-        case AML_RESERVEDFIELD:
+        case AML_RESERVEDFIELD_OP:
 
             FieldBitPosition += Arg->Value.Size;
             break;
 
 
-        case AML_ACCESSFIELD:
+        case AML_ACCESSFIELD_OP:
 
             /* TBD: Arg->Value.Integer contains both AccessType and AccessAttrib */
             break;
 
 
-        case AML_NAMEDFIELD:
+        case AML_NAMEDFIELD_OP:
 
             *(UINT32 *) Buffer = (((ACPI_NAMED_OP *)Arg)->Name);
             Buffer[4] = 0;
@@ -385,19 +385,19 @@ DsCreateIndexField (
     {
         switch (Arg->Opcode)
         {
-        case AML_RESERVEDFIELD:
+        case AML_RESERVEDFIELD_OP:
 
             FieldBitPosition += Arg->Value.Size;
             break;
 
 
-        case AML_ACCESSFIELD:
+        case AML_ACCESSFIELD_OP:
 
             /* TBD: Arg->Value.Integer contains both AccessType and AccessAttrib */
             break;
 
 
-        case AML_NAMEDFIELD:
+        case AML_NAMEDFIELD_OP:
 
             *(UINT32 *) Buffer = (((ACPI_NAMED_OP *)Arg)->Name);
             Buffer[4] = 0;
