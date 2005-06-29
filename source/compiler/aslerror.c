@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslerror - Error handling and statistics
- *              $Revision: 1.6 $
+ *              $Revision: 1.7 $
  *
  *****************************************************************************/
 
@@ -165,11 +165,14 @@ int
 AslCompilererror(char *s)
 {
 
+    UINT32                  Length;
 
+    Length = strlen (Gbl_InputFilename);
 
+	fprintf (stdout, "%s", Gbl_InputFilename);
 	fprintf (stdout, "%5d: ", Gbl_CurrentLineNumber);
     fprintf (stdout, "%s\n", Gbl_CurrentLineBuffer);
-	fprintf (stdout, "\n%*s", Gbl_CurrentColumn + 7, "^");
+	fprintf (stdout, "\n%*s", Gbl_CurrentColumn + 7 + Length, "^");
     fprintf (stdout, "%s\n\n", s);
 
     if (Gbl_DebugFlag)
@@ -202,9 +205,9 @@ AslWarning (
     fprintf (stderr, "%s", Gbl_InputFilename);
     if (LineNumber)
     {
-        fprintf (stderr, "(%04d)", LineNumber);
+        fprintf (stderr, "%5d:", LineNumber);
     }
-    fprintf (stderr, " - Warning %04.4d: %s\n", 
+    fprintf (stderr, " Warning %04.4d - %s\n", 
                 WarningId + ASL_WARNING_PREFIX, AslWarnings[WarningId]);
 
     if (Gbl_DebugFlag)
@@ -212,10 +215,10 @@ AslWarning (
         printf ("%s", Gbl_InputFilename);
         if (LineNumber)
         {
-            printf ("(%04d)", LineNumber);
+            printf ("%5d:", LineNumber);
         }
 
-        printf (" - Warning %04.4d: %s\n", 
+        printf (" Warning %04.4d - %s\n", 
                     WarningId + ASL_WARNING_PREFIX, AslWarnings[WarningId]);
     }
     
@@ -244,10 +247,10 @@ AslError (
     fprintf (stderr, "%s", Gbl_InputFilename);
     if (LineNumber)
     {
-        fprintf (stderr, "(%04d)", LineNumber);
+        fprintf (stderr, "%5d ", LineNumber);
     }
 
-    fprintf (stderr, " - Error %04.4d  : %s\n", 
+    fprintf (stderr, "Error %04.4d  - %s\n", 
                 ErrorId + ASL_ERROR_PREFIX, AslErrors[ErrorId]);
 
     if (Gbl_DebugFlag)
@@ -255,10 +258,10 @@ AslError (
         printf ("%s", Gbl_InputFilename);
         if (LineNumber)
         {
-            printf ("(%04d)", LineNumber);
+            printf ("%5d", LineNumber);
         }
 
-        printf (" - Error %04.4d  : %s\n", 
+        printf (" - Error %04.4d  - %s\n", 
                     ErrorId + ASL_ERROR_PREFIX, AslErrors[ErrorId]);
     }
 
