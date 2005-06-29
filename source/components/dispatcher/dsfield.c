@@ -272,7 +272,7 @@ AcpiDsCreateField (
 ACPI_STATUS
 AcpiDsCreateBankField (
     ACPI_GENERIC_OP         *Op,
-    ACPI_HANDLE             Region,
+    ACPI_NAMED_OBJECT       *Region,
     ACPI_WALK_STATE         *WalkState)
 {
     ACPI_STATUS             Status = AE_AML_ERROR;
@@ -297,7 +297,7 @@ AcpiDsCreateBankField (
         Status = AcpiNsLookup (WalkState->ScopeInfo, Arg->Value.Name,
                                 ACPI_TYPE_REGION, IMODE_EXECUTE,
                                 NS_SEARCH_PARENT, WalkState,
-                                &((ACPI_NAMED_OBJECT *)Region));
+                                &Region);
 
         if (ACPI_FAILURE (Status))
         {
