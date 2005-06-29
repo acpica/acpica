@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: pswalk - Parser routines to walk parsed op tree(s)
- *              $Revision: 1.42 $
+ *              $Revision: 1.43 $
  *
  *****************************************************************************/
 
@@ -567,7 +567,7 @@ AcpiPsWalkParsedAml (
     ACPI_GENERIC_OP         *StartOp,
     ACPI_GENERIC_OP         *EndOp,
     ACPI_OBJECT_INTERNAL    *MthDesc,
-    ACPI_NAME_TABLE         *StartScope,
+    ACPI_NAMED_OBJECT       *StartScope,
     ACPI_OBJECT_INTERNAL    **Params,
     ACPI_OBJECT_INTERNAL    **CallerReturnDesc,
     ACPI_OWNER_ID           OwnerId,

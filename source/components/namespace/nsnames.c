@@ -1,10 +1,10 @@
 
-/******************************************************************************
+/*******************************************************************************
  *
- * Module Name: psxface - Parser external interfaces
- *              $Revision: 1.34 $
+ * Module Name: nsnames - Name manipulation and search
+ *              $Revision: 1.46 $
  *
- *****************************************************************************/
+ ******************************************************************************/
 
 /******************************************************************************
  *
@@ -115,154 +115,221 @@
  *
  *****************************************************************************/
 
-#define __PSXFACE_C__
+#define __NSNAMES_C__
 
 #include "acpi.h"
-#include "acparser.h"
-#include "acdispat.h"
-#include "acinterp.h"
 #include "amlcode.h"
+#include "acinterp.h"
 #include "acnamesp.h"
 
 
-#define _COMPONENT          PARSER
-        MODULE_NAME         ("psxface");
+#define _COMPONENT          NAMESPACE
+        MODULE_NAME         ("nsnames");
 
 
-/*****************************************************************************
+/*******************************************************************************
  *
- * FUNCTION:    AcpiPsxExecute
+ * FUNCTION:    AcpiNsGetTablePathname
  *
- * PARAMETERS:  ObjDesc             - A method object containing both the AML
- *                                    address and length.
- *              **Params            - List of parameters to pass to method,
- *                                    terminated by NULL. Params itself may be
- *                                    NULL if no parameters are being passed.
+ * PARAMETERS:  NameDesc        - Scope whose name is needed
  *
- * RETURN:      Status
+ * RETURN:      Pointer to storage containing the fully qualified name of
+ *              the scope, in Label format (all segments strung together
+ *              with no separators)
  *
- * DESCRIPTION: Execute a control method
+ * DESCRIPTION: Used for debug printing in AcpiNsSearchTable().
  *
- ****************************************************************************/
+ ******************************************************************************/
 
-ACPI_STATUS
-AcpiPsxExecute (
-    ACPI_NAMED_OBJECT       *MethodNameDesc,
-    ACPI_OBJECT_INTERNAL    **Params,
-    ACPI_OBJECT_INTERNAL    **ReturnObjDesc)
+NATIVE_CHAR *
+AcpiNsGetTablePathname (
+    ACPI_NAMED_OBJECT       *NameDesc)
 {
-    ACPI_STATUS             Status;
-    ACPI_OBJECT_INTERNAL    *ObjDesc;
-    UINT32                  i;
-    ACPI_GENERIC_OP         *Op;
+    NATIVE_CHAR             *NameBuffer;
+    UINT32                  Size;
+    ACPI_NAME               Name;
+    ACPI_NAMED_OBJECT       *ChildDesc;
+    ACPI_NAMED_OBJECT       *ParentDesc;
 
 
-    FUNCTION_TRACE ("PsxExecute");
+    FUNCTION_TRACE_PTR ("AcpiNsGetTablePathname", NameDesc);
 
 
-    /* Validate the Named Object and get the attached object */
 
-    if (!MethodNameDesc)
-    {
-        return_ACPI_STATUS (AE_NULL_ENTRY);
-    }
-
-    ObjDesc = AcpiNsGetAttachedObject (MethodNameDesc);
-    if (!ObjDesc)
-    {
-        return_ACPI_STATUS (AE_NULL_OBJECT);
-    }
-
-    /* Init for new method, wait on concurrency semaphore */
-
-    Status = AcpiDsBeginMethodExecution (MethodNameDesc, ObjDesc);
-    if (ACPI_FAILURE (Status))
-    {
-        return_ACPI_STATUS (Status);
-    }
-
-    if (Params)
+    if (!AcpiGbl_RootObject || !NameDesc)
     {
         /*
-         * The caller "owns" the parameters, so give each one an extra
-         * reference
+         * If the name space has not been initialized,
+         * this function should not have been called.
+         */
+        return_PTR (NULL);
+    }
+
+    ChildDesc = NameDesc->Child;
+
+
+    /* Calculate required buffer size based on depth below root */
+
+    Size = 1;
+    ParentDesc = ChildDesc;
+    while (ParentDesc)
+    {
+        ParentDesc = AcpiNsGetParentObject (ParentDesc);
+        if (ParentDesc)
+        {
+            Size += ACPI_NAME_SIZE;
+        }
+    }
+
+
+    /* Allocate a buffer to be returned to caller */
+
+    NameBuffer = AcpiCmCallocate (Size + 1);
+    if (!NameBuffer)
+    {
+        REPORT_ERROR ("NsGetTablePathname: allocation failure");
+        return_PTR (NULL);
+    }
+
+
+    /* Store terminator byte, then build name backwards */
+
+    NameBuffer[Size] = '\0';
+    while ((Size > ACPI_NAME_SIZE) &&
+        AcpiNsGetParentObject (ChildDesc))
+    {
+        Size -= ACPI_NAME_SIZE;
+        Name = AcpiNsFindParentName (ChildDesc);
+
+        /* Put the name into the buffer */
+
+        MOVE_UNALIGNED32_TO_32 ((NameBuffer + Size), &Name);
+        ChildDesc = AcpiNsGetParentObject (ChildDesc);
+    }
+
+    NameBuffer[--Size] = AML_ROOT_PREFIX;
+
+    if (Size != 0)
+    {
+        DEBUG_PRINT (ACPI_ERROR,
+            ("NsGetTablePathname:  Bad pointer returned; size = %d\n", Size));
+    }
+
+    return_PTR (NameBuffer);
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiNsHandleToPathname
+ *
+ * PARAMETERS:  TargetHandle            - Handle of named object whose name is 
+ *                                        to be found
+ *              BufSize                 - Size of the buffer provided
+ *              UserBuffer              - Where the pathname is returned
+ *
+ * RETURN:      Status, Buffer is filled with pathname if status is AE_OK
+ *
+ * DESCRIPTION: Build and return a full namespace pathname
+ *
+ * MUTEX:       Locks Namespace
+ *
+ ******************************************************************************/
+
+ACPI_STATUS
+AcpiNsHandleToPathname (
+    ACPI_HANDLE             TargetHandle,
+    UINT32                  *BufSize,
+    NATIVE_CHAR             *UserBuffer)
+{
+    ACPI_STATUS             Status = AE_OK;
+    ACPI_NAMED_OBJECT       *NameDesc = NULL;
+    ACPI_NAMED_OBJECT       *Temp = NULL;
+    UINT32                  PathLength = 0;
+    UINT32                  Size;
+    UINT32                  UserBufSize;
+    ACPI_NAME               Name;
+
+    FUNCTION_TRACE_PTR ("NsHandleToPathname", TargetHandle);
+
+
+    if (!AcpiGbl_RootObject || !TargetHandle)
+    {
+        /*
+         * If the name space has not been initialized,
+         * this function should not have been called.
          */
 
-        for (i = 0; Params[i]; i++)
-        {
-            AcpiCmAddReference (Params[i]);
-        }
+        return_ACPI_STATUS (AE_NO_NAMESPACE);
+    }
+
+    NameDesc = AcpiNsConvertHandleToEntry (TargetHandle);
+    if (!NameDesc)
+    {
+        return_ACPI_STATUS (AE_BAD_PARAMETER);
     }
 
     /*
-     * Perform the first pass parse of the method to enter any
-     * named objects that it creates into the namespace
+     * Compute length of pathname as 5 * number of name segments.
+     * Go back up the parent tree to the root
      */
-
-    DEBUG_PRINT (ACPI_INFO,
-        ("PsxExecute: **** Begin Method Execution **** Entry=%p obj=%p\n",
-        MethodNameDesc, ObjDesc));
-
-    /* Create and init a root object */
-
-    Op = AcpiPsAllocOp (AML_SCOPE_OP);
-    if (!Op)
+    for (Size = 0, Temp = NameDesc;
+          AcpiNsGetParentObject (Temp);
+          Temp = AcpiNsGetParentObject (Temp))
     {
-        return_ACPI_STATUS (AE_NO_MEMORY);
+        Size += PATH_SEGMENT_LENGTH;
     }
 
-    Status = AcpiPsParseAml (Op, ObjDesc->Method.Pcode,
-                                ObjDesc->Method.PcodeLength, 
-                                ACPI_PARSE_LOAD_PASS1 | ACPI_PARSE_DELETE_TREE,
-                                MethodNameDesc, Params, ReturnObjDesc,
-                                AcpiDsLoad1BeginOp, AcpiDsLoad1EndOp);
-    AcpiPsDeleteParseTree (Op);
+    /* Set return length to the required path length */
 
-    /* Create and init a root object */
+    PathLength = Size + 1;
+    UserBufSize = *BufSize;
+    *BufSize = PathLength;
 
-    Op = AcpiPsAllocOp (AML_SCOPE_OP);
-    if (!Op)
+    /* Check if the user buffer is sufficiently large */
+
+    if (PathLength > UserBufSize)
     {
-        return_ACPI_STATUS (AE_NO_MEMORY);
+        Status = AE_BUFFER_OVERFLOW;
+        goto Exit;
+    }
+
+    /* Store null terminator */
+
+    UserBuffer[Size] = 0;
+    Size -= ACPI_NAME_SIZE;
+
+    /* Put the original ACPI name at the end of the path */
+
+    MOVE_UNALIGNED32_TO_32 ((UserBuffer + Size),
+                            &NameDesc->Name);
+
+    UserBuffer[--Size] = PATH_SEPARATOR;
+
+    /* Build name backwards, putting "." between segments */
+
+    while ((Size > ACPI_NAME_SIZE) && NameDesc)
+    {
+        Size -= ACPI_NAME_SIZE;
+        Name = AcpiNsFindParentName (NameDesc);
+        MOVE_UNALIGNED32_TO_32 ((UserBuffer + Size), &Name);
+
+        UserBuffer[--Size] = PATH_SEPARATOR;
+        NameDesc = AcpiNsGetParentObject (NameDesc);
     }
 
     /*
-     * The walk of the parse tree is where we actually execute the method
-     */
-    Status = AcpiPsParseAml (Op, ObjDesc->Method.Pcode,
-                                ObjDesc->Method.PcodeLength, 
-                                ACPI_PARSE_EXECUTE | ACPI_PARSE_DELETE_TREE,
-                                MethodNameDesc, Params, ReturnObjDesc,
-                                AcpiDsExecBeginOp, AcpiDsExecEndOp);
-    AcpiPsDeleteParseTree (Op);
-
-    if (Params)
-    {
-        /* Take away the extra reference that we gave the parameters above */
-
-        for (i = 0; Params[i]; i++)
-        {
-            AcpiCmUpdateObjectReference (Params[i], REF_DECREMENT);
-        }
-    }
-
-
-    /*
-     * Normal exit is with Status == AE_RETURN_VALUE when a ReturnOp has been
-     * executed, or with Status == AE_PENDING at end of AML block (end of
-     * Method code)
+     * Overlay the "." preceding the first segment with
+     * the root name "\"
      */
 
-    if (*ReturnObjDesc)
-    {
-        DEBUG_PRINT (ACPI_INFO, ("Method returned ObjDesc=%X\n",
-            *ReturnObjDesc));
-        DUMP_STACK_ENTRY (*ReturnObjDesc);
+    UserBuffer[Size] = '\\';
 
-        Status = AE_CTRL_RETURN_VALUE;
-    }
+    DEBUG_PRINT (TRACE_EXEC,
+        ("NsHandleToPathname: Len=%d, %s \n",
+        PathLength, UserBuffer));
 
-
+Exit:
     return_ACPI_STATUS (Status);
 }
 
