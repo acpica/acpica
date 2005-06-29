@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: achware.h -- hardware specific interfaces
- *       $Revision: 1.53 $
+ *       $Revision: 1.54 $
  *
  *****************************************************************************/
 
@@ -119,7 +119,7 @@
 
 
 /* PM Timer ticks per second (HZ) */
-#define PM_TIMER_FREQUENCY  3579545     
+#define PM_TIMER_FREQUENCY  3579545
 
 
 /* Prototypes */
@@ -190,7 +190,6 @@ AcpiHwClearAcpiStatus (
 UINT32
 AcpiHwGetBitShift (
     UINT32                  Mask);
-
 
 
 /* GPE support */
