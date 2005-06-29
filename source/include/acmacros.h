@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acmacros.h - C macros for the entire subsystem.
- *       $Revision: 1.90 $
+ *       $Revision: 1.91 $
  *
  *****************************************************************************/
 
@@ -518,6 +518,9 @@
                                         AcpiUtTraceU32(__LINE__,&_Dbg,(UINT32)b)
 #define FUNCTION_TRACE_STR(a,b)         PROC_NAME(a)\
                                         AcpiUtTraceStr(__LINE__,&_Dbg,(NATIVE_CHAR *)b)
+
+#define FUNCTION_ENTRY                  AcpiUtTrackStackPtr
+
 /*
  * Function exit tracing.
  * WARNING: These macros include a return statement.  This is usually considered
@@ -599,6 +602,7 @@
 #define FUNCTION_EXIT
 #define FUNCTION_STATUS_EXIT(s)
 #define FUNCTION_VALUE_EXIT(s)
+#define FUNCTION_ENTRY
 #define DUMP_STACK_ENTRY(a)
 #define DUMP_OPERANDS(a,b,c,d,e)
 #define DUMP_ENTRY(a,b)
