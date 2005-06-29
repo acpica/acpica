@@ -120,6 +120,7 @@
 #include <interpreter.h>
 #include <amlcode.h>
 #include <namespace.h>
+#include <tables.h>
 
 
 #define _THIS_MODULE        "ievalue.c"
@@ -542,7 +543,7 @@ AmlGetRvalueFromEntry (
      * 2) A pointer into the AML stream (into one of the ACPI system tables)
      */
 
-    if (NsIsInSystemTable (ValDesc))
+    if (TbSystemTablePointer (ValDesc))
     {
         AttachedAmlPointer = TRUE;
         AmlOpcode = *((UINT8 *) ValDesc);
