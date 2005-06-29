@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: evxface - External interfaces for ACPI events
- *              $Revision: 1.119 $
+ *              $Revision: 1.120 $
  *
  *****************************************************************************/
 
@@ -732,10 +732,16 @@ Cleanup:
 
 ACPI_STATUS
 AcpiAcquireGlobalLock (
-    void)
+    UINT32                  Timeout,
+    UINT32                  *Handle)
 {
     ACPI_STATUS             Status;
 
+
+    if (!Handle)
+    {
+        return (AE_BAD_PARAMETER);
+    }
 
     Status = AcpiExEnterInterpreter ();
     if (ACPI_FAILURE (Status))
@@ -743,12 +749,14 @@ AcpiAcquireGlobalLock (
         return (Status);
     }
 
-    /*
-     * TBD: [Restructure] add timeout param to internal interface, and
-     * perhaps INTERPRETER_LOCKED
-     */
-    Status = AcpiEvAcquireGlobalLock ();
+    Status = AcpiEvAcquireGlobalLock (Timeout);
     AcpiExExitInterpreter ();
+
+    if (ACPI_SUCCESS (Status))
+    {
+        AcpiGbl_GlobalLockHandle++;
+        *Handle = AcpiGbl_GlobalLockHandle;
+    }
 
     return (Status);
 }
@@ -768,8 +776,13 @@ AcpiAcquireGlobalLock (
 
 ACPI_STATUS
 AcpiReleaseGlobalLock (
-    void)
+    UINT32                  Handle)
 {
+
+    if (Handle != AcpiGbl_GlobalLockHandle)
+    {
+        return (AE_NOT_ACQUIRED);
+    }
 
     AcpiEvReleaseGlobalLock ();
     return (AE_OK);
