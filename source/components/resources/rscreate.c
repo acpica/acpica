@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: rscreate - Create resource lists/tables
- *              $Revision: 1.38 $
+ *              $Revision: 1.39 $
  *
  ******************************************************************************/
 
@@ -266,6 +266,7 @@ AcpiRsCreatePciRoutingTable (
 
     if (BufferSizeNeeded > *OutputBufferLength)
     {
+        *OutputBufferLength = BufferSizeNeeded;
         return_ACPI_STATUS (AE_BUFFER_OVERFLOW);
     }
     *OutputBufferLength = BufferSizeNeeded;
