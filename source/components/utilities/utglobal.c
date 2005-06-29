@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: utglobal - Global variables for the ACPI subsystem
- *              $Revision: 1.169 $
+ *              $Revision: 1.170 $
  *
  *****************************************************************************/
 
@@ -264,7 +264,7 @@ const NATIVE_CHAR           *AcpiGbl_DbSleepStates[ACPI_NUM_SLEEP_STATES] = {
 
 
 /*
- * Predifined ACPI Names (Built-in to the Interpreter)
+ * Predefined ACPI Names (Built-in to the Interpreter)
  *
  * Initial values are currently supported only for types String and Number.
  * Both are specified as strings in this table.
