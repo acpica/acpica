@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exmisc - ACPI AML (p-code) execution - specific opcodes
- *              $Revision: 1.126 $
+ *              $Revision: 1.127 $
  *
  *****************************************************************************/
 
@@ -478,7 +478,7 @@ Cleanup:
     {
         AcpiUtRemoveReference (LocalOperand1);
     }
-    return_ACPI_STATUS (AE_OK);
+    return_ACPI_STATUS (Status);
 }
 
 
