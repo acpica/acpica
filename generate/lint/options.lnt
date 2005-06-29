@@ -32,6 +32,8 @@
 -emacro( (413), ACPI_FADT_OFFSET )          // use of NULL pointer creates a stir
 -emacro( (413), ASL_RESDESC_OFFSET )        // use of NULL pointer creates a stir
 
+
+-emacro( 826, ACPI_NEXT_RESOURCE)           // Pointer cast
 -emacro( 826, ACPI_MOVE_UNALIGNED16_TO_16)  // Pointer cast
 -emacro( 826, ACPI_MOVE_UNALIGNED16_TO_32)  // Pointer cast
 -emacro( 826, ACPI_MOVE_UNALIGNED32_TO_32)  // Pointer cast
