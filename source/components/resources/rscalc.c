@@ -2,7 +2,7 @@
  *
  * Module Name: rscalc - AcpiRsCalculateByteStreamLength
  *                       AcpiRsCalculateListLength
- *              $Revision: 1.21 $
+ *              $Revision: 1.22 $
  *
  ******************************************************************************/
 
@@ -941,7 +941,7 @@ AcpiRsCalculatePciRoutingTableLength (
         {
             if ((ACPI_TYPE_STRING == (*SubObjectList)->Common.Type) ||
                 ((INTERNAL_TYPE_REFERENCE == (*SubObjectList)->Common.Type) &&
-                    ((*SubObjectList)->Reference.OpCode == AML_NAMEPATH_OP)))
+                    ((*SubObjectList)->Reference.Opcode == AML_NAMEPATH_OP)))
             {
                 NameFound = TRUE;
             }
