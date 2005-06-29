@@ -27,7 +27,7 @@
  * Code in any form, with the right to sublicense such rights; and
  *
  * 2.3. Intel grants Licensee a non-exclusive and non-transferable patent
- * license (without the right to sublicense), under only those claims of Intel
+ * license (with the right to sublicense), under only those claims of Intel
  * patents that are infringed by the Original Intel Code, to make, use, sell,
  * offer to sell, and import the Covered Code and derivative works thereof
  * solely to the minimum extent necessary to exercise the above copyright
@@ -118,6 +118,27 @@
 #define _ACPI_INTERNAL_H
 
 
+
+/*
+ * ACPI Table information.  We save the table address, length,
+ * and type of memory allocation (mapped or allocated) for each
+ * table for 1) when we exit, and 2) if a new table is installed
+ */
+
+#define ACPI_MEM_NOT_ALLOCATED  0
+#define ACPI_MEM_ALLOCATED      1
+#define ACPI_MEM_MAPPED         2
+
+typedef struct AcpiTableInfo
+{
+    char                Name[4];           /* signature */
+    void                *Pointer;
+    UINT32              Length;
+    UINT32              Allocation;
+
+} ACPI_TABLE_INFO;
+
+
 /* Operational mode of AML scanner */
 
 typedef enum 
@@ -200,6 +221,12 @@ typedef struct
 } NS_SEARCH_DATA;
 
 
+/*
+ * Predefined Namespace items
+ */
+#define ACPI_MAX_ADDRESS_SPACE      255
+#define ACPI_NUM_ADDRESS_SPACES     256
+
 typedef struct
 {
     char                    *Name;
@@ -209,15 +236,26 @@ typedef struct
 } PREDEFINED_NAMES;
 
 
+/* 
+ * Entry in the AddressSpace (AKA Operation Region) table
+ */
 
-/* Values ad addresses of the GPE registers (both banks) */
+typedef struct
+{
+    ADDRESS_SPACE_HANDLER   Handler;
+    void                    *Context;
+
+} ADDRESS_SPACE_INFO;
+
+
+/* Values and addresses of the GPE registers (both banks) */
 
 typedef struct 
 {
-    UINT8           Status;         /* Current value of status reg */
-    UINT8           Enable;         /* Current value of enable reg */
-    UINT16          StatusAddr;     /* Address of status reg */
-    UINT16          EnableAddr;     /* Address of enable reg */
+    UINT8                   Status;         /* Current value of status reg */
+    UINT8                   Enable;         /* Current value of enable reg */
+    UINT16                  StatusAddr;     /* Address of status reg */
+    UINT16                  EnableAddr;     /* Address of enable reg */
 
 } GPE_REGISTERS;
 
@@ -230,13 +268,32 @@ typedef struct
 
 typedef struct
 {
-    UINT8           Type;           /* Level or Edge */
-    ACPI_HANDLE     MethodHandle;   /* Method handle for direct (fast) execution */
-    GPE_HANDLER     Handler;        /* Address of handler, if any */
-    void            *Context;       /* Context to be passed to handler */
+    UINT8                   Type;           /* Level or Edge */
+    ACPI_HANDLE             MethodHandle;   /* Method handle for direct (fast) execution */
+    GPE_HANDLER             Handler;        /* Address of handler, if any */
+    void                    *Context;       /* Context to be passed to handler */
 
 } GPE_LEVEL_INFO;
 
 
+/* Entry for a memory allocation (debug only) */
 
-#endifn
+
+#define MEM_MALLOC          0
+#define MEM_CALLOC          1
+
+typedef struct AllocationInfo 
+{
+    void                    *Address;
+    UINT32                  Size;
+    UINT8                   AllocType;
+    UINT32                  Component;
+    char                    Module[32];
+    INT32                   Line;
+    struct AllocationInfo   *Previous;
+    struct AllocationInfo   *Next;
+
+} ALLOCATION_INFO;
+
+
+#endif

@@ -27,7 +27,7 @@
  * Code in any form, with the right to sublicense such rights; and
  *
  * 2.3. Intel grants Licensee a non-exclusive and non-transferable patent
- * license (without the right to sublicense), under only those claims of Intel
+ * license (with the right to sublicense), under only those claims of Intel
  * patents that are infringed by the Original Intel Code, to make, use, sell,
  * offer to sell, and import the Covered Code and derivative works thereof
  * solely to the minimum extent necessary to exercise the above copyright
@@ -118,21 +118,11 @@
 #define __HARDWARE_H__
 
 
-
-/* flags for use in DisplayBitFlags parameters */
-
-#define ACPI_MODE               1
-#define LEGACY_MODE             2
-
 /* Sleep states */
 
-#define S0                      "_S0_"
-#define S1                      "_S1_"
-#define S2                      "_S2_"
-#define S3                      "_S3_"
-#define S4                      "_S4_"
-#define S4BIOS                  "_S4B"
-#define S5                      "_S5_"
+#define SLWA_DEBUG_LEVEL    4
+#define GTS_CALL            0
+#define GTS_WAKE            1
 
 /* 
  * The #define's and enum below establish an abstract way of identifying what
@@ -255,15 +245,26 @@ enum
 
 /* Register read/write Macros */
 
-#define READ_ACPI_REGISTER(RegId)       AcpiRegisterIO (ACPI_READ, (INT32)(RegId))
-#define WRITE_ACPI_REGISTER(RegId,Val)  AcpiRegisterIO (ACPI_WRITE, (INT32) (RegId), Val)
+#define READ_ACPI_REGISTER(RegId)       HwRegisterIO (ACPI_READ, (INT32)(RegId))
+#define WRITE_ACPI_REGISTER(RegId,Val)  HwRegisterIO (ACPI_WRITE, (INT32) (RegId), Val)
 
 
+ACPI_STATUS
+HwSetMode (
+    UINT32                  Mode);
+
+UINT32
+HwGetMode (
+    void);
+
+UINT32
+HwGetModeCapabilities (
+    void);
 
 /* Register I/O Prototypes */
 
 UINT32
-AcpiRegisterIO (
+HwRegisterIO (
     INT32                   ReadWrite, 
     INT32                   RegisterId, ... /* DWORD Value */);
 
@@ -289,29 +290,21 @@ HwClearGpe (
 
 /* Sleep Prototypes */
 
-INT32
-AcpiObtainSleepTypeRegisterData (
+ACPI_STATUS
+HwObtainSleepTypeRegisterData (
     char                    *SleepStateReq,
     UINT8                   *Slp_TypA,
     UINT8                   *Slp_TypB);
-
-BOOLEAN 
-AcpiSleepStateSupported (
-    char                    *SleepState);
-
-INT32
-AcpiGoToSleep (
-    char                    *SleepState);
 
 
 /* ACPI Timer prototypes */
 
 UINT32
-AcpiPmtTicks (
+HwPmtTicks (
     void);
 
-INT32
-AcpiPmtResolution (
+UINT32
+HwPmtResolution (
     void);
 
 #endif /* __HARDWARE_H__ */
