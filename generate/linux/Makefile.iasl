@@ -12,6 +12,7 @@ SRCS=	aslcompilerparse.c aslcompilerlex.c aslanalyze.c aslcodegen.c \
 	../utilities/utglobal.c \
 	../utilities/utobject.c \
 	../utilities/utmisc.c \
+	../utilities/utmath.c \
 	../namespace/nsaccess.c \
 	../namespace/nsalloc.c \
 	../namespace/nsdump.c \
