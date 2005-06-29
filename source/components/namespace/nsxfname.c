@@ -189,10 +189,12 @@ AcpiLoadNamespace (
      * but the SSDT and PSDT tables are optional.
      */
 
+//    CmAcquireMutex (MTX_NAMESPACE);
+
     Status = AmlLoadTable (TABLE_DSDT);
     if (ACPI_FAILURE (Status))
     {
-        return_ACPI_STATUS (Status);
+        goto UnlockAndExit;
     }
 
     Status = AmlLoadTable (TABLE_SSDT);
@@ -208,7 +210,11 @@ AcpiLoadNamespace (
     /* Install the default OpRegion handlers, ignore the return code right now. */
 
     EvInstallDefaultAddressSpaceHandlers ();
+
+
+UnlockAndExit:
     
+//    CmReleaseMutex (MTX_NAMESPACE);
     return_ACPI_STATUS (Status);
 }
 
@@ -241,15 +247,29 @@ AcpiGetHandle (
     NAME_TABLE_ENTRY        *ThisEntry;
     NAME_TABLE_ENTRY        *Scope = NULL;
 
+
     if (!RetHandle || !Pathname)
     {
         return AE_BAD_PARAMETER;
     }
 
     if (Parent)
-        Scope = ((NAME_TABLE_ENTRY*) Parent)->Scope;
+    {   
+        CmAcquireMutex (MTX_NAMESPACE);
+        
+        ThisEntry = NsConvertHandleToEntry (Parent);
+        if (!ThisEntry)
+        {   
+            CmReleaseMutex (MTX_NAMESPACE);
+            return AE_BAD_PARAMETER;
+        }
+
+        Scope = ThisEntry->Scope;
+        CmReleaseMutex (MTX_NAMESPACE);
+    }
 
     /* Special case for root, since we can't search for it */
+    /* TBD: Check for both forward and backslash?? */
 
     if (STRCMP (Pathname, NS_ROOT_PATH) == 0)
     {
@@ -315,36 +335,41 @@ AcpiGetName (
         /* Get the full pathname (From the namespace root) */
 
         Status = NsHandleToPathname (Handle, &RetPathPtr->Length, RetPathPtr->Pointer);
+        return Status;
     }
 
-    else
+    /* 
+     * Wants the single segment ACPI name.  
+     * Validate handle and convert to an NTE 
+     */
+
+    CmAcquireMutex (MTX_NAMESPACE);
+    ObjEntry = NsConvertHandleToEntry (Handle);
+    if (!ObjEntry)
     {
-        /* 
-         * Wants the single segment ACPI name.  
-         * Validate handle and convert to an NTE 
-         */
-
-        ObjEntry = NsConvertHandleToEntry (Handle);
-        if (!ObjEntry)
-        {
-            return AE_BAD_PARAMETER;
-        }
-
-        /* Check if name will fit in buffer */
-
-        if (RetPathPtr->Length < PATH_SEGMENT_LENGTH)
-        {
-            RetPathPtr->Length = PATH_SEGMENT_LENGTH;
-            return AE_BUFFER_OVERFLOW;
-        }
-
-        /* Just copy the ACPI name from the NTE and zero terminate it */
-
-        STRNCPY (RetPathPtr->Pointer, (char *) &ObjEntry->Name, ACPI_NAME_SIZE);
-        ((char *) RetPathPtr->Pointer) [ACPI_NAME_SIZE] = 0;
-        Status = AE_OK;
+        Status = AE_BAD_PARAMETER;
+        goto UnlockAndExit;
     }
 
+    /* Check if name will fit in buffer */
+
+    if (RetPathPtr->Length < PATH_SEGMENT_LENGTH)
+    {
+        RetPathPtr->Length = PATH_SEGMENT_LENGTH;
+        Status = AE_BUFFER_OVERFLOW;
+        goto UnlockAndExit;
+    }
+
+    /* Just copy the ACPI name from the NTE and zero terminate it */
+
+    STRNCPY (RetPathPtr->Pointer, (char *) &ObjEntry->Name, ACPI_NAME_SIZE);
+    ((char *) RetPathPtr->Pointer) [ACPI_NAME_SIZE] = 0;
+    Status = AE_OK;
+
+
+UnlockAndExit:
+
+    CmReleaseMutex (MTX_NAMESPACE);
     return Status;
 }
 
@@ -383,24 +408,33 @@ AcpiGetObjectInfo (
         return AE_BAD_PARAMETER;
     }
 
+    CmAcquireMutex (MTX_NAMESPACE);
+
     DeviceEntry = NsConvertHandleToEntry (Device);
     if (!DeviceEntry)
     {
+        CmReleaseMutex (MTX_NAMESPACE);
         return AE_BAD_PARAMETER;
     }
 
-    Info->Type = DeviceEntry->Type;
-    Info->Name = DeviceEntry->Name;
-    Info->Parent = NsConvertEntryToHandle(DeviceEntry->ParentEntry);
+    Info->Type      = DeviceEntry->Type;
+    Info->Name      = DeviceEntry->Name;
+    Info->Parent    = NsConvertEntryToHandle (DeviceEntry->ParentEntry);
 
-    if (DeviceEntry->Type != ACPI_TYPE_Device)
+    CmReleaseMutex (MTX_NAMESPACE);
+
+    /*
+     * If not a device, we are all done.
+     */
+    if (Info->Type != ACPI_TYPE_Device)
     {
-        /*
-         *  We're done, get out
-         */
         return AE_OK;
     }
-    Info->Valid = 0;
+
+
+    /* Get extra info for ACPI devices */
+
+    Info->Valid     = 0;
 
     /* Execute the _HID method and save the result */
 
@@ -415,6 +449,7 @@ AcpiGetObjectInfo (
         {
             STRCPY (Info->HardwareId, Hid.Data.Buffer);
         }
+
         Info->Valid |= ACPI_VALID_HID;
     }
 
@@ -431,6 +466,7 @@ AcpiGetObjectInfo (
         {
             STRCPY (Info->UniqueId, Uid.Data.Buffer);
         }
+
         Info->Valid |= ACPI_VALID_UID;
     }
 
@@ -460,76 +496,4 @@ AcpiGetObjectInfo (
 
     return AE_OK;
 }
-
-
-
-/* OBSOLETE FUNCTIONS */
-
-/****************************************************************************
- *
- * FUNCTION:    AcpiEnumerateDevice
- *
- * PARAMETERS:  DevHandle       - handle to the device to  enumerate
- *              HidPtr          - Pointer to a DEVICE_ID structure to return 
- *                                the device's HID
- *              EnumPtr         - Pointer to a BOOLEAN flag that if set to TRUE 
- *                                indicate that the enumeration of this device 
- *                                is owned by ACPI.
- *
- * RETURN:      Status
- *
- * DESCRIPTION: Returns HID in the HidPtr structure and an indication that the
- *              device should be enumerated in the field pointed to by EnumPtr
- *
- ******************************************************************************/
-
-ACPI_STATUS
-AcpiEnumerateDevice (
-    ACPI_HANDLE             DevHandle, 
-    DEVICE_ID               *HidPtr, 
-    BOOLEAN                 *EnumPtr)
-{
-
-    HidPtr->Data.StringPtr = NULL;
-    *EnumPtr = FALSE;
-
-    return (AE_OK);
-}
-
-
-/****************************************************************************
- *
- * FUNCTION:    AcpiGetNextSubDevice
- *
- * PARAMETERS:  DevHandle       - handle to the device to enumerate
- *              Count           - zero based counter of the sub-device to locate
- *              RetHandle       - Where handle for next device is placed
- *
- * RETURN:      Status
- *
- * DESCRIPTION: This routine is used in the enumeration process to locate devices
- *              located within the namespace of another device.
- *
- ******************************************************************************/
-
-ACPI_STATUS 
-AcpiGetNextSubDevice (
-    ACPI_HANDLE             DevHandle, 
-    UINT32                  Count, 
-    ACPI_HANDLE             *RetHandle)
-{
-
-    if (!RetHandle)
-    {
-        return AE_BAD_PARAMETER;
-    }
-
-    *RetHandle = NULL;
-
-    return (AE_OK);
-}
-
-
-
-
 
