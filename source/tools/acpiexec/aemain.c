@@ -133,7 +133,7 @@
         MODULE_NAME         ("aemain");
 
 
-char                    *Version = "X003";
+char                    *Version = "X004";
    
 
 /******************************************************************************
@@ -187,11 +187,11 @@ main (
     /* Init globals */
 
     Buffer = malloc (BUFFER_SIZE);
-    DebugLevel = DEBUG_DEFAULT;    
+    DebugLevel = DEBUG_DEFAULT & (~TRACE_TABLES);    
     DebugLayer = 0xFFFFFFFF;
 
 
-    printf ("ACPI AML Execution/Debug Utility version %s\n", Version);
+    printf ("ACPI AML Execution/Debug Utility version [%s]\n", __DATE__);
 
     /* Get the command line options */
 
@@ -242,6 +242,15 @@ main (
         opt_tables = TRUE;
         Filename = argv[optind];
         Status = DbLoadAcpiTable (Filename);
+        if (ACPI_FAILURE (Status))
+        {
+            return Status;
+        }
+
+        DbSetOutputDestination (DB_REDIRECTABLE_OUTPUT);
+        Status = AcpiLoadNamespace ();
+        DbSetOutputDestination (DB_CONSOLE_OUTPUT);
+
         if (ACPI_FAILURE (Status))
         {
             return Status;
