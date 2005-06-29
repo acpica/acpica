@@ -272,7 +272,7 @@ ACPI_STATUS
 AmlExecUnloadTable (
     ACPI_HANDLE             DdbHandle)
 {
-    ACPI_STATUS             Status;
+    ACPI_STATUS             Status = AE_NOT_IMPLEMENTED;
 
 
     FUNCTION_TRACE ("AmlExecUnloadTable");
