@@ -173,6 +173,10 @@ InitAcpiLibGlobals (void)
 
     OutOfMemory             = FALSE;
 
+    /* Interpreter */
+
+    BufSeq                  = 0;
+    NamedObjectErr          = FALSE;
 
     /* Hardware oriented */
 
