@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: aeexec - Support routines for AcpiExec utility
- *              $Revision: 1.58 $
+ *              $Revision: 1.60 $
  *
  *****************************************************************************/
 
@@ -137,7 +137,7 @@ UINT32                      AmlLength;
 UINT8                       *DsdtPtr;
 UINT32                      AcpiDsdtLength;
 
-DEBUG_REGIONS               Regions;
+DEBUG_REGIONS               AeRegions;
 RSDP_DESCRIPTOR             LocalRsdp;
 
 
@@ -156,6 +156,8 @@ RSDT_DESCRIPTOR_REV1        *LocalRSDT;
 
 #define RSDT_TABLES         3
 #define RSDT_SIZE           (sizeof (RSDT_DESCRIPTOR_REV1) + ((RSDT_TABLES -1) * sizeof (UINT32)))
+
+
 
 /******************************************************************************
  *
@@ -182,32 +184,31 @@ AeBuildLocalTables (void)
     }
 
     ACPI_MEMSET (LocalRSDT, 0, RSDT_SIZE);
-    ACPI_MEMCPY (LocalRSDT->Header.Signature, RSDT_SIG, 4);
+    ACPI_STRNCPY (LocalRSDT->Header.Signature, RSDT_SIG, 4);
     LocalRSDT->Header.Length = RSDT_SIZE;
 
-    LocalRSDT->TableOffsetEntry[2] = ACPI_TO_INTEGER (&LocalFADT);
-    LocalRSDT->TableOffsetEntry[1] = ACPI_TO_INTEGER (&LocalBADTABLE);
-    LocalRSDT->TableOffsetEntry[0] = ACPI_TO_INTEGER (&LocalTEST);
-    LocalRSDT->Header.Checksum = (UINT8) (0 - AcpiTbChecksum (LocalRSDT, LocalRSDT->Header.Length));
+    LocalRSDT->TableOffsetEntry[2] = ACPI_PTR_TO_PHYSADDR (&LocalFADT);
+    LocalRSDT->TableOffsetEntry[1] = ACPI_PTR_TO_PHYSADDR (&LocalBADTABLE);
+    LocalRSDT->TableOffsetEntry[0] = ACPI_PTR_TO_PHYSADDR (&LocalTEST);
+    LocalRSDT->Header.Checksum     = (UINT8) (0 - AcpiTbChecksum (LocalRSDT, LocalRSDT->Header.Length));
 
     /* Build an RSDP */
 
     ACPI_MEMSET (&LocalRSDP, 0, sizeof (RSDP_DESCRIPTOR));
-    ACPI_MEMCPY (&LocalRSDP.Signature, RSDP_SIG, 8);
+    ACPI_STRNCPY (LocalRSDP.Signature, RSDP_SIG, 8);
     LocalRSDP.Revision            = 1;
-    LocalRSDP.RsdtPhysicalAddress = ACPI_TO_INTEGER (LocalRSDT);
-    LocalRSDP.Checksum     = (UINT8) (0 - AcpiTbChecksum (&LocalRSDP, ACPI_RSDP_CHECKSUM_LENGTH));
+    LocalRSDP.RsdtPhysicalAddress = ACPI_PTR_TO_PHYSADDR (LocalRSDT);
+    LocalRSDP.Checksum            = (UINT8) (0 - AcpiTbChecksum (&LocalRSDP, ACPI_RSDP_CHECKSUM_LENGTH));
 
     AcpiGbl_RSDP = &LocalRSDP;
-
 
     /* Build a FADT so we can test the hardware/event init */
 
     ACPI_MEMSET (&LocalFADT, 0, sizeof (FADT_DESCRIPTOR_REV1));
-    ACPI_MEMCPY (&LocalFADT.Header.Signature, FADT_SIG, 4);
+    ACPI_STRNCPY (LocalFADT.Header.Signature, FADT_SIG, 4);
 
-    LocalFADT.FirmwareCtrl      = ACPI_TO_INTEGER (&LocalFACS);
-    LocalFADT.Dsdt              = ACPI_TO_INTEGER (AcpiGbl_DbTablePtr);
+    LocalFADT.FirmwareCtrl      = ACPI_PTR_TO_PHYSADDR (&LocalFACS);
+    LocalFADT.Dsdt              = ACPI_PTR_TO_PHYSADDR (AcpiGbl_DbTablePtr);
     LocalFADT.Header.Revision   = 1;
     LocalFADT.Header.Length     = sizeof (FADT_DESCRIPTOR_REV1);
     LocalFADT.Gpe0BlkLen        = 4;
@@ -233,14 +234,14 @@ AeBuildLocalTables (void)
     /* Build a FACS */
 
     ACPI_MEMSET (&LocalFACS, 0, sizeof (FACS_DESCRIPTOR_REV1));
-    ACPI_MEMCPY (&LocalFACS.Signature, FACS_SIG, 4);
+    ACPI_STRNCPY (LocalFACS.Signature, FACS_SIG, 4);
     LocalFACS.Length = sizeof (FACS_DESCRIPTOR_REV1);
     LocalFACS.GlobalLock = 0x11AA0011;
 
     /* Build a fake table so that we make sure that the CA core ignores it */
 
     ACPI_MEMSET (&LocalTEST, 0, sizeof (ACPI_TABLE_HEADER));
-    ACPI_MEMCPY (&LocalTEST.Signature, "TEST", 4);
+    ACPI_STRNCPY (LocalTEST.Signature, "TEST", 4);
 
     LocalTEST.Revision   = 1;
     LocalTEST.Length     = sizeof (ACPI_TABLE_HEADER);
@@ -248,10 +249,11 @@ AeBuildLocalTables (void)
     /* Build a fake table with a bad signature so that we make sure that the CA core ignores it */
 
     ACPI_MEMSET (&LocalBADTABLE, 0, sizeof (ACPI_TABLE_HEADER));
-    ACPI_MEMCPY (&LocalBADTABLE.Signature, "BAD!", 4);
+    ACPI_STRNCPY (LocalBADTABLE.Signature, "BAD!", 4);
 
     LocalBADTABLE.Revision   = 1;
     LocalBADTABLE.Length     = sizeof (ACPI_TABLE_HEADER);
+
     return (AE_OK);
 }
 
@@ -346,7 +348,7 @@ AeRegionHandler (
 
     ACPI_OPERAND_OBJECT     *RegionObject = (ACPI_OPERAND_OBJECT*) RegionContext;
     ACPI_PHYSICAL_ADDRESS   BaseAddress;
-    UINT32                  Length;
+    ACPI_SIZE               Length;
     BOOLEAN                 BufferExists;
     REGION                  *RegionElement;
     void                    *BufferValue;
@@ -354,7 +356,6 @@ AeRegionHandler (
 
 
     ACPI_FUNCTION_NAME ("AeRegionHandler");
-
 
     /*
      * If the object is not a region, simply return
@@ -368,21 +369,20 @@ AeRegionHandler (
             AcpiUtGetRegionName (RegionObject->Region.SpaceId),
             Address));
 
-
     /*
      * Find the region's address space and length before searching
      *  the linked list.
      */
     BaseAddress = RegionObject->Region.Address;
-    Length = RegionObject->Region.Length;
+    Length = (ACPI_SIZE) RegionObject->Region.Length;
 
     /*
      * Search through the linked list for this region's buffer
      */
     BufferExists = FALSE;
-    RegionElement = Regions.RegionList;
+    RegionElement = AeRegions.RegionList;
 
-    if (0 != Regions.NumberOfRegions)
+    if (AeRegions.NumberOfRegions)
     {
         while (!BufferExists && RegionElement)
         {
@@ -396,12 +396,12 @@ AeRegionHandler (
                 RegionElement = RegionElement->NextRegion;
             }
         }
-    }
+    }                                                                
 
     /*
      * If the Region buffer does not exist, create it now
      */
-    if (FALSE == BufferExists)
+    if (!BufferExists)
     {
         /*
          * Do the memory allocations first
@@ -429,14 +429,14 @@ AeRegionHandler (
          *  at the head of the list as it will probably get accessed
          *  more often anyway.
          */
-        Regions.NumberOfRegions += 1;
+        AeRegions.NumberOfRegions += 1;
 
-        if (NULL != Regions.RegionList)
+        if (NULL != AeRegions.RegionList)
         {
-            RegionElement->NextRegion = Regions.RegionList->NextRegion;
+            RegionElement->NextRegion = AeRegions.RegionList->NextRegion;
         }
 
-        Regions.RegionList = RegionElement;
+        AeRegions.RegionList = RegionElement;
     }
 
     /*
@@ -494,7 +494,6 @@ AeRegionHandler (
     default:
         return AE_BAD_PARAMETER;
     }
-
     return AE_OK;
 }
 
@@ -646,8 +645,8 @@ AeInstallHandlers (void)
      * Initialize the global Region Handler space
      * MCW 3/23/00
      */
-    Regions.NumberOfRegions = 0;
-    Regions.RegionList = NULL;
+    AeRegions.NumberOfRegions = 0;
+    AeRegions.RegionList = NULL;
 
     return Status;
 }
