@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acmacros.h - C macros for the entire subsystem.
- *       $Revision: 1.104 $
+ *       $Revision: 1.105 $
  *
  *****************************************************************************/
 
@@ -216,9 +216,19 @@
 
 /* Pointer arithmetic */
 
-
 #define ACPI_PTR_ADD(t,a,b)             (t *) ((char *)(a) + (b))
 #define ACPI_PTR_DIFF(a,b)              (ACPI_SIZE) ((char *)(a) - (char *)(b))
+
+/* Pointer/Integer type conversions */
+
+#define ACPI_TO_POINTER(i)              ACPI_PTR_ADD (void,NULL,(NATIVE_UINT)i)
+#define ACPI_TO_INTEGER(p)              ACPI_PTR_DIFF (p,NULL)
+
+#ifdef _IA16
+#define ACPI_PHYSADDR_TO_PTR(i)         (void *)(i)
+#else
+#define ACPI_PHYSADDR_TO_PTR(i)         ACPI_TO_POINTER(i)
+#endif
 
 /*
  * Macros for moving data around to/from buffers that are possibly unaligned.
