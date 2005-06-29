@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dsobject - Dispatcher object management routines
- *              $Revision: 1.94 $
+ *              $Revision: 1.96 $
  *
  *****************************************************************************/
 
@@ -291,7 +291,8 @@ AcpiDsInitializeObjects (
                     AcpiDsInitOneObject, &Info, NULL);
     if (ACPI_FAILURE (Status))
     {
-        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "WalkNamespace failed! %x\n", Status));
+        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "WalkNamespace failed, %s\n", 
+            AcpiFormatException (Status)));
     }
 
     ACPI_DEBUG_PRINT_RAW ((ACPI_DB_OK,
@@ -434,7 +435,7 @@ AcpiDsInitObjectFromOp (
 
     default:
 
-        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Unimplemented data type: %x\n",
+        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Unimplemented data type: %X\n",
             ObjDesc->Common.Type));
 
         break;
@@ -740,7 +741,7 @@ AcpiDsBuildInternalPackageObj (
      * that the list is always null terminated.
      */
     ObjDesc->Package.Elements = ACPI_MEM_CALLOCATE (
-                            (ObjDesc->Package.Count + 1) * sizeof (void *));
+                ((ACPI_SIZE) ObjDesc->Package.Count + 1) * sizeof (void *));
 
     if (!ObjDesc->Package.Elements)
     {
@@ -760,7 +761,7 @@ AcpiDsBuildInternalPackageObj (
         {
             /* Object (package or buffer) is already built */
 
-            ObjDesc->Package.Elements[i] = (ACPI_OPERAND_OBJECT *) Arg->Common.Node;
+            ObjDesc->Package.Elements[i] = ACPI_CAST_PTR (ACPI_OPERAND_OBJECT, Arg->Common.Node);
         }
         else
         {

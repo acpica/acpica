@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dsmethod - Parser/Interpreter interface - control method parsing
- *              $Revision: 1.84 $
+ *              $Revision: 1.85 $
  *
  *****************************************************************************/
 
@@ -591,8 +591,15 @@ AcpiDsTerminateControlMethod (
 
     if (WalkState->MethodDesc->Method.Semaphore)
     {
-        AcpiOsSignalSemaphore (
+        Status = AcpiOsSignalSemaphore (
             WalkState->MethodDesc->Method.Semaphore, 1);
+        if (ACPI_FAILURE (Status))
+        {
+            ACPI_REPORT_ERROR (("Could not signal method semaphore\n"));
+            Status = AE_OK;
+
+            /* Ignore error and continue cleanup */
+        }
     }
 
     /* Decrement the thread count on the method parse tree */
