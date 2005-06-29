@@ -131,9 +131,9 @@
  ******************************************************************************/
 
 UINT32 
-EvSciHandler (void)
+EvSciHandler (void *Context)
 {
-    INT32                   InterruptHandled = INTERRUPT_NOT_HANDLED;
+    UINT32 InterruptHandled = INTERRUPT_NOT_HANDLED;
        
     
     /* 
@@ -191,19 +191,15 @@ EvSciHandler (void)
 UINT32 
 EvInstallSciHandler (void)
 {
-    UINT32                  Except = AE_OK;
-
+    UINT32 Except = AE_OK;
      
     FUNCTION_TRACE ("EvInstallSciHandler");
    
-    if (!SciHandle)
-    {
-        Except = OsdInstallInterruptHandler (
-                            (UINT32) FACP->SciInt,
-                            EvSciHandler,
-                            &SciHandle);
-    }
-
+    Except = OsdInstallInterruptHandler (
+        (UINT32) FACP->SciInt,
+        EvSciHandler,
+        NULL);
+    
     FUNCTION_EXIT;
     return Except;
 }
@@ -228,8 +224,6 @@ EvRemoveSciHandler (void)
 {
     FUNCTION_TRACE ("EvRemoveSciHandler");
     
-    if (SciHandle)
-    {
 #if 0
         /* Disable all events first ???  TBD:  Figure this out!! */
 
@@ -259,12 +253,13 @@ EvRemoveSciHandler (void)
         }
         
         OriginalFixedEnableBitStatus = 0;
+
 #endif      
             
-        OsdRemoveInterruptHandler (SciHandle);
-        SciHandle = 0;
-    }
-    
+    OsdRemoveInterruptHandler (
+        (UINT32) FACP->SciInt,
+        EvSciHandler);
+
     FUNCTION_EXIT;
     return AE_OK;
 }
