@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exregion - ACPI default OpRegion (address space) handlers
- *              $Revision: 1.52 $
+ *              $Revision: 1.53 $
  *
  *****************************************************************************/
 
@@ -242,7 +242,8 @@ AcpiExSystemMemorySpaceHandler (
                     ((ACPI_INTEGER) Address - (ACPI_INTEGER) MemInfo->MappedPhysicalAddress);
 
     DEBUG_PRINT ((TRACE_OPREGION | VERBOSE_INFO),
-        ("IO %d (%d width) Address=%p\n", Function, BitWidth, Address));
+        ("IO %d (%d width) Address=%8.8lX%8.8lX\n", Function, BitWidth,
+        HIDWORD(Address), LODWORD(Address)));
 
    /* Perform the memory read or write */
 
@@ -332,7 +333,8 @@ AcpiExSystemIoSpaceHandler (
 
 
     DEBUG_PRINT ((TRACE_OPREGION | VERBOSE_INFO),
-        ("IO %d (%d width) Address=%p\n", Function, BitWidth, Address));
+        ("IO %d (%d width) Address=%8.8lX%8.8lX\n", Function, BitWidth,
+        HIDWORD(Address), LODWORD(Address)));
 
     /* Decode the function parameter */
 
