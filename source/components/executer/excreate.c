@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: amcreate - Named object creation
- *              $Revision: 1.54 $
+ *              $Revision: 1.57 $
  *
  *****************************************************************************/
 
@@ -126,7 +126,7 @@
 #include "acdispat.h"
 
 
-#define _COMPONENT          INTERPRETER
+#define _COMPONENT          ACPI_EXECUTER
         MODULE_NAME         ("amcreate")
 
 
@@ -195,7 +195,7 @@ AcpiAmlExecCreateField (
      */
 
     ObjDesc->FieldUnit.Extra = AcpiCmCreateInternalObject (
-                                        INTERNAL_TYPE_EXTRA);
+                                    INTERNAL_TYPE_EXTRA);
     if (!ObjDesc->FieldUnit.Extra)
     {
         Status = AE_NO_MEMORY;
@@ -270,7 +270,8 @@ AcpiAmlExecCreateField (
 
     /* Store constructed field descriptor in result location */
 
-    Status = AcpiAmlExecStore (ObjDesc, (ACPI_OPERAND_OBJECT *) Node, WalkState);
+    Status = AcpiAmlExecStore (ObjDesc, (ACPI_OPERAND_OBJECT *) Node, 
+                    WalkState);
 
     /*
      * If the field descriptor was not physically stored (or if a failure
@@ -305,7 +306,8 @@ Cleanup:
  *
  * FUNCTION:    AcpiAmlExecCreateAlias
  *
- * PARAMETERS:  Operands            - List of operands for the opcode
+ * PARAMETERS:  WalkState            - Current state, contains List of 
+ *                                      operands for the opcode
  *
  * RETURN:      Status
  *
@@ -325,7 +327,7 @@ AcpiAmlExecCreateAlias (
     FUNCTION_TRACE ("AmlExecCreateAlias");
 
 
-    /* Get the source/alias operands (both NTEs) */
+    /* Get the source/alias operands (both namespace nodes) */
 
     Status = AcpiDsObjStackPopObject ((ACPI_OPERAND_OBJECT  **) &SourceNode,
                                         WalkState);
@@ -337,7 +339,6 @@ AcpiAmlExecCreateAlias (
     /*
      * Don't pop it, it gets removed in the calling routine
      */
-
     AliasNode = AcpiDsObjStackGetValue (0, WalkState);
 
     /* Add an additional reference to the object */
@@ -358,7 +359,7 @@ AcpiAmlExecCreateAlias (
      * source or the alias Node
      */
 
-    /* Since both operands are NTEs, we don't need to delete them */
+    /* Since both operands are Nodes, we don't need to delete them */
 
     return_ACPI_STATUS (Status);
 }
@@ -643,7 +644,7 @@ Cleanup:
  *
  * PARAMETERS:  Op              - Op containing the Processor definition and
  *                                args
- *              ProcessorNTE    - Node for the containing Node
+ *              ProcessorNode   - Parent Node for the processor object
  *
  * RETURN:      Status
  *
@@ -654,7 +655,7 @@ Cleanup:
 ACPI_STATUS
 AcpiAmlExecCreateProcessor (
     ACPI_PARSE_OBJECT       *Op,
-    ACPI_HANDLE             ProcessorNTE)
+    ACPI_HANDLE             ProcessorNode)
 {
     ACPI_STATUS             Status;
     ACPI_PARSE_OBJECT       *Arg;
@@ -667,59 +668,54 @@ AcpiAmlExecCreateProcessor (
     ObjDesc = AcpiCmCreateInternalObject (ACPI_TYPE_PROCESSOR);
     if (!ObjDesc)
     {
-        Status = AE_NO_MEMORY;
-        return_ACPI_STATUS (Status);
+        return_ACPI_STATUS (AE_NO_MEMORY);
     }
 
     /* Install the new processor object in the parent Node */
 
-    Status = AcpiNsAttachObject (ProcessorNTE, ObjDesc,
+    Status = AcpiNsAttachObject (ProcessorNode, ObjDesc,
                                     (UINT8) ACPI_TYPE_PROCESSOR);
     if (ACPI_FAILURE (Status))
     {
-        return_ACPI_STATUS(Status);
+        AcpiCmDeleteObjectDesc (ObjDesc);
+        return_ACPI_STATUS (Status);
     }
 
+    /* Get first arg and verify existence */
+
     Arg = Op->Value.Arg;
-
-    /* check existence */
-
     if (!Arg)
     {
-        Status = AE_AML_NO_OPERAND;
-        return_ACPI_STATUS (Status);
+        return_ACPI_STATUS (AE_AML_NO_OPERAND);
     }
 
     /* First arg is the Processor ID */
 
     ObjDesc->Processor.ProcId = (UINT8) Arg->Value.Integer;
 
-    /* Move to next arg and check existence */
+    /* Get second arg and verify existence */
 
     Arg = Arg->Next;
     if (!Arg)
     {
-        Status = AE_AML_NO_OPERAND;
-        return_ACPI_STATUS (Status);
+        return_ACPI_STATUS (AE_AML_NO_OPERAND);
     }
 
     /* Second arg is the PBlock Address */
 
     ObjDesc->Processor.Address = (ACPI_IO_ADDRESS) Arg->Value.Integer;
 
-    /* Move to next arg and check existence */
+    /* Get third arg and verify existence */
 
     Arg = Arg->Next;
     if (!Arg)
     {
-        Status = AE_AML_NO_OPERAND;
-        return_ACPI_STATUS (Status);
+        return_ACPI_STATUS (AE_AML_NO_OPERAND);
     }
 
     /* Third arg is the PBlock Length */
 
     ObjDesc->Processor.Length = (UINT8) Arg->Value.Integer;
-
     return_ACPI_STATUS (AE_OK);
 }
 
@@ -730,7 +726,7 @@ AcpiAmlExecCreateProcessor (
  *
  * PARAMETERS:  Op              - Op containing the PowerResource definition
  *                                and args
- *              PowerResNTE     - Node for the containing Node
+ *              PowerNode       - Parent Node for the power object
  *
  * RETURN:      Status
  *
@@ -741,7 +737,7 @@ AcpiAmlExecCreateProcessor (
 ACPI_STATUS
 AcpiAmlExecCreatePowerResource (
     ACPI_PARSE_OBJECT       *Op,
-    ACPI_HANDLE             PowerResNTE)
+    ACPI_HANDLE             PowerNode)
 {
     ACPI_STATUS             Status;
     ACPI_PARSE_OBJECT       *Arg;
@@ -754,40 +750,37 @@ AcpiAmlExecCreatePowerResource (
     ObjDesc = AcpiCmCreateInternalObject (ACPI_TYPE_POWER);
     if (!ObjDesc)
     {
-        Status = AE_NO_MEMORY;
-        return_ACPI_STATUS (Status);
+        return_ACPI_STATUS (AE_NO_MEMORY);
     }
 
     /* Install the new power resource object in the parent Node */
 
-    Status = AcpiNsAttachObject (PowerResNTE, ObjDesc,
+    Status = AcpiNsAttachObject (PowerNode, ObjDesc,
                                 (UINT8) ACPI_TYPE_POWER);
     if (ACPI_FAILURE (Status))
     {
         return_ACPI_STATUS(Status);
     }
 
+
+    /* Get first arg and verify existence */
+
     Arg = Op->Value.Arg;
-
-    /* check existence */
-
     if (!Arg)
     {
-        Status = AE_AML_NO_OPERAND;
-        return_ACPI_STATUS (Status);
+        return_ACPI_STATUS (AE_AML_NO_OPERAND);
     }
 
     /* First arg is the SystemLevel */
 
     ObjDesc->PowerResource.SystemLevel = (UINT8) Arg->Value.Integer;
 
-    /* Move to next arg and check existence */
+    /* Get second arg and check existence */
 
     Arg = Arg->Next;
     if (!Arg)
     {
-        Status = AE_AML_NO_OPERAND;
-        return_ACPI_STATUS (Status);
+        return_ACPI_STATUS (AE_AML_NO_OPERAND);
     }
 
     /* Second arg is the PBlock Address */
@@ -856,7 +849,7 @@ AcpiAmlExecCreateMethod (
     if (MethodFlags & METHOD_FLAGS_SERIALIZED)
     {
         /*
-         * ACPI 1.0: Concurrency = 1 
+         * ACPI 1.0: Concurrency = 1
          * ACPI 2.0: Concurrency = (SyncLevel (in method declaration) + 1)
          */
         ObjDesc->Method.Concurrency = (UINT8)
