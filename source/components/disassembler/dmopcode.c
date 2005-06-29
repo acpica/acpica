@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dbdisasm - parser op tree display routines
- *              $Revision: 1.50 $
+ *              $Revision: 1.51 $
  *
  ******************************************************************************/
 
@@ -208,7 +208,6 @@ AcpiPsDisplayObjectPathname (
          */
         AcpiOsPrintf ("  **** Path not found in parse tree");
     }
-
     else
     {
         /* The target was found, print the name and complete path */
@@ -320,7 +319,7 @@ AcpiDbDisplayOp (
     {
         while (Op)
         {
-            /* indentation */
+            /* Indentation */
 
             DepthCount = 0;
             if (!AcpiGbl_DbOpt_verbose)
@@ -345,7 +344,6 @@ AcpiDbDisplayOp (
 
                 DepthCount++;
             }
-
 
             /* Open a new block if we are nested further than last time */
 
@@ -402,7 +400,6 @@ AcpiDbDisplayOp (
                 AcpiOsPrintf ("%s", AcpiGbl_DbDisasmIndent);
             }
 
-
             /* Now print the opcode */
 
             AcpiDbDisplayOpcode (WalkState, Op);
@@ -443,7 +440,6 @@ AcpiDbDisplayOp (
             AcpiOsPrintf ("}\n");
             DepthCount--;
         }
-
     }
 
     else
@@ -557,7 +553,6 @@ AcpiDbDisplayPath (
         return;
     }
 
-
     if (OpInfo->Flags & AML_CREATE)
     {
         /* Field creation - check for a fully qualified namepath */
@@ -630,7 +625,6 @@ AcpiDbDisplayPath (
                         AcpiOsPrintf ("%4.4s", NamePath->Value.String);
                     }
                 }
-
                 else
                 {
                     Name = AcpiPsGetName (Search);
@@ -678,24 +672,20 @@ AcpiDbDisplayOpcode (
         AcpiOsPrintf ("<NULL OP PTR>");
     }
 
-
     /* op and arguments */
 
     switch (Op->Opcode)
     {
-
     case AML_BYTE_OP:
 
         if (AcpiGbl_DbOpt_verbose)
         {
             AcpiOsPrintf ("(UINT8)  0x%2.2X", Op->Value.Integer8);
         }
-
         else
         {
             AcpiOsPrintf ("0x%2.2X", Op->Value.Integer8);
         }
-
         break;
 
 
@@ -705,12 +695,10 @@ AcpiDbDisplayOpcode (
         {
             AcpiOsPrintf ("(UINT16) 0x%4.4X", Op->Value.Integer16);
         }
-
         else
         {
             AcpiOsPrintf ("0x%4.4X", Op->Value.Integer16);
         }
-
         break;
 
 
@@ -720,12 +708,10 @@ AcpiDbDisplayOpcode (
         {
             AcpiOsPrintf ("(UINT32) 0x%8.8X", Op->Value.Integer32);
         }
-
         else
         {
             AcpiOsPrintf ("0x%8.8X", Op->Value.Integer32);
         }
-
         break;
 
 
@@ -736,13 +722,11 @@ AcpiDbDisplayOpcode (
             AcpiOsPrintf ("(UINT64) 0x%8.8X%8.8X", Op->Value.Integer64.Hi,
                                                    Op->Value.Integer64.Lo);
         }
-
         else
         {
             AcpiOsPrintf ("0x%8.8X%8.8X", Op->Value.Integer64.Hi,
                                           Op->Value.Integer64.Lo);
         }
-
         break;
 
 
@@ -752,12 +736,10 @@ AcpiDbDisplayOpcode (
         {
             AcpiOsPrintf ("\"%s\"", Op->Value.String);
         }
-
         else
         {
             AcpiOsPrintf ("<\"NULL STRING PTR\">");
         }
-
         break;
 
 
@@ -767,12 +749,10 @@ AcpiDbDisplayOpcode (
         {
             AcpiOsPrintf ("\"%s\"", Op->Value.String);
         }
-
         else
         {
             AcpiOsPrintf ("\"<NULL STATIC STRING PTR>\"");
         }
-
         break;
 
 
