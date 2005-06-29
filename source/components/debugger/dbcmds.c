@@ -471,13 +471,12 @@ DbSetMethodData (
  *****************************************************************************/
 
 ACPI_STATUS
-DbWalkMethods (
+DbWalkForSpecificObjects (
     ACPI_HANDLE             ObjHandle,
     UINT32                  NestingLevel,
     void                    *Context,
     void                    **ReturnValue)
 {
-    UINT32                  NumArgs;
     ACPI_OBJECT_INTERNAL    *ObjDesc;
     ACPI_STATUS             Status;
     UINT32                  BufSize;
@@ -485,7 +484,6 @@ DbWalkMethods (
 
 
     ObjDesc = ((NAME_TABLE_ENTRY *)ObjHandle)->Object;
-    NumArgs = ObjDesc->Method.ParamCount;
 
     /* Get the full pathname to this method */
 
@@ -498,8 +496,10 @@ DbWalkMethods (
 
     else
     {
-        OsdPrintf ("%32s", buffer);
-        OsdPrintf ("  #args = %d\n", NumArgs);
+        OsdPrintf ("%32s\n", buffer);
+
+
+//        OsdPrintf ("  #args = %d\n", NumArgs);
     }
 
     return AE_OK;
@@ -519,12 +519,46 @@ DbWalkMethods (
  *****************************************************************************/
 
 ACPI_STATUS
-DbDisplayAllMethods (
+DbDisplayObjects (
+    char                    *ObjTypeArg,
     char                    *DisplayCountArg)
 {
     UINT32                  DisplayCount;
+    UINT32                  Type;
 
     
+    switch (ObjTypeArg[0])
+    {
+    case 'B':
+        Type = ACPI_TYPE_Buffer;
+        break;
+
+    case 'D':
+        Type = ACPI_TYPE_Device;
+        break;
+
+    case 'M':
+        Type = ACPI_TYPE_Method;
+        break;
+
+    case 'O':
+        Type = ACPI_TYPE_Region;
+        break;
+
+    case 'N':
+        Type = ACPI_TYPE_Number;
+        break;
+
+    case 'S':
+        Type = ACPI_TYPE_String;
+        break;
+
+    default:
+        Type = ACPI_TYPE_Any;
+        break;
+    }
+
+
     if (DisplayCountArg)
     {
         DisplayCount = STRTOUL (DisplayCountArg, NULL, 0);
@@ -536,16 +570,74 @@ DbDisplayAllMethods (
     }
 
     DbSetOutputDestination (DB_DUPLICATE_OUTPUT);
-    OsdPrintf ("Control Methods defined in the current ACPI Namespace: \n");
+    OsdPrintf ("Objects of type [%s] defined in the current ACPI Namespace: \n", Gbl_NsTypeNames[Type]);
 
     DbSetOutputDestination (DB_REDIRECTABLE_OUTPUT);
-    AcpiWalkNamespace (ACPI_TYPE_Method, ACPI_ROOT_OBJECT, ACPI_UINT32_MAX,
-        DbWalkMethods, NULL, NULL);
+    AcpiWalkNamespace (Type, ACPI_ROOT_OBJECT, ACPI_UINT32_MAX,
+        DbWalkForSpecificObjects, NULL, NULL);
 
     DbSetOutputDestination (DB_CONSOLE_OUTPUT);
     return AE_OK;
 }
 
+
+
+ACPI_STATUS
+DbWalkAndMatchName (
+    ACPI_HANDLE             ObjHandle,
+    UINT32                  NestingLevel,
+    void                    *Context,
+    void                    **ReturnValue)
+{
+    ACPI_OBJECT_INTERNAL    *ObjDesc;
+    ACPI_STATUS             Status;
+    UINT32                  Name = *((UINT32 *) Context);
+    UINT32                  BufSize;
+    char                    buffer[64];
+
+
+    ObjDesc = ((NAME_TABLE_ENTRY *)ObjHandle)->Object;
+
+    if (Name == ((NAME_TABLE_ENTRY *)ObjHandle)->Name)
+    {
+        /* Get the full pathname to this method */
+
+        Status = NsHandleToPathname (ObjHandle, &BufSize, buffer);
+
+        if (ACPI_FAILURE (Status))
+        {
+            OsdPrintf ("Could Not get pathname for object %p\n", ObjHandle);
+        }
+
+        else
+        {
+/* TBD: Make typename lookup a function */
+
+            OsdPrintf ("%32s (0x%p) - %s\n", buffer, ObjHandle, Gbl_NsTypeNames[((NAME_TABLE_ENTRY *)ObjHandle)->Type]);
+        }
+    }
+
+    return AE_OK;
+}
+
+
+ACPI_STATUS
+DbFindNameInNamespace (
+    char                    *NameArg)
+{
+    
+    if (STRLEN (NameArg) > 4)
+    {
+        OsdPrintf ("Name must be no longer than 4 characters\n");
+        return (AE_OK);
+    }
+
+    AcpiWalkNamespace (ACPI_TYPE_Any, ACPI_ROOT_OBJECT, ACPI_UINT32_MAX,
+        DbWalkAndMatchName, NameArg, NULL);
+
+    DbSetOutputDestination (DB_CONSOLE_OUTPUT);
+    return AE_OK;
+}
 
 /******************************************************************************
  * 
