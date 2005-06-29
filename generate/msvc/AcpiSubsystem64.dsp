@@ -25,7 +25,7 @@ CFG=AcpiSubsystem64 - Win32 Debug
 # PROP AllowPerConfigDependencies 0
 # PROP Scc_ProjName ""$/Acpi Components/Subsystem", CQBAAAAA"
 # PROP Scc_LocalPath "..\.."
-CPP=cl.exe
+CPP=xicl6.exe
 RSC=rc.exe
 
 !IF  "$(CFG)" == "AcpiSubsystem64 - Win32 Release"
@@ -41,17 +41,16 @@ RSC=rc.exe
 # PROP Intermediate_Dir "\Acpi\Generate\msvc\AcpiSubsystem64\NoDebug"
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_MBCS" /D "_LIB" /YX /FD /c
-# ADD CPP /Gz /MT /Za /W4 /Gm /GX /Zi /O1 /I "..\..\source\Include" /D "NDEBUG" /D "ACPILIB_GEN" /D "DRIVER" /D "ACPI_LIBRARY" /D "_WINDOWS" /D PROCESSOR_ARCHITECTURE=x86 /D "WIN64" /D "_IA64" /FR /FD /c
-# SUBTRACT CPP /nologo /YX
+# ADD CPP /nologo /Gz /MT /Za /W4 /GX /O1 /I "..\..\source\Include" /D "NDEBUG" /D "ACPILIB_GEN" /D "DRIVER" /D "_WINDOWS" /D PROCESSOR_ARCHITECTURE=x86 /D "WIN64" /D "_IA64" /FR /FD /c
+# SUBTRACT CPP /YX
 # ADD BASE RSC /l 0x409 /d "NDEBUG"
 # ADD RSC /l 0x409 /d "NDEBUG"
 BSC32=bscmake.exe
 # ADD BASE BSC32 /nologo
 # ADD BSC32 /nologo
-LIB32=link.exe -lib
+LIB32=xilink6.exe -lib
 # ADD BASE LIB32 /nologo
-# ADD LIB32 /out:"bin\acpica64.lib" /machine:IA64
-# SUBTRACT LIB32 /nologo
+# ADD LIB32 /nologo /out:"bin\acpica64.lib" /machine:IA64
 # Begin Special Build Tool
 SOURCE="$(InputPath)"
 PreLink_Desc=Checking existence of acpi/libraries directory
@@ -73,17 +72,15 @@ PostBuild_Cmds=copy bin\acpica64.lib ..\..\libraries\acpica64.lib	dir ..\..\libr
 # PROP Intermediate_Dir "\Acpi\Generate\msvc\AcpiSubsystem64\Debug"
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_MBCS" /D "_LIB" /YX /FD /GZ /c
-# ADD CPP /Gz /MT /Za /W4 /Gm /GX /Zi /Oa /Og /Os /Oy /I "..\..\source\Include" /D "ACPI_DEBUG_OUTPUT" /D "_DEBUG" /D "ACPI_DEBUGGER" /D "ACPI_DISASSEMBLER" /D "ACPI_LIBRARY" /D "_WINDOWS" /D PROCESSOR_ARCHITECTURE=x86 /D "WIN64" /D "_IA64" /FR /FD /c
-# SUBTRACT CPP /nologo
+# ADD CPP /nologo /Gz /MT /Za /W4 /GX /Z7 /Oa /Og /Os /Oy /I "..\..\source\Include" /D "ACPI_DEBUG" /D "_DEBUG" /D "ENABLE_DEBUGGER" /D "_WINDOWS" /D PROCESSOR_ARCHITECTURE=x86 /D "WIN64" /D "_IA64" /FR /FD /c
 # ADD BASE RSC /l 0x409 /d "_DEBUG"
 # ADD RSC /l 0x409
 BSC32=bscmake.exe
 # ADD BASE BSC32 /nologo
 # ADD BSC32 /nologo
-LIB32=link.exe -lib
+LIB32=xilink6.exe -lib
 # ADD BASE LIB32 /nologo
-# ADD LIB32 /out:"bin\acpica_dbg64.lib" /machine:IA64
-# SUBTRACT LIB32 /nologo
+# ADD LIB32 /nologo /out:"bin\acpica_dbg64.lib" /machine:IA64
 # Begin Special Build Tool
 SOURCE="$(InputPath)"
 PreLink_Desc=Checking existence of acpi/libraries directory
@@ -108,10 +105,6 @@ PostBuild_Cmds=copy bin\acpica_dbg64.lib ..\..\libraries\acpica_dbg64.lib	dir ..
 
 SOURCE=..\..\source\components\utilities\utalloc.c
 # ADD CPP /nologo
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\source\components\utilities\utcache.c
 # End Source File
 # Begin Source File
 
@@ -160,16 +153,8 @@ SOURCE=..\..\source\components\utilities\utmisc.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\source\components\utilities\utmutex.c
-# End Source File
-# Begin Source File
-
 SOURCE=..\..\source\components\utilities\utobject.c
 # ADD CPP /nologo
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\source\components\utilities\utstate.c
 # End Source File
 # Begin Source File
 
@@ -183,14 +168,6 @@ SOURCE=..\..\source\components\utilities\utxface.c
 # Begin Source File
 
 SOURCE=..\..\source\components\events\evevent.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\source\COMPONENTS\EVENTS\evgpe.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\SOURCE\COMPONENTS\EVENTS\evgpeblk.c
 # End Source File
 # Begin Source File
 
@@ -359,10 +336,6 @@ SOURCE=..\..\source\components\namespace\nsdump.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\source\COMPONENTS\NAMESPACE\nsdumpdv.c
-# End Source File
-# Begin Source File
-
 SOURCE=..\..\source\components\namespace\nseval.c
 # End Source File
 # Begin Source File
@@ -383,10 +356,6 @@ SOURCE=..\..\source\components\namespace\nsobject.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\source\COMPONENTS\NAMESPACE\nsparse.c
-# End Source File
-# Begin Source File
-
 SOURCE=..\..\source\components\namespace\nssearch.c
 # End Source File
 # Begin Source File
@@ -396,10 +365,6 @@ SOURCE=..\..\source\components\namespace\nsutils.c
 # Begin Source File
 
 SOURCE=..\..\source\components\namespace\nswalk.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\source\COMPONENTS\NAMESPACE\nsxfeval.c
 # End Source File
 # Begin Source File
 
@@ -471,15 +436,7 @@ SOURCE=..\..\source\components\tables\tbget.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\source\COMPONENTS\tables\tbgetall.c
-# End Source File
-# Begin Source File
-
 SOURCE=..\..\source\components\tables\tbinstal.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\source\COMPONENTS\tables\tbrsdt.c
 # End Source File
 # Begin Source File
 
@@ -500,10 +457,6 @@ SOURCE=..\..\source\components\tables\tbxfroot.c
 # Begin Source File
 
 SOURCE=..\..\source\components\interpreter\parser\psargs.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\source\components\interpreter\parser\psloop.c
 # End Source File
 # Begin Source File
 
@@ -534,16 +487,56 @@ SOURCE=..\..\source\components\interpreter\parser\pswalk.c
 SOURCE=..\..\source\components\interpreter\parser\psxface.c
 # End Source File
 # End Group
+# Begin Group "Debugger"
+
+# PROP Default_Filter ""
+# Begin Source File
+
+SOURCE=..\..\source\components\interpreter\debugger\dbcmds.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\components\interpreter\debugger\dbdisasm.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\components\interpreter\debugger\dbdisply.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\components\interpreter\debugger\dbexec.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\components\interpreter\debugger\dbfileio.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\components\interpreter\debugger\dbhistry.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\components\interpreter\debugger\dbinput.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\components\interpreter\debugger\dbstats.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\components\interpreter\debugger\dbutils.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\components\interpreter\debugger\dbxface.c
+# End Source File
+# End Group
 # Begin Group "Dispatcher"
 
 # PROP Default_Filter ""
 # Begin Source File
 
 SOURCE=..\..\source\components\interpreter\dispatcher\dsfield.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\source\COMPONENTS\INTERPRETER\DISPATCHER\dsinit.c
 # End Source File
 # Begin Source File
 
@@ -580,86 +573,6 @@ SOURCE=..\..\source\components\interpreter\dispatcher\dswscope.c
 # Begin Source File
 
 SOURCE=..\..\source\components\interpreter\dispatcher\dswstate.c
-# End Source File
-# End Group
-# Begin Group "Disassembler"
-
-# PROP Default_Filter ""
-# Begin Source File
-
-SOURCE=..\..\source\COMPONENTS\Disassembler\dmbuffer.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\source\COMPONENTS\Disassembler\dmnames.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\SOURCE\COMPONENTS\disassembler\dmobject.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\source\COMPONENTS\Disassembler\dmopcode.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\source\COMPONENTS\Disassembler\dmresrc.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\source\COMPONENTS\Disassembler\dmresrcl.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\source\COMPONENTS\Disassembler\dmresrcs.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\source\COMPONENTS\Disassembler\dmutils.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\source\COMPONENTS\Disassembler\dmwalk.c
-# End Source File
-# End Group
-# Begin Group "Debugger"
-
-# PROP Default_Filter ""
-# Begin Source File
-
-SOURCE=..\..\source\COMPONENTS\DEBUGGER\dbcmds.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\source\COMPONENTS\DEBUGGER\dbdisply.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\source\COMPONENTS\DEBUGGER\dbexec.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\source\COMPONENTS\DEBUGGER\dbfileio.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\source\COMPONENTS\DEBUGGER\dbhistry.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\source\COMPONENTS\DEBUGGER\dbinput.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\source\COMPONENTS\DEBUGGER\dbstats.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\source\COMPONENTS\DEBUGGER\dbutils.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\source\COMPONENTS\DEBUGGER\dbxface.c
 # End Source File
 # End Group
 # End Group
@@ -732,19 +645,11 @@ SOURCE=..\..\source\Include\platform\acmsvc.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\source\include\acnames.h
-# End Source File
-# Begin Source File
-
 SOURCE=..\..\source\Include\acnamesp.h
 # End Source File
 # Begin Source File
 
 SOURCE=..\..\source\Include\acobject.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\source\include\acopcode.h
 # End Source File
 # Begin Source File
 
@@ -789,6 +694,10 @@ SOURCE=..\..\source\Include\actbl1.h
 # Begin Source File
 
 SOURCE=..\..\source\Include\actbl2.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\Include\actbl71.h
 # End Source File
 # Begin Source File
 
