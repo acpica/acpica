@@ -116,6 +116,7 @@
 
 #include <acpi.h>
 #include <parser.h>
+#include <dispatch.h>
 #include <amlcode.h>
 #include <namesp.h>
 #include <parser.h>
@@ -646,7 +647,7 @@ DbSetMethodData (
             return;
         }
 
-        PsxMthStackSetValue (MTH_TYPE_ARG, Index, ObjDesc);
+        DsMthStackSetValue (MTH_TYPE_ARG, Index, ObjDesc);
         ObjDesc = WalkState->Arguments[Index].Object;
         OsdPrintf ("Arg%d: ", Index);
         DbDisplayInternalObject (ObjDesc);
@@ -662,7 +663,7 @@ DbSetMethodData (
             return;
         }
 
-        PsxMthStackSetValue (MTH_TYPE_LOCAL, Index, ObjDesc);
+        DsMthStackSetValue (MTH_TYPE_LOCAL, Index, ObjDesc);
         ObjDesc = WalkState->LocalVariables[Index].Object;
         OsdPrintf ("Local%d: ", Index);
         DbDisplayInternalObject (ObjDesc);
