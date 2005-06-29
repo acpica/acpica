@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: aclocal.h - Internal data types used across the ACPI subsystem
- *       $Revision: 1.172 $
+ *       $Revision: 1.173 $
  *
  *****************************************************************************/
 
@@ -659,7 +659,7 @@ ACPI_STATUS (*ACPI_EXECUTE_OP) (
  */
 typedef struct acpi_opcode_info
 {
-#ifdef ACPI_DISASSEMBLER
+#if defined(ACPI_DISASSEMBLER) || defined(ACPI_DEBUG)
     NATIVE_CHAR             *Name;          /* Opcode name (disassembler/debug only) */
 #endif
     UINT32                  ParseArgs;      /* Grammar/Parse time arguments */
