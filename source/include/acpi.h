@@ -120,6 +120,7 @@
 #include <acpiosd.h>        /* Interfaces to OS-dependent part (OSD) */
 #include <acpisubsys.h>     /* External interfaces to this part */
 #include <globals.h>        /* All global variables */
+#include <common.h>         /* Common (global) interfaces */
 
 
 
