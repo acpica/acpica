@@ -117,9 +117,9 @@
 #define __IEREGION_C__
 
 #include <acpi.h>
-#include <interpreter.h>
+#include <interp.h>
 #include <amlcode.h>
-#include <namespace.h>
+#include <namesp.h>
 #include <hardware.h>
 #include <events.h>
 
@@ -166,10 +166,8 @@ AmlSystemMemorySpaceHandler (
 
     case ADDRESS_SPACE_READ:
 
-        /* XXX: was PhysicalAddrPtr = PHYStoFP(Address); */
-
         /* 
-         * XXX: This may be too high an overhead to do every time.
+         * TBD: This may be too high an overhead to do every time.
          * Probably should have a mapping cached.
          */
 
@@ -206,9 +204,8 @@ AmlSystemMemorySpaceHandler (
 
     case ADDRESS_SPACE_WRITE:
 
-        /* XXX: was PhysicalAddrPtr = PHYStoFP(Address); */
 
-        /* XXX: This may be too high an overhead to do every time.
+        /* TBD: This may be too high an overhead to do every time.
          * Probably should have a mapping cached.
          */
         DEBUG_PRINT ((TRACE_OPREGION | VERBOSE_INFO),
@@ -382,26 +379,27 @@ AmlPciConfigSpaceHandler (
     UINT8                   PciReg;
     PCI_HANDLER_CONTEXT    *PCIContext;
 
+
     FUNCTION_TRACE ("AmlPciConfigSpaceHandler");
 
-    PCIContext = (PCI_HANDLER_CONTEXT *) Context;
+
 
     /*
      *  The arguments to Osd(Read|Write)PciCfg(Byte|Word|Dword) are:
      *
-     *  SegBus - 0xSSSSBBBB
-     *      SSSS is the PCI bus segment
-     *      BBBB is the PCI bus number
+     *  SegBus - 0xSSSSBBBB     - SSSS is the PCI bus segment
+     *                            BBBB is the PCI bus number
      *
-     *  DevFunc - 0xDDDDFFFF
-     *      DDDD is the PCI device number
-     *      FFFF is the PCI device function number
+     *  DevFunc - 0xDDDDFFFF    - DDDD is the PCI device number
+     *                            FFFF is the PCI device function number
      *
      *  RegNum - Config space register must be < 40h
      *
      *  Value - input value for write, output for read
      *
      */
+
+    PCIContext = (PCI_HANDLER_CONTEXT *) Context;
 
     PciBus = (PCIContext->SegNum) << 16;
     PciBus |= PCIContext->BusNum;
@@ -413,78 +411,80 @@ AmlPciConfigSpaceHandler (
 
     switch (Function)
     {
-        case ADDRESS_SPACE_READ:
-            {
-            DEBUG_PRINT ((TRACE_OPREGION | VERBOSE_INFO),
-                ("R%d S(%04x) B(%04x) D(%04x) F(%04x) R(%04x)\n", 
-                    BitWidth,PCIContext->SegNum,PCIContext->BusNum,PCIContext->DevNum,
-                    PCIContext->FuncNum, PciReg));
 
-                *Value  = 0;
+    case ADDRESS_SPACE_READ:
 
-                switch (BitWidth)
-                {
-                    /* PCI Register width */
+        DEBUG_PRINT ((TRACE_OPREGION | VERBOSE_INFO),
+                        ("R%d S(%04x) B(%04x) D(%04x) F(%04x) R(%04x)\n", 
+                        BitWidth,PCIContext->SegNum,PCIContext->BusNum,PCIContext->DevNum,
+                        PCIContext->FuncNum, PciReg));
 
-                    case 8:
-                        Status = OsdReadPciCfgByte (PciBus, DevFunc, PciReg, (UINT8 *) Value);
-                        break;
+        *Value  = 0;
 
-                    case 16:
-                        Status = OsdReadPciCfgWord (PciBus, DevFunc, PciReg, (UINT16 *) Value);
-                        break;
+        switch (BitWidth)
+        {
+        /* PCI Register width */
 
-                    case 32:
-                        Status = OsdReadPciCfgDword (PciBus, DevFunc, PciReg, Value);
-                        break;
+        case 8:
+            Status = OsdReadPciCfgByte (PciBus, DevFunc, PciReg, (UINT8 *) Value);
+            break;
 
-                    default:
-                        DEBUG_PRINT (ACPI_ERROR,
-                                ("AmlPciConfigSpaceHandler: Invalid PCIConfig width %d\n", BitWidth));
-                        Status = AE_AML_ERROR;
-                } /* Switch bitWidth */
+        case 16:
+            Status = OsdReadPciCfgWord (PciBus, DevFunc, PciReg, (UINT16 *) Value);
+            break;
 
-                break;
-            }
+        case 32:
+            Status = OsdReadPciCfgDword (PciBus, DevFunc, PciReg, Value);
+            break;
+
+        default:
+            DEBUG_PRINT (ACPI_ERROR,
+                    ("AmlPciConfigSpaceHandler: Invalid PCIConfig width %d\n", BitWidth));
+            Status = AE_AML_ERROR;
+
+        } /* Switch bitWidth */
+
+        break;
 
 
     case ADDRESS_SPACE_WRITE:
+
+        DEBUG_PRINT ((TRACE_OPREGION | VERBOSE_INFO),
+                        ("W%d S(%04x) B(%04x) D(%04x) F(%04x) R(%04x) D(%08x)\n", 
+                        BitWidth,PCIContext->SegNum,PCIContext->BusNum,PCIContext->DevNum,
+                        PCIContext->FuncNum, PciReg,*Value));
+
+        switch (BitWidth)
         {
-            DEBUG_PRINT ((TRACE_OPREGION | VERBOSE_INFO),
-                ("W%d S(%04x) B(%04x) D(%04x) F(%04x) R(%04x) D(%08x)\n", 
-                    BitWidth,PCIContext->SegNum,PCIContext->BusNum,PCIContext->DevNum,
-                    PCIContext->FuncNum, PciReg,*Value));
+        /* PCI Register width */
 
-            switch (BitWidth)
-            {
-                /* PCI Register width */
-
-                case 8:
-                    Status = OsdWritePciCfgByte (PciBus, DevFunc, PciReg, *(UINT8 *) Value);
-                    break;
-
-                case 16:
-                    Status = OsdWritePciCfgWord (PciBus, DevFunc, PciReg, *(UINT16 *) Value);
-                    break;
-
-                case 32:
-                    Status = OsdWritePciCfgDword (PciBus, DevFunc, PciReg, *Value);
-                    break;
-
-                default:
-                    DEBUG_PRINT (ACPI_ERROR, (
-                            "AmlPciConfigSpaceHandler: Invalid PCIConfig width %d\n", BitWidth));
-                    Status = AE_AML_ERROR;
-            } /* Switch bitWidth */
-
+        case 8:
+            Status = OsdWritePciCfgByte (PciBus, DevFunc, PciReg, *(UINT8 *) Value);
             break;
-        }
+
+        case 16:
+            Status = OsdWritePciCfgWord (PciBus, DevFunc, PciReg, *(UINT16 *) Value);
+            break;
+
+        case 32:
+            Status = OsdWritePciCfgDword (PciBus, DevFunc, PciReg, *Value);
+            break;
+
+        default:
+            DEBUG_PRINT (ACPI_ERROR, (
+                    "AmlPciConfigSpaceHandler: Invalid PCIConfig width %d\n", BitWidth));
+            Status = AE_AML_ERROR;
+
+        } /* Switch bitWidth */
+
+        break;
+
 
     default:
-        {
-            Status = AE_BAD_PARAMETER;
-            break;
-        }
+
+        Status = AE_BAD_PARAMETER;
+        break;
+
     }
 
     return_ACPI_STATUS (Status);
