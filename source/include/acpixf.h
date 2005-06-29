@@ -118,7 +118,7 @@
 #ifndef __ACPISUBSYS_H__
 #define __ACPISUBSYS_H__
 
-#include <datatypes.h>
+#include <acpitypes.h>
 #include <acpitables.h>
 
 
