@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: cmalloc - local memory allocation routines
- *              $Revision: 1.84 $
+ *              $Revision: 1.85 $
  *
  *****************************************************************************/
 
@@ -270,7 +270,7 @@ AcpiCmAddElementToAllocList (
     Element = AcpiCmSearchAllocList (Address);
     if (Element)
     {
-        REPORT_ERROR (("CmAddElementToAllocList: Address already present in list! (%p)\n", 
+        REPORT_ERROR (("CmAddElementToAllocList: Address already present in list! (%p)\n",
             Address));
 
         DEBUG_PRINT (ACPI_ERROR, ("Element %p Address %p\n", Element, Address));
