@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: cmalloc - local memory allocation routines
- *              $Revision: 1.68 $ 
+ *              $Revision: 1.69 $ 
  *
  *****************************************************************************/
 
@@ -199,7 +199,7 @@ AcpiCmAddElementToAllocList (
     UINT32                  Size,
     UINT8                   AllocType,
     UINT32                  Component,
-    ACPI_STRING             Module,
+    NATIVE_CHAR             *Module,
     UINT32                  Line)
 {
     ALLOCATION_INFO         *Element;
@@ -317,8 +317,8 @@ void
 AcpiCmDeleteElementFromAllocList (
     void                    *Address,
     UINT32                  Component,
-    ACPI_STRING             Module,
-    INT32                   Line)
+    NATIVE_CHAR             *Module,
+    UINT32                  Line)
 {
     ALLOCATION_INFO         *Element;
     UINT32                  *DwordPtr;
@@ -523,7 +523,7 @@ AcpiCmDumpAllocationInfo (
 void
 AcpiCmDumpCurrentAllocations (
     UINT32                  Component,
-    ACPI_STRING             Module)
+    NATIVE_CHAR             *Module)
 {
     ALLOCATION_INFO         *Element = AcpiGbl_HeadAllocPtr;
     UINT32                  i;
@@ -629,8 +629,8 @@ void *
 _CmAllocate (
     UINT32                  Size,
     UINT32                  Component,
-    ACPI_STRING             Module,
-    INT32                   Line)
+    NATIVE_CHAR             *Module,
+    UINT32                  Line)
 {
     void                    *Address = NULL;
     DEBUG_EXEC (\
@@ -701,8 +701,8 @@ void *
 _CmCallocate (
     UINT32                  Size,
     UINT32                  Component,
-    ACPI_STRING             Module,
-    INT32                   Line)
+    NATIVE_CHAR             *Module,
+    UINT32                  Line)
 {
     void                    *Address = NULL;
     DEBUG_EXEC (\
@@ -775,8 +775,8 @@ void
 _CmFree (
     void                    *Address,
     UINT32                  Component,
-    ACPI_STRING             Module,
-    INT32                   Line)
+    NATIVE_CHAR             *Module,
+    UINT32                  Line)
 {
     FUNCTION_TRACE_PTR ("_CmFree", Address);
 
