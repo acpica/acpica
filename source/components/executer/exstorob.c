@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exstorob - AML Interpreter object store support, store to object
- *              $Revision: 1.33 $
+ *              $Revision: 1.38 $
  *
  *****************************************************************************/
 
@@ -132,7 +132,7 @@
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiExCopyBufferToBuffer
+ * FUNCTION:    AcpiExStoreBufferToBuffer
  *
  * PARAMETERS:  SourceDesc          - Source object to copy
  *              TargetDesc          - Destination object of the copy
@@ -144,12 +144,15 @@
  ******************************************************************************/
 
 ACPI_STATUS
-AcpiExCopyBufferToBuffer (
+AcpiExStoreBufferToBuffer (
     ACPI_OPERAND_OBJECT     *SourceDesc,
     ACPI_OPERAND_OBJECT     *TargetDesc)
 {
     UINT32                  Length;
     UINT8                   *Buffer;
+
+
+    PROC_NAME ("ExStoreBufferToBuffer");
 
 
     /*
@@ -192,8 +195,8 @@ AcpiExCopyBufferToBuffer (
          */
         MEMCPY (TargetDesc->Buffer.Pointer, Buffer, TargetDesc->Buffer.Length);
 
-        DEBUG_PRINT (ACPI_INFO,
-            ("ExCopyBufferToBuffer: Truncating src buffer from %X to %X\n",
+        ACPI_DEBUG_PRINT ((ACPI_DB_INFO,
+            "Truncating src buffer from %X to %X\n",
             Length, TargetDesc->Buffer.Length));
     }
 
@@ -203,7 +206,7 @@ AcpiExCopyBufferToBuffer (
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiExCopyStringToString
+ * FUNCTION:    AcpiExStoreStringToString
  *
  * PARAMETERS:  SourceDesc          - Source object to copy
  *              TargetDesc          - Destination object of the copy
@@ -215,12 +218,15 @@ AcpiExCopyBufferToBuffer (
  ******************************************************************************/
 
 ACPI_STATUS
-AcpiExCopyStringToString (
+AcpiExStoreStringToString (
     ACPI_OPERAND_OBJECT     *SourceDesc,
     ACPI_OPERAND_OBJECT     *TargetDesc)
 {
     UINT32                  Length;
     UINT8                   *Buffer;
+
+
+    FUNCTION_ENTRY ();
 
 
     /*
@@ -247,7 +253,7 @@ AcpiExCopyStringToString (
          * large enough to hold the value
          */
         if (TargetDesc->String.Pointer &&
-            !AcpiTbSystemTablePointer (TargetDesc->String.Pointer))
+           (!(TargetDesc->Common.Flags & AOPOBJ_STATIC_POINTER)))
         {
             /*
              * Only free if not a pointer into the DSDT
@@ -260,9 +266,8 @@ AcpiExCopyStringToString (
         {
             return (AE_NO_MEMORY);
         }
+
         TargetDesc->String.Length = Length;
-
-
         MEMCPY (TargetDesc->String.Pointer, Buffer, Length);
     }
 
