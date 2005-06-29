@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslcompile - top level compile module
- *              $Revision: 1.40 $
+ *              $Revision: 1.42 $
  *
  *****************************************************************************/
 
@@ -192,10 +192,28 @@ void
 AslCompilerSignon (
     UINT32                  FileId)
 {
+    char                    *Prefix = "";
+
+
+    switch (FileId)
+    {
+    case ASL_FILE_ASM_SOURCE_OUTPUT:
+        Prefix = "; ";
+        break;
+
+    case ASL_FILE_HEX_OUTPUT:
+        Prefix = " * ";
+        break;
+   }
 
     FlPrintFile (FileId,
-        "\n%s %s [%s]\nACPI CA Subsystem version %X\n%s\nSupports ACPI Specification Revision 2.0\n\n",
-        CompilerId, CompilerVersion, __DATE__, ACPI_CA_VERSION, CompilerCopyright);
+        "%s\n%s%s %s [%s]\n%sACPI CA Subsystem version %X\n%s%s\n%sSupports ACPI Specification Revision 2.0\n%s\n",
+        Prefix,
+        Prefix, CompilerId, CompilerVersion, __DATE__,
+        Prefix, ACPI_CA_VERSION,
+        Prefix, CompilerCopyright,
+        Prefix,
+        Prefix);
 }
 
 
@@ -217,14 +235,27 @@ AslCompilerFileHeader (
 {
     struct tm               *NewTime;
     time_t                  Aclock;
+    char                    *Prefix = "";
 
+
+    switch (FileId)
+    {
+    case ASL_FILE_ASM_SOURCE_OUTPUT:
+        Prefix = "; ";
+        break;
+
+    case ASL_FILE_HEX_OUTPUT:
+        Prefix = " * ";
+        break;
+    }
 
     time (&Aclock);
     NewTime = localtime (&Aclock);
 
     FlPrintFile (FileId,
-        "Compilation of \"%s\" - %s\n",
-        Gbl_Files[ASL_FILE_INPUT].Filename, asctime (NewTime));
+        "%sCompilation of \"%s\" - %s%s\n",
+        Prefix, Gbl_Files[ASL_FILE_INPUT].Filename, asctime (NewTime),
+        Prefix);
 }
 
 
@@ -342,7 +373,6 @@ CmDoCompile (void)
      *
      * part one - check control methods
      */
-
     UtBeginEvent (i, "Analyze control method return types");
     AnalysisWalkInfo.MethodStack = NULL;
 
@@ -376,7 +406,6 @@ CmDoCompile (void)
                         AnOtherSemanticAnalysisWalkEnd, &AnalysisWalkInfo);
     UtEndEvent (i++);
 
-
     /* Calculate all AML package lengths */
 
     UtBeginEvent (i, "Finish AML package length generation");
@@ -398,7 +427,6 @@ CmDoCompile (void)
         return -1;
     }
 
-
     /* Code generation - emit the AML */
 
     UtBeginEvent (i, "Generate AML code and write output files");
@@ -411,6 +439,7 @@ CmDoCompile (void)
     /* Dump the AML as hex if requested */
 
     LsDoHexOutput ();
+    LsDoAsmOutput ();
 
     /* Dump the namespace to the .nsp file if requested */
 
@@ -420,7 +449,6 @@ CmDoCompile (void)
 
     UtEndEvent (13);
     CmCleanupAndExit ();
-
     return 0;
 }
 
@@ -495,7 +523,6 @@ CmCleanupAndExit (void)
                         Gbl_NsLookupCount);
     }
 
-
     if (Gbl_ListingFlag)
     {
         /* Flush any final AML in the buffer */
@@ -511,14 +538,12 @@ CmCleanupAndExit (void)
         FlPrintFile (ASL_FILE_LISTING_OUTPUT, "\n\n");
     }
 
-
     /* Close all open files */
 
     for (i = 2; i < ASL_MAX_FILE; i++)
     {
         FlCloseFile (i);
     }
-
 
     /*
      * TBD: SourceOutput should be .TMP, then rename if we want to keep it?
@@ -536,7 +561,6 @@ CmCleanupAndExit (void)
     }
 
     UtDisplaySummary (ASL_FILE_STDOUT);
-
     exit (0);
 }
 

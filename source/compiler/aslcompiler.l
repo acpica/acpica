@@ -3,7 +3,7 @@
 /******************************************************************************
  *
  * Module Name: aslcompiler.l - Flex input file
- *              $Revision: 1.45 $
+ *              $Revision: 1.47 $
  *
  *****************************************************************************/
 
@@ -704,12 +704,17 @@ InsertLineBuffer (
 
         if (Gbl_LineBufPtr > (Gbl_CurrentLineBuffer + (ASL_LINE_BUFFER_SIZE - 1)))
         {
+#if 0
+            /*
+             * Warning if we have split a long source line.
+             * <Probably overkill>
+             */
             sprintf (MsgBuffer, "Max %d", ASL_LINE_BUFFER_SIZE);
             AslCommonError (ASL_WARNING, ASL_MSG_LONG_LINE,
                             Gbl_CurrentLineNumber, Gbl_LogicalLineNumber,
                             Gbl_CurrentLineOffset, Gbl_CurrentColumn,
                             Gbl_Files[ASL_FILE_INPUT].Filename, MsgBuffer);
-
+#endif
 
             ResetCurrentLineBuffer ();
         }
@@ -963,7 +968,7 @@ DoCharacter:
                 break;
 
             default:
-            
+
                 /* Check for an octal digit (0-7) */
 
                 if (IS_OCTAL_DIGIT (StringChar))

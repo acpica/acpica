@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslcodegen - AML code generation
- *              $Revision: 1.36 $
+ *              $Revision: 1.37 $
  *
  *****************************************************************************/
 
@@ -143,7 +143,6 @@ void
 CgGenerateAmlOutput (void)
 {
 
-
     DbgPrint (ASL_DEBUG_OUTPUT, "\nWriting AML\n\n");
 
     FlSeekFile (ASL_FILE_SOURCE_OUTPUT, 0);
@@ -194,7 +193,6 @@ CgAmlWriteWalk (
         DbgPrint (ASL_TREE_OUTPUT,
             "%10.32s      ", Node->ExternalName);
     }
-
     else
     {
         DbgPrint (ASL_TREE_OUTPUT, "                ");
@@ -220,9 +218,7 @@ CgAmlWriteWalk (
 
 
     LsWriteNodeToListing (Node);
-
     CgWriteNode (Node);
-
     return (AE_OK);
 }
 
@@ -292,7 +288,6 @@ CgWriteAmlOpcode (
     {
         return;
     }
-
 
     switch (Node->AmlOpcode)
     {
@@ -368,7 +363,6 @@ CgWriteAmlOpcode (
              * Encode the "bytes to follow" in the first byte, top two bits.
              * The low-order nybble of the length is in the bottom 4 bits
              */
-
             PkgLenFirstByte = (UINT8) (((Node->AmlPkgLenBytes - 1) << 6) |
                                         (PkgLen.LenBytes[0] & 0x0F));
 
@@ -468,7 +462,6 @@ CgWriteTableHeader (
 
     TableHeader.AslCompilerRevision = CompilerCreatorRevision;
 
-
     /* Table length.  Checksum zero for now, will rewrite later */
 
     TableHeader.Length   = Gbl_TableLength;
@@ -547,7 +540,6 @@ CgWriteNode (
         return;
     }
 
-
     switch (Node->AmlOpcode)
     {
     case AML_RAW_DATA_BYTE:
@@ -575,7 +567,6 @@ CgWriteNode (
         }
         return;
     }
-
 
     switch (Node->ParseOpcode)
     {

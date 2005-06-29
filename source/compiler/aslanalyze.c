@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslanalyze.c - check for semantic errors
- *              $Revision: 1.53 $
+ *              $Revision: 1.54 $
  *
  *****************************************************************************/
 
@@ -378,7 +378,6 @@ AnFormatBtype (
                 strcat (Buffer, "|");
             }
             First = FALSE;
-
             strcat (Buffer, AcpiUtGetTypeName (Type));
         }
 
@@ -466,19 +465,16 @@ AnGetBtype (
             {
                 ThisNodeBtype = ReferencedNode->AcpiBtype;
             }
-
             else
             {
                 return (ACPI_UINT32_MAX -1);
             }
         }
     }
-
     else
     {
         ThisNodeBtype = PsNode->AcpiBtype;
     }
-
 
     return (ThisNodeBtype);
 }
@@ -512,7 +508,6 @@ AnCheckForReservedMethod (
     {
         return;
     }
-
 
     /* Check for a standard reserved method name */
 
@@ -559,7 +554,6 @@ AnCheckForReservedMethod (
      * GPE:  _Exx
      * EC:   _Qxx
      */
-
     if ((Node->ExternalName[1] == 'L') ||
         (Node->ExternalName[1] == 'E') ||
         (Node->ExternalName[1] == 'Q'))
@@ -598,7 +592,6 @@ AnCheckForReservedMethod (
      * warning, since the entire namespace starting with an underscore is
      * reserved by the ACPI spec.
      */
-
     AslError (ASL_WARNING, ASL_MSG_UNKNOWN_RESERVED_NAME, Node, Node->ExternalName);
     return;
 }
@@ -718,7 +711,6 @@ AnMethodAnalysisWalkBegin (
             LocalName[strlen (LocalName) -1] = (UINT8) (RegisterNumber + 0x30);
             AslError (ASL_ERROR, ASL_MSG_LOCAL_INIT, Node, LocalName);
         }
-
         break;
 
 
@@ -760,7 +752,6 @@ AnMethodAnalysisWalkBegin (
             AslError (ASL_ERROR, ASL_MSG_ARG_INIT, Node, ArgName);
         }
 
-
         /* Flag this arg if it is not a "real" argument to the method */
 
         if (RegisterNumber >= MethodInfo->NumArguments)
@@ -788,7 +779,6 @@ AnMethodAnalysisWalkBegin (
         {
             MethodInfo->NumReturnWithValue++;
         }
-
         else
         {
             MethodInfo->NumReturnNoValue++;
@@ -806,7 +796,6 @@ AnMethodAnalysisWalkBegin (
             {
                 break;
             }
-
             Next = Next->Parent;
         }
 
@@ -904,7 +893,6 @@ AnMethodAnalysisWalkEnd (
 
         WalkInfo->MethodStack = MethodInfo->Next;
 
-
         /*
          * Check if there is no return statement at the end of the
          * method AND we can actually get there -- i.e., the execution
@@ -917,23 +905,19 @@ AnMethodAnalysisWalkEnd (
              * No return statement, and execution can possibly exit
              * via this path.  This is equivalent to Return ()
              */
-
             MethodInfo->NumReturnNoValue++;
         }
-
 
         /*
          * Check for case where some return statements have a return value
          * and some do not.  Exit without a return statement is a return with
          * no value
          */
-
         if (MethodInfo->NumReturnNoValue &&
             MethodInfo->NumReturnWithValue)
         {
             AslError (ASL_WARNING, ASL_MSG_RETURN_TYPES, Node, Node->ExternalName);
         }
-
 
         /*
          * If there are any RETURN() statements with no value, or there is a
@@ -942,7 +926,6 @@ AnMethodAnalysisWalkEnd (
          * knowledge can be used to check method invocations that expect a
          * returned value.
          */
-
         if (MethodInfo->NumReturnNoValue)
         {
             if (MethodInfo->NumReturnWithValue)
@@ -961,7 +944,6 @@ AnMethodAnalysisWalkEnd (
          */
         AnCheckForReservedMethod (Node, MethodInfo);
         ACPI_MEM_FREE (MethodInfo);
-
         break;
 
 
@@ -1085,7 +1067,6 @@ AnMethodTypingWalkEnd (
 
             Node->ParentMethod->AcpiBtype |= ThisNodeBtype;
         }
-
         break;
     }
 
@@ -1172,7 +1153,6 @@ AnOperandTypecheckWalkEnd (
         return (AE_OK);
     }
 
-
     ArgNode         = Node->Child;
     RuntimeArgTypes = OpInfo->RuntimeArgs;
     OpcodeClass     = OpInfo->Class;
@@ -1183,7 +1163,6 @@ AnOperandTypecheckWalkEnd (
     {
         return (AE_OK);
     }
-
 
     switch (OpcodeClass)
     {
