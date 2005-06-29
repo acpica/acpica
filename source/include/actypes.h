@@ -21,7 +21,7 @@
 #ifndef _DATATYPES_H
 #define _DATATYPES_H
 
-#ifdef FLAT_MODEL
+// #ifdef FLAT_MODEL
 
 /* 
  * Data types - Fixed across all compilation models
@@ -77,8 +77,8 @@ typedef void            VOID;
 
 /* We want to obsolete everything that is NOT flat model */
 
-#else                                             	/* ! RMX   */
-    #pragma pack(1)
+/* #else                                             	/* ! RMX   */
+/*    #pragma pack(1)
     #include <graph.h>
 
     #define BYTE    	unsigned char
