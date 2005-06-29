@@ -571,7 +571,15 @@ DsExecEndOp (
 
         case AML_MethodOp:
             
-            /* End of execution, nothing else to do */
+            /* 
+             * End of a method execution 
+             * Delete the method's parse tree if asked to 
+             */
+            if (Gbl_WhenToParseMethods & METHOD_DELETE_AT_COMPLETION)
+            {
+                PsDeleteParseTree (WalkState->MethodDesc->Method.ParserOp);
+                WalkState->MethodDesc->Method.ParserOp = NULL;
+            }
 
             break;
 
