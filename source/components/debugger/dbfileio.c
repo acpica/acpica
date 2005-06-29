@@ -2,7 +2,7 @@
  *
  * Module Name: dbfileio - Debugger file I/O commands.  These can't usually
  *              be used when running the debugger in Ring 0 (Kernel mode)
- *              $Revision: 1.67 $
+ *              $Revision: 1.69 $
  *
  ******************************************************************************/
 
@@ -121,9 +121,9 @@
 #include "acnamesp.h"
 #include "actables.h"
 
-#if (defined ENABLE_DEBUGGER || defined ACPI_DISASSEMBLER)
+#if (defined ACPI_DEBUGGER || defined ACPI_DISASSEMBLER)
 
-#define _COMPONENT          ACPI_DEBUGGER
+#define _COMPONENT          ACPI_CA_DEBUGGER
         ACPI_MODULE_NAME    ("dbfileio")
 
 
@@ -180,7 +180,7 @@ AcpiDbMatchArgument (
 }
 
 
-#ifdef ENABLE_DEBUGGER
+#ifdef ACPI_DEBUGGER
 /*******************************************************************************
  *
  * FUNCTION:    AcpiDbCloseDebugFile
@@ -332,6 +332,10 @@ AcpiDbLoadTable(
     Actual = fread (AmlStart, 1, (size_t) AmlLength, fp);
     if (Actual == AmlLength)
     {
+        /* Now validate the checksum */
+
+        Status = AcpiTbVerifyTableChecksum (*TablePtr);
+
         return (AE_OK);
     }
 
@@ -420,6 +424,18 @@ AeLocalLoadTable (
 
 
 #ifdef ACPI_APPLICATION
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiDbGetAcpiTable
+ *
+ * PARAMETERS:  Filname         - File where table is located
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Get an ACPI table from a file
+ *
+ ******************************************************************************/
+
 ACPI_STATUS
 AcpiDbGetAcpiTable (
     NATIVE_CHAR             *Filename)
@@ -427,6 +443,7 @@ AcpiDbGetAcpiTable (
     FILE                    *fp;
     UINT32                  TableLength;
     ACPI_STATUS             Status;
+
 
     /* Open the file */
 
@@ -453,6 +470,7 @@ AcpiDbGetAcpiTable (
     return (AE_OK);
  }
 #endif
+
 
 /*******************************************************************************
  *
@@ -509,5 +527,5 @@ AcpiDbLoadAcpiTable (
 }
 
 
-#endif  /* ENABLE_DEBUGGER */
+#endif  /* ACPI_DEBUGGER */
 
