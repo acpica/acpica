@@ -1,6 +1,7 @@
 /******************************************************************************
  *
  * Module Name: cmalloc - local memory allocation routines
+ *              $Revision: 1.68 $ 
  *
  *****************************************************************************/
 
@@ -431,9 +432,11 @@ AcpiCmDeleteElementFromAllocList (
     {
         _REPORT_ERROR (Module, Line, Component,
                 "_CmFree: Entry not found in list");
-        DEBUG_PRINT (TRACE_ALLOCATIONS,
+        DEBUG_PRINT (ACPI_ERROR,
                 ("_CmFree: Entry %p was not found in allocation list\n",
                 Address));
+        AcpiCmReleaseMutex (ACPI_MTX_MEMORY);
+        return_VOID;
     }
 
 
