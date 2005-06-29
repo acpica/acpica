@@ -398,7 +398,7 @@ ConsumeAMLStreamBytes (
     UINT8               *AmlBuffer);
 
 void
-DumpCode (
+ConsumeAMLPackage (
     OpMode              LoadExecMode);
 
 void
