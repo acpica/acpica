@@ -151,6 +151,10 @@ void
 EvRestoreAcpiState (
     void);
 
+void
+EvTerminate (
+    void);
+
 
 /* Fixed event handling - evfixed */
 
