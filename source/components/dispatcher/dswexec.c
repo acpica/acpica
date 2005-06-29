@@ -2,7 +2,7 @@
  *
  * Module Name: dswexec - Dispatcher method execution callbacks;
  *                        dispatch to interpreter.
- *              $Revision: 1.111 $
+ *              $Revision: 1.113 $
  *
  *****************************************************************************/
 
@@ -528,7 +528,9 @@ AcpiDsExecEndOp (
                 (WalkState->Operands[0]->Common.Type == ACPI_TYPE_LOCAL_REFERENCE) &&
                 (WalkState->Operands[1]->Common.Type == ACPI_TYPE_LOCAL_REFERENCE) &&
                 (WalkState->Operands[0]->Reference.Opcode ==
-                 WalkState->Operands[1]->Reference.Opcode))
+                 WalkState->Operands[1]->Reference.Opcode) &&
+                (WalkState->Operands[0]->Reference.Offset ==
+                 WalkState->Operands[1]->Reference.Offset))
             {
                 Status = AE_OK;
             }
@@ -756,7 +758,7 @@ AcpiDsExecEndOp (
      * conditional predicate
      */
 
-    if ((ACPI_SUCCESS (Status)) && 
+    if ((ACPI_SUCCESS (Status)) &&
         (WalkState->ControlState) &&
         (WalkState->ControlState->Common.State ==
             ACPI_CONTROL_PREDICATE_EXECUTING) &&
@@ -776,7 +778,7 @@ Cleanup:
         !(Status & AE_CODE_CONTROL))
     {
         AcpiExExitInterpreter ();
-        Status = AcpiGbl_ExceptionHandler (Status, 
+        Status = AcpiGbl_ExceptionHandler (Status,
                     WalkState->MethodNode->Name.Integer, WalkState->Opcode,
                     WalkState->AmlOffset, NULL);
         AcpiExEnterInterpreter ();
