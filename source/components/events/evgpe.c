@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: evgpe - General Purpose Event handling and dispatch
- *              $Revision: 1.44 $
+ *              $Revision: 1.45 $
  *
  *****************************************************************************/
 
@@ -712,8 +712,8 @@ AcpiEvGpeDispatch (
         Status = AcpiHwClearGpe (GpeEventInfo);
         if (ACPI_FAILURE (Status))
         {
-            ACPI_REPORT_ERROR (("AcpiEvGpeDispatch: Unable to clear GPE[%2X]\n",
-                GpeNumber));
+            ACPI_REPORT_ERROR (("AcpiEvGpeDispatch: %s, Unable to clear GPE[%2X]\n",
+                AcpiFormatException (Status), GpeNumber));
             return_VALUE (ACPI_INTERRUPT_NOT_HANDLED);
         }
     }
@@ -755,8 +755,8 @@ AcpiEvGpeDispatch (
             if (ACPI_FAILURE (Status))
             {
                 ACPI_REPORT_ERROR ((
-                    "AcpiEvGpeDispatch: Unable to clear GPE[%2X]\n",
-                    GpeNumber));
+                    "AcpiEvGpeDispatch: %s, Unable to clear GPE[%2X]\n",
+                    AcpiFormatException (Status), GpeNumber));
                 return_VALUE (ACPI_INTERRUPT_NOT_HANDLED);
             }
         }
@@ -772,8 +772,8 @@ AcpiEvGpeDispatch (
         if (ACPI_FAILURE (Status))
         {
             ACPI_REPORT_ERROR ((
-                "AcpiEvGpeDispatch: Unable to disable GPE[%2X]\n",
-                GpeNumber));
+                "AcpiEvGpeDispatch: %s, Unable to disable GPE[%2X]\n",
+                AcpiFormatException (Status), GpeNumber));
             return_VALUE (ACPI_INTERRUPT_NOT_HANDLED);
         }
 
@@ -781,13 +781,13 @@ AcpiEvGpeDispatch (
          * Execute the method associated with the GPE
          * NOTE: Level-triggered GPEs are cleared after the method completes.
          */
-        if (ACPI_FAILURE (AcpiOsQueueForExecution (OSD_PRIORITY_GPE,
-                                AcpiEvAsynchExecuteGpeMethod,
-                                GpeEventInfo)))
+        Status = AcpiOsQueueForExecution (OSD_PRIORITY_GPE,
+                    AcpiEvAsynchExecuteGpeMethod, GpeEventInfo);
+        if (ACPI_FAILURE (Status))
         {
             ACPI_REPORT_ERROR ((
-                "AcpiEvGpeDispatch: Unable to queue handler for GPE[%2X], event is disabled\n",
-                GpeNumber));
+                "AcpiEvGpeDispatch: %s, Unable to queue handler for GPE[%2X] - event disabled\n",
+                AcpiFormatException (Status), GpeNumber));
         }
         break;
 
@@ -807,8 +807,8 @@ AcpiEvGpeDispatch (
         if (ACPI_FAILURE (Status))
         {
             ACPI_REPORT_ERROR ((
-                "AcpiEvGpeDispatch: Unable to disable GPE[%2X]\n",
-                GpeNumber));
+                "AcpiEvGpeDispatch: %s, Unable to disable GPE[%2X]\n",
+                AcpiFormatException (Status), GpeNumber));
             return_VALUE (ACPI_INTERRUPT_NOT_HANDLED);
         }
         break;
