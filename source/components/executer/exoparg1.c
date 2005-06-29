@@ -641,7 +641,7 @@ AmlExecMonadic2R (
 
         /* The object exists in the namespace, return TRUE */
 
-        RetDesc->Number.Value = -1;
+        RetDesc->Number.Value = (UINT32) -1;
         goto Cleanup;
         break;
 
