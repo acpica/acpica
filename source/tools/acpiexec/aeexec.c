@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: aeexec - Top level parse and execute routines
- *              $Revision: 1.31 $
+ *              $Revision: 1.33 $
  *
  *****************************************************************************/
 
@@ -9,8 +9,8 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, Intel Corp.  All rights
- * reserved.
+ * Some or all of this work - Copyright (c) 1999, 2000, Intel Corp.
+ * All rights reserved.
  *
  * 2. License
  *
@@ -191,21 +191,21 @@ AcpiCmFormatSpaceId (
 
 ACPI_STATUS
 RegionHandler (
-    UINT32                      Function,
-    ACPI_PHYSICAL_ADDRESS       Address,
-    UINT32                      BitWidth,
-    UINT32                      *Value,
-    void                        *HandlerContext,
-    void                        *RegionContext)
+    UINT32                  Function,
+    ACPI_PHYSICAL_ADDRESS   Address,
+    UINT32                  BitWidth,
+    UINT32                  *Value,
+    void                    *HandlerContext,
+    void                    *RegionContext)
 {
 
-    ACPI_OPERAND_OBJECT     *RegionObject = (ACPI_OPERAND_OBJECT*)RegionContext;
+    ACPI_OPERAND_OBJECT     *RegionObject = (ACPI_OPERAND_OBJECT*) RegionContext;
     ACPI_PHYSICAL_ADDRESS   BaseAddress;
     UINT32                  Length;
     BOOLEAN                 BufferExists;
     REGION                  *RegionElement;
     void                    *BufferValue;
-    UINT32                  ByteWidth;
+    UINT32                  ByteWidth; 
 
 
     /*
@@ -216,7 +216,7 @@ RegionHandler (
         return AE_OK;
     }
 
-    DEBUG_PRINT (TRACE_OPREGION, ("Operation Region request on %s at 0x%X\n", 
+    DEBUG_PRINT (TRACE_OPREGION, ("Operation Region request on %s at 0x%X\n",
             AcpiCmFormatSpaceId (RegionObject->Region.SpaceId),
             Address));
 
@@ -232,7 +232,6 @@ RegionHandler (
      * Search through the linked list for this region's buffer
      */
     BufferExists = FALSE;
-
     RegionElement = Regions.RegionList;
 
     if (0 != Regions.NumberOfRegions)
@@ -265,20 +264,17 @@ RegionHandler (
             return AE_NO_MEMORY;
         }
 
-        RegionElement->Buffer = AcpiOsAllocate (Length);
+        RegionElement->Buffer = AcpiOsCallocate (Length);
         if (!RegionElement->Buffer)
         {
             AcpiOsFree (RegionElement);
             return AE_NO_MEMORY;
         }
 
-        RegionElement->Address = BaseAddress;
+        RegionElement->Address      = BaseAddress;
+        RegionElement->Length       = Length;
+        RegionElement->NextRegion   = NULL;   
 
-        RegionElement->Length = Length;
-
-        MEMSET(RegionElement->Buffer, 0, Length);
-
-        RegionElement->NextRegion = NULL;
 
         /*
          * Increment the number of regions and put this one
@@ -307,20 +303,27 @@ RegionHandler (
 
     /*
      * The buffer exists and is pointed to by RegionElement.
-     *  We now need to verify the request is valid and perform the operation.
+     * We now need to verify the request is valid and perform the operation.
      *
      * NOTE: RegionElement->Length is in bytes, therefore it we compare against
-     *  ByteWidth (see above)
+     * ByteWidth (see above)
      */
-    if ((Address + ByteWidth) > (RegionElement->Address + RegionElement->Length))
+    if (((ACPI_INTEGER) Address + ByteWidth) > 
+        ((ACPI_INTEGER)(RegionElement->Address) + RegionElement->Length))
     {
-        return AE_BUFFER_OVERFLOW;
+        DEBUG_PRINT (ACPI_WARN, ("Request on [%4.4s] is beyond region limit Req-%lX+%lX, Base=%lX, Len-%lX\n",
+                &((RegionObject->Region.Node)->Name), (ACPI_INTEGER) Address, ByteWidth, (ACPI_INTEGER)(RegionElement->Address),
+                RegionElement->Length));
+
+        //return AE_BUFFER_OVERFLOW;
+        return AE_OK;
     }
 
     /*
      * Get BufferValue to point to the "address" in the buffer
      */
-    BufferValue = ((UINT8 *)RegionElement->Buffer + (Address - RegionElement->Address));
+    BufferValue = ((UINT8 *) RegionElement->Buffer + 
+                    ((ACPI_INTEGER) Address - (ACPI_INTEGER) RegionElement->Address));
 
     /*
      * Perform a read or write to the buffer space
@@ -468,13 +471,13 @@ AeInstallHandlers (void)
 
     for (i = 0; i < 3; i++)
     {
-        Status = AcpiRemoveAddressSpaceHandler (AcpiGbl_RootNode, 
+        Status = AcpiRemoveAddressSpaceHandler (AcpiGbl_RootNode,
                         (ACPI_ADDRESS_SPACE_TYPE) i, RegionHandler);
 
         /* Install handler at the root object.
          * TBD: all default handlers should be installed here!
          */
-        Status = AcpiInstallAddressSpaceHandler (AcpiGbl_RootNode, 
+        Status = AcpiInstallAddressSpaceHandler (AcpiGbl_RootNode,
                         (ACPI_ADDRESS_SPACE_TYPE) i, RegionHandler, RegionInit, NULL);
         if (ACPI_FAILURE (Status))
         {

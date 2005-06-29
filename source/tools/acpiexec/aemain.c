@@ -1,6 +1,7 @@
-    /******************************************************************************
+/******************************************************************************
  *
  * Module Name: aemain - Main routine for the AcpiExec utility
+ *              $Revision: 1.28 $
  *
  *****************************************************************************/
 
@@ -8,8 +9,8 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, Intel Corp.  All rights
- * reserved.
+ * Some or all of this work - Copyright (c) 1999, 2000, Intel Corp.
+ * All rights reserved.
  *
  * 2. License
  *
@@ -124,7 +125,7 @@
 #include "acnamesp.h"
 #include "acinterp.h"
 #include "acdebug.h"
-
+                      
 #include "aecommon.h"
 
 
@@ -138,8 +139,8 @@
  * anything.
  */
 
-FIXED_ACPI_DESCRIPTION_TABLE    LocalFADT;
-
+FADT_DESCRIPTOR             LocalFADT;
+ACPI_COMMON_FACS            LocalFACS;
 
 
 /******************************************************************************
@@ -245,7 +246,7 @@ main (
 
     /* Init ACPI and start debugger thread */
 
-    AcpiInitialize (NULL);
+    AcpiInitializeSubsystem ();
 
 
     /* Standalone filename is the only argument */
@@ -254,63 +255,88 @@ main (
     {
         opt_tables = TRUE;
         Filename = argv[optind];
+
+
         Status = AcpiDbLoadAcpiTable (Filename);
         if (ACPI_FAILURE (Status))
         {
+            printf ("**** Could not load input table, %s\n", AcpiCmFormatException (Status));
             goto enterloop;
         }
 
-        AcpiDbSetOutputDestination (DB_REDIRECTABLE_OUTPUT);
-        Status = AcpiLoadNamespace ();
-        AcpiDbSetOutputDestination (DB_CONSOLE_OUTPUT);
 
-        if (ACPI_FAILURE (Status))
-        {
-            printf ("**** Could not load namespace, %s\n", AcpiCmFormatException (Status));
-            goto enterloop;
-        }
+        /* Need a fake FADT so that the hardware component is happy */
+
+        ACPI_STORE_ADDRESS (LocalFADT.XGpe0Blk.Address, 0x70);
+        ACPI_STORE_ADDRESS (LocalFADT.XPm1aEvtBlk.Address, 0x80);
+        ACPI_STORE_ADDRESS (LocalFADT.XPm1aCntBlk.Address, 0x90);
+        ACPI_STORE_ADDRESS (LocalFADT.XPmTmrBlk.Address, 0xA0);
+
+        LocalFADT.Gpe0BlkLen    = 8;
+        LocalFADT.Pm1EvtLen     = 4;
+        LocalFADT.Pm1CntLen     = 4;
+        LocalFADT.PmTmLen       = 8;
+
+        AcpiGbl_FADT = &LocalFADT;
+        AcpiGbl_FACS = &LocalFACS;
+
 
         /* TBD:
          * Need a way to call this after the "LOAD" command
          */
         AeInstallHandlers ();
 
-        LocalFADT.Gpe0BlkLen = 19;
-        AcpiGbl_FACP = &LocalFADT;
+        Status = AcpiEnableSubsystem (ACPI_NO_HARDWARE_INIT   |
+                                        ACPI_NO_ACPI_ENABLE   |
+                                        ACPI_NO_EVENT_INIT);
+        if (ACPI_FAILURE (Status))
+        {
+            printf ("**** Could not EnableSubsystem, %s\n", AcpiCmFormatException (Status));
+            goto enterloop;
+        }
 
-        AcpiEnable ();
     }
 
 #ifdef _IA16
     else
     {
-        Status = AdFindDsdt (NULL, NULL);
+#include "16bit.h"
+                      
+        Status = AfFindDsdt (NULL, NULL);
         if (ACPI_FAILURE (Status))
         {
             goto enterloop;
         }
 
-        AcpiDbSetOutputDestination (DB_REDIRECTABLE_OUTPUT);
-        Status = AcpiLoadNamespace ();
-        AcpiDbSetOutputDestination (DB_CONSOLE_OUTPUT);
 
         if (ACPI_FAILURE (Status))
         {
-            printf ("**** Could not load namespace, %s\n", AcpiCmFormatException (Status));
+            printf ("**** Could not load ACPI tables, %s\n", AcpiCmFormatException (Status));
             goto enterloop;
         }
 
+
+        Status = AcpiNsLoadNamespace ();
+        if (ACPI_FAILURE (Status))
+        {
+            printf ("**** Could not load ACPI namespace, %s\n", AcpiCmFormatException (Status));
+            goto enterloop;
+        }
 
         /* TBD:
          * Need a way to call this after the "LOAD" command
          */
         AeInstallHandlers ();
 
-        LocalFADT.Gpe0BlkLen = 19;
-        AcpiGbl_FACP = &LocalFADT;
-
-        AcpiEnable ();
-    }
+        Status = AcpiEnableSubsystem (ACPI_NO_HARDWARE_INIT   |
+                                        ACPI_NO_ACPI_ENABLE   |
+                                        ACPI_NO_EVENT_INIT);
+        if (ACPI_FAILURE (Status))
+        {
+            printf ("**** Could not EnableSubsystem, %s\n", AcpiCmFormatException (Status));
+            goto enterloop;
+        }
+     }
 #endif
 
 enterloop:
