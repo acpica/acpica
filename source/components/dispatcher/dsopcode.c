@@ -2,7 +2,7 @@
  *
  * Module Name: dsopcode - Dispatcher Op Region support and handling of
  *                         "control" opcodes
- *              $Revision: 1.92 $
+ *              $Revision: 1.97 $
  *
  *****************************************************************************/
 
@@ -10,7 +10,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2004, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2005, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -153,7 +153,6 @@ AcpiDsExecuteArguments (
     ACPI_STATUS             Status;
     ACPI_PARSE_OBJECT       *Op;
     ACPI_WALK_STATE         *WalkState;
-    ACPI_PARSE_OBJECT       *Arg;
 
 
     ACPI_FUNCTION_TRACE ("DsExecuteArguments");
@@ -181,7 +180,7 @@ AcpiDsExecuteArguments (
     }
 
     Status = AcpiDsInitAmlWalk (WalkState, Op, NULL, AmlStart,
-                    AmlLength, NULL, NULL, 1);
+                    AmlLength, NULL, 1);
     if (ACPI_FAILURE (Status))
     {
         AcpiDsDeleteWalkState (WalkState);
@@ -204,9 +203,7 @@ AcpiDsExecuteArguments (
 
     /* Get and init the Op created above */
 
-    Arg = Op->Common.Value.Arg;
     Op->Common.Node = Node;
-    Arg->Common.Node = Node;
     AcpiPsDeleteParseTree (Op);
 
     /* Evaluate the deferred arguments */
@@ -230,7 +227,7 @@ AcpiDsExecuteArguments (
     /* Execute the opcode and arguments */
 
     Status = AcpiDsInitAmlWalk (WalkState, Op, NULL, AmlStart,
-                    AmlLength, NULL, NULL, 3);
+                    AmlLength, NULL, 3);
     if (ACPI_FAILURE (Status))
     {
         AcpiDsDeleteWalkState (WalkState);
@@ -327,8 +324,8 @@ AcpiDsGetBufferArguments (
     Node = ObjDesc->Buffer.Node;
     if (!Node)
     {
-        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
-                "No pointer back to NS node in buffer %p\n", ObjDesc));
+        ACPI_REPORT_ERROR ((
+                "No pointer back to NS node in buffer obj %p\n", ObjDesc));
         return_ACPI_STATUS (AE_AML_INTERNAL);
     }
 
@@ -376,7 +373,7 @@ AcpiDsGetPackageArguments (
     Node = ObjDesc->Package.Node;
     if (!Node)
     {
-        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
+        ACPI_REPORT_ERROR ((
                 "No pointer back to NS node in package %p\n", ObjDesc));
         return_ACPI_STATUS (AE_AML_INTERNAL);
     }
@@ -869,9 +866,8 @@ AcpiDsEvalRegionOperands (
  *
  * RETURN:      Status
  *
- * DESCRIPTION: Get the operands and complete the following data objec types:
- *              Buffer
- *              Package
+ * DESCRIPTION: Get the operands and complete the following data object types:
+ *              Buffer, Package.
  *
  ****************************************************************************/
 

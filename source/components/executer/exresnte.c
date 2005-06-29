@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exresnte - AML Interpreter object resolution
- *              $Revision: 1.62 $
+ *              $Revision: 1.66 $
  *
  *****************************************************************************/
 
@@ -10,7 +10,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2003, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2005, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -121,6 +121,8 @@
 #include "acdispat.h"
 #include "acinterp.h"
 #include "acnamesp.h"
+#include "acparser.h"
+#include "amlcode.h"
 
 
 #define _COMPONENT          ACPI_EXECUTER
@@ -180,11 +182,12 @@ AcpiExResolveNodeToValue (
     ACPI_DEBUG_PRINT ((ACPI_DB_EXEC, "Entry=%p SourceDesc=%p [%s]\n",
          Node, SourceDesc, AcpiUtGetTypeName (EntryType)));
 
-    if (EntryType == ACPI_TYPE_LOCAL_ALIAS)
+    if ((EntryType == ACPI_TYPE_LOCAL_ALIAS) ||
+        (EntryType == ACPI_TYPE_LOCAL_METHOD_ALIAS))
     {
         /* There is always exactly one level of indirection */
 
-        Node       = (ACPI_NAMESPACE_NODE *) Node->Object;
+        Node       = ACPI_CAST_PTR (ACPI_NAMESPACE_NODE, Node->Object);
         SourceDesc = AcpiNsGetAttachedObject (Node);
         EntryType  = AcpiNsGetType ((ACPI_HANDLE) Node);
         *ObjectPtr = Node;
@@ -327,12 +330,27 @@ AcpiExResolveNodeToValue (
 
     case ACPI_TYPE_LOCAL_REFERENCE:
 
-        /* No named references are allowed here */
+        switch (SourceDesc->Reference.Opcode)
+        {
+        case AML_LOAD_OP:
 
-        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Unsupported Reference opcode %X\n",
-            SourceDesc->Reference.Opcode));
+            /* This is a DdbHandle */
+            /* Return an additional reference to the object */
 
-        return_ACPI_STATUS (AE_AML_OPERAND_TYPE);
+            ObjDesc = SourceDesc;
+            AcpiUtAddReference (ObjDesc);
+            break;
+
+        default:
+            /* No named references are allowed here */
+
+            ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Unsupported Reference opcode %X (%s)\n",
+                SourceDesc->Reference.Opcode,
+                AcpiPsGetOpcodeName (SourceDesc->Reference.Opcode)));
+
+            return_ACPI_STATUS (AE_AML_OPERAND_TYPE);
+        }
+        break;
 
 
     /* Default case is for unknown types */

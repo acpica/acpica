@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: excreate - Named object creation
- *              $Revision: 1.99 $
+ *              $Revision: 1.104 $
  *
  *****************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2003, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2005, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -159,7 +159,8 @@ AcpiExCreateAlias (
     AliasNode =  (ACPI_NAMESPACE_NODE *) WalkState->Operands[0];
     TargetNode = (ACPI_NAMESPACE_NODE *) WalkState->Operands[1];
 
-    if (TargetNode->Type == ACPI_TYPE_LOCAL_ALIAS)
+    if ((TargetNode->Type == ACPI_TYPE_LOCAL_ALIAS)  ||
+        (TargetNode->Type == ACPI_TYPE_LOCAL_METHOD_ALIAS))
     {
         /*
          * Dereference an existing alias so that we don't create a chain
@@ -167,7 +168,7 @@ AcpiExCreateAlias (
          * always exactly one level of indirection away from the
          * actual aliased name.
          */
-        TargetNode = (ACPI_NAMESPACE_NODE *) TargetNode->Object;
+        TargetNode = ACPI_CAST_PTR (ACPI_NAMESPACE_NODE, TargetNode->Object);
     }
 
     /*
@@ -191,6 +192,17 @@ AcpiExCreateAlias (
          * types, the object can change dynamically via a Store.
          */
         AliasNode->Type = ACPI_TYPE_LOCAL_ALIAS;
+        AliasNode->Object = ACPI_CAST_PTR (ACPI_OPERAND_OBJECT, TargetNode);
+        break;
+
+    case ACPI_TYPE_METHOD:
+
+        /*
+         * The new alias has the type ALIAS and points to the original
+         * NS node, not the object itself.  This is because for these
+         * types, the object can change dynamically via a Store.
+         */
+        AliasNode->Type = ACPI_TYPE_LOCAL_METHOD_ALIAS;
         AliasNode->Object = ACPI_CAST_PTR (ACPI_OPERAND_OBJECT, TargetNode);
         break;
 
@@ -367,7 +379,7 @@ AcpiExCreateRegion (
     ACPI_FUNCTION_TRACE ("ExCreateRegion");
 
 
-    /* Get the Node from the object stack  */
+    /* Get the Namespace Node */
 
     Node = WalkState->Op->Common.Node;
 
@@ -393,7 +405,6 @@ AcpiExCreateRegion (
 
     ACPI_DEBUG_PRINT ((ACPI_DB_LOAD, "Region Type - %s (%X)\n",
                     AcpiUtGetRegionName (RegionSpace), RegionSpace));
-
 
     /* Create the region descriptor */
 
@@ -459,6 +470,7 @@ AcpiExCreateTableRegion (
 
     ACPI_FUNCTION_TRACE ("ExCreateTableRegion");
 
+
     /* Get the Node from the object stack  */
 
     Node = WalkState->Op->Common.Node;
@@ -477,7 +489,6 @@ AcpiExCreateTableRegion (
     Status = AcpiTbFindTable (Operand[1]->String.Pointer,
                               Operand[2]->String.Pointer,
                               Operand[3]->String.Pointer, &Table);
-
     if (ACPI_FAILURE (Status))
     {
         return_ACPI_STATUS (Status);
@@ -581,7 +592,6 @@ AcpiExCreateProcessor (
     Status = AcpiNsAttachObject ((ACPI_NAMESPACE_NODE *) Operand[0],
                     ObjDesc, ACPI_TYPE_PROCESSOR);
 
-
     /* Remove local reference to the object */
 
     AcpiUtRemoveReference (ObjDesc);
@@ -633,7 +643,6 @@ AcpiExCreatePowerResource (
     Status = AcpiNsAttachObject ((ACPI_NAMESPACE_NODE *) Operand[0],
                     ObjDesc, ACPI_TYPE_POWER);
 
-
     /* Remove local reference to the object */
 
     AcpiUtRemoveReference (ObjDesc);
@@ -684,30 +693,36 @@ AcpiExCreateMethod (
     ObjDesc->Method.AmlStart  = AmlStart;
     ObjDesc->Method.AmlLength = AmlLength;
 
-    /* disassemble the method flags */
-
+    /*
+     * Disassemble the method flags.  Split off the Arg Count
+     * for efficiency
+     */
     MethodFlags = (UINT8) Operand[1]->Integer.Value;
 
-    ObjDesc->Method.MethodFlags = MethodFlags;
-    ObjDesc->Method.ParamCount  = (UINT8) (MethodFlags & METHOD_FLAGS_ARG_COUNT);
+    ObjDesc->Method.MethodFlags = (UINT8) (MethodFlags & ~AML_METHOD_ARG_COUNT);
+    ObjDesc->Method.ParamCount  = (UINT8) (MethodFlags & AML_METHOD_ARG_COUNT);
 
     /*
      * Get the concurrency count.  If required, a semaphore will be
      * created for this method when it is parsed.
      */
-    if (MethodFlags & METHOD_FLAGS_SERIALIZED)
+    if (AcpiGbl_AllMethodsSerialized)
+    {
+        ObjDesc->Method.Concurrency = 1;
+        ObjDesc->Method.MethodFlags |= AML_METHOD_SERIALIZED;
+    }
+    else if (MethodFlags & AML_METHOD_SERIALIZED)
     {
         /*
          * ACPI 1.0: Concurrency = 1
          * ACPI 2.0: Concurrency = (SyncLevel (in method declaration) + 1)
          */
         ObjDesc->Method.Concurrency = (UINT8)
-                        (((MethodFlags & METHOD_FLAGS_SYNCH_LEVEL) >> 4) + 1);
+                        (((MethodFlags & AML_METHOD_SYNCH_LEVEL) >> 4) + 1);
     }
-
     else
     {
-        ObjDesc->Method.Concurrency = INFINITE_CONCURRENCY;
+        ObjDesc->Method.Concurrency = ACPI_INFINITE_CONCURRENCY;
     }
 
     /* Attach the new object to the method Node */

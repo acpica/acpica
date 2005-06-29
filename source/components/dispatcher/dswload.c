@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dswload - Dispatcher namespace load callbacks
- *              $Revision: 1.83 $
+ *              $Revision: 1.89 $
  *
  *****************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2003, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2005, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -124,6 +124,9 @@
 #include "acnamesp.h"
 #include "acevents.h"
 
+#ifdef _ACPI_ASL_COMPILER
+#include "acdisasm.h"
+#endif
 
 #define _COMPONENT          ACPI_DISPATCHER
         ACPI_MODULE_NAME    ("dswload")
@@ -246,7 +249,7 @@ AcpiDsLoad1BeginOp (
     ObjectType = WalkState->OpInfo->ObjectType;
 
     ACPI_DEBUG_PRINT ((ACPI_DB_DISPATCH,
-        "State=%p Op=%p [%s] ", WalkState, Op, AcpiUtGetTypeName (ObjectType)));
+        "State=%p Op=%p [%s]\n", WalkState, Op, AcpiUtGetTypeName (ObjectType)));
 
     switch (WalkState->Opcode)
     {
@@ -259,6 +262,19 @@ AcpiDsLoad1BeginOp (
          */
         Status = AcpiNsLookup (WalkState->ScopeInfo, Path, ObjectType,
                         ACPI_IMODE_EXECUTE, ACPI_NS_SEARCH_PARENT, WalkState, &(Node));
+#ifdef _ACPI_ASL_COMPILER
+        if (Status == AE_NOT_FOUND)
+        {
+            /*
+             * Table disassembly:
+             * Target of Scope() not found.  Generate an External for it, and
+             * insert the name into the namespace.
+             */
+            AcpiDmAddToExternalList (Path);
+            Status = AcpiNsLookup (WalkState->ScopeInfo, Path, ObjectType,
+                       ACPI_IMODE_LOAD_PASS1, ACPI_NS_SEARCH_PARENT, WalkState, &(Node));
+        }
+#endif
         if (ACPI_FAILURE (Status))
         {
             ACPI_REPORT_NSERROR (Path, Status);
@@ -330,16 +346,27 @@ AcpiDsLoad1BeginOp (
          *       BufferField, or Package), the name of the object is already
          *       in the namespace.
          */
+        if (WalkState->DeferredNode)
+        {
+            /* This name is already in the namespace, get the node */
+
+            Node = WalkState->DeferredNode;
+            Status = AE_OK;
+            break;
+        }
+
         Flags = ACPI_NS_NO_UPSEARCH;
         if ((WalkState->Opcode != AML_SCOPE_OP) &&
             (!(WalkState->ParseFlags & ACPI_PARSE_DEFERRED_OP)))
         {
             Flags |= ACPI_NS_ERROR_IF_FOUND;
-            ACPI_DEBUG_PRINT_RAW ((ACPI_DB_DISPATCH, "Cannot already exist\n"));
+            ACPI_DEBUG_PRINT ((ACPI_DB_DISPATCH, "[%s] Cannot already exist\n",
+                    AcpiUtGetTypeName (ObjectType)));
         }
         else
         {
-            ACPI_DEBUG_PRINT_RAW ((ACPI_DB_DISPATCH, "Both Find or Create allowed\n"));
+            ACPI_DEBUG_PRINT ((ACPI_DB_DISPATCH, "[%s] Both Find or Create allowed\n",
+                    AcpiUtGetTypeName (ObjectType)));
         }
 
         /*
@@ -626,7 +653,18 @@ AcpiDsLoad2BeginOp (
                         ACPI_IMODE_EXECUTE, ACPI_NS_SEARCH_PARENT, WalkState, &(Node));
         if (ACPI_FAILURE (Status))
         {
+#ifdef _ACPI_ASL_COMPILER
+            if (Status == AE_NOT_FOUND)
+            {
+                Status = AE_OK;
+            }
+            else
+            {
+                ACPI_REPORT_NSERROR (BufferPtr, Status);
+            }
+#else
             ACPI_REPORT_NSERROR (BufferPtr, Status);
+#endif
             return_ACPI_STATUS (Status);
         }
         /*
@@ -700,7 +738,18 @@ AcpiDsLoad2BeginOp (
          * Enter the named type into the internal namespace.  We enter the name
          * as we go downward in the parse tree.  Any necessary subobjects that involve
          * arguments to the opcode must be created as we go back up the parse tree later.
+         *
+         * Note: Name may already exist if we are executing a deferred opcode.
          */
+        if (WalkState->DeferredNode)
+        {
+            /* This name is already in the namespace, get the node */
+
+            Node = WalkState->DeferredNode;
+            Status = AE_OK;
+            break;
+        }
+
         Status = AcpiNsLookup (WalkState->ScopeInfo, BufferPtr, ObjectType,
                         ACPI_IMODE_EXECUTE, ACPI_NS_NO_UPSEARCH, WalkState, &(Node));
         break;

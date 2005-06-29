@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dsobject - Dispatcher object management routines
- *              $Revision: 1.118 $
+ *              $Revision: 1.121 $
  *
  *****************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2004, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2005, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -622,7 +622,7 @@ AcpiDsInitObjectFromOp (
 
             case AML_REVISION_OP:
 
-                ObjDesc->Integer.Value = ACPI_CA_SUPPORT_LEVEL;
+                ObjDesc->Integer.Value = ACPI_CA_VERSION;
                 break;
 
             default:
@@ -689,6 +689,11 @@ AcpiDsInitObjectFromOp (
 
             ObjDesc->Reference.Opcode = AML_ARG_OP;
             ObjDesc->Reference.Offset = Opcode - AML_ARG_OP;
+
+#ifndef ACPI_NO_METHOD_EXECUTION
+            Status = AcpiDsMethodDataGetNode (AML_ARG_OP, ObjDesc->Reference.Offset,
+                        WalkState, (ACPI_NAMESPACE_NODE **) &ObjDesc->Reference.Object);
+#endif
             break;
 
         default: /* Other literals, etc.. */

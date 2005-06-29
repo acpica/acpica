@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: psparse - Parser top level AML parse routines
- *              $Revision: 1.139 $
+ *              $Revision: 1.147 $
  *
  *****************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2003, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2005, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -240,141 +240,143 @@ AcpiPsCompleteThisOp (
 
     /* Delete this op and the subtree below it if asked to */
 
-    if (((WalkState->ParseFlags & ACPI_PARSE_TREE_MASK) == ACPI_PARSE_DELETE_TREE) &&
-        (WalkState->OpInfo->Class != AML_CLASS_ARGUMENT))
+    if (((WalkState->ParseFlags & ACPI_PARSE_TREE_MASK) != ACPI_PARSE_DELETE_TREE) ||
+         (WalkState->OpInfo->Class == AML_CLASS_ARGUMENT))
     {
-        /* Make sure that we only delete this subtree */
-
-        if (Op->Common.Parent)
-        {
-            /*
-             * Check if we need to replace the operator and its subtree
-             * with a return value op (placeholder op)
-             */
-            ParentInfo  = AcpiPsGetOpcodeInfo (Op->Common.Parent->Common.AmlOpcode);
-
-            switch (ParentInfo->Class)
-            {
-            case AML_CLASS_CONTROL:
-                break;
-
-            case AML_CLASS_CREATE:
-
-                /*
-                 * These opcodes contain TermArg operands.  The current
-                 * op must be replaced by a placeholder return op
-                 */
-                ReplacementOp = AcpiPsAllocOp (AML_INT_RETURN_VALUE_OP);
-                if (!ReplacementOp)
-                {
-                    return_VOID;
-                }
-                break;
-
-            case AML_CLASS_NAMED_OBJECT:
-
-                /*
-                 * These opcodes contain TermArg operands.  The current
-                 * op must be replaced by a placeholder return op
-                 */
-                if ((Op->Common.Parent->Common.AmlOpcode == AML_REGION_OP)       ||
-                    (Op->Common.Parent->Common.AmlOpcode == AML_DATA_REGION_OP)  ||
-                    (Op->Common.Parent->Common.AmlOpcode == AML_BUFFER_OP)       ||
-                    (Op->Common.Parent->Common.AmlOpcode == AML_PACKAGE_OP)      ||
-                    (Op->Common.Parent->Common.AmlOpcode == AML_VAR_PACKAGE_OP))
-                {
-                    ReplacementOp = AcpiPsAllocOp (AML_INT_RETURN_VALUE_OP);
-                    if (!ReplacementOp)
-                    {
-                        return_VOID;
-                    }
-                }
-
-                if ((Op->Common.Parent->Common.AmlOpcode == AML_NAME_OP) &&
-                    (WalkState->DescendingCallback != AcpiDsExecBeginOp))
-
-                {
-                    if ((Op->Common.AmlOpcode == AML_BUFFER_OP) ||
-                        (Op->Common.AmlOpcode == AML_PACKAGE_OP) ||
-                        (Op->Common.AmlOpcode == AML_VAR_PACKAGE_OP))
-                    {
-                        ReplacementOp = AcpiPsAllocOp (Op->Common.AmlOpcode);
-                        if (!ReplacementOp)
-                        {
-                            return_VOID;
-                        }
-
-                        ReplacementOp->Named.Data = Op->Named.Data;
-                        ReplacementOp->Named.Length = Op->Named.Length;
-                    }
-                }
-                break;
-
-            default:
-                ReplacementOp = AcpiPsAllocOp (AML_INT_RETURN_VALUE_OP);
-                if (!ReplacementOp)
-                {
-                    return_VOID;
-                }
-            }
-
-            /* We must unlink this op from the parent tree */
-
-            Prev = Op->Common.Parent->Common.Value.Arg;
-            if (Prev == Op)
-            {
-                /* This op is the first in the list */
-
-                if (ReplacementOp)
-                {
-                    ReplacementOp->Common.Parent        = Op->Common.Parent;
-                    ReplacementOp->Common.Value.Arg     = NULL;
-                    ReplacementOp->Common.Node          = Op->Common.Node;
-                    Op->Common.Parent->Common.Value.Arg = ReplacementOp;
-                    ReplacementOp->Common.Next          = Op->Common.Next;
-                }
-                else
-                {
-                    Op->Common.Parent->Common.Value.Arg    = Op->Common.Next;
-                }
-            }
-
-            /* Search the parent list */
-
-            else while (Prev)
-            {
-                /* Traverse all siblings in the parent's argument list */
-
-                Next = Prev->Common.Next;
-                if (Next == Op)
-                {
-                    if (ReplacementOp)
-                    {
-                        ReplacementOp->Common.Parent    = Op->Common.Parent;
-                        ReplacementOp->Common.Value.Arg = NULL;
-                        ReplacementOp->Common.Node      = Op->Common.Node;
-                        Prev->Common.Next               = ReplacementOp;
-                        ReplacementOp->Common.Next      = Op->Common.Next;
-                        Next = NULL;
-                    }
-                    else
-                    {
-                        Prev->Common.Next = Op->Common.Next;
-                        Next = NULL;
-                    }
-                }
-
-                Prev = Next;
-            }
-        }
-
-        /* Now we can actually delete the subtree rooted at op */
-
-        AcpiPsDeleteParseTree (Op);
-
         return_VOID;
     }
 
+    /* Make sure that we only delete this subtree */
+
+    if (Op->Common.Parent)
+    {
+        /*
+         * Check if we need to replace the operator and its subtree
+         * with a return value op (placeholder op)
+         */
+        ParentInfo  = AcpiPsGetOpcodeInfo (Op->Common.Parent->Common.AmlOpcode);
+
+        switch (ParentInfo->Class)
+        {
+        case AML_CLASS_CONTROL:
+            break;
+
+        case AML_CLASS_CREATE:
+
+            /*
+             * These opcodes contain TermArg operands.  The current
+             * op must be replaced by a placeholder return op
+             */
+            ReplacementOp = AcpiPsAllocOp (AML_INT_RETURN_VALUE_OP);
+            if (!ReplacementOp)
+            {
+                goto Cleanup;
+            }
+            break;
+
+        case AML_CLASS_NAMED_OBJECT:
+
+            /*
+             * These opcodes contain TermArg operands.  The current
+             * op must be replaced by a placeholder return op
+             */
+            if ((Op->Common.Parent->Common.AmlOpcode == AML_REGION_OP)       ||
+                (Op->Common.Parent->Common.AmlOpcode == AML_DATA_REGION_OP)  ||
+                (Op->Common.Parent->Common.AmlOpcode == AML_BUFFER_OP)       ||
+                (Op->Common.Parent->Common.AmlOpcode == AML_PACKAGE_OP)      ||
+                (Op->Common.Parent->Common.AmlOpcode == AML_VAR_PACKAGE_OP))
+            {
+                ReplacementOp = AcpiPsAllocOp (AML_INT_RETURN_VALUE_OP);
+                if (!ReplacementOp)
+                {
+                    goto Cleanup;
+                }
+            }
+
+            if ((Op->Common.Parent->Common.AmlOpcode == AML_NAME_OP) &&
+                (WalkState->DescendingCallback != AcpiDsExecBeginOp))
+
+            {
+                if ((Op->Common.AmlOpcode == AML_BUFFER_OP) ||
+                    (Op->Common.AmlOpcode == AML_PACKAGE_OP) ||
+                    (Op->Common.AmlOpcode == AML_VAR_PACKAGE_OP))
+                {
+                    ReplacementOp = AcpiPsAllocOp (Op->Common.AmlOpcode);
+                    if (!ReplacementOp)
+                    {
+                        goto Cleanup;
+                    }
+
+                    ReplacementOp->Named.Data = Op->Named.Data;
+                    ReplacementOp->Named.Length = Op->Named.Length;
+                }
+            }
+            break;
+
+        default:
+            ReplacementOp = AcpiPsAllocOp (AML_INT_RETURN_VALUE_OP);
+            if (!ReplacementOp)
+            {
+                goto Cleanup;
+            }
+        }
+
+        /* We must unlink this op from the parent tree */
+
+        Prev = Op->Common.Parent->Common.Value.Arg;
+        if (Prev == Op)
+        {
+            /* This op is the first in the list */
+
+            if (ReplacementOp)
+            {
+                ReplacementOp->Common.Parent        = Op->Common.Parent;
+                ReplacementOp->Common.Value.Arg     = NULL;
+                ReplacementOp->Common.Node          = Op->Common.Node;
+                Op->Common.Parent->Common.Value.Arg = ReplacementOp;
+                ReplacementOp->Common.Next          = Op->Common.Next;
+            }
+            else
+            {
+                Op->Common.Parent->Common.Value.Arg = Op->Common.Next;
+            }
+        }
+
+        /* Search the parent list */
+
+        else while (Prev)
+        {
+            /* Traverse all siblings in the parent's argument list */
+
+            Next = Prev->Common.Next;
+            if (Next == Op)
+            {
+                if (ReplacementOp)
+                {
+                    ReplacementOp->Common.Parent    = Op->Common.Parent;
+                    ReplacementOp->Common.Value.Arg = NULL;
+                    ReplacementOp->Common.Node      = Op->Common.Node;
+                    Prev->Common.Next               = ReplacementOp;
+                    ReplacementOp->Common.Next      = Op->Common.Next;
+                    Next = NULL;
+                }
+                else
+                {
+                    Prev->Common.Next = Op->Common.Next;
+                    Next = NULL;
+                }
+            }
+
+            Prev = Next;
+        }
+    }
+
+
+Cleanup:
+
+    /* Now we can actually delete the subtree rooted at op */
+
+    AcpiPsDeleteParseTree (Op);
     return_VOID;
 }
 
@@ -522,7 +524,7 @@ AcpiPsParseLoop (
     ACPI_STATUS             Status = AE_OK;
     ACPI_PARSE_OBJECT       *Op = NULL;     /* current op */
     ACPI_PARSE_OBJECT       *Arg = NULL;
-    ACPI_PARSE_OBJECT       PreOp;
+    ACPI_PARSE_OBJECT       *PreOp = NULL;
     ACPI_PARSE_STATE        *ParserState;
     UINT8                   *AmlOpStart = NULL;
 
@@ -533,7 +535,6 @@ AcpiPsParseLoop (
     {
         return_ACPI_STATUS (AE_BAD_PARAMETER);
     }
-
 
     ParserState = &WalkState->ParserState;
     WalkState->ArgTypes = 0;
@@ -604,8 +605,8 @@ AcpiPsParseLoop (
         {
             /* Get the next opcode from the AML stream */
 
-            WalkState->AmlOffset = ACPI_PTR_DIFF (ParserState->Aml,
-                                                  ParserState->AmlStart);
+            WalkState->AmlOffset = (UINT32) ACPI_PTR_DIFF (ParserState->Aml,
+                                                           ParserState->AmlStart);
             WalkState->Opcode    = AcpiPsPeekOpcode (ParserState);
 
             /*
@@ -655,8 +656,20 @@ AcpiPsParseLoop (
 
             if (WalkState->OpInfo->Flags & AML_NAMED)
             {
-                PreOp.Common.Value.Arg = NULL;
-                PreOp.Common.AmlOpcode = WalkState->Opcode;
+                /* Allocate a new PreOp if necessary */
+
+                if (!PreOp)
+                {
+                    PreOp = AcpiPsAllocOp (WalkState->Opcode);
+                    if (!PreOp)
+                    {
+                        Status = AE_NO_MEMORY;
+                        goto CloseThisOp;
+                    }
+                }
+
+                PreOp->Common.Value.Arg = NULL;
+                PreOp->Common.AmlOpcode = WalkState->Opcode;
 
                 /*
                  * Get and append arguments until we find the node that contains
@@ -672,7 +685,7 @@ AcpiPsParseLoop (
                         goto CloseThisOp;
                     }
 
-                    AcpiPsAppendArg (&PreOp, Arg);
+                    AcpiPsAppendArg (PreOp, Arg);
                     INCREMENT_ARG_LIST (WalkState->ArgTypes);
                 }
 
@@ -680,7 +693,8 @@ AcpiPsParseLoop (
 
                 if (!GET_CURRENT_ARG_TYPE (WalkState->ArgTypes))
                 {
-                    return_ACPI_STATUS (AE_AML_NO_OPERAND);
+                    Status = AE_AML_NO_OPERAND;
+                    goto CloseThisOp;
                 }
 
                 /* We know that this arg is a name, move to next arg */
@@ -718,7 +732,7 @@ AcpiPsParseLoop (
                     goto CloseThisOp;
                 }
 
-                AcpiPsAppendArg (Op, PreOp.Common.Value.Arg);
+                AcpiPsAppendArg (Op, PreOp->Common.Value.Arg);
                 AcpiGbl_Depth++;
 
                 if (Op->Common.AmlOpcode == AML_REGION_OP)
@@ -747,7 +761,8 @@ AcpiPsParseLoop (
                 Op = AcpiPsAllocOp (WalkState->Opcode);
                 if (!Op)
                 {
-                    return_ACPI_STATUS (AE_NO_MEMORY);
+                    Status = AE_NO_MEMORY;
+                    goto CloseThisOp;
                 }
 
                 if (WalkState->OpInfo->Flags & AML_CREATE)
@@ -830,16 +845,15 @@ AcpiPsParseLoop (
                 WalkState->ArgTypes = 0;
                 break;
 
-
             default:
 
-                /* Op is not a constant or string, append each argument */
+                /* Op is not a constant or string, append each argument to the Op */
 
                 while (GET_CURRENT_ARG_TYPE (WalkState->ArgTypes) &&
                         !WalkState->ArgCount)
                 {
-                    WalkState->AmlOffset = ACPI_PTR_DIFF (ParserState->Aml,
-                                                          ParserState->AmlStart);
+                    WalkState->AmlOffset = (UINT32) ACPI_PTR_DIFF (ParserState->Aml,
+                                                                   ParserState->AmlStart);
                     Status = AcpiPsGetNextArg (WalkState, ParserState,
                                 GET_CURRENT_ARG_TYPE (WalkState->ArgTypes), &Arg);
                     if (ACPI_FAILURE (Status))
@@ -855,24 +869,24 @@ AcpiPsParseLoop (
                     INCREMENT_ARG_LIST (WalkState->ArgTypes);
                 }
 
+                /* Special processing for certain opcodes */
+
                 switch (Op->Common.AmlOpcode)
                 {
                 case AML_METHOD_OP:
 
-                    /* For a method, save the length and address of the body */
-
                     /*
-                     * Skip parsing of control method or opregion body,
+                     * Skip parsing of control method
                      * because we don't have enough info in the first pass
-                     * to parse them correctly.
+                     * to parse it correctly.
+                     *
+                     * Save the length and address of the body
                      */
                     Op->Named.Data   = ParserState->Aml;
                     Op->Named.Length = (UINT32) (ParserState->PkgEnd - ParserState->Aml);
-                    /*
-                     * Skip body of method.  For OpRegions, we must continue
-                     * parsing because the opregion is not a standalone
-                     * package (We don't know where the end is).
-                     */
+
+                    /* Skip body of method */
+
                     ParserState->Aml    = ParserState->PkgEnd;
                     WalkState->ArgCount = 0;
                     break;
@@ -886,15 +900,15 @@ AcpiPsParseLoop (
                         (WalkState->DescendingCallback != AcpiDsExecBeginOp))
                     {
                         /*
-                         * Skip parsing of
+                         * Skip parsing of Buffers and Packages
                          * because we don't have enough info in the first pass
                          * to parse them correctly.
                          */
                         Op->Named.Data   = AmlOpStart;
                         Op->Named.Length = (UINT32) (ParserState->PkgEnd - AmlOpStart);
-                        /*
-                         * Skip body
-                         */
+
+                        /* Skip body */
+
                         ParserState->Aml    = ParserState->PkgEnd;
                         WalkState->ArgCount = 0;
                     }
@@ -909,6 +923,7 @@ AcpiPsParseLoop (
                     break;
 
                 default:
+
                     /* No action for all other opcodes */
                     break;
                 }
@@ -926,7 +941,7 @@ AcpiPsParseLoop (
                         WalkState->ArgTypes, WalkState->ArgCount);
             if (ACPI_FAILURE (Status))
             {
-                return_ACPI_STATUS (Status);
+                goto CloseThisOp;
             }
             Op = NULL;
             continue;
@@ -994,6 +1009,11 @@ CloseThisOp:
 
         AcpiPsCompleteThisOp (WalkState, Op);
         Op = NULL;
+        if (PreOp)
+        {
+            AcpiPsFreeOp (PreOp);
+            PreOp = NULL;
+        }
 
         switch (Status)
         {
@@ -1278,10 +1298,34 @@ AcpiPsParseAml (
         {
             Status = AE_OK;
         }
-        else if (Status != AE_OK)
+        else if ((Status != AE_OK) && (WalkState->MethodDesc))
         {
             ACPI_REPORT_METHOD_ERROR ("Method execution failed",
                 WalkState->MethodNode, NULL, Status);
+
+            /* Check for possible multi-thread reentrancy problem */
+
+            if ((Status == AE_ALREADY_EXISTS) &&
+                (!WalkState->MethodDesc->Method.Semaphore))
+            {
+                /*
+                 * This method is marked NotSerialized, but it tried to create a named
+                 * object, causing the second thread entrance to fail.  We will workaround
+                 * this by marking the method permanently as Serialized.
+                 */
+                WalkState->MethodDesc->Method.MethodFlags |= AML_METHOD_SERIALIZED;
+                WalkState->MethodDesc->Method.Concurrency = 1;
+            }
+        }
+
+        if (WalkState->MethodDesc)
+        {
+            /* Decrement the thread count on the method parse tree */
+
+            if (WalkState->MethodDesc->Method.ThreadCount)
+            {
+                WalkState->MethodDesc->Method.ThreadCount--;
+            }
         }
 
         /* We are done with this walk, move on to the parent if any */

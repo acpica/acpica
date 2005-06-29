@@ -3,7 +3,7 @@
  *
  * Module Name: exstoren - AML Interpreter object store support,
  *                        Store to Node (namespace object)
- *              $Revision: 1.55 $
+ *              $Revision: 1.60 $
  *
  *****************************************************************************/
 
@@ -11,7 +11,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2003, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2005, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -120,6 +120,7 @@
 
 #include "acpi.h"
 #include "acinterp.h"
+#include "amlcode.h"
 
 
 #define _COMPONENT          ACPI_EXECUTER
@@ -188,12 +189,20 @@ AcpiExResolveObject (
             }
         }
 
+        /* For CopyObject, no further validation necessary */
+
+        if (WalkState->Opcode == AML_COPY_OP)
+        {
+            break;
+        }
+
         /*
          * Must have a Integer, Buffer, or String
          */
-        if ((ACPI_GET_OBJECT_TYPE (SourceDesc) != ACPI_TYPE_INTEGER)     &&
-            (ACPI_GET_OBJECT_TYPE (SourceDesc) != ACPI_TYPE_BUFFER)      &&
-            (ACPI_GET_OBJECT_TYPE (SourceDesc) != ACPI_TYPE_STRING))
+        if ((ACPI_GET_OBJECT_TYPE (SourceDesc) != ACPI_TYPE_INTEGER)    &&
+            (ACPI_GET_OBJECT_TYPE (SourceDesc) != ACPI_TYPE_BUFFER)     &&
+            (ACPI_GET_OBJECT_TYPE (SourceDesc) != ACPI_TYPE_STRING)     &&
+            !((ACPI_GET_OBJECT_TYPE (SourceDesc) == ACPI_TYPE_LOCAL_REFERENCE) && (SourceDesc->Reference.Opcode == AML_LOAD_OP)))
         {
             /*
              * Conversion successful but still not a valid type
@@ -208,11 +217,12 @@ AcpiExResolveObject (
 
 
     case ACPI_TYPE_LOCAL_ALIAS:
+    case ACPI_TYPE_LOCAL_METHOD_ALIAS:
 
         /*
          * Aliases are resolved by AcpiExPrepOperands
          */
-        ACPI_DEBUG_PRINT ((ACPI_DB_WARN, "Store into Alias - should never happen\n"));
+        ACPI_REPORT_ERROR (("Store into Alias - should never happen\n"));
         Status = AE_AML_INTERNAL;
         break;
 

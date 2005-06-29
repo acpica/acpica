@@ -2,7 +2,7 @@
  *
  * Module Name: dswexec - Dispatcher method execution callbacks;
  *                        dispatch to interpreter.
- *              $Revision: 1.98 $
+ *              $Revision: 1.115 $
  *
  *****************************************************************************/
 
@@ -10,7 +10,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2003, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2005, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -124,6 +124,7 @@
 #include "acinterp.h"
 #include "acnamesp.h"
 #include "acdebug.h"
+#include "acdisasm.h"
 
 
 #define _COMPONENT          ACPI_DISPATCHER
@@ -133,17 +134,18 @@
  * Dispatch table for opcode classes
  */
 static ACPI_EXECUTE_OP      AcpiGbl_OpTypeDispatch [] = {
-                            AcpiExOpcode_1A_0T_0R,
-                            AcpiExOpcode_1A_0T_1R,
-                            AcpiExOpcode_1A_1T_0R,
-                            AcpiExOpcode_1A_1T_1R,
-                            AcpiExOpcode_2A_0T_0R,
-                            AcpiExOpcode_2A_0T_1R,
-                            AcpiExOpcode_2A_1T_1R,
-                            AcpiExOpcode_2A_2T_1R,
-                            AcpiExOpcode_3A_0T_0R,
-                            AcpiExOpcode_3A_1T_1R,
-                            AcpiExOpcode_6A_0T_1R};
+                                AcpiExOpcode_0A_0T_1R,
+                                AcpiExOpcode_1A_0T_0R,
+                                AcpiExOpcode_1A_0T_1R,
+                                AcpiExOpcode_1A_1T_0R,
+                                AcpiExOpcode_1A_1T_1R,
+                                AcpiExOpcode_2A_0T_0R,
+                                AcpiExOpcode_2A_0T_1R,
+                                AcpiExOpcode_2A_1T_1R,
+                                AcpiExOpcode_2A_2T_1R,
+                                AcpiExOpcode_3A_0T_0R,
+                                AcpiExOpcode_3A_1T_1R,
+                                AcpiExOpcode_6A_0T_1R};
 
 /*****************************************************************************
  *
@@ -497,30 +499,58 @@ AcpiDsExecEndOp (
             goto Cleanup;
         }
 
-        /* Resolve all operands */
+        /*
+         * All opcodes require operand resolution, with the only exceptions
+         * being the ObjectType and SizeOf operators.
+         */
+        if (!(WalkState->OpInfo->Flags & AML_NO_OPERAND_RESOLVE))
+        {
+            /* Resolve all operands */
 
-        Status = AcpiExResolveOperands (WalkState->Opcode,
-                        &(WalkState->Operands [WalkState->NumOperands -1]),
-                        WalkState);
+            Status = AcpiExResolveOperands (WalkState->Opcode,
+                            &(WalkState->Operands [WalkState->NumOperands -1]),
+                            WalkState);
+            if (ACPI_SUCCESS (Status))
+            {
+                ACPI_DUMP_OPERANDS (ACPI_WALK_OPERANDS, ACPI_IMODE_EXECUTE,
+                                AcpiPsGetOpcodeName (WalkState->Opcode),
+                                WalkState->NumOperands, "after ExResolveOperands");
+            }
+        }
+
         if (ACPI_SUCCESS (Status))
         {
-            ACPI_DUMP_OPERANDS (ACPI_WALK_OPERANDS, ACPI_IMODE_EXECUTE,
-                            AcpiPsGetOpcodeName (WalkState->Opcode),
-                            WalkState->NumOperands, "after ExResolveOperands");
-
             /*
              * Dispatch the request to the appropriate interpreter handler
              * routine.  There is one routine per opcode "type" based upon the
              * number of opcode arguments and return type.
              */
-            Status = AcpiGbl_OpTypeDispatch [OpType] (WalkState);
+            Status = AcpiGbl_OpTypeDispatch[OpType] (WalkState);
         }
         else
         {
-            ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
-                "[%s]: Could not resolve operands, %s\n",
-                AcpiPsGetOpcodeName (WalkState->Opcode),
-                AcpiFormatException (Status)));
+            /*
+             * Treat constructs of the form "Store(LocalX,LocalX)" as noops when the
+             * Local is uninitialized.
+             */
+            if  ((Status == AE_AML_UNINITIALIZED_LOCAL) &&
+                (WalkState->Opcode == AML_STORE_OP) &&
+                (WalkState->Operands[0]->Common.Type == ACPI_TYPE_LOCAL_REFERENCE) &&
+                (WalkState->Operands[1]->Common.Type == ACPI_TYPE_LOCAL_REFERENCE) &&
+                (WalkState->Operands[0]->Reference.Opcode ==
+                 WalkState->Operands[1]->Reference.Opcode) &&
+                (WalkState->Operands[0]->Reference.Offset ==
+                 WalkState->Operands[1]->Reference.Offset))
+            {
+                Status = AE_OK;
+            }
+            else
+            {
+                ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
+                    "[%s]: Could not resolve operands, %s\n",
+                    AcpiPsGetOpcodeName (WalkState->Opcode),
+                    AcpiFormatException (Status)));
+            }
         }
 
         /* Always delete the argument objects and clear the operand stack */
@@ -738,7 +768,8 @@ AcpiDsExecEndOp (
      * conditional predicate
      */
 
-    if ((WalkState->ControlState) &&
+    if ((ACPI_SUCCESS (Status)) &&
+        (WalkState->ControlState) &&
         (WalkState->ControlState->Common.State ==
             ACPI_CONTROL_PREDICATE_EXECUTING) &&
         (WalkState->ControlState->Control.PredicateOp == Op))
@@ -749,6 +780,20 @@ AcpiDsExecEndOp (
 
 
 Cleanup:
+
+    /* Invoke exception handler on error */
+
+    if (ACPI_FAILURE (Status) &&
+        AcpiGbl_ExceptionHandler &&
+        !(Status & AE_CODE_CONTROL))
+    {
+        AcpiExExitInterpreter ();
+        Status = AcpiGbl_ExceptionHandler (Status,
+                    WalkState->MethodNode->Name.Integer, WalkState->Opcode,
+                    WalkState->AmlOffset, NULL);
+        AcpiExEnterInterpreter ();
+    }
+
     if (WalkState->ResultObj)
     {
         /* Break to debugger to display result */
@@ -763,7 +808,7 @@ Cleanup:
         AcpiDsDeleteResultIfNotUsed (Op, WalkState->ResultObj, WalkState);
     }
 
-#if _UNDER_DEVELOPMENT
+#ifdef _UNDER_DEVELOPMENT
 
     if (WalkState->ParserState.Aml == WalkState->ParserState.AmlEnd)
     {
@@ -774,6 +819,17 @@ Cleanup:
     /* Always clear the object stack */
 
     WalkState->NumOperands = 0;
+
+#ifdef ACPI_DISASSEMBLER
+
+    /* On error, display method locals/args */
+
+    if (ACPI_FAILURE (Status))
+    {
+        AcpiDmDumpMethodInfo (Status, WalkState, Op);
+    }
+#endif
+
     return_ACPI_STATUS (Status);
 }
 

@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dsmthdat - control method arguments and local variables
- *              $Revision: 1.76 $
+ *              $Revision: 1.81 $
  *
  ******************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2004, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2005, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -285,10 +285,10 @@ AcpiDsMethodDataInitArgs (
     {
         /*
          * A valid parameter.
-         * Store the argument in the method/walk descriptor
+         * Store the argument in the method/walk descriptor.
+         * Do not copy the arg in order to implement call by reference
          */
-        Status = AcpiDsStoreObjectToLocal (AML_ARG_OP, Index, Params[Index],
-                                            WalkState);
+        Status = AcpiDsMethodDataSetValue (AML_ARG_OP, Index, Params[Index], WalkState);
         if (ACPI_FAILURE (Status))
         {
             return_ACPI_STATUS (Status);
@@ -398,7 +398,7 @@ AcpiDsMethodDataSetValue (
 
 
     ACPI_DEBUG_PRINT ((ACPI_DB_EXEC,
-        "obj %p op %X, ref count = %d [%s]\n", Object,
+        "NewObj %p Opcode %X, Refs=%d [%s]\n", Object,
         Opcode, Object->Common.ReferenceCount,
         AcpiUtGetTypeName (Object->Common.Type)));
 
@@ -540,7 +540,24 @@ AcpiDsMethodDataGetValue (
          * was referenced by the method (via the ASL)
          * before it was initialized.  Either case is an error.
          */
-        switch (Opcode)
+
+        /* If slack enabled, init the LocalX/ArgX to an Integer of value zero */
+
+        if (AcpiGbl_EnableInterpreterSlack)
+        {
+            Object = AcpiUtCreateInternalObject (ACPI_TYPE_INTEGER);
+            if (!Object)
+            {
+                return_ACPI_STATUS (AE_NO_MEMORY);
+            }
+
+            Object->Integer.Value = 0;
+            Node->Object = Object;
+        }
+
+        /* Otherwise, return the error */
+
+        else switch (Opcode)
         {
         case AML_ARG_OP:
 
@@ -557,6 +574,7 @@ AcpiDsMethodDataGetValue (
             return_ACPI_STATUS (AE_AML_UNINITIALIZED_LOCAL);
 
         default:
+            ACPI_REPORT_ERROR (("Not Arg/Local opcode: %X\n", Opcode));
             return_ACPI_STATUS (AE_AML_INTERNAL);
         }
     }
@@ -666,7 +684,7 @@ AcpiDsStoreObjectToLocal (
 
 
     ACPI_FUNCTION_TRACE ("DsStoreObjectToLocal");
-    ACPI_DEBUG_PRINT ((ACPI_DB_EXEC, "Opcode=%d Idx=%d Obj=%p\n",
+    ACPI_DEBUG_PRINT ((ACPI_DB_EXEC, "Opcode=%X Index=%d Obj=%p\n",
         Opcode, Index, ObjDesc));
 
     /* Parameter validation */
@@ -694,7 +712,10 @@ AcpiDsStoreObjectToLocal (
 
     /*
      * If the reference count on the object is more than one, we must
-     * take a copy of the object before we store.
+     * take a copy of the object before we store.  A reference count
+     * of exactly 1 means that the object was just created during the
+     * evaluation of an expression, and we can safely use it since it
+     * is not used anywhere else.
      */
     NewObjDesc = ObjDesc;
     if (ObjDesc->Common.ReferenceCount > 1)
@@ -756,11 +777,13 @@ AcpiDsStoreObjectToLocal (
                         NewObjDesc, CurrentObjDesc));
 
                 /*
-                 * Store this object to the Node
-                 * (perform the indirect store)
+                 * Store this object to the Node (perform the indirect store)
+                 * NOTE: No implicit conversion is performed, as per the ACPI
+                 * specification rules on storing to Locals/Args.
                  */
                 Status = AcpiExStoreObjectToNode (NewObjDesc,
-                            CurrentObjDesc->Reference.Object, WalkState);
+                            CurrentObjDesc->Reference.Object, WalkState,
+                            ACPI_NO_IMPLICIT_CONVERSION);
 
                 /* Remove local reference if we copied the object above */
 
