@@ -2,7 +2,7 @@
  *
  * Module Name: nsxfobj - Public interfaces to the ACPI subsystem
  *                         ACPI Object oriented interfaces
- *              $Revision: 1.71 $
+ *              $Revision: 1.73 $
  *
  ******************************************************************************/
 
@@ -691,9 +691,10 @@ AcpiWalkNamespace (
     return_ACPI_STATUS (Status);
 }
 
+
 /*******************************************************************************
  *
- * FUNCTION:    AcpiGetDeviceCallback
+ * FUNCTION:    AcpiNsGetDeviceCallback
  *
  * PARAMETERS:  Callback from AcpiGetDevice
  *
@@ -706,20 +707,21 @@ AcpiWalkNamespace (
  ******************************************************************************/
 
 static ACPI_STATUS
-AcpiGetDeviceCallback (
+AcpiNsGetDeviceCallback (
     ACPI_HANDLE             ObjHandle,
     UINT32                  NestingLevel,
     void                    *Context,
     void                    **ReturnValue)
 {
     ACPI_STATUS             Status;
-    ACPI_NAMESPACE_NODE    *Node;
+    ACPI_NAMESPACE_NODE     *Node;
     UINT32                  Flags;
     DEVICE_ID               DeviceId;
-    ACPI_GET_DEVICES_INFO  *Info;
+    ACPI_GET_DEVICES_INFO   *Info;
+
 
     Info = Context;
-    
+
     AcpiCmAcquireMutex (ACPI_MTX_NAMESPACE);
 
     Node = AcpiNsConvertHandleToEntry (ObjHandle);
@@ -744,6 +746,7 @@ AcpiGetDeviceCallback (
     if (!(Flags & 0x01))
     {
         /* don't return at the device or children of the device if not there */
+
         return (AE_CTRL_DEPTH);
     }
 
@@ -752,27 +755,27 @@ AcpiGetDeviceCallback (
      */
     if (Info->Hid != NULL)
     {
-        Status = AcpiCmExecute_HID(Node, &DeviceId);
+        Status = AcpiCmExecute_HID (Node, &DeviceId);
 
-	if (Status == AE_NOT_FOUND)
-	{
-		return (AE_OK);
-	}
+        if (Status == AE_NOT_FOUND)
+        {
+            return (AE_OK);
+        }
 
         else if (ACPI_FAILURE (Status))
         {
             return (Status);
         }
 
-        if (STRNCMP(DeviceId.Buffer, Info->Hid, sizeof(DeviceId.Buffer)) != 0)
+        if (STRNCMP (DeviceId.Buffer, Info->Hid, sizeof (DeviceId.Buffer)) != 0)
         {
             return (AE_OK);
         }
     }
 
-    Info->UserFunction(ObjHandle, NestingLevel, Info->Context, ReturnValue);    
+    Info->UserFunction (ObjHandle, NestingLevel, Info->Context, ReturnValue);
 
-    return (AE_OK);    
+    return (AE_OK);
 }
 
 
@@ -841,7 +844,7 @@ AcpiGetDevices (
     Status = AcpiNsWalkNamespace (ACPI_TYPE_DEVICE,
                                     ACPI_ROOT_OBJECT, ACPI_UINT32_MAX,
                                     NS_WALK_UNLOCK,
-                                    AcpiGetDeviceCallback, &Info,
+                                    AcpiNsGetDeviceCallback, &Info,
                                     ReturnValue);
 
     AcpiCmReleaseMutex (ACPI_MTX_NAMESPACE);
