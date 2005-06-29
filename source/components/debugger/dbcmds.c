@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dbcmds - debug commands and output routines
- *              $Revision: 1.125 $
+ *              $Revision: 1.126 $
  *
  ******************************************************************************/
 
@@ -1543,6 +1543,131 @@ AcpiDbGenerateGpe (
     }
 
     (void) AcpiEvGpeDispatch (GpeEventInfo, GpeNumber);
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiDbBusWalk
+ *
+ * PARAMETERS:  Callback from WalkNamespace
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Display info about device objects that have a corresponding
+ *              _PRT method.
+ *
+ ******************************************************************************/
+
+static ACPI_STATUS
+AcpiDbBusWalk (
+    ACPI_HANDLE             ObjHandle,
+    UINT32                  NestingLevel,
+    void                    *Context,
+    void                    **ReturnValue)
+{
+    ACPI_NAMESPACE_NODE     *Node = (ACPI_NAMESPACE_NODE *) ObjHandle;
+    ACPI_STATUS             Status;
+    ACPI_BUFFER             Buffer;
+    ACPI_INTEGER            ADR;
+    ACPI_DEVICE_ID          Id;
+    ACPI_COMPATIBLE_ID_LIST *Cid;
+    ACPI_NAMESPACE_NODE     *TempNode;
+
+
+    /* Exit if there is no _PRT under this device */
+
+    Status = AcpiGetHandle (Node, METHOD_NAME__PRT, &TempNode);
+    if (ACPI_FAILURE (Status))
+    {
+        return (AE_OK);
+    }
+
+    /* Get the full path to this device object */
+
+    Buffer.Length = ACPI_ALLOCATE_LOCAL_BUFFER;
+    Status = AcpiNsHandleToPathname (ObjHandle, &Buffer);
+    if (ACPI_FAILURE (Status))
+    {
+        AcpiOsPrintf ("Could Not get pathname for object %p\n", ObjHandle);
+        return (AE_OK);
+    }
+
+    /* Display the full path */
+
+    AcpiOsPrintf ("%-32s", (char *) Buffer.Pointer);
+    ACPI_MEM_FREE (Buffer.Pointer);
+
+    /* _PRT info */
+
+    AcpiOsPrintf ("_PRT=%p", TempNode);
+
+    /* Get the _ADR value */
+
+    Status = AcpiUtEvaluateNumericObject (METHOD_NAME__ADR, Node, &ADR);
+    if (ACPI_FAILURE (Status))
+    {
+        AcpiOsPrintf (" No _ADR      ");
+    }
+    else
+    {
+        AcpiOsPrintf (" _ADR=%8.8X", (UINT32) ADR);
+    }
+
+    /* Get the _HID if present */
+
+    Status = AcpiUtExecute_HID (Node, &Id);
+    if (ACPI_SUCCESS (Status))
+    {
+        AcpiOsPrintf (" _HID=%s", Id.Value);
+    }
+    else
+    {
+        AcpiOsPrintf ("             ");
+    }
+
+    /* Get the _UID if present */
+
+    Status = AcpiUtExecute_UID (Node, &Id);
+    if (ACPI_SUCCESS (Status))
+    {
+        AcpiOsPrintf (" _UID=%s", Id.Value);
+    }
+
+    /* Get the _CID if present */
+
+    Status = AcpiUtExecute_CID (Node, &Cid);
+    if (ACPI_SUCCESS (Status))
+    {
+        AcpiOsPrintf (" _CID=%s", Cid->Id[0].Value);
+        ACPI_MEM_FREE (Cid);    
+    }
+
+    AcpiOsPrintf ("\n");
+    return (AE_OK);
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiDbGetBusInfo
+ *
+ * PARAMETERS:  None
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Display info about system busses.
+ *
+ ******************************************************************************/
+
+void
+AcpiDbGetBusInfo (
+    void)
+{
+    /* Search all nodes in namespace */
+
+    (void) AcpiWalkNamespace (ACPI_TYPE_DEVICE, ACPI_ROOT_OBJECT, ACPI_UINT32_MAX,
+                    AcpiDbBusWalk, NULL, NULL);
 }
 
 #endif /* ACPI_DEBUGGER */
