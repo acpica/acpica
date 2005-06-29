@@ -1,7 +1,7 @@
 
 /******************************************************************************
- * 
- * Module Name: cmeval - Object evaluation 
+ *
+ * Module Name: cmeval - Object evaluation
  *
  *****************************************************************************/
 
@@ -38,9 +38,9 @@
  * The above copyright and patent license is granted only if the following
  * conditions are met:
  *
- * 3. Conditions 
+ * 3. Conditions
  *
- * 3.1. Redistribution of Source with Rights to Further Distribute Source.  
+ * 3.1. Redistribution of Source with Rights to Further Distribute Source.
  * Redistribution of source code of any substantial portion of the Covered
  * Code or modification with rights to further distribute source must include
  * the above Copyright Notice, the above License, this list of Conditions,
@@ -48,11 +48,11 @@
  * Licensee must cause all Covered Code to which Licensee contributes to
  * contain a file documenting the changes Licensee made to create that Covered
  * Code and the date of any change.  Licensee must include in that file the
- * documentation of any changes made by any predecessor Licensee.  Licensee 
+ * documentation of any changes made by any predecessor Licensee.  Licensee
  * must include a prominent statement that the modification is derived,
  * directly or indirectly, from Original Intel Code.
  *
- * 3.2. Redistribution of Source with no Rights to Further Distribute Source.  
+ * 3.2. Redistribution of Source with no Rights to Further Distribute Source.
  * Redistribution of source code of any substantial portion of the Covered
  * Code or modification without rights to further distribute source must
  * include the following Disclaimer and Export Compliance provision in the
@@ -86,7 +86,7 @@
  * INSTALLATION, TRAINING OR OTHER SERVICES.  INTEL WILL NOT PROVIDE ANY
  * UPDATES, ENHANCEMENTS OR EXTENSIONS.  INTEL SPECIFICALLY DISCLAIMS ANY
  * IMPLIED WARRANTIES OF MERCHANTABILITY, NONINFRINGEMENT AND FITNESS FOR A
- * PARTICULAR PURPOSE. 
+ * PARTICULAR PURPOSE.
  *
  * 4.2. IN NO EVENT SHALL INTEL HAVE ANY LIABILITY TO LICENSEE, ITS LICENSEES
  * OR ANY OTHER THIRD PARTY, FOR ANY LOST PROFITS, LOST DATA, LOSS OF USE OR
@@ -116,9 +116,9 @@
 
 #define __CMEVAL_C__
 
-#include <acpi.h>
-#include <namesp.h>
-#include <interp.h>
+#include "acpi.h"
+#include "acnamesp.h"
+#include "acinterp.h"
 
 
 #define _COMPONENT          MISCELLANEOUS
@@ -127,7 +127,7 @@
 
 /****************************************************************************
  *
- * FUNCTION:    CmEvaluateNumericObject
+ * FUNCTION:    AcpiCmEvaluateNumericObject
  *
  * PARAMETERS:  AcpiDevice          - NTE for the device
  *              *Address            - Where the value is returned
@@ -141,33 +141,36 @@
  *
  ***************************************************************************/
 
-ACPI_STATUS 
-CmEvaluateNumericObject (
-    char                    *ObjectName,
-    NAME_TABLE_ENTRY        *AcpiDevice, 
+ACPI_STATUS
+AcpiCmEvaluateNumericObject (
+    NATIVE_CHAR             *ObjectName,
+    ACPI_NAMED_OBJECT       *AcpiDevice,
     UINT32                  *Address)
 {
     ACPI_OBJECT_INTERNAL    *ObjDesc;
     ACPI_STATUS             Status;
 
-    
+
     FUNCTION_TRACE ("CmEvaluateNumericObject");
 
 
     /* Execute the method */
 
-    Status = NsEvaluateRelative (AcpiDevice, ObjectName, NULL, &ObjDesc);
+    Status = AcpiNsEvaluateRelative (AcpiDevice, ObjectName, NULL, &ObjDesc);
     if (ACPI_FAILURE (Status))
     {
         if (Status == AE_NOT_FOUND)
         {
-            DEBUG_PRINT (ACPI_INFO, ("%s on %4.4s was not found\n", ObjectName,
-                                        &((NAME_TABLE_ENTRY *) AcpiDevice)->Name));
+            DEBUG_PRINT (ACPI_INFO,
+                ("%s on %4.4s was not found\n", ObjectName,
+                &((ACPI_NAMED_OBJECT*) AcpiDevice)->Name));
         }
         else
         {
-            DEBUG_PRINT (ACPI_ERROR, ("%s on %4.4s failed with status %4.4x\n", ObjectName,
-                                        &((NAME_TABLE_ENTRY *) AcpiDevice)->Name, Status));
+            DEBUG_PRINT (ACPI_ERROR,
+                ("%s on %4.4s failed with status %4.4x\n", ObjectName,
+                &((ACPI_NAMED_OBJECT*) AcpiDevice)->Name, 
+                AcpiCmFormatException (Status)));
         }
 
         return_ACPI_STATUS (Status);
@@ -178,21 +181,23 @@ CmEvaluateNumericObject (
 
     if (!ObjDesc)
     {
-        DEBUG_PRINT (ACPI_ERROR, ("No object was returned from %s\n", ObjectName));
+        DEBUG_PRINT (ACPI_ERROR,
+            ("No object was returned from %s\n", ObjectName));
         return_ACPI_STATUS (AE_TYPE);
     }
 
     /* Is the return object of the correct type? */
 
-    if (ObjDesc->Common.Type != ACPI_TYPE_Number)
+    if (ObjDesc->Common.Type != ACPI_TYPE_NUMBER)
     {
         Status = AE_TYPE;
-        DEBUG_PRINT (ACPI_ERROR, ("Type returned from %s was not a number: %d \n",
-                                    ObjectName, ObjDesc->Common.Type));
+        DEBUG_PRINT (ACPI_ERROR,
+            ("Type returned from %s was not a number: %d \n",
+            ObjectName, ObjDesc->Common.Type));
     }
     else
     {
-        /* 
+        /*
          * Since the structure is a union, setting any field will set all
          * of the variables in the union
          */
@@ -201,7 +206,7 @@ CmEvaluateNumericObject (
 
     /* On exit, we must delete the return object */
 
-    CmRemoveReference (ObjDesc);
+    AcpiCmRemoveReference (ObjDesc);
 
     return_ACPI_STATUS (Status);
 }
@@ -209,7 +214,7 @@ CmEvaluateNumericObject (
 
 /****************************************************************************
  *
- * FUNCTION:    CmExecute_HID
+ * FUNCTION:    AcpiCmExecute_HID
  *
  * PARAMETERS:  AcpiDevice          - NTE for the device
  *              *Hid                - Where the HID is returned
@@ -223,9 +228,9 @@ CmEvaluateNumericObject (
  *
  ***************************************************************************/
 
-ACPI_STATUS 
-CmExecute_HID (
-    NAME_TABLE_ENTRY        *AcpiDevice, 
+ACPI_STATUS
+AcpiCmExecute_HID (
+    ACPI_NAMED_OBJECT       *AcpiDevice,
     DEVICE_ID               *Hid)
 {
     ACPI_OBJECT_INTERNAL    *ObjDesc;
@@ -237,19 +242,23 @@ CmExecute_HID (
 
     /* Execute the method */
 
-    Status = NsEvaluateRelative (AcpiDevice, METHOD_NAME__HID, NULL, &ObjDesc);
+    Status = AcpiNsEvaluateRelative (AcpiDevice,
+                                     METHOD_NAME__HID, NULL, &ObjDesc);
     if (ACPI_FAILURE (Status))
     {
         if (Status == AE_NOT_FOUND)
         {
-            DEBUG_PRINT (ACPI_INFO, ("_HID on %4.4s was not found\n",
-                                        &((NAME_TABLE_ENTRY *) AcpiDevice)->Name));
+            DEBUG_PRINT (ACPI_INFO,
+                ("_HID on %4.4s was not found\n",
+                &((ACPI_NAMED_OBJECT*) AcpiDevice)->Name));
         }
 
         else
         {
-            DEBUG_PRINT (ACPI_ERROR, ("_HID on %4.4s failed with status %4.4x\n",
-                                        &((NAME_TABLE_ENTRY *) AcpiDevice)->Name, Status));
+            DEBUG_PRINT (ACPI_ERROR,
+                ("_HID on %4.4s failed with status %4.4x\n",
+                &((ACPI_NAMED_OBJECT*) AcpiDevice)->Name, 
+                AcpiCmFormatException (Status)));
         }
 
         return_ACPI_STATUS (Status);
@@ -264,24 +273,26 @@ CmExecute_HID (
     }
 
     /*
-     *  A _HID can return either a Number (32 bit compressed EISA ID) or a string
+     *  A _HID can return either a Number (32 bit compressed EISA ID) or
+     *  a string
      */
 
-    if ((ObjDesc->Common.Type != ACPI_TYPE_Number) &&
-        (ObjDesc->Common.Type != ACPI_TYPE_String))
+    if ((ObjDesc->Common.Type != ACPI_TYPE_NUMBER) &&
+        (ObjDesc->Common.Type != ACPI_TYPE_STRING))
     {
         Status = AE_TYPE;
-        DEBUG_PRINT (ACPI_ERROR, ("Type returned from _HID was not a number or string: [0x%X] \n",
-                                    ObjDesc->Common.Type));
+        DEBUG_PRINT (ACPI_ERROR,
+            ("Type returned from _HID was not a number or string: [0x%X] \n",
+            ObjDesc->Common.Type));
     }
 
     else
     {
-        if (ObjDesc->Common.Type == ACPI_TYPE_Number)
+        if (ObjDesc->Common.Type == ACPI_TYPE_NUMBER)
         {
             /* Convert the Numeric HID to string */
 
-            AmlEisaIdToString (ObjDesc->Number.Value, Hid->Data.Buffer);
+            AcpiAmlEisaIdToString (ObjDesc->Number.Value, Hid->Data.Buffer);
             Hid->Type = STRING_DEVICE_ID;
         }
 
@@ -297,15 +308,15 @@ CmExecute_HID (
 
     /* On exit, we must delete the return object */
 
-    CmRemoveReference (ObjDesc);
+    AcpiCmRemoveReference (ObjDesc);
 
     return_ACPI_STATUS (Status);
-}  
+}
 
 
 /****************************************************************************
  *
- * FUNCTION:    CmExecute_UID
+ * FUNCTION:    AcpiCmExecute_UID
  *
  * PARAMETERS:  AcpiDevice          - NTE for the device
  *              *Uid                - Where the UID is returned
@@ -319,31 +330,34 @@ CmExecute_HID (
  *
  ***************************************************************************/
 
-ACPI_STATUS 
-CmExecute_UID (
-    NAME_TABLE_ENTRY        *AcpiDevice, 
+ACPI_STATUS
+AcpiCmExecute_UID (
+    ACPI_NAMED_OBJECT       *AcpiDevice,
     DEVICE_ID               *Uid)
 {
     ACPI_OBJECT_INTERNAL    *ObjDesc;
     ACPI_STATUS             Status;
 
 
-
     /* Execute the method */
 
-    Status = NsEvaluateRelative (AcpiDevice, METHOD_NAME__UID, NULL, &ObjDesc);
+    Status = AcpiNsEvaluateRelative (AcpiDevice,
+                                     METHOD_NAME__UID, NULL, &ObjDesc);
     if (ACPI_FAILURE (Status))
     {
         if (Status == AE_NOT_FOUND)
         {
-            DEBUG_PRINT (ACPI_INFO, ("_UID on %4.4s was not found\n",
-                                        &((NAME_TABLE_ENTRY *) AcpiDevice)->Name));
+            DEBUG_PRINT (ACPI_INFO,
+                ("_UID on %4.4s was not found\n",
+                &((ACPI_NAMED_OBJECT*) AcpiDevice)->Name));
         }
 
         else
         {
-            DEBUG_PRINT (ACPI_ERROR, ("_UID on %4.4s failed with status %4.4x\n",
-                                        &((NAME_TABLE_ENTRY *) AcpiDevice)->Name, Status));
+            DEBUG_PRINT (ACPI_ERROR,
+                ("_UID on %4.4s failed with status %4.4x\n",
+                &((ACPI_NAMED_OBJECT*) AcpiDevice)->Name,
+                AcpiCmFormatException (Status)));
         }
 
         return (Status);
@@ -358,20 +372,22 @@ CmExecute_UID (
     }
 
     /*
-     *  A _UID can return either a Number (32 bit compressed EISA ID) or a string
+     *  A _UID can return either a Number (32 bit compressed EISA ID) or
+     *  a string
      */
 
-    if ((ObjDesc->Common.Type != ACPI_TYPE_Number) &&
-        (ObjDesc->Common.Type != ACPI_TYPE_String))
+    if ((ObjDesc->Common.Type != ACPI_TYPE_NUMBER) &&
+        (ObjDesc->Common.Type != ACPI_TYPE_STRING))
     {
         Status = AE_TYPE;
-        DEBUG_PRINT (ACPI_ERROR, ("Type returned from _UID was not a number or string: %d \n",
-                                    ObjDesc->Common.Type));
+        DEBUG_PRINT (ACPI_ERROR,
+            ("Type returned from _UID was not a number or string: %d \n",
+            ObjDesc->Common.Type));
     }
 
     else
     {
-        if (ObjDesc->Common.Type == ACPI_TYPE_Number)
+        if (ObjDesc->Common.Type == ACPI_TYPE_NUMBER)
         {
             /* Convert the Numeric HID to string */
 
@@ -390,14 +406,14 @@ CmExecute_UID (
 
     /* On exit, we must delete the return object */
 
-    CmRemoveReference (ObjDesc);
+    AcpiCmRemoveReference (ObjDesc);
 
     return (Status);
-}  
+}
 
 /****************************************************************************
  *
- * FUNCTION:    CmExecute_STA
+ * FUNCTION:    AcpiCmExecute_STA
  *
  * PARAMETERS:  AcpiDevice          - NTE for the device
  *              *Flags              - Where the status flags are returned
@@ -411,9 +427,9 @@ CmExecute_UID (
  *
  ***************************************************************************/
 
-ACPI_STATUS 
-CmExecute_STA (
-    NAME_TABLE_ENTRY        *AcpiDevice, 
+ACPI_STATUS
+AcpiCmExecute_STA (
+    ACPI_NAMED_OBJECT       *AcpiDevice,
     UINT32                  *Flags)
 {
     ACPI_OBJECT_INTERNAL    *ObjDesc;
@@ -423,22 +439,25 @@ CmExecute_STA (
     FUNCTION_TRACE ("CmExecute_STA");
 
 
-
     /* Execute the method */
 
-    Status = NsEvaluateRelative (AcpiDevice, METHOD_NAME__STA, NULL, &ObjDesc);
+    Status = AcpiNsEvaluateRelative (AcpiDevice,
+                                     METHOD_NAME__STA, NULL, &ObjDesc);
     if (ACPI_FAILURE (Status))
     {
         if (Status == AE_NOT_FOUND)
         {
-            DEBUG_PRINT (ACPI_INFO, ("_STA on %4.4s was not found\n",
-                                        &((NAME_TABLE_ENTRY *) AcpiDevice)->Name));
+            DEBUG_PRINT (ACPI_INFO,
+                ("_STA on %4.4s was not found\n",
+                &((ACPI_NAMED_OBJECT*) AcpiDevice)->Name));
         }
 
         else
         {
-            DEBUG_PRINT (ACPI_ERROR, ("_STA on %4.4s failed with status %4.4x\n",
-                                        &((NAME_TABLE_ENTRY *) AcpiDevice)->Name, Status));
+            DEBUG_PRINT (ACPI_ERROR,
+                ("_STA on %4.4s failed with status %4.4x\n",
+                &((ACPI_NAMED_OBJECT*) AcpiDevice)->Name, 
+                AcpiCmFormatException (Status)));
         }
 
         return_ACPI_STATUS (Status);
@@ -455,11 +474,12 @@ CmExecute_STA (
 
     /* Is the return object of the correct type? */
 
-    if (ObjDesc->Common.Type != ACPI_TYPE_Number)
+    if (ObjDesc->Common.Type != ACPI_TYPE_NUMBER)
     {
         Status = AE_TYPE;
-        DEBUG_PRINT (ACPI_ERROR, ("Type returned from _STA was not a number: %d \n",
-                                    ObjDesc->Common.Type));
+        DEBUG_PRINT (ACPI_ERROR,
+            ("Type returned from _STA was not a number: %d \n",
+            ObjDesc->Common.Type));
     }
 
     else
@@ -472,7 +492,7 @@ CmExecute_STA (
 
     /* On exit, we must delete the return object */
 
-    CmRemoveReference (ObjDesc);
+    AcpiCmRemoveReference (ObjDesc);
 
     return_ACPI_STATUS (Status);
 }
