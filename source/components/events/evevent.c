@@ -2,7 +2,7 @@
  *
  * Module Name: evevent - Fixed and General Purpose AcpiEvent
  *                          handling and dispatch
- *              $Revision: 1.47 $
+ *              $Revision: 1.48 $
  *
  *****************************************************************************/
 
@@ -275,7 +275,7 @@ AcpiEvFixedEventDetect (void)
     UINT32                  StatusRegister;
     UINT32                  EnableRegister;
 
-    PROC_NAME ("AcpiEvFixedEventDetect");
+    PROC_NAME ("EvFixedEventDetect");
 
 
     /*
