@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acmacros.h - C macros for the entire subsystem.
- *       $Revision: 1.55 $
+ *       $Revision: 1.56 $
  *
  *****************************************************************************/
 
@@ -233,12 +233,15 @@
 #define ROUND_UP(value,boundary)        (((value) + ((boundary)-1)) & (~((boundary)-1)))
 
 #define ROUND_DOWN_TO_32_BITS(a)        ROUND_DOWN(a,4)
+#define ROUND_DOWN_TO_64_BITS(a)        ROUND_DOWN(a,8)
 #define ROUND_DOWN_TO_NATIVE_WORD(a)    ROUND_DOWN(a,ALIGNED_ADDRESS_BOUNDARY)
 
 #define ROUND_UP_TO_32BITS(a)           ROUND_UP(a,4)
+#define ROUND_UP_TO_64BITS(a)           ROUND_UP(a,8)
 #define ROUND_UP_TO_NATIVE_WORD(a)      ROUND_UP(a,ALIGNED_ADDRESS_BOUNDARY)
 
 #define ROUND_PTR_UP_TO_4(a,b)          ((b *)(((NATIVE_UINT)(a) + 3) & ~3))
+#define ROUND_PTR_UP_TO_8(a,b)          ((b *)(((NATIVE_UINT)(a) + 7) & ~7))
 
 #define ROUND_UP_TO_1K(a)               (((a) + 1023) >> 10)
 
@@ -551,5 +554,6 @@
 #define ADD_OBJECT_NAME(a,b)
 
 #endif
+
 
 #endif /* ACMACROS_H */
