@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: aemain - Main routine for the AcpiExec utility
- *              $Revision: 1.47 $
+ *              $Revision: 1.48 $
  *
  *****************************************************************************/
 
@@ -356,7 +356,7 @@ main (
 
     AcpiInitializeSubsystem ();
 
-    InitFlags = (/*ACPI_NO_HARDWARE_INIT | */ACPI_NO_ACPI_ENABLE); //| ACPI_NO_EVENT_INIT);
+    InitFlags = (ACPI_NO_HANDLER_INIT | ACPI_NO_ACPI_ENABLE); //| ACPI_NO_EVENT_INIT);
     if (!AcpiGbl_DbOpt_ini_methods)
     {
         InitFlags |= (ACPI_NO_DEVICE_INIT | ACPI_NO_OBJECT_INIT);
