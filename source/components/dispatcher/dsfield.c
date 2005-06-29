@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dsfield - Dispatcher field routines
- *              $Revision: 1.54 $
+ *              $Revision: 1.55 $
  *
  *****************************************************************************/
 
@@ -222,9 +222,6 @@ AcpiDsCreateBufferField (
     ObjDesc = AcpiNsGetAttachedObject (Node);
     if (ObjDesc)
     {
-        /* TBD: true?  No longer need the Extra field */
-
-        AcpiNsDetachSecondary (ObjDesc);
         return_ACPI_STATUS (AE_OK);
     }
 
@@ -243,23 +240,14 @@ AcpiDsCreateBufferField (
     }
 
     /*
-     * Allocate a secondary object for this field unit
-     */
-    SecondDesc = AcpiUtCreateInternalObject (INTERNAL_TYPE_EXTRA);
-    if (!SecondDesc)
-    {
-        Status = AE_NO_MEMORY;
-        goto Cleanup;
-    }
-
-    /*
      * Remember location in AML stream of the field unit
      * opcode and operands -- since the buffer and index
      * operands must be evaluated.
      */
+    SecondDesc                  = ObjDesc->Common.NextObject;
     SecondDesc->Extra.AmlStart  = ((ACPI_PARSE2_OBJECT *) Op)->Data;
     SecondDesc->Extra.AmlLength = ((ACPI_PARSE2_OBJECT *) Op)->Length;
-    ObjDesc->BufferField.Node = Node;
+    ObjDesc->BufferField.Node   = Node;
 
     /* Attach constructed field descriptors to parent node */
 
@@ -269,14 +257,12 @@ AcpiDsCreateBufferField (
         goto Cleanup;
     }
 
-    Status = AcpiNsAttachSecondary (Node, SecondDesc);
 
 Cleanup:
 
-    /* Remove local reference to the objects */
+    /* Remove local reference to the object */
 
     AcpiUtRemoveReference (ObjDesc);
-    AcpiUtRemoveReference (SecondDesc);
     return_ACPI_STATUS (Status);
 }
 
