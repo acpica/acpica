@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: evxface - External interfaces for ACPI events
- *              $Revision: 1.102 $
+ *              $Revision: 1.103 $
  *
  *****************************************************************************/
 
@@ -731,7 +731,11 @@ AcpiAcquireGlobalLock (
     ACPI_STATUS             Status;
 
 
-    AcpiAmlEnterInterpreter ();
+    Status = AcpiAmlEnterInterpreter ();
+    if (ACPI_FAILURE (Status))
+    {
+        return (Status);
+    }
 
     /*
      * TBD: [Restructure] add timeout param to internal interface, and
