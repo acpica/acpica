@@ -119,6 +119,7 @@
 #include <hardware.h>
 #include <namespace.h>
 #include <events.h>
+#include <amlcode.h>
 
 #define _THIS_MODULE        "evapi.c"
 #define _COMPONENT          EVENT_HANDLING
@@ -798,9 +799,7 @@ AcpiInstallAddressSpaceHandler (
     NAME_TABLE_ENTRY       *ObjEntry;
     ACPI_STATUS             Status;
 
-
     FUNCTION_TRACE ("AcpiInstallAddressSpaceHandler");
-
 
     /* Parameter validation */
 
@@ -866,6 +865,9 @@ AcpiInstallAddressSpaceHandler (
 
     else
     {
+        DEBUG_PRINT (TRACE_OPREGION,
+            ("Creating object on device Device 0x%X while installing handler\n", 
+                ObjEntry));
         /* ObjDesc DNE: We must create one */
 
         ObjDesc = CmCreateInternalObject (ObjEntry->Type);
@@ -878,12 +880,18 @@ AcpiInstallAddressSpaceHandler (
 
         /* Attach the new object to the NTE */
 
-        Status = NsAttachObject (Device, ObjDesc, (UINT8) ObjEntry->Type);
+        ObjDesc->Common.Type = ObjEntry->Type;
+
+        Status = NsAttachObject (Device, ObjDesc, ObjEntry->Type);
         if (ACPI_FAILURE (Status))
         {
             return_ACPI_STATUS (Status);
         }
     }
+
+    DEBUG_PRINT (TRACE_OPREGION,
+        ("Installing address handler for %s on Device 0x%X (0x%X)\n", 
+            Gbl_RegionTypes[SpaceId], ObjEntry, ObjDesc));
 
     /* 
      *  Now we can install the handler
@@ -984,6 +992,7 @@ AcpiRemoveAddressSpaceHandler (
     /* Make sure the internal object exists */
 
     ObjDesc = ObjEntry->Object;
+
     if (!ObjDesc)
     {
         /*
@@ -1009,6 +1018,10 @@ AcpiRemoveAddressSpaceHandler (
             /*
              *  Got it, first dereference this in the Regions
              */
+            DEBUG_PRINT (TRACE_OPREGION,
+                ("Removing address handler 0x%X (0x%X) for %s on Device 0x%X (0x%X)\n", 
+                    HandlerObj, Handler, Gbl_RegionTypes[SpaceId], ObjEntry, ObjDesc));
+
             RegionObj = HandlerObj->AddrHandler.RegionList;
 
             while (RegionObj)
@@ -1020,7 +1033,7 @@ AcpiRemoveAddressSpaceHandler (
                  *  The region is just inaccessible as indicated to
                  *  the _REG method
                  */
-                EvDisassociateRegionAndHandler(HandlerObj, RegionObj);
+                EvDisassociateRegionFromHandler(RegionObj);
 
                 /*
                  *  Walk the list, since we took the first region and it
@@ -1059,6 +1072,10 @@ AcpiRemoveAddressSpaceHandler (
     /*
      *  If we get here the handler DNE, get out with error
      */
+    DEBUG_PRINT (TRACE_OPREGION,
+        ("Unable to remove address handler xxxx (0x%X) for %s on Device 0x%X (0x%X)\n", 
+        Handler, Gbl_RegionTypes[SpaceId], ObjEntry, ObjDesc));
+
     return_ACPI_STATUS (AE_NOT_EXIST);
 }
 
