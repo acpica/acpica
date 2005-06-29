@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exutils - interpreter/scanner utilities
- *              $Revision: 1.86 $
+ *              $Revision: 1.87 $
  *
  *****************************************************************************/
 
@@ -152,7 +152,6 @@
  * PARAMETERS:  None
  *
  * DESCRIPTION: Enter the interpreter execution region
- *              TBD: should be a macro
  *
  ******************************************************************************/
 
@@ -186,8 +185,6 @@ AcpiExEnterInterpreter (void)
  *      6) Method blocked to execute a serialized control method that is
  *          already executing
  *      7) About to invoke a user-installed opregion handler
- *
- *              TBD: should be a macro
  *
  ******************************************************************************/
 
