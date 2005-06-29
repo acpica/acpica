@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: aclocal.h - Internal data types used across the ACPI subsystem
- *       $Revision: 1.84 $
+ *       $Revision: 1.86 $
  *
  *****************************************************************************/
 
@@ -268,6 +268,7 @@ typedef struct acpi_node
 
 #define ANOBJ_AML_ATTACHMENT        0x1
 #define ANOBJ_END_OF_PEER_LIST      0x2
+#define ANOBJ_DATA_WIDTH_32         0x4     /* Parent table is 64-bits */
 
 
 /*
@@ -650,7 +651,7 @@ typedef struct acpi_walk_state
     UINT8                   CurrentResult;                      /* */
 
     struct acpi_walk_state  *Next;                              /* Next WalkState in list */
-    ACPI_PARSE_OBJECT       *Origin;                            /* Start of walk */
+    ACPI_PARSE_OBJECT       *Origin;                            /* Start of walk [Obsolete] */
 
 /* TBD: Obsolete with removal of WALK procedure ? */
     ACPI_PARSE_OBJECT       *PrevOp;                            /* Last op that was processed */
@@ -770,29 +771,62 @@ typedef struct acpi_get_devices_info
 #define MAX_CX_STATE_LATENCY        0xFFFFFFFF
 #define MAX_CX_STATES               4
 
+
 /*
  * The #define's and enum below establish an abstract way of identifying what
  * register block and register is to be accessed.  Do not change any of the
  * values as they are used in switch statements and offset calculations.
  */
 
-#define REGISTER_BLOCK_MASK         0xFF00
-#define BIT_IN_REGISTER_MASK        0x00FF
-#define PM1_EVT                     0x0100
-#define PM1_CONTROL                 0x0200
-#define PM2_CONTROL                 0x0300
-#define PM_TIMER                    0x0400
-#define PROCESSOR_BLOCK             0x0500
-#define GPE0_STS_BLOCK              0x0600
-#define GPE0_EN_BLOCK               0x0700
-#define GPE1_STS_BLOCK              0x0800
-#define GPE1_EN_BLOCK               0x0900
+#define REGISTER_BLOCK_MASK         0xFF00  /* Register Block Id    */
+#define BIT_IN_REGISTER_MASK        0x00FF  /* Bit Id in the Register Block Id    */
+#define BYTE_IN_REGISTER_MASK       0x00FF  /* Register Offset in the Register Block    */
+#define REGISTER_BLOCK_ID(RegId)    (RegId & REGISTER_BLOCK_MASK)
+#define REGISTER_BIT_ID(RegId)      (RegId & BIT_IN_REGISTER_MASK)
+#define REGISTER_OFFSET(RegId)      (RegId & BYTE_IN_REGISTER_MASK)
+
+/*
+ * Access Rule
+ *  To access a Register Bit:
+ *  -> Use Bit Name (= Register Block Id | Bit Id) defined in the enum.
+ *
+ *  To access a Register:
+ *  -> Use Register Id (= Register Block Id | Register Offset)
+ */
+
+
+/* Register Block Id */
+#define PM1_STS                     0x0100
+#define PM1_EN                      0x0200
+#define PM1a_CONTROL                0xa300
+#define PM1b_CONTROL                0xb300
+#define PM2_CONTROL                 0x0400
+#define PM_TIMER                    0x0500
+#define PROCESSOR_BLOCK             0x0600
+#define GPE0_STS_BLOCK              0x0700
+#define GPE0_EN_BLOCK               0x0800
+#define GPE1_STS_BLOCK              0x0900
+#define GPE1_EN_BLOCK               0x0A00
+#define SMI_CMD_BLOCK               0x0B00
+
+#define PM1_CONTROL                 (PM1a_CONTROL | PM1b_CONTROL)
+
+/*
+ * Address space bitmasks for mmio or io spaces
+ */
+
+#define SMI_CMD_ADDRESS_SPACE       0x01
+#define PM1_BLK_ADDRESS_SPACE       0x02
+#define PM2_CNT_BLK_ADDRESS_SPACE   0x04
+#define PM_TMR_BLK_ADDRESS_SPACE    0x08
+#define GPE0_BLK_ADDRESS_SPACE      0x10
+#define GPE1_BLK_ADDRESS_SPACE      0x20
 
 enum
 {
     /* PM1 status register ids */
 
-    TMR_STS =   (PM1_EVT        | 0x01),
+    TMR_STS =   (PM1_STS        | 0x01),
     BM_STS,
     GBL_STS,
     PWRBTN_STS,
@@ -802,9 +836,9 @@ enum
 
     /* PM1 enable register ids */
 
-    TMR_EN,
+    TMR_EN =    (PM1_EN         | 0x01),
     /* need to skip 1 enable number since there's no bus master enable register */
-    GBL_EN =    (PM1_EVT        | 0x0A),
+    GBL_EN =    (PM1_EN         | 0x03),
     PWRBTN_EN,
     SLPBTN_EN,
     RTC_EN,
@@ -830,7 +864,7 @@ enum
     GPE0_EN =   (GPE0_EN_BLOCK  | 0x01),
 
     GPE1_STS =  (GPE1_STS_BLOCK | 0x01),
-    GPE1_EN =   (GPE0_EN_BLOCK  | 0x01),
+    GPE1_EN =   (GPE1_EN_BLOCK  | 0x01),
 
     /* Last register value is one less than LAST_REG */
 
@@ -862,6 +896,7 @@ enum
 #define SLP_EN_MASK         0x2000
 
 #define ARB_DIS_MASK        0x0001
+#define TMR_VAL_MASK        0xFFFFFFFF
 
 #define GPE0_STS_MASK
 #define GPE0_EN_MASK
