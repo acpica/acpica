@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: utinit - Common ACPI subsystem initialization
- *              $Revision: 1.97 $
+ *              $Revision: 1.98 $
  *
  *****************************************************************************/
 
@@ -349,7 +349,8 @@ AcpiUtSubsystemShutdown (void)
     AcpiPsDeleteParseCache ();
 
     /* Debug only - display leftover memory allocation, if any */
-#ifdef ENABLE_DEBUGGER
+
+#ifdef ACPI_DBG_TRACK_ALLOCATIONS
     AcpiUtDumpCurrentAllocations (ACPI_UINT32_MAX, NULL);
 #endif
 
