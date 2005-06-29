@@ -400,7 +400,7 @@ AmlDumpObjStackEntry (
 
         case AML_NameOp:
 
-            NsDumpPathname (EntryDesc->Lvalue.Object, "Lvalue: Name: ", 
+            DUMP_PATHNAME (EntryDesc->Lvalue.Object, "Lvalue: Name: ", 
                             ACPI_INFO, _COMPONENT);
             DUMP_ENTRY (EntryDesc->Lvalue.Object, ACPI_INFO);
             break;
