@@ -14,15 +14,17 @@
  | Functions for accessing ACPI namespace
  |__________________________________________________________________________
  |
- | $Revision: 1.11 $
- | $Date: 2005/06/29 18:15:34 $
+ | $Revision: 1.12 $
+ | $Date: 2005/06/29 18:15:35 $
  | $Log: nsaccess.c,v $
- | Revision 1.11  2005/06/29 18:15:34  aystarik
- | Integrated with 03/99 OPSD code
+ | Revision 1.12  2005/06/29 18:15:35  aystarik
+ |
  |
  | 
- | date	99.03.31.22.33.00;	author rmoore1;	state Exp;
+ | date	99.04.02.17.54.00;	author rmoore1;	state Exp;
  |
+ * 
+ * 12    4/02/99 9:54a Rmoore1
  * 
  * 11    3/31/99 2:33p Rmoore1
  * Integrated with 03/99 OPSD code
@@ -674,7 +676,7 @@ MarkStaticBlocks (INT32 *Count)
 
 /****************************************************************************
  *
- * FUNCTION:    AllocNT
+ * FUNCTION:    AllocateNteDesc
  *
  * PARAMETERS:  INT32 Size       # of nte in table
  *
@@ -685,13 +687,13 @@ MarkStaticBlocks (INT32 *Count)
  ***************************************************************************/
 
 static nte *
-AllocNT (INT32 Size)
+AllocateNteDesc (INT32 Size)
 {
-    nte             *NewNT = NULL;
+    nte             *NewNteDesc = NULL;
     size_t          AllocSize;
 
 
-    FUNCTION_TRACE ("AllocNT");
+    FUNCTION_TRACE ("AllocateNteDesc");
 
 
     AllocSize = (size_t) Size * sizeof (nte);
@@ -703,25 +705,21 @@ AllocNT (INT32 Size)
     AllocSize += sizeof (nte *);
 #endif
 
-    
-    NewNT = (nte *) OsdCallocate (AllocSize, 1);
+  
+    NewNteDesc = LocalCallocate (AllocSize);
 
 #ifndef USE_HASHING
-    if (NewNT)
+    if (NewNteDesc)
     {
         /* Move past the appendage pointer */
     
-        NewNT = (nte *) (((UINT8 *) NewNT) + sizeof (nte *));
-    }
-    else
-    {
-        OutOfMemory = TRUE;
+        NewNteDesc = (nte *) (((UINT8 *) NewNteDesc) + sizeof (nte *));
     }
 
-    DEBUG_PRINT1 (TRACE_EXEC, "nAllocNT: NewNT=%p\n", NewNT);
+    DEBUG_PRINT1 (TRACE_EXEC, "AllocateNteDesc: NewNteDesc=%p\n", NewNteDesc);
 #endif
 
-    return NewNT;
+    return NewNteDesc;
 }
 
 
@@ -886,13 +884,7 @@ InternalizeName (char *DottedName)
             }
 
             INsize = 4 * i + 4;
-            IN = OsdCallocate (1, INsize);
-            if (!IN)
-            {
-//              DisplayAllocFailure (__FILE__, "InternalizeName", "IN",
-//                  __LINE__, INsize, INC_ERROR, NULL, NULL);
-                OutOfMemory = TRUE;
-            }
+            IN = LocalCallocate (INsize);
         }
 
         if (IN)
@@ -1625,7 +1617,7 @@ SearchTable (char *NamSeg, nte *NameTbl, INT32 TableSize,
 
         /* Allocate and chain an appendage to the filled table */
         
-        NEXTSEG (NameTbl) = AllocNT (TABLSIZE);
+        NEXTSEG (NameTbl) = AllocateNteDesc (TABLSIZE);
         if (!NEXTSEG (NameTbl))
         {
             REPORT_ERROR (&KDT[16]);
@@ -1748,7 +1740,7 @@ NsSetup (void)
     }
 
     NsCurrentSize = NsRootSize = ROOTSIZE;
-    Root = AllocNT (NsRootSize);
+    Root = AllocateNteDesc (NsRootSize);
     if (!Root)
     {
         /*  root name table allocation failure  */
@@ -2158,7 +2150,7 @@ DEBUG_PRINT1 (NS_INFO, "ThisEntry: %x\n", ThisEntry);
                 /*  first or second pass load mode ==> locate the next scope    */
                 
                 DEBUG_PRINT (TRACE_NAMES, "add level \n");
-                ThisEntry->ChildScope = AllocNT (TABLSIZE);
+                ThisEntry->ChildScope = AllocateNteDesc (TABLSIZE);
             }
 
             /* Now complain if there is no next scope */
@@ -2406,6 +2398,7 @@ NsNameOfScope (nte *EntryToSearch)
 
     /* Calculate required buffer size based on depth below root NT */
     
+BREAKPOINT3;
     for (Size = 1, Temp = EntryToSearch;
             Temp->ParentScope;
             Temp = Temp->ParentScope)
@@ -2426,11 +2419,10 @@ NsNameOfScope (nte *EntryToSearch)
             RegisterStaticBlockPtr (&FullyQualifiedName);
         }
 
-        FullyQualifiedName = OsdCallocate (1, Size + 1);
+        FullyQualifiedName = LocalCallocate (Size + 1);
         if (!FullyQualifiedName)
         {
             REPORT_ERROR (&KDT[28]);
-            OutOfMemory = TRUE;
             return NULL;
         }
         
@@ -2542,11 +2534,10 @@ NsFullyQualifiedName (NsHandle TargetHandle)
             RegisterStaticBlockPtr (&FullyQualifiedName);
         }
         
-        FullyQualifiedName = OsdCallocate (1, Size + 1);
+        FullyQualifiedName = LocalCallocate (Size + 1);
         if (!FullyQualifiedName)
         {
             REPORT_ERROR (&KDT[30]);
-            OutOfMemory = TRUE;
             return NULL;
         }
 
@@ -3428,12 +3419,11 @@ NsFindNames (char *SearchFor, NsHandle SearchBase, INT32 MaxDepth)
         return NULL;
     }
 
-    Count++;               /* Allow for trailing null */
-    List = (NsHandle *) OsdCallocate ((size_t)Count, sizeof(NsHandle));
+    Count++;                                            /* Allow for trailing null */
+    List = LocalCallocate (Count * sizeof(NsHandle));
     if (!List)
     {
         REPORT_ERROR (&KDT[0]);
-        OutOfMemory = TRUE;
     }
 
     else
