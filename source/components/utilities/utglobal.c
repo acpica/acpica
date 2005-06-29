@@ -146,6 +146,10 @@ UINT32                      DebugLayer = ALL_COMPONENTS;
 UINT32                      NestingLevel = 0;
 
 
+/* System flags */
+
+UINT32                      SystemFlags = 0;
+UINT32                      StartupFlags = 0;
 
 /* 
  * Human-readable decode of exception codes, mostly for debugging
@@ -411,16 +415,9 @@ CmInitGlobals (void)
     
     /* Miscellaneous variables */
     
-    Capabilities            = 0;
+    SystemFlags             = 0;
+    StartupFlags            = 0;
     GlobalLockSet           = FALSE;
-    
-    /* File handles and names */
-    
-    DsdtFile                = NULL;
-
-    OutputFile              = NULL;
-    InputFile               = NULL;
-    
     RsdpOriginalLocation    = 0;
     
     /* Interpreter */
@@ -470,43 +467,49 @@ CmLocalCleanup (void)
     FUNCTION_TRACE ("CmLocalCleanup");
 
 
-    /* 
-     * TBD: !!! MAKE OS INDEPENDENT!!
-     *
-     * iRMX does not allocate memory for the tables unless they are loaded from a
-     * file. 
+    /* TBD: Need method to determine if a table ptr should be freed */
+
+    /*
+     * Free memory allocated for ACPI tables
      */
 
-    if (InputFile)
-    {
-        if (InputFile && RSDP != NULL)   
-            OsdFree (RSDP);
-        
-        if (RSDT != NULL)  
-            OsdFree (RSDT);
-        
-        if (FACS != NULL)  
-            OsdFree (FACS);
-        
-        if (FACP != NULL)  
-            OsdFree (FACP);
-        
-        if (MAPIC != NULL) 
-            OsdFree (MAPIC);
-        
-        if (DSDT != NULL)  
-            OsdFree (DSDT);
-        
-        if (PSDT != NULL)  
-            OsdFree (PSDT);
-        
-        if (SSDT != NULL)  
-            OsdFree (SSDT);
-        
-        if (SBDT != NULL)  
-            OsdFree (SBDT);
+    if (RSDP != NULL)   
+        OsdFree (RSDP);
+    
+    if (RSDT != NULL)  
+        OsdFree (RSDT);
+    
+    if (FACS != NULL)  
+        OsdFree (FACS);
+    
+    if (FACP != NULL)  
+        OsdFree (FACP);
+    
+    if (MAPIC != NULL) 
+        OsdFree (MAPIC);
+    
+    if (DSDT != NULL)  
+        OsdFree (DSDT);
+    
+    if (PSDT != NULL)  
+        OsdFree (PSDT);
+    
+    if (SSDT != NULL)  
+        OsdFree (SSDT);
+    
+    if (SBDT != NULL)  
+        OsdFree (SBDT);
 
-    }
+    
+    /*
+     * Free all objects within the namespace
+     */
+
+
+    /*
+     * Free the namespace tables
+     */
+
 
     FUNCTION_EXIT;
 }
