@@ -236,7 +236,7 @@ NsEvaluateByName (char *Pathname, OBJECT_DESCRIPTOR *ReturnObject,
                     OBJECT_DESCRIPTOR **Params)
 {
     ACPI_STATUS         Status = AE_ERROR;
-    NAME_TABLE_ENTRY    *MethodEntry = NULL;
+    NAME_TABLE_ENTRY    *ObjEntry = NULL;
 
     
     FUNCTION_TRACE ("NsEvaluateByName");
@@ -252,7 +252,7 @@ NsEvaluateByName (char *Pathname, OBJECT_DESCRIPTOR *ReturnObject,
 
     /* Lookup the name in the namespace */
 
-    Status = NsEnter (Pathname, TYPE_Any, MODE_Exec, (NsHandle *) &MethodEntry);
+    Status = NsEnter (Pathname, TYPE_Any, MODE_Exec, &ObjEntry);
 
     if (Status != AE_OK)
     {
@@ -268,9 +268,9 @@ NsEvaluateByName (char *Pathname, OBJECT_DESCRIPTOR *ReturnObject,
      */
 
     DEBUG_PRINT (ACPI_INFO, ("[%s Method %p Value %p\n",
-                                Pathname, MethodEntry, MethodEntry->Value));
+                                Pathname, ObjEntry, ObjEntry->Value));
 
-    Status = NsEvaluateByHandle (MethodEntry, ReturnObject, Params);
+    Status = NsEvaluateByHandle (ObjEntry, ReturnObject, Params);
 
     DEBUG_PRINT (ACPI_INFO, ("*** Completed execution of method %s ***\n",
                                 Pathname));
@@ -303,7 +303,6 @@ ACPI_STATUS
 NsEvaluateByHandle (NAME_TABLE_ENTRY *ObjEntry, OBJECT_DESCRIPTOR *ReturnObject,
                             OBJECT_DESCRIPTOR **Params)
 {
-    NAME_TABLE_ENTRY    *MethodEntry;
     ACPI_STATUS         Status = AE_ERROR;
 
 
@@ -344,7 +343,7 @@ NsEvaluateByHandle (NAME_TABLE_ENTRY *ObjEntry, OBJECT_DESCRIPTOR *ReturnObject,
      * 2) The object is not a method -- just return it's current value
      */
 
-    if (NsGetType (MethodEntry) == TYPE_Method)
+    if (NsGetType (ObjEntry) == TYPE_Method)
     {
         /* Case 1) We have an actual control method to execute */
 
@@ -467,10 +466,9 @@ NsExecuteControlMethod (NAME_TABLE_ENTRY *MethodEntry, OBJECT_DESCRIPTOR **Param
     /* 
      * Excecute the method via the interpreter
      */
-    Status = AmlExecuteMethod (
-                     ((METHOD_INFO *) MethodEntry->Value)->Offset + 1,
-                     ((METHOD_INFO *) MethodEntry->Value)->Length - 1,
-                     Params);
+    Status = AmlExecuteMethod (((METHOD_INFO *) MethodEntry->Value)->Offset + 1,
+                               ((METHOD_INFO *) MethodEntry->Value)->Length - 1,
+                               Params);
 
     if (AmlPackageNested ())
     {
