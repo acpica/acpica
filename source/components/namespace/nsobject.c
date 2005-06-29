@@ -331,7 +331,7 @@ NsAttachObject (
                 DEBUG_PRINT (ACPI_ERROR, ("AML Opcode/Type [%x] not supported in attach\n",
                                *(UINT16 *) Object));
 
-                return_ACPI_STATUS (AE_AML_ERROR);
+                return_ACPI_STATUS (AE_TYPE);
 
                 break;
             }
@@ -379,7 +379,7 @@ NsAttachObject (
 
     /* Must increment the new value's reference count (if it is an internal object) */
 
-    CmUpdateObjectReference (ObjDesc, REF_INCREMENT);
+    CmAddReference (ObjDesc);
 
     /* Save the existing object (if any) for deletion later */
 
@@ -387,9 +387,9 @@ NsAttachObject (
 
     /* Install the object and set the type, flags */
 
-    ThisEntry->Object = ObjDesc;
-    ThisEntry->Type = (UINT8) ObjType;
-    ThisEntry->Flags = Flags;
+    ThisEntry->Object   = ObjDesc;
+    ThisEntry->Type     = (UINT8) ObjType;
+    ThisEntry->Flags    = Flags;
 
 
     /* 
@@ -398,8 +398,8 @@ NsAttachObject (
 
     if (PreviousObjDesc)
     {
-        CmUpdateObjectReference (PreviousObjDesc, REF_DECREMENT);
-        CmDeleteInternalObject (PreviousObjDesc);
+        CmRemoveReference (PreviousObjDesc);    /* One for the attach to the NTE */
+        CmRemoveReference (PreviousObjDesc);    /* Now delete */
     }
 
     return_ACPI_STATUS (AE_OK);
@@ -472,7 +472,7 @@ NsAttachMethod (
 
     /* Update reference count and install */
 
-    CmUpdateObjectReference (ObjDesc, REF_INCREMENT);
+    CmAddReference (ObjDesc);
 
     PreviousObjDesc = ThisEntry->Object;
     ThisEntry->Object = ObjDesc;
@@ -486,8 +486,7 @@ NsAttachMethod (
         DEBUG_PRINT (ACPI_INFO, ("NsAttachMethod: ***Old: %p Obj %p Pcode %p Len 0x%X\n",
                                     Handle, PreviousObjDesc, PreviousObjDesc->Method.Pcode, PreviousObjDesc->Method.PcodeLength));
 
-        CmUpdateObjectReference (PreviousObjDesc, REF_DECREMENT);
-        CmDeleteInternalObject (PreviousObjDesc);
+        CmRemoveReference (PreviousObjDesc);
     }
 
     DEBUG_PRINT (ACPI_INFO, ("NsAttachMethod: %p Obj %p Pcode %p Len 0x%X\n",
@@ -542,7 +541,7 @@ NsDetachObject (
     {
         /* Attempt to delete the object (and all subobjects) */
 
-        CmDeleteInternalObject (ObjDesc);
+        CmRemoveReference (ObjDesc);
     }
 
     return_VOID;
@@ -571,36 +570,10 @@ NsGetAttachedObject (
         /* handle invalid */
 
         REPORT_WARNING ("NsGetAttachedObject: Null handle");
-        return_VALUE (NULL);
+        return_PTR (NULL);
     }
 
-    return_VALUE (((NAME_TABLE_ENTRY *) Handle)->Object);
-}
-
-
-/*****************************************************************************
- *
- * FUNCTION:    IsNsObject
- *
- * PARAMETERS:  *ObjDesc            - An object descriptor
- *
- * RETURN:      TRUE if the passed descriptor is the value of a Name in
- *              the name space, else FALSE
- *
- ****************************************************************************/
-
-INT32
-IsNsObject (
-    ACPI_OBJECT_INTERNAL    *ObjDesc)
-{
-    ACPI_HANDLE             RetHandle;
-
-
-    FUNCTION_TRACE ("IsNsObject");
-
-    RetHandle = NsFindAttachedObject (ObjDesc, NS_ALL, ACPI_INT32_MAX);
-
-    return_VALUE ((RetHandle != (ACPI_HANDLE) 0));
+    return_PTR (((NAME_TABLE_ENTRY *) Handle)->Object);
 }
 
 
@@ -638,7 +611,7 @@ NsCompareObject (
             *ReturnValue = ObjHandle;
         }
 
-        return AE_TERMINATE;        /* Stop the walk */
+        return AE_CTRL_TERMINATE;        /* Stop the walk */
     }
 
     return AE_OK;   /* Not found, continue the walk */
@@ -680,12 +653,12 @@ NsFindAttachedObject (
 
     if (!ObjDesc)
     {
-        return_VALUE (NULL);
+        return_PTR (NULL);
     }
 
     if (0 == MaxDepth)
     {
-        return_VALUE (NULL);
+        return_PTR (NULL);
     }
 
     if (!Gbl_RootObject->Scope)
@@ -694,7 +667,7 @@ NsFindAttachedObject (
          * If the name space has not been initialized,
          * there surely are no matching values.
          */
-        return_VALUE (NULL);
+        return_PTR (NULL);
     }
 
     if (NS_ALL == StartHandle)
@@ -708,7 +681,7 @@ NsFindAttachedObject (
          * If base is not the root and has no children,
          * there is nothing to search.
          */
-        return_VALUE (NULL);
+        return_PTR (NULL);
     }
 
 
@@ -717,7 +690,7 @@ NsFindAttachedObject (
      * Either the matching object is returned, or NULL in case
      * of no match.
      */
-    Status = AcpiWalkNamespace (ACPI_TYPE_Any, StartHandle, MaxDepth, NsCompareObject, 
+    Status = NsWalkNamespace (ACPI_TYPE_Any, StartHandle, MaxDepth, NS_WALK_NO_UNLOCK, NsCompareObject, 
                                 ObjDesc, &RetObject);
     if (ACPI_FAILURE (Status))
     {
@@ -725,7 +698,7 @@ NsFindAttachedObject (
         RetObject = NULL;
     }
 
-    return_VALUE (RetObject);
+    return_PTR (RetObject);
 }
 
 

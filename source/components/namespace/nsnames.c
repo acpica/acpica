@@ -161,7 +161,7 @@ NsNameOfScope (
          * If the name space has not been initialized,
          * this function should not have been called.
          */
-        return_VALUE (NULL);
+        return_PTR (NULL);
     }
 
     /* Calculate required buffer size based on depth below root NT */
@@ -180,7 +180,7 @@ NsNameOfScope (
     if (!NameBuffer)
     {
         REPORT_ERROR ("NsNameOfScope: allocation failure");
-        return_VALUE (NULL);
+        return_PTR (NULL);
     }
     
 
@@ -201,7 +201,7 @@ NsNameOfScope (
         DEBUG_PRINT (ACPI_ERROR, ("NsNameOfScope:  Bad pointer returned; size = %d\n", Size));
     }
 
-    return_VALUE (NameBuffer);
+    return_PTR (NameBuffer);
 }
 
 
@@ -228,12 +228,12 @@ NsNameOfCurrentScope (
     if (WalkState && WalkState->ScopeInfo)
     {
         ScopeName = NsNameOfScope (WalkState->ScopeInfo->Scope.Entry);
-        return_VALUE (ScopeName);
+        return_PTR (ScopeName);
     }
     
     REPORT_ERROR ("Current scope pointer is invalid");
 
-    return_VALUE (NULL);
+    return_PTR (NULL);
 }
 
 
@@ -551,7 +551,7 @@ NsFindNames (
          * If the name space has not been initialized,
          * there surely are no matching names.
          */
-        return_VALUE (NULL);
+        return_PTR (NULL);
     }
 
     if (NS_ALL == StartHandle)
@@ -574,7 +574,7 @@ NsFindNames (
          * If base is not the root and has no children,
          * there is nothing to search.
          */
-        return_VALUE (NULL);
+        return_PTR (NULL);
     }
 
     if (!SearchFor)
@@ -592,7 +592,7 @@ NsFindNames (
     
     if (0 == Count)
     {
-        return_VALUE (NULL);
+        return_PTR (NULL);
     }
 
     Count++;                                            /* Allow for trailing null */
@@ -600,7 +600,7 @@ NsFindNames (
     if (!List)
     {
         REPORT_ERROR ("NsFindNames: allocation failure");
-        return_VALUE (NULL);
+        return_PTR (NULL);
     }
 
     /* Pass 2.  Fill buffer */
@@ -608,7 +608,7 @@ NsFindNames (
     Count = 0;
     NsLowFindNames (StartHandle, SearchFor, &Count, List, MaxDepth);
 
-    return_VALUE (List);
+    return_PTR (List);
 }
 
 
