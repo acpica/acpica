@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: adisasm - Application-level disassembler routines
- *              $Revision: 1.61 $
+ *              $Revision: 1.63 $
  *
  *****************************************************************************/
 
@@ -597,7 +597,7 @@ AdCreateTableHeader (
     AcpiOsPrintf (" *\n * Disassembly of %s, %s */\n", Filename, ctime (&Timer));
 
     AcpiOsPrintf (
-        "DefinitionBlock (\"%4.4s.aml\", \"%4.4s\", %hd, \"%.6s\", \"%.8s\", %d)\n",
+        "DefinitionBlock (\"%4.4s.aml\", \"%4.4s\", %hd, \"%.6s\", \"%.8s\", %u)\n",
         Table->Signature, Table->Signature, Table->Revision,
         Table->OemId, Table->OemTableId, Table->OemRevision);
 }
@@ -923,7 +923,7 @@ AdGetLocalTables (
         {
             AcpiGbl_FACS = (void *) NewTable;
             AdWriteTable (NewTable, AcpiGbl_FACS->Length,
-                FACS_SIG, AcpiGbl_FADT->Header.OemTableId);
+                FACS_SIG, AcpiGbl_FADT->OemTableId);
         }
         AcpiOsPrintf ("\n");
     }
