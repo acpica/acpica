@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: nsinit - namespace initialization
- *              $Revision: 1.18 $
+ *              $Revision: 1.19 $
  *
  *****************************************************************************/
 
@@ -447,7 +447,7 @@ AcpiNsInitOneDevice (
 
     else
     {
-        /* Count of successfull INIs */
+        /* Count of successful INIs */
 
         Info->Num_INI++;
     }
