@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslcompiler.h - common include file
- *              $Revision: 1.22 $
+ *              $Revision: 1.23 $
  *
  *****************************************************************************/
 
@@ -133,12 +133,12 @@
 
 #include "acpi.h"
 
-#define CompilerVersion                         "X204"
+#define CompilerVersion                         "X205"
+#define CompilerCreatorRevision                 0x00020205  /* Acpi 2.0, Version# */
 
 #define CompilerId                              "ACPI Component Architecture ASL Compiler"
 #define CompilerName                            "iasl"
 #define CompilerCreatorId                       "IASL"
-#define CompilerCreatorRevision                 0x00020203
 
 
 
@@ -471,7 +471,24 @@ AePrintErrorLog (
     FILE                    *Where);
 
 
+/* asllisting */
 
+void
+LsWriteListingHexBytes (
+    char                    *Buffer,
+    UINT32                  Length);
+
+void
+LsWriteNodeToListing (
+    ASL_PARSE_NODE          *Node);
+
+
+
+
+
+
+void
+CgGenerateAmlOutput (void);
 
 UINT32
 CgSetOptimalIntegerSize (
