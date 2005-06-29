@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dswload - Dispatcher namespace load callbacks
- *              $Revision: 1.48 $
+ *              $Revision: 1.49 $
  *
  *****************************************************************************/
 
@@ -143,7 +143,8 @@
  ******************************************************************************/
 
 ACPI_STATUS
-LdLoadNamespace (void)
+LdLoadNamespace (
+    ACPI_PARSE_OBJECT       *RootOp)
 {
     ACPI_WALK_STATE         *WalkState;
 
@@ -160,7 +161,7 @@ LdLoadNamespace (void)
 
     /* Perform the walk of the parse tree */
 
-    TrWalkParseTree (RootNode, ASL_WALK_VISIT_TWICE, LdNamespace1Begin,
+    TrWalkParseTree (RootOp, ASL_WALK_VISIT_TWICE, LdNamespace1Begin,
                         LdNamespace1End, WalkState);
 
     /* Dump the namespace if debug is enabled */
