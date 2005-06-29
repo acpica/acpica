@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: psxface - Parser external interfaces
- *              $Revision: 1.37 $
+ *              $Revision: 1.40 $
  *
  *****************************************************************************/
 
@@ -9,8 +9,8 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, Intel Corp.  All rights
- * reserved.
+ * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
+ * All rights reserved.
  *
  * 2. License
  *
@@ -226,6 +226,12 @@ AcpiPsxExecute (
     {
         return_ACPI_STATUS (AE_NO_MEMORY);
     }
+
+
+    /* Init new op with the method name and pointer back to the NS node */
+
+    AcpiPsSetName (Op, MethodNode->Name);
+    Op->Node = MethodNode;
 
     /*
      * The walk of the parse tree is where we actually execute the method
