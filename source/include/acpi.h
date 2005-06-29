@@ -123,8 +123,9 @@
 
 #ifdef DEFINE_ACPI_GLOBALS
 #define ACPI_EXTERN
+#ifndef __GNUC__
 #pragma message ("ACPI_EXTERN variables defined in this module.")
-
+#endif
 #else
 #define ACPI_EXTERN extern
 #endif
@@ -163,12 +164,6 @@ ACPI_EXTERN ACPI_TABLE_HEADER                   * SBDT;
 
 
 
-/*  
- * OutOfMemory is initialized to FALSE and is set to TRUE whenever
- * an ACPI.LIB allocation failure is encountered.
- */
-ACPI_EXTERN INT32       OutOfMemory;
-
 
 /* Misc Globals */
 
@@ -186,6 +181,7 @@ ACPI_EXTERN INT32       OriginalMode;
 ACPI_EXTERN INT32       EdgeLevelSave;
 ACPI_EXTERN INT32       IrqEnableSave;
 ACPI_EXTERN INT32       OriginalMode;
+extern char             *ExceptionNames[];
 
 /* File I/O globals */
 
@@ -255,7 +251,6 @@ extern INT32            DebugLayer;
 
 /* Interpreter globals */
 
-extern char             *RV[];
 extern char             *FENames[];
 
 
