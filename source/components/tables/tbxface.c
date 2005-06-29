@@ -1,7 +1,7 @@
 
 /******************************************************************************
  *
- * Module Name: tbapi - Public interfaces to the ACPI subsystem
+ * Module Name: tbxface - Public interfaces to the ACPI subsystem
  *                         ACPI table oriented interfaces
  *
  *****************************************************************************/
@@ -115,7 +115,7 @@
  *
  *****************************************************************************/
 
-#define __TBAPI_C__
+#define __TBXFACE_C__
 
 #include "acpi.h"
 #include "namesp.h"
@@ -124,7 +124,7 @@
 
 
 #define _COMPONENT          TABLE_MANAGER
-        MODULE_NAME         ("tbapi");
+        MODULE_NAME         ("tbxface");
 
 
 /****************************************************************************
