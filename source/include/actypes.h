@@ -259,7 +259,8 @@ typedef struct
 {
    ptrdiff_t            Offset;      /* offset to MethodFlags in AML pcode block */
    UINT32               Length;      /* length of method code including MethodFlags */
-} meth;
+
+} METHOD_INFO;
 
 /* NsHandle is actually an nte * */
 
@@ -329,22 +330,23 @@ typedef enum {
  * ParentScope member will be valid.
  */
 
-typedef struct nte
+typedef struct NAME_TABLE_ENTRY
 {
-    UINT32          Name;           /* Name segment, always 4 chars per ACPI spec.
-                                     * NameSeg must be the first field in the nte
-                                     * -- see the IsNsHandle macro in acpinmsp.h
-                                     */
-    struct nte      *Scope;         /* Scope owned by this name */
-    struct nte      *ParentScope;   /* Previous level of names */
-    struct nte      *ParentEntry;   /* Actual parent NTE */
-    struct nte      *NextEntry;     /* Next within this scope */
-    struct nte      *PrevEntry;     /* Previous within this scope */
-    NsType          Type;           /* Type associated with this name */
-    void            *Value;         /* Pointer to value associated with this name */
-} nte;
+    UINT32                  Name;           /* Name segment, always 4 chars per ACPI spec.
+                                             * NameSeg must be the first field in the nte
+                                             * -- see the IsNsHandle macro in acpinmsp.h
+                                             */
+    struct NAME_TABLE_ENTRY *Scope;         /* Scope owned by this name */
+    struct NAME_TABLE_ENTRY *ParentScope;   /* Previous level of names */
+    struct NAME_TABLE_ENTRY *ParentEntry;   /* Actual parent NTE */
+    struct NAME_TABLE_ENTRY *NextEntry;     /* Next within this scope */
+    struct NAME_TABLE_ENTRY *PrevEntry;     /* Previous within this scope */
+    NsType                  Type;           /* Type associated with this name */
+    void                    *Value;         /* Pointer to value associated with this name */
 
-#define NOTFOUND            (nte *)0
+} NAME_TABLE_ENTRY;
+
+#define ENTRY_NOT_FOUND     NULL
 #define INVALID_HANDLE      0
 #define NULL_HANDLE         INVALID_HANDLE
 
@@ -353,37 +355,37 @@ typedef struct nte
 
 typedef struct
 {
-    nte             *Scope;
+    NAME_TABLE_ENTRY        *Scope;
     /* 
      * Type of scope, typically the same as the type of its parent's entry 
      * (but not the same as the type of its parent's scope).
      */
-    NsType          Type;   
+    NsType                  Type;   
 } SCOPE_STACK;    
 
 
 typedef struct 
 {
-    char            *SearchFor;
-    NsHandle        *List;
-    INT32           *Count;
+    char                    *SearchFor;
+    NsHandle                *List;
+    INT32                   *Count;
 } FIND_CONTEXT;
 
 
 typedef struct
 {
-    nte             *PreviousEntry;
-    nte             *NameTable;
-    UINT32          Position;
-    BOOLEAN         TableFull;
+    NAME_TABLE_ENTRY        *PreviousEntry;
+    NAME_TABLE_ENTRY        *NameTable;
+    UINT32                  Position;
+    BOOLEAN                 TableFull;
 } NS_SEARCH_DATA;
 
 
 typedef struct
 {
-    char            *Name;
-    NsType          Type;
-    char            *Val;
+    char                    *Name;
+    NsType                  Type;
+    char                    *Val;
 } PREDEFINED_NAMES;
 
 
