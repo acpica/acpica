@@ -43,7 +43,7 @@ RSC=rc.exe
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /MD /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_AFXDLL" /YX /FD /c
-# ADD CPP /nologo /W4 /GX /O2 /I "..\..\Subsystem\Include" /D "NDEBUG" /D "WIN32" /D "_WINDOWS" /D "_MBCS" /D "YY_NEVER_INTERACTIVE" /D "_ACPI_ASL_COMPILER" /FR /YX /FD /c
+# ADD CPP /nologo /W3 /GX /O2 /I "..\..\Subsystem\Include" /D "NDEBUG" /D "WIN32" /D "_WINDOWS" /D "_MBCS" /D "YY_NEVER_INTERACTIVE" /D "_ACPI_ASL_COMPILER" /FR /YX /FD /c
 # ADD BASE MTL /nologo /D "NDEBUG" /mktyplib203 /win32
 # ADD MTL /nologo /D "NDEBUG" /mktyplib203 /win32
 # ADD BASE RSC /l 0x409 /d "NDEBUG" /d "_AFXDLL"
@@ -53,7 +53,7 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=xilink6.exe
 # ADD BASE LINK32 /nologo /subsystem:windows /machine:I386
-# ADD LINK32 libflex.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /machine:I386 /out:"Release/iasl.exe"
+# ADD LINK32 libflex.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /incremental:yes /machine:I386 /out:"Release/iasl.exe"
 # Begin Special Build Tool
 SOURCE="$(InputPath)"
 PostBuild_Desc=Copy compiler to libraries directory
@@ -292,12 +292,11 @@ SOURCE=../../AslCompiler/AslCompiler.l
 !IF  "$(CFG)" == "AslCompiler - Win32 Release"
 
 # PROP Ignore_Default_Tool 1
-# Begin Custom Build - Building Lexer
+# Begin Custom Build - Building Lexer from $(InputPath)
 InputPath=../../AslCompiler/AslCompiler.l
-InputName=AslCompiler
 
-"$(InputName).l.c" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	flex.exe -PAslCompiler -i -t $(InputName).l > $(InputName).l.c
+"$(InputPath).c" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	flex.exe -PAslCompiler -i -o$(InputPath).c $(InputPath)
 
 # End Custom Build
 
@@ -322,17 +321,16 @@ SOURCE=../../AslCompiler/AslCompiler.y
 !IF  "$(CFG)" == "AslCompiler - Win32 Release"
 
 # PROP Ignore_Default_Tool 1
-# Begin Custom Build - Building Parser
+# Begin Custom Build - Building Parser from $(InputPath)
 InputPath=../../AslCompiler/AslCompiler.y
-InputName=AslCompiler
 
 BuildCmds= \
-	bison.exe -pAslCompiler -d -v -o$(InputName).c $(InputName)
+	bison.exe -pAslCompiler -t -d -v -o$(InputPath).c $(InputPath)
 
-"$(InputName).c" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+"$(InputPath).c" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
    $(BuildCmds)
 
-"$(InputName).h" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+"$(InputPath).h" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
    $(BuildCmds)
 # End Custom Build
 
