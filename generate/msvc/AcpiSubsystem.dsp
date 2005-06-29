@@ -780,6 +780,14 @@ SOURCE=..\..\Subsystem\Include\acpitables.h
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\Subsystem\Include\acpitbl32.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\Subsystem\Include\acpitbl64.h
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\Subsystem\Include\acpitypes.h
 # End Source File
 # Begin Source File
