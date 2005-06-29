@@ -1,6 +1,8 @@
+
 /******************************************************************************
  *
  * Module Name: rsutils - Utilities for the resource manager
+ *              $Revision: 1.7 $
  *
  *****************************************************************************/
 
@@ -117,8 +119,8 @@
 #define __RSUTILS_C__
 
 #include "acpi.h"
-#include "namesp.h"
-#include "resource.h"
+#include "acnamesp.h"
+#include "acresrc.h"
 
 
 #define _COMPONENT          RESOURCE_MANAGER
@@ -172,7 +174,7 @@ AcpiRsGetPrtMethodData (
      *  Execute the method, no parameters
      */
     Status = AcpiNsEvaluateRelative (Handle, "_PRT", NULL, &RetObj);
-    if (Status != AE_OK)
+    if (ACPI_FAILURE (Status))
     {
         return_ACPI_STATUS (Status);
     }
@@ -271,7 +273,7 @@ AcpiRsGetCrsMethodData (
      *  Execute the method, no parameters
      */
     Status = AcpiNsEvaluateRelative (Handle, "_CRS", NULL, &RetObj);
-    if (Status != AE_OK)
+    if (ACPI_FAILURE (Status))
     {
         return_ACPI_STATUS (Status);
     }
@@ -305,7 +307,7 @@ AcpiRsGetCrsMethodData (
                                    RetBuffer->Pointer,
                                    &BufferSpaceNeeded);
 
-    if (AE_OK == Status)
+    if (ACPI_SUCCESS (Status))
     {
         AcpiRsDumpResourceList((RESOURCE *)RetBuffer->Pointer);
     }
@@ -374,7 +376,7 @@ AcpiRsGetPrsMethodData (
      *  Execute the method, no parameters
      */
     Status = AcpiNsEvaluateRelative (Handle, "_PRS", NULL, &RetObj);
-    if (Status != AE_OK)
+    if (ACPI_FAILURE (Status))
     {
         return_ACPI_STATUS (Status);
     }
@@ -509,7 +511,7 @@ AcpiRsSetSrsMethodData (
                                  ByteStream,
                                  &BufferSizeNeeded);
 
-    if(AE_OK != Status)
+    if (ACPI_FAILURE (Status))
     {
         /*
          *  Failed the call

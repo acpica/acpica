@@ -1,3 +1,4 @@
+
 /******************************************************************************
  *
  * Module Name: rsio - AcpiRsIoResource
@@ -6,6 +7,7 @@
  *                     AcpiRsFixedIoStream
  *                     AcpiRsDmaResource
  *                     AcpiRsDmaStream
+ *              $Revision: 1.6 $
  *
  *****************************************************************************/
 

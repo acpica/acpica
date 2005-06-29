@@ -4,6 +4,7 @@
  *                       AcpiRsAddress16Stream
  *                       AcpiRsAddress32Resource
  *                       AcpiRsAddress32Stream
+ *              $Revision: 1.5 $
  *
  *****************************************************************************/
 

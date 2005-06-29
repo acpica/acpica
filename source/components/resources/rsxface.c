@@ -1,6 +1,8 @@
+
 /******************************************************************************
  *
  * Module Name: rsxface - Public interfaces to the ACPI subsystem
+ *              $Revision: 1.5 $
  *
  *****************************************************************************/
 
@@ -117,9 +119,9 @@
 #define __RSXFACE_C__
 
 #include "acpi.h"
-#include "interp.h"
-#include "namesp.h"
-#include "resource.h"
+#include "acinterp.h"
+#include "acnamesp.h"
+#include "acresrc.h"
 
 #define _COMPONENT          RESOURCE_MANAGER
         MODULE_NAME         ("rsxface");

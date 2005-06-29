@@ -1,3 +1,4 @@
+
 /******************************************************************************
  *
  * Module Name: rsmisc - AcpiRsEndTagResource
@@ -8,6 +9,7 @@
  *                       AcpiRsEndDependentFunctionsResource
  *                       AcpiRsStartDependentFunctionsStream
  *                       AcpiRsEndDependentFunctionsStream
+ *              $Revision: 1.5 $
  *
  *****************************************************************************/
 

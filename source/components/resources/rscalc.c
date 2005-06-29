@@ -1,7 +1,9 @@
+
 /******************************************************************************
  *
  * Module Name: rscalc - AcpiRsCalculateByteStreamLength
  *                       AcpiRsCalculateListLength
+ *              $Revision: 1.6 $
  *
  *****************************************************************************/
 
@@ -230,7 +232,7 @@ AcpiRsCalculateByteStreamLength (
              * Vendor Defined Resource
              */
             /*
-             * For a Vendor Specific resource, if the Length is 
+             * For a Vendor Specific resource, if the Length is
              *  between 1 and 7 it will be created as a Small
              *  Resource data type, otherwise it is a Large
              *  Resource data type.
@@ -243,7 +245,7 @@ AcpiRsCalculateByteStreamLength (
             {
                 SizeOfThisBit = 1;
             }
-            SizeOfThisBit += 
+            SizeOfThisBit +=
                 LinkedList->Data.VendorSpecific.Length;
             break;
 
@@ -293,9 +295,9 @@ AcpiRsCalculateByteStreamLength (
              * 16-Bit Address Resource
              */
             /*
-             * The base size of this byte stream is 16. If a 
-             *  Resource Source string is not NULL, add 1 for 
-             *  the Index + the length of the null terminated 
+             * The base size of this byte stream is 16. If a
+             *  Resource Source string is not NULL, add 1 for
+             *  the Index + the length of the null terminated
              *  string Resource Source + 1 for the null.
              */
             SizeOfThisBit = 16;
@@ -599,7 +601,6 @@ AcpiRsCalculateListLength (
                  */
                 AdditionalBytes = (UINT8) ((Temp8 - 1) * 4);
 
-                /*
                 /*
                  * Resource Source Index and Resource Source are
                  *  optional elements.  Check the length of the

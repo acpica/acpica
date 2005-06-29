@@ -1,7 +1,9 @@
+
 /******************************************************************************
  *
  * Module Name: rslist - AcpiRsByteStreamToList
  *                       AcpiListToByteStream
+ *              $Revision: 1.4 $
  *
  *****************************************************************************/
 
@@ -117,7 +119,7 @@
 #define __RSLIST_C__
 
 #include "acpi.h"
-#include "resource.h"
+#include "acresrc.h"
 
 #define _COMPONENT          RESOURCE_MANAGER
         MODULE_NAME         ("rslist");

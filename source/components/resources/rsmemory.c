@@ -1,3 +1,4 @@
+
 /******************************************************************************
  *
  * Module Name: rsmem24 - AcpiRsMemory24Resource
@@ -6,6 +7,7 @@
  *                        AcpiRsFixedMemory32Resource
  *                        AcpiRsMemory32RangeStream
  *                        AcpiRsFixedMemory32Stream
+ *              $Revision: 1.6 $
  *
  *****************************************************************************/
 
