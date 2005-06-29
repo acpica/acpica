@@ -2,7 +2,7 @@
  *
  * Module Name: dsopcode - Dispatcher Op Region support and handling of
  *                         "control" opcodes
- *              $Revision: 1.95 $
+ *              $Revision: 1.96 $
  *
  *****************************************************************************/
 
@@ -866,9 +866,8 @@ AcpiDsEvalRegionOperands (
  *
  * RETURN:      Status
  *
- * DESCRIPTION: Get the operands and complete the following data objec types:
- *              Buffer
- *              Package
+ * DESCRIPTION: Get the operands and complete the following data object types:
+ *              Buffer, Package.
  *
  ****************************************************************************/
 
