@@ -324,19 +324,11 @@ SOURCE=..\..\subsystem\Hardware\hwacpi.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\subsystem\Hardware\hwcpu32.c
-# End Source File
-# Begin Source File
-
 SOURCE=..\..\Subsystem\Hardware\hwgpe.c
 # End Source File
 # Begin Source File
 
 SOURCE=..\..\Subsystem\Hardware\hwregs.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\subsystem\Hardware\hwxface.c
 # End Source File
 # End Group
 # Begin Group "Events"
