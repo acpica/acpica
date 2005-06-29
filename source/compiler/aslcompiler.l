@@ -3,7 +3,7 @@
 /******************************************************************************
  *
  * Module Name: aslcompiler.l - Flex input file
- *              $Revision: 1.24 $
+ *              $Revision: 1.41 $
  *
  *****************************************************************************/
 
@@ -11,8 +11,8 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, Intel Corp.  All rights
- * reserved.
+ * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
+ * All rights reserved.
  *
  * 2. License
  *
@@ -116,10 +116,13 @@
  *
  *****************************************************************************/
 
+//    \"([^\"]|(\\\"))*\"         { literal (); return STRING_LITERAL; }
+
+
 #include <stdlib.h>
 #include <string.h>
-#include "AslCompiler.h"
-#include "AslCompiler.y.h"
+#include "aslcompiler.h"
+#include "aslcompiler.y.h"
 YYSTYPE AslCompilerlval;
 
 /*
@@ -130,6 +133,8 @@ YYSTYPE AslCompilerlval;
  * -i: Scanner must be case-insensitive
  */
 
+#define _COMPONENT          ACPI_COMPILER
+        MODULE_NAME         ("aslscan")
 void
 comment (void);
 void
@@ -142,7 +147,6 @@ void
 copy (void);
 
 %}
-
 
 
 LeadNameChar                [A-Za-z_]
@@ -160,340 +164,337 @@ NameSeg                     {LeadNameChar}|{NameSeg1}|{NameSeg2}|{NameSeg3}
 NameString                  {RootChar}|{RootChar}{NamePath}|[\^]+{NamePath}|{NonEmptyNamePath}
 NamePath                    {NonEmptyNamePath}?
 NonEmptyNamePath            {NameSeg}{NamePathTail}*
-NamePathTail                [.]{NameSeg}  
+NamePathTail                [.]{NameSeg}
 
 %%
 
-[ ]                         { copy(); count (0); }
-[\n]                        { copy(); count (0); }
-[ \t]                       { copy(); count (0); }
+[ ]                         { count (0); }
+[\n]                        { count (0); }
+[ \t]                       { count (0); }
 
 
+"/*"                        { comment(); }
+"//"                        { comment2(); }
 
-"/*"			            { copy(); comment(); }
-"//"                        { copy(); comment2(); }
-
-\"([^\"]|(\\\"))*\"	        { literal (); return STRING_LITERAL; }
+"\""                        { literal (); return STRING_LITERAL; }
 
 
 0[xX]{HexDigitChar}+ |
 {DigitChar}+                { AslCompilerlval.i = UtStrtoul64 ((char *) AslCompilertext, NULL, 0);
-                                copy(); count (1); return (INTEGER); }
+                                count (1); return (INTEGER); }
 
-"Include"                   { copy(); count (1); return (INCLUDE); }
-"#include"                  { copy(); count (1); return (INCLUDE_CSTYLE); }
-"External"                  { copy(); count (1); return (EXTERNAL); }
-
-
-"Ones"                      { copy(); count (1); return (ONES); }
-"One"                       { copy(); count (1); return (ONE); }
-"Zero"                      { copy(); count (1); return (ZERO); }
-"Revision"                  { copy(); count (1); return (REVISION); }
-                                
-"Offset"                    { copy(); count (1); return (OFFSET); }
-"AccessAs"                  { copy(); count (1); return (ACCESSAS); }
-"BankField"                 { copy(); count (2); return (BANKFIELD); }
-"CreateBitField"            { copy(); count (2); return (CREATEBITFIELD); }
-"CreateByteField"           { copy(); count (2); return (CREATEBYTEFIELD); }
-"CreateDWordField"          { copy(); count (2); return (CREATEDWORDFIELD); }
-"CreateField"               { copy(); count (2); return (CREATEFIELD); }
-"CreateQWordField"          { copy(); count (2); return (CREATEQWORDFIELD); }
-"CreateWordField"           { copy(); count (2); return (CREATEWORDFIELD); }
-"DataTableRegion"           { copy(); count (2); return (DATATABLEREGION); }
-"Device"                    { copy(); count (2); return (DEVICE); }
-"Event"                     { copy(); count (2); return (EVENT); }
-"Field"                     { copy(); count (2); return (FIELD); }
-"IndexField"                { copy(); count (2); return (INDEXFIELD); }
-"Method"                    { copy(); count (2); return (METHOD); }
-"Mutex"                     { copy(); count (2); return (MUTEX); }
-"OperationRegion"           { copy(); count (2); return (OPERATIONREGION); }
-"PowerResource"             { copy(); count (2); return (POWERRESOURCE); }
-"Processor"                 { copy(); count (2); return (PROCESSOR); }
-"ThermalZone"               { copy(); count (2); return (THERMALZONE); }
-"Alias"                     { copy(); count (2); return (ALIAS); }
-"Name"                      { copy(); count (2); return (NAME); }
-"Scope"                     { copy(); count (2); return (SCOPE); }
-"Break"                     { copy(); count (3); return (BREAK); }
-"BreakPoint"                { copy(); count (3); return (BREAKPOINT); }
-"Continue"                  { copy(); count (3); return (CONTINUE); }
-"Fatal"                     { copy(); count (3); return (FATAL); }
-"If"                        { copy(); count (3); return (IF); }
-"Else"                      { copy(); count (3); return (ELSE); }
-"ElseIf"                    { copy(); count (3); return (ELSEIF); }
-"Load"                      { copy(); count (3); return (LOAD); }
-"Noop"                      { copy(); count (3); return (NOOP); }
-"Notify"                    { copy(); count (3); return (NOTIFY); }
-"Release"                   { copy(); count (3); return (RELEASE); }
-"Reset"                     { copy(); count (3); return (RESET); }
-"Return"                    { copy(); count (3); return (RETURN); }
-"Signal"                    { copy(); count (3); return (SIGNAL); }
-"Sleep"                     { copy(); count (3); return (SLEEP); }
-"Stall"                     { copy(); count (3); return (STALL); }
-"Switch"                    { copy(); count (3); return (SWITCH); }
-"Case"                      { copy(); count (3); return (CASE); }
-"Default"                   { copy(); count (3); return (DEFAULT); }
-"Unload"                    { copy(); count (3); return (UNLOAD); }
-"While"                     { copy(); count (3); return (WHILE); }
-
-"Acquire"                   { copy(); count (3); return (ACQUIRE); }
-"Add"                       { copy(); count (3); return (ADD); }
-"And"                       { copy(); count (3); return (AND); }
-"Concatenate"               { copy(); count (3); return (CONCATENATE); }
-"ConcatenateResTemplate"    { copy(); count (3); return (CONCATENATERESTEMPLATE); }
-"CondRefOf"                 { copy(); count (3); return (CONDREFOF); }
-"Copy"                      { copy(); count (3); return (COPY); }
-"Decrement"                 { copy(); count (3); return (DECREMENT); }
-"DeRefOf"                   { copy(); count (3); return (DEREFOF); }
-"Divide"                    { copy(); count (3); return (DIVIDE); }
-"FindSetLeftBit"            { copy(); count (3); return (FINDSETLEFTBIT); }
-"FindSetRightBit"           { copy(); count (3); return (FINDSETRIGHTBIT); }
-"FromBCD"                   { copy(); count (3); return (FROMBCD); }
-"Increment"                 { copy(); count (3); return (INCREMENT); }
-"Index"                     { copy(); count (3); return (INDEX); }
-"LAnd"                      { copy(); count (3); return (LAND); }
-"LEqual"                    { copy(); count (3); return (LEQUAL); }
-"LGreater"                  { copy(); count (3); return (LGREATER); }
-"LGreaterEqual"             { copy(); count (3); return (LGREATEREQUAL); }
-"LLess"                     { copy(); count (3); return (LLESS); }
-"LLessEqual"                { copy(); count (3); return (LLESSEQUAL); }
-"LNot"                      { copy(); count (3); return (LNOT); }
-"LNotEqual"                 { copy(); count (3); return (LNOTEQUAL); }
-"LoadTable"                 { copy(); count (3); return (LOADTABLE); }
-"LOr"                       { copy(); count (3); return (LOR); }
-"Match"                     { copy(); count (3); return (MATCH); }
-"Mid"                       { copy(); count (3); return (MID); }
-"Mod"                       { copy(); count (3); return (MOD); }
-"Multiply"                  { copy(); count (3); return (MULTIPLY); }
-"NAnd"                      { copy(); count (3); return (NAND); }
-"NOr"                       { copy(); count (3); return (NOR); }
-"Not"                       { copy(); count (3); return (NOT); }
-"ObjectType"                { copy(); count (3); return (OBJECTTYPE); }
-"Or"                        { copy(); count (3); return (OR); }
-"RefOf"                     { copy(); count (3); return (REFOF); }
-"ShiftLeft"                 { copy(); count (3); return (SHIFTLEFT); }
-"ShiftRight"                { copy(); count (3); return (SHIFTRIGHT); }
-"SizeOf"                    { copy(); count (3); return (SIZEOF); }
-"Store"                     { copy(); count (3); return (STORE); }
-"Subtract"                  { copy(); count (3); return (SUBTRACT); }
-"ToBCD"                     { copy(); count (3); return (TOBCD); }
-"ToBuffer"                  { copy(); count (3); return (TOBUFFER); }
-"ToDecimalString"           { copy(); count (3); return (TODECIMALSTRING); }
-"ToHexString"               { copy(); count (3); return (TOHEXSTRING); }
-"ToInteger"                 { copy(); count (3); return (TOINTEGER); }
-"ToString"                  { copy(); count (3); return (TOSTRING); }
-"Wait"                      { copy(); count (3); return (WAIT); }
-"XOr"                       { copy(); count (3); return (XOR); }
-
-"Arg0"                      { copy(); count (1); return (ARG0); }
-"Arg1"                      { copy(); count (1); return (ARG1); }
-"Arg2"                      { copy(); count (1); return (ARG2); }
-"Arg3"                      { copy(); count (1); return (ARG3); }
-"Arg4"                      { copy(); count (1); return (ARG4); }
-"Arg5"                      { copy(); count (1); return (ARG5); }
-"Arg6"                      { copy(); count (1); return (ARG6); }
-
-"Local0"                    { copy(); count (1); return (LOCAL0); }
-"Local1"                    { copy(); count (1); return (LOCAL1); }
-"Local2"                    { copy(); count (1); return (LOCAL2); }
-"Local3"                    { copy(); count (1); return (LOCAL3); }
-"Local4"                    { copy(); count (1); return (LOCAL4); }
-"Local5"                    { copy(); count (1); return (LOCAL5); }
-"Local6"                    { copy(); count (1); return (LOCAL6); }
-"Local7"                    { copy(); count (1); return (LOCAL7); }
-
-"Debug"                     { copy(); count (1); return (DEBUG); }
-
-"DefinitionBlock"           { copy(); count (1); return (DEFINITIONBLOCK); }
-"Buffer"                    { copy(); count (1); return (BUFFER); }
-"Package"                   { copy(); count (1); return (PACKAGE); }
-
-"EISAID"                    { copy(); count (1); return (EISAID); }
-"ResourceTemplate"          { copy(); count (1); return (RESOURCETEMPLATE); }
-"Unicode"                   { copy(); count (1); return (UNICODE); }
-"DMA"                       { copy(); count (1); return (DMA); }
-"DWordIO"                   { copy(); count (1); return (DWORDIO); }
-"DWordMemory"               { copy(); count (1); return (DWORDMEMORY); }
-"EndDependentFn"            { copy(); count (1); return (ENDDEPENDENTFN); }
-"FixedIO"                   { copy(); count (1); return (FIXEDIO); }
-"Interrupt"                 { copy(); count (1); return (INTERRUPT); }
-"IO"                        { copy(); count (1); return (IO); }
-"IRQNoFlags"                { copy(); count (1); return (IRQNOFLAGS); }
-"IRQ"                       { copy(); count (1); return (IRQ); }
-"Memory24"                  { copy(); count (1); return (MEMORY24); }
-"Memory32Fixed"             { copy(); count (1); return (MEMORY32FIXED); }
-"Memory32"                  { copy(); count (1); return (MEMORY32); }
-"QWordIO"                   { copy(); count (1); return (QWORDIO); }
-"QWordMemory"               { copy(); count (1); return (QWORDMEMORY); }
-"Register"                  { copy(); count (1); return (REGISTER); }
-"StartDependentFn"          { copy(); count (1); return (STARTDEPENDENTFN); }
-"StartDependentFnNoPri"     { copy(); count (1); return (STARTDEPENDENTFN_NOPRI); }
-"VendorLong"                { copy(); count (1); return (VENDORLONG); }
-"VendorShort"               { copy(); count (1); return (VENDORSHORT); }
-"WordBusNumber"             { copy(); count (1); return (WORDBUSNUMBER); }
-"WordIO"                    { copy(); count (1); return (WORDIO); }
-
-"UnknownObj"                { copy(); count (0); return (OBJECTTYPE_UNK); }
-"IntObj"                    { copy(); count (0); return (OBJECTTYPE_INT); }
-"StrObj"                    { copy(); count (0); return (OBJECTTYPE_STR); }
-"BuffObj"                   { copy(); count (0); return (OBJECTTYPE_BUF); }
-"PkgObj"                    { copy(); count (0); return (OBJECTTYPE_PKG); }
-"FieldUnitObj"              { copy(); count (0); return (OBJECTTYPE_FLD); }
-"DeviceObj"                 { copy(); count (0); return (OBJECTTYPE_DEV); }
-"EventObj"                  { copy(); count (0); return (OBJECTTYPE_EVT); }
-"MethodObj"                 { copy(); count (0); return (OBJECTTYPE_MTH); }
-"MutexObj"                  { copy(); count (0); return (OBJECTTYPE_MTX); }
-"OpRegionObj"               { copy(); count (0); return (OBJECTTYPE_OPR); }
-"PowerResObj"               { copy(); count (0); return (OBJECTTYPE_POW); }
-"ThermalZoneObj"            { copy(); count (0); return (OBJECTTYPE_THZ); }
-"BuffFieldObj"              { copy(); count (0); return (OBJECTTYPE_BFF); }
-"DDBHandleObj"              { copy(); count (0); return (OBJECTTYPE_DDB); }
-
-"AnyAcc"                    { copy(); count (0); return (ACCESSTYPE_ANY); }
-"ByteAcc"                   { copy(); count (0); return (ACCESSTYPE_BYTE); }
-"WordAcc"                   { copy(); count (0); return (ACCESSTYPE_WORD); }
-"DWordAcc"                  { copy(); count (0); return (ACCESSTYPE_DWORD); }
-"QWordAcc"                  { copy(); count (0); return (ACCESSTYPE_QWORD); }
-"BufferAcc"                 { copy(); count (0); return (ACCESSTYPE_BUF); }
-
-"Lock"                      { copy(); count (0); return (LOCKRULE_LOCK); }
-"NoLock"                    { copy(); count (0); return (LOCKRULE_NOLOCK); }
-
-"Preserve"                  { copy(); count (0); return (UPDATERULE_PRESERVE); }
-"WriteAsOnes"               { copy(); count (0); return (UPDATERULE_ONES); }
-"WriteAsZeros"              { copy(); count (0); return (UPDATERULE_ZEROS); }
-
-"Serialized"                { copy(); count (0); return (SERIALIZERULE_SERIAL); }
-"NotSerialized"             { copy(); count (0); return (SERIALIZERULE_NOTSERIAL); }
-
-"SystemIO"                  { copy(); count (0); return (REGIONSPACE_IO); }
-"SystemMemory"              { copy(); count (0); return (REGIONSPACE_MEM); }
-"PCI_Config"                { copy(); count (0); return (REGIONSPACE_PCI); }
-"EmbeddedControl"           { copy(); count (0); return (REGIONSPACE_EC); }
-"SMBus"                     { copy(); count (0); return (REGIONSPACE_SMBUS); }
-"CMOS"                      { copy(); count (0); return (REGIONSPACE_CMOS); }
-"PciBarTarget"              { copy(); count (0); return (REGIONSPACE_PCIBAR); }
-
-"FFixedHW"                  { copy(); count (0); return (ADDRESSSPACE_FFIXEDHW); }
-
-"SMBQuick"                  { copy(); count (0); return (ACCESSATTRIB_QUICK); }
-"SMBSendReceive"            { copy(); count (0); return (ACCESSATTRIB_SND_RCV); }
-"SMBByte"                   { copy(); count (0); return (ACCESSATTRIB_BYTE); }
-"SMBWord"                   { copy(); count (0); return (ACCESSATTRIB_WORD); }
-"SMBBlock"                  { copy(); count (0); return (ACCESSATTRIB_BLOCK); }
-"SMBProcessCall"            { copy(); count (0); return (ACCESSATTRIB_CALL); }
-
-"MTR"                       { copy(); count (0); return (MATCHTYPE_MTR); }
-"MEQ"                       { copy(); count (0); return (MATCHTYPE_MEQ); }
-"MLE"                       { copy(); count (0); return (MATCHTYPE_MLE); }
-"MLT"                       { copy(); count (0); return (MATCHTYPE_MLT); }
-"MGE"                       { copy(); count (0); return (MATCHTYPE_MGE); }
-"MGT"                       { copy(); count (0); return (MATCHTYPE_MGT); }
-
-"Compatibility"             { copy(); count (0); return (DMATYPE_COMPATIBILITY); }
-"TypeA"                     { copy(); count (0); return (DMATYPE_A); }
-"TypeB"                     { copy(); count (0); return (DMATYPE_B); }
-"TypeF"                     { copy(); count (0); return (DMATYPE_F); }
-
-"BusMaster"                 { copy(); count (0); return (BUSMASTERTYPE_MASTER); }
-"NotBusMaster"              { copy(); count (0); return (BUSMASTERTYPE_NOTMASTER); }
-
-"Transfer8"                 { copy(); count (0); return (XFERTYPE_8); }
-"Transfer8_16"              { copy(); count (0); return (XFERTYPE_8_16); }
-"Transfer16"                { copy(); count (0); return (XFERTYPE_16); }
-
-"ResourceConsumer"          { copy(); count (0); return (RESOURCETYPE_CONSUMER); }
-"ResourceProducer"          { copy(); count (0); return (RESOURCETYPE_PRODUCER); }
-
-"MinFixed"                  { copy(); count (0); return (MINTYPE_FIXED); }
-"MinNotFixed"               { copy(); count (0); return (MINTYPE_NOTFIXED); }
-
-"MaxFixed"                  { copy(); count (0); return (MAXTYPE_FIXED); }
-"MaxNotFixed"               { copy(); count (0); return (MAXTYPE_NOTFIXED); }
-
-"PosDecode"                 { copy(); count (0); return (DECODETYPE_POS); }
-"SubDecode"                 { copy(); count (0); return (DECODETYPE_SUB); }
-
-"ISAOnlyRanges"             { copy(); count (0); return (RANGETYPE_ISAONLY); }
-"NonISAOnlyRanges"          { copy(); count (0); return (RANGETYPE_NONISAONLY); }
-"EntireRange"               { copy(); count (0); return (RANGETYPE_ENTIRE); }
-
-"Cacheable"                 { copy(); count (0); return (MEMTYPE_CACHEABLE); }
-"WriteCombining"            { copy(); count (0); return (MEMTYPE_WRITECOMBINING); }
-"Prefetchable"              { copy(); count (0); return (MEMTYPE_PREFETCHABLE); }
-"NonCacheable"              { copy(); count (0); return (MEMTYPE_NONCACHEABLE); }
-
-"ReadWrite"                 { copy(); count (0); return (READWRITETYPE_BOTH); }
-"ReadOnly"                  { copy(); count (0); return (READWRITETYPE_READONLY); }
-
-"Edge"                      { copy(); count (0); return (INTTYPE_EDGE); }
-"Level"                     { copy(); count (0); return (INTTYPE_LEVEL); }
-
-"ActiveHigh"                { copy(); count (0); return (INTLEVEL_ACTIVEHIGH); }
-"ActiveLow"                 { copy(); count (0); return (INTLEVEL_ACTIVELOW); }
-
-"Shared"                    { copy(); count (0); return (SHARETYPE_SHARED); }
-"Exclusive"                 { copy(); count (0); return (SHARETYPE_EXCLUSIVE); }
-
-"Decode10"                  { copy(); count (0); return (IODECODETYPE_10); }
-"Decode16"                  { copy(); count (0); return (IODECODETYPE_16); }
-
-"TypeTranslation"           { copy(); count (0); return (TYPE_TRANSLATION); }
-"TypeStatic"                { copy(); count (0); return (TYPE_STATIC); }
-
-"SparseTranslation"         { copy(); count (0); return (TRANSLATIONTYPE_SPARSE); }
-"DenseTranslation"          { copy(); count (0); return (TRANSLATIONTYPE_DENSE); }
-
-"AddressRangeMemory"        { copy(); count (0); return (ADDRESSTYPE_MEMORY); }
-"AddressRangeReserved"      { copy(); count (0); return (ADDRESSTYPE_RESERVED); }
-"AddressRangeNVS"           { copy(); count (0); return (ADDRESSTYPE_NVS); }
-"AddressRangeACPI"          { copy(); count (0); return (ADDRESSTYPE_ACPI); }
+"Include"                   { count (1); return (INCLUDE); }
+"#include"                  { count (1); return (INCLUDE_CSTYLE); }
+"External"                  { count (1); return (EXTERNAL); }
 
 
+"Ones"                      { count (1); return (ONES); }
+"One"                       { count (1); return (ONE); }
+"Zero"                      { count (1); return (ZERO); }
+"Revision"                  { count (1); return (REVISION); }
 
-"{"			                { copy(); count (0); return('{'); }
-"}"			                { copy(); count (0); return('}'); }
-","			                { copy(); count (0); return(','); }
-"("			                { copy(); count (0); return('('); }
-")"			                { copy(); count (0); return(')'); }
+"Offset"                    { count (1); return (OFFSET); }
+"AccessAs"                  { count (1); return (ACCESSAS); }
+"BankField"                 { count (2); return (BANKFIELD); }
+"CreateBitField"            { count (2); return (CREATEBITFIELD); }
+"CreateByteField"           { count (2); return (CREATEBYTEFIELD); }
+"CreateDWordField"          { count (2); return (CREATEDWORDFIELD); }
+"CreateField"               { count (2); return (CREATEFIELD); }
+"CreateQWordField"          { count (2); return (CREATEQWORDFIELD); }
+"CreateWordField"           { count (2); return (CREATEWORDFIELD); }
+"DataTableRegion"           { count (2); return (DATATABLEREGION); }
+"Device"                    { count (2); return (DEVICE); }
+"Event"                     { count (2); return (EVENT); }
+"Field"                     { count (2); return (FIELD); }
+"IndexField"                { count (2); return (INDEXFIELD); }
+"Method"                    { count (2); return (METHOD); }
+"Mutex"                     { count (2); return (MUTEX); }
+"OperationRegion"           { count (2); return (OPERATIONREGION); }
+"PowerResource"             { count (2); return (POWERRESOURCE); }
+"Processor"                 { count (2); return (PROCESSOR); }
+"ThermalZone"               { count (2); return (THERMALZONE); }
+"Alias"                     { count (2); return (ALIAS); }
+"Name"                      { count (2); return (NAME); }
+"Scope"                     { count (2); return (SCOPE); }
+"Break"                     { count (3); return (BREAK); }
+"BreakPoint"                { count (3); return (BREAKPOINT); }
+"Continue"                  { count (3); return (CONTINUE); }
+"Fatal"                     { count (3); return (FATAL); }
+"If"                        { count (3); return (IF); }
+"Else"                      { count (3); return (ELSE); }
+"ElseIf"                    { count (3); return (ELSEIF); }
+"Load"                      { count (3); return (LOAD); }
+"Noop"                      { count (3); return (NOOP); }
+"Notify"                    { count (3); return (NOTIFY); }
+"Release"                   { count (3); return (RELEASE); }
+"Reset"                     { count (3); return (RESET); }
+"Return"                    { count (3); return (RETURN); }
+"Signal"                    { count (3); return (SIGNAL); }
+"Sleep"                     { count (3); return (SLEEP); }
+"Stall"                     { count (3); return (STALL); }
+"Switch"                    { count (3); return (SWITCH); }
+"Case"                      { count (3); return (CASE); }
+"Default"                   { count (3); return (DEFAULT); }
+"Unload"                    { count (3); return (UNLOAD); }
+"While"                     { count (3); return (WHILE); }
+
+"Acquire"                   { count (3); return (ACQUIRE); }
+"Add"                       { count (3); return (ADD); }
+"And"                       { count (3); return (AND); }
+"Concatenate"               { count (3); return (CONCATENATE); }
+"ConcatenateResTemplate"    { count (3); return (CONCATENATERESTEMPLATE); }
+"CondRefOf"                 { count (3); return (CONDREFOF); }
+"CopyObject"                { count (3); return (COPYOBJECT); }
+"Decrement"                 { count (3); return (DECREMENT); }
+"DeRefOf"                   { count (3); return (DEREFOF); }
+"Divide"                    { count (3); return (DIVIDE); }
+"FindSetLeftBit"            { count (3); return (FINDSETLEFTBIT); }
+"FindSetRightBit"           { count (3); return (FINDSETRIGHTBIT); }
+"FromBCD"                   { count (3); return (FROMBCD); }
+"Increment"                 { count (3); return (INCREMENT); }
+"Index"                     { count (3); return (INDEX); }
+"LAnd"                      { count (3); return (LAND); }
+"LEqual"                    { count (3); return (LEQUAL); }
+"LGreater"                  { count (3); return (LGREATER); }
+"LGreaterEqual"             { count (3); return (LGREATEREQUAL); }
+"LLess"                     { count (3); return (LLESS); }
+"LLessEqual"                { count (3); return (LLESSEQUAL); }
+"LNot"                      { count (3); return (LNOT); }
+"LNotEqual"                 { count (3); return (LNOTEQUAL); }
+"LoadTable"                 { count (3); return (LOADTABLE); }
+"LOr"                       { count (3); return (LOR); }
+"Match"                     { count (3); return (MATCH); }
+"Mid"                       { count (3); return (MID); }
+"Mod"                       { count (3); return (MOD); }
+"Multiply"                  { count (3); return (MULTIPLY); }
+"NAnd"                      { count (3); return (NAND); }
+"NOr"                       { count (3); return (NOR); }
+"Not"                       { count (3); return (NOT); }
+"ObjectType"                { count (3); return (OBJECTTYPE); }
+"Or"                        { count (3); return (OR); }
+"RefOf"                     { count (3); return (REFOF); }
+"ShiftLeft"                 { count (3); return (SHIFTLEFT); }
+"ShiftRight"                { count (3); return (SHIFTRIGHT); }
+"SizeOf"                    { count (3); return (SIZEOF); }
+"Store"                     { count (3); return (STORE); }
+"Subtract"                  { count (3); return (SUBTRACT); }
+"ToBCD"                     { count (3); return (TOBCD); }
+"ToBuffer"                  { count (3); return (TOBUFFER); }
+"ToDecimalString"           { count (3); return (TODECIMALSTRING); }
+"ToHexString"               { count (3); return (TOHEXSTRING); }
+"ToInteger"                 { count (3); return (TOINTEGER); }
+"ToString"                  { count (3); return (TOSTRING); }
+"Wait"                      { count (3); return (WAIT); }
+"XOr"                       { count (3); return (XOR); }
+
+"Arg0"                      { count (1); return (ARG0); }
+"Arg1"                      { count (1); return (ARG1); }
+"Arg2"                      { count (1); return (ARG2); }
+"Arg3"                      { count (1); return (ARG3); }
+"Arg4"                      { count (1); return (ARG4); }
+"Arg5"                      { count (1); return (ARG5); }
+"Arg6"                      { count (1); return (ARG6); }
+
+"Local0"                    { count (1); return (LOCAL0); }
+"Local1"                    { count (1); return (LOCAL1); }
+"Local2"                    { count (1); return (LOCAL2); }
+"Local3"                    { count (1); return (LOCAL3); }
+"Local4"                    { count (1); return (LOCAL4); }
+"Local5"                    { count (1); return (LOCAL5); }
+"Local6"                    { count (1); return (LOCAL6); }
+"Local7"                    { count (1); return (LOCAL7); }
+
+"Debug"                     { count (1); return (DEBUG); }
+
+"DefinitionBlock"           { count (1); return (DEFINITIONBLOCK); }
+"Buffer"                    { count (1); return (BUFFER); }
+"Package"                   { count (1); return (PACKAGE); }
+
+"EISAID"                    { count (1); return (EISAID); }
+"ResourceTemplate"          { count (1); return (RESOURCETEMPLATE); }
+"Unicode"                   { count (1); return (UNICODE); }
+"DMA"                       { count (1); return (DMA); }
+"DWordIO"                   { count (1); return (DWORDIO); }
+"DWordMemory"               { count (1); return (DWORDMEMORY); }
+"EndDependentFn"            { count (1); return (ENDDEPENDENTFN); }
+"FixedIO"                   { count (1); return (FIXEDIO); }
+"Interrupt"                 { count (1); return (INTERRUPT); }
+"IO"                        { count (1); return (IO); }
+"IRQNoFlags"                { count (1); return (IRQNOFLAGS); }
+"IRQ"                       { count (1); return (IRQ); }
+"Memory24"                  { count (1); return (MEMORY24); }
+"Memory32Fixed"             { count (1); return (MEMORY32FIXED); }
+"Memory32"                  { count (1); return (MEMORY32); }
+"QWordIO"                   { count (1); return (QWORDIO); }
+"QWordMemory"               { count (1); return (QWORDMEMORY); }
+"Register"                  { count (1); return (REGISTER); }
+"StartDependentFn"          { count (1); return (STARTDEPENDENTFN); }
+"StartDependentFnNoPri"     { count (1); return (STARTDEPENDENTFN_NOPRI); }
+"VendorLong"                { count (1); return (VENDORLONG); }
+"VendorShort"               { count (1); return (VENDORSHORT); }
+"WordBusNumber"             { count (1); return (WORDBUSNUMBER); }
+"WordIO"                    { count (1); return (WORDIO); }
+
+"UnknownObj"                { count (0); return (OBJECTTYPE_UNK); }
+"IntObj"                    { count (0); return (OBJECTTYPE_INT); }
+"StrObj"                    { count (0); return (OBJECTTYPE_STR); }
+"BuffObj"                   { count (0); return (OBJECTTYPE_BUF); }
+"PkgObj"                    { count (0); return (OBJECTTYPE_PKG); }
+"FieldUnitObj"              { count (0); return (OBJECTTYPE_FLD); }
+"DeviceObj"                 { count (0); return (OBJECTTYPE_DEV); }
+"EventObj"                  { count (0); return (OBJECTTYPE_EVT); }
+"MethodObj"                 { count (0); return (OBJECTTYPE_MTH); }
+"MutexObj"                  { count (0); return (OBJECTTYPE_MTX); }
+"OpRegionObj"               { count (0); return (OBJECTTYPE_OPR); }
+"PowerResObj"               { count (0); return (OBJECTTYPE_POW); }
+"ThermalZoneObj"            { count (0); return (OBJECTTYPE_THZ); }
+"BuffFieldObj"              { count (0); return (OBJECTTYPE_BFF); }
+"DDBHandleObj"              { count (0); return (OBJECTTYPE_DDB); }
+
+"AnyAcc"                    { count (0); return (ACCESSTYPE_ANY); }
+"ByteAcc"                   { count (0); return (ACCESSTYPE_BYTE); }
+"WordAcc"                   { count (0); return (ACCESSTYPE_WORD); }
+"DWordAcc"                  { count (0); return (ACCESSTYPE_DWORD); }
+"QWordAcc"                  { count (0); return (ACCESSTYPE_QWORD); }
+"BufferAcc"                 { count (0); return (ACCESSTYPE_BUF); }
+
+"Lock"                      { count (0); return (LOCKRULE_LOCK); }
+"NoLock"                    { count (0); return (LOCKRULE_NOLOCK); }
+
+"Preserve"                  { count (0); return (UPDATERULE_PRESERVE); }
+"WriteAsOnes"               { count (0); return (UPDATERULE_ONES); }
+"WriteAsZeros"              { count (0); return (UPDATERULE_ZEROS); }
+
+"Serialized"                { count (0); return (SERIALIZERULE_SERIAL); }
+"NotSerialized"             { count (0); return (SERIALIZERULE_NOTSERIAL); }
+
+"SystemIO"                  { count (0); return (REGIONSPACE_IO); }
+"SystemMemory"              { count (0); return (REGIONSPACE_MEM); }
+"PCI_Config"                { count (0); return (REGIONSPACE_PCI); }
+"EmbeddedControl"           { count (0); return (REGIONSPACE_EC); }
+"SMBus"                     { count (0); return (REGIONSPACE_SMBUS); }
+"SystemCMOS"                { count (0); return (REGIONSPACE_CMOS); }
+"PciBarTarget"              { count (0); return (REGIONSPACE_PCIBAR); }
+
+"FFixedHW"                  { count (0); return (ADDRESSSPACE_FFIXEDHW); }
+
+"SMBQuick"                  { count (0); return (ACCESSATTRIB_QUICK); }
+"SMBSendReceive"            { count (0); return (ACCESSATTRIB_SND_RCV); }
+"SMBByte"                   { count (0); return (ACCESSATTRIB_BYTE); }
+"SMBWord"                   { count (0); return (ACCESSATTRIB_WORD); }
+"SMBBlock"                  { count (0); return (ACCESSATTRIB_BLOCK); }
+"SMBProcessCall"            { count (0); return (ACCESSATTRIB_CALL); }
+
+"MTR"                       { count (0); return (MATCHTYPE_MTR); }
+"MEQ"                       { count (0); return (MATCHTYPE_MEQ); }
+"MLE"                       { count (0); return (MATCHTYPE_MLE); }
+"MLT"                       { count (0); return (MATCHTYPE_MLT); }
+"MGE"                       { count (0); return (MATCHTYPE_MGE); }
+"MGT"                       { count (0); return (MATCHTYPE_MGT); }
+
+"Compatibility"             { count (0); return (DMATYPE_COMPATIBILITY); }
+"TypeA"                     { count (0); return (DMATYPE_A); }
+"TypeB"                     { count (0); return (DMATYPE_B); }
+"TypeF"                     { count (0); return (DMATYPE_F); }
+
+"BusMaster"                 { count (0); return (BUSMASTERTYPE_MASTER); }
+"NotBusMaster"              { count (0); return (BUSMASTERTYPE_NOTMASTER); }
+
+"Transfer8"                 { count (0); return (XFERTYPE_8); }
+"Transfer8_16"              { count (0); return (XFERTYPE_8_16); }
+"Transfer16"                { count (0); return (XFERTYPE_16); }
+
+"ResourceConsumer"          { count (0); return (RESOURCETYPE_CONSUMER); }
+"ResourceProducer"          { count (0); return (RESOURCETYPE_PRODUCER); }
+
+"MinFixed"                  { count (0); return (MINTYPE_FIXED); }
+"MinNotFixed"               { count (0); return (MINTYPE_NOTFIXED); }
+
+"MaxFixed"                  { count (0); return (MAXTYPE_FIXED); }
+"MaxNotFixed"               { count (0); return (MAXTYPE_NOTFIXED); }
+
+"PosDecode"                 { count (0); return (DECODETYPE_POS); }
+"SubDecode"                 { count (0); return (DECODETYPE_SUB); }
+
+"ISAOnlyRanges"             { count (0); return (RANGETYPE_ISAONLY); }
+"NonISAOnlyRanges"          { count (0); return (RANGETYPE_NONISAONLY); }
+"EntireRange"               { count (0); return (RANGETYPE_ENTIRE); }
+
+"Cacheable"                 { count (0); return (MEMTYPE_CACHEABLE); }
+"WriteCombining"            { count (0); return (MEMTYPE_WRITECOMBINING); }
+"Prefetchable"              { count (0); return (MEMTYPE_PREFETCHABLE); }
+"NonCacheable"              { count (0); return (MEMTYPE_NONCACHEABLE); }
+
+"ReadWrite"                 { count (0); return (READWRITETYPE_BOTH); }
+"ReadOnly"                  { count (0); return (READWRITETYPE_READONLY); }
+
+"Edge"                      { count (0); return (INTTYPE_EDGE); }
+"Level"                     { count (0); return (INTTYPE_LEVEL); }
+
+"ActiveHigh"                { count (0); return (INTLEVEL_ACTIVEHIGH); }
+"ActiveLow"                 { count (0); return (INTLEVEL_ACTIVELOW); }
+
+"Shared"                    { count (0); return (SHARETYPE_SHARED); }
+"Exclusive"                 { count (0); return (SHARETYPE_EXCLUSIVE); }
+
+"Decode10"                  { count (0); return (IODECODETYPE_10); }
+"Decode16"                  { count (0); return (IODECODETYPE_16); }
+
+"TypeTranslation"           { count (0); return (TYPE_TRANSLATION); }
+"TypeStatic"                { count (0); return (TYPE_STATIC); }
+
+"SparseTranslation"         { count (0); return (TRANSLATIONTYPE_SPARSE); }
+"DenseTranslation"          { count (0); return (TRANSLATIONTYPE_DENSE); }
+
+"AddressRangeMemory"        { count (0); return (ADDRESSTYPE_MEMORY); }
+"AddressRangeReserved"      { count (0); return (ADDRESSTYPE_RESERVED); }
+"AddressRangeNVS"           { count (0); return (ADDRESSTYPE_NVS); }
+"AddressRangeACPI"          { count (0); return (ADDRESSTYPE_ACPI); }
+
+
+"{"                         { count (0); return('{'); }
+"}"                         { count (0); return('}'); }
+","                         { count (0); return(','); }
+"("                         { count (0); return('('); }
+")"                         { count (0); return(')'); }
 
 
 {NameSeg}                   { char *s;
-                                copy(); count (0);
-			                    s=malloc (ACPI_NAME_SIZE + 1);
+                                count (0);
+                                s=malloc (ACPI_NAME_SIZE + 1);
                                 if (strcmp (AslCompilertext, "\\"))
                                 {
                                     strcpy (s, "____");
-                                    strupr (AslCompilertext);
+                                    STRUPR (AslCompilertext);
                                 }
-			                    memcpy (s, AslCompilertext, strlen (AslCompilertext));
-			                    AslCompilerlval.s = s;
-                                DbgPrint ("NameSeg: %s\n", s);
+                                memcpy (s, AslCompilertext, strlen (AslCompilertext));
+                                AslCompilerlval.s = s;
+                                DbgPrint (ASL_PARSE_OUTPUT, "NameSeg: %s\n", s);
                                 return (NAMESEG); }
 
 {NameString}                { char *s;
-                                copy(); count (0);
-			                    s=malloc (strlen (AslCompilertext)+1);
-                                strupr (AslCompilertext);
-			                    strcpy (s, AslCompilertext);
-			                    s[strlen (AslCompilertext)] = 0;
-			                    AslCompilerlval.s = s;
-                                DbgPrint ("NameString: %s\n", s);
+                                count (0);
+                                s=malloc (strlen (AslCompilertext)+1);
+                                STRUPR (AslCompilertext);
+                                strcpy (s, AslCompilertext);
+                                s[strlen (AslCompilertext)] = 0;
+                                AslCompilerlval.s = s;
+                                DbgPrint (ASL_PARSE_OUTPUT, "NameString: %s\n", s);
                                 return (NAMESTRING); }
 
 "*" |
-"/"                         { copy(); count (1); 
-                                AslCompilererror ("parse error, expecting ASL keyword or name");}
+"/"                         { count (1);
+                                AslCompilererror ("Parse error, expecting ASL keyword or name");}
 
-.                           { copy(); count (1); 
-                                AslCompilererror ("invalid character, expecting ASL keyword or name");}
+.                           { count (1);
+                                AslCompilererror ("Invalid character, expecting ASL keyword or name");}
 
-<<EOF>>                     { if (AslPopInputFileStack ()) 
-                                yyterminate(); 
-                              else 
+<<EOF>>                     { if (AslPopInputFileStack ())
+                                yyterminate();
+                              else
                                 return (INCLUDE_END);};
 
 %%
-
 
 
 typedef struct asl_file_node
@@ -507,56 +508,6 @@ typedef struct asl_file_node
 } ASL_FILE_NODE;
 
 ASL_FILE_NODE               *InputStack = NULL;
-
-
-
-/*******************************************************************************
- *
- * FUNCTION:    copy
- *
- * PARAMETERS:  none
- *
- * RETURN:      none
- *
- * DESCRIPTION: copy the entire contents of yytext (a null-terminated string)
- *              to the combined source output file (if option is in effect).
- *
- ******************************************************************************/
-
-void
-copy (void)
-{
-
-
-    if (Gbl_SourceOutputFile)
-    {
-       fwrite (yytext, strlen(yytext), 1, Gbl_SourceOutputFile);
-    }
-}
-
-
-/*******************************************************************************
- *
- * FUNCTION:    copy_one
- *
- * PARAMETERS:  c           - Lone character to write
- *
- * RETURN:      none
- *
- * DESCRIPTION: copy the character to the combined source output file 
- *              (if option is in effect).
- *
- ******************************************************************************/
-
-void
-copy_one (int c)
-{
-
-    if (Gbl_SourceOutputFile)
-    {
-       fwrite (&c, 1, 1, Gbl_SourceOutputFile);
-    }
-}
 
 
 /*******************************************************************************
@@ -579,12 +530,12 @@ AslPopInputFileStack (void)
 {
     ASL_FILE_NODE           *Fnode;
     FILE                    *InputFile = NULL;
-  
+
 
     Fnode = InputStack;
-    DbgPrint ("\nPop InputFile Stack, Fnode %p\n\n", Fnode);
+    DbgPrint (ASL_PARSE_OUTPUT, "\nPop InputFile Stack, Fnode %p\n\n", Fnode);
 
-    
+
     if (!Fnode)
     {
         return -1;
@@ -602,7 +553,7 @@ AslPopInputFileStack (void)
 
     /* Reset global line counter and filename */
 
-    Gbl_InputFilename = Fnode->Filename;
+    Gbl_Files[ASL_FILE_INPUT].Filename = Fnode->Filename;
     Gbl_CurrentLineNumber = Fnode->CurrentLineNumber;
 
     /* Point the parser to the popped file */
@@ -613,7 +564,7 @@ AslPopInputFileStack (void)
 
     /* All done with this node */
 
-    free (Fnode);
+    AcpiUtFree (Fnode);
     return 0;
 }
 
@@ -625,7 +576,7 @@ AslPopInputFileStack (void)
  * PARAMETERS:  InputFile           - Open file pointer
  *              Filename            - Name of the file
  *
- * RETURN:      None   
+ * RETURN:      None
  *
  * DESCRIPTION: Push the InputFile onto the file stack, and point the parser
  *              to this file.  Called when an include file is successfully
@@ -640,17 +591,17 @@ AslPushInputFileStack (
 {
     ASL_FILE_NODE           *Fnode;
     YY_BUFFER_STATE         State;
-      
+
 
     /* Save the current state in an Fnode */
-          
+
     Fnode = UtLocalCalloc (sizeof (ASL_FILE_NODE));
 
     Fnode->File                 = yyin;
     Fnode->Next                 = InputStack;
     Fnode->State                = YY_CURRENT_BUFFER;
     Fnode->CurrentLineNumber    = Gbl_CurrentLineNumber;
-    Fnode->Filename             = Gbl_InputFilename;
+    Fnode->Filename             = Gbl_Files[ASL_FILE_INPUT].Filename;
 
     /* Push it on the stack */
 
@@ -662,11 +613,11 @@ AslPushInputFileStack (
     State = yy_create_buffer (InputFile, YY_BUF_SIZE);
     yy_switch_to_buffer (State);
 
-    DbgPrint ("\nPush InputFile Stack, returning %p\n\n", InputFile);
+    DbgPrint (ASL_PARSE_OUTPUT, "\nPush InputFile Stack, returning %p\n\n", InputFile);
 
     /* Reset the global line count and filename */
 
-    Gbl_InputFilename = Filename;
+    Gbl_Files[ASL_FILE_INPUT].Filename = Filename;
     Gbl_CurrentLineNumber = 1;
     yyin = InputFile;
 }
@@ -674,7 +625,7 @@ AslPushInputFileStack (
 
 /*******************************************************************************
  *
- * FUNCTION:    ResetCurrentLineBuffer  
+ * FUNCTION:    ResetCurrentLineBuffer
  *
  * PARAMETERS:  None
  *
@@ -689,10 +640,20 @@ ResetCurrentLineBuffer (
     void)
 {
 
-	Gbl_CurrentColumn = 0;
-	Gbl_CurrentLineNumber++;
-	Gbl_LogicalLineNumber++;
-	Gbl_LineBufPtr = Gbl_CurrentLineBuffer;
+    if (Gbl_Files[ASL_FILE_SOURCE_OUTPUT].Handle)
+    {
+        FlWriteFile (ASL_FILE_SOURCE_OUTPUT, Gbl_CurrentLineBuffer,
+            Gbl_LineBufPtr - Gbl_CurrentLineBuffer);
+    }
+
+    Gbl_InputByteCount++; /* Account for the CR/linefeed */
+    Gbl_CurrentLineOffset += Gbl_CurrentColumn + 1;
+
+    Gbl_CurrentColumn = 0;
+
+    Gbl_CurrentLineNumber++;
+    Gbl_LogicalLineNumber++;
+    Gbl_LineBufPtr = Gbl_CurrentLineBuffer;
 }
 
 
@@ -708,43 +669,62 @@ ResetCurrentLineBuffer (
  *
  ******************************************************************************/
 
+#define ASL_SPACES_PER_TAB  4
+
 void
 InsertLineBuffer (
     int                     SourceChar)
 {
+    UINT32                  i;
+    UINT32                  Count = 1;
 
-    /* End of line? */
 
-    if (SourceChar == '\n')
+    if (SourceChar == EOF)
     {
-        ResetCurrentLineBuffer ();
         return;
     }
 
+    Gbl_InputByteCount++;
 
-    /* Insert the character into the line buffer */
 
-	*Gbl_LineBufPtr = SourceChar;
-    Gbl_LineBufPtr++;
-
-    if (Gbl_LineBufPtr > (Gbl_CurrentLineBuffer + (ASL_LINE_BUFFER_SIZE - 1)))
-    {
-        printf ("DoOneChar: Line buffer overflow (%d) at line %d\n", 
-                    ASL_LINE_BUFFER_SIZE, Gbl_CurrentLineNumber);
-        ResetCurrentLineBuffer ();
-    }
-
-    /* Handle tabs */
+    /* Handle tabs.  Convert to spaces */
 
     if (SourceChar == '\t')
     {
-        Gbl_CurrentColumn += 8 - (Gbl_CurrentColumn & (8-1));
-    }
-    else
-    {
-        Gbl_CurrentColumn++;
+        SourceChar = ' ';
+        Count = ASL_SPACES_PER_TAB -
+                    (Gbl_CurrentColumn & (ASL_SPACES_PER_TAB-1));
     }
 
+
+    for (i = 0; i < Count; i++)
+    {
+        Gbl_CurrentColumn++;
+
+        /* Insert the character into the line buffer */
+
+        *Gbl_LineBufPtr = (UINT8) SourceChar;
+        Gbl_LineBufPtr++;
+
+        if (Gbl_LineBufPtr > (Gbl_CurrentLineBuffer + (ASL_LINE_BUFFER_SIZE - 1)))
+        {
+            sprintf (MsgBuffer, "Max %d", ASL_LINE_BUFFER_SIZE);
+            AslCommonError (ASL_WARNING, ASL_MSG_LONG_LINE,
+                            Gbl_CurrentLineNumber, Gbl_LogicalLineNumber,
+                            Gbl_CurrentLineOffset, Gbl_CurrentColumn,
+                            Gbl_Files[ASL_FILE_INPUT].Filename, MsgBuffer);
+
+
+            ResetCurrentLineBuffer ();
+        }
+
+        else if (SourceChar == '\n')
+        {
+            /* End of line */
+
+            ResetCurrentLineBuffer ();
+        }
+    }
 }
 
 
@@ -765,11 +745,11 @@ InsertLineBuffer (
  *
  ******************************************************************************/
 
-void 
+void
 count (
     int                 Type)
 {
-	int                 i;
+    int                 i;
 
 
     switch (Type)
@@ -785,45 +765,13 @@ count (
     }
 
 
-	for (i = 0; yytext[i] != 0; i++)
-	{
+    for (i = 0; (yytext[i] != 0) && (yytext[i] != EOF); i++)
+    {
         InsertLineBuffer (yytext[i]);
-        Gbl_InputByteCount++;
-		*Gbl_LineBufPtr = 0;
-	}
+        *Gbl_LineBufPtr = 0;
+    }
 }
 
-
-/*******************************************************************************
- *
- * FUNCTION:    DoOneChar
- *
- * PARAMETERS:  SourceChar      - One char from the input ASL source file
- *
- * RETURN:      None
- *
- * DESCRIPTION: Process one character: Count it, echo to the source output file,
- *              then put it into the line buffer.  This procedure is called
- *              to process comments and literals
- *
- ******************************************************************************/
-
-void 
-DoOneChar (
-    int                     SourceChar)
-{
-
-    Gbl_InputByteCount++;
-
-    /* echo the char to the source output file */
-
-    copy_one (SourceChar);
-
-
-    /* Put the char into the line buffer */
-
-    InsertLineBuffer (SourceChar);
-}
 
 
 /*******************************************************************************
@@ -841,17 +789,20 @@ DoOneChar (
 void
 comment (void)
 {
-	char                c;
+    char                c;
     char                c1 = 0;
 
+
+    InsertLineBuffer ('/');
+    InsertLineBuffer ('*');
 
 loop:
 
     /* Eat chars until end-of-comment */
 
-	while ((c = input()) != '*' && c != 0)
+    while ((c = (char) input()) != '*' && c != EOF)
     {
-        DoOneChar (c);
+        InsertLineBuffer (c);
         c1 = c;
     }
 
@@ -861,24 +812,24 @@ loop:
      */
     if ((c1 == '/') && (c == '*'))
     {
-        AslCommonError (ASL_WARNING, ASL_MSG_NESTED_COMMENT, 
-                    Gbl_CurrentLineNumber, Gbl_LogicalLineNumber, 
-                    Gbl_InputFilename, NULL);
+        AslCommonError (ASL_WARNING, ASL_MSG_NESTED_COMMENT,
+                        Gbl_CurrentLineNumber, Gbl_LogicalLineNumber,
+                        Gbl_InputByteCount, Gbl_CurrentColumn,
+                        Gbl_Files[ASL_FILE_INPUT].Filename, NULL);
     }
-
 
 
     /* Comment is closed only if the NEXT character is a slash */
 
-    DoOneChar (c);
+    InsertLineBuffer (c);
 
-	if ((c1 = input()) != '/' && c != 0)
-	{
-		unput(c1);
-		goto loop;
-	}
+    if ((c1 = (char) input()) != '/' && c1 != EOF)
+    {
+        unput(c1);
+        goto loop;
+    }
 
-    DoOneChar (c1);
+    InsertLineBuffer (c1);
 }
 
 
@@ -897,15 +848,17 @@ loop:
 void
 comment2 (void)
 {
-	char                c;
+    char                c;
 
+    InsertLineBuffer ('/');
+    InsertLineBuffer ('/');
 
-	while ((c = input()) != '\n' && c != 0)
+    while ((c = (char) input()) != '\n' && c != EOF)
     {
-        DoOneChar (c);
+        InsertLineBuffer (c);
     }
 
-    DoOneChar (c);
+    InsertLineBuffer (c);
 }
 
 
@@ -924,57 +877,66 @@ comment2 (void)
 void
 literal (void)
 {
-    char                *d;
-    char                *s;
+    char                *s = MsgBuffer;
     char                *CleanString;
+    char                Escape = FALSE;
 
 
-    CleanString = malloc (strlen (AslCompilertext));
-    d = CleanString;
+    /* Eat chars until end-of-literal */
 
-    s = AslCompilertext;
-    DoOneChar (*s);
-    s++;
-
-    while (*s)
+    while ((*s = (char) input()) != '\"' && *s != EOF)
     {
-        if (*s != '\\')
-        {
-            *d = *s;
-            d++;
-            DoOneChar (*s);
-            s++;
-        }
+        InsertLineBuffer (*s);
 
-        else /* (*s == backslash escape) */
+        /* Special handling for backslash-escape sequence */
+
+        if (*s == '\\')
         {
-            DoOneChar (*s);
-            s++;
+            /* Toss this backslash, get next char */
+
+            *s = (char) input();
+            if (*s == EOF)
+            {
+                break;
+            }
+
+            InsertLineBuffer (*s);
+
+            /* Weed out "special" chars */
 
             switch (*s)
             {
             case 'n':
-                *d = 0x0A;      /* LF */
+                *s = 0x0A;      /* LF */
                 break;
 
-            case 't':
-                *d = 0x20;
+            case 't':           /* TAB */
+                *s = 0x20;
                 break;
 
-            default:
-                *d = *s;
+            default:            /* Just keep the char */
                 break;
             }
-
-            d++;
-            DoOneChar (*s);
-            s++;
         }
+
+        s++;
     }
 
-    d--;
-    *d = 0;
+    /* Null terminate and copy string to a new buffer */
 
+    *s = 0;
+
+    CleanString = UtGetStringBuffer (strlen (MsgBuffer) + 1);
+    if (!CleanString)
+    {
+        AslCommonError (ASL_ERROR, ASL_MSG_MEMORY_ALLOCATION,
+                        Gbl_CurrentLineNumber, Gbl_LogicalLineNumber,
+                        Gbl_InputByteCount, Gbl_CurrentColumn,
+                        Gbl_Files[ASL_FILE_INPUT].Filename, NULL);
+        return;
+    }
+
+    STRCPY (CleanString, MsgBuffer);
     AslCompilerlval.s = CleanString;
 }
 

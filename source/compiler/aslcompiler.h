@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslcompiler.h - common include file
- *              $Revision: 1.59 $
+ *              $Revision: 1.64 $
  *
  *****************************************************************************/
 
@@ -164,8 +164,8 @@ getopt (
  * Compiler versions and names
  */
 
-#define CompilerVersion             "X2017"
-#define CompilerCreatorRevision     0x02002017  /* Acpi 2.0, Version # */
+#define CompilerVersion             "X2019"
+#define CompilerCreatorRevision     0x02002019  /* Acpi 2.0, Version # */
 
 #define CompilerId                  "Intel ACPI Component Architecture ASL Compiler"
 #define CompilerCopyright           "Copyright (C) 2000, 2001 Intel Corporation"
@@ -177,6 +177,8 @@ getopt (
 /* Configuration constants */
 
 #define ASL_MAX_ERROR_COUNT         200
+#define ASL_NODE_CACHE_SIZE         1024
+#define ASL_STRING_CACHE_SIZE       32768
 
 /*
  * Macros
@@ -586,12 +588,12 @@ FlWriteFile (
     void                    *Buffer,
     UINT32                  Length);
 
-ACPI_STATUS 
+ACPI_STATUS
 FlSeekFile (
     UINT32                  FileId,
     UINT32                  Offset);
 
-ACPI_STATUS 
+ACPI_STATUS
 FlCloseFile (
     UINT32                  FileId);
 
@@ -617,7 +619,6 @@ FlOpenAmlOutputFile (
 ACPI_STATUS
 FlOpenMiscOutputFiles (
     char                    *InputFilename);
-
 
 
 /* Load */
@@ -692,6 +693,15 @@ ASL_PARSE_NODE  *
 UtGetArg (
     ASL_PARSE_NODE          *Op,
     UINT32                  Argn);
+
+NATIVE_CHAR *
+UtGetStringBuffer (
+    UINT32                  Length);
+
+ACPI_STATUS
+UtInternalizeName (
+    NATIVE_CHAR             *ExternalName,
+    NATIVE_CHAR             **ConvertedName);
 
 void
 UtAttachNamepathToOwner (
