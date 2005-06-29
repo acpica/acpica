@@ -350,7 +350,7 @@ UnlockAndExit:
 
 ACPI_STATUS
 NsLookup (
-    SCOPE_STACK             *ScopeInfo,
+    ACPI_GENERIC_STATE      *ScopeInfo,
     char                    *Name, 
     ACPI_OBJECT_TYPE        Type, 
     OPERATING_MODE          InterpreterMode,
@@ -412,7 +412,7 @@ NsLookup (
     }
     else
     {
-        PrefixScope = ScopeInfo->Scope;
+        PrefixScope = ScopeInfo->Scope.Entry;
     }
 
 
