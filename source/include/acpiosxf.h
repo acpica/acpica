@@ -360,7 +360,7 @@ AcpiOsSignal (
  * Debug print routines
  */
 
-void
+void ACPI_INTERNAL_VAR_XFACE
 AcpiOsPrintf (
     const NATIVE_CHAR       *Format,
     ...);
