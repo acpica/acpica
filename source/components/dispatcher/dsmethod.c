@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dsmethod - Parser/Interpreter interface - control method parsing
- *              $Revision: 1.57 $
+ *              $Revision: 1.58 $
  *
  *****************************************************************************/
 
@@ -188,7 +188,8 @@ AcpiDsParseMethod (
     if ((ObjDesc->Method.Concurrency != INFINITE_CONCURRENCY) &&
         (!ObjDesc->Method.Semaphore))
     {
-        Status = AcpiOsCreateSemaphore (1,ObjDesc->Method.Concurrency,
+        Status = AcpiOsCreateSemaphore (ObjDesc->Method.Concurrency, 
+                                        ObjDesc->Method.Concurrency,
                                         &ObjDesc->Method.Semaphore);
         if (ACPI_FAILURE (Status))
         {
@@ -257,8 +258,9 @@ AcpiDsParseMethod (
  *
  * FUNCTION:    AcpiDsBeginMethodExecution
  *
- * PARAMETERS:  MethodNode         - Node of the method
+ * PARAMETERS:  MethodNode          - Node of the method
  *              ObjDesc             - The method object
+ *              CallingMethodNode   - Caller of this method (if non-null)
  *
  * RETURN:      Status
  *
@@ -273,7 +275,8 @@ AcpiDsParseMethod (
 ACPI_STATUS
 AcpiDsBeginMethodExecution (
     ACPI_NAMESPACE_NODE     *MethodNode,
-    ACPI_OPERAND_OBJECT     *ObjDesc)
+    ACPI_OPERAND_OBJECT     *ObjDesc,
+    ACPI_NAMESPACE_NODE     *CallingMethodNode)
 {
     ACPI_STATUS             Status = AE_OK;
 
@@ -289,21 +292,38 @@ AcpiDsBeginMethodExecution (
 
     /*
      * If there is a concurrency limit on this method, we need to
-     * obtain a unit from the method semaphore.  This releases the
-     * interpreter if we block
+     * obtain a unit from the method semaphore.  
      */
     if (ObjDesc->Method.Semaphore)
     {
+        /*
+         * Allow recursive method calls, up to the reentrancy/concurrency
+         * limit imposed by the SERIALIZED rule and the SyncLevel method
+         * parameter.
+         *
+         * The point of this code is to avoid permanently blocking a
+         * thread that is making recursive method calls.
+         */
+        if (MethodNode == CallingMethodNode)
+        {
+            if (ObjDesc->Method.ThreadCount >= ObjDesc->Method.Concurrency)
+            {
+                return_ACPI_STATUS (AE_AML_METHOD_LIMIT);
+            }
+        }
+
+        /*
+         * Get a unit from the method semaphore. This releases the
+         * interpreter if we block
+         */
         Status = AcpiAmlSystemWaitSemaphore (ObjDesc->Method.Semaphore,
                                             WAIT_FOREVER);
     }
 
 
     /*
-     * Increment the method parse tree thread count since there
-     * is one additional thread executing in it.  If configured
-     * for deletion-on-exit, the parse tree will be deleted when
-     * the last thread completes execution of the method
+     * Increment the method parse tree thread count since it has been
+     * reentered one more time (even if it is the same thread)
      */
     ObjDesc->Method.ThreadCount++;
 
@@ -360,22 +380,14 @@ AcpiDsCallControlMethod (
     }
 
 
-    /*
-     * Allow recursive method calls.  If this is NOT a
-     * recursive call, wait on the concurrency semaphore as
-     * necessary 
-     */
-    if (MethodNode != ThisWalkState->MethodNode)
+    /* Init for new method, wait on concurrency semaphore */
+
+    Status = AcpiDsBeginMethodExecution (MethodNode, ObjDesc, 
+                    ThisWalkState->MethodNode);
+    if (ACPI_FAILURE (Status))
     {
-        /* Init for new method, wait on concurrency semaphore */
-
-        Status = AcpiDsBeginMethodExecution (MethodNode, ObjDesc);
-        if (ACPI_FAILURE (Status))
-        {
-            return_ACPI_STATUS (Status);
-        }
+        return_ACPI_STATUS (Status);
     }
-
 
     /* Create and initialize a new parser state */
 
