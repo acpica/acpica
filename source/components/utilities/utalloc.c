@@ -597,7 +597,7 @@ _CmAllocate (
 {
     void                    *Address = NULL;
     DEBUG_EXEC (\
-    ACPI_STATUS             Status);
+    ACPI_STATUS             Status)
 
 
     FUNCTION_TRACE_U32 ("_CmAllocate", Size);
@@ -665,7 +665,7 @@ _CmCallocate (
 {
     void                    *Address = NULL;
     DEBUG_EXEC (\
-    ACPI_STATUS             Status);
+    ACPI_STATUS             Status)
 
 
 
