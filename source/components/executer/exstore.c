@@ -122,8 +122,8 @@
 #include <namespace.h>
 
 
-#define _THIS_MODULE        "iexecute.c"
 #define _COMPONENT          INTERPRETER
+        MODULE_NAME         ("iexecute");
 
 
 
@@ -182,8 +182,7 @@ AmlExecute (
 
     /* This is where we really execute the method */
 
-    while ((Status = AmlDoCode (IMODE_Execute)) == AE_OK)
-    {;}
+    Status = AmlDoCodeBlock (IMODE_Execute);
 
 
     /* 
