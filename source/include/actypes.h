@@ -439,7 +439,7 @@ typedef union AcpiObj
     {
         ACPI_OBJECT_TYPE            Type;
         UINT32                      Length;     /* # of bytes in string, excluding trailing null */
-        UINT8                       *Pointer;   /* points to the string value */
+        char                        *Pointer;   /* points to the string value */
     } String;
 
     struct
