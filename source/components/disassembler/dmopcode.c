@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dmopcode - AML disassembler, specific AML opcodes
- *              $Revision: 1.78 $
+ *              $Revision: 1.79 $
  *
  ******************************************************************************/
 
@@ -551,10 +551,11 @@ AcpiDmDisassembleOneOp (
 
     case AML_INT_ACCESSFIELD_OP:
 
-        AcpiOsPrintf ("AccessAs (%s, 0x%.2X)",
-            AcpiGbl_AccessTypes [Op->Common.Value.Integer32 >> 8],
-            Op->Common.Value.Integer32 & 0x0F);
+        AcpiOsPrintf ("AccessAs (%s, ",
+            AcpiGbl_AccessTypes [Op->Common.Value.Integer32 >> 8]);
 
+        AcpiDmDecodeAttribute ((UINT8) Op->Common.Value.Integer32);
+        AcpiOsPrintf (")");
         AcpiDmCommaIfFieldMember (Op);
         break;
 
