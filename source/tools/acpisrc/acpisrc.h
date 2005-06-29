@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: acpisrc.h - Include file for AcpiSrc utility
- *              $Revision: 1.24 $
+ *              $Revision: 1.25 $
  *
  *****************************************************************************/
 
@@ -137,7 +137,7 @@
 
 #define FILE_TYPE_SOURCE                    1
 #define FILE_TYPE_HEADER                    2
-#define FILE_TYPE_ALL                       3
+#define FILE_TYPE_DIRECTORY                 3
 
 
 #define CVT_COUNT_TABS                      0x00000001
@@ -401,7 +401,7 @@ ACPI_NATIVE_INT
 AsCheckForDirectory (
     char                    *SourceDirPath,
     char                    *TargetDirPath,
-    struct _finddata_t      *FindInfo,
+    char                    *Filename,
     char                    **SourcePath,
     char                    **TargetPath);
 
