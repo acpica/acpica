@@ -224,6 +224,14 @@ AcpiGetDeviceInfo (
     ACPI_HANDLE             Device, 
     ACPI_DEVICE_INFO        *Info);
 
+ACPI_STATUS
+AcpiSetFirmwareWakingVector (
+    void                    *PhysicalAddress);
+
+ACPI_STATUS
+AcpiGetFirmwareWakingVector (
+    void                    **PhysicalAddress);
+
 
 /* 
  * Object manipulation
@@ -303,6 +311,7 @@ AcpiRemoveNotifyHandler (
     NOTIFY_HANDLER          Handler);
 
 ACPI_STATUS
+
 AcpiInstallAddressSpaceHandler (
     UINT32                  SpaceId, 
     ADDRESS_SPACE_HANDLER   Handler, 
@@ -343,21 +352,14 @@ AcpiGetIRQRoutingTable  (
  * Hardware (ACPI device) interfaces
  */
 
-ACPI_STATUS
-AcpiSetMode (
-    INT32                   Mode);
-
-INT32
-AcpiGetMode (
-    void);
+ACPI_STATUS 
+AcpiSystemSleepStateSupported (
+    UINT8                   SleepState,
+    BOOLEAN					*Supported);
 
 ACPI_STATUS
-AcpiSetFirmwareWakingVector (
-    void                    *PhysicalAddress);
-
-ACPI_STATUS
-AcpiGetFirmwareWakingVector (
-    void                    **PhysicalAddress);
+AcpiEnterSystemSleepState (
+    UINT8                   SleepState);
 
 
 
