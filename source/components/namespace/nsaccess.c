@@ -283,22 +283,26 @@ static ST_KEY_DESC_TABLE KDT[] = {
  *              scope
  *
  ****************************************************************************/
+
 ACPI_STATUS
 AcpiExecuteRelativeMethod (NsHandle Handle,
                            char * MethodName,
                            OBJECT_DESCRIPTOR *ReturnValue,
                            OBJECT_DESCRIPTOR **Params)
 {
-    char NameBuffer[PATHNAME_MAX];
-    ACPI_STATUS RetValue;
-    UINT32  MaxObjectPathLength = PATHNAME_MAX - 1;
+    char                NameBuffer[PATHNAME_MAX];
+    ACPI_STATUS         RetValue;
+    UINT32              MaxObjectPathLength = PATHNAME_MAX - 1;
+
 
     FUNCTION_TRACE ("AcpiExecuteRelativeMethod");
 
     /*
      *  Must have a valid handle
      */
-    if (!Handle) {
+    if (!Handle) 
+    {
+        FUNCTION_EXIT;
         return AE_BAD_PARAMETER;
     }
 
@@ -307,7 +311,8 @@ AcpiExecuteRelativeMethod (NsHandle Handle,
      *  the object indicated by the handle we need to reserve space in the
      *  buffer to append the CM name later
      */
-    if (MethodName) {
+    if (MethodName) 
+    {
         /*
          *  Append the method name to the device pathname
          */
@@ -319,10 +324,12 @@ AcpiExecuteRelativeMethod (NsHandle Handle,
      */
     RetValue = NsHandleToPathname (Handle, MaxObjectPathLength, NameBuffer);
 
-    if (RetValue != AE_OK) {
+    if (RetValue != AE_OK) 
+    {
         /*
          *  Failed the conversion
          */
+        FUNCTION_EXIT;
         return RetValue;
     }
 
@@ -330,7 +337,8 @@ AcpiExecuteRelativeMethod (NsHandle Handle,
      *  If the caller specified a method then it must be a path relative to
      *  the object indicated by the handle
      */
-    if (MethodName) {
+    if (MethodName) 
+    {
         /*
          *  Append the method name to the device pathname
          */
@@ -342,8 +350,10 @@ AcpiExecuteRelativeMethod (NsHandle Handle,
      */
     RetValue = AcpiExecuteMethod(NameBuffer, ReturnValue, Params);
 
+    FUNCTION_EXIT;
     return RetValue;
 }
+
 
 /****************************************************************************
  *
@@ -603,12 +613,13 @@ BREAKPOINT3;
              * There are clearly cases that we don't and this will fault
              */
 
-            /* DELETE (ObjStack[ObjStackTop]); */
+            /* OsdFree (ObjStack[ObjStackTop]); */
 
             Status = AE_OK;
         }
     }
 
+    FUNCTION_EXIT;
     return Status;
 }
 
@@ -633,9 +644,11 @@ AcpiLoadTableInNameSpace (void)
 
     if (!RootObject->Scope)
     {
+        FUNCTION_EXIT;
         return AE_ERROR;
     }
     
+    FUNCTION_EXIT;
     return (AE_OK);
 }
 
@@ -671,6 +684,7 @@ NsSetup (void)
 
     if (RootObject->Scope)
     {
+        FUNCTION_EXIT;
         return AE_OK;
     }
 
@@ -681,6 +695,7 @@ NsSetup (void)
         /*  root name table allocation failure  */
 
         REPORT_ERROR (&KDT[4]);
+        FUNCTION_EXIT;
         return AE_NO_MEMORY;
     }
 
@@ -722,6 +737,7 @@ NsSetup (void)
 
             if (!ObjDesc)
             {
+                FUNCTION_EXIT;
                 return AE_NO_MEMORY;
             }
 
@@ -753,6 +769,7 @@ NsSetup (void)
                     if (!ObjDesc->String.String)
                     {
                         REPORT_ERROR (&KDT[6]);
+                        FUNCTION_EXIT;
                         return AE_NO_MEMORY;
                     }
                     else
@@ -763,7 +780,8 @@ NsSetup (void)
                     break;
 
                 default:
-                    DELETE (ObjDesc);
+                    OsdFree (ObjDesc);
+                    ObjDesc = NULL;
                     continue;
                 }
 
@@ -778,6 +796,7 @@ NsSetup (void)
     RegisterMarkingFunction (NsMarkNS);
 #endif
 
+    FUNCTION_EXIT;
     return AE_OK;
 }
 
@@ -818,6 +837,7 @@ NsEnter (char *Name, NsType Type, OpMode LoadMode, NsHandle *RetHandle)
 
     if (!RetHandle)
     {
+        FUNCTION_EXIT;
         return AE_BAD_PARAMETER;
     }
 
@@ -835,11 +855,13 @@ NsEnter (char *Name, NsType Type, OpMode LoadMode, NsHandle *RetHandle)
         {
             if ((Status = NsSetup ()) != AE_OK)
             {
+                FUNCTION_EXIT;
                 return Status;
             }
         }
         else
         {
+            FUNCTION_EXIT;
             return AE_NOT_FOUND;
         }
     }
@@ -848,6 +870,7 @@ NsEnter (char *Name, NsType Type, OpMode LoadMode, NsHandle *RetHandle)
     {
         /* Invalid parameter */
 
+        FUNCTION_EXIT;
         return AE_BAD_PARAMETER;
     }
 
@@ -919,6 +942,7 @@ NsEnter (char *Name, NsType Type, OpMode LoadMode, NsHandle *RetHandle)
                 REPORT_ERROR (&KDT[7]);
                 CheckTrash ("leave NsEnter NOTFOUND 1");
 
+                FUNCTION_EXIT;
                 return AE_NOT_FOUND;
             }
         }
@@ -1008,6 +1032,7 @@ NsEnter (char *Name, NsType Type, OpMode LoadMode, NsHandle *RetHandle)
                 CheckTrash ("leave NsEnter NOTFOUND 2");
             }
 
+            FUNCTION_EXIT;
             return Status;
         }
 
@@ -1053,6 +1078,7 @@ NsEnter (char *Name, NsType Type, OpMode LoadMode, NsHandle *RetHandle)
 
                 if (!ThisEntry->Scope)
                 {
+                    FUNCTION_EXIT;
                     return AE_NO_MEMORY;
                 }
             }
@@ -1066,11 +1092,13 @@ NsEnter (char *Name, NsType Type, OpMode LoadMode, NsHandle *RetHandle)
                 if (MODE_Load1 == LoadMode || MODE_Load == LoadMode)
                 {
                     REPORT_ERROR (&KDT[11]);
+                    FUNCTION_EXIT;
                     return AE_NOT_FOUND;
                 }
 
                 REPORT_ERROR (&KDT[12]);
                 CheckTrash ("leave NsEnter NOTFOUND 3");
+                FUNCTION_EXIT;
                 return AE_NOT_FOUND;
             }
 
@@ -1124,6 +1152,7 @@ NsEnter (char *Name, NsType Type, OpMode LoadMode, NsHandle *RetHandle)
     }
 
     *RetHandle = (NsHandle) ThisEntry;
+    FUNCTION_EXIT;
     return AE_OK;
 }
 
@@ -1148,9 +1177,11 @@ PriUnloadNameSpace (void)
 
     if (!RootObject->Scope)
     {
+        FUNCTION_EXIT;
         return AE_ERROR;
     }
     
+    FUNCTION_EXIT;
     return (AE_OK);
 }
 
