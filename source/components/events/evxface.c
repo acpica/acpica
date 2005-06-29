@@ -430,7 +430,7 @@ AcpiInstallGpeHandler (
 
     /* Parameter validation */
 
-    if (!Handler || (GpeNumber >= Gbl_GpeRegisterCount))
+    if (!Handler || (GpeNumber >= (Gbl_GpeRegisterCount * sizeof(GPE_REGISTERS))))
     {
         return_ACPI_STATUS (AE_BAD_PARAMETER);
     }
