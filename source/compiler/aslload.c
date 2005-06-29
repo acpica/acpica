@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dswload - Dispatcher namespace load callbacks
- *              $Revision: 1.28 $
+ *              $Revision: 1.29 $
  *
  *****************************************************************************/
 
@@ -320,7 +320,7 @@ LdLoadResourceElements (
              * Store the field offset in the namespace node so it
              * can be used when the field is referenced
              */
-            (UINT16) NsNode->OwnerId = InitializerNode->Value.Integer16;
+            NsNode->OwnerId = InitializerNode->Value.Integer16;
             InitializerNode->NsNode = NsNode;
             NsNode->Object = InitializerNode;
         }
@@ -478,17 +478,22 @@ LdNamespace1Begin (
     NsNode->Object = PsNode;
 
 
-    if (PsNode->ParseOpcode == METHOD)
-    {
-        NsNode->OwnerId = PsNode->Extra;
-    }
-
 
     /* Set the actual data type if appropriate (EXTERNAL term only) */
 
     if (ActualDataType != ACPI_TYPE_ANY)
     {
         NsNode->Type = ActualDataType;
+        NsNode->OwnerId = ASL_EXTERNAL_METHOD;
+    }
+
+    if (PsNode->ParseOpcode == METHOD)
+    {
+        /* 
+         * Get the method argument count from "Extra" and store
+         * it in the OwnerId field of the namespace node
+         */
+        NsNode->OwnerId = (UINT16) PsNode->Extra;
     }
 
     return (Status);
