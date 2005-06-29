@@ -220,13 +220,13 @@ AcpiDbDumpParserDescriptor (
 
 void
 AcpiDbDecodeAndDisplayObject (
-    INT8                    *Target,
-    INT8                    *OutputType)
+    NATIVE_CHAR             *Target,
+    NATIVE_CHAR             *OutputType)
 {
     void                    *ObjPtr;
     ACPI_NAMED_OBJECT       *Entry;
     UINT32                  Display = DB_BYTE_DISPLAY;
-    INT8                    Buffer[80];
+    NATIVE_CHAR             Buffer[80];
     ACPI_BUFFER             RetBuf;
     ACPI_STATUS             Status;
     UINT32                  Size;

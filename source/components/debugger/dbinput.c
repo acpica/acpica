@@ -132,20 +132,19 @@
  * Globals that are specific to the debugger
  */
 
-INT8                    LineBuf[80];
-INT8                    ParsedBuf[80];
-INT8                    ScopeBuf[40];
-INT8                    DebugFilename[40];
-INT8                    *Args[DB_MAX_ARGS];
-INT8                    *Buffer;
-INT8                    *Filename = NULL;
+NATIVE_CHAR             LineBuf[80];
+NATIVE_CHAR             ParsedBuf[80];
+NATIVE_CHAR             ScopeBuf[40];
+NATIVE_CHAR             DebugFilename[40];
+NATIVE_CHAR             *Args[DB_MAX_ARGS];
+NATIVE_CHAR             *Buffer;
+NATIVE_CHAR             *Filename = NULL;
 BOOLEAN                 OutputToFile = FALSE;
 
 
 UINT32                  AcpiGbl_DbDebugLevel = 0x0FFFFFFF;
 UINT32                  AcpiGbl_DbConsoleDebugLevel = DEBUG_DEFAULT;
 UINT8                   AcpiGbl_DbOutputFlags = DB_CONSOLE_OUTPUT;
-UINT32                  AcpiGbl_MethodBreakpoint = 0;
 
 
 BOOLEAN                 opt_tables      = FALSE;
@@ -274,7 +273,7 @@ COMMAND_INFO                Commands[] =
 
 void
 AcpiDbDisplayHelp (
-    INT8                    *HelpType)
+    NATIVE_CHAR             *HelpType)
 {
 
 
@@ -380,12 +379,12 @@ AcpiDbDisplayHelp (
  *
  *****************************************************************************/
 
-INT8 *
+NATIVE_CHAR *
 AcpiDbGetNextToken (
-    INT8                    *String,
-    INT8                    **Next)
+    NATIVE_CHAR             *String,
+    NATIVE_CHAR             **Next)
 {
-    INT8                    *Start;
+    NATIVE_CHAR             *Start;
 
     /* At end of buffer? */
 
@@ -448,14 +447,14 @@ AcpiDbGetNextToken (
  *
  *****************************************************************************/
 
-INT32
+UINT32
 AcpiDbGetLine (
-    INT8                    *InputBuffer)
+    NATIVE_CHAR             *InputBuffer)
 {
     UINT32                  i;
-    INT32                   Count;
-    INT8                    *Next;
-    INT8                    *This;
+    UINT32                  Count;
+    NATIVE_CHAR             *Next;
+    NATIVE_CHAR             *This;
 
 
     STRCPY (ParsedBuf, InputBuffer);
@@ -501,9 +500,9 @@ AcpiDbGetLine (
  *
  *****************************************************************************/
 
-INT32
+UINT32
 AcpiDbMatchCommand (
-    INT8                    *UserCommand)
+    NATIVE_CHAR             *UserCommand)
 {
     UINT32                  i;
 
@@ -541,14 +540,14 @@ AcpiDbMatchCommand (
 
 ACPI_STATUS
 AcpiDbCommandDispatch (
-    INT8                    *InputBuffer,
+    NATIVE_CHAR             *InputBuffer,
     ACPI_WALK_STATE         *WalkState,
     ACPI_GENERIC_OP         *Op)
 {
     UINT32                  Temp;
-    INT32                   CommandIndex;
-    INT32                   ParamCount;
-    INT8                    *CommandLine;
+    UINT32                  CommandIndex;
+    UINT32                  ParamCount;
+    NATIVE_CHAR             *CommandLine;
     ACPI_STATUS             Status = AE_CTRL_TRUE;
 
 
@@ -680,7 +679,9 @@ AcpiDbCommandDispatch (
         if (Op)
         {
             AcpiGbl_CmSingleStep = TRUE;
-            AcpiGbl_MethodBreakpoint = 0;
+
+/* TBD: Must get current walk state */
+            /* AcpiGbl_MethodBreakpoint = 0; */
             return (AE_OK);
         }
         break;
@@ -912,7 +913,7 @@ AcpiDbSingleThread (
 
 ACPI_STATUS
 AcpiDbUserCommands (
-    INT8                    Prompt,
+    NATIVE_CHAR             Prompt,
     ACPI_GENERIC_OP         *Op)
 {
     ACPI_STATUS             Status = AE_OK;

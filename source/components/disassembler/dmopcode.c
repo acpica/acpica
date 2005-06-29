@@ -130,7 +130,7 @@
 #define MAX_SHOW_ENTRY      128
 
 
-char                        *INDENT_STRING = "....";
+NATIVE_CHAR                 *INDENT_STRING = "....";
 
 
 /*******************************************************************************
@@ -148,7 +148,7 @@ char                        *INDENT_STRING = "....";
 #define BLOCK_PAREN 1
 #define BLOCK_BRACE 2
 
-INT32
+UINT32
 AcpiDbBlockType (
     ACPI_GENERIC_OP *Op)
 {
@@ -156,14 +156,14 @@ AcpiDbBlockType (
     switch (Op->Opcode)
     {
     case AML_METHOD_OP:
-        return BLOCK_BRACE;
+        return (BLOCK_BRACE);
         break;
 
     default:
         break;
     }
 
-    return BLOCK_PAREN;
+    return (BLOCK_PAREN);
 
 }
 
@@ -216,7 +216,7 @@ AcpiPsDisplayObjectPathname (
     }
 
     AcpiOsPrintf (")");
-    return AE_OK;
+    return (AE_OK);
 }
 
 #else
@@ -227,7 +227,7 @@ AcpiPsDisplayObjectPathname (
 {
     ACPI_STATUS             Status;
     ACPI_NAMED_OBJECT       *Nte;
-    char                    Buffer[MAX_SHOW_ENTRY];
+    NATIVE_CHAR             Buffer[MAX_SHOW_ENTRY];
     UINT32                  BufferSize = MAX_SHOW_ENTRY;
 
 
@@ -243,7 +243,7 @@ AcpiPsDisplayObjectPathname (
          * is not in the namespace.  This can happen during single
          * stepping where a dynamic named object is *about* to be created.
          */
-        return AE_OK;
+        return (AE_OK);
     }
 
     /* Convert NTE/handle to a full pathname */
@@ -252,11 +252,11 @@ AcpiPsDisplayObjectPathname (
     if (ACPI_FAILURE (Status))
     {
         AcpiOsPrintf ("****Could not get pathname****)");
-        return Status;
+        return (Status);
     }
 
     AcpiOsPrintf ("%s)", Buffer);
-    return AE_OK;
+    return (AE_OK);
 }
 
 #endif
@@ -434,7 +434,7 @@ AcpiDbDisplayOp (
 
 void
 AcpiDbDisplayNamestring (
-    char                    *Name)
+    NATIVE_CHAR             *Name)
 {
     UINT32                  SegCount;
     BOOLEAN                 DoDot = FALSE;
@@ -462,7 +462,7 @@ AcpiDbDisplayNamestring (
         break;
 
     case AML_MULTI_NAME_PREFIX_OP:
-        SegCount = (INT32) GET8 (Name + 1);
+        SegCount = (UINT32) GET8 (Name + 1);
         Name += 2;
         break;
 
@@ -755,7 +755,7 @@ AcpiDbDisplayOpcode (
             AcpiOsPrintf ("0x%2.2X", Op->Value.Integer);
 
             ByteCount = Op->Value.Integer;
-            ByteData = ((ACPI_BYTELIST_OP *) Op)->Data;
+            ByteData = ((ACPI_EXTENDED_OP *) Op)->Data;
 
             for (i = 0; i < ByteCount; i++)
             {
@@ -771,16 +771,7 @@ AcpiDbDisplayOpcode (
         /* Just get the opcode name and print it */
 
         Opc = AcpiPsGetOpcodeInfo (Op->Opcode);
-        if (Opc)
-        {
-            DEBUG_ONLY_MEMBERS ((AcpiOsPrintf ("%s", Opc->Name)));
-        }
-
-        else
-        {
-            AcpiOsPrintf ("<Opcode 0x%04x>", Op->Opcode);
-        }
-
+        DEBUG_ONLY_MEMBERS ((AcpiOsPrintf ("%s", Opc->Name)));
         break;
     }
 

@@ -133,7 +133,7 @@
 
 typedef struct HistoryInfo
 {
-    INT8                    Command[80];
+    NATIVE_CHAR             Command[80];
     UINT32                  CmdNum;
 
 } HISTORY_INFO;
@@ -163,7 +163,7 @@ UINT32                      NextCmdNum = 1;
 
 void
 AcpiDbAddToHistory (
-    INT8                    *CommandLine)
+    NATIVE_CHAR             *CommandLine)
 {
 
 
@@ -242,9 +242,9 @@ AcpiDbDisplayHistory (void)
  *
  *****************************************************************************/
 
-INT8 *
+NATIVE_CHAR *
 AcpiDbGetFromHistory (
-    INT8                    *CommandNumArg)
+    NATIVE_CHAR             *CommandNumArg)
 {
     NATIVE_UINT             i;
     UINT16                  HistoryIndex;

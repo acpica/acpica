@@ -151,7 +151,7 @@ FILE                    *DebugFile = NULL;
 
 OBJECT_TYPE_INTERNAL
 AcpiDbMatchArgument (
-    INT8                    *UserArgument,
+    NATIVE_CHAR             *UserArgument,
     ARGUMENT_INFO           *Arguments)
 {
     UINT32                  i;
@@ -159,7 +159,7 @@ AcpiDbMatchArgument (
 
     if (!UserArgument || UserArgument[0] == 0)
     {
-        return ACPI_TYPE_NOT_FOUND;
+        return (ACPI_TYPE_NOT_FOUND);
     }
 
     for (i = 0; Arguments[i].Name; i++)
@@ -172,7 +172,7 @@ AcpiDbMatchArgument (
 
     /* Argument not recognized */
 
-    return ACPI_TYPE_NOT_FOUND;
+    return (ACPI_TYPE_NOT_FOUND);
 }
 
 
@@ -221,7 +221,7 @@ AcpiDbCloseDebugFile (
 
 void
 AcpiDbOpenDebugFile (
-    INT8                    *Name)
+    NATIVE_CHAR             *Name)
 {
 
 #ifdef ACPI_APPLICATION
@@ -255,11 +255,11 @@ AcpiDbOpenDebugFile (
 ACPI_STATUS
 AcpiDbLoadTable(
     FILE                    *fp,
-    INT8                    **TablePtr,
+    ACPI_TABLE_HEADER       **TablePtr,
     UINT32                  *TableLength)
 {
     ACPI_TABLE_HEADER       TableHeader;
-    INT8                    *AmlPtr;
+    UINT8                   *AmlPtr;
     UINT32                  AmlLength;
 
 
@@ -282,7 +282,7 @@ AcpiDbLoadTable(
 
     /* Allocate a buffer for the table */
 
-    *TablePtr = (INT8 *) malloc ((size_t) *TableLength);
+    *TablePtr = (ACPI_TABLE_HEADER *) malloc ((size_t) *TableLength);
     if (!*TablePtr)
     {
         AcpiOsPrintf ("Could not allocate memory for the table (size=0x%X)\n", TableHeader.Length);
@@ -290,7 +290,7 @@ AcpiDbLoadTable(
     }
 
 
-    AmlPtr      = *TablePtr + sizeof (TableHeader);
+    AmlPtr      = (UINT8 *) *TablePtr + sizeof (TableHeader);
     AmlLength   = *TableLength - sizeof (TableHeader);
 
     /* Copy the header to the buffer */
@@ -301,7 +301,7 @@ AcpiDbLoadTable(
 
     if ((UINT32) fread (AmlPtr, 1, (size_t) AmlLength, fp) == AmlLength)
     {
-        return AE_OK;
+        return (AE_OK);
     }
 
     AcpiOsPrintf ("Error reading the table\n");
@@ -309,7 +309,7 @@ AcpiDbLoadTable(
     *TablePtr = NULL;
     *TableLength = 0;
 
-    return AE_ERROR;
+    return (AE_ERROR);
 }
 #endif
 
@@ -328,12 +328,12 @@ AcpiDbLoadTable(
 
 ACPI_STATUS
 AcpiDbLoadAcpiTable (
-    INT8                    *Filename)
+    NATIVE_CHAR             *Filename)
 {
 #ifdef ACPI_APPLICATION
     FILE                    *fp;
     ACPI_STATUS             Status;
-    INT8                    *TablePtr;
+    ACPI_TABLE_HEADER       *TablePtr;
     UINT32                  TableLength;
     ACPI_TABLE_DESC         TableInfo;
 
@@ -342,7 +342,7 @@ AcpiDbLoadAcpiTable (
     if (!fp)
     {
         AcpiOsPrintf ("Could not open file %s\n", Filename);
-        return AE_ERROR;
+        return (AE_ERROR);
     }
 
     AcpiOsPrintf ("Loading Acpi table from file %s\n", Filename);
@@ -352,13 +352,13 @@ AcpiDbLoadAcpiTable (
     if (ACPI_FAILURE (Status))
     {
         AcpiOsPrintf ("Couldn't get table from the file\n");
-        return Status;
+        return (Status);
     }
 
 
     /* Attempt to recognize and install the table */
 
-    TableInfo.Pointer = (ACPI_TABLE_HEADER *) TablePtr;                       /* TBD: [Restructure] Fix redundant parameter */
+    TableInfo.Pointer = TablePtr;
     Status = AcpiTbInstallTable (TablePtr, &TableInfo);
     if (ACPI_FAILURE (Status))
     {
@@ -371,7 +371,7 @@ AcpiDbLoadAcpiTable (
             AcpiOsPrintf ("Could not install table, %s\n", AcpiCmFormatException (Status));
         }
         free (TablePtr);
-        return Status;
+        return (Status);
     }
 
 
@@ -381,7 +381,7 @@ AcpiDbLoadAcpiTable (
     AcpiGbl_AcpiHardwarePresent = FALSE;
 
 #endif  /* ACPI_APPLICATION */
-    return AE_OK;
+    return (AE_OK);
 }
 
 

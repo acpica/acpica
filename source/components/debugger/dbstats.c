@@ -181,7 +181,7 @@ UINT32                      SizeOfAcpiObjects;
 
 ACPI_STATUS
 AcpiDbDisplayStatistics (
-    INT8                    *TypeArg)
+    NATIVE_CHAR             *TypeArg)
 {
     UINT32                  i;
     UINT32                  Type;
@@ -273,6 +273,10 @@ AcpiDbDisplayStatistics (
         AcpiOsPrintf ("Parse Cache hits............% 7ld\n", AcpiGbl_ParseCacheHits);
         AcpiOsPrintf ("Parse Cache depth...........% 7ld (%d remaining entries)\n", AcpiGbl_ParseCacheDepth,
                                                             MAX_PARSE_CACHE_DEPTH - AcpiGbl_ParseCacheDepth);
+        AcpiOsPrintf ("Ext Parse Cache requests....% 7ld\n", AcpiGbl_ExtParseCacheRequests);
+        AcpiOsPrintf ("Ext Parse Cache hits........% 7ld\n", AcpiGbl_ExtParseCacheHits);
+        AcpiOsPrintf ("Ext Parse Cache depth.......% 7ld (%d remaining entries)\n", AcpiGbl_ExtParseCacheDepth,
+                                                            MAX_EXTPARSE_CACHE_DEPTH - AcpiGbl_ExtParseCacheDepth);
         AcpiOsPrintf ("Object Cache requests.......% 7ld\n", AcpiGbl_ObjectCacheRequests);
         AcpiOsPrintf ("Object Cache hits...........% 7ld\n", AcpiGbl_ObjectCacheHits);
         AcpiOsPrintf ("Object Cache depth..........% 7ld (%d remaining entries)\n", AcpiGbl_ObjectCacheDepth,

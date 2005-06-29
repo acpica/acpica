@@ -134,11 +134,11 @@
 typedef struct dbmethodinfo
 {
     ACPI_HANDLE             ThreadGate;
-    INT8                    *Name;
-    INT8                    **Args;
+    NATIVE_CHAR             *Name;
+    NATIVE_CHAR             **Args;
     UINT32                  Flags;
     UINT32                  NumLoops;
-    INT8                    Pathname[128];
+    NATIVE_CHAR             Pathname[128];
 
 } DB_METHOD_INFO;
 
@@ -283,8 +283,8 @@ AcpiDbExecuteSetup (
 
 void
 AcpiDbExecute (
-    INT8                    *Name,
-    INT8                    **Args,
+    NATIVE_CHAR             *Name,
+    NATIVE_CHAR             **Args,
     UINT32                  Flags)
 {
     ACPI_STATUS             Status;
@@ -400,9 +400,9 @@ AcpiDbMethodThread (
 
 void
 AcpiDbCreateExecutionThreads (
-    INT8                    *NumThreadsArg,
-    INT8                    *NumLoopsArg,
-    INT8                    *MethodNameArg)
+    NATIVE_CHAR             *NumThreadsArg,
+    NATIVE_CHAR             *NumLoopsArg,
+    NATIVE_CHAR             *MethodNameArg)
 {
     ACPI_STATUS             Status;
     UINT32                  NumThreads;

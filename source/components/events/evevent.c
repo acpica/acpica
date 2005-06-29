@@ -160,7 +160,7 @@ AcpiEvFixedEventInitialize(void)
     AcpiHwRegisterAccess (ACPI_WRITE, ACPI_MTX_LOCK, ACPI_EVENT_RTC +
                             TMR_EN, 0);
 
-    return AE_OK;
+    return (AE_OK);
 }
 
 
@@ -238,7 +238,7 @@ AcpiEvFixedEventDetect(void)
         IntStatus |= AcpiEvFixedEventDispatch (ACPI_EVENT_SLEEP_BUTTON);
     }
 
-    return IntStatus;
+    return (IntStatus);
 }
 
 
@@ -261,7 +261,7 @@ AcpiEvFixedEventDispatch (
 {
     /* Clear the status bit */
 
-    AcpiHwRegisterAccess (ACPI_WRITE, ACPI_MTX_DO_NOT_LOCK, (INT32)TMR_STS +
+    AcpiHwRegisterAccess (ACPI_WRITE, ACPI_MTX_DO_NOT_LOCK, TMR_STS +
                             Event, 1);
 
     /*
@@ -278,13 +278,13 @@ AcpiEvFixedEventDispatch (
             ("EvGpeDispatch: No installed handler for fixed event [0x%08X].",
             Event));
 
-        return INTERRUPT_NOT_HANDLED;
+        return (INTERRUPT_NOT_HANDLED);
     }
 
     /* Invoke the handler */
 
-    return (AcpiGbl_FixedEventHandlers[Event].Handler)(
-                                AcpiGbl_FixedEventHandlers[Event].Context);
+    return ((AcpiGbl_FixedEventHandlers[Event].Handler)(
+                                AcpiGbl_FixedEventHandlers[Event].Context));
 }
 
 
@@ -320,6 +320,13 @@ AcpiEvGpeInitialize (void)
     Gpe0RegisterCount       = (UINT16) DIV_2 (AcpiGbl_FACP->Gpe0BlkLen);
     Gpe1RegisterCount       = (UINT16) DIV_2 (AcpiGbl_FACP->Gpe1BlkLen);
     AcpiGbl_GpeRegisterCount    = Gpe0RegisterCount + Gpe1RegisterCount;
+
+    if (!AcpiGbl_GpeRegisterCount)
+    {
+        REPORT_WARNING ("No GPEs defined in the FACP");
+        DEBUG_PRINT (ACPI_ERROR, ("Zero GPE count!\n"));
+        return_ACPI_STATUS (AE_OK);
+    }
 
     /*
      * Allocate the Gpe information block
@@ -460,7 +467,7 @@ AcpiEvSaveMethodInfo (
     void                    **ReturnValue)
 {
     UINT32                  GpeNumber;
-    char                    Name[ACPI_NAME_SIZE + 1];
+    NATIVE_CHAR             Name[ACPI_NAME_SIZE + 1];
     UINT8                   Type;
 
 
@@ -470,7 +477,7 @@ AcpiEvSaveMethodInfo (
     Name[ACPI_NAME_SIZE] = 0;
 
     /*
-     * Edge/Level determination is based on the 2nd char of the method name
+     * Edge/Level determination is based on the 2nd INT8 of the method name
      */
     if (Name[1] == 'L')
     {
@@ -487,7 +494,7 @@ AcpiEvSaveMethodInfo (
         DEBUG_PRINT (ACPI_ERROR,
             ("EvSaveMethodInfo: Unknown GPE method type: %s (name not of form _Lnn or _Enn)\n",
             Name));
-        return AE_OK;
+        return (AE_OK);
     }
 
     /* Convert the last two characters of the name to the Gpe Number */
@@ -500,7 +507,7 @@ AcpiEvSaveMethodInfo (
         DEBUG_PRINT (ACPI_ERROR,
             ("EvSaveMethodInfo: Could not extract GPE number from name: %s (name not of form _Lnn or _Enn)\n",
             Name));
-        return AE_OK;
+        return (AE_OK);
     }
 
     /* Ensure that we have a valid GPE number */
@@ -509,7 +516,7 @@ AcpiEvSaveMethodInfo (
     {
         /* Not valid, all we can do here is ignore it */
 
-        return AE_OK;
+        return (AE_OK);
     }
 
     /*
@@ -530,7 +537,7 @@ AcpiEvSaveMethodInfo (
     DEBUG_PRINT (ACPI_INFO,
         ("EvSaveMethodInfo: Registered GPE method %s as GPE number %d\n",
         Name, GpeNumber));
-    return AE_OK;
+    return (AE_OK);
 }
 
 
@@ -568,7 +575,7 @@ AcpiEvInitGpeControlMethods (void)
     /* Traverse the namespace under \_GPE to find all methods there */
 
     Status = AcpiWalkNamespace (ACPI_TYPE_METHOD, AcpiGbl_GpeObjHandle,
-                                ACPI_INT32_MAX, AcpiEvSaveMethodInfo,
+                                ACPI_UINT32_MAX, AcpiEvSaveMethodInfo,
                                 NULL, NULL);
 
     return_ACPI_STATUS (Status);
@@ -670,7 +677,7 @@ AcpiEvGpeDetect (void)
         }
     }
 
-    return IntStatus;
+    return (IntStatus);
 }
 
 

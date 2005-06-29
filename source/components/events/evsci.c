@@ -1,9 +1,9 @@
-/******************************************************************************
+/*******************************************************************************
  *
  * Module Name: evsci - System Control Interrupt configuration and
  *                      legacy to ACPI mode state transition functions
  *
- *****************************************************************************/
+ ******************************************************************************/
 
 /******************************************************************************
  *
@@ -126,17 +126,16 @@
 
 
 /*
- * Elements correspond to counts for
- * TMR, NOT_USED, GBL, PWR_BTN, SLP_BTN, RTC,
- * and GENERAL respectively.  These counts
- * are modified by the ACPI interrupt handler...
- * Note that GENERAL should probably be split out
- * into one element for each bit in the GPE
- * registers
+ * Elements correspond to counts for TMR, NOT_USED, GBL, PWR_BTN, SLP_BTN, RTC,
+ * and GENERAL respectively.  These counts are modified by the ACPI interrupt
+ * handler.
+ *
+ * TBD: [Investigate] Note that GENERAL should probably be split out into
+ * one element for each bit in the GPE registers
  */
 
 
-/******************************************************************************
+/*******************************************************************************
  *
  * FUNCTION:    AcpiEvSciHandler
  *
@@ -153,19 +152,20 @@
 UINT32
 AcpiEvSciHandler (void *Context)
 {
-    UINT32 InterruptHandled = INTERRUPT_NOT_HANDLED;
+    UINT32                  InterruptHandled = INTERRUPT_NOT_HANDLED;
+
 
     FUNCTION_TRACE("EvSciHandler");
 
+
     /*
-     * ACPI Enabled?
-     * -------------
      * Make sure that ACPI is enabled by checking SCI_EN.  Note that we are
      * required to treat the SCI interrupt as sharable, level, active low.
      */
-    if (!AcpiHwRegisterAccess (ACPI_READ, ACPI_MTX_DO_NOT_LOCK, (INT32)SCI_EN))
+    if (!AcpiHwRegisterAccess (ACPI_READ, ACPI_MTX_DO_NOT_LOCK, SCI_EN))
     {
-        REPORT_ERROR ("Received and SCI but ACPI is not enabled.");
+        /* ACPI is not enabled;  this interrupt cannot be for us */
+
         return_VALUE (INTERRUPT_NOT_HANDLED);
     }
 
@@ -202,14 +202,15 @@ AcpiEvSciHandler (void *Context)
 UINT32
 AcpiEvInstallSciHandler (void)
 {
-    UINT32 Except = AE_OK;
+    UINT32                  Except = AE_OK;
+
 
     FUNCTION_TRACE ("EvInstallSciHandler");
 
-    Except = AcpiOsInstallInterruptHandler (
-        (UINT32) AcpiGbl_FACP->SciInt,
-        AcpiEvSciHandler,
-        NULL);
+
+    Except = AcpiOsInstallInterruptHandler ((UINT32) AcpiGbl_FACP->SciInt,
+                                            AcpiEvSciHandler,
+                                            NULL);
 
     return_ACPI_STATUS (Except);
 }
@@ -267,24 +268,21 @@ AcpiEvRemoveSciHandler (void)
 
 #endif
 
-    AcpiOsRemoveInterruptHandler (
-        (UINT32) AcpiGbl_FACP->SciInt,
-        AcpiEvSciHandler);
+    AcpiOsRemoveInterruptHandler ((UINT32) AcpiGbl_FACP->SciInt,
+                                    AcpiEvSciHandler);
 
     return_ACPI_STATUS (AE_OK);
 }
 
 
-/******************************************************************************
+/*******************************************************************************
  *
  * FUNCTION:    AcpiEvSciCount
  *
- * PARAMETERS:  char * EventName        name (fully qualified name from namespace
- *                                      or one of the fixed event names defined above)
- *                                      of the event to check if it's generated an SCI.
+ * PARAMETERS:  Event       Event that generated an SCI.
  *
- * RETURN:      Number of SCI's for requested event since last time iSciOccured()
- *              was called for this event.
+ * RETURN:      Number of SCI's for requested event since last time
+ *              SciOccured() was called for this event.
  *
  * DESCRIPTION: Checks to see if SCI has been generated from requested source
  *              since the last time this function was called.
@@ -293,11 +291,11 @@ AcpiEvRemoveSciHandler (void)
 
 #ifdef ACPI_DEBUG
 
-INT32
+UINT32
 AcpiEvSciCount (
     UINT32                  Event)
 {
-    INT32                   Count;
+    UINT32                  Count;
 
     FUNCTION_TRACE ("EvSciCount");
 
@@ -308,7 +306,7 @@ AcpiEvSciCount (
 
     if (Event >= NUM_FIXED_EVENTS)
     {
-        Count = -1;
+        Count = (UINT32) -1;
     }
     else
     {
@@ -321,7 +319,7 @@ AcpiEvSciCount (
 #endif
 
 
-/******************************************************************************
+/*******************************************************************************
  *
  * FUNCTION:    AcpiEvRestoreAcpiState
  *
@@ -336,7 +334,7 @@ AcpiEvSciCount (
 void
 AcpiEvRestoreAcpiState (void)
 {
-    INT32                   Index;
+    UINT32                  Index;
 
 
     FUNCTION_TRACE ("EvRestoreAcpiState");
@@ -427,6 +425,7 @@ AcpiEvTerminate (void)
 {
 
     FUNCTION_TRACE ("EvTerminate");
+
 
     /*
      * Free global tables, etc.

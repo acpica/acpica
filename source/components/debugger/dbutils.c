@@ -122,6 +122,7 @@
 #include "acevents.h"
 #include "acinterp.h"
 #include "acdebug.h"
+#include "acdispat.h"
 
 
 #ifdef ENABLE_DEBUGGER
@@ -144,7 +145,7 @@
 
 void
 AcpiDbSetOutputDestination (
-    INT32                   OutputFlags)
+    UINT32                  OutputFlags)
 {
 
     AcpiGbl_DbOutputFlags = (UINT8) OutputFlags;
@@ -182,7 +183,7 @@ AcpiDbDumpBuffer (
     AcpiOsPrintf ("\nLocation 0x%X:\n", Address);
 
     AcpiDbgLevel |= TRACE_TABLES;
-    AcpiCmDumpBuffer ((char *) Address, 64, DB_BYTE_DISPLAY, ACPI_UINT32_MAX);
+    AcpiCmDumpBuffer ((UINT8 *) Address, 64, DB_BYTE_DISPLAY, ACPI_UINT32_MAX);
 }
 
 
@@ -245,7 +246,7 @@ AcpiDbDumpObject (
     case ACPI_TYPE_BUFFER:
 
         AcpiOsPrintf ("[Buffer]  Value: ");
-        AcpiCmDumpBuffer ((char *) ObjDesc->Buffer.Pointer, ObjDesc->Buffer.Length, DB_DWORD_DISPLAY, _COMPONENT);
+        AcpiCmDumpBuffer ((UINT8 *) ObjDesc->Buffer.Pointer, ObjDesc->Buffer.Length, DB_DWORD_DISPLAY, _COMPONENT);
         break;
 
 
@@ -282,7 +283,7 @@ AcpiDbDumpObject (
 
 void
 AcpiDbPrepNamestring (
-    char                    *Name)
+    NATIVE_CHAR             *Name)
 {
 
 
@@ -339,7 +340,7 @@ AcpiDbSecondPassParse (
     ACPI_GENERIC_OP         *Root)
 {
     ACPI_GENERIC_OP         *Op = Root;
-    ACPI_DEFERRED_OP        *Method;
+    ACPI_EXTENDED_OP        *Method;
     ACPI_GENERIC_OP         *SearchOp;
     ACPI_GENERIC_OP         *StartOp;
     ACPI_STATUS             Status = AE_OK;
@@ -352,8 +353,9 @@ AcpiDbSecondPassParse (
     {
         if (Op->Opcode == AML_METHOD_OP)
         {
-            Method = (ACPI_DEFERRED_OP *) Op;
-            Status = AcpiPsParseAml (Op, Method->Body, Method->BodyLength, 0);
+            Method = (ACPI_EXTENDED_OP *) Op;
+            Status = AcpiPsParseAml (Op, Method->Data, Method->Length, 0,
+                        NULL, NULL, NULL, AcpiDsLoad1BeginOp, AcpiDsLoad1EndOp);
 
 
             BaseAmlOffset = (Method->Value.Arg)->AmlOffset + 1;
@@ -380,13 +382,13 @@ AcpiDbSecondPassParse (
 
         if (ACPI_FAILURE (Status))
         {
-            return Status;
+            return (Status);
         }
 
         Op = AcpiPsGetDepthNext (Root, Op);
     }
 
-    return Status;
+    return (Status);
 }
 
 
@@ -404,9 +406,9 @@ AcpiDbSecondPassParse (
 
 ACPI_NAMED_OBJECT*
 AcpiDbLocalNsLookup (
-    char                    *Name)
+    NATIVE_CHAR             *Name)
 {
-    char                    *InternalPath;
+    NATIVE_CHAR             *InternalPath;
     ACPI_STATUS             Status;
     ACPI_NAMED_OBJECT       *Entry = NULL;
 
@@ -419,7 +421,7 @@ AcpiDbLocalNsLookup (
     if (ACPI_FAILURE (Status))
     {
         AcpiOsPrintf ("Invalid namestring: %s\n", Name);
-        return NULL;
+        return (NULL);
     }
 
     /* Lookup the name */
@@ -438,7 +440,7 @@ AcpiDbLocalNsLookup (
 
     AcpiCmFree (InternalPath);
 
-    return Entry;
+    return (Entry);
 }
 
 

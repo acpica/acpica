@@ -324,7 +324,7 @@ AcpiEvGlobalLockHandler (
                                     Context);
     }
 
-    return INTERRUPT_HANDLED;
+    return (INTERRUPT_HANDLED);
 }
 
 
@@ -481,7 +481,7 @@ AcpiEvReleaseGlobalLock (void)
         if (Pending)
         {
             AcpiHwRegisterAccess (ACPI_WRITE, ACPI_MTX_LOCK,
-                                    (INT32)PM1_CONTROL | GBL_RLS, 1);
+                                    PM1_CONTROL | GBL_RLS, 1);
         }
     }
 

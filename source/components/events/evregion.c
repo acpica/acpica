@@ -162,10 +162,10 @@ AcpiEvFindOnePciRootBus (
      * We are looking for all valid _HID objects.
      */
 
-    if (STRNCMP ((char *)&Entry->Name, METHOD_NAME__HID, ACPI_NAME_SIZE) ||
+    if (STRNCMP (&Entry->Name, METHOD_NAME__HID, ACPI_NAME_SIZE) ||
         (!ObjDesc))
     {
-        return AE_OK;
+        return (AE_OK);
     }
 
 
@@ -181,7 +181,7 @@ AcpiEvFindOnePciRootBus (
 
         if (ObjDesc->Number.Value != PCI_ROOT_HID_VALUE)
         {
-            return AE_OK;
+            return (AE_OK);
         }
 
         break;
@@ -191,14 +191,14 @@ AcpiEvFindOnePciRootBus (
         if (STRNCMP (ObjDesc->String.Pointer, PCI_ROOT_HID_STRING,
                      sizeof (PCI_ROOT_HID_STRING)))
         {
-            return AE_OK;
+            return (AE_OK);
         }
 
         break;
 
     default:
 
-        return AE_OK;
+        return (AE_OK);
     }
 
 
@@ -212,7 +212,7 @@ AcpiEvFindOnePciRootBus (
                                              ADDRESS_SPACE_PCI_CONFIG,
                                              ACPI_DEFAULT_HANDLER, NULL, NULL);
 
-    return AE_OK;
+    return (AE_OK);
 }
 
 
@@ -236,7 +236,7 @@ AcpiEvFindPciRootBuses (
     AcpiNsWalkNamespace (ACPI_TYPE_ANY, ACPI_ROOT_OBJECT, ACPI_UINT32_MAX,
                         FALSE, AcpiEvFindOnePciRootBus, NULL, NULL);
 
-    return AE_OK;
+    return (AE_OK);
 }
 
 
@@ -398,7 +398,7 @@ AcpiEvAddressSpaceDispatch (
     ADDRESS_SPACE_HANDLER   Handler;
     ADDRESS_SPACE_SETUP     RegionSetup;
     ACPI_OBJECT_INTERNAL    *HandlerDesc;
-    void                    *RegionContext;
+    void                    *RegionContext = NULL;
 
 
     FUNCTION_TRACE ("EvAddressSpaceDispatch");
@@ -463,9 +463,10 @@ AcpiEvAddressSpaceDispatch (
         }
 
         /*
-         *  Save the returned context for use in all accesses to the region
+         *  Save the returned context for use in all accesses to 
+         *  this particular region.
          */
-        HandlerDesc->AddrHandler.Context = RegionContext;
+        RegionObj->Region.RegionContext = RegionContext;
     }
 
     /*
@@ -491,7 +492,8 @@ AcpiEvAddressSpaceDispatch (
      *  Invoke the handler.
      */
     Status = Handler (Function, Address, BitWidth, Value,
-                      HandlerDesc->AddrHandler.Context);
+                      HandlerDesc->AddrHandler.Context,
+                      RegionObj->Region.RegionContext);
 
     if (ACPI_FAILURE (Status))
     {
@@ -533,7 +535,7 @@ AcpiEvDisassociateRegionFromHandler(
     ACPI_OBJECT_INTERNAL    *ObjDesc;
     ACPI_OBJECT_INTERNAL    **LastObjPtr;
     ADDRESS_SPACE_SETUP     RegionSetup;
-    void                    *RegionContext;
+    void                    *RegionContext = RegionObj->Region.RegionContext;
     ACPI_STATUS             Status;
 
 
@@ -588,12 +590,6 @@ AcpiEvDisassociateRegionFromHandler(
             Status = RegionSetup (RegionObj, ACPI_REGION_DEACTIVATE,
                                   HandlerObj->AddrHandler.Context,
                                   &RegionContext);
-
-            /*
-             *  Save the returned context (It is the original context
-             *  passed into Install)
-             */
-            HandlerObj->AddrHandler.Context = RegionContext;
 
             /*
              *  Init routine may fail, Just ignore errors
@@ -656,9 +652,10 @@ AcpiEvDisassociateRegionFromHandler(
  ******************************************************************************/
 
 ACPI_STATUS
-AcpiEvAssociateRegionAndHandler(
+AcpiEvAssociateRegionAndHandler ( 
     ACPI_OBJECT_INTERNAL    *HandlerObj,
-    ACPI_OBJECT_INTERNAL    *RegionObj)
+    ACPI_OBJECT_INTERNAL    *RegionObj,
+    BOOLEAN                 AcpiNsIsLocked)
 {
     ACPI_STATUS     Status;
 
@@ -693,9 +690,17 @@ AcpiEvAssociateRegionAndHandler(
     /*
      *  Last thing, tell all users that this region is usable
      */
-    AcpiCmReleaseMutex (ACPI_MTX_NAMESPACE);
+    if (AcpiNsIsLocked)
+    {
+        AcpiCmReleaseMutex (ACPI_MTX_NAMESPACE);
+    }
+
     Status = AcpiEvExecuteRegMethod (RegionObj, 1);
-    AcpiCmAcquireMutex (ACPI_MTX_NAMESPACE);
+
+    if (AcpiNsIsLocked)
+    {
+        AcpiCmAcquireMutex (ACPI_MTX_NAMESPACE);
+    }
 
     return_ACPI_STATUS (Status);
 }
@@ -847,7 +852,7 @@ AcpiEvAddrHandlerHelper (
     /*
      *  Then connect the region to the new handler
      */
-    Status = AcpiEvAssociateRegionAndHandler (HandlerObj, ObjDesc);
+    Status = AcpiEvAssociateRegionAndHandler (HandlerObj, ObjDesc, FALSE);
 
     return (Status);
 }
