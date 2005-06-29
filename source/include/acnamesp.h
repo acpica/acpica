@@ -214,14 +214,16 @@ NsVerifyTableChecksum (
     void                *TableHeader, 
     INT32               DisplayBitFlags);
 
-void * 
+ACPI_STATUS
 NsGetTable (
     UINT32              PhysicalAddress, 
-    OSD_FILE            *InputFile);
+    OSD_FILE            *InputFile,
+    void *              *Table);
 
-void * 
+ACPI_STATUS
 NsGetFACS (
-    OSD_FILE            *InputFile);
+    OSD_FILE            *InputFile,
+    void *              *Table);
 
 
 /*
@@ -233,15 +235,16 @@ INT32
 PriUnloadNameSpace (
     void);
 
-void
+ACPI_STATUS
 NsSetup (
     void);
 
-NsHandle
+ACPI_STATUS
 NsEnter (
     char                *Name, 
     NsType              Type, 
-    OpMode              iLE);
+    OpMode              iLE,
+    NsHandle            *RetHandle);
 
 
 /*
@@ -252,13 +255,14 @@ INT32
 NsOpensScope (
     NsType              Type);
 
-nte *
+ACPI_STATUS
 NsSearchTable (
     char                *NamSeg, 
     nte                 *NameTbl, 
     INT32               TableSize, 
     OpMode              LoadMode, 
-    NsType              Type);
+    NsType              Type,
+    nte *               *RetNte);
 
 char *
 NsNameOfScope (
@@ -274,7 +278,7 @@ NsHandleToPathname (
     UINT32              BufSize,
     char                *UserBuffer);
 
-void
+ACPI_STATUS
 NsSetMethod (
     NsHandle            ObjHandle, 
     ptrdiff_t           Offset, 
@@ -381,7 +385,7 @@ void
 NsDumpEntry (
     NsHandle            Handle);
 
-void
+ACPI_STATUS
 NsDumpPathname (
     NsHandle            Handle, 
     char                *Msg, 
