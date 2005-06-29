@@ -2,7 +2,7 @@
 /******************************************************************************
  * 
  * Module Name: abcompare - compare AML files
- *              $Revision: 1.1 $
+ *              $Revision: 1.2 $
  *
  *****************************************************************************/
 
@@ -174,15 +174,15 @@ AbCompareAmlFiles (
     }
 
 
-    printf ("Signature         : %8.4s %8.4s\n",    Header1.Signature, Header2.Signature);
-    printf ("Length            : %8.8X %8.8X\n",    Header1.Length, Header2.Length);
-    printf ("Revision          : % 8.2X % 8.2X\n",  Header1.Revision, Header2.Revision);
-    printf ("Checksum          : % 8.2X % 8.2X\n",  Header1.Checksum, Header2.Checksum);
-    printf ("OEM ID            : \n");
-    printf ("OEM Table ID      : \n");
-    printf ("OEM Revision      : %8.8X %8.8X\n",    Header1.OemRevision, Header2.OemRevision);
-    printf ("ASL Compiler ID   : %8.8X %8.8X\n",    *(UINT32 *) Header1.AslCompilerId, *(UINT32 *) Header2.AslCompilerId);
-    printf ("Compiler Revision : %8.8X %8.8X\n",    Header1.AslCompilerRevision, Header2.AslCompilerRevision);
+    printf ("Signature         : %8.4s  %8.4s\n",    Header1.Signature, Header2.Signature);
+    printf ("Length            : %8.8X  %8.8X\n",    Header1.Length, Header2.Length);
+    printf ("Revision          : % 8.2X  % 8.2X\n",  Header1.Revision, Header2.Revision);
+    printf ("Checksum          : % 8.2X  % 8.2X\n",  Header1.Checksum, Header2.Checksum);
+    printf ("OEM ID            : %8.6s  %8.6s\n",    Header1.OemId, Header2.OemId);
+    printf ("OEM Table ID      : %8.8s  %8.8s\n",    Header1.OemTableId, Header2.OemTableId);
+    printf ("OEM Revision      : %8.8X  %8.8X\n",    Header1.OemRevision, Header2.OemRevision);
+    printf ("ASL Compiler ID   : %8.4s  %8.4s\n",    Header1.AslCompilerId, Header2.AslCompilerId);
+    printf ("Compiler Revision : %8.8X  %8.8X\n",    Header1.AslCompilerRevision, Header2.AslCompilerRevision);
     printf ("\n");
 
     Actual1 = fread (&Char1, 1, 1, File1);
