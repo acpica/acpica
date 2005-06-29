@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dbdisply - debug display commands
- *              $Revision: 1.31 $
+ *              $Revision: 1.32 $
  *
  ******************************************************************************/
 
@@ -160,7 +160,7 @@ AcpiDbGetPointer (
     if (!sscanf (Target, "%p", &ObjPtr))
     {
         AcpiOsPrintf ("Invalid pointer: %s\n", Target);
-        return;
+        return (NULL);
     }
 
 #else
@@ -250,11 +250,11 @@ AcpiDbDecodeAndDisplayObject (
             Display = DB_WORD_DISPLAY;
         }
         else if (OutputType[0] == 'D')
-         {
+        {
             Display = DB_DWORD_DISPLAY;
         }
         else if (OutputType[0] == 'Q')
-         {
+        {
             Display = DB_QWORD_DISPLAY;
         }
     }
@@ -407,7 +407,7 @@ AcpiDbDecodeInternalObject (
     switch (ObjDesc->Common.Type)
     {
     case ACPI_TYPE_NUMBER:
-        AcpiOsPrintf ("0x%.8X", ObjDesc->Number.Value, ObjDesc->Number.Value);
+        AcpiOsPrintf ("0x%.8X", ObjDesc->Number.Value);
         break;
 
     case ACPI_TYPE_STRING:
@@ -628,14 +628,18 @@ AcpiDbDisplayMethodInfo (
         case OPTYPE_LOCAL_VARIABLE:     /* argument type only */
         case OPTYPE_METHOD_ARGUMENT:    /* argument type only */
             if (CountRemaining)
+            {
                 NumRemainingOperands++;
+            }
 
             NumOperands++;
             break;
 
         default:
             if (CountRemaining)
+            {
                 NumRemainingOperators++;
+            }
 
             NumOperators++;
             break;

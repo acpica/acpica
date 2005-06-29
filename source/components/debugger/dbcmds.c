@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dbcmds - debug commands and output routines
- *              $Revision: 1.38 $
+ *              $Revision: 1.39 $
  *
  ******************************************************************************/
 
@@ -295,7 +295,7 @@ AcpiDbUnloadAcpiTable (
     ACPI_STATUS             Status;
 
 
-    /* Search all tables for the targe type */
+    /* Search all tables for the target type */
 
     for (i = 0; i < NUM_ACPI_TABLES; i++)
     {
