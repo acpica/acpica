@@ -115,10 +115,13 @@
 
 #include <acpi.h>
 #include <events.h>
+#include <namespace.h>
 
 #define _THIS_MODULE        "evregion.c"
 #define _COMPONENT          EVENT_HANDLING
 
+
+#define GO_NO_FURTHER   (void *) 0xffffffff
 
 
 /**************************************************************************
@@ -168,3 +171,465 @@ EvAddressSpaceDispatch (
 
     return Status;
 }
+
+/******************************************************************************
+ *
+ * FUNCTION:    EvDisassociateRegionAndHandler
+ *
+ * PARAMETERS:  HandlerObj      - Handler Object
+ *              RegionObj       - Region Object
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Break the association between the handler and the region
+ *              this is a two way association.
+ *
+ ******************************************************************************/
+
+void
+EvDisassociateRegionAndHandler(
+    ACPI_OBJECT_INTERNAL    *HandlerObj,
+    ACPI_OBJECT_INTERNAL    *RegionObj)
+{
+    ACPI_OBJECT_INTERNAL   *ObjDesc;
+    ACPI_OBJECT_INTERNAL   **LastObjPtr;
+
+
+    FUNCTION_TRACE ("EvDisassociateRegionAndHandler");
+
+
+    /*
+     *  First stop region accesses by executing the _REG
+     *  methods
+     */
+
+    //  BUGBUG: Need to call _REG for this region
+
+    /*
+     *  Remove handler reference in the region
+     *
+     *  NOTE: this doesn't mean that the region goes away
+     *  The region is just inaccessible as indicated to
+     *  the _REG method
+     */
+
+    /*
+     *  Find this region in the handler's list
+     */
+    ObjDesc = HandlerObj->AddrHandler.RegionList;
+    LastObjPtr = &ObjDesc->AddrHandler.RegionList;
+
+    while (ObjDesc)
+    {
+        /*
+         *  See if this is the one
+         */
+        if (ObjDesc == RegionObj)
+        {
+            /*
+             *  This is it, remove it from the handler's list
+             */
+            *LastObjPtr = ObjDesc->Region.Link;
+
+            /*
+             *  Remove handler reference in the region and
+             *  the region reference in the handler
+             */
+            CmUpdateObjectReference (RegionObj, REF_DECREMENT);
+            CmUpdateObjectReference (HandlerObj, REF_DECREMENT);
+
+            return;
+
+        } /* found the right handler */
+
+        /*
+         *  Move through the linked list of handlers
+         */
+        LastObjPtr = &ObjDesc->Region.Link;
+        ObjDesc = ObjDesc->Region.Link;
+    }
+
+    /*
+     *  If we get here, the region was not not in the handler's region list
+     */
+
+}  /* EvDisassociateRegionAndHandler */
+
+
+/******************************************************************************
+ *
+ * FUNCTION:    EvAssociateRegionAndHander
+ *
+ * PARAMETERS:  HandlerObj      - Handler Object
+ *              RegionObj       - Region Object
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Create the association between the handler and the region
+ *              this is a two way association.
+ *
+ ******************************************************************************/
+
+EvAssociateRegionAndHander(
+    ACPI_OBJECT_INTERNAL    *HandlerObj,
+    ACPI_OBJECT_INTERNAL    *RegionObj)
+{
+    FUNCTION_TRACE ("EvAssociateRegionAndHander");
+
+
+    /*
+     *  BUGBUG:  We should invoke _REG here up to 2 times, If there was
+     *           a previous handler, it should have _REG run and the new
+     *           handler too.
+     */
+
+    /*
+     *  Break any old associations
+     */
+    if (RegionObj->Region.AddrHandler)
+    {
+        EvDisassociateRegionAndHandler(RegionObj->Region.AddrHandler, RegionObj);
+    }
+
+    /*
+     *  We need to update the reference for the handler and the region
+     */
+    CmUpdateObjectReference (HandlerObj, REF_INCREMENT);
+    CmUpdateObjectReference (RegionObj, REF_INCREMENT);
+
+    /*
+     *  Link this region to the front of the handler's list
+     */
+
+    RegionObj->Region.Link = HandlerObj->AddrHandler.RegionList;
+    HandlerObj->AddrHandler.RegionList = RegionObj;
+
+    return_ACPI_STATUS (AE_OK);
+
+}  /* EvAssociateRegionAndHander */
+
+
+/****************************************************************************
+ *
+ * FUNCTION:    EvAddrHandlerHelper   
+ *
+ * PARAMETERS:  Handle              - Entry to be dumped
+ *              Level               - Nesting level of the handle
+ *              Context             - Passed into NsWalkNamespace
+ *
+ * DESCRIPTION: This routine checks to see if the object is a Region if it
+ *              is then the address handler is installed in it.
+ *
+ *              If the Object is a Device, and the device has a handler of
+ *              the same type then the search is terminated in that branch.
+ *
+ *              This is because the existing handler is closer in proximity
+ *              to any more regions than the one we are trying to install.
+ *
+ ***************************************************************************/
+
+void *
+EvAddrHandlerHelper (
+    ACPI_HANDLE             ObjHandle, 
+    UINT32                  Level, 
+    void                    *Context)
+{
+    ACPI_OBJECT_INTERNAL   *HandlerObj;
+    ACPI_OBJECT_INTERNAL   *TmpObj;
+    ACPI_OBJECT_INTERNAL    *ObjDesc;
+    NAME_TABLE_ENTRY        *ObjEntry;
+
+
+    FUNCTION_TRACE ("InsAddrHandlerHelper");
+
+
+    HandlerObj = (ACPI_OBJECT_INTERNAL *) Context;
+
+    /* Parameter validation */
+
+    if (!HandlerObj)
+    {
+        return (void *) AE_OK;
+    }
+
+    /* Convert and validate the device handle */
+
+    if (!(ObjEntry = NsConvertHandleToEntry (ObjHandle)))
+    {
+        return (void *) AE_BAD_PARAMETER;
+    }
+
+    /*
+     *  We only care about regions.and objects
+     *  that can have address handlers
+     */
+
+    if ((ObjEntry->Type != TYPE_Device) &&
+        (ObjEntry->Type != TYPE_Region))
+    {
+        return (void *) AE_OK;
+    }
+
+    /* Check for an existing internal object */
+
+    ObjDesc = ObjEntry->Object;
+    if (!ObjDesc)
+    {
+        /*
+         *  The object DNE, this is bad
+         */
+        return (void *) AE_AML_ERROR;
+    }
+
+    if (ObjDesc->Type == TYPE_Device)
+    {
+        TmpObj = ObjDesc->Device.AddrHandler;
+        while (TmpObj)
+        {
+            /*
+             *  This device has an Address handler, see if this is
+             *  the same user address space.
+             */
+            if(TmpObj->AddrHandler.SpaceId == HandlerObj->AddrHandler.SpaceId)
+            {
+                return GO_NO_FURTHER;
+            }
+            /*
+             *  Move through the linked list of handlers
+             */
+            TmpObj = TmpObj->AddrHandler.Link;
+        }
+        return (void *) AE_OK;
+    }
+
+    /*
+     *  Object is a Region, update the handler overwriting whatever
+     *  is there.  First decrement the reference count in the old handler
+     */
+
+    EvAssociateRegionAndHander(HandlerObj, ObjDesc);
+
+    return (void *) AE_OK;
+}
+
+/******************************************************************************
+ *
+ * FUNCTION:    EvGetAddressSpaceHandler
+ *
+ * PARAMETERS:  Parent     - parent NTE
+ *              RegionObj  - Region we are searching for
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Install a handler for accesses on an Operation Region
+ *
+ ******************************************************************************/
+
+ACPI_STATUS
+EvGetAddressSpaceHandler ( ACPI_OBJECT_INTERNAL *RegionObj)
+{
+    ACPI_OBJECT_INTERNAL   *HandlerObj;
+    UINT32                  SpaceId; 
+    NAME_TABLE_ENTRY       *Nte;        /* Namespace Object */
+
+
+    FUNCTION_TRACE ("EvGetAddressSpaceHandler");
+
+
+    Nte = RegionObj->Region.Parent;
+    SpaceId = RegionObj->Region.SpaceId;
+    RegionObj->Region.AddrHandler = NULL;
+
+    while (Nte != Gbl_RootObject)
+    {
+        /*
+         *  Check to see if a handler exists
+         */
+        switch (Nte->Type)
+        {
+        case TYPE_Device:
+
+            HandlerObj = ((ACPI_OBJECT_INTERNAL *)Nte->Object)->Device.AddrHandler;
+            break;
+
+        case TYPE_Processor:
+
+            HandlerObj = ((ACPI_OBJECT_INTERNAL *)Nte->Object)->Processor.AddrHandler;
+            break;
+
+        case TYPE_Thermal:
+
+            HandlerObj = ((ACPI_OBJECT_INTERNAL *)Nte->Object)->ThermalZone.AddrHandler;
+            break;
+
+        default:
+            HandlerObj = NULL;
+            break;
+        }
+
+
+        while (HandlerObj)
+        {
+            /*
+             *  This guy has at least one address handler
+             *  see if it has the type we want 
+             */
+            if (HandlerObj->AddrHandler.SpaceId == SpaceId)
+            {
+                /*
+                 *  Found it!!! Now update the region and the handler
+                 */
+                EvAssociateRegionAndHander(HandlerObj, RegionObj);
+                return_ACPI_STATUS (AE_OK);
+            }
+
+            HandlerObj = HandlerObj->AddrHandler.Link;
+        } /* while handlerobj */
+
+        /*
+         *  This one does not have the handler we need
+         *  Pop up one level
+         */
+        Nte = Nte->ParentEntry;
+
+    } /* while Nte != ROOT */
+
+    /*
+     *  If we get here the handler DNE, get out with error
+     */
+    return_ACPI_STATUS (AE_NOT_EXIST);
+}
+
+
+/******************************************************************************
+ *
+ * FUNCTION:    EvWalkNamespace
+ *
+ * PARAMETERS:  Type                - ACPI_OBJECT_TYPE to search for
+ *              StartObject         - Handle in namespace where search begins
+ *              MaxDepth            - Depth to which search is to reach
+ *              UserFunction        - Called when an object of "Type" is found
+ *              Context             - Passed to user function
+ *
+ * RETURNS      Return value from the UserFunction if terminated early.
+ *              Otherwise, returns NULL.
+ *
+ * DESCRIPTION: Identical to the AcpiWalkNamespace except. Checks the return
+ *              value from the user function for the special value GO_NO_FURTHER
+ *
+ *              When that value is encountered the progression down a branch of
+ *              tree halts but the search continues in the parent.
+ *
+ ******************************************************************************/
+
+ACPI_STATUS
+EvWalkNamespace (
+    ACPI_OBJECT_TYPE        Type, 
+    ACPI_HANDLE             StartObject, 
+    UINT32                  MaxDepth,
+    WALK_CALLBACK           UserFunction, 
+    void                    *Context, 
+    void                    **ReturnValue)
+{
+    ACPI_HANDLE             ChildHandle;
+    ACPI_HANDLE             ParentHandle;
+    ACPI_HANDLE             Dummy;
+    UINT32                  Level;
+    void                    *UserReturnVal;
+
+
+    FUNCTION_TRACE ("EvWalkNamespace");
+
+    /* Parameter validation */
+
+    if ((Type > ACPI_TABLE_MAX) ||
+        (!MaxDepth)             || 
+        (!UserFunction))
+    {
+        return_ACPI_STATUS (AE_BAD_PARAMETER);
+    }
+
+    /* Special case for the namespace root object */
+
+    if (StartObject == ACPI_ROOT_OBJECT)
+    {
+        StartObject = Gbl_RootObject;
+    }
+
+    /* Init return value, if any */
+
+    if (ReturnValue)
+    {
+        *ReturnValue = NULL;
+    }
+
+    /* Null child means "get first object" */
+
+    ParentHandle    = StartObject;
+    ChildHandle     = 0;
+    Level           = 1;
+
+    /* 
+     * Traverse the tree of objects until we bubble back up to where we
+     * started. When Level is zero, the loop is done because we have 
+     * bubbled up to (and passed) the original parent handle (StartHandle)
+     */
+
+    while (Level > 0)
+    {
+        /* Get the next typed object in this scope.  Null returned if not found */
+
+        if (ACPI_SUCCESS (AcpiGetNextObject (Type, ParentHandle, ChildHandle, &ChildHandle))) 
+        {
+            /* Found an object - process by calling the user function */
+
+            UserReturnVal = UserFunction (ChildHandle, Level, Context);
+
+            if ((UserReturnVal) && (UserReturnVal != GO_NO_FURTHER))
+            {
+                /* Non-zero from user function means "exit now" */
+
+                if (ReturnValue)
+                {
+                    /* Pass return value back to the caller */
+
+                    *ReturnValue = UserReturnVal;
+                }
+
+                return_ACPI_STATUS (AE_OK);
+            }
+
+            /* Go down another level in the namespace if we are allowed to */
+
+            if ((Level < MaxDepth) && (UserReturnVal != GO_NO_FURTHER))
+            {
+                /* Check if this object has any children */
+
+                if (ACPI_SUCCESS (AcpiGetNextObject (Type, ChildHandle, 0, &Dummy)))
+                {
+                    /* There is at least one child of this object, visit the object */
+
+                    Level++;
+                    ParentHandle    = ChildHandle;
+                    ChildHandle     = 0;
+                }
+            }
+        }
+
+        else
+        {
+            /* 
+             * No more children in this object, go back up to the object's parent
+             */
+            Level--;
+            ChildHandle = ParentHandle;
+            AcpiGetParent (ParentHandle, &ParentHandle);
+        }
+    }
+
+
+    return_ACPI_STATUS (AE_OK);                   /* Complete walk, not terminated by user function */
+}
+
+
+
