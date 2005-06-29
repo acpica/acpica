@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: rscreate - Create resource lists/tables
- *              $Revision: 1.47 $
+ *              $Revision: 1.48 $
  *
  ******************************************************************************/
 
@@ -503,7 +503,7 @@ AcpiRsCreateByteStream (
     MEMSET (OutputBuffer->Pointer, 0x00, OutputBuffer->Length);
 
     Status = AcpiRsListToByteStream (LinkedListBuffer, ByteStreamSizeNeeded,
-                OutputBuffer->Pointer);
+                (UCHAR **) &OutputBuffer->Pointer);
     if (ACPI_FAILURE (Status))
     {
         return_ACPI_STATUS (Status);
