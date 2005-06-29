@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: ammonad - ACPI AML (p-code) execution for monadic operators
- *              $Revision: 1.90 $
+ *              $Revision: 1.91 $
  *
  *****************************************************************************/
 
@@ -272,7 +272,7 @@ AcpiAmlExecMonadic1 (
 
     case AML_RELEASE_OP:
 
-        Status = AcpiAmlSystemReleaseMutex (ObjDesc);
+        Status = AcpiAmlReleaseMutex (ObjDesc, WalkState);
         break;
 
 
