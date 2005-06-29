@@ -2,7 +2,7 @@
  *
  * Module Name: evevent - Fixed and General Purpose AcpiEvent
  *                          handling and dispatch
- *              $Revision: 1.45 $
+ *              $Revision: 1.46 $
  *
  *****************************************************************************/
 
@@ -724,7 +724,6 @@ AcpiEvGpeDetect (void)
     UINT32                  IntStatus = INTERRUPT_NOT_HANDLED;
     UINT32                  i;
     UINT32                  j;
-    UINT32                  Temp;
     UINT8                   EnabledStatusByte;
     UINT8                   BitMask;
 
@@ -736,11 +735,11 @@ AcpiEvGpeDetect (void)
      */
     for (i = 0; i < AcpiGbl_GpeRegisterCount; i++)
     {
-        AcpiOsReadPort (AcpiGbl_GpeRegisters[i].StatusAddr, &Temp, 8);
-        AcpiGbl_GpeRegisters[i].Status = (UINT8) Temp;
+        AcpiOsReadPort (AcpiGbl_GpeRegisters[i].StatusAddr, 
+                &AcpiGbl_GpeRegisters[i].Status, 8);
 
-        AcpiOsReadPort (AcpiGbl_GpeRegisters[i].EnableAddr, &Temp, 8);
-        AcpiGbl_GpeRegisters[i].Enable = (UINT8) Temp;
+        AcpiOsReadPort (AcpiGbl_GpeRegisters[i].EnableAddr, 
+                &AcpiGbl_GpeRegisters[i].Enable, 8);
 
         DEBUG_PRINT (TRACE_INTERRUPTS,
             ("GPE block at %X - Enable %08X Status %08X\n",
