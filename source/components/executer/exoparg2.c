@@ -633,11 +633,13 @@ AmlExecDyadic2S (
                     ResDesc->Common.Type));
             Status = AE_AML_ERROR;
         }
+
         else
         {
             Status = OsAcquireOpRqst (TimeDesc, ObjDesc);
         }
 
+        break;
 
 
     /* DefWait :=  WaitOp  EventObject Timeout */
@@ -651,10 +653,13 @@ AmlExecDyadic2S (
                     ResDesc->Common.Type));
             Status = AE_AML_ERROR;
         }
+
         else
         {
             Status = OsWaitOpRqst (TimeDesc, ObjDesc);
         }
+
+        break;
 
 
     default:
@@ -663,20 +668,35 @@ AmlExecDyadic2S (
                 "AmlExecDyadic2S: Unknown dyadic synchronization opcode %02x\n",
                 opcode));
         Status = AE_AML_ERROR;
+
+        break;
     }
 
 
 
 Cleanup:
 
-    /* Delete TimeOut object descriptor before removing it from object stack   */
-
-    CmDeleteInternalObject (TimeDesc);
-
     /* Remove TimeOut parameter from object stack  */
 
     AmlObjStackPop (1);
     
+    /* We will use the TimeOut object as the return value object */
+
+    if (Status == AE_TIME)
+    {
+        TimeDesc->Number.Value = (-1);       /* TRUE, operation timed out */
+    }
+
+    else
+    {
+        TimeDesc->Number.Value = 0;          /* FALSE, operation did not time out */
+    }
+
+    /* Delete mutex param and put the result on the stack */
+
+    AmlObjStackDeleteValue (STACK_TOP);
+    AmlObjStackSetValue (STACK_TOP, TimeDesc);
+
     return_ACPI_STATUS (Status);
 }
 
