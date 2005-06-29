@@ -11,19 +11,21 @@
  | otherwise, without the prior written permission of Intel Corporation.
  |__________________________________________________________________________
  |
- | FILENAME: scilast.h -  System Control Interrupt configuration and
- |                                  legacy to ACPI mode state transition functions
+ | FILENAME: events.h - System Control Interrupt configuration and
+ |                      legacy to ACPI mode state transition functions
  |__________________________________________________________________________
  |
- | $Revision: 1.5 $
- | $Date: 2005/06/29 19:31:11 $
+ | $Revision: 1.6 $
+ | $Date: 2005/06/29 19:31:12 $
  | $Log: acevents.h,v $
- | Revision 1.5  2005/06/29 19:31:11  aystarik
- | Integrated with 03/99 OPSD code
+ | Revision 1.6  2005/06/29 19:31:12  aystarik
+ |
  |
  | 
- | date	99.03.31.22.30.00;	author rmoore1;	state Exp;
+ | date	99.04.06.20.41.00;	author rmoore1;	state Exp;
  |
+ * 
+ * 6     4/06/99 1:41p Rmoore1
  * 
  * 5     3/31/99 2:30p Rmoore1
  * Integrated with 03/99 OPSD code
@@ -62,9 +64,14 @@
 
 */
 
-#ifndef __EVSCI_H__
-#define __EVSCI_H__
+#ifndef __EVENTS_H__
+#define __EVENTS_H__
 
+/* Interrupt handler return values */
+
+#define INTERRUPT_HANDLED               0x01
+#define INTERRUPT_NOT_HANDLED           0x02
+#define INTERRUPT_ERROR                 0x03
 
 /*  InstallSCIHandlerXferToACPI() Flags bitmask options   */
 
@@ -116,5 +123,15 @@ InstallSCIHandlerXferToACPI (
 INT32 
 UninstallSCIHandlerXferToLegacy (void);
 
+UINT32
+InstallInterruptHandler (
+    UINT32          InterruptNumber,
+    INT32           (* Isr)(void),
+    UINT32          *ExceptPtr);
 
-#endif  /*  __EVSCI_H__   */
+INT32
+RemoveInterruptHandler (UINT32 Handle);
+
+
+
+#endif  /*  __EVENTS_H__   */
