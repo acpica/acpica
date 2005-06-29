@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: cmxface - External interfaces for "global" ACPI functions
- *              $Revision: 1.44 $
+ *              $Revision: 1.45 $
  *
  *****************************************************************************/
 
@@ -132,7 +132,7 @@
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiInitialize
+ * FUNCTION:    AcpiInitializeSubsystem
  *
  * PARAMETERS:  None
  *
@@ -144,7 +144,7 @@
  ******************************************************************************/
 
 ACPI_STATUS
-AcpiInitialize (ACPI_INIT_DATA *InitData)
+AcpiInitializeSubsystem (ACPI_INIT_DATA *InitData)
 {
     ACPI_STATUS             Status;
 
