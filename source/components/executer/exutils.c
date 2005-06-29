@@ -164,7 +164,7 @@ AmlAppendOperandDiag(
 
     DEBUG_PRINT (ACPI_ERROR, (" [%s:%d, opcode = %s AML offset %04x]\n",
                     FileName, LineNum,
-                    (OpCode > UCHAR_MAX)
+                    (OpCode > ACPI_UCHAR_MAX)
                         ? LongOps[OpCode & 0x00ff]
                         : ShortOps[OpCode],
                     Method.Offset));
@@ -172,7 +172,7 @@ AmlAppendOperandDiag(
     if (GetDebugLevel () > 0)
     {
         DUMP_STACK (MODE_Exec,
-                      (OpCode > UCHAR_MAX)
+                      (OpCode > ACPI_UCHAR_MAX)
                       ? LongOps[OpCode & 0x00ff]
                       : ShortOps[OpCode],
                       NumOperands,
