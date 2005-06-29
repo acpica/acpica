@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: evregion - ACPI AddressSpace / OpRegion handler dispatch
- *              $Revision: 1.78 $
+ *              $Revision: 1.79 $
  *
  *****************************************************************************/
 
@@ -148,17 +148,21 @@ AcpiEvInstallDefaultAddressSpaceHandlers (
 
     FUNCTION_TRACE ("EvInstallDefaultAddressSpaceHandlers");
 
-    /*
-     * NOTE:    All address spaces (PCI Config, EC, SMBus) are scope dependent
-     *          and registration must occur for a specific device.  In the case
-     *          system memory and IO address spaces there is currently no device
-     *          associated with the address space.  For these we use the root.
+    /*  
+     * All address spaces (PCI Config, EC, SMBus) are scope dependent
+     * and registration must occur for a specific device.  In the case
+     * system memory and IO address spaces there is currently no device
+     * associated with the address space.  For these we use the root.
+     *
+     * NOTE: We ignore AE_EXIST because this means that a handler has
+     * already been installed (via AcpiInstallAddressSpaceHandler)
      */
 
     Status = AcpiInstallAddressSpaceHandler (AcpiGbl_RootNode,
                                              ADDRESS_SPACE_SYSTEM_MEMORY,
                                              ACPI_DEFAULT_HANDLER, NULL, NULL);
-    if (ACPI_FAILURE (Status))
+    if ((ACPI_FAILURE (Status)) &&
+        (Status != AE_EXIST))
     {
         return_ACPI_STATUS (Status);
     }
@@ -166,7 +170,8 @@ AcpiEvInstallDefaultAddressSpaceHandlers (
     Status = AcpiInstallAddressSpaceHandler (AcpiGbl_RootNode,
                                              ADDRESS_SPACE_SYSTEM_IO,
                                              ACPI_DEFAULT_HANDLER, NULL, NULL);
-    if (ACPI_FAILURE (Status))
+    if ((ACPI_FAILURE (Status)) &&
+        (Status != AE_EXIST))
     {
         return_ACPI_STATUS (Status);
     }
