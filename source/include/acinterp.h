@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acinterp.h - Interpreter subcomponent prototypes and defines
- *       $Revision: 1.96 $
+ *       $Revision: 1.98 $
  *
  *****************************************************************************/
 
@@ -191,7 +191,7 @@ AcpiAmlConvertToTargetType (
  */
 
 ACPI_STATUS
-AcpiAmlReadField (
+AcpiAmlExtractFromField (
     ACPI_OPERAND_OBJECT     *ObjDesc,
     void                    *Buffer,
     UINT32                  BufferLength,
@@ -201,7 +201,7 @@ AcpiAmlReadField (
     UINT32                  ByteGranularity);
 
 ACPI_STATUS
-AcpiAmlWriteField (
+AcpiAmlInsertIntoField (
     ACPI_OPERAND_OBJECT     *ObjDesc,
     void                    *Buffer,
     UINT32                  BufferLength,
@@ -217,25 +217,65 @@ AcpiAmlSetupField (
     UINT32                  FieldBitWidth);
 
 ACPI_STATUS
-AcpiAmlReadFieldData (
+AcpiAmlReadFieldDatum (
     ACPI_OPERAND_OBJECT     *ObjDesc,
     UINT32                  FieldByteOffset,
     UINT32                  FieldBitWidth,
     UINT32                  *Value);
 
 ACPI_STATUS
-AcpiAmlAccessNamedField (
+AcpiAmlCommonAccessField (
     UINT32                  Mode,
-    ACPI_HANDLE             NamedField,
+    ACPI_OPERAND_OBJECT     *ObjDesc,
     void                    *Buffer,
-    UINT32                  Length);
+    UINT32                  BufferLength);
+
+
+ACPI_STATUS
+AcpiAmlAccessIndexField (
+    UINT32                  Mode,
+    ACPI_OPERAND_OBJECT     *ObjDesc,
+    void                    *Buffer,
+    UINT32                  BufferLength);
+
+ACPI_STATUS
+AcpiAmlAccessBankField (
+    UINT32                  Mode,
+    ACPI_OPERAND_OBJECT     *ObjDesc,
+    void                    *Buffer,
+    UINT32                  BufferLength);
+
+ACPI_STATUS
+AcpiAmlAccessRegionField (
+    UINT32                  Mode,
+    ACPI_OPERAND_OBJECT     *ObjDesc,
+    void                    *Buffer,
+    UINT32                  BufferLength);
+
+
+ACPI_STATUS
+AcpiAmlAccessBufferField (
+    UINT32                  Mode,
+    ACPI_OPERAND_OBJECT     *ObjDesc,
+    void                    *Buffer,
+    UINT32                  BufferLength);
+
+ACPI_STATUS
+AcpiAmlReadDataFromField (
+    ACPI_OPERAND_OBJECT     *ObjDesc,
+    ACPI_OPERAND_OBJECT     **RetBufferDesc);
+
+ACPI_STATUS
+AcpiAmlWriteDataToField (
+    ACPI_OPERAND_OBJECT     *SourceDesc,
+    ACPI_OPERAND_OBJECT     *ObjDesc);
 
 /*
  * ammisc - ACPI AML (p-code) execution - specific opcodes
  */
 
 ACPI_STATUS
-AcpiAmlExecCreateField (
+AcpiAmlCreateBufferField (
     UINT8                   *AmlPtr,
     UINT32                  AmlLength,
     ACPI_NAMESPACE_NODE     *Node,
@@ -267,12 +307,12 @@ AcpiAmlExecCreateMutex (
 ACPI_STATUS
 AcpiAmlExecCreateProcessor (
     ACPI_PARSE_OBJECT       *Op,
-    ACPI_HANDLE             ProcessorNTE);
+    ACPI_NAMESPACE_NODE     *ProcessorNode);
 
 ACPI_STATUS
 AcpiAmlExecCreatePowerResource (
     ACPI_PARSE_OBJECT       *Op,
-    ACPI_HANDLE             ProcessorNTE);
+    ACPI_NAMESPACE_NODE     *PowerNode);
 
 ACPI_STATUS
 AcpiAmlExecCreateRegion (
@@ -294,7 +334,7 @@ AcpiAmlExecCreateMethod (
     UINT8                   *AmlPtr,
     UINT32                  AcpiAmlLength,
     UINT32                  MethodFlags,
-    ACPI_HANDLE             Method);
+    ACPI_NAMESPACE_NODE     *Method);
 
 
 /*
@@ -326,7 +366,15 @@ AcpiAmlUnlinkMutex (
  */
 
 ACPI_STATUS
-AcpiAmlPrepDefFieldValue (
+AcpiAmlPrepCommonFieldObject (
+    ACPI_OPERAND_OBJECT     *ObjDesc,
+    UINT8                   FieldFlags,
+    UINT8                   FieldAttribute,
+    UINT32                  FieldPosition,
+    UINT32                  FieldLength);
+
+ACPI_STATUS
+AcpiAmlPrepRegionFieldValue (
     ACPI_NAMESPACE_NODE     *Node,
     ACPI_HANDLE             Region,
     UINT8                   FieldFlags,
@@ -337,8 +385,8 @@ AcpiAmlPrepDefFieldValue (
 ACPI_STATUS
 AcpiAmlPrepBankFieldValue (
     ACPI_NAMESPACE_NODE     *Node,
-    ACPI_HANDLE             Region,
-    ACPI_HANDLE             BankReg,
+    ACPI_NAMESPACE_NODE     *RegionNode,
+    ACPI_NAMESPACE_NODE     *BankRegisterNode,
     UINT32                  BankVal,
     UINT8                   FieldFlags,
     UINT8                   FieldAttribute,
@@ -348,8 +396,8 @@ AcpiAmlPrepBankFieldValue (
 ACPI_STATUS
 AcpiAmlPrepIndexFieldValue (
     ACPI_NAMESPACE_NODE     *Node,
-    ACPI_HANDLE             IndexReg,
-    ACPI_HANDLE             DataReg,
+    ACPI_NAMESPACE_NODE     *IndexReg,
+    ACPI_NAMESPACE_NODE     *DataReg,
     UINT8                   FieldFlags,
     UINT8                   FieldAttribute,
     UINT32                  FieldPosition,
@@ -471,7 +519,7 @@ AcpiAmlResolveObjectToValue (
     ACPI_WALK_STATE         *WalkState);
 
 ACPI_STATUS
-AcpiAmlGetFieldUnitValue (
+AcpiAmlGetBufferFieldValue (
     ACPI_OPERAND_OBJECT     *FieldDesc,
     ACPI_OPERAND_OBJECT     *ResultDesc);
 
@@ -621,7 +669,7 @@ AcpiAmlCopyDataToNamedField (
     ACPI_NAMESPACE_NODE     *Node);
 
 ACPI_STATUS
-AcpiAmlCopyIntegerToFieldUnit (
+AcpiAmlCopyIntegerToBufferField (
     ACPI_OPERAND_OBJECT     *SourceDesc,
     ACPI_OPERAND_OBJECT     *TargetDesc);
 

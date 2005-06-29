@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acmacros.h - C macros for the entire subsystem.
- *       $Revision: 1.57 $
+ *       $Revision: 1.65 $
  *
  *****************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, 2000, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -121,6 +121,14 @@
  * Data manipulation macros
  */
 
+#ifndef LODWORD
+#define LODWORD(l)                      ((UINT32)(UINT64)(l))
+#endif
+
+#ifndef HIDWORD
+#define HIDWORD(l)                      ((UINT32)((((UINT64)(l)) >> 32) & 0xFFFFFFFF))
+#endif
+
 #ifndef LOWORD
 #define LOWORD(l)                       ((UINT16)(NATIVE_UINT)(l))
 #endif
@@ -154,6 +162,23 @@
 #define HI_LIMIT(b)                     ((UINT8) (((b) & 0x00FF0000) >> 16))
 
 
+#ifdef _IA16
+/*
+ * For 16-bit addresses, we have to assume that the upper 32 bits
+ * are zero.
+ */
+#define ACPI_GET_ADDRESS(a)             ((a).Lo)
+#define ACPI_STORE_ADDRESS(a,b)         {(a).Hi=0;(a).Lo=(b);}
+#define ACPI_VALID_ADDRESS(a)           ((a).Hi | (a).Lo)
+
+#else
+/*
+ * Full 64-bit address on 32-bit and 64-bit platforms
+ */
+#define ACPI_GET_ADDRESS(a)             (a)
+#define ACPI_STORE_ADDRESS(a,b)         ((a)=(b))
+#define ACPI_VALID_ADDRESS(a)           (a)
+#endif
  /*
   * Extract a byte of data using a pointer.  Any more than a byte and we
   * get into potential aligment issues -- see the STORE macros below
@@ -174,6 +199,7 @@
 #define MOVE_UNALIGNED16_TO_16(d,s)     *(UINT16*)(d) = *(UINT16*)(s)
 #define MOVE_UNALIGNED32_TO_32(d,s)     *(UINT32*)(d) = *(UINT32*)(s)
 #define MOVE_UNALIGNED16_TO_32(d,s)     *(UINT32*)(d) = *(UINT16*)(s)
+#define MOVE_UNALIGNED64_TO_64(d,s)     *(UINT64*)(d) = *(UINT64*)(s)
 
 #else
 /*
@@ -191,6 +217,15 @@
                                          ((UINT8 *)(d))[3] = ((UINT8 *)(s))[3];}
 
 #define MOVE_UNALIGNED16_TO_32(d,s)     {(*(UINT32*)(d)) = 0; MOVE_UNALIGNED16_TO_16(d,s);}
+
+#define MOVE_UNALIGNED64_TO_64(d,s)     {((UINT8 *)(d))[0] = ((UINT8 *)(s))[0];\
+                                         ((UINT8 *)(d))[1] = ((UINT8 *)(s))[1];\
+                                         ((UINT8 *)(d))[2] = ((UINT8 *)(s))[2];\
+                                         ((UINT8 *)(d))[3] = ((UINT8 *)(s))[3];\
+                                         ((UINT8 *)(d))[4] = ((UINT8 *)(s))[4];\
+                                         ((UINT8 *)(d))[5] = ((UINT8 *)(s))[5];\
+                                         ((UINT8 *)(d))[6] = ((UINT8 *)(s))[6];\
+                                         ((UINT8 *)(d))[7] = ((UINT8 *)(s))[7];}
 
 #endif
 
@@ -243,6 +278,8 @@
 #define ROUND_PTR_UP_TO_4(a,b)          ((b *)(((NATIVE_UINT)(a) + 3) & ~3))
 #define ROUND_PTR_UP_TO_8(a,b)          ((b *)(((NATIVE_UINT)(a) + 7) & ~7))
 
+#define ROUND_BITS_UP_TO_BYTES(a)       DIV_8((a) + 7)
+
 #define ROUND_UP_TO_1K(a)               (((a) + 1023) >> 10)
 
 #ifdef DEBUG_ASSERT
@@ -258,9 +295,16 @@
 
 #define ACPI_PCI_FUNCTION(a)            (UINT32) ((((a) & ACPI_PCI_FUNCTION_MASK) >> 16))
 #define ACPI_PCI_DEVICE(a)              (UINT32) ((((a) & ACPI_PCI_DEVICE_MASK) >> 32))
+
+#ifndef _IA16
 #define ACPI_PCI_REGISTER(a)            (UINT32) (((a) & ACPI_PCI_REGISTER_MASK))
 #define ACPI_PCI_DEVFUN(a)              (UINT32) ((ACPI_PCI_DEVICE(a) << 16) | ACPI_PCI_FUNCTION(a))
 
+#else
+#define ACPI_PCI_REGISTER(a)            (UINT32) (((a) & 0x0000FFFF))
+#define ACPI_PCI_DEVFUN(a)              (UINT32) ((((a) & 0xFFFF0000) >> 16))
+
+#endif
 
 /*
  * An ACPI_HANDLE (which is actually an ACPI_NAMESPACE_NODE *) can appear in some contexts,
@@ -410,7 +454,7 @@
  */
 #define return_VOID                     {FunctionExit(_THIS_MODULE,__LINE__,_COMPONENT,_ProcName);return;}
 #define return_ACPI_STATUS(s)           {FunctionStatusExit(_THIS_MODULE,__LINE__,_COMPONENT,_ProcName,s);return(s);}
-#define return_VALUE(s)                 {FunctionValueExit(_THIS_MODULE,__LINE__,_COMPONENT,_ProcName,(NATIVE_UINT)s);return(s);}
+#define return_VALUE(s)                 {FunctionValueExit(_THIS_MODULE,__LINE__,_COMPONENT,_ProcName,s);return(s);}
 #define return_PTR(s)                   {FunctionPtrExit(_THIS_MODULE,__LINE__,_COMPONENT,_ProcName,(UINT8 *)s);return(s);}
 
 
@@ -421,6 +465,8 @@
 
 #define DEBUG_DEFINE(a)                 a;
 #define DEBUG_ONLY_MEMBERS(a)           a;
+#define _OPCODE_NAMES
+#define _VERBOSE_STRUCTURES
 
 
 /* Stack and buffer dumping */
@@ -533,9 +579,8 @@
  */
 #ifdef _IA16
 #undef DEBUG_ONLY_MEMBERS
+#undef _VERBOSE_STRUCTURES
 #define DEBUG_ONLY_MEMBERS(a)
-#undef OP_INFO_ENTRY
-#define OP_INFO_ENTRY(Flags,Name,PArgs,IArgs)     {Flags,PArgs,IArgs}
 #endif
 
 
