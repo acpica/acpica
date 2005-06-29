@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: cmglobal - Global variables for the ACPI subsystem
- *              $Revision: 1.102 $
+ *              $Revision: 1.103 $
  *
  *****************************************************************************/
 
@@ -271,8 +271,6 @@ ACPI_TABLE_SUPPORT          AcpiGbl_AcpiTableData[NUM_ACPI_TABLES] =
     /* SPIC 9 */ {SPIC_SIG, SPIC_SIG, sizeof (SPIC_SIG)-1, ACPI_TABLE_MULTIPLE, AE_OK,      NULL},
     /* BOOT 10 */{BOOT_SIG, BOOT_SIG, sizeof (BOOT_SIG)-1, ACPI_TABLE_SINGLE,   AE_SUPPORT, NULL}
 };
-
-ACPI_INIT_DATA AcpiGbl_AcpiInitData;
 
 
 #ifdef ACPI_DEBUG
@@ -564,7 +562,8 @@ AcpiCmAllocateOwnerId (
  ***************************************************************************/
 
 void
-AcpiCmInitGlobals (ACPI_INIT_DATA *InitData)
+AcpiCmInitGlobals (
+    void)
 {
     UINT32                  i;
 
@@ -572,15 +571,6 @@ AcpiCmInitGlobals (ACPI_INIT_DATA *InitData)
     FUNCTION_TRACE ("CmInitGlobals");
 
 
-    if (InitData)
-    {
-        MEMCPY (&AcpiGbl_AcpiInitData, InitData, sizeof (ACPI_INIT_DATA));
-    }
-
-    else
-    {
-        MEMSET (&AcpiGbl_AcpiInitData, 0, sizeof (ACPI_INIT_DATA));
-    }
 
     /* ACPI table structure */
 
