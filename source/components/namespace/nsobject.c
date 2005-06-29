@@ -142,13 +142,16 @@
  *
  ***************************************************************************/
 
-void
+ACPI_STATUS
 NsAttachObject (
     ACPI_HANDLE             handle, 
     ACPI_HANDLE             Object, 
     UINT8                   Type)
 {
     NAME_TABLE_ENTRY        *ThisEntry;
+    ACPI_OBJECT_INTERNAL    *ObjDesc;
+    ACPI_OBJECT_INTERNAL    *PreviousObjDesc;
+    ACPI_OBJECT_TYPE        ObjType;
 
 
     FUNCTION_TRACE ("NsAttachObject");
@@ -159,7 +162,7 @@ NsAttachObject (
         /* Name space not initialized  */
 
         REPORT_ERROR ("NsAttachObject: Name space not initialized");
-        return_VOID;
+        return_ACPI_STATUS (AE_NO_NAMESPACE);
     }
     
     if (!handle)
@@ -167,15 +170,15 @@ NsAttachObject (
         /* Invalid handle */
 
         REPORT_ERROR ("NsAttachObject: Null name handle");
-        return_VOID;
+        return_ACPI_STATUS (AE_BAD_PARAMETER);
     }
     
     if (!Object && (TYPE_Any != Type))
     {
         /* Null object */
 
-        REPORT_ERROR ("NsAttachObject: Null object, type not TYPE_Any");
-        return_VOID;
+        REPORT_ERROR ("NsAttachObject: Null object, but type not TYPE_Any");
+        return_ACPI_STATUS (AE_BAD_PARAMETER);
     }
     
     if (!IS_NS_HANDLE (handle))
@@ -183,161 +186,190 @@ NsAttachObject (
         /* Not a name handle */
 
         REPORT_ERROR ("NsAttachObject: Invalid handle");
-        return_VOID;
+        return_ACPI_STATUS (AE_BAD_PARAMETER);
     }
-
-    DEBUG_PRINT (TRACE_EXEC,("NsAttachObject: Install obj %p into NTE %p\n",
-                    Object, handle));
-    
-    ThisEntry = (NAME_TABLE_ENTRY *) handle;
-
 
     /* Check if this object is already attached */
 
     if (ThisEntry->Object == Object)
     {
-        return_VOID;
+        DEBUG_PRINT (TRACE_EXEC,("NsAttachObject: Obj %p already installed in NTE %p\n",
+                        Object, handle));
+    
+        return_ACPI_STATUS (AE_OK);
     }
 
-    /* 
-     * Delete an existing attached object. 
-     */
-
-    if (ThisEntry->Object)
-    {
-        CmUpdateObjectReference (ThisEntry->Object, REF_DECREMENT);
-        CmDeleteInternalObject ((ACPI_OBJECT_INTERNAL *) ThisEntry->Object);
-    }
-
-    /* Set the new value */
-
-    ThisEntry->Object = Object;
-
-    /* If the new value is NULL, done */
-
-    if (!Object)
-    {
-        ThisEntry->Type = (ACPI_OBJECT_TYPE) TYPE_Any;
-        DEBUG_PRINT (TRACE_EXEC,("Leave NsAttachObject (NULL value)\n")); 
-        return_VOID;
-    }
-
-
-    /* Must increment the new value's reference count (if it is an internal object) */
-
-    CmUpdateObjectReference (Object, REF_INCREMENT);
-
-    /* Set the type if given, or if it can be discerned */
-
-    if (TYPE_Any != Type)
-    {
-        ThisEntry->Type = (ACPI_OBJECT_TYPE) Type;
-    }
 
 
     /*
-     * Check if value points into the AML code
+     * If the object is an NTE with an attached object, we will use that object
      */
-    else if (NsIsInSystemTable (Object))
-    {
-        /* Object points into the AML stream.  Check for a recognized OpCode */
-    
-        switch (*(UINT8 *) Object)
-        {
 
-        case AML_OpPrefix:
-
-            if (*(UINT16 *) Object != AML_RevisionOp)
-            {
-                /* OpPrefix is unrecognized unless part of RevisionOp */
-            
-                break;
-            }
-
-            /* Else fall through to set type as Number */
-    
-
-        case AML_ZeroOp: case AML_OnesOp: case AML_OneOp:
-        case AML_ByteOp: case AML_WordOp: case AML_DWordOp:
-
-            ThisEntry->Type = TYPE_Number;
-            break;
-
-
-        case AML_StringOp:
-
-            ThisEntry->Type = TYPE_String;
-            break;
-
-
-        case AML_BufferOp:
-
-            ThisEntry->Type = TYPE_Buffer;
-            break;
-
-
-        case AML_PackageOp:
-
-            ThisEntry->Type = TYPE_Package;
-            break;
-
-
-        default:
-
-            break;
-        }
-    }
-
-
-    /*
-     * Check if value is another name table entry (nte)
-     */
-    else if (IS_NS_HANDLE (Object) && 
-            ((NAME_TABLE_ENTRY *) Object)->Object)
+    if (IS_NS_HANDLE (Object) && 
+        ((NAME_TABLE_ENTRY *) Object)->Object)
     {
         /* 
          * Value passed is a name handle and that name has a non-null value.
          * Use that name's value and type.
          */
 
-        NsAttachObject (handle, ((NAME_TABLE_ENTRY *) Object)->Object, 
-                    (UINT8) ((NAME_TABLE_ENTRY *) Object)->Type);
+        ObjDesc = ((NAME_TABLE_ENTRY *) Object)->Object;
+        ObjType = ((NAME_TABLE_ENTRY *) Object)->Type;
     }
+
+
+    /*
+     * Otherwise, we will use the parameter object, but we must type it first
+     */
 
     else
     {
-        /* 
-         * Cannot figure out the type -- set to DefAny which will print as an
-         * error in the name table dump
-         */
+        ObjDesc = (ACPI_OBJECT_INTERNAL *) Object;
 
-        if (GetDebugLevel () > 0)
+
+        /* Set the type if given, or if it can be discerned */
+
+        if (TYPE_Any != Type)
         {
-            NsDumpPathname (handle, "NsAttachObject confused: setting bogus type for  ", 
-                            ACPI_INFO, _COMPONENT);
+            ObjType = (ACPI_OBJECT_TYPE) Type;
+        }
 
-            if (NsIsInSystemTable (Object))
+        else if (!Object)
+        {
+            ObjType = TYPE_Any;
+        }
+
+        /*
+         * Check if value points into the AML code
+         */
+        else if (NsIsInSystemTable (Object))
+        {
+            /* Object points into the AML stream.  Check for a recognized OpCode */
+    
+            switch (*(UINT8 *) Object)
             {
-                DEBUG_PRINT (ACPI_INFO,
-                            ("AML-stream code %02x\n", *(UINT8 *) Object));
-            }
-        
-            else if (IS_NS_HANDLE (Object))
-            {
-                NsDumpPathname (Object, "name ", ACPI_INFO, _COMPONENT);
-            }
-        
-            else
-            {
-                NsDumpPathname (Object, "object ", ACPI_INFO, _COMPONENT);
-                DUMP_STACK_ENTRY (Object);
+
+            case AML_OpPrefix:
+
+                if (*(UINT16 *) Object != AML_RevisionOp)
+                {
+                    /* OpPrefix is unrecognized unless part of RevisionOp */
+            
+                    break;
+                }
+
+                /* Else fall through to set type as Number */
+    
+
+            case AML_ZeroOp: case AML_OnesOp: case AML_OneOp:
+            case AML_ByteOp: case AML_WordOp: case AML_DWordOp:
+
+                ObjType = TYPE_Number;
+                break;
+
+
+            case AML_StringOp:
+
+                ObjType = TYPE_String;
+                break;
+
+
+            case AML_BufferOp:
+
+                ObjType = TYPE_Buffer;
+                break;
+
+
+            case AML_MutexOp:
+
+                ObjType = TYPE_Mutex;
+                break;
+
+
+            case AML_PackageOp:
+
+                ObjType = TYPE_Package;
+                break;
+
+
+            default:
+
+                break;
             }
         }
 
-        ThisEntry->Type = TYPE_DefAny;
+        else
+        {
+            /* 
+             * Cannot figure out the type -- set to DefAny which will print as an
+             * error in the name table dump
+             */
+
+            if (GetDebugLevel () > 0)
+            {
+                NsDumpPathname (handle, "NsAttachObject confused: setting bogus type for  ", 
+                                ACPI_INFO, _COMPONENT);
+
+                if (NsIsInSystemTable (Object))
+                {
+                    DEBUG_PRINT (ACPI_INFO,
+                                ("AML-stream code %02x\n", *(UINT8 *) Object));
+                }
+        
+                else if (IS_NS_HANDLE (Object))
+                {
+                    NsDumpPathname (Object, "name ", ACPI_INFO, _COMPONENT);
+                }
+        
+                else
+                {
+                    NsDumpPathname (Object, "object ", ACPI_INFO, _COMPONENT);
+                    DUMP_STACK_ENTRY (Object);
+                }
+            }
+
+            ObjType = TYPE_DefAny;
+        }
     }
 
-    return_VOID;
+
+
+
+    DEBUG_PRINT (TRACE_EXEC,("NsAttachObject: Installing obj %p into NTE %p\n",
+                    ObjDesc, handle));
+    
+    ThisEntry = (NAME_TABLE_ENTRY *) handle;
+
+
+    /* Must increment the new value's reference count (if it is an internal object) */
+
+    CmUpdateObjectReference (ObjDesc, REF_INCREMENT);
+
+    CmAcquireMutex (MTX_NAMESPACE);
+    {
+        /* Save the existing object (if any) for deletion later */
+
+        PreviousObjDesc = ThisEntry->Object;
+
+        /* Install the object and set the type */
+
+        ThisEntry->Object = ObjDesc;
+        ThisEntry->Type = ObjType;
+    }
+    CmReleaseMutex (MTX_NAMESPACE);
+
+
+    /* 
+     * Delete an existing attached object. 
+     */
+
+    if (PreviousObjDesc)
+    {
+        CmUpdateObjectReference (PreviousObjDesc, REF_DECREMENT);
+        CmDeleteInternalObject (PreviousObjDesc);
+    }
+
+    return_ACPI_STATUS (AE_OK);
 }
 
 
@@ -361,6 +393,7 @@ NsAttachMethod (
     UINT32                  PcodeLength)
 {
     ACPI_OBJECT_INTERNAL    *ObjDesc;
+    ACPI_OBJECT_INTERNAL    *PreviousObjDesc;
     NAME_TABLE_ENTRY        *ThisEntry = (NAME_TABLE_ENTRY *) Handle;
 
 
@@ -386,19 +419,6 @@ NsAttachMethod (
     }
 
     
-    /* 
-     * Delete an existing object.  Don't try to re-use in case it is shared
-     */
-    ObjDesc = ThisEntry->Object;
-    if (ObjDesc)
-    {
-        DEBUG_PRINT (ACPI_ERROR, ("NsAttachMethod: ***Old: %p Obj %p Pcode %p Len 0x%X\n",
-                                    Handle, ObjDesc, ObjDesc->Method.Pcode, ObjDesc->Method.PcodeLength));
-
-        CmUpdateObjectReference (ObjDesc, REF_DECREMENT);
-        CmDeleteInternalObject (ObjDesc);
-    }
-
     /* Allocate a method descriptor */
 
     ObjDesc = CmCreateInternalObject (TYPE_Method);
@@ -410,7 +430,6 @@ NsAttachMethod (
         return_ACPI_STATUS (AE_NO_MEMORY);
     }
 
-
     /* Init the method info */
 
     ObjDesc->Method.Pcode       = PcodeAddr;
@@ -419,7 +438,26 @@ NsAttachMethod (
     /* Update reference count and install */
 
     CmUpdateObjectReference (ObjDesc, REF_INCREMENT);
-    ThisEntry->Object = (void *) ObjDesc;
+
+    CmAcquireMutex (MTX_NAMESPACE);
+    {
+        PreviousObjDesc = ThisEntry->Object;
+        ThisEntry->Object = ObjDesc;
+    }
+    CmReleaseMutex (MTX_NAMESPACE);
+
+
+    /* 
+     * Delete an existing object.  Don't try to re-use in case it is shared
+     */
+    if (PreviousObjDesc)
+    {
+        DEBUG_PRINT (ACPI_INFO, ("NsAttachMethod: ***Old: %p Obj %p Pcode %p Len 0x%X\n",
+                                    Handle, PreviousObjDesc, PreviousObjDesc->Method.Pcode, PreviousObjDesc->Method.PcodeLength));
+
+        CmUpdateObjectReference (PreviousObjDesc, REF_DECREMENT);
+        CmDeleteInternalObject (PreviousObjDesc);
+    }
 
     DEBUG_PRINT (ACPI_INFO, ("NsAttachMethod: %p Obj %p Pcode %p Len 0x%X\n",
                             Handle, ObjDesc, ObjDesc->Method.Pcode, ObjDesc->Method.PcodeLength));
