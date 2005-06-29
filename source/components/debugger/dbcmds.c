@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dbcmds - debug commands and output routines
- *              $Revision: 1.114 $
+ *              $Revision: 1.115 $
  *
  ******************************************************************************/
 
@@ -916,6 +916,8 @@ AcpiDbWalkForSpecificObjects (
 
     if (ObjDesc)
     {
+        AcpiOsPrintf ("  %p/%p", ObjHandle, ObjDesc);
+
         switch (ACPI_GET_OBJECT_TYPE (ObjDesc))
         {
         case ACPI_TYPE_METHOD:
