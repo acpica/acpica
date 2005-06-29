@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslopcode - AML opcode generation
- *              $Revision: 1.57 $
+ *              $Revision: 1.58 $
  *
  *****************************************************************************/
 
@@ -476,11 +476,11 @@ OpcDoEisaId (
 
         for (i = 0; i < 7; i++)
         {
-            /* First 3 characters must be letters */
+            /* First 3 characters must be uppercase letters */
 
             if (i < 3)
             {
-                if (!isalpha (InString[i]))
+                if (!isupper (InString[i]))
                 {
                     Status = AE_BAD_PARAMETER;
                 }
