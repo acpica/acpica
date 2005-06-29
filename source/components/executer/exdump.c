@@ -150,13 +150,13 @@
 
 void
 AcpiAmlShowHexValue (
-    INT32                   ByteCount,
+    UINT32                  ByteCount,
     UINT8                   *AmlPtr,
-    INT32                   LeadSpace)
+    UINT32                  LeadSpace)
 {
-    INT32                   Value;                  /*  Value retrieved from AML stream */
-    INT32                   ShowDecimalValue;
-    INT32                   Length;                 /*  Length of printed field */
+    UINT32                  Value;                  /*  Value retrieved from AML stream */
+    UINT32                  ShowDecimalValue;
+    UINT32                  Length;                 /*  Length of printed field */
     UINT8                   *CurrentAmlPtr = NULL;  /*  Pointer to current byte of AML value    */
 
 
@@ -176,7 +176,7 @@ AcpiAmlShowHexValue (
             Value = 0;
             CurrentAmlPtr > AmlPtr; )
     {
-        Value = (Value << 8) + (INT32)* --CurrentAmlPtr;
+        Value = (Value << 8) + (UINT32)* --CurrentAmlPtr;
     }
 
     Length = LeadSpace * ByteCount + 2;
@@ -652,13 +652,13 @@ void
 AcpiAmlDumpOperands (
     ACPI_OBJECT_INTERNAL    **Operands,
     OPERATING_MODE          InterpreterMode,
-    INT8                    *Ident,
-    INT32                   NumLevels,
-    INT8                    *Note,
-    INT8                    *ModuleName,
-    INT32                   LineNumber)
+    NATIVE_CHAR             *Ident,
+    UINT32                  NumLevels,
+    NATIVE_CHAR             *Note,
+    NATIVE_CHAR             *ModuleName,
+    UINT32                  LineNumber)
 {
-    INT32                   i;
+    UINT32                  i;
     ACPI_OBJECT_INTERNAL    **EntryDesc;
 
 
