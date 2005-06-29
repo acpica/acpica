@@ -2,14 +2,17 @@
 PROG=	acpibin
 SRCS=	abcompare.c abmain.c \
 	../../utilities/utalloc.c \
+	../../utilities/utcache.c \
 	../../utilities/utdebug.c \
 	../../utilities/utglobal.c \
 	../../utilities/utmath.c \
 	../../utilities/utmisc.c \
+	../../utilities/utmutex.c \
+	../../utilities/utstate.c \
 	../../osunixxf.c \
     ../../common/getopt.c
 
-CFLAGS+= -Wall -O2 -D_LINUX -Wstrict-prototypes -I../../include 
+CFLAGS+= -Wall -O2 -D_LINUX -DACPI_APPLICATION -Wstrict-prototypes -I../../include 
 
 
 acpibin : $(patsubst %.c,%.o, $(SRCS))
