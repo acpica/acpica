@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: exfldio - Aml Field I/O
- *              $Revision: 1.71 $
+ *              $Revision: 1.73 $
  *
  *****************************************************************************/
 
@@ -141,7 +141,7 @@
  * RETURN:      Status
  *
  * DESCRIPTION: Common processing for AcpiExExtractFromField and
- *              AcpiExInsertIntoField.  Initialize the 
+ *              AcpiExInsertIntoField.  Initialize the
  *
  ******************************************************************************/
 
@@ -257,8 +257,8 @@ AcpiExAccessRegion (
      * 3) The current offset into the field
      */
     RgnDesc = ObjDesc->CommonField.RegionObj;
-    Address = RgnDesc->Region.Address 
-                + ObjDesc->CommonField.BaseByteOffset 
+    Address = RgnDesc->Region.Address
+                + ObjDesc->CommonField.BaseByteOffset
                 + FieldDatumByteOffset;
 
     if (ReadWrite == ACPI_READ)
@@ -270,12 +270,12 @@ AcpiExAccessRegion (
         ACPI_DEBUG_PRINT ((ACPI_DB_BFIELD, "[WRITE]"));
     }
 
-    ACPI_DEBUG_PRINT_RAW ((ACPI_DB_BFIELD, 
+    ACPI_DEBUG_PRINT_RAW ((ACPI_DB_BFIELD,
         " Region[%s-%X] Width %X Base:Off %X:%X at %8.8X%8.8X\n",
         AcpiUtGetRegionName (RgnDesc->Region.SpaceId),
-        RgnDesc->Region.SpaceId, 
+        RgnDesc->Region.SpaceId,
         ObjDesc->CommonField.AccessBitWidth,
-        ObjDesc->CommonField.BaseByteOffset, 
+        ObjDesc->CommonField.BaseByteOffset,
         FieldDatumByteOffset,
         HIDWORD (Address), LODWORD (Address)));
 
@@ -288,7 +288,7 @@ AcpiExAccessRegion (
     {
         if (Status == AE_NOT_IMPLEMENTED)
         {
-            ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, 
+            ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
                 "Region %s(%X) not implemented\n",
                 AcpiUtGetRegionName (RgnDesc->Region.SpaceId),
                 RgnDesc->Region.SpaceId));
@@ -296,7 +296,7 @@ AcpiExAccessRegion (
 
         else if (Status == AE_NOT_EXIST)
         {
-            ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, 
+            ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
                 "Region %s(%X) has no handler\n",
                 AcpiUtGetRegionName (RgnDesc->Region.SpaceId),
                 RgnDesc->Region.SpaceId));
@@ -415,22 +415,22 @@ AcpiExFieldDatumIo (
         if (ReadWrite == ACPI_READ)
         {
             /*
-             * Copy the data from the source buffer.  
+             * Copy the data from the source buffer.
              * Length is the field width in bytes.
              */
             MEMCPY (Value, (ObjDesc->BufferField.BufferObj)->Buffer.Pointer
-                            + ObjDesc->BufferField.BaseByteOffset 
+                            + ObjDesc->BufferField.BaseByteOffset
                             + FieldDatumByteOffset,
                             ObjDesc->CommonField.AccessByteWidth);
         }
         else
         {
             /*
-             * Copy the data to the target buffer.  
+             * Copy the data to the target buffer.
              * Length is the field width in bytes.
              */
             MEMCPY ((ObjDesc->BufferField.BufferObj)->Buffer.Pointer
-                    + ObjDesc->BufferField.BaseByteOffset 
+                    + ObjDesc->BufferField.BaseByteOffset
                     + FieldDatumByteOffset,
                     Value, ObjDesc->CommonField.AccessByteWidth);
         }
@@ -480,11 +480,11 @@ AcpiExFieldDatumIo (
             return_ACPI_STATUS (Status);
         }
 
-        Status = AcpiExAccessRegion (ObjDesc, FieldDatumByteOffset, Value, 
+        Status = AcpiExAccessRegion (ObjDesc, FieldDatumByteOffset, Value,
                         ReadWrite);
         break;
 
-    
+
     case INTERNAL_TYPE_INDEX_FIELD:
 
 
@@ -809,7 +809,7 @@ AcpiExExtractFromField (
     FieldDatumByteOffset = 0;
     DatumOffset= 0;
 
-    Status = AcpiExFieldDatumIo (ObjDesc, FieldDatumByteOffset, 
+    Status = AcpiExFieldDatumIo (ObjDesc, FieldDatumByteOffset,
                     &PreviousRawDatum, ACPI_READ);
     if (ACPI_FAILURE (Status))
     {
@@ -864,7 +864,7 @@ AcpiExExtractFromField (
              * Get the next raw datum, it contains some or all bits
              * of the current field datum
              */
-            Status = AcpiExFieldDatumIo (ObjDesc, FieldDatumByteOffset, 
+            Status = AcpiExFieldDatumIo (ObjDesc, FieldDatumByteOffset,
                             &ThisRawDatum, ACPI_READ);
             if (ACPI_FAILURE (Status))
             {
@@ -930,7 +930,6 @@ AcpiExExtractFromField (
 }
 
 
-
 /*******************************************************************************
  *
  * FUNCTION:    AcpiExInsertIntoField
@@ -975,8 +974,6 @@ AcpiExInsertIntoField (
     {
         ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "Buffer length %X too small for field %X\n",
             BufferLength, ByteFieldLength));
-
-        /* TBD: Need a better error code */
 
         return_ACPI_STATUS (AE_BUFFER_OVERFLOW);
     }
@@ -1127,7 +1124,7 @@ AcpiExInsertIntoField (
         {
             /* Normal case -- write the completed datum */
 
-            Status = AcpiExFieldDatumIo (ObjDesc, FieldDatumByteOffset, 
+            Status = AcpiExFieldDatumIo (ObjDesc, FieldDatumByteOffset,
                             &MergedDatum, ACPI_WRITE);
             if (ACPI_FAILURE (Status))
             {

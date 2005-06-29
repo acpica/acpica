@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: exdump - Interpreter debug output routines
- *              $Revision: 1.136 $
+ *              $Revision: 1.137 $
  *
  *****************************************************************************/
 
@@ -250,12 +250,11 @@ AcpiExDumpOperand (
 
     PROC_NAME ("ExDumpOperand")
 
+
     if (!((ACPI_LV_INFO & AcpiDbgLevel) && (_COMPONENT & AcpiDbgLayer)))
     {
         return (AE_OK);
     }
-
-        /* TBD: change all dbg prints to osprintf */
 
     if (!EntryDesc)
     {
@@ -610,22 +609,8 @@ AcpiExDumpOperand (
     default:
         /*  unknown EntryDesc->Common.Type value    */
 
-        AcpiOsPrintf ("Unknown Type %X\n",
-            EntryDesc->Common.Type);
-
-        /* Back up to previous entry */
-
-        EntryDesc--;
-
-
-        /* TBD: [Restructure]  Change to use dump object routine !! */
-        /*       What is all of this?? */
-
-        DUMP_BUFFER (EntryDesc, sizeof (ACPI_OPERAND_OBJECT));
-        DUMP_BUFFER (++EntryDesc, sizeof (ACPI_OPERAND_OBJECT));
-        DUMP_BUFFER (++EntryDesc, sizeof (ACPI_OPERAND_OBJECT));
+        AcpiOsPrintf ("Unknown Type %X\n", EntryDesc->Common.Type);
         break;
-
     }
 
     return (AE_OK);
