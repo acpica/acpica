@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: evregion - ACPI AddressSpace (OpRegion) handler dispatch
- *              $Revision: 1.133 $
+ *              $Revision: 1.134 $
  *
  *****************************************************************************/
 
@@ -754,7 +754,7 @@ AcpiEvAddrHandlerHelper (
     /*
      *  Devices are handled different than regions
      */
-    if (ObjDesc->Common.Type == ACPI_TYPE_DEVICE)
+    if (ACPI_GET_OBJECT_TYPE (ObjDesc) == ACPI_TYPE_DEVICE)
     {
         /*
          *  See if this guy has any handlers
