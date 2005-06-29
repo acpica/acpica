@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acglobal.h - Declarations for global variables
- *       $Revision: 1.148 $
+ *       $Revision: 1.149 $
  *
  *****************************************************************************/
 
@@ -160,6 +160,7 @@ extern      UINT32                      AcpiGbl_NestingLevel;
 
 ACPI_EXTERN UINT8                       AcpiGbl_CreateOsiMethod;
 ACPI_EXTERN UINT8                       AcpiGbl_AllMethodsSerialized;
+ACPI_EXTERN UINT8                       AcpiGbl_LeaveWakeGpesDisabled;
 
 /*****************************************************************************
  *
@@ -269,6 +270,7 @@ extern const char                      *AcpiGbl_ValidOsiStrings[ACPI_NUM_OSI_STR
 
 ACPI_EXTERN ACPI_NAMESPACE_NODE         AcpiGbl_RootNodeStruct;
 ACPI_EXTERN ACPI_NAMESPACE_NODE        *AcpiGbl_RootNode;
+ACPI_EXTERN ACPI_NAMESPACE_NODE        *AcpiGbl_FadtGpeDevice;
 
 extern const UINT8                      AcpiGbl_NsProperties[NUM_NS_TYPES];
 extern const ACPI_PREDEFINED_NAMES      AcpiGbl_PreDefinedNames [NUM_PREDEFINED_NAMES];
