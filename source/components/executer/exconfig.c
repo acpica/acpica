@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: exconfig - Namespace reconfiguration (Load/Unload opcodes)
- *              $Revision: 1.52 $
+ *              $Revision: 1.53 $
  *
  *****************************************************************************/
 
@@ -453,7 +453,7 @@ AcpiExLoadOp (
     case ACPI_TYPE_REGION:
 
         ACPI_DEBUG_PRINT ((ACPI_DB_EXEC, "Load from Region %p %s\n",
-            ObjDesc));
+            ObjDesc, AcpiUtGetTypeName (ObjDesc->Common.Type)));
 
         /* Get the table header */
 
