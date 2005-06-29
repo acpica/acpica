@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: aemain - Main routine for the AcpiExec utility
- *              $Revision: 1.74 $
+ *              $Revision: 1.80 $
  *
  *****************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2003, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -117,6 +117,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <signal.h>
 
 #include "acpi.h"
 #include "amlcode.h"
@@ -148,6 +149,17 @@ AcpiGetIrqRoutingTable  (
     return AE_NOT_IMPLEMENTED;
 }
 #endif
+
+
+void
+AeGpeHandler (
+    void                        *Context)
+{
+
+
+    AcpiOsPrintf ("Received a GPE at handler\n");
+}
+
 
 /******************************************************************************
  *
@@ -198,6 +210,7 @@ main (
     ACPI_STATUS             Status;
     UINT32                  InitFlags;
     ACPI_BUFFER             ReturnBuf;
+    ACPI_TABLE_HEADER       *Table;
     char                    Buffer[32];
 
 
@@ -206,6 +219,8 @@ main (
     _CrtSetDbgFlag (_CRTDBG_CHECK_ALWAYS_DF | _CrtSetDbgFlag(0));
 #endif
 #endif
+
+    signal (SIGINT, AeCtrlCHandler);
 
     /* Init globals */
 
@@ -282,15 +297,14 @@ main (
         AcpiGbl_DbOpt_tables = TRUE;
         AcpiGbl_DbFilename = argv[AcpiGbl_Optind];
 
-        Status = AcpiDbGetAcpiTable (AcpiGbl_DbFilename);
+        Status = AcpiDbReadTableFromFile (AcpiGbl_DbFilename, &Table);
         if (ACPI_FAILURE (Status))
         {
             printf ("**** Could not get input table, %s\n", AcpiFormatException (Status));
             goto enterloop;
         }
 
-
-        AeBuildLocalTables ();
+        AeBuildLocalTables (Table);
         Status = AeInstallTables ();
         if (ACPI_FAILURE (Status))
         {
@@ -298,16 +312,16 @@ main (
             goto enterloop;
         }
 
-        /*
-         * TBD:
-         * Need a way to call this after the "LOAD" command
-         */
         Status = AeInstallHandlers ();
         if (ACPI_FAILURE (Status))
         {
             goto enterloop;
         }
 
+        /*
+         * TBD:
+         * Need a way to call this after the "LOAD" command
+         */
         Status = AcpiEnableSubsystem (InitFlags);
         if (ACPI_FAILURE (Status))
         {
@@ -322,11 +336,13 @@ main (
             goto enterloop;
         }
 
+        AcpiInstallGpeHandler (0, NULL, 0, AeGpeHandler, NULL);
+
         ReturnBuf.Length = 32;
         ReturnBuf.Pointer = Buffer;
         AcpiGetName (AcpiGbl_RootNode, ACPI_FULL_PATHNAME, &ReturnBuf);
-        AcpiEnableEvent (ACPI_EVENT_GLOBAL, ACPI_EVENT_FIXED, 0);
-        AcpiEnableEvent (0, ACPI_EVENT_GPE, 0);
+        AcpiEnableEvent (ACPI_EVENT_GLOBAL, 0);
+        AcpiEnableGpe (0, NULL, 0);
     }
 
 #if ACPI_MACHINE_WIDTH == 16
@@ -355,15 +371,15 @@ main (
             goto enterloop;
         }
 
-        /* TBD:
-         * Need a way to call this after the "LOAD" command
-         */
+
         Status = AeInstallHandlers ();
         if (ACPI_FAILURE (Status))
         {
             goto enterloop;
         }
-
+        /* TBD:
+         * Need a way to call this after the "LOAD" command
+         */
         Status = AcpiEnableSubsystem (InitFlags);
         if (ACPI_FAILURE (Status))
         {
@@ -377,6 +393,7 @@ main (
             printf ("**** Could not InitializeObjects, %s\n", AcpiFormatException (Status));
             goto enterloop;
         }
+
      }
 #endif
 
