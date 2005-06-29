@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: aslopt- Compiler optimizations
- *              $Revision: 1.18 $
+ *              $Revision: 1.19 $
  *
  *****************************************************************************/
 
@@ -335,7 +335,7 @@ OptBuildShortestPath (
     /*
      * Construct a new target string
      */
-    NewPathExternal = ACPI_MEM_CALLOCATE (TargetPath->Length + NumCarats);
+    NewPathExternal = ACPI_MEM_CALLOCATE (TargetPath->Length + NumCarats + 1);
 
     /* Insert the Carats into the Target string */
 
