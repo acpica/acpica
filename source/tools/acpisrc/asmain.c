@@ -340,22 +340,7 @@ ACPI_CONVERSION_TABLE       StatsConversionTable = {
 ACPI_STRING_TABLE           CustomReplacements[] = {
 
 
-    "\"common.h\"",   "\"accommon.h\"",
-    "\"config.h\"",   "\"acconfig.h\"",
-    "\"debugger.h\"", "\"acdebug.h\"",
-    "\"dispatch.h\"", "\"acdispat.h\"",
-    "\"events.h\"",   "\"acevents.h\"",
-    "\"globals.h\"",   "\"acglobal.h\"",
-    "\"hardware.h\"",   "\"achware.h\"",
-    "\"interp.h\"",   "\"acinterp.h\"",
-    "\"internal.h\"",   "\"aclocal.h\"",
-    "\"macros.h\"",   "\"acmacros.h\"",
-    "\"namesp.h\"",   "\"acnamesp.h\"",
-    "\"output.h\"",   "\"acoutput.h\"",
-    "\"parser.h\"",   "\"acparser.h\"",
-    "\"resource.h\"",   "\"acresrc.h\"",
-    "\"actables.h\"",   "\"actbl.h\"",
-    "\"tables.h\"",   "\"actables.h\"",
+    "char ",             "INT8 ",
     NULL,               NULL
 };
 
