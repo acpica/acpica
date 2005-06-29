@@ -1,7 +1,7 @@
 
 /******************************************************************************
  *
- * Name: internal.h - Internal data types used across the ACPI subsystem
+ * Name: aclocal.h - Internal data types used across the ACPI subsystem
  *
  *****************************************************************************/
 
@@ -114,25 +114,23 @@
  *
  *****************************************************************************/
 
-#ifndef _ACPI_INTERNAL_H
-#define _ACPI_INTERNAL_H
-
-#include "config.h"
+#ifndef __ACLOCAL_H__
+#define __ACLOCAL_H__
 
 
-#define WAIT_FOREVER            ((UINT32) -1)
+#define WAIT_FOREVER                ((UINT32) -1)
 
-typedef void*                   ACPI_MUTEX;
-typedef UINT32                  ACPI_MUTEX_HANDLE;
+typedef void*                       ACPI_MUTEX;
+typedef UINT32                      ACPI_MUTEX_HANDLE;
 
 
 /* Object descriptor types */
 
-#define DESC_TYPE_ACPI_OBJ      0xAA
-#define DESC_TYPE_PARSER        0xBB
-#define DESC_TYPE_STATE         0xCC
-#define DESC_TYPE_WALK          0xDD
-#define DESC_TYPE_NTE           0xEE
+#define ACPI_DESC_TYPE_INTERNAL     0xAA
+#define ACPI_DESC_TYPE_PARSER       0xBB
+#define ACPI_DESC_TYPE_STATE        0xCC
+#define ACPI_DESC_TYPE_WALK         0xDD
+#define ACPI_DESC_TYPE_NAMED        0xEE
 
 
 /*****************************************************************************
@@ -148,22 +146,22 @@ typedef UINT32                  ACPI_MUTEX_HANDLE;
  * NOTE: any changes here must be reflected in the AcpiGbl_MutexNames table also!
  */
 
-#define MTX_HARDWARE            0
-#define MTX_MEMORY              1
-#define MTX_CACHES              2
-#define MTX_TABLES              3
-#define MTX_PARSER              4
-#define MTX_DISPATCHER          5
-#define MTX_INTERPRETER         6
-#define MTX_EXECUTE             7
-#define MTX_NAMESPACE           8
-#define MTX_EVENTS              9
-#define MTX_OP_REGIONS          10
-#define MTX_DEBUG_CMD_READY     11
-#define MTX_DEBUG_CMD_COMPLETE  12
+#define ACPI_MTX_HARDWARE           0
+#define ACPI_MTX_MEMORY             1
+#define ACPI_MTX_CACHES             2
+#define ACPI_MTX_TABLES             3
+#define ACPI_MTX_PARSER             4
+#define ACPI_MTX_DISPATCHER         5
+#define ACPI_MTX_INTERPRETER        6
+#define ACPI_MTX_EXECUTE            7
+#define ACPI_MTX_NAMESPACE          8
+#define ACPI_MTX_EVENTS             9
+#define ACPI_MTX_OP_REGIONS         10
+#define ACPI_MTX_DEBUG_CMD_READY    11
+#define ACPI_MTX_DEBUG_CMD_COMPLETE 12
 
-#define MAX_MTX                 12
-#define NUM_MTX                 MAX_MTX+1
+#define MAX_MTX                     12
+#define NUM_MTX                     MAX_MTX+1
 
 
 #ifdef ACPI_DEBUG
@@ -173,19 +171,19 @@ typedef UINT32                  ACPI_MUTEX_HANDLE;
 
 static char                 *AcpiGbl_MutexNames[] =
 {
-    "MTX_Hardware",
-    "MTX_Memory",
-    "MTX_Caches",
-    "MTX_Tables",
-    "MTX_Parser",
-    "MTX_Dispatcher",
-    "MTX_Interpreter",
-    "MTX_Execute",
-    "MTX_Namespace",
-    "MTX_Events",
-    "MTX_OpRegions",
-    "MTX_DebugCmdReady",
-    "MTX_DebugCmdComplete"
+    "ACPI_MTX_Hardware",
+    "ACPI_MTX_Memory",
+    "ACPI_MTX_Caches",
+    "ACPI_MTX_Tables",
+    "ACPI_MTX_Parser",
+    "ACPI_MTX_Dispatcher",
+    "ACPI_MTX_Interpreter",
+    "ACPI_MTX_Execute",
+    "ACPI_MTX_Namespace",
+    "ACPI_MTX_Events",
+    "ACPI_MTX_OpRegions",
+    "ACPI_MTX_DebugCmdReady",
+    "ACPI_MTX_DebugCmdComplete"
 };
 
 #endif
@@ -205,19 +203,19 @@ typedef struct AcpiMutexInfo
 
 /* Lock flag parameter for various interfaces */
 
-#define MTX_DO_NOT_LOCK         0
-#define MTX_LOCK                1
+#define ACPI_MTX_DO_NOT_LOCK        0
+#define ACPI_MTX_LOCK               1
 
 
-typedef UINT16                  ACPI_OWNER_ID;
-#define OWNER_TYPE_TABLE        0x0
-#define OWNER_TYPE_METHOD       0x1
-#define FIRST_METHOD_ID         0x0000
-#define FIRST_TABLE_ID          0x8000
+typedef UINT16                      ACPI_OWNER_ID;
+#define OWNER_TYPE_TABLE            0x0
+#define OWNER_TYPE_METHOD           0x1
+#define FIRST_METHOD_ID             0x0000
+#define FIRST_TABLE_ID              0x8000
 
 /* TBD: [Restructure] get rid of the need for this! */
 
-#define TABLE_ID_DSDT           (ACPI_OWNER_ID) 0xD1D1
+#define TABLE_ID_DSDT               (ACPI_OWNER_ID) 0xD1D1
 
 /*****************************************************************************
  *
@@ -238,53 +236,45 @@ typedef enum
 
 
 /*
- * Typedef nte (name table entry) is private to avoid global
- * impact in the event of changes to it.  The externally-known type ACPI_HANDLE
- * is actually an (nte *).  If an external program needs to extract a field
- * from the nte, it should use an access function defined in acpinmsp.c
- *
- * If you need an access function not provided herein, add it to this module
- * rather than exporting the nte typedef.
- *
- * (nte *) are actually used in two different and not entirely compatible
- * ways: as pointer to an individual nte and as pointer to an entire name
- * table (which is an array of nte, sometimes referred to as a scope).  In
- * the latter case, the specific nte pointed to may be unused; however its
- * ParentScope member will be valid.
+ * The AcpiNamedObject describes a named object that appears in the AML
+ * An AcpiNameTable is used to store AcpiNamedObjects.
  *
  * DataType is used to differentiate between internal descriptors, and MUST
  * be the first byte in this structure.
  */
 
-typedef struct NameTableEntry
+typedef struct AcpiNamedObject
 {
     UINT8                   DataType;
     UINT8                   Type;           /* Type associated with this name */
-    UINT8                   Fill1;
+    UINT8                   ThisIndex;      /* Entry number */
     UINT8                   Flags;
     UINT32                  Name;           /* ACPI Name, always 4 chars per ACPI spec */
 
 
     void                    *Object;        /* Pointer to attached ACPI object (optional) */
-    struct NameTableEntry   *Scope;         /* Scope owned by this name (optional) */
-    struct NameTableEntry   *ParentEntry;   /* Parent NTE */
-    struct NameTableEntry   *NextEntry;     /* Next NTE within this scope */
-    struct NameTableEntry   *PrevEntry;     /* Previous NTE within this scope */
-
+    struct AcpiNameTable    *ChildTable;    /* Scope owned by this name (optional) */
     ACPI_OWNER_ID           OwnerId;        /* ID of owner - either an ACPI table or a method */
     UINT16                  ReferenceCount; /* Current count of references and children */
 
-    /* Align on 16-byte boundary for memory dump readability */
-/*
-    DEBUG_ONLY_MEMBERS (
-    char                    *FillDebug)
-*/
-} NAME_TABLE_ENTRY;
+#ifdef _IA64
+    UINT32                  Fill1;          /* 64-bit alignment */
+#endif
+
+} ACPI_NAMED_OBJECT;
+
+
+typedef struct AcpiNameTable
+{
+    struct AcpiNameTable    *NextTable;
+    struct AcpiNameTable    *ParentTable;
+    ACPI_NAMED_OBJECT       *ParentEntry;
+    ACPI_NAMED_OBJECT       Entries[1];
+
+} ACPI_NAME_TABLE;
 
 
 #define ENTRY_NOT_FOUND     NULL
-#define INVALID_HANDLE      0
-#define NULL_HANDLE         INVALID_HANDLE
 
 
 /* NTE flags */
@@ -325,8 +315,7 @@ typedef struct
 
 typedef struct
 {
-    NAME_TABLE_ENTRY        *PreviousEntry;
-    NAME_TABLE_ENTRY        *NameTable;
+    ACPI_NAME_TABLE        *NameTable;
     UINT32                  Position;
     BOOLEAN                 TableFull;
 
@@ -471,7 +460,7 @@ typedef union acpi_op_value
     UINT8                   *Buffer;        /* buffer or string */
     char                    *Name;          /* NULL terminated string */
     struct acpi_generic_op  *Arg;           /* arguments and contained ops */
-    NAME_TABLE_ENTRY        *Entry;         /* entry in interpreter namespace tbl */
+    ACPI_NAMED_OBJECT       *Entry;         /* entry in interpreter namespace tbl */
 
 } ACPI_OP_VALUE;
 
@@ -486,7 +475,7 @@ typedef union acpi_op_value
     DEBUG_ONLY_MEMBERS (\
     char                    OpName[16])     /* op name (debug only) */\
                                             /* NON-DEBUG members below: */\
-    void                    *NameTableEntry;/* for use by interpreter */\
+    void                    *AcpiNamedObject;/* for use by interpreter */\
     ACPI_OP_VALUE           Value;          /* Value or args associated with the opcode */\
 
 
@@ -628,7 +617,7 @@ typedef struct acpi_control_state
 typedef struct acpi_scope_state
 {
     ACPI_STATE_COMMON
-    NAME_TABLE_ENTRY        *Entry;
+    ACPI_NAME_TABLE         *NameTable;
 
 } ACPI_SCOPE_STATE;
 
@@ -641,6 +630,25 @@ typedef union acpi_gen_state
     ACPI_SCOPE_STATE        Scope;
 
 } ACPI_GENERIC_STATE;
+
+
+
+typedef
+ACPI_STATUS (*xxxINTERPRETER_CALLBACK) (
+    void                    *State,
+    ACPI_GENERIC_OP         *Op);
+
+typedef
+ACPI_STATUS (*ACPI_PARSE_DOWNWARDS) (
+    UINT16                  Opcode,
+    ACPI_GENERIC_OP         *Op,
+    void                    *WalkState,
+    ACPI_GENERIC_OP         **OutOp);
+
+typedef
+ACPI_STATUS (*ACPI_PARSE_UPWARDS) (
+    void                    *State,
+    ACPI_GENERIC_OP         *Op);
 
 
 /*****************************************************************************
@@ -674,13 +682,18 @@ typedef struct acpi_walk_state
     ACPI_GENERIC_OP         *NextOp;                            /* next op to be processed */
     ACPI_GENERIC_STATE      *ControlState;                      /* List of control states (nested IFs) */
     ACPI_GENERIC_STATE      *ScopeInfo;                         /* Stack of nested scopes */
+    ACPI_PARSE_STATE        *ParserState;                       /* Current state of parser */
+    UINT32                  ParseFlags;
+    ACPI_PARSE_DOWNWARDS    DescendingCallback;
+    ACPI_PARSE_UPWARDS      AscendingCallback;
+
     union AcpiObjInternal   *ReturnDesc;                        /* Return object, if any */
     union AcpiObjInternal   *MethodDesc;                        /* Method descriptor if running a method */
     ACPI_GENERIC_OP         *MethodCallOp;                      /* MethodCall Op if running a method */
     union AcpiObjInternal   *Operands[OBJ_NUM_OPERANDS];        /* Operands passed to the interpreter */
     union AcpiObjInternal   *Results[OBJ_NUM_OPERANDS];         /* Accumulated results */
-    struct NameTableEntry   Arguments[MTH_NUM_ARGS];            /* Control method arguments */
-    struct NameTableEntry   LocalVariables[MTH_NUM_LOCALS];     /* Control method locals */
+    struct AcpiNamedObject  Arguments[MTH_NUM_ARGS];            /* Control method arguments */
+    struct AcpiNamedObject  LocalVariables[MTH_NUM_LOCALS];     /* Control method locals */
 
 
 } ACPI_WALK_STATE;
@@ -697,11 +710,6 @@ typedef struct acpi_walk_list
 
 } ACPI_WALK_LIST;
 
-
-typedef
-ACPI_STATUS (*INTERPRETER_CALLBACK) (
-    ACPI_WALK_STATE         *State,
-    ACPI_GENERIC_OP         *Op);
 
 
 /* Info used by AcpiPsInitObjects */
@@ -723,9 +731,6 @@ typedef struct AcpiWalkInfo
     UINT32                  OwnerId;
 
 } ACPI_WALK_INFO;
-
-
-
 
 
 /*****************************************************************************
@@ -920,8 +925,6 @@ typedef struct
 } DEVICE_ID;
 
 
-
-
 /*****************************************************************************
  *
  * Debug
@@ -952,4 +955,4 @@ typedef struct AllocationInfo
 
 #endif
 
-#endif
+#endif /* __ACLOCAL_H__ */
