@@ -2,7 +2,7 @@
  *
  * Module Name: dsopcode - Dispatcher Op Region support and handling of
  *                         "control" opcodes
- *              $Revision: 1.20 $
+ *              $Revision: 1.22 $
  *
  *****************************************************************************/
 
@@ -485,7 +485,7 @@ AcpiDsEvalFieldUnitOperands (
     }
 
 
-    Offset = OffDesc->Number.Value;
+    Offset = (UINT32) OffDesc->Number.Value;
 
 
     /*
@@ -739,7 +739,7 @@ AcpiDsEvalRegionOperands (
     /* Top of stack */
     OperandDesc = WalkState->Operands[WalkState->NumOperands - 1];
 
-    ObjDesc->Region.Length = OperandDesc->Number.Value;
+    ObjDesc->Region.Length = (UINT32) OperandDesc->Number.Value;
     AcpiCmRemoveReference (OperandDesc);
 
     /* Get the address and save it */
@@ -747,7 +747,7 @@ AcpiDsEvalRegionOperands (
     /* Top of stack - 1 */
     OperandDesc = WalkState->Operands[WalkState->NumOperands - 2];
 
-    ObjDesc->Region.Address = OperandDesc->Number.Value;
+    ObjDesc->Region.Address = (ACPI_PHYSICAL_ADDRESS) OperandDesc->Number.Value;
     AcpiCmRemoveReference (OperandDesc);
 
 
