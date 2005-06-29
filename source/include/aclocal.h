@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: aclocal.h - Internal data types used across the ACPI subsystem
- *       $Revision: 1.135 $
+ *       $Revision: 1.137 $
  *
  *****************************************************************************/
 
@@ -376,6 +376,33 @@ typedef struct acpi_namestring_info
 } ACPI_NAMESTRING_INFO;
 
 
+/* Field creation info */
+
+typedef struct
+{
+    ACPI_NAMESPACE_NODE     *RegionNode;
+    ACPI_NAMESPACE_NODE     *FieldNode;
+    ACPI_NAMESPACE_NODE     *RegisterNode;
+    ACPI_NAMESPACE_NODE     *DataRegisterNode;
+    UINT32                  BankValue;
+    UINT32                  FieldBitPosition;
+    UINT32                  FieldBitLength;
+    UINT8                   FieldFlags;
+    UINT8                   FieldType;
+
+} ACPI_CREATE_FIELD_INFO;
+
+/*
+ * Field flags: Bits 00 - 03 : AccessType (AnyAcc, ByteAcc, etc.)
+ *                   04      : LockRule (1 == Lock)
+ *                   05 - 06 : UpdateRule
+ */
+
+#define FIELD_ACCESS_TYPE_MASK      0x0F
+#define FIELD_LOCK_RULE_MASK        0x10
+#define FIELD_UPDATE_RULE_MASK      0x60
+
+
 /*****************************************************************************
  *
  * Event typedefs and structs
@@ -641,7 +668,9 @@ typedef struct acpi_opcode_info
 {
     UINT32                  ParseArgs;      /* Grammar/Parse time arguments */
     UINT32                  RuntimeArgs;    /* Interpret time arguments */
-    UINT32                  Flags;          /* Opcode type, HasArgs flag */
+    UINT16                  Flags;          /* Misc flags */
+    UINT8                   Class;          /* Opcode class */
+    UINT8                   Type;           /* Opcode type */
 
 #ifdef _OPCODE_NAMES
     NATIVE_CHAR             *Name;          /* op name (debug only) */

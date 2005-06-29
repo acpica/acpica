@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acinterp.h - Interpreter subcomponent prototypes and defines
- *       $Revision: 1.115 $
+ *       $Revision: 1.116 $
  *
  *****************************************************************************/
 
@@ -307,13 +307,6 @@ AcpiExDoMathOp (
     ACPI_INTEGER            Operand1);
 
 ACPI_STATUS
-AcpiExCreateBufferField (
-    UINT8                   *AmlStart,
-    UINT32                  AmlLength,
-    ACPI_NAMESPACE_NODE     *Node,
-    ACPI_WALK_STATE         *WalkState);
-
-ACPI_STATUS
 AcpiExLoadOp (
     ACPI_OPERAND_OBJECT     *RgnDesc,
     ACPI_OPERAND_OBJECT     *DdbHandle);
@@ -328,13 +321,11 @@ AcpiExCreateMutex (
 
 ACPI_STATUS
 AcpiExCreateProcessor (
-    ACPI_PARSE_OBJECT       *Op,
-    ACPI_NAMESPACE_NODE     *ProcessorNode);
+    ACPI_WALK_STATE         *WalkState);
 
 ACPI_STATUS
 AcpiExCreatePowerResource (
-    ACPI_PARSE_OBJECT       *Op,
-    ACPI_NAMESPACE_NODE     *PowerNode);
+    ACPI_WALK_STATE         *WalkState);
 
 ACPI_STATUS
 AcpiExCreateRegion (
@@ -359,8 +350,7 @@ ACPI_STATUS
 AcpiExCreateMethod (
     UINT8                   *AmlStart,
     UINT32                  AmlLength,
-    UINT32                  MethodFlags,
-    ACPI_NAMESPACE_NODE     *Method);
+    ACPI_WALK_STATE         *WalkState);
 
 
 /*
@@ -425,6 +415,9 @@ AcpiExPrepIndexFieldValue (
     UINT32                  FieldPosition,
     UINT32                  FieldLength);
 
+ACPI_STATUS
+AcpiExPrepFieldValue (
+    ACPI_CREATE_FIELD_INFO  *Info);
 
 /*
  * amsystem - Interface to OS services
