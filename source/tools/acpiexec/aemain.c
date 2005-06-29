@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: aemain - Main routine for the AcpiExec utility
- *              $Revision: 1.71 $
+ *              $Revision: 1.72 $
  *
  *****************************************************************************/
 
@@ -333,7 +333,7 @@ main (
     {
 #include "16bit.h"
 
-        Status = AfFindDsdt (NULL, NULL);
+        Status = AfFindTable (DSDT_SIG, NULL, NULL);
         if (ACPI_FAILURE (Status))
         {
             goto enterloop;
