@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslmain - compiler main and utilities
- *              $Revision: 1.10 $
+ *              $Revision: 1.8 $
  *
  *****************************************************************************/
 
@@ -242,7 +242,7 @@ main (
     /* Calculate all AML package lengths */
 
     DbgPrint ("\nGenerating Package lengths\n\n");
-    TgWalkParseTree (ASL_WALK_VISIT_UPWARD, NULL, LnPackageLengthWalk, NULL);
+    TgWalkParseTree (ASL_WALK_VISIT_UPWARD, NULL, CgAmlPackageLengthWalk, NULL);
 
     /* Semantic error checking */
 
@@ -255,18 +255,13 @@ main (
 
     /* Namespace loading */
 
-    LdLoadNamespace ();
+    LkLoadNamespace ();
 
 
     /* Namespace lookup */
 
     LkCrossReferenceNamespace ();
 
-    /* Calculate all AML package lengths */
-
-    DbgPrint ("\nGenerating Package lengths\n\n");
-    TgWalkParseTree (ASL_WALK_VISIT_UPWARD, NULL, LnInitLengthsWalk, NULL);
-    TgWalkParseTree (ASL_WALK_VISIT_UPWARD, NULL, LnPackageLengthWalk, NULL);
 
     /* Code generation - emit the AML */
 

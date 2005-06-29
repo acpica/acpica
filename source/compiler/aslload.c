@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dswload - Dispatcher namespace load callbacks
- *              $Revision: 1.1 $
+ *              $Revision: 1.2 $
  *
  *****************************************************************************/
 
@@ -153,11 +153,13 @@ LkLoadNamespace (void)
     }
 
 
+//    AcpiDbgLevel = 0xFFFFFFFF;
     TgWalkParseTree (ASL_WALK_VISIT_TWICE, LdNamespace1Begin, 
                         LdNamespace1End, WalkState);
 
 
     /* Dump the namespace if requested */
+//    AcpiDbgLevel = TRACE_TABLES;
 
     AcpiNsDumpTables (NS_ALL, ACPI_UINT32_MAX);
 
@@ -282,7 +284,7 @@ LdLoadResourceElements (
              * Store the field offset in the namespace node so it
              * can be used when the field is referenced
              */
-            (UINT32) NsNode->Object = InitializerNode->Value.Integer32;
+            (UINT16) NsNode->OwnerId = InitializerNode->Value.Integer16;
         }
         InitializerNode = ASL_GET_PEER_NODE (InitializerNode);
     }
