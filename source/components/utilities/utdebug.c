@@ -347,7 +347,7 @@ FunctionStatusExit (
     { 
         DebugPrint (ModuleName, LineNumber, ComponentId, TRACE_FUNCTIONS,
                     " %2.2ld Exiting Function: %s, %s\n", 
-                    Gbl_NestingLevel, FunctionName, Gbl_ExceptionNames[Status]);
+                    Gbl_NestingLevel, FunctionName, CmFormatException (Status));
     }
 
     Gbl_NestingLevel--;
