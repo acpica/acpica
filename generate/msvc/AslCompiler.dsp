@@ -243,11 +243,11 @@ SOURCE=..\..\components\compiler\aslutils.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\components\compiler\components\compiler.l.c
+SOURCE=..\..\components\compiler\aslcompiler.l.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\components\compiler\components\compiler.y.c
+SOURCE=..\..\components\compiler\aslcompiler.y.c
 # End Source File
 # End Group
 # Begin Group "Parser"
@@ -304,11 +304,11 @@ SOURCE=..\..\components\compiler\asltypes.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\components\compiler\components\compiler.h
+SOURCE=..\..\components\compiler\aslcompiler.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\components\compiler\components\compiler.y.h
+SOURCE=..\..\components\compiler\aslcompiler.y.h
 # End Source File
 # End Group
 # Begin Group "Resource Files"
@@ -317,13 +317,13 @@ SOURCE=..\..\components\compiler\components\compiler.y.h
 # End Group
 # Begin Source File
 
-SOURCE=../../AslCompiler/aslcompiler.l
+SOURCE=../../components/compiler/aslcompiler.l
 
 !IF  "$(CFG)" == "AslCompiler - Win32 Release"
 
 # PROP Ignore_Default_Tool 1
 # Begin Custom Build - Building Lexer from $(InputPath)
-InputPath=../../AslCompiler/aslcompiler.l
+InputPath=../../components/compiler/aslcompiler.l
 
 "$(InputPath).c" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
 	..\..\ThirdPartyTools\BisonFlex\flex.exe -PAslCompiler -i -s -CF -o$(InputPath).c $(InputPath)
@@ -334,7 +334,7 @@ InputPath=../../AslCompiler/aslcompiler.l
 
 # PROP Ignore_Default_Tool 1
 # Begin Custom Build - Building Lexer from $(InputPath)
-InputPath=../../AslCompiler/aslcompiler.l
+InputPath=../../components/compiler/aslcompiler.l
 
 "$(InputPath).c" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
 	..\..\ThirdPartyTools\BisonFlex\flex.exe -PAslCompiler -i -s -CF -o$(InputPath).c $(InputPath)
