@@ -631,26 +631,10 @@ PsWalkParsedAml (
 
         /* If we just returned from the execution of a control method, there's lots of cleanup to do */
 
-        if (WalkState->MethodDesc)
+        if (WalkState->MethodDesc &&
+            WalkState->MethodDesc->Method.ParserOp)
         {
-            /* Signal completion of the execution of this method if necessary */
-
-            if (WalkState->MethodDesc->Method.Semaphore)
-            {
-                Status = OsdSignalSemaphore (WalkState->MethodDesc->Method.Semaphore, 1);
-            }
-
-            /* Delete all arguments and locals */
-
-            DsMethodDataDeleteAll (WalkState);      
-
-            /* Delete the parse tree if asked to */
-
-            if (Gbl_WhenToParseMethods & METHOD_DELETE_AT_COMPLETION)
-            {
-                PsDeleteParseTree (WalkState->MethodDesc->Method.ParserOp);
-                WalkState->MethodDesc->Method.ParserOp = NULL;
-            }
+            DsTerminateControlMethod (WalkState);
         }
 
          /* Delete this walk state and all linked control states */
