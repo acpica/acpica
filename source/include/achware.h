@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: achware.h -- hardware specific interfaces
- *       $Revision: 1.57 $
+ *       $Revision: 1.76 $
  *
  *****************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2005, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -119,22 +119,26 @@
 
 
 /* PM Timer ticks per second (HZ) */
+
 #define PM_TIMER_FREQUENCY  3579545
+
+/* Values for the _SST reserved method */
+
+#define ACPI_SST_INDICATOR_OFF  0
+#define ACPI_SST_WORKING        1
+#define ACPI_SST_WAKING         2
+#define ACPI_SST_SLEEPING       3
+#define ACPI_SST_SLEEP_CONTEXT  4
 
 
 /* Prototypes */
 
 
+/*
+ * hwacpi - high level functions
+ */
 ACPI_STATUS
 AcpiHwInitialize (
-    void);
-
-ACPI_STATUS
-AcpiHwShutdown (
-    void);
-
-ACPI_STATUS
-AcpiHwInitializeSystemInfo (
     void);
 
 ACPI_STATUS
@@ -145,100 +149,95 @@ UINT32
 AcpiHwGetMode (
     void);
 
-UINT32
-AcpiHwGetModeCapabilities (
-    void);
 
-/* Register I/O Prototypes */
-
-
-UINT32
-AcpiHwRegisterBitAccess (
-    NATIVE_UINT             ReadWrite,
-    BOOLEAN                 UseLock,
-    UINT32                  RegisterId,
-    ... /* DWORD Write Value */);
-
-UINT32
-AcpiHwRegisterRead (
-    BOOLEAN                 UseLock,
+/*
+ * hwregs - ACPI Register I/O
+ */
+ACPI_BIT_REGISTER_INFO *
+AcpiHwGetBitRegisterInfo (
     UINT32                  RegisterId);
 
-void
+ACPI_STATUS
+AcpiHwRegisterRead (
+    BOOLEAN                 UseLock,
+    UINT32                  RegisterId,
+    UINT32                  *ReturnValue);
+
+ACPI_STATUS
 AcpiHwRegisterWrite (
     BOOLEAN                 UseLock,
     UINT32                  RegisterId,
     UINT32                  Value);
 
-UINT32
+ACPI_STATUS
 AcpiHwLowLevelRead (
     UINT32                  Width,
-    ACPI_GENERIC_ADDRESS    *Reg,
-    UINT32                  Offset);
+    UINT32                  *Value,
+    ACPI_GENERIC_ADDRESS    *Reg);
 
-void
+ACPI_STATUS
 AcpiHwLowLevelWrite (
     UINT32                  Width,
     UINT32                  Value,
-    ACPI_GENERIC_ADDRESS    *Reg,
-    UINT32                  Offset);
-
-void
-AcpiHwClearAcpiStatus (
-   void);
-
-UINT32
-AcpiHwGetBitShift (
-    UINT32                  Mask);
-
-
-/* GPE support */
-
-void
-AcpiHwEnableGpe (
-    UINT32                  GpeNumber);
-
-void
-AcpiHwEnableGpeForWakeup (
-    UINT32                  GpeNumber);
-
-void
-AcpiHwDisableGpe (
-    UINT32                  GpeNumber);
-
-void
-AcpiHwDisableGpeForWakeup (
-    UINT32                  GpeNumber);
-
-void
-AcpiHwClearGpe (
-    UINT32                  GpeNumber);
-
-void
-AcpiHwGetGpeStatus (
-    UINT32                  GpeNumber,
-    ACPI_EVENT_STATUS       *EventStatus);
-
-void
-AcpiHwDisableNonWakeupGpes (
-    void);
-
-void
-AcpiHwEnableNonWakeupGpes (
-    void);
-
-
-/* Sleep Prototypes */
+    ACPI_GENERIC_ADDRESS    *Reg);
 
 ACPI_STATUS
-AcpiHwObtainSleepTypeRegisterData (
-    UINT8                   SleepState,
-    UINT8                   *Slp_TypA,
-    UINT8                   *Slp_TypB);
+AcpiHwClearAcpiStatus (
+    UINT32                  Flags);
 
 
-/* ACPI Timer prototypes */
+/*
+ * hwgpe - GPE support
+ */
+ACPI_STATUS
+AcpiHwWriteGpeEnableReg (
+    ACPI_GPE_EVENT_INFO     *GpeEventInfo);
 
+ACPI_STATUS
+AcpiHwDisableGpeBlock (
+    ACPI_GPE_XRUPT_INFO     *GpeXruptInfo,
+    ACPI_GPE_BLOCK_INFO     *GpeBlock);
+
+ACPI_STATUS
+AcpiHwClearGpe (
+    ACPI_GPE_EVENT_INFO     *GpeEventInfo);
+
+ACPI_STATUS
+AcpiHwClearGpeBlock (
+    ACPI_GPE_XRUPT_INFO     *GpeXruptInfo,
+    ACPI_GPE_BLOCK_INFO     *GpeBlock);
+
+ACPI_STATUS
+AcpiHwGetGpeStatus (
+    ACPI_GPE_EVENT_INFO     *GpeEventInfo,
+    ACPI_EVENT_STATUS       *EventStatus);
+
+ACPI_STATUS
+AcpiHwDisableAllGpes (
+    UINT32                  Flags);
+
+ACPI_STATUS
+AcpiHwEnableAllRuntimeGpes (
+    UINT32                  Flags);
+
+ACPI_STATUS
+AcpiHwEnableAllWakeupGpes (
+    UINT32                  Flags);
+
+ACPI_STATUS
+AcpiHwEnableRuntimeGpeBlock (
+    ACPI_GPE_XRUPT_INFO     *GpeXruptInfo,
+    ACPI_GPE_BLOCK_INFO     *GpeBlock);
+
+static ACPI_STATUS
+AcpiHwEnableWakeupGpeBlock (
+    ACPI_GPE_XRUPT_INFO     *GpeXruptInfo,
+    ACPI_GPE_BLOCK_INFO     *GpeBlock);
+
+
+/*
+ * hwtimer - ACPI Timer prototypes
+ */
 ACPI_STATUS
 AcpiGetTimerResolution (
     UINT32                  *Resolution);

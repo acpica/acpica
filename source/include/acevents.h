@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acevents.h - Event subcomponent prototypes and defines
- *       $Revision: 1.69 $
+ *       $Revision: 1.99 $
  *
  *****************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2005, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -119,15 +119,18 @@
 
 
 ACPI_STATUS
-AcpiEvInitialize (
+AcpiEvInitializeEvents (
+    void);
+
+ACPI_STATUS
+AcpiEvInstallXruptHandlers (
     void);
 
 
 /*
  * Evfixed - Fixed event handling
  */
-
-ACPI_STATUS
+static ACPI_STATUS
 AcpiEvFixedEventInitialize (
     void);
 
@@ -135,20 +138,23 @@ UINT32
 AcpiEvFixedEventDetect (
     void);
 
-UINT32
+static UINT32
 AcpiEvFixedEventDispatch (
-    UINT32                  AcpiEvent);
+    UINT32                  Event);
 
 
 /*
- * Evglock - Global Lock support
+ * Evmisc
  */
+BOOLEAN
+AcpiEvIsNotifyObject (
+    ACPI_NAMESPACE_NODE     *Node);
 
 ACPI_STATUS
 AcpiEvAcquireGlobalLock(
-    UINT32                  Timeout);
+    UINT16                  Timeout);
 
-void
+ACPI_STATUS
 AcpiEvReleaseGlobalLock(
     void);
 
@@ -156,47 +162,147 @@ ACPI_STATUS
 AcpiEvInitGlobalLockHandler (
     void);
 
-
-/*
- * Evgpe - GPE handling and dispatch
- */
-
-ACPI_STATUS
-AcpiEvGpeInitialize (
-    void);
-
-ACPI_STATUS
-AcpiEvInitGpeControlMethods (
-    void);
-
 UINT32
-AcpiEvGpeDispatch (
+AcpiEvGetGpeNumberIndex (
     UINT32                  GpeNumber);
-
-UINT32
-AcpiEvGpeDetect (
-    void);
-
-
-/*
- * Evnotify - Device Notify handling and dispatch
- */
 
 ACPI_STATUS
 AcpiEvQueueNotifyRequest (
     ACPI_NAMESPACE_NODE     *Node,
     UINT32                  NotifyValue);
 
-void
+static void ACPI_SYSTEM_XFACE
 AcpiEvNotifyDispatch (
     void                    *Context);
+
+static void ACPI_SYSTEM_XFACE
+AcpiEvGlobalLockThread (
+    void                    *Context);
+
+static UINT32
+AcpiEvGlobalLockHandler (
+    void                    *Context);
+
+/*
+ * Evgpe - GPE handling and dispatch
+ */
+ACPI_STATUS
+AcpiEvUpdateGpeEnableMasks (
+    ACPI_GPE_EVENT_INFO     *GpeEventInfo,
+    UINT8                   Type);
+
+ACPI_STATUS
+AcpiEvEnableGpe (
+    ACPI_GPE_EVENT_INFO     *GpeEventInfo,
+    BOOLEAN                 WriteToHardware);
+
+ACPI_STATUS
+AcpiEvDisableGpe (
+    ACPI_GPE_EVENT_INFO     *GpeEventInfo);
+
+ACPI_GPE_EVENT_INFO *
+AcpiEvGetGpeEventInfo (
+    ACPI_HANDLE             GpeDevice,
+    UINT32                  GpeNumber);
+
+static void ACPI_SYSTEM_XFACE
+AcpiEvAsynchExecuteGpeMethod (
+    void                    *Context);
+
+
+/*
+ * evgpeblk
+ */
+BOOLEAN
+AcpiEvValidGpeEvent (
+    ACPI_GPE_EVENT_INFO     *GpeEventInfo);
+
+ACPI_STATUS
+AcpiEvWalkGpeList (
+    ACPI_GPE_CALLBACK       GpeWalkCallback,
+    UINT32                  Flags);
+
+ACPI_STATUS
+AcpiEvDeleteGpeHandlers (
+    ACPI_GPE_XRUPT_INFO     *GpeXruptInfo,
+    ACPI_GPE_BLOCK_INFO     *GpeBlock);
+
+ACPI_STATUS
+AcpiEvCreateGpeBlock (
+    ACPI_NAMESPACE_NODE     *GpeDevice,
+    ACPI_GENERIC_ADDRESS    *GpeBlockAddress,
+    UINT32                  RegisterCount,
+    UINT8                   GpeBlockBaseNumber,
+    UINT32                  InterruptLevel,
+    ACPI_GPE_BLOCK_INFO     **ReturnGpeBlock);
+
+ACPI_STATUS
+AcpiEvDeleteGpeBlock (
+    ACPI_GPE_BLOCK_INFO     *GpeBlock);
+
+UINT32
+AcpiEvGpeDispatch (
+    ACPI_GPE_EVENT_INFO     *GpeEventInfo,
+    UINT32                  GpeNumber);
+
+UINT32
+AcpiEvGpeDetect (
+    ACPI_GPE_XRUPT_INFO     *GpeXruptList);
+
+ACPI_STATUS
+AcpiEvSetGpeType (
+    ACPI_GPE_EVENT_INFO     *GpeEventInfo,
+    UINT8                   Type);
+
+ACPI_STATUS
+AcpiEvCheckForWakeOnlyGpe (
+    ACPI_GPE_EVENT_INFO     *GpeEventInfo);
+
+ACPI_STATUS
+AcpiEvGpeInitialize (
+    void);
+
+static ACPI_STATUS
+AcpiEvSaveMethodInfo (
+    ACPI_HANDLE             ObjHandle,
+    UINT32                  Level,
+    void                    *ObjDesc,
+    void                    **ReturnValue);
+
+static ACPI_STATUS
+AcpiEvMatchPrwAndGpe (
+    ACPI_HANDLE             ObjHandle,
+    UINT32                  Level,
+    void                    *Info,
+    void                    **ReturnValue);
+
+static ACPI_GPE_XRUPT_INFO *
+AcpiEvGetGpeXruptBlock (
+    UINT32                  InterruptLevel);
+
+static ACPI_STATUS
+AcpiEvDeleteGpeXrupt (
+    ACPI_GPE_XRUPT_INFO     *GpeXrupt);
+
+static ACPI_STATUS
+AcpiEvInstallGpeBlock (
+    ACPI_GPE_BLOCK_INFO     *GpeBlock,
+    UINT32                  InterruptLevel);
+
+static ACPI_STATUS
+AcpiEvCreateGpeInfoBlocks (
+    ACPI_GPE_BLOCK_INFO     *GpeBlock);
+
 
 /*
  * Evregion - Address Space handling
  */
+ACPI_STATUS
+AcpiEvInstallRegionHandlers (
+    void);
 
 ACPI_STATUS
-AcpiEvInstallDefaultAddressSpaceHandlers (
+AcpiEvInitializeOpRegions (
     void);
 
 ACPI_STATUS
@@ -205,31 +311,55 @@ AcpiEvAddressSpaceDispatch (
     UINT32                  Function,
     ACPI_PHYSICAL_ADDRESS   Address,
     UINT32                  BitWidth,
-    ACPI_INTEGER            *Value);
+    void                    *Value);
 
 ACPI_STATUS
-AcpiEvAddrHandlerHelper (
+AcpiEvAttachRegion (
+    ACPI_OPERAND_OBJECT     *HandlerObj,
+    ACPI_OPERAND_OBJECT     *RegionObj,
+    BOOLEAN                 AcpiNsIsLocked);
+
+void
+AcpiEvDetachRegion (
+    ACPI_OPERAND_OBJECT    *RegionObj,
+    BOOLEAN                 AcpiNsIsLocked);
+
+ACPI_STATUS
+AcpiEvInstallSpaceHandler (
+    ACPI_NAMESPACE_NODE     *Node,
+    ACPI_ADR_SPACE_TYPE     SpaceId,
+    ACPI_ADR_SPACE_HANDLER  Handler,
+    ACPI_ADR_SPACE_SETUP    Setup,
+    void                    *Context);
+
+ACPI_STATUS
+AcpiEvExecuteRegMethods (
+    ACPI_NAMESPACE_NODE     *Node,
+    ACPI_ADR_SPACE_TYPE     SpaceId);
+
+ACPI_STATUS
+AcpiEvExecuteRegMethod (
+    ACPI_OPERAND_OBJECT    *RegionObj,
+    UINT32                  Function);
+
+static ACPI_STATUS
+AcpiEvRegRun (
     ACPI_HANDLE             ObjHandle,
     UINT32                  Level,
     void                    *Context,
     void                    **ReturnValue);
 
-void
-AcpiEvDisassociateRegionFromHandler(
-    ACPI_OPERAND_OBJECT    *RegionObj,
-    BOOLEAN                 AcpiNsIsLocked);
-
-ACPI_STATUS
-AcpiEvAssociateRegionAndHandler (
-    ACPI_OPERAND_OBJECT     *HandlerObj,
-    ACPI_OPERAND_OBJECT     *RegionObj,
-    BOOLEAN                 AcpiNsIsLocked);
+static ACPI_STATUS
+AcpiEvInstallHandler (
+    ACPI_HANDLE             ObjHandle,
+    UINT32                  Level,
+    void                    *Context,
+    void                    **ReturnValue);
 
 
 /*
  * Evregini - Region initialization and setup
  */
-
 ACPI_STATUS
 AcpiEvSystemMemoryRegionSetup (
     ACPI_HANDLE             Handle,
@@ -281,6 +411,9 @@ AcpiEvInitializeRegion (
 /*
  * Evsci - SCI (System Control Interrupt) handling/dispatch
  */
+UINT32 ACPI_SYSTEM_XFACE
+AcpiEvGpeXruptHandler (
+    void                    *Context);
 
 UINT32
 AcpiEvInstallSciHandler (
@@ -295,12 +428,12 @@ AcpiEvInitializeSCI (
     UINT32                  ProgramSCI);
 
 void
-AcpiEvRestoreAcpiState (
-    void);
-
-void
 AcpiEvTerminate (
     void);
+
+static UINT32 ACPI_SYSTEM_XFACE
+AcpiEvSciXruptHandler (
+    void                    *Context);
 
 
 #endif  /* __ACEVENTS_H__  */

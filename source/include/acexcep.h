@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acexcep.h - Exception codes returned by the ACPI subsystem
- *       $Revision: 1.55 $
+ *       $Revision: 1.74 $
  *
  *****************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2005, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -121,7 +121,6 @@
 /*
  * Exceptions returned by external ACPI interfaces
  */
-
 #define AE_CODE_ENVIRONMENTAL           0x0000
 #define AE_CODE_PROGRAMMER              0x1000
 #define AE_CODE_ACPI_TABLES             0x2000
@@ -165,8 +164,13 @@
 #define AE_ALREADY_ACQUIRED             (ACPI_STATUS) (0x0018 | AE_CODE_ENVIRONMENTAL)
 #define AE_NO_HARDWARE_RESPONSE         (ACPI_STATUS) (0x0019 | AE_CODE_ENVIRONMENTAL)
 #define AE_NO_GLOBAL_LOCK               (ACPI_STATUS) (0x001A | AE_CODE_ENVIRONMENTAL)
+#define AE_LOGICAL_ADDRESS              (ACPI_STATUS) (0x001B | AE_CODE_ENVIRONMENTAL)
+#define AE_ABORT_METHOD                 (ACPI_STATUS) (0x001C | AE_CODE_ENVIRONMENTAL)
+#define AE_SAME_HANDLER                 (ACPI_STATUS) (0x001D | AE_CODE_ENVIRONMENTAL)
+#define AE_WAKE_ONLY_GPE                (ACPI_STATUS) (0x001E | AE_CODE_ENVIRONMENTAL)
 
-#define AE_CODE_ENV_MAX                 0x001A
+#define AE_CODE_ENV_MAX                 0x001E
+
 
 /*
  * Programmer exceptions
@@ -177,8 +181,11 @@
 #define AE_BAD_DATA                     (ACPI_STATUS) (0x0004 | AE_CODE_PROGRAMMER)
 #define AE_BAD_ADDRESS                  (ACPI_STATUS) (0x0005 | AE_CODE_PROGRAMMER)
 #define AE_ALIGNMENT                    (ACPI_STATUS) (0x0006 | AE_CODE_PROGRAMMER)
+#define AE_BAD_HEX_CONSTANT             (ACPI_STATUS) (0x0007 | AE_CODE_PROGRAMMER)
+#define AE_BAD_OCTAL_CONSTANT           (ACPI_STATUS) (0x0008 | AE_CODE_PROGRAMMER)
+#define AE_BAD_DECIMAL_CONSTANT         (ACPI_STATUS) (0x0009 | AE_CODE_PROGRAMMER)
 
-#define AE_CODE_PGM_MAX                 0x0006
+#define AE_CODE_PGM_MAX                 0x0009
 
 
 /*
@@ -188,8 +195,10 @@
 #define AE_BAD_HEADER                   (ACPI_STATUS) (0x0002 | AE_CODE_ACPI_TABLES)
 #define AE_BAD_CHECKSUM                 (ACPI_STATUS) (0x0003 | AE_CODE_ACPI_TABLES)
 #define AE_BAD_VALUE                    (ACPI_STATUS) (0x0004 | AE_CODE_ACPI_TABLES)
+#define AE_TABLE_NOT_SUPPORTED          (ACPI_STATUS) (0x0005 | AE_CODE_ACPI_TABLES)
+#define AE_INVALID_TABLE_LENGTH         (ACPI_STATUS) (0x0006 | AE_CODE_ACPI_TABLES)
 
-#define AE_CODE_TBL_MAX                 0x0003
+#define AE_CODE_TBL_MAX                 0x0006
 
 
 /*
@@ -224,8 +233,14 @@
 #define AE_AML_INVALID_INDEX            (ACPI_STATUS) (0x001A | AE_CODE_AML)
 #define AE_AML_REGISTER_LIMIT           (ACPI_STATUS) (0x001B | AE_CODE_AML)
 #define AE_AML_NO_WHILE                 (ACPI_STATUS) (0x001C | AE_CODE_AML)
+#define AE_AML_ALIGNMENT                (ACPI_STATUS) (0x001D | AE_CODE_AML)
+#define AE_AML_NO_RESOURCE_END_TAG      (ACPI_STATUS) (0x001E | AE_CODE_AML)
+#define AE_AML_BAD_RESOURCE_VALUE       (ACPI_STATUS) (0x001F | AE_CODE_AML)
+#define AE_AML_CIRCULAR_REFERENCE       (ACPI_STATUS) (0x0020 | AE_CODE_AML)
+#define AE_AML_BAD_RESOURCE_LENGTH      (ACPI_STATUS) (0x0021 | AE_CODE_AML)
 
-#define AE_CODE_AML_MAX                 0x001C
+#define AE_CODE_AML_MAX                 0x0021
+
 
 /*
  * Internal exceptions used for control
@@ -240,17 +255,19 @@
 #define AE_CTRL_TRANSFER                (ACPI_STATUS) (0x0008 | AE_CODE_CONTROL)
 #define AE_CTRL_BREAK                   (ACPI_STATUS) (0x0009 | AE_CODE_CONTROL)
 #define AE_CTRL_CONTINUE                (ACPI_STATUS) (0x000A | AE_CODE_CONTROL)
+#define AE_CTRL_SKIP                    (ACPI_STATUS) (0x000B | AE_CODE_CONTROL)
 
-#define AE_CODE_CTRL_MAX                0x000A
+#define AE_CODE_CTRL_MAX                0x000B
 
 
 #ifdef DEFINE_ACPI_GLOBALS
+
 
 /*
  * String versions of the exception codes above
  * These strings must match the corresponding defines exactly
  */
-NATIVE_CHAR const   *AcpiGbl_ExceptionNames_Env[] =
+char const   *AcpiGbl_ExceptionNames_Env[] =
 {
     "AE_OK",
     "AE_ERROR",
@@ -279,9 +296,13 @@ NATIVE_CHAR const   *AcpiGbl_ExceptionNames_Env[] =
     "AE_ALREADY_ACQUIRED",
     "AE_NO_HARDWARE_RESPONSE",
     "AE_NO_GLOBAL_LOCK",
+    "AE_LOGICAL_ADDRESS",
+    "AE_ABORT_METHOD",
+    "AE_SAME_HANDLER",
+    "AE_WAKE_ONLY_GPE"
 };
 
-NATIVE_CHAR const   *AcpiGbl_ExceptionNames_Pgm[] =
+char const   *AcpiGbl_ExceptionNames_Pgm[] =
 {
     "AE_BAD_PARAMETER",
     "AE_BAD_CHARACTER",
@@ -289,17 +310,22 @@ NATIVE_CHAR const   *AcpiGbl_ExceptionNames_Pgm[] =
     "AE_BAD_DATA",
     "AE_BAD_ADDRESS",
     "AE_ALIGNMENT",
+    "AE_BAD_HEX_CONSTANT",
+    "AE_BAD_OCTAL_CONSTANT",
+    "AE_BAD_DECIMAL_CONSTANT"
 };
 
-NATIVE_CHAR const   *AcpiGbl_ExceptionNames_Tbl[] =
+char const   *AcpiGbl_ExceptionNames_Tbl[] =
 {
     "AE_BAD_SIGNATURE",
     "AE_BAD_HEADER",
     "AE_BAD_CHECKSUM",
     "AE_BAD_VALUE",
+    "AE_TABLE_NOT_SUPPORTED",
+    "AE_INVALID_TABLE_LENGTH"
 };
 
-NATIVE_CHAR const   *AcpiGbl_ExceptionNames_Aml[] =
+char const   *AcpiGbl_ExceptionNames_Aml[] =
 {
     "AE_AML_ERROR",
     "AE_AML_PARSE",
@@ -329,9 +355,14 @@ NATIVE_CHAR const   *AcpiGbl_ExceptionNames_Aml[] =
     "AE_AML_INVALID_INDEX",
     "AE_AML_REGISTER_LIMIT",
     "AE_AML_NO_WHILE",
+    "AE_AML_ALIGNMENT",
+    "AE_AML_NO_RESOURCE_END_TAG",
+    "AE_AML_BAD_RESOURCE_VALUE",
+    "AE_AML_CIRCULAR_REFERENCE",
+    "AE_AML_BAD_RESOURCE_LENGTH"
 };
 
-NATIVE_CHAR const   *AcpiGbl_ExceptionNames_Ctrl[] =
+char const   *AcpiGbl_ExceptionNames_Ctrl[] =
 {
     "AE_CTRL_RETURN_VALUE",
     "AE_CTRL_PENDING",
@@ -343,9 +374,9 @@ NATIVE_CHAR const   *AcpiGbl_ExceptionNames_Ctrl[] =
     "AE_CTRL_TRANSFER",
     "AE_CTRL_BREAK",
     "AE_CTRL_CONTINUE",
+    "AE_CTRL_SKIP"
 };
 
 #endif /* ACPI GLOBALS */
-
 
 #endif /* __ACEXCEP_H__ */
