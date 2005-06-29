@@ -189,7 +189,7 @@ _CmCreateInternalObject (
 
     INCREMENT_OBJECT_METRICS (sizeof (ACPI_OBJECT_INTERNAL));
 
-    return_VALUE (Object);
+    return_PTR (Object);
 }
 
 
@@ -326,7 +326,7 @@ _CmAllocateObjectDesc (
             _REPORT_ERROR (ModuleName, LineNumber, ComponentId, 
                             "Could not allocate Object Descriptor");
 
-            return_VALUE (NULL);
+            return_PTR (NULL);
         }
     }
 
@@ -337,7 +337,7 @@ _CmAllocateObjectDesc (
     DEBUG_PRINT (TRACE_ALLOCATIONS, ("AllocateObjectDesc: %p Size 0x%x\n",
                     Object, sizeof (ACPI_OBJECT_INTERNAL)));
 
-    return_VALUE (Object);
+    return_PTR (Object);
 }
 
 
