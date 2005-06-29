@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: evxfevnt - External Interfaces, ACPI event disable/enable
- *              $Revision: 1.56 $
+ *              $Revision: 1.57 $
  *
  *****************************************************************************/
 
@@ -197,18 +197,18 @@ AcpiDisable (void)
 
     if (!AcpiGbl_FADT)
     {
-	ACPI_DEBUG_PRINT ((ACPI_DB_WARN, "No FADT information present!\n"));
-	return_ACPI_STATUS (AE_NO_ACPI_TABLES);
+        ACPI_DEBUG_PRINT ((ACPI_DB_WARN, "No FADT information present!\n"));
+        return_ACPI_STATUS (AE_NO_ACPI_TABLES);
     }
 
     if (AcpiHwGetMode() == ACPI_SYS_MODE_LEGACY)
     {
-	ACPI_DEBUG_PRINT ((ACPI_DB_OK, "Already in LEGACY mode.\n"));
+        ACPI_DEBUG_PRINT ((ACPI_DB_OK, "Already in LEGACY mode.\n"));
     }
     else
     {
-	/* Transition to LEGACY mode */
-	Status = AcpiHwSetMode (ACPI_SYS_MODE_LEGACY);
+        /* Transition to LEGACY mode */
+        Status = AcpiHwSetMode (ACPI_SYS_MODE_LEGACY);
 
         if (ACPI_FAILURE (Status))
         {
