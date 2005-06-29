@@ -233,7 +233,7 @@ NsAllocateNameTable (
 
 ACPI_STATUS
 NsDeleteNamespaceSubtree (
-    ACPI_HANDLE             ParentHandle);
+    NAME_TABLE_ENTRY        *ParentHandle);
 
 void
 NsDetachObject (
