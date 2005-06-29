@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asfile - Main module for the acpi source processor utility
- *              $Revision: 1.16 $
+ *              $Revision: 1.18 $
  *
  *****************************************************************************/
 
@@ -127,7 +127,7 @@
  *
  ******************************************************************************/
 
-NATIVE_INT
+ACPI_NATIVE_INT
 AsProcessTree (
     ACPI_CONVERSION_TABLE   *ConversionTable,
     char                    *SourcePath,
@@ -185,11 +185,10 @@ AsProcessTree (
         {
             VERBOSE_PRINT (("File: %s\n", FindInfo.name));
             AsProcessOneFile (ConversionTable, SourcePath, TargetPath, MaxPathLength, FindInfo.name, FILE_TYPE_SOURCE);
-       }
+        }
 
         _findclose (FindHandle);
     }
-
 
     /* Do the C header files */
 
@@ -257,7 +256,6 @@ AsProcessTree (
         _findclose (FindHandle);
     }
 
-
     /* Do the subdirectories */
 
     strcpy (FileSpec, SourcePath);
@@ -288,11 +286,18 @@ AsProcessTree (
         _findclose (FindHandle);
     }
 
-
     free (FileSpec);
     return 0;
 }
 
+
+/******************************************************************************
+ *
+ * FUNCTION:    AsDetectLoneLineFeeds
+ *
+ * DESCRIPTION: Find LF without CR.
+ *
+ ******************************************************************************/
 
 BOOLEAN
 AsDetectLoneLineFeeds (
@@ -345,7 +350,7 @@ AsConvertFile (
     ACPI_CONVERSION_TABLE   *ConversionTable,
     char                    *FileBuffer,
     char                    *Filename,
-    NATIVE_INT              FileType)
+    ACPI_NATIVE_INT         FileType)
 {
     UINT32                  i;
     UINT32                  Functions;
@@ -550,14 +555,14 @@ AsConvertFile (
  *
  ******************************************************************************/
 
-NATIVE_INT
+ACPI_NATIVE_INT
 AsProcessOneFile (
     ACPI_CONVERSION_TABLE   *ConversionTable,
     char                    *SourcePath,
     char                    *TargetPath,
     int                     MaxPathLength,
     char                    *Filename,
-    NATIVE_INT              FileType)
+    ACPI_NATIVE_INT         FileType)
 {
     char                    *Pathname;
 
@@ -625,7 +630,7 @@ AsProcessOneFile (
  *
  ******************************************************************************/
 
-NATIVE_INT
+ACPI_NATIVE_INT
 AsCheckForDirectory (
     char                    *SourceDirPath,
     char                    *TargetDirPath,
@@ -647,7 +652,6 @@ AsCheckForDirectory (
     {
         return -1;
     }
-
 
     SrcPath = calloc (strlen (SourceDirPath) + strlen (FindInfo->name) + 2, 1);
     if (!SrcPath)
@@ -718,7 +722,6 @@ AsGetFile (
      * Create a buffer for the entire file
      * Add 10% extra to accomodate string replacements
      */
-
     Size = Gbl_StatBuf.st_size;
     Buffer = calloc (Size + (Size / 10), 1);
     if (!Buffer)
@@ -762,7 +765,6 @@ AsGetFile (
         goto ErrorExit;
     }
     Size = Gbl_StatBuf.st_size;
-
 
     /* Read the entire file */
 

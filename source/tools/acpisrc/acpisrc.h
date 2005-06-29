@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: acpisrc.h - Include file for AcpiSrc utility
- *              $Revision: 1.16 $
+ *              $Revision: 1.17 $
  *
  *****************************************************************************/
 
@@ -332,7 +332,7 @@ AsRemoveConditionalCompile (
     char                    *Buffer,
     char                    *Keyword);
 
-NATIVE_INT
+ACPI_NATIVE_INT
 AsProcessTree (
     ACPI_CONVERSION_TABLE   *ConversionTable,
     char                    *SourcePath,
@@ -360,18 +360,18 @@ AsConvertFile (
     ACPI_CONVERSION_TABLE   *ConversionTable,
     char                    *FileBuffer,
     char                    *Filename,
-    NATIVE_INT              FileType);
+    ACPI_NATIVE_INT         FileType);
 
-NATIVE_INT
+ACPI_NATIVE_INT
 AsProcessOneFile (
     ACPI_CONVERSION_TABLE   *ConversionTable,
     char                    *SourcePath,
     char                    *TargetPath,
     int                     MaxPathLength,
     char                    *Filename,
-    NATIVE_INT              FileType);
+    ACPI_NATIVE_INT         FileType);
 
-NATIVE_INT
+ACPI_NATIVE_INT
 AsCheckForDirectory (
     char                    *SourceDirPath,
     char                    *TargetDirPath,
