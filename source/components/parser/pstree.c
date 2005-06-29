@@ -1,6 +1,7 @@
 /******************************************************************************
  *
  * Module Name: pstree - Parser op tree manipulation/traversal/search
+ *              $Revision: 1.23 $
  *
  *****************************************************************************/
 
@@ -117,12 +118,11 @@
 #define __PSTREE_C__
 
 #include "acpi.h"
-#include "parser.h"
+#include "acparser.h"
 #include "amlcode.h"
 
 #define _COMPONENT          PARSER
-        MODULE_NAME         ("pstree");
-
+        MODULE_NAME         ("pstree")
 
 
 /*******************************************************************************
@@ -132,39 +132,38 @@
  * PARAMETERS:  Op              - Get an argument for this op
  *              Argn            - Nth argument to get
  *
- * RETURN:      The argument (as an Op object).  NULL if argument does not exist.
+ * RETURN:      The argument (as an Op object).  NULL if argument does not exist
  *
  * DESCRIPTION: Get the specified op's argument.
  *
  ******************************************************************************/
 
-ACPI_GENERIC_OP *
+ACPI_PARSE_OBJECT *
 AcpiPsGetArg (
-    ACPI_GENERIC_OP         *Op,
+    ACPI_PARSE_OBJECT       *Op,
     UINT32                  Argn)
 {
-    ACPI_GENERIC_OP         *Arg = NULL;
-    ACPI_OP_INFO            *OpInfo;
-
+    ACPI_PARSE_OBJECT       *Arg = NULL;
+    ACPI_OPCODE_INFO        *OpInfo;
 
 
     /* Get the info structure for this opcode */
 
     OpInfo = AcpiPsGetOpcodeInfo (Op->Opcode);
-    if (!OpInfo)
+    if (ACPI_GET_OP_TYPE (OpInfo) != ACPI_OP_TYPE_OPCODE)
     {
-        /* Invalid opcode */
+        /* Invalid opcode or ASCII character */
 
-        return NULL;
+        return (NULL);
     }
 
     /* Check if this opcode requires argument sub-objects */
 
-    if (!(OpInfo->Flags & OP_INFO_HAS_ARGS))
+    if (!(ACPI_GET_OP_ARGS (OpInfo)))
     {
         /* Has no linked argument objects */
 
-        return NULL;
+        return (NULL);
     }
 
     /* Get the requested argument object */
@@ -176,7 +175,7 @@ AcpiPsGetArg (
         Arg = Arg->Next;
     }
 
-    return Arg;
+    return (Arg);
 }
 
 
@@ -195,11 +194,11 @@ AcpiPsGetArg (
 
 void
 AcpiPsAppendArg (
-    ACPI_GENERIC_OP         *Op,
-    ACPI_GENERIC_OP         *Arg)
+    ACPI_PARSE_OBJECT       *Op,
+    ACPI_PARSE_OBJECT       *Arg)
 {
-    ACPI_GENERIC_OP         *PrevArg;
-    ACPI_OP_INFO            *OpInfo;
+    ACPI_PARSE_OBJECT       *PrevArg;
+    ACPI_OPCODE_INFO        *OpInfo;
 
 
     if (!Op)
@@ -210,7 +209,7 @@ AcpiPsAppendArg (
     /* Get the info structure for this opcode */
 
     OpInfo = AcpiPsGetOpcodeInfo (Op->Opcode);
-    if (!OpInfo)
+    if (ACPI_GET_OP_TYPE (OpInfo) != ACPI_OP_TYPE_OPCODE)
     {
         /* Invalid opcode */
 
@@ -219,13 +218,12 @@ AcpiPsAppendArg (
 
     /* Check if this opcode requires argument sub-objects */
 
-    if (!(OpInfo->Flags & OP_INFO_HAS_ARGS))
+    if (!(ACPI_GET_OP_ARGS (OpInfo)))
     {
         /* Has no linked argument objects */
 
         return;
     }
-
 
 
     /* Append the argument to the linked argument list */
@@ -272,11 +270,11 @@ AcpiPsAppendArg (
  *
  ******************************************************************************/
 
-ACPI_GENERIC_OP *
+ACPI_PARSE_OBJECT *
 AcpiPsGetChild (
-    ACPI_GENERIC_OP         *Op)
+    ACPI_PARSE_OBJECT       *Op)
 {
-    ACPI_GENERIC_OP         *Child = NULL;
+    ACPI_PARSE_OBJECT       *Child = NULL;
 
 
     switch (Op->Opcode)
@@ -317,7 +315,7 @@ AcpiPsGetChild (
 
     }
 
-    return Child;
+    return (Child);
 }
 
 
@@ -335,19 +333,19 @@ AcpiPsGetChild (
  *
  ******************************************************************************/
 
-ACPI_GENERIC_OP *
+ACPI_PARSE_OBJECT *
 AcpiPsGetDepthNext (
-    ACPI_GENERIC_OP         *Origin,
-    ACPI_GENERIC_OP         *Op)
+    ACPI_PARSE_OBJECT       *Origin,
+    ACPI_PARSE_OBJECT       *Op)
 {
-    ACPI_GENERIC_OP         *Next = NULL;
-    ACPI_GENERIC_OP         *Parent;
-    ACPI_GENERIC_OP         *Arg;
+    ACPI_PARSE_OBJECT       *Next = NULL;
+    ACPI_PARSE_OBJECT       *Parent;
+    ACPI_PARSE_OBJECT       *Arg;
 
 
     if (!Op)
     {
-        return NULL;
+        return (NULL);
     }
 
     /* look for an argument or child */
@@ -355,7 +353,7 @@ AcpiPsGetDepthNext (
     Next = AcpiPsGetArg (Op, 0);
     if (Next)
     {
-        return Next;
+        return (Next);
     }
 
     /* look for a sibling */
@@ -363,7 +361,7 @@ AcpiPsGetDepthNext (
     Next = Op->Next;
     if (Next)
     {
-        return Next;
+        return (Next);
     }
 
     /* look for a sibling of parent */
@@ -382,20 +380,20 @@ AcpiPsGetDepthNext (
         {
             /* reached parent of origin, end search */
 
-            return NULL;
+            return (NULL);
         }
 
         if (Parent->Next)
         {
             /* found sibling of parent */
-            return Parent->Next;
+            return (Parent->Next);
         }
 
         Op = Parent;
         Parent = Parent->Parent;
     }
 
-    return Next;
+    return (Next);
 }
 
 
@@ -413,10 +411,10 @@ AcpiPsGetDepthNext (
  *
  ******************************************************************************/
 
-ACPI_GENERIC_OP *
+ACPI_PARSE_OBJECT *
 AcpiPsFetchPrefix (
-    ACPI_GENERIC_OP         *Scope,
-    char                    **Path,
+    ACPI_PARSE_OBJECT       *Scope,
+    NATIVE_CHAR             **Path,
     UINT32                  io)
 {
     UINT32                  prefix = io ? GET8 (*Path):**Path;
@@ -453,7 +451,7 @@ AcpiPsFetchPrefix (
         Scope = AcpiPsGetChild (Scope);
     }
 
-    return Scope;
+    return (Scope);
 }
 
 
@@ -464,7 +462,7 @@ AcpiPsFetchPrefix (
  * PARAMETERS:  Path            - A string containing the name segment
  *              io              - Direction flag
  *
- * RETURN:      The 4-char ASCII ACPI Name as a UINT32
+ * RETURN:      The 4-INT8 ASCII ACPI Name as a UINT32
  *
  * DESCRIPTION: Fetch ACPI name segment (dot-delimited)
  *
@@ -472,20 +470,20 @@ AcpiPsFetchPrefix (
 
 UINT32
 AcpiPsFetchName (
-    char                    **Path,
+    NATIVE_CHAR             **Path,
     UINT32                  io)
 {
     UINT32                  Name = 0;
-    char                    *nm;
+    NATIVE_CHAR             *nm;
     UINT32                  i;
-    char                    ch;
+    NATIVE_CHAR             ch;
 
 
     if (io)
     {
         /* Get the name from the path pointer */
 
-        STORE32TO32 (&Name, *Path);
+        MOVE_UNALIGNED32_TO_32 (&Name, *Path);
         *Path += 4;
     }
 
@@ -496,7 +494,7 @@ AcpiPsFetchName (
             *Path += 1;
         }
 
-        nm = (char*) &Name;
+        nm = (NATIVE_CHAR *) &Name;
         for (i = 0; i < 4; i++)
         {
             ch = **Path;
@@ -514,7 +512,7 @@ AcpiPsFetchName (
         }
     }
 
-    return Name;
+    return (Name);
 }
 
 

@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: ammonad - ACPI AML (p-code) execution for monadic operators
- *              $Revision: 1.76 $
+ *              $Revision: 1.79 $
  *
  *****************************************************************************/
 
@@ -126,7 +126,7 @@
 
 
 #define _COMPONENT          INTERPRETER
-        MODULE_NAME         ("ammonad");
+        MODULE_NAME         ("ammonad")
 
 
 /*******************************************************************************
@@ -145,8 +145,8 @@
 
 ACPI_STATUS
 AcpiAmlGetObjectReference (
-    ACPI_OBJECT_INTERNAL    *ObjDesc,
-    ACPI_OBJECT_INTERNAL    **RetDesc,
+    ACPI_OPERAND_OBJECT     *ObjDesc,
+    ACPI_OPERAND_OBJECT     **RetDesc,
     ACPI_WALK_STATE         *WalkState)
 {
     ACPI_STATUS             Status = AE_OK;
@@ -198,7 +198,7 @@ AcpiAmlGetObjectReference (
 
     else if (VALID_DESCRIPTOR_TYPE (ObjDesc, ACPI_DESC_TYPE_NAMED))
     {
-        /* Must be a named object;  Just return the NTE */
+        /* Must be a named object;  Just return the Node */
 
         *RetDesc = ObjDesc;
     }
@@ -236,7 +236,7 @@ AcpiAmlExecMonadic1 (
     UINT16                  Opcode,
     ACPI_WALK_STATE         *WalkState)
 {
-    ACPI_OBJECT_INTERNAL    *ObjDesc;
+    ACPI_OPERAND_OBJECT     *ObjDesc;
     ACPI_STATUS             Status;
 
 
@@ -255,7 +255,7 @@ AcpiAmlExecMonadic1 (
     Status |= AcpiDsObjStackPopObject (&ObjDesc, WalkState);
     if (ACPI_FAILURE (Status))
     {
-        DEBUG_PRINT (ACPI_ERROR, 
+        DEBUG_PRINT (ACPI_ERROR,
             ("ExecMonadic1/%s: bad operand(s) (0x%X)\n",
             AcpiPsGetOpcodeName (Opcode), Status));
 
@@ -346,12 +346,12 @@ ACPI_STATUS
 AcpiAmlExecMonadic2R (
     UINT16                  Opcode,
     ACPI_WALK_STATE         *WalkState,
-    ACPI_OBJECT_INTERNAL    **ReturnDesc)
+    ACPI_OPERAND_OBJECT     **ReturnDesc)
 {
-    ACPI_OBJECT_INTERNAL    *ObjDesc;
-    ACPI_OBJECT_INTERNAL    *ResDesc;
-    ACPI_OBJECT_INTERNAL    *RetDesc = NULL;
-    ACPI_OBJECT_INTERNAL    *RetDesc2 = NULL;
+    ACPI_OPERAND_OBJECT     *ObjDesc;
+    ACPI_OPERAND_OBJECT     *ResDesc;
+    ACPI_OPERAND_OBJECT     *RetDesc = NULL;
+    ACPI_OPERAND_OBJECT     *RetDesc2 = NULL;
     UINT32                  ResVal;
     ACPI_STATUS             Status;
     UINT32                  d0;
@@ -376,7 +376,7 @@ AcpiAmlExecMonadic2R (
     Status |= AcpiDsObjStackPopObject (&ObjDesc, WalkState);
     if (ACPI_FAILURE (Status))
     {
-        DEBUG_PRINT (ACPI_ERROR, 
+        DEBUG_PRINT (ACPI_ERROR,
             ("ExecMonadic2R/%s: bad operand(s) (0x%X)\n",
             AcpiPsGetOpcodeName (Opcode), Status));
 
@@ -511,7 +511,7 @@ AcpiAmlExecMonadic2R (
          * (There are really two return values)
          */
 
-        if ((ACPI_NAMED_OBJECT*) ObjDesc == AcpiGbl_RootObject)
+        if ((ACPI_NAMESPACE_NODE *) ObjDesc == AcpiGbl_RootNode)
         {
             /*
              * This means that the object does not exist in the namespace,
@@ -663,11 +663,11 @@ ACPI_STATUS
 AcpiAmlExecMonadic2 (
     UINT16                  Opcode,
     ACPI_WALK_STATE         *WalkState,
-    ACPI_OBJECT_INTERNAL    **ReturnDesc)
+    ACPI_OPERAND_OBJECT     **ReturnDesc)
 {
-    ACPI_OBJECT_INTERNAL    *ObjDesc;
-    ACPI_OBJECT_INTERNAL    *TmpDesc;
-    ACPI_OBJECT_INTERNAL    *RetDesc = NULL;
+    ACPI_OPERAND_OBJECT     *ObjDesc;
+    ACPI_OPERAND_OBJECT     *TmpDesc;
+    ACPI_OPERAND_OBJECT     *RetDesc = NULL;
     ACPI_STATUS             ResolveStatus;
     ACPI_STATUS             Status;
     UINT32                  Type;
@@ -693,7 +693,7 @@ AcpiAmlExecMonadic2 (
 
     if (ACPI_FAILURE (ResolveStatus))
     {
-        DEBUG_PRINT (ACPI_ERROR, 
+        DEBUG_PRINT (ACPI_ERROR,
             ("ExecMonadic2[%s]: Could not resolve operands, %s\n",
             AcpiPsGetOpcodeName (Opcode), AcpiCmFormatException (ResolveStatus)));
 
@@ -702,7 +702,7 @@ AcpiAmlExecMonadic2 (
 
     if (ACPI_FAILURE (Status))
     {
-        DEBUG_PRINT (ACPI_ERROR, 
+        DEBUG_PRINT (ACPI_ERROR,
             ("ExecMonadic2[%s]: Bad operand(s), %s\n",
             AcpiPsGetOpcodeName (Opcode), AcpiCmFormatException (Status)));
 
@@ -739,7 +739,7 @@ AcpiAmlExecMonadic2 (
 
         /*
          * Since we are expecting an Reference on the top of the stack, it
-         * can be either an NTE or an internal object.
+         * can be either an Node or an internal object.
          *
          * TBD: [Future] This may be the prototype code for all cases where
          * an Reference is expected!! 10/99
@@ -778,7 +778,7 @@ AcpiAmlExecMonadic2 (
         Status = AcpiAmlResolveOperands (AML_LNOT_OP, &RetDesc, WalkState);
         if (ACPI_FAILURE (Status))
         {
-            DEBUG_PRINT (ACPI_ERROR, 
+            DEBUG_PRINT (ACPI_ERROR,
                 ("ExecMonadic2/%s: bad operand(s) (0x%X)\n",
                 AcpiPsGetOpcodeName (Opcode), Status));
 
@@ -1032,9 +1032,9 @@ AcpiAmlExecMonadic2 (
 
         if (VALID_DESCRIPTOR_TYPE (ObjDesc, ACPI_DESC_TYPE_NAMED))
         {
-            /* Get the actual object from the NTE (This is the dereference) */
+            /* Get the actual object from the Node (This is the dereference) */
 
-            RetDesc = ((ACPI_NAMED_OBJECT*) ObjDesc)->Object;
+            RetDesc = ((ACPI_NAMESPACE_NODE *) ObjDesc)->Object;
 
             /* Returning a pointer to the object, add another reference! */
 

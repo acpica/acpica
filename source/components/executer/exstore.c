@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: amstore - AML Interpreter object store support
- *              $Revision: 1.113 $
+ *              $Revision: 1.116 $
  *
  *****************************************************************************/
 
@@ -127,7 +127,7 @@
 
 
 #define _COMPONENT          INTERPRETER
-        MODULE_NAME         ("amstore");
+        MODULE_NAME         ("amstore")
 
 
 /*******************************************************************************
@@ -136,7 +136,7 @@
  *
  * PARAMETERS:  *ValDesc            - Value to be stored
  *              *DestDesc           - Where to store it 0 Must be (ACPI_HANDLE)
- *                                    or an ACPI_OBJECT_INTERNAL of type
+ *                                    or an ACPI_OPERAND_OBJECT  of type
  *                                    Reference; if the latter the descriptor
  *                                    will be either reused or deleted.
  *
@@ -151,14 +151,14 @@
 
 ACPI_STATUS
 AcpiAmlExecStore (
-    ACPI_OBJECT_INTERNAL    *ValDesc,
-    ACPI_OBJECT_INTERNAL    *DestDesc,
+    ACPI_OPERAND_OBJECT     *ValDesc,
+    ACPI_OPERAND_OBJECT     *DestDesc,
     ACPI_WALK_STATE         *WalkState)
 {
     ACPI_STATUS             Status = AE_OK;
-    ACPI_OBJECT_INTERNAL    *DeleteDestDesc = NULL;
-    ACPI_OBJECT_INTERNAL    *TmpDesc;
-    ACPI_NAMED_OBJECT       *Entry = NULL;
+    ACPI_OPERAND_OBJECT     *DeleteDestDesc = NULL;
+    ACPI_OPERAND_OBJECT     *TmpDesc;
+    ACPI_NAMESPACE_NODE     *Node = NULL;
     UINT8                   Value = 0;
     UINT32                  Length;
     UINT32                  i;
@@ -185,7 +185,7 @@ AcpiAmlExecStore (
     {
         /* Dest is an ACPI_HANDLE, create a new object */
 
-        Entry = (ACPI_NAMED_OBJECT*) DestDesc;
+        Node = (ACPI_NAMESPACE_NODE *) DestDesc;
         DestDesc = AcpiCmCreateInternalObject (INTERNAL_TYPE_REFERENCE);
         if (!DestDesc)
         {
@@ -197,7 +197,7 @@ AcpiAmlExecStore (
         /* Build a new Reference wrapper around the handle */
 
         DestDesc->Reference.OpCode = AML_NAME_OP;
-        DestDesc->Reference.Object = Entry;
+        DestDesc->Reference.Object = Node;
     }
 
     else
@@ -234,7 +234,7 @@ AcpiAmlExecStore (
          *  Storing into a Name
          */
         DeleteDestDesc = DestDesc;
-        Status = AcpiAmlStoreObjectToNte (ValDesc, DestDesc->Reference.Object,
+        Status = AcpiAmlStoreObjectToNode (ValDesc, DestDesc->Reference.Object,
                         WalkState);
 
         break;  /* Case NameOp */
@@ -334,7 +334,7 @@ AcpiAmlExecStore (
                  * convert the contents of the source (ValDesc) and copy into
                  * the destination (TmpDesc)
                  */
-                Status = AcpiAmlStoreObjectToObject (ValDesc, TmpDesc, 
+                Status = AcpiAmlStoreObjectToObject (ValDesc, TmpDesc,
                                                         WalkState);
                 if (ACPI_FAILURE (Status))
                 {
@@ -508,7 +508,7 @@ AcpiAmlExecStore (
 
         /* TBD: [Restructure] use object dump routine !! */
 
-        DUMP_BUFFER (DestDesc, sizeof (ACPI_OBJECT_INTERNAL));
+        DUMP_BUFFER (DestDesc, sizeof (ACPI_OPERAND_OBJECT));
 
         DeleteDestDesc = DestDesc;
         Status = AE_AML_INTERNAL;

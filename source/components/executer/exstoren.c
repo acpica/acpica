@@ -1,8 +1,9 @@
 
 /******************************************************************************
  *
- * Module Name: amstoren - AML Interpreter object store support, store to NTE
- *              $Revision: 1.18 $
+ * Module Name: amstoren - AML Interpreter object store support,
+ *                         Store to Node (namespace object)
+ *              $Revision: 1.21 $
  *
  *****************************************************************************/
 
@@ -127,15 +128,15 @@
 
 
 #define _COMPONENT          INTERPRETER
-        MODULE_NAME         ("amstoren");
+        MODULE_NAME         ("amstoren")
 
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiAmlStoreObjectToNte
+ * FUNCTION:    AcpiAmlStoreObjectToNode
  *
  * PARAMETERS:  *ValDesc            - Value to be stored
- *              *Entry              - Named object to recieve the value
+ *              *Node           - Named object to recieve the value
  *
  * RETURN:      Status
  *
@@ -158,9 +159,9 @@
  ******************************************************************************/
 
 ACPI_STATUS
-AcpiAmlStoreObjectToNte (
-    ACPI_OBJECT_INTERNAL    *ValDesc,
-    ACPI_NAMED_OBJECT       *Entry,
+AcpiAmlStoreObjectToNode (
+    ACPI_OPERAND_OBJECT     *ValDesc,
+    ACPI_NAMESPACE_NODE     *Node,
     ACPI_WALK_STATE         *WalkState)
 {
     ACPI_STATUS             Status = AE_OK;
@@ -170,22 +171,22 @@ AcpiAmlStoreObjectToNte (
     UINT32                  NewValue;
     BOOLEAN                 Locked = FALSE;
     UINT8                   *Location=NULL;
-    ACPI_OBJECT_INTERNAL    *DestDesc;
+    ACPI_OPERAND_OBJECT     *DestDesc;
     OBJECT_TYPE_INTERNAL    DestinationType = ACPI_TYPE_ANY;
 
 
     FUNCTION_TRACE ("AmlStoreObjectToNte");
 
     DEBUG_PRINT (ACPI_INFO,
-        ("entered AcpiAmlStoreObjectToNte: NTE=%p, Obj=%p\n",
-        Entry, ValDesc));
+        ("entered AcpiAmlStoreObjectToNode: NamedObj=%p, Obj=%p\n",
+        Node, ValDesc));
 
     /*
      *  Assuming the parameters are valid!!!
      */
-    ACPI_ASSERT((Entry) && (ValDesc));
+    ACPI_ASSERT((Node) && (ValDesc));
 
-    DestinationType = AcpiNsGetType (Entry);
+    DestinationType = AcpiNsGetType (Node);
 
     DEBUG_PRINT (ACPI_INFO, ("AmlStoreObjectToNte: Storing %s into %s\n",
         AcpiCmGetTypeName (ValDesc->Common.Type),
@@ -299,7 +300,7 @@ AcpiAmlStoreObjectToNte (
          * ValDesc reference count is incremented by AttachObject.
          */
 
-        Status = AcpiNsAttachObject (Entry, ValDesc, ValDesc->Common.Type);
+        Status = AcpiNsAttachObject (Node, ValDesc, ValDesc->Common.Type);
 
         DEBUG_PRINT (ACPI_INFO,
             ("AmlStoreObjectToNte: Store %s into %s via Attach\n",
@@ -318,29 +319,29 @@ AcpiAmlStoreObjectToNte (
     }
 
     /*
-     *  Get descriptor for object attached to NTE
+     *  Get descriptor for object attached to Node
      */
-    DestDesc = AcpiNsGetAttachedObject (Entry);
+    DestDesc = AcpiNsGetAttachedObject (Node);
     if (!DestDesc)
     {
         /*
-         *  There is no existing object attached to this NTE
+         *  There is no existing object attached to this Node
          */
         DEBUG_PRINT (ACPI_ERROR,
             ("AmlStoreObjectToNte: Internal error - no destination object for %4.4s type %d\n",
-            &Entry->Name, DestinationType));
+            &Node->Name, DestinationType));
         Status = AE_AML_INTERNAL;
         goto CleanUpAndBailOut;
     }
 
     /*
-     *  Make sure the destination Object is the same as the NTE
+     *  Make sure the destination Object is the same as the Node
      */
     if (DestDesc->Common.Type != (UINT8) DestinationType)
     {
         DEBUG_PRINT (ACPI_ERROR,
             ("AmlStoreObjectToNte: Internal error - Name %4.4s type %d does not match value-type %d at %p\n",
-            &Entry->Name, AcpiNsGetType (Entry),
+            &Node->Name, AcpiNsGetType (Node),
             DestDesc->Common.Type, DestDesc));
         Status = AE_AML_INTERNAL;
         goto CleanUpAndBailOut;
@@ -413,8 +414,8 @@ AcpiAmlStoreObjectToNte (
             break;
         }
 
-        Status = AcpiAmlAccessNamedField (ACPI_WRITE, 
-                                    Entry, Buffer, Length);
+        Status = AcpiAmlAccessNamedField (ACPI_WRITE,
+                                    Node, Buffer, Length);
 
         break;      /* Global Lock released below   */
 
@@ -579,10 +580,10 @@ AcpiAmlStoreObjectToNte (
             DestDesc->FieldUnit.Sequence !=
                 DestDesc->FieldUnit.Container->Buffer.Sequence))
         {
-            DUMP_PATHNAME (Entry,
+            DUMP_PATHNAME (Node,
                 "AmlStoreObjectToNte: FieldUnit: Bad container in ",
                 ACPI_ERROR, _COMPONENT);
-            DUMP_ENTRY (Entry, ACPI_ERROR);
+            DUMP_ENTRY (Node, ACPI_ERROR);
             DEBUG_PRINT (ACPI_ERROR,
                 ("Container: %p", DestDesc->FieldUnit.Container));
 
@@ -682,7 +683,7 @@ AcpiAmlStoreObjectToNte (
 
         DEBUG_PRINT (ACPI_WARN,
             ("AmlStoreObjectToNte: Store into %s not implemented\n",
-            AcpiCmGetTypeName (AcpiNsGetType (Entry))));
+            AcpiCmGetTypeName (AcpiNsGetType (Node))));
 
         Status = AE_NOT_IMPLEMENTED;
         break;

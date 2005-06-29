@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: amresop - AML Interpreter operand/object resolution
- *              $Revision: 1.12 $
+ *              $Revision: 1.15 $
  *
  *****************************************************************************/
 
@@ -128,7 +128,7 @@
 
 
 #define _COMPONENT          INTERPRETER
-        MODULE_NAME         ("amresop");
+        MODULE_NAME         ("amresop")
 
 
 /*******************************************************************************
@@ -153,15 +153,15 @@
 ACPI_STATUS
 AcpiAmlResolveOperands (
     UINT16                  Opcode,
-    ACPI_OBJECT_INTERNAL    **StackPtr,
+    ACPI_OPERAND_OBJECT     **StackPtr,
     ACPI_WALK_STATE         *WalkState)
 {
-    ACPI_OBJECT_INTERNAL    *ObjDesc;
+    ACPI_OPERAND_OBJECT     *ObjDesc;
     ACPI_STATUS             Status = AE_OK;
     UINT8                   ObjectType;
     ACPI_HANDLE             TempHandle;
     UINT32                  ArgTypes;
-    ACPI_OP_INFO            *OpInfo;
+    ACPI_OPCODE_INFO        *OpInfo;
     UINT32                  ThisArgType;
 
 
@@ -215,9 +215,9 @@ AcpiAmlResolveOperands (
 
         if (VALID_DESCRIPTOR_TYPE (ObjDesc, ACPI_DESC_TYPE_NAMED))
         {
-            /* NTE */
+            /* Node */
 
-            ObjectType = ((ACPI_NAMED_OBJECT*) ObjDesc)->Type;
+            ObjectType = ((ACPI_NAMESPACE_NODE *) ObjDesc)->Type;
         }
 
         else if (VALID_DESCRIPTOR_TYPE (ObjDesc, ACPI_DESC_TYPE_INTERNAL))
@@ -533,7 +533,7 @@ AcpiAmlResolveOperands (
              *
              * The ACPI specification allows SizeOf to return the size of
              *  a Buffer, String or Package.  However, the MS ACPI.SYS AML
-             *  Interpreter also allows an NTE reference to return without
+             *  Interpreter also allows an Node reference to return without
              *  error with a size of 4.
              */
 
@@ -543,7 +543,7 @@ AcpiAmlResolveOperands (
                 goto Cleanup;
             }
 
-            /* Need a buffer, string, package or NTE reference */
+            /* Need a buffer, string, package or Node reference */
 
             if (((*StackPtr)->Common.Type != ACPI_TYPE_BUFFER) &&
                 ((*StackPtr)->Common.Type != ACPI_TYPE_STRING) &&
@@ -558,14 +558,14 @@ AcpiAmlResolveOperands (
             }
 
             /*
-             * If this is a reference, only allow a reference to an NTE.
+             * If this is a reference, only allow a reference to an Node.
              */
             if ((*StackPtr)->Common.Type == INTERNAL_TYPE_REFERENCE)
             {
-                if (!(*StackPtr)->Reference.Nte)
+                if (!(*StackPtr)->Reference.Node)
                 {
                     DEBUG_PRINT (ACPI_INFO,
-                        ("AmlResolveOperands: Needed NTE reference, found %s Obj=%p\n",
+                        ("AmlResolveOperands: Needed Node reference, found %s Obj=%p\n",
                         AcpiCmGetTypeName (ObjectType), *StackPtr));
                     Status = AE_AML_OPERAND_TYPE;
                     goto Cleanup;

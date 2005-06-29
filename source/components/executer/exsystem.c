@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: amsystem - Interface to OS services
- *              $Revision: 1.49 $
+ *              $Revision: 1.51 $
  *
  *****************************************************************************/
 
@@ -124,7 +124,7 @@
 #include "acevents.h"
 
 #define _COMPONENT          INTERPRETER
-        MODULE_NAME         ("amsystem");
+        MODULE_NAME         ("amsystem")
 
 
 /*******************************************************************************
@@ -283,8 +283,8 @@ AcpiAmlSystemDoSuspend (
 
 ACPI_STATUS
 AcpiAmlSystemAcquireMutex (
-    ACPI_OBJECT_INTERNAL    *TimeDesc,
-    ACPI_OBJECT_INTERNAL    *ObjDesc)
+    ACPI_OPERAND_OBJECT     *TimeDesc,
+    ACPI_OPERAND_OBJECT     *ObjDesc)
 {
     ACPI_STATUS             Status = AE_OK;
 
@@ -329,7 +329,7 @@ AcpiAmlSystemAcquireMutex (
 
 ACPI_STATUS
 AcpiAmlSystemReleaseMutex (
-    ACPI_OBJECT_INTERNAL    *ObjDesc)
+    ACPI_OPERAND_OBJECT     *ObjDesc)
 {
     ACPI_STATUS             Status = AE_OK;
 
@@ -371,7 +371,7 @@ AcpiAmlSystemReleaseMutex (
 
 ACPI_STATUS
 AcpiAmlSystemSignalEvent (
-    ACPI_OBJECT_INTERNAL    *ObjDesc)
+    ACPI_OPERAND_OBJECT     *ObjDesc)
 {
     ACPI_STATUS             Status = AE_OK;
 
@@ -405,8 +405,8 @@ AcpiAmlSystemSignalEvent (
 
 ACPI_STATUS
 AcpiAmlSystemWaitEvent (
-    ACPI_OBJECT_INTERNAL    *TimeDesc,
-    ACPI_OBJECT_INTERNAL    *ObjDesc)
+    ACPI_OPERAND_OBJECT     *TimeDesc,
+    ACPI_OPERAND_OBJECT     *ObjDesc)
 {
     ACPI_STATUS             Status = AE_OK;
 
@@ -440,7 +440,7 @@ AcpiAmlSystemWaitEvent (
 
 ACPI_STATUS
 AcpiAmlSystemResetEvent (
-    ACPI_OBJECT_INTERNAL    *ObjDesc)
+    ACPI_OPERAND_OBJECT     *ObjDesc)
 {
     ACPI_STATUS             Status = AE_OK;
     void                    *TempSemaphore;

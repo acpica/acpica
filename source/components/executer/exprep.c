@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: amprep - ACPI AML (p-code) execution - field prep utilities
- *              $Revision: 1.64 $
+ *              $Revision: 1.67 $
  *
  *****************************************************************************/
 
@@ -125,7 +125,7 @@
 
 
 #define _COMPONENT          INTERPRETER
-        MODULE_NAME         ("amprep");
+        MODULE_NAME         ("amprep")
 
 
 /*******************************************************************************
@@ -194,7 +194,7 @@ AcpiAmlDecodeFieldAccessType (
 
 ACPI_STATUS
 AcpiAmlPrepCommonFieldObject (
-    ACPI_OBJECT_INTERNAL    *ObjDesc,
+    ACPI_OPERAND_OBJECT     *ObjDesc,
     UINT8                   FieldFlags,
     UINT8                   FieldAttribute,
     UINT32                  FieldPosition,
@@ -250,7 +250,7 @@ AcpiAmlPrepCommonFieldObject (
  *
  * FUNCTION:    AcpiAmlPrepDefFieldValue
  *
- * PARAMETERS:  ThisEntry           - Owning NTE
+ * PARAMETERS:  Node            - Owning Node
  *              Region              - Region in which field is being defined
  *              FieldFlags          - Access, LockRule, or UpdateRule.
  *                                    The format of a FieldFlag is described
@@ -260,21 +260,21 @@ AcpiAmlPrepCommonFieldObject (
  *
  * RETURN:      Status
  *
- * DESCRIPTION: Construct an ACPI_OBJECT_INTERNAL of type DefField and
- *              connect it to the parent NTE.
+ * DESCRIPTION: Construct an ACPI_OPERAND_OBJECT  of type DefField and
+ *              connect it to the parent Node.
  *
  ******************************************************************************/
 
 ACPI_STATUS
 AcpiAmlPrepDefFieldValue (
-    ACPI_NAMED_OBJECT       *ThisEntry,
+    ACPI_NAMESPACE_NODE     *Node,
     ACPI_HANDLE             Region,
     UINT8                   FieldFlags,
     UINT8                   FieldAttribute,
     UINT32                  FieldPosition,
     UINT32                  FieldLength)
 {
-    ACPI_OBJECT_INTERNAL    *ObjDesc;
+    ACPI_OPERAND_OBJECT     *ObjDesc;
     UINT32                  Type;
     ACPI_STATUS             Status;
 
@@ -310,9 +310,9 @@ AcpiAmlPrepDefFieldValue (
 
     /* ObjDesc and Region valid */
 
-    DUMP_OPERANDS ((ACPI_OBJECT_INTERNAL **) &ThisEntry, IMODE_EXECUTE,
+    DUMP_OPERANDS ((ACPI_OPERAND_OBJECT  **) &Node, IMODE_EXECUTE,
                     "AmlPrepDefFieldValue", 1, "case DefField");
-    DUMP_OPERANDS ((ACPI_OBJECT_INTERNAL **) &Region, IMODE_EXECUTE,
+    DUMP_OPERANDS ((ACPI_OPERAND_OBJECT  **) &Region, IMODE_EXECUTE,
                     "AmlPrepDefFieldValue", 1, "case DefField");
 
     /* Initialize areas of the object that are common to all fields */
@@ -341,8 +341,8 @@ AcpiAmlPrepDefFieldValue (
         ObjDesc->Field.Granularity));
 
     DEBUG_PRINT (ACPI_INFO,
-        ("AmlPrepDefFieldValue: set nte %p (%4.4s) val = %p\n",
-        ThisEntry, &(ThisEntry->Name), ObjDesc));
+        ("AmlPrepDefFieldValue: set NamedObj %p (%4.4s) val = %p\n",
+        Node, &(Node->Name), ObjDesc));
 
     DUMP_STACK_ENTRY (ObjDesc);
     DUMP_ENTRY (Region, ACPI_INFO);
@@ -355,11 +355,11 @@ AcpiAmlPrepDefFieldValue (
         ("============================================================\n"));
 
     /*
-     * Store the constructed descriptor (ObjDesc) into the nte whose
-     * handle is on TOS, preserving the current type of that nte.
+     * Store the constructed descriptor (ObjDesc) into the NamedObj whose
+     * handle is on TOS, preserving the current type of that NamedObj.
      */
-    Status = AcpiNsAttachObject ((ACPI_HANDLE) ThisEntry, ObjDesc,
-                    (UINT8) AcpiNsGetType ((ACPI_HANDLE) ThisEntry));
+    Status = AcpiNsAttachObject ((ACPI_HANDLE) Node, ObjDesc,
+                    (UINT8) AcpiNsGetType ((ACPI_HANDLE) Node));
 
     return_ACPI_STATUS (Status);
 }
@@ -369,7 +369,7 @@ AcpiAmlPrepDefFieldValue (
  *
  * FUNCTION:    AcpiAmlPrepBankFieldValue
  *
- * PARAMETERS:  ThisEntry           - Owning NTE
+ * PARAMETERS:  Node            - Owning Node
  *              Region              - Region in which field is being defined
  *              BankReg             - Bank selection register
  *              BankVal             - Value to store in selection register
@@ -379,14 +379,14 @@ AcpiAmlPrepDefFieldValue (
  *
  * RETURN:      Status
  *
- * DESCRIPTION: Construct an ACPI_OBJECT_INTERNAL of type BankField and
- *              connect it to the parent NTE.
+ * DESCRIPTION: Construct an ACPI_OPERAND_OBJECT  of type BankField and
+ *              connect it to the parent Node.
  *
  ******************************************************************************/
 
 ACPI_STATUS
 AcpiAmlPrepBankFieldValue (
-    ACPI_NAMED_OBJECT       *ThisEntry,
+    ACPI_NAMESPACE_NODE     *Node,
     ACPI_HANDLE             Region,
     ACPI_HANDLE             BankReg,
     UINT32                  BankVal,
@@ -395,7 +395,7 @@ AcpiAmlPrepBankFieldValue (
     UINT32                  FieldPosition,
     UINT32                  FieldLength)
 {
-    ACPI_OBJECT_INTERNAL    *ObjDesc;
+    ACPI_OPERAND_OBJECT     *ObjDesc;
     UINT32                  Type;
     ACPI_STATUS             Status;
 
@@ -430,9 +430,9 @@ AcpiAmlPrepBankFieldValue (
 
     /*  ObjDesc and Region valid    */
 
-    DUMP_OPERANDS ((ACPI_OBJECT_INTERNAL **) &ThisEntry, IMODE_EXECUTE,
+    DUMP_OPERANDS ((ACPI_OPERAND_OBJECT  **) &Node, IMODE_EXECUTE,
                     "AmlPrepBankFieldValue", 1, "case BankField");
-    DUMP_OPERANDS ((ACPI_OBJECT_INTERNAL **) &Region, IMODE_EXECUTE,
+    DUMP_OPERANDS ((ACPI_OPERAND_OBJECT  **) &Region, IMODE_EXECUTE,
                     "AmlPrepBankFieldValue", 1, "case BankField");
 
     /* Initialize areas of the object that are common to all fields */
@@ -464,8 +464,8 @@ AcpiAmlPrepBankFieldValue (
         ObjDesc->Field.Granularity));
 
     DEBUG_PRINT (ACPI_INFO,
-        ("AmlPrepBankFieldValue: set nte %p (%4.4s) val = %p\n",
-        ThisEntry, &(ThisEntry->Name), ObjDesc));
+        ("AmlPrepBankFieldValue: set NamedObj %p (%4.4s) val = %p\n",
+        Node, &(Node->Name), ObjDesc));
 
     DUMP_STACK_ENTRY (ObjDesc);
     DUMP_ENTRY (Region, ACPI_INFO);
@@ -474,11 +474,11 @@ AcpiAmlPrepBankFieldValue (
         ("============================================================\n"));
 
     /*
-     * Store the constructed descriptor (ObjDesc) into the nte whose
-     * handle is on TOS, preserving the current type of that nte.
+     * Store the constructed descriptor (ObjDesc) into the NamedObj whose
+     * handle is on TOS, preserving the current type of that NamedObj.
      */
-    Status = AcpiNsAttachObject ((ACPI_HANDLE) ThisEntry, ObjDesc,
-                (UINT8) AcpiNsGetType ((ACPI_HANDLE) ThisEntry));
+    Status = AcpiNsAttachObject ((ACPI_HANDLE) Node, ObjDesc,
+                (UINT8) AcpiNsGetType ((ACPI_HANDLE) Node));
 
     return_ACPI_STATUS (Status);
 }
@@ -488,7 +488,7 @@ AcpiAmlPrepBankFieldValue (
  *
  * FUNCTION:    AcpiAmlPrepIndexFieldValue
  *
- * PARAMETERS:  ThisEntry           - Owning NTE
+ * PARAMETERS:  Node            - Owning Node
  *              IndexReg            - Index register
  *              DataReg             - Data register
  *              FieldFlags          - Access, LockRule, or UpdateRule
@@ -497,14 +497,14 @@ AcpiAmlPrepBankFieldValue (
  *
  * RETURN:      Status
  *
- * DESCRIPTION: Construct an ACPI_OBJECT_INTERNAL of type IndexField and
- *              connect it to the parent NTE.
+ * DESCRIPTION: Construct an ACPI_OPERAND_OBJECT  of type IndexField and
+ *              connect it to the parent Node.
  *
  ******************************************************************************/
 
 ACPI_STATUS
 AcpiAmlPrepIndexFieldValue (
-    ACPI_NAMED_OBJECT       *ThisEntry,
+    ACPI_NAMESPACE_NODE     *Node,
     ACPI_HANDLE             IndexReg,
     ACPI_HANDLE             DataReg,
     UINT8                   FieldFlags,
@@ -512,7 +512,7 @@ AcpiAmlPrepIndexFieldValue (
     UINT32                  FieldPosition,
     UINT32                  FieldLength)
 {
-    ACPI_OBJECT_INTERNAL    *ObjDesc;
+    ACPI_OPERAND_OBJECT     *ObjDesc;
     ACPI_STATUS             Status;
 
 
@@ -559,8 +559,8 @@ AcpiAmlPrepIndexFieldValue (
         ObjDesc->Field.Granularity));
 
     DEBUG_PRINT (ACPI_INFO,
-        ("AmlPrepIndexFieldValue: set nte %p (%4.4s) val = %p\n",
-        ThisEntry, &(ThisEntry->Name), ObjDesc));
+        ("AmlPrepIndexFieldValue: set NamedObj %p (%4.4s) val = %p\n",
+        Node, &(Node->Name), ObjDesc));
 
     DUMP_STACK_ENTRY (ObjDesc);
     DUMP_ENTRY (IndexReg, ACPI_INFO);
@@ -569,11 +569,11 @@ AcpiAmlPrepIndexFieldValue (
         ("============================================================\n"));
 
     /*
-     * Store the constructed descriptor (ObjDesc) into the nte whose
-     * handle is on TOS, preserving the current type of that nte.
+     * Store the constructed descriptor (ObjDesc) into the NamedObj whose
+     * handle is on TOS, preserving the current type of that NamedObj.
      */
-    Status = AcpiNsAttachObject ((ACPI_HANDLE) ThisEntry, ObjDesc,
-                (UINT8) AcpiNsGetType ((ACPI_HANDLE) ThisEntry));
+    Status = AcpiNsAttachObject ((ACPI_HANDLE) Node, ObjDesc,
+                (UINT8) AcpiNsGetType ((ACPI_HANDLE) Node));
 
     return_ACPI_STATUS (Status);
 }

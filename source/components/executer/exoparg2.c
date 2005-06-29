@@ -1,8 +1,7 @@
-
 /******************************************************************************
  *
  * Module Name: amdyadic - ACPI AML (p-code) execution for dyadic operators
- *              $Revision: 1.60 $
+ *              $Revision: 1.63 $
  *
  *****************************************************************************/
 
@@ -20,7 +19,7 @@
  * you this software, covering your right to use that party's intellectual
  * property rights.
  *
- * 2.2. Intel grants,  of charge, to any person ("Licensee") obtaining a
+ * 2.2. Intel grants, free of charge, to any person ("Licensee") obtaining a
  * copy of the source code appearing in this file ("Covered Code") an
  * irrevocable, perpetual, worldwide license under Intel's copyrights in the
  * base code distributed originally by Intel ("Original Intel Code") to copy,
@@ -128,7 +127,7 @@
 
 
 #define _COMPONENT          INTERPRETER
-        MODULE_NAME         ("amdyadic");
+        MODULE_NAME         ("amdyadic")
 
 
 /*****************************************************************************
@@ -151,9 +150,9 @@ AcpiAmlExecDyadic1 (
     UINT16                  Opcode,
     ACPI_WALK_STATE         *WalkState)
 {
-    ACPI_OBJECT_INTERNAL    *ObjDesc = NULL;
-    ACPI_OBJECT_INTERNAL    *ValDesc = NULL;
-    ACPI_NAMED_OBJECT       *Entry;
+    ACPI_OPERAND_OBJECT     *ObjDesc = NULL;
+    ACPI_OPERAND_OBJECT     *ValDesc = NULL;
+    ACPI_NAMESPACE_NODE     *Node;
     ACPI_STATUS             Status = AE_OK;
 
 
@@ -174,7 +173,7 @@ AcpiAmlExecDyadic1 (
     {
         /* Invalid parameters on object stack  */
 
-        DEBUG_PRINT (ACPI_ERROR, 
+        DEBUG_PRINT (ACPI_ERROR,
             ("ExecDyadic1/%s: bad operand(s) (0x%X)\n",
             AcpiPsGetOpcodeName (Opcode), Status));
 
@@ -191,16 +190,16 @@ AcpiAmlExecDyadic1 (
 
     case AML_NOTIFY_OP:
 
-        /* The ObjDesc is actually an NTE */
+        /* The ObjDesc is actually an Node */
 
-        Entry = (ACPI_NAMED_OBJECT*) ObjDesc;
+        Node = (ACPI_NAMESPACE_NODE *) ObjDesc;
         ObjDesc = NULL;
 
         /* Object must be a device or thermal zone */
 
-        if (Entry && ValDesc)
+        if (Node && ValDesc)
         {
-            switch (Entry->Type)
+            switch (Node->Type)
             {
             case ACPI_TYPE_DEVICE:
             case ACPI_TYPE_THERMAL:
@@ -212,7 +211,7 @@ AcpiAmlExecDyadic1 (
 
                 /* Dispatch the notify to the appropriate handler */
 
-                AcpiEvNotifyDispatch (Entry, ValDesc->Number.Value);
+                AcpiEvNotifyDispatch (Node, ValDesc->Number.Value);
                 break;
 
             default:
@@ -263,14 +262,14 @@ ACPI_STATUS
 AcpiAmlExecDyadic2R (
     UINT16                  Opcode,
     ACPI_WALK_STATE         *WalkState,
-    ACPI_OBJECT_INTERNAL    **ReturnDesc)
+    ACPI_OPERAND_OBJECT     **ReturnDesc)
 {
-    ACPI_OBJECT_INTERNAL    *ObjDesc    = NULL;
-    ACPI_OBJECT_INTERNAL    *ObjDesc2   = NULL;
-    ACPI_OBJECT_INTERNAL    *ResDesc    = NULL;
-    ACPI_OBJECT_INTERNAL    *ResDesc2   = NULL;
-    ACPI_OBJECT_INTERNAL    *RetDesc    = NULL;
-    ACPI_OBJECT_INTERNAL    *RetDesc2   = NULL;
+    ACPI_OPERAND_OBJECT     *ObjDesc    = NULL;
+    ACPI_OPERAND_OBJECT     *ObjDesc2   = NULL;
+    ACPI_OPERAND_OBJECT     *ResDesc    = NULL;
+    ACPI_OPERAND_OBJECT     *ResDesc2   = NULL;
+    ACPI_OPERAND_OBJECT     *RetDesc    = NULL;
+    ACPI_OPERAND_OBJECT     *RetDesc2   = NULL;
     ACPI_STATUS             Status      = AE_OK;
     UINT32                  Remainder;
     UINT32                  NumOperands = 3;
@@ -299,7 +298,7 @@ AcpiAmlExecDyadic2R (
     Status |= AcpiDsObjStackPopObject (&ObjDesc, WalkState);
     if (ACPI_FAILURE (Status))
     {
-        DEBUG_PRINT (ACPI_ERROR, 
+        DEBUG_PRINT (ACPI_ERROR,
             ("ExecDyadic2R/%s: bad operand(s) (0x%X)\n",
             AcpiPsGetOpcodeName (Opcode), Status));
 
@@ -631,11 +630,11 @@ ACPI_STATUS
 AcpiAmlExecDyadic2S (
     UINT16                  Opcode,
     ACPI_WALK_STATE         *WalkState,
-    ACPI_OBJECT_INTERNAL    **ReturnDesc)
+    ACPI_OPERAND_OBJECT     **ReturnDesc)
 {
-    ACPI_OBJECT_INTERNAL    *ObjDesc;
-    ACPI_OBJECT_INTERNAL    *TimeDesc;
-    ACPI_OBJECT_INTERNAL    *RetDesc = NULL;
+    ACPI_OPERAND_OBJECT     *ObjDesc;
+    ACPI_OPERAND_OBJECT     *TimeDesc;
+    ACPI_OPERAND_OBJECT     *RetDesc = NULL;
     ACPI_STATUS             Status;
 
 
@@ -656,7 +655,7 @@ AcpiAmlExecDyadic2S (
     {
         /* Invalid parameters on object stack  */
 
-        DEBUG_PRINT (ACPI_ERROR, 
+        DEBUG_PRINT (ACPI_ERROR,
             ("ExecDyadic2S/%s: bad operand(s) (0x%X)\n",
             AcpiPsGetOpcodeName (Opcode), Status));
 
@@ -763,11 +762,11 @@ ACPI_STATUS
 AcpiAmlExecDyadic2 (
     UINT16                  Opcode,
     ACPI_WALK_STATE         *WalkState,
-    ACPI_OBJECT_INTERNAL    **ReturnDesc)
+    ACPI_OPERAND_OBJECT     **ReturnDesc)
 {
-    ACPI_OBJECT_INTERNAL    *ObjDesc;
-    ACPI_OBJECT_INTERNAL    *ObjDesc2;
-    ACPI_OBJECT_INTERNAL    *RetDesc = NULL;
+    ACPI_OPERAND_OBJECT     *ObjDesc;
+    ACPI_OPERAND_OBJECT     *ObjDesc2;
+    ACPI_OPERAND_OBJECT     *RetDesc = NULL;
     ACPI_STATUS             Status;
     BOOLEAN                 Lboolean;
 
@@ -789,7 +788,7 @@ AcpiAmlExecDyadic2 (
     {
         /* Invalid parameters on object stack  */
 
-        DEBUG_PRINT (ACPI_ERROR, 
+        DEBUG_PRINT (ACPI_ERROR,
             ("ExecDyadic2/%s: bad operand(s) (0x%X)\n",
             AcpiPsGetOpcodeName (Opcode), Status));
 

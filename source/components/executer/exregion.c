@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: amregion - ACPI default OpRegion (address space) handlers
- *              $Revision: 1.32 $
+ *              $Revision: 1.35 $
  *
  *****************************************************************************/
 
@@ -127,7 +127,7 @@
 
 
 #define _COMPONENT          INTERPRETER
-        MODULE_NAME         ("amregion");
+        MODULE_NAME         ("amregion")
 
 
 /*******************************************************************************
@@ -139,7 +139,7 @@
  *              BitWidth            - Field width in bits (8, 16, or 32)
  *              Value               - Pointer to in or out value
  *              HandlerContext      - Pointer to Handler's context
- *              RegionContext       - Pointer to context specific to the 
+ *              RegionContext       - Pointer to context specific to the
  *                                      accessed region
  *
  * RETURN:      Status
@@ -308,7 +308,7 @@ AcpiAmlSystemMemorySpaceHandler (
  *              BitWidth            - Field width in bits (8, 16, or 32)
  *              Value               - Pointer to in or out value
  *              HandlerContext      - Pointer to Handler's context
- *              RegionContext       - Pointer to context specific to the 
+ *              RegionContext       - Pointer to context specific to the
  *                                      accessed region
  *
  * RETURN:      Status
@@ -416,7 +416,7 @@ AcpiAmlSystemIoSpaceHandler (
  *              BitWidth            - Field width in bits (8, 16, or 32)
  *              Value               - Pointer to in or out value
  *              HandlerContext      - Pointer to Handler's context
- *              RegionContext       - Pointer to context specific to the 
+ *              RegionContext       - Pointer to context specific to the
  *                                      accessed region
  *
  * RETURN:      Status
@@ -509,11 +509,6 @@ AcpiAmlPciConfigSpaceHandler (
 
 
     case ADDRESS_SPACE_WRITE:
-
-        DEBUG_PRINT ((TRACE_OPREGION | VERBOSE_INFO),
-            ("R%d S(%04x) B(%04x) DF(%08x) R(%04x)\n", BitWidth,
-            PCIContext->Seg,PCIContext->Bus,PCIContext->DevFunc, PciReg));
-
 
         DEBUG_PRINT ((TRACE_OPREGION | VERBOSE_INFO),
             ("W%d S(%04x) B(%04x) DF(%08x) R(%04x) D(%08x)\n", BitWidth,

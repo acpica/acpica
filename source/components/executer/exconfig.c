@@ -1,8 +1,7 @@
-
 /******************************************************************************
  *
  * Module Name: amconfig - Namespace reconfiguration (Load/Unload opcodes)
- *              $Revision: 1.20 $
+ *              $Revision: 1.23 $
  *
  *****************************************************************************/
 
@@ -129,7 +128,7 @@
 
 
 #define _COMPONENT          INTERPRETER
-        MODULE_NAME         ("amconfig");
+        MODULE_NAME         ("amconfig")
 
 
 /*****************************************************************************
@@ -147,11 +146,11 @@
 
 ACPI_STATUS
 AcpiAmlExecLoadTable (
-    ACPI_OBJECT_INTERNAL    *RgnDesc,
+    ACPI_OPERAND_OBJECT     *RgnDesc,
     ACPI_HANDLE             *DdbHandle)
 {
     ACPI_STATUS             Status;
-    ACPI_OBJECT_INTERNAL    *TableDesc = NULL;
+    ACPI_OPERAND_OBJECT     *TableDesc = NULL;
     UINT8                   *TablePtr;
     UINT8                   *TableDataPtr;
     ACPI_TABLE_HEADER       TableHeader;
@@ -291,7 +290,7 @@ AcpiAmlExecUnloadTable (
     ACPI_HANDLE             DdbHandle)
 {
     ACPI_STATUS             Status = AE_NOT_IMPLEMENTED;
-    ACPI_OBJECT_INTERNAL    *TableDesc = (ACPI_OBJECT_INTERNAL *) DdbHandle;
+    ACPI_OPERAND_OBJECT     *TableDesc = (ACPI_OPERAND_OBJECT  *) DdbHandle;
     ACPI_TABLE_DESC         *TableInfo;
 
 
@@ -306,7 +305,7 @@ AcpiAmlExecUnloadTable (
 
     if ((!DdbHandle) ||
         (!VALID_DESCRIPTOR_TYPE (DdbHandle, ACPI_DESC_TYPE_INTERNAL)) ||
-        (((ACPI_OBJECT_INTERNAL *)DdbHandle)->Common.Type !=
+        (((ACPI_OPERAND_OBJECT  *)DdbHandle)->Common.Type !=
                 INTERNAL_TYPE_REFERENCE))
     {
         return_ACPI_STATUS (AE_BAD_PARAMETER);
@@ -318,7 +317,7 @@ AcpiAmlExecUnloadTable (
     TableInfo = (ACPI_TABLE_DESC *) TableDesc->Reference.Object;
 
     /*
-     * Delete the entire namespace under this table NTE
+     * Delete the entire namespace under this table Node
      * (Offset contains the TableId)
      */
 
@@ -359,7 +358,7 @@ AcpiAmlExecReconfiguration (
     ACPI_WALK_STATE         *WalkState)
 {
     ACPI_STATUS             Status;
-    ACPI_OBJECT_INTERNAL    *RegionDesc = NULL;
+    ACPI_OPERAND_OBJECT     *RegionDesc = NULL;
     ACPI_HANDLE             *DdbHandle;
 
 
@@ -374,7 +373,7 @@ AcpiAmlExecReconfiguration (
 
     /* Get the table handle, common for both opcodes */
 
-    Status |= AcpiDsObjStackPopObject ((ACPI_OBJECT_INTERNAL **) &DdbHandle,
+    Status |= AcpiDsObjStackPopObject ((ACPI_OPERAND_OBJECT  **) &DdbHandle,
                                         WalkState);
 
     switch (Opcode)
@@ -387,7 +386,7 @@ AcpiAmlExecReconfiguration (
         Status |= AcpiDsObjStackPopObject (&RegionDesc, WalkState);
         if (ACPI_FAILURE (Status))
         {
-            DEBUG_PRINT (ACPI_ERROR, 
+            DEBUG_PRINT (ACPI_ERROR,
                 ("ExecReconfiguration/AML_LOAD_OP: bad operand(s) (0x%X)\n",
                 Status));
 
@@ -403,7 +402,7 @@ AcpiAmlExecReconfiguration (
 
         if (ACPI_FAILURE (Status))
         {
-            DEBUG_PRINT (ACPI_ERROR, 
+            DEBUG_PRINT (ACPI_ERROR,
                 ("ExecReconfiguration/AML_UNLOAD_OP: bad operand(s) (0x%X)\n",
                 Status));
 

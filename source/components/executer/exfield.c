@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: amfield - ACPI AML (p-code) execution - field manipulation
- *              $Revision: 1.67 $
+ *              $Revision: 1.69 $
  *
  *****************************************************************************/
 
@@ -127,7 +127,7 @@
 
 
 #define _COMPONENT          INTERPRETER
-        MODULE_NAME         ("amfield");
+        MODULE_NAME         ("amfield")
 
 
 /*******************************************************************************
@@ -161,8 +161,8 @@
 
 ACPI_STATUS
 AcpiAmlSetupField (
-    ACPI_OBJECT_INTERNAL    *ObjDesc,
-    ACPI_OBJECT_INTERNAL    *RgnDesc,
+    ACPI_OPERAND_OBJECT     *ObjDesc,
+    ACPI_OPERAND_OBJECT     *RgnDesc,
     UINT32                  FieldBitWidth)
 {
     ACPI_STATUS             Status = AE_OK;
@@ -269,7 +269,7 @@ AcpiAmlAccessNamedField (
     void                    *Buffer,
     UINT32                  BufferLength)
 {
-    ACPI_OBJECT_INTERNAL    *ObjDesc = NULL;
+    ACPI_OPERAND_OBJECT     *ObjDesc = NULL;
     ACPI_STATUS             Status = AE_OK;
     BOOLEAN                 Locked = FALSE;
     UINT32                  BitGranularity = 0;
@@ -289,7 +289,7 @@ AcpiAmlAccessNamedField (
             ("AcpiAmlAccessNamedField: Internal error - null parameter\n"));
         return_ACPI_STATUS (AE_AML_INTERNAL);
     }
-    
+
     /* Get the attached field object */
 
     ObjDesc = AcpiNsGetAttachedObject (NamedField);
@@ -306,7 +306,7 @@ AcpiAmlAccessNamedField (
     {
         DEBUG_PRINT (ACPI_ERROR,
             ("AmlAccessNamedField: Name %4.4s type %x is not a defined field\n",
-            &(((ACPI_NAMED_OBJECT*) NamedField)->Name),
+            &(((ACPI_NAMESPACE_NODE *) NamedField)->Name),
             AcpiNsGetType (NamedField)));
         return_ACPI_STATUS (AE_AML_OPERAND_TYPE);
     }
@@ -328,7 +328,7 @@ AcpiAmlAccessNamedField (
     {
         DEBUG_PRINT (ACPI_ERROR,
             ("AmlAccessNamedField: Internal error - Name %4.4s type %x does not match value-type %x at %p\n",
-            &(((ACPI_NAMED_OBJECT*) NamedField)->Name),
+            &(((ACPI_NAMESPACE_NODE *) NamedField)->Name),
             AcpiNsGetType (NamedField), ObjDesc->Common.Type, ObjDesc));
         return_ACPI_STATUS (AE_AML_OPERAND_TYPE);
     }

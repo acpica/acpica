@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: amfldio - Aml Field I/O
- *              $Revision: 1.24 $
+ *              $Revision: 1.26 $
  *
  *****************************************************************************/
 
@@ -126,7 +126,7 @@
 
 
 #define _COMPONENT          INTERPRETER
-        MODULE_NAME         ("amfldio");
+        MODULE_NAME         ("amfldio")
 
 
 /*******************************************************************************
@@ -145,13 +145,13 @@
 
 ACPI_STATUS
 AcpiAmlReadFieldData (
-    ACPI_OBJECT_INTERNAL    *ObjDesc,
+    ACPI_OPERAND_OBJECT     *ObjDesc,
     UINT32                  FieldByteOffset,
     UINT32                  FieldBitWidth,
     UINT32                  *Value)
 {
     ACPI_STATUS             Status;
-    ACPI_OBJECT_INTERNAL    *RgnDesc = NULL;
+    ACPI_OPERAND_OBJECT     *RgnDesc = NULL;
     UINT32                  Address;
     UINT32                  LocalValue = 0;
     UINT32                  FieldByteWidth;
@@ -184,7 +184,7 @@ AcpiAmlReadFieldData (
 
 
     /*
-     * Set offset to next multiple of field width, 
+     * Set offset to next multiple of field width,
      *  add region base address and offset within the field
      */
     Address = RgnDesc->Region.Address +
@@ -250,7 +250,7 @@ AcpiAmlReadFieldData (
 
 ACPI_STATUS
 AcpiAmlReadField (
-    ACPI_OBJECT_INTERNAL    *ObjDesc,
+    ACPI_OPERAND_OBJECT     *ObjDesc,
     void                    *Buffer,
     UINT32                  BufferLength,
     UINT32                  ByteLength,
@@ -456,13 +456,13 @@ Cleanup:
 
 ACPI_STATUS
 AcpiAmlWriteFieldData (
-    ACPI_OBJECT_INTERNAL    *ObjDesc,
+    ACPI_OPERAND_OBJECT     *ObjDesc,
     UINT32                  FieldByteOffset,
     UINT32                  FieldBitWidth,
     UINT32                  Value)
 {
     ACPI_STATUS             Status = AE_OK;
-    ACPI_OBJECT_INTERNAL    *RgnDesc = NULL;
+    ACPI_OPERAND_OBJECT     *RgnDesc = NULL;
     UINT32                  Address;
     UINT32                  FieldByteWidth;
 
@@ -486,7 +486,7 @@ AcpiAmlWriteFieldData (
 
 
     /*
-     * Set offset to next multiple of field width, 
+     * Set offset to next multiple of field width,
      *  add region base address and offset within the field
      */
     Address = RgnDesc->Region.Address +
@@ -547,7 +547,7 @@ AcpiAmlWriteFieldData (
 
 ACPI_STATUS
 AcpiAmlWriteFieldDataWithUpdateRule (
-    ACPI_OBJECT_INTERNAL    *ObjDesc,
+    ACPI_OPERAND_OBJECT     *ObjDesc,
     UINT32                  Mask,
     UINT32                  FieldValue,
     UINT32                  ThisFieldByteOffset,
@@ -634,7 +634,7 @@ AcpiAmlWriteFieldDataWithUpdateRule (
 
 ACPI_STATUS
 AcpiAmlWriteField (
-    ACPI_OBJECT_INTERNAL    *ObjDesc,
+    ACPI_OPERAND_OBJECT     *ObjDesc,
     void                    *Buffer,
     UINT32                  BufferLength,
     UINT32                  ByteLength,
@@ -839,7 +839,7 @@ AcpiAmlWriteField (
         FieldValue = (PreviousRawDatum >>
                         (BitGranularity - ObjDesc->Field.BitOffset)) & Mask;
 
-        Status = AcpiAmlWriteFieldDataWithUpdateRule (ObjDesc, Mask, FieldValue, 
+        Status = AcpiAmlWriteFieldDataWithUpdateRule (ObjDesc, Mask, FieldValue,
                                                         ThisFieldByteOffset + ByteGranularity,
                                                         BitGranularity);
         if (ACPI_FAILURE (Status))
