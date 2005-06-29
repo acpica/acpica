@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: exconfig - Namespace reconfiguration (Load/Unload opcodes)
- *              $Revision: 1.76 $
+ *              $Revision: 1.77 $
  *
  *****************************************************************************/
 
@@ -423,6 +423,13 @@ AcpiExLoadOp (
             }
         }
 
+        /* Sanity check the table length */
+
+        if (TableHeader.Length < sizeof (ACPI_TABLE_HEADER))
+        {
+            return_ACPI_STATUS (AE_BAD_HEADER);
+        }
+
         /* Allocate a buffer for the entire table */
 
         TablePtr = ACPI_MEM_ALLOCATE (TableHeader.Length);
@@ -465,6 +472,13 @@ AcpiExLoadOp (
         }
 
         TablePtr = ACPI_CAST_PTR (ACPI_TABLE_HEADER, BufferDesc->Buffer.Pointer);
+
+         /* Sanity check the table length */
+
+        if (TablePtr->Length < sizeof (ACPI_TABLE_HEADER))
+        {
+            return_ACPI_STATUS (AE_BAD_HEADER);
+        }
         break;
 
 
