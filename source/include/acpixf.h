@@ -157,27 +157,26 @@ AcpiEvaluateObject (
  */
 
 ACPI_STATUS
-AcpiLoadTables (
-    ACPI_BUFFER             *TableBuffer);
+AcpiLoadFirmwareTables (
+    void);
 
 ACPI_STATUS
 AcpiLoadTable (
-    ACPI_TABLE_HEADER       *TablePtr,
-    ACPI_HANDLE             *OutTableHandle);
+    ACPI_TABLE_HEADER       *TablePtr);
 
 ACPI_STATUS
 AcpiUnloadTable (
-    ACPI_HANDLE             TableHandle);
+    ACPI_TABLE_TYPE         TableType);
+
+ACPI_STATUS
+AcpiGetTableHeader (
+    ACPI_TABLE_TYPE         TableType,
+    ACPI_TABLE_HEADER       *OutTableHeader);
 
 ACPI_STATUS
 AcpiGetTable (
     ACPI_TABLE_TYPE         TableType,
     ACPI_BUFFER             *RetBuffer);
-
-ACPI_STATUS
-AcpiGetTableHeader (
-    ACPI_TABLE_TYPE         TableType,
-    UINT8                   *OutTableHeader);
 
 
 
