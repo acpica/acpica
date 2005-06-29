@@ -167,10 +167,10 @@ SetDebugLevel (
 
 void
 FunctionTrace (
-    INT8                    *ModuleName,
+    ACPI_STRING             ModuleName,
     INT32                   LineNumber,
     INT32                   ComponentId,
-    INT8                    *FunctionName)
+    ACPI_STRING             FunctionName)
 {
 
     AcpiGbl_NestingLevel++;
@@ -201,10 +201,10 @@ FunctionTrace (
 
 void
 FunctionTracePtr (
-    INT8                    *ModuleName,
+    ACPI_STRING             ModuleName,
     INT32                   LineNumber,
     INT32                   ComponentId,
-    INT8                    *FunctionName,
+    ACPI_STRING             FunctionName,
     void                    *Pointer)
 {
 
@@ -234,11 +234,11 @@ FunctionTracePtr (
 
 void
 FunctionTraceStr (
-    INT8                    *ModuleName,
+    ACPI_STRING             ModuleName,
     INT32                   LineNumber,
     INT32                   ComponentId,
-    INT8                    *FunctionName,
-    INT8                    *String)
+    ACPI_STRING             FunctionName,
+    ACPI_STRING             String)
 {
 
     AcpiGbl_NestingLevel++;
@@ -267,10 +267,10 @@ FunctionTraceStr (
 
 void
 FunctionTraceU32 (
-    INT8                    *ModuleName,
+    ACPI_STRING             ModuleName,
     INT32                   LineNumber,
     INT32                   ComponentId,
-    INT8                    *FunctionName,
+    ACPI_STRING             FunctionName,
     UINT32                  Integer)
 {
 
@@ -299,10 +299,10 @@ FunctionTraceU32 (
 
 void
 FunctionExit (
-    INT8                    *ModuleName,
+    ACPI_STRING             ModuleName,
     INT32                   LineNumber,
     INT32                   ComponentId,
-    INT8                    *FunctionName)
+    ACPI_STRING             FunctionName)
 {
 
     DebugPrint (ModuleName, LineNumber, ComponentId, TRACE_FUNCTIONS,
@@ -332,10 +332,10 @@ FunctionExit (
 
 void
 FunctionStatusExit (
-    INT8                    *ModuleName,
+    ACPI_STRING             ModuleName,
     INT32                   LineNumber,
     INT32                   ComponentId,
-    INT8                    *FunctionName,
+    ACPI_STRING             FunctionName,
     ACPI_STATUS             Status)
 {
 
@@ -369,10 +369,10 @@ FunctionStatusExit (
 
 void
 FunctionValueExit (
-    INT8                    *ModuleName,
+    ACPI_STRING             ModuleName,
     INT32                   LineNumber,
     INT32                   ComponentId,
-    INT8                    *FunctionName,
+    ACPI_STRING             FunctionName,
     NATIVE_UINT             Value)
 {
 
@@ -403,10 +403,10 @@ FunctionValueExit (
 
 void
 FunctionPtrExit (
-    INT8                    *ModuleName,
+    ACPI_STRING             ModuleName,
     INT32                   LineNumber,
     INT32                   ComponentId,
-    INT8                    *FunctionName,
+    ACPI_STRING             FunctionName,
     INT8                    *Ptr)
 {
 
@@ -438,11 +438,11 @@ FunctionPtrExit (
 
 void
 DebugPrint (
-    INT8                    *ModuleName,
+    ACPI_STRING             ModuleName,
     INT32                   LineNumber,
     INT32                   ComponentId,
     INT32                   PrintLevel,
-    INT8                    *Format,
+    ACPI_STRING             Format,
     ...)
 {
     va_list                 args;
@@ -478,7 +478,7 @@ DebugPrint (
 
 void
 DebugPrintPrefix (
-    INT8                    *ModuleName,
+    ACPI_STRING             ModuleName,
     INT32                   LineNumber)
 {
 
@@ -502,7 +502,7 @@ DebugPrintPrefix (
 
 void
 DebugPrintRaw (
-    INT8                    *Format,
+    ACPI_STRING             Format,
     ...)
 {
     va_list                 args;
