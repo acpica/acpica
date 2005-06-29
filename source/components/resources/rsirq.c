@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: rsirq - IRQ resource descriptors
- *              $Revision: 1.27 $
+ *              $Revision: 1.28 $
  *
  ******************************************************************************/
 
@@ -183,11 +183,18 @@ AcpiRsIrqResource (
 
     for (i = 0, Index = 0; Index < 16; Index++)
     {
-        if((Temp16 >> Index) & 0x01)
+        if ((Temp16 >> Index) & 0x01)
         {
             OutputStruct->Data.Irq.Interrupts[i] = Index;
             i++;
         }
+    }
+
+    if (i == 0)
+    {
+        /* Zero interrupts is invalid! */
+
+        return_ACPI_STATUS (AE_BAD_DATA);
     }
     OutputStruct->Data.Irq.NumberOfInterrupts = i;
 
