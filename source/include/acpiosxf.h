@@ -213,11 +213,11 @@ AcpiOsSignalSemaphore (
 
 void *
 AcpiOsAllocate (
-    UINT32                  Size);
+    ACPI_SIZE               Size);
 
 void *
 AcpiOsCallocate (
-    UINT32                  Size);
+    ACPI_SIZE               Size);
 
 void
 AcpiOsFree (
@@ -226,13 +226,13 @@ AcpiOsFree (
 ACPI_STATUS
 AcpiOsMapMemory (
     ACPI_PHYSICAL_ADDRESS   PhysicalAddress,
-    UINT32                  Length,
+    ACPI_SIZE               Size,
     void                    **LogicalAddress);
 
 void
 AcpiOsUnmapMemory (
     void                    *LogicalAddress,
-    UINT32                  Length);
+    ACPI_SIZE               Size);
 
 ACPI_STATUS
 AcpiOsGetPhysicalAddress (
