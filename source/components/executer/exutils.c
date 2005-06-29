@@ -1,7 +1,7 @@
 
 /******************************************************************************
  *
- * Module Name: isutils - interpreter/scanner utilities
+ * Module Name: amutils - interpreter/scanner utilities
  *
  *****************************************************************************/
 
@@ -114,7 +114,7 @@
  *
  *****************************************************************************/
 
-#define __ISUTILS_C__
+#define __AMUTILS_C__
 
 #include "acpi.h"
 #include "parser.h"
@@ -124,7 +124,7 @@
 #include "events.h"
 
 #define _COMPONENT          INTERPRETER
-        MODULE_NAME         ("isutils");
+        MODULE_NAME         ("amutils");
 
 
 typedef struct Internal_Search_st
@@ -637,7 +637,6 @@ AcpiAmlBuildCopyInternalPackageObject (
                      * We have handled all of the objects in the top level package
                      * just add the length of the package objects and get out
                      */
-                    // *SpaceUsed = Length;
                     return_ACPI_STATUS (AE_OK);
                 }
 
