@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: actbl2.h - ACPI Specification Revision 2.0 Tables
- *       $Revision: 1.15 $
+ *       $Revision: 1.16 $
  *
  *****************************************************************************/
 
@@ -116,6 +116,18 @@
 
 #ifndef __ACTBL2_H__
 #define __ACTBL2_H__
+
+/**************************************/
+/* Prefered Power Management Profiles */
+/**************************************/
+#define PM_UNSPECIFIED        0
+#define PM_DESKTOP            1
+#define PM_MOBILE             2
+#define PM_WORKSTATION        3
+#define PM_ENTERPRISE_SERVER  4
+#define PM_SOHO_SERVER        5
+#define PM_APPLIANCE_PC       6
+
 
 #pragma pack(1)
 
