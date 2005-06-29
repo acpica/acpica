@@ -3,7 +3,7 @@
 /******************************************************************************
  *
  * Module Name: aslcompiler.y - Bison input file (ASL grammar and actions)
- *              $Revision: 1.8 $
+ *              $Revision: 1.12 $
  *
  *****************************************************************************/
 
@@ -117,8 +117,7 @@
  *****************************************************************************/
 
 #define YYDEBUG 1
-#define YYERROR_VERBOSE
-
+#define YYERROR_VERBOSE 1
 
 /*
  * State stack - compiler will fault if it overflows.   (Default was 200)
@@ -140,6 +139,21 @@ extern char     *AslCompilertext;
  * we can access some of the parser tables from other modules
  */
 #define static
+#define YYERROR_VERBOSE     1
+
+
+/*
+ * The windows version of bison defines this incorrectly as "32768" (Not negative).
+ * Using a custom (edited binary) version of bison that defines YYFLAG as YYFBAD
+ * instead (#define	YYFBAD		32768), so we can define it correctly here.
+ *
+ * The problem is that if YYFLAG is positive, the extended syntax error messages
+ * are disabled.
+ */
+
+#define YYFLAG              0
+
+
 %}
 
 
@@ -190,7 +204,6 @@ extern char     *AslCompilertext;
 %token <i> BANKFIELD
 %token <i> BREAK
 %token <i> BREAKPOINT
-%token <i> BUFF
 %token <i> BUFFER
 %token <i> BUSMASTERTYPE_MASTER
 %token <i> BUSMASTERTYPE_NOTMASTER
@@ -212,7 +225,6 @@ extern char     *AslCompilertext;
 %token <i> DECODETYPE_POS
 %token <i> DECODETYPE_SUB
 %token <i> DECREMENT
-%token <i> DECSTR
 %token <i> DEFAULT
 %token <i> DEFAULT_ARG
 %token <i> DEFINITIONBLOCK
@@ -239,13 +251,12 @@ extern char     *AslCompilertext;
 %token <i> FINDSETRIGHTBIT
 %token <i> FIXEDIO
 %token <i> FROMBCD
-%token <i> HEXSTR
 %token <i> IF
 %token <i> INCLUDE
+%token <i> INCLUDE_CSTYLE
 %token <i> INCREMENT
 %token <i> INDEX
 %token <i> INDEXFIELD
-%token <i> INT
 %token <i> INTEGER
 %token <i> INTERRUPT
 %token <i> INTLEVEL_ACTIVEHIGH
@@ -379,6 +390,10 @@ extern char     *AslCompilertext;
 %token <i> SWITCH
 %token <i> THERMALZONE
 %token <i> TOBCD
+%token <i> TOBUFFER
+%token <i> TODECIMALSTRING
+%token <i> TOHEXSTRING
+%token <i> TOINTEGER
 %token <i> TRANSLATIONTYPE_DENSE
 %token <i> TRANSLATIONTYPE_SPARSE
 %token <i> TYPE_STATIC
@@ -437,6 +452,7 @@ extern char     *AslCompilertext;
 
 
 %type <n> IncludeTerm
+%type <n> IncludeCStyleTerm
 %type <n> ExternalTerm
 
 %type <n> FieldUnitList
@@ -510,23 +526,19 @@ extern char     *AslCompilertext;
 %type <n> AcquireTerm
 %type <n> AddTerm
 %type <n> AndTerm
-%type <n> BuffTerm
 %type <n> ConcatTerm
 %type <n> ConcatResTerm
 %type <n> CondRefOfTerm
 %type <n> CopyTerm
 %type <n> CopyTarget
 %type <n> DecTerm
-%type <n> DecStrTerm
 %type <n> DerefOfTerm
 %type <n> DivideTerm
 %type <n> FindSetLeftBitTerm
 %type <n> FindSetRightBitTerm
 %type <n> FromBCDTerm
-%type <n> HexStrTerm
 %type <n> IncTerm
 %type <n> IndexTerm
-%type <n> IntTerm
 %type <n> LAndTerm
 %type <n> LEqualTerm
 %type <n> LGreaterTerm
@@ -554,6 +566,10 @@ extern char     *AslCompilertext;
 %type <n> StringTerm
 %type <n> SubtractTerm
 %type <n> ToBCDTerm
+%type <n> ToBufferTerm
+%type <n> ToDecimalStringTerm
+%type <n> ToHexStringTerm
+%type <n> ToIntegerTerm
 %type <n> WaitTerm
 %type <n> XOrTerm
 
@@ -686,6 +702,7 @@ extern char     *AslCompilertext;
 %type <n> OptionalTranslationType
 %type <n> OptionalStringData 
 %type <n> OptionalNameString 
+%type <n> OptionalNameString_First 
 %type <n> OptionalAddressRange
 
 %%
@@ -737,7 +754,8 @@ Term
 
 CompilerDirective
     : IncludeTerm               {}
-    | ExternalTerm              {}
+    | IncludeCStyleTerm         {$$= NULL}
+    | ExternalTerm              {$$= NULL}
     ;
 
 ObjectList
@@ -845,6 +863,7 @@ Target
     :                           {$$ = TgCreateLeafNode (ZERO, NULL);}       /* Placeholder is a ZeroOp object */
     | ','                       {$$ = TgCreateLeafNode (ZERO, NULL);}       /* Placeholder is a ZeroOp object */
     | ',' SuperName             {$$ = TgSetNodeFlags ($2, NODE_IS_TARGET);}
+    | error                     {$$= NULL}
     ;
 
 
@@ -874,22 +893,18 @@ Type2Opcode
     : AcquireTerm               {}
     | AddTerm                   {}
     | AndTerm                   {}
-    | BuffTerm                  {}
     | ConcatTerm                {}
     | ConcatResTerm             {}
     | CondRefOfTerm             {}
     | CopyTerm                  {}
     | DecTerm                   {}
-    | DecStrTerm                {}
     | DerefOfTerm               {}
     | DivideTerm                {}
     | FindSetLeftBitTerm        {}
     | FindSetRightBitTerm       {}
     | FromBCDTerm               {}
-    | HexStrTerm                {}
     | IncTerm                   {}
     | IndexTerm                 {}
-    | IntTerm                   {}
     | LAndTerm                  {}
     | LEqualTerm                {}
     | LGreaterTerm              {}
@@ -917,6 +932,10 @@ Type2Opcode
     | StringTerm                {}
     | SubtractTerm              {}
     | ToBCDTerm                 {}
+    | ToBufferTerm              {}
+    | ToDecimalStringTerm       {}
+    | ToHexStringTerm           {}
+    | ToIntegerTerm             {}
     | WaitTerm                  {}
     | XOrTerm                   {}
     | UserTerm                  {}
@@ -938,7 +957,6 @@ Type3Opcode
     | FromBCDTerm               {}
     | IncTerm                   {}
     | IndexTerm                 {}
-    | IntTerm                   {}
     | LAndTerm                  {}
     | LEqualTerm                {}
     | LGreaterTerm              {}
@@ -959,19 +977,20 @@ Type3Opcode
     | ShiftRightTerm            {} 
     | SubtractTerm              {}
     | ToBCDTerm                 {}
+    | ToIntegerTerm             {}
     | XOrTerm                   {}
     ;
 
 Type4Opcode
     : ConcatTerm                {}
-    | DecStrTerm                {}
-    | HexStrTerm                {}
+    | ToDecimalStringTerm       {}
+    | ToHexStringTerm           {}
     | MidTerm                   {}
     | StringTerm                {}
     ;
 
 Type5Opcode
-    : BuffTerm                  {}
+    : ToBufferTerm              {}
     | ConcatTerm                {}
     | ConcatResTerm             {}
     | MidTerm                   {}
@@ -988,7 +1007,14 @@ Type6Opcode
 
 IncludeTerm
     : INCLUDE '(' 
-        String ')'              {}
+        String                  {UtOpenIncludeFile ($3);}
+        ')'
+        TermList                {$$ = $6}                     
+    ;
+
+IncludeCStyleTerm
+    : INCLUDE_CSTYLE 
+        String                  {UtOpenIncludeFile ($2);}
     ;
 
 ExternalTerm
@@ -1312,7 +1338,7 @@ ResetTerm
 
 ReturnTerm
     : RETURN '('
-        TermArg
+        OptionalTermArg
         ')'                     {$$ = TgCreateNode (RETURN,1,$3);}
     ;
 
@@ -1410,13 +1436,6 @@ AndTerm
         ')'                     {$$ = TgCreateNode (AND,3,$3,$5,$6);}
     ;
 
-BuffTerm
-    : BUFF '(' 
-        TermArg
-        Target
-        ')'                     {$$ = TgCreateNode (BUFF,2,$3,$4);}
-    ;
-
 ConcatTerm
     : CONCATENATE '(' 
         TermArg ','
@@ -1459,13 +1478,6 @@ DecTerm
         ')'                     {$$ = TgCreateNode (DECREMENT,1,$3);}
     ;
 
-DecStrTerm
-    : DECSTR '(' 
-        TermArg
-        Target
-        ')'                     {$$ = TgCreateNode (DECSTR,2,$3,$4);}
-    ;
-
 DerefOfTerm
     : DEREFOF '(' 
         TermArg
@@ -1502,13 +1514,6 @@ FromBCDTerm
         ')'                     {$$ = TgCreateNode (FROMBCD,2,$3,$4);}
     ;
 
-HexStrTerm
-    : HEXSTR '(' 
-        TermArg
-        Target
-        ')'                     {$$ = TgCreateNode (HEXSTR,2,$3,$4);}
-    ;
-
 IncTerm
     : INCREMENT '(' 
         SuperName
@@ -1521,13 +1526,6 @@ IndexTerm
         TermArg
         Target
         ')'                     {$$ = TgCreateNode (INDEX,3,$3,$5,$6);}
-    ;
-
-IntTerm
-    : INT '(' 
-        TermArg
-        Target
-        ')'                     {$$ = TgCreateNode (INT,2,$3,$4);}
     ;
 
 LAndTerm
@@ -1734,6 +1732,34 @@ ToBCDTerm
         ')'                     {$$ = TgCreateNode (TOBCD,2,$3,$4);}
     ;
 
+ToBufferTerm
+    : TOBUFFER '(' 
+        TermArg
+        Target
+        ')'                     {$$ = TgCreateNode (TOBUFFER,2,$3,$4);}
+    ;
+
+ToDecimalStringTerm
+    : TODECIMALSTRING '(' 
+        TermArg
+        Target
+        ')'                     {$$ = TgCreateNode (TODECIMALSTRING,2,$3,$4);}
+    ;
+
+ToHexStringTerm
+    : TOHEXSTRING '(' 
+        TermArg
+        Target
+        ')'                     {$$ = TgCreateNode (TOHEXSTRING,2,$3,$4);}
+    ;
+
+ToIntegerTerm
+    : TOINTEGER '(' 
+        TermArg
+        Target
+        ')'                     {$$ = TgCreateNode (TOINTEGER,2,$3,$4);}
+    ;
+
 WaitTerm
     : WAIT '(' 
         SuperName ','
@@ -1770,6 +1796,7 @@ ObjectTypeKeyword
     | OBJECTTYPE_THZ            {$$ = TgCreateLeafNode (OBJECTTYPE_THZ, NULL);}
     | OBJECTTYPE_BFF            {$$ = TgCreateLeafNode (OBJECTTYPE_BFF, NULL);}
     | OBJECTTYPE_DDB            {$$ = TgCreateLeafNode (OBJECTTYPE_DDB, NULL);}
+    | error                     {$$= NULL}
     ;
 
 AccessTypeKeyword
@@ -1779,6 +1806,7 @@ AccessTypeKeyword
     | ACCESSTYPE_DWORD          {$$ = TgCreateLeafNode (ACCESSTYPE_DWORD, NULL);}
     | ACCESSTYPE_QWORD          {$$ = TgCreateLeafNode (ACCESSTYPE_QWORD, NULL);}
     | ACCESSTYPE_BUF            {$$ = TgCreateLeafNode (ACCESSTYPE_BUF, NULL);}
+    | error                     {$$= NULL}
     ;
 
 AccessAttribKeyword
@@ -1788,17 +1816,20 @@ AccessAttribKeyword
     | ACCESSATTRIB_WORD         {$$ = TgCreateLeafNode (ACCESSATTRIB_WORD, NULL);}
     | ACCESSATTRIB_BLOCK        {$$ = TgCreateLeafNode (ACCESSATTRIB_BLOCK, NULL);}
     | ACCESSATTRIB_CALL         {$$ = TgCreateLeafNode (ACCESSATTRIB_CALL, NULL);}
+    | error                     {$$= NULL}
     ;
 
 LockRuleKeyword
     : LOCKRULE_LOCK             {$$ = TgCreateLeafNode (LOCKRULE_LOCK, NULL);}
     | LOCKRULE_NOLOCK           {$$ = TgCreateLeafNode (LOCKRULE_NOLOCK, NULL);}
+    | error                     {$$= NULL}
     ;
 
 UpdateRuleKeyword
     : UPDATERULE_PRESERVE       {$$ = TgCreateLeafNode (UPDATERULE_PRESERVE, NULL);}
     | UPDATERULE_ONES           {$$ = TgCreateLeafNode (UPDATERULE_ONES, NULL);}
     | UPDATERULE_ZEROS          {$$ = TgCreateLeafNode (UPDATERULE_ZEROS, NULL);}
+    | error                     {$$= NULL}
     ;
 
 RegionSpaceKeyword
@@ -1810,11 +1841,13 @@ RegionSpaceKeyword
     | REGIONSPACE_SMBUS         {$$ = TgCreateLeafNode (REGIONSPACE_SMBUS, NULL);}
     | REGIONSPACE_CMOS          {$$ = TgCreateLeafNode (REGIONSPACE_CMOS, NULL);}
     | REGIONSPACE_PCIBAR        {$$ = TgCreateLeafNode (REGIONSPACE_PCIBAR, NULL);}
+    | error                     {$$= NULL}
     ;
 
 AddressSpaceKeyword
     : RegionSpaceKeyword        {}
     | ADDRESSSPACE_FFIXEDHW     {$$ = TgCreateLeafNode (ADDRESSSPACE_FFIXEDHW, NULL);}
+    | error                     {$$= NULL}
     ;
 
 UserDefRegionSpace
@@ -1824,6 +1857,7 @@ UserDefRegionSpace
 SerializeRuleKeyword
     : SERIALIZERULE_SERIAL      {$$ = TgCreateLeafNode (SERIALIZERULE_SERIAL, NULL);}
     | SERIALIZERULE_NOTSERIAL   {$$ = TgCreateLeafNode (SERIALIZERULE_NOTSERIAL, NULL);}
+    | error                     {$$= NULL}
     ;
 
 MatchOpKeyword
@@ -1833,6 +1867,7 @@ MatchOpKeyword
     | MATCHTYPE_MLT             {$$ = TgCreateLeafNode (MATCHTYPE_MLT, NULL);}
     | MATCHTYPE_MGE             {$$ = TgCreateLeafNode (MATCHTYPE_MGE, NULL);}
     | MATCHTYPE_MGT             {$$ = TgCreateLeafNode (MATCHTYPE_MGT, NULL);}
+    | error                     {$$= NULL}
     ;
 
 DMATypeKeyword
@@ -1840,43 +1875,51 @@ DMATypeKeyword
     | DMATYPE_COMPATIBILITY     {$$ = TgCreateLeafNode (DMATYPE_COMPATIBILITY, NULL);}
     | DMATYPE_B                 {$$ = TgCreateLeafNode (DMATYPE_B, NULL);}
     | DMATYPE_F                 {$$ = TgCreateLeafNode (DMATYPE_F, NULL);}
+    | error                     {$$= NULL}
     ;
 
 BusMasterKeyword
     : BUSMASTERTYPE_MASTER      {$$ = TgCreateLeafNode (BUSMASTERTYPE_MASTER, NULL);}
     | BUSMASTERTYPE_NOTMASTER   {$$ = TgCreateLeafNode (BUSMASTERTYPE_NOTMASTER, NULL);}
+    | error                     {$$= NULL}
     ;
 
 XferTypeKeyword
     : XFERTYPE_8                {$$ = TgCreateLeafNode (XFERTYPE_8, NULL);}
     | XFERTYPE_8_16             {$$ = TgCreateLeafNode (XFERTYPE_8_16, NULL);}
     | XFERTYPE_16               {$$ = TgCreateLeafNode (XFERTYPE_16, NULL);}
+    | error                     {$$= NULL}
     ;
 
 ResourceTypeKeyword
     : RESOURCETYPE_CONSUMER     {$$ = TgCreateLeafNode (RESOURCETYPE_CONSUMER, NULL);}
     | RESOURCETYPE_PRODUCER     {$$ = TgCreateLeafNode (RESOURCETYPE_PRODUCER, NULL);}
+    | error                     {$$= NULL}
     ;
 
 MinKeyword
     : MINTYPE_FIXED             {$$ = TgCreateLeafNode (MINTYPE_FIXED, NULL);}
     | MINTYPE_NOTFIXED          {$$ = TgCreateLeafNode (MINTYPE_NOTFIXED, NULL);}
+    | error                     {$$= NULL}
     ;
 
 MaxKeyword
     : MAXTYPE_FIXED             {$$ = TgCreateLeafNode (MAXTYPE_FIXED, NULL);}
     | MAXTYPE_NOTFIXED          {$$ = TgCreateLeafNode (MAXTYPE_NOTFIXED, NULL);}
+    | error                     {$$= NULL}
     ;
 
 DecodeKeyword
     : DECODETYPE_POS            {$$ = TgCreateLeafNode (DECODETYPE_POS, NULL);}
     | DECODETYPE_SUB            {$$ = TgCreateLeafNode (DECODETYPE_SUB, NULL);}
+    | error                     {$$= NULL}
     ;
 
 RangeTypeKeyword
     : RANGETYPE_ISAONLY         {$$ = TgCreateLeafNode (RANGETYPE_ISAONLY, NULL);}
     | RANGETYPE_NONISAONLY      {$$ = TgCreateLeafNode (RANGETYPE_NONISAONLY, NULL);}
     | RANGETYPE_ENTIRE          {$$ = TgCreateLeafNode (RANGETYPE_ENTIRE, NULL);}
+    | error                     {$$= NULL}
     ;
 
 MemTypeKeyword
@@ -1884,41 +1927,49 @@ MemTypeKeyword
     | MEMTYPE_WRITECOMBINING    {$$ = TgCreateLeafNode (MEMTYPE_WRITECOMBINING, NULL);}
     | MEMTYPE_PREFETCHABLE      {$$ = TgCreateLeafNode (MEMTYPE_PREFETCHABLE, NULL);}
     | MEMTYPE_NONCACHEABLE      {$$ = TgCreateLeafNode (MEMTYPE_NONCACHEABLE, NULL);}
+    | error                     {$$= NULL}
     ;
 
 ReadWriteKeyword
     : READWRITETYPE_BOTH        {$$ = TgCreateLeafNode (READWRITETYPE_BOTH, NULL);}
     | READWRITETYPE_READONLY    {$$ = TgCreateLeafNode (READWRITETYPE_READONLY, NULL);}
+    | error                     {$$= NULL}
     ;
 
 InterruptTypeKeyword
     : INTTYPE_EDGE              {$$ = TgCreateLeafNode (INTTYPE_EDGE, NULL);}
     | INTTYPE_LEVEL             {$$ = TgCreateLeafNode (INTTYPE_LEVEL, NULL);}
+    | error                     {$$= NULL}
     ;
 
 InterruptLevel
     : INTLEVEL_ACTIVEHIGH       {$$ = TgCreateLeafNode (INTLEVEL_ACTIVEHIGH, NULL);}
     | INTLEVEL_ACTIVELOW        {$$ = TgCreateLeafNode (INTLEVEL_ACTIVELOW, NULL);}
+    | error                     {$$= NULL}
     ;
 
 ShareTypeKeyword
     : SHARETYPE_SHARED          {$$ = TgCreateLeafNode (SHARETYPE_SHARED, NULL);}
     | SHARETYPE_EXCLUSIVE       {$$ = TgCreateLeafNode (SHARETYPE_EXCLUSIVE, NULL);}
+    | error                     {$$= NULL}
     ;
 
 IODecodeKeyword
     : IODECODETYPE_16           {$$ = TgCreateLeafNode (IODECODETYPE_16, NULL);}
     | IODECODETYPE_10           {$$ = TgCreateLeafNode (IODECODETYPE_10, NULL);}
+    | error                     {$$= NULL}
     ;
 
 TypeKeyword
     : TYPE_TRANSLATION          {$$ = TgCreateLeafNode (TYPE_TRANSLATION, NULL);}
     | TYPE_STATIC               {$$ = TgCreateLeafNode (TYPE_STATIC, NULL);}
+    | error                     {$$= NULL}
     ;
 
 TranslationKeyword
     : TRANSLATIONTYPE_SPARSE    {$$ = TgCreateLeafNode (TRANSLATIONTYPE_SPARSE, NULL);}
     | TRANSLATIONTYPE_DENSE     {$$ = TgCreateLeafNode (TRANSLATIONTYPE_DENSE, NULL);}
+    | error                     {$$= NULL}
     ;
 
 AddressKeyword
@@ -1926,6 +1977,7 @@ AddressKeyword
     | ADDRESSTYPE_RESERVED      {$$ = TgCreateLeafNode (ADDRESSTYPE_RESERVED, NULL);}
     | ADDRESSTYPE_NVS           {$$ = TgCreateLeafNode (ADDRESSTYPE_NVS, NULL);}
     | ADDRESSTYPE_ACPI          {$$ = TgCreateLeafNode (ADDRESSTYPE_ACPI, NULL);}
+    | error                     {$$= NULL}
     ;
 
    
@@ -1948,10 +2000,10 @@ ArgTerm
     | ARG1                      {$$ = TgCreateLeafNode (ARG1, NULL);}
     | ARG2                      {$$ = TgCreateLeafNode (ARG2, NULL);}
     | ARG3                      {$$ = TgCreateLeafNode (ARG3, NULL);}
-    | ARG4                      {$$ = TgCreateLeafNode (ARG3, NULL);}
-    | ARG5                      {$$ = TgCreateLeafNode (ARG4, NULL);}
+    | ARG4                      {$$ = TgCreateLeafNode (ARG4, NULL);}
     | ARG5                      {$$ = TgCreateLeafNode (ARG5, NULL);}
     | ARG6                      {$$ = TgCreateLeafNode (ARG6, NULL);}
+    | error                     {$$= NULL}
     ;
 
 LocalTerm
@@ -1963,14 +2015,17 @@ LocalTerm
     | LOCAL5                    {$$ = TgCreateLeafNode (LOCAL5, NULL);}
     | LOCAL6                    {$$ = TgCreateLeafNode (LOCAL6, NULL);}
     | LOCAL7                    {$$ = TgCreateLeafNode (LOCAL7, NULL);}
+    | error                     {$$= NULL}
     ;
 
 DebugTerm
     : DEBUG                     {$$ = TgCreateLeafNode (DEBUG, NULL);}
+    | error                     {$$= NULL}
     ;
 
 Integer
     : INTEGER                   {$$ = TgCreateLeafNode (INTEGER, (void *) AslCompilerlval.i);}
+    | error                     {$$= NULL}
     ;
 
 ByteConst
@@ -1991,6 +2046,7 @@ QwordConst
 
 String
     : STRING_LITERAL            {$$ = TgCreateLeafNode (STRING_LITERAL, AslCompilerlval.s);}
+    | error                     {$$= NULL}
     ;
 
 /* 
@@ -2001,6 +2057,7 @@ ConstTerm
     : ZERO                      {$$ = TgCreateLeafNode (ZERO, NULL);}
     | ONE                       {$$ = TgCreateLeafNode (ONE, NULL);}
     | ONES                      {$$ = TgCreateLeafNode (ONES, NULL);}
+    | error                     {$$= NULL}
     ;
 
 ByteConstExpr
@@ -2032,6 +2089,7 @@ ConstExprTerm
     : ZERO                      {$$ = TgCreateLeafNode (ZERO, NULL);}
     | ONE                       {$$ = TgCreateLeafNode (ONE, NULL);}
     | ONES                      {$$ = TgCreateLeafNode (ONES, NULL);}
+    | error                     {$$= NULL}
     ;
 
 BufferTerm
@@ -2161,10 +2219,10 @@ DMATerm
     : DMA '('
         DMATypeKeyword ','
         BusMasterKeyword ','
-        XferTypeKeyword ','
+        XferTypeKeyword
         OptionalNameString
         ')' '{'
-            ByteList '}'        {$$ = TgCreateNode (DMA,5,$3,$5,$7,$9,$12);}
+            ByteList '}'        {$$ = TgCreateNode (DMA,5,$3,$5,$7,$8,$11);}
     ;
 
 DWordIOTerm
@@ -2204,7 +2262,7 @@ DWordMemoryTerm
         OptionalStringData
         OptionalNameString
         OptionalAddressRange
-        OptionalTranslationType
+        OptionalType
         ')'                     {$$ = TgCreateNode (DWORDMEMORY,16,$3,$4,$5,$6,$7,$8,$10,$12,$14,$16,$18,$19,$20,$21,$22,$23);}
     ;
 
@@ -2247,7 +2305,7 @@ IOTerm
 
 IRQNoFlagsTerm
     : IRQNOFLAGS '('
-        OptionalNameString
+        OptionalNameString_First
         ')' '{' 
             ByteList '}'        {$$ = TgCreateNode (IRQNOFLAGS,2,$3,$6);}
     ;
@@ -2259,7 +2317,7 @@ IRQTerm
         OptionalShareType     
         OptionalNameString
         ')' '{' 
-            ByteList '}'        {$$ = TgCreateNode (IRQ,4,$3,$5,$6,$7);}
+            ByteList '}'        {$$ = TgCreateNode (IRQ,5,$3,$5,$6,$7,$10);}
     ;
 
 Memory24Term
@@ -2268,18 +2326,18 @@ Memory24Term
         WordConstExpr ','
         WordConstExpr ','
         WordConstExpr ','
-        WordConstExpr ','
+        WordConstExpr
         OptionalNameString
-        ')'                     {$$ = TgCreateNode (MEMORY24,6,$3,$5,$7,$9,$11,$13);}
+        ')'                     {$$ = TgCreateNode (MEMORY24,6,$3,$5,$7,$9,$11,$12);}
     ;
 
 Memory32FixedTerm
     : MEMORY32FIXED '('
         ReadWriteKeyword ','
         DWordConstExpr ','
-        DWordConstExpr ','
+        DWordConstExpr
         OptionalNameString
-        ')'                     {$$ = TgCreateNode (MEMORY32FIXED,4,$3,$5,$7,$9);}
+        ')'                     {$$ = TgCreateNode (MEMORY32FIXED,4,$3,$5,$7,$8);}
     ;
 
 Memory32Term
@@ -2288,9 +2346,9 @@ Memory32Term
         DWordConstExpr ','
         DWordConstExpr ','
         DWordConstExpr ','
-        DWordConstExpr ','
+        DWordConstExpr
         OptionalNameString
-        ')'                     {$$ = TgCreateNode (MEMORY32,6,$3,$5,$7,$9,$11,$13);}
+        ')'                     {$$ = TgCreateNode (MEMORY32,6,$3,$5,$7,$9,$11,$12);}
     ;
 
 QWordIOTerm
@@ -2330,7 +2388,7 @@ QWordMemoryTerm
         OptionalStringData
         OptionalNameString
         OptionalAddressRange
-        OptionalTranslationType
+        OptionalType
         ')'                     {$$ = TgCreateNode (QWORDMEMORY,16,$3,$4,$5,$6,$7,$8,$10,$12,$14,$16,$18,$19,$20,$21,$22,$23);}
     ;
 
@@ -2346,9 +2404,9 @@ RegisterTerm
 StartDependentFnTerm
     : STARTDEPENDENTFN '('
         ByteConstExpr ','
-        ByteConstExpr ','
+        ByteConstExpr
         ')' '{' 
-        ResourceMacroList '}'   {$$ = TgCreateNode (STARTDEPENDENTFN,3,$3,$5,$9);}
+        ResourceMacroList '}'   {$$ = TgCreateNode (STARTDEPENDENTFN,3,$3,$5,$8);}
     ;
                 
 StartDependentFnNoPriTerm
@@ -2359,14 +2417,14 @@ StartDependentFnNoPriTerm
                
 VendorLongTerm
     : VENDORLONG '('
-        OptionalNameString
+        OptionalNameString_First
         ')' '{' 
             ByteList '}'        {$$ = TgCreateNode (VENDORLONG,2,$3,$6);}
     ;
         
 VendorShortTerm
     : VENDORSHORT '('
-        OptionalNameString
+        OptionalNameString_First
         ')' '{' 
             ByteList '}'        {$$ = TgCreateNode (VENDORSHORT,2,$3,$6);}
     ;
@@ -2505,6 +2563,12 @@ OptionalNameString
     | ',' NameString            {$$ = $2}
     ;
 
+OptionalNameString_First
+    :                           {$$ = NULL}
+    | NameString                {$$ = $1}
+    ;
+
+
 OptionalAddressRange
     :                           {$$ = NULL}
     | ','                       {$$ = NULL}
@@ -2542,8 +2606,9 @@ OptionalRangeType
     ;
 
 OptionalShareType
-    : ','                       {$$ = NULL}
-    | ShareTypeKeyword ','      {$$ = $1}
+    :                           {$$ = NULL}
+    | ','                       {$$ = NULL}
+    | ',' ShareTypeKeyword      {$$ = $2}
     ;
 
 OptionalType
