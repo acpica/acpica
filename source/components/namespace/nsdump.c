@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: nsdump - table dumping routines for debug
- *              $Revision: 1.96 $
+ *              $Revision: 1.98 $
  *
  *****************************************************************************/
 
@@ -215,7 +215,7 @@ AcpiNsDumpOneObject (
     UINT32                  WhichBit;
 
 
-    PROC_NAME ("AcpiNsDumpOneObject");
+    PROC_NAME ("NsDumpOneObject");
 
 
     ThisNode = AcpiNsConvertHandleToEntry (ObjHandle);
@@ -549,7 +549,7 @@ AcpiNsDumpOneDevice (
     ACPI_STATUS             Status;
     UINT32                  i;
 
-    PROC_NAME ("AcpiNsDumpOneDevice");
+    PROC_NAME ("NsDumpOneDevice");
 
 
     Status = AcpiNsDumpOneObject (ObjHandle, Level, Context, ReturnValue);
@@ -585,7 +585,7 @@ AcpiNsDumpRootDevices (void)
 {
     ACPI_HANDLE             SysBusHandle;
 
-    PROC_NAME ("AcpiNsDumpRootDevices");
+    PROC_NAME ("NsDumpRootDevices");
 
 
     /* Only dump the table if tracing is enabled */
@@ -671,14 +671,10 @@ AcpiNsDumpEntry (
     ACPI_WALK_INFO          Info;
 
 
-    FUNCTION_TRACE_PTR ("NsDumpEntry", Handle);
-
     Info.DebugLevel = DebugLevel;
     Info.OwnerId = ACPI_UINT32_MAX;
 
     AcpiNsDumpOneObject (Handle, 1, &Info, NULL);
-
-    return_VOID;
 }
 
 #endif
