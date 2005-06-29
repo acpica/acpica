@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: exfldio - Aml Field I/O
- *              $Revision: 1.108 $
+ *              $Revision: 1.109 $
  *
  *****************************************************************************/
 
@@ -212,7 +212,7 @@ AcpiExSetupRegion (
                                     + FieldDatumByteOffset
                                     + ObjDesc->CommonField.AccessByteWidth))
     {
-        if (AcpiGbl_EnableInterpeterSlack)
+        if (AcpiGbl_EnableInterpreterSlack)
         {
             /*
              * Slack mode only:  We will go ahead and allow access to this
