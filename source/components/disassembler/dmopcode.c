@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dbdisasm - parser op tree display routines
- *              $Revision: 1.58 $
+ *              $Revision: 1.59 $
  *
  ******************************************************************************/
 
@@ -128,7 +128,6 @@
         MODULE_NAME         ("dbdisasm")
 
 
-#define MAX_SHOW_ENTRY      128
 #define BLOCK_PAREN         1
 #define BLOCK_BRACE         2
 #define DB_NO_OP_INFO       "            [%2.2d]  "
@@ -165,7 +164,6 @@ AcpiDbBlockType (
     }
 
     return (BLOCK_PAREN);
-
 }
 
 
@@ -243,8 +241,7 @@ AcpiPsDisplayObjectPathname (
 {
     ACPI_STATUS             Status;
     ACPI_NAMESPACE_NODE     *Node;
-    NATIVE_CHAR             Buffer[MAX_SHOW_ENTRY];
-    ACPI_SIZE               BufferSize = MAX_SHOW_ENTRY;
+    ACPI_BUFFER             Buffer;
     UINT32                  DebugLevel;
 
 
@@ -281,14 +278,16 @@ AcpiPsDisplayObjectPathname (
 
     /* Convert NamedDesc/handle to a full pathname */
 
-    Status = AcpiNsHandleToPathname (Node, &BufferSize, Buffer);
+    Buffer.Length = ACPI_ALLOCATE_LOCAL_BUFFER;
+    Status = AcpiNsHandleToPathname (Node, &Buffer);
     if (ACPI_FAILURE (Status))
     {
         AcpiOsPrintf ("****Could not get pathname****)");
         goto Exit;
     }
 
-    AcpiOsPrintf ("  (Path %s)", Buffer);
+    AcpiOsPrintf ("  (Path %s)", Buffer.Pointer);
+    AcpiOsFree (Buffer.Pointer);
 
 
 Exit:
