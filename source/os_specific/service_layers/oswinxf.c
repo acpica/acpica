@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: oswinxf - Windows OSL
- *              $Revision: 1.37 $
+ *              $Revision: 1.38 $
  *
  *****************************************************************************/
 
@@ -847,11 +847,12 @@ ACPI_STATUS
 AcpiOsWaitSemaphore (
     ACPI_HANDLE         Handle,
     UINT32              Units,
-    UINT32              Timeout)
+    UINT16              Timeout)
 {
 #ifdef _MULTI_THREADED
     UINT32              Index = (UINT32) Handle;
     UINT32              WaitStatus;
+    UINT32              OsTimeout = Timeout;
 
 
     ACPI_FUNCTION_NAME ("OsWaitSemaphore");
@@ -877,7 +878,12 @@ AcpiOsWaitSemaphore (
         Timeout = 400000;
 */
 
-    WaitStatus = WaitForSingleObject (AcpiGbl_Semaphores[Index].OsHandle, Timeout);
+    if (Timeout == ACPI_WAIT_FOREVER)
+    {
+        OsTimeout = INFINITE;
+    }
+
+    WaitStatus = WaitForSingleObject (AcpiGbl_Semaphores[Index].OsHandle, OsTimeout);
     if (WaitStatus == WAIT_TIMEOUT)
     {
 /* Make optional -- wait of 0 is used to detect if unit is available
