@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: asllookup- Namespace lookup
- *              $Revision: 1.13 $
+ *              $Revision: 1.19 $
  *
  *****************************************************************************/
 
@@ -9,8 +9,8 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, Intel Corp.  All rights
- * reserved.
+ * Some or all of this work - Copyright (c) 1999, 2000, Intel Corp.
+ * All rights reserved.
  *
  * 2. License
  *
@@ -137,7 +137,7 @@
  *
  * RETURN:      Status
  *
- * DESCRIPTION: Dump a namespace object to the namespace output file. 
+ * DESCRIPTION: Dump a namespace object to the namespace output file.
  *              Called during the walk of the namespace to dump all objects.
  *
  ****************************************************************************/
@@ -150,14 +150,78 @@ LsDoOneNamespaceObject (
     void                    **ReturnValue)
 {
     ACPI_NAMESPACE_NODE     *Node = (ACPI_NAMESPACE_NODE *) ObjHandle;
+    ASL_PARSE_NODE          *Pnode;
 
 
     Gbl_NumNamespaceObjects++;
 
-    fprintf (Gbl_NamespaceOutputFile, "%5d  [%d]  %*s %4.4s - %s\n",
+    fprintf (Gbl_NamespaceOutputFile, "%5d  [%d]  %*s %4.4s - %s",
                         Gbl_NumNamespaceObjects, Level, (Level * 3), " ",
                         &Node->Name,
                         AcpiCmGetTypeName (Node->Type));
+
+    Pnode = (ASL_PARSE_NODE *) Node->Object;
+
+    if (Pnode)
+    {
+        if (Pnode->ParseOpcode == NAME)
+        {
+            Pnode = Pnode->Child;
+        }
+
+
+        switch (Node->Type)
+        {
+        case ACPI_TYPE_NUMBER:
+
+            if ((Pnode->ParseOpcode == NAMESEG)  ||
+                (Pnode->ParseOpcode == NAMESTRING))
+            {
+                Pnode = Pnode->Peer;
+            }
+
+            if (Pnode->Value.Integer64 > ACPI_UINT32_MAX)
+            {
+                fprintf (Gbl_NamespaceOutputFile, "    [Initial Value = 0x%X%X]", 
+                            HIDWORD (Pnode->Value.Integer64), Pnode->Value.Integer32);
+            }
+            else
+            {
+                fprintf (Gbl_NamespaceOutputFile, "    [Initial Value = 0x%X]", 
+                            Pnode->Value.Integer32);
+            }
+            break;
+
+
+        case ACPI_TYPE_STRING:
+            if ((Pnode->ParseOpcode == NAMESEG)  ||
+                (Pnode->ParseOpcode == NAMESTRING))
+            {
+                Pnode = Pnode->Peer;
+            }
+
+            fprintf (Gbl_NamespaceOutputFile, "    [Initial Value = \"%s\"]", 
+                        Pnode->Value.String);
+
+            break;
+
+
+        case INTERNAL_TYPE_DEF_FIELD:
+            if ((Pnode->ParseOpcode == NAMESEG)  ||
+                (Pnode->ParseOpcode == NAMESTRING))
+            {
+                Pnode = Pnode->Child;
+            }
+            fprintf (Gbl_NamespaceOutputFile, "    [Length = 0x%02X]", 
+                        Pnode->Value.Integer32);
+
+            break;
+
+        }
+
+    }
+
+    fprintf (Gbl_NamespaceOutputFile, "\n");
 
     return (AE_OK);
 }
@@ -165,14 +229,14 @@ LsDoOneNamespaceObject (
 
 /*****************************************************************************
  *
- * FUNCTION:    LsDisplayNamespace 
+ * FUNCTION:    LsDisplayNamespace
  *
  * PARAMETERS:  None
  *
  * RETURN:      None
  *
  * DESCRIPTION: Walk the namespace an display information about each node
- *              in the tree.  Information is written to the optional 
+ *              in the tree.  Information is written to the optional
  *              namespace output file.
  *
  ****************************************************************************/
@@ -230,9 +294,9 @@ LkCrossReferenceNamespace (void)
     ACPI_WALK_LIST          WalkList;
 
 
-    DbgPrint ("\nCreating namespace\n\n");
+    DbgPrint (ASL_DEBUG_OUTPUT, "\nCreating namespace\n\n");
 
-    /* 
+    /*
      * Create a new walk state for use when looking up names
      * within the namespace (Passed as context to the callbacks)
      */
@@ -247,7 +311,7 @@ LkCrossReferenceNamespace (void)
 
     /* Walk the entire parse tree */
 
-    TrWalkParseTree (ASL_WALK_VISIT_TWICE, LkNamespaceLocateBegin,
+    TrWalkParseTree (RootNode, ASL_WALK_VISIT_TWICE, LkNamespaceLocateBegin,
                         LkNamespaceLocateEnd, WalkState);
 
     return AE_OK;
@@ -263,11 +327,11 @@ LkCrossReferenceNamespace (void)
  * RETURN:      Status
  *
  * DESCRIPTION: Descending callback used during cross-reference.  For named
- *              object references, attempt to locate the name in the 
+ *              object references, attempt to locate the name in the
  *              namespace.
  *
- * NOTE: ASL references to named fields within resource descriptors are 
- *       resolve to integer values here.  Therefore, this step is an 
+ * NOTE: ASL references to named fields within resource descriptors are
+ *       resolve to integer values here.  Therefore, this step is an
  *       important part of the code generation.  We don't know that the
  *       name refers to a resource descriptor until now.
  *
@@ -286,6 +350,7 @@ LkNamespaceLocateBegin (
     NATIVE_CHAR             *Path;
     UINT8                   PassedArgs;
     ASL_PARSE_NODE          *Next;
+    ASL_PARSE_NODE          *MethodPsNode;
 
 
     DEBUG_PRINT (TRACE_DISPATCH,
@@ -327,6 +392,8 @@ LkNamespaceLocateBegin (
      * The namespace is also used as a lookup table for references to resource
      * descriptors and the fields within them.
      */
+    Gbl_NsLookupCount++;
+
     Status = AcpiNsLookup (WalkState->ScopeInfo,  Path,
                             DataType, IMODE_EXECUTE,
                             NS_SEARCH_PARENT, WalkState, &(NsNode));
@@ -377,47 +444,60 @@ LkNamespaceLocateBegin (
          * Count the number of arguments, each appears as a child
          * under the parent node
          */
-        PassedArgs = 0;
-        Next = PsNode->Child;
+        PsNode->ParseOpcode = METHODCALL;
+        PassedArgs          = 0;
+        Next                = PsNode->Child;
+
         while (Next)
         {
             PassedArgs++;
             Next = Next->Peer;
         }
 
-        /* 
+        /*
          * Check the parsed arguments with the number expected by the
          * method declaration itself
          */
         if (PassedArgs != NsNode->OwnerId)
         {
-            sprintf (MsgBuffer, "%s requires %d\n", PsNode->ExternalName,
+            sprintf (MsgBuffer, "%s requires %d", PsNode->ExternalName,
                         NsNode->OwnerId);
 
             if (PassedArgs < NsNode->OwnerId)
             {
                 AslError (ASL_ERROR, ASL_MSG_ARG_COUNT_LO, PsNode, MsgBuffer);
             }
-            else 
+            else
             {
                 AslError (ASL_ERROR, ASL_MSG_ARG_COUNT_HI, PsNode, MsgBuffer);
             }
         }
 
-        /* 
+        /*
          * Check if the method caller expects this method to return a value and
-         * if the method in fact returns a value.
+         * if the called method in fact returns a value.
          */
 
-        if ((!(PsNode->Flags & NODE_RESULT_NOT_USED)) &&
-            (NsNode->Flags & ANOBJ_METHOD_NO_RETVAL))
+        if (!(PsNode->Flags & NODE_RESULT_NOT_USED))
         {
-            /* 
-             * 1) Result from the method is used (method is a TermArg)
-             * 2) Method does not return a value (or does not consistently return 
-             *    a value)
-             */
-            AslError (ASL_ERROR, ASL_MSG_NO_RETVAL, PsNode, PsNode->ExternalName);
+            /* 1) The result from the method is used (the method is a TermArg) */
+
+            MethodPsNode = NsNode->Object;
+            if (MethodPsNode->Flags & NODE_METHOD_NO_RETVAL)
+            {
+                /*
+                 * 2) Method NEVER returns a value
+                 */
+                AslError (ASL_ERROR, ASL_MSG_NO_RETVAL, PsNode, PsNode->ExternalName);
+            }
+
+            else if (MethodPsNode->Flags & NODE_METHOD_SOME_NO_RETVAL)
+            {
+                /*
+                 * 2) Method SOMETIMES returns a value, SOMETIMES not
+                 */
+                AslError (ASL_WARNING, ASL_MSG_SOME_NO_RETVAL, PsNode, PsNode->ExternalName);
+            }
         }
     }
 
