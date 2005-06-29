@@ -2,7 +2,7 @@
  *
  * Module Name: dsopcode - Dispatcher Op Region support and handling of
  *                         "control" opcodes
- *              $Revision: 1.62 $
+ *              $Revision: 1.63 $
  *
  *****************************************************************************/
 
@@ -272,7 +272,7 @@ AcpiDsGetBufferFieldArguments (
 
     /* Get the AML pointer (method object) and BufferField node */
 
-    ExtraDesc = ObjDesc->BufferField.Extra;
+    ExtraDesc = AcpiNsGetSecondaryObject (ObjDesc);
     Node = ObjDesc->BufferField.Node;
 
     DEBUG_EXEC(AcpiUtDisplayInitPathname (Node, "  [Field]"));
@@ -281,14 +281,16 @@ AcpiDsGetBufferFieldArguments (
 
 
     Status = AcpiDsExecuteArguments (Node, ExtraDesc);
+    if (ACPI_FAILURE (Status))
+    {
+        return_ACPI_STATUS (Status);
+    }
 
     /*
-     * The pseudo-method object is no longer needed since the region is
+     * The secondary object is no longer needed since the buffer field is
      * now initialized
      */
-    AcpiUtRemoveReference (ObjDesc->BufferField.Extra);
-    ObjDesc->BufferField.Extra = NULL;
-
+    AcpiNsDetachSecondary (ObjDesc);
     return_ACPI_STATUS (Status);
 }
 
@@ -310,9 +312,9 @@ ACPI_STATUS
 AcpiDsGetRegionArguments (
     ACPI_OPERAND_OBJECT     *ObjDesc)
 {
-    ACPI_OPERAND_OBJECT     *ExtraDesc = NULL;
     ACPI_NAMESPACE_NODE     *Node;
     ACPI_STATUS             Status;
+    ACPI_OPERAND_OBJECT     *RegionObj2;
 
 
     FUNCTION_TRACE_PTR ("DsGetRegionArguments", ObjDesc);
@@ -323,18 +325,23 @@ AcpiDsGetRegionArguments (
         return_ACPI_STATUS (AE_OK);
     }
 
+    RegionObj2 = AcpiNsGetSecondaryObject (ObjDesc);
+    if (!RegionObj2)
+    {
+        return_ACPI_STATUS (AE_NOT_EXIST);
+    }
+
     /* Get the AML pointer (method object) and region node */
 
-    ExtraDesc = ObjDesc->Region.Extra;
     Node = ObjDesc->Region.Node;
 
     DEBUG_EXEC(AcpiUtDisplayInitPathname (Node, "  [Operation Region]"));
 
     ACPI_DEBUG_PRINT ((ACPI_DB_EXEC, "[%4.4s] OpRegion Init at AML %p\n",
-        (char *) &Node->Name, ExtraDesc->Extra.AmlStart));
+        (char *) &Node->Name, RegionObj2->Extra.AmlStart));
 
 
-    Status = AcpiDsExecuteArguments (Node, ExtraDesc);
+    Status = AcpiDsExecuteArguments (Node, RegionObj2);
 
     return_ACPI_STATUS (Status);
 }
