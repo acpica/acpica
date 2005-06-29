@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: utdebug - Debug print routines
- *              $Revision: 1.101 $
+ *              $Revision: 1.105 $
  *
  *****************************************************************************/
 
@@ -122,12 +122,12 @@
         ACPI_MODULE_NAME    ("utdebug")
 
 
+#ifdef ACPI_DEBUG_OUTPUT
+
 static UINT32   AcpiGbl_PrevThreadId = 0xFFFFFFFF;
 static char     *AcpiGbl_FnEntryStr = "----Entry";
 static char     *AcpiGbl_FnExitStr  = "----Exit-";
 
-
-#ifdef ACPI_DEBUG
 
 /*****************************************************************************
  *
@@ -250,7 +250,7 @@ AcpiUtDebugPrint (
 
     if (ACPI_LV_THREADS & AcpiDbgLevel)
     {
-        AcpiOsPrintf ("[%04lX] ", ThreadId, AcpiGbl_NestingLevel, DbgInfo->ProcName);
+        AcpiOsPrintf ("[%04lX] ", ThreadId);
     }
 
     AcpiOsPrintf ("[%02ld] %-22.22s: ", AcpiGbl_NestingLevel, DbgInfo->ProcName);
@@ -529,7 +529,7 @@ AcpiUtValueExit (
 {
 
     AcpiUtDebugPrint (ACPI_LV_FUNCTIONS, LineNumber, DbgInfo,
-            "%s %8.8lX%8.8lX\n", AcpiGbl_FnExitStr,
+            "%s %8.8X%8.8X\n", AcpiGbl_FnExitStr,
             ACPI_HIDWORD (Value), ACPI_LODWORD (Value));
 
     AcpiGbl_NestingLevel--;
@@ -620,7 +620,7 @@ AcpiUtDumpBuffer (
     {
         /* Print current offset */
 
-        AcpiOsPrintf ("%05X    ", i);
+        AcpiOsPrintf ("%05X    ", (UINT32) i);
 
         /* Print 16 hex chars */
 
