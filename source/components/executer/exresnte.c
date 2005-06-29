@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exresnte - AML Interpreter object resolution
- *              $Revision: 1.58 $
+ *              $Revision: 1.59 $
  *
  *****************************************************************************/
 
@@ -180,6 +180,16 @@ AcpiExResolveNodeToValue (
     ACPI_DEBUG_PRINT ((ACPI_DB_EXEC, "Entry=%p SourceDesc=%p Type=%X\n",
          Node, SourceDesc, EntryType));
 
+    if (EntryType == INTERNAL_TYPE_ALIAS)
+    {
+        /* There is always exactly one level of indirection */
+
+        Node       = (ACPI_NAMESPACE_NODE *) Node->Object;
+        SourceDesc = AcpiNsGetAttachedObject (Node);
+        EntryType  = AcpiNsGetType ((ACPI_HANDLE) Node);
+        *ObjectPtr = Node;
+    }
+
     /*
      * Several object types require no further processing:
      * 1) Devices rarely have an attached object, return the Node
@@ -305,7 +315,7 @@ AcpiExResolveNodeToValue (
         break;
 
 
-    /* TYPE_Any is untyped, and thus there is no object associated with it */
+    /* TYPE_ANY is untyped, and thus there is no object associated with it */
 
     case ACPI_TYPE_ANY:
 
