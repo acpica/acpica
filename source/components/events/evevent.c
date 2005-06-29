@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: evevent - Fixed and General Purpose Even handling and dispatch
- *              $Revision: 1.99 $
+ *              $Revision: 1.100 $
  *
  *****************************************************************************/
 
@@ -446,6 +446,7 @@ AcpiEvGpeInitialize (void)
 
     /* 
      * Determine the maximum GPE number for this machine.
+     *
      * Note: both GPE0 and GPE1 are optional, and either can exist without
      * the other.
      * If EITHER the register length OR the block address are zero, then that
@@ -453,7 +454,7 @@ AcpiEvGpeInitialize (void)
      */
     if (AcpiGbl_FADT->XGpe0Blk.RegisterBitWidth && ACPI_GET_ADDRESS (AcpiGbl_FADT->XGpe0Blk.Address))
     {
-        /* GPE block 0 exists (has length and address > 0) */
+        /* GPE block 0 exists (has both length and address > 0) */
 
         AcpiGbl_GpeBlockInfo[0].RegisterCount   = (UINT16) ACPI_DIV_16 (AcpiGbl_FADT->XGpe0Blk.RegisterBitWidth);
         AcpiGbl_GpeNumberMax                    = ACPI_MUL_8 (AcpiGbl_GpeBlockInfo[0].RegisterCount) - 1;
@@ -461,7 +462,7 @@ AcpiEvGpeInitialize (void)
 
     if (AcpiGbl_FADT->XGpe1Blk.RegisterBitWidth && ACPI_GET_ADDRESS (AcpiGbl_FADT->XGpe1Blk.Address))
     {
-        /* GPE block 1 exists (has length and address > 0) */
+        /* GPE block 1 exists (has both length and address > 0) */
 
         AcpiGbl_GpeBlockInfo[1].RegisterCount   = (UINT16) ACPI_DIV_16 (AcpiGbl_FADT->XGpe1Blk.RegisterBitWidth);
 
@@ -471,18 +472,23 @@ AcpiEvGpeInitialize (void)
             (AcpiGbl_GpeNumberMax >= AcpiGbl_FADT->Gpe1Base))
         {
             ACPI_REPORT_ERROR ((
-                "GPE0 block (GPE 0 to %d) overlaps the GPE1 block (GPE %d to %d)\n",
+                "GPE0 block (GPE 0 to %d) overlaps the GPE1 block (GPE %d to %d) - Ignoring GPE1\n",
                 AcpiGbl_GpeNumberMax, AcpiGbl_FADT->Gpe1Base, 
                 AcpiGbl_FADT->Gpe1Base + (ACPI_MUL_8 (AcpiGbl_GpeBlockInfo[1].RegisterCount) - 1)));
-            return_ACPI_STATUS (AE_BAD_VALUE);
-        }
 
-        /* 
-         * GPE0 and GPE1 do not have to be contiguous in the GPE number space,
-         * But, GPE0 always starts at zero.
-         */
-        AcpiGbl_GpeNumberMax = AcpiGbl_FADT->Gpe1Base + 
-                                (ACPI_MUL_8 (AcpiGbl_GpeBlockInfo[1].RegisterCount) - 1);
+            /* Ignore GPE1 block by setting the register count to zero */
+
+            AcpiGbl_GpeBlockInfo[1].RegisterCount = 0;
+        }
+        else
+        {
+            /* 
+             * GPE0 and GPE1 do not have to be contiguous in the GPE number space,
+             * But, GPE0 always starts at zero.
+             */
+            AcpiGbl_GpeNumberMax = AcpiGbl_FADT->Gpe1Base + 
+                                    (ACPI_MUL_8 (AcpiGbl_GpeBlockInfo[1].RegisterCount) - 1);
+        }
     }
 
     /* Warn and exit if there are no GPE registers */
