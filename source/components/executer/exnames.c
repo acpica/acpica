@@ -9,91 +9,110 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, Intel Corp.  All rights 
+ * Some or all of this work - Copyright (c) 1999, Intel Corp.  All rights
  * reserved.
  *
  * 2. License
- * 
- * 2.1. Intel grants, free of charge, to any person ("Licensee") obtaining a 
- * copy of the source code appearing in this file ("Covered Code") a license 
- * under Intel's copyrights in the base code distributed originally by Intel 
- * ("Original Intel Code") to copy, make derivatives, distribute, use and 
- * display any portion of the Covered Code in any form; and
  *
- * 2.2. Intel grants Licensee a non-exclusive and non-transferable patent 
+ * 2.1. This is your license from Intel Corp. under its intellectual property
+ * rights.  You may have additional license terms from the party that provided
+ * you this software, covering your right to use that party's intellectual
+ * property rights.
+ *
+ * 2.2. Intel grants, free of charge, to any person ("Licensee") obtaining a
+ * copy of the source code appearing in this file ("Covered Code") an
+ * irrevocable, perpetual, worldwide license under Intel's copyrights in the
+ * base code distributed originally by Intel ("Original Intel Code") to copy,
+ * make derivatives, distribute, use and display any portion of the Covered
+ * Code in any form, with the right to sublicense such rights; and
+ *
+ * 2.3. Intel grants Licensee a non-exclusive and non-transferable patent
  * license (without the right to sublicense), under only those claims of Intel
- * patents that are infringed by the Original Intel Code, to make, use, sell, 
- * offer to sell, and import the Covered Code and derivative works thereof 
- * solely to the minimum extent necessary to exercise the above copyright 
- * license, and in no event shall the patent license extend to any additions to
- * or modifications of the Original Intel Code.  No other license or right is 
- * granted directly or by implication, estoppel or otherwise;
+ * patents that are infringed by the Original Intel Code, to make, use, sell,
+ * offer to sell, and import the Covered Code and derivative works thereof
+ * solely to the minimum extent necessary to exercise the above copyright
+ * license, and in no event shall the patent license extend to any additions
+ * to or modifications of the Original Intel Code.  No other license or right
+ * is granted directly or by implication, estoppel or otherwise;
  *
- * the above copyright and patent license is granted only if the following 
+ * The above copyright and patent license is granted only if the following
  * conditions are met:
  *
  * 3. Conditions 
  *
- * 3.1. Redistribution of source code of any substantial portion of the Covered 
- * Code or modification must include the above Copyright Notice, the above 
- * License, this list of Conditions, and the following Disclaimer and Export 
- * Compliance provision.  In addition, Licensee must cause all Covered Code to 
- * which Licensee contributes to contain a file documenting the changes 
- * Licensee made to create that Covered Code and the date of any change.  
- * Licensee must include in that file the documentation of any changes made by
- * any predecessor Licensee.  Licensee must include a prominent statement that
- * the modification is derived, directly or indirectly, from Original Intel 
- * Code.
+ * 3.1. Redistribution of Source with Rights to Further Distribute Source.  
+ * Redistribution of source code of any substantial portion of the Covered
+ * Code or modification with rights to further distribute source must include
+ * the above Copyright Notice, the above License, this list of Conditions,
+ * and the following Disclaimer and Export Compliance provision.  In addition,
+ * Licensee must cause all Covered Code to which Licensee contributes to
+ * contain a file documenting the changes Licensee made to create that Covered
+ * Code and the date of any change.  Licensee must include in that file the
+ * documentation of any changes made by any predecessor Licensee.  Licensee 
+ * must include a prominent statement that the modification is derived,
+ * directly or indirectly, from Original Intel Code.
  *
- * 3.2. Redistribution in binary form of any substantial portion of the Covered 
- * Code or modification must reproduce the above Copyright Notice, and the 
- * following Disclaimer and Export Compliance provision in the documentation 
- * and/or other materials provided with the distribution.
+ * 3.2. Redistribution of Source with no Rights to Further Distribute Source.  
+ * Redistribution of source code of any substantial portion of the Covered
+ * Code or modification without rights to further distribute source must
+ * include the following Disclaimer and Export Compliance provision in the
+ * documentation and/or other materials provided with distribution.  In
+ * addition, Licensee may not authorize further sublicense of source of any
+ * portion of the Covered Code, and must include terms to the effect that the
+ * license from Licensee to its licensee is limited to the intellectual
+ * property embodied in the software Licensee provides to its licensee, and
+ * not to intellectual property embodied in modifications its licensee may
+ * make.
  *
- * 3.3. Intel retains all right, title, and interest in and to the Original 
+ * 3.3. Redistribution of Executable. Redistribution in executable form of any
+ * substantial portion of the Covered Code or modification must reproduce the
+ * above Copyright Notice, and the following Disclaimer and Export Compliance
+ * provision in the documentation and/or other materials provided with the
+ * distribution.
+ *
+ * 3.4. Intel retains all right, title, and interest in and to the Original
  * Intel Code.
  *
- * 3.4. Neither the name Intel nor any other trademark owned or controlled by 
- * Intel shall be used in advertising or otherwise to promote the sale, use or 
- * other dealings in products derived from or relating to the Covered Code 
+ * 3.5. Neither the name Intel nor any other trademark owned or controlled by
+ * Intel shall be used in advertising or otherwise to promote the sale, use or
+ * other dealings in products derived from or relating to the Covered Code
  * without prior written authorization from Intel.
  *
  * 4. Disclaimer and Export Compliance
  *
- * 4.1. INTEL MAKES NO WARRANTY OF ANY KIND REGARDING ANY SOFTWARE PROVIDED 
- * HERE.  ANY SOFTWARE ORIGINATING FROM INTEL OR DERIVED FROM INTEL SOFTWARE 
- * IS PROVIDED "AS IS," AND INTEL WILL NOT PROVIDE ANY SUPPORT,  ASSISTANCE, 
- * INSTALLATION, TRAINING OR OTHER SERVICES.  INTEL WILL NOT PROVIDE ANY 
- * UPDATES, ENHANCEMENTS OR EXTENSIONS.  INTEL SPECIFICALLY DISCLAIMS ANY 
- * IMPLIED WARRANTIES OF MERCHANTABILITY, NONINFRINGEMENT AND FITNESS FOR A 
+ * 4.1. INTEL MAKES NO WARRANTY OF ANY KIND REGARDING ANY SOFTWARE PROVIDED
+ * HERE.  ANY SOFTWARE ORIGINATING FROM INTEL OR DERIVED FROM INTEL SOFTWARE
+ * IS PROVIDED "AS IS," AND INTEL WILL NOT PROVIDE ANY SUPPORT,  ASSISTANCE,
+ * INSTALLATION, TRAINING OR OTHER SERVICES.  INTEL WILL NOT PROVIDE ANY
+ * UPDATES, ENHANCEMENTS OR EXTENSIONS.  INTEL SPECIFICALLY DISCLAIMS ANY
+ * IMPLIED WARRANTIES OF MERCHANTABILITY, NONINFRINGEMENT AND FITNESS FOR A
  * PARTICULAR PURPOSE. 
  *
- * 4.2. IN NO EVENT SHALL INTEL HAVE ANY LIABILITY TO LICENSEE, ITS LICENSEES 
- * OR ANY OTHER THIRD PARTY, FOR ANY LOST PROFITS, LOST DATA, LOSS OF USE OR 
- * COSTS OF PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES, OR FOR ANY INDIRECT, 
- * SPECIAL OR CONSEQUENTIAL DAMAGES ARISING OUT OF THIS AGREEMENT, UNDER ANY 
- * CAUSE OF ACTION OR THEORY OF LIABILITY, AND IRRESPECTIVE OF WHETHER INTEL 
- * HAS ADVANCE NOTICE OF THE POSSIBILITY OF SUCH DAMAGES.  THESE LIMITATIONS 
- * SHALL APPLY NOTWITHSTANDING THE FAILURE OF THE ESSENTIAL PURPOSE OF ANY 
+ * 4.2. IN NO EVENT SHALL INTEL HAVE ANY LIABILITY TO LICENSEE, ITS LICENSEES
+ * OR ANY OTHER THIRD PARTY, FOR ANY LOST PROFITS, LOST DATA, LOSS OF USE OR
+ * COSTS OF PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES, OR FOR ANY INDIRECT,
+ * SPECIAL OR CONSEQUENTIAL DAMAGES ARISING OUT OF THIS AGREEMENT, UNDER ANY
+ * CAUSE OF ACTION OR THEORY OF LIABILITY, AND IRRESPECTIVE OF WHETHER INTEL
+ * HAS ADVANCE NOTICE OF THE POSSIBILITY OF SUCH DAMAGES.  THESE LIMITATIONS
+ * SHALL APPLY NOTWITHSTANDING THE FAILURE OF THE ESSENTIAL PURPOSE OF ANY
  * LIMITED REMEDY.
  *
- * 4.3. Licensee shall not export, either directly or indirectly, any of this 
- * software or system incorporating such software without first obtaining any 
- * required license or other approval from the U. S. Department of Commerce or 
- * any other agency or department of the United States Government.  In the 
- * event Licensee exports any such software from the United States or re-
- * exports any such software from a foreign destination, Licensee shall ensure
- * that the distribution and export/re-export of the software is in compliance 
- * with all laws, regulations, orders, or other restrictions of the U.S. Export 
- * Administration Regulations. Licensee agrees that neither it nor any of its 
- * subsidiaries will export/re-export any technical data, process, software, or 
- * service, directly or indirectly, to any country for which the United States 
- * government or any agency thereof requires an export license, other 
- * governmental approval, or letter of assurance, without first obtaining such
- * license, approval or letter.
+ * 4.3. Licensee shall not export, either directly or indirectly, any of this
+ * software or system incorporating such software without first obtaining any
+ * required license or other approval from the U. S. Department of Commerce or
+ * any other agency or department of the United States Government.  In the
+ * event Licensee exports any such software from the United States or
+ * re-exports any such software from a foreign destination, Licensee shall
+ * ensure that the distribution and export/re-export of the software is in
+ * compliance with all laws, regulations, orders, or other restrictions of the
+ * U.S. Export Administration Regulations. Licensee agrees that neither it nor
+ * any of its subsidiaries will export/re-export any technical data, process,
+ * software, or service, directly or indirectly, to any country for which the
+ * United States government or any agency thereof requires an export license,
+ * other governmental approval, or letter of assurance, without first obtaining
+ * such license, approval or letter.
  *
  *****************************************************************************/
-
 
 #define __ISNAMES_C__
 
@@ -158,7 +177,7 @@ AmlAllocateNameString (
     }
 
 
-    NameString = OsdAllocate ((ACPI_SIZE) SizeNeeded);
+    NameString = CmAllocate ((ACPI_SIZE) SizeNeeded);
     if (!NameString)
     {
         /* Allocation failure  */
@@ -176,6 +195,7 @@ AmlAllocateNameString (
     {
         *TempPtr++ = AML_RootPrefix;
     }
+
     else
     {
         while (PrefixCount--)
@@ -420,8 +440,8 @@ AmlDoName (
 
 BREAKPOINT3;
 
-    if (TYPE_DefField == DataType || 
-        TYPE_BankField == DataType || 
+    if (TYPE_DefField == DataType    || 
+        TYPE_BankField == DataType   || 
         TYPE_IndexField == DataType)
     {   
         /* Disallow prefixes for types associated with field names */
@@ -446,6 +466,7 @@ BREAKPOINT3;
             /* Examine first character of name for root or parent prefix operators */
 
         case AML_RootPrefix:
+
             AmlConsumeStreamBytes (1, &Prefix);
             DEBUG_PRINT (TRACE_LOAD, ("RootPrefix: %x\n", Prefix));
 
@@ -456,26 +477,34 @@ BREAKPOINT3;
             PrefixCount = -1;
             break;
 
+
         case AML_ParentPrefix:
+
             do
             {
                 AmlConsumeStreamBytes (1, &Prefix);
                 DEBUG_PRINT (TRACE_LOAD, ("ParentPrefix: %x\n", Prefix));
 
                 ++PrefixCount;
+
             } while (AmlPeekOp () == AML_ParentPrefix);
             
             break;
 
+
         default:
+
             break;
         }
+
+
 
         switch (AmlPeekOp ())
         {
             /* Examine first character of name for name segment prefix operator */
             
         case AML_DualNamePrefix:
+
             AmlConsumeStreamBytes (1, &Prefix);
             DEBUG_PRINT (TRACE_LOAD, ("DualNamePrefix: %x\n", Prefix));
 
@@ -497,7 +526,9 @@ BREAKPOINT3;
 
             break;
 
+
         case AML_MultiNamePrefixOp:
+
             AmlConsumeStreamBytes (1, &Prefix);
             DEBUG_PRINT (TRACE_LOAD, ("MultiNamePrefix: %x\n", Prefix));
 
@@ -531,6 +562,7 @@ BREAKPOINT3;
 
             break;
 
+
         case 0: 
             
             /* NullName valid as of 8-12-98 ASL/AML Grammar Update */
@@ -553,6 +585,7 @@ BREAKPOINT3;
 
             break;
 
+
         default:
 
             /* Name segment string */
@@ -570,11 +603,12 @@ BREAKPOINT3;
         }   /* Switch (PeekOp ())    */
     }
 
+
     if (AE_OK == Status)
     {
         /* All prefixes have been handled, and the name is in NameString */
 
-        LocalDeleteObject ((ACPI_OBJECT **) &ObjStack[ObjStackTop]);
+        LocalDeleteObject ((ACPI_OBJECT_INTERNAL **) &ObjStack[ObjStackTop]);
 
         Status = NsLookup (CurrentScope->Scope, NameString, DataType, LoadExecMode, 
                                     NS_SEARCH_PARENT, (NAME_TABLE_ENTRY **) &ObjStack[ObjStackTop]);
@@ -595,6 +629,7 @@ BREAKPOINT3;
         {
             DEBUG_PRINT (ACPI_ERROR, ("AmlDoName: Name Lookup Failure\n"));
             Status = AE_AML_ERROR;
+
         }
 
         else if (MODE_Load1 != LoadExecMode)
@@ -658,7 +693,7 @@ BREAKPOINT3;
                                      */
                                     if (MODE_Exec == LoadExecMode)
                                     {
-                                        Status = AmlGetRvalue ((ACPI_OBJECT **)
+                                        Status = AmlGetRvalue ((ACPI_OBJECT_INTERNAL **)
                                             &ObjStack[ObjStackTop]);
                                     }
 
@@ -677,7 +712,7 @@ BREAKPOINT3;
                             /* Execution mode  */
                             /* Mark end of arg list */
 
-                            LocalDeleteObject ((ACPI_OBJECT **) &ObjStack[ObjStackTop]);
+                            LocalDeleteObject ((ACPI_OBJECT_INTERNAL **) &ObjStack[ObjStackTop]);
                             ObjStack[ObjStackTop] = NULL;
 
                             /* Establish Method's scope as current */
@@ -695,7 +730,7 @@ BREAKPOINT3;
                             
                             Status = AmlExecuteMethod (
                                         MethodPtr->Offset + 1, MethodPtr->Length - 1,
-                                        (ACPI_OBJECT **) &ObjStack[StackBeforeArgs + 1]);
+                                        (ACPI_OBJECT_INTERNAL **) &ObjStack[StackBeforeArgs + 1]);
 
                             DEBUG_PRINT (TRACE_LOAD,
                                     ("AmlExec Status=%s, StackBeforeArgs %d  ObjStackTop %d\n",
@@ -707,7 +742,7 @@ BREAKPOINT3;
 
                                 if (StackBeforeArgs < ObjStackTop)
                                 {
-                                    LocalDeleteObject ((ACPI_OBJECT **) &ObjStack[StackBeforeArgs]);
+                                    LocalDeleteObject ((ACPI_OBJECT_INTERNAL **) &ObjStack[StackBeforeArgs]);
                                     ObjStack[StackBeforeArgs] = ObjStack[ObjStackTop];
                                     ObjStackTop--;
                                 }
@@ -730,7 +765,7 @@ BREAKPOINT3;
 
                         while (ObjStackTop > StackBeforeArgs)
                         {
-                            LocalDeleteObject ((ACPI_OBJECT **) &ObjStack[ObjStackTop]);
+                            LocalDeleteObject ((ACPI_OBJECT_INTERNAL **) &ObjStack[ObjStackTop]);
 
                             /* Zero out the slot and move on */
 
@@ -762,9 +797,12 @@ BREAKPOINT3;
         Status = AE_AML_ERROR;
     }
 
+
+    /* Cleanup */
+
     if (NameString)
     {
-        OsdFree (NameString);
+        CmFree (NameString);
     }
 
     FUNCTION_STATUS_EXIT (Status);
