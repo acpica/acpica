@@ -118,13 +118,12 @@
 #include <string.h>
 
 #include "acpi.h"
-#include "acxface.h"
 #include "amlcode.h"
-#include "parser.h"
-#include "tables.h"
-#include "namesp.h"
-#include "interp.h"
-#include "debugger.h"
+#include "acparser.h"
+#include "actables.h"
+#include "acnamesp.h"
+#include "acinterp.h"
+#include "acdebug.h"
 
 #include "aecommon.h"
 
@@ -160,7 +159,6 @@ usage (void)
     printf ("        -j                  Just-in-time method parsing\n");
     printf ("        -l DebugLevel       Specify debug output level\n");
 }
-
 
 
 /******************************************************************************
@@ -236,7 +234,7 @@ main (
         usage();
         return -1;
     }
-    
+
 
     /* Init ACPI and start debugger thread */
 
@@ -261,6 +259,7 @@ main (
 
         if (ACPI_FAILURE (Status))
         {
+            printf ("**** Could not load namespace, %s\n", AcpiCmFormatException (Status));
             goto enterloop;
         }
 
@@ -285,6 +284,7 @@ main (
 
         if (ACPI_FAILURE (Status))
         {
+            printf ("**** Could not load namespace, %s\n", AcpiCmFormatException (Status));
             goto enterloop;
         }
 
