@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dsutils - Dispatcher utilities
- *              $Revision: 1.46 $
+ *              $Revision: 1.47 $
  *
  ******************************************************************************/
 
@@ -218,8 +218,8 @@ AcpiDsIsResultUsed (
         case AML_IF_OP:
         case AML_WHILE_OP:
 
-            /* 
-             * If we are executing the predicate AND this is the predicate op, 
+            /*
+             * If we are executing the predicate AND this is the predicate op,
              * we will use the return value!
              */
 
@@ -235,9 +235,8 @@ AcpiDsIsResultUsed (
             break;
         }
 
-   
-        /* Fall through to not used case below */
 
+        /* Fall through to not used case below */
 
 
     case OPTYPE_NAMED_OBJECT:   /* Scope, method, etc. */
