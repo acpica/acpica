@@ -653,7 +653,20 @@ DbCommandDispatch (
         break;
 
     case CMD_LOAD:
-        DbLoadAcpiTable (Args[1]);
+        Status = DbLoadAcpiTable (Args[1]);
+        if (ACPI_FAILURE (Status))
+        {
+            return Status;
+        }
+
+        DbSetOutputDestination (DB_REDIRECTABLE_OUTPUT);
+        Status = AcpiLoadNamespace ();
+        DbSetOutputDestination (DB_CONSOLE_OUTPUT);
+
+        if (ACPI_FAILURE (Status))
+        {
+            return Status;
+        }
         break;
 
     case CMD_LOCALS:
