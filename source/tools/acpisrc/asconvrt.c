@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asconvrt - Source conversion code
- *              $Revision: 1.26 $
+ *              $Revision: 1.28 $
  *
  *****************************************************************************/
 
@@ -551,6 +551,94 @@ AsReplaceString (
     return ReplaceCount;
 }
 
+/******************************************************************************
+ *
+ * FUNCTION:    AsLowerCaseString
+ *
+ * DESCRIPTION: LowerCase all instances of a target string with a replacement
+ *              string.  Returns count of the strings replaced.
+ *
+ ******************************************************************************/
+
+int
+AsLowerCaseString (
+    char                    *Target,
+    char                    *Buffer)
+{
+    char                    *SubString1;
+    char                    *SubString2;
+    char                    *SubBuffer;
+    int                     TargetLength;
+    int                     LowerCaseCount = 0;
+    int                     i;
+
+
+    TargetLength = strlen (Target);
+
+    SubBuffer = Buffer;
+    SubString1 = Buffer;
+
+
+    while (SubString1)
+    {
+        /* Find the target string */
+
+        SubString1 = strstr (SubBuffer, Target);
+        if (!SubString1)
+        {
+            return LowerCaseCount;
+        }
+
+
+        /*
+         * Check for translation escape string -- means to ignore
+         * blocks of code while replacing
+         */
+
+        SubString2 = strstr (SubBuffer, "/*!");
+
+        if ((SubString2) &&
+            (SubString2 < SubString1))
+        {
+            /* Find end of the escape block starting at "Substring2" */
+
+            SubString2 = strstr (SubString2, "!*/");
+            if (!SubString2)
+            {
+                /* Didn't find terminator */
+
+                return LowerCaseCount;
+            }
+
+            /* Move buffer to end of escape block and continue */
+
+            SubBuffer = SubString2;
+        }
+
+        /* Do the actual replace if the target was found */
+
+        else
+        {
+            if (!AsMatchExactWord (SubString1, TargetLength))
+            {
+                SubBuffer = SubString1 + 1;
+                continue;
+            }
+
+            for (i = 0; i < TargetLength; i++)
+            {
+                SubString1[i] = (char) tolower (SubString1[i]);
+            }
+
+            SubBuffer = SubString1 + TargetLength;
+            LowerCaseCount++;
+        }
+    }
+
+    return LowerCaseCount;
+}
+
+
 
 /******************************************************************************
  *
@@ -641,6 +729,15 @@ AsMixedCaseToUnderscores (
                  (isupper (SubBuffer[1])))
 
         {
+            if (isdigit (SubBuffer[0]))
+            {
+                if (isupper (*(SubBuffer-1)))
+                {
+                    SubBuffer++;
+                    continue;
+                }
+            }
+
             /*
              * Matched the pattern.
              * Find the end of this identifier (token)
@@ -716,7 +813,6 @@ AsLowerCaseIdentifiers (
          * Check for translation escape string -- means to ignore
          * blocks of code while replacing
          */
-
         if ((SubBuffer[0] == '/') &&
             (SubBuffer[1] == '*') &&
             (SubBuffer[2] == '!'))
@@ -750,7 +846,7 @@ AsLowerCaseIdentifiers (
 
             /* Find the closing quote */
 
-            while (1)
+            while (SubBuffer[0])
             {
                 /* Ignore escaped quote characters */
 
@@ -768,6 +864,10 @@ AsLowerCaseIdentifiers (
             }
         }
 
+        if (!SubBuffer[0])
+        {
+            return;
+        }
 
         /*
          * Only lower case if we have an upper followed by a lower
@@ -1019,12 +1119,34 @@ AsRemoveConditionalCompile (
 
     while (SubString)
     {
-        Comment = strstr (SubString, "/*");
         SubBuffer = strstr (SubString, Keyword);
         if (!SubBuffer)
         {
             return;
         }
+
+        /*
+         * Check for translation escape string -- means to ignore
+         * blocks of code while replacing
+         */
+        Comment = strstr (SubString, "/*!");
+
+        if ((Comment) &&
+            (Comment < SubBuffer))
+        {
+            SubString = strstr (Comment, "!*/");
+            if (!SubString)
+            {
+                return;
+            }
+
+            SubString += 3;
+            continue;
+        }
+
+        /* Check for ordinary comment */
+
+        Comment = strstr (SubString, "/*");
 
         if ((Comment) &&
             (Comment < SubBuffer))
@@ -1128,6 +1250,7 @@ AsRemoveConditionalCompile (
 
         Gbl_MadeChanges = TRUE;
         memmove (SubString, SubBuffer, StrLength+1);
+
         SubBuffer = SubString;
     }
 }
