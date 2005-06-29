@@ -1,7 +1,8 @@
 
 /******************************************************************************
  *
- * Module Name: istoreob - AML Interpreter object store support, store to object
+ * Module Name: amstorob - AML Interpreter object store support, store to object
+ *              $Revision: 1.17 $
  *
  *****************************************************************************/
 
@@ -114,23 +115,22 @@
  *
  *****************************************************************************/
 
-#define __ISTOREOB_C__
+#define __AMSTOROB_C__
 
 #include "acpi.h"
-#include "parser.h"
-#include "dispatch.h"
-#include "interp.h"
+#include "acparser.h"
+#include "acdispat.h"
+#include "acinterp.h"
 #include "amlcode.h"
-#include "namesp.h"
-#include "tables.h"
+#include "acnamesp.h"
+#include "actables.h"
 
 
 #define _COMPONENT          INTERPRETER
-        MODULE_NAME         ("istoreob");
+        MODULE_NAME         ("amstorob")
 
 
-
-/*****************************************************************************
+/*******************************************************************************
  *
  * FUNCTION:    AcpiAmlStoreObjectToObject
  *
@@ -154,12 +154,13 @@
  *              This module allows destination types of Number, String,
  *              and Buffer.
  *
- ****************************************************************************/
+ ******************************************************************************/
 
 ACPI_STATUS
 AcpiAmlStoreObjectToObject (
-    ACPI_OBJECT_INTERNAL    *ValDesc,
-    ACPI_OBJECT_INTERNAL    *DestDesc)
+    ACPI_OPERAND_OBJECT     *ValDesc,
+    ACPI_OPERAND_OBJECT     *DestDesc,
+    ACPI_WALK_STATE         *WalkState)
 {
     ACPI_STATUS             Status = AE_OK;
     UINT8                   *Buffer = NULL;
@@ -169,8 +170,9 @@ AcpiAmlStoreObjectToObject (
 
     FUNCTION_TRACE ("AmlStoreObjectToObject");
 
-    DEBUG_PRINT (ACPI_INFO, ("entered AcpiAmlStoreObjectToObject: Dest=%p, Val=%p\n",
-                    DestDesc, ValDesc));
+    DEBUG_PRINT (ACPI_INFO,
+        ("entered AcpiAmlStoreObjectToObject: Dest=%p, Val=%p\n",
+        DestDesc, ValDesc));
 
     /*
      *  Assuming the parameters are valid!!!
@@ -202,16 +204,17 @@ AcpiAmlStoreObjectToObject (
             /*
              *  Initially not a number, convert
              */
-            Status = AcpiAmlResolveToValue (&ValDesc);
-            if ((Status == AE_OK) &&
+            Status = AcpiAmlResolveToValue (&ValDesc, WalkState);
+            if (ACPI_SUCCESS (Status) &&
                 (ValDesc->Common.Type != ACPI_TYPE_NUMBER))
             {
                 /*
                  *  Conversion successful but still not a number
                  */
-                DEBUG_PRINT (ACPI_ERROR, ("AmlStoreObjectToObject: Value assigned to %s must be Number, not %s\n",
-                                AcpiCmGetTypeName (DestinationType),
-                                AcpiCmGetTypeName (ValDesc->Common.Type)));
+                DEBUG_PRINT (ACPI_ERROR,
+                    ("AmlStoreObjectToObject: Value assigned to %s must be Number, not %s\n",
+                    AcpiCmGetTypeName (DestinationType),
+                    AcpiCmGetTypeName (ValDesc->Common.Type)));
                 Status = AE_AML_OPERAND_TYPE;
             }
         }
@@ -235,8 +238,8 @@ AcpiAmlStoreObjectToObject (
             /*
              *  Initially not a valid type, convert
              */
-            Status = AcpiAmlResolveToValue (&ValDesc);
-            if ((Status == AE_OK) &&
+            Status = AcpiAmlResolveToValue (&ValDesc, WalkState);
+            if (ACPI_SUCCESS (Status) &&
                 (ValDesc->Common.Type != ACPI_TYPE_NUMBER) &&
                 (ValDesc->Common.Type != ACPI_TYPE_BUFFER) &&
                 (ValDesc->Common.Type != ACPI_TYPE_STRING))
@@ -244,9 +247,10 @@ AcpiAmlStoreObjectToObject (
                 /*
                  *  Conversion successful but still not a valid type
                  */
-                DEBUG_PRINT (ACPI_ERROR, ("AmlStoreObjectToObject: Assign wrong type %s to %s (must be type Num/Str/Buf)\n",
-                                AcpiCmGetTypeName (ValDesc->Common.Type),
-                                AcpiCmGetTypeName (DestinationType)));
+                DEBUG_PRINT (ACPI_ERROR,
+                    ("AmlStoreObjectToObject: Assign wrong type %s to %s (must be type Num/Str/Buf)\n",
+                    AcpiCmGetTypeName (ValDesc->Common.Type),
+                    AcpiCmGetTypeName (DestinationType)));
                 Status = AE_AML_OPERAND_TYPE;
             }
         }
@@ -264,7 +268,7 @@ AcpiAmlStoreObjectToObject (
 
     /* Exit now if failure above */
 
-    if (Status != AE_OK)
+    if (ACPI_FAILURE (Status))
     {
         goto CleanUpAndBailOut;
     }
@@ -330,7 +334,7 @@ AcpiAmlStoreObjectToObject (
                 AcpiCmFree(DestDesc->String.Pointer);
             }
 
-            DestDesc->String.Pointer = AcpiCmAllocate ((ACPI_SIZE) (Length + 1));
+            DestDesc->String.Pointer = AcpiCmAllocate (Length + 1);
             DestDesc->String.Length = Length;
 
             if (!DestDesc->String.Pointer)
@@ -403,14 +407,19 @@ AcpiAmlStoreObjectToObject (
              *  truncate, copy only what will fit
              */
             MEMCPY(DestDesc->Buffer.Pointer, Buffer, DestDesc->Buffer.Length);
-            DEBUG_PRINT (ACPI_INFO, ("AmlStoreObjectToObject: Truncating src buffer from %d to %d\n",
-                            Length, DestDesc->Buffer.Length));
+            DEBUG_PRINT (ACPI_INFO,
+                ("AmlStoreObjectToObject: Truncating src buffer from %d to %d\n",
+                Length, DestDesc->Buffer.Length));
         }
         break;
 
     case ACPI_TYPE_NUMBER:
 
         DestDesc->Number.Value = ValDesc->Number.Value;
+
+        /* Truncate value if we are executing from a 32-bit ACPI table */
+
+        AcpiAmlTruncateFor32bitTable (DestDesc, WalkState);
         break;
 
     default:
@@ -422,8 +431,9 @@ AcpiAmlStoreObjectToObject (
          * ValDesc reference count is incremented by AttachObject.
          */
 
-        DEBUG_PRINT (ACPI_WARN, ("AmlStoreObjectToObject: Store into %s not implemented\n",
-                        AcpiCmGetTypeName (DestDesc->Common.Type)));
+        DEBUG_PRINT (ACPI_WARN,
+            ("AmlStoreObjectToObject: Store into %s not implemented\n",
+            AcpiCmGetTypeName (DestDesc->Common.Type)));
 
         Status = AE_NOT_IMPLEMENTED;
         break;
