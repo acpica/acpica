@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acoutput.h -- debug output
- *       $Revision: 1.82 $
+ *       $Revision: 1.83 $
  *
  *****************************************************************************/
 
@@ -200,7 +200,7 @@
  * Debug level macros that are used in the DEBUG_PRINT macros
  */
 
-#define ACPI_DEBUG_LEVEL(val)       val,_COMPONENT,_ProcName,_THIS_MODULE,__LINE__
+#define ACPI_DEBUG_LEVEL(dl)       dl,__LINE__,&_Dbg
 
 /* Exception level -- used in the global "DebugLevel" */
 
@@ -254,7 +254,7 @@
 
 #define DEBUG_DEFAULT               (ACPI_LV_OK | ACPI_LV_WARN | ACPI_LV_ERROR | ACPI_LV_DEBUG_OBJECT)
 #define NORMAL_DEFAULT              (ACPI_LV_OK | ACPI_LV_WARN | ACPI_LV_ERROR | ACPI_LV_DEBUG_OBJECT)
-#define DEBUG_ALL                   (ACPI_DB_AML_DISASSEMBLE | ACPI_LV_ALL_EXCEPTIONS | ACPI_LV_ALL)
+#define DEBUG_ALL                   (ACPI_LV_AML_DISASSEMBLE | ACPI_LV_ALL_EXCEPTIONS | ACPI_LV_ALL)
 
 /* Misc defines */
 
