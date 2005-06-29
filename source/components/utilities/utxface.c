@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: cmxface - External interfaces for "global" ACPI functions
- *              $Revision: 1.57 $
+ *              $Revision: 1.59 $
  *
  *****************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, 2000, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -451,7 +451,14 @@ AcpiGetSystemInfo (
 
     /* Timer resolution - 24 or 32 bits  */
 
-    InfoPtr->TimerResolution    = AcpiHwPmtResolution ();
+    if (0 == AcpiGbl_FADT->TmrValExt)
+    {
+        InfoPtr->TimerResolution = 24;
+    }
+    else
+    {
+        InfoPtr->TimerResolution = 32;
+    }
 
     /* Clear the reserved fields */
 
