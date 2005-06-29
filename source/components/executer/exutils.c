@@ -121,6 +121,7 @@
 #include <interp.h>
 #include <amlcode.h>
 #include <namesp.h>
+#include <events.h>
 
 #define _COMPONENT          INTERPRETER
         MODULE_NAME         ("isutils");
@@ -302,7 +303,7 @@ AmlAcquireGlobalLock (
     {   
         /*  OK to get the lock   */
         
-        if (OsGetGlobalLock () != AE_OK)
+        if (EvAcquireGlobalLock () != AE_OK)
         {
             /*  
              * lock ownership failed
@@ -352,7 +353,7 @@ AmlReleaseGlobalLock (
         {
             /* OK, now release the lock */
 
-            OsReleaseGlobalLock ();
+            EvReleaseGlobalLock ();
             Gbl_GlobalLockSet = FALSE;
         }
 
@@ -467,14 +468,14 @@ AmlEisaIdToString (
     
     id = _ntohl (NumericId);                    /* swap to big-endian to get contiguous bits */
     
-    OutString[0] = '@' + ((id >> 26) & 0x1f);
-    OutString[1] = '@' + ((id >> 21) & 0x1f);
-    OutString[2] = '@' + ((id >> 16) & 0x1f);
+    OutString[0] = (char) ('@' + ((id >> 26) & 0x1f));
+    OutString[1] = (char) ('@' + ((id >> 21) & 0x1f));
+    OutString[2] = (char) ('@' + ((id >> 16) & 0x1f));
     OutString[3] = hex[(id >> 12) & 0xf];
     OutString[4] = hex[(id >> 8) & 0xf];
     OutString[5] = hex[(id >> 4) & 0xf];
     OutString[6] = hex[id & 0xf];
-    OutString[7] = '\0';
+    OutString[7] = 0;
     
     return AE_OK;
 }
