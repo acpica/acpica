@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asmain - Main module for the acpi source processor utility
- *              $Revision: 1.67 $
+ *              $Revision: 1.68 $
  *
  *****************************************************************************/
 
@@ -295,6 +295,7 @@ ACPI_TYPED_IDENTIFIER_TABLE           AcpiIdentifiers[] = {
     {"ACPI_EVENT_HANDLER",               SRC_TYPE_SIMPLE},
     {"ACPI_EVENT_STATUS",                SRC_TYPE_SIMPLE},
     {"ACPI_EVENT_TYPE",                  SRC_TYPE_SIMPLE},
+    {"ACPI_EXTERNAL_LIST",               SRC_TYPE_STRUCT},
     {"ACPI_FIELD_INFO",                  SRC_TYPE_STRUCT},
     {"ACPI_FIND_CONTEXT",                SRC_TYPE_STRUCT},
     {"ACPI_FIXED_EVENT_HANDLER",         SRC_TYPE_STRUCT},
@@ -310,6 +311,7 @@ ACPI_TYPED_IDENTIFIER_TABLE           AcpiIdentifiers[] = {
     {"ACPI_GPE_REGISTER_INFO",           SRC_TYPE_STRUCT},
     {"ACPI_GPE_WALK_INFO",               SRC_TYPE_STRUCT},
     {"ACPI_HANDLE",                      SRC_TYPE_SIMPLE},
+    {"ACPI_HANDLER_INFO",                SRC_TYPE_STRUCT},
     {"ACPI_INIT_HANDLER",                SRC_TYPE_SIMPLE},
     {"ACPI_IDENTIFIER_TABLE",            SRC_TYPE_STRUCT},
     {"ACPI_INIT_WALK_INFO",              SRC_TYPE_STRUCT},
@@ -368,6 +370,7 @@ ACPI_TYPED_IDENTIFIER_TABLE           AcpiIdentifiers[] = {
     {"ACPI_OPCODE_INFO",                 SRC_TYPE_STRUCT},
     {"ACPI_OPERAND_OBJECT",              SRC_TYPE_UNION},
     {"ACPI_OWNER_ID",                    SRC_TYPE_SIMPLE},
+    {"ACPI_PARAMETER_INFO",              SRC_TYPE_STRUCT},
     {"ACPI_PARSE_DOWNWARDS",             SRC_TYPE_SIMPLE},
     {"ACPI_PARSE_OBJ_ASL",               SRC_TYPE_STRUCT},
     {"ACPI_PARSE_OBJ_COMMON",            SRC_TYPE_STRUCT},
