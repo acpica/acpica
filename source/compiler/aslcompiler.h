@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslcompiler.h - common include file
- *              $Revision: 1.65 $
+ *              $Revision: 1.66 $
  *
  *****************************************************************************/
 
@@ -164,8 +164,8 @@ getopt (
  * Compiler versions and names
  */
 
-#define CompilerVersion             "X2020"
-#define CompilerCreatorRevision     0x02002020  /* Acpi 2.0, Version # */
+#define CompilerVersion             "X2021"
+#define CompilerCreatorRevision     0x02002021  /* Acpi 2.0, Version # */
 
 #define CompilerId                  "Intel ACPI Component Architecture ASL Compiler"
 #define CompilerCopyright           "Copyright (C) 2000, 2001 Intel Corporation"
@@ -223,6 +223,10 @@ getopt (
 #define FILE_SUFFIX_SOURCE          "src"
 #define FILE_SUFFIX_NAMESPACE       "nsp"
 
+
+/* Misc */
+
+#define ASL_EXTERNAL_METHOD         255
 
 /*******************************************************************************
  *
