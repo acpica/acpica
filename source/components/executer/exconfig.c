@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: exconfig - Namespace reconfiguration (Load/Unload opcodes)
- *              $Revision: 1.65 $
+ *              $Revision: 1.67 $
  *
  *****************************************************************************/
 
@@ -234,6 +234,7 @@ AcpiExLoadTableOp (
     ACPI_FUNCTION_TRACE ("ExLoadTableOp");
 
 
+#if 0
     /*
      * Make sure that the signature does not match one of the tables that
      * is already loaded.
@@ -245,6 +246,7 @@ AcpiExLoadTableOp (
 
         return_ACPI_STATUS (AE_ALREADY_EXISTS);
     }
+#endif
 
     /* Find the ACPI table */
 
@@ -383,7 +385,7 @@ AcpiExLoadOp (
     case ACPI_TYPE_REGION:
 
         ACPI_DEBUG_PRINT ((ACPI_DB_EXEC, "Load from Region %p %s\n",
-            ObjDesc, AcpiUtGetTypeName (ObjDesc->Common.Type)));
+            ObjDesc, AcpiUtGetObjectTypeName (ObjDesc)));
 
         /* Get the table header */
 
@@ -433,7 +435,7 @@ AcpiExLoadOp (
     case INTERNAL_TYPE_INDEX_FIELD:
 
         ACPI_DEBUG_PRINT ((ACPI_DB_EXEC, "Load from Field %p %s\n",
-            ObjDesc, AcpiUtGetTypeName (ObjDesc->Common.Type)));
+            ObjDesc, AcpiUtGetObjectTypeName (ObjDesc)));
 
         /*
          * The length of the field must be at least as large as the table.
@@ -535,8 +537,7 @@ AcpiExUnloadTable (
      */
     if ((!DdbHandle) ||
         (ACPI_GET_DESCRIPTOR_TYPE (DdbHandle) != ACPI_DESC_TYPE_OPERAND) ||
-        (((ACPI_OPERAND_OBJECT  *)DdbHandle)->Common.Type !=
-                INTERNAL_TYPE_REFERENCE))
+        (ACPI_GET_OBJECT_TYPE (DdbHandle) != INTERNAL_TYPE_REFERENCE))
     {
         return_ACPI_STATUS (AE_BAD_PARAMETER);
     }
