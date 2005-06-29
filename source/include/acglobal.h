@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acglobal.h - Declarations for global variables
- *       $Revision: 1.89 $
+ *       $Revision: 1.90 $
  *
  *****************************************************************************/
 
@@ -254,7 +254,6 @@ extern      BOOLEAN                     AcpiGbl_Shutdown;
 extern      UINT32                      AcpiGbl_SystemFlags;
 extern      UINT32                      AcpiGbl_StartupFlags;
 extern      UINT8                       AcpiGbl_DecodeTo8bit[];
-
 
 
 /*****************************************************************************

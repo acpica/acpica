@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: achware.h -- hardware specific interfaces
- *       $Revision: 1.44 $
+ *       $Revision: 1.46 $
  *
  *****************************************************************************/
 
@@ -149,6 +149,13 @@ AcpiHwGetModeCapabilities (
 
 
 UINT32
+AcpiHwRegisterBitAccess (
+    NATIVE_UINT             ReadWrite,
+    BOOLEAN                 UseLock,
+    UINT32                  RegisterId,
+    ... /* DWORD Write Value */);
+
+UINT32
 AcpiHwRegisterRead (
     BOOLEAN                 UseLock,
     UINT32                  RegisterId);
@@ -158,6 +165,19 @@ AcpiHwRegisterWrite (
     BOOLEAN                 UseLock,
     UINT32                  RegisterId,
     UINT32                  Value);
+
+UINT32
+AcpiHwLowLevelRead (
+    UINT32                  Width,
+    ACPI_GAS                *Register,
+    UINT32                  Offset);
+
+void
+AcpiHwLowLevelWrite (
+    UINT32                  Width,
+    UINT32                  Value,
+    ACPI_GAS                *Register,
+    UINT32                  Offset);
 
 void
 AcpiHwClearAcpiStatus (
