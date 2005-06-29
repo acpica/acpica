@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acevents.h - Event subcomponent prototypes and defines
- *       $Revision: 1.77 $
+ *       $Revision: 1.79 $
  *
  *****************************************************************************/
 
@@ -207,7 +207,7 @@ AcpiEvGpeDetect (
  */
 
 ACPI_STATUS
-AcpiEvInstallDefaultAddressSpaceHandlers (
+AcpiEvInitAddressSpaces (
     void);
 
 ACPI_STATUS
@@ -216,7 +216,7 @@ AcpiEvAddressSpaceDispatch (
     UINT32                  Function,
     ACPI_PHYSICAL_ADDRESS   Address,
     UINT32                  BitWidth,
-    ACPI_INTEGER            *Value);
+    void                    *Value);
 
 ACPI_STATUS
 AcpiEvAddrHandlerHelper (
@@ -225,15 +225,15 @@ AcpiEvAddrHandlerHelper (
     void                    *Context,
     void                    **ReturnValue);
 
-void
-AcpiEvDisassociateRegionFromHandler(
-    ACPI_OPERAND_OBJECT    *RegionObj,
-    BOOLEAN                 AcpiNsIsLocked);
-
 ACPI_STATUS
-AcpiEvAssociateRegionAndHandler (
+AcpiEvAttachRegion (
     ACPI_OPERAND_OBJECT     *HandlerObj,
     ACPI_OPERAND_OBJECT     *RegionObj,
+    BOOLEAN                 AcpiNsIsLocked);
+
+void
+AcpiEvDetachRegion (
+    ACPI_OPERAND_OBJECT    *RegionObj,
     BOOLEAN                 AcpiNsIsLocked);
 
 
