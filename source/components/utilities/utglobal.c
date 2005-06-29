@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: cmglobal - Global variables for the ACPI subsystem
- *              $Revision: 1.115 $
+ *              $Revision: 1.118 $
  *
  *****************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, 2000, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -124,7 +124,7 @@
 #include "amlcode.h"
 
 
-#define _COMPONENT          MISCELLANEOUS
+#define _COMPONENT          ACPI_UTILITIES
         MODULE_NAME         ("cmglobal")
 
 
@@ -149,7 +149,7 @@ UINT32                      AcpiDbgLevel = NORMAL_DEFAULT;
 
 /* Debug switch - layer (component) mask */
 
-UINT32                      AcpiDbgLayer = COMPONENT_DEFAULT;
+UINT32                      AcpiDbgLayer = ACPI_COMPONENT_DEFAULT;
 UINT32                      AcpiGbl_NestingLevel = 0;
 
 
@@ -191,7 +191,7 @@ PREDEFINED_NAMES            AcpiGbl_PreDefinedNames[] =
     {"_SB_",    INTERNAL_TYPE_DEF_ANY},
     {"_SI_",    INTERNAL_TYPE_DEF_ANY},
     {"_TZ_",    INTERNAL_TYPE_DEF_ANY},
-    {"_REV",    ACPI_TYPE_NUMBER, "2"},
+    {"_REV",    ACPI_TYPE_INTEGER, "2"},
     {"_OS_",    ACPI_TYPE_STRING, ACPI_OS_NAME},
     {"_GL_",    ACPI_TYPE_MUTEX, "0"},
 
@@ -723,7 +723,6 @@ AcpiCmInitGlobals (
 
     AcpiGbl_SystemFlags                 = 0;
     AcpiGbl_StartupFlags                = 0;
-    AcpiGbl_GlobalLockSet               = FALSE;
     AcpiGbl_RsdpOriginalLocation        = 0;
     AcpiGbl_CmSingleStep                = FALSE;
     AcpiGbl_DbTerminateThreads          = FALSE;
