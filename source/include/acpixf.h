@@ -106,6 +106,41 @@
 #define LEGACY_MODE             2
 
 
+typedef union UserObj {
+    UINT8               ValType;        /* See definition of NsType for values */
+    struct
+    {
+        UINT8           ValType;
+        UINT8           reserved[3];    /* for 32 bit alignment */
+        UINT32          Number;
+    } Number;
+
+    struct
+    {
+        UINT8           ValType;
+        UINT8           reserved;       /* for 32 bit alignment */
+        UINT16          StrLen;         /* # of bytes in string, excluding trailing null */
+        UINT8           *String;        /* points to the string value */
+    } String;
+
+    struct
+    {
+        UINT8           ValType;
+        UINT8           reserved;       /* for 32 bit alignment */
+        UINT16          BufLen;         /* # of bytes in buffer */
+        UINT8           *Buffer;        /* points to the buffer */
+    } Buffer;
+
+    struct
+    {
+        UINT8           ValType;
+        UINT8           reserved;       /* for 32 bit alignment */
+        UINT16          PkgCount;       /* # of elements in package */
+        union UserObj   *PackageElems;  /* Addr of an array of UserObjects */
+    } Package;
+
+} USER_OBJECT, *PUSER_OBJECT;
+
 /*
  * Global interfaces
  */
@@ -305,8 +340,13 @@ AcpiSetCurrentResources (
     ACPI_BUFFER             *InBuffer);
 
 ACPI_STATUS
+AcpiGetIRQRoutingTable  (
+    ACPI_HANDLE             BusDeviceHandle, 
+    ACPI_BUFFER             *RetBuffer);
+
+ACPI_STATUS
 AcpiGetSystemInfo(
-    ACPI_BUFFER             *OutBuffer);
+    ACPI_BUFFER             *RetBuffer);
 
 
 /*
@@ -324,13 +364,6 @@ AcpiGetMode (
 INT32
 AcpiModeCapabilities (
     void);
-
-
-
-
-
-
-
 
 /* TBD: these may be obsolete */
 
