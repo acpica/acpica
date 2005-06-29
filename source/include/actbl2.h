@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: actbl2.h - ACPI Specification Revision 2.0 Tables
- *       $Revision: 1.23 $
+ *       $Revision: 1.24 $
  *
  *****************************************************************************/
 
@@ -140,7 +140,7 @@
 #pragma pack(1)
 
 /*
- * ACPI Specification Rev 2.0 for the Root System Description Table 
+ * ACPI Specification Rev 2.0 for the Root System Description Table
  */
 typedef struct
 {

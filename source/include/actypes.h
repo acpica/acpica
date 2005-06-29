@@ -1,7 +1,7 @@
-
 /******************************************************************************
- * 
+ *
  * Name: actypes.h - Common data types for the entire ACPI subsystem
+ *       $Revision: 1.176 $
  *
  *****************************************************************************/
 
@@ -9,8 +9,8 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, Intel Corp.  All rights
- * reserved.
+ * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
+ * All rights reserved.
  *
  * 2. License
  *
@@ -38,9 +38,9 @@
  * The above copyright and patent license is granted only if the following
  * conditions are met:
  *
- * 3. Conditions 
+ * 3. Conditions
  *
- * 3.1. Redistribution of Source with Rights to Further Distribute Source.  
+ * 3.1. Redistribution of Source with Rights to Further Distribute Source.
  * Redistribution of source code of any substantial portion of the Covered
  * Code or modification with rights to further distribute source must include
  * the above Copyright Notice, the above License, this list of Conditions,
@@ -48,11 +48,11 @@
  * Licensee must cause all Covered Code to which Licensee contributes to
  * contain a file documenting the changes Licensee made to create that Covered
  * Code and the date of any change.  Licensee must include in that file the
- * documentation of any changes made by any predecessor Licensee.  Licensee 
+ * documentation of any changes made by any predecessor Licensee.  Licensee
  * must include a prominent statement that the modification is derived,
  * directly or indirectly, from Original Intel Code.
  *
- * 3.2. Redistribution of Source with no Rights to Further Distribute Source.  
+ * 3.2. Redistribution of Source with no Rights to Further Distribute Source.
  * Redistribution of source code of any substantial portion of the Covered
  * Code or modification without rights to further distribute source must
  * include the following Disclaimer and Export Compliance provision in the
@@ -86,7 +86,7 @@
  * INSTALLATION, TRAINING OR OTHER SERVICES.  INTEL WILL NOT PROVIDE ANY
  * UPDATES, ENHANCEMENTS OR EXTENSIONS.  INTEL SPECIFICALLY DISCLAIMS ANY
  * IMPLIED WARRANTIES OF MERCHANTABILITY, NONINFRINGEMENT AND FITNESS FOR A
- * PARTICULAR PURPOSE. 
+ * PARTICULAR PURPOSE.
  *
  * 4.2. IN NO EVENT SHALL INTEL HAVE ANY LIABILITY TO LICENSEE, ITS LICENSEES
  * OR ANY OTHER THIRD PARTY, FOR ANY LOST PROFITS, LOST DATA, LOSS OF USE OR
@@ -114,14 +114,18 @@
  *
  *****************************************************************************/
 
-#ifndef _ACTYPES_H
-#define _ACTYPES_H
+#ifndef __ACTYPES_H__
+#define __ACTYPES_H__
 
+/*! [Begin] no source code translation (keep the typedefs) */
 
-/* 
+/*
  * Data types - Fixed across all compilation models
- * 
- * BOOLEAN      Logical Boolean. 1 byte value containing a 0 for FALSE or a 1 for TRUE.  Other values are undefined.
+ *
+ * BOOLEAN      Logical Boolean.
+ *              1 byte value containing a 0 for FALSE or a 1 for TRUE.
+ *              Other values are undefined.
+ *
  * INT8         8-bit  (1 byte) signed value
  * UINT8        8-bit  (1 byte) unsigned value
  * INT16        16-bit (2 byte) signed value
@@ -132,67 +136,91 @@
  * UINT64       64-bit (8 byte) unsigned value
  * NATIVE_INT   32-bit on IA-32, 64-bit on IA-64 signed value
  * NATIVE_UINT  32-bit on IA-32, 64-bit on IA-64 unsigned value
- * UCHAR        Character. 1 byte unsigned value. 
+ * UCHAR        Character. 1 byte unsigned value.
  */
+
 
 #ifdef _IA64
 /*
- * 64-bit type definitions 
+ * 64-bit type definitions
  */
-typedef signed char                     INT8;
 typedef unsigned char                   UINT8;
+typedef unsigned char                   BOOLEAN;
 typedef unsigned char                   UCHAR;
-typedef short                           INT16;
 typedef unsigned short                  UINT16;
 typedef int                             INT32;
 typedef unsigned int                    UINT32;
-typedef long                            INT64;
-typedef unsigned long                   UINT64;
+typedef COMPILER_DEPENDENT_UINT64       UINT64;
 
 typedef UINT64                          NATIVE_UINT;
 typedef INT64                           NATIVE_INT;
 
 typedef NATIVE_UINT                     ACPI_TBLPTR;
 typedef UINT64                          ACPI_IO_ADDRESS;
+typedef UINT64                          ACPI_PHYSICAL_ADDRESS;
+
+#define ALIGNED_ADDRESS_BOUNDARY        0x00000008
+
+/* (No hardware alignment support in IA64) */
 
 
 #elif _IA16
 /*
  * 16-bit type definitions
  */
-typedef signed char                     INT8;
 typedef unsigned char                   UINT8;
+typedef unsigned char                   BOOLEAN;
 typedef unsigned char                   UCHAR;
-typedef int                             INT16;
 typedef unsigned int                    UINT16;
 typedef long                            INT32;
+typedef int                             INT16;
 typedef unsigned long                   UINT32;
+
+typedef struct
+{
+    UINT32                                  Lo;
+    UINT32                                  Hi;
+
+} UINT64;
 
 typedef UINT16                          NATIVE_UINT;
 typedef INT16                           NATIVE_INT;
 
 typedef UINT32                          ACPI_TBLPTR;
 typedef UINT32                          ACPI_IO_ADDRESS;
+typedef char                            *ACPI_PHYSICAL_ADDRESS;
 
- 
+#define ALIGNED_ADDRESS_BOUNDARY        0x00000002
+#define _HW_ALIGNMENT_SUPPORT
+
+/*
+ * (16-bit only) internal integers must be 32-bits, so
+ * 64-bit integers cannot be supported
+ */
+#define ACPI_NO_INTEGER64_SUPPORT
+
+
 #else
 /*
  * 32-bit type definitions (default)
  */
-typedef signed char                     INT8;
 typedef unsigned char                   UINT8;
+typedef unsigned char                   BOOLEAN;
 typedef unsigned char                   UCHAR;
-typedef short                           INT16;
 typedef unsigned short                  UINT16;
 typedef int                             INT32;
 typedef unsigned int                    UINT32;
+typedef COMPILER_DEPENDENT_UINT64       UINT64;
 
 typedef UINT32                          NATIVE_UINT;
 typedef INT32                           NATIVE_INT;
 
 typedef NATIVE_UINT                     ACPI_TBLPTR;
 typedef UINT32                          ACPI_IO_ADDRESS;
+typedef UINT64                          ACPI_PHYSICAL_ADDRESS;
 
+#define ALIGNED_ADDRESS_BOUNDARY        0x00000004
+#define _HW_ALIGNMENT_SUPPORT
 #endif
 
 
@@ -201,24 +229,36 @@ typedef UINT32                          ACPI_IO_ADDRESS;
  * Miscellaneous common types
  */
 
-typedef UINT8                           BOOLEAN;
 typedef UINT32                          UINT32_BIT;
-typedef NATIVE_INT                      ACPI_PTRDIFF;
-typedef NATIVE_UINT                     ACPI_SIZE;
+typedef NATIVE_UINT                     ACPI_PTRDIFF;
+typedef char                            NATIVE_CHAR;
 
 
 /*
  * Data type ranges
  */
 
-#define ACPI_UCHAR_MAX                  (UCHAR)  0xFF
-#define ACPI_INT32_MAX                  (INT32)  0x7FFFFFFF
+#define ACPI_UINT8_MAX                  (UINT8)  0xFF
+#define ACPI_UINT16_MAX                 (UINT16) 0xFFFF
 #define ACPI_UINT32_MAX                 (UINT32) 0xFFFFFFFF
+#define ACPI_UINT64_MAX                 (UINT64) 0xFFFFFFFFFFFFFFFF
 
- 
 
-/* 
- * Useful defines 
+#ifdef DEFINE_ALTERNATE_TYPES
+/*
+ * Types used only in translated source
+ */
+typedef INT32                           s32;
+typedef UINT8                           u8;
+typedef UINT16                          u16;
+typedef UINT32                          u32;
+typedef UINT64                          u64;
+#endif
+/*! [End] no source code translation !*/
+
+
+/*
+ * Useful defines
  */
 
 #ifdef FALSE
@@ -236,15 +276,44 @@ typedef NATIVE_UINT                     ACPI_SIZE;
 #endif
 
 
-/* 
- * Local datatypes 
+/*
+ * Local datatypes
  */
 
-
 typedef UINT32                          ACPI_STATUS;    /* All ACPI Exceptions */
-typedef UINT32                          ACPI_NAME;      /* 4-char ACPI name */
+typedef UINT32                          ACPI_NAME;      /* 4-INT8 ACPI name */
 typedef char*                           ACPI_STRING;    /* Null terminated ASCII string */
-typedef void*                           ACPI_HANDLE;    /* Actually a ptr to an NTE */
+typedef void*                           ACPI_HANDLE;    /* Actually a ptr to an Node */
+
+
+/*
+ * Acpi integer width. In ACPI version 1, integers are
+ * 32 bits.  In ACPI version 2, integers are 64 bits.
+ * Note that this pertains to the ACPI integer type only, not
+ * other integers used in the implementation of the ACPI CA
+ * subsystem.
+ */
+#ifdef ACPI_NO_INTEGER64_SUPPORT
+
+/* 32-bit integers only, no 64-bit support */
+
+typedef UINT32                          ACPI_INTEGER;
+#define ACPI_INTEGER_MAX                ACPI_UINT32_MAX
+#define ACPI_INTEGER_BIT_SIZE           32
+#define ACPI_MAX_BCD_VALUE              99999999
+#define ACPI_MAX_BCD_DIGITS             8
+
+#else
+
+/* 64-bit integers */
+
+typedef UINT64                          ACPI_INTEGER;
+#define ACPI_INTEGER_MAX                ACPI_UINT64_MAX
+#define ACPI_INTEGER_BIT_SIZE           64
+#define ACPI_MAX_BCD_VALUE              9999999999999999
+#define ACPI_MAX_BCD_DIGITS             16
+
+#endif
 
 
 /*
@@ -255,16 +324,42 @@ typedef void*                           ACPI_HANDLE;    /* Actually a ptr to an 
 
 
 /*
- * Sleep state constants
+ * Initialization sequence
  */
-#define S0					            (UINT8) 0
-#define S1					            (UINT8) 1
-#define S2					            (UINT8) 2
-#define S3					            (UINT8) 3
-#define S4					            (UINT8) 4
-#define S4BIOS				            (UINT8) 5
-#define S5					            (UINT8) 6
-#define ACPI_S_STATES_MAX	            S5
+#define ACPI_FULL_INITIALIZATION        0x00
+#define ACPI_NO_ADDRESS_SPACE_INIT      0x01
+#define ACPI_NO_HARDWARE_INIT           0x02
+#define ACPI_NO_EVENT_INIT              0x04
+#define ACPI_NO_ACPI_ENABLE             0x08
+#define ACPI_NO_DEVICE_INIT             0x10
+#define ACPI_NO_OBJECT_INIT             0x20
+
+
+/*
+ * System states
+ */
+#define ACPI_STATE_S0                   (UINT8) 0
+#define ACPI_STATE_S1                   (UINT8) 1
+#define ACPI_STATE_S2                   (UINT8) 2
+#define ACPI_STATE_S3                   (UINT8) 3
+#define ACPI_STATE_S4                   (UINT8) 4
+#define ACPI_STATE_S5                   (UINT8) 5
+/* let's pretend S4BIOS didn't exist for now. ASG */
+#define ACPI_STATE_S4BIOS               (UINT8) 6
+#define ACPI_S_STATES_MAX               ACPI_STATE_S5
+#define ACPI_S_STATE_COUNT              6
+
+/*
+ * Device power states
+ */
+#define ACPI_STATE_D0                   (UINT8) 0
+#define ACPI_STATE_D1                   (UINT8) 1
+#define ACPI_STATE_D2                   (UINT8) 2
+#define ACPI_STATE_D3                   (UINT8) 3
+#define ACPI_D_STATES_MAX               ACPI_STATE_D3
+#define ACPI_D_STATE_COUNT              4
+
+#define ACPI_STATE_UNKNOWN              (UINT8) 0xFF
 
 
 /*
@@ -273,124 +368,167 @@ typedef void*                           ACPI_HANDLE;    /* Actually a ptr to an 
 
 typedef UINT32                          ACPI_TABLE_TYPE;
 
-#define TABLE_RSDP                      (ACPI_TABLE_TYPE) 0
-#define TABLE_APIC                      (ACPI_TABLE_TYPE) 1
-#define TABLE_DSDT                      (ACPI_TABLE_TYPE) 2
-#define TABLE_FACP                      (ACPI_TABLE_TYPE) 3
-#define TABLE_FACS                      (ACPI_TABLE_TYPE) 4
-#define TABLE_PSDT                      (ACPI_TABLE_TYPE) 5
-#define TABLE_RSDT                      (ACPI_TABLE_TYPE) 6
-#define TABLE_SSDT                      (ACPI_TABLE_TYPE) 7
-#define TABLE_SBST                      (ACPI_TABLE_TYPE) 8
-#define TABLE_BOOT                      (ACPI_TABLE_TYPE) 9
-#define ACPI_TABLE_MAX                  9
-#define NUM_ACPI_TABLES                 10
+#define ACPI_TABLE_RSDP                 (ACPI_TABLE_TYPE) 0
+#define ACPI_TABLE_DSDT                 (ACPI_TABLE_TYPE) 1
+#define ACPI_TABLE_FADT                 (ACPI_TABLE_TYPE) 2
+#define ACPI_TABLE_FACS                 (ACPI_TABLE_TYPE) 3
+#define ACPI_TABLE_PSDT                 (ACPI_TABLE_TYPE) 4
+#define ACPI_TABLE_SSDT                 (ACPI_TABLE_TYPE) 5
+#define ACPI_TABLE_XSDT                 (ACPI_TABLE_TYPE) 6
+#define ACPI_TABLE_MAX                  6
+#define NUM_ACPI_TABLES                 (ACPI_TABLE_MAX+1)
 
 
-/* 
+/*
  * Types associated with names.  The first group of
- * values correspond to the definition of the ACPI ObjectType operator (See the ACPI Spec).
- * Therefore, only add to the first group if the spec changes!
+ * values correspond to the definition of the ACPI
+ * ObjectType operator (See the ACPI Spec).  Therefore,
+ * only add to the first group if the spec changes!
  *
- * Types must be kept in sync with the NsProperties and NsTypeNames arrays
+ * Types must be kept in sync with the AcpiNsProperties
+ * and AcpiNsTypeNames arrays
  */
 
-typedef UINT8                           ACPI_OBJECT_TYPE;
+typedef UINT32                          ACPI_OBJECT_TYPE;
+typedef UINT8                           ACPI_OBJECT_TYPE8;
 
-#define ACPI_TYPE_Any                   (ACPI_OBJECT_TYPE) 0  /* 0x00  */
-#define ACPI_TYPE_Number                (ACPI_OBJECT_TYPE) 1  /* 0x01  Byte/Word/Dword/Zero/One/Ones */
-#define ACPI_TYPE_String                (ACPI_OBJECT_TYPE) 2  /* 0x02  */
-#define ACPI_TYPE_Buffer                (ACPI_OBJECT_TYPE) 3  /* 0x03  */
-#define ACPI_TYPE_Package               (ACPI_OBJECT_TYPE) 4  /* 0x04  ByteConst, multiple DataTerm/Constant/SuperName */
-#define ACPI_TYPE_FieldUnit             (ACPI_OBJECT_TYPE) 5  /* 0x05  */
-#define ACPI_TYPE_Device                (ACPI_OBJECT_TYPE) 6  /* 0x06  Name, multiple NamedObject */
-#define ACPI_TYPE_Event                 (ACPI_OBJECT_TYPE) 7  /* 0x07  */
-#define ACPI_TYPE_Method                (ACPI_OBJECT_TYPE) 8  /* 0x08  Name, ByteConst, multiple Code */
-#define ACPI_TYPE_Mutex                 (ACPI_OBJECT_TYPE) 9  /* 0x09  */
-#define ACPI_TYPE_Region                (ACPI_OBJECT_TYPE) 10 /* 0x0A  */
-#define ACPI_TYPE_Power                 (ACPI_OBJECT_TYPE) 11 /* 0x0B  Name,ByteConst,WordConst,multi NamedObject */
-#define ACPI_TYPE_Processor             (ACPI_OBJECT_TYPE) 12 /* 0x0C  Name,ByteConst,DWordConst,ByteConst,multi NmO */
-#define ACPI_TYPE_Thermal               (ACPI_OBJECT_TYPE) 13 /* 0x0D  Name, multiple NamedObject */
-#define ACPI_TYPE_BufferField           (ACPI_OBJECT_TYPE) 14 /* 0x0E  */
-#define ACPI_TYPE_DdbHandle             (ACPI_OBJECT_TYPE) 15 /* 0x0F  */
-#define ACPI_TYPE_DebugObject           (ACPI_OBJECT_TYPE) 16 /* 0x10  */
+
+#define ACPI_TYPE_ANY                   0  /* 0x00  */
+#define ACPI_TYPE_INTEGER               1  /* 0x01  Byte/Word/Dword/Zero/One/Ones */
+#define ACPI_TYPE_STRING                2  /* 0x02  */
+#define ACPI_TYPE_BUFFER                3  /* 0x03  */
+#define ACPI_TYPE_PACKAGE               4  /* 0x04  ByteConst, multiple DataTerm/Constant/SuperName */
+#define ACPI_TYPE_FIELD_UNIT            5  /* 0x05  */
+#define ACPI_TYPE_DEVICE                6  /* 0x06  Name, multiple Node */
+#define ACPI_TYPE_EVENT                 7  /* 0x07  */
+#define ACPI_TYPE_METHOD                8  /* 0x08  Name, ByteConst, multiple Code */
+#define ACPI_TYPE_MUTEX                 9  /* 0x09  */
+#define ACPI_TYPE_REGION                10 /* 0x0A  */
+#define ACPI_TYPE_POWER                 11 /* 0x0B  Name,ByteConst,WordConst,multi Node */
+#define ACPI_TYPE_PROCESSOR             12 /* 0x0C  Name,ByteConst,DWordConst,ByteConst,multi NmO */
+#define ACPI_TYPE_THERMAL               13 /* 0x0D  Name, multiple Node */
+#define ACPI_TYPE_BUFFER_FIELD          14 /* 0x0E  */
+#define ACPI_TYPE_DDB_HANDLE            15 /* 0x0F  */
+#define ACPI_TYPE_DEBUG_OBJECT          16 /* 0x10  */
 
 #define ACPI_TYPE_MAX                   16
 
-/* 
+/*
  * This section contains object types that do not relate to the ACPI ObjectType operator.
- * They are used for various internal purposes only.  A numerical gap is provided in 
- * case additional "official" ObjectTypes are added in the future.  Also, values exceeding
- * the largest official ACPI ObjectType must not overlap with defined AML opcodes.
+ * They are used for various internal purposes only.  If new predefined ACPI_TYPEs are
+ * added (via the ACPI specification), these internal types must move upwards.
+ * Also, values exceeding the largest official ACPI ObjectType must not overlap with
+ * defined AML opcodes.
  */
-#define INTERNAL_TYPE_BEGIN             25
-#define INTERNAL_TYPE_DefField          (ACPI_OBJECT_TYPE) 25 /* 0x19  */
-#define INTERNAL_TYPE_BankField         (ACPI_OBJECT_TYPE) 26 /* 0x1A  */
-#define INTERNAL_TYPE_IndexField        (ACPI_OBJECT_TYPE) 27 /* 0x1B  */
-#define INTERNAL_TYPE_DefFieldDefn      (ACPI_OBJECT_TYPE) 28 /* 0x1C  Name, ByteConst, multiple FieldElement */
-#define INTERNAL_TYPE_BankFieldDefn     (ACPI_OBJECT_TYPE) 29 /* 0x1D  2 Name,DWordConst,ByteConst,multi FieldElement */
-#define INTERNAL_TYPE_IndexFieldDefn    (ACPI_OBJECT_TYPE) 30 /* 0x1E  2 Name, ByteConst, multiple FieldElement */
-#define INTERNAL_TYPE_If                (ACPI_OBJECT_TYPE) 31 /* 0x1F  OpCode, multiple Code */
-#define INTERNAL_TYPE_Else              (ACPI_OBJECT_TYPE) 32 /* 0x20  multiple Code */
-#define INTERNAL_TYPE_While             (ACPI_OBJECT_TYPE) 33 /* 0x21  OpCode, multiple Code */
-#define INTERNAL_TYPE_Scope             (ACPI_OBJECT_TYPE) 34 /* 0x22  Name, multiple NamedObject */
-#define INTERNAL_TYPE_DefAny            (ACPI_OBJECT_TYPE) 35 /* 0x23  type is Any, suppress search of enclosing scopes */
-#define INTERNAL_TYPE_Reference         (ACPI_OBJECT_TYPE) 36 /* 0x24  Arg#, Local#, Name, Debug; used only in descriptors */
-#define INTERNAL_TYPE_Alias             (ACPI_OBJECT_TYPE) 37 /* 0x25  */
-#define INTERNAL_TYPE_Notify            (ACPI_OBJECT_TYPE) 38 /* 0x26  */
-#define INTERNAL_TYPE_AddressHandler    (ACPI_OBJECT_TYPE) 39 /* 0x27  */
-#define INTERNAL_TYPE_MethodArgument    (ACPI_OBJECT_TYPE) 40 /* 0x28  */
-#define INTERNAL_TYPE_MethodLocalVar    (ACPI_OBJECT_TYPE) 41 /* 0x29  */
+#define INTERNAL_TYPE_BEGIN             17
 
-#define INTERNAL_TYPE_MAX               41
+#define INTERNAL_TYPE_REGION_FIELD      17 /* 0x11  */
+#define INTERNAL_TYPE_BANK_FIELD        18 /* 0x12  */
+#define INTERNAL_TYPE_INDEX_FIELD       19 /* 0x13  */
+#define INTERNAL_TYPE_REFERENCE         20 /* 0x14  Arg#, Local#, Name, Debug; used only in descriptors */
+#define INTERNAL_TYPE_ALIAS             21 /* 0x15  */
+#define INTERNAL_TYPE_NOTIFY            22 /* 0x16  */
+#define INTERNAL_TYPE_ADDRESS_HANDLER   23 /* 0x17  */
+#define INTERNAL_TYPE_RESOURCE          24 /* 0x18  */
 
-#define INTERNAL_TYPE_Invalid           (ACPI_OBJECT_TYPE) 42
-#define ACPI_TYPE_NotFound              (ACPI_OBJECT_TYPE) 0xFF
 
-/* 
- * Event Types:
+#define INTERNAL_TYPE_NODE_MAX          24
+
+/* These are pseudo-types because there are never any namespace nodes with these types */
+
+#define INTERNAL_TYPE_FIELD_DEFN        25 /* 0x19  Name, ByteConst, multiple FieldElement */
+#define INTERNAL_TYPE_BANK_FIELD_DEFN   26 /* 0x1A  2 Name,DWordConst,ByteConst,multi FieldElement */
+#define INTERNAL_TYPE_INDEX_FIELD_DEFN  27 /* 0x1B  2 Name, ByteConst, multiple FieldElement */
+#define INTERNAL_TYPE_IF                28 /* 0x1C  */
+#define INTERNAL_TYPE_ELSE              29 /* 0x1D  */
+#define INTERNAL_TYPE_WHILE             30 /* 0x1E  */
+#define INTERNAL_TYPE_SCOPE             31 /* 0x1F  Name, multiple Node */
+#define INTERNAL_TYPE_DEF_ANY           32 /* 0x20  type is Any, suppress search of enclosing scopes */
+#define INTERNAL_TYPE_EXTRA             33 /* 0x21  */
+
+#define INTERNAL_TYPE_MAX               33
+
+#define INTERNAL_TYPE_INVALID           34
+#define ACPI_TYPE_NOT_FOUND             0xFF
+
+
+/*
+ * Bitmapped ACPI types
+ * Used internally only
+ */
+#define ACPI_BTYPE_ANY                  0x00000000
+#define ACPI_BTYPE_INTEGER              0x00000001
+#define ACPI_BTYPE_STRING               0x00000002
+#define ACPI_BTYPE_BUFFER               0x00000004
+#define ACPI_BTYPE_PACKAGE              0x00000008
+#define ACPI_BTYPE_FIELD_UNIT           0x00000010
+#define ACPI_BTYPE_DEVICE               0x00000020
+#define ACPI_BTYPE_EVENT                0x00000040
+#define ACPI_BTYPE_METHOD               0x00000080
+#define ACPI_BTYPE_MUTEX                0x00000100
+#define ACPI_BTYPE_REGION               0x00000200
+#define ACPI_BTYPE_POWER                0x00000400
+#define ACPI_BTYPE_PROCESSOR            0x00000800
+#define ACPI_BTYPE_THERMAL              0x00001000
+#define ACPI_BTYPE_BUFFER_FIELD         0x00002000
+#define ACPI_BTYPE_DDB_HANDLE           0x00004000
+#define ACPI_BTYPE_DEBUG_OBJECT         0x00008000
+#define ACPI_BTYPE_REFERENCE            0x00010000
+#define ACPI_BTYPE_RESOURCE             0x00020000
+
+#define ACPI_BTYPE_COMPUTE_DATA         (ACPI_BTYPE_INTEGER | ACPI_BTYPE_STRING | ACPI_BTYPE_BUFFER)
+
+#define ACPI_BTYPE_DATA                 (ACPI_BTYPE_COMPUTE_DATA  | ACPI_BTYPE_PACKAGE)
+#define ACPI_BTYPE_DATA_REFERENCE       (ACPI_BTYPE_DATA | ACPI_BTYPE_REFERENCE | ACPI_BTYPE_DDB_HANDLE)
+#define ACPI_BTYPE_DEVICE_OBJECTS       (ACPI_BTYPE_DEVICE | ACPI_BTYPE_THERMAL | ACPI_BTYPE_PROCESSOR)
+#define ACPI_BTYPE_OBJECTS_AND_REFS     0x00017FFF  /* ARG or LOCAL */
+#define ACPI_BTYPE_ALL_OBJECTS          0x00007FFF
+
+
+/*
+ * AcpiEvent Types:
  * ------------
  * Fixed & general purpose...
  */
 
 typedef UINT32                          ACPI_EVENT_TYPE;
 
-#define EVENT_FIXED                     (ACPI_EVENT_TYPE) 0
-#define EVENT_GPE                       (ACPI_EVENT_TYPE) 1
+#define ACPI_EVENT_FIXED                (ACPI_EVENT_TYPE) 0
+#define ACPI_EVENT_GPE                  (ACPI_EVENT_TYPE) 1
 
-/* 
+/*
  * Fixed events
  */
 
-#define EVENT_PMTIMER                   (ACPI_EVENT_TYPE) 0
-    /* 
+#define ACPI_EVENT_PMTIMER              (ACPI_EVENT_TYPE) 0
+    /*
      * There's no bus master event so index 1 is used for IRQ's that are not
-     * handled by the SCI handler 
+     * handled by the SCI handler
      */
-#define EVENT_NOT_USED                  (ACPI_EVENT_TYPE) 1
-#define EVENT_GLOBAL                    (ACPI_EVENT_TYPE) 2
-#define EVENT_POWER_BUTTON              (ACPI_EVENT_TYPE) 3
-#define EVENT_SLEEP_BUTTON              (ACPI_EVENT_TYPE) 4
-#define EVENT_RTC                       (ACPI_EVENT_TYPE) 5
-#define EVENT_GENERAL                   (ACPI_EVENT_TYPE) 6
+#define ACPI_EVENT_NOT_USED             (ACPI_EVENT_TYPE) 1
+#define ACPI_EVENT_GLOBAL               (ACPI_EVENT_TYPE) 2
+#define ACPI_EVENT_POWER_BUTTON         (ACPI_EVENT_TYPE) 3
+#define ACPI_EVENT_SLEEP_BUTTON         (ACPI_EVENT_TYPE) 4
+#define ACPI_EVENT_RTC                  (ACPI_EVENT_TYPE) 5
+#define ACPI_EVENT_GENERAL              (ACPI_EVENT_TYPE) 6
 #define ACPI_EVENT_MAX                  6
-#define NUM_FIXED_EVENTS                (ACPI_EVENT_TYPE) 7
+#define ACPI_NUM_FIXED_EVENTS           (ACPI_EVENT_TYPE) 7
 
-#define GPE_INVALID                     0xFF
-#define GPE_MAX                         0xFF
-#define NUM_GPE                         256
+#define ACPI_GPE_INVALID                0xFF
+#define ACPI_GPE_MAX                    0xFF
+#define ACPI_NUM_GPE                    256
 
-#define EVENT_LEVEL_TRIGGERED           (ACPI_EVENT_TYPE) 1
-#define EVENT_EDGE_TRIGGERED            (ACPI_EVENT_TYPE) 2
+#define ACPI_EVENT_LEVEL_TRIGGERED      (ACPI_EVENT_TYPE) 1
+#define ACPI_EVENT_EDGE_TRIGGERED       (ACPI_EVENT_TYPE) 2
 
-/* 
- * Event Status:
+/*
+ * AcpiEvent Status:
  * -------------
  * The encoding of ACPI_EVENT_STATUS is illustrated below.
  * Note that a set bit (1) indicates the property is TRUE
  * (e.g. if bit 0 is set then the event is enabled).
  * +---------------+-+-+
- * |   Bits 31:2   |1|0|    
+ * |   Bits 31:2   |1|0|
  * +---------------+-+-+
  *          |       | |
  *          |       | +- Enabled?
@@ -399,8 +537,9 @@ typedef UINT32                          ACPI_EVENT_TYPE;
  */
 typedef UINT32                          ACPI_EVENT_STATUS;
 
-#define EVENT_FLAG_ENABLED              (ACPI_EVENT_STATUS) 0x01
-#define EVENT_FLAG_SET                  (ACPI_EVENT_STATUS) 0x02
+#define ACPI_EVENT_FLAG_DISABLED        (ACPI_EVENT_STATUS) 0x00
+#define ACPI_EVENT_FLAG_ENABLED         (ACPI_EVENT_STATUS) 0x01
+#define ACPI_EVENT_FLAG_SET             (ACPI_EVENT_STATUS) 0x02
 
 
 /* Notify types */
@@ -414,33 +553,35 @@ typedef UINT32                          ACPI_EVENT_STATUS;
 
 /* Address Space (Operation Region) Types */
 
-typedef UINT32                          ACPI_ADDRESS_SPACE_TYPE;
+typedef UINT8                           ACPI_ADR_SPACE_TYPE;
 
-#define ADDRESS_SPACE_SYSTEM_MEMORY     (ACPI_ADDRESS_SPACE_TYPE) 0
-#define ADDRESS_SPACE_SYSTEM_IO         (ACPI_ADDRESS_SPACE_TYPE) 1
-#define ADDRESS_SPACE_PCI_CONFIG        (ACPI_ADDRESS_SPACE_TYPE) 2
-#define ADDRESS_SPACE_EC                (ACPI_ADDRESS_SPACE_TYPE) 3
-#define ADDRESS_SPACE_SMBUS             (ACPI_ADDRESS_SPACE_TYPE) 4
+#define ACPI_ADR_SPACE_SYSTEM_MEMORY    (ACPI_ADR_SPACE_TYPE) 0
+#define ACPI_ADR_SPACE_SYSTEM_IO        (ACPI_ADR_SPACE_TYPE) 1
+#define ACPI_ADR_SPACE_PCI_CONFIG       (ACPI_ADR_SPACE_TYPE) 2
+#define ACPI_ADR_SPACE_EC               (ACPI_ADR_SPACE_TYPE) 3
+#define ACPI_ADR_SPACE_SMBUS            (ACPI_ADR_SPACE_TYPE) 4
+#define ACPI_ADR_SPACE_CMOS             (ACPI_ADR_SPACE_TYPE) 5
+#define ACPI_ADR_SPACE_PCI_BAR_TARGET   (ACPI_ADR_SPACE_TYPE) 6
 
 
-/* 
- * External ACPI object definition 
+/*
+ * External ACPI object definition
  */
 
-typedef union AcpiObj 
+typedef union AcpiObj
 {
-    ACPI_OBJECT_TYPE            Type;   /* See definition of NsType for values */
+    ACPI_OBJECT_TYPE            Type;   /* See definition of AcpiNsType for values */
     struct
     {
         ACPI_OBJECT_TYPE            Type;
-        UINT32                      Value;      /* The actual number */
-    } Number;
+        ACPI_INTEGER                Value;      /* The actual number */
+    } Integer;
 
     struct
     {
         ACPI_OBJECT_TYPE            Type;
         UINT32                      Length;     /* # of bytes in string, excluding trailing null */
-        char                        *Pointer;   /* points to the string value */
+        NATIVE_CHAR                 *Pointer;   /* points to the string value */
     } String;
 
     struct
@@ -453,6 +594,7 @@ typedef union AcpiObj
     struct
     {
         ACPI_OBJECT_TYPE            Type;
+        UINT32                      Fill1;
         ACPI_HANDLE                 Handle;     /* object reference */
     } Reference;
 
@@ -467,8 +609,8 @@ typedef union AcpiObj
     {
         ACPI_OBJECT_TYPE            Type;
         UINT32                      ProcId;
-        UINT32                      PBLKAddress;
-        UINT32                      PBLKLength;
+        ACPI_IO_ADDRESS             PblkAddress;
+        UINT32                      PblkLength;
     } Processor;
 
     struct
@@ -481,9 +623,8 @@ typedef union AcpiObj
 } ACPI_OBJECT, *PACPI_OBJECT;
 
 
-
 /*
- * List of objects, used as a parameter list for control method evaluation 
+ * List of objects, used as a parameter list for control method evaluation
  */
 
 typedef struct AcpiObjList
@@ -494,12 +635,11 @@ typedef struct AcpiObjList
 } ACPI_OBJECT_LIST, *PACPI_OBJECT_LIST;
 
 
-
 /*
  * Miscellaneous common Data Structures used by the interfaces
  */
 
-typedef struct 
+typedef struct
 {
     UINT32                      Length;         /* Length in bytes of the buffer */
     void                        *Pointer;       /* pointer to buffer */
@@ -530,7 +670,7 @@ typedef struct
  */
 typedef
 ACPI_STATUS (*ACPI_SET_C_STATE_HANDLER) (
-    NATIVE_UINT                 PBlkAddress);
+    NATIVE_UINT                 PblkAddress);
 
 /*
  *  ACPI Cx State info
@@ -564,9 +704,9 @@ typedef struct AcpiTableInfo
  * System info returned by AcpiGetSystemInfo()
  */
 
-typedef struct _AcpiSysInfo 
+typedef struct _AcpiSysInfo
 {
-    UINT32                      AcpiCAVersion;
+    UINT32                      AcpiCaVersion;
     UINT32                      Flags;
     UINT32                      TimerResolution;
     UINT32                      Reserved1;
@@ -584,56 +724,61 @@ typedef struct _AcpiSysInfo
  *  copyied to global data and retained by ACPI CA
  */
 
-typedef struct _AcpiInitData 
+typedef struct _AcpiInitData
 {
     void                        *RSDP_PhysicalAddress;  /*  Address of RSDP, needed it it is    */
                                                         /*  not found in the IA32 manner        */
 } ACPI_INIT_DATA;
 
+
 /*
  * Various handlers and callback procedures
  */
 
-typedef 
-UINT32 (*FIXED_EVENT_HANDLER) (
+typedef
+UINT32 (*ACPI_EVENT_HANDLER) (
     void                        *Context);
 
 typedef
-void (*GPE_HANDLER) (
+void (*ACPI_GPE_HANDLER) (
     void                        *Context);
 
 typedef
-void (*NOTIFY_HANDLER) (
+void (*ACPI_NOTIFY_HANDLER) (
     ACPI_HANDLE                 Device,
     UINT32                      Value,
     void                        *Context);
-    
-#define ADDRESS_SPACE_READ              1
-#define ADDRESS_SPACE_WRITE             2
+
+
+/* Address Spaces (Operation Regions */
+
+#define ACPI_READ_ADR_SPACE     1
+#define ACPI_WRITE_ADR_SPACE    2
 
 typedef
-ACPI_STATUS (*ADDRESS_SPACE_HANDLER) (
+ACPI_STATUS (*ACPI_ADR_SPACE_HANDLER) (
     UINT32                      Function,
-    UINT32                      Address,
+    ACPI_PHYSICAL_ADDRESS       Address,
     UINT32                      BitWidth,
     UINT32                      *Value,
-    void                        *Context);
+    void                        *HandlerContext,
+    void                        *RegionContext);
 
-#define ACPI_DEFAULT_HANDLER            ((ADDRESS_SPACE_HANDLER) NULL)
+#define ACPI_DEFAULT_HANDLER            ((ACPI_ADR_SPACE_HANDLER) NULL)
 
 
 typedef
-ACPI_STATUS (*ADDRESS_SPACE_SETUP) (
+ACPI_STATUS (*ACPI_ADR_SPACE_SETUP) (
     ACPI_HANDLE                 RegionHandle,
     UINT32                      Function,
     void                        *HandlerContext,
-    void                        **ReturnContext);
+    void                        **RegionContext);
 
 #define ACPI_REGION_ACTIVATE    0
 #define ACPI_REGION_DEACTIVATE  1
 
 typedef
-ACPI_STATUS (*WALK_CALLBACK) (
+ACPI_STATUS (*ACPI_WALK_CALLBACK) (
     ACPI_HANDLE                 ObjHandle,
     UINT32                      NestingLevel,
     void                        *Context,
@@ -655,65 +800,59 @@ ACPI_STATUS (*WALK_CALLBACK) (
 
 
 #define ACPI_COMMON_OBJ_INFO \
-    ACPI_OBJECT_TYPE            Type;           /* ACPI object type */\
-    ACPI_NAME                   Name;           /* ACPI object Name */\
-    /*\
-     *  TBD:Do we want or need these next two??\
-     */\
-    ACPI_HANDLE                 Parent;         /* Parent object */\
-    ACPI_HANDLE                 Children;       /* Linked list of children */\
-    UINT32                      Valid           /* ?????    */
+    ACPI_OBJECT_TYPE            Type;           /* ACPI object type */ \
+    ACPI_NAME                   Name            /* ACPI object Name */
 
-typedef struct 
+
+typedef struct
 {
     ACPI_COMMON_OBJ_INFO;
 } ACPI_OBJ_INFO_HEADER;
 
 
-typedef struct 
+typedef struct
 {
     ACPI_COMMON_OBJ_INFO;
 
-    /*
-     *  TBD: a HID or a _UID can return either a number or a string
-     */
-    char                        HardwareId [9];     /*  _HID value if any */
-    char                        UniqueId[9];        /*  _UID value if any */
-    UINT32                      Address;            /*  _ADR value if any */
+    UINT32                      Valid;              /*  Are the next bits legit? */
+    NATIVE_CHAR                 HardwareId [9];     /*  _HID value if any */
+    NATIVE_CHAR                 UniqueId[9];        /*  _UID value if any */
+    ACPI_INTEGER                Address;            /*  _ADR value if any */
     UINT32                      CurrentStatus;      /*  _STA value */
 } ACPI_DEVICE_INFO;
-
-
 
 
 /* Context structs for address space handlers */
 
 typedef struct
 {
-    void                        *HandlerContext;
     UINT32                      Seg;
     UINT32                      Bus;
     UINT32                      DevFunc;
-} PCI_HANDLER_CONTEXT;
+} ACPI_PCI_SPACE_CONTEXT;
 
 
 typedef struct
 {
-    void                        *HandlerContext;
-    char                        *MappedPhysicalAddress;
-    char                        *MappedLogicalAddress;
+    ACPI_PHYSICAL_ADDRESS       MappedPhysicalAddress;
+    UINT8                       *MappedLogicalAddress;
     UINT32                      MappedLength;
+} ACPI_MEM_SPACE_CONTEXT;
 
-} MEM_HANDLER_CONTEXT;
 
+/*
+ * C-state handler
+ */
+
+typedef ACPI_STATUS (*ACPI_C_STATE_HANDLER) (ACPI_IO_ADDRESS, UINT32*);
 
 
 /*
  * Definitions for Resource Attributes
  */
 
-/* 
- *  Memory Attributes 
+/*
+ *  Memory Attributes
  */
 #define READ_ONLY_MEMORY                (UINT8) 0x00
 #define READ_WRITE_MEMORY               (UINT8) 0x01
@@ -723,8 +862,8 @@ typedef struct
 #define WRITE_COMBINING_MEMORY          (UINT8) 0x02
 #define PREFETCHABLE_MEMORY             (UINT8) 0x03
 
-/* 
- *  IO Attributes 
+/*
+ *  IO Attributes
  *  The ISA IO ranges are: n000-n0FFh,  n400-n4FFh, n800-n8FFh, nC00-nCFFh.
  *  The non-ISA IO ranges are: n100-n3FFh,  n500-n7FFh, n900-nBFFh, nCD0-nFFFh.
  */
@@ -750,8 +889,8 @@ typedef struct
 #define EXCLUSIVE                       (UINT8) 0x00
 #define SHARED                          (UINT8) 0x01
 
-/* 
- *  DMA Attributes 
+/*
+ *  DMA Attributes
  */
 #define COMPATIBILITY                   (UINT8) 0x00
 #define TYPE_A                          (UINT8) 0x01
@@ -760,7 +899,7 @@ typedef struct
 
 #define NOT_BUS_MASTER                  (UINT8) 0x00
 #define BUS_MASTER                      (UINT8) 0x01
-    
+
 #define TRANSFER_8                      (UINT8) 0x00
 #define TRANSFER_8_16                   (UINT8) 0x01
 #define TRANSFER_16                     (UINT8) 0x02
@@ -771,9 +910,9 @@ typedef struct
 #define GOOD_CONFIGURATION              (UINT8) 0x00
 #define ACCEPTABLE_CONFIGURATION        (UINT8) 0x01
 #define SUB_OPTIMAL_CONFIGURATION       (UINT8) 0x02
- 
-/* 
- *  16, 32 and 64-bit Address Descriptor resource types 
+
+/*
+ *  16, 32 and 64-bit Address Descriptor resource types
  */
 #define MEMORY_RANGE                    (UINT8) 0x00
 #define IO_RANGE                        (UINT8) 0x01
@@ -803,7 +942,7 @@ typedef struct
 } IRQ_RESOURCE;
 
 typedef struct
-{   
+{
     UINT32                      Type;
     UINT32                      BusMaster;
     UINT32                      Transfer;
@@ -819,8 +958,8 @@ typedef struct
 
 } START_DEPENDENT_FUNCTIONS_RESOURCE;
 
-/* 
- * END_DEPENDENT_FUNCTIONS_RESOURCE struct is not 
+/*
+ * END_DEPENDENT_FUNCTIONS_RESOURCE struct is not
  *  needed because it has no fields
  */
 
@@ -881,7 +1020,7 @@ typedef struct
     UINT16                      CacheAttribute;
     UINT16                      ReadWriteAttribute;
 
-} MEMORY_ATTRIBUTE; 
+} MEMORY_ATTRIBUTE;
 
 typedef struct
 {
@@ -895,7 +1034,7 @@ typedef struct
     UINT16                      Reserved1;
     UINT16                      Reserved2;
 
-} BUS_ATTRIBUTE; 
+} BUS_ATTRIBUTE;
 
 typedef union
 {
@@ -907,24 +1046,13 @@ typedef union
 
 typedef struct
 {
-    UINT32                      ResourceType;
-    UINT32                      ProducerConsumer;
-    UINT32                      Decode;
-    UINT32                      MinAddressFixed;
-    UINT32                      MaxAddressFixed;
-    ATTRIBUTE_DATA              Attribute;
-    UINT32                      Granularity;
-    UINT32                      MinAddressRange;
-    UINT32                      MaxAddressRange;
-    UINT32                      AddressTranslationOffset;
-    UINT32                      AddressLength;
-    UINT32                      ResourceSourceIndex;
-    UINT32                      ResourceSourceStringLength;
-    UINT8                       ResourceSource[1];
-    
-} ADDRESS16_RESOURCE;
+    UINT32                      Index;
+    UINT32                      StringLength;
+    NATIVE_CHAR                 *StringPtr;
 
-typedef struct  
+} RESOURCE_SOURCE;
+
+typedef struct
 {
     UINT32                      ResourceType;
     UINT32                      ProducerConsumer;
@@ -937,11 +1065,43 @@ typedef struct
     UINT32                      MaxAddressRange;
     UINT32                      AddressTranslationOffset;
     UINT32                      AddressLength;
-    UINT32                      ResourceSourceIndex;
-    UINT32                      ResourceSourceStringLength;
-    UINT8                       ResourceSource[1];
-    
+    RESOURCE_SOURCE             ResourceSource;
+
+} ADDRESS16_RESOURCE;
+
+typedef struct
+{
+    UINT32                      ResourceType;
+    UINT32                      ProducerConsumer;
+    UINT32                      Decode;
+    UINT32                      MinAddressFixed;
+    UINT32                      MaxAddressFixed;
+    ATTRIBUTE_DATA              Attribute;
+    UINT32                      Granularity;
+    UINT32                      MinAddressRange;
+    UINT32                      MaxAddressRange;
+    UINT32                      AddressTranslationOffset;
+    UINT32                      AddressLength;
+    RESOURCE_SOURCE             ResourceSource;
+
 } ADDRESS32_RESOURCE;
+
+typedef struct
+{
+    UINT32                      ResourceType;
+    UINT32                      ProducerConsumer;
+    UINT32                      Decode;
+    UINT32                      MinAddressFixed;
+    UINT32                      MaxAddressFixed;
+    ATTRIBUTE_DATA              Attribute;
+    UINT64                      Granularity;
+    UINT64                      MinAddressRange;
+    UINT64                      MaxAddressRange;
+    UINT64                      AddressTranslationOffset;
+    UINT64                      AddressLength;
+    RESOURCE_SOURCE             ResourceSource;
+
+} ADDRESS64_RESOURCE;
 
 typedef struct
 {
@@ -950,10 +1110,8 @@ typedef struct
     UINT32                      ActiveHighLow;
     UINT32                      SharedExclusive;
     UINT32                      NumberOfInterrupts;
+    RESOURCE_SOURCE             ResourceSource;
     UINT32                      Interrupts[1];
-    UINT32                      ResourceSourceIndex;
-    UINT32                      ResourceSourceStringLength;
-    UINT8                       ResourceSource[1];
 
 } EXTENDED_IRQ_RESOURCE;
 
@@ -972,6 +1130,7 @@ typedef enum
     FixedMemory32,
     Address16,
     Address32,
+    Address64,
     ExtendedIrq
 } RESOURCE_TYPE;
 
@@ -988,6 +1147,7 @@ typedef union
     FIXED_MEMORY32_RESOURCE             FixedMemory32;
     ADDRESS16_RESOURCE                  Address16;
     ADDRESS32_RESOURCE                  Address32;
+    ADDRESS64_RESOURCE                  Address64;
     EXTENDED_IRQ_RESOURCE               ExtendedIrq;
 } RESOURCE_DATA;
 
@@ -1001,26 +1161,20 @@ typedef struct _resource_tag
 #define RESOURCE_LENGTH                 12
 #define RESOURCE_LENGTH_NO_DATA         8
 
+#define NEXT_RESOURCE(Res)    (RESOURCE*)((UINT8*) Res + Res->length)
+
 /*
  * END: Definitions for Resource Attributes
  */
 
-/*
- * Definitions for PCI Routing tables
- */
-typedef struct  
-{
-    UINT32                      Address;
-    UINT32                      Pin;
-    UINT32                      SourceIndex;
-    UINT8                       Source[1];
 
-} PRT_ENTRY;
-
-typedef struct _prt_tag
+typedef struct pci_routing_table
 {
     UINT32                      Length;
-    PRT_ENTRY                   Data;
+    UINT32                      Pin;
+    ACPI_INTEGER                Address;        /* here for 64-bit alignment */
+    UINT32                      SourceIndex;
+    NATIVE_CHAR                 Source[4];      /* pad to 64 bits so sizeof() works in all cases */
 
 } PCI_ROUTING_TABLE;
 
@@ -1029,4 +1183,4 @@ typedef struct _prt_tag
  * END: Definitions for PCI Routing tables
  */
 
-#endif /* ACTYPES_H */
+#endif /* __ACTYPES_H__ */
