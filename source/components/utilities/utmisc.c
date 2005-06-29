@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: utmisc - common utility procedures
- *              $Revision: 1.109 $
+ *              $Revision: 1.111 $
  *
  ******************************************************************************/
 
@@ -124,12 +124,23 @@
 #define _COMPONENT          ACPI_UTILITIES
         ACPI_MODULE_NAME    ("utmisc")
 
+/* Local prototypes */
+
+static ACPI_STATUS
+AcpiUtCreateMutex (
+    ACPI_MUTEX_HANDLE       MutexId);
+
+static ACPI_STATUS
+AcpiUtDeleteMutex (
+    ACPI_MUTEX_HANDLE       MutexId);
+
 
 /*******************************************************************************
  *
  * FUNCTION:    AcpiUtPrintString
  *
  * PARAMETERS:  String          - Null terminated ASCII string
+ *              MaxLength       - Maximum output length
  *
  * RETURN:      None
  *
@@ -227,6 +238,8 @@ AcpiUtPrintString (
  *
  * PARAMETERS:  Value           - Value to be converted
  *
+ * RETURN:      UINT32 integer with bytes swapped
+ *
  * DESCRIPTION: Convert a 32-bit value to big-endian (swap the bytes)
  *
  ******************************************************************************/
@@ -240,7 +253,6 @@ AcpiUtDwordByteSwap (
         UINT32              Value;
         UINT8               Bytes[4];
     } Out;
-
     union
     {
         UINT32              Value;
@@ -302,7 +314,8 @@ AcpiUtSetIntegerWidth (
  *
  * FUNCTION:    AcpiUtDisplayInitPathname
  *
- * PARAMETERS:  ObjHandle           - Handle whose pathname will be displayed
+ * PARAMETERS:  Type                - Object type of the node
+ *              ObjHandle           - Handle whose pathname will be displayed
  *              Path                - Additional path string to be appended.
  *                                      (NULL if no extra path)
  *
@@ -376,9 +389,9 @@ AcpiUtDisplayInitPathname (
  *
  * FUNCTION:    AcpiUtValidAcpiName
  *
- * PARAMETERS:  Character           - The character to be examined
+ * PARAMETERS:  Name            - The name to be examined
  *
- * RETURN:      1 if Character may appear in a name, else 0
+ * RETURN:      TRUE if the name is valid, FALSE otherwise
  *
  * DESCRIPTION: Check for a valid ACPI name.  Each character must be one of:
  *              1) Upper case alpha
@@ -602,40 +615,6 @@ ErrorExit:
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiUtStrupr
- *
- * PARAMETERS:  SrcString       - The source string to convert to
- *
- * RETURN:      SrcString
- *
- * DESCRIPTION: Convert string to uppercase
- *
- ******************************************************************************/
-
-char *
-AcpiUtStrupr (
-    char                    *SrcString)
-{
-    char                    *String;
-
-
-    ACPI_FUNCTION_ENTRY ();
-
-
-    /* Walk entire string, uppercasing the letters */
-
-    for (String = SrcString; *String; )
-    {
-        *String = (char) ACPI_TOUPPER (*String);
-        String++;
-    }
-
-    return (SrcString);
-}
-
-
-/*******************************************************************************
- *
  * FUNCTION:    AcpiUtMutexInitialize
  *
  * PARAMETERS:  None.
@@ -832,16 +811,16 @@ AcpiUtAcquireMutex (
                 if (i == MutexId)
                 {
                     ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
-                            "Mutex [%s] already acquired by this thread [%X]\n",
-                            AcpiUtGetMutexName (MutexId), ThisThreadId));
+                        "Mutex [%s] already acquired by this thread [%X]\n",
+                        AcpiUtGetMutexName (MutexId), ThisThreadId));
 
                     return (AE_ALREADY_ACQUIRED);
                 }
 
                 ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
-                        "Invalid acquire order: Thread %X owns [%s], wants [%s]\n",
-                        ThisThreadId, AcpiUtGetMutexName (i),
-                        AcpiUtGetMutexName (MutexId)));
+                    "Invalid acquire order: Thread %X owns [%s], wants [%s]\n",
+                    ThisThreadId, AcpiUtGetMutexName (i),
+                    AcpiUtGetMutexName (MutexId)));
 
                 return (AE_ACQUIRE_DEADLOCK);
             }
@@ -850,24 +829,25 @@ AcpiUtAcquireMutex (
 #endif
 
     ACPI_DEBUG_PRINT ((ACPI_DB_MUTEX,
-                "Thread %X attempting to acquire Mutex [%s]\n",
-                ThisThreadId, AcpiUtGetMutexName (MutexId)));
+        "Thread %X attempting to acquire Mutex [%s]\n",
+        ThisThreadId, AcpiUtGetMutexName (MutexId)));
 
     Status = AcpiOsWaitSemaphore (AcpiGbl_MutexInfo[MutexId].Mutex,
                                     1, ACPI_WAIT_FOREVER);
     if (ACPI_SUCCESS (Status))
     {
         ACPI_DEBUG_PRINT ((ACPI_DB_MUTEX, "Thread %X acquired Mutex [%s]\n",
-                    ThisThreadId, AcpiUtGetMutexName (MutexId)));
+            ThisThreadId, AcpiUtGetMutexName (MutexId)));
 
         AcpiGbl_MutexInfo[MutexId].UseCount++;
         AcpiGbl_MutexInfo[MutexId].OwnerId = ThisThreadId;
     }
     else
     {
-        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Thread %X could not acquire Mutex [%s] %s\n",
-                    ThisThreadId, AcpiUtGetMutexName (MutexId),
-                    AcpiFormatException (Status)));
+        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
+            "Thread %X could not acquire Mutex [%s] %s\n",
+                ThisThreadId, AcpiUtGetMutexName (MutexId),
+                AcpiFormatException (Status)));
     }
 
     return (Status);
@@ -914,8 +894,8 @@ AcpiUtReleaseMutex (
     if (AcpiGbl_MutexInfo[MutexId].OwnerId == ACPI_MUTEX_NOT_ACQUIRED)
     {
         ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
-                "Mutex [%s] is not acquired, cannot release\n",
-                AcpiUtGetMutexName (MutexId)));
+            "Mutex [%s] is not acquired, cannot release\n",
+            AcpiUtGetMutexName (MutexId)));
 
         return (AE_NOT_ACQUIRED);
     }
@@ -936,8 +916,8 @@ AcpiUtReleaseMutex (
             }
 
             ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
-                    "Invalid release order: owns [%s], releasing [%s]\n",
-                    AcpiUtGetMutexName (i), AcpiUtGetMutexName (MutexId)));
+                "Invalid release order: owns [%s], releasing [%s]\n",
+                AcpiUtGetMutexName (i), AcpiUtGetMutexName (MutexId)));
 
             return (AE_RELEASE_DEADLOCK);
         }
@@ -951,14 +931,15 @@ AcpiUtReleaseMutex (
 
     if (ACPI_FAILURE (Status))
     {
-        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Thread %X could not release Mutex [%s] %s\n",
-                    ThisThreadId, AcpiUtGetMutexName (MutexId),
-                    AcpiFormatException (Status)));
+        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
+            "Thread %X could not release Mutex [%s] %s\n",
+            ThisThreadId, AcpiUtGetMutexName (MutexId),
+            AcpiFormatException (Status)));
     }
     else
     {
         ACPI_DEBUG_PRINT ((ACPI_DB_MUTEX, "Thread %X released Mutex [%s]\n",
-                    ThisThreadId, AcpiUtGetMutexName (MutexId)));
+            ThisThreadId, AcpiUtGetMutexName (MutexId)));
     }
 
     return (Status);
@@ -969,11 +950,11 @@ AcpiUtReleaseMutex (
  *
  * FUNCTION:    AcpiUtCreateUpdateStateAndPush
  *
- * PARAMETERS:  *Object         - Object to be added to the new state
+ * PARAMETERS:  Object          - Object to be added to the new state
  *              Action          - Increment/Decrement
  *              StateList       - List the state will be added to
  *
- * RETURN:      None
+ * RETURN:      Status
  *
  * DESCRIPTION: Create a new state and push it
  *
@@ -1013,11 +994,11 @@ AcpiUtCreateUpdateStateAndPush (
  *
  * FUNCTION:    AcpiUtCreatePkgStateAndPush
  *
- * PARAMETERS:  *Object         - Object to be added to the new state
+ * PARAMETERS:  Object          - Object to be added to the new state
  *              Action          - Increment/Decrement
  *              StateList       - List the state will be added to
  *
- * RETURN:      None
+ * RETURN:      Status
  *
  * DESCRIPTION: Create a new state and push it
  *
@@ -1054,7 +1035,7 @@ AcpiUtCreatePkgStateAndPush (
  * PARAMETERS:  ListHead            - Head of the state stack
  *              State               - State object to push
  *
- * RETURN:      Status
+ * RETURN:      None
  *
  * DESCRIPTION: Push a state object onto a state stack
  *
@@ -1083,7 +1064,7 @@ AcpiUtPushGenericState (
  *
  * PARAMETERS:  ListHead            - Head of the state stack
  *
- * RETURN:      Status
+ * RETURN:      The popped state object
  *
  * DESCRIPTION: Pop a state object from a state stack
  *
@@ -1119,7 +1100,7 @@ AcpiUtPopGenericState (
  *
  * PARAMETERS:  None
  *
- * RETURN:      Status
+ * RETURN:      The new state object. NULL on failure.
  *
  * DESCRIPTION: Create a generic state object.  Attempt to obtain one from
  *              the global state cache;  If none available, create a new one.
@@ -1127,7 +1108,8 @@ AcpiUtPopGenericState (
  ******************************************************************************/
 
 ACPI_GENERIC_STATE *
-AcpiUtCreateGenericState (void)
+AcpiUtCreateGenericState (
+    void)
 {
     ACPI_GENERIC_STATE      *State;
 
@@ -1154,7 +1136,7 @@ AcpiUtCreateGenericState (void)
  *
  * PARAMETERS:  None
  *
- * RETURN:      Thread State
+ * RETURN:      New Thread State. NULL on failure
  *
  * DESCRIPTION: Create a "Thread State" - a flavor of the generic state used
  *              to track per-thread info during method execution
@@ -1192,11 +1174,10 @@ AcpiUtCreateThreadState (
  *
  * FUNCTION:    AcpiUtCreateUpdateState
  *
- * PARAMETERS:  Object              - Initial Object to be installed in the
- *                                    state
- *              Action              - Update action to be performed
+ * PARAMETERS:  Object          - Initial Object to be installed in the state
+ *              Action          - Update action to be performed
  *
- * RETURN:      Status
+ * RETURN:      New state object, null on failure
  *
  * DESCRIPTION: Create an "Update State" - a flavor of the generic state used
  *              to update reference counts and delete complex objects such
@@ -1237,11 +1218,10 @@ AcpiUtCreateUpdateState (
  *
  * FUNCTION:    AcpiUtCreatePkgState
  *
- * PARAMETERS:  Object              - Initial Object to be installed in the
- *                                    state
- *              Action              - Update action to be performed
+ * PARAMETERS:  Object          - Initial Object to be installed in the state
+ *              Action          - Update action to be performed
  *
- * RETURN:      Status
+ * RETURN:      New state object, null on failure
  *
  * DESCRIPTION: Create a "Package State"
  *
@@ -1285,7 +1265,7 @@ AcpiUtCreatePkgState (
  *
  * PARAMETERS:  None
  *
- * RETURN:      Status
+ * RETURN:      New state object, null on failure
  *
  * DESCRIPTION: Create a "Control State" - a flavor of the generic state used
  *              to support nested IF/WHILE constructs in the AML.
@@ -1325,7 +1305,7 @@ AcpiUtCreateControlState (
  *
  * PARAMETERS:  State               - The state object to be deleted
  *
- * RETURN:      Status
+ * RETURN:      None
  *
  * DESCRIPTION: Put a state object back into the global state cache.  The object
  *              is not actually freed at this time.
@@ -1351,7 +1331,7 @@ AcpiUtDeleteGenericState (
  *
  * PARAMETERS:  None
  *
- * RETURN:      Status
+ * RETURN:      None
  *
  * DESCRIPTION: Purge the global state object cache.  Used during subsystem
  *              termination.
@@ -1375,7 +1355,10 @@ AcpiUtDeleteGenericStateCache (
  *
  * FUNCTION:    AcpiUtWalkPackageTree
  *
- * PARAMETERS:  ObjDesc         - The Package object on which to resolve refs
+ * PARAMETERS:  SourceObject        - The package to walk
+ *              TargetObject        - Target object (if package is being copied)
+ *              WalkCallback        - Called once for each package element
+ *              Context             - Passed to the callback function
  *
  * RETURN:      Status
  *
@@ -1503,7 +1486,7 @@ AcpiUtWalkPackageTree (
  * PARAMETERS:  Buffer          - Buffer to be scanned
  *              Length          - number of bytes to examine
  *
- * RETURN:      checksum
+ * RETURN:      The generated checksum
  *
  * DESCRIPTION: Generate a checksum on a raw buffer
  *
@@ -1591,7 +1574,6 @@ AcpiUtGetResourceEndTag (
  * PARAMETERS:  ModuleName          - Caller's module name (for error output)
  *              LineNumber          - Caller's line number (for error output)
  *              ComponentId         - Caller's component ID (for error output)
- *              Message             - Error message to use on failure
  *
  * RETURN:      None
  *
@@ -1606,7 +1588,6 @@ AcpiUtReportError (
     UINT32                  ComponentId)
 {
 
-
     AcpiOsPrintf ("%8s-%04d: *** Error: ", ModuleName, LineNumber);
 }
 
@@ -1618,7 +1599,6 @@ AcpiUtReportError (
  * PARAMETERS:  ModuleName          - Caller's module name (for error output)
  *              LineNumber          - Caller's line number (for error output)
  *              ComponentId         - Caller's component ID (for error output)
- *              Message             - Error message to use on failure
  *
  * RETURN:      None
  *
@@ -1644,7 +1624,6 @@ AcpiUtReportWarning (
  * PARAMETERS:  ModuleName          - Caller's module name (for error output)
  *              LineNumber          - Caller's line number (for error output)
  *              ComponentId         - Caller's component ID (for error output)
- *              Message             - Error message to use on failure
  *
  * RETURN:      None
  *

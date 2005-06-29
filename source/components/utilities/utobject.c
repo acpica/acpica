@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: utobject - ACPI object create/delete/size/cache routines
- *              $Revision: 1.93 $
+ *              $Revision: 1.95 $
  *
  *****************************************************************************/
 
@@ -124,6 +124,25 @@
 #define _COMPONENT          ACPI_UTILITIES
         ACPI_MODULE_NAME    ("utobject")
 
+/* Local prototypes */
+
+static ACPI_STATUS
+AcpiUtGetSimpleObjectSize (
+    ACPI_OPERAND_OBJECT     *Obj,
+    ACPI_SIZE               *ObjLength);
+
+static ACPI_STATUS
+AcpiUtGetPackageObjectSize (
+    ACPI_OPERAND_OBJECT     *Obj,
+    ACPI_SIZE               *ObjLength);
+
+static ACPI_STATUS
+AcpiUtGetElementLength (
+    UINT8                   ObjectType,
+    ACPI_OPERAND_OBJECT     *SourceObject,
+    ACPI_GENERIC_STATE      *State,
+    void                    *Context);
+
 
 /*******************************************************************************
  *
@@ -134,7 +153,7 @@
  *              ComponentId         - Component type of caller
  *              Type                - ACPI Type of the new object
  *
- * RETURN:      Object              - The new object.  Null on failure
+ * RETURN:      A new internal object, null on failure
  *
  * DESCRIPTION: Create and initialize a new internal object.
  *
@@ -157,7 +176,8 @@ AcpiUtCreateInternalObjectDbg (
     ACPI_OPERAND_OBJECT     *SecondObject;
 
 
-    ACPI_FUNCTION_TRACE_STR ("UtCreateInternalObjectDbg", AcpiUtGetTypeName (Type));
+    ACPI_FUNCTION_TRACE_STR ("UtCreateInternalObjectDbg",
+        AcpiUtGetTypeName (Type));
 
 
     /* Allocate the raw object descriptor */
@@ -175,7 +195,8 @@ AcpiUtCreateInternalObjectDbg (
 
         /* These types require a secondary object */
 
-        SecondObject = AcpiUtAllocateObjectDescDbg (ModuleName, LineNumber, ComponentId);
+        SecondObject = AcpiUtAllocateObjectDescDbg (ModuleName,
+                            LineNumber, ComponentId);
         if (!SecondObject)
         {
             AcpiUtDeleteObjectDesc (Object);
@@ -215,7 +236,7 @@ AcpiUtCreateInternalObjectDbg (
  *
  * PARAMETERS:  BufferSize             - Size of buffer to be created
  *
- * RETURN:      Pointer to a new Buffer object
+ * RETURN:      Pointer to a new Buffer object, null on failure
  *
  * DESCRIPTION: Create a fully initialized buffer object
  *
@@ -272,9 +293,9 @@ AcpiUtCreateBufferObject (
  *
  * FUNCTION:    AcpiUtCreateStringObject
  *
- * PARAMETERS:  StringSize             - Size of string to be created.  Does not
- *                                       include NULL terminator, this is added
- *                                       automatically.
+ * PARAMETERS:  StringSize          - Size of string to be created. Does not
+ *                                    include NULL terminator, this is added
+ *                                    automatically.
  *
  * RETURN:      Pointer to a new String object
  *
@@ -331,7 +352,9 @@ AcpiUtCreateStringObject (
  *
  * PARAMETERS:  Object              - Object to be validated
  *
- * RETURN:      Validate a pointer to be an ACPI_OPERAND_OBJECT
+ * RETURN:      TRUE if object is valid, FALSE otherwise
+ *
+ * DESCRIPTION: Validate a pointer to be an ACPI_OPERAND_OBJECT
  *
  ******************************************************************************/
 
@@ -485,8 +508,8 @@ AcpiUtDeleteObjectCache (
  *
  * FUNCTION:    AcpiUtGetSimpleObjectSize
  *
- * PARAMETERS:  *InternalObject     - Pointer to the object we are examining
- *              *ObjLength          - Where the length is returned
+ * PARAMETERS:  InternalObject     - An ACPI operand object
+ *              ObjLength          - Where the length is returned
  *
  * RETURN:      Status
  *
@@ -677,8 +700,8 @@ AcpiUtGetElementLength (
  *
  * FUNCTION:    AcpiUtGetPackageObjectSize
  *
- * PARAMETERS:  *InternalObject     - Pointer to the object we are examining
- *              *ObjLength          - Where the length is returned
+ * PARAMETERS:  InternalObject      - An ACPI internal object
+ *              ObjLength           - Where the length is returned
  *
  * RETURN:      Status
  *
@@ -732,8 +755,8 @@ AcpiUtGetPackageObjectSize (
  *
  * FUNCTION:    AcpiUtGetObjectSize
  *
- * PARAMETERS:  *InternalObject     - Pointer to the object we are examining
- *              *ObjLength          - Where the length will be returned
+ * PARAMETERS:  InternalObject      - An ACPI internal object
+ *              ObjLength           - Where the length will be returned
  *
  * RETURN:      Status
  *
