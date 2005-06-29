@@ -134,7 +134,8 @@
  *
  * PARAMETERS:  none
  *
- * RETURN:      Status - AE_AML_ERROR on success
+ * RETURN:      Status.  If the OS returns from the OSD call, we just keep
+ *              on going.
  *
  * DESCRIPTION: Execute Fatal operator
  *
@@ -166,7 +167,7 @@ AmlExecFatal (
         /* invalid parameters on object stack  */
 
         AmlAppendOperandDiag (_THIS_MODULE, __LINE__, (UINT16) AML_FatalOp, Operands, 3);
-        return_ACPI_STATUS (Status);
+        goto Cleanup;
     }
 
     DUMP_OPERANDS (Operands, IMODE_Execute, PsGetOpcodeName (AML_FatalOp), 3, "after AmlPrepOperands");
@@ -184,6 +185,8 @@ AmlExecFatal (
 
     /* TBD: call OSD interface to notify OS of fatal error requiring shutdown! */
 
+
+Cleanup:
 
     /* Free the operands */
 
@@ -251,7 +254,7 @@ AmlExecIndex (
         /* invalid parameters on object stack  */
 
         AmlAppendOperandDiag (_THIS_MODULE, __LINE__, (UINT16) AML_IndexOp, Operands, 3);
-        return_ACPI_STATUS (Status);
+        goto Cleanup;
     }
 
     DUMP_OPERANDS (Operands, IMODE_Execute, PsGetOpcodeName (AML_IndexOp), 3, "after AmlPrepOperands");
@@ -387,7 +390,7 @@ AmlExecMatch (
     ACPI_OBJECT_INTERNAL    *Op2Desc;
     ACPI_OBJECT_INTERNAL    *V2Desc;
     ACPI_OBJECT_INTERNAL    *StartDesc;
-    ACPI_OBJECT_INTERNAL    *RetDesc;
+    ACPI_OBJECT_INTERNAL    *RetDesc = NULL;
     ACPI_STATUS             Status;
     UINT32                  Index;
     UINT32                  MatchValue = (UINT32) -1;
@@ -403,7 +406,7 @@ AmlExecMatch (
         /* invalid parameters on object stack  */
 
         AmlAppendOperandDiag (_THIS_MODULE, __LINE__, (UINT16) AML_MatchOp, Operands, 6);
-        return_ACPI_STATUS (Status);
+        goto Cleanup;
     }
 
 
