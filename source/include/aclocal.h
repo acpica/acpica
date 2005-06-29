@@ -258,35 +258,6 @@ typedef struct NameTableEntry
 
 #define NTE_AML_ATTACHMENT  0x1
 
-/* 
- * Stack of currently executing control methods 
- * Contains the arguments and local variables for each nested method.
- */
-
-typedef struct Method_Stack
-{
-    union AcpiObjInternal   *Arguments[MTH_NUM_ARGS];
-    union AcpiObjInternal   *LocalVariables[MTH_NUM_LOCALS];
-    struct Method_Stack     *Next;
-
-} METHOD_STACK;
-
-
-/* Stack of currently-open scopes, and pointer to top of that stack */
-
-typedef struct scope_stack
-{
-    NAME_TABLE_ENTRY        *Scope;
-    /* 
-     * Type of scope, typically the same as the type of its parent's entry 
-     * (but not the same as the type of its parent's scope).
-     */
-    ACPI_OBJECT_TYPE        Type;   
-    struct scope_stack      *Next;
-
-} SCOPE_STACK;    
-
-
 
 /*
  * ACPI Table Descriptor.  One per ACPI table
@@ -608,11 +579,24 @@ typedef struct acpi_control_state
 } ACPI_CONTROL_STATE;
 
 
+/*
+ * Scope state - current scope during namespace lookups
+ */
+
+typedef struct acpi_scope_state
+{
+    ACPI_STATE_COMMON
+    NAME_TABLE_ENTRY        *Entry;
+
+} ACPI_SCOPE_STATE;
+
+
 typedef union acpi_gen_state
 {
     ACPI_COMMON_STATE       Common;
     ACPI_CONTROL_STATE      Control;
     ACPI_UPDATE_STATE       Update;
+    ACPI_SCOPE_STATE        Scope;
 
 } ACPI_GENERIC_STATE;
 
@@ -640,7 +624,7 @@ typedef struct acpi_walk_state
     ACPI_GENERIC_OP         *PrevOp;                            /* Last op that was processed */
     ACPI_GENERIC_OP         *NextOp;                            /* next op to be processed */
     ACPI_GENERIC_STATE      *ControlState;                      /* List of control states (nested IFs) */
-	SCOPE_STACK				*ScopeInfo;							/* Stack of nested scopes */
+	ACPI_GENERIC_STATE		*ScopeInfo;							/* Stack of nested scopes */
     struct NameTableEntry   Arguments[MTH_NUM_ARGS];            /* Control method arguments */
     struct NameTableEntry   LocalVariables[MTH_NUM_LOCALS];     /* Control method locals */
     union AcpiObjInternal   *Operands[OBJ_NUM_OPERANDS];        /* Operands passed to the interpreter */
