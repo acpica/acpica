@@ -149,6 +149,10 @@ SOURCE=..\..\source_linux\COMPONENTS\EVENTS\evgpe.c
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\source_linux\components\events\evgpeblk.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\source_linux\COMPONENTS\EVENTS\evmisc.c
 # End Source File
 # Begin Source File
@@ -543,6 +547,10 @@ SOURCE=..\..\source_linux\COMPONENTS\Disassembler\dmbuffer.c
 # Begin Source File
 
 SOURCE=..\..\source_linux\COMPONENTS\Disassembler\dmnames.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source_linux\components\disassembler\dmobject.c
 # End Source File
 # Begin Source File
 
