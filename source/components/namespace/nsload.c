@@ -186,13 +186,13 @@ NsParseTable (
     DEBUG_PRINT (TRACE_PARSE, ("NsParseTable: Building Internal Namespace\n"));
 BREAKPOINT3;
 
-/* TBD: Temp only */
-
+/* TBD: OBSOLETE, pass 1 is now part of the parse*/
+/*
     PsWalkParsedAml (PsGetChild (Gbl_ParsedNamespaceRoot), Gbl_ParsedNamespaceRoot, NULL, Scope, NULL, NULL,
                         TableDesc->TableId, DsLoad1BeginOp, DsLoad1EndOp);
+*/
 
-
-    PsWalkParsedAml (PsGetChild (Gbl_ParsedNamespaceRoot), Gbl_ParsedNamespaceRoot, NULL, Scope, NULL, NULL,
+    Status = PsWalkParsedAml (PsGetChild (Gbl_ParsedNamespaceRoot), Gbl_ParsedNamespaceRoot, NULL, Scope, NULL, NULL,
                         TableDesc->TableId, DsLoad2BeginOp, DsLoad2EndOp);
 
 
@@ -212,7 +212,7 @@ BREAKPOINT3;
 #endif
 
 
-    return_ACPI_STATUS (AE_OK);
+    return_ACPI_STATUS (Status);
 }
 
 
@@ -273,6 +273,10 @@ NsLoadTable (
     Status = NsParseTable (TableDesc, Entry->Scope);
     CmReleaseMutex (MTX_NAMESPACE);
 
+    if (ACPI_FAILURE (Status))
+    {
+        return_ACPI_STATUS (Status);
+    }
 
     /*
      * Now we can parse the control methods.  We always parse them here for a sanity
