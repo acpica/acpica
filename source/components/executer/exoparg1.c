@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exmonad - ACPI AML execution for monadic (1 operand) operators
- *              $Revision: 1.101 $
+ *              $Revision: 1.102 $
  *
  *****************************************************************************/
 
@@ -251,7 +251,7 @@ AcpiExMonadic1 (
     if (ACPI_FAILURE (ResolveStatus))
     {
         DEBUG_PRINTP (ACPI_ERROR, ("[%s]: Could not resolve operands, %s\n",
-            AcpiPsGetOpcodeName (Opcode), AcpiUtFormatException (ResolveStatus)));
+            AcpiPsGetOpcodeName (Opcode), AcpiFormatException (ResolveStatus)));
 
         goto Cleanup;
     }
@@ -259,7 +259,7 @@ AcpiExMonadic1 (
     if (ACPI_FAILURE (Status))
     {
         DEBUG_PRINTP (ACPI_ERROR, ("[%s]: bad operand(s) %s\n",
-            AcpiPsGetOpcodeName (Opcode), AcpiUtFormatException (Status)));
+            AcpiPsGetOpcodeName (Opcode), AcpiFormatException (Status)));
 
         goto Cleanup;
     }
@@ -382,7 +382,7 @@ AcpiExMonadic2R (
     if (ACPI_FAILURE (ResolveStatus))
     {
         DEBUG_PRINTP (ACPI_ERROR, ("[%s]: Could not resolve operands, %s\n",
-            AcpiPsGetOpcodeName (Opcode), AcpiUtFormatException (ResolveStatus)));
+            AcpiPsGetOpcodeName (Opcode), AcpiFormatException (ResolveStatus)));
 
         goto Cleanup;
     }
@@ -390,7 +390,7 @@ AcpiExMonadic2R (
     if (ACPI_FAILURE (Status))
     {
         DEBUG_PRINTP (ACPI_ERROR, ("[%s]: bad operand(s) %s\n",
-            AcpiPsGetOpcodeName (Opcode), AcpiUtFormatException(Status)));
+            AcpiPsGetOpcodeName (Opcode), AcpiFormatException(Status)));
 
         goto Cleanup;
     }
@@ -749,7 +749,7 @@ AcpiExMonadic2 (
     if (ACPI_FAILURE (ResolveStatus))
     {
         DEBUG_PRINTP (ACPI_ERROR, ("[%s]: Could not resolve operands, %s\n",
-            AcpiPsGetOpcodeName (Opcode), AcpiUtFormatException (ResolveStatus)));
+            AcpiPsGetOpcodeName (Opcode), AcpiFormatException (ResolveStatus)));
 
         goto Cleanup;
     }
@@ -757,7 +757,7 @@ AcpiExMonadic2 (
     if (ACPI_FAILURE (Status))
     {
         DEBUG_PRINTP (ACPI_ERROR, ("[%s]: Bad operand(s), %s\n",
-            AcpiPsGetOpcodeName (Opcode), AcpiUtFormatException (Status)));
+            AcpiPsGetOpcodeName (Opcode), AcpiFormatException (Status)));
 
         goto Cleanup;
     }
@@ -832,7 +832,7 @@ AcpiExMonadic2 (
         if (ACPI_FAILURE (Status))
         {
             DEBUG_PRINTP (ACPI_ERROR, ("%s: bad operand(s) %s\n",
-                AcpiPsGetOpcodeName (Opcode), AcpiUtFormatException(Status)));
+                AcpiPsGetOpcodeName (Opcode), AcpiFormatException(Status)));
 
             goto Cleanup;
         }

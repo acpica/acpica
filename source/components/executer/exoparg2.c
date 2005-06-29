@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: exdyadic - ACPI AML execution for dyadic (2-operand) operators
- *              $Revision: 1.79 $
+ *              $Revision: 1.80 $
  *
  *****************************************************************************/
 
@@ -352,7 +352,7 @@ AcpiExDyadic1 (
         /* Invalid parameters on object stack  */
 
         DEBUG_PRINTP (ACPI_ERROR, ("(%s) bad operand(s) %s\n",
-            AcpiPsGetOpcodeName (Opcode), AcpiUtFormatException (Status)));
+            AcpiPsGetOpcodeName (Opcode), AcpiFormatException (Status)));
 
         goto Cleanup;
     }
@@ -478,7 +478,7 @@ AcpiExDyadic2R (
     if (ACPI_FAILURE (Status))
     {
         DEBUG_PRINTP (ACPI_ERROR, ("(%s) bad operand(s) (%s)\n",
-            AcpiPsGetOpcodeName (Opcode), AcpiUtFormatException (Status)));
+            AcpiPsGetOpcodeName (Opcode), AcpiFormatException (Status)));
 
         goto Cleanup;
     }
@@ -840,7 +840,7 @@ AcpiExDyadic2S (
         /* Invalid parameters on object stack  */
 
         DEBUG_PRINTP (ACPI_ERROR, ("(%s) bad operand(s) %s\n",
-            AcpiPsGetOpcodeName (Opcode), AcpiUtFormatException (Status)));
+            AcpiPsGetOpcodeName (Opcode), AcpiFormatException (Status)));
 
         goto Cleanup;
     }
@@ -974,7 +974,7 @@ AcpiExDyadic2 (
         /* Invalid parameters on object stack  */
 
         DEBUG_PRINTP (ACPI_ERROR, ("(%s) bad operand(s) %s\n",
-            AcpiPsGetOpcodeName (Opcode), AcpiUtFormatException (Status)));
+            AcpiPsGetOpcodeName (Opcode), AcpiFormatException (Status)));
 
         goto Cleanup;
     }
