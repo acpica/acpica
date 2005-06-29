@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: accommon.h -- prototypes for the common (subsystem-wide) procedures
- *       $Revision: 1.95 $
+ *       $Revision: 1.96 $
  *
  *****************************************************************************/
 
@@ -264,10 +264,6 @@ NATIVE_CHAR *
 AcpiCmStrstr (
     NATIVE_CHAR             *String1,
     NATIVE_CHAR             *String2);
-
-NATIVE_CHAR *
-AcpiCmStrupr (
-    NATIVE_CHAR             *SrcString);
 
 void *
 AcpiCmMemcpy (
@@ -688,6 +684,10 @@ AcpiCmValidAcpiName (
 BOOLEAN
 AcpiCmValidAcpiCharacter (
     NATIVE_CHAR             Character);
+
+NATIVE_CHAR *
+AcpiCmStrupr (
+    NATIVE_CHAR             *SrcString);
 
 ACPI_STATUS
 AcpiCmResolvePackageReferences (
