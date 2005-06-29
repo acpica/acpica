@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslanalyze.c - check for semantic errors
- *              $Revision: 1.15 $
+ *              $Revision: 1.16 $
  *
  *****************************************************************************/
 
@@ -164,12 +164,18 @@ AnCheckForReservedMethod (
 
             if (MethodInfo->NumArguments != ReservedMethods[i].NumArguments)
             {
-                sprintf (MsgBuffer, "\n%32s requires %d arg(s) not %d",
+                sprintf (MsgBuffer, " %s requires %d",
                             ReservedMethods[i].Name,
-                            ReservedMethods[i].NumArguments,
-                            MethodInfo->NumArguments);
+                            ReservedMethods[i].NumArguments);
 
-                AslError (ASL_WARNING, ASL_MSG_RESERVED_ARG_COUNT, Node, MsgBuffer);
+                if (MethodInfo->NumArguments > ReservedMethods[i].NumArguments)
+                {
+                    AslError (ASL_WARNING, ASL_MSG_RESERVED_ARG_COUNT_HI, Node, MsgBuffer);
+                }
+                else
+                {
+                    AslError (ASL_WARNING, ASL_MSG_RESERVED_ARG_COUNT_LO, Node, MsgBuffer);
+                }
             }
 
             if (MethodInfo->NumReturnNoValue &&
@@ -205,12 +211,10 @@ AnCheckForReservedMethod (
             (isxdigit (Node->ExternalName[3])) &&
             (MethodInfo->NumArguments != 0))
         {
-            sprintf (MsgBuffer, "\n%32s requires %d arg(s) not %d",
-                        Node->ExternalName,
-                        0,
-                        MethodInfo->NumArguments);
+            sprintf (MsgBuffer, " %s requires %d",
+                        Node->ExternalName, 0);
 
-            AslError (ASL_WARNING, ASL_MSG_RESERVED_ARG_COUNT, Node, MsgBuffer);
+            AslError (ASL_WARNING, ASL_MSG_RESERVED_ARG_COUNT_HI, Node, MsgBuffer);
         }
 
         return;

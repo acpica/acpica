@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslerror - Error handling and statistics
- *              $Revision: 1.27 $
+ *              $Revision: 1.28 $
  *
  *****************************************************************************/
 
@@ -142,12 +142,14 @@ char                        *AslMessages [] = {
     "Mixed return types in method",
     "Cannot find/access object",
     "Nested comment found",
-    "Reserved method has wrong argument count:",
+    "Reserved method has too many arguments:",
+    "Reserved method has too few arguments:",
     "Reserved method must return a value:",
     "Too many arguments:",
     "Too few arguments:",
     "Called method returns no value:",
     "Internal compiler error:",
+    "Invalid backwards offset",
 };
 
 
@@ -363,6 +365,21 @@ AslCommonError (
 
 
     Gbl_ExceptionCount[Level]++;
+
+    if (Gbl_ExceptionCount[ASL_ERROR] > ASL_MAX_ERROR_COUNT)
+    {
+
+        AePrintErrorLog (stdout);
+        if (Gbl_DebugFlag)
+        {
+            /* Print error summary to the debug file */
+
+            AePrintErrorLog (stderr);
+        }
+        printf ("\nMaximum error count (%d) exceeded.\n", ASL_MAX_ERROR_COUNT);
+        CmCleanupAndExit ();
+    }
+
 
     return Enode;
 }

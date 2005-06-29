@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslcompiler.h - common include file
- *              $Revision: 1.37 $
+ *              $Revision: 1.38 $
  *
  *****************************************************************************/
 
@@ -153,6 +153,9 @@
 #define CompilerName                "iasl"
 #define CompilerCreatorId           "IASL"
 
+/* Configuration constants */
+
+#define ASL_MAX_ERROR_COUNT         200
 
 /*
  * Macros
@@ -259,6 +262,9 @@ ErrorContext (void);
 
 int
 CmDoCompile (void);
+
+void
+CmCleanupAndExit (void);
 
 
 /* aslerror */

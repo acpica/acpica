@@ -3,7 +3,7 @@
 /******************************************************************************
  *
  * Module Name: aslglobal.h - Global variable definitions
- *              $Revision: 1.3 $
+ *              $Revision: 1.4 $
  *
  *****************************************************************************/
 
@@ -151,7 +151,7 @@ extern char                     hex[];
 extern char                     MsgBuffer[];
 
 #define ASL_LINE_BUFFER_SIZE    512
-#define ASL_MSG_BUFFER_SIZE   (ASL_LINE_BUFFER_SIZE * 2)
+#define ASL_MSG_BUFFER_SIZE     (ASL_LINE_BUFFER_SIZE * 2)
 
 
 /* Source code buffers and pointers for error reporting */

@@ -3,7 +3,7 @@
 /******************************************************************************
  *
  * Module Name: aslcompiler.y - Bison input file (ASL grammar and actions)
- *              $Revision: 1.27 $
+ *              $Revision: 1.28 $
  *
  *****************************************************************************/
 
@@ -593,7 +593,6 @@ AslLocalAllocate (unsigned int Size);
 %type <n> UpdateRuleKeyword
 %type <n> RegionSpaceKeyword
 %type <n> AddressSpaceKeyword
-%type <n> UserDefRegionSpace
 %type <n> MatchOpKeyword
 %type <n> SerializeRuleKeyword
 %type <n> DMATypeKeyword
@@ -1995,8 +1994,7 @@ UpdateRuleKeyword
 
 
 RegionSpaceKeyword
-    : UserDefRegionSpace            {}
-    | REGIONSPACE_IO                {$$ = TrCreateLeafNode (REGIONSPACE_IO)}
+    : REGIONSPACE_IO                {$$ = TrCreateLeafNode (REGIONSPACE_IO)}
     | REGIONSPACE_MEM               {$$ = TrCreateLeafNode (REGIONSPACE_MEM)}
     | REGIONSPACE_PCI               {$$ = TrCreateLeafNode (REGIONSPACE_PCI)}
     | REGIONSPACE_EC                {$$ = TrCreateLeafNode (REGIONSPACE_EC)}
@@ -2010,9 +2008,6 @@ AddressSpaceKeyword
     | ADDRESSSPACE_FFIXEDHW         {$$ = TrCreateLeafNode (ADDRESSSPACE_FFIXEDHW)}
     ;
 
-UserDefRegionSpace
-    : ByteConst                     {}
-    ;
 
 SerializeRuleKeyword
     : SERIALIZERULE_SERIAL          {$$ = TrCreateLeafNode (SERIALIZERULE_SERIAL)}

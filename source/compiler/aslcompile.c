@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslcompile - top level compile module
- *              $Revision: 1.8 $
+ *              $Revision: 1.9 $
  *
  *****************************************************************************/
 
@@ -342,13 +342,38 @@ CmDoCompile (void)
     LsDisplayNamespace ();
 
 
+    CmCleanupAndExit ();
+    return 0;
+}
+
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    CmCleanupAndExit
+ *
+ * PARAMETERS:  None
+ *
+ * RETURN:      None.
+ *
+ * DESCRIPTION: Close all open files and exit the compiler
+ *
+ ******************************************************************************/
+
+void
+CmCleanupAndExit (void)
+{
+
     /* Close all open files */
 
     FlCloseListingFile ();
     FlCloseSourceOutputFile ();
     FlCloseHexOutputFile ();
 
-    fclose (Gbl_AmlOutputFile);
+    if (Gbl_AmlOutputFile)
+    {
+        fclose (Gbl_AmlOutputFile);
+    }
 
     if ((Gbl_ExceptionCount[ASL_ERROR] > 0) && (!Gbl_IgnoreErrors))
     {
@@ -357,8 +382,7 @@ CmDoCompile (void)
 
     UtDisplaySummary ();
 
-
-    return 0;
+    exit (0);
 }
 
 

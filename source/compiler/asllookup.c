@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: asllookup- Namespace lookup
- *              $Revision: 1.14 $
+ *              $Revision: 1.15 $
  *
  *****************************************************************************/
 
@@ -391,7 +391,7 @@ LkNamespaceLocateBegin (
          */
         if (PassedArgs != NsNode->OwnerId)
         {
-            sprintf (MsgBuffer, "%s requires %d\n", PsNode->ExternalName,
+            sprintf (MsgBuffer, "%s requires %d", PsNode->ExternalName,
                         NsNode->OwnerId);
 
             if (PassedArgs < NsNode->OwnerId)
