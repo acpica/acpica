@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: tbinstal - ACPI table installation and removal
- *              $Revision: 1.71 $
+ *              $Revision: 1.72 $
  *
  *****************************************************************************/
 
@@ -522,7 +522,7 @@ AcpiTbDeleteTablesByType (
         break;
     }
 
-    /* 
+    /*
      * Free the table
      * 1) Get the head of the list
      */
