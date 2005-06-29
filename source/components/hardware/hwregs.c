@@ -199,7 +199,7 @@ HwClearAcpiStatus (void)
     
     if (Gbl_FACP->Gpe0BlkLen)
     {
-        GpeLength = Gbl_FACP->Gpe0BlkLen / 2;
+        GpeLength = (UINT16) (Gbl_FACP->Gpe0BlkLen / 2);
 
         for (Index = 0; Index < GpeLength; Index++)
         {
@@ -209,7 +209,7 @@ HwClearAcpiStatus (void)
 
     if (Gbl_FACP->Gpe1BlkLen)
     {
-        GpeLength = Gbl_FACP->Gpe1BlkLen / 2;
+        GpeLength = (UINT16) (Gbl_FACP->Gpe1BlkLen / 2);
 
         for (Index = 0; Index < GpeLength; Index++)
         {
