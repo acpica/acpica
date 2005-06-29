@@ -152,7 +152,7 @@ AcpiAmlExecDyadic1 (
 {
     ACPI_OBJECT_INTERNAL    *ObjDesc = NULL;
     ACPI_OBJECT_INTERNAL    *ValDesc = NULL;
-    NAME_TABLE_ENTRY        *Entry;
+    ACPI_NAMED_OBJECT       *Entry;
     ACPI_STATUS             Status = AE_OK;
 
 
@@ -188,7 +188,7 @@ AcpiAmlExecDyadic1 (
 
         /* The ObjDesc is actually an NTE */
 
-        Entry = (NAME_TABLE_ENTRY *) ObjDesc;
+        Entry = (ACPI_NAMED_OBJECT*) ObjDesc;
         ObjDesc = NULL;
 
         /* Object must be a device or thermal zone */

@@ -153,7 +153,7 @@ AcpiAmlGetObjectReference (
     FUNCTION_TRACE_PTR ("AmlGetObjectReference", ObjDesc);
 
 
-    if (VALID_DESCRIPTOR_TYPE (ObjDesc, DESC_TYPE_ACPI_OBJ))
+    if (VALID_DESCRIPTOR_TYPE (ObjDesc, ACPI_DESC_TYPE_INTERNAL))
     {
         if (ObjDesc->Common.Type != INTERNAL_TYPE_REFERENCE)
         {
@@ -191,7 +191,7 @@ AcpiAmlGetObjectReference (
 
     }
 
-    else if (VALID_DESCRIPTOR_TYPE (ObjDesc, DESC_TYPE_NTE))
+    else if (VALID_DESCRIPTOR_TYPE (ObjDesc, ACPI_DESC_TYPE_NAMED))
     {
         /* Must be a named object;  Just return the NTE */
 
@@ -481,7 +481,7 @@ AcpiAmlExecMonadic2R (
          * two return values)
          */
 
-        if ((NAME_TABLE_ENTRY *) ObjDesc == AcpiGbl_RootObject)
+        if ((ACPI_NAMED_OBJECT*) ObjDesc == AcpiGbl_RootObject)
         {
             /* This means that the object does not exist in the namespace, return FALSE */
 
@@ -689,7 +689,7 @@ AcpiAmlExecMonadic2 (
          * is expected!! 10/99
          */
 
-       if (VALID_DESCRIPTOR_TYPE (ObjDesc, DESC_TYPE_NTE))
+       if (VALID_DESCRIPTOR_TYPE (ObjDesc, ACPI_DESC_TYPE_NAMED))
        {
            RetDesc = ObjDesc;
        }
@@ -843,7 +843,7 @@ AcpiAmlExecMonadic2 (
 
     case AML_SIZE_OF_OP:
 
-        if (VALID_DESCRIPTOR_TYPE (ObjDesc, DESC_TYPE_NTE))
+        if (VALID_DESCRIPTOR_TYPE (ObjDesc, ACPI_DESC_TYPE_NAMED))
         {
             ObjDesc = AcpiNsGetAttachedObject (ObjDesc);
         }
@@ -924,7 +924,7 @@ AcpiAmlExecMonadic2 (
 
         /* Check for a method local or argument */
 
-        if (!VALID_DESCRIPTOR_TYPE (ObjDesc, DESC_TYPE_NTE))
+        if (!VALID_DESCRIPTOR_TYPE (ObjDesc, ACPI_DESC_TYPE_NAMED))
         {
             /*
              * Must resolve/dereference the local/arg reference first
@@ -958,11 +958,11 @@ AcpiAmlExecMonadic2 (
 
         /* ObjDesc may have changed from the code above */
 
-        if (VALID_DESCRIPTOR_TYPE (ObjDesc, DESC_TYPE_NTE))
+        if (VALID_DESCRIPTOR_TYPE (ObjDesc, ACPI_DESC_TYPE_NAMED))
         {
             /* Extract the actual object from the NTE (This is the dereference) */
 
-            RetDesc = ((NAME_TABLE_ENTRY *) ObjDesc)->Object;
+            RetDesc = ((ACPI_NAMED_OBJECT*) ObjDesc)->Object;
 
             /* Returning a pointer to the object, add another reference! */
 
