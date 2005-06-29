@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dmopcode - AML disassembler, specific AML opcodes
- *              $Revision: 1.79 $
+ *              $Revision: 1.80 $
  *
  ******************************************************************************/
 
@@ -335,7 +335,7 @@ AcpiDmMatchKeyword (
 {
 
 
-    if (Op->Common.Value.Integer32 >= NUM_MATCH_OPS)
+    if (Op->Common.Value.Integer32 >= ACPI_NUM_MATCH_OPS)
     {
         AcpiOsPrintf ("/* Unknown Match Keyword encoding */");
     }
