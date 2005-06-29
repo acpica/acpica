@@ -2,7 +2,7 @@
  *
  * Module Name: evmisc - ACPI device notification handler dispatch
  *                       and ACPI Global Lock support
- *              $Revision: 1.24 $
+ *              $Revision: 1.26 $
  *
  *****************************************************************************/
 
@@ -121,13 +121,15 @@
 #include "acinterp.h"
 #include "achware.h"
 
-#define _COMPONENT          EVENT_HANDLING
+#define _COMPONENT          ACPI_EVENTS
         MODULE_NAME         ("evmisc")
+
+
 
 
 /**************************************************************************
  *
- * FUNCTION:    AcpiEvNotifyDispatch
+ * FUNCTION:    AcpiEvQueueNotifyRequest
  *
  * PARAMETERS:
  *
@@ -138,15 +140,15 @@
  *
  *************************************************************************/
 
-void
-AcpiEvNotifyDispatch (
-    ACPI_HANDLE             Device,
+ACPI_STATUS
+AcpiEvQueueNotifyRequest (
+    ACPI_NAMESPACE_NODE     *Node,
     UINT32                  NotifyValue)
 {
     ACPI_OPERAND_OBJECT     *ObjDesc;
     ACPI_OPERAND_OBJECT     *HandlerObj = NULL;
-    NOTIFY_HANDLER          GlobalHandler = NULL;
-    void                    *GlobalContext = NULL;
+    ACPI_GENERIC_STATE      *NotifyInfo;
+    ACPI_STATUS             Status = AE_OK;
 
 
     /*
@@ -157,7 +159,7 @@ AcpiEvNotifyDispatch (
      */
 
     DEBUG_PRINT (ACPI_INFO,
-        ("Dispatching Notify(%X) on device %p\n", NotifyValue, Device));
+        ("Dispatching Notify(%X) on node %p\n", NotifyValue, Node));
 
     switch (NotifyValue)
     {
@@ -184,11 +186,111 @@ AcpiEvNotifyDispatch (
 
 
     /*
+     * Get the notify object attached to the device Node
+     */
+
+    ObjDesc = AcpiNsGetAttachedObject ((ACPI_HANDLE) Node);
+    if (ObjDesc)
+    {
+
+        /* We have the notify object, Get the right handler */
+
+        switch (Node->Type)
+        {
+        case ACPI_TYPE_DEVICE:
+            if (NotifyValue <= MAX_SYS_NOTIFY)
+            {
+                HandlerObj = ObjDesc->Device.SysHandler;
+            }
+            else
+            {
+                HandlerObj = ObjDesc->Device.DrvHandler;
+            }
+            break;
+
+        case ACPI_TYPE_THERMAL:
+            if (NotifyValue <= MAX_SYS_NOTIFY)
+            {
+                HandlerObj = ObjDesc->ThermalZone.SysHandler;
+            }
+            else
+            {
+                HandlerObj = ObjDesc->ThermalZone.DrvHandler;
+            }
+            break;
+        }
+    }
+
+
+    /* If there is any handler to run, schedule the dispatcher */
+
+    if ((AcpiGbl_SysNotify.Handler && (NotifyValue <= MAX_SYS_NOTIFY)) ||
+        (AcpiGbl_DrvNotify.Handler && (NotifyValue > MAX_SYS_NOTIFY))  ||
+        HandlerObj)
+    {
+
+        NotifyInfo = AcpiCmCreateGenericState ();
+        if (!NotifyInfo)
+        {
+            return (AE_NO_MEMORY);
+        }
+
+        NotifyInfo->Notify.Node       = Node;
+        NotifyInfo->Notify.Value      = (UINT16) NotifyValue;
+        NotifyInfo->Notify.HandlerObj = HandlerObj;
+
+        Status = AcpiOsQueueForExecution (OSD_PRIORITY_HIGH, 
+                        AcpiEvNotifyDispatch, NotifyInfo);
+        if (ACPI_FAILURE (Status))
+        {
+            AcpiCmDeleteGenericState (NotifyInfo);
+        }
+    }
+
+    if (!HandlerObj)
+    {
+        /* There is no per-device notify handler for this device */
+
+        DEBUG_PRINT (ACPI_INFO,
+            ("No notify handler for node %p \n", Node));
+    }
+
+
+    return (Status);
+}
+
+
+
+
+/**************************************************************************
+ *
+ * FUNCTION:    AcpiEvNotifyDispatch
+ *
+ * PARAMETERS:
+ *
+ * RETURN:      None.
+ *
+ * DESCRIPTION: Dispatch a device notification event to a previously
+ *              installed handler.
+ *
+ *************************************************************************/
+
+void
+AcpiEvNotifyDispatch (
+    void                    *Context)
+{
+    ACPI_GENERIC_STATE      *NotifyInfo = (ACPI_GENERIC_STATE *) Context;
+    NOTIFY_HANDLER          GlobalHandler = NULL;
+    void                    *GlobalContext = NULL;
+    ACPI_OPERAND_OBJECT     *HandlerObj;
+
+
+    /*
      * We will invoke a global notify handler if installed.
      * This is done _before_ we invoke the per-device handler attached to the device.
      */
 
-    if (NotifyValue <= MAX_SYS_NOTIFY)
+    if (NotifyInfo->Notify.Value <= MAX_SYS_NOTIFY)
     {
         /* Global system notification handler */
 
@@ -210,62 +312,27 @@ AcpiEvNotifyDispatch (
         }
     }
 
+    
+    /* Invoke the system handler first, if present */
 
-    /*
-     * Get the notify object attached to the device Node
-     */
-
-    ObjDesc = AcpiNsGetAttachedObject ((ACPI_HANDLE) Device);
-    if (ObjDesc)
+    if (GlobalHandler)
     {
-        /* We have the notify object, Get the right handler */
+        GlobalHandler (NotifyInfo->Notify.Node, NotifyInfo->Notify.Value, GlobalContext);
+    }
 
-        if (NotifyValue <= MAX_SYS_NOTIFY)
-        {
-            HandlerObj = ObjDesc->Device.SysHandler;
-        }
-        else
-        {
-            HandlerObj = ObjDesc->Device.DrvHandler;
-        }
+    /* Now invoke the per-device handler, if present */
+
+    HandlerObj = NotifyInfo->Notify.HandlerObj;
+    if (HandlerObj)
+    {
+        HandlerObj->NotifyHandler.Handler (NotifyInfo->Notify.Node, NotifyInfo->Notify.Value, 
+                        HandlerObj->NotifyHandler.Context);
     }
 
 
-    /* Invoke the handler(s) if present */
+    /* All done with the info object */
 
-    if (GlobalHandler || HandlerObj)
-    {
-        /* We have the interpreter locked, release it */
-
-        AcpiAmlExitInterpreter ();
-
-        /* Invoke the system handler first, if present */
-
-        if (GlobalHandler)
-        {
-            GlobalHandler (Device, NotifyValue, GlobalContext);
-        }
-
-        /* Now invoke the per-device handler, if present */
-
-        if (HandlerObj)
-        {
-            HandlerObj->NotifyHandler.Handler (Device, NotifyValue, 
-                            HandlerObj->NotifyHandler.Context);
-        }
-
-        /* Now we must re-acquire the interpreter */
-
-        AcpiAmlEnterInterpreter ();
-    }
-
-    if (!HandlerObj)
-    {
-        /* There is no per-device notify handler for this device */
-
-        DEBUG_PRINT (ACPI_INFO,
-            ("No notify handler for device %p \n", Device));
-    }
+    AcpiCmDeleteGenericState (NotifyInfo);
 }
 
 
