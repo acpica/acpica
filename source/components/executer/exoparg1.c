@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exoparg1 - AML execution - opcodes with 1 argument
- *              $Revision: 1.157 $
+ *              $Revision: 1.158 $
  *
  *****************************************************************************/
 
@@ -491,7 +491,7 @@ AcpiExOpcode_1A_1T_1R (
 
             for (i = 0; (i < AcpiGbl_IntegerNybbleWidth) && (Digit > 0); i++)
             {
-                (void) AcpiUtShortDivide (&Digit, 10, &Digit, &Temp32);
+                (void) AcpiUtShortDivide (Digit, 10, &Digit, &Temp32);
 
                 /* Insert the BCD digit that resides in the remainder from above */
 
@@ -593,28 +593,27 @@ AcpiExOpcode_1A_1T_1R (
     case AML_TO_DECSTRING_OP:       /* ToDecimalString (Data, Result) */
 
         Status = AcpiExConvertToString (Operand[0], &ReturnDesc,
-                    ACPI_EXPLICIT_CONVERT_DECIMAL, WalkState->Opcode);
+                    ACPI_EXPLICIT_CONVERT_DECIMAL);
         break;
 
 
     case AML_TO_HEXSTRING_OP:       /* ToHexString (Data, Result) */
 
         Status = AcpiExConvertToString (Operand[0], &ReturnDesc,
-                    ACPI_EXPLICIT_CONVERT_HEX, WalkState->Opcode);
+                    ACPI_EXPLICIT_CONVERT_HEX);
         break;
 
 
     case AML_TO_BUFFER_OP:          /* ToBuffer (Data, Result) */
 
-        Status = AcpiExConvertToBuffer (Operand[0], &ReturnDesc,
-                    WalkState->Opcode);
+        Status = AcpiExConvertToBuffer (Operand[0], &ReturnDesc);
         break;
 
 
     case AML_TO_INTEGER_OP:         /* ToInteger (Data, Result) */
 
         Status = AcpiExConvertToInteger (Operand[0], &ReturnDesc,
-                    WalkState->Opcode);
+                    ACPI_ANY_BASE);
         break;
 
 
