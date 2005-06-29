@@ -222,34 +222,59 @@ DbLoadDsdt(
     UINT32                   AmlLength;
 
 
-    if (fread (&dsdt_hdr, 1, sizeof (dsdt_hdr), fp) == sizeof (dsdt_hdr))
+    /* Read the table header */
+
+    if (fread (&dsdt_hdr, 1, sizeof (dsdt_hdr), fp) != sizeof (dsdt_hdr))
     {
-        *DsdtLength = dsdt_hdr.Length;
-
-        if (*DsdtLength)
-        {
-            *DsdtPtr = (UINT8*) malloc ((size_t) *DsdtLength);
-
-            if (*DsdtPtr)
-            {
-                AmlPtr = *DsdtPtr + sizeof (dsdt_hdr);
-                AmlLength = *DsdtLength - sizeof (dsdt_hdr);
-
-                memcpy (*DsdtPtr, &dsdt_hdr, sizeof (dsdt_hdr));
-                if ((UINT32) fread (AmlPtr, 1, (size_t) AmlLength, fp) == AmlLength)
-                {
-                    return AE_OK;
-                }
-
-                free(*DsdtPtr);
-            }
-        }
+        OsdPrintf ("Couldn't read the table header\n");
+        return (AE_BAD_SIGNATURE);
     }
 
+    /* Validate the table signature */
+
+    if (STRNCMP (dsdt_hdr.Signature, "DSDT", 4) != 0)
+    {
+        OsdPrintf ("Invalid table signature: %4.4s\n", &dsdt_hdr.Signature);
+        return (AE_BAD_SIGNATURE);
+    }
+
+    /* Get and validate the table length */
+
+    *DsdtLength = dsdt_hdr.Length;
+    if (!*DsdtLength)
+    {
+        OsdPrintf ("Found a table length of zero!\n");
+        return (AE_ERROR);
+    }
+
+
+    /* Allocate a buffer for the table */
+
+    *DsdtPtr = (UINT8*) malloc ((size_t) *DsdtLength);
+    if (!*DsdtPtr)
+    {
+        OsdPrintf ("Could not allocate memory for the table (size=0x%X)\n", dsdt_hdr.Length);
+        return (AE_NO_MEMORY);
+    }
+            
+
+    AmlPtr = *DsdtPtr + sizeof (dsdt_hdr);
+    AmlLength = *DsdtLength - sizeof (dsdt_hdr);
+
+    memcpy (*DsdtPtr, &dsdt_hdr, sizeof (dsdt_hdr));
+
+    /* Read in the table */
+    if ((UINT32) fread (AmlPtr, 1, (size_t) AmlLength, fp) == AmlLength)
+    {
+        return AE_OK;
+    }
+
+    OsdPrintf ("Error reading the table\n");
+    free(*DsdtPtr);
     *DsdtPtr = NULL;
     *DsdtLength = 0;
 
-    return AE_AML_ERROR;
+    return AE_ERROR;
 }
 #endif
 
@@ -285,6 +310,12 @@ DbLoadAcpiTable (
     OsdPrintf ("Loading DSDT from file %s\n", Filename);
     Status = DbLoadDsdt (fp, &DsdtPtr, &DsdtLength);
     fclose(fp);
+
+    if (ACPI_FAILURE (Status))
+    {
+        OsdPrintf ("Couldn't get table from the file\n");
+        return Status;
+    }
 
     /* TBD: set real Dsdt ptr here.  BUT FIX this */
 
