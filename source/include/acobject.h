@@ -414,7 +414,8 @@ typedef struct /* PROCESSOR - has Handle and notification handler/context*/
     ACPI_OBJECT_COMMON
 
     UINT32                  ProcId;
-    UINT32                  PBLKAddress;
+    ACPI_IO_ADDRESS         PBLKAddress;
+    UINT16                  Fill1;
     UINT32                  PBLKLength;
     UINT32                  Reserved4;
 
