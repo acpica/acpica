@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: evrgnini- ACPI AddressSpace (OpRegion) init
- *              $Revision: 1.46 $
+ *              $Revision: 1.50 $
  *
  *****************************************************************************/
 
@@ -257,7 +257,7 @@ AcpiEvPciConfigRegionSetup (
          *  routine checks before we get here, but we check again just in case.
          */
         ACPI_DEBUG_PRINT ((ACPI_DB_OPREGION,
-            "Attempting to init a region %X, with no handler\n", RegionObj));
+            "Attempting to init a region %p, with no handler\n", RegionObj));
         return_ACPI_STATUS (AE_NOT_EXIST);
     }
 
@@ -373,6 +373,70 @@ AcpiEvPciConfigRegionSetup (
 
 /*******************************************************************************
  *
+ * FUNCTION:    AcpiEvPciBarRegionSetup
+ *
+ * PARAMETERS:  RegionObj           - region we are interested in
+ *              Function            - start or stop
+ *              HandlerContext      - Address space handler context
+ *              RegionContext       - Region specific context
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Do any prep work for region handling
+ *
+ * MUTEX:       Assumes namespace is not locked
+ *
+ ******************************************************************************/
+
+ACPI_STATUS
+AcpiEvPciBarRegionSetup (
+    ACPI_HANDLE             Handle,
+    UINT32                  Function,
+    void                    *HandlerContext,
+    void                    **RegionContext)
+{
+
+    FUNCTION_TRACE ("EvPciBarRegionSetup");
+
+
+    return_ACPI_STATUS (AE_OK);
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiEvCmosRegionSetup
+ *
+ * PARAMETERS:  RegionObj           - region we are interested in
+ *              Function            - start or stop
+ *              HandlerContext      - Address space handler context
+ *              RegionContext       - Region specific context
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Do any prep work for region handling
+ *
+ * MUTEX:       Assumes namespace is not locked
+ *
+ ******************************************************************************/
+
+ACPI_STATUS
+AcpiEvCmosRegionSetup (
+    ACPI_HANDLE             Handle,
+    UINT32                  Function,
+    void                    *HandlerContext,
+    void                    **RegionContext)
+{
+
+    FUNCTION_TRACE ("EvCmosRegionSetup");
+
+
+    return_ACPI_STATUS (AE_OK);
+}
+
+
+/*******************************************************************************
+ *
  * FUNCTION:    AcpiEvDefaultRegionSetup
  *
  * PARAMETERS:  RegionObj           - region we are interested in
@@ -452,12 +516,20 @@ AcpiEvInitializeRegion (
         return_ACPI_STATUS (AE_BAD_PARAMETER);
     }
 
+    if (RegionObj->Common.Flags & AOPOBJ_OBJECT_INITIALIZED)
+    {
+        return_ACPI_STATUS (AE_OK);
+    }
+
     Node = AcpiNsGetParentObject (RegionObj->Region.Node);
+
+
     SpaceId = RegionObj->Region.SpaceId;
 
     RegionObj->Region.AddrHandler = NULL;
     RegionObj->Region.Extra->Extra.Method_REG = NULL;
-    RegionObj->Region.Flags &= ~(AOPOBJ_INITIALIZED);
+    RegionObj->Common.Flags &= ~(AOPOBJ_SETUP_COMPLETE);
+    RegionObj->Common.Flags |= AOPOBJ_OBJECT_INITIALIZED;
 
     /*
      *  Find any "_REG" associated with this region definition
@@ -525,6 +597,7 @@ AcpiEvInitializeRegion (
                      */
                     AcpiEvAssociateRegionAndHandler (HandlerObj, RegionObj,
                             AcpiNsLocked);
+
                     return_ACPI_STATUS (AE_OK);
                 }
 

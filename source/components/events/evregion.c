@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: evregion - ACPI AddressSpace (OpRegion) handler dispatch
- *              $Revision: 1.117 $
+ *              $Revision: 1.118 $
  *
  *****************************************************************************/
 
@@ -161,7 +161,7 @@ AcpiEvInstallDefaultAddressSpaceHandlers (
      * space must be always available -- even though we are nowhere
      * near ready to find the PCI root buses at this point.
      *
-     * NOTE: We ignore AE_ALREADY_EXISTS because this means that a handler 
+     * NOTE: We ignore AE_ALREADY_EXISTS because this means that a handler
      * has already been installed (via AcpiInstallAddressSpaceHandler)
      */
     Status = AcpiInstallAddressSpaceHandler (AcpiGbl_RootNode,
