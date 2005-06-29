@@ -116,7 +116,7 @@
 #define __CMALLOC_C__
 
 #include <acpi.h>
-#include <acpiobj.h>
+#include <parser.h>
 #include <interpreter.h>
 #include <namespace.h>
 #include <globals.h>
@@ -524,11 +524,13 @@ CmDumpCurrentAllocations (
 
     DEBUG_PRINT (TRACE_ALLOCATIONS | TRACE_TABLES,
         ("Total number of unfreed allocations = %d\n", i));
-            
+   
+#if defined _RPARSER    
     DEBUG_PRINT (TRACE_ALLOCATIONS | TRACE_TABLES,
         ("Stack Ptrs: Obj=%d Mth=%d\n",
-            AmlObjStackLevel(), AmlMthStackLevel()));
- 
+            PsxObjStackLevel(), PsxMthStackLevel()));
+#endif
+    
     return_VOID;
 }   
 
