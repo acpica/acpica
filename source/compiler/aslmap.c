@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslmap - parser to AML opcode mapping table
- *              $Revision: 1.53 $
+ *              $Revision: 1.56 $
  *
  *****************************************************************************/
 
@@ -10,7 +10,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -124,9 +124,7 @@
 
 
 #define _COMPONENT          ACPI_COMPILER
-        MODULE_NAME         ("aslmap")
-
-
+        ACPI_MODULE_NAME    ("aslmap")
 
 
 /*******************************************************************************
@@ -150,7 +148,7 @@ AslMapNamedOpcodeToDataType (
 
 
     /*
-     * There are some differences from the opcode table types, we 
+     * There are some differences from the opcode table types, we
      * catch them here.
      */
     OpInfo = AcpiPsGetOpcodeInfo (Opcode);
@@ -436,6 +434,7 @@ const ASL_MAPPING_ENTRY     AslKeywordMapping [] =
 /* LEQUAL */                    OP_TABLE_ENTRY (AML_LEQUAL_OP,              0,                  0,                  ACPI_BTYPE_INTEGER),
 /* LGREATER */                  OP_TABLE_ENTRY (AML_LGREATER_OP,            0,                  0,                  ACPI_BTYPE_INTEGER),
 /* LGREATEREQUAL */             OP_TABLE_ENTRY (AML_LGREATEREQUAL_OP,       0,                  0,                  ACPI_BTYPE_INTEGER),
+/* LINE */                      OP_TABLE_ENTRY (AML_DEFAULT_ARG_OP,         0,                  0,                  0),
 /* LLESS */                     OP_TABLE_ENTRY (AML_LLESS_OP,               0,                  0,                  ACPI_BTYPE_INTEGER),
 /* LLESSEQUAL */                OP_TABLE_ENTRY (AML_LLESSEQUAL_OP,          0,                  0,                  ACPI_BTYPE_INTEGER),
 /* LNOT */                      OP_TABLE_ENTRY (AML_LNOT_OP,                0,                  0,                  ACPI_BTYPE_INTEGER),
@@ -616,7 +615,5 @@ AcpiExValidateObjectType (
 
     return (TRUE);
 }
-
-
 
 
