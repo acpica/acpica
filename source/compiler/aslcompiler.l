@@ -3,7 +3,7 @@
 /******************************************************************************
  *
  * Module Name: aslcompiler.l - Flex input file
- *              $Revision: 1.17 $
+ *              $Revision: 1.24 $
  *
  *****************************************************************************/
 
@@ -145,22 +145,22 @@ copy (void);
 
 
 
-LeadNameChar        [A-Za-z_]
-DigitChar           [0-9]
-HexDigitChar        [A-Fa-f0-9]
-RootChar            [\\]
-Nothing             []
+LeadNameChar                [A-Za-z_]
+DigitChar                   [0-9]
+HexDigitChar                [A-Fa-f0-9]
+RootChar                    [\\]
+Nothing                     []
 
-NameChar            [A-Za-z_0-9]
-NameSeg1            {LeadNameChar}{NameChar}
-NameSeg2            {LeadNameChar}{NameChar}{NameChar}
-NameSeg3            {LeadNameChar}{NameChar}{NameChar}{NameChar}
-NameSeg             {LeadNameChar}|{NameSeg1}|{NameSeg2}|{NameSeg3}
+NameChar                    [A-Za-z_0-9]
+NameSeg1                    {LeadNameChar}{NameChar}
+NameSeg2                    {LeadNameChar}{NameChar}{NameChar}
+NameSeg3                    {LeadNameChar}{NameChar}{NameChar}{NameChar}
+NameSeg                     {LeadNameChar}|{NameSeg1}|{NameSeg2}|{NameSeg3}
 
-NameString          {RootChar}|{RootChar}{NamePath}|[\^]+{NamePath}|{NonEmptyNamePath}
-NamePath            {NonEmptyNamePath}?
-NonEmptyNamePath    {NameSeg}{NamePathTail}*
-NamePathTail        [.]{NameSeg}  
+NameString                  {RootChar}|{RootChar}{NamePath}|[\^]+{NamePath}|{NonEmptyNamePath}
+NamePath                    {NonEmptyNamePath}?
+NonEmptyNamePath            {NameSeg}{NamePathTail}*
+NamePathTail                [.]{NameSeg}  
 
 %%
 
@@ -177,9 +177,8 @@ NamePathTail        [.]{NameSeg}
 
 
 0[xX]{HexDigitChar}+ |
-{DigitChar}+                { AslCompilerlval.l = strtoul((char *)AslCompilertext, (char **) 0, 0);
-                                copy(); count (1); 
-                                return (INTEGER); }
+{DigitChar}+                { AslCompilerlval.i = UtStrtoul64 ((char *) AslCompilertext, NULL, 0);
+                                copy(); count (1); return (INTEGER); }
 
 "Include"                   { copy(); count (1); return (INCLUDE); }
 "#include"                  { copy(); count (1); return (INCLUDE_CSTYLE); }
@@ -189,6 +188,7 @@ NamePathTail        [.]{NameSeg}
 "Ones"                      { copy(); count (1); return (ONES); }
 "One"                       { copy(); count (1); return (ONE); }
 "Zero"                      { copy(); count (1); return (ZERO); }
+"Revision"                  { copy(); count (1); return (REVISION); }
                                 
 "Offset"                    { copy(); count (1); return (OFFSET); }
 "AccessAs"                  { copy(); count (1); return (ACCESSAS); }
@@ -274,13 +274,13 @@ NamePathTail        [.]{NameSeg}
 "ShiftRight"                { copy(); count (3); return (SHIFTRIGHT); }
 "SizeOf"                    { copy(); count (3); return (SIZEOF); }
 "Store"                     { copy(); count (3); return (STORE); }
-"String"                    { copy(); count (3); return (STRING); }
 "Subtract"                  { copy(); count (3); return (SUBTRACT); }
 "ToBCD"                     { copy(); count (3); return (TOBCD); }
 "ToBuffer"                  { copy(); count (3); return (TOBUFFER); }
 "ToDecimalString"           { copy(); count (3); return (TODECIMALSTRING); }
 "ToHexString"               { copy(); count (3); return (TOHEXSTRING); }
 "ToInteger"                 { copy(); count (3); return (TOINTEGER); }
+"ToString"                  { copy(); count (3); return (TOSTRING); }
 "Wait"                      { copy(); count (3); return (WAIT); }
 "XOr"                       { copy(); count (3); return (XOR); }
 
@@ -512,13 +512,14 @@ ASL_FILE_NODE               *InputStack = NULL;
 
 /*******************************************************************************
  *
- * FUNCTION:    
+ * FUNCTION:    copy
  *
- * PARAMETERS:  
+ * PARAMETERS:  none
  *
- * RETURN:      
+ * RETURN:      none
  *
- * DESCRIPTION: 
+ * DESCRIPTION: copy the entire contents of yytext (a null-terminated string)
+ *              to the combined source output file (if option is in effect).
  *
  ******************************************************************************/
 
@@ -534,6 +535,19 @@ copy (void)
 }
 
 
+/*******************************************************************************
+ *
+ * FUNCTION:    copy_one
+ *
+ * PARAMETERS:  c           - Lone character to write
+ *
+ * RETURN:      none
+ *
+ * DESCRIPTION: copy the character to the combined source output file 
+ *              (if option is in effect).
+ *
+ ******************************************************************************/
+
 void
 copy_one (int c)
 {
@@ -542,64 +556,80 @@ copy_one (int c)
     {
        fwrite (&c, 1, 1, Gbl_SourceOutputFile);
     }
-
 }
 
 
 /*******************************************************************************
  *
- * FUNCTION:    
+ * FUNCTION:    AslPopInputFileStack
  *
- * PARAMETERS:  
+ * PARAMETERS:  None
  *
- * RETURN:      
+ * RETURN:      0 if a node was popped, -1 otherwise
  *
- * DESCRIPTION: 
+ * DESCRIPTION: Pop the top of the input file stack and point the parser to
+ *              the saved parse buffer contained in the fnode.  Also, set the
+ *              global line counters to the saved values.  This function is
+ *              called when an include file reaches EOF.
  *
  ******************************************************************************/
 
 int
 AslPopInputFileStack (void)
 {
-    ASL_FILE_NODE           *Node;
+    ASL_FILE_NODE           *Fnode;
     FILE                    *InputFile = NULL;
   
 
-    Node = InputStack;
-    DbgPrint ("\nPop InputFile Stack, Node %p\n\n", Node);
+    Fnode = InputStack;
+    DbgPrint ("\nPop InputFile Stack, Fnode %p\n\n", Fnode);
 
-    if (Node)
+    
+    if (!Fnode)
     {
-        fclose (yyin);
-
-        InputStack = Node->Next;
-        InputFile = Node->File;
-
-
-        Gbl_InputFilename = Node->Filename;
-        Gbl_CurrentLineNumber = Node->CurrentLineNumber;
-
-        yy_delete_buffer (YY_CURRENT_BUFFER);
-
-        yy_switch_to_buffer (Node->State);
-
-        free (Node);
-        return 0;
+        return -1;
     }
 
-    return -1;
+
+    /* Close the current include file */
+
+    fclose (yyin);
+
+    /* Update the top-of-stack */
+
+    InputStack = Fnode->Next;
+    InputFile = Fnode->File;
+
+    /* Reset global line counter and filename */
+
+    Gbl_InputFilename = Fnode->Filename;
+    Gbl_CurrentLineNumber = Fnode->CurrentLineNumber;
+
+    /* Point the parser to the popped file */
+
+    yy_delete_buffer (YY_CURRENT_BUFFER);
+
+    yy_switch_to_buffer (Fnode->State);
+
+    /* All done with this node */
+
+    free (Fnode);
+    return 0;
 }
 
 
 /*******************************************************************************
  *
- * FUNCTION:    
+ * FUNCTION:    AslPushInputFileStack
  *
- * PARAMETERS:  
+ * PARAMETERS:  InputFile           - Open file pointer
+ *              Filename            - Name of the file
  *
- * RETURN:      
+ * RETURN:      None   
  *
- * DESCRIPTION: 
+ * DESCRIPTION: Push the InputFile onto the file stack, and point the parser
+ *              to this file.  Called when an include file is successfully
+ *              opened.
  *
  ******************************************************************************/
 
@@ -608,46 +638,49 @@ AslPushInputFileStack (
     FILE                    *InputFile,
     char                    *Filename)
 {
-    ASL_FILE_NODE           *Node;
+    ASL_FILE_NODE           *Fnode;
     YY_BUFFER_STATE         State;
       
 
+    /* Save the current state in an Fnode */
           
-    Node = calloc (sizeof (ASL_FILE_NODE), 1);
-//    if (!Node)
-//    {
-//    }
+    Fnode = UtLocalCalloc (sizeof (ASL_FILE_NODE));
 
-    Node->File = yyin;
-    Node->Next = InputStack;
-    Node->State = YY_CURRENT_BUFFER;
-    Node->CurrentLineNumber = Gbl_CurrentLineNumber;
-    Node->Filename = Gbl_InputFilename;
+    Fnode->File                 = yyin;
+    Fnode->Next                 = InputStack;
+    Fnode->State                = YY_CURRENT_BUFFER;
+    Fnode->CurrentLineNumber    = Gbl_CurrentLineNumber;
+    Fnode->Filename             = Gbl_InputFilename;
 
-    InputStack = Node;
+    /* Push it on the stack */
 
+    InputStack = Fnode;
+
+
+    /* Point the parser to this file */
 
     State = yy_create_buffer (InputFile, YY_BUF_SIZE);
     yy_switch_to_buffer (State);
 
     DbgPrint ("\nPush InputFile Stack, returning %p\n\n", InputFile);
 
+    /* Reset the global line count and filename */
+
     Gbl_InputFilename = Filename;
     Gbl_CurrentLineNumber = 1;
-
     yyin = InputFile;
 }
 
 
 /*******************************************************************************
  *
- * FUNCTION:    
+ * FUNCTION:    ResetCurrentLineBuffer  
  *
- * PARAMETERS:  
+ * PARAMETERS:  None
  *
- * RETURN:      
+ * RETURN:      None
  *
- * DESCRIPTION: 
+ * DESCRIPTION: Reset the Line Buffer to zero, increment global line numbers.
  *
  ******************************************************************************/
 
@@ -665,33 +698,33 @@ ResetCurrentLineBuffer (
 
 /*******************************************************************************
  *
- * FUNCTION:    
+ * FUNCTION:    InsertLineBuffer
  *
- * PARAMETERS:  
+ * PARAMETERS:  SourceChar      - One char from the input ASL source file
  *
- * RETURN:      
+ * RETURN:      None
  *
- * DESCRIPTION: 
+ * DESCRIPTION: Put one character of the source file into the temp line buffer
  *
  ******************************************************************************/
 
-
-void 
-DoOneChar (
-    int                     c)
+void
+InsertLineBuffer (
+    int                     SourceChar)
 {
 
-    Gbl_InputByteCount++;
+    /* End of line? */
 
-    copy_one (c);
-
-    if (c == '\n')
+    if (SourceChar == '\n')
     {
         ResetCurrentLineBuffer ();
         return;
     }
 
-	*Gbl_LineBufPtr = c;
+
+    /* Insert the character into the line buffer */
+
+	*Gbl_LineBufPtr = SourceChar;
     Gbl_LineBufPtr++;
 
     if (Gbl_LineBufPtr > (Gbl_CurrentLineBuffer + (ASL_LINE_BUFFER_SIZE - 1)))
@@ -701,23 +734,34 @@ DoOneChar (
         ResetCurrentLineBuffer ();
     }
 
-    if (c == '\t')
-        Gbl_CurrentColumn += 8 - (Gbl_CurrentColumn & (8-1));
+    /* Handle tabs */
 
+    if (SourceChar == '\t')
+    {
+        Gbl_CurrentColumn += 8 - (Gbl_CurrentColumn & (8-1));
+    }
     else
+    {
         Gbl_CurrentColumn++;
+    }
+
 }
 
 
 /*******************************************************************************
  *
- * FUNCTION:    
+ * FUNCTION:    count
  *
- * PARAMETERS:  
+ * PARAMETERS:  yytext      - Contains the matched keyword.
+ *              Type        - Keyword/Character type:
+ *                             0 = anything except a keyword
+ *                             1 = pseudo-keywords
+ *                             2 = non-executable ASL keywords
+ *                             3 = executable ASL keywords
  *
- * RETURN:      
+ * RETURN:      None
  *
- * DESCRIPTION: 
+ * DESCRIPTION: Count keywords and put them into the line buffer
  *
  ******************************************************************************/
 
@@ -741,49 +785,56 @@ count (
     }
 
 
-
 	for (i = 0; yytext[i] != 0; i++)
 	{
-		if (yytext[i] == '\n')
-		{
-            ResetCurrentLineBuffer ();
-        }
-
-		else
-		{
-			*Gbl_LineBufPtr = yytext[i];
-            Gbl_LineBufPtr++;
-
-            if (Gbl_LineBufPtr > (Gbl_CurrentLineBuffer + (ASL_LINE_BUFFER_SIZE - 1)))
-            {
-                printf ("Count: Line buffer overflow (%d) at line %d\n", 
-                            ASL_LINE_BUFFER_SIZE, Gbl_CurrentLineNumber);
-                ResetCurrentLineBuffer ();
-            }
-
-            if (yytext[i] == '\t')
-                Gbl_CurrentColumn += 8 - (Gbl_CurrentColumn & (8-1));
-    
-            else
-                Gbl_CurrentColumn++;
-		}
-
+        InsertLineBuffer (yytext[i]);
         Gbl_InputByteCount++;
 		*Gbl_LineBufPtr = 0;
 	}
 }
 
 
+/*******************************************************************************
+ *
+ * FUNCTION:    DoOneChar
+ *
+ * PARAMETERS:  SourceChar      - One char from the input ASL source file
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Process one character: Count it, echo to the source output file,
+ *              then put it into the line buffer.  This procedure is called
+ *              to process comments and literals
+ *
+ ******************************************************************************/
+
+void 
+DoOneChar (
+    int                     SourceChar)
+{
+
+    Gbl_InputByteCount++;
+
+    /* echo the char to the source output file */
+
+    copy_one (SourceChar);
+
+
+    /* Put the char into the line buffer */
+
+    InsertLineBuffer (SourceChar);
+}
+
 
 /*******************************************************************************
  *
- * FUNCTION:    
+ * FUNCTION:    comment
  *
- * PARAMETERS:  
+ * PARAMETERS:  none
  *
- * RETURN:      
+ * RETURN:      none
  *
- * DESCRIPTION: 
+ * DESCRIPTION: Process a standard comment.
  *
  ******************************************************************************/
 
@@ -811,7 +862,8 @@ loop:
     if ((c1 == '/') && (c == '*'))
     {
         AslCommonError (ASL_WARNING, ASL_MSG_NESTED_COMMENT, 
-                    Gbl_CurrentLineNumber, Gbl_LogicalLineNumber, NULL);
+                    Gbl_CurrentLineNumber, Gbl_LogicalLineNumber, 
+                    Gbl_InputFilename, NULL);
     }
 
 
@@ -832,13 +884,13 @@ loop:
 
 /*******************************************************************************
  *
- * FUNCTION:    
+ * FUNCTION:    comment
  *
- * PARAMETERS:  
+ * PARAMETERS:  none
  *
- * RETURN:      
+ * RETURN:      none
  *
- * DESCRIPTION: 
+ * DESCRIPTION: Process a new "//" comment.
  *
  ******************************************************************************/
 
@@ -859,13 +911,13 @@ comment2 (void)
 
 /*******************************************************************************
  *
- * FUNCTION:    
+ * FUNCTION:    literal
  *
- * PARAMETERS:  
+ * PARAMETERS:  none
  *
- * RETURN:      
+ * RETURN:      none
  *
- * DESCRIPTION: 
+ * DESCRIPTION: Process a string literal (surrounded by quotes)
  *
  ******************************************************************************/
 
@@ -925,4 +977,5 @@ literal (void)
 
     AslCompilerlval.s = CleanString;
 }
+
 
