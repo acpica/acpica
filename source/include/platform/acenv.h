@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acenv.h - Generation environment specific items
- *       $Revision: 1.88 $
+ *       $Revision: 1.89 $
  *
  *****************************************************************************/
 
@@ -281,7 +281,7 @@
 
 #define ACPI_STRSTR(s1,s2)      strstr((s1), (s2))
 #define ACPI_STRUPR(s)          (void) AcpiUtStrupr ((s))
-#define ACPI_STRLEN(s)          (UINT32) strlen((s))
+#define ACPI_STRLEN(s)          (ACPI_SIZE) strlen((s))
 #define ACPI_STRCPY(d,s)        (void) strcpy((d), (s))
 #define ACPI_STRNCPY(d,s,n)     (void) strncpy((d), (s), (NATIVE_UINT)(n))
 #define ACPI_STRNCMP(d,s,n)     strncmp((d), (s), (NATIVE_UINT)(n))
@@ -337,7 +337,7 @@ typedef char *va_list;
 
 #define ACPI_STRSTR(s1,s2)      AcpiUtStrstr  ((s1), (s2))
 #define ACPI_STRUPR(s)          (void) AcpiUtStrupr ((s))
-#define ACPI_STRLEN(s)          AcpiUtStrlen  ((s))
+#define ACPI_STRLEN(s)          (ACPI_SIZE) AcpiUtStrlen  ((s))
 #define ACPI_STRCPY(d,s)        (void) AcpiUtStrcpy  ((d), (s))
 #define ACPI_STRNCPY(d,s,n)     (void) AcpiUtStrncpy ((d), (s), (NATIVE_UINT)(n))
 #define ACPI_STRNCMP(d,s,n)     AcpiUtStrncmp ((d), (s), (NATIVE_UINT)(n))
