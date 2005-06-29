@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exmisc - ACPI AML (p-code) execution - specific opcodes
- *              $Revision: 1.119 $
+ *              $Revision: 1.120 $
  *
  *****************************************************************************/
 
@@ -666,50 +666,48 @@ AcpiExDoLogicalOp (
 
         case AML_LGREATER_OP:           /* LGreater (Operand0, Operand1) */
 
-            /* Check lengths first */
+            /* Lexicographic compare:  Scan the 1-to-1 data */
 
-            if (Length0 > Length1)
-            {
-                return (TRUE);
-            }
-            else if (Length0 < Length1)
-            {
-                return (FALSE);
-            }
-
-            /* Lengths equal, now scan the data */
-
-            for (i = 0; i < Length0; i++)
+            for (i = 0; (i < Length0) && (i < Length1); i++)
             {
                 if (Ptr0[i] > Ptr1[i])
                 {
                     return (TRUE);
                 }
             }
+
+            /* Bytes match, now check lengths */
+
+            if (Length0 > Length1)
+            {
+                return (TRUE);
+            }
+            
+            /* Length0 <= Length1 */
+
             return (FALSE);
 
         case AML_LLESS_OP:              /* LLess (Operand0, Operand1) */
 
-            /* Check lengths first */
+            /* Lexicographic compare:  Scan the 1-to-1 data */
 
-            if (Length0 < Length1)
-            {
-                return (TRUE);
-            }
-            else if (Length0 > Length1)
-            {
-                return (FALSE);
-            }
-
-            /* Lengths equal, now scan the data */
-
-            for (i = 0; i < Length0; i++)
+            for (i = 0; (i < Length0) && (i < Length1); i++)
             {
                 if (Ptr0[i] < Ptr1[i])
                 {
                     return (TRUE);
                 }
             }
+
+            /* Bytes match, now check lengths */
+
+            if (Length0 < Length1)
+            {
+                return (TRUE);
+            }
+
+            /* Length0 >= Length1 */
+
             return (FALSE);
 
         default:
