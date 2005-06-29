@@ -118,9 +118,9 @@
 
 #include <acpi.h>
 #include <parser.h>
-#include <interpreter.h>
+#include <interp.h>
 #include <amlcode.h>
-#include <namespace.h>
+#include <namesp.h>
 
 
 #define _COMPONENT          INTERPRETER
@@ -343,7 +343,8 @@ AmlExecMonadic2R (
     if (Status != AE_OK)
     {
         AmlAppendOperandDiag (_THIS_MODULE, __LINE__, Opcode, Operands, 2);
-        return_ACPI_STATUS (Status);
+        Status = AE_AML_ERROR;
+        goto Cleanup;
     }
 
 
@@ -406,7 +407,8 @@ AmlExecMonadic2R (
             DEBUG_PRINT (ACPI_ERROR, (
                     "AmlExecMonadic2R/FromBCDOp: improper BCD digit %d %d %d %d\n",
                     d3, d2, d1, d0));
-            return_ACPI_STATUS (AE_AML_ERROR);
+            Status = AE_AML_ERROR;
+            goto Cleanup;
         }
         
         ObjDesc->Number.Value = d0 + d1 * 10 + d2 * 100 + d3 * 1000;
@@ -422,7 +424,8 @@ AmlExecMonadic2R (
         {
             DEBUG_PRINT (ACPI_ERROR, ("iExecMonadic2R/ToBCDOp: BCD overflow: %d\n",
                     ObjDesc->Number.Value));
-            return_ACPI_STATUS (AE_AML_ERROR);
+            Status = AE_AML_ERROR;
+            goto Cleanup;
         }
         
         ObjDesc->Number.Value
@@ -443,7 +446,8 @@ AmlExecMonadic2R (
     case AML_CondRefOfOp:
         
         DEBUG_PRINT (ACPI_ERROR, ("AmlExecMonadic2R: %s unimplemented\n", PsGetOpcodeName (Opcode)));
-        return_ACPI_STATUS (AE_AML_ERROR);
+        Status = AE_AML_ERROR;
+        goto Cleanup;
 
 
     case AML_StoreOp:
@@ -455,12 +459,22 @@ AmlExecMonadic2R (
 
         DEBUG_PRINT (ACPI_ERROR, ("AmlExecMonadic2R: internal error: Unknown monadic opcode %02x\n",
                     Opcode));
-        return_ACPI_STATUS (AE_AML_ERROR);
+        Status = AE_AML_ERROR;
+        goto Cleanup;
     }
     
     Status = AmlExecStore (ObjDesc, ResDesc);
-
     *ReturnDesc = ObjDesc;
+
+
+Cleanup:
+    if (ACPI_FAILURE (Status))
+    {
+        /* On failure, must delete the operand object (which was to be the result object) */
+
+        CmDeleteInternalObject (ObjDesc);
+        *ReturnDesc = NULL;
+    }
 
     return_ACPI_STATUS (Status);
 }
@@ -549,19 +563,19 @@ AmlExecMonadic2 (
 
         else
         {
-            /* Duplicate the Lvalue in a TempDesc */
+            /* 
+             * Duplicate the Lvalue in a new object so that we can resolve it
+             * without destroying the original Lvalue object
+             */
         
-            TempDesc = CmCreateInternalObject (ObjDesc->Common.Type);
+            TempDesc = CmCreateInternalObject (INTERNAL_TYPE_Lvalue);
             if (!TempDesc)
             {
                 return_ACPI_STATUS (AE_NO_MEMORY);
             }
 
-            Status = CmCopyInternalObject (ObjDesc, TempDesc);
-            if (ACPI_FAILURE (Status))
-            {
-                return_ACPI_STATUS (Status);
-            }
+            TempDesc->Lvalue.OpCode = ObjDesc->Lvalue.OpCode;
+            TempDesc->Lvalue.Object = ObjDesc->Lvalue.Object;
         }
         
         /* Convert the TempDesc Lvalue to a Number */
@@ -570,23 +584,25 @@ AmlExecMonadic2 (
         if (Status != AE_OK)
         {
             AmlAppendOperandDiag (_THIS_MODULE, __LINE__, Opcode, Operands, 1);
-            return_ACPI_STATUS (Status);
         }
 
-        /* Do the actual increment or decrement */
-        
-        if (AML_IncrementOp == Opcode)
-        {
-            TempDesc->Number.Value++;
-        }
         else
         {
-            TempDesc->Number.Value--;
+            /* Do the actual increment or decrement */
+        
+            if (AML_IncrementOp == Opcode)
+            {
+                TempDesc->Number.Value++;
+            }
+            else
+            {
+                TempDesc->Number.Value--;
+            }
+
+            /* Store the result back in the original descriptor */
+
+            Status = AmlExecStore (TempDesc, ObjDesc);
         }
-
-        /* Store the result back in the original descriptor */
-
-        Status = AmlExecStore (TempDesc, ObjDesc);
 
         /* 
          * Delete the temporary descriptor 
