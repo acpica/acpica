@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acefi.h - OS specific defines, etc.
- *       $Revision: 1.11 $
+ *       $Revision: 1.15 $
  *
  *****************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2004, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -117,8 +117,6 @@
 #ifndef __ACEFI_H__
 #define __ACEFI_H__
 
-#define ACPI_OS_NAME                "AED EFI"
-
 #include <efi.h>
 #include <efistdarg.h>
 #include <efilib.h>
@@ -133,7 +131,7 @@
  * Calling conventions:
  *
  * ACPI_SYSTEM_XFACE        - Interfaces to host OS (handlers, threads)
- * ACPI_EXTERNAL_XFACE      - External ACPI interfaces 
+ * ACPI_EXTERNAL_XFACE      - External ACPI interfaces
  * ACPI_INTERNAL_XFACE      - Internal ACPI interfaces
  * ACPI_INTERNAL_VAR_XFACE  - Internal variable-parameter list interfaces
  */

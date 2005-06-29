@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: aclinux.h - OS specific defines, etc.
- *       $Revision: 1.1 $
+ *       $Revision: 1.34 $
  *
  *****************************************************************************/
 
@@ -9,8 +9,8 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, Intel Corp.  All rights
- * reserved.
+ * Some or all of this work - Copyright (c) 1999 - 2004, Intel Corp.
+ * All rights reserved.
  *
  * 2. License
  *
@@ -117,8 +117,10 @@
 #ifndef __ACLINUX_H__
 #define __ACLINUX_H__
 
+#define ACPI_USE_SYSTEM_CLIBRARY
+#define ACPI_USE_DO_WHILE_0
 
-#define ACPI_OS_NAME                "Linux"
+#ifdef __KERNEL__
 
 #include <linux/config.h>
 #include <linux/string.h>
@@ -126,25 +128,36 @@
 #include <linux/ctype.h>
 #include <asm/system.h>
 #include <asm/atomic.h>
+#include <asm/div64.h>
+#include <asm/acpi.h>
+
+#define strtoul simple_strtoul
+
+#define ACPI_MACHINE_WIDTH  BITS_PER_LONG
+
+#else /* !__KERNEL__ */
+
+#include <stdarg.h>
+#include <string.h>
+#include <stdlib.h>
+#include <ctype.h>
+#include <unistd.h>
+
+#if defined(__ia64__) || defined(__x86_64__)
+#define ACPI_MACHINE_WIDTH          64
+#define COMPILER_DEPENDENT_INT64    long
+#define COMPILER_DEPENDENT_UINT64   unsigned long
+#else
+#define ACPI_MACHINE_WIDTH          32
+#define COMPILER_DEPENDENT_INT64    long long
+#define COMPILER_DEPENDENT_UINT64   unsigned long long
+#define ACPI_USE_NATIVE_DIVIDE
+#endif
+
+#endif /* __KERNEL__ */
 
 /* Linux uses GCC */
 
 #include "acgcc.h"
-
-#if 0
-
-/* Use native Linux string library */
-
-#define ACPI_USE_SYSTEM_CLIBRARY
-
-/* Special functions */
-
-#define strtoul             simple_strtoul
-
-/* Linux clib doesn't to strupr, but we do. */
-char *
-strupr(char *str);
-
-#endif /* 0 */
 
 #endif /* __ACLINUX_H__ */

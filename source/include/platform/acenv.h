@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acenv.h - Generation environment specific items
- *       $Revision: 1.93 $
+ *       $Revision: 1.107 $
  *
  *****************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2004, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -123,38 +123,31 @@
  */
 
 #ifdef _ACPI_DUMP_APP
-#define ACPI_DEBUG
+#ifndef MSDOS
+#define ACPI_DEBUG_OUTPUT
+#endif
 #define ACPI_APPLICATION
-#define ENABLE_DEBUGGER
+#define ACPI_DISASSEMBLER
+#define ACPI_NO_METHOD_EXECUTION
 #define ACPI_USE_SYSTEM_CLIBRARY
-#define PARSER_ONLY
 #endif
 
 #ifdef _ACPI_EXEC_APP
 #undef DEBUGGER_THREADING
 #define DEBUGGER_THREADING      DEBUGGER_SINGLE_THREADED
-#define ACPI_DEBUG
+#define ACPI_DEBUG_OUTPUT
 #define ACPI_APPLICATION
-#define ENABLE_DEBUGGER
+#define ACPI_DEBUGGER
+#define ACPI_DISASSEMBLER
 #define ACPI_USE_SYSTEM_CLIBRARY
 #endif
 
 #ifdef _ACPI_ASL_COMPILER
-#define ACPI_DEBUG
+#define ACPI_DEBUG_OUTPUT
 #define ACPI_APPLICATION
-/* #define ENABLE_DEBUGGER */
+#define ACPI_DISASSEMBLER
+#define ACPI_CONSTANT_EVAL_ONLY
 #define ACPI_USE_SYSTEM_CLIBRARY
-#endif
-
-/*
- * Memory allocation tracking.  Used only if
- * 1) This is the debug version
- * 2) This is NOT a 16-bit version of the code (not enough real-mode memory)
- */
-#ifdef ACPI_DEBUG
-#ifndef _IA16
-#define ACPI_DBG_TRACK_ALLOCATIONS
-#endif
 #endif
 
 /*
@@ -196,7 +189,7 @@
 
 /*! [Begin] no source code translation */
 
-#if defined(_LINUX)
+#if defined(__linux__)
 #include "aclinux.h"
 
 #elif defined(_AED_EFI)
@@ -214,6 +207,9 @@
 #elif defined(__FreeBSD__)
 #include "acfreebsd.h"
 
+#elif defined(__NetBSD__)
+#include "acnetbsd.h"
+
 #elif defined(MODESTO)
 #include "acmodesto.h"
 
@@ -229,12 +225,8 @@
 #define COMPILER_DEPENDENT_INT64   long long
 #define COMPILER_DEPENDENT_UINT64  unsigned long long
 
-
-/* Name of host operating system (returned by the _OS_ namespace object) */
-
-#define ACPI_OS_NAME         "Intel ACPI/CA Core Subsystem"
-
-/* This macro is used to tag functions as "printf-like" because
+/* 
+ * This macro is used to tag functions as "printf-like" because
  * some compilers can catch printf format string problems. MSVC
  * doesn't, so this is proprocessed away.
  */
@@ -242,7 +234,39 @@
 
 #endif
 
+/*
+ * Memory allocation tracking.  Used only if
+ * 1) This is the debug version
+ * 2) This is NOT a 16-bit version of the code (not enough real-mode memory)
+ */
+#ifdef ACPI_DEBUG_OUTPUT
+#if ACPI_MACHINE_WIDTH != 16
+#define ACPI_DBG_TRACK_ALLOCATIONS
+#endif
+#endif
+
 /*! [End] no source code translation !*/
+
+
+/*
+ * Debugger threading model
+ * Use single threaded if the entire subsystem is contained in an application
+ * Use multiple threaded when the subsystem is running in the kernel.
+ *
+ * By default the model is single threaded if ACPI_APPLICATION is set,
+ * multi-threaded if ACPI_APPLICATION is not set.
+ */
+#define DEBUGGER_SINGLE_THREADED    0
+#define DEBUGGER_MULTI_THREADED     1
+
+#ifndef DEBUGGER_THREADING
+#ifdef ACPI_APPLICATION
+#define DEBUGGER_THREADING          DEBUGGER_SINGLE_THREADED
+
+#else
+#define DEBUGGER_THREADING          DEBUGGER_MULTI_THREADED
+#endif
+#endif /* !DEBUGGER_THREADING */
 
 /******************************************************************************
  *
@@ -254,7 +278,6 @@
 /*
  * Use the standard C library headers.
  * We want to keep these to a minimum.
- *
  */
 
 #ifdef ACPI_USE_STANDARD_HEADERS
@@ -284,12 +307,16 @@
 #define ACPI_STRTOUL(d,s,n)     strtoul((d), (s), (ACPI_SIZE)(n))
 #define ACPI_MEMCPY(d,s,n)      (void) memcpy((d), (s), (ACPI_SIZE)(n))
 #define ACPI_MEMSET(d,s,n)      (void) memset((d), (s), (ACPI_SIZE)(n))
+
 #define ACPI_TOUPPER            toupper
 #define ACPI_TOLOWER            tolower
 #define ACPI_IS_XDIGIT          isxdigit
 #define ACPI_IS_DIGIT           isdigit
 #define ACPI_IS_SPACE           isspace
 #define ACPI_IS_UPPER           isupper
+#define ACPI_IS_PRINT           isprint
+#define ACPI_IS_ALPHA           isalpha
+#define ACPI_IS_ASCII           isascii
 
 /******************************************************************************
  *
@@ -316,8 +343,8 @@ typedef char *va_list;
  * Storage alignment properties
  */
 
-#define  _AUPBND                (sizeof (NATIVE_INT) - 1)
-#define  _ADNBND                (sizeof (NATIVE_INT) - 1)
+#define  _AUPBND                (sizeof (ACPI_NATIVE_INT) - 1)
+#define  _ADNBND                (sizeof (ACPI_NATIVE_INT) - 1)
 
 /*
  * Variable argument list macro definitions
@@ -372,7 +399,7 @@ typedef char *va_list;
  * Calling conventions:
  *
  * ACPI_SYSTEM_XFACE        - Interfaces to host OS (handlers, threads)
- * ACPI_EXTERNAL_XFACE      - External ACPI interfaces 
+ * ACPI_EXTERNAL_XFACE      - External ACPI interfaces
  * ACPI_INTERNAL_XFACE      - Internal ACPI interfaces
  * ACPI_INTERNAL_VAR_XFACE  - Internal variable-parameter list interfaces
  */
