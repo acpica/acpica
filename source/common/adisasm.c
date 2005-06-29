@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: adisasm - Application-level disassembler routines
- *              $Revision: 1.45 $
+ *              $Revision: 1.46 $
  *
  *****************************************************************************/
 
@@ -185,9 +185,105 @@ AcpiDsMethodDataInitArgs (
 
 
 #define FILE_SUFFIX_DISASSEMBLY     "dsl"
+#define ACPI_TABLE_FILE_SUFFIX      ".dat"
+char                        FilenameBuf[20];
+
+/******************************************************************************
+ *
+ * FUNCTION:    AfGenerateFilename
+ *
+ * PARAMETERS:
+ *
+ * RETURN:
+ *
+ * DESCRIPTION: Build an output filename from an ACPI table ID string
+ *
+ ******************************************************************************/
 
 char *
-AfGenerateFilename (char *TableId);
+AdGenerateFilename (char *TableId)
+{
+    NATIVE_UINT              i;
+
+
+    for (i = 0; i < 8 && TableId[i] != ' ' && TableId[i] != 0; i++)
+    {
+        FilenameBuf [i] = TableId[i];
+    }
+
+    FilenameBuf [i] = 0;
+    strcat (FilenameBuf, ACPI_TABLE_FILE_SUFFIX);
+    return FilenameBuf;
+}
+
+
+/******************************************************************************
+ *
+ * FUNCTION:    AfWriteBuffer
+ *
+ * PARAMETERS:
+ *
+ * RETURN:
+ *
+ * DESCRIPTION: Open a file and write out a single buffer
+ *
+ ******************************************************************************/
+
+NATIVE_INT
+AdWriteBuffer (
+    char                *Filename,
+    char                *Buffer,
+    UINT32              Length)
+{
+    FILE                *fp;
+    NATIVE_INT          Actual;
+
+
+    fp = fopen (Filename, "wb");
+    if (!fp)
+    {
+        printf ("Couldn't open %s\n", Filename);
+        return -1;
+    }
+
+    Actual = fwrite (Buffer, (size_t) Length, 1, fp);
+    fclose (fp);
+    return Actual;
+}
+
+
+/******************************************************************************
+ *
+ * FUNCTION:    AfDumpTables
+ *
+ * PARAMETERS:
+ *
+ * RETURN:
+ *
+ * DESCRIPTION: Dump the loaded tables to a file (or files)
+ *
+ ******************************************************************************/
+
+void
+AdWriteDsdt (void)
+{
+    char                    *Filename;
+
+
+    if (!AcpiGbl_DSDT)
+    {
+        AcpiOsPrintf ("No DSDT!\n");
+        return;
+    }
+
+
+    Filename = AdGenerateFilename (AcpiGbl_DSDT->OemTableId);
+    AdWriteBuffer (Filename,
+            (char *) AcpiGbl_DSDT, AcpiGbl_DSDT->Length);
+
+    AcpiOsPrintf ("DSDT AML written to \"%s\"\n", Filename);
+}
+
 
 
 /*******************************************************************************
@@ -290,10 +386,11 @@ FlGenerateFilename (
 ACPI_STATUS
 AdAmlDisassemble (
     BOOLEAN                 OutToFile,
-    char                    *Filename)
+    char                    *Filename,
+    char                    **OutFilename)
 {
     ACPI_STATUS             Status;
-    char                    *OutFilename = NULL;
+    char                    *DisasmFilename = NULL;
     FILE                    *File = NULL;
 
 
@@ -322,22 +419,21 @@ AdAmlDisassemble (
             return AE_OK;
         }
 
-#if ACPI_MACHINE_WIDTH == 16
         AcpiOsPrintf ("\nDisassembly of DSDT\n");
-        Filename = AfGenerateFilename (AcpiGbl_DSDT->OemTableId);
-#endif
+        Filename = AdGenerateFilename (AcpiGbl_DSDT->OemTableId);
+        *OutFilename = Filename;
     }
 
     if (OutToFile)
     {
-        /* Create/Open a combined source output file */
+        /* Create/Open a disassembly output file */
 
-        OutFilename = FlGenerateFilename (Filename, FILE_SUFFIX_DISASSEMBLY);
+        DisasmFilename = FlGenerateFilename (Filename, FILE_SUFFIX_DISASSEMBLY);
         if (!OutFilename)
         {
             fprintf (stderr, "Could not generate output filename\n");
         }
-        File = fopen (OutFilename, "w+");
+        File = fopen (DisasmFilename, "w+");
         if (!File)
         {
             fprintf (stderr, "Could not open output filen\n");
@@ -345,6 +441,8 @@ AdAmlDisassemble (
 
         AcpiOsRedirectOutput (File);
     }
+
+    *OutFilename = DisasmFilename;
 
     /* Always parse the tables, only option is what to display */
 
@@ -361,7 +459,7 @@ AdAmlDisassemble (
     if (AcpiGbl_DbOpt_disasm)
     {
         AdDisplayTables (Filename);
-        fprintf (stderr, "Disassembly completed, written to \"%s\"\n", OutFilename);
+        fprintf (stderr, "Disassembly completed, written to \"%s\"\n", DisasmFilename);
     }
 
 Cleanup:
@@ -730,6 +828,8 @@ AdGetTables (
 {
     FILE                    *fp;
     ACPI_STATUS             Status;
+    ACPI_TABLE_HEADER       TableHeader;
+    ACPI_TABLE_HEADER       *NewTable;
 
 
     if (Filename)
@@ -750,20 +850,22 @@ AdGetTables (
     }
     else
     {
-#if ACPI_MACHINE_WIDTH == 16
-#include "16bit.h"
-        fprintf (stderr, "Scanning memory for ACPI tables\n");
+        ACPI_STRNCPY (TableHeader.Signature, DSDT_SIG, 4);
+        AcpiOsTableOverride (&TableHeader, &NewTable);
 
-        Status = AfFindDsdt (&DsdtPtr, &DsdtLength);
-
-        if (ACPI_SUCCESS (Status))
+        if (NewTable)
         {
-            AfDumpTables ();
+            Status = AE_OK;
+            AcpiGbl_DSDT = NewTable;
+            DsdtPtr = (UINT8 *) AcpiGbl_DSDT;
+            DsdtLength = AcpiGbl_DSDT->Length;
+            AdWriteDsdt ();
         }
-#else
-        fprintf (stderr, "Must supply filename for ACPI tables, cannot scan memory\n");
-        Status = AE_NO_ACPI_TABLES;
-#endif
+        else
+        {
+            fprintf (stderr, "Could not obtain DSDT\n");
+            Status = AE_NO_ACPI_TABLES;
+        }
     }
 
     return Status;
