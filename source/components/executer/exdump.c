@@ -2,6 +2,7 @@
 /******************************************************************************
  *
  * Module Name: amdump - Interpreter debug output routines
+ *              $Revision: 1.86 $
  *
  *****************************************************************************/
 
@@ -259,7 +260,7 @@ AcpiAmlDumpOperand (
     if (VALID_DESCRIPTOR_TYPE (EntryDesc, ACPI_DESC_TYPE_NAMED))
     {
         DEBUG_PRINT (ACPI_INFO,
-            ("AmlDumpOperand: Name Table Entry (NTE): \n"));
+            ("AmlDumpOperand: Named Object: \n"));
         DUMP_ENTRY (EntryDesc, ACPI_INFO);
         return (AE_OK);
     }
@@ -365,8 +366,8 @@ AcpiAmlDumpOperand (
 
 
         case AML_NAMEPATH_OP:
-            DEBUG_PRINT_RAW (ACPI_INFO, ("Reference.Nte->Name %x\n",
-                        EntryDesc->Reference.Nte->Name));
+            DEBUG_PRINT_RAW (ACPI_INFO, ("Reference.NameDesc->Name %x\n",
+                        EntryDesc->Reference.NameDesc->Name));
             break;
 
         default:
@@ -573,8 +574,8 @@ AcpiAmlDumpOperand (
     case ACPI_TYPE_METHOD:
 
         DEBUG_PRINT_RAW (ACPI_INFO,
-            ("Method(%d) @ %p:%lx:%lx\n",
-            EntryDesc->Method.ParamCount, EntryDesc->Method.AcpiTable,
+            ("Method(%d) @ %p:%lx\n",
+            EntryDesc->Method.ParamCount,
             EntryDesc->Method.Pcode, EntryDesc->Method.PcodeLength));
         break;
 
@@ -702,16 +703,16 @@ AcpiAmlDumpOperands (
  *
  * FUNCTION:    AcpiAmlDumpAcpiNamedObject
  *
- * PARAMETERS:  *Entry              - Descriptor to dump
+ * PARAMETERS:  *NameDesc           - Descriptor to dump
  *              Flags               - Force display
  *
- * DESCRIPTION: Dumps the members of the NTE given.
+ * DESCRIPTION: Dumps the members of the given.NamedObject
  *
  ****************************************************************************/
 
 void
 AcpiAmlDumpAcpiNamedObject (
-    ACPI_NAMED_OBJECT       *Entry,
+    ACPI_NAMED_OBJECT       *NameDesc,
     UINT32                  Flags)
 {
 
@@ -724,14 +725,15 @@ AcpiAmlDumpAcpiNamedObject (
     }
 
 
-    AcpiOsPrintf ("%20s : %4.4s\n",    "Name",             &Entry->Name);
-    AcpiOsPrintf ("%20s : %s\n",       "Type",             AcpiCmGetTypeName (Entry->Type));
-    AcpiOsPrintf ("%20s : 0x%X\n",     "Flags",            Entry->Flags);
-    AcpiOsPrintf ("%20s : 0x%X\n",     "Owner Id",         Entry->OwnerId);
-    AcpiOsPrintf ("%20s : 0x%X\n",     "Reference Count",  Entry->ReferenceCount);
-    AcpiOsPrintf ("%20s : 0x%p\n",     "Attached Object",  Entry->Object);
-    AcpiOsPrintf ("%20s : 0x%p\n",     "ChildTable",       Entry->ChildTable);
-    AcpiOsPrintf ("%20s : 0x%p\n",     "Parent",           AcpiNsGetParentEntry (Entry));
+    AcpiOsPrintf ("%20s : %4.4s\n",    "Name",             &NameDesc->Name);
+    AcpiOsPrintf ("%20s : %s\n",       "Type",             AcpiCmGetTypeName (NameDesc->Type));
+    AcpiOsPrintf ("%20s : 0x%X\n",     "Flags",            NameDesc->Flags);
+    AcpiOsPrintf ("%20s : 0x%X\n",     "Owner Id",         NameDesc->OwnerId);
+    AcpiOsPrintf ("%20s : 0x%X\n",     "Reference Count",  NameDesc->ReferenceCount);
+    AcpiOsPrintf ("%20s : 0x%p\n",     "Attached Object",  NameDesc->Object);
+    AcpiOsPrintf ("%20s : 0x%p\n",     "ChildList",        NameDesc->Child);
+    AcpiOsPrintf ("%20s : 0x%p\n",     "NextPeer",         NameDesc->Peer);
+    AcpiOsPrintf ("%20s : 0x%p\n",     "Parent",           AcpiNsGetParentObject (NameDesc));
 }
 
 
@@ -851,7 +853,6 @@ AcpiAmlDumpObjectDescriptor (
         AcpiOsPrintf ("%20s : 0x%p\n", "Semaphore", ObjDesc->Method.Semaphore);
         AcpiOsPrintf ("%20s : 0x%X\n", "PcodeLength", ObjDesc->Method.PcodeLength);
         AcpiOsPrintf ("%20s : 0x%X\n", "Pcode", ObjDesc->Method.Pcode);
-        AcpiOsPrintf ("%20s : 0x%X\n", "AcpiTable", ObjDesc->Method.AcpiTable);
         break;
 
 
@@ -874,7 +875,7 @@ AcpiAmlDumpObjectDescriptor (
         AcpiOsPrintf ("%20s : 0x%X\n", "Length", ObjDesc->Region.Length);
         AcpiOsPrintf ("%20s : 0x%p\n", "Method", ObjDesc->Region.Method);
         AcpiOsPrintf ("%20s : 0x%p\n", "AddrHandler", ObjDesc->Region.AddrHandler);
-        AcpiOsPrintf ("%20s : 0x%p\n", "Link", ObjDesc->Region.Link);
+        AcpiOsPrintf ("%20s : 0x%p\n", "Next", ObjDesc->Region.Next);
         break;
 
 
@@ -947,7 +948,7 @@ AcpiAmlDumpObjectDescriptor (
         AcpiOsPrintf ("%20s : 0x%X\n", "SpaceId", ObjDesc->AddrHandler.SpaceId);
         AcpiOsPrintf ("%20s : 0x%p\n", "Link", ObjDesc->AddrHandler.Link);
         AcpiOsPrintf ("%20s : 0x%p\n", "RegionList", ObjDesc->AddrHandler.RegionList);
-        AcpiOsPrintf ("%20s : 0x%p\n", "Nte", ObjDesc->AddrHandler.Nte);
+        AcpiOsPrintf ("%20s : 0x%p\n", "NameDesc", ObjDesc->AddrHandler.NameDesc);
         AcpiOsPrintf ("%20s : 0x%p\n", "Handler", ObjDesc->AddrHandler.Handler);
         AcpiOsPrintf ("%20s : 0x%p\n", "Context", ObjDesc->AddrHandler.Context);
         break;
@@ -956,7 +957,7 @@ AcpiAmlDumpObjectDescriptor (
     case INTERNAL_TYPE_NOTIFY:
 
         AcpiOsPrintf ("%20s : %s\n",   "Type", "Notify Handler");
-        AcpiOsPrintf ("%20s : 0x%p\n", "Nte", ObjDesc->NotifyHandler.Nte);
+        AcpiOsPrintf ("%20s : 0x%p\n", "NameDesc", ObjDesc->NotifyHandler.NameDesc);
         AcpiOsPrintf ("%20s : 0x%p\n", "Handler", ObjDesc->NotifyHandler.Handler);
         AcpiOsPrintf ("%20s : 0x%p\n", "Context", ObjDesc->NotifyHandler.Context);
         break;
