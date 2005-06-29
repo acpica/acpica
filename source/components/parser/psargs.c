@@ -386,6 +386,7 @@ PsGetNextNamepath (
         }
     }
 
+#ifndef RING3_APPLICATION
     else
     {
         /* 
@@ -419,7 +420,7 @@ PsGetNextNamepath (
             }
         }
     }
-
+#endif
 
     /* Everything else has failed */
     /* variable dereference */
