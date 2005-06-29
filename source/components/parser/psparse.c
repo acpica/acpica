@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: psparse - Parser top level AML parse routines
- *              $Revision: 1.113 $
+ *              $Revision: 1.115 $
  *
  *****************************************************************************/
 
@@ -579,7 +579,7 @@ AcpiPsParseLoop (
                  * predicate and branch based on that value
                  */
                 WalkState->Op = NULL;
-                Status = AcpiDsGetPredicateValue (WalkState, TRUE);
+                Status = AcpiDsGetPredicateValue (WalkState, ACPI_TO_POINTER (TRUE));
                 if (ACPI_FAILURE (Status) &&
                     ((Status & AE_CODE_MASK) != AE_CODE_CONTROL))
                 {
@@ -978,7 +978,6 @@ CloseThisOp:
             WalkState->PrevOp = Op;
             WalkState->PrevArgTypes = WalkState->ArgTypes;
             return_ACPI_STATUS (Status);
-            break;
 
 
         case AE_CTRL_END:
@@ -1040,7 +1039,6 @@ CloseThisOp:
             } while (Op);
 
             return_ACPI_STATUS (Status);
-            break;
 
 
         default:  /* All other non-AE_OK status */
@@ -1069,7 +1067,6 @@ CloseThisOp:
              * TBD: TEMP:
              */
             return_ACPI_STATUS (Status);
-            break;
         }
 
         /* This scope complete? */
@@ -1272,10 +1269,9 @@ AcpiPsParseAml (
         {
             if (ACPI_SUCCESS (Status))
             {
-                /* There is another walk state, restart it */
-
                 /*
-                 * If the method returned value is not used by the parent,
+                 * There is another walk state, restart it.
+                 * If the method return value is not used by the parent,
                  * The object is deleted
                  */
                 AcpiDsRestartControlMethod (WalkState, PreviousWalkState->ReturnDesc);
@@ -1283,7 +1279,9 @@ AcpiPsParseAml (
             }
             else
             {
-                /* TBD: Delete any return object? */
+                /* On error, delete any return object */
+
+                AcpiUtRemoveReference (PreviousWalkState->ReturnDesc);
 
                 REPORT_ERROR (("Method execution failed, %s\n", AcpiFormatException (Status)));
                 DUMP_PATHNAME (WalkState->MethodNode, "Method pathname: ",
