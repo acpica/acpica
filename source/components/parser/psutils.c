@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: psutils - Parser miscellaneous utilities (Parser only)
- *              $Revision: 1.29 $
+ *              $Revision: 1.31 $
  *
  *****************************************************************************/
 
@@ -9,8 +9,8 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, Intel Corp.  All rights
- * reserved.
+ * Some or all of this work - Copyright (c) 1999, 2000, Intel Corp.
+ * All rights reserved.
  *
  * 2. License
  *
@@ -586,7 +586,12 @@ AcpiPsIsDeferredOp (
     UINT16                  Opcode)
 {
     return ((BOOLEAN)
-           (Opcode == AML_METHOD_OP ||
+           (Opcode == AML_METHOD_OP         ||
+            Opcode == AML_CREATE_FIELD_OP   ||
+            Opcode == AML_BIT_FIELD_OP      ||
+            Opcode == AML_BYTE_FIELD_OP     ||
+            Opcode == AML_WORD_FIELD_OP     ||
+            Opcode == AML_DWORD_FIELD_OP    ||
             Opcode == AML_REGION_OP));
 }
 

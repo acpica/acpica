@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: amresolv - AML Interpreter object resolution
- *              $Revision: 1.74 $
+ *              $Revision: 1.79 $
  *
  *****************************************************************************/
 
@@ -10,8 +10,8 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, Intel Corp.  All rights
- * reserved.
+ * Some or all of this work - Copyright (c) 1999, 2000, Intel Corp.
+ * All rights reserved.
  *
  * 2. License
  *
@@ -167,7 +167,16 @@ AcpiAmlGetFieldUnitValue (
         Status = AE_AML_NO_OPERAND;
     }
 
-    else if (!FieldDesc->FieldUnit.Container)
+    if (!(FieldDesc->Common.Flags & AOPOBJ_DATA_VALID))
+    {
+        Status = AcpiDsGetFieldUnitArguments (FieldDesc);
+        if (ACPI_FAILURE (Status))
+        {
+            return_ACPI_STATUS (Status);
+        }
+    }
+
+    if (!FieldDesc->FieldUnit.Container)
     {
         DEBUG_PRINT (ACPI_ERROR,
             ("AmlGetFieldUnitValue: Internal error - null container pointer\n"));
@@ -179,16 +188,6 @@ AcpiAmlGetFieldUnitValue (
         DEBUG_PRINT (ACPI_ERROR,
             ("AmlGetFieldUnitValue: Internal error - container is not a Buffer\n"));
         Status = AE_AML_OPERAND_TYPE;
-    }
-
-    else if (FieldDesc->FieldUnit.Sequence
-                != FieldDesc->FieldUnit.Container->Buffer.Sequence)
-    {
-        DEBUG_PRINT (ACPI_ERROR,
-            ("AmlGetFieldUnitValue: Internal error - stale Buffer [%lx != %lx]\n",
-            FieldDesc->FieldUnit.Sequence,
-            FieldDesc->FieldUnit.Container->Buffer.Sequence));
-        Status = AE_AML_INTERNAL;
     }
 
     else if (!ResultDesc)
@@ -228,7 +227,7 @@ AcpiAmlGetFieldUnitValue (
     }
     else
     {
-        Mask = 0xFFFFFFFF;
+        Mask = ACPI_UINT32_MAX;
     }
 
     ResultDesc->Number.Type = (UINT8) ACPI_TYPE_NUMBER;
@@ -317,7 +316,7 @@ AcpiAmlResolveToValue (
 
     if (VALID_DESCRIPTOR_TYPE (*StackPtr, ACPI_DESC_TYPE_NAMED))
     {
-        Status = AcpiAmlResolveNodeToValue ((ACPI_NAMESPACE_NODE **) StackPtr);
+        Status = AcpiAmlResolveNodeToValue ((ACPI_NAMESPACE_NODE **) StackPtr, WalkState);
     }
 
 
@@ -425,7 +424,7 @@ AcpiAmlResolveObjectToValue (
                 /* Value is a Number */
 
                 DEBUG_PRINT (ACPI_INFO,
-                    ("AmlResolveObjectToValue: [Local%d] value is [0x%X] \n",
+                    ("AmlResolveObjectToValue: [Local%d] value=%X \n",
                     Index, ObjDesc->Number.Value));
             }
 
@@ -466,7 +465,7 @@ AcpiAmlResolveObjectToValue (
                 /* Value is a Number */
 
                 DEBUG_PRINT (ACPI_INFO,
-                    ("AmlResolveObjectToValue: [Arg%d] value is [0x%X] \n",
+                    ("AmlResolveObjectToValue: [Arg%d] value=%X\n",
                     Index, ObjDesc->Number.Value));
             }
 
@@ -495,7 +494,11 @@ AcpiAmlResolveObjectToValue (
         case AML_ONES_OP:
 
             StackDesc->Common.Type = (UINT8) ACPI_TYPE_NUMBER;
-            StackDesc->Number.Value = 0xFFFFFFFF;
+            StackDesc->Number.Value = ACPI_INTEGER_MAX;
+
+            /* Truncate value if we are executing from a 32-bit ACPI table */
+
+            AcpiAmlTruncateFor32bitTable (StackDesc, WalkState);
             break;
 
 
@@ -540,7 +543,7 @@ AcpiAmlResolveObjectToValue (
                 /* Invalid reference OBJ*/
 
                 DEBUG_PRINT (ACPI_ERROR,
-                    ("AmlResolveObjectToValue: Unknown TargetType %d in Index/Reference obj %p\n",
+                    ("AmlResolveObjectToValue: Unknown TargetType %X in Index/Reference obj %p\n",
                     StackDesc->Reference.TargetType, StackDesc));
                 Status = AE_AML_INTERNAL;
                 break;
@@ -558,7 +561,7 @@ AcpiAmlResolveObjectToValue (
         default:
 
             DEBUG_PRINT (ACPI_ERROR,
-                ("AmlResolveObjectToValue: Unknown Reference object subtype %02x in %p\n",
+                ("AmlResolveObjectToValue: Unknown Reference object subtype %02X in %p\n",
                 Opcode, StackDesc));
             Status = AE_AML_INTERNAL;
 

@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: amprep - ACPI AML (p-code) execution - field prep utilities
- *              $Revision: 1.67 $
+ *              $Revision: 1.70 $
  *
  *****************************************************************************/
 
@@ -10,8 +10,8 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, Intel Corp.  All rights
- * reserved.
+ * Some or all of this work - Copyright (c) 1999, 2000, Intel Corp.
+ * All rights reserved.
  *
  * 2. License
  *
@@ -140,7 +140,7 @@
  *
  ******************************************************************************/
 
-UINT32
+static UINT32
 AcpiAmlDecodeFieldAccessType (
     UINT32                  Access)
 {
@@ -192,7 +192,7 @@ AcpiAmlDecodeFieldAccessType (
  *
  ******************************************************************************/
 
-ACPI_STATUS
+static ACPI_STATUS
 AcpiAmlPrepCommonFieldObject (
     ACPI_OPERAND_OBJECT     *ObjDesc,
     UINT8                   FieldFlags,
@@ -294,7 +294,7 @@ AcpiAmlPrepDefFieldValue (
     if (Type != ACPI_TYPE_REGION)
     {
         DEBUG_PRINT (ACPI_ERROR,
-            ("AmlPrepDefFieldValue: Needed Region, found %d %s\n",
+            ("AmlPrepDefFieldValue: Needed Region, found type %X %s\n",
             Type, AcpiCmGetTypeName (Type)));
         return_ACPI_STATUS (AE_AML_OPERAND_TYPE);
     }
@@ -415,7 +415,7 @@ AcpiAmlPrepBankFieldValue (
     if (Type != ACPI_TYPE_REGION)
     {
         DEBUG_PRINT (ACPI_ERROR,
-            ("AmlPrepBankFieldValue: Needed Region, found %d %s\n",
+            ("AmlPrepBankFieldValue: Needed Region, found type %X %s\n",
             Type, AcpiCmGetTypeName (Type)));
         return_ACPI_STATUS (AE_AML_OPERAND_TYPE);
     }

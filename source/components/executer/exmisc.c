@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: ammisc - ACPI AML (p-code) execution - specific opcodes
- *              $Revision: 1.67 $
+ *              $Revision: 1.72 $
  *
  *****************************************************************************/
 
@@ -10,8 +10,8 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, Intel Corp.  All rights
- * reserved.
+ * Some or all of this work - Copyright (c) 1999, 2000, Intel Corp.
+ * All rights reserved.
  *
  * 2. License
  *
@@ -178,7 +178,7 @@ AcpiAmlExecFatal (
         /* Invalid parameters on object stack  */
 
         DEBUG_PRINT (ACPI_ERROR,
-            ("AcpiAmlExecFatal/AML_FATAL_OP: bad operand(s) (0x%X)\n",
+            ("AcpiAmlExecFatal/AML_FATAL_OP: bad operand(s) (Status=%X)\n",
             Status));
 
         goto Cleanup;
@@ -210,7 +210,7 @@ Cleanup:
 
     /* If we get back from the OS call, we might as well keep going. */
 
-    DEBUG_PRINT (ACPI_ERROR, ("AmlExecFatal: FatalOp executed\n"));
+    REPORT_WARNING (("An AML \"Fatal\" Opcode (FatalOp) was executed\n"));
     return_ACPI_STATUS (AE_OK);
 }
 
@@ -271,7 +271,7 @@ AcpiAmlExecIndex (
         /* Invalid parameters on object stack  */
 
         DEBUG_PRINT (ACPI_ERROR,
-            ("AcpiAmlExecIndex/AML_INDEX_OP: bad operand(s) (0x%X)\n",
+            ("AcpiAmlExecIndex/AML_INDEX_OP: bad operand(s) (Status=%X)\n",
             Status));
 
         goto Cleanup;
@@ -356,7 +356,7 @@ AcpiAmlExecIndex (
         RetDesc->Reference.OpCode       = AML_INDEX_OP;
         RetDesc->Reference.TargetType   = ACPI_TYPE_BUFFER_FIELD;
         RetDesc->Reference.Object       = ObjDesc;
-        RetDesc->Reference.Offset       = IdxDesc->Number.Value;
+        RetDesc->Reference.Offset       = (UINT32) IdxDesc->Number.Value;
 
         Status = AcpiAmlExecStore (RetDesc, ResDesc, WalkState);
     }
@@ -452,7 +452,7 @@ AcpiAmlExecMatch (
         /* Invalid parameters on object stack  */
 
         DEBUG_PRINT (ACPI_ERROR,
-            ("ExecMatch/AML_MATCH_OP: bad operand(s) (0x%X)\n",
+            ("ExecMatch/AML_MATCH_OP: bad operand(s) (Status=%X)\n",
             Status));
 
         goto Cleanup;
@@ -469,7 +469,7 @@ AcpiAmlExecMatch (
         goto Cleanup;
     }
 
-    Index = StartDesc->Number.Value;
+    Index = (UINT32) StartDesc->Number.Value;
     if (Index >= (UINT32) PkgDesc->Package.Count)
     {
         DEBUG_PRINT (ACPI_ERROR,

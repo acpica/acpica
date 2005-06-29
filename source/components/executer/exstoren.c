@@ -3,7 +3,7 @@
  *
  * Module Name: amstoren - AML Interpreter object store support,
  *                         Store to Node (namespace object)
- *              $Revision: 1.21 $
+ *              $Revision: 1.25 $
  *
  *****************************************************************************/
 
@@ -11,8 +11,8 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, Intel Corp.  All rights
- * reserved.
+ * Some or all of this work - Copyright (c) 1999, 2000, Intel Corp.
+ * All rights reserved.
  *
  * 2. License
  *
@@ -328,7 +328,7 @@ AcpiAmlStoreObjectToNode (
          *  There is no existing object attached to this Node
          */
         DEBUG_PRINT (ACPI_ERROR,
-            ("AmlStoreObjectToNte: Internal error - no destination object for %4.4s type %d\n",
+            ("AmlStoreObjectToNte: Internal error - no destination object for %4.4s type %X\n",
             &Node->Name, DestinationType));
         Status = AE_AML_INTERNAL;
         goto CleanUpAndBailOut;
@@ -340,7 +340,7 @@ AcpiAmlStoreObjectToNode (
     if (DestDesc->Common.Type != (UINT8) DestinationType)
     {
         DEBUG_PRINT (ACPI_ERROR,
-            ("AmlStoreObjectToNte: Internal error - Name %4.4s type %d does not match value-type %d at %p\n",
+            ("AmlStoreObjectToNte: Internal error - Name %4.4s type %X does not match value-type %X at %p\n",
             &Node->Name, AcpiNsGetType (Node),
             DestDesc->Common.Type, DestDesc));
         Status = AE_AML_INTERNAL;
@@ -531,7 +531,7 @@ AcpiAmlStoreObjectToNode (
              */
             MEMCPY(DestDesc->Buffer.Pointer, Buffer, DestDesc->Buffer.Length);
             DEBUG_PRINT (ACPI_INFO,
-                ("AmlStoreObjectToNte: Truncating src buffer from %d to %d\n",
+                ("AmlStoreObjectToNte: Truncating src buffer from %X to %X\n",
                 Length, DestDesc->Buffer.Length));
         }
         break;
@@ -575,10 +575,22 @@ AcpiAmlStoreObjectToNode (
 
     case ACPI_TYPE_FIELD_UNIT:
 
+
+        /*
+         * If the Field Buffer and Index have not been previously evaluated,
+         * evaluate them and save the results.
+         */
+        if (!(DestDesc->Common.Flags & AOPOBJ_DATA_VALID))
+        {
+            Status = AcpiDsGetFieldUnitArguments (DestDesc);
+            if (ACPI_FAILURE (Status))
+            {
+                return_ACPI_STATUS (Status);
+            }
+        }
+
         if ((!DestDesc->FieldUnit.Container ||
-            ACPI_TYPE_BUFFER != DestDesc->FieldUnit.Container->Common.Type ||
-            DestDesc->FieldUnit.Sequence !=
-                DestDesc->FieldUnit.Container->Buffer.Sequence))
+            ACPI_TYPE_BUFFER != DestDesc->FieldUnit.Container->Common.Type))
         {
             DUMP_PATHNAME (Node,
                 "AmlStoreObjectToNte: FieldUnit: Bad container in ",
@@ -589,10 +601,8 @@ AcpiAmlStoreObjectToNode (
 
             if (DestDesc->FieldUnit.Container)
             {
-                DEBUG_PRINT_RAW (ACPI_ERROR, (" Type %d, FuSeq %x BufSeq %x",
-                    DestDesc->FieldUnit.Container->Common.Type,
-                    DestDesc->FieldUnit.Sequence,
-                    DestDesc->FieldUnit.Container->Buffer.Sequence));
+                DEBUG_PRINT_RAW (ACPI_ERROR, (" Type %X",
+                    DestDesc->FieldUnit.Container->Common.Type));
             }
             DEBUG_PRINT_RAW (ACPI_ERROR, ("\n"));
 
@@ -631,7 +641,7 @@ AcpiAmlStoreObjectToNode (
                             << DestDesc->FieldUnit.BitOffset);
 
         DEBUG_PRINT (TRACE_EXEC,
-            ("** Store %lx in buffer %p byte %ld bit %d width %d addr %p mask %08lx\n",
+            ("** Store %lx in buffer %p byte %ld bit %X width %d addr %p mask %08lx\n",
             ValDesc->Number.Value,
             DestDesc->FieldUnit.Container->Buffer.Pointer,
             DestDesc->FieldUnit.Offset, DestDesc->FieldUnit.BitOffset,
@@ -659,7 +669,12 @@ AcpiAmlStoreObjectToNode (
 
     case ACPI_TYPE_NUMBER:
 
+
         DestDesc->Number.Value = ValDesc->Number.Value;
+
+        /* Truncate value if we are executing from a 32-bit ACPI table */
+
+        AcpiAmlTruncateFor32bitTable (DestDesc, WalkState);
         break;
 
 

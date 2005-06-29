@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: amstore - AML Interpreter object store support
- *              $Revision: 1.116 $
+ *              $Revision: 1.118 $
  *
  *****************************************************************************/
 
@@ -10,8 +10,8 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, Intel Corp.  All rights
- * reserved.
+ * Some or all of this work - Copyright (c) 1999, 2000, Intel Corp.
+ * All rights reserved.
  *
  * 2. License
  *
@@ -430,7 +430,7 @@ AcpiAmlExecStore (
          */
         default:
             DEBUG_PRINT (ACPI_ERROR,
-                ("AmlExecStore/Index: Source must be Number/Buffer/String type, not 0x%x\n",
+                ("AmlExecStore/Index: Source must be Number/Buffer/String type, not %X\n",
                 ValDesc->Common.Type));
             Status = AE_AML_OPERAND_TYPE;
             break;

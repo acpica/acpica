@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: amnames - interpreter/scanner name load/execute
- *              $Revision: 1.69 $
+ *              $Revision: 1.72 $
  *
  *****************************************************************************/
 
@@ -10,8 +10,8 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, Intel Corp.  All rights
- * reserved.
+ * Some or all of this work - Copyright (c) 1999, 2000, Intel Corp.
+ * All rights reserved.
  *
  * 2. License
  *
@@ -123,7 +123,7 @@
 #include "acnamesp.h"
 
 #define _COMPONENT          INTERPRETER
-        MODULE_NAME         ("amnames");
+        MODULE_NAME         ("amnames")
 
 
 /* AML Package Length encodings */
@@ -187,7 +187,7 @@ AcpiAmlAllocateNameString (
     NameString = AcpiCmAllocate (SizeNeeded);
     if (!NameString)
     {
-        REPORT_ERROR ("AmlAllocateNameString: name allocation failure");
+        REPORT_ERROR (("AmlAllocateNameString: name allocation failure\n"));
         return_PTR (NULL);
     }
 
@@ -536,10 +536,8 @@ AcpiAmlGetNameString (
     {
         /* Ran out of segments after processing a prefix */
 
-        DEBUG_PRINT (ACPI_ERROR,
+        REPORT_ERROR (
             ("AmlDoName: Malformed Name at %p\n", NameString));
-        REPORT_ERROR ("Ran out of segments after processing a prefix");
-
         Status = AE_AML_BAD_NAME;
     }
 

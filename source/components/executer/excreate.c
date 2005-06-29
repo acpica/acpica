@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: amcreate - Named object creation
- *              $Revision: 1.49 $
+ *              $Revision: 1.52 $
  *
  *****************************************************************************/
 
@@ -9,8 +9,8 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, Intel Corp.  All rights
- * reserved.
+ * Some or all of this work - Copyright (c) 1999, 2000, Intel Corp.
+ * All rights reserved.
  *
  * 2. License
  *
@@ -213,16 +213,6 @@ AcpiAmlExecCreateField (
     ObjDesc->FieldUnit.Node = Node;
 
 
-/*
-    Status = AcpiNsAttachObject (Node, ObjDesc,
-                                (UINT8) ACPI_TYPE_FIELD_UNIT);
-
-    if (ACPI_FAILURE (Status))
-    {
-        goto Cleanup;
-    }
-*/
-
     /*
      * This operation is supposed to cause the destination Name to refer
      * to the defined FieldUnit -- it must not store the constructed
@@ -305,328 +295,6 @@ Cleanup:
 
         AcpiCmRemoveReference (ObjDesc);
         ObjDesc = NULL;
-    }
-
-    return_ACPI_STATUS (Status);
-}
-
-
-static ACPI_STATUS
-AcpiAmlExecCreateField_original (
-    UINT16                  Opcode,
-    ACPI_WALK_STATE         *WalkState)
-{
-    ACPI_OPERAND_OBJECT     *ResDesc = NULL;
-    ACPI_OPERAND_OBJECT     *CntDesc = NULL;
-    ACPI_OPERAND_OBJECT     *OffDesc = NULL;
-    ACPI_OPERAND_OBJECT     *SrcDesc = NULL;
-    ACPI_OPERAND_OBJECT     *FieldDesc;
-    ACPI_OPERAND_OBJECT     *ObjDesc;
-    OBJECT_TYPE_INTERNAL    ResType;
-    ACPI_STATUS             Status;
-    UINT32                  NumOperands = 3;
-    UINT32                  Offset;
-    UINT32                  BitOffset;
-    UINT16                  BitCount;
-    UINT8                   TypeFound;
-
-
-    FUNCTION_TRACE ("AmlExecCreateField");
-
-
-    /* Resolve the operands */
-
-    Status = AcpiAmlResolveOperands (Opcode, WALK_OPERANDS, WalkState);
-    DUMP_OPERANDS (WALK_OPERANDS, IMODE_EXECUTE, AcpiPsGetOpcodeName (Opcode),
-                    NumOperands, "after AcpiAmlResolveOperands");
-
-
-    /* Get the operands */
-
-    Status |= AcpiDsObjStackPopObject (&ResDesc, WalkState);
-    if (AML_CREATE_FIELD_OP == Opcode)
-    {
-        NumOperands = 4;
-        Status |= AcpiDsObjStackPopObject (&CntDesc, WalkState);
-    }
-
-    Status |= AcpiDsObjStackPopObject (&OffDesc, WalkState);
-    Status |= AcpiDsObjStackPopObject (&SrcDesc, WalkState);
-
-    if (ACPI_FAILURE (Status))
-    {
-        /* Invalid parameters on object stack  */
-
-        DEBUG_PRINT (ACPI_ERROR,
-            ("ExecCreateField/%s: bad operand(s) (0x%X)\n",
-            AcpiPsGetOpcodeName (Opcode), Status));
-
-        goto Cleanup;
-    }
-
-
-    Offset = (UINT32) OffDesc->Number.Value;
-
-
-    /*
-     * If ResDesc is a Name, it will be a direct name pointer after
-     * AcpiAmlResolveOperands()
-     */
-
-    if (!VALID_DESCRIPTOR_TYPE (ResDesc, ACPI_DESC_TYPE_NAMED))
-    {
-        DEBUG_PRINT (ACPI_ERROR,
-            ("AmlExecCreateField (%s): destination must be a Node\n",
-            AcpiPsGetOpcodeName (Opcode)));
-
-        Status = AE_AML_OPERAND_TYPE;
-        goto Cleanup;
-    }
-
-
-    /*
-     * Setup the Bit offsets and counts, according to the opcode
-     */
-
-    switch (Opcode)
-    {
-
-    /* DefCreateBitField */
-
-    case AML_BIT_FIELD_OP:
-
-        /* Offset is in bits, Field is a bit */
-
-        BitOffset = Offset;
-        BitCount = 1;
-        break;
-
-
-    /* DefCreateByteField */
-
-    case AML_BYTE_FIELD_OP:
-
-        /* Offset is in bytes, field is a byte */
-
-        BitOffset = 8 * Offset;
-        BitCount = 8;
-        break;
-
-
-    /* DefCreateWordField  */
-
-    case AML_WORD_FIELD_OP:
-
-        /* Offset is in bytes, field is a word */
-
-        BitOffset = 8 * Offset;
-        BitCount = 16;
-        break;
-
-
-    /* DefCreateDWordField */
-
-    case AML_DWORD_FIELD_OP:
-
-        /* Offset is in bytes, field is a dword */
-
-        BitOffset = 8 * Offset;
-        BitCount = 32;
-        break;
-
-
-    /* DefCreateField   */
-
-    case AML_CREATE_FIELD_OP:
-
-        /* Offset is in bits, count is in bits */
-
-        BitOffset = Offset;
-        BitCount = (UINT16) CntDesc->Number.Value;
-        break;
-
-
-    default:
-
-        DEBUG_PRINT (ACPI_ERROR,
-            ("AmlExecCreateField: Internal error - unknown field creation opcode %02x\n",
-            Opcode));
-        Status = AE_AML_BAD_OPCODE;
-        goto Cleanup;
-    }
-
-
-    /*
-     * Setup field according to the object type
-     */
-
-    switch (SrcDesc->Common.Type)
-    {
-
-    /* SourceBuff  :=  TermArg=>Buffer */
-
-    case ACPI_TYPE_BUFFER:
-
-        if (BitOffset + (UINT32) BitCount >
-            (8 * (UINT32) SrcDesc->Buffer.Length))
-        {
-            DEBUG_PRINT (ACPI_ERROR,
-                ("AmlExecCreateField: Field exceeds Buffer %d > %d\n",
-                 BitOffset + (UINT32) BitCount,
-                 8 * (UINT32) SrcDesc->Buffer.Length));
-            Status = AE_AML_BUFFER_LIMIT;
-            goto Cleanup;
-        }
-
-
-        /* Allocate an object for the field */
-
-        FieldDesc = AcpiCmCreateInternalObject (ACPI_TYPE_FIELD_UNIT);
-        if (!FieldDesc)
-        {
-            Status = AE_NO_MEMORY;
-            goto Cleanup;
-        }
-
-        /* Construct the field object */
-
-        FieldDesc->FieldUnit.Access       = (UINT8) ACCESS_ANY_ACC;
-        FieldDesc->FieldUnit.LockRule     = (UINT8) GLOCK_NEVER_LOCK;
-        FieldDesc->FieldUnit.UpdateRule   = (UINT8) UPDATE_PRESERVE;
-        FieldDesc->FieldUnit.Length       = BitCount;
-        FieldDesc->FieldUnit.BitOffset    = (UINT8) (BitOffset % 8);
-        FieldDesc->FieldUnit.Offset       = DIV_8 (BitOffset);
-        FieldDesc->FieldUnit.Container    = SrcDesc;
-
-        /* An additional reference for SrcDesc */
-
-        AcpiCmAddReference (SrcDesc);
-
-        break;
-
-
-    /* Improper object type */
-
-    default:
-
-        TypeFound = SrcDesc->Common.Type;
-
-        if ((TypeFound > (UINT8) INTERNAL_TYPE_REFERENCE) ||
-            !AcpiCmValidObjectType (TypeFound))
-        {
-            DEBUG_PRINT (ACPI_ERROR,
-                ("AmlExecCreateField: Tried to create field in invalid object type - 0x%X\n",
-                TypeFound));
-        }
-
-        else
-        {
-            DEBUG_PRINT (ACPI_ERROR,
-                ("AmlExecCreateField: Tried to create field in improper object type - %s\n",
-                AcpiCmGetTypeName (TypeFound)));
-        }
-
-        Status = AE_AML_OPERAND_TYPE;
-        goto Cleanup;
-    }
-
-
-    if (AML_CREATE_FIELD_OP == Opcode)
-    {
-        /* Delete object descriptor unique to CreateField  */
-
-        AcpiCmRemoveReference (CntDesc);
-        CntDesc = NULL;
-    }
-
-    /*
-     * This operation is supposed to cause the destination Name to refer
-     * to the defined FieldUnit -- it must not store the constructed
-     * FieldUnit object (or its current value) in some location that the
-     * Name may already be pointing to.  So, if the Name currently contains
-     * a reference which would cause AcpiAmlExecStore() to perform an indirect
-     * store rather than setting the value of the Name itself, clobber that
-     * reference before calling AcpiAmlExecStore().
-     */
-
-    ResType = AcpiNsGetType (ResDesc);
-
-    /* Type of Name's existing value */
-
-    switch (ResType)
-    {
-
-    case ACPI_TYPE_FIELD_UNIT:
-
-    case INTERNAL_TYPE_ALIAS:
-    case INTERNAL_TYPE_BANK_FIELD:
-    case INTERNAL_TYPE_DEF_FIELD:
-    case INTERNAL_TYPE_INDEX_FIELD:
-
-        ObjDesc = AcpiNsGetAttachedObject (ResDesc);
-        if (ObjDesc)
-        {
-            /*
-             * There is an existing object here;  delete it and zero out the
-             * object field within the Node
-             */
-
-            DUMP_PATHNAME (ResDesc,
-                "AmlExecCreateField: Removing Current Reference",
-                TRACE_BFIELD, _COMPONENT);
-
-            DUMP_ENTRY (ResDesc, TRACE_BFIELD);
-            DUMP_STACK_ENTRY (ObjDesc);
-
-            AcpiCmRemoveReference (ObjDesc);
-            AcpiNsAttachObject ((ACPI_NAMESPACE_NODE *) ResDesc, NULL,
-                                    ACPI_TYPE_ANY);
-        }
-
-        /* Set the type to ANY (or the store below will fail) */
-
-        ((ACPI_NAMESPACE_NODE *) ResDesc)->Type = ACPI_TYPE_ANY;
-
-        break;
-
-
-    default:
-
-        break;
-    }
-
-
-    /* Store constructed field descriptor in result location */
-
-    Status = AcpiAmlExecStore (FieldDesc, ResDesc, WalkState);
-
-    /*
-     * If the field descriptor was not physically stored (or if a failure
-     * above), we must delete it
-     */
-    if (FieldDesc->Common.ReferenceCount <= 1)
-    {
-        AcpiCmRemoveReference (FieldDesc);
-    }
-
-
-Cleanup:
-
-    /* Always delete the operands */
-
-    AcpiCmRemoveReference (OffDesc);
-    AcpiCmRemoveReference (SrcDesc);
-
-    if (AML_CREATE_FIELD_OP == Opcode)
-    {
-        AcpiCmRemoveReference (CntDesc);
-    }
-
-    /* On failure, delete the result descriptor */
-
-    if (ACPI_FAILURE (Status))
-    {
-        AcpiCmRemoveReference (ResDesc);     /* Result descriptor */
     }
 
     return_ACPI_STATUS (Status);
@@ -852,7 +520,7 @@ ACPI_STATUS
 AcpiAmlExecCreateRegion (
     UINT8                   *AmlPtr,
     UINT32                  AmlLength,
-    UINT32                  RegionSpace,
+    UINT8                   RegionSpace,
     ACPI_WALK_STATE         *WalkState)
 {
     ACPI_STATUS             Status;
@@ -863,21 +531,19 @@ AcpiAmlExecCreateRegion (
     FUNCTION_TRACE ("AmlExecCreateRegion");
 
 
-    if (RegionSpace >= NUM_REGION_TYPES)
+    /*
+     * Space ID must be one of the predefined IDs, or in the user-defined
+     * range
+     */
+    if ((RegionSpace >= NUM_REGION_TYPES) &&
+        (RegionSpace < USER_REGION_BEGIN))
     {
-        /* TBD: [Future] In ACPI 2.0, valid region space
-         *  includes types 0-6 (Adding CMOS and PCIBARTarget).
-         *  Also, types 0x80-0xff are defined as "OEM Region
-         *  Space handler"
-         *
-         * Should this return an error, or should we just keep
-         * going?  How do we handle the OEM region handlers?
-         */
-        REPORT_WARNING (("Invalid AddressSpace type %X\n", RegionSpace));
+        REPORT_ERROR (("Invalid AddressSpace type %X\n", RegionSpace));
+        return_ACPI_STATUS (AE_AML_INVALID_SPACE_ID);
     }
 
-    DEBUG_PRINT (TRACE_LOAD, ("AmlDoNode: Region Type [%s]\n",
-                    AcpiGbl_RegionTypes[RegionSpace]));
+    DEBUG_PRINT (TRACE_LOAD, ("AmlExecCreateRegion: Region Type - %s (%X)\n",
+                    AcpiCmGetRegionName (RegionSpace), RegionSpace));
 
 
     /* Get the Node from the object stack  */
@@ -915,7 +581,7 @@ AcpiAmlExecCreateRegion (
 
     /* Init the region from the operands */
 
-    ObjDesc->Region.SpaceId       = (UINT8) RegionSpace;
+    ObjDesc->Region.SpaceId       = RegionSpace;
     ObjDesc->Region.Address       = 0;
     ObjDesc->Region.Length        = 0;
 

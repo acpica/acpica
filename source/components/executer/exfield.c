@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: amfield - ACPI AML (p-code) execution - field manipulation
- *              $Revision: 1.69 $
+ *              $Revision: 1.75 $
  *
  *****************************************************************************/
 
@@ -9,8 +9,8 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, Intel Corp.  All rights
- * reserved.
+ * Some or all of this work - Copyright (c) 1999, 2000, Intel Corp.
+ * All rights reserved.
  *
  * 2. License
  *
@@ -210,10 +210,10 @@ AcpiAmlSetupField (
 
 
     /*
-     * If the address and length have not been previously evaluated,
+     * If the Region Address and Length have not been previously evaluated,
      * evaluate them and save the results.
      */
-    if (!(RgnDesc->Region.RegionFlags & REGION_AGRUMENT_DATA_VALID))
+    if (!(RgnDesc->Region.Flags & AOPOBJ_DATA_VALID))
     {
 
         Status = AcpiDsGetRegionArguments (RgnDesc);
@@ -221,6 +221,17 @@ AcpiAmlSetupField (
         {
             return_ACPI_STATUS (Status);
         }
+    }
+
+
+    if ((ObjDesc->Common.Type == ACPI_TYPE_FIELD_UNIT) &&
+        (!(ObjDesc->Common.Flags & AOPOBJ_DATA_VALID)))
+    {
+        /*
+         * Field Buffer and Index have not been previously evaluated,
+         */
+        DEBUG_PRINT (ACPI_ERROR, ("Uninitialized field!\n"));
+        return_ACPI_STATUS (AE_AML_INTERNAL);
     }
 
     if (RgnDesc->Region.Length <
@@ -355,11 +366,31 @@ AcpiAmlAccessNamedField (
     ActualByteLength = BufferLength;
     if (BufferLength > ByteFieldLength)
     {
-        ActualByteLength = ByteFieldLength;
-
         DEBUG_PRINT (ACPI_INFO,
-            ("AmlAccessNamedField: Byte length too large, truncated to %x\n",
-            ActualByteLength));
+            ("AmlAccessNamedField: Byte length %X truncated to %X\n",
+            ActualByteLength, ByteFieldLength));
+
+        ActualByteLength = ByteFieldLength;
+    }
+
+    /* TBD: should these round down to a power of 2? */
+
+    if (DIV_8(BitGranularity) > ByteFieldLength)
+    {
+        DEBUG_PRINT (ACPI_INFO,
+            ("AmlAccessNamedField: Bit granularity %X truncated to %X\n",
+            BitGranularity, MUL_8(ByteFieldLength)));
+
+        BitGranularity = MUL_8(ByteFieldLength);
+    }
+
+    if (ByteGranularity > ByteFieldLength)
+    {
+        DEBUG_PRINT (ACPI_INFO,
+            ("AmlAccessNamedField: Byte granularity %X truncated to %X\n",
+            ByteGranularity, ByteFieldLength));
+
+        ByteGranularity = ByteFieldLength;
     }
 
 

@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: amdyadic - ACPI AML (p-code) execution for dyadic operators
- *              $Revision: 1.63 $
+ *              $Revision: 1.69 $
  *
  *****************************************************************************/
 
@@ -9,8 +9,8 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, Intel Corp.  All rights
- * reserved.
+ * Some or all of this work - Copyright (c) 1999, 2000, Intel Corp.
+ * All rights reserved.
  *
  * 2. License
  *
@@ -174,7 +174,7 @@ AcpiAmlExecDyadic1 (
         /* Invalid parameters on object stack  */
 
         DEBUG_PRINT (ACPI_ERROR,
-            ("ExecDyadic1/%s: bad operand(s) (0x%X)\n",
+            ("ExecDyadic1/%s: bad operand(s) (Status=%X)\n",
             AcpiPsGetOpcodeName (Opcode), Status));
 
         goto Cleanup;
@@ -211,12 +211,12 @@ AcpiAmlExecDyadic1 (
 
                 /* Dispatch the notify to the appropriate handler */
 
-                AcpiEvNotifyDispatch (Node, ValDesc->Number.Value);
+                AcpiEvNotifyDispatch (Node, (UINT32) ValDesc->Number.Value);
                 break;
 
             default:
                 DEBUG_PRINT (ACPI_ERROR,
-                    ("AmlExecDyadic1/NotifyOp: unexpected notify object type %d\n",
+                    ("AmlExecDyadic1/NotifyOp: unexpected notify object type %X\n",
                     ObjDesc->Common.Type));
 
                 Status = AE_AML_OPERAND_TYPE;
@@ -226,7 +226,8 @@ AcpiAmlExecDyadic1 (
 
     default:
 
-        REPORT_ERROR ("AcpiAmlExecDyadic1: Unknown dyadic opcode");
+        REPORT_ERROR (("AcpiAmlExecDyadic1: Unknown dyadic opcode %X\n",
+            Opcode));
         Status = AE_AML_BAD_OPCODE;
     }
 
@@ -271,7 +272,6 @@ AcpiAmlExecDyadic2R (
     ACPI_OPERAND_OBJECT     *RetDesc    = NULL;
     ACPI_OPERAND_OBJECT     *RetDesc2   = NULL;
     ACPI_STATUS             Status      = AE_OK;
-    UINT32                  Remainder;
     UINT32                  NumOperands = 3;
     NATIVE_CHAR             *NewBuf;
 
@@ -299,7 +299,7 @@ AcpiAmlExecDyadic2R (
     if (ACPI_FAILURE (Status))
     {
         DEBUG_PRINT (ACPI_ERROR,
-            ("ExecDyadic2R/%s: bad operand(s) (0x%X)\n",
+            ("ExecDyadic2R/%s: bad operand(s) (Status=%X)\n",
             AcpiPsGetOpcodeName (Opcode), Status));
 
         goto Cleanup;
@@ -398,11 +398,10 @@ AcpiAmlExecDyadic2R (
 
     case AML_DIVIDE_OP:
 
-        if ((UINT32) 0 == ObjDesc2->Number.Value)
+        if (!ObjDesc2->Number.Value)
         {
-            DEBUG_PRINT (ACPI_ERROR,
-                ("AmlExecDyadic2R/DivideOp: Divide by zero\n"));
-            REPORT_ERROR ("AmlExecDyadic2R/DivideOp: Divide by zero");
+            REPORT_ERROR
+                (("AmlExecDyadic2R/DivideOp: Divide by zero\n"));
 
             Status = AE_AML_DIVIDE_BY_ZERO;
             goto Cleanup;
@@ -415,14 +414,15 @@ AcpiAmlExecDyadic2R (
             goto Cleanup;
         }
 
-        Remainder               = ObjDesc->Number.Value %
-                                  ObjDesc2->Number.Value;
-        RetDesc->Number.Value   = Remainder;
+        /* Remainder (modulo) */
+
+        RetDesc->Number.Value   = ACPI_MODULO (ObjDesc->Number.Value,
+                                                ObjDesc2->Number.Value);
 
         /* Result (what we used to call the quotient) */
 
-        RetDesc2->Number.Value  = ObjDesc->Number.Value /
-                                    ObjDesc2->Number.Value;
+        RetDesc2->Number.Value  = ACPI_DIVIDE (ObjDesc->Number.Value,
+                                                ObjDesc2->Number.Value);
         break;
 
 
@@ -469,7 +469,7 @@ AcpiAmlExecDyadic2R (
         if (ObjDesc2->Common.Type != ObjDesc->Common.Type)
         {
             DEBUG_PRINT (ACPI_ERROR,
-                ("AmlExecDyadic2R/ConcatOp: operand type mismatch %d %d\n",
+                ("AmlExecDyadic2R/ConcatOp: operand type mismatch %X != %X\n",
                 ObjDesc->Common.Type, ObjDesc2->Common.Type));
             Status = AE_AML_OPERAND_TYPE;
             goto Cleanup;
@@ -493,7 +493,7 @@ AcpiAmlExecDyadic2R (
             if (!NewBuf)
             {
                 REPORT_ERROR
-                    ("AmlExecDyadic2R/ConcatOp: String allocation failure");
+                    (("AmlExecDyadic2R/ConcatOp: String allocation failure\n"));
                 Status = AE_NO_MEMORY;
                 goto Cleanup;
             }
@@ -525,7 +525,7 @@ AcpiAmlExecDyadic2R (
             if (!NewBuf)
             {
                 REPORT_ERROR
-                    ("AmlExecDyadic2R/ConcatOp: Buffer allocation failure");
+                    (("AmlExecDyadic2R/ConcatOp: Buffer allocation failure\n"));
                 Status = AE_NO_MEMORY;
                 goto Cleanup;
             }
@@ -548,7 +548,7 @@ AcpiAmlExecDyadic2R (
 
     default:
 
-        REPORT_ERROR ("AcpiAmlExecDyadic2R: Unknown dyadic opcode");
+        REPORT_ERROR (("AcpiAmlExecDyadic2R: Unknown dyadic opcode %X\n", Opcode));
         Status = AE_AML_BAD_OPCODE;
         goto Cleanup;
     }
@@ -656,7 +656,7 @@ AcpiAmlExecDyadic2S (
         /* Invalid parameters on object stack  */
 
         DEBUG_PRINT (ACPI_ERROR,
-            ("ExecDyadic2S/%s: bad operand(s) (0x%X)\n",
+            ("ExecDyadic2S/%s: bad operand(s) (Status=%X)\n",
             AcpiPsGetOpcodeName (Opcode), Status));
 
         goto Cleanup;
@@ -700,7 +700,7 @@ AcpiAmlExecDyadic2S (
 
     default:
 
-        REPORT_ERROR ("AcpiAmlExecDyadic2S: Unknown dyadic synchronization opcode");
+        REPORT_ERROR (("AcpiAmlExecDyadic2S: Unknown dyadic synchronization opcode %X\n", Opcode));
         Status = AE_AML_BAD_OPCODE;
         goto Cleanup;
     }
@@ -713,7 +713,7 @@ AcpiAmlExecDyadic2S (
 
     if (Status == AE_TIME)
     {
-        RetDesc->Number.Value = (UINT32)(-1);   /* TRUE, op timed out */
+        RetDesc->Number.Value = ACPI_INTEGER_MAX;   /* TRUE, op timed out */
         Status = AE_OK;
     }
 
@@ -789,7 +789,7 @@ AcpiAmlExecDyadic2 (
         /* Invalid parameters on object stack  */
 
         DEBUG_PRINT (ACPI_ERROR,
-            ("ExecDyadic2/%s: bad operand(s) (0x%X)\n",
+            ("ExecDyadic2/%s: bad operand(s) (Status=%X)\n",
             AcpiPsGetOpcodeName (Opcode), Status));
 
         goto Cleanup;
@@ -860,7 +860,7 @@ AcpiAmlExecDyadic2 (
 
     default:
 
-        REPORT_ERROR ("AcpiAmlExecDyadic2: Unknown dyadic opcode");
+        REPORT_ERROR (("AcpiAmlExecDyadic2: Unknown dyadic opcode %X\n", Opcode));
         Status = AE_AML_BAD_OPCODE;
         goto Cleanup;
         break;
@@ -871,7 +871,7 @@ AcpiAmlExecDyadic2 (
 
     if (Lboolean)
     {
-        RetDesc->Number.Value = 0xffffffff;
+        RetDesc->Number.Value = ACPI_INTEGER_MAX;
     }
     else
     {

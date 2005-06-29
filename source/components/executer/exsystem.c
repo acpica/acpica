@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: amsystem - Interface to OS services
- *              $Revision: 1.51 $
+ *              $Revision: 1.53 $
  *
  *****************************************************************************/
 
@@ -10,8 +10,8 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, Intel Corp.  All rights
- * reserved.
+ * Some or all of this work - Copyright (c) 1999, 2000, Intel Corp.
+ * All rights reserved.
  *
  * 2. License
  *
@@ -307,7 +307,7 @@ AcpiAmlSystemAcquireMutex (
     }
 
     Status = AcpiAmlSystemWaitSemaphore (ObjDesc->Mutex.Semaphore,
-                                         TimeDesc->Number.Value);
+                                         (UINT32) TimeDesc->Number.Value);
     return_ACPI_STATUS (Status);
 }
 
@@ -417,7 +417,7 @@ AcpiAmlSystemWaitEvent (
     if (ObjDesc)
     {
         Status = AcpiAmlSystemWaitSemaphore (ObjDesc->Event.Semaphore,
-                                             TimeDesc->Number.Value);
+                                             (UINT32) TimeDesc->Number.Value);
     }
 
 

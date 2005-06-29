@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: ammonad - ACPI AML (p-code) execution for monadic operators
- *              $Revision: 1.79 $
+ *              $Revision: 1.88 $
  *
  *****************************************************************************/
 
@@ -10,8 +10,8 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, Intel Corp.  All rights
- * reserved.
+ * Some or all of this work - Copyright (c) 1999, 2000, Intel Corp.
+ * All rights reserved.
  *
  * 2. License
  *
@@ -143,7 +143,7 @@
  *
  ******************************************************************************/
 
-ACPI_STATUS
+static ACPI_STATUS
 AcpiAmlGetObjectReference (
     ACPI_OPERAND_OBJECT     *ObjDesc,
     ACPI_OPERAND_OBJECT     **RetDesc,
@@ -256,8 +256,8 @@ AcpiAmlExecMonadic1 (
     if (ACPI_FAILURE (Status))
     {
         DEBUG_PRINT (ACPI_ERROR,
-            ("ExecMonadic1/%s: bad operand(s) (0x%X)\n",
-            AcpiPsGetOpcodeName (Opcode), Status));
+            ("ExecMonadic1/%s: bad operand(s) (Status=%s)\n",
+            AcpiPsGetOpcodeName (Opcode), AcpiCmFormatException(Status)));
 
         goto Cleanup;
     }
@@ -296,7 +296,7 @@ AcpiAmlExecMonadic1 (
 
     case AML_SLEEP_OP:
 
-        AcpiAmlSystemDoSuspend (ObjDesc->Number.Value);
+        AcpiAmlSystemDoSuspend ((UINT32) ObjDesc->Number.Value);
         break;
 
 
@@ -304,7 +304,7 @@ AcpiAmlExecMonadic1 (
 
     case AML_STALL_OP:
 
-        AcpiAmlSystemDoStall (ObjDesc->Number.Value);
+        AcpiAmlSystemDoStall ((UINT32) ObjDesc->Number.Value);
         break;
 
 
@@ -312,7 +312,8 @@ AcpiAmlExecMonadic1 (
 
     default:
 
-        REPORT_ERROR ("AcpiAmlExecMonadic1: Unknown monadic opcode");
+        REPORT_ERROR (("AcpiAmlExecMonadic1: Unknown monadic opcode %X\n",
+            Opcode));
         Status = AE_AML_BAD_OPCODE;
         break;
 
@@ -354,10 +355,9 @@ AcpiAmlExecMonadic2R (
     ACPI_OPERAND_OBJECT     *RetDesc2 = NULL;
     UINT32                  ResVal;
     ACPI_STATUS             Status;
-    UINT32                  d0;
-    UINT32                  d1;
-    UINT32                  d2;
-    UINT32                  d3;
+    UINT32                  i;
+    UINT32                  j;
+    ACPI_INTEGER            Digit;
 
 
     FUNCTION_TRACE_PTR ("AmlExecMonadic2R", WALK_OPERANDS);
@@ -377,8 +377,8 @@ AcpiAmlExecMonadic2R (
     if (ACPI_FAILURE (Status))
     {
         DEBUG_PRINT (ACPI_ERROR,
-            ("ExecMonadic2R/%s: bad operand(s) (0x%X)\n",
-            AcpiPsGetOpcodeName (Opcode), Status));
+            ("ExecMonadic2R/%s: bad operand(s) (Status=%s)\n",
+            AcpiPsGetOpcodeName (Opcode), AcpiCmFormatException(Status)));
 
         goto Cleanup;
     }
@@ -423,11 +423,10 @@ AcpiAmlExecMonadic2R (
         RetDesc->Number.Value = ObjDesc->Number.Value;
 
         /*
-         * Acpi x1.94 spec, Chapter 16 describes Integer as a 32-bit
-         *  little endian unsigned value, so this boundry condition
-         *  is valid.
+         * Acpi specification describes Integer type as a little
+         * endian unsigned value, so this boundry condition is valid.
          */
-        for (ResVal = 0; RetDesc->Number.Value && ResVal < 32; ++ResVal)
+        for (ResVal = 0; RetDesc->Number.Value && ResVal < ACPI_INTEGER_BIT_SIZE; ++ResVal)
         {
             RetDesc->Number.Value >>= 1;
         }
@@ -443,17 +442,17 @@ AcpiAmlExecMonadic2R (
         RetDesc->Number.Value = ObjDesc->Number.Value;
 
         /*
-         * Acpi x1.94 spec, Chapter 16 describes Integer as a 32-bit
-         *  little endian unsigned value, so this boundry condition
-         *  is valid.
+         * Acpi specification describes Integer type as a little
+         * endian unsigned value, so this boundry condition is valid.
          */
-        for (ResVal = 0; RetDesc->Number.Value && ResVal < 32; ++ResVal)
+        for (ResVal = 0; RetDesc->Number.Value && ResVal < ACPI_INTEGER_BIT_SIZE; ++ResVal)
         {
             RetDesc->Number.Value <<= 1;
         }
 
-        /* Since returns must be 1-based, subtract from 33 */
-        RetDesc->Number.Value = ResVal == 0 ? 0 : 33 - ResVal;
+        /* Since returns must be 1-based, subtract from 33 (65) */
+
+        RetDesc->Number.Value = ResVal == 0 ? 0 : (ACPI_INTEGER_BIT_SIZE + 1) - ResVal;
         break;
 
 
@@ -461,21 +460,39 @@ AcpiAmlExecMonadic2R (
 
     case AML_FROM_BCD_OP:
 
-        d0 = (UINT32) (ObjDesc->Number.Value & 15);
-        d1 = (UINT32) (ObjDesc->Number.Value >> 4 & 15);
-        d2 = (UINT32) (ObjDesc->Number.Value >> 8 & 15);
-        d3 = (UINT32) (ObjDesc->Number.Value >> 12 & 15);
-
-        if (d0 > 9 || d1 > 9 || d2 > 9 || d3 > 9)
+        /*
+         * The 64-bit ACPI integer can hold 16 4-bit BCD integers
+         */
+        RetDesc->Number.Value = 0;
+        for (i = 0; i < ACPI_MAX_BCD_DIGITS; i++)
         {
-            DEBUG_PRINT (ACPI_ERROR,
-                ("Monadic2R/FromBCDOp: BCD digit too large %d %d %d %d\n",
-                d3, d2, d1, d0));
-            Status = AE_AML_NUMERIC_OVERFLOW;
-            goto Cleanup;
-        }
+            /* Get one BCD digit */
 
-        RetDesc->Number.Value = d0 + d1 * 10 + d2 * 100 + d3 * 1000;
+            Digit = (ACPI_INTEGER) ((ObjDesc->Number.Value >> (i * 4)) & 0xF);
+
+            /* Check the range of the digit */
+
+            if (Digit > 9)
+            {
+                DEBUG_PRINT (ACPI_ERROR,
+                    ("Monadic2R/FromBCDOp: BCD digit too large: \n",
+                    Digit));
+                Status = AE_AML_NUMERIC_OVERFLOW;
+                goto Cleanup;
+            }
+
+            if (Digit > 0)
+            {
+                /* Sum into the result with the appropriate power of 10 */
+
+                for (j = 0; j < i; j++)
+                {
+                    Digit *= 10;
+                }
+
+                RetDesc->Number.Value += Digit;
+            }
+        }
         break;
 
 
@@ -484,7 +501,7 @@ AcpiAmlExecMonadic2R (
     case AML_TO_BCD_OP:
 
 
-        if (ObjDesc->Number.Value > 9999)
+        if (ObjDesc->Number.Value > ACPI_MAX_BCD_VALUE)
         {
             DEBUG_PRINT (ACPI_ERROR, ("Monadic2R/ToBCDOp: BCD overflow: %d\n",
                 ObjDesc->Number.Value));
@@ -492,12 +509,24 @@ AcpiAmlExecMonadic2R (
             goto Cleanup;
         }
 
-        RetDesc->Number.Value
-            = ObjDesc->Number.Value % 10
-            + (ObjDesc->Number.Value / 10 % 10 << 4)
-            + (ObjDesc->Number.Value / 100 % 10 << 8)
-            + (ObjDesc->Number.Value / 1000 % 10 << 12);
+        RetDesc->Number.Value = 0;
+        for (i = 0; i < ACPI_MAX_BCD_DIGITS; i++)
+        {
+            /* Divide by nth factor of 10 */
 
+            Digit = ObjDesc->Number.Value;
+            for (j = 0; j < i; j++)
+            {
+                Digit /= 10;
+            }
+
+            /* Create the BCD digit */
+
+            if (Digit > 0)
+            {
+                RetDesc->Number.Value += (ACPI_MODULO (Digit, 10) << (i * 4));
+            }
+        }
         break;
 
 
@@ -541,7 +570,7 @@ AcpiAmlExecMonadic2R (
 
         /* The object exists in the namespace, return TRUE */
 
-        RetDesc->Number.Value = (UINT32) -1;
+        RetDesc->Number.Value = ACPI_INTEGER_MAX;
         goto Cleanup;
         break;
 
@@ -612,7 +641,8 @@ AcpiAmlExecMonadic2R (
 
     default:
 
-        REPORT_ERROR ("AcpiAmlExecMonadic2R: Unknown monadic opcode");
+        REPORT_ERROR (("AcpiAmlExecMonadic2R: Unknown monadic opcode %X\n",
+            Opcode));
         Status = AE_AML_BAD_OPCODE;
         goto Cleanup;
     }
@@ -671,7 +701,7 @@ AcpiAmlExecMonadic2 (
     ACPI_STATUS             ResolveStatus;
     ACPI_STATUS             Status;
     UINT32                  Type;
-    UINT32                  Value;
+    ACPI_INTEGER            Value;
 
 
     FUNCTION_TRACE_PTR ("AmlExecMonadic2", WALK_OPERANDS);
@@ -779,8 +809,8 @@ AcpiAmlExecMonadic2 (
         if (ACPI_FAILURE (Status))
         {
             DEBUG_PRINT (ACPI_ERROR,
-                ("ExecMonadic2/%s: bad operand(s) (0x%X)\n",
-                AcpiPsGetOpcodeName (Opcode), Status));
+                ("ExecMonadic2/%s: bad operand(s) (Status=%s)\n",
+                AcpiPsGetOpcodeName (Opcode), AcpiCmFormatException(Status)));
 
             goto Cleanup;
         }
@@ -871,7 +901,8 @@ AcpiAmlExecMonadic2 (
 
             default:
 
-                REPORT_ERROR ("AcpiAmlExecMonadic2/TypeOp:internal error: Unknown Reference subtype");
+                REPORT_ERROR (("AcpiAmlExecMonadic2/TypeOp: Internal error - Unknown Reference subtype %X\n",
+                    ObjDesc->Reference.OpCode));
                 Status = AE_AML_INTERNAL;
                 goto Cleanup;
             }
@@ -942,7 +973,7 @@ AcpiAmlExecMonadic2 (
             default:
 
                 DEBUG_PRINT (ACPI_ERROR,
-                    ("AmlExecMonadic2: Not Buf/Str/Pkg - found type 0x%X\n",
+                    ("AmlExecMonadic2: Not Buf/Str/Pkg - found type %X\n",
                     ObjDesc->Common.Type));
                 Status = AE_AML_OPERAND_TYPE;
                 goto Cleanup;
@@ -1152,7 +1183,8 @@ AcpiAmlExecMonadic2 (
 
     default:
 
-        REPORT_ERROR ("AcpiAmlExecMonadic2: Internal error, unknown monadic opcode");
+        REPORT_ERROR (("AcpiAmlExecMonadic2: Unknown monadic opcode %X\n",
+            Opcode));
         Status = AE_AML_BAD_OPCODE;
         goto Cleanup;
     }

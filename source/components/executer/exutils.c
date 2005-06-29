@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: amutils - interpreter/scanner utilities
- *              $Revision: 1.53 $
+ *              $Revision: 1.65 $
  *
  *****************************************************************************/
 
@@ -10,8 +10,8 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, Intel Corp.  All rights
- * reserved.
+ * Some or all of this work - Copyright (c) 1999, 2000, Intel Corp.
+ * All rights reserved.
  *
  * 2. License
  *
@@ -227,24 +227,45 @@ AcpiAmlValidateObjectType (
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiAmlBufSeq
+ * FUNCTION:    AcpiAmlTruncateFor32bitTable
  *
- * RETURN:      The next buffer descriptor sequence number
+ * PARAMETERS:  ObjDesc         - Object to be truncated
+ *              WalkState       - Current walk state
+ *                                (A method must be executing)
  *
- * DESCRIPTION: Provide a unique sequence number for each Buffer descriptor
- *              allocated during the interpreter's existence.  These numbers
- *              are used to relate FieldUnit descriptors to the Buffers
- *              within which the fields are defined.
+ * RETURN:      none
  *
- *              Just increment the global counter and return it.
+ * DESCRIPTION: Truncate a number to 32-bits if the currently executing method
+ *              belongs to a 32-bit ACPI table.
  *
  ******************************************************************************/
 
-UINT32
-AcpiAmlBufSeq (void)
+void
+AcpiAmlTruncateFor32bitTable (
+    ACPI_OPERAND_OBJECT     *ObjDesc,
+    ACPI_WALK_STATE         *WalkState)
 {
 
-    return (++AcpiGbl_BufSeq);
+    /*
+     * Object must be a valid number and we must be executing
+     * a control method
+     */
+
+    if ((!ObjDesc) ||
+        (ObjDesc->Common.Type != ACPI_TYPE_NUMBER) ||
+        (!WalkState->MethodNode))
+    {
+        return;
+    }
+
+    if (WalkState->MethodNode->Flags & ANOBJ_DATA_WIDTH_32)
+    {
+        /*
+         * We are running a method that exists in a 32-bit ACPI table.
+         * Truncate the value to 32 bits by zeroing out the upper 32-bit field
+         */
+        ObjDesc->Number.Value &= (UINT64) ACPI_UINT32_MAX;
+    }
 }
 
 
@@ -355,7 +376,7 @@ AcpiAmlReleaseGlobalLock (
 
 UINT32
 AcpiAmlDigitsNeeded (
-    UINT32                  val,
+    ACPI_INTEGER            val,
     UINT32                  base)
 {
     UINT32                  NumDigits = 0;
@@ -366,14 +387,12 @@ AcpiAmlDigitsNeeded (
 
     if (base < 1)
     {
-        /*  impossible base */
-
-        REPORT_ERROR ("AmlDigitsNeeded: Impossible base");
+        REPORT_ERROR (("AmlDigitsNeeded: Internal error - Invalid base\n"));
     }
 
     else
     {
-        for (NumDigits = 1 + (val < 0) ; val /= base ; ++NumDigits)
+        for (NumDigits = 1 + (val < 0); (val = ACPI_DIVIDE (val,base)); ++NumDigits)
         { ; }
     }
 
@@ -387,11 +406,11 @@ AcpiAmlDigitsNeeded (
  *
  * PARAMETERS:  Value           - Value to be converted
  *
- * RETURN:      Convert a 32-bit value to big-endian (swap the bytes)
+ * DESCRIPTION: Convert a 32-bit value to big-endian (swap the bytes)
  *
  ******************************************************************************/
 
-UINT32
+static UINT32
 _ntohl (
     UINT32                  Value)
 {
@@ -426,7 +445,7 @@ _ntohl (
  * PARAMETERS:  NumericId       - EISA ID to be converted
  *              OutString       - Where to put the converted string (8 bytes)
  *
- * RETURN:      Convert a numeric EISA ID to string representation
+ * DESCRIPTION: Convert a numeric EISA ID to string representation
  *
  ******************************************************************************/
 
@@ -449,6 +468,40 @@ AcpiAmlEisaIdToString (
     OutString[5] = hex[(id >> 4) & 0xf];
     OutString[6] = hex[id & 0xf];
     OutString[7] = 0;
+
+    return (AE_OK);
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiAmlUnsignedIntegerToString
+ *
+ * PARAMETERS:  Value           - Value to be converted
+ *              OutString       - Where to put the converted string (8 bytes)
+ *
+ * RETURN:      Convert a number to string representation
+ *
+ ******************************************************************************/
+
+ACPI_STATUS
+AcpiAmlUnsignedIntegerToString (
+    ACPI_INTEGER            Value,
+    NATIVE_CHAR             *OutString)
+{
+    UINT32                  Count;
+    UINT32                  DigitsNeeded;
+
+
+    DigitsNeeded = AcpiAmlDigitsNeeded (Value, 10);
+
+    OutString[DigitsNeeded] = '\0';
+
+    for (Count = DigitsNeeded; Count > 0; Count--)
+    {
+        OutString[Count-1] = (NATIVE_CHAR) ('0' + (ACPI_MODULO (Value, 10)));
+        Value = ACPI_DIVIDE (Value, 10);
+    }
 
     return (AE_OK);
 }
@@ -498,8 +551,8 @@ AcpiAmlBuildCopyInternalPackageObject (
     LevelPtr                = &CopyLevel[0];
     CurrentDepth            = 0;
 
-    DestObj->Common.Type        = SourceObj->Common.Type;
-    DestObj->Package.Count      = SourceObj->Package.Count;
+    DestObj->Common.Type    = SourceObj->Common.Type;
+    DestObj->Package.Count  = SourceObj->Package.Count;
 
 
     /*
@@ -514,7 +567,7 @@ AcpiAmlBuildCopyInternalPackageObject (
     {
         /* Package vector allocation failure   */
 
-        REPORT_ERROR ("AmlBuildCopyInternalPackageObject: Package vector allocation failure");
+        REPORT_ERROR (("AmlBuildCopyInternalPackageObject: Package vector allocation failure\n"));
         return_ACPI_STATUS (AE_NO_MEMORY);
     }
 
@@ -524,8 +577,8 @@ AcpiAmlBuildCopyInternalPackageObject (
     while (1)
     {
         ThisIndex       = LevelPtr->Index;
-        ThisDestObj     = (ACPI_OPERAND_OBJECT  *) LevelPtr->DestObj->Package.Elements[ThisIndex];
-        ThisSourceObj   = (ACPI_OPERAND_OBJECT  *) LevelPtr->SourceObj->Package.Elements[ThisIndex];
+        ThisDestObj     = (ACPI_OPERAND_OBJECT *) LevelPtr->DestObj->Package.Elements[ThisIndex];
+        ThisSourceObj   = (ACPI_OPERAND_OBJECT *) LevelPtr->SourceObj->Package.Elements[ThisIndex];
 
         if (IS_THIS_OBJECT_TYPE (ThisSourceObj, ACPI_TYPE_PACKAGE))
         {
@@ -538,7 +591,7 @@ AcpiAmlBuildCopyInternalPackageObject (
                  * Too many nested levels of packages for us to handle
                  */
                 DEBUG_PRINT (ACPI_ERROR,
-                    ("AmlBuildCopyInternalPackageObject: Pkg nested too deep (max %d)\n",
+                    ("AmlBuildCopyInternalPackageObject: Pkg nested too deep (max %X)\n",
                     MAX_PACKAGE_DEPTH));
                 return_ACPI_STATUS (AE_LIMIT);
             }

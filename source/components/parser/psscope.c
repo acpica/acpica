@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: psscope - Parser scope stack management routines
- *              $Revision: 1.18 $
+ *              $Revision: 1.23 $
  *
  *****************************************************************************/
 
@@ -9,8 +9,8 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, Intel Corp.  All rights
- * reserved.
+ * Some or all of this work - Copyright (c) 1999, 2000, Intel Corp.
+ * All rights reserved.
  *
  * 2. License
  *
@@ -213,7 +213,7 @@ AcpiPsInitScope (
  *
  * PARAMETERS:  ParserState         - Current parser state object
  *              Op                  - Current op to be pushed
- *              NextArg             - Next op argument (to be pushed)
+ *              RemainingArgs       - List of args remaining
  *              ArgCount            - Fixed or variable number of args
  *
  * RETURN:      Status
@@ -276,8 +276,9 @@ AcpiPsPushScope (
  *
  * PARAMETERS:  ParserState         - Current parser state object
  *              Op                  - Where the popped op is returned
- *              NextArg             - Where the popped "next argument" is
+ *              ArgList             - Where the popped "next argument" is
  *                                    returned
+ *              ArgCount            - Count of objects in ArgList
  *
  * RETURN:      Status
  *
@@ -289,7 +290,8 @@ void
 AcpiPsPopScope (
     ACPI_PARSE_STATE        *ParserState,
     ACPI_PARSE_OBJECT       **Op,
-    UINT32                  *ArgList)
+    UINT32                  *ArgList,
+    UINT32                  *ArgCount)
 {
     ACPI_GENERIC_STATE      *Scope = ParserState->Scope;
 
@@ -308,6 +310,7 @@ AcpiPsPopScope (
 
         *Op                     = Scope->ParseScope.Op;
         *ArgList                = Scope->ParseScope.ArgList;
+        *ArgCount               = Scope->ParseScope.ArgCount;
         ParserState->PkgEnd     = Scope->ParseScope.PkgEnd;
 
         /* All done with this scope state structure */
@@ -321,10 +324,12 @@ AcpiPsPopScope (
 
         *Op                     = NULL;
         *ArgList                = 0;
+        *ArgCount               = 0;
     }
 
 
-    DEBUG_PRINT (TRACE_PARSE, ("PsPopScope:  Popped Op %p\n", *Op));
+    DEBUG_PRINT (TRACE_PARSE,
+        ("PsPopScope:  Popped Op %p Args %X\n", *Op, *ArgCount));
     return_VOID;
 }
 
