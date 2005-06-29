@@ -226,10 +226,13 @@ _Kinc_warning (char *, INT32, INT32, char *, INT32, INT32);
 
 // assert macros
 
+#ifdef DEBUG_ASSERT
+#undef DEBUG_ASSERT
+#endif
+
 #define ACPI_ASSERT(exp)	                                        \
     if(!(exp))												\
         OsdDbgAssert(#exp, __FILE__, __LINE__, "Failed Assertion")
-
 
 #define DEBUG_ASSERT(msg, exp)								\
     if(!(exp))												\
