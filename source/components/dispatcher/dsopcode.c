@@ -2,7 +2,7 @@
  *
  * Module Name: dsopcode - Dispatcher Op Region support and handling of
  *                         "control" opcodes
- *              $Revision: 1.97 $
+ *              $Revision: 1.99 $
  *
  *****************************************************************************/
 
@@ -129,7 +129,7 @@
         ACPI_MODULE_NAME    ("dsopcode")
 
 
-/*****************************************************************************
+/*******************************************************************************
  *
  * FUNCTION:    AcpiDsExecuteArguments
  *
@@ -141,9 +141,9 @@
  *
  * DESCRIPTION: Late (deferred) execution of region or field arguments
  *
- ****************************************************************************/
+ ******************************************************************************/
 
-ACPI_STATUS
+static ACPI_STATUS
 AcpiDsExecuteArguments (
     ACPI_NAMESPACE_NODE     *Node,
     ACPI_NAMESPACE_NODE     *ScopeNode,
@@ -243,7 +243,7 @@ AcpiDsExecuteArguments (
 }
 
 
-/*****************************************************************************
+/*******************************************************************************
  *
  * FUNCTION:    AcpiDsGetBufferFieldArguments
  *
@@ -254,7 +254,7 @@ AcpiDsExecuteArguments (
  * DESCRIPTION: Get BufferField Buffer and Index.  This implements the late
  *              evaluation of these field attributes.
  *
- ****************************************************************************/
+ ******************************************************************************/
 
 ACPI_STATUS
 AcpiDsGetBufferFieldArguments (
@@ -290,7 +290,7 @@ AcpiDsGetBufferFieldArguments (
 }
 
 
-/*****************************************************************************
+/*******************************************************************************
  *
  * FUNCTION:    AcpiDsGetBufferArguments
  *
@@ -301,7 +301,7 @@ AcpiDsGetBufferFieldArguments (
  * DESCRIPTION: Get Buffer length and initializer byte list.  This implements
  *              the late evaluation of these attributes.
  *
- ****************************************************************************/
+ ******************************************************************************/
 
 ACPI_STATUS
 AcpiDsGetBufferArguments (
@@ -339,7 +339,7 @@ AcpiDsGetBufferArguments (
 }
 
 
-/*****************************************************************************
+/*******************************************************************************
  *
  * FUNCTION:    AcpiDsGetPackageArguments
  *
@@ -350,7 +350,7 @@ AcpiDsGetBufferArguments (
  * DESCRIPTION: Get Package length and initializer byte list.  This implements
  *              the late evaluation of these attributes.
  *
- ****************************************************************************/
+ ******************************************************************************/
 
 ACPI_STATUS
 AcpiDsGetPackageArguments (
@@ -441,7 +441,7 @@ AcpiDsGetRegionArguments (
 }
 
 
-/*****************************************************************************
+/*******************************************************************************
  *
  * FUNCTION:    AcpiDsInitializeRegion
  *
@@ -451,7 +451,7 @@ AcpiDsGetRegionArguments (
  *
  * DESCRIPTION: Front end to EvInitializeRegion
  *
- ****************************************************************************/
+ ******************************************************************************/
 
 ACPI_STATUS
 AcpiDsInitializeRegion (
@@ -470,7 +470,7 @@ AcpiDsInitializeRegion (
 }
 
 
-/*****************************************************************************
+/*******************************************************************************
  *
  * FUNCTION:    AcpiDsInitBufferField
  *
@@ -485,9 +485,9 @@ AcpiDsInitializeRegion (
  *
  * DESCRIPTION: Perform actual initialization of a buffer field
  *
- ****************************************************************************/
+ ******************************************************************************/
 
-ACPI_STATUS
+static ACPI_STATUS
 AcpiDsInitBufferField (
     UINT16                  AmlOpcode,
     ACPI_OPERAND_OBJECT     *ObjDesc,
@@ -525,8 +525,10 @@ AcpiDsInitBufferField (
      */
     if (ACPI_GET_DESCRIPTOR_TYPE (ResultDesc) != ACPI_DESC_TYPE_NAMED)
     {
-        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "(%s) destination not a NS Node [%s]\n",
-                AcpiPsGetOpcodeName (AmlOpcode), AcpiUtGetDescriptorName (ResultDesc)));
+        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
+                "(%s) destination not a NS Node [%s]\n",
+                AcpiPsGetOpcodeName (AmlOpcode),
+                AcpiUtGetDescriptorName (ResultDesc)));
 
         Status = AE_AML_OPERAND_TYPE;
         goto Cleanup;
@@ -619,7 +621,8 @@ AcpiDsInitBufferField (
 
     /*
      * Initialize areas of the field object that are common to all fields
-     * For FieldFlags, use LOCK_RULE = 0 (NO_LOCK), UPDATE_RULE = 0 (UPDATE_PRESERVE)
+     * For FieldFlags, use LOCK_RULE = 0 (NO_LOCK),
+     * UPDATE_RULE = 0 (UPDATE_PRESERVE)
      */
     Status = AcpiExPrepCommonFieldObject (ObjDesc, FieldFlags, 0,
                                             BitOffset, BitCount);
@@ -632,8 +635,8 @@ AcpiDsInitBufferField (
 
     /* Reference count for BufferDesc inherits ObjDesc count */
 
-    BufferDesc->Common.ReferenceCount = (UINT16) (BufferDesc->Common.ReferenceCount +
-                                                  ObjDesc->Common.ReferenceCount);
+    BufferDesc->Common.ReferenceCount = (UINT16)
+        (BufferDesc->Common.ReferenceCount + ObjDesc->Common.ReferenceCount);
 
 
 Cleanup:
@@ -665,7 +668,7 @@ Cleanup:
 }
 
 
-/*****************************************************************************
+/*******************************************************************************
  *
  * FUNCTION:    AcpiDsEvalBufferFieldOperands
  *
@@ -677,7 +680,7 @@ Cleanup:
  * DESCRIPTION: Get BufferField Buffer and Index
  *              Called from AcpiDsExecEndOp during BufferField parse tree walk
  *
- ****************************************************************************/
+ ******************************************************************************/
 
 ACPI_STATUS
 AcpiDsEvalBufferFieldOperands (
@@ -757,7 +760,7 @@ AcpiDsEvalBufferFieldOperands (
 }
 
 
-/*****************************************************************************
+/*******************************************************************************
  *
  * FUNCTION:    AcpiDsEvalRegionOperands
  *
@@ -769,7 +772,7 @@ AcpiDsEvalBufferFieldOperands (
  * DESCRIPTION: Get region address and length
  *              Called from AcpiDsExecEndOp during OpRegion parse tree walk
  *
- ****************************************************************************/
+ ******************************************************************************/
 
 ACPI_STATUS
 AcpiDsEvalRegionOperands (
@@ -787,7 +790,8 @@ AcpiDsEvalRegionOperands (
 
 
     /*
-     * This is where we evaluate the address and length fields of the OpRegion declaration
+     * This is where we evaluate the address and length fields of the
+     * OpRegion declaration
      */
     Node =  Op->Common.Node;
 
@@ -809,7 +813,8 @@ AcpiDsEvalRegionOperands (
 
     /* Resolve the length and address operands to numbers */
 
-    Status = AcpiExResolveOperands (Op->Common.AmlOpcode, ACPI_WALK_OPERANDS, WalkState);
+    Status = AcpiExResolveOperands (Op->Common.AmlOpcode,
+                ACPI_WALK_OPERANDS, WalkState);
     if (ACPI_FAILURE (Status))
     {
         return_ACPI_STATUS (Status);
@@ -840,7 +845,8 @@ AcpiDsEvalRegionOperands (
      */
     OperandDesc = WalkState->Operands[WalkState->NumOperands - 2];
 
-    ObjDesc->Region.Address = (ACPI_PHYSICAL_ADDRESS) OperandDesc->Integer.Value;
+    ObjDesc->Region.Address = (ACPI_PHYSICAL_ADDRESS)
+                                OperandDesc->Integer.Value;
     AcpiUtRemoveReference (OperandDesc);
 
     ACPI_DEBUG_PRINT ((ACPI_DB_EXEC, "RgnObj %p Addr %8.8X%8.8X Len %X\n",
@@ -856,7 +862,7 @@ AcpiDsEvalRegionOperands (
 }
 
 
-/*****************************************************************************
+/*******************************************************************************
  *
  * FUNCTION:    AcpiDsEvalDataObjectOperands
  *
@@ -869,7 +875,7 @@ AcpiDsEvalRegionOperands (
  * DESCRIPTION: Get the operands and complete the following data object types:
  *              Buffer, Package.
  *
- ****************************************************************************/
+ ******************************************************************************/
 
 ACPI_STATUS
 AcpiDsEvalDataObjectOperands (
@@ -939,7 +945,7 @@ AcpiDsEvalDataObjectOperands (
     if (ACPI_SUCCESS (Status))
     {
         /*
-         * Return the object in the WalkState, unless the parent is a package --
+         * Return the object in the WalkState, unless the parent is a package -
          * in this case, the return object will be stored in the parse tree
          * for the package.
          */
@@ -1103,7 +1109,8 @@ AcpiDsExecEndControlOp (
             Status = AE_CTRL_PENDING;
         }
 
-        ACPI_DEBUG_PRINT ((ACPI_DB_DISPATCH, "[WHILE_OP] termination! Op=%p\n", Op));
+        ACPI_DEBUG_PRINT ((ACPI_DB_DISPATCH,
+            "[WHILE_OP] termination! Op=%p\n",Op));
 
         /* Pop this control state and free it */
 
@@ -1126,6 +1133,10 @@ AcpiDsExecEndControlOp (
          */
         if (Op->Common.Value.Arg)
         {
+            /* Since we have a real Return(), delete any implicit return */
+
+            AcpiDsClearImplicitReturn (WalkState);
+
             /* Return statement has an immediate operand */
 
             Status = AcpiDsCreateOperands (WalkState, Op->Common.Value.Arg);
@@ -1155,6 +1166,10 @@ AcpiDsExecEndControlOp (
         else if ((WalkState->Results) &&
                  (WalkState->Results->Results.NumResults > 0))
         {
+            /* Since we have a real Return(), delete any implicit return */
+
+            AcpiDsClearImplicitReturn (WalkState);
+
             /*
              * The return value has come from a previous calculation.
              *

@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dswscope - Scope stack manipulation
- *              $Revision: 1.61 $
+ *              $Revision: 1.62 $
  *
  *****************************************************************************/
 
@@ -126,7 +126,6 @@
 
 #define STACK_POP(head) head
 
-
 /****************************************************************************
  *
  * FUNCTION:    AcpiDsScopeStackClear
@@ -155,7 +154,8 @@ AcpiDsScopeStackClear (
         WalkState->ScopeInfo = ScopeInfo->Scope.Next;
 
         ACPI_DEBUG_PRINT ((ACPI_DB_EXEC,
-            "Popped object type (%s)\n", AcpiUtGetTypeName (ScopeInfo->Common.Value)));
+            "Popped object type (%s)\n",
+            AcpiUtGetTypeName (ScopeInfo->Common.Value)));
         AcpiUtDeleteGenericState (ScopeInfo);
     }
 }
@@ -198,7 +198,8 @@ AcpiDsScopeStackPush (
 
     if (!AcpiUtValidObjectType (Type))
     {
-        ACPI_REPORT_WARNING (("DsScopeStackPush: Invalid object type: 0x%X\n", Type));
+        ACPI_REPORT_WARNING ((
+            "DsScopeStackPush: Invalid object type: 0x%X\n", Type));
     }
 
     /* Allocate a new scope object */

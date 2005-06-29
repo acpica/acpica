@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dsinit - Object initialization namespace walk
- *              $Revision: 1.11 $
+ *              $Revision: 1.12 $
  *
  *****************************************************************************/
 
@@ -144,7 +144,7 @@
  *
  ******************************************************************************/
 
-ACPI_STATUS
+static ACPI_STATUS
 AcpiDsInitOneObject (
     ACPI_HANDLE             ObjHandle,
     UINT32                  Level,
@@ -182,7 +182,8 @@ AcpiDsInitOneObject (
         Status = AcpiDsInitializeRegion (ObjHandle);
         if (ACPI_FAILURE (Status))
         {
-            ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Region %p [%4.4s] - Init failure, %s\n",
+            ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
+                "Region %p [%4.4s] - Init failure, %s\n",
                 ObjHandle, AcpiUtGetNodeName (ObjHandle),
                 AcpiFormatException (Status)));
         }
@@ -195,8 +196,10 @@ AcpiDsInitOneObject (
 
         Info->MethodCount++;
 
-        /* Print a dot for each method unless we are going to print the entire pathname */
-
+        /*
+         * Print a dot for each method unless we are going to print
+         * the entire pathname
+         */
         if (!(AcpiDbgLevel & ACPI_LV_INIT_NAMES))
         {
             ACPI_DEBUG_PRINT_RAW ((ACPI_DB_INIT, "."));
@@ -220,7 +223,8 @@ AcpiDsInitOneObject (
         Status = AcpiDsParseMethod (ObjHandle);
         if (ACPI_FAILURE (Status))
         {
-            ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Method %p [%4.4s] - parse failure, %s\n",
+            ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
+                "Method %p [%4.4s] - parse failure, %s\n",
                 ObjHandle, AcpiUtGetNodeName (ObjHandle),
                 AcpiFormatException (Status)));
 
@@ -234,7 +238,8 @@ AcpiDsInitOneObject (
          * for every execution since there isn't much overhead
          */
         AcpiNsDeleteNamespaceSubtree (ObjHandle);
-        AcpiNsDeleteNamespaceByOwner (((ACPI_NAMESPACE_NODE *) ObjHandle)->Object->Method.OwningId);
+        AcpiNsDeleteNamespaceByOwner (
+            ((ACPI_NAMESPACE_NODE *) ObjHandle)->Object->Method.OwningId);
         break;
 
 
