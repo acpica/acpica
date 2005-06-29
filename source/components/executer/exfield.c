@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: amfield - ACPI AML (p-code) execution - field manipulation
- *              $Revision: 1.83 $
+ *              $Revision: 1.86 $
  *
  *****************************************************************************/
 
@@ -166,7 +166,7 @@ AcpiAmlReadDataFromField (
 
     if (!ObjDesc)
     {
-        return_ACPI_STATUS (AE_AML_NO_OPERAND)
+        return_ACPI_STATUS (AE_AML_NO_OPERAND);
     }
 
     /*
@@ -294,7 +294,7 @@ AcpiAmlWriteDataToField (
 
     if (!SourceDesc || !ObjDesc)
     {
-        return_ACPI_STATUS (AE_AML_NO_OPERAND)
+        return_ACPI_STATUS (AE_AML_NO_OPERAND);
     }
 
 
@@ -559,7 +559,7 @@ AcpiAmlAccessIndexField (
      * Set Index value to select proper Data register
      */
     Status = AcpiAmlCommonAccessField (ACPI_WRITE,
-                            (ObjDesc->IndexField.Index)->Object,
+                            ObjDesc->IndexField.IndexObj,
                             &ObjDesc->IndexField.Value,
                             sizeof (ObjDesc->IndexField.Value));
     if (ACPI_FAILURE (Status))
@@ -569,7 +569,7 @@ AcpiAmlAccessIndexField (
 
     /* Now read/write the data register */
 
-    Status = AcpiAmlCommonAccessField (Mode, (ObjDesc->IndexField.Data)->Object,
+    Status = AcpiAmlCommonAccessField (Mode, ObjDesc->IndexField.DataObj,
                     Buffer, BufferLength);
 
 Cleanup:
@@ -624,7 +624,7 @@ AcpiAmlCommonAccessField (
     DEBUG_PRINT (ACPI_INFO,
         ("CommonAccessField: Mode=%d BitLen=%X BitOff=%X ByteOff=%X\n",
         Mode, ObjDesc->CommonField.BitLength, ObjDesc->CommonField.BitOffset,
-        ObjDesc->CommonField.Offset));
+        ObjDesc->CommonField.ByteOffset));
 
 
 
