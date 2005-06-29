@@ -119,10 +119,10 @@
 #define __NSAPIOBJ_C__
 
 #include <acpi.h>
-#include <interpreter.h>
-#include <namespace.h>
+#include <interp.h>
+#include <namesp.h>
 #include <methods.h>
-#include <acpiobj.h>
+#include <acobject.h>
 #include <pnp.h>
 
 
@@ -161,11 +161,11 @@ AcpiEvaluateObject (
 {
     ACPI_STATUS             Status;
     NAME_TABLE_ENTRY        *ObjEntry;
-    ACPI_OBJECT_INTERNAL    InternalRetObj;
     ACPI_OBJECT_INTERNAL    **ParamPtr = NULL;
-    ACPI_OBJECT_INTERNAL    *ReturnPtr = NULL;
+    ACPI_OBJECT_INTERNAL    *ReturnObj = NULL;
     ACPI_OBJECT_INTERNAL    *ObjectPtr = NULL;
     UINT32                  BufferSpaceNeeded;
+    UINT32                  UserBufferLength;
     UINT32                  Count;
     UINT32                  i;
     UINT32                  ParamLength;
@@ -176,8 +176,8 @@ AcpiEvaluateObject (
 
 
     /* 
-     * If there are parameters, the external objects must be converted
-     * to internal objects
+     * If there are parameters to be passed to the object (which must be a control method), 
+     * the external objects must be converted to internal objects
      */
 
     if (ParamObjects && ParamObjects->Count)
@@ -226,28 +226,29 @@ AcpiEvaluateObject (
         }
     }
 
-    if (ReturnBuffer && ReturnBuffer->Pointer)
-    {
-        ReturnPtr = &InternalRetObj;
-        CmInitStaticObject (&InternalRetObj);
-    }
 
     /*
-     *  If the pathname exists and is fully qualified then just eval by name
+     * Three major cases:
+     * 1) Fully qualified pathname 
+     * 2) No handle, not fully qualified pathname (error)
+     * 3) Valid handle 
      */
 
     if ((Pathname) && (Pathname[0] == '\\'))
     {
-        Status = NsEvaluateByName (Pathname, ParamPtr, ReturnPtr);
-        goto Cleanup;
+        /*
+         *  The path is fully qualified, just evaluate by name
+         */
+        Status = NsEvaluateByName (Pathname, ParamPtr, &ReturnObj);
     }
 
-    if (!Handle)
+    else if (!Handle)
     {
         /*
-         *  Handle is optional iff fully qualified pathname is specified, we've already handled
-         *  fully qualified names, so this is an error
+         * A handle is optional iff a fully qualified pathname is specified.
+         * Since we've already handled fully qualified names above, this is an error
          */
+
         if (!Pathname)
         {
             DEBUG_PRINT (ACPI_ERROR, ("AcpiEvaluateObject: Both Handle and Pathname are NULL\n"));
@@ -259,52 +260,40 @@ AcpiEvaluateObject (
         }
 
         Status = AE_BAD_PARAMETER;
-        goto Cleanup;
     }
 
-
-    /*
-     *  We get here if we have a handle, and if we have a pathname it is relative.
-     *
-     *  Validate the handle
-     */
-    if (!(ObjEntry = NsConvertHandleToEntry (Handle)))
-    {
-        DEBUG_PRINT (ACPI_ERROR, ("AcpiEvaluateObject: Bad Handle\n"));
-        Status = AE_BAD_PARAMETER;
-        goto Cleanup;
-    }
-
-    if (!Pathname)
+    else 
     {
         /*
-         *  The null pathname case means the handle is for the object
+         *  We get here if we have a handle.
+         *  And if we have a pathname it is relative.
+         *  Validate the handle.
          */
-        Status = NsEvaluateByHandle (ObjEntry, ParamPtr, ReturnPtr);
+
+        ObjEntry = NsConvertHandleToEntry (Handle);
+        if (!ObjEntry)
+        {
+            DEBUG_PRINT (ACPI_ERROR, ("AcpiEvaluateObject: Bad Handle (%p)\n", Handle));
+            Status = AE_BAD_PARAMETER;
+        }
+
+        else if (!Pathname)
+        {
+            /*
+             * The null pathname case means the handle is for the actual object to be evaluated
+             */
+            Status = NsEvaluateByHandle (ObjEntry, ParamPtr, &ReturnObj);
+        }
+
+        else
+        {
+           /*
+            * Both a Handle and a relative Pathname
+            */
+            Status = NsEvaluateRelative (ObjEntry, Pathname, ParamPtr, &ReturnObj);
+        }
     }
 
-    else
-    {
-       /*
-        *   Have both Handle and a relative Pathname
-        */
-        Status = NsEvaluateRelative (ObjEntry, Pathname, ParamPtr, ReturnPtr);
-    }
-
-
-
-    /*
-     * Common cleanup: We must free the input parameter list (if we created one),
-     * and copy the return object to the caller's buffer (if necessary)
-     */
-
-Cleanup:
-    if (ParamPtr)
-    {
-        /* Free the allocated parameter block */
-
-        CmDeleteInternalObjectList (ParamPtr);
-    }
 
     
     /* 
@@ -312,74 +301,89 @@ Cleanup:
      * copy the return value to an external object.
      */
 
-    if ((ACPI_SUCCESS (Status)) && (ReturnPtr))
+    if (ReturnBuffer)
     {
-        /* Check if the return object is valid */
+        UserBufferLength = ReturnBuffer->Length;
+        ReturnBuffer->Length = 0;
 
-        if (ReturnPtr->Common.Type != INTERNAL_TYPE_Invalid)
+        if (ReturnObj)
         {
-            /*
-             *  Find out how large a buffer is needed to contain the
-             *  returned object
-             */
-            Status = CmGetObjectSize (ReturnPtr, &BufferSpaceNeeded);
-            if (Status != AE_OK) 
+            if (VALID_DESCRIPTOR_TYPE (ReturnObj, DESC_TYPE_NTE))
             {
-                /*
-                 *  Failed the call
+                /* 
+                 * If we got an NTE as a return object, this means the object we are evaluating has nothing
+                 * interesting to return (such as a mutex, etc.)  We return an error because these types
+                 * are essentially unsupported by this interface.  We don't check up front because this makes
+                 * it easier to add support for various types at a later date if necessary.
                  */
-                ReturnBuffer->Length = 0;
+                Status = AE_TYPE;
+                ReturnObj = NULL;   /* No need to delete an NTE */
             }
-
-
-            /* Check if there is enough room in the caller's buffer */
-
-            else if (ReturnBuffer->Length < BufferSpaceNeeded) 
-            {
-                /*
-                 *  Caller's buffer is too small, can't give him partial results
-                 *  fail the call but return the buffer size needed
-                 */
-
-                DEBUG_PRINT (ACPI_ERROR, ("AcpiEvaluateObject: Needed buffer size %d, received %d\n",
-                                            BufferSpaceNeeded, ReturnBuffer->Length));
-
-                ReturnBuffer->Length = BufferSpaceNeeded;
-                Status = AE_BUFFER_OVERFLOW;
-            }
-
-
-            /* If all is OK, build the external object */
 
             if (ACPI_SUCCESS (Status))
             {
                 /*
-                 *  We have enough space for the object, build it
+                 *  Find out how large a buffer is needed to contain the
+                 *  returned object
                  */
-                Status = CmBuildExternalObject (ReturnPtr, ReturnBuffer);
-                ReturnBuffer->Length = BufferSpaceNeeded;
+                Status = CmGetObjectSize (ReturnObj, &BufferSpaceNeeded);
+                if (ACPI_SUCCESS (Status))
+                {
+                    /* Check if there is enough room in the caller's buffer */
+
+                    if (UserBufferLength < BufferSpaceNeeded) 
+                    {
+                        /*
+                         *  Caller's buffer is too small, can't give him partial results
+                         *  fail the call but return the buffer size needed
+                         */
+
+                        DEBUG_PRINT (ACPI_ERROR, ("AcpiEvaluateObject: Needed buffer size %d, received %d\n",
+                                                    BufferSpaceNeeded, UserBufferLength));
+
+                        ReturnBuffer->Length = BufferSpaceNeeded;
+                        Status = AE_BUFFER_OVERFLOW;
+                    }
+
+                    else
+                    {
+                        /*
+                         *  We have enough space for the object, build it
+                         */
+                        Status = CmBuildExternalObject (ReturnObj, ReturnBuffer);
+                        ReturnBuffer->Length = BufferSpaceNeeded;
+                    }
+                }
             }
-
-
-            /*
-             * Delete the internal return object.  Not the object itself, but
-             * any subobjects that are contained therein.
-             */
-
-            CmDeleteInternalObject (ReturnPtr);
-
         }
+    }
 
-        else
-        {
-            /* Nothing was returned */
 
-            ReturnBuffer->Length = 0;
-        }
+    /* Delete the return and parameter objects */
+
+    if (ReturnObj)
+    {
+        /*
+         * Delete the internal return object. (Or at least
+         * decrement the reference count by one)
+         */
+        CmDeleteInternalObject (ReturnObj);
+    }
+
+    /*
+     * Free the input parameter list (if we created one),
+     */
+
+    if (ParamPtr)
+    {
+        /* Free the allocated parameter block */
+
+        CmDeleteInternalObjectList (ParamPtr);
     }
 
     return_ACPI_STATUS (Status);
 }
+
 
 /****************************************************************************
  *
@@ -420,14 +424,10 @@ AcpiGetNextObject (
 
     if (!Child)
     {
-        if (!Parent)
-        {
-            return AE_NOT_FOUND;
-        }
-
         /* Start search at the beginning of the specified scope */
 
-        else if (!(ThisEntry = NsConvertHandleToEntry (Parent)))
+        ThisEntry = NsConvertHandleToEntry (Parent);
+        if (!ThisEntry)
         {
             return AE_BAD_PARAMETER;
         }
@@ -443,7 +443,8 @@ AcpiGetNextObject (
     {
         /* Convert and validate the handle */
 
-        if (!(ThisEntry = NsConvertHandleToEntry (Child)))
+        ThisEntry = NsConvertHandleToEntry (Child);
+        if (!ThisEntry)
         {
             return AE_BAD_PARAMETER;
         }
@@ -542,7 +543,8 @@ AcpiGetType (
 
     /* Convert and validate the handle */
 
-    if (!(Object = NsConvertHandleToEntry (Handle)))
+    Object = NsConvertHandleToEntry (Handle);
+    if (!Object)
     {
         return AE_BAD_PARAMETER;
     }
@@ -591,7 +593,8 @@ AcpiGetParent (
 
     /* Convert and validate the handle */
 
-    if (!(Object = NsConvertHandleToEntry (Handle)))
+    Object = NsConvertHandleToEntry (Handle);
+    if (!Object)
     {
         return AE_BAD_PARAMETER;
     }

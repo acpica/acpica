@@ -118,11 +118,11 @@
 #define __NSAPINAM_C__
 
 #include <acpi.h>
-#include <interpreter.h>
-#include <namespace.h>
+#include <acobject.h>
+#include <interp.h>
+#include <namesp.h>
 #include <methods.h>
 #include <amlcode.h>
-#include <acpiobj.h>
 #include <pnp.h>
 
 
@@ -199,7 +199,7 @@ AcpiLoadNamespace (
     Status = AmlLoadTable (TABLE_PSDT);
 
 
-    DUMP_TABLES (NS_ALL, ACPI_INT_MAX);
+    DUMP_TABLES (NS_ALL, ACPI_INT32_MAX);
 
     DEBUG_PRINT (ACPI_OK, ("**** ACPI Namespace successfully loaded! [%p]\n", 
                     Gbl_RootObject->Scope));
@@ -324,7 +324,8 @@ AcpiGetName (
          * Validate handle and convert to an NTE 
          */
 
-        if (!(ObjEntry = NsConvertHandleToEntry (Handle)))
+        ObjEntry = NsConvertHandleToEntry (Handle);
+        if (!ObjEntry)
         {
             return AE_BAD_PARAMETER;
         }
@@ -382,7 +383,8 @@ AcpiGetObjectInfo (
         return AE_BAD_PARAMETER;
     }
 
-    if (!(DeviceEntry = NsConvertHandleToEntry (Device)))
+    DeviceEntry = NsConvertHandleToEntry (Device);
+    if (!DeviceEntry)
     {
         return AE_BAD_PARAMETER;
     }
