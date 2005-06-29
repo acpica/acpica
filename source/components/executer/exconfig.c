@@ -173,7 +173,7 @@ AmlExecLoadTable (
                                             (UINT32 *) ((char *) &TableHeader + i));
         if (ACPI_FAILURE (Status))
         {
-            return_ACPI_STATUS (Status)
+            return_ACPI_STATUS (Status);
         }
     }
 
