@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acglobal.h - Declarations for global variables
- *       $Revision: 1.86 $
+ *       $Revision: 1.87 $
  *
  *****************************************************************************/
 
@@ -165,13 +165,12 @@ extern      UINT32                      AcpiGbl_NestingLevel;
  * of each in the system.  Each global points to the actual table.
  *
  */
-ACPI_EXTERN ROOT_SYSTEM_DESCRIPTOR_POINTER      *AcpiGbl_RSDP;
-ACPI_EXTERN ROOT_SYSTEM_DESCRIPTION_TABLE       *AcpiGbl_RSDT;
-ACPI_EXTERN FIRMWARE_ACPI_CONTROL_STRUCTURE     *AcpiGbl_FACS;
-ACPI_EXTERN FIXED_ACPI_DESCRIPTION_TABLE        *AcpiGbl_FACP;
-ACPI_EXTERN APIC_TABLE                          *AcpiGbl_APIC;
-ACPI_EXTERN ACPI_TABLE_HEADER                   *AcpiGbl_DSDT;
-ACPI_EXTERN ACPI_TABLE_HEADER                   *AcpiGbl_SBST;
+ACPI_EXTERN RSDP_DESCRIPTOR             *AcpiGbl_RSDP;
+ACPI_EXTERN XSDT_DESCRIPTOR             *AcpiGbl_XSDT;
+ACPI_EXTERN FACS_DESCRIPTOR             *AcpiGbl_FACS;
+ACPI_EXTERN FADT_DESCRIPTOR             *AcpiGbl_FADT;
+ACPI_EXTERN ACPI_TABLE_HEADER           *AcpiGbl_DSDT;
+
 /*
  * Since there may be multiple SSDTs and PSDTS, a single pointer is not
  * sufficient; Therefore, there isn't one!
