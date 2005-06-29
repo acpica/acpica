@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exmisc - ACPI AML (p-code) execution - specific opcodes
- *              $Revision: 1.125 $
+ *              $Revision: 1.126 $
  *
  *****************************************************************************/
 
@@ -577,8 +577,8 @@ AcpiExDoMathOp (
  *
  * RETURN:      Status
  *
- * DESCRIPTION: Execute a logical "Numeric" AML opcode. For these Numeric 
- *              operators (LAnd and LOr), both operands must be integers. 
+ * DESCRIPTION: Execute a logical "Numeric" AML opcode. For these Numeric
+ *              operators (LAnd and LOr), both operands must be integers.
  *
  *              Note: cleanest machine code seems to be produced by the code
  *              below, rather than using statements of the form:
@@ -753,11 +753,11 @@ AcpiExDoLogicalOp (
     }
     else
     {
-        /* 
+        /*
          * 2) Both operands are Strings or both are Buffers
-         *    Note: Code below takes advantage of common Buffer/String 
+         *    Note: Code below takes advantage of common Buffer/String
          *          object fields. LocalOperand1 may have changed above. Use
-         *          memcmp to handle nulls in buffers. 
+         *          memcmp to handle nulls in buffers.
          */
         Length0 = Operand0->Buffer.Length;
         Length1 = LocalOperand1->Buffer.Length;
