@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslopcode - AML opcode generation
- *              $Revision: 1.44 $
+ *              $Revision: 1.54 $
  *
  *****************************************************************************/
 
@@ -10,7 +10,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2003, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -182,9 +182,8 @@ OpcGetIntegerWidth (
 
     /* Use the revision to set the integer width */
 
-    AcpiUtSetIntegerWidth (Child->Asl.Value.Integer8);
+    AcpiUtSetIntegerWidth ((UINT8) Child->Asl.Value.Integer);
 }
-
 
 
 /*******************************************************************************
@@ -207,36 +206,59 @@ OpcSetOptimalIntegerSize (
     ACPI_PARSE_OBJECT       *Op)
 {
 
-    /* Check for the special AML integers first */
-
-    if (Op->Asl.Value.Integer == 0)
+    /*
+     * Check for the special AML integers first - Zero, One, Ones.
+     * These are single-byte opcodes that are the smallest possible
+     * representation of an integer.
+     *
+     * This optimization is optional.
+     */
+    if (Gbl_IntegerOptimizationFlag)
     {
-        Op->Asl.AmlOpcode = AML_ZERO_OP;
-        return 1;
-    }
-    if (Op->Asl.Value.Integer == 1)
-    {
-        Op->Asl.AmlOpcode = AML_ONE_OP;
-        return 1;
-    }
-
-    /* Check for table integer width (32 or 64) */
-
-    if (AcpiGbl_IntegerByteWidth == 4)
-    {
-        if (Op->Asl.Value.Integer == ACPI_UINT32_MAX)
+        switch (Op->Asl.Value.Integer)
         {
-            Op->Asl.AmlOpcode = AML_ONES_OP;
+        case 0:
+
+            Op->Asl.AmlOpcode = AML_ZERO_OP;
+            AslError (ASL_OPTIMIZATION, ASL_MSG_INTEGER_OPTIMIZATION, Op, "Zero");
             return 1;
+
+        case 1:
+
+            Op->Asl.AmlOpcode = AML_ONE_OP;
+            AslError (ASL_OPTIMIZATION, ASL_MSG_INTEGER_OPTIMIZATION, Op, "One");
+            return 1;
+
+        case ACPI_UINT32_MAX:
+
+            /* Check for table integer width (32 or 64) */
+
+            if (AcpiGbl_IntegerByteWidth == 4)
+            {
+                Op->Asl.AmlOpcode = AML_ONES_OP;
+                AslError (ASL_OPTIMIZATION, ASL_MSG_INTEGER_OPTIMIZATION, Op, "Ones");
+                return 1;
+            }
+            break;
+
+        case ACPI_INTEGER_MAX:
+
+            /* Check for table integer width (32 or 64) */
+
+            if (AcpiGbl_IntegerByteWidth == 8)
+            {
+                Op->Asl.AmlOpcode = AML_ONES_OP;
+                AslError (ASL_OPTIMIZATION, ASL_MSG_INTEGER_OPTIMIZATION, Op, "Ones");
+                return 1;
+            }
+            break;
+
+        default:
+            break;
         }
     }
-    else if (Op->Asl.Value.Integer == ACPI_INTEGER_MAX)
-    {
-        Op->Asl.AmlOpcode = AML_ONES_OP;
-        return 1;
-    }
- 
-    /* Find the best fit */
+
+    /* Find the best fit using the various AML integer prefixes */
 
     if (Op->Asl.Value.Integer <= ACPI_UINT8_MAX)
     {
@@ -389,7 +411,7 @@ OpcDoUnicode (
  * DESCRIPTION: Convert a string EISA ID to numeric representation.  See the
  *              Pnp BIOS Specification for details.  Here is an excerpt:
  *
- *              A seven character ASCII representation of the product 
+ *              A seven character ASCII representation of the product
  *              identifier compressed into a 32-bit identifier.  The seven
  *              character ID consists of a three character manufacturer code,
  *              a three character hexadecimal product identifier, and a one
@@ -421,14 +443,14 @@ OpcDoEisaId (
 {
     UINT32                  EisaId = 0;
     UINT32                  BigEndianId;
-    NATIVE_CHAR             *InString; 
+    char                    *InString;
     ACPI_STATUS             Status = AE_OK;
-    NATIVE_UINT             i;
+    ACPI_NATIVE_UINT        i;
 
 
-    InString = (NATIVE_CHAR *) Op->Asl.Value.String;
+    InString = (char *) Op->Asl.Value.String;
 
-    /* 
+    /*
      * The EISAID string must be exactly 7 characters and of the form
      * "LLLXXXX" -- 3 letters and 4 hex digits (e.g., "PNP0001")
      */
@@ -436,7 +458,7 @@ OpcDoEisaId (
     {
         Status = AE_BAD_PARAMETER;
     }
-    else 
+    else
     {
         /* Check all 7 characters for correct format */
 
@@ -483,11 +505,11 @@ OpcDoEisaId (
         EisaId = AcpiUtDwordByteSwap (BigEndianId);
     }
 
-    /* 
+    /*
      * Morph the Op into an integer, regardless of whether there
      * was an error in the EISAID string
      */
-    Op->Asl.Value.Integer32 = EisaId;
+    Op->Asl.Value.Integer = EisaId;
 
     Op->Asl.CompileFlags &= ~NODE_COMPILE_TIME_CONST;
     Op->Asl.ParseOpcode = PARSEOP_INTEGER;
