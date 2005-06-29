@@ -1,7 +1,7 @@
 
 /******************************************************************************
  * 
- * Module Name: psxutils - Parser/Interpreter interface utilities
+ * Module Name: dsutils - Dispatcher utilities
  *
  *****************************************************************************/
 
@@ -114,22 +114,24 @@
  *
  *****************************************************************************/
 
-#define __PSXUTILS_C__
+#define __DSUTILS_C__
 
 #include <acpi.h>
-#include <amlcode.h>
 #include <parser.h>
+#include <amlcode.h>
+#include <dispatch.h>
 #include <interp.h>
 #include <namesp.h>
+#include <debugger.h>
 
 #define _COMPONENT          PARSER
-        MODULE_NAME         ("psxutils");
+        MODULE_NAME         ("dsutils");
 
 
 
 /*****************************************************************************
  *
- * FUNCTION:    PsxDeleteResultIfNotUsed
+ * FUNCTION:    DsDeleteResultIfNotUsed
  *
  * PARAMETERS:  Op
  *              ResultObj
@@ -145,7 +147,7 @@
  ****************************************************************************/
 
 void
-PsxDeleteResultIfNotUsed (
+DsDeleteResultIfNotUsed (
     ACPI_GENERIC_OP         *Op,
     ACPI_OBJECT_INTERNAL    *ResultObj,
     ACPI_WALK_STATE         *WalkState)
@@ -155,12 +157,12 @@ PsxDeleteResultIfNotUsed (
     ACPI_STATUS             Status;
 
 
-    FUNCTION_TRACE_PTR ("PsxDeleteResultIfNotUsed", ResultObj);
+    FUNCTION_TRACE_PTR ("DsDeleteResultIfNotUsed", ResultObj);
 
 
     if (!Op)
     {
-        DEBUG_PRINT (ACPI_ERROR, ("PsxDeleteResultIfNotUsed: Null Op=%X\n",
+        DEBUG_PRINT (ACPI_ERROR, ("DsDeleteResultIfNotUsed: Null Op=%X\n",
                         Op));
         return_VOID;
     }
@@ -179,7 +181,7 @@ PsxDeleteResultIfNotUsed (
 
         /* Must pop the result stack (ObjDesc should be equal to ResultObj) */
 
-        Status = PsxResultStackPop (&ObjDesc, WalkState);
+        Status = DsResultStackPop (&ObjDesc, WalkState);
         if (ACPI_FAILURE (Status))
         {
             return;
@@ -198,7 +200,7 @@ PsxDeleteResultIfNotUsed (
     ParentInfo = PsGetOpcodeInfo (Op->Parent->Opcode);
     if (!ParentInfo)
     {
-        DEBUG_PRINT (ACPI_ERROR, ("PsxDeleteResultIfNotUsed: Unknown parent opcode. Op=%X\n",
+        DEBUG_PRINT (ACPI_ERROR, ("DsDeleteResultIfNotUsed: Unknown parent opcode. Op=%X\n",
                         Op));
 
         return_VOID;
@@ -209,7 +211,7 @@ PsxDeleteResultIfNotUsed (
 
     if (Op->Parent->Opcode == AML_ReturnOp)
     {
-        DEBUG_PRINT (TRACE_PARSE, ("PsxDeleteResultIfNotUsed: No delete, [RETURN] opcode=%X Op=%X\n",
+        DEBUG_PRINT (TRACE_DISPATCH, ("DsDeleteResultIfNotUsed: No delete, [RETURN] opcode=%X Op=%X\n",
                         Op->Opcode, Op));
         return_VOID;
     }
@@ -230,12 +232,12 @@ PsxDeleteResultIfNotUsed (
     case OPTYPE_CONTROL:        /* IF, ELSE, WHILE only */
     case OPTYPE_NAMED_OBJECT:   /* Scope, method, etc. */
 
-        DEBUG_PRINT (TRACE_PARSE, ("PsxDeleteResultIfNotUsed: Deleting result, Parent opcode=%X Op=%X\n",
+        DEBUG_PRINT (TRACE_DISPATCH, ("DsDeleteResultIfNotUsed: Deleting result, Parent opcode=%X Op=%X\n",
                         Op->Opcode, Op));
 
         /* Must pop the result stack (ObjDesc should be equal to ResultObj) */
 
-        Status = PsxResultStackPop (&ObjDesc, WalkState);
+        Status = DsResultStackPop (&ObjDesc, WalkState);
         if (ACPI_FAILURE (Status))
         {
             return_VOID;
@@ -259,7 +261,7 @@ PsxDeleteResultIfNotUsed (
 
 /*****************************************************************************
  *
- * FUNCTION:    PsxCreateOperand
+ * FUNCTION:    DsCreateOperand
  *
  * PARAMETERS:  WalkState
  *              Arg
@@ -274,7 +276,7 @@ PsxDeleteResultIfNotUsed (
  ****************************************************************************/
 
 ACPI_STATUS
-PsxCreateOperand (
+DsCreateOperand (
     ACPI_WALK_STATE         *WalkState,
     ACPI_GENERIC_OP         *Arg)
 {
@@ -289,15 +291,15 @@ PsxCreateOperand (
     OPERATING_MODE          InterpreterMode;
 
 
-    FUNCTION_TRACE_PTR ("PsxCreateOperand", Arg);
+    FUNCTION_TRACE_PTR ("DsCreateOperand", Arg);
 
 
     /* A valid name must be looked up in the namespace */
 
-    if ((Arg->Opcode == AML_NAMEPATH) &&
+    if ((Arg->Opcode == AML_NAMEPATH_OP) &&
         (Arg->Value.String))
     {
-        DEBUG_PRINT (TRACE_PARSE, ("PsxCreateOperand: Getting a name: Arg=%p\n", Arg));
+        DEBUG_PRINT (TRACE_DISPATCH, ("DsCreateOperand: Getting a name: Arg=%p\n", Arg));
 
         /* Get the entire name string from the AML stream */
 
@@ -317,8 +319,8 @@ PsxCreateOperand (
 
         ParentOp = Arg->Parent;
         if ((PsIsNamedObjectOp (ParentOp->Opcode)) &&
-            (ParentOp->Opcode != AML_METHODCALL) &&
-            (ParentOp->Opcode != AML_NAMEPATH))
+            (ParentOp->Opcode != AML_METHODCALL_OP) &&
+            (ParentOp->Opcode != AML_NAMEPATH_OP))
         {
             /* Enter name into namespace if not found */
 
@@ -332,8 +334,8 @@ PsxCreateOperand (
             InterpreterMode = IMODE_Execute;
         }
 
-        Status = NsLookup (Gbl_CurrentScope->Scope, NameString, ACPI_TYPE_Any, InterpreterMode, 
-                                    NS_SEARCH_PARENT | NS_DONT_OPEN_SCOPE, (NAME_TABLE_ENTRY **) &ObjDesc);
+        Status = NsLookup (WalkState->ScopeInfo, NameString, ACPI_TYPE_Any, InterpreterMode, 
+                                    NS_SEARCH_PARENT | NS_DONT_OPEN_SCOPE, WalkState, (NAME_TABLE_ENTRY **) &ObjDesc);
 
         /* Free the namestring created above */
 
@@ -344,21 +346,37 @@ PsxCreateOperand (
          * CondRefOf opcode.
          */
 
-        if ((Status == AE_NOT_FOUND) &&
-            (ParentOp->Opcode == AML_CondRefOfOp))
+        if (Status == AE_NOT_FOUND) 
         {
-            ObjDesc = (ACPI_OBJECT_INTERNAL *) Gbl_RootObject;
-            Status = AE_OK;
+            if (ParentOp->Opcode == AML_CondRefOfOp)
+            {
+                /*
+                 * For the Conditional Reference op, it's OK if the name is not found;  We
+                 * just need a way to indicate this to the interpreter, set the object to the root
+                 */
+                ObjDesc = (ACPI_OBJECT_INTERNAL *) Gbl_RootObject;
+                Status = AE_OK;
+            }
+
+            else
+            {
+                /* We just plain didn't find it -- which is a very serious error at this point */
+
+                Status = AE_AML_NAME_NOT_FOUND;
+            }
         }
 
         /* Check status from the lookup */
-
+ 
         if (ACPI_FAILURE (Status))
         {
             return_ACPI_STATUS (Status);
         }
 
-        PsxObjStackPush (ObjDesc, WalkState);
+        /* Put the resulting object onto the current object stack */
+
+        DsObjStackPush (ObjDesc, WalkState);
+        DEBUG_EXEC (DbDisplayArgumentObject (ObjDesc));
     }
 
 
@@ -366,7 +384,7 @@ PsxCreateOperand (
     {
         /* Check for null name case */
 
-        if (Arg->Opcode == AML_NAMEPATH)
+        if (Arg->Opcode == AML_NAMEPATH_OP)
         {
             /*
              * If the name is null, this means that this is an optional result parameter that was
@@ -374,7 +392,7 @@ PsxCreateOperand (
              */
             Opcode = AML_ZeroOp;        /* Has no arguments! */
 
-            DEBUG_PRINT (TRACE_PARSE, ("PsxCreateOperand: Null namepath: Arg=%p\n", Arg));
+            DEBUG_PRINT (TRACE_DISPATCH, ("DsCreateOperand: Null namepath: Arg=%p\n", Arg));
 
             /* TBD: anything else needed for the zero op lvalue? */
         }
@@ -387,7 +405,7 @@ PsxCreateOperand (
 
         /* Get the data type of the argument */
 
-        DataType = PsxMapOpcodeToDataType (Opcode, &Flags);
+        DataType = DsMapOpcodeToDataType (Opcode, &Flags);
         if (DataType == INTERNAL_TYPE_Invalid)
         {
             return_ACPI_STATUS (AE_NOT_IMPLEMENTED);
@@ -395,25 +413,28 @@ PsxCreateOperand (
 
         if (Flags & OP_HAS_RETURN_VALUE)
         {
-            DEBUG_PRINT (TRACE_PARSE, ("PsxCreateOperand: Argument already created, getting from result stack \n"));
+            DEBUG_PRINT (TRACE_DISPATCH, ("DsCreateOperand: Argument already created, getting from result stack \n"));
 
             /* 
              * Use value that was already previously returned by the evaluation of this argument
              */
 
-            Status = PsxResultStackPop (&ObjDesc, WalkState);
+            Status = DsResultStackPop (&ObjDesc, WalkState);
             if (ACPI_FAILURE (Status))
             {
-                DEBUG_PRINT (ACPI_ERROR, ("PsxCreateOperand: Could not pop result\n"));
-                return_ACPI_STATUS (Status);
+                /*
+                 * Only error is underflow, and this indicates a missing operand!
+                 */
+                DEBUG_PRINT (ACPI_ERROR, ("DsCreateOperand: Could not pop result\n"));
+                return_ACPI_STATUS (AE_AML_NO_OPERAND);
             }
 
             /* There must be a valid value on the stack or something is seriously wrong */
 
             if (!ObjDesc)
             {
-                DEBUG_PRINT (ACPI_ERROR, ("PsxCreateOperand: But result obj is null! Arg=%X\n", Arg));
-                return_ACPI_STATUS (AE_AML_ERROR);
+                DEBUG_PRINT (ACPI_ERROR, ("DsCreateOperand: But result obj is null! Arg=%X\n", Arg));
+                return_ACPI_STATUS (AE_AML_NO_OPERAND);
             }
         }
 
@@ -429,7 +450,7 @@ PsxCreateOperand (
 
             /* Initialize the new object */
 
-            Status = PsxInitObjectFromOp (WalkState, Arg, Opcode, ObjDesc);
+            Status = DsInitObjectFromOp (WalkState, Arg, Opcode, ObjDesc);
             if (ACPI_FAILURE (Status))
             {
                 CmFree (ObjDesc);
@@ -440,7 +461,8 @@ PsxCreateOperand (
 
         /* Put the operand object on the object stack */
 
-        PsxObjStackPush (ObjDesc, WalkState);
+        DsObjStackPush (ObjDesc, WalkState);
+        DEBUG_EXEC (DbDisplayArgumentObject (ObjDesc));
     }
 
 
@@ -451,7 +473,7 @@ PsxCreateOperand (
 
 /*****************************************************************************
  *
- * FUNCTION:    PsxCreateOperands
+ * FUNCTION:    DsCreateOperands
  *
  * PARAMETERS:  FirstArg            - First argument of a parser argument tree
  *
@@ -464,7 +486,7 @@ PsxCreateOperand (
  ****************************************************************************/
 
 ACPI_STATUS
-PsxCreateOperands (
+DsCreateOperands (
     ACPI_WALK_STATE         *WalkState,
     ACPI_GENERIC_OP         *FirstArg)
 {
@@ -473,7 +495,7 @@ PsxCreateOperands (
     UINT32                  ArgsPushed = 0;
  
 
-    FUNCTION_TRACE_PTR ("PsxCreateOperands", FirstArg);
+    FUNCTION_TRACE_PTR ("DsCreateOperands", FirstArg);
 
     Arg = FirstArg;
 
@@ -483,13 +505,13 @@ PsxCreateOperands (
     while (Arg)
     {
 
-        Status = PsxCreateOperand (WalkState, Arg);
+        Status = DsCreateOperand (WalkState, Arg);
         if (ACPI_FAILURE (Status))
         {
             goto Cleanup;
         }
 
-        DEBUG_PRINT (TRACE_PARSE, ("PsxCreateOperands: Arg #%d (%p) done, Arg1=%p\n", 
+        DEBUG_PRINT (TRACE_DISPATCH, ("DsCreateOperands: Arg #%d (%p) done, Arg1=%p\n", 
                         ArgsPushed, Arg, FirstArg));
 
         /* Move on to next argument, if any */
@@ -507,17 +529,17 @@ Cleanup:
      * of the operand stack and delete those objects 
      */
 
-    PsxObjStackPopAndDelete (ArgsPushed, WalkState);
+    DsObjStackPopAndDelete (ArgsPushed, WalkState);
 
-    DEBUG_PRINT (ACPI_ERROR, ("PsxCreateOperands: Error while creating Arg %d - %s\n",
-                    (ArgsPushed+1), Gbl_ExceptionNames [Status]));
+    DEBUG_PRINT (ACPI_ERROR, ("DsCreateOperands: Error while creating Arg %d - %s\n",
+                    (ArgsPushed+1), CmFormatException (Status)));
     return_ACPI_STATUS (Status);
 }
 
 
 /*****************************************************************************
  *
- * FUNCTION:    PsxResolveOperands
+ * FUNCTION:    DsResolveOperands
  *
  * PARAMETERS:  WalkState           - Current walk state with operands on stack
  *
@@ -529,14 +551,14 @@ Cleanup:
  ****************************************************************************/
 
 ACPI_STATUS
-PsxResolveOperands (
+DsResolveOperands (
     ACPI_WALK_STATE         *WalkState)
 {
     UINT32                  i;
     ACPI_STATUS             Status = AE_OK;
 
     
-    FUNCTION_TRACE_PTR ("PsxResolveOperands", WalkState);
+    FUNCTION_TRACE_PTR ("DsResolveOperands", WalkState);
 
 
     /* 
@@ -565,7 +587,7 @@ PsxResolveOperands (
 
 /*****************************************************************************
  *
- * FUNCTION:    PsxMapOpcodeToDataType
+ * FUNCTION:    DsMapOpcodeToDataType
  *
  * PARAMETERS:  Opcode          - AML opcode to map
  *              OutFlags        - Additional info about the opcode
@@ -579,7 +601,7 @@ PsxResolveOperands (
  ****************************************************************************/
 
 ACPI_OBJECT_TYPE
-PsxMapOpcodeToDataType (
+DsMapOpcodeToDataType (
     UINT16                  Opcode,
     UINT32                  *OutFlags)
 {
@@ -616,7 +638,7 @@ PsxMapOpcodeToDataType (
             DataType = ACPI_TYPE_String;
             break;
 
-        case AML_NAMEPATH:
+        case AML_NAMEPATH_OP:
             DataType = INTERNAL_TYPE_Reference;
             break;
         }
@@ -673,7 +695,7 @@ PsxMapOpcodeToDataType (
 
     case OPTYPE_NAMED_OBJECT:
 
-        DataType = PsxMapNamedOpcodeToDataType (Opcode);
+        DataType = DsMapNamedOpcodeToDataType (Opcode);
 
         break;
 
@@ -706,7 +728,7 @@ PsxMapOpcodeToDataType (
 
 /*****************************************************************************
  *
- * FUNCTION:    PsxMapNamedOpcodeToDataType
+ * FUNCTION:    DsMapNamedOpcodeToDataType
  *
  * PARAMETERS:  Opcode              - The Named AML opcode to map
  *
@@ -718,7 +740,7 @@ PsxMapOpcodeToDataType (
  ****************************************************************************/
 
 ACPI_OBJECT_TYPE 
-PsxMapNamedOpcodeToDataType (
+DsMapNamedOpcodeToDataType (
     UINT16                  Opcode)
 {
     ACPI_OBJECT_TYPE        DataType; 
@@ -764,12 +786,12 @@ PsxMapNamedOpcodeToDataType (
         DataType = INTERNAL_TYPE_BankFieldDefn;
         break;
 
-    case AML_NAMEDFIELD:                            /* NO CASE IN ORIGINAL  */
+    case AML_NAMEDFIELD_OP:                         /* NO CASE IN ORIGINAL  */
         DataType = ACPI_TYPE_Any;
         break;
 
     case AML_NameOp:                                /* NameOp - special code in original */
-    case AML_NAMEPATH:                    
+    case AML_NAMEPATH_OP:                    
         DataType = ACPI_TYPE_Any;
         break;
 
