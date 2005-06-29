@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: psparse - Parser top level AML parse routines
- *              $Revision: 1.86 $
+ *              $Revision: 1.87 $
  *
  *****************************************************************************/
 
@@ -666,11 +666,11 @@ AcpiPsParseLoop (
                     {
                         DEBUG_PRINTP (ACPI_ERROR,
                             ("Invoked method did not return a value, %s\n",
-                            AcpiUtFormatException (Status)));
+                            AcpiFormatException (Status)));
 
                     }
                     DEBUG_PRINTP (ACPI_ERROR, ("GetPredicate Failed, %s\n",
-                        AcpiUtFormatException (Status)));
+                        AcpiFormatException (Status)));
                     return_ACPI_STATUS (Status);
                 }
 
