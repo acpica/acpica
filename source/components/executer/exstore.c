@@ -126,120 +126,6 @@
         MODULE_NAME         ("iexecute");
 
 
-
-/******************************************************************************
- * 
- * FUNCTION:    AmlExecute
- *
- * PARAMETERS:  Pcode               - Pointer to the pcode stream
- *              PcodeLength         - Length of pcode that comprises the method
- *              **Params            - List of parameters to pass to method, 
- *                                    terminated by NULL. Params itself may be 
- *                                    NULL if no parameters are being passed.
- *
- * RETURN:      Status
- *
- * DESCRIPTION: Execute a control method
- *
- *****************************************************************************/
-
-ACPI_STATUS
-AmlExecute (
-    UINT8                   *Pcode, 
-    UINT32                  PcodeLength, 
-    ACPI_OBJECT_INTERNAL    **Params)
-{
-    ACPI_STATUS             Status;
-    void                    *StackTopEntry;
-
-
-    FUNCTION_TRACE ("AmlExecute");
-
-
-    /* Prepare the package stack */
-
-    Status = AmlPrepExec (Pcode, PcodeLength);
-    if (ACPI_FAILURE (Status))
-    {
-        DEBUG_PRINT (ACPI_ERROR, ("AmlExecute: Exec Stack Overflow\n"));
-        goto Cleanup;
-    }
-
-    /* Push new frame on Method stack */
-    
-    Status = AmlMthStackPush (Params);
-    if (ACPI_FAILURE (Status))
-    {
-        DEBUG_PRINT (ACPI_ERROR, ("AmlExecute: Could not push Method Stack\n"));
-
-        /* TBD: do we need to pop the package stack here? */
-
-        goto Cleanup;
-    }
-
-
-    StackTopEntry = AmlObjStackGetValue (STACK_TOP);
-
-    /* This is where we really execute the method */
-
-    Status = AmlDoCodeBlock (IMODE_Execute);
-
-
-    /* 
-     * Normal exit is with Status == AE_RETURN_VALUE when a ReturnOp has been executed,
-     * or with Status == AE_PENDING at end of AML block (end of Method code)
-     */
-
-    if (AE_RETURN_VALUE == Status)
-    {
-        DEBUG_PRINT (ACPI_INFO, ("Method returned: \n"));
-        DUMP_STACK_ENTRY (AmlObjStackGetValue (STACK_TOP));
-        DEBUG_PRINT (ACPI_INFO, (" at stack level %d\n", AmlObjStackLevel()));
-    }
-
-    else
-    {
-        /*
-         * TBD:
-         * Check if there is an extraneous object left on the stack.  This can happen from 
-         * the execution of an numeric operator.  It is not clear who should delete the result
-         * object if it is not to be returned.  Needs more investigation.
-         */
-/*
-        if (StackTopEntry != AmlObjStackGetValue (STACK_TOP))
-        {
-            DEBUG_PRINT (ACPI_INFO, ("AmlExecute: *** Deleting internal return value %p\n"));
-            AmlObjStackDeleteValue (STACK_TOP);
-        }
-*/
-
-        /* Map PENDING (normal exit, no return value) to OK */
-
-        if (AE_PENDING == Status)
-        {
-            Status = AE_OK;
-        }
-    }
-
-
-    /* Stack cleanup */
-
-    AmlPkgPopExec ();       /* pop package stack -- inverse of AmlPrepExec() */
-    AmlMthStackPop ();      /* pop our frame off method stack */
-
-
-    if (AmlObjStackLevel())
-    {
-        DEBUG_PRINT (ACPI_INFO, ("AmlExecute: Obj TOS at exit=%d\n",
-                        AmlObjStackLevel()));
-    }
-
-
-Cleanup:
-    return_ACPI_STATUS (Status);
-}
-
-
 /*****************************************************************************
  * 
  * FUNCTION:    AmlExecStore
@@ -667,7 +553,7 @@ AmlExecStore (
                 DestDesc->FieldUnit.Sequence
                     != DestDesc->FieldUnit.Container->Buffer.Sequence))
             {
-                NsDumpPathname (TempHandle, "AmlExecStore/FieldUnit: Bad container in ", 
+                DUMP_PATHNAME (TempHandle, "AmlExecStore/FieldUnit: Bad container in ", 
                                 ACPI_ERROR, _COMPONENT);
                 DUMP_ENTRY (TempHandle, ACPI_ERROR);
 
@@ -880,8 +766,15 @@ AmlExecStore (
          * Storing to the Debug object causes the value stored to be
          * displayed and otherwise has no effect -- see sec. 15.2.3.3.3.
          */
-        DEBUG_PRINT (ACPI_INFO, ("DebugOp: \n"));
-        DUMP_STACK_ENTRY (ValDesc);
+        DEBUG_PRINT (ACPI_INFO, ("**** Write to Debug Object: ****: \n"));
+        if (ValDesc->Common.Type == ACPI_TYPE_String)
+        {
+            DEBUG_PRINT (ACPI_INFO, ("%s\n", ValDesc->String.Pointer));
+        }
+        else
+        {
+            DUMP_STACK_ENTRY (ValDesc);
+        }
 
         DeleteDestDesc = DestDesc;
         break;
