@@ -198,12 +198,16 @@ EvNotifyDispatch (
 
 ACPI_STATUS
 EvAddressSpaceDispatch (
-    UINT32                  SpaceId,
+    ACPI_OBJECT_INTERNAL   *RegionObj,
     UINT32                  Function,
     UINT32                  Address,
     UINT32                  BitWidth,
     UINT32                  *Value);
 
+
+ACPI_STATUS
+EvGetAddressSpaceHandler (
+    ACPI_OBJECT_INTERNAL *RegionObj);
 
 /* Debug stuff */
 
