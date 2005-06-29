@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dswload - Dispatcher namespace load callbacks
- *              $Revision: 1.29 $
+ *              $Revision: 1.30 $
  *
  *****************************************************************************/
 
@@ -713,7 +713,7 @@ AcpiDsLoad2EndOp (
             ("LOADING-Processor: State=%p Op=%p NamedObj=%p\n",
             WalkState, Op, Node));
 
-        Status = AcpiAmlExecCreateProcessor (Op, (ACPI_HANDLE) Node);
+        Status = AcpiAmlExecCreateProcessor (Op, Node);
         if (ACPI_FAILURE (Status))
         {
             goto Cleanup;
@@ -733,7 +733,7 @@ AcpiDsLoad2EndOp (
             ("LOADING-PowerResource: State=%p Op=%p NamedObj=%p\n",
             WalkState, Op, Node));
 
-        Status = AcpiAmlExecCreatePowerResource (Op, (ACPI_HANDLE) Node);
+        Status = AcpiAmlExecCreatePowerResource (Op, Node);
         if (ACPI_FAILURE (Status))
         {
             goto Cleanup;
@@ -804,7 +804,7 @@ AcpiDsLoad2EndOp (
         {
             Status = AcpiAmlExecCreateMethod (((ACPI_PARSE2_OBJECT *) Op)->Data,
                                 ((ACPI_PARSE2_OBJECT *) Op)->Length,
-                                Arg->Value.Integer, (ACPI_HANDLE) Node);
+                                Arg->Value.Integer, Node);
         }
 
         break;
