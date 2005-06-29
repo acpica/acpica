@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exutils - interpreter/scanner utilities
- *              $Revision: 1.93 $
+ *              $Revision: 1.96 $
  *
  *****************************************************************************/
 
@@ -134,12 +134,9 @@
 #define DEFINE_AML_GLOBALS
 
 #include "acpi.h"
-#include "acparser.h"
 #include "acinterp.h"
 #include "amlcode.h"
-#include "acnamesp.h"
 #include "acevents.h"
-#include "acparser.h"
 
 #define _COMPONENT          ACPI_EXECUTER
         ACPI_MODULE_NAME    ("exutils")
@@ -167,7 +164,7 @@ AcpiExEnterInterpreter (void)
     Status = AcpiUtAcquireMutex (ACPI_MTX_EXECUTE);
     if (ACPI_FAILURE (Status))
     {
-        ACPI_REPORT_ERROR (("Fatal - Could not acquire interpreter lock\n"));
+        ACPI_REPORT_ERROR (("Could not acquire interpreter mutex\n"));
     }
 
     return_ACPI_STATUS (Status);
@@ -204,6 +201,10 @@ AcpiExExitInterpreter (void)
 
 
     Status = AcpiUtReleaseMutex (ACPI_MTX_EXECUTE);
+    if (ACPI_FAILURE (Status))
+    {
+        ACPI_REPORT_ERROR (("Could not release interpreter mutex\n"));
+    }
 
     return_VOID;
 }
@@ -344,10 +345,12 @@ AcpiExAcquireGlobalLock (
  *
  ******************************************************************************/
 
-ACPI_STATUS
+void
 AcpiExReleaseGlobalLock (
     BOOLEAN                 LockedByMe)
 {
+    ACPI_STATUS             Status;
+
 
     ACPI_FUNCTION_TRACE ("ExReleaseGlobalLock");
 
@@ -358,10 +361,14 @@ AcpiExReleaseGlobalLock (
     {
         /* OK, now release the lock */
 
-        AcpiEvReleaseGlobalLock ();
-    }
+        Status = AcpiEvReleaseGlobalLock ();
+        if (ACPI_FAILURE (Status))
+        {
+            /* Report the error, but there isn't much else we can do */
 
-    return_ACPI_STATUS (AE_OK);
+            ACPI_REPORT_ERROR (("Could not release ACPI Global Lock\n"));
+        }
+    }
 }
 
 
@@ -381,25 +388,25 @@ AcpiExDigitsNeeded (
     ACPI_INTEGER            Value,
     UINT32                  Base)
 {
-    UINT32                  NumDigits = 0;
+    UINT32                  NumDigits;
+    ACPI_INTEGER            CurrentValue;
+    ACPI_INTEGER            Quotient;
 
 
     ACPI_FUNCTION_TRACE ("ExDigitsNeeded");
 
 
-    if (Base < 1)
+    /*
+     * ACPI_INTEGER is unsigned, so we don't worry about a '-'
+     */
+    CurrentValue = Value;
+    NumDigits = 0;
+
+    while (CurrentValue)
     {
-        ACPI_REPORT_ERROR (("ExDigitsNeeded: Internal error - Invalid base\n"));
-    }
-    else
-    {
-        /*
-         * ACPI_INTEGER is unsigned, which is why we don't worry about a '-'
-         */
-        for (NumDigits = 1;
-            (AcpiUtShortDivide (&Value, Base, &Value, NULL));
-            ++NumDigits)
-        { ; }
+        (void) AcpiUtShortDivide (&CurrentValue, Base, &Quotient, NULL);
+        NumDigits++;
+        CurrentValue = Quotient;
     }
 
     return_VALUE (NumDigits);
@@ -458,7 +465,7 @@ _ntohl (
  *
  ******************************************************************************/
 
-ACPI_STATUS
+void
 AcpiExEisaIdToString (
     UINT32                  NumericId,
     NATIVE_CHAR             *OutString)
@@ -476,13 +483,11 @@ AcpiExEisaIdToString (
     OutString[0] = (char) ('@' + ((id >> 26) & 0x1f));
     OutString[1] = (char) ('@' + ((id >> 21) & 0x1f));
     OutString[2] = (char) ('@' + ((id >> 16) & 0x1f));
-    OutString[3] = AcpiUtHexToAsciiChar (id, 12);
-    OutString[4] = AcpiUtHexToAsciiChar (id, 8);
-    OutString[5] = AcpiUtHexToAsciiChar (id, 4);
-    OutString[6] = AcpiUtHexToAsciiChar (id, 0);
+    OutString[3] = AcpiUtHexToAsciiChar ((ACPI_INTEGER) id, 12);
+    OutString[4] = AcpiUtHexToAsciiChar ((ACPI_INTEGER) id, 8);
+    OutString[5] = AcpiUtHexToAsciiChar ((ACPI_INTEGER) id, 4);
+    OutString[6] = AcpiUtHexToAsciiChar ((ACPI_INTEGER) id, 0);
     OutString[7] = 0;
-
-    return (AE_OK);
 }
 
 
@@ -497,7 +502,7 @@ AcpiExEisaIdToString (
  *
  ******************************************************************************/
 
-ACPI_STATUS
+void
 AcpiExUnsignedIntegerToString (
     ACPI_INTEGER            Value,
     NATIVE_CHAR             *OutString)
@@ -505,6 +510,7 @@ AcpiExUnsignedIntegerToString (
     UINT32                  Count;
     UINT32                  DigitsNeeded;
     UINT32                  Remainder;
+    ACPI_INTEGER            Quotient;
 
 
     ACPI_FUNCTION_ENTRY ();
@@ -515,11 +521,10 @@ AcpiExUnsignedIntegerToString (
 
     for (Count = DigitsNeeded; Count > 0; Count--)
     {
-        AcpiUtShortDivide (&Value, 10, &Value, &Remainder);
-        OutString[Count-1] = (NATIVE_CHAR) ('0' + Remainder);
+        (void) AcpiUtShortDivide (&Value, 10, &Quotient, &Remainder);
+        OutString[Count-1] = (NATIVE_CHAR) ('0' + Remainder);\
+        Value = Quotient;
     }
-
-    return (AE_OK);
 }
 
 
