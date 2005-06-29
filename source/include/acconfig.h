@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acconfig.h - Global configuration constants
- *       $Revision: 1.81 $
+ *       $Revision: 1.82 $
  *
  *****************************************************************************/
 
@@ -255,6 +255,11 @@
 /* Maximum SpaceIds for Operation Regions */
 
 #define ACPI_MAX_ADDRESS_SPACE      255
+
+/* RSDP checksums */
+
+#define ACPI_RSDP_CHECKSUM_LENGTH   20
+#define ACPI_RSDP_XCHECKSUM_LENGTH  36
 
 
 #endif /* _ACCONFIG_H */
