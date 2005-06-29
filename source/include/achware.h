@@ -247,6 +247,67 @@ enum
 #endif
 
 
+/* Plug and play */
+
+/* Pnp and ACPI data */
+
+#define VERSION_NO                      0x01
+#define LOGICAL_DEVICE_ID               0x02
+#define COMPATIBLE_DEVICE_ID            0x03
+#define IRQ_FORMAT                      0x04
+#define DMA_FORMAT                      0x05
+#define START_DEPENDENT_TAG             0x06
+#define END_DEPENDENT_TAG               0x07
+#define IO_PORT_DESCRIPTOR              0x08
+#define FIXED_LOCATION_IO_DESCRIPTOR    0x09
+#define RESERVED_TYPE0                  0x0A
+#define RESERVED_TYPE1                  0x0B
+#define RESERVED_TYPE2                  0x0C
+#define RESERVED_TYPE3                  0x0D
+#define SMALL_VENDOR_DEFINED            0x0E
+#define END_TAG                         0x0F
+
+/* Pnp and ACPI data */
+
+#define MEMORY_RANGE_24                 0x81
+#define ISA_MEMORY_RANGE                0x81
+#define LARGE_VENDOR_DEFINED            0x84
+#define EISA_MEMORY_RANGE               0x85
+#define MEMORY_RANGE_32                 0x85
+#define FIXED_EISA_MEMORY_RANGE         0x86
+#define FIXED_MEMORY_RANGE_32           0x86
+
+/* ACPI only data */
+
+#define DWORD_ADDRESS_SPACE             0x87
+#define WORD_ADDRESS_SPACE              0x88
+#define EXTENDED_IRQ                    0x89
+
+/* MUST HAVES */
+
+
+typedef enum
+{
+    DWORD_DEVICE_ID,
+    STRING_PTR_DEVICE_ID,
+    STRING_DEVICE_ID
+
+}   DEVICE_ID_TYPE;
+
+typedef struct
+{
+    DEVICE_ID_TYPE      Type;
+    union
+    {
+        UINT32              Number;
+        char                *StringPtr;
+        char                Buffer[9];
+    } Data;
+
+} DEVICE_ID;
+
+
+
 
 /* Prototypes */
 
