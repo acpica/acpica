@@ -336,7 +336,7 @@ NsDumpOneObject (NsHandle ObjHandle, UINT32 Level, void *Context)
 void
 NsDumpObjects (NsType Type, INT32 MaxDepth, NsHandle StartHandle)
 {
-    NsWalkNamespace (Type, StartHandle, MaxDepth, NsDumpOneObject, NULL);
+    AcpiWalkNamespace (Type, StartHandle, MaxDepth, NsDumpOneObject, NULL, NULL);
 }
 
 
