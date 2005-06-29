@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acmacros.h - C macros for the entire subsystem.
- *       $Revision: 1.91 $
+ *       $Revision: 1.93 $
  *
  *****************************************************************************/
 
@@ -320,7 +320,7 @@
 
 #define ROUND_UP_TO(value,boundary)     (((value) + ((boundary)-1)) / (boundary))
 
-/* 
+/*
  * Bitmask creation
  * Bit positions start at zero.
  * MASK_BITS_ABOVE creates a mask starting AT the position and above
@@ -328,7 +328,6 @@
  */
 #define MASK_BITS_ABOVE(position)       (~(((UINT32)(-1)) << ((UINT32) (position))))
 #define MASK_BITS_BELOW(position)       (((UINT32)(-1)) << ((UINT32) (position)))
-
 
 
 /* Macros for GAS addressing */
@@ -519,7 +518,7 @@
 #define FUNCTION_TRACE_STR(a,b)         PROC_NAME(a)\
                                         AcpiUtTraceStr(__LINE__,&_Dbg,(NATIVE_CHAR *)b)
 
-#define FUNCTION_ENTRY                  AcpiUtTrackStackPtr
+#define FUNCTION_ENTRY()                AcpiUtTrackStackPtr()
 
 /*
  * Function exit tracing.
@@ -602,7 +601,7 @@
 #define FUNCTION_EXIT
 #define FUNCTION_STATUS_EXIT(s)
 #define FUNCTION_VALUE_EXIT(s)
-#define FUNCTION_ENTRY
+#define FUNCTION_ENTRY()
 #define DUMP_STACK_ENTRY(a)
 #define DUMP_OPERANDS(a,b,c,d,e)
 #define DUMP_ENTRY(a,b)
