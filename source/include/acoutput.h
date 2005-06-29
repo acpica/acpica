@@ -135,8 +135,8 @@
 #define MISCELLANEOUS               0x00000080
 #define OS_DEPENDENT                0x00000100
 #define OS_APP_INTERFACE            0x00001000
-#define OSPM					        0x00002000
-#define DRIVER                      0x00004000
+#define POWER_MANAGER               0x00002000
+#define ACPI_DEVICE_DRIVER          0x00004000
 
 
 #define ALL_COMPONENTS              0x00007FFF
@@ -169,13 +169,14 @@
 #define TRACE_INTERRUPTS            0x00800000
 #define TRACE_USER_REQUESTS         0x01000000
 #define TRACE_PACKAGE               0x02000000
+#define TRACE_PARSE                 0x04000000
 #define TRACE_ALL                   0x0FFFFF00
 
 /* Exceptionally verbose output -- used in the global "DebugLevel"  */
 
-#define VERBOSE_INFO                0x01000000
-#define VERBOSE_TABLES              0x02000000
-#define VERBOSE_EVENTS              0x08000000
+#define VERBOSE_INFO                0x10000000
+#define VERBOSE_TABLES              0x20000000
+#define VERBOSE_EVENTS              0x80000000
 
 /* Defaults for DebugLevel, debug and normal */
 
