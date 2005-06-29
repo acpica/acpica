@@ -268,7 +268,7 @@ AcpiHwObtainSleepTypeRegisterData (
      */
 
     Status = AcpiNsEvaluateByName (SleepStateTable[SleepState], NULL, &ObjDesc);
-    if (AE_OK == Status)
+    if (ACPI_SUCCESS (Status))
     {
         if (ObjDesc)
         {

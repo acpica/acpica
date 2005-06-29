@@ -171,6 +171,18 @@ AcpiDsCreateField (
     /* First arg is the name of the parent OpRegion */
 
     Arg = Op->Value.Arg;
+    if (!Region)
+    {
+        Status = AcpiNsLookup (WalkState->ScopeInfo, Arg->Value.Name,
+                                ACPI_TYPE_REGION, IMODE_EXECUTE,
+                                NS_SEARCH_PARENT, WalkState,
+                                &((ACPI_NAMED_OBJECT *)Region));
+
+        if (ACPI_FAILURE (Status))
+        {
+            return_ACPI_STATUS (Status);
+        }
+    }
 
     /* Second arg is the field flags */
 
@@ -207,7 +219,7 @@ AcpiDsCreateField (
         case AML_NAMEDFIELD_OP:
 
             Status = AcpiNsLookup (WalkState->ScopeInfo,
-                            (char *) &((ACPI_NAMED_OP *)Arg)->Name,
+                            (INT8 *) &((ACPI_NAMED_OP *)Arg)->Name,
                             INTERNAL_TYPE_DEF_FIELD,
                             IMODE_LOAD_PASS1,
                             NS_NO_UPSEARCH | NS_DONT_OPEN_SCOPE,
@@ -339,7 +351,7 @@ AcpiDsCreateBankField (
         case AML_NAMEDFIELD_OP:
 
             Status = AcpiNsLookup (WalkState->ScopeInfo,
-                            (char *) &((ACPI_NAMED_OP *)Arg)->Name,
+                            (INT8 *) &((ACPI_NAMED_OP *)Arg)->Name,
                             INTERNAL_TYPE_DEF_FIELD,
                             IMODE_LOAD_PASS1,
                             NS_NO_UPSEARCH | NS_DONT_OPEN_SCOPE,
@@ -479,7 +491,7 @@ AcpiDsCreateIndexField (
         case AML_NAMEDFIELD_OP:
 
             Status = AcpiNsLookup (WalkState->ScopeInfo,
-                                    (char *) &((ACPI_NAMED_OP *)Arg)->Name,
+                                    (INT8 *) &((ACPI_NAMED_OP *)Arg)->Name,
                                     INTERNAL_TYPE_INDEX_FIELD,
                                     IMODE_LOAD_PASS1,
                                     NS_NO_UPSEARCH | NS_DONT_OPEN_SCOPE,
