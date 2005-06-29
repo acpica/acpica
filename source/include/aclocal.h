@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: aclocal.h - Internal data types used across the ACPI subsystem
- *       $Revision: 1.189 $
+ *       $Revision: 1.190 $
  *
  *****************************************************************************/
 
@@ -420,7 +420,6 @@ typedef struct acpi_gpe_register_info
 #define ACPI_GPE_LEVEL_TRIGGERED        1
 #define ACPI_GPE_EDGE_TRIGGERED         2
 
-
 /* Information about each GPE register block */
 
 typedef struct acpi_gpe_block_info
@@ -436,6 +435,22 @@ typedef struct acpi_gpe_block_info
 
 } ACPI_GPE_BLOCK_INFO;
 
+/* Information about GPE interrupt handlers */
+
+typedef struct acpi_gpe_xrupt_info
+{
+    struct acpi_gpe_xrupt_info      *Previous;
+    struct acpi_gpe_xrupt_info      *Next;
+    UINT32                          InterruptLevel;
+    ACPI_GPE_BLOCK_INFO             *GpeBlockListHead;
+
+} ACPI_GPE_XRUPT_INFO;
+
+
+typedef ACPI_STATUS (*ACPI_GPE_CALLBACK) (
+    ACPI_GPE_XRUPT_INFO     *GpeXruptInfo,
+    ACPI_GPE_BLOCK_INFO     *GpeBlock);
+
 
 /* Information about each particular fixed event */
 
@@ -445,7 +460,6 @@ typedef struct acpi_fixed_event_handler
     void                    *Context;       /* Context to be passed to handler */
 
 } ACPI_FIXED_EVENT_HANDLER;
-
 
 typedef struct acpi_fixed_event_info
 {
