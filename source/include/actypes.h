@@ -525,6 +525,21 @@ typedef struct
 #define SYS_MODES_MASK                  0x0003
 
 /*
+ *  ACPI CPU Cx state handler
+ */
+typedef
+ACPI_STATUS (*ACPI_SET_C_STATE_HANDLER) (NATIVE_UINT PBlkAddress);
+
+/*
+ *  ACPI Cx State info
+ */
+typedef struct
+{
+    UINT32                  StateNumber;
+    UINT32                  Latency;
+} ACPI_CX_STATE;
+
+/*
  *  ACPI CPU throttling info
  */
 typedef struct
