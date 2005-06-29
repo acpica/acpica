@@ -42,7 +42,7 @@ INT32       __AcpiLibInitStatus = 0;
 #ifdef _DEBUG
 INT32 DebugLevel = 0xFFFFFFFF;
 #else
-INT32 DebugLevel = 0;
+INT32 DebugLevel = GLOBAL_ALL;
 #endif
 
 
@@ -113,19 +113,25 @@ FunctionTrace (INT32 LineNumber, char *ModuleName, char * FunctionName)
  ****************************************************************************/
 
 void
-DebugPrint (INT32 LineNumber, char *ModuleName, INT32 DebugLevel, char *Format, ...)
+DebugPrint (INT32 LineNumber, char *ModuleName, INT32 PrintLevels, char *Format, ...)
 {
     va_list         args;
 
 
-    va_start (args, Format);
+    /* Print only if requested level has been enabled globally */
 
-    /* Need a case statement here, switch on the Debug level */
+    if (PrintLevels & DebugLevel)
+    {
 
-    OsdPrintf (NULL, "%10s(%04d): ", ModuleName, LineNumber);
-    OsdVprintf ((OSD_FILE *) 1, Format, args);
+        va_start (args, Format);
 
-    va_end (args);
+        /* Need a case statement here, switch on the Debug level */
+
+        OsdPrintf (NULL, "%10s(%04d): ", ModuleName, LineNumber);
+        OsdVprintf (NULL, Format, args);
+
+        va_end (args);
+    }
 }
 
 
@@ -138,18 +144,23 @@ DebugPrint (INT32 LineNumber, char *ModuleName, INT32 DebugLevel, char *Format, 
  ****************************************************************************/
 
 void
-DebugPrintRaw (INT32 DebugLevel, char *Format, ...)
+DebugPrintRaw (INT32 PrintLevels, char *Format, ...)
 {
     va_list         args;
 
 
-    va_start (args, Format);
+    /* Print only if requested level has been enabled globally */
 
-    /* Need a case statement here, switch on the Debug level */
+    if (PrintLevels & DebugLevel)
+    {
+        va_start (args, Format);
 
-    OsdVprintf ((OSD_FILE *) 1, Format, args);
+        /* Need a case statement here, switch on the Debug level */
 
-    va_end (args);
+        OsdVprintf (NULL, Format, args);
+
+        va_end (args);
+    }
 }
 
 
@@ -268,6 +279,38 @@ _LocalAllocate (INT32 AllocSize, INT32 LineNumber, char *ModuleName)
 
 
     Block = OsdAllocate ((size_t) AllocSize);
+    if (!Block)
+    {
+        /* Report allocation error */
+
+        _REPORT_ERROR (&AKDT, LineNumber, ModuleName);
+        OutOfMemory = TRUE;
+    }
+
+    return Block;
+}
+
+
+/*****************************************************************************
+ * 
+ * FUNCTION:    _LocalCallocate 
+ *
+ * RETURN:      Pointer to newly allocated memory
+ *
+ * DESCRIPTION: Allocate memory via calloc (initialized to zero).  
+ *              Gracefully handle error conditions.
+ *
+ ****************************************************************************/
+
+void *
+_LocalCallocate (INT32 AllocSize, INT32 LineNumber, char *ModuleName)
+{
+    ST_KEY_DESC_TABLE   AKDT = {"0000", '1', "LocalCallocate: Memory allocation failure", 
+                                              "LocalCallocate: Memory allocation failure"};
+    void                *Block;
+
+
+    Block = OsdCallocate ((size_t) AllocSize);
     if (!Block)
     {
         /* Report allocation error */
