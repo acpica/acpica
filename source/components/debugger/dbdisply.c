@@ -170,7 +170,7 @@ AcpiDbGetPointer (
 
 #endif
 
-    return ObjPtr;
+    return (ObjPtr);
 }
 
 

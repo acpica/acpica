@@ -193,7 +193,7 @@ AcpiDbWalkForReferences (
         AcpiOsPrintf ("Reference at Entry->ChildTable %p [%4.4s]\n", Entry, &Entry->Name);
     }
 
-    return AE_OK;
+    return (AE_OK);
 }
 
 
@@ -709,7 +709,7 @@ AcpiDbWalkForSpecificObjects (
     if (ACPI_FAILURE (Status))
     {
         AcpiOsPrintf ("Could Not get pathname for object %p\n", ObjHandle);
-        return AE_OK;
+        return (AE_OK);
     }
 
     AcpiOsPrintf ("%32s", buffer);
@@ -745,7 +745,7 @@ AcpiDbWalkForSpecificObjects (
     }
 
     AcpiOsPrintf ("\n");
-    return AE_OK;
+    return (AE_OK);
 }
 
 
@@ -775,7 +775,7 @@ AcpiDbDisplayObjects (
     if (Type == ACPI_TYPE_NOT_FOUND)
     {
         AcpiOsPrintf ("Invalid or unsupported argument\n");
-        return AE_OK;
+        return (AE_OK);
     }
 
 
@@ -798,7 +798,7 @@ AcpiDbDisplayObjects (
                         AcpiDbWalkForSpecificObjects, (void *) &Type, NULL);
 
     AcpiDbSetOutputDestination (DB_CONSOLE_OUTPUT);
-    return AE_OK;
+    return (AE_OK);
 }
 
 
@@ -843,7 +843,7 @@ AcpiDbWalkAndMatchName (
         {
             /* No match, just exit */
 
-            return AE_OK;
+            return (AE_OK);
         }
     }
 
@@ -863,7 +863,7 @@ AcpiDbWalkAndMatchName (
         AcpiOsPrintf ("%32s (0x%p) - %s\n", Buffer, ObjHandle, AcpiCmGetTypeName (((ACPI_NAMED_OBJECT*)ObjHandle)->Type));
     }
 
-    return AE_OK;
+    return (AE_OK);
 }
 
 
@@ -894,7 +894,7 @@ AcpiDbFindNameInNamespace (
                         AcpiDbWalkAndMatchName, NameArg, NULL);
 
     AcpiDbSetOutputDestination (DB_CONSOLE_OUTPUT);
-    return AE_OK;
+    return (AE_OK);
 }
 
 

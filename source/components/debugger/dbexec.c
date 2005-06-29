@@ -215,7 +215,7 @@ AcpiDbExecuteMethod (
     AcpiGbl_CmSingleStep = FALSE;
     AcpiGbl_MethodExecuting = FALSE;
 
-    return Status;
+    return (Status);
 }
 
 

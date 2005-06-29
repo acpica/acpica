@@ -391,7 +391,7 @@ AcpiDbGetNextToken (
 
     if (!String || !(*String))
     {
-        return NULL;
+        return (NULL);
     }
 
 
@@ -406,7 +406,7 @@ AcpiDbGetNextToken (
 
         if (!(*String))
         {
-            return NULL;
+            return (NULL);
         }
     }
 
@@ -431,7 +431,7 @@ AcpiDbGetNextToken (
         *Next = String + 1;
     }
 
-    return Start;
+    return (Start);
 }
 
 
@@ -485,7 +485,7 @@ AcpiDbGetLine (
     if (Count)
         Count--;  /* Number of args only */
 
-    return Count;
+    return (Count);
 }
 
 
@@ -510,20 +510,20 @@ AcpiDbMatchCommand (
 
     if (!UserCommand || UserCommand[0] == 0)
     {
-        return CMD_NULL;
+        return (CMD_NULL);
     }
 
     for (i = CMD_FIRST_VALID; Commands[i].Name; i++)
     {
         if (STRSTR (Commands[i].Name, UserCommand) == Commands[i].Name)
         {
-            return i;
+            return (i);
         }
     }
 
     /* Command not recognized */
 
-    return CMD_NOT_FOUND;
+    return (CMD_NOT_FOUND);
 }
 
 
@@ -618,7 +618,7 @@ AcpiDbCommandDispatch (
         if (ACPI_FAILURE(Status))
         {
             AcpiOsPrintf("AcpiEnable failed (0x%x)\n", Status);
-            return Status;
+            return (Status);
         }
         break;
 
@@ -651,26 +651,26 @@ AcpiDbCommandDispatch (
         CommandLine = AcpiDbGetFromHistory (Args[1]);
         if (!CommandLine)
         {
-            return AE_CTRL_TRUE;
+            return (AE_CTRL_TRUE);
         }
 
         Status = AcpiDbCommandDispatch (CommandLine, WalkState, Op);
         if (ACPI_SUCCESS (Status))
             Status = AE_CTRL_TRUE;
-        return Status;
+        return (Status);
         break;
 
     case CMD_HISTORY_LAST:
         CommandLine = AcpiDbGetFromHistory (NULL);
         if (!CommandLine)
         {
-            return AE_CTRL_TRUE;
+            return (AE_CTRL_TRUE);
         }
 
         Status = AcpiDbCommandDispatch (CommandLine, WalkState, Op);
         if (ACPI_SUCCESS (Status))
             Status = AE_CTRL_TRUE;
-        return Status;
+        return (Status);
 
     case CMD_INFORMATION:
         AcpiDbDisplayMethodInfo (Op);
@@ -681,7 +681,7 @@ AcpiDbCommandDispatch (
         {
             AcpiGbl_CmSingleStep = TRUE;
             AcpiGbl_MethodBreakpoint = 0;
-            return AE_OK;
+            return (AE_OK);
         }
         break;
 
@@ -713,7 +713,7 @@ AcpiDbCommandDispatch (
         Status = AcpiDbLoadAcpiTable (Args[1]);
         if (ACPI_FAILURE (Status))
         {
-            return Status;
+            return (Status);
         }
 
         AcpiDbSetOutputDestination (DB_REDIRECTABLE_OUTPUT);
@@ -722,7 +722,7 @@ AcpiDbCommandDispatch (
 
         if (ACPI_FAILURE (Status))
         {
-            return Status;
+            return (Status);
         }
         break;
 
@@ -834,7 +834,7 @@ AcpiDbCommandDispatch (
     /* Add all commands that come here to the history buffer */
 
     AcpiDbAddToHistory (InputBuffer);
-    return Status;
+    return (Status);
 }
 
 
@@ -970,7 +970,7 @@ AcpiDbUserCommands (
      */
     AcpiTerminate ();
 
-    return Status;
+    return (Status);
 }
 
 

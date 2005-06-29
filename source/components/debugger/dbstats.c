@@ -195,7 +195,7 @@ AcpiDbDisplayStatistics (
     if (!TypeArg)
     {
         AcpiOsPrintf ("Use subcommand OBJECTS, MEMORY, MISC, or TABLES\n");
-        return AE_OK;
+        return (AE_OK);
     }
 
     STRUPR (TypeArg);
@@ -203,7 +203,7 @@ AcpiDbDisplayStatistics (
     if (Type == (UINT32) -1)
     {
         AcpiOsPrintf ("Invalid or unsupported argument\n");
-        return AE_OK;
+        return (AE_OK);
     }
 
 
@@ -300,7 +300,7 @@ AcpiDbDisplayStatistics (
     }
 
     AcpiOsPrintf ("\n");
-    return AE_OK;
+    return (AE_OK);
 }
 
 
