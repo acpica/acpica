@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: oswinxf - Windows application interface
- *              $Revision: 1.3 $
+ *              $Revision: 1.4 $
  *
  *****************************************************************************/
 
@@ -763,6 +763,29 @@ AcpiOsRemoveInterruptHandler (
 {
 
     return AE_OK;
+}
+
+
+/******************************************************************************
+ *
+ * FUNCTION:    AcpiOsGetThreadId
+ *
+ * PARAMETERS:  None
+ *
+ * RETURN:      Id of the running thread
+ *
+ * DESCRIPTION: Get the Id of the current (running) thread
+ *
+ *****************************************************************************/
+
+UINT32
+AcpiOsGetThreadId (
+    void)
+{
+
+
+    return (GetCurrentThreadId ());
+
 }
 
 
