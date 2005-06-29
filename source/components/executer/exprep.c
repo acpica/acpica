@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exprep - ACPI AML (p-code) execution - field prep utilities
- *              $Revision: 1.107 $
+ *              $Revision: 1.108 $
  *
  *****************************************************************************/
 
@@ -157,12 +157,12 @@ AcpiExDecodeFieldAccess (
     PROC_NAME ("ExDecodeFieldAccess");
 
 
-    Access = ((FieldFlags & ACCESS_TYPE_MASK) >> ACCESS_TYPE_SHIFT);
+    Access = (FieldFlags & AML_FIELD_ACCESS_TYPE_MASK);
     Length = ObjDesc->CommonField.BitLength;
 
     switch (Access)
     {
-    case ACCESS_ANY_ACC:
+    case AML_FIELD_ACCESS_ANY:
 
         ByteAlignment = 1;
 
@@ -192,22 +192,22 @@ AcpiExDecodeFieldAccess (
         }
         break;
 
-    case ACCESS_BYTE_ACC:
+    case AML_FIELD_ACCESS_BYTE:
         ByteAlignment = 1;
         BitLength = 8;
         break;
 
-    case ACCESS_WORD_ACC:
+    case AML_FIELD_ACCESS_WORD:
         ByteAlignment = 2;
         BitLength = 16;
         break;
 
-    case ACCESS_DWORD_ACC:
+    case AML_FIELD_ACCESS_DWORD:
         ByteAlignment = 4;
         BitLength = 32;
         break;
 
-    case ACCESS_QWORD_ACC:  /* ACPI 2.0 */
+    case AML_FIELD_ACCESS_QWORD:  /* ACPI 2.0 */
         ByteAlignment = 8;
         BitLength = 64;
         break;
@@ -250,7 +250,9 @@ AcpiExDecodeFieldAccess (
  * RETURN:      Status
  *
  * DESCRIPTION: Initialize the areas of the field object that are common
- *              to the various types of fields.
+ *              to the various types of fields.  Note: This is very "sensitive"
+ *              code because we are solving the general case for field
+ *              alignment.
  *
  ******************************************************************************/
 
@@ -258,6 +260,7 @@ ACPI_STATUS
 AcpiExPrepCommonFieldObject (
     ACPI_OPERAND_OBJECT     *ObjDesc,
     UINT8                   FieldFlags,
+    UINT8                   FieldAttribute,
     UINT32                  FieldBitPosition,
     UINT32                  FieldBitLength)
 {
@@ -269,20 +272,19 @@ AcpiExPrepCommonFieldObject (
     FUNCTION_TRACE ("ExPrepCommonFieldObject");
 
 
+    if (FieldBitLength > ACPI_UINT16_MAX)
+    {
+        REPORT_ERROR (("Field size too long (> 0xFFFF), not supported\n"));
+        return_ACPI_STATUS (AE_SUPPORT);
+    }
+
     /*
      * Note: the structure being initialized is the
-     * ACPI_COMMON_FIELD_INFO;  No structure fields outside of the common area
-     * are initialized by this procedure.
+     * ACPI_COMMON_FIELD_INFO;  No structure fields outside of the common
+     * area are initialized by this procedure.
      */
-
-    /* Demultiplex the FieldFlags byte */
-
-    ObjDesc->CommonField.LockRule   = (UINT8) ((FieldFlags & LOCK_RULE_MASK)
-                                                    >> LOCK_RULE_SHIFT);
-    ObjDesc->CommonField.UpdateRule = (UINT8) ((FieldFlags & UPDATE_RULE_MASK)
-                                                    >> UPDATE_RULE_SHIFT);
-    /* Other misc fields */
-
+    ObjDesc->CommonField.FieldFlags = FieldFlags;
+    ObjDesc->CommonField.Attribute  = FieldAttribute;
     ObjDesc->CommonField.BitLength  = (UINT16) FieldBitLength;
 
     /*
@@ -324,7 +326,7 @@ AcpiExPrepCommonFieldObject (
      * StartFieldBitOffset is the offset of the first bit of the field within a field datum.
      */
     ObjDesc->CommonField.StartFieldBitOffset = (UINT8) (FieldBitPosition - 
-                                                            MUL_8 (ObjDesc->CommonField.BaseByteOffset));
+                                                        MUL_8 (ObjDesc->CommonField.BaseByteOffset));
 
     /*
      * Valid bits -- the number of bits that compose a partial datum,
@@ -339,7 +341,7 @@ AcpiExPrepCommonFieldObject (
      * DatumValidBits is the number of valid field bits in the first field datum.
      */
     ObjDesc->CommonField.DatumValidBits      = (UINT8) (AccessBitWidth -
-                                                         ObjDesc->CommonField.StartFieldBitOffset);
+                                                        ObjDesc->CommonField.StartFieldBitOffset);
 
     /*
      * Does the entire field fit within a single field access element? (datum)
@@ -348,7 +350,7 @@ AcpiExPrepCommonFieldObject (
     if ((ObjDesc->CommonField.StartFieldBitOffset + FieldBitLength) <=
         (UINT16) AccessBitWidth)
     {
-        ObjDesc->CommonField.AccessFlags |= AFIELD_SINGLE_DATUM;
+        ObjDesc->Common.Flags |= AOPOBJ_SINGLE_DATUM;
     }
 
     return_ACPI_STATUS (AE_OK);
@@ -397,7 +399,8 @@ AcpiExPrepFieldValue (
         Type = AcpiNsGetType (Info->RegionNode);
         if (Type != ACPI_TYPE_REGION)
         {
-            ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Needed Region, found type %X %s\n",
+            ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, 
+                "Needed Region, found type %X %s\n",
                 Type, AcpiUtGetTypeName (Type)));
 
             return_ACPI_STATUS (AE_AML_OPERAND_TYPE);
@@ -415,8 +418,8 @@ AcpiExPrepFieldValue (
     /* Initialize areas of the object that are common to all fields */
 
     ObjDesc->CommonField.Node = Info->FieldNode;
-    Status = AcpiExPrepCommonFieldObject (ObjDesc, Info->FieldFlags,
-                        Info->FieldBitPosition, Info->FieldBitLength);
+    Status = AcpiExPrepCommonFieldObject (ObjDesc, Info->FieldFlags, 
+                Info->Attribute, Info->FieldBitPosition, Info->FieldBitLength);
     if (ACPI_FAILURE (Status))
     {
         AcpiUtDeleteObjectDesc (ObjDesc);
@@ -429,13 +432,14 @@ AcpiExPrepFieldValue (
     {
     case INTERNAL_TYPE_REGION_FIELD:
 
-        ObjDesc->Field.RegionObj    = AcpiNsGetAttachedObject (Info->RegionNode);
+        ObjDesc->Field.RegionObj     = AcpiNsGetAttachedObject (Info->RegionNode);
 
         /* An additional reference for the container */
 
         AcpiUtAddReference (ObjDesc->Field.RegionObj);
 
-        ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "RegionField: Bitoff=%X Off=%X Gran=%X Region %p\n",
+        ACPI_DEBUG_PRINT ((ACPI_DB_INFO, 
+            "RegionField: Bitoff=%X Off=%X Gran=%X Region %p\n",
             ObjDesc->Field.StartFieldBitOffset, ObjDesc->Field.BaseByteOffset,
             ObjDesc->Field.AccessBitWidth, ObjDesc->Field.RegionObj));
         break;
@@ -443,9 +447,9 @@ AcpiExPrepFieldValue (
 
     case INTERNAL_TYPE_BANK_FIELD:
 
-        ObjDesc->BankField.Value        = Info->BankValue;
-        ObjDesc->BankField.RegionObj    = AcpiNsGetAttachedObject (Info->RegionNode);
-        ObjDesc->BankField.BankObj      = AcpiNsGetAttachedObject (Info->RegisterNode);
+        ObjDesc->BankField.Value     = Info->BankValue;
+        ObjDesc->BankField.RegionObj = AcpiNsGetAttachedObject (Info->RegionNode);
+        ObjDesc->BankField.BankObj   = AcpiNsGetAttachedObject (Info->RegisterNode);
 
         /* An additional reference for the attached objects */
 
