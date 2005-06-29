@@ -8,7 +8,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2003, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2005, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -121,6 +121,19 @@
 #endif
 
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <signal.h>
+
+#include "acpi.h"
+#include "acparser.h"
+#include "amlcode.h"
+#include "acnamesp.h"
+#include "acdebug.h"
+#include "actables.h"
+#include "acinterp.h"
+#include "acapps.h"
+
 
 extern UINT8                    *DsdtPtr;
 extern UINT32                   AcpiDsdtLength;
