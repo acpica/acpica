@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asltypes.h - compiler data types and struct definitions
- *              $Revision: 1.47 $
+ *              $Revision: 1.48 $
  *
  *****************************************************************************/
 
@@ -295,7 +295,8 @@ typedef struct
 #define ASL_ERROR               0
 #define ASL_WARNING             1
 #define ASL_REMARK              2
-#define ASL_NUM_REPORT_LEVELS   3
+#define ASL_OPTIMIZATION        3
+#define ASL_NUM_REPORT_LEVELS   4
 
 
 typedef enum
@@ -375,7 +376,8 @@ typedef enum
     ASL_MSG_MISSING_STARTDEPENDENT,
     ASL_MSG_DEPENDENT_NESTING,
     ASL_MSG_NAME_OPTIMIZATION,
-    ASL_MSG_SINGLE_NAME_OPTIMIZATION
+    ASL_MSG_SINGLE_NAME_OPTIMIZATION,
+    ASL_MSG_INTEGER_OPTIMIZATION
 
 } ASL_MESSAGE_IDS;
 
