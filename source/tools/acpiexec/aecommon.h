@@ -113,8 +113,8 @@
  *
  *****************************************************************************/
 
-#ifndef _ADCOMMON
-#define _ADCOMMON
+#ifndef _AECOMMON
+#define _AECOMMON
 
 #ifdef _MSC_VER                 /* disable some level-4 warnings */
 #pragma warning(disable:4100)   /* warning C4100: unreferenced formal parameter */
@@ -240,5 +240,5 @@ ACPI_STATUS
 AeInstallHandlers (void);
 
 
-#endif /* _ADCOMMON */
+#endif /* _AECOMMON */
 
