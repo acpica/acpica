@@ -145,17 +145,17 @@ extern char                     *Filename;
  */
 typedef struct Region
 {
-    ACPI_INTEGER        Address;
-    UINT32              Length;
-    void                *Buffer;
-    void                *NextRegion;
+    ACPI_PHYSICAL_ADDRESS   Address;
+    UINT32                  Length;
+    void                    *Buffer;
+    void                    *NextRegion;
 
 } REGION;
 
 typedef struct DebugRegions
 {
-    UINT32              NumberOfRegions;
-    REGION              *RegionList;
+    UINT32                  NumberOfRegions;
+    REGION                  *RegionList;
 
 } DEBUG_REGIONS;
 

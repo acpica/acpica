@@ -191,7 +191,7 @@ AcpiCmFormatSpaceId (
 ACPI_STATUS
 RegionHandler (
     UINT32                      Function,
-    ACPI_INTEGER                Address,
+    ACPI_PHYSICAL_ADDRESS       Address,
     UINT32                      BitWidth,
     UINT32                      *Value,
     void                        *HandlerContext,
@@ -199,7 +199,7 @@ RegionHandler (
 {
 
     ACPI_OPERAND_OBJECT     *RegionObject = (ACPI_OPERAND_OBJECT*)RegionContext;
-    ACPI_INTEGER            BaseAddress;
+    ACPI_PHYSICAL_ADDRESS   BaseAddress;
     UINT32                  Length;
     BOOLEAN                 BufferExists;
     REGION                  *RegionElement;
