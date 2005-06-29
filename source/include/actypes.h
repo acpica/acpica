@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: actypes.h - Common data types for the entire ACPI subsystem
- *       $Revision: 1.245 $
+ *       $Revision: 1.246 $
  *
  *****************************************************************************/
 
@@ -153,6 +153,9 @@
 #endif
 
 #if ACPI_MACHINE_WIDTH == 64
+
+/*! [Begin] no source code translation (keep the typedefs) */
+
 /*
  * 64-bit type definitions
  */
@@ -163,6 +166,8 @@ typedef int                             INT32;
 typedef unsigned int                    UINT32;
 typedef COMPILER_DEPENDENT_INT64        INT64;
 typedef COMPILER_DEPENDENT_UINT64       UINT64;
+
+/*! [End] no source code translation !*/
 
 typedef INT64                           NATIVE_INT;
 typedef UINT64                          NATIVE_UINT;
@@ -183,6 +188,8 @@ typedef UINT64                          ACPI_SIZE;
 
 #elif ACPI_MACHINE_WIDTH == 16
 
+/*! [Begin] no source code translation (keep the typedefs) */
+
 /*
  * 16-bit type definitions
  */
@@ -199,6 +206,8 @@ typedef struct
     UINT32                                  Hi;
 
 } UINT64;
+
+/*! [End] no source code translation !*/
 
 typedef UINT16                          NATIVE_UINT;
 typedef INT16                           NATIVE_INT;
@@ -226,6 +235,8 @@ typedef UINT16                          ACPI_SIZE;
 
 #elif ACPI_MACHINE_WIDTH == 32
 
+/*! [Begin] no source code translation (keep the typedefs) */
+
 /*
  * 32-bit type definitions (default)
  */
@@ -236,6 +247,8 @@ typedef int                             INT32;
 typedef unsigned int                    UINT32;
 typedef COMPILER_DEPENDENT_INT64        INT64;
 typedef COMPILER_DEPENDENT_UINT64       UINT64;
+
+/*! [End] no source code translation !*/
 
 typedef INT32                           NATIVE_INT;
 typedef UINT32                          NATIVE_UINT;
@@ -264,26 +277,6 @@ typedef UINT32                          ACPI_SIZE;
 typedef UINT32                          UINT32_BIT;
 typedef NATIVE_UINT                     ACPI_PTRDIFF;
 typedef char                            NATIVE_CHAR;
-
-
-#ifdef DEFINE_ALTERNATE_TYPES
-/*
- * Types used only in translated source, defined here to enable
- * cross-platform compilation only.
- */
-typedef INT32                           s32;
-typedef UINT8                           u8;
-typedef UINT16                          u16;
-typedef UINT32                          u32;
-typedef UINT64                          u64;
-typedef ACPI_PHYSICAL_ADDRESS           acpi_physical_address;
-typedef ACPI_IO_ADDRESS                 acpi_io_address;
-typedef ACPI_SIZE                       acpi_size;
-typedef ACPI_TBLPTR                     acpi_tblptr;
-
-#endif
-/*! [End] no source code translation !*/
-
 
 /*
  * Pointer overlays to avoid lots of typecasting for
