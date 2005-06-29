@@ -2,6 +2,7 @@
 /******************************************************************************
  *
  * Module Name: amutils - interpreter/scanner utilities
+ *              $Revision: 1.51 $
  *
  *****************************************************************************/
 
@@ -614,12 +615,6 @@ AcpiAmlBuildCopyInternalPackageObject (
             }
         }   /* else object is NOT a package */
     }   /* while (1)  */
-
-
-    /*
-     * We'll never get here, but the compiler whines about return value
-     */
-    return_ACPI_STATUS (AE_OK);
 }
 
 
