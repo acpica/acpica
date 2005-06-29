@@ -140,6 +140,10 @@ SOURCE=..\..\Subsystem\Interpreter\iapi.c
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\Subsystem\Interpreter\ieconfig.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\Subsystem\Interpreter\iecreate.c
 # End Source File
 # Begin Source File
@@ -268,6 +272,10 @@ SOURCE=..\..\Subsystem\Namespace\nsfamily.c
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\Subsystem\Namespace\nsload.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\Subsystem\Namespace\nsmodify.c
 # End Source File
 # Begin Source File
@@ -288,11 +296,11 @@ SOURCE=..\..\Subsystem\Namespace\nssearch.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\Subsystem\Namespace\nsstack.c
+SOURCE=..\..\Subsystem\Namespace\nsutils.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\Subsystem\Namespace\nsutils.c
+SOURCE=..\..\Subsystem\Namespace\nswalk.c
 # End Source File
 # End Group
 # Begin Group "Parser"
@@ -511,7 +519,47 @@ SOURCE=..\..\Subsystem\Dispatcher\dswload2.c
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\Subsystem\Dispatcher\dswscope.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\Subsystem\Dispatcher\dswstate.c
+# End Source File
+# End Group
+# Begin Group "Tables"
+
+# PROP Default_Filter ".c"
+# Begin Source File
+
+SOURCE=..\..\Subsystem\Tables\tbapi.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\Subsystem\Tables\tbfac.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\Subsystem\Tables\tbget.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\Subsystem\Tables\tbgetall.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\Subsystem\Tables\tbinstal.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\Subsystem\Tables\tbremove.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\Subsystem\Tables\tbrsd.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\Subsystem\Tables\tbutils.c
 # End Source File
 # End Group
 # End Group
