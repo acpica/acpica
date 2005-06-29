@@ -27,7 +27,7 @@
  * Code in any form, with the right to sublicense such rights; and
  *
  * 2.3. Intel grants Licensee a non-exclusive and non-transferable patent
- * license (without the right to sublicense), under only those claims of Intel
+ * license (with the right to sublicense), under only those claims of Intel
  * patents that are infringed by the Original Intel Code, to make, use, sell,
  * offer to sell, and import the Covered Code and derivative works thereof
  * solely to the minimum extent necessary to exercise the above copyright
@@ -125,13 +125,13 @@ typedef UINT32              IO_ADDRESS;             /* Only for clarity in decla
 
 #define RSDP_SIG            "RSD PTR "              /* RSDT Pointer signature */
 #define APIC_SIG            "APIC"                  /* Multiple APIC Description Table */
-#define DSDT_SIG            "DSDT"                  /* Differentiated Sys Descrip Table */
+#define DSDT_SIG            "DSDT"                  /* Differentiated System Description Table */
 #define FACP_SIG            "FACP"                  /* Fixed ACPI Description Table */
 #define FACS_SIG            "FACS"                  /* Firmware ACPI Control Structure */
-#define PSDT_SIG            "PSDT"                  /* Persistent Sys Description Table */
+#define PSDT_SIG            "PSDT"                  /* Persistent System Description Table */
 #define RSDT_SIG            "RSDT"                  /* Root System Description Table */
-#define SSDT_SIG            "SSDT"                  /* Secondary Sys Description Table */
-#define SBDT_SIG            "SBDT"                  /* Smart Batter Description Table */
+#define SSDT_SIG            "SSDT"                  /* Secondary System Description Table */
+#define SBST_SIG            "SBST"                  /* Smart Battery Specification Table */
 
 
 #define GL_OWNED            0x02                    /* Ownership of global lock is bit 1 */
@@ -309,4 +309,34 @@ typedef struct  /* Smart Battery Description Table */
 
 
 
-#endif /* __ACPITYPE_H__ */
+
+/*
+ * ACPI Table information.  We save the table address, length,
+ * and type of memory allocation (mapped or allocated) for each
+ * table for 1) when we exit, and 2) if a new table is installed
+ */
+
+#define ACPI_MEM_NOT_ALLOCATED  0
+#define ACPI_MEM_ALLOCATED      1
+#define ACPI_MEM_MAPPED         2
+
+#define ACPI_TABLE_SINGLE       0
+#define ACPI_TABLE_MULTIPLE     1
+
+
+/*
+ * ACPI Table Descriptor.  One per ACPI table
+ */
+typedef struct AcpiTableDesc
+{
+    struct AcpiTableDesc    *Prev;
+    struct AcpiTableDesc    *Next;
+    ACPI_TABLE_HEADER       *Pointer;
+    UINT32                  Length;
+    UINT32                  Allocation;
+    UINT32                  Count;
+
+} ACPI_TABLE_DESC;
+
+
+#endif /* __ACPITABLES_H__ */
