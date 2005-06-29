@@ -2,7 +2,7 @@
  *
  * Module Name: evevent - Fixed and General Purpose AcpiEvent
  *                          handling and dispatch
- *              $Revision: 1.38 $
+ *              $Revision: 1.39 $
  *
  *****************************************************************************/
 
@@ -924,7 +924,7 @@ AcpiEvGpeDispatch (
     else if (GpeInfo.MethodHandle)
     {
         if (ACPI_FAILURE(AcpiOsQueueForExecution (OSD_PRIORITY_GPE,
-            AcpiEvAsynchExecuteGpeMethod, (void*)(NATIVE_UINT)GpeNumber)))
+            AcpiEvAsynchExecuteGpeMethod, (void*) GpeNumber)))
         {
             /*
              * Shoudn't occur, but if it does report an error. Note that
