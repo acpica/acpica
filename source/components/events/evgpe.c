@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: evgpe - General Purpose Event handling and dispatch
- *              $Revision: 1.27 $
+ *              $Revision: 1.28 $
  *
  *****************************************************************************/
 
@@ -218,12 +218,10 @@ AcpiEvGpeDetect (
 {
     UINT32                  IntStatus = ACPI_INTERRUPT_NOT_HANDLED;
     UINT8                   EnabledStatusByte;
-    UINT8                   BitMask;
     ACPI_GPE_REGISTER_INFO  *GpeRegisterInfo;
     UINT32                  InValue;
     ACPI_STATUS             Status;
     ACPI_GPE_BLOCK_INFO     *GpeBlock;
-    UINT32                  GpeNumber;
     UINT32                  i;
     UINT32                  j;
 
@@ -290,21 +288,19 @@ AcpiEvGpeDetect (
 
             /* Now look at the individual GPEs in this byte register */
 
-            for (j = 0, BitMask = 1; j < ACPI_GPE_REGISTER_WIDTH; j++, BitMask <<= 1)
+            for (j = 0; j < ACPI_GPE_REGISTER_WIDTH; j++)
             {
                 /* Examine one GPE bit */
 
-                if (EnabledStatusByte & BitMask)
+                if (EnabledStatusByte & AcpiGbl_DecodeTo8bit[j])
                 {
                     /*
                      * Found an active GPE. Dispatch the event to a handler
                      * or method.
                      */
-                    GpeNumber = (i * ACPI_GPE_REGISTER_WIDTH) + j;
-
                     IntStatus |= AcpiEvGpeDispatch (
-                                    &GpeBlock->EventInfo[GpeNumber],
-                                    GpeNumber + GpeBlock->RegisterInfo[GpeNumber].BaseGpeNumber);
+                                    &GpeBlock->EventInfo[(i * ACPI_GPE_REGISTER_WIDTH) + j],
+                                    j + GpeRegisterInfo->BaseGpeNumber);
                 }
             }
         }
