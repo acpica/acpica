@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: exfldio - Aml Field I/O
- *              $Revision: 1.90 $
+ *              $Revision: 1.91 $
  *
  *****************************************************************************/
 
@@ -260,7 +260,7 @@ AcpiExAccessRegion (
     ACPI_FUNCTION_TRACE ("ExAccessRegion");
 
 
-    /* 
+    /*
      * Ensure that the region operands are fully evaluated and verify
      * the validity of the request
      */

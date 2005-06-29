@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: exfield - ACPI AML (p-code) execution - field manipulation
- *              $Revision: 1.116 $
+ *              $Revision: 1.117 $
  *
  *****************************************************************************/
 
@@ -200,7 +200,7 @@ AcpiExReadDataFromField (
          * Perform the read.
          * Note: Smbus protocol value is passed in upper 16-bits of Function
          */
-        Status = AcpiExAccessRegion (ObjDesc, 0, 
+        Status = AcpiExAccessRegion (ObjDesc, 0,
                         ACPI_CAST_PTR (ACPI_INTEGER, BufferDesc->Buffer.Pointer),
                         ACPI_READ | (ObjDesc->Field.Attribute << 16));
         AcpiExReleaseGlobalLock (Locked);
@@ -366,11 +366,11 @@ AcpiExWriteDataToField (
 
         Locked = AcpiExAcquireGlobalLock (ObjDesc->CommonField.FieldFlags);
 
-        /* 
+        /*
          * Perform the write (returns status and perhaps data in the same buffer)
          * Note: SMBus protocol type is passed in upper 16-bits of Function.
          */
-        Status = AcpiExAccessRegion (ObjDesc, 0, 
+        Status = AcpiExAccessRegion (ObjDesc, 0,
                         (ACPI_INTEGER *) Buffer,
                         ACPI_WRITE | (ObjDesc->Field.Attribute << 16));
         AcpiExReleaseGlobalLock (Locked);
