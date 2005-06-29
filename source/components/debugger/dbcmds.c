@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dbcmds - debug commands and output routines
- *              $Revision: 1.81 $
+ *              $Revision: 1.83 $
  *
  ******************************************************************************/
 
@@ -134,7 +134,7 @@
  * These object types map directly to the ACPI_TYPES
  */
 
-ARGUMENT_INFO         AcpiDbObjectTypes [] =
+static ARGUMENT_INFO        AcpiDbObjectTypes [] =
 {
     {"ANY"},
     {"NUMBERS"},
@@ -225,7 +225,7 @@ AcpiDbFindReferences (
 
     /* Search all nodes in namespace */
 
-    AcpiWalkNamespace (ACPI_TYPE_ANY, ACPI_ROOT_OBJECT, ACPI_UINT32_MAX,
+    (void) AcpiWalkNamespace (ACPI_TYPE_ANY, ACPI_ROOT_OBJECT, ACPI_UINT32_MAX,
                     AcpiDbWalkForReferences, (void *) ObjDesc, NULL);
 }
 
@@ -592,6 +592,7 @@ AcpiDbSendNotify (
     UINT32                  Value)
 {
     ACPI_NAMESPACE_NODE     *Node;
+    ACPI_STATUS             Status;
 
 
     /* Translate name to an Named object */
@@ -611,7 +612,11 @@ AcpiDbSendNotify (
 
          /* Send the notify */
 
-        AcpiEvQueueNotifyRequest (Node, Value);
+        Status = AcpiEvQueueNotifyRequest (Node, Value);
+        if (ACPI_FAILURE (Status))
+        {
+            AcpiOsPrintf ("Could not queue notify\n");
+        }
         break;
 
     default:
@@ -648,6 +653,7 @@ AcpiDbSetMethodData (
     UINT32                  Value;
     ACPI_WALK_STATE         *WalkState;
     ACPI_OPERAND_OBJECT     *ObjDesc;
+    ACPI_STATUS             Status;
 
 
     /* Validate TypeArg */
@@ -700,7 +706,12 @@ AcpiDbSetMethodData (
             return;
         }
 
-        AcpiDsStoreObjectToLocal (AML_ARG_OP, Index, ObjDesc, WalkState);
+        Status = AcpiDsStoreObjectToLocal (AML_ARG_OP, Index, ObjDesc, WalkState);
+        if (ACPI_FAILURE (Status))
+        {
+            return;
+        }
+
         ObjDesc = WalkState->Arguments[Index].Object;
 
         AcpiOsPrintf ("Arg%d: ", Index);
@@ -717,7 +728,12 @@ AcpiDbSetMethodData (
             return;
         }
 
-        AcpiDsStoreObjectToLocal (AML_LOCAL_OP, Index, ObjDesc, WalkState);
+        Status = AcpiDsStoreObjectToLocal (AML_LOCAL_OP, Index, ObjDesc, WalkState);
+        if (ACPI_FAILURE (Status))
+        {
+            return;
+        }
+
         ObjDesc = WalkState->LocalVariables[Index].Object;
 
         AcpiOsPrintf ("Local%d: ", Index);
@@ -799,6 +815,10 @@ AcpiDbWalkForSpecificObjects (
         case ACPI_TYPE_BUFFER:
             AcpiOsPrintf ("  Length %X", ObjDesc->Buffer.Length);
             break;
+
+        default:
+            /* Ignore other object types */
+            break;
         }
     }
 
@@ -844,7 +864,7 @@ AcpiDbDisplayObjects (
 
     /* Walk the namespace from the root */
 
-    AcpiWalkNamespace (Type, ACPI_ROOT_OBJECT, ACPI_UINT32_MAX,
+    (void) AcpiWalkNamespace (Type, ACPI_ROOT_OBJECT, ACPI_UINT32_MAX,
                         AcpiDbWalkForSpecificObjects, (void *) &Type, NULL);
 
     AcpiDbSetOutputDestination (ACPI_DB_CONSOLE_OUTPUT);
@@ -939,7 +959,7 @@ AcpiDbFindNameInNamespace (
 
     /* Walk the namespace from the root */
 
-    AcpiWalkNamespace (ACPI_TYPE_ANY, ACPI_ROOT_OBJECT, ACPI_UINT32_MAX,
+    (void) AcpiWalkNamespace (ACPI_TYPE_ANY, ACPI_ROOT_OBJECT, ACPI_UINT32_MAX,
                         AcpiDbWalkAndMatchName, NameArg, NULL);
 
     AcpiDbSetOutputDestination (ACPI_DB_CONSOLE_OUTPUT);
@@ -1031,7 +1051,8 @@ void
 AcpiDbDisplayResources (
     NATIVE_CHAR             *ObjectArg)
 {
-#ifndef _IA16
+#if ACPI_MACHINE_WIDTH != 16
+
     ACPI_OPERAND_OBJECT     *ObjDesc;
     ACPI_STATUS             Status;
     ACPI_BUFFER             ReturnObj;
@@ -1102,7 +1123,7 @@ GetCrs:
 
     else
     {
-        AcpiRsDumpResourceList ((ACPI_RESOURCE *) AcpiGbl_DbBuffer);
+        AcpiRsDumpResourceList (ACPI_CAST_PTR (ACPI_RESOURCE, AcpiGbl_DbBuffer));
     }
 
     Status = AcpiSetCurrentResources (ObjDesc, &ReturnObj);
@@ -1139,7 +1160,7 @@ GetPrs:
 
     else
     {
-        AcpiRsDumpResourceList ((ACPI_RESOURCE *) AcpiGbl_DbBuffer);
+        AcpiRsDumpResourceList (ACPI_CAST_PTR (ACPI_RESOURCE, AcpiGbl_DbBuffer));
     }
 
 
@@ -1206,7 +1227,7 @@ AcpiDbIntegrityWalk (
     if (Object)
     {
         Info->Objects++;
-        if (ACPI_GET_DESCRIPTOR_TYPE (Object) != ACPI_DESC_TYPE_INTERNAL)
+        if (ACPI_GET_DESCRIPTOR_TYPE (Object) != ACPI_DESC_TYPE_OPERAND)
         {
             AcpiOsPrintf ("Invalid Descriptor Type for Object %p, Type = %X\n",
                 Object, ACPI_GET_DESCRIPTOR_TYPE (Object));
@@ -1237,8 +1258,8 @@ AcpiDbCheckIntegrity (void)
 
     /* Search all nodes in namespace */
 
-    AcpiWalkNamespace (ACPI_TYPE_ANY, ACPI_ROOT_OBJECT, ACPI_UINT32_MAX,
-                    AcpiDbIntegrityWalk, (void **) &Info, NULL);
+    (void) AcpiWalkNamespace (ACPI_TYPE_ANY, ACPI_ROOT_OBJECT, ACPI_UINT32_MAX,
+                    AcpiDbIntegrityWalk, (void *) &Info, NULL);
 
     AcpiOsPrintf ("Verified %d namespace nodes with %d Objects\n", Info.Nodes, Info.Objects);
 

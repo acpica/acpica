@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dbdisply - debug display commands
- *              $Revision: 1.69 $
+ *              $Revision: 1.73 $
  *
  ******************************************************************************/
 
@@ -150,7 +150,7 @@ AcpiDbGetPointer (
     void                    *ObjPtr;
 
 
-#ifdef _IA16
+#if ACPI_MACHINE_WIDTH == 16
 #include <stdio.h>
 
     /* Have to handle 16-bit pointers of the form segment:offset */
@@ -198,7 +198,7 @@ AcpiDbDumpParserDescriptor (
 
     ACPI_DEBUG_ONLY_MEMBERS (AcpiOsPrintf ("%20.20s : %s\n", "Opcode Name", Info->Name));
 
-    AcpiOsPrintf ("%20.20s : %p\n", "Value/ArgList", Op->Common.Value);
+    AcpiOsPrintf ("%20.20s : %p\n", "Value/ArgList", Op->Common.Value.Arg);
     AcpiOsPrintf ("%20.20s : %p\n", "Parent", Op->Common.Parent);
     AcpiOsPrintf ("%20.20s : %p\n", "NextOp", Op->Common.Next);
 }
@@ -289,7 +289,7 @@ AcpiDbDecodeAndDisplayObject (
             goto DumpNte;
 
 
-        case ACPI_DESC_TYPE_INTERNAL:
+        case ACPI_DESC_TYPE_OPERAND:
 
             /* This is a ACPI OPERAND OBJECT */
 
@@ -417,8 +417,8 @@ AcpiDbDecodeInternalObject (
     {
     case ACPI_TYPE_INTEGER:
 
-        AcpiOsPrintf (" %.8X%.8X", ACPI_HIDWORD (ObjDesc->Integer.Value),
-                                   ACPI_LODWORD (ObjDesc->Integer.Value));
+        AcpiOsPrintf (" %8.8X%8.8X", ACPI_HIDWORD (ObjDesc->Integer.Value),
+                                     ACPI_LODWORD (ObjDesc->Integer.Value));
         break;
 
 
@@ -445,6 +445,11 @@ AcpiDbDecodeInternalObject (
         {
             AcpiOsPrintf (" %2.2X", ObjDesc->Buffer.Pointer[i]);
         }
+        break;
+
+    
+    default:
+        /* No additional display for other types */
         break;
     }
 }
@@ -506,12 +511,12 @@ AcpiDbDisplayInternalObject (
         break;
 
 
-    case ACPI_DESC_TYPE_INTERNAL:
+    case ACPI_DESC_TYPE_OPERAND:
 
         Type = ObjDesc->Common.Type;
         if (Type > INTERNAL_TYPE_MAX)
         {
-            AcpiOsPrintf (" Type %x [Invalid Type]", Type);
+            AcpiOsPrintf (" Type %hX [Invalid Type]", Type);
             return;
         }
 
@@ -856,7 +861,6 @@ AcpiDbDisplayResults (void)
 void
 AcpiDbDisplayCallingTree (void)
 {
-    UINT32                  i;
     ACPI_WALK_STATE         *WalkState;
     ACPI_NAMESPACE_NODE     *Node;
 
@@ -871,7 +875,7 @@ AcpiDbDisplayCallingTree (void)
     Node = WalkState->MethodNode;
     AcpiOsPrintf ("Current Control Method Call Tree\n");
 
-    for (i = 0; WalkState; i++)
+    while (WalkState)
     {
         Node = WalkState->MethodNode;
 
