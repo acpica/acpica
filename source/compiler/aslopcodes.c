@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslopcode - AML opcode generation
- *              $Revision: 1.69 $
+ *              $Revision: 1.70 $
  *
  *****************************************************************************/
 
@@ -197,18 +197,26 @@ OpcGetIntegerWidth (
 {
     ACPI_PARSE_OBJECT       *Child;
 
+
     if (!Op)
     {
         return;
     }
 
-    Child = Op->Asl.Child;
-    Child = Child->Asl.Next;
-    Child = Child->Asl.Next;
+    if (Gbl_RevisionOverride)
+    {
+        AcpiUtSetIntegerWidth (Gbl_RevisionOverride);
+    }
+    else
+    {
+        Child = Op->Asl.Child;
+        Child = Child->Asl.Next;
+        Child = Child->Asl.Next;
 
-    /* Use the revision to set the integer width */
+        /* Use the revision to set the integer width */
 
-    AcpiUtSetIntegerWidth ((UINT8) Child->Asl.Value.Integer);
+        AcpiUtSetIntegerWidth ((UINT8) Child->Asl.Value.Integer);
+    }
 }
 
 
