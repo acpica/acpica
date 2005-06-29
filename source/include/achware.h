@@ -253,6 +253,21 @@ HwClearAcpiStatus (
    void);
 
 
+/* GPE support */
+
+void
+HwEnableGpe (
+    UINT32                  GpeNumber);
+
+void
+HwDisableGpe (
+    UINT32                  GpeNumber);
+
+void
+HwClearGpe (
+    UINT32                  GpeNumber);
+
+
 /* Sleep Prototypes */
 
 INT32
