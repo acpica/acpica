@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acwin.h - OS specific defines, etc.
- *       $Revision: 1.7 $
+ *       $Revision: 1.9 $
  *
  *****************************************************************************/
 
@@ -117,6 +117,7 @@
 #ifndef __ACWIN_H__
 #define __ACWIN_H__
 
+
 /*! [Begin] no source code translation (Keep the include) */
 
 /* Windows uses VC */
@@ -144,17 +145,16 @@
 #define BREAKPOINT3             __asm {int 3}
 #define ACPI_DISABLE_IRQS()     __asm {cli}
 #define ACPI_ENABLE_IRQS()      __asm {sti}
-#define ACPI_WBINVD()           __asm {WBINVD}
+#define ACPI_FLUSH_CPU_CACHE()  __asm {WBINVD}
 
 
 /*
  * For Acpi applications, we don't want to try to access the global lock
  */
 #ifdef ACPI_APPLICATION
-#define ACPI_ACQUIRE_GLOBAL_LOCK(GLptr, Acq)       (Acq = 0xFF)
-#define ACPI_RELEASE_GLOBAL_LOCK(GLptr, Pnd)       (Pnd = 0)
+#define ACPI_ACQUIRE_GLOBAL_LOCK(GLptr, Acq)       if (AcpiGbl_GlobalLockPresent) {Acq = 0xFF;} else {Acq = 0;}
+#define ACPI_RELEASE_GLOBAL_LOCK(GLptr, Pnd)       if (AcpiGbl_GlobalLockPresent) {Pnd = 0xFF;} else {Pnd = 0;}
 #else
-
 #define ACPI_ACQUIRE_GLOBAL_LOCK(GLptr, Acq)       __asm {     \
         __asm mov           ecx, GLptr              \
         __asm acq10:                                \

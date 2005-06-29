@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acenv.h - Generation environment specific items
- *       $Revision: 1.89 $
+ *       $Revision: 1.90 $
  *
  *****************************************************************************/
 
@@ -118,13 +118,6 @@
 #define __ACENV_H__
 
 
-
-#ifdef _LINT
-#define COMPILER_DEPENDENT_INT64   long long
-#define COMPILER_DEPENDENT_UINT64  unsigned long long
-#endif
-
-
 /*
  * Configuration for ACPI tools and utilities
  */
@@ -209,14 +202,14 @@
 #elif defined(_AED_EFI)
 #include "acefi.h"
 
-#elif defined(MSDOS)
-#include "acdos16.h"
-
 #elif defined(WIN32)
 #include "acwin.h"
 
 #elif defined(WIN64)
 #include "acwin64.h"
+
+#elif defined(MSDOS)        /* Must appear after WIN32 and WIN64 check */
+#include "acdos16.h"
 
 #elif defined(__FreeBSD__)
 #include "acfreebsd.h"
