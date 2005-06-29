@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dsmethod - Parser/Interpreter interface - control method parsing
- *              $Revision: 1.73 $
+ *              $Revision: 1.74 $
  *
  *****************************************************************************/
 
@@ -171,7 +171,7 @@ AcpiDsParseMethod (
     }
 
     ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "**** Parsing [%4.4s] **** NamedObj=%p\n",
-        (char*)&((ACPI_NAMESPACE_NODE *)ObjHandle)->Name, ObjHandle));
+        (char *) &((ACPI_NAMESPACE_NODE *) ObjHandle)->Name, ObjHandle));
 
 
     /* Extract the method object from the method Node */
@@ -212,9 +212,17 @@ AcpiDsParseMethod (
     AcpiPsSetName (Op, Node->Name);
     Op->Node = Node;
 
+    /* 
+     * Get a new OwnerId for objects created by this method.  Namespace
+     * objects (such as Operation Regions) can be created during the
+     * first pass parse.
+     */
+    OwnerId = AcpiUtAllocateOwnerId (OWNER_TYPE_METHOD);
+    ObjDesc->Method.OwningId = OwnerId;
+
     /* Create and initialize a new walk state */
 
-    WalkState = AcpiDsCreateWalkState (TABLE_ID_DSDT,
+    WalkState = AcpiDsCreateWalkState (OwnerId,
                                     NULL, NULL, NULL);
     if (!WalkState)
     {
@@ -245,16 +253,10 @@ AcpiDsParseMethod (
         return_ACPI_STATUS (Status);
     }
 
-    /* Get a new OwnerId for objects created by this method */
-
-    OwnerId = AcpiUtAllocateOwnerId (OWNER_TYPE_METHOD);
-    ObjDesc->Method.OwningId = OwnerId;
-
     ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "**** [%4.4s] Parsed **** NamedObj=%p Op=%p\n",
-        (char*)&((ACPI_NAMESPACE_NODE *)ObjHandle)->Name, ObjHandle, Op));
+        (char *) &((ACPI_NAMESPACE_NODE *) ObjHandle)->Name, ObjHandle, Op));
 
     AcpiPsDeleteParseTree (Op);
-
     return_ACPI_STATUS (Status);
 }
 
@@ -568,7 +570,7 @@ AcpiDsTerminateControlMethod (
     FUNCTION_TRACE_PTR ("DsTerminateControlMethod", WalkState);
 
 
-    /* The method object should be stored in the walk state */
+    /* The current method object was saved in the walk state */
 
     ObjDesc = WalkState->MethodDesc;
     if (!ObjDesc)
