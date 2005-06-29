@@ -735,17 +735,18 @@ typedef struct AcpiWalkInfo
 
 #define MEM_MALLOC          0
 #define MEM_CALLOC          1
+#define MAX_MODULE_NAME     16
 
 typedef struct AllocationInfo 
 {
-    void                    *Address;
-    UINT32                  Size;
-    UINT8                   AllocType;
-    UINT32                  Component;
-    char                    Module[32];
-    INT32                   Line;
     struct AllocationInfo   *Previous;
     struct AllocationInfo   *Next;
+    void                    *Address;
+    UINT32                  Size;
+    UINT32                  Component;
+    UINT32                  Line;
+    char                    Module[MAX_MODULE_NAME];
+    UINT8                   AllocType;
 
 } ALLOCATION_INFO;
 
