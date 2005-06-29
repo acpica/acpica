@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asconvrt - Source conversion code
- *              $Revision: 1.22 $
+ *              $Revision: 1.23 $
  *
  *****************************************************************************/
 
@@ -378,7 +378,7 @@ AsTrimWhitespace (
 
     while (ReplaceCount)
     {
-        ReplaceCount = AsReplaceString ("\n\n\n\n", "\n\n\n", Buffer);
+        ReplaceCount = AsReplaceString ("\n\n\n\n", "\n\n\n", REPLACE_SUBSTRINGS, Buffer);
     }
 }
 
@@ -442,6 +442,7 @@ int
 AsReplaceString (
     char                    *Target,
     char                    *Replacement,
+    UINT8                   Type,
     char                    *Buffer)
 {
     char                    *SubString1;
@@ -450,6 +451,8 @@ AsReplaceString (
     int                     TargetLength;
     int                     ReplacementLength;
     int                     ReplaceCount = 0;
+    char                    NextChar;
+    char                    PrevChar;
 
 
     TargetLength = strlen (Target);
@@ -494,6 +497,22 @@ AsReplaceString (
 
         else if (SubString1)
         {
+            if (Type == REPLACE_WHOLE_WORD)
+            {
+                NextChar = SubString1[TargetLength];
+                PrevChar = SubString1[-1];
+
+                if (isalpha (NextChar) ||
+                    (NextChar == '_')  ||
+                    isalpha (PrevChar) ||
+                    (PrevChar == '_'))
+                {
+                    SubBuffer = SubString1 + 1;
+                    continue;
+                }
+            }
+
+
             SubBuffer = AsReplaceData (SubString1, TargetLength, Replacement, ReplacementLength);
             ReplaceCount++;
         }
@@ -1528,11 +1547,11 @@ AsRemoveDebugMacros (
     AsRemoveStatement (Buffer, "FUNCTION_TRACE");
     AsRemoveStatement (Buffer, "DUMP_");
 
-    AsReplaceString ("return_VOID",         "return", Buffer);
-    AsReplaceString ("return_PTR",          "return", Buffer);
-    AsReplaceString ("return_ACPI_STATUS",  "return", Buffer);
-    AsReplaceString ("return_acpi_status",  "return", Buffer);
-    AsReplaceString ("return_VALUE",        "return", Buffer);
+    AsReplaceString ("return_VOID",         "return", REPLACE_WHOLE_WORD, Buffer);
+    AsReplaceString ("return_PTR",          "return", REPLACE_WHOLE_WORD, Buffer);
+    AsReplaceString ("return_ACPI_STATUS",  "return", REPLACE_WHOLE_WORD, Buffer);
+    AsReplaceString ("return_acpi_status",  "return", REPLACE_WHOLE_WORD, Buffer);
+    AsReplaceString ("return_VALUE",        "return", REPLACE_WHOLE_WORD, Buffer);
 }
 
 
