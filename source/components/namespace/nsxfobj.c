@@ -28,7 +28,7 @@
  * Code in any form, with the right to sublicense such rights; and
  *
  * 2.3. Intel grants Licensee a non-exclusive and non-transferable patent
- * license (without the right to sublicense), under only those claims of Intel
+ * license (with the right to sublicense), under only those claims of Intel
  * patents that are infringed by the Original Intel Code, to make, use, sell,
  * offer to sell, and import the Covered Code and derivative works thereof
  * solely to the minimum extent necessary to exercise the above copyright
@@ -155,7 +155,7 @@
 ACPI_STATUS
 AcpiEvaluateObject (
     ACPI_HANDLE             Handle, 
-    ACPI_STRING             *Pathname, 
+    ACPI_STRING             Pathname, 
     ACPI_OBJECT_LIST        *ParamObjects,
     ACPI_BUFFER             *ReturnBuffer)
 {
@@ -168,6 +168,8 @@ AcpiEvaluateObject (
     UINT32                  BufferSpaceNeeded;
     UINT32                  Count;
     UINT32                  i;
+    UINT32                  ParamLength;
+    UINT32                  ObjectLength;
 
 
     FUNCTION_TRACE ("AcpiEvaluateObject");
@@ -186,23 +188,18 @@ AcpiEvaluateObject (
          * TBD: merge into single allocation!
          */
 
-        Count = ParamObjects->Count;
-        ParamPtr = LocalCallocate ((Count + 1) * 
-                                    sizeof (void *));
+        Count           = ParamObjects->Count;
+        ParamLength     = (Count + 1) * sizeof (void *);
+        ObjectLength    = Count * sizeof (ACPI_OBJECT_INTERNAL);
+
+        ParamPtr = CmCallocate (ParamLength +       /* Parameter List part */
+                                ObjectLength);      /* Actual objects */
         if (!ParamPtr)
         {
-            FUNCTION_STATUS_EXIT (AE_NO_MEMORY);
-            return AE_NO_MEMORY;
+            return_ACPI_STATUS (AE_NO_MEMORY);
         }
 
-        ObjectPtr = LocalCallocate ((Count) * 
-                                    sizeof (ACPI_OBJECT_INTERNAL));
-        if (!ObjectPtr)
-        {
-            OsdFree (ParamPtr);
-            FUNCTION_STATUS_EXIT (AE_NO_MEMORY);
-            return AE_NO_MEMORY;
-        }
+        ObjectPtr = (ACPI_OBJECT_INTERNAL *) ((UINT8 *) ParamPtr + ParamLength);
 
         /*
          * Init the param array of pointers and NULL terminate the list
@@ -211,6 +208,7 @@ AcpiEvaluateObject (
         for (i = 0; i < Count; i++)
         {
             ParamPtr[i] = &ObjectPtr[i];
+            ObjectPtr[i].Common.Flags = AO_STATIC_ALLOCATION;
         }
         ParamPtr[Count] = NULL;                 
 
@@ -223,8 +221,7 @@ AcpiEvaluateObject (
             if (ACPI_FAILURE (Status))
             {
                 CmDeleteInternalObjectList (ParamPtr);
-                FUNCTION_STATUS_EXIT (Status);
-                return Status;
+                return_ACPI_STATUS (Status);
             }
         }
     }
@@ -240,7 +237,6 @@ AcpiEvaluateObject (
 
     if ((Pathname) && (Pathname[0] == '\\'))
     {
-BREAKPOINT3;
         Status = NsEvaluateByName (Pathname, ParamPtr, ReturnPtr);
         goto Cleanup;
     }
@@ -267,7 +263,7 @@ BREAKPOINT3;
 
 
     /*
-     *  We get here we have a handle, and if we have a pathname it is relative.
+     *  We get here if we have a handle, and if we have a pathname it is relative.
      *
      *  Validate the handle
      */
@@ -309,11 +305,17 @@ Cleanup:
         CmDeleteInternalObjectList (ParamPtr);
     }
 
-    if (ReturnPtr)
+    
+    /* 
+     * If we are expecting a return value, and all went well above, 
+     * copy the return value to an external object.
+     */
+
+    if ((ACPI_SUCCESS (Status)) && (ReturnPtr))
     {
         /* Check if the return object is valid */
 
-        if (ReturnPtr->Type != TYPE_Invalid)
+        if (ReturnPtr->Common.Type != TYPE_Invalid)
         {
             /*
              *  Find out how large a buffer is needed to contain the
@@ -326,12 +328,12 @@ Cleanup:
                  *  Failed the call
                  */
                 ReturnBuffer->Length = 0;
-                FUNCTION_STATUS_EXIT (Status);
-                return Status;
             }
 
 
-            if (ReturnBuffer->Length < BufferSpaceNeeded) 
+            /* Check if there is enough room in the caller's buffer */
+
+            else if (ReturnBuffer->Length < BufferSpaceNeeded) 
             {
                 /*
                  *  Caller's buffer is too small, can't give him partial results
@@ -342,15 +344,30 @@ Cleanup:
                                             BufferSpaceNeeded, ReturnBuffer->Length));
 
                 ReturnBuffer->Length = BufferSpaceNeeded;
-                FUNCTION_STATUS_EXIT (AE_BUFFER_OVERFLOW);
-                return AE_BUFFER_OVERFLOW;
+                Status = AE_BUFFER_OVERFLOW;
             }
 
+
+            /* If all is OK, build the external object */
+
+            if (ACPI_SUCCESS (Status))
+            {
+                /*
+                 *  We have enough space for the object, build it
+                 */
+                Status = CmBuildExternalObject (ReturnPtr, ReturnBuffer);
+                ReturnBuffer->Length = BufferSpaceNeeded;
+            }
+
+
             /*
-             *  We have enough space for the object, build it
+             * Delete the internal return object.  Not the object itself, but
+             * any subobjects that are contained therein.
              */
-            Status = CmBuildExternalObject (ReturnPtr, ReturnBuffer);
-            ReturnBuffer->Length = BufferSpaceNeeded;
+
+            ReturnPtr->Common.Flags = AO_STATIC_ALLOCATION;
+            CmDeleteInternalObject (ReturnPtr);
+
         }
 
         else
@@ -361,8 +378,7 @@ Cleanup:
         }
     }
 
-    FUNCTION_STATUS_EXIT (Status);
-    return Status;
+    return_ACPI_STATUS (Status);
 }
 
 /****************************************************************************
@@ -370,8 +386,9 @@ Cleanup:
  * FUNCTION:    AcpiGetNextObject
  *
  * PARAMETERS:  Type            - Type of object to be searched for
- *              Scope           - Scope to search in (only if Handle is null)
- *              Handle          - Current object to search from
+ *              Parent          - Parent object whose children we are getting
+ *              LastChild       - Previous child that was found.  
+ *                                The NEXT child will be returned
  *              RetHandle       - Where handle to the next object is placed
  *
  * RETURN:      Status
@@ -385,8 +402,8 @@ Cleanup:
 ACPI_STATUS
 AcpiGetNextObject (
     ACPI_OBJECT_TYPE        Type, 
-    ACPI_HANDLE             Scope, 
-    ACPI_HANDLE             Handle, 
+    ACPI_HANDLE             Parent, 
+    ACPI_HANDLE             Child, 
     ACPI_HANDLE             *RetHandle)
 {
     NAME_TABLE_ENTRY        *ThisEntry;
@@ -405,30 +422,34 @@ AcpiGetNextObject (
     }
 
 
-    /* If null handle, use the scope */
+    /* If null handle, use the parent */
 
-    if (!Handle)
+    if (!Child)
     {
-        if (!Scope)
+        if (!Parent)
         {
             return AE_NOT_FOUND;
         }
 
         /* Start search at the beginning of the specified scope */
 
-        if (!(ThisEntry = NsConvertHandleToEntry (Scope)))
+        else if (!(ThisEntry = NsConvertHandleToEntry (Parent)))
         {
             return AE_BAD_PARAMETER;
         }
+
+        /* It's really the parent's _scope_ that we want */
+
+        ThisEntry = ThisEntry->Scope;
     }
 
-    /* Non-null handle, ignore the scope */
+    /* Non-null handle, ignore the parent */
 
     else
     {
         /* Convert and validate the handle */
 
-        if (!(ThisEntry = NsConvertHandleToEntry (Handle)))
+        if (!(ThisEntry = NsConvertHandleToEntry (Child)))
         {
             return AE_BAD_PARAMETER;
         }
@@ -455,7 +476,7 @@ AcpiGetNextObject (
             return AE_NOT_FOUND;
         }
 
-        *RetHandle = ThisEntry;
+        *RetHandle = NsConvertEntryToHandle(ThisEntry);
         return AE_OK;
     }
 
@@ -508,6 +529,14 @@ AcpiGetType (
         return AE_BAD_PARAMETER;
     }
 
+    /* Special case for the predefined Root Object (return type ANY) */
+
+    if (Handle == ACPI_ROOT_OBJECT)
+    {
+        *RetType = TYPE_Any;
+        return AE_OK;
+    }
+
     /* Convert and validate the handle */
 
     if (!(Object = NsConvertHandleToEntry (Handle)))
@@ -540,6 +569,9 @@ AcpiGetParent (
     ACPI_HANDLE             *RetHandle)
 {
     NAME_TABLE_ENTRY        *Object;
+    
+
+    /* No trace macro, too verbose */
 
 
     if (!RetHandle)
@@ -547,18 +579,24 @@ AcpiGetParent (
         return AE_BAD_PARAMETER;
     }
 
+    /* Special case for the predefined Root Object (no parent) */
+
+    if (Handle == ACPI_ROOT_OBJECT)
+    {
+        return AE_NULL_ENTRY;
+    }
+
     /* Convert and validate the handle */
 
     if (!(Object = NsConvertHandleToEntry (Handle)))
     {
-        *RetHandle = INVALID_HANDLE;
         return AE_BAD_PARAMETER;
     }
 
    
     /* Get the parent entry */
 
-    *RetHandle = Object->ParentEntry;
+    *RetHandle = NsConvertEntryToHandle(Object->ParentEntry);
 
     /* Return exeption if parent is null */
 
@@ -571,117 +609,12 @@ AcpiGetParent (
 }
 
 
-/****************************************************************************
- *
- * FUNCTION:    AcpiGetScope
- *
- * PARAMETERS:  Handle          - Handle of object whose scope is desired
- *              RetScope        - Where the scope handle is returned
- *
- * RETURN:      Status
- *
- * DESCRIPTION: Returns a handle to the scope that is owned by the object
- *              represented by handle.  NOTE: this is NOT the scope that
- *              contains the object (i.e., not the scope that the object is
- *              defined within.)
- *
- ******************************************************************************/
-
-ACPI_STATUS
-AcpiGetScope (
-    ACPI_HANDLE             Handle, 
-    ACPI_HANDLE             *RetScope)
-{
-    NAME_TABLE_ENTRY        *Object;
-
-
-    if (!RetScope)
-    {
-        return AE_BAD_PARAMETER;
-    }
-
-    /* Convert and validate the handle */
-
-    if (!(Object = NsConvertHandleToEntry (Handle)))
-    {
-        *RetScope = INVALID_HANDLE;
-        return AE_BAD_PARAMETER;
-    }
-
-    /* Get the scope entry */
-
-    *RetScope = Object->Scope;
-
-    /* Return exception in the case of no scope */
-
-    if (!Object->Scope)
-    {
-        return AE_NULL_ENTRY;
-    }
-
-    return AE_OK;
-}
-
-
-
-/****************************************************************************
- *
- * FUNCTION:    AcpiGetContainingScope
- *
- * PARAMETERS:  Handle          - Handle to object whose containing scope is desired
- *              RetHandle       - Where the containing scope handle is placed.
- *
- * RETURN:      Status
- *
- * DESCRIPTION: Returns a handle for the scope that contains the object represented
- *              by Handle.  This is essentially the scope of the objects parent,
- *              and is the scope where the object is defined in the ASL.
- *
- ******************************************************************************/
-
-ACPI_STATUS
-AcpiGetContainingScope (
-    ACPI_HANDLE             Handle, 
-    ACPI_HANDLE             *RetHandle)
-{
-    NAME_TABLE_ENTRY        *Object;
-
-
-    if (!RetHandle)
-    {
-        return AE_BAD_PARAMETER;
-    }
-
-    /* Convert and validate the handle */
-
-    if (!(Object = NsConvertHandleToEntry (Handle)))
-    {
-        *RetHandle = INVALID_HANDLE;
-        return AE_BAD_PARAMETER;
-    }
-
-    /* If no parent, we are in the root scope */
-
-    if (!Object->ParentEntry)
-    {
-        *RetHandle = RootObject->Scope;
-    }
-    else
-    {
-        *RetHandle = Object->ParentEntry->Scope;
-    }
-
-    return AE_OK;
-}
-
-
-
 /******************************************************************************
  *
  * FUNCTION:    AcpiWalkNamespace
  *
  * PARAMETERS:  Type                - ACPI_OBJECT_TYPE to search for
- *              StartHandle         - Handle in namespace where search begins
+ *              StartObject         - Handle in namespace where search begins
  *              MaxDepth            - Depth to which search is to reach
  *              UserFunction        - Called when an object of "Type" is found
  *              Context             - Passed to user function
@@ -707,17 +640,17 @@ AcpiGetContainingScope (
 ACPI_STATUS
 AcpiWalkNamespace (
     ACPI_OBJECT_TYPE        Type, 
-    ACPI_HANDLE             StartHandle, 
+    ACPI_HANDLE             StartObject, 
     UINT32                  MaxDepth,
     WALK_CALLBACK           UserFunction, 
     void                    *Context, 
     void                    **ReturnValue)
 {
-    ACPI_HANDLE             ObjHandle = 0;
-    ACPI_HANDLE             Scope;
-    ACPI_HANDLE             NewScope;
+    ACPI_HANDLE             ChildHandle;
+    ACPI_HANDLE             ParentHandle;
+    ACPI_HANDLE             Dummy;
+    UINT32                  Level;
     void                    *UserReturnVal;
-    UINT32                  Level = 1;
 
 
     FUNCTION_TRACE ("AcpiWalkNamespace");
@@ -725,69 +658,75 @@ AcpiWalkNamespace (
 
     /* Parameter validation */
 
-    if (Type > ACPI_TABLE_MAX)
+    if ((Type > ACPI_TABLE_MAX) ||
+        (!MaxDepth)             || 
+        (!UserFunction))
     {
-        FUNCTION_STATUS_EXIT (AE_BAD_PARAMETER);
-        return AE_BAD_PARAMETER;
+        return_ACPI_STATUS (AE_BAD_PARAMETER);
     }
 
-    if ((!MaxDepth) || (!UserFunction))
-    {
-        FUNCTION_STATUS_EXIT (AE_BAD_PARAMETER);
-        return AE_BAD_PARAMETER;
-    }
+    /* Special case for the namespace root object */
 
-    /* Begin search in the scope owned by the starting object */
-    /* Failure could be bad scope or simply *no* scope */
-
-    if (ACPI_FAILURE (AcpiGetScope (StartHandle, &Scope)))
+    if (StartObject == ACPI_ROOT_OBJECT)
     {
-        FUNCTION_STATUS_EXIT (AE_BAD_PARAMETER);
-        return AE_BAD_PARAMETER;
+        StartObject = Gbl_RootObject;
     }
 
     /* Init return value, if any */
 
     if (ReturnValue)
+    {
         *ReturnValue = NULL;
+    }
+
+
+    /* Null child means "get first object" */
+
+    ParentHandle    = StartObject;
+    ChildHandle     = 0;
+    Level           = 1;
 
     /* 
-     * Traverse the tree of objects until we bubble back up 
-     * to where we started.
+     * Traverse the tree of objects until we bubble back up to where we
+     * started. When Level is zero, the loop is done because we have 
+     * bubbled up to (and passed) the original parent handle (StartHandle)
      */
 
-    while (ObjHandle != StartHandle)
+    while (Level > 0)
     {
         /* Get the next typed object in this scope.  Null returned if not found */
 
-        if (ACPI_SUCCESS (AcpiGetNextObject (Type, Scope, ObjHandle, &ObjHandle)))
+        if (ACPI_SUCCESS (AcpiGetNextObject (Type, ParentHandle, ChildHandle, &ChildHandle))) 
         {
             /* Found an object - process by calling the user function */
 
-            if ((UserReturnVal = UserFunction (ObjHandle, Level, Context)) != 0)
+            if ((UserReturnVal = UserFunction (ChildHandle, Level, Context)) != 0)
             {
                 /* Non-zero from user function means "exit now" */
 
                 if (ReturnValue)
-                    *ReturnValue = UserReturnVal;
+                {
+                    /* Pass return value back to the caller */
 
-                FUNCTION_STATUS_EXIT (AE_OK);
-                return AE_OK;
+                    *ReturnValue = UserReturnVal;
+                }
+
+                return_ACPI_STATUS (AE_OK);
             }
 
-            /* Go down another level if we are allowed to */
+            /* Go down another level in the namespace if we are allowed to */
 
             if (Level < MaxDepth)
             {
-                /* Check for a valid scope for this object */
+                /* Check if this object has any children */
 
-                if (ACPI_SUCCESS (AcpiGetScope (ObjHandle, &NewScope)))
+                if (ACPI_SUCCESS (AcpiGetNextObject (Type, ChildHandle, 0, &Dummy)))
                 {
-                    /* There is a valid scope, we will check for child objects */
+                    /* There is at least one child of this object, visit the object */
 
                     Level++;
-                    ObjHandle = 0;
-                    Scope = NewScope;
+                    ParentHandle    = ChildHandle;
+                    ChildHandle     = 0;
                 }
             }
         }
@@ -795,17 +734,16 @@ AcpiWalkNamespace (
         else
         {
             /* 
-             * No more objects in this scope, go back up to the parent and the 
-             * parent's scope (But only back up to where we started the search)
+             * No more children in this object, go back up to the object's parent
              */
             Level--;
-            AcpiGetParent (Scope, &ObjHandle);
-            AcpiGetContainingScope (ObjHandle, &Scope);
+            ChildHandle = ParentHandle;
+            AcpiGetParent (ParentHandle, &ParentHandle);
         }
     }
 
-    FUNCTION_STATUS_EXIT (AE_OK);
-    return AE_OK; /* Complete walk, not terminated by user function */
+
+    return_ACPI_STATUS (AE_OK);                   /* Complete walk, not terminated by user function */
 }
 
 
@@ -837,90 +775,8 @@ AcpiGetObject (
     }
 
 
-    *RetHandle = RootObject->Scope;
+    *RetHandle = Gbl_RootObject->Scope;
     return AE_OK;
-}
-
-
-/****************************************************************************
- *
- * FUNCTION:    AcpiGetParentHandle
- *
- * PARAMETERS:  ChildHandle     - the handle of the object for which the 
- *                                parent is to be found
- *
- * RETURN:      Parent handle
- *
- * DESCRIPTION: This routine returns the handle for the parent of an object.
- *
- ******************************************************************************/
-
-ACPI_HANDLE 
-AcpiGetParentHandle (
-    ACPI_HANDLE             ChildHandle)
-{
-
-    return ((ACPI_HANDLE) NULL);
-}
-
-
-/****************************************************************************
- *
- * FUNCTION:    AcpiCurrentScopeName
- *
- * PARAMETERS:  none
- *
- * RETURN:      pointer to an ascii string with the absolute name of the scope
- *
- * DESCRIPTION: 
- *
- ******************************************************************************/
-
-char * 
-AcpiCurrentScopeName (void)
-{
-    return ((char *) NULL);
-}
-
-
-/****************************************************************************
- *
- * FUNCTION:    AcpiIsNamespaceHandle
- *
- * PARAMETERS:  QueryHandle     - handle to be verified
- *
- * RETURN:      BOOLEAN -   TRUE if QueryHandle is a NameSpace handle
- *                          FALSE otherwise
- *
- * DESCRIPTION: This routine verifies the validity of a namespace handle
- *
- ******************************************************************************/
-
-BOOLEAN 
-AcpiIsNamesaceHandle (
-    ACPI_HANDLE             QueryHandle)
-{
-    return (TRUE);
-}
-
-
-/****************************************************************************
- *
- * FUNCTION:    AcpiIsNamesaceValue
- *
- * PARAMETERS:  Value
- *
- * RETURN:      TRUE if the value is a valid NS vakue, FALSE otherwise
- *
- * DESCRIPTION: This routine verifies the value is valid for ACPI_OBJECT_TYPE  what is the utility of this? RLM
- *
- ******************************************************************************/
-
-BOOLEAN 
-AcpiIsNamesaceValue (
-    ACPI_OBJECT_TYPE        Value)
-{
-    return (TRUE);
 }
 
 
@@ -943,8 +799,7 @@ AcpiSetFirmwareWakingVector (
 {
     FUNCTION_TRACE ("AcpiSetFirmwareWakingVector");
     
-    FUNCTION_STATUS_EXIT (AE_OK);
-    return (AE_OK);
+    return_ACPI_STATUS ((AE_OK));
 }
 
 
@@ -969,7 +824,6 @@ AcpiGetFirmwareWakingVector (
     FUNCTION_TRACE ("AcpiGetFirmwareWakingVector");
 
     
-    FUNCTION_STATUS_EXIT (AE_OK);
-    return (AE_OK);
+    return_ACPI_STATUS ((AE_OK));
 }
 

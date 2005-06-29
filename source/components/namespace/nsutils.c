@@ -220,7 +220,7 @@ NsLocal (
         return_VALUE (0);
     }
 
-    return_VALUE (NsProperties[Type] & LOCAL);
+    return_VALUE (Gbl_NsProperties[Type] & LOCAL);
 }
 
 
@@ -381,16 +381,58 @@ NsConvertHandleToEntry (
 
     if (Handle == ACPI_ROOT_OBJECT)
     {
-        return RootObject;
+        return Gbl_RootObject;
     }
 
     if (Handle == ACPI_ROOT_SCOPE)
     {
-        return (NAME_TABLE_ENTRY *) RootObject->Scope;
+        return (NAME_TABLE_ENTRY *) Gbl_RootObject->Scope;
     }
 
 
     return (NAME_TABLE_ENTRY *) Handle;
+}
+
+/****************************************************************************
+ *
+ * FUNCTION:    NsConvertEntryToHandle
+ *
+ * PARAMETERS:  Nte          - NTE to be converted to a Handle
+ *
+ * RETURN:      An USER ACPI_HANDLE
+ *
+ * DESCRIPTION: Convert a real NTE to a namespace handle
+ *
+ ****************************************************************************/
+
+ACPI_HANDLE
+NsConvertEntryToHandle(NAME_TABLE_ENTRY *Nte)
+{
+
+    return (ACPI_HANDLE) Nte;
+
+    /* 
+     * Simple implementation for now;
+     * TBD: Real integer handles allow for more verification 
+     * and keep all pointers within this subsystem!
+     */
+
+    if (!Nte)
+    {
+        return NULL;
+    }
+
+    if (Nte == Gbl_RootObject)
+    {
+        return ACPI_ROOT_OBJECT;
+    }
+
+    if (Nte == Gbl_RootObject->Scope)
+    {
+        return ACPI_ROOT_SCOPE;
+    }
+
+    return (ACPI_HANDLE) Nte;
 }
 
 
