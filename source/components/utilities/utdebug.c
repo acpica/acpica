@@ -338,12 +338,18 @@ FunctionStatusExit (
 
     if (Status > ACPI_MAX_STATUS)
     {
-        Status = AE_UNKNOWN_STATUS;
+        DebugPrint (ModuleName, LineNumber, ComponentId, TRACE_FUNCTIONS,
+                    " %2.2d Exiting Function: %s, [Unknown Status] 0x%X\n", 
+                    Gbl_NestingLevel, FunctionName, Status);
     }
 
-    DebugPrint (ModuleName, LineNumber, ComponentId, TRACE_FUNCTIONS,
-                " %2.2d Exiting Function: %s, %s\n", 
-                Gbl_NestingLevel, FunctionName, Gbl_ExceptionNames[Status]);
+    else
+    {
+        DebugPrint (ModuleName, LineNumber, ComponentId, TRACE_FUNCTIONS,
+                    " %2.2d Exiting Function: %s, %s\n", 
+                    Gbl_NestingLevel, FunctionName, Gbl_ExceptionNames[Status]);
+    }
+
     Gbl_NestingLevel--;
 }
 
