@@ -128,7 +128,7 @@ extern UINT32                   AmlLength;
 
 
 extern int                      AcpiGbl_Optind;
-extern char                     *AcpiGbl_Optarg;
+extern NATIVE_CHAR              *AcpiGbl_Optarg;
 
 int
 AcpiGetopt(

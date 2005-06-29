@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: utmisc - common utility procedures
- *              $Revision: 1.90 $
+ *              $Revision: 1.91 $
  *
  ******************************************************************************/
 
@@ -1647,6 +1647,5 @@ AcpiUtReportInfo (
 
     AcpiOsPrintf ("%8s-%04d: *** Info: ", ModuleName, LineNumber);
 }
-
 
 
