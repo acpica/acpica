@@ -2,7 +2,7 @@
  *
  * Module Name: nsobject - Utilities for objects attached to namespace
  *                         table entries
- *              $Revision: 1.57 $
+ *              $Revision: 1.58 $
  *
  ******************************************************************************/
 
@@ -133,10 +133,10 @@
  *
  * FUNCTION:    AcpiNsAttachObject
  *
- * PARAMETERS:  Node            - Parent Node
+ * PARAMETERS:  Node                - Parent Node
  *              Object              - Object to be attached
  *              Type                - Type of object, or ACPI_TYPE_ANY if not
- *                                      known
+ *                                    known
  *
  * DESCRIPTION: Record the given object as the value associated with the
  *              name whose ACPI_HANDLE is passed.  If Object is NULL
@@ -154,7 +154,7 @@ AcpiNsAttachObject (
 {
     ACPI_OPERAND_OBJECT     *ObjDesc;
     ACPI_OPERAND_OBJECT     *PreviousObjDesc;
-    ACPI_OBJECT_TYPE8      ObjType = ACPI_TYPE_ANY;
+    ACPI_OBJECT_TYPE8       ObjType = ACPI_TYPE_ANY;
     UINT8                   Flags;
     UINT16                  Opcode;
 
