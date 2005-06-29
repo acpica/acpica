@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslutils -- compiler utilities
- *              $Revision: 1.31 $
+ *              $Revision: 1.33 $
  *
  *****************************************************************************/
 
@@ -160,6 +160,9 @@ UtLocalCalloc (
             Gbl_Files[ASL_FILE_INPUT].Filename, NULL);
         exit (1);
     }
+
+    TotalAllocations++;
+    TotalAllocated += Size;
 
     return Allocated;
 }
@@ -411,6 +414,93 @@ UtCheckIntegerRange (
 
 /*******************************************************************************
  *
+ * FUNCTION:    UtGetStringBuffer
+ *
+ * PARAMETERS:  None
+ *
+ * RETURN:      Pointer to the buffer.  Aborts on allocation failure
+ *
+ * DESCRIPTION: Allocate a string buffer.  Bypass the local
+ *              dynamic memory manager for performance reasons (This has a
+ *              major impact on the speed of the compiler.)
+ *
+ ******************************************************************************/
+
+NATIVE_CHAR *
+UtGetStringBuffer (
+    UINT32                  Length)
+{
+    NATIVE_CHAR             *Buffer;
+
+
+    if ((Gbl_StringCacheNext + Length) >= Gbl_StringCacheLast)
+    {
+        Gbl_StringCacheNext = UtLocalCalloc (ASL_STRING_CACHE_SIZE + Length);
+        Gbl_StringCacheLast = Gbl_StringCacheNext + ASL_STRING_CACHE_SIZE + Length;
+    }
+
+    Buffer = Gbl_StringCacheNext;
+    Gbl_StringCacheNext += Length;
+
+    return (Buffer);
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    UtInternalizeName
+ *
+ * PARAMETERS:  None
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Convert an external (ASL) name to an internal (AML) name
+ *
+ ******************************************************************************/
+
+ACPI_STATUS
+UtInternalizeName (
+    NATIVE_CHAR             *ExternalName,
+    NATIVE_CHAR             **ConvertedName)
+{
+    ACPI_NAMESTRING_INFO    Info;
+    ACPI_STATUS             Status;
+
+
+    if (!ExternalName)
+    {
+        return (AE_OK);
+    }
+
+    /* Get the length of the new internal name */
+
+    Info.ExternalName = ExternalName;
+    AcpiNsGetInternalNameLength (&Info);
+
+    /* We need a segment to store the internal  name */
+
+    Info.InternalName = UtGetStringBuffer (Info.Length);
+    if (!Info.InternalName)
+    {
+        return (AE_NO_MEMORY);
+    }
+
+    /* Build the name */
+
+    Status = AcpiNsBuildInternalName (&Info);
+    if (ACPI_FAILURE (Status))
+    {
+        return (Status);
+    }
+
+    *ConvertedName = Info.InternalName;
+    return (AE_OK);
+}
+
+
+
+/*******************************************************************************
+ *
  * FUNCTION:    UtAttachNamepathToOwner
  *
  * PARAMETERS:  Node            - Parent parse node
@@ -434,7 +524,7 @@ UtAttachNamepathToOwner (
 
     Node->ExternalName = NameNode->Value.String;
 
-    Status = AcpiNsInternalizeName (NameNode->Value.String, &Node->Namepath);
+    Status = UtInternalizeName (NameNode->Value.String, &Node->Namepath);
     if (ACPI_FAILURE (Status))
     {
         /* TBD: abort on no memory */
