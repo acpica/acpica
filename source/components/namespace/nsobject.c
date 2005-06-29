@@ -486,7 +486,6 @@ NsAttachMethod (
         DEBUG_PRINT (ACPI_INFO, ("NsAttachMethod: ***Old: %p Obj %p Pcode %p Len 0x%X\n",
                                     Handle, PreviousObjDesc, PreviousObjDesc->Method.Pcode, PreviousObjDesc->Method.PcodeLength));
 
-        CmUpdateObjectReference (PreviousObjDesc, REF_DECREMENT);
         CmRemoveReference (PreviousObjDesc);
     }
 
