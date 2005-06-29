@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: nssearch - Namespace search
- *              $Revision: 1.92 $
+ *              $Revision: 1.93 $
  *
  ******************************************************************************/
 
@@ -135,8 +135,8 @@
  *
  * RETURN:      Status
  *
- * DESCRIPTION: Search a single level of the namespace.  Performs a 
- *              simple search of the specified level, and does not add 
+ * DESCRIPTION: Search a single level of the namespace.  Performs a
+ *              simple search of the specified level, and does not add
  *              entries or search parents.
  *
  *
@@ -181,7 +181,7 @@ AcpiNsSearchNode (
 #endif
 
     /*
-     * Search for name at this namespace level, which is to say that we 
+     * Search for name at this namespace level, which is to say that we
      * must search for the name among the children of this object
      */
     NextNode = Node->Child;
@@ -269,7 +269,7 @@ AcpiNsSearchParentTree (
     ParentNode = AcpiNsGetParentNode (Node);
 
     /*
-     * If there is no parent (i.e., we are at the root) or 
+     * If there is no parent (i.e., we are at the root) or
      * type is "local", we won't be searching the parent tree.
      */
     if (!ParentNode)
@@ -379,7 +379,7 @@ AcpiNsSearchAndEnter (
 
     if (!AcpiUtValidAcpiName (TargetName))
     {
-        ACPI_REPORT_ERROR (("NsSearchAndEnter: Bad character in ACPI Name: %X\n", 
+        ACPI_REPORT_ERROR (("NsSearchAndEnter: Bad character in ACPI Name: %X\n",
             TargetName));
         return_ACPI_STATUS (AE_BAD_CHARACTER);
     }
