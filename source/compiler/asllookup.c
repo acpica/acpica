@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: asllookup- Namespace lookup
- *              $Revision: 1.71 $
+ *              $Revision: 1.72 $
  *
  *****************************************************************************/
 
@@ -600,6 +600,32 @@ LkNamespaceLocateBegin (
 
     OptOptimizeNamePath (Op, OpInfo->Flags, WalkState, Path, Node);
 
+    /* 
+     * Dereference an alias. (A name reference that is an alias.)
+     * Aliases are not nested;  The alias always points to the final object
+     */
+    if ((Op->Asl.ParseOpcode != PARSEOP_ALIAS) && (Node->Type == INTERNAL_TYPE_ALIAS))
+    {
+        /* This node points back to the original PARSEOP_ALIAS */
+
+        NextOp = (ACPI_PARSE_OBJECT *) Node->Object;
+
+        /* The first child is the alias target op */
+
+        NextOp = NextOp->Asl.Child;
+
+        /* Who in turn points back to original target alias node */
+
+        if (NextOp->Asl.Node)
+        {
+            Node = NextOp->Asl.Node;
+        }
+        else
+        {
+            AslError (ASL_ERROR, ASL_MSG_COMPILER_INTERNAL, Op, "Missing alias link");
+        }
+    }
+
     /* 1) Check for a reference to a resource descriptor */
 
     if ((Node->Type == INTERNAL_TYPE_RESOURCE_FIELD) ||
@@ -684,6 +710,7 @@ LkNamespaceLocateBegin (
 
         (Op->Asl.ParseOpcode == PARSEOP_METHODCALL))
     {
+
         /*
          * There are two types of method invocation:
          * 1) Invocation with arguments -- the parser recognizes this as a METHODCALL
