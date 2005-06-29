@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: exdump - Interpreter debug output routines
- *              $Revision: 1.167 $
+ *              $Revision: 1.168 $
  *
  *****************************************************************************/
 
@@ -623,7 +623,7 @@ AcpiExDumpNode (
         }
     }
 
-    AcpiOsPrintf ("%20s : %4.4s\n",       "Name", Node->Name.Ascii);
+    AcpiOsPrintf ("%20s : %4.4s\n",       "Name", AcpiUtGetNodeName (Node));
     AcpiExOutString  ("Type",             AcpiUtGetTypeName (Node->Type));
     AcpiExOutInteger ("Flags",            Node->Flags);
     AcpiExOutInteger ("Owner Id",         Node->OwnerId);
