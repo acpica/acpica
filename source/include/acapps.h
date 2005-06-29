@@ -149,7 +149,8 @@ ACPI_STATUS
 AdAmlDisassemble (
     BOOLEAN                 OutToFile,
     char                    *Filename,
-    char                    **OutFilename);
+    char                    **OutFilename,
+    BOOLEAN                 GetAllTables);
 
 void
 AdPrintStatistics (void);
@@ -164,7 +165,8 @@ AdDumpTables (void);
 
 ACPI_STATUS
 AdGetTables (
-    char                    *Filename);
+    char                    *Filename,
+    BOOLEAN                 GetAllTables);
 
 ACPI_STATUS
 AdParseTables (void);
