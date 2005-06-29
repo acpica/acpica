@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dbexec - debugger control method execution
- *              $Revision: 1.31 $
+ *              $Revision: 1.32 $
  *
  ******************************************************************************/
 
@@ -132,7 +132,7 @@
         MODULE_NAME         ("dbexec")
 
 
-DB_METHOD_INFO              Info;
+DB_METHOD_INFO              AcpiGbl_DbMethodInfo;
 
 
 /*******************************************************************************
@@ -326,12 +326,12 @@ AcpiDbExecute (
     PreviousAllocations = AcpiDbGetOutstandingAllocations ();
 #endif
 
-    Info.Name = Name;
-    Info.Args = Args;
-    Info.Flags = Flags;
+    AcpiGbl_DbMethodInfo.Name = Name;
+    AcpiGbl_DbMethodInfo.Args = Args;
+    AcpiGbl_DbMethodInfo.Flags = Flags;
 
-    AcpiDbExecuteSetup (&Info);
-    Status = AcpiDbExecuteMethod (&Info, &ReturnObj);
+    AcpiDbExecuteSetup (&AcpiGbl_DbMethodInfo);
+    Status = AcpiDbExecuteMethod (&AcpiGbl_DbMethodInfo, &ReturnObj);
 
     /*
      * Allow any handlers in separate threads to complete.
@@ -358,7 +358,7 @@ AcpiDbExecute (
     if (ACPI_FAILURE (Status))
     {
         AcpiOsPrintf ("Execution of %s failed with status %s\n", 
-            Info.Pathname, AcpiFormatException (Status));
+            AcpiGbl_DbMethodInfo.Pathname, AcpiFormatException (Status));
     }
 
     else
@@ -368,7 +368,7 @@ AcpiDbExecute (
         if (ReturnObj.Length)
         {
             AcpiOsPrintf ("Execution of %s returned object %p Buflen %X\n",
-                Info.Pathname, ReturnObj.Pointer, ReturnObj.Length);
+                AcpiGbl_DbMethodInfo.Pathname, ReturnObj.Pointer, ReturnObj.Length);
             AcpiDbDumpObject (ReturnObj.Pointer, 1);
         }
     }
@@ -471,13 +471,13 @@ AcpiDbCreateExecutionThreads (
 
     /* Setup the context to be passed to each thread */
 
-    Info.Name = MethodNameArg;
-    Info.Args = NULL;
-    Info.Flags = 0;
-    Info.NumLoops = NumLoops;
-    Info.ThreadGate = ThreadGate;
+    AcpiGbl_DbMethodInfo.Name = MethodNameArg;
+    AcpiGbl_DbMethodInfo.Args = NULL;
+    AcpiGbl_DbMethodInfo.Flags = 0;
+    AcpiGbl_DbMethodInfo.NumLoops = NumLoops;
+    AcpiGbl_DbMethodInfo.ThreadGate = ThreadGate;
 
-    AcpiDbExecuteSetup (&Info);
+    AcpiDbExecuteSetup (&AcpiGbl_DbMethodInfo);
 
 
     /* Create the threads */
@@ -486,7 +486,7 @@ AcpiDbCreateExecutionThreads (
 
     for (i = 0; i < (NumThreads); i++)
     {
-        AcpiOsQueueForExecution (OSD_PRIORITY_MED, AcpiDbMethodThread, &Info);
+        AcpiOsQueueForExecution (OSD_PRIORITY_MED, AcpiDbMethodThread, &AcpiGbl_DbMethodInfo);
     }
 
 

@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dbinput - user front-end to the AML debugger
- *              $Revision: 1.65 $
+ *              $Revision: 1.66 $
  *
  ******************************************************************************/
 
@@ -133,27 +133,27 @@
  * Globals that are specific to the debugger
  */
 
-NATIVE_CHAR             AcpiGbl_DbLineBuf[80];
-NATIVE_CHAR             AcpiGbl_DbParsedBuf[80];
-NATIVE_CHAR             AcpiGbl_DbScopeBuf[40];
-NATIVE_CHAR             AcpiGbl_DbDebugFilename[40];
-NATIVE_CHAR             *AcpiGbl_DbArgs[DB_MAX_ARGS];
-NATIVE_CHAR             *AcpiGbl_DbBuffer;
-NATIVE_CHAR             *AcpiGbl_DbFilename = NULL;
-BOOLEAN                 AcpiGbl_DbOutputToFile = FALSE;
+NATIVE_CHAR                 AcpiGbl_DbLineBuf[80];
+NATIVE_CHAR                 AcpiGbl_DbParsedBuf[80];
+NATIVE_CHAR                 AcpiGbl_DbScopeBuf[40];
+NATIVE_CHAR                 AcpiGbl_DbDebugFilename[40];
+NATIVE_CHAR                 *AcpiGbl_DbArgs[DB_MAX_ARGS];
+NATIVE_CHAR                 *AcpiGbl_DbBuffer;
+NATIVE_CHAR                 *AcpiGbl_DbFilename = NULL;
+BOOLEAN                     AcpiGbl_DbOutputToFile = FALSE;
 
 
-UINT32                  AcpiGbl_DbDebugLevel = 0x0FFFFFFF;
-UINT32                  AcpiGbl_DbConsoleDebugLevel = NORMAL_DEFAULT | ACPI_LV_TABLES;
-UINT8                   AcpiGbl_DbOutputFlags = DB_CONSOLE_OUTPUT;
+UINT32                      AcpiGbl_DbDebugLevel = 0x0FFFFFFF;
+UINT32                      AcpiGbl_DbConsoleDebugLevel = NORMAL_DEFAULT | ACPI_LV_TABLES;
+UINT8                       AcpiGbl_DbOutputFlags = DB_CONSOLE_OUTPUT;
 
 
-BOOLEAN                 AcpiGbl_DbOpt_tables      = FALSE;
-BOOLEAN                 AcpiGbl_DbOpt_disasm      = FALSE;
-BOOLEAN                 AcpiGbl_DbOpt_stats       = FALSE;
-BOOLEAN                 AcpiGbl_DbOpt_parse_jit   = FALSE;
-BOOLEAN                 AcpiGbl_DbOpt_verbose     = TRUE;
-BOOLEAN                 AcpiGbl_DbOpt_ini_methods = TRUE;
+BOOLEAN                     AcpiGbl_DbOpt_tables      = FALSE;
+BOOLEAN                     AcpiGbl_DbOpt_disasm      = FALSE;
+BOOLEAN                     AcpiGbl_DbOpt_stats       = FALSE;
+BOOLEAN                     AcpiGbl_DbOpt_parse_jit   = FALSE;
+BOOLEAN                     AcpiGbl_DbOpt_verbose     = TRUE;
+BOOLEAN                     AcpiGbl_DbOpt_ini_methods = TRUE;
 
 /*
  * Statistic globals
@@ -231,7 +231,7 @@ enum AcpiExDebuggerCommands
 #define CMD_FIRST_VALID     2
 
 
-COMMAND_INFO                Commands[] =
+const COMMAND_INFO          Commands[] =
 {
     {"<NOT FOUND>",  0},
     {"<NULL>",       0},
@@ -615,6 +615,7 @@ AcpiDbCommandDispatch (
         break;
 
     case CMD_ALLOCATIONS:
+
 #ifdef ACPI_DBG_TRACK_ALLOCATIONS
         AcpiUtDumpCurrentAllocations ((UINT32) -1, NULL);
 #endif

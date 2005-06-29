@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dbcmds - debug commands and output routines
- *              $Revision: 1.63 $
+ *              $Revision: 1.64 $
  *
  ******************************************************************************/
 
@@ -138,7 +138,7 @@
  * These object types map directly to the ACPI_TYPES
  */
 
-ARGUMENT_INFO               AcpiDbObjectTypes [] =
+ARGUMENT_INFO         AcpiDbObjectTypes [] =
 {
     {"ANY"},
     {"NUMBERS"},
