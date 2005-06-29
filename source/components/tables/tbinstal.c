@@ -218,7 +218,7 @@ TbRecognizeTable (
 {
     ACPI_TABLE_HEADER       *TableHeader;
     ACPI_STATUS             Status;
-    ACPI_TABLE_TYPE         TableType;
+    ACPI_TABLE_TYPE         TableType = 0;
     void                    **TableGlobalPtr;
     UINT32                  i;
 
