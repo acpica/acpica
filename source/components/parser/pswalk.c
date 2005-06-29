@@ -553,16 +553,25 @@ PsWalkParsedAml (
         ReturnDesc = WalkState->ReturnDesc;     /* Extract return value before we delete WalkState */
 
         DEBUG_PRINT (TRACE_PARSE, ("PsWalkParsedAml: ReturnValue=%p, State=%p\n", WalkState->ReturnDesc, WalkState));
+ 
+        /* If we just returned from the execution of a control method, there's lots of cleanup to do */
 
-        
-        PsxMthStackDeleteArgs (WalkState);      /* Delete all arguments and locals (if a method completed) */
-
-
-        /* Delete the parse tree upon method completion if asked to */
-
-        if (Gbl_WhenToParseMethods & METHOD_DELETE_AT_COMPLETION)
+        if (WalkState->MethodDesc)
         {
-            if (WalkState->MethodDesc)
+            /* Signal completion of the execution of this method if necessary */
+
+            if (WalkState->MethodDesc->Method.Semaphore)
+            {
+                Status = OsdSignalSemaphore (WalkState->MethodDesc->Method.Semaphore, 1);
+            }
+
+            /* Delete all arguments and locals */
+
+            PsxMthStackDeleteArgs (WalkState);      
+
+            /* Delete the parse tree if asked to */
+
+            if (Gbl_WhenToParseMethods & METHOD_DELETE_AT_COMPLETION)
             {
                 PsDeleteParseTree (WalkState->MethodDesc->Method.ParserOp);
                 WalkState->MethodDesc->Method.ParserOp = NULL;
