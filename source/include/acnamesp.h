@@ -376,14 +376,6 @@ NsChecksum (
     void                *Buffer,
     UINT32              Length);
 
-void *
-NsWalkNamespace (
-    NsType              Type, 
-    NsHandle            StartHandle, 
-    UINT32              MaxDepth,
-    void                * (* UserFunction)(NsHandle, UINT32, void *), 
-    void                *Context);
-
 NsType
 NsGetType (
     NsHandle            ObjHandle);
