@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslmap - parser to AML opcode mapping table
- *              $Revision: 1.61 $
+ *              $Revision: 1.62 $
  *
  *****************************************************************************/
 
@@ -216,7 +216,7 @@ const ASL_RESERVED_INFO         ReservedMethods[] = {
     {"_DCK",     1,      ASL_RSVD_RETURN_VALUE},
     {"_DCS",     0,      ASL_RSVD_RETURN_VALUE},
     {"_DDC",     1,      ASL_RSVD_RETURN_VALUE},
-    {"_DDN",     1,      0},                          /* Spec is ambiguous about this */
+    {"_DDN",     0,      0},
     {"_DEC",     0,      ASL_RSVD_RESOURCE_NAME},
     {"_DGS",     0,      ASL_RSVD_RETURN_VALUE},
     {"_DIS",     0,      0},
