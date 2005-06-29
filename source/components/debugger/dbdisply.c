@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dbdisply - debug display commands
- *              $Revision: 1.95 $
+ *              $Revision: 1.96 $
  *
  ******************************************************************************/
 
@@ -586,7 +586,7 @@ AcpiDbDisplayResults (void)
     }
 
     ObjDesc = WalkState->MethodDesc;
-    Node = WalkState->MethodNode;
+    Node    = WalkState->MethodNode;
 
     if (WalkState->Results)
     {
@@ -649,11 +649,11 @@ AcpiDbDisplayCallingTree (void)
  *
  * FUNCTION:    AcpiDbDisplayObjectType
  *
- * PARAMETERS:  None
+ * PARAMETERS:  ObjectArg       - User entered NS node handle
  *
  * RETURN:      None
  *
- * DESCRIPTION: Display current calling tree of nested control methods
+ * DESCRIPTION: Display type of an arbitrary NS node
  *
  ******************************************************************************/
 
@@ -694,7 +694,6 @@ AcpiDbDisplayObjectType (
     {
         AcpiOsPrintf ("%s\n", AcpiFormatException (Status));
     }
-
 }
 
 
@@ -767,11 +766,11 @@ AcpiDbDisplayArgumentObject (
  *
  * FUNCTION:    AcpiDbDisplayGpes
  *
- * PARAMETERS:
+ * PARAMETERS:  None
  *
  * RETURN:      None
  *
- * DESCRIPTION: Display the GPE structures
+ * DESCRIPTION: Display the current GPE structures
  *
  ******************************************************************************/
 
