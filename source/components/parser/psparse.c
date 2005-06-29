@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: psparse - Parser top level AML parse routines
- *              $Revision: 1.61 $
+ *              $Revision: 1.62 $
  *
  *****************************************************************************/
 
@@ -731,6 +731,13 @@ AcpiPsParseLoop (
                  */
 
                 Status = AcpiDsGetPredicateValue (WalkState, NULL, TRUE);
+                if (Status == AE_AML_NO_OPERAND)
+                {
+                    DEBUG_PRINT (ACPI_ERROR,
+                        ("PsParseLoop: Invoked method did not return a value, %s\n", 
+                        AcpiCmFormatException (Status)));
+
+                }
                 Status = AcpiPsNextParseState (WalkState, Op, Status);
             }
 
