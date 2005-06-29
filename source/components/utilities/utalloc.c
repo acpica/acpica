@@ -369,7 +369,10 @@ CmDeleteElementFromAllocList (
     else
     {
         _REPORT_ERROR (Module, Line, Component,
-            "_CmFree: Reached the end of the list without finding the entry.");
+            "_CmFree: Entry not found in list");
+        DEBUG_PRINT (TRACE_ALLOCATIONS,
+            ("_CmFree: Entry %p was not found in allocation list\n", Address));
+    
     }
 
     FUNCTION_EXIT;
