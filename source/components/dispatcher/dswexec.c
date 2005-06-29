@@ -208,7 +208,7 @@ PsxExecBeginOp (
              * TBD: make this a temporary namespace object
              */
 
-            Status = PsxLoadBeginOp (WalkState, Op);
+            Status = PsxLoad2BeginOp (WalkState, Op);
         }
         break;
 
@@ -539,7 +539,7 @@ PsxExecEndOp (
         if ((WalkState->Origin->Opcode == AML_MethodOp) &&
             (WalkState->Origin != Op))
         {
-            PsxLoadEndOp (WalkState, Op);
+            PsxLoad2EndOp (WalkState, Op);
         }
 
         switch (Op->Opcode)
