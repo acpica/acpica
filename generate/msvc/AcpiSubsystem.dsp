@@ -244,6 +244,10 @@ SOURCE=..\..\Subsystem\Interpreter\iapi.c
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\Subsystem\Interpreter\iecreate.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\Subsystem\Interpreter\iedyad.c
 # End Source File
 # Begin Source File
