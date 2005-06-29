@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: exconvrt - Object conversion routines
- *              $Revision: 1.35 $
+ *              $Revision: 1.36 $
  *
  *****************************************************************************/
 
@@ -296,7 +296,7 @@ AcpiExConvertToBuffer (
     case ACPI_TYPE_INTEGER:
 
         /*
-         * Create a new Buffer
+         * Create a new Buffer object
          */
         RetDesc = AcpiUtCreateInternalObject (ACPI_TYPE_BUFFER);
         if (!RetDesc)
@@ -306,7 +306,6 @@ AcpiExConvertToBuffer (
 
         /* Need enough space for one integer */
 
-        RetDesc->Buffer.Length = AcpiGbl_IntegerByteWidth;
         NewBuf = ACPI_MEM_CALLOCATE (AcpiGbl_IntegerByteWidth);
         if (!NewBuf)
         {
@@ -322,7 +321,12 @@ AcpiExConvertToBuffer (
         {
             NewBuf[i] = (UINT8) (ObjDesc->Integer.Value >> (i * 8));
         }
+
+        /* Complete buffer object initialization */
+
+        RetDesc->Buffer.Flags |= AOPOBJ_DATA_VALID;
         RetDesc->Buffer.Pointer = NewBuf;
+        RetDesc->Buffer.Length = AcpiGbl_IntegerByteWidth;
 
         /* Return the new buffer descriptor */
 
