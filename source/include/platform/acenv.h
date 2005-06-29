@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acenv.h - Generation environment specific items
- *       $Revision: 1.82 $
+ *       $Revision: 1.83 $
  *
  *****************************************************************************/
 
@@ -265,21 +265,21 @@
  * We will be linking to the standard Clib functions
  */
 
-#define STRSTR(s1,s2)   strstr((s1), (s2))
-#define STRUPR(s)       AcpiUtStrupr  ((s))
-#define STRLEN(s)       (UINT32) strlen((s))
-#define STRCPY(d,s)     strcpy((d), (s))
-#define STRNCPY(d,s,n)  strncpy((d), (s), (NATIVE_INT)(n))
-#define STRNCMP(d,s,n)  strncmp((d), (s), (NATIVE_INT)(n))
-#define STRCMP(d,s)     strcmp((d), (s))
-#define STRCAT(d,s)     strcat((d), (s))
-#define STRNCAT(d,s,n)  strncat((d), (s), (NATIVE_INT)(n))
-#define STRTOUL(d,s,n)  strtoul((d), (s), (NATIVE_INT)(n))
-#define MEMCPY(d,s,n)   (void) memcpy((d), (s), (NATIVE_INT)(n))
-#define MEMSET(d,s,n)   (void) memset((d), (s), (NATIVE_INT)(n))
-#define TOUPPER         toupper
-#define TOLOWER         tolower
-#define IS_XDIGIT       isxdigit
+#define ACPI_STRSTR(s1,s2)      strstr((s1), (s2))
+#define ACPI_STRUPR(s)          AcpiUtStrupr  ((s))
+#define ACPI_STRLEN(s)          (UINT32) strlen((s))
+#define ACPI_STRCPY(d,s)        strcpy((d), (s))
+#define ACPI_STRNCPY(d,s,n)     strncpy((d), (s), (NATIVE_INT)(n))
+#define ACPI_STRNCMP(d,s,n)     strncmp((d), (s), (NATIVE_INT)(n))
+#define ACPI_STRCMP(d,s)        strcmp((d), (s))
+#define ACPI_STRCAT(d,s)        strcat((d), (s))
+#define ACPI_STRNCAT(d,s,n)     strncat((d), (s), (NATIVE_INT)(n))
+#define ACPI_STRTOUL(d,s,n)     strtoul((d), (s), (NATIVE_INT)(n))
+#define ACPI_MEMCPY(d,s,n)      (void) memcpy((d), (s), (NATIVE_INT)(n))
+#define ACPI_MEMSET(d,s,n)      (void) memset((d), (s), (NATIVE_INT)(n))
+#define ACPI_TOUPPER            toupper
+#define ACPI_TOLOWER            tolower
+#define ACPI_IS_XDIGIT          isxdigit
 
 /******************************************************************************
  *
@@ -306,35 +306,35 @@ typedef char *va_list;
  * Storage alignment properties
  */
 
-#define  _AUPBND         (sizeof (NATIVE_INT) - 1)
-#define  _ADNBND         (sizeof (NATIVE_INT) - 1)
+#define  _AUPBND                (sizeof (NATIVE_INT) - 1)
+#define  _ADNBND                (sizeof (NATIVE_INT) - 1)
 
 /*
  * Variable argument list macro definitions
  */
 
-#define _Bnd(X, bnd)    (((sizeof (X)) + (bnd)) & (~(bnd)))
-#define va_arg(ap, T)   (*(T *)(((ap) += (_Bnd (T, _AUPBND))) - (_Bnd (T,_ADNBND))))
-#define va_end(ap)      (void) 0
-#define va_start(ap, A) (void) ((ap) = (((char *) &(A)) + (_Bnd (A,_AUPBND))))
+#define _Bnd(X, bnd)            (((sizeof (X)) + (bnd)) & (~(bnd)))
+#define va_arg(ap, T)           (*(T *)(((ap) += (_Bnd (T, _AUPBND))) - (_Bnd (T,_ADNBND))))
+#define va_end(ap)              (void) 0
+#define va_start(ap, A)         (void) ((ap) = (((char *) &(A)) + (_Bnd (A,_AUPBND))))
 
 #endif /* va_arg */
 
 
-#define STRSTR(s1,s2)    AcpiUtStrstr  ((s1), (s2))
-#define STRUPR(s)        AcpiUtStrupr  ((s))
-#define STRLEN(s)        AcpiUtStrlen  ((s))
-#define STRCPY(d,s)      AcpiUtStrcpy  ((d), (s))
-#define STRNCPY(d,s,n)   AcpiUtStrncpy ((d), (s), (n))
-#define STRNCMP(d,s,n)   AcpiUtStrncmp ((d), (s), (n))
-#define STRCMP(d,s)      AcpiUtStrcmp  ((d), (s))
-#define STRCAT(d,s)      AcpiUtStrcat  ((d), (s))
-#define STRNCAT(d,s,n)   AcpiUtStrncat ((d), (s), (n))
-#define STRTOUL(d,s,n)   AcpiUtStrtoul ((d), (s),(n))
-#define MEMCPY(d,s,n)    (void) AcpiUtMemcpy  ((d), (s), (n))
-#define MEMSET(d,v,n)    (void) AcpiUtMemset  ((d), (v), (n))
-#define TOUPPER          AcpiUtToUpper
-#define TOLOWER          AcpiUtToLower
+#define ACPI_STRSTR(s1,s2)      AcpiUtStrstr  ((s1), (s2))
+#define ACPI_STRUPR(s)          AcpiUtStrupr  ((s))
+#define ACPI_STRLEN(s)          AcpiUtStrlen  ((s))
+#define ACPI_STRCPY(d,s)        AcpiUtStrcpy  ((d), (s))
+#define ACPI_STRNCPY(d,s,n)     AcpiUtStrncpy ((d), (s), (n))
+#define ACPI_STRNCMP(d,s,n)     AcpiUtStrncmp ((d), (s), (n))
+#define ACPI_STRCMP(d,s)        AcpiUtStrcmp  ((d), (s))
+#define ACPI_STRCAT(d,s)        AcpiUtStrcat  ((d), (s))
+#define ACPI_STRNCAT(d,s,n)     AcpiUtStrncat ((d), (s), (n))
+#define ACPI_STRTOUL(d,s,n)     AcpiUtStrtoul ((d), (s),(n))
+#define ACPI_MEMCPY(d,s,n)      (void) AcpiUtMemcpy  ((d), (s), (n))
+#define ACPI_MEMSET(d,v,n)      (void) AcpiUtMemset  ((d), (v), (n))
+#define ACPI_TOUPPER            AcpiUtToUpper
+#define ACPI_TOLOWER            AcpiUtToLower
 
 #endif /* ACPI_USE_SYSTEM_CLIBRARY */
 

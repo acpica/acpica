@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acwin.h - OS specific defines, etc.
- *       $Revision: 1.2 $
+ *       $Revision: 1.4 $
  *
  *****************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -138,12 +138,12 @@
 /*! [Begin] no source code translation  */
 
 #define ACPI_ASM_MACROS
-#define causeinterrupt(level)   
-#define BREAKPOINT3             
-#define acpi_disable_irqs()               
-#define acpi_enable_irqs()                
-#define halt()                  
-#define wbinvd()                
+#define causeinterrupt(level)
+#define BREAKPOINT3
+#define acpi_disable_irqs()
+#define acpi_enable_irqs()
+#define halt()
+#define wbinvd()
 
 
 /*
@@ -154,7 +154,7 @@
 #define ACPI_RELEASE_GLOBAL_LOCK(GLptr, Pnd)       (Pnd = 0)
 #else
 
-#define ACPI_ACQUIRE_GLOBAL_LOCK(GLptr, Acq)     
+#define ACPI_ACQUIRE_GLOBAL_LOCK(GLptr, Acq)
 
 #define ACPI_RELEASE_GLOBAL_LOCK(GLptr, Pnd)
 
