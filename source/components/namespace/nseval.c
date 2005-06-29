@@ -2,7 +2,7 @@
  *
  * Module Name: nseval - Object evaluation interfaces -- includes control
  *                       method lookup and execution.
- *              $Revision: 1.111 $
+ *              $Revision: 1.112 $
  *
  ******************************************************************************/
 
@@ -503,16 +503,11 @@ AcpiNsExecuteControlMethod (
         return_ACPI_STATUS (AE_NULL_OBJECT);
     }
 
-
-    ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "Control Method at AML address %p Length %x\n",
-        ObjDesc->Method.AmlStart + 1, ObjDesc->Method.AmlLength - 1));
-
     ACPI_DUMP_PATHNAME (MethodNode, "NsExecuteControlMethod: Executing",
         ACPI_LV_INFO, _COMPONENT);
 
-    ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "At AML offset %p\n",
-            ObjDesc->Method.AmlStart + 1));
-
+    ACPI_DEBUG_PRINT ((ACPI_DB_EXEC, "Method at AML address %p Length %x\n",
+        ObjDesc->Method.AmlStart + 1, ObjDesc->Method.AmlLength - 1));
 
     /*
      * Unlock the namespace before execution.  This allows namespace access
