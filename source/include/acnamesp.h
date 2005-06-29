@@ -1,7 +1,7 @@
 
 /******************************************************************************
- *
- * Name: acnamesp.h - Namespace subcomponent prototypes and defines
+ * 
+ * Name: namespace.h - Namespace subcomponent prototypes and defines
  *
  *****************************************************************************/
 
@@ -38,9 +38,9 @@
  * The above copyright and patent license is granted only if the following
  * conditions are met:
  *
- * 3. Conditions
+ * 3. Conditions 
  *
- * 3.1. Redistribution of Source with Rights to Further Distribute Source.
+ * 3.1. Redistribution of Source with Rights to Further Distribute Source.  
  * Redistribution of source code of any substantial portion of the Covered
  * Code or modification with rights to further distribute source must include
  * the above Copyright Notice, the above License, this list of Conditions,
@@ -48,11 +48,11 @@
  * Licensee must cause all Covered Code to which Licensee contributes to
  * contain a file documenting the changes Licensee made to create that Covered
  * Code and the date of any change.  Licensee must include in that file the
- * documentation of any changes made by any predecessor Licensee.  Licensee
+ * documentation of any changes made by any predecessor Licensee.  Licensee 
  * must include a prominent statement that the modification is derived,
  * directly or indirectly, from Original Intel Code.
  *
- * 3.2. Redistribution of Source with no Rights to Further Distribute Source.
+ * 3.2. Redistribution of Source with no Rights to Further Distribute Source.  
  * Redistribution of source code of any substantial portion of the Covered
  * Code or modification without rights to further distribute source must
  * include the following Disclaimer and Export Compliance provision in the
@@ -86,7 +86,7 @@
  * INSTALLATION, TRAINING OR OTHER SERVICES.  INTEL WILL NOT PROVIDE ANY
  * UPDATES, ENHANCEMENTS OR EXTENSIONS.  INTEL SPECIFICALLY DISCLAIMS ANY
  * IMPLIED WARRANTIES OF MERCHANTABILITY, NONINFRINGEMENT AND FITNESS FOR A
- * PARTICULAR PURPOSE.
+ * PARTICULAR PURPOSE. 
  *
  * 4.2. IN NO EVENT SHALL INTEL HAVE ANY LIABILITY TO LICENSEE, ITS LICENSEES
  * OR ANY OTHER THIRD PARTY, FOR ANY LOST PROFITS, LOST DATA, LOSS OF USE OR
@@ -114,16 +114,21 @@
  *
  *****************************************************************************/
 
-#ifndef __ACNAMESP_H__
-#define __ACNAMESP_H__
+#ifndef __NAMESPACE_H__
+#define __NAMESPACE_H__
+
+#include <acpitypes.h>
+#include <acpitables.h>
+#include <acpiobj.h>
+#include <pnp.h>
 
 
 /* To search the entire name space, pass this as SearchBase */
 
 #define NS_ALL                  ((ACPI_HANDLE)0)
 
-/*
- * Elements of AcpiNsProperties are bit significant
+/* 
+ * Elements of NsProperties are bit significant
  * and should be one-to-one with values of ACPI_OBJECT_TYPE
  */
 #define NSP_NORMAL              0
@@ -133,67 +138,15 @@
 
 /* Definitions of the predefined namespace names  */
 
-#define ACPI_UNKNOWN_NAME       (UINT32) 0x3F3F3F3F     /* Unknown name is  "????" */
-#define ACPI_ROOT_NAME          (UINT32) 0x2F202020     /* Root name is     "/   " */
-#define ACPI_SYS_BUS_NAME       (UINT32) 0x5F53425F     /* Sys bus name is  "_SB_" */
-
+#define NS_ROOT                 "/   "
 #define NS_ROOT_PATH            "/"
 #define NS_SYSTEM_BUS           "_SB_"
 
 
-/* Flags for AcpiNsLookup, AcpiNsSearchAndEnter */
+/* Flags for NsLookup, NsSearchAndEnter */
 
+#define NS_SEARCH_PARENT        1
 #define NS_NO_UPSEARCH          0
-#define NS_SEARCH_PARENT        0x01
-#define NS_DONT_OPEN_SCOPE      0x02
-#define NS_NO_PEER_SEARCH       0x04
-
-#define NS_WALK_UNLOCK          TRUE
-#define NS_WALK_NO_UNLOCK       FALSE
-
-
-ACPI_STATUS
-AcpiNsWalkNamespace (
-    OBJECT_TYPE_INTERNAL    Type,
-    ACPI_HANDLE             StartObject,
-    UINT32                  MaxDepth,
-    BOOLEAN                 UnlockBeforeCallback,
-    WALK_CALLBACK           UserFunction,
-    void                    *Context,
-    void                    **ReturnValue);
-
-
-ACPI_NAMED_OBJECT*
-AcpiNsGetNextObject (
-    OBJECT_TYPE_INTERNAL    Type,
-    ACPI_NAMED_OBJECT       *Parent,
-    ACPI_NAMED_OBJECT       *Child);
-
-
-ACPI_STATUS
-AcpiNsDeleteNamespaceByOwner (
-    UINT16                  TableId);
-
-void
-AcpiNsFreeTableEntry (
-    ACPI_NAMED_OBJECT       *Entry);
-
-
-/* Namespace loading - nsload */
-
-ACPI_STATUS
-AcpiNsParseTable (
-    ACPI_TABLE_DESC         *TableDesc,
-    ACPI_NAME_TABLE         *Scope);
-
-ACPI_STATUS
-AcpiNsLoadTable (
-    ACPI_TABLE_DESC         *TableDesc,
-    ACPI_NAMED_OBJECT       *Entry);
-
-ACPI_STATUS
-AcpiNsLoadTableByType (
-    ACPI_TABLE_TYPE         TableType);
 
 
 /*
@@ -202,39 +155,38 @@ AcpiNsLoadTableByType (
 
 
 ACPI_STATUS
-AcpiNsRootInitialize (
+NsSetup (
     void);
 
 ACPI_STATUS
-AcpiNsLookup (
-    ACPI_GENERIC_STATE      *ScopeInfo,
-    INT8                    *Name,
-    OBJECT_TYPE_INTERNAL    Type,
-    OPERATING_MODE          InterpreterMode,
+NsLookup (
+    NAME_TABLE_ENTRY        *PrefixEntry,
+    char                    *Name, 
+    ACPI_OBJECT_TYPE        Type, 
+    OPERATING_MODE          LoadMode,
     UINT32                  Flags,
-    ACPI_WALK_STATE         *WalkState,
-    ACPI_NAMED_OBJECT       **RetEntry);
+    NAME_TABLE_ENTRY        **RetEntry);
 
 
 /*
  * Table allocation/deallocation - nsalloc
  */
 
-ACPI_NAME_TABLE *
-AcpiNsAllocateNameTable (
-    UINT32                  NumEntries);
+NAME_TABLE_ENTRY *
+NsAllocateNameTable (
+    INT32                   NteEntries);
 
 ACPI_STATUS
-AcpiNsDeleteNamespaceSubtree (
-    ACPI_NAMED_OBJECT       *ParentHandle);
+NsDeleteNamespace (
+    void);
 
 void
-AcpiNsDetachObject (
+NsDetachObject (
     ACPI_HANDLE             Object);
 
 void
-AcpiNsDeleteNameTable (
-    ACPI_NAME_TABLE         *NameTable);
+NsDeleteScope (
+    ACPI_HANDLE             Scope);
 
 
 /*
@@ -242,45 +194,38 @@ AcpiNsDeleteNameTable (
  */
 
 ACPI_STATUS
-AcpiNsUnloadNamespace (
+NsUnloadNamespace (
     ACPI_HANDLE             Handle);
 
 ACPI_STATUS
-AcpiNsDeleteSubtree (
+NsDeleteSubtree (
     ACPI_HANDLE             StartHandle);
 
 
-/*
+/* 
  * Namespace dump/print utilities - nsdump
  */
 
 void
-AcpiNsDumpTables (
-    ACPI_HANDLE             SearchBase,
+NsDumpTables (
+    ACPI_HANDLE             SearchBase, 
     INT32                   MaxDepth);
 
 void
-AcpiNsDumpEntry (
+NsDumpEntry (
     ACPI_HANDLE             Handle,
     UINT32                  DebugLevel);
 
 ACPI_STATUS
-AcpiNsDumpPathname (
-    ACPI_HANDLE             Handle,
-    INT8                    *Msg,
-    UINT32                  Level,
+NsDumpPathname (
+    ACPI_HANDLE             Handle, 
+    char                    *Msg, 
+    UINT32                  Level, 
     UINT32                  Component);
 
 void
-AcpiNsDumpRootDevices (
+NsDumpRootDevices (
     void);
-
-void
-AcpiNsDumpObjects (
-    OBJECT_TYPE_INTERNAL    Type,
-    UINT32                  MaxDepth,
-    UINT32                  OwnderId,
-    ACPI_HANDLE             StartHandle);
 
 
 /*
@@ -288,33 +233,33 @@ AcpiNsDumpObjects (
  */
 
 ACPI_STATUS
-AcpiNsEvaluateByHandle (
-    ACPI_NAMED_OBJECT       *ObjectNte,
+NsEvaluateByHandle (
+    NAME_TABLE_ENTRY        *ObjectNte, 
     ACPI_OBJECT_INTERNAL    **Params,
-    ACPI_OBJECT_INTERNAL    **ReturnObject);
+    ACPI_OBJECT_INTERNAL    *ReturnObject);
 
 ACPI_STATUS
-AcpiNsEvaluateByName (
-    INT8                    *Pathname,
+NsEvaluateByName (
+    char                    *Pathname, 
     ACPI_OBJECT_INTERNAL    **Params,
-    ACPI_OBJECT_INTERNAL    **ReturnObject);
+    ACPI_OBJECT_INTERNAL    *ReturnObject);
 
 ACPI_STATUS
-AcpiNsEvaluateRelative (
-    ACPI_NAMED_OBJECT       *ObjectNte,
-    INT8                    *Pathname,
+NsEvaluateRelative (
+    NAME_TABLE_ENTRY        *ObjectNte, 
+    char                    *Pathname, 
     ACPI_OBJECT_INTERNAL    **Params,
-    ACPI_OBJECT_INTERNAL    **ReturnObject);
+    ACPI_OBJECT_INTERNAL    *ReturnObject);
 
 ACPI_STATUS
-AcpiNsExecuteControlMethod (
-    ACPI_NAMED_OBJECT       *MethodEntry,
+NsExecuteControlMethod (
+    NAME_TABLE_ENTRY        *MethodEntry, 
     ACPI_OBJECT_INTERNAL    **Params,
     ACPI_OBJECT_INTERNAL    **ReturnObjDesc);
 
 ACPI_STATUS
-AcpiNsGetObjectValue (
-    ACPI_NAMED_OBJECT       *ObjectEntry,
+NsGetObjectValue (
+    NAME_TABLE_ENTRY        *ObjectEntry,
     ACPI_OBJECT_INTERNAL    **ReturnObjDesc);
 
 
@@ -323,12 +268,14 @@ AcpiNsGetObjectValue (
  */
 
 ACPI_NAME
-AcpiNsFindParentName (
-    ACPI_NAMED_OBJECT       *EntryToSearch);
+NsFindParentName (
+    NAME_TABLE_ENTRY        *EntryToSearch);
 
-BOOLEAN
-AcpiNsExistDownstreamSibling (
-    ACPI_NAMED_OBJECT       *ThisEntry);
+INT32
+NsExistDownstreamSibling (
+    NAME_TABLE_ENTRY        *ThisEntry, 
+    INT32                   Size, 
+    NAME_TABLE_ENTRY        *Appendage);
 
 
 /*
@@ -336,57 +283,83 @@ AcpiNsExistDownstreamSibling (
  */
 
 INT32
-AcpiNsOpensScope (
-    OBJECT_TYPE_INTERNAL    Type);
+NsOpensScope (
+    ACPI_OBJECT_TYPE        Type);
 
-INT8 *
-AcpiNsGetTablePathname (
-    ACPI_NAME_TABLE         *Scope);
+char *
+NsNameOfScope (
+    NAME_TABLE_ENTRY        *EntryToSearch);
 
-INT8 *
-AcpiNsNameOfCurrentScope (
-    ACPI_WALK_STATE         *WalkState);
+char *
+NsNameOfCurrentScope (
+    void);
 
 ACPI_STATUS
-AcpiNsHandleToPathname (
+NsHandleToPathname (
     ACPI_HANDLE             ObjHandle,
     UINT32                  *BufSize,
-    INT8                    *UserBuffer);
+    char                    *UserBuffer);
 
 BOOLEAN
-AcpiNsPatternMatch (
-    ACPI_NAMED_OBJECT       *ObjEntry,
-    INT8                    *SearchFor);
-
+NsPatternMatch (
+    NAME_TABLE_ENTRY        *ObjEntry, 
+    char                    *SearchFor);
+        
 ACPI_STATUS
-AcpiNsNameCompare (
-    ACPI_HANDLE             ObjHandle,
-    UINT32                  Level,
+NsNameCompare (
+    ACPI_HANDLE             ObjHandle, 
+    UINT32                  Level, 
     void                    *Context,
     void                    **ReturnValue);
 
+void
+NsLowFindNames (
+    NAME_TABLE_ENTRY        *ThisEntry, 
+    char                    *SearchFor,
+    INT32                   *Count, 
+    ACPI_HANDLE             List[], 
+    INT32                   MaxDepth);
+
+ACPI_HANDLE *
+NsFindNames (
+    char                    *SearchFor, 
+    ACPI_HANDLE             SearchBase, 
+    INT32                   MaxDepth);
+
 ACPI_STATUS
-AcpiNsGetNamedObject (
-    INT8                    *Pathname,
-    ACPI_NAME_TABLE         *InScope,
-    ACPI_NAMED_OBJECT       **OutNte);
+NsGetNte (
+    char                    *Name, 
+    ACPI_HANDLE             Scope,
+    NAME_TABLE_ENTRY      **OutNte);
 
 /*
  * Object management for NTEs - nsobject
  */
 
 ACPI_STATUS
-AcpiNsAttachObject (
-    ACPI_HANDLE             ObjHandle,
-    ACPI_HANDLE             Value,
-    OBJECT_TYPE_INTERNAL    Type);
+NsAttachMethod (
+    ACPI_HANDLE             ObjHandle, 
+    UINT8                   *PcodeAddr, 
+    UINT32                  PcodeLength);
+
+ACPI_STATUS
+NsAttachObject (
+    ACPI_HANDLE             ObjHandle, 
+    ACPI_HANDLE             Value, 
+    UINT8                   ValTyp);
 
 
 void *
-AcpiNsCompareValue (
-    ACPI_HANDLE             ObjHandle,
-    UINT32                  Level,
+NsCompareValue (
+    ACPI_HANDLE             ObjHandle, 
+    UINT32                  Level, 
     void                    *ObjDesc);
+
+ACPI_HANDLE
+NsFindAttachedObject (
+    ACPI_OBJECT_INTERNAL    *ObjDesc, 
+    ACPI_HANDLE             SearchBase, 
+    INT32                   MaxDepth);
 
 
 /*
@@ -394,94 +367,91 @@ AcpiNsCompareValue (
  */
 
 ACPI_STATUS
-AcpiNsSearchAndEnter (
-    UINT32                  EntryName,
-    ACPI_WALK_STATE         *WalkState,
-    ACPI_NAME_TABLE         *NameTable,
-    OPERATING_MODE          InterpreterMode,
-    OBJECT_TYPE_INTERNAL    Type,
+NsSearchAndEnter (
+    UINT32                  EntryName, 
+    NAME_TABLE_ENTRY        *NameTable,
+    OPERATING_MODE          LoadMode, 
+    ACPI_OBJECT_TYPE        Type, 
     UINT32                  Flags,
-    ACPI_NAMED_OBJECT       **RetEntry);
+    NAME_TABLE_ENTRY        **RetEntry);
 
 void
-AcpiNsInitializeTable (
-    ACPI_NAME_TABLE         *NewTable,
-    ACPI_NAME_TABLE         *ParentScope,
-    ACPI_NAMED_OBJECT       *ParentEntry);
+NsInitializeTable (
+    NAME_TABLE_ENTRY        *NewTbl, 
+    NAME_TABLE_ENTRY        *ParentScope, 
+    NAME_TABLE_ENTRY        *ParentEntry);
 
 ACPI_STATUS
-AcpiNsSearchNameTable (
-    UINT32                  EntryName,
-    ACPI_NAME_TABLE         *NameTable,
-    OBJECT_TYPE_INTERNAL    Type,
-    ACPI_NAMED_OBJECT       **RetEntry,
+NsSearchOnly (
+    UINT32                  EntryName, 
+    NAME_TABLE_ENTRY        *NameTable, 
+    ACPI_OBJECT_TYPE        Type, 
+    NAME_TABLE_ENTRY        **RetEntry, 
     NS_SEARCH_DATA          *RetInfo);
 
+
+/*
+ * Scope Stack manipulation - nsstack
+ */
+
+ACPI_STATUS
+NsScopeStackPush (
+    NAME_TABLE_ENTRY        *NewScope, 
+    ACPI_OBJECT_TYPE        Type);
+
+ACPI_STATUS
+NsScopeStackPushEntry (
+    ACPI_HANDLE             NewScope);
+
+INT32
+NsScopeStackPop (
+    ACPI_OBJECT_TYPE        Type);
+
+void
+NsScopeStackClear (
+    void);
 
 /*
  * Utility functions - nsutils
  */
 
-BOOLEAN
-AcpiNsValidRootPrefix (
-    INT8                    Prefix);
-
-BOOLEAN
-AcpiNsValidPathSeparator (
-    INT8                    Sep);
-
-OBJECT_TYPE_INTERNAL
-AcpiNsGetType (
+ACPI_OBJECT_TYPE
+NsGetType (
     ACPI_HANDLE             ObjHandle);
 
 void *
-AcpiNsGetAttachedObject (
+NsGetAttachedObject (
     ACPI_HANDLE             ObjHandle);
 
 INT32
-AcpiNsLocal (
-    OBJECT_TYPE_INTERNAL    Type);
+NsLocal (
+    ACPI_OBJECT_TYPE        Type);
 
 ACPI_STATUS
-AcpiNsInternalizeName (
-    INT8                    *DottedName,
-    INT8                    **ConvertedName);
-
-ACPI_STATUS
-AcpiNsExternalizeName (
-    UINT32                  InternalNameLength,
-    INT8                    *InternalName,
-    UINT32                  *ConvertedNameLength,
-    INT8                    **ConvertedName);
+NsInternalizeName (
+    char                    *DottedName,
+    char                    **ConvertedName);
 
 INT32
 IsNsObject (
     ACPI_OBJECT_INTERNAL    *pOD);
 
 INT32
-AcpiNsMarkNS(
+NsMarkNS(
     void);
 
-ACPI_NAMED_OBJECT*
-AcpiNsConvertHandleToEntry (
+NAME_TABLE_ENTRY *
+NsConvertHandleToEntry (
     ACPI_HANDLE             Handle);
 
 ACPI_HANDLE
-AcpiNsConvertEntryToHandle(
-    ACPI_NAMED_OBJECT*Nte);
+NsConvertEntryToHandle(
+    NAME_TABLE_ENTRY *Nte);
 
 void
-AcpiNsTerminate (
+NsTerminate (
     void);
 
-ACPI_NAMED_OBJECT *
-AcpiNsGetParentEntry (
-    ACPI_NAMED_OBJECT       *ThisEntry);
 
 
-ACPI_NAMED_OBJECT *
-AcpiNsGetNextValidEntry (
-    ACPI_NAMED_OBJECT       *ThisEntry);
-
-
-#endif /* __ACNAMESP_H__ */
+#endif /* __NAMESPACE_H__ */

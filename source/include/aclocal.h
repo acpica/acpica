@@ -120,6 +120,34 @@
 #include "config.h"
 
 
+#define WAIT_FOREVER        -1
+
+typedef void*               ACPI_MUTEX;
+typedef UINT32              ACPI_MUTEX_HANDLE;
+
+
+/* Object descriptor types */
+
+#define DESC_TYPE_NTE       0xEE
+#define DESC_TYPE_ACPI_OBJ  0xAA
+
+
+/*
+ * Predefined handles for the mutex objects used within the subsystem
+ * All mutex objects are automatically created by CmMutexInitialize.
+ */
+
+#define MTX_INTERPRETER     0
+#define MTX_NAMESPACE       1
+#define MTX_MEMORY          2
+#define MTX_GP_EVENT        3
+#define MTX_FIXED_EVENT     4
+#define MTX_OP_REGIONS      5
+
+#define MAX_MTX             5
+#define NUM_MTX             MAX_MTX+1
+
+
 /* Operational modes of the AML interpreter/scanner */
 
 typedef enum 
@@ -145,21 +173,27 @@ typedef enum
  * table (which is an array of nte, sometimes referred to as a scope).  In
  * the latter case, the specific nte pointed to may be unused; however its
  * ParentScope member will be valid.
+ *
+ * DataType is used to differentiate between internal descriptors, and MUST
+ * be the first byte in this structure.
  */
 
-typedef struct NAME_TABLE_ENTRY
+typedef struct NameTableEntry
 {
-    UINT32                  Name;           /* Name segment, always 4 chars per ACPI spec.
-                                             * NameSeg must be the first field in the nte
-                                             * -- see the IsNsHandle macro in acpinmsp.h
-                                             */
-    struct NAME_TABLE_ENTRY *Scope;         /* Scope owned by this name */
-    struct NAME_TABLE_ENTRY *ParentScope;   /* Previous level of names */
-    struct NAME_TABLE_ENTRY *ParentEntry;   /* Actual parent NTE */
-    struct NAME_TABLE_ENTRY *NextEntry;     /* Next within this scope */
-    struct NAME_TABLE_ENTRY *PrevEntry;     /* Previous within this scope */
-    ACPI_OBJECT_TYPE        Type;           /* Type associated with this name */
-    void                    *Object;        /* Pointer to attached ACPI object */
+    UINT8                   DataType;
+    UINT8                   Type;           /* Type associated with this name */
+    UINT8                   Fill1;
+    UINT8                   Flags;
+    UINT32                  Name;           /* ACPI Name, always 4 chars per ACPI spec */
+
+    void                    *Object;        /* Pointer to attached ACPI object (optional) */
+    struct NameTableEntry   *Scope;         /* Scope owned by this name (optional) */
+
+    struct NameTableEntry   *NextEntry;     /* Next NTE within this scope */
+    struct NameTableEntry   *PrevEntry;     /* Previous NTE within this scope */
+
+    struct NameTableEntry   *ParentEntry;   /* Actual parent NTE */
+    struct NameTableEntry   *ParentScope;   /* Previous level of names */
 
 } NAME_TABLE_ENTRY;
 
@@ -168,22 +202,27 @@ typedef struct NAME_TABLE_ENTRY
 #define NULL_HANDLE         INVALID_HANDLE
 
 
+/* NTE flags */
+
+#define NTE_AML_ATTACHMENT  0x1
+
 /* 
  * Stack of currently executing control methods 
  * Contains the arguments and local variables for each nested method.
  */
 
-typedef struct
+typedef struct Method_Stack
 {
     union AcpiObjInternal   *Arguments[MTH_NUM_ARGS];
     union AcpiObjInternal   *LocalVariables[MTH_NUM_LOCALS];
+    struct Method_Stack     *Next;
 
 } METHOD_STACK;
 
 
 /* Stack of currently-open scopes, and pointer to top of that stack */
 
-typedef struct
+typedef struct scope_stack
 {
     NAME_TABLE_ENTRY        *Scope;
     /* 
@@ -191,6 +230,7 @@ typedef struct
      * (but not the same as the type of its parent's scope).
      */
     ACPI_OBJECT_TYPE        Type;   
+    struct scope_stack      *Next;
 
 } SCOPE_STACK;    
 
@@ -219,6 +259,7 @@ typedef struct
  */
 #define ACPI_MAX_ADDRESS_SPACE      255
 #define ACPI_NUM_ADDRESS_SPACES     256
+
 
 typedef struct
 {
@@ -249,6 +290,7 @@ typedef struct
     UINT8                   Enable;         /* Current value of enable reg */
     UINT16                  StatusAddr;     /* Address of status reg */
     UINT16                  EnableAddr;     /* Address of enable reg */
+    UINT8                   GpeBase;        /* Base GPE number */
 
 } GPE_REGISTERS;
 
@@ -262,6 +304,7 @@ typedef struct
 typedef struct
 {
     UINT8                   Type;           /* Level or Edge */
+
     ACPI_HANDLE             MethodHandle;   /* Method handle for direct (fast) execution */
     GPE_HANDLER             Handler;        /* Address of handler, if any */
     void                    *Context;       /* Context to be passed to handler */
@@ -269,8 +312,208 @@ typedef struct
 } GPE_LEVEL_INFO;
 
 
+/* Information about each particular fixed event */
+
+typedef struct
+{
+	FIXED_EVENT_HANDLER		Handler;		/* Address of handler. */
+	void					*Context;		/* Context to be passed to handler */
+
+} FIXED_EVENT_INFO;
+
+
+
+/* Information used during field processing */
+
+typedef struct
+{
+    UINT8                   SkipField;
+    UINT8                   FieldFlag;
+    UINT32                  PkgLength;
+
+} FIELD_INFO;
+
+
+
+
+
+
+/*
+ * AML opcode, name, and argument layout
+ */
+typedef struct acpi_op_info
+{
+    UINT16                  Opcode;         /* AML opcode */
+    UINT8                   Type            : 5;
+    UINT8                   HasArgs         : 1;
+    UINT8                   ChildLocation   : 2;
+    char                    *Args;          /* argument format */
+
+    DEBUG_ONLY_MEMBERS (
+    char                    *Name)          /* op name (debug only) */
+
+} ACPI_OP_INFO;
+
+
+typedef union acpi_op_value
+{
+    UINT32                  Integer;        /* integer constant */
+    UINT32                  Size;           /* bytelist or field size */
+    char                    *String;        /* NULL terminated string */
+    char                    *Name;          /* NULL terminated string */
+    struct acpi_generic_op  *Arg;           /* arguments and contained ops */
+    NAME_TABLE_ENTRY        *Entry;         /* entry in interpreter namespace tbl */ 
+
+} ACPI_OP_VALUE;
+
+
+#define ACPI_COMMON_OP \
+    DEBUG_ONLY_MEMBERS (\
+    char                    OpName[16])     /* op name (debug only) */\
+                                            /* NON-DEBUG members below: */\
+    struct acpi_generic_op  *Parent;        /* parent op */\
+    struct acpi_generic_op  *Next;          /* next op */\
+    void                    *ResultObj;     /* for use by interpreter */\
+    UINT32                  AmlOffset;      /* offset of declaration in AML */\
+    UINT32                  Opcode;         /* AML opcode */\
+    ACPI_OP_VALUE           Value;          /* Value or args associated with the opcode */\
+
+
+/*
+ * generic operation (eg. If, While, Store)
+ */
+typedef struct acpi_generic_op
+{
+    ACPI_COMMON_OP
+} ACPI_GENERIC_OP;
+
+
+/*
+ * operation with a name (eg. Scope, Method, Name, NamedField, ...)
+ */
+typedef struct acpi_named_op
+{
+    ACPI_COMMON_OP
+    UINT32                  Name;           /* 4-byte name or zero if no name */
+
+} ACPI_NAMED_OP;
+
+
+/*
+ * special operation for methods and regions (parsing must be deferred
+ * until a first pass parse is completed)
+ */
+typedef struct acpi_deferred_op
+{
+    ACPI_COMMON_OP
+    UINT32                  Name;           /* 4-byte name or 0 if none */
+    UINT32                  BodyLength;     /* AML body size */
+    UINT8                   *Body;          /* AML body */
+
+} ACPI_DEFERRED_OP;
+
+
+/*
+ * special operation for bytelists (ByteList only)
+ */
+typedef struct acpi_bytelist_op
+{
+    ACPI_COMMON_OP
+    UINT8                   *Data;          /* bytelist data */
+
+} ACPI_BYTELIST_OP;
+
+
+
+/*
+ * Parse state - one state per parser invocation and each control
+ * method.
+ */
+
+typedef struct acpi_parse_state
+{
+    UINT8                   *AmlStart;      /* first AML byte */
+    UINT8                   *Aml;           /* next AML byte */
+    UINT8                   *AmlEnd;        /* (last + 1) AML byte */
+    UINT8                   *PkgEnd;        /* current package end */
+    struct acpi_parse_scope *Scope;         /* current scope */
+    struct acpi_parse_scope *ScopeAvail;    /* unused (extra) scope structs */
+    struct acpi_parse_state *Next;
+
+} ACPI_PARSE_STATE;
+
+
+/*
+ * Parse scope - one per ACPI scope
+ */
+
+typedef struct acpi_parse_scope
+{
+    ACPI_GENERIC_OP         *Op;            /* current op being parsed */
+    char                    *NextArg;       /* next argument to parse */
+    UINT8                   *ArgEnd;        /* current argument end */
+    UINT8                   *PkgEnd;        /* current package end */
+    struct acpi_parse_scope *Parent;        /* parent scope */
+    UINT32                  ArgCount;       /* Number of fixed arguments */
+
+} ACPI_PARSE_SCOPE;
+
+
+
+
+#define CONTROL_NORMAL                        0xC0
+#define CONTROL_CONDITIONAL_EXECUTING         0xC1
+#define CONTROL_PREDICATE_EXECUTING           0xC2
+#define CONTROL_PREDICATE_FALSE               0xC3
+#define CONTROL_PREDICATE_TRUE                0xC4 
+
+
+
+typedef struct acpi_ctrl_state
+{
+    UINT8                   Exec;           /* Execution state */
+    BOOLEAN                 Predicate;      /* Result of predicate evaluation */
+    ACPI_GENERIC_OP         *PredicateOp;   /* Start of if/while predicate */
+    struct acpi_ctrl_state  *Next;
+
+} ACPI_CTRL_STATE;
+
+
+typedef struct acpi_walk_state
+{
+    ACPI_GENERIC_OP         *Origin;                            /* Start of walk */
+    ACPI_GENERIC_OP         *PrevOp;                            /* Last op that was processed */
+    ACPI_GENERIC_OP         *NextOp;                            /* next op to be processed */
+    ACPI_CTRL_STATE         *ControlState;                      /* List of control states (nested IFs) */
+    union AcpiObjInternal   *Arguments[MTH_NUM_ARGS];           /* Control method arguments */
+    union AcpiObjInternal   *LocalVariables[MTH_NUM_LOCALS];    /* Control method locals */
+    union AcpiObjInternal   *Operands[8];                       /* Operands passed to the interpreter TBD: make max configurable */
+    struct acpi_walk_state  *Next;                              /* Next WalkState in list */
+    BOOLEAN                 LastPredicate;                      /* Result of last predicate */
+    UINT8                   NumOperands;
+
+} ACPI_WALK_STATE;
+
+typedef struct acpi_walk_list
+{
+
+    ACPI_WALK_STATE         *WalkState;
+
+} ACPI_WALK_LIST;
+
+
+
+typedef
+ACPI_STATUS (*INTERPRETER_CALLBACK) (
+    ACPI_WALK_STATE         *State,
+    ACPI_GENERIC_OP         *Op);
+
+
+
+
 /* Entry for a memory allocation (debug only) */
 
+#ifdef ACPI_DEBUG
 
 #define MEM_MALLOC          0
 #define MEM_CALLOC          1
@@ -288,5 +531,6 @@ typedef struct AllocationInfo
 
 } ALLOCATION_INFO;
 
+#endif
 
 #endif

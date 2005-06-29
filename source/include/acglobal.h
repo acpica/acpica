@@ -291,17 +291,19 @@ extern      INT32                       Gbl_PkgStackLevel;
 extern      INT32                       Gbl_PkgStack_Len[AML_PKG_MAX_NEST];
 extern      UINT8                      *Gbl_PkgStack_Code[AML_PKG_MAX_NEST];
 
-#endif
+/* Object stack */
+
+ACPI_EXTERN void                       *Gbl_ObjStack[AML_EXPR_MAX_NEST];
+ACPI_EXTERN INT32                       Gbl_ObjStackTop;
 
 /* Method stack - contains arguments and locals */
 
 ACPI_EXTERN	INT32                       Gbl_MethodStackTop;
 ACPI_EXTERN	METHOD_STACK                *Gbl_MthStackHead;
 
-/* Object stack */
+#endif
 
-ACPI_EXTERN void                       *Gbl_ObjStack[AML_EXPR_MAX_NEST];
-ACPI_EXTERN INT32                       Gbl_ObjStackTop;
+ACPI_EXTERN ACPI_WALK_LIST             *Gbl_CurrentWalkList;
 
 /* Base of AML block, and pointer to current location in it */
 
