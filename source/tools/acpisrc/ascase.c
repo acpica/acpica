@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: ascase - Source conversion - lower/upper case utilities
- *              $Revision: 1.1 $
+ *              $Revision: 1.2 $
  *
  *****************************************************************************/
 
@@ -224,6 +224,7 @@ AsMixedCaseToUnderscores (
     UINT32                  Length;
     char                    *SubBuffer = Buffer;
     char                    *TokenEnd;
+    char                    *TokenStart = NULL;
     char                    *SubString;
 
 
@@ -233,7 +234,6 @@ AsMixedCaseToUnderscores (
          * Check for translation escape string -- means to ignore
          * blocks of code while replacing
          */
-
         if ((SubBuffer[0] == '/') &&
             (SubBuffer[1] == '*') &&
             (SubBuffer[2] == '!'))
@@ -282,6 +282,13 @@ AsMixedCaseToUnderscores (
         {
             SubBuffer += 2;
             continue;
+        }
+
+        /* A capital letter may indicate the start of a token;  save it */
+
+        if (isupper (SubBuffer[0]))
+        {
+            TokenStart = SubBuffer;
         }
 
         /*
@@ -351,6 +358,14 @@ AsMixedCaseToUnderscores (
             memmove (&SubBuffer[2], &SubBuffer[1], (Length+1));
             SubBuffer[1] = '_';
             SubBuffer +=2;
+
+            /* Lower case the leading character of the token */
+
+            if (TokenStart)
+            {
+                *TokenStart = (char) tolower (*TokenStart);
+                TokenStart = NULL;
+            }
         }
 
         SubBuffer++;
