@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: psparse - Parser top level AML parse routines
- *              $Revision: 1.105 $
+ *              $Revision: 1.106 $
  *
  *****************************************************************************/
 
@@ -152,7 +152,7 @@ extern UINT32               AcpiGbl_ScopeDepth;
  *
  ******************************************************************************/
 
-static UINT32
+UINT32
 AcpiPsGetOpcodeSize (
     UINT32                  Opcode)
 {
@@ -273,7 +273,7 @@ AcpiPsFindObject (
  *
  ******************************************************************************/
 
-static BOOLEAN
+BOOLEAN
 AcpiPsCompleteThisOp (
     ACPI_WALK_STATE         *WalkState,
     ACPI_PARSE_OBJECT       *Op)
@@ -423,7 +423,7 @@ AcpiPsCompleteThisOp (
  *
  ******************************************************************************/
 
-static ACPI_STATUS
+ACPI_STATUS
 AcpiPsNextParseState (
     ACPI_WALK_STATE         *WalkState,
     ACPI_PARSE_OBJECT       *Op,
