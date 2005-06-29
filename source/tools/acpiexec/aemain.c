@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: aemain - Main routine for the AcpiExec utility
- *              $Revision: 1.60 $
+ *              $Revision: 1.62 $
  *
  *****************************************************************************/
 
@@ -127,6 +127,9 @@
 
 #include "aecommon.h"
 
+#ifdef _DEBUG
+#include <crtdbg.h>
+#endif
 
 #define _COMPONENT          PARSER
         ACPI_MODULE_NAME    ("aemain")
@@ -268,6 +271,10 @@ main (
     char                    Buffer[32];
 
 
+#ifdef _DEBUG
+    _CrtSetDbgFlag (_CRTDBG_CHECK_ALWAYS_DF | _CrtSetDbgFlag(0));
+#endif
+
     /* Init globals */
 
     AcpiDbgLevel = NORMAL_DEFAULT;
@@ -345,10 +352,10 @@ main (
         AcpiGbl_DbOpt_tables = TRUE;
         AcpiGbl_DbFilename = argv[optind];
 
-        Status = AcpiDbLoadAcpiTable (AcpiGbl_DbFilename);
+        Status = AcpiDbGetAcpiTable (AcpiGbl_DbFilename);
         if (ACPI_FAILURE (Status))
         {
-            printf ("**** Could not load input table, %s\n", AcpiFormatException (Status));
+            printf ("**** Could not get input table, %s\n", AcpiFormatException (Status));
             goto enterloop;
         }
 
