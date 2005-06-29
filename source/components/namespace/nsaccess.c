@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: nsaccess - Top-level functions for accessing ACPI namespace
- *              $Revision: 1.164 $
+ *              $Revision: 1.165 $
  *
  ******************************************************************************/
 
@@ -241,7 +241,7 @@ AcpiNsRootInitialize (void)
                 /*
                  * Build an object around the static string
                  */
-                ObjDesc->String.Length = ACPI_STRLEN (InitVal->Val);
+                ObjDesc->String.Length = (UINT32) ACPI_STRLEN (InitVal->Val);
                 ObjDesc->String.Pointer = InitVal->Val;
                 ObjDesc->Common.Flags |= AOPOBJ_STATIC_POINTER;
                 break;
@@ -463,7 +463,7 @@ AcpiNsLookup (
 
             ACPI_DEBUG_PRINT ((ACPI_DB_NAMES,
                 "Searching relative to prefix scope [%4.4s] (%p)\n",
-                &PrefixNode->Name.Ascii, PrefixNode));
+                PrefixNode->Name.Ascii, PrefixNode));
 
             /*
              * Handle multiple Parent Prefixes (carat) by just getting
