@@ -131,7 +131,7 @@
 #endif
 
 
-extern      INT8                        *MsgAcpiErrorBreak;
+extern      NATIVE_CHAR                 *MsgAcpiErrorBreak;
 
 /*****************************************************************************
  *
@@ -304,7 +304,7 @@ ACPI_EXTERN UINT32                      AcpiGbl_PCodeBlockLen;
 ACPI_EXTERN UINT32                      AcpiGbl_PCodeLen;
 
 ACPI_EXTERN UINT32                      AcpiGbl_BufSeq;             /* Counts allocated Buffer descriptors */
-ACPI_EXTERN INT32                       AcpiGbl_NamedObjectErr;     /* Indicate if inc_error should be called */
+ACPI_EXTERN UINT32                      AcpiGbl_NamedObjectErr;     /* Indicate if inc_error should be called */
 
 /*
  * Handle to the last method found - used during pass1 of load
@@ -401,6 +401,8 @@ ACPI_EXTERN UINT32                      AcpiGbl_MaxConcurrentObjectCount;
 ACPI_EXTERN UINT32                      AcpiGbl_MaxConcurrentObjectSize;
 ACPI_EXTERN UINT32                      AcpiGbl_RunningObjectCount;
 ACPI_EXTERN UINT32                      AcpiGbl_RunningObjectSize;
+ACPI_EXTERN UINT32                      AcpiGbl_CurrentNameTableCount;
+ACPI_EXTERN UINT32                      AcpiGbl_CurrentNameTableSize;
 
 #endif
 
