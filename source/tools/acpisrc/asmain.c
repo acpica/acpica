@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asmain - Main module for the acpi source processor utility
- *              $Revision: 1.41 $
+ *              $Revision: 1.42 $
  *
  *****************************************************************************/
 
@@ -486,9 +486,9 @@ ACPI_STRING_TABLE           CustomReplacements[] = {
     "Copyright (C) 2000, 2001",     "Copyright (C) 2000 - 2002",      REPLACE_WHOLE_WORD,
 #endif
 
-    "char *",         "char *",             REPLACE_WHOLE_WORD,
-    "char        ",          "char        ",     REPLACE_WHOLE_WORD,
-    "char",           "char",             REPLACE_WHOLE_WORD,
+    "NATIVE CHAR *",         "char *",           REPLACE_WHOLE_WORD,
+    "NATIVE CHAR ",          "char        ",     REPLACE_WHOLE_WORD,
+    "char",                  "char",             REPLACE_WHOLE_WORD,
     NULL,                    NULL, 0
 };
 

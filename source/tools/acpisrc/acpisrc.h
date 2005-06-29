@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: acpisrc.h - Include file for AcpiSrc utility
- *              $Revision: 1.15 $
+ *              $Revision: 1.16 $
  *
  *****************************************************************************/
 
@@ -261,6 +261,11 @@ AsLowerCaseString (
 
 void
 AsRemoveLine (
+    char                    *Buffer,
+    char                    *Keyword);
+
+void
+AsRemoveMacro (
     char                    *Buffer,
     char                    *Keyword);
 
