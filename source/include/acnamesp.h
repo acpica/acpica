@@ -235,15 +235,12 @@ NsSetValue (
 
 void
 NsDumpTables (
-    INT32               DisplayBitFlags, 
-    INT32               UseGraphicCharSet,
     NsHandle            SearchBase, 
     INT32               MaxDepth);
 
 void
 NsDumpEntry (
-    NsHandle            h, 
-    INT32               DisplayBitFlags);
+    NsHandle            h);
 
 NsHandle *
 NsFindNames (
