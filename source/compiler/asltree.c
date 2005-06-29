@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asltree - parse tree management
- *              $Revision: 1.35 $
+ *              $Revision: 1.36 $
  *
  *****************************************************************************/
 
@@ -898,7 +898,6 @@ TrWalkParseTree (
         return;
     }
 
-
     Level = 0;
     NodePreviouslyVisited = FALSE;
 
@@ -908,7 +907,6 @@ TrWalkParseTree (
 
         while (Node)
         {
-
             if (!NodePreviouslyVisited)
             {
                 /*
@@ -933,11 +931,10 @@ TrWalkParseTree (
                 Node = Node->Peer;
                 NodePreviouslyVisited = FALSE;
             }
-
-            /* No children or peers, re-visit parent */
-
             else
             {
+                /* No children or peers, re-visit parent */
+
                 if (Level != 0 )
                 {
                     Level--;
@@ -966,11 +963,10 @@ TrWalkParseTree (
                  */
                 AscendingCallback (Node, Level, Context);
             }
-
-            /* Visit children first, once */
-
             else
             {
+                /* Visit children first, once */
+
                 Level++;
                 Node = Node->Child;
                 continue;
@@ -983,11 +979,10 @@ TrWalkParseTree (
                 Node = Node->Peer;
                 NodePreviouslyVisited = FALSE;
             }
-
-            /* No children or peers, re-visit parent */
-
             else
             {
+                /* No children or peers, re-visit parent */
+
                 if (Level != 0 )
                 {
                     Level--;
@@ -996,8 +991,8 @@ TrWalkParseTree (
                 NodePreviouslyVisited = TRUE;
             }
         }
-
         break;
+
 
      case ASL_WALK_VISIT_TWICE:
 
@@ -1008,7 +1003,6 @@ TrWalkParseTree (
             {
                 AscendingCallback (Node, Level, Context);
             }
-
             else
             {
                 /*
@@ -1033,11 +1027,10 @@ TrWalkParseTree (
                 Node = Node->Peer;
                 NodePreviouslyVisited = FALSE;
             }
-
-            /* No children or peers, re-visit parent */
-
             else
             {
+                /* No children or peers, re-visit parent */
+
                 if (Level != 0 )
                 {
                     Level--;
@@ -1046,7 +1039,6 @@ TrWalkParseTree (
                 NodePreviouslyVisited = TRUE;
             }
         }
-
         break;
     }
 }

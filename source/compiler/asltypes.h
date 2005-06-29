@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asltypes.h - compiler data types and struct definitions
- *              $Revision: 1.22 $
+ *              $Revision: 1.24 $
  *
  *****************************************************************************/
 
@@ -372,7 +372,7 @@ typedef enum
     ASL_MSG_ARG_COUNT_LO,
     ASL_MSG_NO_RETVAL,
     ASL_MSG_SOME_NO_RETVAL,
-    ASL_MSG_INTERNAL,
+    ASL_MSG_COMPILER_INTERNAL,
     ASL_MSG_BACKWARDS_OFFSET,
     ASL_MSG_UNKNOWN_RESERVED_NAME,
     ASL_MSG_NAME_EXISTS,
@@ -389,12 +389,13 @@ typedef enum
     ASL_MSG_SEEK,
     ASL_MSG_CLOSE,
     ASL_MSG_FIELD_ACCESS_WIDTH,
+    ASL_MSG_REGION_BYTE_ACCESS,
+    ASL_MSG_REGION_BUFFER_ACCESS,
     ASL_MSG_FIELD_UNIT_OFFSET,
     ASL_MSG_RESOURCE_FIELD,
     ASL_MSG_BYTES_TO_BITS,
     ASL_MSG_BITS_TO_BYTES,
     ASL_MSG_AML_NOT_IMPLEMENTED,
-    ASL_MSG_COMPILER_INTERNAL,
 
 } ASL_MESSAGE_IDS;
 
