@@ -1,16 +1,15 @@
-/*******************************************************************************
- *
+/******************************************************************************
+ * 
  * Module Name: dbcmds - debug commands and output routines
- *              $Revision: 1.92 $
  *
- ******************************************************************************/
+ *****************************************************************************/
 
 /******************************************************************************
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
- * All rights reserved.
+ * Some or all of this work - Copyright (c) 1999, Intel Corp.  All rights
+ * reserved.
  *
  * 2. License
  *
@@ -38,9 +37,9 @@
  * The above copyright and patent license is granted only if the following
  * conditions are met:
  *
- * 3. Conditions
+ * 3. Conditions 
  *
- * 3.1. Redistribution of Source with Rights to Further Distribute Source.
+ * 3.1. Redistribution of Source with Rights to Further Distribute Source.  
  * Redistribution of source code of any substantial portion of the Covered
  * Code or modification with rights to further distribute source must include
  * the above Copyright Notice, the above License, this list of Conditions,
@@ -48,11 +47,11 @@
  * Licensee must cause all Covered Code to which Licensee contributes to
  * contain a file documenting the changes Licensee made to create that Covered
  * Code and the date of any change.  Licensee must include in that file the
- * documentation of any changes made by any predecessor Licensee.  Licensee
+ * documentation of any changes made by any predecessor Licensee.  Licensee 
  * must include a prominent statement that the modification is derived,
  * directly or indirectly, from Original Intel Code.
  *
- * 3.2. Redistribution of Source with no Rights to Further Distribute Source.
+ * 3.2. Redistribution of Source with no Rights to Further Distribute Source.  
  * Redistribution of source code of any substantial portion of the Covered
  * Code or modification without rights to further distribute source must
  * include the following Disclaimer and Export Compliance provision in the
@@ -86,7 +85,7 @@
  * INSTALLATION, TRAINING OR OTHER SERVICES.  INTEL WILL NOT PROVIDE ANY
  * UPDATES, ENHANCEMENTS OR EXTENSIONS.  INTEL SPECIFICALLY DISCLAIMS ANY
  * IMPLIED WARRANTIES OF MERCHANTABILITY, NONINFRINGEMENT AND FITNESS FOR A
- * PARTICULAR PURPOSE.
+ * PARTICULAR PURPOSE. 
  *
  * 4.2. IN NO EVENT SHALL INTEL HAVE ANY LIABILITY TO LICENSEE, ITS LICENSEES
  * OR ANY OTHER THIRD PARTY, FOR ANY LOST PROFITS, LOST DATA, LOSS OF USE OR
@@ -115,630 +114,290 @@
  *****************************************************************************/
 
 
-#include "acpi.h"
-#include "acdispat.h"
-#include "amlcode.h"
-#include "acnamesp.h"
-#include "acevents.h"
-#include "acdebug.h"
-#include "acresrc.h"
-#include "acdisasm.h"
-
-#ifdef ACPI_DEBUGGER
-
-#define _COMPONENT          ACPI_CA_DEBUGGER
-        ACPI_MODULE_NAME    ("dbcmds")
+#include <acpi.h>
+#include <parser.h>
+#include <amlcode.h>
+#include <namesp.h>
+#include <parser.h>
+#include <events.h>
+#include <interp.h>
+#include <debugger.h>
 
 
-/*
- * Arguments for the Objects command
- * These object types map directly to the ACPI_TYPES
- */
+#ifdef ACPI_DEBUG
 
-static ARGUMENT_INFO        AcpiDbObjectTypes [] =
-{
-    {"ANY"},
-    {"NUMBERS"},
-    {"STRINGS"},
-    {"BUFFERS"},
-    {"PACKAGES"},
-    {"FIELDS"},
-    {"DEVICES"},
-    {"EVENTS"},
-    {"METHODS"},
-    {"MUTEXES"},
-    {"REGIONS"},
-    {"POWERRESOURCES"},
-    {"PROCESSORS"},
-    {"THERMALZONES"},
-    {"BUFFERFIELDS"},
-    {"DDBHANDLES"},
-    {NULL}           /* Must be null terminated */
-};
+#define _COMPONENT          DEBUGGER
+        MODULE_NAME         ("dbcmds");
 
 
-/*******************************************************************************
+extern int					opt_verbose;
+
+
+
+/******************************************************************************
+ * 
+ * FUNCTION:    DbLocalNsLookup
  *
- * FUNCTION:    AcpiDbWalkForReferences
- *
- * PARAMETERS:  Callback from WalkNamespace
- *
- * RETURN:      Status
- *
- * DESCRIPTION: Check if this namespace object refers to the target object
- *              that is passed in as the context value.
- *
- * Note: Currently doesn't check subobjects within the Node's object
- *
- ******************************************************************************/
-
-ACPI_STATUS
-AcpiDbWalkForReferences (
-    ACPI_HANDLE             ObjHandle,
-    UINT32                  NestingLevel,
-    void                    *Context,
-    void                    **ReturnValue)
-{
-    ACPI_OPERAND_OBJECT     *ObjDesc = (ACPI_OPERAND_OBJECT  *) Context;
-    ACPI_NAMESPACE_NODE     *Node = (ACPI_NAMESPACE_NODE *) ObjHandle;
-
-
-    /* Check for match against the namespace node itself */
-
-    if (Node == (void *) ObjDesc)
-    {
-        AcpiOsPrintf ("Object is a Node [%4.4s]\n", Node->Name.Ascii);
-    }
-
-    /* Check for match against the object attached to the node */
-
-    if (AcpiNsGetAttachedObject (Node) == ObjDesc)
-    {
-        AcpiOsPrintf ("Reference at Node->Object %p [%4.4s]\n", Node, Node->Name.Ascii);
-    }
-
-    return (AE_OK);
-}
-
-
-/*******************************************************************************
- *
- * FUNCTION:    AcpiDbFindReferences
- *
- * PARAMETERS:  ObjectArg       - String with hex value of the object
+ * PARAMETERS:  
  *
  * RETURN:      None
  *
- * DESCRIPTION: Search namespace for all references to the input object
+ * DESCRIPTION: Lookup a name in the ACPI namespace
  *
- ******************************************************************************/
+ *****************************************************************************/
 
-void
-AcpiDbFindReferences (
-    NATIVE_CHAR             *ObjectArg)
+NAME_TABLE_ENTRY *
+DbLocalNsLookup (
+    char                    *Name)
 {
-    ACPI_OPERAND_OBJECT     *ObjDesc;
-
-
-    /* Convert string to object pointer */
-
-    ObjDesc = ACPI_TO_POINTER (ACPI_STRTOUL (ObjectArg, NULL, 16));
-
-    /* Search all nodes in namespace */
-
-    (void) AcpiWalkNamespace (ACPI_TYPE_ANY, ACPI_ROOT_OBJECT, ACPI_UINT32_MAX,
-                    AcpiDbWalkForReferences, (void *) ObjDesc, NULL);
-}
-
-
-/*******************************************************************************
- *
- * FUNCTION:    AcpiDbDisplayLocks
- *
- * PARAMETERS:  None
- *
- * RETURN:      None
- *
- * DESCRIPTION: Display information about internal mutexes.
- *
- ******************************************************************************/
-
-void
-AcpiDbDisplayLocks (void)
-{
-    UINT32                  i;
-
-
-    for (i = 0; i < MAX_MTX; i++)
-    {
-        AcpiOsPrintf ("%26s : %s\n", AcpiUtGetMutexName (i),
-                    AcpiGbl_AcpiMutexInfo[i].OwnerId == ACPI_MUTEX_NOT_ACQUIRED
-                        ? "Locked" : "Unlocked");
-    }
-}
-
-
-/*******************************************************************************
- *
- * FUNCTION:    AcpiDbDisplayTableInfo
- *
- * PARAMETERS:  TableArg        - String with name of table to be displayed
- *
- * RETURN:      None
- *
- * DESCRIPTION: Display information about loaded tables.  Current
- *              implementation displays all loaded tables.
- *
- ******************************************************************************/
-
-void
-AcpiDbDisplayTableInfo (
-    NATIVE_CHAR             *TableArg)
-{
-    UINT32                  i;
-
-
-    for (i = 0; i < NUM_ACPI_TABLES; i++)
-    {
-        if (AcpiGbl_AcpiTables[i].Pointer)
-        {
-            AcpiOsPrintf ("%s at %p length %X\n", AcpiGbl_AcpiTableData[i].Name,
-                        AcpiGbl_AcpiTables[i].Pointer,
-                        (UINT32) AcpiGbl_AcpiTables[i].Length);
-        }
-    }
-}
-
-
-/*******************************************************************************
- *
- * FUNCTION:    AcpiDbUnloadAcpiTable
- *
- * PARAMETERS:  TableArg        - Name of the table to be unloaded
- *              InstanceArg     - Which instance of the table to unload (if
- *                                there are multiple tables of the same type)
- *
- * RETURN:      Nonde
- *
- * DESCRIPTION: Unload an ACPI table.
- *              Instance is not implemented
- *
- ******************************************************************************/
-
-void
-AcpiDbUnloadAcpiTable (
-    NATIVE_CHAR             *TableArg,
-    NATIVE_CHAR             *InstanceArg)
-{
-    UINT32                  i;
+    char                    *InternalPath;
     ACPI_STATUS             Status;
+    NAME_TABLE_ENTRY        *Entry = NULL;
 
 
-    /* Search all tables for the target type */
+    /* Build an internal namestring */
 
-    for (i = 0; i < NUM_ACPI_TABLES; i++)
+    Status = NsInternalizeName (Name, &InternalPath);
+    if (ACPI_FAILURE (Status))
     {
-        if (!ACPI_STRNCMP (TableArg, AcpiGbl_AcpiTableData[i].Signature,
-                AcpiGbl_AcpiTableData[i].SigLength))
+        OsdPrintf ("Invalid namestring: %s\n", Name);
+        return NULL;
+    }
+
+    /* Lookup the name */
+
+    Status = NsLookup (Gbl_CurrentScope->Scope, InternalPath, ACPI_TYPE_Any, IMODE_Execute, 
+                                    NS_NO_UPSEARCH, &Entry);
+
+    if (ACPI_FAILURE (Status))
+    {
+        OsdPrintf ("Could not locate name: %s %s\n", Name, Gbl_ExceptionNames[Status]);
+    }
+
+
+    CmFree (InternalPath);
+
+    return Entry;
+}
+
+
+/******************************************************************************
+ * 
+ * FUNCTION:    DbDumpNamespace 
+ *
+ * PARAMETERS:  
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Interface to NsDumpObjects
+ *
+ *****************************************************************************/
+
+void
+DbDumpNamespace (void)
+{
+
+    NsDumpObjects (ACPI_TYPE_Any, ACPI_UINT32_MAX, Gbl_RootObject);
+
+}
+
+
+/******************************************************************************
+ * 
+ * FUNCTION:    DbDecodeAndDisplayObject
+ *
+ * PARAMETERS:  
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Display a formatted ACPI object
+ *
+ *****************************************************************************/
+
+void
+DbDecodeAndDisplayObject (
+    char                    *Param)
+{
+    UINT32                  Value;
+    NAME_TABLE_ENTRY        *Entry;
+    
+    
+    if (!Param)
+    {
+        return;
+    }
+
+    /* Differentiate between a number and a name */
+
+    if ((Param[0] >= 0x30) && (Param[0] <= 0x39))
+    {
+        Value = STRTOUL (Param, NULL, 0);
+
+        if (VALID_DESCRIPTOR_TYPE (((void *) Value), DESC_TYPE_NTE))
         {
-            /* Found the table, unload it */
+            /* This is an NTE */
 
-            Status = AcpiUnloadTable (i);
-            if (ACPI_SUCCESS (Status))
-            {
-                AcpiOsPrintf ("[%s] unloaded and uninstalled\n", TableArg);
-            }
-            else
-            {
-                AcpiOsPrintf ("%s, while unloading [%s]\n",
-                    AcpiFormatException (Status), TableArg);
-            }
-
-            return;
-        }
-    }
-
-    AcpiOsPrintf ("Unknown table type [%s]\n", TableArg);
-}
-
-
-/*******************************************************************************
- *
- * FUNCTION:    AcpiDbSetMethodBreakpoint
- *
- * PARAMETERS:  Location            - AML offset of breakpoint
- *              WalkState           - Current walk info
- *              Op                  - Current Op (from parse walk)
- *
- * RETURN:      None
- *
- * DESCRIPTION: Set a breakpoint in a control method at the specified
- *              AML offset
- *
- ******************************************************************************/
-
-void
-AcpiDbSetMethodBreakpoint (
-    NATIVE_CHAR             *Location,
-    ACPI_WALK_STATE         *WalkState,
-    ACPI_PARSE_OBJECT       *Op)
-{
-    UINT32                  Address;
-
-
-    if (!Op)
-    {
-        AcpiOsPrintf ("There is no method currently executing\n");
-        return;
-    }
-
-    /* Get and verify the breakpoint address */
-
-    Address = ACPI_STRTOUL (Location, NULL, 16);
-    if (Address <= Op->Common.AmlOffset)
-    {
-        AcpiOsPrintf ("Breakpoint %X is beyond current address %X\n", Address, Op->Common.AmlOffset);
-    }
-
-    /* Save breakpoint in current walk */
-
-    WalkState->UserBreakpoint = Address;
-    AcpiOsPrintf ("Breakpoint set at AML offset %X\n", Address);
-}
-
-
-/*******************************************************************************
- *
- * FUNCTION:    AcpiDbSetMethodCallBreakpoint
- *
- * PARAMETERS:  Op                  - Current Op (from parse walk)
- *
- * RETURN:      None
- *
- * DESCRIPTION: Set a breakpoint in a control method at the specified
- *              AML offset
- *
- ******************************************************************************/
-
-void
-AcpiDbSetMethodCallBreakpoint (
-    ACPI_PARSE_OBJECT       *Op)
-{
-
-
-    if (!Op)
-    {
-        AcpiOsPrintf ("There is no method currently executing\n");
-        return;
-    }
-
-    AcpiGbl_StepToNextCall = TRUE;
-}
-
-
-/*******************************************************************************
- *
- * FUNCTION:    AcpiDbDisassembleAml
- *
- * PARAMETERS:  Statements          - Number of statements to disassemble
- *              Op                  - Current Op (from parse walk)
- *
- * RETURN:      None
- *
- * DESCRIPTION: Display disassembled AML (ASL) starting from Op for the number
- *              of statements specified.
- *
- ******************************************************************************/
-
-void
-AcpiDbDisassembleAml (
-    NATIVE_CHAR             *Statements,
-    ACPI_PARSE_OBJECT       *Op)
-{
-    UINT32                  NumStatements = 8;
-
-
-    if (!Op)
-    {
-        AcpiOsPrintf ("There is no method currently executing\n");
-        return;
-    }
-
-    if (Statements)
-    {
-        NumStatements = ACPI_STRTOUL (Statements, NULL, 0);
-    }
-
-    AcpiDmDisassemble (NULL, Op, NumStatements);
-}
-
-
-/*******************************************************************************
- *
- * FUNCTION:    AcpiDbDumpNamespace
- *
- * PARAMETERS:  StartArg        - Node to begin namespace dump
- *              DepthArg        - Maximum tree depth to be dumped
- *
- * RETURN:      None
- *
- * DESCRIPTION: Dump entire namespace or a subtree.  Each node is displayed
- *              with type and other information.
- *
- ******************************************************************************/
-
-void
-AcpiDbDumpNamespace (
-    NATIVE_CHAR             *StartArg,
-    NATIVE_CHAR             *DepthArg)
-{
-    ACPI_HANDLE             SubtreeEntry = AcpiGbl_RootNode;
-    UINT32                  MaxDepth = ACPI_UINT32_MAX;
-
-
-    /* No argument given, just start at the root and dump entire namespace */
-
-    if (StartArg)
-    {
-        /* Check if numeric argument, must be a Node */
-
-        if ((StartArg[0] >= 0x30) && (StartArg[0] <= 0x39))
-        {
-            SubtreeEntry = ACPI_TO_POINTER (ACPI_STRTOUL (StartArg, NULL, 16));
-            if (!AcpiOsReadable (SubtreeEntry, sizeof (ACPI_NAMESPACE_NODE)))
-            {
-                AcpiOsPrintf ("Address %p is invalid in this address space\n", SubtreeEntry);
-                return;
-            }
-
-            if (ACPI_GET_DESCRIPTOR_TYPE (SubtreeEntry) != ACPI_DESC_TYPE_NAMED)
-            {
-                AcpiOsPrintf ("Address %p is not a valid Named object\n", SubtreeEntry);
-                return;
-            }
+            CmDumpBuffer ((void *) Value, sizeof (NAME_TABLE_ENTRY), ACPI_UINT32_MAX);
+            AmlDumpNameTableEntry ((void *) Value, 1);
         }
 
-        /* Alpha argument */
+        else if (VALID_DESCRIPTOR_TYPE (((void *) Value), DESC_TYPE_ACPI_OBJ))
+        {
+            /* This is an ACPI OBJECT */
+
+            CmDumpBuffer ((void *) Value, sizeof (ACPI_OBJECT_INTERNAL), ACPI_UINT32_MAX);
+            AmlDumpObjectDescriptor ((void *) Value, 1);
+        }
 
         else
         {
-            /* The parameter is a name string that must be resolved to a Named obj*/
+            /* Just dump some memory */
 
-            SubtreeEntry = AcpiDbLocalNsLookup (StartArg);
-            if (!SubtreeEntry)
-            {
-                SubtreeEntry = AcpiGbl_RootNode;
-            }
+            CmDumpBuffer ((void *) Value, 64, ACPI_UINT32_MAX);
         }
 
-        /* Now we can check for the depth argument */
-
-        if (DepthArg)
-        {
-            MaxDepth = ACPI_STRTOUL (DepthArg, NULL, 0);
-        }
+        return;
     }
+                    
 
-    AcpiDbSetOutputDestination (ACPI_DB_DUPLICATE_OUTPUT);
-    AcpiOsPrintf ("ACPI Namespace (from %p subtree):\n", SubtreeEntry);
+    /* The parameter is a name string that must be resolved to an NTE */
 
-    /* Display the subtree */
-
-    AcpiDbSetOutputDestination (ACPI_DB_REDIRECTABLE_OUTPUT);
-    AcpiNsDumpObjects (ACPI_TYPE_ANY, ACPI_DISPLAY_SUMMARY, MaxDepth, ACPI_UINT32_MAX, SubtreeEntry);
-    AcpiDbSetOutputDestination (ACPI_DB_CONSOLE_OUTPUT);
-}
-
-
-/*******************************************************************************
- *
- * FUNCTION:    AcpiDbDumpNamespaceByOwner
- *
- * PARAMETERS:  OwnerArg        - Owner ID whose nodes will be displayed
- *              DepthArg        - Maximum tree depth to be dumped
- *
- * RETURN:      None
- *
- * DESCRIPTION: Dump elements of the namespace that are owned by the OwnerId.
- *
- ******************************************************************************/
-
-void
-AcpiDbDumpNamespaceByOwner (
-    NATIVE_CHAR             *OwnerArg,
-    NATIVE_CHAR             *DepthArg)
-{
-    ACPI_HANDLE             SubtreeEntry = AcpiGbl_RootNode;
-    UINT32                  MaxDepth = ACPI_UINT32_MAX;
-    UINT16                  OwnerId;
-
-
-    OwnerId = (UINT16) ACPI_STRTOUL (OwnerArg, NULL, 0);
-
-    /* Now we can check for the depth argument */
-
-    if (DepthArg)
-    {
-        MaxDepth = ACPI_STRTOUL (DepthArg, NULL, 0);
-    }
-
-    AcpiDbSetOutputDestination (ACPI_DB_DUPLICATE_OUTPUT);
-    AcpiOsPrintf ("ACPI Namespace by owner %X:\n", OwnerId);
-
-    /* Display the subtree */
-
-    AcpiDbSetOutputDestination (ACPI_DB_REDIRECTABLE_OUTPUT);
-    AcpiNsDumpObjects (ACPI_TYPE_ANY, ACPI_DISPLAY_SUMMARY, MaxDepth, OwnerId, SubtreeEntry);
-    AcpiDbSetOutputDestination (ACPI_DB_CONSOLE_OUTPUT);
-}
-
-
-/*******************************************************************************
- *
- * FUNCTION:    AcpiDbSendNotify
- *
- * PARAMETERS:  Name            - Name of ACPI object to send the notify to
- *              Value           - Value of the notify to send.
- *
- * RETURN:      None
- *
- * DESCRIPTION: Send an ACPI notification.  The value specified is sent to the
- *              named object as an ACPI notify.
- *
- ******************************************************************************/
-
-void
-AcpiDbSendNotify (
-    NATIVE_CHAR             *Name,
-    UINT32                  Value)
-{
-    ACPI_NAMESPACE_NODE     *Node;
-    ACPI_STATUS             Status;
-
-
-    /* Translate name to an Named object */
-
-    Node = AcpiDbLocalNsLookup (Name);
-    if (!Node)
+    Entry = DbLocalNsLookup (Param);
+    if (!Entry)
     {
         return;
     }
 
-    /* Decode Named object type */
+    /* Now dump the NTE */
 
-    switch (Node->Type)
+    CmDumpBuffer ((void *) Entry, sizeof (NAME_TABLE_ENTRY), ACPI_UINT32_MAX);
+    AmlDumpNameTableEntry (Entry, 1);
+
+
+}
+
+
+/******************************************************************************
+ * 
+ * FUNCTION:    DbSendNotify 
+ *
+ * PARAMETERS:  
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Send an ACPI notificationn
+ *
+ *****************************************************************************/
+
+void
+DbSendNotify (
+    char                    *Name,
+    UINT32                  Value)
+{
+    NAME_TABLE_ENTRY        *Entry;
+
+
+
+    /* Translate name to an NTE */
+
+    Entry = DbLocalNsLookup (Name);
+    if (!Entry)
     {
-    case ACPI_TYPE_DEVICE:
-    case ACPI_TYPE_THERMAL:
+        return;
+    }
 
+    /* Decode NTE type */
+
+    switch (Entry->Type)
+    {
+    case ACPI_TYPE_Device:
+    case ACPI_TYPE_Thermal:
+            
          /* Send the notify */
 
-        Status = AcpiEvQueueNotifyRequest (Node, Value);
-        if (ACPI_FAILURE (Status))
-        {
-            AcpiOsPrintf ("Could not queue notify\n");
-        }
+        EvNotifyDispatch (Entry, Value);
         break;
 
     default:
-        AcpiOsPrintf ("Named object is not a device or a thermal object\n");
+        OsdPrintf ("Named object is not a device or a thermal object\n");
         break;
     }
 
 }
 
 
-/*******************************************************************************
+/******************************************************************************
+ * 
+ * FUNCTION:    DbSetMethodData
  *
- * FUNCTION:    AcpiDbSetMethodData
- *
- * PARAMETERS:  TypeArg         - L for local, A for argument
- *              IndexArg        - which one
- *              ValueArg        - Value to set.
+ * PARAMETERS:  
  *
  * RETURN:      None
  *
- * DESCRIPTION: Set a local or argument for the running control method.
- *              NOTE: only object supported is Number.
+ * DESCRIPTION: Set control method local or argument
  *
- ******************************************************************************/
+ *****************************************************************************/
 
 void
-AcpiDbSetMethodData (
-    NATIVE_CHAR             *TypeArg,
-    NATIVE_CHAR             *IndexArg,
-    NATIVE_CHAR             *ValueArg)
+DbSetMethodData (
+    char                    Type,
+    UINT32                  Index,
+    UINT32                  Value)
 {
-    NATIVE_CHAR             Type;
-    UINT32                  Index;
-    UINT32                  Value;
     ACPI_WALK_STATE         *WalkState;
-    ACPI_OPERAND_OBJECT     *ObjDesc;
-    ACPI_STATUS             Status;
+    ACPI_OBJECT_INTERNAL    *ObjDesc;
 
 
-    /* Validate TypeArg */
-
-    ACPI_STRUPR (TypeArg);
-    Type = TypeArg[0];
-    if ((Type != 'L') &&
-        (Type != 'A'))
-    {
-        AcpiOsPrintf ("Invalid SET operand: %s\n", TypeArg);
-        return;
-    }
-
-    /* Get the index and value */
-
-    Index = ACPI_STRTOUL (IndexArg, NULL, 16);
-    Value = ACPI_STRTOUL (ValueArg, NULL, 16);
-
-    WalkState = AcpiDsGetCurrentWalkState (AcpiGbl_CurrentWalkList);
+    WalkState = PsGetCurrentWalkState (Gbl_CurrentWalkList);
     if (!WalkState)
     {
-        AcpiOsPrintf ("There is no method currently executing\n");
+        OsdPrintf ("There is no method currently executing\n");
         return;
     }
 
 
-    /* Create and initialize the new object */
 
-    ObjDesc = AcpiUtCreateInternalObject (ACPI_TYPE_INTEGER);
+    ObjDesc = CmCreateInternalObject (ACPI_TYPE_Number);
     if (!ObjDesc)
     {
-        AcpiOsPrintf ("Could not create an internal object\n");
+        OsdPrintf ("Could not create an internal object\n");
         return;
     }
 
-    ObjDesc->Integer.Value = Value;
-
-
-    /* Store the new object into the target */
+    ObjDesc->Number.Value = Value;
 
     switch (Type)
     {
     case 'A':
-
+        
         /* Set a method argument */
 
-        if (Index > ACPI_METHOD_MAX_ARG)
+        if (Index > MTH_NUM_ARGS)
         {
-            AcpiOsPrintf ("Arg%d - Invalid argument name\n", Index);
+            OsdPrintf ("Arg%d - Invalid argument name\n", Index);
             return;
         }
 
-        Status = AcpiDsStoreObjectToLocal (AML_ARG_OP, Index, ObjDesc, WalkState);
-        if (ACPI_FAILURE (Status))
-        {
-            return;
-        }
-
+        PsxMthStackSetValue (MTH_TYPE_ARG, Index, ObjDesc);
         ObjDesc = WalkState->Arguments[Index].Object;
-
-        AcpiOsPrintf ("Arg%d: ", Index);
-        AcpiDbDisplayInternalObject (ObjDesc, WalkState);
+        OsdPrintf ("Arg%d: ", Index);
+        DbDisplayInternalObject (ObjDesc);
         break;
 
     case 'L':
 
         /* Set a method local */
 
-        if (Index > ACPI_METHOD_MAX_LOCAL)
+        if (Index > MTH_NUM_LOCALS)
         {
-            AcpiOsPrintf ("Local%d - Invalid local variable name\n", Index);
+            OsdPrintf ("Local%d - Invalid local variable name\n", Index);
             return;
         }
 
-        Status = AcpiDsStoreObjectToLocal (AML_LOCAL_OP, Index, ObjDesc, WalkState);
-        if (ACPI_FAILURE (Status))
-        {
-            return;
-        }
-
+        PsxMthStackSetValue (MTH_TYPE_LOCAL, Index, ObjDesc);
         ObjDesc = WalkState->LocalVariables[Index].Object;
-
-        AcpiOsPrintf ("Local%d: ", Index);
-        AcpiDbDisplayInternalObject (ObjDesc, WalkState);
+        OsdPrintf ("Local%d: ", Index);
+        DbDisplayInternalObject (ObjDesc);
         break;
 
     default:
@@ -747,529 +406,488 @@ AcpiDbSetMethodData (
 }
 
 
-/*******************************************************************************
+/******************************************************************************
+ * 
+ * FUNCTION:    DbDisplayInternalObject
  *
- * FUNCTION:    AcpiDbWalkForSpecificObjects
- *
- * PARAMETERS:  Callback from WalkNamespace
- *
- * RETURN:      Status
- *
- * DESCRIPTION: Display short info about objects in the namespace
- *
- ******************************************************************************/
-
-ACPI_STATUS
-AcpiDbWalkForSpecificObjects (
-    ACPI_HANDLE             ObjHandle,
-    UINT32                  NestingLevel,
-    void                    *Context,
-    void                    **ReturnValue)
-{
-    ACPI_OPERAND_OBJECT     *ObjDesc;
-    ACPI_STATUS             Status;
-    ACPI_BUFFER             Buffer;
-
-
-    ObjDesc = AcpiNsGetAttachedObject ((ACPI_NAMESPACE_NODE *) ObjHandle);
-
-    /* Get and display the full pathname to this object */
-
-    Buffer.Length = ACPI_ALLOCATE_LOCAL_BUFFER;
-    Status = AcpiNsHandleToPathname (ObjHandle, &Buffer);
-    if (ACPI_FAILURE (Status))
-    {
-        AcpiOsPrintf ("Could Not get pathname for object %p\n", ObjHandle);
-        return (AE_OK);
-    }
-
-    AcpiOsPrintf ("%32s", (char *) Buffer.Pointer);
-    ACPI_MEM_FREE (Buffer.Pointer);
-
-
-    /* Display short information about the object */
-
-    if (ObjDesc)
-    {
-        switch (ACPI_GET_OBJECT_TYPE (ObjDesc))
-        {
-        case ACPI_TYPE_METHOD:
-            AcpiOsPrintf ("  #Args %d  Concurrency %X",
-                    ObjDesc->Method.ParamCount, ObjDesc->Method.Concurrency);
-            break;
-
-        case ACPI_TYPE_INTEGER:
-            AcpiOsPrintf ("  Value %8.8X%8.8X",
-                    ACPI_HIDWORD (ObjDesc->Integer.Value),
-                    ACPI_LODWORD (ObjDesc->Integer.Value));
-            break;
-
-        case ACPI_TYPE_STRING:
-            AcpiOsPrintf ("  \"%s\"", ObjDesc->String.Pointer);
-            break;
-
-        case ACPI_TYPE_REGION:
-            AcpiOsPrintf ("  SpaceId %X Length %X Address %8.8X%8.8X",
-                    ObjDesc->Region.SpaceId,
-                    ObjDesc->Region.Length,
-                    ACPI_HIDWORD (ObjDesc->Region.Address),
-                    ACPI_LODWORD (ObjDesc->Region.Address));
-            break;
-
-        case ACPI_TYPE_PACKAGE:
-            AcpiOsPrintf ("  #Elements %X", ObjDesc->Package.Count);
-            break;
-
-        case ACPI_TYPE_BUFFER:
-            AcpiOsPrintf ("  Length %X", ObjDesc->Buffer.Length);
-            break;
-
-        default:
-            /* Ignore other object types */
-            break;
-        }
-    }
-
-    AcpiOsPrintf ("\n");
-    return (AE_OK);
-}
-
-
-/*******************************************************************************
- *
- * FUNCTION:    AcpiDbDisplayObjects
- *
- * PARAMETERS:  ObjTypeArg          - Type of object to display
- *              DisplayCountArg     - Max depth to display
+ * PARAMETERS:  
  *
  * RETURN:      None
  *
- * DESCRIPTION: Display objects in the namespace of the requested type
+ * DESCRIPTION: Short display of an internal object
  *
- ******************************************************************************/
+ *****************************************************************************/
 
-ACPI_STATUS
-AcpiDbDisplayObjects (
-    NATIVE_CHAR             *ObjTypeArg,
-    NATIVE_CHAR             *DisplayCountArg)
+void 
+DbDisplayInternalObject (
+    ACPI_OBJECT_INTERNAL    *ObjDesc)
 {
-    ACPI_OBJECT_TYPE        Type;
+    UINT8                   Type;
 
 
-    /* Get the object type */
+    OsdPrintf ("Obj %p ", ObjDesc);
 
-    Type = AcpiDbMatchArgument (ObjTypeArg, AcpiDbObjectTypes);
-    if (Type == ACPI_TYPE_NOT_FOUND)
+    if (!ObjDesc)
     {
-        AcpiOsPrintf ("Invalid or unsupported argument\n");
-        return (AE_OK);
+        OsdPrintf ("<NullObj>\n");
+        return;
     }
 
-    AcpiDbSetOutputDestination (ACPI_DB_DUPLICATE_OUTPUT);
-    AcpiOsPrintf ("Objects of type [%s] defined in the current ACPI Namespace: \n",
-        AcpiUtGetTypeName (Type));
-
-    AcpiDbSetOutputDestination (ACPI_DB_REDIRECTABLE_OUTPUT);
-
-    /* Walk the namespace from the root */
-
-    (void) AcpiWalkNamespace (Type, ACPI_ROOT_OBJECT, ACPI_UINT32_MAX,
-                        AcpiDbWalkForSpecificObjects, (void *) &Type, NULL);
-
-    AcpiDbSetOutputDestination (ACPI_DB_CONSOLE_OUTPUT);
-    return (AE_OK);
-}
-
-
-/*******************************************************************************
- *
- * FUNCTION:    AcpiDbWalkAndMatchName
- *
- * PARAMETERS:  Callback from WalkNamespace
- *
- * RETURN:      Status
- *
- * DESCRIPTION: Find a particular name/names within the namespace.  Wildcards
- *              are supported -- '?' matches any character.
- *
- ******************************************************************************/
-
-ACPI_STATUS
-AcpiDbWalkAndMatchName (
-    ACPI_HANDLE             ObjHandle,
-    UINT32                  NestingLevel,
-    void                    *Context,
-    void                    **ReturnValue)
-{
-    ACPI_STATUS             Status;
-    NATIVE_CHAR             *RequestedName = (NATIVE_CHAR *) Context;
-    UINT32                  i;
-    ACPI_BUFFER             Buffer;
-
-
-    /* Check for a name match */
-
-    for (i = 0; i < 4; i++)
+    else if (VALID_DESCRIPTOR_TYPE (ObjDesc, DESC_TYPE_NTE))
     {
-        /* Wildcard support */
+        OsdPrintf ("<NameTableEntry> ");
+    }
 
-        if ((RequestedName[i] != '?') &&
-            (RequestedName[i] != ((ACPI_NAMESPACE_NODE *) ObjHandle)->Name.Ascii[i]))
+    else if (VALID_DESCRIPTOR_TYPE (ObjDesc, DESC_TYPE_ACPI_OBJ))
+    {
+        OsdPrintf ("<AcpiObj> ");
+        Type = ObjDesc->Common.Type;
+        if (Type > INTERNAL_TYPE_MAX)
         {
-            /* No match, just exit */
+            OsdPrintf (" Type %x [Invalid Type]", Type);
+            return;
+        }
 
-            return (AE_OK);
+        OsdPrintf (" %12.12s ", Gbl_NsTypeNames[Type]);
+
+        switch (ObjDesc->Common.Type)
+        {
+        case ACPI_TYPE_Number:
+            OsdPrintf ("0x%X (%d)", ObjDesc->Number.Value, ObjDesc->Number.Value);
+            break;
+
+        case ACPI_TYPE_String:
+            OsdPrintf ("\"%16s\"", ObjDesc->String.Pointer);
+            break;
+
         }
     }
 
-
-    /* Get the full pathname to this object */
-
-    Buffer.Length = ACPI_ALLOCATE_LOCAL_BUFFER;
-    Status = AcpiNsHandleToPathname (ObjHandle, &Buffer);
-    if (ACPI_FAILURE (Status))
-    {
-        AcpiOsPrintf ("Could Not get pathname for object %p\n", ObjHandle);
-    }
     else
     {
-        AcpiOsPrintf ("%32s (%p) - %s\n", (char *) Buffer.Pointer, ObjHandle,
-            AcpiUtGetTypeName (((ACPI_NAMESPACE_NODE *) ObjHandle)->Type));
-        ACPI_MEM_FREE (Buffer.Pointer);
+        OsdPrintf ("<Not a valid ACPI Object Descriptor> ");
     }
 
-    return (AE_OK);
+    OsdPrintf ("\n");
 }
 
 
-/*******************************************************************************
+
+/******************************************************************************
+ * 
+ * FUNCTION:    DbDisplayLocals
  *
- * FUNCTION:    AcpiDbFindNameInNamespace
- *
- * PARAMETERS:  NameArg         - The 4-character ACPI name to find.
- *                                wildcards are supported.
+ * PARAMETERS:  
  *
  * RETURN:      None
  *
- * DESCRIPTION: Search the namespace for a given name (with wildcards)
+ * DESCRIPTION: Display all locals for a control method
  *
- ******************************************************************************/
+ *****************************************************************************/
 
-ACPI_STATUS
-AcpiDbFindNameInNamespace (
-    NATIVE_CHAR             *NameArg)
+void
+DbDisplayLocals (void)
 {
+    UINT32                  i;
+    ACPI_WALK_STATE         *WalkState;
+    ACPI_OBJECT_INTERNAL    *ObjDesc;
+    NAME_TABLE_ENTRY        *Entry;
 
-    if (ACPI_STRLEN (NameArg) > 4)
+
+
+    WalkState = PsGetCurrentWalkState (Gbl_CurrentWalkList);
+    if (!WalkState)
     {
-        AcpiOsPrintf ("Name must be no longer than 4 characters\n");
-        return (AE_OK);
+        OsdPrintf ("There is no method currently executing\n");
+        return;
     }
 
-    /* Walk the namespace from the root */
+    ObjDesc = WalkState->MethodDesc;
+    Entry = WalkState->Origin->ResultObj;
 
-    (void) AcpiWalkNamespace (ACPI_TYPE_ANY, ACPI_ROOT_OBJECT, ACPI_UINT32_MAX,
-                        AcpiDbWalkAndMatchName, NameArg, NULL);
 
-    AcpiDbSetOutputDestination (ACPI_DB_CONSOLE_OUTPUT);
-    return (AE_OK);
+    OsdPrintf ("Local Variables for method [%4.4s]:\n", &Entry->Name);
+
+    for (i = 0; i < MTH_NUM_LOCALS; i++)
+    {
+        ObjDesc = WalkState->LocalVariables[i].Object;
+        OsdPrintf ("Local%d: ", i);
+        DbDisplayInternalObject (ObjDesc);
+    }
 }
 
 
-/*******************************************************************************
+
+/******************************************************************************
+ * 
+ * FUNCTION:    DbDisplayArguments
  *
- * FUNCTION:    AcpiDbSetScope
+ * PARAMETERS:  
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Display all arguments for a control method
+ *
+ *****************************************************************************/
+
+void
+DbDisplayArguments (void)
+{  
+    UINT32                  i;
+    ACPI_WALK_STATE         *WalkState;
+    ACPI_OBJECT_INTERNAL    *ObjDesc;
+    UINT32                  NumArgs;
+    UINT32                  Concurrency;
+    NAME_TABLE_ENTRY        *Entry;
+
+
+    WalkState = PsGetCurrentWalkState (Gbl_CurrentWalkList);
+    if (!WalkState)
+    {
+        OsdPrintf ("There is no method currently executing\n");
+        return;
+    }
+
+    ObjDesc = WalkState->MethodDesc;
+    Entry = WalkState->Origin->ResultObj;
+
+    NumArgs = ObjDesc->Method.ParamCount;
+    Concurrency = ObjDesc->Method.Concurrency;
+
+    OsdPrintf ("Method [%4.4s] has %d arguments, max concurrency = %d\n", &Entry->Name, NumArgs, Concurrency);
+
+    for (i = 0; i < NumArgs; i++)
+    {
+        ObjDesc = WalkState->Arguments[i].Object;
+        OsdPrintf ("Arg%d: ", i);
+        DbDisplayInternalObject (ObjDesc);
+    }
+}
+
+
+
+/******************************************************************************
+ * 
+ * FUNCTION:    DbDisplayResults 
+ *
+ * PARAMETERS:  
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Display current contents of a method result stack
+ *
+ *****************************************************************************/
+
+void
+DbDisplayResults (void)
+{
+    UINT32                  i;
+    ACPI_WALK_STATE         *WalkState;
+    ACPI_OBJECT_INTERNAL    *ObjDesc;
+    UINT32                  NumResults;
+    NAME_TABLE_ENTRY        *Entry;
+
+
+    WalkState = PsGetCurrentWalkState (Gbl_CurrentWalkList);
+    if (!WalkState)
+    {
+        OsdPrintf ("There is no method currently executing\n");
+        return;
+    }
+
+    ObjDesc = WalkState->MethodDesc;
+    Entry = WalkState->Origin->ResultObj;
+    NumResults = WalkState->NumResults - WalkState->CurrentResult;
+
+    OsdPrintf ("Method [%4.4s] has %d stacked result objects\n", &Entry->Name, NumResults);
+
+    for (i = WalkState->CurrentResult; i < WalkState->NumResults; i++)
+    {
+        ObjDesc = WalkState->Results[i];
+        OsdPrintf ("Result%d: ", i);
+        DbDisplayInternalObject (ObjDesc);
+    }
+}
+
+
+
+/******************************************************************************
+ * 
+ * FUNCTION:    DbDisplayCallingTree
+ *
+ * PARAMETERS:  
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Display current calling tree of nested control methods
+ *
+ *****************************************************************************/
+
+void
+DbDisplayCallingTree (void)
+{
+    UINT32                  i;
+    ACPI_WALK_STATE         *WalkState;
+    ACPI_OBJECT_INTERNAL    *ObjDesc;
+    NAME_TABLE_ENTRY        *Entry;
+
+
+    WalkState = PsGetCurrentWalkState (Gbl_CurrentWalkList);
+    if (!WalkState)
+    {
+        OsdPrintf ("There is no method currently executing\n");
+        return;
+    }
+
+    ObjDesc = WalkState->MethodDesc;
+    Entry = WalkState->Origin->ResultObj;
+
+    OsdPrintf ("Current Control Method Call Tree\n");
+
+    for (i = 0; WalkState; i++)
+    {
+        ObjDesc = WalkState->MethodDesc;
+        Entry = WalkState->Origin->ResultObj;
+
+        OsdPrintf ("    [%4.4s]\n", &Entry->Name);
+
+        WalkState = WalkState->Next;
+    }
+}
+
+
+
+/******************************************************************************
+ * 
+ * FUNCTION:    DbDisplayResultObject
+ *
+ * PARAMETERS:  
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Display the result of an AML opcode
+ *
+ *****************************************************************************/
+
+void
+DbDisplayResultObject (
+    ACPI_OBJECT_INTERNAL    *ObjDesc)
+{
+
+    /* TBD:
+     * We don't always want to display the result.
+     * For now, only display if single stepping
+     * however, this output is very useful in other contexts also
+     */
+
+    if (!Gbl_CmSingleStep)
+    {
+        return;
+    }
+
+    OsdPrintf ("Result: ");
+    DbDisplayInternalObject (ObjDesc);
+    OsdPrintf ("\n");
+}
+
+
+/******************************************************************************
+ * 
+ * FUNCTION:    DbWalkMethods
+ *
+ * PARAMETERS:  Callback from WalkNamespace
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Called for a single method found in the namespace
+ *
+ *****************************************************************************/
+
+ACPI_STATUS
+DbWalkMethods (
+    ACPI_HANDLE                 ObjHandle,
+    UINT32                      NestingLevel,
+    void                        *Context,
+    void                        **ReturnValue)
+{
+    UINT32                      NumArgs;
+    ACPI_OBJECT_INTERNAL        *ObjDesc;
+    UINT32                      BufSize;
+    char                        buffer[64];
+
+
+    ObjDesc = ((NAME_TABLE_ENTRY *)ObjHandle)->Object;
+    NumArgs = ObjDesc->Method.ParamCount;
+
+    NsHandleToPathname (ObjHandle, &BufSize, buffer);
+
+    /* Skip past the junk at the start of the path */
+
+    OsdPrintf ("%32s", &buffer[6]);
+    OsdPrintf ("  #args = %d\n", NumArgs);
+
+    return AE_OK;
+}
+
+
+/******************************************************************************
+ * 
+ * FUNCTION:    DbDisplayAllMethods
+ *
+ * PARAMETERS:  Root            - Root of the parse tree
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Need to wait until second pass to parse the control methods
+ *
+ *****************************************************************************/
+
+ACPI_STATUS
+DbDisplayAllMethods (
+    UINT32                      DisplayCount)
+{
+
+    if (DisplayCount == 0)
+        DisplayCount = ACPI_UINT32_MAX;
+
+    OsdPrintf ("Control Methods defined in this namespace: \n");
+
+    AcpiWalkNamespace (ACPI_TYPE_Method, ACPI_ROOT_OBJECT, ACPI_UINT32_MAX,
+        DbWalkMethods, NULL, NULL);
+
+    return AE_OK;
+}
+
+
+/******************************************************************************
+ * 
+ * FUNCTION:    DbExecute
+ *
+ * PARAMETERS:  Name                - Name of method to execute
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Execute a control method.  Name is relative to the current
+ *              scope.
+ *
+ *****************************************************************************/
+
+void
+DbExecute (
+    char                    *Name,
+    UINT32                  Flags)
+{
+    ACPI_STATUS             Status;
+    ACPI_BUFFER             ReturnObj;
+    ACPI_OBJECT_LIST        ParamObjects;
+    UINT32                  PreviousAllocations;
+    UINT32                  PreviousSize;
+    UINT32                  Allocations;
+    UINT32                  Size;
+    char                    LocalBuf[64];
+
+
+//    ACPI_OBJECT             Obj [4];
+
+    if (Flags & EX_SINGLE_STEP)
+    {
+        Gbl_CmSingleStep = TRUE;
+    }
+
+    /* Memory allocation tracking */
+
+    PreviousAllocations = Gbl_CurrentAllocCount;
+    PreviousSize = Gbl_CurrentAllocSize;
+
+    ParamObjects.Count = 0;
+
+    /* Prepare for a return object of arbitrary size */
+
+    ReturnObj.Pointer = Buffer;
+    ReturnObj.Length = BUFFER_SIZE;
+
+    /* Catenate the current scope to the supplied name */
+
+    STRCPY (LocalBuf, ScopeBuf);
+    STRCAT (LocalBuf, Name);
+
+    OsdPrintf ("Executing %s\n", LocalBuf);
+    if (OutputToFile)
+    {
+        OsdPrintf ("\nExecuting %s\n\n", LocalBuf);
+    }
+
+    /* Do the actual execution */
+
+    Status = AcpiEvaluateObject (NULL, LocalBuf, NULL, &ReturnObj);
+
+    Gbl_CmSingleStep = FALSE;
+
+    /* Memory allocatoin tracking */
+
+    Allocations = Gbl_CurrentAllocCount - PreviousAllocations;
+    Size = Gbl_CurrentAllocSize - PreviousSize;
+
+    if (Allocations > 0)
+    {
+        OsdPrintf ("Outstanding: %ld allocations of total size %ld after execution\n",
+            Allocations, Size);
+    }
+
+
+    if (ACPI_FAILURE (Status))
+    {
+        OsdPrintf ("Execution of %s failed with status %s\n", LocalBuf, Gbl_ExceptionNames[Status]);
+        OsdPrintf ("Execution of %s failed with status %s\n", LocalBuf, Gbl_ExceptionNames[Status]);
+        return;
+    }
+
+    /* Display a return object, if any */
+
+    DbDumpObject (LocalBuf, &ReturnObj);
+}
+
+
+/******************************************************************************
+ * 
+ * FUNCTION:    DbSetScope
  *
  * PARAMETERS:  Name                - New scope path
  *
  * RETURN:      Status
  *
- * DESCRIPTION: Set the "current scope" as maintained by this utility.
+ * DESCRIPTION: Set the "current scope" as maintained by this utility.  
  *              The scope is used as a prefix to ACPI paths.
  *
- ******************************************************************************/
+ *****************************************************************************/
 
 void
-AcpiDbSetScope (
-    NATIVE_CHAR             *Name)
+DbSetScope (
+    char                    *Name)
 {
-    ACPI_STATUS             Status;
-    ACPI_NAMESPACE_NODE     *Node;
 
-
-    if (!Name || Name[0] == 0)
+    if (Name[0] == 0)
     {
-        AcpiOsPrintf ("Current scope: %s\n", AcpiGbl_DbScopeBuf);
+        OsdPrintf ("Current scope: %s\n", ScopeBuf);
         return;
     }
 
-    AcpiDbPrepNamestring (Name);
-
+    /* TBD: Validate scope here */
 
     if (Name[0] == '\\')
     {
-        /* Validate new scope from the root */
-
-        Status = AcpiNsGetNodeByPath (Name, AcpiGbl_RootNode, ACPI_NS_NO_UPSEARCH, &Node);
-        if (ACPI_FAILURE (Status))
-        {
-            goto ErrorExit;
-        }
-
-        ACPI_STRCPY (AcpiGbl_DbScopeBuf, Name);
-        ACPI_STRCAT (AcpiGbl_DbScopeBuf, "\\");
-    }
-    else
-    {
-        /* Validate new scope relative to old scope */
-
-        Status = AcpiNsGetNodeByPath (Name, AcpiGbl_DbScopeNode, ACPI_NS_NO_UPSEARCH, &Node);
-        if (ACPI_FAILURE (Status))
-        {
-            goto ErrorExit;
-        }
-
-        ACPI_STRCAT (AcpiGbl_DbScopeBuf, Name);
-        ACPI_STRCAT (AcpiGbl_DbScopeBuf, "\\");
-    }
-
-    AcpiGbl_DbScopeNode = Node;
-    AcpiOsPrintf ("New scope: %s\n", AcpiGbl_DbScopeBuf);
-    return;
-
-
-ErrorExit:
-
-    AcpiOsPrintf ("Could not attach scope: %s, %s\n", Name, AcpiFormatException (Status));
-}
-
-
-/*******************************************************************************
- *
- * FUNCTION:    AcpiDbDisplayResources
- *
- * PARAMETERS:  ObjectArg       - String with hex value of the object
- *
- * RETURN:      None
- *
- * DESCRIPTION: Display the resource objects associated with a device.
- *
- ******************************************************************************/
-
-void
-AcpiDbDisplayResources (
-    NATIVE_CHAR             *ObjectArg)
-{
-#if ACPI_MACHINE_WIDTH != 16
-
-    ACPI_OPERAND_OBJECT     *ObjDesc;
-    ACPI_STATUS             Status;
-    ACPI_BUFFER             ReturnObj;
-
-
-    AcpiDbSetOutputDestination (ACPI_DB_REDIRECTABLE_OUTPUT);
-    AcpiDbgLevel |= ACPI_LV_RESOURCES;
-
-    /* Convert string to object pointer */
-
-    ObjDesc = ACPI_TO_POINTER (ACPI_STRTOUL (ObjectArg, NULL, 16));
-
-    /* Prepare for a return object of arbitrary size */
-
-    ReturnObj.Pointer           = AcpiGbl_DbBuffer;
-    ReturnObj.Length            = ACPI_DEBUG_BUFFER_SIZE;
-
-    /* _PRT */
-
-    AcpiOsPrintf ("Evaluating _PRT\n");
-
-    Status = AcpiEvaluateObject (ObjDesc, "_PRT", NULL, &ReturnObj);
-    if (ACPI_FAILURE (Status))
-    {
-        AcpiOsPrintf ("Could not obtain _PRT: %s\n", AcpiFormatException (Status));
-        goto GetCrs;
-    }
-
-    ReturnObj.Pointer           = AcpiGbl_DbBuffer;
-    ReturnObj.Length            = ACPI_DEBUG_BUFFER_SIZE;
-
-    Status = AcpiGetIrqRoutingTable (ObjDesc, &ReturnObj);
-    if (ACPI_FAILURE (Status))
-    {
-        AcpiOsPrintf ("GetIrqRoutingTable failed: %s\n", AcpiFormatException (Status));
+        STRCPY (ScopeBuf, Name);
+        STRCAT (ScopeBuf, "\\");
     }
 
     else
     {
-        AcpiRsDumpIrqList ((UINT8 *) AcpiGbl_DbBuffer);
+        STRCAT (ScopeBuf, Name);
+        STRCAT (ScopeBuf, "\\");
     }
-
-
-    /* _CRS */
-
-GetCrs:
-    AcpiOsPrintf ("Evaluating _CRS\n");
-
-    ReturnObj.Pointer           = AcpiGbl_DbBuffer;
-    ReturnObj.Length            = ACPI_DEBUG_BUFFER_SIZE;
-
-    Status = AcpiEvaluateObject (ObjDesc, "_CRS", NULL, &ReturnObj);
-    if (ACPI_FAILURE (Status))
-    {
-        AcpiOsPrintf ("Could not obtain _CRS: %s\n", AcpiFormatException (Status));
-        goto GetPrs;
-    }
-
-    ReturnObj.Pointer           = AcpiGbl_DbBuffer;
-    ReturnObj.Length            = ACPI_DEBUG_BUFFER_SIZE;
-
-    Status = AcpiGetCurrentResources (ObjDesc, &ReturnObj);
-    if (ACPI_FAILURE (Status))
-    {
-        AcpiOsPrintf ("AcpiGetCurrentResources failed: %s\n", AcpiFormatException (Status));
-        goto GetPrs;
-    }
-
-    else
-    {
-        AcpiRsDumpResourceList (ACPI_CAST_PTR (ACPI_RESOURCE, AcpiGbl_DbBuffer));
-    }
-
-    Status = AcpiSetCurrentResources (ObjDesc, &ReturnObj);
-    if (ACPI_FAILURE (Status))
-    {
-        AcpiOsPrintf ("AcpiSetCurrentResources failed: %s\n", AcpiFormatException (Status));
-        goto GetPrs;
-    }
-
-
-    /* _PRS */
-
-GetPrs:
-    AcpiOsPrintf ("Evaluating _PRS\n");
-
-    ReturnObj.Pointer           = AcpiGbl_DbBuffer;
-    ReturnObj.Length            = ACPI_DEBUG_BUFFER_SIZE;
-
-    Status = AcpiEvaluateObject (ObjDesc, "_PRS", NULL, &ReturnObj);
-    if (ACPI_FAILURE (Status))
-    {
-        AcpiOsPrintf ("Could not obtain _PRS: %s\n", AcpiFormatException (Status));
-        goto Cleanup;
-    }
-
-    ReturnObj.Pointer           = AcpiGbl_DbBuffer;
-    ReturnObj.Length            = ACPI_DEBUG_BUFFER_SIZE;
-
-    Status = AcpiGetPossibleResources (ObjDesc, &ReturnObj);
-    if (ACPI_FAILURE (Status))
-    {
-        AcpiOsPrintf ("AcpiGetPossibleResources failed: %s\n", AcpiFormatException (Status));
-    }
-
-    else
-    {
-        AcpiRsDumpResourceList (ACPI_CAST_PTR (ACPI_RESOURCE, AcpiGbl_DbBuffer));
-    }
-
-
-Cleanup:
-
-    AcpiDbSetOutputDestination (ACPI_DB_CONSOLE_OUTPUT);
-    return;
-#endif
-
+  
+    OsdPrintf ("New scope: %s\n", ScopeBuf);
 }
 
+#endif  /* ACPI_DEBUG */
 
-typedef struct
-{
-    UINT32              Nodes;
-    UINT32              Objects;
-} ACPI_INTEGRITY_INFO;
-
-/*******************************************************************************
- *
- * FUNCTION:    AcpiDbIntegrityWalk
- *
- * PARAMETERS:  Callback from WalkNamespace
- *
- * RETURN:      Status
- *
- * DESCRIPTION: Examine one NS node for valid values.
- *
- ******************************************************************************/
-
-ACPI_STATUS
-AcpiDbIntegrityWalk (
-    ACPI_HANDLE             ObjHandle,
-    UINT32                  NestingLevel,
-    void                    *Context,
-    void                    **ReturnValue)
-{
-    ACPI_INTEGRITY_INFO     *Info = (ACPI_INTEGRITY_INFO *) Context;
-    ACPI_NAMESPACE_NODE     *Node = (ACPI_NAMESPACE_NODE *) ObjHandle;
-    ACPI_OPERAND_OBJECT     *Object;
-
-
-    Info->Nodes++;
-    if (ACPI_GET_DESCRIPTOR_TYPE (Node) != ACPI_DESC_TYPE_NAMED)
-    {
-        AcpiOsPrintf ("Invalid Descriptor Type for Node %p, Type = %X\n",
-            Node, ACPI_GET_DESCRIPTOR_TYPE (Node));
-    }
-
-    if (Node->Type > ACPI_TYPE_LOCAL_MAX)
-    {
-        AcpiOsPrintf ("Invalid Object Type for Node %p, Type = %X\n",
-            Node, Node->Type);
-    }
-
-    if (!AcpiUtValidAcpiName (Node->Name.Integer))
-    {
-        AcpiOsPrintf ("Invalid AcpiName for Node %p\n", Node);
-    }
-
-    Object = AcpiNsGetAttachedObject (Node);
-    if (Object)
-    {
-        Info->Objects++;
-        if (ACPI_GET_DESCRIPTOR_TYPE (Object) != ACPI_DESC_TYPE_OPERAND)
-        {
-            AcpiOsPrintf ("Invalid Descriptor Type for Object %p, Type = %X\n",
-                Object, ACPI_GET_DESCRIPTOR_TYPE (Object));
-        }
-    }
-
-
-    return (AE_OK);
-}
-
-
-/*******************************************************************************
- *
- * FUNCTION:    AcpiDbCheckIntegrity
- *
- * PARAMETERS:  None
- *
- * RETURN:      None
- *
- * DESCRIPTION: Check entire namespace for data structure integrity
- *
- ******************************************************************************/
-
-void
-AcpiDbCheckIntegrity (void)
-{
-    ACPI_INTEGRITY_INFO     Info = {0,0};
-
-    /* Search all nodes in namespace */
-
-    (void) AcpiWalkNamespace (ACPI_TYPE_ANY, ACPI_ROOT_OBJECT, ACPI_UINT32_MAX,
-                    AcpiDbIntegrityWalk, (void *) &Info, NULL);
-
-    AcpiOsPrintf ("Verified %d namespace nodes with %d Objects\n", Info.Nodes, Info.Objects);
-
-}
-
-#endif /* ACPI_DEBUGGER */
