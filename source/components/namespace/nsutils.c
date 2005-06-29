@@ -2,7 +2,7 @@
  *
  * Module Name: nsutils - Utilities for accessing ACPI namespace, accessing
  *                        parents and siblings and Scope manipulation
- *              $Revision: 1.113 $
+ *              $Revision: 1.114 $
  *
  *****************************************************************************/
 
@@ -889,7 +889,7 @@ UINT32
 AcpiNsOpensScope (
     ACPI_OBJECT_TYPE        Type)
 {
-    ACPI_FUNCTION_TRACE_U32 ("NsOpensScope", Type);
+    ACPI_FUNCTION_TRACE_STR ("NsOpensScope", AcpiUtGetTypeName (Type));
 
 
     if (!AcpiUtValidObjectType (Type))
