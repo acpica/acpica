@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: utmisc - common utility procedures
- *              $Revision: 1.64 $
+ *              $Revision: 1.66 $
  *
  ******************************************************************************/
 
@@ -127,7 +127,7 @@
 
 
 #define _COMPONENT          ACPI_UTILITIES
-        MODULE_NAME         ("utmisc")
+        ACPI_MODULE_NAME    ("utmisc")
 
 
 #ifdef ACPI_DEBUG
@@ -153,7 +153,7 @@ AcpiUtDisplayInitPathname (
     ACPI_BUFFER             Buffer;
 
 
-    PROC_NAME ("UtDisplayInitPathname");
+    ACPI_FUNCTION_NAME ("UtDisplayInitPathname");
 
 
     Buffer.Length = ACPI_ALLOCATE_LOCAL_BUFFER;
@@ -199,7 +199,7 @@ AcpiUtValidAcpiName (
     UINT32                  i;
 
 
-    FUNCTION_ENTRY ();
+    ACPI_FUNCTION_ENTRY ();
 
 
     for (i = 0; i < ACPI_NAME_SIZE; i++)
@@ -233,7 +233,7 @@ AcpiUtValidAcpiCharacter (
     NATIVE_CHAR             Character)
 {
 
-    FUNCTION_ENTRY ();
+    ACPI_FUNCTION_ENTRY ();
 
     return ((BOOLEAN)   ((Character == '_') ||
                         (Character >= 'A' && Character <= 'Z') ||
@@ -260,7 +260,7 @@ AcpiUtStrupr (
     NATIVE_CHAR             *String;
 
 
-    FUNCTION_ENTRY ();
+    ACPI_FUNCTION_ENTRY ();
 
 
     /* Walk entire string, uppercasing the letters */
@@ -295,7 +295,7 @@ AcpiUtMutexInitialize (
     ACPI_STATUS             Status;
 
 
-    FUNCTION_TRACE ("UtMutexInitialize");
+    ACPI_FUNCTION_TRACE ("UtMutexInitialize");
 
 
     /*
@@ -333,7 +333,7 @@ AcpiUtMutexTerminate (
     UINT32                  i;
 
 
-    FUNCTION_TRACE ("UtMutexTerminate");
+    ACPI_FUNCTION_TRACE ("UtMutexTerminate");
 
 
     /*
@@ -367,7 +367,7 @@ AcpiUtCreateMutex (
     ACPI_STATUS             Status = AE_OK;
 
 
-    FUNCTION_TRACE_U32 ("UtCreateMutex", MutexId);
+    ACPI_FUNCTION_TRACE_U32 ("UtCreateMutex", MutexId);
 
 
     if (MutexId > MAX_MTX)
@@ -407,7 +407,7 @@ AcpiUtDeleteMutex (
     ACPI_STATUS             Status;
 
 
-    FUNCTION_TRACE_U32 ("UtDeleteMutex", MutexId);
+    ACPI_FUNCTION_TRACE_U32 ("UtDeleteMutex", MutexId);
 
 
     if (MutexId > MAX_MTX)
@@ -446,7 +446,7 @@ AcpiUtAcquireMutex (
     UINT32                  ThisThreadId;
 
 
-    PROC_NAME ("UtAcquireMutex");
+    ACPI_FUNCTION_NAME ("UtAcquireMutex");
 
 
     if (MutexId > MAX_MTX)
@@ -492,7 +492,6 @@ AcpiUtAcquireMutex (
 
     Status = AcpiOsWaitSemaphore (AcpiGbl_AcpiMutexInfo[MutexId].Mutex,
                                     1, WAIT_FOREVER);
-
     if (ACPI_SUCCESS (Status))
     {
         ACPI_DEBUG_PRINT ((ACPI_DB_MUTEX, "Thread %X acquired Mutex [%s]\n",
@@ -534,7 +533,7 @@ AcpiUtReleaseMutex (
     UINT32                  ThisThreadId;
 
 
-    PROC_NAME ("UtReleaseMutex");
+    ACPI_FUNCTION_NAME ("UtReleaseMutex");
 
 
     ThisThreadId = AcpiOsGetThreadId ();
@@ -630,7 +629,7 @@ AcpiUtCreateUpdateStateAndPush (
     ACPI_GENERIC_STATE       *State;
 
 
-    FUNCTION_ENTRY ();
+    ACPI_FUNCTION_ENTRY ();
 
 
     /* Ignore null objects; these are expected */
@@ -676,7 +675,7 @@ AcpiUtCreatePkgStateAndPush (
     ACPI_GENERIC_STATE       *State;
 
 
-    FUNCTION_ENTRY ();
+    ACPI_FUNCTION_ENTRY ();
 
 
     State = AcpiUtCreatePkgState (InternalObject, ExternalObject, Index);
@@ -709,7 +708,7 @@ AcpiUtPushGenericState (
     ACPI_GENERIC_STATE      **ListHead,
     ACPI_GENERIC_STATE      *State)
 {
-    FUNCTION_TRACE ("UtPushGenericState");
+    ACPI_FUNCTION_TRACE ("UtPushGenericState");
 
 
     /* Push the state object onto the front of the list (stack) */
@@ -740,7 +739,7 @@ AcpiUtPopGenericState (
     ACPI_GENERIC_STATE      *State;
 
 
-    FUNCTION_TRACE ("UtPopGenericState");
+    ACPI_FUNCTION_TRACE ("UtPopGenericState");
 
 
     /* Remove the state object at the head of the list (stack) */
@@ -776,7 +775,7 @@ AcpiUtCreateGenericState (void)
     ACPI_GENERIC_STATE      *State;
 
 
-    FUNCTION_ENTRY ();
+    ACPI_FUNCTION_ENTRY ();
 
 
     State = AcpiUtAcquireFromCache (ACPI_MEM_LIST_STATE);
@@ -812,7 +811,7 @@ AcpiUtCreateThreadState (
     ACPI_GENERIC_STATE      *State;
 
 
-    FUNCTION_TRACE ("UtCreateThreadState");
+    ACPI_FUNCTION_TRACE ("UtCreateThreadState");
 
 
     /* Create the generic state object */
@@ -856,7 +855,7 @@ AcpiUtCreateUpdateState (
     ACPI_GENERIC_STATE      *State;
 
 
-    FUNCTION_TRACE_PTR ("UtCreateUpdateState", Object);
+    ACPI_FUNCTION_TRACE_PTR ("UtCreateUpdateState", Object);
 
 
     /* Create the generic state object */
@@ -900,7 +899,7 @@ AcpiUtCreatePkgState (
     ACPI_GENERIC_STATE      *State;
 
 
-    FUNCTION_TRACE_PTR ("UtCreatePkgState", InternalObject);
+    ACPI_FUNCTION_TRACE_PTR ("UtCreatePkgState", InternalObject);
 
 
     /* Create the generic state object */
@@ -943,7 +942,7 @@ AcpiUtCreateControlState (
     ACPI_GENERIC_STATE      *State;
 
 
-    FUNCTION_TRACE ("UtCreateControlState");
+    ACPI_FUNCTION_TRACE ("UtCreateControlState");
 
 
     /* Create the generic state object */
@@ -958,7 +957,7 @@ AcpiUtCreateControlState (
     /* Init fields specific to the control struct */
 
     State->Common.DataType  = ACPI_DESC_TYPE_STATE_CONTROL;
-    State->Common.State     = CONTROL_CONDITIONAL_EXECUTING;
+    State->Common.State     = ACPI_CONTROL_CONDITIONAL_EXECUTING;
 
     return_PTR (State);
 }
@@ -981,7 +980,7 @@ void
 AcpiUtDeleteGenericState (
     ACPI_GENERIC_STATE      *State)
 {
-    FUNCTION_TRACE ("UtDeleteGenericState");
+    ACPI_FUNCTION_TRACE ("UtDeleteGenericState");
 
 
     AcpiUtReleaseToCache (ACPI_MEM_LIST_STATE, State);
@@ -1006,7 +1005,7 @@ void
 AcpiUtDeleteGenericStateCache (
     void)
 {
-    FUNCTION_TRACE ("UtDeleteGenericStateCache");
+    ACPI_FUNCTION_TRACE ("UtDeleteGenericStateCache");
 
 
     AcpiUtDeleteGenericCache (ACPI_MEM_LIST_STATE);
@@ -1102,14 +1101,14 @@ AcpiUtResolvePackageReferences (
     ACPI_STATUS             Status;
 
 
-    FUNCTION_TRACE ("UtResolvePackageReferences");
+    ACPI_FUNCTION_TRACE ("UtResolvePackageReferences");
 
 
     if (ObjDesc->Common.Type != ACPI_TYPE_PACKAGE)
     {
         /* The object must be a package */
 
-        REPORT_ERROR (("Expecting a Package object\n"));
+        ACPI_REPORT_ERROR (("Expecting a Package object\n"));
         return_ACPI_STATUS (AE_TYPE);
     }
 
@@ -1150,7 +1149,7 @@ AcpiUtWalkPackageTree (
     ACPI_OPERAND_OBJECT     *ThisSourceObj;
 
 
-    FUNCTION_TRACE ("UtWalkPackageTree");
+    ACPI_FUNCTION_TRACE ("UtWalkPackageTree");
 
 
     State = AcpiUtCreatePkgState (SourceObject, TargetObject, 0);
@@ -1305,7 +1304,7 @@ AcpiUtGetResourceEndTag (
     while (Buffer < EndBuffer)
     {
         BufferByte = *Buffer;
-        if (BufferByte & RESOURCE_DESC_TYPE_MASK)
+        if (BufferByte & ACPI_RDESC_TYPE_MASK)
         {
             /* Large Descriptor - Length is next 2 bytes */
 
@@ -1315,7 +1314,7 @@ AcpiUtGetResourceEndTag (
         {
             /* Small Descriptor.  End Tag will be found here */
 
-            if ((BufferByte & RESOURCE_DESC_SMALL_MASK) == RESOURCE_DESC_END_TAG)
+            if ((BufferByte & ACPI_RDESC_SMALL_MASK) == ACPI_RDESC_TYPE_END_TAG)
             {
                 /* Found the end tag descriptor, all done. */
 
