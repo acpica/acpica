@@ -657,6 +657,51 @@ CmDeleteInternalObj (
     return_VOID;
 }
 
+/******************************************************************************
+ *
+ * FUNCTION:    CmAddReference
+ *
+ * PARAMETERS:  *Object        - Pointer to the list to be deleted
+ * 
+ * RETURN:      None
+ * 
+ * DESCRIPTION: This function deletes a simple (non-package) object.
+ *
+ ******************************************************************************/
+
+void
+CmAddReference (
+    ACPI_OBJECT_INTERNAL    *Object)
+{
+
+    FUNCTION_TRACE_PTR ("CmAddReference", Object);
+
+    if (!Object)
+    {
+        DEBUG_PRINT (ACPI_INFO, ("CmAddReference: **** Null Object Ptr\n"));
+        return_VOID;
+    }
+
+    if (TbSystemTablePointer (Object))
+    {
+        DEBUG_PRINT (ACPI_INFO, ("CmAddReference: **** Object %p is Pcode Ptr\n",
+                        Object));
+        return_VOID;
+    }
+
+    if (VALID_DESCRIPTOR_TYPE (Object, DESC_TYPE_NTE))
+    {
+        DEBUG_PRINT (ACPI_INFO, ("CmAddReference: **** Object %p is NS handle\n",
+                        Object));
+        return_VOID;
+    }
+
+
+    CmUpdateObjectReference  (Object, REF_INCREMENT);
+
+    return_VOID;
+}
+
 
 /******************************************************************************
  *
