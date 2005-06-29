@@ -216,7 +216,7 @@ cleanup:
 
 void
 AmlDumpBuffer (
-    size_t                  NumBytes)
+    ACPI_SIZE               NumBytes)
 {
 
     FUNCTION_TRACE ("AmlDumpBuffer");
@@ -270,6 +270,8 @@ AmlDumpStackEntry (
     {
         /*  EntryDesc is valid  */
 
+        DEBUG_PRINT (ACPI_INFO, ("Entry %p - ", EntryDesc));
+
         switch (EntryDesc->ValType)
         {
         case TYPE_Lvalue:
@@ -277,19 +279,19 @@ AmlDumpStackEntry (
             switch (EntryDesc->Lvalue.OpCode)
             {
             case AML_ZeroOp:
-                DEBUG_PRINT (ACPI_INFO, ("Lvalue: Zero\n"));
+                DEBUG_PRINT_RAW (ACPI_INFO, ("Lvalue: Zero\n"));
                 break;
 
             case AML_OneOp:
-                DEBUG_PRINT (ACPI_INFO, ("Lvalue: One\n"));
+                DEBUG_PRINT_RAW (ACPI_INFO, ("Lvalue: One\n"));
                 break;
 
             case AML_OnesOp:
-                DEBUG_PRINT (ACPI_INFO, ("Lvalue: Ones\n"));
+                DEBUG_PRINT_RAW (ACPI_INFO, ("Lvalue: Ones\n"));
                 break;
 
             case Debug1:
-                DEBUG_PRINT (ACPI_INFO, ("Lvalue: Debug\n"));
+                DEBUG_PRINT_RAW (ACPI_INFO, ("Lvalue: Debug\n"));
                 break;
 
             case AML_NameOp:
@@ -299,19 +301,19 @@ AmlDumpStackEntry (
                 break;
  
             case AML_IndexOp:
-                DEBUG_PRINT (ACPI_INFO, ("Lvalue: Index %p\n",
+                DEBUG_PRINT_RAW (ACPI_INFO, ("Lvalue: Index %p\n",
                             EntryDesc->Lvalue.Ref));
                 break;
  
             case AML_Arg0: case AML_Arg1: case AML_Arg2: case AML_Arg3:
             case AML_Arg4: case AML_Arg5: case AML_Arg6:
-                DEBUG_PRINT (ACPI_INFO, ("Lvalue: Arg%d\n",
+                DEBUG_PRINT_RAW (ACPI_INFO, ("Lvalue: Arg%d\n",
                             EntryDesc->Lvalue.OpCode - AML_Arg0));
                 break;
 
             case AML_Local0: case AML_Local1: case AML_Local2: case AML_Local3:
             case AML_Local4: case AML_Local5: case AML_Local6: case AML_Local7:
-                DEBUG_PRINT (ACPI_INFO, ("Lvalue: Local%d\n",
+                DEBUG_PRINT_RAW (ACPI_INFO, ("Lvalue: Local%d\n",
                             EntryDesc->Lvalue.OpCode - AML_Local0));
                 break;
 
@@ -325,7 +327,7 @@ AmlDumpStackEntry (
             break;
 
         case TYPE_Buffer:
-            DEBUG_PRINT (ACPI_INFO, ("Buffer[%d] seq %lx @ %p \n",
+            DEBUG_PRINT_RAW (ACPI_INFO, ("Buffer[%d] seq %lx @ %p \n",
                         EntryDesc->Buffer.BufLen, EntryDesc->Buffer.Sequence,
                         EntryDesc->Buffer.Buffer));
 
@@ -340,7 +342,7 @@ AmlDumpStackEntry (
 
             if (EntryDesc->Buffer.Buffer)
             {
-                DEBUG_PRINT (ACPI_INFO, ("Buffer Contents: "));
+                DEBUG_PRINT_RAW (ACPI_INFO, ("Buffer Contents: "));
                                
                 for (Buf = EntryDesc->Buffer.Buffer; Length--; ++Buf)
                 {
@@ -352,22 +354,22 @@ AmlDumpStackEntry (
             break;
 
         case TYPE_Number:
-            DEBUG_PRINT (ACPI_INFO, ("Number 0x%lx\n",
+            DEBUG_PRINT_RAW (ACPI_INFO, ("Number 0x%lx\n",
                         EntryDesc->Number.Number));
             break;
 
         case TYPE_If:
-            DEBUG_PRINT (ACPI_INFO, ("If [Number] 0x%lx\n",
+            DEBUG_PRINT_RAW (ACPI_INFO, ("If [Number] 0x%lx\n",
                         EntryDesc->Number.Number));
             break;
 
         case TYPE_While:
-            DEBUG_PRINT (ACPI_INFO, ("While [Number] 0x%lx\n",
+            DEBUG_PRINT_RAW (ACPI_INFO, ("While [Number] 0x%lx\n",
                         EntryDesc->Number.Number));
             break;
 
         case TYPE_Package:
-            DEBUG_PRINT (ACPI_INFO, ("Package[%d] @ %p\n",
+            DEBUG_PRINT_RAW (ACPI_INFO, ("Package[%d] @ %p\n",
                         EntryDesc->Package.PkgCount, EntryDesc->Package.PackageElems));
 
 
@@ -390,7 +392,7 @@ AmlDumpStackEntry (
                 }
             }
 
-            DEBUG_PRINT (ACPI_INFO, ("\n"));
+            DEBUG_PRINT_RAW (ACPI_INFO, ("\n"));
 
             break;
 
@@ -410,27 +412,27 @@ AmlDumpStackEntry (
              */
             if (0 == EntryDesc->Region.AdrLenValid)
             {
-                DEBUG_PRINT (ACPI_INFO, ("Region %s\n", OutString));
+                DEBUG_PRINT_RAW (ACPI_INFO, ("Region %s\n", OutString));
             }
             else
             {
-                DEBUG_PRINT (ACPI_INFO,
+                DEBUG_PRINT_RAW (ACPI_INFO,
                             ("Region %s base %08lx Length %08lx\n", OutString,
                             EntryDesc->Region.Address, EntryDesc->Region.Length));
             }
             break;
 
         case TYPE_String:
-            DEBUG_PRINT (ACPI_INFO, ("String[%d] @ %p\n",
+            DEBUG_PRINT_RAW (ACPI_INFO, ("String[%d] @ %p\n",
                         EntryDesc->String.StrLen, EntryDesc->String.String));
             break;
 
         case TYPE_BankField:
-            DEBUG_PRINT (ACPI_INFO, ("BankField\n"));
+            DEBUG_PRINT_RAW (ACPI_INFO, ("BankField\n"));
             break;
 
         case TYPE_DefField:
-            DEBUG_PRINT (ACPI_INFO,
+            DEBUG_PRINT_RAW (ACPI_INFO,
                         ("DefField: %d bits acc %d lock %d update %d at byte %lx bit %d of \n",
                         EntryDesc->Field.DatLen,   EntryDesc->Field.Access,
                         EntryDesc->Field.LockRule, EntryDesc->Field.UpdateRule,
@@ -439,11 +441,11 @@ AmlDumpStackEntry (
             break;
 
         case TYPE_IndexField:
-            DEBUG_PRINT (ACPI_INFO, ("IndexField\n"));
+            DEBUG_PRINT_RAW (ACPI_INFO, ("IndexField\n"));
             break;
 
         case TYPE_FieldUnit:
-            DEBUG_PRINT (ACPI_INFO,
+            DEBUG_PRINT_RAW (ACPI_INFO,
                         ("FieldUnit: %d bits acc %d lock %d update %d at byte %lx bit %d of \n",
                         EntryDesc->FieldUnit.DatLen,   EntryDesc->FieldUnit.Access,
                         EntryDesc->FieldUnit.LockRule, EntryDesc->FieldUnit.UpdateRule,
@@ -455,14 +457,14 @@ AmlDumpStackEntry (
             }
             else if (TYPE_Buffer != EntryDesc->FieldUnit.Container->ValType)
             {
-                DEBUG_PRINT (ACPI_INFO, ("*not a Buffer* \n"));
+                DEBUG_PRINT_RAW (ACPI_INFO, ("*not a Buffer* \n"));
             }
             else
             {
                 if (EntryDesc->FieldUnit.ConSeq
                         != EntryDesc->FieldUnit.Container->Buffer.Sequence)
                 {
-                    DEBUG_PRINT (ACPI_INFO,
+                    DEBUG_PRINT_RAW (ACPI_INFO,
                                   ("[stale] %lx \n", EntryDesc->FieldUnit.ConSeq));
                 }
 
@@ -471,34 +473,34 @@ AmlDumpStackEntry (
             break;
 
         case TYPE_Event:
-            DEBUG_PRINT (ACPI_INFO, ("Event\n"));
+            DEBUG_PRINT_RAW (ACPI_INFO, ("Event\n"));
             break;
 
         case TYPE_Method:
-            DEBUG_PRINT (ACPI_INFO,
+            DEBUG_PRINT_RAW (ACPI_INFO,
                         ("Method(%d) @ %p:%lx:%lx\n",
                         EntryDesc->Method.NumParam, EntryDesc->Method.AmlBase,
                         EntryDesc->Method.AmlOffset, EntryDesc->Method.Length));
             break;
 
         case TYPE_Mutex:
-            DEBUG_PRINT (ACPI_INFO, ("Mutex\n"));
+            DEBUG_PRINT_RAW (ACPI_INFO, ("Mutex\n"));
             break;
 
         case TYPE_Device:
-            DEBUG_PRINT (ACPI_INFO, ("Device\n"));
+            DEBUG_PRINT_RAW (ACPI_INFO, ("Device\n"));
             break;
 
         case TYPE_Power:
-            DEBUG_PRINT (ACPI_INFO, ("Power\n"));
+            DEBUG_PRINT_RAW (ACPI_INFO, ("Power\n"));
             break;
 
         case TYPE_Processor:
-            DEBUG_PRINT (ACPI_INFO, ("Processor\n"));
+            DEBUG_PRINT_RAW (ACPI_INFO, ("Processor\n"));
             break;
 
         case TYPE_Thermal:
-            DEBUG_PRINT (ACPI_INFO, ("Thermal\n"));
+            DEBUG_PRINT_RAW (ACPI_INFO, ("Thermal\n"));
             break;
 
         default:
@@ -508,7 +510,7 @@ AmlDumpStackEntry (
             
             if (AML_UNASSIGNED != Aml[(INT32) EntryDesc->ValType])
             {
-                DEBUG_PRINT (ACPI_ERROR,
+                DEBUG_PRINT_RAW (ACPI_ERROR,
                               ("AmlDumpStackEntry: Unhandled opcode (AML %s) \n", 
                               ShortOps[Aml[(INT32) EntryDesc->ValType]]));
             }
