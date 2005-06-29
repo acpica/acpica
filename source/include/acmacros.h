@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acmacros.h - C macros for the entire subsystem.
- *       $Revision: 1.96 $
+ *       $Revision: 1.99 $
  *
  *****************************************************************************/
 
@@ -348,8 +348,8 @@
 #endif
 
 /*
- * An ACPI_HANDLE (which is actually an ACPI_NAMESPACE_NODE *) can appear in some contexts,
- * such as on apObjStack, where a pointer to an ACPI_OPERAND_OBJECT  can also
+ * An ACPI_NAMESPACE_NODE * can appear in some contexts,
+ * where a pointer to an ACPI_OPERAND_OBJECT  can also
  * appear.  This macro is used to distinguish them.
  *
  * The DataType field is the first field in both structures.
@@ -385,9 +385,9 @@
  * Macros for the master AML opcode table
  */
 #ifdef ACPI_DEBUG
-#define ACPI_OP(Name,PArgs,IArgs,Flags)     {PArgs,IArgs,Flags,Name}
+#define ACPI_OP(Name,PArgs,IArgs,ObjType,Class,Type,Flags)     {Name,PArgs,IArgs,Flags,ObjType,Class,Type}
 #else
-#define ACPI_OP(Name,PArgs,IArgs,Flags)     {PArgs,IArgs,Flags}
+#define ACPI_OP(Name,PArgs,IArgs,ObjType,Class,Type,Flags)     {PArgs,IArgs,Flags,ObjType,Class,Type}
 #endif
 
 #define ARG_TYPE_WIDTH                  5
