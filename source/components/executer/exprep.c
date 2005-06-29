@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exprep - ACPI AML (p-code) execution - field prep utilities
- *              $Revision: 1.101 $
+ *              $Revision: 1.102 $
  *
  *****************************************************************************/
 
@@ -394,18 +394,9 @@ AcpiExPrepFieldValue (
 
     /* Initialize areas of the object that are common to all fields */
 
+    ObjDesc->CommonField.Node = Info->FieldNode;
     Status = AcpiExPrepCommonFieldObject (ObjDesc, Info->FieldFlags,
                         Info->FieldBitPosition, Info->FieldBitLength);
-    if (ACPI_FAILURE (Status))
-    {
-        AcpiUtDeleteObjectDesc (ObjDesc);
-        return_ACPI_STATUS (Status);
-    }
-
-    /* Initialize areas of the object that are common to all fields */
-
-    Status = AcpiExPrepCommonFieldObject (ObjDesc, Info->FieldFlags,
-                                            Info->FieldBitPosition, Info->FieldBitLength);
     if (ACPI_FAILURE (Status))
     {
         AcpiUtDeleteObjectDesc (ObjDesc);
