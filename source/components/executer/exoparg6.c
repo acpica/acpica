@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exoparg6 - AML execution - opcodes with 6 arguments
- *              $Revision: 1.5 $
+ *              $Revision: 1.7 $
  *
  *****************************************************************************/
 
@@ -302,6 +302,7 @@ AcpiExOpcode_6A_0T_1R (
          * Examine each element until a match is found.  Within the loop,
          * "continue" signifies that the current element does not match
          * and the next should be examined.
+         *
          * Upon finding a match, the loop will terminate via "break" at
          * the bottom.  If it terminates "normally", MatchValue will be -1
          * (its initial value) indicating that no match was found.  When
@@ -313,8 +314,6 @@ AcpiExOpcode_6A_0T_1R (
 
             /*
              * Treat any NULL or non-numeric elements as non-matching.
-             * TBD [Unhandled] - if an element is a Name,
-             *      should we examine its value?
              */
             if (!ThisElement ||
                 ThisElement->Common.Type != ACPI_TYPE_INTEGER)
@@ -322,19 +321,15 @@ AcpiExOpcode_6A_0T_1R (
                 continue;
             }
 
-
             /*
-             * Within these switch statements:
-             *      "break" (exit from the switch) signifies a match;
-             *      "continue" (proceed to next iteration of enclosing
-             *          "for" loop) signifies a non-match.
+             * "continue" (proceed to next iteration of enclosing
+             * "for" loop) signifies a non-match.
              */
             if (!AcpiExDoMatch ((UINT32) Operand[1]->Integer.Value,
                                 ThisElement->Integer.Value, Operand[2]->Integer.Value))
             {
                 continue;
             }
-
 
             if (!AcpiExDoMatch ((UINT32) Operand[3]->Integer.Value,
                                 ThisElement->Integer.Value, Operand[4]->Integer.Value))
@@ -355,7 +350,6 @@ AcpiExOpcode_6A_0T_1R (
 
         Status = AE_NOT_IMPLEMENTED;
         goto Cleanup;
-        break;
 
 
     default:
@@ -364,7 +358,6 @@ AcpiExOpcode_6A_0T_1R (
                 WalkState->Opcode));
         Status = AE_AML_BAD_OPCODE;
         goto Cleanup;
-        break;
     }
 
 

@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: exoparg2 - AML execution - opcodes with 2 arguments
- *              $Revision: 1.98 $
+ *              $Revision: 1.101 $
  *
  *****************************************************************************/
 
@@ -193,31 +193,28 @@ AcpiExOpcode_2A_0T_0R (
 
         /* The node must refer to a device or thermal zone */
 
-        if (Node && Operand[1])     /* TBD: is this check necessary? */
+        switch (Node->Type)
         {
-            switch (Node->Type)
-            {
-            case ACPI_TYPE_DEVICE:
-            case ACPI_TYPE_THERMAL:
+        case ACPI_TYPE_DEVICE:
+        case ACPI_TYPE_THERMAL:
 
-                /*
-                 * Dispatch the notify to the appropriate handler
-                 * NOTE: the request is queued for execution after this method
-                 * completes.  The notify handlers are NOT invoked synchronously
-                 * from this thread -- because handlers may in turn run other
-                 * control methods.
-                 */
-                Status = AcpiEvQueueNotifyRequest (Node,
-                                        (UINT32) Operand[1]->Integer.Value);
-                break;
+            /*
+             * Dispatch the notify to the appropriate handler
+             * NOTE: the request is queued for execution after this method
+             * completes.  The notify handlers are NOT invoked synchronously
+             * from this thread -- because handlers may in turn run other
+             * control methods.
+             */
+            Status = AcpiEvQueueNotifyRequest (Node,
+                                    (UINT32) Operand[1]->Integer.Value);
+            break;
 
-            default:
-                ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Unexpected notify object type %X\n",
-                    Node->Type));
+        default:
+            ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Unexpected notify object type %X\n",
+                Node->Type));
 
-                Status = AE_AML_OPERAND_TYPE;
-                break;
-            }
+            Status = AE_AML_OPERAND_TYPE;
+            break;
         }
         break;
 
@@ -295,7 +292,6 @@ AcpiExOpcode_2A_2T_1R (
                 WalkState->Opcode));
         Status = AE_AML_BAD_OPCODE;
         goto Cleanup;
-        break;
     }
 
 
@@ -453,7 +449,7 @@ AcpiExOpcode_2A_1T_1R (
 
     case AML_CONCAT_RES_OP:         /* ConcatenateResTemplate (Buffer, Buffer, Result) (ACPI 2.0) */
 
-        Status = AE_NOT_IMPLEMENTED;
+        Status = AcpiExConcatTemplate (Operand[0], Operand[1], &ReturnDesc, WalkState);
         break;
 
 
@@ -540,7 +536,6 @@ AcpiExOpcode_2A_1T_1R (
 
         WalkState->ResultObj = ReturnDesc;
         goto Cleanup;
-        break;
 
 
     default:
@@ -658,7 +653,6 @@ AcpiExOpcode_2A_0T_1R (
         REPORT_ERROR (("AcpiExOpcode_2A_0T_1R: Unknown opcode %X\n", WalkState->Opcode));
         Status = AE_AML_BAD_OPCODE;
         goto Cleanup;
-        break;
     }
 
 

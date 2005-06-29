@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exoparg1 - AML execution - opcodes with 1 argument
- *              $Revision: 1.128 $
+ *              $Revision: 1.129 $
  *
  *****************************************************************************/
 
@@ -480,7 +480,6 @@ AcpiExOpcode_1A_1T_1R (
 
         ReturnDesc->Integer.Value = ACPI_INTEGER_MAX;
         goto Cleanup;
-        break;
 
 
     case AML_STORE_OP:              /* Store (Source, Target) */
@@ -505,7 +504,6 @@ AcpiExOpcode_1A_1T_1R (
         WalkState->ResultObj = Operand[0];
         WalkState->Operands[0] = NULL;  /* Prevent deletion */
         return_ACPI_STATUS (Status);
-        break;
 
 
     /*
@@ -551,7 +549,6 @@ AcpiExOpcode_1A_1T_1R (
                         AcpiPsGetOpcodeName (WalkState->Opcode)));
         Status = AE_SUPPORT;
         goto Cleanup;
-        break;
 
 
     default:                        /* Unknown opcode */
@@ -976,7 +973,6 @@ AcpiExOpcode_1A_0T_1R (
 
                 Status = AE_TYPE;
                 goto Cleanup;
-                break;
             }
         }
         break;
