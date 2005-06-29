@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: cmcopy - Internal to external object translation utilities
- *              $Revision: 1.67 $
+ *              $Revision: 1.69 $
  *
  *****************************************************************************/
 
@@ -126,7 +126,6 @@
         MODULE_NAME         ("cmcopy")
 
 
-
 /*******************************************************************************
  *
  * FUNCTION:    AcpiCmCopyIsimpleToEsimple
@@ -242,13 +241,17 @@ AcpiCmCopyIsimpleToEsimple (
             ExternalObject->String.Pointer = (NATIVE_CHAR *) DataSpace;
             Status = AcpiNsHandleToPathname ((ACPI_HANDLE *) InternalObject->Reference.Node,
                         &Length, (char *) DataSpace);
+
+            /* Actual length is returned from above */
+
+            ExternalObject->Buffer.Length = Length;
             break;
 
         default:
-            /* 
+            /*
              * Use the object type of "Any" to indicate a reference
              * to object containing a handle to an ACPI named object.
-             */            
+             */
             ExternalObject->Type = ACPI_TYPE_ANY;
             ExternalObject->Reference.Handle = InternalObject->Reference.Node;
             break;
@@ -266,7 +269,7 @@ AcpiCmCopyIsimpleToEsimple (
 
     case ACPI_TYPE_POWER:
 
-        ExternalObject->PowerResource.SystemLevel = 
+        ExternalObject->PowerResource.SystemLevel =
                             InternalObject->PowerResource.SystemLevel;
 
         ExternalObject->PowerResource.ResourceOrder =
@@ -281,7 +284,6 @@ AcpiCmCopyIsimpleToEsimple (
         return_ACPI_STATUS (AE_SUPPORT);
         break;
     }
-
 
 
     *BufferSpaceUsed = (UINT32) ROUND_UP_TO_NATIVE_WORD (Length);
@@ -314,7 +316,6 @@ AcpiCmCopyIelementToEelement (
     UINT32                  ObjectSpace;
     UINT32                  ThisIndex;
     ACPI_OBJECT             *TargetObject;
-
 
 
     ThisIndex       = State->Pkg.Index;
@@ -420,7 +421,6 @@ AcpiCmCopyIpackageToEpackage (
     Info.FreeSpace   = Buffer + ROUND_UP_TO_NATIVE_WORD (sizeof (ACPI_OBJECT));
 
 
-
     ExternalObject->Type               = InternalObject->Common.Type;
     ExternalObject->Package.Count      = InternalObject->Package.Count;
     ExternalObject->Package.Elements   = (ACPI_OBJECT *) Info.FreeSpace;
@@ -435,7 +435,7 @@ AcpiCmCopyIpackageToEpackage (
                     ROUND_UP_TO_NATIVE_WORD (sizeof (ACPI_OBJECT));
 
 
-    Status = AcpiCmWalkPackageTree (InternalObject, ExternalObject, 
+    Status = AcpiCmWalkPackageTree (InternalObject, ExternalObject,
                             AcpiCmCopyIelementToEelement, &Info);
 
     *SpaceUsed = Info.Length;
@@ -451,7 +451,7 @@ AcpiCmCopyIpackageToEpackage (
  * PARAMETERS:  *InternalObject     - The internal object to be converted
  *              *BufferPtr          - Where the object is returned
  *
- * RETURN:      Status 
+ * RETURN:      Status
  *
  * DESCRIPTION: This function is called to build an API object to be returned to
  *              the caller.
@@ -472,7 +472,7 @@ AcpiCmCopyIobjectToEobject (
     if (IS_THIS_OBJECT_TYPE (InternalObject, ACPI_TYPE_PACKAGE))
     {
         /*
-         * Package object:  Copy all subobjects (including 
+         * Package object:  Copy all subobjects (including
          * nested packages)
          */
         Status = AcpiCmCopyIpackageToEpackage (InternalObject,
@@ -498,7 +498,6 @@ AcpiCmCopyIobjectToEobject (
 
     return_ACPI_STATUS (Status);
 }
-
 
 
 /*******************************************************************************
@@ -696,7 +695,6 @@ AcpiCmCopyEobjectToIobject (
 }
 
 
-
 /*******************************************************************************
  *
  * FUNCTION:    AcpiCmCopyIelementToIelement
@@ -722,9 +720,8 @@ AcpiCmCopyIelementToIelement (
     ACPI_OPERAND_OBJECT     *TargetObject;
 
 
-
     ThisIndex     = State->Pkg.Index;
-    ThisTargetPtr = (ACPI_OPERAND_OBJECT **) 
+    ThisTargetPtr = (ACPI_OPERAND_OBJECT **)
                         &State->Pkg.DestObject->Package.Elements[ThisIndex];
 
     switch (ObjectType)
@@ -740,7 +737,7 @@ AcpiCmCopyIelementToIelement (
             return (AE_NO_MEMORY);
         }
 
-        Status = AcpiAmlStoreObjectToObject (SourceObject, TargetObject, 
+        Status = AcpiAmlStoreObjectToObject (SourceObject, TargetObject,
                         (ACPI_WALK_STATE *) Context);
         if (ACPI_FAILURE (Status))
         {
@@ -753,7 +750,7 @@ AcpiCmCopyIelementToIelement (
 
     case 1:
         /*
-         * This object is a package - go down another nesting level 
+         * This object is a package - go down another nesting level
          * Create and build the package object
          */
         TargetObject = AcpiCmCreateInternalObject (ACPI_TYPE_PACKAGE);
@@ -811,7 +808,6 @@ AcpiCmCopyIpackageToIpackage (
     FUNCTION_TRACE ("CmCopyIpackageToIpackage");
 
 
-
     DestObj->Common.Type    = SourceObj->Common.Type;
     DestObj->Package.Count  = SourceObj->Package.Count;
 
@@ -832,7 +828,7 @@ AcpiCmCopyIpackageToIpackage (
     }
 
 
-    Status = AcpiCmWalkPackageTree (SourceObj, DestObj, 
+    Status = AcpiCmWalkPackageTree (SourceObj, DestObj,
                             AcpiCmCopyIelementToIelement, WalkState);
 
     return_ACPI_STATUS (Status);
