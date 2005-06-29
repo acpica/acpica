@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslmain - compiler main and utilities
- *              $Revision: 1.12 $
+ *              $Revision: 1.13 $
  *
  *****************************************************************************/
 
@@ -186,13 +186,14 @@ void
 Usage (
     void)
 {
-    printf ("Usage:    %s [-dhilno] <InputFile>\n\n", CompilerName);
+    printf ("Usage:    %s <Options> <InputFile>\n\n", CompilerName);
     printf ("Options:  -d               Create debug/trace output file (*.txt)\n");
-    printf ("          -h               Create ascii hex output file\n");
+    printf ("          -h               Create ascii hex output file (*.hex)\n");
     printf ("          -i               Ignore errors, always create AML file\n");
-    printf ("          -l               Create listing file (*.lst)\n");
+    printf ("          -l               Create listing (mixed source/AML) file (*.lst)\n");
     printf ("          -n               Create namespace file (*.nsp)\n");
     printf ("          -o <filename>    Specify output file (override table header)\n");
+    printf ("          -s               Create combined (w/includes) ASL file (*.src)\n");
 }
 
 
@@ -218,7 +219,7 @@ main (
     UINT32              j;
     ACPI_STATUS         Status;
     UINT32              DebugLevel = AcpiDbgLevel;
-    UINT8               FileByte;
+    BOOLEAN             BadCommandLine = FALSE;
 
 
 
@@ -237,7 +238,7 @@ main (
 
     /* Get the command line options */
 
-    while ((j = getopt (argc, argv, "dhilno:")) != EOF) switch (j)
+    while ((j = getopt (argc, argv, "dhilno:s")) != EOF) switch (j)
     {
     case 'd':
         /* Produce debug output file */
@@ -278,29 +279,51 @@ main (
         Gbl_UseDefaultAmlFilename = FALSE;
         break;
 
-    default:
-        printf ("Unknown option %c\n", j);
+    case 's':
+        /* Produce combined source file */
 
+        Gbl_SourceOutputFlag = TRUE;
+        break;
+
+    default:
+        BadCommandLine = TRUE;
+        break;
+    }
+
+
+    /* Next parameter must be the input filename */
+
+    Gbl_InputFilename = argv[optind];
+    if (!Gbl_InputFilename)
+    {
+        printf ("Missing input filename\n");
+        BadCommandLine = TRUE;
+    }
+
+    /* Abort if anything went wrong on the command line */
+
+    if (BadCommandLine)
+    {
+        printf ("\n");
         Usage ();
         return -1;
     }
 
 
 
-    /* Next parameter must be the input filename */
-
-    Gbl_InputFilename = argv[optind];
-    Status = UtOpenInputFile (Gbl_InputFilename);
+    Status = FlOpenInputFile (Gbl_InputFilename);
     if (ACPI_FAILURE (Status))
     {
         return -1;
     }
-    Status = UtOpenMiscOutputFiles (Gbl_InputFilename);
+    Status = FlOpenMiscOutputFiles (Gbl_InputFilename);
     if (ACPI_FAILURE (Status))
     {
         return -1;
     }
 
+
+    /* ACPI CA subsystem initialization */
 
     AcpiCmInitGlobals ();
     AcpiCmMutexInitialize ();
@@ -345,9 +368,22 @@ main (
     TgWalkParseTree (ASL_WALK_VISIT_UPWARD, NULL, LnInitLengthsWalk, NULL);
     TgWalkParseTree (ASL_WALK_VISIT_UPWARD, NULL, LnPackageLengthWalk, NULL);
 
+
+    /*
+     * Now that the input is parsed, we can open the AML output file.
+     * Note: by default, the name of this file comes from the table descriptor 
+     * within the input file.
+     */
+    Status = FlOpenAmlOutputFile (Gbl_InputFilename);
+    if (ACPI_FAILURE (Status))
+    {
+        return -1;
+    }
+
+
     /* Code generation - emit the AML */
 
-    if (Gbl_SourceOutputFlag)
+    if (Gbl_SourceOutputFlag || Gbl_ListingFlag)
     {
         fseek (Gbl_SourceOutputFile, 0, SEEK_SET);
     }
@@ -360,14 +396,6 @@ main (
         fprintf (Gbl_ListingFile, "Compilation of %s\n\n", Gbl_InputFilename); 
     }
 
-
-    Status = UtOpenAmlOutputFile (Gbl_InputFilename);
-    if (ACPI_FAILURE (Status))
-    {
-        return -1;
-    }
-
-
     DbgPrint ("\nWriting AML\n\n");
     TgWalkParseTree (ASL_WALK_VISIT_DOWNWARD, CgAmlWriteWalk, NULL, NULL);
 
@@ -375,28 +403,9 @@ main (
     CgCloseTable ();
 
 
-    if (Gbl_HexOutputFlag)
-    {
-        fseek (Gbl_OutputAmlFile, 0, SEEK_SET);
+    /* Dump the AML as hex if requested */
 
-        j = 0;
-        while (fread (&FileByte, 1, 1, Gbl_OutputAmlFile))
-        {
-            fwrite ("0x", 2, 1, Gbl_HexFile);
-            fwrite (&hex[FileByte >> 4], 1, 1, Gbl_HexFile);
-            fwrite (&hex[FileByte & 0xF], 1, 1, Gbl_HexFile);
-            fwrite (", ", 2, 1, Gbl_HexFile);
-            j++;
-            if (j >= 12)
-            {
-                fwrite ("\n", 1, 1, Gbl_HexFile);
-                j = 0;
-            }
-        }
-    fclose (Gbl_HexFile);
-    }
-
-
+    FlDoHexOutput ();
 
     /* Dump the namespace to the .nsp file if requested */
 
