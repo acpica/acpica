@@ -195,7 +195,9 @@ CmGetTableRsdt (
     /* Save the table pointers and allocation info */
 
     RSDP = (ROOT_SYSTEM_DESCRIPTOR_POINTER *) TableInfo.Pointer;
-    AcpiTables [TABLE_RSDP] = TableInfo;
+    AcpiTables[TABLE_RSDP].Pointer = TableInfo.Pointer;
+    AcpiTables[TABLE_RSDP].Length = TableInfo.Length;
+    AcpiTables[TABLE_RSDP].Allocation = TableInfo.Allocation;
 
     /* RSDP structure was found */
 
@@ -236,7 +238,9 @@ CmGetTableRsdt (
     /* Save the table pointers and allocation info */
 
     RSDT = (ROOT_SYSTEM_DESCRIPTION_TABLE *) TableInfo.Pointer;
-    AcpiTables [TABLE_RSDT] = TableInfo;
+    AcpiTables[TABLE_RSDP].Pointer = TableInfo.Pointer;
+    AcpiTables[TABLE_RSDP].Length = TableInfo.Length;
+    AcpiTables[TABLE_RSDP].Allocation = TableInfo.Allocation;
 
     /* Valid RSDT pointer */
 
@@ -411,7 +415,9 @@ CmInstallTable (
         /* Save the table pointers and allocation info */
 
         *TableGlobalPtr = TableHeader;
-        AcpiTables [TableType] = *TableInfo;
+        AcpiTables[TableType].Pointer = TableInfo->Pointer;
+        AcpiTables[TableType].Length = TableInfo->Length;
+        AcpiTables[TableType].Allocation = TableInfo->Allocation;
 
         DEBUG_PRINT (ACPI_INFO, ("%s located at %p\n", TableName, TableHeader));
 
