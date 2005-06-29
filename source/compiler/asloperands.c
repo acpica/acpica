@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asloperands - AML operand processing
- *              $Revision: 1.25 $
+ *              $Revision: 1.28 $
  *
  *****************************************************************************/
 
@@ -249,20 +249,21 @@ OpnDoFieldCommon (
     Next = Next->Peer;
     UpdateRule = Next->Value.Integer8;
 
-    /* Generate the flags byte */
-
-    FieldFlags = (UINT8) ((AccessType & 0x0F) |
-                         ((LockRule & 0x01) << 4) |
-                         ((UpdateRule & 0x03) << 5));
+    /* 
+     * Generate the flags byte.  The various fields are already
+     * in the right bit position via translation from the
+     * keywords by the parser.
+     */
+    FieldFlags = (UINT8) (AccessType | LockRule | UpdateRule);
 
     /* Use the previous node to be the FieldFlags node */
 
     /* Set the node to RAW_DATA */
 
     Next->Value.Integer = FieldFlags;
-    Next->AmlOpcode = AML_RAW_DATA_BYTE;
-    Next->AmlLength = 1;
-    Next->ParseOpcode = RAW_DATA;
+    Next->AmlOpcode     = AML_RAW_DATA_BYTE;
+    Next->AmlLength     = 1;
+    Next->ParseOpcode   = RAW_DATA;
 
     /* Process the FieldUnitList */
 
@@ -294,7 +295,6 @@ OpnDoFieldCommon (
              * Examine the specified offset in relation to the
              * current offset counter.
              */
-
             if (NewBitOffset < CurrentBitOffset)
             {
                 /*
@@ -305,7 +305,6 @@ OpnDoFieldCommon (
                 Next->ParseOpcode = DEFAULT_ARG;
                 PkgLengthNode->ParseOpcode = DEFAULT_ARG;
             }
-
             else if (NewBitOffset == CurrentBitOffset)
             {
                 /*
@@ -315,7 +314,6 @@ OpnDoFieldCommon (
                 Next->ParseOpcode = DEFAULT_ARG;
                 PkgLengthNode->ParseOpcode = DEFAULT_ARG;
             }
-
             else
             {
                 /*
@@ -677,7 +675,8 @@ OpnDoPackage (
 
     /* Check if initializer list is longer than the buffer length */
 
-    if (PackageLengthNode->ParseOpcode == INTEGER)
+    if ((PackageLengthNode->ParseOpcode == INTEGER)      ||
+        (PackageLengthNode->ParseOpcode == BYTECONST))
     {
         if (PackageLengthNode->Value.Integer > PackageLength)
         {
@@ -691,6 +690,7 @@ OpnDoPackage (
      * package length
      */
     if ((PackageLengthNode->ParseOpcode == INTEGER)      ||
+        (PackageLengthNode->ParseOpcode == BYTECONST)    ||
         (PackageLengthNode->ParseOpcode == DEFAULT_ARG))
     {
         if (!PackageLength)
@@ -957,12 +957,10 @@ OpnAttachNameToNode (
     case AML_FIELD_OP:
 
         return;
-        break;
 
 
     default:
         return;
-        break;
     }
 
 
