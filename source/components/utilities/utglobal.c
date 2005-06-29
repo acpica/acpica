@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: utglobal - Global variables for the ACPI subsystem
- *              $Revision: 1.176 $
+ *              $Revision: 1.179 $
  *
  *****************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2003, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -251,7 +251,7 @@ BOOLEAN                     AcpiGbl_Shutdown = TRUE;
 
 const UINT8                 AcpiGbl_DecodeTo8bit [8] = {1,2,4,8,16,32,64,128};
 
-const NATIVE_CHAR           *AcpiGbl_DbSleepStates[ACPI_S_STATE_COUNT] = {
+const char                  *AcpiGbl_DbSleepStates[ACPI_S_STATE_COUNT] = {
                                 "\\_S0_",
                                 "\\_S1_",
                                 "\\_S2_",
@@ -338,7 +338,7 @@ const UINT8                     AcpiGbl_NsProperties[] =
 
 /* Hex to ASCII conversion table */
 
-static const NATIVE_CHAR    AcpiGbl_HexToAscii[] =
+static const char           AcpiGbl_HexToAscii[] =
                                 {'0','1','2','3','4','5','6','7',
                                  '8','9','A','B','C','D','E','F'};
 
@@ -456,8 +456,9 @@ ACPI_FIXED_EVENT_INFO       AcpiGbl_FixedEventInfo[ACPI_NUM_FIXED_EVENTS] =
 
 /* Region type decoding */
 
-const NATIVE_CHAR *AcpiGbl_RegionTypes[ACPI_NUM_PREDEFINED_REGIONS] =
+const char        *AcpiGbl_RegionTypes[ACPI_NUM_PREDEFINED_REGIONS] =
 {
+/*! [Begin] no source code translation (keep these ASL Keywords as-is) */
     "SystemMemory",
     "SystemIO",
     "PCI_Config",
@@ -465,11 +466,12 @@ const NATIVE_CHAR *AcpiGbl_RegionTypes[ACPI_NUM_PREDEFINED_REGIONS] =
     "SMBus",
     "CMOS",
     "PCIBARTarget",
-    "DataTable",
+    "DataTable"
+/*! [End] no source code translation !*/
 };
 
 
-NATIVE_CHAR *
+char *
 AcpiUtGetRegionName (
     UINT8                   SpaceId)
 {
@@ -481,10 +483,10 @@ AcpiUtGetRegionName (
 
     else if (SpaceId >= ACPI_NUM_PREDEFINED_REGIONS)
     {
-        return ("InvalidSpaceID");
+        return ("InvalidSpaceId");
     }
 
-    return ((NATIVE_CHAR *) AcpiGbl_RegionTypes[SpaceId]);
+    return ((char *) AcpiGbl_RegionTypes[SpaceId]);
 }
 
 
@@ -502,7 +504,7 @@ AcpiUtGetRegionName (
 
 /* Event type decoding */
 
-static const NATIVE_CHAR *AcpiGbl_EventTypes[ACPI_NUM_FIXED_EVENTS] =
+static const char        *AcpiGbl_EventTypes[ACPI_NUM_FIXED_EVENTS] =
 {
     "PM_Timer",
     "GlobalLock",
@@ -512,7 +514,7 @@ static const NATIVE_CHAR *AcpiGbl_EventTypes[ACPI_NUM_FIXED_EVENTS] =
 };
 
 
-NATIVE_CHAR *
+char *
 AcpiUtGetEventName (
     UINT32                  EventId)
 {
@@ -522,7 +524,7 @@ AcpiUtGetEventName (
         return ("InvalidEventID");
     }
 
-    return ((NATIVE_CHAR *) AcpiGbl_EventTypes[EventId]);
+    return ((char *) AcpiGbl_EventTypes[EventId]);
 }
 
 
@@ -547,10 +549,10 @@ AcpiUtGetEventName (
  * indicatewhat type is actually going to be stored for this entry.
  */
 
-static const NATIVE_CHAR    AcpiGbl_BadType[] = "UNDEFINED";
+static const char           AcpiGbl_BadType[] = "UNDEFINED";
 #define TYPE_NAME_LENGTH    12                           /* Maximum length of each string */
 
-static const NATIVE_CHAR    *AcpiGbl_NsTypeNames[] =    /* printable names of ACPI types */
+static const char           *AcpiGbl_NsTypeNames[] =    /* printable names of ACPI types */
 {
     /* 00 */ "Untyped",
     /* 01 */ "Integer",
@@ -585,21 +587,21 @@ static const NATIVE_CHAR    *AcpiGbl_NsTypeNames[] =    /* printable names of AC
 };
 
 
-NATIVE_CHAR *
+char *
 AcpiUtGetTypeName (
     ACPI_OBJECT_TYPE        Type)
 {
 
     if (Type > ACPI_TYPE_INVALID)
     {
-        return ((NATIVE_CHAR *) AcpiGbl_BadType);
+        return ((char *) AcpiGbl_BadType);
     }
 
-    return ((NATIVE_CHAR *) AcpiGbl_NsTypeNames[Type]);
+    return ((char *) AcpiGbl_NsTypeNames[Type]);
 }
 
 
-NATIVE_CHAR *
+char *
 AcpiUtGetObjectTypeName (
     ACPI_OPERAND_OBJECT     *ObjDesc)
 {
@@ -632,7 +634,7 @@ AcpiUtGetObjectTypeName (
  *
  ****************************************************************************/
 
-NATIVE_CHAR *
+char *
 AcpiUtGetMutexName (
     UINT32                  MutexId)
 {
