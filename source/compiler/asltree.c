@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asltree - parse tree management
- *              $Revision: 1.33 $
+ *              $Revision: 1.34 $
  *
  *****************************************************************************/
 
@@ -617,9 +617,9 @@ TrLinkChildren (
     {
         Child = va_arg (ap, ASL_PARSE_NODE *);
 
-        if (Child == PrevChild)
+        if ((Child == PrevChild) && (Child != NULL))
         {
-            printf ("Child list invalid\n");
+            AslError (ASL_WARNING, ASL_MSG_COMPILER_INTERNAL, Child, "Child node list invalid");
             return Node;
         }
 
@@ -730,7 +730,7 @@ TrLinkPeerNode (
     {
         DbgPrint (ASL_DEBUG_OUTPUT,
             "\n\n************* Internal error, linking node to itself %p\n\n\n", Node1);
-        printf ("Internal error, linking node to itself\n");
+        AslError (ASL_WARNING, ASL_MSG_COMPILER_INTERNAL, Node1, "Linking node to itself");
         return Node1;
     }
 
