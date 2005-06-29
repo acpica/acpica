@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslmain - compiler main and utilities
- *              $Revision: 1.50 $
+ *              $Revision: 1.51 $
  *
  *****************************************************************************/
 
@@ -119,7 +119,6 @@
 #define _DECLARE_GLOBALS
 
 #include "aslcompiler.h"
-#include "acparser.h"
 
 #ifdef _DEBUG
 #include <crtdbg.h>
@@ -349,7 +348,6 @@ main (
     case 'd':
         printf ("AML Disassembly not yet supported\n");
         return (0);
-        break;
 
     case 'e':
 
@@ -424,6 +422,7 @@ main (
             printf ("Unknown option: -q%s\n", optarg);
             BadCommandLine = TRUE;
         }
+        break;
 
     case 's':
 
