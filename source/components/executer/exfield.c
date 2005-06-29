@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: exfield - ACPI AML (p-code) execution - field manipulation
- *              $Revision: 1.115 $
+ *              $Revision: 1.116 $
  *
  *****************************************************************************/
 
@@ -149,7 +149,7 @@ AcpiExReadDataFromField (
 {
     ACPI_STATUS             Status;
     ACPI_OPERAND_OBJECT     *BufferDesc;
-    UINT32                  Length;
+    ACPI_SIZE               Length;
     void                    *Buffer;
     BOOLEAN                 Locked;
 
@@ -217,7 +217,7 @@ AcpiExReadDataFromField (
      *
      * Note: Field.length is in bits.
      */
-    Length = ACPI_ROUND_BITS_UP_TO_BYTES (ObjDesc->Field.BitLength);
+    Length = (ACPI_SIZE) ACPI_ROUND_BITS_UP_TO_BYTES (ObjDesc->Field.BitLength);
     if (Length > AcpiGbl_IntegerByteWidth)
     {
         /* Field is too large for an Integer, create a Buffer instead */
@@ -246,7 +246,7 @@ AcpiExReadDataFromField (
 
     ACPI_DEBUG_PRINT ((ACPI_DB_BFIELD,
         "Obj=%p Type=%X Buf=%p Len=%X\n",
-        ObjDesc, ACPI_GET_OBJECT_TYPE (ObjDesc), Buffer, Length));
+        ObjDesc, ACPI_GET_OBJECT_TYPE (ObjDesc), Buffer, (UINT32) Length));
     ACPI_DEBUG_PRINT ((ACPI_DB_BFIELD,
         "FieldWrite: BitLen=%X BitOff=%X ByteOff=%X\n",
         ObjDesc->CommonField.BitLength,
@@ -259,7 +259,7 @@ AcpiExReadDataFromField (
 
     /* Read from the field */
 
-    Status = AcpiExExtractFromField (ObjDesc, Buffer, Length);
+    Status = AcpiExExtractFromField (ObjDesc, Buffer, (UINT32) Length);
     AcpiExReleaseGlobalLock (Locked);
 
 
