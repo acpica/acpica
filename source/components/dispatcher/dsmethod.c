@@ -122,6 +122,7 @@
 #include <dispatch.h>
 #include <interp.h>
 #include <namesp.h>
+#include <tables.h>
 
 
 #define _COMPONENT          DISPATCHER
@@ -140,8 +141,7 @@
  *
  * RETURN:      Status
  *
- * DESCRIPTION: Callback from AcpiWalkNamespace.  Invoked whenever a control 
- *              method is located.  Call the parser and parse the AML that is
+ * DESCRIPTION: Call the parser and parse the AML that is
  *              associated with the method.
  *
  ******************************************************************************/
@@ -154,6 +154,7 @@ DsParseMethod (
     ACPI_OBJECT_INTERNAL    *ObjDesc;
     ACPI_GENERIC_OP         *Op;
     NAME_TABLE_ENTRY        *Entry;
+    ACPI_TABLE_DESC         *TableDesc;
 
 
     FUNCTION_TRACE ("DsParseMethod");
@@ -202,6 +203,14 @@ DsParseMethod (
     }
 
 
+    /* Get a handle to the parent ACPI table */
+
+    Status = TbHandleToObject (Entry->TableId, &TableDesc);
+    if (ACPI_FAILURE (Status))
+    {
+        return_ACPI_STATUS (Status);
+    }
+
 	/*
 	 * Make a first pass walk to add newly declared items to the namespace.
 	 * (The first pass only adds the names, it does not evaluate them)
@@ -210,7 +219,7 @@ DsParseMethod (
 	 */
 
     PsWalkParsedAml (Op->Value.Arg, Op, ObjDesc, Entry->Scope, NULL, NULL,
-                        DsLoad1BeginOp, DsLoad1EndOp);
+                        TableDesc, DsLoad1BeginOp, DsLoad1EndOp);
 
     /* Install the parsed tree in the method object */
 
@@ -303,7 +312,7 @@ DsCallControlMethod (
 
     /* Open a new scope */
 
-    Status = NsScopeStackPush (MethodNte->Scope, ACPI_TYPE_Method, NextWalkState);
+    Status = DsScopeStackPush (MethodNte->Scope, ACPI_TYPE_Method, NextWalkState);
     if (ACPI_FAILURE (Status))
     {
         return_ACPI_STATUS (Status);
@@ -317,7 +326,7 @@ DsCallControlMethod (
      * on the previous walk state's operand stack
      */
 
-    Status = DsMthStackInitArgs (&ThisWalkState->Operands[0], ThisWalkState->NumOperands);
+    Status = DsMethodDataInitArgs (&ThisWalkState->Operands[0], ThisWalkState->NumOperands);
     if (ACPI_FAILURE (Status))
     {
         return_ACPI_STATUS (Status);
@@ -327,7 +336,7 @@ DsCallControlMethod (
 
     for (i = 0; i < NumArgs; i++)
     {
-        CmDeleteInternalObject (ThisWalkState->Operands [i]);
+        CmRemoveReference (ThisWalkState->Operands [i]);
     }
 
     /* Clear the operand stack */
@@ -391,7 +400,7 @@ DsRestartControlMethod (
         Status = DsResultStackPush (ReturnDesc, WalkState);
         if (ACPI_FAILURE (Status))
         {
-            CmDeleteInternalObject (ReturnDesc);
+            CmRemoveReference (ReturnDesc);
             return_ACPI_STATUS (Status);
         }
 
