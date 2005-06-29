@@ -138,7 +138,7 @@
  * anything.
  */
 
-FIXED_ACPI_DESCRIPTION_TABLE    LocalFADT;
+FADT_DESCRIPTOR             LocalFADT;
 
 
 
@@ -275,7 +275,7 @@ main (
         LocalFADT.PmTmrBlk      = 0xA0;
         LocalFADT.PmTmLen       = 8;
 
-        AcpiGbl_FACP = &LocalFADT;
+        AcpiGbl_FADT = &LocalFADT;
 
 
 
