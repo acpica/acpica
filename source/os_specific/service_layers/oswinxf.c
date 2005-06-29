@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: oswinxf - Windows application interface
- *              $Revision: 1.4 $
+ *              $Revision: 1.6 $
  *
  *****************************************************************************/
 
@@ -125,10 +125,12 @@
 #pragma warning(disable:4115)   /* warning C4115: named type definition in parentheses (caused by rpcasync.h> */
 
 #include <windows.h>
+#include <winbase.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdarg.h>
 #include <process.h>
+#include <time.h>
 
 #undef LOWORD
 #undef HIWORD
@@ -139,7 +141,7 @@
 #include "acpi.h"           /* TBD: this should be acpixf.h */
 #include "acdebug.h"
 
-#define _COMPONENT          OS_DEPENDENT
+#define _COMPONENT          ACPI_OS_SERVICES
         MODULE_NAME         ("oswinxf")
 
 
@@ -159,6 +161,7 @@ SEMAPHORE_ENTRY             SemaphoreTable[NUM_SEMAPHORES];
 
 
 extern FILE                 *DebugFile;
+
 
 
 /******************************************************************************
@@ -193,6 +196,33 @@ ACPI_STATUS
 AcpiOsTerminate (void)
 {
     return AE_OK;
+}
+
+
+/******************************************************************************
+ *
+ * FUNCTION:    AcpiOsGetTimer
+ *
+ * PARAMETERS:  None
+ *
+ * RETURN:      Current time in milliseconds
+ *
+ * DESCRIPTION: Get the current system time (in milliseconds).
+ *
+ *****************************************************************************/
+
+UINT32
+AcpiOsGetTimer (void)
+{
+    SYSTEMTIME              SysTime;
+
+
+    GetSystemTime (&SysTime);
+
+    return ((SysTime.wMinute * 60000) +
+        (SysTime.wSecond * 1000) +
+        SysTime.wMilliseconds);
+
 }
 
 
