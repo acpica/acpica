@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslopcode - AML opcode generation
- *              $Revision: 1.14 $
+ *              $Revision: 1.5 $
  *
  *****************************************************************************/
 
@@ -10,8 +10,8 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
- * All rights reserved.
+ * Some or all of this work - Copyright (c) 1999, Intel Corp.  All rights
+ * reserved.
  *
  * 2. License
  *
@@ -116,13 +116,12 @@
  *****************************************************************************/
 
 
-#include "aslcompiler.h"
-#include "aslcompiler.y.h"
+#include "AslCompiler.h"
+#include "AslCompiler.y.h"
 #include "amlcode.h"
 #include "acnamesp.h"
 
-#define _COMPONENT          ACPI_COMPILER
-        MODULE_NAME         ("asloperands")
+
 
 
 /*******************************************************************************
@@ -192,10 +191,6 @@ OpnDoMethod (
     Next->AmlOpcode = AML_RAW_DATA_BYTE;
     Next->AmlLength = 1;
     Next->ParseOpcode = RAW_DATA;
-
-    /* Save the arg count in the first node */
-
-    Node->Extra = NumArgs;
 }
 
 
@@ -255,7 +250,7 @@ OpnDoFieldCommon (
     Next->AmlLength = 1;
     Next->ParseOpcode = RAW_DATA;
 
-    /* Process the FieldUnitList */
+    /*  Process the FieldUnitList */
 
     Next = Next->Peer;
     CurrentBitOffset = 0;
@@ -265,70 +260,28 @@ OpnDoFieldCommon (
         switch (Next->ParseOpcode)
         {
         case ACCESSAS:
-
-            /* Nothing additional to do */
             break;
-
 
         case OFFSET:
-
-            /* New offset into the field */
-
             PkgLengthNode = Next->Child;
             NewBitOffset = PkgLengthNode->Value.Integer32 * 8;
-
-            /*
-             * Examine the specified offset in relation to the
-             * current offset counter.
-             */
-
             if (NewBitOffset < CurrentBitOffset)
             {
-                /*
-                 * Not allowed to specify a backwards offset!
-                 * Issue error and ignore this node.
-                 */
-                AslError (ASL_ERROR, ASL_MSG_BACKWARDS_OFFSET, PkgLengthNode, NULL);
-                Next->ParseOpcode = DEFAULT_ARG;
-                PkgLengthNode->ParseOpcode = DEFAULT_ARG;
+                DbgPrint ("Offset less than current offset\n");
             }
 
-            else if (NewBitOffset == CurrentBitOffset)
-            {
-                /*
-                 * Offset is redundant; we don't need to output an
-                 * offset opcode.  Just set these nodes to default
-                 */
-                Next->ParseOpcode = DEFAULT_ARG;
-                PkgLengthNode->ParseOpcode = DEFAULT_ARG;
-            }
-
-            else
-            {
-                /*
-                 * Valid new offset - set the value to be inserted into the AML
-                 * and update the offset counter.
-                 */
-                PkgLengthNode->Value.Integer = NewBitOffset - CurrentBitOffset;
-                CurrentBitOffset = NewBitOffset;
-            }
+            PkgLengthNode->Value.Integer = NewBitOffset - CurrentBitOffset;
+            CurrentBitOffset = NewBitOffset;
             break;
-
 
         case NAMESEG:
         case RESERVED_BYTES:
-
-            /* Named or reserved field entry */
-
-            PkgLengthNode     = Next->Child;
-            NewBitOffset      = PkgLengthNode->Value.Integer32;
+            PkgLengthNode = Next->Child;
+            NewBitOffset = PkgLengthNode->Value.Integer32;
             CurrentBitOffset += NewBitOffset;
             break;
 
         }
-
-        /* Move on to next entry in the field list */
-
         Next = Next->Peer;
     }
 }
@@ -462,6 +415,7 @@ OpnDoBuffer (
     /* Optional arguments for this opcode with defaults */
 
     UINT32                      BufferLength = 0;
+
 
 
     /* Opcode and package length first */
@@ -683,7 +637,7 @@ OpnDoDefinitionBlock (
     Child = Node->Child;
     if ((Child->Value.Pointer) && (Gbl_UseDefaultAmlFilename))
     {
-        Gbl_OutputFilenamePrefix = Child->Value.Pointer;
+        Gbl_OutputFilename = Child->Value.Pointer;
     }
     Child->ParseOpcode = DEFAULT_ARG;
 
@@ -800,11 +754,11 @@ OpnAttachNameToNode (
         break;
 
 
-    case AML_CREATE_BIT_FIELD_OP:
-    case AML_CREATE_BYTE_FIELD_OP:
-    case AML_CREATE_WORD_FIELD_OP:
-    case AML_CREATE_DWORD_FIELD_OP:
-    case AML_CREATE_QWORD_FIELD_OP:
+    case AML_BIT_FIELD_OP:
+    case AML_BYTE_FIELD_OP:
+    case AML_WORD_FIELD_OP:
+    case AML_DWORD_FIELD_OP:
+    case AML_QWORD_FIELD_OP:
 
         Child = UtGetArg (PsNode, 2);
         break;
@@ -818,7 +772,7 @@ OpnAttachNameToNode (
 
     case AML_BANK_FIELD_OP:
     case AML_INDEX_FIELD_OP:
-    case AML_FIELD_OP:
+    case AML_DEF_FIELD_OP:
 
         return;
         break;
@@ -850,7 +804,7 @@ OpnAttachNameToNode (
  * RETURN:      None
  *
  * DESCRIPTION: Prepare nodes to be output as AML data and operands.  The more
- *              complex AML opcodes require processing of the child nodes
+ *              complex AML opcodes require processing of the child nodes 
  *              (arguments/operands).
  *
  ******************************************************************************/

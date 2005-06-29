@@ -1,7 +1,7 @@
 /******************************************************************************
  *
- * Module Name: dswload - Dispatcher namespace load callbacks
- *              $Revision: 1.3 $
+ * Module Name: asllookup- Namespace lookup
+ *              $Revision: 1.10 $
  *
  *****************************************************************************/
 
@@ -129,16 +129,85 @@
         MODULE_NAME         ("dswload")
 
 
+/*****************************************************************************
+ *
+ * FUNCTION:
+ *
+ * PARAMETERS:
+ *
+ * RETURN:
+ *
+ * DESCRIPTION:
+ *
+ ****************************************************************************/
+
+ACPI_STATUS
+LsDoOneNamespaceObject (
+    ACPI_HANDLE             ObjHandle,
+    UINT32                  Level,
+    void                    *Context,
+    void                    **ReturnValue)
+{
+    ACPI_NAMESPACE_NODE     *Node = (ACPI_NAMESPACE_NODE *) ObjHandle;
+
+
+    Gbl_NumNamespaceObjects++;
+
+    fprintf (Gbl_NamespaceOutputFile, "%5d  [%d]  %*s %4.4s - %s\n",
+                        Gbl_NumNamespaceObjects, Level, (Level * 3), " ",
+                        &Node->Name,
+                        AcpiCmGetTypeName (Node->Type));
+
+    return (AE_OK);
+}
+
 
 /*****************************************************************************
  *
- * FUNCTION:    
+ * FUNCTION:
  *
- * PARAMETERS:  
+ * PARAMETERS:
  *
- * RETURN:      
+ * RETURN:
  *
- * DESCRIPTION: 
+ * DESCRIPTION:
+ *
+ ****************************************************************************/
+
+ACPI_STATUS
+LsDisplayNamespace (void)
+{
+    ACPI_STATUS             Status;
+
+
+    if (!Gbl_NsOutputFlag)
+    {
+        return (AE_OK);
+    }
+
+    fprintf (Gbl_NamespaceOutputFile, "Contents of ACPI Namespace\n\n");
+    fprintf (Gbl_NamespaceOutputFile, "Count  Depth    Name - Type\n\n");
+
+    /* Walk entire namespace from the supplied root */
+
+    Status = AcpiNsWalkNamespace (ACPI_TYPE_ANY, ACPI_ROOT_OBJECT,
+                                ACPI_UINT32_MAX, FALSE, LsDoOneNamespaceObject,
+                                NULL, NULL);
+
+
+    return (AE_OK);
+}
+
+
+/*****************************************************************************
+ *
+ * FUNCTION:
+ *
+ * PARAMETERS:
+ *
+ * RETURN:
+ *
+ * DESCRIPTION:
  *
  ****************************************************************************/
 
@@ -161,7 +230,7 @@ LkCrossReferenceNamespace (void)
     }
 
 
-    TgWalkParseTree (ASL_WALK_VISIT_TWICE, LkNamespaceLocateBegin, 
+    TrWalkParseTree (ASL_WALK_VISIT_TWICE, LkNamespaceLocateBegin,
                         LkNamespaceLocateEnd, WalkState);
 
 
@@ -171,9 +240,9 @@ LkCrossReferenceNamespace (void)
 
 /*****************************************************************************
  *
- * FUNCTION:    
+ * FUNCTION:
  *
- * PARAMETERS:  
+ * PARAMETERS:
  *
  * RETURN:      Status
  *
@@ -183,9 +252,9 @@ LkCrossReferenceNamespace (void)
 
 ACPI_STATUS
 LkNamespaceLocateBegin (
-    ASL_PARSE_NODE              *PsNode,
-    UINT32                      Level,
-    void                        *Context)
+    ASL_PARSE_NODE          *PsNode,
+    UINT32                  Level,
+    void                    *Context)
 {
     ACPI_WALK_STATE         *WalkState = (ACPI_WALK_STATE *) Context;
     ACPI_NAMESPACE_NODE     *NsNode;
@@ -209,7 +278,6 @@ LkNamespaceLocateBegin (
     }
 
 
-
     if (AcpiPsIsNamedOp (PsNode->AmlOpcode))
     {
         Path = PsNode->Child->Value.String;
@@ -228,11 +296,10 @@ LkNamespaceLocateBegin (
         ("Load1BeginOp: Type=%x\n", DataType));
 
 
-
     /*
      * Lookup the name in the namespace.  Name must exist at this point, or it
      * is an invalid reference.
-     * 
+     *
      * The namespace is also used as a lookup table for references to resource
      * descriptors and the fields within them.
      */
@@ -244,7 +311,7 @@ LkNamespaceLocateBegin (
     {
         if (Status == AE_NOT_FOUND)
         {
-            AslWarningMsg (ASL_WARNING_NOT_FOUND, PsNode->LineNumber, PsNode->ExternalName);
+            AslError (ASL_WARNING, ASL_MSG_NOT_FOUND, PsNode, PsNode->ExternalName);
         }
         return (Status);
     }
@@ -256,7 +323,7 @@ LkNamespaceLocateBegin (
          * This was a reference to a field within a resource descriptor.  Extract
          * the associated field offset (either a bit or byte offset depending on
          * the field type) and change the named reference into an integer for
-         * AML code generation 
+         * AML code generation
          */
 
         free (PsNode->Value.String);
@@ -268,16 +335,16 @@ LkNamespaceLocateBegin (
         PsNode->AmlOpcode       = AML_DWORD_OP;
         PsNode->Value.Integer   = (UINT64) NsNode->OwnerId;
 
-        PsNode->AmlLength = CgSetOptimalIntegerSize (PsNode);
+        PsNode->AmlLength = OpcSetOptimalIntegerSize (PsNode);
 
         LengthDelta = LengthDelta - PsNode->AmlLength;
         LengthDelta--; /* Minus one more for opcode length (now 1, was 0) */
-        
+
 
         /*
          * Must adjust all package lengths to the root
          */
-        LnAdjustLengthToRoot (PsNode, LengthDelta);
+//        LnAdjustLengthToRoot (PsNode, LengthDelta);
     }
 
     PsNode->NsNode = NsNode;
@@ -288,9 +355,9 @@ LkNamespaceLocateBegin (
 
 /*****************************************************************************
  *
- * FUNCTION:    
+ * FUNCTION:
  *
- * PARAMETERS:  
+ * PARAMETERS:
  *
  * RETURN:      Status
  *
@@ -301,13 +368,12 @@ LkNamespaceLocateBegin (
 
 ACPI_STATUS
 LkNamespaceLocateEnd (
-    ASL_PARSE_NODE              *PsNode,
-    UINT32                      Level,
-    void                        *Context)
+    ASL_PARSE_NODE          *PsNode,
+    UINT32                  Level,
+    void                    *Context)
 {
     ACPI_WALK_STATE         *WalkState = (ACPI_WALK_STATE *) Context;
     OBJECT_TYPE_INTERNAL    DataType;
-
 
 
     /* We are only interested in opcodes that have an associated name */

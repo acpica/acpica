@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dswload - Dispatcher namespace load callbacks
- *              $Revision: 1.5 $
+ *              $Revision: 1.8 $
  *
  *****************************************************************************/
 
@@ -114,7 +114,7 @@
  *
  *****************************************************************************/
 
-#define __DSWLOAD_C__
+#define __ASLLOAD_C__
 
 #include "acpi.h"
 #include "acparser.h"
@@ -128,20 +128,18 @@
 #include "AslCompiler.y.h"
 
 #define _COMPONENT          DISPATCHER
-        MODULE_NAME         ("dswload")
-
-
+        MODULE_NAME         ("aslload")
 
 
 /*******************************************************************************
  *
- * FUNCTION:    
+ * FUNCTION:
  *
- * PARAMETERS:  
+ * PARAMETERS:
  *
- * RETURN:      
+ * RETURN:
  *
- * DESCRIPTION: 
+ * DESCRIPTION:
  *
  ******************************************************************************/
 
@@ -165,7 +163,7 @@ LdLoadNamespace (void)
 
 
 //    AcpiDbgLevel = 0xFFFFFFFF;
-    TgWalkParseTree (ASL_WALK_VISIT_TWICE, LdNamespace1Begin, 
+    TrWalkParseTree (ASL_WALK_VISIT_TWICE, LdNamespace1Begin,
                         LdNamespace1End, WalkState);
 
 
@@ -178,17 +176,15 @@ LdLoadNamespace (void)
 }
 
 
-
-
 /*******************************************************************************
  *
  * FUNCTION:    LdLoadFieldElements
  *
- * PARAMETERS:  
+ * PARAMETERS:
  *
- * RETURN:      
+ * RETURN:
  *
- * DESCRIPTION: 
+ * DESCRIPTION:
  *
  ******************************************************************************/
 
@@ -199,7 +195,6 @@ LdLoadFieldElements (
 {
     ASL_PARSE_NODE          *Child = NULL;
     ACPI_NAMESPACE_NODE     *NsNode;
-
 
 
     switch (PsNode->AmlOpcode)
@@ -244,13 +239,13 @@ LdLoadFieldElements (
 
 /*****************************************************************************
  *
- * FUNCTION:    
+ * FUNCTION:
  *
- * PARAMETERS:  
+ * PARAMETERS:
  *
  * RETURN:      Status
  *
- * DESCRIPTION: 
+ * DESCRIPTION:
  *
  ****************************************************************************/
 
@@ -264,8 +259,8 @@ LdLoadResourceElements (
     ACPI_STATUS             Status;
 
 
-    /* 
-     * Enter the resouce name into the namespace 
+    /*
+     * Enter the resouce name into the namespace
      * This opens a scope
      */
     Status = AcpiNsLookup (WalkState->ScopeInfo,
@@ -281,7 +276,7 @@ LdLoadResourceElements (
     (UINT32) NsNode->Object = 0;
 
 
-    /* 
+    /*
      * Now enter the predefined fields, for easy lookup when referenced
      * by the source ASL
      */
@@ -303,7 +298,7 @@ LdLoadResourceElements (
                 return;
             }
 
-            /* 
+            /*
              * Store the field offset in the namespace node so it
              * can be used when the field is referenced
              */
@@ -316,9 +311,9 @@ LdLoadResourceElements (
 
 /*****************************************************************************
  *
- * FUNCTION:    
+ * FUNCTION:
  *
- * PARAMETERS:  
+ * PARAMETERS:
  *
  * RETURN:      Status
  *
@@ -400,7 +395,6 @@ LdNamespace1Begin (
         ("Load1BeginOp: Type=%x\n", DataType));
 
 
-
     /*
      * Enter the named type into the internal namespace.  We enter the name
      * as we go downward in the parse tree.  Any necessary subobjects that involve
@@ -426,9 +420,9 @@ LdNamespace1Begin (
 
 /*****************************************************************************
  *
- * FUNCTION:    
+ * FUNCTION:
  *
- * PARAMETERS:  
+ * PARAMETERS:
  *
  * RETURN:      Status
  *
@@ -445,7 +439,6 @@ LdNamespace1End (
 {
     ACPI_WALK_STATE         *WalkState = (ACPI_WALK_STATE *) Context;
     OBJECT_TYPE_INTERNAL    DataType;
-
 
 
     /* We are only interested in opcodes that have an associated name */
