@@ -168,9 +168,6 @@
 #include <linux/ctype.h>
 #include <asm/system.h>
 
-/* Single threaded */
-
-#define ACPI_APPLICATION
 
 /* Use native Linux string library */
 
@@ -179,6 +176,10 @@
 /* Special functions */
 
 #define strtoul             simple_strtoul
+
+/* Linux clib doesn't to strupr, but we do. */
+char *
+strupr(char *str);
 
 #else
 
@@ -190,10 +191,20 @@
 
 #else
 
+#ifdef WIN32
+
+/* MS-VC++ */
+
+#define strupr              _strupr
+#define ACPI_USE_STANDARD_HEADERS
+
+#else
+
 /* All other environments */
 
 #define ACPI_USE_STANDARD_HEADERS
 
+#endif
 #endif
 #endif
 
@@ -218,6 +229,7 @@
 #include <stdarg.h>
 #include <stdlib.h>
 #include <string.h>
+#include <ctype.h>
 
 #endif /* ACPI_USE_STANDARD_HEADERS */
 
@@ -225,16 +237,16 @@
  * We will be linking to the standard Clib functions
  */
 
-#define STRSTR(s1,s2)           strstr((INT8 *) (s1), (INT8 *) (s2))
-#define STRUPR(s)               strupr((INT8 *) (s))
-#define STRLEN(s)               strlen((INT8 *) (s))
-#define STRCPY(d,s)             strcpy((INT8 *) (d), (INT8 *) (s))
-#define STRNCPY(d,s,n)          strncpy((INT8 *) (d), (INT8 *) (s), (n))
-#define STRNCMP(d,s,n)          strncmp((INT8 *) (d), (INT8 *) (s), (n))
-#define STRCMP(d,s)             strcmp((INT8 *) (d), (INT8 *) (s))
-#define STRCAT(d,s)             strcat((INT8 *) (d), (INT8 *) (s))
-#define STRNCAT(d,s,n)          strncat((INT8 *) (d), (INT8 *) (s), (n))
-#define STRTOUL(d,s,n)          strtoul((INT8 *) (d), (INT8 **) (s), (n))
+#define STRSTR(s1,s2)           strstr((NATIVE_CHAR *) (s1), (NATIVE_CHAR *) (s2))
+#define STRUPR(s)               strupr((NATIVE_CHAR *) (s))
+#define STRLEN(s)               strlen((NATIVE_CHAR *) (s))
+#define STRCPY(d,s)             strcpy((NATIVE_CHAR *) (d), (NATIVE_CHAR *) (s))
+#define STRNCPY(d,s,n)          strncpy((NATIVE_CHAR *) (d), (NATIVE_CHAR *) (s), (n))
+#define STRNCMP(d,s,n)          strncmp((NATIVE_CHAR *) (d), (NATIVE_CHAR *) (s), (n))
+#define STRCMP(d,s)             strcmp((NATIVE_CHAR *) (d), (NATIVE_CHAR *) (s))
+#define STRCAT(d,s)             strcat((NATIVE_CHAR *) (d), (NATIVE_CHAR *) (s))
+#define STRNCAT(d,s,n)          strncat((NATIVE_CHAR *) (d), (NATIVE_CHAR *) (s), (n))
+#define STRTOUL(d,s,n)          strtoul((d), (s), (n))
 #define MEMCPY(d,s,n)           memcpy(d, s, (size_t) n)
 #define MEMSET(d,s,n)           memset(d, s, (size_t) n)
 #define TOUPPER                 toupper
@@ -277,22 +289,22 @@ typedef char *va_list;
 #define va_arg(ap, T)           (*(T *)(((ap) += ((_Bnd(T, _AUPBND))) \
                                     - (_Bnd(T, _ADNBND)))))
 #define va_end(ap)              (void)0
-#define va_start(ap, A)         (void) ((ap) = (((INT8 *)&(A)) \
+#define va_start(ap, A)         (void) ((ap) = (((NATIVE_CHAR *)&(A)) \
                                     + (_Bnd(A, _AUPBND))))
 
 #endif /* va_arg */
 
 
-#define STRSTR(s1,s2)           AcpiCmStrstr    ((INT8 *) (s1), (INT8 *) (s2))
-#define STRUPR(s)               AcpiCmStrupr    ((INT8 *) (s))
-#define STRLEN(s)               AcpiCmStrlen    ((INT8 *) (s))
-#define STRCPY(d,s)             AcpiCmStrcpy    ((INT8 *) (d), (INT8 *) (s))
-#define STRNCPY(d,s,n)          AcpiCmStrncpy   ((INT8 *) (d), (INT8 *) (s), (n))
-#define STRNCMP(d,s,n)          AcpiCmStrncmp   ((INT8 *) (d), (INT8 *) (s), (n))
-#define STRCMP(d,s)             AcpiCmStrcmp    ((INT8 *) (d), (INT8 *) (s))
-#define STRCAT(d,s)             AcpiCmStrcat    ((INT8 *) (d), (INT8 *) (s))
-#define STRNCAT(d,s,n)          AcpiCmStrncat   ((INT8 *) (d), (INT8 *) (s), (n))
-#define STRTOUL(d,s,n)          AcpiCmStrtoul   ((INT8 *) (d), (INT8 **) (s), (n))
+#define STRSTR(s1,s2)           AcpiCmStrstr    ((NATIVE_CHAR *) (s1), (NATIVE_CHAR *) (s2))
+#define STRUPR(s)               AcpiCmStrupr    ((NATIVE_CHAR *) (s))
+#define STRLEN(s)               AcpiCmStrlen    ((NATIVE_CHAR *) (s))
+#define STRCPY(d,s)             AcpiCmStrcpy    ((NATIVE_CHAR *) (d), (NATIVE_CHAR *) (s))
+#define STRNCPY(d,s,n)          AcpiCmStrncpy   ((NATIVE_CHAR *) (d), (NATIVE_CHAR *) (s), (n))
+#define STRNCMP(d,s,n)          AcpiCmStrncmp   ((NATIVE_CHAR *) (d), (NATIVE_CHAR *) (s), (n))
+#define STRCMP(d,s)             AcpiCmStrcmp    ((NATIVE_CHAR *) (d), (NATIVE_CHAR *) (s))
+#define STRCAT(d,s)             AcpiCmStrcat    ((NATIVE_CHAR *) (d), (NATIVE_CHAR *) (s))
+#define STRNCAT(d,s,n)          AcpiCmStrncat   ((NATIVE_CHAR *) (d), (NATIVE_CHAR *) (s), (n))
+#define STRTOUL(d,s,n)          AcpiCmStrtoul   ((NATIVE_CHAR *) (d), (NATIVE_CHAR **) (s), (n))
 #define MEMCPY(d,s,n)           AcpiCmMemcpy    ((void *) (d), (const void *) (s), (n))
 #define MEMSET(d,v,n)           AcpiCmMemset    ((void *) (d), (v), (n))
 #define TOUPPER                 AcpiCmToUpper
@@ -353,7 +365,7 @@ typedef char *va_list;
         __asm mov           edx, eax                \
         __asm and           edx, 0xFFFFFFFC         \
         __asm lock cmpxchg  dword ptr [ecx], edx    \
-        __asm jnz           rel10                   \
+        __asm jnz           Rel10                   \
                                                     \
         __asm cmp           dl, 3                   \
         __asm and           eax, 1                  \

@@ -154,9 +154,9 @@
 
 typedef struct  /* Root System Descriptor Pointer */
 {
-    INT8                    Signature [8];          /* contains "RSD PTR " */
+    NATIVE_CHAR             Signature [8];          /* contains "RSD PTR " */
     UINT8                   Checksum;               /* to make sum of struct == 0 */
-    INT8                    OemId [6];              /* OEM identification */
+    NATIVE_CHAR             OemId [6];              /* OEM identification */
     UINT8                   Reserved;               /* reserved - must be zero */
     UINT32                  RsdtPhysicalAddress;    /* physical address of RSDT */
 
@@ -165,15 +165,15 @@ typedef struct  /* Root System Descriptor Pointer */
 
 typedef struct  /* ACPI common table header */
 {
-    INT8                    Signature [4];          /* identifies type of table */
+    NATIVE_CHAR             Signature [4];          /* identifies type of table */
     UINT32                  Length;                 /* length of table, in bytes,
                                                      * including header */
     UINT8                   Revision;               /* specification minor version # */
     UINT8                   Checksum;               /* to make sum of entire table == 0 */
-    INT8                    OemId [6];              /* OEM identification */
-    INT8                    OemTableId [8];         /* OEM table identification */
+    NATIVE_CHAR             OemId [6];              /* OEM identification */
+    NATIVE_CHAR             OemTableId [8];         /* OEM table identification */
     UINT32                  OemRevision;            /* OEM revision number */
-    INT8                    AslCompilerId [4];      /* ASL compiler vendor ID */
+    NATIVE_CHAR             AslCompilerId [4];      /* ASL compiler vendor ID */
     UINT32                  AslCompilerRevision;    /* ASL compiler revision number */
 
 } ACPI_TABLE_HEADER;
@@ -257,8 +257,8 @@ typedef struct  /* Smart Battery Description Table */
 
 typedef struct _AcpiTableSupport
 {
-    INT8                    *Name;
-    INT8                    *Signature;
+    NATIVE_CHAR             *Name;
+    NATIVE_CHAR             *Signature;
     UINT8                   SigLength;
     UINT8                   Flags;
     UINT16                  Status;

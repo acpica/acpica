@@ -247,7 +247,11 @@
 #define AML_LNOTEQUAL_OP            (UINT16) 0x9293
 
 
-/* Internal opcodes */
+/*
+ * Internal opcodes 
+ * Use only "Unknown" AML opcodes, don't attempt to use
+ * any valid ACPI ASCII values (A-Z, 0-9, '-')
+ */
 
 #define AML_NAMEPATH_OP             (UINT16) 0x002d
 #define AML_NAMEDFIELD_OP           (UINT16) 0x0030
@@ -256,29 +260,9 @@
 #define AML_BYTELIST_OP             (UINT16) 0x0033
 #define AML_STATICSTRING_OP         (UINT16) 0x0034
 #define AML_METHODCALL_OP           (UINT16) 0x0035
+#define AML_RETURN_VALUE_OP         (UINT16) 0x0036
 
 
-/*
- * argument types
- */
-
-/*
-#define AML_ASCIICHARLIST_ARG       'A'
-#define AML_BYTEDATA_ARG            'b'
-#define AML_BYTELIST_ARG            'B'
-#define AML_DWORDDATA_ARG           'd'
-#define AML_DATAOBJECT_ARG          'o'
-#define AML_DATAOBJECTLIST_ARG      'O'
-#define AML_FIELDLIST_ARG           'F'
-#define AML_NAMESTRING_ARG          'n'
-#define AML_OBJECTLIST_ARG          'P'
-#define AML_PKGLENGTH_ARG           'p'
-#define AML_SUPERNAME_ARG           's'
-#define AML_TARGET_ARG              'l'
-#define AML_TERMARG_ARG             't'
-#define AML_TERMLIST_ARG            'T'
-#define AML_WORDDATA_ARG            'w'
-*/
 
 
 #define ARG_NONE                    0x0
@@ -382,8 +366,9 @@
 #define OPTYPE_CONTROL              18
 #define OPTYPE_RECONFIGURATION      19
 #define OPTYPE_NAMED_OBJECT         20
+#define OPTYPE_RETURN               21
 
-#define OPTYPE_BOGUS                21
+#define OPTYPE_BOGUS                22
 
 
 /* Comparison operation codes for MatchOp operator */
@@ -466,13 +451,11 @@ typedef enum
 
 extern UINT8                    AcpiGbl_Aml             [NUM_OPCODES];
 extern UINT16                   AcpiGbl_Pfx             [NUM_OPCODES];
-extern INT8                     *AcpiGbl_ShortOps       [NUM_OPCODES];
-extern INT8                     *AcpiGbl_LongOps        [NUM_OPCODES];
-extern INT8                     *AcpiGbl_RegionTypes    [NUM_REGION_TYPES];
-extern INT8                     *AcpiGbl_MatchOps       [NUM_MATCH_OPS];
-extern INT8                     *AcpiGbl_AccessTypes    [NUM_ACCESS_TYPES];
-extern INT8                     *AcpiGbl_UpdateRules    [NUM_UPDATE_RULES];
-extern INT8                     *AcpiGbl_FENames        [NUM_FIELD_NAMES];
+extern NATIVE_CHAR              *AcpiGbl_RegionTypes    [NUM_REGION_TYPES];
+extern NATIVE_CHAR              *AcpiGbl_MatchOps       [NUM_MATCH_OPS];
+extern NATIVE_CHAR              *AcpiGbl_AccessTypes    [NUM_ACCESS_TYPES];
+extern NATIVE_CHAR              *AcpiGbl_UpdateRules    [NUM_UPDATE_RULES];
+extern NATIVE_CHAR              *AcpiGbl_FENames        [NUM_FIELD_NAMES];
 
 
 /*
@@ -483,7 +466,7 @@ extern INT8                     *AcpiGbl_FENames        [NUM_FIELD_NAMES];
 
 /* Data used in keeping track of fields */
 
-INT8            *AcpiGbl_FENames[NUM_FIELD_NAMES] =
+NATIVE_CHAR *AcpiGbl_FENames[NUM_FIELD_NAMES] =
 {
     "skip",
     "?access?"
@@ -492,7 +475,7 @@ INT8            *AcpiGbl_FENames[NUM_FIELD_NAMES] =
 
 /* Region type decoding */
 
-INT8 *AcpiGbl_RegionTypes[NUM_REGION_TYPES] =
+NATIVE_CHAR *AcpiGbl_RegionTypes[NUM_REGION_TYPES] =
 {
     "SystemMemory",
     "SystemIO",
@@ -502,7 +485,7 @@ INT8 *AcpiGbl_RegionTypes[NUM_REGION_TYPES] =
 };
 
 
-INT8 *AcpiGbl_MatchOps[NUM_MATCH_OPS] =
+NATIVE_CHAR *AcpiGbl_MatchOps[NUM_MATCH_OPS] =
 {
     "Error",
     "MTR",
@@ -516,7 +499,7 @@ INT8 *AcpiGbl_MatchOps[NUM_MATCH_OPS] =
 
 /* Access type decoding */
 
-INT8 *AcpiGbl_AccessTypes[NUM_ACCESS_TYPES] =
+NATIVE_CHAR *AcpiGbl_AccessTypes[NUM_ACCESS_TYPES] =
 {
     "AnyAcc",
     "ByteAcc",
@@ -530,7 +513,7 @@ INT8 *AcpiGbl_AccessTypes[NUM_ACCESS_TYPES] =
 
 /* Update rule decoding */
 
-INT8 *AcpiGbl_UpdateRules[NUM_UPDATE_RULES] =
+NATIVE_CHAR *AcpiGbl_UpdateRules[NUM_UPDATE_RULES] =
 {
     "Preserve",
     "WriteAsOnes",

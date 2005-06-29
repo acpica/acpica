@@ -215,9 +215,9 @@ ACPI_STATUS
 AcpiTbGetTableRsdt (
     UINT32                  *NumberOfTables);
 
-INT8 *
+UINT8 *
 AcpiTbScanMemoryForRsdp (
-    INT8                    *StartAddress,
+    UINT8                   *StartAddress,
     UINT32                  Length);
 
 ACPI_STATUS

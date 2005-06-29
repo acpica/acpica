@@ -131,7 +131,7 @@ typedef struct
 
 typedef struct
 {
-    INT8                    Signature[4];           /* signature "FACS" */
+    NATIVE_CHAR             Signature[4];           /* signature "FACS" */
     UINT32                  Length;                 /* length of structure, in bytes */
     UINT32                  HardwareSignature;      /* hardware configuration signature */
     UINT32                  FirmwareWakingVector;   /* ACPI OS waking vector */
