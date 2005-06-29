@@ -21,7 +21,7 @@
 
 #include <acpi.h>
 #include <acpiobj.h>
-#include <amlexec.h>
+#include <interpreter.h>
 #include <stdarg.h>
 
 
