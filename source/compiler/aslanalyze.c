@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslanalyze.c - check for semantic errors
- *              $Revision: 1.84 $
+ *              $Revision: 1.85 $
  *
  *****************************************************************************/
 
@@ -386,7 +386,7 @@ AnFormatBtype (
         return;
     }
 
-    for (Type = 1; Type < ACPI_TYPE_EXTERNAL_MAX; Type++)
+    for (Type = 1; Type <= ACPI_TYPE_EXTERNAL_MAX; Type++)
     {
         if (Btype & 0x00000001)
         {
