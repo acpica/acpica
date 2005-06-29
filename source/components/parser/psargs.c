@@ -399,7 +399,7 @@ PsGetNextNamepath (
         ACPI_STATUS             Status;
         NAME_TABLE_ENTRY        *Method = NULL;
         NAME_TABLE_ENTRY        *Nte;
-        SCOPE_STACK             ScopeInfo;
+        ACPI_GENERIC_STATE      ScopeInfo;
 
 
         /* 
@@ -409,7 +409,7 @@ PsGetNextNamepath (
         Nte = ParserState->StartOp->NameTableEntry;
         if (Nte)
         {
-            ScopeInfo.Scope = Nte->Scope;
+            ScopeInfo.Scope.Entry = Nte->Scope;
         }
 
         /* 
