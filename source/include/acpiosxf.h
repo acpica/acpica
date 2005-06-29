@@ -126,10 +126,10 @@
 
 /* Priorities for AcpiOsQueueForExecution */
 
-#define OSD_PRIORITY_HIGH   1
-#define OSD_PRIORITY_MED    2
-#define OSD_PRIORITY_LO     3
-#define OSD_PRIORITY_GPE    OSD_PRIORITY_HIGH
+#define OSD_PRIORITY_GPE    1
+#define OSD_PRIORITY_HIGH   2
+#define OSD_PRIORITY_MED    3
+#define OSD_PRIORITY_LO     4
 
 #define ACPI_NO_UNIT_LIMIT  ((UINT32) -1)
 #define ACPI_MUTEX_SEM      1
