@@ -439,7 +439,15 @@ SOURCE=..\..\source\components\tables\tbget.c
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\source\COMPONENTS\tables\tbgetall.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\source\components\tables\tbinstal.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\COMPONENTS\tables\tbrsdt.c
 # End Source File
 # Begin Source File
 
