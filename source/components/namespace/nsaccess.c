@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: nsaccess - Top-level functions for accessing ACPI namespace
- *              $Revision: 1.137 $
+ *              $Revision: 1.138 $
  *
  ******************************************************************************/
 
@@ -339,8 +339,6 @@ AcpiNsLookup (
     ACPI_OBJECT_TYPE8       ThisSearchType;
     UINT32                  LocalFlags = Flags & ~NS_ERROR_IF_FOUND;
 
-    DEBUG_EXEC              (UINT32 i;)
-
 
     FUNCTION_TRACE ("NsLookup");
 
@@ -536,20 +534,7 @@ AcpiNsLookup (
                 "Simple Pathname (1 segment, Flags=%X)\n", Flags));
         }
 
-#ifdef ACPI_DEBUG
-
-        /* TBD: [Restructure] Make this a procedure */
-
-        /* Debug only: print the entire name that we are about to lookup */
-
-        ACPI_DEBUG_PRINT ((ACPI_DB_NAMES, "["));
-
-        for (i = 0; i < NumSegments; i++)
-        {
-            ACPI_DEBUG_PRINT_RAW ((ACPI_DB_NAMES, "%4.4s/", (char*)&Pathname[i * 4]));
-        }
-        ACPI_DEBUG_PRINT_RAW ((ACPI_DB_NAMES, "]\n"));
-#endif
+        DEBUG_EXEC (AcpiNsPrintPathname (NumSegments, Pathname));
     }
 
     /*
