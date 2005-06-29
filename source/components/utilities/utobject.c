@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: utobject - ACPI object create/delete/size/cache routines
- *              $Revision: 1.87 $
+ *              $Revision: 1.88 $
  *
  *****************************************************************************/
 
@@ -272,9 +272,9 @@ AcpiUtCreateBufferObject (
  *
  * FUNCTION:    AcpiUtCreateStringObject
  *
- * PARAMETERS:  StringSize             - Size of string to be created, plus one
- *                                       for the NULL terminater.  Actual sting
- *                                       length will be this size minus one.
+ * PARAMETERS:  StringSize             - Size of string to be created.  Does not
+ *                                       include NULL terminator, this is added
+ *                                       automatically.
  *
  * RETURN:      Pointer to a new String object
  *
@@ -301,26 +301,21 @@ AcpiUtCreateStringObject (
         return_PTR (NULL);
     }
 
-    /* Create an actual string only if size > 0 */
+    /* Allocate the actual string buffer -- (Size + 1) for NULL terminator */
 
-    if (StringSize > 0)
+    String = ACPI_MEM_CALLOCATE (StringSize + 1);
+    if (!String)
     {
-        /* Allocate the actual string */
-
-        String = ACPI_MEM_CALLOCATE (StringSize);
-        if (!String)
-        {
-            ACPI_REPORT_ERROR (("CreateString: could not allocate size %X\n",
-                (UINT32) StringSize));
-            AcpiUtRemoveReference (StringDesc);
-            return_PTR (NULL);
-        }
+        ACPI_REPORT_ERROR (("CreateString: could not allocate size %X\n",
+            (UINT32) StringSize));
+        AcpiUtRemoveReference (StringDesc);
+        return_PTR (NULL);
     }
 
     /* Complete string object initialization */
 
     StringDesc->String.Pointer = String;
-    StringDesc->String.Length = (UINT32) StringSize - 1;
+    StringDesc->String.Length = (UINT32) StringSize;
 
     /* Return the new string descriptor */
 
