@@ -679,3 +679,64 @@ Cleanup:
 }
 
 
+
+/******************************************************************************
+ *
+ * FUNCTION:    AcpiAcquireGlobalLock
+ *
+ * PARAMETERS:  Timeout         - How long the caller is willing to wait
+ *              OutHandle       - A handle to the lock if acquired
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Acquire the ACPI Global Lock
+ *
+ ******************************************************************************/
+
+ACPI_STATUS
+AcpiAcquireGlobalLock (
+    UINT32                  Timeout,
+    UINT32                  *OutHandle)
+{
+    ACPI_STATUS             Status;
+
+
+    AmlEnterInterpreter ();
+
+    /* TBD: add timeout param to internal interface, and perhaps INTERPRETER_LOCKED */
+
+
+    Status = EvAcquireGlobalLock ();
+    AmlExitInterpreter ();
+
+    *OutHandle = 0;
+    return Status;
+}
+
+
+
+/******************************************************************************
+ *
+ * FUNCTION:    AcpiReleaseGlobalLock
+ *
+ * PARAMETERS:  Handle      - Returned from AcpiAcquireGlobalLock
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Release the ACPI Global Lock
+ *
+ ******************************************************************************/
+
+ACPI_STATUS
+AcpiReleaseGlobalLock (
+    UINT32                  Handle)
+{
+
+
+    /* TBD: Validate handle */
+
+    EvReleaseGlobalLock ();
+    return AE_OK;
+}
+
+
