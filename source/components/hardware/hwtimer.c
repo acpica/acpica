@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Name: hwtimer.c - ACPI Power Management Timer Interface
- *              $Revision: 1.17 $
+ *              $Revision: 1.23 $
  *
  *****************************************************************************/
 
@@ -10,7 +10,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2003, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -116,10 +116,9 @@
  *****************************************************************************/
 
 #include "acpi.h"
-#include "achware.h"
 
 #define _COMPONENT          ACPI_HARDWARE
-        MODULE_NAME         ("hwtimer")
+        ACPI_MODULE_NAME    ("hwtimer")
 
 
 /******************************************************************************
@@ -138,7 +137,7 @@ ACPI_STATUS
 AcpiGetTimerResolution (
     UINT32                  *Resolution)
 {
-    FUNCTION_TRACE ("AcpiGetTimerResolution");
+    ACPI_FUNCTION_TRACE ("AcpiGetTimerResolution");
 
 
     if (!Resolution)
@@ -175,7 +174,10 @@ ACPI_STATUS
 AcpiGetTimer (
     UINT32                  *Ticks)
 {
-    FUNCTION_TRACE ("AcpiGetTimer");
+    ACPI_STATUS             Status;
+
+
+    ACPI_FUNCTION_TRACE ("AcpiGetTimer");
 
 
     if (!Ticks)
@@ -183,10 +185,9 @@ AcpiGetTimer (
         return_ACPI_STATUS (AE_BAD_PARAMETER);
     }
 
-    AcpiOsReadPort ((ACPI_IO_ADDRESS)
-        ACPI_GET_ADDRESS (AcpiGbl_FADT->XPmTmrBlk.Address), Ticks, 32);
+    Status = AcpiHwLowLevelRead (32, Ticks, &AcpiGbl_FADT->XPmTmrBlk, 0);
 
-    return_ACPI_STATUS (AE_OK);
+    return_ACPI_STATUS (Status);
 }
 
 
@@ -212,7 +213,10 @@ AcpiGetTimer (
  *              Note that this function accomodates only a single timer
  *              rollover.  Thus for 24-bit timers, this function should only
  *              be used for calculating durations less than ~4.6 seconds
- *              (~20 hours for 32-bit timers).
+ *              (~20 minutes for 32-bit timers) -- calculations below
+ *
+ *              2**24 Ticks / 3,600,000 Ticks/Sec = 4.66 sec
+ *              2**32 Ticks / 3,600,000 Ticks/Sec = 1193 sec or 19.88 minutes
  *
  ******************************************************************************/
 
@@ -228,7 +232,7 @@ AcpiGetTimerDuration (
     ACPI_INTEGER            OutQuotient;
 
 
-    FUNCTION_TRACE ("AcpiGetTimerDuration");
+    ACPI_FUNCTION_TRACE ("AcpiGetTimerDuration");
 
 
     if (!TimeElapsed)
@@ -270,7 +274,7 @@ AcpiGetTimerDuration (
      * Compute Duration:
      * -----------------
      *
-     * Requires a 64-bit divide: 
+     * Requires a 64-bit divide:
      *
      * TimeElapsed = (DeltaTicks * 1000000) / PM_TIMER_FREQUENCY;
      */
