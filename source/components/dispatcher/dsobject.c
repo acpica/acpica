@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dsobject - Dispatcher object management routines
- *              $Revision: 1.57 $
+ *              $Revision: 1.58 $
  *
  *****************************************************************************/
 
@@ -465,7 +465,7 @@ AcpiDsInitObjectFromOp (
 
             /* Split the opcode into a base opcode + offset */
 
-            (*ObjDesc)->Reference.OpCode = AML_LOCAL_OP;
+            (*ObjDesc)->Reference.Opcode = AML_LOCAL_OP;
             (*ObjDesc)->Reference.Offset = Opcode - AML_LOCAL_OP;
             break;
 
@@ -473,7 +473,7 @@ AcpiDsInitObjectFromOp (
 
             /* Split the opcode into a base opcode + offset */
 
-            (*ObjDesc)->Reference.OpCode = AML_ARG_OP;
+            (*ObjDesc)->Reference.Opcode = AML_ARG_OP;
             (*ObjDesc)->Reference.Offset = Opcode - AML_ARG_OP;
             break;
 
@@ -486,7 +486,7 @@ AcpiDsInitObjectFromOp (
                 (*ObjDesc)->Reference.Node = Op->Node;
             }
 
-            (*ObjDesc)->Reference.OpCode = Opcode;
+            (*ObjDesc)->Reference.Opcode = Opcode;
             break;
         }
 
