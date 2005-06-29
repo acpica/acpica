@@ -1,6 +1,7 @@
 /******************************************************************************
  *
  * Module Name: cmxface - External interfaces for "global" ACPI functions
+ *              $Revision: 1.44 $
  *
  *****************************************************************************/
 
@@ -126,7 +127,7 @@
 
 
 #define _COMPONENT          MISCELLANEOUS
-        MODULE_NAME         ("cmxface");
+        MODULE_NAME         ("cmxface")
 
 
 /*******************************************************************************
@@ -313,7 +314,7 @@ AcpiGetSystemInfo (
     /* Current status of the ACPI tables, per table type */
 
     InfoPtr->NumTableTypes = NUM_ACPI_TABLES;
-    for (i = 0; i < NUM_ACPI_TABLES; i++);
+    for (i = 0; i < NUM_ACPI_TABLES; i++)
     {
         InfoPtr->TableInfo[i].Count = AcpiGbl_AcpiTables[i].Count;
     }
