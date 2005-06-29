@@ -125,6 +125,8 @@
 typedef void*               ACPI_MUTEX;
 typedef UINT32              ACPI_MUTEX_HANDLE;
 
+#define DESC_TYPE_NTE       0xEE
+#define DESC_TYPE_ACPI_OBJ  0xAA
 
 /*
  * Predefined handles for the mutex objects used within the subsystem
@@ -167,21 +169,24 @@ typedef enum
  * table (which is an array of nte, sometimes referred to as a scope).  In
  * the latter case, the specific nte pointed to may be unused; however its
  * ParentScope member will be valid.
+ *
+ * DataType is used to differentiate between internal descriptors, and MUST
+ * be the first byte in this structure.
  */
 
 typedef struct NAME_TABLE_ENTRY
 {
-    UINT32                  Name;           /* Name segment, always 4 chars per ACPI spec.
-                                             * NameSeg must be the first field in the nte
-                                             * -- see the IsNsHandle macro in acpinmsp.h
-                                             */
-    struct NAME_TABLE_ENTRY *Scope;         /* Scope owned by this name */
+    UINT8                   DataType;
+    UINT8                   Type;           /* Type associated with this name */
+    UINT16                  Fill1;
+
     struct NAME_TABLE_ENTRY *ParentScope;   /* Previous level of names */
     struct NAME_TABLE_ENTRY *ParentEntry;   /* Actual parent NTE */
+    struct NAME_TABLE_ENTRY *Scope;         /* Scope owned by this name */
+    UINT32                  Name;           /* ACPI Name, always 4 chars per ACPI spec */
+    void                    *Object;        /* Pointer to attached ACPI object */
     struct NAME_TABLE_ENTRY *NextEntry;     /* Next within this scope */
     struct NAME_TABLE_ENTRY *PrevEntry;     /* Previous within this scope */
-    ACPI_OBJECT_TYPE        Type;           /* Type associated with this name */
-    void                    *Object;        /* Pointer to attached ACPI object */
 
 } NAME_TABLE_ENTRY;
 
@@ -286,6 +291,7 @@ typedef struct
 typedef struct
 {
     UINT8                   Type;           /* Level or Edge */
+
     ACPI_HANDLE             MethodHandle;   /* Method handle for direct (fast) execution */
     GPE_HANDLER             Handler;        /* Address of handler, if any */
     void                    *Context;       /* Context to be passed to handler */
@@ -303,6 +309,7 @@ typedef struct
 
 /* Entry for a memory allocation (debug only) */
 
+#ifdef ACPI_DEBUG
 
 #define MEM_MALLOC          0
 #define MEM_CALLOC          1
@@ -320,5 +327,6 @@ typedef struct AllocationInfo
 
 } ALLOCATION_INFO;
 
+#endif
 
 #endif
