@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: utcopy - Internal to external object translation utilities
- *              $Revision: 1.81 $
+ *              $Revision: 1.82 $
  *
  *****************************************************************************/
 
@@ -558,19 +558,37 @@ AcpiUtCopyEsimpleToIsimple (
     switch (ExternalObject->Type)
     {
 
-        /* TBD: Must COPY string and buffer contents */
+    /* Must COPY string and buffer contents */
 
     case ACPI_TYPE_STRING:
 
+        InternalObject->String.Pointer = ACPI_MEM_CALLOCATE (ExternalObject->String.Length + 1);
+        if (!InternalObject->String.Pointer)
+        {
+            return_ACPI_STATUS (AE_NO_MEMORY);
+        }
+
+        MEMCPY (InternalObject->String.Pointer, 
+                ExternalObject->String.Pointer, 
+                ExternalObject->String.Length);
+
         InternalObject->String.Length  = ExternalObject->String.Length;
-        InternalObject->String.Pointer = ExternalObject->String.Pointer;
         break;
 
 
     case ACPI_TYPE_BUFFER:
 
+        InternalObject->Buffer.Pointer = ACPI_MEM_CALLOCATE (ExternalObject->Buffer.Length);
+        if (!InternalObject->Buffer.Pointer)
+        {
+            return_ACPI_STATUS (AE_NO_MEMORY);
+        }
+
+        MEMCPY (InternalObject->Buffer.Pointer, 
+                ExternalObject->Buffer.Pointer, 
+                ExternalObject->Buffer.Length);
+
         InternalObject->Buffer.Length  = ExternalObject->Buffer.Length;
-        InternalObject->Buffer.Pointer = ExternalObject->Buffer.Pointer;
         break;
 
 
