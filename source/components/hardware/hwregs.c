@@ -3,7 +3,7 @@
  *
  * Module Name: hwregs - Read/write access functions for the various ACPI
  *                       control and status registers.
- *              $Revision: 1.158 $
+ *              $Revision: 1.159 $
  *
  ******************************************************************************/
 
@@ -338,8 +338,8 @@ AcpiHwGetBitRegisterInfo (
  *              ReturnValue     - Value that was read from the register
  *              Flags           - Lock the hardware or not
  *
- * RETURN:      Value is read from specified Register.  Value returned is
- *              normalized to bit0 (is shifted all the way right)
+ * RETURN:      Status and the value read from specified Register.  Value
+ *              returned is normalized to bit0 (is shifted all the way right)
  *
  * DESCRIPTION: ACPI BitRegister read function.
  *
@@ -376,6 +376,8 @@ AcpiGetRegister (
         }
     }
 
+    /* Read from the register */
+
     Status = AcpiHwRegisterRead (ACPI_MTX_DO_NOT_LOCK,
                     BitRegInfo->ParentRegister, &RegisterValue);
 
@@ -407,10 +409,10 @@ AcpiGetRegister (
  *
  * PARAMETERS:  RegisterId      - ID of ACPI BitRegister to access
  *              Value           - (only used on write) value to write to the
- *                                Register, NOT pre-normalized to the bit pos.
+ *                                Register, NOT pre-normalized to the bit pos
  *              Flags           - Lock the hardware or not
  *
- * RETURN:      None
+ * RETURN:      Status
  *
  * DESCRIPTION: ACPI Bit Register write function.
  *
@@ -563,10 +565,11 @@ UnlockAndExit:
  *
  * FUNCTION:    AcpiHwRegisterRead
  *
- * PARAMETERS:  UseLock                - Mutex hw access.
- *              RegisterId             - RegisterID + Offset.
+ * PARAMETERS:  UseLock             - Mutex hw access
+ *              RegisterId          - RegisterID + Offset
+ *              ReturnValue         - Value that was read from the register
  *
- * RETURN:      Value read or written.
+ * RETURN:      Status and the value read.
  *
  * DESCRIPTION: Acpi register read function.  Registers are read at the
  *              given offset.
@@ -682,10 +685,11 @@ UnlockAndExit:
  *
  * FUNCTION:    AcpiHwRegisterWrite
  *
- * PARAMETERS:  UseLock                - Mutex hw access.
- *              RegisterId             - RegisterID + Offset.
+ * PARAMETERS:  UseLock             - Mutex hw access
+ *              RegisterId          - RegisterID + Offset
+ *              Value               - The value to write
  *
- * RETURN:      Value read or written.
+ * RETURN:      Status
  *
  * DESCRIPTION: Acpi register Write function.  Registers are written at the
  *              given offset.
@@ -808,7 +812,7 @@ UnlockAndExit:
  *
  * PARAMETERS:  Width               - 8, 16, or 32
  *              Value               - Where the value is returned
- *              Register            - GAS register structure
+ *              Reg                 - GAS register structure
  *
  * RETURN:      Status
  *
@@ -841,8 +845,8 @@ AcpiHwLowLevelRead (
     *Value = 0;
 
     /*
-     * Two address spaces supported:
-     * Memory or IO. PCI_Config is not supported here.
+     * Two address spaces supported: Memory or IO. 
+     * PCI_Config is not supported here because the GAS struct is insufficient
      */
     switch (Reg->AddressSpaceId)
     {
@@ -882,7 +886,7 @@ AcpiHwLowLevelRead (
  *
  * PARAMETERS:  Width               - 8, 16, or 32
  *              Value               - To be written
- *              Register            - GAS register structure
+ *              Reg                 - GAS register structure
  *
  * RETURN:      Status
  *
@@ -914,8 +918,8 @@ AcpiHwLowLevelWrite (
     }
 
     /*
-     * Two address spaces supported:
-     * Memory or IO. PCI_Config is not supported here.
+     * Two address spaces supported: Memory or IO. 
+     * PCI_Config is not supported here because the GAS struct is insufficient
      */
     switch (Reg->AddressSpaceId)
     {
