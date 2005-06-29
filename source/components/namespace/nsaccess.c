@@ -101,7 +101,6 @@
 #include <amlcode.h>
 #include <interpreter.h>
 #include <namespace.h>
-#include <limits.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -112,387 +111,16 @@
 
 
 static ST_KEY_DESC_TABLE KDT[] = {
-    {"0000", 'I', "Package stack not empty at method exit", "Package stack not empty at method exit"},
-    {"0001", '1', "Method stack not empty at method exit", "Method stack not empty at method exit"},
-    {"0002", 'I', "Object stack not empty at method exit", "Object stack not empty at method exit"},
-    {"0003", '1', "Descriptor Allocation Failure", "Descriptor Allocation Failure"},
-    {"0004", '1', "root name table allocation failure", "root name table allocation failure"},
-    {"0005", '1', "Initial value descriptor allocation failure", "Initial value descriptor allocation failure"},
-    {"0006", '1', "Initial value string allocation failure", "Initial value string allocation failure"},
-    {"0007", '1', "Scope has no parent", "Scope has no parent"},
-    {"0008", '1', "name table overflow", "name table overflow"},
-    {"0009", '1', "A name was not found in given scope", "A name was not found in given scope"},
-    {"0010", 'W', "Type mismatch", "Type mismatch"},
-    {"0011", '1', "Name Table allocation failure", "Name Table allocation failure"},
-    {"0012", '1', " Name not found", " Name not found"},
+    {"0000", '1', "Root name table allocation failure", "Root name table allocation failure"},
+    {"0001", '1', "Initial value descriptor allocation failure", "Initial value descriptor allocation failure"},
+    {"0002", '1', "Initial value string allocation failure", "Initial value string allocation failure"},
+    {"0003", '1', "Scope has no parent", "Scope has no parent"},
+    {"0004", '1', "name table overflow", "name table overflow"},
+    {"0005", 'W', "Type mismatch", "Type mismatch"},
+    {"0006", '1', "Name Table allocation failure", "Name Table allocation failure"},
+    {"0007", '1', " Name not found", " Name not found"},
     {NULL, 'I', NULL, NULL}
 };
-
-
-/****************************************************************************
- *
- * FUNCTION:    AcpiExecuteRelativeMethod
- *
- * PARAMETERS:  Handle              - Handle of containing object
- *              *MethodName         - Name of method to execute, If NULL, the
- *                                    handle is the object to execute
- *              *ReturnObject       - Where to put method's return value (if 
- *                                    any).  If NULL, no value is returned.
- *              **Params            - List of parameters to pass to
- *                                    method, terminated by NULL.
- *                                    Params itself may be NULL
- *                                    if no parameters are being
- *                                    passed.
- *
- * RETURN:      Status
- *
- * DESCRIPTION: Find and execute the requested method using the handle as a
- *              scope
- *
- ****************************************************************************/
-
-ACPI_STATUS
-AcpiExecuteRelativeMethod (NsHandle Handle,
-                           char * MethodName,
-                           OBJECT_DESCRIPTOR *ReturnObject,
-                           OBJECT_DESCRIPTOR **Params)
-{
-    char                NameBuffer[PATHNAME_MAX];
-    ACPI_STATUS         Status;
-    UINT32              MaxObjectPathLength = PATHNAME_MAX - 1;
-
-
-    FUNCTION_TRACE ("AcpiExecuteRelativeMethod");
-
-    /*
-     *  Must have a valid handle
-     */
-    if (!Handle) 
-    {
-        FUNCTION_EXIT;
-        return AE_BAD_PARAMETER;
-    }
-
-    /*
-     *  If the caller specified a method then it must be a path relative to
-     *  the object indicated by the handle we need to reserve space in the
-     *  buffer to append the CM name later
-     */
-    if (MethodName) 
-    {
-        /*
-         *  We will append the method name to the device pathname
-         */
-        MaxObjectPathLength -= (strlen (MethodName) + 1);
-    }
-
-    /*
-     *  Get the device pathname
-     */
-    Status = NsHandleToPathname (Handle, MaxObjectPathLength, NameBuffer);
-    if (Status != AE_OK) 
-    {
-        /*
-         *  Failed the conversion
-         */
-        FUNCTION_EXIT;
-        return Status;
-    }
-
-    /*
-     *  If the caller specified a method then it must be a path relative to
-     *  the object indicated by the handle
-     */
-    if (MethodName) 
-    {
-        /*
-         * Append the method name to the device pathname
-         * (Path separator is a period) 
-         */
-        strcat (NameBuffer, ".");
-        strcat (NameBuffer, MethodName);
-    }
-
-    /*
-     *  Execute the method
-     */
-    Status = AcpiExecuteMethod (NameBuffer, ReturnObject, Params);
-
-    FUNCTION_EXIT;
-    return Status;
-}
-
-
-/****************************************************************************
- *
- * FUNCTION:    AcpiExecuteMethod
- *
- * PARAMETERS:  *MethodName         - Name of method to execute
- *              *ReturnObject       - Where to put method's return value (if 
- *                                    any).  If NULL, no value is returned.
- *              **Params            - List of parameters to pass to
- *                                    method, terminated by NULL.
- *                                    Params itself may be NULL
- *                                    if no parameters are being
- *                                    passed.
- *
- * RETURN:      Status
- *
- * DESCRIPTION: Find and execute the requested method passing the given
- *              parameters
- *
- ****************************************************************************/
-
-ACPI_STATUS
-AcpiExecuteMethod (char * MethodName, OBJECT_DESCRIPTOR *ReturnObject,
-                    OBJECT_DESCRIPTOR **Params)
-{
-    ACPI_STATUS         Status = AE_ERROR;
-    nte                 *MethodPtr = NULL;
-    OBJECT_DESCRIPTOR   *ObjDesc;
-
-
-
-
-    FUNCTION_TRACE ("AcpiExecuteMethod");
-
-
-    /* Parameter validation */
-
-    if (!RootObject->Scope)
-    {
-        /* 
-         * If the name space has not been initialized, the Method has surely
-         * not been defined and there is nothing to execute.
-         */
-
-        DEBUG_PRINT (ACPI_ERROR, ("Name space not initialized ==> method not defined\n"));
-        FUNCTION_EXIT;
-        return AE_NO_NAMESPACE;
-    }
-
-    if (!MethodName)
-    {
-        DEBUG_PRINT (ACPI_ERROR, ("AcpiExecuteMethod: MethodName is NULL\n"));
-        FUNCTION_EXIT;
-        return AE_BAD_PARAMETER;
-    }
-
-
-    if (ReturnObject)
-    {
-        /* Initialize the return value */
-
-        memset (ReturnObject, 0, sizeof (OBJECT_DESCRIPTOR));
-    }
-
-    if (RootObject->Scope && MethodName)
-    {   
-        /*  Root and MethodName valid   */
-
-        if (MethodName[0] != '\\' || MethodName[1] != '/')
-        {
-            MethodName = NsInternalizeName (MethodName);
-        }
-
-        /* See comment near top of file re significance of FETCH_VALUES */
-
-#ifdef FETCH_VALUES
-        Status = NsEnter (MethodName, TYPE_Any, MODE_Exec, (NsHandle *) &MethodPtr);
-#else 
-        Status = NsEnter (MethodName, TYPE_Method, MODE_Exec, (NsHandle *) &MethodPtr);
-#endif
-
-        if (Status != AE_OK)
-        {
-            DEBUG_PRINT (ACPI_INFO, ("Method [%s] was not found, status=%.4X\n",
-                            MethodName, Status));
-        }
-    }
-
-    if (RootObject->Scope && MethodName && (Status == AE_OK))
-    {   
-        /*  Root, MethodName, and Method valid  */
-
-#ifdef FETCH_VALUES
-        if (NsGetType (MethodPtr) == TYPE_Method)
-        {
-            /* Method points to a method name */
-        
-            DEBUG_PRINT (ACPI_INFO,
-                        ("[%s Method %p Value %p\n",
-                        MethodName, MethodPtr, MethodPtr->Value));
-
-            if (MethodPtr->Value)
-            {
-                DEBUG_PRINT (ACPI_INFO,
-                            ("Offset %x Length %lx]\n",
-                            ((meth *) MethodPtr->Value)->Offset + 1,
-                            ((meth *) MethodPtr->Value)->Length - 1));
-            }
-        
-            else
-            {
-                DEBUG_PRINT (ACPI_INFO, ("*Undefined*]\n"));
-            }
-#endif
-
-            /* 
-             * Here if not FETCH_VALUES (and hence only Method was looked for), or
-             * FETCH_VALUES and the name found was in fact a Method.  In either
-             * case, set the current scope to that of the Method, and execute it.
-             */
-
-            if (!MethodPtr->Value)
-            {
-                DEBUG_PRINT (ACPI_ERROR, ("Method is undefined\n"));
-            }
-
-            else
-            {
-                NsDumpPathname (MethodPtr->Scope, "AcpiExecuteMethod: Setting scope to", 
-                                TRACE_NAMES, _COMPONENT);
-
-                /* Reset the current scope to the beginning of scope stack */
-
-                CurrentScope = &ScopeStack[0];
-
-                /* Push current scope on scope stack and make Method->Scope current  */
-
-                NsPushCurrentScope (MethodPtr->Scope, TYPE_Method);
-
-                NsDumpPathname (MethodPtr, "AcpiExecuteMethod: Executing", 
-                                TRACE_NAMES, _COMPONENT);
-
-                DEBUG_PRINT (TRACE_NAMES, ("At offset %8XH\n",
-                                  ((meth *) MethodPtr->Value)->Offset + 1));
-        
-                AmlClearPkgStack ();
-                ObjStackTop = 0;    /* Clear object stack */
-                
-
-                /* 
-                 * Excecute the method here 
-                 */
-                Status = AmlExecuteMethod (
-                                 ((meth *) MethodPtr->Value)->Offset + 1,
-                                 ((meth *) MethodPtr->Value)->Length - 1,
-                                 Params);
-
-                if (AmlPackageNested ())
-                {
-                    /*  Package stack not empty at method exit and should be  */
-
-                    REPORT_INFO (&KDT[0]);
-                }
-
-                if (AmlGetMethodDepth () > -1)
-                {
-                    /*  Method stack not empty at method exit and should be */
-
-                    REPORT_ERROR (&KDT[1]);
-                }
-
-                if (ObjStackTop)
-                {
-                    /* Object stack is not empty at method exit and should be */
-
-                    REPORT_INFO (&KDT[2]);
-                    AmlDumpStack (MODE_Exec, "Remaining Object Stack entries", -1, "");
-                }
-
-                DEBUG_PRINT (ACPI_INFO, ("*** Completed execution of method %s ***\n",
-                                MethodName));
-            }
-
-#ifdef FETCH_VALUES
-        }
-    
-        else
-        {
-            /*
-             * Method points to a name that is not a method
-             * Here if FETCH_VALUES and the name found was not a Method.
-             * Return its value.
-             */
-            ObjDesc = AllocateObjectDesc (&KDT[3]);
-            if (ObjDesc)
-            {
-                /* Construct a descriptor pointing to the name */
-            
-                ObjDesc->Lvalue.ValType = (UINT8) TYPE_Lvalue;
-                ObjDesc->Lvalue.OpCode  = (UINT8) AML_NameOp;
-                ObjDesc->Lvalue.Ref     = (void *) MethodPtr;
-
-                /* 
-                 * Put it on the stack, and use AmlGetRvalue() to get the value.
-                 * Note that ObjStackTop points to the top valid entry, not to
-                 * the first unused position.
-                 */
-
-                LocalDeleteObject ((OBJECT_DESCRIPTOR **) &ObjStack[ObjStackTop]);
-                ObjStack[ObjStackTop] = (void *) ObjDesc;
-
-                /* This causes ObjDesc (allocated above) to always be deleted */
-
-                Status = AmlGetRvalue ((OBJECT_DESCRIPTOR **) &ObjStack[ObjStackTop]);
-
-                /* 
-                 * If AmlGetRvalue() succeeded, treat the top stack entry as
-                 * a return value.
-                 */
-
-                if (AE_OK == Status)
-                {
-                    Status = AE_RETURN_VALUE;
-                }
-            }
-
-            else
-            {
-                /* Descriptor allocation failure */
-
-                Status = AE_NO_MEMORY;
-            }
-        }
-#endif
-
-
-
-        /* TBD: Unecessary mapping? */
-
-        if (AE_AML_ERROR == Status)
-        {
-            Status = AE_ERROR;
-        }
-    
-        if (AE_RETURN_VALUE == Status)
-        {
-            /* 
-             * If the Method returned a value and the caller provided a place
-             * to store a returned value, Copy the returned value to the object
-             * descriptor provided by the caller.
-             */
-
-            if (ReturnObject)
-            {
-                (*ReturnObject) = *((OBJECT_DESCRIPTOR *) ObjStack[ObjStackTop]);            
-            }
-        
-            /* 
-             * TBD: do we ever want to delete this??? 
-             * There are clearly cases that we don't and this will fault
-             */
-
-            /* OsdFree (ObjStack[ObjStackTop]); */
-
-            Status = AE_OK;
-        }
-    }
-
-    FUNCTION_EXIT;
-    return Status;
-}
 
 
 
@@ -537,7 +165,7 @@ NsSetup (void)
     {
         /*  root name table allocation failure  */
 
-        REPORT_ERROR (&KDT[4]);
+        REPORT_ERROR (&KDT[0]);
         FUNCTION_EXIT;
         return AE_NO_MEMORY;
     }
@@ -571,7 +199,7 @@ NsSetup (void)
         {
             /* Entry requests an initial value, allocate a descriptor for it. */
             
-            OBJECT_DESCRIPTOR       *ObjDesc = AllocateObjectDesc (&KDT[5]);
+            OBJECT_DESCRIPTOR       *ObjDesc = AllocateObjectDesc (&KDT[1]);
 
             if (!ObjDesc)
             {
@@ -606,7 +234,7 @@ NsSetup (void)
                     ObjDesc->String.String = OsdAllocate ((size_t) (ObjDesc->String.StrLen + 1));
                     if (!ObjDesc->String.String)
                     {
-                        REPORT_ERROR (&KDT[6]);
+                        REPORT_ERROR (&KDT[2]);
                         FUNCTION_EXIT;
                         return AE_NO_MEMORY;
                     }
@@ -774,7 +402,7 @@ NsEnter (char *Name, NsType Type, OpMode LoadMode, NsHandle *RetHandle)
             {
                 /* Current scope has no parent scope */
                 
-                REPORT_ERROR (&KDT[7]);
+                REPORT_ERROR (&KDT[3]);
                 CheckTrash ("leave NsEnter NOTFOUND 1");
 
                 FUNCTION_EXIT;
@@ -842,7 +470,7 @@ NsEnter (char *Name, NsType Type, OpMode LoadMode, NsHandle *RetHandle)
 
                 if (MODE_Load1 == LoadMode || MODE_Load == LoadMode)
                 {
-                    REPORT_ERROR (&KDT[8]);
+                    REPORT_ERROR (&KDT[4]);
                 }
 
                 else
@@ -867,7 +495,7 @@ NsEnter (char *Name, NsType Type, OpMode LoadMode, NsHandle *RetHandle)
         {                                                   /* complain.                        */
             /*  complain about type mismatch    */
 
-            REPORT_WARNING (&KDT[10]);
+            REPORT_WARNING (&KDT[5]);
         }
 
         /*
@@ -912,12 +540,12 @@ NsEnter (char *Name, NsType Type, OpMode LoadMode, NsHandle *RetHandle)
 
                 if (MODE_Load1 == LoadMode || MODE_Load == LoadMode)
                 {
-                    REPORT_ERROR (&KDT[11]);
+                    REPORT_ERROR (&KDT[6]);
                     FUNCTION_EXIT;
                     return AE_NOT_FOUND;
                 }
 
-                REPORT_ERROR (&KDT[12]);
+                REPORT_ERROR (&KDT[7]);
                 CheckTrash ("leave NsEnter NOTFOUND 3");
                 FUNCTION_EXIT;
                 return AE_NOT_FOUND;
