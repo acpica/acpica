@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dbinput - user front-end to the AML debugger
- *              $Revision: 1.99 $
+ *              $Revision: 1.100 $
  *
  ******************************************************************************/
 
@@ -175,6 +175,7 @@ enum AcpiExDebuggerCommands
     CMD_RESOURCES,
     CMD_RESULTS,
     CMD_SET,
+    CMD_SLEEP,
     CMD_STATS,
     CMD_STOP,
     CMD_TABLES,
@@ -233,6 +234,7 @@ static const COMMAND_INFO       AcpiGbl_DbCommands[] =
     {"RESOURCES",    1},
     {"RESULTS",      0},
     {"SET",          3},
+    {"SLEEP",        1},
     {"STATS",        0},
     {"STOP",         0},
     {"TABLES",       0},
@@ -773,6 +775,10 @@ AcpiDbCommandDispatch (
 
     case CMD_SET:
         AcpiDbSetMethodData (AcpiGbl_DbArgs[1], AcpiGbl_DbArgs[2], AcpiGbl_DbArgs[3]);
+        break;
+
+    case CMD_SLEEP:
+        Status = AcpiDbSleep (AcpiGbl_DbArgs[1]);
         break;
 
     case CMD_STATS:
