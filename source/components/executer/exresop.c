@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: amresop - AML Interpreter operand/object resolution
- *              $Revision: 1.17 $
+ *              $Revision: 1.18 $
  *
  *****************************************************************************/
 
@@ -165,7 +165,7 @@ AcpiAmlCheckObjectType (
     if (TypeNeeded != ThisType)
     {
         DEBUG_PRINT (ACPI_INFO,
-            ("AmlResolveOperands: Needed %s, found %s %p\n",
+            ("AmlResolveOperands: Needed [%s], found [%s] %p\n",
             AcpiCmGetTypeName (TypeNeeded),
             AcpiCmGetTypeName (ThisType), Object));
 
@@ -494,7 +494,7 @@ AcpiAmlResolveOperands (
                 (ACPI_TYPE_BUFFER != (*StackPtr)->Common.Type))
             {
                 DEBUG_PRINT (ACPI_INFO,
-                    ("AmlResolveOperands: Needed String or Buffer, found %s %p\n",
+                    ("AmlResolveOperands: Needed [String or Buffer], found [%s] %p\n",
                     AcpiCmGetTypeName ((*StackPtr)->Common.Type), *StackPtr));
 
                 return_ACPI_STATUS (AE_AML_OPERAND_TYPE);
@@ -521,7 +521,7 @@ AcpiAmlResolveOperands (
                 ((*StackPtr)->Common.Type != INTERNAL_TYPE_REFERENCE))
             {
                 DEBUG_PRINT (ACPI_INFO,
-                    ("AmlResolveOperands: Needed Buf/Str/Pkg/Ref, found %s %p\n",
+                    ("AmlResolveOperands: Needed [Buf/Str/Pkg/Ref], found [%s] %p\n",
                     AcpiCmGetTypeName ((*StackPtr)->Common.Type), *StackPtr));
                 
                 return_ACPI_STATUS (AE_AML_OPERAND_TYPE);
@@ -535,7 +535,7 @@ AcpiAmlResolveOperands (
                 if (!(*StackPtr)->Reference.Node)
                 {
                     DEBUG_PRINT (ACPI_INFO,
-                        ("AmlResolveOperands: Needed Node reference, found %p\n",
+                        ("AmlResolveOperands: Needed [Node Reference], found [%p]\n",
                         *StackPtr));
 
                     return_ACPI_STATUS (AE_AML_OPERAND_TYPE);
@@ -553,7 +553,7 @@ AcpiAmlResolveOperands (
                 ((*StackPtr)->Common.Type != ACPI_TYPE_PACKAGE))
             {
                 DEBUG_PRINT (ACPI_INFO,
-                    ("AmlResolveOperands: Needed Buf/Pkg, found %s %p\n",
+                    ("AmlResolveOperands: Needed [Buf/Pkg], found [%s] %p\n",
                     AcpiCmGetTypeName ((*StackPtr)->Common.Type), *StackPtr));
 
                 return_ACPI_STATUS (AE_AML_OPERAND_TYPE);
