@@ -220,7 +220,7 @@ typedef struct /* STRING - has length and pointer */
     UINT32                  Reserved3;
     UINT32                  Reserved4;
 
-    UINT8                   *Pointer;       /* String value in AML stream or in allocated space */
+    char                    *Pointer;       /* String value in AML stream or in allocated space */
     void                    *Reserved_p2;
     void                    *Reserved_p3;
     void                    *Reserved_p4;
