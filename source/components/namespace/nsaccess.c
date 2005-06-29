@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: nsaccess - Top-level functions for accessing ACPI namespace
- *              $Revision: 1.156 $
+ *              $Revision: 1.157 $
  *
  ******************************************************************************/
 
@@ -216,6 +216,19 @@ AcpiNsRootInitialize (void)
              */
             switch (InitVal->Type)
             {
+            case ACPI_TYPE_METHOD:
+                ObjDesc->Method.ParamCount = 
+                        (UINT8) ACPI_STRTOUL (InitVal->Val, NULL, 10);
+                ObjDesc->Common.Flags |= AOPOBJ_DATA_VALID;
+
+#if defined (ACPI_NO_METHOD_EXECUTION) || defined (ACPI_CONSTANT_EVAL_ONLY)
+
+                /* Compiler cheats by putting parameter count in the OwnerID */
+
+                NewNode->OwnerId = ObjDesc->Method.ParamCount;
+#endif
+                break;
+
             case ACPI_TYPE_INTEGER:
 
                 ObjDesc->Integer.Value =
