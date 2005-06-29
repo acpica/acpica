@@ -148,10 +148,10 @@ NsAttachObject (
     ACPI_HANDLE             Object, 
     UINT8                   Type)
 {
-    NAME_TABLE_ENTRY        *ThisEntry = NULL;
+    NAME_TABLE_ENTRY        *ThisEntry = (NAME_TABLE_ENTRY *) handle;
     ACPI_OBJECT_INTERNAL    *ObjDesc;
     ACPI_OBJECT_INTERNAL    *PreviousObjDesc;
-    ACPI_OBJECT_TYPE        ObjType = NULL;
+    ACPI_OBJECT_TYPE        ObjType = TYPE_Any;
 
 
     FUNCTION_TRACE ("NsAttachObject");
@@ -338,8 +338,6 @@ NsAttachObject (
     DEBUG_PRINT (TRACE_EXEC,("NsAttachObject: Installing obj %p into NTE %p\n",
                     ObjDesc, handle));
     
-    ThisEntry = (NAME_TABLE_ENTRY *) handle;
-
 
     /* Must increment the new value's reference count (if it is an internal object) */
 
