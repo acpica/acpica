@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: actypes.h - Common data types for the entire ACPI subsystem
- *       $Revision: 1.214 $
+ *       $Revision: 1.215 $
  *
  *****************************************************************************/
 
@@ -136,7 +136,6 @@
  * UINT64       64-bit (8 byte) unsigned value
  * NATIVE_INT   32-bit on IA-32, 64-bit on IA-64 signed value
  * NATIVE_UINT  32-bit on IA-32, 64-bit on IA-64 unsigned value
- * UCHAR        Character. 1 byte unsigned value.
  */
 
 
@@ -146,7 +145,6 @@
  */
 typedef unsigned char                   UINT8;
 typedef unsigned char                   BOOLEAN;
-typedef unsigned char                   UCHAR;
 typedef unsigned short                  UINT16;
 typedef int                             INT32;
 typedef unsigned int                    UINT32;
@@ -170,7 +168,6 @@ typedef UINT64                          ACPI_SIZE;
  */
 typedef unsigned char                   UINT8;
 typedef unsigned char                   BOOLEAN;
-typedef unsigned char                   UCHAR;
 typedef unsigned int                    UINT16;
 typedef long                            INT32;
 typedef int                             INT16;
@@ -208,7 +205,6 @@ typedef UINT32                          ACPI_SIZE;
  */
 typedef unsigned char                   UINT8;
 typedef unsigned char                   BOOLEAN;
-typedef unsigned char                   UCHAR;
 typedef unsigned short                  UINT16;
 typedef int                             INT32;
 typedef unsigned int                    UINT32;
