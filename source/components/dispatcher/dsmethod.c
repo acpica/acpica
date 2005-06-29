@@ -156,7 +156,9 @@ PsxParseMethod (
 /*    INIT_WALK_INFO          Info; */
 
 
-    DEBUG_PRINT (TRACE_PARSE, ("PsParseMethod: [%4.4s] Nte=%p\n", 
+    FUNCTION_TRACE ("PsxParseMethod");
+
+    DEBUG_PRINT (TRACE_PARSE, ("PsxParseMethod: [%4.4s] Nte=%p\n", 
                     &((NAME_TABLE_ENTRY *)ObjHandle)->Name, ObjHandle));
 
 
@@ -170,7 +172,7 @@ PsxParseMethod (
     Op = PsAllocOp (AML_MethodOp);
     if (!Op)
     {
-        return AE_NO_MEMORY;
+        return_ACPI_STATUS (AE_NO_MEMORY);
     }
 
     /* Init new op with the method name and pointer back to the NTE */
@@ -183,7 +185,7 @@ PsxParseMethod (
     Status = NsScopeStackPush (Entry->Scope, ACPI_TYPE_Method);
     if (ACPI_FAILURE (Status))
     {
-        return Status;
+        return_ACPI_STATUS (Status);
     }
 
     /* Parse the method, creating a parse tree */
@@ -191,7 +193,7 @@ PsxParseMethod (
     Status = PsParseAml (Op, ObjDesc->Method.Pcode, ObjDesc->Method.PcodeLength);
     if (ACPI_FAILURE (Status))
     {
-        return Status;
+        return_ACPI_STATUS (Status);
     }
 
     /* 
@@ -199,7 +201,7 @@ PsxParseMethod (
      * method into the namespace.  Don't include the method op in the walk, start with
      * first arg.
      */
-    PsWalkParsedAml (PsGetArg (Op, 0), Op, NULL, NULL, PsxLoadBeginMethodOp, PsxLoadEndOp);
+/*    PsWalkParsedAml (PsGetArg (Op, 0), Op, NULL, NULL, PsxLoadBeginMethodOp, PsxLoadEndOp); */
 
 
     /*
@@ -229,7 +231,7 @@ BREAKPOINT3;
 
     ObjDesc->Method.ParserOp = Op;
 
-    return Status;
+    return_ACPI_STATUS (Status);
 }
 
 
@@ -346,13 +348,19 @@ PsxRestartControlMethod (
     FUNCTION_TRACE_PTR ("PsxRestartControlMethod", WalkState);
 
 
-    /* Get the return value (if any) from the previous method.  NULL if no return value */
+    if (ReturnDesc)
+    {
+        /* Get the return value (if any) from the previous method.  NULL if no return value */
 
-    PsxResultStackPush (ReturnDesc, WalkState);
+        PsxResultStackPush (ReturnDesc, WalkState);
+
+        /* Delete the return value if it will not be used by the calling method */
+
+        PsxDeleteResultIfNotUsed (WalkState->NextOp, ReturnDesc, WalkState);
+    }
 
     DEBUG_PRINT (TRACE_PARSE, ("PsxRestart: Method=%p Return=%p State=%p\n", 
                         MethodCallOp, ReturnDesc, WalkState));
-
 
     /*
      * Currently, the only way a method can be preempted is by the nested execution
