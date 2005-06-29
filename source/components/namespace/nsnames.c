@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: nsnames - Name manipulation and search
- *              $Revision: 1.88 $
+ *              $Revision: 1.90 $
  *
  ******************************************************************************/
 
@@ -124,6 +124,14 @@
 #define _COMPONENT          ACPI_NAMESPACE
         ACPI_MODULE_NAME    ("nsnames")
 
+/* Local prototypes */
+
+static void
+AcpiNsBuildExternalPath (
+    ACPI_NAMESPACE_NODE     *Node,
+    ACPI_SIZE               Size,
+    char                    *NameBuffer);
+
 
 /*******************************************************************************
  *
@@ -203,7 +211,7 @@ AcpiNsBuildExternalPath (
  *
  * FUNCTION:    AcpiNsGetExternalPathname
  *
- * PARAMETERS:  Node            - NS node whose pathname is needed
+ * PARAMETERS:  Node            - Namespace node whose pathname is needed
  *
  * RETURN:      Pointer to storage containing the fully qualified name of
  *              the node, In external format (name segments separated by path

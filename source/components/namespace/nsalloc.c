@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: nsalloc - Namespace allocation and deletion utilities
- *              $Revision: 1.90 $
+ *              $Revision: 1.92 $
  *
  ******************************************************************************/
 
@@ -124,14 +124,20 @@
 #define _COMPONENT          ACPI_NAMESPACE
         ACPI_MODULE_NAME    ("nsalloc")
 
+/* Local prototypes */
+
+static void
+AcpiNsRemoveReference (
+    ACPI_NAMESPACE_NODE     *Node);
+
 
 /*******************************************************************************
  *
  * FUNCTION:    AcpiNsCreateNode
  *
- * PARAMETERS:  AcpiName        - Name of the new node
+ * PARAMETERS:  Name            - Name of the new node (4 char ACPI name)
  *
- * RETURN:      None
+ * RETURN:      New namespace node (Null on failure)
  *
  * DESCRIPTION: Create a namespace node
  *
@@ -227,7 +233,6 @@ AcpiNsDeleteNode (
         }
     }
 
-
     ACPI_MEM_TRACKING (AcpiGbl_MemoryLists[ACPI_MEM_LIST_NSNODE].TotalFreed++);
 
     /*
@@ -237,60 +242,6 @@ AcpiNsDeleteNode (
     ACPI_MEM_FREE (Node);
     return_VOID;
 }
-
-
-#ifdef ACPI_ALPHABETIC_NAMESPACE
-/*******************************************************************************
- *
- * FUNCTION:    AcpiNsCompareNames
- *
- * PARAMETERS:  Name1           - First name to compare
- *              Name2           - Second name to compare
- *
- * RETURN:      value from strncmp
- *
- * DESCRIPTION: Compare two ACPI names.  Names that are prefixed with an
- *              underscore are forced to be alphabetically first.
- *
- ******************************************************************************/
-
-int
-AcpiNsCompareNames (
-    char                    *Name1,
-    char                    *Name2)
-{
-    char                    ReversedName1[ACPI_NAME_SIZE];
-    char                    ReversedName2[ACPI_NAME_SIZE];
-    UINT32                  i;
-    UINT32                  j;
-
-
-    /*
-     * Replace all instances of "underscore" with a value that is smaller so
-     * that all names that are prefixed with underscore(s) are alphabetically
-     * first.
-     *
-     * Reverse the name bytewise so we can just do a 32-bit compare instead
-     * of a strncmp.
-     */
-    for (i = 0, j= (ACPI_NAME_SIZE - 1); i < ACPI_NAME_SIZE; i++, j--)
-    {
-        ReversedName1[j] = Name1[i];
-        if (Name1[i] == '_')
-        {
-            ReversedName1[j] = '*';
-        }
-
-        ReversedName2[j] = Name2[i];
-        if (Name2[i] == '_')
-        {
-            ReversedName2[j] = '*';
-        }
-    }
-
-    return (*(int *) ReversedName1 - *(int *) ReversedName2);
-}
-#endif
 
 
 /*******************************************************************************
@@ -800,5 +751,59 @@ AcpiNsDeleteNamespaceByOwner (
 
     return_VOID;
 }
+
+
+#ifdef ACPI_ALPHABETIC_NAMESPACE
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiNsCompareNames
+ *
+ * PARAMETERS:  Name1           - First name to compare
+ *              Name2           - Second name to compare
+ *
+ * RETURN:      value from strncmp
+ *
+ * DESCRIPTION: Compare two ACPI names.  Names that are prefixed with an
+ *              underscore are forced to be alphabetically first.
+ *
+ ******************************************************************************/
+
+int
+AcpiNsCompareNames (
+    char                    *Name1,
+    char                    *Name2)
+{
+    char                    ReversedName1[ACPI_NAME_SIZE];
+    char                    ReversedName2[ACPI_NAME_SIZE];
+    UINT32                  i;
+    UINT32                  j;
+
+
+    /*
+     * Replace all instances of "underscore" with a value that is smaller so
+     * that all names that are prefixed with underscore(s) are alphabetically
+     * first.
+     *
+     * Reverse the name bytewise so we can just do a 32-bit compare instead
+     * of a strncmp.
+     */
+    for (i = 0, j= (ACPI_NAME_SIZE - 1); i < ACPI_NAME_SIZE; i++, j--)
+    {
+        ReversedName1[j] = Name1[i];
+        if (Name1[i] == '_')
+        {
+            ReversedName1[j] = '*';
+        }
+
+        ReversedName2[j] = Name2[i];
+        if (Name2[i] == '_')
+        {
+            ReversedName2[j] = '*';
+        }
+    }
+
+    return (*(int *) ReversedName1 - *(int *) ReversedName2);
+}
+#endif
 
 

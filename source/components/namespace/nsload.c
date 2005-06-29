@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: nsload - namespace loading/expanding/contracting procedures
- *              $Revision: 1.71 $
+ *              $Revision: 1.72 $
  *
  *****************************************************************************/
 
@@ -124,9 +124,24 @@
 #define _COMPONENT          ACPI_NAMESPACE
         ACPI_MODULE_NAME    ("nsload")
 
+/* Local prototypes */
+
+static ACPI_STATUS
+AcpiNsLoadTableByType (
+    ACPI_TABLE_TYPE         TableType);
+
+#ifdef ACPI_FUTURE_IMPLEMENTATION
+ACPI_STATUS
+AcpiNsUnloadNamespace (
+    ACPI_HANDLE             Handle);
+
+static ACPI_STATUS
+AcpiNsDeleteSubtree (
+    ACPI_HANDLE             StartHandle);
+#endif
+
 
 #ifndef ACPI_NO_METHOD_EXECUTION
-
 /*******************************************************************************
  *
  * FUNCTION:    AcpiNsLoadTable

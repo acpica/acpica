@@ -2,7 +2,7 @@
  *
  * Module Name: nsutils - Utilities for accessing ACPI namespace, accessing
  *                        parents and siblings and Scope manipulation
- *              $Revision: 1.138 $
+ *              $Revision: 1.140 $
  *
  *****************************************************************************/
 
@@ -125,6 +125,18 @@
 #define _COMPONENT          ACPI_NAMESPACE
         ACPI_MODULE_NAME    ("nsutils")
 
+/* Local prototypes */
+
+static BOOLEAN
+AcpiNsValidPathSeparator (
+    char                    Sep);
+
+#ifdef ACPI_OBSOLETE_FUNCTIONS
+ACPI_NAME
+AcpiNsFindParentName (
+    ACPI_NAMESPACE_NODE     *NodeToSearch);
+#endif
+
 
 /*******************************************************************************
  *
@@ -133,7 +145,8 @@
  * PARAMETERS:  ModuleName          - Caller's module name (for error output)
  *              LineNumber          - Caller's line number (for error output)
  *              ComponentId         - Caller's component ID (for error output)
- *              Message             - Error message to use on failure
+ *              InternalName        - Name or path of the namespace node
+ *              LookupStatus        - Exception code from NS lookup
  *
  * RETURN:      None
  *
@@ -200,6 +213,9 @@ AcpiNsReportError (
  *              LineNumber          - Caller's line number (for error output)
  *              ComponentId         - Caller's component ID (for error output)
  *              Message             - Error message to use on failure
+ *              PrefixNode          - Prefix relative to the path
+ *              Path                - Path to the node
+ *              MethodStatus        - Execution status
  *
  * RETURN:      None
  *
@@ -242,8 +258,8 @@ AcpiNsReportMethodError (
  *
  * FUNCTION:    AcpiNsPrintNodePathname
  *
- * PARAMETERS:  Node                - Object
- *              Msg                 - Prefix message
+ * PARAMETERS:  Node            - Object
+ *              Message         - Prefix message
  *
  * DESCRIPTION: Print an object's full namespace pathname
  *              Manages allocation/freeing of a pathname buffer
@@ -253,7 +269,7 @@ AcpiNsReportMethodError (
 void
 AcpiNsPrintNodePathname (
     ACPI_NAMESPACE_NODE     *Node,
-    char                    *Msg)
+    char                    *Message)
 {
     ACPI_BUFFER             Buffer;
     ACPI_STATUS             Status;
@@ -272,9 +288,9 @@ AcpiNsPrintNodePathname (
     Status = AcpiNsHandleToPathname (Node, &Buffer);
     if (ACPI_SUCCESS (Status))
     {
-        if (Msg)
+        if (Message)
         {
-            AcpiOsPrintf ("%s ", Msg);
+            AcpiOsPrintf ("%s ", Message);
         }
 
         AcpiOsPrintf ("[%s] (Node %p)", (char *) Buffer.Pointer, Node);
@@ -308,7 +324,7 @@ AcpiNsValidRootPrefix (
  *
  * FUNCTION:    AcpiNsValidPathSeparator
  *
- * PARAMETERS:  Sep              - Character to be checked
+ * PARAMETERS:  Sep         - Character to be checked
  *
  * RETURN:      TRUE if a valid path separator
  *
@@ -329,9 +345,11 @@ AcpiNsValidPathSeparator (
  *
  * FUNCTION:    AcpiNsGetType
  *
- * PARAMETERS:  Handle              - Parent Node to be examined
+ * PARAMETERS:  Node        - Parent Node to be examined
  *
  * RETURN:      Type field from Node whose handle is passed
+ *
+ * DESCRIPTION: Return the type of a Namespace node
  *
  ******************************************************************************/
 
@@ -356,10 +374,12 @@ AcpiNsGetType (
  *
  * FUNCTION:    AcpiNsLocal
  *
- * PARAMETERS:  Type            - A namespace object type
+ * PARAMETERS:  Type        - A namespace object type
  *
  * RETURN:      LOCAL if names must be found locally in objects of the
  *              passed type, 0 if enclosing scopes should be searched
+ *
+ * DESCRIPTION: Returns scope rule for the given object type.
  *
  ******************************************************************************/
 
@@ -389,7 +409,7 @@ AcpiNsLocal (
  * PARAMETERS:  Info            - Info struct initialized with the
  *                                external name pointer.
  *
- * RETURN:      Status
+ * RETURN:      None
  *
  * DESCRIPTION: Calculate the length of the internal (AML) namestring
  *              corresponding to the external (ASL) namestring.
@@ -663,14 +683,16 @@ AcpiNsInternalizeName (
  *
  * FUNCTION:    AcpiNsExternalizeName
  *
- * PARAMETERS:  *InternalName          - Internal representation of name
- *              **ConvertedName        - Where to return the resulting
- *                                       external representation of name
+ * PARAMETERS:  InternalNameLength  - Lenth of the internal name below
+ *              InternalName        - Internal representation of name
+ *              ConvertedNameLength - Where the length is returned
+ *              ConvertedName       - Where the resulting external name
+ *                                    is returned
  *
  * RETURN:      Status
  *
  * DESCRIPTION: Convert internal name (e.g. 5c 2f 02 5f 50 52 5f 43 50 55 30)
- *              to its external form (e.g. "\_PR_.CPU0")
+ *              to its external (printable) form (e.g. "\_PR_.CPU0")
  *
  ******************************************************************************/
 
@@ -844,8 +866,9 @@ AcpiNsExternalizeName (
  *
  * DESCRIPTION: Convert a namespace handle to a real Node
  *
- * Note: Real integer handles allow for more verification
- *       and keep all pointers within this subsystem.
+ * Note: Real integer handles would allow for more verification
+ *       and keep all pointers within this subsystem - however this introduces
+ *       more (and perhaps unnecessary) overhead.
  *
  ******************************************************************************/
 
@@ -905,7 +928,7 @@ AcpiNsConvertEntryToHandle (
     return ((ACPI_HANDLE) Node);
 
 
-/* ---------------------------------------------------
+/* Example future implementation ---------------------
 
     if (!Node)
     {
@@ -931,12 +954,13 @@ AcpiNsConvertEntryToHandle (
  *
  * RETURN:      none
  *
- * DESCRIPTION: free memory allocated for table storage.
+ * DESCRIPTION: free memory allocated for namespace and ACPI table storage.
  *
  ******************************************************************************/
 
 void
-AcpiNsTerminate (void)
+AcpiNsTerminate (
+    void)
 {
     ACPI_OPERAND_OBJECT     *ObjDesc;
 
