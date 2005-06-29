@@ -259,6 +259,9 @@ TbChecksum (
     void                    *Buffer,
     UINT32                  Length);
 
+ACPI_STATUS
+TbValidateTableHeader (
+    ACPI_TABLE_HEADER       *TableHeader);
 
 
 #endif /* __TABLES_H__ */
