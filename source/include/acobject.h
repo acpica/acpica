@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Name: acobject.h - Definition of ACPI_OPERAND_OBJECT  (Internal object only)
- *       $Revision: 1.97 $
+ *       $Revision: 1.98 $
  *
  *****************************************************************************/
 
@@ -303,8 +303,8 @@ typedef struct acpi_obj_mutex /* MUTEX */
     UINT16                      SyncLevel;
     UINT16                      AcquisitionDepth;
 
+    struct acpi_thread_state    *OwnerThread;
     void                        *Semaphore;
-    void                        *Owner;
     union acpi_operand_obj      *Prev;              /* Link for list of acquired mutexes */
     union acpi_operand_obj      *Next;              /* Link for list of acquired mutexes */
 
