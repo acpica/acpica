@@ -1,7 +1,7 @@
+
 /******************************************************************************
- *
- * Module Name: exoparg2 - AML execution - opcodes with 2 arguments
- *              $Revision: 1.128 $
+ * 
+ * Module Name: iedyadic - ACPI AML (p-code) execution for dyadic operators
  *
  *****************************************************************************/
 
@@ -9,704 +9,712 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2004, Intel Corp.
- * All rights reserved.
+ * Some or all of this work - Copyright (c) 1999, Intel Corp.  All rights 
+ * reserved.
  *
  * 2. License
+ * 
+ * 2.1. Intel grants, free of charge, to any person ("Licensee") obtaining a 
+ * copy of the source code appearing in this file ("Covered Code") a license 
+ * under Intel's copyrights in the base code distributed originally by Intel 
+ * ("Original Intel Code") to copy, make derivatives, distribute, use and 
+ * display any portion of the Covered Code in any form; and
  *
- * 2.1. This is your license from Intel Corp. under its intellectual property
- * rights.  You may have additional license terms from the party that provided
- * you this software, covering your right to use that party's intellectual
- * property rights.
+ * 2.2. Intel grants Licensee a non-exclusive and non-transferable patent 
+ * license (without the right to sublicense), under only those claims of Intel
+ * patents that are infringed by the Original Intel Code, to make, use, sell, 
+ * offer to sell, and import the Covered Code and derivative works thereof 
+ * solely to the minimum extent necessary to exercise the above copyright 
+ * license, and in no event shall the patent license extend to any additions to
+ * or modifications of the Original Intel Code.  No other license or right is 
+ * granted directly or by implication, estoppel or otherwise;
  *
- * 2.2. Intel grants, free of charge, to any person ("Licensee") obtaining a
- * copy of the source code appearing in this file ("Covered Code") an
- * irrevocable, perpetual, worldwide license under Intel's copyrights in the
- * base code distributed originally by Intel ("Original Intel Code") to copy,
- * make derivatives, distribute, use and display any portion of the Covered
- * Code in any form, with the right to sublicense such rights; and
- *
- * 2.3. Intel grants Licensee a non-exclusive and non-transferable patent
- * license (with the right to sublicense), under only those claims of Intel
- * patents that are infringed by the Original Intel Code, to make, use, sell,
- * offer to sell, and import the Covered Code and derivative works thereof
- * solely to the minimum extent necessary to exercise the above copyright
- * license, and in no event shall the patent license extend to any additions
- * to or modifications of the Original Intel Code.  No other license or right
- * is granted directly or by implication, estoppel or otherwise;
- *
- * The above copyright and patent license is granted only if the following
+ * the above copyright and patent license is granted only if the following 
  * conditions are met:
  *
- * 3. Conditions
+ * 3. Conditions 
  *
- * 3.1. Redistribution of Source with Rights to Further Distribute Source.
- * Redistribution of source code of any substantial portion of the Covered
- * Code or modification with rights to further distribute source must include
- * the above Copyright Notice, the above License, this list of Conditions,
- * and the following Disclaimer and Export Compliance provision.  In addition,
- * Licensee must cause all Covered Code to which Licensee contributes to
- * contain a file documenting the changes Licensee made to create that Covered
- * Code and the date of any change.  Licensee must include in that file the
- * documentation of any changes made by any predecessor Licensee.  Licensee
- * must include a prominent statement that the modification is derived,
- * directly or indirectly, from Original Intel Code.
+ * 3.1. Redistribution of source code of any substantial portion of the Covered 
+ * Code or modification must include the above Copyright Notice, the above 
+ * License, this list of Conditions, and the following Disclaimer and Export 
+ * Compliance provision.  In addition, Licensee must cause all Covered Code to 
+ * which Licensee contributes to contain a file documenting the changes 
+ * Licensee made to create that Covered Code and the date of any change.  
+ * Licensee must include in that file the documentation of any changes made by
+ * any predecessor Licensee.  Licensee must include a prominent statement that
+ * the modification is derived, directly or indirectly, from Original Intel 
+ * Code.
  *
- * 3.2. Redistribution of Source with no Rights to Further Distribute Source.
- * Redistribution of source code of any substantial portion of the Covered
- * Code or modification without rights to further distribute source must
- * include the following Disclaimer and Export Compliance provision in the
- * documentation and/or other materials provided with distribution.  In
- * addition, Licensee may not authorize further sublicense of source of any
- * portion of the Covered Code, and must include terms to the effect that the
- * license from Licensee to its licensee is limited to the intellectual
- * property embodied in the software Licensee provides to its licensee, and
- * not to intellectual property embodied in modifications its licensee may
- * make.
+ * 3.2. Redistribution in binary form of any substantial portion of the Covered 
+ * Code or modification must reproduce the above Copyright Notice, and the 
+ * following Disclaimer and Export Compliance provision in the documentation 
+ * and/or other materials provided with the distribution.
  *
- * 3.3. Redistribution of Executable. Redistribution in executable form of any
- * substantial portion of the Covered Code or modification must reproduce the
- * above Copyright Notice, and the following Disclaimer and Export Compliance
- * provision in the documentation and/or other materials provided with the
- * distribution.
- *
- * 3.4. Intel retains all right, title, and interest in and to the Original
+ * 3.3. Intel retains all right, title, and interest in and to the Original 
  * Intel Code.
  *
- * 3.5. Neither the name Intel nor any other trademark owned or controlled by
- * Intel shall be used in advertising or otherwise to promote the sale, use or
- * other dealings in products derived from or relating to the Covered Code
+ * 3.4. Neither the name Intel nor any other trademark owned or controlled by 
+ * Intel shall be used in advertising or otherwise to promote the sale, use or 
+ * other dealings in products derived from or relating to the Covered Code 
  * without prior written authorization from Intel.
  *
  * 4. Disclaimer and Export Compliance
  *
- * 4.1. INTEL MAKES NO WARRANTY OF ANY KIND REGARDING ANY SOFTWARE PROVIDED
- * HERE.  ANY SOFTWARE ORIGINATING FROM INTEL OR DERIVED FROM INTEL SOFTWARE
- * IS PROVIDED "AS IS," AND INTEL WILL NOT PROVIDE ANY SUPPORT,  ASSISTANCE,
- * INSTALLATION, TRAINING OR OTHER SERVICES.  INTEL WILL NOT PROVIDE ANY
- * UPDATES, ENHANCEMENTS OR EXTENSIONS.  INTEL SPECIFICALLY DISCLAIMS ANY
- * IMPLIED WARRANTIES OF MERCHANTABILITY, NONINFRINGEMENT AND FITNESS FOR A
- * PARTICULAR PURPOSE.
+ * 4.1. INTEL MAKES NO WARRANTY OF ANY KIND REGARDING ANY SOFTWARE PROVIDED 
+ * HERE.  ANY SOFTWARE ORIGINATING FROM INTEL OR DERIVED FROM INTEL SOFTWARE 
+ * IS PROVIDED "AS IS," AND INTEL WILL NOT PROVIDE ANY SUPPORT,  ASSISTANCE, 
+ * INSTALLATION, TRAINING OR OTHER SERVICES.  INTEL WILL NOT PROVIDE ANY 
+ * UPDATES, ENHANCEMENTS OR EXTENSIONS.  INTEL SPECIFICALLY DISCLAIMS ANY 
+ * IMPLIED WARRANTIES OF MERCHANTABILITY, NONINFRINGEMENT AND FITNESS FOR A 
+ * PARTICULAR PURPOSE. 
  *
- * 4.2. IN NO EVENT SHALL INTEL HAVE ANY LIABILITY TO LICENSEE, ITS LICENSEES
- * OR ANY OTHER THIRD PARTY, FOR ANY LOST PROFITS, LOST DATA, LOSS OF USE OR
- * COSTS OF PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES, OR FOR ANY INDIRECT,
- * SPECIAL OR CONSEQUENTIAL DAMAGES ARISING OUT OF THIS AGREEMENT, UNDER ANY
- * CAUSE OF ACTION OR THEORY OF LIABILITY, AND IRRESPECTIVE OF WHETHER INTEL
- * HAS ADVANCE NOTICE OF THE POSSIBILITY OF SUCH DAMAGES.  THESE LIMITATIONS
- * SHALL APPLY NOTWITHSTANDING THE FAILURE OF THE ESSENTIAL PURPOSE OF ANY
+ * 4.2. IN NO EVENT SHALL INTEL HAVE ANY LIABILITY TO LICENSEE, ITS LICENSEES 
+ * OR ANY OTHER THIRD PARTY, FOR ANY LOST PROFITS, LOST DATA, LOSS OF USE OR 
+ * COSTS OF PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES, OR FOR ANY INDIRECT, 
+ * SPECIAL OR CONSEQUENTIAL DAMAGES ARISING OUT OF THIS AGREEMENT, UNDER ANY 
+ * CAUSE OF ACTION OR THEORY OF LIABILITY, AND IRRESPECTIVE OF WHETHER INTEL 
+ * HAS ADVANCE NOTICE OF THE POSSIBILITY OF SUCH DAMAGES.  THESE LIMITATIONS 
+ * SHALL APPLY NOTWITHSTANDING THE FAILURE OF THE ESSENTIAL PURPOSE OF ANY 
  * LIMITED REMEDY.
  *
- * 4.3. Licensee shall not export, either directly or indirectly, any of this
- * software or system incorporating such software without first obtaining any
- * required license or other approval from the U. S. Department of Commerce or
- * any other agency or department of the United States Government.  In the
- * event Licensee exports any such software from the United States or
- * re-exports any such software from a foreign destination, Licensee shall
- * ensure that the distribution and export/re-export of the software is in
- * compliance with all laws, regulations, orders, or other restrictions of the
- * U.S. Export Administration Regulations. Licensee agrees that neither it nor
- * any of its subsidiaries will export/re-export any technical data, process,
- * software, or service, directly or indirectly, to any country for which the
- * United States government or any agency thereof requires an export license,
- * other governmental approval, or letter of assurance, without first obtaining
- * such license, approval or letter.
+ * 4.3. Licensee shall not export, either directly or indirectly, any of this 
+ * software or system incorporating such software without first obtaining any 
+ * required license or other approval from the U. S. Department of Commerce or 
+ * any other agency or department of the United States Government.  In the 
+ * event Licensee exports any such software from the United States or re-
+ * exports any such software from a foreign destination, Licensee shall ensure
+ * that the distribution and export/re-export of the software is in compliance 
+ * with all laws, regulations, orders, or other restrictions of the U.S. Export 
+ * Administration Regulations. Licensee agrees that neither it nor any of its 
+ * subsidiaries will export/re-export any technical data, process, software, or 
+ * service, directly or indirectly, to any country for which the United States 
+ * government or any agency thereof requires an export license, other 
+ * governmental approval, or letter of assurance, without first obtaining such
+ * license, approval or letter.
  *
  *****************************************************************************/
 
 
-#define __EXOPARG2_C__
+#define __IEDYADIC_C__
 
-#include "acpi.h"
-#include "acparser.h"
-#include "acinterp.h"
-#include "acevents.h"
-#include "amlcode.h"
-
-
-#define _COMPONENT          ACPI_EXECUTER
-        ACPI_MODULE_NAME    ("exoparg2")
+#include <acpi.h>
+#include <interpreter.h>
+#include <amlcode.h>
+#include <string.h>
 
 
-/*!
- * Naming convention for AML interpreter execution routines.
- *
- * The routines that begin execution of AML opcodes are named with a common
- * convention based upon the number of arguments, the number of target operands,
- * and whether or not a value is returned:
- *
- *      AcpiExOpcode_xA_yT_zR
- *
- * Where:
- *
- * xA - ARGUMENTS:    The number of arguments (input operands) that are
- *                    required for this opcode type (1 through 6 args).
- * yT - TARGETS:      The number of targets (output operands) that are required
- *                    for this opcode type (0, 1, or 2 targets).
- * zR - RETURN VALUE: Indicates whether this opcode type returns a value
- *                    as the function return (0 or 1).
- *
- * The AcpiExOpcode* functions are called via the Dispatcher component with
- * fully resolved operands.
-!*/
+#define _THIS_MODULE        "iedyadic.c"
+#define _COMPONENT          INTERPRETER
 
 
-/*******************************************************************************
+static ST_KEY_DESC_TABLE KDT[] = {
+    {"0000", '1', "AmlExecDyadic2R: Descriptor Allocation Failure", "AmlExecDyadic2R: Descriptor Allocation Failure"},
+    {"0001", '1', "AmlExecDyadic2R/ConcatOp: String allocation failure", "AmlExecDyadic2R/ConcatOp: String allocation failure"},
+    {"0002", '1', "AmlExecDyadic2R/ConcatOp: Buffer allocation failure", "AmlExecDyadic2R/ConcatOp: Buffer allocation failure"},
+    {NULL, 'I', NULL, NULL}
+};
+
+
+
+/*****************************************************************************
+ * 
+ * FUNCTION:    AmlExecDyadic1
  *
- * FUNCTION:    AcpiExOpcode_2A_0T_0R
- *
- * PARAMETERS:  WalkState           - Current walk state
+ * PARAMETERS:  opcode              - The opcode to be executed
  *
  * RETURN:      Status
  *
- * DESCRIPTION: Execute opcode with two arguments, no target, and no return
- *              value.
+ * DESCRIPTION: Execute Type 1 dyadic operator with numeric operands:
+ *              NotifyOp
  *
  * ALLOCATION:  Deletes both operands
  *
- ******************************************************************************/
+ ****************************************************************************/
 
 ACPI_STATUS
-AcpiExOpcode_2A_0T_0R (
-    ACPI_WALK_STATE         *WalkState)
+AmlExecDyadic1 (UINT16 opcode)
 {
-    ACPI_OPERAND_OBJECT     **Operand = &WalkState->Operands[0];
-    ACPI_NAMESPACE_NODE     *Node;
-    UINT32                  Value;
-    ACPI_STATUS             Status = AE_OK;
-
-
-    ACPI_FUNCTION_TRACE_STR ("ExOpcode_2A_0T_0R",
-            AcpiPsGetOpcodeName (WalkState->Opcode));
-
-
-    /* Examine the opcode */
-
-    switch (WalkState->Opcode)
-    {
-    case AML_NOTIFY_OP:         /* Notify (NotifyObject, NotifyValue) */
-
-        /* The first operand is a namespace node */
-
-        Node = (ACPI_NAMESPACE_NODE *) Operand[0];
-
-        /* Second value is the notify value */
-
-        Value = (UINT32) Operand[1]->Integer.Value;
-
-        /* Notifies allowed on this object? */
-
-        if (!AcpiEvIsNotifyObject (Node))
-        {
-            ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
-                    "Unexpected notify object type [%s]\n",
-                    AcpiUtGetTypeName (Node->Type)));
-
-            Status = AE_AML_OPERAND_TYPE;
-            break;
-        }
-
-#ifdef ACPI_GPE_NOTIFY_CHECK
-        /*
-         * GPE method wake/notify check.  Here, we want to ensure that we
-         * don't receive any "DeviceWake" Notifies from a GPE _Lxx or _Exx
-         * GPE method during system runtime.  If we do, the GPE is marked
-         * as "wake-only" and disabled.
-         *
-         * 1) Is the Notify() value == DeviceWake?
-         * 2) Is this a GPE deferred method?  (An _Lxx or _Exx method)
-         * 3) Did the original GPE happen at system runtime?
-         *    (versus during wake)
-         *
-         * If all three cases are true, this is a wake-only GPE that should
-         * be disabled at runtime.
-         */
-        if (Value == 2)     /* DeviceWake */
-        {
-            Status = AcpiEvCheckForWakeOnlyGpe (WalkState->GpeEventInfo);
-            if (ACPI_FAILURE (Status))
-            {
-                /* AE_WAKE_ONLY_GPE only error, means ignore this notify */
-
-                return_ACPI_STATUS (AE_OK)
-            }
-        }
-#endif
-
-        /*
-         * Dispatch the notify to the appropriate handler
-         * NOTE: the request is queued for execution after this method
-         * completes.  The notify handlers are NOT invoked synchronously
-         * from this thread -- because handlers may in turn run other
-         * control methods.
-         */
-        Status = AcpiEvQueueNotifyRequest (Node, Value);
-        break;
-
-
-    default:
-
-        ACPI_REPORT_ERROR (("AcpiExOpcode_2A_0T_0R: Unknown opcode %X\n",
-                WalkState->Opcode));
-        Status = AE_AML_BAD_OPCODE;
-    }
-
-    return_ACPI_STATUS (Status);
-}
-
-
-/*******************************************************************************
- *
- * FUNCTION:    AcpiExOpcode_2A_2T_1R
- *
- * PARAMETERS:  WalkState           - Current walk state
- *
- * RETURN:      Status
- *
- * DESCRIPTION: Execute a dyadic operator (2 operands) with 2 output targets
- *              and one implicit return value.
- *
- ******************************************************************************/
-
-ACPI_STATUS
-AcpiExOpcode_2A_2T_1R (
-    ACPI_WALK_STATE         *WalkState)
-{
-    ACPI_OPERAND_OBJECT     **Operand = &WalkState->Operands[0];
-    ACPI_OPERAND_OBJECT     *ReturnDesc1 = NULL;
-    ACPI_OPERAND_OBJECT     *ReturnDesc2 = NULL;
+    OBJECT_DESCRIPTOR       *ObjDesc = NULL;
+    OBJECT_DESCRIPTOR       *ValDesc = NULL;
     ACPI_STATUS             Status;
 
 
-    ACPI_FUNCTION_TRACE_STR ("ExOpcode_2A_2T_1R",
-        AcpiPsGetOpcodeName (WalkState->Opcode));
+    FUNCTION_TRACE ("AmlExecDyadic1");
 
 
-    /*
-     * Execute the opcode
-     */
-    switch (WalkState->Opcode)
+    Status = AmlPrepStack ("nl");
+
+    if (Status != AE_OK)
     {
-    case AML_DIVIDE_OP:             /* Divide (Dividend, Divisor, RemainderResult QuotientResult) */
+        /*  invalid parameters on object stack  */
 
-        ReturnDesc1 = AcpiUtCreateInternalObject (ACPI_TYPE_INTEGER);
-        if (!ReturnDesc1)
+        AmlAppendOperandDiag (_THIS_MODULE, __LINE__, opcode, 2);
+        FUNCTION_EXIT;
+        return Status;
+    }
+
+    AmlDumpStack (MODE_Exec, ShortOps[opcode], 2, "after AmlPrepStack");
+
+    ValDesc = (OBJECT_DESCRIPTOR *) ObjStack[ObjStackTop];
+    ObjDesc = (OBJECT_DESCRIPTOR *) ObjStack[ObjStackTop - 1];
+
+    switch (opcode)
+    {
+
+
+    /*  DefNotify   :=  NotifyOp    NotifyObject    NotifyValue */
+
+    case AML_NotifyOp:
+
+        /* XXX - What should actually happen here [NotifyOp] ?
+         * XXX - See ACPI 1.0 spec sec 5.6.3 p. 5-102.
+         * XXX - We may need to simulate what an OS would
+         * XXX - do in response to the Notify operation.
+         * XXX - For value 1 (Ejection Request),
+         * XXX -        some device method may need to be run.
+         * XXX - For value 2 (Device Wake) if _PRW exists,
+         * XXX -        the _PS0 method may need to be run.
+         * XXX - For value 0x80 (Status Change) on the power button or
+         * XXX -        sleep button, initiate soft-off or sleep operation?
+         */
+
+        if (ObjDesc)
         {
-            Status = AE_NO_MEMORY;
-            goto Cleanup;
-        }
+            switch (ObjDesc->ValType)
+            {
+            case TYPE_Device:
+            case TYPE_Thermal:
+            
+                /* XXX - Requires that sDevice and sThermalZone
+                 * XXX - be compatible mappings
+                 */
 
-        ReturnDesc2 = AcpiUtCreateInternalObject (ACPI_TYPE_INTEGER);
-        if (!ReturnDesc2)
-        {
-            Status = AE_NO_MEMORY;
-            goto Cleanup;
-        }
+                OsDoNotifyOp (ValDesc, ObjDesc);
+                break;
 
-        /* Quotient to ReturnDesc1, remainder to ReturnDesc2 */
-
-        Status = AcpiUtDivide (Operand[0]->Integer.Value,
-                               Operand[1]->Integer.Value,
-                               &ReturnDesc1->Integer.Value,
-                               &ReturnDesc2->Integer.Value);
-        if (ACPI_FAILURE (Status))
-        {
-            goto Cleanup;
+            default:
+                DEBUG_PRINT (ACPI_ERROR, (
+                        "AmlExecDyadic1/NotifyOp: unexpected notify object type %d\n",
+                        ObjDesc->ValType));
+                FUNCTION_EXIT;
+                return AE_AML_ERROR;
+            }
         }
         break;
 
-
     default:
-
-        ACPI_REPORT_ERROR (("AcpiExOpcode_2A_2T_1R: Unknown opcode %X\n",
-                WalkState->Opcode));
-        Status = AE_AML_BAD_OPCODE;
-        goto Cleanup;
+        DEBUG_PRINT (ACPI_ERROR, ("AmlExecDyadic1: Unknown dyadic opcode %02x\n", opcode));
+        FUNCTION_EXIT;
+        return AE_AML_ERROR;
     }
 
-
-    /* Store the results to the target reference operands */
-
-    Status = AcpiExStore (ReturnDesc2, Operand[2], WalkState);
-    if (ACPI_FAILURE (Status))
+    if (ValDesc)
     {
-        goto Cleanup;
+        OsdFree (ValDesc);
     }
 
-    Status = AcpiExStore (ReturnDesc1, Operand[3], WalkState);
-    if (ACPI_FAILURE (Status))
+    if (ObjDesc)
     {
-        goto Cleanup;
+        OsdFree (ObjDesc);
     }
+    
+    ObjStack[--ObjStackTop] = NULL;
 
-    /* Return the remainder */
-
-    WalkState->ResultObj = ReturnDesc1;
-
-
-Cleanup:
-    /*
-     * Since the remainder is not returned indirectly, remove a reference to
-     * it. Only the quotient is returned indirectly.
-     */
-    AcpiUtRemoveReference (ReturnDesc2);
-
-    if (ACPI_FAILURE (Status))
-    {
-        /* Delete the return object */
-
-        AcpiUtRemoveReference (ReturnDesc1);
-    }
-
-    return_ACPI_STATUS (Status);
+    FUNCTION_EXIT;
+    return AE_OK;
 }
 
 
-/*******************************************************************************
+/*****************************************************************************
+ * 
+ * FUNCTION:    AmlExecDyadic2R
  *
- * FUNCTION:    AcpiExOpcode_2A_1T_1R
- *
- * PARAMETERS:  WalkState           - Current walk state
+ * PARAMETERS:  opcode              - The opcode to be executed
  *
  * RETURN:      Status
  *
- * DESCRIPTION: Execute opcode with two arguments, one target, and a return
- *              value.
+ * DESCRIPTION: Execute Type 2 dyadic operator with numeric operands and
+ *              one or two result operands
  *
- ******************************************************************************/
+ * ALLOCATION:  Deletes one operand descriptor -- other remains on stack
+ *
+ ****************************************************************************/
 
 ACPI_STATUS
-AcpiExOpcode_2A_1T_1R (
-    ACPI_WALK_STATE         *WalkState)
+AmlExecDyadic2R (UINT16 opcode)
 {
-    ACPI_OPERAND_OBJECT     **Operand = &WalkState->Operands[0];
-    ACPI_OPERAND_OBJECT     *ReturnDesc = NULL;
-    UINT32                  Index;
-    ACPI_STATUS             Status = AE_OK;
-    ACPI_SIZE               Length;
+    OBJECT_DESCRIPTOR       *ObjDesc = NULL;
+    OBJECT_DESCRIPTOR       *ObjDesc2 = NULL;
+    OBJECT_DESCRIPTOR       *ResDesc = NULL;
+    OBJECT_DESCRIPTOR       *ResDesc2 = NULL;
+    ACPI_STATUS             Status;
+    UINT32                  remain;
+    INT32                   NumOperands;
 
 
-    ACPI_FUNCTION_TRACE_STR ("ExOpcode_2A_1T_1R",
-        AcpiPsGetOpcodeName (WalkState->Opcode));
+    FUNCTION_TRACE ("AmlExecDyadic2R");
 
 
-    /*
-     * Execute the opcode
-     */
-    if (WalkState->OpInfo->Flags & AML_MATH)
+    switch (opcode)
     {
-        /* All simple math opcodes (add, etc.) */
 
-        ReturnDesc = AcpiUtCreateInternalObject (ACPI_TYPE_INTEGER);
-        if (!ReturnDesc)
-        {
-            Status = AE_NO_MEMORY;
-            goto Cleanup;
-        }
 
-        ReturnDesc->Integer.Value = AcpiExDoMathOp (WalkState->Opcode,
-                                                Operand[0]->Integer.Value,
-                                                Operand[1]->Integer.Value);
-        goto StoreResultToTarget;
+    /*  DefConcat   :=  ConcatOp    Data1   Data2   Result  */
+
+    case AML_ConcatOp:
+        Status = AmlPrepStack ("lss");
+        NumOperands = 3;
+        break;
+
+
+    /*  DefDivide   :=  DivideOp Dividend Divisor Remainder Quotient    */
+
+    case AML_DivideOp:
+        Status = AmlPrepStack ("llnn");
+        NumOperands = 4;
+        break;
+
+
+    /*  DefX    :=  XOp Operand1    Operand2    Result  */
+
+    default:
+        Status = AmlPrepStack ("lnn");
+        NumOperands = 3;
+        break;
     }
 
-
-    switch (WalkState->Opcode)
+    if (Status != AE_OK)
     {
-    case AML_MOD_OP:                /* Mod (Dividend, Divisor, RemainderResult (ACPI 2.0) */
+        AmlAppendOperandDiag (_THIS_MODULE, __LINE__, opcode, NumOperands);
+        FUNCTION_EXIT;
+        return Status;
+    }
 
-        ReturnDesc = AcpiUtCreateInternalObject (ACPI_TYPE_INTEGER);
-        if (!ReturnDesc)
+    AmlDumpStack (MODE_Exec, ShortOps[opcode], NumOperands, "after AmlPrepStack");
+
+    if (AML_DivideOp == opcode)
+    {
+        ResDesc2 = (OBJECT_DESCRIPTOR *) ObjStack[ObjStackTop--];
+    }
+
+    ResDesc     = (OBJECT_DESCRIPTOR *) ObjStack[ObjStackTop--];
+    ObjDesc2    = (OBJECT_DESCRIPTOR *) ObjStack[ObjStackTop--];
+    ObjDesc     = (OBJECT_DESCRIPTOR *) ObjStack[ObjStackTop];
+    ObjStackTop += NumOperands - 1;
+
+    switch (opcode)
+    {
+
+
+    /*  DefAdd  :=  AddOp   Operand1    Operand2    Result  */
+
+    case AML_AddOp:
+        ObjDesc->Number.Number += ObjDesc2->Number.Number;
+        break;
+ 
+        
+    /*  DefAnd  :=  AndOp   Operand1    Operand2    Result  */
+
+    case AML_BitAndOp:
+        ObjDesc->Number.Number &= ObjDesc2->Number.Number;
+        break;
+
+        
+    /*  DefNAnd :=  NAndOp  Operand1    Operand2    Result  */
+
+    case AML_BitNandOp:
+        ObjDesc->Number.Number = ~(ObjDesc->Number.Number & ObjDesc2->Number.Number);
+        break;
+   
+       
+    /*  DefOr       :=  OrOp    Operand1    Operand2    Result  */
+        
+    case AML_BitOrOp:
+        ObjDesc->Number.Number |= ObjDesc2->Number.Number;
+        break;
+
+        
+    /*  DefNOr  :=  NOrOp   Operand1    Operand2    Result  */
+
+    case AML_BitNorOp:
+        ObjDesc->Number.Number = ~(ObjDesc->Number.Number | ObjDesc2->Number.Number);
+        break;
+
+        
+    /*  DefXOr  :=  XOrOp   Operand1    Operand2    Result  */
+
+    case AML_BitXorOp:
+        ObjDesc->Number.Number ^= ObjDesc2->Number.Number;
+        break;
+
+        
+    /*  DefDivide   :=  DivideOp Dividend Divisor Remainder Quotient    */
+
+    case AML_DivideOp:
+        if ((UINT32) 0 == ObjDesc2->Number.Number)
         {
-            Status = AE_NO_MEMORY;
-            goto Cleanup;
+            DEBUG_PRINT (ACPI_ERROR, ("AmlExecDyadic2R/DivideOp: divide by zero\n"));
+            FUNCTION_EXIT;
+            return AE_AML_ERROR;
         }
 
-        /* ReturnDesc will contain the remainder */
+        remain = ObjDesc->Number.Number % ObjDesc2->Number.Number;
+        ObjDesc->Number.Number /= ObjDesc2->Number.Number;
+        ObjDesc2->Number.Number = remain;
+        break;
 
-        Status = AcpiUtDivide (Operand[0]->Integer.Value,
-                               Operand[1]->Integer.Value,
-                               NULL,
-                               &ReturnDesc->Integer.Value);
+        
+    /*  DefMultiply :=  MultiplyOp  Operand1    Operand2    Result  */
+
+    case AML_MultiplyOp:
+        ObjDesc->Number.Number *= ObjDesc2->Number.Number;
+        break;
+
+        
+    /*  DefShiftLeft    :=  ShiftLeftOp Operand ShiftCount  Result  */
+
+    case AML_ShiftLeftOp:
+        ObjDesc->Number.Number <<= ObjDesc2->Number.Number;
+        break;
+
+        
+    /*  DefShiftRight   :=  ShiftRightOp    Operand ShiftCount  Result  */
+
+    case AML_ShiftRightOp:
+        ObjDesc->Number.Number >>= ObjDesc2->Number.Number;
+        break;
+
+        
+    /*  DefSubtract :=  SubtractOp  Operand1    Operand2    Result  */
+
+    case AML_SubtractOp:
+        ObjDesc->Number.Number -= ObjDesc2->Number.Number;
         break;
 
 
-    case AML_CONCAT_OP:             /* Concatenate (Data1, Data2, Result) */
+    /*  DefConcat   :=  ConcatOp    Data1   Data2   Result  */
 
-        Status = AcpiExDoConcatenate (Operand[0], Operand[1],
-                    &ReturnDesc, WalkState);
-        break;
-
-
-    case AML_TO_STRING_OP:          /* ToString (Buffer, Length, Result) (ACPI 2.0) */
-
-        /*
-         * Input object is guaranteed to be a buffer at this point (it may have
-         * been converted.)  Copy the raw buffer data to a new object of type String.
-         */
-
-        /*
-         * Get the length of the new string. It is the smallest of:
-         * 1) Length of the input buffer
-         * 2) Max length as specified in the ToString operator
-         * 3) Length of input buffer up to a zero byte (null terminator)
-         *
-         * NOTE: A length of zero is ok, and will create a zero-length, null
-         *       terminated string.
-         */
-        Length = 0;
-        while ((Length < Operand[0]->Buffer.Length) &&
-               (Length < Operand[1]->Integer.Value) &&
-               (Operand[0]->Buffer.Pointer[Length]))
+    case AML_ConcatOp:
+        if (ObjDesc2->ValType != ObjDesc->ValType)
         {
-            Length++;
-            if (Length > ACPI_MAX_STRING_CONVERSION)
+            DEBUG_PRINT (ACPI_ERROR, (
+                    "AmlExecDyadic2R/ConcatOp: operand type mismatch %d %d\n",
+                    ObjDesc->ValType, ObjDesc2->ValType));
+            FUNCTION_EXIT;
+            return AE_AML_ERROR;
+        }
+
+        /* Both operands are now known to be the same */
+        
+        if (TYPE_String == ObjDesc->ValType)
+        {
+            /*  Operand1 is string  */
+
+            char *NewBuf = OsdAllocate ((size_t) (ObjDesc->String.StrLen
+                                                + ObjDesc2->String.StrLen + 1));
+            if (!NewBuf)
             {
-                Status = AE_AML_STRING_LIMIT;
-                goto Cleanup;
+                REPORT_ERROR (&KDT[1]);
+                FUNCTION_EXIT;
+                return AE_AML_ERROR;
             }
+            
+            strcpy (NewBuf, (char *) ObjDesc->String.String);
+            strcpy (NewBuf + ObjDesc->String.StrLen,
+                     (char *) ObjDesc2->String.String);
+            
+            /* Don't free old ObjDesc->String.String; the operand still exists */
+            
+            ObjDesc->String.String = (UINT8 *) NewBuf;
+            ObjDesc->String.StrLen += ObjDesc2->String.StrLen;
         }
-
-        /* Allocate a new string object */
-
-        ReturnDesc = AcpiUtCreateStringObject (Length);
-        if (!ReturnDesc)
-        {
-            Status = AE_NO_MEMORY;
-            goto Cleanup;
-        }
-
-        /* Copy the raw buffer data with no transform. NULL terminated already. */
-
-        ACPI_MEMCPY (ReturnDesc->String.Pointer,
-            Operand[0]->Buffer.Pointer, Length);
-        break;
-
-
-    case AML_CONCAT_RES_OP:         /* ConcatenateResTemplate (Buffer, Buffer, Result) (ACPI 2.0) */
-
-        Status = AcpiExConcatTemplate (Operand[0], Operand[1],
-                    &ReturnDesc, WalkState);
-        break;
-
-
-    case AML_INDEX_OP:              /* Index (Source Index Result) */
-
-        /* Create the internal return object */
-
-        ReturnDesc = AcpiUtCreateInternalObject (ACPI_TYPE_LOCAL_REFERENCE);
-        if (!ReturnDesc)
-        {
-            Status = AE_NO_MEMORY;
-            goto Cleanup;
-        }
-
-        Index = (UINT32) Operand[1]->Integer.Value;
-
-        /*
-         * At this point, the Source operand is either a Package or a Buffer
-         */
-        if (ACPI_GET_OBJECT_TYPE (Operand[0]) == ACPI_TYPE_PACKAGE)
-        {
-            /* Object to be indexed is a Package */
-
-            if (Index >= Operand[0]->Package.Count)
-            {
-                ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
-                    "Index value (%X) beyond package end (%X)\n",
-                    Index, Operand[0]->Package.Count));
-                Status = AE_AML_PACKAGE_LIMIT;
-                goto Cleanup;
-            }
-
-            ReturnDesc->Reference.TargetType = ACPI_TYPE_PACKAGE;
-            ReturnDesc->Reference.Object     = Operand[0];
-            ReturnDesc->Reference.Where      = &Operand[0]->Package.Elements [Index];
-        }
+        
         else
         {
-            /* Object to be indexed is a Buffer */
+            /*  Operand1 is not string ==> buffer   */
 
-            if (Index >= Operand[0]->Buffer.Length)
+            char *NewBuf = OsdAllocate ((size_t) (ObjDesc->Buffer.BufLen
+                                                + ObjDesc2->Buffer.BufLen));
+            if (!NewBuf)
             {
-                ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
-                    "Index value (%X) beyond end of buffer (%X)\n",
-                    Index, Operand[0]->Buffer.Length));
-                Status = AE_AML_BUFFER_LIMIT;
-                goto Cleanup;
+                /* Only bail out if the buffer is small */
+                
+                if (ObjDesc->Buffer.BufLen + ObjDesc2->Buffer.BufLen < 1024)
+                {
+                    REPORT_ERROR (&KDT[0]);
+                    FUNCTION_EXIT;
+                    return AE_AML_ERROR;
+                }
+
+                DEBUG_PRINT (ACPI_ERROR, (
+                            "AmlExecDyadic2R/ConcatOp: Buffer allocation failure %d\n",
+                            ObjDesc->Buffer.BufLen + ObjDesc2->Buffer.BufLen));
+                FUNCTION_EXIT;
+                return AE_AML_ERROR;
             }
 
-            ReturnDesc->Reference.TargetType = ACPI_TYPE_BUFFER_FIELD;
-            ReturnDesc->Reference.Object     = Operand[0];
+            memcpy (NewBuf, ObjDesc->Buffer.Buffer, (size_t) ObjDesc->Buffer.BufLen);
+            memcpy (NewBuf + ObjDesc->Buffer.BufLen, ObjDesc2->Buffer.Buffer,
+                    (size_t) ObjDesc2->Buffer.BufLen);
+            
+            /* Don't free old ObjDesc->Buffer.Buffer; the operand still exists */
+            
+            ObjDesc->Buffer.Buffer = (UINT8 *) NewBuf;
+            ObjDesc->Buffer.BufLen += ObjDesc2->Buffer.BufLen;
         }
-
-        /* Complete the Index reference object */
-
-        ReturnDesc->Reference.Opcode     = AML_INDEX_OP;
-        ReturnDesc->Reference.Offset     = Index;
-
-        /* Store the reference to the Target */
-
-        Status = AcpiExStore (ReturnDesc, Operand[2], WalkState);
-
-        /* Return the reference */
-
-        WalkState->ResultObj = ReturnDesc;
-        goto Cleanup;
-
+        break;
 
     default:
-
-        ACPI_REPORT_ERROR (("AcpiExOpcode_2A_1T_1R: Unknown opcode %X\n",
-                WalkState->Opcode));
-        Status = AE_AML_BAD_OPCODE;
-        break;
+        DEBUG_PRINT (ACPI_ERROR, ("AmlExecDyadic2R: Unknown dyadic opcode %02x\n", opcode));
+        FUNCTION_EXIT;
+        return AE_AML_ERROR;
     }
-
-
-StoreResultToTarget:
-
-    if (ACPI_SUCCESS (Status))
+    
+    if ((Status = AmlExecStore (ObjDesc, ResDesc)) != AE_OK)
     {
-        /*
-         * Store the result of the operation (which is now in ReturnDesc) into
-         * the Target descriptor.
-         */
-        Status = AcpiExStore (ReturnDesc, Operand[2], WalkState);
-        if (ACPI_FAILURE (Status))
-        {
-            goto Cleanup;
-        }
-
-        if (!WalkState->ResultObj)
-        {
-            WalkState->ResultObj = ReturnDesc;
-        }
+        ObjStackTop -= NumOperands - 1;
+        FUNCTION_EXIT;
+        return Status;
     }
-
-
-Cleanup:
-
-    /* Delete return object on error */
-
-    if (ACPI_FAILURE (Status))
+    
+    if (AML_DivideOp == opcode)
     {
-        AcpiUtRemoveReference (ReturnDesc);
+        Status = AmlExecStore(ObjDesc2, ResDesc2);
     }
 
-    return_ACPI_STATUS (Status);
+    /* Don't delete ObjDesc because it remains on the stack */
+    /* deleting psObjDescOperand2 is valid for DivideOp since we preserved
+     * remainder on stack
+     */
+    
+    OsdFree (ObjDesc2);
+    ObjStackTop -= NumOperands - 1;
+    
+    FUNCTION_EXIT;
+    return Status;
 }
 
 
-/*******************************************************************************
+/*****************************************************************************
+ * 
+ * FUNCTION:    AmlExecDyadic2S
  *
- * FUNCTION:    AcpiExOpcode_2A_0T_1R
- *
- * PARAMETERS:  WalkState           - Current walk state
+ * PARAMETERS:  opcode              - The opcode to be executed
  *
  * RETURN:      Status
  *
- * DESCRIPTION: Execute opcode with 2 arguments, no target, and a return value
+ * DESCRIPTION: Execute Type 2 dyadic synchronization operator
  *
- ******************************************************************************/
+ * ALLOCATION:  Deletes one operand descriptor -- other remains on stack
+ *
+ ****************************************************************************/
 
 ACPI_STATUS
-AcpiExOpcode_2A_0T_1R (
-    ACPI_WALK_STATE         *WalkState)
+AmlExecDyadic2S (UINT16 opcode)
 {
-    ACPI_OPERAND_OBJECT     **Operand = &WalkState->Operands[0];
-    ACPI_OPERAND_OBJECT     *ReturnDesc = NULL;
-    ACPI_STATUS             Status = AE_OK;
-    BOOLEAN                 LogicalResult = FALSE;
+    OBJECT_DESCRIPTOR       *ObjDesc = NULL;
+    OBJECT_DESCRIPTOR       *TimeDesc = NULL;
+    OBJECT_DESCRIPTOR       *ResDesc = NULL;
+    ACPI_STATUS             Status;
 
 
-    ACPI_FUNCTION_TRACE_STR ("ExOpcode_2A_0T_1R",
-        AcpiPsGetOpcodeName (WalkState->Opcode));
+    FUNCTION_TRACE ("AmlExecDyadic2S");
 
 
-    /* Create the internal return object */
+    Status = AmlPrepStack ("nl");
 
-    ReturnDesc = AcpiUtCreateInternalObject (ACPI_TYPE_INTEGER);
-    if (!ReturnDesc)
-    {
-        Status = AE_NO_MEMORY;
-        goto Cleanup;
+    if (Status != AE_OK)
+    {   
+        /*  invalid parameters on object stack  */
+
+        AmlAppendOperandDiag (_THIS_MODULE, __LINE__, opcode, 2);
     }
 
-    /*
-     * Execute the Opcode
-     */
-    if (WalkState->OpInfo->Flags & AML_LOGICAL_NUMERIC) /* LogicalOp  (Operand0, Operand1) */
+    else
     {
-        Status = AcpiExDoLogicalNumericOp (WalkState->Opcode,
-                        Operand[0]->Integer.Value, Operand[1]->Integer.Value,
-                        &LogicalResult);
-        goto StoreLogicalResult;
-    }
-    else if (WalkState->OpInfo->Flags & AML_LOGICAL)    /* LogicalOp  (Operand0, Operand1) */
-    {
-        Status = AcpiExDoLogicalOp (WalkState->Opcode, Operand[0],
-                    Operand[1], &LogicalResult);
-        goto StoreLogicalResult;
-    }
+        AmlDumpStack (MODE_Exec, LongOps[opcode & 0x00ff], 2, "after AmlPrepStack");
 
+        TimeDesc = (OBJECT_DESCRIPTOR *) ObjStack[ObjStackTop];
+        ObjDesc = (OBJECT_DESCRIPTOR *) ObjStack[ObjStackTop - 1];
 
-    switch (WalkState->Opcode)
-    {
-    case AML_ACQUIRE_OP:            /* Acquire (MutexObject, Timeout) */
-
-        Status = AcpiExAcquireMutex (Operand[1], Operand[0], WalkState);
-        if (Status == AE_TIME)
+        switch (opcode)
         {
-            LogicalResult = TRUE;       /* TRUE = Acquire timed out */
-            Status = AE_OK;
+
+
+        /*  DefAcquire  :=  AcquireOp   MutexObject Timeout */
+
+        case AML_AcquireOp:
+            if (TYPE_Mutex != ObjDesc->ValType)
+            {
+                DEBUG_PRINT (ACPI_ERROR, (
+                        "AmlExecDyadic2S/AcquireOp: Needed Mutex, found %d\n",
+                        ResDesc->ValType));
+                Status = AE_AML_ERROR;
+            }
+            else
+            {
+                Status = OsAcquireOpRqst (TimeDesc, ObjDesc);
+            }
+
+
+
+        /*  DefWait :=  WaitOp  EventObject Timeout */
+
+        case AML_WaitOp:
+            if (TYPE_Event != ObjDesc->ValType)
+            {
+                DEBUG_PRINT (ACPI_ERROR, (
+                        "AmlExecDyadic2S/WaitOp: Needed Event, found %d\n",
+                        ResDesc->ValType));
+                Status = AE_AML_ERROR;
+            }
+            else
+            {
+                Status = OsWaitOpRqst (TimeDesc, ObjDesc);
+            }
+
+
+        default:
+            DEBUG_PRINT (ACPI_ERROR, (
+                    "AmlExecDyadic2S: Unknown dyadic synchronization opcode %02x\n",
+                    opcode));
+            Status = AE_AML_ERROR;
+        }
+
+        /*  delete TimeOut object descriptor before removing it from object stack   */
+    
+        OsdFree (TimeDesc);
+
+        /*  remove TimeOut parameter from object stack  */
+
+        ObjStackTop--;
+    
+    }
+
+    FUNCTION_EXIT;
+    return Status;
+}
+
+
+/*****************************************************************************
+ * 
+ * FUNCTION:    AmlExecDyadic2
+ *
+ * PARAMETERS:  opcode              - The opcode to be executed
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Execute Type 2 dyadic operator with numeric operands and
+ *              no result operands
+ *
+ * ALLOCATION:  Deletes one operand descriptor -- other remains on stack
+ *              containing result value
+ *
+ ****************************************************************************/
+
+ACPI_STATUS
+AmlExecDyadic2 (UINT16 opcode)
+{
+    OBJECT_DESCRIPTOR       *ObjDesc;
+    OBJECT_DESCRIPTOR       *ObjDesc2;
+    ACPI_STATUS             Status;
+
+
+    FUNCTION_TRACE ("AmlExecDyadic2");
+
+
+    Status = AmlPrepStack ("nn");
+
+    if (Status != AE_OK)
+    {
+        /*  invalid parameters on object stack  */
+
+        AmlAppendOperandDiag (_THIS_MODULE, __LINE__, opcode, 2);
+        FUNCTION_EXIT;
+        return Status;
+    }
+
+    AmlDumpStack (MODE_Exec, ShortOps[opcode], 2, "after AmlPrepStack");
+
+    ObjDesc2 = (OBJECT_DESCRIPTOR *) ObjStack[ObjStackTop];
+    ObjDesc = (OBJECT_DESCRIPTOR *) ObjStack[ObjStackTop - 1];
+
+    Status = AE_OK;      /* Make sure AE_OK */
+    switch (opcode)
+    {
+
+
+    /*  DefLAnd :=  LAndOp  Operand1    Operand2    */
+
+    case AML_LAndOp:
+        if (ObjDesc->Number.Number && ObjDesc2->Number.Number)
+        {
+            Status = AE_PENDING;
         }
         break;
 
 
-    case AML_WAIT_OP:               /* Wait (EventObject, Timeout) */
+    /*  DefLEqual   :=  LEqualOp    Operand1    Operand2    */
 
-        Status = AcpiExSystemWaitEvent (Operand[1], Operand[0]);
-        if (Status == AE_TIME)
+    case AML_LEqualOp:
+        if (ObjDesc->Number.Number == ObjDesc2->Number.Number)
         {
-            LogicalResult = TRUE;       /* TRUE, Wait timed out */
-            Status = AE_OK;
+            Status = AE_PENDING;
         }
         break;
 
 
+    /*  DefLGreater :=  LGreaterOp  Operand1    Operand2    */
+
+    case AML_LGreaterOp:
+        if (ObjDesc->Number.Number > ObjDesc2->Number.Number)
+        {
+            Status = AE_PENDING;
+        }
+        break;
+
+
+    /*  DefLLess    :=  LLessOp Operand1    Operand2    */
+
+    case AML_LLessOp:
+        if (ObjDesc->Number.Number < ObjDesc2->Number.Number)
+        {
+            Status = AE_PENDING;
+        }
+        break;
+
+
+    /*  DefLOr  :=  LOrOp   Operand1    Operand2    */
+
+    case AML_LOrOp:
+        if (ObjDesc->Number.Number || ObjDesc2->Number.Number)
+        {
+            Status = AE_PENDING;
+        }
+        break;
+    
     default:
-
-        ACPI_REPORT_ERROR (("AcpiExOpcode_2A_0T_1R: Unknown opcode %X\n",
-            WalkState->Opcode));
-        Status = AE_AML_BAD_OPCODE;
-        goto Cleanup;
+        DEBUG_PRINT (ACPI_ERROR, ("AmlExecDyadic2: Unknown dyadic opcode %02x\n", opcode));
+        FUNCTION_EXIT;
+        return AE_AML_ERROR;
     }
 
-
-StoreLogicalResult:
-    /*
-     * Set return value to according to LogicalResult. logical TRUE (all ones)
-     * Default is FALSE (zero)
-     */
-    if (LogicalResult)
+    /* ObjDesc->ValType == Number was assured by AmlPrepStack("nn") call */
+    
+    if (Status == AE_PENDING)
     {
-        ReturnDesc->Integer.Value = ACPI_INTEGER_MAX;
+        ObjDesc->Number.Number = 0xffffffff;
     }
-
-    WalkState->ResultObj = ReturnDesc;
-
-
-Cleanup:
-
-    /* Delete return object on error */
-
-    if (ACPI_FAILURE (Status))
+    else
     {
-        AcpiUtRemoveReference (ReturnDesc);
+        ObjDesc->Number.Number = 0;
     }
 
-    return_ACPI_STATUS (Status);
+    OsdFree (ObjDesc2);
+    ObjStackTop--;
+    
+    FUNCTION_EXIT;
+    return AE_OK;
 }
 
 
