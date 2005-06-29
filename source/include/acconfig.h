@@ -144,7 +144,7 @@
 #define AML_EXPR_MAX_NEST           100     /* Max stack depth parsing expressions */
 
 /* 
- * Method Stack, containing local variables and argumetns
+ * Method info (in WALK_STATE), containing local variables and argumetns
  */
 #define MTH_NUM_LOCALS              8
 #define MTH_MAX_LOCAL               7
@@ -152,6 +152,12 @@
 #define MTH_NUM_ARGS                7
 #define MTH_MAX_ARG                 6
 
+/*
+ * Operand Stack (in WALK_STATE), Must be large enough to contain MTH_MAX_ARG
+ */
+
+#define OBJ_NUM_OPERANDS            8
+#define OBJ_MAX_OPERAND             7
 
 
 /* 
