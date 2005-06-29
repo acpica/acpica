@@ -1,8 +1,8 @@
 
 /******************************************************************************
- * 
+ *
  * Name: amlcode.h - Definitions for AML, as included in "definition blocks"
- *                   Declarations and definitions contained herein are derived 
+ *                   Declarations and definitions contained herein are derived
  *                   directly from the ACPI specification.
  *
  *****************************************************************************/
@@ -40,9 +40,9 @@
  * The above copyright and patent license is granted only if the following
  * conditions are met:
  *
- * 3. Conditions 
+ * 3. Conditions
  *
- * 3.1. Redistribution of Source with Rights to Further Distribute Source.  
+ * 3.1. Redistribution of Source with Rights to Further Distribute Source.
  * Redistribution of source code of any substantial portion of the Covered
  * Code or modification with rights to further distribute source must include
  * the above Copyright Notice, the above License, this list of Conditions,
@@ -50,11 +50,11 @@
  * Licensee must cause all Covered Code to which Licensee contributes to
  * contain a file documenting the changes Licensee made to create that Covered
  * Code and the date of any change.  Licensee must include in that file the
- * documentation of any changes made by any predecessor Licensee.  Licensee 
+ * documentation of any changes made by any predecessor Licensee.  Licensee
  * must include a prominent statement that the modification is derived,
  * directly or indirectly, from Original Intel Code.
  *
- * 3.2. Redistribution of Source with no Rights to Further Distribute Source.  
+ * 3.2. Redistribution of Source with no Rights to Further Distribute Source.
  * Redistribution of source code of any substantial portion of the Covered
  * Code or modification without rights to further distribute source must
  * include the following Disclaimer and Export Compliance provision in the
@@ -88,7 +88,7 @@
  * INSTALLATION, TRAINING OR OTHER SERVICES.  INTEL WILL NOT PROVIDE ANY
  * UPDATES, ENHANCEMENTS OR EXTENSIONS.  INTEL SPECIFICALLY DISCLAIMS ANY
  * IMPLIED WARRANTIES OF MERCHANTABILITY, NONINFRINGEMENT AND FITNESS FOR A
- * PARTICULAR PURPOSE. 
+ * PARTICULAR PURPOSE.
  *
  * 4.2. IN NO EVENT SHALL INTEL HAVE ANY LIABILITY TO LICENSEE, ITS LICENSEES
  * OR ANY OTHER THIRD PARTY, FOR ANY LOST PROFITS, LOST DATA, LOSS OF USE OR
@@ -122,122 +122,122 @@
 
 /* primary opcodes */
 
-#define AML_NullChar                (UINT16) 0x00
+#define AML_NULL_CHAR               (UINT16) 0x00
 
-#define AML_ZeroOp                  (UINT16) 0x00
-#define AML_OneOp                   (UINT16) 0x01
+#define AML_ZERO_OP                 (UINT16) 0x00
+#define AML_ONE_OP                  (UINT16) 0x01
 #define AML_UNASSIGNED              (UINT16) 0x02
-#define AML_AliasOp                 (UINT16) 0x06
-#define AML_NameOp                  (UINT16) 0x08
-#define AML_ByteOp                  (UINT16) 0x0a
-#define AML_WordOp                  (UINT16) 0x0b
-#define AML_DWordOp                 (UINT16) 0x0c
-#define AML_StringOp                (UINT16) 0x0d
-#define AML_ScopeOp                 (UINT16) 0x10
-#define AML_BufferOp                (UINT16) 0x11
-#define AML_PackageOp               (UINT16) 0x12
-#define AML_MethodOp                (UINT16) 0x14
-#define AML_DualNamePrefix          (UINT16) 0x2e
-#define AML_MultiNamePrefixOp       (UINT16) 0x2f
-#define AML_NameCharSubseq          (UINT16) 0x30
-#define AML_NameCharFirst           (UINT16) 0x41
-#define AML_OpPrefix                (UINT16) 0x5b
-#define AML_RootPrefix              (UINT16) 0x5c
-#define AML_ParentPrefix            (UINT16) 0x5e
-#define AML_LocalOp                 (UINT16) 0x60
-#define AML_Local0                  (UINT16) 0x60
-#define AML_Local1                  (UINT16) 0x61
-#define AML_Local2                  (UINT16) 0x62
-#define AML_Local3                  (UINT16) 0x63
-#define AML_Local4                  (UINT16) 0x64
-#define AML_Local5                  (UINT16) 0x65
-#define AML_Local6                  (UINT16) 0x66
-#define AML_Local7                  (UINT16) 0x67
-#define AML_ArgOp                   (UINT16) 0x68
-#define AML_Arg0                    (UINT16) 0x68
-#define AML_Arg1                    (UINT16) 0x69
-#define AML_Arg2                    (UINT16) 0x6a
-#define AML_Arg3                    (UINT16) 0x6b
-#define AML_Arg4                    (UINT16) 0x6c
-#define AML_Arg5                    (UINT16) 0x6d
-#define AML_Arg6                    (UINT16) 0x6e
-#define AML_StoreOp                 (UINT16) 0x70
-#define AML_RefOfOp                 (UINT16) 0x71
-#define AML_AddOp                   (UINT16) 0x72
-#define AML_ConcatOp                (UINT16) 0x73
-#define AML_SubtractOp              (UINT16) 0x74
-#define AML_IncrementOp             (UINT16) 0x75
-#define AML_DecrementOp             (UINT16) 0x76
-#define AML_MultiplyOp              (UINT16) 0x77
-#define AML_DivideOp                (UINT16) 0x78
-#define AML_ShiftLeftOp             (UINT16) 0x79
-#define AML_ShiftRightOp            (UINT16) 0x7a
-#define AML_BitAndOp                (UINT16) 0x7b
-#define AML_BitNandOp               (UINT16) 0x7c
-#define AML_BitOrOp                 (UINT16) 0x7d
-#define AML_BitNorOp                (UINT16) 0x7e
-#define AML_BitXorOp                (UINT16) 0x7f
-#define AML_BitNotOp                (UINT16) 0x80
-#define AML_FindSetLeftBitOp        (UINT16) 0x81
-#define AML_FindSetRightBitOp       (UINT16) 0x82
-#define AML_DerefOfOp               (UINT16) 0x83
-#define AML_NotifyOp                (UINT16) 0x86
-#define AML_SizeOfOp                (UINT16) 0x87
-#define AML_IndexOp                 (UINT16) 0x88
-#define AML_MatchOp                 (UINT16) 0x89
-#define AML_DWordFieldOp            (UINT16) 0x8a
-#define AML_WordFieldOp             (UINT16) 0x8b
-#define AML_ByteFieldOp             (UINT16) 0x8c
-#define AML_BitFieldOp              (UINT16) 0x8d
-#define AML_TypeOp                  (UINT16) 0x8e
-#define AML_LAndOp                  (UINT16) 0x90
-#define AML_LOrOp                   (UINT16) 0x91
-#define AML_LNotOp                  (UINT16) 0x92
-#define AML_LEqualOp                (UINT16) 0x93
-#define AML_LGreaterOp              (UINT16) 0x94
-#define AML_LLessOp                 (UINT16) 0x95
-#define AML_IfOp                    (UINT16) 0xa0
-#define AML_ElseOp                  (UINT16) 0xa1
-#define AML_WhileOp                 (UINT16) 0xa2
-#define AML_NoopCode                (UINT16) 0xa3
-#define AML_ReturnOp                (UINT16) 0xa4
-#define AML_BreakOp                 (UINT16) 0xa5
-#define AML_BreakPointOp            (UINT16) 0xcc
-#define AML_OnesOp                  (UINT16) 0xff
+#define AML_ALIAS_OP                (UINT16) 0x06
+#define AML_NAME_OP                 (UINT16) 0x08
+#define AML_BYTE_OP                 (UINT16) 0x0a
+#define AML_WORD_OP                 (UINT16) 0x0b
+#define AML_DWORD_OP                (UINT16) 0x0c
+#define AML_STRING_OP               (UINT16) 0x0d
+#define AML_SCOPE_OP                (UINT16) 0x10
+#define AML_BUFFER_OP               (UINT16) 0x11
+#define AML_PACKAGE_OP              (UINT16) 0x12
+#define AML_METHOD_OP               (UINT16) 0x14
+#define AML_DUAL_NAME_PREFIX        (UINT16) 0x2e
+#define AML_MULTI_NAME_PREFIX_OP    (UINT16) 0x2f
+#define AML_NAME_CHAR_SUBSEQ        (UINT16) 0x30
+#define AML_NAME_CHAR_FIRST         (UINT16) 0x41
+#define AML_OP_PREFIX               (UINT16) 0x5b
+#define AML_ROOT_PREFIX             (UINT16) 0x5c
+#define AML_PARENT_PREFIX           (UINT16) 0x5e
+#define AML_LOCAL_OP                (UINT16) 0x60
+#define AML_LOCAL0                  (UINT16) 0x60
+#define AML_LOCAL1                  (UINT16) 0x61
+#define AML_LOCAL2                  (UINT16) 0x62
+#define AML_LOCAL3                  (UINT16) 0x63
+#define AML_LOCAL4                  (UINT16) 0x64
+#define AML_LOCAL5                  (UINT16) 0x65
+#define AML_LOCAL6                  (UINT16) 0x66
+#define AML_LOCAL7                  (UINT16) 0x67
+#define AML_ARG_OP                  (UINT16) 0x68
+#define AML_ARG0                    (UINT16) 0x68
+#define AML_ARG1                    (UINT16) 0x69
+#define AML_ARG2                    (UINT16) 0x6a
+#define AML_ARG3                    (UINT16) 0x6b
+#define AML_ARG4                    (UINT16) 0x6c
+#define AML_ARG5                    (UINT16) 0x6d
+#define AML_ARG6                    (UINT16) 0x6e
+#define AML_STORE_OP                (UINT16) 0x70
+#define AML_REF_OF_OP               (UINT16) 0x71
+#define AML_ADD_OP                  (UINT16) 0x72
+#define AML_CONCAT_OP               (UINT16) 0x73
+#define AML_SUBTRACT_OP             (UINT16) 0x74
+#define AML_INCREMENT_OP            (UINT16) 0x75
+#define AML_DECREMENT_OP            (UINT16) 0x76
+#define AML_MULTIPLY_OP             (UINT16) 0x77
+#define AML_DIVIDE_OP               (UINT16) 0x78
+#define AML_SHIFT_LEFT_OP           (UINT16) 0x79
+#define AML_SHIFT_RIGHT_OP          (UINT16) 0x7a
+#define AML_BIT_AND_OP              (UINT16) 0x7b
+#define AML_BIT_NAND_OP             (UINT16) 0x7c
+#define AML_BIT_OR_OP               (UINT16) 0x7d
+#define AML_BIT_NOR_OP              (UINT16) 0x7e
+#define AML_BIT_XOR_OP              (UINT16) 0x7f
+#define AML_BIT_NOT_OP              (UINT16) 0x80
+#define AML_FIND_SET_LEFT_BIT_OP    (UINT16) 0x81
+#define AML_FIND_SET_RIGHT_BIT_OP   (UINT16) 0x82
+#define AML_DEREF_OF_OP             (UINT16) 0x83
+#define AML_NOTIFY_OP               (UINT16) 0x86
+#define AML_SIZE_OF_OP              (UINT16) 0x87
+#define AML_INDEX_OP                (UINT16) 0x88
+#define AML_MATCH_OP                (UINT16) 0x89
+#define AML_DWORD_FIELD_OP          (UINT16) 0x8a
+#define AML_WORD_FIELD_OP           (UINT16) 0x8b
+#define AML_BYTE_FIELD_OP           (UINT16) 0x8c
+#define AML_BIT_FIELD_OP            (UINT16) 0x8d
+#define AML_TYPE_OP                 (UINT16) 0x8e
+#define AML_LAND_OP                 (UINT16) 0x90
+#define AML_LOR_OP                  (UINT16) 0x91
+#define AML_LNOT_OP                 (UINT16) 0x92
+#define AML_LEQUAL_OP               (UINT16) 0x93
+#define AML_LGREATER_OP             (UINT16) 0x94
+#define AML_LLESS_OP                (UINT16) 0x95
+#define AML_IF_OP                   (UINT16) 0xa0
+#define AML_ELSE_OP                 (UINT16) 0xa1
+#define AML_WHILE_OP                (UINT16) 0xa2
+#define AML_NOOP_OP                 (UINT16) 0xa3
+#define AML_RETURN_OP               (UINT16) 0xa4
+#define AML_BREAK_OP                (UINT16) 0xa5
+#define AML_BREAK_POINT_OP          (UINT16) 0xcc
+#define AML_ONES_OP                 (UINT16) 0xff
 
 /* prefixed opcodes */
 
 #define AML_EXTOP                   (UINT16) 0x005b
 
 
-#define AML_MutexOp                 (UINT16) 0x5b01
-#define AML_EventOp                 (UINT16) 0x5b02
-#define AML_ShiftRightBitOp         (UINT16) 0x5b10
-#define AML_ShiftLeftBitOp          (UINT16) 0x5b11
-#define AML_CondRefOfOp             (UINT16) 0x5b12
-#define AML_CreateFieldOp           (UINT16) 0x5b13
-#define AML_LoadOp                  (UINT16) 0x5b20
-#define AML_StallOp                 (UINT16) 0x5b21
-#define AML_SleepOp                 (UINT16) 0x5b22
-#define AML_AcquireOp               (UINT16) 0x5b23
-#define AML_SignalOp                (UINT16) 0x5b24
-#define AML_WaitOp                  (UINT16) 0x5b25
-#define AML_ResetOp                 (UINT16) 0x5b26
-#define AML_ReleaseOp               (UINT16) 0x5b27
-#define AML_FromBCDOp               (UINT16) 0x5b28
-#define AML_ToBCDOp                 (UINT16) 0x5b29
-#define AML_UnLoadOp                (UINT16) 0x5b2a
-#define AML_RevisionOp              (UINT16) 0x5b30
-#define AML_DebugOp                 (UINT16) 0x5b31
-#define AML_FatalOp                 (UINT16) 0x5b32
-#define AML_RegionOp                (UINT16) 0x5b80
-#define AML_DefFieldOp              (UINT16) 0x5b81
-#define AML_DeviceOp                (UINT16) 0x5b82
-#define AML_ProcessorOp             (UINT16) 0x5b83
-#define AML_PowerResOp              (UINT16) 0x5b84
-#define AML_ThermalZoneOp           (UINT16) 0x5b85
-#define AML_IndexFieldOp            (UINT16) 0x5b86
-#define AML_BankFieldOp             (UINT16) 0x5b87
+#define AML_MUTEX_OP                (UINT16) 0x5b01
+#define AML_EVENT_OP                (UINT16) 0x5b02
+#define AML_SHIFT_RIGHT_BIT_OP      (UINT16) 0x5b10
+#define AML_SHIFT_LEFT_BIT_OP       (UINT16) 0x5b11
+#define AML_COND_REF_OF_OP          (UINT16) 0x5b12
+#define AML_CREATE_FIELD_OP         (UINT16) 0x5b13
+#define AML_LOAD_OP                 (UINT16) 0x5b20
+#define AML_STALL_OP                (UINT16) 0x5b21
+#define AML_SLEEP_OP                (UINT16) 0x5b22
+#define AML_ACQUIRE_OP              (UINT16) 0x5b23
+#define AML_SIGNAL_OP               (UINT16) 0x5b24
+#define AML_WAIT_OP                 (UINT16) 0x5b25
+#define AML_RESET_OP                (UINT16) 0x5b26
+#define AML_RELEASE_OP              (UINT16) 0x5b27
+#define AML_FROM_BCD_OP             (UINT16) 0x5b28
+#define AML_TO_BCD_OP               (UINT16) 0x5b29
+#define AML_UNLOAD_OP               (UINT16) 0x5b2a
+#define AML_REVISION_OP             (UINT16) 0x5b30
+#define AML_DEBUG_OP                (UINT16) 0x5b31
+#define AML_FATAL_OP                (UINT16) 0x5b32
+#define AML_REGION_OP               (UINT16) 0x5b80
+#define AML_DEF_FIELD_OP            (UINT16) 0x5b81
+#define AML_DEVICE_OP               (UINT16) 0x5b82
+#define AML_PROCESSOR_OP            (UINT16) 0x5b83
+#define AML_POWER_RES_OP            (UINT16) 0x5b84
+#define AML_THERMAL_ZONE_OP         (UINT16) 0x5b85
+#define AML_INDEX_FIELD_OP          (UINT16) 0x5b86
+#define AML_BANK_FIELD_OP           (UINT16) 0x5b87
 
 
 /* Bogus opcodes (they are actually two separate opcodes) */
@@ -247,7 +247,11 @@
 #define AML_LNOTEQUAL_OP            (UINT16) 0x9293
 
 
-/* Internal opcodes */
+/*
+ * Internal opcodes 
+ * Use only "Unknown" AML opcodes, don't attempt to use
+ * any valid ACPI ASCII values (A-Z, 0-9, '-')
+ */
 
 #define AML_NAMEPATH_OP             (UINT16) 0x002d
 #define AML_NAMEDFIELD_OP           (UINT16) 0x0030
@@ -256,37 +260,15 @@
 #define AML_BYTELIST_OP             (UINT16) 0x0033
 #define AML_STATICSTRING_OP         (UINT16) 0x0034
 #define AML_METHODCALL_OP           (UINT16) 0x0035
+#define AML_RETURN_VALUE_OP         (UINT16) 0x0036
 
 
-
-
-/*
- * argument types
- */
-
-/*
-#define AML_ASCIICHARLIST_ARG       'A'
-#define AML_BYTEDATA_ARG            'b'
-#define AML_BYTELIST_ARG            'B'
-#define AML_DWORDDATA_ARG           'd'
-#define AML_DATAOBJECT_ARG          'o'
-#define AML_DATAOBJECTLIST_ARG      'O'
-#define AML_FIELDLIST_ARG           'F'
-#define AML_NAMESTRING_ARG          'n'
-#define AML_OBJECTLIST_ARG          'P'
-#define AML_PKGLENGTH_ARG           'p'
-#define AML_SUPERNAME_ARG           's'
-#define AML_TARGET_ARG              'l'
-#define AML_TERMARG_ARG             't'
-#define AML_TERMLIST_ARG            'T'
-#define AML_WORDDATA_ARG            'w'
-*/
 
 
 #define ARG_NONE                    0x0
 
 /*
- * Argument types for the AML Parser 
+ * Argument types for the AML Parser
  * Each field in the ArgTypes UINT32 is 5 bits, allowing for a maximum of 6 arguments.
  * There can be up to 31 unique argument types
  */
@@ -322,7 +304,7 @@
 #define ARGI_STRING                 0x06
 #define ARGI_BUFFER                 0x07
 #define ARGI_PACKAGE                0x08
-#define ARGI_DATAOBJECT             0x09     /* Buffer, string, or package */
+#define ARGI_DATAOBJECT             0x09     /* Buffer, string, package or reference to a Named Object - Used only by SizeOf operator*/
 #define ARGI_COMPLEXOBJ             0x0A     /* Buffer or package */
 #define ARGI_MUTEX                  0x0B
 #define ARGI_EVENT                  0x0C
@@ -330,7 +312,6 @@
 #define ARGI_DDBHANDLE              0x0E
 
 #define ARGI_INVALID_OPCODE         0xFFFFFFFF
-
 
 
 /*
@@ -385,15 +366,14 @@
 #define OPTYPE_CONTROL              18
 #define OPTYPE_RECONFIGURATION      19
 #define OPTYPE_NAMED_OBJECT         20
+#define OPTYPE_RETURN               21
 
-#define OPTYPE_BOGUS                21
-
-
+#define OPTYPE_BOGUS                22
 
 
 /* Comparison operation codes for MatchOp operator */
 
-typedef enum 
+typedef enum
 {
     MATCH_MTR                   = 0,
     MATCH_MEQ                   = 1,
@@ -412,15 +392,15 @@ typedef enum
 #define ACCESS_TYPE_MASK        0x0f
 #define ACCESS_TYPE_SHIFT       0
 
-typedef enum 
+typedef enum
 {
-    ACCESS_AnyAcc               = 0,
-    ACCESS_ByteAcc              = 1,
-    ACCESS_WordAcc              = 2,
-    ACCESS_DWordAcc             = 3,
-    ACCESS_BlockAcc             = 4,
-    ACCESS_SMBSendRecvAcc       = 5,
-    ACCESS_SMBQuickAcc          = 6
+    ACCESS_ANY_ACC              = 0,
+    ACCESS_BYTE_ACC             = 1,
+    ACCESS_WORD_ACC             = 2,
+    ACCESS_DWORD_ACC            = 3,
+    ACCESS_BLOCK_ACC            = 4,
+    ACCESS_SMBSEND_RECV_ACC     = 5,
+    ACCESS_SMBQUICK_ACC         = 6
 
 } AML_ACCESS_TYPE;
 
@@ -430,10 +410,10 @@ typedef enum
 #define LOCK_RULE_MASK          0x10
 #define LOCK_RULE_SHIFT         4
 
-typedef enum 
+typedef enum
 {
-    GLOCK_NeverLock             = 0,
-    GLOCK_AlwaysLock            = 1
+    GLOCK_NEVER_LOCK            = 0,
+    GLOCK_ALWAYS_LOCK           = 1
 
 } AML_LOCK_RULE;
 
@@ -443,11 +423,11 @@ typedef enum
 #define UPDATE_RULE_MASK        0x060
 #define UPDATE_RULE_SHIFT       5
 
-typedef enum 
+typedef enum
 {
-    UPDATE_Preserve             = 0,
-    UPDATE_WriteAsOnes          = 1,
-    UPDATE_WriteAsZeros         = 2
+    UPDATE_PRESERVE             = 0,
+    UPDATE_WRITE_AS_ONES        = 1,
+    UPDATE_WRITE_AS_ZEROS       = 2
 
 } AML_UPDATE_RULE;
 
@@ -469,15 +449,13 @@ typedef enum
 
 /* External declarations of the AML tables */
 
-extern UINT8                    Gbl_Aml             [NUM_OPCODES];
-extern UINT16                   Gbl_Pfx             [NUM_OPCODES];
-extern char                     *Gbl_ShortOps       [NUM_OPCODES];
-extern char                     *Gbl_LongOps        [NUM_OPCODES];
-extern char                     *Gbl_RegionTypes    [NUM_REGION_TYPES];
-extern char                     *Gbl_MatchOps       [NUM_MATCH_OPS];
-extern char                     *Gbl_AccessTypes    [NUM_ACCESS_TYPES];
-extern char                     *Gbl_UpdateRules    [NUM_UPDATE_RULES];
-extern char                     *Gbl_FENames        [NUM_FIELD_NAMES];
+extern UINT8                    AcpiGbl_Aml             [NUM_OPCODES];
+extern UINT16                   AcpiGbl_Pfx             [NUM_OPCODES];
+extern NATIVE_CHAR              *AcpiGbl_RegionTypes    [NUM_REGION_TYPES];
+extern NATIVE_CHAR              *AcpiGbl_MatchOps       [NUM_MATCH_OPS];
+extern NATIVE_CHAR              *AcpiGbl_AccessTypes    [NUM_ACCESS_TYPES];
+extern NATIVE_CHAR              *AcpiGbl_UpdateRules    [NUM_UPDATE_RULES];
+extern NATIVE_CHAR              *AcpiGbl_FENames        [NUM_FIELD_NAMES];
 
 
 /*
@@ -488,18 +466,17 @@ extern char                     *Gbl_FENames        [NUM_FIELD_NAMES];
 
 /* Data used in keeping track of fields */
 
-char            *Gbl_FENames[NUM_FIELD_NAMES] = 
-{ 
-    "skip", 
-    "?access?" 
+NATIVE_CHAR *AcpiGbl_FENames[NUM_FIELD_NAMES] =
+{
+    "skip",
+    "?access?"
 };              /* FE = Field Element */
-
 
 
 /* Region type decoding */
 
-char *Gbl_RegionTypes[NUM_REGION_TYPES] = 
-{   
+NATIVE_CHAR *AcpiGbl_RegionTypes[NUM_REGION_TYPES] =
+{
     "SystemMemory",
     "SystemIO",
     "PCIConfig",
@@ -508,22 +485,22 @@ char *Gbl_RegionTypes[NUM_REGION_TYPES] =
 };
 
 
-char *Gbl_MatchOps[NUM_MATCH_OPS] = 
-{   
-    "Error", 
-    "MTR", 
-    "MEQ", 
-    "MLE", 
-    "MLT", 
-    "MGE", 
-    "MGT" 
+NATIVE_CHAR *AcpiGbl_MatchOps[NUM_MATCH_OPS] =
+{
+    "Error",
+    "MTR",
+    "MEQ",
+    "MLE",
+    "MLT",
+    "MGE",
+    "MGT"
 };
 
 
 /* Access type decoding */
 
-char *Gbl_AccessTypes[NUM_ACCESS_TYPES] = 
-{   
+NATIVE_CHAR *AcpiGbl_AccessTypes[NUM_ACCESS_TYPES] =
+{
     "AnyAcc",
     "ByteAcc",
     "WordAcc",
@@ -536,14 +513,12 @@ char *Gbl_AccessTypes[NUM_ACCESS_TYPES] =
 
 /* Update rule decoding */
 
-char *Gbl_UpdateRules[NUM_UPDATE_RULES] = 
-{   
+NATIVE_CHAR *AcpiGbl_UpdateRules[NUM_UPDATE_RULES] =
+{
     "Preserve",
     "WriteAsOnes",
     "WriteAsZeros"
 };
-
-
 
 
 #endif /* DEFINE_AML_GLOBALS */
