@@ -37,12 +37,12 @@ RSC=rc.exe
 # PROP BASE Target_Dir ""
 # PROP Use_MFC 0
 # PROP Use_Debug_Libraries 0
-# PROP Output_Dir "AcpiSrc"
-# PROP Intermediate_Dir "AcpiSrc"
+# PROP Output_Dir "\Acpi\Components\Generate\VC\AcpiSrc"
+# PROP Intermediate_Dir "\Acpi\Components\Generate\VC\AcpiSrc"
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_CONSOLE" /D "_MBCS" /Yu"stdafx.h" /FD /c
-# ADD CPP /nologo /W3 /GX /O2 /I "..\..\Subsystem\Include" /D "NDEBUG" /D "WIN32" /D "_CONSOLE" /D "_MBCS" /D "ACPI_USE_SYSTEM_CLIBRARY" /D "ACPI_DEBUG" /D "ACPI_APPLICATION" /D "_IA32" /FD /c
+# ADD CPP /nologo /W4 /GX /O2 /I "..\..\Subsystem\Include" /D "NDEBUG" /D "WIN32" /D "_CONSOLE" /D "_MBCS" /D "ACPI_USE_SYSTEM_CLIBRARY" /D "ACPI_DEBUG" /D "ACPI_APPLICATION" /D "_IA32" /FD /c
 # SUBTRACT CPP /YX /Yc /Yu
 # ADD BASE RSC /l 0x409 /d "NDEBUG"
 # ADD RSC /l 0x409 /d "NDEBUG"
@@ -69,12 +69,12 @@ PostBuild_Cmds=copy bin\acpisrc.exe ..\..\libraries\acpisrc.exe	dir ..\..\librar
 # PROP BASE Target_Dir ""
 # PROP Use_MFC 0
 # PROP Use_Debug_Libraries 1
-# PROP Output_Dir "AcpiSrc"
-# PROP Intermediate_Dir "AcpiSrc"
+# PROP Output_Dir "\Acpi\Components\Generate\VC\AcpiSrc"
+# PROP Intermediate_Dir "\Acpi\Components\Generate\VC\AcpiSrc"
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_CONSOLE" /D "_MBCS" /Yu"stdafx.h" /FD /GZ /c
-# ADD CPP /nologo /W3 /Gm /GX /ZI /Od /I "..\..\Subsystem\Include" /D "_DEBUG" /D "WIN32" /D "_CONSOLE" /D "_MBCS" /D "ACPI_USE_SYSTEM_CLIBRARY" /D "ACPI_DEBUG" /D "ACPI_APPLICATION" /D "_IA32" /FR /FD /GZ /c
+# ADD CPP /nologo /W4 /Gm /GX /ZI /Od /I "..\..\Subsystem\Include" /D "_DEBUG" /D "WIN32" /D "_CONSOLE" /D "_MBCS" /D "ACPI_USE_SYSTEM_CLIBRARY" /D "ACPI_DEBUG" /D "ACPI_APPLICATION" /D "_IA32" /FR /FD /GZ /c
 # SUBTRACT CPP /YX /Yc /Yu
 # ADD BASE RSC /l 0x409 /d "_DEBUG"
 # ADD RSC /l 0x409 /d "_DEBUG"
