@@ -112,6 +112,10 @@ SOURCE=..\..\source\components\utilities\utalloc.c
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\source\components\utilities\utcopy.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\source\components\utilities\utdebug.c
 # End Source File
 # Begin Source File
@@ -196,6 +200,10 @@ SOURCE=..\..\source\compiler\aslfiles.c
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\source\compiler\aslfold.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\source\compiler\asllength.c
 # End Source File
 # Begin Source File
@@ -268,6 +276,26 @@ SOURCE=..\..\source\components\interpreter\parser\psutils.c
 # PROP Default_Filter ".c"
 # Begin Source File
 
+SOURCE=..\..\source\components\interpreter\dispatcher\dsfield.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\components\interpreter\dispatcher\dsobject.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\components\interpreter\dispatcher\dsopcode.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\components\interpreter\dispatcher\dsutils.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\components\interpreter\dispatcher\dswexec.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\source\components\interpreter\Dispatcher\dswscope.c
 # End Source File
 # Begin Source File
@@ -323,6 +351,102 @@ SOURCE=.\AslCompiler\AslCompiler.y.c
 # Begin Source File
 
 SOURCE=.\AslCompiler\AslCompiler.y.h
+# End Source File
+# End Group
+# Begin Group "Interpreter"
+
+# PROP Default_Filter ""
+# Begin Source File
+
+SOURCE=..\..\source\components\interpreter\executer\exconfig.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\components\interpreter\executer\exconvrt.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\components\interpreter\executer\excreate.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\components\interpreter\executer\exdump.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\components\interpreter\executer\exfield.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\components\interpreter\executer\exfldio.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\components\interpreter\executer\exmisc.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\components\interpreter\executer\exmutex.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\components\interpreter\executer\exnames.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\components\interpreter\executer\exoparg1.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\components\interpreter\executer\exoparg2.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\components\interpreter\executer\exoparg3.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\components\interpreter\executer\exoparg6.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\components\interpreter\executer\exprep.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\components\interpreter\executer\exregion.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\components\interpreter\executer\exresnte.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\components\interpreter\executer\exresolv.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\components\interpreter\executer\exresop.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\components\interpreter\executer\exstore.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\components\interpreter\executer\exstoren.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\components\interpreter\executer\exstorob.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\components\interpreter\executer\exsystem.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\components\interpreter\executer\exutils.c
 # End Source File
 # End Group
 # End Group
@@ -427,6 +551,10 @@ BuildCmds= \
 
 !ENDIF 
 
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\compiler\readme.txt
 # End Source File
 # End Target
 # End Project
