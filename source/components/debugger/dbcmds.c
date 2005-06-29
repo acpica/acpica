@@ -179,10 +179,10 @@ AcpiDbDisplayTableInfo (
 
     for (i = 0; i < NUM_ACPI_TABLES; i++)
     {
-        if (Acpi_GblAcpiTables[i].Pointer)
+        if (AcpiGbl_AcpiTables[i].Pointer)
         {
-            AcpiOsdPrintf ("%s at 0x%p length 0x%X\n", Acpi_GblAcpiTableData[i].Name,
-                        Acpi_GblAcpiTables[i].Pointer, Acpi_GblAcpiTables[i].Length);
+            AcpiOsdPrintf ("%s at 0x%p length 0x%X\n", AcpiGbl_AcpiTableData[i].Name,
+                        AcpiGbl_AcpiTables[i].Pointer, AcpiGbl_AcpiTables[i].Length);
         }
     }
 }
@@ -212,7 +212,7 @@ AcpiDbUnloadAcpiTable (
 
     for (i = 0; i < NUM_ACPI_TABLES; i++)
     {
-        if (!STRNCMP (TableArg, Acpi_GblAcpiTableData[i].Signature, Acpi_GblAcpiTableData[i].SigLength))
+        if (!STRNCMP (TableArg, AcpiGbl_AcpiTableData[i].Signature, AcpiGbl_AcpiTableData[i].SigLength))
         {
             Status = AcpiUnloadTable (i);
             if (ACPI_SUCCESS (Status))
@@ -271,8 +271,8 @@ AcpiDbSetMethodBreakpoint (
 
     /* Just save the breakpoint in a global */
 
-    Acpi_GblMethodBreakpoint = Address;
-    Acpi_GblBreakpointWalk = WalkState;
+    AcpiGbl_MethodBreakpoint = Address;
+    AcpiGbl_BreakpointWalk = WalkState;
     AcpiOsdPrintf ("Breakpoint set at AML offset 0x%X\n", Address);
 }
 
@@ -304,7 +304,7 @@ AcpiDbSetMethodCallBreakpoint (
     }
 
 
-    Acpi_GblStepToNextCall = TRUE;
+    AcpiGbl_StepToNextCall = TRUE;
 }
 
 
@@ -364,7 +364,7 @@ AcpiDbDumpNamespace (
     char                    *StartArg,
     char                    *DepthArg)
 {
-    ACPI_HANDLE             SubtreeEntry = Acpi_GblRootObject;
+    ACPI_HANDLE             SubtreeEntry = AcpiGbl_RootObject;
     UINT32                  MaxDepth = ACPI_UINT32_MAX;
 
 
@@ -401,7 +401,7 @@ AcpiDbDumpNamespace (
             SubtreeEntry = AcpiDbLocalNsLookup (StartArg);
             if (!SubtreeEntry)
             {
-                SubtreeEntry = Acpi_GblRootObject;
+                SubtreeEntry = AcpiGbl_RootObject;
             }
         }
 
@@ -443,7 +443,7 @@ AcpiDbDumpNamespaceByOwner (
     char                    *OwnerArg,
     char                    *DepthArg)
 {
-    ACPI_HANDLE             SubtreeEntry = Acpi_GblRootObject;
+    ACPI_HANDLE             SubtreeEntry = AcpiGbl_RootObject;
     UINT32                  MaxDepth = ACPI_UINT32_MAX;
     UINT16                  OwnerId;
 
@@ -557,7 +557,7 @@ AcpiDbSetMethodData (
     Index = STRTOUL (IndexArg, NULL, 16);
     Value = STRTOUL (ValueArg, NULL, 16);
 
-    WalkState = AcpiDsGetCurrentWalkState (Acpi_GblCurrentWalkList);
+    WalkState = AcpiDsGetCurrentWalkState (AcpiGbl_CurrentWalkList);
     if (!WalkState)
     {
         AcpiOsdPrintf ("There is no method currently executing\n");

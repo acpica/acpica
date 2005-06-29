@@ -145,10 +145,10 @@ char                    *Filename = NULL;
 BOOLEAN                 OutputToFile = FALSE;
 
 
-UINT32                  Acpi_GblDbDebugLevel = 0x0FFFFFFF;
-UINT32                  Acpi_GblDbConsoleDebugLevel = DEBUG_DEFAULT;
-UINT8                   Acpi_GblDbOutputFlags = DB_CONSOLE_OUTPUT;
-UINT32                  Acpi_GblMethodBreakpoint = 0;
+UINT32                  AcpiGbl_DbDebugLevel = 0x0FFFFFFF;
+UINT32                  AcpiGbl_DbConsoleDebugLevel = DEBUG_DEFAULT;
+UINT8                   AcpiGbl_DbOutputFlags = DB_CONSOLE_OUTPUT;
+UINT32                  AcpiGbl_MethodBreakpoint = 0;
 
 
 BOOLEAN                 opt_tables      = FALSE;
@@ -558,7 +558,7 @@ AcpiDbCommandDispatch (
 
     /* If AcpiTerminate has been called, terminate this thread */
 
-    if (Acpi_GblDbTerminateThreads)
+    if (AcpiGbl_DbTerminateThreads)
     {
         return (AE_CTRL_TERMINATE);
     }
@@ -639,7 +639,7 @@ AcpiDbCommandDispatch (
         break;
 
     case CMD_GO:
-        Acpi_GblCmSingleStep = FALSE;
+        AcpiGbl_CmSingleStep = FALSE;
         return (AE_OK);
 
     case CMD_HELP:
@@ -683,8 +683,8 @@ AcpiDbCommandDispatch (
     case CMD_INTO:
         if (Op)
         {
-            Acpi_GblCmSingleStep = TRUE;
-            Acpi_GblMethodBreakpoint = 0;
+            AcpiGbl_CmSingleStep = TRUE;
+            AcpiGbl_MethodBreakpoint = 0;
             return AE_OK;
         }
         break;
@@ -692,20 +692,20 @@ AcpiDbCommandDispatch (
     case CMD_LEVEL:
         if (ParamCount == 0)
         {
-            AcpiOsdPrintf ("Current debug level for file output is:    %8.8lX\n", Acpi_GblDbDebugLevel);
-            AcpiOsdPrintf ("Current debug level for console output is: %8.8lX\n", Acpi_GblDbConsoleDebugLevel);
+            AcpiOsdPrintf ("Current debug level for file output is:    %8.8lX\n", AcpiGbl_DbDebugLevel);
+            AcpiOsdPrintf ("Current debug level for console output is: %8.8lX\n", AcpiGbl_DbConsoleDebugLevel);
         }
         else if (ParamCount == 2)
         {
-            Temp = Acpi_GblDbConsoleDebugLevel;
-            Acpi_GblDbConsoleDebugLevel = STRTOUL (Args[1], NULL, 16);
-            AcpiOsdPrintf ("Debug Level for console output was %8.8lX, now %8.8lX\n", Temp, Acpi_GblDbConsoleDebugLevel);
+            Temp = AcpiGbl_DbConsoleDebugLevel;
+            AcpiGbl_DbConsoleDebugLevel = STRTOUL (Args[1], NULL, 16);
+            AcpiOsdPrintf ("Debug Level for console output was %8.8lX, now %8.8lX\n", Temp, AcpiGbl_DbConsoleDebugLevel);
         }
         else
         {
-            Temp = Acpi_GblDbDebugLevel;
-            Acpi_GblDbDebugLevel = STRTOUL (Args[1], NULL, 16);
-            AcpiOsdPrintf ("Debug Level for file output was %8.8lX, now %8.8lX\n", Temp, Acpi_GblDbDebugLevel);
+            Temp = AcpiGbl_DbDebugLevel;
+            AcpiGbl_DbDebugLevel = STRTOUL (Args[1], NULL, 16);
+            AcpiOsdPrintf ("Debug Level for file output was %8.8lX, now %8.8lX\n", Temp, AcpiGbl_DbDebugLevel);
         }
         break;
 
@@ -821,7 +821,7 @@ AcpiDbCommandDispatch (
 //        AcpiCmSubsystemShutdown ();
         AcpiDbCloseDebugFile ();
 
-        Acpi_GblDbTerminateThreads = TRUE;
+        AcpiGbl_DbTerminateThreads = TRUE;
 
         return (AE_CTRL_TERMINATE);
 
@@ -860,8 +860,8 @@ AcpiDbExecuteThread (
 
     while (Status != AE_CTRL_TERMINATE)
     {
-        Acpi_GblMethodExecuting = FALSE;
-        Acpi_GblStepToNextCall = FALSE;
+        AcpiGbl_MethodExecuting = FALSE;
+        AcpiGbl_StepToNextCall = FALSE;
 
         AcpiCmAcquireMutex (MTX_DEBUG_CMD_READY);
         Status = AcpiDbCommandDispatch (LineBuf, NULL, NULL);
@@ -890,8 +890,8 @@ AcpiDbSingleThread (
     ACPI_STATUS             Status = AE_OK;
 
 
-    Acpi_GblMethodExecuting = FALSE;
-    Acpi_GblStepToNextCall = FALSE;
+    AcpiGbl_MethodExecuting = FALSE;
+    AcpiGbl_StepToNextCall = FALSE;
 
     Status = AcpiDbCommandDispatch (LineBuf, NULL, NULL);
 }
@@ -922,7 +922,7 @@ AcpiDbUserCommands (
 
     /* TBD: [Restructure] Need a separate command line buffer for step mode */
 
-    while (!Acpi_GblDbTerminateThreads)
+    while (!AcpiGbl_DbTerminateThreads)
     {
         /* Force output to console until a command is entered */
 
@@ -930,7 +930,7 @@ AcpiDbUserCommands (
 
         /* Different prompt if method is executing */
 
-        if (!Acpi_GblMethodExecuting)
+        if (!AcpiGbl_MethodExecuting)
         {
             AcpiOsdPrintf ("%1c ", DB_COMMAND_PROMPT);
         }
@@ -946,7 +946,7 @@ AcpiDbUserCommands (
 
         /* Check for single or multithreaded debug */
 
-        if (Acpi_GblDebuggerConfiguration & DEBUGGER_MULTI_THREADED)
+        if (AcpiGbl_DebuggerConfiguration & DEBUGGER_MULTI_THREADED)
         {
             /*
              * Signal the debug thread that we have a command to execute,

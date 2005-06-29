@@ -147,18 +147,18 @@ AcpiDbSetOutputDestination (
     INT32                   OutputFlags)
 {
 
-    Acpi_GblDbOutputFlags = (UINT8) OutputFlags;
+    AcpiGbl_DbOutputFlags = (UINT8) OutputFlags;
 
     if (OutputFlags & DB_REDIRECTABLE_OUTPUT)
     {
         if (OutputToFile)
         {
-            DebugLevel = Acpi_GblDbDebugLevel;
+            DebugLevel = AcpiGbl_DbDebugLevel;
         }
     }
     else
     {
-        DebugLevel = Acpi_GblDbConsoleDebugLevel;
+        DebugLevel = AcpiGbl_DbConsoleDebugLevel;
     }
 }
 

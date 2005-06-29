@@ -155,19 +155,19 @@ AcpiDbSingleStep (
 
     /* Is there a breakpoint set? */
 
-    if (Acpi_GblMethodBreakpoint)
+    if (AcpiGbl_MethodBreakpoint)
     {
         /* Check if the breakpoint has been reached or passed */
 
-        if ((Acpi_GblBreakpointWalk == WalkState) &&
-            (Acpi_GblMethodBreakpoint <= Op->AmlOffset))
+        if ((AcpiGbl_BreakpointWalk == WalkState) &&
+            (AcpiGbl_MethodBreakpoint <= Op->AmlOffset))
         {
             /* Hit the breakpoint, resume single step, reset breakpoint */
 
             AcpiOsdPrintf ("***Break*** at AML offset 0x%X\n", Op->AmlOffset);
-            Acpi_GblCmSingleStep = TRUE;
-            Acpi_GblStepToNextCall = FALSE;
-            Acpi_GblMethodBreakpoint = 0;
+            AcpiGbl_CmSingleStep = TRUE;
+            AcpiGbl_StepToNextCall = FALSE;
+            AcpiGbl_MethodBreakpoint = 0;
         }
     }
 
@@ -208,7 +208,7 @@ AcpiDbSingleStep (
      */
 
     if ((OutputToFile)                  ||
-        (Acpi_GblCmSingleStep)              ||
+        (AcpiGbl_CmSingleStep)              ||
         (DebugLevel & TRACE_PARSE))
     {
         if ((OutputToFile)                  ||
@@ -242,7 +242,7 @@ AcpiDbSingleStep (
 
     /* If we are not single stepping, just continue executing the method */
 
-    if (!Acpi_GblCmSingleStep)
+    if (!AcpiGbl_CmSingleStep)
     {
         return (AE_OK);
     }
@@ -253,7 +253,7 @@ AcpiDbSingleStep (
      * Check if this is a method call.
      */
 
-    if (Acpi_GblStepToNextCall)
+    if (AcpiGbl_StepToNextCall)
     {
         if (Op->Opcode != AML_METHODCALL_OP)
         {
@@ -264,7 +264,7 @@ AcpiDbSingleStep (
 
         /* Found a method call, stop executing */
 
-        Acpi_GblStepToNextCall = FALSE;
+        AcpiGbl_StepToNextCall = FALSE;
     }
 
 
@@ -275,14 +275,14 @@ AcpiDbSingleStep (
 
     if (Op->Opcode == AML_METHODCALL_OP)
     {
-        Acpi_GblCmSingleStep = FALSE;  /* No more single step while executing called method */
+        AcpiGbl_CmSingleStep = FALSE;  /* No more single step while executing called method */
 
         /* Set the breakpoint on the call, it will stop execution as soon as we return */
 
         /* TBD: [Future] don't kill the user breakpoint! */
 
-        Acpi_GblMethodBreakpoint = Op->AmlOffset + 1;  /* Must be non-zero! */
-        Acpi_GblBreakpointWalk = WalkState;
+        AcpiGbl_MethodBreakpoint = Op->AmlOffset + 1;  /* Must be non-zero! */
+        AcpiGbl_BreakpointWalk = WalkState;
     }
 
 
@@ -291,11 +291,11 @@ AcpiDbSingleStep (
 
     /* Go into the command loop and await next user command */
 
-    Acpi_GblMethodExecuting = TRUE;
+    AcpiGbl_MethodExecuting = TRUE;
     Status = AE_CTRL_TRUE;
     while (Status == AE_CTRL_TRUE)
     {
-        if (Acpi_GblDebuggerConfiguration == DEBUGGER_MULTI_THREADED)
+        if (AcpiGbl_DebuggerConfiguration == DEBUGGER_MULTI_THREADED)
         {
             /* Handshake with the front-end that gets user command lines */
 
@@ -313,7 +313,7 @@ AcpiDbSingleStep (
 
             /* Different prompt if method is executing */
 
-            if (!Acpi_GblMethodExecuting)
+            if (!AcpiGbl_MethodExecuting)
             {
                 AcpiOsdPrintf ("%1c ", DB_COMMAND_PROMPT);
             }
@@ -372,7 +372,7 @@ AcpiDbInitialize (void)
      * space, environment, or even another machine.
      */
 
-    if (Acpi_GblDebuggerConfiguration & DEBUGGER_MULTI_THREADED)
+    if (AcpiGbl_DebuggerConfiguration & DEBUGGER_MULTI_THREADED)
     {
         /* These were created with one unit, grab it */
 

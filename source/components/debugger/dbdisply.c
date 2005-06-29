@@ -189,7 +189,7 @@ AcpiDbDecodeAndDisplayObject (
     UINT32                  Size;
 
 
-    
+
     if (!Target)
     {
         return;
@@ -401,7 +401,7 @@ AcpiDbDisplayInternalObject (
     ACPI_WALK_STATE         *WalkState;
 
 
-    WalkState = AcpiDsGetCurrentWalkState (Acpi_GblCurrentWalkList);
+    WalkState = AcpiDsGetCurrentWalkState (AcpiGbl_CurrentWalkList);
 
     AcpiOsdPrintf ("%p ", ObjDesc);
 
@@ -532,7 +532,7 @@ AcpiDbDisplayMethodInfo (
 
 
 
-    WalkState = AcpiDsGetCurrentWalkState (Acpi_GblCurrentWalkList);
+    WalkState = AcpiDsGetCurrentWalkState (AcpiGbl_CurrentWalkList);
     if (!WalkState)
     {
         AcpiOsdPrintf ("There is no method currently executing\n");
@@ -632,7 +632,7 @@ AcpiDbDisplayLocals (void)
 
 
 
-    WalkState = AcpiDsGetCurrentWalkState (Acpi_GblCurrentWalkList);
+    WalkState = AcpiDsGetCurrentWalkState (AcpiGbl_CurrentWalkList);
     if (!WalkState)
     {
         AcpiOsdPrintf ("There is no method currently executing\n");
@@ -678,7 +678,7 @@ AcpiDbDisplayArguments (void)
     NAME_TABLE_ENTRY        *Entry;
 
 
-    WalkState = AcpiDsGetCurrentWalkState (Acpi_GblCurrentWalkList);
+    WalkState = AcpiDsGetCurrentWalkState (AcpiGbl_CurrentWalkList);
     if (!WalkState)
     {
         AcpiOsdPrintf ("There is no method currently executing\n");
@@ -725,7 +725,7 @@ AcpiDbDisplayResults (void)
     NAME_TABLE_ENTRY        *Entry;
 
 
-    WalkState = AcpiDsGetCurrentWalkState (Acpi_GblCurrentWalkList);
+    WalkState = AcpiDsGetCurrentWalkState (AcpiGbl_CurrentWalkList);
     if (!WalkState)
     {
         AcpiOsdPrintf ("There is no method currently executing\n");
@@ -769,7 +769,7 @@ AcpiDbDisplayCallingTree (void)
     NAME_TABLE_ENTRY        *Entry;
 
 
-    WalkState = AcpiDsGetCurrentWalkState (Acpi_GblCurrentWalkList);
+    WalkState = AcpiDsGetCurrentWalkState (AcpiGbl_CurrentWalkList);
     if (!WalkState)
     {
         AcpiOsdPrintf ("There is no method currently executing\n");
@@ -816,7 +816,7 @@ AcpiDbDisplayResultObject (
      * however, this output is very useful in other contexts also
      */
 
-    if (!Acpi_GblCmSingleStep)
+    if (!AcpiGbl_CmSingleStep)
     {
         return;
     }
@@ -845,7 +845,7 @@ AcpiDbDisplayArgumentObject (
 {
 
 
-    if (!Acpi_GblCmSingleStep)
+    if (!AcpiGbl_CmSingleStep)
     {
         return;
     }

@@ -214,8 +214,8 @@ AcpiDbExecuteMethod (
 
     Status = AcpiEvaluateObject (NULL, Info->Pathname, &ParamObjects, ReturnObj);
 
-    Acpi_GblCmSingleStep = FALSE;
-    Acpi_GblMethodExecuting = FALSE;
+    AcpiGbl_CmSingleStep = FALSE;
+    AcpiGbl_MethodExecuting = FALSE;
 
     return Status;
 }
@@ -256,7 +256,7 @@ AcpiDbExecuteSetup (
 
     if (Info->Flags & EX_SINGLE_STEP)
     {
-        Acpi_GblCmSingleStep = TRUE;
+        AcpiGbl_CmSingleStep = TRUE;
         AcpiDbSetOutputDestination (DB_CONSOLE_OUTPUT);
     }
 
@@ -301,8 +301,8 @@ AcpiDbExecute (
 
     /* Memory allocation tracking */
 
-    PreviousAllocations = Acpi_GblCurrentAllocCount;
-    PreviousSize = Acpi_GblCurrentAllocSize;
+    PreviousAllocations = AcpiGbl_CurrentAllocCount;
+    PreviousSize = AcpiGbl_CurrentAllocSize;
 
 
     Info.Name = Name;
@@ -315,8 +315,8 @@ AcpiDbExecute (
 
     /* Memory allocation tracking */
 
-    Allocations = Acpi_GblCurrentAllocCount - PreviousAllocations;
-    Size = Acpi_GblCurrentAllocSize - PreviousSize;
+    Allocations = AcpiGbl_CurrentAllocCount - PreviousAllocations;
+    Size = AcpiGbl_CurrentAllocSize - PreviousSize;
 
     AcpiDbSetOutputDestination (DB_DUPLICATE_OUTPUT);
 

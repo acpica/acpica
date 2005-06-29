@@ -189,7 +189,7 @@ AcpiDbDisplayStatistics (
     UINT32                  Type;
 
 
-    if (!Acpi_GblDSDT)
+    if (!AcpiGbl_DSDT)
     {
         AcpiOsdPrintf ("*** Warning:  There is no DSDT loaded\n");
     }
@@ -220,9 +220,9 @@ AcpiDbDisplayStatistics (
     case CMD_TABLES:
 
         AcpiOsdPrintf ("ACPI Table Information:\n\n");
-        if (Acpi_GblDSDT)
+        if (AcpiGbl_DSDT)
         {
-            AcpiOsdPrintf ("DSDT Length:................% 7ld (0x%X)\n", Acpi_GblDSDT->Length, Acpi_GblDSDT->Length);
+            AcpiOsdPrintf ("DSDT Length:................% 7ld (0x%X)\n", AcpiGbl_DSDT->Length, AcpiGbl_DSDT->Length);
         }
         break;
 
@@ -259,40 +259,40 @@ AcpiDbDisplayStatistics (
         AcpiOsdPrintf ("Control Method Parse Trees:.% 7ld (If parsed simultaneously)\n", SizeOfMethodTrees);
         AcpiOsdPrintf ("Named Object NTEs:..........% 7ld (%d objects)\n", SizeOfNTEs, NumNamedObjects);
         AcpiOsdPrintf ("Named Internal Objects......% 7ld\n", SizeOfAcpiObjects);
-        AcpiOsdPrintf ("State Cache size............% 7ld\n", Acpi_GblGenericStateCacheDepth * sizeof (ACPI_GENERIC_STATE));
-        AcpiOsdPrintf ("Parse Cache size............% 7ld\n", Acpi_GblParseCacheDepth * sizeof (ACPI_GENERIC_OP));
-        AcpiOsdPrintf ("Object Cache size...........% 7ld\n", Acpi_GblObjectCacheDepth * sizeof (ACPI_OBJECT_INTERNAL));
-        AcpiOsdPrintf ("WalkState Cache size........% 7ld\n", Acpi_GblWalkStateCacheDepth * sizeof (ACPI_WALK_STATE));
+        AcpiOsdPrintf ("State Cache size............% 7ld\n", AcpiGbl_GenericStateCacheDepth * sizeof (ACPI_GENERIC_STATE));
+        AcpiOsdPrintf ("Parse Cache size............% 7ld\n", AcpiGbl_ParseCacheDepth * sizeof (ACPI_GENERIC_OP));
+        AcpiOsdPrintf ("Object Cache size...........% 7ld\n", AcpiGbl_ObjectCacheDepth * sizeof (ACPI_OBJECT_INTERNAL));
+        AcpiOsdPrintf ("WalkState Cache size........% 7ld\n", AcpiGbl_WalkStateCacheDepth * sizeof (ACPI_WALK_STATE));
 
         AcpiOsdPrintf ("\n");
 
         AcpiOsdPrintf ("Cache Statistics:\n\n");
-        AcpiOsdPrintf ("State Cache requests........% 7ld\n", Acpi_GblStateCacheRequests);
-        AcpiOsdPrintf ("State Cache hits............% 7ld\n", Acpi_GblStateCacheHits);
-        AcpiOsdPrintf ("State Cache depth...........% 7ld\n", Acpi_GblGenericStateCacheDepth);
-        AcpiOsdPrintf ("Parse Cache requests........% 7ld\n", Acpi_GblParseCacheRequests);
-        AcpiOsdPrintf ("Parse Cache hits............% 7ld\n", Acpi_GblParseCacheHits);
-        AcpiOsdPrintf ("Parse Cache depth...........% 7ld\n", Acpi_GblParseCacheDepth);
-        AcpiOsdPrintf ("Object Cache requests.......% 7ld\n", Acpi_GblObjectCacheRequests);
-        AcpiOsdPrintf ("Object Cache hits...........% 7ld\n", Acpi_GblObjectCacheHits);
-        AcpiOsdPrintf ("Object Cache depth..........% 7ld\n", Acpi_GblObjectCacheDepth);
-        AcpiOsdPrintf ("WalkState Cache requests....% 7ld\n", Acpi_GblWalkStateCacheRequests);
-        AcpiOsdPrintf ("WalkState Cache hits........% 7ld\n", Acpi_GblWalkStateCacheHits);
-        AcpiOsdPrintf ("WalkState Cache depth.......% 7ld\n", Acpi_GblWalkStateCacheDepth);
+        AcpiOsdPrintf ("State Cache requests........% 7ld\n", AcpiGbl_StateCacheRequests);
+        AcpiOsdPrintf ("State Cache hits............% 7ld\n", AcpiGbl_StateCacheHits);
+        AcpiOsdPrintf ("State Cache depth...........% 7ld\n", AcpiGbl_GenericStateCacheDepth);
+        AcpiOsdPrintf ("Parse Cache requests........% 7ld\n", AcpiGbl_ParseCacheRequests);
+        AcpiOsdPrintf ("Parse Cache hits............% 7ld\n", AcpiGbl_ParseCacheHits);
+        AcpiOsdPrintf ("Parse Cache depth...........% 7ld\n", AcpiGbl_ParseCacheDepth);
+        AcpiOsdPrintf ("Object Cache requests.......% 7ld\n", AcpiGbl_ObjectCacheRequests);
+        AcpiOsdPrintf ("Object Cache hits...........% 7ld\n", AcpiGbl_ObjectCacheHits);
+        AcpiOsdPrintf ("Object Cache depth..........% 7ld\n", AcpiGbl_ObjectCacheDepth);
+        AcpiOsdPrintf ("WalkState Cache requests....% 7ld\n", AcpiGbl_WalkStateCacheRequests);
+        AcpiOsdPrintf ("WalkState Cache hits........% 7ld\n", AcpiGbl_WalkStateCacheHits);
+        AcpiOsdPrintf ("WalkState Cache depth.......% 7ld\n", AcpiGbl_WalkStateCacheDepth);
         break;
 
     case CMD_MISC:
 
         AcpiOsdPrintf ("\nMiscellaneous Statistics:\n\n");
-        AcpiOsdPrintf ("Calls to AcpiPsFind:..  ........% 7ld\n", Acpi_GblPsFindCount);
-        AcpiOsdPrintf ("Calls to AcpiNsLookup:..........% 7ld\n", Acpi_GblNsLookupCount);
+        AcpiOsdPrintf ("Calls to AcpiPsFind:..  ........% 7ld\n", AcpiGbl_PsFindCount);
+        AcpiOsdPrintf ("Calls to AcpiNsLookup:..........% 7ld\n", AcpiGbl_NsLookupCount);
 
         AcpiOsdPrintf ("\n");
 
         AcpiOsdPrintf ("Mutex usage:\n\n");
         for (i = 0; i < NUM_MTX; i++)
         {
-            AcpiOsdPrintf ("%-20s:       % 7ld\n", AcpiCmGetMutexName (i), Acpi_GblAcpiMutexInfo[i].UseCount);
+            AcpiOsdPrintf ("%-20s:       % 7ld\n", AcpiCmGetMutexName (i), AcpiGbl_AcpiMutexInfo[i].UseCount);
         }
         break;
     }

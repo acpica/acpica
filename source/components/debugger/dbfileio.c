@@ -380,9 +380,9 @@ AcpiDbLoadAcpiTable (
 
 
     AcpiOsdPrintf ("%s successfully loaded and installed at %p\n",
-                                Acpi_GblAcpiTableData[TableInfo.Type].Name, TablePtr);
+                                AcpiGbl_AcpiTableData[TableInfo.Type].Name, TablePtr);
 
-    Acpi_GblAcpiHardwarePresent = FALSE;
+    AcpiGbl_AcpiHardwarePresent = FALSE;
 
 #endif  /* ACPI_APPLICATION */
     return AE_OK;
