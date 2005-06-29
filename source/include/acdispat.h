@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acdispat.h - dispatcher (parser to interpreter interface)
- *       $Revision: 1.46 $
+ *       $Revision: 1.47 $
  *
  *****************************************************************************/
 
@@ -296,18 +296,19 @@ AcpiDsMethodDataInitArgs (
     UINT32                  MaxParamCount,
     ACPI_WALK_STATE         *WalkState);
 
-ACPI_NAMESPACE_NODE *
+ACPI_STATUS
 AcpiDsMethodDataGetNode (
     UINT16                  Opcode,
     UINT32                  Index,
-    ACPI_WALK_STATE         *WalkState);
+    ACPI_WALK_STATE         *WalkState,
+    ACPI_NAMESPACE_NODE     **Node);
 
 ACPI_STATUS
 AcpiDsMethodDataInit (
     ACPI_WALK_STATE         *WalkState);
 
 ACPI_STATUS
-AcpiDsMethodDataSetEntry (
+AcpiDsMethodDataSetValue (
     UINT16                  Opcode,
     UINT32                  Index,
     ACPI_OPERAND_OBJECT     *Object,
