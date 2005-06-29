@@ -266,6 +266,7 @@ typedef char *va_list;
 #define disable()               __asm {cli}
 #define enable()                __asm {sti}
 #define halt()                  __asm {hlt}
+#define wbinvd()                __asm {WBINVD}
 
 #elif defined(__GNUC__)
 
@@ -274,6 +275,7 @@ typedef char *va_list;
 #define disable()               __asm ("cli")
 #define enable()                __asm ("sti")
 #define halt()                  __asm ("hlt")
+#define wbinvd()                __asm ("wbinvd")
 
 #else
 
