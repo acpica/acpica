@@ -99,6 +99,7 @@
 
 #include <acpi.h>
 #include <namespace.h>
+#include <interpreter.h>
 #include <string.h>
 
 
@@ -108,28 +109,172 @@
 
 
 static ST_KEY_DESC_TABLE KDT[] = {
-    {"0000", 'W', "NsValType: Null handle", "NsValType: Null handle"},
-    {"0001", 'W', "NsValPtr: Null handle", "NsValPtr: Null handle"},
+    {"0000", 'W', "NsGetType: Null handle", "NsGetType: Null handle"},
+    {"0001", 'W', "NsGetValue: Null handle", "NsGetValue: Null handle"},
     {NULL, 'I', NULL, NULL}
 };
 
 
+/******************************************************************************
+ *
+ * FUNCTION:    NsWalkNamespace
+ *
+ * PARAMETERS:  Type -              NsType to search for
+ *              StartHandle -       Handle in namespace where search begins
+ *              MaxDepth -          Depth to which search is to reach
+ *              UserFunction -      Called when an object of "Type" is found
+ *              Context -           Passed to user function
+ *
+ * RETURNS      Return value from the UserFunction
+ *
+ * DESCRIPTION: Performs a modified depth-first walk of the namespace tree,
+ *              starting (and ending) at the object specified by StartHandle.
+ *              The UserFunction is called whenever an object that matches
+ *              the type parameter is found.  If the user function returns
+ *              a non-zero value, the search is terminated immediately and this
+ *              value is returned to the caller.
+ *
+ *              The point of this procedure is to provide a generic namespace
+ *              walk routine that can be called from multiple places to 
+ *              provide multiple services;  the User Function can be tailored
+ *              to each task, whether it is a print function, a compare 
+ *              function, etc.
+ *
+ ******************************************************************************/
+
+
+void *
+NsWalkNamespace (NsType Type, NsHandle StartHandle, UINT32 MaxDepth,
+                 void *(* UserFunction)(NsHandle,UINT32,void *), void *Context)
+{
+    NsHandle            ObjHandle = 0;
+    NsHandle            Scope;
+    NsHandle            NewScope;
+    void                *UserReturnVal;
+    UINT32              Level = 1;
+
+
+    FUNCTION_TRACE ("NsWalkNamespace");
+
+
+    /* Parameter validation */
+
+    if (OUTRANGE (Type, NsTypeNames))
+    {
+        return FALSE;
+    }
+
+    /* Begin search in the scope owned by the starting object */
+
+    if (!(Scope = AcpiGetScope (StartHandle)))
+    {
+        return FALSE;
+    }
+
+    /* 
+     * Traverse the tree of objects until we bubble back up 
+     * to where we started.
+     */
+
+    while (ObjHandle != StartHandle)
+    {
+        /* Get the next typed object in this scope.  Null returned if not found */
+
+        if (ObjHandle = AcpiGetNextObject (Type, Scope, ObjHandle))
+        {
+            /* Found an object - process by calling the user function */
+
+            if (UserReturnVal = UserFunction (ObjHandle, Level, Context))
+            {
+                /* Non-zero from user function means "exit now" */
+
+                return UserReturnVal;
+            }
+
+            /* Go down another level if we are allowed to */
+
+            if (Level < MaxDepth)
+            {
+                /* Check for a valid scope for this object */
+
+                if (NewScope = AcpiGetScope (ObjHandle))
+                {
+                    /* There is a valid scope, we will check for child objects */
+
+                    Level++;
+                    ObjHandle = 0;
+                    Scope = NewScope;
+                }
+            }
+        }
+
+        else
+        {
+            /* 
+             * No more objects in this scope, go back up to the parent and the 
+             * parent's scope (But only back up to where we started the search)
+             */
+            Level--;
+            ObjHandle = AcpiGetParent (Scope);
+            Scope = AcpiGetContainingScope (ObjHandle);
+        }
+    }
+
+    return NULL; /* Complete walk, not terminated by user function */
+}
+
+
+
+/******************************************************************************
+ *
+ * FUNCTION:    NsChecksum
+ *
+ * PARAMETERS:  Buffer -                    Buffer to checksum
+ *              Length -                    Size of the buffer
+ *
+ * RETURNS      8 bit checksum of buffer
+ *
+ * DESCRIPTION: Computes an 8 bit checksum of the buffer(length) and returns it. 
+ *
+ ******************************************************************************/
+
+UINT8
+NsChecksum (void *Buffer, UINT32 Length)
+{
+    UINT8       *limit;
+    UINT8       *rover;
+    UINT8       sum = 0;
+
+
+    if (Buffer && Length)
+    {   
+        /*  Buffer and Length are valid   */
+        
+        limit = (UINT8 *) Buffer + Length;
+
+        for (rover = Buffer; rover < limit; rover++)
+            sum += *rover;
+    }
+
+    return sum;
+}
 
 
 /****************************************************************************
  *
- * FUNCTION:    AllocateNteDesc
+ * FUNCTION:    NsAllocateNteDesc
  *
  * PARAMETERS:  INT32 Size       # of nte in table
  *
  * DESCRIPTION: Allocate an array of nte, including prepended link space
+ *              Array is set to all zeros via OsdCallcate().
  *
  * RETURN:      The address of the first nte in the array, or NULL
  *
  ***************************************************************************/
 
 nte *
-AllocateNteDesc (INT32 Size)
+NsAllocateNteDesc (INT32 Size)
 {
     nte             *NewNteDesc = NULL;
     size_t          AllocSize;
@@ -168,7 +313,7 @@ AllocateNteDesc (INT32 Size)
 
 /****************************************************************************
  *
- * FUNCTION:    NsValType
+ * FUNCTION:    NsGetType
  *
  * PARAMETERS:  NsHandle Handle          Handle of nte to be examined
  *
@@ -177,9 +322,9 @@ AllocateNteDesc (INT32 Size)
  ***************************************************************************/
 
 NsType
-NsValType (NsHandle handle)
+NsGetType (NsHandle handle)
 {
-    FUNCTION_TRACE ("NsValType");
+    FUNCTION_TRACE ("NsGetType");
 
 
     if (!handle)
@@ -190,24 +335,24 @@ NsValType (NsHandle handle)
         return TYPE_Any;
     }
 
-    return ((nte *) handle)->NtType;
+    return ((nte *) handle)->Type;
 }
 
 
 /****************************************************************************
  *
- * FUNCTION:    NsValPtr
+ * FUNCTION:    NsGetValue
  *
  * PARAMETERS:  NsHandle Handle              Handle of nte to be examined
  *
- * RETURN:      ptrVal field from nte whose handle is passed
+ * RETURN:      Value field from nte whose handle is passed
  *
  ***************************************************************************/
 
 void *
-NsValPtr (NsHandle handle)
+NsGetValue (NsHandle handle)
 {
-    FUNCTION_TRACE ("NsValPtr");
+    FUNCTION_TRACE ("NsGetValue");
 
 
     if (!handle)
@@ -218,7 +363,7 @@ NsValPtr (NsHandle handle)
         return NULL;
     }
 
-    return ((nte *) handle)->ptrVal;
+    return ((nte *) handle)->Value;
 }
 
 
@@ -240,14 +385,43 @@ IsNsValue (OBJECT_DESCRIPTOR *ObjDesc)
     FUNCTION_TRACE ("IsNsValue");
 
 
-    return ((NsHandle) 0 != NsFindpVal (ObjDesc, NS_ALL, INT_MAX));
+    return ((NsHandle) 0 != NsFindValue (ObjDesc, NS_ALL, INT_MAX));
 }
-
 
 
 /****************************************************************************
  *
- * FUNCTION:    InternalizeName
+ *  FUNCTION:   NsLocal
+ *
+ *  PARAMETERS: NsType Type
+ *
+ *  RETURN: LOCAL if names must be found locally in objects of the
+ *              passed type
+ *          0 if enclosing scopes should be searched
+ *
+ ***************************************************************************/
+
+INT32
+NsLocal (NsType Type)
+{
+    FUNCTION_TRACE ("NsLocal");
+
+
+    if (OUTRANGE (Type, NsProperties))
+    {
+        /*  type code out of range  */
+
+        REPORT_WARNING (&KDT[1]);
+        return 0;
+    }
+
+    return NsProperties[Type] & LOCAL;
+}
+
+
+/****************************************************************************
+ *
+ * FUNCTION:    NsInternalizeName
  *
  * PARAMETERS:  char *DottedName -        external representation of name
  *
@@ -258,12 +432,12 @@ IsNsValue (OBJECT_DESCRIPTOR *ObjDesc)
  *
  * ALLOCATION:
  * Reference   Size              Pool  Owner                Description
- * pcIN{sl}    INsiz{sl:HWM}     bu    InternalizeName      Internal name
+ * pcIN{sl}    INsiz{sl:HWM}     bu    NsInternalizeName      Internal name
  *
  ****************************************************************************/
 
 char *
-InternalizeName (char *DottedName)
+NsInternalizeName (char *DottedName)
 {
     char            *Result = NULL;
     static char     *IN = NULL;
@@ -271,7 +445,7 @@ InternalizeName (char *DottedName)
     size_t          i;
 
 
-    FUNCTION_TRACE ("InternalizeName");
+    FUNCTION_TRACE ("NsInternalizeName");
 
 
     if (DottedName)
@@ -317,7 +491,7 @@ InternalizeName (char *DottedName)
         }
     }
 
-    DEBUG_PRINT (TRACE_EXEC,("InternalizeName: returning %p=>\"%s\"\n", IN, IN ? IN : ""));     
+    DEBUG_PRINT (TRACE_EXEC,("NsInternalizeName: returning %p=>\"%s\"\n", IN, IN ? IN : ""));     
     
     return IN;
 }
@@ -448,14 +622,14 @@ NsMarkNT (nte *ThisEntry, INT32 Size, INT32 *Count)
         {
             /* non-empty entry -- mark anything it points to */
 
-            switch (NsValType (ThisEntry))
+            switch (NsGetType (ThisEntry))
             {
                 OBJECT_DESCRIPTOR       *ptrVal;
                 meth                    *Method;
 
 
             case String:
-                ptrVal = (OBJECT_DESCRIPTOR *) NsValPtr (ThisEntry);
+                ptrVal = (OBJECT_DESCRIPTOR *) NsGetValue (ThisEntry);
                 
                 /* 
                  * Check for the value pointer in the name table entry
@@ -476,7 +650,7 @@ NsMarkNT (nte *ThisEntry, INT32 Size, INT32 *Count)
                 break;
 
             case Buffer:
-                ptrVal = (OBJECT_DESCRIPTOR *) NsValPtr (ThisEntry);
+                ptrVal = (OBJECT_DESCRIPTOR *) NsGetValue (ThisEntry);
                 
                 /* 
                  * Check for the value pointer in the name table entry
@@ -492,7 +666,7 @@ NsMarkNT (nte *ThisEntry, INT32 Size, INT32 *Count)
                 break;
 
             case Package:
-                ptrVal = (OBJECT_DESCRIPTOR *) NsValPtr (ThisEntry);
+                ptrVal = (OBJECT_DESCRIPTOR *) NsGetValue (ThisEntry);
                 
                 /* 
                  * Check for the value pointer in the name table entry
@@ -507,7 +681,7 @@ NsMarkNT (nte *ThisEntry, INT32 Size, INT32 *Count)
                 break;
 
             case Method:
-                Method = (meth *) NsValPtr (ThisEntry);
+                Method = (meth *) NsGetValue (ThisEntry);
                 if (Method)
                 {
                     MarkBlock(Method);
@@ -518,7 +692,7 @@ NsMarkNT (nte *ThisEntry, INT32 Size, INT32 *Count)
             case FieldUnit:
             case IndexField:
             case Region:
-                ptrVal = (OBJECT_DESCRIPTOR *) NsValPtr (ThisEntry);
+                ptrVal = (OBJECT_DESCRIPTOR *) NsGetValue (ThisEntry);
                 if (ptrVal)
                 {
                     AmlMarkObject (ptrVal);
