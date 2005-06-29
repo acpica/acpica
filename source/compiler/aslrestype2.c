@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslrestype2 - Long (type2) resource templates and descriptors
- *              $Revision: 1.27 $
+ *              $Revision: 1.28 $
  *
  *****************************************************************************/
 
@@ -1356,13 +1356,21 @@ RsDoInterruptDescriptor (
             Rover->U32Item = (UINT32) InitializerOp->Asl.Value.Integer;
             Rover = ACPI_PTR_ADD (ASL_RESOURCE_DESC, &(Rover->U32Item), 4);
 
+            /* Maximum 255 interrupts allowed for this descriptor */
+
+            if (Descriptor->Exx.TableLength == 255)
+            {
+                AslError (ASL_ERROR, ASL_MSG_INTERRUPT_LIST, InitializerOp, NULL);
+                return (Rnode);
+            }
+
             Descriptor->Exx.TableLength++;
             Descriptor->Exx.Length += 4;
 
             if (i == 7) /* case 7: First interrupt number */
             {
                 RsCreateByteField (InitializerOp, ASL_RESNAME_INTERRUPT,
-                                    CurrentByteOffset + ASL_RESDESC_OFFSET (Exx.InterruptNumber[0]));
+                    CurrentByteOffset + ASL_RESDESC_OFFSET (Exx.InterruptNumber[0]));
             }
         }
 
