@@ -749,15 +749,27 @@ SOURCE=..\..\Subsystem\Parser\psxutils.c
 # PROP Default_Filter "h;hpp;hxx;hm;inl"
 # Begin Source File
 
+SOURCE=..\..\Subsystem\Include\acapi.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\Subsystem\Include\acenum.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\Subsystem\Include\acenv.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\Subsystem\Include\acexcep.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\Subsystem\Include\acobject.h
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\Subsystem\Include\acpi.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\Subsystem\Include\acpiexcep.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\Subsystem\Include\acpiobj.h
 # End Source File
 # Begin Source File
 
@@ -765,23 +777,19 @@ SOURCE=..\..\Subsystem\Include\acpiosd.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\Subsystem\Include\acpisubsys.h
+SOURCE=..\..\Subsystem\Include\actables.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\Subsystem\Include\acpitables.h
+SOURCE=..\..\Subsystem\Include\actbl32.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\Subsystem\Include\acpitbl32.h
+SOURCE=..\..\Subsystem\Include\actbl64.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\Subsystem\Include\acpitbl64.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\Subsystem\Include\acpitypes.h
+SOURCE=..\..\Subsystem\Include\actypes.h
 # End Source File
 # Begin Source File
 
@@ -797,11 +805,7 @@ SOURCE=..\..\Subsystem\Include\config.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\Subsystem\Include\enumerate.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\Subsystem\Include\environment.h
+SOURCE=..\..\Subsystem\Include\errata.h
 # End Source File
 # Begin Source File
 
@@ -817,11 +821,15 @@ SOURCE=..\..\Subsystem\Include\hardware.h
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\Subsystem\Include\hwapi.h
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\Subsystem\Include\internal.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\Subsystem\Include\interpreter.h
+SOURCE=..\..\Subsystem\Include\interp.h
 # End Source File
 # Begin Source File
 
@@ -833,7 +841,7 @@ SOURCE=..\..\Subsystem\Include\methods.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\Subsystem\Include\namespace.h
+SOURCE=..\..\Subsystem\Include\namesp.h
 # End Source File
 # Begin Source File
 
