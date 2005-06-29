@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: amstore - AML Interpreter object store support
- *              $Revision: 1.122 $
+ *              $Revision: 1.123 $
  *
  *****************************************************************************/
 
@@ -717,7 +717,7 @@ AcpiAmlStoreObjectToObject (
      */
     ACPI_ASSERT((DestDesc) && (SourceDesc));
 
-    DEBUG_PRINT (ACPI_INFO, ("AmlStoreObjectToObject: Storing %p(%s) to (%p)%s\n",
+    DEBUG_PRINT (ACPI_INFO, ("AmlStoreObjectToObject: Storing %p(%s) to %p(%s)\n",
                     SourceDesc, AcpiCmGetTypeName (SourceDesc->Common.Type),
                     DestDesc, AcpiCmGetTypeName (DestDesc->Common.Type)));
 
