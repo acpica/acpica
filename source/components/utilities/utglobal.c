@@ -476,6 +476,60 @@ CmFormatException (
 }
 
 
+/****************************************************************************
+ *
+ * FUNCTION:    CmAllocateOwnerId
+ *
+ * PARAMETERS:  IdType          - Type of ID (method or table)
+ *
+ * DESCRIPTION: Allocate a table or method owner id
+ *
+ ***************************************************************************/
+
+ACPI_OWNER_ID
+CmAllocateOwnerId (
+    UINT32                  IdType)
+{
+    ACPI_OWNER_ID           OwnerId = 0xFFFF;
+
+
+    FUNCTION_TRACE ("CmAllocateOwnerId");
+
+
+    CmAcquireMutex (MTX_MEMORY);
+
+    switch (IdType)
+    {
+    case OWNER_TYPE_TABLE:
+
+        OwnerId = Gbl_NextTableOwnerId;
+        Gbl_NextTableOwnerId++;
+
+        if (Gbl_NextTableOwnerId == FIRST_METHOD_ID)
+        {
+            Gbl_NextTableOwnerId = FIRST_TABLE_ID;
+        }
+        break;
+
+
+    case OWNER_TYPE_METHOD:
+
+        OwnerId = Gbl_NextMethodOwnerId;
+        Gbl_NextMethodOwnerId++;
+
+        if (Gbl_NextMethodOwnerId == FIRST_TABLE_ID)
+        {
+            Gbl_NextMethodOwnerId = FIRST_METHOD_ID;
+        }
+        break;
+    }
+
+
+    CmReleaseMutex (MTX_MEMORY);
+
+    return_VALUE (OwnerId);
+}
+
 
 /****************************************************************************
  *
@@ -570,7 +624,8 @@ CmInitGlobals (ACPI_INIT_DATA *InitData)
     Gbl_NsLookupCount           = 0;
     Gbl_PsFindCount             = 0;
     Gbl_AcpiHardwarePresent     = TRUE;
-    Gbl_TbNextTableId           = 1;
+    Gbl_NextTableOwnerId        = FIRST_TABLE_ID;
+    Gbl_NextMethodOwnerId       = FIRST_METHOD_ID;
 
     /* Interpreter */
 
