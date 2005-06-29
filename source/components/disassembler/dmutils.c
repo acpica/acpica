@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dmutils - AML disassembler utilities
- *              $Revision: 1.1 $
+ *              $Revision: 1.2 $
  *
  ******************************************************************************/
 
@@ -321,7 +321,7 @@ AcpiDmIndent (
  *
  * PARAMETERS:  Op              - Current operator/operand
  *
- * RETURN:      TRUE if a comman was inserted
+ * RETURN:      TRUE if a comma was inserted
  *
  * DESCRIPTION: Insert a comma if this Op is a member of an argument list.
  *
@@ -344,7 +344,16 @@ AcpiDmCommaIfListMember (
         if ((Op->Common.Next->Common.AmlOpcode == AML_INT_NAMEPATH_OP) &&
             (!Op->Common.Next->Common.Value.String))
         {
-            return FALSE;
+            /*
+             * To handle the Divide() case where there are two optional
+             * targets, look ahead one more op.  If null, this null target
+             * is the one and only target -- no comma needed.  Otherwise,
+             * we need a comma to prepare for the next target.
+             */
+            if (!Op->Common.Next->Common.Next)
+            {
+                return FALSE;
+            }
         }
 
         if ((Op->Common.DisasmFlags & ACPI_PARSEOP_PARAMLIST) &&

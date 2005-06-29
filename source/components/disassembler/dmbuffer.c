@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dmbuffer - AML disassembler, buffer and string support
- *              $Revision: 1.1 $
+ *              $Revision: 1.3 $
  *
  ******************************************************************************/
 
@@ -117,6 +117,8 @@
 
 #include "acpi.h"
 #include "acdisasm.h"
+#include "acparser.h"
+#include "amlcode.h"
 
 
 #ifdef ACPI_DISASSEMBLER
@@ -503,6 +505,80 @@ AcpiDmUnicode (
     }
 
     AcpiOsPrintf ("\")");
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiIsEisaId 
+ *
+ * PARAMETERS:  Op              - Op to be examined
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Determine if an Op can be converted to an EisaId.
+ *
+ ******************************************************************************/
+
+void
+AcpiIsEisaId (
+    ACPI_PARSE_OBJECT       *Op)
+{
+    UINT32                  Name;
+    UINT32                  BigEndianId;
+    ACPI_PARSE_OBJECT       *NextOp;
+    NATIVE_UINT             i;
+    UINT32                  Prefix[3];
+
+
+    /* Get the NameSegment */
+
+    Name = AcpiPsGetName (Op);
+    if (!Name)
+    {
+        return;
+    }
+    
+    /* We are looking for _HID */
+
+    if (ACPI_STRNCMP ((char *) &Name, "_HID", 4))
+    {
+        return;
+    }
+
+    /* The parameter must be either a word or a dword */
+
+    NextOp = AcpiPsGetDepthNext (NULL, Op);
+    if ((NextOp->Common.AmlOpcode != AML_DWORD_OP) &&
+        (NextOp->Common.AmlOpcode != AML_WORD_OP))
+    {
+        return;
+    }
+
+    /* Swap from little-endian to big-endian to simplify conversion */
+
+    BigEndianId = AcpiUtDwordByteSwap (NextOp->Common.Value.Integer32);
+
+    /* Create the 3 leading ASCII letters */
+
+    Prefix[0] = ((BigEndianId >> 26) & 0x1F) + 0x40;
+    Prefix[1] = ((BigEndianId >> 21) & 0x1F) + 0x40;
+    Prefix[2] = ((BigEndianId >> 16) & 0x1F) + 0x40;
+
+    /* Verify that all 3 are ascii and alpha */
+
+    for (i = 0; i < 3; i++)
+    {
+        if (!ACPI_IS_ASCII (Prefix[i]) ||
+            !ACPI_IS_ALPHA (Prefix[i]))
+        {
+            return;
+        }
+    }
+
+    /* OK - mark this node as convertable to an EISA ID */
+
+    NextOp->Common.DisasmOpcode = ACPI_DASM_EISAID;
 }
 
 
