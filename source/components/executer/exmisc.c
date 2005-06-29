@@ -84,6 +84,7 @@
  * HERE.  ANY SOFTWARE ORIGINATING FROM INTEL OR DERIVED FROM INTEL SOFTWARE
  * IS PROVIDED "AS IS," AND INTEL WILL NOT PROVIDE ANY SUPPORT,  ASSISTANCE,
  * INSTALLATION, TRAINING OR OTHER SERVICES.  INTEL WILL NOT PROVIDE ANY
+
  * UPDATES, ENHANCEMENTS OR EXTENSIONS.  INTEL SPECIFICALLY DISCLAIMS ANY
  * IMPLIED WARRANTIES OF MERCHANTABILITY, NONINFRINGEMENT AND FITNESS FOR A
  * PARTICULAR PURPOSE. 
@@ -236,7 +237,7 @@ AmlExecCreateField (
     /*  DefCreateBitField   :=  CreateBitFieldOp    SourceBuff  BitIndex    NameString  */
 
     case AML_BitFieldOp:
-        BitOffset = OffDesc->Number.Number;             /* offset is in bits */
+        BitOffset = OffDesc->Number.Value;              /* offset is in bits */
         BitCount = 1;                                   /* field is a bit */
         break;
 
@@ -244,7 +245,7 @@ AmlExecCreateField (
     /*  DefCreateByteField  :=  CreateByteFieldOp   SourceBuff  ByteIndex   NameString  */
 
     case AML_ByteFieldOp:
-        BitOffset = 8 * OffDesc->Number.Number;         /* offset is in bytes */
+        BitOffset = 8 * OffDesc->Number.Value;          /* offset is in bytes */
         BitCount = 8;                                   /* field is a Byte */
         break;
 
@@ -252,7 +253,7 @@ AmlExecCreateField (
     /*  DefCreateWordField  :=  CreateWordFieldOp   SourceBuff  ByteIndex   NameString  */
 
     case AML_WordFieldOp:
-        BitOffset = 8 * OffDesc->Number.Number;         /* offset is in bytes */
+        BitOffset = 8 * OffDesc->Number.Value;          /* offset is in bytes */
         BitCount = 16;                                  /* field is a Word */
         break;
 
@@ -260,7 +261,7 @@ AmlExecCreateField (
     /*  DefCreateDWordField :=  CreateDWordFieldOp  SourceBuff  ByteIndex   NameString  */
 
     case AML_DWordFieldOp:
-        BitOffset = 8 * OffDesc->Number.Number;         /* offset is in bytes */
+        BitOffset = 8 * OffDesc->Number.Value;          /* offset is in bytes */
         BitCount = 32;                                  /* field is a DWord */
         break;
 
@@ -268,8 +269,8 @@ AmlExecCreateField (
     /*  DefCreateField  :=  CreateFieldOp   SourceBuff  BitIndex    NumBits NameString  */
 
     case AML_CreateFieldOp:
-        BitOffset = OffDesc->Number.Number;             /* offset is in bits */
-        BitCount = (UINT16) CntDesc->Number.Number;       /* as is count */
+        BitOffset = OffDesc->Number.Value;              /* offset is in bits */
+        BitCount = (UINT16) CntDesc->Number.Value;      /* as is count */
         break;
 
     default:
@@ -282,36 +283,36 @@ AmlExecCreateField (
     } /* switch */
 
 
-    switch (SrcDesc->ValType)
+    switch (SrcDesc->Type)
     {
     
     /*  SourceBuff  :=  TermArg=>Buffer */
 
     case TYPE_Buffer:
-        if (BitOffset + (UINT32) BitCount > 8 * (UINT32) SrcDesc->Buffer.BufLen)
+        if (BitOffset + (UINT32) BitCount > 8 * (UINT32) SrcDesc->Buffer.Length)
         {
             DEBUG_PRINT (ACPI_ERROR, ("AmlExecCreateField: Field exceeds Buffer %d > %d\n",
                             BitOffset + (UINT32)BitCount,
-                            8 * (UINT32)SrcDesc->Buffer.BufLen));
+                            8 * (UINT32)SrcDesc->Buffer.Length));
             FUNCTION_STATUS_EXIT (AE_AML_ERROR);
             return AE_AML_ERROR;
         }
 
         /* Reuse "OffDesc" descriptor to build result */
         
-        OffDesc->ValType                = (UINT8) TYPE_FieldUnit;
+        OffDesc->Type                   = (UINT8) TYPE_FieldUnit;
         OffDesc->FieldUnit.Access       = (UINT16) ACCESS_AnyAcc;
         OffDesc->FieldUnit.LockRule     = (UINT16) GLOCK_NeverLock;
         OffDesc->FieldUnit.UpdateRule   = (UINT16) UPDATE_Preserve;
-        OffDesc->FieldUnit.DatLen       = BitCount;
+        OffDesc->FieldUnit.Length       = BitCount;
         OffDesc->FieldUnit.BitOffset    = (UINT16) BitOffset % 8;
         OffDesc->FieldUnit.Offset       = BitOffset / 8;
         OffDesc->FieldUnit.Container    = SrcDesc;
-        OffDesc->FieldUnit.ConSeq       = SrcDesc->Buffer.Sequence;
+        OffDesc->FieldUnit.Sequence     = SrcDesc->Buffer.Sequence;
         break;
 
     default:
-        bTypeFound = SrcDesc->ValType;
+        bTypeFound = SrcDesc->Type;
 
         if ((bTypeFound > (UINT8) TYPE_Lvalue) ||
             (BadType == NsTypeNames[bTypeFound]))
@@ -337,7 +338,7 @@ AmlExecCreateField (
     {
         /*  delete object descriptor unique to CreateField  */
 
-        OsdFree (CntDesc);
+        CmFree (CntDesc);
         CntDesc = NULL;
     }
 
@@ -433,8 +434,8 @@ AmlExecFatal (void)
 
     DEBUG_PRINT (ACPI_INFO,
                 ("FatalOp: Type %x Code %x Arg %x <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<\n",
-                TypeDesc->Number.Number, CodeDesc->Number.Number,
-                ArgDesc->Number.Number));
+                TypeDesc->Number.Value, CodeDesc->Number.Value,
+                ArgDesc->Number.Value));
 
     DEBUG_PRINT (ACPI_ERROR, ("AmlExecFatal: FatalOp executed\n"));
     FUNCTION_STATUS_EXIT (AE_AML_ERROR);
@@ -493,8 +494,8 @@ AmlExecIndex (void)
         IdxDesc = (ACPI_OBJECT_INTERNAL *) ObjStack[ObjStackTop - 1];
         PkgDesc = (ACPI_OBJECT_INTERNAL *) ObjStack[ObjStackTop - 2];
 
-        if (IdxDesc->Number.Number < 0 || 
-            IdxDesc->Number.Number >= (UINT32) PkgDesc->Package.PkgCount)
+        if (IdxDesc->Number.Value < 0 || 
+            IdxDesc->Number.Value >= (UINT32) PkgDesc->Package.Count)
         {
             DEBUG_PRINT (ACPI_ERROR, ("AmlExecIndex: Index value out of range\n"));
             Status = AE_AML_ERROR;
@@ -503,11 +504,11 @@ AmlExecIndex (void)
         else
         {
             /* 
-             * XXX - possible dangling reference: if the package vector changes
-             * XXX - before this pointer is used, the results may be surprising.
+             * TBD - possible dangling reference: if the package vector changes
+             * TBD - before this pointer is used, the results may be surprising.
              */
-            PkgDesc->Lvalue.Ref     = (void *) &PkgDesc->Package.PackageElems[IdxDesc->Number.Number];
-            PkgDesc->ValType        = (UINT8) TYPE_Lvalue;
+            PkgDesc->Lvalue.Object  = (void *) &PkgDesc->Package.Elements[IdxDesc->Number.Value];
+            PkgDesc->Type           = (UINT8) TYPE_Lvalue;
             PkgDesc->Lvalue.OpCode  = AML_IndexOp;
 
             Status = AmlExecStore (PkgDesc, ResDesc);
@@ -515,7 +516,7 @@ AmlExecIndex (void)
 
         if (AE_OK == Status)
         {
-            OsdFree (IdxDesc);
+            CmFree (IdxDesc);
         }
 
         ObjStackTop -= 2;
@@ -589,16 +590,16 @@ AmlExecMatch (void)
 
     /* Validate match comparison sub-opcodes */
     
-    if (Op1Desc->Number.Number < 0 || Op1Desc->Number.Number > 5 || 
-        Op2Desc->Number.Number < 0 || Op2Desc->Number.Number > 5)
+    if (Op1Desc->Number.Value < 0 || Op1Desc->Number.Value > 5 || 
+        Op2Desc->Number.Value < 0 || Op2Desc->Number.Value > 5)
     {
         DEBUG_PRINT (ACPI_ERROR, ("AmlExecMatch: operation encoding out of range\n"));
         FUNCTION_STATUS_EXIT (AE_AML_ERROR);
         return AE_AML_ERROR;
     }
 
-    Look = StartDesc->Number.Number;
-    if (Look < 0 || Look >= (UINT32) PkgDesc->Package.PkgCount)
+    Look = StartDesc->Number.Value;
+    if (Look < 0 || Look >= (UINT32) PkgDesc->Package.Count)
     {
         DEBUG_PRINT (ACPI_ERROR, ("AmlExecMatch: start position value out of range\n"));
         FUNCTION_STATUS_EXIT (AE_AML_ERROR);
@@ -615,14 +616,14 @@ AmlExecMatch (void)
      * returned as a Number, this will produce the Ones value as specified.
      */
 
-    for ( ; Look < (UINT32) PkgDesc->Package.PkgCount ; ++Look)
+    for ( ; Look < (UINT32) PkgDesc->Package.Count ; ++Look)
     {
         /* 
          * Treat any NULL or non-numeric elements as non-matching.
          * XXX - if an element is a Name, should we examine its value?
          */
-        if (!PkgDesc->Package.PackageElems[Look] ||
-            TYPE_Number != PkgDesc->Package.PackageElems[Look]->ValType)
+        if (!PkgDesc->Package.Elements[Look] ||
+            TYPE_Number != PkgDesc->Package.Elements[Look]->Type)
         {
             continue;
         }
@@ -633,46 +634,46 @@ AmlExecMatch (void)
          *      "continue" (proceed to next iteration of enclosing
          *          "for" loop) signifies a non-match.
          */
-        switch (Op1Desc->Number.Number)
+        switch (Op1Desc->Number.Value)
         {
         case MATCH_MTR:   /*  always true */
             break;
 
         case MATCH_MEQ:   /*  true if equal   */
-            if (PkgDesc->Package.PackageElems[Look]->Number.Number
-                 != V1Desc->Number.Number)
+            if (PkgDesc->Package.Elements[Look]->Number.Value
+                 != V1Desc->Number.Value)
             {
                 continue;
             }
             break;
 
         case MATCH_MLE:   /*  true if less than or equal  */
-            if (PkgDesc->Package.PackageElems[Look]->Number.Number
-                 > V1Desc->Number.Number)
+            if (PkgDesc->Package.Elements[Look]->Number.Value
+                 > V1Desc->Number.Value)
             {
                 continue;
             }
             break;
 
         case MATCH_MLT:   /*  true if less than   */
-            if (PkgDesc->Package.PackageElems[Look]->Number.Number
-                 >= V1Desc->Number.Number)
+            if (PkgDesc->Package.Elements[Look]->Number.Value
+                 >= V1Desc->Number.Value)
             {
                 continue;
             }
             break;
 
         case MATCH_MGE:   /*  true if greater than or equal   */
-            if (PkgDesc->Package.PackageElems[Look]->Number.Number
-                 < V1Desc->Number.Number)
+            if (PkgDesc->Package.Elements[Look]->Number.Value
+                 < V1Desc->Number.Value)
             {
                 continue;
             }
             break;
 
         case MATCH_MGT:   /*  true if greater than    */
-            if (PkgDesc->Package.PackageElems[Look]->Number.Number
-                 <= V1Desc->Number.Number)
+            if (PkgDesc->Package.Elements[Look]->Number.Value
+                 <= V1Desc->Number.Value)
             {
                 continue;
             }
@@ -683,46 +684,46 @@ AmlExecMatch (void)
         }
  
         
-        switch(Op2Desc->Number.Number)
+        switch(Op2Desc->Number.Value)
         {
         case MATCH_MTR:
             break;
 
         case MATCH_MEQ:
-            if (PkgDesc->Package.PackageElems[Look]->Number.Number
-                 != V2Desc->Number.Number)
+            if (PkgDesc->Package.Elements[Look]->Number.Value
+                 != V2Desc->Number.Value)
             {
                 continue;
             }
             break;
 
         case MATCH_MLE:
-            if (PkgDesc->Package.PackageElems[Look]->Number.Number
-                 > V2Desc->Number.Number)
+            if (PkgDesc->Package.Elements[Look]->Number.Value
+                 > V2Desc->Number.Value)
             {
                 continue;
             }
             break;
 
         case MATCH_MLT:
-            if (PkgDesc->Package.PackageElems[Look]->Number.Number
-                 >= V2Desc->Number.Number)
+            if (PkgDesc->Package.Elements[Look]->Number.Value
+                 >= V2Desc->Number.Value)
             {
                 continue;
             }
             break;
 
         case MATCH_MGE:
-            if (PkgDesc->Package.PackageElems[Look]->Number.Number
-                 < V2Desc->Number.Number)
+            if (PkgDesc->Package.Elements[Look]->Number.Value
+                 < V2Desc->Number.Value)
             {
                 continue;
             }
             break;
 
         case MATCH_MGT:
-            if (PkgDesc->Package.PackageElems[Look]->Number.Number
-                 <= V2Desc->Number.Number)
+            if (PkgDesc->Package.Elements[Look]->Number.Value
+                 <= V2Desc->Number.Value)
             {
                 continue;
             }
@@ -738,14 +739,14 @@ AmlExecMatch (void)
         break;
     }
 
-    PkgDesc->ValType = (UINT8) TYPE_Number;
-    PkgDesc->Number.Number = MatchValue;
+    PkgDesc->Type = (UINT8) TYPE_Number;
+    PkgDesc->Number.Value = MatchValue;
 
-    OsdFree (StartDesc);
-    OsdFree (V2Desc);
-    OsdFree (Op2Desc);
-    OsdFree (V1Desc);
-    OsdFree (Op1Desc);
+    CmFree (StartDesc);
+    CmFree (V2Desc);
+    CmFree (Op2Desc);
+    CmFree (V1Desc);
+    CmFree (Op1Desc);
     
     ObjStackTop -= 5;          /* Remove operands */
 
