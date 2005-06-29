@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exstore - AML Interpreter object store support
- *              $Revision: 1.156 $
+ *              $Revision: 1.158 $
  *
  *****************************************************************************/
 
@@ -439,7 +439,6 @@ AcpiExStoreObjectToIndex (
                 "Source must be Integer/Buffer/String type, not %s\n",
                 AcpiUtGetTypeName (SourceDesc->Common.Type)));
             return_ACPI_STATUS (AE_AML_OPERAND_TYPE);
-            break;
         }
 
         /* Store the source value into the target buffer byte */
@@ -493,7 +492,7 @@ AcpiExStoreObjectToNode (
     ACPI_STATUS             Status = AE_OK;
     ACPI_OPERAND_OBJECT     *TargetDesc;
     ACPI_OPERAND_OBJECT     *NewDesc;
-    ACPI_OBJECT_TYPE8       TargetType;
+    ACPI_OBJECT_TYPE        TargetType;
 
 
     FUNCTION_TRACE_PTR ("ExStoreObjectToNode", SourceDesc);
