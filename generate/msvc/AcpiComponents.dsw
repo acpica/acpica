@@ -8,7 +8,7 @@ Project: "Device"=..\..\SUBSYSTEM\Device\Device.dsp - Package Owner=<4>
 Package=<5>
 {{{
     begin source code control
-    "$/Acpi Components/SubSystem/Device/Device", CEDAAAAA
+    "$/Acpi Components/Subsystem/Device", EQBAAAAA
     ..\..\subsystem\device
     end source code control
 }}}
