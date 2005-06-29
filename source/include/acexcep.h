@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acexcep.h - Exception codes returned by the ACPI subsystem
- *       $Revision: 1.44 $
+ *       $Revision: 1.45 $
  *
  *****************************************************************************/
 
@@ -163,8 +163,10 @@
 #define AE_RELEASE_DEADLOCK             (ACPI_STATUS) (0x0016 | AE_CODE_ENVIRONMENTAL)
 #define AE_NOT_ACQUIRED                 (ACPI_STATUS) (0x0017 | AE_CODE_ENVIRONMENTAL)
 #define AE_ALREADY_ACQUIRED             (ACPI_STATUS) (0x0018 | AE_CODE_ENVIRONMENTAL)
+#define AE_NO_HARDWARE_RESPONSE         (ACPI_STATUS) (0x0019 | AE_CODE_ENVIRONMENTAL)
+#define AE_NO_GLOBAL_LOCK               (ACPI_STATUS) (0x001A | AE_CODE_ENVIRONMENTAL)
 
-#define AE_CODE_ENV_MAX                 0x0018
+#define AE_CODE_ENV_MAX                 0x001A
 
 /*
  * Programmer exceptions
@@ -268,6 +270,8 @@ static NATIVE_CHAR          *AcpiGbl_ExceptionNames_Env[] =
     "AE_RELEASE_DEADLOCK",
     "AE_NOT_ACQUIRED",
     "AE_ALREADY_ACQUIRED",
+    "AE_NO_HARDWARE_RESPONSE",
+    "AE_NO_GLOBAL_LOCK",
 };
 
 static NATIVE_CHAR          *AcpiGbl_ExceptionNames_Pgm[] =
