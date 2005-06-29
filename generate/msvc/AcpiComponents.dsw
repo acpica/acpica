@@ -8,7 +8,7 @@ Project: "AcpiBin"=.\AcpiBin.dsp - Package Owner=<4>
 Package=<5>
 {{{
     begin source code control
-    "$/Acpi/Components/Tools/AcpiBin", SVBAAAAA
+    "$/Acpi/generate/msvc", SVBAAAAA
     ..\..
     end source code control
 }}}
@@ -23,10 +23,6 @@ Project: "AcpiDriver"=.\AcpiDriver.dsp - Package Owner=<4>
 
 Package=<5>
 {{{
-    begin source code control
-    "$/Acpi/Components/test/driver/wdm", DBDAAAAA
-    ..\..
-    end source code control
 }}}
 
 Package=<4>
@@ -40,7 +36,7 @@ Project: "AcpiDump"=.\AcpiDump.dsp - Package Owner=<4>
 Package=<5>
 {{{
     begin source code control
-    "$/Acpi/Components/Tools/AcpiDump", SVBAAAAA
+    "$/Acpi/generate/msvc", SVBAAAAA
     ..\..
     end source code control
 }}}
@@ -56,7 +52,7 @@ Project: "AcpiExec"=.\AcpiExec.dsp - Package Owner=<4>
 Package=<5>
 {{{
     begin source code control
-    "$/Acpi/Components/Tools/AcpiExec", SVBAAAAA
+    "$/Acpi/generate/msvc", SVBAAAAA
     ..\..
     end source code control
 }}}
@@ -72,7 +68,7 @@ Project: "AcpiSrc"=.\AcpiSrc.dsp - Package Owner=<4>
 Package=<5>
 {{{
     begin source code control
-    "$/Acpi/Components/Tools/AcpiSrc", SVBAAAAA
+    "$/Acpi/generate/msvc", SVBAAAAA
     ..\..
     end source code control
 }}}
@@ -88,9 +84,21 @@ Project: "AcpiSubsystem"=.\AcpiSubsystem.dsp - Package Owner=<4>
 Package=<5>
 {{{
     begin source code control
-    "$/Acpi/Components", CQBAAAAA
+    "$/Acpi/source/components", CQBAAAAA
     ..\..
     end source code control
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
+Project: "AcpiSubsystem_Linux"=.\AcpiSubsystem_Linux.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
 }}}
 
 Package=<4>
@@ -104,7 +112,7 @@ Project: "AcpiTest"=.\AcpiTest.dsp - Package Owner=<4>
 Package=<5>
 {{{
     begin source code control
-    "$/Acpi/Components/Test/AcpiTest/Wdm", DLHAAAAA
+    "$/Acpi/source/test/AcpiTest/Wdm", DLHAAAAA
     ..\..
     end source code control
 }}}
@@ -120,7 +128,7 @@ Project: "AslCompiler"=.\AslCompiler.dsp - Package Owner=<4>
 Package=<5>
 {{{
     begin source code control
-    "$/Acpi/Components/compiler", DLHAAAAA
+    "$/Acpi/source/test/AcpiTest/Wdm", DLHAAAAA
     ..\..
     end source code control
 }}}
