@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: rscalc - Calculate stream and list lengths
- *              $Revision: 1.56 $
+ *              $Revision: 1.57 $
  *
  ******************************************************************************/
 
@@ -156,9 +156,8 @@ AcpiRsGetByteStreamLength (
 
     while (!Done)
     {
-        /*
-         * Init the variable that will hold the size to add to the total.
-         */
+        /* Init the variable that will hold the size to add to the total. */
+
         SegmentSize = 0;
 
         switch (LinkedList->Id)
@@ -275,7 +274,8 @@ AcpiRsGetByteStreamLength (
 
             if (LinkedList->Data.Address16.ResourceSource.StringPtr)
             {
-                SegmentSize += LinkedList->Data.Address16.ResourceSource.StringLength;
+                SegmentSize +=
+                    LinkedList->Data.Address16.ResourceSource.StringLength;
                 SegmentSize++;
             }
             break;
@@ -292,7 +292,8 @@ AcpiRsGetByteStreamLength (
 
             if (LinkedList->Data.Address32.ResourceSource.StringPtr)
             {
-                SegmentSize += LinkedList->Data.Address32.ResourceSource.StringLength;
+                SegmentSize +=
+                    LinkedList->Data.Address32.ResourceSource.StringLength;
                 SegmentSize++;
             }
             break;
@@ -308,7 +309,8 @@ AcpiRsGetByteStreamLength (
 
             if (LinkedList->Data.Address64.ResourceSource.StringPtr)
             {
-                SegmentSize += LinkedList->Data.Address64.ResourceSource.StringLength;
+                SegmentSize +=
+                    LinkedList->Data.Address64.ResourceSource.StringLength;
                 SegmentSize++;
             }
             break;
@@ -322,39 +324,37 @@ AcpiRsGetByteStreamLength (
              * Index + the length of the null terminated string
              * Resource Source + 1 for the null.
              */
-            SegmentSize = 9 +
-                (((ACPI_SIZE) LinkedList->Data.ExtendedIrq.NumberOfInterrupts - 1) * 4);
+            SegmentSize = 9 + (((ACPI_SIZE)
+                LinkedList->Data.ExtendedIrq.NumberOfInterrupts - 1) * 4);
 
             if (LinkedList->Data.ExtendedIrq.ResourceSource.StringPtr)
             {
-                SegmentSize += LinkedList->Data.ExtendedIrq.ResourceSource.StringLength;
+                SegmentSize +=
+                    LinkedList->Data.ExtendedIrq.ResourceSource.StringLength;
                 SegmentSize++;
             }
             break;
 
         default:
-            /*
-             * If we get here, everything is out of sync, exit with error
-             */
+
+            /* If we get here, everything is out of sync, exit with error */
+
             return_ACPI_STATUS (AE_AML_INVALID_RESOURCE_TYPE);
 
         } /* switch (LinkedList->Id) */
 
-        /*
-         * Update the total
-         */
+        /* Update the total */
+
         ByteStreamSizeNeeded += SegmentSize;
 
-        /*
-         * Point to the next object
-         */
+        /* Point to the next object */
+
         LinkedList = ACPI_PTR_ADD (ACPI_RESOURCE,
                         LinkedList, LinkedList->Length);
     }
 
-    /*
-     * This is the data the caller needs
-     */
+    /* This is the data the caller needs */
+
     *SizeNeeded = ByteStreamSizeNeeded;
     return_ACPI_STATUS (AE_OK);
 }
@@ -403,9 +403,8 @@ AcpiRsGetListLength (
 
     while (BytesParsed < ByteStreamBufferLength)
     {
-        /*
-         * The next byte in the stream is the resource type
-         */
+        /* The next byte in the stream is the resource type */
+
         ResourceType = AcpiRsGetResourceType (*ByteStreamBuffer);
 
         switch (ResourceType)
@@ -430,9 +429,8 @@ AcpiRsGetListLength (
             ACPI_MOVE_16_TO_16 (&Temp16, Buffer);
             BytesConsumed = Temp16 + 3;
 
-            /*
-             * Ensure a 32-bit boundary for the structure
-             */
+            /* Ensure a 32-bit boundary for the structure */
+
             Temp16 = (UINT16) ACPI_ROUND_UP_TO_32BITS (Temp16);
 
             StructureSize = ACPI_SIZEOF_RESOURCE (ACPI_RESOURCE_VENDOR) +
@@ -502,9 +500,8 @@ AcpiRsGetListLength (
                 Temp8 = 0;
             }
 
-            /*
-             * Ensure a 64-bit boundary for the structure
-             */
+            /* Ensure a 64-bit boundary for the structure */
+
             Temp8 = (UINT8) ACPI_ROUND_UP_TO_64BITS (Temp8);
 
             StructureSize = ACPI_SIZEOF_RESOURCE (ACPI_RESOURCE_ADDRESS64) +
@@ -540,9 +537,8 @@ AcpiRsGetListLength (
                 Temp8 = 0;
             }
 
-            /*
-             * Ensure a 32-bit boundary for the structure
-             */
+            /* Ensure a 32-bit boundary for the structure */
+
             Temp8 = (UINT8) ACPI_ROUND_UP_TO_32BITS (Temp8);
 
             StructureSize = ACPI_SIZEOF_RESOURCE (ACPI_RESOURCE_ADDRESS32) +
@@ -578,9 +574,8 @@ AcpiRsGetListLength (
                 Temp8 = 0;
             }
 
-            /*
-             * Ensure a 32-bit boundary for the structure
-             */
+            /* Ensure a 32-bit boundary for the structure */
+
             Temp8 = (UINT8) ACPI_ROUND_UP_TO_32BITS (Temp8);
 
             StructureSize = ACPI_SIZEOF_RESOURCE (ACPI_RESOURCE_ADDRESS16) +
@@ -629,9 +624,8 @@ AcpiRsGetListLength (
                 Temp8 = 0;
             }
 
-            /*
-             * Ensure a 32-bit boundary for the structure
-             */
+            /* Ensure a 32-bit boundary for the structure */
+
             Temp8 = (UINT8) ACPI_ROUND_UP_TO_32BITS (Temp8);
 
             StructureSize = ACPI_SIZEOF_RESOURCE (ACPI_RESOURCE_EXT_IRQ) +
@@ -661,9 +655,8 @@ AcpiRsGetListLength (
 
             ++Buffer;
 
-            /*
-             * Look at the number of bits set
-             */
+            /* Look at the number of bits set */
+
             ACPI_MOVE_16_TO_16 (&Temp16, Buffer);
 
             for (Index = 0; Index < 16; Index++)
@@ -692,9 +685,8 @@ AcpiRsGetListLength (
 
             ++Buffer;
 
-            /*
-             * Look at the number of bits set
-             */
+            /* Look at the number of bits set */
+
             Temp8 = *Buffer;
 
             for(Index = 0; Index < 8; Index++)
@@ -770,9 +762,8 @@ AcpiRsGetListLength (
             Temp8 = (UINT8) (Temp8 & 0x7);
             BytesConsumed = Temp8 + 1;
 
-            /*
-             * Ensure a 32-bit boundary for the structure
-             */
+            /* Ensure a 32-bit boundary for the structure */
+
             Temp8 = (UINT8) ACPI_ROUND_UP_TO_32BITS (Temp8);
             StructureSize = ACPI_SIZEOF_RESOURCE (ACPI_RESOURCE_VENDOR) +
                                 (Temp8 * sizeof (UINT8));
@@ -797,21 +788,18 @@ AcpiRsGetListLength (
             return_ACPI_STATUS (AE_AML_INVALID_RESOURCE_TYPE);
         }
 
-        /*
-         * Update the return value and counter
-         */
+        /* Update the return value and counter */
+
         BufferSize += (UINT32) ACPI_ALIGN_RESOURCE_SIZE (StructureSize);
         BytesParsed += BytesConsumed;
 
-        /*
-         * Set the byte stream to point to the next resource
-         */
+        /* Set the byte stream to point to the next resource */
+
         ByteStreamBuffer += BytesConsumed;
     }
 
-    /*
-     * This is the data the caller needs
-     */
+    /* This is the data the caller needs */
+
     *SizeNeeded = BufferSize;
     return_ACPI_STATUS (AE_OK);
 }
@@ -868,9 +856,8 @@ AcpiRsGetPciRoutingTableLength (
 
     for (Index = 0; Index < NumberOfElements; Index++)
     {
-        /*
-         * Dereference the sub-package
-         */
+        /* Dereference the sub-package */
+
         PackageElement = *TopObjectList;
 
         /*
@@ -879,33 +866,35 @@ AcpiRsGetPciRoutingTableLength (
          */
         SubObjectList = PackageElement->Package.Elements;
 
-        /*
-         * Scan the IrqTableElements for the Source Name String
-         */
+        /* Scan the IrqTableElements for the Source Name String */
+
         NameFound = FALSE;
 
         for (TableIndex = 0; TableIndex < 4 && !NameFound; TableIndex++)
         {
-            if ((ACPI_TYPE_STRING == ACPI_GET_OBJECT_TYPE (*SubObjectList)) ||
-                ((ACPI_TYPE_LOCAL_REFERENCE == ACPI_GET_OBJECT_TYPE (*SubObjectList)) &&
-                    ((*SubObjectList)->Reference.Opcode == AML_INT_NAMEPATH_OP)))
+            if ((ACPI_TYPE_STRING ==
+                    ACPI_GET_OBJECT_TYPE (*SubObjectList)) ||
+
+                ((ACPI_TYPE_LOCAL_REFERENCE ==
+                    ACPI_GET_OBJECT_TYPE (*SubObjectList)) &&
+
+                    ((*SubObjectList)->Reference.Opcode ==
+                        AML_INT_NAMEPATH_OP)))
             {
                 NameFound = TRUE;
             }
             else
             {
-                /*
-                 * Look at the next element
-                 */
+                /* Look at the next element */
+
                 SubObjectList++;
             }
         }
 
         TempSizeNeeded += (sizeof (ACPI_PCI_ROUTING_TABLE) - 4);
 
-        /*
-         * Was a String type found?
-         */
+        /* Was a String type found? */
+
         if (NameFound)
         {
             if (ACPI_GET_OBJECT_TYPE (*SubObjectList) == ACPI_TYPE_STRING)
@@ -936,9 +925,8 @@ AcpiRsGetPciRoutingTableLength (
 
         TempSizeNeeded = ACPI_ROUND_UP_TO_64BITS (TempSizeNeeded);
 
-        /*
-         * Point to the next ACPI_OPERAND_OBJECT
-         */
+        /* Point to the next ACPI_OPERAND_OBJECT */
+
         TopObjectList++;
     }
 

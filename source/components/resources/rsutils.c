@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: rsutils - Utilities for the resource manager
- *              $Revision: 1.43 $
+ *              $Revision: 1.45 $
  *
  ******************************************************************************/
 
@@ -158,11 +158,10 @@ AcpiRsGetPrtMethodData (
 
     /* Parameters guaranteed valid by caller */
 
-    /*
-     * Execute the method, no parameters
-     */
-    Status = AcpiUtEvaluateObject (Handle, "_PRT", ACPI_BTYPE_PACKAGE,
-                &ObjDesc);
+    /* Execute the method, no parameters */
+
+    Status = AcpiUtEvaluateObject (Handle, METHOD_NAME__PRT,
+                ACPI_BTYPE_PACKAGE, &ObjDesc);
     if (ACPI_FAILURE (Status))
     {
         return_ACPI_STATUS (Status);
@@ -213,10 +212,10 @@ AcpiRsGetCrsMethodData (
 
     /* Parameters guaranteed valid by caller */
 
-    /*
-     * Execute the method, no parameters
-     */
-    Status = AcpiUtEvaluateObject (Handle, "_CRS", ACPI_BTYPE_BUFFER, &ObjDesc);
+    /* Execute the method, no parameters */
+
+    Status = AcpiUtEvaluateObject (Handle, METHOD_NAME__CRS,
+                ACPI_BTYPE_BUFFER, &ObjDesc);
     if (ACPI_FAILURE (Status))
     {
         return_ACPI_STATUS (Status);
@@ -268,10 +267,10 @@ AcpiRsGetPrsMethodData (
 
     /* Parameters guaranteed valid by caller */
 
-    /*
-     * Execute the method, no parameters
-     */
-    Status = AcpiUtEvaluateObject (Handle, "_PRS", ACPI_BTYPE_BUFFER, &ObjDesc);
+    /* Execute the method, no parameters */
+
+    Status = AcpiUtEvaluateObject (Handle, METHOD_NAME__PRS,
+                ACPI_BTYPE_BUFFER, &ObjDesc);
     if (ACPI_FAILURE (Status))
     {
         return_ACPI_STATUS (Status);
@@ -296,6 +295,7 @@ AcpiRsGetPrsMethodData (
  * FUNCTION:    AcpiRsGetMethodData
  *
  * PARAMETERS:  Handle          - a handle to the containing object
+ *              Path            - Path to method, relative to Handle
  *              RetBuffer       - a pointer to a buffer structure for the
  *                                  results
  *
@@ -324,9 +324,8 @@ AcpiRsGetMethodData (
 
     /* Parameters guaranteed valid by caller */
 
-    /*
-     * Execute the method, no parameters
-     */
+    /* Execute the method, no parameters */
+
     Status = AcpiUtEvaluateObject (Handle, Path, ACPI_BTYPE_BUFFER, &ObjDesc);
     if (ACPI_FAILURE (Status)) {
         return_ACPI_STATUS (Status);
@@ -393,9 +392,8 @@ AcpiRsSetSrsMethodData (
         return_ACPI_STATUS (Status);
     }
 
-    /*
-     * Init the param object
-     */
+    /* Init the param object */
+
     Params[0] = AcpiUtCreateInternalObject (ACPI_TYPE_BUFFER);
     if (!Params[0])
     {
@@ -403,9 +401,8 @@ AcpiRsSetSrsMethodData (
         return_ACPI_STATUS (AE_NO_MEMORY);
     }
 
-    /*
-     * Set up the parameter object
-     */
+    /* Set up the parameter object */
+
     Params[0]->Buffer.Length  = (UINT32) Buffer.Length;
     Params[0]->Buffer.Pointer = Buffer.Pointer;
     Params[0]->Common.Flags   = AOPOBJ_DATA_VALID;
@@ -415,10 +412,9 @@ AcpiRsSetSrsMethodData (
     Info.Parameters = Params;
     Info.ParameterType = ACPI_PARAM_ARGS;
 
-    /*
-     * Execute the method, no return value
-     */
-    Status = AcpiNsEvaluateRelative ("_SRS", &Info);
+    /* Execute the method, no return value */
+
+    Status = AcpiNsEvaluateRelative (METHOD_NAME__SRS, &Info);
     if (ACPI_SUCCESS (Status))
     {
         /* Delete any return object (especially if ImplicitReturn is enabled) */
@@ -429,9 +425,8 @@ AcpiRsSetSrsMethodData (
         }
     }
 
-    /*
-     * Clean up and return the status from AcpiNsEvaluateRelative
-     */
+    /* Clean up and return the status from AcpiNsEvaluateRelative */
+
     AcpiUtRemoveReference (Params[0]);
     return_ACPI_STATUS (Status);
 }
