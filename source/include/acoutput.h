@@ -215,8 +215,8 @@
 
 /* Stack and buffer dumping */
 
-#define DUMP_STACK_ENTRY(a)             AmlDumpStackEntry(a)
-#define DUMP_STACK(a,b,c,d)             AmlDumpStack(a,b,c,d)
+#define DUMP_STACK_ENTRY(a)             AmlDumpObjStackEntry(a)
+#define DUMP_STACK(a,b,c,d)             AmlDumpObjStack(a,b,c,d)
 #define DUMP_ENTRY(a)                   NsDumpEntry (a)
 #define DUMP_TABLES(a,b)                NsDumpTables(a,b)
 
