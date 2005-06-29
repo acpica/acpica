@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: aclocal.h - Internal data types used across the ACPI subsystem
- *       $Revision: 1.177 $
+ *       $Revision: 1.178 $
  *
  *****************************************************************************/
 
@@ -745,6 +745,7 @@ typedef struct acpi_parseobj_asl
     char                        *Filename;
     char                        *ExternalName;
     char                        *Namepath;
+    char                        NameSeg[4];
     UINT32                      ExtraValue;
     UINT32                      Column;
     UINT32                      LineNumber;
