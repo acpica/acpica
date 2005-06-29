@@ -125,14 +125,30 @@
 #define REF_DECREMENT       -1
 #define REF_FORCE_DELETE    0x80000000
 
+
 /* Global initialization interfaces */
 
 void 
 CmInitGlobals (
     void);
 
+void
+CmTerminate (
+    void);
 
-/* Table and hardware initialization - cminit */
+
+/*
+ * CmInit - miscellaneous initialization
+ */
+
+ACPI_STATUS
+CmHardwareInitialize (
+    void);
+
+
+/* 
+ * CmTable - ACPI Table loading and initialization
+ */
 
 ACPI_STATUS
 CmInstallTable (
@@ -149,17 +165,6 @@ CmGetAllTables (
     UINT32                  NumberOfTables, 
     char                    *BufferPtr);
 
-ACPI_STATUS
-CmHardwareInitialize (
-    void);
-
-
-/* Exit interfaces */
-
-void
-CmTerminate (
-    void);
-
 
 /* Object construction and conversion interfaces - cmobject */
 
@@ -169,21 +174,6 @@ _CmCreateInternalObject (
     INT32                   LineNumber, 
     INT32                   ComponentId,
     ACPI_OBJECT_TYPE        Type);
-
-ACPI_STATUS
-CmGetSimpleObjectSize (
-    ACPI_OBJECT_INTERNAL    *Obj, 
-    UINT32                  *ObjLength);
-
-ACPI_STATUS
-CmGetPackageObjectSize (
-    ACPI_OBJECT_INTERNAL    *Obj, 
-    UINT32                  *ObjLength);
-
-ACPI_STATUS
-CmGetObjectSize(
-    ACPI_OBJECT_INTERNAL    *Obj, 
-    UINT32                  *ObjLength);
 
 ACPI_STATUS
 CmBuildSimpleObject(
@@ -213,6 +203,25 @@ CmBuildInternalObject (
     ACPI_OBJECT             *Obj, 
     ACPI_OBJECT_INTERNAL    *InternalObj);
 
+
+/*
+ * CmSize - Object size routines
+ */
+
+ACPI_STATUS
+CmGetSimpleObjectSize (
+    ACPI_OBJECT_INTERNAL    *Obj, 
+    UINT32                  *ObjLength);
+
+ACPI_STATUS
+CmGetPackageObjectSize (
+    ACPI_OBJECT_INTERNAL    *Obj, 
+    UINT32                  *ObjLength);
+
+ACPI_STATUS
+CmGetObjectSize(
+    ACPI_OBJECT_INTERNAL    *Obj, 
+    UINT32                  *ObjLength);
 
 
 /*
@@ -253,7 +262,39 @@ CmDeleteInternalObjDispatch (
     ACPI_OBJECT_INTERNAL    *Object);
 
 
-/* Debug interfaces */
+/*
+ * CmMutex - mutual exclusion interfaces
+ */
+
+ACPI_STATUS
+CmMutexInitialize (
+    void);
+
+void
+CmMutexTerminate (
+    void);
+
+ACPI_STATUS
+CmCreateMutex (
+    ACPI_MUTEX_HANDLE       MutexId);
+
+ACPI_STATUS
+CmDeleteMutex (
+    ACPI_MUTEX_HANDLE       MutexId);
+
+ACPI_STATUS
+CmAcquireMutex (
+    ACPI_MUTEX_HANDLE       MutexId);
+
+ACPI_STATUS
+CmReleaseMutex (
+    ACPI_MUTEX_HANDLE       MutexId);
+
+
+
+/* 
+ * CmDebug - Debug interfaces 
+ */
 
 INT32
 GetDebugLevel (
