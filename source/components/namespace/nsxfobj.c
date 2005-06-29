@@ -2,7 +2,7 @@
  *
  * Module Name: nsxfobj - Public interfaces to the ACPI subsystem
  *                         ACPI Object oriented interfaces
- *              $Revision: 1.80 $
+ *              $Revision: 1.82 $
  *
  ******************************************************************************/
 
@@ -124,7 +124,7 @@
 #include "acdispat.h"
 
 
-#define _COMPONENT          NAMESPACE
+#define _COMPONENT          ACPI_NAMESPACE
         MODULE_NAME         ("nsxfobj")
 
 
@@ -739,13 +739,12 @@ AcpiNsGetDeviceCallback (
     Status = AcpiCmExecute_STA (Node, &Flags);
     if (ACPI_FAILURE (Status))
     {
-        return (Status);
+        return (AE_CTRL_DEPTH);
     }
 
     if (!(Flags & 0x01))
     {
         /* don't return at the device or children of the device if not there */
-
         return (AE_CTRL_DEPTH);
     }
 
@@ -763,7 +762,7 @@ AcpiNsGetDeviceCallback (
 
         else if (ACPI_FAILURE (Status))
         {
-            return (Status);
+            return (AE_CTRL_DEPTH);
         }
 
         if (STRNCMP (DeviceId.Buffer, Info->Hid, sizeof (DeviceId.Buffer)) != 0)
