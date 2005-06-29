@@ -1,6 +1,7 @@
 /******************************************************************************
  *
  * Module Name: evxface - External interfaces for ACPI events
+ *              $Revision: 1.89 $
  *
  *****************************************************************************/
 
@@ -124,7 +125,7 @@
 #include "acinterp.h"
 
 #define _COMPONENT          EVENT_HANDLING
-        MODULE_NAME         ("evxface");
+        MODULE_NAME         ("evxface")
 
 
 /******************************************************************************
@@ -284,9 +285,9 @@ AcpiInstallNotifyHandler (
     NOTIFY_HANDLER          Handler,
     void                    *Context)
 {
-    ACPI_OBJECT_INTERNAL    *ObjDesc;
-    ACPI_OBJECT_INTERNAL    *NotifyObj;
-    ACPI_NAMED_OBJECT       *ObjEntry;
+    ACPI_OPERAND_OBJECT     *ObjDesc;
+    ACPI_OPERAND_OBJECT     *NotifyObj;
+    ACPI_NAMESPACE_NODE     *DeviceNode;
     ACPI_STATUS             Status = AE_OK;
 
 
@@ -305,8 +306,8 @@ AcpiInstallNotifyHandler (
 
     AcpiCmAcquireMutex (ACPI_MTX_NAMESPACE);
 
-    ObjEntry = AcpiNsConvertHandleToEntry (Device);
-    if (!ObjEntry)
+    DeviceNode = AcpiNsConvertHandleToEntry (Device);
+    if (!DeviceNode)
     {
         Status = AE_BAD_PARAMETER;
         goto UnlockAndExit;
@@ -335,14 +336,14 @@ AcpiInstallNotifyHandler (
 
         if (HandlerType == ACPI_SYSTEM_NOTIFY)
         {
-            AcpiGbl_SysNotify.NameDesc = ObjEntry;
+            AcpiGbl_SysNotify.Node = DeviceNode;
             AcpiGbl_SysNotify.Handler = Handler;
             AcpiGbl_SysNotify.Context = Context;
         }
 
         else
         {
-            AcpiGbl_DrvNotify.NameDesc = ObjEntry;
+            AcpiGbl_DrvNotify.Node = DeviceNode;
             AcpiGbl_DrvNotify.Handler = Handler;
             AcpiGbl_DrvNotify.Context = Context;
         }
@@ -358,10 +359,10 @@ AcpiInstallNotifyHandler (
      * These are the ONLY objects that can receive ACPI notifications
      */
 
-    if ((ObjEntry->Type != ACPI_TYPE_DEVICE)     &&
-        (ObjEntry->Type != ACPI_TYPE_PROCESSOR)  &&
-        (ObjEntry->Type != ACPI_TYPE_POWER)      &&
-        (ObjEntry->Type != ACPI_TYPE_THERMAL))
+    if ((DeviceNode->Type != ACPI_TYPE_DEVICE)     &&
+        (DeviceNode->Type != ACPI_TYPE_PROCESSOR)  &&
+        (DeviceNode->Type != ACPI_TYPE_POWER)      &&
+        (DeviceNode->Type != ACPI_TYPE_THERMAL))
     {
         Status = AE_BAD_PARAMETER;
         goto UnlockAndExit;
@@ -369,7 +370,7 @@ AcpiInstallNotifyHandler (
 
     /* Check for an existing internal object */
 
-    ObjDesc = AcpiNsGetAttachedObject ((ACPI_HANDLE) ObjEntry);
+    ObjDesc = AcpiNsGetAttachedObject ((ACPI_HANDLE) DeviceNode);
     if (ObjDesc)
     {
         /*
@@ -391,16 +392,16 @@ AcpiInstallNotifyHandler (
     {
         /* Create a new object */
 
-        ObjDesc = AcpiCmCreateInternalObject (ObjEntry->Type);
+        ObjDesc = AcpiCmCreateInternalObject (DeviceNode->Type);
         if (!ObjDesc)
         {
             Status = AE_NO_MEMORY;
             goto UnlockAndExit;
         }
 
-        /* Attach new object to the Named Object */
+        /* Attach new object to the Node */
 
-        Status = AcpiNsAttachObject (Device, ObjDesc, (UINT8) ObjEntry->Type);
+        Status = AcpiNsAttachObject (Device, ObjDesc, (UINT8) DeviceNode->Type);
 
         if (ACPI_FAILURE (Status))
         {
@@ -420,7 +421,7 @@ AcpiInstallNotifyHandler (
         goto UnlockAndExit;
     }
 
-    NotifyObj->NotifyHandler.NameDesc = ObjEntry;
+    NotifyObj->NotifyHandler.Node = DeviceNode;
     NotifyObj->NotifyHandler.Handler = Handler;
     NotifyObj->NotifyHandler.Context = Context;
 
@@ -463,9 +464,9 @@ AcpiRemoveNotifyHandler (
     UINT32                  HandlerType,
     NOTIFY_HANDLER          Handler)
 {
-    ACPI_OBJECT_INTERNAL    *NotifyObj;
-    ACPI_OBJECT_INTERNAL    *ObjDesc;
-    ACPI_NAMED_OBJECT       *ObjEntry;
+    ACPI_OPERAND_OBJECT     *NotifyObj;
+    ACPI_OPERAND_OBJECT     *ObjDesc;
+    ACPI_NAMESPACE_NODE     *DeviceNode;
     ACPI_STATUS             Status = AE_OK;
 
 
@@ -484,8 +485,8 @@ AcpiRemoveNotifyHandler (
 
     /* Convert and validate the device handle */
 
-    ObjEntry = AcpiNsConvertHandleToEntry (Device);
-    if (!ObjEntry)
+    DeviceNode = AcpiNsConvertHandleToEntry (Device);
+    if (!DeviceNode)
     {
         Status = AE_BAD_PARAMETER;
         goto UnlockAndExit;
@@ -495,10 +496,10 @@ AcpiRemoveNotifyHandler (
      * These are the ONLY objects that can receive ACPI notifications
      */
 
-    if ((ObjEntry->Type != ACPI_TYPE_DEVICE)     &&
-        (ObjEntry->Type != ACPI_TYPE_PROCESSOR)  &&
-        (ObjEntry->Type != ACPI_TYPE_POWER)      &&
-        (ObjEntry->Type != ACPI_TYPE_THERMAL))
+    if ((DeviceNode->Type != ACPI_TYPE_DEVICE)     &&
+        (DeviceNode->Type != ACPI_TYPE_PROCESSOR)  &&
+        (DeviceNode->Type != ACPI_TYPE_POWER)      &&
+        (DeviceNode->Type != ACPI_TYPE_THERMAL))
     {
         Status = AE_BAD_PARAMETER;
         goto UnlockAndExit;
@@ -506,7 +507,7 @@ AcpiRemoveNotifyHandler (
 
     /* Check for an existing internal object */
 
-    ObjDesc = AcpiNsGetAttachedObject ((ACPI_HANDLE) ObjEntry);
+    ObjDesc = AcpiNsGetAttachedObject ((ACPI_HANDLE) DeviceNode);
     if (!ObjDesc)
     {
         Status = AE_NOT_EXIST;
@@ -560,14 +561,14 @@ UnlockAndExit:
  *
  * PARAMETERS:  GpeNumber       - The GPE number.  The numbering scheme is
  *                                bank 0 first, then bank 1.
- *              Trigger         - Whether this GPE should be treated as an
+ *              Type            - Whether this GPE should be treated as an
  *                                edge- or level-triggered interrupt.
  *              Handler         - Address of the handler
  *              Context         - Value passed to the handler on each GPE
  *
  * RETURN:      Status
  *
- * DESCRIPTION: Install a handler for a General Purpose AcpiEvent.
+ * DESCRIPTION: Install a handler for a General Purpose Event.
  *
  ******************************************************************************/
 
@@ -699,7 +700,6 @@ Cleanup:
  * DESCRIPTION: Acquire the ACPI Global Lock
  *
  ******************************************************************************/
-
 ACPI_STATUS
 AcpiAcquireGlobalLock (
     UINT32                  Timeout,
