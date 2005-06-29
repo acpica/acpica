@@ -555,7 +555,7 @@ NsInitializeEntry (
          * is found later.
          */
 
-        DEBUG_PRINT (ACPI_INFO, ("[%4.4s] is a forward reference into the namespace",
+        DEBUG_PRINT (ACPI_INFO, ("[%4.4s] is a forward reference into the namespace\n",
                         EntryName));
 
     }
@@ -674,12 +674,14 @@ NsSearchAndEnter (
 
 
     /*
-     * Not found in the table.  If we are NOT loading the namespace, search the 
-     * parent tree (all the way to the root if necessary.)  We don't want to perform
-     * the parent search when the namespace is actually being loaded.
+     * Not found in the table.  If we are NOT performing the first pass (name entry) of
+     * loading the namespace, search the parent tree (all the way to the root if necessary.)  
+     * We don't want to perform the parent search when the namespace is actually being loaded.
+     * We want to perform the search when namespace references are being resolved (load pass 2)
+     * and during the execution phase.
      */
 
-    if (LoadMode == MODE_Exec)
+    if (LoadMode != MODE_Load1)
     {
         /* Not found in table - search parent tree according to ACPI specification */
 
