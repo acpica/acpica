@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dbdisasm - parser op tree display routines
- *              $Revision: 1.53 $
+ *              $Revision: 1.55 $
  *
  ******************************************************************************/
 
@@ -159,7 +159,6 @@ AcpiDbBlockType (
     {
     case AML_METHOD_OP:
         return (BLOCK_BRACE);
-        break;
 
     default:
         break;
@@ -193,11 +192,26 @@ AcpiPsDisplayObjectPathname (
     ACPI_PARSE_OBJECT       *Op)
 {
     ACPI_PARSE_OBJECT       *TargetOp;
+    char                    *Name;
 
+
+    if (Op->Flags & PARSEOP_GENERIC)
+    {
+        Name = Op->Value.Name;
+        if (Name[0] == '\\')
+        {
+            AcpiOsPrintf ("  (Fully Qualified Pathname)");
+            return (AE_OK);
+        }
+    }
+    else
+    {
+        Name = (char *) &((ACPI_PARSE2_OBJECT *) Op)->Name;
+    }
 
     /* Search parent tree up to the root if necessary */
 
-    TargetOp = AcpiPsFind (Op, Op->Value.Name, 0, 0);
+    TargetOp = AcpiPsFind (Op, Name, 0, 0);
     if (!TargetOp)
     {
         /*
@@ -230,7 +244,7 @@ AcpiPsDisplayObjectPathname (
     ACPI_STATUS             Status;
     ACPI_NAMESPACE_NODE     *Node;
     NATIVE_CHAR             Buffer[MAX_SHOW_ENTRY];
-    UINT32                  BufferSize = MAX_SHOW_ENTRY;
+    ACPI_SIZE               BufferSize = MAX_SHOW_ENTRY;
     UINT32                  DebugLevel;
 
 
