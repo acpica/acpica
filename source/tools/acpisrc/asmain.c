@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asmain - Main module for the acpi source processor utility
- *              $Revision: 1.18 $
+ *              $Revision: 1.19 $
  *
  *****************************************************************************/
 
@@ -122,6 +122,7 @@
 /* Globals */
 
 UINT32                  Gbl_Tabs = 0;
+UINT32                  Gbl_MissingBraces = 0;
 UINT32                  Gbl_NonAnsiComments = 0;
 UINT32                  Gbl_Files = 0;
 UINT32                  Gbl_WhiteLines = 0;
@@ -264,7 +265,7 @@ ACPI_CONVERSION_TABLE       LinuxConversionTable = {
     LinuxDataTypes,
     LinuxLineIdentifiers,
     NULL,
-    (CVT_COUNT_TABS | CVT_COUNT_NON_ANSI_COMMENTS | CVT_COUNT_LINES | CVT_TRIM_LINES | CVT_BRACES_ON_SAME_LINE |
+    (CVT_COUNT_TABS | CVT_COUNT_NON_ANSI_COMMENTS | CVT_COUNT_LINES | CVT_CHECK_BRACES | CVT_TRIM_LINES | CVT_BRACES_ON_SAME_LINE |
      CVT_MIXED_CASE_TO_UNDERSCORES | CVT_LOWER_CASE_IDENTIFIERS | CVT_REMOVE_DEBUG_MACROS | CVT_TRIM_WHITESPACE |
      CVT_REMOVE_EMPTY_BLOCKS | CVT_SPACES_TO_TABS8),
 
@@ -296,7 +297,7 @@ ACPI_CONVERSION_TABLE       CleanupConversionTable = {
     NULL,
     NULL,
     NULL,
-    (CVT_COUNT_TABS | CVT_COUNT_NON_ANSI_COMMENTS | CVT_COUNT_LINES | CVT_TRIM_LINES | CVT_TRIM_WHITESPACE),
+    (CVT_COUNT_TABS | CVT_COUNT_NON_ANSI_COMMENTS | CVT_COUNT_LINES | CVT_CHECK_BRACES | CVT_TRIM_LINES | CVT_TRIM_WHITESPACE),
 
     /* C header files */
 
@@ -462,6 +463,7 @@ AsDisplayStats (void)
     printf ("\nAcpiSrc statistics:\n\n");
     printf ("%6d Files processed\n", Gbl_Files);
     printf ("%6d Tabs found\n", Gbl_Tabs);
+    printf ("%6d Missing if/else braces\n", Gbl_MissingBraces);
     printf ("%6d Non-ANSI comments found\n", Gbl_NonAnsiComments);
     printf ("%6d Total Lines\n", Gbl_TotalLines);
     printf ("%6d Lines of code\n", Gbl_SourceLines);
@@ -556,7 +558,7 @@ main (
         break;
 
     case 'u':
-        /* Cleanup code */
+        /* custom conversion  */
 
         printf ("Custom source translation\n");
         ConversionTable = &CustomConversionTable;
@@ -587,6 +589,13 @@ main (
 
 
     SourcePath = argv[optind];
+    if (!SourcePath)
+    {
+        printf ("Missing source path\n");
+        AsDisplayUsage ();
+        return -1;
+    }
+        
     TargetPath = argv[optind+1];
 
     if (!ConversionTable)
@@ -597,6 +606,11 @@ main (
 
         printf ("Source code statistics only\n");
         ConversionTable = &StatsConversionTable;
+    }
+
+    else if (!TargetPath)
+    {
+        TargetPath = SourcePath;
     }
 
     if (Gbl_DebugStatementsMode)

@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asconvrt - Source conversion code
- *              $Revision: 1.14 $
+ *              $Revision: 1.16 $
  *
  *****************************************************************************/
 
@@ -140,6 +140,159 @@ AsPrint (
 
 
     printf ("-- %4u %28.28s : %s\n", Count, Message, Filename);
+}
+
+
+
+/******************************************************************************
+ *
+ * FUNCTION:    AsCheckAndSkipLiterals
+ *
+ * DESCRIPTION: Generic routine to skip comments and quoted string literals.
+ *              Keeps a line count.
+ *
+ ******************************************************************************/
+
+char *
+AsCheckAndSkipLiterals (
+    char                    *Buffer,
+    UINT32                  *TotalLines)
+{
+    UINT32                  NewLines = 0;
+    char                    *SubBuffer = Buffer;
+    char                    *LiteralEnd;
+
+
+    /* Ignore comments */
+
+    if ((SubBuffer[0] == '/') &&
+        (SubBuffer[1] == '*'))
+    {
+        LiteralEnd = strstr (SubBuffer, "*/");
+        SubBuffer += 2;     /* Get past comment opening */
+
+        if (!LiteralEnd)
+        {
+            return SubBuffer;
+        }
+
+        while (SubBuffer < LiteralEnd)
+        {
+            if (*SubBuffer == '\n')
+            {
+                NewLines++;
+            }
+
+            SubBuffer++;
+        }
+
+        SubBuffer += 2;     /* Get past comment close */
+    }
+
+    /* Ignore quoted strings */
+
+    else if (*SubBuffer == '\"')
+    {
+        SubBuffer++;
+        LiteralEnd = AsSkipPastChar (SubBuffer, '\"');
+        if (!LiteralEnd)
+        {
+            return SubBuffer;
+        }
+    }
+
+
+    if (TotalLines)
+    {
+        (*TotalLines) += NewLines;
+    }
+    return SubBuffer;
+}
+
+
+
+
+/******************************************************************************
+ *
+ * FUNCTION:    AsAsCheckForBraces
+ *
+ * DESCRIPTION: Check for an open brace after each if statement
+ *
+ ******************************************************************************/
+
+void
+AsCheckForBraces (
+    char                    *Buffer,
+    char                    *Filename)
+{
+    char                    *SubBuffer = Buffer;
+    char                    *NextBrace;
+    char                    *NextSemicolon;
+    char                    *NextIf;
+    UINT32                  TotalLines = 1;
+
+
+    while (*SubBuffer)
+    {
+
+        SubBuffer = AsCheckAndSkipLiterals (SubBuffer, &TotalLines);
+
+        if (*SubBuffer == '\n')
+        {
+            TotalLines++;
+        }
+
+        else if (!(strncmp (" if", SubBuffer, 3)))
+        {
+            SubBuffer += 2;
+            NextBrace = strstr (SubBuffer, "{");
+            NextSemicolon = strstr (SubBuffer, ";");
+            NextIf = strstr (SubBuffer, " if");
+
+            if ((!NextBrace) ||
+               (NextSemicolon && (NextBrace > NextSemicolon)) ||
+               (NextIf && (NextBrace > NextIf)))
+            {
+                Gbl_MissingBraces++;
+                printf ("Missing braces for <if>, line %d: %s\n", TotalLines, Filename);
+            }
+        }
+
+        else if (!(strncmp (" else if", SubBuffer, 8)))
+        {
+            SubBuffer += 7;
+            NextBrace = strstr (SubBuffer, "{");
+            NextSemicolon = strstr (SubBuffer, ";");
+            NextIf = strstr (SubBuffer, " if");
+
+            if ((!NextBrace) ||
+               (NextSemicolon && (NextBrace > NextSemicolon)) ||
+               (NextIf && (NextBrace > NextIf)))
+            {
+                Gbl_MissingBraces++;
+                printf ("Missing braces for <if>, line %d: %s\n", TotalLines, Filename);
+            }
+        }
+
+
+        else if (!(strncmp (" else", SubBuffer, 5)))
+        {
+            SubBuffer += 4;
+            NextBrace = strstr (SubBuffer, "{");
+            NextSemicolon = strstr (SubBuffer, ";");
+            NextIf = strstr (SubBuffer, " if");
+
+            if ((!NextBrace) ||
+               (NextSemicolon && (NextBrace > NextSemicolon)) ||
+               (NextIf && (NextBrace > NextIf)))
+            {
+                Gbl_MissingBraces++;
+                printf ("Missing braces for <else>, line %d: %s\n", TotalLines, Filename);
+            }
+        }
+
+        SubBuffer++;
+    }
 }
 
 
@@ -492,6 +645,7 @@ AsMixedCaseToUnderscores (
 }
 
 
+
 /******************************************************************************
  *
  * FUNCTION:    AsLowerCaseIdentifiers
@@ -588,23 +742,54 @@ AsBracesOnSameLine (
     char                    *SubBuffer = Buffer;
     char                    *Beginning;
     char                    *StartOfThisLine;
-    BOOLEAN                 FunctionBegin = TRUE;
+    BOOLEAN                 BlockBegin = TRUE;
 
 
     while (*SubBuffer)
     {
+        /* Ignore comments */
+
+        if ((SubBuffer[0] == '/') &&
+            (SubBuffer[1] == '*'))
+        {
+            SubBuffer = strstr (SubBuffer, "*/");
+            if (!SubBuffer)
+            {
+                return;
+            }
+
+            SubBuffer += 2;
+            continue;
+        }
+
+        /* Ignore quoted strings */
+
+        if (*SubBuffer == '\"')
+        {
+            SubBuffer++;
+            SubBuffer = AsSkipPastChar (SubBuffer, '\"');
+            if (!SubBuffer)
+            {
+                return;
+            }
+        }
+
         if (!strncmp ("\n}", SubBuffer, 2))
         {
-            FunctionBegin = TRUE;
+            /*
+             * A newline followed by a closing brace closes a function 
+             * or struct or initializer block
+             */
+            BlockBegin = TRUE;
         }
 
         /* Move every standalone brace up to the previous line */
 
         if (*SubBuffer == '{')
         {
-            if (FunctionBegin)
+            if (BlockBegin)
             {
-                FunctionBegin = FALSE;
+                BlockBegin = FALSE;
             }
 
             else
@@ -630,8 +815,13 @@ AsBracesOnSameLine (
                  * Move the brace up to the previous line, UNLESS:
                  * 
                  * 1) There is a conditional compile on the line (starts with '#')
+                 * 2) Previous line ends with an '=' (Start of initializer block)
+                 * 3) Previous line ends with a comma (part of an init list)
+                 *
                  */
-                if (StartOfThisLine[1] != '#')
+                if ((StartOfThisLine[1] != '#') &&
+                    (*Beginning != '=') &&
+                    (*Beginning != ','))
                 {
                     Beginning++;
                     *Beginning = 0;
