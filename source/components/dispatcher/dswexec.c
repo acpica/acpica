@@ -122,6 +122,7 @@
 #include <parser.h>
 #include <interp.h>
 #include <namesp.h>
+#include <debugger.h>
 
 
 #define _COMPONENT          PARSER
@@ -276,6 +277,13 @@ PsxExecEndOp (
 
     WalkState->NumOperands = 0;
     WalkState->ReturnDesc = NULL;
+
+
+    /* Call debugger for single step support (DEBUG build only) */
+
+    DEBUG_EXEC (Status = DbSingleStep (Op, Optype));
+    DEBUG_EXEC (if (Status != AE_OK) {return_ACPI_STATUS (Status);});
+
 
     /* Decode the opcode */
 
@@ -583,6 +591,7 @@ PsxExecEndOp (
     }
 
 
+
     /*
      * Check if we just completed the evaluation of a conditional predicate 
      */
@@ -665,6 +674,10 @@ Cleanup:
 
     if (ResultObj)
     {
+        /* Break to debugger to display result */
+
+        DEBUG_EXEC (DbDisplayResultObject (ResultObj));
+
         /* Delete the result op IFF:
          * Parent will not use the result -- such as any non-nested type2 op in a method (parent will be method)
          */
