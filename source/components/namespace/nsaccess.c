@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: nsaccess - Top-level functions for accessing ACPI namespace
- *              $Revision: 1.169 $
+ *              $Revision: 1.170 $
  *
  ******************************************************************************/
 
@@ -207,7 +207,9 @@ AcpiNsRootInitialize (void)
                     InitVal->Name));
             }
             if (Val == NULL)
-            Val = InitVal->Val;
+            {
+                Val = InitVal->Val;
+            }
 
             /*
              * Entry requests an initial value, allocate a
