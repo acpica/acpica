@@ -155,6 +155,9 @@ ACPI_STATUS
 EvGpeInitialize (
     void);
 
+ACPI_STATUS
+EvInitGpeControlMethods (void);
+
 UINT32
 EvGpeDispatch (
     UINT32              GpeNumber);
@@ -162,6 +165,12 @@ EvGpeDispatch (
 UINT32
 EvGpeDetect (
     void);
+
+void
+EvNotifyDispatch (
+    NsHandle            Device, 
+    UINT32              NotifyValue);
+
 
 UINT32
 EvFixedEventDetect (
