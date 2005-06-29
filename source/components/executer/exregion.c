@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exregion - ACPI default OpRegion (address space) handlers
- *              $Revision: 1.54 $
+ *              $Revision: 1.56 $
  *
  *****************************************************************************/
 
@@ -183,7 +183,7 @@ AcpiExSystemMemorySpaceHandler (
         break;
 
     default:
-        DEBUG_PRINTP (ACPI_ERROR, ("Invalid SystemMemory width %d\n",
+        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Invalid SystemMemory width %d\n",
             BitWidth));
         return_ACPI_STATUS (AE_AML_OPERAND_VALUE);
         break;
@@ -195,7 +195,6 @@ AcpiExSystemMemorySpaceHandler (
      * Is 1) Address below the current mapping? OR
      *    2) Address beyond the current mapping?
      */
-
     if ((Address < MemInfo->MappedPhysicalAddress) ||
         (((ACPI_INTEGER) Address + Length) >
             ((ACPI_INTEGER) MemInfo->MappedPhysicalAddress + MemInfo->MappedLength)))
@@ -204,7 +203,6 @@ AcpiExSystemMemorySpaceHandler (
          * The request cannot be resolved by the current memory mapping;
          * Delete the existing mapping and create a new one.
          */
-
         if (MemInfo->MappedLength)
         {
             /* Valid mapping, delete it */
@@ -241,9 +239,9 @@ AcpiExSystemMemorySpaceHandler (
     LogicalAddrPtr = MemInfo->MappedLogicalAddress +
                     ((ACPI_INTEGER) Address - (ACPI_INTEGER) MemInfo->MappedPhysicalAddress);
 
-    DEBUG_PRINT ((TRACE_OPREGION | VERBOSE_INFO),
-        ("IO %d (%d width) Address=%8.8lX%8.8lX\n", Function, BitWidth,
-        HIDWORD(Address), LODWORD(Address)));
+    ACPI_DEBUG_PRINT ((ACPI_DB_INFO,
+        "IO %d (%d width) Address=%8.8lX%8.8lX\n", Function, BitWidth,
+        HIDWORD (Address), LODWORD (Address)));
 
    /* Perform the memory read or write */
 
@@ -332,9 +330,9 @@ AcpiExSystemIoSpaceHandler (
     FUNCTION_TRACE ("ExSystemIoSpaceHandler");
 
 
-    DEBUG_PRINT ((TRACE_OPREGION | VERBOSE_INFO),
-        ("IO %d (%d width) Address=%8.8lX%8.8lX\n", Function, BitWidth,
-        HIDWORD(Address), LODWORD(Address)));
+    ACPI_DEBUG_PRINT ((ACPI_DB_INFO,
+        "IO %d (%d width) Address=%8.8lX%8.8lX\n", Function, BitWidth,
+        HIDWORD (Address), LODWORD (Address)));
 
     /* Decode the function parameter */
 
@@ -413,8 +411,8 @@ AcpiExPciConfigSpaceHandler (
     PciId       = (ACPI_PCI_ID *) RegionContext;
     PciRegister = (UINT16) Address;
 
-    DEBUG_PRINT ((TRACE_OPREGION | VERBOSE_INFO),
-        ("IO %d (%d) Seg(%04x) Bus(%04x) Dev(%04x) Func(%04x) Reg(%04x)\n", 
+    ACPI_DEBUG_PRINT ((ACPI_DB_INFO,
+        "IO %d (%d) Seg(%04x) Bus(%04x) Dev(%04x) Func(%04x) Reg(%04x)\n", 
         Function, BitWidth, PciId->Segment, PciId->Bus, PciId->Device, 
         PciId->Function, PciRegister));
 
