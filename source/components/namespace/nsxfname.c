@@ -260,7 +260,7 @@ AcpiGetHandle (
      *  Find the Nte and convert to the user format
      */
     ThisEntry = NULL;
-    Status = NsGetNte (Pathname, Parent, &ThisEntry);
+    Status = NsGetNte (Pathname, Parent->Scope, &ThisEntry);
 
    *RetHandle = NsConvertEntryToHandle (ThisEntry);
 
