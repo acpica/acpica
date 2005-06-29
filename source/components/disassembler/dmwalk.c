@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dmwalk - AML disassembly tree walk
- *              $Revision: 1.6 $
+ *              $Revision: 1.16 $
  *
  ******************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2005, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -124,12 +124,11 @@
 
 #ifdef ACPI_DISASSEMBLER
 
-#define _COMPONENT          ACPI_DEBUGGER
+#define _COMPONENT          ACPI_CA_DEBUGGER
         ACPI_MODULE_NAME    ("dmwalk")
 
 
 #define DB_FULL_OP_INFO     "%5.5X #%4.4hX "
-
 
 
 /*******************************************************************************
@@ -182,7 +181,7 @@ AcpiDmDisassemble (
  *
  ******************************************************************************/
 
-void
+static void
 AcpiDmWalkParseTree (
     ACPI_PARSE_OBJECT       *Op,
     ASL_WALK_CALLBACK       DescendingCallback,
@@ -211,9 +210,8 @@ AcpiDmWalkParseTree (
         }
         else
         {
-            /*
-             * Let the callback process the node.
-             */
+            /* Let the callback process the node */
+
             Status = DescendingCallback (Op, Info->Level, Context);
             if (ACPI_SUCCESS (Status))
             {
@@ -289,7 +287,7 @@ AcpiDmWalkParseTree (
  *
  ******************************************************************************/
 
-UINT32
+static UINT32
 AcpiDmBlockType (
     ACPI_PARSE_OBJECT       *Op)
 {
@@ -421,12 +419,12 @@ AcpiDmListType (
  *
  * RETURN:      Status
  *
- * DESCRIPTION: First visitation of a parse object during tree descent.  
+ * DESCRIPTION: First visitation of a parse object during tree descent.
  *              Decode opcode name and begin parameter list(s), if any.
  *
  ******************************************************************************/
 
-ACPI_STATUS
+static ACPI_STATUS
 AcpiDmDescendingOp (
     ACPI_PARSE_OBJECT       *Op,
     UINT32                  Level,
@@ -436,6 +434,7 @@ AcpiDmDescendingOp (
     const ACPI_OPCODE_INFO  *OpInfo;
     UINT32                  Name;
     ACPI_PARSE_OBJECT       *NextOp;
+    ACPI_EXTERNAL_LIST      *NextExternal;
 
 
     if (Op->Common.DisasmFlags & ACPI_PARSEOP_IGNORE)
@@ -445,6 +444,7 @@ AcpiDmDescendingOp (
         return (AE_CTRL_DEPTH);
     }
 
+    /* Level 0 is at the Definition Block level */
 
     if (Level == 0)
     {
@@ -455,7 +455,31 @@ AcpiDmDescendingOp (
 
         if (Op->Common.AmlOpcode == AML_SCOPE_OP)
         {
+            /* This is the beginning of the Definition Block */
+
             AcpiOsPrintf ("{\n");
+
+            /* Emit all External() declarations here */
+
+            if (AcpiGbl_ExternalList)
+            {
+                AcpiOsPrintf ("    /*\n     * These objects were referenced but not defined in this table\n     */\n");
+
+                /* Walk the list of externals (unresolved references) found during parsing */
+
+                while (AcpiGbl_ExternalList)
+                {
+                    AcpiOsPrintf ("    External (%s, DeviceObj)\n",
+                        AcpiGbl_ExternalList->Path);
+
+                    NextExternal = AcpiGbl_ExternalList->Next;
+                    ACPI_MEM_FREE (AcpiGbl_ExternalList->Path);
+                    ACPI_MEM_FREE (AcpiGbl_ExternalList);
+                    AcpiGbl_ExternalList = NextExternal;
+                }
+                AcpiOsPrintf ("\n");
+            }
+
             return (AE_OK);
         }
     }
@@ -478,12 +502,11 @@ AcpiDmDescendingOp (
         Info->Level--;
     }
 
-    /*
-     * Start the opcode argument list if necessary
-     */
+    /* Start the opcode argument list if necessary */
+
     OpInfo = AcpiPsGetOpcodeInfo (Op->Common.AmlOpcode);
 
-    if ((OpInfo->Flags & AML_HAS_ARGS) || 
+    if ((OpInfo->Flags & AML_HAS_ARGS) ||
         (Op->Common.AmlOpcode == AML_EVENT_OP))
     {
         /* This opcode has an argument list */
@@ -493,9 +516,8 @@ AcpiDmDescendingOp (
             AcpiOsPrintf (" (");
         }
 
-        /*
-         * If this is a named opcode, print the associated name value
-         */
+        /* If this is a named opcode, print the associated name value */
+
         if (OpInfo->Flags & AML_NAMED)
         {
             switch (Op->Common.AmlOpcode)
@@ -680,7 +702,7 @@ AcpiDmDescendingOp (
             if (Op->Common.DisasmOpcode == ACPI_DASM_RESOURCE)
             {
                 /*
-                 * We have a resource list.  Don't need to output 
+                 * We have a resource list.  Don't need to output
                  * the buffer size Op.  Open up a new block
                  */
                 NextOp->Common.DisasmFlags |= ACPI_PARSEOP_IGNORE;
@@ -759,7 +781,7 @@ AcpiDmDescendingOp (
  *
  ******************************************************************************/
 
-ACPI_STATUS
+static ACPI_STATUS
 AcpiDmAscendingOp (
     ACPI_PARSE_OBJECT       *Op,
     UINT32                  Level,
@@ -799,8 +821,10 @@ AcpiDmAscendingOp (
                      (!(Op->Common.DisasmFlags & ACPI_PARSEOP_PARAMLIST)) &&
                      (Op->Common.AmlOpcode != AML_INT_BYTELIST_OP))
             {
-                /* This is a first-level element of a term list, start a new line */
-
+                /*
+                 * This is a first-level element of a term list
+                 * start a new line
+                 */
                 AcpiOsPrintf ("\n");
             }
         }
@@ -858,8 +882,10 @@ AcpiDmAscendingOp (
                      (!(Op->Common.DisasmFlags & ACPI_PARSEOP_PARAMLIST)) &&
                      (Op->Common.AmlOpcode != AML_INT_BYTELIST_OP))
             {
-                /* This is a first-level element of a term list, start a new line */
-
+                /*
+                 * This is a first-level element of a term list
+                 * start a new line
+                 */
                 AcpiOsPrintf ("\n");
             }
         }

@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dmbuffer - AML disassembler, buffer and string support
- *              $Revision: 1.12 $
+ *              $Revision: 1.15 $
  *
  ******************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2003, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2005, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -393,7 +393,7 @@ AcpiDmIsStringBuffer (
  *
  ******************************************************************************/
 
-void
+static void
 AcpiDmUnicode (
     ACPI_PARSE_OBJECT       *Op)
 {

@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dmopcode - AML disassembler, specific AML opcodes
- *              $Revision: 1.82 $
+ *              $Revision: 1.87 $
  *
  ******************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2003, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2005, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -118,7 +118,6 @@
 #include "acparser.h"
 #include "amlcode.h"
 #include "acdisasm.h"
-#include "acdebug.h"
 
 #ifdef ACPI_DISASSEMBLER
 
@@ -329,7 +328,7 @@ AcpiDmMatchOp (
  *
  ******************************************************************************/
 
-void
+static void
 AcpiDmMatchKeyword (
     ACPI_PARSE_OBJECT       *Op)
 {
@@ -341,7 +340,8 @@ AcpiDmMatchKeyword (
     }
     else
     {
-        AcpiOsPrintf ("%s", (char *) AcpiGbl_MatchOps[(ACPI_SIZE) Op->Common.Value.Integer]);
+        AcpiOsPrintf ("%s", (char *)
+            AcpiGbl_MatchOps[(ACPI_SIZE) Op->Common.Value.Integer]);
     }
 }
 
@@ -388,8 +388,7 @@ AcpiDmDisassembleOneOp (
         break;
     }
 
-
-    /* op and arguments */
+    /* The op and arguments */
 
     switch (Op->Common.AmlOpcode)
     {
@@ -522,7 +521,8 @@ AcpiDmDisassembleOneOp (
     case AML_INT_NAMEDFIELD_OP:
 
         Length = AcpiDmDumpName ((char *) &Op->Named.Name);
-        AcpiOsPrintf (",%*.s  %d", (int) (5 - Length), " ", (UINT32) Op->Common.Value.Integer);
+        AcpiOsPrintf (",%*.s  %d", (int) (5 - Length), " ",
+            (UINT32) Op->Common.Value.Integer);
         AcpiDmCommaIfFieldMember (Op);
 
         Info->BitOffset += (UINT32) Op->Common.Value.Integer;
@@ -591,7 +591,7 @@ AcpiDmDisassembleOneOp (
             (WalkState->Results) &&
             (WalkState->Results->Results.NumResults))
         {
-            AcpiDbDecodeInternalObject (
+            AcpiDmDecodeInternalObject (
                 WalkState->Results->Results.ObjDesc [WalkState->Results->Results.NumResults-1]);
         }
 #endif

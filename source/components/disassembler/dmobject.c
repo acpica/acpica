@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dmobject - ACPI object decode and display
- *              $Revision: 1.5 $
+ *              $Revision: 1.15 $
  *
  ******************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2003, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2005, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -171,6 +171,17 @@ AcpiDmDumpMethodInfo (
         return;
     }
 
+    /*
+     * If there is no Thread, we are not actually executing a method.
+     * This can happen when the iASL compiler calls the interpreter
+     * to perform constant folding.
+     */
+    Thread = WalkState->Thread;
+    if (!Thread)
+    {
+        return;
+    }
+
     /* Display exception and method name */
 
     AcpiOsPrintf ("\n**** Exception %s during execution of method ",
@@ -180,7 +191,6 @@ AcpiDmDumpMethodInfo (
     /* Display stack of executing methods */
 
     AcpiOsPrintf ("\n\nMethod Execution Stack:\n");
-    Thread = WalkState->Thread;
     NextWalkState = Thread->WalkStateList;
 
     /* Walk list of linked walk states */
@@ -255,7 +265,7 @@ AcpiDmDecodeInternalObject (
 
     if (ACPI_GET_DESCRIPTOR_TYPE (ObjDesc) != ACPI_DESC_TYPE_OPERAND)
     {
-        AcpiOsPrintf (" %p", ObjDesc);
+        AcpiOsPrintf (" %p [%s]", ObjDesc, AcpiUtGetDescriptorName (ObjDesc));
         return;
     }
 
@@ -265,7 +275,7 @@ AcpiDmDecodeInternalObject (
     {
     case ACPI_TYPE_INTEGER:
 
-        AcpiOsPrintf (" %8.8X%8.8X", 
+        AcpiOsPrintf (" %8.8X%8.8X",
                 ACPI_FORMAT_UINT64 (ObjDesc->Integer.Value));
         break;
 
@@ -316,7 +326,7 @@ AcpiDmDecodeInternalObject (
  *
  ******************************************************************************/
 
-void
+static void
 AcpiDmDecodeNode (
     ACPI_NAMESPACE_NODE     *Node)
 {
@@ -432,14 +442,30 @@ AcpiDmDisplayInternalObject (
 
             case AML_INDEX_OP:
 
-                AcpiOsPrintf ("[Index]          ");
-                if (!ObjDesc->Reference.Where)
+                AcpiOsPrintf ("[Index]  ");
+                switch (ObjDesc->Reference.TargetType)
                 {
-                    AcpiOsPrintf ("Uninitialized WHERE ptr");
-                }
-                else
-                {
-                    AcpiDmDecodeInternalObject (*(ObjDesc->Reference.Where));
+                case ACPI_TYPE_BUFFER_FIELD:
+                    AcpiOsPrintf ("%p", ObjDesc->Reference.Object);
+                    AcpiDmDecodeInternalObject (ObjDesc->Reference.Object);
+                    break;
+
+                case ACPI_TYPE_PACKAGE:
+
+                    AcpiOsPrintf ("%p", ObjDesc->Reference.Where);
+                    if (!ObjDesc->Reference.Where)
+                    {
+                        AcpiOsPrintf (" Uninitialized WHERE ptr");
+                    }
+                    else
+                    {
+                        AcpiDmDecodeInternalObject (*(ObjDesc->Reference.Where));
+                    }
+                    break;
+
+                default:
+                    AcpiOsPrintf ("Unknown index target type");
+                    break;
                 }
                 break;
 
@@ -450,9 +476,15 @@ AcpiDmDisplayInternalObject (
                 break;
 
 
-           case AML_REF_OF_OP:
+            case AML_REF_OF_OP:
 
                 AcpiOsPrintf ("[RefOf]          ");
+
+                if (!ObjDesc->Reference.Object)
+                {
+                    AcpiOsPrintf ("Uninitialized reference subobject ptr");
+                    break;
+                }
 
                 /* Reference can be to a Node or an Operand object */
 
@@ -471,6 +503,10 @@ AcpiDmDisplayInternalObject (
                 }
                 break;
 
+            case AML_INT_NAMEPATH_OP:
+
+                AcpiDmDecodeNode (ObjDesc->Reference.Node);
+                break;
 
             default:
 
@@ -483,8 +519,7 @@ AcpiDmDisplayInternalObject (
 
         default:
 
-            AcpiOsPrintf ("<Obj> ");
-            AcpiOsPrintf ("           ");
+            AcpiOsPrintf ("<Obj>            ");
             AcpiDmDecodeInternalObject (ObjDesc);
             break;
         }
@@ -493,7 +528,8 @@ AcpiDmDisplayInternalObject (
 
     default:
 
-        AcpiOsPrintf ("<Not a valid ACPI Object Descriptor> ");
+        AcpiOsPrintf ("<Not a valid ACPI Object Descriptor> [%s]",
+                AcpiUtGetDescriptorName (ObjDesc));
         break;
     }
 
