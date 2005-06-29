@@ -28,7 +28,7 @@
  * Code in any form, with the right to sublicense such rights; and
  *
  * 2.3. Intel grants Licensee a non-exclusive and non-transferable patent
- * license (without the right to sublicense), under only those claims of Intel
+ * license (with the right to sublicense), under only those claims of Intel
  * patents that are infringed by the Original Intel Code, to make, use, sell,
  * offer to sell, and import the Covered Code and derivative works thereof
  * solely to the minimum extent necessary to exercise the above copyright
@@ -63,6 +63,7 @@
  * license from Licensee to its licensee is limited to the intellectual
  * property embodied in the software Licensee provides to its licensee, and
  * not to intellectual property embodied in modifications its licensee may
+
  * make.
  *
  * 3.3. Redistribution of Executable. Redistribution in executable form of any
@@ -225,6 +226,7 @@ EvInstallSciHandler (void)
 
 
 /******************************************************************************
+
  *
  * FUNCTION:    EvRemoveSciHandler
  *
@@ -400,9 +402,9 @@ EvRestoreAcpiState (void)
             }
         }
         
-        if (AcpiGetMode() != OriginalMode)
+        if (HwGetMode() != OriginalMode)
         {
-            AcpiSetMode (OriginalMode);
+            HwSetMode (OriginalMode);
         }
     }
     
@@ -411,3 +413,39 @@ EvRestoreAcpiState (void)
 }
 
 
+
+/******************************************************************************
+ *
+ * FUNCTION:    EvTerminate
+ *
+ * PARAMETERS:  none
+ *
+ * RETURN:      none
+ *
+ * DESCRIPTION: free memory allocated for table storage.
+ *
+ ******************************************************************************/
+
+void
+EvTerminate (void)
+{
+
+    FUNCTION_TRACE ("EvTerminate");
+
+
+    /* Free global tables, etc. */
+
+    if (GpeRegisters)
+    {
+        CmFree (GpeRegisters);
+    }
+
+    if (GpeInfo)
+    {
+        CmFree (GpeInfo);
+    }
+
+    FUNCTION_EXIT;
+}
+
+ 
