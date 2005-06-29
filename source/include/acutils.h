@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acutils.h -- prototypes for the common (subsystem-wide) procedures
- *       $Revision: 1.132 $
+ *       $Revision: 1.133 $
  *
  *****************************************************************************/
 
@@ -241,7 +241,7 @@ AcpiUtStrncpy (
     const NATIVE_CHAR       *SrcString,
     NATIVE_UINT             Count);
 
-UINT32
+int
 AcpiUtStrncmp (
     const NATIVE_CHAR       *String1,
     const NATIVE_CHAR       *String2,
@@ -286,13 +286,13 @@ AcpiUtMemset (
     NATIVE_UINT             Value,
     NATIVE_UINT             Count);
 
-UINT32
+int
 AcpiUtToUpper (
-    UINT32                  c);
+    int                     c);
 
-UINT32
+int
 AcpiUtToLower (
-    UINT32                  c);
+    int                     c);
 
 #endif /* ACPI_USE_SYSTEM_CLIBRARY */
 
@@ -312,6 +312,20 @@ AcpiUtBuildPackageObject (
     ACPI_OPERAND_OBJECT     *Obj,
     UINT8                   *Buffer,
     UINT32                  *SpaceUsed);
+
+ACPI_STATUS
+AcpiUtCopyIelementToEelement (
+    UINT8                   ObjectType,
+    ACPI_OPERAND_OBJECT     *SourceObject,
+    ACPI_GENERIC_STATE      *State,
+    void                    *Context);
+
+ACPI_STATUS
+AcpiUtCopyIelementToIelement (
+    UINT8                   ObjectType,
+    ACPI_OPERAND_OBJECT     *SourceObject,
+    ACPI_GENERIC_STATE      *State,
+    void                    *Context);
 
 ACPI_STATUS
 AcpiUtCopyIobjectToEobject (
@@ -615,6 +629,13 @@ AcpiUtGetObjectSize(
     ACPI_OPERAND_OBJECT     *Obj,
     ACPI_SIZE               *ObjLength);
 
+ACPI_STATUS
+AcpiUtGetElementLength (
+    UINT8                   ObjectType,
+    ACPI_OPERAND_OBJECT     *SourceObject,
+    ACPI_GENERIC_STATE      *State,
+    void                    *Context);
+
 
 /*
  * UtState - Generic state creation/cache routines
@@ -712,6 +733,13 @@ ACPI_STATUS
 AcpiUtResolvePackageReferences (
     ACPI_OPERAND_OBJECT     *ObjDesc);
 
+ACPI_STATUS
+AcpiUtResolveReference (
+    UINT8                   ObjectType,
+    ACPI_OPERAND_OBJECT     *SourceObject,
+    ACPI_GENERIC_STATE      *State,
+    void                    *Context);
+
 UINT8 *
 AcpiUtGetResourceEndTag (
     ACPI_OPERAND_OBJECT     *ObjDesc);
@@ -796,6 +824,12 @@ AcpiUtFreeAndTrack (
     UINT32                  Component,
     NATIVE_CHAR             *Module,
     UINT32                  Line);
+
+ACPI_DEBUG_MEM_BLOCK *
+AcpiUtFindAllocation (
+    UINT32                  ListId,
+    void                    *Allocation);
+
 ACPI_STATUS
 AcpiUtTrackAllocation (
     UINT32                  ListId,
