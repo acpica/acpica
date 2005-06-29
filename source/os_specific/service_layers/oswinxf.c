@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: oswinxf - Windows application interface
- *              $Revision: 1.14 $
+ *              $Revision: 1.15 $
  *
  *****************************************************************************/
 
@@ -547,10 +547,11 @@ AcpiOsCreateSemaphore (
 {
 #ifdef _MULTI_THREADED
     void                *Mutex;
+
+    PROC_NAME ("OsCreateSemaphore");
 #endif
 
 
-    PROC_NAME ("OsCreateSemaphore");
 
 
     if (MaxUnits == ACPI_UINT32_MAX)
