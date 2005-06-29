@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: aclinux.h - OS specific defines, etc.
- *       $Revision: 1.5 $
+ *       $Revision: 1.6 $
  *
  *****************************************************************************/
 
@@ -138,21 +138,5 @@
 #ifndef _IA64
 #define ACPI_NO_INTEGER64_SUPPORT
 #endif
-
-#if 0
-
-/* Use native Linux string library */
-
-#define ACPI_USE_SYSTEM_CLIBRARY
-
-/* Special functions */
-
-#define strtoul             simple_strtoul
-
-/* Linux clib doesn't to strupr, but we do. */
-char *
-strupr(char *str);
-
-#endif /* 0 */
 
 #endif /* __ACLINUX_H__ */
