@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: cminit - Common ACPI subsystem initialization
- *              $Revision: 1.87 $
+ *              $Revision: 1.88 $
  *
  *****************************************************************************/
 
@@ -212,7 +212,7 @@ AcpiCmValidateFadt (
                         AcpiGbl_FADT->XPmTmrBlk.Address);
     }
 
-    if ((AcpiGbl_FADT->XPm2CntBlk.Address && 
+    if ((AcpiGbl_FADT->XPm2CntBlk.Address &&
         !AcpiGbl_FADT->Pm2CntLen))
     {
         Status = AcpiCmFadtRegisterError ("PM2_CNT_LEN",
@@ -228,14 +228,14 @@ AcpiCmValidateFadt (
     /* length of GPE blocks must be a multiple of 2 */
 
 
-    if (AcpiGbl_FADT->XGpe0Blk.Address && 
+    if (AcpiGbl_FADT->XGpe0Blk.Address &&
         (AcpiGbl_FADT->Gpe0BlkLen & 1))
     {
         Status = AcpiCmFadtRegisterError ("GPE0_BLK_LEN",
                         (UINT32) AcpiGbl_FADT->Gpe0BlkLen);
     }
 
-    if (AcpiGbl_FADT->XGpe1Blk.Address && 
+    if (AcpiGbl_FADT->XGpe1Blk.Address &&
         (AcpiGbl_FADT->Gpe1BlkLen & 1))
     {
         Status = AcpiCmFadtRegisterError ("GPE1_BLK_LEN",
