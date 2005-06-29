@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslcompile - top level compile module
- *              $Revision: 1.9 $
+ *              $Revision: 1.10 $
  *
  *****************************************************************************/
 
@@ -183,10 +183,8 @@ AslCompilerSignon (
     FILE                    *Where)
 {
 
-    time (&Aclock);
-    NewTime = localtime (&Aclock);
-
-    fprintf (Where, "\n%s [Version %s, %s]\n\n", CompilerId, CompilerVersion, __DATE__);
+    fprintf (Where, "\n%s %s [%s]\n%s\nSupports ACPI Specification Revision 2.0\n\n", 
+                CompilerId, CompilerVersion, __DATE__, CompilerCopyright);
 
 }
 
@@ -207,6 +205,9 @@ void
 AslCompilerFileHeader (
     FILE                    *Where)
 {
+
+    time (&Aclock);
+    NewTime = localtime (&Aclock);
 
     fprintf (Where, "Compilation of \"%s\" - %s\n", Gbl_InputFilename, asctime (NewTime));
 
@@ -271,13 +272,14 @@ CmDoCompile (void)
     if (Gbl_ParseOnlyFlag)
     {
         AePrintErrorLog (stdout);
+        UtDisplaySummary (stdout);
         if (Gbl_DebugFlag)
         {
             /* Print error summary to the debug file */
 
             AePrintErrorLog (stderr);
+            UtDisplaySummary (stderr);
         }
-        UtDisplaySummary ();
         return 0;
     }
 
@@ -380,7 +382,7 @@ CmCleanupAndExit (void)
         unlink (Gbl_OutputFilename);
     }
 
-    UtDisplaySummary ();
+    UtDisplaySummary (stdout);
 
     exit (0);
 }

@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslanalyze.c - check for semantic errors
- *              $Revision: 1.16 $
+ *              $Revision: 1.17 $
  *
  *****************************************************************************/
 
@@ -227,7 +227,18 @@ AnCheckForReservedMethod (
         (Node->ExternalName[2] == '_'))
     {
         AslError (ASL_ERROR, ASL_MSG_RESERVED_WORD, Node, Node->ExternalName);
+        return;
     }
+
+
+    /*
+     * The name didn't match any of the known reserved names.  Flag it as a
+     * warning, since the entire namespace starting with an underscore is
+     * reserved by the ACPI spec.
+     */
+
+    AslError (ASL_WARNING, ASL_MSG_UNKNOWN_RESERVED_NAME, Node, Node->ExternalName);
+    return;
 }
 
 
@@ -491,7 +502,14 @@ AnSemanticAnalysisWalkEnd (
 
         if (MethodInfo->NumReturnNoValue)
         {
-            Node->Flags |= NODE_METHOD_NO_RETURN_VAL;
+            if (MethodInfo->NumReturnWithValue)
+            {
+                Node->Flags |= NODE_METHOD_SOME_NO_RETVAL;
+            }
+            else
+            {
+                Node->Flags |= NODE_METHOD_NO_RETVAL;
+            }
         }
 
         /*
@@ -533,7 +551,8 @@ AnSemanticAnalysisWalkEnd (
 
     default:
 
-        if (Node->Flags & NODE_HAS_NO_EXIT)
+        if ((Node->Flags & NODE_HAS_NO_EXIT) &&
+            (Node->Parent))
         {
             Node->Parent->Flags |= NODE_HAS_NO_EXIT;
         }

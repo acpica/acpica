@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslcompiler.h - common include file
- *              $Revision: 1.38 $
+ *              $Revision: 1.39 $
  *
  *****************************************************************************/
 
@@ -139,19 +139,23 @@
 
 /* TBD: Move to definition of NAMESPACE NODE */
 
-#define ANOBJ_METHOD_NO_RETVAL      0x20
+#define ANOBJ_METHOD_NO_RETVAL          0x20
+#define ANOBJ_METHOD_SOME_NO_RETVAL     0x40
 
 
 /*
  * Compiler versions and names
  */
 
-#define CompilerVersion             "X206"
+#define CompilerVersion             "X207"
 #define CompilerCreatorRevision     0x00020206  /* Acpi 2.0, Version# */
 
-#define CompilerId                  "ACPI Component Architecture ASL Compiler"
+#define CompilerId                  "Intel ACPI Component Architecture ASL Compiler"
+#define CompilerCopyright           "Copyright (C) 2000 Intel Corporation"
+#define CompilerCompliance          "ACPI 2.0"
 #define CompilerName                "iasl"
-#define CompilerCreatorId           "IASL"
+#define CompilerCreatorId           "INTL"
+
 
 /* Configuration constants */
 
@@ -580,7 +584,7 @@ UtPrintFormattedName (
 
 void
 UtDisplaySummary (
-    void);
+    FILE                    *Where);
 
 UINT8
 UtHexCharToValue (

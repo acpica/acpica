@@ -3,7 +3,7 @@
 /******************************************************************************
  *
  * Module Name: aslcompiler.l - Flex input file
- *              $Revision: 1.26 $
+ *              $Revision: 1.27 $
  *
  *****************************************************************************/
 
@@ -368,7 +368,7 @@ NamePathTail                [.]{NameSeg}
 "PCI_Config"                { copy(); count (0); return (REGIONSPACE_PCI); }
 "EmbeddedControl"           { copy(); count (0); return (REGIONSPACE_EC); }
 "SMBus"                     { copy(); count (0); return (REGIONSPACE_SMBUS); }
-"CMOSMemory"                { copy(); count (0); return (REGIONSPACE_CMOS); }
+"SystemCMOS"                { copy(); count (0); return (REGIONSPACE_CMOS); }
 "PciBarTarget"              { copy(); count (0); return (REGIONSPACE_PCIBAR); }
 
 "FFixedHW"                  { copy(); count (0); return (ADDRESSSPACE_FFIXEDHW); }
