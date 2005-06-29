@@ -3,7 +3,7 @@
  * Name: amlcode.h - Definitions for AML, as included in "definition blocks"
  *                   Declarations and definitions contained herein are derived
  *                   directly from the ACPI specification.
- *       $Revision: 1.41 $
+ *       $Revision: 1.44 $
  *
  *****************************************************************************/
 
@@ -11,8 +11,8 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, Intel Corp.  All rights
- * reserved.
+ * Some or all of this work - Copyright (c) 1999, 2000, Intel Corp.
+ * All rights reserved.
  *
  * 2. License
  *
@@ -201,10 +201,11 @@
 #define AML_LEQUAL_OP               (UINT16) 0x93
 #define AML_LGREATER_OP             (UINT16) 0x94
 #define AML_LLESS_OP                (UINT16) 0x95
-#define AML_BUFF_OP                 (UINT16) 0x96     /* ACPI 2.0 */
-#define AML_DEC_STR_OP              (UINT16) 0x97     /* ACPI 2.0 */
-#define AML_HEX_STR_OP              (UINT16) 0x98     /* ACPI 2.0 */
-#define AML_INT_OP                  (UINT16) 0x99     /* ACPI 2.0 */
+#define AML_TO_BUFFER_OP            (UINT16) 0x96     /* ACPI 2.0 */
+#define AML_TO_DECSTRING_OP         (UINT16) 0x97     /* ACPI 2.0 */
+#define AML_TO_HEXSTRING_OP         (UINT16) 0x98     /* ACPI 2.0 */
+#define AML_TO_INTEGER_OP           (UINT16) 0x99     /* ACPI 2.0 */
+#define AML_TO_STRING_OP            (UINT16) 0x9c     /* ACPI 2.0 */
 #define AML_COPY_OP                 (UINT16) 0x9d     /* ACPI 2.0 */
 #define AML_MID_OP                  (UINT16) 0x9e     /* ACPI 2.0 */
 #define AML_CONTINUE_OP             (UINT16) 0x9f     /* ACPI 2.0 */
@@ -322,6 +323,7 @@
 #define ARGI_EVENT                  0x0C
 #define ARGI_REGION                 0x0D
 #define ARGI_DDBHANDLE              0x0E
+#define ARGI_ANYOBJECT              0x0F
 
 #define ARGI_INVALID_OPCODE         0xFFFFFFFF
 
@@ -463,8 +465,6 @@ typedef enum
 
 #define METHOD_FLAGS_ARG_COUNT  0x07
 #define METHOD_FLAGS_SERIALIZED 0x08
-
-
 
 
 /* Array sizes.  Used for range checking also */

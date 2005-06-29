@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acenv.h - Generation environment specific items
- *       $Revision: 1.59 $
+ *       $Revision: 1.67 $
  *
  *****************************************************************************/
 
@@ -9,8 +9,8 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, Intel Corp.  All rights
- * reserved.
+ * Some or all of this work - Copyright (c) 1999, 2000, Intel Corp.
+ * All rights reserved.
  *
  * 2. License
  *
@@ -119,7 +119,7 @@
 
 
 /*
- * Configuration for ACPI Utilities
+ * Configuration for ACPI tools and utilities
  */
 
 #ifdef _ACPI_DUMP_APP
@@ -139,6 +139,20 @@
 #define ACPI_USE_SYSTEM_CLIBRARY
 #endif
 
+#ifdef _ACPI_ASL_COMPILER
+#define ACPI_DEBUG
+#define ACPI_APPLICATION
+#define ENABLE_DEBUGGER
+#define ACPI_USE_SYSTEM_CLIBRARY
+#endif
+
+/* Memory allocation tracking */
+
+#ifdef ACPI_DEBUG
+#ifndef _IA16
+#define ACPI_DEBUG_TRACK_ALLOCATIONS
+#endif
+#endif
 
 /*
  * Environment configuration.  The purpose of this file is to interface to the
@@ -177,102 +191,19 @@
  *
  */
 
-
-/*
- * Environment-specific configuration
- */
-
-/*! [Begin] no source code translation  */
+/*! [Begin] no source code translation */
 
 #ifdef _LINUX
-
-#define ACPI_OS_NAME                "Linux"
-
-#include <linux/config.h>
-#include <linux/string.h>
-#include <linux/kernel.h>
-#include <linux/ctype.h>
-#include <asm/system.h>
-#include <asm/atomic.h>
-
-/* Use native Linux string library */
-
-#define ACPI_USE_SYSTEM_CLIBRARY
-
-/* Special functions */
-
-#define strtoul             simple_strtoul
-
-/* Linux clib doesn't to strupr, but we do. */
-char *
-strupr(char *str);
+#include "aclinux.h"
 
 #elif _AED_EFI
-
-#define ACPI_OS_NAME                "AED EFI"
-
-#include <efi.h>
-#include <efistdarg.h>
-#include <efilib.h>
-
-
-
+#include "acefi.h"
 
 #elif WIN32
-
-#define ACPI_OS_NAME                "Windows"
-
-/* MS-VC++ */
-
-#define strupr              _strupr
-#define ACPI_USE_STANDARD_HEADERS
-
-
-
+#include "acwin.h"
 
 #elif __FreeBSD__
-
-#define ACPI_OS_NAME                "FreeBSD"
-
-#ifdef _KERNEL
-#include <sys/ctype.h>
-#include <sys/param.h>
-#include <sys/systm.h>
-#include <sys/libkern.h>
-#include <stdarg.h>
-
-#define asm         __asm
-#define __cli()     disable_intr()
-#define __sti()     enable_intr()
-
-#else
-
-/* Not building kernel code, so use libc */
-
-#define ACPI_USE_STANDARD_HEADERS
-#endif
-
-/* Always use FreeBSD code over our local versions */
-#define ACPI_USE_SYSTEM_CLIBRARY
-
-/* FreeBSD doesn't have strupr, WHY NOT!?    BOB fix that. */
-
-/* THIS SHOULD BE:
- * We don't want Clib functions implemented here!!!!
- *
- *  #define strupr AcpiCmStrupr
- */
-
-static __inline char *
-strupr(char *str)
-{
-    char *c = str;
-    while(*c) {
-    *c = toupper(*c);
-    c++;
-    }
-    return(str);
-}
+#include "acfreebsd.h"
 
 #else
 
@@ -285,6 +216,7 @@ strupr(char *str)
 #define ACPI_OS_NAME         "Intel ACPI/CA Core Subsystem"
 
 #endif
+
 
 /*! [End] no source code translation !*/
 
@@ -398,191 +330,12 @@ typedef char *va_list;
 
 /*
  * Handle platform- and compiler-specific assembly language differences.
+ * These should already have been defined by the platform includes above.
  *
  * Notes:
  * 1) Interrupt 3 is used to break into a debugger
  * 2) Interrupts are turned off during ACPI register setup
  */
-
-#ifdef WIN32   /* MS VC */
-
-/*! [Begin] no source code translation  */
-
-#define ACPI_ASM_MACROS
-#define causeinterrupt(level)   __asm {int level}
-#define BREAKPOINT3             __asm {int 3}
-#define disable()               __asm {cli}
-#define enable()                __asm {sti}
-#define halt()                  __asm {hlt}
-#define wbinvd()                __asm {WBINVD}
-
-
-/*
- * For Acpi applications, we don't want to try to access the global lock
- */
-
-#ifdef ACPI_APPLICATION
-#define ACPI_ACQUIRE_GLOBAL_LOCK(GLptr, Acq)       (Acq = 0xFF)
-#define ACPI_RELEASE_GLOBAL_LOCK(GLptr, Pnd)       (Pnd = 0)
-#else
-
-#define ACPI_ACQUIRE_GLOBAL_LOCK(GLptr, Acq)       __asm {     \
-        __asm mov           ecx, GLptr              \
-        __asm acq10:                                \
-        __asm mov           eax, [ecx]              \
-        __asm mov           edx, eax                \
-        __asm and           edx, 0xFFFFFFFE         \
-        __asm bts           edx, 1                  \
-        __asm adc           edx, 0                  \
-        __asm lock cmpxchg  dword ptr [ecx], edx    \
-        __asm jnz           acq10                   \
-                                                    \
-        __asm cmp           dl, 3                   \
-        __asm sbb           eax, eax                \
-        __asm mov           Acq, al                 \
-}
-
-#define ACPI_RELEASE_GLOBAL_LOCK(GLptr, Pnd)       __asm {     \
-        __asm mov           ecx, GLptr              \
-        __asm Rel10:                                \
-        __asm mov           eax, [ecx]              \
-        __asm mov           edx, eax                \
-        __asm and           edx, 0xFFFFFFFC         \
-        __asm lock cmpxchg  dword ptr [ecx], edx    \
-        __asm jnz           Rel10                   \
-                                                    \
-        __asm cmp           dl, 3                   \
-        __asm and           eax, 1                  \
-        __asm mov           Pnd, al                 \
-}
-
-#endif
-
-/*! [End] no source code translation !*/
-
-
-#endif /* WIN32 */
-
-
-#ifdef __GNUC__
-
-
-#ifdef __ia64__
-#define _IA64
-
-/* Single threaded */
-#define ACPI_APPLICATION
-
-#define ACPI_ASM_MACROS
-#define causeinterrupt(level)
-#define BREAKPOINT3
-#define disable() __cli()
-#define enable()  __sti()
-#define wbinvd()
-
-/*! [Begin] no source code translation */
-
-#include <asm/pal.h>
-
-#define halt()              ia64_pal_halt_light()           /* PAL_HALT[_LIGHT] */
-#define safe_halt()         ia64_pal_halt(1)                /* PAL_HALT */
-
-
-#define ACPI_ACQUIRE_GLOBAL_LOCK(GLptr, Acq) \
-    do { \
-    __asm__ volatile ("1:  ld4      r29=%1\n"  \
-        ";;\n"                  \
-        "mov    ar.ccv=r29\n"   \
-        "mov    r2=r29\n"       \
-        "shr.u  r30=r29,1\n"    \
-        "and    r29=-4,r29\n"   \
-        ";;\n"                  \
-        "add    r29=2,r29\n"    \
-        "and    r30=1,r30\n"    \
-        ";;\n"                  \
-        "add    r29=r29,r30\n"  \
-        ";;\n"                  \
-        "cmpxchg4.acq   r30=%1,r29,ar.ccv\n" \
-        ";;\n"                  \
-        "cmp.eq p6,p7=r2,r30\n" \
-        "(p7) br.dpnt.few 1b\n" \
-        "cmp.gt p8,p9=3,r29\n"  \
-        ";;\n"                  \
-        "(p8) mov %0=-1\n"      \
-        "(p9) mov %0=r0\n"      \
-        :"=r"(Acq):"m" __atomic_fool_gcc((GLptr)):"r2","r29","r30","memory"); \
-    } while (0)
-
-#define ACPI_RELEASE_GLOBAL_LOCK(GLptr, Acq) \
-    do { \
-    __asm__ volatile ("1:  ld4      r29=%1\n" \
-        ";;\n"                  \
-        "mov    ar.ccv=r29\n"   \
-        "mov    r2=r29\n"       \
-        "and    r29=-4,r29\n"   \
-        ";;\n"                  \
-        "cmpxchg4.acq   r30=%1,r29,ar.ccv\n" \
-        ";;\n"                  \
-        "cmp.eq p6,p7=r2,r30\n" \
-        "(p7) br.dpnt.few 1b\n" \
-        "and    %0=1,r2\n"      \
-        ";;\n"                  \
-        :"=r"(Acq):"m" __atomic_fool_gcc((GLptr)):"r2","r29","r30","memory"); \
-    } while (0)
-/*! [End] no source code translation !*/
-
-
-#else /* DO IA32 */
-
-#define ACPI_ASM_MACROS
-#define causeinterrupt(level)
-#define BREAKPOINT3
-#define disable() __cli()
-#define enable()  __sti()
-#define halt()    __asm__ __volatile__ ("sti; hlt":::"memory")
-#define wbinvd()
-
-/*! [Begin] no source code translation
- *
- * A brief explanation as GNU inline assembly is a bit hairy
- *  %0 is the output parameter in EAX ("=a")
- *  %1 and %2 are the input parameters in ECX ("c")
- *  and an immediate value ("i") respectively
- *  All actual register references are preceded with "%%" as in "%%edx"
- *  Immediate values in the assembly are preceded by "$" as in "$0x1"
- *  The final asm parameter are the operation altered non-output registers.
- */
-#define ACPI_ACQUIRE_GLOBAL_LOCK(GLptr, Acq) \
-    do { \
-        int dummy; \
-        asm("1:     movl (%1),%%eax;" \
-            "movl   %%eax,%%edx;" \
-            "andl   %2,%%edx;" \
-            "btsl   $0x1,%%edx;" \
-            "adcl   $0x0,%%edx;" \
-            "lock;  cmpxchgl %%edx,(%1);" \
-            "jnz    1b;" \
-            "cmpb   $0x3,%%dl;" \
-            "sbbl   %%eax,%%eax" \
-            :"=a"(Acq),"=c"(dummy):"c"(GLptr),"i"(~1L):"dx"); \
-    } while(0)
-
-#define ACPI_RELEASE_GLOBAL_LOCK(GLptr, Acq) \
-    do { \
-        int dummy; \
-        asm("1:     movl (%1),%%eax;" \
-            "movl   %%eax,%%edx;" \
-            "andl   %2,%%edx;" \
-            "lock;  cmpxchgl %%edx,(%1);" \
-            "jnz    1b;" \
-            "andl   $0x1,%%eax" \
-            :"=a"(Acq),"=c"(dummy):"c"(GLptr),"i"(~3L):"dx"); \
-    } while(0)
-/*! [End] no source code translation !*/
-
-#endif /* IA 32 */
-#endif /* __GNUC__ */
-
 
 /* Unrecognized compiler, use defaults */
 #ifndef ACPI_ASM_MACROS
@@ -616,35 +369,8 @@ typedef char *va_list;
  *
  *****************************************************************************/
 
-#ifdef _MSC_VER                 /* disable some level-4 warnings */
-
-/* warn C4100: unreferenced formal parameter */
-#pragma warning(disable:4100)
-
-/* warn C4127: conditional expression is constant */
-#pragma warning(disable:4127)
-
-
-#define COMPILER_DEPENDENT_UINT64   unsigned __int64
-
-#endif
-
-
-#ifdef __GNUC__
-#define COMPILER_DEPENDENT_UINT64   unsigned long long
-#endif
-
-
-/* TBD: move this elsewhere! */
-
-
-#ifdef __ia64__
-/* Look at interim FADT to determine IO or memory mapped */
-#define IoAddressSpace(flag)    (AcpiGbl_FACP->AddressSpace & flag)
-#else
-/* always IO space */
-#define IoAddressSpace(flag)    (1)
-#endif
+/* this has been moved to compiler-specific headers, which are included from the
+   platform header. */
 
 
 #endif /* __ACENV_H__ */

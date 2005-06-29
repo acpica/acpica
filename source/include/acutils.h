@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: accommon.h -- prototypes for the common (subsystem-wide) procedures
- *       $Revision: 1.82 $
+ *       $Revision: 1.84 $
  *
  *****************************************************************************/
 
@@ -9,8 +9,8 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, Intel Corp.  All rights
- * reserved.
+ * Some or all of this work - Copyright (c) 1999, 2000, Intel Corp.
+ * All rights reserved.
  *
  * 2. License
  *
@@ -232,7 +232,7 @@ UINT32
 AcpiCmStrtoul (
     const NATIVE_CHAR       *String,
     NATIVE_CHAR             **Terminator,
-    UINT32                  Base);
+    NATIVE_UINT             Base);
 
 NATIVE_CHAR *
 AcpiCmStrstr (
@@ -252,7 +252,7 @@ AcpiCmMemcpy (
 void *
 AcpiCmMemset (
     void                    *Dest,
-    UINT32                  Value,
+    NATIVE_UINT             Value,
     NATIVE_UINT             Count);
 
 UINT32
@@ -388,7 +388,7 @@ FunctionValueExit (
     UINT32                  LineNumber,
     UINT32                  ComponentId,
     NATIVE_CHAR             *FunctionName,
-    NATIVE_UINT             Value);
+    ACPI_INTEGER            Value);
 
 void
 FunctionPtrExit (
