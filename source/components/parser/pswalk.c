@@ -490,7 +490,7 @@ PsWalkParsedAml (
 	NAME_TABLE_ENTRY		*StartScope,
     ACPI_OBJECT_INTERNAL    **Params,
     ACPI_OBJECT_INTERNAL    **CallerReturnDesc,
-    ACPI_TABLE_DESC         *TableDesc,
+    ACPI_OWNER_ID           OwnerId,
     INTERPRETER_CALLBACK    DescendingCallback,
     INTERPRETER_CALLBACK    AscendingCallback)
 {
@@ -522,7 +522,9 @@ PsWalkParsedAml (
         return_ACPI_STATUS (AE_NO_MEMORY);
     }
 
-    WalkState->TableDesc = TableDesc;
+    /* TBD: move to createWalkSTate */
+
+    WalkState->OwnerId = OwnerId;
 
     /* TBD:
      * TEMP until we pass WalkState to the interpreter
@@ -596,7 +598,7 @@ PsWalkParsedAml (
 
             /* Delete all arguments and locals */
 
-            DsMethodDataDeleteArgs (WalkState);      
+            DsMethodDataDeleteAll (WalkState);      
 
             /* Delete the parse tree if asked to */
 

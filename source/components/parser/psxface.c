@@ -131,84 +131,6 @@
 char    *Gbl_ParserId = "Non-recursive AML Parser";
 
 
-/*****************************************************************************
- *
- * FUNCTION:    PsxLoadTable
- *
- * PARAMETERS:  *PcodeAddr          - Address of pcode block
- *              PcodeLength         - Length of pcode block
- *
- * RETURN:      Status
- *
- * DESCRIPTION: Mainline of the AML load/dump subsystem. Sets up the
- *              input engine, calls handler for outermost object type.
- *
- *
- ****************************************************************************/
-
-ACPI_STATUS
-PsxLoadTable (
-    UINT8                   *PcodeAddr, 
-    INT32                   PcodeLength)
-{
-    ACPI_STATUS             Status;
-
-
-    FUNCTION_TRACE ("PsxLoadTable");
-
-
-/* TBD By using the NAMESPACE mutex, this is now a namespace  interface, move it */
-
-    if (!PcodeAddr)
-    {
-        DEBUG_PRINT (ACPI_ERROR, ("PsxLoadTable: Null AML pointer\n"));
-        return_ACPI_STATUS (AE_BAD_PARAMETER);
-    }
-
-    DEBUG_PRINT (ACPI_INFO, ("PsxLoadTable: AML block at %p\n", PcodeAddr));
-
-
-    if (!PcodeLength)
-    {
-        DEBUG_PRINT (ACPI_ERROR, ("PsxLoadTable: Zero-length AML block\n"));
-        return_ACPI_STATUS (AE_BAD_PARAMETER);
-    }
-
-
-    /*
-     * Parse the table and load the namespace with all named objects found within.  
-     * Control methods are NOT parsed at this time.  In fact, the control methods 
-     * cannot be parsed until the entire namespace is loaded, because if a control 
-     * method makes a forward reference (call) to another control method, we can't 
-     * continue parsing because we don't know how many arguments to parse next!
-     */
-
-    DEBUG_PRINT (ACPI_INFO, ("PsxLoadTable: **** Begin Namespace Load ****\n"));
-BREAKPOINT3;
-
-    CmAcquireMutex (MTX_NAMESPACE);
-    Status = PsParseTable (PcodeAddr, PcodeLength, DsLoad2BeginOp, DsLoad2EndOp, NULL);
-    CmReleaseMutex (MTX_NAMESPACE);
-
-
-
-    /* TBD: Check if we should parse all methods here, or parse late */
-/*
-   if (Gbl_MethodParsing = PARSE_EARLY)
-   {
-*/
-
-    DEBUG_PRINT (ACPI_INFO, ("PsxLoadTable: **** Begin Object Initialization ****\n"));
-BREAKPOINT3;
-
-    Status = DsInitializeObjects ();
-
-    DEBUG_PRINT (ACPI_INFO, ("PsxLoadTable: **** Completed Object Initialization ****\n"));
-BREAKPOINT3;
-
-    return_ACPI_STATUS (Status);
-}
-
 
 /*****************************************************************************
  *
@@ -266,7 +188,7 @@ BREAKPOINT3;
     }
 
 
-    DEBUG_PRINT (ACPI_INFO, ("PsxExecute: **** Begin Execution **** obj=%p code=%p len=%X\n",
+    DEBUG_PRINT (ACPI_INFO, ("PsxExecute: **** Begin Method Execution **** obj=%p code=%p len=%X\n",
                     ObjDesc, Pcode, PcodeLength));
 
 
@@ -279,6 +201,8 @@ BREAKPOINT3;
             CmUpdateObjectReference (Params[i], REF_INCREMENT);
         }
     }
+
+
 
     /* 
      * If there is a concurrency limit on this method, we need to obtain a unit
@@ -298,7 +222,7 @@ BREAKPOINT3;
     /* This is where we really execute the method */
 
     Status = PsWalkParsedAml (ObjDesc->Method.ParserOp, ObjDesc->Method.ParserOp, ObjDesc, MethodEntry->Scope, Params,
-                                ReturnObjDesc, DsExecBeginOp, DsExecEndOp);
+                                ReturnObjDesc, ObjDesc->Method.OwningId, DsExecBeginOp, DsExecEndOp);
     
     /* Signal completion of the execution of this method if necessary */
 
