@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: asllookup- Namespace lookup
- *              $Revision: 1.10 $
+ *              $Revision: 1.11 $
  *
  *****************************************************************************/
 
@@ -131,13 +131,14 @@
 
 /*****************************************************************************
  *
- * FUNCTION:
+ * FUNCTION:    LsDoOneNamespaceObject
  *
- * PARAMETERS:
+ * PARAMETERS:  ACPI_WALK_CALLBACK
  *
- * RETURN:
+ * RETURN:      Status
  *
- * DESCRIPTION:
+ * DESCRIPTION: Dump a namespace object to the namespace output file. 
+ *              Called during the walk of the namespace to dump all objects.
  *
  ****************************************************************************/
 
@@ -164,13 +165,15 @@ LsDoOneNamespaceObject (
 
 /*****************************************************************************
  *
- * FUNCTION:
+ * FUNCTION:    LsDisplayNamespace 
  *
- * PARAMETERS:
+ * PARAMETERS:  None
  *
- * RETURN:
+ * RETURN:      None
  *
- * DESCRIPTION:
+ * DESCRIPTION: Walk the namespace an display information about each node
+ *              in the tree.  Information is written to the optional 
+ *              namespace output file.
  *
  ****************************************************************************/
 
@@ -185,6 +188,8 @@ LsDisplayNamespace (void)
         return (AE_OK);
     }
 
+    /* File header */
+
     fprintf (Gbl_NamespaceOutputFile, "Contents of ACPI Namespace\n\n");
     fprintf (Gbl_NamespaceOutputFile, "Count  Depth    Name - Type\n\n");
 
@@ -194,20 +199,27 @@ LsDisplayNamespace (void)
                                 ACPI_UINT32_MAX, FALSE, LsDoOneNamespaceObject,
                                 NULL, NULL);
 
-
     return (AE_OK);
 }
 
 
 /*****************************************************************************
  *
- * FUNCTION:
+ * FUNCTION:    LkCrossReferenceNamespace
  *
- * PARAMETERS:
+ * PARAMETERS:  None
  *
- * RETURN:
+ * RETURN:      Status
  *
- * DESCRIPTION:
+ * DESCRIPTION: Perform a cross reference check of the parse tree against the
+ *              namespace.  Every named referenced within the parse tree
+ *              should be get resolved with a namespace lookup.  If not, the
+ *              original reference in the ASL code is invalid -- i.e., refers
+ *              to a non-existent object.
+ *
+ * NOTE:  The ASL "External" operator causes the name to be inserted into the
+ *        namespace so that references to the external name will be resolved
+ *        correctly here.
  *
  ****************************************************************************/
 
@@ -221,14 +233,20 @@ LkCrossReferenceNamespace (void)
 
     DbgPrint ("\nCreating namespace\n\n");
 
-    WalkList.WalkState = NULL;
+    /* 
+     * Create a new walk state for use when looking up names
+     * within the namespace (Passed as context to the callbacks)
+     */
 
+    WalkList.WalkState = NULL;
     WalkState = AcpiDsCreateWalkState (TABLE_ID_DSDT, NULL, NULL, &WalkList);
     if (!WalkState)
     {
         return AE_NO_MEMORY;
     }
 
+
+    /* Walk the entire parse tree */
 
     TrWalkParseTree (ASL_WALK_VISIT_TWICE, LkNamespaceLocateBegin,
                         LkNamespaceLocateEnd, WalkState);
@@ -240,13 +258,20 @@ LkCrossReferenceNamespace (void)
 
 /*****************************************************************************
  *
- * FUNCTION:
+ * FUNCTION:    LkNamespaceLocateBegin
  *
- * PARAMETERS:
+ * PARAMETERS:  ASL_WALK_CALLBACK
  *
  * RETURN:      Status
  *
- * DESCRIPTION: Descending callback used during the loading of ACPI tables.
+ * DESCRIPTION: Descending callback used during cross-reference.  For named
+ *              object references, attempt to locate the name in the 
+ *              namespace.
+ *
+ * NOTE: ASL references to named fields within resource descriptors are 
+ *       resolve to integer values here.  Therefore, this step is an 
+ *       important part of the code generation.  We don't know that the
+ *       name refers to a resource descriptor until now.
  *
  ****************************************************************************/
 
@@ -355,14 +380,14 @@ LkNamespaceLocateBegin (
 
 /*****************************************************************************
  *
- * FUNCTION:
+ * FUNCTION:    LkNamespaceLocateEnd
  *
- * PARAMETERS:
+ * PARAMETERS:  ASL_WALK_CALLBACK
  *
  * RETURN:      Status
  *
- * DESCRIPTION: Ascending callback used during the loading of the namespace,
- *              both control methods and everything else.
+ * DESCRIPTION: Ascending callback used during cross reference.  We only
+ *              need to worry about scope management here.
  *
  ****************************************************************************/
 
