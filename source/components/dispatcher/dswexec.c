@@ -120,8 +120,8 @@
 #include <acpi.h>
 #include <amlcode.h>
 #include <parser.h>
-#include <interpreter.h>
-#include <namespace.h>
+#include <interp.h>
+#include <namesp.h>
 
 
 #define _COMPONENT          PARSER
@@ -157,6 +157,11 @@ PsxExecBeginOp (
 
     FUNCTION_TRACE_PTR ("PsxExecBeginOp", Op);
 
+
+    if (Op == WalkState->Origin)
+    {
+        return_ACPI_STATUS (AE_OK);
+    }
     
     /*
      * If the previous opcode was a conditional, this opcode
@@ -174,6 +179,13 @@ PsxExecBeginOp (
         WalkState->ControlState->PredicateOp    = Op;         /* Save start of predicate */
     }
 
+/*
+    if (Op->Opcode != AML_MethodOp)
+    {
+        return_ACPI_STATUS (AE_OK);
+    }
+    
+*/
 
     OpInfo = PsGetOpcodeInfo (Op->Opcode);
 
@@ -182,6 +194,21 @@ PsxExecBeginOp (
     case OPTYPE_CONTROL:
 
         Status = PsxExecBeginControlOp (WalkState, Op);
+        break;
+
+    case OPTYPE_NAMED_OBJECT:
+
+        if (WalkState->Origin->Opcode == AML_MethodOp)
+        {
+            /*
+             * Found a named object declaration during method execution;  we must enter
+             * this object into the namespace.
+             *
+             * TBD: make this a temporary namespace object
+             */
+
+            Status = PsxLoadBeginOp (WalkState, Op);
+        }
         break;
 
     default:
@@ -236,7 +263,7 @@ PsxExecEndOp (
     OpInfo = PsGetOpcodeInfo (Op->Opcode);
     if (!OpInfo)
     {
-        DEBUG_PRINT (ACPI_ERROR, ("EndOp: Unknown opcode. Op=%X\n",
+        DEBUG_PRINT (ACPI_ERROR, ("ExecEndOp: Unknown opcode. Op=%X\n",
                         Op));
 
         return_ACPI_STATUS (AE_NOT_IMPLEMENTED);
@@ -250,21 +277,20 @@ PsxExecEndOp (
     WalkState->NumOperands = 0;
     WalkState->ReturnDesc = NULL;
 
-
     /* Decode the opcode */
 
     switch (Optype)
     {
     case OPTYPE_UNDEFINED:
 
-        DEBUG_PRINT (ACPI_ERROR, ("EndOp: Undefined opcode type Op=%X\n",
+        DEBUG_PRINT (ACPI_ERROR, ("ExecEndOp: Undefined opcode type Op=%X\n",
                         Op));
         return_ACPI_STATUS (AE_NOT_IMPLEMENTED);
         break;
 
 
     case OPTYPE_BOGUS:
-        DEBUG_PRINT (ACPI_ERROR, ("EndOp: Ignoring bogus opcode=%X type Op=%X\n",
+        DEBUG_PRINT (TRACE_PARSE, ("ExecEndOp: Internal opcode=%X type Op=%X\n",
                         Opcode, Op));
         break;
 
@@ -438,7 +464,7 @@ PsxExecEndOp (
 
     case OPTYPE_METHOD_CALL: 
 
-        DEBUG_PRINT (TRACE_PARSE, ("EndOp: Method invocation, Op=%X\n", Op));
+        DEBUG_PRINT (TRACE_PARSE, ("ExecEndOp: Method invocation, Op=%X\n", Op));
 
         /*
          * (AML_METHODCALL) Op->Value->Arg->ResultObj contains the method NTE pointer
@@ -475,7 +501,7 @@ PsxExecEndOp (
         Status = NsScopeStackPushEntry (Entry);
         if (ACPI_FAILURE (Status))
         {
-            DEBUG_PRINT (ACPI_ERROR, ("EndOp: Could not push Scope Stack\n"));
+            DEBUG_PRINT (ACPI_ERROR, ("ExecEndOp: Could not push Scope Stack\n"));
             break;
         }
 
@@ -491,7 +517,7 @@ PsxExecEndOp (
 
     case OPTYPE_RECONFIGURATION:
 
-        DEBUG_PRINT (ACPI_ERROR, ("EndOp: Unimplemented reconfig opcode=%X Op=%X\n",
+        DEBUG_PRINT (ACPI_ERROR, ("ExecEndOp: Unimplemented reconfig opcode=%X Op=%X\n",
                         Op->Opcode, Op));
 
         Status = AE_NOT_IMPLEMENTED;
@@ -500,11 +526,17 @@ PsxExecEndOp (
 
     case OPTYPE_NAMED_OBJECT:
 
+
+        if (WalkState->Origin->Opcode == AML_MethodOp)
+        {
+            PsxLoadEndOp (WalkState, Op);
+        }
+
         switch (Op->Opcode)
         {
         case AML_RegionOp:
 
-            DEBUG_PRINT (TRACE_EXEC, ("EndOp: Executing OpRegion Address/Length Op=%X\n",
+            DEBUG_PRINT (TRACE_EXEC, ("ExecEndOp: Executing OpRegion Address/Length Op=%X\n",
                             Op));
 
             Status = PsxEvalRegionOperands (WalkState, Op);
@@ -521,17 +553,20 @@ PsxExecEndOp (
 
 
         default:
-            DEBUG_PRINT (TRACE_EXEC, ("EndOp: Unimplemented Named object, opcode= Op=%X\n",
-                            Op->Opcode, Op));
-
             /* TBD: Nothing to do here at this time */
 
             Status = AE_OK;
             break;
         }
+        
+        break;
 
     default:
 
+        DEBUG_PRINT (ACPI_ERROR, ("ExecEndOp: Unimplemented opcode, type=%X Opcode=%X Op=%X\n",
+                        Optype, Op->Opcode, Op));
+
+        Status = AE_NOT_IMPLEMENTED;
         break;
     }
 
@@ -546,19 +581,40 @@ PsxExecEndOp (
     {
         /* Completed the predicate, the result must be a number */
 
+        WalkState->ControlState->Exec = 0;
 
 /* TBD: REDO now that we have the resultobj mechanism */
 
-        Status = PsxResultStackPop (&ObjDesc, WalkState);
-        if (ACPI_FAILURE (Status))
+        if (ResultObj)
         {
-            goto Cleanup;
+            Status = PsxResultStackPop (&ObjDesc, WalkState);
+            if (ACPI_FAILURE (Status))
+            {
+                goto Cleanup;
+            }
+        }
+
+        else
+        {
+            Status = PsxCreateOperand (WalkState, Op);
+            if (ACPI_FAILURE (Status))
+            {
+                goto Cleanup;
+            }
+
+            Status = AmlGetRvalue (&WalkState->Operands [0]);
+            if (ACPI_FAILURE (Status))
+            {
+                goto Cleanup;
+            }
+
+            ObjDesc = WalkState->Operands [0];
         }
 
         if ((!ObjDesc) ||
             (ObjDesc->Common.Type != ACPI_TYPE_Number))
         {
-            DEBUG_PRINT (ACPI_ERROR, ("EndOp: Bad predicate ObjDesc=%X State=%X\n",
+            DEBUG_PRINT (ACPI_ERROR, ("ExecEndOp: Bad predicate ObjDesc=%X State=%X\n",
                             ObjDesc, WalkState));
 
             Status = AE_AML_ERROR;
@@ -579,7 +635,7 @@ PsxExecEndOp (
             Status = AE_FALSE;
         }
 
-        DEBUG_PRINT (TRACE_EXEC, ("EndOp: Completed a predicate eval=%X Op=%X\n",
+        DEBUG_PRINT (TRACE_EXEC, ("ExecEndOp: Completed a predicate eval=%X Op=%X\n",
                         WalkState->ControlState->Predicate, Op));
 
         /* Delete the predicate result object (we know that we don't need it anymore) and cleanup the stack */
