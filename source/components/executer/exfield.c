@@ -332,6 +332,7 @@ AmlSetupField (
 }
 
 
+
 /*****************************************************************************
  * 
  * FUNCTION:    AmlReadField
@@ -357,11 +358,14 @@ AmlReadField (
     UINT32                  Address;
     UINT32                  LocalValue = 0;
     INT32                   FieldByteWidth;
+    
+    /* These aren't used right now...
     void *                  PhysicalAddrPtr = NULL;
     UINT8                   PciBus = 0;
     UINT8                  DevFunc = 0;
     UINT8                   PciReg = 0;
     UINT8                   PciExcep = 0;
+	*/
 
 
     FUNCTION_TRACE ("AmlReadField");
@@ -462,12 +466,14 @@ AmlWriteField (
     ACPI_STATUS             Status = AE_OK;
     UINT32                  Address;
     INT32                   FieldByteWidth;
+
+	/* These aren't used right now...
     void                    *PhysicalAddrPtr = NULL;
     UINT8                   PciBus = 0;
     UINT8                   DevFunc = 0;
     UINT8                   PciReg = 0;
     UINT8                   PciExcep = 0;
-
+	*/
 
     FUNCTION_TRACE ("AmlWriteField");
 
@@ -815,6 +821,7 @@ AmlSetNamedFieldValue (
  ****************************************************************************/
 
 ACPI_STATUS
+
 AmlGetNamedFieldValue (
     ACPI_HANDLE             NamedField, 
     UINT32                  *Value)
