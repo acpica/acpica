@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dsutils - Dispatcher utilities
- *              $Revision: 1.62 $
+ *              $Revision: 1.65 $
  *
  ******************************************************************************/
 
@@ -318,14 +318,15 @@ AcpiDsDeleteResultIfNotUsed (
     if (!AcpiDsIsResultUsed (Op, WalkState))
     {
         /*
-         * Must pop the result stack (ObjDesc should be equal
-         *  to ResultObj)
+         * Must pop the result stack (ObjDesc should be equal to ResultObj)
          */
-
         Status = AcpiDsResultPop (&ObjDesc, WalkState);
         if (ACPI_SUCCESS (Status))
         {
-            AcpiUtRemoveReference (ResultObj);
+//            if (ResultObj->Common.ReferenceCount == 1)
+            {
+                AcpiUtRemoveReference (ResultObj);
+            }
         }
     }
 
@@ -397,7 +398,6 @@ AcpiDsCreateOperand (
          * IMODE_EXECUTE) in order to support the creation of
          * namespace objects during the execution of control methods.
          */
-
         ParentOp = Arg->Parent;
         if ((AcpiPsIsNodeOp (ParentOp->Opcode)) &&
             (ParentOp->Opcode != AML_INT_METHODCALL_OP) &&
@@ -729,6 +729,7 @@ AcpiDsMapOpcodeToDataType (
         case AML_BYTE_OP:
         case AML_WORD_OP:
         case AML_DWORD_OP:
+        case AML_QWORD_OP:
 
             DataType = ACPI_TYPE_INTEGER;
             break;

@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dsobject - Dispatcher object management routines
- *              $Revision: 1.69 $
+ *              $Revision: 1.70 $
  *
  *****************************************************************************/
 
@@ -407,13 +407,12 @@ AcpiDsInitObjectFromOp (
         }
 
         /*
-         * Second arg is the buffer data (optional)
-         * ByteList can be either individual bytes or a
-         * string initializer!
+         * Second arg is the buffer data (optional) ByteList can be either 
+         * individual bytes or a string initializer.
          */
 
-        /* skip first arg */
-        Arg = Op->Value.Arg;
+        Arg = Op->Value.Arg;         /* skip first arg */
+
         ByteList = (ACPI_PARSE2_OBJECT *) Arg->Next;
         if (ByteList)
         {
@@ -434,12 +433,11 @@ AcpiDsInitObjectFromOp (
     case ACPI_TYPE_PACKAGE:
 
         /*
-         * When called, an internal package object has already
-         * been built and is pointed to by ObjDesc.
-         * AcpiDsBuildInternalObject build another internal
-         * package object, so remove reference to the original
-         * so that it is deleted.  Error checking is done
-         * within the remove reference function.
+         * When called, an internal package object has already been built and 
+         * is pointed to by ObjDesc.  AcpiDsBuildInternalObject builds another
+         * internal package object, so remove reference to the original so 
+         * that it is deleted.  Error checking is done within the remove 
+         * reference function.
          */
         AcpiUtRemoveReference (ObjDesc);
         Status = AcpiDsBuildInternalObject (WalkState, Op, RetObjDesc);
@@ -472,6 +470,7 @@ AcpiDsInitObjectFromOp (
             ObjDesc->Reference.Offset = Opcode - AML_LOCAL_OP;
             break;
 
+
         case OPTYPE_METHOD_ARGUMENT:
 
             /* Split the opcode into a base opcode + offset */
@@ -479,6 +478,61 @@ AcpiDsInitObjectFromOp (
             ObjDesc->Reference.Opcode = AML_ARG_OP;
             ObjDesc->Reference.Offset = Opcode - AML_ARG_OP;
             break;
+
+
+#ifdef INTEGER_CONST__
+        case OPTYPE_CONSTANT:
+
+            /* TBD: Why is the DEBUG object a CONSTANT? */
+
+            if (Op->Opcode == AML_DEBUG_OP)
+            {
+                break;
+            }
+
+            /* Reference object no longer needed */
+
+            AcpiUtRemoveReference (ObjDesc);
+
+            /* Create/Init a new Integer object */
+
+            ObjDesc = AcpiUtCreateInternalObject (ACPI_TYPE_INTEGER);
+            if (!ObjDesc)
+            {
+                return_ACPI_STATUS (AE_NO_MEMORY);
+            }
+
+            /*
+             * Decode constants here.  Turn them into real integer objects 
+             * that are initialized to the value of the constant.
+             */
+            switch (Op->Opcode)
+            {
+            case AML_ONE_OP:
+                ObjDesc->Integer.Value = 1;
+                break;
+
+            case AML_ONES_OP:
+                ObjDesc->Integer.Value = ACPI_INTEGER_MAX;
+                break;
+
+            case AML_REVISION_OP:
+                ObjDesc->Integer.Value = ACPI_CA_VERSION;
+                break;
+
+            case AML_ZERO_OP:
+                ObjDesc->Integer.Flags |= AOPOBJ_ZERO_CONST;
+                ObjDesc->Integer.Value = 0;
+                break;
+
+            default:
+                ObjDesc->Integer.Value = 0;
+                break;
+            }
+
+            *RetObjDesc = ObjDesc;
+            break;
+#endif
 
         default: /* Constants, Literals, etc.. */
 
@@ -545,7 +599,6 @@ AcpiDsBuildInternalSimpleObj (
          * previously looked up in the NS, it is stored in this op.
          * Otherwise, go ahead and look it up now
          */
-
         if (!Op->Node)
         {
             Status = AcpiNsLookup (WalkState->ScopeInfo,
@@ -649,9 +702,18 @@ AcpiDsBuildInternalPackageObj (
 
 
     ObjDesc = AcpiUtCreateInternalObject (ACPI_TYPE_PACKAGE);
+    *ObjDescPtr = ObjDesc;
     if (!ObjDesc)
     {
         return_ACPI_STATUS (AE_NO_MEMORY);
+    }
+    
+    if (Op->Opcode == AML_VAR_PACKAGE_OP)
+    {
+        /*
+         * Variable length package parameters are evaluated JIT
+         */
+        return_ACPI_STATUS (AE_OK);
     }
 
     /* The first argument must be the package length */
@@ -664,7 +726,6 @@ AcpiDsBuildInternalPackageObj (
      * individual objects) Add an extra pointer slot so
      * that the list is always null terminated.
      */
-
     ObjDesc->Package.Elements = ACPI_MEM_CALLOCATE (
                             (ObjDesc->Package.Count + 1) * sizeof (void *));
 
@@ -679,7 +740,6 @@ AcpiDsBuildInternalPackageObj (
     /*
      * Now init the elements of the package
      */
-
     Arg = Arg->Next;
     while (Arg)
     {
@@ -699,7 +759,7 @@ AcpiDsBuildInternalPackageObj (
         Arg = Arg->Next;
     }
 
-    *ObjDescPtr = ObjDesc;
+    ObjDesc->Package.Flags |= AOPOBJ_DATA_VALID;
     return_ACPI_STATUS (Status);
 }
 
@@ -727,14 +787,19 @@ AcpiDsBuildInternalObject (
     ACPI_STATUS             Status;
 
 
-    if (Op->Opcode == AML_PACKAGE_OP)
+    switch (Op->Opcode)
     {
-        Status = AcpiDsBuildInternalPackageObj (WalkState, Op, ObjDescPtr);
-    }
+    case AML_PACKAGE_OP:
+    case AML_VAR_PACKAGE_OP:
 
-    else
-    {
+        Status = AcpiDsBuildInternalPackageObj (WalkState, Op, ObjDescPtr);
+        break;
+
+
+    default:
+
         Status = AcpiDsBuildInternalSimpleObj (WalkState, Op, ObjDescPtr);
+        break;
     }
 
     return (Status);
