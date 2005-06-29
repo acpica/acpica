@@ -164,54 +164,6 @@ NsChecksum (
 }
 
 
-/****************************************************************************
- *
- * FUNCTION:    NsAllocateNteDesc
- *
- * PARAMETERS:  NteCount            - Count of NTEs to allocate
- *
- * DESCRIPTION: Allocate an array of nte, including prepended link space
- *              Array is set to all zeros via OsdCallcate().
- *
- * RETURN:      The address of the first nte in the array, or NULL
- *
- ***************************************************************************/
-
-NAME_TABLE_ENTRY *
-NsAllocateNteDesc (
-    INT32                   NteCount)
-{
-    NAME_TABLE_ENTRY        *NewNteDesc = NULL;
-    ACPI_SIZE               AllocSize;
-
-
-    FUNCTION_TRACE ("AllocateNteDesc");
-
-
-    AllocSize = (ACPI_SIZE) NteCount * sizeof (NAME_TABLE_ENTRY);
-
-    
-    /* Allow room for link to appendage */
-    
-    AllocSize += sizeof (NAME_TABLE_ENTRY *);
-
-  
-    NewNteDesc = LocalCallocate (AllocSize);
-    if (NewNteDesc)
-    {
-        /* Move past the appendage pointer */
-    
-        NewNteDesc = (NAME_TABLE_ENTRY *) (((UINT8 *) NewNteDesc) + 
-                        sizeof (NAME_TABLE_ENTRY *));
-    }
-
-    DEBUG_PRINT (TRACE_EXEC, ("AllocateNteDesc: NewNteDesc=%p\n", NewNteDesc));
-
-    FUNCTION_EXIT;
-    return NewNteDesc;
-}
-
-
 
 /****************************************************************************
  *
@@ -470,6 +422,17 @@ NsConvertHandleToEntry (
     {
         return NULL;
     }
+
+    if (Handle == ACPI_ROOT_OBJECT)
+    {
+        return RootObject;
+    }
+
+    if (Handle == ACPI_ROOT_SCOPE)
+    {
+        return (NAME_TABLE_ENTRY *) RootObject->Scope;
+    }
+
 
     return (NAME_TABLE_ENTRY *) Handle;
 }
