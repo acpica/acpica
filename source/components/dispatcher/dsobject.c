@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dsobject - Dispatcher object management routines
- *              $Revision: 1.83 $
+ *              $Revision: 1.86 $
  *
  *****************************************************************************/
 
@@ -218,7 +218,7 @@ AcpiDsInitOneObject (
         if (ACPI_FAILURE (Status))
         {
             ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Method %p [%4.4s] - parse failure, %s\n",
-                ObjHandle, (char*)&((ACPI_NAMESPACE_NODE *)ObjHandle)->Name,
+                ObjHandle, (char *) &((ACPI_NAMESPACE_NODE *) ObjHandle)->Name,
                 AcpiFormatException (Status)));
 
             /* This parse failed, but we will continue parsing more methods */
@@ -231,6 +231,7 @@ AcpiDsInitOneObject (
          * for every execution since there isn't much overhead
          */
         AcpiNsDeleteNamespaceSubtree (ObjHandle);
+        AcpiNsDeleteNamespaceByOwner (((ACPI_NAMESPACE_NODE *) ObjHandle)->Object->Method.OwningId);
         break;
 
     default:
@@ -450,11 +451,11 @@ AcpiDsInitObjectFromOp (
         ObjDesc->String.Pointer = Op->Value.String;
         ObjDesc->String.Length = STRLEN (Op->Value.String);
 
-        /* 
+        /*
          * The string is contained in the ACPI table, don't ever try
          * to delete it
          */
-        ObjDesc->Common.Flags |= AOPOBJ_STATIC_POINTER;   
+        ObjDesc->Common.Flags |= AOPOBJ_STATIC_POINTER;
         break;
 
 
@@ -534,7 +535,6 @@ AcpiDsBuildInternalSimpleObj (
 {
     ACPI_OPERAND_OBJECT     *ObjDesc;
     ACPI_STATUS             Status;
-    UINT32                  Length;
     char                    *Name;
 
 
@@ -550,17 +550,17 @@ AcpiDsBuildInternalSimpleObj (
          */
         if (!Op->Node)
         {
-            Status = AcpiNsLookup (WalkState->ScopeInfo, Op->Value.String, 
+            Status = AcpiNsLookup (WalkState->ScopeInfo, Op->Value.String,
                             ACPI_TYPE_ANY, IMODE_EXECUTE,
                             NS_SEARCH_PARENT | NS_DONT_OPEN_SCOPE, NULL,
-                            (ACPI_NAMESPACE_NODE **)&(Op->Node));
+                            (ACPI_NAMESPACE_NODE **) &(Op->Node));
 
             if (ACPI_FAILURE (Status))
             {
                 if (Status == AE_NOT_FOUND)
                 {
                     Name = NULL;
-                    AcpiNsExternalizeName (ACPI_UINT32_MAX, Op->Value.String, &Length, &Name);
+                    AcpiNsExternalizeName (ACPI_UINT32_MAX, Op->Value.String, NULL, &Name);
 
                     if (Name)
                     {
@@ -771,7 +771,7 @@ AcpiDsCreateNode (
      * parts of the table, we can arrive here twice.  Only init
      * the named object node the first time through
      */
-    if (Node->Object)
+    if (AcpiNsGetAttachedObject (Node))
     {
         return_ACPI_STATUS (AE_OK);
     }
