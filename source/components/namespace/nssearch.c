@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: nssearch - Namespace search
- *              $Revision: 1.77 $
+ *              $Revision: 1.78 $
  *
  ******************************************************************************/
 
@@ -170,11 +170,11 @@ AcpiNsSearchNode (
     {
         NATIVE_CHAR         *ScopeName;
 
-        ScopeName = AcpiNsGetTablePathname (Node);
+        ScopeName = AcpiNsGetExternalPathname (Node);
         if (ScopeName)
         {
-            ACPI_DEBUG_PRINT ((ACPI_DB_NAMES, "Searching %s [%p] For %4.4s (type %X)\n",
-                ScopeName, Node, (char *) &TargetName, Type));
+            ACPI_DEBUG_PRINT ((ACPI_DB_NAMES, "Searching %s [%p] For %4.4s (type %s)\n",
+                ScopeName, Node, (char *) &TargetName, AcpiUtGetTypeName (Type)));
 
             ACPI_MEM_FREE (ScopeName);
         }
