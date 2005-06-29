@@ -501,7 +501,6 @@ Cleanup:
     return_ACPI_STATUS (Status);
 }
 
-
 /******************************************************************************
  *
  * FUNCTION:    AcpiInstallNotifyHandler
@@ -509,6 +508,8 @@ Cleanup:
  * PARAMETERS:  Device          - The device for which notifies will be handled
  *              Handler         - Address of the handler
  *              Context         - Value passed to the handler on each GPE
+ *              Type            -   0: SystemHandler (00-7f)
+ *                                  1: DriverHandler (80-ff)
  *
  * RETURN:      Status
  *
@@ -520,15 +521,15 @@ ACPI_STATUS
 AcpiInstallNotifyHandler (
     ACPI_HANDLE             Device, 
     NOTIFY_HANDLER          Handler, 
-    void                    *Context)
+    void                    *Context,
+    UINT32                  Type)
 {
     ACPI_OBJECT_INTERNAL    *ObjDesc;
+    ACPI_OBJECT_INTERNAL    *NotifyObj;
     NAME_TABLE_ENTRY        *ObjEntry;
     ACPI_STATUS             Status;
 
-
     FUNCTION_TRACE ("AcpiInstallNotifyHandler");
-
 
     /* Parameter validation */
 
@@ -536,7 +537,6 @@ AcpiInstallNotifyHandler (
     {
         return_ACPI_STATUS (AE_BAD_PARAMETER);
     }
-
 
     /* Convert and validate the device handle */
 
@@ -546,22 +546,659 @@ AcpiInstallNotifyHandler (
     }
 
     /*
-     * The handle must refer to either a device or a thermal zone.  These
-     * are the ONLY objects that can receive ACPI notifications
+     * These are the ONLY objects that can receive ACPI notifications
      */
 
-    if ((ObjEntry->Type != TYPE_Device) &&
+    if ((ObjEntry->Type != TYPE_Device)     &&
+        (ObjEntry->Type != TYPE_Processor)  &&
+        (ObjEntry->Type != TYPE_Power)      &&
         (ObjEntry->Type != TYPE_Thermal))
     {
         return_ACPI_STATUS (AE_BAD_PARAMETER);
     }
 
+    /* Check for an existing internal object */
+
+    ObjDesc = ObjEntry->Object;
+
+    if (ObjDesc)
+    {
+        /*
+         *  The object exists.
+         *
+         *  Make sure the handler is not already installed.
+         */
+
+        if (((Type = 0) && ObjDesc->Device.SysHandler) ||
+            ((Type = 1) && ObjDesc->Device.DrvHandler))
+        {
+            return_ACPI_STATUS (AE_EXIST);
+        }
+    }
+    else
+    {
+        /* ObjDesc DNE: We must create one */
+
+        ObjDesc = CmCreateInternalObject (ObjEntry->Type);
+        if (!ObjDesc)
+        {
+            /* Descriptor allocation failure   */
+
+            return_ACPI_STATUS (AE_NO_MEMORY);
+        }
+
+        /* Attach the new object to the NTE */
+
+        Status = NsAttachObject (Device, ObjDesc, (UINT8) ObjEntry->Type);
+
+        if (ACPI_FAILURE (Status))
+        {
+            return_ACPI_STATUS (Status);
+        }
+    }
+
+    /* 
+     *  We get here, we know that there is no handler installed
+     *  so let's party
+     */
+
+    NotifyObj = CmCreateInternalObject (TYPE_Notfy);
+    if (!NotifyObj)
+    {
+        /* Descriptor allocation failure   */
+
+        return_ACPI_STATUS (AE_NO_MEMORY);
+    }
+
+    /* TBD: Mutex?? */
+
+    NotifyObj->NotifyHandler.Nte = ObjEntry;
+    NotifyObj->NotifyHandler.Handler = Handler;
+    NotifyObj->NotifyHandler.Context = Context;
+
+    /*
+     *  Have a new reference for the device
+     */
+    CmUpdateObjectReference (ObjDesc, REF_INCREMENT);
+
+    if (Type = 0)
+    {
+        ObjDesc->Device.SysHandler = NotifyObj;
+    }
+    else
+    {
+        ObjDesc->Device.DrvHandler = NotifyObj;
+    }
+
+    return_ACPI_STATUS (AE_OK);
+}
+
+#define GO_NO_FURTHER   (void *) 0xffffffff
+
+/******************************************************************************
+ *
+ * FUNCTION:    AdrWalkNamespace
+ *
+ * PARAMETERS:  Type                - ACPI_OBJECT_TYPE to search for
+ *              StartObject         - Handle in namespace where search begins
+ *              MaxDepth            - Depth to which search is to reach
+ *              UserFunction        - Called when an object of "Type" is found
+ *              Context             - Passed to user function
+ *
+ * RETURNS      Return value from the UserFunction if terminated early.
+ *              Otherwise, returns NULL.
+ *
+ * DESCRIPTION: Identical to the AcpiWalkNamespace except. Checks the return
+ *              value from the user function for the special value GO_NO_FURTHER
+ *
+ *              When that value is encountered the progression down a branch of
+ *              tree halts but the search continues in the parent.
+ *
+ ******************************************************************************/
+
+ACPI_STATUS
+AdrWalkNamespace (
+    ACPI_OBJECT_TYPE        Type, 
+    ACPI_HANDLE             StartObject, 
+    UINT32                  MaxDepth,
+    WALK_CALLBACK           UserFunction, 
+    void                    *Context, 
+    void                    **ReturnValue)
+{
+    ACPI_HANDLE             ChildHandle;
+    ACPI_HANDLE             ParentHandle;
+    ACPI_HANDLE             Dummy;
+    UINT32                  Level;
+    void                    *UserReturnVal;
+
+
+    FUNCTION_TRACE ("AdrWalkNamespace");
+
+    /* Parameter validation */
+
+    if ((Type > ACPI_TABLE_MAX) ||
+        (!MaxDepth)             || 
+        (!UserFunction))
+    {
+        return_ACPI_STATUS (AE_BAD_PARAMETER);
+    }
+
+    /* Special case for the namespace root object */
+
+    if (StartObject == ACPI_ROOT_OBJECT)
+    {
+        StartObject = RootObject;
+    }
+
+    /* Init return value, if any */
+
+    if (ReturnValue)
+    {
+        *ReturnValue = NULL;
+    }
+
+    /* Null child means "get first object" */
+
+    ParentHandle    = StartObject;
+    ChildHandle     = 0;
+    Level           = 1;
+
+    /* 
+     * Traverse the tree of objects until we bubble back up to where we
+     * started. When Level is zero, the loop is done because we have 
+     * bubbled up to (and passed) the original parent handle (StartHandle)
+     */
+
+    while (Level > 0)
+    {
+        /* Get the next typed object in this scope.  Null returned if not found */
+
+        if (ACPI_SUCCESS (AcpiGetNextObject (Type, ParentHandle, ChildHandle, &ChildHandle))) 
+        {
+            /* Found an object - process by calling the user function */
+
+            UserReturnVal = UserFunction (ChildHandle, Level, Context);
+
+            if ((UserReturnVal) && (UserReturnVal != GO_NO_FURTHER))
+            {
+                /* Non-zero from user function means "exit now" */
+
+                if (ReturnValue)
+                {
+                    /* Pass return value back to the caller */
+
+                    *ReturnValue = UserReturnVal;
+                }
+
+                return_ACPI_STATUS (AE_OK);
+            }
+
+            /* Go down another level in the namespace if we are allowed to */
+
+            if ((Level < MaxDepth) && (UserReturnVal != GO_NO_FURTHER))
+            {
+                /* Check if this object has any children */
+
+                if (ACPI_SUCCESS (AcpiGetNextObject (Type, ChildHandle, 0, &Dummy)))
+                {
+                    /* There is at least one child of this object, visit the object */
+
+                    Level++;
+                    ParentHandle    = ChildHandle;
+                    ChildHandle     = 0;
+                }
+            }
+        }
+
+        else
+        {
+            /* 
+             * No more children in this object, go back up to the object's parent
+             */
+            Level--;
+            ChildHandle = ParentHandle;
+            AcpiGetParent (ParentHandle, &ParentHandle);
+        }
+    }
+
+
+    return_ACPI_STATUS (AE_OK);                   /* Complete walk, not terminated by user function */
+}
+
+/*****************************************************************************
+ *
+ * FUNCTION:    AcpiRemoveNotifyHandler
+ *
+ * PARAMETERS:  Device          - The device for which notifies will be handled
+ *              Handler         - Address of the handler
+ *              Type            -   0: SystemHandler (00-7f)
+ *                                  1: DriverHandler (80-ff)
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Remove a handler for notifies on an ACPI device
+ *
+ ******************************************************************************/
+
+ACPI_STATUS
+AcpiRemoveNotifyHandler (
+    ACPI_HANDLE             Device, 
+    NOTIFY_HANDLER          Handler,
+    UINT32                  Type)
+{
+    ACPI_OBJECT_INTERNAL    *NotifyObj;
+    ACPI_OBJECT_INTERNAL    *ObjDesc;
+    NAME_TABLE_ENTRY        *ObjEntry;
+
+    FUNCTION_TRACE ("AcpiRemoveNotifyHandler");
+
+    /* Parameter validation */
+
+    if (!Handler)
+    {
+        return_ACPI_STATUS (AE_BAD_PARAMETER);
+    }
+
+    /* Convert and validate the device handle */
+
+    if (!(ObjEntry = NsConvertHandleToEntry (Device)))
+    {
+        return_ACPI_STATUS (AE_BAD_PARAMETER);
+    }
+
+    /*
+     * These are the ONLY objects that can receive ACPI notifications
+     */
+
+    if ((ObjEntry->Type != TYPE_Device)     &&
+        (ObjEntry->Type != TYPE_Processor)  &&
+        (ObjEntry->Type != TYPE_Power)      &&
+        (ObjEntry->Type != TYPE_Thermal))
+    {
+        return_ACPI_STATUS (AE_BAD_PARAMETER);
+    }
 
     /* Check for an existing internal object */
 
     if (!ObjEntry->Object)
     {
-        /* We must create one */
+        return_ACPI_STATUS (AE_NOT_EXIST);
+        
+    }
+
+    ObjDesc = ObjEntry->Object;
+
+    /*
+     *  The object exists.
+     *
+     *  Make sure the handler is installed.
+     */
+
+    if (Type = 0)
+    {
+        NotifyObj = ObjDesc->Device.SysHandler;
+    }
+    else
+    {
+        NotifyObj = ObjDesc->Device.DrvHandler;
+    }
+
+    if ((!NotifyObj) ||
+        (NotifyObj->NotifyHandler.Handler != Handler))
+    {
+        return_ACPI_STATUS (AE_BAD_PARAMETER);
+    }
+
+    /* 
+     * Now we can remove the handler
+     */
+
+    /* TBD: Mutex?? */
+    if (Type = 0)
+    {
+        ObjDesc->Device.SysHandler = NULL;
+    }
+    else
+    {
+        ObjDesc->Device.DrvHandler = NULL;
+    }
+
+    CmDeleteInternalObject(NotifyObj);
+
+    /*
+     *  Remove handler reference in the device
+     */
+    CmUpdateObjectReference (ObjDesc, REF_DECREMENT);
+
+    return_ACPI_STATUS (AE_OK);
+}
+
+/******************************************************************************
+ *
+ * FUNCTION:    EvDisassociateRegionAndHandler
+ *
+ * PARAMETERS:  HandlerObj      - Handler Object
+ *              RegionObj       - Region Object
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Break the association between the handler and the region
+ *              this is a two way association.
+ *
+ ******************************************************************************/
+void
+EvDisassociateRegionAndHandler(
+    ACPI_OBJECT_INTERNAL    *HandlerObj,
+    ACPI_OBJECT_INTERNAL    *RegionObj)
+{
+    ACPI_OBJECT_INTERNAL   *ObjDesc;
+    ACPI_OBJECT_INTERNAL   **LastObjPtr;
+
+    FUNCTION_TRACE ("EvDisassociateRegionAndHandler");
+
+    /*
+     *  First stop region accesses by executing the _REG
+     *  methods
+     */
+
+    //  BUGBUG: Need to call _REG for this region
+
+    /*
+     *  Remove handler reference in the region
+     *
+     *  NOTE: this doesn't mean that the region goes away
+     *  The region is just inaccessible as indicated to
+     *  the _REG method
+     */
+
+    /*
+     *  Find this region in the handler's list
+     */
+    ObjDesc = HandlerObj->AddrHandler.RegionList;
+    LastObjPtr = &ObjDesc->AddrHandler.RegionList;
+
+    while (ObjDesc)
+    {
+        /*
+         *  See if this is the one
+         */
+        if (ObjDesc == RegionObj)
+        {
+            /*
+             *  This is it, remove it from the handler's list
+             */
+            *LastObjPtr = ObjDesc->Region.Link;
+
+            /*
+             *  Remove handler reference in the region and
+             *  the region reference in the handler
+             */
+            CmUpdateObjectReference (RegionObj, REF_DECREMENT);
+            CmUpdateObjectReference (HandlerObj, REF_DECREMENT);
+
+            return;
+
+        } /* found the right handler */
+
+        /*
+         *  Move through the linked list of handlers
+         */
+        LastObjPtr = &ObjDesc->Region.Link;
+        ObjDesc = ObjDesc->Region.Link;
+    }
+
+    /*
+     *  If we get here, the region was not not in the handler's region list
+     */
+
+}  /* EvDisassociateRegionAndHandler */
+
+/******************************************************************************
+ *
+ * FUNCTION:    EvAssociateRegionAndHander
+ *
+ * PARAMETERS:  HandlerObj      - Handler Object
+ *              RegionObj       - Region Object
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Create the association between the handler and the region
+ *              this is a two way association.
+ *
+ ******************************************************************************/
+
+EvAssociateRegionAndHander(
+    ACPI_OBJECT_INTERNAL    *HandlerObj,
+    ACPI_OBJECT_INTERNAL    *RegionObj)
+{
+    FUNCTION_TRACE ("EvAssociateRegionAndHander");
+
+    /*
+     *  BUGBUG:  We should invoke _REG here up to 2 times, If there was
+     *           a previous handler, it should have _REG run and the new
+     *           handler too.
+     */
+
+    /*
+     *  Break any old associations
+     */
+    if (RegionObj->Region.AddrHandler)
+    {
+        EvDisassociateRegionAndHandler(RegionObj->Region.AddrHandler, RegionObj);
+    }
+
+     /*
+     *  We need to update the reference for the handler and the region
+     */
+    CmUpdateObjectReference (HandlerObj, REF_INCREMENT);
+    CmUpdateObjectReference (RegionObj, REF_INCREMENT);
+
+    /*
+     *  Link this region to the front of the handler's list
+     */
+
+    RegionObj->Region.Link = HandlerObj->AddrHandler.RegionList;
+    HandlerObj->AddrHandler.RegionList = RegionObj;
+
+    return_ACPI_STATUS (AE_OK);
+
+}  /* EvAssociateRegionAndHander */
+
+/****************************************************************************
+ *
+ * FUNCTION:    InsAddrHandlerHelper   
+ *
+ * PARAMETERS:  Handle              - Entry to be dumped
+ *              Level               - Nesting level of the handle
+ *              Context             - Passed into NsWalkNamespace
+ *
+ * DESCRIPTION: This routine checks to see if the object is a Region if it
+ *              is then the address handler is installed in it.
+ *
+ *              If the Object is a Device, and the device has a handler of
+ *              the same type then the search is terminated in that branch.
+ *
+ *              This is because the existing handler is closer in proximity
+ *              to any more regions than the one we are trying to install.
+ *
+ ***************************************************************************/
+
+void *
+InsAddrHandlerHelper (
+    ACPI_HANDLE             ObjHandle, 
+    UINT32                  Level, 
+    void                    *Context)
+{
+    ACPI_OBJECT_INTERNAL   *HandlerObj;
+    ACPI_OBJECT_INTERNAL   *TmpObj;
+    ACPI_OBJECT_INTERNAL    *ObjDesc;
+    NAME_TABLE_ENTRY        *ObjEntry;
+
+    FUNCTION_TRACE ("InsAddrHandlerHelper");
+
+    HandlerObj = (ACPI_OBJECT_INTERNAL *) Context;
+
+    /* Parameter validation */
+
+    if (!HandlerObj)
+    {
+        return (void *) AE_OK;
+    }
+
+    /* Convert and validate the device handle */
+
+    if (!(ObjEntry = NsConvertHandleToEntry (ObjHandle)))
+    {
+        return (void *) AE_BAD_PARAMETER;
+    }
+
+    /*
+     *  We only care about regions.and objects
+     *  that can have address handlers
+     */
+
+    if ((ObjEntry->Type != TYPE_Device) &&
+        (ObjEntry->Type != TYPE_Region))
+    {
+        return (void *) AE_OK;
+    }
+
+    /* Check for an existing internal object */
+
+    ObjDesc = ObjEntry->Object;
+
+    if (!ObjDesc)
+    {
+        /*
+         *  The object DNE, this is bad
+         */
+        return (void *) AE_AML_ERROR;
+    }
+
+    if (ObjDesc->Type == TYPE_Device)
+    {
+        TmpObj = ObjDesc->Device.AddrHandler;
+        while (TmpObj)
+        {
+            /*
+             *  This device has an Address handler, see if this is
+             *  the same user address space.
+             */
+            if(TmpObj->AddrHandler.SpaceId == HandlerObj->AddrHandler.SpaceId)
+            {
+                return GO_NO_FURTHER;
+            }
+            /*
+             *  Move through the linked list of handlers
+             */
+            TmpObj = TmpObj->AddrHandler.Link;
+        }
+        return (void *) AE_OK;
+    }
+
+    /*
+     *  Object is a Region, update the handler overwriting whatever
+     *  is there.  First decrement the reference count in the old handler
+     */
+
+    EvAssociateRegionAndHander(HandlerObj, ObjDesc);
+
+    return (void *) AE_OK;
+}
+
+/******************************************************************************
+ *
+ * FUNCTION:    AcpiInstallAddressSpaceHandler
+ *
+ * PARAMETERS:  Device          - Handle for the device 
+ *              SpaceId         - The address space ID
+ *              Handler         - Address of the handler
+ *              Context         - Value passed to the handler on each access
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Install a handler for accesses on an address space controlled
+ *              a specific device.
+ *
+ ******************************************************************************/
+
+ACPI_STATUS
+AcpiInstallAddressSpaceHandler (
+    ACPI_HANDLE             Device, 
+    UINT32                  SpaceId, 
+    ADDRESS_SPACE_HANDLER   Handler, 
+    void                    *Context)
+{
+    ACPI_OBJECT_INTERNAL   *ObjDesc;
+    ACPI_OBJECT_INTERNAL   *HandlerObj;
+    NAME_TABLE_ENTRY       *ObjEntry;
+    ACPI_STATUS             Status;
+
+    FUNCTION_TRACE ("AcpiInstallAddressSpaceHandler");
+
+    /* Parameter validation */
+
+    if ((!Device)   ||
+        (!Handler)  ||
+        (SpaceId > ACPI_MAX_ADDRESS_SPACE))
+    {
+        return_ACPI_STATUS (AE_BAD_PARAMETER);
+    }
+
+    /* Convert and validate the device handle */
+
+    if (!(ObjEntry = NsConvertHandleToEntry (Device)))
+    {
+        return_ACPI_STATUS (AE_BAD_PARAMETER);
+    }
+
+    /*
+     *  This registration is valid for only the types below
+     *  and the root.  This is where the default handlers
+     *  get placed.
+     */
+
+    if ((ObjEntry->Type != TYPE_Device)     &&
+        (ObjEntry->Type != TYPE_Processor)  &&
+        (ObjEntry->Type != TYPE_Thermal)    &&
+        (ObjEntry != RootObject))
+    {
+        return_ACPI_STATUS (AE_BAD_PARAMETER);
+    }
+
+    /* Check for an existing internal object */
+
+    ObjDesc = ObjEntry->Object;
+
+    if (ObjDesc)
+    {
+        /*
+         *  The object exists.
+         *
+         *  Make sure the handler is not already installed.
+         */
+
+        /* check the address handler the user requested */
+
+        HandlerObj = ObjDesc->Device.AddrHandler;
+        while (HandlerObj)
+        {
+            /*
+             *  We have an Address handler, see if user request this
+             *  address space.
+             */
+            if(HandlerObj->AddrHandler.SpaceId == SpaceId)
+            {
+                return_ACPI_STATUS (AE_EXIST);
+            }
+            /*
+             *  Move through the linked list of handlers
+             */
+            HandlerObj = HandlerObj->AddrHandler.Link;
+        }
+    }
+    else
+    {
+        /* ObjDesc DNE: We must create one */
 
         ObjDesc = CmCreateInternalObject (ObjEntry->Type);
         if (!ObjDesc)
@@ -580,166 +1217,53 @@ AcpiInstallNotifyHandler (
         }
     }
 
-    else
-    {
-        /* Object exists; check for an existing handler */
-
-        ObjDesc = ObjEntry->Object;
-        if (ObjDesc->Device.Handler)
-        {
-            return_ACPI_STATUS (AE_EXIST);
-        }
-    }
-
     /* 
-     * Now we can install the handler
-     * Devices and Thermal zones share a common structure
+     *  Now we can install the handler
+     *
+     *  At this point we know that the handler we are installing DNE. 
+     *  So, we just allocate the object for the handler and link it
+     *  into the list.
      */
 
-    /* TBD: Mutex?? */
-
-    ObjDesc->Device.Handler = Handler;
-    ObjDesc->Device.Context = Context;
-
-
-    return_ACPI_STATUS (AE_OK);
-}
-
-
-/*****************************************************************************
- *
- * FUNCTION:    AcpiRemoveNotifyHandler
- *
- * PARAMETERS:  Device          - The device for which notifies will be handled
- *              Handler         - Address of the handler
- *
- * RETURN:      Status
- *
- * DESCRIPTION: Remove a handler for notifies on an ACPI device
- *
- ******************************************************************************/
-
-ACPI_STATUS
-AcpiRemoveNotifyHandler (
-    ACPI_HANDLE             Device, 
-    NOTIFY_HANDLER          Handler)
-{
-    ACPI_OBJECT_INTERNAL    *ObjDesc;
-    NAME_TABLE_ENTRY        *ObjEntry;
-
-
-    FUNCTION_TRACE ("AcpiRemoveNotifyHandler");
-
-
-    /* Parameter validation */
-
-    if (!Handler)
+    HandlerObj = CmCreateInternalObject (TYPE_AddrHandler);
+    if (!HandlerObj)
     {
-        return_ACPI_STATUS (AE_BAD_PARAMETER);
+        /* Descriptor allocation failure   */
+        return_ACPI_STATUS (AE_NO_MEMORY);
     }
 
+    HandlerObj->AddrHandler.SpaceId = SpaceId;
+    HandlerObj->AddrHandler.Link = ObjDesc->Device.AddrHandler;
+    HandlerObj->AddrHandler.RegionList = NULL;
+    HandlerObj->AddrHandler.Nte = ObjEntry;
+    HandlerObj->AddrHandler.Handler = Handler;
+    HandlerObj->AddrHandler.Context = Context;
 
-    /* Convert and validate the device handle */
-
-    if (!(ObjEntry = NsConvertHandleToEntry (Device)))
-    {
-        return_ACPI_STATUS (AE_BAD_PARAMETER);
-    }
 
     /*
-     * The handle must refer to either a device or a thermal zone.  These
-     * are the ONLY objects that can receive ACPI notifications
+     *  Now walk the namespace finding all of the regions this
+     *  handler will manage.
+     *
+     *  We start at the device and search the branch until toward
+     *  the leaf nodes until either the leaf is encountered or
+     *  a device is detected that has an address handler of the
+     *  same type.
+     *
+     *  In either case we back up and search down the remainder
+     *  of the branch
      */
+    Status = AdrWalkNamespace ( TYPE_Any, Device, 100,
+                    InsAddrHandlerHelper, HandlerObj, NULL);
 
-    if ((ObjEntry->Type != TYPE_Device) &&
-        (ObjEntry->Type != TYPE_Thermal))
-    {
-        return_ACPI_STATUS (AE_BAD_PARAMETER);
-    }
-
-
-    /* Check for an existing internal object */
-
-    if (!ObjEntry->Object)
-    {
-        return_ACPI_STATUS (AE_NOT_EXIST);
-        
-    }
-
-    /* Make sure handler matches */
-
-    ObjDesc = ObjEntry->Object;
-    if (ObjDesc->Device.Handler != Handler)
-    {
-        return_ACPI_STATUS (AE_BAD_PARAMETER);
-    }
-
-
-    /* 
-     * Now we can remove the handler
-     * Devices and Thermal zones share a common structure
+    /*
+     *  Place this handler 1st on the list
      */
-
-    /* TBD: Mutex?? */
-
-    ObjDesc->Device.Handler = NULL;
-    ObjDesc->Device.Context = NULL;
-
+    CmUpdateObjectReference (ObjDesc, REF_INCREMENT);
+    ObjDesc->Device.AddrHandler = HandlerObj;
 
     return_ACPI_STATUS (AE_OK);
-}
 
-
-/******************************************************************************
- *
- * FUNCTION:    AcpiInstallAddressSpaceHandler
- *
- * PARAMETERS:  SpaceId         - The address space ID
- *              Handler         - Address of the handler
- *              Context         - Value passed to the handler on each GPE
- *
- * RETURN:      Status
- *
- * DESCRIPTION: Install a handler for accesses on an Operation Region
- *
- ******************************************************************************/
-
-ACPI_STATUS
-AcpiInstallAddressSpaceHandler (
-    UINT32                  SpaceId, 
-    ADDRESS_SPACE_HANDLER   Handler, 
-    void                    *Context)
-{
-    FUNCTION_TRACE ("AcpiInstallAddressSpaceHandler");
-
-
-    /* Parameter validation */
-
-    if ((!Handler) ||
-        (SpaceId > ACPI_MAX_ADDRESS_SPACE))
-    {
-        return_ACPI_STATUS (AE_BAD_PARAMETER);
-    }
-
-
-    /* TBD: Mutex */
-
-
-    /* Check for an existing handler */
-
-    if (AddressSpaces[SpaceId].Handler)
-    {
-        return_ACPI_STATUS (AE_EXIST);
-    }
-
-    /* Install the handler */
-
-    AddressSpaces[SpaceId].Handler = Handler;
-    AddressSpaces[SpaceId].Context = Context;
-
-
-    return_ACPI_STATUS (AE_OK);
-}
+}  /* AcpiInstallAddressSpaceHandler */
 
 
 /******************************************************************************
@@ -757,34 +1281,198 @@ AcpiInstallAddressSpaceHandler (
 
 ACPI_STATUS
 AcpiRemoveAddressSpaceHandler (
+    ACPI_HANDLE             Device, 
     UINT32                  SpaceId, 
     ADDRESS_SPACE_HANDLER   Handler)
 {
-    FUNCTION_TRACE ("AcpiRemoveAddressSpaceHandler");
+    ACPI_OBJECT_INTERNAL   *ObjDesc;
+    ACPI_OBJECT_INTERNAL   *HandlerObj;
+    ACPI_OBJECT_INTERNAL   *RegionObj;
+    ACPI_OBJECT_INTERNAL   **LastObjPtr;
+    NAME_TABLE_ENTRY       *ObjEntry;
 
+    FUNCTION_TRACE ("AcpiRemoveAddressSpaceHandler");
 
     /* Parameter validation */
 
-    if ((!Handler) ||
+    if ((!Device)   ||
+        (!Handler)  ||
         (SpaceId > ACPI_MAX_ADDRESS_SPACE))
+    {
+        return_ACPI_STATUS (AE_BAD_PARAMETER);
+    }
+
+    /* Convert and validate the device handle */
+
+    if (!(ObjEntry = NsConvertHandleToEntry (Device)))
     {
         return_ACPI_STATUS (AE_BAD_PARAMETER);
     }
 
     /* TBD: Mutex */
 
-    /* Make sure that the installed handler is the same */
+    /* Make sure the internal object exists */
 
-    if (AddressSpaces[SpaceId].Handler != Handler)
+    ObjDesc = ObjEntry->Object;
+
+    if (!ObjDesc)
     {
-        return_ACPI_STATUS (AE_BAD_PARAMETER);
+        /*
+         *  The object DNE.
+         */
+        return_ACPI_STATUS (AE_NOT_EXIST);
     }
 
-    /* Remove the handler */
+    /*
+     *  find the address handler the user requested
+     */
 
-    AddressSpaces[SpaceId].Handler = NULL;
-    AddressSpaces[SpaceId].Context = NULL;
+    HandlerObj = ObjDesc->Device.AddrHandler;
+    LastObjPtr = &ObjDesc->Device.AddrHandler;
+    while (HandlerObj)
+    {
+        /*
+         *  We have a handler, see if user requested this one
+         */
 
+        if(HandlerObj->AddrHandler.SpaceId == SpaceId)
+        {
+            /*
+             *  Got it, first dereference this in the Regions
+             */
+            RegionObj = HandlerObj->AddrHandler.RegionList;
 
-    return_ACPI_STATUS (AE_OK);
+            while (RegionObj)
+            {
+                /*
+                 *  First disassociate the handler from the region.
+                 *
+                 *  NOTE: this doesn't mean that the region goes away
+                 *  The region is just inaccessible as indicated to
+                 *  the _REG method
+                 */
+                EvDisassociateRegionAndHandler(HandlerObj, RegionObj);
+
+                /*
+                 *  Walk the list, since we took the first region and it
+                 *  was removed from the list by the dissassociate call
+                 *  we just get the first item on the list again
+                 */
+                RegionObj = HandlerObj->AddrHandler.RegionList;
+            } /* walk the handler's region list */
+
+            /*
+             *  Remove this Handler object from the list
+             */
+            *LastObjPtr = HandlerObj->AddrHandler.Link;
+
+            /*
+             *  Now we can actually delete the object
+             */
+            CmDeleteInternalObject(HandlerObj);
+
+            /*
+             *  Remove handler reference in the device
+             */
+            CmUpdateObjectReference (ObjDesc, REF_DECREMENT);
+
+            return_ACPI_STATUS (AE_OK);
+        } /* found the right handler */
+
+        /*
+         *  Move through the linked list of handlers
+         */
+        LastObjPtr = &HandlerObj->AddrHandler.Link;
+        HandlerObj = HandlerObj->AddrHandler.Link;
+    }
+
+    /*
+     *  If we get here the handler DNE, get out with error
+     */
+    return_ACPI_STATUS (AE_NOT_EXIST);
+}
+
+/******************************************************************************
+ *
+ * FUNCTION:    EvGetAddressSpaceHandler
+ *
+ * PARAMETERS:  Parent     - parent NTE
+ *              RegionObj  - Region we are searching for
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Install a handler for accesses on an Operation Region
+ *
+ ******************************************************************************/
+
+ACPI_STATUS
+EvGetAddressSpaceHandler ( ACPI_OBJECT_INTERNAL *RegionObj)
+{
+    ACPI_OBJECT_INTERNAL   *HandlerObj;
+    UINT32                  SpaceId; 
+    NAME_TABLE_ENTRY       *Nte;        /* Namespace Object */
+
+    FUNCTION_TRACE ("EvGetAddressSpaceHandler");
+
+    Nte = RegionObj->Region.Parent;
+    SpaceId = RegionObj->Region.SpaceId;
+    RegionObj->Region.AddrHandler = NULL;
+
+    while (Nte != RootObject)
+    {
+        /*
+         *  Check to see if a handler exists
+         */
+        switch (Nte->Type)
+        {
+            case TYPE_Device:
+
+                HandlerObj = ((ACPI_OBJECT_INTERNAL *)Nte->Object)->Device.AddrHandler;
+                break;
+
+            case TYPE_Processor:
+
+                HandlerObj = ((ACPI_OBJECT_INTERNAL *)Nte->Object)->Processor.AddrHandler;
+                break;
+
+            case TYPE_Thermal:
+
+                HandlerObj = ((ACPI_OBJECT_INTERNAL *)Nte->Object)->ThermalZone.AddrHandler;
+                break;
+
+            default:
+                HandlerObj = NULL;
+                break;
+        }
+
+        while (HandlerObj)
+        {
+            /*
+             *  This guy has at least one address handler
+             *  see if it has the type we want 
+             */
+            if (HandlerObj->AddrHandler.SpaceId == SpaceId)
+            {
+                /*
+                 *  Found it!!! Now update the region and the handler
+                 */
+                EvAssociateRegionAndHander(HandlerObj, RegionObj);
+                return_ACPI_STATUS (AE_OK);
+            }
+
+            HandlerObj = HandlerObj->AddrHandler.Link;
+        } /* while handlerobj */
+
+        /*
+         *  This one does not have the handler we need
+         *  Pop up one level
+         */
+        Nte = Nte->ParentEntry;
+
+    } /* while Nte != ROOT */
+
+    /*
+     *  If we get here the handler DNE, get out with error
+     */
+    return_ACPI_STATUS (AE_NOT_EXIST);
 }
