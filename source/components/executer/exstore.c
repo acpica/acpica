@@ -156,29 +156,29 @@ AmlExecuteMethod (
     {
         /* Undefine all local variables */
     
-        for (i1 = 0; (i1 < NUMLCL) && (Status == AE_OK); ++i1)
+        for (i1 = 0; (i1 < MTH_NUM_LOCALS) && (Status == AE_OK); ++i1)
         {
-            Status = AmlSetMethodValue (i1 + LCLBASE, NULL, NULL);
+            Status = AmlMthStackSetValue (i1 + MTH_LOCAL_BASE, NULL, NULL);
         }
 
         if (AE_OK == Status)
         {
             /*  Copy passed parameters into method stack frame  */
                 
-            for (i2 = i1 = 0; (i1 < NUMARG) && (AE_OK == Status); ++i1)
+            for (i2 = i1 = 0; (i1 < MTH_NUM_ARGS) && (AE_OK == Status); ++i1)
             {   
                 if (Params && Params[i2])   
                 {
                     /*  parameter/argument specified    */
                     /*  define ppsParams[i2++] argument object descriptor   */
                     
-                    Status = AmlSetMethodValue (i1 + ARGBASE, Params[i2++], NULL);
+                    Status = AmlMthStackSetValue (i1 + MTH_ARG_BASE, Params[i2++], NULL);
                 }
                 else    
                 {
                     /*  no parameter/argument object descriptor definition  */
                     
-                    Status = AmlSetMethodValue (i1 + ARGBASE, NULL, NULL);
+                    Status = AmlMthStackSetValue (i1 + MTH_ARG_BASE, NULL, NULL);
                 }
             }
         }
@@ -197,7 +197,7 @@ AmlExecuteMethod (
 
         if (AE_PENDING == Status)
         {
-            Status = AmlPopExec ();            /* package stack -- inverse of AmlPrepExec() */
+            Status = AmlPkgPopExec ();            /* package stack -- inverse of AmlPrepExec() */
         }
 
         else
@@ -209,7 +209,7 @@ AmlExecuteMethod (
                 DEBUG_PRINT (ACPI_INFO, (" at stack level %d\n", ObjStackTop));
             }
 
-            AmlPopExec ();            /* package stack -- inverse of AmlPrepExec() */
+            AmlPkgPopExec ();            /* package stack -- inverse of AmlPrepExec() */
         }
 
         MethodStackTop--;          /* pop our frame off method stack */
@@ -222,7 +222,7 @@ AmlExecuteMethod (
                         ObjStack, ObjStackTop));
     }
 
-    FUNCTION_EXIT;
+    FUNCTION_STATUS_EXIT (Status);
     return Status;
 }
 
@@ -256,6 +256,10 @@ AmlExecStore (
     INT32                   Stacked = FALSE;
     BOOLEAN                 Locked = FALSE;
     ACPI_OBJECT             *DeleteDestDesc = NULL;
+    UINT8                   *Location=NULL;
+    UINT32                  Mask;
+
+
 
 
     FUNCTION_TRACE ("AmlExecStore");
@@ -278,7 +282,7 @@ AmlExecStore (
         {   
             /* Allocation failure  */
             
-            FUNCTION_EXIT;
+            FUNCTION_STATUS_EXIT (AE_NO_MEMORY);
             return AE_NO_MEMORY;
         }
         else
@@ -294,7 +298,7 @@ AmlExecStore (
              * to protect it from garbage collection
              */
 
-            Status = AmlPushIfExec (MODE_Exec);
+            Status = AmlObjPushIfExec (MODE_Exec);
             if (AE_OK != Status)
             {
                 OsdFree (DestDesc);
@@ -335,7 +339,7 @@ AmlExecStore (
 
     if (AE_OK != Status)
     {
-        FUNCTION_EXIT;
+        FUNCTION_STATUS_EXIT (Status);
         return Status;   /* TBD: temporary hack */
     }
 
@@ -412,7 +416,7 @@ AmlExecStore (
                 DEBUG_PRINT (ACPI_ERROR, (
                         "AmlExecStore/BankField: internal error: Name %4.4s type %d does not match value-type %d at %p\n",
                         TempHandle, NsGetType (TempHandle), DestDesc->ValType, DestDesc));
-                AmlAppendBlockOwner (DestDesc);
+
                 Status = AE_AML_ERROR;
             }
 
@@ -491,7 +495,7 @@ AmlExecStore (
                 DEBUG_PRINT (ACPI_ERROR, (
                         "AmlExecStore/DefField:internal error: Name %4.4s type %d does not match value-type %d at %p\n",
                         TempHandle, NsGetType (TempHandle), DestDesc->ValType, DestDesc));
-                AmlAppendBlockOwner (DestDesc);
+
                 Status = AE_AML_ERROR;
             }
 
@@ -554,7 +558,7 @@ AmlExecStore (
                 DEBUG_PRINT (ACPI_ERROR, (
                         "AmlExecStore/IndexField:internal error: Name %4.4s type %d does not match value-type %d at %p\n",
                         TempHandle, NsGetType (TempHandle), DestDesc->ValType, DestDesc));
-                AmlAppendBlockOwner (DestDesc);
+
                 Status = AE_AML_ERROR;
             }
 
@@ -638,7 +642,7 @@ AmlExecStore (
                 DEBUG_PRINT (ACPI_ERROR, (
                         "AmlExecStore/FieldUnit:internal error: Name %4.4s type %d does not match value-type %d at %p\n",
                           TempHandle, NsGetType(TempHandle), DestDesc->ValType, DestDesc));
-                AmlAppendBlockOwner (DestDesc);
+
                 Status = AE_AML_ERROR;
             }
 
@@ -670,10 +674,6 @@ AmlExecStore (
             
             if (AE_OK == Status)
             {
-                UINT8           *Location=NULL;
-                UINT32          Mask;
-
-
                 /* Field location is (base of buffer) + (byte offset) */
                 
                 Location = DestDesc->FieldUnit.Container->Buffer.Buffer
@@ -758,14 +758,14 @@ AmlExecStore (
     case AML_Local0: case AML_Local1: case AML_Local2: case AML_Local3:
     case AML_Local4: case AML_Local5: case AML_Local6: case AML_Local7:
 
-        Status = AmlSetMethodValue (LCLBASE + DestDesc->Lvalue.OpCode - AML_Local0, ValDesc, DestDesc);
+        Status = AmlMthStackSetValue (MTH_LOCAL_BASE + DestDesc->Lvalue.OpCode - AML_Local0, ValDesc, DestDesc);
         break;
 
 
     case AML_Arg0: case AML_Arg1: case AML_Arg2: case AML_Arg3:
     case AML_Arg4: case AML_Arg5: case AML_Arg6:
 
-        Status = AmlSetMethodValue (ARGBASE + DestDesc->Lvalue.OpCode - AML_Arg0, ValDesc, DestDesc);
+        Status = AmlMthStackSetValue (MTH_ARG_BASE + DestDesc->Lvalue.OpCode - AML_Arg0, ValDesc, DestDesc);
         break;
 
 
@@ -829,7 +829,7 @@ AmlExecStore (
         ObjStackTop--;
     }
 
-    FUNCTION_EXIT;
+    FUNCTION_STATUS_EXIT (Status);
     return Status;
 }
 
