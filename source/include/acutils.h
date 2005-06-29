@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acutils.h -- prototypes for the common (subsystem-wide) procedures
- *       $Revision: 1.170 $
+ *       $Revision: 1.171 $
  *
  *****************************************************************************/
 
@@ -214,16 +214,6 @@ ACPI_STATUS
 AcpiUtValidateFadt (
     void);
 
-static void
-AcpiUtFadtRegisterError (
-    char                    *RegisterName,
-    UINT32                  Value,
-    ACPI_SIZE               Offset);
-
-void
-static AcpiUtTerminate (
-    void);
-
 
 /*
  * utclib - Local implementations of C library functions
@@ -370,49 +360,6 @@ AcpiUtCopyIobjectToIobject (
     ACPI_OPERAND_OBJECT     **DestDesc,
     ACPI_WALK_STATE         *WalkState);
 
-static ACPI_STATUS
-AcpiUtCopyIsimpleToEsimple (
-    ACPI_OPERAND_OBJECT     *InternalObject,
-    ACPI_OBJECT             *ExternalObject,
-    UINT8                   *DataSpace,
-    ACPI_SIZE               *BufferSpaceUsed);
-
-static ACPI_STATUS
-AcpiUtCopyIelementToIelement (
-    UINT8                   ObjectType,
-    ACPI_OPERAND_OBJECT     *SourceObject,
-    ACPI_GENERIC_STATE      *State,
-    void                    *Context);
-
-static ACPI_STATUS
-AcpiUtCopyIpackageToEpackage (
-    ACPI_OPERAND_OBJECT     *InternalObject,
-    UINT8                   *Buffer,
-    ACPI_SIZE               *SpaceUsed);
-
-static ACPI_STATUS
-AcpiUtCopyEsimpleToIsimple(
-    ACPI_OBJECT             *UserObj,
-    ACPI_OPERAND_OBJECT     **ReturnObj);
-
-static ACPI_STATUS
-AcpiUtCopySimpleObject (
-    ACPI_OPERAND_OBJECT     *SourceDesc,
-    ACPI_OPERAND_OBJECT     *DestDesc);
-
-static ACPI_STATUS
-AcpiUtCopyIelementToEelement (
-    UINT8                   ObjectType,
-    ACPI_OPERAND_OBJECT     *SourceObject,
-    ACPI_GENERIC_STATE      *State,
-    void                    *Context);
-
-static ACPI_STATUS
-AcpiUtCopyIpackageToIpackage (
-    ACPI_OPERAND_OBJECT     *SourceObj,
-    ACPI_OPERAND_OBJECT     *DestObj,
-    ACPI_WALK_STATE         *WalkState);
-
 
 /*
  * utcreate - Object creation
@@ -545,14 +492,6 @@ void
 AcpiUtDeleteInternalObjectList (
     ACPI_OPERAND_OBJECT     **ObjList);
 
-static void
-AcpiUtDeleteInternalObj (
-    ACPI_OPERAND_OBJECT     *Object);
-
-static void
-AcpiUtUpdateRefCount (
-    ACPI_OPERAND_OBJECT     *Object,
-    UINT32                  Action);
 
 /*
  * uteval - object evaluation
@@ -599,16 +538,6 @@ AcpiUtExecute_Sxds (
     ACPI_NAMESPACE_NODE     *DeviceNode,
     UINT8                   *Highest);
 
-static void
-AcpiUtCopyIdString (
-    char                    *Destination,
-    char                    *Source,
-    ACPI_SIZE               MaxLength);
-
-static ACPI_STATUS
-AcpiUtTranslateOneCid (
-    ACPI_OPERAND_OBJECT     *ObjDesc,
-    ACPI_COMPATIBLE_ID      *OneCid);
 
 /*
  * utobject - internal object create/delete/cache routines
@@ -649,23 +578,6 @@ ACPI_STATUS
 AcpiUtGetObjectSize(
     ACPI_OPERAND_OBJECT     *Obj,
     ACPI_SIZE               *ObjLength);
-
-static ACPI_STATUS
-AcpiUtGetSimpleObjectSize (
-    ACPI_OPERAND_OBJECT     *Obj,
-    ACPI_SIZE               *ObjLength);
-
-static ACPI_STATUS
-AcpiUtGetPackageObjectSize (
-    ACPI_OPERAND_OBJECT     *Obj,
-    ACPI_SIZE               *ObjLength);
-
-static ACPI_STATUS
-AcpiUtGetElementLength (
-    UINT8                   ObjectType,
-    ACPI_OPERAND_OBJECT     *SourceObject,
-    ACPI_GENERIC_STATE      *State,
-    void                    *Context);
 
 
 /*
@@ -778,6 +690,10 @@ AcpiUtStrtoul64 (
     UINT32                  Base,
     ACPI_INTEGER            *RetInteger);
 
+/* Values for Base above (16=Hex, 10=Decimal) */
+
+#define ACPI_ANY_BASE        0
+
 ACPI_STATUS
 AcpiUtMutexInitialize (
     void);
@@ -793,19 +709,6 @@ AcpiUtAcquireMutex (
 ACPI_STATUS
 AcpiUtReleaseMutex (
     ACPI_MUTEX_HANDLE       MutexId);
-
-static ACPI_STATUS
-AcpiUtCreateMutex (
-    ACPI_MUTEX_HANDLE       MutexId);
-
-static ACPI_STATUS
-AcpiUtDeleteMutex (
-    ACPI_MUTEX_HANDLE       MutexId);
-
-
-/* Values for Base above (16=Hex, 10=Decimal) */
-
-#define ACPI_ANY_BASE        0
 
 UINT8 *
 AcpiUtGetResourceEndTag (
@@ -893,29 +796,6 @@ AcpiUtCallocateAndTrack (
 void
 AcpiUtFreeAndTrack (
     void                    *Address,
-    UINT32                  Component,
-    char                    *Module,
-    UINT32                  Line);
-
-static ACPI_DEBUG_MEM_BLOCK *
-AcpiUtFindAllocation (
-    UINT32                  ListId,
-    void                    *Allocation);
-
-static ACPI_STATUS
-AcpiUtTrackAllocation (
-    UINT32                  ListId,
-    ACPI_DEBUG_MEM_BLOCK    *Address,
-    ACPI_SIZE               Size,
-    UINT8                   AllocType,
-    UINT32                  Component,
-    char                    *Module,
-    UINT32                  Line);
-
-static ACPI_STATUS
-AcpiUtRemoveAllocation (
-    UINT32                  ListId,
-    ACPI_DEBUG_MEM_BLOCK    *Address,
     UINT32                  Component,
     char                    *Module,
     UINT32                  Line);
