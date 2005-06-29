@@ -264,6 +264,10 @@ CmDeleteInternalSimpleObject (
     ACPI_OBJECT_INTERNAL    *Object);
 
 void
+CmAddReference (
+    ACPI_OBJECT_INTERNAL    *Object);
+
+void
 CmRemoveReference (
     ACPI_OBJECT_INTERNAL    *Object);
 
