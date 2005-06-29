@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: rsxface - Public interfaces to the resource manager
- *              $Revision: 1.15 $
+ *              $Revision: 1.19 $
  *
  ******************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -118,12 +118,10 @@
 #define __RSXFACE_C__
 
 #include "acpi.h"
-#include "acinterp.h"
-#include "acnamesp.h"
 #include "acresrc.h"
 
 #define _COMPONENT          ACPI_RESOURCES
-        MODULE_NAME         ("rsxface")
+        ACPI_MODULE_NAME    ("rsxface")
 
 
 /*******************************************************************************
@@ -157,7 +155,7 @@ AcpiGetIrqRoutingTable  (
     ACPI_STATUS             Status;
 
 
-    FUNCTION_TRACE ("AcpiGetIrqRoutingTable ");
+    ACPI_FUNCTION_TRACE ("AcpiGetIrqRoutingTable ");
 
 
     /*
@@ -166,11 +164,15 @@ AcpiGetIrqRoutingTable  (
      * we also need a valid pointer in the buffer. If it's a zero buffer length,
      * we'll be returning the needed buffer size, so keep going.
      */
-    if ((!DeviceHandle)         ||
-        (!RetBuffer)            ||
-        ((!RetBuffer->Pointer) && (RetBuffer->Length)))
+    if (!DeviceHandle)
     {
         return_ACPI_STATUS (AE_BAD_PARAMETER);
+    }
+
+    Status = AcpiUtValidateBuffer (RetBuffer);
+    if (ACPI_FAILURE (Status))
+    {
+        return_ACPI_STATUS (Status);
     }
 
     Status = AcpiRsGetPrtMethodData (DeviceHandle, RetBuffer);
@@ -210,7 +212,7 @@ AcpiGetCurrentResources (
     ACPI_STATUS             Status;
 
 
-    FUNCTION_TRACE ("AcpiGetCurrentResources");
+    ACPI_FUNCTION_TRACE ("AcpiGetCurrentResources");
 
 
     /*
@@ -219,11 +221,15 @@ AcpiGetCurrentResources (
      * we also need a valid pointer in the buffer. If it's a zero buffer length,
      * we'll be returning the needed buffer size, so keep going.
      */
-    if ((!DeviceHandle)         ||
-        (!RetBuffer)            ||
-        ((RetBuffer->Length) && (!RetBuffer->Pointer)))
+    if (!DeviceHandle)
     {
         return_ACPI_STATUS (AE_BAD_PARAMETER);
+    }
+
+    Status = AcpiUtValidateBuffer (RetBuffer);
+    if (ACPI_FAILURE (Status))
+    {
+        return_ACPI_STATUS (Status);
     }
 
     Status = AcpiRsGetCrsMethodData (DeviceHandle, RetBuffer);
@@ -260,7 +266,7 @@ AcpiGetPossibleResources (
     ACPI_STATUS             Status;
 
 
-    FUNCTION_TRACE ("AcpiGetPossibleResources");
+    ACPI_FUNCTION_TRACE ("AcpiGetPossibleResources");
 
 
     /*
@@ -269,11 +275,15 @@ AcpiGetPossibleResources (
      * we also need a valid pointer in the buffer. If it's a zero buffer length,
      * we'll be returning the needed buffer size, so keep going.
      */
-    if ((!DeviceHandle)         ||
-        (!RetBuffer)            ||
-        ((RetBuffer->Length) && (!RetBuffer->Pointer)))
+    if (!DeviceHandle)
     {
         return_ACPI_STATUS (AE_BAD_PARAMETER);
+    }
+
+    Status = AcpiUtValidateBuffer (RetBuffer);
+    if (ACPI_FAILURE (Status))
+    {
+        return_ACPI_STATUS (Status);
     }
 
     Status = AcpiRsGetPrsMethodData (DeviceHandle, RetBuffer);
@@ -307,7 +317,7 @@ AcpiSetCurrentResources (
     ACPI_STATUS             Status;
 
 
-    FUNCTION_TRACE ("AcpiSetCurrentResources");
+    ACPI_FUNCTION_TRACE ("AcpiSetCurrentResources");
 
 
     /*

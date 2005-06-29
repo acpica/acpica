@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: cmclib - Local implementation of C library functions
- * $Revision: 1.38 $
+ * $Revision: 1.44 $
  *
  *****************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -118,11 +118,6 @@
 #define __CMCLIB_C__
 
 #include "acpi.h"
-#include "acevents.h"
-#include "achware.h"
-#include "acnamesp.h"
-#include "acinterp.h"
-#include "amlcode.h"
 
 /*
  * These implementations of standard C Library routines can optionally be
@@ -130,8 +125,8 @@
  * than an inline or assembly implementation
  */
 
-#define _COMPONENT          MISCELLANEOUS
-        MODULE_NAME         ("cmclib")
+#define _COMPONENT          ACPI_UTILITIES
+        ACPI_MODULE_NAME    ("cmclib")
 
 
 #ifndef ACPI_USE_SYSTEM_CLIBRARY
@@ -202,7 +197,6 @@ AcpiUtStrcpy (
     /* Null terminate */
 
     *String = 0;
-
     return (DstString);
 }
 
@@ -278,7 +272,6 @@ AcpiUtStrcmp (
         }
     }
 
-
     return ((unsigned char) *String1 - (unsigned char) *String2);
 }
 
@@ -313,7 +306,7 @@ AcpiUtStrncmp (
         }
     }
 
-    return ((Count == -1) ? 0 : ((unsigned char) *String1 -
+    return ((Count == ACPI_INTEGER_MAX) ? 0 : ((unsigned char) *String1 -
         (unsigned char) *String2));
 }
 
@@ -344,7 +337,7 @@ AcpiUtStrcat (
     for (String = DstString; *String++; )
     { ; }
 
-    /* Concatinate the string */
+    /* Concatenate the string */
 
     for (--String; (*String++ = *SrcString++); )
     { ; }
@@ -384,7 +377,7 @@ AcpiUtStrncat (
         for (String = DstString; *String++; )
         { ; }
 
-        /* Concatinate the string */
+        /* Concatenate the string */
 
         for (--String; (*String++ = *SrcString++) && --Count; )
         { ; }
@@ -716,7 +709,6 @@ AcpiUtStrstr (
         String++;
     }
 
-
     return (String1);
 }
 
@@ -769,13 +761,11 @@ AcpiUtStrtoul (
         sign = NEGATIVE;
         ++String;
     }
-
     else if (*String == '+')
     {
         ++String;
         sign = POSITIVE;
     }
-
     else
     {
         sign = POSITIVE;
@@ -794,19 +784,16 @@ AcpiUtStrtoul (
                 Base = 16;
                 ++String;
             }
-
             else
             {
                 Base = 8;
             }
         }
-
         else
         {
             Base = 10;
         }
     }
-
     else if (Base < 2 || Base > 36)
     {
         /*
@@ -842,7 +829,6 @@ AcpiUtStrtoul (
         {
             index = *String - '0';
         }
-
         else
         {
             index = AcpiUtToUpper (*String);
@@ -850,7 +836,6 @@ AcpiUtStrtoul (
             {
                 index = index - 'A' + 10;
             }
-
             else
             {
                 goto done;
@@ -872,7 +857,6 @@ AcpiUtStrtoul (
             Status = AE_ERROR;
             ReturnValue = 0L;           /* reset */
         }
-
         else
         {
             ReturnValue *= Base;
@@ -894,7 +878,6 @@ done:
         {
             *Terminator = (NATIVE_CHAR *) StringStart;
         }
-
         else
         {
             *Terminator = (NATIVE_CHAR *) String;

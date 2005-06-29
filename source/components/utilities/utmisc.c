@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: utmisc - common utility procedures
- *              $Revision: 1.41 $
+ *              $Revision: 1.68 $
  *
  ******************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -118,16 +118,58 @@
 #define __UTMISC_C__
 
 #include "acpi.h"
-#include "acevents.h"
-#include "achware.h"
 #include "acnamesp.h"
-#include "acinterp.h"
 #include "amlcode.h"
-#include "acdebug.h"
 
 
 #define _COMPONENT          ACPI_UTILITIES
-        MODULE_NAME         ("utmisc")
+        ACPI_MODULE_NAME    ("utmisc")
+
+
+#ifdef ACPI_DEBUG
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiUtDisplayInitPathname
+ *
+ * PARAMETERS:  ObjHandle           - Handle whose pathname will be displayed
+ *              Path                - Additional path string to be appended
+ *
+ * RETURN:      ACPI_STATUS
+ *
+ * DESCRIPTION: Display full pathnbame of an object, DEBUG ONLY
+ *
+ ******************************************************************************/
+
+void
+AcpiUtDisplayInitPathname (
+    ACPI_HANDLE             ObjHandle,
+    char                    *Path)
+{
+    ACPI_STATUS             Status;
+    ACPI_BUFFER             Buffer;
+
+
+    ACPI_FUNCTION_NAME ("UtDisplayInitPathname");
+
+
+    Buffer.Length = ACPI_ALLOCATE_LOCAL_BUFFER;
+
+    Status = AcpiNsHandleToPathname (ObjHandle, &Buffer);
+    if (ACPI_SUCCESS (Status))
+    {
+        if (Path)
+        {
+            ACPI_DEBUG_PRINT ((ACPI_DB_INIT, "%s.%s\n", (char *) Buffer.Pointer, Path));
+        }
+        else
+        {
+            ACPI_DEBUG_PRINT ((ACPI_DB_INIT, "%s\n", (char *) Buffer.Pointer));
+        }
+
+        ACPI_MEM_FREE (Buffer.Pointer);
+    }
+}
+#endif
 
 
 /*******************************************************************************
@@ -153,6 +195,9 @@ AcpiUtValidAcpiName (
     UINT32                  i;
 
 
+    ACPI_FUNCTION_ENTRY ();
+
+
     for (i = 0; i < ACPI_NAME_SIZE; i++)
     {
         if (!((NamePtr[i] == '_') ||
@@ -162,7 +207,6 @@ AcpiUtValidAcpiName (
             return (FALSE);
         }
     }
-
 
     return (TRUE);
 }
@@ -185,10 +229,13 @@ AcpiUtValidAcpiCharacter (
     NATIVE_CHAR             Character)
 {
 
+    ACPI_FUNCTION_ENTRY ();
+
     return ((BOOLEAN)   ((Character == '_') ||
                         (Character >= 'A' && Character <= 'Z') ||
                         (Character >= '0' && Character <= '9')));
 }
+
 
 /*******************************************************************************
  *
@@ -209,11 +256,14 @@ AcpiUtStrupr (
     NATIVE_CHAR             *String;
 
 
+    ACPI_FUNCTION_ENTRY ();
+
+
     /* Walk entire string, uppercasing the letters */
 
     for (String = SrcString; *String; )
     {
-        *String = (char) TOUPPER (*String);
+        *String = (char) ACPI_TOUPPER (*String);
         String++;
     }
 
@@ -241,7 +291,7 @@ AcpiUtMutexInitialize (
     ACPI_STATUS             Status;
 
 
-    FUNCTION_TRACE ("UtMutexInitialize");
+    ACPI_FUNCTION_TRACE ("UtMutexInitialize");
 
 
     /*
@@ -279,7 +329,7 @@ AcpiUtMutexTerminate (
     UINT32                  i;
 
 
-    FUNCTION_TRACE ("UtMutexTerminate");
+    ACPI_FUNCTION_TRACE ("UtMutexTerminate");
 
 
     /*
@@ -313,7 +363,7 @@ AcpiUtCreateMutex (
     ACPI_STATUS             Status = AE_OK;
 
 
-    FUNCTION_TRACE_U32 ("UtCreateMutex", MutexId);
+    ACPI_FUNCTION_TRACE_U32 ("UtCreateMutex", MutexId);
 
 
     if (MutexId > MAX_MTX)
@@ -353,7 +403,7 @@ AcpiUtDeleteMutex (
     ACPI_STATUS             Status;
 
 
-    FUNCTION_TRACE_U32 ("UtDeleteMutex", MutexId);
+    ACPI_FUNCTION_TRACE_U32 ("UtDeleteMutex", MutexId);
 
 
     if (MutexId > MAX_MTX)
@@ -392,6 +442,9 @@ AcpiUtAcquireMutex (
     UINT32                  ThisThreadId;
 
 
+    ACPI_FUNCTION_NAME ("UtAcquireMutex");
+
+
     if (MutexId > MAX_MTX)
     {
         return (AE_BAD_PARAMETER);
@@ -412,15 +465,15 @@ AcpiUtAcquireMutex (
         {
             if (i == MutexId)
             {
-                DEBUG_PRINT (ACPI_ERROR,
-                        ("Mutex [%s] already acquired by this thread [%X]\n",
+                ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
+                        "Mutex [%s] already acquired by this thread [%X]\n",
                         AcpiUtGetMutexName (MutexId), ThisThreadId));
 
                 return (AE_ALREADY_ACQUIRED);
             }
 
-            DEBUG_PRINT (ACPI_ERROR,
-                    ("Invalid acquire order: Thread %X owns [%s], wants [%s]\n",
+            ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
+                    "Invalid acquire order: Thread %X owns [%s], wants [%s]\n",
                     ThisThreadId, AcpiUtGetMutexName (i),
                     AcpiUtGetMutexName (MutexId)));
 
@@ -429,16 +482,15 @@ AcpiUtAcquireMutex (
     }
 
 
-    DEBUG_PRINT (TRACE_MUTEX,
-                ("Thread %X attempting to acquire Mutex [%s]\n",
+    ACPI_DEBUG_PRINT ((ACPI_DB_MUTEX,
+                "Thread %X attempting to acquire Mutex [%s]\n",
                 ThisThreadId, AcpiUtGetMutexName (MutexId)));
 
     Status = AcpiOsWaitSemaphore (AcpiGbl_AcpiMutexInfo[MutexId].Mutex,
                                     1, WAIT_FOREVER);
-
     if (ACPI_SUCCESS (Status))
     {
-        DEBUG_PRINT (TRACE_MUTEX, ("Thread %X acquired Mutex [%s]\n",
+        ACPI_DEBUG_PRINT ((ACPI_DB_MUTEX, "Thread %X acquired Mutex [%s]\n",
                     ThisThreadId, AcpiUtGetMutexName (MutexId)));
 
         AcpiGbl_AcpiMutexInfo[MutexId].UseCount++;
@@ -447,9 +499,9 @@ AcpiUtAcquireMutex (
 
     else
     {
-        DEBUG_PRINT (ACPI_ERROR, ("Thread %X could not acquire Mutex [%s] %s\n",
+        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Thread %X could not acquire Mutex [%s] %s\n",
                     ThisThreadId, AcpiUtGetMutexName (MutexId),
-                    AcpiUtFormatException (Status)));
+                    AcpiFormatException (Status)));
     }
 
     return (Status);
@@ -477,9 +529,12 @@ AcpiUtReleaseMutex (
     UINT32                  ThisThreadId;
 
 
+    ACPI_FUNCTION_NAME ("UtReleaseMutex");
+
+
     ThisThreadId = AcpiOsGetThreadId ();
-    DEBUG_PRINT (TRACE_MUTEX,
-        ("Thread %X releasing Mutex [%s]\n", ThisThreadId,
+    ACPI_DEBUG_PRINT ((ACPI_DB_MUTEX,
+        "Thread %X releasing Mutex [%s]\n", ThisThreadId,
         AcpiUtGetMutexName (MutexId)));
 
     if (MutexId > MAX_MTX)
@@ -493,8 +548,8 @@ AcpiUtReleaseMutex (
      */
     if (AcpiGbl_AcpiMutexInfo[MutexId].OwnerId == ACPI_MUTEX_NOT_ACQUIRED)
     {
-        DEBUG_PRINT (ACPI_ERROR,
-                ("Mutex [%s] is not acquired, cannot release\n",
+        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
+                "Mutex [%s] is not acquired, cannot release\n",
                 AcpiUtGetMutexName (MutexId)));
 
         return (AE_NOT_ACQUIRED);
@@ -516,8 +571,8 @@ AcpiUtReleaseMutex (
                 continue;
             }
 
-            DEBUG_PRINT (ACPI_ERROR,
-                    ("Invalid release order: owns [%s], releasing [%s]\n",
+            ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
+                    "Invalid release order: owns [%s], releasing [%s]\n",
                     AcpiUtGetMutexName (i), AcpiUtGetMutexName (MutexId)));
 
             return (AE_RELEASE_DEADLOCK);
@@ -533,13 +588,13 @@ AcpiUtReleaseMutex (
 
     if (ACPI_FAILURE (Status))
     {
-        DEBUG_PRINT (ACPI_ERROR, ("Thread %X could not release Mutex [%s] %s\n",
+        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Thread %X could not release Mutex [%s] %s\n",
                     ThisThreadId, AcpiUtGetMutexName (MutexId),
-                    AcpiUtFormatException (Status)));
+                    AcpiFormatException (Status)));
     }
     else
     {
-        DEBUG_PRINT (TRACE_MUTEX, ("Thread %X released Mutex [%s]\n",
+        ACPI_DEBUG_PRINT ((ACPI_DB_MUTEX, "Thread %X released Mutex [%s]\n",
                     ThisThreadId, AcpiUtGetMutexName (MutexId)));
     }
 
@@ -568,6 +623,9 @@ AcpiUtCreateUpdateStateAndPush (
     ACPI_GENERIC_STATE      **StateList)
 {
     ACPI_GENERIC_STATE       *State;
+
+
+    ACPI_FUNCTION_ENTRY ();
 
 
     /* Ignore null objects; these are expected */
@@ -613,6 +671,9 @@ AcpiUtCreatePkgStateAndPush (
     ACPI_GENERIC_STATE       *State;
 
 
+    ACPI_FUNCTION_ENTRY ();
+
+
     State = AcpiUtCreatePkgState (InternalObject, ExternalObject, Index);
     if (!State)
     {
@@ -643,7 +704,8 @@ AcpiUtPushGenericState (
     ACPI_GENERIC_STATE      **ListHead,
     ACPI_GENERIC_STATE      *State)
 {
-    FUNCTION_TRACE ("UtPushGenericState");
+    ACPI_FUNCTION_TRACE ("UtPushGenericState");
+
 
     /* Push the state object onto the front of the list (stack) */
 
@@ -673,7 +735,7 @@ AcpiUtPopGenericState (
     ACPI_GENERIC_STATE      *State;
 
 
-    FUNCTION_TRACE ("DsPopGenericState");
+    ACPI_FUNCTION_TRACE ("UtPopGenericState");
 
 
     /* Remove the state object at the head of the list (stack) */
@@ -709,49 +771,59 @@ AcpiUtCreateGenericState (void)
     ACPI_GENERIC_STATE      *State;
 
 
-    AcpiUtAcquireMutex (ACPI_MTX_CACHES);
+    ACPI_FUNCTION_ENTRY ();
 
-    AcpiGbl_StateCacheRequests++;
 
-    /* Check the cache first */
-
-    if (AcpiGbl_GenericStateCache)
-    {
-        /* There is an object available, use it */
-
-        State = AcpiGbl_GenericStateCache;
-        AcpiGbl_GenericStateCache = State->Common.Next;
-        State->Common.Next = NULL;
-
-        AcpiGbl_StateCacheHits++;
-        AcpiGbl_GenericStateCacheDepth--;
-
-        AcpiUtReleaseMutex (ACPI_MTX_CACHES);
-
-        DEBUG_PRINT (TRACE_EXEC, ("CreateGenState: State %p from cache\n", State));
-    }
-
-    else
-    {
-        /* The cache is empty, create a new object */
-
-        AcpiUtReleaseMutex (ACPI_MTX_CACHES);
-
-        State = AcpiUtCallocate (sizeof (ACPI_GENERIC_STATE));
-    }
+    State = AcpiUtAcquireFromCache (ACPI_MEM_LIST_STATE);
 
     /* Initialize */
 
     if (State)
     {
-        /* Always zero out the object before init */
-
-        MEMSET (State, 0, sizeof (ACPI_GENERIC_STATE));
-
         State->Common.DataType = ACPI_DESC_TYPE_STATE;
     }
 
     return (State);
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiUtCreateThreadState
+ *
+ * PARAMETERS:  None
+ *
+ * RETURN:      Thread State
+ *
+ * DESCRIPTION: Create a "Thread State" - a flavor of the generic state used
+ *              to track per-thread info during method execution
+ *
+ ******************************************************************************/
+
+ACPI_THREAD_STATE *
+AcpiUtCreateThreadState (
+    void)
+{
+    ACPI_GENERIC_STATE      *State;
+
+
+    ACPI_FUNCTION_TRACE ("UtCreateThreadState");
+
+
+    /* Create the generic state object */
+
+    State = AcpiUtCreateGenericState ();
+    if (!State)
+    {
+        return_PTR (NULL);
+    }
+
+    /* Init fields specific to the update struct */
+
+    State->Common.DataType = ACPI_DESC_TYPE_STATE_THREAD;
+    State->Thread.ThreadId = AcpiOsGetThreadId ();
+
+    return_PTR ((ACPI_THREAD_STATE *) State);
 }
 
 
@@ -779,7 +851,7 @@ AcpiUtCreateUpdateState (
     ACPI_GENERIC_STATE      *State;
 
 
-    FUNCTION_TRACE_PTR ("UtCreateUpdateState", Object);
+    ACPI_FUNCTION_TRACE_PTR ("UtCreateUpdateState", Object);
 
 
     /* Create the generic state object */
@@ -787,11 +859,12 @@ AcpiUtCreateUpdateState (
     State = AcpiUtCreateGenericState ();
     if (!State)
     {
-        return (NULL);
+        return_PTR (NULL);
     }
 
     /* Init fields specific to the update struct */
 
+    State->Common.DataType = ACPI_DESC_TYPE_STATE_UPDATE;
     State->Update.Object = Object;
     State->Update.Value  = Action;
 
@@ -809,9 +882,7 @@ AcpiUtCreateUpdateState (
  *
  * RETURN:      Status
  *
- * DESCRIPTION: Create an "Update State" - a flavor of the generic state used
- *              to update reference counts and delete complex objects such
- *              as packages.
+ * DESCRIPTION: Create a "Package State"
  *
  ******************************************************************************/
 
@@ -824,7 +895,7 @@ AcpiUtCreatePkgState (
     ACPI_GENERIC_STATE      *State;
 
 
-    FUNCTION_TRACE_PTR ("UtCreatePkgState", InternalObject);
+    ACPI_FUNCTION_TRACE_PTR ("UtCreatePkgState", InternalObject);
 
 
     /* Create the generic state object */
@@ -832,11 +903,12 @@ AcpiUtCreatePkgState (
     State = AcpiUtCreateGenericState ();
     if (!State)
     {
-        return (NULL);
+        return_PTR (NULL);
     }
 
     /* Init fields specific to the update struct */
 
+    State->Common.DataType  = ACPI_DESC_TYPE_STATE_PACKAGE;
     State->Pkg.SourceObject = (ACPI_OPERAND_OBJECT *) InternalObject;
     State->Pkg.DestObject   = ExternalObject;
     State->Pkg.Index        = Index;
@@ -866,20 +938,22 @@ AcpiUtCreateControlState (
     ACPI_GENERIC_STATE      *State;
 
 
-    FUNCTION_TRACE ("UtCreateControlState");
+    ACPI_FUNCTION_TRACE ("UtCreateControlState");
+
 
     /* Create the generic state object */
 
     State = AcpiUtCreateGenericState ();
     if (!State)
     {
-        return (NULL);
+        return_PTR (NULL);
     }
 
 
     /* Init fields specific to the control struct */
 
-    State->Common.State = CONTROL_CONDITIONAL_EXECUTING;
+    State->Common.DataType  = ACPI_DESC_TYPE_STATE_CONTROL;
+    State->Common.State     = ACPI_CONTROL_CONDITIONAL_EXECUTING;
 
     return_PTR (State);
 }
@@ -902,36 +976,10 @@ void
 AcpiUtDeleteGenericState (
     ACPI_GENERIC_STATE      *State)
 {
-    FUNCTION_TRACE ("UtDeleteGenericState");
+    ACPI_FUNCTION_TRACE ("UtDeleteGenericState");
 
 
-    /* If cache is full, just free this state object */
-
-    if (AcpiGbl_GenericStateCacheDepth >= MAX_STATE_CACHE_DEPTH)
-    {
-        AcpiUtFree (State);
-    }
-
-    /* Otherwise put this object back into the cache */
-
-    else
-    {
-        AcpiUtAcquireMutex (ACPI_MTX_CACHES);
-
-        /* Clear the state */
-
-        MEMSET (State, 0, sizeof (ACPI_GENERIC_STATE));
-        State->Common.DataType = ACPI_DESC_TYPE_STATE;
-
-        /* Put the object at the head of the global cache list */
-
-        State->Common.Next = AcpiGbl_GenericStateCache;
-        AcpiGbl_GenericStateCache = State;
-        AcpiGbl_GenericStateCacheDepth++;
-
-
-        AcpiUtReleaseMutex (ACPI_MTX_CACHES);
-    }
+    AcpiUtReleaseToCache (ACPI_MEM_LIST_STATE, State);
     return_VOID;
 }
 
@@ -953,25 +1001,86 @@ void
 AcpiUtDeleteGenericStateCache (
     void)
 {
-    ACPI_GENERIC_STATE      *Next;
+    ACPI_FUNCTION_TRACE ("UtDeleteGenericStateCache");
 
 
-    FUNCTION_TRACE ("UtDeleteGenericStateCache");
+    AcpiUtDeleteGenericCache (ACPI_MEM_LIST_STATE);
+    return_VOID;
+}
 
 
-    /* Traverse the global cache list */
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiUtResolveReference
+ *
+ * PARAMETERS:  ACPI_PKG_CALLBACK
+ *
+ * RETURN:      Status          - the status of the call
+ *
+ * DESCRIPTION: Resolve a reference object to an actual value
+ *
+ ******************************************************************************/
 
-    while (AcpiGbl_GenericStateCache)
+ACPI_STATUS
+AcpiUtResolveReference (
+    UINT8                   ObjectType,
+    ACPI_OPERAND_OBJECT     *SourceObject,
+    ACPI_GENERIC_STATE      *State,
+    void                    *Context)
+{
+    ACPI_PKG_INFO           *Info = (ACPI_PKG_INFO *) Context;
+
+
+    switch (ObjectType)
     {
-        /* Delete one cached state object */
+    case ACPI_COPY_TYPE_SIMPLE:
 
-        Next = AcpiGbl_GenericStateCache->Common.Next;
-        AcpiUtFree (AcpiGbl_GenericStateCache);
-        AcpiGbl_GenericStateCache = Next;
-        AcpiGbl_GenericStateCacheDepth--;
+        /*
+         * Simple object - check for a reference
+         */
+        if (SourceObject->Common.Type == INTERNAL_TYPE_REFERENCE)
+        {
+            switch (SourceObject->Reference.Opcode)
+            {
+            case AML_ZERO_OP:
+
+                SourceObject->Common.Type  = ACPI_TYPE_INTEGER;
+                SourceObject->Integer.Value = 0;
+                break;
+
+            case AML_ONE_OP:
+
+                SourceObject->Common.Type  = ACPI_TYPE_INTEGER;
+                SourceObject->Integer.Value = 1;
+                break;
+
+            case AML_ONES_OP:
+
+                SourceObject->Common.Type  = ACPI_TYPE_INTEGER;
+                SourceObject->Integer.Value = ACPI_INTEGER_MAX;
+                break;
+
+            default:
+                /* Other types not supported */
+                return (AE_SUPPORT);
+            }
+        }
+        break;
+
+
+    case ACPI_COPY_TYPE_PACKAGE:
+
+        /* Package object - nothing much to do here, let the walk handle it */
+
+        Info->NumPackages++;
+        State->Pkg.ThisTargetObj = NULL;
+        break;
+
+    default:
+        return (AE_BAD_PARAMETER);
     }
 
-    return_VOID;
+    return (AE_OK);
 }
 
 
@@ -991,92 +1100,31 @@ ACPI_STATUS
 AcpiUtResolvePackageReferences (
     ACPI_OPERAND_OBJECT     *ObjDesc)
 {
-    UINT32                  Count;
-    ACPI_OPERAND_OBJECT     *SubObject;
+    ACPI_PKG_INFO           Info;
+    ACPI_STATUS             Status;
 
 
-    FUNCTION_TRACE ("AcpiUtResolvePackageReferences");
+    ACPI_FUNCTION_TRACE ("UtResolvePackageReferences");
 
 
     if (ObjDesc->Common.Type != ACPI_TYPE_PACKAGE)
     {
         /* The object must be a package */
 
-        REPORT_ERROR (("Must resolve Package Refs on a Package\n"));
-        return_ACPI_STATUS(AE_ERROR);
+        ACPI_REPORT_ERROR (("Expecting a Package object\n"));
+        return_ACPI_STATUS (AE_TYPE);
     }
 
-    /*
-     * TBD: what about nested packages? */
+    Info.Length      = 0;
+    Info.ObjectSpace = 0;
+    Info.NumPackages = 1;
 
-    for (Count = 0; Count < ObjDesc->Package.Count; Count++)
-    {
-        SubObject = ObjDesc->Package.Elements[Count];
+    Status = AcpiUtWalkPackageTree (ObjDesc, NULL,
+                            AcpiUtResolveReference, &Info);
 
-        if (SubObject->Common.Type == INTERNAL_TYPE_REFERENCE)
-        {
-            if (SubObject->Reference.Opcode == AML_ZERO_OP)
-            {
-                SubObject->Common.Type  = ACPI_TYPE_INTEGER;
-                SubObject->Integer.Value = 0;
-            }
-
-            else if (SubObject->Reference.Opcode == AML_ONE_OP)
-            {
-                SubObject->Common.Type  = ACPI_TYPE_INTEGER;
-                SubObject->Integer.Value = 1;
-            }
-
-            else if (SubObject->Reference.Opcode == AML_ONES_OP)
-            {
-                SubObject->Common.Type  = ACPI_TYPE_INTEGER;
-                SubObject->Integer.Value = ACPI_INTEGER_MAX;
-            }
-        }
-    }
-
-    return_ACPI_STATUS(AE_OK);
+    return_ACPI_STATUS (Status);
 }
 
-#ifdef ACPI_DEBUG
-
-/*******************************************************************************
- *
- * FUNCTION:    AcpiUtDisplayInitPathname
- *
- * PARAMETERS:  ObjHandle           - Handle whose pathname will be displayed
- *              Path                - Additional path string to be appended
- *
- * RETURN:      ACPI_STATUS
- *
- * DESCRIPTION: Display full pathnbame of an object, DEBUG ONLY
- *
- ******************************************************************************/
-
-void
-AcpiUtDisplayInitPathname (
-    ACPI_HANDLE             ObjHandle,
-    char                    *Path)
-{
-    ACPI_STATUS             Status;
-    UINT32                  Length = 128;
-    char                    Buffer[128];
-
-
-    Status = AcpiNsHandleToPathname (ObjHandle, &Length, Buffer);
-    if (ACPI_SUCCESS (Status))
-    {
-        if (Path)
-        {
-            DEBUG_PRINT (TRACE_INIT, ("%s.%s\n", Buffer, Path))
-        }
-        else
-        {
-            DEBUG_PRINT (TRACE_INIT, ("%s\n", Buffer))
-        }
-    }
-}
-#endif
 
 /*******************************************************************************
  *
@@ -1104,7 +1152,7 @@ AcpiUtWalkPackageTree (
     ACPI_OPERAND_OBJECT     *ThisSourceObj;
 
 
-    FUNCTION_TRACE ("AcpiUtWalkPackageTree");
+    ACPI_FUNCTION_TRACE ("UtWalkPackageTree");
 
 
     State = AcpiUtCreatePkgState (SourceObject, TargetObject, 0);
@@ -1120,26 +1168,21 @@ AcpiUtWalkPackageTree (
                         State->Pkg.SourceObject->Package.Elements[ThisIndex];
 
         /*
-         * Check for
+         * Check for:
          * 1) An uninitialized package element.  It is completely
-         *      legal to declare a package and leave it uninitialized
+         *    legal to declare a package and leave it uninitialized
          * 2) Not an internal object - can be a namespace node instead
          * 3) Any type other than a package.  Packages are handled in else
-         *      case below.
+         *    case below.
          */
         if ((!ThisSourceObj) ||
-            (!VALID_DESCRIPTOR_TYPE (
-                    ThisSourceObj, ACPI_DESC_TYPE_INTERNAL)) ||
-            (!IS_THIS_OBJECT_TYPE (
-                    ThisSourceObj, ACPI_TYPE_PACKAGE)))
+            (ACPI_GET_DESCRIPTOR_TYPE (ThisSourceObj) != ACPI_DESC_TYPE_INTERNAL) ||
+            (ThisSourceObj->Common.Type != ACPI_TYPE_PACKAGE))
         {
-
             Status = WalkCallback (ACPI_COPY_TYPE_SIMPLE, ThisSourceObj,
                                     State, Context);
             if (ACPI_FAILURE (Status))
             {
-                /* TBD: must delete package created up to this point */
-
                 return_ACPI_STATUS (Status);
             }
 
@@ -1155,7 +1198,6 @@ AcpiUtWalkPackageTree (
                  */
                 AcpiUtDeleteGenericState (State);
                 State = AcpiUtPopGenericState (&StateList);
-
 
                 /* Finished when there are no more states */
 
@@ -1176,35 +1218,26 @@ AcpiUtWalkPackageTree (
                 State->Pkg.Index++;
             }
         }
-
         else
         {
-            /* This is a sub-object of type package */
+            /* This is a subobject of type package */
 
             Status = WalkCallback (ACPI_COPY_TYPE_PACKAGE, ThisSourceObj,
                                         State, Context);
             if (ACPI_FAILURE (Status))
             {
-                /* TBD: must delete package created up to this point */
-
                 return_ACPI_STATUS (Status);
             }
 
-
-            /*
-             * The callback above returned a new target package object.
-             */
-
             /*
              * Push the current state and create a new one
+             * The callback above returned a new target package object.
              */
             AcpiUtPushGenericState (&StateList, State);
             State = AcpiUtCreatePkgState (ThisSourceObj,
                                             State->Pkg.ThisTargetObj, 0);
             if (!State)
             {
-                /* TBD: must delete package created up to this point */
-
                 return_ACPI_STATUS (AE_NO_MEMORY);
             }
         }
@@ -1212,14 +1245,100 @@ AcpiUtWalkPackageTree (
 
     /* We should never get here */
 
-    return (AE_AML_INTERNAL);
-
+    return_ACPI_STATUS (AE_AML_INTERNAL);
 }
 
 
 /*******************************************************************************
  *
- * FUNCTION:    _ReportError
+ * FUNCTION:    AcpiUtGenerateChecksum
+ *
+ * PARAMETERS:  Buffer          - Buffer to be scanned
+ *              Length          - number of bytes to examine
+ *
+ * RETURN:      checksum
+ *
+ * DESCRIPTION: Generate a checksum on a raw buffer
+ *
+ ******************************************************************************/
+
+UINT8
+AcpiUtGenerateChecksum (
+    UINT8                   *Buffer,
+    UINT32                  Length)
+{
+    UINT32                  i;
+    signed char             Sum = 0;
+
+    for (i = 0; i < Length; i++)
+    {
+        Sum = (signed char) (Sum + Buffer[i]);
+    }
+
+    return ((UINT8) (0 - Sum));
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiUtGetResourceEndTag
+ *
+ * PARAMETERS:  ObjDesc         - The resource template buffer object
+ *
+ * RETURN:      Pointer to the end tag
+ *
+ * DESCRIPTION: Find the END_TAG resource descriptor in a resource template
+ *
+ ******************************************************************************/
+
+
+UINT8 *
+AcpiUtGetResourceEndTag (
+    ACPI_OPERAND_OBJECT     *ObjDesc)
+{
+    UINT8                   BufferByte;
+    UINT8                   *Buffer;
+    UINT8                   *EndBuffer;
+
+
+    Buffer    = ObjDesc->Buffer.Pointer;
+    EndBuffer = Buffer + ObjDesc->Buffer.Length;
+
+    while (Buffer < EndBuffer)
+    {
+        BufferByte = *Buffer;
+        if (BufferByte & ACPI_RDESC_TYPE_MASK)
+        {
+            /* Large Descriptor - Length is next 2 bytes */
+
+            Buffer += ((*(Buffer+1) | (*(Buffer+2) << 8)) + 3);
+        }
+        else
+        {
+            /* Small Descriptor.  End Tag will be found here */
+
+            if ((BufferByte & ACPI_RDESC_SMALL_MASK) == ACPI_RDESC_TYPE_END_TAG)
+            {
+                /* Found the end tag descriptor, all done. */
+
+                return (Buffer);
+            }
+
+            /* Length is in the header */
+
+            Buffer += ((BufferByte & 0x07) + 1);
+        }
+    }
+
+    /* End tag not found */
+
+    return (NULL);
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiUtReportError
  *
  * PARAMETERS:  ModuleName          - Caller's module name (for error output)
  *              LineNumber          - Caller's line number (for error output)
@@ -1233,7 +1352,7 @@ AcpiUtWalkPackageTree (
  ******************************************************************************/
 
 void
-_ReportError (
+AcpiUtReportError (
     NATIVE_CHAR             *ModuleName,
     UINT32                  LineNumber,
     UINT32                  ComponentId)
@@ -1246,7 +1365,7 @@ _ReportError (
 
 /*******************************************************************************
  *
- * FUNCTION:    _ReportWarning
+ * FUNCTION:    AcpiUtReportWarning
  *
  * PARAMETERS:  ModuleName          - Caller's module name (for error output)
  *              LineNumber          - Caller's line number (for error output)
@@ -1260,7 +1379,7 @@ _ReportError (
  ******************************************************************************/
 
 void
-_ReportWarning (
+AcpiUtReportWarning (
     NATIVE_CHAR             *ModuleName,
     UINT32                  LineNumber,
     UINT32                  ComponentId)
@@ -1272,7 +1391,7 @@ _ReportWarning (
 
 /*******************************************************************************
  *
- * FUNCTION:    _ReportInfo
+ * FUNCTION:    AcpiUtReportInfo
  *
  * PARAMETERS:  ModuleName          - Caller's module name (for error output)
  *              LineNumber          - Caller's line number (for error output)
@@ -1286,7 +1405,7 @@ _ReportWarning (
  ******************************************************************************/
 
 void
-_ReportInfo (
+AcpiUtReportInfo (
     NATIVE_CHAR             *ModuleName,
     UINT32                  LineNumber,
     UINT32                  ComponentId)
