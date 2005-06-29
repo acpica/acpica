@@ -209,12 +209,12 @@ void
 TbDeleteAcpiTable (
     ACPI_TABLE_TYPE         Type);
 
-void
+ACPI_TABLE_DESC *
 TbDeleteSingleTable (
     ACPI_TABLE_DESC         *TableDesc);
 
 void
-TbFreeAcpiTable (
+TbFreeAcpiTablesOfType (
     ACPI_TABLE_DESC         *TableInfo);
 
 
