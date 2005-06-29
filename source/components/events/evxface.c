@@ -720,6 +720,7 @@ AcpiInstallAddressSpaceHandler (
     NAME_TABLE_ENTRY       *ObjEntry;
     ACPI_STATUS             Status;
     ACPI_OBJECT_TYPE        Type;
+    UINT16                  Flags = 0;
 
 
     FUNCTION_TRACE ("AcpiInstallAddressSpaceHandler");
@@ -758,6 +759,8 @@ AcpiInstallAddressSpaceHandler (
 
     if (Handler == ACPI_DEFAULT_HANDLER)
     {
+        Flags = AH_DEFAULT_HANDLER;
+
         switch (SpaceId)
         {
         case ADDRESS_SPACE_SYSTEM_MEMORY:
@@ -801,6 +804,7 @@ AcpiInstallAddressSpaceHandler (
             {
                 return_ACPI_STATUS (AE_EXIST);
             }
+
             /*
              *  Move through the linked list of handlers
              */
@@ -810,9 +814,8 @@ AcpiInstallAddressSpaceHandler (
 
     else
     {
-        DEBUG_PRINT (TRACE_OPREGION,
-            ("Creating object on Device 0x%X while installing handler\n", 
-                ObjEntry));
+        DEBUG_PRINT (TRACE_OPREGION, ("Creating object on Device 0x%X while installing handler\n", 
+                        ObjEntry));
 
         /* ObjDesc does not exist, create one */
 
@@ -855,9 +858,8 @@ AcpiInstallAddressSpaceHandler (
         }
     }
 
-    DEBUG_PRINT (TRACE_OPREGION,
-        ("Installing address handler for %s on Device 0x%X (0x%X)\n", 
-            Gbl_RegionTypes[SpaceId], ObjEntry, ObjDesc));
+    DEBUG_PRINT (TRACE_OPREGION, ("Installing address handler for %s on Device 0x%X (0x%X)\n", 
+                    Gbl_RegionTypes[SpaceId], ObjEntry, ObjDesc));
 
     /* 
      *  Now we can install the handler
@@ -875,6 +877,7 @@ AcpiInstallAddressSpaceHandler (
     }
 
     HandlerObj->AddrHandler.SpaceId     = SpaceId;
+    HandlerObj->AddrHandler.Hflags      = Flags;
     HandlerObj->AddrHandler.Link        = ObjDesc->Device.AddrHandler;
     HandlerObj->AddrHandler.RegionList  = NULL;
     HandlerObj->AddrHandler.Nte         = ObjEntry;
