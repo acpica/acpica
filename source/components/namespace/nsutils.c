@@ -578,7 +578,18 @@ NsTerminate (void)
      * 1) Free the entire namespace -- all objects, tables, and stacks
      */
 
-    NsDeleteNamespace ();
+    NsDeleteNamespace (Gbl_RootObject);
+
+    /* Detach any object(s) attached to the root */
+    
+    NsDetachObject (Gbl_RootObject);
+    NsDeleteScope (Gbl_RootObject->Scope);
+    Gbl_RootObject->Scope = NULL;
+
+    REPORT_SUCCESS ("Entire namespace and objects deleted");
+
+
+
     NsScopeStackClear ();
     CmFree (Gbl_CurrentScope);      /* Free the root scope */
 
