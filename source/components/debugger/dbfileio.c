@@ -136,6 +136,50 @@ FILE                    *DebugFile = NULL;
 #endif
 
 
+
+/* NOTE: this is here for lack of a better place.  It is used in all flavors of the debugger, need LCD file */
+
+/******************************************************************************
+ * 
+ * FUNCTION:    DbMatchArgument
+ *
+ * PARAMETERS:  UserArgument             - User command line
+ *
+ * RETURN:      Index into command array, -1 if not found
+ *
+ * DESCRIPTION: Search command array for a command match
+ *
+ *****************************************************************************/
+
+INT32
+DbMatchArgument (
+    char                    *UserArgument,
+    ARGUMENT_INFO           *Arguments)
+{
+    UINT32                  i;
+
+
+    if (!UserArgument || UserArgument[0] == 0)
+    {
+        return -1;
+    }
+
+    for (i = 0; Arguments[i].Name; i++)
+    {
+        if (STRSTR (Arguments[i].Name, UserArgument) == Arguments[i].Name)
+        {
+            return i;
+        }
+    }
+
+    /* Argument not recognized */
+
+    return -1;
+}
+
+
+
+
 /******************************************************************************
  * 
  * FUNCTION:    DbCloseDebugFile
@@ -335,16 +379,10 @@ DbLoadAcpiTable (
     }
 
 
-    DbSetOutputDestination (DB_REDIRECTABLE_OUTPUT);
-
     OsdPrintf ("%s successfully loaded and installed at %p\n", 
                                 Gbl_AcpiTableData[TableInfo.Type].Name, TablePtr);
 
     Gbl_AcpiHardwarePresent = FALSE;
-    AcpiLoadNamespace ();
-
-
-    DbSetOutputDestination (DB_CONSOLE_OUTPUT);
 
 #endif  /* ACPI_APPLICATION */  
     return AE_OK;
