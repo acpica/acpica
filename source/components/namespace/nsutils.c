@@ -2,7 +2,7 @@
  *
  * Module Name: nsutils - Utilities for accessing ACPI namespace, accessing
  *                        parents and siblings and Scope manipulation
- *              $Revision: 1.117 $
+ *              $Revision: 1.118 $
  *
  *****************************************************************************/
 
@@ -183,6 +183,51 @@ AcpiNsReportError (
 
 /*******************************************************************************
  *
+ * FUNCTION:    AcpiNsReportMethodError
+ *
+ * PARAMETERS:  ModuleName          - Caller's module name (for error output)
+ *              LineNumber          - Caller's line number (for error output)
+ *              ComponentId         - Caller's component ID (for error output)
+ *              Message             - Error message to use on failure
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Print warning message with full pathname
+ *
+ ******************************************************************************/
+
+void
+AcpiNsReportMethodError (
+    NATIVE_CHAR             *ModuleName,
+    UINT32                  LineNumber,
+    UINT32                  ComponentId,
+    char                    *Message,
+    ACPI_NAMESPACE_NODE     *PrefixNode,
+    char                    *Path,
+    ACPI_STATUS             MethodStatus)
+{
+    ACPI_STATUS             Status;
+    ACPI_NAMESPACE_NODE     *Node = PrefixNode;
+
+ 
+    if (Path)
+    {
+        Status = AcpiNsGetNodeByPath (Path, PrefixNode, ACPI_NS_NO_UPSEARCH, &Node);
+        if (ACPI_FAILURE (Status))
+        {
+            AcpiOsPrintf ("ReportMethodError: Could not get node\n");
+            return;
+        }
+    }
+
+    AcpiOsPrintf ("%8s-%04d: *** Error: ", ModuleName, LineNumber);
+    AcpiNsPrintNodePathname (Node, Message);
+    AcpiOsPrintf (", %s\n", AcpiFormatException (MethodStatus));
+}
+
+
+/*******************************************************************************
+ *
  * FUNCTION:    AcpiNsPrintNodePathname
  *
  * PARAMETERS:  Node                - Object
@@ -209,7 +254,7 @@ AcpiNsPrintNodePathname (
     Status = AcpiNsHandleToPathname (Node, &Buffer);
     if (ACPI_SUCCESS (Status))
     {
-        AcpiOsPrintf ("%s %s (Node %p)\n", Msg, (char *) Buffer.Pointer, Node);
+        AcpiOsPrintf ("%s [%s] (Node %p)", Msg, (char *) Buffer.Pointer, Node);
         ACPI_MEM_FREE (Buffer.Pointer);
     }
 }
@@ -979,17 +1024,15 @@ AcpiNsGetNodeByPath (
     ACPI_FUNCTION_TRACE_PTR ("NsGetNodeByPath", Pathname);
 
 
-    if (!Pathname)
+    if (Pathname)
     {
-        return_ACPI_STATUS (AE_BAD_PARAMETER);
-    }
+        /* Convert path to internal representation */
 
-    /* Convert path to internal representation */
-
-    Status = AcpiNsInternalizeName (Pathname, &InternalPath);
-    if (ACPI_FAILURE (Status))
-    {
-        return_ACPI_STATUS (Status);
+        Status = AcpiNsInternalizeName (Pathname, &InternalPath);
+        if (ACPI_FAILURE (Status))
+        {
+            return_ACPI_STATUS (Status);
+        }
     }
 
     /* Must lock namespace during lookup */
@@ -1019,7 +1062,11 @@ AcpiNsGetNodeByPath (
     /* Cleanup */
 
     (void) AcpiUtReleaseMutex (ACPI_MTX_NAMESPACE);
-    ACPI_MEM_FREE (InternalPath);
+
+    if (InternalPath)
+    {
+        ACPI_MEM_FREE (InternalPath);
+    }
     return_ACPI_STATUS (Status);
 }
 
