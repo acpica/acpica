@@ -118,13 +118,6 @@
 #define _CONFIG_H
 
 
-#if defined _RPARSER
-#define VERBOSE_DEBUG 
-#define AML_EXPR_MAX_NEST           100     /* Max stack depth parsing expressions */
-#define AML_PKG_MAX_NEST            100     /* Max depth of package nesting */
-#define AML_METHOD_MAX_NEST         10      /* Max depth of nested method calls */
-#endif
-
 /*
  * Configuration constants for the ACPI subsystem
  * 
