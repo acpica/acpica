@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: actypes.h - Common data types for the entire ACPI subsystem
- *       $Revision: 1.140 $
+ *       $Revision: 1.141 $
  *
  *****************************************************************************/
 
@@ -139,9 +139,6 @@
  * UCHAR        Character. 1 byte unsigned value.
  */
 
-#ifdef __ia64__
-#define _IA64
-#endif
 
 #ifdef _IA64
 /*
@@ -190,6 +187,10 @@ typedef UINT32                          ACPI_MEM_ADDRESS;
 #define ALIGNED_ADDRESS_BOUNDARY        0x00000002
 #define _HW_ALIGNMENT_SUPPORT
 
+/* (16-bit only) Force internal integers to be 32, not 64 bits */
+
+#define ACPI_VERSION_1
+
 
 #else
 /*
@@ -201,6 +202,7 @@ typedef unsigned char                   UCHAR;
 typedef unsigned short                  UINT16;
 typedef int                             INT32;
 typedef unsigned int                    UINT32;
+typedef COMPILER_DEPENDENT_UINT64       UINT64;
 
 typedef UINT32                          NATIVE_UINT;
 typedef INT32                           NATIVE_INT;
@@ -213,6 +215,8 @@ typedef UINT32                          ACPI_MEM_ADDRESS;
 #define _HW_ALIGNMENT_SUPPORT
 
 #endif
+
+
 
 /*
  * Miscellaneous common types
@@ -227,8 +231,10 @@ typedef char                            NATIVE_CHAR;
  * Data type ranges
  */
 
-#define ACPI_UCHAR_MAX                  (UCHAR)  0xFF
+#define ACPI_UINT8_MAX                  (UINT8)  0xFF
+#define ACPI_UINT16_MAX                 (UINT16) 0xFFFF
 #define ACPI_UINT32_MAX                 (UINT32) 0xFFFFFFFF
+#define ACPI_UINT64_MAX                 (UINT64) 0xFFFFFFFFFFFFFFFF
 
 
 #ifdef DEFINE_ALTERNATE_TYPES
@@ -239,6 +245,7 @@ typedef INT32                           s32;
 typedef UINT8                           u8;
 typedef UINT16                          u16;
 typedef UINT32                          u32;
+typedef UINT64                          u64;
 #endif
 /*! [End] no source code translation !*/
 
@@ -270,6 +277,36 @@ typedef UINT32                          ACPI_STATUS;    /* All ACPI Exceptions *
 typedef UINT32                          ACPI_NAME;      /* 4-INT8 ACPI name */
 typedef char*                           ACPI_STRING;    /* Null terminated ASCII string */
 typedef void*                           ACPI_HANDLE;    /* Actually a ptr to an Node */
+
+
+/* TBD: TEMP ONLY! */
+
+#define ACPI_VERSION_1
+
+/*
+ * Acpi integer width. In ACPI version 1, integers are
+ * 32 bits.  In ACPI version 2, integers are 64 bits.  Period.
+ * Note that this pertains to the ACPI integer type only, not
+ * other integers used in the implementation of the ACPI CA
+ * subsystem.
+ */
+
+#ifdef ACPI_VERSION_1
+
+/* 32-bit Integers */
+
+typedef UINT32                          ACPI_INTEGER;
+#define ACPI_INTEGER_MAX                ACPI_UINT32_MAX;
+#define ACPI_INTEGER_BIT_SIZE           32
+
+#else
+
+/* 64-bit Integers */
+
+typedef UINT64                          ACPI_INTEGER;
+#define ACPI_INTEGER_MAX                ACPI_UINT64_MAX;
+#define ACPI_INTEGER_BIT_SIZE           64
+#endif
 
 
 /*
@@ -479,7 +516,7 @@ typedef union AcpiObj
     struct
     {
         ACPI_OBJECT_TYPE            Type;
-        UINT32                      Value;      /* The actual number */
+        ACPI_INTEGER                Value;      /* The actual number */
     } Number;
 
     struct
@@ -659,7 +696,7 @@ void (*NOTIFY_HANDLER) (
 typedef
 ACPI_STATUS (*ADDRESS_SPACE_HANDLER) (
     UINT32                      Function,
-    UINT32                      Address,
+    ACPI_INTEGER                Address,
     UINT32                      BitWidth,
     UINT32                      *Value,
     void                        *HandlerContext,
@@ -723,7 +760,7 @@ typedef struct
      */
     NATIVE_CHAR                 HardwareId [9];     /*  _HID value if any */
     NATIVE_CHAR                 UniqueId[9];        /*  _UID value if any */
-    UINT32                      Address;            /*  _ADR value if any */
+    ACPI_INTEGER                Address;            /*  _ADR value if any */
     UINT32                      CurrentStatus;      /*  _STA value */
 } ACPI_DEVICE_INFO;
 
@@ -1057,7 +1094,7 @@ typedef struct _resource_tag
  */
 typedef struct
 {
-    UINT32                      Address;
+    ACPI_INTEGER                Address;
     UINT32                      Pin;
     UINT32                      SourceIndex;
     NATIVE_CHAR                 Source[1];

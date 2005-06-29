@@ -1,9 +1,9 @@
-
 /******************************************************************************
  *
  * Name: amlcode.h - Definitions for AML, as included in "definition blocks"
  *                   Declarations and definitions contained herein are derived
  *                   directly from the ACPI specification.
+ *       $Revision: 1.40 $
  *
  *****************************************************************************/
 
@@ -133,9 +133,11 @@
 #define AML_WORD_OP                 (UINT16) 0x0b
 #define AML_DWORD_OP                (UINT16) 0x0c
 #define AML_STRING_OP               (UINT16) 0x0d
+#define AML_QWORD_OP                (UINT16) 0x0e     /* ACPI 2.0 */
 #define AML_SCOPE_OP                (UINT16) 0x10
 #define AML_BUFFER_OP               (UINT16) 0x11
 #define AML_PACKAGE_OP              (UINT16) 0x12
+#define AML_VAR_PACKAGE_OP          (UINT16) 0x13     /* ACPI 2.0 */
 #define AML_METHOD_OP               (UINT16) 0x14
 #define AML_DUAL_NAME_PREFIX        (UINT16) 0x2e
 #define AML_MULTI_NAME_PREFIX_OP    (UINT16) 0x2f
@@ -181,6 +183,8 @@
 #define AML_FIND_SET_LEFT_BIT_OP    (UINT16) 0x81
 #define AML_FIND_SET_RIGHT_BIT_OP   (UINT16) 0x82
 #define AML_DEREF_OF_OP             (UINT16) 0x83
+#define AML_CONCAT_RES_OP           (UINT16) 0x84     /* ACPI 2.0 */
+#define AML_MOD_OP                  (UINT16) 0x85     /* ACPI 2.0 */
 #define AML_NOTIFY_OP               (UINT16) 0x86
 #define AML_SIZE_OF_OP              (UINT16) 0x87
 #define AML_INDEX_OP                (UINT16) 0x88
@@ -190,12 +194,20 @@
 #define AML_BYTE_FIELD_OP           (UINT16) 0x8c
 #define AML_BIT_FIELD_OP            (UINT16) 0x8d
 #define AML_TYPE_OP                 (UINT16) 0x8e
+#define AML_QWORD_FIELD_OP          (UINT16) 0x8f     /* ACPI 2.0 */
 #define AML_LAND_OP                 (UINT16) 0x90
 #define AML_LOR_OP                  (UINT16) 0x91
 #define AML_LNOT_OP                 (UINT16) 0x92
 #define AML_LEQUAL_OP               (UINT16) 0x93
 #define AML_LGREATER_OP             (UINT16) 0x94
 #define AML_LLESS_OP                (UINT16) 0x95
+#define AML_BUFF_OP                 (UINT16) 0x96     /* ACPI 2.0 */
+#define AML_DEC_STR_OP              (UINT16) 0x97     /* ACPI 2.0 */
+#define AML_HEX_STR_OP              (UINT16) 0x98     /* ACPI 2.0 */
+#define AML_INT_OP                  (UINT16) 0x99     /* ACPI 2.0 */
+#define AML_COPY_OP                 (UINT16) 0x9d     /* ACPI 2.0 */
+#define AML_MID_OP                  (UINT16) 0x9e     /* ACPI 2.0 */
+#define AML_CONTINUE_OP             (UINT16) 0x9f     /* ACPI 2.0 */
 #define AML_IF_OP                   (UINT16) 0xa0
 #define AML_ELSE_OP                 (UINT16) 0xa1
 #define AML_WHILE_OP                (UINT16) 0xa2
@@ -216,6 +228,7 @@
 #define AML_SHIFT_LEFT_BIT_OP       (UINT16) 0x5b11
 #define AML_COND_REF_OF_OP          (UINT16) 0x5b12
 #define AML_CREATE_FIELD_OP         (UINT16) 0x5b13
+#define AML_LOAD_TABLE_OP           (UINT16) 0x5b1f     /* ACPI 2.0 */
 #define AML_LOAD_OP                 (UINT16) 0x5b20
 #define AML_STALL_OP                (UINT16) 0x5b21
 #define AML_SLEEP_OP                (UINT16) 0x5b22
@@ -238,6 +251,7 @@
 #define AML_THERMAL_ZONE_OP         (UINT16) 0x5b85
 #define AML_INDEX_FIELD_OP          (UINT16) 0x5b86
 #define AML_BANK_FIELD_OP           (UINT16) 0x5b87
+#define AML_DATA_REGION_OP          (UINT16) 0x5b88     /* ACPI 2.0 */
 
 
 /* Bogus opcodes (they are actually two separate opcodes) */
@@ -248,7 +262,7 @@
 
 
 /*
- * Internal opcodes 
+ * Internal opcodes
  * Use only "Unknown" AML opcodes, don't attempt to use
  * any valid ACPI ASCII values (A-Z, 0-9, '-')
  */
@@ -261,8 +275,6 @@
 #define AML_STATICSTRING_OP         (UINT16) 0x0034
 #define AML_METHODCALL_OP           (UINT16) 0x0035
 #define AML_RETURN_VALUE_OP         (UINT16) 0x0036
-
-
 
 
 #define ARG_NONE                    0x0
@@ -304,7 +316,7 @@
 #define ARGI_STRING                 0x06
 #define ARGI_BUFFER                 0x07
 #define ARGI_PACKAGE                0x08
-#define ARGI_DATAOBJECT             0x09     /* Buffer, string, package or reference to a Named Object - Used only by SizeOf operator*/
+#define ARGI_DATAOBJECT             0x09     /* Buffer, string, package or reference to a Node - Used only by SizeOf operator*/
 #define ARGI_COMPLEXOBJ             0x0A     /* Buffer or package */
 #define ARGI_MUTEX                  0x0B
 #define ARGI_EVENT                  0x0C
@@ -369,6 +381,21 @@
 #define OPTYPE_RETURN               21
 
 #define OPTYPE_BOGUS                22
+
+
+/* Predefined Operation Region SpaceIDs */
+
+typedef enum
+{
+    REGION_MEMORY               = 0,
+    REGION_IO,
+    REGION_PCI_CONFIG,
+    REGION_EC,
+    REGION_SMBUS,
+    REGION_CMOS,
+    REGION_PCI_BAR
+
+} AML_REGION_TYPES;
 
 
 /* Comparison operation codes for MatchOp operator */

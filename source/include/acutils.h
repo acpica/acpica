@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: accommon.h -- prototypes for the common (subsystem-wide) procedures
- *       $Revision: 1.77 $
+ *       $Revision: 1.80 $
  *
  *****************************************************************************/
 
@@ -134,7 +134,7 @@
 
 void
 AcpiCmInitGlobals (
-    ACPI_INIT_DATA *InitData);
+    void);
 
 void
 AcpiCmTerminate (
@@ -470,9 +470,9 @@ AcpiCmDeleteInternalObjectList (
 
 ACPI_STATUS
 AcpiCmEvaluateNumericObject (
-    NATIVE_CHAR             *MethodName,
+    NATIVE_CHAR             *ObjectName,
     ACPI_NAMESPACE_NODE     *DeviceNode,
-    UINT32                  *Address);
+    ACPI_INTEGER            *Address);
 
 ACPI_STATUS
 AcpiCmExecute_HID (
@@ -638,6 +638,10 @@ AcpiCmValidAcpiName (
 BOOLEAN
 AcpiCmValidAcpiCharacter (
     NATIVE_CHAR             Character);
+
+ACPI_STATUS
+AcpiCmResolvePackageReferences (
+    ACPI_OPERAND_OBJECT     *ObjDesc);
 
 
 /*
