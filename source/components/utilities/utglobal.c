@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: cmglobal - Global variables for the ACPI subsystem
- *              $Revision: 1.100 $
+ *              $Revision: 1.120 $
  *
  *****************************************************************************/
 
@@ -9,8 +9,8 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, Intel Corp.  All rights
- * reserved.
+ * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
+ * All rights reserved.
  *
  * 2. License
  *
@@ -121,9 +121,10 @@
 #include "acevents.h"
 #include "acnamesp.h"
 #include "acinterp.h"
+#include "amlcode.h"
 
 
-#define _COMPONENT          MISCELLANEOUS
+#define _COMPONENT          ACPI_UTILITIES
         MODULE_NAME         ("cmglobal")
 
 
@@ -148,7 +149,7 @@ UINT32                      AcpiDbgLevel = NORMAL_DEFAULT;
 
 /* Debug switch - layer (component) mask */
 
-UINT32                      AcpiDbgLayer = ALL_COMPONENTS;
+UINT32                      AcpiDbgLayer = ACPI_COMPONENT_DEFAULT;
 UINT32                      AcpiGbl_NestingLevel = 0;
 
 
@@ -166,6 +167,9 @@ UINT32                      AcpiGbl_StartupFlags = 0;
 BOOLEAN                     AcpiGbl_Shutdown = TRUE;
 
 
+UINT8                       AcpiGbl_DecodeTo8bit [8] = {1,2,4,8,16,32,64,128};
+
+
 /******************************************************************************
  *
  * Namespace globals
@@ -178,22 +182,23 @@ BOOLEAN                     AcpiGbl_Shutdown = TRUE;
  *
  * Initial values are currently supported only for types String and Number.
  * To avoid type punning, both are specified as strings in this table.
+ *
+ * NOTES:
+ * 1) _SB_ is defined to be a device to allow _SB_/_INI to be run
+ *    during the initialization sequence.
  */
 
 PREDEFINED_NAMES            AcpiGbl_PreDefinedNames[] =
 {
     {"_GPE",    INTERNAL_TYPE_DEF_ANY},
     {"_PR_",    INTERNAL_TYPE_DEF_ANY},
-    {"_SB_",    INTERNAL_TYPE_DEF_ANY},
+    {"_SB_",    ACPI_TYPE_DEVICE},
     {"_SI_",    INTERNAL_TYPE_DEF_ANY},
     {"_TZ_",    INTERNAL_TYPE_DEF_ANY},
-    {"_REV",    ACPI_TYPE_NUMBER, "2"},
+    {"_REV",    ACPI_TYPE_INTEGER, "2"},
     {"_OS_",    ACPI_TYPE_STRING, ACPI_OS_NAME},
     {"_GL_",    ACPI_TYPE_MUTEX, "0"},
-
-    /* Table terminator */
-
-    {NULL,      ACPI_TYPE_ANY}
+    {NULL,      ACPI_TYPE_ANY}           /* Table terminator */
 };
 
 
@@ -230,24 +235,34 @@ UINT8                       AcpiGbl_NsProperties[] =
     NSP_NORMAL,                 /* 21 Alias            */
     NSP_NORMAL,                 /* 22 Notify           */
     NSP_NORMAL,                 /* 23 Address Handler  */
-    NSP_NORMAL,                 /* 24 DefFieldDefn     */
-    NSP_NORMAL,                 /* 25 BankFieldDefn    */
-    NSP_NORMAL,                 /* 26 IndexFieldDefn   */
-    NSP_NORMAL,                 /* 27 If               */
-    NSP_NORMAL,                 /* 28 Else             */
-    NSP_NORMAL,                 /* 29 While            */
-    NSP_NEWSCOPE,               /* 30 Scope            */
-    NSP_LOCAL,                  /* 31 DefAny           */
-    NSP_NORMAL,                 /* 32 Method Arg       */
-    NSP_NORMAL,                 /* 33 Method Local     */
-    NSP_NORMAL,                 /* 34 Extra            */
-    NSP_NORMAL                  /* 35 Invalid          */
+    NSP_NEWSCOPE | NSP_LOCAL,   /* 24 Resource         */
+    NSP_NORMAL,                 /* 25 DefFieldDefn     */
+    NSP_NORMAL,                 /* 26 BankFieldDefn    */
+    NSP_NORMAL,                 /* 27 IndexFieldDefn   */
+    NSP_NORMAL,                 /* 28 If               */
+    NSP_NORMAL,                 /* 29 Else             */
+    NSP_NORMAL,                 /* 30 While            */
+    NSP_NEWSCOPE,               /* 31 Scope            */
+    NSP_LOCAL,                  /* 32 DefAny           */
+    NSP_NORMAL,                 /* 33 Extra            */
+    NSP_NORMAL                  /* 34 Invalid          */
 };
+
+
+/* Hex to ASCII conversion table */
+
+NATIVE_CHAR                 AcpiGbl_HexToAscii[] =
+                                {'0','1','2','3','4','5','6','7',
+                                '8','9','A','B','C','D','E','F'};
 
 
 /******************************************************************************
  *
  * Table globals
+ *
+ * NOTE: This table includes ONLY the ACPI tables that the subsystem consumes.
+ * it is NOT an exhaustive list of all possible ACPI tables.  All ACPI tables
+ * that are not used by the subsystem are simply ignored.
  *
  ******************************************************************************/
 
@@ -257,21 +272,16 @@ ACPI_TABLE_DESC             AcpiGbl_AcpiTables[NUM_ACPI_TABLES];
 
 ACPI_TABLE_SUPPORT          AcpiGbl_AcpiTableData[NUM_ACPI_TABLES] =
 {
-                 /* Name,   Signature,  Signature size,    How many allowed?,   Supported?  Global typed pointer */
+    /***********    Name,    Signature,  Signature size,    How many allowed?,   Supported?  Global typed pointer */
 
-    /* RSDP 0 */ {"RSDP",   RSDP_SIG, sizeof (RSDP_SIG)-1, ACPI_TABLE_SINGLE,   AE_OK,      NULL},
-    /* APIC 1 */ {APIC_SIG, APIC_SIG, sizeof (APIC_SIG)-1, ACPI_TABLE_SINGLE,   AE_OK,      (void **) &AcpiGbl_APIC},
-    /* DSDT 2 */ {DSDT_SIG, DSDT_SIG, sizeof (DSDT_SIG)-1, ACPI_TABLE_SINGLE,   AE_OK,      (void **) &AcpiGbl_DSDT},
-    /* FACP 3 */ {FACP_SIG, FACP_SIG, sizeof (FACP_SIG)-1, ACPI_TABLE_SINGLE,   AE_OK,      (void **) &AcpiGbl_FACP},
-    /* FACS 4 */ {FACS_SIG, FACS_SIG, sizeof (FACS_SIG)-1, ACPI_TABLE_SINGLE,   AE_OK,      (void **) &AcpiGbl_FACS},
-    /* PSDT 5 */ {PSDT_SIG, PSDT_SIG, sizeof (PSDT_SIG)-1, ACPI_TABLE_MULTIPLE, AE_OK,      NULL},
-    /* RSDT 6 */ {RSDT_SIG, RSDT_SIG, sizeof (RSDT_SIG)-1, ACPI_TABLE_SINGLE,   AE_OK,      NULL},
-    /* SSDT 7 */ {SSDT_SIG, SSDT_SIG, sizeof (SSDT_SIG)-1, ACPI_TABLE_MULTIPLE, AE_OK,      NULL},
-    /* SBST 8 */ {SBST_SIG, SBST_SIG, sizeof (SBST_SIG)-1, ACPI_TABLE_SINGLE,   AE_OK,      (void **) &AcpiGbl_SBST},
-    /* BOOT 9 */ {BOOT_SIG, BOOT_SIG, sizeof (BOOT_SIG)-1, ACPI_TABLE_SINGLE,   AE_SUPPORT, NULL}
+    /* RSDP 0 */ {RSDP_NAME, RSDP_SIG, sizeof (RSDP_SIG)-1, ACPI_TABLE_SINGLE,   AE_OK,      NULL},
+    /* DSDT 1 */ {DSDT_SIG,  DSDT_SIG, sizeof (DSDT_SIG)-1, ACPI_TABLE_SINGLE,   AE_OK,      (void **) &AcpiGbl_DSDT},
+    /* FADT 2 */ {FADT_SIG,  FADT_SIG, sizeof (FADT_SIG)-1, ACPI_TABLE_SINGLE,   AE_OK,      (void **) &AcpiGbl_FADT},
+    /* FACS 3 */ {FACS_SIG,  FACS_SIG, sizeof (FACS_SIG)-1, ACPI_TABLE_SINGLE,   AE_OK,      (void **) &AcpiGbl_FACS},
+    /* PSDT 4 */ {PSDT_SIG,  PSDT_SIG, sizeof (PSDT_SIG)-1, ACPI_TABLE_MULTIPLE, AE_OK,      NULL},
+    /* SSDT 5 */ {SSDT_SIG,  SSDT_SIG, sizeof (SSDT_SIG)-1, ACPI_TABLE_MULTIPLE, AE_OK,      NULL},
+    /* XSDT 6 */ {XSDT_SIG,  XSDT_SIG, sizeof (RSDT_SIG)-1, ACPI_TABLE_SINGLE,   AE_OK,      NULL},
 };
-
-ACPI_INIT_DATA AcpiGbl_AcpiInitData;
 
 
 #ifdef ACPI_DEBUG
@@ -326,7 +336,7 @@ static NATIVE_CHAR          AcpiGbl_BadType[] = "UNDEFINED";
 static NATIVE_CHAR          *AcpiGbl_NsTypeNames[] =    /* printable names of ACPI types */
 {
     /* 00 */ "Untyped",
-    /* 01 */ "Number",
+    /* 01 */ "Integer",
     /* 02 */ "String",
     /* 03 */ "Buffer",
     /* 04 */ "Package",
@@ -339,28 +349,27 @@ static NATIVE_CHAR          *AcpiGbl_NsTypeNames[] =    /* printable names of AC
     /* 11 */ "Power",
     /* 12 */ "Processor",
     /* 13 */ "Thermal",
-    /* 14 */ "BufferFld",
+    /* 14 */ "BufrField",
     /* 15 */ "DdbHandle",
     /* 16 */ "DebugObj",
-    /* 17 */ "DefField",
-    /* 18 */ "BnkField",
-    /* 19 */ "IdxField",
+    /* 17 */ "RegnField",
+    /* 18 */ "BankField",
+    /* 19 */ "IndxField",
     /* 20 */ "Reference",
     /* 21 */ "Alias",
     /* 22 */ "Notify",
     /* 23 */ "AddrHndlr",
-    /* 24 */ "DefFldDfn",
-    /* 25 */ "BnkFldDfn",
-    /* 26 */ "IdxFldDfn",
-    /* 27 */ "If",
-    /* 28 */ "Else",
-    /* 29 */ "While",
-    /* 30 */ "Scope",
-    /* 31 */ "DefAny",
-    /* 32 */ "MethodArg",
-    /* 33 */ "MethodLcl",
-    /* 34 */ "Extra",
-    /* 35 */ "Invalid"
+    /* 24 */ "Resource",
+    /* 25 */ "DefFldDfn",
+    /* 26 */ "BnkFldDfn",
+    /* 27 */ "IdxFldDfn",
+    /* 28 */ "If",
+    /* 29 */ "Else",
+    /* 30 */ "While",
+    /* 31 */ "Scope",
+    /* 32 */ "DefAny",
+    /* 33 */ "Extra",
+    /* 34 */ "Invalid"
 };
 
 
@@ -388,6 +397,96 @@ AcpiCmGetTypeName (
 
     return (AcpiGbl_NsTypeNames[Type]);
 }
+
+
+/* Region type decoding */
+
+NATIVE_CHAR *AcpiGbl_RegionTypes[NUM_REGION_TYPES] =
+{
+    "SystemMemory",
+    "SystemIO",
+    "PCIConfig",
+    "EmbeddedControl",
+    "SMBus",
+    "CMOS",
+    "PCIBarTarget",
+};
+
+
+/*****************************************************************************
+ *
+ * FUNCTION:    AcpiCmGetRegionName
+ *
+ * PARAMETERS:  None.
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Translate a Space ID into a name string (Debug only)
+ *
+ ****************************************************************************/
+
+NATIVE_CHAR *
+AcpiCmGetRegionName (
+    UINT8                   SpaceId)
+{
+
+    if (SpaceId >= USER_REGION_BEGIN)
+    {
+        return ("UserDefinedRegion");
+    }
+
+    else if (SpaceId >= NUM_REGION_TYPES)
+    {
+        return ("InvalidSpaceID");
+    }
+
+    return (AcpiGbl_RegionTypes[SpaceId]);
+}
+
+
+/* Data used in keeping track of fields */
+
+NATIVE_CHAR *AcpiGbl_FENames[NUM_FIELD_NAMES] =
+{
+    "skip",
+    "?access?"
+};              /* FE = Field Element */
+
+
+NATIVE_CHAR *AcpiGbl_MatchOps[NUM_MATCH_OPS] =
+{
+    "Error",
+    "MTR",
+    "MEQ",
+    "MLE",
+    "MLT",
+    "MGE",
+    "MGT"
+};
+
+
+/* Access type decoding */
+
+NATIVE_CHAR *AcpiGbl_AccessTypes[NUM_ACCESS_TYPES] =
+{
+    "AnyAcc",
+    "ByteAcc",
+    "WordAcc",
+    "DWordAcc",
+    "BlockAcc",
+    "SMBSendRecvAcc",
+    "SMBQuickAcc"
+};
+
+
+/* Update rule decoding */
+
+NATIVE_CHAR *AcpiGbl_UpdateRules[NUM_UPDATE_RULES] =
+{
+    "Preserve",
+    "WriteAsOnes",
+    "WriteAsZeros"
+};
 
 #endif
 
@@ -563,23 +662,14 @@ AcpiCmAllocateOwnerId (
  ***************************************************************************/
 
 void
-AcpiCmInitGlobals (ACPI_INIT_DATA *InitData)
+AcpiCmInitGlobals (
+    void)
 {
     UINT32                  i;
 
 
     FUNCTION_TRACE ("CmInitGlobals");
 
-
-    if (InitData)
-    {
-        MEMCPY (&AcpiGbl_AcpiInitData, InitData, sizeof (ACPI_INIT_DATA));
-    }
-
-    else
-    {
-        MEMSET (&AcpiGbl_AcpiInitData, 0, sizeof (ACPI_INIT_DATA));
-    }
 
     /* ACPI table structure */
 
@@ -619,12 +709,10 @@ AcpiCmInitGlobals (ACPI_INIT_DATA *InitData)
     /* Global "typed" ACPI table pointers */
 
     AcpiGbl_RSDP                        = NULL;
-    AcpiGbl_RSDT                        = NULL;
+    AcpiGbl_XSDT                        = NULL;
     AcpiGbl_FACS                        = NULL;
-    AcpiGbl_FACP                        = NULL;
-    AcpiGbl_APIC                        = NULL;
+    AcpiGbl_FADT                        = NULL;
     AcpiGbl_DSDT                        = NULL;
-    AcpiGbl_SBST                        = NULL;
 
 
     /* Global Lock support */
@@ -636,9 +724,7 @@ AcpiCmInitGlobals (ACPI_INIT_DATA *InitData)
 
     AcpiGbl_SystemFlags                 = 0;
     AcpiGbl_StartupFlags                = 0;
-    AcpiGbl_GlobalLockSet               = FALSE;
     AcpiGbl_RsdpOriginalLocation        = 0;
-    AcpiGbl_WhenToParseMethods          = METHOD_PARSE_CONFIGURATION;
     AcpiGbl_CmSingleStep                = FALSE;
     AcpiGbl_DbTerminateThreads          = FALSE;
     AcpiGbl_Shutdown                    = FALSE;
@@ -675,15 +761,6 @@ AcpiCmInitGlobals (ACPI_INIT_DATA *InitData)
     AcpiGbl_WalkStateCacheDepth         = 0;
     AcpiGbl_WalkStateCacheRequests      = 0;
     AcpiGbl_WalkStateCacheHits          = 0;
-
-    /* Interpreter */
-
-    AcpiGbl_BufSeq                      = 0;
-    AcpiGbl_NodeErr                     = FALSE;
-
-    /* Parser */
-
-    AcpiGbl_ParsedNamespaceRoot         = NULL;
 
     /* Hardware oriented */
 

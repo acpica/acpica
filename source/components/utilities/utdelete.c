@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: cmdelete - object deletion and reference count utilities
- *              $Revision: 1.66 $
+ *              $Revision: 1.67 $
  *
  ******************************************************************************/
 
@@ -270,15 +270,15 @@ AcpiCmDeleteInternalObj (
         break;
 
 
-    case ACPI_TYPE_FIELD_UNIT:
+    case ACPI_TYPE_BUFFER_FIELD:
 
         DEBUG_PRINT (ACPI_INFO,
-            ("CmDeleteInternalObj: ***** FieldUnit %p\n",
+            ("CmDeleteInternalObj: ***** Buffer Field %p\n",
             Object));
 
-        if (Object->FieldUnit.Extra)
+        if (Object->BufferField.Extra)
         {
-            AcpiCmDeleteObjectDesc (Object->FieldUnit.Extra);
+            AcpiCmDeleteObjectDesc (Object->BufferField.Extra);
         }
         break;
 
@@ -638,10 +638,10 @@ AcpiCmUpdateObjectReference (
             break;
 
 
-        case ACPI_TYPE_FIELD_UNIT:
+        case ACPI_TYPE_BUFFER_FIELD:
 
             Status = AcpiCmCreateUpdateStateAndPush (
-                        Object->FieldUnit.ContainerObj, Action, &StateList);
+                        Object->BufferField.BufferObj, Action, &StateList);
 
             if (ACPI_FAILURE (Status))
             {
@@ -650,7 +650,7 @@ AcpiCmUpdateObjectReference (
             break;
 
 
-        case INTERNAL_TYPE_FIELD:
+        case INTERNAL_TYPE_REGION_FIELD:
 
             Status = AcpiCmCreateUpdateStateAndPush (
                         Object->Field.RegionObj, Action, &StateList);
