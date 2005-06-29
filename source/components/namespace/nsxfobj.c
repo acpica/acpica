@@ -416,7 +416,7 @@ AcpiGetContainingScope (NsHandle Handle, NsHandle *RetHandle)
 
 ACPI_STATUS
 AcpiWalkNamespace (NsType Type, NsHandle StartHandle, UINT32 MaxDepth,
-                    void *(* UserFunction)(NsHandle,UINT32,void *), 
+                    WALK_CALLBACK UserFunction, 
                     void *Context, void **ReturnValue)
 {
     NsHandle            ObjHandle = 0;
