@@ -637,8 +637,6 @@ typedef struct
     UINT32      Interrupts[1];
 } IRQ_RESOURCE;
 
-#define IRQ_RESOURCE_LENGTH         20
-
 typedef struct
 {
     UINT32      Type;
@@ -648,22 +646,16 @@ typedef struct
     UINT32      Channels[1];
 } DMA_RESOURCE;
 
-#define DMA_RESOURCE_LENGTH         20
-
 typedef struct
 {
     UINT32      CompatibilityPriority;
     UINT32      PerformanceRobustness;
 } START_DEPENDENT_FUNCTIONS_RESOURCE;
 
-#define START_DEPENDENT_FUNCTIONS_RESOURCE_LENGTH       8
-
 /* 
  * END_DEPENDENT_FUNCTIONS_RESOURCE struct is not 
  *  needed because it has no fields
  */
-
-#define END_DEPENDENT_FUNCTIONS_RESOURCE_LENGTH         0
 
 typedef struct
 {
@@ -674,23 +666,17 @@ typedef struct
     UINT32      RangeLength;
 } IO_RESOURCE;
 
-#define IO_RESOURCE_LENGTH          20
-
 typedef struct
 {
     UINT32      BaseAddress;
     UINT32      RangeLength;
 } FIXED_IO_RESOURCE;
 
-#define FIXED_IO_RESOURCE_LENGTH    8
-
 typedef struct
 {
     UINT32      Length;
     UINT8       Reserved[1];
 } VENDOR_RESOURCE;
-
-#define VENDOR_RESOURCE_LENGTH      5
 
 typedef struct
 {
@@ -701,8 +687,6 @@ typedef struct
     UINT32      RangeLength;
 } MEMORY24_RESOURCE;
 
-#define MEMORY24_RESOURCE_LENGTH    20
-
 typedef struct
 {
     UINT32      ReadWriteAttribute;
@@ -712,16 +696,12 @@ typedef struct
     UINT32      RangeLength;
 } MEMORY32_RESOURCE;
 
-#define MEMORY32_RESOURCE_LENGTH    20
-
 typedef struct
 {
     UINT32      ReadWriteAttribute;
     UINT32      RangeBaseAddress;
     UINT32      RangeLength;
 } FIXED_MEMORY32_RESOURCE;
-
-#define FIXED_MEMORY32_RESOURCE_LENGTH      12
 
 typedef struct
 {
@@ -762,11 +742,10 @@ typedef struct
     UINT32          AddressTranslationOffset;
     UINT32          AddressLength;
     UINT32          ResourceSourceIndex;
-    UINT8           * ResourceSource;
+    UINT32          ResourceSourceStringLength;
+    UINT8           ResourceSource[1];
     
 } ADDRESS16_DESCRIPTOR_RESOURCE;
-
-#define ADDRESS16_DESCRIPTOR_RESOURCE_LENGTH    52
 
 typedef struct  
 {
@@ -782,11 +761,10 @@ typedef struct
     UINT32          AddressTranslationOffset;
     UINT32          AddressLength;
     UINT32          ResourceSourceIndex;
-    UINT8           * ResourceSource;
+    UINT32          ResourceSourceStringLength;
+    UINT8           ResourceSource[1];
     
 } ADDRESS32_DESCRIPTOR_RESOURCE;
-
-#define ADDRESS32_DESCRIPTOR_RESOURCE_LENGTH    52
 
 typedef struct
 {
@@ -794,13 +772,12 @@ typedef struct
     UINT32          EdgeLevel;
     UINT32          ActiveHighLow;
     UINT32          SharedExclusive;
-    UINT32          ResourceSourceIndex;
-    UINT8           * ResourceSource;
     UINT32          NumberOfInterrupts;
     UINT32          Interrupts[1];
+    UINT32          ResourceSourceIndex;
+    UINT32          ResourceSourceStringLength;
+    UINT8           ResourceSource[1];
 } EXTENDED_IRQ_RESOURCE;
-
-#define EXTENDED_IRQ_RESOURCE_LENGTH    32
 
 typedef enum
 {
@@ -839,11 +816,9 @@ typedef union
 typedef struct _resource_tag
 {
     RESOURCE_TYPE           Id;
-    struct _resource_tag  * Next;
-    RESOURCE_DATA         * Data;
+    UINT32                  Length;
+    RESOURCE_DATA           Data;
 } RESOURCE;
-
-#define RESOURCE_LENGTH     12
 
 /*
  * END: Definitions for Resource Attributes
@@ -856,20 +831,15 @@ typedef struct
 {
     UINT32          Address;
     UINT32          Pin;
-    UINT8           * Source;
     UINT32          SourceIndex;
+    UINT8           Source[1];
 } PRT_ENTRY;
-
-#define PRT_ENTRY_LENGTH    16
-
 
 typedef struct _prt_tag
 {
-    PRT_ENTRY        * Data;
-    struct _prt_tag  * Next;
+    UINT32          Length;
+    PRT_ENTRY       Data;
 } PCI_ROUTING_TABLE;
-
-#define PCI_ROUTING_TABLE_LENGTH     8
 
 /*
  * END: Definitions for PCI Routing tables
