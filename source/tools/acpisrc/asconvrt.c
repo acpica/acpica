@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asconvrt - Source conversion code
- *              $Revision: 1.33 $
+ *              $Revision: 1.34 $
  *
  *****************************************************************************/
 
@@ -846,7 +846,7 @@ AsLowerCaseIdentifiers (
 
         /* Ignore quoted strings */
 
-        if (SubBuffer[0] == '\"')
+        if ((SubBuffer[0] == '\"') && (SubBuffer[1] != '\''))
         {
             SubBuffer++;
 
