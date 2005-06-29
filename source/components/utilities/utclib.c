@@ -130,8 +130,8 @@
  * than an inline or assembly implementation
  */
 
-#define _THIS_MODULE        "cmclib.c"
 #define _COMPONENT          MISCELLANEOUS
+        MODULE_NAME         ("cmclib");
 
 
 /*******************************************************************************
