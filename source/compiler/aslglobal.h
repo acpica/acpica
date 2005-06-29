@@ -3,7 +3,7 @@
 /******************************************************************************
  *
  * Module Name: aslglobal.h - Global variable definitions
- *              $Revision: 1.15 $
+ *              $Revision: 1.17 $
  *
  *****************************************************************************/
 
@@ -216,7 +216,8 @@ EXTERN ASL_PARSE_NODE           INIT_GLOBAL (*Gbl_NodeCacheNext, NULL);
 EXTERN ASL_PARSE_NODE           INIT_GLOBAL (*Gbl_NodeCacheLast, NULL);
 EXTERN NATIVE_CHAR              INIT_GLOBAL (*Gbl_StringCacheNext, NULL);
 EXTERN NATIVE_CHAR              INIT_GLOBAL (*Gbl_StringCacheLast, NULL);
-
+EXTERN UINT32                   INIT_GLOBAL (Gbl_TempCount, 0);
+EXTERN ASL_PARSE_NODE           *Gbl_FirstLevelInsertionNode;
 
 
 EXTERN UINT32                   INIT_GLOBAL (Gbl_CurrentHexColumn, 0);
@@ -234,6 +235,7 @@ EXTERN FILE                     *DebugFile; /* Placeholder for oswinxf only */
 EXTERN ASL_ANALYSIS_WALK_INFO   AnalysisWalkInfo;
 EXTERN ACPI_TABLE_HEADER        TableHeader;
 extern ASL_RESERVED_INFO        ReservedMethods[];
+EXTERN ASL_EVENT_INFO           AslGbl_Events[20];
 
 
 /* Scratch buffers */
