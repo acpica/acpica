@@ -2,7 +2,7 @@
  *
  * Module Name: tbxface - Public interfaces to the ACPI subsystem
  *                         ACPI table oriented interfaces
- *              $Revision: 1.31 $
+ *              $Revision: 1.32 $
  *
  *****************************************************************************/
 
@@ -156,6 +156,8 @@ AcpiLoadTables (
     Status = AcpiTbVerifyRsdp (RsdpPhysicalAddress);
     if (ACPI_FAILURE (Status))
     {
+        REPORT_ERROR (("AcpiLoadTables: RSDP Failed validation: %s\n",
+                        AcpiCmFormatException (Status)));
         goto ErrorExit;
     }
 
@@ -164,6 +166,8 @@ AcpiLoadTables (
     Status = AcpiTbGetTableRsdt (&NumberOfTables);
     if (ACPI_FAILURE (Status))
     {
+        REPORT_ERROR (("AcpiLoadTables: Could not load RSDT: %s\n",
+                        AcpiCmFormatException (Status)));
         goto ErrorExit;
     }
 
@@ -172,6 +176,8 @@ AcpiLoadTables (
     Status = AcpiTbGetAllTables (NumberOfTables, NULL);
     if (ACPI_FAILURE (Status))
     {
+        REPORT_ERROR (("AcpiLoadTables: Error getting required tables (DSDT/FADT/FACS): %s\n",
+                        AcpiCmFormatException (Status)));
         goto ErrorExit;
     }
 
@@ -183,6 +189,8 @@ AcpiLoadTables (
     Status = AcpiNsLoadNamespace ();
     if (ACPI_FAILURE (Status))
     {
+        REPORT_ERROR (("AcpiLoadTables: Could not load namespace: %s\n",
+                        AcpiCmFormatException (Status)));
         goto ErrorExit;
     }
 
