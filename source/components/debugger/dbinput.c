@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dbinput - user front-end to the AML debugger
- *              $Revision: 1.57 $
+ *              $Revision: 1.59 $
  *
  ******************************************************************************/
 
@@ -125,7 +125,7 @@
 
 #ifdef ENABLE_DEBUGGER
 
-#define _COMPONENT          DEBUGGER
+#define _COMPONENT          ACPI_DEBUGGER
         MODULE_NAME         ("dbinput")
 
 
@@ -672,7 +672,9 @@ AcpiDbCommandDispatch (
 
         Status = AcpiDbCommandDispatch (CommandLine, WalkState, Op);
         if (ACPI_SUCCESS (Status))
+        {
             Status = AE_CTRL_TRUE;
+        }
         return (Status);
         break;
 
@@ -685,7 +687,9 @@ AcpiDbCommandDispatch (
 
         Status = AcpiDbCommandDispatch (CommandLine, WalkState, Op);
         if (ACPI_SUCCESS (Status))
+        {
             Status = AE_CTRL_TRUE;
+        }
         return (Status);
 
     case CMD_INFORMATION:
