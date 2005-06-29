@@ -670,6 +670,7 @@ _CmCallocate (
 
     FUNCTION_TRACE_U32 ("_CmCallocate", Size);
 
+
     /* Check for an inadvertent size of zero bytes */
 
     if (!Size)
@@ -743,7 +744,10 @@ _CmFree (
         return_VOID;
     }
 
+#ifdef ACPI_DEBUG
     AcpiCmDeleteElementFromAllocList (Address, Component, Module, Line);
+#endif
+
     AcpiOsdFree (Address);
 
     DEBUG_PRINT (TRACE_ALLOCATIONS, ("CmFree: %p freed\n", Address));
