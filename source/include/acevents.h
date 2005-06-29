@@ -101,11 +101,11 @@
 
 /* Globals for event handling */
 
+/* The first two can probably be taken out...
 extern INT32            EdgeLevelSave;
-extern INT32            IrqEnableSave;  /*  original SCI config */
+extern INT32            IrqEnableSave;  original SCI config */
 extern INT32            OriginalMode;   /*  stores the original ACPI/legacy mode    */
-
-
+extern UINT16			SciHandle;
 
 /* Interrupt handler return values */
 
@@ -113,51 +113,26 @@ extern INT32            OriginalMode;   /*  stores the original ACPI/legacy mode
 #define INTERRUPT_NOT_HANDLED           0x02
 #define INTERRUPT_ERROR                 0x03
 
-
-/*  iErrorMask mask bits    */
-
-#define NO_ACPI_TABLES_MASK             0x01
-#define NO_ACPI_TRANSITION_MASK         0x02
-#define SCI_LEVEL_INT_MASK              0x04
-#define NO_SCI_HANDLER_MASK             0x08
-#define NO_LEGACY_TRANSITION_MASK       0x10
-#define	UNABLE_TO_LOAD_NAMESPACE        0x20
-#define	SCI_DISABLED                    0x40
-
-#define SAVE_NOT_VALID                  -1
-
-/* identifier strings for fixed events */
-
-#define TMR_FIXED_EVENT                 "TMR_FIXED_EVENT"
-#define NOT_USED_EVENT                  "UNHANDLED_SCI"
-#define GBL_FIXED_EVENT                 "GBL_FIXED_EVENT"
-#define PWR_BTN_FIXED_EVENT             "PWR_BTN_FIXED_EVENT"
-#define SLP_BTN_FIXED_EVENT             "SLP_BTN_FIXED_EVENT"
-#define RTC_FIXED_EVENT                 "RTC_FIXED_EVENT"
-
 /* event index for types of events */
 
 enum 
 {
-    TMR_EVENT,
+    PMTIMER_EVENT = 0,
     NOT_USED,
     /* 
      * There's no bus master event so index 1 is used for IRQ's that are not
      * handled by the SCI handler 
      */
-    GBL_EVENT, 
-    PWR_BTN_EVENT, 
-    SLP_BTN_EVENT, 
+    GLOBAL_EVENT, 
+    POWER_BUTTON_EVENT, 
+    SLEEP_BUTTON_EVENT, 
     RTC_EVENT, 
-    GENERAL_EVENT
+    GENERAL_EVENT,
+    NUM_EVENTS
 };
 
-
-/* Opcodes for event enable/disable functions */
-
-#define DISABLE                         0
-#define ENABLE                          1
-#define STATUS                          0
+/* Array for registering fixed event handlers */
+typedef UINT32 (*FIXED_EVENT_HANDLER) (void);
 
 /* 
  * Use the macros below + the function AcpiClearStatusBit for
@@ -184,7 +159,7 @@ enum
  * by the ACPI interrupt handler... 
  */
 
-extern volatile UINT32                  EventCount[];   
+// extern volatile UINT32                  EventCount[];   
 
 
 /* Prototypes */
@@ -212,27 +187,13 @@ ACPI_STATUS
 UninstallSciHandler (
     void);
 
-UINT32 
+INT32 
 SciCount (
-    char *          EventName);
+    UINT32          Event);
 
 INT32 
 InitializeSCI (
     INT32           ProgramSCI);
-
-INT32 
-VerifyAcpiTablesPresent (
-    char *          TestName);
-
-
-UINT32
-InstallInterruptHandler (
-    UINT32          InterruptNumber,
-    INT32           (* Isr)(void),
-    UINT32          *ExceptPtr);
-
-INT32
-RemoveInterruptHandler (UINT32 Handle);
 
 void
 RestoreAcpiState (
