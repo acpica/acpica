@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: utobject - ACPI object create/delete/size/cache routines
- *              $Revision: 1.84 $
+ *              $Revision: 1.85 $
  *
  *****************************************************************************/
 
@@ -307,7 +307,7 @@ AcpiUtValidInternalObject (
 
     default:
         ACPI_DEBUG_PRINT ((ACPI_DB_INFO,
-                "%p is not not an ACPI operand obj [%s]\n", 
+                "%p is not not an ACPI operand obj [%s]\n",
                 Object, AcpiUtGetDescriptorName (Object)));
         break;
     }
