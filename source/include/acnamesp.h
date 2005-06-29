@@ -228,10 +228,9 @@ NsOpensScope (
     NsType              Type);
 
 ACPI_STATUS
-NsSearchTable (
+NsSearchAndEnter (
     char                *NamSeg, 
     nte                 *NameTbl, 
-    INT32               TableSize, 
     OpMode              LoadMode, 
     NsType              Type,
     nte *               *RetNte);
