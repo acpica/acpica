@@ -273,6 +273,10 @@ SOURCE=..\..\source\components\namespace\nsdump.c
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\source\COMPONENTS\NAMESPACE\nsdumpdv.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\source\components\namespace\nseval.c
 # End Source File
 # Begin Source File
@@ -302,6 +306,10 @@ SOURCE=..\..\source\components\namespace\nsutils.c
 # Begin Source File
 
 SOURCE=..\..\source\components\namespace\nswalk.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\COMPONENTS\NAMESPACE\nsxfeval.c
 # End Source File
 # Begin Source File
 
