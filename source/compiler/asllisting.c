@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asllisting - Listing file generation
- *              $Revision: 1.30 $
+ *              $Revision: 1.31 $
  *
  *****************************************************************************/
 
@@ -982,7 +982,7 @@ LsDumpAscii (
     for (i = 0; i < Count; i++)
     {
         BufChar = Buffer[i];
-        if (isascii (BufChar))
+        if (isprint (BufChar))
         {
             FlPrintFile (FileId, "%c", BufChar);
         }
@@ -993,10 +993,39 @@ LsDumpAscii (
     }
 }
 
-
 /*******************************************************************************
  *
  * FUNCTION:    LsDoHexOutput
+ *
+ * PARAMETERS:  None
+ *
+ * RETURN:      None.
+ *
+ * DESCRIPTION: Create the hex output file.
+ *
+ ******************************************************************************/
+
+
+void
+LsDoHexOutput (void)
+{
+
+    switch (Gbl_HexOutputFlag)
+    {
+    case HEX_OUTPUT_C:
+        LsDoHexOutputC ();
+        break;
+
+    case HEX_OUTPUT_ASM:
+        LsDoHexOutputAsm ();
+        break;
+    }
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    LsDoHexOutputC
  *
  * PARAMETERS:  None
  *
@@ -1011,7 +1040,7 @@ LsDumpAscii (
 #define HEX_CHARS_PER_LINE 8
 
 void
-LsDoHexOutput (void)
+LsDoHexOutputC (void)
 {
     UINT32                  j;
     UINT8                   FileByte[HEX_CHARS_PER_LINE];
@@ -1019,10 +1048,6 @@ LsDoHexOutput (void)
     UINT32                  Offset = 0;
 
 
-    if (!Gbl_HexOutputFlag)
-    {
-        return;
-    }
 
     FlPrintFile (ASL_FILE_HEX_OUTPUT, " * C source code output\n *\n */\n");
     FlPrintFile (ASL_FILE_HEX_OUTPUT, "unsigned char AmlCode[] = \n{\n");
@@ -1071,7 +1096,7 @@ LsDoHexOutput (void)
 
 /*******************************************************************************
  *
- * FUNCTION:    LsDoAsmOutput
+ * FUNCTION:    LsDoHexOutputAsm
  *
  * PARAMETERS:  None
  *
@@ -1079,7 +1104,7 @@ LsDoHexOutput (void)
  *
  * DESCRIPTION: Create the hex output file.  This is the same data as the AML
  *              output file, but formatted into hex/ascii bytes suitable for
- *              inclusion into a C source file.
+ *              inclusion into a ASM source file.
  *
  ******************************************************************************/
 
@@ -1087,7 +1112,7 @@ LsDoHexOutput (void)
 
 
 void
-LsDoAsmOutput (void)
+LsDoHexOutputAsm (void)
 {
     UINT32                  j;
     UINT8                   FileByte[HEX_CHARS_PER_LINE];
@@ -1096,12 +1121,8 @@ LsDoAsmOutput (void)
     BOOLEAN                 DoComma = FALSE;
 
 
-    if (!Gbl_AsmOutputFlag)
-    {
-        return;
-    }
 
-    FlPrintFile (ASL_FILE_ASM_SOURCE_OUTPUT, "; Assembly code source output\n;\n");
+    FlPrintFile (ASL_FILE_HEX_OUTPUT, "; Assembly code source output\n;\n");
 
     /* Start at the beginning of the AML file */
 
@@ -1114,11 +1135,11 @@ LsDoAsmOutput (void)
     {
         if (j == 0)
         {
-            FlPrintFile (ASL_FILE_ASM_SOURCE_OUTPUT, "  db  ");
+            FlPrintFile (ASL_FILE_HEX_OUTPUT, "  db  ");
         }
         else if (DoComma)
         {
-            FlPrintFile (ASL_FILE_ASM_SOURCE_OUTPUT, ",");
+            FlPrintFile (ASL_FILE_HEX_OUTPUT, ",");
             DoComma = FALSE;
         }
 
@@ -1126,7 +1147,7 @@ LsDoAsmOutput (void)
          * Convert each AML byte to hex
          */
         UtConvertByteToAsmHex (FileByte[j], Buffer);
-        FlWriteFile (ASL_FILE_ASM_SOURCE_OUTPUT, Buffer, 4);
+        FlWriteFile (ASL_FILE_HEX_OUTPUT, Buffer, 4);
 
         /* An occasional linefeed improves readability */
 
@@ -1134,12 +1155,12 @@ LsDoAsmOutput (void)
         j++;
         if (j >= ASM_HEX_CHARS_PER_LINE)
         {
-            FlPrintFile (ASL_FILE_ASM_SOURCE_OUTPUT, "  ;%8.8X \"", Offset - ASM_HEX_CHARS_PER_LINE);
+            FlPrintFile (ASL_FILE_HEX_OUTPUT, "  ;%8.8X \"", Offset - ASM_HEX_CHARS_PER_LINE);
 
             /* Write the ASCII character associated with each of the bytes */
 
-            LsDumpAscii (ASL_FILE_ASM_SOURCE_OUTPUT, ASM_HEX_CHARS_PER_LINE, FileByte);
-            FlPrintFile (ASL_FILE_ASM_SOURCE_OUTPUT, "\"\n");
+            LsDumpAscii (ASL_FILE_HEX_OUTPUT, ASM_HEX_CHARS_PER_LINE, FileByte);
+            FlPrintFile (ASL_FILE_HEX_OUTPUT, "\"\n");
             j = 0;
         }
         else
@@ -1148,8 +1169,8 @@ LsDoAsmOutput (void)
         }
     }
 
-    FlPrintFile (ASL_FILE_ASM_SOURCE_OUTPUT, "\n");
-    FlCloseFile (ASL_FILE_ASM_SOURCE_OUTPUT);
+    FlPrintFile (ASL_FILE_HEX_OUTPUT, "\n");
+    FlCloseFile (ASL_FILE_HEX_OUTPUT);
 }
 
 

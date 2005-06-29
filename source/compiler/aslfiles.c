@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslfiles - file I/O suppoert
- *              $Revision: 1.28 $
+ *              $Revision: 1.29 $
  *
  *****************************************************************************/
 
@@ -737,7 +737,6 @@ FlOpenMiscOutputFiles (
 
         FlOpenFile (ASL_FILE_HEX_OUTPUT, Filename, "w+");
 
-        FlPrintFile (ASL_FILE_HEX_OUTPUT, "/*\n");
         AslCompilerSignon (ASL_FILE_HEX_OUTPUT);
         AslCompilerFileHeader (ASL_FILE_HEX_OUTPUT);
     }
