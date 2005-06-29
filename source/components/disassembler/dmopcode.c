@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dbdisasm - parser op tree display routines
- *              $Revision: 1.66 $
+ *              $Revision: 1.67 $
  *
  ******************************************************************************/
 
@@ -833,7 +833,8 @@ AcpiDbDisplayOpcode (
             (WalkState->Results) &&
             (WalkState->Results->Results.NumResults))
         {
-            AcpiDbDecodeInternalObject (WalkState->Results->Results.ObjDesc [WalkState->Results->Results.NumResults-1]);
+            AcpiDbDecodeInternalObject (
+                WalkState->Results->Results.ObjDesc [WalkState->Results->Results.NumResults-1]);
         }
 #endif
         break;
