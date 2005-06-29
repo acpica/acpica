@@ -581,11 +581,83 @@ SOURCE=..\..\Subsystem\NameSpace\nsutils.c
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\Subsystem\Resources\rsaddr16.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\Subsystem\Resources\rsaddr32.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\Subsystem\Resources\rsapi.c
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\Subsystem\Resources\rsby2lst.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\Subsystem\Resources\rscalcb.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\Subsystem\Resources\rscalcl.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\Subsystem\Resources\rscrbyst.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\Subsystem\Resources\rscrresl.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\Subsystem\Resources\rsdepend.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\Subsystem\Resources\rsdma.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\Subsystem\Resources\rseirq.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\Subsystem\Resources\rsgetbss.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\Subsystem\Resources\rsio.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\Subsystem\Resources\rsirq.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\Subsystem\Resources\rslst2by.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\Subsystem\Resources\rsmem24.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\Subsystem\Resources\rsmem32.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\Subsystem\Resources\rstag.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\Subsystem\Resources\rsutils.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\Subsystem\Resources\rsvendor.c
 # End Source File
 # End Group
 # Begin Group "Header Files"
