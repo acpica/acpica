@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: actypes.h - Common data types for the entire ACPI subsystem
- *       $Revision: 1.149 $
+ *       $Revision: 1.150 $
  *
  *****************************************************************************/
 
@@ -187,7 +187,7 @@ typedef UINT32                          ACPI_PHYSICAL_ADDRESS;
 #define ALIGNED_ADDRESS_BOUNDARY        0x00000002
 #define _HW_ALIGNMENT_SUPPORT
 
-/* 
+/*
  * (16-bit only) internal integers must be 32-bits, so
  * 64-bit integers cannot be supported
  */
