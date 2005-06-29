@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: actypes.h - Common data types for the entire ACPI subsystem
- *       $Revision: 1.218 $
+ *       $Revision: 1.219 $
  *
  *****************************************************************************/
 
@@ -244,6 +244,7 @@ typedef char                            NATIVE_CHAR;
 #define ACPI_UINT16_MAX                 (UINT16) 0xFFFF
 #define ACPI_UINT32_MAX                 (UINT32) 0xFFFFFFFF
 #define ACPI_UINT64_MAX                 (UINT64) 0xFFFFFFFFFFFFFFFF
+#define ACPI_ASCII_MAX                  0x7F
 
 
 #ifdef DEFINE_ALTERNATE_TYPES
