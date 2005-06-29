@@ -162,8 +162,8 @@ AcpiGetTable (
 
 ACPI_STATUS
 AcpiNameToHandle (
-    ACPI_HANDLE             Scope, 
     UINT32                  Name,
+    ACPI_HANDLE             Scope, 
     ACPI_HANDLE             *OutHandle);
 
 ACPI_STATUS
@@ -328,7 +328,7 @@ AcpiGetMode (
     void);
 
 INT32
-AcpiModeCapabilities (
+AcpiGetModeCapabilities (
     void);
 
 ACPI_STATUS
