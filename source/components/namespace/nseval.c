@@ -184,7 +184,7 @@ NsEvaluateRelative (
 
     /* Lookup the name in the namespace */
 
-    Status = NsLookup (RelObjEntry->Scope, InternalPath, TYPE_Any, IMODE_Execute, 
+    Status = NsLookup (RelObjEntry->Scope, InternalPath, ACPI_TYPE_Any, IMODE_Execute, 
                                 NS_NO_UPSEARCH, &ObjEntry);
     if (Status != AE_OK)
     {
@@ -264,7 +264,7 @@ NsEvaluateByName (
 
     /* Lookup the name in the namespace */
 
-    Status = NsLookup (NULL, InternalPath, TYPE_Any, IMODE_Execute, 
+    Status = NsLookup (NULL, InternalPath, ACPI_TYPE_Any, IMODE_Execute, 
                                 NS_NO_UPSEARCH, &ObjEntry);
     if (Status != AE_OK)
     {
@@ -332,7 +332,7 @@ NsEvaluateByHandle (
 
     /* Parameter Validation */
 
-    if (!RootObject->Scope)
+    if (!Gbl_RootObject->Scope)
     {
         /* 
          * If the name space has not been initialized, the Method has surely
@@ -352,8 +352,8 @@ NsEvaluateByHandle (
     {
         /* Initialize the return value to an invalid object */
 
-        memset (ReturnObject, 0, sizeof (ACPI_OBJECT_INTERNAL));
-        ReturnObject->Type = TYPE_Invalid;
+        CmInitStaticObject (ReturnObject);
+        ReturnObject->Common.Type = INTERNAL_TYPE_Invalid;
     }
 
 
@@ -363,7 +363,7 @@ NsEvaluateByHandle (
      * 2) The object is not a method -- just return it's current value
      */
 
-    if (NsGetType (ObjEntry) == TYPE_Method)
+    if (NsGetType (ObjEntry) == ACPI_TYPE_Method)
     {
         /* Case 1) We have an actual control method to execute */
 
@@ -468,25 +468,25 @@ NsExecuteControlMethod (
 
     DEBUG_PRINT (ACPI_INFO,
                 ("Control method at Offset %x Length %lx]\n",
-                ((ACPI_OBJECT_INTERNAL *) MethodEntry->Object)->Method.Offset + 1,
-                ((ACPI_OBJECT_INTERNAL *) MethodEntry->Object)->Method.Length - 1));
+                ((ACPI_OBJECT_INTERNAL *) MethodEntry->Object)->Method.Pcode + 1,
+                ((ACPI_OBJECT_INTERNAL *) MethodEntry->Object)->Method.PcodeLength - 1));
 
     NsDumpPathname (MethodEntry->Scope, "NsExecuteControlMethod: Setting scope to", 
                     TRACE_NAMES, _COMPONENT);
 
     /* Reset the current scope to the beginning of scope stack */
 
-    CurrentScope = &ScopeStack[0];
+    Gbl_CurrentScope = &Gbl_ScopeStack[0];
 
     /* Push current scope on scope stack and make Method->Scope current  */
 
-    NsPushCurrentScope (MethodEntry->Scope, TYPE_Method);
+    NsPushCurrentScope (MethodEntry->Scope, ACPI_TYPE_Method);
 
     NsDumpPathname (MethodEntry, "NsExecuteControlMethod: Executing", 
                     TRACE_NAMES, _COMPONENT);
 
     DEBUG_PRINT (TRACE_NAMES, ("At offset %8XH\n",
-                      ((ACPI_OBJECT_INTERNAL *) MethodEntry->Object)->Method.Offset + 1));
+                      ((ACPI_OBJECT_INTERNAL *) MethodEntry->Object)->Method.Pcode + 1));
 
     /* Clear both the package and object stacks */
 
@@ -496,8 +496,8 @@ NsExecuteControlMethod (
     /* 
      * Excecute the method via the interpreter
      */
-    Status = AmlExecuteMethod (((ACPI_OBJECT_INTERNAL *) MethodEntry->Object)->Method.Offset + 1,
-                               ((ACPI_OBJECT_INTERNAL *) MethodEntry->Object)->Method.Length - 1,
+    Status = AmlExecuteMethod (((ACPI_OBJECT_INTERNAL *) MethodEntry->Object)->Method.Pcode + 1,
+                               ((ACPI_OBJECT_INTERNAL *) MethodEntry->Object)->Method.PcodeLength - 1,
                                Params);
 
     if (AmlPkgStackLevel ())
@@ -557,7 +557,7 @@ NsGetObjectValue (
     FUNCTION_TRACE ("NsGetObjectValue");
 
 
-    ObjDesc = CmCreateInternalObject (TYPE_Lvalue);
+    ObjDesc = CmCreateInternalObject (INTERNAL_TYPE_Lvalue);
     if (!ObjDesc)
     {
         /* Descriptor allocation failure */
