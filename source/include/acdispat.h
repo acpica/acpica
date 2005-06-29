@@ -362,7 +362,7 @@ AcpiDsInitObjectFromOp (
     ACPI_WALK_STATE         *WalkState,
     ACPI_GENERIC_OP         *Op,
     UINT16                  Opcode,
-    ACPI_OBJECT_INTERNAL    *ObjDesc);
+    ACPI_OBJECT_INTERNAL    **ObjDesc);
 
 ACPI_STATUS
 AcpiDsCreateNamedObject (
