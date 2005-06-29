@@ -135,17 +135,7 @@ SOURCE=..\..\source\components\utilities\utinit.c
 # Begin Source File
 
 SOURCE=..\..\source\components\utilities\utmath.c
-
-!IF  "$(CFG)" == "AcpiExec - Win32 Release"
-
 # ADD CPP /Ze
-
-!ELSEIF  "$(CFG)" == "AcpiExec - Win32 Debug"
-
-# ADD CPP /Ze
-
-!ENDIF 
-
 # End Source File
 # Begin Source File
 
@@ -190,10 +180,6 @@ SOURCE=..\..\source\components\interpreter\executer\exdump.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\source\components\interpreter\executer\exdyadic.c
-# End Source File
-# Begin Source File
-
 SOURCE=..\..\source\components\interpreter\executer\exfield.c
 # End Source File
 # Begin Source File
@@ -206,15 +192,27 @@ SOURCE=..\..\source\components\interpreter\executer\exmisc.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\source\components\interpreter\executer\exmonad.c
-# End Source File
-# Begin Source File
-
 SOURCE=..\..\source\components\interpreter\executer\exmutex.c
 # End Source File
 # Begin Source File
 
 SOURCE=..\..\source\components\interpreter\executer\exnames.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\components\interpreter\executer\exoparg1.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\components\interpreter\executer\exoparg2.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\components\interpreter\executer\exoparg3.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\components\interpreter\executer\exoparg6.c
 # End Source File
 # Begin Source File
 
