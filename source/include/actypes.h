@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: actypes.h - Common data types for the entire ACPI subsystem
- *       $Revision: 1.161 $
+ *       $Revision: 1.163 $
  *
  *****************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, 2000, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -176,7 +176,7 @@ typedef long                            INT32;
 typedef int                             INT16;
 typedef unsigned long                   UINT32;
 
-typedef struct 
+typedef struct
 {
     UINT32                                  Lo;
     UINT32                                  Hi;
@@ -340,8 +340,9 @@ typedef UINT64                          ACPI_INTEGER;
 #define ACPI_STATE_S2                   (UINT8) 2
 #define ACPI_STATE_S3                   (UINT8) 3
 #define ACPI_STATE_S4                   (UINT8) 4
-#define ACPI_STATE_S4BIOS               (UINT8) 5
-#define ACPI_STATE_S5                   (UINT8) 6
+#define ACPI_STATE_S5                   (UINT8) 5
+/* let's pretend S4BIOS didn't exist for now. ASG */
+#define ACPI_STATE_S4BIOS               (UINT8) 6
 #define ACPI_S_STATES_MAX               ACPI_STATE_S5
 
 
@@ -376,14 +377,14 @@ typedef UINT32                          ACPI_OBJECT_TYPE;
 typedef UINT8                           OBJECT_TYPE_INTERNAL;
 
 #define ACPI_BTYPE_ANY                  0x00000000
-#define ACPI_BTYPE_NUMBER               0x00000001
+#define ACPI_BTYPE_INTEGER               0x00000001
 #define ACPI_BTYPE_STRING               0x00000002
 #define ACPI_BTYPE_BUFFER               0x00000004
 #define ACPI_BTYPE_PACKAGE              0x00000008
 #define ACPI_BTYPE_FIELD_UNIT           0x00000010
 #define ACPI_BTYPE_DEVICE               0x00000020
 #define ACPI_BTYPE_EVENT                0x00000040
-#define ACPI_BTYPE_METHOD               0x00000080 
+#define ACPI_BTYPE_METHOD               0x00000080
 #define ACPI_BTYPE_MUTEX                0x00000100
 #define ACPI_BTYPE_REGION               0x00000200
 #define ACPI_BTYPE_POWER                0x00000400
@@ -395,7 +396,7 @@ typedef UINT8                           OBJECT_TYPE_INTERNAL;
 #define ACPI_BTYPE_REFERENCE            0x00010000
 #define ACPI_BTYPE_RESOURCE             0x00020000
 
-#define ACPI_BTYPE_COMPUTE_DATA         (ACPI_BTYPE_NUMBER | ACPI_BTYPE_STRING | ACPI_BTYPE_BUFFER)
+#define ACPI_BTYPE_COMPUTE_DATA         (ACPI_BTYPE_INTEGER | ACPI_BTYPE_STRING | ACPI_BTYPE_BUFFER)
 
 #define ACPI_BTYPE_DATA                 (ACPI_BTYPE_COMPUTE_DATA  | ACPI_BTYPE_PACKAGE)
 #define ACPI_BTYPE_DATA_REFERENCE       (ACPI_BTYPE_DATA | ACPI_BTYPE_REFERENCE | ACPI_BTYPE_DDB_HANDLE)
@@ -404,9 +405,8 @@ typedef UINT8                           OBJECT_TYPE_INTERNAL;
 #define ACPI_BTYPE_ALL_OBJECTS          0x00007FFF
 
 
-
 #define ACPI_TYPE_ANY                   0  /* 0x00  */
-#define ACPI_TYPE_NUMBER                1  /* 0x01  Byte/Word/Dword/Zero/One/Ones */
+#define ACPI_TYPE_INTEGER               1  /* 0x01  Byte/Word/Dword/Zero/One/Ones */
 #define ACPI_TYPE_STRING                2  /* 0x02  */
 #define ACPI_TYPE_BUFFER                3  /* 0x03  */
 #define ACPI_TYPE_PACKAGE               4  /* 0x04  ByteConst, multiple DataTerm/Constant/SuperName */
@@ -553,7 +553,7 @@ typedef union AcpiObj
     {
         ACPI_OBJECT_TYPE            Type;
         ACPI_INTEGER                Value;      /* The actual number */
-    } Number;
+    } Integer;
 
     struct
     {
