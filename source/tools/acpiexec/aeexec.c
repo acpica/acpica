@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: aeexec - Top level parse and execute routines
- *              $Revision: 1.34 $
+ *              $Revision: 1.36 $
  *
  *****************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, 2000, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -125,7 +125,7 @@
 #include <stdio.h>
 
 
-#define _COMPONENT          PARSER
+#define _COMPONENT          ACPI_TOOLS
         MODULE_NAME         ("aeexec")
 
 
@@ -205,7 +205,7 @@ RegionHandler (
     BOOLEAN                 BufferExists;
     REGION                  *RegionElement;
     void                    *BufferValue;
-    UINT32                  ByteWidth; 
+    UINT32                  ByteWidth;
 
 
     /*
@@ -273,7 +273,7 @@ RegionHandler (
 
         RegionElement->Address      = BaseAddress;
         RegionElement->Length       = Length;
-        RegionElement->NextRegion   = NULL;   
+        RegionElement->NextRegion   = NULL;
 
 
         /*
@@ -308,7 +308,7 @@ RegionHandler (
      * NOTE: RegionElement->Length is in bytes, therefore it we compare against
      * ByteWidth (see above)
      */
-    if (((ACPI_INTEGER) Address + ByteWidth) > 
+    if (((ACPI_INTEGER) Address + ByteWidth) >
         ((ACPI_INTEGER)(RegionElement->Address) + RegionElement->Length))
     {
         DEBUG_PRINT (ACPI_WARN, ("Request on [%4.4s] is beyond region limit Req-%lX+%lX, Base=%lX, Len-%lX\n",
@@ -321,7 +321,7 @@ RegionHandler (
     /*
      * Get BufferValue to point to the "address" in the buffer
      */
-    BufferValue = ((UINT8 *) RegionElement->Buffer + 
+    BufferValue = ((UINT8 *) RegionElement->Buffer +
                     ((ACPI_INTEGER) Address - (ACPI_INTEGER) RegionElement->Address));
 
     /*
