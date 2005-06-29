@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: nssearch - Namespace search
- *              $Revision: 1.89 $
+ *              $Revision: 1.90 $
  *
  ******************************************************************************/
 
@@ -406,10 +406,8 @@ AcpiNsSearchAndEnter (
 
     if (!AcpiUtValidAcpiName (TargetName))
     {
-        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "*** Bad character in name: %08x *** \n",
+        ACPI_REPORT_ERROR (("NsSearchAndEnter: Bad character in ACPI Name: %X\n", 
             TargetName));
-
-        ACPI_REPORT_ERROR (("NsSearchAndEnter: Bad character in ACPI Name\n"));
         return_ACPI_STATUS (AE_BAD_CHARACTER);
     }
 
