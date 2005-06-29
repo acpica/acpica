@@ -100,22 +100,149 @@
 
 #define ACPI_MODE               1
 #define LEGACY_MODE             2
-#define DISABLE_KNOWN_EVENTS    8
 
+
+/*  AcpiEnable() Flags bitmask options   */
+
+#define ACPI_TABLES_REQUIRED            0x01
+#define HW_OVERRIDE_SUPPORTED           0x02
+#define PROGRAM_SCI_LEVEL_SENSITIVITY   0x04
+#define DISABLE_KNOWN_EVENTS            0x08
+#define	LOAD_ACPI_NAMESPACE             0x10
+
+
+
+/*
+ * Global interfaces
+ */
 
 INT32 
 AcpiInit (
     char                *AcpiFile);
+
+/*
+ * Interpreter interfaces
+ */
+
+INT32
+AcpiExecuteMethod (
+    char                *MethodName, 
+    OBJECT_DESCRIPTOR   *ReturnValue,
+    OBJECT_DESCRIPTOR   **Param);
+
+
+/*
+ * Namespace and enumeration interfaces
+ */
 
 INT32
 AcpiLoadNameSpace (
     INT32               DisplayAmlDuringLoad);
 
 INT32
-AcpiExecuteMethod (
-    char                *MethodName, 
-    OBJECT_DESCRIPTOR   **ReturnValue,
-    OBJECT_DESCRIPTOR   **Params);
+AcpiUnloadNameSpace (
+    void);
+
+NsHandle 
+AcpiLoadTable (
+    NsHandle            OpRegion);
+
+INT32 
+AcpiUnLoadTable (
+    NsHandle            TableHandle);
+
+NsHandle 
+AcpiLoadTableFromFile (
+    char                *FileName);
+
+INT32
+AcpiLoadNameSpace (
+    INT32               DisplayAmlDuringLoad);
+
+NsHandle
+AcpiNameToHandle (
+    NsHandle            Scope, 
+    UINT32              Name);
+
+UINT32 
+AcpiHandleToName (
+    NsHandle            Handle);
+
+NsHandle
+AcpiPathameToHandle (
+    NsHandle            Scope, 
+    char                *Pathname);
+
+char * 
+AcpiHandleToPathname (
+    NsHandle            Handle);
+
+NsHandle
+AcpiGetNextObject (
+    NsType              Type, 
+    NsHandle            Scope, 
+    NsHandle            Handle);
+
+NsHandle
+AcpiGetParent (
+    NsHandle            Handle);
+
+NsHandle
+AcpiGetScope (
+    NsHandle            Handle);
+
+NsHandle
+AcpiGetContainingScope (
+    NsHandle            Handle);
+
+
+
+/* TBD: these may be obsolete */
+
+
+NsHandle 
+AcpiGetParentHandle (
+    NsHandle            ChildHandle);
+
+NsType 
+AcpiValueType (
+    NsHandle            Handle);
+
+char * 
+AcpiCurrentScopeName (
+    void);
+
+BOOLEAN 
+AcpiIsNameSpaceHandle (
+    NsHandle            QueryHandle);
+
+BOOLEAN 
+AcpiIsNameSpaceValue (
+    NsType              Value);
+
+INT32
+AcpiSetFirmwareWakingVector (
+    UINT32              PhysicalAddress);
+
+INT32
+AcpiGetFirmwareWakingVector (
+    UINT32              *PhysicalAddress);
+
+ACPI_TABLE_HEADER * 
+AcpiGetTableHeader (
+    NsHandle            Handle);
+
+ACPI_TABLE_HEADER * 
+AcpiGetTable (
+    NsHandle            Handle);
+
+/* End of potentiallly obsolete functions */
+
+
+
+/*
+ * Device/hardware interfaces
+ */
 
 INT32
 AcpiSetMode (
@@ -137,3 +264,7 @@ AcpiEnable (
 INT32 
 AcpiDisable (
     void);
+
+/*
+ * Event interfaces
+ */
