@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: psparse - Parser top level AML parse routines
- *              $Revision: 1.47 $
+ *              $Revision: 1.48 $
  *
  *****************************************************************************/
 
@@ -453,7 +453,7 @@ AcpiPsCompleteThisOp (
 
     /* Delete this op and the subtree below it if asked to */
 
-    if ((WalkState->ParseFlags & PARSE_DELETE_TREE) &&
+    if (((WalkState->ParseFlags & ACPI_PARSE_TREE_MASK) == ACPI_PARSE_DELETE_TREE) &&
         (OpcodeClass != OPTYPE_CONSTANT) &&
         (OpcodeClass != OPTYPE_LITERAL) &&
         (OpcodeClass != OPTYPE_LOCAL_VARIABLE) &&
@@ -646,7 +646,7 @@ AcpiPsNextParseState (
         Status = AE_CTRL_TRANSFER;
         WalkState->PrevOp = Op;
         WalkState->MethodCallOp = Op;
-        WalkState->MethodEntry = (Op->Value.Arg)->AcpiNamedObject;
+        WalkState->MethodCallEntry = (Op->Value.Arg)->AcpiNamedObject;
 
         /* Will return value (if any) be used by the caller? */
 
@@ -696,7 +696,7 @@ AcpiPsParseLoop (
     UINT16                  Opcode;
     ACPI_GENERIC_OP         PreOp;
     ACPI_PARSE_STATE        *ParserState;
-    ACPI_GENERIC_OP         *NewOp;
+
 
     FUNCTION_TRACE_PTR ("PsParseLoop", WalkState);
 
@@ -845,13 +845,6 @@ AcpiPsParseLoop (
                 if (!Op)
                 {
                     return_ACPI_STATUS (AE_NO_MEMORY);
-                }
-
-                NewOp = AcpiPsGetParentScope (ParserState);
-                if (NewOp->Value.Arg == (void *) 0x00DEAD00)
-                {
-                    DEBUG_PRINT (ACPI_ERROR, ("Deleted Op found: %p\n", NewOp));
-                    return_ACPI_STATUS (AE_BAD_PARAMETER);
                 }
 
                 AcpiPsAppendArg (AcpiPsGetParentScope (ParserState), Op);
@@ -1222,6 +1215,7 @@ AcpiPsParseAml (
         goto Cleanup;
     }
 
+    WalkState->MethodEntry          = MethodEntry;
     WalkState->ParserState          = ParserState;
     WalkState->ParseFlags           = ParseFlags;
     WalkState->DescendingCallback   = DescendingCallback;
@@ -1344,8 +1338,7 @@ AcpiPsParseAml (
          * there's lots of cleanup to do
          */
 
-        if (WalkState->MethodDesc)  /*&&
-            WalkState->MethodDesc->Method.ParserOp)*/
+        if ((WalkState->ParseFlags & ACPI_PARSE_MODE_MASK) == ACPI_PARSE_EXECUTE)
         {
             AcpiDsTerminateControlMethod (WalkState);
         }
