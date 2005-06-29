@@ -3,7 +3,7 @@
 /******************************************************************************
  *
  * Module Name: aslcompiler.y - Bison input file (ASL grammar and actions)
- *              $Revision: 1.58 $
+ *              $Revision: 1.59 $
  *
  *****************************************************************************/
 
@@ -451,6 +451,7 @@ AslLocalAllocate (unsigned int Size);
 %type <n> Target
 %type <n> RequiredTarget
 %type <n> SimpleTarget
+%type <n> BufferTermData
 
 %type <n> Type1Opcode
 %type <n> Type2Opcode
@@ -798,7 +799,7 @@ DataObject
     : BufferData                    {}
     | PackageData                   {}
     | IntegerData                   {}
-/*    | StringData                    {} */ /* Caused a reduce/reduce conflict BufferData->StringData */
+    | StringData                    {}
     ;
 
 BufferData
@@ -2256,12 +2257,12 @@ BufferTerm
     : PARSEOP_BUFFER '('            {$$ = TrCreateLeafNode (PARSEOP_BUFFER);}
         OptionalTermArg
         ')' '{'
-            BufferData '}'          {$$ = TrLinkChildren ($<n>3,2,$4,$7);}
+            BufferTermData '}'      {$$ = TrLinkChildren ($<n>3,2,$4,$7);}
     | PARSEOP_BUFFER '('
         error ')'                   {$$ = AslDoError(); yyerrok;}
     ;
 
-BufferData
+BufferTermData
     : ByteList                      {}
     | StringData                    {}
     ;
