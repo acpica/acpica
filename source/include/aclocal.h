@@ -211,17 +211,18 @@ typedef struct NameTableEntry
  * Contains the arguments and local variables for each nested method.
  */
 
-typedef struct
+typedef struct Method_Stack
 {
     union AcpiObjInternal   *Arguments[MTH_NUM_ARGS];
     union AcpiObjInternal   *LocalVariables[MTH_NUM_LOCALS];
+    struct Method_Stack     *Next;
 
 } METHOD_STACK;
 
 
 /* Stack of currently-open scopes, and pointer to top of that stack */
 
-typedef struct
+typedef struct scope_stack
 {
     NAME_TABLE_ENTRY        *Scope;
     /* 
@@ -229,7 +230,7 @@ typedef struct
      * (but not the same as the type of its parent's scope).
      */
     ACPI_OBJECT_TYPE        Type;   
-
+    struct scope_stack      *Next;
 
 } SCOPE_STACK;    
 
@@ -289,6 +290,7 @@ typedef struct
     UINT8                   Enable;         /* Current value of enable reg */
     UINT16                  StatusAddr;     /* Address of status reg */
     UINT16                  EnableAddr;     /* Address of enable reg */
+    UINT8                   GpeBase;        /* Base GPE number */
 
 } GPE_REGISTERS;
 
@@ -342,9 +344,13 @@ typedef struct
 typedef struct acpi_op_info
 {
     UINT16                  Opcode;         /* AML opcode */
-    UINT8                   Type;
-    char                    *Name;          /* op name */
+    UINT8                   Type            : 5;
+    UINT8                   HasArgs         : 1;
+    UINT8                   ChildLocation   : 2;
     char                    *Args;          /* argument format */
+
+    DEBUG_ONLY_MEMBERS (
+    char                    *Name)          /* op name (debug only) */
 
 } ACPI_OP_INFO;
 
@@ -361,13 +367,14 @@ typedef union acpi_op_value
 
 
 #define ACPI_COMMON_OP \
-    UINT16                  Opcode;         /* AML opcode */\
-    char                    OpName[14];         /* TBD: debug Only! */\
-    ACPI_OP_VALUE           Value;          /* Value or args associated with the opcode */\
-    ACPI_PTRDIFF            AmlOffset;      /* offset of declaration in AML */\
+    void                    *Entry;         /* for use by interpreter */\
     struct acpi_generic_op  *Next;          /* next op */\
     struct acpi_generic_op  *Parent;        /* parent op */\
-    void                    *Entry;         /* for use by interpreter */\
+    ACPI_PTRDIFF            AmlOffset;      /* offset of declaration in AML */\
+    UINT32                  Opcode;         /* AML opcode */\
+    ACPI_OP_VALUE           Value;          /* Value or args associated with the opcode */\
+    DEBUG_ONLY_MEMBERS (\
+    char                    OpName[12])     /* op name (debug only) */\
 
 
 /*
@@ -385,7 +392,7 @@ typedef struct acpi_generic_op
 typedef struct acpi_named_op
 {
     ACPI_COMMON_OP
-    UINT32                  Name;           /* 4-byte name or 0 if none */
+    UINT32                  Name;           /* 4-byte name or zero if no name */
 
 } ACPI_NAMED_OP;
 
@@ -476,6 +483,9 @@ typedef struct acpi_walk_state
     ACPI_GENERIC_OP         *NextOp;        /* next op to be processed */
     ACPI_CTRL_STATE         *ControlState;  /* List of control states (nested IFs) */
     struct acpi_walk_state  *Next;
+
+    /* TBD: move method stack here:  METHOD_STACK            MethodInfo; */
+
     BOOLEAN                 LastPredicate;  /* Result of last predicate */
 
 } ACPI_WALK_STATE;
