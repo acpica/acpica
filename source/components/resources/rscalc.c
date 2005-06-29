@@ -2,7 +2,7 @@
  *
  * Module Name: rscalc - AcpiRsCalculateByteStreamLength
  *                       AcpiRsCalculateListLength
- *              $Revision: 1.25 $
+ *              $Revision: 1.29 $
  *
  ******************************************************************************/
 
@@ -132,7 +132,7 @@
  *
  * PARAMETERS:  LinkedList          - Pointer to the resource linked list
  *              SizeNeeded          - UINT32 pointer of the size buffer needed
- *                                      to properly return the parsed data
+ *                                    to properly return the parsed data
  *
  * RETURN:      Status  AE_OK if okay, else a valid ACPI_STATUS code
  *
@@ -160,8 +160,7 @@ AcpiRsCalculateByteStreamLength (
     {
 
         /*
-         * Init the variable that will hold the size to add to the
-         *  total.
+         * Init the variable that will hold the size to add to the total.
          */
         SegmentSize = 0;
 
@@ -170,10 +169,8 @@ AcpiRsCalculateByteStreamLength (
         case Irq:
             /*
              * IRQ Resource
-             */
-            /*
              * For an IRQ Resource, Byte 3, although optional, will
-             *  always be created - it holds IRQ information.
+             * always be created - it holds IRQ information.
              */
             SegmentSize = 4;
             break;
@@ -181,8 +178,6 @@ AcpiRsCalculateByteStreamLength (
         case Dma:
             /*
              * DMA Resource
-             */
-            /*
              * For this resource the size is static
              */
             SegmentSize = 3;
@@ -191,8 +186,6 @@ AcpiRsCalculateByteStreamLength (
         case StartDependentFunctions:
             /*
              * Start Dependent Functions Resource
-             */
-            /*
              * For a StartDependentFunctions Resource, Byte 1,
              * although optional, will always be created.
              */
@@ -202,8 +195,6 @@ AcpiRsCalculateByteStreamLength (
         case EndDependentFunctions:
             /*
              * End Dependent Functions Resource
-             */
-            /*
              * For this resource the size is static
              */
             SegmentSize = 1;
@@ -212,8 +203,6 @@ AcpiRsCalculateByteStreamLength (
         case Io:
             /*
              * IO Port Resource
-             */
-            /*
              * For this resource the size is static
              */
             SegmentSize = 8;
@@ -222,8 +211,6 @@ AcpiRsCalculateByteStreamLength (
         case FixedIo:
             /*
              * Fixed IO Port Resource
-             */
-            /*
              * For this resource the size is static
              */
             SegmentSize = 4;
@@ -232,14 +219,12 @@ AcpiRsCalculateByteStreamLength (
         case VendorSpecific:
             /*
              * Vendor Defined Resource
-             */
-            /*
              * For a Vendor Specific resource, if the Length is
-             *  between 1 and 7 it will be created as a Small
-             *  Resource data type, otherwise it is a Large
-             *  Resource data type.
+             * between 1 and 7 it will be created as a Small
+             * Resource data type, otherwise it is a Large
+             * Resource data type.
              */
-            if(LinkedList->Data.VendorSpecific.Length > 7)
+            if (LinkedList->Data.VendorSpecific.Length > 7)
             {
                 SegmentSize = 3;
             }
@@ -247,15 +232,12 @@ AcpiRsCalculateByteStreamLength (
             {
                 SegmentSize = 1;
             }
-            SegmentSize +=
-                LinkedList->Data.VendorSpecific.Length;
+            SegmentSize += LinkedList->Data.VendorSpecific.Length;
             break;
 
         case EndTag:
             /*
              * End Tag
-             */
-            /*
              * For this resource the size is static
              */
             SegmentSize = 2;
@@ -265,8 +247,6 @@ AcpiRsCalculateByteStreamLength (
         case Memory24:
             /*
              * 24-Bit Memory Resource
-             */
-            /*
              * For this resource the size is static
              */
             SegmentSize = 12;
@@ -275,8 +255,6 @@ AcpiRsCalculateByteStreamLength (
         case Memory32:
             /*
              * 32-Bit Memory Range Resource
-             */
-            /*
              * For this resource the size is static
              */
             SegmentSize = 20;
@@ -285,8 +263,6 @@ AcpiRsCalculateByteStreamLength (
         case FixedMemory32:
             /*
              * 32-Bit Fixed Memory Resource
-             */
-            /*
              * For this resource the size is static
              */
             SegmentSize = 12;
@@ -295,16 +271,14 @@ AcpiRsCalculateByteStreamLength (
         case Address16:
             /*
              * 16-Bit Address Resource
-             */
-            /*
              * The base size of this byte stream is 16. If a
-             *  Resource Source string is not NULL, add 1 for
-             *  the Index + the length of the null terminated
-             *  string Resource Source + 1 for the null.
+             * Resource Source string is not NULL, add 1 for
+             * the Index + the length of the null terminated
+             * string Resource Source + 1 for the null.
              */
             SegmentSize = 16;
 
-            if(NULL != LinkedList->Data.Address16.ResourceSource.StringPtr)
+            if (NULL != LinkedList->Data.Address16.ResourceSource.StringPtr)
             {
                 SegmentSize += (1 +
                     LinkedList->Data.Address16.ResourceSource.StringLength);
@@ -314,16 +288,14 @@ AcpiRsCalculateByteStreamLength (
         case Address32:
             /*
              * 32-Bit Address Resource
-             */
-            /*
              * The base size of this byte stream is 26. If a Resource
-             *  Source string is not NULL, add 1 for the Index + the
-             *  length of the null terminated string Resource Source +
-             *  1 for the null.
+             * Source string is not NULL, add 1 for the Index + the
+             * length of the null terminated string Resource Source +
+             * 1 for the null.
              */
             SegmentSize = 26;
 
-            if(NULL != LinkedList->Data.Address32.ResourceSource.StringPtr)
+            if (NULL != LinkedList->Data.Address32.ResourceSource.StringPtr)
             {
                 SegmentSize += (1 +
                     LinkedList->Data.Address32.ResourceSource.StringLength);
@@ -333,16 +305,14 @@ AcpiRsCalculateByteStreamLength (
         case Address64:
             /*
              * 64-Bit Address Resource
-             */
-            /*
              * The base size of this byte stream is 46. If a Resource
-             *  Source string is not NULL, add 1 for the Index + the
-             *  length of the null terminated string Resource Source +
-             *  1 for the null.
+             * Source string is not NULL, add 1 for the Index + the
+             * length of the null terminated string Resource Source +
+             * 1 for the null.
              */
             SegmentSize = 46;
 
-            if(NULL != LinkedList->Data.Address64.ResourceSource.StringPtr)
+            if (NULL != LinkedList->Data.Address64.ResourceSource.StringPtr)
             {
                 SegmentSize += (1 +
                     LinkedList->Data.Address64.ResourceSource.StringLength);
@@ -352,22 +322,17 @@ AcpiRsCalculateByteStreamLength (
         case ExtendedIrq:
             /*
              * Extended IRQ Resource
-             */
-            /*
              * The base size of this byte stream is 9. This is for an
-             *  Interrupt table length of 1.  For each additional
-             *  interrupt, add 4.
+             * Interrupt table length of 1.  For each additional
+             * interrupt, add 4.
              * If a Resource Source string is not NULL, add 1 for the
-             *  Index + the length of the null terminated string
-             *  Resource Source + 1 for the null.
+             * Index + the length of the null terminated string
+             * Resource Source + 1 for the null.
              */
-            SegmentSize = 9;
+            SegmentSize = 9 + 
+                ((LinkedList->Data.ExtendedIrq.NumberOfInterrupts - 1) * 4);
 
-            SegmentSize +=
-                (LinkedList->Data.ExtendedIrq.NumberOfInterrupts -
-                 1) * 4;
-
-            if(NULL != ExIrq->ResourceSource.StringPtr)
+            if (NULL != ExIrq->ResourceSource.StringPtr)
             {
                 SegmentSize += (1 +
                     LinkedList->Data.ExtendedIrq.ResourceSource.StringLength);
@@ -377,7 +342,7 @@ AcpiRsCalculateByteStreamLength (
         default:
             /*
              * If we get here, everything is out of sync,
-             *  so exit with an error
+             * so exit with an error
              */
             return_ACPI_STATUS (AE_AML_ERROR);
             break;
@@ -412,8 +377,8 @@ AcpiRsCalculateByteStreamLength (
  * PARAMETERS:  ByteStreamBuffer        - Pointer to the resource byte stream
  *              ByteStreamBufferLength  - Size of ByteStreamBuffer
  *              SizeNeeded              - UINT32 pointer of the size buffer
- *                                          needed to properly return the
- *                                          parsed data
+ *                                        needed to properly return the
+ *                                        parsed data
  *
  * RETURN:      Status  AE_OK if okay, else a valid ACPI_STATUS code
  *
@@ -449,458 +414,415 @@ AcpiRsCalculateListLength (
     while (BytesParsed < ByteStreamBufferLength)
     {
         /*
-         * Look at the next byte in the stream
+         * The next byte in the stream is the resource type
          */
-        ResourceType = *ByteStreamBuffer;
+        ResourceType = AcpiRsGetResourceType (*ByteStreamBuffer);
 
-        /*
-         * See if this is a small or large resource
-         */
-        if(ResourceType & 0x80)
+        switch (ResourceType)
         {
+        case RESOURCE_DESC_MEMORY_24:
             /*
-             * Large Resource Type
+             * 24-Bit Memory Resource
              */
-            switch (ResourceType)
-            {
-            case MEMORY_RANGE_24:
-                /*
-                 * 24-Bit Memory Resource
-                 */
-                BytesConsumed = 12;
+            BytesConsumed = 12;
 
-                StructureSize = sizeof (MEMORY24_RESOURCE) +
+            StructureSize = sizeof (MEMORY24_RESOURCE) + 
                                 RESOURCE_LENGTH_NO_DATA;
-                break;
+            break;
 
-            case LARGE_VENDOR_DEFINED:
-                /*
-                 * Vendor Defined Resource
-                 */
-                Buffer = ByteStreamBuffer;
-                ++Buffer;
 
-                MOVE_UNALIGNED16_TO_16 (&Temp16, Buffer);
-                BytesConsumed = Temp16 + 3;
+        case RESOURCE_DESC_LARGE_VENDOR:
+            /*
+             * Vendor Defined Resource
+             */
+            Buffer = ByteStreamBuffer;
+            ++Buffer;
 
-                /*
-                 * Ensure a 32-bit boundary for the structure
-                 */
-                Temp16 = (UINT16) ROUND_UP_TO_32BITS (Temp16);
+            MOVE_UNALIGNED16_TO_16 (&Temp16, Buffer);
+            BytesConsumed = Temp16 + 3;
 
-                StructureSize = sizeof (VENDOR_RESOURCE) +
+            /*
+             * Ensure a 32-bit boundary for the structure
+             */
+            Temp16 = (UINT16) ROUND_UP_TO_32BITS (Temp16);
+
+            StructureSize = sizeof (VENDOR_RESOURCE) + 
                                 RESOURCE_LENGTH_NO_DATA +
                                 (Temp16 * sizeof (UINT8));
-                break;
+            break;
 
-            case MEMORY_RANGE_32:
-                /*
-                 * 32-Bit Memory Range Resource
-                 */
 
-                BytesConsumed = 20;
+        case RESOURCE_DESC_MEMORY_32:
+            /*
+             * 32-Bit Memory Range Resource
+             */
 
-                StructureSize = sizeof (MEMORY32_RESOURCE) +
+            BytesConsumed = 20;
+
+            StructureSize = sizeof (MEMORY32_RESOURCE) + 
                                 RESOURCE_LENGTH_NO_DATA;
-                break;
+            break;
 
-            case FIXED_MEMORY_RANGE_32:
-                /*
-                 * 32-Bit Fixed Memory Resource
-                 */
-                BytesConsumed = 12;
 
-                StructureSize = sizeof(FIXED_MEMORY32_RESOURCE) +
+        case RESOURCE_DESC_FIXED_MEMORY_32:
+            /*
+             * 32-Bit Fixed Memory Resource
+             */
+            BytesConsumed = 12;
+
+            StructureSize = sizeof (FIXED_MEMORY32_RESOURCE) + 
                                 RESOURCE_LENGTH_NO_DATA;
-                break;
+            break;
 
-            case QWORD_ADDRESS_SPACE:
-                /*
-                 * 64-Bit Address Resource
-                 */
-                Buffer = ByteStreamBuffer;
 
-                ++Buffer;
-                MOVE_UNALIGNED16_TO_16 (&Temp16, Buffer);
+        case RESOURCE_DESC_QWORD_ADDRESS_SPACE:
+            /*
+             * 64-Bit Address Resource
+             */
+            Buffer = ByteStreamBuffer;
 
-                BytesConsumed = Temp16 + 3;
+            ++Buffer;
+            MOVE_UNALIGNED16_TO_16 (&Temp16, Buffer);
 
-                /*
-                 * Resource Source Index and Resource Source are
-                 *  optional elements.  Check the length of the
-                 *  Bytestream.  If it is greater than 43, that
-                 *  means that an Index exists and is followed by
-                 *  a null termininated string.  Therefore, set
-                 *  the temp variable to the length minus the minimum
-                 *  byte stream length plus the byte for the Index to
-                 *  determine the size of the NULL terminiated string.
-                 */
-                if (43 < Temp16)
-                {
-                    Temp8 = (UINT8) (Temp16 - 44);
-                }
-                else
-                {
-                    Temp8 = 0;
-                }
+            BytesConsumed = Temp16 + 3;
 
-                /*
-                 * Ensure a 64-bit boundary for the structure
-                 */
-                Temp8 = (UINT8) ROUND_UP_TO_64BITS (Temp8);
+            /*
+             * Resource Source Index and Resource Source are
+             * optional elements.  Check the length of the
+             * Bytestream.  If it is greater than 43, that
+             * means that an Index exists and is followed by
+             * a null termininated string.  Therefore, set
+             * the temp variable to the length minus the minimum
+             * byte stream length plus the byte for the Index to
+             * determine the size of the NULL terminiated string.
+             */
+            if (43 < Temp16)
+            {
+                Temp8 = (UINT8) (Temp16 - 44);
+            }
+            else
+            {
+                Temp8 = 0;
+            }
 
-                StructureSize = sizeof (ADDRESS64_RESOURCE) +
+            /*
+             * Ensure a 64-bit boundary for the structure
+             */
+            Temp8 = (UINT8) ROUND_UP_TO_64BITS (Temp8);
+
+            StructureSize = sizeof (ADDRESS64_RESOURCE) +
                                 RESOURCE_LENGTH_NO_DATA +
                                 (Temp8 * sizeof (UINT8));
-                break;
+            break;
 
-            case DWORD_ADDRESS_SPACE:
-                /*
-                 * 32-Bit Address Resource
-                 */
-                Buffer = ByteStreamBuffer;
 
-                ++Buffer;
-                MOVE_UNALIGNED16_TO_16 (&Temp16, Buffer);
+        case RESOURCE_DESC_DWORD_ADDRESS_SPACE:
+            /*
+             * 32-Bit Address Resource
+             */
+            Buffer = ByteStreamBuffer;
 
-                BytesConsumed = Temp16 + 3;
+            ++Buffer;
+            MOVE_UNALIGNED16_TO_16 (&Temp16, Buffer);
 
-                /*
-                 * Resource Source Index and Resource Source are
-                 *  optional elements.  Check the length of the
-                 *  Bytestream.  If it is greater than 23, that
-                 *  means that an Index exists and is followed by
-                 *  a null termininated string.  Therefore, set
-                 *  the temp variable to the length minus the minimum
-                 *  byte stream length plus the byte for the Index to
-                 *  determine the size of the NULL terminiated string.
-                 */
-                if (23 < Temp16)
-                {
-                    Temp8 = (UINT8) (Temp16 - 24);
-                }
-                else
-                {
-                    Temp8 = 0;
-                }
+            BytesConsumed = Temp16 + 3;
 
-                /*
-                 * Ensure a 32-bit boundary for the structure
-                 */
-                Temp8 = (UINT8) ROUND_UP_TO_32BITS (Temp8);
+            /*
+             * Resource Source Index and Resource Source are
+             * optional elements.  Check the length of the
+             * Bytestream.  If it is greater than 23, that
+             * means that an Index exists and is followed by
+             * a null termininated string.  Therefore, set
+             * the temp variable to the length minus the minimum
+             * byte stream length plus the byte for the Index to
+             * determine the size of the NULL terminiated string.
+             */
+            if (23 < Temp16)
+            {
+                Temp8 = (UINT8) (Temp16 - 24);
+            }
+            else
+            {
+                Temp8 = 0;
+            }
 
-                StructureSize = sizeof (ADDRESS32_RESOURCE) +
+            /*
+             * Ensure a 32-bit boundary for the structure
+             */
+            Temp8 = (UINT8) ROUND_UP_TO_32BITS (Temp8);
+
+            StructureSize = sizeof (ADDRESS32_RESOURCE) +
                                 RESOURCE_LENGTH_NO_DATA +
                                 (Temp8 * sizeof (UINT8));
-                break;
+            break;
 
-            case WORD_ADDRESS_SPACE:
-                /*
-                 * 16-Bit Address Resource
-                 */
-                Buffer = ByteStreamBuffer;
 
-                ++Buffer;
-                MOVE_UNALIGNED16_TO_16 (&Temp16, Buffer);
+        case RESOURCE_DESC_WORD_ADDRESS_SPACE:
+            /*
+             * 16-Bit Address Resource
+             */
+            Buffer = ByteStreamBuffer;
 
-                BytesConsumed = Temp16 + 3;
+            ++Buffer;
+            MOVE_UNALIGNED16_TO_16 (&Temp16, Buffer);
 
-                /*
-                 * Resource Source Index and Resource Source are
-                 *  optional elements.  Check the length of the
-                 *  Bytestream.  If it is greater than 13, that
-                 *  means that an Index exists and is followed by
-                 *  a null termininated string.  Therefore, set
-                 *  the temp variable to the length minus the minimum
-                 *  byte stream length plus the byte for the Index to
-                 *  determine the size of the NULL terminiated string.
-                 */
-                if (13 < Temp16)
-                {
-                    Temp8 = (UINT8) (Temp16 - 14);
-                }
-                else
-                {
-                    Temp8 = 0;
-                }
+            BytesConsumed = Temp16 + 3;
 
-                /*
-                 * Ensure a 32-bit boundry for the structure
-                 */
-                Temp8 = (UINT8) ROUND_UP_TO_32BITS (Temp8);
+            /*
+             * Resource Source Index and Resource Source are
+             * optional elements.  Check the length of the
+             * Bytestream.  If it is greater than 13, that
+             * means that an Index exists and is followed by
+             * a null termininated string.  Therefore, set
+             * the temp variable to the length minus the minimum
+             * byte stream length plus the byte for the Index to
+             * determine the size of the NULL terminiated string.
+             */
+            if (13 < Temp16)
+            {
+                Temp8 = (UINT8) (Temp16 - 14);
+            }
+            else
+            {
+                Temp8 = 0;
+            }
 
-                StructureSize = sizeof (ADDRESS16_RESOURCE) +
+            /*
+             * Ensure a 32-bit boundary for the structure
+             */
+            Temp8 = (UINT8) ROUND_UP_TO_32BITS (Temp8);
+
+            StructureSize = sizeof (ADDRESS16_RESOURCE) +
                                 RESOURCE_LENGTH_NO_DATA +
                                 (Temp8 * sizeof (UINT8));
-                break;
+            break;
 
-            case EXTENDED_IRQ:
-                /*
-                 * Extended IRQ
-                 */
-                Buffer = ByteStreamBuffer;
 
-                ++Buffer;
-                MOVE_UNALIGNED16_TO_16 (&Temp16, Buffer);
+        case RESOURCE_DESC_EXTENDED_XRUPT:
+            /*
+             * Extended IRQ
+             */
+            Buffer = ByteStreamBuffer;
 
-                BytesConsumed = Temp16 + 3;
+            ++Buffer;
+            MOVE_UNALIGNED16_TO_16 (&Temp16, Buffer);
 
-                /*
-                 * Point past the length field and the
-                 *  Interrupt vector flags to save off the
-                 *  Interrupt table length to the Temp8 variable.
-                 */
-                Buffer += 3;
-                Temp8 = *Buffer;
+            BytesConsumed = Temp16 + 3;
 
-                /*
-                 * To compensate for multiple interrupt numbers,
-                 *  Add 4 bytes for each additional interrupts
-                 *  greater than 1
-                 */
-                AdditionalBytes = (UINT8) ((Temp8 - 1) * 4);
+            /*
+             * Point past the length field and the
+             * Interrupt vector flags to save off the
+             * Interrupt table length to the Temp8 variable.
+             */
+            Buffer += 3;
+            Temp8 = *Buffer;
 
-                /*
-                 * Resource Source Index and Resource Source are
-                 *  optional elements.  Check the length of the
-                 *  Bytestream.  If it is greater than 9, that
-                 *  means that an Index exists and is followed by
-                 *  a null termininated string.  Therefore, set
-                 *  the temp variable to the length minus the minimum
-                 *  byte stream length plus the byte for the Index to
-                 *  determine the size of the NULL terminiated string.
-                 */
-                if (9 + AdditionalBytes < Temp16)
-                {
-                    Temp8 = (UINT8) (Temp16 - (9 + AdditionalBytes));
-                }
+            /*
+             * To compensate for multiple interrupt numbers, add 4 bytes for 
+             * each additional interrupts greater than 1
+             */
+            AdditionalBytes = (UINT8) ((Temp8 - 1) * 4);
 
-                else
-                {
-                    Temp8 = 0;
-                }
+            /*
+             * Resource Source Index and Resource Source are
+             * optional elements.  Check the length of the
+             * Bytestream.  If it is greater than 9, that
+             * means that an Index exists and is followed by
+             * a null termininated string.  Therefore, set
+             * the temp variable to the length minus the minimum
+             * byte stream length plus the byte for the Index to
+             * determine the size of the NULL terminiated string.
+             */
+            if (9 + AdditionalBytes < Temp16)
+            {
+                Temp8 = (UINT8) (Temp16 - (9 + AdditionalBytes));
+            }
 
-                /*
-                 * Ensure a 32-bit boundry for the structure
-                 */
-                Temp8 = (UINT8) ROUND_UP_TO_32BITS (Temp8);
+            else
+            {
+                Temp8 = 0;
+            }
 
-                StructureSize = sizeof (EXTENDED_IRQ_RESOURCE) +
+            /*
+             * Ensure a 32-bit boundary for the structure
+             */
+            Temp8 = (UINT8) ROUND_UP_TO_32BITS (Temp8);
+
+            StructureSize = sizeof (EXTENDED_IRQ_RESOURCE) +
                                 RESOURCE_LENGTH_NO_DATA +
                                 (AdditionalBytes * sizeof (UINT8)) +
                                 (Temp8 * sizeof (UINT8));
+            break;
 
-                break;
 
-/* TBD: [Future] 64-bit not currently supported */
-/*
-            case 0x8A:
-                break;
-*/
-
-            default:
-                /*
-                 * If we get here, everything is out of sync,
-                 *  so exit with an error
-                 */
-                return_ACPI_STATUS (AE_AML_ERROR);
-                break;
-            }
-        }
-
-        else
-        {
+        case RESOURCE_DESC_IRQ_FORMAT:
             /*
-             * Small Resource Type
-             *  Only bits 7:3 are valid
+             * IRQ Resource.
+             * Determine if it there are two or three trailing bytes
              */
-            ResourceType >>= 3;
+            Buffer = ByteStreamBuffer;
+            Temp8 = *Buffer;
 
-            switch (ResourceType)
+            if(Temp8 & 0x01)
             {
-            case IRQ_FORMAT:
-                /*
-                 * IRQ Resource
-                 */
-                /*
-                 * Determine if it there are two or three
-                 *  trailing bytes
-                 */
-                Buffer = ByteStreamBuffer;
-                Temp8 = *Buffer;
+                BytesConsumed = 4;
+            }
 
-                if(Temp8 & 0x01)
+            else
+            {
+                BytesConsumed = 3;
+            }
+
+            /*
+             * Point past the descriptor
+             */
+            ++Buffer;
+
+            /*
+             * Look at the number of bits set
+             */
+            MOVE_UNALIGNED16_TO_16 (&Temp16, Buffer);
+
+            for (Index = 0; Index < 16; Index++)
+            {
+                if (Temp16 & 0x1)
                 {
-                    BytesConsumed = 4;
+                    ++NumberOfInterrupts;
                 }
 
-                else
-                {
-                    BytesConsumed = 3;
-                }
+                Temp16 >>= 1;
+            }
 
-                /*
-                 * Point past the descriptor
-                 */
-                ++Buffer;
-
-                /*
-                 * Look at the number of bits set
-                 */
-                MOVE_UNALIGNED16_TO_16 (&Temp16, Buffer);
-
-                for (Index = 0; Index < 16; Index++)
-                {
-                    if (Temp16 & 0x1)
-                    {
-                        ++NumberOfInterrupts;
-                    }
-
-                    Temp16 >>= 1;
-                }
-
-                StructureSize = sizeof (IO_RESOURCE) +
+            StructureSize = sizeof (IO_RESOURCE) +
                                 RESOURCE_LENGTH_NO_DATA +
                                 (NumberOfInterrupts * sizeof (UINT32));
-                break;
+            break;
 
 
-            case DMA_FORMAT:
+        case RESOURCE_DESC_DMA_FORMAT:
+            /*
+             * DMA Resource
+             */
+            Buffer = ByteStreamBuffer;
+            BytesConsumed = 3;
 
-                /*
-                 * DMA Resource
-                 */
-                Buffer = ByteStreamBuffer;
+            /*
+             * Point past the descriptor
+             */
+            ++Buffer;
 
-                BytesConsumed = 3;
+            /*
+             * Look at the number of bits set
+             */
+            Temp8 = *Buffer;
 
-                /*
-                 * Point past the descriptor
-                 */
-                ++Buffer;
-
-                /*
-                 * Look at the number of bits set
-                 */
-                Temp8 = *Buffer;
-
-                for(Index = 0; Index < 8; Index++)
+            for(Index = 0; Index < 8; Index++)
+            {
+                if(Temp8 & 0x1)
                 {
-                    if(Temp8 & 0x1)
-                    {
-                        ++NumberOfChannels;
-                    }
-
-                    Temp8 >>= 1;
+                    ++NumberOfChannels;
                 }
 
-                StructureSize = sizeof (DMA_RESOURCE) +
+                Temp8 >>= 1;
+            }
+
+            StructureSize = sizeof (DMA_RESOURCE) +
                                 RESOURCE_LENGTH_NO_DATA +
                                 (NumberOfChannels * sizeof (UINT32));
-                break;
+            break;
 
 
-            case START_DEPENDENT_TAG:
+        case RESOURCE_DESC_START_DEPENDENT:
+            /*
+             * Start Dependent Functions Resource
+             * Determine if it there are two or three trailing bytes
+             */
+            Buffer = ByteStreamBuffer;
+            Temp8 = *Buffer;
 
-                /*
-                 * Start Dependent Functions Resource
-                 */
-                /*
-                 * Determine if it there are two or three trailing bytes
-                 */
-                Buffer = ByteStreamBuffer;
-                Temp8 = *Buffer;
-
-                if(Temp8 & 0x01)
-                {
-                    BytesConsumed = 2;
-                }
-                else
-                {
-                    BytesConsumed = 1;
-                }
-
-
-                StructureSize =
-                        sizeof (START_DEPENDENT_FUNCTIONS_RESOURCE) +
-                        RESOURCE_LENGTH_NO_DATA;
-                break;
-
-
-            case END_DEPENDENT_TAG:
-
-                /*
-                 * End Dependent Functions Resource
-                 */
+            if(Temp8 & 0x01)
+            {
+                BytesConsumed = 2;
+            }
+            else
+            {
                 BytesConsumed = 1;
-                StructureSize = RESOURCE_LENGTH;
-                break;
+            }
 
 
-            case IO_PORT_DESCRIPTOR:
-                /*
-                 * IO Port Resource
-                 */
-                BytesConsumed = 8;
-                StructureSize = sizeof (IO_RESOURCE) +
+            StructureSize = sizeof (START_DEPENDENT_FUNCTIONS_RESOURCE) +
                                 RESOURCE_LENGTH_NO_DATA;
-                break;
+            break;
 
 
-            case FIXED_LOCATION_IO_DESCRIPTOR:
+        case RESOURCE_DESC_END_DEPENDENT:
+            /*
+             * End Dependent Functions Resource
+             */
+            BytesConsumed = 1;
+            StructureSize = RESOURCE_LENGTH;
+            break;
 
-                /*
-                 * Fixed IO Port Resource
-                 */
-                BytesConsumed = 4;
-                StructureSize = sizeof (FIXED_IO_RESOURCE) +
+
+        case RESOURCE_DESC_IO_PORT:
+            /*
+             * IO Port Resource
+             */
+            BytesConsumed = 8;
+            StructureSize = sizeof (IO_RESOURCE) +
                                 RESOURCE_LENGTH_NO_DATA;
-                break;
+            break;
 
 
-            case SMALL_VENDOR_DEFINED:
+        case RESOURCE_DESC_FIXED_IO_PORT:
+            /*
+             * Fixed IO Port Resource
+             */
+            BytesConsumed = 4;
+            StructureSize = sizeof (FIXED_IO_RESOURCE) +
+                                RESOURCE_LENGTH_NO_DATA;
+            break;
 
-                /*
-                 * Vendor Specific Resource
-                 */
-                Buffer = ByteStreamBuffer;
 
-                Temp8 = *Buffer;
-                Temp8 = (UINT8) (Temp8 & 0x7);
-                BytesConsumed = Temp8 + 1;
+        case RESOURCE_DESC_SMALL_VENDOR:
+            /*
+             * Vendor Specific Resource
+             */
+            Buffer = ByteStreamBuffer;
 
-                /*
-                 * Ensure a 32-bit boundry for the structure
-                 */
-                Temp8 = (UINT8) ROUND_UP_TO_32BITS (Temp8);
-                StructureSize = sizeof (VENDOR_RESOURCE) +
+            Temp8 = *Buffer;
+            Temp8 = (UINT8) (Temp8 & 0x7);
+            BytesConsumed = Temp8 + 1;
+
+            /*
+             * Ensure a 32-bit boundary for the structure
+             */
+            Temp8 = (UINT8) ROUND_UP_TO_32BITS (Temp8);
+            StructureSize = sizeof (VENDOR_RESOURCE) +
                                 RESOURCE_LENGTH_NO_DATA +
                                 (Temp8 * sizeof (UINT8));
-                break;
+            break;
 
 
-            case END_TAG:
+        case RESOURCE_DESC_END_TAG:
+            /*
+             * End Tag
+             */
+            BytesConsumed = 2;
+            StructureSize = RESOURCE_LENGTH;
+            ByteStreamBufferLength = BytesParsed;
+            break;
 
-                /*
-                 * End Tag
-                 */
-                BytesConsumed = 2;
-                StructureSize = RESOURCE_LENGTH;
-                ByteStreamBufferLength = BytesParsed;
-                break;
 
+        default:
+            /*
+             * If we get here, everything is out of sync,
+             *  so exit with an error
+             */
+            return_ACPI_STATUS (AE_AML_ERROR);
+            break;
+        }
 
-            default:
-                /*
-                 * If we get here, everything is out of sync,
-                 *  so exit with an error
-                 */
-                return_ACPI_STATUS (AE_AML_ERROR);
-                break;
-
-            } /* switch */
-
-        }  /* if(ResourceType & 0x80) */
 
         /*
          * Update the return value and counter
@@ -912,8 +834,8 @@ AcpiRsCalculateListLength (
          * Set the byte stream to point to the next resource
          */
         ByteStreamBuffer += BytesConsumed;
-
     }
+
 
     /*
      * This is the data the caller needs
@@ -930,14 +852,14 @@ AcpiRsCalculateListLength (
  *
  * PARAMETERS:  PackageObject           - Pointer to the package object
  *              BufferSizeNeeded        - UINT32 pointer of the size buffer
- *                                          needed to properly return the
- *                                          parsed data
+ *                                        needed to properly return the
+ *                                        parsed data
  *
  * RETURN:      Status  AE_OK
  *
  * DESCRIPTION: Given a package representing a PCI routing table, this
- *                calculates the size of the corresponding linked list of
- *                descriptions.
+ *              calculates the size of the corresponding linked list of
+ *              descriptions.
  *
  ******************************************************************************/
 
@@ -997,7 +919,7 @@ AcpiRsCalculatePciRoutingTableLength (
         {
             if ((ACPI_TYPE_STRING == (*SubObjectList)->Common.Type) ||
                 ((INTERNAL_TYPE_REFERENCE == (*SubObjectList)->Common.Type) &&
-                    ((*SubObjectList)->Reference.Opcode == AML_NAMEPATH_OP)))
+                    ((*SubObjectList)->Reference.Opcode == AML_INT_NAMEPATH_OP)))
             {
                 NameFound = TRUE;
             }
@@ -1028,7 +950,8 @@ AcpiRsCalculatePciRoutingTableLength (
             }
             else
             {
-                TempSizeNeeded += AcpiNsGetPathnameLength ((*SubObjectList)->Reference.Node);
+                TempSizeNeeded += AcpiNsGetPathnameLength (
+                                    (*SubObjectList)->Reference.Node);
             }
         }
 
@@ -1036,7 +959,7 @@ AcpiRsCalculatePciRoutingTableLength (
         {
             /*
              * If no name was found, then this is a NULL, which is
-             *  translated as a UINT32 zero.
+             * translated as a UINT32 zero.
              */
             TempSizeNeeded += sizeof(UINT32);
         }
