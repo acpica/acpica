@@ -481,24 +481,47 @@ AmlResolveOperands (
 
 
         case ARGI_DATAOBJECT:
-
+            /*
+             * ARGI_DATAOBJECT is only used by the SizeOf operator.
+             *
+             * The ACPI specification allows SizeOf to return the size of
+             *  a Buffer, String or Package.  However, the MS ACPI.SYS AML
+             *  Interpreter also allows an NTE reference to return without
+             *  error with a size of 4.
+             */
 
             if ((Status = AmlResolveToValue (StackPtr)) != AE_OK)
             {
                 goto Cleanup;
             }
 
-            /* Need a buffer, string, or package */
+            /* Need a buffer, string, package or NTE reference */
 
             if (((*StackPtr)->Common.Type != ACPI_TYPE_Buffer) &&
                 ((*StackPtr)->Common.Type != ACPI_TYPE_String) &&
-                ((*StackPtr)->Common.Type != ACPI_TYPE_Package))
+                ((*StackPtr)->Common.Type != ACPI_TYPE_Package) &&
+                ((*StackPtr)->Common.Type != INTERNAL_TYPE_Reference))
             {
                 DEBUG_PRINT (ACPI_INFO, ("AmlResolveOperands: Needed Buf/Str/Pkg, found %s Obj=%p\n",
                                 CmGetTypeName (ObjectType), *StackPtr));
                 Status = AE_AML_OPERAND_TYPE;
                 goto Cleanup;
             }
+
+            /*
+             * If this is a reference, only allow a reference to an NTE.
+             */
+            if ((*StackPtr)->Common.Type == INTERNAL_TYPE_Reference)
+            {
+                if (!(*StackPtr)->Reference.Nte)
+                {
+                    DEBUG_PRINT (ACPI_INFO, ("AmlResolveOperands: Needed NTE reference, found %s Obj=%p\n",
+                                    CmGetTypeName (ObjectType), *StackPtr));
+                    Status = AE_AML_OPERAND_TYPE;
+                    goto Cleanup;
+                }
+            }
+
             break;
 
 
