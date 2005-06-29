@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: oswinxf - Windows application interface
- *              $Revision: 1.20 $
+ *              $Revision: 1.21 $
  *
  *****************************************************************************/
 
@@ -166,6 +166,10 @@ SEMAPHORE_ENTRY             AcpiGbl_Semaphores[NUM_SEMAPHORES];
 
 
 extern FILE                 *AcpiGbl_DebugFile;
+ACPI_STATUS
+AeLocalGetRootPointer (
+    UINT32                  Flags,
+    ACPI_PHYSICAL_ADDRESS   *RsdpPhysicalAddress);
 
 
 /******************************************************************************
@@ -208,7 +212,7 @@ AcpiOsGetRootPointer (
     ACPI_PHYSICAL_ADDRESS   *RsdpPhysicalAddress)
 {
 
-    return (AE_NO_ACPI_TABLES);
+    return (AeLocalGetRootPointer (Flags, RsdpPhysicalAddress));
 }
 
 
