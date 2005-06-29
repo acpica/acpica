@@ -38,8 +38,8 @@ RSC=rc.exe
 # PROP BASE Target_Dir ""
 # PROP Use_MFC 0
 # PROP Use_Debug_Libraries 0
-# PROP Output_Dir "\Acpi\generate\msvc\AslCompiler\NoDebug"
-# PROP Intermediate_Dir "\Acpi\generate\msvc\AslCompiler\NoDebug"
+# PROP Output_Dir "AslCompiler\NoDebug"
+# PROP Intermediate_Dir "AslCompiler\NoDebug"
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /MD /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_AFXDLL" /YX /FD /c
@@ -70,8 +70,8 @@ PostBuild_Cmds=copy Release\iasl.exe ..\..\Libraries
 # PROP BASE Target_Dir ""
 # PROP Use_MFC 0
 # PROP Use_Debug_Libraries 1
-# PROP Output_Dir "\Acpi\generate\msvc\AslCompiler\Debug"
-# PROP Intermediate_Dir "\Acpi\generate\msvc\AslCompiler\Debug"
+# PROP Output_Dir "AslCompiler\Debug"
+# PROP Intermediate_Dir "AslCompiler\Debug"
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /MDd /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_AFXDLL" /YX /FD /GZ /c
