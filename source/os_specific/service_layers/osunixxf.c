@@ -125,18 +125,13 @@
 #include <unistd.h>
 #include <sys/time.h>
 
-#undef LOWORD
-#undef HIWORD
-#undef LOBYTE
-#undef HIBYTE
-
 #include "acpi.h"
 #include "amlcode.h"
 #include "acparser.h"
 #include "acdebug.h"
 
 #define _COMPONENT          ACPI_OS_SERVICES
-        MODULE_NAME         ("osunixxf")
+        ACPI_MODULE_NAME    ("osunixxf")
 
 
 extern FILE                    *AcpiGbl_DebugFile;

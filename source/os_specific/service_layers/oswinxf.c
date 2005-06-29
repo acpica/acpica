@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: oswinxf - Windows OSL
- *              $Revision: 1.23 $
+ *              $Revision: 1.25 $
  *
  *****************************************************************************/
 
@@ -138,17 +138,11 @@
 #include <process.h>
 #include <time.h>
 
-#undef LOWORD
-#undef HIWORD
-#undef LOBYTE
-#undef HIBYTE
-
-
 #include "acpi.h"
 #include "acdebug.h"
 
 #define _COMPONENT          ACPI_OS_SERVICES
-        MODULE_NAME         ("oswinxf")
+        ACPI_MODULE_NAME    ("oswinxf")
 
 
 UINT32                      AcpiGbl_NextSemaphore = 0;
@@ -342,7 +336,7 @@ AcpiOsVprintf (
 
 
     Flags = AcpiGbl_DbOutputFlags;
-    if (Flags & DB_REDIRECTABLE_OUTPUT)
+    if (Flags & ACPI_DB_REDIRECTABLE_OUTPUT)
     {
         /* Output is directable to either a file (if open) or the console */
 
@@ -356,11 +350,11 @@ AcpiOsVprintf (
         {
             /* No redirection, send output to console (once only!) */
 
-            Flags |= DB_CONSOLE_OUTPUT;
+            Flags |= ACPI_DB_CONSOLE_OUTPUT;
         }
     }
 
-    if (Flags & DB_CONSOLE_OUTPUT)
+    if (Flags & ACPI_DB_CONSOLE_OUTPUT)
     {
         Count = vprintf (Fmt, Args);
     }
@@ -530,7 +524,7 @@ AcpiOsCreateSemaphore (
 #ifdef _MULTI_THREADED
     void                *Mutex;
 
-    PROC_NAME ("OsCreateSemaphore");
+    ACPI_FUNCTION_NAME ("OsCreateSemaphore");
 #endif
 
 
@@ -638,7 +632,7 @@ AcpiOsWaitSemaphore (
     UINT32              WaitStatus;
 
 
-    PROC_NAME ("OsWaitSemaphore");
+    ACPI_FUNCTION_NAME ("OsWaitSemaphore");
 
 
     if ((Index >= NUM_SEMAPHORES) ||
@@ -709,7 +703,7 @@ AcpiOsSignalSemaphore (
 
     UINT32              Index = (UINT32) Handle;
 
-    PROC_NAME ("OsSignalSemaphore");
+    ACPI_FUNCTION_NAME ("OsSignalSemaphore");
 
 
     if ((Index >= NUM_SEMAPHORES) ||
@@ -970,19 +964,19 @@ AcpiOsReadPort (
     switch (Width)
     {
     case 8:
-        *((UINT8 *) Value) = 0;
+        *((UINT8 *) Value) = 0xFF;
         break;
 
     case 16:
-        *((UINT16 *) Value) = 0;
+        *((UINT16 *) Value) = 0xFFFF;
         break;
 
     case 32:
-        *((UINT32 *) Value) = 0;
+        *((UINT32 *) Value) = 0xFFFFFFFF;
         break;
 
     case 64:
-        *((UINT64 *) Value) = 0;
+        *((UINT64 *) Value) = 0xFFFFFFFFFFFFFFFF;
         break;
     }
 
