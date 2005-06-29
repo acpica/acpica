@@ -14,15 +14,18 @@
  | Functions for accessing ACPI namespace
  |__________________________________________________________________________
  |
- | $Revision: 1.9 $
- | $Date: 2005/06/29 18:15:32 $
+ | $Revision: 1.10 $
+ | $Date: 2005/06/29 18:15:33 $
  | $Log: nsaccess.c,v $
- | Revision 1.9  2005/06/29 18:15:32  aystarik
- | 16/32/64-bit common data types
+ | Revision 1.10  2005/06/29 18:15:33  aystarik
+ | Moved table-size constants to acpi.h
  |
  | 
- | date	99.03.10.00.06.00;	author rmoore1;	state Exp;
+ | date	99.03.12.00.20.00;	author rmoore1;	state Exp;
  |
+ * 
+ * 10    3/11/99 4:20p Rmoore1
+ * Moved table-size constants to acpi.h
  * 
  * 9     3/09/99 4:06p Rmoore1
  * 16/32/64-bit common data types
@@ -358,34 +361,15 @@
 #define FETCH_VALUES
 
 
-/* 
- * Table sizes
- * 
- * If USE_HASHING is #defined, these must be prime numbers and
- * should be large enough that the tables never get terribly full.
- *
- * The root NT was made bigger than others in the, possibly erroneous,
- * expectation that there might be quite a few entries in the root.
- */
 
-#ifdef USE_HASHING
-#define ROOTSIZE    101     /* # of slots in root table */
-#define TABLSIZE    53      /* # of slots per table below the root */
-
-#else
-#define ROOTSIZE    40      /* initial # of slots in root table */
-#define TABLSIZE    20      /* initial # of slots per table below the root */
-#endif
-
-#define MAXNEST     15      /* Max nesting of name scopes, used for sizing stacks */
-
-
-#include <bu.h>
 #include <limits.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <stddef.h>
+
+#include "acpi.h"
+#include "bu.h"
 #include "acpiasm.h"
 #include "acpiosd.h"
 #include "aml.h"
