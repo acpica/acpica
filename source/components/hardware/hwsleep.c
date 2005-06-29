@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Name: hwsleep.c - ACPI Hardware Sleep/Wake Interface
- *              $Revision: 1.10 $
+ *              $Revision: 1.12 $
  *
  *****************************************************************************/
 
@@ -228,30 +228,32 @@ AcpiGetFirmwareWakingVector (
 
 ACPI_STATUS
 AcpiEnterSleepState (
-    UINT8 SleepState)
+    UINT8               SleepState)
 {
-    ACPI_STATUS Status;
-    ACPI_OBJECT_LIST ArgList;
-    ACPI_OBJECT Arg;
-    UINT8 TypeA;
-    UINT8 TypeB;
-    UINT16 PM1AControl;
-    UINT16 PM1BControl;
+    ACPI_STATUS         Status;
+    ACPI_OBJECT_LIST    ArgList;
+    ACPI_OBJECT         Arg;
+    UINT8               TypeA;
+    UINT8               TypeB;
+    UINT16              PM1AControl;
+    UINT16              PM1BControl;
+
 
     FUNCTION_TRACE ("AcpiEnterSleepState");
+
 
     /*
      * _PSW methods could be run here to enable wake-on keyboard, LAN, etc.
      */
 
-    Status = AcpiHwObtainSleepTypeRegisterData(SleepState, &TypeA, &TypeB);
-
-    if (!ACPI_SUCCESS(Status))
+    Status = AcpiHwObtainSleepTypeRegisterData (SleepState, &TypeA, &TypeB);
+    if (!ACPI_SUCCESS (Status))
     {
         return Status;
     }
 
     /* run the _PTS and _GTS methods */
+
     MEMSET(&ArgList, 0, sizeof(ArgList));
     ArgList.Count = 1;
     ArgList.Pointer = &Arg;
@@ -264,31 +266,34 @@ AcpiEnterSleepState (
     AcpiEvaluateObject(NULL, "\\_GTS", &ArgList, NULL);
 
     /* clear wake status */
+
     AcpiHwRegisterBitAccess(ACPI_WRITE, ACPI_MTX_LOCK, WAK_STS, 1);
+
+    disable();
 
     PM1AControl = (UINT16) AcpiHwRegisterRead(ACPI_MTX_LOCK, PM1_CONTROL);
 
+    DEBUG_PRINT(ACPI_OK, ("Entering S%d\n", SleepState));
+
     /* mask off SLP_EN and SLP_TYP fields */
     PM1AControl &= 0xC3FF;
-
-    /* mask in SLP_EN */
-    PM1AControl |= (1 << AcpiHwGetBitShift (SLP_EN_MASK));
-
     PM1BControl = PM1AControl;
 
     /* mask in SLP_TYP */
     PM1AControl |= (TypeA << AcpiHwGetBitShift (SLP_TYPE_X_MASK));
     PM1BControl |= (TypeB << AcpiHwGetBitShift (SLP_TYPE_X_MASK));
 
-    DEBUG_PRINT(ACPI_OK, ("Entering S%d\n", SleepState));
-
-    disable();
-
+    /* write #1: fill in SLP_TYPE data */
     AcpiHwRegisterWrite(ACPI_MTX_LOCK, PM1A_CONTROL, PM1AControl);
     AcpiHwRegisterWrite(ACPI_MTX_LOCK, PM1B_CONTROL, PM1BControl);
-    /* one system won't work with this, one won't work without */
-    /*AcpiHwRegisterWrite(ACPI_MTX_LOCK, PM1_CONTROL,
-        (1 << AcpiHwGetBitShift (SLP_EN_MASK)));*/
+
+    /* mask in SLP_EN */
+    PM1AControl |= (1 << AcpiHwGetBitShift (SLP_EN_MASK));
+    PM1BControl |= (1 << AcpiHwGetBitShift (SLP_EN_MASK));
+
+    /* write #2: the whole tamale */
+    AcpiHwRegisterWrite(ACPI_MTX_LOCK, PM1A_CONTROL, PM1AControl);
+    AcpiHwRegisterWrite(ACPI_MTX_LOCK, PM1B_CONTROL, PM1BControl);
 
     enable();
 
