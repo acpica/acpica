@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: accommon.h -- prototypes for the common (subsystem-wide) procedures
- *       $Revision: 1.94 $
+ *       $Revision: 1.95 $
  *
  *****************************************************************************/
 
@@ -258,7 +258,7 @@ UINT32
 AcpiCmStrtoul (
     const NATIVE_CHAR       *String,
     NATIVE_CHAR             **Terminator,
-    NATIVE_UINT             Base);
+    UINT32                  Base);
 
 NATIVE_CHAR *
 AcpiCmStrstr (
