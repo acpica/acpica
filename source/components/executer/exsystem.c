@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: amsystem - Interface to OS services
- *              $Revision: 1.58 $
+ *              $Revision: 1.60 $
  *
  *****************************************************************************/
 
@@ -123,7 +123,7 @@
 #include "achware.h"
 #include "acevents.h"
 
-#define _COMPONENT          INTERPRETER
+#define _COMPONENT          ACPI_EXECUTER
         MODULE_NAME         ("amsystem")
 
 
@@ -177,7 +177,7 @@ AcpiAmlSystemWaitSemaphore (
         {
             /* Restore the timeout exception */
 
-            Status = AE_TIME; 
+            Status = AE_TIME;
         }
     }
 

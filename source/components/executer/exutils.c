@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: amutils - interpreter/scanner utilities
- *              $Revision: 1.72 $
+ *              $Revision: 1.76 $
  *
  *****************************************************************************/
 
@@ -124,7 +124,7 @@
 #include "acnamesp.h"
 #include "acevents.h"
 
-#define _COMPONENT          INTERPRETER
+#define _COMPONENT          ACPI_EXECUTER
         MODULE_NAME         ("amutils")
 
 
@@ -287,17 +287,16 @@ AcpiAmlAcquireGlobalLock (
         /* We should attempt to get the lock */
 
         Status = AcpiEvAcquireGlobalLock ();
-        if (ACPI_FAILURE (Status))
+        if (ACPI_SUCCESS (Status))
         {
-            DEBUG_PRINT (ACPI_ERROR, 
-                ("Could not acquire Global Lock, %s\n",
-                AcpiCmFormatException (Status)));
+            Locked = TRUE;
         }
 
         else
         {
-            AcpiGbl_GlobalLockSet = TRUE;
-            Locked = TRUE;
+            DEBUG_PRINT (ACPI_ERROR,
+                ("Could not acquire Global Lock, %s\n",
+                AcpiCmFormatException (Status)));
         }
     }
 
@@ -330,20 +329,9 @@ AcpiAmlReleaseGlobalLock (
 
     if (LockedByMe)
     {
-        /* Double check against the global flag */
+        /* OK, now release the lock */
 
-        if (AcpiGbl_GlobalLockSet)
-        {
-            /* OK, now release the lock */
-
-            AcpiEvReleaseGlobalLock ();
-            AcpiGbl_GlobalLockSet = FALSE;
-        }
-
-        else
-        {
-            DEBUG_PRINT (ACPI_ERROR, ("Global lock was not set\n"));
-        }
+        AcpiEvReleaseGlobalLock ();
     }
 
 
