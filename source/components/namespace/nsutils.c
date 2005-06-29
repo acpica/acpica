@@ -187,70 +187,10 @@ NsGetType (
         /*  Handle invalid  */
 
         REPORT_WARNING ("NsGetType: Null handle");
-        FUNCTION_EXIT;
-        return TYPE_Any;
+        return_VALUE (TYPE_Any);
     }
 
-    FUNCTION_EXIT;
-    return ((NAME_TABLE_ENTRY *) handle)->Type;
-}
-
-
-/****************************************************************************
- *
- * FUNCTION:    NsGetValue
- *
- * PARAMETERS:  Handle              - Handle of nte to be examined
- *
- * RETURN:      Value field from nte whose handle is passed
- *
- ***************************************************************************/
-
-void *
-NsGetValue (
-    ACPI_HANDLE             handle)
-{
-    FUNCTION_TRACE ("NsGetValue");
-
-
-    if (!handle)
-    {
-        /* handle invalid */
-
-        REPORT_WARNING ("NsGetValue: Null handle");
-        FUNCTION_EXIT;
-        return NULL;
-    }
-
-    FUNCTION_EXIT;
-    return ((NAME_TABLE_ENTRY *) handle)->Value;
-}
-
-
-/*****************************************************************************
- *
- * FUNCTION:    IsNsValue
- *
- * PARAMETERS:  *ObjDesc            - An object descriptor
- *
- * RETURN:      TRUE if the passed descriptor is the value of a Name in
- *              the name space, else FALSE
- *
- ****************************************************************************/
-
-INT32
-IsNsValue (
-    ACPI_OBJECT_INTERNAL    *ObjDesc)
-{
-    ACPI_HANDLE             RetHandle;
-
-
-    FUNCTION_TRACE ("IsNsValue");
-
-    RetHandle = NsFindValue (ObjDesc, NS_ALL, ACPI_INT_MAX);
-
-    FUNCTION_EXIT;
-    return (RetHandle != (ACPI_HANDLE) 0);
+    return_VALUE (((NAME_TABLE_ENTRY *) handle)->Type);
 }
 
 
@@ -277,12 +217,10 @@ NsLocal (
         /*  type code out of range  */
 
         REPORT_WARNING ("NsLocal: Type code out of range");
-        FUNCTION_EXIT;
-        return 0;
+        return_VALUE (0);
     }
 
-    FUNCTION_EXIT;
-    return NsProperties[Type] & LOCAL;
+    return_VALUE (NsProperties[Type] & LOCAL);
 }
 
 
@@ -318,8 +256,7 @@ NsInternalizeName (
 
     if (!DottedName || !ConvertedName)
     {
-        FUNCTION_STATUS_EXIT (AE_BAD_PARAMETER);
-        return AE_BAD_PARAMETER;
+        return_ACPI_STATUS (AE_BAD_PARAMETER);
     }
 
 
@@ -344,8 +281,7 @@ NsInternalizeName (
 
     if (Length < 4)
     {
-        FUNCTION_STATUS_EXIT (AE_BAD_PATHNAME);
-        return AE_BAD_PATHNAME;
+        return_ACPI_STATUS (AE_BAD_PATHNAME);
     }
 
     /* Pathname must be an exact multiple of segments */
@@ -354,8 +290,7 @@ NsInternalizeName (
     {
         if ((Length + 1) % PATH_SEGMENT_LENGTH)
         {
-            FUNCTION_STATUS_EXIT (AE_BAD_PATHNAME);
-            return AE_BAD_PATHNAME;
+            return_ACPI_STATUS (AE_BAD_PATHNAME);
         }
     }
 
@@ -364,8 +299,7 @@ NsInternalizeName (
     InternalName = CmCallocate ((ACPI_NAME_SIZE * NumSegments) + 4);
     if (!InternalName)
     {
-        FUNCTION_STATUS_EXIT (AE_NO_MEMORY);
-        return AE_NO_MEMORY;
+        return_ACPI_STATUS (AE_NO_MEMORY);
     }
 
 
@@ -413,8 +347,7 @@ NsInternalizeName (
                                 InternalName, &InternalName[2])); 
     }
 
-    FUNCTION_STATUS_EXIT (AE_OK);
-    return AE_OK;
+    return_ACPI_STATUS (AE_OK);
 }
 
 
@@ -496,8 +429,7 @@ NsTerminate (void)
 
     DEBUG_PRINT (ACPI_INFO, ("NsTerminate: ACPI Tables freed\n"));
 
-
-    FUNCTION_EXIT;
+	return_VOID;
 }
 
  
