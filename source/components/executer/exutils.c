@@ -470,7 +470,8 @@ AcpiAmlEisaIdToString (
 ACPI_STATUS
 AcpiAmlBuildCopyInternalPackageObject (
     ACPI_OBJECT_INTERNAL    *SourceObj,
-    ACPI_OBJECT_INTERNAL    *DestObj)
+    ACPI_OBJECT_INTERNAL    *DestObj,
+    ACPI_WALK_STATE         *WalkState)
 {
     UINT32                      CurrentDepth = 0;
     ACPI_STATUS                 Status = AE_OK;
@@ -573,7 +574,7 @@ AcpiAmlBuildCopyInternalPackageObject (
                                 ThisSourceObj->Common.Type);
             LevelPtr->DestObj->Package.Elements[ThisIndex] = ThisDestObj;
 
-            Status = AcpiAmlStoreObjectToObject(ThisSourceObj, ThisDestObj);
+            Status = AcpiAmlStoreObjectToObject(ThisSourceObj, ThisDestObj, WalkState);
 
             if (ACPI_FAILURE (Status))
             {
