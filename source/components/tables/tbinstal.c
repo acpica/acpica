@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: tbinstal - ACPI table installation and removal
- *              $Revision: 1.38 $
+ *              $Revision: 1.40 $
  *
  *****************************************************************************/
 
@@ -170,7 +170,7 @@ AcpiTbInstallTable (
 
     Status = AcpiTbInitTableDescriptor (TableInfo->Type, TableInfo);
 
-    DEBUG_PRINT (ACPI_INFO, ("%s located at %p\n",
+    DEBUG_PRINTP (ACPI_INFO, ("%s located at %p\n",
         AcpiGbl_AcpiTableData[TableInfo->Type].Name, TableInfo->Pointer));
 
     AcpiUtReleaseMutex (ACPI_MTX_TABLES);
@@ -241,8 +241,7 @@ AcpiTbRecognizeTable (
             TableType       = i;
             Status          = AcpiGbl_AcpiTableData[i].Status;
 
-            DEBUG_PRINT (ACPI_INFO,
-                ("TbRecognizeTable: Found %4.4s\n",
+            DEBUG_PRINTP (ACPI_INFO, ("Found %4.4s\n",
                 AcpiGbl_AcpiTableData[i].Signature));
             break;
         }
@@ -274,7 +273,7 @@ AcpiTbRecognizeTable (
 
     if (Status == AE_SUPPORT)
     {
-        DEBUG_PRINT (ACPI_INFO,
+        DEBUG_PRINTP (ACPI_INFO,
             ("Unsupported table %s (Type %X) was found and discarded\n",
             AcpiGbl_AcpiTableData[TableType].Name, TableType));
     }
@@ -346,7 +345,7 @@ AcpiTbInitTableDescriptor (
 
         if (ListHead->Pointer)
         {
-            TableDesc = AcpiUtCallocate (sizeof (ACPI_TABLE_DESC));
+            TableDesc = ACPI_MEM_CALLOCATE (sizeof (ACPI_TABLE_DESC));
             if (!TableDesc)
             {
                 return_ACPI_STATUS (AE_NO_MEMORY);
@@ -587,7 +586,7 @@ AcpiTbDeleteSingleTable (
 
         case ACPI_MEM_ALLOCATED:
 
-            AcpiUtFree (TableDesc->BasePointer);
+            ACPI_MEM_FREE (TableDesc->BasePointer);
             break;
 
 
@@ -668,7 +667,7 @@ AcpiTbUninstallTable (
         /* Free the table descriptor */
 
         NextDesc = TableDesc->Next;
-        AcpiUtFree (TableDesc);
+        ACPI_MEM_FREE (TableDesc);
     }
 
 
