@@ -1,654 +1,994 @@
-
-/******************************************************************************
- *
- * Module Name: exprep - ACPI AML (p-code) execution - field prep utilities
- *              $Revision: 1.133 $
- *
- *****************************************************************************/
-
-/******************************************************************************
- *
- * 1. Copyright Notice
- *
- * Some or all of this work - Copyright (c) 1999 - 2005, Intel Corp.
- * All rights reserved.
- *
- * 2. License
- *
- * 2.1. This is your license from Intel Corp. under its intellectual property
- * rights.  You may have additional license terms from the party that provided
- * you this software, covering your right to use that party's intellectual
- * property rights.
- *
- * 2.2. Intel grants, free of charge, to any person ("Licensee") obtaining a
- * copy of the source code appearing in this file ("Covered Code") an
- * irrevocable, perpetual, worldwide license under Intel's copyrights in the
- * base code distributed originally by Intel ("Original Intel Code") to copy,
- * make derivatives, distribute, use and display any portion of the Covered
- * Code in any form, with the right to sublicense such rights; and
- *
- * 2.3. Intel grants Licensee a non-exclusive and non-transferable patent
- * license (with the right to sublicense), under only those claims of Intel
- * patents that are infringed by the Original Intel Code, to make, use, sell,
- * offer to sell, and import the Covered Code and derivative works thereof
- * solely to the minimum extent necessary to exercise the above copyright
- * license, and in no event shall the patent license extend to any additions
- * to or modifications of the Original Intel Code.  No other license or right
- * is granted directly or by implication, estoppel or otherwise;
- *
- * The above copyright and patent license is granted only if the following
- * conditions are met:
- *
- * 3. Conditions
- *
- * 3.1. Redistribution of Source with Rights to Further Distribute Source.
- * Redistribution of source code of any substantial portion of the Covered
- * Code or modification with rights to further distribute source must include
- * the above Copyright Notice, the above License, this list of Conditions,
- * and the following Disclaimer and Export Compliance provision.  In addition,
- * Licensee must cause all Covered Code to which Licensee contributes to
- * contain a file documenting the changes Licensee made to create that Covered
- * Code and the date of any change.  Licensee must include in that file the
- * documentation of any changes made by any predecessor Licensee.  Licensee
- * must include a prominent statement that the modification is derived,
- * directly or indirectly, from Original Intel Code.
- *
- * 3.2. Redistribution of Source with no Rights to Further Distribute Source.
- * Redistribution of source code of any substantial portion of the Covered
- * Code or modification without rights to further distribute source must
- * include the following Disclaimer and Export Compliance provision in the
- * documentation and/or other materials provided with distribution.  In
- * addition, Licensee may not authorize further sublicense of source of any
- * portion of the Covered Code, and must include terms to the effect that the
- * license from Licensee to its licensee is limited to the intellectual
- * property embodied in the software Licensee provides to its licensee, and
- * not to intellectual property embodied in modifications its licensee may
- * make.
- *
- * 3.3. Redistribution of Executable. Redistribution in executable form of any
- * substantial portion of the Covered Code or modification must reproduce the
- * above Copyright Notice, and the following Disclaimer and Export Compliance
- * provision in the documentation and/or other materials provided with the
- * distribution.
- *
- * 3.4. Intel retains all right, title, and interest in and to the Original
- * Intel Code.
- *
- * 3.5. Neither the name Intel nor any other trademark owned or controlled by
- * Intel shall be used in advertising or otherwise to promote the sale, use or
- * other dealings in products derived from or relating to the Covered Code
- * without prior written authorization from Intel.
- *
- * 4. Disclaimer and Export Compliance
- *
- * 4.1. INTEL MAKES NO WARRANTY OF ANY KIND REGARDING ANY SOFTWARE PROVIDED
- * HERE.  ANY SOFTWARE ORIGINATING FROM INTEL OR DERIVED FROM INTEL SOFTWARE
- * IS PROVIDED "AS IS," AND INTEL WILL NOT PROVIDE ANY SUPPORT,  ASSISTANCE,
- * INSTALLATION, TRAINING OR OTHER SERVICES.  INTEL WILL NOT PROVIDE ANY
- * UPDATES, ENHANCEMENTS OR EXTENSIONS.  INTEL SPECIFICALLY DISCLAIMS ANY
- * IMPLIED WARRANTIES OF MERCHANTABILITY, NONINFRINGEMENT AND FITNESS FOR A
- * PARTICULAR PURPOSE.
- *
- * 4.2. IN NO EVENT SHALL INTEL HAVE ANY LIABILITY TO LICENSEE, ITS LICENSEES
- * OR ANY OTHER THIRD PARTY, FOR ANY LOST PROFITS, LOST DATA, LOSS OF USE OR
- * COSTS OF PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES, OR FOR ANY INDIRECT,
- * SPECIAL OR CONSEQUENTIAL DAMAGES ARISING OUT OF THIS AGREEMENT, UNDER ANY
- * CAUSE OF ACTION OR THEORY OF LIABILITY, AND IRRESPECTIVE OF WHETHER INTEL
- * HAS ADVANCE NOTICE OF THE POSSIBILITY OF SUCH DAMAGES.  THESE LIMITATIONS
- * SHALL APPLY NOTWITHSTANDING THE FAILURE OF THE ESSENTIAL PURPOSE OF ANY
- * LIMITED REMEDY.
- *
- * 4.3. Licensee shall not export, either directly or indirectly, any of this
- * software or system incorporating such software without first obtaining any
- * required license or other approval from the U. S. Department of Commerce or
- * any other agency or department of the United States Government.  In the
- * event Licensee exports any such software from the United States or
- * re-exports any such software from a foreign destination, Licensee shall
- * ensure that the distribution and export/re-export of the software is in
- * compliance with all laws, regulations, orders, or other restrictions of the
- * U.S. Export Administration Regulations. Licensee agrees that neither it nor
- * any of its subsidiaries will export/re-export any technical data, process,
- * software, or service, directly or indirectly, to any country for which the
- * United States government or any agency thereof requires an export license,
- * other governmental approval, or letter of assurance, without first obtaining
- * such license, approval or letter.
- *
- *****************************************************************************/
-
-#define __EXPREP_C__
-
-#include "acpi.h"
-#include "acinterp.h"
-#include "amlcode.h"
-#include "acnamesp.h"
+/*__________________________________________________________________________
+ |
+ |
+ |           Copyright (C) Intel Corporation 1994-1996
+ |
+ | All rights reserved.  No part of this program or publication may be
+ | reproduced, transmitted, transcribed, stored in a retrieval system, or
+ | translated into any language or computer language, in any form or by any
+ | means, electronic, mechanical, magnetic, optical, chemical, manual, or
+ | otherwise, without the prior written permission of Intel Corporation.
+ |__________________________________________________________________________
+ |
+ | ModuleName: ieprep - ACPI AML (p-code) execution - prep utilities
+ |__________________________________________________________________________
+*/
 
 
-#define _COMPONENT          ACPI_EXECUTER
-        ACPI_MODULE_NAME    ("exprep")
+#define __IEPREP_C__
 
-/* Local prototypes */
-
-static UINT32
-AcpiExGenerateAccess (
-    UINT32                  FieldBitOffset,
-    UINT32                  FieldBitLength,
-    UINT32                  RegionLength);
-
-static UINT32
-AcpiExDecodeFieldAccess (
-    ACPI_OPERAND_OBJECT     *ObjDesc,
-    UINT8                   FieldFlags,
-    UINT32                  *ReturnByteAlignment);
+#include <acpi.h>
+#include <interpreter.h>
+#include <amlcode.h>
+#include <namespace.h>
+#include <string.h>
 
 
-#ifdef ACPI_UNDER_DEVELOPMENT
-/*******************************************************************************
- *
- * FUNCTION:    AcpiExGenerateAccess
- *
- * PARAMETERS:  FieldBitOffset      - Start of field within parent region/buffer
- *              FieldBitLength      - Length of field in bits
- *              RegionLength        - Length of parent in bytes
- *
- * RETURN:      Field granularity (8, 16, 32 or 64) and
- *              ByteAlignment (1, 2, 3, or 4)
- *
- * DESCRIPTION: Generate an optimal access width for fields defined with the
- *              AnyAcc keyword.
- *
- * NOTE: Need to have the RegionLength in order to check for boundary
- *       conditions (end-of-region).  However, the RegionLength is a deferred
- *       operation.  Therefore, to complete this implementation, the generation
- *       of this access width must be deferred until the region length has
- *       been evaluated.
- *
- ******************************************************************************/
+#define _THIS_MODULE        "ieprep.c"
+#define _COMPONENT          INTERPRETER
 
-static UINT32
-AcpiExGenerateAccess (
-    UINT32                  FieldBitOffset,
-    UINT32                  FieldBitLength,
-    UINT32                  RegionLength)
+/* 
+ * Method Stack, containing locals and args
+ * per level, 0-7 are Local# and 8-14 are Arg#
+ */
+
+OBJECT_DESCRIPTOR *         MethodStack[AML_METHOD_MAX_NEST][ARGBASE+NUMARG];
+INT32                       MethodStackTop = -1;
+
+
+static ST_KEY_DESC_TABLE KDT[] = {
+    {"0000", 'T', "GetMethodValTyp: internal error", "GetMethodValTyp: internal error"},
+    {"0001", '1', "SetMethodValue: Descriptor Allocation Failure", "SetMethodValue: Descriptor Allocation Failure"},
+    {"0002", '1', "PrepDefFieldValue: Descriptor Allocation Failure", "PrepDefFieldValue: Descriptor Allocation Failure"},
+    {"0003", '1', "PrepBankFieldValue: Descriptor Allocation Failure", "PrepBankFieldValue: Descriptor Allocation Failure"},
+    {"0004", '1', "PrepIndexFieldValue: Descriptor Allocation Failure", "PrepIndexFieldValue: Descriptor Allocation Failure"},
+    {NULL, 'I', NULL, NULL}
+};
+
+
+
+/*****************************************************************************
+ * 
+ * FUNCTION:    GetMethodDepth
+ *
+ * RETURN:      The current value of MethodStackTop
+ *
+ ****************************************************************************/
+
+INT32
+GetMethodDepth (void)
 {
-    UINT32                  FieldByteLength;
-    UINT32                  FieldByteOffset;
-    UINT32                  FieldByteEndOffset;
-    UINT32                  AccessByteWidth;
-    UINT32                  FieldStartOffset;
-    UINT32                  FieldEndOffset;
-    UINT32                  MinimumAccessWidth = 0xFFFFFFFF;
-    UINT32                  MinimumAccesses = 0xFFFFFFFF;
-    UINT32                  Accesses;
 
-
-    ACPI_FUNCTION_TRACE ("ExGenerateAccess");
-
-
-    /* Round Field start offset and length to "minimal" byte boundaries */
-
-    FieldByteOffset    = ACPI_DIV_8 (ACPI_ROUND_DOWN (FieldBitOffset, 8));
-    FieldByteEndOffset = ACPI_DIV_8 (ACPI_ROUND_UP   (FieldBitLength +
-                                                      FieldBitOffset, 8));
-    FieldByteLength    = FieldByteEndOffset - FieldByteOffset;
-
-    ACPI_DEBUG_PRINT ((ACPI_DB_BFIELD,
-            "Bit length %d, Bit offset %d\n",
-            FieldBitLength, FieldBitOffset));
-
-    ACPI_DEBUG_PRINT ((ACPI_DB_BFIELD,
-            "Byte Length %d, Byte Offset %d, End Offset %d\n",
-            FieldByteLength, FieldByteOffset, FieldByteEndOffset));
-
-    /*
-     * Iterative search for the maximum access width that is both aligned
-     * and does not go beyond the end of the region
-     *
-     * Start at ByteAcc and work upwards to QwordAcc max. (1,2,4,8 bytes)
-     */
-    for (AccessByteWidth = 1; AccessByteWidth <= 8; AccessByteWidth <<= 1)
-    {
-        /*
-         * 1) Round end offset up to next access boundary and make sure that
-         *    this does not go beyond the end of the parent region.
-         * 2) When the Access width is greater than the FieldByteLength, we
-         *    are done. (This does not optimize for the perfectly aligned
-         *    case yet).
-         */
-        if (ACPI_ROUND_UP (FieldByteEndOffset, AccessByteWidth) <= RegionLength)
-        {
-            FieldStartOffset =
-                ACPI_ROUND_DOWN (FieldByteOffset, AccessByteWidth) /
-                AccessByteWidth;
-
-            FieldEndOffset =
-                ACPI_ROUND_UP ((FieldByteLength + FieldByteOffset),
-                    AccessByteWidth) / AccessByteWidth;
-
-            Accesses = FieldEndOffset - FieldStartOffset;
-
-            ACPI_DEBUG_PRINT ((ACPI_DB_BFIELD,
-                    "AccessWidth %d end is within region\n", AccessByteWidth));
-
-            ACPI_DEBUG_PRINT ((ACPI_DB_BFIELD,
-                    "Field Start %d, Field End %d -- requires %d accesses\n",
-                    FieldStartOffset, FieldEndOffset, Accesses));
-
-            /* Single access is optimal */
-
-            if (Accesses <= 1)
-            {
-                ACPI_DEBUG_PRINT ((ACPI_DB_BFIELD,
-                    "Entire field can be accessed with one operation of size %d\n",
-                    AccessByteWidth));
-                return_VALUE (AccessByteWidth);
-            }
-
-            /*
-             * Fits in the region, but requires more than one read/write.
-             * try the next wider access on next iteration
-             */
-            if (Accesses < MinimumAccesses)
-            {
-                MinimumAccesses    = Accesses;
-                MinimumAccessWidth = AccessByteWidth;
-            }
-        }
-        else
-        {
-            ACPI_DEBUG_PRINT ((ACPI_DB_BFIELD,
-                "AccessWidth %d end is NOT within region\n", AccessByteWidth));
-            if (AccessByteWidth == 1)
-            {
-                ACPI_DEBUG_PRINT ((ACPI_DB_BFIELD,
-                        "Field goes beyond end-of-region!\n"));
-
-                /* Field does not fit in the region at all */
-
-                return_VALUE (0);
-            }
-
-            /*
-             * This width goes beyond the end-of-region, back off to
-             * previous access
-             */
-            ACPI_DEBUG_PRINT ((ACPI_DB_BFIELD,
-                    "Backing off to previous optimal access width of %d\n",
-                    MinimumAccessWidth));
-            return_VALUE (MinimumAccessWidth);
-        }
-    }
-
-    /*
-     * Could not read/write field with one operation,
-     * just use max access width
-     */
-    ACPI_DEBUG_PRINT ((ACPI_DB_BFIELD,
-            "Cannot access field in one operation, using width 8\n"));
-    return_VALUE (8);
-}
-#endif /* ACPI_UNDER_DEVELOPMENT */
-
-
-/*******************************************************************************
- *
- * FUNCTION:    AcpiExDecodeFieldAccess
- *
- * PARAMETERS:  ObjDesc             - Field object
- *              FieldFlags          - Encoded fieldflags (contains access bits)
- *              ReturnByteAlignment - Where the byte alignment is returned
- *
- * RETURN:      Field granularity (8, 16, 32 or 64) and
- *              ByteAlignment (1, 2, 3, or 4)
- *
- * DESCRIPTION: Decode the AccessType bits of a field definition.
- *
- ******************************************************************************/
-
-static UINT32
-AcpiExDecodeFieldAccess (
-    ACPI_OPERAND_OBJECT     *ObjDesc,
-    UINT8                   FieldFlags,
-    UINT32                  *ReturnByteAlignment)
-{
-    UINT32                  Access;
-    UINT32                  ByteAlignment;
-    UINT32                  BitLength;
-
-
-    ACPI_FUNCTION_TRACE ("ExDecodeFieldAccess");
-
-
-    Access = (FieldFlags & AML_FIELD_ACCESS_TYPE_MASK);
-
-    switch (Access)
-    {
-    case AML_FIELD_ACCESS_ANY:
-
-#ifdef ACPI_UNDER_DEVELOPMENT
-        ByteAlignment =
-            AcpiExGenerateAccess (ObjDesc->CommonField.StartFieldBitOffset,
-                ObjDesc->CommonField.BitLength,
-                0xFFFFFFFF /* Temp until we pass RegionLength as parameter */);
-        BitLength = ByteAlignment * 8;
-#endif
-
-        ByteAlignment = 1;
-        BitLength = 8;
-        break;
-
-    case AML_FIELD_ACCESS_BYTE:
-    case AML_FIELD_ACCESS_BUFFER:   /* ACPI 2.0 (SMBus Buffer) */
-        ByteAlignment = 1;
-        BitLength     = 8;
-        break;
-
-    case AML_FIELD_ACCESS_WORD:
-        ByteAlignment = 2;
-        BitLength     = 16;
-        break;
-
-    case AML_FIELD_ACCESS_DWORD:
-        ByteAlignment = 4;
-        BitLength     = 32;
-        break;
-
-    case AML_FIELD_ACCESS_QWORD:    /* ACPI 2.0 */
-        ByteAlignment = 8;
-        BitLength     = 64;
-        break;
-
-    default:
-        /* Invalid field access type */
-
-        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
-            "Unknown field access type %X\n",
-            Access));
-        return_VALUE (0);
-    }
-
-    if (ACPI_GET_OBJECT_TYPE (ObjDesc) == ACPI_TYPE_BUFFER_FIELD)
-    {
-        /*
-         * BufferField access can be on any byte boundary, so the
-         * ByteAlignment is always 1 byte -- regardless of any ByteAlignment
-         * implied by the field access type.
-         */
-        ByteAlignment = 1;
-    }
-
-    *ReturnByteAlignment = ByteAlignment;
-    return_VALUE (BitLength);
+    return MethodStackTop;
 }
 
 
-/*******************************************************************************
+/*****************************************************************************
+ * 
+ * FUNCTION:    GetMethodValTyp
  *
- * FUNCTION:    AcpiExPrepCommonFieldObject
+ * PARAMETERS:  INT32 Index      index in MethodStack[MethodStackTop]
  *
- * PARAMETERS:  ObjDesc             - The field object
- *              FieldFlags          - Access, LockRule, and UpdateRule.
- *                                    The format of a FieldFlag is described
- *                                    in the ACPI specification
- *              FieldAttribute      - Special attributes (not used)
- *              FieldBitPosition    - Field start position
- *              FieldBitLength      - Field length in number of bits
+ * RETURN:      Data type of selected Arg or Local
+ *              Used only in ExecMonadic2()/TypeOp.
  *
- * RETURN:      Status
- *
- * DESCRIPTION: Initialize the areas of the field object that are common
- *              to the various types of fields.  Note: This is very "sensitive"
- *              code because we are solving the general case for field
- *              alignment.
- *
- ******************************************************************************/
+ ****************************************************************************/
 
-ACPI_STATUS
-AcpiExPrepCommonFieldObject (
-    ACPI_OPERAND_OBJECT     *ObjDesc,
-    UINT8                   FieldFlags,
-    UINT8                   FieldAttribute,
-    UINT32                  FieldBitPosition,
-    UINT32                  FieldBitLength)
+NsType
+GetMethodValTyp (INT32 Index)
 {
-    UINT32                  AccessBitWidth;
-    UINT32                  ByteAlignment;
-    UINT32                  NearestByteAddress;
+    FUNCTION_TRACE ("GetMethodValTyp");
 
 
-    ACPI_FUNCTION_TRACE ("ExPrepCommonFieldObject");
-
-
-    /*
-     * Note: the structure being initialized is the
-     * ACPI_COMMON_FIELD_INFO;  No structure fields outside of the common
-     * area are initialized by this procedure.
-     */
-    ObjDesc->CommonField.FieldFlags = FieldFlags;
-    ObjDesc->CommonField.Attribute  = FieldAttribute;
-    ObjDesc->CommonField.BitLength  = FieldBitLength;
-
-    /*
-     * Decode the access type so we can compute offsets.  The access type gives
-     * two pieces of information - the width of each field access and the
-     * necessary ByteAlignment (address granularity) of the access.
-     *
-     * For AnyAcc, the AccessBitWidth is the largest width that is both
-     * necessary and possible in an attempt to access the whole field in one
-     * I/O operation.  However, for AnyAcc, the ByteAlignment is always one
-     * byte.
-     *
-     * For all Buffer Fields, the ByteAlignment is always one byte.
-     *
-     * For all other access types (Byte, Word, Dword, Qword), the Bitwidth is
-     * the same (equivalent) as the ByteAlignment.
-     */
-    AccessBitWidth = AcpiExDecodeFieldAccess (ObjDesc, FieldFlags,
-                                &ByteAlignment);
-    if (!AccessBitWidth)
+    if (OUTRANGE (MethodStackTop, MethodStack) ||
+        OUTRANGE (Index, MethodStack[MethodStackTop]))
     {
-        return_ACPI_STATUS (AE_AML_OPERAND_VALUE);
+        /*  iMethodStackTop or iIndex invalid for current object stack  */
+
+        REPORT_ERROR (&KDT[0]);
+        return (NsType)-1;
     }
 
-    /* Setup width (access granularity) fields */
-
-    ObjDesc->CommonField.AccessByteWidth = (UINT8)
-            ACPI_DIV_8 (AccessBitWidth);            /* 1,  2,  4,  8 */
-
-    ObjDesc->CommonField.AccessBitWidth = (UINT8) AccessBitWidth;
-
-    /*
-     * BaseByteOffset is the address of the start of the field within the
-     * region.  It is the byte address of the first *datum* (field-width data
-     * unit) of the field. (i.e., the first datum that contains at least the
-     * first *bit* of the field.)
-     *
-     * Note: ByteAlignment is always either equal to the AccessBitWidth or 8
-     * (Byte access), and it defines the addressing granularity of the parent
-     * region or buffer.
-     */
-    NearestByteAddress =
-            ACPI_ROUND_BITS_DOWN_TO_BYTES (FieldBitPosition);
-    ObjDesc->CommonField.BaseByteOffset = (UINT32)
-            ACPI_ROUND_DOWN (NearestByteAddress, ByteAlignment);
-
-    /*
-     * StartFieldBitOffset is the offset of the first bit of the field within
-     * a field datum.
-     */
-    ObjDesc->CommonField.StartFieldBitOffset = (UINT8)
-        (FieldBitPosition - ACPI_MUL_8 (ObjDesc->CommonField.BaseByteOffset));
-
-    /*
-     * Does the entire field fit within a single field access element? (datum)
-     * (i.e., without crossing a datum boundary)
-     */
-    if ((ObjDesc->CommonField.StartFieldBitOffset + FieldBitLength) <=
-            (UINT16) AccessBitWidth)
+    if (!MethodStack[MethodStackTop][Index])
     {
-        ObjDesc->Common.Flags |= AOPOBJ_SINGLE_DATUM;
+        return Any; /* Any == 0 => "uninitialized" -- see spec 15.2.3.5.2.28 */
     }
 
-    return_ACPI_STATUS (AE_OK);
+    return MethodStack[MethodStackTop][Index]->ValType;
 }
 
 
-/*******************************************************************************
+/*****************************************************************************
+ * 
+ * FUNCTION:    GetMethodValue
  *
- * FUNCTION:    AcpiExPrepFieldValue
+ * PARAMETERS:  INT32               Index       index in MethodStack[MethodStackTop]
+ *              OBJECT_DESCRIPTOR   *ObjDesc    Descriptor into which selected Arg
+ *                                              or Local value should be copied
  *
- * PARAMETERS:  Info    - Contains all field creation info
+ * RETURN:      S_SUCCESS or S_ERROR
  *
- * RETURN:      Status
+ * DESCRIPTION: Retrieve value of selected Arg or Local
+ *              Used only in GetRvalue().
  *
- * DESCRIPTION: Construct an ACPI_OPERAND_OBJECT of type DefField and
- *              connect it to the parent Node.
- *
- ******************************************************************************/
+ ****************************************************************************/
 
-ACPI_STATUS
-AcpiExPrepFieldValue (
-    ACPI_CREATE_FIELD_INFO  *Info)
+INT32
+GetMethodValue (INT32 Index, OBJECT_DESCRIPTOR *ObjDesc)
 {
-    ACPI_OPERAND_OBJECT     *ObjDesc;
-    UINT32                  Type;
-    ACPI_STATUS             Status;
+    INT32           Excep = S_ERROR;
 
 
-    ACPI_FUNCTION_TRACE ("ExPrepFieldValue");
+    FUNCTION_TRACE ("GetMethodValue");
 
 
-    /* Parameter validation */
-
-    if (Info->FieldType != ACPI_TYPE_LOCAL_INDEX_FIELD)
-    {
-        if (!Info->RegionNode)
-        {
-            ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Null RegionNode\n"));
-            return_ACPI_STATUS (AE_AML_NO_OPERAND);
-        }
-
-        Type = AcpiNsGetType (Info->RegionNode);
-        if (Type != ACPI_TYPE_REGION)
-        {
-            ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
-                "Needed Region, found type %X (%s)\n",
-                Type, AcpiUtGetTypeName (Type)));
-
-            return_ACPI_STATUS (AE_AML_OPERAND_TYPE);
-        }
-    }
-
-    /* Allocate a new field object */
-
-    ObjDesc = AcpiUtCreateInternalObject (Info->FieldType);
     if (!ObjDesc)
     {
-        return_ACPI_STATUS (AE_NO_MEMORY);
+        sprintf (WhyBuf, "GetMethodValue: NULL object descriptor pointer");
     }
+    
+    else
+    {   
+        /* ObjDesc is valid */
 
-    /* Initialize areas of the object that are common to all fields */
-
-    ObjDesc->CommonField.Node = Info->FieldNode;
-    Status = AcpiExPrepCommonFieldObject (ObjDesc, Info->FieldFlags,
-                Info->Attribute, Info->FieldBitPosition, Info->FieldBitLength);
-    if (ACPI_FAILURE (Status))
-    {
-        AcpiUtDeleteObjectDesc (ObjDesc);
-        return_ACPI_STATUS (Status);
-    }
-
-    /* Initialize areas of the object that are specific to the field type */
-
-    switch (Info->FieldType)
-    {
-    case ACPI_TYPE_LOCAL_REGION_FIELD:
-
-        ObjDesc->Field.RegionObj = AcpiNsGetAttachedObject (Info->RegionNode);
-
-        /* An additional reference for the container */
-
-        AcpiUtAddReference (ObjDesc->Field.RegionObj);
-
-        ACPI_DEBUG_PRINT ((ACPI_DB_BFIELD,
-            "RegionField: BitOff %X, Off %X, Gran %X, Region %p\n",
-            ObjDesc->Field.StartFieldBitOffset, ObjDesc->Field.BaseByteOffset,
-            ObjDesc->Field.AccessByteWidth, ObjDesc->Field.RegionObj));
-        break;
-
-
-    case ACPI_TYPE_LOCAL_BANK_FIELD:
-
-        ObjDesc->BankField.Value     = Info->BankValue;
-        ObjDesc->BankField.RegionObj = AcpiNsGetAttachedObject (
-                                            Info->RegionNode);
-        ObjDesc->BankField.BankObj   = AcpiNsGetAttachedObject (
-                                            Info->RegisterNode);
-
-        /* An additional reference for the attached objects */
-
-        AcpiUtAddReference (ObjDesc->BankField.RegionObj);
-        AcpiUtAddReference (ObjDesc->BankField.BankObj);
-
-        ACPI_DEBUG_PRINT ((ACPI_DB_BFIELD,
-            "Bank Field: BitOff %X, Off %X, Gran %X, Region %p, BankReg %p\n",
-            ObjDesc->BankField.StartFieldBitOffset,
-            ObjDesc->BankField.BaseByteOffset,
-            ObjDesc->Field.AccessByteWidth,
-            ObjDesc->BankField.RegionObj,
-            ObjDesc->BankField.BankObj));
-        break;
-
-
-    case ACPI_TYPE_LOCAL_INDEX_FIELD:
-
-        ObjDesc->IndexField.IndexObj = AcpiNsGetAttachedObject (
-                                            Info->RegisterNode);
-        ObjDesc->IndexField.DataObj  = AcpiNsGetAttachedObject (
-                                            Info->DataRegisterNode);
-        ObjDesc->IndexField.Value    = (UINT32)
-            (Info->FieldBitPosition / ACPI_MUL_8 (
-                                        ObjDesc->Field.AccessByteWidth));
-
-        if (!ObjDesc->IndexField.DataObj || !ObjDesc->IndexField.IndexObj)
+        if (OUTRANGE (MethodStackTop, MethodStack) ||
+            OUTRANGE (Index, MethodStack[MethodStackTop]))
         {
-            ACPI_REPORT_ERROR (("Null Index Object during field prep\n"));
-            AcpiUtDeleteObjectDesc (ObjDesc);
-            return_ACPI_STATUS (AE_AML_INTERNAL);
+            /* MethodStackTop or Index invalid for current object stack */
+
+            sprintf (WhyBuf, "GetMethodValue: Bad method stack index [%d][%d]",
+                        MethodStackTop, Index);
         }
 
-        /* An additional reference for the attached objects */
+        else if (!MethodStack[MethodStackTop][Index])
+        {
+            /* Index points to uninitialized object stack value */
 
-        AcpiUtAddReference (ObjDesc->IndexField.DataObj);
-        AcpiUtAddReference (ObjDesc->IndexField.IndexObj);
+            if ((ARGBASE <= Index) && (Index < (ARGBASE + NUMARG)))
+            {
+                sprintf (WhyBuf, "GetMethodValue: Uninitialized Arg%d",
+                        Index - ARGBASE);
+            }
+            else if ((LCLBASE <= Index) && (Index < (LCLBASE + NUMLCL)))
+            {
+                sprintf (WhyBuf, "GetMethodValue: Uninitialized Local%d",
+                        Index - LCLBASE);
+            }
+            else
+            {
+                sprintf (WhyBuf, "GetMethodValue: Uninitialized method value %d",
+                        Index);
+            }
 
-        ACPI_DEBUG_PRINT ((ACPI_DB_BFIELD,
-            "IndexField: BitOff %X, Off %X, Value %X, Gran %X, Index %p, Data %p\n",
-            ObjDesc->IndexField.StartFieldBitOffset,
-            ObjDesc->IndexField.BaseByteOffset,
-            ObjDesc->IndexField.Value,
-            ObjDesc->Field.AccessByteWidth,
-            ObjDesc->IndexField.IndexObj,
-            ObjDesc->IndexField.DataObj));
-        break;
+#ifdef HACK
+            DEBUG_PRINT (ACPI_WARN, (" ** GetMethodValue: ret uninit as 4 **\n"));
+            ObjDesc->Number.ValType = (UINT8) Number;
+            ObjDesc->Number.Number = 0x4;
+            Excep = S_SUCCESS;
+#endif /* HACK */
 
-    default:
-        /* No other types should get here */
-        break;
+        }
+
+        else
+        {
+            /* Index points to initialized object stack value   */
+
+            memcpy ((void *) ObjDesc,
+                     (void *) MethodStack[MethodStackTop][Index],
+                     sizeof (*ObjDesc));
+
+            if (Buffer == ObjDesc->ValType)
+            {
+                /* Assign a new sequence number to track buffer usage */
+            
+                ObjDesc->Buffer.Sequence = AmlBufSeq ();
+            }
+
+            Excep = S_SUCCESS;
+        }
     }
 
-    /*
-     * Store the constructed descriptor (ObjDesc) into the parent Node,
-     * preserving the current type of that NamedObj.
-     */
-    Status = AcpiNsAttachObject (Info->FieldNode, ObjDesc,
-                    AcpiNsGetType (Info->FieldNode));
+    if (S_SUCCESS != Excep)
+    {
+        Why = WhyBuf;
+    }
 
-    ACPI_DEBUG_PRINT ((ACPI_DB_BFIELD, "Set NamedObj %p [%4.4s], ObjDesc %p\n",
-            Info->FieldNode, AcpiUtGetNodeName (Info->FieldNode), ObjDesc));
-
-    /* Remove local reference to the object */
-
-    AcpiUtRemoveReference (ObjDesc);
-    return_ACPI_STATUS (Status);
+    return Excep;
 }
+
+
+/*****************************************************************************
+ * 
+ * FUNCTION:    SetMethodValue
+ *
+ * PARAMETERS:  INT32               Index       Index in MethodStack[MethodStackTop]
+ *              OBJECT_DESCRIPTOR * ObjDesc     Value to be stored
+ *                                              May be NULL -- see Description.
+ *              OBJECT_DESCRIPTOR * ObjDesc2    Spare descriptor into which *ObjDesc
+ *                                              can be copied, or NULL if one must
+ *                                              be allocated for the purpose.  If
+ *                                              provided, this descriptor will be
+ *                                              consumed (either used for the new
+ *                                              value or deleted).
+ *
+ * RETURN:      S_SUCCESS or S_ERROR
+ *
+ * DESCRIPTION: Store a value in an Arg or Local.
+ *              To undefine an entry, pass ObjDesc as NULL; the old descriptor
+ *              will be deleted.
+ *
+ * ALLOCATION:
+ *  Reference     Size                    Pool    Owner       Description
+ *  MethodStack   s(OBJECT_DESCRIPTOR)    bu      amlexec     Object
+ *
+ ****************************************************************************/
+
+INT32
+SetMethodValue (INT32 Index, OBJECT_DESCRIPTOR *ObjDesc, OBJECT_DESCRIPTOR *ObjDesc2)
+{
+    FUNCTION_TRACE ("SetMethodValue");
+
+
+    DEBUG_PRINT (TRACE_EXEC, ("Index=%d, ObjDesc=%p, ObjDesc2=%p\n",
+                    Index, ObjDesc, ObjDesc2));
+
+    if (OUTRANGE (MethodStackTop, MethodStack) ||
+        OUTRANGE (Index, MethodStack[MethodStackTop]))
+    {
+        /* MethodStackTop or Index invalid for current object stack */
+
+        sprintf (WhyBuf, "SetMethodValue: Bad method stack index [%d][%d]",
+                MethodStackTop, Index);
+        Why = WhyBuf;
+        return S_ERROR;
+    }
+
+    if (!MethodStack[MethodStackTop][Index])
+    {
+        /* Local or Arg is currently undefined in object stack */
+
+        if (!ObjDesc2 && ObjDesc)
+        {
+            /* 
+             * No descriptor was provided in ObjDesc2, and the currently-undefined
+             * Local or Arg is to be defined.  Allocate a descriptor.
+             */
+            MethodStack[MethodStackTop][Index] = AllocateObjectDesc (&KDT[1]);
+            if (!MethodStack[MethodStackTop][Index])
+            {
+                /*  allocation failure  */
+
+                return S_ERROR;
+            }
+        }
+
+        else
+        {
+            /* 
+             * A descriptor was provided in ObjDesc2; use it for the Arg/Local
+             * new value (or delete it later if the new value is NULL).
+             * We also come here if no descriptor was supplied and the
+             * undefined Local or Arg is to remain undefined; in that case
+             * the assignment is a no-op.
+             */
+            MethodStack[MethodStackTop][Index] = ObjDesc2;
+        }
+    }
+ 
+    else
+    {
+        /* 
+         * Arg or Local is currently defined, so that descriptor will be
+         * reused for the new value.  Delete the spare descriptor if supplied.
+         */
+        if (ObjDesc2)
+        {
+            /* XXX - see XXX comment below re possible storage leak */
+
+            DELETE (ObjDesc2);
+        }
+    }
+
+    if (!ObjDesc)
+    {
+        /* 
+         * Undefine the Arg or Local by setting its descriptor pointer to NULL.
+         * If it is currently defined, delete the old descriptor first.
+         */
+        if (MethodStack[MethodStackTop][Index])
+        {
+            /* object descriptor currently defined, delete the old descriptor   */
+
+            if (Buffer == MethodStack[MethodStackTop][Index]->ValType)
+            {
+                /* 
+                 * Ensure the about-to-be-deleted Buffer's sequence number
+                 * will no longer match any FieldUnits defined within it,
+                 * by inverting its most-significant bit.
+                 */
+                MethodStack[MethodStackTop][Index]->Buffer.Sequence
+                                                                ^= 0x80000000UL;
+            }
+
+            DELETE (MethodStack[MethodStackTop][Index]);
+
+            /*  TBD:    Should also delete any unshared storage pointed to by this
+             *          descriptor, but lacking a convenient way to determine
+             *          whether the storage is shared or not we'll let Garbage
+             *          Collection handle it.
+             */
+        }
+
+        MethodStack[MethodStackTop][Index] = ObjDesc;
+    }
+
+    else
+    {
+        /* 
+         * Copy the ObjStack descriptor (*ObjDesc) into the descriptor for the
+         * Arg or Local.
+         */
+        /*
+         * TBD:     possible storage leak: if the old descriptor happens to be
+         *          for an aggregate (Buffer, String, Package, etc.), it points
+         *          to other storage which may or may not be shared; if unshared
+         *          it should be freed here. (Good Luck figuring out whether it
+         *          is shared or not.)
+         */
+        memcpy ((void *) MethodStack[MethodStackTop][Index],
+                 (void *) ObjDesc, sizeof (*ObjDesc));
+
+        if (Buffer == ObjDesc->ValType)
+        {
+            /* Assign a new sequence number to track buffers */
+
+            MethodStack[MethodStackTop][Index]->Buffer.Sequence
+                        = AmlBufSeq ();
+        }
+    }
+
+    return S_SUCCESS;
+}
+
+
+/*****************************************************************************
+ * 
+ * FUNCTION:    PrepDefFieldValue
+ *
+ * PARAMETERS:  NsHandle    Region     Region in which field is being defined
+ *              UINT8       FldFlg     Access, LockRule, UpdateRule
+ *                                     The format of a FieldFlag is described
+ *                                     in the ACPI specification and in <aml.h>
+ *              INT32       FldPos     field position
+ *              INT32       FldLen     field length
+ *
+ * RETURN:      S_SUCCESS or S_ERROR
+ *
+ * DESCRIPTION: Construct an OBJECT_DESCRIPTOR of type DefField and connect
+ *              it to the nte whose handle is at ObjStack[ObjStackTop]
+ *
+ * ALLOCATION:
+ *  Reference   Size                    Pool    Owner       Description
+ *  nte.ValDesc s(OBJECT_DESCRIPTOR)    bu      amlexec     Field descriptor
+ *
+ ****************************************************************************/
+
+INT32
+PrepDefFieldValue (NsHandle Region, UINT8 FldFlg, INT32 FldPos, INT32 FldLen)
+{
+    OBJECT_DESCRIPTOR   *ObjDesc = NULL;
+    INT32               Excep = S_SUCCESS;
+    INT32               Type;
+
+
+    FUNCTION_TRACE ("PrepDefFieldValue");
+
+
+    if (!Region)
+    {
+        Why = "PrepDefFieldValue: null Region";
+        Excep = S_ERROR;
+    }
+
+    else if (Region != (NsHandle)(Type = NsValType (Region)))
+    {
+        sprintf (WhyBuf, "PrepDefFieldValue: Needed Region, found %d %s",
+                    Type, NsTypeNames[Type]);
+        Why = WhyBuf;
+        Excep = S_ERROR;
+    }
+
+    else if (!(ObjDesc = AllocateObjectDesc (&KDT[3])))
+    {   
+        /*  unable to allocate new object descriptor    */
+
+        Excep = S_ERROR;
+    }
+
+
+    if (S_SUCCESS == Excep)
+    {   
+        /* ObjDesc and Region valid */
+
+        DUMP_STACK (Exec, "PrepDefFieldValue", 2, "case DefField");
+
+
+        ObjDesc->ValType = (UINT8) DefField;
+        if (DefField != ObjDesc->Field.ValType)
+        {
+            /* 
+             * The C implementation has done something which is technically legal
+             * but unexpected:  the ValType field which was defined as a UINT8 did
+             * not map to the same structure offset as the one which was defined
+             * as a WORD_BIT -- see comments in the definition of the FieldUnit
+             * variant of OBJECT_DESCRIPTOR in amlpriv.h.
+             *
+             * Log some evidence to facilitate porting the code.
+             */
+            ObjDesc->Field.ValType = 0x005a;
+            sprintf (WhyBuf,
+                    "PrepDefFieldValue: internal failure %p %02x %02x %02x %02x",
+                    ObjDesc, ((UINT8 *) ObjDesc)[0], ((UINT8 *) ObjDesc)[1], ((UINT8 *) ObjDesc)[2],
+                    ((UINT8 *) ObjDesc)[3]);
+            Why = WhyBuf;
+            DELETE (ObjDesc);
+            Excep = S_ERROR;
+        }
+    }
+
+    if (S_SUCCESS == Excep)
+    {   
+        /* ObjDesc, Region, and ObjDesc->Field.ValType valid    */
+
+        ObjDesc->Field.Access     = (FldFlg & ACCESS_TYPE_MASK) >> ACCESS_TYPE_SHIFT;
+        ObjDesc->Field.LockRule   = (FldFlg & LOCK_RULE_MASK) >> LOCK_RULE_SHIFT;
+        ObjDesc->Field.UpdateRule = (FldFlg & UPDATE_RULE_MASK) >> UPDATE_RULE_SHIFT;
+        ObjDesc->Field.DatLen     = (UINT16) FldLen;
+
+        /* XXX - should use width of data register, not hardcoded 8 */
+
+        DEBUG_PRINT (ACPI_INFO, (" ** PrepDefFieldValue: hard 8 **\n"));
+
+        ObjDesc->Field.BitOffset  = (UINT16) FldPos % 8;
+        ObjDesc->Field.Offset     = (UINT32) FldPos / 8;
+        ObjDesc->Field.Container  = NsValPtr (Region);
+
+
+        DEBUG_PRINT (ACPI_INFO, ("PrepDefFieldValue: set nte %p (%4.4s) val = %p\n",
+                        ObjStack[ObjStackTop], ObjStack[ObjStackTop], ObjDesc));
+
+        DUMP_STACK_ENTRY (ObjDesc);
+        DUMP_ENTRY (Region);
+        DEBUG_PRINT (ACPI_INFO, ("\t%p \n", ObjDesc->Field.Container));
+
+        if (ObjDesc->Field.Container)
+        {
+            DUMP_STACK_ENTRY (ObjDesc->Field.Container);
+        }
+
+        DEBUG_PRINT (ACPI_INFO,
+                    ("============================================================\n"));
+
+        /* 
+         * Store the constructed descriptor (ObjDesc) into the nte whose
+         * handle is on TOS, preserving the current type of that nte.
+         */
+        NsSetValue ((NsHandle) ObjStack[ObjStackTop], ObjDesc,
+                    (UINT8) NsValType ((NsHandle) ObjStack[ObjStackTop]));
+    }
+
+    return Excep;
+}
+
+
+/*****************************************************************************
+ * 
+ * FUNCTION:    PrepBankFieldValue
+ *
+ * PARAMETERS:  NsHandle    Region     Region in which field is being defined
+ *              NsHandle    BankReg    Bank selection register
+ *              UINT32      BankVal    Value to store in selection register
+ *              UINT8       FldFlg     Access, LockRule, UpdateRule
+ *              INT32       FldPos     field position
+ *              INT32       FldLen     field length
+ *
+ * RETURN:      S_SUCCESS or S_ERROR
+ *
+ * DESCRIPTION: Construct an OBJECT_DESCRIPTOR of type BankField and connect
+ *              it to the nte whose handle is at ObjStack[ObjStackTop]
+ *
+ * ALLOCATION:
+ *  Reference   Size                    Pool    Owner       Description
+ *  nte.ValDesc s(OBJECT_DESCRIPTOR)    bu      amlexec     Field descriptor
+ *
+ ****************************************************************************/
+
+INT32
+PrepBankFieldValue (NsHandle Region, NsHandle BankReg, UINT32 BankVal,
+                        UINT8 FldFlg, INT32 FldPos, INT32 FldLen)
+{
+    OBJECT_DESCRIPTOR   *ObjDesc = NULL;
+    INT32               Excep = S_SUCCESS;
+    INT32               Type;
+
+
+    FUNCTION_TRACE ("PrepBankFieldValue");
+
+
+    if (!Region)
+    {
+        Why = "PrepBankFieldValue: null Region";
+        Excep = S_ERROR;
+    }
+    else if (Region != (NsHandle) (Type = NsValType (Region)))
+    {
+        sprintf (WhyBuf, "PrepBankFieldValue: Needed Region, found %d %s",
+                    Type, NsTypeNames[Type]);
+        Why = WhyBuf;
+        Excep = S_ERROR;
+    }
+    else if (!(ObjDesc = AllocateObjectDesc (&KDT[3])))
+    {   
+        /*  unable to allocate new object descriptor    */
+        
+        Excep = S_ERROR;
+    }
+
+
+    if (S_SUCCESS == Excep)
+    {   
+        /*  ObjDesc and Region valid    */
+
+        DUMP_STACK (Exec, "PrepBankFieldValue", 2, "case BankField");
+
+        ObjDesc->ValType = (UINT8) BankField;
+        if (BankField != ObjDesc->BankField.ValType)
+        {
+            /* See comments in PrepDefFieldValue() re unexpected C behavior */
+
+            ObjDesc->BankField.ValType = 0x005a;
+            sprintf (WhyBuf,
+                    "PrepBankFieldValue: internal failure %p %02x %02x %02x %02x",
+                    ObjDesc, ((UINT8 *) ObjDesc)[0], ((UINT8 *) ObjDesc)[1], ((UINT8 *) ObjDesc)[2],
+                    ((UINT8 *) ObjDesc)[3]);
+            Why = WhyBuf;
+            DELETE (ObjDesc);
+            return S_ERROR;
+        }
+    }
+
+    if (S_SUCCESS == Excep)
+    {   
+        /*  ObjDesc, Region, and ObjDesc->BankField.ValTyp valid    */
+
+        ObjDesc->BankField.Access     = (FldFlg & ACCESS_TYPE_MASK) >> ACCESS_TYPE_SHIFT;
+        ObjDesc->BankField.LockRule   = (FldFlg & LOCK_RULE_MASK) >> LOCK_RULE_SHIFT;
+        ObjDesc->BankField.UpdateRule = (FldFlg & UPDATE_RULE_MASK) >> UPDATE_RULE_SHIFT;
+        ObjDesc->BankField.DatLen     = (UINT16) FldLen;
+
+        /* XXX - should use width of data register, not hardcoded 8 */
+
+        DEBUG_PRINT (ACPI_INFO, (" ** PrepBankFieldValue: hard 8 **\n"));
+
+        ObjDesc->BankField.BitOffset  = (UINT16) FldPos % 8;
+        ObjDesc->BankField.Offset     = (UINT32) FldPos / 8;
+        ObjDesc->BankField.BankVal    = BankVal;
+        ObjDesc->BankField.Container  = NsValPtr (Region);
+        ObjDesc->BankField.BankSelect = NsValPtr (BankReg);
+
+
+        DEBUG_PRINT (ACPI_INFO, ("PrepBankFieldValue: set nte %p (%4.4s) val = %p\n",
+                        ObjStack[ObjStackTop], ObjStack[ObjStackTop], ObjDesc));
+        
+        DUMP_STACK_ENTRY (ObjDesc);
+        DUMP_ENTRY (Region);
+        DUMP_ENTRY (BankReg);
+
+        DEBUG_PRINT (ACPI_INFO,
+                    ("============================================================\n"));
+
+        /* 
+         * Store the constructed descriptor (ObjDesc) into the nte whose
+         * handle is on TOS, preserving the current type of that nte.
+         */
+        NsSetValue ((NsHandle) ObjStack[ObjStackTop], ObjDesc,
+                    (UINT8) NsValType ((NsHandle) ObjStack[ObjStackTop]));
+    }
+
+
+    return Excep;
+}
+
+
+/*****************************************************************************
+ * 
+ * FUNCTION:    PrepIndexFieldValue
+ *
+ * PARAMETERS:  NsHandle    IndexReg   Index register
+ *              NsHandle    DataReg    Data register
+ *              UINT8       FldFlg     Access, LockRule, UpdateRule
+ *              INT32       FldPos     field position
+ *              INT32       FldLen     field length
+ *
+ * RETURN:      S_SUCCESS or S_ERROR
+ *
+ * DESCRIPTION: Construct an OBJECT_DESCRIPTOR of type IndexField and connect
+ *              it to the nte whose handle is at ObjStack[ObjStackTop]
+ *
+ * ALLOCATION:
+ *  Reference   Size                    Pool    Owner       Description
+ *  nte.ValDesc s(OBJECT_DESCRIPTOR)    bu      amlexec     Field descriptor
+ *
+ ****************************************************************************/
+
+INT32
+PrepIndexFieldValue (NsHandle IndexReg, NsHandle DataReg,
+                        UINT8 FldFlg, INT32 FldPos, INT32 FldLen)
+{
+    OBJECT_DESCRIPTOR   *ObjDesc = NULL;
+    INT32               Excep = S_SUCCESS;
+
+
+    FUNCTION_TRACE ("PrepIndexFieldValue");
+
+
+    if (!IndexReg || !DataReg)
+    {
+        Why = "PrepIndexFieldValue: null handle";
+        Excep = S_ERROR;
+    }
+
+    else if (!(ObjDesc = AllocateObjectDesc (&KDT[4])))
+    {   
+        /*  unable to allocate new object descriptor    */
+
+        Excep = S_ERROR;
+    }
+
+    if (S_SUCCESS == Excep)
+    {   
+        /* ObjDesc, IndexRegion, and DataReg valid  */
+
+        ObjDesc->ValType = (UINT8) IndexField;
+        if (IndexField != ObjDesc->IndexField.ValType)
+        {
+            /* See comments in PrepDefFieldValue() re unexpected C behavior */
+        
+            ObjDesc->IndexField.ValType = 0x005a;
+            sprintf (WhyBuf,
+                    "PrepIndexFieldValue: internal failure %p %02x %02x %02x %02x",
+                    ObjDesc, ((UINT8 *) ObjDesc)[0], ((UINT8 *) ObjDesc)[1], ((UINT8 *) ObjDesc)[2],
+                    ((UINT8 *) ObjDesc)[3]);
+            Why = WhyBuf;
+            DELETE (ObjDesc);
+            return S_ERROR;
+        }
+    }
+
+
+    if (S_SUCCESS == Excep)
+    {   
+        /*  ObjDesc, IndexRegion, and DataReg, and ObjDesc->IndexField.ValTyp valid */
+    
+        ObjDesc->IndexField.Access        = (FldFlg & ACCESS_TYPE_MASK) >> ACCESS_TYPE_SHIFT;
+        ObjDesc->IndexField.LockRule      = (FldFlg & LOCK_RULE_MASK) >> LOCK_RULE_SHIFT;
+        ObjDesc->IndexField.UpdateRule    = (FldFlg & UPDATE_RULE_MASK) >> UPDATE_RULE_SHIFT;
+        ObjDesc->IndexField.DatLen        = (UINT16) FldLen;
+
+        /* XXX - should use width of data register, not hardcoded 8 */
+
+        DEBUG_PRINT (ACPI_INFO, (" ** PrepIndexFieldValue: hard 8 **\n"));
+
+        ObjDesc->IndexField.BitOffset = (UINT16) FldPos % 8;
+        ObjDesc->IndexField.IndexVal  = (UINT32) FldPos / 8;
+        ObjDesc->IndexField.Index     = IndexReg;
+        ObjDesc->IndexField.Data      = DataReg;
+
+        DEBUG_PRINT (ACPI_INFO, ("PrepIndexFieldValue: set nte %p (%4.4s) val = %p\n",
+                        ObjStack[ObjStackTop], ObjStack[ObjStackTop], ObjDesc));
+
+        DUMP_STACK_ENTRY (ObjDesc);
+        DUMP_ENTRY (IndexReg);
+        DUMP_ENTRY (DataReg);
+
+        DEBUG_PRINT (ACPI_INFO,
+                    ("============================================================\n"));
+
+        /* 
+         * Store the constructed descriptor (ObjDesc) into the nte whose
+         * handle is on TOS, preserving the current type of that nte.
+         */
+        NsSetValue ((NsHandle) ObjStack[ObjStackTop], ObjDesc,
+                    (UINT8) NsValType ((NsHandle) ObjStack[ObjStackTop]));
+    }
+
+    return Excep;
+}
+
+/*****************************************************************************
+ * 
+ * FUNCTION:    PrepStack
+ *
+ * PARAMETERS:  char *Types       String showing operand types needed
+ *
+ * RETURN:      S_SUCCESS or S_ERROR
+ *
+ * DESCRIPTION: Convert stack entries to required types
+ *
+ *      Each character in Types represents one required operand
+ *      and indicates the required ValType:
+ *          l => Lvalue, also accepts an entry which is an NsHandle
+ *                  instead of an (OBJECT_DESCRIPTOR *))
+ *          n => Number
+ *          s => String or Buffer
+ *          b => Buffer
+ *          i => If
+ *          p => Package
+ *      The corresponding stack entry will be converted to the
+ *      required type if possible, else return S_ERROR.
+ *
+ ****************************************************************************/
+
+INT32
+PrepStack (char *Types)
+{
+    OBJECT_DESCRIPTOR **    StackPtr = (OBJECT_DESCRIPTOR **) &ObjStack[ObjStackTop];
+    INT32                   Excep;
+
+
+    FUNCTION_TRACE ("PrepStack");
+
+
+    /* 
+     * Ensure room on stack for GetRvalue() to operate
+     * without clobbering top existing entry.
+     */
+
+    Excep = PushIfExec (Exec);
+    if (S_SUCCESS != Excep)
+    {
+        return Excep;
+    }
+
+    /* 
+     * Normal exit is with *Types == '\0' at end of string.
+     * Function will return S_ERROR from within the loop upon
+     * finding an entry which is not, and cannot be converted
+     * to, the required type; if stack underflows; or upon
+     * finding a NULL stack entry (which "should never happen").
+     */
+
+    while (*Types)
+    {
+        UINT8       bTypeFound;
+        char        TypeFound[30];
+        char        *TypeFoundPtr;
+
+
+        if (!StackPtr || !*StackPtr)
+        {
+            Why = "PrepStack:internal error: null stack entry";
+            ObjStackTop--;
+            return S_ERROR;
+        }
+
+        bTypeFound = (*StackPtr)->ValType;
+        if (bTypeFound > (UINT8) Lvalue || 
+            BadType == NsTypeNames[bTypeFound])
+        {
+            sprintf (TypeFound, "type encoding %d", bTypeFound);
+            TypeFoundPtr = TypeFound;
+        }
+        
+        else if ((UINT8) Lvalue == bTypeFound)
+        {
+            strcpy (TypeFound, "Lvalue ");
+            switch ((*StackPtr)->Lvalue.OpCode)
+            {
+            case ZeroOp:
+                strcat (TypeFound, "Zero");
+                break;
+            
+            case OneOp:
+                strcat (TypeFound, "One");
+                break;
+            
+            case OnesOp:
+                strcat (TypeFound, "Ones");
+                break;
+            
+            case Debug1:
+                strcat (TypeFound, "Debug");
+                break;
+            
+            case NameOp:
+                sprintf (&TypeFound[7], "Name");
+                break;
+           
+            case IndexOp:
+                sprintf (&TypeFound[7], "Index %p",
+                            (*StackPtr)->Lvalue.Ref);
+                break;
+            
+            case Arg0: case Arg1: case Arg2: case Arg3:
+            case Arg4: case Arg5: case Arg6:
+                sprintf (&TypeFound[7], "Arg%d",
+                            (*StackPtr)->Lvalue.OpCode - Arg0);
+                break;
+            
+            case Local0: case Local1: case Local2: case Local3:
+            case Local4: case Local5: case Local6: case Local7:
+                sprintf (&TypeFound[7], "Local%d",
+                            (*StackPtr)->Lvalue.OpCode - Local0);
+                break;
+            
+            default:
+                sprintf (&TypeFound[7], "??? %02x",
+                            (*StackPtr)->Lvalue.OpCode);
+                break;
+            }
+        }
+        
+        else
+        {
+            TypeFoundPtr = NsTypeNames[bTypeFound];
+        }
+
+
+        switch (*Types++)
+        {
+        case 'l':                                   /* need Lvalue */
+            if (IsNsHandle (*StackPtr))             /* direct name ptr OK as-is */
+            {
+                break;
+            }
+
+            if (Lvalue != (*StackPtr)->ValType)
+            {
+                sprintf (WhyBuf, "PrepStack: Needed Lvalue, found %s",
+                            TypeFoundPtr);
+                Why = WhyBuf;
+                ObjStackTop--;
+                return S_ERROR;
+            }
+
+            if (NameOp == (*StackPtr)->Lvalue.OpCode)
+            {
+                /* Convert indirect name ptr to direct name ptr */
+                
+                NsHandle TempHandle = (*StackPtr)->Lvalue.Ref;
+                DELETE (*StackPtr);
+                (*StackPtr) = TempHandle;
+            }
+            break;
+
+        case 'n':                                   /* need Number */
+            Excep = GetRvalue (StackPtr);
+
+            DEBUG_PRINT (TRACE_EXEC,
+                          ("PrepStack:n: GetRvalue returned %s\n", RV[Excep]));
+
+            if (S_SUCCESS != Excep)
+            {
+                ObjStackTop--;
+                return Excep;
+            }
+
+            if (Number != (*StackPtr)->ValType)
+            {
+                sprintf (WhyBuf, "PrepStack: Needed Number, found %s",
+                            TypeFoundPtr);
+                Why = WhyBuf;
+                ObjStackTop--;
+                return S_ERROR;
+            }
+            break;
+
+        case 's':                                   /* need String (or Buffer) */
+            if ((Excep = GetRvalue (StackPtr)) != S_SUCCESS)
+            {
+                ObjStackTop--;
+                return Excep;
+            }
+
+            DEBUG_PRINT (TRACE_EXEC, ("GetRvalue returned S_SUCCESS\n"));
+
+            if (String != (*StackPtr)->ValType &&
+                Buffer != (*StackPtr)->ValType)
+            {
+                sprintf (WhyBuf,
+                        "PrepStack: Needed String or Buffer, found %s",
+                        TypeFoundPtr);
+                Why = WhyBuf;
+                ObjStackTop--;
+                return S_ERROR;
+            }
+            break;
+
+        case 'b':                                   /* need Buffer */
+            if ((Excep = GetRvalue(StackPtr)) != S_SUCCESS)
+            {
+                ObjStackTop--;
+                return Excep;
+            }
+
+            DEBUG_PRINT (TRACE_EXEC, ("GetRvalue returned S_SUCCESS\n"));
+
+            if (Buffer != (*StackPtr)->ValType)
+            {
+                sprintf(WhyBuf, "PrepStack: Needed Buffer, found %s",
+                            TypeFoundPtr);
+                Why = WhyBuf;
+                ObjStackTop--;
+                return S_ERROR;
+            }
+            break;
+
+        case 'i':                                   /* need If */
+            if (If != (*StackPtr)->ValType)
+            {
+                sprintf (WhyBuf, "PrepStack: Needed If, found %s",
+                        TypeFoundPtr);
+                Why = WhyBuf;
+                ObjStackTop--;
+                return S_ERROR;
+            }
+            break;
+
+        case 'p':                                   /* need Package */
+            if ((Excep = GetRvalue (StackPtr)) != S_SUCCESS)
+            {
+                ObjStackTop--;
+                return Excep;
+            }
+
+            DEBUG_PRINT (TRACE_EXEC, ("GetRvalue returned S_SUCCESS\n"));
+
+            if (Package != (*StackPtr)->ValType)
+            {
+                sprintf (WhyBuf, "PrepStack: Needed Package, found %s",
+                            TypeFoundPtr);
+                Why = WhyBuf;
+                ObjStackTop--;
+                return S_ERROR;
+            }
+            break;
+
+        default:
+            sprintf (WhyBuf,
+                    "PrepStack:internal error Unknown type flag %02x",
+                    *--Types);
+            Why = WhyBuf;
+            ObjStackTop--;
+            return S_ERROR;
+
+        }   /* switch (*Types++) */
+
+
+        /* 
+         * If more operands needed, decrement StackPtr to point
+         * to next operand on stack (after checking for underflow).
+         */
+        if (*Types)
+        {
+            /* Don't try to decrement below bottom of stack */
+            
+            if ((OBJECT_DESCRIPTOR **) &ObjStack[0] == StackPtr)
+            {
+                Why = "PrepStack: not enough operands";
+                ObjStackTop--;
+                return S_ERROR;
+            }
+
+            StackPtr--;
+        }
+
+    }   /* while (*Types) */
+
+    ObjStackTop--;
+    return S_SUCCESS;
+}
+
+
+
 
