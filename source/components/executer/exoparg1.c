@@ -311,24 +311,46 @@ AmlExecMonadic2R (
 
     FUNCTION_TRACE ("AmlExecMonadic2R");
 
+    /*
+     * We will try several different combinations of operands
+     *
+     * 1) Try Lvalue returning a Number
+     */
 
     Status = AmlPrepObjStack ("ln");
+    if (Status == AE_TYPE)
+    {
+        /* Try Lvalue, returning a string or buffer */
+
+        Status = AmlPrepObjStack ("ls");
+    }
+
+    if (Status == AE_TYPE)
+    {
+        /* Try Lvalue, returning an Lvalue (caused by storing into a DebugOp */
+
+        Status = AmlPrepObjStack ("ll");
+    }
+
+    if (Status == AE_TYPE)
+    {
+        /* Try Package, returning a Number (Local0 = _PRT package) */
+
+        Status = AmlPrepObjStack ("pn");
+    }
+
+    /* If everything failed above, exit */
 
     if (Status != AE_OK)
     {
-        /* Invalid parameters on object stack   */
-        /* This was added since it is allowable to return a buffer so */
-        /* ln is a local and a number and that will fail.  lb is a local */
-        /* and a buffer which will pass.  */
-        
-        Status = AmlPrepObjStack ("lb");
-
-        if (Status != AE_OK)
-        {
-            AmlAppendOperandDiag (_THIS_MODULE, __LINE__, opcode, 2);
-            return_ACPI_STATUS (Status);
-        }
+        AmlAppendOperandDiag (_THIS_MODULE, __LINE__, opcode, 2);
+        return_ACPI_STATUS (Status);
     }
+
+
+    /*
+     * Stack was prepped successfully
+     */
 
     AmlDumpObjStack (IMODE_Execute, Gbl_ShortOps[opcode], 2, "after AmlPrepObjStack");
 
