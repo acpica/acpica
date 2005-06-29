@@ -122,6 +122,7 @@
 #include <namesp.h>
 #include <hardware.h>
 #include <events.h>
+#include <methods.h>
 
 
 #define _COMPONENT          INTERPRETER
@@ -195,7 +196,7 @@ AmlSystemMemorySpaceHandler (
         default:
             DEBUG_PRINT (ACPI_ERROR,
                     ("AmlSystemMemorySpaceHandler: Invalid SystemMemory width %d\n", BitWidth));
-            Status = AE_AML_ERROR;
+            Status = AE_AML_OPERAND_VALUE;
         }
 
         OsdUnMapMemory (PhysicalAddrPtr, 4);
@@ -230,7 +231,7 @@ AmlSystemMemorySpaceHandler (
         default:
             DEBUG_PRINT (ACPI_ERROR, (
                     "AmlSystemMemorySpaceHandler: Invalid SystemMemory width %d\n", BitWidth));
-            Status = AE_AML_ERROR;
+            Status = AE_AML_OPERAND_VALUE;
         }
 
         OsdUnMapMemory (PhysicalAddrPtr, 4);
@@ -305,7 +306,7 @@ AmlSystemIoSpaceHandler (
         default:
             DEBUG_PRINT (ACPI_ERROR,
                     ("AmlSystemIoSpaceHandler: Invalid SystemIO width %d\n", BitWidth));
-            Status = AE_AML_ERROR;
+            Status = AE_AML_OPERAND_VALUE;
         }
 
         break;
@@ -334,7 +335,7 @@ AmlSystemIoSpaceHandler (
         default:
             DEBUG_PRINT (ACPI_ERROR, (
                     "AmlSystemIoSpaceHandler: Invalid SystemIO width %d\n", BitWidth));
-            Status = AE_AML_ERROR;
+            Status = AE_AML_OPERAND_VALUE;
         }
 
         break;
@@ -347,7 +348,6 @@ AmlSystemIoSpaceHandler (
 
     return_ACPI_STATUS (Status);
 }
-
 
 /*****************************************************************************
  * 
@@ -382,8 +382,6 @@ AmlPciConfigSpaceHandler (
 
     FUNCTION_TRACE ("AmlPciConfigSpaceHandler");
 
-
-
     /*
      *  The arguments to Osd(Read|Write)PciCfg(Byte|Word|Dword) are:
      *
@@ -401,11 +399,10 @@ AmlPciConfigSpaceHandler (
 
     PCIContext = (PCI_HANDLER_CONTEXT *) Context;
 
-    PciBus = (PCIContext->SegNum) << 16;
-    PciBus |= PCIContext->BusNum;
+    PciBus = LOWORD(PCIContext->Seg) << 16;
+    PciBus |= LOWORD(PCIContext->Bus);
 
-    DevFunc = (PCIContext->DevNum) << 16;
-    DevFunc |= PCIContext->FuncNum;
+    DevFunc = PCIContext->DevFunc;
 
     PciReg  = (UINT8) Address;
 
@@ -415,9 +412,8 @@ AmlPciConfigSpaceHandler (
     case ADDRESS_SPACE_READ:
 
         DEBUG_PRINT ((TRACE_OPREGION | VERBOSE_INFO),
-                        ("R%d S(%04x) B(%04x) D(%04x) F(%04x) R(%04x)\n", 
-                        BitWidth,PCIContext->SegNum,PCIContext->BusNum,PCIContext->DevNum,
-                        PCIContext->FuncNum, PciReg));
+                        ("R%d S(%04x) B(%04x) DF(%08x) R(%04x)\n", BitWidth,
+                        PCIContext->Seg,PCIContext->Bus,PCIContext->DevFunc, PciReg));
 
         *Value  = 0;
 
@@ -440,7 +436,7 @@ AmlPciConfigSpaceHandler (
         default:
             DEBUG_PRINT (ACPI_ERROR,
                     ("AmlPciConfigSpaceHandler: Invalid PCIConfig width %d\n", BitWidth));
-            Status = AE_AML_ERROR;
+            Status = AE_AML_OPERAND_VALUE;
 
         } /* Switch bitWidth */
 
@@ -450,9 +446,14 @@ AmlPciConfigSpaceHandler (
     case ADDRESS_SPACE_WRITE:
 
         DEBUG_PRINT ((TRACE_OPREGION | VERBOSE_INFO),
-                        ("W%d S(%04x) B(%04x) D(%04x) F(%04x) R(%04x) D(%08x)\n", 
-                        BitWidth,PCIContext->SegNum,PCIContext->BusNum,PCIContext->DevNum,
-                        PCIContext->FuncNum, PciReg,*Value));
+                        ("R%d S(%04x) B(%04x) DF(%08x) R(%04x)\n", BitWidth,
+                        PCIContext->Seg,PCIContext->Bus,PCIContext->DevFunc, PciReg));
+
+
+        DEBUG_PRINT ((TRACE_OPREGION | VERBOSE_INFO),
+                        ("W%d S(%04x) B(%04x) DF(%08x) R(%04x) D(%08x)\n", BitWidth,
+                        PCIContext->Seg,PCIContext->Bus,PCIContext->DevFunc,
+                        PciReg,*Value));
 
         switch (BitWidth)
         {
@@ -473,7 +474,7 @@ AmlPciConfigSpaceHandler (
         default:
             DEBUG_PRINT (ACPI_ERROR, (
                     "AmlPciConfigSpaceHandler: Invalid PCIConfig width %d\n", BitWidth));
-            Status = AE_AML_ERROR;
+            Status = AE_AML_OPERAND_VALUE;
 
         } /* Switch bitWidth */
 
@@ -489,5 +490,4 @@ AmlPciConfigSpaceHandler (
 
     return_ACPI_STATUS (Status);
 }
-
 
