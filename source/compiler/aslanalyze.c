@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslanalyze.c - check for semantic errors
- *              $Revision: 1.37 $
+ *              $Revision: 1.38 $
  *
  *****************************************************************************/
 
@@ -934,7 +934,7 @@ AnMethodAnalysisWalkEnd (
          * and correct number of arguments
          */
         AnCheckForReservedMethod (Node, MethodInfo);
-        AcpiUtFree (MethodInfo);
+        ACPI_MEM_FREE (MethodInfo);
 
         break;
 
