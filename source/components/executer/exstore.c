@@ -1,8 +1,7 @@
 
 /******************************************************************************
- *
- * Module Name: exstore - AML Interpreter object store support
- *              $Revision: 1.171 $
+ * 
+ * Module Name: iexecute - ACPI AML (p-code) execution, top-level routines
  *
  *****************************************************************************/
 
@@ -10,587 +9,807 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
- * All rights reserved.
+ * Some or all of this work - Copyright (c) 1999, Intel Corp.  All rights 
+ * reserved.
  *
  * 2. License
+ * 
+ * 2.1. Intel grants, free of charge, to any person ("Licensee") obtaining a 
+ * copy of the source code appearing in this file ("Covered Code") a license 
+ * under Intel's copyrights in the base code distributed originally by Intel 
+ * ("Original Intel Code") to copy, make derivatives, distribute, use and 
+ * display any portion of the Covered Code in any form; and
  *
- * 2.1. This is your license from Intel Corp. under its intellectual property
- * rights.  You may have additional license terms from the party that provided
- * you this software, covering your right to use that party's intellectual
- * property rights.
+ * 2.2. Intel grants Licensee a non-exclusive and non-transferable patent 
+ * license (without the right to sublicense), under only those claims of Intel
+ * patents that are infringed by the Original Intel Code, to make, use, sell, 
+ * offer to sell, and import the Covered Code and derivative works thereof 
+ * solely to the minimum extent necessary to exercise the above copyright 
+ * license, and in no event shall the patent license extend to any additions to
+ * or modifications of the Original Intel Code.  No other license or right is 
+ * granted directly or by implication, estoppel or otherwise;
  *
- * 2.2. Intel grants, free of charge, to any person ("Licensee") obtaining a
- * copy of the source code appearing in this file ("Covered Code") an
- * irrevocable, perpetual, worldwide license under Intel's copyrights in the
- * base code distributed originally by Intel ("Original Intel Code") to copy,
- * make derivatives, distribute, use and display any portion of the Covered
- * Code in any form, with the right to sublicense such rights; and
- *
- * 2.3. Intel grants Licensee a non-exclusive and non-transferable patent
- * license (with the right to sublicense), under only those claims of Intel
- * patents that are infringed by the Original Intel Code, to make, use, sell,
- * offer to sell, and import the Covered Code and derivative works thereof
- * solely to the minimum extent necessary to exercise the above copyright
- * license, and in no event shall the patent license extend to any additions
- * to or modifications of the Original Intel Code.  No other license or right
- * is granted directly or by implication, estoppel or otherwise;
- *
- * The above copyright and patent license is granted only if the following
+ * the above copyright and patent license is granted only if the following 
  * conditions are met:
  *
- * 3. Conditions
+ * 3. Conditions 
  *
- * 3.1. Redistribution of Source with Rights to Further Distribute Source.
- * Redistribution of source code of any substantial portion of the Covered
- * Code or modification with rights to further distribute source must include
- * the above Copyright Notice, the above License, this list of Conditions,
- * and the following Disclaimer and Export Compliance provision.  In addition,
- * Licensee must cause all Covered Code to which Licensee contributes to
- * contain a file documenting the changes Licensee made to create that Covered
- * Code and the date of any change.  Licensee must include in that file the
- * documentation of any changes made by any predecessor Licensee.  Licensee
- * must include a prominent statement that the modification is derived,
- * directly or indirectly, from Original Intel Code.
+ * 3.1. Redistribution of source code of any substantial portion of the Covered 
+ * Code or modification must include the above Copyright Notice, the above 
+ * License, this list of Conditions, and the following Disclaimer and Export 
+ * Compliance provision.  In addition, Licensee must cause all Covered Code to 
+ * which Licensee contributes to contain a file documenting the changes 
+ * Licensee made to create that Covered Code and the date of any change.  
+ * Licensee must include in that file the documentation of any changes made by
+ * any predecessor Licensee.  Licensee must include a prominent statement that
+ * the modification is derived, directly or indirectly, from Original Intel 
+ * Code.
  *
- * 3.2. Redistribution of Source with no Rights to Further Distribute Source.
- * Redistribution of source code of any substantial portion of the Covered
- * Code or modification without rights to further distribute source must
- * include the following Disclaimer and Export Compliance provision in the
- * documentation and/or other materials provided with distribution.  In
- * addition, Licensee may not authorize further sublicense of source of any
- * portion of the Covered Code, and must include terms to the effect that the
- * license from Licensee to its licensee is limited to the intellectual
- * property embodied in the software Licensee provides to its licensee, and
- * not to intellectual property embodied in modifications its licensee may
- * make.
+ * 3.2. Redistribution in binary form of any substantial portion of the Covered 
+ * Code or modification must reproduce the above Copyright Notice, and the 
+ * following Disclaimer and Export Compliance provision in the documentation 
+ * and/or other materials provided with the distribution.
  *
- * 3.3. Redistribution of Executable. Redistribution in executable form of any
- * substantial portion of the Covered Code or modification must reproduce the
- * above Copyright Notice, and the following Disclaimer and Export Compliance
- * provision in the documentation and/or other materials provided with the
- * distribution.
- *
- * 3.4. Intel retains all right, title, and interest in and to the Original
+ * 3.3. Intel retains all right, title, and interest in and to the Original 
  * Intel Code.
  *
- * 3.5. Neither the name Intel nor any other trademark owned or controlled by
- * Intel shall be used in advertising or otherwise to promote the sale, use or
- * other dealings in products derived from or relating to the Covered Code
+ * 3.4. Neither the name Intel nor any other trademark owned or controlled by 
+ * Intel shall be used in advertising or otherwise to promote the sale, use or 
+ * other dealings in products derived from or relating to the Covered Code 
  * without prior written authorization from Intel.
  *
  * 4. Disclaimer and Export Compliance
  *
- * 4.1. INTEL MAKES NO WARRANTY OF ANY KIND REGARDING ANY SOFTWARE PROVIDED
- * HERE.  ANY SOFTWARE ORIGINATING FROM INTEL OR DERIVED FROM INTEL SOFTWARE
- * IS PROVIDED "AS IS," AND INTEL WILL NOT PROVIDE ANY SUPPORT,  ASSISTANCE,
- * INSTALLATION, TRAINING OR OTHER SERVICES.  INTEL WILL NOT PROVIDE ANY
- * UPDATES, ENHANCEMENTS OR EXTENSIONS.  INTEL SPECIFICALLY DISCLAIMS ANY
- * IMPLIED WARRANTIES OF MERCHANTABILITY, NONINFRINGEMENT AND FITNESS FOR A
- * PARTICULAR PURPOSE.
+ * 4.1. INTEL MAKES NO WARRANTY OF ANY KIND REGARDING ANY SOFTWARE PROVIDED 
+ * HERE.  ANY SOFTWARE ORIGINATING FROM INTEL OR DERIVED FROM INTEL SOFTWARE 
+ * IS PROVIDED "AS IS," AND INTEL WILL NOT PROVIDE ANY SUPPORT,  ASSISTANCE, 
+ * INSTALLATION, TRAINING OR OTHER SERVICES.  INTEL WILL NOT PROVIDE ANY 
+ * UPDATES, ENHANCEMENTS OR EXTENSIONS.  INTEL SPECIFICALLY DISCLAIMS ANY 
+ * IMPLIED WARRANTIES OF MERCHANTABILITY, NONINFRINGEMENT AND FITNESS FOR A 
+ * PARTICULAR PURPOSE. 
  *
- * 4.2. IN NO EVENT SHALL INTEL HAVE ANY LIABILITY TO LICENSEE, ITS LICENSEES
- * OR ANY OTHER THIRD PARTY, FOR ANY LOST PROFITS, LOST DATA, LOSS OF USE OR
- * COSTS OF PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES, OR FOR ANY INDIRECT,
- * SPECIAL OR CONSEQUENTIAL DAMAGES ARISING OUT OF THIS AGREEMENT, UNDER ANY
- * CAUSE OF ACTION OR THEORY OF LIABILITY, AND IRRESPECTIVE OF WHETHER INTEL
- * HAS ADVANCE NOTICE OF THE POSSIBILITY OF SUCH DAMAGES.  THESE LIMITATIONS
- * SHALL APPLY NOTWITHSTANDING THE FAILURE OF THE ESSENTIAL PURPOSE OF ANY
+ * 4.2. IN NO EVENT SHALL INTEL HAVE ANY LIABILITY TO LICENSEE, ITS LICENSEES 
+ * OR ANY OTHER THIRD PARTY, FOR ANY LOST PROFITS, LOST DATA, LOSS OF USE OR 
+ * COSTS OF PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES, OR FOR ANY INDIRECT, 
+ * SPECIAL OR CONSEQUENTIAL DAMAGES ARISING OUT OF THIS AGREEMENT, UNDER ANY 
+ * CAUSE OF ACTION OR THEORY OF LIABILITY, AND IRRESPECTIVE OF WHETHER INTEL 
+ * HAS ADVANCE NOTICE OF THE POSSIBILITY OF SUCH DAMAGES.  THESE LIMITATIONS 
+ * SHALL APPLY NOTWITHSTANDING THE FAILURE OF THE ESSENTIAL PURPOSE OF ANY 
  * LIMITED REMEDY.
  *
- * 4.3. Licensee shall not export, either directly or indirectly, any of this
- * software or system incorporating such software without first obtaining any
- * required license or other approval from the U. S. Department of Commerce or
- * any other agency or department of the United States Government.  In the
- * event Licensee exports any such software from the United States or
- * re-exports any such software from a foreign destination, Licensee shall
- * ensure that the distribution and export/re-export of the software is in
- * compliance with all laws, regulations, orders, or other restrictions of the
- * U.S. Export Administration Regulations. Licensee agrees that neither it nor
- * any of its subsidiaries will export/re-export any technical data, process,
- * software, or service, directly or indirectly, to any country for which the
- * United States government or any agency thereof requires an export license,
- * other governmental approval, or letter of assurance, without first obtaining
- * such license, approval or letter.
+ * 4.3. Licensee shall not export, either directly or indirectly, any of this 
+ * software or system incorporating such software without first obtaining any 
+ * required license or other approval from the U. S. Department of Commerce or 
+ * any other agency or department of the United States Government.  In the 
+ * event Licensee exports any such software from the United States or re-
+ * exports any such software from a foreign destination, Licensee shall ensure
+ * that the distribution and export/re-export of the software is in compliance 
+ * with all laws, regulations, orders, or other restrictions of the U.S. Export 
+ * Administration Regulations. Licensee agrees that neither it nor any of its 
+ * subsidiaries will export/re-export any technical data, process, software, or 
+ * service, directly or indirectly, to any country for which the United States 
+ * government or any agency thereof requires an export license, other 
+ * governmental approval, or letter of assurance, without first obtaining such
+ * license, approval or letter.
  *
  *****************************************************************************/
 
-#define __EXSTORE_C__
 
-#include "acpi.h"
-#include "acdispat.h"
-#include "acinterp.h"
-#include "amlcode.h"
-#include "acnamesp.h"
+#define __IEXECUTE_C__
 
-
-#define _COMPONENT          ACPI_EXECUTER
-        ACPI_MODULE_NAME    ("exstore")
+#include <acpi.h>
+#include <interpreter.h>
+#include <amlcode.h>
+#include <namespace.h>
 
 
-/*******************************************************************************
+#define _THIS_MODULE        "iexecute.c"
+#define _COMPONENT          INTERPRETER
+
+
+static ST_KEY_DESC_TABLE KDT[] = {
+    {"0000", '1', "AmlExecStore: Descriptor Allocation Failure", "AmlExecStore: Descriptor Allocation Failure"},
+    {NULL, 'I', NULL, NULL}
+};
+
+
+/******************************************************************************
+ * 
+ * FUNCTION:    AmlExecuteMethod
  *
- * FUNCTION:    AcpiExStore
- *
- * PARAMETERS:  *SourceDesc         - Value to be stored
- *              *DestDesc           - Where to store it.  Must be an NS node
- *                                    or an ACPI_OPERAND_OBJECT of type
- *                                    Reference;
- *              WalkState           - Current walk state
- *
- * RETURN:      Status
- *
- * DESCRIPTION: Store the value described by SourceDesc into the location
- *              described by DestDesc.  Called by various interpreter
- *              functions to store the result of an operation into
- *              the destination operand -- not just simply the actual "Store"
- *              ASL operator.
- *
- ******************************************************************************/
-
-ACPI_STATUS
-AcpiExStore (
-    ACPI_OPERAND_OBJECT     *SourceDesc,
-    ACPI_OPERAND_OBJECT     *DestDesc,
-    ACPI_WALK_STATE         *WalkState)
-{
-    ACPI_STATUS             Status = AE_OK;
-    ACPI_OPERAND_OBJECT     *RefDesc = DestDesc;
-
-
-    ACPI_FUNCTION_TRACE_PTR ("ExStore", DestDesc);
-
-
-    /* Validate parameters */
-
-    if (!SourceDesc || !DestDesc)
-    {
-        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Null parameter\n"));
-        return_ACPI_STATUS (AE_AML_NO_OPERAND);
-    }
-
-    /* DestDesc can be either a namespace node or an ACPI object */
-
-    if (ACPI_GET_DESCRIPTOR_TYPE (DestDesc) == ACPI_DESC_TYPE_NAMED)
-    {
-        /*
-         * Dest is a namespace node,
-         * Storing an object into a Name "container"
-         */
-        Status = AcpiExStoreObjectToNode (SourceDesc,
-                    (ACPI_NAMESPACE_NODE *) DestDesc, WalkState);
-
-        return_ACPI_STATUS (Status);
-    }
-
-    /* Destination object must be a Reference or a Constant object */
-
-    switch (ACPI_GET_OBJECT_TYPE (DestDesc))
-    {
-    case INTERNAL_TYPE_REFERENCE:
-        break;
-
-    case ACPI_TYPE_INTEGER:
-
-        /* Allow stores to Constants -- a Noop as per ACPI spec */
-
-        if (DestDesc->Common.Flags & AOPOBJ_AML_CONSTANT)
-        {
-            return_ACPI_STATUS (AE_OK);
-        }
-
-        /*lint -fallthrough */
-
-    default:
-
-        /* Destination is not an Reference */
-
-        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
-            "Destination is not a Reference or Constant object [%p]\n", DestDesc));
-
-        ACPI_DUMP_STACK_ENTRY (SourceDesc);
-        ACPI_DUMP_STACK_ENTRY (DestDesc);
-        ACPI_DUMP_OPERANDS (&DestDesc, ACPI_IMODE_EXECUTE, "ExStore",
-                        2, "Target is not a Reference or Constant object");
-
-        return_ACPI_STATUS (AE_AML_OPERAND_TYPE);
-    }
-
-    /*
-     * Examine the Reference opcode.  These cases are handled:
-     *
-     * 1) Store to Name (Change the object associated with a name)
-     * 2) Store to an indexed area of a Buffer or Package
-     * 3) Store to a Method Local or Arg
-     * 4) Store to the debug object
-     */
-    switch (RefDesc->Reference.Opcode)
-    {
-    case AML_NAME_OP:
-    case AML_REF_OF_OP:
-
-        /* Storing an object into a Name "container" */
-
-        Status = AcpiExStoreObjectToNode (SourceDesc, RefDesc->Reference.Object,
-                        WalkState);
-        break;
-
-
-    case AML_INDEX_OP:
-
-        /* Storing to an Index (pointer into a packager or buffer) */
-
-        Status = AcpiExStoreObjectToIndex (SourceDesc, RefDesc, WalkState);
-        break;
-
-
-    case AML_LOCAL_OP:
-    case AML_ARG_OP:
-
-        /* Store to a method local/arg  */
-
-        Status = AcpiDsStoreObjectToLocal (RefDesc->Reference.Opcode,
-                        RefDesc->Reference.Offset, SourceDesc, WalkState);
-        break;
-
-
-    case AML_DEBUG_OP:
-
-        /*
-         * Storing to the Debug object causes the value stored to be
-         * displayed and otherwise has no effect -- see ACPI Specification
-         */
-        ACPI_DEBUG_PRINT ((ACPI_DB_EXEC, "**** Write to Debug Object: ****:\n\n"));
-
-        ACPI_DEBUG_PRINT_RAW ((ACPI_DB_DEBUG_OBJECT, "[ACPI Debug] %s: ",
-                        AcpiUtGetObjectTypeName (SourceDesc)));
-
-        switch (ACPI_GET_OBJECT_TYPE (SourceDesc))
-        {
-        case ACPI_TYPE_INTEGER:
-
-            ACPI_DEBUG_PRINT_RAW ((ACPI_DB_DEBUG_OBJECT, "%8.8X%8.8X\n",
-                    ACPI_HIWORD (SourceDesc->Integer.Value),
-                    ACPI_LOWORD (SourceDesc->Integer.Value)));
-            break;
-
-
-        case ACPI_TYPE_BUFFER:
-
-            ACPI_DEBUG_PRINT_RAW ((ACPI_DB_DEBUG_OBJECT, "Length %.2X\n",
-                    (UINT32) SourceDesc->Buffer.Length));
-            break;
-
-
-        case ACPI_TYPE_STRING:
-
-            ACPI_DEBUG_PRINT_RAW ((ACPI_DB_DEBUG_OBJECT, "%s\n", SourceDesc->String.Pointer));
-            break;
-
-
-        case ACPI_TYPE_PACKAGE:
-
-            ACPI_DEBUG_PRINT_RAW ((ACPI_DB_DEBUG_OBJECT, "Elements Ptr - %p\n",
-                    SourceDesc->Package.Elements));
-            break;
-
-
-        default:
-
-            ACPI_DEBUG_PRINT_RAW ((ACPI_DB_DEBUG_OBJECT, "Type %s %p\n",
-                    AcpiUtGetObjectTypeName (SourceDesc), SourceDesc));
-            break;
-        }
-
-        ACPI_DEBUG_PRINT_RAW ((ACPI_DB_EXEC, "\n"));
-        break;
-
-
-    default:
-
-        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Unknown Reference opcode %X\n",
-            RefDesc->Reference.Opcode));
-        ACPI_DUMP_ENTRY (RefDesc, ACPI_LV_ERROR);
-
-        Status = AE_AML_INTERNAL;
-        break;
-    }
-
-    return_ACPI_STATUS (Status);
-}
-
-
-/*******************************************************************************
- *
- * FUNCTION:    AcpiExStoreObjectToIndex
- *
- * PARAMETERS:  *SourceDesc             - Value to be stored
- *              *DestDesc               - Named object to receive the value
- *              WalkState               - Current walk state
+ * PARAMETERS:  Offset              - Offset to method in code block
+ *              Length              - Length of method
+ *              **Params            - List of parameters to pass to method, 
+ *                                    terminated by NULL. Params itself may be 
+ *                                    NULL if no parameters are being passed.
  *
  * RETURN:      Status
  *
- * DESCRIPTION: Store the object to indexed Buffer or Package element
+ * DESCRIPTION: Execute a control method
  *
- ******************************************************************************/
+ *****************************************************************************/
 
 ACPI_STATUS
-AcpiExStoreObjectToIndex (
-    ACPI_OPERAND_OBJECT     *SourceDesc,
-    ACPI_OPERAND_OBJECT     *IndexDesc,
-    ACPI_WALK_STATE         *WalkState)
+AmlExecuteMethod (INT32 Offset, INT32 Length, OBJECT_DESCRIPTOR **Params)
 {
-    ACPI_STATUS             Status = AE_OK;
-    ACPI_OPERAND_OBJECT     *ObjDesc;
-    ACPI_OPERAND_OBJECT     *NewDesc;
-    UINT8                   Value = 0;
+    ACPI_STATUS     Status;
+    INT32           i1;
+    INT32           i2;
 
 
-    ACPI_FUNCTION_TRACE ("ExStoreObjectToIndex");
+    FUNCTION_TRACE ("AmlExecuteMethod");
 
 
-    /*
-     * Destination must be a reference pointer, and
-     * must point to either a buffer or a package
-     */
-    switch (IndexDesc->Reference.TargetType)
+    if ((Status = AmlPrepExec (Offset, Length)) != AE_OK)  /* package stack */
     {
-    case ACPI_TYPE_PACKAGE:
-        /*
-         * Storing to a package element is not simple.  The source must be
-         * evaluated and converted to the type of the destination and then the
-         * source is copied into the destination - we can't just point to the
-         * source object.
-         */
-        /*
-         * The object at *(IndexDesc->Reference.Where) is the
-         * element within the package that is to be modified.
-         */
-        ObjDesc = *(IndexDesc->Reference.Where);
+        DEBUG_PRINT (ACPI_ERROR, ("AmlExecuteMethod: Exec Stack Overflow\n"));
+    }
 
-        /* Do the conversion/store */
+    /* Push new frame on Method stack */
+    
+    else if (++MethodStackTop >= AML_METHOD_MAX_NEST)
+    {
+        MethodStackTop--;
+        DEBUG_PRINT (ACPI_ERROR, ("AmlExecuteMethod: Method Stack Overflow\n"));
+        Status = AE_AML_ERROR;
+    }
 
-        Status = AcpiExStoreObjectToObject (SourceDesc, ObjDesc, &NewDesc,
-                                                WalkState);
-        if (ACPI_FAILURE (Status))
+    else
+    {
+        /* Undefine all local variables */
+    
+        for (i1 = 0; (i1 < NUMLCL) && (Status == AE_OK); ++i1)
         {
-            ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
-                "Could not store object to indexed package element\n"));
-            return_ACPI_STATUS (Status);
+            Status = AmlSetMethodValue (i1 + LCLBASE, NULL, NULL);
         }
 
-        /*
-         * If a new object was created, we must install it as the new
-         * package element
-         */
-        if (NewDesc != ObjDesc)
+        if (AE_OK == Status)
         {
-            AcpiUtRemoveReference (ObjDesc);
-            *(IndexDesc->Reference.Where) = NewDesc;
-
-            /* If same as the original source, add a reference */
-
-            if (NewDesc == SourceDesc)
-            {
-                AcpiUtAddReference (NewDesc);
+            /*  Copy passed parameters into method stack frame  */
+                
+            for (i2 = i1 = 0; (i1 < NUMARG) && (AE_OK == Status); ++i1)
+            {   
+                if (Params && Params[i2])   
+                {
+                    /*  parameter/argument specified    */
+                    /*  define ppsParams[i2++] argument object descriptor   */
+                    
+                    Status = AmlSetMethodValue (i1 + ARGBASE, Params[i2++], NULL);
+                }
+                else    
+                {
+                    /*  no parameter/argument object descriptor definition  */
+                    
+                    Status = AmlSetMethodValue (i1 + ARGBASE, NULL, NULL);
+                }
             }
         }
-        break;
 
 
-    case ACPI_TYPE_BUFFER_FIELD:
-
-        /*
-         * Store into a Buffer (not actually a real BufferField) at a
-         * location defined by an Index.
-         *
-         * The first 8-bit element of the source object is written to the
-         * 8-bit Buffer location defined by the Index destination object,
-         * according to the ACPI 2.0 specification.
+        /* 
+         * Normal exit is with Status == AE_RETURN_VALUE when a ReturnOp has been executed,
+         * or with Status == AE_PENDING at end of AML block (end of Method code)
          */
 
-        /*
-         * Make sure the target is a Buffer
-         */
-        ObjDesc = IndexDesc->Reference.Object;
-        if (ACPI_GET_OBJECT_TYPE (ObjDesc) != ACPI_TYPE_BUFFER)
+        if (AE_OK == Status)
         {
-            return_ACPI_STATUS (AE_AML_OPERAND_TYPE);
+            while ((Status = AmlDoCode (MODE_Exec)) == AE_OK)
+            {;}
         }
 
-        /*
-         * The assignment of the individual elements will be slightly
-         * different for each source type.
-         */
-        switch (ACPI_GET_OBJECT_TYPE (SourceDesc))
+        if (AE_PENDING == Status)
         {
-        case ACPI_TYPE_INTEGER:
-
-            /* Use the least-significant byte of the integer */
-
-            Value = (UINT8) (SourceDesc->Integer.Value);
-            break;
-
-        case ACPI_TYPE_BUFFER:
-
-            Value = SourceDesc->Buffer.Pointer[0];
-            break;
-
-        case ACPI_TYPE_STRING:
-
-            Value = (UINT8) SourceDesc->String.Pointer[0];
-            break;
-
-        default:
-
-            /* All other types are invalid */
-
-            ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
-                "Source must be Integer/Buffer/String type, not %s\n",
-                AcpiUtGetObjectTypeName (SourceDesc)));
-            return_ACPI_STATUS (AE_AML_OPERAND_TYPE);
+            Status = AmlPopExec ();            /* package stack -- inverse of AmlPrepExec() */
         }
 
-        /* Store the source value into the target buffer byte */
+        else
+        {
+            if (AE_RETURN_VALUE == Status)
+            {
+                DEBUG_PRINT (ACPI_INFO, ("Method returned: \n"));
+                DUMP_STACK_ENTRY ((OBJECT_DESCRIPTOR *) ObjStack[ObjStackTop]);
+                DEBUG_PRINT (ACPI_INFO, (" at stack level %d\n", ObjStackTop));
+            }
 
-        ObjDesc->Buffer.Pointer[IndexDesc->Reference.Offset] = Value;
-        break;
+            AmlPopExec ();            /* package stack -- inverse of AmlPrepExec() */
+        }
 
+        MethodStackTop--;          /* pop our frame off method stack */
 
-    default:
-        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
-            "Target is not a Package or BufferField\n"));
-        Status = AE_AML_OPERAND_TYPE;
-        break;
     }
 
-    return_ACPI_STATUS (Status);
+    FUNCTION_EXIT;
+    return Status;
 }
 
 
-/*******************************************************************************
+/*****************************************************************************
+ * 
+ * FUNCTION:    AmlExecStore
  *
- * FUNCTION:    AcpiExStoreObjectToNode
- *
- * PARAMETERS:  SourceDesc              - Value to be stored
- *              Node                    - Named object to receive the value
- *              WalkState               - Current walk state
+ * PARAMETERS:  *ValDesc            - Value to be stored
+ *              *DestDesc           - Where to store it -- must be an (NsHandle)
+ *                                    or an OBJECT_DESCRIPTOR of type Lvalue;
+ *                                    if the latter the descriptor will be 
+ *                                    either reused or deleted.
  *
  * RETURN:      Status
  *
- * DESCRIPTION: Store the object to the named object.
+ * DESCRIPTION: Store the value described by ValDesc into the location
+ *              described by DestDesc.  Called by various interpreter
+ *              functions to store the result of an operation into
+ *              the destination operand.
  *
- *              The Assignment of an object to a named object is handled here
- *              The value passed in will replace the current value (if any)
- *              with the input value.
- *
- *              When storing into an object the data is converted to the
- *              target object type then stored in the object.  This means
- *              that the target object type (for an initialized target) will
- *              not be changed by a store operation.
- *
- *              Assumes parameters are already validated.
- *
- ******************************************************************************/
+ ****************************************************************************/
 
 ACPI_STATUS
-AcpiExStoreObjectToNode (
-    ACPI_OPERAND_OBJECT     *SourceDesc,
-    ACPI_NAMESPACE_NODE     *Node,
-    ACPI_WALK_STATE         *WalkState)
+AmlExecStore(OBJECT_DESCRIPTOR *ValDesc, OBJECT_DESCRIPTOR *DestDesc)
 {
-    ACPI_STATUS             Status = AE_OK;
-    ACPI_OPERAND_OBJECT     *TargetDesc;
-    ACPI_OPERAND_OBJECT     *NewDesc;
-    ACPI_OBJECT_TYPE        TargetType;
+    NsHandle        TempHandle;
+    ACPI_STATUS     Status = AE_AML_ERROR;
+    INT32           Stacked = FALSE;
+    BOOLEAN         Locked = FALSE;
 
 
-    ACPI_FUNCTION_TRACE_PTR ("ExStoreObjectToNode", SourceDesc);
+    FUNCTION_TRACE ("AmlExecStore");
 
+    DEBUG_PRINT (ACPI_INFO, ("entered AmlExecStore: Val=%p, Dest=%p\n", 
+                    ValDesc, DestDesc));
 
-    /*
-     * Get current type of the node, and object attached to Node
-     */
-    TargetType = AcpiNsGetType (Node);
-    TargetDesc = AcpiNsGetAttachedObject (Node);
-
-    ACPI_DEBUG_PRINT ((ACPI_DB_EXEC, "Storing %p(%s) into node %p(%s)\n",
-        SourceDesc, AcpiUtGetObjectTypeName (SourceDesc),
-              Node, AcpiUtGetTypeName (TargetType)));
-
-    /*
-     * Resolve the source object to an actual value
-     * (If it is a reference object)
-     */
-    Status = AcpiExResolveObject (&SourceDesc, TargetType, WalkState);
-    if (ACPI_FAILURE (Status))
+    if (!ValDesc || !DestDesc)
     {
-        return_ACPI_STATUS (Status);
+        DEBUG_PRINT (ACPI_ERROR, ("AmlExecStore: internal error: null pointer\n"));
     }
 
-    /*
-     * Do the actual store operation
-     */
-    switch (TargetType)
+    else if (IS_NS_HANDLE (DestDesc))
     {
-    case ACPI_TYPE_BUFFER_FIELD:
-    case INTERNAL_TYPE_REGION_FIELD:
-    case INTERNAL_TYPE_BANK_FIELD:
-    case INTERNAL_TYPE_INDEX_FIELD:
+        /* Dest is an NsHandle */
 
-        /*
-         * For fields, copy the source data to the target field.
-         */
-        Status = AcpiExWriteDataToField (SourceDesc, TargetDesc);
-        break;
-
-
-    case ACPI_TYPE_INTEGER:
-    case ACPI_TYPE_STRING:
-    case ACPI_TYPE_BUFFER:
-
-        /*
-         * These target types are all of type Integer/String/Buffer, and
-         * therefore support implicit conversion before the store.
-         *
-         * Copy and/or convert the source object to a new target object
-         */
-        Status = AcpiExStoreObjectToObject (SourceDesc, TargetDesc, &NewDesc, WalkState);
-        if (ACPI_FAILURE (Status))
-        {
-            return_ACPI_STATUS (Status);
+        TempHandle = (NsHandle) DestDesc;
+        DestDesc = AllocateObjectDesc (&KDT[0]);
+        if (!DestDesc)
+        {   
+            /*  allocation failure  */
+            
+            FUNCTION_EXIT;
+            return AE_NO_MEMORY;
         }
-
-        if (NewDesc != TargetDesc)
+        else
         {
-            /*
-             * Store the new NewDesc as the new value of the Name, and set
-             * the Name's type to that of the value being stored in it.
-             * SourceDesc reference count is incremented by AttachObject.
+            /* DestDesc is valid */
+
+            DestDesc->ValType       = (UINT8) TYPE_Lvalue;
+            DestDesc->Lvalue.OpCode = AML_NameOp;
+            DestDesc->Lvalue.Ref    = TempHandle;
+
+            /* Push the descriptor on TOS temporarily
+             * to protect it from garbage collection
              */
-            Status = AcpiNsAttachObject (Node, NewDesc, TargetType);
-
-            ACPI_DEBUG_PRINT ((ACPI_DB_EXEC,
-                "Store %s into %s via Convert/Attach\n",
-                AcpiUtGetObjectTypeName (SourceDesc),
-                AcpiUtGetObjectTypeName (NewDesc)));
+            Status = AmlPushIfExec (MODE_Exec);
+            if (AE_OK != Status)
+            {
+                OsdFree (DestDesc);
+                DestDesc = NULL;
+            }
+            else
+            {
+                ObjStack[ObjStackTop] = DestDesc;
+                Stacked = TRUE;
+            }
         }
+    }
+
+    else
+    {
+        /* DestDesc is not an NsHandle  */
+
+        Status = AE_OK;
+    }
+
+    if ((AE_OK == Status) && 
+        (DestDesc->ValType != TYPE_Lvalue))
+    {   
+        /*  Store target is not an Lvalue   */
+
+        DEBUG_PRINT (ACPI_ERROR, ("AmlExecStore: Store target is not an Lvalue [%s]\n",
+                        NsTypeNames[DestDesc->ValType]));
+
+        DUMP_STACK_ENTRY (ValDesc);
+        DUMP_STACK_ENTRY (DestDesc);
+        DUMP_STACK (MODE_Exec, "AmlExecStore", 2, "target not Lvalue");
+
+        Status = AE_AML_ERROR;
+    }
+
+    if (AE_OK != Status)
+    {
+        FUNCTION_EXIT;
+        return Status;   /*  temporary hack  */
+    }
+
+
+    /* Now examine the opcode */
+
+    switch (DestDesc->Lvalue.OpCode)
+    {
+    case AML_NameOp:
+
+        /* Storing into a Name */
+
+        TempHandle = DestDesc->Lvalue.Ref;
+        switch (NsGetType (TempHandle)) 
+        {
+            /* Type of Name's existing value */
+
+        case TYPE_Alias:
+#if 1
+            DEBUG_PRINT (ACPI_ERROR, (
+                      "AmlExecStore/NameOp: Store into %s not implemented\n",
+                      NsTypeNames[NsGetType (TempHandle)]));
+            Status = AE_AML_ERROR;
+#else
+            DEBUG_PRINT (ACPI_WARN,
+                        ("AmlExecStore/NameOp: Store into %s not implemented\n",
+                        NsTypeNames[NsGetType(TempHandle)]));
+            Status = AE_OK;
+#endif
+            OsdFree (DestDesc);
+            DestDesc = NULL;
+            break;
+
+        case TYPE_BankField:
+
+            /* 
+             * Storing into a BankField.
+             * If value is not a Number, try to resolve it to one.
+             */
+            if ((ValDesc->ValType != TYPE_Number) &&
+               ((Status = AmlGetRvalue (&ValDesc)) != AE_OK))
+            {
+                OsdFree (DestDesc);
+                DestDesc = NULL;
+            }
+
+            else if (ValDesc->ValType != TYPE_Number)
+            {
+               DEBUG_PRINT (ACPI_ERROR, (
+                        "AmlExecStore: Value assigned to BankField must be Number, not %d\n",
+                        ValDesc->ValType));
+                OsdFree (DestDesc);
+                DestDesc = NULL;
+                Status = AE_AML_ERROR;
+            }
+
+            else
+            {
+                /* 
+                 * Delete descriptor that points to name,
+                 * and point to descriptor for name's value instead.
+                 */
+
+                OsdFree (DestDesc);
+                DestDesc = NsGetValue (TempHandle);
+                if (!DestDesc)
+                {
+                    DEBUG_PRINT (ACPI_ERROR, ("AmlExecStore/BankField: internal error: null old-value pointer\n"));
+                    Status = AE_AML_ERROR;
+                }
+            }
+
+
+            if ((AE_OK == Status) && 
+                (TYPE_BankField != DestDesc->ValType))
+            {
+                DEBUG_PRINT (ACPI_ERROR, (
+                        "AmlExecStore/BankField: internal error: Name %4.4s type %d does not match value-type %d at %p\n",
+                        TempHandle, NsGetType (TempHandle), DestDesc->ValType, DestDesc));
+                AmlAppendBlockOwner (DestDesc);
+                Status = AE_AML_ERROR;
+            }
+
+            if (AE_OK == Status)
+            {
+                /* Get the global lock if needed */
+
+                Locked = AmlAcquireGlobalLock (DestDesc->BankField.LockRule);
+
+                /* Set Bank value to select proper Bank */
+                /* Perform the update (Set Bank Select) */
+
+                Status = AmlSetNamedFieldValue (DestDesc->BankField.BankSelect,
+                                            DestDesc->BankField.BankVal);
+
+                DEBUG_PRINT (ACPI_INFO,
+                            ("AmlExecStore: set bank select returned %s\n", ExceptionNames[Status]));
+            }
+
+
+            if (AE_OK == Status)
+            {
+                /* Set bank select successful, next set data value  */
+                
+                Status = AmlSetNamedFieldValue (DestDesc->BankField.BankSelect,
+                                               ValDesc->BankField.BankVal);
+                DEBUG_PRINT (ACPI_INFO,
+                            ("AmlExecStore: set bank select returned %s\n", ExceptionNames[Status]));
+            }
+            
+            break;  /*  Global Lock released below  */
+
+
+        case TYPE_DefField:
+
+            /* 
+             * Storing into a Field defined in a Region.
+             * If value is not a Number, try to resolve it to one.
+             */
+
+            if ((ValDesc->ValType != TYPE_Number) && 
+               ((Status = AmlGetRvalue (&ValDesc)) != AE_OK))
+            {
+                OsdFree (DestDesc);
+                DestDesc = NULL;
+            }
+
+            else if (ValDesc->ValType != TYPE_Number)
+            {
+                DEBUG_PRINT (ACPI_ERROR, (
+                        "AmlExecStore/DefField: Value assigned to Field must be Number, not %d\n",
+                        ValDesc->ValType));
+                OsdFree (DestDesc);
+                DestDesc = NULL;
+                Status = AE_AML_ERROR;
+            }
+
+            else
+            {
+                /* 
+                 * Delete descriptor that points to name,
+                 * and point to descriptor for name's value instead.
+                 */
+
+                OsdFree (DestDesc);
+                DestDesc = NsGetValue (TempHandle);
+            
+                if (!DestDesc)
+                {
+                    DEBUG_PRINT (ACPI_ERROR, ("AmlExecStore/DefField: internal error: null old-value pointer\n"));
+                    Status = AE_AML_ERROR;
+                }
+            }
+
+            if ((AE_OK == Status) && 
+                (TYPE_DefField != DestDesc->ValType))
+            {
+                DEBUG_PRINT (ACPI_ERROR, (
+                        "AmlExecStore/DefField:internal error: Name %4.4s type %d does not match value-type %d at %p\n",
+                        TempHandle, NsGetType (TempHandle), DestDesc->ValType, DestDesc));
+                AmlAppendBlockOwner (DestDesc);
+                Status = AE_AML_ERROR;
+            }
+
+            if (AE_OK == Status)
+            {
+                /* Get the global lock if needed */
+
+                Locked = AmlAcquireGlobalLock (ValDesc->Field.LockRule);
+
+                /* perform the update */
+                
+                Status = AmlSetNamedFieldValue (TempHandle, ValDesc->Number.Number);
+            }
+                
+            break;      /* Global Lock released below   */
+
+
+        case TYPE_IndexField:
+            
+            /* 
+             * Storing into an IndexField.
+             * If value is not a Number, try to resolve it to one.
+             */
+            
+            if ((ValDesc->ValType != TYPE_Number) &&
+               ((Status = AmlGetRvalue (&ValDesc)) != AE_OK))
+            {
+                OsdFree (DestDesc);
+                DestDesc = NULL;
+            }
+
+            else if (ValDesc->ValType != TYPE_Number)
+            {
+                DEBUG_PRINT (ACPI_ERROR, (
+                        "AmlExecStore: Value assigned to IndexField must be Number, not %d\n",
+                        ValDesc->ValType));
+                OsdFree (DestDesc);
+                DestDesc = NULL;
+                Status = AE_AML_ERROR;
+            }
+
+            if (AE_OK == Status)
+            {
+                /* 
+                 * Delete descriptor that points to name,
+                 * and point to descriptor for name's value instead.
+                 */
+
+                OsdFree (DestDesc);
+                DestDesc = NsGetValue (TempHandle);
+            
+                if (!DestDesc)
+                {
+                    DEBUG_PRINT (ACPI_ERROR, ("AmlExecStore/IndexField: internal error: null old-value pointer\n"));
+                    Status = AE_AML_ERROR;
+                }
+            }
+
+            if ((AE_OK == Status) &&
+                (TYPE_IndexField != DestDesc->ValType))
+            {
+                DEBUG_PRINT (ACPI_ERROR, (
+                        "AmlExecStore/IndexField:internal error: Name %4.4s type %d does not match value-type %d at %p\n",
+                        TempHandle, NsGetType (TempHandle), DestDesc->ValType, DestDesc));
+                AmlAppendBlockOwner (DestDesc);
+                Status = AE_AML_ERROR;
+            }
+
+            if (AE_OK == Status)
+            {
+                /* Get the global lock if needed */
+
+                Locked = AmlAcquireGlobalLock (DestDesc->IndexField.LockRule);
+
+                /* Set Index value to select proper Data register */
+                /* perform the update (Set index) */
+
+                Status = AmlSetNamedFieldValue (DestDesc->IndexField.Index,
+                                               DestDesc->IndexField.IndexVal);
+                DEBUG_PRINT (ACPI_INFO,
+                            ("AmlExecStore: IndexField: set index returned %s\n", ExceptionNames[Status]));
+            }
+
+            if (AE_OK == Status)
+            {
+                /* set index successful, next set Data value */
+                
+                Status = AmlSetNamedFieldValue (DestDesc->IndexField.Data,
+                                               ValDesc->Number.Number);
+                DEBUG_PRINT (ACPI_INFO,
+                            ("AmlExecStore: IndexField: set data returned %s\n", ExceptionNames[Status]));
+            }
+
+            break;      /* Global Lock released below   */
+
+
+        case TYPE_FieldUnit:
+            
+            /* 
+             * Storing into a FieldUnit (defined in a Buffer).
+             * If value is not a Number, try to resolve it to one.
+             */
+            if ((ValDesc->ValType != TYPE_Number) &&
+               ((Status = AmlGetRvalue (&ValDesc)) != AE_OK))
+            {
+                OsdFree (DestDesc);
+                DestDesc = NULL;
+            }
+
+            else if (ValDesc->ValType != TYPE_Number)
+            {
+                DEBUG_PRINT (ACPI_ERROR, (
+                        "AmlExecStore/FieldUnit: Value assigned to Field must be Number, not %d\n",
+                          ValDesc->ValType));
+                OsdFree (DestDesc);
+                DestDesc = NULL;
+                Status = AE_AML_ERROR;
+            }
+
+
+            if (AE_OK == Status)
+            {
+                /* 
+                 * Delete descriptor that points to name,
+                 * and point to descriptor for name's value instead.
+                 */
+                OsdFree (DestDesc);
+                DestDesc = NsGetValue (TempHandle);
+            
+                if (!DestDesc)
+                {
+                    DEBUG_PRINT (ACPI_ERROR, ("AmlExecStore/FieldUnit: internal error: null old-value pointer\n"));
+                    Status = AE_AML_ERROR;
+                }
+
+                else
+                {
+                    DEBUG_PRINT (ACPI_INFO,
+                        ("AmlExecStore: FieldUnit: name's value DestDesc=%p, DestDesc->ValType=%02Xh\n",
+                        DestDesc, DestDesc->ValType));
+                }
+            }
+
+            if ((AE_OK == Status) &&
+                (DestDesc->ValType != (UINT8) NsGetType (TempHandle)))
+            {
+                DEBUG_PRINT (ACPI_ERROR, (
+                        "AmlExecStore/FieldUnit:internal error: Name %4.4s type %d does not match value-type %d at %p\n",
+                          TempHandle, NsGetType(TempHandle), DestDesc->ValType, DestDesc));
+                AmlAppendBlockOwner (DestDesc);
+                Status = AE_AML_ERROR;
+            }
+
+            if ((AE_OK == Status) &&
+               (!DestDesc->FieldUnit.Container ||
+                TYPE_Buffer != DestDesc->FieldUnit.Container->ValType ||
+                DestDesc->FieldUnit.ConSeq
+                    != DestDesc->FieldUnit.Container->Buffer.Sequence))
+            {
+                NsDumpPathname (TempHandle, "AmlExecStore/FieldUnit: bad container in: ", 
+                                ACPI_ERROR, _COMPONENT);
+                DUMP_ENTRY (TempHandle);
+                Status = AE_AML_ERROR;
+            }
+
+            if (AE_OK == Status)
+            {
+                /* Get the global lock if needed */
+
+                Locked = AmlAcquireGlobalLock (DestDesc->FieldUnit.LockRule);
+            }
+
+            if ((AE_OK == Status) &&
+                (DestDesc->FieldUnit.DatLen + DestDesc->FieldUnit.BitOffset > 32))
+            {
+                DEBUG_PRINT (ACPI_ERROR, ("AmlExecStore/FieldUnit: implementation limitation: Field exceeds UINT32\n"));
+                Status = AE_AML_ERROR;
+            }
+            
+            if (AE_OK == Status)
+            {
+                UINT8           *Location=NULL;
+                UINT32          Mask;
+
+
+                /* Field location is (base of buffer) + (byte offset) */
+                
+                Location = DestDesc->FieldUnit.Container->Buffer.Buffer
+                                + DestDesc->FieldUnit.Offset;
+                
+                /* 
+                 * Construct Mask with 1 bits where the field is,
+                 * 0 bits elsewhere
+                 */
+                Mask = ((UINT32) 1 << DestDesc->FieldUnit.DatLen) - ((UINT32)1
+                                    << DestDesc->FieldUnit.BitOffset);
+
+                DEBUG_PRINT (TRACE_BFIELD,
+                        ("** Store %lx in buffer %p byte %ld bit %d width %d addr %p mask %08lx\n",
+                        ValDesc->Number.Number,
+                        DestDesc->FieldUnit.Container->Buffer.Buffer,
+                        DestDesc->FieldUnit.Offset,
+                        DestDesc->FieldUnit.BitOffset,
+                        DestDesc->FieldUnit.DatLen,
+                        Location, Mask));
+
+                /* zero out the field in the buffer */
+                
+                *(UINT32 *) Location &= ~Mask;
+
+                /* 
+                 * Shift and mask the new value into position,
+                 * and or it into the buffer.
+                 */
+                *(UINT32 *) Location |=
+                    (ValDesc->Number.Number << DestDesc->FieldUnit.BitOffset) & Mask;
+                
+                DEBUG_PRINT (TRACE_BFIELD,
+                            (" val %08lx\n", *(UINT32 *) Location));
+            }
+            break;  /* Global lock released below */
+
+
+        default:
+            
+            /* 
+             * All other types than Alias and the various Fields come here.
+             * Store a copy of ValDesc as the new value of the Name, and set
+             * the Name's type to that of the value being stored in it.
+             */
+            memcpy ((void *) DestDesc, (void *) ValDesc, sizeof (*ValDesc));
+            
+            if (TYPE_Buffer == DestDesc->ValType)
+            {
+                /* Assign a new sequence number */
+
+                DestDesc->Buffer.Sequence = AmlBufSeq ();
+            }
+
+            NsSetValue (TempHandle, DestDesc, DestDesc->ValType);
+
+            if (Stacked)
+            {
+                NsDumpPathname (TempHandle, "AmlExecStore: set ", ACPI_INFO, _COMPONENT);
+
+                DUMP_ENTRY (TempHandle);
+                DUMP_STACK_ENTRY (DestDesc);
+            }
+
+            break;
+        }
+
+        break;  /* Case NameOp */
+
+
+    case AML_ZeroOp: case AML_OneOp: case AML_OnesOp:
+
+        /* 
+         * Storing to a constant is a no-op -- see spec sec 15.2.3.3.1.
+         * Delete the result descriptor.
+         */
+        OsdFree (DestDesc);
+        DestDesc = NULL;
         break;
 
+
+    case AML_Local0: case AML_Local1: case AML_Local2: case AML_Local3:
+    case AML_Local4: case AML_Local5: case AML_Local6: case AML_Local7:
+
+        Status = AmlSetMethodValue (LCLBASE + DestDesc->Lvalue.OpCode - AML_Local0, ValDesc, DestDesc);
+        break;
+
+
+    case AML_Arg0: case AML_Arg1: case AML_Arg2: case AML_Arg3:
+    case AML_Arg4: case AML_Arg5: case AML_Arg6:
+
+        Status = AmlSetMethodValue (ARGBASE + DestDesc->Lvalue.OpCode - AML_Arg0, ValDesc, DestDesc);
+        break;
+
+
+    case Debug1:
+
+        /* 
+         * Storing to the Debug object causes the value stored to be
+         * displayed and otherwise has no effect -- see sec. 15.2.3.3.3.
+         */
+        DEBUG_PRINT (ACPI_INFO, ("DebugOp: \n"));
+        DUMP_STACK_ENTRY (ValDesc);
+
+        OsdFree (DestDesc);
+        DestDesc = NULL;
+        break;
+
+#if 0
+    case IndexOp:
+        break;
+#endif
 
     default:
+        DEBUG_PRINT (ACPI_ERROR,
+                    ("AmlExecStore:internal error: Unknown Lvalue subtype %02x\n",
+                    DestDesc->Lvalue.OpCode));
+        
+        /* TBD:  use object dump routine !! */
 
-        ACPI_DEBUG_PRINT ((ACPI_DB_EXEC,
-            "Storing %s (%p) directly into node (%p), no implicit conversion\n",
-            AcpiUtGetObjectTypeName (SourceDesc), SourceDesc, Node));
+        DUMP_BUFFER (DestDesc, sizeof (OBJECT_DESCRIPTOR),0);
 
-        /* No conversions for all other types.  Just attach the source object */
+        OsdFree (DestDesc);
+        DestDesc = NULL;
+        Status = AE_AML_ERROR;
+    
+    }   /* switch(DestDesc->Lvalue.OpCode) */
 
-        Status = AcpiNsAttachObject (Node, SourceDesc, ACPI_GET_OBJECT_TYPE (SourceDesc));
-        break;
+
+    /* Release global lock if we acquired it earlier */
+
+    AmlReleaseGlobalLock (Locked);
+
+    if (Stacked)
+    {
+        ObjStackTop--;
     }
 
-    return_ACPI_STATUS (Status);
+    FUNCTION_EXIT;
+    return Status;
 }
 
 
