@@ -316,6 +316,7 @@ AcpiFormatException (
     ACPI_BUFFER             *OutBuffer)
 {
     UINT32                  Length;
+    char                    *FormattedException;
 
 
     FUNCTION_TRACE ("AcpiFormatException");
@@ -339,12 +340,15 @@ AcpiFormatException (
     }
 
 
+    /* Convert the exception code */
+
+    FormattedException = CmFormatException (Exception);
+
     /*
      * Get length of string and check if it will fit in caller's buffer
      */
 
-    Length = STRLEN (Gbl_ExceptionNames [Exception]);
-
+    Length = STRLEN (FormattedException);
     if (OutBuffer->Length < Length)
     {
         OutBuffer->Length = Length;
@@ -354,7 +358,7 @@ AcpiFormatException (
 
     /* Copy the string, all done */
 
-    STRCPY (OutBuffer->Pointer, Gbl_ExceptionNames [Exception]);
+    STRCPY (OutBuffer->Pointer, FormattedException);
 
     return_ACPI_STATUS (AE_OK);
 }
