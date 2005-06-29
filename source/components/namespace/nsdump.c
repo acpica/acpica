@@ -265,7 +265,7 @@ NsDumpOneObject (
 
     /* Check the integrity of our data */
 
-    if (OUTRANGE (Type, NsTypeNames))
+    if (Type > INTERNAL_TYPE_MAX)
     {
         Type = TYPE_DefAny;                                 /* prints as *ERROR* */
     }
@@ -311,7 +311,7 @@ NsDumpOneObject (
     
         while (Value && (DebugLevel & TRACE_VALUES))
         {
-            UINT8               bT = ((ACPI_OBJECT_INTERNAL *) Value)->ValType;
+            UINT8               bT = ((ACPI_OBJECT_INTERNAL *) Value)->Type;
 
 
             DEBUG_PRINT_RAW (TRACE_TABLES,
@@ -332,7 +332,7 @@ NsDumpOneObject (
                  * the above-listed variants of ACPI_OBJECT_INTERNAL have
                  * compatible mappings.
                  */
-                Value = ((ACPI_OBJECT_INTERNAL *)Value)->Buffer.Buffer;
+                Value = ((ACPI_OBJECT_INTERNAL *)Value)->Buffer.Pointer;
             }
             else
             {
