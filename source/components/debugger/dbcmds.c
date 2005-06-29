@@ -123,13 +123,10 @@
 #include <interp.h>
 #include <debugger.h>
 
-
 #ifdef ACPI_DEBUG
 
 #define _COMPONENT          DEBUGGER
         MODULE_NAME         ("dbcmds");
-
-
 
 
 /******************************************************************************
@@ -149,6 +146,7 @@
 void
 DbSetMethodBreakpoint (
     char                    *Location,
+    ACPI_WALK_STATE         *WalkState,
     ACPI_GENERIC_OP         *Op)
 {
     UINT32                  Address;
@@ -171,8 +169,41 @@ DbSetMethodBreakpoint (
     /* Just save the breakpoint in a global */
 
     Gbl_MethodBreakpoint = Address;
+    Gbl_BreakpointWalk = WalkState;
     OsdPrintf ("Breakpoint set at AML offset 0x%X\n", Address);
 }
+
+
+/******************************************************************************
+ * 
+ * FUNCTION:    DbSetMethodCallBreakpoint
+ *
+ * PARAMETERS:  Location            - AML offset of breakpoint
+ *              Op                  - Current Op (from parse walk)
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Set a breakpoint in a control method at the specified 
+ *              AML offset
+ *
+ *****************************************************************************/
+
+void
+DbSetMethodCallBreakpoint (
+    ACPI_GENERIC_OP         *Op)
+{
+
+
+    if (!Op)
+    {
+        OsdPrintf ("There is no method currently executing\n");
+        return;
+    }
+
+
+    Gbl_StepToNextCall = TRUE;
+}
+
 
 
 
@@ -229,8 +260,12 @@ void
 DbDumpNamespace (void)
 {
 
-    NsDumpObjects (ACPI_TYPE_Any, ACPI_UINT32_MAX, Gbl_RootObject);
+    DbSetOutputDestination (DB_DUPLICATE_OUTPUT);
+    OsdPrintf ("Entire loaded ACPI Namespace:\n");
 
+    DbSetOutputDestination (DB_REDIRECTABLE_OUTPUT);
+    NsDumpObjects (ACPI_TYPE_Any, ACPI_UINT32_MAX, Gbl_RootObject);
+    DbSetOutputDestination (DB_CONSOLE_OUTPUT);
 }
 
 
@@ -399,6 +434,7 @@ DbWalkMethods (
 {
     UINT32                  NumArgs;
     ACPI_OBJECT_INTERNAL    *ObjDesc;
+    ACPI_STATUS             Status;
     UINT32                  BufSize;
     char                    buffer[64];
 
@@ -406,12 +442,20 @@ DbWalkMethods (
     ObjDesc = ((NAME_TABLE_ENTRY *)ObjHandle)->Object;
     NumArgs = ObjDesc->Method.ParamCount;
 
-    NsHandleToPathname (ObjHandle, &BufSize, buffer);
+    /* Get the full pathname to this method */
 
-    /* Skip past the junk at the start of the path */
+    Status = NsHandleToPathname (ObjHandle, &BufSize, buffer);
 
-    OsdPrintf ("%32s", &buffer[6]);
-    OsdPrintf ("  #args = %d\n", NumArgs);
+    if (ACPI_FAILURE (Status))
+    {
+        OsdPrintf ("Could Not get pathname for object %p\n", ObjHandle);
+    }
+
+    else
+    {
+        OsdPrintf ("%32s", buffer);
+        OsdPrintf ("  #args = %d\n", NumArgs);
+    }
 
     return AE_OK;
 }
@@ -446,11 +490,14 @@ DbDisplayAllMethods (
         DisplayCount = ACPI_UINT32_MAX;
     }
 
-    OsdPrintf ("Control Methods defined in this namespace: \n");
+    DbSetOutputDestination (DB_DUPLICATE_OUTPUT);
+    OsdPrintf ("Control Methods defined in the current ACPI Namespace: \n");
 
+    DbSetOutputDestination (DB_REDIRECTABLE_OUTPUT);
     AcpiWalkNamespace (ACPI_TYPE_Method, ACPI_ROOT_OBJECT, ACPI_UINT32_MAX,
         DbWalkMethods, NULL, NULL);
 
+    DbSetOutputDestination (DB_CONSOLE_OUTPUT);
     return AE_OK;
 }
 
@@ -476,6 +523,7 @@ DbExecute (
     ACPI_STATUS             Status;
     ACPI_BUFFER             ReturnObj;
     ACPI_OBJECT_LIST        ParamObjects;
+    ACPI_OBJECT             Params[2];
     UINT32                  PreviousAllocations;
     UINT32                  PreviousSize;
     UINT32                  Allocations;
@@ -483,16 +531,9 @@ DbExecute (
     char                    LocalBuf[64];
 
 
-//    ACPI_OBJECT             Obj [4];
-
     if (OutputToFile && !DebugLevel)
     {
         OsdPrintf ("Warning: debug output is not enabled!\n");
-    }
-
-    if (Flags & EX_SINGLE_STEP)
-    {
-        Gbl_CmSingleStep = TRUE;
     }
 
     /* Memory allocation tracking */
@@ -500,57 +541,89 @@ DbExecute (
     PreviousAllocations = Gbl_CurrentAllocCount;
     PreviousSize = Gbl_CurrentAllocSize;
 
-    ParamObjects.Count = 0;
+    /* Setup parameters */
+
+    Params[0].Type              = ACPI_TYPE_Number;
+    Params[0].Number.Value      = 0x01020304;
+
+    Params[1].Type              = ACPI_TYPE_String;
+    Params[1].String.Length     = 12;
+    Params[1].String.Pointer    = "AML Debugger";
+
+    ParamObjects.Pointer        = Params;
+    ParamObjects.Count          = 2;
 
     /* Prepare for a return object of arbitrary size */
 
-    ReturnObj.Pointer = Buffer;
-    ReturnObj.Length = BUFFER_SIZE;
+    ReturnObj.Pointer           = Buffer;
+    ReturnObj.Length            = BUFFER_SIZE;
 
     /* Catenate the current scope to the supplied name */
 
-    STRCPY (LocalBuf, ScopeBuf);
-    STRCAT (LocalBuf, Name);
-
-    DbPrepNamestring (LocalBuf);
-    OsdPrintf ("Executing %s\n", LocalBuf);
-    if (OutputToFile)
+    LocalBuf[0] = 0;
+    if ((Name[0] != '\\') &&
+        (Name[0] != '/'))
     {
-        OsdPrintf ("\nExecuting %s\n\n", LocalBuf);
+        STRCAT (LocalBuf, ScopeBuf);
+    }
+    STRCAT (LocalBuf, Name);
+    DbPrepNamestring (LocalBuf);
+
+    DbSetOutputDestination (DB_DUPLICATE_OUTPUT);
+    OsdPrintf ("Executing %s\n", LocalBuf);
+
+    if (Flags & EX_SINGLE_STEP)
+    {
+        Gbl_CmSingleStep = TRUE;
+        DbSetOutputDestination (DB_CONSOLE_OUTPUT);
     }
 
-    /* Do the actual execution */
+    else
+    {
+        /* No single step, allow redirection to a file */
 
-    Status = AcpiEvaluateObject (NULL, LocalBuf, NULL, &ReturnObj);
+        DbSetOutputDestination (DB_REDIRECTABLE_OUTPUT);
+    }
+
+
+    /* Do the actual method execution */
+
+    Status = AcpiEvaluateObject (NULL, LocalBuf, &ParamObjects, &ReturnObj);
 
     Gbl_CmSingleStep = FALSE;
+    Gbl_MethodExecuting = FALSE;
 
-    /* Memory allocatoin tracking */
+    /* Memory allocation tracking */
 
     Allocations = Gbl_CurrentAllocCount - PreviousAllocations;
     Size = Gbl_CurrentAllocSize - PreviousSize;
 
+    DbSetOutputDestination (DB_DUPLICATE_OUTPUT);
+
     if (Allocations > 0)
     {
         OsdPrintf ("Outstanding: %ld allocations of total size %ld after execution\n",
-            Allocations, Size);
+                        Allocations, Size);
     }
 
 
     if (ACPI_FAILURE (Status))
     {
-        OsdPrintf ("Execution of %s failed with status %s\n", LocalBuf, Gbl_ExceptionNames[Status]);
-        OsdPrintf ("Execution of %s failed with status %s\n", LocalBuf, Gbl_ExceptionNames[Status]);
-        return;
+        OsdPrintf ("Execution of %s failed with status %s\n", LocalBuf, CmFormatException (Status));
     }
 
-    /* Display a return object, if any */
-
-    if (ReturnObj.Length)
+    else
     {
-        OsdPrintf ("Execution of %s returned object %p\n", LocalBuf, ReturnObj.Pointer);
-        DbDumpObject (ReturnObj.Pointer, 1);
+        /* Display a return object, if any */
+
+        if (ReturnObj.Length)
+        {
+            OsdPrintf ("Execution of %s returned object %p\n", LocalBuf, ReturnObj.Pointer);
+            DbDumpObject (ReturnObj.Pointer, 1);
+        }
     }
+
+    DbSetOutputDestination (DB_CONSOLE_OUTPUT);
 }
 
 
@@ -596,5 +669,4 @@ DbSetScope (
     OsdPrintf ("New scope: %s\n", ScopeBuf);
 }
 
-#endif  /* ACPI_DEBUG */
-
+#endif
