@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: utmisc - common utility procedures
- *              $Revision: 1.71 $
+ *              $Revision: 1.72 $
  *
  ******************************************************************************/
 
@@ -263,6 +263,8 @@ AcpiUtStrtoul64 (
     UINT32                  Sign;
     ACPI_INTEGER            ReturnValue = 0;
     ACPI_STATUS             Status = AE_OK;
+    ACPI_INTEGER            Dividend;
+    ACPI_INTEGER            Quotient;
 
 
     *RetInteger = 0;
@@ -378,17 +380,15 @@ AcpiUtStrtoul64 (
 
         /* Check to see if value is out of range: */
 
-        if (ReturnValue > ((ACPI_INTEGER_MAX - (ACPI_INTEGER) Index) /
-                            (ACPI_INTEGER) Base))
+        Dividend = ACPI_INTEGER_MAX - (ACPI_INTEGER) Index;
+        (void) AcpiUtShortDivide (&Dividend, Base, &Quotient, NULL);
+        if (ReturnValue > Quotient)
         {
             goto ErrorExit;
         }
-        else
-        {
-            ReturnValue *= Base;
-            ReturnValue += Index;
-        }
 
+        ReturnValue *= Base;
+        ReturnValue += Index;
         ++String;
     }
 
