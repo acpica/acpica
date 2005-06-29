@@ -117,9 +117,9 @@
 #define __ISNAMES_C__
 
 #include <acpi.h>
-#include <interpreter.h>
+#include <interp.h>
 #include <amlcode.h>
-#include <namespace.h>
+#include <namesp.h>
 
 #define _COMPONENT          INTERPRETER
         MODULE_NAME         ("isnames");
@@ -166,11 +166,11 @@ AmlAllocateNameString (
 
     if (PrefixCount < 0)
     {
-        SizeNeeded = 1 /* root */ +  (ACPI_NAME_SIZE * NumNameSegs) + 2;
+        SizeNeeded = 1 /* root */ +  (ACPI_NAME_SIZE * NumNameSegs) + 2 +1; /* zero terminate */
     }
     else
     {
-        SizeNeeded = PrefixCount + (ACPI_NAME_SIZE * NumNameSegs) + 2;
+        SizeNeeded = PrefixCount + (ACPI_NAME_SIZE * NumNameSegs) + 2 +1; /* zero terminate */
     }
 
     /* 
