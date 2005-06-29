@@ -1,7 +1,7 @@
 /******************************************************************************
  *
- * Module Name: cminit - Common ACPI subsystem initialization
- *              $Revision: 1.94 $
+ * Module Name: utinit - Common ACPI subsystem initialization
+ *              $Revision: 1.121 $
  *
  *****************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2005, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -115,56 +115,46 @@
  *****************************************************************************/
 
 
-#define __CMINIT_C__
+#define __UTINIT_C__
 
 #include "acpi.h"
-#include "achware.h"
 #include "acnamesp.h"
 #include "acevents.h"
-#include "acparser.h"
-#include "acdispat.h"
 
 #define _COMPONENT          ACPI_UTILITIES
-        MODULE_NAME         ("cminit")
+        ACPI_MODULE_NAME    ("utinit")
 
-
-#define ACPI_OFFSET(d,o)    ((UINT32) &(((d *)0)->o))
-#define ACPI_FADT_OFFSET(o) ACPI_OFFSET (FADT_DESCRIPTOR, o)
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiCmFadtRegisterError
+ * FUNCTION:    AcpiUtFadtRegisterError
  *
- * PARAMETERS:  *RegisterName           - Pointer to string identifying register
+ * PARAMETERS:  RegisterName            - Pointer to string identifying register
  *              Value                   - Actual register contents value
- *              AcpiTestSpecSection     - TDS section containing assertion
- *              AcpiAssertion           - Assertion number being tested
+ *              Offset                  - Byte offset in the FADT
  *
  * RETURN:      AE_BAD_VALUE
  *
- * DESCRIPTION: Display failure message and link failure to TDS assertion
+ * DESCRIPTION: Display failure message
  *
  ******************************************************************************/
 
-static ACPI_STATUS
-AcpiCmFadtRegisterError (
-    NATIVE_CHAR             *RegisterName,
+static void
+AcpiUtFadtRegisterError (
+    char                    *RegisterName,
     UINT32                  Value,
-    UINT32                  Offset)
+    ACPI_SIZE               Offset)
 {
 
-    REPORT_ERROR (
-        ("Invalid FADT value %s=%lX at offset %lX FADT=%p\n",
-        RegisterName, Value, Offset, AcpiGbl_FADT));
-
-
-    return (AE_BAD_VALUE);
+    ACPI_REPORT_WARNING (
+        ("Invalid FADT value %s=%X at offset %X FADT=%p\n",
+        RegisterName, Value, (UINT32) Offset, AcpiGbl_FADT));
 }
 
 
 /******************************************************************************
  *
- * FUNCTION:    AcpiCmValidateFadt
+ * FUNCTION:    AcpiUtValidateFadt
  *
  * PARAMETERS:  None
  *
@@ -175,70 +165,66 @@ AcpiCmFadtRegisterError (
  ******************************************************************************/
 
 ACPI_STATUS
-AcpiCmValidateFadt (
+AcpiUtValidateFadt (
     void)
 {
-    ACPI_STATUS                 Status = AE_OK;
-
 
     /*
      * Verify Fixed ACPI Description Table fields,
      * but don't abort on any problems, just display error
      */
-
     if (AcpiGbl_FADT->Pm1EvtLen < 4)
     {
-        Status = AcpiCmFadtRegisterError ("PM1_EVT_LEN",
+        AcpiUtFadtRegisterError ("PM1_EVT_LEN",
                         (UINT32) AcpiGbl_FADT->Pm1EvtLen,
                         ACPI_FADT_OFFSET (Pm1EvtLen));
     }
 
     if (!AcpiGbl_FADT->Pm1CntLen)
     {
-        Status = AcpiCmFadtRegisterError ("PM1_CNT_LEN", 0,
+        AcpiUtFadtRegisterError ("PM1_CNT_LEN", 0,
                         ACPI_FADT_OFFSET (Pm1CntLen));
     }
 
     if (!ACPI_VALID_ADDRESS (AcpiGbl_FADT->XPm1aEvtBlk.Address))
     {
-        Status = AcpiCmFadtRegisterError ("X_PM1a_EVT_BLK", 0,
+        AcpiUtFadtRegisterError ("X_PM1a_EVT_BLK", 0,
                         ACPI_FADT_OFFSET (XPm1aEvtBlk.Address));
     }
 
     if (!ACPI_VALID_ADDRESS (AcpiGbl_FADT->XPm1aCntBlk.Address))
     {
-        Status = AcpiCmFadtRegisterError ("X_PM1a_CNT_BLK", 0,
+        AcpiUtFadtRegisterError ("X_PM1a_CNT_BLK", 0,
                         ACPI_FADT_OFFSET (XPm1aCntBlk.Address));
     }
 
     if (!ACPI_VALID_ADDRESS (AcpiGbl_FADT->XPmTmrBlk.Address))
     {
-        Status = AcpiCmFadtRegisterError ("X_PM_TMR_BLK", 0,
+        AcpiUtFadtRegisterError ("X_PM_TMR_BLK", 0,
                         ACPI_FADT_OFFSET (XPmTmrBlk.Address));
     }
 
     if ((ACPI_VALID_ADDRESS (AcpiGbl_FADT->XPm2CntBlk.Address) &&
         !AcpiGbl_FADT->Pm2CntLen))
     {
-        Status = AcpiCmFadtRegisterError ("PM2_CNT_LEN",
+        AcpiUtFadtRegisterError ("PM2_CNT_LEN",
                         (UINT32) AcpiGbl_FADT->Pm2CntLen,
                         ACPI_FADT_OFFSET (Pm2CntLen));
     }
 
     if (AcpiGbl_FADT->PmTmLen < 4)
     {
-        Status = AcpiCmFadtRegisterError ("PM_TM_LEN",
+        AcpiUtFadtRegisterError ("PM_TM_LEN",
                         (UINT32) AcpiGbl_FADT->PmTmLen,
                         ACPI_FADT_OFFSET (PmTmLen));
     }
 
-    /* length of GPE blocks must be a multiple of 2 */
-
+    /* Length of GPE blocks must be a multiple of 2 */
 
     if (ACPI_VALID_ADDRESS (AcpiGbl_FADT->XGpe0Blk.Address) &&
         (AcpiGbl_FADT->Gpe0BlkLen & 1))
     {
-        Status = AcpiCmFadtRegisterError ("(x)GPE0_BLK_LEN",
+        AcpiUtFadtRegisterError ("(x)GPE0_BLK_LEN",
                         (UINT32) AcpiGbl_FADT->Gpe0BlkLen,
                         ACPI_FADT_OFFSET (Gpe0BlkLen));
     }
@@ -246,54 +232,68 @@ AcpiCmValidateFadt (
     if (ACPI_VALID_ADDRESS (AcpiGbl_FADT->XGpe1Blk.Address) &&
         (AcpiGbl_FADT->Gpe1BlkLen & 1))
     {
-        Status = AcpiCmFadtRegisterError ("(x)GPE1_BLK_LEN",
+        AcpiUtFadtRegisterError ("(x)GPE1_BLK_LEN",
                         (UINT32) AcpiGbl_FADT->Gpe1BlkLen,
                         ACPI_FADT_OFFSET (Gpe1BlkLen));
     }
 
-    return (Status);
+    return (AE_OK);
 }
 
 
 /******************************************************************************
  *
- * FUNCTION:    AcpiCmTerminate
+ * FUNCTION:    AcpiUtTerminate
  *
  * PARAMETERS:  none
  *
  * RETURN:      none
  *
- * DESCRIPTION: free memory allocated for table storage.
+ * DESCRIPTION: Free global memory
  *
  ******************************************************************************/
 
-void
-AcpiCmTerminate (void)
+static void
+AcpiUtTerminate (
+    void)
 {
+    ACPI_GPE_BLOCK_INFO     *GpeBlock;
+    ACPI_GPE_BLOCK_INFO     *NextGpeBlock;
+    ACPI_GPE_XRUPT_INFO     *GpeXruptInfo;
+    ACPI_GPE_XRUPT_INFO     *NextGpeXruptInfo;
 
-    FUNCTION_TRACE ("CmTerminate");
+
+    ACPI_FUNCTION_TRACE ("UtTerminate");
 
 
     /* Free global tables, etc. */
+    /* Free global GPE blocks and related info structures */
 
-    if (AcpiGbl_Gpe0EnableRegisterSave)
+    GpeXruptInfo = AcpiGbl_GpeXruptListHead;
+    while (GpeXruptInfo)
     {
-        AcpiCmFree (AcpiGbl_Gpe0EnableRegisterSave);
-    }
+        GpeBlock = GpeXruptInfo->GpeBlockListHead;
+        while (GpeBlock)
+        {
+            NextGpeBlock = GpeBlock->Next;
+            ACPI_MEM_FREE (GpeBlock->EventInfo);
+            ACPI_MEM_FREE (GpeBlock->RegisterInfo);
+            ACPI_MEM_FREE (GpeBlock);
 
-    if (AcpiGbl_Gpe1EnableRegisterSave)
-    {
-        AcpiCmFree (AcpiGbl_Gpe1EnableRegisterSave);
+            GpeBlock = NextGpeBlock;
+        }
+        NextGpeXruptInfo = GpeXruptInfo->Next;
+        ACPI_MEM_FREE (GpeXruptInfo);
+        GpeXruptInfo = NextGpeXruptInfo;
     }
-
 
     return_VOID;
 }
 
 
-/******************************************************************************
+/*******************************************************************************
  *
- * FUNCTION:    AcpiCmSubsystemShutdown
+ * FUNCTION:    AcpiUtSubsystemShutdown
  *
  * PARAMETERS:  none
  *
@@ -304,56 +304,51 @@ AcpiCmTerminate (void)
  *
  ******************************************************************************/
 
-ACPI_STATUS
-AcpiCmSubsystemShutdown (void)
+void
+AcpiUtSubsystemShutdown (
+    void)
 {
 
-    FUNCTION_TRACE ("CmSubsystemShutdown");
+    ACPI_FUNCTION_TRACE ("UtSubsystemShutdown");
 
     /* Just exit if subsystem is already shutdown */
 
     if (AcpiGbl_Shutdown)
     {
-        DEBUG_PRINT (ACPI_ERROR, ("ACPI Subsystem is already terminated\n"));
-        return_ACPI_STATUS (AE_OK);
+        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
+            "ACPI Subsystem is already terminated\n"));
+        return_VOID;
     }
 
     /* Subsystem appears active, go ahead and shut it down */
 
     AcpiGbl_Shutdown = TRUE;
-    DEBUG_PRINT (ACPI_INFO, ("Shutting down ACPI Subsystem...\n"));
-
-
-    /* Close the Namespace */
-
-    AcpiNsTerminate ();
+    ACPI_DEBUG_PRINT ((ACPI_DB_INFO,
+        "Shutting down ACPI Subsystem...\n"));
 
     /* Close the AcpiEvent Handling */
 
     AcpiEvTerminate ();
 
+    /* Close the Namespace */
+
+    AcpiNsTerminate ();
+
     /* Close the globals */
 
-    AcpiCmTerminate ();
+    AcpiUtTerminate ();
 
-    /* Flush the local cache(s) */
+    /* Purge the local caches */
 
-    AcpiCmDeleteGenericStateCache ();
-    AcpiCmDeleteObjectCache ();
-    AcpiDsDeleteWalkStateCache ();
-
-    /* Close the Parser */
-
-    /* TBD: [Restructure] AcpiPsTerminate () */
-
-    AcpiPsDeleteParseCache ();
+    (void) AcpiPurgeCachedObjects ();
 
     /* Debug only - display leftover memory allocation, if any */
-#ifdef ENABLE_DEBUGGER
-    AcpiCmDumpCurrentAllocations (ACPI_UINT32_MAX, NULL);
+
+#ifdef ACPI_DBG_TRACK_ALLOCATIONS
+    AcpiUtDumpAllocations (ACPI_UINT32_MAX, NULL);
 #endif
 
-    return_ACPI_STATUS (AE_OK);
+    return_VOID;
 }
 
 

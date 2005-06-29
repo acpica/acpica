@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: utalloc - local cache and memory allocation routines
- *              $Revision: 1.141 $
+ *              $Revision: 1.142 $
  *
  *****************************************************************************/
 
@@ -122,7 +122,7 @@
         ACPI_MODULE_NAME    ("utalloc")
 
 
-/******************************************************************************
+/*******************************************************************************
  *
  * FUNCTION:    AcpiUtReleaseToCache
  *
@@ -193,7 +193,7 @@ AcpiUtReleaseToCache (
 }
 
 
-/******************************************************************************
+/*******************************************************************************
  *
  * FUNCTION:    AcpiUtAcquireFromCache
  *
@@ -285,7 +285,7 @@ AcpiUtAcquireFromCache (
 
 
 #ifdef ACPI_ENABLE_OBJECT_CACHE
-/******************************************************************************
+/*******************************************************************************
  *
  * FUNCTION:    AcpiUtDeleteGenericCache
  *
@@ -911,7 +911,7 @@ AcpiUtRemoveAllocation (
         /* No allocations! */
 
         _ACPI_REPORT_ERROR (Module, Line, Component,
-                ("UtRemoveAllocation: Empty allocation list, nothing to free!\n"));
+            ("UtRemoveAllocation: Empty allocation list, nothing to free!\n"));
 
         return_ACPI_STATUS (AE_OK);
     }
@@ -1056,8 +1056,8 @@ AcpiUtDumpAllocations (
             if (Descriptor->DescriptorId != ACPI_DESC_TYPE_CACHED)
             {
                 AcpiOsPrintf ("%p Len %04X %9.9s-%d [%s] ",
-                            Descriptor, Element->Size, Element->Module,
-                            Element->Line, AcpiUtGetDescriptorName (Descriptor));
+                    Descriptor, Element->Size, Element->Module,
+                    Element->Line, AcpiUtGetDescriptorName (Descriptor));
 
                 /* Most of the elements will be Operand objects. */
 
@@ -1065,18 +1065,18 @@ AcpiUtDumpAllocations (
                 {
                 case ACPI_DESC_TYPE_OPERAND:
                     AcpiOsPrintf ("%12.12s R%hd",
-                            AcpiUtGetTypeName (Descriptor->Object.Common.Type),
-                            Descriptor->Object.Common.ReferenceCount);
+                        AcpiUtGetTypeName (Descriptor->Object.Common.Type),
+                        Descriptor->Object.Common.ReferenceCount);
                     break;
 
                 case ACPI_DESC_TYPE_PARSER:
                     AcpiOsPrintf ("AmlOpcode %04hX",
-                            Descriptor->Op.Asl.AmlOpcode);
+                        Descriptor->Op.Asl.AmlOpcode);
                     break;
 
                 case ACPI_DESC_TYPE_NAMED:
                     AcpiOsPrintf ("%4.4s",
-                            AcpiUtGetNodeName (&Descriptor->Node));
+                        AcpiUtGetNodeName (&Descriptor->Node));
                     break;
 
                 default:
@@ -1108,7 +1108,6 @@ AcpiUtDumpAllocations (
 
     return_VOID;
 }
-
 
 #endif  /* #ifdef ACPI_DBG_TRACK_ALLOCATIONS */
 

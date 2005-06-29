@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: utcopy - Internal to external object translation utilities
- *              $Revision: 1.118 $
+ *              $Revision: 1.119 $
  *
  *****************************************************************************/
 
@@ -128,16 +128,19 @@
  *
  * FUNCTION:    AcpiUtCopyIsimpleToEsimple
  *
- * PARAMETERS:  *InternalObject     - Pointer to the object we are examining
- *              *Buffer             - Where the object is returned
- *              *SpaceUsed          - Where the data length is returned
+ * PARAMETERS:  InternalObject      - Source object to be copied
+ *              ExternalObject      - Where to return the copied object
+ *              DataSpace           - Where object data is returned (such as
+ *                                    buffer and string data)
+ *              BufferSpaceUsed     - Length of DataSpace that was used
  *
  * RETURN:      Status
  *
- * DESCRIPTION: This function is called to place a simple object in a user
- *              buffer.
+ * DESCRIPTION: This function is called to copy a simple internal object to
+ *              an external object.
  *
- *              The buffer is assumed to have sufficient space for the object.
+ *              The DataSpace buffer is assumed to have sufficient space for
+ *              the object.
  *
  ******************************************************************************/
 
@@ -183,10 +186,12 @@ AcpiUtCopyIsimpleToEsimple (
 
         ExternalObject->String.Pointer = (char *) DataSpace;
         ExternalObject->String.Length  = InternalObject->String.Length;
-        *BufferSpaceUsed = ACPI_ROUND_UP_TO_NATIVE_WORD ((ACPI_SIZE) InternalObject->String.Length + 1);
+        *BufferSpaceUsed = ACPI_ROUND_UP_TO_NATIVE_WORD (
+                            (ACPI_SIZE) InternalObject->String.Length + 1);
 
-        ACPI_MEMCPY ((void *) DataSpace, (void *) InternalObject->String.Pointer,
-                    (ACPI_SIZE) InternalObject->String.Length + 1);
+        ACPI_MEMCPY ((void *) DataSpace,
+            (void *) InternalObject->String.Pointer,
+            (ACPI_SIZE) InternalObject->String.Length + 1);
         break;
 
 
@@ -194,10 +199,12 @@ AcpiUtCopyIsimpleToEsimple (
 
         ExternalObject->Buffer.Pointer = DataSpace;
         ExternalObject->Buffer.Length  = InternalObject->Buffer.Length;
-        *BufferSpaceUsed = ACPI_ROUND_UP_TO_NATIVE_WORD (InternalObject->String.Length);
+        *BufferSpaceUsed = ACPI_ROUND_UP_TO_NATIVE_WORD (
+                            InternalObject->String.Length);
 
-        ACPI_MEMCPY ((void *) DataSpace, (void *) InternalObject->Buffer.Pointer,
-                    InternalObject->Buffer.Length);
+        ACPI_MEMCPY ((void *) DataSpace,
+            (void *) InternalObject->Buffer.Pointer,
+            InternalObject->Buffer.Length);
         break;
 
 
@@ -290,7 +297,7 @@ AcpiUtCopyIelementToEelement (
 
     ThisIndex    = State->Pkg.Index;
     TargetObject = (ACPI_OBJECT *)
-                    &((ACPI_OBJECT *)(State->Pkg.DestObject))->Package.Elements[ThisIndex];
+        &((ACPI_OBJECT *)(State->Pkg.DestObject))->Package.Elements[ThisIndex];
 
     switch (ObjectType)
     {
@@ -315,7 +322,8 @@ AcpiUtCopyIelementToEelement (
          */
         TargetObject->Type              = ACPI_TYPE_PACKAGE;
         TargetObject->Package.Count     = SourceObject->Package.Count;
-        TargetObject->Package.Elements  = ACPI_CAST_PTR (ACPI_OBJECT, Info->FreeSpace);
+        TargetObject->Package.Elements  =
+            ACPI_CAST_PTR (ACPI_OBJECT, Info->FreeSpace);
 
         /*
          * Pass the new package object back to the package walk routine
@@ -327,7 +335,8 @@ AcpiUtCopyIelementToEelement (
          * update the buffer length counter
          */
         ObjectSpace = ACPI_ROUND_UP_TO_NATIVE_WORD (
-                            (ACPI_SIZE) TargetObject->Package.Count * sizeof (ACPI_OBJECT));
+                            (ACPI_SIZE) TargetObject->Package.Count *
+                            sizeof (ACPI_OBJECT));
         break;
 
 
@@ -345,9 +354,9 @@ AcpiUtCopyIelementToEelement (
  *
  * FUNCTION:    AcpiUtCopyIpackageToEpackage
  *
- * PARAMETERS:  *InternalObject     - Pointer to the object we are returning
- *              *Buffer             - Where the object is returned
- *              *SpaceUsed          - Where the object length is returned
+ * PARAMETERS:  InternalObject      - Pointer to the object we are returning
+ *              Buffer              - Where the object is returned
+ *              SpaceUsed           - Where the object length is returned
  *
  * RETURN:      Status
  *
@@ -383,13 +392,15 @@ AcpiUtCopyIpackageToEpackage (
      * Free space begins right after the first package
      */
     Info.Length      = ACPI_ROUND_UP_TO_NATIVE_WORD (sizeof (ACPI_OBJECT));
-    Info.FreeSpace   = Buffer + ACPI_ROUND_UP_TO_NATIVE_WORD (sizeof (ACPI_OBJECT));
+    Info.FreeSpace   = Buffer + ACPI_ROUND_UP_TO_NATIVE_WORD (
+                                    sizeof (ACPI_OBJECT));
     Info.ObjectSpace = 0;
     Info.NumPackages = 1;
 
     ExternalObject->Type             = ACPI_GET_OBJECT_TYPE (InternalObject);
     ExternalObject->Package.Count    = InternalObject->Package.Count;
-    ExternalObject->Package.Elements = ACPI_CAST_PTR (ACPI_OBJECT, Info.FreeSpace);
+    ExternalObject->Package.Elements = ACPI_CAST_PTR (ACPI_OBJECT,
+                                            Info.FreeSpace);
 
     /*
      * Leave room for an array of ACPI_OBJECTS in the buffer
@@ -401,7 +412,7 @@ AcpiUtCopyIpackageToEpackage (
                             ACPI_ROUND_UP_TO_NATIVE_WORD (sizeof (ACPI_OBJECT));
 
     Status = AcpiUtWalkPackageTree (InternalObject, ExternalObject,
-                            AcpiUtCopyIelementToEelement, &Info);
+                AcpiUtCopyIelementToEelement, &Info);
 
     *SpaceUsed = Info.Length;
     return_ACPI_STATUS (Status);
@@ -412,8 +423,8 @@ AcpiUtCopyIpackageToEpackage (
  *
  * FUNCTION:    AcpiUtCopyIobjectToEobject
  *
- * PARAMETERS:  *InternalObject     - The internal object to be converted
- *              *BufferPtr          - Where the object is returned
+ * PARAMETERS:  InternalObject      - The internal object to be converted
+ *              BufferPtr           - Where the object is returned
  *
  * RETURN:      Status
  *
@@ -448,10 +459,10 @@ AcpiUtCopyIobjectToEobject (
          * Build a simple object (no nested objects)
          */
         Status = AcpiUtCopyIsimpleToEsimple (InternalObject,
-                        (ACPI_OBJECT *) RetBuffer->Pointer,
-                        ((UINT8 *) RetBuffer->Pointer +
-                        ACPI_ROUND_UP_TO_NATIVE_WORD (sizeof (ACPI_OBJECT))),
-                        &RetBuffer->Length);
+                    (ACPI_OBJECT *) RetBuffer->Pointer,
+                    ((UINT8 *) RetBuffer->Pointer +
+                    ACPI_ROUND_UP_TO_NATIVE_WORD (sizeof (ACPI_OBJECT))),
+                    &RetBuffer->Length);
         /*
          * build simple does not include the object size in the length
          * so we add it in here
@@ -467,8 +478,8 @@ AcpiUtCopyIobjectToEobject (
  *
  * FUNCTION:    AcpiUtCopyEsimpleToIsimple
  *
- * PARAMETERS:  *ExternalObject    - The external object to be converted
- *              *InternalObject    - Where the internal object is returned
+ * PARAMETERS:  ExternalObject      - The external object to be converted
+ *              RetInternalObject   - Where the internal object is returned
  *
  * RETURN:      Status
  *
@@ -499,7 +510,8 @@ AcpiUtCopyEsimpleToIsimple (
     case ACPI_TYPE_BUFFER:
     case ACPI_TYPE_INTEGER:
 
-        InternalObject = AcpiUtCreateInternalObject ((UINT8) ExternalObject->Type);
+        InternalObject = AcpiUtCreateInternalObject (
+                            (UINT8) ExternalObject->Type);
         if (!InternalObject)
         {
             return_ACPI_STATUS (AE_NO_MEMORY);
@@ -572,7 +584,6 @@ ErrorExit:
 
 
 #ifdef ACPI_FUTURE_IMPLEMENTATION
-
 /* Code to convert packages that are parameters to control methods */
 
 /*******************************************************************************

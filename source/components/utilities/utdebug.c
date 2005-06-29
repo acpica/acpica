@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: utdebug - Debug print routines
- *              $Revision: 1.113 $
+ *              $Revision: 1.114 $
  *
  *****************************************************************************/
 
@@ -129,7 +129,7 @@ static char     *AcpiGbl_FnEntryStr = "----Entry";
 static char     *AcpiGbl_FnExitStr  = "----Exit-";
 
 
-/*****************************************************************************
+/*******************************************************************************
  *
  * FUNCTION:    AcpiUtInitStackPtrTrace
  *
@@ -137,9 +137,9 @@ static char     *AcpiGbl_FnExitStr  = "----Exit-";
  *
  * RETURN:      None
  *
- * DESCRIPTION: Save the current stack pointer
+ * DESCRIPTION: Save the current CPU stack pointer at subsystem startup
  *
- ****************************************************************************/
+ ******************************************************************************/
 
 void
 AcpiUtInitStackPtrTrace (
@@ -152,7 +152,7 @@ AcpiUtInitStackPtrTrace (
 }
 
 
-/*****************************************************************************
+/*******************************************************************************
  *
  * FUNCTION:    AcpiUtTrackStackPtr
  *
@@ -160,9 +160,9 @@ AcpiUtInitStackPtrTrace (
  *
  * RETURN:      None
  *
- * DESCRIPTION: Save the current stack pointer
+ * DESCRIPTION: Save the current CPU stack pointer
  *
- ****************************************************************************/
+ ******************************************************************************/
 
 void
 AcpiUtTrackStackPtr (
@@ -185,16 +185,16 @@ AcpiUtTrackStackPtr (
 }
 
 
-/*****************************************************************************
+/*******************************************************************************
  *
  * FUNCTION:    AcpiUtDebugPrint
  *
- * PARAMETERS:  DebugLevel          - Requested debug print level
- *              ProcName            - Caller's procedure name
- *              ModuleName          - Caller's module name (for error output)
+ * PARAMETERS:  RequestedDebugLevel - Requested debug print level
  *              LineNumber          - Caller's line number (for error output)
- *              ComponentId         - Caller's component ID (for error output)
- *
+ *              DbgInfo             - Contains:
+ *                  ProcName            - Caller's procedure name
+ *                  ModuleName          - Caller's module name
+ *                  ComponentId         - Caller's component ID
  *              Format              - Printf format field
  *              ...                 - Optional printf arguments
  *
@@ -203,7 +203,7 @@ AcpiUtTrackStackPtr (
  * DESCRIPTION: Print error message with prefix consisting of the module name,
  *              line number, and component ID.
  *
- ****************************************************************************/
+ ******************************************************************************/
 
 void  ACPI_INTERNAL_VAR_XFACE
 AcpiUtDebugPrint (
@@ -262,7 +262,7 @@ AcpiUtDebugPrint (
 }
 
 
-/*****************************************************************************
+/*******************************************************************************
  *
  * FUNCTION:    AcpiUtDebugPrintRaw
  *
@@ -280,7 +280,7 @@ AcpiUtDebugPrint (
  * DESCRIPTION: Print message with no headers.  Has same interface as
  *              DebugPrint so that the same macros can be used.
  *
- ****************************************************************************/
+ ******************************************************************************/
 
 void  ACPI_INTERNAL_VAR_XFACE
 AcpiUtDebugPrintRaw (
@@ -304,7 +304,7 @@ AcpiUtDebugPrintRaw (
 }
 
 
-/*****************************************************************************
+/*******************************************************************************
  *
  * FUNCTION:    AcpiUtTrace
  *
@@ -319,7 +319,7 @@ AcpiUtDebugPrintRaw (
  * DESCRIPTION: Function entry trace.  Prints only if TRACE_FUNCTIONS bit is
  *              set in DebugLevel
  *
- ****************************************************************************/
+ ******************************************************************************/
 
 void
 AcpiUtTrace (
@@ -335,7 +335,7 @@ AcpiUtTrace (
 }
 
 
-/*****************************************************************************
+/*******************************************************************************
  *
  * FUNCTION:    AcpiUtTracePtr
  *
@@ -351,7 +351,7 @@ AcpiUtTrace (
  * DESCRIPTION: Function entry trace.  Prints only if TRACE_FUNCTIONS bit is
  *              set in DebugLevel
  *
- ****************************************************************************/
+ ******************************************************************************/
 
 void
 AcpiUtTracePtr (
@@ -367,7 +367,7 @@ AcpiUtTracePtr (
 }
 
 
-/*****************************************************************************
+/*******************************************************************************
  *
  * FUNCTION:    AcpiUtTraceStr
  *
@@ -383,7 +383,7 @@ AcpiUtTracePtr (
  * DESCRIPTION: Function entry trace.  Prints only if TRACE_FUNCTIONS bit is
  *              set in DebugLevel
  *
- ****************************************************************************/
+ ******************************************************************************/
 
 void
 AcpiUtTraceStr (
@@ -400,7 +400,7 @@ AcpiUtTraceStr (
 }
 
 
-/*****************************************************************************
+/*******************************************************************************
  *
  * FUNCTION:    AcpiUtTraceU32
  *
@@ -416,7 +416,7 @@ AcpiUtTraceStr (
  * DESCRIPTION: Function entry trace.  Prints only if TRACE_FUNCTIONS bit is
  *              set in DebugLevel
  *
- ****************************************************************************/
+ ******************************************************************************/
 
 void
 AcpiUtTraceU32 (
@@ -433,7 +433,7 @@ AcpiUtTraceU32 (
 }
 
 
-/*****************************************************************************
+/*******************************************************************************
  *
  * FUNCTION:    AcpiUtExit
  *
@@ -448,7 +448,7 @@ AcpiUtTraceU32 (
  * DESCRIPTION: Function exit trace.  Prints only if TRACE_FUNCTIONS bit is
  *              set in DebugLevel
  *
- ****************************************************************************/
+ ******************************************************************************/
 
 void
 AcpiUtExit (
@@ -463,7 +463,7 @@ AcpiUtExit (
 }
 
 
-/*****************************************************************************
+/*******************************************************************************
  *
  * FUNCTION:    AcpiUtStatusExit
  *
@@ -479,7 +479,7 @@ AcpiUtExit (
  * DESCRIPTION: Function exit trace.  Prints only if TRACE_FUNCTIONS bit is
  *              set in DebugLevel.  Prints exit status also.
  *
- ****************************************************************************/
+ ******************************************************************************/
 
 void
 AcpiUtStatusExit (
@@ -505,7 +505,7 @@ AcpiUtStatusExit (
 }
 
 
-/*****************************************************************************
+/*******************************************************************************
  *
  * FUNCTION:    AcpiUtValueExit
  *
@@ -521,7 +521,7 @@ AcpiUtStatusExit (
  * DESCRIPTION: Function exit trace.  Prints only if TRACE_FUNCTIONS bit is
  *              set in DebugLevel.  Prints exit value also.
  *
- ****************************************************************************/
+ ******************************************************************************/
 
 void
 AcpiUtValueExit (
@@ -538,7 +538,7 @@ AcpiUtValueExit (
 }
 
 
-/*****************************************************************************
+/*******************************************************************************
  *
  * FUNCTION:    AcpiUtPtrExit
  *
@@ -547,14 +547,14 @@ AcpiUtValueExit (
  *                  ProcName            - Caller's procedure name
  *                  ModuleName          - Caller's module name
  *                  ComponentId         - Caller's component ID
- *              Value               - Value to be printed with exit msg
+ *              Ptr                 - Pointer to display
  *
  * RETURN:      None
  *
  * DESCRIPTION: Function exit trace.  Prints only if TRACE_FUNCTIONS bit is
  *              set in DebugLevel.  Prints exit value also.
  *
- ****************************************************************************/
+ ******************************************************************************/
 
 void
 AcpiUtPtrExit (
@@ -572,7 +572,7 @@ AcpiUtPtrExit (
 #endif
 
 
-/*****************************************************************************
+/*******************************************************************************
  *
  * FUNCTION:    AcpiUtDumpBuffer
  *
@@ -585,7 +585,7 @@ AcpiUtPtrExit (
  *
  * DESCRIPTION: Generic dump buffer in both hex and ascii.
  *
- ****************************************************************************/
+ ******************************************************************************/
 
 void
 AcpiUtDumpBuffer (
