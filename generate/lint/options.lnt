@@ -13,9 +13,9 @@
 -A              // ANSI C only
 +fie            // Enum is integer
 -dACPI_USE_DO_WHILE_0
--dACPI_DEBUG
+-dACPI_DEBUG_OUTPUT
 -dACPI_APPLICATION
--dENABLE_DEBUGGER
+-dACPI_DEBUGGER
 -dACPI_DISASSEMBLER
 -d_LINT=1
 

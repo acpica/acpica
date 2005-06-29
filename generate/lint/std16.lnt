@@ -3,9 +3,10 @@
 
 
 c:\acpi\generate\lint\co-msc40.lnt
-c:\acpi\generate\lint\lib-win.lnt
+//c:\acpi\generate\lint\lib-win.lnt
 
 -dMSDOS
+-dACPI_MACHINE_WIDTH=16
 //-d_MSC_VER
 
 -e747	// Compiler supports parameter conversions
