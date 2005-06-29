@@ -398,7 +398,8 @@ typedef struct acpi_op_info
 {
     UINT16                  Opcode;         /* AML opcode */
     UINT8                   Flags;          /* Opcode type, HasArgs flag */
-    char                    *Args;          /* argument format */
+    UINT32                  ParseArgs;      /* Grammar/Parse time arguments */
+    UINT32                  RuntimeArgs;    /* Interpret time arguments */
 
     DEBUG_ONLY_MEMBERS (
     char                    *Name)          /* op name (debug only) */
@@ -505,10 +506,10 @@ typedef struct acpi_parse_state
 typedef struct acpi_parse_scope
 {
     ACPI_GENERIC_OP         *Op;            /* current op being parsed */
-    char                    *NextArg;       /* next argument to parse */
     UINT8                   *ArgEnd;        /* current argument end */
     UINT8                   *PkgEnd;        /* current package end */
     struct acpi_parse_scope *Parent;        /* parent scope */
+    UINT32                  ArgList;        /* next argument to parse */
     UINT32                  ArgCount;       /* Number of fixed arguments */
 
 } ACPI_PARSE_SCOPE;
