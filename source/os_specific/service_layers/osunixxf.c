@@ -135,7 +135,7 @@
 
 
 extern FILE                    *AcpiGbl_DebugFile;
-FILE                           *AcpiGbl_OutputFile = stdout;
+FILE                           *AcpiGbl_OutputFile;
 
 
 /******************************************************************************
@@ -153,6 +153,8 @@ FILE                           *AcpiGbl_OutputFile = stdout;
 ACPI_STATUS
 AcpiOsInitialize (void)
 {
+    AcpiGbl_OutputFile = stdout;
+
     return AE_OK;
 }
 
