@@ -465,9 +465,7 @@ ACPI_STATUS
 AmlDoDefinitionBlock (
     char                *name, 
     UINT8               *addr, 
-    INT32               len,
-    LogHandle           iLstHandle, 
-    OSD_FILE            *fAsmF);
+    INT32               len);
 
 ACPI_STATUS
 AmlDoFieldElement (
