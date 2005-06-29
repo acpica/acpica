@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: evgpe - General Purpose Event handling and dispatch
- *              $Revision: 1.12 $
+ *              $Revision: 1.13 $
  *
  *****************************************************************************/
 
@@ -190,7 +190,8 @@ AcpiEvGetGpeEventInfo (
  ******************************************************************************/
 
 UINT32
-AcpiEvGpeDetect (void)
+AcpiEvGpeDetect (
+    ACPI_GPE_BLOCK_INFO     *GpeBlockListHead)
 {
     UINT32                  IntStatus = ACPI_INTERRUPT_NOT_HANDLED;
     UINT32                  i;
@@ -208,7 +209,7 @@ AcpiEvGpeDetect (void)
 
     /* Examine all GPE blocks attached to this interrupt level */
 
-    GpeBlock = AcpiGbl_GpeBlockListHead;
+    GpeBlock = GpeBlockListHead;
     while (GpeBlock)
     {
         /*
