@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exoparg3 - AML execution - opcodes with 3 arguments
- *              $Revision: 1.13 $
+ *              $Revision: 1.16 $
  *
  *****************************************************************************/
 
@@ -240,7 +240,7 @@ AcpiExOpcode_3A_1T_1R (
     ACPI_OPERAND_OBJECT     *ReturnDesc = NULL;
     char                    *Buffer;
     ACPI_STATUS             Status = AE_OK;
-    NATIVE_UINT             Index;
+    ACPI_NATIVE_UINT        Index;
     ACPI_SIZE               Length;
 
 
@@ -255,7 +255,7 @@ AcpiExOpcode_3A_1T_1R (
          * Create the return object.  The Source operand is guaranteed to be
          * either a String or a Buffer, so just use its type.
          */
-        ReturnDesc = AcpiUtCreateInternalObject (Operand[0]->Common.Type);
+        ReturnDesc = AcpiUtCreateInternalObject (ACPI_GET_OBJECT_TYPE (Operand[0]));
         if (!ReturnDesc)
         {
             Status = AE_NO_MEMORY;
@@ -264,7 +264,7 @@ AcpiExOpcode_3A_1T_1R (
 
         /* Get the Integer values from the objects */
 
-        Index = (NATIVE_UINT) Operand[1]->Integer.Value;
+        Index = (ACPI_NATIVE_UINT) Operand[1]->Integer.Value;
         Length = (ACPI_SIZE) Operand[2]->Integer.Value;
 
         /*
@@ -327,7 +327,10 @@ Cleanup:
 
     /* Set the return object and exit */
 
-    WalkState->ResultObj = ReturnDesc;
+    if (!WalkState->ResultObj)
+    {
+        WalkState->ResultObj = ReturnDesc;
+    }
     return_ACPI_STATUS (Status);
 }
 
