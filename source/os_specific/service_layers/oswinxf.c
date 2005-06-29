@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: oswinxf - Windows application interface
- *              $Revision: 1.10 $
+ *              $Revision: 1.11 $
  *
  *****************************************************************************/
 
@@ -848,38 +848,6 @@ AcpiOsQueueForExecution (
 }
 
 
-/******************************************************************************
- *
- * FUNCTION:    AcpiOsBreakpoint
- *
- * PARAMETERS:  Msg                 Message to print
- *
- * RETURN:      Status
- *
- * DESCRIPTION: Print a message and break to the debugger.
- *
- *****************************************************************************/
-
-ACPI_STATUS
-AcpiOsBreakpoint (
-    char                    *Msg)
-{
-
-    /* Print the message and do an INT 3 */
-
-    if (Msg)
-    {
-        AcpiOsPrintf ("AcpiOsBreakpoint: %s ****\n", Msg);
-    }
-    else
-    {
-        AcpiOsPrintf ("At AcpiOsBreakpoint ****\n");
-    }
-
-
-    return AE_OK;
-}
-
 
 /******************************************************************************
  *
@@ -1102,8 +1070,29 @@ AcpiOsSignal (
     void                    *Info)
 {
 
+    switch (Function)
+    {
+    case ACPI_SIGNAL_FATAL:
+        break;
+
+    case ACPI_SIGNAL_BREAKPOINT:
+
+        if (Info)
+        {
+            AcpiOsPrintf ("AcpiOsBreakpoint: %s ****\n", Info);
+        }
+        else
+        {
+            AcpiOsPrintf ("At AcpiOsBreakpoint ****\n");
+        }
+
+        break;
+    }
+
+
     return (AE_OK);
 }
+
 
 
 
