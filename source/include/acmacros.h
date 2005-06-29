@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acmacros.h - C macros for the entire subsystem.
- *       $Revision: 1.113 $
+ *       $Revision: 1.114 $
  *
  *****************************************************************************/
 
@@ -616,8 +616,8 @@
  * 1) Set name to blanks
  * 2) Copy the object name
  */
-#define ACPI_ADD_OBJECT_NAME(a,b)       MEMSET (a->Common.Name, ' ', sizeof (a->Common.Name));\
-                                        STRNCPY (a->Common.Name, AcpiGbl_NsTypeNames[b], sizeof (a->Common.Name))
+#define ACPI_ADD_OBJECT_NAME(a,b)       ACPI_MEMSET (a->Common.Name, ' ', sizeof (a->Common.Name));\
+                                        ACPI_STRNCPY (a->Common.Name, AcpiGbl_NsTypeNames[b], sizeof (a->Common.Name))
 #else
 
 #define ACPI_ADD_OBJECT_NAME(a,b)

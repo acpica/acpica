@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: aclocal.h - Internal data types used across the ACPI subsystem
- *       $Revision: 1.158 $
+ *       $Revision: 1.159 $
  *
  *****************************************************************************/
 
@@ -772,7 +772,7 @@ typedef struct acpi_parse_state
 
 #define PCI_ROOT_HID_STRING         "PNP0A03"
 
-typedef struct 
+typedef struct
 {
     UINT8                   ParentRegister;
     UINT8                   BitPosition;
@@ -783,7 +783,7 @@ typedef struct
 
 /*
  * Register IDs
- * These are the full ACPI registers 
+ * These are the full ACPI registers
  */
 #define ACPI_REGISTER_PM1_STATUS                0x01
 #define ACPI_REGISTER_PM1_ENABLE                0x02
@@ -813,7 +813,7 @@ typedef struct
 #define ACPI_BITREG_POWER_BUTTON_ENABLE         0x09
 #define ACPI_BITREG_SLEEP_BUTTON_ENABLE         0x0A
 #define ACPI_BITREG_RT_CLOCK_ENABLE             0x0B
-#define ACPI_BITREG_WAKE_ENABLE                 0x0C      
+#define ACPI_BITREG_WAKE_ENABLE                 0x0C
 
 #define ACPI_BITREG_SCI_ENABLE                  0x0D
 #define ACPI_BITREG_BUS_MASTER_RLD              0x0E
@@ -971,7 +971,6 @@ typedef struct dbmethodinfo
     NATIVE_CHAR             Pathname[128];
 
 } ACPI_DB_METHOD_INFO;
-
 
 
 #define ACPI_DB_REDIRECTABLE_OUTPUT  0x01
