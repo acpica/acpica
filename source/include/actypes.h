@@ -536,12 +536,313 @@ typedef struct
 #define NULL                (void *) 0
 #endif
 
-
-
-
 /* TBD: remove! */
 
 #include <internal.h>
 
+/*
+ * Definitions for Resource Attributes
+ */
+
+/* 
+ *  Memory Attributes 
+ */
+#define READ_ONLY_MEMORY            (UINT8)0x00
+#define READ_WRITE_MEMORY           (UINT8)0x01
+
+#define NON_CACHEABLE_MEMORY        (UINT8)0x00
+#define CACHABLE_MEMORY             (UINT8)0x01
+#define WRITE_COMBINING_MEMORY      (UINT8)0x02
+#define PREFETCHABLE_MEMORY         (UINT8)0x03
+
+/* 
+ *  IO Attributes 
+ *  The ISA IO ranges are: n000-n0FFh,  n400-n4FFh, n800-n8FFh, nC00-nCFFh.
+ *  The non-ISA IO ranges are: n100-n3FFh,  n500-n7FFh, n900-nBFFh, nCD0-nFFFh.
+ */
+#define NON_ISA_ONLY_RANGES         (UINT8)0x01
+#define ISA_ONLY_RANGES             (UINT8)0x02
+#define ENTIRE_RANGE                (NON_ISA_ONLY_RANGES | ISA_ONLY_RANGES)
+
+/*
+ *  IO Port Descriptor Decode
+ */
+#define DECODE_10                   (UINT8)0x00    /* 10-bit IO address decode */
+#define DECODE_16                   (UINT8)0x01    /* 16-bit IO address decode */
+
+/*
+ *  IRQ Attributes
+ */
+#define EDGE_SENSITIVE              (UINT8)0x00
+#define LEVEL_SENSITIVE             (UINT8)0x01
+
+#define ACTIVE_HIGH                 (UINT8)0x00
+#define ACTIVE_LOW                  (UINT8)0x01
+
+#define EXCLUSIVE                   (UINT8)0x00
+#define SHARED                      (UINT8)0x01
+
+/* 
+ *  DMA Attributes 
+ */
+#define COMPATIBILITY               (UINT8)0x00
+#define TYPE_A                      (UINT8)0x01
+#define TYPE_B                      (UINT8)0x02
+#define TYPE_F                      (UINT8)0x03
+
+#define NOT_BUS_MASTER              (UINT8)0x00
+#define BUS_MASTER                  (UINT8)0x01
+
+#define TRANSFER_8                  (UINT8)0x00
+#define TRANSFER_8_16               (UINT8)0x01
+#define TRANSFER_16                 (UINT8)0x02
+
+/*
+ * Start Dependent Functions Priority definitions
+ */
+#define GOOD_CONFIGURATION          (UINT8)0x00
+#define ACCEPTABLE_CONFIGURATION    (UINT8)0x01
+#define SUB_OPTIMAL_CONFIGURATION   (UINT8)0x02
+ 
+/* 
+ *  16, 32 and 64-bit Address Descriptor resource types 
+ */
+#define MEMORY_RANGE                (UINT8)0x00
+#define IO_RANGE                    (UINT8)0x01
+#define BUS_NUMBER_RANGE            (UINT8)0x02
+
+#define ADDRESS_NOT_FIXED           (UINT8)0x00
+#define ADDRESS_FIXED               (UINT8)0x01
+
+#define POS_DECODE                  (UINT8)0x00
+#define SUB_DECODE                  (UINT8)0x01
+
+#define PRODUCER                    (UINT8)0x00
+#define CONSUMER                    (UINT8)0x01
+
+
+/*
+ *  Structures used to describe device resources
+ */
+typedef struct
+{
+    UINT32      EdgeLevel;
+    UINT32      ActiveHighLow;
+    UINT32      SharedExclusive;
+    UINT32      NumberOfInterrupts;
+    UINT32      Interrupts[1];
+} IRQ_RESOURCE;
+
+#define IRQ_RESOURCE_LENGTH         20
+
+typedef struct
+{
+    UINT32      Type;
+    UINT32      BusMaster;
+    UINT32      Transfer;
+    UINT32      NumberOfChannels;
+    UINT32      Channels[1];
+} DMA_RESOURCE;
+
+#define DMA_RESOURCE_LENGTH         20
+
+typedef struct
+{
+    UINT32      CompatibilityPriority;
+    UINT32      PerformanceRobustness;
+} START_DEPENDENT_FUNCTIONS_RESOURCE;
+
+#define START_DEPENDENT_FUNCTIONS_RESOURCE_LENGTH       8
+
+/* 
+ * END_DEPENDENT_FUNCTIONS_RESOURCE struct is not 
+ *  needed because it has no fields
+ */
+
+#define END_DEPENDENT_FUNCTIONS_RESOURCE_LENGTH         0
+
+typedef struct
+{
+    UINT32      IoDecode;
+    UINT32      MinBaseAddress;
+    UINT32      MaxBaseAddress;
+    UINT32      Alignment;
+    UINT32      RangeLength;
+} IO_RESOURCE;
+
+#define IO_RESOURCE_LENGTH          20
+
+typedef struct
+{
+    UINT32      BaseAddress;
+    UINT32      RangeLength;
+} FIXED_IO_RESOURCE;
+
+#define FIXED_IO_RESOURCE_LENGTH    4
+
+typedef struct
+{
+    UINT32      Length;
+    UINT8       Reserved[1];
+} VENDOR_RESOURCE;
+
+#define VENDOR_RESOURCE_LENGTH      4
+
+typedef struct
+{
+    UINT32      ReadWriteAttribute;
+    UINT32      MinBaseAddress;
+    UINT32      MaxBaseAddress;
+    UINT32      Alignment;
+    UINT32      RangeLength;
+} MEMORY24_RESOURCE;
+
+#define MEMORY24_RESOURCE_LENGTH    20
+
+typedef struct
+{
+    UINT32      ReadWriteAttribute;
+    UINT32      MinBaseAddress;
+    UINT32      MaxBaseAddress;
+    UINT32      Alignment;
+    UINT32      RangeLength;
+} MEMORY32_RESOURCE;
+
+#define MEMORY32_RESOURCE_LENGTH    20
+
+typedef struct
+{
+    UINT32      ReadWriteAttribute;
+    UINT32      RangeBaseAddress;
+    UINT32      RangeLength;
+} FIXED_MEMORY32_RESOURCE;
+
+#define FIXED_MEMORY32_RESOURCE_LENGTH      12
+
+typedef struct
+{
+    UINT16      CacheAttribute;
+    UINT16      ReadWriteAttribute;
+} MEMORY_ATTRIBUTE;
+
+typedef struct
+{
+    UINT16      RangeAttribute;
+    UINT16      Reserved;
+} IO_ATTRIBUTE;
+
+typedef struct
+{
+    UINT16      Reserved1;
+    UINT16      Reserved2;
+} BUS_ATTRIBUTE; 
+
+typedef union
+{
+    MEMORY_ATTRIBUTE        Memory;
+    IO_ATTRIBUTE            Io;
+    BUS_ATTRIBUTE           Bus;
+} ATTRIBUTE_DATA;
+
+typedef struct
+{
+    UINT32          ResourceType;
+    UINT32          ProducerConsumer;
+    UINT32          Decode;
+    UINT32          MinAddressFixed;
+    UINT32          MaxAddressFixed;
+    ATTRIBUTE_DATA  Attribute;
+    UINT32          Granularity;
+    UINT32          MinAddressRange;
+    UINT32          MaxAddressRange;
+    UINT32          AddressTranslationOffset;
+    UINT32          AddressLength;
+    UINT32          ResourceSourceIndex;
+    UINT8           * ResourceSource;
+    
+} ADDRESS16_DESCRIPTOR_RESOURCE;
+
+#define ADDRESS16_DESCRIPTOR_RESOURCE_LENGTH    52
+
+typedef struct  
+{
+    UINT32          ResourceType;
+    UINT32          ProducerConsumer;
+    UINT32          Decode;
+    UINT32          MinAddressFixed;
+    UINT32          MaxAddressFixed;
+    ATTRIBUTE_DATA  Attribute;
+    UINT32          Granularity;
+    UINT32          MinAddressRange;
+    UINT32          MaxAddressRange;
+    UINT32          AddressTranslationOffset;
+    UINT32          AddressLength;
+    UINT32          ResourceSourceIndex;
+    UINT8           * ResourceSource;
+    
+} ADDRESS32_DESCRIPTOR_RESOURCE;
+
+#define ADDRESS32_DESCRIPTOR_RESOURCE_LENGTH    52
+
+typedef struct
+{
+    UINT32          ProducerConsumer;
+    UINT32          EdgeLevel;
+    UINT32          ActiveHighLow;
+    UINT32          SharedExclusive;
+    UINT32          ResourceSourceIndex;
+    UINT8           * ResourceSource;
+    UINT32          NumberOfInterrupts;
+    UINT32          Interrupts[1];
+} EXTENDED_IRQ_RESOURCE;
+
+#define EXTENDED_IRQ_RESOURCE_LENGTH    32
+
+typedef enum
+{
+    Irq,
+    Dma,
+    StartDependentFunctions,
+    EndDependentFunctions,
+    Io,
+    FixedIo,
+    VendorSpecific,
+    EndTag,
+    Memory24,
+    Memory32,
+    FixedMemory32,
+    Address16Descriptor,
+    Address32Descriptor,
+    ExtendedIrq
+} RESOURCE_TYPE;
+
+typedef union
+{
+    IRQ_RESOURCE                        Irq;
+    DMA_RESOURCE                        Dma;
+    START_DEPENDENT_FUNCTIONS_RESOURCE  StartDependentFunctions;
+    IO_RESOURCE                         Io;
+    FIXED_IO_RESOURCE                   FixedIo;
+    VENDOR_RESOURCE                     VendorSpecific;
+    MEMORY24_RESOURCE                   Memory24;
+    MEMORY32_RESOURCE                   Memory32;
+    FIXED_MEMORY32_RESOURCE             FixedMemory32;
+    ADDRESS16_DESCRIPTOR_RESOURCE       Address16Descriptor;
+    ADDRESS32_DESCRIPTOR_RESOURCE       Address32Descriptor;
+    EXTENDED_IRQ_RESOURCE               ExtendedIrq;
+} RESOURCE_DATA;
+
+typedef struct _resource_tag
+{
+    RESOURCE_TYPE           Id;
+    struct _resource_tag  * Next;
+    RESOURCE_DATA         * Data;
+} RESOURCE;
+
+#define RESOURCE_LENGTH     12
+
+/*
+ * END: Definitions for Resource Attributes
+ */
 
 #endif /* ACPITYPES_H */
