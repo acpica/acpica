@@ -431,7 +431,9 @@ EvAddressSpaceDispatch (
     ACPI_OBJECT_INTERNAL    *HandlerDesc;
     void                   *RegionContext;
 
+
     FUNCTION_TRACE ("EvAddressSpaceDispatch");
+
 
     /*
      *  Check for an installed handler
@@ -440,8 +442,7 @@ EvAddressSpaceDispatch (
 
     if (!HandlerDesc)
     {
-        DEBUG_PRINT (TRACE_OPREGION,
-            ("Dispatch address access region 0x%X, no handler\n", RegionObj));
+        DEBUG_PRINT (TRACE_OPREGION, ("Dispatch address access region 0x%X, no handler\n", RegionObj));
         return_ACPI_STATUS(AE_EXIST);
     }
 
@@ -449,33 +450,34 @@ EvAddressSpaceDispatch (
      *  It may be the case that the region has never been initialized
      *  Some types of regions require special init code
      */
-    if (!(RegionObj->Region.RegionFlags & REGION_INITIALIZED)) {
+    if (!(RegionObj->Region.RegionFlags & REGION_INITIALIZED)) 
+    {
         /*
          *  This region has not been initialized yet, do it
          */
         RegionSetup = HandlerDesc->AddrHandler.RegionSetupFunction;
-        if (!RegionSetup) {
+        if (!RegionSetup) 
+        {
             /*
              *  Bad news, no init routine and not init'd
              */
-		    DEBUG_PRINT (ACPI_ERROR,
-                ("EvAddressSpaceDispatch: No init routine for region %X\n", 
-                  RegionObj));
-            return_ACPI_STATUS(AE_UNKNOWN_STATUS);
+            DEBUG_PRINT (ACPI_ERROR, ("EvAddressSpaceDispatch: No init routine for region %X\n", 
+                            RegionObj));
+            return_ACPI_STATUS (AE_UNKNOWN_STATUS);
         }
-        Status = RegionSetup (  RegionObj,
-                                ACPI_REGION_ACTIVATE,
+
+        Status = RegionSetup (RegionObj, ACPI_REGION_ACTIVATE,
                                 HandlerDesc->AddrHandler.InstallTimeContext,
                                 &RegionContext);
         /*
          *  Init routine may fail
          */
-	    if (ACPI_FAILURE (Status))
-	    {
-		    DEBUG_PRINT (ACPI_ERROR, ("EvAddressSpaceDispatch: %s from region init, SpaceID %d\n", 
-						    CmFormatException (Status), RegionObj->Region.SpaceId));
+        if (ACPI_FAILURE (Status))
+        {
+            DEBUG_PRINT (ACPI_ERROR, ("EvAddressSpaceDispatch: %s from region init, SpaceID %d\n", 
+                            CmFormatException (Status), RegionObj->Region.SpaceId));
             return_ACPI_STATUS(Status);
-	    }
+        }
 
         /*
          *  Save the returned context for use in all accesses to the region
@@ -507,11 +509,11 @@ EvAddressSpaceDispatch (
      */
     Status = Handler (Function, Address, BitWidth, Value, HandlerDesc->AddrHandler.Context);
 
-	if (ACPI_FAILURE (Status))
-	{
-		DEBUG_PRINT (ACPI_ERROR, ("EvAddressSpaceDispatch: %s from handler, SpaceID %d\n", 
-						CmFormatException (Status), RegionObj->Region.SpaceId));
-	}
+    if (ACPI_FAILURE (Status))
+    {
+        DEBUG_PRINT (ACPI_ERROR, ("EvAddressSpaceDispatch: %s from handler, SpaceID %d\n", 
+                        CmFormatException (Status), RegionObj->Region.SpaceId));
+    }
 
     if (!(HandlerDesc->AddrHandler.Flags & ADDR_HANDLER_DEFAULT_INSTALLED))
     {
@@ -548,7 +550,9 @@ EvDisassociateRegionFromHandler(
     void                   *RegionContext;
     ACPI_STATUS             Status;
 
+
     FUNCTION_TRACE ("EvDisassociateRegionAndHandler");
+
 
     /*
      *  Get the address handler from the region object
@@ -601,15 +605,15 @@ EvDisassociateRegionFromHandler(
             /*
              *  Init routine may fail
              */
-	        if (ACPI_FAILURE (Status))
-	        {
-		        DEBUG_PRINT (ACPI_ERROR,
+            if (ACPI_FAILURE (Status))
+            {
+                DEBUG_PRINT (ACPI_ERROR,
                     ("EvDisassociateRegionFromHandler: %s from region init, SpaceID %d\n", 
-					 CmFormatException (Status), RegionObj->Region.SpaceId));
+                     CmFormatException (Status), RegionObj->Region.SpaceId));
                 /*
                  *  Just ignore failures for now
                  */
-	        }
+            }
 
             /*
              *  Remove handler reference in the region
@@ -645,6 +649,7 @@ EvDisassociateRegionFromHandler(
     return_VOID;
 }
 
+
 /*****************************************************************************
  * 
  * FUNCTION:    EvSystemMemoryRegionSetup
@@ -667,18 +672,25 @@ EvSystemMemoryRegionSetup (
     void                        *HandlerContext,
     void                        **ReturnContext)
 {
+
     FUNCTION_TRACE ("EvSystemMemoryRegionSetup");
 
-    if (Function == ACPI_REGION_DEACTIVATE) {
+
+    if (Function == ACPI_REGION_DEACTIVATE) 
+    {
         RegionObj->Region.RegionFlags &= ~(REGION_INITIALIZED);
         *ReturnContext = NULL;
-    } else {
+    } 
+    
+    else 
+    {
         RegionObj->Region.RegionFlags |= REGION_INITIALIZED;
         *ReturnContext = HandlerContext;
     }
 
     return_ACPI_STATUS (AE_OK);
 }
+
 
 /*****************************************************************************
  * 
@@ -702,18 +714,24 @@ EvIoSpaceRegionSetup (
     void                        *HandlerContext,
     void                        **ReturnContext)
 {
+
     FUNCTION_TRACE ("EvIoSpaceRegionSetup");
 
-    if (Function == ACPI_REGION_DEACTIVATE) {
+
+    if (Function == ACPI_REGION_DEACTIVATE) 
+    {
         RegionObj->Region.RegionFlags &= ~(REGION_INITIALIZED);
         *ReturnContext = NULL;
-    } else {
+    } 
+    else 
+    {
         RegionObj->Region.RegionFlags |= REGION_INITIALIZED;
         *ReturnContext = HandlerContext;
     }
 
     return_ACPI_STATUS (AE_OK);
 }
+
 
 /*****************************************************************************
  * 
@@ -727,6 +745,8 @@ EvIoSpaceRegionSetup (
  * RETURN:      Status
  *
  * DESCRIPTION: Do any prep work for region handling
+ *              
+ * MUTEX:       Assumes namespace is locked
  *
  ****************************************************************************/
 
@@ -743,23 +763,26 @@ EvPciConfigRegionSetup (
     ACPI_OBJECT_INTERNAL   *HandlerObj;
     NAME_TABLE_ENTRY       *SearchScope;
 
+
     FUNCTION_TRACE ("EvPciConfigRegionSetup");
+
 
     HandlerObj = RegionObj->Region.AddrHandler;
 
-    if(!HandlerObj) {
+    if(!HandlerObj) 
+    {
         /*
          *  No Handler ... bummer....
          *
          *  This cannot happen because the dispatch routine checks before
          *  we get here, but just in case.
          */
-        DEBUG_PRINT (TRACE_OPREGION,
-            ("Attempting to init a region 0x%X, with no handler\n", RegionObj));
+        DEBUG_PRINT (TRACE_OPREGION, ("Attempting to init a region 0x%X, with no handler\n", RegionObj));
         return_ACPI_STATUS(AE_EXIST);
     }
 
-    if (Function == ACPI_REGION_DEACTIVATE) {
+    if (Function == ACPI_REGION_DEACTIVATE) 
+    {
         /*
          *  For right now we just free the allocated space
          */
@@ -788,6 +811,9 @@ EvPciConfigRegionSetup (
     ACPI_ASSERT(RegionObj->Region.Nte);
 
     SearchScope = RegionObj->Region.Nte->ParentEntry;
+
+
+    CmReleaseMutex (MTX_NAMESPACE);
 
     Status = EvaluateNumeric (METHOD_NAME__ADR, SearchScope, &Temp);
     /*
@@ -829,11 +855,14 @@ EvPciConfigRegionSetup (
         PCIContext->Bus = Temp;
     }
 
+    CmAcquireMutex (MTX_NAMESPACE);
+
     *ReturnContext = PCIContext;
 
     RegionObj->Region.RegionFlags |= REGION_INITIALIZED;
     return_ACPI_STATUS (AE_OK);
 }
+
 
 /*****************************************************************************
  * 
@@ -857,12 +886,17 @@ EvDefaultRegionSetup (
     void                        *HandlerContext,
     void                        **ReturnContext)
 {
+
     FUNCTION_TRACE ("EvDefaultRegionSetup");
 
-    if (Function == ACPI_REGION_DEACTIVATE) {
+
+    if (Function == ACPI_REGION_DEACTIVATE) 
+    {
         RegionObj->Region.RegionFlags &= ~(REGION_INITIALIZED);
         *ReturnContext = NULL;
-    } else {
+    } 
+    else 
+    {
         RegionObj->Region.RegionFlags |= REGION_INITIALIZED;
         *ReturnContext = HandlerContext;
     }
@@ -911,6 +945,10 @@ EvAssociateRegionAndHandler(
     /*
      *  set the region's handler
      */
+
+/*
+    HandlerObj->Common.ReferenceCount = (UINT16) (HandlerObj->Common.ReferenceCount + RegionObj->Common.ReferenceCount - 1);
+*/
     RegionObj->Region.AddrHandler = HandlerObj;
 
     /*
@@ -1107,7 +1145,9 @@ EvInitializeRegion (
     NAME_TABLE_ENTRY       *RegEntry;
     ACPI_NAME              *RegNamePtr = (ACPI_NAME *) METHOD_NAME__REG;
 
+
     FUNCTION_TRACE ("EvInitializeRegion");
+
 
     if (!RegionObj)
     {
