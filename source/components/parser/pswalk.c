@@ -515,7 +515,7 @@ PsWalkParsedAml (
 
     WalkList.WalkState = NULL;
 
-    WalkState = PsCreateWalkState (EndOp, MthDesc, &WalkList);
+    WalkState = DsCreateWalkState (EndOp, MthDesc, &WalkList);
     if (!WalkState)
     {
         return_ACPI_STATUS (AE_NO_MEMORY);
@@ -567,7 +567,7 @@ PsWalkParsedAml (
 
         BREAKPOINT3;
 
-        WalkState = PsPopWalkState (&WalkList);
+        WalkState = DsPopWalkState (&WalkList);
         ReturnDesc = WalkState->ReturnDesc;     /* Extract return value before we delete WalkState */
 
         DEBUG_PRINT (TRACE_PARSE, ("PsWalkParsedAml: ReturnValue=%p, State=%p\n", WalkState->ReturnDesc, WalkState));
@@ -602,7 +602,7 @@ PsWalkParsedAml (
 
          /* Delete this walk state and all linked control states */
 
-        PsDeleteWalkState (WalkState);
+        DsDeleteWalkState (WalkState);
 
        /* Check if we have restarted a preempted walk */
 
