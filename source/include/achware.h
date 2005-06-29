@@ -310,13 +310,28 @@ HwObtainSleepTypeRegisterData (
 /* Cx State Prototypes */
 
 ACPI_STATUS
-HwIa32SetCx (
-    UINT32                  CxState);
+HwIa32EnterC1(
+    ACPI_IO_ADDRESS         PBlkAddress,
+	UINT32					*PmTimerTicks);
+
+ACPI_STATUS
+HwIa32EnterC2(
+    ACPI_IO_ADDRESS         PBlkAddress,
+	UINT32					*PmTimerTicks);
+
+ACPI_STATUS
+HwIa32EnterC3(
+    ACPI_IO_ADDRESS         PBlkAddress,
+	UINT32					*PmTimerTicks);
 
 ACPI_STATUS
 HwIa32EnterCx (
     ACPI_IO_ADDRESS         PBlkAddress,
 	UINT32					*PmTimerTicks);
+
+ACPI_STATUS
+HwIa32SetCx (
+    UINT32                  CxState);
 
 ACPI_STATUS
 HwIa32GetCxInfo (
