@@ -164,8 +164,7 @@ AcpiInitialize (void)
     AcpiInstallAddressSpaceHandler (REGION_SMBus, AmlSmBusSpaceHandler, NULL);
 
 
-    FUNCTION_STATUS_EXIT (AE_OK);
-    return AE_OK;
+    return_ACPI_STATUS (AE_OK);
 }
 
 
@@ -211,8 +210,7 @@ AcpiTerminate (void)
     BREAKPOINT3;
 
 
-    FUNCTION_STATUS_EXIT (AE_OK);
-    return AE_OK;
+    return_ACPI_STATUS (AE_OK);
 }
 
 
@@ -250,8 +248,7 @@ AcpiGetSystemInfo (
     if ((!OutBuffer)          ||
         (!OutBuffer->Pointer))
     {
-        FUNCTION_EXIT;
-        return AE_BAD_PARAMETER;
+        return_ACPI_STATUS (AE_BAD_PARAMETER);
     }
 
     if (OutBuffer->Length < sizeof (ACPI_SYSTEM_INFO)) 
@@ -262,8 +259,7 @@ AcpiGetSystemInfo (
          */
         OutBuffer->Length = sizeof (ACPI_SYSTEM_INFO);
 
-        FUNCTION_EXIT;
-        return AE_BUFFER_OVERFLOW;
+        return_ACPI_STATUS (AE_BUFFER_OVERFLOW);
     }
 
 
@@ -291,8 +287,6 @@ AcpiGetSystemInfo (
     InfoPtr->DebugLayer         = DebugLayer;
     InfoPtr->DebugLevel         = DebugLevel;
 
-    FUNCTION_EXIT;
-    return AE_OK;
+    return_ACPI_STATUS (AE_OK);
 }
-
 
