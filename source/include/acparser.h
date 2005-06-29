@@ -134,74 +134,12 @@
 
 #define ACPI_METHOD_ARG_MASK        (0x7)
 
-
-
-/*
- * iemstack - method stack utilities
- */
-
 /* For PsxMthStackSetValue */
 
 #define MTH_TYPE_LOCAL              0
 #define MTH_TYPE_ARG                1
 
 
-ACPI_STATUS
-PsxMthStackDeleteArgs (
-    ACPI_WALK_STATE         *WalkState);
-
-BOOLEAN
-PsxIsMethodValue (
-    ACPI_OBJECT_INTERNAL    *ObjDesc);
-
-INT32
-PsxMthStackLevel (
-    void);
-
-ACPI_OBJECT_TYPE
-PsxMthStackGetType (
-    UINT32                  Type,
-    UINT32                  Index);
-
-ACPI_STATUS
-PsxMthStackGetValue (
-    UINT32                  Type,
-    UINT32                  Index, 
-    ACPI_OBJECT_INTERNAL    *ObjDesc);
-
-ACPI_STATUS
-PsxMthStackSetValue (
-    UINT32                  Type,
-    UINT32                  Index, 
-    ACPI_OBJECT_INTERNAL    *ObjDesc, 
-    ACPI_OBJECT_INTERNAL    *ObjDesc2);
-
-ACPI_STATUS
-PsxMthStackPop (
-    void);
-
-ACPI_STATUS
-PsxMthStackPush (
-    ACPI_OBJECT_INTERNAL    **Params);
-
-ACPI_STATUS
-PsxMthStackDeleteValue (
-    UINT32                  Type,
-    UINT32                  Index);
-
-ACPI_STATUS
-PsxMthStackInitArgs (
-    ACPI_OBJECT_INTERNAL    **Params,
-    UINT32                  ParamCount);
-
-NAME_TABLE_ENTRY *
-PsxMthStackGetNte (
-    UINT32                  Type,
-    UINT32                  Index);
-
-ACPI_STATUS
-PsxMthStackInit (
-    ACPI_WALK_STATE         *WalkState);
 
 
 /* psapi - Parser external interfaces */
@@ -221,19 +159,10 @@ ACPI_STATUS
 PsxGetRegionData (
     ACPI_OBJECT_INTERNAL    *RgnDesc);
 
-char *
-PsGetOpcodeName (
-    INT32                   Opcode);
-
 
 #ifndef _RPARSER
 
-/******************************************************************************
- * 
- * Parser to Interpreter interface layer
- *
- *****************************************************************************/
-
+/* Common interfaces */
 
 ACPI_STATUS
 PsxObjStackPush (
@@ -249,6 +178,14 @@ void *
 PsxObjStackGetValue (
     UINT32                  Index,
     ACPI_WALK_STATE         *WalkState);
+
+
+
+/******************************************************************************
+ * 
+ * Parser to Interpreter interface layer
+ *
+ *****************************************************************************/
 
 
 /* psxctrl - Parser/Interpreter interface, control stack routines */
@@ -326,6 +263,67 @@ PsxLoadEndOp (
     ACPI_GENERIC_OP         *Op);
 
 
+/* psxmargs - method stack utilities */
+
+
+ACPI_STATUS
+PsxMthStackDeleteArgs (
+    ACPI_WALK_STATE         *WalkState);
+
+BOOLEAN
+PsxIsMethodValue (
+    ACPI_OBJECT_INTERNAL    *ObjDesc);
+
+INT32
+PsxMthStackLevel (
+    void);
+
+ACPI_OBJECT_TYPE
+PsxMthStackGetType (
+    UINT32                  Type,
+    UINT32                  Index);
+
+ACPI_STATUS
+PsxMthStackGetValue (
+    UINT32                  Type,
+    UINT32                  Index, 
+    ACPI_OBJECT_INTERNAL    *ObjDesc);
+
+ACPI_STATUS
+PsxMthStackSetValue (
+    UINT32                  Type,
+    UINT32                  Index, 
+    ACPI_OBJECT_INTERNAL    *ObjDesc, 
+    ACPI_OBJECT_INTERNAL    *ObjDesc2);
+
+ACPI_STATUS
+PsxMthStackPop (
+    void);
+
+ACPI_STATUS
+PsxMthStackPush (
+    ACPI_OBJECT_INTERNAL    **Params);
+
+ACPI_STATUS
+PsxMthStackDeleteValue (
+    UINT32                  Type,
+    UINT32                  Index);
+
+ACPI_STATUS
+PsxMthStackInitArgs (
+    ACPI_OBJECT_INTERNAL    **Params,
+    UINT32                  ParamCount);
+
+NAME_TABLE_ENTRY *
+PsxMthStackGetNte (
+    UINT32                  Type,
+    UINT32                  Index);
+
+ACPI_STATUS
+PsxMthStackInit (
+    ACPI_WALK_STATE         *WalkState);
+
+
 /* psxmethod - Parser/Interpreter interface - control method parsing */
 
 ACPI_STATUS
@@ -344,13 +342,23 @@ PsxRestartControlMethod (
     ACPI_OBJECT_INTERNAL    *ReturnDesc);
 
 
-/* psxobj - Parser/Interpreter interface - object conversion */
+/* psxobj - Parser/Interpreter interface - object initialization and conversion */
+
+ACPI_STATUS
+PsxInitOneObject (
+    ACPI_HANDLE             ObjHandle, 
+    UINT32                  Level, 
+    void                    *Context,
+    void                    **ReturnValue);
+
+ACPI_STATUS
+PsxInitializeObjects (
+    void);
 
 ACPI_STATUS
 PsxBuildInternalPackageObj (
     ACPI_GENERIC_OP         *op,
     ACPI_OBJECT_INTERNAL    **ObjDesc);
-
 
 ACPI_STATUS
 PsxBuildInternalObject (
@@ -371,7 +379,6 @@ PsxInitializeRegion (
 
     
 /* psxutils - Parser/Interpreter interface utility routines */
-
 
 ACPI_STATUS
 PsxInitObjectFromOp (
@@ -449,6 +456,10 @@ PsGetNextArg (
 
 ACPI_OP_INFO *
 PsGetOpcodeInfo (
+    INT32                   Opcode);
+
+char *
+PsGetOpcodeName (
     INT32                   Opcode);
 
 
@@ -681,6 +692,51 @@ PsShow (
  * TBD: Remove when the parser is obsoleted
  *
  *****************************************************************************/
+
+
+INT32
+PsxMthStackLevel (
+    void);
+
+BOOLEAN
+PsxIsMethodValue (
+    ACPI_OBJECT_INTERNAL    *ObjDesc);
+
+char *
+PsGetOpcodeName (
+    INT32                   Opcode);
+
+ACPI_OBJECT_TYPE
+PsxMthStackGetType (
+    UINT32                  Type,
+    UINT32                  Index);
+
+ACPI_STATUS
+PsxMthStackGetValue (
+    UINT32                  Type,
+    UINT32                  Index, 
+    ACPI_OBJECT_INTERNAL    *DestDesc);
+
+ACPI_STATUS
+PsxMthStackSetValue (
+    UINT32                  Type,
+    UINT32                  Index, 
+    ACPI_OBJECT_INTERNAL    *SrcDesc, 
+    ACPI_OBJECT_INTERNAL    *DestDesc);
+
+ACPI_STATUS
+PsxMthStackPush (
+    ACPI_OBJECT_INTERNAL    **Params);
+
+ACPI_STATUS
+PsxMthStackPop (
+    void);
+
+NAME_TABLE_ENTRY *
+PsxMthStackGetNte (
+    UINT32                  Type,
+    UINT32                  Index);
+
 
 /*
  * idoatoms - interpreter/scanner atom load/execute
