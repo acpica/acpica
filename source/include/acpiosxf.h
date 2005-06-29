@@ -174,6 +174,11 @@ ACPI_STATUS
 AcpiOsTerminate (
     void);
 
+ACPI_STATUS
+AcpiOsGetRootPointer (
+    UINT32                  Flags,
+    ACPI_PHYSICAL_ADDRESS   *RsdpPhysicalAddress);
+
 
 /*
  * Synchronization primitives
