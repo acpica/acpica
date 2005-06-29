@@ -175,22 +175,15 @@ NsParseTable (
 
     /* Pass 1:  Parse everything except control method bodies */
 
-    Status = PsParseAml (Gbl_ParsedNamespaceRoot, TableDesc->AmlPointer, TableDesc->AmlLength); 
+    Status = PsParseAml (Gbl_ParsedNamespaceRoot, TableDesc->AmlPointer, TableDesc->AmlLength, 0); 
     if (ACPI_FAILURE (Status))
     {
         return_ACPI_STATUS (Status);
     }
 
+
 #ifndef PARSER_ONLY
-
     DEBUG_PRINT (TRACE_PARSE, ("NsParseTable: Building Internal Namespace\n"));
-BREAKPOINT3;
-
-/* TBD: OBSOLETE, pass 1 is now part of the parse*/
-/*
-    PsWalkParsedAml (PsGetChild (Gbl_ParsedNamespaceRoot), Gbl_ParsedNamespaceRoot, NULL, Scope, NULL, NULL,
-                        TableDesc->TableId, DsLoad1BeginOp, DsLoad1EndOp);
-*/
 
     Status = PsWalkParsedAml (PsGetChild (Gbl_ParsedNamespaceRoot), Gbl_ParsedNamespaceRoot, NULL, Scope, NULL, NULL,
                         TableDesc->TableId, DsLoad2BeginOp, DsLoad2EndOp);
@@ -202,8 +195,6 @@ BREAKPOINT3;
      */
 
     DEBUG_PRINT (TRACE_PARSE, ("NsParseTable: Deleting Parsed Namespace\n"));
-BREAKPOINT3;
-
 
     DEBUG_EXEC (DbGenerateStatistics (Gbl_ParsedNamespaceRoot, 0));
 
@@ -285,12 +276,10 @@ NsLoadTable (
      */
 
     DEBUG_PRINT (ACPI_INFO, ("NsLoadTable: **** Begin Table Method Parsing and Object Initialization ****\n"));
-BREAKPOINT3;
 
     Status = DsInitializeObjects (TableDesc, Entry);
 
     DEBUG_PRINT (ACPI_INFO, ("NsLoadTable: **** Completed Table Method Parsing and Object Initialization ****\n"));
-BREAKPOINT3;
 
     return_ACPI_STATUS (Status);
 }
