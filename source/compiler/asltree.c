@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asltree - parse tree management
- *              $Revision: 1.19 $
+ *              $Revision: 1.21 $
  *
  *****************************************************************************/
 
@@ -10,8 +10,8 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, Intel Corp.  All rights
- * reserved.
+ * Some or all of this work - Copyright (c) 1999, 2000, Intel Corp.
+ * All rights reserved.
  *
  * 2. License
  *
@@ -120,8 +120,6 @@
 #include "AslCompiler.y.h"
 
 
-
-
 /*******************************************************************************
  *
  * FUNCTION:    TrAllocateNode
@@ -186,10 +184,13 @@ TrUpdateNode (
                 UtGetOpName (Node->ParseOpcode),
                 UtGetOpName (ParseOpcode));
 
+    /* Assign new opcode and name */
+
     Node->ParseOpcode = ParseOpcode;
+    strncpy (Node->ParseOpName, UtGetOpName (ParseOpcode), 12);
 
 
-    /* 
+    /*
      * For the BYTE, WORD, and DWORD constants, make sure that the integer
      * that was passed in will actually fit into the data type
      */
@@ -307,7 +308,6 @@ TrCreateLeafNode (
 }
 
 
-
 /*******************************************************************************
  *
  * FUNCTION:    TrCreateValuedLeafNode
@@ -317,7 +317,7 @@ TrCreateLeafNode (
  *
  * RETURN:      Pointer to the new node.  Aborts on allocation failure
  *
- * DESCRIPTION: Create a leaf node (no children or peers) with a value 
+ * DESCRIPTION: Create a leaf node (no children or peers) with a value
  *              assigned to it
  *
  ******************************************************************************/
@@ -507,7 +507,7 @@ TrCreateNode (
  *
  * RETURN:      The updated (linked) node
  *
- * DESCRIPTION: Link a group of nodes to an existing parse node 
+ * DESCRIPTION: Link a group of nodes to an existing parse node
  *
  ******************************************************************************/
 

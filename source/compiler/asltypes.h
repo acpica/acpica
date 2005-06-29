@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asltypes.h - compiler data types and struct definitions
- *              $Revision: 1.2 $
+ *              $Revision: 1.7 $
  *
  *****************************************************************************/
 
@@ -10,8 +10,8 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, Intel Corp.  All rights
- * reserved.
+ * Some or all of this work - Copyright (c) 1999, 2000, Intel Corp.
+ * All rights reserved.
  *
  * 2. License
  *
@@ -116,7 +116,6 @@
  *****************************************************************************/
 
 
-
 #ifndef __ASLTYPES_H
 #define __ASLTYPES_H
 
@@ -161,6 +160,7 @@ typedef struct asl_parse_node
     UINT32                      EndLogicalLine;
     UINT16                      AmlOpcode;
     UINT16                      ParseOpcode;
+    UINT32                      AcpiBtype;
     UINT32                      AmlLength;
     UINT32                      AmlSubtreeLength;
     UINT8                       AmlOpcodeLength;
@@ -182,9 +182,9 @@ typedef struct asl_parse_node
 #define NODE_HAS_NO_EXIT            0x0020
 #define NODE_IF_HAS_NO_EXIT         0x0040
 #define NODE_NAME_INTERNALIZED      0x0080
-#define NODE_METHOD_NO_RETURN_VAL   0x0100
-#define NODE_RESULT_NOT_USED        0x0200
-
+#define NODE_METHOD_NO_RETVAL       0x0100
+#define NODE_METHOD_SOME_NO_RETVAL  0x0200
+#define NODE_RESULT_NOT_USED        0x0400
 
 
 /* Keeps information about individual control methods */
@@ -195,6 +195,7 @@ typedef struct asl_method_info
     UINT8                   LocalInitialized[8];
     UINT32                  NumReturnNoValue;
     UINT32                  NumReturnWithValue;
+    ASL_PARSE_NODE          *Node;
     struct asl_method_info  *Next;
 
 } ASL_METHOD_INFO;
@@ -214,6 +215,7 @@ typedef struct asl_analysis_walk_info
 typedef struct asl_mapping_entry
 {
     UINT32                      Value;
+    UINT32                      AcpiBtype;   /* Object type or return type */
     UINT16                      AmlOpcode;
     UINT8                       Flags;
 
@@ -270,7 +272,6 @@ typedef struct asl_listing_node
 } ASL_LISTING_NODE;
 
 
-
 /* Callback interface for a parse tree walk */
 
 typedef
@@ -278,7 +279,6 @@ void (*ASL_WALK_CALLBACK) (
     ASL_PARSE_NODE              *Node,
     UINT32                      Level,
     void                        *Context);
-
 
 
 #define ASL_ERROR               0
@@ -309,12 +309,18 @@ typedef enum
     ASL_MSG_RETURN_TYPES,
     ASL_MSG_NOT_FOUND,
     ASL_MSG_NESTED_COMMENT,
-    ASL_MSG_RESERVED_ARG_COUNT,
+    ASL_MSG_RESERVED_ARG_COUNT_HI,
+    ASL_MSG_RESERVED_ARG_COUNT_LO,
     ASL_MSG_RESERVED_RETURN_VALUE,
     ASL_MSG_ARG_COUNT_HI,
     ASL_MSG_ARG_COUNT_LO,
     ASL_MSG_NO_RETVAL,
+    ASL_MSG_SOME_NO_RETVAL,
     ASL_MSG_INTERNAL,
+    ASL_MSG_BACKWARDS_OFFSET,
+    ASL_MSG_UNKNOWN_RESERVED_NAME,
+    ASL_MSG_NAME_EXISTS,
+    ASL_MSG_INVALID_TYPE,
 
 } ASL_MESSAGE_IDS;
 
