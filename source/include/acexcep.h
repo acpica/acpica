@@ -143,38 +143,39 @@
 #define AE_AML_PACKAGE_LIMIT        (ACPI_STATUS) 0x000F
 #define AE_AML_DIVIDE_BY_ZERO       (ACPI_STATUS) 0x0010
 #define AE_AML_BAD_NAME             (ACPI_STATUS) 0x0011
-#define AE_AML_INTERNAL             (ACPI_STATUS) 0x0012
-#define AE_NO_ACPI_TABLES           (ACPI_STATUS) 0x0013
-#define AE_NO_NAMESPACE             (ACPI_STATUS) 0x0014
-#define AE_NO_MEMORY                (ACPI_STATUS) 0x0015
-#define AE_BAD_SIGNATURE            (ACPI_STATUS) 0x0016
-#define AE_BAD_HEADER               (ACPI_STATUS) 0x0017
-#define AE_BAD_CHECKSUM             (ACPI_STATUS) 0x0018
-#define AE_BAD_PARAMETER            (ACPI_STATUS) 0x0019
-#define AE_BAD_CHARACTER            (ACPI_STATUS) 0x001A
-#define AE_BAD_PATHNAME             (ACPI_STATUS) 0x001B
-#define AE_BAD_DATA                 (ACPI_STATUS) 0x001C
-#define AE_NOT_FOUND                (ACPI_STATUS) 0x001D
-#define AE_NOT_EXIST                (ACPI_STATUS) 0x001E
-#define AE_EXIST                    (ACPI_STATUS) 0x001F
-#define AE_TYPE                     (ACPI_STATUS) 0x0020
-#define AE_NULL_ENTRY               (ACPI_STATUS) 0x0021
-#define AE_BUFFER_OVERFLOW          (ACPI_STATUS) 0x0022
-#define AE_STACK_OVERFLOW           (ACPI_STATUS) 0x0023
-#define AE_STACK_UNDERFLOW          (ACPI_STATUS) 0x0024
-#define AE_NOT_IMPLEMENTED          (ACPI_STATUS) 0x0025
-#define AE_VERSION_MISMATCH         (ACPI_STATUS) 0x0026
-#define AE_SUPPORT                  (ACPI_STATUS) 0x0027
-#define AE_SHARE                    (ACPI_STATUS) 0x0028
-#define AE_LIMIT                    (ACPI_STATUS) 0x0029
-#define AE_TIME                     (ACPI_STATUS) 0x002A
-#define AE_TERMINATE                (ACPI_STATUS) 0x002B
-#define AE_DEPTH                    (ACPI_STATUS) 0x002C
-#define AE_TRUE                     (ACPI_STATUS) 0x002D
-#define AE_FALSE                    (ACPI_STATUS) 0x002E
-#define AE_UNKNOWN_STATUS           (ACPI_STATUS) 0x002F
-#define ACPI_MAX_STATUS             (ACPI_STATUS) 0x002F
-#define ACPI_NUM_STATUS             (ACPI_STATUS) 0x0030
+#define AE_AML_NAME_NOT_FOUND       (ACPI_STATUS) 0x0012
+#define AE_AML_INTERNAL             (ACPI_STATUS) 0x0013
+#define AE_NO_ACPI_TABLES           (ACPI_STATUS) 0x0014
+#define AE_NO_NAMESPACE             (ACPI_STATUS) 0x0015
+#define AE_NO_MEMORY                (ACPI_STATUS) 0x0016
+#define AE_BAD_SIGNATURE            (ACPI_STATUS) 0x0017
+#define AE_BAD_HEADER               (ACPI_STATUS) 0x0018
+#define AE_BAD_CHECKSUM             (ACPI_STATUS) 0x0019
+#define AE_BAD_PARAMETER            (ACPI_STATUS) 0x001A
+#define AE_BAD_CHARACTER            (ACPI_STATUS) 0x001B
+#define AE_BAD_PATHNAME             (ACPI_STATUS) 0x001C
+#define AE_BAD_DATA                 (ACPI_STATUS) 0x001D
+#define AE_NOT_FOUND                (ACPI_STATUS) 0x001E
+#define AE_NOT_EXIST                (ACPI_STATUS) 0x001F
+#define AE_EXIST                    (ACPI_STATUS) 0x0020
+#define AE_TYPE                     (ACPI_STATUS) 0x0021
+#define AE_NULL_ENTRY               (ACPI_STATUS) 0x0022
+#define AE_BUFFER_OVERFLOW          (ACPI_STATUS) 0x0023
+#define AE_STACK_OVERFLOW           (ACPI_STATUS) 0x0024
+#define AE_STACK_UNDERFLOW          (ACPI_STATUS) 0x0025
+#define AE_NOT_IMPLEMENTED          (ACPI_STATUS) 0x0026
+#define AE_VERSION_MISMATCH         (ACPI_STATUS) 0x0027
+#define AE_SUPPORT                  (ACPI_STATUS) 0x0028
+#define AE_SHARE                    (ACPI_STATUS) 0x0029
+#define AE_LIMIT                    (ACPI_STATUS) 0x002A
+#define AE_TIME                     (ACPI_STATUS) 0x002B
+#define AE_TERMINATE                (ACPI_STATUS) 0x002C
+#define AE_DEPTH                    (ACPI_STATUS) 0x002D
+#define AE_TRUE                     (ACPI_STATUS) 0x002E
+#define AE_FALSE                    (ACPI_STATUS) 0x002F
+#define AE_UNKNOWN_STATUS           (ACPI_STATUS) 0x0030
+#define ACPI_MAX_STATUS             (ACPI_STATUS) 0x0030
+#define ACPI_NUM_STATUS             (ACPI_STATUS) 0x0031
 
 
 #ifdef DEFINE_ACPI_GLOBALS
@@ -203,6 +204,7 @@ static char                 *Gbl_ExceptionNames[] =
     "AE_AML_PACKAGE_LIMIT",
     "AE_AML_DIVIDE_BY_ZERO",
     "AE_AML_BAD_NAME",
+    "AE_AML_NAME_NOT_FOUND",
 	"AE_AML_INTERNAL",
     "AE_NO_ACPI_TABLES",
     "AE_NO_NAMESPACE",
