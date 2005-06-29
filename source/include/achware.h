@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: achware.h -- hardware specific interfaces
- *       $Revision: 1.60 $
+ *       $Revision: 1.64 $
  *
  *****************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2003, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -188,33 +188,39 @@ AcpiHwClearAcpiStatus (
 
 /* GPE support */
 
-UINT8
-AcpiHwGetGpeBitMask (
-    UINT32                  GpeNumber);
-
 ACPI_STATUS
 AcpiHwEnableGpe (
-    UINT32                  GpeNumber);
+    ACPI_GPE_EVENT_INFO     *GpeEventInfo);
 
 void
 AcpiHwEnableGpeForWakeup (
-    UINT32                  GpeNumber);
+    ACPI_GPE_EVENT_INFO     *GpeEventInfo);
 
 ACPI_STATUS
 AcpiHwDisableGpe (
-    UINT32                  GpeNumber);
+    ACPI_GPE_EVENT_INFO     *GpeEventInfo);
+
+ACPI_STATUS
+AcpiHwDisableGpeBlock (
+    ACPI_GPE_XRUPT_INFO     *GpeXruptInfo,
+    ACPI_GPE_BLOCK_INFO     *GpeBlock);
 
 void
 AcpiHwDisableGpeForWakeup (
-    UINT32                  GpeNumber);
+    ACPI_GPE_EVENT_INFO     *GpeEventInfo);
 
 ACPI_STATUS
 AcpiHwClearGpe (
-    UINT32                  GpeNumber);
+    ACPI_GPE_EVENT_INFO     *GpeEventInfo);
+
+ACPI_STATUS
+AcpiHwClearGpeBlock (
+    ACPI_GPE_XRUPT_INFO     *GpeXruptInfo,
+    ACPI_GPE_BLOCK_INFO     *GpeBlock);
 
 ACPI_STATUS
 AcpiHwGetGpeStatus (
-    UINT32                  GpeNumber,
+    ACPI_GPE_EVENT_INFO     *GpeEventInfo,
     ACPI_EVENT_STATUS       *EventStatus);
 
 ACPI_STATUS
