@@ -1,9 +1,9 @@
-
-/******************************************************************************
+/*******************************************************************************
  *
  * Module Name: nsnames - Name manipulation and search
+ *              $Revision: 1.50 $
  *
- *****************************************************************************/
+ ******************************************************************************/
 
 /******************************************************************************
  *
@@ -123,40 +123,38 @@
 
 
 #define _COMPONENT          NAMESPACE
-        MODULE_NAME         ("nsnames");
+        MODULE_NAME         ("nsnames")
 
 
-/****************************************************************************
+/*******************************************************************************
  *
- * FUNCTION:    AcpiNsNameOfScope
+ * FUNCTION:    AcpiNsGetTablePathname
  *
- * PARAMETERS:  Scope           - Scope whose name is needed
+ * PARAMETERS:  Node        - Scope whose name is needed
  *
  * RETURN:      Pointer to storage containing the fully qualified name of
  *              the scope, in Label format (all segments strung together
  *              with no separators)
  *
- * DESCRIPTION: Used via AcpiNsNameOfCurrentScope() and AcpiNsLastFQN()
- *              for label generation in the interpreter, and for debug
- *              printing in AcpiNsSearchTable().
+ * DESCRIPTION: Used for debug printing in AcpiNsSearchTable().
  *
- ***************************************************************************/
+ ******************************************************************************/
 
-char *
-AcpiNsNameOfScope (
-    ACPI_NAME_TABLE         *Scope)
+NATIVE_CHAR *
+AcpiNsGetTablePathname (
+    ACPI_NAMESPACE_NODE     *Node)
 {
-    char                    *NameBuffer;
+    NATIVE_CHAR             *NameBuffer;
     UINT32                  Size;
     ACPI_NAME               Name;
-    ACPI_NAMED_OBJECT       *EntryToSearch;
-    ACPI_NAMED_OBJECT       *ParentEntry;
+    ACPI_NAMESPACE_NODE     *ChildNode;
+    ACPI_NAMESPACE_NODE     *ParentNode;
 
 
-    FUNCTION_TRACE ("NsNameOfScope");
+    FUNCTION_TRACE_PTR ("AcpiNsGetTablePathname", Node);
 
 
-    if (!AcpiGbl_RootObject->ChildTable || !Scope)
+    if (!AcpiGbl_RootNode || !Node)
     {
         /*
          * If the name space has not been initialized,
@@ -165,29 +163,29 @@ AcpiNsNameOfScope (
         return_PTR (NULL);
     }
 
-    EntryToSearch = Scope->Entries;
+    ChildNode = Node->Child;
 
 
-    /* Calculate required buffer size based on depth below root NT */
+    /* Calculate required buffer size based on depth below root */
 
     Size = 1;
-    ParentEntry = EntryToSearch;
-    while (ParentEntry)
+    ParentNode = ChildNode;
+    while (ParentNode)
     {
-        ParentEntry = AcpiNsGetParentEntry (ParentEntry);
-        if (ParentEntry)
+        ParentNode = AcpiNsGetParentObject (ParentNode);
+        if (ParentNode)
         {
             Size += ACPI_NAME_SIZE;
         }
     }
 
 
-    /* Allocate the buffer */
+    /* Allocate a buffer to be returned to caller */
 
     NameBuffer = AcpiCmCallocate (Size + 1);
     if (!NameBuffer)
     {
-        REPORT_ERROR ("NsNameOfScope: allocation failure");
+        REPORT_ERROR (("NsGetTablePathname: allocation failure\n"));
         return_PTR (NULL);
     }
 
@@ -196,15 +194,15 @@ AcpiNsNameOfScope (
 
     NameBuffer[Size] = '\0';
     while ((Size > ACPI_NAME_SIZE) &&
-        AcpiNsGetParentEntry (EntryToSearch))
+        AcpiNsGetParentObject (ChildNode))
     {
         Size -= ACPI_NAME_SIZE;
-        Name = AcpiNsFindParentName (EntryToSearch);
+        Name = AcpiNsFindParentName (ChildNode);
 
         /* Put the name into the buffer */
 
         MOVE_UNALIGNED32_TO_32 ((NameBuffer + Size), &Name);
-        EntryToSearch = AcpiNsGetParentEntry (EntryToSearch);
+        ChildNode = AcpiNsGetParentObject (ChildNode);
     }
 
     NameBuffer[--Size] = AML_ROOT_PREFIX;
@@ -212,83 +210,48 @@ AcpiNsNameOfScope (
     if (Size != 0)
     {
         DEBUG_PRINT (ACPI_ERROR,
-            ("NsNameOfScope:  Bad pointer returned; size = %d\n", Size));
+            ("NsGetTablePathname:  Bad pointer returned; size=%X\n", Size));
     }
 
     return_PTR (NameBuffer);
 }
 
 
-/****************************************************************************
- *
- * FUNCTION:    AcpiNsNameOfCurrentScope
- *
- * PARAMETERS:  none
- *
- * RETURN:      pointer to storage containing the name of the current scope
- *
- ***************************************************************************/
-
-char *
-AcpiNsNameOfCurrentScope (
-    ACPI_WALK_STATE         *WalkState)
-{
-    char                    *ScopeName;
-
-
-    FUNCTION_TRACE ("NsNameOfCurrentScope");
-
-
-    if (WalkState && WalkState->ScopeInfo)
-    {
-        ScopeName =
-            AcpiNsNameOfScope (WalkState->ScopeInfo->Scope.NameTable);
-
-        return_PTR (ScopeName);
-    }
-
-    REPORT_ERROR ("Current scope pointer is invalid");
-
-    return_PTR (NULL);
-}
-
-
-/****************************************************************************
+/*******************************************************************************
  *
  * FUNCTION:    AcpiNsHandleToPathname
  *
- * PARAMETERS:  TargetHandle            - Handle of nte whose name is to be found
+ * PARAMETERS:  TargetHandle            - Handle of named object whose name is
+ *                                        to be found
  *              BufSize                 - Size of the buffer provided
  *              UserBuffer              - Where the pathname is returned
  *
- * RETURN:      Status, Buffer is filled with pathname if status == AE_OK
+ * RETURN:      Status, Buffer is filled with pathname if status is AE_OK
  *
  * DESCRIPTION: Build and return a full namespace pathname
  *
  * MUTEX:       Locks Namespace
  *
- ***************************************************************************/
+ ******************************************************************************/
 
 ACPI_STATUS
 AcpiNsHandleToPathname (
     ACPI_HANDLE             TargetHandle,
     UINT32                  *BufSize,
-    char                    *UserBuffer)
+    NATIVE_CHAR             *UserBuffer)
 {
     ACPI_STATUS             Status = AE_OK;
-    ACPI_NAMED_OBJECT       *EntryToSearch = NULL;
-    ACPI_NAMED_OBJECT       *Temp = NULL;
-    UINT32                  PathLength = 0;
+    ACPI_NAMESPACE_NODE     *Node;
+    ACPI_NAMESPACE_NODE     *NextNode;
+    UINT32                  PathLength;
     UINT32                  Size;
     UINT32                  UserBufSize;
     ACPI_NAME               Name;
-    BOOLEAN                 NamespaceWasLocked;
-
 
     FUNCTION_TRACE_PTR ("NsHandleToPathname", TargetHandle);
 
 
-    if (!AcpiGbl_RootObject->ChildTable || !TargetHandle)
+    if (!AcpiGbl_RootNode || !TargetHandle)
     {
         /*
          * If the name space has not been initialized,
@@ -298,14 +261,8 @@ AcpiNsHandleToPathname (
         return_ACPI_STATUS (AE_NO_NAMESPACE);
     }
 
-    NamespaceWasLocked = AcpiGbl_AcpiMutexInfo[ACPI_MTX_NAMESPACE].Locked;
-    if (!NamespaceWasLocked)
-    {
-        AcpiCmAcquireMutex (ACPI_MTX_NAMESPACE);
-    }
-
-    EntryToSearch = AcpiNsConvertHandleToEntry (TargetHandle);
-    if (!EntryToSearch)
+    Node = AcpiNsConvertHandleToEntry (TargetHandle);
+    if (!Node)
     {
         return_ACPI_STATUS (AE_BAD_PARAMETER);
     }
@@ -314,9 +271,9 @@ AcpiNsHandleToPathname (
      * Compute length of pathname as 5 * number of name segments.
      * Go back up the parent tree to the root
      */
-    for (Size = 0, Temp = EntryToSearch;
-          AcpiNsGetParentEntry (Temp);
-          Temp = AcpiNsGetParentEntry (Temp))
+    for (Size = 0, NextNode = Node;
+          AcpiNsGetParentObject (NextNode);
+          NextNode = AcpiNsGetParentObject (NextNode))
     {
         Size += PATH_SEGMENT_LENGTH;
     }
@@ -332,7 +289,7 @@ AcpiNsHandleToPathname (
     if (PathLength > UserBufSize)
     {
         Status = AE_BUFFER_OVERFLOW;
-        goto UnlockAndExit;
+        goto Exit;
     }
 
     /* Store null terminator */
@@ -343,20 +300,20 @@ AcpiNsHandleToPathname (
     /* Put the original ACPI name at the end of the path */
 
     MOVE_UNALIGNED32_TO_32 ((UserBuffer + Size),
-                            &EntryToSearch->Name);
+                            &Node->Name);
 
     UserBuffer[--Size] = PATH_SEPARATOR;
 
     /* Build name backwards, putting "." between segments */
 
-    while ((Size > ACPI_NAME_SIZE) && EntryToSearch)
+    while ((Size > ACPI_NAME_SIZE) && Node)
     {
         Size -= ACPI_NAME_SIZE;
-        Name = AcpiNsFindParentName (EntryToSearch);
+        Name = AcpiNsFindParentName (Node);
         MOVE_UNALIGNED32_TO_32 ((UserBuffer + Size), &Name);
 
         UserBuffer[--Size] = PATH_SEPARATOR;
-        EntryToSearch = AcpiNsGetParentEntry (EntryToSearch);
+        Node = AcpiNsGetParentObject (Node);
     }
 
     /*
@@ -367,279 +324,11 @@ AcpiNsHandleToPathname (
     UserBuffer[Size] = '\\';
 
     DEBUG_PRINT (TRACE_EXEC,
-        ("NsHandleToPathname: Len=%d, %s \n",
+        ("NsHandleToPathname: Len=%X, %s \n",
         PathLength, UserBuffer));
 
-
-UnlockAndExit:
-
-    if (!NamespaceWasLocked)
-    {
-        AcpiCmReleaseMutex (ACPI_MTX_NAMESPACE);
-    }
-
+Exit:
     return_ACPI_STATUS (Status);
-}
-
-
-/****************************************************************************
- *
- * FUNCTION:    AcpiNsPatternMatch
- *
- * PARAMETERS:  ObjEntry        - A namespace entry
- *              SearchFor       - Wildcard pattern string
- *
- * DESCRIPTION: Matches a namespace name against a wildcard pattern.  Only
- *              a very simple pattern - 4 chars, either a valid char or a "?"
- *              to match any.
- *
- ***************************************************************************/
-
-BOOLEAN
-AcpiNsPatternMatch (
-    ACPI_NAMED_OBJECT       *ObjEntry,
-    char                    *SearchFor)
-{
-    INT32                   i;
-
-
-    for (i = 0; i < ACPI_NAME_SIZE; i++)
-    {
-        if (SearchFor[i] != '?' &&
-            SearchFor[i] != ((char *) &ObjEntry->Name)[i])
-        {
-            /* No match */
-
-            return FALSE;
-        }
-    }
-
-    /* name matches pattern */
-
-    return TRUE;
-}
-
-
-/****************************************************************************
- *
- * FUNCTION:    AcpiNsNameCompare
- *
- * PARAMETERS:  ObjHandle       - A namespace entry
- *              Level           - Current nesting level
- *              Context         - A FIND_CONTEXT structure
- *
- * DESCRIPTION: A UserFunction called by AcpiNsWalkNamespace().  It performs
- *              a pattern match for AcpiNsLowFindNames(), and updates the list
- *              and count as required.
- *
- ***************************************************************************/
-
-ACPI_STATUS
-AcpiNsNameCompare (
-    ACPI_HANDLE             ObjHandle,
-    UINT32                  Level,
-    void                    *Context,
-    void                    **ReturnValue)
-{
-    FIND_CONTEXT            *Find = Context;
-
-
-    /* Match, yes or no? */
-
-    if (AcpiNsPatternMatch ((ACPI_NAMED_OBJECT*) ObjHandle,
-                            Find->SearchFor))
-    {
-        /* Name matches pattern */
-
-        if (Find->List)
-        {
-            DEBUG_PRINT (TRACE_NAMES,
-                ("FindName: Match found: %.4s\n",
-                &((ACPI_NAMED_OBJECT*) ObjHandle)->Name));
-
-            Find->List[*(Find->Count)] = ObjHandle;
-        }
-
-        ++*(Find->Count);
-    }
-
-     /* Don't terminate the walk */
-    return AE_OK;
-}
-
-
-/****************************************************************************
- *
- * FUNCTION:    AcpiNsLowFindNames
- *
- * PARAMETERS:  *ThisEntry          - Table to be searched
- *              *SearchFor          - Pattern to be found.
- *                                    4 bytes, ? matches any character.
- *              *Count              - Output count of matches found.
- *                                    Outermost caller should preset to 0
- *              List[]              - Output array of handles.  If
- *                                    null, only the count is obtained.
- *              MaxDepth            - Maximum depth of search.  Use
- *                                    INT_MAX for an effectively
- *                                    unlimited depth.
- *
- * DESCRIPTION: Low-level find name.
- *              Traverse the name space finding names which match a search
- *              pattern, and return an array of handles in List[].
- *
- ***************************************************************************/
-
-void
-AcpiNsLowFindNames (
-    ACPI_NAMED_OBJECT       *ThisEntry,
-    char                    *SearchFor,
-    INT32                   *Count,
-    ACPI_HANDLE             List[],
-    INT32                   MaxDepth)
-{
-    FIND_CONTEXT            Find;
-
-
-    FUNCTION_TRACE ("NsLowFindNames");
-
-
-    if (0 == MaxDepth || !ThisEntry || !SearchFor || !Count)
-    {
-        /*
-         * Zero requested depth, nothing to search,
-         * nothing to search for, or count pointer bad
-         */
-
-        return_VOID;
-    }
-
-    /* Init the context structure used by compare routine */
-
-    Find.List       = List;
-    Find.Count      = Count;
-    Find.SearchFor  = SearchFor;
-
-    /* Walk the namespace and find all matches */
-
-    AcpiNsWalkNamespace (ACPI_TYPE_ANY, (ACPI_HANDLE) ThisEntry,
-                        MaxDepth, NS_WALK_NO_UNLOCK,
-                        AcpiNsNameCompare, &Find, NULL);
-
-    if (List)
-    {
-        /* null-terminate the output array */
-
-        List[*Count] = (ACPI_HANDLE) 0;
-    }
-
-    return_VOID;
-}
-
-
-/****************************************************************************
- *
- * FUNCTION:    AcpiNsFindNames
-
- *
- * PARAMETERS:  *SearchFor          - pattern to be found.
- *                                    4 bytes, ? matches any character.
- *                                    If NULL, "????" will be used.
- *              StartHandle         - Root of subtree to be searched, or
- *                                    NS_ALL to search the entire namespace
- *              MaxDepth            - Maximum depth of search.  Use INT_MAX
- *                                    for an effectively unlimited depth.
- *
- * DESCRIPTION: Traverse the name space finding names which match a search
- *              pattern, and return an array of handles.  The end of the
- *              array is marked by the value (ACPI_HANDLE)0.  A return value
- *              of (ACPI_HANDLE *)0 indicates that no matching names were
- *              found or that space for the list could not be allocated.
- *              if StartHandle is NS_ALL (null) search from the root,
- *              else it is a handle whose children are to be searched.
- *
- ***************************************************************************/
-
-ACPI_HANDLE *
-AcpiNsFindNames (
-    char                    *SearchFor,
-    ACPI_HANDLE             StartHandle,
-    INT32                   MaxDepth)
-{
-    ACPI_HANDLE             *List = NULL;
-    INT32                   Count;
-
-
-    FUNCTION_TRACE ("NsFindNames");
-
-
-    if (!AcpiGbl_RootObject->ChildTable)
-    {
-        /*
-         * If the name space has not been initialized,
-         * there surely are no matching names.
-         */
-        return_PTR (NULL);
-    }
-
-    if (NS_ALL == StartHandle)
-    {
-        /* base is root */
-
-        StartHandle = AcpiGbl_RootObject;
-    }
-
-    else if (((ACPI_NAMED_OBJECT *) StartHandle)->ChildTable)
-    {
-        /* base has children to search */
-
-        StartHandle =
-            ((ACPI_NAMED_OBJECT *) StartHandle)->ChildTable->Entries;
-    }
-
-    else
-    {
-        /*
-         * If base is not the root and has no children,
-         * there is nothing to search.
-         */
-        return_PTR (NULL);
-    }
-
-    if (!SearchFor)
-    {
-        /* Search name not specified */
-
-        SearchFor = "????";
-    }
-
-
-    /* Pass 1.  Get required buffer size, don't try to build list */
-
-    Count = 0;
-    AcpiNsLowFindNames (StartHandle, SearchFor, &Count,
-                        NULL, MaxDepth);
-
-    if (0 == Count)
-    {
-        return_PTR (NULL);
-    }
-
-    /* Allow for trailing null */
-    Count++;
-
-    List = AcpiCmCallocate (Count * sizeof(ACPI_HANDLE));
-    if (!List)
-    {
-        REPORT_ERROR ("NsFindNames: allocation failure");
-        return_PTR (NULL);
-    }
-
-    /* Pass 2.  Fill buffer */
-
-    Count = 0;
-    AcpiNsLowFindNames (StartHandle, SearchFor, &Count, List, MaxDepth);
-
-    return_PTR (List);
 }
 
 
