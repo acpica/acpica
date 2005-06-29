@@ -268,6 +268,16 @@ typedef char *va_list;
 #define halt()                  __asm {hlt}
 #define wbinvd()                __asm {WBINVD}
 
+#define ASM_mov(d,s)            __asm {mov d, s}
+#define ASM_and(t,v)            __asm {and t, v}
+#define ASM_bts(t,b)            __asm {bts t, b}
+#define ASM_adc(t,v)            __asm {adc t, v}
+#define ASM_cmp(v1,v2)          __asm {cmp v1, v2}
+#define ASM_cmpxchg(v1,v2)      __asm {lock cmpxchg dword ptr v1, v2}
+#define ASM_jnz(t)              __asm {jnz short t}
+#define ASM_sbb(t,v)            __asm {sbb t, v}
+
+
 #elif defined(__GNUC__)
 
 #define causeinterrupt(level)
@@ -277,6 +287,16 @@ typedef char *va_list;
 #define halt()                  __asm ("hlt")
 #define wbinvd()                __asm ("wbinvd")
 
+#define ASM_mov(d,s)            __asm {"mov d, s"}
+#define ASM_and(t,v)            __asm {"and t, v"}
+#define ASM_bts(t,b)            __asm {"bts t, b"}
+#define ASM_adc(t,v)            __asm {"adc t, v"}
+#define ASM_cmp(v1,v2)          __asm {"cmp v1, v2"}
+#define ASM_cmpxchg(v1,v2)      __asm {"lock cmpxchg dword ptr v1, v2"}
+#define ASM_jnz(t)              __asm {"jnz short t"}
+#define ASM_sbb(t,v)            __asm {"sbb t, v"}
+
+
 #else
 
 #define causeinterrupt(level)
@@ -284,6 +304,15 @@ typedef char *va_list;
 #define disable()
 #define enable()
 #define halt()
+
+#define ASM_mov(d,s)
+#define ASM_and(t,v)
+#define ASM_bts(t,b) 
+#define ASM_adc(t,v)
+#define ASM_cmp(v1,v2)
+#define ASM_cmpxchg(v1,v2)
+#define ASM_jnz(t)
+#define ASM_sbb(t,v)
 
 #endif
 
