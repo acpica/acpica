@@ -356,39 +356,34 @@ AcpiGetFirmwareWakingVector (
     void                    **PhysicalAddress);
 
 ACPI_STATUS
-AcpiGetProcessorThrottlingInfo(
+AcpiGetProcessorThrottlingInfo (
     ACPI_HANDLE             ProcessorHandle,
     ACPI_BUFFER             *UserBuffer);
 
 ACPI_STATUS
-AcpiSetProcessorThrottlingState(
+AcpiSetProcessorThrottlingState (
     ACPI_HANDLE             ProcessorHandle,
     UINT32                  ThrottleState);
 
 ACPI_STATUS
-AcpiGetProcessorThrottlingState(
+AcpiGetProcessorThrottlingState (
     ACPI_HANDLE             ProcessorHandle,
     UINT32                  *ThrottleState);
 
 ACPI_STATUS
-AcpiGetProcessorCxInfo(
+AcpiGetProcessorCxInfo (
     ACPI_HANDLE             ProcessorHandle,
     ACPI_BUFFER             *UserBuffer);
 
 ACPI_STATUS
-AcpiSetProcessorCxState(
+AcpiSetProcessorSleepState (
     ACPI_HANDLE             ProcessorHandle,
     UINT32                  CxState);
 
 ACPI_STATUS
-AcpiGetCxHandler(
-    UINT32                  State,
-    ACPI_SET_C_STATE_HANDLER *Handler);
-
-ACPI_STATUS
-AcpiSetCxHandler(
-    UINT32                  State,
-    ACPI_SET_C_STATE_HANDLER Handler);
+AcpiProcessorSleep (
+    ACPI_HANDLE             ProcessorHandle,
+	UINT32					*PmTimerTicks);
 
 
 #endif /* __ACAPI_H__ */
