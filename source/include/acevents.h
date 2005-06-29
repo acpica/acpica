@@ -117,12 +117,6 @@
 #ifndef __EVENTS_H__
 #define __EVENTS_H__
 
-typedef struct
-{
-    NATIVE_UINT      Seg;
-    NATIVE_UINT      Bus;
-    NATIVE_UINT      DevFunc;
-} PCI_HANDLER_CONTEXT;
 
 
 /* Status bits. */
