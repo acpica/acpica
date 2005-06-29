@@ -101,21 +101,10 @@
 #include <interpreter.h>
 #include <amlcode.h>
 #include <namespace.h>
-#include <string.h>
 
 
 #define _THIS_MODULE        "ieprep.c"
 #define _COMPONENT          INTERPRETER
-
-
-static ST_KEY_DESC_TABLE KDT[] = {
-    {"0000", 'T', "AmlGetMethodType: internal error", "AmlGetMethodType: internal error"},
-    {"0001", '1', "AmlSetMethodValue: Descriptor Allocation Failure", "AmlSetMethodValue: Descriptor Allocation Failure"},
-    {"0002", '1', "AmlPrepDefFieldValue: Descriptor Allocation Failure", "AmlPrepDefFieldValue: Descriptor Allocation Failure"},
-    {"0003", '1', "AmlPrepBankFieldValue: Descriptor Allocation Failure", "AmlPrepBankFieldValue: Descriptor Allocation Failure"},
-    {"0004", '1', "AmlPrepIndexFieldValue: Descriptor Allocation Failure", "AmlPrepIndexFieldValue: Descriptor Allocation Failure"},
-    {NULL, 'I', NULL, NULL}
-};
 
 
 
@@ -148,8 +137,9 @@ AmlGetMethodDepth (void)
  *
  ****************************************************************************/
 
-NsType
-AmlGetMethodType (INT32 Index)
+ACPI_OBJECT_TYPE
+AmlGetMethodType (
+    INT32                   Index)
 {
     FUNCTION_TRACE ("AmlGetMethodType");
 
@@ -157,11 +147,11 @@ AmlGetMethodType (INT32 Index)
     if (OUTRANGE (MethodStackTop, MethodStack) ||
         OUTRANGE (Index, MethodStack[MethodStackTop]))
     {
-        /*  iMethodStackTop or iIndex invalid for current object stack  */
+        /* MethodStackTop or Index invalid for current object stack  */
 
-        REPORT_ERROR (&KDT[0]);
+        REPORT_ERROR ("AmlGetMethodType: internal error");
         FUNCTION_EXIT;
-        return (NsType)-1;
+        return (ACPI_OBJECT_TYPE) -1;
     }
 
     if (!MethodStack[MethodStackTop][Index])
@@ -191,9 +181,11 @@ AmlGetMethodType (INT32 Index)
  ****************************************************************************/
 
 ACPI_STATUS
-AmlGetMethodValue (INT32 Index, OBJECT_DESCRIPTOR *ObjDesc)
+AmlGetMethodValue (
+    INT32                   Index, 
+    ACPI_OBJECT             *ObjDesc)
 {
-    ACPI_STATUS         Status = AE_AML_ERROR;
+    ACPI_STATUS             Status = AE_AML_ERROR;
 
 
     FUNCTION_TRACE ("AmlGetMethodValue");
@@ -293,12 +285,15 @@ AmlGetMethodValue (INT32 Index, OBJECT_DESCRIPTOR *ObjDesc)
  ****************************************************************************/
 
 ACPI_STATUS
-AmlSetMethodValue (INT32 Index, OBJECT_DESCRIPTOR *ObjDesc, OBJECT_DESCRIPTOR *ObjDesc2)
+AmlSetMethodValue (
+    INT32                   Index, 
+    ACPI_OBJECT             *ObjDesc, 
+    ACPI_OBJECT             *ObjDesc2)
 {
     FUNCTION_TRACE ("AmlSetMethodValue");
 
 
-    DEBUG_PRINT (TRACE_EXEC, ("AmlSetMethodValue: Index=%d, ObjDesc=%p, ObjDesc2=%p\n",
+    DEBUG_PRINT (TRACE_EXEC, ("AmlSetMethodValue: Idx=%d, Obj1=%p, Obj2=%p\n",
                     Index, ObjDesc, ObjDesc2));
 
     if (OUTRANGE (MethodStackTop, MethodStack) ||
@@ -322,7 +317,7 @@ AmlSetMethodValue (INT32 Index, OBJECT_DESCRIPTOR *ObjDesc, OBJECT_DESCRIPTOR *O
              * No descriptor was provided in ObjDesc2, and the currently-undefined
              * Local or Arg is to be defined.  Allocate a descriptor.
              */
-            MethodStack[MethodStackTop][Index] = AllocateObjectDesc (&KDT[1]);
+            MethodStack[MethodStackTop][Index] = AllocateObjectDesc ();
             if (!MethodStack[MethodStackTop][Index])
             {
                 /*  allocation failure  */
@@ -437,17 +432,21 @@ AmlSetMethodValue (INT32 Index, OBJECT_DESCRIPTOR *ObjDesc, OBJECT_DESCRIPTOR *O
  *
  * RETURN:      Status
  *
- * DESCRIPTION: Construct an OBJECT_DESCRIPTOR of type DefField and connect
+ * DESCRIPTION: Construct an ACPI_OBJECT of type DefField and connect
  *              it to the nte whose handle is at ObjStack[ObjStackTop]
  *
  ****************************************************************************/
 
 ACPI_STATUS
-AmlPrepDefFieldValue (NsHandle Region, UINT8 FldFlg, INT32 FldPos, INT32 FldLen)
+AmlPrepDefFieldValue (
+    ACPI_HANDLE             Region, 
+    UINT8                   FldFlg, 
+    INT32                   FldPos, 
+    INT32                   FldLen)
 {
-    OBJECT_DESCRIPTOR   *ObjDesc = NULL;
-    ACPI_STATUS         Status = AE_OK;
-    INT32               Type;
+    ACPI_OBJECT             *ObjDesc = NULL;
+    ACPI_STATUS             Status = AE_OK;
+    INT32                   Type;
 
 
     FUNCTION_TRACE ("AmlPrepDefFieldValue");
@@ -459,16 +458,18 @@ AmlPrepDefFieldValue (NsHandle Region, UINT8 FldFlg, INT32 FldPos, INT32 FldLen)
         Status = AE_AML_ERROR;
     }
 
-    else if (Region != (NsHandle)(Type = NsGetType (Region)))
+    /* Region typecheck */
+
+    else if (TYPE_Region != (Type = NsGetType (Region)))
     {
         DEBUG_PRINT (ACPI_ERROR, ("AmlPrepDefFieldValue: Needed Region, found %d %s\n",
                     Type, NsTypeNames[Type]));
         Status = AE_AML_ERROR;
     }
 
-    else if (!(ObjDesc = AllocateObjectDesc (&KDT[3])))
+    else if (!(ObjDesc = AllocateObjectDesc ()))
     {   
-        /*  unable to allocate new object descriptor    */
+        /* Unable to allocate new object descriptor    */
 
         Status = AE_NO_MEMORY;
     }
@@ -489,13 +490,13 @@ AmlPrepDefFieldValue (NsHandle Region, UINT8 FldFlg, INT32 FldPos, INT32 FldLen)
              * but unexpected:  the ValType field which was defined as a UINT8 did
              * not map to the same structure offset as the one which was defined
              * as a WORD_BIT -- see comments in the definition of the FieldUnit
-             * variant of OBJECT_DESCRIPTOR in amlpriv.h.
+             * variant of ACPI_OBJECT
              *
              * Log some evidence to facilitate porting the code.
              */
             ObjDesc->Field.ValType = 0x005a;
             DEBUG_PRINT (ACPI_ERROR, (
-                    "AmlPrepDefFieldValue: internal failure %p %02x %02x %02x %02x\n",
+                    "AmlPrepDefFieldValue: **** Internal Failure %p %02x %02x %02x %02x\n",
                     ObjDesc, ((UINT8 *) ObjDesc)[0], ((UINT8 *) ObjDesc)[1], ((UINT8 *) ObjDesc)[2],
                     ((UINT8 *) ObjDesc)[3]));
             OsdFree (ObjDesc);
@@ -513,14 +514,13 @@ AmlPrepDefFieldValue (NsHandle Region, UINT8 FldFlg, INT32 FldPos, INT32 FldLen)
         ObjDesc->Field.UpdateRule = (FldFlg & UPDATE_RULE_MASK) >> UPDATE_RULE_SHIFT;
         ObjDesc->Field.DatLen     = (UINT16) FldLen;
 
-        /* XXX - should use width of data register, not hardcoded 8 */
+        /* TBD: - should use width of data register, not hardcoded 8 */
 
-        DEBUG_PRINT (ACPI_INFO, (" ** AmlPrepDefFieldValue: hard 8 **\n"));
+        DEBUG_PRINT (ACPI_INFO, ("AmlPrepDefFieldValue: hardcoded 8 **\n"));
 
         ObjDesc->Field.BitOffset  = (UINT16) FldPos % 8;
         ObjDesc->Field.Offset     = (UINT32) FldPos / 8;
         ObjDesc->Field.Container  = NsGetValue (Region);
-
 
         DEBUG_PRINT (ACPI_INFO, ("AmlPrepDefFieldValue: set nte %p (%4.4s) val = %p\n",
                         ObjStack[ObjStackTop], ObjStack[ObjStackTop], ObjDesc));
@@ -541,8 +541,8 @@ AmlPrepDefFieldValue (NsHandle Region, UINT8 FldFlg, INT32 FldPos, INT32 FldLen)
          * Store the constructed descriptor (ObjDesc) into the nte whose
          * handle is on TOS, preserving the current type of that nte.
          */
-        NsSetValue ((NsHandle) ObjStack[ObjStackTop], ObjDesc,
-                    (UINT8) NsGetType ((NsHandle) ObjStack[ObjStackTop]));
+        NsSetValue ((ACPI_HANDLE) ObjStack[ObjStackTop], ObjDesc,
+                    (UINT8) NsGetType ((ACPI_HANDLE) ObjStack[ObjStackTop]));
     }
 
     FUNCTION_EXIT;
@@ -563,18 +563,23 @@ AmlPrepDefFieldValue (NsHandle Region, UINT8 FldFlg, INT32 FldPos, INT32 FldLen)
  *
  * RETURN:      Status
  *
- * DESCRIPTION: Construct an OBJECT_DESCRIPTOR of type BankField and connect
+ * DESCRIPTION: Construct an ACPI_OBJECT of type BankField and connect
  *              it to the nte whose handle is at ObjStack[ObjStackTop]
  *
  ****************************************************************************/
 
 ACPI_STATUS
-AmlPrepBankFieldValue (NsHandle Region, NsHandle BankReg, UINT32 BankVal,
-                        UINT8 FldFlg, INT32 FldPos, INT32 FldLen)
+AmlPrepBankFieldValue (
+    ACPI_HANDLE             Region, 
+    ACPI_HANDLE             BankReg, 
+    UINT32                  BankVal,
+    UINT8                   FldFlg, 
+    INT32                   FldPos, 
+    INT32                   FldLen)
 {
-    OBJECT_DESCRIPTOR   *ObjDesc = NULL;
-    ACPI_STATUS         Status = AE_OK;
-    INT32               Type;
+    ACPI_OBJECT             *ObjDesc = NULL;
+    ACPI_STATUS             Status = AE_OK;
+    INT32                   Type;
 
 
     FUNCTION_TRACE ("AmlPrepBankFieldValue");
@@ -585,13 +590,13 @@ AmlPrepBankFieldValue (NsHandle Region, NsHandle BankReg, UINT32 BankVal,
         DEBUG_PRINT (ACPI_ERROR, ("AmlPrepBankFieldValue: null Region\n"));
         Status = AE_AML_ERROR;
     }
-    else if (Region != (NsHandle) (Type = NsGetType (Region)))
+    else if (Region != (ACPI_HANDLE) (Type = NsGetType (Region)))
     {
         DEBUG_PRINT (ACPI_ERROR, ("AmlPrepBankFieldValue: Needed Region, found %d %s\n",
                         Type, NsTypeNames[Type]));
         Status = AE_AML_ERROR;
     }
-    else if (!(ObjDesc = AllocateObjectDesc (&KDT[3])))
+    else if (!(ObjDesc = AllocateObjectDesc ()))
     {   
         /*  unable to allocate new object descriptor    */
         
@@ -656,8 +661,8 @@ AmlPrepBankFieldValue (NsHandle Region, NsHandle BankReg, UINT32 BankVal,
          * Store the constructed descriptor (ObjDesc) into the nte whose
          * handle is on TOS, preserving the current type of that nte.
          */
-        NsSetValue ((NsHandle) ObjStack[ObjStackTop], ObjDesc,
-                    (UINT8) NsGetType ((NsHandle) ObjStack[ObjStackTop]));
+        NsSetValue ((ACPI_HANDLE) ObjStack[ObjStackTop], ObjDesc,
+                    (UINT8) NsGetType ((ACPI_HANDLE) ObjStack[ObjStackTop]));
     }
 
 
@@ -678,17 +683,21 @@ AmlPrepBankFieldValue (NsHandle Region, NsHandle BankReg, UINT32 BankVal,
  *
  * RETURN:      Status
  *
- * DESCRIPTION: Construct an OBJECT_DESCRIPTOR of type IndexField and connect
+ * DESCRIPTION: Construct an ACPI_OBJECT of type IndexField and connect
  *              it to the nte whose handle is at ObjStack[ObjStackTop]
  *
  ****************************************************************************/
 
 ACPI_STATUS
-AmlPrepIndexFieldValue (NsHandle IndexReg, NsHandle DataReg,
-                        UINT8 FldFlg, INT32 FldPos, INT32 FldLen)
+AmlPrepIndexFieldValue (
+    ACPI_HANDLE             IndexReg, 
+    ACPI_HANDLE             DataReg,
+    UINT8                   FldFlg, 
+    INT32                   FldPos, 
+    INT32                   FldLen)
 {
-    OBJECT_DESCRIPTOR   *ObjDesc = NULL;
-    ACPI_STATUS         Status = AE_OK;
+    ACPI_OBJECT             *ObjDesc = NULL;
+    ACPI_STATUS             Status = AE_OK;
 
 
     FUNCTION_TRACE ("AmlPrepIndexFieldValue");
@@ -700,7 +709,7 @@ AmlPrepIndexFieldValue (NsHandle IndexReg, NsHandle DataReg,
         Status = AE_AML_ERROR;
     }
 
-    else if (!(ObjDesc = AllocateObjectDesc (&KDT[4])))
+    else if (!(ObjDesc = AllocateObjectDesc ()))
     {   
         /*  unable to allocate new object descriptor    */
 
@@ -760,8 +769,8 @@ AmlPrepIndexFieldValue (NsHandle IndexReg, NsHandle DataReg,
          * Store the constructed descriptor (ObjDesc) into the nte whose
          * handle is on TOS, preserving the current type of that nte.
          */
-        NsSetValue ((NsHandle) ObjStack[ObjStackTop], ObjDesc,
-                    (UINT8) NsGetType ((NsHandle) ObjStack[ObjStackTop]));
+        NsSetValue ((ACPI_HANDLE) ObjStack[ObjStackTop], ObjDesc,
+                    (UINT8) NsGetType ((ACPI_HANDLE) ObjStack[ObjStackTop]));
     }
 
     FUNCTION_EXIT;
@@ -780,8 +789,8 @@ AmlPrepIndexFieldValue (NsHandle IndexReg, NsHandle DataReg,
  *
  *      Each character in Types represents one required operand
  *      and indicates the required ValType:
- *          l => Lvalue, also accepts an entry which is an NsHandle
- *                  instead of an (OBJECT_DESCRIPTOR *))
+ *          l => Lvalue, also accepts an entry which is an ACPI_HANDLE
+ *                  instead of an (ACPI_OBJECT *))
  *          n => Number
  *          s => String or Buffer
  *          b => Buffer
@@ -793,9 +802,10 @@ AmlPrepIndexFieldValue (NsHandle IndexReg, NsHandle DataReg,
  ****************************************************************************/
 
 ACPI_STATUS
-AmlPrepStack (char *Types)
+AmlPrepStack (
+    char                    *Types)
 {
-    OBJECT_DESCRIPTOR **    StackPtr = (OBJECT_DESCRIPTOR **) &ObjStack[ObjStackTop];
+    ACPI_OBJECT             **StackPtr = (ACPI_OBJECT **) &ObjStack[ObjStackTop];
     ACPI_STATUS             Status;
 
 
@@ -921,7 +931,7 @@ AmlPrepStack (char *Types)
             {
                 /* Convert indirect name ptr to direct name ptr */
                 
-                NsHandle TempHandle = (*StackPtr)->Lvalue.Ref;
+                ACPI_HANDLE TempHandle = (*StackPtr)->Lvalue.Ref;
                 OsdFree (*StackPtr);
                 (*StackPtr) = TempHandle;
             }
@@ -931,7 +941,7 @@ AmlPrepStack (char *Types)
             Status = AmlGetRvalue (StackPtr);
 
             DEBUG_PRINT (TRACE_EXEC,
-                          ("AmlPrepStack:n: AmlGetRvalue returned %s\n", ExceptionNames[Status]));
+                          ("AmlPrepStack: AmlGetRvalue returned %s\n", ExceptionNames[Status]));
 
             if (AE_OK != Status)
             {
@@ -1042,7 +1052,7 @@ AmlPrepStack (char *Types)
         {
             /* Don't try to decrement below bottom of stack */
             
-            if ((OBJECT_DESCRIPTOR **) &ObjStack[0] == StackPtr)
+            if ((ACPI_OBJECT **) &ObjStack[0] == StackPtr)
             {
                 DEBUG_PRINT (ACPI_ERROR, ("AmlPrepStack: not enough operands\n"));
                 ObjStackTop--;
