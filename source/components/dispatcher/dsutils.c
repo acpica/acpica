@@ -121,6 +121,7 @@
 #include <parser.h>
 #include <interp.h>
 #include <namesp.h>
+#include <debugger.h>
 
 #define _COMPONENT          PARSER
         MODULE_NAME         ("psxutils");
