@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dsinit - Object initialization namespace walk
- *              $Revision: 1.14 $
+ *              $Revision: 1.1 $
  *
  *****************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2005, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -117,33 +117,21 @@
 #define __DSINIT_C__
 
 #include "acpi.h"
+#include "acparser.h"
+#include "amlcode.h"
 #include "acdispat.h"
 #include "acnamesp.h"
+#include "acinterp.h"
 
 #define _COMPONENT          ACPI_DISPATCHER
         ACPI_MODULE_NAME    ("dsinit")
-
-/* Local prototypes */
-
-static ACPI_STATUS
-AcpiDsBuildInternalObject (
-    ACPI_WALK_STATE         *WalkState,
-    ACPI_PARSE_OBJECT       *Op,
-    ACPI_OPERAND_OBJECT     **ObjDescPtr);
-
-static ACPI_STATUS
-AcpiDsInitOneObject (
-    ACPI_HANDLE             ObjHandle,
-    UINT32                  Level,
-    void                    *Context,
-    void                    **ReturnValue);
 
 
 /*******************************************************************************
  *
  * FUNCTION:    AcpiDsInitOneObject
  *
- * PARAMETERS:  ObjHandle       - Node for the object
+ * PARAMETERS:  ObjHandle       - Node
  *              Level           - Current nesting level
  *              Context         - Points to a init info struct
  *              ReturnValue     - Not used
@@ -159,7 +147,7 @@ AcpiDsInitOneObject (
  *
  ******************************************************************************/
 
-static ACPI_STATUS
+ACPI_STATUS
 AcpiDsInitOneObject (
     ACPI_HANDLE             ObjHandle,
     UINT32                  Level,
@@ -197,9 +185,8 @@ AcpiDsInitOneObject (
         Status = AcpiDsInitializeRegion (ObjHandle);
         if (ACPI_FAILURE (Status))
         {
-            ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
-                "Region %p [%4.4s] - Init failure, %s\n",
-                ObjHandle, AcpiUtGetNodeName (ObjHandle),
+            ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Region %p [%4.4s] - Init failure, %s\n",
+                ObjHandle, ((ACPI_NAMESPACE_NODE *) ObjHandle)->Name.Ascii,
                 AcpiFormatException (Status)));
         }
 
@@ -211,13 +198,9 @@ AcpiDsInitOneObject (
 
         Info->MethodCount++;
 
-        /*
-         * Print a dot for each method unless we are going to print
-         * the entire pathname
-         */
-        if (!(AcpiDbgLevel & ACPI_LV_INIT_NAMES))
+        if (!(AcpiDbgLevel & ACPI_LV_INIT))
         {
-            ACPI_DEBUG_PRINT_RAW ((ACPI_DB_INIT, "."));
+            ACPI_DEBUG_PRINT_RAW ((ACPI_DB_OK, "."));
         }
 
         /*
@@ -232,15 +215,14 @@ AcpiDsInitOneObject (
         }
 
         /*
-         * Always parse methods to detect errors, we will delete
+         * Always parse methods to detect errors, we may delete
          * the parse tree below
          */
         Status = AcpiDsParseMethod (ObjHandle);
         if (ACPI_FAILURE (Status))
         {
-            ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
-                "Method %p [%4.4s] - parse failure, %s\n",
-                ObjHandle, AcpiUtGetNodeName (ObjHandle),
+            ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Method %p [%4.4s] - parse failure, %s\n",
+                ObjHandle, ((ACPI_NAMESPACE_NODE *) ObjHandle)->Name.Ascii,
                 AcpiFormatException (Status)));
 
             /* This parse failed, but we will continue parsing more methods */
@@ -249,12 +231,11 @@ AcpiDsInitOneObject (
         }
 
         /*
-         * Delete the parse tree.  We simply re-parse the method
+         * Delete the parse tree.  We simple re-parse the method
          * for every execution since there isn't much overhead
          */
         AcpiNsDeleteNamespaceSubtree (ObjHandle);
-        AcpiNsDeleteNamespaceByOwner (
-            ((ACPI_NAMESPACE_NODE *) ObjHandle)->Object->Method.OwningId);
+        AcpiNsDeleteNamespaceByOwner (((ACPI_NAMESPACE_NODE *) ObjHandle)->Object->Method.OwningId);
         break;
 
 
@@ -304,7 +285,7 @@ AcpiDsInitializeObjects (
 
     ACPI_DEBUG_PRINT ((ACPI_DB_DISPATCH,
         "**** Starting initialization of namespace objects ****\n"));
-    ACPI_DEBUG_PRINT_RAW ((ACPI_DB_INIT, "Parsing all Control Methods:"));
+    ACPI_DEBUG_PRINT_RAW ((ACPI_DB_OK, "Parsing Methods:"));
 
     Info.MethodCount    = 0;
     Info.OpRegionCount  = 0;
@@ -322,9 +303,9 @@ AcpiDsInitializeObjects (
             AcpiFormatException (Status)));
     }
 
-    ACPI_DEBUG_PRINT_RAW ((ACPI_DB_INIT,
-        "\nTable [%4.4s](id %4.4X) - %hd Objects with %hd Devices %hd Methods %hd Regions\n",
-        TableDesc->Pointer->Signature, TableDesc->TableId, Info.ObjectCount,
+    ACPI_DEBUG_PRINT_RAW ((ACPI_DB_OK,
+        "\nTable [%4.4s] - %hd Objects with %hd Devices %hd Methods %hd Regions\n",
+        TableDesc->Pointer->Signature, Info.ObjectCount,
         Info.DeviceCount, Info.MethodCount, Info.OpRegionCount));
 
     ACPI_DEBUG_PRINT ((ACPI_DB_DISPATCH,
