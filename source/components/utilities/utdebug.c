@@ -194,6 +194,44 @@ FunctionExit (
 
 /*****************************************************************************
  * 
+ * FUNCTION:    FunctionStatusExit
+ *
+ * PARAMETERS:  ModuleName          - Caller's module name (for error output)
+ *              LineNumber          - Caller's line number (for error output)
+ *              ComponentId         - Caller's component ID (for error output)
+ *              FunctionName        - Name of Caller's function
+ *              Status              - Exit status code
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Function exit trace.  Prints only if TRACE_FUNCTIONS bit is
+ *              set in DebugLevel.  Prints exit status also.
+ *
+ ****************************************************************************/
+
+void
+FunctionStatusExit (
+    char                    *ModuleName, 
+    INT32                   LineNumber, 
+    INT32                   ComponentId, 
+    char                    *FunctionName,
+    ACPI_STATUS             Status)
+{
+
+    if (Status > ACPI_MAX_STATUS)
+    {
+        Status = AE_UNKNOWN_STATUS;
+    }
+
+    DebugPrint (ModuleName, LineNumber, ComponentId, TRACE_FUNCTIONS,
+                " %2.2d Exiting Function: %s, %s\n", 
+                NestingLevel, FunctionName, ExceptionNames[Status]);
+    NestingLevel--;
+}
+
+
+/*****************************************************************************
+ * 
  * FUNCTION:    DebugPrint
  *
  * PARAMETERS:  ModuleName          - Caller's module name (for error output)
