@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslcompiler.h - common include file
- *              $Revision: 1.30 $
+ *              $Revision: 1.32 $
  *
  *****************************************************************************/
 
@@ -556,32 +556,71 @@ ASL_LISTING_NODE *
 LsPopNode (void);
 
 
-void
-CgGenerateAmlOutput (void);
+/*
+ * aslopcodes - generate AML opcodes
+ */
 
-UINT32
-CgSetOptimalIntegerSize (
+
+void
+OpcAmlOpcodeWalk (
+    ASL_PARSE_NODE          *Node,
+    UINT32                  Level,
+    void                    *Context);
+
+void
+OpcGenerateAmlOpcode (
     ASL_PARSE_NODE          *Node);
 
+UINT32
+OpcSetOptimalIntegerSize (
+    ASL_PARSE_NODE          *Node);
+
+
+/*
+ * asloperands - generate AML operands for the AML opcodes
+ */
+
+void
+OpnGenerateAmlOperands (
+    ASL_PARSE_NODE          *Node);
+
+
+/*
+ * aslresource - resource template generation
+ */
+
+void
+RsDoResourceTemplate (
+    ASL_PARSE_NODE          *Node);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+void
+CgGenerateAmlOutput (void);
 void
 CgGenerateAmlLengths (
     ASL_PARSE_NODE          *Node);
-
-void
-CgGenerateAmlOpcode (
-    ASL_PARSE_NODE          *Node);
-
 
 ACPI_STATUS
 CgOpenOutputFile (
     char                    *InputFilename);
 
-
-void
-CgAmlOpcodeWalk (
-    ASL_PARSE_NODE          *Node,
-    UINT32                  Level,
-    void                    *Context);
 
 /* asllength */
 
@@ -605,10 +644,6 @@ CgAmlWriteWalk (
     void                    *Context);
 
 
-void
-CgGenerateAmlOperands (
-    ASL_PARSE_NODE          *Node);
-
 
 void
 CgGenerateOutput(
@@ -623,76 +658,73 @@ CgWriteNode (
     ASL_PARSE_NODE          *Node);
 
 
+
+
+/* 
+ * asltree - parse tree support
+ */
+
 void
-CgDoResourceTemplate (
-    ASL_PARSE_NODE          *Node);
-
-
-/* asltree */
-
-void
-TgWalkParseTree (
+TrWalkParseTree (
     UINT32                  Visitation,
     ASL_WALK_CALLBACK       DescendingCallback,
     ASL_WALK_CALLBACK       AscendingCallback,
     void                    *Context);
 
-
 char *
-TgAddNode (
+TrAddNode (
     void                    *Thing);
 
 ASL_PARSE_NODE *
-TgUpdateNode (
+TrUpdateNode (
     UINT32                  ParseOpcode,
     ASL_PARSE_NODE          *Node);
 
 ASL_PARSE_NODE *
-TgCreateNode (
+TrCreateNode (
     UINT32                  ParseOpcode,
     UINT32                  NumChildren,
     ...);
 
 ASL_PARSE_NODE *
-TgCreateLeafNode (
+TrCreateLeafNode (
     UINT32                  ParseOpcode);
 
 ASL_PARSE_NODE *
-TgCreateValuedLeafNode (
+TrCreateValuedLeafNode (
     UINT32                  ParseOpcode,
     void                    *Value);
 
 ASL_PARSE_NODE *
-TgLinkChildren (
+TrLinkChildren (
     ASL_PARSE_NODE          *Node,
     UINT32                  NumChildren,
     ...);
 
 void
-TgSetEndLineNumber (
+TrSetEndLineNumber (
     ASL_PARSE_NODE          *Node);
 
-
 void
-TgWalkTree (void);
+TrWalkTree (void);
 
 ASL_PARSE_NODE *
-TgLinkPeerNode (
+TrLinkPeerNode (
     ASL_PARSE_NODE          *Node1,
     ASL_PARSE_NODE          *Node2);
 
 ASL_PARSE_NODE *
-TgLinkChildNode (
+TrLinkChildNode (
     ASL_PARSE_NODE          *Node1,
     ASL_PARSE_NODE          *Node2);
 
 ASL_PARSE_NODE *
-TgSetNodeFlags (
+TrSetNodeFlags (
     ASL_PARSE_NODE          *Node,
     UINT32                  Flags);
 
 ASL_PARSE_NODE *
-TgLinkPeerNodes (
+TrLinkPeerNodes (
     UINT32                  NumPeers,
     ...);
 
@@ -781,14 +813,6 @@ LsDisplayNamespace (void);
 void *
 UtLocalCalloc (
     UINT32                  Size);
-
-
-void *
-UtLocalRealloc (
-    void                    *Previous,
-    UINT32                  OldSize,
-    UINT32                  Size);
-
 
 void
 UtPrintFormattedName (
