@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acutils.h -- prototypes for the common (subsystem-wide) procedures
- *       $Revision: 1.144 $
+ *       $Revision: 1.145 $
  *
  *****************************************************************************/
 
@@ -475,6 +475,14 @@ AcpiUtReportWarning (
     NATIVE_CHAR             *ModuleName,
     UINT32                  LineNumber,
     UINT32                  ComponentId);
+
+void
+AcpiUtReportNsError (
+    NATIVE_CHAR             *ModuleName,
+    UINT32                  LineNumber,
+    UINT32                  ComponentId,
+    char                    *InternalName,
+    ACPI_STATUS             LookupStatus);
 
 void
 AcpiUtDumpBuffer (
