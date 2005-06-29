@@ -279,7 +279,10 @@ AmlExecMonadic1 (
     } /* switch */
 
 
-    CmDeleteInternalObject (ObjDesc);
+    /* Delete the operand */
+
+    AmlObjStackDeleteValue (0);
+
     return_ACPI_STATUS (AE_OK);
 }
 
