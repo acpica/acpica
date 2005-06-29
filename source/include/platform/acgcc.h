@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acgcc.h - GCC specific defines, etc.
- *       $Revision: 1.7 $
+ *       $Revision: 1.8 $
  *
  *****************************************************************************/
 
@@ -130,7 +130,7 @@
 #define BREAKPOINT3
 #define disable() __cli()
 #define enable()  __sti()
-#define wbinvd()
+#define wbinvd()  __asm__ __volatile__ ("wbinvd": : :"memory")
 
 /*! [Begin] no source code translation */
 
