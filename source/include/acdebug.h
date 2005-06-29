@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acdebug.h - ACPI/AML debugger
- *       $Revision: 1.36 $
+ *       $Revision: 1.37 $
  *
  *****************************************************************************/
 
@@ -312,6 +312,10 @@ void
 AcpiDbDisplayOpcode (
     ACPI_WALK_STATE         *WalkState,
     ACPI_PARSE_OBJECT       *Op);
+
+void
+AcpiDbDecodeInternalObject (
+    ACPI_OPERAND_OBJECT     *ObjDesc);
 
 
 /*
