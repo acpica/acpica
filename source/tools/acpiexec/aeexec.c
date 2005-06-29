@@ -172,10 +172,6 @@ RegionHandler (
 		
     printf ("Received an OpRegion request\n");
 
-
-    /* Temp only */
-    return AE_OK;
-
 	/*
 	 * If the object is not a region, simply return
 	 */
