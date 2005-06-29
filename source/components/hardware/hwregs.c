@@ -3,7 +3,7 @@
  *
  * Module Name: hwregs - Read/write access functions for the various ACPI
  *                       control and status registers.
- *              $Revision: 1.76 $
+ *              $Revision: 1.77 $
  *
  ******************************************************************************/
 
@@ -982,7 +982,7 @@ AcpiHwLowLevelRead (
     UINT32                  Offset)
 {
     UINT32                  Value = 0;
-    UINT64                  MemAddress;
+    ACPI_PHYSICAL_ADDRESS   MemAddress;
     ACPI_IO_ADDRESS         IoAddress;
     UINT32                  PciRegister;
     UINT32                  PciDevFunc;
@@ -1008,7 +1008,7 @@ AcpiHwLowLevelRead (
     {
     case ADDRESS_SPACE_SYSTEM_MEMORY:
 
-        MemAddress = Reg->Address + Offset;
+        MemAddress = (ACPI_PHYSICAL_ADDRESS) Reg->Address + Offset;
 
         switch (Width)
         {
@@ -1091,7 +1091,7 @@ AcpiHwLowLevelWrite (
     ACPI_GAS                *Reg,
     UINT32                  Offset)
 {
-    UINT64                  MemAddress;
+    ACPI_PHYSICAL_ADDRESS   MemAddress;
     ACPI_IO_ADDRESS         IoAddress;
     UINT32                  PciRegister;
     UINT32                  PciDevFunc;
@@ -1117,7 +1117,7 @@ AcpiHwLowLevelWrite (
     {
     case ADDRESS_SPACE_SYSTEM_MEMORY:
 
-        MemAddress = Reg->Address + Offset;
+        MemAddress = (ACPI_PHYSICAL_ADDRESS) Reg->Address + Offset;
 
         switch (Width)
         {
