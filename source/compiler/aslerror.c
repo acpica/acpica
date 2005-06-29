@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslerror - Error handling and statistics
- *              $Revision: 1.76 $
+ *              $Revision: 1.77 $
  *
  *****************************************************************************/
 
@@ -185,10 +185,10 @@ char                        *AslMessages [] = {
     "Invalid Table Signature",
     "Too many resource items (internal error)",
     "Target operand not allowed in constant expression",
-    "Invalid operator (not type 3/4/5) in constant expression",
+    "Invalid operator in constant expression (not type 3/4/5)",
     "Could not evaluate constant expression",
     "Constant expression evaluated and reduced",
-    "Invalid EISAID string, not of the form \"UUUXXXX\" (3 uppercase, 4 hex digits)",
+    "EISAID string must be of the form \"UUUXXXX\" (3 uppercase, 4 hex digits)",
     "Invalid operand type for reserved name, must be",
     "Reserved name must be a control method",
     "String must be entirely alphanumeric",
@@ -203,14 +203,19 @@ char                        *AslMessages [] = {
 };
 
 
-char                        *AslErrorLevel [ASL_NUM_REPORT_LEVELS] = {
+char                    *AslErrorLevel [ASL_NUM_REPORT_LEVELS] = {
     "Error   ",
     "Warning ",
     "Remark  ",
     "Optimize"
 };
 
-#define ASL_ERROR_LEVEL_LENGTH          8
+#define ASL_ERROR_LEVEL_LENGTH          8       /* Length of strings above */
+
+/* Exception counters */
+
+UINT32                  Gbl_ExceptionCount[ASL_NUM_REPORT_LEVELS] = {0,0,0,0};
+
 
 
 /*******************************************************************************
@@ -481,6 +486,8 @@ AePrintErrorLog (
     ASL_ERROR_MSG           *Enode = Gbl_ErrorLog;
 
 
+    /* Walk the error node list */
+
     while (Enode)
     {
         AePrintException (FileId, Enode, NULL);
@@ -538,9 +545,8 @@ AslCommonError (
         ACPI_STRCPY (MessageBuffer, ExtraMessage);
     }
 
-    /*
-     * Initialize the error node
-     */
+    /* Initialize the error node */
+
     if (Filename)
     {
         Enode->Filename       = Filename;
@@ -647,11 +653,10 @@ AslCompilererror (
     char                    *CompilerMessage)
 {
 
-
     AslCommonError (ASL_ERROR, ASL_MSG_SYNTAX, Gbl_CurrentLineNumber,
                     Gbl_LogicalLineNumber, Gbl_CurrentLineOffset,
                     Gbl_CurrentColumn, Gbl_Files[ASL_FILE_INPUT].Filename,
-                    CompilerMessage /*MsgBuffer*/);
+                    CompilerMessage);
 
     return 0;
 }
