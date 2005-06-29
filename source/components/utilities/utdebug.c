@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: cmdebug - Debug print routines
- *              $Revision: 1.70 $
+ *              $Revision: 1.71 $
  *
  *****************************************************************************/
 
@@ -461,6 +461,17 @@ DebugPrint (
     {
         va_start (args, Format);
 
+        if (ThreadId != PrevThreadId)
+        {
+            if (TRACE_THREADS & AcpiDbgLevel)
+            {
+                AcpiOsPrintf ("\n**** Context Switch from TID %X to TID %X ****\n\n",
+                    PrevThreadId, ThreadId);
+            }
+
+            PrevThreadId = ThreadId;
+        }
+
         if (TRACE_THREADS & AcpiDbgLevel)
         {
             AcpiOsPrintf ("%8s-%04d[%04X]: ", ModuleName, LineNumber, ThreadId);
@@ -471,14 +482,6 @@ DebugPrint (
         }
 
         AcpiOsVprintf (Format, args);
-
-        if (ThreadId != PrevThreadId)
-        {
-            AcpiOsPrintf ("\n**** Context Switch from TID %X to TID %X ****\n\n",
-                PrevThreadId, ThreadId);
-
-            PrevThreadId = ThreadId;
-        }
     }
 }
 
@@ -508,6 +511,17 @@ DebugPrintPrefix (
 
     ThreadId = AcpiOsGetThreadId ();
 
+    if (ThreadId != PrevThreadId)
+    {
+        if (TRACE_THREADS & AcpiDbgLevel)
+        {
+            AcpiOsPrintf ("\n**** Context Switch from TID %X to TID %X ****\n\n",
+                PrevThreadId, ThreadId);
+        }
+
+        PrevThreadId = ThreadId;
+    }
+
     if (TRACE_THREADS & AcpiDbgLevel)
     {
         AcpiOsPrintf ("%8s-%04d[%04X]: ", ModuleName, LineNumber, ThreadId);
@@ -517,13 +531,6 @@ DebugPrintPrefix (
         AcpiOsPrintf ("%8s-%04d: ", ModuleName, LineNumber);
     }
 
-    if (ThreadId != PrevThreadId)
-    {
-        AcpiOsPrintf ("\n**** Context Switch from TID %X to TID %X ****\n\n",
-            PrevThreadId, ThreadId);
-
-        PrevThreadId = ThreadId;
-    }
 }
 
 
