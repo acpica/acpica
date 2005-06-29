@@ -101,6 +101,7 @@
 #include <acpi.h>
 #include <events.h>
 #include <namespace.h>
+#include <interpreter.h>
 
 
 #define _THIS_MODULE        "cmglobal.c"
@@ -115,21 +116,21 @@
     /* Debug switch - level and trace mask */
 
 #ifdef _DEBUG
-INT32                       DebugLevel = DEBUG_DEFAULT;
+UINT32                      DebugLevel = DEBUG_DEFAULT;
 #else
-INT32                       DebugLevel = NORMAL_DEFAULT;
+UINT32                      DebugLevel = NORMAL_DEFAULT;
 #endif
 
     /* Debug switch - layer (component) mask */
 
-INT32                       DebugLayer = ALL_COMPONENTS;
+UINT32                      DebugLayer = ALL_COMPONENTS;
 
 
 
 /* 
- * Human-readable decode of rv values, mostly for debugging
+ * Human-readable decode of exception codes, mostly for debugging
  * These need to match the corresponding defines
- * Note that S_FAILURE is not an error, but indicates
+ * Note that AE_PENDING is not an error, but indicates
  * that other alternatives should be checked.
  */
 char            *ExceptionNames[] = 
@@ -139,6 +140,180 @@ char            *ExceptionNames[] =
     "AE_AML_ERROR",
     "AE_RETURN_VALUE" 
 };
+
+
+
+/******************************************************************************
+ *
+ * Namespace globals
+ *
+ ******************************************************************************/
+
+
+
+/* Scope stack */
+
+SCOPE_STACK     ScopeStack[MAX_SCOPE_NESTING];
+SCOPE_STACK     *CurrentScope;
+
+
+/* 
+ * Names built-in to the interpreter
+ *
+ * Initial values are currently supported only for types String and Number.
+ * To avoid type punning, both are specified as strings in this table.
+ */
+
+PREDEFINED_NAMES PreDefinedNames[] = {
+    {"_GPE",    TYPE_DefAny},
+    {"_PR_",    TYPE_DefAny},
+    {"_SB_",    TYPE_DefAny},
+    {"_SI_",    TYPE_DefAny},
+    {"_TZ_",    TYPE_DefAny},
+    {"_REV",    TYPE_Number, "2"},
+    {"_OS_",    TYPE_String, "Intel AML interpreter"},
+    {"_GL_",    TYPE_Mutex},
+
+    /* Table terminator */
+
+    {(char *)0, TYPE_Any}
+};
+
+
+/* 
+ * Elements of NsProperties are bit significant
+ * and should be one-to-one with values of NsType in acpinmsp.h
+ */
+
+INT32 NsProperties[] = {     /* properties of types */
+    0,                      /* Any              */
+    0,                      /* Number           */
+    0,                      /* String           */
+    0,                      /* Buffer           */
+    LOCAL,                  /* Package          */
+    0,                      /* FieldUnit        */
+    NEWSCOPE | LOCAL,       /* Device           */
+    LOCAL,                  /* Event            */
+    NEWSCOPE | LOCAL,       /* Method           */
+    LOCAL,                  /* Mutex            */
+    LOCAL,                  /* Region           */
+    NEWSCOPE | LOCAL,       /* Power            */
+    NEWSCOPE | LOCAL,       /* Processor        */
+    NEWSCOPE | LOCAL,       /* Thermal          */
+    0,                      /* Alias            */
+    0, 
+    0, 
+    0, 
+    0, 
+    0, 
+    0, 
+    0, 
+    0, 
+    0, 
+    0,
+    0,                      /* DefField         */
+    0,                      /* BankField        */
+    0,                      /* IndexField       */
+    0,                      /* DefFieldDefn     */
+    0,                      /* BankFieldDefn    */
+    0,                      /* IndexFieldDefn   */
+    0,                      /* If               */
+    0,                      /* Else             */
+    0,                      /* While            */
+    NEWSCOPE,               /* Scope            */
+    LOCAL,                  /* DefAny           */
+    0                       /* Lvalue           */
+};
+
+char BadType[] = "ERROR: unused type encoding found in table";
+
+
+/* 
+ * Elements of NsTypeNames should be
+ * one-to-one with values of NsType in acpinmsp.h
+ */
+
+/* 
+ * The type Any is used as a "don't care" when searching; when stored in a
+ * table it really means that we have thus far seen no evidence to indicate
+ * what type is actually going to be stored for this entry.
+ */
+
+char *NsTypeNames[] = { /* printable names of types */
+    "Unknown",
+    "Number",
+    "String",
+    "Buffer",
+    "Package",
+    "FieldUnit",
+    "Device",
+    "Event",
+    "Method",
+    "Mutex",
+    "Region",
+    "Power",
+    "Processor",
+    "Thermal",
+    "Alias",
+    BadType, 
+    BadType, 
+    BadType, 
+    BadType, 
+    BadType,
+    BadType, 
+    BadType, 
+    BadType, 
+    BadType, 
+    BadType,
+    "DefField",
+    "BankField",
+    "IndexField",
+    "DefFieldDefn",
+    "BankFieldDefn",
+    "IndexFieldDefn",
+    "If",
+    "Else",
+    "While",
+    "Scope",
+    "ERROR: DefAny found in table", /* should never happen */
+    "ERROR: Lvalue found in table"  /* should never happen */
+};
+
+
+
+
+/******************************************************************************
+ *
+ * Interpreter globals
+ *
+ ******************************************************************************/
+
+
+
+/* 
+ * Method Stack, containing locals and args
+ * per level, 0-7 are Local# and 8-14 are Arg#
+ */
+
+OBJECT_DESCRIPTOR       *MethodStack[AML_METHOD_MAX_NEST][ARGBASE+NUMARG];
+INT32                   MethodStackTop = -1;
+
+
+
+/* 
+ * Package stack, used for keeping track of nested AML packages.
+ * Grows upwards.
+ */
+INT32                   PkgStackLevel;
+INT32                   PkgStack_Len[AML_PKG_MAX_NEST];
+UINT8                   *PkgStack_Code[AML_PKG_MAX_NEST];
+
+
+/* Object Stack */
+/* values are NsHandle or ObjHandle */
+
+void                    *ObjStack[AML_EXPR_MAX_NEST]; 
+INT32                   ObjStackTop = 0;
 
 
 
@@ -177,11 +352,9 @@ InitAcpiLibGlobals (void)
     
     /* file handles and names */
     
-    AsmFile                 = NULL;
     DsdtFile                = NULL;
     OutputFile              = NULL;
     InputFile               = NULL;
-    LstFileHandle           = NO_LOG_HANDLE;
     
     NameString              = NULL;
     NameStringSize          = 0;
@@ -216,6 +389,13 @@ InitAcpiLibGlobals (void)
     RootObject->Type            = TYPE_Any;
     RootObject->Value           = NULL;
 
+
+    /* Debug */
+
+    NestingLevel            = 0;
+
+
+    FUNCTION_EXIT;
 }   
 
 
@@ -274,5 +454,7 @@ AcpiLocalCleanup (void)
             OsdFree (SBDT);
 
     }
+
+    FUNCTION_EXIT;
 }
 
