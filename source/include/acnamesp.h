@@ -106,35 +106,34 @@
 
 #define ACPILIB_DATA_FILE_VERSION "ADF-001"
 
-
 /* 
  * There is an (nte *) prefix to each name table, containing either a NULL 
  * pointer or the address of the next array of nte's in the scope.
  *
  * This macro extracts a pointer to the NEXT table in the chain.
  */
-#define NEXTSEG(NameTbl) ((NAME_TABLE_ENTRY **)NameTbl)[-1]
+#define NEXTSEG(NameTbl)        ((NAME_TABLE_ENTRY **)NameTbl)[-1]
 
 /* 
- * An NsHandle (which is actually an NAME_TABLE_ENTRY *) can appear in some contexts,
- * such as on apObjStack, where a pointer to an OBJECT_DESCRIPTOR can also
+ * An ACPI_HANDLE (which is actually an NAME_TABLE_ENTRY *) can appear in some contexts,
+ * such as on apObjStack, where a pointer to an ACPI_OBJECT can also
  * appear.  This macro is used to distinguish them.
  *
  * The first byte of an NAME_TABLE_ENTRY is a character of the name segment, which will
- * be accepted by NcOK().  The first byte of an OBJECT_DESCRIPTOR is the
- * ValTyp field, whose (UINT8) value comes from the NsType enumeration.
- * Valid NsType values must not include any character acceptable in a name.
+ * be accepted by NcOK().  The first byte of an ACPI_OBJECT is the
+ * ValTyp field, whose (UINT8) value comes from the ACPI_OBJECT_TYPE enumeration.
+ * Valid ACPI_OBJECT_TYPE values must not include any character acceptable in a name.
  */
 
 #define IS_NS_HANDLE(h)         (AmlGoodChar((INT32) * (char *) (h)))
 
 /* To search the entire name space, pass this as SearchBase */
 
-#define NS_ALL                  ((NsHandle)0)
+#define NS_ALL                  ((ACPI_HANDLE)0)
 
 /* 
  * Elements of NsProperties are bit significant
- * and should be one-to-one with values of NsType in acpinmsp.h
+ * and should be one-to-one with values of ACPI_OBJECT_TYPE
  */
 #define NEWSCOPE                1   /* a definition of this type opens a name scope */
 #define LOCAL                   2   /* suppress search of enclosing scopes */
@@ -163,8 +162,8 @@ NsSetup (
 ACPI_STATUS
 NsEnter (
     char                *Name, 
-    NsType              Type, 
-    OpMode              iLE,
+    ACPI_OBJECT_TYPE    Type, 
+    OPERATING_MODE      CurrentMode,
     NAME_TABLE_ENTRY    **RetEntry);
 
 
@@ -174,11 +173,11 @@ NsEnter (
 
 ACPI_STATUS
 NsUnloadNamespace (
-    NsHandle            Handle);
+    ACPI_HANDLE         Handle);
 
 ACPI_STATUS
 NsDeleteSubtree (
-    NsHandle            StartHandle);
+    ACPI_HANDLE         StartHandle);
 
 
 /* 
@@ -187,16 +186,16 @@ NsDeleteSubtree (
 
 void
 NsDumpTables (
-    NsHandle            SearchBase, 
+    ACPI_HANDLE         SearchBase, 
     INT32               MaxDepth);
 
 void
 NsDumpEntry (
-    NsHandle            Handle);
+    ACPI_HANDLE         Handle);
 
 ACPI_STATUS
 NsDumpPathname (
-    NsHandle            Handle, 
+    ACPI_HANDLE         Handle, 
     char                *Msg, 
     UINT32              Level, 
     UINT32              Component);
@@ -209,27 +208,27 @@ NsDumpPathname (
 ACPI_STATUS
 NsEvaluateByHandle (
     NAME_TABLE_ENTRY    *ObjectNte, 
-    OBJECT_DESCRIPTOR   *ReturnObject,
-    OBJECT_DESCRIPTOR   **Params);
+    ACPI_OBJECT         *ReturnObject,
+    ACPI_OBJECT         **Params);
 
 ACPI_STATUS
 NsEvaluateByName (
     char                *Pathname, 
-    OBJECT_DESCRIPTOR   *ReturnObject,
-    OBJECT_DESCRIPTOR   **Params);
+    ACPI_OBJECT         *ReturnObject,
+    ACPI_OBJECT         **Params);
 
 ACPI_STATUS
 NsEvaluateRelative (
     NAME_TABLE_ENTRY    *ObjectNte, 
     char                *Pathname, 
-    OBJECT_DESCRIPTOR   *ReturnObject,
-    OBJECT_DESCRIPTOR   **Params);
+    ACPI_OBJECT         *ReturnObject,
+    ACPI_OBJECT         **Params);
 
 
 ACPI_STATUS
 NsExecuteControlMethod (
     NAME_TABLE_ENTRY    *MethodNte, 
-    OBJECT_DESCRIPTOR   **Params);
+    ACPI_OBJECT         **Params);
 
 ACPI_STATUS
 NsGetObjectValue (
@@ -251,9 +250,9 @@ NsExistDownstreamSibling (
     INT32               Size, 
     NAME_TABLE_ENTRY    *Appendage);
 
-NsHandle 
+ACPI_HANDLE 
 NsGetParentHandle (
-    NsHandle            Look);
+    ACPI_HANDLE         Look);
 
 
 /*
@@ -262,7 +261,7 @@ NsGetParentHandle (
 
 INT32
 NsOpensScope (
-    NsType              Type);
+    ACPI_OBJECT_TYPE    Type);
 
 char *
 NsNameOfScope (
@@ -274,19 +273,19 @@ NsNameOfCurrentScope (
 
 ACPI_STATUS
 NsHandleToPathname (
-    NsHandle            ObjHandle,
+    ACPI_HANDLE         ObjHandle,
     UINT32              BufSize,
     char                *UserBuffer);
 
 ACPI_STATUS
 NsSetMethod (
-    NsHandle            ObjHandle, 
+    ACPI_HANDLE         ObjHandle, 
     ptrdiff_t           Offset, 
     INT32               Length);
 
 void
 NsSetValue (
-    NsHandle            ObjHandle, 
+    ACPI_HANDLE         ObjHandle, 
     ACPI_OBJECT_HANDLE  v, 
     UINT8               ValTyp);
 
@@ -297,7 +296,7 @@ NsPatternMatch (
         
 void *
 NsNameCompare (
-    NsHandle            ObjHandle, 
+    ACPI_HANDLE         ObjHandle, 
     UINT32              Level, 
     void                *Context);
 
@@ -306,31 +305,31 @@ NsLowFindNames (
     NAME_TABLE_ENTRY    *ThisEntry, 
     char                *SearchFor,
     INT32               *Count, 
-    NsHandle            List[], 
+    ACPI_HANDLE         List[], 
     INT32               MaxDepth);
 
-NsHandle *
+ACPI_HANDLE *
 NsFindNames (
     char                *SearchFor, 
-    NsHandle            SearchBase, 
+    ACPI_HANDLE         SearchBase, 
     INT32               MaxDepth);
 
 ACPI_STATUS
 NsGetHandle (
     char                *Name, 
-    NsHandle            Scope,
-    NsHandle            *OutHandle);
+    ACPI_HANDLE         Scope,
+    ACPI_HANDLE         *OutHandle);
 
 void *
 NsCompareValue (
-    NsHandle            ObjHandle, 
+    ACPI_HANDLE         ObjHandle, 
     UINT32              Level, 
     void                *ObjDesc);
 
-NsHandle
+ACPI_HANDLE
 NsFindValue (
-    OBJECT_DESCRIPTOR   *ObjDesc, 
-    NsHandle            SearchBase, 
+    ACPI_OBJECT         *ObjDesc, 
+    ACPI_HANDLE         SearchBase, 
     INT32               MaxDepth);
 
 /*
@@ -342,8 +341,8 @@ ACPI_STATUS
 NsSearchAndEnter (
     char                *NamSeg, 
     NAME_TABLE_ENTRY    *NameTbl, 
-    OpMode              LoadMode, 
-    NsType              Type,
+    OPERATING_MODE      LoadMode, 
+    ACPI_OBJECT_TYPE    Type,
     NAME_TABLE_ENTRY    **RetNte);
 
 void
@@ -359,15 +358,15 @@ NsInitializeTable (
 void
 NsPushCurrentScope (
     NAME_TABLE_ENTRY    *NewScope, 
-    NsType              Type);
+    ACPI_OBJECT_TYPE    Type);
 
 void
 NsPushMethodScope (
-    NsHandle            nNewScope);
+    ACPI_HANDLE         NewScope);
 
 INT32
 NsPopCurrent (
-    NsType              Type);
+    ACPI_OBJECT_TYPE    Type);
 
 
 /*
@@ -409,17 +408,17 @@ NsChecksum (
     void                *Buffer,
     UINT32              Length);
 
-NsType
+ACPI_OBJECT_TYPE
 NsGetType (
-    NsHandle            ObjHandle);
+    ACPI_HANDLE         ObjHandle);
 
 void *
 NsGetValue (
-    NsHandle            ObjHandle);
+    ACPI_HANDLE         ObjHandle);
 
 INT32
 NsLocal (
-    NsType              Type);
+    ACPI_OBJECT_TYPE    Type);
 
 char *
 NsInternalizeName (
@@ -427,7 +426,7 @@ NsInternalizeName (
 
 INT32
 IsNsValue (
-    OBJECT_DESCRIPTOR   *pOD);
+    ACPI_OBJECT         *pOD);
 
 INT32
 NsMarkNS(
@@ -435,7 +434,7 @@ NsMarkNS(
 
 NAME_TABLE_ENTRY *
 NsConvertHandleToEntry (
-    NsHandle            Handle);
+    ACPI_HANDLE         Handle);
 
 
 /*

@@ -1,7 +1,7 @@
 
 /******************************************************************************
  * 
- * Name: acpiobj.h - Definition of OBJECT_DESCRIPTOR
+ * Name: acpiobj.h - Definition of ACPI_OBJECT
  *
  *****************************************************************************/
 
@@ -101,7 +101,7 @@
 #include <datatypes.h>
 
 /* 
- * All variants of the OBJECT_DESCRIPTOR are defined with the same
+ * All variants of the ACPI_OBJECT are defined with the same
  * sequence of field types, with fields that are not used in a particular
  * variant being named "Reserved".  This is not strictly necessary, but
  * may in some circumstances simplify understanding if these structures
@@ -207,7 +207,7 @@ typedef union od                    /* OBJECT DESCRIPTOR */
         UINT16          Reserved2;
         UINT32          Reserved3;
         UINT32          Reserved4;
-        NsHandle        Device;
+        ACPI_HANDLE     Device;
         NOTIFY_HANDLER  Handler;
         void            *Context;
     } Device;
@@ -269,7 +269,7 @@ typedef union od                    /* OBJECT DESCRIPTOR */
         UINT16          Reserved2;
         UINT32          Reserved3;
         UINT32          Reserved4;
-        NsHandle        PowerResource;
+        ACPI_HANDLE     PowerResource;
         void            *Reserved_p2;
         void            *Reserved_p3;
     } PowerResource;
@@ -281,7 +281,7 @@ typedef union od                    /* OBJECT DESCRIPTOR */
         UINT16          Reserved2;
         UINT32          Reserved3;
         UINT32          Reserved4;
-        NsHandle        Processor;
+        ACPI_HANDLE     Processor;
         void            *Reserved_p2;
         void            *Reserved_p3;
     } Processor;
@@ -293,7 +293,7 @@ typedef union od                    /* OBJECT DESCRIPTOR */
         UINT16          Reserved2;
         UINT32          Reserved3;
         UINT32          Reserved4;
-        NsHandle        ThermalZone;
+        ACPI_HANDLE     ThermalZone;
         NOTIFY_HANDLER  Handler;
         void            *Context;
     } ThermalZone;
@@ -330,7 +330,7 @@ typedef union od                    /* OBJECT DESCRIPTOR */
         UINT32          Offset;             /* Byte offset within containing object */
         UINT32          BankVal;            /* Value to store into pBankSelect */
         union od        *Container;         /* Containing object */
-        NsHandle        BankSelect;         /* Bank select register */
+        ACPI_HANDLE     BankSelect;         /* Bank select register */
         void            *Reserved_p3;
     } BankField;
 
@@ -350,8 +350,8 @@ typedef union od                    /* OBJECT DESCRIPTOR */
                                              * and data register definitions will define
                                              * how to access the respective registers
                                              */
-        NsHandle        Index;              /* Index register */
-        NsHandle        Data;               /* Data register */
+        ACPI_HANDLE     Index;              /* Index register */
+        ACPI_HANDLE     Data;               /* Data register */
         void            *Reserved_p3;
     } IndexField;
 
@@ -366,14 +366,14 @@ typedef union od                    /* OBJECT DESCRIPTOR */
         UINT32          Reserved3;
         void            *Ref;               /* bOpCode  Use of pvRef field
                                              * -------  ----------------------------
-                                             * NameOp   NsHandle for referenced name
-                                             * IndexOp  OBJECT_DESCRIPTOR **
+                                             * NameOp   ACPI_HANDLE for referenced name
+                                             * IndexOp  ACPI_OBJECT **
                                              */
         void            *Reserved_p2;
         void            *Reserved_p3;
     } Lvalue;
 
-} OBJECT_DESCRIPTOR;
+} ACPI_OBJECT;
 
 
 /*
@@ -381,7 +381,7 @@ typedef union od                    /* OBJECT DESCRIPTOR */
  */
 
 /* 
- * The sLvalue case of OBJECT_DESCRIPTOR includes a one-byte field which
+ * The sLvalue case of ACPI_OBJECT includes a one-byte field which
  * contains an AML opcode identifying the type of lvalue.  Debug1 is used
  * in this field as a stand-in for the (two-byte) AML encoding of DebugOp.
  */
