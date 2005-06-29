@@ -357,12 +357,10 @@ NotifyHandler (
     void                        *Context)
 {
 
-    printf ("**** Notify Handler: Value 0x%x\n", Value);
-
     switch (Value)
     {
     case 0:
-        printf ("**** Method Error: Results not equal\n");
+        printf ("**** Method Error 0x%X: Results not equal\n", Value);
         if (DebugFile)
         {
             OsdPrintf ("**** Method Error: Results not equal\n");
@@ -389,10 +387,10 @@ NotifyHandler (
     
 
     default:
-        printf ("**** Unknown notify value=%d\n", Value);
+        printf ("**** Received a notify, value 0x%X\n", Value);
         if (DebugFile)
         {
-            OsdPrintf ("**** Unknown notify value=%d\n", Value);
+            OsdPrintf ("**** Received a notify, value 0x%X\n", Value);
         }
         break;
     }
@@ -534,7 +532,7 @@ AdSecondPassParse (
  *****************************************************************************/
 
 ACPI_STATUS
-AdGetTables (
+xxxAdGetTables (
     char                    *Filename)
 {
     ACPI_STATUS             Status;

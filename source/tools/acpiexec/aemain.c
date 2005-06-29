@@ -247,6 +247,15 @@ main (
             return Status;
         }
 
+        DbSetOutputDestination (DB_REDIRECTABLE_OUTPUT);
+        Status = AcpiLoadNamespace ();
+        DbSetOutputDestination (DB_CONSOLE_OUTPUT);
+
+        if (ACPI_FAILURE (Status))
+        {
+            return Status;
+        }
+
         /* TBD:
          * Need a way to call this after the "LOAD" command
          */
