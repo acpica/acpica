@@ -323,6 +323,44 @@ AcpiGetNextObject (
 
 /****************************************************************************
  *
+ * FUNCTION:    AcpiGetType
+ *
+ * PARAMETERS:  Handle          - Handle of object whose type is desired
+ *              *RetType        - Where the type will be placed
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: This routine returns the type associatd with a particular handle
+ *
+ ******************************************************************************/
+
+ACPI_STATUS 
+AcpiGetType (
+    ACPI_HANDLE             Handle,
+    ACPI_OBJECT_TYPE        *RetType)
+{
+    NAME_TABLE_ENTRY        *Object;
+
+
+    if (!RetType)
+    {
+        return AE_BAD_PARAMETER;
+    }
+
+    /* Convert and validate the handle */
+
+    if (!(Object = NsConvertHandleToEntry (Handle)))
+    {
+        return AE_BAD_PARAMETER;
+    }
+
+    *RetType = Object->Type;
+    return AE_OK;
+}
+
+
+/****************************************************************************
+ *
  * FUNCTION:    AcpiGetParent
  *
  * PARAMETERS:  Handle          - Handle of object whose parent is desired
@@ -664,26 +702,6 @@ AcpiGetParentHandle (
     return ((ACPI_HANDLE) NULL);
 }
 
-
-/****************************************************************************
- *
- * FUNCTION:    ACPI_OBJECT_TYPE AcpiValueType
- *
- * PARAMETERS:  Handle          - the handle of the object to find the type of
- *
- * RETURN:      ACPI_OBJECT_TYPE - type of the Handle
- *
- * DESCRIPTION: This routine returns the type associatd with a particular handle
- *
- ******************************************************************************/
-
-ACPI_OBJECT_TYPE 
-AcpiValueType (
-    ACPI_HANDLE             Handle)
-{
-
-    return (TYPE_Any);
-}
 
 /****************************************************************************
  *
