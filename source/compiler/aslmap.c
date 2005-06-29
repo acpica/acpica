@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslmap - parser to AML opcode mapping table
- *              $Revision: 1.38 $
+ *              $Revision: 1.42 $
  *
  *****************************************************************************/
 
@@ -142,7 +142,7 @@
  *
  ******************************************************************************/
 
-ASL_RESERVED_INFO               ReservedMethods[] = {
+const ASL_RESERVED_INFO         ReservedMethods[] = {
     {"_AC0",     0,      ASL_RSVD_RETURN_VALUE},
     {"_AC1",     0,      ASL_RSVD_RETURN_VALUE},
     {"_AC2",     0,      ASL_RSVD_RETURN_VALUE},
@@ -287,7 +287,7 @@ ASL_RESERVED_INFO               ReservedMethods[] = {
  *
  ******************************************************************************/
 
-ASL_MAPPING_ENTRY AslKeywordMapping [] =
+const ASL_MAPPING_ENTRY     AslKeywordMapping [] =
 {
 
 /* ACCESSAS */                  OP_TABLE_ENTRY (AML_INT_ACCESSFIELD_OP,     0,                  0,                  0),
@@ -525,6 +525,7 @@ ASL_MAPPING_ENTRY AslKeywordMapping [] =
 /* UPDATERULE_ONES */           OP_TABLE_ENTRY (AML_BYTE_OP,                UPDATE_WRITE_AS_ONES,   0,              0),
 /* UPDATERULE_PRESERVE */       OP_TABLE_ENTRY (AML_BYTE_OP,                UPDATE_PRESERVE,        0,              0),
 /* UPDATERULE_ZEROS */          OP_TABLE_ENTRY (AML_BYTE_OP,                UPDATE_WRITE_AS_ZEROS,  0,              0),
+/* VAR_PACKAGE */               OP_TABLE_ENTRY (AML_VAR_PACKAGE_OP,         0,                  NODE_AML_PACKAGE,   ACPI_BTYPE_PACKAGE),
 /* VENDORLONG */                OP_TABLE_ENTRY (AML_BYTE_OP,                0,                  0,                  0),
 /* VENDORSHORT */               OP_TABLE_ENTRY (AML_BYTE_OP,                0,                  0,                  0),
 /* WAIT */                      OP_TABLE_ENTRY (AML_WAIT_OP,                0,                  0,                  ACPI_BTYPE_INTEGER),
@@ -598,8 +599,11 @@ AcpiDsMapOpcodeToDataType (
     UINT32                  *OutFlags)
 {
     ACPI_OBJECT_TYPE8       DataType = INTERNAL_TYPE_INVALID;
-    ACPI_OPCODE_INFO        *OpInfo;
+    const ACPI_OPCODE_INFO  *OpInfo;
     UINT32                  Flags = 0;
+
+
+    PROC_NAME ("DsMapOpcodeToDataType");
 
 
     OpInfo = AcpiPsGetOpcodeInfo (Opcode);
@@ -607,7 +611,7 @@ AcpiDsMapOpcodeToDataType (
     {
         /* Unknown opcode */
 
-        DEBUG_PRINT (ACPI_ERROR, ("MapOpcode: Unknown AML opcode: %x\n",
+        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Unknown AML opcode: %x\n",
             Opcode));
 
         return (DataType);
@@ -639,8 +643,8 @@ AcpiDsMapOpcodeToDataType (
             break;
 
         default:
-            DEBUG_PRINT (ACPI_ERROR,
-                ("MapOpcode: Unknown (type LITERAL) AML opcode: %x\n",
+            ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
+                "Unknown (type LITERAL) AML opcode: %x\n",
                 Opcode));
             break;
         }
@@ -663,8 +667,8 @@ AcpiDsMapOpcodeToDataType (
             break;
 
         default:
-            DEBUG_PRINT (ACPI_ERROR,
-                ("MapOpcode: Unknown (type DATA_TERM) AML opcode: %x\n",
+            ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
+                "Unknown (type DATA_TERM) AML opcode: %x\n",
                 Opcode));
             break;
         }
@@ -683,7 +687,7 @@ AcpiDsMapOpcodeToDataType (
     case OPTYPE_MONADIC2R:
     case OPTYPE_DYADIC2:
     case OPTYPE_DYADIC2R:
-    case OPTYPE_DYADIC2S:
+    case OPTYPE_DYADIC_T21:
     case OPTYPE_TRIADIC:
     case OPTYPE_QUADRADIC:
     case OPTYPE_HEXADIC:
@@ -716,8 +720,8 @@ AcpiDsMapOpcodeToDataType (
 
     default:
 
-        DEBUG_PRINT (ACPI_ERROR,
-            ("MapOpcode: Unimplemented data type opcode: %x\n",
+        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
+            "Unimplemented data type opcode: %x\n",
             Opcode));
         break;
     }
