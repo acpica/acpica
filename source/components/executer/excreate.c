@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: amcreate - Named object creation
- *              $Revision: 1.45 $
+ *              $Revision: 1.46 $
  *
  *****************************************************************************/
 
@@ -175,8 +175,6 @@ AcpiAmlExecCreateField (
     FUNCTION_TRACE ("AmlExecCreateField");
 
 
-
-
     /* Create the region descriptor */
 
     ObjDesc = AcpiCmCreateInternalObject (ACPI_TYPE_FIELD_UNIT);
@@ -294,8 +292,6 @@ AcpiAmlExecCreateField (
     }
 
 
-
-
     return_ACPI_STATUS (AE_OK);
 
 
@@ -313,25 +309,6 @@ Cleanup:
 
     return_ACPI_STATUS (Status);
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 ACPI_STATUS
