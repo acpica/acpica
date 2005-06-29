@@ -124,7 +124,7 @@
 #include <namesp.h>
 
 #define _COMPONENT          DISPATCHER
-        MODULE_NAME         ("DSOBJECT");
+        MODULE_NAME         ("dsobject");
 
 
 
@@ -158,7 +158,18 @@ DsInitOneObject (
     ACPI_OBJECT_TYPE        Type;
     ACPI_STATUS             Status;
     ACPI_OBJECT_INTERNAL    *ObjDesc;
+    INIT_WALK_INFO          *Info = (INIT_WALK_INFO *) Context;
 
+
+    /* We are only interested in objects owned by the table that was just loaded */
+
+    if (((NAME_TABLE_ENTRY *) ObjHandle)->OwnerId != Info->TableDesc->TableId)
+    {
+        return AE_OK;
+    }
+
+
+    /* And even then, we are only interested in a few object types */
 
     Type = NsGetType (ObjHandle);
 
@@ -169,13 +180,15 @@ DsInitOneObject (
 
         DsInitializeRegion (ObjHandle);
 
-        ((INIT_WALK_INFO *) Context)->OpRegionCount++;
+        Info->OpRegionCount++;
         break;
 
 
     case ACPI_TYPE_Method:
 
-        ((INIT_WALK_INFO *) Context)->MethodCount++;
+        Info->MethodCount++;
+        OsdPrintf (".");
+
 
         /* Always parse methods to detect errors, we may delete the parse tree below */
 
@@ -185,15 +198,18 @@ DsInitOneObject (
 
         if (ACPI_FAILURE (Status))
         {
-            DEBUG_PRINT (ACPI_ERROR, ("DsInitOneObject: Method %p [%4.4s] parse failed! %x\n", 
-                                        ObjHandle, ((NAME_TABLE_ENTRY *)ObjHandle)->Name, Status));
+            DEBUG_PRINT (ACPI_ERROR, ("DsInitOneObject: Method %p [%4.4s] parse failed! %s\n", 
+                                        ObjHandle, &((NAME_TABLE_ENTRY *)ObjHandle)->Name, CmFormatException (Status)));
             break;
         }
 
         /* Keep the parse tree only if we are parsing all methods at init time (versus just-in-time) */
 
         if (Gbl_WhenToParseMethods != METHOD_PARSE_AT_INIT)
-        {
+        {                
+            
+            NsDeleteNamespaceSubtree (ObjHandle);
+
             ObjDesc = ((NAME_TABLE_ENTRY *)ObjHandle)->Object; 
             PsDeleteParseTree (ObjDesc->Method.ParserOp);
             ObjDesc->Method.ParserOp = NULL;
@@ -227,7 +243,9 @@ DsInitOneObject (
  ******************************************************************************/
 
 ACPI_STATUS
-DsInitializeObjects (void)
+DsInitializeObjects (
+    ACPI_TABLE_DESC         *TableDesc,
+    NAME_TABLE_ENTRY        *StartEntry)
 {
     ACPI_STATUS             Status;
     INIT_WALK_INFO          Info;
@@ -236,21 +254,25 @@ DsInitializeObjects (void)
     FUNCTION_TRACE ("DsInitializeObjects");
 
 
+    OsdPrintf ("Parsing Methods:");
+
     DEBUG_PRINT (TRACE_DISPATCH, ("DsInitializeObjects: **** Starting initialization of namespace objects ****\n"));
 
     Info.MethodCount = 0;
     Info.OpRegionCount = 0;
+    Info.TableDesc = TableDesc;
 
 
-    /* Walk entire namespace from the root */
+    /* Walk entire namespace from the supplied root */
 
-    Status = AcpiWalkNamespace (ACPI_TYPE_Any, Gbl_RootObject, ACPI_INT32_MAX, DsInitOneObject, 
+    Status = AcpiWalkNamespace (ACPI_TYPE_Any, StartEntry, ACPI_INT32_MAX, DsInitOneObject, 
                                 &Info, NULL);
     if (ACPI_FAILURE (Status))
     {
         DEBUG_PRINT (ACPI_ERROR, ("DsInitializeObjects: WalkNamespace failed! %x\n", Status));
     }
 
+    OsdPrintf ("\n%d Control Methods found and parsed\n", Info.MethodCount);
     DEBUG_PRINT (TRACE_DISPATCH, ("DsInitializeObjects: %d Control Methods found\n", Info.MethodCount));
     DEBUG_PRINT (TRACE_DISPATCH, ("DsInitializeObjects: %d Op Regions found\n", Info.OpRegionCount));
 
@@ -313,10 +335,10 @@ DsInitObjectFromOp (
 
         /* Resolve the object (could be an arg or local) */
 
-        Status = AmlGetRvalue (&ArgDesc);
+        Status = AmlResolveToValue (&ArgDesc);
         if (ACPI_FAILURE (Status))
         {
-            CmDeleteInternalObject (ArgDesc);
+            CmRemoveReference (ArgDesc);
             return Status;
         }
 
@@ -326,14 +348,14 @@ DsInitObjectFromOp (
         {
             DEBUG_PRINT (ACPI_ERROR, ("InitObject: Expecting number, got obj: %p type %X\n",
                             ArgDesc, ArgDesc->Common.Type));
-            CmDeleteInternalObject (ArgDesc);
+            CmRemoveReference (ArgDesc);
             return AE_TYPE;
         }
  
         /* Get the value, delete the internal object */
 
         ObjDesc->Buffer.Length = ArgDesc->Number.Value;
-        CmDeleteInternalObject (ArgDesc);
+        CmRemoveReference (ArgDesc);
 
         /* Allocate the buffer */
 
@@ -350,7 +372,7 @@ DsInitObjectFromOp (
         ByteList = (ACPI_BYTELIST_OP *) Arg->Next;
         if (ByteList)
         {
-            if (ByteList->Opcode != AML_BYTELIST)
+            if (ByteList->Opcode != AML_BYTELIST_OP)
             {
                 DEBUG_PRINT (ACPI_ERROR, ("InitObject: Expecting bytelist, got: %x\n",
                                 ByteList));
@@ -378,7 +400,7 @@ DsInitObjectFromOp (
         break;
 
 
-    case INTERNAL_TYPE_Lvalue:
+    case INTERNAL_TYPE_Reference:
 
         switch (OpInfo->Flags & OP_INFO_TYPE)
         {
@@ -386,28 +408,28 @@ DsInitObjectFromOp (
 
             /* Split the opcode into a base opcode + offset */
 
-            ObjDesc->Lvalue.OpCode = AML_LocalOp;
-            ObjDesc->Lvalue.Offset = Opcode - AML_LocalOp;
+            ObjDesc->Reference.OpCode = AML_LocalOp;
+            ObjDesc->Reference.Offset = Opcode - AML_LocalOp;
             break;
 
         case OPTYPE_METHOD_ARGUMENT:
 
             /* Split the opcode into a base opcode + offset */
 
-            ObjDesc->Lvalue.OpCode = AML_ArgOp;
-            ObjDesc->Lvalue.Offset = Opcode - AML_ArgOp;
+            ObjDesc->Reference.OpCode = AML_ArgOp;
+            ObjDesc->Reference.Offset = Opcode - AML_ArgOp;
             break;
 
         default: /* Constants, Literals, etc.. */
 
-            if (Op->Opcode == AML_NAMEPATH)
+            if (Op->Opcode == AML_NAMEPATH_OP)
             {
                 /* Nte was saved in Op */
 
-                ObjDesc->Lvalue.Nte = Op->NameTableEntry;
+                ObjDesc->Reference.Nte = Op->NameTableEntry;
             }
 
-            ObjDesc->Lvalue.OpCode = Opcode;
+            ObjDesc->Reference.OpCode = Opcode;
             break;
         }
 
@@ -455,7 +477,7 @@ DsBuildInternalSimpleObj (
     FUNCTION_TRACE ("DsBuildInternalSimpleObj");
 
 
-    if (Op->Opcode == AML_NAMEPATH)
+    if (Op->Opcode == AML_NAMEPATH_OP)
     {
         /*
          * This is an object reference.  If The name was previously looked up in the NS,
@@ -465,7 +487,7 @@ DsBuildInternalSimpleObj (
         if (!Op->NameTableEntry)
         {
             Status = NsLookup (WalkState->ScopeInfo, Op->Value.String, ACPI_TYPE_Any, IMODE_Execute, 
-                                        NS_SEARCH_PARENT | NS_DONT_OPEN_SCOPE, NULL, &((NAME_TABLE_ENTRY *) Op->NameTableEntry));
+                                        NS_SEARCH_PARENT | NS_DONT_OPEN_SCOPE, NULL, (NAME_TABLE_ENTRY **)&(Op->NameTableEntry));
             if (ACPI_FAILURE (Status))
             {
                 return_ACPI_STATUS (Status);
@@ -473,11 +495,11 @@ DsBuildInternalSimpleObj (
         }
 
         /*
-         * The reference will be an Lvalue
+         * The reference will be a Reference
          * TBD: unless we really need a separate type of INTERNAL_TYPE_reference
          * TBD: change DsMapOpcodeToDataType to handle this case 
          */
-        Type = INTERNAL_TYPE_Lvalue;
+        Type = INTERNAL_TYPE_Reference;
     }
 
     else
@@ -497,7 +519,7 @@ DsBuildInternalSimpleObj (
     Status = DsInitObjectFromOp (WalkState, Op, Op->Opcode, ObjDesc);
     if (ACPI_FAILURE (Status))
     {
-        CmDeleteInternalObject (ObjDesc);
+        CmRemoveReference (ObjDesc);
         return_ACPI_STATUS (Status);
     }
 
@@ -551,8 +573,7 @@ DsBuildInternalPackageObj (
      * Add an extra pointer slot so that the list is always null terminated.
      */
 
-    ObjDesc->Package.Elements   = CmCallocate ((ACPI_SIZE) (ObjDesc->Package.Count + 1) *
-                                                     sizeof (void *));
+    ObjDesc->Package.Elements   = CmCallocate ((ObjDesc->Package.Count + 1) * sizeof (void *));
     if (!ObjDesc->Package.Elements)
     {
         /* Package vector allocation failure   */
@@ -690,7 +711,7 @@ DsCreateNamedObject (
 
 Cleanup:
 
-    CmDeleteInternalObject (ObjDesc);
+    CmRemoveReference (ObjDesc);
 
     return_ACPI_STATUS (Status);
 }

@@ -161,7 +161,6 @@ DsCreateField (
     ACPI_STATUS             Status = AE_AML_ERROR;
     ACPI_GENERIC_OP         *Arg;
     NAME_TABLE_ENTRY        *Entry;
-    char                    Buffer[5];
     UINT8                   FieldFlags;
     UINT8                   AccessAttribute = 0;
     UINT32                  FieldBitPosition = 0;
@@ -204,10 +203,7 @@ DsCreateField (
 
         case AML_NAMEDFIELD_OP:
 
-            *(UINT32 *) Buffer = (((ACPI_NAMED_OP *)Arg)->Name);
-            Buffer[4] = 0;
-
-            Status = NsLookup (WalkState->ScopeInfo, Buffer, INTERNAL_TYPE_DefField, IMODE_LoadPass1, 
+            Status = NsLookup (WalkState->ScopeInfo, (char *) &((ACPI_NAMED_OP *)Arg)->Name, INTERNAL_TYPE_DefField, IMODE_LoadPass1, 
                                         NS_NO_UPSEARCH | NS_DONT_OPEN_SCOPE, NULL, &Entry);
             if (ACPI_FAILURE (Status))
             {
@@ -259,7 +255,6 @@ DsCreateBankField (
     NAME_TABLE_ENTRY        *BankReg;
     NAME_TABLE_ENTRY        *Entry;
     UINT32                  BankValue;
-    char                    Buffer[5];
     UINT8                   FieldFlags;
     UINT8                   AccessAttribute = 0;
     UINT32                  FieldBitPosition = 0;
@@ -318,10 +313,7 @@ DsCreateBankField (
 
         case AML_NAMEDFIELD_OP:
 
-            *(UINT32 *) Buffer = (((ACPI_NAMED_OP *)Arg)->Name);
-            Buffer[4] = 0;
-
-            Status = NsLookup (WalkState->ScopeInfo, Buffer, INTERNAL_TYPE_DefField, IMODE_LoadPass1, 
+            Status = NsLookup (WalkState->ScopeInfo, (char *) &((ACPI_NAMED_OP *)Arg)->Name, INTERNAL_TYPE_DefField, IMODE_LoadPass1, 
                                         NS_NO_UPSEARCH | NS_DONT_OPEN_SCOPE, NULL, &Entry);
             if (ACPI_FAILURE (Status))
             {
@@ -372,7 +364,6 @@ DsCreateIndexField (
     ACPI_STATUS             Status;
     ACPI_GENERIC_OP         *Arg;
     NAME_TABLE_ENTRY        *Entry;
-    char                    *Buffer;
     NAME_TABLE_ENTRY        *IndexReg;
     NAME_TABLE_ENTRY        *DataReg;
     UINT8                   FieldFlags;
@@ -387,9 +378,7 @@ DsCreateIndexField (
 
     /* First arg is the name of the Index register */
 
-    Buffer = Arg->Value.String;
-
-    Status = NsLookup (WalkState->ScopeInfo, Buffer, ACPI_TYPE_Any, IMODE_LoadPass1, 
+    Status = NsLookup (WalkState->ScopeInfo, Arg->Value.String, ACPI_TYPE_Any, IMODE_LoadPass1, 
                                 NS_NO_UPSEARCH | NS_DONT_OPEN_SCOPE, NULL, &IndexReg);
     if (ACPI_FAILURE (Status))
     {
@@ -438,10 +427,7 @@ DsCreateIndexField (
 
         case AML_NAMEDFIELD_OP:
 
-            *(UINT32 *) Buffer = (((ACPI_NAMED_OP *)Arg)->Name);
-            Buffer[4] = 0;
-
-            Status = NsLookup (WalkState->ScopeInfo, Buffer, INTERNAL_TYPE_IndexField, IMODE_LoadPass1, 
+            Status = NsLookup (WalkState->ScopeInfo, (char *) &((ACPI_NAMED_OP *)Arg)->Name, INTERNAL_TYPE_IndexField, IMODE_LoadPass1, 
                                         NS_NO_UPSEARCH | NS_DONT_OPEN_SCOPE, NULL, &Entry);
             if (ACPI_FAILURE (Status))
             {
