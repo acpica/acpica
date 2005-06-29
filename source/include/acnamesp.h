@@ -1,581 +1,602 @@
-/******************************************************************************
- *
- * Name: acnamesp.h - Namespace subcomponent prototypes and defines
- *       $Revision: 1.131 $
- *
- *****************************************************************************/
-
-/******************************************************************************
- *
- * 1. Copyright Notice
- *
- * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
- * All rights reserved.
- *
- * 2. License
- *
- * 2.1. This is your license from Intel Corp. under its intellectual property
- * rights.  You may have additional license terms from the party that provided
- * you this software, covering your right to use that party's intellectual
- * property rights.
- *
- * 2.2. Intel grants, free of charge, to any person ("Licensee") obtaining a
- * copy of the source code appearing in this file ("Covered Code") an
- * irrevocable, perpetual, worldwide license under Intel's copyrights in the
- * base code distributed originally by Intel ("Original Intel Code") to copy,
- * make derivatives, distribute, use and display any portion of the Covered
- * Code in any form, with the right to sublicense such rights; and
- *
- * 2.3. Intel grants Licensee a non-exclusive and non-transferable patent
- * license (with the right to sublicense), under only those claims of Intel
- * patents that are infringed by the Original Intel Code, to make, use, sell,
- * offer to sell, and import the Covered Code and derivative works thereof
- * solely to the minimum extent necessary to exercise the above copyright
- * license, and in no event shall the patent license extend to any additions
- * to or modifications of the Original Intel Code.  No other license or right
- * is granted directly or by implication, estoppel or otherwise;
- *
- * The above copyright and patent license is granted only if the following
- * conditions are met:
- *
- * 3. Conditions
- *
- * 3.1. Redistribution of Source with Rights to Further Distribute Source.
- * Redistribution of source code of any substantial portion of the Covered
- * Code or modification with rights to further distribute source must include
- * the above Copyright Notice, the above License, this list of Conditions,
- * and the following Disclaimer and Export Compliance provision.  In addition,
- * Licensee must cause all Covered Code to which Licensee contributes to
- * contain a file documenting the changes Licensee made to create that Covered
- * Code and the date of any change.  Licensee must include in that file the
- * documentation of any changes made by any predecessor Licensee.  Licensee
- * must include a prominent statement that the modification is derived,
- * directly or indirectly, from Original Intel Code.
- *
- * 3.2. Redistribution of Source with no Rights to Further Distribute Source.
- * Redistribution of source code of any substantial portion of the Covered
- * Code or modification without rights to further distribute source must
- * include the following Disclaimer and Export Compliance provision in the
- * documentation and/or other materials provided with distribution.  In
- * addition, Licensee may not authorize further sublicense of source of any
- * portion of the Covered Code, and must include terms to the effect that the
- * license from Licensee to its licensee is limited to the intellectual
- * property embodied in the software Licensee provides to its licensee, and
- * not to intellectual property embodied in modifications its licensee may
- * make.
- *
- * 3.3. Redistribution of Executable. Redistribution in executable form of any
- * substantial portion of the Covered Code or modification must reproduce the
- * above Copyright Notice, and the following Disclaimer and Export Compliance
- * provision in the documentation and/or other materials provided with the
- * distribution.
- *
- * 3.4. Intel retains all right, title, and interest in and to the Original
- * Intel Code.
- *
- * 3.5. Neither the name Intel nor any other trademark owned or controlled by
- * Intel shall be used in advertising or otherwise to promote the sale, use or
- * other dealings in products derived from or relating to the Covered Code
- * without prior written authorization from Intel.
- *
- * 4. Disclaimer and Export Compliance
- *
- * 4.1. INTEL MAKES NO WARRANTY OF ANY KIND REGARDING ANY SOFTWARE PROVIDED
- * HERE.  ANY SOFTWARE ORIGINATING FROM INTEL OR DERIVED FROM INTEL SOFTWARE
- * IS PROVIDED "AS IS," AND INTEL WILL NOT PROVIDE ANY SUPPORT,  ASSISTANCE,
- * INSTALLATION, TRAINING OR OTHER SERVICES.  INTEL WILL NOT PROVIDE ANY
- * UPDATES, ENHANCEMENTS OR EXTENSIONS.  INTEL SPECIFICALLY DISCLAIMS ANY
- * IMPLIED WARRANTIES OF MERCHANTABILITY, NONINFRINGEMENT AND FITNESS FOR A
- * PARTICULAR PURPOSE.
- *
- * 4.2. IN NO EVENT SHALL INTEL HAVE ANY LIABILITY TO LICENSEE, ITS LICENSEES
- * OR ANY OTHER THIRD PARTY, FOR ANY LOST PROFITS, LOST DATA, LOSS OF USE OR
- * COSTS OF PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES, OR FOR ANY INDIRECT,
- * SPECIAL OR CONSEQUENTIAL DAMAGES ARISING OUT OF THIS AGREEMENT, UNDER ANY
- * CAUSE OF ACTION OR THEORY OF LIABILITY, AND IRRESPECTIVE OF WHETHER INTEL
- * HAS ADVANCE NOTICE OF THE POSSIBILITY OF SUCH DAMAGES.  THESE LIMITATIONS
- * SHALL APPLY NOTWITHSTANDING THE FAILURE OF THE ESSENTIAL PURPOSE OF ANY
- * LIMITED REMEDY.
- *
- * 4.3. Licensee shall not export, either directly or indirectly, any of this
- * software or system incorporating such software without first obtaining any
- * required license or other approval from the U. S. Department of Commerce or
- * any other agency or department of the United States Government.  In the
- * event Licensee exports any such software from the United States or
- * re-exports any such software from a foreign destination, Licensee shall
- * ensure that the distribution and export/re-export of the software is in
- * compliance with all laws, regulations, orders, or other restrictions of the
- * U.S. Export Administration Regulations. Licensee agrees that neither it nor
- * any of its subsidiaries will export/re-export any technical data, process,
- * software, or service, directly or indirectly, to any country for which the
- * United States government or any agency thereof requires an export license,
- * other governmental approval, or letter of assurance, without first obtaining
- * such license, approval or letter.
- *
- *****************************************************************************/
-
-#ifndef __ACNAMESP_H__
-#define __ACNAMESP_H__
-
-
-/* To search the entire name space, pass this as SearchBase */
-
-#define ACPI_NS_ALL                 ((ACPI_HANDLE)0)
-
 /*
- * Elements of AcpiNsProperties are bit significant
- * and should be one-to-one with values of ACPI_OBJECT_TYPE
+  __________________________________________________________________________
+ |
+ |
+ |           Copyright (C) Intel Corporation 1994-1996
+ |
+ | All rights reserved.  No part of this program or publication may be
+ | reproduced, transmitted, transcribed, stored in a retrieval system, or
+ | translated into any language or computer language, in any form or by any
+ | means, electronic, mechanical, magnetic, optical, chemical, manual, or
+ | otherwise, without the prior written permission of Intel Corporation.
+ |__________________________________________________________________________
+ |
+ | FILENAME: acpinmsp.h - prototypes for accessing namespace
+ |__________________________________________________________________________
+ |
+ | $Revision: 1.1 $
+ | $Date: 2005/06/29 19:49:27 $
+ | $Log: acnamesp.h,v $
+ | Revision 1.1  2005/06/29 19:49:27  aystarik
+ | Subsystem headers
+ |
+ |
+ | 
+ | date	99.01.11.22.10.00;	author rmoore1;	state Exp;
+ |
+ * 
+ * 1     1/11/99 2:10p Rmoore1
+ * Subsystem headers
+// 
+//    Rev 1.23   05 Feb 1998 11:56:34   phutchis
+// Added vNsPushMethodScope(), iIsNsValue(), vRegisterStaticBlockPtr(), and
+//   vMarkStaticBlocks().
+// 
+//    Rev 1.22   26 Nov 1997 16:19:44   phutchis
+// Code inspection rework:
+//   Made acBadType[] public so other modules can check for it in apcNsTypeNames[].
+// 
+//    Rev 1.21   31 Oct 1997 15:57:30   phutchis
+// Rework from code inspection:
+//   Added/revised comments throughout.
+//   Added #include <stddef.h> to get typedef for ptrdiff_t.
+//   Changed vNsPopCurrent() to iNsPopCurrent(), returning the number of frames
+//     popped (or an error indication).
+//   Changed empty formal parameter lists to "(void)".
+//   Changed meth.iOffset, and other values which are offsets, from (int) to
+//     (ptrdiff_t).
+//   Replaced "int iLoading" parameter of hNsEnter() with "OpMode iLE".
+// Removed vReporter() parameter from several functions.
+//   Removed iExistDownstreamSibling() which is now static.
+// 
+//    Rev 1.20   08 Oct 1997 16:32:28   kdbranno
+// Removed define/undefine of OBJECT_DESCRIPTOR.  Added #include of amlpub.h
+// when ACPILIB_GEN is not defined.
+// 
+//    Rev 1.19   24 Sep 1997 15:11:36   phutchis
+// Add function declaration for iNsMarkNS().
+// 
+//    Rev 1.18   16 Sep 1997 10:43:00   phutchis
+// Added function hNsGetHandle()
+// 
+//    Rev 1.17   04 Aug 1997 16:14:12   kdbranno
+// Added function hGetParentHandle.
+// 
+//    Rev 1.16   29 Jul 1997 14:34:28   phutchis
+// Add ppsParams parameter to iAcpiExecuteMethod() and iAmlExec()
+// 
+//    Rev 1.15   11 Jul 1997 16:13:58   phutchis
+// Fix problem with ordering of recursive includes
+// 
+//    Rev 1.14   11 Jul 1997 16:07:38   phutchis
+// Add iIsNsHandle() macro.
+// 
+//    Rev 1.13   08 Jul 1997 17:03:22   phutchis
+// Add ppsReturnValue parameter to iAcpiExecuteMethod().
+// This requires #include of amlexec.h and amlpriv.h
+// 
+//    Rev 1.12   18 Jun 1997 09:34:42   phutchis
+// Add hSearchBase and iMaxDepth parameters to vNsDumpTables()
+// and phNsFindNames()
+// 
+//    Rev 1.11   12 Jun 1997 11:43:52   phutchis
+// Conform function headers to .c file.
+// 
+//    Rev 1.10   12 Jun 1997 09:59:54   phutchis
+// Add parameter to phNsFindNames() to enable searching a subtree.
+// 
+//    Rev 1.9   11 Jun 1997 15:51:12   phutchis
+// Add entry point phNsFindNames.
+// Add some debug capability.
+// 
+//    Rev 1.8   14 May 1997 16:05:10   kdbranno
+// Removed calloc_bu
+//
+//    Rev 1.7   13 May 1997 18:00:54   phutchis
+// Add guards for uninitialized namespace and hooks for interpreter
+//
+//    Rev 1.6   16 Apr 1997 15:06:52   kdbranno
+// Changed include brackets to quotes for .h files from ACPILIB
+// Removed declarations for "meth" and "nte" and returned them to ACPINMSP.C
+// Changed prototype for iExistDownstreamSibling
+//
+//    Rev 1.5   Apr 14 1997 16:18:50   kdbranno
+// Moved typedef for nte and meth to acpinmsp.h
+//
+//    Rev 1.4   Apr 14 1997 15:51:34   kdbranno
+// Added prototype for iExistDownstreamSibling
+//
+//    Rev 1.3   Apr 14 1997 15:43:00   kdbranno
+// Added DisplayBitFlags parameter to vNsDumpTables()
+//
+//    Rev 1.2   14 Mar 1997 17:46:26   phutchis
+// Renamed vNsEnter to hNsEnter to correspond to its return value
+// type (handle), and added iLoading parameter.
+//
+//    Rev 1.1   05 Mar 1997 13:29:14   phutchis
+// Added typedefs and function prototypes
+//
+//    Rev 1.0   Feb 28 1997 13:26:18   KBRANNOC
+// Initial revision.
+ |__________________________________________________________________________
+
+*/
+
+#ifndef __ACPINMSP_H__
+#define __ACPINMSP_H__
+
+#include <stddef.h>
+typedef struct
+{
+   ptrdiff_t   iOffset;    /* offset to MethodFlags in AML pcode block */
+   long        lLength;    /* length of method code including MethodFlags */
+} meth;
+
+/* NsHandle is actually an nte *, which is private to acpinmsp.c */
+typedef void * NsHandle;
+
+/* An NsHandle (which is actually an nte *) can appear in some contexts,
+ * such as on apObjStack, where a pointer to an OBJECT_DESCRIPTOR can also
+ * appear.  This macro is used to distinguish them.
+ *
+ * The first byte of an nte is a character of the name segment, which will
+ * be accepted by NcOK().  The first byte of an OBJECT_DESCRIPTOR is the
+ * bValTyp field, whose (BYTE) value comes from the NsType enumeration.
+ * Valid NsType values must not include any character acceptable in a name.
  */
-#define ACPI_NS_NORMAL              0
-#define ACPI_NS_NEWSCOPE            1   /* a definition of this type opens a name scope */
-#define ACPI_NS_LOCAL               2   /* suppress search of enclosing scopes */
+#define iIsNsHandle(h) (NcOK((int)*(char *)(h)))
 
-
-/* Definitions of the predefined namespace names  */
-
-#define ACPI_UNKNOWN_NAME           (UINT32) 0x3F3F3F3F     /* Unknown name is  "????" */
-#define ACPI_ROOT_NAME              (UINT32) 0x5F5F5F5C     /* Root name is     "\___" */
-#define ACPI_SYS_BUS_NAME           (UINT32) 0x5F53425F     /* Sys bus name is  "_SB_" */
-
-#define ACPI_NS_ROOT_PATH           "\\"
-#define ACPI_NS_SYSTEM_BUS          "_SB_"
-
-
-/* Flags for AcpiNsLookup, AcpiNsSearchAndEnter */
-
-#define ACPI_NS_NO_UPSEARCH         0
-#define ACPI_NS_SEARCH_PARENT       0x01
-#define ACPI_NS_DONT_OPEN_SCOPE     0x02
-#define ACPI_NS_NO_PEER_SEARCH      0x04
-#define ACPI_NS_ERROR_IF_FOUND      0x08
-
-#define ACPI_NS_WALK_UNLOCK         TRUE
-#define ACPI_NS_WALK_NO_UNLOCK      FALSE
-
-
-ACPI_STATUS
-AcpiNsLoadNamespace (
-    void);
-
-ACPI_STATUS
-AcpiNsInitializeObjects (
-    void);
-
-ACPI_STATUS
-AcpiNsInitializeDevices (
-    void);
-
-
-/* Namespace init - nsxfinit */
-
-ACPI_STATUS
-AcpiNsInitOneDevice (
-    ACPI_HANDLE             ObjHandle,
-    UINT32                  NestingLevel,
-    void                    *Context,
-    void                    **ReturnValue);
-
-ACPI_STATUS
-AcpiNsInitOneObject (
-    ACPI_HANDLE             ObjHandle,
-    UINT32                  Level,
-    void                    *Context,
-    void                    **ReturnValue);
-
-
-ACPI_STATUS
-AcpiNsWalkNamespace (
-    ACPI_OBJECT_TYPE        Type,
-    ACPI_HANDLE             StartObject,
-    UINT32                  MaxDepth,
-    BOOLEAN                 UnlockBeforeCallback,
-    ACPI_WALK_CALLBACK      UserFunction,
-    void                    *Context,
-    void                    **ReturnValue);
-
-ACPI_NAMESPACE_NODE *
-AcpiNsGetNextNode (
-    ACPI_OBJECT_TYPE        Type,
-    ACPI_NAMESPACE_NODE     *Parent,
-    ACPI_NAMESPACE_NODE     *Child);
-
-void
-AcpiNsDeleteNamespaceByOwner (
-    UINT16                  TableId);
-
-
-/* Namespace loading - nsload */
-
-ACPI_STATUS
-AcpiNsOneCompleteParse (
-    UINT32                  PassNumber,
-    ACPI_TABLE_DESC         *TableDesc);
-
-ACPI_STATUS
-AcpiNsParseTable (
-    ACPI_TABLE_DESC         *TableDesc,
-    ACPI_NAMESPACE_NODE     *Scope);
-
-ACPI_STATUS
-AcpiNsLoadTable (
-    ACPI_TABLE_DESC         *TableDesc,
-    ACPI_NAMESPACE_NODE     *Node);
-
-ACPI_STATUS
-AcpiNsLoadTableByType (
-    ACPI_TABLE_TYPE         TableType);
-
-
-/*
- * Top-level namespace access - nsaccess
+/* Types associated with names
+ * Values correspond to the definition of the ObjectType operator.
+ * Must coordinate with aiNsProperties and apcNsTypeNames in acpinmsp.c
+ * The NsType type is also used in OBJECT_DESCRIPTOR defined in amlpriv.h
  */
+typedef enum {
+   Any         =  0,
+   Number      =  1, /* Byte/Word/Dword/Zero/One/Ones */
+   String      =  2,
+   Buffer      =  3,
+   Package     =  4, /* ByteConst, multiple DataTerm/Constant/SuperName */
+   FieldUnit   =  5,
+   Device      =  6, /* Name, multiple NamedObject */
+   Event       =  7,
+   Method      =  8, /* Name, ByteConst, multiple Code */
+   Mutex       =  9,
+   Region      = 10,
+   Power       = 11, /* Name,ByteConst,WordConst,multi NamedObject */
+   Processor   = 12, /* Name,ByteConst,DWordConst,ByteConst,multi NmO */
+   Thermal     = 13, /* Name, multiple NamedObject */
+   Alias       = 14,
 
-ACPI_STATUS
-AcpiNsRootInitialize (
-    void);
-
-ACPI_STATUS
-AcpiNsLookup (
-    ACPI_GENERIC_STATE      *ScopeInfo,
-    NATIVE_CHAR             *Name,
-    ACPI_OBJECT_TYPE        Type,
-    ACPI_INTERPRETER_MODE   InterpreterMode,
-    UINT32                  Flags,
-    ACPI_WALK_STATE         *WalkState,
-    ACPI_NAMESPACE_NODE     **RetNode);
-
-
-/*
- * Named object allocation/deallocation - nsalloc
+/* The remaining values do not relate to the ObjectType operator and are
+ * used for various internal purposes.  A gap is provided in case more
+ * official ObjectType's are added in the future.  Also, values exceeding
+ * the largest ObjectType need to not overlap with defined AML opcodes.
  */
+   DefField    = 25,
+   BankField   = 26,
+   IndexField  = 27,
+   DefFieldDefn    = 28, /* Name, ByteConst, multiple FieldElement */
+   BankFieldDefn   = 29, /* 2 Name,DWordConst,ByteConst,multi FieldElement */
+   IndexFieldDefn  = 30, /* 2 Name, ByteConst, multiple FieldElement */
+   If          = 31, /* OpCode, multiple Code */
+   Else        = 32, /* multiple Code */
+   While       = 33, /* OpCode, multiple Code */
+   Scope       = 34, /* Name, multiple NamedObject */
+   DefAny      = 35, /* type is Any, suppress search of enclosing scopes */
+   Lvalue      = 36  /* Arg#, Local#, Name, Debug; used only in descriptors */
+} NsType;
 
-ACPI_NAMESPACE_NODE *
-AcpiNsCreateNode (
-    UINT32                  Name);
+/* To search the entire name space, pass this as hSearchBase */
+#define  NS_ALL   ((NsHandle)0)
 
+/* Definitions in amlpriv.h, including OBJECT_DESCRIPTOR, are internal to the
+ * AML scanner/interpreter; however descriptor pointers are used externally
+ * as object handles.  If not building the interpreter itself, we need to
+ * include amlpub.h, which defines OBJECT_DESCRIPTOR as void so that functions
+ * which actually expect (OBJECT_DESCRIPTOR *) are declared as receiving
+ * (void *).
+ */
+#ifdef ACPILIB_GEN
+   #include "acpitype.h"
+   #include "amlexec.h"
+   #include "amlscan.h"
+   #include "amlpriv.h"
+#else
+   #include <acpitype.h>
+   #include <amlexec.h>
+   #include <amlscan.h>
+   #include <amlpub.h>
+#endif
+
+extern char acBadType[];
+extern char *apcNsTypeNames[];
+
+/****************************************************************************
+ *	FUNCTION:		void vNsPushMethodScope(NsHandle nNewScope)
+ *
+ *	PARAMETERS:		NsHandle nNewScope,				name to be made current
+ *
+ *	DESCRIPTION:	Push the current scope on the scope stack, and make the
+ *						passed nte current.
+ *
+ ***************************************************************************/
 void
-AcpiNsDeleteNode (
-    ACPI_NAMESPACE_NODE     *Node);
+vNsPushMethodScope(NsHandle nNewScope)
+;
 
-void
-AcpiNsDeleteNamespaceSubtree (
-    ACPI_NAMESPACE_NODE     *ParentHandle);
-
-void
-AcpiNsDetachObject (
-    ACPI_NAMESPACE_NODE     *Node);
-
-void
-AcpiNsDeleteChildren (
-    ACPI_NAMESPACE_NODE     *Parent);
-
+/****************************************************************************
+A* FUNCTION:		int iAcpiExecuteMethod(pcMethodName, ppsReturnValue, ...)
+ *
+ * PARAMETERS:		char *pcMethodName				name of method to execute
+ *
+ *				OBJECT_DESCRIPTOR **ppsReturnValue	where to put method's return
+ *																value (if any).
+ *																ppsReturnValue must not be
+ *																passed in as NULL because
+ *																*ppsReturnValue will always
+ *																be set (to NULL if there is
+ *																no return value).
+ *
+ *						OBJECT_DESCRIPTOR **ppsParams	list of parameters to pass to
+ *																method, terminated by NULL.
+ *																ppsParams itself may be NULL
+ *																if no parameters are being
+ *																passed.
+ *
+ * RETURN:			E_OK or E_ERROR
+ *
+ * DESCRIPTION:	Find and execute the requested method passing the given
+ *						parameters
+ *
+ * ALLOCATION:
+A*	Reference		 Size						 Pool	Owner			Description
+A*	*ppsReturnValue s(OBJECT_DESCRIPTOR) bu	CALLER		returned value
+ *
+ ****************************************************************************/
 int
-AcpiNsCompareNames (
-    char                    *Name1,
-    char                    *Name2);
+iAcpiExecuteMethod (char * pcMethodName, OBJECT_DESCRIPTOR **ppsReturnValue,
+		OBJECT_DESCRIPTOR **ppsParams)
+;
 
-/*
- * Namespace modification - nsmodify
- */
+/****************************************************************************
+ * FUNCTION:		int iAcpiLoadNameSpace (void)
+ *
+ * PARAMETERS:		none
+ *
+ * RETURN:			E_OK or E_ERROR
+ *
+ * DESCRIPTION:	Expands namespace, typically in response to a docking event
+ *
+ ****************************************************************************/
+int
+iAcpiLoadNameSpace (void)
+;
 
-ACPI_STATUS
-AcpiNsUnloadNamespace (
-    ACPI_HANDLE             Handle);
+/****************************************************************************
+ * FUNCTION:		int iAcpiUnloadNameSpace (void)
+ *
+ * PARAMETERS:		none
+ *
+ * RETURN:			E_OK or E_ERROR
+ *
+ * DESCRIPTION:	Contracts namespace, typically in response to an undocking
+ *						event
+ *
+ ****************************************************************************/
+int
+iAcipUnloadNameSpace (void)
+;
 
-ACPI_STATUS
-AcpiNsDeleteSubtree (
-    ACPI_HANDLE             StartHandle);
+/****************************************************************************
+ * FUNCTION:		NsType iNsValType(NsHandle h)
+ *
+ * PARAMETERS:		NsHandle h		Handle of nte to be examined
+ *
+ * RETURN:			iType field from nte whose handle is passed
+ *
+ ***************************************************************************/
+NsType
+iNsValType(NsHandle h)
+;
 
+/****************************************************************************
+ * FUNCTION:		void * pvNsValPtr(NsHandle h)
+ *
+ * PARAMETERS:		NsHandle h		Handle of nte to be examined
+ *
+ * RETURN:			pVal field from nte whose handle is passed
+ *
+ ***************************************************************************/
+void *
+pvNsValPtr(NsHandle h)
+;
 
-/*
- * Namespace dump/print utilities - nsdump
- */
-
+/****************************************************************************
+A* FUNCTION:		void vNsSetup()
+ *
+ * PARAMETERS:		none
+ *
+ * DESCRIPTION:	Allocate and initialize the root name table
+ *
+ * ALLOCATION:
+A*	Reference		Size						Pool	Owner			Description
+A*	psRoot			iNsRootSize*s(nte)	bu		acpinmsp		Root Name Table
+A*	nte.pVal			s(OBJECT_DESCRIPTOR)	bu		acpinmsp		initialized value
+A*	nte.pVal->pbString	varies			bu		acpinmsp		string value
+ *
+ ***************************************************************************/
 void
-AcpiNsDumpTables (
-    ACPI_HANDLE             SearchBase,
-    UINT32                  MaxDepth);
+vNsSetup(void)
+;
 
+/****************************************************************************
+ * FUNCTION:		int iNsPopCurrent(NsType iType)
+ *
+ * PARAMETERS:		NsType iType	The type of frame to be found
+ *
+ * DESCRIPTION:	Pop the scope stack until a frame of the requested type
+ *						is found.
+ *
+ * RETURN:			Count of frames popped.  If no frame of the requested type
+ *						was found, the count is returned as a negative number and
+ *						the scope stack is emptied (which sets the current scope
+ *						to the root).  If the scope stack was empty at entry, the
+ *						function is a no-op and returns 0.
+ *
+ ***************************************************************************/
+int
+iNsPopCurrent(NsType iType)
+;
+
+/****************************************************************************
+A* FUNCTION:		NsHandle hNsEnter(char *pcName, NsType iType, ...)
+ *
+ * PARAMETERS:		char  *pcName	name to be entered, in internal format
+ *											as represented in the AML stream
+ *						NsType iType	type associated with name
+ *						OpMode iLE		Load => add name if not found
+ *
+ * RETURN:			Handle to the nte for the passed name
+ *
+ * DESCRIPTION:	Find or enter the passed name in the name space.
+ *
+ * ALLOCATION:
+A*	Reference			Size						Pool	Owner			Description
+A*	nte.nChildScope	TABLSIZE*s(nte)		bu		acpinmsp		Name Table
+ *
+ ***************************************************************************/
+NsHandle
+hNsEnter(
+	char  *pcName,
+	NsType iType,
+	OpMode iLE)
+;
+
+/****************************************************************************
+ * FUNCTION:		NsHandle hGetParentHandle(NsHandle hLook)
+ *
+ * PARAMETERS:		NsHandle hLook - Handle whose parent is to be returned
+ *
+ * RETURN:			Parent of parameter.	NOTFOUND if hLook is invalid
+ *						or hLook refers to the root.
+ *
+ ***************************************************************************/
+NsHandle hGetParentHandle(NsHandle hLook)
+;
+
+/****************************************************************************
+ * FUNCTION:		char * pcNsNameOfCurrentScope()
+ *
+ * PARAMETERS:		none
+ *
+ * RETURN:			pointer to storage containing the name of the current scope
+ *
+ * DESCRIPTION:
+ *
+ ***************************************************************************/
+char *
+pcNsNameOfCurrentScope(void)
+;
+
+/****************************************************************************
+A* FUNCTION:		char * pcNsFullyQualifiedName(NsHandle hLook)
+ *
+ * PARAMETERS:		NsHandle hLook		handle of nte whose name is to be found
+ *
+ * RETURN:			pointer to storage containing the name, in external format
+ *
+ * DESCRIPTION:
+ *
+ * ALLOCATION:
+A*	Reference		Size						Pool	Owner			Description
+A*	pcFQN{sl}		iFQNsiz{sl:HWM}		bu		acpinmsp		Name of handle
+ *
+ ***************************************************************************/
+char *
+pcNsFullyQualifiedName(NsHandle hLook)
+;
+
+/****************************************************************************
+A* FUNCTION:		void vNsSetMethod(NsHandle h, ptrdiff_t iOffset, long lLength)
+ *
+ * PARAMETERS:		NsHandle		h			handle of nte to be set
+ *						ptrdiff_t	iOffset  value to be set
+ *						long			lLength  length associated with value
+ *
+ * DESCRIPTION:	Record the given offset and p-code length of the method
+ *						whose handle is passed
+ *
+ * ALLOCATION:
+A*	Reference		Size						Pool	Owner			Description
+A*	nte.pVal			s(meth)					bu		acpinmsp		Method AML descrip
+ *
+ ***************************************************************************/
 void
-AcpiNsDumpEntry (
-    ACPI_HANDLE             Handle,
-    UINT32                  DebugLevel);
+vNsSetMethod(
+	NsHandle		h,
+	ptrdiff_t	iOffset,
+	long			lLength)
+;
 
+/****************************************************************************
+ * FUNCTION:		void vNsSetValue(NsHandle hN, ACPI_OBJECT_HANDLE hV, ...)
+ *
+ * PARAMETERS:		NsHandle				 hN		handle of nte to be set
+ *						ACPI_OBJECT_HANDLE hV		value to be set
+ *						BYTE					 bValTyp type of value,
+ *															or Any if not known
+ *
+ * DESCRIPTION:	Record the given object as the value associated with the
+ *						name whose NsHandle is passed
+ *
+ ***************************************************************************/
 void
-AcpiNsDumpPathname (
-    ACPI_HANDLE             Handle,
-    NATIVE_CHAR             *Msg,
-    UINT32                  Level,
-    UINT32                  Component);
+vNsSetValue(NsHandle hN, ACPI_OBJECT_HANDLE hV, BYTE bValTyp)
+;
 
+/****************************************************************************
+ * FUNCTION:		void vNsDumpTables(int iDisplayBitFlags, ...)
+ *
+ * PARAMETERS:		int iDisplayBitFlags		See definitions of OUTPUT_DATA
+ * 													and related symbols in display.h
+ *						int iUseGraphicCharSet	1 => use graphic character set to
+ *															  draw links in name space tree
+ *														0 => use +, -, and | to draw links
+ *						NsHandle hSearchBase		Root of subtree to be dumped, or
+ *														NS_ALL to dump the entire namespace
+ *						int		iMaxDepth		Maximum depth of dump.  Use INT_MAX
+ *														for an effectively unlimited depth.
+ *
+ * DESCRIPTION:	Dump the name space, or a portion of it.
+ *
+ ***************************************************************************/
 void
-AcpiNsPrintPathname (
-    UINT32                  NumSegments,
-    char                    *Pathname);
+vNsDumpTables(int iDisplayBitFlags, int iUseGraphicCharSet,
+		NsHandle hSearchBase, int iMaxDepth)
+;
 
-ACPI_STATUS
-AcpiNsDumpOneDevice (
-    ACPI_HANDLE             ObjHandle,
-    UINT32                  Level,
-    void                    *Context,
-    void                    **ReturnValue);
-
+/****************************************************************************
+ * FUNCTION:		void vNsDumpEntry(NsHandle h)
+ *
+ * PARAMETERS:		NsHandle h		Entry to be dumped
+ *
+ * DESCRIPTION:	Dump a single nte
+ *
+ ***************************************************************************/
 void
-AcpiNsDumpRootDevices (
-    void);
+vNsDumpEntry(NsHandle h, int iDisplayBitFlags)
+;
 
-ACPI_STATUS
-AcpiNsDumpOneObject (
-    ACPI_HANDLE             ObjHandle,
-    UINT32                  Level,
-    void                    *Context,
-    void                    **ReturnValue);
+/****************************************************************************
+A* FUNCTION:		NsHandle *phNsFindNames(char *pcSearchFor, ... )
+ *
+ * PARAMETERS:		char	  *pcSearchFor	pattern to be found.
+ * 												4 bytes, ? matches any character.
+ *													If NULL, "????" will be used.
+ *						NsHandle hSearchBase	Root of subtree to be searched, or
+ *													NS_ALL to search the entire namespace
+ *						int		iMaxDepth	Maximum depth of search.  Use INT_MAX
+ *													for an effectively unlimited depth.
+ *
+ * DESCRIPTION:	Traverse the name space finding names which match a search
+ *						pattern, and return an array of handles.  The end of the
+ *						array is marked by the value (NsHandle)0.  A return value
+ *						of (NsHandle *)0 indicates that no matching names were
+ *						found or that space for the list could not be allocated.
+ *						if hSearchBase is NS_ALL (null) search from the root,
+ *						else it is a handle whose children are to be searched.
+ *
+ * ALLOCATION:
+A*	Reference		Size						Pool	Owner			Description
+A*	RETURNED			#*s(NsHandle)			bu		CALLER		Array of NsHandle
+ *
+ ***************************************************************************/
+NsHandle *
+phNsFindNames(char *pcSearchFor, NsHandle hSearchBase, int iMaxDepth)
+;
 
+/****************************************************************************
+ * FUNCTION:		NsHandle hNsGetHandle(char *pcName, NsHandle hScope)
+ *
+ * PARAMETERS:		char	  *pcName	Name to be found, in external (ASL)
+ *												format.  The \ and ^ prefixes, and the
+ *												. to separate segments, are supported.
+ *
+ *						NsHandle hScope	Root of subtree to be searched, or
+ *												NS_ALL for the root of the name space.
+ *												If pcName is fully qualified (first char
+ *												is '\'), the passed value of hScope will
+ *												not be accessed.
+ *
+ * DESCRIPTION:	Look up a name relative to a given scope and return the
+ *						corresponding handle, or (NsHandle)NOTFOUND.
+ *
+ ***************************************************************************/
+NsHandle
+hNsGetHandle(char *pcName, NsHandle hScope)
+;
+
+/*****************************************************************************
+ * FUNCTION:		int	iIsNsValue(OBJECT_DESCRIPTOR *pOD)
+ *
+ * PARAMETERS:		OBJECT_DESCRIPTOR *pOD
+ *
+ * RETURN:			TRUE if the passed descriptor is the value of a Name in
+ *						the name space, else FALSE
+ *
+ ****************************************************************************/
+int
+iIsNsValue(OBJECT_DESCRIPTOR *pOD)
+;
+
+/****************************************************************************
+ * FUNCTION:		int iNsMarkNS()
+ *
+ * PARAMETERS:		none
+ *
+ * DESCRIPTION:	If compiled with bu_plumr.h, traverse the name space
+ *						"marking" all name tables and reachable values.
+ *
+ * RETURN:			The number of blocks marked
+ *
+ ***************************************************************************/
+int
+iNsMarkNS(void)
+;
+
+#ifndef PLUMBER
+/* dummy macros to make calls go away */
+#define vMarkStaticBlocks(piCount)
+#define vRegisterStaticBlockPtr(ppvBP)
+#else
+
+/****************************************************************************
+ *	FUNCTION:		void vRegisterStaticBlockPtr(void **ppvBP)
+ *
+ *	PARAMETERS:		void	**ppvBP	Addr of static pointer to be registered
+ *
+ *	DESCRIPTION:	If compiled with bu_plumr.h, add the pointer whose address
+ *						is passed to the registry.  vMarkStaticBlocks() will then
+ *						"mark" each block pointed to by a registered pointer.
+ *
+ ***************************************************************************/
 void
-AcpiNsDumpObjects (
-    ACPI_OBJECT_TYPE        Type,
-    UINT8                   DisplayType,
-    UINT32                  MaxDepth,
-    UINT32                  OwnderId,
-    ACPI_HANDLE             StartHandle);
+vRegisterStaticBlockPtr(void **ppvBP)
+;
 
-
-/*
- * Namespace evaluation functions - nseval
- */
-
-ACPI_STATUS
-AcpiNsEvaluateByHandle (
-    ACPI_NAMESPACE_NODE     *PrefixNode,
-    ACPI_OPERAND_OBJECT     **Params,
-    ACPI_OPERAND_OBJECT     **ReturnObject);
-
-ACPI_STATUS
-AcpiNsEvaluateByName (
-    NATIVE_CHAR             *Pathname,
-    ACPI_OPERAND_OBJECT     **Params,
-    ACPI_OPERAND_OBJECT     **ReturnObject);
-
-ACPI_STATUS
-AcpiNsEvaluateRelative (
-    ACPI_NAMESPACE_NODE     *PrefixNode,
-    NATIVE_CHAR             *Pathname,
-    ACPI_OPERAND_OBJECT     **Params,
-    ACPI_OPERAND_OBJECT     **ReturnObject);
-
-ACPI_STATUS
-AcpiNsExecuteControlMethod (
-    ACPI_NAMESPACE_NODE     *MethodNode,
-    ACPI_OPERAND_OBJECT     **Params,
-    ACPI_OPERAND_OBJECT     **ReturnObjDesc);
-
-ACPI_STATUS
-AcpiNsGetObjectValue (
-    ACPI_NAMESPACE_NODE     *ObjectNode,
-    ACPI_OPERAND_OBJECT     **ReturnObjDesc);
-
-
-/*
- * Parent/Child/Peer utility functions
- */
-
-ACPI_NAME
-AcpiNsFindParentName (
-    ACPI_NAMESPACE_NODE     *NodeToSearch);
-
-
-/*
- * Name and Scope manipulation - nsnames
- */
-
-UINT32
-AcpiNsOpensScope (
-    ACPI_OBJECT_TYPE        Type);
-
+/****************************************************************************
+ *	FUNCTION:		void vMarkStaticBlocks(int *piCount)
+ *
+ *	PARAMETERS:		int	*piCount		Count of blocks marked
+ *
+ *	DESCRIPTION:	"Mark" all blocks pointed to by registered static pointers
+ *
+ ***************************************************************************/
 void
-AcpiNsBuildExternalPath (
-    ACPI_NAMESPACE_NODE     *Node,
-    ACPI_SIZE               Size,
-    NATIVE_CHAR             *NameBuffer);
+vMarkStaticBlocks(int *piCount)
+;
 
-NATIVE_CHAR *
-AcpiNsGetExternalPathname (
-    ACPI_NAMESPACE_NODE     *Node);
+#endif /* PLUMBER */
 
-NATIVE_CHAR *
-AcpiNsNameOfCurrentScope (
-    ACPI_WALK_STATE         *WalkState);
-
-ACPI_STATUS
-AcpiNsHandleToPathname (
-    ACPI_HANDLE             TargetHandle,
-    ACPI_BUFFER             *Buffer);
-
-BOOLEAN
-AcpiNsPatternMatch (
-    ACPI_NAMESPACE_NODE     *ObjNode,
-    NATIVE_CHAR             *SearchFor);
-
-ACPI_STATUS
-AcpiNsGetNodeByPath (
-    NATIVE_CHAR             *ExternalPathname,
-    ACPI_NAMESPACE_NODE     *InPrefixNode,
-    UINT32                  Flags,
-    ACPI_NAMESPACE_NODE     **OutNode);
-
-ACPI_SIZE
-AcpiNsGetPathnameLength (
-    ACPI_NAMESPACE_NODE     *Node);
-
-
-/*
- * Object management for namespace nodes - nsobject
- */
-
-ACPI_STATUS
-AcpiNsAttachObject (
-    ACPI_NAMESPACE_NODE     *Node,
-    ACPI_OPERAND_OBJECT     *Object,
-    ACPI_OBJECT_TYPE        Type);
-
-ACPI_OPERAND_OBJECT *
-AcpiNsGetAttachedObject (
-    ACPI_NAMESPACE_NODE     *Node);
-
-ACPI_OPERAND_OBJECT *
-AcpiNsGetSecondaryObject (
-    ACPI_OPERAND_OBJECT     *ObjDesc);
-
-ACPI_STATUS
-AcpiNsAttachData (
-    ACPI_NAMESPACE_NODE     *Node,
-    ACPI_OBJECT_HANDLER     Handler,
-    void                    *Data);
-
-ACPI_STATUS
-AcpiNsDetachData (
-    ACPI_NAMESPACE_NODE     *Node,
-    ACPI_OBJECT_HANDLER     Handler);
-
-ACPI_STATUS
-AcpiNsGetAttachedData (
-    ACPI_NAMESPACE_NODE     *Node,
-    ACPI_OBJECT_HANDLER     Handler,
-    void                    **Data);
-
-
-/*
- * Namespace searching and entry - nssearch
- */
-
-ACPI_STATUS
-AcpiNsSearchAndEnter (
-    UINT32                  EntryName,
-    ACPI_WALK_STATE         *WalkState,
-    ACPI_NAMESPACE_NODE     *Node,
-    ACPI_INTERPRETER_MODE   InterpreterMode,
-    ACPI_OBJECT_TYPE        Type,
-    UINT32                  Flags,
-    ACPI_NAMESPACE_NODE     **RetNode);
-
-ACPI_STATUS
-AcpiNsSearchNode (
-    UINT32                  EntryName,
-    ACPI_NAMESPACE_NODE     *Node,
-    ACPI_OBJECT_TYPE        Type,
-    ACPI_NAMESPACE_NODE     **RetNode);
-
-void
-AcpiNsInstallNode (
-    ACPI_WALK_STATE         *WalkState,
-    ACPI_NAMESPACE_NODE     *ParentNode,
-    ACPI_NAMESPACE_NODE     *Node,
-    ACPI_OBJECT_TYPE        Type);
-
-
-/*
- * Utility functions - nsutils
- */
-
-BOOLEAN
-AcpiNsValidRootPrefix (
-    NATIVE_CHAR             Prefix);
-
-BOOLEAN
-AcpiNsValidPathSeparator (
-    NATIVE_CHAR             Sep);
-
-ACPI_OBJECT_TYPE
-AcpiNsGetType (
-    ACPI_NAMESPACE_NODE     *Node);
-
-UINT32
-AcpiNsLocal (
-    ACPI_OBJECT_TYPE        Type);
-
-void
-AcpiNsReportError (
-    NATIVE_CHAR             *ModuleName,
-    UINT32                  LineNumber,
-    UINT32                  ComponentId,
-    char                    *InternalName,
-    ACPI_STATUS             LookupStatus);
-
-void
-AcpiNsReportMethodError (
-    NATIVE_CHAR             *ModuleName,
-    UINT32                  LineNumber,
-    UINT32                  ComponentId,
-    char                    *Message,
-    ACPI_NAMESPACE_NODE     *Node,
-    char                    *Path,
-    ACPI_STATUS             LookupStatus);
-
-void
-AcpiNsPrintNodePathname (
-    ACPI_NAMESPACE_NODE     *Node,
-    NATIVE_CHAR             *Msg);
-
-ACPI_STATUS
-AcpiNsBuildInternalName (
-    ACPI_NAMESTRING_INFO    *Info);
-
-void
-AcpiNsGetInternalNameLength (
-    ACPI_NAMESTRING_INFO    *Info);
-
-ACPI_STATUS
-AcpiNsInternalizeName (
-    NATIVE_CHAR             *DottedName,
-    NATIVE_CHAR             **ConvertedName);
-
-ACPI_STATUS
-AcpiNsExternalizeName (
-    UINT32                  InternalNameLength,
-    NATIVE_CHAR             *InternalName,
-    UINT32                  *ConvertedNameLength,
-    NATIVE_CHAR             **ConvertedName);
-
-ACPI_NAMESPACE_NODE *
-AcpiNsMapHandleToNode (
-    ACPI_HANDLE             Handle);
-
-ACPI_HANDLE
-AcpiNsConvertEntryToHandle(
-    ACPI_NAMESPACE_NODE     *Node);
-
-void
-AcpiNsTerminate (
-    void);
-
-ACPI_NAMESPACE_NODE *
-AcpiNsGetParentNode (
-    ACPI_NAMESPACE_NODE     *Node);
-
-
-ACPI_NAMESPACE_NODE *
-AcpiNsGetNextValidNode (
-    ACPI_NAMESPACE_NODE     *Node);
-
-
-#endif /* __ACNAMESP_H__ */
+#endif /* __ACPINMSP_H__ */
