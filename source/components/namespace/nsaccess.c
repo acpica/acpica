@@ -296,7 +296,7 @@ AcpiNsRootInitialize (void)
                     goto UnlockAndExit;
                 }
 
-                STRCPY ((INT8 *) ObjDesc->String.Pointer, InitVal->Val);
+                STRCPY (ObjDesc->String.Pointer, InitVal->Val);
                 break;
 
 
@@ -392,7 +392,7 @@ UnlockAndExit:
 ACPI_STATUS
 AcpiNsLookup (
     ACPI_GENERIC_STATE      *ScopeInfo,
-    INT8                    *Pathname,
+    NATIVE_CHAR             *Pathname,
     OBJECT_TYPE_INTERNAL    Type,
     OPERATING_MODE          InterpreterMode,
     UINT32                  Flags,
@@ -606,7 +606,7 @@ AcpiNsLookup (
 
         else if (*Pathname == AML_MULTI_NAME_PREFIX_OP)
         {
-            NumSegments = (INT32)* (UINT8 *) ++Pathname;
+            NumSegments = (UINT32)* (UINT8 *) ++Pathname;
 
             /* point to first segment */
 
