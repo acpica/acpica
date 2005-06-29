@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: evevent - Fixed and General Purpose Even handling and dispatch
- *              $Revision: 1.64 $
+ *              $Revision: 1.65 $
  *
  *****************************************************************************/
 
@@ -258,21 +258,23 @@ AcpiEvFixedEventInitialize (
     NATIVE_UINT             i;
 
 
-    /* Initialize the structure that keeps track of fixed event handlers */
-
+    /* 
+     * Initialize the structure that keeps track of fixed event handlers 
+     * and enable the fixed events.
+     */
     for (i = 0; i < ACPI_NUM_FIXED_EVENTS; i++)
     {
         AcpiGbl_FixedEventHandlers[i].Handler = NULL;
         AcpiGbl_FixedEventHandlers[i].Context = NULL;
+
+        /* Enable the fixed event */
+
+        if (AcpiGbl_FixedEventInfo[i].EnableRegisterId != 0xFF)
+        {
+            AcpiHwBitRegisterWrite (AcpiGbl_FixedEventInfo[i].EnableRegisterId, 
+                                    0, ACPI_MTX_LOCK);
+        }
     }
-
-    /* Enable the fixed events */
-
-    AcpiHwRegisterBitAccess (ACPI_WRITE, ACPI_MTX_LOCK, ACPI_TIMER_ENABLE, 0);
-    AcpiHwRegisterBitAccess (ACPI_WRITE, ACPI_MTX_LOCK, ACPI_GBL_LOCK_ENABLE, 0);
-    AcpiHwRegisterBitAccess (ACPI_WRITE, ACPI_MTX_LOCK, ACPI_POWER_BTN_ENABLE, 0);
-    AcpiHwRegisterBitAccess (ACPI_WRITE, ACPI_MTX_LOCK, ACPI_SLEEP_BTN_ENABLE, 0);
-    AcpiHwRegisterBitAccess (ACPI_WRITE, ACPI_MTX_LOCK, ACPI_RT_CLOCK_ENABLE, 0);
 
     return (AE_OK);
 }
@@ -295,8 +297,9 @@ AcpiEvFixedEventDetect (
     void)
 {
     UINT32                  IntStatus = INTERRUPT_NOT_HANDLED;
-    UINT32                  StatusRegister;
-    UINT32                  EnableRegister;
+    UINT32                  GpeStatus;
+    UINT32                  GpeEnable;
+    NATIVE_UINT             i;
 
 
     PROC_NAME ("EvFixedEventDetect");
@@ -306,43 +309,27 @@ AcpiEvFixedEventDetect (
      * Read the fixed feature status and enable registers, as all the cases
      * depend on their values.
      */
-    StatusRegister = AcpiHwRegisterRead (ACPI_MTX_DO_NOT_LOCK, ACPI_PM1_STATUS);
-    EnableRegister = AcpiHwRegisterRead (ACPI_MTX_DO_NOT_LOCK, ACPI_PM1_ENABLE);
+    GpeStatus = AcpiHwRegisterRead (ACPI_MTX_DO_NOT_LOCK, ACPI_REGISTER_PM1_STATUS);
+    GpeEnable = AcpiHwRegisterRead (ACPI_MTX_DO_NOT_LOCK, ACPI_REGISTER_PM1_ENABLE);
 
     ACPI_DEBUG_PRINT ((ACPI_DB_INTERRUPTS,
         "Fixed AcpiEvent Block: Enable %08X Status %08X\n",
-        EnableRegister, StatusRegister));
+        GpeEnable, GpeStatus));
 
-    /* Power management timer roll over */
-
-    if ((StatusRegister & ACPI_STATUS_PMTIMER) &&
-        (EnableRegister & ACPI_ENABLE_PMTIMER))
+    /*
+     * Check for all possible Fixed Events and dispatch those that are active
+     */
+    for (i = 0; i < ACPI_NUM_FIXED_EVENTS; i++)
     {
-        IntStatus |= AcpiEvFixedEventDispatch (ACPI_EVENT_PMTIMER);
-    }
+        /* Both the status and enable bits must be on for this event */
 
-    /* Global event (BIOS wants the global lock) */
+        if ((GpeStatus & AcpiGbl_FixedEventInfo[i].StatusBitMask) &&
+            (GpeEnable & AcpiGbl_FixedEventInfo[i].EnableBitMask))
+        {
+            /* Found an active (signalled) event */
 
-    if ((StatusRegister & ACPI_STATUS_GLOBAL) &&
-        (EnableRegister & ACPI_ENABLE_GLOBAL))
-    {
-        IntStatus |= AcpiEvFixedEventDispatch (ACPI_EVENT_GLOBAL);
-    }
-
-    /* Power button event */
-
-    if ((StatusRegister & ACPI_STATUS_POWER_BUTTON) &&
-        (EnableRegister & ACPI_ENABLE_POWER_BUTTON))
-    {
-        IntStatus |= AcpiEvFixedEventDispatch (ACPI_EVENT_POWER_BUTTON);
-    }
-
-    /* Sleep button event */
-
-    if ((StatusRegister & ACPI_STATUS_SLEEP_BUTTON) &&
-        (EnableRegister & ACPI_ENABLE_SLEEP_BUTTON))
-    {
-        IntStatus |= AcpiEvFixedEventDispatch (ACPI_EVENT_SLEEP_BUTTON);
+            IntStatus |= AcpiEvFixedEventDispatch (i);
+        }
     }
 
     return (IntStatus);
@@ -366,7 +353,6 @@ UINT32
 AcpiEvFixedEventDispatch (
     UINT32                  Event)
 {
-    UINT32                  RegisterId;
 
 
     FUNCTION_ENTRY ();
@@ -374,13 +360,8 @@ AcpiEvFixedEventDispatch (
 
     /* Clear the status bit */
 
-    RegisterId = AcpiEvGetFixedStatusRegisterId (Event);
-    if (!RegisterId)
-    {
-        return (0);
-    }
-
-    AcpiHwRegisterBitAccess (ACPI_WRITE, ACPI_MTX_DO_NOT_LOCK, RegisterId, 1);
+    AcpiHwBitRegisterWrite (AcpiGbl_FixedEventInfo[Event].StatusRegisterId, 
+                1, ACPI_MTX_DO_NOT_LOCK);
 
     /*
      * Make sure we've got a handler.  If not, report an error.
@@ -388,10 +369,8 @@ AcpiEvFixedEventDispatch (
      */
     if (NULL == AcpiGbl_FixedEventHandlers[Event].Handler)
     {
-        RegisterId = (ACPI_PM1_ENABLE | ACPI_GET_REGISTER_BIT_ID (RegisterId));
-
-        AcpiHwRegisterBitAccess (ACPI_WRITE, ACPI_MTX_DO_NOT_LOCK,
-                                RegisterId, 0);
+        AcpiHwBitRegisterWrite (AcpiGbl_FixedEventInfo[Event].EnableRegisterId, 
+                0, ACPI_MTX_DO_NOT_LOCK);
 
         REPORT_ERROR (
             ("EvGpeDispatch: No installed handler for fixed event [%08X]\n",
@@ -400,7 +379,7 @@ AcpiEvFixedEventDispatch (
         return (INTERRUPT_NOT_HANDLED);
     }
 
-    /* Invoke the handler */
+    /* Invoke the Fixed Event handler */
 
     return ((AcpiGbl_FixedEventHandlers[Event].Handler)(
                                 AcpiGbl_FixedEventHandlers[Event].Context));
@@ -424,13 +403,10 @@ AcpiEvGpeInitialize (void)
 {
     NATIVE_UINT             i;
     NATIVE_UINT             j;
-    NATIVE_UINT             GpeBlockNum;
-    UINT32                  GpeRegisterIndex;
+    NATIVE_UINT             GpeBlock;
+    UINT32                  GpeRegister;
     UINT32                  GpeNumberIndex;
     UINT32                  GpeNumber;
-    UINT16                  GpeRegisterCount[ACPI_MAX_GPE_BLOCKS];
-    UINT16                  GpeBlockAddress[ACPI_MAX_GPE_BLOCKS];
-    UINT8                   GpeBlockBaseNumber[ACPI_MAX_GPE_BLOCKS];
     ACPI_GPE_REGISTER_INFO  *GpeRegisterInfo;
 
 
@@ -438,31 +414,31 @@ AcpiEvGpeInitialize (void)
 
 
     /*
-     * Set up various GPE counts
+     * Initialize the GPE Block globals
      *
-     * Why are the GPE register block lengths divided by 2?
-     *
-     * From the ACPI 2.0 Spec, General-Purpose Event Registers, we have:
+     * Why the GPE register block lengths divided by 2:  From the ACPI Spec, 
+     * section "General-Purpose Event Registers", we have:
      *
      * "Each register block contains two registers of equal length
-     * GPEx_STS and GPEx_EN (where x is 0 or 1). The length of the
-     * GPE0_STS and GPE0_EN registers is equal to half the GPE0_LEN
-     * The length of the GPE1_STS and GPE1_EN registers is equal to
-     * half the GPE1_LEN. If a generic register block is not supported
-     * then its respective block pointer and block length values in the
-     * FADT table contain zeros. The GPE0_LEN and GPE1_LEN do not need
-     * to be the same size."
+     *  GPEx_STS and GPEx_EN (where x is 0 or 1). The length of the
+     *  GPE0_STS and GPE0_EN registers is equal to half the GPE0_LEN
+     *  The length of the GPE1_STS and GPE1_EN registers is equal to
+     *  half the GPE1_LEN. If a generic register block is not supported
+     *  then its respective block pointer and block length values in the
+     *  FADT table contain zeros. The GPE0_LEN and GPE1_LEN do not need
+     *  to be the same size."
      */
-    GpeRegisterCount[0]   = (UINT16) DIV_2 (AcpiGbl_FADT->Gpe0BlkLen);
-    GpeRegisterCount[1]   = (UINT16) DIV_2 (AcpiGbl_FADT->Gpe1BlkLen);
+    AcpiGbl_GpeBlockInfo[0].RegisterCount   = (UINT16) DIV_2 (AcpiGbl_FADT->Gpe0BlkLen);
+    AcpiGbl_GpeBlockInfo[1].RegisterCount   = (UINT16) DIV_2 (AcpiGbl_FADT->Gpe1BlkLen);
 
-    GpeBlockAddress[0]    = (UINT16) ACPI_GET_ADDRESS (AcpiGbl_FADT->XGpe0Blk.Address);
-    GpeBlockAddress[1]    = (UINT16) ACPI_GET_ADDRESS (AcpiGbl_FADT->XGpe1Blk.Address);
+    AcpiGbl_GpeBlockInfo[0].BlockAddress    = (UINT16) ACPI_GET_ADDRESS (AcpiGbl_FADT->XGpe0Blk.Address);
+    AcpiGbl_GpeBlockInfo[1].BlockAddress    = (UINT16) ACPI_GET_ADDRESS (AcpiGbl_FADT->XGpe1Blk.Address);
 
-    GpeBlockBaseNumber[0] = 0;
-    GpeBlockBaseNumber[1] = AcpiGbl_FADT->Gpe1Base;
+    AcpiGbl_GpeBlockInfo[0].BlockBaseNumber = 0;
+    AcpiGbl_GpeBlockInfo[1].BlockBaseNumber = AcpiGbl_FADT->Gpe1Base;
 
-    AcpiGbl_GpeRegisterCount = GpeRegisterCount[0] + GpeRegisterCount[1];
+    AcpiGbl_GpeRegisterCount = AcpiGbl_GpeBlockInfo[0].RegisterCount + 
+                               AcpiGbl_GpeBlockInfo[1].RegisterCount;
     if (!AcpiGbl_GpeRegisterCount)
     {
         REPORT_WARNING (("Zero GPEs are defined in the FADT\n"));
@@ -471,9 +447,9 @@ AcpiEvGpeInitialize (void)
 
     /* Determine the maximum GPE number for this machine */
 
-    AcpiGbl_GpeNumberMax = MUL_8 (GpeRegisterCount[0]) - 1;
+    AcpiGbl_GpeNumberMax = MUL_8 (AcpiGbl_GpeBlockInfo[0].RegisterCount) - 1;
 
-    if (GpeRegisterCount[1])
+    if (AcpiGbl_GpeBlockInfo[1].RegisterCount)
     {
         /* Check for GPE0/GPE1 overlap */
 
@@ -485,7 +461,7 @@ AcpiEvGpeInitialize (void)
 
         /* GPE0 and GPE1 do not have to be contiguous in the GPE number space */
 
-        AcpiGbl_GpeNumberMax = AcpiGbl_FADT->Gpe1Base + (MUL_8 (GpeRegisterCount[1]) - 1);
+        AcpiGbl_GpeNumberMax = AcpiGbl_FADT->Gpe1Base + (MUL_8 (AcpiGbl_GpeBlockInfo[1].RegisterCount) - 1);
     }
 
     /* Check for Max GPE number out-of-range */
@@ -520,10 +496,9 @@ AcpiEvGpeInitialize (void)
                                 sizeof (ACPI_GPE_REGISTER_INFO));
     if (!AcpiGbl_GpeRegisterInfo)
     {
-        ACPI_MEM_FREE (AcpiGbl_GpeNumberToIndex);
         ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
             "Could not allocate the GpeRegisterInfo table\n"));
-        return_ACPI_STATUS (AE_NO_MEMORY);
+        goto ErrorExit1;
     }
 
     /*
@@ -534,34 +509,32 @@ AcpiEvGpeInitialize (void)
                                             sizeof (ACPI_GPE_NUMBER_INFO));
     if (!AcpiGbl_GpeNumberInfo)
     {
-        ACPI_MEM_FREE (AcpiGbl_GpeNumberToIndex);
-        ACPI_MEM_FREE (AcpiGbl_GpeRegisterInfo);
         ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Could not allocate the GpeNumberInfo table\n"));
-        return_ACPI_STATUS (AE_NO_MEMORY);
+        goto ErrorExit2;
     }
 
     /*
-     * Initialize the GPE information and validation blocks.  A goal of these
-     * blocks is to hide the fact that there are two separate GPE register sets
+     * Initialize the GPE information and validation tables.  A goal of these
+     * tables is to hide the fact that there are two separate GPE register sets
      * in a given gpe hardware block, the status registers occupy the first half,
      * and the enable registers occupy the second half.  Another goal is to hide
      * the fact that there may be multiple GPE hardware blocks.
      */
-    GpeRegisterIndex = 0;
+    GpeRegister = 0;
     GpeNumberIndex = 0;
 
-    for (GpeBlockNum = 0; GpeBlockNum < ACPI_MAX_GPE_BLOCKS; GpeBlockNum++)
+    for (GpeBlock = 0; GpeBlock < ACPI_MAX_GPE_BLOCKS; GpeBlock++)
     {
-        for (i = 0; i < GpeRegisterCount[GpeBlockNum]; i++)
+        for (i = 0; i < AcpiGbl_GpeBlockInfo[GpeBlock].RegisterCount; i++)
         {
-            GpeRegisterInfo = &AcpiGbl_GpeRegisterInfo[GpeRegisterIndex];
+            GpeRegisterInfo = &AcpiGbl_GpeRegisterInfo[GpeRegister];
 
             /* Init the Register info for this entire GPE register (8 GPEs) */
 
-            GpeRegisterInfo->BaseGpeNumber = (UINT8)  (GpeBlockBaseNumber[GpeBlockNum] + (MUL_8 (i)));
-            GpeRegisterInfo->StatusAddr    = (UINT16) (GpeBlockAddress[GpeBlockNum] + i);
-            GpeRegisterInfo->EnableAddr    = (UINT16) (GpeBlockAddress[GpeBlockNum] + i + 
-                                                       GpeRegisterCount[GpeBlockNum]);
+            GpeRegisterInfo->BaseGpeNumber = (UINT8)  (AcpiGbl_GpeBlockInfo[GpeBlock].BlockBaseNumber + (MUL_8 (i)));
+            GpeRegisterInfo->StatusAddr    = (UINT16) (AcpiGbl_GpeBlockInfo[GpeBlock].BlockAddress + i);
+            GpeRegisterInfo->EnableAddr    = (UINT16) (AcpiGbl_GpeBlockInfo[GpeBlock].BlockAddress + i + 
+                                                       AcpiGbl_GpeBlockInfo[GpeBlock].RegisterCount);
 
             /* Init the Index mapping info for each GPE number within this register */
 
@@ -569,6 +542,8 @@ AcpiEvGpeInitialize (void)
             {
                 GpeNumber = GpeRegisterInfo->BaseGpeNumber + j;
                 AcpiGbl_GpeNumberToIndex[GpeNumber].NumberIndex = (UINT8) GpeNumberIndex;
+
+                AcpiGbl_GpeNumberInfo[GpeNumberIndex].BitMask = AcpiGbl_DecodeTo8bit[i];
                 GpeNumberIndex++;
             }
 
@@ -580,15 +555,25 @@ AcpiEvGpeInitialize (void)
             AcpiOsWritePort (GpeRegisterInfo->EnableAddr, 0x00, 8);
             AcpiOsWritePort (GpeRegisterInfo->StatusAddr, 0xFF, 8);
 
-            GpeRegisterIndex++;
+            GpeRegister++;
         }
     }
 
     ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "GPE registers: %X@%8.8X%8.8X (Blk0) %X@%8.8X%8.8X (Blk1)\n",
-        GpeRegisterCount[0], HIDWORD(AcpiGbl_FADT->XGpe0Blk.Address), LODWORD(AcpiGbl_FADT->XGpe0Blk.Address),
-        GpeRegisterCount[1], HIDWORD(AcpiGbl_FADT->XGpe1Blk.Address), LODWORD(AcpiGbl_FADT->XGpe1Blk.Address)));
+        AcpiGbl_GpeBlockInfo[0].RegisterCount, HIDWORD(AcpiGbl_FADT->XGpe0Blk.Address), LODWORD(AcpiGbl_FADT->XGpe0Blk.Address),
+        AcpiGbl_GpeBlockInfo[1].RegisterCount, HIDWORD(AcpiGbl_FADT->XGpe1Blk.Address), LODWORD(AcpiGbl_FADT->XGpe1Blk.Address)));
 
     return_ACPI_STATUS (AE_OK);
+
+
+    /* Error cleanup */
+
+ErrorExit2:
+    ACPI_MEM_FREE (AcpiGbl_GpeRegisterInfo);
+
+ErrorExit1:
+    ACPI_MEM_FREE (AcpiGbl_GpeNumberToIndex);
+    return_ACPI_STATUS (AE_NO_MEMORY);
 }
 
 
@@ -610,7 +595,7 @@ AcpiEvGpeInitialize (void)
  *              Where:
  *                  L      - means that the GPE is level triggered
  *                  E      - means that the GPE is edge triggered
- *                  nn     - is the GPE number
+ *                  nn     - is the GPE number [in HEX]
  *
  ******************************************************************************/
 
@@ -636,18 +621,19 @@ AcpiEvSaveMethodInfo (
     Name[ACPI_NAME_SIZE] = 0;
 
     /*
-     * Edge/Level determination is based on the 2nd INT8 of the method name
+     * Edge/Level determination is based on the 2nd character of the method name
      */
-    if (Name[1] == 'L')
+    switch (Name[1])
     {
+    case 'L':
         Type = ACPI_EVENT_LEVEL_TRIGGERED;
-    }
-    else if (Name[1] == 'E')
-    {
+        break;
+
+    case 'E':
         Type = ACPI_EVENT_EDGE_TRIGGERED;
-    }
-    else
-    {
+        break;
+
+    default:
         /* Unknown method type, just ignore it! */
 
         ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
@@ -703,10 +689,9 @@ AcpiEvSaveMethodInfo (
  *
  * PARAMETERS:  None
  *
- * RETURN:      None
+ * RETURN:      Status
  *
  * DESCRIPTION: Obtain the control methods associated with the GPEs.
- *
  *              NOTE: Must be called AFTER namespace initialization!
  *
  ******************************************************************************/
@@ -790,7 +775,6 @@ AcpiEvGpeDetect (void)
 
         EnabledStatusByte = (UINT8) (GpeRegisterInfo->Status &
                                      GpeRegisterInfo->Enable);
-
         if (!EnabledStatusByte)
         {
             /* No active GPEs in this register, move on */
@@ -862,23 +846,21 @@ AcpiEvAsynchExecuteGpeMethod (
     GpeInfo = AcpiGbl_GpeNumberInfo [GpeNumberIndex];
     AcpiUtReleaseMutex (ACPI_MTX_EVENTS);
 
-    /*
-     * Method Handler (_Lxx, _Exx):
-     * ----------------------------
-     * Evaluate the _Lxx/_Exx control method that corresponds to this GPE.
-     */
     if (GpeInfo.MethodHandle)
     {
+        /*
+         * Invoke the GPE Method (_Lxx, _Exx):
+         * (Evaluate the _Lxx/_Exx control method that corresponds to this GPE.)
+         */
         AcpiNsEvaluateByHandle (GpeInfo.MethodHandle, NULL, NULL);
     }
 
-    /*
-     * Level-Triggered?
-     * ----------------
-     * If level-triggered we clear the GPE status bit after handling the event.
-     */
     if (GpeInfo.Type & ACPI_EVENT_LEVEL_TRIGGERED)
     {
+        /*
+         * GPE is level-triggered, we clear the GPE status bit after handling 
+         * the event.
+         */
         AcpiHwClearGpe (GpeNumber);
     }
 
@@ -938,47 +920,37 @@ AcpiEvGpeDispatch (
     }
 
     /*
-     * Function Handler?
-     * -----------------
-     * e.g. Embedded Controller
+     * Dispatch the GPE to either an installed handler, or the control
+     * method associated with this GPE (_Lxx or _Exx).
      */
     if (GpeInfo->Handler)
     {
-        /* Invoke function handler (at interrupt level) */
+        /* Invoke the installed handler (at interrupt level) */
 
         GpeInfo->Handler (GpeInfo->Context);
     }
-
-    /*
-     * Method Handler?
-     * ---------------
-     * e.g. _Exx/_Lxx
-     */
     else if (GpeInfo->MethodHandle)
     {
+        /*
+         * Execute the method associated with the GPE.
+         */
         if (ACPI_FAILURE (AcpiOsQueueForExecution (OSD_PRIORITY_GPE,
-            AcpiEvAsynchExecuteGpeMethod, ACPI_TO_POINTER (GpeNumber))))
+                                AcpiEvAsynchExecuteGpeMethod, 
+                                ACPI_TO_POINTER (GpeNumber))))
         {
-            /*
-             * Shoudn't occur, but if it does report an error.
-             */
             REPORT_ERROR (("AcpiEvGpeDispatch: Unable to queue handler for GPE bit [%X]\n", GpeNumber));
 
             /*
-             * Disable the GPE.  The GPE will remain disabled until the ACPI
+             * Disable the GPE on error.  The GPE will remain disabled until the ACPI
              * Core Subsystem is restarted, or the handler is reinstalled.
              */
             AcpiHwDisableGpe (GpeNumber);
         }
     }
-
-    /*
-     * No Handler?
-     * -----------
-     * Report an error and leave the GPE disabled.
-     */
     else
     {
+        /* No handler or method to run! */
+
         REPORT_ERROR (("AcpiEvGpeDispatch: No installed handler for GPE [%X]\n", GpeNumber));
 
         /*
@@ -989,7 +961,7 @@ AcpiEvGpeDispatch (
     }
 
     /*
-     * Now its safe to clear level-triggered evnets.
+     * It is now safe to clear level-triggered evnets.
      */
     if (GpeInfo->Type & ACPI_EVENT_LEVEL_TRIGGERED)
     {
