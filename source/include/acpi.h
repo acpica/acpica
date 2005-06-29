@@ -133,7 +133,9 @@
 #include <actables.h>       /* ACPI table definitions */
 #include <acpiosd.h>        /* Interfaces to OS-dependent part (OSD) */
 #include <acapi.h>          /* External interfaces to this part */
+#include <acobject.h>       /* Acpi internal object */
 #include <globals.h>        /* All global variables */
+#include <pnp.h>            /* Plug and play definitions */
 #include <common.h>         /* Common (global) interfaces */
 
 
