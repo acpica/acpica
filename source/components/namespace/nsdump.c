@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: nsdump - table dumping routines for debug
- *              $Revision: 1.159 $
+ *              $Revision: 1.160 $
  *
  *****************************************************************************/
 
@@ -449,7 +449,7 @@ AcpiNsDumpOneObject (
         case ACPI_TYPE_LOCAL_ALIAS:
         case ACPI_TYPE_LOCAL_METHOD_ALIAS:
 
-            AcpiOsPrintf ("Target %4.4s (%p)\n", 
+            AcpiOsPrintf ("Target %4.4s (%p)\n",
                 AcpiUtGetNodeName (ObjDesc), ObjDesc);
             break;
 
