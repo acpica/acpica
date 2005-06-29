@@ -886,7 +886,7 @@ AcpiPsGetNextArg (
                 /* fill in bytelist data */
 
                 Arg->Value.Size = (ParserState->PkgEnd - ParserState->Aml);
-                AcpiPsToBytelistOp (Arg)->Data = ParserState->Aml;
+                ((ACPI_EXTENDED_OP *) Arg)->Data = ParserState->Aml;
             }
 
             /* skip to End of byte data */
