@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslanalyze.c - check for semantic errors
- *              $Revision: 1.72 $
+ *              $Revision: 1.80 $
  *
  *****************************************************************************/
 
@@ -10,7 +10,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2003, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2004, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -149,16 +149,37 @@ AnMapArgTypeToBtype (
 
     switch (ArgType)
     {
+
+    /* Simple types */
+
     case ARGI_ANYTYPE:
         return (ACPI_BTYPE_OBJECTS_AND_REFS);
 
-    case ARGI_TARGETREF:
-    case ARGI_FIXED_TARGET:
-    case ARGI_SIMPLE_TARGET:
-        return (ACPI_BTYPE_OBJECTS_AND_REFS);
+    case ARGI_PACKAGE:
+        return (ACPI_BTYPE_PACKAGE);
 
-    case ARGI_REFERENCE:
-        return (ACPI_BTYPE_REFERENCE);
+    case ARGI_EVENT:
+        return (ACPI_BTYPE_EVENT);
+
+    case ARGI_MUTEX:
+        return (ACPI_BTYPE_MUTEX);
+
+    case ARGI_DDBHANDLE:
+        return (ACPI_BTYPE_DDB_HANDLE);
+
+    /* Interchangeable types */
+    /*
+     * Source conversion rules:
+     * Integer, String, and Buffer are all interchangeable
+     */
+    case ARGI_INTEGER:
+    case ARGI_STRING:
+    case ARGI_BUFFER:
+    case ARGI_BUFFER_OR_STRING:
+    case ARGI_COMPUTEDATA:
+        return (ACPI_BTYPE_COMPUTE_DATA);
+
+    /* References */
 
     case ARGI_INTEGER_REF:
         return (ACPI_BTYPE_INTEGER);
@@ -169,27 +190,15 @@ AnMapArgTypeToBtype (
     case ARGI_DEVICE_REF:
         return (ACPI_BTYPE_DEVICE_OBJECTS);
 
-    case ARGI_IF:
-        return (ACPI_BTYPE_ANY);
+    case ARGI_REFERENCE:
+        return (ACPI_BTYPE_REFERENCE);
 
-    /*
-     * Source conversion rules:
-     * Integer, String, and Buffer are interchangable
-     */
-    case ARGI_INTEGER:
-        return (ACPI_BTYPE_INTEGER | ACPI_BTYPE_STRING | ACPI_BTYPE_BUFFER);
+    case ARGI_TARGETREF:
+    case ARGI_FIXED_TARGET:
+    case ARGI_SIMPLE_TARGET:
+        return (ACPI_BTYPE_OBJECTS_AND_REFS);
 
-    case ARGI_STRING:
-        return (ACPI_BTYPE_INTEGER | ACPI_BTYPE_STRING | ACPI_BTYPE_BUFFER);
-
-    case ARGI_BUFFER:
-        return (ACPI_BTYPE_INTEGER | ACPI_BTYPE_STRING | ACPI_BTYPE_BUFFER);
-
-    case ARGI_PACKAGE:
-        return (ACPI_BTYPE_PACKAGE);
-
-    case ARGI_COMPUTEDATA:
-        return (ACPI_BTYPE_COMPUTE_DATA);
+    /* Complex types */
 
     case ARGI_DATAOBJECT:
 
@@ -203,17 +212,11 @@ AnMapArgTypeToBtype (
 
         return (ACPI_BTYPE_STRING | ACPI_BTYPE_BUFFER | ACPI_BTYPE_PACKAGE);
 
-    case ARGI_MUTEX:
-        return (ACPI_BTYPE_MUTEX);
+    case ARGI_REF_OR_STRING:
+        return (ACPI_BTYPE_STRING | ACPI_BTYPE_REFERENCE);
 
-    case ARGI_EVENT:
-        return (ACPI_BTYPE_EVENT);
-
-    case ARGI_REGION:
-        return (ACPI_BTYPE_REGION);
-
-    case ARGI_DDBHANDLE:
-        return (ACPI_BTYPE_DDB_HANDLE);
+    case ARGI_REGION_OR_FIELD:
+        return (ACPI_BTYPE_REGION | ACPI_BTYPE_FIELD_UNIT);
 
     default:
         break;
@@ -299,7 +302,7 @@ AnMapEtypeToBtype (
 
         /* Named fields can be either Integer/Buffer/String */
 
-        return (ACPI_BTYPE_COMPUTE_DATA);
+        return (ACPI_BTYPE_COMPUTE_DATA | ACPI_BTYPE_FIELD_UNIT);
 
     case ACPI_TYPE_LOCAL_ALIAS:
 
@@ -732,7 +735,7 @@ AnMethodAnalysisWalkBegin (
 
         Next = Op->Asl.Child;
         Next = Next->Asl.Next;
-        MethodInfo->NumArguments = (UINT8) (Next->Asl.Value.Integer8 & 0x07);
+        MethodInfo->NumArguments = (UINT8) (((UINT8) Next->Asl.Value.Integer) & 0x07);
 
         /*
          * Actual arguments are initialized at method entry.
@@ -887,6 +890,15 @@ AnMethodAnalysisWalkBegin (
         break;
 
 
+    case PARSEOP_STALL:
+
+        if (Op->Asl.Child->Asl.Value.Integer > ACPI_UINT8_MAX)
+        {
+            AslError (ASL_ERROR, ASL_MSG_INVALID_TIME, Op, NULL);
+        }
+        break;
+
+
     case PARSEOP_DEVICE:
     case PARSEOP_EVENT:
     case PARSEOP_MUTEX:
@@ -924,7 +936,7 @@ AnMethodAnalysisWalkBegin (
             /*
              * Typechecking for _HID
              */
-            else if (!ACPI_STRCMP ("_HID", ReservedMethods[i].Name))
+            else if (!ACPI_STRCMP (METHOD_NAME__HID, ReservedMethods[i].Name))
             {
                 /* Examine the second operand to typecheck it */
 
@@ -1110,13 +1122,17 @@ AnMethodAnalysisWalkEnd (
 
     case PARSEOP_RETURN:
 
+        /*
+         * The parent block does not "exit" and continue execution -- the
+         * method is terminated here with the Return() statement.
+         */
         Op->Asl.Parent->Asl.CompileFlags |= NODE_HAS_NO_EXIT;
         Op->Asl.ParentMethod = MethodInfo->Op;      /* Used in the "typing" pass later */
 
         /*
          * If there is a peer node after the return statement, then this
          * node is unreachable code -- i.e., it won't be executed because of the
-         * preceeding Return().
+         * preceeding Return() statement.
          */
         if (Op->Asl.Next)
         {
@@ -1131,6 +1147,11 @@ AnMethodAnalysisWalkEnd (
             (Op->Asl.Next) &&
             (Op->Asl.Next->Asl.ParseOpcode == PARSEOP_ELSE))
         {
+            /*
+             * This IF has a corresponding ELSE.  The IF block has no exit,
+             * (it contains an unconditional Return)
+             * mark the ELSE block to remember this fact.
+             */
             Op->Asl.Next->Asl.CompileFlags |= NODE_IF_HAS_NO_EXIT;
         }
         break;
@@ -1141,6 +1162,10 @@ AnMethodAnalysisWalkEnd (
         if ((Op->Asl.CompileFlags & NODE_HAS_NO_EXIT) &&
             (Op->Asl.CompileFlags & NODE_IF_HAS_NO_EXIT))
         {
+            /*
+             * This ELSE block has no exit and the corresponding IF block
+             * has no exit either.  Therefore, the parent node has no exit.
+             */
             Op->Asl.Parent->Asl.CompileFlags |= NODE_HAS_NO_EXIT;
         }
         break;
@@ -1151,6 +1176,8 @@ AnMethodAnalysisWalkEnd (
         if ((Op->Asl.CompileFlags & NODE_HAS_NO_EXIT) &&
             (Op->Asl.Parent))
         {
+            /* If this node has no exit, then the parent has no exit either */
+
             Op->Asl.Parent->Asl.CompileFlags |= NODE_HAS_NO_EXIT;
         }
         break;
