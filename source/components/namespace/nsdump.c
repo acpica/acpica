@@ -118,8 +118,8 @@
 #define __NSDUMP_C__
 
 #include <acpi.h>
-#include <interpreter.h>
-#include <namespace.h>
+#include <interp.h>
+#include <namesp.h>
 #include <tables.h>
 
 
@@ -423,7 +423,7 @@ NsDumpOneObject (
 
         else
         {
-            DEBUG_PRINT_RAW (TRACE_TABLES, ("(Unknown Descriptor Type)\n", Value));
+            DEBUG_PRINT_RAW (TRACE_TABLES, ("(String or Buffer - not descriptor)\n", Value));
             BytesToDump = 16;
         }
 
@@ -583,7 +583,7 @@ NsDumpRootDevices (void)
     AcpiGetHandle (0, NS_SYSTEM_BUS, &SysBusHandle);
 
     DEBUG_PRINT (TRACE_TABLES, ("Display of all devices in the namespace:\n"));
-    AcpiWalkNamespace (ACPI_TYPE_Device, SysBusHandle, ACPI_INT_MAX, NsDumpOneDevice, NULL, NULL);
+    AcpiWalkNamespace (ACPI_TYPE_Device, SysBusHandle, ACPI_INT32_MAX, NsDumpOneDevice, NULL, NULL);
 }
 
 
