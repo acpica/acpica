@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: achware.h -- hardware specific interfaces
- *       $Revision: 1.69 $
+ *       $Revision: 1.70 $
  *
  *****************************************************************************/
 
@@ -222,11 +222,15 @@ AcpiHwGetGpeStatus (
     ACPI_EVENT_STATUS       *EventStatus);
 
 ACPI_STATUS
-AcpiHwPrepareGpesForSleep (
+AcpiHwDisableAllGpes (
     void);
 
 ACPI_STATUS
-AcpiHwRestoreGpesOnWake (
+AcpiHwEnableAllRuntimeGpes (
+    void);
+
+ACPI_STATUS
+AcpiHwEnableAllWakeupGpes (
     void);
 
 
