@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asltypes.h - compiler data types and struct definitions
- *              $Revision: 1.73 $
+ *              $Revision: 1.74 $
  *
  *****************************************************************************/
 
@@ -402,7 +402,8 @@ typedef enum
     ASL_MSG_TOO_MANY_TEMPS,
     ASL_MSG_RESOURCE_INDEX,
     ASL_MSG_RESOURCE_SOURCE,
-    ASL_MSG_LIST_LENGTH
+    ASL_MSG_LIST_LENGTH,
+    ASL_MSG_INTEGER_LENGTH
 
 } ASL_MESSAGE_IDS;
 
@@ -504,7 +505,8 @@ char                        *AslMessages [] = {
 /*    ASL_MSG_TOO_MANY_TEMPS */             "Method requires too many temporary variables (_T_x)",
 /*    ASL_MSG_RESOURCE_INDEX */             "Missing ResourceSourceIndex (required)",
 /*    ASL_MSG_RESOURCE_SOURCE */            "Missing ResourceSource string (required)",
-/*    ASL_MSG_LIST_LENGTH */                "Initializer list too long"
+/*    ASL_MSG_LIST_LENGTH */                "Initializer list too long",
+/*    ASL_MSG_INTEGER_LENGTH */             "64-bit integer in 32-bit table, truncating"
 
 };
 
