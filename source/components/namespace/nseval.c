@@ -2,7 +2,7 @@
  *
  * Module Name: nseval - Object evaluation interfaces -- includes control
  *                       method lookup and execution.
- *              $Revision: 1.86 $
+ *              $Revision: 1.88 $
  *
  ******************************************************************************/
 
@@ -125,7 +125,7 @@
 #include "acnamesp.h"
 
 
-#define _COMPONENT          NAMESPACE
+#define _COMPONENT          ACPI_NAMESPACE
         MODULE_NAME         ("nseval")
 
 
@@ -208,7 +208,7 @@ AcpiNsEvaluateRelative (
     if (ACPI_FAILURE (Status))
     {
         DEBUG_PRINT (ACPI_INFO,
-            ("NsEvaluateRelative: Object [%s] not found [%.4X]\n",
+            ("NsEvaluateRelative: Object [%s] not found [%s]\n",
             Pathname, AcpiCmFormatException (Status)));
         goto Cleanup;
     }
