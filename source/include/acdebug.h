@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acdebug.h - ACPI/AML debugger
- *       $Revision: 1.68 $
+ *       $Revision: 1.69 $
  *
  *****************************************************************************/
 
@@ -250,6 +250,9 @@ AcpiDbDisplayLocks (void);
 void
 AcpiDbDisplayResources (
     char                    *ObjectArg);
+
+void
+AcpiDbDisplayGpes (void);
 
 void
 AcpiDbCheckIntegrity (
