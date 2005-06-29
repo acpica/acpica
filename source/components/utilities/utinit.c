@@ -120,7 +120,7 @@
 #include <acpi.h>
 #include <hardware.h>
 #include <namesp.h>
-
+#include <events.h>
 
 #define _COMPONENT          MISCELLANEOUS
         MODULE_NAME         ("cminit");
