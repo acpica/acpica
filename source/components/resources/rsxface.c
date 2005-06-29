@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: rsxface - Public interfaces to the resource manager
- *              $Revision: 1.22 $
+ *              $Revision: 1.24 $
  *
  ******************************************************************************/
 
@@ -320,63 +320,66 @@ AcpiWalkResources (
     ACPI_STATUS                 Status;
     ACPI_BUFFER                 Buffer = {ACPI_ALLOCATE_BUFFER, NULL};
     ACPI_RESOURCE               *Resource;
-    
+
+
     ACPI_FUNCTION_TRACE ("AcpiWalkResources");
-    
-    
+
+
     if (!DeviceHandle ||
         (ACPI_STRNCMP (Path, METHOD_NAME__CRS, sizeof (METHOD_NAME__CRS)) &&
-        ACPI_STRNCMP (Path, METHOD_NAME__PRS, sizeof (METHOD_NAME__PRS))))
+         ACPI_STRNCMP (Path, METHOD_NAME__PRS, sizeof (METHOD_NAME__PRS))))
     {
         return_ACPI_STATUS (AE_BAD_PARAMETER);
     }
-    
+
     Status = AcpiRsGetMethodData (DeviceHandle, Path, &Buffer);
     if (ACPI_FAILURE (Status))
     {
         return_ACPI_STATUS (Status);
     }
-    
+
     Resource = (ACPI_RESOURCE *) Buffer.Pointer;
-    for (;;) {
+    for (;;)
+    {
         if (!Resource || Resource->Id == ACPI_RSTYPE_END_TAG)
         {
             break;
         }
-        
+
         Status = UserFunction (Resource, Context);
-        
-        switch (Status) {
+
+        switch (Status)
+        {
         case AE_OK:
         case AE_CTRL_DEPTH:
-            
+
             /* Just keep going */
             Status = AE_OK;
             break;
-            
+
         case AE_CTRL_TERMINATE:
-            
+
             /* Exit now, with OK stats */
-            
+
             Status = AE_OK;
             goto Cleanup;
-            
+
         default:
-            
+
             /* All others are valid exceptions */
-            
+
             goto Cleanup;
         }
-        
+
         Resource = ACPI_NEXT_RESOURCE (Resource);
     }
-    
+
 Cleanup:
 
     AcpiOsFree (Buffer.Pointer);
-
     return_ACPI_STATUS (Status);
 }
+
 
 /*******************************************************************************
  *
@@ -422,6 +425,8 @@ AcpiSetCurrentResources (
     return_ACPI_STATUS (Status);
 }
 
+
+
 #define COPY_FIELD(Out, In, Field)  Out->Field = In->Field
 #define COPY_ADDRESS(Out, In)                      \
     COPY_FIELD(Out, In, ResourceType);              \
@@ -437,48 +442,53 @@ AcpiSetCurrentResources (
     COPY_FIELD(Out, In, AddressLength);             \
     COPY_FIELD(Out, In, ResourceSource);
 
-/*******************************************************************************
-*
-* FUNCTION:    AcpiResourceToAddress64
-*
-* PARAMETERS:  resource                - Pointer to a resource
-*              out                     - Pointer to the users's return 
-*                                        buffer (a struct
-*                                        acpi_resource_address64)
-*
-* RETURN:      Status
-*
-* DESCRIPTION: If the resource is an address16, address32, or address64,
-*              copy it to the address64 return buffer.  This saves the
-*              caller from having to duplicate code for different-sized
-*              addresses.
-*
-******************************************************************************/
+/******************************************************************************
+ *
+ * FUNCTION:    AcpiResourceToAddress64
+ *
+ * PARAMETERS:  resource                - Pointer to a resource
+ *              out                     - Pointer to the users's return
+ *                                        buffer (a struct
+ *                                        acpi_resource_address64)
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: If the resource is an address16, address32, or address64,
+ *              copy it to the address64 return buffer.  This saves the
+ *              caller from having to duplicate code for different-sized
+ *              addresses.
+ *
+ ******************************************************************************/
 
 ACPI_STATUS
 AcpiResourceToAddress64 (
-    ACPI_RESOURCE           *Resource,
-    ACPI_RESOURCE_ADDRESS64 *Out)
+    ACPI_RESOURCE               *Resource,
+    ACPI_RESOURCE_ADDRESS64     *Out)
 {
-    ACPI_RESOURCE_ADDRESS16  *Address16;
-    ACPI_RESOURCE_ADDRESS32  *Address32;
-    ACPI_RESOURCE_ADDRESS64  *Address64;
-    
+    ACPI_RESOURCE_ADDRESS16     *Address16;
+    ACPI_RESOURCE_ADDRESS32     *Address32;
+    ACPI_RESOURCE_ADDRESS64     *Address64;
+
+
     switch (Resource->Id) {
     case ACPI_RSTYPE_ADDRESS16:
         Address16 = (ACPI_RESOURCE_ADDRESS16 *) &Resource->Data;
         COPY_ADDRESS(Out, Address16);
         break;
+
     case ACPI_RSTYPE_ADDRESS32:
         Address32 = (ACPI_RESOURCE_ADDRESS32 *) &Resource->Data;
         COPY_ADDRESS(Out, Address32);
         break;
+
     case ACPI_RSTYPE_ADDRESS64:
         Address64 = (ACPI_RESOURCE_ADDRESS64 *) &Resource->Data;
         COPY_ADDRESS(Out, Address64);
         break;
+
     default:
         return (AE_BAD_PARAMETER);
     }
+
     return (AE_OK);
 }
