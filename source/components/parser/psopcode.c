@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: psopcode - Parser/Interpreter opcode information table
- *              $Revision: 1.61 $
+ *              $Revision: 1.62 $
  *
  *****************************************************************************/
 
@@ -327,7 +327,7 @@
 #define ARGI_DATA_REGION_OP             ARGI_LIST3 (ARGI_STRING,     ARGI_STRING,       ARGI_STRING)
 #define ARGI_DEBUG_OP                   ARG_NONE
 #define ARGI_DECREMENT_OP               ARGI_LIST1 (ARGI_INTEGER_REF)
-#define ARGI_DEREF_OF_OP                ARGI_LIST1 (ARGI_REFERENCE)
+#define ARGI_DEREF_OF_OP                ARGI_LIST1 (ARGI_REF_OR_STRING)
 #define ARGI_DEVICE_OP                  ARGI_INVALID_OPCODE
 #define ARGI_DIVIDE_OP                  ARGI_LIST4 (ARGI_INTEGER,    ARGI_INTEGER,       ARGI_TARGETREF,    ARGI_TARGETREF)
 #define ARGI_DWORD_OP                   ARGI_INVALID_OPCODE
