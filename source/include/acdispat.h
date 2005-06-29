@@ -258,7 +258,7 @@ BOOLEAN
 DsIsMethodValue (
     ACPI_OBJECT_INTERNAL    *ObjDesc);
 
-ACPI_OBJECT_TYPE
+OBJECT_TYPE_INTERNAL
 DsMethodDataGetType (
     UINT32                  Type,
     UINT32                  Index);
@@ -396,12 +396,12 @@ ACPI_STATUS
 DsResolveOperands (
     ACPI_WALK_STATE         *WalkState);
 
-ACPI_OBJECT_TYPE
+OBJECT_TYPE_INTERNAL 
 DsMapOpcodeToDataType (
     UINT16                  Opcode,
     UINT32                  *OutFlags);
 
-ACPI_OBJECT_TYPE 
+OBJECT_TYPE_INTERNAL  
 DsMapNamedOpcodeToDataType (
     UINT16                  Opcode);
 
@@ -413,7 +413,7 @@ DsMapNamedOpcodeToDataType (
 ACPI_STATUS
 DsScopeStackPush (
     NAME_TABLE_ENTRY        *NewScope, 
-    ACPI_OBJECT_TYPE        Type,
+    OBJECT_TYPE_INTERNAL    Type,
 	ACPI_WALK_STATE			*WalkState);
 
 
@@ -430,6 +430,7 @@ DsScopeStackClear (
 
 ACPI_WALK_STATE *
 DsCreateWalkState (
+    ACPI_OWNER_ID           OwnerId,
     ACPI_GENERIC_OP         *Origin,
     ACPI_OBJECT_INTERNAL    *MthDesc,
     ACPI_WALK_LIST          *WalkList);
