@@ -184,6 +184,17 @@ AcpiTerminate (void)
 {
 
     FUNCTION_TRACE ("AcpiTerminate");
+
+
+    /* Just exit if subsystem is already shutdown */
+
+    if (Gbl_AcpiMutexTable [0] == 0)
+    {
+        return_ACPI_STATUS (AE_OK);
+    }
+
+    /* Subsystem appears active, go ahead and shut it down */
+
     DEBUG_PRINT (ACPI_INFO, ("Shutting down ACPI Subsystem...\n"));
 
     /* Close the Namespace */
