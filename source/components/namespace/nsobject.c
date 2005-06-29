@@ -2,7 +2,7 @@
  *
  * Module Name: nsobject - Utilities for objects attached to namespace
  *                         table entries
- *              $Revision: 1.51 $
+ *              $Revision: 1.53 $
  *
  ******************************************************************************/
 
@@ -150,11 +150,11 @@ ACPI_STATUS
 AcpiNsAttachObject (
     ACPI_NAMESPACE_NODE     *Node,
     ACPI_OPERAND_OBJECT     *Object,
-    OBJECT_TYPE_INTERNAL    Type)
+    ACPI_OBJECT_TYPE8       Type)
 {
     ACPI_OPERAND_OBJECT     *ObjDesc;
     ACPI_OPERAND_OBJECT     *PreviousObjDesc;
-    OBJECT_TYPE_INTERNAL    ObjType = ACPI_TYPE_ANY;
+    ACPI_OBJECT_TYPE8      ObjType = ACPI_TYPE_ANY;
     UINT8                   Flags;
     UINT16                  Opcode;
 
@@ -495,7 +495,7 @@ AcpiNsDetachObject (
  *
  * FUNCTION:    AcpiNsGetAttachedObject
  *
- * PARAMETERS:  Handle              - Parent Node to be examined
+ * PARAMETERS:  Node             - Parent Node to be examined
  *
  * RETURN:      Current value of the object field from the Node whose
  *              handle is passed
@@ -504,20 +504,20 @@ AcpiNsDetachObject (
 
 void *
 AcpiNsGetAttachedObject (
-    ACPI_HANDLE             Handle)
+    ACPI_NAMESPACE_NODE     *Node)
 {
-    FUNCTION_TRACE_PTR ("NsGetAttachedObject", Handle);
+    FUNCTION_TRACE_PTR ("NsGetAttachedObject", Node);
 
 
-    if (!Handle)
+    if (!Node)
     {
         /* handle invalid */
 
-        DEBUG_PRINT (ACPI_WARN, ("NsGetAttachedObject: Null handle\n"));
+        DEBUG_PRINT (ACPI_WARN, ("NsGetAttachedObject: Null Node ptr\n"));
         return_PTR (NULL);
     }
 
-    return_PTR (((ACPI_NAMESPACE_NODE *) Handle)->Object);
+    return_PTR (Node->Object);
 }
 
 

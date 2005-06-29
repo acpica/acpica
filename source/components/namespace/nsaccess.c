@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: nsaccess - Top-level functions for accessing ACPI namespace
- *              $Revision: 1.123 $
+ *              $Revision: 1.124 $
  *
  ******************************************************************************/
 
@@ -182,8 +182,7 @@ AcpiNsRootInitialize (void)
 
     for (InitVal = AcpiGbl_PreDefinedNames; InitVal->Name; InitVal++)
     {
-        Status = AcpiNsLookup (NULL, InitVal->Name,
-                                (OBJECT_TYPE_INTERNAL) InitVal->Type,
+        Status = AcpiNsLookup (NULL, InitVal->Name, InitVal->Type,
                                 IMODE_LOAD_PASS2, NS_NO_UPSEARCH,
                                 NULL, &NewNode);
 
@@ -207,9 +206,7 @@ AcpiNsRootInitialize (void)
              * descriptor for it.
              */
 
-            ObjDesc = AcpiCmCreateInternalObject (
-                            (OBJECT_TYPE_INTERNAL) InitVal->Type);
-
+            ObjDesc = AcpiCmCreateInternalObject (InitVal->Type);
             if (!ObjDesc)
             {
                 Status = AE_NO_MEMORY;
@@ -343,7 +340,7 @@ ACPI_STATUS
 AcpiNsLookup (
     ACPI_GENERIC_STATE      *ScopeInfo,
     NATIVE_CHAR             *Pathname,
-    OBJECT_TYPE_INTERNAL    Type,
+    ACPI_OBJECT_TYPE8       Type,
     OPERATING_MODE          InterpreterMode,
     UINT32                  Flags,
     ACPI_WALK_STATE         *WalkState,
@@ -357,8 +354,8 @@ AcpiNsLookup (
     UINT32                  NumSegments;
     ACPI_NAME               SimpleName;
     BOOLEAN                 NullNamePath = FALSE;
-    OBJECT_TYPE_INTERNAL    TypeToCheckFor;
-    OBJECT_TYPE_INTERNAL    ThisSearchType;
+    ACPI_OBJECT_TYPE8       TypeToCheckFor;
+    ACPI_OBJECT_TYPE8       ThisSearchType;
     UINT32                  LocalFlags = Flags & ~NS_ERROR_IF_FOUND;
 
     DEBUG_EXEC              (UINT32 i;)

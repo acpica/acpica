@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: nsdump - table dumping routines for debug
- *              $Revision: 1.88 $
+ *              $Revision: 1.91 $
  *
  *****************************************************************************/
 
@@ -207,8 +207,8 @@ AcpiNsDumpOneObject (
     ACPI_NAMESPACE_NODE     *ThisNode;
     UINT8                   *Value;
     ACPI_OPERAND_OBJECT     *ObjDesc = NULL;
-    OBJECT_TYPE_INTERNAL    ObjType;
-    OBJECT_TYPE_INTERNAL    Type;
+    ACPI_OBJECT_TYPE8       ObjType;
+    ACPI_OBJECT_TYPE8       Type;
     UINT32                  BytesToDump;
     UINT32                  DownstreamSiblingMask = 0;
     UINT32                  LevelTmp;
@@ -450,6 +450,10 @@ AcpiNsDumpOneObject (
             Value = (UINT8 *) ObjDesc->Buffer.Pointer;
             break;
 
+        case ACPI_TYPE_BUFFER_FIELD:
+            Value = (UINT8 *) ObjDesc->BufferField.BufferObj;
+            break;
+
         case ACPI_TYPE_PACKAGE:
             Value = (UINT8 *) ObjDesc->Package.Elements;
             break;
@@ -458,11 +462,7 @@ AcpiNsDumpOneObject (
             Value = (UINT8 *) ObjDesc->Method.Pcode;
             break;
 
-        case ACPI_TYPE_FIELD_UNIT:
-            Value = (UINT8 *) ObjDesc->FieldUnit.ContainerObj;
-            break;
-
-        case INTERNAL_TYPE_FIELD:
+        case INTERNAL_TYPE_REGION_FIELD:
             Value = (UINT8 *) ObjDesc->Field.RegionObj;
             break;
 
@@ -471,7 +471,7 @@ AcpiNsDumpOneObject (
             break;
 
         case INTERNAL_TYPE_INDEX_FIELD:
-            Value = (UINT8 *) ObjDesc->IndexField.Index;
+            Value = (UINT8 *) ObjDesc->IndexField.IndexObj;
             break;
 
        default:
@@ -505,7 +505,7 @@ Cleanup:
 
 void
 AcpiNsDumpObjects (
-    OBJECT_TYPE_INTERNAL    Type,
+    ACPI_OBJECT_TYPE8       Type,
     UINT32                  MaxDepth,
     UINT32                  OwnerId,
     ACPI_HANDLE             StartHandle)

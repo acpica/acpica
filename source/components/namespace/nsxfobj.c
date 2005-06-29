@@ -2,7 +2,7 @@
  *
  * Module Name: nsxfobj - Public interfaces to the ACPI subsystem
  *                         ACPI Object oriented interfaces
- *              $Revision: 1.81 $
+ *              $Revision: 1.83 $
  *
  ******************************************************************************/
 
@@ -468,7 +468,7 @@ AcpiGetNextObject (
 
     /* Internal function does the real work */
 
-    Node = AcpiNsGetNextObject ((OBJECT_TYPE_INTERNAL) Type,
+    Node = AcpiNsGetNextObject ((ACPI_OBJECT_TYPE8) Type,
                                     ParentNode, ChildNode);
     if (!Node)
     {
@@ -652,7 +652,7 @@ AcpiWalkNamespace (
     ACPI_OBJECT_TYPE        Type,
     ACPI_HANDLE             StartObject,
     UINT32                  MaxDepth,
-    WALK_CALLBACK           UserFunction,
+    ACPI_WALK_CALLBACK      UserFunction,
     void                    *Context,
     void                    **ReturnValue)
 {
@@ -679,7 +679,7 @@ AcpiWalkNamespace (
      */
 
     AcpiCmAcquireMutex (ACPI_MTX_NAMESPACE);
-    Status = AcpiNsWalkNamespace ((OBJECT_TYPE_INTERNAL) Type,
+    Status = AcpiNsWalkNamespace ((ACPI_OBJECT_TYPE8) Type,
                                     StartObject, MaxDepth,
                                     NS_WALK_UNLOCK,
                                     UserFunction, Context,
@@ -715,16 +715,14 @@ AcpiNsGetDeviceCallback (
     ACPI_STATUS             Status;
     ACPI_NAMESPACE_NODE     *Node;
     UINT32                  Flags;
-    DEVICE_ID               DeviceId;
+    ACPI_DEVICE_ID          DeviceId;
     ACPI_GET_DEVICES_INFO   *Info;
 
 
     Info = Context;
 
     AcpiCmAcquireMutex (ACPI_MTX_NAMESPACE);
-
     Node = AcpiNsConvertHandleToEntry (ObjHandle);
-
     AcpiCmReleaseMutex (ACPI_MTX_NAMESPACE);
 
     if (!Node)
@@ -735,17 +733,15 @@ AcpiNsGetDeviceCallback (
     /*
      * Run _STA to determine if device is present
      */
-
     Status = AcpiCmExecute_STA (Node, &Flags);
     if (ACPI_FAILURE (Status))
     {
-        return (Status);
+        return (AE_CTRL_DEPTH);
     }
 
     if (!(Flags & 0x01))
     {
         /* don't return at the device or children of the device if not there */
-
         return (AE_CTRL_DEPTH);
     }
 
@@ -755,7 +751,6 @@ AcpiNsGetDeviceCallback (
     if (Info->Hid != NULL)
     {
         Status = AcpiCmExecute_HID (Node, &DeviceId);
-
         if (Status == AE_NOT_FOUND)
         {
             return (AE_OK);
@@ -763,7 +758,7 @@ AcpiNsGetDeviceCallback (
 
         else if (ACPI_FAILURE (Status))
         {
-            return (Status);
+            return (AE_CTRL_DEPTH);
         }
 
         if (STRNCMP (DeviceId.Buffer, Info->Hid, sizeof (DeviceId.Buffer)) != 0)
@@ -773,7 +768,6 @@ AcpiNsGetDeviceCallback (
     }
 
     Info->UserFunction (ObjHandle, NestingLevel, Info->Context, ReturnValue);
-
     return (AE_OK);
 }
 
@@ -806,7 +800,7 @@ AcpiNsGetDeviceCallback (
 ACPI_STATUS
 AcpiGetDevices (
     NATIVE_CHAR             *HID,
-    WALK_CALLBACK           UserFunction,
+    ACPI_WALK_CALLBACK      UserFunction,
     void                    *Context,
     void                    **ReturnValue)
 {

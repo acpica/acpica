@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: nsinit - namespace initialization
- *              $Revision: 1.20 $
+ *              $Revision: 1.23 $
  *
  *****************************************************************************/
 
@@ -174,7 +174,7 @@ AcpiNsInitializeObjects (
 
     DEBUG_PRINT_RAW (ACPI_OK,
         ("\n%d/%d Regions, %d/%d Fields initialized (%d nodes total)\n",
-        Info.OpRegionInit, Info.OpRegionCount, Info.FieldInit, 
+        Info.OpRegionInit, Info.OpRegionCount, Info.FieldInit,
         Info.FieldCount, Info.ObjectCount));
     DEBUG_PRINT (TRACE_DISPATCH,
         ("NsInitializeObjects: %d Control Methods found\n", Info.MethodCount));
@@ -219,7 +219,7 @@ AcpiNsInitializeDevices (
 
     DEBUG_PRINT_RAW (ACPI_OK, ("Executing device _INI methods:"));
 
-    Status = AcpiNsWalkNamespace (ACPI_TYPE_DEVICE, ACPI_ROOT_OBJECT, 
+    Status = AcpiNsWalkNamespace (ACPI_TYPE_DEVICE, ACPI_ROOT_OBJECT,
                     ACPI_UINT32_MAX, FALSE, AcpiNsInitOneDevice, &Info, NULL);
 
     if (ACPI_FAILURE (Status))
@@ -264,7 +264,7 @@ AcpiNsInitOneObject (
     void                    *Context,
     void                    **ReturnValue)
 {
-    OBJECT_TYPE_INTERNAL    Type;
+    ACPI_OBJECT_TYPE8       Type;
     ACPI_STATUS             Status;
     ACPI_INIT_WALK_INFO     *Info = (ACPI_INIT_WALK_INFO *) Context;
     ACPI_NAMESPACE_NODE     *Node = (ACPI_NAMESPACE_NODE *) ObjHandle;
@@ -299,7 +299,7 @@ AcpiNsInitOneObject (
         if (ACPI_FAILURE (Status))
         {
             DEBUG_PRINT_RAW (ACPI_ERROR, ("\n"));
-            DEBUG_PRINT (ACPI_ERROR, 
+            DEBUG_PRINT (ACPI_ERROR,
                     ("%s while getting region arguments [%4.4s]\n",
                     AcpiCmFormatException (Status), &Node->Name));
         }
@@ -312,7 +312,7 @@ AcpiNsInitOneObject (
         break;
 
 
-    case ACPI_TYPE_FIELD_UNIT:
+    case ACPI_TYPE_BUFFER_FIELD:
 
         Info->FieldCount++;
         if (ObjDesc->Common.Flags & AOPOBJ_DATA_VALID)
@@ -321,12 +321,12 @@ AcpiNsInitOneObject (
         }
 
         Info->FieldInit++;
-        Status = AcpiDsGetFieldUnitArguments (ObjDesc);
+        Status = AcpiDsGetBufferFieldArguments (ObjDesc);
         if (ACPI_FAILURE (Status))
         {
             DEBUG_PRINT_RAW (ACPI_ERROR, ("\n"));
-            DEBUG_PRINT (ACPI_ERROR, 
-                    ("%s while getting field arguments [%4.4s]\n",
+            DEBUG_PRINT (ACPI_ERROR,
+                    ("%s while getting buffer field arguments [%4.4s]\n",
                     AcpiCmFormatException (Status), &Node->Name));
         }
         if (!(AcpiDbgLevel & TRACE_INIT))
@@ -353,7 +353,7 @@ AcpiNsInitOneObject (
  *
  * FUNCTION:    AcpiNsInitOneDevice
  *
- * PARAMETERS:  WALK_CALLBACK
+ * PARAMETERS:  ACPI_WALK_CALLBACK
  *
  * RETURN:      ACPI_STATUS
  *

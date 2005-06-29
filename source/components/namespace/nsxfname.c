@@ -2,7 +2,7 @@
  *
  * Module Name: nsxfname - Public interfaces to the ACPI subsystem
  *                         ACPI Namespace oriented interfaces
- *              $Revision: 1.76 $
+ *              $Revision: 1.77 $
  *
  *****************************************************************************/
 
@@ -310,8 +310,8 @@ AcpiGetObjectInfo (
     ACPI_HANDLE             Handle,
     ACPI_DEVICE_INFO        *Info)
 {
-    DEVICE_ID               Hid;
-    DEVICE_ID               Uid;
+    ACPI_DEVICE_ID          Hid;
+    ACPI_DEVICE_ID          Uid;
     ACPI_STATUS             Status;
     UINT32                  DeviceStatus = 0;
     ACPI_INTEGER            Address = 0;

@@ -2,7 +2,7 @@
  *
  * Module Name: rslist - AcpiRsByteStreamToList
  *                       AcpiListToByteStream
- *              $Revision: 1.10 $
+ *              $Revision: 1.15 $
  *
  ******************************************************************************/
 
@@ -120,7 +120,7 @@
 #include "acpi.h"
 #include "acresrc.h"
 
-#define _COMPONENT          RESOURCE_MANAGER
+#define _COMPONENT          ACPI_RESOURCES
         MODULE_NAME         ("rslist")
 
 
@@ -169,14 +169,14 @@ AcpiRsByteStreamToList (
         /*
          * See if this is a small or large resource
          */
-        if(ResourceType & 0x80)
+        if (ResourceType & 0x80)
         {
             /*
              * Large Resource Type
              */
             switch (ResourceType)
             {
-            case MEMORY_RANGE_24:
+            case RESOURCE_DESC_MEMORY_24:
                 /*
                  * 24-Bit Memory Resource
                  */
@@ -184,10 +184,10 @@ AcpiRsByteStreamToList (
                                                 &BytesConsumed,
                                                 Buffer,
                                                 &StructureSize);
-
                 break;
 
-            case LARGE_VENDOR_DEFINED:
+
+            case RESOURCE_DESC_LARGE_VENDOR:
                 /*
                  * Vendor Defined Resource
                  */
@@ -195,10 +195,10 @@ AcpiRsByteStreamToList (
                                               &BytesConsumed,
                                               Buffer,
                                               &StructureSize);
-
                 break;
 
-            case MEMORY_RANGE_32:
+
+            case RESOURCE_DESC_MEMORY_32:
                 /*
                  * 32-Bit Memory Range Resource
                  */
@@ -206,10 +206,10 @@ AcpiRsByteStreamToList (
                                                      &BytesConsumed,
                                                      Buffer,
                                                      &StructureSize);
-
                 break;
 
-            case FIXED_MEMORY_RANGE_32:
+
+            case RESOURCE_DESC_FIXED_MEMORY_32:
                 /*
                  * 32-Bit Fixed Memory Resource
                  */
@@ -217,10 +217,21 @@ AcpiRsByteStreamToList (
                                                      &BytesConsumed,
                                                      Buffer,
                                                      &StructureSize);
-
                 break;
 
-            case DWORD_ADDRESS_SPACE:
+
+            case RESOURCE_DESC_QWORD_ADDRESS_SPACE:
+                /*
+                 * 64-Bit Address Resource
+                 */
+                Status = AcpiRsAddress64Resource(ByteStreamBuffer,
+                                                 &BytesConsumed,
+                                                 Buffer,
+                                                 &StructureSize);
+                break;
+
+
+            case RESOURCE_DESC_DWORD_ADDRESS_SPACE:
                 /*
                  * 32-Bit Address Resource
                  */
@@ -228,10 +239,10 @@ AcpiRsByteStreamToList (
                                                  &BytesConsumed,
                                                  Buffer,
                                                  &StructureSize);
-
                 break;
 
-            case WORD_ADDRESS_SPACE:
+
+            case RESOURCE_DESC_WORD_ADDRESS_SPACE:
                 /*
                  * 16-Bit Address Resource
                  */
@@ -239,10 +250,10 @@ AcpiRsByteStreamToList (
                                                  &BytesConsumed,
                                                  Buffer,
                                                  &StructureSize);
-
                 break;
 
-            case EXTENDED_IRQ:
+
+            case RESOURCE_DESC_EXTENDED_XRUPT:
                 /*
                  * Extended IRQ
                  */
@@ -250,14 +261,8 @@ AcpiRsByteStreamToList (
                                                    &BytesConsumed,
                                                    Buffer,
                                                    &StructureSize);
-
                 break;
 
-/* TBD: [Future] 64-bit not currently supported */
-/*
-            case 0x8A:
-                break;
-*/
 
             default:
                 /*
@@ -272,14 +277,11 @@ AcpiRsByteStreamToList (
         else
         {
             /*
-             * Small Resource Type
-             *  Only bits 7:3 are valid
+             * Small Resource Type -- Only bits 6:3 are valid
              */
-            ResourceType >>= 3;
-
-            switch(ResourceType)
+            switch (ResourceType & RESOURCE_DESC_SMALL_MASK)
             {
-            case IRQ_FORMAT:
+            case RESOURCE_DESC_IRQ_FORMAT:
                 /*
                  * IRQ Resource
                  */
@@ -287,10 +289,10 @@ AcpiRsByteStreamToList (
                                            &BytesConsumed,
                                            Buffer,
                                            &StructureSize);
-
                 break;
 
-            case DMA_FORMAT:
+
+            case RESOURCE_DESC_DMA_FORMAT:
                 /*
                  * DMA Resource
                  */
@@ -298,10 +300,10 @@ AcpiRsByteStreamToList (
                                            &BytesConsumed,
                                            Buffer,
                                            &StructureSize);
-
                 break;
 
-            case START_DEPENDENT_TAG:
+
+            case RESOURCE_DESC_START_DEPENDENT:
                 /*
                  * Start Dependent Functions Resource
                  */
@@ -309,10 +311,10 @@ AcpiRsByteStreamToList (
                                                                &BytesConsumed,
                                                                Buffer,
                                                                &StructureSize);
-
                 break;
 
-            case END_DEPENDENT_TAG:
+
+            case RESOURCE_DESC_END_DEPENDENT:
                 /*
                  * End Dependent Functions Resource
                  */
@@ -320,10 +322,10 @@ AcpiRsByteStreamToList (
                                                              &BytesConsumed,
                                                              Buffer,
                                                              &StructureSize);
-
                 break;
 
-            case IO_PORT_DESCRIPTOR:
+
+            case RESOURCE_DESC_IO_PORT:
                 /*
                  * IO Port Resource
                  */
@@ -331,10 +333,10 @@ AcpiRsByteStreamToList (
                                           &BytesConsumed,
                                           Buffer,
                                           &StructureSize);
-
                 break;
 
-            case FIXED_LOCATION_IO_DESCRIPTOR:
+
+            case RESOURCE_DESC_FIXED_IO_PORT:
                 /*
                  * Fixed IO Port Resource
                  */
@@ -342,10 +344,10 @@ AcpiRsByteStreamToList (
                                                &BytesConsumed,
                                                Buffer,
                                                &StructureSize);
-
                 break;
 
-            case SMALL_VENDOR_DEFINED:
+
+            case RESOURCE_DESC_SMALL_VENDOR:
                 /*
                  * Vendor Specific Resource
                  */
@@ -353,10 +355,10 @@ AcpiRsByteStreamToList (
                                               &BytesConsumed,
                                               Buffer,
                                               &StructureSize);
-
                 break;
 
-            case END_TAG:
+
+            case RESOURCE_DESC_END_TAG:
                 /*
                  * End Tag
                  */
@@ -365,8 +367,8 @@ AcpiRsByteStreamToList (
                                               Buffer,
                                               &StructureSize);
                 EndTagProcessed = TRUE;
-
                 break;
+
 
             default:
                 /*
@@ -375,9 +377,14 @@ AcpiRsByteStreamToList (
                  */
                 return_ACPI_STATUS (AE_AML_ERROR);
                 break;
-
-            } /* switch */
+            }
         }  /* end else */
+
+
+        if (!ACPI_SUCCESS(Status))
+        {
+            return_ACPI_STATUS (Status);
+        }
 
         /*
          * Update the return value and counter
@@ -399,8 +406,7 @@ AcpiRsByteStreamToList (
     /*
      * Check the reason for exiting the while loop
      */
-    if (!(ByteStreamBufferLength == BytesParsed) ||
-         (TRUE != EndTagProcessed))
+    if (TRUE != EndTagProcessed)
     {
         return_ACPI_STATUS (AE_AML_ERROR);
     }
@@ -570,6 +576,15 @@ AcpiRsListToByteStream (
                                             &BytesConsumed);
             break;
 
+        case Address64:
+            /*
+             * 64-Bit Address Descriptor Resource
+             */
+            Status = AcpiRsAddress64Stream (LinkedList,
+                                            &Buffer,
+                                            &BytesConsumed);
+            break;
+
         case ExtendedIrq:
             /*
              * Extended IRQ Resource
@@ -589,6 +604,11 @@ AcpiRsListToByteStream (
 
         } /* switch (LinkedList->Id) */
 
+        if (!ACPI_SUCCESS(Status))
+        {
+            return_ACPI_STATUS (Status);
+        }
+
         /*
          * Set the Buffer to point to the open byte
          */
@@ -601,6 +621,6 @@ AcpiRsListToByteStream (
                      (NATIVE_UINT) LinkedList->Length);
     }
 
-    return_ACPI_STATUS  (AE_OK);
+    return_ACPI_STATUS (AE_OK);
 }
 

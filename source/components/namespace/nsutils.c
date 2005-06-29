@@ -2,7 +2,7 @@
  *
  * Module Name: nsutils - Utilities for accessing ACPI namespace, accessing
  *                        parents and siblings and Scope manipulation
- *              $Revision: 1.78 $
+ *              $Revision: 1.80 $
  *
  *****************************************************************************/
 
@@ -179,20 +179,20 @@ AcpiNsValidPathSeparator (
  *
  ***************************************************************************/
 
-OBJECT_TYPE_INTERNAL
+ACPI_OBJECT_TYPE8
 AcpiNsGetType (
-    ACPI_HANDLE             handle)
+    ACPI_NAMESPACE_NODE     *Node)
 {
     FUNCTION_TRACE ("NsGetType");
 
 
-    if (!handle)
+    if (!Node)
     {
-        REPORT_WARNING (("NsGetType: Null handle\n"));
+        REPORT_WARNING (("NsGetType: Null Node ptr"));
         return_VALUE (ACPI_TYPE_ANY);
     }
 
-    return_VALUE (((ACPI_NAMESPACE_NODE *) handle)->Type);
+    return_VALUE (Node->Type);
 }
 
 
@@ -209,7 +209,7 @@ AcpiNsGetType (
 
 UINT32
 AcpiNsLocal (
-    OBJECT_TYPE_INTERNAL    Type)
+    ACPI_OBJECT_TYPE8       Type)
 {
     FUNCTION_TRACE ("NsLocal");
 
@@ -777,7 +777,7 @@ AcpiNsTerminate (void)
 
 UINT32
 AcpiNsOpensScope (
-    OBJECT_TYPE_INTERNAL    Type)
+    ACPI_OBJECT_TYPE8       Type)
 {
     FUNCTION_TRACE_U32 ("NsOpensScope", Type);
 
