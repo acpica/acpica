@@ -1,7 +1,7 @@
 
 /******************************************************************************
  * 
- * Module Name: asmain - Main module for the acpi source processor utility
+ * Module Name: asfile - Main module for the acpi source processor utility
  *
  *****************************************************************************/
 
@@ -144,17 +144,25 @@ AsProcessTree (
 
     MaxPathLength = max (strlen (SourcePath), strlen (TargetPath));
 
-    if (mkdir (TargetPath))
+    if (!(ConversionTable->Flags & FLG_NO_FILE_OUTPUT))
     {
-        if (errno != EEXIST)
+        if (ConversionTable->Flags & FLG_LOWERCASE_DIRNAMES)
         {
-            printf ("Could not create target directory\n");
-            return -1;
+            strlwr (TargetPath);
+        }
+
+        VERBOSE_PRINT (("Creating Directory \"%s\"\n", TargetPath));
+        if (mkdir (TargetPath))
+        {
+            if (errno != EEXIST)
+            {
+                printf ("Could not create target directory\n");
+                return -1;
+            }
         }
     }
 
     /* Do the C source files */
-
 
     FileSpec = calloc (strlen (SourcePath) + 5, 1);
     if (!FileSpec)
@@ -166,17 +174,17 @@ AsProcessTree (
     strcpy (FileSpec, SourcePath);
     strcat (FileSpec, "/*.c");
 
-    printf ("Source path: %s\n", FileSpec);
+    VERBOSE_PRINT (("Checking for C source files in path \"%s\"\n", FileSpec));
 
     FindHandle = _findfirst (FileSpec, &FindInfo);
     if (FindHandle != -1)
     {
-        printf ("File: %s\n", FindInfo.name);
+        VERBOSE_PRINT (("File: %s\n", FindInfo.name));
         AsProcessOneFile (ConversionTable, SourcePath, TargetPath, MaxPathLength, FindInfo.name, FILE_TYPE_SOURCE);
 
         while (_findnext (FindHandle, &FindInfo) == 0)
         {
-            printf ("File: %s\n", FindInfo.name);
+            VERBOSE_PRINT (("File: %s\n", FindInfo.name));
             AsProcessOneFile (ConversionTable, SourcePath, TargetPath, MaxPathLength, FindInfo.name, FILE_TYPE_SOURCE);
        }
 
@@ -189,17 +197,17 @@ AsProcessTree (
     strcpy (FileSpec, SourcePath);
     strcat (FileSpec, "/*.h");
 
-    printf ("Source path: %s\n", FileSpec);
+    VERBOSE_PRINT (("Checking for C header files in path \"%s\"\n", FileSpec));
 
     FindHandle = _findfirst (FileSpec, &FindInfo);
     if (FindHandle != -1)
     {
-        printf ("File: %s\n", FindInfo.name);
+        VERBOSE_PRINT (("File: %s\n", FindInfo.name));
         AsProcessOneFile (ConversionTable, SourcePath, TargetPath, MaxPathLength, FindInfo.name, FILE_TYPE_HEADER);
 
         while (_findnext (FindHandle, &FindInfo) == 0)
         {
-            printf ("File: %s\n", FindInfo.name);
+            VERBOSE_PRINT (("File: %s\n", FindInfo.name));
             AsProcessOneFile (ConversionTable, SourcePath, TargetPath, MaxPathLength, FindInfo.name, FILE_TYPE_HEADER);
         }
 
@@ -212,14 +220,11 @@ AsProcessTree (
     strcpy (FileSpec, SourcePath);
     strcat (FileSpec, "/*.*");
 
-    printf ("Source path: %s\n", FileSpec);
+    VERBOSE_PRINT (("Checking for subdirectories in path \"%s\"\n", FileSpec));
 
     FindHandle = _findfirst (FileSpec, &FindInfo);
     if (FindHandle != -1)
     {
-
-        printf ("File: %s\n", FindInfo.name);
-
         if (!AsCheckForDirectory (SourcePath, TargetPath, &FindInfo, &SourceDirPath, &TargetDirPath))
         {
             AsProcessTree (ConversionTable, SourceDirPath, TargetDirPath);
@@ -229,8 +234,6 @@ AsProcessTree (
 
         while (_findnext (FindHandle, &FindInfo) == 0)
         {
-            printf ("File: %s\n", FindInfo.name);
-
             if (!AsCheckForDirectory (SourcePath, TargetPath, &FindInfo, &SourceDirPath, &TargetDirPath))
             {
                 AsProcessTree (ConversionTable, SourceDirPath, TargetDirPath);
@@ -261,26 +264,30 @@ void
 AsConvertFile (
     ACPI_CONVERSION_TABLE   *ConversionTable,
     char                    *FileBuffer,
+    char                    *Filename,
     NATIVE_INT              FileType)
 {
     UINT32                  i;
     UINT32                  Functions;
     ACPI_STRING_TABLE       *StringTable;
-    ACPI_LINE_TABLE         *LineTable;
+    ACPI_IDENTIFIER_TABLE   *ConditionalTable;
+    ACPI_IDENTIFIER_TABLE   *LineTable;
 
 
     switch (FileType)
     {
     case FILE_TYPE_SOURCE:
-        Functions   = ConversionTable->SourceFunctions;
-        StringTable = ConversionTable->SourceStringTable;
-        LineTable   = ConversionTable->SourceLineTable;
+        Functions           = ConversionTable->SourceFunctions;
+        StringTable         = ConversionTable->SourceStringTable;
+        LineTable           = ConversionTable->SourceLineTable;
+        ConditionalTable    = ConversionTable->SourceConditionalTable;
         break;
     
     case FILE_TYPE_HEADER:
-        Functions   = ConversionTable->HeaderFunctions;
-        StringTable = ConversionTable->HeaderStringTable;
-        LineTable   = ConversionTable->HeaderLineTable;
+        Functions           = ConversionTable->HeaderFunctions;
+        StringTable         = ConversionTable->HeaderStringTable;
+        LineTable           = ConversionTable->HeaderLineTable;
+        ConditionalTable    = ConversionTable->HeaderConditionalTable;
         break;
     
     default:
@@ -290,7 +297,8 @@ AsConvertFile (
 
 
     Gbl_Files++;
-    printf ("Processing %d bytes\n", strlen (FileBuffer));
+    VERBOSE_PRINT (("Processing %d bytes\n", strlen (FileBuffer)));
+//    TERSE_PRINT (("."));
 
 
     /* Process all the string replacements */
@@ -314,6 +322,15 @@ AsConvertFile (
     }
 
 
+    if (ConditionalTable)
+    {
+        for (i = 0; ConditionalTable[i].Identifier; i++)
+        {
+            AsRemoveConditionalCompile (FileBuffer, ConditionalTable[i].Identifier);
+        }
+    }
+
+
     /* Process the function table */
 
     for (i = 0; i < 32; i++)
@@ -329,25 +346,25 @@ AsConvertFile (
 
         case CVT_COUNT_TABS:
 
-            AsCountTabs (FileBuffer);
+            AsCountTabs (FileBuffer, Filename);
             break;
 
 
         case CVT_COUNT_NON_ANSI_COMMENTS:
 
-            AsCountNonAnsiComments (FileBuffer);
+            AsCountNonAnsiComments (FileBuffer, Filename);
             break;
 
 
         case CVT_TRIM_LINES:
 
-            AsTrimLines (FileBuffer);
+            AsTrimLines (FileBuffer, Filename);
             break;
 
 
         case CVT_COUNT_LINES:
 
-            AsCountSourceLines (FileBuffer);
+            AsCountSourceLines (FileBuffer, Filename);
             break;
 
 
@@ -380,6 +397,25 @@ AsConvertFile (
             AsTrimWhitespace (FileBuffer);
             break;
     
+
+        case CVT_REMOVE_EMPTY_BLOCKS:
+
+            AsRemoveEmptyBlocks (FileBuffer, Filename);
+            break;
+
+
+
+        case CVT_SPACES_TO_TABS4:
+
+            AsTabify4 (FileBuffer);
+            break;
+
+
+        case CVT_SPACES_TO_TABS8:
+
+            AsTabify8 (FileBuffer);
+            break;
+
 
         default:
 
@@ -437,8 +473,12 @@ AsProcessOneFile (
 
     /* Generate the source pathname and read the file */
 
-    strcpy (Pathname, SourcePath);
-    strcat (Pathname, "/");
+    if (SourcePath)
+    {
+        strcpy (Pathname, SourcePath);
+        strcat (Pathname, "/");
+    }
+
     strcat (Pathname, Filename);
 
     if (AsGetFile (Pathname, &Gbl_FileBuffer, &Gbl_FileSize))
@@ -448,15 +488,21 @@ AsProcessOneFile (
 
     /* Process the file in the buffer */
 
-    AsConvertFile (ConversionTable, Gbl_FileBuffer, FileType);
+    AsConvertFile (ConversionTable, Gbl_FileBuffer, Pathname, FileType);
 
-    /* Generate the target pathname and write the file */
+    if (!(ConversionTable->Flags & FLG_NO_FILE_OUTPUT))
+    {
+        /* Generate the target pathname and write the file */
 
-    strcpy (Pathname, TargetPath);
-    strcat (Pathname, "/");
-    strcat (Pathname, Filename);
+        strcpy (Pathname, TargetPath);
+        if (SourcePath)
+        {
+            strcat (Pathname, "/");
+            strcat (Pathname, Filename);
+        }
 
-    AsPutFile (Pathname, Gbl_FileBuffer, ConversionTable->Flags);
+        AsPutFile (Pathname, Gbl_FileBuffer, ConversionTable->Flags);
+    }
 
     free (Gbl_FileBuffer);
     free (Pathname);
@@ -532,18 +578,11 @@ AsCheckForDirectory (
 }
 
 
-
-
-
 /******************************************************************************
  *
- * FUNCTION:    
+ * FUNCTION:    AsGetFile  
  *
- * PARAMETERS:  
- *
- * RETURN:      
- *
- * DESCRIPTION: 
+ * DESCRIPTION: Open a file and read it entirely into a an allocated buffer 
  *
  ******************************************************************************/
 
@@ -616,13 +655,10 @@ ErrorExit:
 
 /******************************************************************************
  *
- * FUNCTION:    
+ * FUNCTION:    AsPutFile
  *
- * PARAMETERS:  
- *
- * RETURN:      
- *
- * DESCRIPTION: 
+ * DESCRIPTION: Create a new output file and write the entire contents of the
+ *              buffer to the new file.  Buffer must be a zero terminated string
  *
  ******************************************************************************/
 
