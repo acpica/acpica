@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: excreate - Named object creation
- *              $Revision: 1.81 $
+ *              $Revision: 1.82 $
  *
  *****************************************************************************/
 
@@ -452,7 +452,7 @@ AcpiExCreateTableRegion (
             return_ACPI_STATUS (AE_SUPPORT);
     }
 
-    /* Check OemId and TableId
+    /* Check OemId and TableId */
 
 
 
@@ -471,7 +471,7 @@ AcpiExCreateTableRegion (
     /* Init the region from the operands */
 
     ObjDesc->Region.SpaceId = REGION_DATA_TABLE;
-    ObjDesc->Region.Address = (ACPI_PHYSICAL_ADDRESS) Table;
+    ObjDesc->Region.Address = (NATIVE_UINT) Table;
     ObjDesc->Region.Length  = Table->Length;
     ObjDesc->Region.Node    = Node;
     ObjDesc->Region.Flags   = AOPOBJ_DATA_VALID;
