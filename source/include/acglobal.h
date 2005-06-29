@@ -160,11 +160,19 @@ ACPI_EXTERN ACPI_TABLE_HEADER                   * SBST;
 
 
 /*
- * ACPI Table info tables
+ * ACPI Table info arrays
  */
 extern      ACPI_TABLE_DESC     AcpiTables[NUM_ACPI_TABLES];
 extern      UINT8               AcpiTableFlags[NUM_ACPI_TABLES];
 extern      char                *AcpiTableNames[NUM_ACPI_TABLES];
+
+/*
+ * Predefined mutex objects.  This array contains the 
+ * actual OS mutex handles, indexed by the local ACPI_MUTEX_HANDLEs.
+ * (The table maps local handles to the real OS handles)
+ */
+extern      ACPI_MUTEX          AcpiMutexTable [NUM_MTX];
+
 
 /*****************************************************************************
  * 
