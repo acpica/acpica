@@ -271,7 +271,8 @@ HwGetModeCapabilities (
 
 UINT32
 HwRegisterIO (
-    INT32                   ReadWrite, 
+    INT32                   ReadWrite,
+	UINT32					UseLock,	
     INT32                   RegisterId, ... /* DWORD Value */);
 
 void 
