@@ -2,7 +2,7 @@
  *
  * Module Name: nseval - Object evaluation interfaces -- includes control
  *                       method lookup and execution.
- *              $Revision: 1.99 $
+ *              $Revision: 1.101 $
  *
  ******************************************************************************/
 
@@ -188,7 +188,7 @@ AcpiNsEvaluateRelative (
 
     AcpiUtAcquireMutex (ACPI_MTX_NAMESPACE);
 
-    PrefixNode = AcpiNsConvertHandleToEntry (Handle);
+    PrefixNode = AcpiNsMapHandleToNode (Handle);
     if (!PrefixNode)
     {
         AcpiUtReleaseMutex (ACPI_MTX_NAMESPACE);
@@ -374,7 +374,7 @@ AcpiNsEvaluateByHandle (
 
     AcpiUtAcquireMutex (ACPI_MTX_NAMESPACE);
 
-    Node = AcpiNsConvertHandleToEntry (Handle);
+    Node = AcpiNsMapHandleToNode (Handle);
     if (!Node)
     {
         AcpiUtReleaseMutex (ACPI_MTX_NAMESPACE);
@@ -549,7 +549,7 @@ AcpiNsGetObjectValue (
 {
     ACPI_STATUS             Status = AE_OK;
     ACPI_OPERAND_OBJECT     *ObjDesc;
-    ACPI_OPERAND_OBJECT     *ValDesc;
+    ACPI_OPERAND_OBJECT     *SourceDesc;
 
 
     FUNCTION_TRACE ("NsGetObjectValue");
@@ -574,8 +574,8 @@ AcpiNsGetObjectValue (
         /*
          *  Get the attached object
          */
-        ValDesc = AcpiNsGetAttachedObject (Node);
-        if (!ValDesc)
+        SourceDesc = AcpiNsGetAttachedObject (Node);
+        if (!SourceDesc)
         {
             Status = AE_NULL_OBJECT;
             goto UnlockAndExit;
@@ -587,7 +587,7 @@ AcpiNsGetObjectValue (
          * TBD: [Future] - need a low-level object copy that handles
          * the reference count automatically.  (Don't want to copy it)
          */
-        MEMCPY (ObjDesc, ValDesc, sizeof (ACPI_OPERAND_OBJECT));
+        MEMCPY (ObjDesc, SourceDesc, sizeof (ACPI_OPERAND_OBJECT));
         ObjDesc->Common.ReferenceCount = 1;
         AcpiUtReleaseMutex (ACPI_MTX_NAMESPACE);
     }

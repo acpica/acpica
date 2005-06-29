@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: nsdump - table dumping routines for debug
- *              $Revision: 1.100 $
+ *              $Revision: 1.102 $
  *
  *****************************************************************************/
 
@@ -219,7 +219,7 @@ AcpiNsDumpOneObject (
     PROC_NAME ("NsDumpOneObject");
 
 
-    ThisNode = AcpiNsConvertHandleToEntry (ObjHandle);
+    ThisNode = AcpiNsMapHandleToNode (ObjHandle);
 
     LevelTmp    = Level;
     Type        = ThisNode->Type;
@@ -315,9 +315,10 @@ AcpiNsDumpOneObject (
     /*
      * Now we can print out the pertinent information
      */
-    ACPI_DEBUG_PRINT_RAW ((ACPI_DB_TABLES, " %4.4s %-9s ", &ThisNode->Name, AcpiUtGetTypeName (Type)));
-    ACPI_DEBUG_PRINT_RAW ((ACPI_DB_TABLES, "%p S:%p O:%p",  ThisNode, ThisNode->Child, ThisNode->Object));
-
+    ACPI_DEBUG_PRINT_RAW ((ACPI_DB_TABLES, " %4.4s %-9s ", 
+            &ThisNode->Name, AcpiUtGetTypeName (Type)));
+    ACPI_DEBUG_PRINT_RAW ((ACPI_DB_TABLES, "%p O:%p",  
+            ThisNode, ThisNode->Object));
 
     if (!ThisNode->Object)
     {
@@ -326,6 +327,9 @@ AcpiNsDumpOneObject (
         ACPI_DEBUG_PRINT_RAW ((ACPI_DB_TABLES, "\n"));
         return (AE_OK);
     }
+
+    ACPI_DEBUG_PRINT_RAW ((ACPI_DB_TABLES, "(R%d)",  
+            ((ACPI_OPERAND_OBJECT  *) ThisNode->Object)->Common.ReferenceCount));
 
     switch (Type)
     {
