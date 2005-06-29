@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: aclinux.h - OS specific defines, etc.
- *       $Revision: 1.24 $
+ *       $Revision: 1.25 $
  *
  *****************************************************************************/
 
@@ -134,12 +134,25 @@
 
 #define strtoul simple_strtoul
 
+#define ACPI_MACHINE_WIDTH	BITS_PER_LONG
+
 #else /* !__KERNEL__ */
 
 #include <stdarg.h>
 #include <string.h>
 #include <stdlib.h>
 #include <ctype.h>
+
+#if defined(__ia64__) || defined(__x86_64__)
+#define ACPI_MACHINE_WIDTH		64
+#define COMPILER_DEPENDENT_INT64	long
+#define COMPILER_DEPENDENT_UINT64	unsigned long
+#else
+#define ACPI_MACHINE_WIDTH		32
+#define COMPILER_DEPENDENT_INT64	long long
+#define COMPILER_DEPENDENT_UINT64	unsigned long long
+#define ACPI_USE_NATIVE_DIVIDE
+#endif
 
 #endif /* __KERNEL__ */
 
@@ -149,7 +162,5 @@
 
 #undef DEBUGGER_THREADING
 #define DEBUGGER_THREADING	DEBUGGER_SINGLE_THREADED
-
-#define ACPI_MACHINE_WIDTH	BITS_PER_LONG
 
 #endif /* __ACLINUX_H__ */
