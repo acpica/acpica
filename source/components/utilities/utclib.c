@@ -117,12 +117,12 @@
 
 #define __CMCLIB_C__
 
-#include <acpi.h>
-#include <events.h>
-#include <hardware.h>
-#include <namesp.h>
-#include <interp.h>
-#include <amlcode.h>
+#include "acpi.h"
+#include "events.h"
+#include "hardware.h"
+#include "namesp.h"
+#include "interp.h"
+#include "amlcode.h"
 
 /*
  * These implementations of standard C Library routines can optionally be
@@ -132,6 +132,12 @@
 
 #define _COMPONENT          MISCELLANEOUS
         MODULE_NAME         ("cmclib");
+
+
+#ifdef _MSC_VER                 /* disable some level-4 warnings for VC++ */
+#pragma warning(disable:4706)   /* warning C4706: assignment within conditional expression */
+#endif
+
 
 
 /*******************************************************************************
@@ -148,7 +154,7 @@
 
 
 ACPI_SIZE
-_strlen (
+AcpiCmStrlen (
     const char              *String)
 {
     UINT32                  Length = 0;
@@ -181,7 +187,7 @@ _strlen (
  ******************************************************************************/
 
 char *
-_strcpy (
+AcpiCmStrcpy (
     char                    *DstString, 
     const char              *SrcString)
 {
@@ -222,7 +228,7 @@ _strcpy (
  ******************************************************************************/
 
 char *
-_strncpy (
+AcpiCmStrncpy (
     char                    *DstString, 
     const char              *SrcString, 
     ACPI_SIZE               Count)
@@ -264,7 +270,7 @@ _strncpy (
  ******************************************************************************/
 
 UINT32
-_strcmp (
+AcpiCmStrcmp (
     const char              *String1, 
     const char              *String2)
 {
@@ -298,7 +304,7 @@ _strcmp (
  ******************************************************************************/
 
 UINT32
-_strncmp (
+AcpiCmStrncmp (
     const char              *String1, 
     const char              *String2, 
     ACPI_SIZE               Count)
@@ -331,7 +337,7 @@ _strncmp (
  ******************************************************************************/
 
 char *
-_strcat (
+AcpiCmStrcat (
     char                    *DstString,
     const char              *SrcString)
 {
@@ -369,7 +375,7 @@ _strcat (
  ******************************************************************************/
 
 char *
-_strncat (
+AcpiCmStrncat (
     char                    *DstString, 
     const char              *SrcString, 
     ACPI_SIZE               Count)
@@ -417,7 +423,7 @@ _strncat (
  ******************************************************************************/
 
 void *
-_memcpy (
+AcpiCmMemcpy (
     void                    *Dest, 
     const void              *Src, 
     ACPI_SIZE               Count)
@@ -454,7 +460,7 @@ _memcpy (
  ******************************************************************************/
 
 void *
-_memset (
+AcpiCmMemset (
     void                    *Dest,
     INT32                   Value,
     ACPI_SIZE               Count)
@@ -636,17 +642,127 @@ const unsigned char _ctype[257] = {
 #define IS_DIGIT(c)  (_ctype[(unsigned char)(c)] & (_DI))
 #define IS_SPACE(c)  (_ctype[(unsigned char)(c)] & (_SP))
 
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiCmToUpper
+ *
+ * PARAMETERS:  
+ *
+ * RETURN:      
+ *
+ * DESCRIPTION: Convert character to uppercase
+ *
+ ******************************************************************************/
+
 INT32
-ToUpper (INT32 c)
+AcpiCmToUpper (
+    INT32                   c)
 {
+
     return (IS_LOWER(c) ? ((c)-0x20) : (c));
 }
 
 
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiCmToLower
+ *
+ * PARAMETERS:  
+ *
+ * RETURN:      
+ *
+ * DESCRIPTION: Convert character to lowercase
+ *
+ ******************************************************************************/
+
 INT32
-ToLower (INT32 c)
+AcpiCmToLower (
+    INT32                   c)
 {
+
     return (IS_UPPER(c) ? ((c)+0x20) : (c));
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    strupr
+ *
+ * PARAMETERS:  SrcString       - The source string to convert to 
+ *
+ * RETURN:      SrcString
+ *
+ * DESCRIPTION: Convert string to uppercase
+ *
+ ******************************************************************************/
+
+char *
+AcpiCmStrupr (
+    char                    *SrcString)
+{
+    char                    *String;
+
+
+
+    /* Walk entire string, uppercasing the letters */
+
+    for (String = SrcString; *String; )
+    {
+        *String = (char) AcpiCmToUpper (*String);
+        String++;
+    }
+
+
+    return SrcString;
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    strstr
+ *
+ * PARAMETERS:  String1       - 
+ *              String2
+ *
+ * RETURN:      
+ *
+ * DESCRIPTION: Checks if String2 occurs in String1. This is not really a
+ *              full implementation of strstr, only sufficient for command
+ *              matching
+ *
+ ******************************************************************************/
+
+char *
+AcpiCmStrstr (
+    char                    *String1,
+    char                    *String2)
+{
+    char                    *String;
+
+
+
+    if (AcpiCmStrlen (String2) > AcpiCmStrlen (String1))
+    {
+        return NULL;
+    }
+
+    /* Walk entire string, uppercasing the letters */
+
+    for (String = String1; *String2; )
+    {
+        if (*String2 != *String)
+        {
+            return NULL;
+        }
+        
+        String2++;
+        String++;
+    }
+
+
+    return String1;
 }
 
 
@@ -665,7 +781,7 @@ ToLower (INT32 c)
  ******************************************************************************/
 
 UINT32
-_strtoul (
+AcpiCmStrtoul (
     const char              *String, 
     char                    **Terminator, 
     INT32                   Base)
@@ -718,7 +834,7 @@ _strtoul (
     {
         if (*String == '0') 
         {
-            if (ToLower (*(++String)) == 'x') 
+            if (AcpiCmToLower (*(++String)) == 'x') 
             {
                 Base = 16;
                 ++String;
@@ -754,7 +870,7 @@ _strtoul (
         String++;
     }
     
-    if (Base == 16 && *String == '0' && ToLower (*(++String)) == 'x')
+    if (Base == 16 && *String == '0' && AcpiCmToLower (*(++String)) == 'x')
     {
         String++;
     }
@@ -772,7 +888,7 @@ _strtoul (
 
         else 
         {
-            index = ToUpper (*String);
+            index = AcpiCmToUpper (*String);
             if (IS_UPPER (index)) 
             {
                 index = index - 'A' + 10;

@@ -1,7 +1,7 @@
  
 /******************************************************************************
  * 
- * Module Name: cmobject - Internal to external object translation utilities
+ * Module Name: cmcopy - Internal to external object translation utilities
  *
  *****************************************************************************/
 
@@ -114,17 +114,15 @@
  *
  *****************************************************************************/
 
-#define __CMOBJECT_C__
+#define __CMCOPY_C__
 
-#include <acpi.h>
-#include <acobject.h>
-#include <interp.h>
-#include <namesp.h>
-#include <pnp.h>
+#include "acpi.h"
+#include "interp.h"
+#include "namesp.h"
 
 
 #define _COMPONENT          MISCELLANEOUS
-        MODULE_NAME         ("cmobject");
+        MODULE_NAME         ("cmcopy");
 
 
 typedef struct Search_st 
@@ -140,10 +138,9 @@ typedef struct Search_st
 
 PKG_SEARCH_INFO                 Level[MAX_PACKAGE_DEPTH];
 
-
 /******************************************************************************
  *
- * FUNCTION:    CmBuildExternalSimpleObject
+ * FUNCTION:    AcpiCmBuildExternalSimpleObject
  *
  * PARAMETERS:  *InternalObj    - Pointer to the object we are examining
  *              *Buffer         - Where the object is returned
@@ -158,53 +155,97 @@ PKG_SEARCH_INFO                 Level[MAX_PACKAGE_DEPTH];
  ******************************************************************************/
 
 ACPI_STATUS
-CmBuildExternalSimpleObject (
+AcpiCmBuildExternalSimpleObject (
     ACPI_OBJECT_INTERNAL    *InternalObj,
     ACPI_OBJECT             *ExternalObj,
     UINT8                   *DataSpace,
     UINT32                  *BufferSpaceUsed)
 {
     UINT32                  Length = 0;
-    UINT8                   *SourcePtr = NULL;
+    char                    *SourcePtr = NULL;
 
 
     FUNCTION_TRACE ("CmBuildExternalSimpleObject");
 
 
+    /* Check for NULL object case (could be an uninitialized package element */
+
+    if (!InternalObj)
+    {
+        *BufferSpaceUsed = 0;
+        return_ACPI_STATUS (AE_OK);
+    }
+
+    /* Always clear the external object */
+
+    MEMSET (ExternalObj, 0, sizeof (ACPI_OBJECT));
+
+    /* In general, the external object will be the same type as the internal object */
+
     ExternalObj->Type = InternalObj->Common.Type;
+
+    /* However, only a limited number of external types are supported */
 
     switch (ExternalObj->Type)
     {
 
-    case ACPI_TYPE_String:
+    case ACPI_TYPE_STRING:
 
         Length = InternalObj->String.Length;
         ExternalObj->String.Length = InternalObj->String.Length;
-        ExternalObj->String.Pointer = DataSpace;
+        ExternalObj->String.Pointer = (char *) DataSpace;
         SourcePtr = InternalObj->String.Pointer;
         break;
 
 
-    case ACPI_TYPE_Buffer:
+    case ACPI_TYPE_BUFFER:
 
         Length = InternalObj->Buffer.Length;
         ExternalObj->Buffer.Length = InternalObj->Buffer.Length;
         ExternalObj->Buffer.Pointer = DataSpace;
-        SourcePtr = InternalObj->Buffer.Pointer;
+        SourcePtr = (char *) InternalObj->Buffer.Pointer;
         break;
 
 
-    case ACPI_TYPE_Number:
+    case ACPI_TYPE_NUMBER:
 
         ExternalObj->Number.Value= InternalObj->Number.Value;
         break;
 
 
+    case INTERNAL_TYPE_REFERENCE:
+
+        /* 
+         * This is an object reference.  We use the object type of "Any" to
+         * indicate a reference object containing a handle to an ACPI
+         * named object.
+         */
+
+        ExternalObj->Type = ACPI_TYPE_ANY;
+        ExternalObj->Reference.Handle = InternalObj->Reference.Nte;
+        break;
+
+
+    case ACPI_TYPE_PROCESSOR:
+
+        ExternalObj->Processor.ProcId = InternalObj->Processor.ProcId;
+        ExternalObj->Processor.PBLKAddress = InternalObj->Processor.PBLKAddress;
+        ExternalObj->Processor.PBLKLength = InternalObj->Processor.PBLKLength;
+        break;
+
+    case ACPI_TYPE_POWER:
+
+        ExternalObj->PowerResource.SystemLevel = InternalObj->PowerResource.SystemLevel;
+        ExternalObj->PowerResource.ResourceOrder = InternalObj->PowerResource.ResourceOrder;
+        break;
+
     default:
-        return_ACPI_STATUS (AE_RETURN_VALUE);
+        return_ACPI_STATUS (AE_CTRL_RETURN_VALUE);
         break;
     }
 
+
+    /* Copy data if necessary (strings or buffers) */
 
     if (Length)
     {
@@ -215,7 +256,7 @@ CmBuildExternalSimpleObject (
     }
 
 
-    *BufferSpaceUsed = Length;
+    *BufferSpaceUsed = (UINT32) ROUND_UP_TO_NATIVE_WORD (Length);
     
     return_ACPI_STATUS (AE_OK);
 }
@@ -223,7 +264,7 @@ CmBuildExternalSimpleObject (
 
 /******************************************************************************
  *
- * FUNCTION:    CmBuildExternalPackageObject
+ * FUNCTION:    AcpiCmBuildExternalPackageObject
  *
  * PARAMETERS:  *InternalObj    - Pointer to the object we are returning
  *              *Buffer         - Where the object is returned
@@ -236,12 +277,12 @@ CmBuildExternalSimpleObject (
  *
  *              The buffer is assumed to have sufficient space for the object.
  *              The caller must have verified the buffer length needed using the
- *              CmGetObjectSize function before calling this function.
+ *              AcpiCmGetObjectSize function before calling this function.
  * 
  ******************************************************************************/
 
 ACPI_STATUS
-CmBuildExternalPackageObject (
+AcpiCmBuildExternalPackageObject (
     ACPI_OBJECT_INTERNAL    *InternalObj, 
     UINT8                   *Buffer, 
     UINT32                  *SpaceUsed)
@@ -269,7 +310,7 @@ CmBuildExternalPackageObject (
     /*
      * Free space begins right after the first package
      */
-    FreeSpace = Buffer + sizeof (ACPI_OBJECT);
+    FreeSpace = Buffer + ROUND_UP_TO_NATIVE_WORD (sizeof (ACPI_OBJECT));
 
 
     /*
@@ -294,7 +335,7 @@ CmBuildExternalPackageObject (
      * and move the free space past it
      */
 
-    FreeSpace += ExternalObj->Package.Count * sizeof (ACPI_OBJECT);
+    FreeSpace += ExternalObj->Package.Count * ROUND_UP_TO_NATIVE_WORD (sizeof (ACPI_OBJECT));
 
 
     while (1)
@@ -303,57 +344,32 @@ CmBuildExternalPackageObject (
         ThisInternalObj = (ACPI_OBJECT_INTERNAL *) LevelPtr->InternalObj->Package.Elements[ThisIndex];
         ThisExternalObj = (ACPI_OBJECT *) &LevelPtr->ExternalObj->Package.Elements[ThisIndex];
 
-        if (IS_THIS_OBJECT_TYPE (ThisInternalObj, ACPI_TYPE_Package))
+
+
+        /* 
+         * Check for 1) Null object -- OK, this can happen if package element never initialized
+         *           2) Not an internal object - can be an NTE instead
+         *           3) Any internal object other than a package.
+         *
+         * The more complex package case is handled later
+         */
+
+        if ((!ThisInternalObj) ||
+            (!VALID_DESCRIPTOR_TYPE (ThisInternalObj, DESC_TYPE_ACPI_OBJ)) ||
+            (!IS_THIS_OBJECT_TYPE (ThisInternalObj, ACPI_TYPE_PACKAGE)))
         {
             /*
-             * If this object is a package then we go one deeper
+             * This is a simple or null object -- get the size 
              */
-            if (CurrentDepth >= MAX_PACKAGE_DEPTH-1)
+
+            Status = AcpiCmBuildExternalSimpleObject (ThisInternalObj, ThisExternalObj, FreeSpace, &ObjectSpace);
+            if (ACPI_FAILURE (Status)) 
             {
-                /*
-                 * Too many nested levels of packages for us to handle
-                 */
-                DEBUG_PRINT (ACPI_ERROR, ("CmBuildPackageObject: Pkg nested too deep (max %d)\n",
-                                            MAX_PACKAGE_DEPTH));
-                return_ACPI_STATUS (AE_LIMIT);
-            }
-
-            /*
-             * Build the package object
-             */
-            ThisExternalObj->Type              = ACPI_TYPE_Package;
-            ThisExternalObj->Package.Count     = ThisInternalObj->Package.Count;
-            ThisExternalObj->Package.Elements  = (ACPI_OBJECT *) FreeSpace;
-
-            /*
-             * Save space for the array of objects (Package elements)
-             * update the buffer length counter
-             */
-            ObjectSpace             = ThisExternalObj->Package.Count * sizeof(ACPI_OBJECT);
-            FreeSpace               += ObjectSpace;
-            Length                  += ObjectSpace;
-
-            CurrentDepth++;
-            LevelPtr                = &Level[CurrentDepth];
-            LevelPtr->InternalObj   = ThisInternalObj;
-            LevelPtr->ExternalObj   = ThisExternalObj;
-            LevelPtr->Index         = 0;
-
-        }   /* if object is a package */
-        
-        else
-        {
-            Status = CmBuildExternalSimpleObject (ThisInternalObj, ThisExternalObj, FreeSpace, &ObjectSpace);
-            if (Status != AE_OK) 
-            {
-                /*
-                 * Failure get out
-                 */
                 return_ACPI_STATUS (Status);
             }
 
             FreeSpace   += ObjectSpace;
-            Length      +=ObjectSpace;
+            Length      += ObjectSpace;
 
             LevelPtr->Index++;
             while (LevelPtr->Index >= LevelPtr->InternalObj->Package.Count)
@@ -381,20 +397,54 @@ CmBuildExternalPackageObject (
                 LevelPtr = &Level[CurrentDepth];
                 LevelPtr->Index++;
             }
-        }   /* else object is NOT a package */
-    }   /* while (1)  */
+        }
 
 
-    /*
-     * We'll never get here, but the compiler whines about return value
-     */
+        else
+        {
+            /*
+             * This object is a package -- we must go one level deeper
+             */
+            if (CurrentDepth >= MAX_PACKAGE_DEPTH-1)
+            {
+                /*
+                 * Too many nested levels of packages for us to handle
+                 */
+                DEBUG_PRINT (ACPI_ERROR, ("CmBuildPackageObject: Pkg nested too deep (max %d)\n",
+                                            MAX_PACKAGE_DEPTH));
+                return_ACPI_STATUS (AE_LIMIT);
+            }
+
+            /*
+             * Build the package object
+             */
+            ThisExternalObj->Type              = ACPI_TYPE_PACKAGE;
+            ThisExternalObj->Package.Count     = ThisInternalObj->Package.Count;
+            ThisExternalObj->Package.Elements  = (ACPI_OBJECT *) FreeSpace;
+
+            /*
+             * Save space for the array of objects (Package elements)
+             * update the buffer length counter
+             */
+            ObjectSpace             = (UINT32) ROUND_UP_TO_NATIVE_WORD (ThisExternalObj->Package.Count * sizeof (ACPI_OBJECT));
+            FreeSpace               += ObjectSpace;
+            Length                  += ObjectSpace;
+
+            CurrentDepth++;
+            LevelPtr                = &Level[CurrentDepth];
+            LevelPtr->InternalObj   = ThisInternalObj;
+            LevelPtr->ExternalObj   = ThisExternalObj;
+            LevelPtr->Index         = 0;
+        }
+    }
+
     return_ACPI_STATUS (AE_OK);
 }
 
 
 /******************************************************************************
  *
- * FUNCTION:    CmBuildExternalObject
+ * FUNCTION:    AcpiCmBuildExternalObject
  *
  * PARAMETERS:  *InternalObj    - The internal object to be converted
  *              *BufferPtr      - Where the object is returned
@@ -407,7 +457,7 @@ CmBuildExternalPackageObject (
  ******************************************************************************/
 
 ACPI_STATUS
-CmBuildExternalObject (
+AcpiCmBuildExternalObject (
     ACPI_OBJECT_INTERNAL    *InternalObj, 
     ACPI_BUFFER             *RetBuffer)
 {
@@ -417,14 +467,13 @@ CmBuildExternalObject (
     FUNCTION_TRACE ("CmBuildExternalObject");
 
 
-    if (IS_THIS_OBJECT_TYPE (InternalObj, ACPI_TYPE_Package))
+    if (IS_THIS_OBJECT_TYPE (InternalObj, ACPI_TYPE_PACKAGE))
     {
         /*
          * Package objects contain other objects (which can be objects)
          * buildpackage does it all
          */
-        Status = CmBuildExternalPackageObject(InternalObj, RetBuffer->Pointer,
-                        &RetBuffer->Length);
+        Status = AcpiCmBuildExternalPackageObject (InternalObj, RetBuffer->Pointer, &RetBuffer->Length);
     }
 
     else
@@ -432,10 +481,8 @@ CmBuildExternalObject (
         /*
          * Build a simple object (no nested objects)
          */
-        Status = CmBuildExternalSimpleObject(InternalObj,
-                        (ACPI_OBJECT *) RetBuffer->Pointer,
-                        ((UINT8 *) RetBuffer->Pointer + sizeof (ACPI_OBJECT)),
-                        &RetBuffer->Length);
+        Status = AcpiCmBuildExternalSimpleObject (InternalObj, (ACPI_OBJECT *) RetBuffer->Pointer,
+                    ((UINT8 *) RetBuffer->Pointer + ROUND_UP_TO_NATIVE_WORD (sizeof (ACPI_OBJECT))), &RetBuffer->Length);
         /*
          * build simple does not include the object size in the length
          * so we add it in here
@@ -449,7 +496,7 @@ CmBuildExternalObject (
 
 /******************************************************************************
  *
- * FUNCTION:    CmBuildInternalSimpleObject
+ * FUNCTION:    AcpiCmBuildInternalSimpleObject
  *
  * PARAMETERS:  *ExternalObj    - The external object to be converted
  *              *InternalObj    - Where the internal object is returned
@@ -464,7 +511,7 @@ CmBuildExternalObject (
  ******************************************************************************/
 
 ACPI_STATUS
-CmBuildInternalSimpleObject (
+AcpiCmBuildInternalSimpleObject (
     ACPI_OBJECT             *ExternalObj,
     ACPI_OBJECT_INTERNAL    *InternalObj)
 {
@@ -472,26 +519,26 @@ CmBuildInternalSimpleObject (
     FUNCTION_TRACE ("CmBuildInternalSimpleObject");
 
 
-    InternalObj->Common.Type = ExternalObj->Type;
+    InternalObj->Common.Type = (UINT8) ExternalObj->Type;
 
     switch (ExternalObj->Type)
     {
 
-    case ACPI_TYPE_String:
+    case ACPI_TYPE_STRING:
 
         InternalObj->String.Length      = ExternalObj->String.Length;
         InternalObj->String.Pointer     = ExternalObj->String.Pointer;
         break;
 
 
-    case ACPI_TYPE_Buffer:
+    case ACPI_TYPE_BUFFER:
 
         InternalObj->Buffer.Length      = ExternalObj->Buffer.Length;
         InternalObj->Buffer.Pointer     = ExternalObj->Buffer.Pointer;
         break;
 
 
-    case ACPI_TYPE_Number:
+    case ACPI_TYPE_NUMBER:
         /*
          * Number is included in the object itself
          */
@@ -500,7 +547,7 @@ CmBuildInternalSimpleObject (
 
 
     default:
-        return_ACPI_STATUS (AE_RETURN_VALUE);
+        return_ACPI_STATUS (AE_CTRL_RETURN_VALUE);
         break;
     }
 
@@ -511,7 +558,7 @@ CmBuildInternalSimpleObject (
 
 /******************************************************************************
  *
- * FUNCTION:    CmBuildInternalPackageObject
+ * FUNCTION:    AcpiCmBuildInternalPackageObject
  *
  * PARAMETERS:  *InternalObj    - Pointer to the object we are returning
  *              *Buffer         - Where the object is returned
@@ -524,12 +571,12 @@ CmBuildInternalSimpleObject (
  *
  *              The buffer is assumed to have sufficient space for the object.
  *              The caller must have verified the buffer length needed using the
- *              CmGetObjectSize function before calling this function.
+ *              AcpiCmGetObjectSize function before calling this function.
  * 
  ******************************************************************************/
 
 ACPI_STATUS
-CmBuildInternalPackageObject (
+AcpiCmBuildInternalPackageObject (
     ACPI_OBJECT_INTERNAL    *InternalObj, 
     UINT8                   *Buffer, 
     UINT32                  *SpaceUsed)
@@ -591,7 +638,7 @@ CmBuildInternalPackageObject (
         ThisInternalObj = (ACPI_OBJECT_INTERNAL *) &LevelPtr->InternalObj->Package.Elements[ThisIndex];
         ThisExternalObj = (ACPI_OBJECT *) &LevelPtr->ExternalObj->Package.Elements[ThisIndex];
 
-        if (IS_THIS_OBJECT_TYPE (ThisInternalObj, ACPI_TYPE_Package))
+        if (IS_THIS_OBJECT_TYPE (ThisInternalObj, ACPI_TYPE_PACKAGE))
         {
             /*
              * If this object is a package then we go one deeper
@@ -609,7 +656,7 @@ CmBuildInternalPackageObject (
             /*
              * Build the package object
              */
-            ThisExternalObj->Type               = ACPI_TYPE_Package;
+            ThisExternalObj->Type               = ACPI_TYPE_PACKAGE;
             ThisExternalObj->Package.Count      = ThisInternalObj->Package.Count;
             ThisExternalObj->Package.Elements   = (ACPI_OBJECT *) FreeSpace;
 
@@ -631,7 +678,7 @@ CmBuildInternalPackageObject (
         
         else
         {
-/*            Status = CmBuildSimpleObject(ThisInternalObj, ThisExternalObj, FreeSpace, &ObjectSpace);
+/*            Status = AcpiCmBuildSimpleObject(ThisInternalObj, ThisExternalObj, FreeSpace, &ObjectSpace);
 */
             if (Status != AE_OK) 
             {
@@ -683,7 +730,7 @@ CmBuildInternalPackageObject (
 
 /******************************************************************************
  *
- * FUNCTION:    CmBuildInternalObject
+ * FUNCTION:    AcpiCmBuildInternalObject
  *
  * PARAMETERS:  *InternalObj    - The external object to be converted
  *              *BufferPtr      - Where the internal object is returned
@@ -695,7 +742,7 @@ CmBuildInternalPackageObject (
  ******************************************************************************/
 
 ACPI_STATUS
-CmBuildInternalObject (
+AcpiCmBuildInternalObject (
     ACPI_OBJECT             *ExternalObj, 
     ACPI_OBJECT_INTERNAL    *InternalObj)
 {
@@ -705,14 +752,14 @@ CmBuildInternalObject (
     FUNCTION_TRACE ("CmBuildInternalObject");
 
 
-    if (ExternalObj->Type == ACPI_TYPE_Package)
+    if (ExternalObj->Type == ACPI_TYPE_PACKAGE)
     {
         /*
          * Package objects contain other objects (which can be objects)
          * buildpackage does it all
          */
 /*
-        Status = CmBuildInternalPackageObject(InternalObj, RetBuffer->Pointer,
+        Status = AcpiCmBuildInternalPackageObject(InternalObj, RetBuffer->Pointer,
                         &RetBuffer->Length);
 */
         DEBUG_PRINT (ACPI_ERROR, ("CmBuildInternalObject: Packages as parameters not implemented!\n"));
@@ -725,7 +772,7 @@ CmBuildInternalObject (
         /*
          * Build a simple object (no nested objects)
          */
-        Status = CmBuildInternalSimpleObject (ExternalObj, InternalObj);
+        Status = AcpiCmBuildInternalSimpleObject (ExternalObj, InternalObj);
         /*
          * build simple does not include the object size in the length
          * so we add it in here
@@ -734,5 +781,4 @@ CmBuildInternalObject (
 
     return_ACPI_STATUS (Status);
 }
-
 

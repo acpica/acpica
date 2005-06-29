@@ -117,18 +117,21 @@
 
 #define __CMINIT_C__
 
-#include <acpi.h>
-#include <hardware.h>
-#include <namesp.h>
-
+#include "acpi.h"
+#include "hardware.h"
+#include "namesp.h"
+#include "events.h"
+#include "parser.h"
+#include "dispatch.h"
 
 #define _COMPONENT          MISCELLANEOUS
         MODULE_NAME         ("cminit");
 
 
+
 /*******************************************************************************
  *
- * FUNCTION:    CmFacpRegisterError
+ * FUNCTION:    AcpiCmFacpRegisterError
  *
  * PARAMETERS:  *RegisterName           - Pointer to string identifying register
  *              Value                   - Actual register contents value
@@ -142,23 +145,21 @@
  ******************************************************************************/
 
 void
-CmFacpRegisterError (
+AcpiCmFacpRegisterError (
     char                    *RegisterName, 
-    UINT32                  Value,
-    INT32                   AcpiTestSpecSection, 
-    INT32                   AcpiAssertion)
+    UINT32                  Value)
 {
     
     REPORT_ERROR ("Invalid FACP register value");
     
-    DEBUG_PRINT (ACPI_ERROR, ("  Assertion %d.%d.%d Failed  %s=%08lXh\n",
-                ACPI_CHAPTER, AcpiTestSpecSection, AcpiAssertion, RegisterName, Value));
+    DEBUG_PRINT (ACPI_ERROR, ("Invalid FACP register value, %s = 0x%X (FACP=0x%X)\n", 
+                    RegisterName, Value, Acpi_GblFACP));
 }
 
 
 /******************************************************************************
  *
- * FUNCTION:    CmHardwareInitialize
+ * FUNCTION:    AcpiCmHardwareInitialize
  *
  * PARAMETERS:  None
  *
@@ -169,7 +170,7 @@ CmFacpRegisterError (
  ******************************************************************************/
 
 ACPI_STATUS
-CmHardwareInitialize (void)
+AcpiCmHardwareInitialize (void)
 {
     ACPI_STATUS             Status = AE_OK;
     INT32                   Index;
@@ -179,11 +180,20 @@ CmHardwareInitialize (void)
     FUNCTION_TRACE ("CmHardwareInitialize");
 
 
-    /* We must have an the ACPI tables by the time we get here */
+    /* Are we running on the actual hardware */
 
-    if (!Gbl_FACP)
+    if (!Acpi_GblAcpiHardwarePresent)
     {
-        Gbl_RestoreAcpiChipset = FALSE;
+        /* No, just return */
+
+        return_ACPI_STATUS (AE_OK);
+    }
+
+    /* We must have the ACPI tables by the time we get here */
+
+    if (!Acpi_GblFACP)
+    {
+        Acpi_GblRestoreAcpiChipset = FALSE;
 
         DEBUG_PRINT (ACPI_ERROR, ("CmHardwareInitialize: No FACP!\n"));
 
@@ -196,27 +206,27 @@ CmHardwareInitialize (void)
     {
         RestoreAcpiChipset = FALSE;
 
-        DEBUG_PRINT (ACPI_ERROR, ("CmHardwareInitialize: Supported modes unitialized!\n"));
+        DEBUG_PRINT (ACPI_ERROR, ("CmHardwareInitialize: Supported modes uninitialized!\n"));
         return_ACPI_STATUS (AE_ERROR);
     }
 
 */
 
 
-    switch (Gbl_SystemFlags & SYS_MODES_MASK)
+    switch (Acpi_GblSystemFlags & SYS_MODES_MASK)
     {
         /* Identify current ACPI/legacy mode   */
 
     case (SYS_MODE_ACPI):
 
-        Gbl_OriginalMode = SYS_MODE_ACPI;
+        Acpi_GblOriginalMode = SYS_MODE_ACPI;
         DEBUG_PRINT (ACPI_INFO, ("System supports ACPI mode only.\n"));
         break;
 
 
     case (SYS_MODE_LEGACY):
 
-        Gbl_OriginalMode = SYS_MODE_LEGACY;
+        Acpi_GblOriginalMode = SYS_MODE_LEGACY;
         DEBUG_PRINT (ACPI_INFO,
                     ("Tables loaded from buffer, hardware assumed to support LEGACY mode only.\n"));
         break;
@@ -224,24 +234,24 @@ CmHardwareInitialize (void)
 
     case (SYS_MODE_ACPI | SYS_MODE_LEGACY):
 
-        if (HwGetMode () == SYS_MODE_ACPI)
+        if (AcpiHwGetMode () == SYS_MODE_ACPI)
         {
-            Gbl_OriginalMode = SYS_MODE_ACPI;
+            Acpi_GblOriginalMode = SYS_MODE_ACPI;
         }
         else
         {
-            Gbl_OriginalMode = SYS_MODE_LEGACY;
+            Acpi_GblOriginalMode = SYS_MODE_LEGACY;
         }
 
         DEBUG_PRINT (ACPI_INFO, ("System supports both ACPI and LEGACY modes.\n"));
 
         DEBUG_PRINT (ACPI_INFO, ("System is currently in %s mode.\n",
-                                (Gbl_OriginalMode == SYS_MODE_ACPI) ? "ACPI" : "LEGACY"));
+                                (Acpi_GblOriginalMode == SYS_MODE_ACPI) ? "ACPI" : "LEGACY"));
         break;
     }
 
 
-    if (Gbl_SystemFlags & SYS_MODE_ACPI)
+    if (Acpi_GblSystemFlags & SYS_MODE_ACPI)
     {
         /* Target system supports ACPI mode */
 
@@ -260,10 +270,10 @@ CmHardwareInitialize (void)
          * be modified. The PM1bEvtBlk behaves as expected.
          */
 
-        Gbl_Pm1EnableRegisterSave = OsdIn16 ((Gbl_FACP->Pm1aEvtBlk + 2));
-        if (Gbl_FACP->Pm1bEvtBlk)
+        Acpi_GblPm1EnableRegisterSave = AcpiOsdIn16 ((Acpi_GblFACP->Pm1aEvtBlk + 2));
+        if (Acpi_GblFACP->Pm1bEvtBlk)
         {
-            Gbl_Pm1EnableRegisterSave |= OsdIn16 ((Gbl_FACP->Pm1bEvtBlk + 2));
+            Acpi_GblPm1EnableRegisterSave |= AcpiOsdIn16 ((Acpi_GblFACP->Pm1bEvtBlk + 2));
         }
 
 
@@ -272,106 +282,114 @@ CmHardwareInitialize (void)
          * block is not fixed, so the buffer must be allocated with malloc 
          */
 
-        if (Gbl_FACP->Gpe0Blk && Gbl_FACP->Gpe0BlkLen)
+        if (Acpi_GblFACP->Gpe0Blk && Acpi_GblFACP->Gpe0BlkLen)
         {
             /* GPE0 specified in FACP  */
 
-            Gbl_Gpe0EnableRegisterSave = CmAllocate ((ACPI_SIZE) (Gbl_FACP->Gpe0BlkLen / 2));
-            if (!Gbl_Gpe0EnableRegisterSave)
+            Acpi_GblGpe0EnableRegisterSave = AcpiCmAllocate (DIV_2 (Acpi_GblFACP->Gpe0BlkLen));
+            if (!Acpi_GblGpe0EnableRegisterSave)
             {
                 return_ACPI_STATUS (AE_NO_MEMORY);
             }
 
             /* Save state of GPE0 enable bits */
 
-            for (Index = 0; Index < Gbl_FACP->Gpe0BlkLen / 2; Index++)
+            for (Index = 0; Index < DIV_2 (Acpi_GblFACP->Gpe0BlkLen); Index++)
             {
-                Gbl_Gpe0EnableRegisterSave[Index] =
-                    OsdIn8 ((Gbl_FACP->Gpe0Blk + Gbl_FACP->Gpe0BlkLen / 2));
+                Acpi_GblGpe0EnableRegisterSave[Index] =
+                    AcpiOsdIn8 (Acpi_GblFACP->Gpe0Blk + DIV_2 (Acpi_GblFACP->Gpe0BlkLen));
             }
         }
         
         else
         {
-            Gbl_Gpe0EnableRegisterSave = NULL;
+            Acpi_GblGpe0EnableRegisterSave = NULL;
         }
 
-        if (Gbl_FACP->Gpe1Blk && Gbl_FACP->Gpe1BlkLen)
+        if (Acpi_GblFACP->Gpe1Blk && Acpi_GblFACP->Gpe1BlkLen)
         {
-            /* GPE1 defined    */
+            /* GPE1 defined */
 
-            Gbl_Gpe1EnableRegisterSave = CmAllocate ((ACPI_SIZE) (Gbl_FACP->Gpe1BlkLen / 2));
-            if (!Gbl_Gpe1EnableRegisterSave)
+            Acpi_GblGpe1EnableRegisterSave = AcpiCmAllocate (DIV_2 (Acpi_GblFACP->Gpe1BlkLen));
+            if (!Acpi_GblGpe1EnableRegisterSave)
             {
                 return_ACPI_STATUS (AE_NO_MEMORY);
             }
 
             /* save state of GPE1 enable bits */
     
-            for (Index = 0; Index < Gbl_FACP->Gpe1BlkLen / 2; Index++)
+            for (Index = 0; Index < DIV_2 (Acpi_GblFACP->Gpe1BlkLen); Index++)
             {
-                Gbl_Gpe1EnableRegisterSave[Index] =
-                    OsdIn8 ((Gbl_FACP->Gpe1Blk + Gbl_FACP->Gpe1BlkLen / 2));
+                Acpi_GblGpe1EnableRegisterSave[Index] =
+                    AcpiOsdIn8 (Acpi_GblFACP->Gpe1Blk + DIV_2 (Acpi_GblFACP->Gpe1BlkLen));
             }
         }
         
         else
         {
-            Gbl_Gpe1EnableRegisterSave = NULL;
+            Acpi_GblGpe1EnableRegisterSave = NULL;
         }
     
     
         /* 
-         * Verify Fixed ACPI Description Table fields per ACPI 1.0 sections
-         * 4.7.1.2 and 5.2.5 (assertions #410, 415, 435-440)
+         * Verify Fixed ACPI Description Table fields,
+         * but don't abort on any problems, just display error
          */
 
-        if (Gbl_FACP->Pm1EvtLen < 4)
-            CmFacpRegisterError ("PM1_EVT_LEN", (UINT32) Gbl_FACP->Pm1EvtLen,
-                ACPI_TABLE_NAMESPACE_SECTION, 410); /* #410 == #435    */
+        if (Acpi_GblFACP->Pm1EvtLen < 4)
+        {
+            AcpiCmFacpRegisterError ("PM1_EVT_LEN", (UINT32) Acpi_GblFACP->Pm1EvtLen);
+        }
 
-        if (!Gbl_FACP->Pm1CntLen)
-            CmFacpRegisterError ("PM1_CNT_LEN", (UINT32) Gbl_FACP->Pm1CntLen,
-                ACPI_TABLE_NAMESPACE_SECTION, 415); /* #415 == #436    */
+        if (!Acpi_GblFACP->Pm1CntLen)
+        {
+            AcpiCmFacpRegisterError ("PM1_CNT_LEN", (UINT32) Acpi_GblFACP->Pm1CntLen);
+        }
 
-        if (!Gbl_FACP->Pm1aEvtBlk)
-            CmFacpRegisterError ("PM1a_EVT_BLK", Gbl_FACP->Pm1aEvtBlk,
-                ACPI_TABLE_NAMESPACE_SECTION, 432);
+        if (!Acpi_GblFACP->Pm1aEvtBlk)
+        {
+            AcpiCmFacpRegisterError ("PM1a_EVT_BLK", Acpi_GblFACP->Pm1aEvtBlk);
+        }
 
-        if (!Gbl_FACP->Pm1aCntBlk)
-            CmFacpRegisterError ("PM1a_CNT_BLK", Gbl_FACP->Pm1aCntBlk,
-                ACPI_TABLE_NAMESPACE_SECTION, 433);
+        if (!Acpi_GblFACP->Pm1aCntBlk)
+        {
+            AcpiCmFacpRegisterError ("PM1a_CNT_BLK", Acpi_GblFACP->Pm1aCntBlk);
+        }
 
-        if (!Gbl_FACP->PmTmrBlk)
-            CmFacpRegisterError ("PM_TMR_BLK", Gbl_FACP->PmTmrBlk,
-                ACPI_TABLE_NAMESPACE_SECTION, 434);
+        if (!Acpi_GblFACP->PmTmrBlk)
+        {
+            AcpiCmFacpRegisterError ("PM_TMR_BLK", Acpi_GblFACP->PmTmrBlk);
+        }
 
-        if (Gbl_FACP->Pm2CntBlk && !Gbl_FACP->Pm2CntLen)
-            CmFacpRegisterError ("PM2_CNT_LEN", (UINT32) Gbl_FACP->Pm2CntLen,
-                ACPI_TABLE_NAMESPACE_SECTION, 437);
+        if (Acpi_GblFACP->Pm2CntBlk && !Acpi_GblFACP->Pm2CntLen)
+        {
+            AcpiCmFacpRegisterError ("PM2_CNT_LEN", (UINT32) Acpi_GblFACP->Pm2CntLen);
+        }
 
-        if (Gbl_FACP->PmTmLen < 4)
-            CmFacpRegisterError ("PM_TM_LEN", (UINT32) Gbl_FACP->PmTmLen,
-                ACPI_TABLE_NAMESPACE_SECTION, 438);
+        if (Acpi_GblFACP->PmTmLen < 4)
+        {
+            AcpiCmFacpRegisterError ("PM_TM_LEN", (UINT32) Acpi_GblFACP->PmTmLen);
+        }
 
-        if (Gbl_FACP->Gpe0Blk && (Gbl_FACP->Gpe0BlkLen & 1))    /* length not multiple of 2    */
-            CmFacpRegisterError ("GPE0_BLK_LEN", (UINT32) Gbl_FACP->Gpe0BlkLen,
-                ACPI_TABLE_NAMESPACE_SECTION, 439);
+        if (Acpi_GblFACP->Gpe0Blk && (Acpi_GblFACP->Gpe0BlkLen & 1))    /* length not multiple of 2    */
+        {
+            AcpiCmFacpRegisterError ("GPE0_BLK_LEN", (UINT32) Acpi_GblFACP->Gpe0BlkLen);
+        }
 
-        if (Gbl_FACP->Gpe1Blk && (Gbl_FACP->Gpe1BlkLen & 1))    /* length not multiple of 2    */
-            CmFacpRegisterError ("GPE1_BLK_LEN", (UINT32) Gbl_FACP->Gpe1BlkLen,
-                ACPI_TABLE_NAMESPACE_SECTION, 440);
+        if (Acpi_GblFACP->Gpe1Blk && (Acpi_GblFACP->Gpe1BlkLen & 1))    /* length not multiple of 2    */
+        {
+            AcpiCmFacpRegisterError ("GPE1_BLK_LEN", (UINT32) Acpi_GblFACP->Gpe1BlkLen);
+        }
     }
 
 
-BREAKPOINT3;
-    return_ACPI_STATUS ((Status));
+    return_ACPI_STATUS (Status);
 }
 
 
 /******************************************************************************
  *
- * FUNCTION:    CmTerminate
+ * FUNCTION:    AcpiCmTerminate
  *
  * PARAMETERS:  none
  *
@@ -382,7 +400,7 @@ BREAKPOINT3;
  ******************************************************************************/
 
 void
-CmTerminate (void)
+AcpiCmTerminate (void)
 {
 
     FUNCTION_TRACE ("CmTerminate");
@@ -390,26 +408,87 @@ CmTerminate (void)
 
     /* Free global tables, etc. */
 
-    if (Gbl_Gpe0EnableRegisterSave)
+    if (Acpi_GblGpe0EnableRegisterSave)
     {
-        CmFree (Gbl_Gpe0EnableRegisterSave);
+        AcpiCmFree (Acpi_GblGpe0EnableRegisterSave);
     }
 
-    if (Gbl_Gpe1EnableRegisterSave)
+    if (Acpi_GblGpe1EnableRegisterSave)
     {
-        CmFree (Gbl_Gpe1EnableRegisterSave);
+        AcpiCmFree (Acpi_GblGpe1EnableRegisterSave);
     }
-
-
-    /* Free the mutex objects */
-
-    CmMutexTerminate ();
 
 
     return_VOID;
 }
 
  
+/******************************************************************************
+ *
+ * FUNCTION:    AcpiCmSubsystemShutdown
+ *
+ * PARAMETERS:  none
+ *
+ * RETURN:      none
+ *
+ * DESCRIPTION: Shutdown the various subsystems.  Don't delete the mutex
+ *              objects here -- because the AML debugger may be still running.
+ *
+ ******************************************************************************/
+
+ACPI_STATUS
+AcpiCmSubsystemShutdown (void)
+{
+
+    FUNCTION_TRACE ("CmSubsystemShutdown");
+    
+    /* Just exit if subsystem is already shutdown */
+
+    if (Acpi_GblShutdown)
+    {
+        DEBUG_PRINT (ACPI_ERROR, ("ACPI Subsystem is already terminated\n"));
+        return_ACPI_STATUS (AE_OK);
+    }
+
+    /* Subsystem appears active, go ahead and shut it down */
+
+    Acpi_GblShutdown = TRUE;
+    DEBUG_PRINT (ACPI_INFO, ("Shutting down ACPI Subsystem...\n"));
+
+
+    /* Close the Namespace */
+
+    AcpiNsTerminate ();
+
+    /* Close the AcpiEvent Handling */
+
+    AcpiEvTerminate ();
+
+    /* Close the globals */
+
+    AcpiCmTerminate ();
+
+    /* Flush the local cache(s) */
+
+    AcpiCmDeleteGenericStateCache ();
+    AcpiCmDeleteObjectCache ();
+    AcpiDsDeleteWalkStateCache ();
+
+    /* Close the Parser */
+
+    /* TBD: [Restructure] AcpiPsTerminate () */
+
+    AcpiPsDeleteParseCache ();
+
+    /* Debug only - display leftover memory allocation, if any */
+
+    AcpiCmDumpCurrentAllocations (ACPI_UINT32_MAX, NULL);
+
+    BREAKPOINT3;
+
+    return_ACPI_STATUS (AE_OK);
+}
+
 
 
 

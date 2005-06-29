@@ -115,11 +115,11 @@
 
 #define __CMALLOC_C__
 
-#include <acpi.h>
-#include <parser.h>
-#include <interp.h>
-#include <namesp.h>
-#include <globals.h>
+#include "acpi.h"
+#include "parser.h"
+#include "interp.h"
+#include "namesp.h"
+#include "globals.h"
 
 #define _COMPONENT          MISCELLANEOUS
         MODULE_NAME         ("cmalloc");
@@ -127,10 +127,10 @@
 
 /*
  * Most of this code is for tracking memory leaks in the subsystem, and it
- * gets compiled out when the ACPI_DEBUG flag is not set.  It works like so:
- * every memory allocation is kept track of in a doubly linked list.  Each
+ * gets compiled out when the ACPI_DEBUG flag is not set.
+ * Every memory allocation is kept track of in a doubly linked list.  Each
  * element contains the caller's component, module name, function name, and
- * line number.  _CmAllocate and _CmCallocate call CmAddElementToAllocList
+ * line number.  _CmAllocate and _CmCallocate call AcpiCmAddElementToAllocList
  * to add an element to the list; deletion occurs in the bosy of _CmFree.
  */
 
@@ -138,7 +138,7 @@
 
 /*****************************************************************************
  * 
- * FUNCTION:    CmSearchAllocList
+ * FUNCTION:    AcpiCmSearchAllocList
  *
  * PARAMETERS:  Address             - Address of allocated memory
  *
@@ -149,10 +149,10 @@
  ****************************************************************************/
 
 ALLOCATION_INFO *
-CmSearchAllocList (
+AcpiCmSearchAllocList (
     void                    *Address)
 {
-    ALLOCATION_INFO         *Element = Gbl_HeadAllocPtr;
+    ALLOCATION_INFO         *Element = Acpi_GblHeadAllocPtr;
 
 
     /* Search for the address. note - this always searches the entire list...*/
@@ -176,7 +176,7 @@ CmSearchAllocList (
 
 /*****************************************************************************
  * 
- * FUNCTION:    CmAddElementToAllocList
+ * FUNCTION:    AcpiCmAddElementToAllocList
  *
  * PARAMETERS:  Address             - Address of allocated memory
  *              Size                - Size of the allocation
@@ -193,7 +193,7 @@ CmSearchAllocList (
  ****************************************************************************/
 
 ACPI_STATUS
-CmAddElementToAllocList (
+AcpiCmAddElementToAllocList (
     void                    *Address,
     UINT32                  Size,
     UINT8                   AllocType,
@@ -208,42 +208,45 @@ CmAddElementToAllocList (
     FUNCTION_TRACE_PTR ("CmAddElementToAllocList", Address);
     
 
-    CmAcquireMutex (MTX_MEMORY);
+    AcpiCmAcquireMutex (MTX_MEMORY);
     
     /* Keep track of the running total of all allocations. */
-    Gbl_CurrentAllocCount++;
-    Gbl_RunningAllocCount++;
-    if (Gbl_MaxConcurrentAllocCount < Gbl_CurrentAllocCount)
+
+    Acpi_GblCurrentAllocCount++;
+    Acpi_GblRunningAllocCount++;
+
+    if (Acpi_GblMaxConcurrentAllocCount < Acpi_GblCurrentAllocCount)
     {
-        Gbl_MaxConcurrentAllocCount = Gbl_CurrentAllocCount;
+        Acpi_GblMaxConcurrentAllocCount = Acpi_GblCurrentAllocCount;
     }
     
-    Gbl_CurrentAllocSize += Size;
-    Gbl_RunningAllocSize += Size;
-    if (Gbl_MaxConcurrentAllocSize < Gbl_CurrentAllocSize)
+    Acpi_GblCurrentAllocSize += Size;
+    Acpi_GblRunningAllocSize += Size;
+
+    if (Acpi_GblMaxConcurrentAllocSize < Acpi_GblCurrentAllocSize)
     {
-        Gbl_MaxConcurrentAllocSize = Gbl_CurrentAllocSize;
+        Acpi_GblMaxConcurrentAllocSize = Acpi_GblCurrentAllocSize;
     }
     
     /* If the head pointer is null, create the first element and fill it in. */
 
-    if (NULL == Gbl_HeadAllocPtr)
+    if (NULL == Acpi_GblHeadAllocPtr)
     {
-        Gbl_HeadAllocPtr = (ALLOCATION_INFO *) OsdCallocate (sizeof (ALLOCATION_INFO));
-        if (!Gbl_HeadAllocPtr)
+        Acpi_GblHeadAllocPtr = (ALLOCATION_INFO *) AcpiOsdCallocate (sizeof (ALLOCATION_INFO));
+        if (!Acpi_GblHeadAllocPtr)
         {
             DEBUG_PRINT (ACPI_ERROR, ("Could not allocate memory info block\n"));
             Status = AE_NO_MEMORY;
             goto UnlockAndExit;
         }
 
-        Gbl_TailAllocPtr = Gbl_HeadAllocPtr;
+        Acpi_GblTailAllocPtr = Acpi_GblHeadAllocPtr;
     }
 
     else
     {
-        Gbl_TailAllocPtr->Next = (ALLOCATION_INFO *) OsdCallocate (sizeof (ALLOCATION_INFO));
-        if (!Gbl_TailAllocPtr->Next)
+        Acpi_GblTailAllocPtr->Next = (ALLOCATION_INFO *) AcpiOsdCallocate (sizeof (ALLOCATION_INFO));
+        if (!Acpi_GblTailAllocPtr->Next)
         {
             DEBUG_PRINT (ACPI_ERROR, ("Could not allocate memory info block\n"));
             Status = AE_NO_MEMORY;
@@ -252,8 +255,8 @@ CmAddElementToAllocList (
         
         /* error check */
         
-        Gbl_TailAllocPtr->Next->Previous = Gbl_TailAllocPtr;
-        Gbl_TailAllocPtr = Gbl_TailAllocPtr->Next;
+        Acpi_GblTailAllocPtr->Next->Previous = Acpi_GblTailAllocPtr;
+        Acpi_GblTailAllocPtr = Acpi_GblTailAllocPtr->Next;
     }
 
     /* 
@@ -261,7 +264,7 @@ CmAddElementToAllocList (
      * This will catch several kinds of problems.
      */
 
-    Element = CmSearchAllocList (Address);
+    Element = AcpiCmSearchAllocList (Address);
     if (Element)
     {
         REPORT_ERROR ("CmAddElementToAllocList: Address already present in list!");
@@ -272,24 +275,24 @@ CmAddElementToAllocList (
 
     /* Fill in the instance data. */    
     
-    Gbl_TailAllocPtr->Address   = Address;
-    Gbl_TailAllocPtr->Size      = Size;
-    Gbl_TailAllocPtr->AllocType = AllocType;
-    Gbl_TailAllocPtr->Component = Component;
-    Gbl_TailAllocPtr->Line      = Line;
+    Acpi_GblTailAllocPtr->Address   = Address;
+    Acpi_GblTailAllocPtr->Size      = Size;
+    Acpi_GblTailAllocPtr->AllocType = AllocType;
+    Acpi_GblTailAllocPtr->Component = Component;
+    Acpi_GblTailAllocPtr->Line      = Line;
 
-    STRNCPY (Gbl_TailAllocPtr->Module, Module, MAX_MODULE_NAME);
+    STRNCPY (Acpi_GblTailAllocPtr->Module, Module, MAX_MODULE_NAME);
 
 
 UnlockAndExit:
-    CmReleaseMutex (MTX_MEMORY);
+    AcpiCmReleaseMutex (MTX_MEMORY);
     return_ACPI_STATUS (Status);
 }
 
 
 /*****************************************************************************
  * 
- * FUNCTION:    CmDeleteElementFromAllocList
+ * FUNCTION:    AcpiCmDeleteElementFromAllocList
  *
  * PARAMETERS:  Address             - Address of allocated memory
  *              Component           - Component type of caller
@@ -303,7 +306,7 @@ UnlockAndExit:
  ****************************************************************************/
 
 void
-CmDeleteElementFromAllocList (
+AcpiCmDeleteElementFromAllocList (
     void                    *Address,
     UINT32                  Component,
     ACPI_STRING             Module,
@@ -320,7 +323,7 @@ CmDeleteElementFromAllocList (
 
     /* cases: none, one, multiple. */
 
-    if (NULL == Gbl_HeadAllocPtr)
+    if (NULL == Acpi_GblHeadAllocPtr)
     {
         /* Boy we got problems. */
 
@@ -330,26 +333,27 @@ CmDeleteElementFromAllocList (
     }
 
     
-    CmAcquireMutex (MTX_MEMORY);
+    AcpiCmAcquireMutex (MTX_MEMORY);
     
     /* Keep track of the amount of memory allocated. */
-    Size = 0;
-    Gbl_CurrentAllocCount--;
 
-    if (Gbl_HeadAllocPtr == Gbl_TailAllocPtr)
+    Size = 0;
+    Acpi_GblCurrentAllocCount--;
+
+    if (Acpi_GblHeadAllocPtr == Acpi_GblTailAllocPtr)
     {   
-        if (Address != Gbl_HeadAllocPtr->Address)
+        if (Address != Acpi_GblHeadAllocPtr->Address)
         {
             _REPORT_ERROR (Module, Line, Component, "CmDeleteElementFromAllocList: Deleting non-allocated memory...");
 
             goto Cleanup;
         }
         
-        Size = Gbl_HeadAllocPtr->Size;
+        Size = Acpi_GblHeadAllocPtr->Size;
         
-        OsdFree (Gbl_HeadAllocPtr);
-        Gbl_HeadAllocPtr = NULL;
-        Gbl_TailAllocPtr = NULL;
+        AcpiOsdFree (Acpi_GblHeadAllocPtr);
+        Acpi_GblHeadAllocPtr = NULL;
+        Acpi_GblTailAllocPtr = NULL;
         
         DEBUG_PRINT (TRACE_ALLOCATIONS, ("_CmFree: Allocation list deleted.  There are no outstanding allocations.\n"));
     
@@ -359,23 +363,23 @@ CmDeleteElementFromAllocList (
 
     /* Search list for this address */
 
-    Element = CmSearchAllocList (Address);
+    Element = AcpiCmSearchAllocList (Address);
     if (Element)
     {
         /* cases: head, tail, other */
 
-        if (Element == Gbl_HeadAllocPtr)
+        if (Element == Acpi_GblHeadAllocPtr)
         {
             Element->Next->Previous = NULL;
-            Gbl_HeadAllocPtr = Element->Next;
+            Acpi_GblHeadAllocPtr = Element->Next;
         }
 
         else
         {
-            if (Element == Gbl_TailAllocPtr)
+            if (Element == Acpi_GblTailAllocPtr)
             {
                 Element->Previous->Next = NULL;
-                Gbl_TailAllocPtr = Element->Previous;
+                Acpi_GblTailAllocPtr = Element->Previous;
             }
 
             else
@@ -410,7 +414,7 @@ CmDeleteElementFromAllocList (
         Size = Element->Size;
 
         MEMSET (Element, 0xEA, sizeof (ALLOCATION_INFO));
-        OsdFree (Element);
+        AcpiOsdFree (Element);
     }
             
     else
@@ -422,8 +426,8 @@ CmDeleteElementFromAllocList (
 
 Cleanup:
     
-    Gbl_CurrentAllocSize -= Size;
-    CmReleaseMutex (MTX_MEMORY);
+    Acpi_GblCurrentAllocSize -= Size;
+    AcpiCmReleaseMutex (MTX_MEMORY);
 
     return_VOID;
 }
@@ -431,7 +435,7 @@ Cleanup:
 
 /*****************************************************************************
  * 
- * FUNCTION:    CmDumpAllocationInfo
+ * FUNCTION:    AcpiCmDumpAllocationInfo
  *
  * PARAMETERS:  
  *
@@ -442,7 +446,7 @@ Cleanup:
  ****************************************************************************/
 
 void
-CmDumpAllocationInfo (
+AcpiCmDumpAllocationInfo (
     void)
 {
     FUNCTION_TRACE ("CmDumpAllocationInfo");
@@ -450,27 +454,27 @@ CmDumpAllocationInfo (
 
     DEBUG_PRINT (TRACE_ALLOCATIONS | TRACE_TABLES,
                     ("Current outstanding allocations: %d (%d b, %d Kb)\n",
-                    Gbl_CurrentAllocCount, Gbl_CurrentAllocSize, Gbl_CurrentAllocSize / 1024));
+                    Acpi_GblCurrentAllocCount, Acpi_GblCurrentAllocSize, Acpi_GblCurrentAllocSize / 1024));
 
     DEBUG_PRINT (TRACE_ALLOCATIONS | TRACE_TABLES,
                     ("Maximum concurrent allocations thus far: %d (%d b, %d Kb)\n",
-                    Gbl_MaxConcurrentAllocCount, Gbl_MaxConcurrentAllocSize, Gbl_MaxConcurrentAllocSize / 1024));
+                    Acpi_GblMaxConcurrentAllocCount, Acpi_GblMaxConcurrentAllocSize, Acpi_GblMaxConcurrentAllocSize / 1024));
 
     DEBUG_PRINT (TRACE_ALLOCATIONS | TRACE_TABLES,
                     ("Current number of allocated internal objects: %d (%d b, %d Kb)\n",
-                    Gbl_CurrentObjectCount, Gbl_CurrentObjectSize, Gbl_CurrentObjectSize / 1024));
+                    Acpi_GblCurrentObjectCount, Acpi_GblCurrentObjectSize, Acpi_GblCurrentObjectSize / 1024));
 
     DEBUG_PRINT (TRACE_ALLOCATIONS | TRACE_TABLES,
                     ("Maximum concurrent number of allocated internal objects: %d (%d b, %d Kb)\n",
-                    Gbl_MaxConcurrentObjectCount, Gbl_MaxConcurrentObjectSize, Gbl_MaxConcurrentObjectSize / 1024));
+                    Acpi_GblMaxConcurrentObjectCount, Acpi_GblMaxConcurrentObjectSize, Acpi_GblMaxConcurrentObjectSize / 1024));
 
     DEBUG_PRINT (TRACE_ALLOCATIONS | TRACE_TABLES,
                     ("Total number of allocated internal objects: %d (%d b, %d Kb)\n",
-                    Gbl_RunningObjectCount, Gbl_RunningObjectSize, Gbl_RunningObjectSize / 1024));
+                    Acpi_GblRunningObjectCount, Acpi_GblRunningObjectSize, Acpi_GblRunningObjectSize / 1024));
 
     DEBUG_PRINT (TRACE_ALLOCATIONS | TRACE_TABLES,
                     ("Total number of allocations: %d (%d b, %d Kb)\n",
-                    Gbl_RunningAllocCount, Gbl_RunningAllocSize, Gbl_RunningAllocSize / 1024));
+                    Acpi_GblRunningAllocCount, Acpi_GblRunningAllocSize, Acpi_GblRunningAllocSize / 1024));
 
     return_VOID;
 }
@@ -478,7 +482,7 @@ CmDumpAllocationInfo (
 
 /*****************************************************************************
  * 
- * FUNCTION:    CmDumpCurrentAllocations
+ * FUNCTION:    AcpiCmDumpCurrentAllocations
  *
  * PARAMETERS:  Component           - Component(s) to dump info for.
  *              Module              - Module to dump info for.  NULL means all.
@@ -490,11 +494,11 @@ CmDumpAllocationInfo (
  ****************************************************************************/
 
 void
-CmDumpCurrentAllocations (
+AcpiCmDumpCurrentAllocations (
     UINT32                  Component,
     ACPI_STRING             Module)
 {
-    ALLOCATION_INFO         *Element = Gbl_HeadAllocPtr;
+    ALLOCATION_INFO         *Element = Acpi_GblHeadAllocPtr;
     UINT32                  i;
     
 
@@ -512,7 +516,7 @@ CmDumpCurrentAllocations (
      * Walk the allocation list.
      */
 
-    CmAcquireMutex (MTX_MEMORY);
+    AcpiCmAcquireMutex (MTX_MEMORY);
 
     DEBUG_PRINT (TRACE_ALLOCATIONS | TRACE_TABLES, ("Outstanding allocations:\n"));
 
@@ -530,7 +534,7 @@ CmDumpCurrentAllocations (
             {
             case DESC_TYPE_ACPI_OBJ:
                 DEBUG_PRINT_RAW (TRACE_ALLOCATIONS | TRACE_TABLES, (" ObjType %s", 
-                                    CmGetTypeName (((ACPI_OBJECT_INTERNAL *)(Element->Address))->Common.Type)));
+                                    AcpiCmGetTypeName (((ACPI_OBJECT_INTERNAL *)(Element->Address))->Common.Type)));
                 break;
 
             case DESC_TYPE_PARSER:
@@ -559,7 +563,7 @@ CmDumpCurrentAllocations (
         Element = Element->Next;
     }
 
-    CmReleaseMutex (MTX_MEMORY);
+    AcpiCmReleaseMutex (MTX_MEMORY);
 
     DEBUG_PRINT (TRACE_ALLOCATIONS | TRACE_TABLES, ("Total number of unfreed allocations = %d\n", i));
    
@@ -608,7 +612,7 @@ _CmAllocate (
         Size = 1;
     }
 
-    Address = OsdAllocate (Size);
+    Address = AcpiOsdAllocate (Size);
     if (!Address)
     {
         /* Report allocation error */
@@ -621,10 +625,10 @@ _CmAllocate (
         return_VALUE (NULL);
     }
     
-    Status = CmAddElementToAllocList (Address, Size, MEM_MALLOC, Component, Module, Line);
+    Status = AcpiCmAddElementToAllocList (Address, Size, MEM_MALLOC, Component, Module, Line);
     if (ACPI_FAILURE (Status))
     {
-        OsdFree (Address);
+        AcpiOsdFree (Address);
         return_PTR (NULL);
     }
 
@@ -673,7 +677,7 @@ _CmCallocate (
     }
 
 
-    Address = OsdCallocate (Size);
+    Address = AcpiOsdCallocate (Size);
     
     if (!Address)
     {
@@ -687,10 +691,10 @@ _CmCallocate (
         return_VALUE (NULL);
     }
 
-    Status = CmAddElementToAllocList (Address, Size, MEM_CALLOC, Component, Module, Line);
+    Status = AcpiCmAddElementToAllocList (Address, Size, MEM_CALLOC, Component, Module, Line);
     if (ACPI_FAILURE (Status))
     {
-        OsdFree (Address);
+        AcpiOsdFree (Address);
         return_PTR (NULL);
     }
     
@@ -733,8 +737,8 @@ _CmFree (
         return_VOID;
     }   
     
-    CmDeleteElementFromAllocList (Address, Component, Module, Line);
-    OsdFree (Address);
+    AcpiCmDeleteElementFromAllocList (Address, Component, Module, Line);
+    AcpiOsdFree (Address);
     
     DEBUG_PRINT (TRACE_ALLOCATIONS, ("CmFree: %p freed\n", Address));
 
