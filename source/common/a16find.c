@@ -397,7 +397,7 @@ AfRecognizeTable (
 
     if (Status == AE_SUPPORT)
     {
-        DEBUG_PRINT (ACPI_INFO, ("Unsupported table %s (Type %d) was found and discarded\n",
+        ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "Unsupported table %s (Type %d) was found and discarded\n",
                             AcpiGbl_AcpiTableData[TableType].Name, TableType));
 
         *TableGlobalPtr = NULL;
@@ -410,7 +410,7 @@ AfRecognizeTable (
     {
         /* Table failed verification, map all errors to BAD_DATA */
 
-        DEBUG_PRINT (ACPI_ERROR, ("Invalid table header found in table named %s (Type %d)\n",
+        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Invalid table header found in table named %s (Type %d)\n",
                             AcpiGbl_AcpiTableData[TableType].Name, TableType));
 
         return_ACPI_STATUS (AE_BAD_DATA);
@@ -619,6 +619,8 @@ AfFindDsdt(
     char                    *TableSignature;
  
  
+    FUNCTION_TRACE ("AfFindDsdt");
+
  
     Found = AfFindRsdp (&AcpiGbl_RSDP);
     if (!Found)
@@ -638,7 +640,7 @@ AfFindDsdt(
         TableSignature = RSDT_SIG;
         SignatureLength = sizeof (RSDT_SIG) -1;  
         
-        DEBUG_PRINT (ACPI_INFO, ("Found ACPI 1.0 RSDP\n"));
+        ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "Found ACPI 1.0 RSDP\n"));
     }
     else
     {
@@ -646,7 +648,7 @@ AfFindDsdt(
         TableSignature = XSDT_SIG;
         SignatureLength = sizeof (XSDT_SIG) -1;
         
-        DEBUG_PRINT (ACPI_INFO, ("Found ACPI 2.0 RSDP\n"));
+        ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "Found ACPI 2.0 RSDP\n"));
     }
  
     AcpiUtDumpBuffer ((char *) AcpiGbl_RSDP, sizeof (RSDP_DESCRIPTOR), 0, ACPI_UINT32_MAX);
@@ -657,7 +659,7 @@ AfFindDsdt(
     
     CopyExtendedToReal (&AcpiTblHeader, PhysicalAddress, sizeof (ACPI_TABLE_HEADER));
 
-    DEBUG_PRINT (ACPI_INFO, ("RSDT/XSDT at %lX\n", PhysicalAddress)); 
+    ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "RSDT/XSDT at %lX\n", PhysicalAddress)); 
     AcpiUtDumpBuffer ((char *) &AcpiTblHeader, sizeof (ACPI_TABLE_HEADER), 0, ACPI_UINT32_MAX);
  
     /* Validate the table header */
@@ -667,7 +669,7 @@ AfFindDsdt(
     {
         /* Table failed verification, map all errors to BAD_DATA */
 
-        DEBUG_PRINT (ACPI_ERROR, ("Invalid RSDT table header\n"));
+        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Invalid RSDT table header\n"));
         return (AE_BAD_DATA);
     }
 
@@ -714,7 +716,7 @@ AfFindDsdt(
     }
 
 
-    DEBUG_PRINT (ACPI_OK, ("ACPI Tables successfully loaded\n"));
+    ACPI_DEBUG_PRINT ((ACPI_DB_OK, "ACPI Tables successfully loaded\n"));
 
     if (AcpiGbl_DSDT)
     {
@@ -727,7 +729,7 @@ AfFindDsdt(
 
 ErrorExit:
 
-    DEBUG_PRINT (ACPI_ERROR, ("Failure during ACPI Table initialization: %x\n", Status));
+    ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Failure during ACPI Table initialization: %x\n", Status));
 
 
     return (Status);
