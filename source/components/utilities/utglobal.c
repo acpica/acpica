@@ -574,7 +574,9 @@ CmInitGlobals (ACPI_INIT_DATA *InitData)
 
     for (i = 0; i < NUM_MTX; i++)
     {
-        Gbl_AcpiMutexLocked[i] = FALSE;
+        Gbl_AcpiMutexInfo[i].Mutex      = NULL;
+        Gbl_AcpiMutexInfo[i].Locked     = FALSE;
+        Gbl_AcpiMutexInfo[i].UseCount   = 0;
     }
 
     /* Global notify handlers */
@@ -600,7 +602,6 @@ CmInitGlobals (ACPI_INIT_DATA *InitData)
 
     /* Miscellaneous variables */
 
-    Gbl_Shutdown                = FALSE;
     Gbl_SystemFlags             = 0;
     Gbl_StartupFlags            = 0;
     Gbl_GlobalLockSet           = FALSE;
@@ -608,6 +609,9 @@ CmInitGlobals (ACPI_INIT_DATA *InitData)
     Gbl_WhenToParseMethods      = METHOD_PARSE_AT_INIT;
     Gbl_CmSingleStep            = FALSE;
     Gbl_DbTerminateThreads      = FALSE;
+    Gbl_Shutdown                = FALSE;
+    Gbl_NsLookupCount           = 0;
+    Gbl_PsFindCount             = 0;
 
     /* Stack pointers */
 
