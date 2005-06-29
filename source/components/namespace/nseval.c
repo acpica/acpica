@@ -356,9 +356,10 @@ NsEvaluateByHandle (
 
     if (ReturnObject)
     {
-        /* Initialize the return value */
+        /* Initialize the return value to an invalid object */
 
         memset (ReturnObject, 0, sizeof (ACPI_OBJECT_INTERNAL));
+        ReturnObject->ValType = TYPE_Invalid;
     }
 
 
@@ -396,15 +397,13 @@ BREAKPOINT3;
          * descriptor provided by the caller.
          */
 
-        /*
-         * TBD: Translate to a different external object type here 
-         */
-
         if (ReturnObject)
         {
+            /* Valid return object, copy the returned object that is on the stack */
+
             (*ReturnObject) = *((ACPI_OBJECT_INTERNAL *) ObjStack[ObjStackTop]);            
         }
-    
+
         /* 
          * Now that the return value (object) has been copied, we must purge the stack 
          * of the return value by deleting the object and popping the stack!
@@ -428,7 +427,9 @@ BREAKPOINT3;
             ObjStackTop = 0;
         }
 
-        /* Return the AE_RETURN_VALUE exception */
+        /* Map AE_RETURN_VALUE to AE_OK, we are done with it */
+
+        Status = AE_OK;
     }
 
     FUNCTION_STATUS_EXIT (Status);
