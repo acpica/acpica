@@ -138,7 +138,6 @@
 #define FIELD_UPDATE_RULE_MASK      0x60
 
 
-
 /*****************************************************************************
  *
  * FUNCTION:    AcpiDsCreateField
@@ -167,7 +166,6 @@ AcpiDsCreateField (
 
 
     FUNCTION_TRACE_PTR ("DsCreateField", Op);
-
 
 
     /* First arg is the name of the parent OpRegion */
@@ -460,8 +458,5 @@ AcpiDsCreateIndexField (
 
     return_ACPI_STATUS (Status);
 }
-
-
-
 
 

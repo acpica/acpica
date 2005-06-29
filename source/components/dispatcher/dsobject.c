@@ -127,7 +127,6 @@
         MODULE_NAME         ("dsobject");
 
 
-
 /*******************************************************************************
  *
  * FUNCTION:    AcpiDsInitOneObject
@@ -206,9 +205,9 @@ AcpiDsInitOneObject (
 
         /* Keep the parse tree only if we are parsing all methods at init time (versus just-in-time) */
 
-        if (Acpi_GblWhenToParseMethods != METHOD_PARSE_AT_INIT)
+        if (AcpiGbl_WhenToParseMethods != METHOD_PARSE_AT_INIT)
         {
-            
+
             AcpiNsDeleteNamespaceSubtree (ObjHandle);
 
             ObjDesc = ((NAME_TABLE_ENTRY *)ObjHandle)->Object;
@@ -311,7 +310,6 @@ AcpiDsInitObjectFromOp (
     ACPI_OP_INFO            *OpInfo;
 
 
-
     OpInfo = AcpiPsGetOpcodeInfo (Opcode);
     if (!OpInfo)
     {
@@ -319,7 +317,6 @@ AcpiDsInitObjectFromOp (
 
         return AE_TYPE;
     }
-
 
 
     /* Get and prepare the first argument */
@@ -447,7 +444,6 @@ AcpiDsInitObjectFromOp (
 
     return AE_OK;
 }
-
 
 
 /*****************************************************************************
@@ -649,7 +645,6 @@ AcpiDsBuildInternalObject (
 }
 
 
-
 /*****************************************************************************
  *
  * FUNCTION:    AcpiDsCreateNamedObject
@@ -671,7 +666,6 @@ AcpiDsCreateNamedObject (
 {
     ACPI_STATUS             Status;
     ACPI_OBJECT_INTERNAL    *ObjDesc;
-
 
 
     FUNCTION_TRACE_PTR ("DsCreateNamedObject", Op);
@@ -709,13 +703,11 @@ AcpiDsCreateNamedObject (
     return_ACPI_STATUS (Status);
 
 
-
 Cleanup:
 
     AcpiCmRemoveReference (ObjDesc);
 
     return_ACPI_STATUS (Status);
 }
-
 
 

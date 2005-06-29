@@ -602,7 +602,7 @@ AcpiDsTerminateControlMethod (
         /*
          * Delete the method's parse tree if asked to
          */
-        if (Acpi_GblWhenToParseMethods & METHOD_DELETE_AT_COMPLETION)
+        if (AcpiGbl_WhenToParseMethods & METHOD_DELETE_AT_COMPLETION)
         {
             AcpiPsDeleteParseTree (WalkState->MethodDesc->Method.ParserOp);
             WalkState->MethodDesc->Method.ParserOp = NULL;
@@ -615,8 +615,5 @@ UnlockAndExit:
     AcpiCmReleaseMutex (MTX_PARSER);
     return_ACPI_STATUS (AE_OK);
 }
-
-
-
 
 

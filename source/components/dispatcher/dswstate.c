@@ -127,8 +127,6 @@
         MODULE_NAME         ("dswstate");
 
 
-
-
 /*******************************************************************************
  *
  * FUNCTION:    AcpiDsResultStackClear
@@ -285,7 +283,6 @@ AcpiDsObjStackDeleteAll (
 }
 
 
-
 /*******************************************************************************
  *
  * FUNCTION:    AcpiDsObjStackPush
@@ -405,7 +402,6 @@ AcpiDsObjStackPop (
     UINT32                  i;
 
 
-
     for (i = 0; i < PopCount; i++)
     {
         /* Check for stack underflow */
@@ -523,8 +519,6 @@ AcpiDsObjStackGetValue (
 
     return_PTR (WalkState->Operands [(NATIVE_UINT) (WalkState->NumOperands - 1) - Index]);
 }
-
-
 
 
 /*******************************************************************************
@@ -658,19 +652,19 @@ AcpiDsCreateWalkState (
 
 
     AcpiCmAcquireMutex (MTX_CACHES);
-    Acpi_GblWalkStateCacheRequests++;
+    AcpiGbl_WalkStateCacheRequests++;
 
     /* Check the cache first */
 
-    if (Acpi_GblWalkStateCache)
+    if (AcpiGbl_WalkStateCache)
     {
         /* There is an object available, use it */
 
-        WalkState = Acpi_GblWalkStateCache;
-        Acpi_GblWalkStateCache = WalkState->Next;
+        WalkState = AcpiGbl_WalkStateCache;
+        AcpiGbl_WalkStateCache = WalkState->Next;
 
-        Acpi_GblWalkStateCacheHits++;
-        Acpi_GblWalkStateCacheDepth--;
+        AcpiGbl_WalkStateCacheHits++;
+        AcpiGbl_WalkStateCacheDepth--;
 
         AcpiCmReleaseMutex (MTX_CACHES);
    }
@@ -761,7 +755,7 @@ AcpiDsDeleteWalkState (
 
     /* If walk cache is full, just free this wallkstate object */
 
-    if (Acpi_GblWalkStateCacheDepth >= MAX_WALK_CACHE_DEPTH)
+    if (AcpiGbl_WalkStateCacheDepth >= MAX_WALK_CACHE_DEPTH)
     {
         AcpiCmFree (WalkState);
     }
@@ -779,9 +773,9 @@ AcpiDsDeleteWalkState (
 
         /* Put the object at the head of the global cache list */
 
-        WalkState->Next = Acpi_GblWalkStateCache;
-        Acpi_GblWalkStateCache = WalkState;
-        Acpi_GblWalkStateCacheDepth++;
+        WalkState->Next = AcpiGbl_WalkStateCache;
+        AcpiGbl_WalkStateCache = WalkState;
+        AcpiGbl_WalkStateCacheDepth++;
 
 
         AcpiCmReleaseMutex (MTX_CACHES);
@@ -816,17 +810,16 @@ AcpiDsDeleteWalkStateCache (
 
     /* Traverse the global cache list */
 
-    while (Acpi_GblWalkStateCache)
+    while (AcpiGbl_WalkStateCache)
     {
         /* Delete one cached state object */
 
-        Next = Acpi_GblWalkStateCache->Next;
-        AcpiCmFree (Acpi_GblWalkStateCache);
-        Acpi_GblWalkStateCache = Next;
+        Next = AcpiGbl_WalkStateCache->Next;
+        AcpiCmFree (AcpiGbl_WalkStateCache);
+        AcpiGbl_WalkStateCache = Next;
     }
 
     return_VOID;
 }
-
 
 

@@ -130,8 +130,6 @@
         MODULE_NAME         ("dswexec");
 
 
-
-
 /*****************************************************************************
  *
  * FUNCTION:    AcpiDsExecBeginOp
@@ -482,7 +480,6 @@ AcpiDsExecEndOp (
         break;
 
 
-
     case OPTYPE_CONTROL:    /* Type 1 opcode, IF/ELSE/WHILE/NOOP */
 
         /* 1 Operand, 0 ExternalResult, 0 InternalResult */
@@ -602,7 +599,6 @@ AcpiDsExecEndOp (
     }
 
 
-
     /*
      * Check if we just completed the evaluation of a conditional predicate
      */
@@ -684,8 +680,6 @@ AcpiDsExecEndOp (
         AcpiCmRemoveReference (ObjDesc);
         ResultObj = NULL;
 
-        //DsObjStackPop (1, WalkState);
-
         WalkState->ControlState->Common.State = CONTROL_NORMAL;
     }
 
@@ -711,6 +705,5 @@ Cleanup:
 
     return_ACPI_STATUS (Status);
 }
-
 
 

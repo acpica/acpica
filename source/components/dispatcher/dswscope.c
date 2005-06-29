@@ -128,7 +128,6 @@
 #define STACK_POP(head) head
 
 
-
 /****************************************************************************
  *
  * FUNCTION:    AcpiDsScopeStackClear
@@ -158,7 +157,6 @@ AcpiDsScopeStackClear (
         AcpiCmDeleteGenericState (ScopeInfo);
     }
 }
-
 
 
 /****************************************************************************
@@ -264,6 +262,5 @@ AcpiDsScopeStackPop (
 
     return_ACPI_STATUS (AE_OK);
 }
-
 
 

@@ -128,7 +128,6 @@
         MODULE_NAME         ("dsutils");
 
 
-
 /*****************************************************************************
  *
  * FUNCTION:    AcpiDsDeleteResultIfNotUsed
@@ -257,8 +256,6 @@ AcpiDsDeleteResultIfNotUsed (
 }
 
 
-
-
 /*****************************************************************************
  *
  * FUNCTION:    AcpiDsCreateOperand
@@ -354,7 +351,7 @@ AcpiDsCreateOperand (
                  * For the Conditional Reference op, it's OK if the name is not found;  We
                  * just need a way to indicate this to the interpreter, set the object to the root
                  */
-                ObjDesc = (ACPI_OBJECT_INTERNAL *) Acpi_GblRootObject;
+                ObjDesc = (ACPI_OBJECT_INTERNAL *) AcpiGbl_RootObject;
                 Status = AE_OK;
             }
 
@@ -418,8 +415,7 @@ AcpiDsCreateOperand (
         if (Flags & OP_HAS_RETURN_VALUE)
         {
             DEBUG_PRINT (TRACE_DISPATCH, ("DsCreateOperand: Argument previously created, already stacked \n"));
-
-//            DEBUG_EXEC (AcpiDbDisplayArgumentObject (WalkState->Operands [WalkState->NumOperands - 1]));
+            DEBUG_EXEC (AcpiDbDisplayArgumentObject (WalkState->Operands [WalkState->NumOperands - 1]));
 
             /*
              * Use value that was already previously returned by the evaluation of this argument
@@ -472,7 +468,6 @@ AcpiDsCreateOperand (
 
     return_ACPI_STATUS (AE_OK);
 }
-
 
 
 /*****************************************************************************
@@ -823,6 +818,5 @@ AcpiDsMapNamedOpcodeToDataType (
 
     return DataType;
 }
-
 
 

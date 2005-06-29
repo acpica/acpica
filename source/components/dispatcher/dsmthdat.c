@@ -128,7 +128,6 @@
         MODULE_NAME         ("dsmthdat");
 
 
-
 /*****************************************************************************
  *
  * FUNCTION:    AcpiDsMethodDataInit
@@ -164,7 +163,7 @@ AcpiDsMethodDataInit (
 
     for (i = 0; i < MTH_NUM_ARGS; i++)
     {
-        STORE32TO32 (&WalkState->Arguments[i].Name, NAMEOF_ARG_NTE);
+        MOVE_UNALIGNED32_TO_32 (&WalkState->Arguments[i].Name, NAMEOF_ARG_NTE);
 
         WalkState->Arguments[i].Name            |= (i << 24);
         WalkState->Arguments[i].DataType        = DESC_TYPE_NTE;
@@ -175,7 +174,7 @@ AcpiDsMethodDataInit (
 
     for (i = 0; i < MTH_NUM_LOCALS; i++)
     {
-        STORE32TO32 (&WalkState->LocalVariables[i].Name, NAMEOF_LOCAL_NTE);
+        MOVE_UNALIGNED32_TO_32 (&WalkState->LocalVariables[i].Name, NAMEOF_LOCAL_NTE);
 
         WalkState->LocalVariables[i].Name       |= (i << 24);
         WalkState->LocalVariables[i].DataType   = DESC_TYPE_NTE;
@@ -309,7 +308,6 @@ AcpiDsMethodDataInitArgs (
 }
 
 
-
 /*****************************************************************************
  *
  * FUNCTION:    AcpiDsMethodDataGetEntry
@@ -337,7 +335,7 @@ AcpiDsMethodDataGetEntry (
     FUNCTION_TRACE_U32 ("DsMethodDataGetEntry", Index);
 
 
-    WalkState = AcpiDsGetCurrentWalkState (Acpi_GblCurrentWalkList);
+    WalkState = AcpiDsGetCurrentWalkState (AcpiGbl_CurrentWalkList);
 
     /*
      * Get the requested object.
@@ -502,7 +500,7 @@ AcpiDsMethodDataGetNte (
     FUNCTION_TRACE ("DsMethodDataGetNte");
 
 
-    WalkState = AcpiDsGetCurrentWalkState (Acpi_GblCurrentWalkList);
+    WalkState = AcpiDsGetCurrentWalkState (AcpiGbl_CurrentWalkList);
 
 
     switch (Type)
