@@ -2,7 +2,7 @@
  *
  * Module Name: tbxface - Public interfaces to the ACPI subsystem
  *                         ACPI table oriented interfaces
- *              $Revision: 1.44 $
+ *              $Revision: 1.45 $
  *
  *****************************************************************************/
 
@@ -299,7 +299,6 @@ AcpiUnloadTable (
     ACPI_TABLE_TYPE         TableType)
 {
     ACPI_TABLE_DESC         *ListHead;
-    ACPI_STATUS             Status;
 
 
     FUNCTION_TRACE ("AcpiUnloadTable");
