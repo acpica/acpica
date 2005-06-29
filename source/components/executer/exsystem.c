@@ -146,7 +146,8 @@ OsThreadId (void)
  ******************************************************************************/
 
 void
-OsDoSuspend (UINT32 HowLong)
+OsDoSuspend (
+    UINT32                  HowLong)
 {
     OsdSleep ((UINT16) (HowLong / (UINT32) 1000), (UINT16) (HowLong % (UINT32) 1000));
 }
@@ -170,10 +171,12 @@ OsDoSuspend (UINT32 HowLong)
  ******************************************************************************/
 
 ACPI_STATUS
-OsAcquireOpRqst (ACPI_OBJECT *TimeDesc, ACPI_OBJECT *ObjDesc)
+OsAcquireOpRqst (
+    ACPI_OBJECT             *TimeDesc, 
+    ACPI_OBJECT             *ObjDesc)
 {
-    UINT16          CurrentId;
-    ACPI_STATUS     Status = AE_OK;
+    UINT16                  CurrentId;
+    ACPI_STATUS             Status = AE_OK;
 
 
     if (ObjDesc)
@@ -216,10 +219,11 @@ OsAcquireOpRqst (ACPI_OBJECT *TimeDesc, ACPI_OBJECT *ObjDesc)
  ******************************************************************************/
 
 ACPI_STATUS
-OsReleaseOpRqst (ACPI_OBJECT *ObjDesc)
+OsReleaseOpRqst (
+    ACPI_OBJECT             *ObjDesc)
 {
-    UINT16          CurrentId;
-    ACPI_STATUS     Status = AE_OK;
+    UINT16                  CurrentId;
+    ACPI_STATUS             Status = AE_OK;
 
 
     if (ObjDesc)
@@ -264,7 +268,8 @@ OsReleaseOpRqst (ACPI_OBJECT *ObjDesc)
  ******************************************************************************/
 
 ACPI_STATUS
-OsSignalOpRqst (ACPI_OBJECT *ObjDesc)
+OsSignalOpRqst (
+    ACPI_OBJECT             *ObjDesc)
 {
 
     if (ObjDesc)
@@ -298,9 +303,11 @@ OsSignalOpRqst (ACPI_OBJECT *ObjDesc)
  ******************************************************************************/
 
 ACPI_STATUS
-OsWaitOpRqst (ACPI_OBJECT *TimeDesc, ACPI_OBJECT *ObjDesc)
+OsWaitOpRqst (
+    ACPI_OBJECT             *TimeDesc, 
+    ACPI_OBJECT             *ObjDesc)
 {
-    ACPI_STATUS     Status = AE_OK;
+    ACPI_STATUS             Status = AE_OK;
 
 
     if (ObjDesc)
@@ -340,9 +347,10 @@ OsWaitOpRqst (ACPI_OBJECT *TimeDesc, ACPI_OBJECT *ObjDesc)
  ******************************************************************************/
 
 ACPI_STATUS
-OsResetOpRqst (ACPI_OBJECT *ObjDesc)
+OsResetOpRqst (
+    ACPI_OBJECT             *ObjDesc)
 {
-    ACPI_STATUS         Status = AE_OK;
+    ACPI_STATUS             Status = AE_OK;
 
 
     if (ObjDesc)
