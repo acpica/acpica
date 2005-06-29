@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acnamesp.h - Namespace subcomponent prototypes and defines
- *       $Revision: 1.130 $
+ *       $Revision: 1.131 $
  *
  *****************************************************************************/
 
@@ -519,6 +519,16 @@ AcpiNsReportError (
     UINT32                  LineNumber,
     UINT32                  ComponentId,
     char                    *InternalName,
+    ACPI_STATUS             LookupStatus);
+
+void
+AcpiNsReportMethodError (
+    NATIVE_CHAR             *ModuleName,
+    UINT32                  LineNumber,
+    UINT32                  ComponentId,
+    char                    *Message,
+    ACPI_NAMESPACE_NODE     *Node,
+    char                    *Path,
     ACPI_STATUS             LookupStatus);
 
 void
