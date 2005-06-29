@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acexcep.h - Exception codes returned by the ACPI subsystem
- *       $Revision: 1.53 $
+ *       $Revision: 1.54 $
  *
  *****************************************************************************/
 
@@ -176,8 +176,9 @@
 #define AE_BAD_PATHNAME                 (ACPI_STATUS) (0x0003 | AE_CODE_PROGRAMMER)
 #define AE_BAD_DATA                     (ACPI_STATUS) (0x0004 | AE_CODE_PROGRAMMER)
 #define AE_BAD_ADDRESS                  (ACPI_STATUS) (0x0005 | AE_CODE_PROGRAMMER)
+#define AE_ALIGNMENT                    (ACPI_STATUS) (0x0006 | AE_CODE_PROGRAMMER)
 
-#define AE_CODE_PGM_MAX                 0x0005
+#define AE_CODE_PGM_MAX                 0x0006
 
 
 /*
@@ -222,8 +223,9 @@
 #define AE_AML_INVALID_RESOURCE_TYPE    (ACPI_STATUS) (0x0019 | AE_CODE_AML)
 #define AE_AML_INVALID_INDEX            (ACPI_STATUS) (0x001A | AE_CODE_AML)
 #define AE_AML_REGISTER_LIMIT           (ACPI_STATUS) (0x001B | AE_CODE_AML)
+#define AE_AML_NO_WHILE                 (ACPI_STATUS) (0x001C | AE_CODE_AML)
 
-#define AE_CODE_AML_MAX                 0x001B
+#define AE_CODE_AML_MAX                 0x001C
 
 /*
  * Internal exceptions used for control
@@ -236,8 +238,10 @@
 #define AE_CTRL_DEPTH                   (ACPI_STATUS) (0x0006 | AE_CODE_CONTROL)
 #define AE_CTRL_END                     (ACPI_STATUS) (0x0007 | AE_CODE_CONTROL)
 #define AE_CTRL_TRANSFER                (ACPI_STATUS) (0x0008 | AE_CODE_CONTROL)
+#define AE_CTRL_BREAK                   (ACPI_STATUS) (0x0009 | AE_CODE_CONTROL)
+#define AE_CTRL_CONTINUE                (ACPI_STATUS) (0x000A | AE_CODE_CONTROL)
 
-#define AE_CODE_CTRL_MAX                0x0008
+#define AE_CODE_CTRL_MAX                0x000A
 
 
 #ifdef DEFINE_ACPI_GLOBALS
@@ -284,6 +288,7 @@ NATIVE_CHAR const   *AcpiGbl_ExceptionNames_Pgm[] =
     "AE_BAD_PATHNAME",
     "AE_BAD_DATA",
     "AE_BAD_ADDRESS",
+    "AE_ALIGNMENT",
 };
 
 NATIVE_CHAR const   *AcpiGbl_ExceptionNames_Tbl[] =
@@ -323,6 +328,7 @@ NATIVE_CHAR const   *AcpiGbl_ExceptionNames_Aml[] =
     "AE_AML_INVALID_RESOURCE_TYPE",
     "AE_AML_INVALID_INDEX",
     "AE_AML_REGISTER_LIMIT",
+    "AE_AML_NO_WHILE",
 };
 
 NATIVE_CHAR const   *AcpiGbl_ExceptionNames_Ctrl[] =
@@ -335,6 +341,8 @@ NATIVE_CHAR const   *AcpiGbl_ExceptionNames_Ctrl[] =
     "AE_CTRL_DEPTH",
     "AE_CTRL_END",
     "AE_CTRL_TRANSFER",
+    "AE_CTRL_BREAK",
+    "AE_CTRL_CONTINUE",
 };
 
 #endif /* ACPI GLOBALS */
