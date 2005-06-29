@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: aemain - Main routine for the AcpiExec utility
- *              $Revision: 1.33 $
+ *              $Revision: 1.35 $
  *
  *****************************************************************************/
 
@@ -289,7 +289,7 @@ main (
         Status = AcpiDbLoadAcpiTable (Filename);
         if (ACPI_FAILURE (Status))
         {
-            printf ("**** Could not load input table, %s\n", AcpiCmFormatException (Status));
+            printf ("**** Could not load input table, %s\n", AcpiFormatException (Status));
             goto enterloop;
         }
 
@@ -318,7 +318,7 @@ main (
         Status = AcpiEnableSubsystem (InitFlags);
         if (ACPI_FAILURE (Status))
         {
-            printf ("**** Could not EnableSubsystem, %s\n", AcpiCmFormatException (Status));
+            printf ("**** Could not EnableSubsystem, %s\n", AcpiFormatException (Status));
             goto enterloop;
         }
 
@@ -338,7 +338,7 @@ main (
 
         if (ACPI_FAILURE (Status))
         {
-            printf ("**** Could not load ACPI tables, %s\n", AcpiCmFormatException (Status));
+            printf ("**** Could not load ACPI tables, %s\n", AcpiFormatException (Status));
             goto enterloop;
         }
 
@@ -346,7 +346,7 @@ main (
         Status = AcpiNsLoadNamespace ();
         if (ACPI_FAILURE (Status))
         {
-            printf ("**** Could not load ACPI namespace, %s\n", AcpiCmFormatException (Status));
+            printf ("**** Could not load ACPI namespace, %s\n", AcpiFormatException (Status));
             goto enterloop;
         }
 
@@ -358,7 +358,7 @@ main (
         Status = AcpiEnableSubsystem (InitFlags);
         if (ACPI_FAILURE (Status))
         {
-            printf ("**** Could not EnableSubsystem, %s\n", AcpiCmFormatException (Status));
+            printf ("**** Could not EnableSubsystem, %s\n", AcpiFormatException (Status));
             goto enterloop;
         }
      }
