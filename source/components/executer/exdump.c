@@ -107,13 +107,6 @@
 #define _COMPONENT          INTERPRETER
 
 
-static ST_KEY_DESC_TABLE KDT[] = {
-    {"0000", '1', "AmlDumpStackEntry: Unknown OPCODE", "AmlDumpStackEntry: Unknown OPCODE"},
-    {"0001", '1', "AmlDumpStackEntry: unknown ValType", "AmlDumpStackEntry: unknown ValType"},
-    {NULL, 'I', NULL, NULL}
-};
-
-
 /* TBD: Move this routine to common code */
 
 /*****************************************************************************
@@ -325,7 +318,7 @@ AmlDumpStackEntry (
             default:
                 /*  unknown opcode  */
 
-                REPORT_ERROR (&KDT[0]);
+                REPORT_ERROR ("AmlDumpStackEntry: Unknown AML Opcode");
                 break;
 
             }
@@ -511,7 +504,7 @@ AmlDumpStackEntry (
         default:
             /*  unknown EntryDesc->ValType value    */
 
-            REPORT_ERROR (&KDT[0]);
+            REPORT_ERROR ("AmlDumpStackEntry: Unknown ValType");
             
             if (AML_UNASSIGNED != Aml[(INT32) EntryDesc->ValType])
             {
