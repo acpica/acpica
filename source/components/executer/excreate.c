@@ -322,7 +322,7 @@ AmlExecCreateField (
         FieldDesc->FieldUnit.UpdateRule   = (UINT8) UPDATE_Preserve;
         FieldDesc->FieldUnit.Length       = BitCount;
         FieldDesc->FieldUnit.BitOffset    = (UINT8) (BitOffset % 8);
-        FieldDesc->FieldUnit.Offset       = BitOffset / 8;
+        FieldDesc->FieldUnit.Offset       = DIV_8 (BitOffset);
         FieldDesc->FieldUnit.Container    = SrcDesc;
         FieldDesc->FieldUnit.Sequence     = SrcDesc->Buffer.Sequence;
 
