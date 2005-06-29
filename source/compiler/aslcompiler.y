@@ -3,7 +3,7 @@
 /******************************************************************************
  *
  * Module Name: aslcompiler.y - Bison input file (ASL grammar and actions)
- *              $Revision: 1.59 $
+ *              $Revision: 1.60 $
  *
  *****************************************************************************/
 
@@ -2239,9 +2239,9 @@ QWordConstExpr
     ;
 
 ConstExprTerm
-    : PARSEOP_ZERO                  {$$ = TrCreateLeafNode (PARSEOP_ZERO);}
-    | PARSEOP_ONE                   {$$ = TrCreateLeafNode (PARSEOP_ONE);}
-    | PARSEOP_ONES                  {$$ = TrCreateLeafNode (PARSEOP_ONES);}
+    : PARSEOP_ZERO                  {$$ = TrCreateValuedLeafNode (PARSEOP_ZERO, 0);}
+    | PARSEOP_ONE                   {$$ = TrCreateValuedLeafNode (PARSEOP_ONE, 1);}
+    | PARSEOP_ONES                  {$$ = TrCreateValuedLeafNode (PARSEOP_ONES, 0xFFFFFFFFFFFFFFFF);}
     ;
 
 /* OptionalCount must appear before ByteList or an incorrect reduction will result */
