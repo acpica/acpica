@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asmain - Main module for the acpi source processor utility
- *              $Revision: 1.26 $
+ *              $Revision: 1.27 $
  *
  *****************************************************************************/
 
@@ -294,7 +294,7 @@ ACPI_STRING_TABLE           LinuxDataTypes[] = {
     "ACPI_RESOURCE_ADDRESS32",  "acpi_resource_address32",
     "ACPI_RESOURCE_ADDRESS64",  "acpi_resource_address64",
     "ACPI_RESOURCE_EXT_IRQ",    "acpi_resource_ext_irq",
-    "ACPI_RESOURCE",            "acpi_resource",    /* Must be last resource desc */
+    "ACPI_RESOURCE ",           "acpi_resource ",  /* Must be last resource desc */
     "ACPI_SYSTEM_INFO",         "acpi_system_info",
     "ACPI_TABLE_DESC",          "acpi_table_desc",
     "XSDT_DESCRIPTOR",          "xsdt_descriptor",
@@ -365,8 +365,10 @@ ACPI_STRING_TABLE           LinuxDataTypes[] = {
     "ACPI_OWNER_ID",           "acpi_owner_id",
     "ACPI_OBJECT_TYPE8",       "acpi_object_type8",
     "ACPI_HANDLE",             "acpi_handle",
-    "ACPI_NAME",               "acpi_name",
+    "ACPI_NAME\n",             "acpi_name\n",
+    "ACPI_NAME ",              "acpi_name ",
     "ACPI_OBJECT",             "acpi_object",
+    "ACPI_RESOURCE,",          "acpi_resource,",
 
     NULL,                       NULL
 };
