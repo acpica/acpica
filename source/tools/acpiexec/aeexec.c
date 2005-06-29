@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: aeexec - Support routines for AcpiExec utility
- *              $Revision: 1.62 $
+ *              $Revision: 1.64 $
  *
  *****************************************************************************/
 
@@ -124,6 +124,7 @@
 #include "aecommon.h"
 
 #include <stdio.h>
+#include <signal.h>
 
 
 #define _COMPONENT          ACPI_TOOLS
@@ -156,6 +157,39 @@ RSDT_DESCRIPTOR_REV1        *LocalRSDT;
 
 #define RSDT_TABLES         3
 #define RSDT_SIZE           (sizeof (RSDT_DESCRIPTOR_REV1) + ((RSDT_TABLES -1) * sizeof (UINT32)))
+
+
+/******************************************************************************
+ *
+ * FUNCTION:    AeCtrlCHandler
+ *
+ * PARAMETERS:
+ *
+ * RETURN:      none
+ *
+ * DESCRIPTION: Control-C handler.  Abort running control method if any.
+ *
+ *****************************************************************************/
+
+void __cdecl
+AeCtrlCHandler (
+    int                     Sig)
+{
+
+    signal (SIGINT, SIG_IGN);
+
+    AcpiOsPrintf ("Caught a ctrl-c\n\n");
+
+    if (AcpiGbl_MethodExecuting)
+    {
+        AcpiGbl_AbortMethod = TRUE;
+        signal (SIGINT, AeCtrlCHandler);
+    }
+    else
+    {
+        exit (0);
+    }
+}
 
 
 /******************************************************************************
@@ -618,6 +652,7 @@ AeNotifyHandler (
 
     switch (Value)
     {
+#if 0
     case 0:
         printf ("**** Method Error 0x%X: Results not equal\n", Value);
         if (AcpiGbl_DebugFile)
@@ -644,9 +679,11 @@ AeNotifyHandler (
         }
         break;
 
+#endif
 
     default:
-        printf ("**** Received a notify, value 0x%X\n", Value);
+        printf ("**** Received a Notify on Device [%s] %p value 0x%X\n",
+            ((ACPI_NAMESPACE_NODE *) Device)->Name.Ascii, Device, Value);
         if (AcpiGbl_DebugFile)
         {
             AcpiOsPrintf ("**** Received a notify, value 0x%X\n", Value);
