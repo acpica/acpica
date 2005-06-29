@@ -109,9 +109,6 @@
  * Some of these should be fixed or at least made run-time configurable.
  *
  */
-
-#define WHYBUF_SIZE                 512     /* Runtime error message communication */
-
 #define MAX_STRING_LENGTH           512
 #define PATHNAME_MAX                256     /* A full namespace pathname */
 
@@ -127,24 +124,14 @@
 
 
 /* 
- * NameSpace Table sizes
- * 
- * If USE_HASHING is #defined, these must be prime numbers and
- * should be large enough that the tables never get terribly full.
+ * NameSpace Table size
  *
- * The root NT was made bigger than others in the possibly erroneous
- * expectation that there might be quite a few entries in the root.
+ * All tables are the same size to simplify the implementation.
+ * Tables may be extended by allocating additional tables that 
+ * are in turn linked together to form a chain of tables.
  */
 
-#ifdef USE_HASHING
-#define NS_ROOT_TABLE_SIZE          101     /* # of slots in root table */
-#define NS_DEFAULT_TABLE_SIZE       53      /* # of slots per table below the root */
-
-#else
-#define NS_ROOT_TABLE_SIZE          40      /* initial # of slots in root table */
-#define NS_DEFAULT_TABLE_SIZE       20      /* initial # of slots per table below the root */
-#endif
-
+#define NS_TABLE_SIZE               16
 #define MAX_SCOPE_NESTING           15      /* Max nesting of name scopes, used for sizing stacks */
 
 
