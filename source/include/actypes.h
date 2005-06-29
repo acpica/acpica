@@ -211,11 +211,6 @@ typedef INT32           ACPI_STATUS;
 
 typedef void            OSD_FILE;
 
-/* File operations */
-
-typedef INT32           LogHandle;
-#define NO_LOG_HANDLE   ((LogHandle) -1)
-
 
 /*
  * Debug/Error reporting table definition
@@ -229,6 +224,23 @@ typedef struct
     char            *Description2;
 
 } ST_KEY_DESC_TABLE;
+
+
+/*
+ *  Table types.  These values are passed to the table related APIs
+ */
+
+typedef enum {
+    RSDPTR_Ord    = 0,
+    APIC_Ord,
+    DSDT_Ord,
+    FACP_Ord,
+    FACS_Ord,
+    PSDT_Ord,
+    RSDT_Ord,
+    SSDT_Ord,
+    SBDT_Ord
+} AcpiTableType;
 
 
 
@@ -421,6 +433,29 @@ enum
     EVENT_GENERAL,
     NUM_FIXED_EVENTS
 };
+
+
+/* Values and addresses of the GPE registers (both banks) */
+
+typedef struct 
+{
+    UINT8           Status;
+    UINT16          StatusReg;
+    UINT8           Enable;
+    UINT16          EnableReg;
+
+} GPE_INFO;
+
+
+/* Installed GPE handlers and their context values */
+
+typedef struct
+{
+    GPE_HANDLER     Handler;
+    void            *Context;
+
+} GPE_HANDLERS;
+
 
 
 
