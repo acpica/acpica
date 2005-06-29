@@ -1,7 +1,7 @@
-
 /******************************************************************************
  *
  * Name: acexcep.h - Exception codes returned by the ACPI subsystem
+ *       $Revision: 1.36 $
  *
  *****************************************************************************/
 
@@ -162,7 +162,7 @@
 
 #define AE_CODE_ENV_MAX                 0x0014
 
-/* 
+/*
  * Programmer exceptions
  */
 #define AE_BAD_PARAMETER                (ACPI_STATUS) (0x0001 | AE_CODE_PROGRAMMER)
@@ -180,6 +180,7 @@
 #define AE_BAD_SIGNATURE                (ACPI_STATUS) (0x0001 | AE_CODE_ACPI_TABLES)
 #define AE_BAD_HEADER                   (ACPI_STATUS) (0x0002 | AE_CODE_ACPI_TABLES)
 #define AE_BAD_CHECKSUM                 (ACPI_STATUS) (0x0003 | AE_CODE_ACPI_TABLES)
+#define AE_BAD_VALUE                    (ACPI_STATUS) (0x0004 | AE_CODE_ACPI_TABLES)
 
 #define AE_CODE_TBL_MAX                 0x0003
 
@@ -223,14 +224,13 @@
 #define AE_CODE_CTRL_MAX                0x0008
 
 
-
 #ifdef DEFINE_ACPI_GLOBALS
 
 /*
  * String versions of the exception codes above
  * These strings must match the corresponding defines exactly
  */
-static INT8                 *AcpiGbl_ExceptionNames_Env[] =
+static NATIVE_CHAR          *AcpiGbl_ExceptionNames_Env[] =
 {
     "AE_OK",
     "AE_ERROR",
@@ -255,7 +255,7 @@ static INT8                 *AcpiGbl_ExceptionNames_Env[] =
     "AE_UNKNOWN_STATUS",
 };
 
-static INT8                 *AcpiGbl_ExceptionNames_Pgm[] =
+static NATIVE_CHAR          *AcpiGbl_ExceptionNames_Pgm[] =
 {
     "AE_BAD_PARAMETER",
     "AE_BAD_CHARACTER",
@@ -264,14 +264,15 @@ static INT8                 *AcpiGbl_ExceptionNames_Pgm[] =
     "AE_BAD_ADDRESS",
 };
 
-static INT8                 *AcpiGbl_ExceptionNames_Tbl[] =
+static NATIVE_CHAR          *AcpiGbl_ExceptionNames_Tbl[] =
 {
     "AE_BAD_SIGNATURE",
     "AE_BAD_HEADER",
     "AE_BAD_CHECKSUM",
+    "AE_BAD_VALUE",
 };
 
-static INT8                 *AcpiGbl_ExceptionNames_Aml[] =
+static NATIVE_CHAR          *AcpiGbl_ExceptionNames_Aml[] =
 {
     "AE_AML_ERROR",
     "AE_AML_PARSE",
@@ -292,7 +293,7 @@ static INT8                 *AcpiGbl_ExceptionNames_Aml[] =
     "AE_AML_INTERNAL",
 };
 
-static INT8                 *AcpiGbl_ExceptionNames_Ctrl[] =
+static NATIVE_CHAR          *AcpiGbl_ExceptionNames_Ctrl[] =
 {
     "AE_CTRL_RETURN_VALUE",
     "AE_CTRL_PENDING",
@@ -303,8 +304,6 @@ static INT8                 *AcpiGbl_ExceptionNames_Ctrl[] =
     "AE_CTRL_END",
     "AE_CTRL_TRANSFER",
 };
-
-
 
 
 #endif /* DEFINE_ACPI_GLOBALS */
