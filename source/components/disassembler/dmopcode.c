@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dbdisasm - parser op tree display routines
- *              $Revision: 1.57 $
+ *              $Revision: 1.58 $
  *
  ******************************************************************************/
 
@@ -479,7 +479,6 @@ AcpiDbDisplayNamestring (
     NATIVE_CHAR             *Name)
 {
     UINT32                  SegCount;
-    BOOLEAN                 DoDot = FALSE;
 
 
     if (!Name)
@@ -492,7 +491,7 @@ AcpiDbDisplayNamestring (
 
     while (AcpiPsIsPrefixChar (GET8 (Name)))
     {
-        /* append prefix character */
+        /* Append prefix character */
 
         AcpiOsPrintf ("%1c", GET8 (Name));
         Name++;
@@ -519,21 +518,20 @@ AcpiDbDisplayNamestring (
         break;
     }
 
-    while (SegCount--)
+    while (SegCount)
     {
-        /* append Name segment */
+        /* Append Name segment */
 
-        if (DoDot)
+        AcpiOsPrintf ("%4.4s", Name);
+
+        SegCount--;
+        if (SegCount)
         {
-            /* append dot */
+            /* Not last name, append dot separator */
 
             AcpiOsPrintf (".");
         }
-
-        AcpiOsPrintf ("%4.4s", Name);
-        DoDot = TRUE;
-
-        Name += 4;
+        Name += ACPI_NAME_SIZE;
     }
 }
 
