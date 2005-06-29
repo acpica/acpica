@@ -1,7 +1,7 @@
 
 /******************************************************************************
  *
- * Name: actables.h - Table data structures defined in ACPI specification
+ * Name: actbl.h - Table data structures defined in ACPI specification
  *
  *****************************************************************************/
 
@@ -114,8 +114,8 @@
  *
  *****************************************************************************/
 
-#ifndef __ACTABLES_H__
-#define __ACTABLES_H__
+#ifndef __ACTBL_H__
+#define __ACTBL_H__
 
 
 /*
@@ -154,9 +154,9 @@
 
 typedef struct  /* Root System Descriptor Pointer */
 {
-    char                    Signature [8];          /* contains "RSD PTR " */
+    INT8                    Signature [8];          /* contains "RSD PTR " */
     UINT8                   Checksum;               /* to make sum of struct == 0 */
-    char                    OemId [6];              /* OEM identification */
+    INT8                    OemId [6];              /* OEM identification */
     UINT8                   Reserved;               /* reserved - must be zero */
     UINT32                  RsdtPhysicalAddress;    /* physical address of RSDT */
 
@@ -165,15 +165,15 @@ typedef struct  /* Root System Descriptor Pointer */
 
 typedef struct  /* ACPI common table header */
 {
-    char                    Signature [4];          /* identifies type of table */
+    INT8                    Signature [4];          /* identifies type of table */
     UINT32                  Length;                 /* length of table, in bytes,
                                                      * including header */
     UINT8                   Revision;               /* specification minor version # */
     UINT8                   Checksum;               /* to make sum of entire table == 0 */
-    char                    OemId [6];              /* OEM identification */
-    char                    OemTableId [8];         /* OEM table identification */
+    INT8                    OemId [6];              /* OEM identification */
+    INT8                    OemTableId [8];         /* OEM table identification */
     UINT32                  OemRevision;            /* OEM revision number */
-    char                    AslCompilerId [4];      /* ASL compiler vendor ID */
+    INT8                    AslCompilerId [4];      /* ASL compiler vendor ID */
     UINT32                  AslCompilerRevision;    /* ASL compiler revision number */
 
 } ACPI_TABLE_HEADER;
@@ -255,8 +255,8 @@ typedef struct  /* Smart Battery Description Table */
 
 typedef struct _AcpiTableSupport
 {
-    char                    *Name;
-    char                    *Signature;
+    INT8                    *Name;
+    INT8                    *Signature;
     UINT8                   SigLength;
     UINT8                   Flags;
     UINT16                  Status;
@@ -276,4 +276,4 @@ typedef struct _AcpiTableSupport
 #endif
 
 
-#endif /* __ACTABLES_H__ */
+#endif /* __ACTBL_H__ */

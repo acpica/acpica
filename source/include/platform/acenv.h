@@ -119,23 +119,16 @@
 
 
 /*
- * define SYSTEM_CLIB_FUNCTIONS if linking to an actual C library.
- * Otherwise, local versions of the string and memory functions will be used.
- */
-
-/******************************************************************************
+ * Environment configuration.  The purpose of this file is to interface to the
+ * local generation environment.
  *
- * Using native C library functions
+ * 1) ACPI_USE_SYSTEM_CLIBRARY - Define this if linking to an actual C library.
+ *      Otherwise, local versions of string/memory functions will be used.
+ * 2) ACPI_USE_STANDARD_HEADERS - Define this if linking to a C library and
+ *      the standard header files may be used.
  *
- *****************************************************************************/
-
-#ifdef SYSTEM_CLIB_FUNCTIONS
-/*
- * Standard C library headers.
- * We want to keep these to a minimum.
- *
- * The ACPI subsystem only uses low level functions that do not call OS
- * system services and may therefore be inlined in the code.
+ * The ACPI subsystem only uses low level C library functions that do not call
+ * operating system services and may therefore be inlined in the code.
  *
  * It may be necessary to tailor these include files to the target
  * generation environment.
@@ -162,24 +155,86 @@
  *
  */
 
+
+/*
+ * Environment-specific configuration
+ */
+
+#ifdef _LINUX
+
+#include <linux/config.h>
+#include <linux/string.h>
+#include <linux/kernel.h>
+#include <linux/ctype.h>
+#include <asm/system.h>
+
+/* Single threaded */
+
+#define ACPI_APPLICATION
+
+/* Use native Linux string library */
+
+#define ACPI_USE_SYSTEM_CLIBRARY
+
+/* Special functions */
+
+#define strtoul             simple_strtoul
+
+#else
+
+#ifdef _AED_EFI
+
+#include <efi.h>
+#include <efistdarg.h>
+#include <efilib.h>
+
+#else
+
+/* All other environments */
+
+#define ACPI_USE_STANDARD_HEADERS
+
+#endif
+#endif
+
+
+/******************************************************************************
+ *
+ * C library configuration
+ *
+ *****************************************************************************/
+
+#ifdef ACPI_USE_SYSTEM_CLIBRARY
+/*
+ * Use the standard C library headers.
+ * We want to keep these to a minimum.
+ *
+ */
+
+#ifdef ACPI_USE_STANDARD_HEADERS
+/*
+ * Use the standard headers from the standard locations
+ */
 #include <stdarg.h>
 #include <stdlib.h>
 #include <string.h>
 
+#endif /* ACPI_USE_STANDARD_HEADERS */
+
 /*
- * We will be using the standard Clib functions
+ * We will be linking to the standard Clib functions
  */
 
-#define STRSTR(s1,s2)           strstr((char *) (s1), (char *) (s2))
-#define STRUPR(s)               strupr((char *) (s))
-#define STRLEN(s)               strlen((char *) (s))
-#define STRCPY(d,s)             strcpy((char *) (d), (char *) (s))
-#define STRNCPY(d,s,n)          strncpy((char *) (d), (char *) (s), (n))
-#define STRNCMP(d,s,n)          strncmp((char *) (d), (char *) (s), (n))
-#define STRCMP(d,s)             strcmp((char *) (d), (char *) (s))
-#define STRCAT(d,s)             strcat((char *) (d), (char *) (s))
-#define STRNCAT(d,s,n)          strncat((char *) (d), (char *) (s), (n))
-#define STRTOUL(d,s,n)          strtoul((char *) (d), (char **) (s), (n))
+#define STRSTR(s1,s2)           strstr((INT8 *) (s1), (INT8 *) (s2))
+#define STRUPR(s)               strupr((INT8 *) (s))
+#define STRLEN(s)               strlen((INT8 *) (s))
+#define STRCPY(d,s)             strcpy((INT8 *) (d), (INT8 *) (s))
+#define STRNCPY(d,s,n)          strncpy((INT8 *) (d), (INT8 *) (s), (n))
+#define STRNCMP(d,s,n)          strncmp((INT8 *) (d), (INT8 *) (s), (n))
+#define STRCMP(d,s)             strcmp((INT8 *) (d), (INT8 *) (s))
+#define STRCAT(d,s)             strcat((INT8 *) (d), (INT8 *) (s))
+#define STRNCAT(d,s,n)          strncat((INT8 *) (d), (INT8 *) (s), (n))
+#define STRTOUL(d,s,n)          strtoul((INT8 *) (d), (INT8 **) (s), (n))
 #define MEMCPY(d,s,n)           memcpy(d, s, (size_t) n)
 #define MEMSET(d,s,n)           memset(d, s, (size_t) n)
 #define TOUPPER                 toupper
@@ -219,29 +274,31 @@ typedef char *va_list;
  */
 
 #define _Bnd(X, bnd)            (((sizeof(X)) + (bnd)) & (~(bnd)))
-#define va_arg(ap, T)           (*(T *)(((ap) += ((_Bnd(T, _AUPBND))) - (_Bnd(T, _ADNBND)))))
+#define va_arg(ap, T)           (*(T *)(((ap) += ((_Bnd(T, _AUPBND))) \
+                                    - (_Bnd(T, _ADNBND)))))
 #define va_end(ap)              (void)0
-#define va_start(ap, A)         (void) ((ap) = (((char *)&(A)) + (_Bnd(A, _AUPBND))))
+#define va_start(ap, A)         (void) ((ap) = (((INT8 *)&(A)) \
+                                    + (_Bnd(A, _AUPBND))))
 
 #endif /* va_arg */
 
 
-#define STRSTR(s1,s2)           AcpiCmStrstr    ((char *) (s1), (char *) (s2))
-#define STRUPR(s)               AcpiCmStrupr    ((char *) (s))
-#define STRLEN(s)               AcpiCmStrlen    ((char *) (s))
-#define STRCPY(d,s)             AcpiCmStrcpy    ((char *) (d), (char *) (s))
-#define STRNCPY(d,s,n)          AcpiCmStrncpy   ((char *) (d), (char *) (s), (n))
-#define STRNCMP(d,s,n)          AcpiCmStrncmp   ((char *) (d), (char *) (s), (n))
-#define STRCMP(d,s)             AcpiCmStrcmp    ((char *) (d), (char *) (s))
-#define STRCAT(d,s)             AcpiCmStrcat    ((char *) (d), (char *) (s))
-#define STRNCAT(d,s,n)          AcpiCmStrncat   ((char *) (d), (char *) (s), (n))
-#define STRTOUL(d,s,n)          AcpiCmStrtoul   ((char *) (d), (char **) (s), (n))
+#define STRSTR(s1,s2)           AcpiCmStrstr    ((INT8 *) (s1), (INT8 *) (s2))
+#define STRUPR(s)               AcpiCmStrupr    ((INT8 *) (s))
+#define STRLEN(s)               AcpiCmStrlen    ((INT8 *) (s))
+#define STRCPY(d,s)             AcpiCmStrcpy    ((INT8 *) (d), (INT8 *) (s))
+#define STRNCPY(d,s,n)          AcpiCmStrncpy   ((INT8 *) (d), (INT8 *) (s), (n))
+#define STRNCMP(d,s,n)          AcpiCmStrncmp   ((INT8 *) (d), (INT8 *) (s), (n))
+#define STRCMP(d,s)             AcpiCmStrcmp    ((INT8 *) (d), (INT8 *) (s))
+#define STRCAT(d,s)             AcpiCmStrcat    ((INT8 *) (d), (INT8 *) (s))
+#define STRNCAT(d,s,n)          AcpiCmStrncat   ((INT8 *) (d), (INT8 *) (s), (n))
+#define STRTOUL(d,s,n)          AcpiCmStrtoul   ((INT8 *) (d), (INT8 **) (s), (n))
 #define MEMCPY(d,s,n)           AcpiCmMemcpy    ((void *) (d), (const void *) (s), (n))
 #define MEMSET(d,v,n)           AcpiCmMemset    ((void *) (d), (v), (n))
 #define TOUPPER                 AcpiCmToUpper
 #define TOLOWER                 AcpiCmToLower
 
-#endif /* LOCAL_CLIB_FUNCTIONS */
+#endif /* ACPI_USE_SYSTEM_CLIBRARY */
 
 
 /******************************************************************************
@@ -260,6 +317,9 @@ typedef char *va_list;
 
 #ifdef WIN32   /* MS VC */
 
+/*! [Begin] no source code translation  */
+
+#define ACPI_ASM_MACROS
 #define causeinterrupt(level)   __asm {int level}
 #define BREAKPOINT3             __asm {int 3}
 #define disable()               __asm {cli}
@@ -268,7 +328,7 @@ typedef char *va_list;
 #define wbinvd()                __asm {WBINVD}
 
 
-#define ASM_AcquireGL(GLptr, Acq)       __asm {     \
+#define ACPI_ACQUIRE_GLOBAL_LOCK(GLptr, Acq)       __asm {     \
         __asm mov           ecx, GLptr              \
                                                     \
         __asm acq10:                                \
@@ -285,7 +345,7 @@ typedef char *va_list;
         __asm mov           Acq, al                 \
 }
 
-#define ASM_ReleaseGL(GLptr, Pnd)       __asm {     \
+#define ACPI_RELEASE_GLOBAL_LOCK(GLptr, Pnd)       __asm {     \
         __asm mov           ecx, GLptr              \
                                                     \
         __asm Rel10:                                \
@@ -300,18 +360,29 @@ typedef char *va_list;
         __asm mov           Pnd, al                 \
 }
 
+/*! [End] no source code translation !*/
 
-#elif defined(__GNUC__)
 
+#endif /* WIN32 */
+
+
+#ifdef __GNUC__
+
+#ifdef __ia64__
+#define _IA64
+#endif
+
+#define ACPI_ASM_MACROS
 #define causeinterrupt(level)
 #define BREAKPOINT3
-#define disable()               __asm ("cli")
-#define enable()                __asm ("sti")
-#define halt()                  __asm ("hlt")
-#define wbinvd()                __asm ("wbinvd")
+#define disable() __cli()
+#define enable()  __sti()
+#define halt()    __asm__ __volatile__ ("sti; hlt":::"memory")
+#define wbinvd()
 
 
-/*
+/*! [Begin] no source code translation
+ *
  * A brief explanation as GNU inline assembly is a bit hairy
  *  %0 is the output parameter in EAX ("=a")
  *  %1 and %2 are the input parameters in ECX ("c") and an immediate value ("i") respectively
@@ -319,44 +390,58 @@ typedef char *va_list;
  *  Immediate values in the assembly are preceded by "$" as in "$0x1"
  *  The final asm parameter is the non-output registers altered by the operation
  */
-#define ASM_AcquireGL(GLptr, Acq)           \
-  asm("1: movl              (%1),%%eax;"    \
-         "movl              %%eax,%%edx;"   \
-         "andl              %2,%%edx;"      \
-         "btsl              $0x1,%%edx;"    \
-         "adcl              $0x0,%%edx;"    \
-         "lock; cmpxchgl    %%edx,(%1);"    \
-         "jnz               1b;"            \
-                                            \
-         "cmpb              $0x3,%%dl;"     \
-         "sbbl              %%eax,%%eax"    \
-         :"=a"(Acq):"c"(GLptr),"i"(~1L):"cx","dx")
+#define ACPI_ACQUIRE_GLOBAL_LOCK(GLptr, Acq) \
+    do { \
+        int dummy; \
+        asm("1:     movl (%1),%%eax;" \
+            "movl   %%eax,%%edx;" \
+            "andl   %2,%%edx;" \
+            "btsl   $0x1,%%edx;" \
+            "adcl   $0x0,%%edx;" \
+            "lock;  cmpxchgl %%edx,(%1);" \
+            "jnz    1b;" \
+            "cmpb   $0x3,%%dl;" \
+            "sbbl   %%eax,%%eax" \
+            :"=a"(Acq),"=c"(dummy):"c"(GLptr),"i"(~1L):"dx"); \
+    } while(0)
 
-#define ASM_ReleaseGL(GLptr, Acq)           \
-  asm("1: movl              (%1),%%eax;"    \
-         "movl              %%eax,%%edx;"   \
-         "andl              %2,%%edx;"      \
-         "lock; cmpxchgl    %%edx,(%1);"    \
-         "jnz               1b;"            \
-                                            \
-         "andl              $0x1,%%eax"     \
-         :"=a"(Acq):"c"(GLptr),"i"(~3L):"cx","dx")
+#define ACPI_RELEASE_GLOBAL_LOCK(GLptr, Acq) \
+    do { \
+        int dummy; \
+        asm("1:     movl (%1),%%eax;" \
+            "movl   %%eax,%%edx;" \
+            "andl   %2,%%edx;" \
+            "lock;  cmpxchgl %%edx,(%1);" \
+            "jnz    1b;" \
+            "andl   $0x1,%%eax" \
+            :"=a"(Acq),"=c"(dummy):"c"(GLptr),"i"(~3L):"dx"); \
+    } while(0)
+/*! [End] no source code translation !*/
+
+#endif /* __GNUC__ */
 
 
-#else
+#ifndef ACPI_ASM_MACROS
 
+/* Unrecognized compiler, use defaults */
+
+#define ACPI_ASM_MACROS
 #define causeinterrupt(level)
 #define BREAKPOINT3
 #define disable()
 #define enable()
 #define halt()
 
-#define ASM_AcquireGL(GLptr, Acq)
-#define ASM_ReleaseGL(GLptr, Acq)
+#define ACPI_ACQUIRE_GLOBAL_LOCK(GLptr, Acq)
+#define ACPI_RELEASE_GLOBAL_LOCK(GLptr, Acq)
 
-#endif
+#endif /* ACPI_ASM_MACROS */
+
 
 #ifdef ACPI_APPLICATION
+
+/* Don't want software interrupts within a ring3 application */
+
 #undef causeinterrupt
 #undef BREAKPOINT3
 #define causeinterrupt(level)
@@ -364,15 +449,16 @@ typedef char *va_list;
 #endif
 
 
+#ifdef _MSC_VER                 /* disable some level-4 warnings */
+
 /******************************************************************************
  *
  * Compiler-specific
  *
  *****************************************************************************/
 
-#ifdef _MSC_VER                 /* disable some level-4 warnings */
-#pragma warning(disable:4100)   /* warning C4100: unreferenced formal parameter */
-#pragma warning(disable:4127)   /* warning C4127: conditional expression is constant */
+#pragma warning(disable:4100) /* warn C4100: unreferenced formal parameter */
+#pragma warning(disable:4127) /* warn C4127: conditional expression is constant */
 #endif
 
 

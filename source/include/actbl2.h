@@ -136,7 +136,7 @@ typedef struct
 
 typedef struct
 {
-    char                    Signature[4];           /* signature "FACS" */
+    INT8                    Signature[4];           /* signature "FACS" */
     UINT32                  Length;                 /* length of structure, in bytes */
     UINT32                  HardwareSignature;      /* hardware configuration signature */
     UINT32                  Reserved4;              /* must be 0 */
@@ -156,7 +156,7 @@ typedef struct
     ACPI_TABLE_HEADER       header;                 /* table header */
     UINT32                  ReservedPad;            /* IA64 alignment, must be 0 */
     ACPI_TBLPTR             FirmwareCtrl;           /* Physical address of FACS */
-    ACPI_TBLPTR             AcpiDsdt;                   /* Physical address of DSDT */
+    ACPI_TBLPTR             Dsdt;                   /* Physical address of DSDT */
     UINT8                   Model;                  /* System Interrupt Model */
     UINT8                   AddressSpace;           /* Address Space Bitmask */
     UINT16                  SciInt;                 /* System vector of SCI interrupt */
@@ -181,8 +181,8 @@ typedef struct
     UINT8                   Gpe1BlkLen;             /* Byte Length of ports at gpe1_blk */
     UINT8                   Gpe1Base;               /* offset in gpe model where gpe1 events start */
     UINT8                   Reserved3;              /* reserved */
-    UINT16                  PLvl2Lat;               /* worst case HW latency to enter/exit C2 state */
-    UINT16                  PLvl3Lat;               /* worst case HW latency to enter/exit C3 state */
+    UINT16                  Plvl2Lat;               /* worst case HW latency to enter/exit C2 state */
+    UINT16                  Plvl3Lat;               /* worst case HW latency to enter/exit C3 state */
     UINT8                   DayAlrm;                /* index to day-of-month alarm in RTC CMOS RAM */
     UINT8                   MonAlrm;                /* index to month-of-year alarm in RTC CMOS RAM */
     UINT8                   Century;                /* index to century in RTC CMOS RAM */
@@ -190,11 +190,11 @@ typedef struct
     UINT32_BIT              FlushCash       : 1;    /* PAL_FLUSH_CACHE is correctly supported */
     UINT32_BIT              Reserved5       : 1;    /* reserved - must be zero */
     UINT32_BIT              ProcC1          : 1;    /* all processors support C1 state */
-    UINT32_BIT              PLvl2Up         : 1;    /* C2 state works on MP system */
+    UINT32_BIT              Plvl2Up         : 1;    /* C2 state works on MP system */
     UINT32_BIT              PwrButton       : 1;    /* Power button is handled as a generic feature */
     UINT32_BIT              SleepButton     : 1;    /* Sleep button is handled as a generic feature, or not present */
     UINT32_BIT              FixedRTC        : 1;    /* RTC wakeup stat not in fixed register space */
-    UINT32_BIT              RTCS4           : 1;    /* RTC wakeup stat not possible from S4 */
+    UINT32_BIT              Rtcs4           : 1;    /* RTC wakeup stat not possible from S4 */
     UINT32_BIT              TmrValExt       : 1;    /* tmr_val is 32 bits */
     UINT32_BIT              DockCap         : 1;    /* Supports Docking */
     UINT32_BIT              Reserved6       : 22;    /* reserved - must be zero */

@@ -1,7 +1,7 @@
 
 /******************************************************************************
  *
- * Name: tables.h - ACPI table management
+ * Name: actables.h - ACPI table management
  *
  *****************************************************************************/
 
@@ -114,11 +114,8 @@
  *
  *****************************************************************************/
 
-#ifndef __TABLES_H__
-#define __TABLES_H__
-
-#include "actypes.h"
-#include "actables.h"
+#ifndef __ACTABLES_H__
+#define __ACTABLES_H__
 
 
 /* Used in AcpiTbMapAcpiTable for size parameter if table header is to be used */
@@ -138,7 +135,7 @@ AcpiTbHandleToObject (
 
 ACPI_STATUS
 AcpiTbGetTableFacs (
-    char                    *BufferPtr,
+    INT8                    *BufferPtr,
     ACPI_TABLE_DESC         *TableInfo);
 
 
@@ -155,7 +152,7 @@ AcpiTbGetTablePtr (
 ACPI_STATUS
 AcpiTbGetTable (
     void                    *PhysicalAddress,
-    char                    *BufferPtr,
+    INT8                    *BufferPtr,
     ACPI_TABLE_DESC         *TableInfo);
 
 
@@ -166,7 +163,7 @@ AcpiTbGetTable (
 ACPI_STATUS
 AcpiTbGetAllTables (
     UINT32                  NumberOfTables,
-    char                    *BufferPtr);
+    INT8                    *BufferPtr);
 
 
 /*
@@ -175,12 +172,12 @@ AcpiTbGetAllTables (
 
 ACPI_STATUS
 AcpiTbInstallTable (
-    char                    *TablePtr,
+    INT8                    *TablePtr,
     ACPI_TABLE_DESC         *TableInfo);
 
 ACPI_STATUS
 AcpiTbRecognizeTable (
-    char                    *TablePtr,
+    INT8                    *TablePtr,
     ACPI_TABLE_DESC         *TableInfo);
 
 ACPI_STATUS
@@ -218,9 +215,9 @@ ACPI_STATUS
 AcpiTbGetTableRsdt (
     UINT32                  *NumberOfTables);
 
-char *
+INT8 *
 AcpiTbScanMemoryForRsdp (
-    char                    *StartAddress,
+    INT8                    *StartAddress,
     UINT32                  Length);
 
 ACPI_STATUS
@@ -256,4 +253,4 @@ AcpiTbValidateTableHeader (
     ACPI_TABLE_HEADER       *TableHeader);
 
 
-#endif /* __TABLES_H__ */
+#endif /* __ACTABLES_H__ */

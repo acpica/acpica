@@ -199,7 +199,7 @@
 #define AML_IF_OP                   (UINT16) 0xa0
 #define AML_ELSE_OP                 (UINT16) 0xa1
 #define AML_WHILE_OP                (UINT16) 0xa2
-#define AML_NOOP_CODE               (UINT16) 0xa3
+#define AML_NOOP_OP                 (UINT16) 0xa3
 #define AML_RETURN_OP               (UINT16) 0xa4
 #define AML_BREAK_OP                (UINT16) 0xa5
 #define AML_BREAK_POINT_OP          (UINT16) 0xcc
@@ -224,9 +224,9 @@
 #define AML_WAIT_OP                 (UINT16) 0x5b25
 #define AML_RESET_OP                (UINT16) 0x5b26
 #define AML_RELEASE_OP              (UINT16) 0x5b27
-#define AML_FROM_BCDOP              (UINT16) 0x5b28
-#define AML_TO_BCDOP                (UINT16) 0x5b29
-#define AML_UN_LOAD_OP              (UINT16) 0x5b2a
+#define AML_FROM_BCD_OP             (UINT16) 0x5b28
+#define AML_TO_BCD_OP               (UINT16) 0x5b29
+#define AML_UNLOAD_OP               (UINT16) 0x5b2a
 #define AML_REVISION_OP             (UINT16) 0x5b30
 #define AML_DEBUG_OP                (UINT16) 0x5b31
 #define AML_FATAL_OP                (UINT16) 0x5b32
@@ -466,13 +466,13 @@ typedef enum
 
 extern UINT8                    AcpiGbl_Aml             [NUM_OPCODES];
 extern UINT16                   AcpiGbl_Pfx             [NUM_OPCODES];
-extern char                     *AcpiGbl_ShortOps       [NUM_OPCODES];
-extern char                     *AcpiGbl_LongOps        [NUM_OPCODES];
-extern char                     *AcpiGbl_RegionTypes    [NUM_REGION_TYPES];
-extern char                     *AcpiGbl_MatchOps       [NUM_MATCH_OPS];
-extern char                     *AcpiGbl_AccessTypes    [NUM_ACCESS_TYPES];
-extern char                     *AcpiGbl_UpdateRules    [NUM_UPDATE_RULES];
-extern char                     *AcpiGbl_FENames        [NUM_FIELD_NAMES];
+extern INT8                     *AcpiGbl_ShortOps       [NUM_OPCODES];
+extern INT8                     *AcpiGbl_LongOps        [NUM_OPCODES];
+extern INT8                     *AcpiGbl_RegionTypes    [NUM_REGION_TYPES];
+extern INT8                     *AcpiGbl_MatchOps       [NUM_MATCH_OPS];
+extern INT8                     *AcpiGbl_AccessTypes    [NUM_ACCESS_TYPES];
+extern INT8                     *AcpiGbl_UpdateRules    [NUM_UPDATE_RULES];
+extern INT8                     *AcpiGbl_FENames        [NUM_FIELD_NAMES];
 
 
 /*
@@ -483,7 +483,7 @@ extern char                     *AcpiGbl_FENames        [NUM_FIELD_NAMES];
 
 /* Data used in keeping track of fields */
 
-char            *AcpiGbl_FENames[NUM_FIELD_NAMES] =
+INT8            *AcpiGbl_FENames[NUM_FIELD_NAMES] =
 {
     "skip",
     "?access?"
@@ -492,7 +492,7 @@ char            *AcpiGbl_FENames[NUM_FIELD_NAMES] =
 
 /* Region type decoding */
 
-char *AcpiGbl_RegionTypes[NUM_REGION_TYPES] =
+INT8 *AcpiGbl_RegionTypes[NUM_REGION_TYPES] =
 {
     "SystemMemory",
     "SystemIO",
@@ -502,7 +502,7 @@ char *AcpiGbl_RegionTypes[NUM_REGION_TYPES] =
 };
 
 
-char *AcpiGbl_MatchOps[NUM_MATCH_OPS] =
+INT8 *AcpiGbl_MatchOps[NUM_MATCH_OPS] =
 {
     "Error",
     "MTR",
@@ -516,7 +516,7 @@ char *AcpiGbl_MatchOps[NUM_MATCH_OPS] =
 
 /* Access type decoding */
 
-char *AcpiGbl_AccessTypes[NUM_ACCESS_TYPES] =
+INT8 *AcpiGbl_AccessTypes[NUM_ACCESS_TYPES] =
 {
     "AnyAcc",
     "ByteAcc",
@@ -530,7 +530,7 @@ char *AcpiGbl_AccessTypes[NUM_ACCESS_TYPES] =
 
 /* Update rule decoding */
 
-char *AcpiGbl_UpdateRules[NUM_UPDATE_RULES] =
+INT8 *AcpiGbl_UpdateRules[NUM_UPDATE_RULES] =
 {
     "Preserve",
     "WriteAsOnes",
