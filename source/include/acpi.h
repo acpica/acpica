@@ -106,7 +106,7 @@
 #include <environment.h>    /* Target environment specific items */
 #include <datatypes.h>      /* Fundamental data types */
 #include <internal.h>       /* Internal data types */
-#include <excep.h>          /* Local exception codes */
+#include <acpiexcep.h>      /* Local exception codes */
 #include <config.h>         /* Configuration constants */
 #include <output.h>         /* Error output and Debug macros */
 #include <acpiasm.h>        /* Assembly macros */
