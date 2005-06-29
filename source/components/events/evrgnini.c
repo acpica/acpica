@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: evrgnini- ACPI AddressSpace (OpRegion) init
- *              $Revision: 1.51 $
+ *              $Revision: 1.53 $
  *
  *****************************************************************************/
 
@@ -290,7 +290,7 @@ AcpiEvPciConfigRegionSetup (
      *  First get device and function numbers from the _ADR object
      *  in the parent's scope.
      */
-    Node = AcpiNsGetParentObject (RegionObj->Region.Node);
+    Node = AcpiNsGetParentNode (RegionObj->Region.Node);
 
 
     /* AcpiEvaluate the _ADR object */
@@ -333,14 +333,14 @@ AcpiEvPciConfigRegionSetup (
                 if (!(STRNCMP (ObjectHID.Buffer, PCI_ROOT_HID_STRING,
                                     sizeof (PCI_ROOT_HID_STRING))))
                 {
-                    AcpiInstallAddressSpaceHandler (Node,
+                    AcpiInstallAddressSpaceHandler ((ACPI_HANDLE) Node,
                                         ACPI_ADR_SPACE_PCI_CONFIG,
                                         ACPI_DEFAULT_HANDLER, NULL, NULL);
                     break;
                 }
             }
 
-            Node = AcpiNsGetParentObject (Node);
+            Node = AcpiNsGetParentNode (Node);
         }
     }
     else
@@ -527,7 +527,7 @@ AcpiEvInitializeRegion (
     {
         return_ACPI_STATUS (AE_NOT_EXIST);
     }
-    Node = AcpiNsGetParentObject (RegionObj->Region.Node);
+    Node = AcpiNsGetParentNode (RegionObj->Region.Node);
 
 
     SpaceId = RegionObj->Region.SpaceId;
@@ -616,7 +616,7 @@ AcpiEvInitializeRegion (
          *  This one does not have the handler we need
          *  Pop up one level
          */
-        Node = AcpiNsGetParentObject (Node);
+        Node = AcpiNsGetParentNode (Node);
 
     } /* while Node != ROOT */
 
