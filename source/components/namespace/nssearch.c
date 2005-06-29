@@ -444,7 +444,7 @@ NsCreateAndLinkNewTable (
 
     /* Allocate and chain an appendage to the filled table */
     
-    NewTable = NsAllocateNteDesc (NS_TABLE_SIZE);
+    NewTable = NsAllocateNameTable (NS_TABLE_SIZE);
     if (!NewTable)
     {
         REPORT_ERROR ("Name Table appendage allocation failure");
