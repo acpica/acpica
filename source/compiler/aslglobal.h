@@ -3,7 +3,7 @@
 /******************************************************************************
  *
  * Module Name: aslglobal.h - Global variable definitions
- *              $Revision: 1.29 $
+ *              $Revision: 1.34 $
  *
  *****************************************************************************/
 
@@ -162,7 +162,7 @@ ASL_EXTERN char                     ASL_INIT_GLOBAL (*Gbl_LineBufPtr, Gbl_Curren
 
 ASL_EXTERN ASL_ERROR_MSG            ASL_INIT_GLOBAL (*Gbl_ErrorLog,NULL);
 ASL_EXTERN ASL_ERROR_MSG            ASL_INIT_GLOBAL (*Gbl_NextError,NULL);
-extern UINT32                   Gbl_ExceptionCount[];
+extern UINT32                       Gbl_ExceptionCount[];
 
 
 /* Option flags */
@@ -179,6 +179,11 @@ ASL_EXTERN BOOLEAN                  ASL_INIT_GLOBAL (Gbl_ParseOnlyFlag, FALSE);
 ASL_EXTERN BOOLEAN                  ASL_INIT_GLOBAL (Gbl_CompileTimesFlag, FALSE);
 ASL_EXTERN BOOLEAN                  ASL_INIT_GLOBAL (Gbl_FoldConstants, TRUE);
 ASL_EXTERN BOOLEAN                  ASL_INIT_GLOBAL (Gbl_VerboseErrors, TRUE);
+ASL_EXTERN BOOLEAN                  ASL_INIT_GLOBAL (Gbl_DisasmFlag, FALSE);
+ASL_EXTERN BOOLEAN                  ASL_INIT_GLOBAL (Gbl_IntegerOptimizationFlag, TRUE);
+ASL_EXTERN BOOLEAN                  ASL_INIT_GLOBAL (Gbl_ReferenceOptimizationFlag, TRUE);
+ASL_EXTERN BOOLEAN                  ASL_INIT_GLOBAL (Gbl_DisplayRemarks, TRUE);
+ASL_EXTERN BOOLEAN                  ASL_INIT_GLOBAL (Gbl_DisplayOptimizations, FALSE);
 
 
 #define HEX_OUTPUT_NONE         0

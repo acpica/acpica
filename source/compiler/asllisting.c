@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asllisting - Listing file generation
- *              $Revision: 1.43 $
+ *              $Revision: 1.45 $
  *
  *****************************************************************************/
 
@@ -348,9 +348,7 @@ LsCheckException (
         while (Gbl_NextError &&
               (LineNumber >= Gbl_NextError->LogicalLineNumber))
         {
-            FlPrintFile (FileId, "\n[****AslException****]\n");
-
-            AePrintException (FileId, Gbl_NextError);
+            AePrintException (FileId, Gbl_NextError, "\n[****iasl****]\n");
 
             Gbl_NextError = Gbl_NextError->Next;
         }

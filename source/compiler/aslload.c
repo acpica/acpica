@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dswload - Dispatcher namespace load callbacks
- *              $Revision: 1.45 $
+ *              $Revision: 1.50 $
  *
  *****************************************************************************/
 
@@ -143,7 +143,8 @@
  ******************************************************************************/
 
 ACPI_STATUS
-LdLoadNamespace (void)
+LdLoadNamespace (
+    ACPI_PARSE_OBJECT       *RootOp)
 {
     ACPI_WALK_STATE         *WalkState;
 
@@ -160,7 +161,7 @@ LdLoadNamespace (void)
 
     /* Perform the walk of the parse tree */
 
-    TrWalkParseTree (RootNode, ASL_WALK_VISIT_TWICE, LdNamespace1Begin,
+    TrWalkParseTree (RootOp, ASL_WALK_VISIT_TWICE, LdNamespace1Begin,
                         LdNamespace1End, WalkState);
 
     /* Dump the namespace if debug is enabled */
@@ -212,6 +213,10 @@ LdLoadFieldElements (
 
         Child = UtGetArg (Op, 4);
         break;
+
+    default:
+        /* No other opcodes should arrive here */
+        return (AE_BAD_PARAMETER);
     }
 
     /* Enter all elements into the namespace */
@@ -385,6 +390,11 @@ LdNamespace1Begin (
 
         Status = LdLoadFieldElements (Op, WalkState);
         return (Status);
+
+    default:
+
+        /* All other opcodes go below */
+        break;
     }
 
     /* Check if this object has already been installed in the namespace */
@@ -404,7 +414,7 @@ LdNamespace1Begin (
 
     if (Op->Asl.ParseOpcode == PARSEOP_NAME)
     {
-        Arg = Op->Asl.Child;    /* Get the NameSeg/NameString node */
+        Arg = Op->Asl.Child;        /* Get the NameSeg/NameString node */
         Arg = Arg->Asl.Next;        /* First peer is the object to be associated with the name */
 
         /* Get the data type associated with the named object, not the name itself */
@@ -440,7 +450,7 @@ LdNamespace1Begin (
         ObjectType = AslMapNamedOpcodeToDataType (Op->Asl.AmlOpcode);
     }
 
-    ACPI_DEBUG_PRINT ((ACPI_DB_DISPATCH, "LdNamespace1Begin: Type=%x\n", ObjectType));
+    ACPI_DEBUG_PRINT ((ACPI_DB_DISPATCH, "LdNamespace1Begin: Type=%X\n", ObjectType));
 
     if (Op->Asl.ParseOpcode != PARSEOP_SCOPE)
     {
@@ -466,6 +476,37 @@ LdNamespace1Begin (
 
         printf ("Failure from lookup %s\n", AcpiFormatException (Status));
         return (Status);
+    }
+
+    if (Op->Asl.ParseOpcode == PARSEOP_SCOPE)
+    {
+        switch (Node->Type)
+        {
+        case ACPI_TYPE_ANY:         /* Scope nodes are untyped (ANY) */
+        case ACPI_TYPE_DEVICE:
+        case ACPI_TYPE_METHOD:
+        case ACPI_TYPE_POWER:
+        case ACPI_TYPE_PROCESSOR:
+        case ACPI_TYPE_THERMAL:
+
+            /* These are acceptable types */
+            break;
+
+        default:
+
+            /* All other types are an error */
+
+            sprintf (MsgBuffer, "%s, %s", Path, AcpiUtGetTypeName (Node->Type));
+            AslError (ASL_ERROR, ASL_MSG_SCOPE_TYPE, Op, MsgBuffer);
+
+            /* 
+             * However, switch the type to be an actual scope so 
+             * that compilation can continue without generating a whole
+             * cascade of additional errors.
+             */
+            Node->Type = ACPI_TYPE_ANY;
+            break;
+        }
     }
 
     /*

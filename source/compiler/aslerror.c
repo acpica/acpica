@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslerror - Error handling and statistics
- *              $Revision: 1.68 $
+ *              $Revision: 1.78 $
  *
  *****************************************************************************/
 
@@ -180,24 +180,43 @@ char                        *AslMessages [] = {
     "Invalid Bit Offset, Byte Offset required",
     "Opcode is not implemented in compiler AML code generator",
     "No enclosing While statement",
-    "Invalid Escape Sequence",
+    "Invalid or unknown escape sequence",
     "Invalid Hex/Octal Escape - Non-ASCII or NULL",
     "Invalid Table Signature",
     "Too many resource items (internal error)",
     "Target operand not allowed in constant expression",
-    "Invalid operator (not type 3/4/5) in constant expression",
+    "Invalid operator in constant expression (not type 3/4/5)",
     "Could not evaluate constant expression",
-    "Constant expression evaluated and reduced"
+    "Constant expression evaluated and reduced",
+    "EISAID string must be of the form \"UUUXXXX\" (3 uppercase, 4 hex digits)",
+    "Invalid operand type for reserved name, must be",
+    "Reserved name must be a control method",
+    "String must be entirely alphanumeric",
+    "Invalid use of reserved name",
+    "Invalid operand",
+    "Missing EndDependentFn() macro in dependent resource list",
+    "Missing StartDependentFn() macro in dependent resource list",
+    "Dependent function macros cannot be nested",\
+    "NamePath optimized",
+    "NamePath optimized to NameSeg (uses run-time search path)",
+    "Integer optimized to single-byte AML opcode",
+    "Existing object has invalid type for Scope operator"
 };
 
 
-char                        *AslErrorLevel [] = {
-    "Error  ",
-    "Warning",
-    "Remark ",
+char                    *AslErrorLevel [ASL_NUM_REPORT_LEVELS] = {
+    "Error   ",
+    "Warning ",
+    "Remark  ",
+    "Optimize"
 };
 
-#define ASL_ERROR_LEVEL_LENGTH          7
+#define ASL_ERROR_LEVEL_LENGTH          8       /* Length of strings above */
+
+/* Exception counters */
+
+UINT32                  Gbl_ExceptionCount[ASL_NUM_REPORT_LEVELS] = {0,0,0,0};
+
 
 
 /*******************************************************************************
@@ -267,8 +286,9 @@ AeAddToErrorLog (
  *
  * FUNCTION:    AePrintException
  *
- * PARAMETERS:  Where       - Where to send the message
- *              Enode       - Error node to print
+ * PARAMETERS:  Where           - Where to send the message
+ *              Enode           - Error node to print
+ *              Header          - Additional text before each message
  *
  * RETURN:      None
  *
@@ -284,7 +304,8 @@ AeAddToErrorLog (
 void
 AePrintException (
     UINT32                  FileId,
-    ASL_ERROR_MSG           *Enode)
+    ASL_ERROR_MSG           *Enode,
+    char                    *Header)
 {
     UINT8                   SourceByte;
     UINT32                  Actual;
@@ -297,9 +318,42 @@ AePrintException (
     FILE                    *SourceFile;
 
 
+    /* Only listing files have a header, and remarks/optimizations are always output */
+
+    if (!Header)
+    {
+        /* Ignore remarks if requested */
+
+        switch (Enode->Level)
+        {
+        case ASL_REMARK:
+            if (!Gbl_DisplayRemarks)
+            {
+                return;
+            }
+            break;
+
+        case ASL_OPTIMIZATION:
+            if (!Gbl_DisplayOptimizations)
+            {
+                return;
+            }
+            break;
+
+        default:
+            break;
+        }
+    }
+
+    /* Get the file handles */
+
     OutputFile = Gbl_Files[FileId].Handle;
     SourceFile = Gbl_Files[ASL_FILE_SOURCE_OUTPUT].Handle;
 
+    if (Header)
+    {
+        fprintf (OutputFile, "%s", Header);
+    }
 
     /* Print filename and line number if present and valid */
 
@@ -403,7 +457,7 @@ AePrintException (
             {
                 fprintf (OutputFile, "\n");
             }
-       }
+        }
         else
         {
             fprintf (OutputFile, " %s %s\n\n",
@@ -433,9 +487,11 @@ AePrintErrorLog (
     ASL_ERROR_MSG           *Enode = Gbl_ErrorLog;
 
 
+    /* Walk the error node list */
+
     while (Enode)
     {
-        AePrintException (FileId, Enode);
+        AePrintException (FileId, Enode, NULL);
         Enode = Enode->Next;
     }
 }
@@ -490,9 +546,8 @@ AslCommonError (
         ACPI_STRCPY (MessageBuffer, ExtraMessage);
     }
 
-    /*
-     * Initialize the error node
-     */
+    /* Initialize the error node */
+
     if (Filename)
     {
         Enode->Filename       = Filename;
@@ -519,21 +574,17 @@ AslCommonError (
     {
         /* stderr is a file, send error to it immediately */
 
-        AePrintException (ASL_FILE_STDERR, Enode);
+        AePrintException (ASL_FILE_STDERR, Enode, NULL);
     }
 
     Gbl_ExceptionCount[Level]++;
     if (Gbl_ExceptionCount[ASL_ERROR] > ASL_MAX_ERROR_COUNT)
     {
-
-        AePrintErrorLog (ASL_FILE_STDOUT);
-        if (Gbl_DebugFlag)
-        {
-            /* Print error summary to the debug file */
-
-            AePrintErrorLog (ASL_FILE_STDERR);
-        }
         printf ("\nMaximum error count (%d) exceeded.\n", ASL_MAX_ERROR_COUNT);
+
+        Gbl_SourceLine = 0;
+        Gbl_NextError = Gbl_ErrorLog;
+        CmDoOutputFiles ();
         CmCleanupAndExit ();
     }
 
@@ -547,7 +598,7 @@ AslCommonError (
  *
  * PARAMETERS:  Level               - Seriousness (Warning/error, etc.)
  *              MessageId           - Index into global message buffer
- *              Op                - Parse node where error happened
+ *              Op                  - Parse node where error happened
  *              ExtraMessage        - additional error message
  *
  * RETURN:      None
@@ -585,7 +636,7 @@ AslError (
  *
  * FUNCTION:    AslCompilererror
  *
- * PARAMETERS:  CompilerMessage
+ * PARAMETERS:  CompilerMessage         - Error message from the parser
  *
  * RETURN:      Status?
  *
@@ -599,11 +650,10 @@ AslCompilererror (
     char                    *CompilerMessage)
 {
 
-
     AslCommonError (ASL_ERROR, ASL_MSG_SYNTAX, Gbl_CurrentLineNumber,
                     Gbl_LogicalLineNumber, Gbl_CurrentLineOffset,
                     Gbl_CurrentColumn, Gbl_Files[ASL_FILE_INPUT].Filename,
-                    CompilerMessage /*MsgBuffer*/);
+                    CompilerMessage);
 
     return 0;
 }
