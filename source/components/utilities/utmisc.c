@@ -1,6 +1,6 @@
 
 /******************************************************************************
- * 
+ *
  * Module Name: cmutils - common utility procedures
  *
  *****************************************************************************/
@@ -38,9 +38,9 @@
  * The above copyright and patent license is granted only if the following
  * conditions are met:
  *
- * 3. Conditions 
+ * 3. Conditions
  *
- * 3.1. Redistribution of Source with Rights to Further Distribute Source.  
+ * 3.1. Redistribution of Source with Rights to Further Distribute Source.
  * Redistribution of source code of any substantial portion of the Covered
  * Code or modification with rights to further distribute source must include
  * the above Copyright Notice, the above License, this list of Conditions,
@@ -48,11 +48,11 @@
  * Licensee must cause all Covered Code to which Licensee contributes to
  * contain a file documenting the changes Licensee made to create that Covered
  * Code and the date of any change.  Licensee must include in that file the
- * documentation of any changes made by any predecessor Licensee.  Licensee 
+ * documentation of any changes made by any predecessor Licensee.  Licensee
  * must include a prominent statement that the modification is derived,
  * directly or indirectly, from Original Intel Code.
  *
- * 3.2. Redistribution of Source with no Rights to Further Distribute Source.  
+ * 3.2. Redistribution of Source with no Rights to Further Distribute Source.
  * Redistribution of source code of any substantial portion of the Covered
  * Code or modification without rights to further distribute source must
  * include the following Disclaimer and Export Compliance provision in the
@@ -86,7 +86,7 @@
  * INSTALLATION, TRAINING OR OTHER SERVICES.  INTEL WILL NOT PROVIDE ANY
  * UPDATES, ENHANCEMENTS OR EXTENSIONS.  INTEL SPECIFICALLY DISCLAIMS ANY
  * IMPLIED WARRANTIES OF MERCHANTABILITY, NONINFRINGEMENT AND FITNESS FOR A
- * PARTICULAR PURPOSE. 
+ * PARTICULAR PURPOSE.
  *
  * 4.2. IN NO EVENT SHALL INTEL HAVE ANY LIABILITY TO LICENSEE, ITS LICENSEES
  * OR ANY OTHER THIRD PARTY, FOR ANY LOST PROFITS, LOST DATA, LOSS OF USE OR
@@ -117,13 +117,13 @@
 
 #define __CMUTILS_C__
 
-#include <acpi.h>
-#include <events.h>
-#include <hardware.h>
-#include <namesp.h>
-#include <interp.h>
-#include <amlcode.h>
-#include <debugger.h>
+#include "acpi.h"
+#include "events.h"
+#include "hardware.h"
+#include "namesp.h"
+#include "interp.h"
+#include "amlcode.h"
+#include "debugger.h"
 
 
 #define _COMPONENT          MISCELLANEOUS
@@ -134,7 +134,7 @@
 
 /*****************************************************************************
  *
- * FUNCTION:    CmValidAcpiName
+ * FUNCTION:    AcpiCmValidAcpiName
  *
  * PARAMETERS:  Character           - The character to be examined
  *
@@ -147,18 +147,18 @@
  *
  ****************************************************************************/
 
-BOOLEAN 
-CmValidAcpiName (
+BOOLEAN
+AcpiCmValidAcpiName (
     UINT32                  Name)
 {
     char                    *NamePtr = (char *) &Name;
     UINT32                  i;
 
-    
+
 
     for (i = 0; i < ACPI_NAME_SIZE; i++)
     {
-        if (!((NamePtr[i] == '_') || 
+        if (!((NamePtr[i] == '_') ||
               (NamePtr[i] >= 'A' && NamePtr[i] <= 'Z') ||
               (NamePtr[i] >= '0' && NamePtr[i] <= '9')))
         {
@@ -173,7 +173,7 @@ CmValidAcpiName (
 
 /*****************************************************************************
  *
- * FUNCTION:    CmValidAcpiCharacter
+ * FUNCTION:    AcpiCmValidAcpiCharacter
  *
  * PARAMETERS:  Character           - The character to be examined
  *
@@ -184,14 +184,700 @@ CmValidAcpiName (
  ****************************************************************************/
 
 BOOLEAN
-CmValidAcpiCharacter (
+AcpiCmValidAcpiCharacter (
     char                    Character)
 {
 
-    return ((BOOLEAN)   ((Character == '_') || 
+    return ((BOOLEAN)   ((Character == '_') ||
                         (Character >= 'A' && Character <= 'Z') ||
                         (Character >= '0' && Character <= '9')));
 }
+
+
+
+/*****************************************************************************
+ *
+ * FUNCTION:    AcpiCmMutexInitialize
+ *
+ * PARAMETERS:  None.
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Create the system mutex objects.
+ *
+ ****************************************************************************/
+
+ACPI_STATUS
+AcpiCmMutexInitialize (
+    void)
+{
+    UINT32                  i;
+    ACPI_STATUS             Status;
+
+
+    FUNCTION_TRACE ("CmMutexInitialize");
+
+
+    /*
+     * Create each of the predefined mutex objects
+     */
+    for (i = 0; i < NUM_MTX; i++)
+    {
+        Status = AcpiCmCreateMutex (i);
+        if (ACPI_FAILURE (Status))
+        {
+            return_ACPI_STATUS (Status);
+        }
+    }
+
+    return_ACPI_STATUS (AE_OK);
+}
+
+
+/*****************************************************************************
+ *
+ * FUNCTION:    AcpiCmMutexTerminate
+ *
+ * PARAMETERS:  None.
+ *
+ * RETURN:      None.
+ *
+ * DESCRIPTION: Delete all of the system mutex objects.
+ *
+ ****************************************************************************/
+
+void
+AcpiCmMutexTerminate (
+    void)
+{
+    UINT32                  i;
+
+
+    FUNCTION_TRACE ("CmMutexTerminate");
+
+
+    /*
+     * Delete each predefined mutex object
+     */
+    for (i = 0; i < NUM_MTX; i++)
+    {
+        AcpiCmDeleteMutex (i);
+    }
+
+    return_VOID;
+}
+
+
+/*****************************************************************************
+ *
+ * FUNCTION:    AcpiCmCreateMutex
+ *
+ * PARAMETERS:  MutexID         - ID of the mutex to be created
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Create a mutex object.
+ *
+ ****************************************************************************/
+
+ACPI_STATUS
+AcpiCmCreateMutex (
+    ACPI_MUTEX_HANDLE       MutexId)
+{
+    ACPI_STATUS             Status = AE_OK;
+
+
+    FUNCTION_TRACE_U32 ("CmCreateMutex", MutexId);
+
+
+    if (MutexId > MAX_MTX)
+    {
+        return_ACPI_STATUS (AE_BAD_PARAMETER);
+    }
+
+
+    if (!AcpiGbl_AcpiMutexInfo[MutexId].Mutex)
+    {
+        Status = AcpiOsdCreateSemaphore (1, &AcpiGbl_AcpiMutexInfo[MutexId].Mutex);
+        AcpiGbl_AcpiMutexInfo[MutexId].Locked = FALSE;
+        AcpiGbl_AcpiMutexInfo[MutexId].UseCount = 0;
+    }
+
+    return_ACPI_STATUS (Status);
+}
+
+
+/*****************************************************************************
+ *
+ * FUNCTION:    AcpiCmDeleteMutex
+ *
+ * PARAMETERS:  MutexID         - ID of the mutex to be deleted
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Delete a mutex object.
+ *
+ ****************************************************************************/
+
+ACPI_STATUS
+AcpiCmDeleteMutex (
+    ACPI_MUTEX_HANDLE       MutexId)
+{
+    ACPI_STATUS             Status;
+
+
+    FUNCTION_TRACE_U32 ("CmDeleteMutex", MutexId);
+
+
+    if (MutexId > MAX_MTX)
+    {
+        return_ACPI_STATUS (AE_BAD_PARAMETER);
+    }
+
+
+    Status = AcpiOsdDeleteSemaphore (AcpiGbl_AcpiMutexInfo[MutexId].Mutex);
+
+    AcpiGbl_AcpiMutexInfo[MutexId].Mutex = NULL;
+    AcpiGbl_AcpiMutexInfo[MutexId].Locked = FALSE;
+
+    return_ACPI_STATUS (Status);
+}
+
+
+/*****************************************************************************
+ *
+ * FUNCTION:    AcpiCmAcquireMutex
+ *
+ * PARAMETERS:  MutexID         - ID of the mutex to be acquired
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Acquire a mutex object.
+ *
+ ****************************************************************************/
+
+ACPI_STATUS
+AcpiCmAcquireMutex (
+    ACPI_MUTEX_HANDLE       MutexId)
+{
+    ACPI_STATUS             Status;
+
+
+    DEBUG_PRINT (TRACE_MUTEX, ("Acquiring Mutex [%s]\n", AcpiCmGetMutexName (MutexId)));
+
+    if (MutexId > MAX_MTX)
+    {
+        return (AE_BAD_PARAMETER);
+    }
+
+
+    Status = AcpiOsdWaitSemaphore (AcpiGbl_AcpiMutexInfo[MutexId].Mutex, 1, WAIT_FOREVER);
+
+    DEBUG_PRINT (TRACE_MUTEX, ("Acquired Mutex  [%s] Status %s\n",
+                    AcpiCmGetMutexName (MutexId), AcpiCmFormatException (Status)));
+
+    if (ACPI_SUCCESS (Status))
+    {
+        AcpiGbl_AcpiMutexInfo[MutexId].Locked = TRUE;
+        AcpiGbl_AcpiMutexInfo[MutexId].UseCount++;
+    }
+
+    return (Status);
+}
+
+
+/*****************************************************************************
+ *
+ * FUNCTION:    AcpiCmReleaseMutex
+ *
+ * PARAMETERS:  MutexID         - ID of the mutex to be released
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Release a mutex object.
+ *
+ ****************************************************************************/
+
+ACPI_STATUS
+AcpiCmReleaseMutex (
+    ACPI_MUTEX_HANDLE       MutexId)
+{
+    ACPI_STATUS             Status;
+
+
+    DEBUG_PRINT (TRACE_MUTEX, ("Releasing Mutex [%s]\n", AcpiCmGetMutexName (MutexId)));
+
+    if (MutexId > MAX_MTX)
+    {
+        return (AE_BAD_PARAMETER);
+    }
+
+
+    AcpiGbl_AcpiMutexInfo[MutexId].Locked = FALSE;  /* Mark before unlocking */
+
+    Status = AcpiOsdSignalSemaphore (AcpiGbl_AcpiMutexInfo[MutexId].Mutex, 1);
+
+    DEBUG_PRINT (TRACE_MUTEX, ("Released Mutex  [%s] Status %s\n",
+                    AcpiCmGetMutexName (MutexId), AcpiCmFormatException (Status)));
+
+    return (Status);
+}
+
+
+
+/******************************************************************************
+ *
+ * FUNCTION:    AcpiCmCreateUpdateStateAndPush
+ *
+ * PARAMETERS:  *Object         - Object to be added to the new state
+ *              Action          - Increment/Decrement
+ *              StateList       - List the state will be added to
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Create a new state and push it
+ *
+ ******************************************************************************/
+
+ACPI_STATUS
+AcpiCmCreateUpdateStateAndPush (
+    ACPI_OBJECT_INTERNAL    *Object,
+    UINT16                  Action,
+    ACPI_GENERIC_STATE      **StateList)
+{
+    ACPI_GENERIC_STATE       *State;
+
+
+    /* Ignore null objects; these are expected */
+
+    if (!Object)
+    {
+        return AE_OK;
+    }
+
+    State = AcpiCmCreateUpdateState (Object, Action);
+    if (!State)
+    {
+        return AE_NO_MEMORY;
+    }
+
+
+    AcpiCmPushGenericState (StateList, State);
+    return AE_OK;
+}
+
+
+/******************************************************************************
+ *
+ * FUNCTION:    AcpiCmPushGenericState
+ *
+ * PARAMETERS:  ListHead            - Head of the state stack
+ *              State               - State object to push
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Push a state object onto a state stack
+ *
+ ******************************************************************************/
+
+void
+AcpiCmPushGenericState (
+    ACPI_GENERIC_STATE      **ListHead,
+    ACPI_GENERIC_STATE      *State)
+{
+    FUNCTION_TRACE ("CmPushGenericState");
+
+    /* Push the state object onto the front of the list (stack) */
+
+    State->Common.Next = *ListHead;
+    *ListHead = State;
+
+    return_VOID;
+}
+
+
+/******************************************************************************
+ *
+ * FUNCTION:    AcpiCmPopGenericState
+ *
+ * PARAMETERS:  ListHead            - Head of the state stack
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Pop a state object from a state stack
+ *
+ ******************************************************************************/
+
+ACPI_GENERIC_STATE *
+AcpiCmPopGenericState (
+    ACPI_GENERIC_STATE      **ListHead)
+{
+    ACPI_GENERIC_STATE      *State;
+
+
+    FUNCTION_TRACE ("DsPopGenericState");
+
+
+    /* Remove the state object at the head of the list (stack) */
+
+    State = *ListHead;
+    if (State)
+    {
+        /* Update the list head */
+
+        *ListHead = State->Common.Next;
+    }
+
+    return_PTR (State);
+}
+
+
+/******************************************************************************
+ *
+ * FUNCTION:    AcpiCmCreateGenericState
+ *
+ * PARAMETERS:  None
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Create a generic state object.  Attempt to obtain one from
+ *              the global state cache;  If none available, create a new one.
+ *
+ ******************************************************************************/
+
+ACPI_GENERIC_STATE *
+AcpiCmCreateGenericState (void)
+{
+    ACPI_GENERIC_STATE      *State;
+
+
+    AcpiCmAcquireMutex (MTX_CACHES);
+
+    AcpiGbl_StateCacheRequests++;
+
+    /* Check the cache first */
+
+    if (AcpiGbl_GenericStateCache)
+    {
+        /* There is an object available, use it */
+
+        State = AcpiGbl_GenericStateCache;
+        AcpiGbl_GenericStateCache = State->Common.Next;
+        State->Common.Next = NULL;
+
+        AcpiGbl_StateCacheHits++;
+        AcpiGbl_GenericStateCacheDepth--;
+
+        AcpiCmReleaseMutex (MTX_CACHES);
+    }
+
+    else
+    {
+        /* The cache is empty, create a new object */
+
+        AcpiCmReleaseMutex (MTX_CACHES);
+
+        State = AcpiCmCallocate (sizeof (ACPI_GENERIC_STATE));
+    }
+
+    /* Initialize */
+
+    if (State)
+    {
+        State->Common.DataType = DESC_TYPE_STATE;
+    }
+
+    return State;
+}
+
+
+/******************************************************************************
+ *
+ * FUNCTION:    AcpiCmCreateUpdateState
+ *
+ * PARAMETERS:  Object              - Initial Object to be installed in the state
+ *              Action              - Update action to be performed
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Create an "Update State" - a flavor of the generic state used
+ *              to update reference counts and delete complex objects such
+ *              as packages.
+ *
+ ******************************************************************************/
+
+ACPI_GENERIC_STATE *
+AcpiCmCreateUpdateState (
+    ACPI_OBJECT_INTERNAL    *Object,
+    UINT16                  Action)
+{
+    ACPI_GENERIC_STATE      *State;
+
+
+    FUNCTION_TRACE_PTR ("CmCreateUpdateState", Object);
+
+
+    /* Create the generic state object */
+
+    State = AcpiCmCreateGenericState ();
+    if (!State)
+    {
+        return NULL;
+    }
+
+    /* Init fields specific to the update struct */
+
+    State->Update.Object = Object;
+    State->Update.Value  = Action;
+
+    return_PTR (State);
+}
+
+
+/******************************************************************************
+ *
+ * FUNCTION:    AcpiCmCreateControlState
+ *
+ * PARAMETERS:  None
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Create a "Control State" - a flavor of the generic state used
+ *              to support nested IF/WHILE constructs in the AML.
+ *
+ ******************************************************************************/
+
+ACPI_GENERIC_STATE *
+AcpiCmCreateControlState (
+    void)
+{
+    ACPI_GENERIC_STATE      *State;
+
+
+    FUNCTION_TRACE ("CmCreateControlState");
+
+    /* Create the generic state object */
+
+    State = AcpiCmCreateGenericState ();
+    if (!State)
+    {
+        return NULL;
+    }
+
+
+    /* Init fields specific to the control struct */
+
+    State->Common.State = CONTROL_CONDITIONAL_EXECUTING;
+
+    return_PTR (State);
+}
+
+
+/******************************************************************************
+ *
+ * FUNCTION:    AcpiCmDeleteGenericState
+ *
+ * PARAMETERS:  State               - The state object to be deleted
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Put a state object back into the global state cache.  The object
+ *              is not actually freed at this time.
+ *
+ ******************************************************************************/
+
+void
+AcpiCmDeleteGenericState (
+    ACPI_GENERIC_STATE      *State)
+{
+    FUNCTION_TRACE ("CmDeleteGenericState");
+
+
+    /* If cache is full, just free this state object */
+
+    if (AcpiGbl_GenericStateCacheDepth >= MAX_STATE_CACHE_DEPTH)
+    {
+        AcpiCmFree (State);
+    }
+
+    /* Otherwise put this object back into the cache */
+
+    else
+    {
+        AcpiCmAcquireMutex (MTX_CACHES);
+
+        /* Clear the state */
+
+        MEMSET (State, 0, sizeof (ACPI_GENERIC_STATE));
+        State->Common.DataType = DESC_TYPE_STATE;
+
+        /* Put the object at the head of the global cache list */
+
+        State->Common.Next = AcpiGbl_GenericStateCache;
+        AcpiGbl_GenericStateCache = State;
+        AcpiGbl_GenericStateCacheDepth++;
+
+
+        AcpiCmReleaseMutex (MTX_CACHES);
+    }
+    return_VOID;
+}
+
+
+/******************************************************************************
+ *
+ * FUNCTION:    AcpiCmDeleteGenericStateCache
+ *
+ * PARAMETERS:  None
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Purge the global state object cache.  Used during subsystem
+ *              termination.
+ *
+ ******************************************************************************/
+
+void
+AcpiCmDeleteGenericStateCache (
+    void)
+{
+    ACPI_GENERIC_STATE      *Next;
+
+
+    FUNCTION_TRACE ("CmDeleteGenericStateCache");
+
+
+    /* Traverse the global cache list */
+
+    while (AcpiGbl_GenericStateCache)
+    {
+        /* Delete one cached state object */
+
+        Next = AcpiGbl_GenericStateCache->Common.Next;
+        AcpiCmFree (AcpiGbl_GenericStateCache);
+        AcpiGbl_GenericStateCache = Next;
+    }
+
+    return_VOID;
+}
+ 
+
+/*****************************************************************************
+ *
+ * FUNCTION:    _ReportError
+ *
+ * PARAMETERS:  ModuleName          - Caller's module name (for error output)
+ *              LineNumber          - Caller's line number (for error output)
+ *              ComponentId         - Caller's component ID (for error output)
+ *              Message             - Error message to use on failure
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Print error message from KD table
+ *
+ ****************************************************************************/
+
+void
+_ReportError (
+    char                    *ModuleName,
+    INT32                   LineNumber,
+    INT32                   ComponentId,
+    char                    *Message)
+{
+
+    DebugPrint (ModuleName, LineNumber, ComponentId, ACPI_ERROR,
+                "*** Error: %s\n", Message);
+
+}
+
+
+/*****************************************************************************
+ *
+ * FUNCTION:    _ReportWarning
+ *
+ * PARAMETERS:  ModuleName          - Caller's module name (for error output)
+ *              LineNumber          - Caller's line number (for error output)
+ *              ComponentId         - Caller's component ID (for error output)
+ *              Message             - Error message to use on failure
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Print warning message from KD table
+ *
+ ****************************************************************************/
+
+void
+_ReportWarning (
+    char                    *ModuleName,
+    INT32                   LineNumber,
+    INT32                   ComponentId,
+    char                    *Message)
+{
+
+    DebugPrint (ModuleName, LineNumber, ComponentId, ACPI_WARN,
+                "*** Warning: %s\n", Message);
+
+}
+
+
+/*****************************************************************************
+ *
+ * FUNCTION:    _ReportSuccess
+ *
+ * PARAMETERS:  ModuleName          - Caller's module name (for error output)
+ *              LineNumber          - Caller's line number (for error output)
+ *              ComponentId         - Caller's component ID (for error output)
+ *              Message             - Error message to use on failure
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Print warning message from KD table
+ *
+ ****************************************************************************/
+
+void
+_ReportSuccess (
+    char                    *ModuleName,
+    INT32                   LineNumber,
+    INT32                   ComponentId,
+    char                    *Message)
+{
+
+    DebugPrint (ModuleName, LineNumber, ComponentId, ACPI_OK,
+                "*** Success: %s\n", Message);
+}
+
+
+/*****************************************************************************
+ *
+ * FUNCTION:    _ReportInfo
+ *
+ * PARAMETERS:  ModuleName          - Caller's module name (for error output)
+ *              LineNumber          - Caller's line number (for error output)
+ *              ComponentId         - Caller's component ID (for error output)
+ *              Message             - Error message to use on failure
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Print information message from KD table
+ *
+ ****************************************************************************/
+
+void
+_ReportInfo (
+    char                    *ModuleName,
+    INT32                   LineNumber,
+    INT32                   ComponentId,
+    char                    *Message)
+{
+
+    DebugPrint (ModuleName, LineNumber, ComponentId, ACPI_INFO,
+                "*** Info: %s\n", Message);
+
+}
+
+
+
 
 
 
