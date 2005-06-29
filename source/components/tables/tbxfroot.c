@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: tbxfroot - Find the root ACPI table (RSDT)
- *              $Revision: 1.79 $
+ *              $Revision: 1.80 $
  *
  *****************************************************************************/
 
@@ -192,8 +192,10 @@ AcpiTbFindTable (
 
     /* Check OemId and OemTableId */
 
-    if ((OemId[0]      && ACPI_STRCMP (OemId, Table->OemId)) ||
-        (OemTableId[0] && ACPI_STRCMP (OemTableId, Table->OemTableId)))
+    if ((OemId[0]      && ACPI_STRNCMP (
+                            OemId, Table->OemId, sizeof (Table->OemId))) ||
+        (OemTableId[0] && ACPI_STRNCMP (
+                            OemTableId, Table->OemTableId, sizeof (Table->OemTableId))))
     {
         return_ACPI_STATUS (AE_AML_NAME_NOT_FOUND);
     }
