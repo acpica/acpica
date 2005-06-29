@@ -120,8 +120,8 @@
 #include <acpi.h>
 #include <amlcode.h>
 #include <parser.h>
-#include <interpreter.h>
-#include <namespace.h>
+#include <interp.h>
+#include <namesp.h>
 
 
 #define _COMPONENT          PARSER
@@ -222,7 +222,7 @@ PsxExecEndOp (
     ACPI_GENERIC_OP         *NextOp;
     NAME_TABLE_ENTRY        *Entry;
     ACPI_GENERIC_OP         *FirstArg;
-//    ACPI_OBJECT_INTERNAL    **StartOfOperands;
+    ACPI_OBJECT_INTERNAL    *ResultObj = NULL;
     ACPI_OP_INFO            *OpInfo;
     UINT32                  OperandIndex;
 
@@ -244,7 +244,11 @@ PsxExecEndOp (
 
     Optype = OpInfo->Type;
     FirstArg = Op->Value.Arg;
+
+    /* Init the walk state */
+
     WalkState->NumOperands = 0;
+    WalkState->ReturnDesc = NULL;
 
 
     /* Decode the opcode */
@@ -309,7 +313,11 @@ PsxExecEndOp (
 
             /* 1 Operand, 0 ExternalResult, 1 InternalResult */
 
-            Status = AmlExecMonadic2 (Opcode, &WalkState->Operands [OperandIndex], (ACPI_OBJECT_INTERNAL **) &Op->ResultObj);
+            Status = AmlExecMonadic2 (Opcode, &WalkState->Operands [OperandIndex], &ResultObj);
+            if (ACPI_SUCCESS (Status))
+            {
+                PsxResultStackPush (ResultObj, WalkState);
+            }
 
             break;
 
@@ -318,7 +326,11 @@ PsxExecEndOp (
 
             /* 1 Operand, 1 ExternalResult, 1 InternalResult */
 
-            Status = AmlExecMonadic2R (Opcode, &WalkState->Operands [OperandIndex], (ACPI_OBJECT_INTERNAL **) &Op->ResultObj);
+            Status = AmlExecMonadic2R (Opcode, &WalkState->Operands [OperandIndex], &ResultObj);
+            if (ACPI_SUCCESS (Status))
+            {
+                PsxResultStackPush (ResultObj, WalkState);
+            }
 
             break;
 
@@ -335,8 +347,12 @@ PsxExecEndOp (
         case OPTYPE_DYADIC2:
 
             /* 2 Operands, 0 ExternalResult, 1 InternalResult */
-BREAKPOINT3;
-            Status = AmlExecDyadic2 (Opcode, &WalkState->Operands [OperandIndex], (ACPI_OBJECT_INTERNAL **) &Op->ResultObj);
+
+            Status = AmlExecDyadic2 (Opcode, &WalkState->Operands [OperandIndex], &ResultObj);
+            if (ACPI_SUCCESS (Status))
+            {
+                PsxResultStackPush (ResultObj, WalkState);
+            }
 
             break;
 
@@ -345,7 +361,11 @@ BREAKPOINT3;
 
             /* 2 Operands, 1 or 2 ExternalResults, 1 InternalResult */
 
-            Status = AmlExecDyadic2R (Opcode, &WalkState->Operands [OperandIndex], (ACPI_OBJECT_INTERNAL **) &Op->ResultObj);
+            Status = AmlExecDyadic2R (Opcode, &WalkState->Operands [OperandIndex], &ResultObj);
+            if (ACPI_SUCCESS (Status))
+            {
+                PsxResultStackPush (ResultObj, WalkState);
+            }
 
             break;
 
@@ -354,7 +374,11 @@ BREAKPOINT3;
 
             /* 2 Operands, 0 ExternalResult, 1 InternalResult */
 
-            Status = AmlExecDyadic2S (Opcode, &WalkState->Operands [OperandIndex], (ACPI_OBJECT_INTERNAL **) &Op->ResultObj);
+            Status = AmlExecDyadic2S (Opcode, &WalkState->Operands [OperandIndex], &ResultObj);
+            if (ACPI_SUCCESS (Status))
+            {
+                PsxResultStackPush (ResultObj, WalkState);
+            }
 
             break;
 
@@ -380,7 +404,11 @@ BREAKPOINT3;
 
             /* 3 Operands, 1 ExternalResult, 1 InternalResult */
 
-            Status = AmlExecIndex (&WalkState->Operands [OperandIndex], (ACPI_OBJECT_INTERNAL **) &Op->ResultObj);
+            Status = AmlExecIndex (&WalkState->Operands [OperandIndex], &ResultObj);
+            if (ACPI_SUCCESS (Status))
+            {
+                PsxResultStackPush (ResultObj, WalkState);
+            }
 
             break;
 
@@ -389,7 +417,8 @@ BREAKPOINT3;
 
             /* 6 Operands, 0 ExternalResult, 1 InternalResult */
 
-            Status = AmlExecMatch (&WalkState->Operands [OperandIndex], (ACPI_OBJECT_INTERNAL **) &Op->ResultObj);
+            Status = AmlExecMatch (&WalkState->Operands [OperandIndex], &ResultObj);
+            PsxResultStackPush (ResultObj, WalkState);
 
             break;
         }
@@ -430,6 +459,17 @@ BREAKPOINT3;
             break;
         }
 
+        /*
+         * Since the operands will be passed to another control method, we must
+         * resolve all local references here (Local variables, arguments to *this* method, etc.)
+         */
+
+        Status = PsxResolveOperands (WalkState);
+        if (ACPI_FAILURE (Status))
+        {
+            break;
+        }
+
         /* Open new scope on the scope stack */
 
         Status = NsScopeStackPushEntry (Entry);
@@ -444,14 +484,15 @@ BREAKPOINT3;
         Status = AE_PENDING;
 
         /* Return now; we don't want to disturb anything, especially the operand count! */
+
         return_ACPI_STATUS (Status);
         break;
 
 
     case OPTYPE_RECONFIGURATION:
 
-        DEBUG_PRINT (ACPI_ERROR, ("EndOp: Unimplemented reconfig opcode Op=%X\n",
-                        Op));
+        DEBUG_PRINT (ACPI_ERROR, ("EndOp: Unimplemented reconfig opcode=%X Op=%X\n",
+                        Op->Opcode, Op));
 
         Status = AE_NOT_IMPLEMENTED;
         break;
@@ -508,7 +549,11 @@ BREAKPOINT3;
 
 /* TBD: REDO now that we have the resultobj mechanism */
 
-        ObjDesc = Op->ResultObj;
+        Status = PsxResultStackPop (&ObjDesc, WalkState);
+        if (ACPI_FAILURE (Status))
+        {
+            goto Cleanup;
+        }
 
         if ((!ObjDesc) ||
             (ObjDesc->Common.Type != ACPI_TYPE_Number))
@@ -537,10 +582,10 @@ BREAKPOINT3;
         DEBUG_PRINT (TRACE_EXEC, ("EndOp: Completed a predicate eval=%X Op=%X\n",
                         WalkState->ControlState->Predicate, Op));
 
-        /* Delete the predicate object (we know that we don't need it anymore) and cleanup the stack */
+        /* Delete the predicate result object (we know that we don't need it anymore) and cleanup the stack */
 
-        CmDeleteInternalObject (Op->ResultObj);
-        Op->ResultObj = NULL;
+        CmDeleteInternalObject (ObjDesc);
+        ResultObj = NULL;
 
         PsxObjStackPop (1, WalkState);
 
@@ -550,12 +595,12 @@ BREAKPOINT3;
 
 Cleanup:
 
-    if (Op->ResultObj)
+    if (ResultObj)
     {
-        /* TBD: Delete the result op IFF:
+        /* Delete the result op IFF:
          * Parent will not use the result -- such as any non-nested type2 op in a method (parent will be method)
          */
-        PsxSaveOrDeleteResult (Op);
+        PsxDeleteResultIfNotUsed (Op, ResultObj, WalkState);
     }
 
     /* Always clear the object stack */
