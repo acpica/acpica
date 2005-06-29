@@ -416,9 +416,12 @@ CmInitGlobals (ACPI_INIT_DATA *InitData)
 
     if (InitData)
     {
-        MEMCPY(&Gbl_AcpiInitData, InitData, sizeof (ACPI_INIT_DATA));
-    } else {
-        MEMSET(&Gbl_AcpiInitData, 0, sizeof (ACPI_INIT_DATA));
+        MEMCPY (&Gbl_AcpiInitData, InitData, sizeof (ACPI_INIT_DATA));
+    } 
+
+    else 
+    {
+        MEMSET (&Gbl_AcpiInitData, 0, sizeof (ACPI_INIT_DATA));
     }
 
     /* ACPI table structure */
@@ -459,13 +462,20 @@ CmInitGlobals (ACPI_INIT_DATA *InitData)
     Gbl_SBST                    = NULL;
 
 
+    /* Global Lock support */
+
+    Gbl_GlobalLockAcquired      = FALSE;
+    Gbl_GlobalLockThreadCount   = 0;
+
     /* Miscellaneous variables */
     
     Gbl_SystemFlags             = 0;
     Gbl_StartupFlags            = 0;
     Gbl_GlobalLockSet           = FALSE;
     Gbl_RsdpOriginalLocation    = 0;
-    
+    Gbl_WhenToParseMethods      = METHOD_PARSE_AT_INIT;
+    Gbl_CmSingleStep            = FALSE;
+
     /* Stack pointers */
 
     Gbl_CurrentScope            = NULL;
