@@ -370,6 +370,7 @@ AmlExecStore (
             DeleteDestDesc = DestDesc;
             break;
 
+
         case TYPE_BankField:
 
             /* 
@@ -401,6 +402,13 @@ AmlExecStore (
                  */
 
                 DeleteDestDesc = DestDesc;
+                if (Stacked)
+                {
+                    /* Must clear the top of the stack or it will get deleted twice */
+
+                    ObjStack[ObjStackTop] = NULL;
+                }
+
                 DestDesc = NsGetValue (TempHandle);
                 if (!DestDesc)
                 {
@@ -481,6 +489,13 @@ AmlExecStore (
                  */
 
                 DeleteDestDesc = DestDesc;
+                if (Stacked)
+                {
+                    /* Must clear the top of the stack or it will get deleted twice */
+
+                    ObjStack[ObjStackTop] = NULL;
+                }
+
                 DestDesc = NsGetValue (TempHandle);
                 if (!DestDesc)
                 {
@@ -544,6 +559,13 @@ AmlExecStore (
                  */
 
                 DeleteDestDesc = DestDesc;
+                if (Stacked)
+                {
+                    /* Must clear the top of the stack or it will get deleted twice */
+
+                    ObjStack[ObjStackTop] = NULL;
+                }
+
                 DestDesc = NsGetValue (TempHandle);
                 if (!DestDesc)
                 {
@@ -621,6 +643,13 @@ AmlExecStore (
                  */
 
                 DeleteDestDesc = DestDesc;
+                if (Stacked)
+                {
+                    /* Must clear the top of the stack or it will get deleted twice */
+
+                    ObjStack[ObjStackTop] = NULL;
+                }
+
                 DestDesc = NsGetValue (TempHandle);
                 if (!DestDesc)
                 {
