@@ -157,7 +157,7 @@ NsAttachObject (
     FUNCTION_TRACE ("NsAttachObject");
 
 
-    if (!RootObject->Scope)
+    if (!Gbl_RootObject->Scope)
     {
         /* Name space not initialized  */
 
@@ -181,7 +181,8 @@ NsAttachObject (
         return_ACPI_STATUS (AE_BAD_PARAMETER);
     }
     
-    if (!IS_NS_HANDLE (handle))
+    if (!IS_NS_HANDLE (handle) &&
+        (ThisEntry != Gbl_RootObject))
     {
         /* Not a name handle */
 
@@ -400,7 +401,7 @@ NsAttachMethod (
 
     /* Parameter validation */
 
-    if (!RootObject->Scope)
+    if (!Gbl_RootObject->Scope)
     {
         /* Name space uninitialized */
 
@@ -651,7 +652,7 @@ NsFindAttachedObject (
         return_VALUE (NULL);
     }
 
-    if (!RootObject->Scope)
+    if (!Gbl_RootObject->Scope)
     {
         /* 
          * If the name space has not been initialized,
@@ -662,7 +663,7 @@ NsFindAttachedObject (
 
     if (NS_ALL == StartHandle)
     {
-        StartHandle = RootObject;
+        StartHandle = Gbl_RootObject;
     }
     
     else
