@@ -1,7 +1,7 @@
 
 /******************************************************************************
- * 
- * Name: macros.h - C macros for the entire subsystem.
+ *
+ * Name: acmacros.h - C macros for the entire subsystem.
  *
  *****************************************************************************/
 
@@ -38,9 +38,9 @@
  * The above copyright and patent license is granted only if the following
  * conditions are met:
  *
- * 3. Conditions 
+ * 3. Conditions
  *
- * 3.1. Redistribution of Source with Rights to Further Distribute Source.  
+ * 3.1. Redistribution of Source with Rights to Further Distribute Source.
  * Redistribution of source code of any substantial portion of the Covered
  * Code or modification with rights to further distribute source must include
  * the above Copyright Notice, the above License, this list of Conditions,
@@ -48,11 +48,11 @@
  * Licensee must cause all Covered Code to which Licensee contributes to
  * contain a file documenting the changes Licensee made to create that Covered
  * Code and the date of any change.  Licensee must include in that file the
- * documentation of any changes made by any predecessor Licensee.  Licensee 
+ * documentation of any changes made by any predecessor Licensee.  Licensee
  * must include a prominent statement that the modification is derived,
  * directly or indirectly, from Original Intel Code.
  *
- * 3.2. Redistribution of Source with no Rights to Further Distribute Source.  
+ * 3.2. Redistribution of Source with no Rights to Further Distribute Source.
  * Redistribution of source code of any substantial portion of the Covered
  * Code or modification without rights to further distribute source must
  * include the following Disclaimer and Export Compliance provision in the
@@ -86,7 +86,7 @@
  * INSTALLATION, TRAINING OR OTHER SERVICES.  INTEL WILL NOT PROVIDE ANY
  * UPDATES, ENHANCEMENTS OR EXTENSIONS.  INTEL SPECIFICALLY DISCLAIMS ANY
  * IMPLIED WARRANTIES OF MERCHANTABILITY, NONINFRINGEMENT AND FITNESS FOR A
- * PARTICULAR PURPOSE. 
+ * PARTICULAR PURPOSE.
  *
  * 4.2. IN NO EVENT SHALL INTEL HAVE ANY LIABILITY TO LICENSEE, ITS LICENSEES
  * OR ANY OTHER THIRD PARTY, FOR ANY LOST PROFITS, LOST DATA, LOSS OF USE OR
@@ -114,11 +114,11 @@
  *
  *****************************************************************************/
 
-#ifndef __MACROS_H__
-#define __MACROS_H__
+#ifndef __ACMACROS_H__
+#define __ACMACROS_H__
 
-/* 
- * Data manipulation macros 
+/*
+ * Data manipulation macros
  */
 
 #ifndef LOWORD
@@ -127,7 +127,7 @@
 
 #ifndef HIWORD
 #define HIWORD(l)                       ((UINT16)((((NATIVE_UINT)(l)) >> 16) & 0xFFFF))
-#endif  
+#endif
 
 #ifndef LOBYTE
 #define LOBYTE(l)                       ((UINT8)(UINT16)(l))
@@ -154,7 +154,7 @@
 #define HI_LIMIT(b)                     ((UINT8) (((b) & 0x00FF0000) >> 16))
 
 
- /* 
+ /*
   * Extract a byte of data using a pointer.  Any more than a byte and we
   * get into potential aligment issues -- see the STORE macros below
   */
@@ -167,13 +167,13 @@
  * Otherwise, we have to move one byte at a time.
  */
 
-//#define _HW_ALIGNMENT_SUPPORT
 #ifdef _HW_ALIGNMENT_SUPPORT
 
 /* The hardware supports unaligned transfers, just do the move */
 
-#define STORE16(d,s)                    *(UINT16*)(d) = *(UINT16*)(s)
-#define STORE32(d,s)                    *(UINT32*)(d) = *(UINT32*)(s)
+#define MOVE_UNALIGNED16_TO_16(d,s)     *(UINT16*)(d) = *(UINT16*)(s)
+#define MOVE_UNALIGNED32_TO_32(d,s)     *(UINT32*)(d) = *(UINT32*)(s)
+#define MOVE_UNALIGNED16_TO_32(d,s)     *(UINT32*)(d) = *(UINT16*)(s)
 
 #else
 /*
@@ -182,31 +182,26 @@
  * the destination (or both) is/are unaligned.
  */
 
-#define STORE16(d,s)                    {((char *)(d))[0] = ((char *)(s))[0];\
-                                         ((char *)(d))[1] = ((char *)(s))[1];}
+#define MOVE_UNALIGNED16_TO_16(d,s)     {((UINT8 *)(d))[0] = ((UINT8 *)(s))[0];\
+                                         ((UINT8 *)(d))[1] = ((UINT8 *)(s))[1];}
 
-#define STORE32(d,s)                    {((char *)(d))[0] = ((char *)(s))[0];\
-                                         ((char *)(d))[1] = ((char *)(s))[1];\
-                                         ((char *)(d))[2] = ((char *)(s))[2];\
-                                         ((char *)(d))[3] = ((char *)(s))[3];}
+#define MOVE_UNALIGNED32_TO_32(d,s)     {((UINT8 *)(d))[0] = ((UINT8 *)(s))[0];\
+                                         ((UINT8 *)(d))[1] = ((UINT8 *)(s))[1];\
+                                         ((UINT8 *)(d))[2] = ((UINT8 *)(s))[2];\
+                                         ((UINT8 *)(d))[3] = ((UINT8 *)(s))[3];}
+
+#define MOVE_UNALIGNED16_TO_32(d,s)     {(*(UINT32*)(d)) = 0; MOVE_UNALIGNED16_TO_16(d,s);}
 
 #endif
-
-/* Helper macros */
-
-#define STORE16TO16(d,s)                STORE16(d,s)
-#define STORE16TO32(d,s)                {(*(UINT32*)(d)) = 0; STORE16(d,s);}
-#define STORE32TO32(d,s)                STORE32(d,s)
-
 
 
 /*
  * Fast power-of-two math macros for non-optimized compilers
  */
 
-#define _DIV(value,PowerOf2)            ((value) >> (PowerOf2))
-#define _MUL(value,PowerOf2)            ((value) << (PowerOf2))
-#define _MOD(value,Divisor)             ((value) & ((Divisor) -1))
+#define _DIV(value,PowerOf2)            ((UINT32) ((value) >> (PowerOf2)))
+#define _MUL(value,PowerOf2)            ((UINT32) ((value) << (PowerOf2)))
+#define _MOD(value,Divisor)             ((UINT32) ((value) & ((Divisor) -1)))
 
 #define DIV_2(a)                        _DIV(a,1)
 #define MUL_2(a)                        _MUL(a,1)
@@ -244,35 +239,28 @@
 #endif
 
 
-/* 
- * An ACPI_HANDLE (which is actually an NAME_TABLE_ENTRY *) can appear in some contexts,
+/*
+ * An ACPI_HANDLE (which is actually an ACPI_NAMED_OBJECT*) can appear in some contexts,
  * such as on apObjStack, where a pointer to an ACPI_OBJECT_INTERNAL can also
  * appear.  This macro is used to distinguish them.
  *
  * The DataType field is the first field in both structures.
  */
 
-#define VALID_DESCRIPTOR_TYPE(d,t)      (((NAME_TABLE_ENTRY *)d)->DataType == t)
+#define VALID_DESCRIPTOR_TYPE(d,t)      (((ACPI_NAMED_OBJECT*)d)->DataType == t)
 
 
 /* Macro to test the object type */
 
 #define IS_THIS_OBJECT_TYPE(d,t)        (((ACPI_OBJECT_INTERNAL *)d)->Common.Type == (UINT8)t)
 
+/* Macro to check the table flags for SINGLE or MULTIPLE tables are allowed */
 
-/* 
- * There is an (nte *) prefix to each name table, containing either a NULL 
- * pointer or the address of the next array of nte's in the scope.
- *
- * This macro extracts a pointer to the NEXT table in the chain.
- */
-#define NEXTSEG(NameTbl)                ((NAME_TABLE_ENTRY **)NameTbl)[-1]
+#define IS_SINGLE_TABLE(x)              (((x) & 0x01) == ACPI_TABLE_SINGLE ? 1 : 0)
 
-
-
-/* 
+/*
  * Macro to check if a pointer is within an ACPI table.
- * Parameter (a) is the pointer to check.  Parameter (b) must be defined 
+ * Parameter (a) is the pointer to check.  Parameter (b) must be defined
  * as a pointer to an ACPI_TABLE_HEADER.  (b+1) then points past the header,
  * and ((UINT8 *)b+b->Length) points one byte past the end of the table.
  */
@@ -292,9 +280,9 @@
  */
 
 #ifdef ACPI_DEBUG
-#define OP_INFO_ENTRY(Opcode,Flags,Name,PArgs,IArgs)     {Opcode,Flags,PArgs,IArgs,Name}
+#define OP_INFO_ENTRY(Flags,Name,PArgs,IArgs)     {Flags,PArgs,IArgs,Name}
 #else
-#define OP_INFO_ENTRY(Opcode,Flags,Name,PArgs,IArgs)     {Opcode,Flags,PArgs,IArgs}
+#define OP_INFO_ENTRY(Flags,Name,PArgs,IArgs)     {Flags,PArgs,IArgs}
 #endif
 
 #define ARG_TYPE_WIDTH                  5
@@ -323,10 +311,6 @@
 #define INCREMENT_ARG_LIST(List)        (List >>= ARG_TYPE_WIDTH)
 
 
-
-
-
-
 /*
  * Reporting macros that are never compiled out
  */
@@ -342,14 +326,12 @@
 #define REPORT_INFO(a)                  _ReportInfo(_THIS_MODULE,__LINE__,_COMPONENT,a)
 #define REPORT_ERROR(a)                 _ReportError(_THIS_MODULE,__LINE__,_COMPONENT,a)
 #define REPORT_WARNING(a)               _ReportWarning(_THIS_MODULE,__LINE__,_COMPONENT,a)
-#define REPORT_SUCCESS(a)               _ReportSuccess(_THIS_MODULE,__LINE__,_COMPONENT,a)
 
 #else
 
 #define REPORT_INFO(a)                  _ReportInfo("",__LINE__,_COMPONENT,a)
 #define REPORT_ERROR(a)                 _ReportError("",__LINE__,_COMPONENT,a)
 #define REPORT_WARNING(a)               _ReportWarning("",__LINE__,_COMPONENT,a)
-#define REPORT_SUCCESS(a)               _ReportSuccess("",__LINE__,_COMPONENT,a)
 
 #endif
 
@@ -361,7 +343,7 @@
 
 /* Buffer dump macros */
 
-#define DUMP_BUFFER(a,b)                AcpiCmDumpBuffer((char *)a,b,DB_BYTE_DISPLAY,_COMPONENT)
+#define DUMP_BUFFER(a,b)                AcpiCmDumpBuffer((UINT8 *)a,b,DB_BYTE_DISPLAY,_COMPONENT)
 
 /*
  * Debug macros that are conditionally compiled
@@ -371,8 +353,8 @@
 
 #define MODULE_NAME(name)               static char *_THIS_MODULE = name
 
-/* 
- * Function entry tracing. 
+/*
+ * Function entry tracing.
  * The first parameter should be the procedure name as a quoted string.  This is declared
  * as a local string ("_ProcName) so that it can be also used by the function exit macros below.
  */
@@ -384,10 +366,10 @@
 #define FUNCTION_TRACE_U32(a,b)         char * _ProcName = a;\
                                         FunctionTraceU32(_THIS_MODULE,__LINE__,_COMPONENT,a,(UINT32)b)
 #define FUNCTION_TRACE_STR(a,b)         char * _ProcName = a;\
-                                        FunctionTraceStr(_THIS_MODULE,__LINE__,_COMPONENT,a,(char *)b)
-/* 
- * Function exit tracing. 
- * WARNING: These macros include a return statement.  This is usually considered 
+                                        FunctionTraceStr(_THIS_MODULE,__LINE__,_COMPONENT,a,(NATIVE_CHAR *)b)
+/*
+ * Function exit tracing.
+ * WARNING: These macros include a return statement.  This is usually considered
  * bad form, but having a separate exit macro is very ugly and difficult to maintain.
  * One of the FUNCTION_TRACE macros above must be used in conjunction with these macros
  * so that "_ProcName" is defined.
@@ -395,7 +377,7 @@
 #define return_VOID                     {FunctionExit(_THIS_MODULE,__LINE__,_COMPONENT,_ProcName);return;}
 #define return_ACPI_STATUS(s)           {FunctionStatusExit(_THIS_MODULE,__LINE__,_COMPONENT,_ProcName,s);return(s);}
 #define return_VALUE(s)                 {FunctionValueExit(_THIS_MODULE,__LINE__,_COMPONENT,_ProcName,(NATIVE_UINT)s);return(s);}
-#define return_PTR(s)                   {FunctionPtrExit(_THIS_MODULE,__LINE__,_COMPONENT,_ProcName,(char *)s);return(s);}
+#define return_PTR(s)                   {FunctionPtrExit(_THIS_MODULE,__LINE__,_COMPONENT,_ProcName,(UINT8 *)s);return(s);}
 
 
 /* Conditional execution */
@@ -416,7 +398,7 @@
 #define DUMP_ENTRY(a,b)                 AcpiNsDumpEntry (a,b)
 #define DUMP_TABLES(a,b)                AcpiNsDumpTables(a,b)
 #define DUMP_PATHNAME(a,b,c,d)          AcpiNsDumpPathname(a,b,c,d)
-#define BREAK_MSG(a)                    AcpiOsdBreakpoint (a)
+#define BREAK_MSG(a)                    AcpiOsBreakpoint (a)
 
 /*
  * Generate INT3 on ACPI_ERROR (Debug only!)
@@ -424,13 +406,13 @@
 
 #define ERROR_BREAK
 #ifdef  ERROR_BREAK
-#define BREAK_ON_ERROR(lvl)             if ((lvl)&ACPI_ERROR) AcpiOsdBreakpoint("Fatal error encountered\n")
+#define BREAK_ON_ERROR(lvl)             if ((lvl)&ACPI_ERROR) AcpiOsBreakpoint("Fatal error encountered\n")
 #else
-#define BREAK_ON_ERROR(lvl) 
+#define BREAK_ON_ERROR(lvl)
 #endif
 
-/* 
- * Master debug print macros 
+/*
+ * Master debug print macros
  * Print iff:
  *    1) Debug print for the current component is enabled
  *    2) Debug error level or trace level for the print statement is enabled
@@ -439,7 +421,7 @@
 
 #define PARAM_LIST(pl)                  pl
 
-#define TEST_DEBUG_SWITCH(lvl)          if (((lvl) & DebugLevel) && (_COMPONENT & DebugLayer))
+#define TEST_DEBUG_SWITCH(lvl)          if (((lvl) & AcpiDbgLevel) && (_COMPONENT & AcpiDbgLayer))
 
 #define DEBUG_PRINT(lvl,fp)             TEST_DEBUG_SWITCH(lvl) {\
                                             DebugPrintPrefix (_THIS_MODULE,__LINE__);\
@@ -453,14 +435,14 @@
 /* Assert macros */
 
 #define ACPI_ASSERT(exp)                if(!(exp)) \
-                                            AcpiOsdDbgAssert(#exp, __FILE__, __LINE__, "Failed Assertion")
+                                            AcpiOsDbgAssert(#exp, __FILE__, __LINE__, "Failed Assertion")
 
 #define DEBUG_ASSERT(msg, exp)          if(!(exp)) \
-                                            AcpiOsdDbgAssert(#exp, __FILE__, __LINE__, msg)
+                                            AcpiOsDbgAssert(#exp, __FILE__, __LINE__, msg)
 
 
 #else
-/* 
+/*
  * This is the non-debug case -- make everything go away,
  * leaving no executable debug code!
  */
@@ -468,10 +450,10 @@
 #define MODULE_NAME(name)
 #define _THIS_MODULE ""
 
-#define DEBUG_EXEC(a)  
+#define DEBUG_EXEC(a)
 #define NORMAL_EXEC(a)                  a;
 
-#define DEBUG_DEFINE(a)                     
+#define DEBUG_DEFINE(a)
 #define DEBUG_ONLY_MEMBERS(a)
 #define FUNCTION_TRACE(a)
 #define FUNCTION_TRACE_PTR(a,b)
@@ -486,7 +468,7 @@
 #define DUMP_TABLES(a,b)
 #define DUMP_PATHNAME(a,b,c,d)
 #define DEBUG_PRINT(l,f)
-#define DEBUG_PRINT_RAW(l,f) 
+#define DEBUG_PRINT_RAW(l,f)
 #define BREAK_MSG(a)
 
 #define return_VOID                     return
@@ -525,10 +507,9 @@
  */
 
 #define ADD_OBJECT_NAME(a,b)            MEMSET (a->Common.Name, ' ', sizeof (a->Common.Name));\
-                                        STRNCPY (a->Common.Name, Acpi_GblNsTypeNames[b], sizeof (a->Common.Name))
-    
+                                        STRNCPY (a->Common.Name, AcpiGbl_NsTypeNames[b], sizeof (a->Common.Name))
+
 #endif
 
 
-
-#endif /* MACROS_H */
+#endif /* ACMACROS_H */

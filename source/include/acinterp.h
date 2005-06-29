@@ -1,7 +1,7 @@
 
 /******************************************************************************
- * 
- * Name: interpreter.h - Interpreter subcomponent prototypes and defines
+ *
+ * Name: acinterp.h - Interpreter subcomponent prototypes and defines
  *
  *****************************************************************************/
 
@@ -38,9 +38,9 @@
  * The above copyright and patent license is granted only if the following
  * conditions are met:
  *
- * 3. Conditions 
+ * 3. Conditions
  *
- * 3.1. Redistribution of Source with Rights to Further Distribute Source.  
+ * 3.1. Redistribution of Source with Rights to Further Distribute Source.
  * Redistribution of source code of any substantial portion of the Covered
  * Code or modification with rights to further distribute source must include
  * the above Copyright Notice, the above License, this list of Conditions,
@@ -48,11 +48,11 @@
  * Licensee must cause all Covered Code to which Licensee contributes to
  * contain a file documenting the changes Licensee made to create that Covered
  * Code and the date of any change.  Licensee must include in that file the
- * documentation of any changes made by any predecessor Licensee.  Licensee 
+ * documentation of any changes made by any predecessor Licensee.  Licensee
  * must include a prominent statement that the modification is derived,
  * directly or indirectly, from Original Intel Code.
  *
- * 3.2. Redistribution of Source with no Rights to Further Distribute Source.  
+ * 3.2. Redistribution of Source with no Rights to Further Distribute Source.
  * Redistribution of source code of any substantial portion of the Covered
  * Code or modification without rights to further distribute source must
  * include the following Disclaimer and Export Compliance provision in the
@@ -86,7 +86,7 @@
  * INSTALLATION, TRAINING OR OTHER SERVICES.  INTEL WILL NOT PROVIDE ANY
  * UPDATES, ENHANCEMENTS OR EXTENSIONS.  INTEL SPECIFICALLY DISCLAIMS ANY
  * IMPLIED WARRANTIES OF MERCHANTABILITY, NONINFRINGEMENT AND FITNESS FOR A
- * PARTICULAR PURPOSE. 
+ * PARTICULAR PURPOSE.
  *
  * 4.2. IN NO EVENT SHALL INTEL HAVE ANY LIABILITY TO LICENSEE, ITS LICENSEES
  * OR ANY OTHER THIRD PARTY, FOR ANY LOST PROFITS, LOST DATA, LOSS OF USE OR
@@ -114,12 +114,8 @@
  *
  *****************************************************************************/
 
-#ifndef __INTERPRETER_H__
-#define __INTERPRETER_H__
-
-
-#include "actypes.h"
-#include "acobject.h"
+#ifndef __ACINTERP_H__
+#define __ACINTERP_H__
 
 
 #define WALK_OPERANDS       &(WalkState->Operands [WalkState->NumOperands -1])
@@ -145,11 +141,12 @@
 ACPI_STATUS
 AcpiAmlResolveOperands (
     UINT16                  Opcode,
-    ACPI_OBJECT_INTERNAL    **StackPtr);
+    ACPI_OBJECT_INTERNAL    **StackPtr,
+    ACPI_WALK_STATE         *WalkState);
 
 
 /*
- * iapi - External interpreter interfaces
+ * amxface - External interpreter interfaces
  */
 
 ACPI_STATUS
@@ -158,29 +155,20 @@ AcpiAmlLoadTable (
 
 ACPI_STATUS
 AcpiAmlExecuteMethod (
-    NAME_TABLE_ENTRY        *MethodEntry,
+    ACPI_NAMED_OBJECT       *MethodEntry,
     ACPI_OBJECT_INTERNAL    **Params,
     ACPI_OBJECT_INTERNAL    **ReturnObjDesc);
 
 
-/*
- * iecopy - Interpreter object copy support
- */
-
-ACPI_STATUS
-AcpiAmlBuildCopyInternalPackageObject (
-    ACPI_OBJECT_INTERNAL    *SourceObj, 
-    ACPI_OBJECT_INTERNAL    *DestObj);
-
 
 /*
- * iefield - ACPI AML (p-code) execution - field manipulation
+ * amfield - ACPI AML (p-code) execution - field manipulation
  */
 
 
 ACPI_STATUS
 AcpiAmlReadField (
-    ACPI_OBJECT_INTERNAL    *ObjDesc, 
+    ACPI_OBJECT_INTERNAL    *ObjDesc,
     void                    *Buffer,
     UINT32                  BufferLength,
     UINT32                  ByteLength,
@@ -190,7 +178,7 @@ AcpiAmlReadField (
 
 ACPI_STATUS
 AcpiAmlWriteField (
-    ACPI_OBJECT_INTERNAL    *ObjDesc, 
+    ACPI_OBJECT_INTERNAL    *ObjDesc,
     void                    *Buffer,
     UINT32                  BufferLength,
     UINT32                  ByteLength,
@@ -200,39 +188,26 @@ AcpiAmlWriteField (
 
 ACPI_STATUS
 AcpiAmlSetupField (
-    ACPI_OBJECT_INTERNAL    *ObjDesc, 
-    ACPI_OBJECT_INTERNAL    *RgnDesc, 
-    INT32                   FieldBitWidth);
+    ACPI_OBJECT_INTERNAL    *ObjDesc,
+    ACPI_OBJECT_INTERNAL    *RgnDesc,
+    UINT32                  FieldBitWidth);
 
 ACPI_STATUS
 AcpiAmlReadFieldData (
-    ACPI_OBJECT_INTERNAL    *ObjDesc, 
+    ACPI_OBJECT_INTERNAL    *ObjDesc,
     UINT32                  FieldByteOffset,
     UINT32                  FieldBitWidth,
     UINT32                  *Value);
 
 ACPI_STATUS
 AcpiAmlAccessNamedField (
-    INT32                   Mode, 
-    ACPI_HANDLE             NamedField, 
-    void                    *Buffer,
-    UINT32                  Length);
-
-ACPI_STATUS
-AcpiAmlSetNamedFieldValue (
+    UINT32                  Mode,
     ACPI_HANDLE             NamedField,
     void                    *Buffer,
     UINT32                  Length);
 
-ACPI_STATUS
-AcpiAmlGetNamedFieldValue (
-    ACPI_HANDLE             NamedField, 
-    void                    *Buffer,
-    UINT32                  Length);
-
-
 /*
- * ieopexec - ACPI AML (p-code) execution - specific opcodes
+ * ammisc - ACPI AML (p-code) execution - specific opcodes
  */
 
 ACPI_STATUS
@@ -246,7 +221,7 @@ AcpiAmlExecReconfiguration (
     ACPI_WALK_STATE         *WalkState);
 
 ACPI_STATUS
-AcpiAmlExecFatal (    
+AcpiAmlExecFatal (
     ACPI_WALK_STATE         *WalkState);
 
 ACPI_STATUS
@@ -297,137 +272,91 @@ AcpiAmlExecCreateMethod (
 
 
 /*
- * ieprep - ACPI AML (p-code) execution - prep utilities
+ * amprep - ACPI AML (p-code) execution - prep utilities
  */
 
 ACPI_STATUS
 AcpiAmlPrepDefFieldValue (
-    NAME_TABLE_ENTRY        *ThisEntry,
-    ACPI_HANDLE             Region, 
+    ACPI_NAMED_OBJECT       *ThisEntry,
+    ACPI_HANDLE             Region,
     UINT8                   FieldFlags,
     UINT8                   FieldAttribute,
-    UINT32                  FieldPosition, 
+    UINT32                  FieldPosition,
     UINT32                  FieldLength);
 
 ACPI_STATUS
 AcpiAmlPrepBankFieldValue (
-    NAME_TABLE_ENTRY        *ThisEntry,
-    ACPI_HANDLE             Region, 
-    ACPI_HANDLE             BankReg, 
+    ACPI_NAMED_OBJECT       *ThisEntry,
+    ACPI_HANDLE             Region,
+    ACPI_HANDLE             BankReg,
     UINT32                  BankVal,
-    UINT8                   FieldFlags, 
+    UINT8                   FieldFlags,
     UINT8                   FieldAttribute,
-    UINT32                  FieldPosition, 
+    UINT32                  FieldPosition,
     UINT32                  FieldLength);
 
 ACPI_STATUS
 AcpiAmlPrepIndexFieldValue (
-    NAME_TABLE_ENTRY        *ThisEntry,
-    ACPI_HANDLE             IndexReg, 
+    ACPI_NAMED_OBJECT       *ThisEntry,
+    ACPI_HANDLE             IndexReg,
     ACPI_HANDLE             DataReg,
-    UINT8                   FieldFlags, 
+    UINT8                   FieldFlags,
     UINT8                   FieldAttribute,
-    UINT32                  FieldPosition, 
+    UINT32                  FieldPosition,
     UINT32                  FieldLength);
 
-ACPI_STATUS
-AcpiAmlPrepOperands (
-    char                    *Types,
-    ACPI_OBJECT_INTERNAL    **StackPtr);
-
-
 
 /*
- * iepstack - package stack utilities
+ * amsystem - Interface to OS services
  */
 
-UINT32
-AcpiAmlPkgStackLevel (
-     void);
-
-void
-AcpiAmlClearPkgStack (
+UINT16
+AcpiAmlSystemThreadId (
     void);
 
 ACPI_STATUS
-AcpiAmlPkgPushLength (
-    UINT32                  Length, 
-    OPERATING_MODE          LoadExecMode);
-
-ACPI_STATUS
-AcpiAmlPkgPushExecLength (
-    UINT32                  Length);
-
-ACPI_STATUS
-AcpiAmlPkgPushExec (
-    UINT8                   *Code, 
-    UINT32                  Len);
-
-ACPI_STATUS
-AcpiAmlPkgPopLength (
-    INT32                   NoErrUnder, 
-    OPERATING_MODE          LoadExecMode);
-
-ACPI_STATUS
-AcpiAmlPkgPopExecLength (
-    void);
-
-ACPI_STATUS
-AcpiAmlPkgPopExec (
-    void);
-
-
-/*
- * iesystem - Interface to OS services
- */
-
-UINT16 
-OsThreadId (
-    void);
-
-ACPI_STATUS
-OsDoNotifyOp (
-    ACPI_OBJECT_INTERNAL    *Value, 
+AcpiAmlSystemDoNotifyOp (
+    ACPI_OBJECT_INTERNAL    *Value,
     ACPI_OBJECT_INTERNAL    *ObjDesc);
 
 void
-OsDoSuspend(
+AcpiAmlSystemDoSuspend(
     UINT32                  Time);
 
 void
-OsDoStall (
+AcpiAmlSystemDoStall (
     UINT32                  Time);
 
 ACPI_STATUS
-OsAcquireMutex(
-    ACPI_OBJECT_INTERNAL    *Time, 
+AcpiAmlSystemAcquireMutex(
+    ACPI_OBJECT_INTERNAL    *Time,
     ACPI_OBJECT_INTERNAL    *ObjDesc);
 
 ACPI_STATUS
-OsReleaseMutex(
+AcpiAmlSystemReleaseMutex(
     ACPI_OBJECT_INTERNAL    *ObjDesc);
 
 ACPI_STATUS
-OsSignalEvent(
+AcpiAmlSystemSignalEvent(
     ACPI_OBJECT_INTERNAL    *ObjDesc);
 
 ACPI_STATUS
-OsWaitEvent(
-    ACPI_OBJECT_INTERNAL    *Time, 
+AcpiAmlSystemWaitEvent(
+    ACPI_OBJECT_INTERNAL    *Time,
     ACPI_OBJECT_INTERNAL    *ObjDesc);
 
 ACPI_STATUS
-OsResetEvent(
+AcpiAmlSystemResetEvent(
     ACPI_OBJECT_INTERNAL    *ObjDesc);
 
 ACPI_STATUS
-OsLocalWaitSemaphore (
+AcpiAmlSystemWaitSemaphore (
     ACPI_HANDLE             Semaphore,
     UINT32                  Timeout);
 
 
 /*
- * iemonadic - ACPI AML (p-code) execution, monadic operators
+ * ammonadic - ACPI AML (p-code) execution, monadic operators
  */
 
 ACPI_STATUS
@@ -449,7 +378,7 @@ AcpiAmlExecMonadic2R (
 
 
 /*
- * iedyadic - ACPI AML (p-code) execution, dyadic operators
+ * amdyadic - ACPI AML (p-code) execution, dyadic operators
  */
 
 ACPI_STATUS
@@ -468,7 +397,7 @@ AcpiAmlExecDyadic2R (
     UINT16                  Opcode,
     ACPI_WALK_STATE         *WalkState,
     ACPI_OBJECT_INTERNAL    **ReturnDesc);
-        
+
 ACPI_STATUS
 AcpiAmlExecDyadic2S (
     UINT16                  Opcode,
@@ -476,103 +405,39 @@ AcpiAmlExecDyadic2S (
     ACPI_OBJECT_INTERNAL    **ReturnDesc);
 
 
-
 /*
- * iresolve  - Object resolution and get value functions
+ * amresolv  - Object resolution and get value functions
  */
 
 ACPI_STATUS
 AcpiAmlResolveToValue (
-    ACPI_OBJECT_INTERNAL    **StackPtr);
+    ACPI_OBJECT_INTERNAL    **StackPtr,
+    ACPI_WALK_STATE         *WalkState);
 
 ACPI_STATUS
 AcpiAmlResolveEntryToValue (
-    NAME_TABLE_ENTRY        **StackPtr);
+    ACPI_NAMED_OBJECT       **StackPtr);
 
 ACPI_STATUS
 AcpiAmlResolveObjectToValue (
-    ACPI_OBJECT_INTERNAL    **StackPtr);
+    ACPI_OBJECT_INTERNAL    **StackPtr,
+    ACPI_WALK_STATE         *WalkState);
 
 ACPI_STATUS
 AcpiAmlGetFieldUnitValue (
-    ACPI_OBJECT_INTERNAL    *FieldDesc, 
+    ACPI_OBJECT_INTERNAL    *FieldDesc,
     ACPI_OBJECT_INTERNAL    *ResultDesc);
 
 
-
 /*
- * iscode - Scanner AML code manipulation routines
+ * amdump - Scanner debug output routines
  */
 
-INT32
-AcpiAmlAvail (
-    ACPI_SIZE               n);
-
-INT32
-AcpiAmlPeek (
-    void);
-
-INT32
-AcpiAmlGetPCodeByte (
-    UINT8                   *Pcode);
-
-UINT16
-AcpiAmlPeekOp (
-    void);
-
-UINT8 *
-AcpiAmlConsumeBytes (
-    ACPI_SIZE               Bytes);
-
-ACPI_SIZE
-AcpiAmlConsumeStreamBytes (
-    ACPI_SIZE               BytesToGet, 
-    UINT8                   *AmlBuffer);
-
 void
-AcpiAmlConsumePackage (
-    OPERATING_MODE          LoadExecMode);
-
-void
-AcpiAmlSetPCodeInput (
-    UINT8                   *Base, 
-    UINT32                  Length);
-
-ACPI_STATUS
-AcpiAmlSetMethod (
-    void                    *Object);
-
-ACPI_STATUS
-AcpiAmlPrepExec (
-    UINT8                   *Pcode, 
-    UINT32                  PcodeLength);
-
-ACPI_HANDLE
-AcpiAmlGetPCodeHandle (
-    void);
-
-void
-AcpiAmlGetCurrentLocation (
-    ACPI_OBJECT_INTERNAL    *MethodDesc);
-
-void
-AcpiAmlSetCurrentLocation (
-    ACPI_OBJECT_INTERNAL    *MethodDesc);
-
-
-/*
- * isdump - Scanner debug output routines
- */
-
-void 
 AcpiAmlShowHexValue (
-    INT32                   ByteCount, 
-    UINT8                   *AmlPtr, 
-    INT32                   LeadSpace);
-
-void
-AcpiAmlDumpBuffer (
-    ACPI_SIZE               Length);
+    UINT32                  ByteCount,
+    UINT8                   *AmlPtr,
+    UINT32                  LeadSpace);
 
 
 ACPI_STATUS
@@ -582,12 +447,12 @@ AcpiAmlDumpOperand (
 void
 AcpiAmlDumpOperands (
     ACPI_OBJECT_INTERNAL    **Operands,
-    OPERATING_MODE          InterpreterMode, 
-    char                    *Ident, 
-    INT32                   NumLevels, 
-    char                    *Note,
-    char                    *ModuleName, 
-    INT32                   LineNumber);
+    OPERATING_MODE          InterpreterMode,
+    NATIVE_CHAR             *Ident,
+    UINT32                  NumLevels,
+    NATIVE_CHAR             *Note,
+    NATIVE_CHAR             *ModuleName,
+    UINT32                  LineNumber);
 
 void
 AcpiAmlDumpObjectDescriptor (
@@ -596,69 +461,67 @@ AcpiAmlDumpObjectDescriptor (
 
 
 void
-AcpiAmlDumpNameTableEntry (
-    NAME_TABLE_ENTRY        *Entry,
+AcpiAmlDumpAcpiNamedObject (
+    ACPI_NAMED_OBJECT       *Entry,
     UINT32                  Flags);
 
 
 /*
- * isnames - interpreter/scanner name load/execute
+ * amnames - interpreter/scanner name load/execute
  */
 
-char *
+NATIVE_CHAR *
 AcpiAmlAllocateNameString (
-    INT32                   PrefixCount,
-    INT32                   NSeg);
+    UINT32                  PrefixCount,
+    UINT32                  NumNameSegs);
 
-INT32
+UINT32
 AcpiAmlGoodChar (
-    INT32                   Character);
+    UINT32                  Character);
 
 ACPI_STATUS
 AcpiAmlExecNameSegment (
     UINT8                   **InAmlAddress,
-    char                    *NameString);
+    NATIVE_CHAR             *NameString);
 
 ACPI_STATUS
 AcpiAmlGetNameString (
-    OBJECT_TYPE_INTERNAL    DataType, 
+    OBJECT_TYPE_INTERNAL    DataType,
     UINT8                   *InAmlAddress,
-    char                    **OutNameString,
-    UINT32                  *OutNameLength)  ; 
-
-INT32 
-AcpiAmlDecodePackageLength (
-    INT32                   LastPkgLen);
-
+    NATIVE_CHAR             **OutNameString,
+    UINT32                  *OutNameLength);
 
 ACPI_STATUS
 AcpiAmlDoName (
-    ACPI_OBJECT_TYPE        DataType, 
+    ACPI_OBJECT_TYPE        DataType,
     OPERATING_MODE          LoadExecMode);
 
 
 /*
- * istore - Object store support
+ * amstore - Object store support
  */
 
 ACPI_STATUS
 AcpiAmlExecStore (
-    ACPI_OBJECT_INTERNAL    *op1, 
-    ACPI_OBJECT_INTERNAL    *res);
+    ACPI_OBJECT_INTERNAL    *ValDesc,
+    ACPI_OBJECT_INTERNAL    *DestDesc,
+    ACPI_WALK_STATE         *WalkState);
 
 ACPI_STATUS
 AcpiAmlStoreObjectToObject (
     ACPI_OBJECT_INTERNAL    *ValDesc,
-    ACPI_OBJECT_INTERNAL    *DestDesc);
+    ACPI_OBJECT_INTERNAL    *DestDesc,
+    ACPI_WALK_STATE         *WalkState);
 
 ACPI_STATUS
 AcpiAmlStoreObjectToNte (
     ACPI_OBJECT_INTERNAL    *ValDesc,
-    NAME_TABLE_ENTRY        *Entry);
+    ACPI_NAMED_OBJECT       *Entry,
+    ACPI_WALK_STATE         *WalkState);
 
 
 /*
- * isutils - interpreter/scanner utilities
+ * amutils - interpreter/scanner utilities
  */
 
 void
@@ -681,31 +544,29 @@ ACPI_STATUS
 AcpiAmlReleaseGlobalLock (
     BOOLEAN                 Locked);
 
-void
-AcpiAmlAppendOperandDiag(
-    char                    *Name, 
-    INT32                   Line, 
-    UINT16                  OpCode, 
-    ACPI_OBJECT_INTERNAL    **Operands,
-    INT32                   NOperands);
-
-UINT32 
+UINT32
 AcpiAmlBufSeq (
     void);
 
-INT32
+UINT32
 AcpiAmlDigitsNeeded (
-    INT32                   Value, 
-    INT32                   Base);
+    UINT32                  Value,
+    UINT32                  Base);
 
 ACPI_STATUS
 AcpiAmlEisaIdToString (
     UINT32                  NumericId,
-    char                    *OutString);
+    NATIVE_CHAR             *OutString);
+
+ACPI_STATUS
+AcpiAmlBuildCopyInternalPackageObject (
+    ACPI_OBJECT_INTERNAL    *SourceObj,
+    ACPI_OBJECT_INTERNAL    *DestObj,
+    ACPI_WALK_STATE         *WalkState);
 
 
 /*
- * ieregion - default OpRegion handlers
+ * amregion - default OpRegion handlers
  */
 
 ACPI_STATUS
@@ -714,7 +575,8 @@ AcpiAmlSystemMemorySpaceHandler (
     UINT32                  Address,
     UINT32                  BitWidth,
     UINT32                  *Value,
-    void                    *Context);
+    void                    *HandlerContext,
+    void                    *RegionContext);
 
 ACPI_STATUS
 AcpiAmlSystemIoSpaceHandler (
@@ -722,7 +584,8 @@ AcpiAmlSystemIoSpaceHandler (
     UINT32                  Address,
     UINT32                  BitWidth,
     UINT32                  *Value,
-    void                    *Context);
+    void                    *HandlerContext,
+    void                    *RegionContext);
 
 ACPI_STATUS
 AcpiAmlPciConfigSpaceHandler (
@@ -730,7 +593,8 @@ AcpiAmlPciConfigSpaceHandler (
     UINT32                  Address,
     UINT32                  BitWidth,
     UINT32                  *Value,
-    void                    *Context);
+    void                    *HandlerContext,
+    void                    *RegionContext);
 
 ACPI_STATUS
 AcpiAmlEmbeddedControllerSpaceHandler (
@@ -738,7 +602,8 @@ AcpiAmlEmbeddedControllerSpaceHandler (
     UINT32                  Address,
     UINT32                  BitWidth,
     UINT32                  *Value,
-    void                    *Context);
+    void                    *HandlerContext,
+    void                    *RegionContext);
 
 ACPI_STATUS
 AcpiAmlSmBusSpaceHandler (
@@ -746,9 +611,8 @@ AcpiAmlSmBusSpaceHandler (
     UINT32                  Address,
     UINT32                  BitWidth,
     UINT32                  *Value,
-    void                    *Context);
+    void                    *HandlerContext,
+    void                    *RegionContext);
 
 
-
-
-#endif /* __INTERPRETER_H__ */
+#endif /* __INTERP_H__ */
