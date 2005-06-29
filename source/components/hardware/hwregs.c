@@ -520,6 +520,7 @@ AcpiRegisterIO (INT32 ReadWrite, INT32 RegisterId, ... /* UINT32 Value */)
     RegisterValue >>= GetBitShift (Mask);
 
     DEBUG_PRINT (TRACE_IO, ("Register I/O: returning 0x%X\n", RegisterValue));
+    FUNCTION_EXIT;
     return (RegisterValue);
 }
 
@@ -579,4 +580,6 @@ ClearAllAcpiChipsetStatusBits (void)
             OsdOut8 ((UINT16) (FACP->Gpe1Blk + Index), (UINT8) 0xff);
         }
     }
+
+    FUNCTION_EXIT;
 }   
