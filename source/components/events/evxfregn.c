@@ -2,7 +2,7 @@
  *
  * Module Name: evxfregn - External Interfaces, ACPI Operation Regions and
  *                         Address Spaces.
- *              $Revision: 1.46 $
+ *              $Revision: 1.50 $
  *
  *****************************************************************************/
 
@@ -118,14 +118,12 @@
 #define __EVXFREGN_C__
 
 #include "acpi.h"
-#include "achware.h"
 #include "acnamesp.h"
 #include "acevents.h"
-#include "amlcode.h"
 #include "acinterp.h"
 
 #define _COMPONENT          ACPI_EVENTS
-        MODULE_NAME         ("evxfregn")
+        ACPI_MODULE_NAME    ("evxfregn")
 
 
 /*******************************************************************************
@@ -155,12 +153,12 @@ AcpiInstallAddressSpaceHandler (
     ACPI_OPERAND_OBJECT     *ObjDesc;
     ACPI_OPERAND_OBJECT     *HandlerObj;
     ACPI_NAMESPACE_NODE     *Node;
-    ACPI_STATUS             Status = AE_OK;
+    ACPI_STATUS             Status;
     ACPI_OBJECT_TYPE        Type;
     UINT16                  Flags = 0;
 
 
-    FUNCTION_TRACE ("AcpiInstallAddressSpaceHandler");
+    ACPI_FUNCTION_TRACE ("AcpiInstallAddressSpaceHandler");
 
 
     /* Parameter validation */
@@ -170,7 +168,11 @@ AcpiInstallAddressSpaceHandler (
         return_ACPI_STATUS (AE_BAD_PARAMETER);
     }
 
-    AcpiUtAcquireMutex (ACPI_MTX_NAMESPACE);
+    Status = AcpiUtAcquireMutex (ACPI_MTX_NAMESPACE);
+    if (ACPI_FAILURE (Status))
+    {
+        return_ACPI_STATUS (Status);
+    }
 
     /* Convert and validate the device handle */
 
@@ -197,7 +199,7 @@ AcpiInstallAddressSpaceHandler (
 
     if (Handler == ACPI_DEFAULT_HANDLER)
     {
-        Flags = ADDR_HANDLER_DEFAULT_INSTALLED;
+        Flags = ACPI_ADDR_HANDLER_DEFAULT_INSTALLED;
 
         switch (SpaceId)
         {
@@ -354,7 +356,7 @@ AcpiInstallAddressSpaceHandler (
      * of the branch
      */
     Status = AcpiNsWalkNamespace (ACPI_TYPE_ANY, Device,
-                                  ACPI_UINT32_MAX, NS_WALK_UNLOCK,
+                                  ACPI_UINT32_MAX, ACPI_NS_WALK_UNLOCK,
                                   AcpiEvAddrHandlerHelper,
                                   HandlerObj, NULL);
 
@@ -368,7 +370,7 @@ AcpiInstallAddressSpaceHandler (
 
 
 UnlockAndExit:
-    AcpiUtReleaseMutex (ACPI_MTX_NAMESPACE);
+    (void) AcpiUtReleaseMutex (ACPI_MTX_NAMESPACE);
     return_ACPI_STATUS (Status);
 }
 
@@ -397,10 +399,10 @@ AcpiRemoveAddressSpaceHandler (
     ACPI_OPERAND_OBJECT     *RegionObj;
     ACPI_OPERAND_OBJECT     **LastObjPtr;
     ACPI_NAMESPACE_NODE     *Node;
-    ACPI_STATUS             Status = AE_OK;
+    ACPI_STATUS             Status;
 
 
-    FUNCTION_TRACE ("AcpiRemoveAddressSpaceHandler");
+    ACPI_FUNCTION_TRACE ("AcpiRemoveAddressSpaceHandler");
 
 
     /* Parameter validation */
@@ -410,7 +412,11 @@ AcpiRemoveAddressSpaceHandler (
         return_ACPI_STATUS (AE_BAD_PARAMETER);
     }
 
-    AcpiUtAcquireMutex (ACPI_MTX_NAMESPACE);
+    Status = AcpiUtAcquireMutex (ACPI_MTX_NAMESPACE);
+    if (ACPI_FAILURE (Status))
+    {
+        return_ACPI_STATUS (Status);
+    }
 
     /* Convert and validate the device handle */
 
@@ -463,7 +469,7 @@ AcpiRemoveAddressSpaceHandler (
                  * The region is just inaccessible as indicated to
                  * the _REG method
                  */
-                AcpiEvDisassociateRegionFromHandler(RegionObj, TRUE);
+                AcpiEvDetachRegion (RegionObj, TRUE);
 
                 /*
                  * Walk the list, since we took the first region and it
@@ -507,7 +513,7 @@ AcpiRemoveAddressSpaceHandler (
 
 
 UnlockAndExit:
-    AcpiUtReleaseMutex (ACPI_MTX_NAMESPACE);
+    (void) AcpiUtReleaseMutex (ACPI_MTX_NAMESPACE);
     return_ACPI_STATUS (Status);
 }
 
