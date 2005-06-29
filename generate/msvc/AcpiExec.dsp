@@ -23,7 +23,7 @@ CFG=AcpiExec - Win32 Debug
 
 # Begin Project
 # PROP AllowPerConfigDependencies 0
-# PROP Scc_ProjName ""$/Acpi Components/Generate/VC", SVBAAAAA"
+# PROP Scc_ProjName ""$/Acpi/Generate/msvc", SVBAAAAA"
 # PROP Scc_LocalPath "."
 CPP=xicl6.exe
 RSC=rc.exe
@@ -37,8 +37,8 @@ RSC=rc.exe
 # PROP BASE Target_Dir ""
 # PROP Use_MFC 0
 # PROP Use_Debug_Libraries 0
-# PROP Output_Dir "\Acpi\Components\Generate\VC\AcpiExec"
-# PROP Intermediate_Dir "\Acpi\Components\Generate\VC\AcpiExec"
+# PROP Output_Dir "\Acpi\Generate\msvc\AcpiExec"
+# PROP Intermediate_Dir "\Acpi\Generate\msvc\AcpiExec"
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_CONSOLE" /D "_MBCS" /YX /FD /c
