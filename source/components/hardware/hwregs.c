@@ -125,12 +125,10 @@
         MODULE_NAME         ("hwregs");
 
 
-
 /* This matches the #defines in actypes.h. */
 
 ACPI_STRING SleepStateTable[] = {"\\_S0_","\\_S1_","\\_S2_","\\_S3_",
                                  "\\_S4_","\\_S4B","\\_S5_"};
-
 
 
 /******************************************************************************
@@ -186,41 +184,41 @@ AcpiHwClearAcpiStatus (void)
 
 
     DEBUG_PRINT (TRACE_IO, ("About to write %04X to %04X\n",
-                    ALL_FIXED_STS_BITS, (UINT16) Acpi_GblFACP->Pm1aEvtBlk));
+                    ALL_FIXED_STS_BITS, (UINT16) AcpiGbl_FACP->Pm1aEvtBlk));
 
 
-    AcpiCmAcquireMutex (MTX_HARDWARE);
+    AcpiCmAcquireMutex (ACPI_MTX_HARDWARE);
 
-    AcpiOsdOut16 (Acpi_GblFACP->Pm1aEvtBlk, (UINT16) ALL_FIXED_STS_BITS);
+    AcpiOsOut16 (AcpiGbl_FACP->Pm1aEvtBlk, (UINT16) ALL_FIXED_STS_BITS);
 
-    if (Acpi_GblFACP->Pm1bEvtBlk)
+    if (AcpiGbl_FACP->Pm1bEvtBlk)
     {
-        AcpiOsdOut16 ((UINT16) Acpi_GblFACP->Pm1bEvtBlk, (UINT16) ALL_FIXED_STS_BITS);
+        AcpiOsOut16 ((UINT16) AcpiGbl_FACP->Pm1bEvtBlk, (UINT16) ALL_FIXED_STS_BITS);
     }
 
     /* now clear the GPE Bits */
 
-    if (Acpi_GblFACP->Gpe0BlkLen)
+    if (AcpiGbl_FACP->Gpe0BlkLen)
     {
-        GpeLength = (UINT16) DIV_2 (Acpi_GblFACP->Gpe0BlkLen);
+        GpeLength = (UINT16) DIV_2 (AcpiGbl_FACP->Gpe0BlkLen);
 
         for (Index = 0; Index < GpeLength; Index++)
         {
-            AcpiOsdOut8 ((Acpi_GblFACP->Gpe0Blk + Index), (UINT8) 0xff);
+            AcpiOsOut8 ((AcpiGbl_FACP->Gpe0Blk + Index), (UINT8) 0xff);
         }
     }
 
-    if (Acpi_GblFACP->Gpe1BlkLen)
+    if (AcpiGbl_FACP->Gpe1BlkLen)
     {
-        GpeLength = (UINT16) DIV_2 (Acpi_GblFACP->Gpe1BlkLen);
+        GpeLength = (UINT16) DIV_2 (AcpiGbl_FACP->Gpe1BlkLen);
 
         for (Index = 0; Index < GpeLength; Index++)
         {
-            AcpiOsdOut8 ((Acpi_GblFACP->Gpe1Blk + Index), (UINT8) 0xff);
+            AcpiOsOut8 ((AcpiGbl_FACP->Gpe1Blk + Index), (UINT8) 0xff);
         }
     }
 
-    AcpiCmReleaseMutex (MTX_HARDWARE);
+    AcpiCmReleaseMutex (ACPI_MTX_HARDWARE);
     return_VOID;
 }
 
@@ -361,21 +359,21 @@ AcpiHwRegisterAccess (
         {
             /* status register */
 
-            if (MTX_LOCK == UseLock)
+            if (ACPI_MTX_LOCK == UseLock)
             {
-                AcpiCmAcquireMutex (MTX_HARDWARE);
+                AcpiCmAcquireMutex (ACPI_MTX_HARDWARE);
             }
 
 
-            RegisterValue = (UINT32) AcpiOsdIn16 (Acpi_GblFACP->Pm1aEvtBlk);
+            RegisterValue = (UINT32) AcpiOsIn16 (AcpiGbl_FACP->Pm1aEvtBlk);
             DEBUG_PRINT (TRACE_IO, ("PM1a status: Read 0x%X from 0x%X\n",
-                            RegisterValue, Acpi_GblFACP->Pm1aEvtBlk));
+                            RegisterValue, AcpiGbl_FACP->Pm1aEvtBlk));
 
-            if (Acpi_GblFACP->Pm1bEvtBlk)
+            if (AcpiGbl_FACP->Pm1bEvtBlk)
             {
-                RegisterValue |= (UINT32) AcpiOsdIn16 (Acpi_GblFACP->Pm1bEvtBlk);
+                RegisterValue |= (UINT32) AcpiOsIn16 (AcpiGbl_FACP->Pm1bEvtBlk);
                 DEBUG_PRINT (TRACE_IO, ("PM1b status: Read 0x%X from 0x%X\n",
-                                RegisterValue, Acpi_GblFACP->Pm1bEvtBlk));
+                                RegisterValue, AcpiGbl_FACP->Pm1bEvtBlk));
             }
 
             switch (RegisterId)
@@ -427,22 +425,22 @@ AcpiHwRegisterAccess (
 
                 if (Value)
                 {
-                    DEBUG_PRINT (TRACE_IO, ("About to write %04X to %04X\n", Value, Acpi_GblFACP->Pm1aEvtBlk));
+                    DEBUG_PRINT (TRACE_IO, ("About to write %04X to %04X\n", Value, AcpiGbl_FACP->Pm1aEvtBlk));
 
-                    AcpiOsdOut16 (Acpi_GblFACP->Pm1aEvtBlk, (UINT16) Value);
+                    AcpiOsOut16 (AcpiGbl_FACP->Pm1aEvtBlk, (UINT16) Value);
 
-                    if (Acpi_GblFACP->Pm1bEvtBlk)
+                    if (AcpiGbl_FACP->Pm1bEvtBlk)
                     {
-                        AcpiOsdOut16 (Acpi_GblFACP->Pm1bEvtBlk, (UINT16) Value);
+                        AcpiOsOut16 (AcpiGbl_FACP->Pm1bEvtBlk, (UINT16) Value);
                     }
 
                     RegisterValue = 0;
                 }
             }
 
-            if (MTX_LOCK == UseLock)
+            if (ACPI_MTX_LOCK == UseLock)
             {
-                AcpiCmReleaseMutex (MTX_HARDWARE);
+                AcpiCmReleaseMutex (ACPI_MTX_HARDWARE);
             }
         }
 
@@ -450,22 +448,22 @@ AcpiHwRegisterAccess (
         {
             /* enable register */
 
-            if (MTX_LOCK == UseLock)
+            if (ACPI_MTX_LOCK == UseLock)
             {
-                AcpiCmAcquireMutex (MTX_HARDWARE);
+                AcpiCmAcquireMutex (ACPI_MTX_HARDWARE);
             }
 
-            RegisterValue = (UINT32) AcpiOsdIn16 (Acpi_GblFACP->Pm1aEvtBlk + DIV_2 (Acpi_GblFACP->Pm1EvtLen));
+            RegisterValue = (UINT32) AcpiOsIn16 (AcpiGbl_FACP->Pm1aEvtBlk + DIV_2 (AcpiGbl_FACP->Pm1EvtLen));
 
             DEBUG_PRINT (TRACE_IO, ("PM1a enable: Read 0x%X from 0x%X\n",
-                            RegisterValue, (Acpi_GblFACP->Pm1aEvtBlk + DIV_2 (Acpi_GblFACP->Pm1EvtLen))));
+                            RegisterValue, (AcpiGbl_FACP->Pm1aEvtBlk + DIV_2 (AcpiGbl_FACP->Pm1EvtLen))));
 
-            if (Acpi_GblFACP->Pm1bEvtBlk)
+            if (AcpiGbl_FACP->Pm1bEvtBlk)
             {
-                RegisterValue |= (UINT32) AcpiOsdIn16 (Acpi_GblFACP->Pm1bEvtBlk + DIV_2 (Acpi_GblFACP->Pm1EvtLen));
+                RegisterValue |= (UINT32) AcpiOsIn16 (AcpiGbl_FACP->Pm1bEvtBlk + DIV_2 (AcpiGbl_FACP->Pm1EvtLen));
 
                 DEBUG_PRINT (TRACE_IO, ("PM1b enable: Read 0x%X from 0x%X\n",
-                                RegisterValue, (Acpi_GblFACP->Pm1bEvtBlk + DIV_2 (Acpi_GblFACP->Pm1EvtLen))));
+                                RegisterValue, (AcpiGbl_FACP->Pm1bEvtBlk + DIV_2 (AcpiGbl_FACP->Pm1EvtLen))));
             }
 
             switch (RegisterId)
@@ -503,20 +501,20 @@ AcpiHwRegisterAccess (
                 RegisterValue  |= Value;
 
                 DEBUG_PRINT (TRACE_IO, ("About to write %04X to %04X\n", RegisterValue,
-                                (Acpi_GblFACP->Pm1aEvtBlk + DIV_2 (Acpi_GblFACP->Pm1EvtLen))));
+                                (AcpiGbl_FACP->Pm1aEvtBlk + DIV_2 (AcpiGbl_FACP->Pm1EvtLen))));
 
-                AcpiOsdOut16 ((Acpi_GblFACP->Pm1aEvtBlk + DIV_2 (Acpi_GblFACP->Pm1EvtLen)),
+                AcpiOsOut16 ((AcpiGbl_FACP->Pm1aEvtBlk + DIV_2 (AcpiGbl_FACP->Pm1EvtLen)),
                             (UINT16) RegisterValue);
 
-                if (Acpi_GblFACP->Pm1bEvtBlk)
+                if (AcpiGbl_FACP->Pm1bEvtBlk)
                 {
-                    AcpiOsdOut16 ((Acpi_GblFACP->Pm1bEvtBlk + DIV_2 (Acpi_GblFACP->Pm1EvtLen)),
+                    AcpiOsOut16 ((AcpiGbl_FACP->Pm1bEvtBlk + DIV_2 (AcpiGbl_FACP->Pm1EvtLen)),
                                 (UINT16) RegisterValue);
                 }
             }
-            if(MTX_LOCK == UseLock)
+            if(ACPI_MTX_LOCK == UseLock)
             {
-                AcpiCmReleaseMutex (MTX_HARDWARE);
+                AcpiCmReleaseMutex (ACPI_MTX_HARDWARE);
             }
         }
         break;
@@ -526,9 +524,9 @@ AcpiHwRegisterAccess (
 
         RegisterValue = 0;
 
-        if (MTX_LOCK == UseLock)
+        if (ACPI_MTX_LOCK == UseLock)
         {
-            AcpiCmAcquireMutex (MTX_HARDWARE);
+            AcpiCmAcquireMutex (ACPI_MTX_HARDWARE);
         }
 
         if (RegisterId != SLP_TYPE_B)
@@ -540,16 +538,16 @@ AcpiHwRegisterAccess (
              * for A may be different than the value for B
              */
 
-            RegisterValue = (UINT32) AcpiOsdIn16 (Acpi_GblFACP->Pm1aCntBlk);
+            RegisterValue = (UINT32) AcpiOsIn16 (AcpiGbl_FACP->Pm1aCntBlk);
             DEBUG_PRINT (TRACE_IO, ("PM1a control: Read 0x%X from 0x%X\n",
-                            RegisterValue, Acpi_GblFACP->Pm1aCntBlk));
+                            RegisterValue, AcpiGbl_FACP->Pm1aCntBlk));
         }
 
-        if (Acpi_GblFACP->Pm1bCntBlk && RegisterId != (INT32) SLP_TYPE_A)
+        if (AcpiGbl_FACP->Pm1bCntBlk && RegisterId != (INT32) SLP_TYPE_A)
         {
-            RegisterValue |= (UINT32) AcpiOsdIn16 (Acpi_GblFACP->Pm1bCntBlk);
+            RegisterValue |= (UINT32) AcpiOsIn16 (AcpiGbl_FACP->Pm1bCntBlk);
             DEBUG_PRINT (TRACE_IO, ("PM1b control: Read 0x%X from 0x%X\n",
-                            RegisterValue, Acpi_GblFACP->Pm1bCntBlk));
+                            RegisterValue, AcpiGbl_FACP->Pm1bCntBlk));
         }
 
         switch (RegisterId)
@@ -601,7 +599,7 @@ AcpiHwRegisterAccess (
                     disable();  /* disable interrupts */
                 }
 
-                AcpiOsdOut16 (Acpi_GblFACP->Pm1aCntBlk, (UINT16) RegisterValue);
+                AcpiOsOut16 (AcpiGbl_FACP->Pm1aCntBlk, (UINT16) RegisterValue);
 
                 if (Mask == SLP_EN_MASK)
                 {
@@ -614,29 +612,29 @@ AcpiHwRegisterAccess (
                 }
             }
 
-            if (Acpi_GblFACP->Pm1bCntBlk && RegisterId != (INT32) SLP_TYPE_A)
+            if (AcpiGbl_FACP->Pm1bCntBlk && RegisterId != (INT32) SLP_TYPE_A)
             {
-                AcpiOsdOut16 (Acpi_GblFACP->Pm1bCntBlk, (UINT16) RegisterValue);
+                AcpiOsOut16 (AcpiGbl_FACP->Pm1bCntBlk, (UINT16) RegisterValue);
             }
         }
 
-        if (MTX_LOCK == UseLock)
+        if (ACPI_MTX_LOCK == UseLock)
         {
-            AcpiCmReleaseMutex (MTX_HARDWARE);
+            AcpiCmReleaseMutex (ACPI_MTX_HARDWARE);
         }
         break;
 
 
     case PM2_CONTROL:
 
-        if (MTX_LOCK == UseLock)
+        if (ACPI_MTX_LOCK == UseLock)
         {
-            AcpiCmAcquireMutex (MTX_HARDWARE);
+            AcpiCmAcquireMutex (ACPI_MTX_HARDWARE);
         }
 
-        RegisterValue = (UINT32) AcpiOsdIn16 (Acpi_GblFACP->Pm2CntBlk);
+        RegisterValue = (UINT32) AcpiOsIn16 (AcpiGbl_FACP->Pm2CntBlk);
         DEBUG_PRINT (TRACE_IO, ("PM2 control: Read 0x%X from 0x%X\n",
-                        RegisterValue, Acpi_GblFACP->Pm2CntBlk));
+                        RegisterValue, AcpiGbl_FACP->Pm2CntBlk));
 
         switch (RegisterId)
         {
@@ -656,23 +654,23 @@ AcpiHwRegisterAccess (
             Value          &= Mask;
             RegisterValue  |= Value;
 
-            DEBUG_PRINT (TRACE_IO, ("About to write %04X to %04X\n", RegisterValue, Acpi_GblFACP->Pm2CntBlk));
+            DEBUG_PRINT (TRACE_IO, ("About to write %04X to %04X\n", RegisterValue, AcpiGbl_FACP->Pm2CntBlk));
 
-            AcpiOsdOut16 (Acpi_GblFACP->Pm2CntBlk, (UINT16) RegisterValue);
+            AcpiOsOut16 (AcpiGbl_FACP->Pm2CntBlk, (UINT16) RegisterValue);
         }
 
-        if (MTX_LOCK == UseLock)
+        if (ACPI_MTX_LOCK == UseLock)
         {
-            AcpiCmReleaseMutex (MTX_HARDWARE);
+            AcpiCmReleaseMutex (ACPI_MTX_HARDWARE);
         }
         break;
 
 
     case PM_TIMER:
 
-        RegisterValue = AcpiOsdIn32 (Acpi_GblFACP->PmTmrBlk);
+        RegisterValue = AcpiOsIn32 (AcpiGbl_FACP->PmTmrBlk);
         DEBUG_PRINT (TRACE_IO, ("PM_TIMER: Read 0x%X from 0x%X\n",
-                        RegisterValue, Acpi_GblFACP->PmTmrBlk));
+                        RegisterValue, AcpiGbl_FACP->PmTmrBlk));
 
         Mask = 0xFFFFFFFF;
         break;
@@ -680,15 +678,15 @@ AcpiHwRegisterAccess (
 
     case GPE1_EN_BLOCK:
 
-        GpeReg = (Acpi_GblFACP->Gpe1Blk + Acpi_GblFACP->Gpe1Base) +
-                    (GpeReg + (DIV_2 (Acpi_GblFACP->Gpe1BlkLen)));
+        GpeReg = (AcpiGbl_FACP->Gpe1Blk + AcpiGbl_FACP->Gpe1Base) +
+                    (GpeReg + (DIV_2 (AcpiGbl_FACP->Gpe1BlkLen)));
 
 
     case GPE1_STS_BLOCK:
 
         if (!GpeReg)
         {
-            GpeReg = (Acpi_GblFACP->Gpe1Blk + Acpi_GblFACP->Gpe1Base);
+            GpeReg = (AcpiGbl_FACP->Gpe1Blk + AcpiGbl_FACP->Gpe1Base);
         }
 
 
@@ -696,7 +694,7 @@ AcpiHwRegisterAccess (
 
         if (!GpeReg)
         {
-            GpeReg = Acpi_GblFACP->Gpe0Blk + DIV_2 (Acpi_GblFACP->Gpe0BlkLen);
+            GpeReg = AcpiGbl_FACP->Gpe0Blk + DIV_2 (AcpiGbl_FACP->Gpe0BlkLen);
         }
 
 
@@ -704,7 +702,7 @@ AcpiHwRegisterAccess (
 
         if (!GpeReg)
         {
-            GpeReg = Acpi_GblFACP->Gpe0Blk;
+            GpeReg = AcpiGbl_FACP->Gpe0Blk;
         }
 
         /* Determine the bit to be accessed */
@@ -730,12 +728,12 @@ AcpiHwRegisterAccess (
 
         /* Now get the current Enable Bits in the selected Reg */
 
-        if(MTX_LOCK == UseLock)
+        if(ACPI_MTX_LOCK == UseLock)
         {
-            AcpiCmAcquireMutex (MTX_HARDWARE);
+            AcpiCmAcquireMutex (ACPI_MTX_HARDWARE);
         }
 
-        RegisterValue = (UINT32) AcpiOsdIn8 (GpeReg);
+        RegisterValue = (UINT32) AcpiOsIn8 (GpeReg);
         DEBUG_PRINT (TRACE_IO, ("GPE Enable bits: Read 0x%X from 0x%X\n", RegisterValue, GpeReg));
 
         if (ReadWrite == ACPI_WRITE)
@@ -751,13 +749,13 @@ AcpiHwRegisterAccess (
 
             DEBUG_PRINT (TRACE_IO, ("About to write %04X to %04X\n", RegisterValue, GpeReg));
 
-            AcpiOsdOut8 (GpeReg, (UINT8) RegisterValue);
-            RegisterValue = (UINT32) AcpiOsdIn8 (GpeReg);
+            AcpiOsOut8 (GpeReg, (UINT8) RegisterValue);
+            RegisterValue = (UINT32) AcpiOsIn8 (GpeReg);
         }
 
-        if(MTX_LOCK == UseLock)
+        if(ACPI_MTX_LOCK == UseLock)
         {
-            AcpiCmReleaseMutex (MTX_HARDWARE);
+            AcpiCmReleaseMutex (ACPI_MTX_HARDWARE);
         }
         break;
 
