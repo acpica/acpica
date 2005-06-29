@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: aemain - Main routine for the AcpiExec utility
- *              $Revision: 1.26 $
+ *              $Revision: 1.30 $
  *
  *****************************************************************************/
 
@@ -9,8 +9,8 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, Intel Corp.  All rights
- * reserved.
+ * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
+ * All rights reserved.
  *
  * 2. License
  *
@@ -158,13 +158,14 @@ ACPI_COMMON_FACS            LocalFACS;
 void
 usage (void)
 {
-    printf ("Usage: acpiexec [-dgjs] [-l DebugLevel] [-o OutputFile] [AcpiTableFile]\n");
+    printf ("Usage: acpiexec [-?dgis] [-l DebugLevel] [-o OutputFile] [AcpiTableFile]\n");
     printf ("Where:\n");
     printf ("    Input Options\n");
     printf ("        AcpiTableFile       Get ACPI tables from this file\n");
     printf ("    Output Options\n");
     printf ("    Miscellaneous Options\n");
-    printf ("        -j                  Just-in-time method parsing\n");
+    printf ("        -?                  Display this message\n");
+    printf ("        -i                  Do not run INI methods\n");
     printf ("        -l DebugLevel       Specify debug output level\n");
 }
 
@@ -188,6 +189,7 @@ main (
 {
     int                     j;
     ACPI_STATUS             Status;
+    UINT32                  InitFlags;
 
 
     /* Init globals */
@@ -209,7 +211,7 @@ main (
 
     /* Get the command line options */
 
-    while ((j = getopt (argc, argv, "dgjl:o:s")) != EOF) switch(j)
+    while ((j = getopt (argc, argv, "?dgijl:o:s")) != EOF) switch(j)
     {
     case 'd':
         opt_disasm = TRUE;
@@ -219,6 +221,10 @@ main (
     case 'g':
         opt_tables = TRUE;
         Filename = NULL;
+        break;
+
+    case 'i':
+        opt_ini_methods = FALSE;
         break;
 
     case 'j':
@@ -238,6 +244,7 @@ main (
         opt_stats = TRUE;
         break;
 
+    case '?':
     default:
         usage();
         return -1;
@@ -248,6 +255,13 @@ main (
 
     AcpiInitializeSubsystem ();
 
+
+    InitFlags = (ACPI_NO_HARDWARE_INIT | ACPI_NO_ACPI_ENABLE | ACPI_NO_EVENT_INIT);
+
+    if (!opt_ini_methods)
+    {
+        InitFlags |= (ACPI_NO_DEVICE_INIT | ACPI_NO_OBJECT_INIT);
+    }
 
     /* Standalone filename is the only argument */
 
@@ -267,10 +281,10 @@ main (
 
         /* Need a fake FADT so that the hardware component is happy */
 
-        LocalFADT.XGpe0Blk.Address       = 0x70; 
-        LocalFADT.XPm1aEvtBlk.Address    = 0x80;
-        LocalFADT.XPm1aCntBlk.Address    = 0x90;
-        LocalFADT.XPmTmrBlk.Address      = 0xA0;
+        ACPI_STORE_ADDRESS (LocalFADT.XGpe0Blk.Address, 0x70);
+        ACPI_STORE_ADDRESS (LocalFADT.XPm1aEvtBlk.Address, 0x80);
+        ACPI_STORE_ADDRESS (LocalFADT.XPm1aCntBlk.Address, 0x90);
+        ACPI_STORE_ADDRESS (LocalFADT.XPmTmrBlk.Address, 0xA0);
 
         LocalFADT.Gpe0BlkLen    = 8;
         LocalFADT.Pm1EvtLen     = 4;
@@ -281,21 +295,26 @@ main (
         AcpiGbl_FACS = &LocalFACS;
 
 
-
         /* TBD:
          * Need a way to call this after the "LOAD" command
          */
         AeInstallHandlers ();
 
-        AcpiEnableSubsystem (ACPI_NO_HARDWARE_INIT | 
-                             ACPI_NO_ACPI_ENABLE   | 
-                             ACPI_NO_EVENT_INIT);
+        Status = AcpiEnableSubsystem (InitFlags);
+        if (ACPI_FAILURE (Status))
+        {
+            printf ("**** Could not EnableSubsystem, %s\n", AcpiCmFormatException (Status));
+            goto enterloop;
+        }
+
     }
 
 #ifdef _IA16
     else
     {
-        Status = AdFindDsdt (NULL, NULL);
+#include "16bit.h"
+
+        Status = AfFindDsdt (NULL, NULL);
         if (ACPI_FAILURE (Status))
         {
             goto enterloop;
@@ -304,18 +323,30 @@ main (
 
         if (ACPI_FAILURE (Status))
         {
-            printf ("**** Could not load namespace, %s\n", AcpiCmFormatException (Status));
+            printf ("**** Could not load ACPI tables, %s\n", AcpiCmFormatException (Status));
             goto enterloop;
         }
 
-       
+
+        Status = AcpiNsLoadNamespace ();
+        if (ACPI_FAILURE (Status))
+        {
+            printf ("**** Could not load ACPI namespace, %s\n", AcpiCmFormatException (Status));
+            goto enterloop;
+        }
+
         /* TBD:
          * Need a way to call this after the "LOAD" command
          */
         AeInstallHandlers ();
 
-        AcpiEnableSubsystem (0);
-    }
+        Status = AcpiEnableSubsystem (InitFlags);
+        if (ACPI_FAILURE (Status))
+        {
+            printf ("**** Could not EnableSubsystem, %s\n", AcpiCmFormatException (Status));
+            goto enterloop;
+        }
+     }
 #endif
 
 enterloop:
