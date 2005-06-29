@@ -1,4 +1,3 @@
-
 /******************************************************************************
  *
  * Module Name: cmutils - common utility procedures
@@ -294,7 +293,8 @@ AcpiCmCreateMutex (
 
     if (!AcpiGbl_AcpiMutexInfo[MutexId].Mutex)
     {
-        Status = AcpiOsCreateSemaphore (1, 1, &AcpiGbl_AcpiMutexInfo[MutexId].Mutex);
+        Status = AcpiOsCreateSemaphore (1, 1,
+                                        &AcpiGbl_AcpiMutexInfo[MutexId].Mutex);
         AcpiGbl_AcpiMutexInfo[MutexId].Locked = FALSE;
         AcpiGbl_AcpiMutexInfo[MutexId].UseCount = 0;
     }
@@ -359,7 +359,8 @@ AcpiCmAcquireMutex (
     ACPI_STATUS             Status;
 
 
-    DEBUG_PRINT (TRACE_MUTEX, ("Acquiring Mutex [%s]\n", AcpiCmGetMutexName (MutexId)));
+    DEBUG_PRINT (TRACE_MUTEX,
+                ("Acquiring Mutex [%s]\n", AcpiCmGetMutexName (MutexId)));
 
     if (MutexId > MAX_MTX)
     {
@@ -367,10 +368,12 @@ AcpiCmAcquireMutex (
     }
 
 
-    Status = AcpiOsWaitSemaphore (AcpiGbl_AcpiMutexInfo[MutexId].Mutex, 1, WAIT_FOREVER);
+    Status =
+        AcpiOsWaitSemaphore (AcpiGbl_AcpiMutexInfo[MutexId].Mutex,
+                            1, WAIT_FOREVER);
 
     DEBUG_PRINT (TRACE_MUTEX, ("Acquired Mutex  [%s] Status %s\n",
-                    AcpiCmGetMutexName (MutexId), AcpiCmFormatException (Status)));
+                AcpiCmGetMutexName (MutexId), AcpiCmFormatException (Status)));
 
     if (ACPI_SUCCESS (Status))
     {
@@ -411,10 +414,11 @@ AcpiCmReleaseMutex (
 
     AcpiGbl_AcpiMutexInfo[MutexId].Locked = FALSE;  /* Mark before unlocking */
 
-    Status = AcpiOsSignalSemaphore (AcpiGbl_AcpiMutexInfo[MutexId].Mutex, 1);
+    Status =
+        AcpiOsSignalSemaphore (AcpiGbl_AcpiMutexInfo[MutexId].Mutex, 1);
 
     DEBUG_PRINT (TRACE_MUTEX, ("Released Mutex  [%s] Status %s\n",
-                    AcpiCmGetMutexName (MutexId), AcpiCmFormatException (Status)));
+                AcpiCmGetMutexName (MutexId), AcpiCmFormatException (Status)));
 
     return (Status);
 }
