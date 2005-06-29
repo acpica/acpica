@@ -236,6 +236,7 @@ ACPI_EXTERN UINT32                      Gbl_RsdpOriginalLocation;
 ACPI_EXTERN ACPI_HANDLE                 Gbl_GlobalLockSemaphore;
 ACPI_EXTERN BOOLEAN                     Gbl_MethodExecuting;
 ACPI_EXTERN BOOLEAN                     Gbl_StepToNextCall;
+ACPI_EXTERN BOOLEAN                     Gbl_AcpiHardwarePresent;
 ACPI_EXTERN ACPI_WALK_STATE            *Gbl_BreakpointWalk;
 ACPI_EXTERN BOOLEAN                     Gbl_DbTerminateThreads;
 
@@ -250,6 +251,7 @@ ACPI_EXTERN ACPI_OBJECT_NotifyHandler   Gbl_SysNotify;
 
 ACPI_EXTERN UINT32                      Gbl_NsLookupCount;
 ACPI_EXTERN UINT32                      Gbl_PsFindCount;
+ACPI_EXTERN UINT16                      Gbl_TbNextTableId;
 
 /*****************************************************************************
  * 
