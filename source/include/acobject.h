@@ -156,7 +156,6 @@
     UINT8                   Flags;\
     UINT16                  ReferenceCount; /* For object deletion management */\
     UINT16                  CmFill2;\
-    char                    Name[8];        /* TBD: Temporary only, for debug */
 
 /* Defines for flag byte above */
 
