@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exstore - AML Interpreter object store support
- *              $Revision: 1.149 $
+ *              $Revision: 1.150 $
  *
  *****************************************************************************/
 
@@ -137,8 +137,7 @@
  * PARAMETERS:  *SourceDesc         - Value to be stored
  *              *DestDesc           - Where to store it.  Must be an NS node
  *                                    or an ACPI_OPERAND_OBJECT of type
- *                                    Reference; if the latter the descriptor
- *                                    will be either reused or deleted.
+ *                                    Reference; 
  *
  * RETURN:      Status
  *
@@ -320,13 +319,6 @@ AcpiExStore (
 
     }   /* switch (RefDesc->Reference.Opcode) */
 
-
-    /* Always delete the reference descriptor object */
-
-    if (RefDesc)
-    {
-        AcpiUtRemoveReference (RefDesc);
-    }
 
     return_ACPI_STATUS (Status);
 }
