@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: achware.h -- hardware specific interfaces
- *       $Revision: 1.54 $
+ *       $Revision: 1.55 $
  *
  *****************************************************************************/
 
@@ -173,14 +173,14 @@ AcpiHwRegisterWrite (
 UINT32
 AcpiHwLowLevelRead (
     UINT32                  Width,
-    ACPI_GAS                *Reg,
+    ACPI_GENERIC_ADDRESS    *Reg,
     UINT32                  Offset);
 
 void
 AcpiHwLowLevelWrite (
     UINT32                  Width,
     UINT32                  Value,
-    ACPI_GAS                *Reg,
+    ACPI_GENERIC_ADDRESS    *Reg,
     UINT32                  Offset);
 
 void
