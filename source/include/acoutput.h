@@ -1,267 +1,335 @@
-/******************************************************************************
- *
- * Name: acoutput.h -- debug output
- *       $Revision: 1.89 $
- *
- *****************************************************************************/
+/*
+  __________________________________________________________________________
+ |
+ |
+ |           Copyright (C) Intel Corporation 1994-1996
+ |
+ | All rights reserved.  No part of this program or publication may be
+ | reproduced, transmitted, transcribed, stored in a retrieval system, or
+ | translated into any language or computer language, in any form or by any
+ | means, electronic, mechanical, magnetic, optical, chemical, manual, or
+ | otherwise, without the prior written permission of Intel Corporation.
+ |__________________________________________________________________________
+ |
+ | FILENAME: output.h -- debug macros and procedures
+ |__________________________________________________________________________
+*/
 
-/******************************************************************************
- *
- * 1. Copyright Notice
- *
- * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
- * All rights reserved.
- *
- * 2. License
- *
- * 2.1. This is your license from Intel Corp. under its intellectual property
- * rights.  You may have additional license terms from the party that provided
- * you this software, covering your right to use that party's intellectual
- * property rights.
- *
- * 2.2. Intel grants, free of charge, to any person ("Licensee") obtaining a
- * copy of the source code appearing in this file ("Covered Code") an
- * irrevocable, perpetual, worldwide license under Intel's copyrights in the
- * base code distributed originally by Intel ("Original Intel Code") to copy,
- * make derivatives, distribute, use and display any portion of the Covered
- * Code in any form, with the right to sublicense such rights; and
- *
- * 2.3. Intel grants Licensee a non-exclusive and non-transferable patent
- * license (with the right to sublicense), under only those claims of Intel
- * patents that are infringed by the Original Intel Code, to make, use, sell,
- * offer to sell, and import the Covered Code and derivative works thereof
- * solely to the minimum extent necessary to exercise the above copyright
- * license, and in no event shall the patent license extend to any additions
- * to or modifications of the Original Intel Code.  No other license or right
- * is granted directly or by implication, estoppel or otherwise;
- *
- * The above copyright and patent license is granted only if the following
- * conditions are met:
- *
- * 3. Conditions
- *
- * 3.1. Redistribution of Source with Rights to Further Distribute Source.
- * Redistribution of source code of any substantial portion of the Covered
- * Code or modification with rights to further distribute source must include
- * the above Copyright Notice, the above License, this list of Conditions,
- * and the following Disclaimer and Export Compliance provision.  In addition,
- * Licensee must cause all Covered Code to which Licensee contributes to
- * contain a file documenting the changes Licensee made to create that Covered
- * Code and the date of any change.  Licensee must include in that file the
- * documentation of any changes made by any predecessor Licensee.  Licensee
- * must include a prominent statement that the modification is derived,
- * directly or indirectly, from Original Intel Code.
- *
- * 3.2. Redistribution of Source with no Rights to Further Distribute Source.
- * Redistribution of source code of any substantial portion of the Covered
- * Code or modification without rights to further distribute source must
- * include the following Disclaimer and Export Compliance provision in the
- * documentation and/or other materials provided with distribution.  In
- * addition, Licensee may not authorize further sublicense of source of any
- * portion of the Covered Code, and must include terms to the effect that the
- * license from Licensee to its licensee is limited to the intellectual
- * property embodied in the software Licensee provides to its licensee, and
- * not to intellectual property embodied in modifications its licensee may
- * make.
- *
- * 3.3. Redistribution of Executable. Redistribution in executable form of any
- * substantial portion of the Covered Code or modification must reproduce the
- * above Copyright Notice, and the following Disclaimer and Export Compliance
- * provision in the documentation and/or other materials provided with the
- * distribution.
- *
- * 3.4. Intel retains all right, title, and interest in and to the Original
- * Intel Code.
- *
- * 3.5. Neither the name Intel nor any other trademark owned or controlled by
- * Intel shall be used in advertising or otherwise to promote the sale, use or
- * other dealings in products derived from or relating to the Covered Code
- * without prior written authorization from Intel.
- *
- * 4. Disclaimer and Export Compliance
- *
- * 4.1. INTEL MAKES NO WARRANTY OF ANY KIND REGARDING ANY SOFTWARE PROVIDED
- * HERE.  ANY SOFTWARE ORIGINATING FROM INTEL OR DERIVED FROM INTEL SOFTWARE
- * IS PROVIDED "AS IS," AND INTEL WILL NOT PROVIDE ANY SUPPORT,  ASSISTANCE,
- * INSTALLATION, TRAINING OR OTHER SERVICES.  INTEL WILL NOT PROVIDE ANY
- * UPDATES, ENHANCEMENTS OR EXTENSIONS.  INTEL SPECIFICALLY DISCLAIMS ANY
- * IMPLIED WARRANTIES OF MERCHANTABILITY, NONINFRINGEMENT AND FITNESS FOR A
- * PARTICULAR PURPOSE.
- *
- * 4.2. IN NO EVENT SHALL INTEL HAVE ANY LIABILITY TO LICENSEE, ITS LICENSEES
- * OR ANY OTHER THIRD PARTY, FOR ANY LOST PROFITS, LOST DATA, LOSS OF USE OR
- * COSTS OF PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES, OR FOR ANY INDIRECT,
- * SPECIAL OR CONSEQUENTIAL DAMAGES ARISING OUT OF THIS AGREEMENT, UNDER ANY
- * CAUSE OF ACTION OR THEORY OF LIABILITY, AND IRRESPECTIVE OF WHETHER INTEL
- * HAS ADVANCE NOTICE OF THE POSSIBILITY OF SUCH DAMAGES.  THESE LIMITATIONS
- * SHALL APPLY NOTWITHSTANDING THE FAILURE OF THE ESSENTIAL PURPOSE OF ANY
- * LIMITED REMEDY.
- *
- * 4.3. Licensee shall not export, either directly or indirectly, any of this
- * software or system incorporating such software without first obtaining any
- * required license or other approval from the U. S. Department of Commerce or
- * any other agency or department of the United States Government.  In the
- * event Licensee exports any such software from the United States or
- * re-exports any such software from a foreign destination, Licensee shall
- * ensure that the distribution and export/re-export of the software is in
- * compliance with all laws, regulations, orders, or other restrictions of the
- * U.S. Export Administration Regulations. Licensee agrees that neither it nor
- * any of its subsidiaries will export/re-export any technical data, process,
- * software, or service, directly or indirectly, to any country for which the
- * United States government or any agency thereof requires an export license,
- * other governmental approval, or letter of assurance, without first obtaining
- * such license, approval or letter.
- *
- *****************************************************************************/
-
-#ifndef __ACOUTPUT_H__
-#define __ACOUTPUT_H__
+#ifndef _OUTPUT_H
+#define _OUTPUT_H
 
 /*
- * Debug levels and component IDs.  These are used to control the
- * granularity of the output of the DEBUG_PRINT macro -- on a per-
- * component basis and a per-exception-type basis.
+ * Debug/Error reporting table definition
  */
 
-/* Component IDs are used in the global "DebugLayer" */
+typedef struct
+{
+    char            *Key;
+    char            Level;
+    char            *Description;
+    char            *Description2;
 
-#define ACPI_UTILITIES              0x00000001
-#define ACPI_HARDWARE               0x00000002
-#define ACPI_EVENTS                 0x00000004
-#define ACPI_TABLES                 0x00000008
-#define ACPI_NAMESPACE              0x00000010
-#define ACPI_PARSER                 0x00000020
-#define ACPI_DISPATCHER             0x00000040
-#define ACPI_EXECUTER               0x00000080
-#define ACPI_RESOURCES              0x00000100
-#define ACPI_CA_DEBUGGER            0x00000200
-#define ACPI_OS_SERVICES            0x00000400
-#define ACPI_CA_DISASSEMBLER        0x00000800
-
-#define ACPI_ALL_COMPONENTS         0x00000FFF
-
-#define ACPI_COMPONENT_DEFAULT      (ACPI_ALL_COMPONENTS)
-
-/* Component IDs for ACPI tools and utilities */
-
-#define ACPI_COMPILER               0x00001000
-#define ACPI_TOOLS                  0x00002000
-
-/* Component IDs reserved for ACPI drivers */
-
-#define ACPI_ALL_DRIVERS            0xFFFF0000
-
-/*
- * Raw debug output levels, do not use these in the DEBUG_PRINT macros
- */
-
-#define ACPI_LV_OK                  0x00000001
-#define ACPI_LV_INFO                0x00000002
-#define ACPI_LV_WARN                0x00000004
-#define ACPI_LV_ERROR               0x00000008
-#define ACPI_LV_FATAL               0x00000010
-#define ACPI_LV_DEBUG_OBJECT        0x00000020
-#define ACPI_LV_ALL_EXCEPTIONS      0x0000003F
+} ST_KEY_DESC_TABLE;
 
 
-/* Trace verbosity level 1 [Standard Trace Level] */
 
-#define ACPI_LV_PARSE               0x00000040
-#define ACPI_LV_LOAD                0x00000080
-#define ACPI_LV_DISPATCH            0x00000100
-#define ACPI_LV_EXEC                0x00000200
-#define ACPI_LV_NAMES               0x00000400
-#define ACPI_LV_OPREGION            0x00000800
-#define ACPI_LV_BFIELD              0x00001000
-#define ACPI_LV_TABLES              0x00002000
-#define ACPI_LV_VALUES              0x00004000
-#define ACPI_LV_OBJECTS             0x00008000
-#define ACPI_LV_RESOURCES           0x00010000
-#define ACPI_LV_USER_REQUESTS       0x00020000
-#define ACPI_LV_PACKAGE             0x00040000
-#define ACPI_LV_INIT                0x00080000
-#define ACPI_LV_VERBOSITY1          0x000FFF40 | ACPI_LV_ALL_EXCEPTIONS
+#define HEX                 0x01
+#define ASCII               0x02
+#define FULL_ADDRESS        0x04
+#define CHARS_PER_LINE      16      /* used in DumpBuf function */
 
-/* Trace verbosity level 2 [Function tracing and memory allocation] */
 
-#define ACPI_LV_ALLOCATIONS         0x00100000
-#define ACPI_LV_FUNCTIONS           0x00200000
-#define ACPI_LV_VERBOSITY2          0x00300000 | ACPI_LV_VERBOSITY1
-#define ACPI_LV_ALL                 ACPI_LV_VERBOSITY2
+/* Prototypes */
 
-/* Trace verbosity level 3 [Threading, I/O, and Interrupts] */
+INT32
+GetDebugLevel (void);
+void
+SetDebugLevel (INT32 level);
+void
+FunctionTrace (INT32 LineNumber, char *ModuleName, char * FunctionName);
+void
+DebugPrint (INT32 LineNumber, char *ModuleName, INT32 DebugLevel, char *Format, ...);
+void
+DebugPrintRaw (INT32 DebugLevel, char *Format, ...);
+void
+_ReportInfo (ST_KEY_DESC_TABLE *KdtEntry, INT32 LineNumber, char *ModuleName);
+void
+_ReportError (ST_KEY_DESC_TABLE *KdtEntry, INT32 LineNumber, char *ModuleName);
+void
+_ReportWarning (ST_KEY_DESC_TABLE *KdtEntry, INT32 LineNumber, char *ModuleName);
+void *
+_AllocateObjectDesc (ST_KEY_DESC_TABLE *KdtEntry, INT32 LineNumber, char *ModuleName);
+void *
+_LocalAllocate (INT32 AllocSize, INT32 LineNumber, char *ModuleName);
+void 
+_Kinc_error (char *, INT32, INT32, char *, INT32, INT32); 
+void 
+_Kinc_info (char *, INT32, INT32, char *, INT32, INT32); 
+void 
+_Kinc_warning (char *, INT32, INT32, char *, INT32, INT32);
 
-#define ACPI_LV_MUTEX               0x01000000
-#define ACPI_LV_THREADS             0x02000000
-#define ACPI_LV_IO                  0x04000000
-#define ACPI_LV_INTERRUPTS          0x08000000
-#define ACPI_LV_VERBOSITY3          0x0F000000 | ACPI_LV_VERBOSITY2
 
-/* Exceptionally verbose output -- also used in the global "DebugLevel"  */
 
-#define ACPI_LV_AML_DISASSEMBLE     0x10000000
-#define ACPI_LV_VERBOSE_INFO        0x20000000
-#define ACPI_LV_FULL_TABLES         0x40000000
-#define ACPI_LV_EVENTS              0x80000000
+#define dump_buf(Buf, len, flags) _dump_buf (Buf, len, flags, 0, SCREEN | LOGFILE)
 
-#define ACPI_LV_VERBOSE             0xF0000000
+void
+_dump_buf (
+    void        *buf,
+    UINT32      len,
+    INT32       flags,
+    LogHandle   Logfile,
+    INT32       LogFlags);
+
+void DumpBuf(UINT8*Buffer, UINT32 Count, INT32 Flags, LogHandle LogFile,
+    INT32 iLogFlags);
+
+#define DumpBuffer(Buffer, Count, Flags) \
+    DumpBuf(Buffer, Count, Flags, 0, SCREEN | LOGFILE)
 
 
 /*
- * Debug level macros that are used in the DEBUG_PRINT macros
+ * Macros that expand to include filename and line number
  */
 
-#define ACPI_DEBUG_LEVEL(dl)       dl,__LINE__,&_Dbg
+#define LocalAllocate(a)                _LocalAllocate(a,__LINE__,_THIS_MODULE)
+#define AllocateObjectDesc(a)           _AllocateObjectDesc(a,__LINE__,_THIS_MODULE)
 
-/* Exception level -- used in the global "DebugLevel" */
+/* 
+ * Trace macro.
+ * Used to trace procedure entries
+ */
 
-#define ACPI_DB_OK                  ACPI_DEBUG_LEVEL (ACPI_LV_OK)
-#define ACPI_DB_INFO                ACPI_DEBUG_LEVEL (ACPI_LV_INFO)
-#define ACPI_DB_WARN                ACPI_DEBUG_LEVEL (ACPI_LV_WARN)
-#define ACPI_DB_ERROR               ACPI_DEBUG_LEVEL (ACPI_LV_ERROR)
-#define ACPI_DB_FATAL               ACPI_DEBUG_LEVEL (ACPI_LV_FATAL)
-#define ACPI_DB_DEBUG_OBJECT        ACPI_DEBUG_LEVEL (ACPI_LV_DEBUG_OBJECT)
-#define ACPI_DB_ALL_EXCEPTIONS      ACPI_DEBUG_LEVEL (ACPI_LV_ALL_EXCEPTIONS)
+#ifdef _TRACE
+#define FUNCTION_TRACE(a)     FunctionTrace (__LINE__,_THIS_MODULE,a)
+#else
+#define FUNCTION_TRACE(a)
+#endif
+
+#ifdef _SCREEN_IO
+#define LINE_SET(a,b)                   LineSet(a,b)
+#else
+#define LINE_SET(a,b)
+#endif
+
+/*
+ * Debug macros
+ */
+
+#ifdef _DEBUG
+
+/* Error reporting.  These versions stamp with callers module/line# */
+
+#define REPORT_INFO(a)                  _ReportInfo(a,__LINE__,_THIS_MODULE)
+#define REPORT_ERROR(a)                 _ReportError(a,__LINE__,_THIS_MODULE)
+#define REPORT_WARNING(a)               _ReportWarning(a,__LINE__,_THIS_MODULE)
+
+/* Error reporting.  These versions pass thru the module/line# */
+
+#define _REPORT_INFO(a,b,c)             _ReportInfo(a,b,c)
+#define _REPORT_ERROR(a,b,c)            _ReportError(a,b,c)
+#define _REPORT_WARNING(a,b,c)          _ReportWarning(a,b,c)
+
+/* Stack and buffer dumping */
+
+#define DUMP_STACK_ENTRY(a)             DumpStackEntry(a)
+#define DUMP_STACK(a,b,c,d)             DumpStack(a,b,c,d)
+#define DUMP_ENTRY(a)                   NsDumpEntry (a, LOGFILE)
+#define DUMP_BUFFER(a,b,c)              DumpBuffer(a,b,c)
+#define DUMP_CODE(a)                    DumpCode(a)
+
+/* Master debug print macros */
+
+#define DEBUG_PRINT(l,f)                            DebugPrint(__LINE__,_THIS_MODULE,l,f)
+#define DEBUG_PRINT1(l,f,a)                         DebugPrint(__LINE__,_THIS_MODULE,l,f,a)
+#define DEBUG_PRINT2(l,f,a,b)                       DebugPrint(__LINE__,_THIS_MODULE,l,f,a,b)
+#define DEBUG_PRINT3(l,f,a,b,c)                     DebugPrint(__LINE__,_THIS_MODULE,l,f,a,b,c)
+#define DEBUG_PRINT4(l,f,a,b,c,d)                   DebugPrint(__LINE__,_THIS_MODULE,l,f,a,b,c,d)
+#define DEBUG_PRINT5(l,f,a,b,c,d,e)                 DebugPrint(__LINE__,_THIS_MODULE,l,f,a,b,c,d,e)
+#define DEBUG_PRINT6(l,f,a,b,c,d,e,g)               DebugPrint(__LINE__,_THIS_MODULE,l,f,a,b,c,d,e,g)
+#define DEBUG_PRINT7(l,f,a,b,c,d,e,g,h)             DebugPrint(__LINE__,_THIS_MODULE,l,f,a,b,c,d,e,g,h)
+#define DEBUG_PRINT10(l,f,a,b,c,d,e,g,h,i,j,k)      DebugPrint(__LINE__,_THIS_MODULE,l,f,a,b,c,d,e,g,h,i,j,k)
+
+#define DEBUG_PRINT_RAW(l,f)                        DebugPrintRaw(l,f)
+#define DEBUG_PRINT1_RAW(l,f,a)                     DebugPrintRaw(l,f,a)
+#define DEBUG_PRINT2_RAW(l,f,a,b)                   DebugPrintRaw(l,f,a,b)
+#define DEBUG_PRINT3_RAW(l,f,a,b,c)                 DebugPrintRaw(l,f,a,b,c)
+#define DEBUG_PRINT4_RAW(l,f,a,b,c,d)               DebugPrintRaw(l,f,a,b,c,d)
+#define DEBUG_PRINT5_RAW(l,f,a,b,c,d,e)             DebugPrintRaw(l,f,a,b,c,d,e)
+#define DEBUG_PRINT6_RAW(l,f,a,b,c,d,e,g)           DebugPrintRaw(l,f,a,b,c,d,e,g)
+#define DEBUG_PRINT7_RAW(l,f,a,b,c,d,e,g,h)         DebugPrintRaw(l,f,a,b,c,d,e,g,h)
+#define DEBUG_PRINT10_RAW(l,f,a,b,c,d,e,g,h,i,j,k)  DebugPrintRaw(l,f,a,b,c,d,e,g,h,i,j,k)
+
+#else
+
+#define REPORT_INFO(a) 
+#define REPORT_ERROR(a) 
+#define REPORT_WARNING(a)
+#define _REPORT_INFO(a,b,c)
+#define _REPORT_ERROR(a,b,c)
+#define _REPORT_WARNING(a,b,c)
+#define DUMP_STACK_ENTRY(a)
+#define DUMP_STACK(a,b,c,d)
+#define DUMP_ENTRY(a)
+#define DUMP_BUFFER(a,b,c)
+#define DUMP_CODE(a)
+
+#define DEBUG_PRINT(l,f)
+#define DEBUG_PRINT1(l,f,a)
+#define DEBUG_PRINT2(l,f,a,b)
+#define DEBUG_PRINT3(l,f,a,b,c)
+#define DEBUG_PRINT4(l,f,a,b,c,d)
+#define DEBUG_PRINT5(l,f,a,b,c,d,e)
+#define DEBUG_PRINT6(l,f,a,b,c,d,e,g)
+#define DEBUG_PRINT7(l,f,a,b,c,d,e,g,h)
+#define DEBUG_PRINT10(l,f,a,b,c,d,e,g,h,i,j,k)
+#endif
 
 
-/* Trace level -- also used in the global "DebugLevel" */
+#define ACPI_INTERPRETER            0
+#define ACPI_NAMESPACE              1
+#define ACPI_DEVICE_MANAGER         2
+#define ACPI_EVENT_HANDLING         3
 
-#define ACPI_DB_THREADS             ACPI_DEBUG_LEVEL (ACPI_LV_THREADS)
-#define ACPI_DB_PARSE               ACPI_DEBUG_LEVEL (ACPI_LV_PARSE)
-#define ACPI_DB_DISPATCH            ACPI_DEBUG_LEVEL (ACPI_LV_DISPATCH)
-#define ACPI_DB_LOAD                ACPI_DEBUG_LEVEL (ACPI_LV_LOAD)
-#define ACPI_DB_EXEC                ACPI_DEBUG_LEVEL (ACPI_LV_EXEC)
-#define ACPI_DB_NAMES               ACPI_DEBUG_LEVEL (ACPI_LV_NAMES)
-#define ACPI_DB_OPREGION            ACPI_DEBUG_LEVEL (ACPI_LV_OPREGION)
-#define ACPI_DB_BFIELD              ACPI_DEBUG_LEVEL (ACPI_LV_BFIELD)
-#define ACPI_DB_TABLES              ACPI_DEBUG_LEVEL (ACPI_LV_TABLES)
-#define ACPI_DB_FUNCTIONS           ACPI_DEBUG_LEVEL (ACPI_LV_FUNCTIONS)
-#define ACPI_DB_VALUES              ACPI_DEBUG_LEVEL (ACPI_LV_VALUES)
-#define ACPI_DB_OBJECTS             ACPI_DEBUG_LEVEL (ACPI_LV_OBJECTS)
-#define ACPI_DB_ALLOCATIONS         ACPI_DEBUG_LEVEL (ACPI_LV_ALLOCATIONS)
-#define ACPI_DB_RESOURCES           ACPI_DEBUG_LEVEL (ACPI_LV_RESOURCES)
-#define ACPI_DB_IO                  ACPI_DEBUG_LEVEL (ACPI_LV_IO)
-#define ACPI_DB_INTERRUPTS          ACPI_DEBUG_LEVEL (ACPI_LV_INTERRUPTS)
-#define ACPI_DB_USER_REQUESTS       ACPI_DEBUG_LEVEL (ACPI_LV_USER_REQUESTS)
-#define ACPI_DB_PACKAGE             ACPI_DEBUG_LEVEL (ACPI_LV_PACKAGE)
-#define ACPI_DB_MUTEX               ACPI_DEBUG_LEVEL (ACPI_LV_MUTEX)
-#define ACPI_DB_INIT                ACPI_DEBUG_LEVEL (ACPI_LV_INIT)
+#define GLOBAL_INFO                 0x00000001
+#define GLOBAL_WARN                 0x00000002
+#define GLOBAL_ERROR                0x00000004
+#define GLOBAL_FATAL                0x00000008
 
-#define ACPI_DB_ALL                 ACPI_DEBUG_LEVEL (ACPI_LV_ALL)
+#define AML_INFO                    0x00000010
+#define AML_WARN                    0x00000020
+#define AML_ERROR                   0x00000040
 
+#define NS_INFO                     0x00000080
+#define NS_WARN                     0x00000100
+#define NS_ERROR                    0x00000200
 
-/* Defaults for DebugLevel, debug and normal */
+#define DV_INFO                     0x00000400
+#define DV_WARN                     0x00000800
+#define DV_ERROR                    0x00001000
 
-#define DEBUG_DEFAULT               (ACPI_LV_OK | ACPI_LV_WARN | ACPI_LV_ERROR | ACPI_LV_DEBUG_OBJECT)
-#define NORMAL_DEFAULT              (ACPI_LV_OK | ACPI_LV_WARN | ACPI_LV_ERROR | ACPI_LV_DEBUG_OBJECT)
-#define DEBUG_ALL                   (ACPI_LV_AML_DISASSEMBLE | ACPI_LV_ALL_EXCEPTIONS | ACPI_LV_ALL)
-
-/* Misc defines */
-
-#define HEX                         0x01
-#define ASCII                       0x02
-#define FULL_ADDRESS                0x04
-#define CHARS_PER_LINE              16          /* used in DumpBuf function */
+#define EV_INFO                     0x00002000
+#define EV_WARN                     0x00004000
+#define EV_ERROR                    0x00008000
 
 
-#endif /* __ACOUTPUT_H__ */
+#define TRACE_LOAD                  0x00100000
+#define TRACE_OPCODE                0x00200000
+#define TRACE_STACK                 0x00400000
+#define TRACE_EXEC                  0x00800000
+#define TRACE_NAMES                 0x01000000
+#define TRACE_OPREGION              0x02000000
+#define TRACE_BFIELD                0x04000000
+#define TRACE_TRASH                 0x08000000
+#define TRACE_OPCODE_EXEC           0x00A00000
+#define TRACE_TABLES                0x10000000
+#define TRACE_FUNCTIONS             0x20000000
+
+
+
+/********************************************************************************************
+ *
+ * Obsolete??
+ */
+
+/* flags for print_message, inc_warning, inc_error, and inc_info. */
+
+#define NO_PRINT        0                  /* quietly increment the count */
+#define PRINT           1                  /* print the word "ERROR " (or
+                                            * "WARNING " or "INFO ") */
+#define PREPEND_CRLF    2                  /* prepend CRLF before printing
+                                            * "ERROR " (or "WARNING " or
+                                            * "INFO ") */
+#define APPEND_CRLF 4                      /* append CRLF after printing
+                                            * "ERROR " (or "WARNING " or
+                                            * "INFO ") */
+#define PACRLF          (PRINT | APPEND_CRLF)
+#define FILE_LINE       8                  /* print file and line message was
+                                            * generated from. */
+#define NO_INC          16                 /* not increase a global count */
+
+#define SCREEN          1
+#define LOGFILE         2
+
+
+/* 
+ * The following functions deal with the indent level.  The concept is that
+ *  if the library is allowed to maintain the indent level rather than doing
+ *  it explicitly in the printf_bu format string, an output function can print
+ *  correctly no matter where it's called from.
+ */
+
+
+#define SetIndentAfterNewLine(NewValue) _SetIndentAfterNewLine ((BOOLEAN) NewValue)
+
+BOOLEAN
+_SetIndentAfterNewLine (BOOLEAN NewValue);
+BOOLEAN
+GetIndentAfterNewLine (void);
+INT32
+IncIndent (void);
+INT32
+DecIndent (void);
+INT32
+SetIndent (INT32 i);
+INT32
+GetIndent (void);
+char *
+pIndent (void);
+void
+CloseOFT (void);
+void
+RestoreOFT (void);
+
+/*
+LogHandle
+GetMasterLogHandle (void);
+*/
+
+
+/* 
+ * fflush_bu and fflushall_bu have been changed to be identical and are implemented
+ *  as macros.  They both always return E_OK and flush all open logfiles 
+ */
+#define flushall_bu() (CloseOFT(),RestoreOFT(),OsdFlushall())
+#define fflush_bu(x) flushall_bu()
+
+/* Log file open mode... */
+
+#define OVERWRITE       0
+#define APPEND          1
+#define FORCE_WRITES    2
+
+LogHandle
+open_log (
+    char        *filename,                      /* name of logfile to open. */
+    INT32       mode);                          /* OVERWRITE, APPEND, FORCE_WRITES */
+
+INT32
+close_log (LogHandle handle);                             /* LogHandle to close */
+
+
+
+/* Orphaned prototypes TBD:  move to appropriate header !!!*/
+
+UINT8
+checksum (
+    void                *Buf,
+    UINT32              BufSize);
+
+
+UINT32
+InstallInterruptHandler (
+    UINT8               InterruptNumber,
+    INT32               (* Isr)(void),
+    UINT8               InterruptTaskFlag,
+    UINT32 *            ExceptPtr);
+
+INT32
+RemoveInterruptHandler (UINT32 Key);
+
+INT32
+AcpiInit (char          *FileName);
+
+
+
+#endif /* _OUTPUT_H */
