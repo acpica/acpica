@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: oswinxf - Windows application interface
- *              $Revision: 1.13 $
+ *              $Revision: 1.14 $
  *
  *****************************************************************************/
 
@@ -550,6 +550,9 @@ AcpiOsCreateSemaphore (
 #endif
 
 
+    PROC_NAME ("OsCreateSemaphore");
+
+
     if (MaxUnits == ACPI_UINT32_MAX)
     {
         MaxUnits = 255;
@@ -573,7 +576,7 @@ AcpiOsCreateSemaphore (
     Mutex = CreateSemaphore (NULL, InitialUnits, MaxUnits, NULL);
     if (!Mutex)
     {
-        DEBUG_PRINT (ACPI_ERROR, ("CreateSemaphore: could not create!\n"));
+        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "CreateSemaphore: could not create!\n"));
 
         return AE_NO_MEMORY;
     }
@@ -583,7 +586,7 @@ AcpiOsCreateSemaphore (
     SemaphoreTable[NextSemaphoreHandle].CurrentUnits = (UINT16) InitialUnits;
     SemaphoreTable[NextSemaphoreHandle].OsHandle = Mutex;
 
-    DEBUG_PRINT (ACPI_INFO, ("Created semaphore: Handle=%d, Max=%d, Current=%d, OsHandle=%p\n",
+    ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "Handle=%d, Max=%d, Current=%d, OsHandle=%p\n",
             NextSemaphoreHandle, MaxUnits, InitialUnits, Mutex));
 
     *OutHandle = (void *) NextSemaphoreHandle;
@@ -654,6 +657,9 @@ AcpiOsWaitSemaphore (
     UINT32              WaitStatus;
 
 
+    PROC_NAME ("OsWaitSemaphore");
+
+
     if ((Index >= NUM_SEMAPHORES) ||
         !SemaphoreTable[Index].OsHandle)
     {
@@ -679,7 +685,7 @@ AcpiOsWaitSemaphore (
     if (WaitStatus == WAIT_TIMEOUT)
     {
 /* Make optional -- wait of 0 is used to detect if unit is available 
-        DEBUG_PRINT (ACPI_ERROR, ("WaitSemaphore [%d]: *** Timeout on semaphore %d\n",
+        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "WaitSemaphore [%d]: *** Timeout on semaphore %d\n",
                     Handle));
 */
         return AE_TIME;
@@ -687,7 +693,7 @@ AcpiOsWaitSemaphore (
 
     if (SemaphoreTable[Index].CurrentUnits == 0)
     {
-        DEBUG_PRINT (ACPI_ERROR, ("WaitSemaphore [%d]: No units, Timeout %X, Status 0x%X\n",
+        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "[%d] No units, Timeout %X, Status 0x%X\n",
                     Index, Timeout, WaitStatus));
 
         return AE_OK;
@@ -723,6 +729,8 @@ AcpiOsSignalSemaphore (
 
     UINT32              Index = (UINT32) Handle;
 
+    PROC_NAME ("OsSignalSemaphore");
+
 
     if ((Index >= NUM_SEMAPHORES) ||
         !SemaphoreTable[Index].OsHandle)
@@ -741,7 +749,7 @@ AcpiOsSignalSemaphore (
     if ((SemaphoreTable[Index].CurrentUnits + 1) > 
         SemaphoreTable[Index].MaxUnits)
     {
-        DEBUG_PRINT (ACPI_ERROR, ("Signal: Oversignalled semaphore[%d]! Current %d Max %d\n", 
+        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Oversignalled semaphore[%d]! Current %d Max %d\n", 
             Index, SemaphoreTable[Index].CurrentUnits, SemaphoreTable[Index].MaxUnits));
 
         return (AE_LIMIT);
