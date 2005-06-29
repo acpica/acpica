@@ -284,8 +284,11 @@ AcpiInstallFixedEventHandler (
     FIXED_EVENT_HANDLER     Handler,
     void                    *Context)
 {
+    ACPI_STATUS             Status = AE_OK;
+
 
     FUNCTION_TRACE ("AcpiInstallFixedEventHandler");
+
 
     /* Sanity check the parameters. */
 
@@ -294,11 +297,14 @@ AcpiInstallFixedEventHandler (
         return_ACPI_STATUS (AE_BAD_PARAMETER);
     }
     
+    CmAcquireMutex (MTX_FIXED_EVENT);
+
     /* Don't allow two handlers. */
 
     if (NULL != FixedEventHandlers[Event])
     {
-        return_ACPI_STATUS (AE_EXIST);
+        Status = AE_EXIST;
+        goto Cleanup;
     }
     
     /* Install the handler before enabling the event - just in case... */
@@ -309,12 +315,15 @@ AcpiInstallFixedEventHandler (
     {
         DEBUG_PRINT (ACPI_WARN, ("Could not write to fixed event enable register.\n"));
         FixedEventHandlers[Event] = NULL;
-        return_ACPI_STATUS (AE_ERROR);
+        Status = AE_ERROR;
+        goto Cleanup;
     }
 
     DEBUG_PRINT (ACPI_INFO, ("Enabled fixed event %d.  Handler: %x\n", Event, Handler));    
-    
-    return_ACPI_STATUS (AE_OK);
+
+Cleanup:
+    CmReleaseMutex (MTX_FIXED_EVENT);
+    return_ACPI_STATUS (Status);
 }
 
 
@@ -336,8 +345,11 @@ AcpiRemoveFixedEventHandler (
     UINT32                  Event,
     FIXED_EVENT_HANDLER     Handler)
 {
+    ACPI_STATUS             Status = AE_OK;
+
 
     FUNCTION_TRACE ("AcpiRemoveFixedEventHandler");
+
 
     /* Sanity check the parameters. */
 
@@ -346,18 +358,25 @@ AcpiRemoveFixedEventHandler (
         return_ACPI_STATUS (AE_BAD_PARAMETER);
     }
     
+    CmAcquireMutex (MTX_FIXED_EVENT);
+
     /* Disable the event before removing the handler - just in case... */
 
     if (0 != HwRegisterIO (ACPI_WRITE, Event + TMR_EN, 0))
     {
         DEBUG_PRINT (ACPI_WARN, ("Could not write to fixed event enable register.\n"));
-        return_ACPI_STATUS (AE_ERROR);
+        Status = AE_ERROR;
+        goto Cleanup;
     }
+
+    /* Remove the handler */
 
     FixedEventHandlers[Event] = NULL;    
     DEBUG_PRINT (ACPI_INFO, ("Disabled fixed event %d.\n", Event));    
     
-    return_ACPI_STATUS (AE_OK);
+Cleanup:
+    CmReleaseMutex (MTX_FIXED_EVENT);
+    return_ACPI_STATUS (Status);
 }
 
 
@@ -382,6 +401,9 @@ AcpiInstallGpeHandler (
     GPE_HANDLER             Handler, 
     void                    *Context)
 {
+    ACPI_STATUS             Status = AE_OK;
+
+    
     FUNCTION_TRACE ("AcpiInstallGpeHandler");
 
 
@@ -393,13 +415,14 @@ AcpiInstallGpeHandler (
     }
 
 
-    /* TBD: Mutex */
+    CmAcquireMutex (MTX_GP_EVENT);
 
     /* Make sure that there isn't a handler there already */
 
     if (GpeInfo[GpeNumber].Handler)
     {
-        return_ACPI_STATUS (AE_EXIST);
+        Status = AE_EXIST;
+        goto Cleanup;
     }
 
 
@@ -413,7 +436,9 @@ AcpiInstallGpeHandler (
 
     HwEnableGpe (GpeNumber);
 
-    return_ACPI_STATUS (AE_OK);
+Cleanup:
+    CmReleaseMutex (MTX_GP_EVENT);
+    return_ACPI_STATUS (Status);
 }
 
 
@@ -435,6 +460,9 @@ AcpiRemoveGpeHandler (
     UINT32                  GpeNumber, 
     GPE_HANDLER             Handler)
 {
+    ACPI_STATUS             Status = AE_OK;
+
+    
     FUNCTION_TRACE ("AcpiRemoveGpeHandler");
 
 
@@ -446,13 +474,14 @@ AcpiRemoveGpeHandler (
     }
 
 
-    /* TBD: Mutex */
+    CmAcquireMutex (MTX_GP_EVENT);
 
     /* Make sure that the installed handler is the same */
 
     if (GpeInfo[GpeNumber].Handler != Handler)
     {
-        return_ACPI_STATUS (AE_BAD_PARAMETER);
+        Status = AE_BAD_PARAMETER;
+        goto Cleanup;
     }
 
 
@@ -467,7 +496,9 @@ AcpiRemoveGpeHandler (
     GpeInfo[GpeNumber].Context = NULL;
 
  
-    return_ACPI_STATUS (AE_OK);
+Cleanup:
+    CmReleaseMutex (MTX_GP_EVENT);
+    return_ACPI_STATUS (Status);
 }
 
 
@@ -493,6 +524,7 @@ AcpiInstallNotifyHandler (
 {
     ACPI_OBJECT_INTERNAL    *ObjDesc;
     NAME_TABLE_ENTRY        *ObjEntry;
+    ACPI_STATUS             Status;
 
 
     FUNCTION_TRACE ("AcpiInstallNotifyHandler");
@@ -539,11 +571,13 @@ AcpiInstallNotifyHandler (
             return_ACPI_STATUS (AE_NO_MEMORY);
         }
 
-        /* Init */
-        /* TBD: Should use NsAttachObject! */
+        /* Attach the new object to the NTE */
 
-        CmUpdateObjectReference (ObjDesc, REF_INCREMENT);
-        ObjEntry->Object = ObjDesc;
+        Status = NsAttachObject (Device, ObjDesc, (UINT8) ObjEntry->Type);
+        if (ACPI_FAILURE (Status))
+        {
+            return_ACPI_STATUS (Status);
+        }
     }
 
     else
