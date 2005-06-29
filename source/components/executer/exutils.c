@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exutils - interpreter/scanner utilities
- *              $Revision: 1.98 $
+ *              $Revision: 1.101 $
  *
  *****************************************************************************/
 
@@ -144,6 +144,35 @@
 
 /*******************************************************************************
  *
+ * FUNCTION:    AcpiExValidateObjectType
+ *
+ * PARAMETERS:  Type            Object type to validate
+ *
+ * DESCRIPTION: Determine if a type is a valid ACPI object type
+ *
+ ******************************************************************************/
+
+BOOLEAN
+AcpiExValidateObjectType (
+    ACPI_OBJECT_TYPE        Type)
+{
+
+    ACPI_FUNCTION_ENTRY ();
+
+
+    if ((Type > ACPI_TYPE_MAX && Type < INTERNAL_TYPE_BEGIN) ||
+        (Type > INTERNAL_TYPE_MAX))
+    {
+        return (FALSE);
+    }
+
+    return (TRUE);
+}
+
+#ifndef ACPI_NO_METHOD_EXECUTION
+
+/*******************************************************************************
+ *
  * FUNCTION:    AcpiExEnterInterpreter
  *
  * PARAMETERS:  None
@@ -212,39 +241,9 @@ AcpiExExitInterpreter (void)
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiExValidateObjectType
- *
- * PARAMETERS:  Type            Object type to validate
- *
- * DESCRIPTION: Determine if a type is a valid ACPI object type
- *
- ******************************************************************************/
-
-BOOLEAN
-AcpiExValidateObjectType (
-    ACPI_OBJECT_TYPE        Type)
-{
-
-    ACPI_FUNCTION_ENTRY ();
-
-
-    if ((Type > ACPI_TYPE_MAX && Type < INTERNAL_TYPE_BEGIN) ||
-        (Type > INTERNAL_TYPE_MAX))
-    {
-        return (FALSE);
-    }
-
-    return (TRUE);
-}
-
-
-/*******************************************************************************
- *
  * FUNCTION:    AcpiExTruncateFor32bitTable
  *
  * PARAMETERS:  ObjDesc         - Object to be truncated
- *              WalkState       - Current walk state
- *                                (A method must be executing)
  *
  * RETURN:      none
  *
@@ -255,8 +254,7 @@ AcpiExValidateObjectType (
 
 void
 AcpiExTruncateFor32bitTable (
-    ACPI_OPERAND_OBJECT     *ObjDesc,
-    ACPI_WALK_STATE         *WalkState)
+    ACPI_OPERAND_OBJECT     *ObjDesc)
 {
 
     ACPI_FUNCTION_ENTRY ();
@@ -267,8 +265,7 @@ AcpiExTruncateFor32bitTable (
      * a control method
      */
     if ((!ObjDesc) ||
-        (ObjDesc->Common.Type != ACPI_TYPE_INTEGER) ||
-        (!WalkState->MethodNode))
+        (ACPI_GET_OBJECT_TYPE (ObjDesc) != ACPI_TYPE_INTEGER))
     {
         return;
     }
@@ -486,4 +483,4 @@ AcpiExUnsignedIntegerToString (
     }
 }
 
-
+#endif
