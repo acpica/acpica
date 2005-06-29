@@ -123,8 +123,8 @@
 #include <pnp.h>
 
 
-#define _THIS_MODULE        "cmobject.c"
 #define _COMPONENT          MISCELLANEOUS
+        MODULE_NAME         ("cmobject");
 
 
 typedef struct Search_st 
@@ -211,7 +211,7 @@ CmBuildExternalSimpleObject (
         /*
          * Copy the return data to the caller's buffer
          */
-        memcpy ((void *) DataSpace, (void *) SourcePtr, Length);
+        MEMCPY ((void *) DataSpace, (void *) SourcePtr, Length);
     }
 
 
@@ -276,7 +276,7 @@ CmBuildExternalPackageObject (
      * Initialize the working variables
      */
 
-    memset ((void *) Level, 0, sizeof (Level));
+    MEMSET ((void *) Level, 0, sizeof (Level));
 
     Level[0].InternalObj    = InternalObj;
     Level[0].ExternalObj    = ExternalObj;
@@ -303,7 +303,7 @@ CmBuildExternalPackageObject (
         ThisInternalObj = (ACPI_OBJECT_INTERNAL *) LevelPtr->InternalObj->Package.Elements[ThisIndex];
         ThisExternalObj = (ACPI_OBJECT *) &LevelPtr->ExternalObj->Package.Elements[ThisIndex];
 
-        if (VALID_OBJECT_TYPE (ThisInternalObj, ACPI_TYPE_Package))
+        if (IS_THIS_OBJECT_TYPE (ThisInternalObj, ACPI_TYPE_Package))
         {
             /*
              * If this object is a package then we go one deeper
@@ -417,7 +417,7 @@ CmBuildExternalObject (
     FUNCTION_TRACE ("CmBuildExternalObject");
 
 
-    if (VALID_OBJECT_TYPE (InternalObj, ACPI_TYPE_Package))
+    if (IS_THIS_OBJECT_TYPE (InternalObj, ACPI_TYPE_Package))
     {
         /*
          * Package objects contain other objects (which can be objects)
@@ -565,7 +565,7 @@ CmBuildInternalPackageObject (
      * Initialize the working variables
      */
     
-    memset ((void *) Level, 0, sizeof(Level));
+    MEMSET ((void *) Level, 0, sizeof(Level));
 
     Level[0].InternalObj    = InternalObj;
     Level[0].ExternalObj    = ExternalObj;
@@ -591,7 +591,7 @@ CmBuildInternalPackageObject (
         ThisInternalObj = (ACPI_OBJECT_INTERNAL *) &LevelPtr->InternalObj->Package.Elements[ThisIndex];
         ThisExternalObj = (ACPI_OBJECT *) &LevelPtr->ExternalObj->Package.Elements[ThisIndex];
 
-        if (VALID_OBJECT_TYPE (ThisInternalObj, ACPI_TYPE_Package))
+        if (IS_THIS_OBJECT_TYPE (ThisInternalObj, ACPI_TYPE_Package))
         {
             /*
              * If this object is a package then we go one deeper
