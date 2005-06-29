@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: aeexec - Support routines for AcpiExec utility
- *              $Revision: 1.80 $
+ *              $Revision: 1.81 $
  *
  *****************************************************************************/
 
@@ -782,7 +782,11 @@ AeNotifyHandler (
 
 ACPI_STATUS
 AeExceptionHandler (
-    ACPI_STATUS             AmlStatus)
+    ACPI_STATUS             AmlStatus,
+    ACPI_NAME               Name,
+    UINT16                  Opcode,
+    UINT32                  AmlOffset,
+    void                    *Context)
 {
     ACPI_STATUS             Status;
     ACPI_BUFFER             ReturnObj;
@@ -792,7 +796,9 @@ AeExceptionHandler (
 
 
     Exception = AcpiFormatException (AmlStatus);
-    AcpiOsPrintf ("****AcpiExec exception: %s\n", Exception);
+    AcpiOsPrintf (
+        "**** AcpiExec Exception: %s during execution of method [%4.4s] Opcode [%s] @%X\n",
+        Exception, &Name, AcpiPsGetOpcodeName (Opcode), AmlOffset);
 
     /*
      * Invoke the _ERR method if present
