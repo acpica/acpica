@@ -220,6 +220,11 @@ NsDumpOneObject (
         return NULL;
     }
     
+    if (!ObjHandle)
+    {
+        DEBUG_PRINT (ACPI_INFO, ("Null object handle\n"));
+        return NULL;
+    }
 
     /* Indent the object according to the level */
 
@@ -293,7 +298,7 @@ NsDumpOneObject (
      */
 
     DEBUG_PRINT_RAW (TRACE_TABLES,
-                ("%4.4s [%s] ", &ThisEntry->Name, NsTypeNames[Type]));
+                ("%4.4s [%s] ", &ThisEntry->Name, Gbl_NsTypeNames[Type]));
 
     DEBUG_PRINT_RAW (TRACE_TABLES, ("%p S:%p O:%p",
                 ThisEntry,
@@ -322,7 +327,7 @@ NsDumpOneObject (
     
         while (Value && (DebugLevel & TRACE_VALUES))
         {
-            UINT8               bT = ((ACPI_OBJECT_INTERNAL *) Value)->Type;
+            UINT8               bT = ((ACPI_OBJECT_INTERNAL *) Value)->Common.Type;
 
 
             DEBUG_PRINT_RAW (TRACE_TABLES,
@@ -481,7 +486,7 @@ NsDumpTables (
     FUNCTION_TRACE ("NsDumpTables");
 
 
-    if (!RootObject->Scope)
+    if (!Gbl_RootObject->Scope)
     {      
         /* 
          * If the name space has not been initialized,
@@ -495,7 +500,7 @@ NsDumpTables (
     {
         /*  entire namespace    */
 
-        SearchHandle = RootObject;
+        SearchHandle = Gbl_RootObject;
         DEBUG_PRINT (TRACE_TABLES, ("\\\n"));
     }
 
@@ -522,7 +527,7 @@ NsDumpEntry (
     UINT32                  DebugLevel)
 {
 
-    FUNCTION_TRACE ("NsDumpEntry");
+    FUNCTION_TRACE_PTR ("NsDumpEntry", Handle);
 
 
     NsDumpOneObject (Handle, 1, (void *) DebugLevel);

@@ -332,7 +332,7 @@ NsEvaluateByHandle (
 
     /* Parameter Validation */
 
-    if (!RootObject->Scope)
+    if (!Gbl_RootObject->Scope)
     {
         /* 
          * If the name space has not been initialized, the Method has surely
@@ -353,7 +353,7 @@ NsEvaluateByHandle (
         /* Initialize the return value to an invalid object */
 
         memset (ReturnObject, 0, sizeof (ACPI_OBJECT_INTERNAL));
-        ReturnObject->Type = TYPE_Invalid;
+        ReturnObject->Common.Type = TYPE_Invalid;
     }
 
 
@@ -476,7 +476,7 @@ NsExecuteControlMethod (
 
     /* Reset the current scope to the beginning of scope stack */
 
-    CurrentScope = &ScopeStack[0];
+    Gbl_CurrentScope = &Gbl_ScopeStack[0];
 
     /* Push current scope on scope stack and make Method->Scope current  */
 
