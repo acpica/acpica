@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exresolv - AML Interpreter object resolution
- *              $Revision: 1.118 $
+ *              $Revision: 1.120 $
  *
  *****************************************************************************/
 
@@ -10,7 +10,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2003, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -122,6 +122,7 @@
 #include "acdispat.h"
 #include "acinterp.h"
 #include "acnamesp.h"
+#include "acparser.h"
 
 
 #define _COMPONENT          ACPI_EXECUTER
@@ -333,6 +334,7 @@ AcpiExResolveObjectToValue (
 
         case AML_REF_OF_OP:
         case AML_DEBUG_OP:
+        case AML_LOAD_OP:
 
             /* Just leave the object as-is */
 
@@ -341,8 +343,8 @@ AcpiExResolveObjectToValue (
 
         default:
 
-            ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Unknown Reference opcode %X in %p\n",
-                Opcode, StackDesc));
+            ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Unknown Reference opcode %X (%s) in %p\n",
+                Opcode, AcpiPsGetOpcodeName (Opcode), StackDesc));
             Status = AE_AML_INTERNAL;
             break;
         }

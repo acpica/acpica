@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exresop - AML Interpreter operand/object resolution
- *              $Revision: 1.50 $
+ *              $Revision: 1.64 $
  *
  *****************************************************************************/
 
@@ -10,7 +10,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2003, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -121,7 +121,6 @@
 #include "amlcode.h"
 #include "acparser.h"
 #include "acinterp.h"
-#include "acnamesp.h"
 
 
 #define _COMPONENT          ACPI_EXECUTER
@@ -158,6 +157,20 @@ AcpiExCheckObjectType (
         return (AE_OK);
     }
 
+    if (TypeNeeded == ACPI_TYPE_LOCAL_REFERENCE)
+    {
+        /*
+         * Allow the AML "Constant" opcodes (Zero, One, etc.) to be reference
+         * objects and thus allow them to be targets.  (As per the ACPI
+         * specification, a store to a constant is a noop.)
+         */
+        if ((ThisType == ACPI_TYPE_INTEGER) &&
+            (((ACPI_OPERAND_OBJECT *) Object)->Common.Flags & AOPOBJ_AML_CONSTANT))
+        {
+            return (AE_OK);
+        }
+    }
+
     if (TypeNeeded != ThisType)
     {
         ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
@@ -179,18 +192,17 @@ AcpiExCheckObjectType (
  * PARAMETERS:  Opcode              - Opcode being interpreted
  *              StackPtr            - Pointer to the operand stack to be
  *                                    resolved
- *              WalkState           - Current stateu
+ *              WalkState           - Current state
  *
  * RETURN:      Status
  *
  * DESCRIPTION: Convert multiple input operands to the types required by the
  *              target operator.
  *
- *      Each nibble (actually 5 bits)  in ArgTypes represents one required
- *      operand and indicates the required Type:
- *
- *      The corresponding operand will be converted to the required type if
- *      possible, otherwise we abort with an exception.
+ *      Each 5-bit group in ArgTypes represents one required
+ *      operand and indicates the required Type. The corresponding operand
+ *      will be converted to the required type if possible, otherwise we
+ *      abort with an exception.
  *
  ******************************************************************************/
 
@@ -268,11 +280,11 @@ AcpiExResolveOperands (
 
             /* ACPI internal object */
 
-            ObjectType = ObjDesc->Common.Type;
+            ObjectType = ACPI_GET_OBJECT_TYPE (ObjDesc);
 
             /* Check for bad ACPI_OBJECT_TYPE */
 
-            if (!AcpiExValidateObjectType (ObjectType))
+            if (!AcpiUtValidObjectType (ObjectType))
             {
                 ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Bad operand object type [%X]\n",
                     ObjectType));
@@ -280,7 +292,7 @@ AcpiExResolveOperands (
                 return_ACPI_STATUS (AE_AML_OPERAND_TYPE);
             }
 
-            if (ObjectType == (UINT8) INTERNAL_TYPE_REFERENCE)
+            if (ObjectType == (UINT8) ACPI_TYPE_LOCAL_REFERENCE)
             {
                 /*
                  * Decode the Reference
@@ -293,15 +305,13 @@ AcpiExResolveOperands (
 
                 switch (ObjDesc->Reference.Opcode)
                 {
-                case AML_ZERO_OP:
-                case AML_ONE_OP:
-                case AML_ONES_OP:
                 case AML_DEBUG_OP:
                 case AML_NAME_OP:
                 case AML_INDEX_OP:
+                case AML_REF_OF_OP:
                 case AML_ARG_OP:
                 case AML_LOCAL_OP:
-                case AML_REVISION_OP:
+                case AML_LOAD_OP:   /* DdbHandle from LOAD_OP or LOAD_TABLE_OP */
 
                     ACPI_DEBUG_ONLY_MEMBERS (ACPI_DEBUG_PRINT ((ACPI_DB_EXEC,
                         "Reference Opcode: %s\n", OpInfo->Name)));
@@ -309,8 +319,9 @@ AcpiExResolveOperands (
 
                 default:
                     ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
-                        "Reference Opcode: Unknown [%02x]\n",
-                        ObjDesc->Reference.Opcode));
+                        "Unknown Reference Opcode %X [%s]\n",
+                        ObjDesc->Reference.Opcode,
+                        (AcpiPsGetOpcodeInfo (ObjDesc->Reference.Opcode))->Name));
 
                     return_ACPI_STATUS (AE_AML_OPERAND_TYPE);
                 }
@@ -365,14 +376,14 @@ AcpiExResolveOperands (
         case ARGI_FIXED_TARGET:         /* No implicit conversion before store to target */
         case ARGI_SIMPLE_TARGET:        /* Name, Local, or Arg - no implicit conversion  */
 
-            /* Need an operand of type INTERNAL_TYPE_REFERENCE */
+            /* Need an operand of type ACPI_TYPE_LOCAL_REFERENCE */
 
             if (ACPI_GET_DESCRIPTOR_TYPE (ObjDesc) == ACPI_DESC_TYPE_NAMED) /* Node (name) ptr OK as-is */
             {
                 goto NextOperand;
             }
 
-            Status = AcpiExCheckObjectType (INTERNAL_TYPE_REFERENCE,
+            Status = AcpiExCheckObjectType (ACPI_TYPE_LOCAL_REFERENCE,
                             ObjectType, ObjDesc);
             if (ACPI_FAILURE (Status))
             {
@@ -401,7 +412,7 @@ AcpiExResolveOperands (
              * -- All others must be resolved below.
              */
             if ((Opcode == AML_STORE_OP) &&
-                ((*StackPtr)->Common.Type == INTERNAL_TYPE_REFERENCE) &&
+                (ACPI_GET_OBJECT_TYPE (*StackPtr) == ACPI_TYPE_LOCAL_REFERENCE) &&
                 ((*StackPtr)->Reference.Opcode == AML_INDEX_OP))
             {
                 goto NextOperand;
@@ -422,6 +433,10 @@ AcpiExResolveOperands (
         {
             return_ACPI_STATUS (Status);
         }
+
+        /* Get the resolved object */
+
+        ObjDesc = *StackPtr;
 
         /*
          * Check the resulting object (value) type
@@ -446,20 +461,6 @@ AcpiExResolveOperands (
             TypeNeeded = ACPI_TYPE_EVENT;
             break;
 
-        case ARGI_REGION:
-
-            /* Need an operand of type ACPI_TYPE_REGION */
-
-            TypeNeeded = ACPI_TYPE_REGION;
-            break;
-
-        case ARGI_IF:   /* If */
-
-            /* Need an operand of type INTERNAL_TYPE_IF */
-
-            TypeNeeded = INTERNAL_TYPE_IF;
-            break;
-
         case ARGI_PACKAGE:   /* Package */
 
             /* Need an operand of type ACPI_TYPE_PACKAGE */
@@ -474,6 +475,13 @@ AcpiExResolveOperands (
             TypeNeeded = ACPI_TYPE_ANY;
             break;
 
+        case ARGI_DDBHANDLE:
+
+            /* Need an operand of type ACPI_TYPE_DDB_HANDLE */
+
+            TypeNeeded = ACPI_TYPE_LOCAL_REFERENCE;
+            break;
+
 
         /*
          * The more complex cases allow multiple resolved object types
@@ -483,15 +491,16 @@ AcpiExResolveOperands (
             /*
              * Need an operand of type ACPI_TYPE_INTEGER,
              * But we can implicitly convert from a STRING or BUFFER
+             * Aka - "Implicit Source Operand Conversion"
              */
-            Status = AcpiExConvertToInteger (*StackPtr, StackPtr, WalkState);
+            Status = AcpiExConvertToInteger (ObjDesc, StackPtr, WalkState);
             if (ACPI_FAILURE (Status))
             {
                 if (Status == AE_TYPE)
                 {
                     ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
                         "Needed [Integer/String/Buffer], found [%s] %p\n",
-                        AcpiUtGetTypeName ((*StackPtr)->Common.Type), *StackPtr));
+                        AcpiUtGetObjectTypeName (ObjDesc), ObjDesc));
 
                     return_ACPI_STATUS (AE_AML_OPERAND_TYPE);
                 }
@@ -506,15 +515,16 @@ AcpiExResolveOperands (
             /*
              * Need an operand of type ACPI_TYPE_BUFFER,
              * But we can implicitly convert from a STRING or INTEGER
+             * Aka - "Implicit Source Operand Conversion"
              */
-            Status = AcpiExConvertToBuffer (*StackPtr, StackPtr, WalkState);
+            Status = AcpiExConvertToBuffer (ObjDesc, StackPtr, WalkState);
             if (ACPI_FAILURE (Status))
             {
                 if (Status == AE_TYPE)
                 {
                     ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
                         "Needed [Integer/String/Buffer], found [%s] %p\n",
-                        AcpiUtGetTypeName ((*StackPtr)->Common.Type), *StackPtr));
+                        AcpiUtGetObjectTypeName (ObjDesc), ObjDesc));
 
                     return_ACPI_STATUS (AE_AML_OPERAND_TYPE);
                 }
@@ -529,15 +539,16 @@ AcpiExResolveOperands (
             /*
              * Need an operand of type ACPI_TYPE_STRING,
              * But we can implicitly convert from a BUFFER or INTEGER
+             * Aka - "Implicit Source Operand Conversion"
              */
-            Status = AcpiExConvertToString (*StackPtr, StackPtr, 16, ACPI_UINT32_MAX, WalkState);
+            Status = AcpiExConvertToString (ObjDesc, StackPtr, 16, ACPI_UINT32_MAX, WalkState);
             if (ACPI_FAILURE (Status))
             {
                 if (Status == AE_TYPE)
                 {
                     ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
                         "Needed [Integer/String/Buffer], found [%s] %p\n",
-                        AcpiUtGetTypeName ((*StackPtr)->Common.Type), *StackPtr));
+                        AcpiUtGetObjectTypeName (ObjDesc), ObjDesc));
 
                     return_ACPI_STATUS (AE_AML_OPERAND_TYPE);
                 }
@@ -551,7 +562,7 @@ AcpiExResolveOperands (
 
             /* Need an operand of type INTEGER, STRING or BUFFER */
 
-            switch ((*StackPtr)->Common.Type)
+            switch (ACPI_GET_OBJECT_TYPE (ObjDesc))
             {
             case ACPI_TYPE_INTEGER:
             case ACPI_TYPE_STRING:
@@ -563,7 +574,40 @@ AcpiExResolveOperands (
             default:
                 ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
                     "Needed [Integer/String/Buffer], found [%s] %p\n",
-                    AcpiUtGetTypeName ((*StackPtr)->Common.Type), *StackPtr));
+                    AcpiUtGetObjectTypeName (ObjDesc), ObjDesc));
+
+                return_ACPI_STATUS (AE_AML_OPERAND_TYPE);
+            }
+            goto NextOperand;
+
+
+        case ARGI_BUFFER_OR_STRING:
+
+            /* Need an operand of type STRING or BUFFER */
+
+            switch (ACPI_GET_OBJECT_TYPE (ObjDesc))
+            {
+            case ACPI_TYPE_STRING:
+            case ACPI_TYPE_BUFFER:
+
+                /* Valid operand */
+               break;
+
+            case ACPI_TYPE_INTEGER:
+
+                /* Highest priority conversion is to type Buffer */
+
+                Status = AcpiExConvertToBuffer (ObjDesc, StackPtr, WalkState);
+                if (ACPI_FAILURE (Status))
+                {
+                    return_ACPI_STATUS (Status);
+                }
+                break;
+
+            default:
+                ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
+                    "Needed [Integer/String/Buffer], found [%s] %p\n",
+                    AcpiUtGetObjectTypeName (ObjDesc), ObjDesc));
 
                 return_ACPI_STATUS (AE_AML_OPERAND_TYPE);
             }
@@ -573,59 +617,25 @@ AcpiExResolveOperands (
         case ARGI_DATAOBJECT:
             /*
              * ARGI_DATAOBJECT is only used by the SizeOf operator.
-             * Need a buffer, string, package, or Node reference.
+             * Need a buffer, string, package, or RefOf reference.
              *
              * The only reference allowed here is a direct reference to
              * a namespace node.
              */
-            if ((*StackPtr)->Common.Type == INTERNAL_TYPE_REFERENCE)
-            {
-                if (!(*StackPtr)->Reference.Node)
-                {
-                    ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
-                        "Needed [Node Reference], found [%p]\n",
-                        *StackPtr));
-
-                    return_ACPI_STATUS (AE_AML_OPERAND_TYPE);
-                }
-
-                /* Get the object attached to the node */
-
-                TempNode = AcpiNsGetAttachedObject ((*StackPtr)->Reference.Node);
-                if (!TempNode)
-                {
-                    ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
-                        "Node [%p] has no attached object\n",
-                        (*StackPtr)->Reference.Node));
-
-                    return_ACPI_STATUS (AE_AML_OPERAND_TYPE);
-                }
-
-                /*
-                 * Swap the reference object with the node's object.  Must add
-                 * a reference to the node object, and remove a reference from
-                 * the original reference object.
-                 */
-                AcpiUtAddReference (TempNode);
-                AcpiUtRemoveReference (*StackPtr);
-                (*StackPtr) = TempNode;
-            }
-
-            /* Need a buffer, string, package */
-
-            switch ((*StackPtr)->Common.Type)
+            switch (ACPI_GET_OBJECT_TYPE (ObjDesc))
             {
             case ACPI_TYPE_PACKAGE:
             case ACPI_TYPE_STRING:
             case ACPI_TYPE_BUFFER:
+            case ACPI_TYPE_LOCAL_REFERENCE:
 
                 /* Valid operand */
                 break;
 
             default:
                 ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
-                    "Needed [Buf/Str/Pkg], found [%s] %p\n",
-                    AcpiUtGetTypeName ((*StackPtr)->Common.Type), *StackPtr));
+                    "Needed [Buffer/String/Package/Reference], found [%s] %p\n",
+                    AcpiUtGetObjectTypeName (ObjDesc), ObjDesc));
 
                 return_ACPI_STATUS (AE_AML_OPERAND_TYPE);
             }
@@ -636,7 +646,7 @@ AcpiExResolveOperands (
 
             /* Need a buffer or package or (ACPI 2.0) String */
 
-            switch ((*StackPtr)->Common.Type)
+            switch (ACPI_GET_OBJECT_TYPE (ObjDesc))
             {
             case ACPI_TYPE_PACKAGE:
             case ACPI_TYPE_STRING:
@@ -647,8 +657,32 @@ AcpiExResolveOperands (
 
             default:
                 ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
-                    "Needed [Buf/Str/Pkg], found [%s] %p\n",
-                    AcpiUtGetTypeName ((*StackPtr)->Common.Type), *StackPtr));
+                    "Needed [Buffer/String/Package], found [%s] %p\n",
+                    AcpiUtGetObjectTypeName (ObjDesc), ObjDesc));
+
+                return_ACPI_STATUS (AE_AML_OPERAND_TYPE);
+            }
+            goto NextOperand;
+
+
+        case ARGI_REGION_OR_FIELD:
+
+            /* Need an operand of type ACPI_TYPE_REGION or a FIELD in a region */
+
+            switch (ACPI_GET_OBJECT_TYPE (ObjDesc))
+            {
+            case ACPI_TYPE_REGION:
+            case ACPI_TYPE_LOCAL_REGION_FIELD:
+            case ACPI_TYPE_LOCAL_BANK_FIELD:
+            case ACPI_TYPE_LOCAL_INDEX_FIELD:
+
+                /* Valid operand */
+                break;
+
+            default:
+                ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
+                    "Needed [Region/RegionField], found [%s] %p\n",
+                    AcpiUtGetObjectTypeName (ObjDesc), ObjDesc));
 
                 return_ACPI_STATUS (AE_AML_OPERAND_TYPE);
             }
@@ -660,7 +694,7 @@ AcpiExResolveOperands (
             /* Unknown type */
 
             ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
-                "Internal - Unknown ARGI type %X\n",
+                "Internal - Unknown ARGI (required operand) type %X\n",
                 ThisArgType));
 
             return_ACPI_STATUS (AE_BAD_PARAMETER);
@@ -671,7 +705,7 @@ AcpiExResolveOperands (
          * required object type (Simple cases only).
          */
         Status = AcpiExCheckObjectType (TypeNeeded,
-                        (*StackPtr)->Common.Type, *StackPtr);
+                        ACPI_GET_OBJECT_TYPE (*StackPtr), *StackPtr);
         if (ACPI_FAILURE (Status))
         {
             return_ACPI_STATUS (Status);
