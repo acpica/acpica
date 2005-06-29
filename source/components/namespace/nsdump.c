@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: nsdump - table dumping routines for debug
- *              $Revision: 1.144 $
+ *              $Revision: 1.145 $
  *
  *****************************************************************************/
 
@@ -394,7 +394,7 @@ AcpiNsDumpOneObject (
 
         case ACPI_TYPE_STRING:
 
-            AcpiOsPrintf ("Len %.2X", ObjDesc->String.Length);
+            AcpiOsPrintf ("Len %.2X ", ObjDesc->String.Length);
             AcpiUtPrintString (ObjDesc->String.Pointer, 32);
             AcpiOsPrintf ("\n");
             break;
