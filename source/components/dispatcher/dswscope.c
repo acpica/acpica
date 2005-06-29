@@ -213,7 +213,7 @@ NsPushMethodScope (NsHandle NewScope)
     {
         if (CurrentScope < &ScopeStack[MAXNEST-1])   /* check for overflow */
         {
-            NsPushCurrentScope (((nte *) NewScope)->ChildScope, Method);
+            NsPushCurrentScope (((nte *) NewScope)->ChildScope, TYPE_Method);
         }
     
         else
@@ -278,7 +278,7 @@ NsPopCurrent (NsType Type)
 
         DEBUG_PRINT (TRACE_EXEC, ("Popped %d\n", (CurrentScope+1)->Type));
 
-        if ((Any == Type) || (Type == (CurrentScope + 1)->Type))
+        if ((TYPE_Any == Type) || (Type == (CurrentScope + 1)->Type))
         {
             DEBUG_PRINT (TRACE_EXEC, ("Found %d\n", Type));
             return Count;
