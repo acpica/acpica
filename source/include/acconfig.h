@@ -186,7 +186,7 @@
  * are in turn linked together to form a chain of tables.
  */
 
-#define NS_TABLE_SIZE               16
+#define NS_TABLE_SIZE               4
 
 /* String size constants */
 
