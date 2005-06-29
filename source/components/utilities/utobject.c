@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: cmobject - ACPI object create/delete/size/cache routines
- *              $Revision: 1.31 $
+ *              $Revision: 1.34 $
  *
  *****************************************************************************/
 
@@ -9,8 +9,8 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, Intel Corp.  All rights
- * reserved.
+ * Some or all of this work - Copyright (c) 1999, 2000, Intel Corp.
+ * All rights reserved.
  *
  * 2. License
  *
@@ -334,7 +334,7 @@ _CmAllocateObjectDesc (
 
     Object->Common.DataType = ACPI_DESC_TYPE_INTERNAL;
 
-    DEBUG_PRINT (TRACE_ALLOCATIONS, ("AllocateObjectDesc: %p Size 0x%x\n",
+    DEBUG_PRINT (TRACE_ALLOCATIONS, ("AllocateObjectDesc: %p Size %X\n",
                     Object, sizeof (ACPI_OPERAND_OBJECT)));
 
     return_PTR (Object);
@@ -576,7 +576,7 @@ AcpiCmGetSimpleObjectSize (
 
     case ACPI_TYPE_STRING:
 
-        Length += InternalObj->String.Length;
+        Length += InternalObj->String.Length + 1;
         break;
 
 
@@ -605,7 +605,7 @@ AcpiCmGetSimpleObjectSize (
         if (InternalObj->Reference.OpCode != AML_NAMEPATH_OP)
         {
             DEBUG_PRINT (ACPI_ERROR,
-                ("CmGetSimpleObjectSize: Unsupported Reference opcode=0x%X in object %p\n",
+                ("CmGetSimpleObjectSize: Unsupported Reference opcode=%X in object %p\n",
                 InternalObj->Reference.OpCode, InternalObj));
             Status = AE_TYPE;
         }
@@ -615,7 +615,7 @@ AcpiCmGetSimpleObjectSize (
     default:
 
         DEBUG_PRINT (ACPI_ERROR,
-            ("CmGetSimpleObjectSize: Unsupported type=0x%X in object %p\n",
+            ("CmGetSimpleObjectSize: Unsupported type=%X in object %p\n",
             InternalObj->Common.Type, InternalObj));
         Status = AE_TYPE;
         break;
@@ -772,7 +772,7 @@ AcpiCmGetPackageObjectSize (
                  */
 
                 DEBUG_PRINT (ACPI_ERROR,
-                    ("CmGetPackageObjectSize: Pkg nested too deep (max %d)\n",
+                    ("CmGetPackageObjectSize: Pkg nested too deep (max %X)\n",
                     MAX_PACKAGE_DEPTH));
                 return_ACPI_STATUS (AE_LIMIT);
             }
