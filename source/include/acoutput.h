@@ -211,6 +211,7 @@
 #define FUNCTION_TRACE(a)               char * ThisProc = a;\
                                         FunctionTrace(_THIS_MODULE,__LINE__,_COMPONENT,a);
 #define FUNCTION_EXIT                   FunctionExit(_THIS_MODULE,__LINE__,_COMPONENT,ThisProc);
+#define FUNCTION_STATUS_EXIT(s)         FunctionStatusExit(_THIS_MODULE,__LINE__,_COMPONENT,ThisProc,s);
 
 /* Stack and buffer dumping */
 
