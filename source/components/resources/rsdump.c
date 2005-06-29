@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
- * Module Name: rsdump - Functions to display the resource structures.
- *              $Revision: 1.29 $
+ * Module Name: rsdump - Functions do dump out the resource structures.
+ *              $Revision: 1.13 $
  *
  ******************************************************************************/
 
@@ -9,8 +9,8 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
- * All rights reserved.
+ * Some or all of this work - Copyright (c) 1999, Intel Corp.  All rights
+ * reserved.
  *
  * 2. License
  *
@@ -120,11 +120,9 @@
 #include "acpi.h"
 #include "acresrc.h"
 
-#define _COMPONENT          ACPI_RESOURCES
-        ACPI_MODULE_NAME    ("rsdump")
+#define _COMPONENT          RESOURCE_MANAGER
+        MODULE_NAME         ("rsdump")
 
-
-#ifdef ACPI_DEBUG
 
 /*******************************************************************************
  *
@@ -132,7 +130,7 @@
  *
  * PARAMETERS:  Data            - pointer to the resource structure to dump.
  *
- * RETURN:      None
+ * RETURN:
  *
  * DESCRIPTION: Prints out the various members of the Data structure type.
  *
@@ -140,27 +138,28 @@
 
 void
 AcpiRsDumpIrq (
-    ACPI_RESOURCE_DATA      *Data)
+    RESOURCE_DATA           *Data)
 {
-    ACPI_RESOURCE_IRQ       *IrqData = (ACPI_RESOURCE_IRQ *) Data;
+    IRQ_RESOURCE            *IrqData = (IRQ_RESOURCE*) Data;
     UINT8                   Index = 0;
 
 
-    ACPI_FUNCTION_ENTRY ();
+    AcpiOsPrintf ("\tIRQ Resource\n");
 
+    AcpiOsPrintf ("\t\t%s Triggered\n",
+                LEVEL_SENSITIVE == IrqData->EdgeLevel ?
+                "Level" : "Edge");
 
-    AcpiOsPrintf ("IRQ Resource\n");
+    AcpiOsPrintf ("\t\tActive %s\n",
+                ACTIVE_LOW == IrqData->ActiveHighLow ?
+                "Low" : "High");
 
-    AcpiOsPrintf ("    %s Triggered\n",
-                ACPI_LEVEL_SENSITIVE == IrqData->EdgeLevel ? "Level" : "Edge");
+    AcpiOsPrintf ("\t\t%s\n",
+                SHARED == IrqData->SharedExclusive ?
+                "Shared" : "Exclusive");
 
-    AcpiOsPrintf ("    Active %s\n",
-                ACPI_ACTIVE_LOW == IrqData->ActiveHighLow ? "Low" : "High");
-
-    AcpiOsPrintf ("    %s\n",
-                ACPI_SHARED == IrqData->SharedExclusive ? "Shared" : "Exclusive");
-
-    AcpiOsPrintf ("    %X Interrupts ( ", IrqData->NumberOfInterrupts);
+    AcpiOsPrintf ("\t\t%X Interrupts ( ",
+                IrqData->NumberOfInterrupts);
 
     for (Index = 0; Index < IrqData->NumberOfInterrupts; Index++)
     {
@@ -178,7 +177,7 @@ AcpiRsDumpIrq (
  *
  * PARAMETERS:  Data            - pointer to the resource structure to dump.
  *
- * RETURN:      None
+ * RETURN:
  *
  * DESCRIPTION: Prints out the various members of the Data structure type.
  *
@@ -186,64 +185,62 @@ AcpiRsDumpIrq (
 
 void
 AcpiRsDumpDma (
-    ACPI_RESOURCE_DATA      *Data)
+    RESOURCE_DATA           *Data)
 {
-    ACPI_RESOURCE_DMA       *DmaData = (ACPI_RESOURCE_DMA *) Data;
+    DMA_RESOURCE            *DmaData = (DMA_RESOURCE*) Data;
     UINT8                   Index = 0;
 
 
-    ACPI_FUNCTION_ENTRY ();
-
-
-    AcpiOsPrintf ("DMA Resource\n");
+    AcpiOsPrintf ("\tDMA Resource\n");
 
     switch (DmaData->Type)
     {
-    case ACPI_COMPATIBILITY:
-        AcpiOsPrintf ("    Compatibility mode\n");
+    case COMPATIBILITY:
+        AcpiOsPrintf ("\t\tCompatibility mode\n");
         break;
 
-    case ACPI_TYPE_A:
-        AcpiOsPrintf ("    Type A\n");
+    case TYPE_A:
+        AcpiOsPrintf ("\t\tType A\n");
         break;
 
-    case ACPI_TYPE_B:
-        AcpiOsPrintf ("    Type B\n");
+    case TYPE_B:
+        AcpiOsPrintf ("\t\tType B\n");
         break;
 
-    case ACPI_TYPE_F:
-        AcpiOsPrintf ("    Type F\n");
+    case TYPE_F:
+        AcpiOsPrintf ("\t\tType F\n");
         break;
 
     default:
-        AcpiOsPrintf ("    Invalid DMA type\n");
+        AcpiOsPrintf ("\t\tInvalid DMA type\n");
         break;
     }
 
-    AcpiOsPrintf ("    %sBus Master\n",
-                ACPI_BUS_MASTER == DmaData->BusMaster ? "" : "Not a ");
-
+    AcpiOsPrintf ("\t\t%sBus Master\n",
+                BUS_MASTER == DmaData->BusMaster ?
+                "" : "Not a ");
 
     switch (DmaData->Transfer)
     {
-    case ACPI_TRANSFER_8:
-        AcpiOsPrintf ("    8-bit only transfer\n");
+    case TRANSFER_8:
+        AcpiOsPrintf ("\t\t8-bit only transfer\n");
         break;
 
-    case ACPI_TRANSFER_8_16:
-        AcpiOsPrintf ("    8 and 16-bit transfer\n");
+    case TRANSFER_8_16:
+        AcpiOsPrintf ("\t\t8 and 16-bit transfer\n");
         break;
 
-    case ACPI_TRANSFER_16:
-        AcpiOsPrintf ("    16 bit only transfer\n");
+    case TRANSFER_16:
+        AcpiOsPrintf ("\t\t16 bit only transfer\n");
         break;
 
     default:
-        AcpiOsPrintf ("    Invalid transfer preference\n");
+        AcpiOsPrintf ("\t\tInvalid transfer preference\n");
         break;
     }
 
-    AcpiOsPrintf ("    Number of Channels: %X ( ", DmaData->NumberOfChannels);
+    AcpiOsPrintf ("\t\tNumber of Channels: %X ( ",
+                DmaData->NumberOfChannels);
 
     for (Index = 0; Index < DmaData->NumberOfChannels; Index++)
     {
@@ -257,63 +254,61 @@ AcpiRsDumpDma (
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiRsDumpStartDependFns
+ * FUNCTION:    AcpiRsDumpStartDependentFunctions
  *
  * PARAMETERS:  Data            - pointer to the resource structure to dump.
  *
- * RETURN:      None
+ * RETURN:
  *
  * DESCRIPTION: Prints out the various members of the Data structure type.
  *
  ******************************************************************************/
 
 void
-AcpiRsDumpStartDependFns (
-    ACPI_RESOURCE_DATA          *Data)
+AcpiRsDumpStartDependentFunctions (
+    RESOURCE_DATA               *Data)
 {
-    ACPI_RESOURCE_START_DPF     *SdfData = (ACPI_RESOURCE_START_DPF *) Data;
+    START_DEPENDENT_FUNCTIONS_RESOURCE *SdfData =
+                        (START_DEPENDENT_FUNCTIONS_RESOURCE*) Data;
 
 
-    ACPI_FUNCTION_ENTRY ();
-
-
-    AcpiOsPrintf ("Start Dependent Functions Resource\n");
+    AcpiOsPrintf ("\tStart Dependent Functions Resource\n");
 
     switch (SdfData->CompatibilityPriority)
     {
-    case ACPI_GOOD_CONFIGURATION:
-        AcpiOsPrintf ("    Good configuration\n");
+    case GOOD_CONFIGURATION:
+        AcpiOsPrintf ("\t\tGood configuration\n");
         break;
 
-    case ACPI_ACCEPTABLE_CONFIGURATION:
-        AcpiOsPrintf ("    Acceptable configuration\n");
+    case ACCEPTABLE_CONFIGURATION:
+        AcpiOsPrintf ("\t\tAcceptable configuration\n");
         break;
 
-    case ACPI_SUB_OPTIMAL_CONFIGURATION:
-        AcpiOsPrintf ("    Sub-optimal configuration\n");
+    case SUB_OPTIMAL_CONFIGURATION:
+        AcpiOsPrintf ("\t\tSub-optimal configuration\n");
         break;
 
     default:
-        AcpiOsPrintf ("    Invalid compatibility priority\n");
+        AcpiOsPrintf ("\t\tInvalid compatibility priority\n");
         break;
     }
 
     switch(SdfData->PerformanceRobustness)
     {
-    case ACPI_GOOD_CONFIGURATION:
-        AcpiOsPrintf ("    Good configuration\n");
+    case GOOD_CONFIGURATION:
+        AcpiOsPrintf ("\t\tGood configuration\n");
         break;
 
-    case ACPI_ACCEPTABLE_CONFIGURATION:
-        AcpiOsPrintf ("    Acceptable configuration\n");
+    case ACCEPTABLE_CONFIGURATION:
+        AcpiOsPrintf ("\t\tAcceptable configuration\n");
         break;
 
-    case ACPI_SUB_OPTIMAL_CONFIGURATION:
-        AcpiOsPrintf ("    Sub-optimal configuration\n");
+    case SUB_OPTIMAL_CONFIGURATION:
+        AcpiOsPrintf ("\t\tSub-optimal configuration\n");
         break;
 
     default:
-        AcpiOsPrintf ("    Invalid performance "
+        AcpiOsPrintf ("\t\tInvalid performance "
                         "robustness preference\n");
         break;
     }
@@ -328,7 +323,7 @@ AcpiRsDumpStartDependFns (
  *
  * PARAMETERS:  Data            - pointer to the resource structure to dump.
  *
- * RETURN:      None
+ * RETURN:
  *
  * DESCRIPTION: Prints out the various members of the Data structure type.
  *
@@ -336,29 +331,26 @@ AcpiRsDumpStartDependFns (
 
 void
 AcpiRsDumpIo (
-    ACPI_RESOURCE_DATA      *Data)
+    RESOURCE_DATA       *Data)
 {
-    ACPI_RESOURCE_IO        *IoData = (ACPI_RESOURCE_IO *) Data;
+    IO_RESOURCE         *IoData = (IO_RESOURCE*) Data;
 
 
-    ACPI_FUNCTION_ENTRY ();
+    AcpiOsPrintf ("\tIo Resource\n");
 
+    AcpiOsPrintf ("\t\t%d bit decode\n",
+                DECODE_16 == IoData->IoDecode ? 16 : 10);
 
-    AcpiOsPrintf ("Io Resource\n");
-
-    AcpiOsPrintf ("    %d bit decode\n",
-                ACPI_DECODE_16 == IoData->IoDecode ? 16 : 10);
-
-    AcpiOsPrintf ("    Range minimum base: %08X\n",
+    AcpiOsPrintf ("\t\tRange minimum base: %08X\n",
                 IoData->MinBaseAddress);
 
-    AcpiOsPrintf ("    Range maximum base: %08X\n",
+    AcpiOsPrintf ("\t\tRange maximum base: %08X\n",
                 IoData->MaxBaseAddress);
 
-    AcpiOsPrintf ("    Alignment: %08X\n",
+    AcpiOsPrintf ("\t\tAlignment: %08X\n",
                 IoData->Alignment);
 
-    AcpiOsPrintf ("    Range Length: %08X\n",
+    AcpiOsPrintf ("\t\tRange Length: %08X\n",
                 IoData->RangeLength);
 
     return;
@@ -371,7 +363,7 @@ AcpiRsDumpIo (
  *
  * PARAMETERS:  Data            - pointer to the resource structure to dump.
  *
- * RETURN:      None
+ * RETURN:
  *
  * DESCRIPTION: Prints out the various members of the Data structure type.
  *
@@ -379,19 +371,16 @@ AcpiRsDumpIo (
 
 void
 AcpiRsDumpFixedIo (
-    ACPI_RESOURCE_DATA      *Data)
+    RESOURCE_DATA           *Data)
 {
-    ACPI_RESOURCE_FIXED_IO  *FixedIoData = (ACPI_RESOURCE_FIXED_IO *) Data;
+    FIXED_IO_RESOURCE       *FixedIoData = (FIXED_IO_RESOURCE*) Data;
 
 
-    ACPI_FUNCTION_ENTRY ();
-
-
-    AcpiOsPrintf ("Fixed Io Resource\n");
-    AcpiOsPrintf ("    Range base address: %08X",
+    AcpiOsPrintf ("\tFixed Io Resource\n");
+    AcpiOsPrintf ("\t\tRange base address: %08X",
                 FixedIoData->BaseAddress);
 
-    AcpiOsPrintf ("    Range length: %08X",
+    AcpiOsPrintf ("\t\tRange length: %08X",
                 FixedIoData->RangeLength);
 
     return;
@@ -404,7 +393,7 @@ AcpiRsDumpFixedIo (
  *
  * PARAMETERS:  Data            - pointer to the resource structure to dump.
  *
- * RETURN:      None
+ * RETURN:
  *
  * DESCRIPTION: Prints out the various members of the Data structure type.
  *
@@ -412,22 +401,19 @@ AcpiRsDumpFixedIo (
 
 void
 AcpiRsDumpVendorSpecific (
-    ACPI_RESOURCE_DATA      *Data)
+    RESOURCE_DATA           *Data)
 {
-    ACPI_RESOURCE_VENDOR    *VendorData = (ACPI_RESOURCE_VENDOR *) Data;
+    VENDOR_RESOURCE         *VendorData = (VENDOR_RESOURCE*) Data;
     UINT16                  Index = 0;
 
 
-    ACPI_FUNCTION_ENTRY ();
+    AcpiOsPrintf ("\tVendor Specific Resource\n");
 
-
-    AcpiOsPrintf ("Vendor Specific Resource\n");
-
-    AcpiOsPrintf ("    Length: %08X\n", VendorData->Length);
+    AcpiOsPrintf ("\t\tLength: %08X\n", VendorData->Length);
 
     for (Index = 0; Index < VendorData->Length; Index++)
     {
-        AcpiOsPrintf ("    Byte %X: %08X\n",
+        AcpiOsPrintf ("\t\tByte %X: %08X\n",
                     Index, VendorData->Reserved[Index]);
     }
 
@@ -441,7 +427,7 @@ AcpiRsDumpVendorSpecific (
  *
  * PARAMETERS:  Data            - pointer to the resource structure to dump.
  *
- * RETURN:      None
+ * RETURN:
  *
  * DESCRIPTION: Prints out the various members of the Data structure type.
  *
@@ -449,31 +435,28 @@ AcpiRsDumpVendorSpecific (
 
 void
 AcpiRsDumpMemory24 (
-    ACPI_RESOURCE_DATA      *Data)
+    RESOURCE_DATA           *Data)
 {
-    ACPI_RESOURCE_MEM24     *Memory24Data = (ACPI_RESOURCE_MEM24 *) Data;
+    MEMORY24_RESOURCE       *Memory24Data = (MEMORY24_RESOURCE*) Data;
 
 
-    ACPI_FUNCTION_ENTRY ();
+    AcpiOsPrintf ("\t24-Bit Memory Range Resource\n");
 
-
-    AcpiOsPrintf ("24-Bit Memory Range Resource\n");
-
-    AcpiOsPrintf ("    Read%s\n",
-                ACPI_READ_WRITE_MEMORY ==
+    AcpiOsPrintf ("\t\tRead%s\n",
+                READ_WRITE_MEMORY ==
                 Memory24Data->ReadWriteAttribute ?
                 "/Write" : " only");
 
-    AcpiOsPrintf ("    Range minimum base: %08X\n",
+    AcpiOsPrintf ("\t\tRange minimum base: %08X\n",
                 Memory24Data->MinBaseAddress);
 
-    AcpiOsPrintf ("    Range maximum base: %08X\n",
+    AcpiOsPrintf ("\t\tRange maximum base: %08X\n",
                 Memory24Data->MaxBaseAddress);
 
-    AcpiOsPrintf ("    Alignment: %08X\n",
+    AcpiOsPrintf ("\t\tAlignment: %08X\n",
                 Memory24Data->Alignment);
 
-    AcpiOsPrintf ("    Range length: %08X\n",
+    AcpiOsPrintf ("\t\tRange length: %08X\n",
                 Memory24Data->RangeLength);
 
     return;
@@ -486,7 +469,7 @@ AcpiRsDumpMemory24 (
  *
  * PARAMETERS:  Data            - pointer to the resource structure to dump.
  *
- * RETURN:      None
+ * RETURN:
  *
  * DESCRIPTION: Prints out the various members of the Data structure type.
  *
@@ -494,31 +477,28 @@ AcpiRsDumpMemory24 (
 
 void
 AcpiRsDumpMemory32 (
-    ACPI_RESOURCE_DATA      *Data)
+    RESOURCE_DATA           *Data)
 {
-    ACPI_RESOURCE_MEM32     *Memory32Data = (ACPI_RESOURCE_MEM32 *) Data;
+    MEMORY32_RESOURCE       *Memory32Data = (MEMORY32_RESOURCE*) Data;
 
 
-    ACPI_FUNCTION_ENTRY ();
+    AcpiOsPrintf ("\t32-Bit Memory Range Resource\n");
 
-
-    AcpiOsPrintf ("32-Bit Memory Range Resource\n");
-
-    AcpiOsPrintf ("    Read%s\n",
-                ACPI_READ_WRITE_MEMORY ==
+    AcpiOsPrintf ("\t\tRead%s\n",
+                READ_WRITE_MEMORY ==
                 Memory32Data->ReadWriteAttribute ?
                 "/Write" : " only");
 
-    AcpiOsPrintf ("    Range minimum base: %08X\n",
+    AcpiOsPrintf ("\t\tRange minimum base: %08X\n",
                 Memory32Data->MinBaseAddress);
 
-    AcpiOsPrintf ("    Range maximum base: %08X\n",
+    AcpiOsPrintf ("\t\tRange maximum base: %08X\n",
                 Memory32Data->MaxBaseAddress);
 
-    AcpiOsPrintf ("    Alignment: %08X\n",
+    AcpiOsPrintf ("\t\tAlignment: %08X\n",
                 Memory32Data->Alignment);
 
-    AcpiOsPrintf ("    Range length: %08X\n",
+    AcpiOsPrintf ("\t\tRange length: %08X\n",
                 Memory32Data->RangeLength);
 
     return;
@@ -539,25 +519,22 @@ AcpiRsDumpMemory32 (
 
 void
 AcpiRsDumpFixedMemory32 (
-    ACPI_RESOURCE_DATA          *Data)
+    RESOURCE_DATA           *Data)
 {
-    ACPI_RESOURCE_FIXED_MEM32   *FixedMemory32Data = (ACPI_RESOURCE_FIXED_MEM32 *) Data;
+    FIXED_MEMORY32_RESOURCE *FixedMemory32Data = (FIXED_MEMORY32_RESOURCE*) Data;
 
 
-    ACPI_FUNCTION_ENTRY ();
+    AcpiOsPrintf ("\t32-Bit Fixed Location Memory Range Resource\n");
 
-
-    AcpiOsPrintf ("32-Bit Fixed Location Memory Range Resource\n");
-
-    AcpiOsPrintf ("    Read%s\n",
-                ACPI_READ_WRITE_MEMORY ==
+    AcpiOsPrintf ("\t\tRead%s\n",
+                READ_WRITE_MEMORY ==
                 FixedMemory32Data->ReadWriteAttribute ?
                 "/Write" : " Only");
 
-    AcpiOsPrintf ("    Range base address: %08X\n",
+    AcpiOsPrintf ("\t\tRange base address: %08X\n",
                 FixedMemory32Data->RangeBaseAddress);
 
-    AcpiOsPrintf ("    Range length: %08X\n",
+    AcpiOsPrintf ("\t\tRange length: %08X\n",
                 FixedMemory32Data->RangeLength);
 
     return;
@@ -570,7 +547,7 @@ AcpiRsDumpFixedMemory32 (
  *
  * PARAMETERS:  Data            - pointer to the resource structure to dump.
  *
- * RETURN:      None
+ * RETURN:
  *
  * DESCRIPTION: Prints out the various members of the Data structure type.
  *
@@ -578,86 +555,83 @@ AcpiRsDumpFixedMemory32 (
 
 void
 AcpiRsDumpAddress16 (
-    ACPI_RESOURCE_DATA      *Data)
+    RESOURCE_DATA           *Data)
 {
-    ACPI_RESOURCE_ADDRESS16 *Address16Data = (ACPI_RESOURCE_ADDRESS16 *) Data;
+    ADDRESS16_RESOURCE      *Address16Data = (ADDRESS16_RESOURCE*) Data;
 
 
-    ACPI_FUNCTION_ENTRY ();
-
-
-    AcpiOsPrintf ("16-Bit Address Space Resource\n");
-    AcpiOsPrintf ("    Resource Type: ");
+    AcpiOsPrintf ("\t16-Bit Address Space Resource\n");
+    AcpiOsPrintf ("\t\tResource Type: ");
 
     switch (Address16Data->ResourceType)
     {
-    case ACPI_MEMORY_RANGE:
+    case MEMORY_RANGE:
 
         AcpiOsPrintf ("Memory Range\n");
 
         switch (Address16Data->Attribute.Memory.CacheAttribute)
         {
-        case ACPI_NON_CACHEABLE_MEMORY:
-            AcpiOsPrintf ("    Type Specific: "
+        case NON_CACHEABLE_MEMORY:
+            AcpiOsPrintf ("\t\tType Specific: "
                             "Noncacheable memory\n");
             break;
 
-        case ACPI_CACHABLE_MEMORY:
-            AcpiOsPrintf ("    Type Specific: "
+        case CACHABLE_MEMORY:
+            AcpiOsPrintf ("\t\tType Specific: "
                             "Cacheable memory\n");
             break;
 
-        case ACPI_WRITE_COMBINING_MEMORY:
-            AcpiOsPrintf ("    Type Specific: "
+        case WRITE_COMBINING_MEMORY:
+            AcpiOsPrintf ("\t\tType Specific: "
                             "Write-combining memory\n");
             break;
 
-        case ACPI_PREFETCHABLE_MEMORY:
-            AcpiOsPrintf ("    Type Specific: "
+        case PREFETCHABLE_MEMORY:
+            AcpiOsPrintf ("\t\tType Specific: "
                             "Prefetchable memory\n");
             break;
 
         default:
-            AcpiOsPrintf ("    Type Specific: "
+            AcpiOsPrintf ("\t\tType Specific: "
                             "Invalid cache attribute\n");
             break;
         }
 
-        AcpiOsPrintf ("    Type Specific: Read%s\n",
-            ACPI_READ_WRITE_MEMORY ==
+        AcpiOsPrintf ("\t\tType Specific: Read%s\n",
+            READ_WRITE_MEMORY ==
             Address16Data->Attribute.Memory.ReadWriteAttribute ?
             "/Write" : " Only");
         break;
 
-    case ACPI_IO_RANGE:
+    case IO_RANGE:
 
         AcpiOsPrintf ("I/O Range\n");
 
         switch (Address16Data->Attribute.Io.RangeAttribute)
         {
-        case ACPI_NON_ISA_ONLY_RANGES:
-            AcpiOsPrintf ("    Type Specific: "
+        case NON_ISA_ONLY_RANGES:
+            AcpiOsPrintf ("\t\tType Specific: "
                             "Non-ISA Io Addresses\n");
             break;
 
-        case ACPI_ISA_ONLY_RANGES:
-            AcpiOsPrintf ("    Type Specific: "
+        case ISA_ONLY_RANGES:
+            AcpiOsPrintf ("\t\tType Specific: "
                             "ISA Io Addresses\n");
             break;
 
-        case ACPI_ENTIRE_RANGE:
-            AcpiOsPrintf ("    Type Specific: "
+        case ENTIRE_RANGE:
+            AcpiOsPrintf ("\t\tType Specific: "
                             "ISA and non-ISA Io Addresses\n");
             break;
 
         default:
-            AcpiOsPrintf ("    Type Specific: "
+            AcpiOsPrintf ("\t\tType Specific: "
                             "Invalid range attribute\n");
             break;
         }
         break;
 
-    case ACPI_BUS_NUMBER_RANGE:
+    case BUS_NUMBER_RANGE:
 
         AcpiOsPrintf ("Bus Number Range\n");
         break;
@@ -668,43 +642,43 @@ AcpiRsDumpAddress16 (
         return;
     }
 
-    AcpiOsPrintf ("    Resource %s\n",
-            ACPI_CONSUMER == Address16Data->ProducerConsumer ?
+    AcpiOsPrintf ("\t\tResource %s\n",
+            CONSUMER == Address16Data->ProducerConsumer ?
             "Consumer" : "Producer");
 
-    AcpiOsPrintf ("    %s decode\n",
-                ACPI_SUB_DECODE == Address16Data->Decode ?
+    AcpiOsPrintf ("\t\t%s decode\n",
+                SUB_DECODE == Address16Data->Decode ?
                 "Subtractive" : "Positive");
 
-    AcpiOsPrintf ("    Min address is %s fixed\n",
-                ACPI_ADDRESS_FIXED == Address16Data->MinAddressFixed ?
+    AcpiOsPrintf ("\t\tMin address is %s fixed\n",
+                ADDRESS_FIXED == Address16Data->MinAddressFixed ?
                 "" : "not");
 
-    AcpiOsPrintf ("    Max address is %s fixed\n",
-                ACPI_ADDRESS_FIXED == Address16Data->MaxAddressFixed ?
+    AcpiOsPrintf ("\t\tMax address is %s fixed\n",
+                ADDRESS_FIXED == Address16Data->MaxAddressFixed ?
                 "" : "not");
 
-    AcpiOsPrintf ("    Granularity: %08X\n",
+    AcpiOsPrintf ("\t\tGranularity: %08X\n",
                 Address16Data->Granularity);
 
-    AcpiOsPrintf ("    Address range min: %08X\n",
+    AcpiOsPrintf ("\t\tAddress range min: %08X\n",
                 Address16Data->MinAddressRange);
 
-    AcpiOsPrintf ("    Address range max: %08X\n",
+    AcpiOsPrintf ("\t\tAddress range max: %08X\n",
                 Address16Data->MaxAddressRange);
 
-    AcpiOsPrintf ("    Address translation offset: %08X\n",
+    AcpiOsPrintf ("\t\tAddress translation offset: %08X\n",
                 Address16Data->AddressTranslationOffset);
 
-    AcpiOsPrintf ("    Address Length: %08X\n",
+    AcpiOsPrintf ("\t\tAddress Length: %08X\n",
                 Address16Data->AddressLength);
 
-    if (0xFF != Address16Data->ResourceSource.Index)
+    if (0xFF != Address16Data->ResourceSourceIndex)
     {
-        AcpiOsPrintf ("    Resource Source Index: %X\n",
-                    Address16Data->ResourceSource.Index);
-        AcpiOsPrintf ("    Resource Source: %s\n",
-                    Address16Data->ResourceSource.StringPtr);
+        AcpiOsPrintf ("\t\tResource Source Index: %X\n",
+                    Address16Data->ResourceSourceIndex);
+        AcpiOsPrintf ("\t\tResource Source: %s\n",
+                    Address16Data->ResourceSource);
     }
 
     return;
@@ -717,7 +691,7 @@ AcpiRsDumpAddress16 (
  *
  * PARAMETERS:  Data            - pointer to the resource structure to dump.
  *
- * RETURN:      None
+ * RETURN:
  *
  * DESCRIPTION: Prints out the various members of the Data structure type.
  *
@@ -725,278 +699,129 @@ AcpiRsDumpAddress16 (
 
 void
 AcpiRsDumpAddress32 (
-    ACPI_RESOURCE_DATA      *Data)
+    RESOURCE_DATA           *Data)
 {
-    ACPI_RESOURCE_ADDRESS32 *Address32Data = (ACPI_RESOURCE_ADDRESS32 *) Data;
+    ADDRESS32_RESOURCE      *Address32Data = (ADDRESS32_RESOURCE*) Data;
 
 
-    ACPI_FUNCTION_ENTRY ();
-
-
-    AcpiOsPrintf ("32-Bit Address Space Resource\n");
+    AcpiOsPrintf ("\t32-Bit Address Space Resource\n");
 
     switch (Address32Data->ResourceType)
     {
-    case ACPI_MEMORY_RANGE:
+    case MEMORY_RANGE:
 
-        AcpiOsPrintf ("    Resource Type: Memory Range\n");
+        AcpiOsPrintf ("\t\tResource Type: Memory Range\n");
 
         switch (Address32Data->Attribute.Memory.CacheAttribute)
         {
-        case ACPI_NON_CACHEABLE_MEMORY:
-            AcpiOsPrintf ("    Type Specific: "
+        case NON_CACHEABLE_MEMORY:
+            AcpiOsPrintf ("\t\tType Specific: "
                             "Noncacheable memory\n");
             break;
 
-        case ACPI_CACHABLE_MEMORY:
-            AcpiOsPrintf ("    Type Specific: "
+        case CACHABLE_MEMORY:
+            AcpiOsPrintf ("\t\tType Specific: "
                             "Cacheable memory\n");
             break;
 
-        case ACPI_WRITE_COMBINING_MEMORY:
-            AcpiOsPrintf ("    Type Specific: "
+        case WRITE_COMBINING_MEMORY:
+            AcpiOsPrintf ("\t\tType Specific: "
                             "Write-combining memory\n");
             break;
 
-        case ACPI_PREFETCHABLE_MEMORY:
-            AcpiOsPrintf ("    Type Specific: "
+        case PREFETCHABLE_MEMORY:
+            AcpiOsPrintf ("\t\tType Specific: "
                             "Prefetchable memory\n");
             break;
 
         default:
-            AcpiOsPrintf ("    Type Specific: "
+            AcpiOsPrintf ("\t\tType Specific: "
                             "Invalid cache attribute\n");
             break;
         }
 
-        AcpiOsPrintf ("    Type Specific: Read%s\n",
-            ACPI_READ_WRITE_MEMORY ==
+        AcpiOsPrintf ("\t\tType Specific: Read%s\n",
+            READ_WRITE_MEMORY ==
             Address32Data->Attribute.Memory.ReadWriteAttribute ?
             "/Write" : " Only");
         break;
 
-    case ACPI_IO_RANGE:
+    case IO_RANGE:
 
-        AcpiOsPrintf ("    Resource Type: Io Range\n");
+        AcpiOsPrintf ("\t\tResource Type: Io Range\n");
 
         switch (Address32Data->Attribute.Io.RangeAttribute)
             {
-            case ACPI_NON_ISA_ONLY_RANGES:
-                AcpiOsPrintf ("    Type Specific: "
+            case NON_ISA_ONLY_RANGES:
+                AcpiOsPrintf ("\t\tType Specific: "
                                 "Non-ISA Io Addresses\n");
                 break;
 
-            case ACPI_ISA_ONLY_RANGES:
-                AcpiOsPrintf ("    Type Specific: "
+            case ISA_ONLY_RANGES:
+                AcpiOsPrintf ("\t\tType Specific: "
                                 "ISA Io Addresses\n");
                 break;
 
-            case ACPI_ENTIRE_RANGE:
-                AcpiOsPrintf ("    Type Specific: "
+            case ENTIRE_RANGE:
+                AcpiOsPrintf ("\t\tType Specific: "
                                 "ISA and non-ISA Io Addresses\n");
                 break;
 
             default:
-                AcpiOsPrintf ("    Type Specific: "
+                AcpiOsPrintf ("\t\tType Specific: "
                                 "Invalid Range attribute");
                 break;
             }
         break;
 
-    case ACPI_BUS_NUMBER_RANGE:
+    case BUS_NUMBER_RANGE:
 
-        AcpiOsPrintf ("    Resource Type: Bus Number Range\n");
+        AcpiOsPrintf ("\t\tResource Type: Bus Number Range\n");
         break;
 
     default:
 
-        AcpiOsPrintf ("    Invalid Resource Type..exiting.\n");
+        AcpiOsPrintf ("\t\tInvalid Resource Type..exiting.\n");
         return;
     }
 
-    AcpiOsPrintf ("    Resource %s\n",
-                ACPI_CONSUMER == Address32Data->ProducerConsumer ?
+    AcpiOsPrintf ("\t\tResource %s\n",
+                CONSUMER == Address32Data->ProducerConsumer ?
                 "Consumer" : "Producer");
 
-    AcpiOsPrintf ("    %s decode\n",
-                ACPI_SUB_DECODE == Address32Data->Decode ?
+    AcpiOsPrintf ("\t\t%s decode\n",
+                SUB_DECODE == Address32Data->Decode ?
                 "Subtractive" : "Positive");
 
-    AcpiOsPrintf ("    Min address is %s fixed\n",
-                ACPI_ADDRESS_FIXED == Address32Data->MinAddressFixed ?
+    AcpiOsPrintf ("\t\tMin address is %s fixed\n",
+                ADDRESS_FIXED == Address32Data->MinAddressFixed ?
                 "" : "not ");
 
-    AcpiOsPrintf ("    Max address is %s fixed\n",
-                ACPI_ADDRESS_FIXED == Address32Data->MaxAddressFixed ?
+    AcpiOsPrintf ("\t\tMax address is %s fixed\n",
+                ADDRESS_FIXED == Address32Data->MaxAddressFixed ?
                 "" : "not ");
 
-    AcpiOsPrintf ("    Granularity: %08X\n",
+    AcpiOsPrintf ("\t\tGranularity: %08X\n",
                 Address32Data->Granularity);
 
-    AcpiOsPrintf ("    Address range min: %08X\n",
+    AcpiOsPrintf ("\t\tAddress range min: %08X\n",
                 Address32Data->MinAddressRange);
 
-    AcpiOsPrintf ("    Address range max: %08X\n",
+    AcpiOsPrintf ("\t\tAddress range max: %08X\n",
                 Address32Data->MaxAddressRange);
 
-    AcpiOsPrintf ("    Address translation offset: %08X\n",
+    AcpiOsPrintf ("\t\tAddress translation offset: %08X\n",
                 Address32Data->AddressTranslationOffset);
 
-    AcpiOsPrintf ("    Address Length: %08X\n",
+    AcpiOsPrintf ("\t\tAddress Length: %08X\n",
                 Address32Data->AddressLength);
 
-    if(0xFF != Address32Data->ResourceSource.Index)
+    if(0xFF != Address32Data->ResourceSourceIndex)
     {
-        AcpiOsPrintf ("    Resource Source Index: %X\n",
-                    Address32Data->ResourceSource.Index);
-        AcpiOsPrintf ("    Resource Source: %s\n",
-                    Address32Data->ResourceSource.StringPtr);
-    }
-
-    return;
-}
-
-
-/*******************************************************************************
- *
- * FUNCTION:    AcpiRsDumpAddress64
- *
- * PARAMETERS:  Data            - pointer to the resource structure to dump.
- *
- * RETURN:      None
- *
- * DESCRIPTION: Prints out the various members of the Data structure type.
- *
- ******************************************************************************/
-
-void
-AcpiRsDumpAddress64 (
-    ACPI_RESOURCE_DATA      *Data)
-{
-    ACPI_RESOURCE_ADDRESS64 *Address64Data = (ACPI_RESOURCE_ADDRESS64 *) Data;
-
-
-    ACPI_FUNCTION_ENTRY ();
-
-
-    AcpiOsPrintf ("64-Bit Address Space Resource\n");
-
-    switch (Address64Data->ResourceType)
-    {
-    case ACPI_MEMORY_RANGE:
-
-        AcpiOsPrintf ("    Resource Type: Memory Range\n");
-
-        switch (Address64Data->Attribute.Memory.CacheAttribute)
-        {
-        case ACPI_NON_CACHEABLE_MEMORY:
-            AcpiOsPrintf ("    Type Specific: "
-                            "Noncacheable memory\n");
-            break;
-
-        case ACPI_CACHABLE_MEMORY:
-            AcpiOsPrintf ("    Type Specific: "
-                            "Cacheable memory\n");
-            break;
-
-        case ACPI_WRITE_COMBINING_MEMORY:
-            AcpiOsPrintf ("    Type Specific: "
-                            "Write-combining memory\n");
-            break;
-
-        case ACPI_PREFETCHABLE_MEMORY:
-            AcpiOsPrintf ("    Type Specific: "
-                            "Prefetchable memory\n");
-            break;
-
-        default:
-            AcpiOsPrintf ("    Type Specific: "
-                            "Invalid cache attribute\n");
-            break;
-        }
-
-        AcpiOsPrintf ("    Type Specific: Read%s\n",
-            ACPI_READ_WRITE_MEMORY ==
-            Address64Data->Attribute.Memory.ReadWriteAttribute ?
-            "/Write" : " Only");
-        break;
-
-    case ACPI_IO_RANGE:
-
-        AcpiOsPrintf ("    Resource Type: Io Range\n");
-
-        switch (Address64Data->Attribute.Io.RangeAttribute)
-            {
-            case ACPI_NON_ISA_ONLY_RANGES:
-                AcpiOsPrintf ("    Type Specific: "
-                                "Non-ISA Io Addresses\n");
-                break;
-
-            case ACPI_ISA_ONLY_RANGES:
-                AcpiOsPrintf ("    Type Specific: "
-                                "ISA Io Addresses\n");
-                break;
-
-            case ACPI_ENTIRE_RANGE:
-                AcpiOsPrintf ("    Type Specific: "
-                                "ISA and non-ISA Io Addresses\n");
-                break;
-
-            default:
-                AcpiOsPrintf ("    Type Specific: "
-                                "Invalid Range attribute");
-                break;
-            }
-        break;
-
-    case ACPI_BUS_NUMBER_RANGE:
-
-        AcpiOsPrintf ("    Resource Type: Bus Number Range\n");
-        break;
-
-    default:
-
-        AcpiOsPrintf ("    Invalid Resource Type..exiting.\n");
-        return;
-    }
-
-    AcpiOsPrintf ("    Resource %s\n",
-                ACPI_CONSUMER == Address64Data->ProducerConsumer ?
-                "Consumer" : "Producer");
-
-    AcpiOsPrintf ("    %s decode\n",
-                ACPI_SUB_DECODE == Address64Data->Decode ?
-                "Subtractive" : "Positive");
-
-    AcpiOsPrintf ("    Min address is %s fixed\n",
-                ACPI_ADDRESS_FIXED == Address64Data->MinAddressFixed ?
-                "" : "not ");
-
-    AcpiOsPrintf ("    Max address is %s fixed\n",
-                ACPI_ADDRESS_FIXED == Address64Data->MaxAddressFixed ?
-                "" : "not ");
-
-    AcpiOsPrintf ("    Granularity: %16X\n",
-                Address64Data->Granularity);
-
-    AcpiOsPrintf ("    Address range min: %16X\n",
-                Address64Data->MinAddressRange);
-
-    AcpiOsPrintf ("    Address range max: %16X\n",
-                Address64Data->MaxAddressRange);
-
-    AcpiOsPrintf ("    Address translation offset: %16X\n",
-                Address64Data->AddressTranslationOffset);
-
-    AcpiOsPrintf ("    Address Length: %16X\n",
-                Address64Data->AddressLength);
-
-    if(0xFF != Address64Data->ResourceSource.Index)
-    {
-        AcpiOsPrintf ("    Resource Source Index: %X\n",
-                    Address64Data->ResourceSource.Index);
-        AcpiOsPrintf ("    Resource Source: %s\n",
-                    Address64Data->ResourceSource.StringPtr);
+        AcpiOsPrintf ("\t\tResource Source Index: %X\n",
+                    Address32Data->ResourceSourceIndex);
+        AcpiOsPrintf ("\t\tResource Source: %s\n",
+                    Address32Data->ResourceSource);
     }
 
     return;
@@ -1009,7 +834,7 @@ AcpiRsDumpAddress64 (
  *
  * PARAMETERS:  Data            - pointer to the resource structure to dump.
  *
- * RETURN:      None
+ * RETURN:
  *
  * DESCRIPTION: Prints out the various members of the Data structure type.
  *
@@ -1017,34 +842,31 @@ AcpiRsDumpAddress64 (
 
 void
 AcpiRsDumpExtendedIrq (
-    ACPI_RESOURCE_DATA      *Data)
+    RESOURCE_DATA           *Data)
 {
-    ACPI_RESOURCE_EXT_IRQ   *ExtIrqData = (ACPI_RESOURCE_EXT_IRQ *) Data;
+    EXTENDED_IRQ_RESOURCE   *ExtIrqData = (EXTENDED_IRQ_RESOURCE*) Data;
     UINT8                   Index = 0;
 
 
-    ACPI_FUNCTION_ENTRY ();
+    AcpiOsPrintf ("\tExtended IRQ Resource\n");
 
-
-    AcpiOsPrintf ("Extended IRQ Resource\n");
-
-    AcpiOsPrintf ("    Resource %s\n",
-                ACPI_CONSUMER == ExtIrqData->ProducerConsumer ?
+    AcpiOsPrintf ("\t\tResource %s\n",
+                CONSUMER == ExtIrqData->ProducerConsumer ?
                 "Consumer" : "Producer");
 
-    AcpiOsPrintf ("    %s\n",
-                ACPI_LEVEL_SENSITIVE == ExtIrqData->EdgeLevel ?
+    AcpiOsPrintf ("\t\t%s\n",
+                LEVEL_SENSITIVE == ExtIrqData->EdgeLevel ?
                 "Level" : "Edge");
 
-    AcpiOsPrintf ("    Active %s\n",
-                ACPI_ACTIVE_LOW == ExtIrqData->ActiveHighLow ?
+    AcpiOsPrintf ("\t\tActive %s\n",
+                ACTIVE_LOW == ExtIrqData->ActiveHighLow ?
                 "low" : "high");
 
-    AcpiOsPrintf ("    %s\n",
-                ACPI_SHARED == ExtIrqData->SharedExclusive ?
+    AcpiOsPrintf ("\t\t%s\n",
+                SHARED == ExtIrqData->SharedExclusive ?
                 "Shared" : "Exclusive");
 
-    AcpiOsPrintf ("    Interrupts : %X ( ",
+    AcpiOsPrintf ("\t\tInterrupts : %X ( ",
                 ExtIrqData->NumberOfInterrupts);
 
     for (Index = 0; Index < ExtIrqData->NumberOfInterrupts; Index++)
@@ -1054,12 +876,12 @@ AcpiRsDumpExtendedIrq (
 
     AcpiOsPrintf (")\n");
 
-    if(0xFF != ExtIrqData->ResourceSource.Index)
+    if(0xFF != ExtIrqData->ResourceSourceIndex)
     {
-        AcpiOsPrintf ("    Resource Source Index: %X",
-                    ExtIrqData->ResourceSource.Index);
-        AcpiOsPrintf ("    Resource Source: %s",
-                    ExtIrqData->ResourceSource.StringPtr);
+        AcpiOsPrintf ("\t\tResource Source Index: %X",
+                    ExtIrqData->ResourceSourceIndex);
+        AcpiOsPrintf ("\t\tResource Source: %s",
+                    ExtIrqData->ResourceSource);
     }
 
     return;
@@ -1072,7 +894,7 @@ AcpiRsDumpExtendedIrq (
  *
  * PARAMETERS:  Data            - pointer to the resource structure to dump.
  *
- * RETURN:      None
+ * RETURN:
  *
  * DESCRIPTION: Dispatches the structure to the correct dump routine.
  *
@@ -1080,83 +902,76 @@ AcpiRsDumpExtendedIrq (
 
 void
 AcpiRsDumpResourceList (
-    ACPI_RESOURCE       *Resource)
+    RESOURCE            *Resource)
 {
     UINT8               Count = 0;
     BOOLEAN             Done = FALSE;
 
 
-    ACPI_FUNCTION_ENTRY ();
-
-
-    if (AcpiDbgLevel & ACPI_LV_RESOURCES && _COMPONENT & AcpiDbgLayer)
+    if (AcpiDbgLevel & TRACE_RESOURCES && _COMPONENT & AcpiDbgLayer)
     {
         while (!Done)
         {
-            AcpiOsPrintf ("Resource structure %x.\n", Count++);
+            AcpiOsPrintf ("\tResource structure %x.\n", Count++);
 
             switch (Resource->Id)
             {
-            case ACPI_RSTYPE_IRQ:
+            case Irq:
                 AcpiRsDumpIrq (&Resource->Data);
                 break;
 
-            case ACPI_RSTYPE_DMA:
+            case Dma:
                 AcpiRsDumpDma (&Resource->Data);
                 break;
 
-            case ACPI_RSTYPE_START_DPF:
-                AcpiRsDumpStartDependFns (&Resource->Data);
+            case StartDependentFunctions:
+                AcpiRsDumpStartDependentFunctions (&Resource->Data);
                 break;
 
-            case ACPI_RSTYPE_END_DPF:
-                AcpiOsPrintf ("EndDependentFunctions Resource\n");
+            case EndDependentFunctions:
+                AcpiOsPrintf ("\tEndDependentFunctions Resource\n");
                 /* AcpiRsDumpEndDependentFunctions (Resource->Data);*/
                 break;
 
-            case ACPI_RSTYPE_IO:
+            case Io:
                 AcpiRsDumpIo (&Resource->Data);
                 break;
 
-            case ACPI_RSTYPE_FIXED_IO:
+            case FixedIo:
                 AcpiRsDumpFixedIo (&Resource->Data);
                 break;
 
-            case ACPI_RSTYPE_VENDOR:
+            case VendorSpecific:
                 AcpiRsDumpVendorSpecific (&Resource->Data);
                 break;
 
-            case ACPI_RSTYPE_END_TAG:
+            case EndTag:
                 /*RsDumpEndTag (Resource->Data);*/
-                AcpiOsPrintf ("EndTag Resource\n");
+                AcpiOsPrintf ("\tEndTag Resource\n");
                 Done = TRUE;
                 break;
 
-            case ACPI_RSTYPE_MEM24:
+            case Memory24:
                 AcpiRsDumpMemory24 (&Resource->Data);
                 break;
 
-            case ACPI_RSTYPE_MEM32:
+            case Memory32:
                 AcpiRsDumpMemory32 (&Resource->Data);
                 break;
 
-            case ACPI_RSTYPE_FIXED_MEM32:
+            case FixedMemory32:
                 AcpiRsDumpFixedMemory32 (&Resource->Data);
                 break;
 
-            case ACPI_RSTYPE_ADDRESS16:
+            case Address16:
                 AcpiRsDumpAddress16 (&Resource->Data);
                 break;
 
-            case ACPI_RSTYPE_ADDRESS32:
+            case Address32:
                 AcpiRsDumpAddress32 (&Resource->Data);
                 break;
 
-            case ACPI_RSTYPE_ADDRESS64:
-                AcpiRsDumpAddress64 (&Resource->Data);
-                break;
-
-            case ACPI_RSTYPE_EXT_IRQ:
+            case ExtendedIrq:
                 AcpiRsDumpExtendedIrq (&Resource->Data);
                 break;
 
@@ -1166,7 +981,8 @@ AcpiRsDumpResourceList (
 
             }
 
-            Resource = ACPI_PTR_ADD (ACPI_RESOURCE, Resource, Resource->Length);
+            Resource = (RESOURCE *) ((NATIVE_UINT) Resource +
+                        (NATIVE_UINT) Resource->Length);
         }
     }
 
@@ -1179,7 +995,7 @@ AcpiRsDumpResourceList (
  *
  * PARAMETERS:  Data            - pointer to the routing table to dump.
  *
- * RETURN:      None
+ * RETURN:
  *
  * DESCRIPTION: Dispatches the structures to the correct dump routine.
  *
@@ -1187,39 +1003,35 @@ AcpiRsDumpResourceList (
 
 void
 AcpiRsDumpIrqList (
-    UINT8                   *RouteTable)
+    UINT8               *RouteTable)
 {
-    UINT8                   *Buffer = RouteTable;
-    UINT8                   Count = 0;
-    BOOLEAN                 Done = FALSE;
-    ACPI_PCI_ROUTING_TABLE  *PrtElement;
+    UINT8               *Buffer = RouteTable;
+    UINT8               Count = 0;
+    BOOLEAN             Done = FALSE;
+    PCI_ROUTING_TABLE   *PrtElement;
 
 
-    ACPI_FUNCTION_ENTRY ();
-
-
-    if (AcpiDbgLevel & ACPI_LV_RESOURCES && _COMPONENT & AcpiDbgLayer)
+    if (AcpiDbgLevel & TRACE_RESOURCES && _COMPONENT & AcpiDbgLayer)
     {
-        PrtElement = (ACPI_PCI_ROUTING_TABLE *) Buffer;
+        PrtElement = (PCI_ROUTING_TABLE *)Buffer;
 
         while (!Done)
         {
-            AcpiOsPrintf ("PCI IRQ Routing Table structure %X.\n", Count++);
+            AcpiOsPrintf ("\tPCI IRQ Routing Table structure %X.\n", Count++);
 
-            AcpiOsPrintf ("    Address: %8.8X%8.8X\n",
-                        ACPI_HIDWORD (PrtElement->Address),
-                        ACPI_LODWORD (PrtElement->Address));
+            AcpiOsPrintf ("\t\tAddress: %X\n",
+                        PrtElement->Data.Address);
 
-            AcpiOsPrintf ("    Pin: %X\n", PrtElement->Pin);
+            AcpiOsPrintf ("\t\tPin: %X\n", PrtElement->Data.Pin);
 
-            AcpiOsPrintf ("    Source: %s\n", PrtElement->Source);
+            AcpiOsPrintf ("\t\tSource: %s\n", PrtElement->Data.Source);
 
-            AcpiOsPrintf ("    SourceIndex: %X\n",
-                        PrtElement->SourceIndex);
+            AcpiOsPrintf ("\t\tSourceIndex: %X\n",
+                        PrtElement->Data.SourceIndex);
 
             Buffer += PrtElement->Length;
 
-            PrtElement = (ACPI_PCI_ROUTING_TABLE *) Buffer;
+            PrtElement = (PCI_ROUTING_TABLE *)Buffer;
 
             if(0 == PrtElement->Length)
             {
@@ -1230,6 +1042,4 @@ AcpiRsDumpIrqList (
 
     return;
 }
-
-#endif
 
