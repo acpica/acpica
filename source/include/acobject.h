@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Name: acobject.h - Definition of ACPI_OPERAND_OBJECT  (Internal object only)
- *       $Revision: 1.98 $
+ *       $Revision: 1.99 $
  *
  *****************************************************************************/
 
@@ -149,10 +149,11 @@
  */
 
 
-#define ACPI_OBJECT_COMMON_HEADER           /* SIZE/ALIGNMENT: 32-bits plus trailing 8-bit flag */\
+#define ACPI_OBJECT_COMMON_HEADER           /* SIZE/ALIGNMENT: 32 bits, one ptr plus trailing 8-bit flag */\
     UINT8                       DataType;           /* To differentiate various internal objs */\
     UINT8                       Type;               /* ACPI_OBJECT_TYPE */\
     UINT16                      ReferenceCount;     /* For object deletion management */\
+    union acpi_operand_obj      *NextObject;        /* Objects linked to parent NS node */\
     UINT8                       Flags; \
 
 /* Defines for flag byte above */
@@ -318,7 +319,6 @@ typedef struct /* REGION */
     UINT8                       SpaceId;
     UINT32                      Length;
     ACPI_PHYSICAL_ADDRESS       Address;
-    union acpi_operand_obj      *Extra;             /* Pointer to executable AML (in region definition) */
 
     union acpi_operand_obj      *AddrHandler;       /* Handler for system notifies */
     ACPI_NAMESPACE_NODE         *Node;              /* containing object */
@@ -422,7 +422,6 @@ typedef struct /* BUFFER FIELD */
     ACPI_OBJECT_COMMON_HEADER
     ACPI_COMMON_FIELD_INFO
 
-    union acpi_operand_obj      *Extra;             /* Pointer to executable AML (in field definition) */
     union acpi_operand_obj      *BufferObj;         /* Containing Buffer object */
 
 } ACPI_OBJECT_BUFFER_FIELD;
