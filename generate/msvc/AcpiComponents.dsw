@@ -3,22 +3,6 @@ Microsoft Developer Studio Workspace File, Format Version 6.00
 
 ###############################################################################
 
-Project: "Event"=..\..\SUBSYSTEM\Event\Event.dsp - Package Owner=<4>
-
-Package=<5>
-{{{
-    begin source code control
-    "$/Acpi Components/SubSystem/Event", FQBAAAAA
-    ..\..\subsystem\event
-    end source code control
-}}}
-
-Package=<4>
-{{{
-}}}
-
-###############################################################################
-
 Project: "Hardware"=..\..\SUBSYSTEM\Hardware\Hardware.dsp - Package Owner=<4>
 
 Package=<5>
