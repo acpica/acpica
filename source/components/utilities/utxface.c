@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: cmxface - External interfaces for "global" ACPI functions
- *              $Revision: 1.61 $
+ *              $Revision: 1.62 $
  *
  *****************************************************************************/
 
@@ -148,8 +148,6 @@ AcpiInitializeSubsystem (
     void)
 {
     ACPI_STATUS             Status;
-    ACPI_BUFFER             Buffer;
-    ACPI_SYSTEM_INFO        SysInfo;
 
     FUNCTION_TRACE ("AcpiInitializeSubsystem");
 
