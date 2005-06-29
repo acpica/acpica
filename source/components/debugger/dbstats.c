@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dbstats - Generation and display of ACPI table statistics
- *              $Revision: 1.51 $
+ *              $Revision: 1.53 $
  *
  ******************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -368,8 +368,10 @@ AcpiDbDisplayStatistics (
 {
     UINT32                  i;
     UINT32                  Type;
-    UINT32                  Outstanding;
     UINT32                  Size;
+#ifdef ACPI_DBG_TRACK_ALLOCATIONS
+    UINT32                  Outstanding;
+#endif
 
 
     if (!AcpiGbl_DSDT)
