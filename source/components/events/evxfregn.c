@@ -2,7 +2,7 @@
  *
  * Module Name: evxfregn - External Interfaces, ACPI Operation Regions and
  *                         Address Spaces.
- *              $Revision: 1.62 $
+ *              $Revision: 1.63 $
  *
  *****************************************************************************/
 
@@ -120,7 +120,6 @@
 #include "acpi.h"
 #include "acnamesp.h"
 #include "acevents.h"
-#include "acinterp.h"
 
 #define _COMPONENT          ACPI_EVENTS
         ACPI_MODULE_NAME    ("evxfregn")
