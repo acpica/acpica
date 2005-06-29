@@ -19,6 +19,8 @@
 #ifndef __NAMESPACE_H__
 #define __NAMESPACE_H__
 
+#include <datatypes.h>
+#include <acpitables.h>
 #include <acpiobj.h>
 #include <pnp.h>
 
