@@ -2,7 +2,7 @@
  *
  * Module Name: evevent - Fixed and General Purpose AcpiEvent
  *                          handling and dispatch
- *              $Revision: 1.16 $
+ *              $Revision: 1.17 $
  *
  *****************************************************************************/
 
@@ -404,10 +404,22 @@ AcpiEvGpeInitialize (void)
 
     FUNCTION_TRACE ("EvGpeInitialize");
 
-    /*
-     * Setup various GPE counts
-     */
-
+    /*******************************************************************/
+    /* Setting up various GPE counts                                   */
+    /*                                                                 */
+    /* You may ask,why are the GPE register block lengths divided by 2?*/
+    /* From the ACPI 2.0 Spec, section, 4.7.1.6 General-Purpose Event  */
+    /* Registers, we have,                                             */
+    /*                                                                 */
+    /* "Each register block contains two registers of equal length:     */
+    /* GPEx_STS and GPEx_EN (where x is 0 or 1). The length of the     */
+    /* GPE0_STS and GPE0_EN registers is equal to half the GPE0_LEN.   */
+    /* The length of the GPE1_STS and GPE1_EN registers is equal to    */
+    /* half the GPE1_LEN. If a generic register block is not supported */
+    /* then its respective block pointer and block length values in the*/
+    /* FADT table contain zeros. The GPE0_LEN and GPE1_LEN do not need */
+    /* to be the same size."                                           */
+    /*******************************************************************/
     Gpe0RegisterCount       = (UINT16) DIV_2 (AcpiGbl_FACP->Gpe0BlkLen);
     Gpe1RegisterCount       = (UINT16) DIV_2 (AcpiGbl_FACP->Gpe1BlkLen);
     AcpiGbl_GpeRegisterCount    = Gpe0RegisterCount + Gpe1RegisterCount;
