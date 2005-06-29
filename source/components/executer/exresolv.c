@@ -166,7 +166,7 @@ AmlGetFieldUnitValue (
         DEBUG_PRINT (ACPI_ERROR, ("AmlGetFieldUnitValue: internal error - null container pointer\n"));
     }
 
-    else if (TYPE_Buffer != FieldDesc->FieldUnit.Container->Type)
+    else if (TYPE_Buffer != FieldDesc->FieldUnit.Container->Common.Type)
     {
         DEBUG_PRINT (ACPI_ERROR, ("AmlGetFieldUnitValue: internal error - container is not a Buffer\n"));
     }
@@ -279,7 +279,7 @@ AmlGetRvalue (
         return_ACPI_STATUS (AE_AML_ERROR);
     }
 
-    switch ((*StackPtr)->Type)
+    switch ((*StackPtr)->Common.Type)
     {
     case TYPE_Lvalue:
 
@@ -314,7 +314,7 @@ AmlGetRvalue (
                             MvIndex, Gbl_ExceptionNames[Status], StackPtr, *StackPtr,
                             *(UINT32 *)* StackPtr));
             
-            if (TYPE_Number == (*StackPtr)->Type)
+            if (TYPE_Number == (*StackPtr)->Common.Type)
             {
                 /* Value is a Number */
                 
@@ -340,7 +340,7 @@ AmlGetRvalue (
                             MvIndex, Gbl_ExceptionNames[Status], StackPtr, *StackPtr,
                             *(UINT32 *)* StackPtr));
 
-            if (TYPE_Number == (*StackPtr)->Type)
+            if (TYPE_Number == (*StackPtr)->Common.Type)
             {
                 /* Value is a Number */
                 
@@ -353,7 +353,7 @@ AmlGetRvalue (
 
         case AML_ZeroOp:
 
-            (*StackPtr)->Type = (UINT8) TYPE_Number;
+            (*StackPtr)->Common.Type = (UINT8) TYPE_Number;
             (*StackPtr)->Number.Value = 0;
             Status = AE_OK;
             break;
@@ -361,7 +361,7 @@ AmlGetRvalue (
 
         case AML_OneOp:
 
-            (*StackPtr)->Type = (UINT8) TYPE_Number;
+            (*StackPtr)->Common.Type = (UINT8) TYPE_Number;
             (*StackPtr)->Number.Value = 1;
             Status = AE_OK;
             break;
@@ -369,7 +369,7 @@ AmlGetRvalue (
 
         case AML_OnesOp:
 
-            (*StackPtr)->Type = (UINT8) TYPE_Number;
+            (*StackPtr)->Common.Type = (UINT8) TYPE_Number;
             (*StackPtr)->Number.Value = 0xFFFFFFFF;
             Status = AE_OK;
             break;
@@ -438,7 +438,7 @@ AmlGetRvalue (
 
         break;
 
-    }   /* switch ((*StackPtr)->Type) */
+    }   /* switch ((*StackPtr)->Common.Type) */
 
 
 
@@ -503,7 +503,7 @@ AmlGetRvalue (
                 }
             }
             
-            if (!ValDesc || (TYPE_Package != ValDesc->Type))
+            if (!ValDesc || (TYPE_Package != ValDesc->Common.Type))
             {
                 DEBUG_PRINT (ACPI_ERROR, ("AmlGetRvalue:internal error - Bad package value\n"));
                 return_ACPI_STATUS (AE_AML_ERROR);
@@ -532,7 +532,7 @@ AmlGetRvalue (
 
             /* TBD: - Is there a problem here if the nte points to an AML definition? */
             
-            if (TYPE_String != ValDesc->Type)
+            if (TYPE_String != ValDesc->Common.Type)
             {
                 DEBUG_PRINT (ACPI_ERROR, ("AmlGetRvalue: internal error - Bad string value\n"));
                 return_ACPI_STATUS (AE_AML_ERROR);
@@ -597,7 +597,7 @@ AmlGetRvalue (
                 }
             }
             
-            if (!ValDesc || (TYPE_Buffer != ValDesc->Type))
+            if (!ValDesc || (TYPE_Buffer != ValDesc->Common.Type))
             {
                 DEBUG_PRINT (ACPI_ERROR, ("AmlGetRvalue: Bad buffer value\n"));
                 return_ACPI_STATUS (AE_AML_ERROR);
@@ -640,7 +640,7 @@ AmlGetRvalue (
                 return_ACPI_STATUS (AE_AML_ERROR);
             }
 
-            if (TYPE_Number == ValDesc->Type)
+            if (TYPE_Number == ValDesc->Common.Type)
             {
                 ObjDesc = CmAllocateObjectDesc ();
                 if (!ObjDesc)
@@ -770,11 +770,11 @@ BREAKPOINT3;
                 return_ACPI_STATUS (AE_AML_ERROR);
             }
 
-            if (TYPE_BankField != ValDesc->Type)
+            if (TYPE_BankField != ValDesc->Common.Type)
             {
                 DEBUG_PRINT (ACPI_ERROR, (
                         "AmlGetRvalue/BankField:internal error - Name %4.4s type %d does not match value-type %d at %p\n",
-                        *StackPtr, TYPE_BankField, ValDesc->Type, ValDesc));
+                        *StackPtr, TYPE_BankField, ValDesc->Common.Type, ValDesc));
                 
                 return_ACPI_STATUS (AE_AML_ERROR);
             }
@@ -828,11 +828,11 @@ BREAKPOINT3;
                 return_ACPI_STATUS (AE_AML_ERROR);
             }
 
-            if (TYPE_IndexField != ValDesc->Type)
+            if (TYPE_IndexField != ValDesc->Common.Type)
             {
                 DEBUG_PRINT (ACPI_ERROR, (
                         "AmlGetRvalue/IndexField: internal error - Name %4.4s type %d does not match value-type %d at %p\n",
-                        *StackPtr, TYPE_IndexField, ValDesc->Type, ValDesc));
+                        *StackPtr, TYPE_IndexField, ValDesc->Common.Type, ValDesc));
                 
                 return_ACPI_STATUS (AE_AML_ERROR);
             }
@@ -884,12 +884,12 @@ BREAKPOINT3;
                 return_ACPI_STATUS (AE_AML_ERROR);
             }
 
-            if (ValDesc->Type != (UINT8) NsGetType ((ACPI_HANDLE)* StackPtr))
+            if (ValDesc->Common.Type != (UINT8) NsGetType ((ACPI_HANDLE)* StackPtr))
             {
                 DEBUG_PRINT (ACPI_ERROR, (
                         "AmlGetRvalue/FieldUnit:internal error - Name %4.4s type %d does not match value-type %d at %p\n",
                           *StackPtr, NsGetType ((ACPI_HANDLE)* StackPtr),
-                          ValDesc->Type, ValDesc));
+                          ValDesc->Common.Type, ValDesc));
                 
                 return_ACPI_STATUS (AE_AML_ERROR);
                 break;

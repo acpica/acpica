@@ -299,12 +299,12 @@ AmlExecStore (
 
     /* Destination object must be of type Lvalue */
 
-    if (DestDesc->Type != TYPE_Lvalue)
+    if (DestDesc->Common.Type != TYPE_Lvalue)
     {   
         /* Destination is not an Lvalue */
 
         DEBUG_PRINT (ACPI_ERROR, ("AmlExecStore: Destination is not an Lvalue [%s]\n",
-                        Gbl_NsTypeNames[DestDesc->Type]));
+                        Gbl_NsTypeNames[DestDesc->Common.Type]));
 
         DUMP_STACK_ENTRY (ValDesc);
         DUMP_STACK_ENTRY (DestDesc);
@@ -345,17 +345,17 @@ AmlExecStore (
              * If value is not a Number, try to resolve it to one.
              */
 
-            if ((ValDesc->Type != TYPE_Number) &&
+            if ((ValDesc->Common.Type != TYPE_Number) &&
                ((Status = AmlGetRvalue (&ValDesc)) != AE_OK))
             {
                 DeleteDestDesc = DestDesc;
             }
 
-            else if (ValDesc->Type != TYPE_Number)
+            else if (ValDesc->Common.Type != TYPE_Number)
             {
                 DEBUG_PRINT (ACPI_ERROR, (
                         "AmlExecStore: Value assigned to BankField must be Number, not %d\n",
-                        ValDesc->Type));
+                        ValDesc->Common.Type));
 
                 DeleteDestDesc = DestDesc;
                 Status = AE_AML_ERROR;
@@ -380,11 +380,11 @@ AmlExecStore (
 
 
             if ((AE_OK == Status) && 
-                (TYPE_BankField != DestDesc->Type))
+                (TYPE_BankField != DestDesc->Common.Type))
             {
                 DEBUG_PRINT (ACPI_ERROR, (
                         "AmlExecStore/BankField: Internal error - Name %4.4s type %d does not match value-type %d at %p\n",
-                        TempHandle, NsGetType (TempHandle), DestDesc->Type, DestDesc));
+                        TempHandle, NsGetType (TempHandle), DestDesc->Common.Type, DestDesc));
 
                 Status = AE_AML_ERROR;
             }
@@ -426,17 +426,17 @@ AmlExecStore (
              * If value is not a Number, try to resolve it to one.
              */
 
-            if ((ValDesc->Type != TYPE_Number) && 
+            if ((ValDesc->Common.Type != TYPE_Number) && 
                ((Status = AmlGetRvalue (&ValDesc)) != AE_OK))
             {
                 DeleteDestDesc = DestDesc;
             }
 
-            else if (ValDesc->Type != TYPE_Number)
+            else if (ValDesc->Common.Type != TYPE_Number)
             {
                 DEBUG_PRINT (ACPI_ERROR, 
                         ("AmlExecStore/DefField: Value assigned to Field must be Number, not %d\n",
-                        ValDesc->Type));
+                        ValDesc->Common.Type));
 
                 DeleteDestDesc = DestDesc;
                 Status = AE_AML_ERROR;
@@ -460,11 +460,11 @@ AmlExecStore (
             }
 
             if ((AE_OK == Status) && 
-                (TYPE_DefField != DestDesc->Type))
+                (TYPE_DefField != DestDesc->Common.Type))
             {
                 DEBUG_PRINT (ACPI_ERROR, (
                         "AmlExecStore/DefField: Internal error - Name %4.4s type %d does not match value-type %d at %p\n",
-                        TempHandle, NsGetType (TempHandle), DestDesc->Type, DestDesc));
+                        TempHandle, NsGetType (TempHandle), DestDesc->Common.Type, DestDesc));
 
                 Status = AE_AML_ERROR;
             }
@@ -490,17 +490,17 @@ AmlExecStore (
              * If value is not a Number, try to resolve it to one.
              */
             
-            if ((ValDesc->Type != TYPE_Number) &&
+            if ((ValDesc->Common.Type != TYPE_Number) &&
                ((Status = AmlGetRvalue (&ValDesc)) != AE_OK))
             {
                 DeleteDestDesc = DestDesc;
             }
 
-            else if (ValDesc->Type != TYPE_Number)
+            else if (ValDesc->Common.Type != TYPE_Number)
             {
                 DEBUG_PRINT (ACPI_ERROR, (
                         "AmlExecStore: Value assigned to IndexField must be Number, not %d\n",
-                        ValDesc->Type));
+                        ValDesc->Common.Type));
 
                 DeleteDestDesc = DestDesc;
                 Status = AE_AML_ERROR;
@@ -525,11 +525,11 @@ AmlExecStore (
             }
 
             if ((AE_OK == Status) &&
-                (TYPE_IndexField != DestDesc->Type))
+                (TYPE_IndexField != DestDesc->Common.Type))
             {
                 DEBUG_PRINT (ACPI_ERROR, 
                         ("AmlExecStore/IndexField: Internal error - Name %4.4s type %d does not match value-type %d at %p\n",
-                        TempHandle, NsGetType (TempHandle), DestDesc->Type, DestDesc));
+                        TempHandle, NsGetType (TempHandle), DestDesc->Common.Type, DestDesc));
 
                 Status = AE_AML_ERROR;
             }
@@ -568,17 +568,17 @@ AmlExecStore (
              * Storing into a FieldUnit (defined in a Buffer).
              * If value is not a Number, try to resolve it to one.
              */
-            if ((ValDesc->Type != TYPE_Number) &&
+            if ((ValDesc->Common.Type != TYPE_Number) &&
                ((Status = AmlGetRvalue (&ValDesc)) != AE_OK))
             {
                 DeleteDestDesc = DestDesc;
             }
 
-            else if (ValDesc->Type != TYPE_Number)
+            else if (ValDesc->Common.Type != TYPE_Number)
             {
                 DEBUG_PRINT (ACPI_ERROR, (
                         "AmlExecStore/FieldUnit: Value assigned to Field must be Number, not %d\n",
-                          ValDesc->Type));
+                          ValDesc->Common.Type));
 
                 DeleteDestDesc = DestDesc;
                 Status = AE_AML_ERROR;
@@ -604,24 +604,24 @@ AmlExecStore (
                 else
                 {
                     DEBUG_PRINT (ACPI_INFO,
-                        ("AmlExecStore: FieldUnit: Name's value DestDesc=%p, DestDesc->Type=%02Xh\n",
-                        DestDesc, DestDesc->Type));
+                        ("AmlExecStore: FieldUnit: Name's value DestDesc=%p, DestDesc->Common.Type=%02Xh\n",
+                        DestDesc, DestDesc->Common.Type));
                 }
             }
 
             if ((AE_OK == Status) &&
-                (DestDesc->Type != (UINT8) NsGetType (TempHandle)))
+                (DestDesc->Common.Type != (UINT8) NsGetType (TempHandle)))
             {
                 DEBUG_PRINT (ACPI_ERROR, (
                         "AmlExecStore/FieldUnit: Internal error - Name %4.4s type %d does not match value-type %d at %p\n",
-                          TempHandle, NsGetType(TempHandle), DestDesc->Type, DestDesc));
+                          TempHandle, NsGetType(TempHandle), DestDesc->Common.Type, DestDesc));
 
                 Status = AE_AML_ERROR;
             }
 
             if ((AE_OK == Status) &&
                (!DestDesc->FieldUnit.Container ||
-                TYPE_Buffer != DestDesc->FieldUnit.Container->Type ||
+                TYPE_Buffer != DestDesc->FieldUnit.Container->Common.Type ||
                 DestDesc->FieldUnit.Sequence
                     != DestDesc->FieldUnit.Container->Buffer.Sequence))
             {
@@ -633,7 +633,7 @@ AmlExecStore (
                 if (DestDesc->FieldUnit.Container)
                 {
                     DEBUG_PRINT_RAW (ACPI_ERROR, (" Type %d, FuSeq %x BufSeq %x",
-                        DestDesc->FieldUnit.Container->Type,
+                        DestDesc->FieldUnit.Container->Common.Type,
                         DestDesc->FieldUnit.Sequence,
                         DestDesc->FieldUnit.Container->Buffer.Sequence));
                 }
@@ -709,7 +709,7 @@ AmlExecStore (
                 return_ACPI_STATUS (Status);
             }
             
-            if (TYPE_Buffer == DestDesc->Type)
+            if (TYPE_Buffer == DestDesc->Common.Type)
             {
                 /* Assign a new sequence number */
 
@@ -717,7 +717,7 @@ AmlExecStore (
             }
 
 
-            NsAttachObject (TempHandle, DestDesc, DestDesc->Type);
+            NsAttachObject (TempHandle, DestDesc, DestDesc->Common.Type);
             break;
         }
 
