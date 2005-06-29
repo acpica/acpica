@@ -310,6 +310,10 @@ SOURCE=..\..\subsystem\Namespace\nseval.c
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\subsystem\Namespace\nsinit.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\subsystem\Namespace\nsload.c
 # End Source File
 # Begin Source File
@@ -331,10 +335,6 @@ SOURCE=..\..\subsystem\Namespace\nsutils.c
 # Begin Source File
 
 SOURCE=..\..\subsystem\Namespace\nswalk.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\subsystem\Namespace\nsxfinit.c
 # End Source File
 # Begin Source File
 
