@@ -1,7 +1,7 @@
-
 /******************************************************************************
  *
  * Name: acevents.h - Event subcomponent prototypes and defines
+ *       $Revision: 1.58 $
  *
  *****************************************************************************/
 
@@ -118,6 +118,11 @@
 #define __ACEVENTS_H__
 
 
+ACPI_STATUS
+AcpiEvInitialize (
+    void);
+
+
 /*
  * AcpiEvfixed - Fixed event handling
  */
@@ -193,7 +198,7 @@ AcpiEvInstallDefaultAddressSpaceHandlers (
 
 ACPI_STATUS
 AcpiEvAddressSpaceDispatch (
-    ACPI_OBJECT_INTERNAL   *RegionObj,
+    ACPI_OPERAND_OBJECT    *RegionObj,
     UINT32                  Function,
     UINT32                  Address,
     UINT32                  BitWidth,
@@ -209,13 +214,13 @@ AcpiEvAddrHandlerHelper (
 
 void
 AcpiEvDisassociateRegionFromHandler(
-    ACPI_OBJECT_INTERNAL   *RegionObj);
+    ACPI_OPERAND_OBJECT    *RegionObj);
 
 
 ACPI_STATUS
 AcpiEvAssociateRegionAndHandler (
-    ACPI_OBJECT_INTERNAL    *HandlerObj,
-    ACPI_OBJECT_INTERNAL    *RegionObj,
+    ACPI_OPERAND_OBJECT     *HandlerObj,
+    ACPI_OPERAND_OBJECT     *RegionObj,
     BOOLEAN                 AcpiNsIsLocked);
 
 
@@ -253,12 +258,12 @@ AcpiEvDefaultRegionSetup (
 
 ACPI_STATUS
 AcpiEvInitializeRegion (
-    ACPI_OBJECT_INTERNAL    *RegionObj,
+    ACPI_OPERAND_OBJECT     *RegionObj,
     BOOLEAN                 AcpiNsLocked);
 
 
 /*
- * AcpiEvsci - SCI (System Control Interrupt) handling/dispatch
+ * Evsci - SCI (System Control Interrupt) handling/dispatch
  */
 
 UINT32
@@ -269,9 +274,9 @@ ACPI_STATUS
 AcpiEvRemoveSciHandler (
     void);
 
-INT32
+UINT32
 AcpiEvInitializeSCI (
-    INT32                   ProgramSCI);
+    UINT32                  ProgramSCI);
 
 void
 AcpiEvRestoreAcpiState (
@@ -286,7 +291,7 @@ AcpiEvTerminate (
 
 #ifdef ACPI_DEBUG
 
-INT32
+UINT32
 AcpiEvSciCount (
     UINT32                  AcpiEvent);
 
