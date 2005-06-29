@@ -358,6 +358,11 @@ AmlDumpOperand (
             break;
 
 
+        case AML_NAMEPATH_OP:
+            DEBUG_PRINT_RAW (ACPI_INFO, ("Lvalue.Nte->Name %x\n",
+                        EntryDesc->Lvalue.Nte->Name));
+            break;
+        
         default:
 
             /*  unknown opcode  */
