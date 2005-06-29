@@ -277,5 +277,11 @@ typedef char *va_list;
 
 #endif
 
+#ifdef ACPI_APPLICATION
+#undef causeinterrupt
+#undef BREAKPOINT3
+#define causeinterrupt(level)
+#define BREAKPOINT3   
+#endif         
 
 #endif /* __ACENV_H__ */
