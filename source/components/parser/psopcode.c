@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: psopcode - Parser/Interpreter opcode information table
- *              $Revision: 1.56 $
+ *              $Revision: 1.57 $
  *
  *****************************************************************************/
 
@@ -676,7 +676,7 @@ static const ACPI_OPCODE_INFO    AcpiGbl_AmlOpInfo[] =
 /* 79 */ ACPI_OP ("Mid",                ARGP_MID_OP,               ARGI_MID_OP,                ACPI_TYPE_ANY,           AML_CLASS_EXECUTE,         AML_TYPE_EXEC_3A_1T_1R,   AML_FLAGS_EXEC_3A_1T_1R),
 /* 7A */ ACPI_OP ("Continue",           ARGP_CONTINUE_OP,          ARGI_CONTINUE_OP,           ACPI_TYPE_ANY,           AML_CLASS_CONTROL,         AML_TYPE_CONTROL,         0),
 /* 7B */ ACPI_OP ("LoadTable",          ARGP_LOAD_TABLE_OP,        ARGI_LOAD_TABLE_OP,         ACPI_TYPE_ANY,           AML_CLASS_EXECUTE,         AML_TYPE_EXEC_6A_0T_1R,   AML_FLAGS_EXEC_6A_0T_1R),
-/* 7C */ ACPI_OP ("DataTableRegion",    ARGP_DATA_REGION_OP,       ARGI_DATA_REGION_OP,        ACPI_TYPE_REGION,        AML_CLASS_EXECUTE,         AML_TYPE_NAMED_SIMPLE,    AML_HAS_ARGS | AML_NSOBJECT | AML_NSOPCODE | AML_NSNODE | AML_NAMED),
+/* 7C */ ACPI_OP ("DataTableRegion",    ARGP_DATA_REGION_OP,       ARGI_DATA_REGION_OP,        ACPI_TYPE_REGION,        AML_CLASS_NAMED_OBJECT,    AML_TYPE_NAMED_SIMPLE,    AML_HAS_ARGS | AML_NSOBJECT | AML_NSOPCODE | AML_NSNODE | AML_NAMED),
 
 };
 
