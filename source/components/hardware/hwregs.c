@@ -15,15 +15,18 @@
  | control and status registers.
  |__________________________________________________________________________
  |
- | $Revision: 1.9 $
- | $Date: 2005/06/29 16:54:09 $
+ | $Revision: 1.10 $
+ | $Date: 2005/06/29 16:54:10 $
  | $Log: hwregs.c,v $
- | Revision 1.9  2005/06/29 16:54:09  aystarik
- | Integrated with 03/99 OPSD code
+ | Revision 1.10  2005/06/29 16:54:10  aystarik
+ | New version of DEBUG_PRINT
  |
  | 
- | date	99.03.31.22.32.00;	author rmoore1;	state Exp;
+ | date	99.04.02.22.40.00;	author rmoore1;	state Exp;
  |
+ * 
+ * 10    4/02/99 2:40p Rmoore1
+ * New version of DEBUG_PRINT
  * 
  * 9     3/31/99 2:32p Rmoore1
  * Integrated with 03/99 OPSD code
@@ -270,8 +273,8 @@ AcpiRegisterIO (INT32 ReadWrite, INT32 RegisterId, ... /* UINT32 Value */)
                     
                     if (Value)
                     {
-                        DEBUG_PRINT2 (DV_INFO, "About to write %04X to %04X\n", (UINT16) Value, 
-                                    (UINT16) FACP->Pm1aEvtBlk);
+                        DEBUG_PRINT (DV_INFO, ("About to write %04X to %04X\n", (UINT16) Value, 
+                                    (UINT16) FACP->Pm1aEvtBlk));
                         OsdOut16 ((UINT16) FACP->Pm1aEvtBlk, (UINT16) Value);
                         
                         if (FACP->Pm1bEvtBlk)
@@ -329,8 +332,8 @@ AcpiRegisterIO (INT32 ReadWrite, INT32 RegisterId, ... /* UINT32 Value */)
                     Value          &= Mask;
                     RegisterValue  |= Value;
 
-                    DEBUG_PRINT2 (DV_INFO, "About to write %04X to %04X\n", (UINT16) RegisterValue, 
-                                (UINT16) (FACP->Pm1aEvtBlk + FACP->Pm1EvtLen / 2));
+                    DEBUG_PRINT (DV_INFO, ("About to write %04X to %04X\n", (UINT16) RegisterValue, 
+                                (UINT16) (FACP->Pm1aEvtBlk + FACP->Pm1EvtLen / 2)));
 
                     OsdOut16 ((UINT16) (FACP->Pm1aEvtBlk + FACP->Pm1EvtLen / 2), 
                             (UINT16) RegisterValue);
@@ -454,8 +457,8 @@ AcpiRegisterIO (INT32 ReadWrite, INT32 RegisterId, ... /* UINT32 Value */)
                 Value          &= Mask;
                 RegisterValue  |= Value;
 
-                DEBUG_PRINT2 (DV_INFO, "About to write %04X to %04X\n", (UINT16) RegisterValue, 
-                            (UINT16) FACP->Pm2CntBlk);
+                DEBUG_PRINT (DV_INFO, ("About to write %04X to %04X\n", (UINT16) RegisterValue, 
+                            (UINT16) FACP->Pm2CntBlk));
 
                 OsdOut16 ((UINT16) FACP->Pm2CntBlk, (UINT16) RegisterValue);
             }
@@ -523,8 +526,8 @@ AcpiRegisterIO (INT32 ReadWrite, INT32 RegisterId, ... /* UINT32 Value */)
                 /* This write will put the iAction state into the General Purpose */
                 /* Enable Register indexed by the value in Mask */
 
-                DEBUG_PRINT2 (DV_INFO, "About to write %04X to %04X\n", (UINT16) RegisterValue, 
-                            (UINT16) GpeReg);
+                DEBUG_PRINT (DV_INFO, ("About to write %04X to %04X\n", (UINT16) RegisterValue, 
+                            (UINT16) GpeReg));
 
                 OsdOut8 ((UINT16) GpeReg, (UINT8) RegisterValue);
                 RegisterValue = (UINT32) OsdIn8 ((UINT16) GpeReg);          
@@ -568,7 +571,8 @@ ClearAllAcpiChipsetStatusBits (void)
     FUNCTION_TRACE ("ClearAllAcpiChipsetStatusBits");
 
 
-    DEBUG_PRINT2 (DV_INFO, "About to write %04X to %04X\n", ALL_FIXED_STS_BITS, (UINT16) FACP->Pm1aEvtBlk);
+    DEBUG_PRINT (DV_INFO, ("About to write %04X to %04X\n", 
+                    ALL_FIXED_STS_BITS, (UINT16) FACP->Pm1aEvtBlk));
 
     OsdOut16 ((UINT16) FACP->Pm1aEvtBlk, (UINT16) ALL_FIXED_STS_BITS);
     
