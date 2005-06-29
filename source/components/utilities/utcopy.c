@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: utcopy - Internal to external object translation utilities
- *              $Revision: 1.107 $
+ *              $Revision: 1.108 $
  *
  *****************************************************************************/
 
@@ -521,7 +521,7 @@ AcpiUtCopyEsimpleToIsimple (
 
     case ACPI_TYPE_STRING:
 
-        InternalObject->String.Pointer = 
+        InternalObject->String.Pointer =
             ACPI_MEM_CALLOCATE ((ACPI_SIZE) ExternalObject->String.Length + 1);
         if (!InternalObject->String.Pointer)
         {
@@ -538,7 +538,7 @@ AcpiUtCopyEsimpleToIsimple (
 
     case ACPI_TYPE_BUFFER:
 
-        InternalObject->Buffer.Pointer = 
+        InternalObject->Buffer.Pointer =
             ACPI_MEM_CALLOCATE (ExternalObject->Buffer.Length);
         if (!InternalObject->Buffer.Pointer)
         {
@@ -715,7 +715,7 @@ AcpiUtCopySimpleObject (
 
     /* Copy the entire source object over the destination object*/
 
-    ACPI_MEMCPY ((char *) DestDesc, (char *) SourceDesc, 
+    ACPI_MEMCPY ((char *) DestDesc, (char *) SourceDesc,
                     sizeof (ACPI_OPERAND_OBJECT));
 
     /* Restore the saved fields */
@@ -868,7 +868,7 @@ AcpiUtCopyIelementToIelement (
         /*
          * Create the object array
          */
-        TargetObject->Package.Elements = 
+        TargetObject->Package.Elements =
             ACPI_MEM_CALLOCATE (((ACPI_SIZE) SourceObject->Package.Count + 1) *
                                     sizeof (void *));
         if (!TargetObject->Package.Elements)
