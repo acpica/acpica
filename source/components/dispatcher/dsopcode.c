@@ -266,7 +266,6 @@ AcpiDsEvalRegionOperands (
     FUNCTION_TRACE_PTR ("DsEvalRegionOperands", Op);
 
 
-
     /*
      * This is where we evaluate the address and length fields of the OpRegion declaration
      */
@@ -412,7 +411,6 @@ AcpiDsExecEndControlOp (
     ACPI_GENERIC_STATE      *ControlState;
 
 
-
     switch (Op->Opcode)
     {
     case AML_IF_OP:
@@ -525,7 +523,7 @@ AcpiDsExecEndControlOp (
 
         /* Call up to the OS dependent layer to handle this */
 
-        AcpiOsdBreakpoint (NULL);
+        AcpiOsBreakpoint (NULL);
 
         /* If it returns, we are done! */
 
