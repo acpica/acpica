@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exresolv - AML Interpreter object resolution
- *              $Revision: 1.95 $
+ *              $Revision: 1.99 $
  *
  *****************************************************************************/
 
@@ -163,7 +163,7 @@ AcpiExGetBufferFieldValue (
      */
     if (!ObjDesc)
     {
-        DEBUG_PRINTP (ACPI_ERROR, ("Internal - null field pointer\n"));
+        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Internal - null field pointer\n"));
         return_ACPI_STATUS (AE_AML_NO_OPERAND);
     }
 
@@ -178,19 +178,19 @@ AcpiExGetBufferFieldValue (
 
     if (!ObjDesc->BufferField.BufferObj)
     {
-        DEBUG_PRINTP (ACPI_ERROR, ("Internal - null container pointer\n"));
+        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Internal - null container pointer\n"));
         return_ACPI_STATUS (AE_AML_INTERNAL);
     }
 
     if (ACPI_TYPE_BUFFER != ObjDesc->BufferField.BufferObj->Common.Type)
     {
-        DEBUG_PRINTP (ACPI_ERROR, ("Internal - container is not a Buffer\n"));
+        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Internal - container is not a Buffer\n"));
         return_ACPI_STATUS (AE_AML_OPERAND_TYPE);
     }
 
     if (!ResultDesc)
     {
-        DEBUG_PRINTP (ACPI_ERROR, ("Internal - null result pointer\n"));
+        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Internal - null result pointer\n"));
         return_ACPI_STATUS (AE_AML_INTERNAL);
     }
 
@@ -230,8 +230,8 @@ AcpiExGetBufferFieldValue (
     ResultDesc->Integer.Value =
         (ResultDesc->Integer.Value >> ObjDesc->BufferField.StartFieldBitOffset) & Mask;
 
-    DEBUG_PRINT (ACPI_INFO,
-        ("** Read from buffer %p byte %ld bit %d width %d addr %p mask %08lx val %08lx\n",
+    ACPI_DEBUG_PRINT ((ACPI_DB_INFO,
+        "** Read from buffer %p byte %ld bit %d width %d addr %p mask %08lx val %08lx\n",
         ObjDesc->BufferField.BufferObj->Buffer.Pointer,
         ObjDesc->BufferField.BaseByteOffset,
         ObjDesc->BufferField.StartFieldBitOffset,
@@ -270,7 +270,7 @@ AcpiExResolveToValue (
 
     if (!StackPtr || !*StackPtr)
     {
-        DEBUG_PRINTP (ACPI_ERROR, ("Internal - null pointer\n"));
+        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Internal - null pointer\n"));
         return_ACPI_STATUS (AE_AML_NO_OPERAND);
     }
 
@@ -304,7 +304,7 @@ AcpiExResolveToValue (
     }
 
 
-    DEBUG_PRINTP (ACPI_INFO, ("Resolved object %p\n", *StackPtr));
+    ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "Resolved object %p\n", *StackPtr));
     return_ACPI_STATUS (AE_OK);
 }
 
@@ -392,37 +392,57 @@ AcpiExResolveObjectToValue (
             AcpiUtRemoveReference (StackDesc);
             *StackPtr = ObjDesc;
 
-            DEBUG_PRINTP (ACPI_INFO, ("[Arg/Local %d] ValueObj is %p\n",
+            ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "[Arg/Local %d] ValueObj is %p\n",
                 StackDesc->Reference.Offset, ObjDesc));
             break;
 
 
         /*
-         * TBD: [Restructure] These next three opcodes change the type of
-         * the object, which is actually a no-no.
+         * For constants, we must change the reference/constant object
+         * to a real integer object
          */
         case AML_ZERO_OP:
-
-            StackDesc->Common.Type = (UINT8) ACPI_TYPE_INTEGER;
-            StackDesc->Integer.Value = 0;
-            break;
-
-
         case AML_ONE_OP:
-
-            StackDesc->Common.Type = (UINT8) ACPI_TYPE_INTEGER;
-            StackDesc->Integer.Value = 1;
-            break;
-
-
         case AML_ONES_OP:
+        case AML_REVISION_OP:
 
-            StackDesc->Common.Type = (UINT8) ACPI_TYPE_INTEGER;
-            StackDesc->Integer.Value = ACPI_INTEGER_MAX;
+            /* Create a new integer object */
 
-            /* Truncate value if we are executing from a 32-bit ACPI table */
+            ObjDesc = AcpiUtCreateInternalObject (ACPI_TYPE_INTEGER);
+            if (!ObjDesc)
+            {
+                return_ACPI_STATUS (AE_NO_MEMORY);
+            }
 
-            AcpiExTruncateFor32bitTable (StackDesc, WalkState);
+            switch (Opcode)
+            {
+            case AML_ZERO_OP:
+                ObjDesc->Integer.Value = 0;
+                break;
+
+            case AML_ONE_OP:
+                ObjDesc->Integer.Value = 1;
+                break;
+
+            case AML_ONES_OP:
+                ObjDesc->Integer.Value = ACPI_INTEGER_MAX;
+
+                /* Truncate value if we are executing from a 32-bit ACPI table */
+
+                AcpiExTruncateFor32bitTable (ObjDesc, WalkState);
+                break;
+
+            case AML_REVISION_OP:
+                ObjDesc->Integer.Value = ACPI_CA_VERSION;
+                break;
+            }
+
+            /* 
+             * Remove a reference from the original reference object
+             * and put the new object in its place
+             */
+            AcpiUtRemoveReference (StackDesc);
+            *StackPtr = ObjDesc;
             break;
 
 
@@ -456,8 +476,8 @@ AcpiExResolveObjectToValue (
                      * A NULL object descriptor means an unitialized element of
                      * the package, can't dereference it
                      */
-                    DEBUG_PRINTP (ACPI_ERROR,
-                        ("Attempt to deref an Index to NULL pkg element Idx=%p\n", 
+                    ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
+                        "Attempt to deref an Index to NULL pkg element Idx=%p\n",
                         StackDesc));
                     Status = AE_AML_UNINITIALIZED_ELEMENT;
                 }
@@ -466,8 +486,8 @@ AcpiExResolveObjectToValue (
             default:
                 /* Invalid reference object */
 
-                DEBUG_PRINTP (ACPI_ERROR,
-                    ("Unknown TargetType %X in Index/Reference obj %p\n",
+                ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
+                    "Unknown TargetType %X in Index/Reference obj %p\n",
                     StackDesc->Reference.TargetType, StackDesc));
                 Status = AE_AML_INTERNAL;
                 break;
@@ -484,7 +504,7 @@ AcpiExResolveObjectToValue (
 
         default:
 
-            DEBUG_PRINTP (ACPI_ERROR, ("Unknown Reference object subtype %02X in %p\n",
+            ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Unknown Reference object subtype %02X in %p\n",
                 Opcode, StackDesc));
             Status = AE_AML_INTERNAL;
             break;
