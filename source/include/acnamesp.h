@@ -411,9 +411,9 @@ NsPopCurrent (
  */
 
 ACPI_STATUS
-NsFindRootSystemDescriptorPointer (
+NsFindRsdp (
     ROOT_SYSTEM_DESCRIPTOR_POINTER  ** RSDP,
-    OSD_FILE                        *InputFile);
+    char                    **BufferPtr);
 
 ACPI_STATUS
 NsVerifyTableChecksum (
@@ -422,12 +422,12 @@ NsVerifyTableChecksum (
 ACPI_STATUS
 NsGetTable (
     void                    *PhysicalAddress, 
-    OSD_FILE                *InputFile,
+    char                    **BufferPtr,
     void                    **Table);
 
 ACPI_STATUS
-NsGetFACS (
-    OSD_FILE                *InputFile,
+NsGetTableFacs (
+    char                    **BufferPtr,
     void                    **Table);
 
 
