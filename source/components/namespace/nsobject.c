@@ -376,8 +376,7 @@ AcpiNsAttachObject (
                         ("AML-stream code %02x\n", *(UINT8 *) Object));
                 }
 
-                else if (VALID_DESCRIPTOR_TYPE (Object,
-                            ACPI_DESC_TYPE_NAMED))
+                else if (VALID_DESCRIPTOR_TYPE (Object, ACPI_DESC_TYPE_NAMED))
                 {
                     DUMP_PATHNAME (Object,
                                     "name ", ACPI_INFO,
