@@ -395,10 +395,8 @@ TbInitTableDescriptor (
     TableDesc->Allocation           = TableInfo->Allocation;
     TableDesc->AmlPointer           = (UINT8 *) (TableDesc->Pointer + 1),
     TableDesc->AmlLength            = (UINT32) (TableDesc->Length - (UINT32) sizeof (ACPI_TABLE_HEADER));
-    TableDesc->TableId              = Gbl_TbNextTableId;
+    TableDesc->TableId              = CmAllocateOwnerId (OWNER_TYPE_TABLE);
     TableDesc->LoadedIntoNamespace  = FALSE;
-
-    Gbl_TbNextTableId++;
 
 
     /* Set the appropriate global pointer (if there is one) to point to the newly installed table */
