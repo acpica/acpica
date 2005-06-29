@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asllength - Tree walk to determine package and opcode lengths
- *              $Revision: 1.1 $
+ *              $Revision: 1.2 $
  *
  *****************************************************************************/
 
@@ -160,7 +160,8 @@ CgAmlPackageLengthWalk (
     {
         Node->Parent->AmlSubtreeLength += (Node->AmlLength + 
                                             Node->AmlOpcodeLength +
-                                            Node->AmlPkgLenBytes +                                            Node->AmlSubtreeLength);
+                                            Node->AmlPkgLenBytes + 
+                                            Node->AmlSubtreeLength);
     }
 }
 
@@ -570,6 +571,11 @@ CgGenerateAmlLengths (
         Node->AmlOpcodeLength = 0;
         Node->AmlLength = 8;
         return;
+
+    case AML_RAW_DATA_BUFFER:
+        /* Aml length set by creator */
+        Node->AmlOpcodeLength = 0;
+        return;
     }
 
 
@@ -615,7 +621,7 @@ CgGenerateAmlLengths (
 
     case PACKAGE_LENGTH:
         Node->AmlOpcodeLength = 0;
-        Node->AmlPkgLenBytes = CgGetPackageLenByteCount (Node->Value.Integer);
+        Node->AmlPkgLenBytes = CgGetPackageLenByteCount (Node->Value.Integer32);
         break;
 
     case RAW_DATA:
