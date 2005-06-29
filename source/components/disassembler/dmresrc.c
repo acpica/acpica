@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dmresrc.c - Resource Descriptor disassembly
- *              $Revision: 1.12 $
+ *              $Revision: 1.13 $
  *
  ******************************************************************************/
 
@@ -433,12 +433,14 @@ AcpiDmIsResourceDescriptor (
     ByteCount = (UINT32) NextOp->Common.Value.Integer;
     ByteData = NextOp->Named.Data;
 
+    /* Absolute minimum descriptor is an END_TAG (2 bytes) */
+
     if (ByteCount < 2)
     {
         return (FALSE);
     }
 
-    /* The list must have a valid END_TAG */
+    /* The list must have a valid 2-byte END_TAG */
 
     if (ByteData[ByteCount-2] != (ACPI_RDESC_TYPE_END_TAG | 1))
     {
