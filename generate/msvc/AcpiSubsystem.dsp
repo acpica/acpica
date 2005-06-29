@@ -564,7 +564,7 @@ SOURCE=..\..\subsystem\Include\accommon.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\subsystem\Include\acconfig.h
+SOURCE=..\..\Subsystem\Include\Config\acconfig.h
 # End Source File
 # Begin Source File
 
@@ -576,11 +576,11 @@ SOURCE=..\..\subsystem\Include\acdispat.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\subsystem\Include\acefi.h
+SOURCE=..\..\Subsystem\Include\Config\acefi.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\Subsystem\Include\acenv.h
+SOURCE=..\..\Subsystem\Include\Config\acenv.h
 # End Source File
 # Begin Source File
 
@@ -592,11 +592,11 @@ SOURCE=..\..\Subsystem\Include\acexcep.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\subsystem\Include\acfreebsd.h
+SOURCE=..\..\Subsystem\Include\Config\acfreebsd.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\subsystem\Include\acgcc.h
+SOURCE=..\..\Subsystem\Include\Config\acgcc.h
 # End Source File
 # Begin Source File
 
@@ -612,7 +612,7 @@ SOURCE=..\..\subsystem\Include\acinterp.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\subsystem\Include\aclinux.h
+SOURCE=..\..\Subsystem\Include\Config\aclinux.h
 # End Source File
 # Begin Source File
 
@@ -624,7 +624,7 @@ SOURCE=..\..\subsystem\Include\acmacros.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\subsystem\Include\acmsvc.h
+SOURCE=..\..\Subsystem\Include\Config\acmsvc.h
 # End Source File
 # Begin Source File
 
@@ -684,7 +684,7 @@ SOURCE=..\..\Subsystem\Include\actypes.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\subsystem\Include\acwin.h
+SOURCE=..\..\Subsystem\Include\Config\acwin.h
 # End Source File
 # Begin Source File
 
