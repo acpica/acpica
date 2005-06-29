@@ -175,7 +175,12 @@ AmlSystemMemorySpaceHandler (
         DEBUG_PRINT ((TRACE_OPREGION | VERBOSE_INFO),
             ("Read(%d width) Address:0x%08x\n", BitWidth, Address));
 
-        PhysicalAddrPtr = OsdMapMemory ((void *) Address, 4);
+        Status = OsdMapMemory ((void *) Address, 4, &PhysicalAddrPtr);
+
+		if (ACPI_FAILURE (Status))
+		{
+		    return_ACPI_STATUS (Status);
+		}
 
         switch (BitWidth)
         {
@@ -212,8 +217,13 @@ AmlSystemMemorySpaceHandler (
         DEBUG_PRINT ((TRACE_OPREGION | VERBOSE_INFO),
             ("Write(%d width) Address:0x%08x Value 0x%08x\n", BitWidth, Address, *Value));
 
-        PhysicalAddrPtr = OsdMapMemory ((void *) Address, 4);
+        Status = OsdMapMemory ((void *) Address, 4, &PhysicalAddrPtr);
                 
+		if (ACPI_FAILURE (Status))
+		{
+		    return_ACPI_STATUS (Status);
+		}
+
         switch (BitWidth)
         {
         case 8:
