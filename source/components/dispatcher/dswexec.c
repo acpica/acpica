@@ -562,13 +562,8 @@ PsxExecEndOp (
 
         case AML_AliasOp:
 
-            Status = PsxCreateOperands (WalkState, FirstArg);
-            if (ACPI_FAILURE (Status))
-            {
-                break;
-            }
+            /* Alias creation was already handled by call to psxload above */
 
-            Status = AmlExecCreateAlias (&WalkState->Operands [WalkState->NumOperands -1]);
             break;
 
 
