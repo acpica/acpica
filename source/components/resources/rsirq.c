@@ -1,13 +1,12 @@
-
-/******************************************************************************
+/*******************************************************************************
  *
  * Module Name: rsirq - AcpiRsIrqResource,
  *                      AcpiRsIrqStream
  *                      AcpiRsExtendedIrqResource
  *                      AcpiRsExtendedIrqStream
- *              $Revision: 1.7 $
+ *              $Revision: 1.9 $
  *
- *****************************************************************************/
+ ******************************************************************************/
 
 /******************************************************************************
  *
@@ -123,14 +122,15 @@
 #include "acpi.h"
 
 #define _COMPONENT          RESOURCE_MANAGER
-        MODULE_NAME         ("rsirq");
+        MODULE_NAME         ("rsirq")
 
 
-/***************************************************************************
+
+/*******************************************************************************
+ *
  * FUNCTION:    AcpiRsIrqResource
  *
- * PARAMETERS:
- *              ByteStreamBuffer        - Pointer to the resource input byte
+ * PARAMETERS:  ByteStreamBuffer        - Pointer to the resource input byte
  *                                          stream
  *              BytesConsumed           - UINT32 pointer that is filled with
  *                                          the number of bytes consumed from
@@ -146,7 +146,7 @@
  *                  structure pointed to by the OutputBuffer.  Return the
  *                  number of bytes consumed from the byte stream.
  *
- ***************************************************************************/
+ ******************************************************************************/
 
 ACPI_STATUS
 AcpiRsIrqResource (
@@ -172,9 +172,7 @@ AcpiRsIrqResource (
      *  (Bits:0-1)
      */
     Temp8 = *Buffer;
-
     *BytesConsumed = (Temp8 & 0x03) + 1;
-
     OutputStruct->Id = Irq;
 
     /*
@@ -186,6 +184,7 @@ AcpiRsIrqResource (
     OutputStruct->Data.Irq.NumberOfInterrupts = 0;
 
     /* Decode the IRQ bits */
+
     for (i = 0, Index = 0; Index < 16; Index++)
     {
         if((Temp16 >> Index) & 0x01)
@@ -207,7 +206,6 @@ AcpiRsIrqResource (
     if (4 == *BytesConsumed)
     {
         Buffer += 2;
-
         Temp8 = *Buffer;
 
         /*
@@ -269,11 +267,11 @@ AcpiRsIrqResource (
 }
 
 
-/***************************************************************************
+/*******************************************************************************
+ *
  * FUNCTION:    AcpiRsIrqStream
  *
- * PARAMETERS:
- *              LinkedList              - Pointer to the resource linked list
+ * PARAMETERS:  LinkedList              - Pointer to the resource linked list
  *              OutputBuffer            - Pointer to the user's return buffer
  *              BytesConsumed           - UINT32 pointer that is filled with
  *                                          the number of bytes of the
@@ -284,7 +282,7 @@ AcpiRsIrqResource (
  * DESCRIPTION: Take the linked list resource structure and fills in the
  *                  the appropriate bytes in a byte stream
  *
- ***************************************************************************/
+ ******************************************************************************/
 
 ACPI_STATUS
 AcpiRsIrqStream (
@@ -300,6 +298,7 @@ AcpiRsIrqStream (
 
 
     FUNCTION_TRACE ("RsIrqStream");
+
 
     /*
      * The descriptor field is set based upon whether a third byte is
@@ -319,7 +318,6 @@ AcpiRsIrqStream (
     }
 
     Buffer += 1;
-
     Temp16 = 0;
 
     /*
@@ -333,8 +331,7 @@ AcpiRsIrqStream (
         Temp16 |= 0x1 << Temp8;
     }
 
-    MOVE_UNALIGNED16_TO_16 (&Temp16, Buffer);
-
+    MOVE_UNALIGNED16_TO_16 (Buffer, &Temp16);
     Buffer += 2;
 
     /*
@@ -343,7 +340,6 @@ AcpiRsIrqStream (
     if (IRQInfoByteNeeded)
     {
         Temp8 = 0;
-
         Temp8 = (UINT8) ((LinkedList->Data.Irq.SharedExclusive &
                           0x01) << 4);
 
@@ -359,7 +355,6 @@ AcpiRsIrqStream (
         }
 
         *Buffer = Temp8;
-
         Buffer += 1;
     }
 
@@ -373,11 +368,11 @@ AcpiRsIrqStream (
 }
 
 
-/***************************************************************************
+/*******************************************************************************
+ *
  * FUNCTION:    AcpiRsExtendedIrqResource
  *
- * PARAMETERS:
- *              ByteStreamBuffer        - Pointer to the resource input byte
+ * PARAMETERS:  ByteStreamBuffer        - Pointer to the resource input byte
  *                                          stream
  *              BytesConsumed           - UINT32 pointer that is filled with
  *                                          the number of bytes consumed from
@@ -393,7 +388,7 @@ AcpiRsIrqStream (
  *                  structure pointed to by the OutputBuffer.  Return the
  *                  number of bytes consumed from the byte stream.
  *
- ***************************************************************************/
+ ******************************************************************************/
 
 ACPI_STATUS
 AcpiRsExtendedIrqResource (
@@ -567,11 +562,11 @@ AcpiRsExtendedIrqResource (
 }
 
 
-/***************************************************************************
+/*******************************************************************************
+ * 
  * FUNCTION:    AcpiRsExtendedIrqStream
  *
- * PARAMETERS:
- *              LinkedList              - Pointer to the resource linked list
+ * PARAMETERS:  LinkedList              - Pointer to the resource linked list
  *              OutputBuffer            - Pointer to the user's return buffer
  *              BytesConsumed           - UINT32 pointer that is filled with
  *                                          the number of bytes of the
@@ -580,9 +575,9 @@ AcpiRsExtendedIrqResource (
  * RETURN:      Status  AE_OK if okay, else a valid ACPI_STATUS code
  *
  * DESCRIPTION: Take the linked list resource structure and fills in the
- *                  the appropriate bytes in a byte stream
+ *              the appropriate bytes in a byte stream
  *
- ***************************************************************************/
+ ******************************************************************************/
 
 ACPI_STATUS
 AcpiRsExtendedIrqStream (
@@ -598,6 +593,7 @@ AcpiRsExtendedIrqStream (
 
 
     FUNCTION_TRACE ("RsExtendedIrqStream");
+
 
     /*
      * The descriptor field is static
@@ -638,7 +634,6 @@ AcpiRsExtendedIrqStream (
     Temp8 = (UINT8) LinkedList->Data.ExtendedIrq.NumberOfInterrupts;
 
     *Buffer = Temp8;
-
     Buffer += 1;
 
     for (Index = 0;

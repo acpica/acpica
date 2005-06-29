@@ -1,10 +1,9 @@
-
-/******************************************************************************
+/*******************************************************************************
  *
  * Module Name: rsxface - Public interfaces to the ACPI subsystem
- *              $Revision: 1.6 $
+ *              $Revision: 1.8 $
  *
- *****************************************************************************/
+ ******************************************************************************/
 
 /******************************************************************************
  *
@@ -124,10 +123,10 @@
 #include "acresrc.h"
 
 #define _COMPONENT          RESOURCE_MANAGER
-        MODULE_NAME         ("rsxface");
+        MODULE_NAME         ("rsxface")
 
 
-/******************************************************************************
+/*******************************************************************************
  *
  * FUNCTION:    AcpiGetIrqRoutingTable
  *
@@ -179,7 +178,7 @@ AcpiGetIrqRoutingTable  (
 }
 
 
-/******************************************************************************
+/*******************************************************************************
  *
  * FUNCTION:    AcpiGetCurrentResources
  *
@@ -232,7 +231,7 @@ AcpiGetCurrentResources (
 }
 
 
-/******************************************************************************
+/*******************************************************************************
  *
  * FUNCTION:    AcpiGetPossibleResources
  *
@@ -240,7 +239,7 @@ AcpiGetCurrentResources (
  *                                device we are querying
  *              RetBuffer       - a pointer to a buffer to receive the
  *                                resources for the device
-  *
+ *
  * RETURN:      Status          - the status of the call
  *
  * DESCRIPTION: This function is called to get a list of the possible resources
@@ -282,7 +281,7 @@ AcpiGetPossibleResources (
 }
 
 
-/******************************************************************************
+/*******************************************************************************
  *
  * FUNCTION:    AcpiSetCurrentResources
  *

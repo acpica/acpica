@@ -1,5 +1,4 @@
-
-/******************************************************************************
+/*******************************************************************************
  *
  * Module Name: rsmisc - AcpiRsEndTagResource
  *                       AcpiRsEndTagStream
@@ -9,9 +8,9 @@
  *                       AcpiRsEndDependentFunctionsResource
  *                       AcpiRsStartDependentFunctionsStream
  *                       AcpiRsEndDependentFunctionsStream
- *              $Revision: 1.6 $
+ *              $Revision: 1.8 $
  *
- *****************************************************************************/
+ ******************************************************************************/
 
 /******************************************************************************
  *
@@ -127,14 +126,15 @@
 #include "acpi.h"
 
 #define _COMPONENT          RESOURCE_MANAGER
-        MODULE_NAME         ("rsmisc");
+        MODULE_NAME         ("rsmisc")
 
 
-/***************************************************************************
+
+/*******************************************************************************
+ *
  * FUNCTION:    AcpiRsEndTagResource
  *
- * PARAMETERS:
- *              ByteStreamBuffer        - Pointer to the resource input byte
+ * PARAMETERS:  ByteStreamBuffer        - Pointer to the resource input byte
  *                                          stream
  *              BytesConsumed           - UINT32 pointer that is filled with
  *                                          the number of bytes consumed from
@@ -150,7 +150,7 @@
  *                  structure pointed to by the OutputBuffer.  Return the
  *                  number of bytes consumed from the byte stream.
  *
- ***************************************************************************/
+ ******************************************************************************/
 
 ACPI_STATUS
 AcpiRsEndTagResource (
@@ -189,11 +189,11 @@ AcpiRsEndTagResource (
 }
 
 
-/***************************************************************************
+/*******************************************************************************
+ *
  * FUNCTION:    AcpiRsEndTagStream
  *
- * PARAMETERS:
- *              LinkedList              - Pointer to the resource linked list
+ * PARAMETERS:  LinkedList              - Pointer to the resource linked list
  *              OutputBuffer            - Pointer to the user's return buffer
  *              BytesConsumed           - UINT32 pointer that is filled with
  *                                          the number of bytes of the
@@ -204,7 +204,7 @@ AcpiRsEndTagResource (
  * DESCRIPTION: Take the linked list resource structure and fills in the
  *                  the appropriate bytes in a byte stream
  *
- ***************************************************************************/
+ ******************************************************************************/
 
 ACPI_STATUS
 AcpiRsEndTagStream (
@@ -222,7 +222,6 @@ AcpiRsEndTagStream (
      * The descriptor field is static
      */
     *Buffer = 0x79;
-
     Buffer += 1;
 
     /*
@@ -232,7 +231,6 @@ AcpiRsEndTagStream (
     Temp8 = 0;
 
     *Buffer = Temp8;
-
     Buffer += 1;
 
     /*
@@ -244,11 +242,12 @@ AcpiRsEndTagStream (
     return_ACPI_STATUS (AE_OK);
 }
 
-/***************************************************************************
+
+/*******************************************************************************
+ *
  * FUNCTION:    AcpiRsVendorResource
  *
- * PARAMETERS:
- *              ByteStreamBuffer        - Pointer to the resource input byte
+ * PARAMETERS:  ByteStreamBuffer        - Pointer to the resource input byte
  *                                          stream
  *              BytesConsumed           - UINT32 pointer that is filled with
  *                                          the number of bytes consumed from
@@ -264,7 +263,7 @@ AcpiRsEndTagStream (
  *                  structure pointed to by the OutputBuffer.  Return the
  *                  number of bytes consumed from the byte stream.
  *
- ***************************************************************************/
+ ******************************************************************************/
 
 ACPI_STATUS
 AcpiRsVendorResource (
@@ -331,7 +330,6 @@ AcpiRsVendorResource (
     }
 
     OutputStruct->Id = VendorSpecific;
-
     OutputStruct->Data.VendorSpecific.Length = Temp16;
 
     for (Index = 0; Index < Temp16; Index++)
@@ -361,11 +359,11 @@ AcpiRsVendorResource (
 }
 
 
-/***************************************************************************
+/*******************************************************************************
+ *
  * FUNCTION:    AcpiRsVendorStream
  *
- * PARAMETERS:
- *              LinkedList              - Pointer to the resource linked list
+ * PARAMETERS:  LinkedList              - Pointer to the resource linked list
  *              OutputBuffer            - Pointer to the user's return buffer
  *              BytesConsumed           - UINT32 pointer that is filled with
  *                                          the number of bytes of the
@@ -376,7 +374,7 @@ AcpiRsVendorResource (
  * DESCRIPTION: Take the linked list resource structure and fills in the
  *                  the appropriate bytes in a byte stream
  *
- ***************************************************************************/
+ ******************************************************************************/
 
 ACPI_STATUS
 AcpiRsVendorStream (
@@ -405,13 +403,11 @@ AcpiRsVendorStream (
          * Set the descriptor field and length bytes
          */
         *Buffer = 0x84;
-
         Buffer += 1;
 
         Temp16 = (UINT16) LinkedList->Data.VendorSpecific.Length;
 
-        MOVE_UNALIGNED16_TO_16 (&Temp16, Buffer);
-
+        MOVE_UNALIGNED16_TO_16 (Buffer, &Temp16);
         Buffer += 2;
     }
 
@@ -425,11 +421,9 @@ AcpiRsVendorStream (
          * Set the descriptor field
          */
         Temp8 = 0x70;
-
         Temp8 |= LinkedList->Data.VendorSpecific.Length;
 
         *Buffer = Temp8;
-
         Buffer += 1;
     }
 
@@ -439,6 +433,7 @@ AcpiRsVendorStream (
     for (Index = 0; Index < LinkedList->Data.VendorSpecific.Length; Index++)
     {
         Temp8 = LinkedList->Data.VendorSpecific.Reserved[Index];
+
         *Buffer = Temp8;
         Buffer += 1;
     }
@@ -452,11 +447,12 @@ AcpiRsVendorStream (
     return_ACPI_STATUS (AE_OK);
 }
 
-/***************************************************************************
+
+/*******************************************************************************
+ *
  * FUNCTION:    AcpiRsStartDependentFunctionsResource
  *
- * PARAMETERS:
- *              ByteStreamBuffer        - Pointer to the resource input byte
+ * PARAMETERS:  ByteStreamBuffer        - Pointer to the resource input byte
  *                                          stream
  *              BytesConsumed           - UINT32 pointer that is filled with
  *                                          the number of bytes consumed from
@@ -472,7 +468,7 @@ AcpiRsVendorStream (
  *                  structure pointed to by the OutputBuffer.  Return the
  *                  number of bytes consumed from the byte stream.
  *
- ***************************************************************************/
+ ******************************************************************************/
 
 ACPI_STATUS
 AcpiRsStartDependentFunctionsResource (
@@ -554,11 +550,11 @@ AcpiRsStartDependentFunctionsResource (
 }
 
 
-/***************************************************************************
+/*******************************************************************************
+ *
  * FUNCTION:    AcpiRsEndDependentFunctionsResource
  *
- * PARAMETERS:
- *              ByteStreamBuffer        - Pointer to the resource input byte
+ * PARAMETERS:  ByteStreamBuffer        - Pointer to the resource input byte
  *                                          stream
  *              BytesConsumed           - UINT32 pointer that is filled with
  *                                          the number of bytes consumed from
@@ -574,7 +570,7 @@ AcpiRsStartDependentFunctionsResource (
  *                  structure pointed to by the OutputBuffer.  Return the
  *                  number of bytes consumed from the byte stream.
  *
- ***************************************************************************/
+ ******************************************************************************/
 
 ACPI_STATUS
 AcpiRsEndDependentFunctionsResource (
@@ -613,11 +609,11 @@ AcpiRsEndDependentFunctionsResource (
 }
 
 
-/***************************************************************************
+/*******************************************************************************
+ *
  * FUNCTION:    AcpiRsStartDependentFunctionsStream
  *
- * PARAMETERS:
- *              LinkedList              - Pointer to the resource linked list
+ * PARAMETERS:  LinkedList              - Pointer to the resource linked list
  *              OutputBuffer            - Pointer to the user's return buffer
  *              BytesConsumed           - UINT32 pointer that is filled with
  *                                          the number of bytes of the
@@ -628,7 +624,8 @@ AcpiRsEndDependentFunctionsResource (
  * DESCRIPTION: Take the linked list resource structure and fills in the
  *                  the appropriate bytes in a byte stream
  *
- ***************************************************************************/
+ ******************************************************************************/
+
 ACPI_STATUS
 AcpiRsStartDependentFunctionsStream (
     RESOURCE                *LinkedList,
@@ -655,18 +652,15 @@ AcpiRsStartDependentFunctionsStream (
     else
     {
         *Buffer = 0x31;
-
         Buffer += 1;
 
         /*
          * Set the Priority Byte Definition
          */
         Temp8 = 0;
-
         Temp8 = (UINT8)
             ((LinkedList->Data.StartDependentFunctions.PerformanceRobustness &
               0x03) << 2);
-
         Temp8 |=
             (LinkedList->Data.StartDependentFunctions.CompatibilityPriority &
              0x03);
@@ -686,11 +680,11 @@ AcpiRsStartDependentFunctionsStream (
 }
 
 
-/***************************************************************************
+/*******************************************************************************
+ *
  * FUNCTION:    AcpiRsEndDependentFunctionsStream
  *
- * PARAMETERS:
- *              LinkedList              - Pointer to the resource linked list
+ * PARAMETERS:  LinkedList              - Pointer to the resource linked list
  *              OutputBuffer            - Pointer to the user's return buffer
  *              BytesConsumed           - UINT32 pointer that is filled with
  *                                          the number of bytes of the
@@ -701,7 +695,7 @@ AcpiRsStartDependentFunctionsStream (
  * DESCRIPTION: Take the linked list resource structure and fills in the
  *                  the appropriate bytes in a byte stream
  *
- ***************************************************************************/
+ ******************************************************************************/
 
 ACPI_STATUS
 AcpiRsEndDependentFunctionsStream (
@@ -719,7 +713,6 @@ AcpiRsEndDependentFunctionsStream (
      * The descriptor field is static
      */
     *Buffer = 0x38;
-
     Buffer += 1;
 
     /*

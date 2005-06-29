@@ -1,11 +1,10 @@
-
-/******************************************************************************
+/*******************************************************************************
  *
  * Module Name: rslist - AcpiRsByteStreamToList
  *                       AcpiListToByteStream
- *              $Revision: 1.5 $
+ *              $Revision: 1.7 $
  *
- *****************************************************************************/
+ ******************************************************************************/
 
 /******************************************************************************
  *
@@ -122,14 +121,15 @@
 #include "acresrc.h"
 
 #define _COMPONENT          RESOURCE_MANAGER
-        MODULE_NAME         ("rslist");
+        MODULE_NAME         ("rslist")
 
 
-/***************************************************************************
+
+/*******************************************************************************
+ *
  * FUNCTION:    AcpiRsByteStreamToList
  *
- * PARAMETERS:
- *              ByteStreamBuffer        - Pointer to the resource byte stream
+ * PARAMETERS:  ByteStreamBuffer        - Pointer to the resource byte stream
  *              ByteStreamBufferLength  - Length of ByteStreamBuffer
  *              OutputBuffer            - Pointer to the buffer that will
  *                                          contain the output structures
@@ -139,7 +139,7 @@
  * DESCRIPTION: Takes the resource byte stream and parses it, creating a
  *              linked list of resources in the caller's output buffer
  *
- ***************************************************************************/
+ ******************************************************************************/
 
 ACPI_STATUS
 AcpiRsByteStreamToList (
@@ -157,6 +157,7 @@ AcpiRsByteStreamToList (
 
 
     FUNCTION_TRACE ("RsByteStreamToList");
+
 
     while (BytesParsed < ByteStreamBufferLength &&
             FALSE == EndTagProcessed)
@@ -253,7 +254,7 @@ AcpiRsByteStreamToList (
 
                 break;
 
-/* 64-bit not currently supported */
+/* TBD: [Future] 64-bit not currently supported */
 /*
             case 0x8A:
                 break;
@@ -406,15 +407,14 @@ AcpiRsByteStreamToList (
     }
 
     return_ACPI_STATUS (AE_OK);
+}
 
-} /* AcpiRsByteStreamToList */
 
-
-/***************************************************************************
+/*******************************************************************************
+ *
  * FUNCTION:    AcpiRsListToByteStream
  *
- * PARAMETERS:
- *              LinkedList              - Pointer to the resource linked list
+ * PARAMETERS:  LinkedList              - Pointer to the resource linked list
  *              ByteSteamSizeNeeded     - Calculated size of the byte stream
  *                                          needed from calling
  *                                          AcpiRsCalculateByteStreamLength()
@@ -429,7 +429,7 @@ AcpiRsByteStreamToList (
  * DESCRIPTION: Takes the resource linked list and parses it, creating a
  *              byte stream of resources in the caller's output buffer
  *
- ***************************************************************************/
+ ******************************************************************************/
 
 ACPI_STATUS
 AcpiRsListToByteStream (
@@ -603,6 +603,5 @@ AcpiRsListToByteStream (
     }
 
     return_ACPI_STATUS  (AE_OK);
-
-} /* AcpiRsListToByteStream */
+}
 

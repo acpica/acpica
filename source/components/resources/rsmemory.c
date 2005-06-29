@@ -1,5 +1,4 @@
-
-/******************************************************************************
+/*******************************************************************************
  *
  * Module Name: rsmem24 - AcpiRsMemory24Resource
  *                        AcpiRsMemory24Stream
@@ -7,9 +6,9 @@
  *                        AcpiRsFixedMemory32Resource
  *                        AcpiRsMemory32RangeStream
  *                        AcpiRsFixedMemory32Stream
- *              $Revision: 1.6 $
+ *              $Revision: 1.8 $
  *
- *****************************************************************************/
+ ******************************************************************************/
 
 /******************************************************************************
  *
@@ -125,14 +124,15 @@
 #include "acpi.h"
 
 #define _COMPONENT          RESOURCE_MANAGER
-        MODULE_NAME         ("rsmemory");
+        MODULE_NAME         ("rsmemory")
 
 
-/***************************************************************************
+
+/*******************************************************************************
+ *
  * FUNCTION:    AcpiRsMemory24Resource
  *
- * PARAMETERS:
- *              ByteStreamBuffer        - Pointer to the resource input byte
+ * PARAMETERS:  ByteStreamBuffer        - Pointer to the resource input byte
  *                                          stream
  *              BytesConsumed           - UINT32 pointer that is filled with
  *                                          the number of bytes consumed from
@@ -148,7 +148,7 @@
  *                  structure pointed to by the OutputBuffer.  Return the
  *                  number of bytes consumed from the byte stream.
  *
- ***************************************************************************/
+ ******************************************************************************/
 
 ACPI_STATUS
 AcpiRsMemory24Resource (
@@ -173,54 +173,42 @@ AcpiRsMemory24Resource (
     Buffer += 1;
 
     MOVE_UNALIGNED16_TO_16 (&Temp16, Buffer);
-
     Buffer += 2;
-
     *BytesConsumed = Temp16 + 3;
-
     OutputStruct->Id = Memory24;
 
     /*
      * Check Byte 3 the Read/Write bit
      */
     Temp8 = *Buffer;
-
     Buffer += 1;
-
     OutputStruct->Data.Memory24.ReadWriteAttribute = Temp8 & 0x01;
 
     /*
      * Get MinBaseAddress (Bytes 4-5)
      */
     MOVE_UNALIGNED16_TO_16 (&Temp16, Buffer);
-
     Buffer += 2;
-
     OutputStruct->Data.Memory24.MinBaseAddress = Temp16;
 
     /*
      * Get MaxBaseAddress (Bytes 6-7)
      */
     MOVE_UNALIGNED16_TO_16 (&Temp16, Buffer);
-
     Buffer += 2;
-
     OutputStruct->Data.Memory24.MaxBaseAddress = Temp16;
 
     /*
      * Get Alignment (Bytes 8-9)
      */
     MOVE_UNALIGNED16_TO_16 (&Temp16, Buffer);
-
     Buffer += 2;
-
     OutputStruct->Data.Memory24.Alignment = Temp16;
 
     /*
      * Get RangeLength (Bytes 10-11)
      */
     MOVE_UNALIGNED16_TO_16 (&Temp16, Buffer);
-
     OutputStruct->Data.Memory24.RangeLength = Temp16;
 
     /*
@@ -237,11 +225,11 @@ AcpiRsMemory24Resource (
 }
 
 
-/***************************************************************************
+/*******************************************************************************
+ *
  * FUNCTION:    AcpiRsMemory24Stream
  *
- * PARAMETERS:
- *              LinkedList              - Pointer to the resource linked list
+ * PARAMETERS:  LinkedList              - Pointer to the resource linked list
  *              OutputBuffer            - Pointer to the user's return buffer
  *              BytesConsumed           - UINT32 pointer that is filled with
  *                                          the number of bytes of the
@@ -252,7 +240,7 @@ AcpiRsMemory24Resource (
  * DESCRIPTION: Take the linked list resource structure and fills in the
  *                  the appropriate bytes in a byte stream
  *
- ***************************************************************************/
+ ******************************************************************************/
 
 ACPI_STATUS
 AcpiRsMemory24Stream (
@@ -271,16 +259,13 @@ AcpiRsMemory24Stream (
      * The descriptor field is static
      */
     *Buffer = 0x81;
-
     Buffer += 1;
 
     /*
      * The length field is static
      */
     Temp16 = 0x09;
-
     MOVE_UNALIGNED16_TO_16 (Buffer, &Temp16);
-
     Buffer += 2;
 
     /*
@@ -324,11 +309,11 @@ AcpiRsMemory24Stream (
 }
 
 
-/***************************************************************************
+/*******************************************************************************
+ *
  * FUNCTION:    AcpiRsMemory32RangeResource
  *
- * PARAMETERS:
- *              ByteStreamBuffer        - Pointer to the resource input byte
+ * PARAMETERS:  ByteStreamBuffer        - Pointer to the resource input byte
  *                                          stream
  *              BytesConsumed           - UINT32 pointer that is filled with
  *                                          the number of bytes consumed from
@@ -344,7 +329,7 @@ AcpiRsMemory24Stream (
  *                  structure pointed to by the OutputBuffer.  Return the
  *                  number of bytes consumed from the byte stream.
  *
- ***************************************************************************/
+ ******************************************************************************/
 
 ACPI_STATUS
 AcpiRsMemory32RangeResource (
@@ -431,11 +416,11 @@ AcpiRsMemory32RangeResource (
 }
 
 
-/***************************************************************************
+/*******************************************************************************
+ *
  * FUNCTION:    AcpiRsFixedMemory32Resource
  *
- * PARAMETERS:
- *              ByteStreamBuffer        - Pointer to the resource input byte
+ * PARAMETERS:  ByteStreamBuffer        - Pointer to the resource input byte
  *                                          stream
  *              BytesConsumed           - UINT32 pointer that is filled with
  *                                          the number of bytes consumed from
@@ -451,7 +436,7 @@ AcpiRsMemory32RangeResource (
  *                  structure pointed to by the OutputBuffer.  Return the
  *                  number of bytes consumed from the byte stream.
  *
- ***************************************************************************/
+ ******************************************************************************/
 
 ACPI_STATUS
 AcpiRsFixedMemory32Resource (
@@ -515,11 +500,11 @@ AcpiRsFixedMemory32Resource (
 }
 
 
-/***************************************************************************
+/*******************************************************************************
+ *
  * FUNCTION:    AcpiRsMemory32RangeStream
  *
- * PARAMETERS:
- *              LinkedList              - Pointer to the resource linked list
+ * PARAMETERS:  LinkedList              - Pointer to the resource linked list
  *              OutputBuffer            - Pointer to the user's return buffer
  *              BytesConsumed           - UINT32 pointer that is filled with
  *                                          the number of bytes of the
@@ -530,7 +515,7 @@ AcpiRsFixedMemory32Resource (
  * DESCRIPTION: Take the linked list resource structure and fills in the
  *                  the appropriate bytes in a byte stream
  *
- ***************************************************************************/
+ ******************************************************************************/
 
 ACPI_STATUS
 AcpiRsMemory32RangeStream (
@@ -600,11 +585,11 @@ AcpiRsMemory32RangeStream (
 }
 
 
-/***************************************************************************
+/*******************************************************************************
+ *
  * FUNCTION:    AcpiRsFixedMemory32Stream
  *
- * PARAMETERS:
- *              LinkedList              - Pointer to the resource linked list
+ * PARAMETERS:  LinkedList              - Pointer to the resource linked list
  *              OutputBuffer            - Pointer to the user's return buffer
  *              BytesConsumed           - UINT32 pointer that is filled with
  *                                          the number of bytes of the
@@ -615,7 +600,7 @@ AcpiRsMemory32RangeStream (
  * DESCRIPTION: Take the linked list resource structure and fills in the
  *                  the appropriate bytes in a byte stream
  *
- ***************************************************************************/
+ ******************************************************************************/
 
 ACPI_STATUS
 AcpiRsFixedMemory32Stream (

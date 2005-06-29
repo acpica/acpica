@@ -1,12 +1,12 @@
-/******************************************************************************
+/*******************************************************************************
  *
  * Module Name: rsaddr - AcpiRsAddress16Resource
  *                       AcpiRsAddress16Stream
  *                       AcpiRsAddress32Resource
  *                       AcpiRsAddress32Stream
- *              $Revision: 1.8 $
+ *              $Revision: 1.10 $
  *
- *****************************************************************************/
+ ******************************************************************************/
 
 /******************************************************************************
  *
@@ -122,14 +122,15 @@
 #include "acpi.h"
 
 #define _COMPONENT          RESOURCE_MANAGER
-        MODULE_NAME         ("rsaddr");
+        MODULE_NAME         ("rsaddr")
 
 
-/***************************************************************************
+
+/*******************************************************************************
+ *
  * FUNCTION:    AcpiRsAddress16Resource
  *
- * PARAMETERS:
- *              ByteStreamBuffer        - Pointer to the resource input byte
+ * PARAMETERS:  ByteStreamBuffer        - Pointer to the resource input byte
  *                                              stream
  *              BytesConsumed           - UINT32 pointer that is filled with
  *                                          the number of bytes consumed from
@@ -145,7 +146,7 @@
  *                  structure pointed to by the OutputBuffer.  Return the
  *                  number of bytes consumed from the byte stream.
  *
- ***************************************************************************/
+ ******************************************************************************/
 
 ACPI_STATUS
 AcpiRsAddress16Resource (
@@ -355,11 +356,11 @@ AcpiRsAddress16Resource (
 }
 
 
-/***************************************************************************
+/*******************************************************************************
+ *
  * FUNCTION:    AcpiRsAddress16Stream
  *
- * PARAMETERS:
- *              LinkedList              - Pointer to the resource linked list
+ * PARAMETERS:  LinkedList              - Pointer to the resource linked list
  *              OutputBuffer            - Pointer to the user's return buffer
  *              BytesConsumed           - UINT32 pointer that is filled with
  *                                          the number of bytes of the
@@ -370,7 +371,7 @@ AcpiRsAddress16Resource (
  * DESCRIPTION: Take the linked list resource structure and fills in the
  *                  the appropriate bytes in a byte stream
  *
- ***************************************************************************/
+ ******************************************************************************/
 
 ACPI_STATUS
 AcpiRsAddress16Stream (
@@ -456,7 +457,6 @@ AcpiRsAddress16Stream (
      */
     MOVE_UNALIGNED16_TO_16 (Buffer,
                             &LinkedList->Data.Address16.MinAddressRange);
-
     Buffer += 2;
 
     /*
@@ -464,7 +464,6 @@ AcpiRsAddress16Stream (
      */
     MOVE_UNALIGNED16_TO_16 (Buffer,
                             &LinkedList->Data.Address16.MaxAddressRange);
-
     Buffer += 2;
 
     /*
@@ -472,7 +471,6 @@ AcpiRsAddress16Stream (
      */
     MOVE_UNALIGNED16_TO_16 (Buffer,
                     &LinkedList->Data.Address16.AddressTranslationOffset);
-
     Buffer += 2;
 
     /*
@@ -480,7 +478,6 @@ AcpiRsAddress16Stream (
      */
     MOVE_UNALIGNED16_TO_16 (Buffer,
                             &LinkedList->Data.Address16.AddressLength);
-
     Buffer += 2;
 
     /*
@@ -525,11 +522,12 @@ AcpiRsAddress16Stream (
     return_ACPI_STATUS (AE_OK);
 }
 
-/***************************************************************************
+
+/*******************************************************************************
+ *
  * FUNCTION:    AcpiRsAddress32Resource
  *
- * PARAMETERS:
- *              ByteStreamBuffer        - Pointer to the resource input byte
+ * PARAMETERS:  ByteStreamBuffer        - Pointer to the resource input byte
  *                                          stream
  *              BytesConsumed           - UINT32 pointer that is filled with
  *                                          the number of bytes consumed from
@@ -545,7 +543,7 @@ AcpiRsAddress16Stream (
  *                  structure pointed to by the OutputBuffer.  Return the
  *                  number of bytes consumed from the byte stream.
  *
- ***************************************************************************/
+ ******************************************************************************/
 
 ACPI_STATUS
 AcpiRsAddress32Resource (
@@ -758,11 +756,11 @@ AcpiRsAddress32Resource (
 }
 
 
-/***************************************************************************
+/*******************************************************************************
+ *
  * FUNCTION:    AcpiRsAddress32Stream
  *
- * PARAMETERS:
- *              LinkedList              - Pointer to the resource linked list
+ * PARAMETERS:  LinkedList              - Pointer to the resource linked list
  *              OutputBuffer            - Pointer to the user's return buffer
  *              BytesConsumed           - UINT32 pointer that is filled with
  *                                          the number of bytes of the
@@ -773,7 +771,7 @@ AcpiRsAddress32Resource (
  * DESCRIPTION: Take the linked list resource structure and fills in the
  *                  the appropriate bytes in a byte stream
  *
- ***************************************************************************/
+ ******************************************************************************/
 
 ACPI_STATUS
 AcpiRsAddress32Stream (
@@ -795,7 +793,6 @@ AcpiRsAddress32Stream (
      * The descriptor field is static
      */
     *Buffer = 0x87;
-
     Buffer += 1;
 
     /*
@@ -803,7 +800,6 @@ AcpiRsAddress32Stream (
      */
 
     LengthField = (UINT16 *)Buffer;
-
     Buffer += 2;
 
     /*
@@ -812,22 +808,17 @@ AcpiRsAddress32Stream (
     Temp8 = (UINT8) (LinkedList->Data.Address32.ResourceType & 0x03);
 
     *Buffer = Temp8;
-
     Buffer += 1;
 
     /*
      * Set the general flags
      */
     Temp8 = (UINT8) (LinkedList->Data.Address32.ProducerConsumer & 0x01);
-
     Temp8 |= (LinkedList->Data.Address32.Decode & 0x01) << 1;
-
     Temp8 |= (LinkedList->Data.Address32.MinAddressFixed & 0x01) << 2;
-
     Temp8 |= (LinkedList->Data.Address32.MaxAddressFixed & 0x01) << 3;
 
     *Buffer = Temp8;
-
     Buffer += 1;
 
     /*
@@ -868,7 +859,6 @@ AcpiRsAddress32Stream (
      */
     MOVE_UNALIGNED32_TO_32 (Buffer,
                             &LinkedList->Data.Address32.MinAddressRange);
-
     Buffer += 4;
 
     /*
@@ -876,7 +866,6 @@ AcpiRsAddress32Stream (
      */
     MOVE_UNALIGNED32_TO_32 (Buffer,
                             &LinkedList->Data.Address32.MaxAddressRange);
-
     Buffer += 4;
 
     /*
@@ -884,7 +873,6 @@ AcpiRsAddress32Stream (
      */
     MOVE_UNALIGNED32_TO_32 (Buffer,
                     &LinkedList->Data.Address32.AddressTranslationOffset);
-
     Buffer += 4;
 
     /*
@@ -892,7 +880,6 @@ AcpiRsAddress32Stream (
      */
     MOVE_UNALIGNED32_TO_32 (Buffer,
                             &LinkedList->Data.Address32.AddressLength);
-
     Buffer += 4;
 
     /*
@@ -903,7 +890,6 @@ AcpiRsAddress32Stream (
         Temp8 = (UINT8) LinkedList->Data.Address32.ResourceSourceIndex;
 
         *Buffer = Temp8;
-
         Buffer += 1;
 
         TempPointer = (NATIVE_CHAR *) Buffer;

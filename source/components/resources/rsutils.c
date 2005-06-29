@@ -1,10 +1,9 @@
-
-/******************************************************************************
+/*******************************************************************************
  *
  * Module Name: rsutils - Utilities for the resource manager
- *              $Revision: 1.8 $
+ *              $Revision: 1.11 $
  *
- *****************************************************************************/
+ ******************************************************************************/
 
 /******************************************************************************
  *
@@ -124,10 +123,11 @@
 
 
 #define _COMPONENT          RESOURCE_MANAGER
-        MODULE_NAME         ("rsutils");
+        MODULE_NAME         ("rsutils")
 
 
-/******************************************************************************
+
+/*******************************************************************************
  *
  * FUNCTION:    AcpiRsGetPrtMethodData
  *
@@ -150,12 +150,13 @@ AcpiRsGetPrtMethodData (
     ACPI_HANDLE             Handle,
     ACPI_BUFFER             *RetBuffer)
 {
-    ACPI_OBJECT_INTERNAL    *RetObj;
+    ACPI_OPERAND_OBJECT     *RetObj;
     ACPI_STATUS             Status;
     UINT32                  BufferSpaceNeeded;
 
 
     FUNCTION_TRACE ("RsGetPrtMethodData");
+
 
     /* already validated params, so we won't repeat here */
 
@@ -217,7 +218,7 @@ Cleanup:
 }
 
 
-/******************************************************************************
+/*******************************************************************************
  *
  * FUNCTION:    AcpiRsGetCrsMethodData
  *
@@ -240,12 +241,13 @@ AcpiRsGetCrsMethodData (
     ACPI_HANDLE             Handle,
     ACPI_BUFFER             *RetBuffer)
 {
-    ACPI_OBJECT_INTERNAL    *RetObj;
+    ACPI_OPERAND_OBJECT     *RetObj;
     ACPI_STATUS             Status;
     UINT32                  BufferSpaceNeeded = RetBuffer->Length;
 
 
     FUNCTION_TRACE ("RsGetCrsMethodData");
+
 
     /* already validated params, so we won't repeat here */
 
@@ -287,7 +289,6 @@ AcpiRsGetCrsMethodData (
                                    RetBuffer->Pointer,
                                    &BufferSpaceNeeded);
 
-    
 
     if (ACPI_SUCCESS (Status))
     {
@@ -311,7 +312,7 @@ Cleanup:
 }
 
 
-/******************************************************************************
+/*******************************************************************************
  *
  * FUNCTION:    AcpiRsGetPrsMethodData
  *
@@ -334,12 +335,13 @@ AcpiRsGetPrsMethodData (
     ACPI_HANDLE             Handle,
     ACPI_BUFFER             *RetBuffer)
 {
-    ACPI_OBJECT_INTERNAL    *RetObj;
+    ACPI_OPERAND_OBJECT     *RetObj;
     ACPI_STATUS             Status;
     UINT32                  BufferSpaceNeeded = RetBuffer->Length;
 
 
     FUNCTION_TRACE ("RsGetPrsMethodData");
+
 
     /* already validated params, so we won't repeat here */
 
@@ -398,7 +400,7 @@ Cleanup:
 }
 
 
-/******************************************************************************
+/*******************************************************************************
  *
  * FUNCTION:    AcpiRsSetSrsMethodData
  *
@@ -421,13 +423,15 @@ AcpiRsSetSrsMethodData (
     ACPI_HANDLE             Handle,
     ACPI_BUFFER             *InBuffer)
 {
-    ACPI_OBJECT_INTERNAL    *Params[2];
-    ACPI_OBJECT_INTERNAL    ParamObj;
+    ACPI_OPERAND_OBJECT     *Params[2];
+    ACPI_OPERAND_OBJECT     ParamObj;
     ACPI_STATUS             Status;
     UINT8                   *ByteStream = NULL;
     UINT32                  BufferSizeNeeded = 0;
 
+
     FUNCTION_TRACE ("RsSetSrsMethodData");
+
 
     /* already validated params, so we won't repeat here */
 
@@ -444,7 +448,6 @@ AcpiRsSetSrsMethodData (
     Status = AcpiRsCreateByteStream (InBuffer->Pointer,
                                  ByteStream,
                                  &BufferSizeNeeded);
-
     /*
      * We expect a return of AE_BUFFER_OVERFLOW
      *  if not, exit with the error
@@ -458,7 +461,6 @@ AcpiRsSetSrsMethodData (
      * Allocate the buffer needed
      */
     ByteStream = AcpiCmCallocate(BufferSizeNeeded);
-
     if (NULL == ByteStream)
     {
         return_ACPI_STATUS (AE_NO_MEMORY);
@@ -470,7 +472,6 @@ AcpiRsSetSrsMethodData (
     Status = AcpiRsCreateByteStream (InBuffer->Pointer,
                                  ByteStream,
                                  &BufferSizeNeeded);
-
     if (ACPI_FAILURE (Status))
     {
         goto Cleanup;

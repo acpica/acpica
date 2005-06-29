@@ -1,12 +1,11 @@
-
-/******************************************************************************
+/*******************************************************************************
  *
  * Module Name: rscreate - AcpiRsCreateResourceList
  *                         AcpiRsCreatePciRoutingTable
  *                         AcpiRsCreateByteStream
- *              $Revision: 1.13 $
+ *              $Revision: 1.17 $
  *
- *****************************************************************************/
+ ******************************************************************************/
 
 /******************************************************************************
  *
@@ -124,7 +123,8 @@
 #include "acresrc.h"
 
 #define _COMPONENT          RESOURCE_MANAGER
-        MODULE_NAME         ("rscreate");
+        MODULE_NAME         ("rscreate")
+
 
 
 /*******************************************************************************
@@ -149,7 +149,7 @@
 
 ACPI_STATUS
 AcpiRsCreateResourceList (
-    ACPI_OBJECT_INTERNAL    *ByteStreamBuffer,
+    ACPI_OPERAND_OBJECT     *ByteStreamBuffer,
     UINT8                   *OutputBuffer,
     UINT32                  *OutputBufferLength)
 {
@@ -162,13 +162,14 @@ AcpiRsCreateResourceList (
 
     FUNCTION_TRACE ("RsCreateResourceList");
 
+
     DEBUG_PRINT (VERBOSE_INFO, ("RsCreateResourceList: ByteStreamBuffer = %p\n",
                  ByteStreamBuffer));
 
-	    /*
-	     * Params already validated, so we don't re-validate here
-	     */
-    
+    /*
+     * Params already validated, so we don't re-validate here
+     */
+
     ByteStreamBufferLength = ByteStreamBuffer->Buffer.Length;
     ByteStreamStart = ByteStreamBuffer->Buffer.Pointer;
 
@@ -237,7 +238,7 @@ AcpiRsCreateResourceList (
  * FUNCTION:    AcpiRsCreatePciRoutingTable
  *
  * PARAMETERS:
- *              PackageObject           - Pointer to an ACPI_OBJECT_INTERNAL
+ *              PackageObject           - Pointer to an ACPI_OPERAND_OBJECT
  *                                          package
  *              OutputBuffer            - Pointer to the user's buffer
  *              OutputBufferLength      - Size of OutputBuffer
@@ -247,21 +248,21 @@ AcpiRsCreateResourceList (
  *              AE_BUFFER_OVERFLOW and OutputBufferLength will point
  *              to the size buffer needed.
  *
- * DESCRIPTION: Takes the ACPI_OBJECT_INTERNAL package and creates a
+ * DESCRIPTION: Takes the ACPI_OPERAND_OBJECT  package and creates a
  *              linked list of PCI interrupt descriptions
  *
  ******************************************************************************/
 
 ACPI_STATUS
 AcpiRsCreatePciRoutingTable (
-    ACPI_OBJECT_INTERNAL    *PackageObject,
+    ACPI_OPERAND_OBJECT     *PackageObject,
     UINT8                   *OutputBuffer,
     UINT32                  *OutputBufferLength)
 {
     UINT8                   *Buffer = OutputBuffer;
-    ACPI_OBJECT_INTERNAL    **TopObjectList = NULL;
-    ACPI_OBJECT_INTERNAL    **SubObjectList = NULL;
-    ACPI_OBJECT_INTERNAL    *PackageElement = NULL;
+    ACPI_OPERAND_OBJECT     **TopObjectList = NULL;
+    ACPI_OPERAND_OBJECT     **SubObjectList = NULL;
+    ACPI_OPERAND_OBJECT     *PackageElement = NULL;
     UINT32                  BufferSizeNeeded = 0;
     UINT32                  NumberOfElements = 0;
     UINT32                  Index = 0;
@@ -270,6 +271,7 @@ AcpiRsCreatePciRoutingTable (
 
 
     FUNCTION_TRACE ("RsCreatePciRoutingTable");
+
 
     /*
      * Params already validated, so we don't re-validate here
@@ -298,11 +300,9 @@ AcpiRsCreatePciRoutingTable (
          * contain a UINT32 Address, a UINT8 Pin, a Name and a UINT8
          * SourceIndex.
          */
-        TopObjectList = PackageObject->Package.Elements;
-
-        NumberOfElements = PackageObject->Package.Count;
-
-        UserPrt = (PCI_ROUTING_TABLE *) Buffer;
+        TopObjectList       = PackageObject->Package.Elements;
+        NumberOfElements    = PackageObject->Package.Count;
+        UserPrt             = (PCI_ROUTING_TABLE *) Buffer;
 
         for (Index = 0; Index < NumberOfElements; Index++)
         {
@@ -313,6 +313,7 @@ AcpiRsCreatePciRoutingTable (
              * be zero because we cleared the return buffer earlier
              */
             Buffer += UserPrt->Length;
+            Buffer = ROUND_PTR_UP_TO_4 (Buffer, UINT8);
             UserPrt = (PCI_ROUTING_TABLE *) Buffer;
 
             /*
@@ -379,8 +380,6 @@ AcpiRsCreatePciRoutingTable (
                  * Add to the Length field the length of the string
                  */
                 UserPrt->Length += (*SubObjectList)->String.Length;
-                UserPrt->Length =
-                    ROUND_UP_TO_32BITS (UserPrt->Length);
             }
 
             else
@@ -405,6 +404,10 @@ AcpiRsCreatePciRoutingTable (
                 }
             }
 
+            /* Now align the current length */
+
+            UserPrt->Length = ROUND_UP_TO_32BITS (UserPrt->Length);
+            
             /*
              * Dereference the Source Index
              */
@@ -422,7 +425,7 @@ AcpiRsCreatePciRoutingTable (
             }
 
             /*
-             * Point to the next ACPI_OBJECT_INTERNAL
+             * Point to the next ACPI_OPERAND_OBJECT
              */
             TopObjectList++;
         }
@@ -445,7 +448,6 @@ AcpiRsCreatePciRoutingTable (
     *OutputBufferLength = BufferSizeNeeded;
 
     return_ACPI_STATUS (AE_OK);
-
 }
 
 
@@ -480,6 +482,7 @@ AcpiRsCreateByteStream (
 
 
     FUNCTION_TRACE ("RsCreateByteStream");
+
 
     DEBUG_PRINT (VERBOSE_INFO,
         ("RsCreateByteStream: LinkedListBuffer = %p\n",
@@ -542,6 +545,5 @@ AcpiRsCreateByteStream (
     }
 
     return_ACPI_STATUS (AE_OK);
-
 }
 

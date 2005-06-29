@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: tbinstal - ACPI table installation and removal
- *              $Revision: 1.41 $
+ *              $Revision: 1.31 $
  *
  *****************************************************************************/
 
@@ -9,8 +9,8 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
- * All rights reserved.
+ * Some or all of this work - Copyright (c) 1999, Intel Corp.  All rights
+ * reserved.
  *
  * 2. License
  *
@@ -122,7 +122,7 @@
 #include "actables.h"
 
 
-#define _COMPONENT          ACPI_TABLES
+#define _COMPONENT          TABLE_MANAGER
         MODULE_NAME         ("tbinstal")
 
 
@@ -164,16 +164,16 @@ AcpiTbInstallTable (
 
     /* Lock tables while installing */
 
-    AcpiUtAcquireMutex (ACPI_MTX_TABLES);
+    AcpiCmAcquireMutex (ACPI_MTX_TABLES);
 
     /* Install the table into the global data structure */
 
     Status = AcpiTbInitTableDescriptor (TableInfo->Type, TableInfo);
 
-    ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "%s located at %p\n",
+    DEBUG_PRINT (ACPI_INFO, ("%s located at %p\n",
         AcpiGbl_AcpiTableData[TableInfo->Type].Name, TableInfo->Pointer));
 
-    AcpiUtReleaseMutex (ACPI_MTX_TABLES);
+    AcpiCmReleaseMutex (ACPI_MTX_TABLES);
     return_ACPI_STATUS (Status);
 }
 
@@ -241,7 +241,8 @@ AcpiTbRecognizeTable (
             TableType       = i;
             Status          = AcpiGbl_AcpiTableData[i].Status;
 
-            ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "Found %4.4s\n",
+            DEBUG_PRINT (ACPI_INFO,
+                ("TbRecognizeTable: Found %4.4s\n",
                 AcpiGbl_AcpiTableData[i].Signature));
             break;
         }
@@ -273,8 +274,8 @@ AcpiTbRecognizeTable (
 
     if (Status == AE_SUPPORT)
     {
-        ACPI_DEBUG_PRINT ((ACPI_DB_INFO,
-            "Unsupported table %s (Type %X) was found and discarded\n",
+        DEBUG_PRINT (ACPI_INFO,
+            ("Unsupported table %s (Type %d) was found and discarded\n",
             AcpiGbl_AcpiTableData[TableType].Name, TableType));
     }
 
@@ -345,7 +346,7 @@ AcpiTbInitTableDescriptor (
 
         if (ListHead->Pointer)
         {
-            TableDesc = ACPI_MEM_CALLOCATE (sizeof (ACPI_TABLE_DESC));
+            TableDesc = AcpiCmCallocate (sizeof (ACPI_TABLE_DESC));
             if (!TableDesc)
             {
                 return_ACPI_STATUS (AE_NO_MEMORY);
@@ -383,7 +384,7 @@ AcpiTbInitTableDescriptor (
     TableDesc->AmlPointer           = (UINT8 *) (TableDesc->Pointer + 1),
     TableDesc->AmlLength            = (UINT32) (TableDesc->Length -
                                         (UINT32) sizeof (ACPI_TABLE_HEADER));
-    TableDesc->TableId              = AcpiUtAllocateOwnerId (OWNER_TYPE_TABLE);
+    TableDesc->TableId              = AcpiCmAllocateOwnerId (OWNER_TYPE_TABLE);
     TableDesc->LoadedIntoNamespace  = FALSE;
 
     /*
@@ -463,7 +464,7 @@ AcpiTbDeleteAcpiTable (
     }
 
 
-    AcpiUtAcquireMutex (ACPI_MTX_TABLES);
+    AcpiCmAcquireMutex (ACPI_MTX_TABLES);
 
     /* Free the table */
 
@@ -478,29 +479,43 @@ AcpiTbDeleteAcpiTable (
         AcpiGbl_RSDP = NULL;
         break;
 
+    case ACPI_TABLE_APIC:
+        AcpiGbl_APIC = NULL;
+        break;
+
     case ACPI_TABLE_DSDT:
         AcpiGbl_DSDT = NULL;
         break;
 
-    case ACPI_TABLE_FADT:
-        AcpiGbl_FADT = NULL;
+    case ACPI_TABLE_FACP:
+        AcpiGbl_FACP = NULL;
         break;
 
     case ACPI_TABLE_FACS:
         AcpiGbl_FACS = NULL;
         break;
 
-    case ACPI_TABLE_XSDT:
-        AcpiGbl_XSDT = NULL;
+    case ACPI_TABLE_PSDT:
+        break;
+
+    case ACPI_TABLE_RSDT:
+        AcpiGbl_RSDT = NULL;
         break;
 
     case ACPI_TABLE_SSDT:
-    case ACPI_TABLE_PSDT:
+        break;
+
+    case ACPI_TABLE_SBST:
+        AcpiGbl_SBST = NULL;
+
+    case ACPI_TABLE_SPIC:
+	    break;
+
     default:
         break;
     }
 
-    AcpiUtReleaseMutex (ACPI_MTX_TABLES);
+    AcpiCmReleaseMutex (ACPI_MTX_TABLES);
 
     return_VOID;
 }
@@ -586,7 +601,7 @@ AcpiTbDeleteSingleTable (
 
         case ACPI_MEM_ALLOCATED:
 
-            ACPI_MEM_FREE (TableDesc->BasePointer);
+            AcpiCmFree (TableDesc->BasePointer);
             break;
 
 
@@ -667,7 +682,7 @@ AcpiTbUninstallTable (
         /* Free the table descriptor */
 
         NextDesc = TableDesc->Next;
-        ACPI_MEM_FREE (TableDesc);
+        AcpiCmFree (TableDesc);
     }
 
 
