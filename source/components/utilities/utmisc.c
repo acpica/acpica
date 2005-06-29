@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: utmisc - common utility procedures
- *              $Revision: 1.56 $
+ *              $Revision: 1.57 $
  *
  ******************************************************************************/
 
@@ -1118,18 +1118,15 @@ AcpiUtWalkPackageTree (
         /*
          * Check for:
          * 1) An uninitialized package element.  It is completely
-         *      legal to declare a package and leave it uninitialized
+         *    legal to declare a package and leave it uninitialized
          * 2) Not an internal object - can be a namespace node instead
          * 3) Any type other than a package.  Packages are handled in else
-         *      case below.
+         *    case below.
          */
         if ((!ThisSourceObj) ||
-            (!VALID_DESCRIPTOR_TYPE (
-                    ThisSourceObj, ACPI_DESC_TYPE_INTERNAL)) ||
-            (!IS_THIS_OBJECT_TYPE (
-                    ThisSourceObj, ACPI_TYPE_PACKAGE)))
+            (ACPI_GET_DESCRIPTOR_TYPE (ThisSourceObj) != ACPI_DESC_TYPE_INTERNAL) ||
+            (ThisSourceObj->Common.Type != ACPI_TYPE_PACKAGE))
         {
-
             Status = WalkCallback (ACPI_COPY_TYPE_SIMPLE, ThisSourceObj,
                                     State, Context);
             if (ACPI_FAILURE (Status))
