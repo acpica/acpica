@@ -923,22 +923,22 @@ AcpiOsDerivePciId(
 ACPI_STATUS
 AcpiOsReadPort (
     ACPI_IO_ADDRESS         Address,
-    void                    *Value,
+    UINT32                  *Value,
     UINT32                  Width)
 {
 
     switch (Width)
     {
     case 8:
-        *((UINT8 *) Value) = 0;
+        *Value = 0xFF;
         break;
 
     case 16:
-        *((UINT16 *) Value) = 0;
+        *Value = 0xFFFF;
         break;
 
     case 32:
-        *((UINT32 *) Value) = 0;
+        *Value = 0xFFFFFFFF;
         break;
     }
 
@@ -963,7 +963,7 @@ AcpiOsReadPort (
 ACPI_STATUS
 AcpiOsWritePort (
     ACPI_IO_ADDRESS         Address,
-    ACPI_INTEGER            Value,
+    UINT32                  Value,
     UINT32                  Width)
 {
 
@@ -988,22 +988,20 @@ AcpiOsWritePort (
 ACPI_STATUS
 AcpiOsReadMemory (
     ACPI_PHYSICAL_ADDRESS   Address,
-    void                    *Value,
+    UINT32                  *Value,
     UINT32                  Width)
 {
 
     switch (Width)
     {
     case 8:
-        *((UINT8 *) Value) = 0;
-        break;
-
     case 16:
-        *((UINT16 *) Value) = 0;
+    case 32:
+        *Value = 0;
         break;
 
-    case 32:
-        *((UINT32 *) Value) = 0;
+    default:
+        return (AE_BAD_PARAMETER);
         break;
     }
     return (AE_OK);
@@ -1027,7 +1025,7 @@ AcpiOsReadMemory (
 ACPI_STATUS
 AcpiOsWriteMemory (
     ACPI_PHYSICAL_ADDRESS   Address,
-    ACPI_INTEGER            Value,
+    UINT32                  Value,
     UINT32                  Width)
 {
 

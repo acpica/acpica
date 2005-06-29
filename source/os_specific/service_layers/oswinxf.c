@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: oswinxf - Windows OSL
- *              $Revision: 1.47 $
+ *              $Revision: 1.49 $
  *
  *****************************************************************************/
 
@@ -995,6 +995,44 @@ AcpiOsSignalSemaphore (
 }
 
 
+
+
+ACPI_STATUS
+AcpiOsCreateLock (
+    ACPI_HANDLE             *OutHandle)
+{
+
+    return (AcpiOsCreateSemaphore (1, 1, OutHandle));
+}
+
+void
+AcpiOsDeleteLock (
+    ACPI_HANDLE             Handle)
+{
+    AcpiOsDeleteSemaphore (Handle);
+}
+
+
+void
+AcpiOsAcquireLock (
+    ACPI_HANDLE             Handle,
+    UINT32                  Flags)
+{
+    AcpiOsWaitSemaphore (Handle, 1, 0xFFFF);
+}
+
+
+void
+AcpiOsReleaseLock (
+    ACPI_HANDLE             Handle,
+    UINT32                  Flags)
+{
+    AcpiOsSignalSemaphore (Handle, 1);
+}
+
+
+
+
 /******************************************************************************
  *
  * FUNCTION:    AcpiOsInstallInterruptHandler
@@ -1221,27 +1259,26 @@ AcpiOsDerivePciId(
 ACPI_STATUS
 AcpiOsReadPort (
     ACPI_IO_ADDRESS         Address,
-    void                    *Value,
+    UINT32                  *Value,
     UINT32                  Width)
 {
 
     switch (Width)
     {
     case 8:
-        *((UINT8 *) Value) = 0xFF;
+        *Value = 0xFF;
         break;
 
     case 16:
-        *((UINT16 *) Value) = 0xFFFF;
+        *Value = 0xFFFF;
         break;
 
     case 32:
-        *((UINT32 *) Value) = 0xFFFFFFFF;
+        *Value = 0xFFFFFFFF;
         break;
 
-    case 64:
-        *((UINT64 *) Value) = 0xFFFFFFFFFFFFFFFF;
-        break;
+    default:
+        return (AE_BAD_PARAMETER);
     }
 
     return (AE_OK);
@@ -1265,7 +1302,7 @@ AcpiOsReadPort (
 ACPI_STATUS
 AcpiOsWritePort (
     ACPI_IO_ADDRESS         Address,
-    ACPI_INTEGER            Value,
+    UINT32                  Value,
     UINT32                  Width)
 {
 
@@ -1281,7 +1318,8 @@ AcpiOsWritePort (
  *              Value               Where value is placed
  *              Width               Number of bits
  *
- * RETURN:      Value read from physical memory address
+ * RETURN:      Value read from physical memory address.  Always returned
+ *              as a 32-bit integer, regardless of the read width.
  *
  * DESCRIPTION: Read data from a physical memory address
  *
@@ -1290,26 +1328,20 @@ AcpiOsWritePort (
 ACPI_STATUS
 AcpiOsReadMemory (
     ACPI_PHYSICAL_ADDRESS   Address,
-    void                    *Value,
+    UINT32                  *Value,
     UINT32                  Width)
 {
 
     switch (Width)
     {
     case 8:
-        *((UINT8 *) Value) = 0;
-        break;
-
     case 16:
-        *((UINT16 *) Value) = 0;
-        break;
-
     case 32:
-        *((UINT32 *) Value) = 0;
+        *Value = 0;
         break;
 
-    case 64:
-        *((UINT64 *) Value) = 0;
+    default:
+        return (AE_BAD_PARAMETER);
         break;
     }
 
@@ -1334,7 +1366,7 @@ AcpiOsReadMemory (
 ACPI_STATUS
 AcpiOsWriteMemory (
     ACPI_PHYSICAL_ADDRESS   Address,
-    ACPI_INTEGER            Value,
+    UINT32                  Value,
     UINT32                  Width)
 {
 
