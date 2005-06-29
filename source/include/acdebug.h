@@ -225,7 +225,8 @@ DbUnloadAcpiTable (
 
 void
 DbGenerateStatistics (
-    void);
+    ACPI_GENERIC_OP         *Root,
+    BOOLEAN                 IsMethod);
 
 void
 DbAddToHistory (
