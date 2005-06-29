@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acutils.h -- prototypes for the common (subsystem-wide) procedures
- *       $Revision: 1.172 $
+ *       $Revision: 1.173 $
  *
  *****************************************************************************/
 
@@ -629,16 +629,6 @@ void
 AcpiUtDeleteGenericState (
     ACPI_GENERIC_STATE      *State);
 
-#ifdef ACPI_ENABLE_OBJECT_CACHE
-void
-AcpiUtDeleteGenericStateCache (
-    void);
-
-void
-AcpiUtDeleteObjectCache (
-    void);
-#endif
-
 
 /*
  * utmath
@@ -740,20 +730,13 @@ AcpiUtDisplayInitPathname (
 /*
  * utalloc - memory allocation and object caching
  */
-void *
-AcpiUtAcquireFromCache (
-    UINT32                  ListId);
+ACPI_STATUS
+AcpiUtCreateCaches (
+    void);
 
-void
-AcpiUtReleaseToCache (
-    UINT32                  ListId,
-    void                    *Object);
-
-#ifdef ACPI_ENABLE_OBJECT_CACHE
-void
-AcpiUtDeleteGenericCache (
-    UINT32                  ListId);
-#endif
+ACPI_STATUS
+AcpiUtDeleteCaches (
+    void);
 
 ACPI_STATUS
 AcpiUtValidateBuffer (
