@@ -224,21 +224,21 @@ NsDumpRootDevices (
 ACPI_STATUS
 NsEvaluateByHandle (
     NAME_TABLE_ENTRY        *ObjectNte, 
-    ACPI_OBJECT             *ReturnObject,
-    ACPI_OBJECT             **Params);
+    ACPI_OBJECT             **Params,
+    ACPI_OBJECT             *ReturnObject);
 
 ACPI_STATUS
 NsEvaluateByName (
     char                    *Pathname, 
-    ACPI_OBJECT             *ReturnObject,
-    ACPI_OBJECT             **Params);
+    ACPI_OBJECT             **Params,
+    ACPI_OBJECT             *ReturnObject);
 
 ACPI_STATUS
 NsEvaluateRelative (
     NAME_TABLE_ENTRY        *ObjectNte, 
     char                    *Pathname, 
-    ACPI_OBJECT             *ReturnObject,
-    ACPI_OBJECT             **Params);
+    ACPI_OBJECT             **Params,
+    ACPI_OBJECT             *ReturnObject);
 
 
 ACPI_STATUS
