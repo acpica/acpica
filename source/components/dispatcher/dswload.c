@@ -153,7 +153,7 @@ AcpiDsLoad1BeginOp (
     ACPI_NAMED_OBJECT       *Entry;
     ACPI_STATUS             Status;
     OBJECT_TYPE_INTERNAL    DataType;
-    char                    *Path;
+    INT8                    *Path;
 
 
     DEBUG_PRINT (TRACE_DISPATCH,
@@ -164,7 +164,8 @@ AcpiDsLoad1BeginOp (
 
     if (!AcpiPsIsNamedOp (Opcode))
     {
-        return AE_OK;
+        *OutOp = Op;
+        return (AE_OK);
     }
 
 
@@ -172,7 +173,8 @@ AcpiDsLoad1BeginOp (
 
     if (Op && Op->AcpiNamedObject)
     {
-        return AE_OK;
+        *OutOp = Op;
+        return (AE_OK);
     }
 
     Path = AcpiPsGetNextNamestring (WalkState->ParserState);
@@ -260,7 +262,7 @@ AcpiDsLoad1EndOp (
 
     if (!AcpiPsIsNamedOp (Op->Opcode))
     {
-        return AE_OK;
+        return (AE_OK);
     }
 
 
@@ -293,7 +295,7 @@ AcpiDsLoad1EndOp (
         AcpiDsScopeStackPop (WalkState);
     }
 
-    return AE_OK;
+    return (AE_OK);
 
 }
 
@@ -322,7 +324,7 @@ AcpiDsLoad2BeginOp (
     ACPI_NAMED_OBJECT       *NewEntry;
     ACPI_STATUS             Status;
     OBJECT_TYPE_INTERNAL    DataType;
-    char                    *BufferPtr;
+    INT8                    *BufferPtr;
     void                    *Original = NULL;
 
 
@@ -335,9 +337,16 @@ AcpiDsLoad2BeginOp (
     if (!AcpiPsIsNamespaceOp (Opcode) &&
         Opcode != AML_NAMEPATH_OP)
     {
-        return AE_OK;
+        return (AE_OK);
     }
 
+
+    /* Temp! same code as in psparse */
+
+    if (!AcpiPsIsNamedOp (Opcode))
+    {
+        return (AE_OK);
+    }
 
     if (Op)
     {
@@ -353,7 +362,7 @@ AcpiDsLoad2BeginOp (
             {
                 /* No name, just exit */
 
-                return AE_OK;
+                return (AE_OK);
             }
         }
 
@@ -361,7 +370,7 @@ AcpiDsLoad2BeginOp (
         {
             /* Get name from the op */
 
-            BufferPtr = (char *) &((ACPI_NAMED_OP *)Op)->Name;
+            BufferPtr = (INT8 *) &((ACPI_NAMED_OP *)Op)->Name;
         }
     }
 
@@ -417,7 +426,7 @@ AcpiDsLoad2BeginOp (
                 }
 
             }
-            return AE_OK;
+            return (AE_OK);
         }
 
         /*
@@ -505,7 +514,7 @@ AcpiDsLoad2EndOp (
 
     if (!AcpiPsIsNamespaceObjectOp (Op->Opcode))
     {
-        return AE_OK;
+        return (AE_OK);
     }
 
     if (Op->Opcode == AML_SCOPE_OP)
@@ -518,7 +527,7 @@ AcpiDsLoad2EndOp (
             DEBUG_PRINT (ACPI_ERROR,
                 ("Load2EndOp: Un-named scope! Op=%p State=%p\n", Op,
                 WalkState));
-            return AE_OK;
+            return (AE_OK);
         }
     }
 
@@ -626,8 +635,18 @@ AcpiDsLoad2EndOp (
              * can get it again at the end of this scope
              */
             Op->AcpiNamedObject = NewEntry;
-        }
 
+            /*
+             * If this is NOT a control method, we need to evaluate this opcode now.
+             */
+
+            /* THIS WON"T WORK. Must execute all operands like Add().  => Must do an execute pass 
+            if (!WalkState->MethodDesc)
+            {
+                Status = AcpiDsExecEndOp (WalkState, Op);
+            }
+            */
+        }
         break;
 
 
@@ -724,7 +743,7 @@ AcpiDsLoad2EndOp (
         Arg = Op->Value.Arg;
 
         Status = AcpiDsCreateField (Op,
-                                    (ACPI_HANDLE) Arg->AcpiNamedObject,
+                                    Arg->AcpiNamedObject,
                                     WalkState);
         break;
 
@@ -806,6 +825,11 @@ AcpiDsLoad2EndOp (
 
 
     case AML_REGION_OP:
+
+        if (Entry->Object)
+        {
+            break;
+        }
 
         DEBUG_PRINT (TRACE_DISPATCH,
             ("LOADING-Opregion: Op=%p State=%p Nte=%p\n", Op, WalkState, Entry));
