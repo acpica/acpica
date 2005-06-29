@@ -152,26 +152,6 @@ extern      UINT32                      DebugLayer;
 extern      UINT32                      Gbl_NestingLevel;
 
 
-/* Memory allocation metrics - Debug Only! */
-
-#ifdef ACPI_DEBUG
-
-ACPI_EXTERN UINT32				        Gbl_CurrentAllocSize;
-ACPI_EXTERN UINT32				        Gbl_CurrentAllocCount;
-ACPI_EXTERN UINT32				        Gbl_RunningAllocSize;
-ACPI_EXTERN UINT32				        Gbl_RunningAllocCount;
-ACPI_EXTERN UINT32				        Gbl_MaxConcurrentAllocSize;
-ACPI_EXTERN UINT32				        Gbl_MaxConcurrentAllocCount;
-ACPI_EXTERN UINT32				        Gbl_CurrentObjectCount;
-ACPI_EXTERN UINT32				        Gbl_CurrentObjectSize;
-ACPI_EXTERN UINT32				        Gbl_MaxConcurrentObjectCount;
-ACPI_EXTERN UINT32				        Gbl_MaxConcurrentObjectSize;
-ACPI_EXTERN UINT32				        Gbl_RunningObjectCount;
-ACPI_EXTERN UINT32				        Gbl_RunningObjectSize;
-
-#endif
-
-
 
 /*****************************************************************************
  * 
@@ -222,54 +202,62 @@ extern      ACPI_INIT_DATA              Gbl_AcpiInitData;
  *
  ****************************************************************************/
 
-ACPI_EXTERN BOOLEAN                     Gbl_GlobalLockAcquired;
-ACPI_EXTERN BOOLEAN                     Gbl_GlobalLockSet; /* TBD: OBSOLETE?? */
-ACPI_EXTERN UINT32                      Gbl_GlobalLockThreadCount;
-ACPI_EXTERN INT32                       Gbl_RestoreAcpiChipset;
-ACPI_EXTERN UINT16                      Gbl_Pm1EnableRegisterSave;
+
 ACPI_EXTERN UINT8                      *Gbl_Gpe0EnableRegisterSave;
 ACPI_EXTERN UINT8                      *Gbl_Gpe1EnableRegisterSave;
-ACPI_EXTERN UINT32                      Gbl_OriginalMode;
-ACPI_EXTERN INT32                       Gbl_EdgeLevelSave;
-ACPI_EXTERN INT32                       Gbl_IrqEnableSave;
-ACPI_EXTERN UINT32                      Gbl_RsdpOriginalLocation; 
+ACPI_EXTERN ACPI_WALK_STATE            *Gbl_BreakpointWalk;
+ACPI_EXTERN ACPI_GENERIC_STATE         *Gbl_GenericStateCache;
+ACPI_EXTERN ACPI_GENERIC_OP            *Gbl_ParseCache;
+ACPI_EXTERN ACPI_OBJECT_INTERNAL       *Gbl_ObjectCache;
+ACPI_EXTERN ACPI_WALK_STATE            *Gbl_WalkStateCache;
 ACPI_EXTERN ACPI_HANDLE                 Gbl_GlobalLockSemaphore;
+
+
+ACPI_EXTERN UINT32                      Gbl_GlobalLockThreadCount;
+ACPI_EXTERN UINT32                      Gbl_RestoreAcpiChipset;
+ACPI_EXTERN UINT32                      Gbl_OriginalMode;
+ACPI_EXTERN UINT32                      Gbl_EdgeLevelSave;
+ACPI_EXTERN UINT32                      Gbl_IrqEnableSave;
+ACPI_EXTERN UINT32                      Gbl_RsdpOriginalLocation; 
+
+ACPI_EXTERN UINT32                      Gbl_StateCacheRequests;
+ACPI_EXTERN UINT32                      Gbl_StateCacheHits;
+ACPI_EXTERN UINT32                      Gbl_ParseCacheRequests;
+ACPI_EXTERN UINT32                      Gbl_ParseCacheHits;
+ACPI_EXTERN UINT32                      Gbl_ObjectCacheRequests;
+ACPI_EXTERN UINT32                      Gbl_ObjectCacheHits;
+ACPI_EXTERN UINT32                      Gbl_WalkStateCacheRequests;
+ACPI_EXTERN UINT32                      Gbl_WalkStateCacheHits;
+ACPI_EXTERN UINT32                      Gbl_NsLookupCount;
+ACPI_EXTERN UINT32                      Gbl_PsFindCount;
+
+
+ACPI_EXTERN UINT16                      Gbl_GenericStateCacheDepth;
+ACPI_EXTERN UINT16                      Gbl_ParseCacheDepth;
+ACPI_EXTERN UINT16                      Gbl_ObjectCacheDepth;
+ACPI_EXTERN UINT16                      Gbl_WalkStateCacheDepth;
+ACPI_EXTERN UINT16                      Gbl_Pm1EnableRegisterSave;
+ACPI_EXTERN UINT16                      Gbl_NextTableOwnerId;
+ACPI_EXTERN UINT16                      Gbl_NextMethodOwnerId;
+
+ACPI_EXTERN UINT8                       Gbl_DebuggerConfiguration;
+ACPI_EXTERN BOOLEAN                     Gbl_GlobalLockAcquired;
+ACPI_EXTERN BOOLEAN                     Gbl_GlobalLockSet; /* TBD: OBSOLETE?? */
 ACPI_EXTERN BOOLEAN                     Gbl_MethodExecuting;
 ACPI_EXTERN BOOLEAN                     Gbl_StepToNextCall;
 ACPI_EXTERN BOOLEAN                     Gbl_AcpiHardwarePresent;
-ACPI_EXTERN ACPI_WALK_STATE            *Gbl_BreakpointWalk;
 ACPI_EXTERN BOOLEAN                     Gbl_DbTerminateThreads;
-ACPI_EXTERN UINT8                       Gbl_DebuggerConfiguration;
-ACPI_EXTERN ACPI_GENERIC_STATE         *Gbl_GenericStateCache;
-ACPI_EXTERN UINT16                      Gbl_GenericStateCacheDepth;
-ACPI_EXTERN UINT32                      Gbl_StateCacheRequests;
-ACPI_EXTERN UINT32                      Gbl_StateCacheHits;
-ACPI_EXTERN ACPI_GENERIC_OP            *Gbl_ParseCache;
-ACPI_EXTERN UINT16                      Gbl_ParseCacheDepth;
-ACPI_EXTERN UINT32                      Gbl_ParseCacheRequests;
-ACPI_EXTERN UINT32                      Gbl_ParseCacheHits;
-ACPI_EXTERN ACPI_OBJECT_INTERNAL       *Gbl_ObjectCache;
-ACPI_EXTERN UINT16                      Gbl_ObjectCacheDepth;
-ACPI_EXTERN UINT32                      Gbl_ObjectCacheRequests;
-ACPI_EXTERN UINT32                      Gbl_ObjectCacheHits;
-ACPI_EXTERN ACPI_WALK_STATE            *Gbl_WalkStateCache;
-ACPI_EXTERN UINT16                      Gbl_WalkStateCacheDepth;
-ACPI_EXTERN UINT32                      Gbl_WalkStateCacheRequests;
-ACPI_EXTERN UINT32                      Gbl_WalkStateCacheHits;
 
-extern		BOOLEAN                     Gbl_Shutdown;
-extern      UINT32                      Gbl_SystemFlags;
-extern      UINT32                      Gbl_StartupFlags;
-extern      UINT32                      Gbl_AcpiCaVersion;
 
 ACPI_EXTERN ACPI_OBJECT_NotifyHandler   Gbl_DrvNotify;
 ACPI_EXTERN ACPI_OBJECT_NotifyHandler   Gbl_SysNotify;
 
 
-ACPI_EXTERN UINT32                      Gbl_NsLookupCount;
-ACPI_EXTERN UINT32                      Gbl_PsFindCount;
-ACPI_EXTERN UINT16                      Gbl_NextTableOwnerId;
-ACPI_EXTERN UINT16                      Gbl_NextMethodOwnerId;
+extern		BOOLEAN                     Gbl_Shutdown;
+extern      UINT32                      Gbl_SystemFlags;
+extern      UINT32                      Gbl_StartupFlags;
+
+
 
 /*****************************************************************************
  * 
@@ -381,6 +369,31 @@ ACPI_EXTERN UINT8                       Gbl_GpeValid [NUM_GPE];
 #ifdef ACPI_DEBUG
 ACPI_EXTERN UINT32                      Gbl_EventCount[NUM_FIXED_EVENTS];   
 #endif
+
+
+
+
+
+/* Memory allocation metrics - Debug Only! */
+
+#ifdef ACPI_DEBUG
+
+ACPI_EXTERN UINT32				        Gbl_CurrentAllocSize;
+ACPI_EXTERN UINT32				        Gbl_CurrentAllocCount;
+ACPI_EXTERN UINT32				        Gbl_RunningAllocSize;
+ACPI_EXTERN UINT32				        Gbl_RunningAllocCount;
+ACPI_EXTERN UINT32				        Gbl_MaxConcurrentAllocSize;
+ACPI_EXTERN UINT32				        Gbl_MaxConcurrentAllocCount;
+ACPI_EXTERN UINT32				        Gbl_CurrentObjectCount;
+ACPI_EXTERN UINT32				        Gbl_CurrentObjectSize;
+ACPI_EXTERN UINT32				        Gbl_MaxConcurrentObjectCount;
+ACPI_EXTERN UINT32				        Gbl_MaxConcurrentObjectSize;
+ACPI_EXTERN UINT32				        Gbl_RunningObjectCount;
+ACPI_EXTERN UINT32				        Gbl_RunningObjectSize;
+
+#endif
+
+
 
 
 
