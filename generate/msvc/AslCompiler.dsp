@@ -156,6 +156,10 @@ SOURCE=..\..\source\components\namespace\nsdump.c
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\source\COMPONENTS\NAMESPACE\nsload.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\source\components\namespace\nsnames.c
 # End Source File
 # Begin Source File
@@ -173,6 +177,10 @@ SOURCE=..\..\source\components\namespace\nsutils.c
 # Begin Source File
 
 SOURCE=..\..\source\components\namespace\nswalk.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\COMPONENTS\NAMESPACE\nsxfobj.c
 # End Source File
 # End Group
 # Begin Group "Compiler"
@@ -272,10 +280,6 @@ SOURCE=..\..\source\COMPONENTS\INTERPRETER\PARSER\psargs.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\source\COMPONENTS\INTERPRETER\PARSER\psfind.c
-# End Source File
-# Begin Source File
-
 SOURCE=..\..\source\components\interpreter\parser\psopcode.c
 # End Source File
 # Begin Source File
@@ -293,6 +297,10 @@ SOURCE=..\..\source\COMPONENTS\INTERPRETER\PARSER\pstree.c
 # Begin Source File
 
 SOURCE=..\..\source\components\interpreter\parser\psutils.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\COMPONENTS\INTERPRETER\PARSER\pswalk.c
 # End Source File
 # End Group
 # Begin Group "Dispatcher"
@@ -320,7 +328,15 @@ SOURCE=..\..\source\components\interpreter\dispatcher\dswexec.c
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\source\COMPONENTS\INTERPRETER\DISPATCHER\dswload.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\source\components\interpreter\Dispatcher\dswscope.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\COMPONENTS\INTERPRETER\DISPATCHER\dswstate.c
 # End Source File
 # End Group
 # Begin Group "Common"
@@ -523,14 +539,6 @@ SOURCE=..\..\source\COMPONENTS\tables\tbinstal.c
 # Begin Source File
 
 SOURCE=..\..\source\COMPONENTS\tables\tbutils.c
-# End Source File
-# End Group
-# Begin Group "Dispatcher No. 1"
-
-# PROP Default_Filter ""
-# Begin Source File
-
-SOURCE=..\..\source\COMPONENTS\INTERPRETER\DISPATCHER\dswstate.c
 # End Source File
 # End Group
 # End Group
