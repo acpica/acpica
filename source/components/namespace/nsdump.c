@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: nsdump - table dumping routines for debug
- *              $Revision: 1.152 $
+ *              $Revision: 1.154 $
  *
  *****************************************************************************/
 
@@ -289,7 +289,7 @@ AcpiNsDumpOneObject (
      * Now we can print out the pertinent information
      */
     AcpiOsPrintf ("%4.4s %-12s %p ",
-            ThisNode->Name.Ascii, AcpiUtGetTypeName (Type), ThisNode);
+            AcpiUtGetNodeName (ThisNode), AcpiUtGetTypeName (Type), ThisNode);
 
     DbgLevel = AcpiDbgLevel;
     AcpiDbgLevel = 0;
@@ -337,8 +337,7 @@ AcpiNsDumpOneObject (
         case ACPI_TYPE_INTEGER:
 
             AcpiOsPrintf ("= %8.8X%8.8X\n",
-                        ACPI_HIDWORD (ObjDesc->Integer.Value),
-                        ACPI_LODWORD (ObjDesc->Integer.Value));
+                        ACPI_FORMAT_UINT64 (ObjDesc->Integer.Value));
             break;
 
 
@@ -396,8 +395,7 @@ AcpiNsDumpOneObject (
             if (ObjDesc->Region.Flags & AOPOBJ_DATA_VALID)
             {
                 AcpiOsPrintf (" Addr %8.8X%8.8X Len %.4X\n",
-                            ACPI_HIDWORD (ObjDesc->Region.Address),
-                            ACPI_LODWORD (ObjDesc->Region.Address),
+                            ACPI_FORMAT_UINT64 (ObjDesc->Region.Address),
                             ObjDesc->Region.Length);
             }
             else
@@ -420,7 +418,7 @@ AcpiNsDumpOneObject (
                 ObjDesc->BufferField.BufferObj->Buffer.Node)
             {
                 AcpiOsPrintf ("Buf [%4.4s]",
-                        ObjDesc->BufferField.BufferObj->Buffer.Node->Name.Ascii);
+                        AcpiUtGetNodeName (ObjDesc->BufferField.BufferObj->Buffer.Node));
             }
             break;
 
@@ -428,29 +426,29 @@ AcpiNsDumpOneObject (
         case ACPI_TYPE_LOCAL_REGION_FIELD:
 
             AcpiOsPrintf ("Rgn [%4.4s]",
-                    ObjDesc->CommonField.RegionObj->Region.Node->Name.Ascii);
+                    AcpiUtGetNodeName (ObjDesc->CommonField.RegionObj->Region.Node));
             break;
 
 
         case ACPI_TYPE_LOCAL_BANK_FIELD:
 
             AcpiOsPrintf ("Rgn [%4.4s] Bnk [%4.4s]",
-                    ObjDesc->CommonField.RegionObj->Region.Node->Name.Ascii,
-                    ObjDesc->BankField.BankObj->CommonField.Node->Name.Ascii);
+                    AcpiUtGetNodeName (ObjDesc->CommonField.RegionObj->Region.Node),
+                    AcpiUtGetNodeName (ObjDesc->BankField.BankObj->CommonField.Node));
             break;
 
 
         case ACPI_TYPE_LOCAL_INDEX_FIELD:
 
             AcpiOsPrintf ("Idx [%4.4s] Dat [%4.4s]",
-                    ObjDesc->IndexField.IndexObj->CommonField.Node->Name.Ascii,
-                    ObjDesc->IndexField.DataObj->CommonField.Node->Name.Ascii);
+                    AcpiUtGetNodeName (ObjDesc->IndexField.IndexObj->CommonField.Node),
+                    AcpiUtGetNodeName (ObjDesc->IndexField.DataObj->CommonField.Node));
             break;
 
 
         case ACPI_TYPE_LOCAL_ALIAS:
 
-            AcpiOsPrintf ("Target %4.4s (%p)\n", ((ACPI_NAMESPACE_NODE *) ObjDesc)->Name.Ascii, ObjDesc);
+            AcpiOsPrintf ("Target %4.4s (%p)\n", AcpiUtGetNodeName (ObjDesc), ObjDesc);
             break;
 
         default:
@@ -507,8 +505,8 @@ AcpiNsDumpOneObject (
 
         case ACPI_TYPE_INTEGER:
 
-            AcpiOsPrintf (" N:%X%X\n", ACPI_HIDWORD(ObjDesc->Integer.Value),
-                                       ACPI_LODWORD(ObjDesc->Integer.Value));
+            AcpiOsPrintf (" I:%8.8X8.8%X\n",
+                    ACPI_FORMAT_UINT64 (ObjDesc->Integer.Value));
             break;
 
         case ACPI_TYPE_STRING:
