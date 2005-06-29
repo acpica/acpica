@@ -101,20 +101,10 @@
 #include <interpreter.h>
 #include <amlcode.h>
 #include <namespace.h>
-#include <string.h>
 
 
 #define _THIS_MODULE        "iemonadic.c"
 #define _COMPONENT          INTERPRETER
-
-
-
-static ST_KEY_DESC_TABLE KDT[] = {
-    {"0000", '1', "AmlExecMonadic2/IncDec: stack overflow", "AmlExecMonadic2/IncDec: stack overflow"},
-    {"0001", '1', "AmlExecMonadic2/IncDec: Descriptor Allocation Failure", "AmlExecMonadic2/IncDec: Descriptor Allocation Failure"},
-    {"0002", '1', "AmlExecMonadic2/ObjectTypeOp: Descriptor Allocation Failure", "AmlExecMonadic2/ObjectTypeOp: Descriptor Allocation Failure"},
-    {NULL, 'I', NULL, NULL}
-};
 
 
 
@@ -134,9 +124,10 @@ static ST_KEY_DESC_TABLE KDT[] = {
  ****************************************************************************/
 
 ACPI_STATUS
-AmlExecMonadic1 (UINT16 opcode)
+AmlExecMonadic1 (
+    UINT16                  opcode)
 {
-    OBJECT_DESCRIPTOR       *ObjDesc;
+    ACPI_OBJECT             *ObjDesc;
     ACPI_STATUS             Status;
 
 
@@ -162,7 +153,7 @@ AmlExecMonadic1 (UINT16 opcode)
 
     AmlDumpStack (MODE_Exec, LongOps[opcode & 0x00ff], 1, "after AmlPrepStack");
 
-    ObjDesc = (OBJECT_DESCRIPTOR *) ObjStack[ObjStackTop];
+    ObjDesc = (ACPI_OBJECT *) ObjStack[ObjStackTop];
 
     switch (opcode)
     {
@@ -256,10 +247,11 @@ AmlExecMonadic1 (UINT16 opcode)
  ****************************************************************************/
 
 ACPI_STATUS
-AmlExecMonadic2R (UINT16 opcode)
+AmlExecMonadic2R (
+    UINT16                  opcode)
 {
-    OBJECT_DESCRIPTOR       *ObjDesc;
-    OBJECT_DESCRIPTOR       *ResDesc;
+    ACPI_OBJECT             *ObjDesc;
+    ACPI_OBJECT             *ResDesc;
     UINT32                  ResVal;
     ACPI_STATUS             Status;
 
@@ -288,8 +280,8 @@ AmlExecMonadic2R (UINT16 opcode)
 
     AmlDumpStack (MODE_Exec, ShortOps[opcode], 2, "after AmlPrepStack");
 
-    ResDesc = (OBJECT_DESCRIPTOR *) ObjStack[ObjStackTop];
-    ObjDesc = (OBJECT_DESCRIPTOR *) ObjStack[ObjStackTop - 1];
+    ResDesc = (ACPI_OBJECT *) ObjStack[ObjStackTop];
+    ObjDesc = (ACPI_OBJECT *) ObjStack[ObjStackTop - 1];
 
     switch (opcode)
     {
@@ -377,7 +369,7 @@ AmlExecMonadic2R (UINT16 opcode)
     case AML_CondRefOfOp:
         
         DEBUG_PRINT (ACPI_ERROR, ("AmlExecMonadic2R: %s unimplemented\n",
-                (opcode > UCHAR_MAX) ? LongOps[opcode & 0x00ff] : ShortOps[opcode]));
+                (opcode > ACPI_UCHAR_MAX) ? LongOps[opcode & 0x00ff] : ShortOps[opcode]));
         FUNCTION_EXIT;
         return AE_AML_ERROR;
 
@@ -416,10 +408,11 @@ AmlExecMonadic2R (UINT16 opcode)
  ****************************************************************************/
 
 ACPI_STATUS
-AmlExecMonadic2 (UINT16 opcode)
+AmlExecMonadic2 (
+    UINT16                  opcode)
 {
-    OBJECT_DESCRIPTOR       *ObjDesc;
-    OBJECT_DESCRIPTOR       *ResDesc;
+    ACPI_OBJECT             *ObjDesc;
+    ACPI_OBJECT             *ResDesc;
     ACPI_STATUS             Status;
 
 
@@ -444,7 +437,7 @@ AmlExecMonadic2 (UINT16 opcode)
 
     AmlDumpStack (MODE_Exec, ShortOps[opcode], 1, "after AmlPrepStack");
 
-    ObjDesc = (OBJECT_DESCRIPTOR *) ObjStack[ObjStackTop];
+    ObjDesc = (ACPI_OBJECT *) ObjStack[ObjStackTop];
 
 
     switch (opcode)
@@ -465,14 +458,14 @@ AmlExecMonadic2 (UINT16 opcode)
 
         if ((Status = AmlPushIfExec (MODE_Exec)) != AE_OK)
         {
-            REPORT_ERROR (&KDT[0]);
+            REPORT_ERROR ("AmlExecMonadic2/IncDec: stack overflow");
             FUNCTION_EXIT;
             return AE_AML_ERROR;
         }
 
         /* duplicate the Lvalue on TOS */
         
-        ResDesc = AllocateObjectDesc (&KDT[1]);
+        ResDesc = AllocateObjectDesc ();
         if (ResDesc)
         {
             memcpy ((void *) ResDesc, (void *) ObjDesc, sizeof (*ObjDesc));
@@ -500,8 +493,8 @@ AmlExecMonadic2 (UINT16 opcode)
 
         /* get the Number in ObjDesc and the Lvalue in ResDesc */
         
-        ObjDesc = (OBJECT_DESCRIPTOR *) ObjStack[ObjStackTop];
-        ResDesc = (OBJECT_DESCRIPTOR *) ObjStack[ObjStackTop - 1];
+        ObjDesc = (ACPI_OBJECT *) ObjStack[ObjStackTop];
+        ResDesc = (ACPI_OBJECT *) ObjStack[ObjStackTop - 1];
 
         /* do the ++ or -- */
         
@@ -516,7 +509,7 @@ AmlExecMonadic2 (UINT16 opcode)
 
         /* store result */
         
-        LocalDeleteObject ((OBJECT_DESCRIPTOR **) &ObjStack[ObjStackTop - 1]);
+        LocalDeleteObject ((ACPI_OBJECT **) &ObjStack[ObjStackTop - 1]);
         ObjStack[ObjStackTop - 1] = (void *) ObjDesc;
         
         Status = AmlExecStore (ObjDesc, ResDesc);
@@ -585,9 +578,9 @@ AmlExecMonadic2 (UINT16 opcode)
              * it must be a direct name pointer.  Allocate a descriptor
              * to hold the type.
              */
-            Status = (INT32) NsGetType ((NsHandle) ObjDesc);
+            Status = (INT32) NsGetType ((ACPI_HANDLE) ObjDesc);
 
-            ObjDesc = AllocateObjectDesc (&KDT[2]);
+            ObjDesc = AllocateObjectDesc ();
             if (!ObjDesc)
             {
                 FUNCTION_EXIT;
@@ -595,8 +588,8 @@ AmlExecMonadic2 (UINT16 opcode)
             }
 
             /* 
-             * Replace (NsHandle) on TOS with descriptor containing result.
-             * No need to LocalDeleteObject() first since TOS is an NsHandle.
+             * Replace (ACPI_HANDLE) on TOS with descriptor containing result.
+             * No need to LocalDeleteObject() first since TOS is an ACPI_HANDLE.
              */
 
             ObjStack[ObjStackTop] = (void *) ObjDesc;
@@ -642,7 +635,7 @@ AmlExecMonadic2 (UINT16 opcode)
     case AML_RefOfOp:
     case AML_DerefOfOp:
         DEBUG_PRINT (ACPI_ERROR, ("AmlExecMonadic2: %s unimplemented\n",
-                (opcode > UCHAR_MAX) ? LongOps[opcode & 0x00ff] : ShortOps[opcode]));
+                (opcode > ACPI_UCHAR_MAX) ? LongOps[opcode & 0x00ff] : ShortOps[opcode]));
         ObjStackTop++;  /*  dummy return value  */
         FUNCTION_EXIT;
         return AE_AML_ERROR;
