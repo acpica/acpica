@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: aclocal.h - Internal data types used across the ACPI subsystem
- *       $Revision: 1.209 $
+ *       $Revision: 1.210 $
  *
  *****************************************************************************/
 
@@ -1026,15 +1026,6 @@ typedef struct acpi_integrity_info
  * Debug
  *
  ****************************************************************************/
-
-typedef struct acpi_debug_print_info
-{
-    UINT32                  ComponentId;
-    char                    *ProcName;
-    char                    *ModuleName;
-
-} ACPI_DEBUG_PRINT_INFO;
-
 
 /* Entry for a memory allocation (debug only) */
 

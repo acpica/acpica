@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acmacros.h - C macros for the entire subsystem.
- *       $Revision: 1.145 $
+ *       $Revision: 1.159 $
  *
  *****************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2003, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2005, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -121,11 +121,14 @@
 /*
  * Data manipulation macros
  */
-
 #define ACPI_LOWORD(l)                  ((UINT16)(UINT32)(l))
 #define ACPI_HIWORD(l)                  ((UINT16)((((UINT32)(l)) >> 16) & 0xFFFF))
 #define ACPI_LOBYTE(l)                  ((UINT8)(UINT16)(l))
 #define ACPI_HIBYTE(l)                  ((UINT8)((((UINT16)(l)) >> 8) & 0xFF))
+
+#define ACPI_SET_BIT(target,bit)        ((target) |= (bit))
+#define ACPI_CLEAR_BIT(target,bit)      ((target) &= ~(bit))
+#define ACPI_MIN(a,b)                   (((a)<(b))?(a):(b))
 
 
 #if ACPI_MACHINE_WIDTH == 16
@@ -167,10 +170,18 @@
 #endif
 #endif
 
- /*
-  * Extract a byte of data using a pointer.  Any more than a byte and we
-  * get into potential aligment issues -- see the STORE macros below
-  */
+/*
+ * printf() format helpers
+ */
+
+/* Split 64-bit integer into two 32-bit values. Use with %8.8X%8.8X */
+
+#define ACPI_FORMAT_UINT64(i)           ACPI_HIDWORD(i),ACPI_LODWORD(i)
+
+/*
+ * Extract a byte of data using a pointer.  Any more than a byte and we
+ * get into potential aligment issues -- see the STORE macros below
+ */
 #define ACPI_GET8(addr)                 (*(UINT8*)(addr))
 
 /* Pointer arithmetic */
@@ -202,7 +213,6 @@
  * If the hardware supports the transfer of unaligned data, just do the store.
  * Otherwise, we have to move one byte at a time.
  */
-
 #ifdef ACPI_BIG_ENDIAN
 /*
  * Macros for big-endian machines
@@ -372,7 +382,6 @@
 /*
  * Fast power-of-two math macros for non-optimized compilers
  */
-
 #define _ACPI_DIV(value,PowerOf2)       ((UINT32) ((value) >> (PowerOf2)))
 #define _ACPI_MUL(value,PowerOf2)       ((UINT32) ((value) << (PowerOf2)))
 #define _ACPI_MOD(value,Divisor)        ((UINT32) ((value) & ((Divisor) -1)))
@@ -428,24 +437,6 @@
 #define ACPI_MASK_BITS_BELOW(position)       ((ACPI_INTEGER_MAX) << ((UINT32) (position)))
 
 #define ACPI_IS_OCTAL_DIGIT(d)               (((char)(d) >= '0') && ((char)(d) <= '7'))
-
-/* Macros for GAS addressing */
-
-#if ACPI_MACHINE_WIDTH != 16
-
-#define ACPI_PCI_DEVICE(a)              (UINT16) ((ACPI_HIDWORD ((a))) & 0x0000FFFF)
-#define ACPI_PCI_FUNCTION(a)            (UINT16) ((ACPI_LODWORD ((a))) >> 16)
-#define ACPI_PCI_REGISTER(a)            (UINT16) ((ACPI_LODWORD ((a))) & 0x0000FFFF)
-
-#else
-
-/* No support for GAS and PCI IDs in 16-bit mode  */
-
-#define ACPI_PCI_FUNCTION(a)            (UINT16) ((a) & 0xFFFF0000)
-#define ACPI_PCI_DEVICE(a)              (UINT16) ((a) & 0x0000FFFF)
-#define ACPI_PCI_REGISTER(a)            (UINT16) ((a) & 0x0000FFFF)
-
-#endif
 
 
 /* Bitfields within ACPI registers */
@@ -516,26 +507,25 @@
 /*
  * Reporting macros that are never compiled out
  */
-
 #define ACPI_PARAM_LIST(pl)                 pl
 
 /*
- * Error reporting.  These versions add callers module and line#.  Since
- * _THIS_MODULE gets compiled out when ACPI_DEBUG_OUTPUT isn't defined, only
- * use it in debug mode.
+ * Error reporting.  These versions add callers module and line#.
+ *
+ * Since _AcpiModuleName gets compiled out when ACPI_DEBUG_OUTPUT
+ * isn't defined, only use it in debug mode.
  */
-
 #ifdef ACPI_DEBUG_OUTPUT
 
-#define ACPI_REPORT_INFO(fp)                {AcpiUtReportInfo(_THIS_MODULE,__LINE__,_COMPONENT); \
+#define ACPI_REPORT_INFO(fp)                {AcpiUtReportInfo(_AcpiModuleName,__LINE__,_COMPONENT); \
                                                 AcpiOsPrintf ACPI_PARAM_LIST(fp);}
-#define ACPI_REPORT_ERROR(fp)               {AcpiUtReportError(_THIS_MODULE,__LINE__,_COMPONENT); \
+#define ACPI_REPORT_ERROR(fp)               {AcpiUtReportError(_AcpiModuleName,__LINE__,_COMPONENT); \
                                                 AcpiOsPrintf ACPI_PARAM_LIST(fp);}
-#define ACPI_REPORT_WARNING(fp)             {AcpiUtReportWarning(_THIS_MODULE,__LINE__,_COMPONENT); \
+#define ACPI_REPORT_WARNING(fp)             {AcpiUtReportWarning(_AcpiModuleName,__LINE__,_COMPONENT); \
                                                 AcpiOsPrintf ACPI_PARAM_LIST(fp);}
-#define ACPI_REPORT_NSERROR(s,e)            AcpiNsReportError(_THIS_MODULE,__LINE__,_COMPONENT, s, e);
+#define ACPI_REPORT_NSERROR(s,e)            AcpiNsReportError(_AcpiModuleName,__LINE__,_COMPONENT, s, e);
 
-#define ACPI_REPORT_METHOD_ERROR(s,n,p,e)   AcpiNsReportMethodError(_THIS_MODULE,__LINE__,_COMPONENT, s, n, p, e);
+#define ACPI_REPORT_METHOD_ERROR(s,n,p,e)   AcpiNsReportMethodError(_AcpiModuleName,__LINE__,_COMPONENT, s, n, p, e);
 
 #else
 
@@ -563,32 +553,50 @@
 /*
  * Debug macros that are conditionally compiled
  */
-
 #ifdef ACPI_DEBUG_OUTPUT
-
-#define ACPI_MODULE_NAME(name)               static char ACPI_UNUSED_VAR *_THIS_MODULE = name;
+#define ACPI_MODULE_NAME(Name)          static char ACPI_UNUSED_VAR *_AcpiModuleName = Name;
 
 /*
- * Function entry tracing.
- * The first parameter should be the procedure name as a quoted string.  This is declared
- * as a local string ("_ProcName) so that it can be also used by the function exit macros below.
+ * Common parameters used for debug output functions:
+ * line number, function name, module(file) name, component ID
+ */
+#define ACPI_DEBUG_PARAMETERS           __LINE__, ACPI_GET_FUNCTION_NAME, _AcpiModuleName, _COMPONENT
+
+/*
+ * Function entry tracing
  */
 
-#define ACPI_FUNCTION_NAME(a)               ACPI_DEBUG_PRINT_INFO _Dbg; \
-                                                _Dbg.ComponentId = _COMPONENT; \
-                                                _Dbg.ProcName    = a; \
-                                                _Dbg.ModuleName  = _THIS_MODULE;
+/*
+ * If ACPI_GET_FUNCTION_NAME was not defined in the compiler-dependent header,
+ * define it now. This is the case where there the compiler does not support
+ * a __FUNCTION__ macro or equivalent. We save the function name on the 
+ * local stack.
+ */
+#ifndef ACPI_GET_FUNCTION_NAME
+#define ACPI_GET_FUNCTION_NAME          ProcName
+/*
+ * The parameter should be the procedure name as a quoted string.
+ * This is declared as a local string ("_ProcName") so that it can
+ * be also used by the function exit macros below.
+ */
+#define ACPI_FUNCTION_NAME(Name)        char *ProcName = Name;
 
-#define ACPI_FUNCTION_TRACE(a)              ACPI_FUNCTION_NAME(a) \
-                                                AcpiUtTrace(__LINE__,&_Dbg)
-#define ACPI_FUNCTION_TRACE_PTR(a,b)        ACPI_FUNCTION_NAME(a) \
-                                                AcpiUtTracePtr(__LINE__,&_Dbg,(void *)b)
-#define ACPI_FUNCTION_TRACE_U32(a,b)        ACPI_FUNCTION_NAME(a) \
-                                                AcpiUtTraceU32(__LINE__,&_Dbg,(UINT32)b)
-#define ACPI_FUNCTION_TRACE_STR(a,b)        ACPI_FUNCTION_NAME(a) \
-                                                AcpiUtTraceStr(__LINE__,&_Dbg,(char *)b)
+#else
+/* Compiler supports __FUNCTION__ (or equivalent) -- Ignore this macro */
 
-#define ACPI_FUNCTION_ENTRY()               AcpiUtTrackStackPtr()
+#define ACPI_FUNCTION_NAME(Name)
+#endif
+
+#define ACPI_FUNCTION_TRACE(a)          ACPI_FUNCTION_NAME(a) \
+                                            AcpiUtTrace(ACPI_DEBUG_PARAMETERS)
+#define ACPI_FUNCTION_TRACE_PTR(a,b)    ACPI_FUNCTION_NAME(a) \
+                                            AcpiUtTracePtr(ACPI_DEBUG_PARAMETERS,(void *)b)
+#define ACPI_FUNCTION_TRACE_U32(a,b)    ACPI_FUNCTION_NAME(a) \
+                                            AcpiUtTraceU32(ACPI_DEBUG_PARAMETERS,(UINT32)b)
+#define ACPI_FUNCTION_TRACE_STR(a,b)    ACPI_FUNCTION_NAME(a) \
+                                            AcpiUtTraceStr(ACPI_DEBUG_PARAMETERS,(char *)b)
+
+#define ACPI_FUNCTION_ENTRY()           AcpiUtTrackStackPtr()
 
 /*
  * Function exit tracing.
@@ -603,10 +611,10 @@
 #define ACPI_DO_WHILE0(a)               a
 #endif
 
-#define return_VOID                     ACPI_DO_WHILE0 ({AcpiUtExit(__LINE__,&_Dbg);return;})
-#define return_ACPI_STATUS(s)           ACPI_DO_WHILE0 ({AcpiUtStatusExit(__LINE__,&_Dbg,(s));return((s));})
-#define return_VALUE(s)                 ACPI_DO_WHILE0 ({AcpiUtValueExit(__LINE__,&_Dbg,(ACPI_INTEGER)(s));return((s));})
-#define return_PTR(s)                   ACPI_DO_WHILE0 ({AcpiUtPtrExit(__LINE__,&_Dbg,(UINT8 *)(s));return((s));})
+#define return_VOID                     ACPI_DO_WHILE0 ({AcpiUtExit(ACPI_DEBUG_PARAMETERS);return;})
+#define return_ACPI_STATUS(s)           ACPI_DO_WHILE0 ({AcpiUtStatusExit(ACPI_DEBUG_PARAMETERS,(s));return((s));})
+#define return_VALUE(s)                 ACPI_DO_WHILE0 ({AcpiUtValueExit(ACPI_DEBUG_PARAMETERS,(ACPI_INTEGER)(s));return((s));})
+#define return_PTR(s)                   ACPI_DO_WHILE0 ({AcpiUtPtrExit(ACPI_DEBUG_PARAMETERS,(UINT8 *)(s));return((s));})
 
 /* Conditional execution */
 
@@ -620,12 +628,11 @@
 
 /* Stack and buffer dumping */
 
-#define ACPI_DUMP_STACK_ENTRY(a)        AcpiExDumpOperand(a)
-#define ACPI_DUMP_OPERANDS(a,b,c,d,e)   AcpiExDumpOperands(a,b,c,d,e,_THIS_MODULE,__LINE__)
+#define ACPI_DUMP_STACK_ENTRY(a)        AcpiExDumpOperand((a),0)
+#define ACPI_DUMP_OPERANDS(a,b,c,d,e)   AcpiExDumpOperands(a,b,c,d,e,_AcpiModuleName,__LINE__)
 
 
 #define ACPI_DUMP_ENTRY(a,b)            AcpiNsDumpEntry (a,b)
-#define ACPI_DUMP_TABLES(a,b)           AcpiNsDumpTables(a,b)
 #define ACPI_DUMP_PATHNAME(a,b,c,d)     AcpiNsDumpPathname(a,b,c,d)
 #define ACPI_DUMP_RESOURCE_LIST(a)      AcpiRsDumpResourceList(a)
 #define ACPI_DUMP_BUFFER(a,b)           AcpiUtDumpBuffer((UINT8 *)a,b,DB_BYTE_DISPLAY,_COMPONENT)
@@ -635,7 +642,6 @@
 /*
  * Generate INT3 on ACPI_ERROR (Debug only!)
  */
-
 #define ACPI_ERROR_BREAK
 #ifdef  ACPI_ERROR_BREAK
 #define ACPI_BREAK_ON_ERROR(lvl)        if ((lvl)&ACPI_ERROR) \
@@ -650,7 +656,6 @@
  *    1) Debug print for the current component is enabled
  *    2) Debug error level or trace level for the print statement is enabled
  */
-
 #define ACPI_DEBUG_PRINT(pl)            AcpiUtDebugPrint ACPI_PARAM_LIST(pl)
 #define ACPI_DEBUG_PRINT_RAW(pl)        AcpiUtDebugPrintRaw ACPI_PARAM_LIST(pl)
 
@@ -660,9 +665,8 @@
  * This is the non-debug case -- make everything go away,
  * leaving no executable debug code!
  */
-
-#define ACPI_MODULE_NAME(name)
-#define _THIS_MODULE ""
+#define ACPI_MODULE_NAME(Name)
+#define _AcpiModuleName ""
 
 #define ACPI_DEBUG_EXEC(a)
 #define ACPI_NORMAL_EXEC(a)             a;
@@ -735,29 +739,24 @@
 /*
  * Memory allocation tracking (DEBUG ONLY)
  */
-
 #ifndef ACPI_DBG_TRACK_ALLOCATIONS
 
 /* Memory allocation */
 
-#define ACPI_MEM_ALLOCATE(a)            AcpiUtAllocate((ACPI_SIZE)(a),_COMPONENT,_THIS_MODULE,__LINE__)
-#define ACPI_MEM_CALLOCATE(a)           AcpiUtCallocate((ACPI_SIZE)(a), _COMPONENT,_THIS_MODULE,__LINE__)
+#define ACPI_MEM_ALLOCATE(a)            AcpiUtAllocate((ACPI_SIZE)(a),_COMPONENT,_AcpiModuleName,__LINE__)
+#define ACPI_MEM_CALLOCATE(a)           AcpiUtCallocate((ACPI_SIZE)(a), _COMPONENT,_AcpiModuleName,__LINE__)
 #define ACPI_MEM_FREE(a)                AcpiOsFree(a)
 #define ACPI_MEM_TRACKING(a)
-
 
 #else
 
 /* Memory allocation */
 
-#define ACPI_MEM_ALLOCATE(a)            AcpiUtAllocateAndTrack((ACPI_SIZE)(a),_COMPONENT,_THIS_MODULE,__LINE__)
-#define ACPI_MEM_CALLOCATE(a)           AcpiUtCallocateAndTrack((ACPI_SIZE)(a), _COMPONENT,_THIS_MODULE,__LINE__)
-#define ACPI_MEM_FREE(a)                AcpiUtFreeAndTrack(a,_COMPONENT,_THIS_MODULE,__LINE__)
+#define ACPI_MEM_ALLOCATE(a)            AcpiUtAllocateAndTrack((ACPI_SIZE)(a),_COMPONENT,_AcpiModuleName,__LINE__)
+#define ACPI_MEM_CALLOCATE(a)           AcpiUtCallocateAndTrack((ACPI_SIZE)(a), _COMPONENT,_AcpiModuleName,__LINE__)
+#define ACPI_MEM_FREE(a)                AcpiUtFreeAndTrack(a,_COMPONENT,_AcpiModuleName,__LINE__)
 #define ACPI_MEM_TRACKING(a)            a
 
 #endif /* ACPI_DBG_TRACK_ALLOCATIONS */
-
-
-#define ACPI_GET_STACK_POINTER          _asm {mov eax, ebx}
 
 #endif /* ACMACROS_H */
