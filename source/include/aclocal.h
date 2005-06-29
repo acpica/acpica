@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: aclocal.h - Internal data types used across the ACPI subsystem
- *       $Revision: 1.187 $
+ *       $Revision: 1.188 $
  *
  *****************************************************************************/
 
@@ -120,7 +120,7 @@
 
 #define ACPI_WAIT_FOREVER               0xFFFF  /* UINT16, as per ACPI spec */
 
-typedef void*                           ACPI_MUTEX;
+typedef void *                          ACPI_MUTEX;
 typedef UINT32                          ACPI_MUTEX_HANDLE;
 
 
@@ -257,8 +257,8 @@ typedef enum
 
 typedef union acpi_name_union
 {
-    UINT32                  Integer;
-    char                    Ascii[4];
+    UINT32                      Integer;
+    char                        Ascii[4];
 
 } ACPI_NAME_UNION;
 
@@ -691,13 +691,13 @@ typedef union acpi_parse_value
     UINT8                       Flags;          /* Type of Op */\
     UINT16                      AmlOpcode;      /* AML opcode */\
     UINT32                      AmlOffset;      /* offset of declaration in AML */\
-    union acpi_parse_object    *Parent;        /* parent op */\
-    union acpi_parse_object    *Next;          /* next op */\
+    union acpi_parse_object     *Parent;        /* parent op */\
+    union acpi_parse_object     *Next;          /* next op */\
     ACPI_DISASM_ONLY_MEMBERS (\
     UINT8                       DisasmFlags;    /* Used during AML disassembly */\
     UINT8                       DisasmOpcode;   /* Subtype used for disassembly */\
     char                        AmlOpName[16])  /* op name (debug only) */\
-                                            /* NON-DEBUG members below: */\
+                                                /* NON-DEBUG members below: */\
     ACPI_NAMESPACE_NODE         *Node;          /* for use by interpreter */\
     ACPI_PARSE_VALUE            Value;          /* Value or args associated with the opcode */\
 
