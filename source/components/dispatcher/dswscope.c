@@ -116,9 +116,9 @@
 
 #define __DSWSCOPE_C__
 
-#include <acpi.h>
-#include <interp.h>
-#include <dispatch.h>
+#include "acpi.h"
+#include "interp.h"
+#include "dispatch.h"
 
 
 #define _COMPONENT          NAMESPACE
@@ -131,7 +131,7 @@
 
 /****************************************************************************
  *
- * FUNCTION:    DsScopeStackClear
+ * FUNCTION:    AcpiDsScopeStackClear
  *
  * PARAMETERS:  None
  *
@@ -141,7 +141,7 @@
  ***************************************************************************/
 
 void
-DsScopeStackClear (
+AcpiDsScopeStackClear (
     ACPI_WALK_STATE         *WalkState)
 {
     ACPI_GENERIC_STATE      *ScopeInfo;
@@ -155,7 +155,7 @@ DsScopeStackClear (
         WalkState->ScopeInfo = ScopeInfo->Scope.Next;
 
         DEBUG_PRINT (TRACE_EXEC, ("Popped object type 0x%X\n", ScopeInfo->Common.Value));
-        CmDeleteGenericState (ScopeInfo);
+        AcpiCmDeleteGenericState (ScopeInfo);
     }
 }
 
@@ -163,7 +163,7 @@ DsScopeStackClear (
 
 /****************************************************************************
  *
- * FUNCTION:    DsScopeStackPush
+ * FUNCTION:    AcpiDsScopeStackPush
  *
  * PARAMETERS:  *NewScope,              - Name to be made current
  *              Type,                   - Type of frame being pushed
@@ -174,7 +174,7 @@ DsScopeStackClear (
  ***************************************************************************/
 
 ACPI_STATUS
-DsScopeStackPush (
+AcpiDsScopeStackPush (
     NAME_TABLE_ENTRY        *NewScope, 
     OBJECT_TYPE_INTERNAL    Type,
     ACPI_WALK_STATE         *WalkState)
@@ -195,7 +195,7 @@ DsScopeStackPush (
 
     /* Make sure object type is valid */
 
-    if (!AmlValidateObjectType (Type))
+    if (!AcpiAmlValidateObjectType (Type))
     {
         REPORT_WARNING ("DsScopeStackPush: type code out of range");
     }
@@ -203,7 +203,7 @@ DsScopeStackPush (
 
     /* Allocate a new scope object */
 
-    ScopeInfo = CmCreateGenericState ();
+    ScopeInfo = AcpiCmCreateGenericState ();
     if (!ScopeInfo)
     {
         return_ACPI_STATUS (AE_NO_MEMORY);
@@ -216,7 +216,7 @@ DsScopeStackPush (
 
     /* Push new scope object onto stack */
 
-    CmPushGenericState (&WalkState->ScopeInfo, ScopeInfo);
+    AcpiCmPushGenericState (&WalkState->ScopeInfo, ScopeInfo);
 
     return_ACPI_STATUS (AE_OK);
 }
@@ -224,7 +224,7 @@ DsScopeStackPush (
 
 /****************************************************************************
  *
- * FUNCTION:    DsScopeStackPop
+ * FUNCTION:    AcpiDsScopeStackPop
  *
  * PARAMETERS:  Type                - The type of frame to be found
  *
@@ -240,7 +240,7 @@ DsScopeStackPush (
  ***************************************************************************/
 
 ACPI_STATUS
-DsScopeStackPop (
+AcpiDsScopeStackPop (
     ACPI_WALK_STATE         *WalkState)
 {
     ACPI_GENERIC_STATE      *ScopeInfo;
@@ -252,7 +252,7 @@ DsScopeStackPop (
      * Pop scope info object off the stack.
      */
 
-    ScopeInfo = CmPopGenericState (&WalkState->ScopeInfo);
+    ScopeInfo = AcpiCmPopGenericState (&WalkState->ScopeInfo);
     if (!ScopeInfo)
     {
         return_ACPI_STATUS (AE_STACK_UNDERFLOW);
@@ -260,7 +260,7 @@ DsScopeStackPop (
 
     DEBUG_PRINT (TRACE_EXEC, ("Popped object type 0x%X\n", ScopeInfo->Common.Value));
 
-    CmDeleteGenericState (ScopeInfo);
+    AcpiCmDeleteGenericState (ScopeInfo);
 
     return_ACPI_STATUS (AE_OK);
 }
