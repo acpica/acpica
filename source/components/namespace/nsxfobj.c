@@ -142,66 +142,63 @@ AcpiEvaluateObject (
     ACPI_STATUS             Status;
     NAME_TABLE_ENTRY        *ObjEntry;
 
-
     FUNCTION_TRACE ("AcpiEvaluateObject");
 
 
-    /* Parameter validation */
+    /*
+     *  If the pathname exists and is fully qualified then just eval by name
+     */
+
+    if ((Pathname) && (Pathname[0] == '\\'))
+    {
+        Status = NsEvaluateByName (Pathname, ReturnObject, Params);
+        FUNCTION_EXIT;
+        return Status;
+    }
 
     if (!Handle)
     {
         /*
-         *  Handle is optional iff fully qualified pathname is specified
+         *  Handle is optional iff fully qualified pathname is specified, we've already handled
+         *  fully qualified names, so this is an error
          */
         if (!Pathname)
         {
             DEBUG_PRINT (ACPI_ERROR, ("AcpiEvaluateObject: Both Handle and Pathname are NULL\n"));
-            FUNCTION_EXIT;
-            return AE_BAD_PARAMETER;
         }
-        if ((Pathname[0] != '\\'))
-        {
-            DEBUG_PRINT (ACPI_ERROR, ("AcpiEvaluateObject: Handle is NULL and Pathname is relative\n"));
-            FUNCTION_EXIT;
-            return AE_BAD_PARAMETER;
-        }
-    }
-
-    /*
-     *  If fully qualified pathname
-     */ 
-
-    if (Pathname[0] == '\\')
-    {
-        Status = NsEvaluateByName (Pathname, ReturnObject, Params);
-    }
-
-    else
-    {
-        /* These cases require a valid handle */
-
-        if (!(ObjEntry = NsConvertHandleToEntry (Handle)))
-        {
-            FUNCTION_EXIT;
-            return AE_BAD_PARAMETER;
-        }
-
-        /* The null pathname case means the handle is for the object */
-
-        if (!Pathname)
-        {
-            Status = NsEvaluateByHandle (ObjEntry, ReturnObject, Params);
-        }
-
-
-        /* Both Handle and Pathname means we have a path relative to the handle */
-
         else
         {
-            Status = NsEvaluateRelative (ObjEntry, Pathname, ReturnObject, Params);
+            DEBUG_PRINT (ACPI_ERROR, ("AcpiEvaluateObject: Handle is NULL and Pathname is relative\n"));
         }
+        FUNCTION_EXIT;
+        return AE_BAD_PARAMETER;
+    }
+    /*
+     *  We get here we have a handle, and if we have a pathname it is relative.
+     *
+     *  Validate the handle
+     */
+    if (!(ObjEntry = NsConvertHandleToEntry (Handle)))
+    {
+        DEBUG_PRINT (ACPI_ERROR, ("AcpiEvaluateObject: Bad Handle\n"));
+        FUNCTION_EXIT;
+        return AE_BAD_PARAMETER;
     }
 
+    if (!Pathname)
+    {
+        /*
+         *  The null pathname case means the handle is for the object
+         */
+        Status = NsEvaluateByHandle (ObjEntry, ReturnObject, Params);
+    }
+    else
+    {
+       /*
+        *   Have both Handle and a relative Pathname
+        */
+        Status = NsEvaluateRelative (ObjEntry, Pathname, ReturnObject, Params);
+    }
 
     FUNCTION_EXIT;
     return Status;
