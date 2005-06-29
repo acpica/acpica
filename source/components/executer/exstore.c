@@ -269,7 +269,7 @@ AmlExecStore (
 
     /* Examine the datatype of the DestDesc */
 
-    if (IS_NS_HANDLE (DestDesc))
+    if (VALID_DESCRIPTOR_TYPE (DestDesc, DESC_TYPE_NTE))
     {
         /* Dest is an ACPI_HANDLE, create a new object */
 
