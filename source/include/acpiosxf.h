@@ -419,7 +419,6 @@ AcpiOsOpenDirectory (
 #define REQUEST_DIR_ONLY                    1
 
 
-
 char *
 AcpiOsGetNextFilename (
     void                    *DirHandle);
