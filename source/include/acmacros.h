@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acmacros.h - C macros for the entire subsystem.
- *       $Revision: 1.123 $
+ *       $Revision: 1.125 $
  *
  *****************************************************************************/
 
@@ -353,7 +353,7 @@
 
 /* Macro to test the object type */
 
-#define ACPI_GET_OBJECT_TYPE(d)         (((ACPI_OPERAND_OBJECT *)(void *)d)->Common.Type)
+#define ACPI_GET_OBJECT_TYPE(d)         (((ACPI_OPERAND_OBJECT *)(void *)(d))->Common.Type)
 
 /* Macro to check the table flags for SINGLE or MULTIPLE tables are allowed */
 
@@ -378,10 +378,12 @@
 /*
  * Macros for the master AML opcode table
  */
-#if defined(ACPI_DEBUG) || defined(ENABLE_DEBUGGER)
+#ifdef ACPI_DISASSEMBLER
 #define ACPI_OP(Name,PArgs,IArgs,ObjType,Class,Type,Flags)     {Name,PArgs,IArgs,Flags,ObjType,Class,Type}
+#define ACPI_DISASM_ONLY_MEMBERS(a)      a;
 #else
 #define ACPI_OP(Name,PArgs,IArgs,ObjType,Class,Type,Flags)     {PArgs,IArgs,Flags,ObjType,Class,Type}
+#define ACPI_DISASM_ONLY_MEMBERS(a)
 #endif
 
 #define ARG_TYPE_WIDTH                  5
@@ -526,7 +528,6 @@
 
 #define ACPI_DEBUG_DEFINE(a)            a;
 #define ACPI_DEBUG_ONLY_MEMBERS(a)      a;
-#define _OPCODE_NAMES
 #define _VERBOSE_STRUCTURES
 
 
@@ -605,10 +606,6 @@
 #define return_ACPI_STATUS(s)           return(s)
 #define return_VALUE(s)                 return(s)
 #define return_PTR(s)                   return(s)
-
-#ifdef ENABLE_DEBUGGER
-#define _OPCODE_NAMES
-#endif
 
 #endif
 

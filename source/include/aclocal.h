@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: aclocal.h - Internal data types used across the ACPI subsystem
- *       $Revision: 1.171 $
+ *       $Revision: 1.172 $
  *
  *****************************************************************************/
 
@@ -659,8 +659,8 @@ ACPI_STATUS (*ACPI_EXECUTE_OP) (
  */
 typedef struct acpi_opcode_info
 {
-#ifdef _OPCODE_NAMES
-    NATIVE_CHAR             *Name;          /* Opcode name (debug only) */
+#ifdef ACPI_DISASSEMBLER
+    NATIVE_CHAR             *Name;          /* Opcode name (disassembler/debug only) */
 #endif
     UINT32                  ParseArgs;      /* Grammar/Parse time arguments */
     UINT32                  RuntimeArgs;    /* Interpret time arguments */
@@ -695,9 +695,9 @@ typedef union acpi_parse_val
     UINT32                  AmlOffset;      /* offset of declaration in AML */\
     union acpi_parse_obj    *Parent;        /* parent op */\
     union acpi_parse_obj    *Next;          /* next op */\
+    ACPI_DISASM_ONLY_MEMBERS (\
     UINT8                   DisasmFlags;    /* Used during AML disassembly */\
     UINT8                   DisasmOpcode;   /* Subtype used for disassembly */\
-    ACPI_DEBUG_ONLY_MEMBERS (\
     NATIVE_CHAR             AmlOpName[16])  /* op name (debug only) */\
                                             /* NON-DEBUG members below: */\
     ACPI_NAMESPACE_NODE     *Node;          /* for use by interpreter */\
