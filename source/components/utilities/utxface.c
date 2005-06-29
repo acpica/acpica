@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: utxface - External interfaces for "global" ACPI functions
- *              $Revision: 1.74 $
+ *              $Revision: 1.77 $
  *
  *****************************************************************************/
 
@@ -124,6 +124,7 @@
 #include "acinterp.h"
 #include "amlcode.h"
 #include "acdebug.h"
+#include "acexcep.h"
 
 
 #define _COMPONENT          ACPI_UTILITIES
@@ -162,7 +163,7 @@ AcpiInitializeSubsystem (
     if (ACPI_FAILURE (Status))
     {
         REPORT_ERROR (("OSD failed to initialize, %s\n",
-            AcpiUtFormatException (Status)));
+            AcpiFormatException (Status)));
         return_ACPI_STATUS (Status);
     }
 
@@ -172,7 +173,7 @@ AcpiInitializeSubsystem (
     if (ACPI_FAILURE (Status))
     {
         REPORT_ERROR (("Global mutex creation failure, %s\n",
-            AcpiUtFormatException (Status)));
+            AcpiFormatException (Status)));
         return_ACPI_STATUS (Status);
     }
 
@@ -185,7 +186,7 @@ AcpiInitializeSubsystem (
     if (ACPI_FAILURE (Status))
     {
         REPORT_ERROR (("Namespace initialization failure, %s\n",
-            AcpiUtFormatException (Status)));
+            AcpiFormatException (Status)));
         return_ACPI_STATUS (Status);
     }
 
@@ -237,7 +238,7 @@ AcpiEnableSubsystem (
 
     if (!(Flags & ACPI_NO_ADDRESS_SPACE_INIT))
     {
-        DEBUG_PRINT (TRACE_EXEC, ("[Init] Installing default address space handlers\n"));
+        ACPI_DEBUG_PRINT ((ACPI_DB_EXEC, "[Init] Installing default address space handlers\n"));
 
         Status = AcpiEvInstallDefaultAddressSpaceHandlers ();
         if (ACPI_FAILURE (Status))
@@ -252,7 +253,7 @@ AcpiEnableSubsystem (
 
     if (!(Flags & ACPI_NO_HARDWARE_INIT))
     {
-        DEBUG_PRINT (TRACE_EXEC, ("[Init] Initializing ACPI hardware\n"));
+        ACPI_DEBUG_PRINT ((ACPI_DB_EXEC, "[Init] Initializing ACPI hardware\n"));
 
         Status = AcpiHwInitialize ();
         if (ACPI_FAILURE (Status))
@@ -267,12 +268,12 @@ AcpiEnableSubsystem (
 
     if (!(Flags & ACPI_NO_ACPI_ENABLE))
     {
-        DEBUG_PRINT (TRACE_EXEC, ("[Init] Going into ACPI mode\n"));
+        ACPI_DEBUG_PRINT ((ACPI_DB_EXEC, "[Init] Going into ACPI mode\n"));
 
         Status = AcpiEnable ();
         if (ACPI_FAILURE (Status))
         {
-            DEBUG_PRINT(ACPI_WARN, ("AcpiEnable failed.\n"));
+            ACPI_DEBUG_PRINT ((ACPI_DB_WARN, "AcpiEnable failed.\n"));
             return_ACPI_STATUS (Status);
         }
     }
@@ -286,7 +287,7 @@ AcpiEnableSubsystem (
 
     if (!(Flags & ACPI_NO_EVENT_INIT))
     {
-        DEBUG_PRINT (TRACE_EXEC, ("[Init] Initializing ACPI events\n"));
+        ACPI_DEBUG_PRINT ((ACPI_DB_EXEC, "[Init] Initializing ACPI events\n"));
 
         Status = AcpiEvInitialize ();
         if (ACPI_FAILURE (Status))
@@ -303,7 +304,7 @@ AcpiEnableSubsystem (
 
     if (!(Flags & ACPI_NO_DEVICE_INIT))
     {
-        DEBUG_PRINT (TRACE_EXEC, ("[Init] Initializing ACPI Devices\n"));
+        ACPI_DEBUG_PRINT ((ACPI_DB_EXEC, "[Init] Initializing ACPI Devices\n"));
 
         Status = AcpiNsInitializeDevices ();
         if (ACPI_FAILURE (Status))
@@ -321,7 +322,7 @@ AcpiEnableSubsystem (
 
     if (!(Flags & ACPI_NO_OBJECT_INIT))
     {
-        DEBUG_PRINT (TRACE_EXEC, ("[Init] Initializing ACPI Objects\n"));
+        ACPI_DEBUG_PRINT ((ACPI_DB_EXEC, "[Init] Initializing ACPI Objects\n"));
 
         Status = AcpiNsInitializeObjects ();
         if (ACPI_FAILURE (Status))
@@ -521,65 +522,6 @@ AcpiGetSystemInfo (
     {
         InfoPtr->TableInfo[i].Count = AcpiGbl_AcpiTables[i].Count;
     }
-
-    return_ACPI_STATUS (AE_OK);
-}
-
-
-/******************************************************************************
- *
- * FUNCTION:    AcpiFormatException
- *
- * PARAMETERS:  OutBuffer       - a pointer to a buffer to receive the
- *                                exception name
- *
- * RETURN:      Status          - the status of the call
- *
- * DESCRIPTION: This function translates an ACPI exception into an ASCII string.
- *
- ******************************************************************************/
-
-ACPI_STATUS
-AcpiFormatException (
-    ACPI_STATUS             Exception,
-    ACPI_BUFFER             *OutBuffer)
-{
-    UINT32                  Length;
-    NATIVE_CHAR             *FormattedException;
-
-
-    FUNCTION_TRACE ("AcpiFormatException");
-
-
-    /*
-     *  Must have a valid buffer
-     */
-    if ((!OutBuffer)          ||
-        (!OutBuffer->Pointer))
-    {
-        return_ACPI_STATUS (AE_BAD_PARAMETER);
-    }
-
-
-    /* Convert the exception code (Handles bad exception codes) */
-
-    FormattedException = AcpiUtFormatException (Exception);
-
-    /*
-     * Get length of string and check if it will fit in caller's buffer
-     */
-
-    Length = STRLEN (FormattedException);
-    if (OutBuffer->Length < Length)
-    {
-        OutBuffer->Length = Length;
-        return_ACPI_STATUS (AE_BUFFER_OVERFLOW);
-    }
-
-
-    /* Copy the string, all done */
-
-    STRCPY (OutBuffer->Pointer, FormattedException);
 
     return_ACPI_STATUS (AE_OK);
 }
