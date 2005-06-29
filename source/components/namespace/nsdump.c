@@ -116,17 +116,17 @@ static ST_KEY_DESC_TABLE KDT[] = {
  *
  * FUNCTION:    NsDumpPathname   
  *
- * PARAMETERS:  Handle              Object
- *              Msg                 Prefix message
- *              Level               Desired debug level
- *              Component           Caller's component ID
+ * PARAMETERS:  Handle              - Object
+ *              Msg                 - Prefix message
+ *              Level               - Desired debug level
+ *              Component           - Caller's component ID
  *
  * DESCRIPTION: Print an object's full namespace pathname
  *              Manages allocation/freeing of a pathname buffer
  *
  ***************************************************************************/
 
-void
+ACPI_STATUS
 NsDumpPathname (NsHandle Handle, char *Msg, UINT32 Level, UINT32 Component)
 {
     char            *Buffer;
@@ -134,13 +134,13 @@ NsDumpPathname (NsHandle Handle, char *Msg, UINT32 Level, UINT32 Component)
 
     if (!(DebugLevel & Level) || !(DebugLayer & Component))
     {
-        return;
+        return AE_OK;
     }
 
     Buffer = LocalAllocate (PATHNAME_MAX);
     if (!Buffer)
     {
-        return;
+        return AE_NO_MEMORY;
     }
 
     if (ACPI_SUCCESS (NsHandleToPathname (Handle, PATHNAME_MAX, Buffer)))
@@ -149,6 +149,7 @@ NsDumpPathname (NsHandle Handle, char *Msg, UINT32 Level, UINT32 Component)
     }
 
     OsdFree (Buffer);
+    return AE_OK;
 }
 
 
@@ -156,7 +157,7 @@ NsDumpPathname (NsHandle Handle, char *Msg, UINT32 Level, UINT32 Component)
  *
  * FUNCTION:    NsDumpOneObject   
  *
- * PARAMETERS:  NsHandle Handle          Entry to be dumped
+ * PARAMETERS:  NsHandle Handle          - Entry to be dumped
  *
  * DESCRIPTION: Dump a single nte
  *              This procedure is a UserFunction called by NsWalkNamespace.
@@ -322,8 +323,8 @@ NsDumpOneObject (NsHandle ObjHandle, INT32 Level, void *Context)
  *
  * FUNCTION:    NsDumpObjects 
  *
- * PARAMETERS:  Type            - Object type to be dumped
- *              StartHandle     - Where in namespace to start/end search
+ * PARAMETERS:  Type                - Object type to be dumped
+ *              StartHandle         - Where in namespace to start/end search
  *
  * DESCRIPTION: Dump typed objects
  *              Uses NsWalkNamespace in conjunction with NsDumpOneObject.
@@ -372,10 +373,10 @@ NsDumpRootDevices (void)
  * 
  * FUNCTION:    NsDumpTables
  *
- * PARAMETERS:  NsHandle SearchBase         Root of subtree to be dumped, or
- *                                          NS_ALL to dump the entire namespace
- *              INT32   MaxDepth            Maximum depth of dump.  Use INT_MAX
- *                                          for an effectively unlimited depth.
+ * PARAMETERS:  SearchBase          - Root of subtree to be dumped, or
+ *                                    NS_ALL to dump the entire namespace
+ *              MaxDepth            - Maximum depth of dump.  Use INT_MAX
+ *                                    for an effectively unlimited depth.
  *
  * DESCRIPTION: Dump the name space, or a portion of it.
  *
@@ -417,7 +418,7 @@ NsDumpTables (NsHandle SearchBase, INT32 MaxDepth)
  *
  * FUNCTION:    NsDumpEntry    
  *
- * PARAMETERS:  NsHandle Handle          Entry to be dumped
+ * PARAMETERS:  Handle              - Entry to be dumped
  *
  * DESCRIPTION: Dump a single nte
  *
