@@ -4,13 +4,14 @@ PROG=	acpisrc
 SRCS=	ascase.c asconvrt.c asfile.c asmain.c asremove.c asutils.c osunixdir.c \
         ../../common/getopt.c
 
-CFLAGS+= -Wall -O2 -D_LINUX -DACPI_APPLICATION -Wstrict-prototypes -I../../include 
+CFLAGS+= -Wall -O2 -Wstrict-prototypes -D_LINUX -I../../include 
 
 
 aslmain : $(patsubst %.c,%.o, $(SRCS))
-	$(CC) $(LDFLAGS) $(patsubst %.c,%.o, $(SRCS)) -o $(PROG)
+	$(CC) $(LDFLAGS) $(patsubst %.c,%.o, $(SRCS)) \
+		$(LOADLIBES) $(LDLIBS) -o iasl
 
-CLEANFILES= $(PROG)
+CLEANFILES= acpisrc
 
 clean : 
 	rm -f $(CLEANFILES) $(patsubst %.c,%.o, $(SRCS))
