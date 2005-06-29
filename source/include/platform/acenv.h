@@ -174,7 +174,7 @@
 #else   /* MS VC */
 
 #define causeinterrupt(level)   __asm {int level}
-#define BREAKPOINT3             __asm int 3
+#define BREAKPOINT3             __asm {int 3}
 #define disable()               __asm {cli}
 #define enable()                __asm {sti}
 
