@@ -292,3 +292,66 @@ AcpiGetSystemInfo (
     return_ACPI_STATUS (AE_OK);
 }
 
+
+/******************************************************************************
+ *
+ * FUNCTION:    AcpiFormatException
+ *
+ * PARAMETERS:  OutBuffer       - a pointer to a buffer to receive the 
+ *                                exception name
+ * 
+ * RETURN:      Status          - the status of the call
+ * 
+ * DESCRIPTION: This function translates an ACPI exception into an ASCII string.
+ *
+ ******************************************************************************/
+
+ACPI_STATUS
+AcpiFormatException (
+    ACPI_STATUS             Exception,
+    ACPI_BUFFER             *OutBuffer)
+{
+    UINT32                  Length;
+
+
+    FUNCTION_TRACE ("AcpiFormatException");
+
+
+    /*
+     *  Must have a valid buffer
+     */
+    if ((!OutBuffer)          ||
+        (!OutBuffer->Pointer))
+    {
+        return_ACPI_STATUS (AE_BAD_PARAMETER);
+    }
+
+
+    /* Exception must be within range */
+
+    if (Exception > ACPI_MAX_STATUS)
+    {
+        return_ACPI_STATUS (AE_BAD_PARAMETER);
+    }
+
+
+    /*
+     * Get length of string and check if it will fit in caller's buffer
+     */
+
+    Length = strlen (Gbl_ExceptionNames [Exception]);
+
+    if (OutBuffer->Length < Length)
+    {
+        OutBuffer->Length = Length;
+        return_ACPI_STATUS (AE_BUFFER_OVERFLOW);
+    }
+
+
+    /* Copy the string, all done */
+
+    strcpy (OutBuffer->Pointer, Gbl_ExceptionNames [Exception]);
+
+    return_ACPI_STATUS (AE_OK);
+}
+
