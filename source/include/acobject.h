@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Name: acobject.h - Definition of ACPI_OPERAND_OBJECT  (Internal object only)
- *       $Revision: 1.93 $
+ *       $Revision: 1.94 $
  *
  *****************************************************************************/
 
@@ -181,7 +181,8 @@
     UINT8                       DatumValidBits;     /* Valid bit in first "Field datum" */\
     UINT8                       EndFieldValidBits;  /* Valid bits in the last "field datum" */\
     UINT8                       EndBufferValidBits; /* Valid bits in the last "buffer datum" */\
-    UINT32                      Value;              /* Value to store into the Bank or Index register */
+    UINT32                      Value;              /* Value to store into the Bank or Index register */\
+    ACPI_NAMESPACE_NODE         *Node;              /* Link back to parent node */
 
 
 /* Access flag bits */
@@ -422,7 +423,6 @@ typedef struct /* BUFFER FIELD */
     ACPI_COMMON_FIELD_INFO
 
     union acpi_operand_obj      *Extra;             /* Pointer to executable AML (in field definition) */
-    ACPI_NAMESPACE_NODE         *Node;              /* Parent (containing) object node */
     union acpi_operand_obj      *BufferObj;         /* Containing Buffer object */
 
 } ACPI_OBJECT_BUFFER_FIELD;
