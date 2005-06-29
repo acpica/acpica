@@ -124,6 +124,7 @@
         MODULE_NAME         ("evapi");
 
 
+
 /**************************************************************************
  *
  * FUNCTION:    AcpiEnable
@@ -132,10 +133,9 @@
  *
  * RETURN:      Status
  *
- * DESCRIPTION: Ensures that the system
- *              control interrupt (SCI) is properly configured, disables
- *              SCI event sources, installs the SCI handler, and
- *              transfers the system into ACPI mode.
+ * DESCRIPTION: Ensures that the system control interrupt (SCI) is properly 
+ *              configured, disables SCI event sources, installs the SCI 
+ *              handler, and transfers the system into ACPI mode.
  *
  *************************************************************************/
 
@@ -144,7 +144,9 @@ AcpiEnable (void)
 {
     ACPI_STATUS             Status;
 
+
     FUNCTION_TRACE ("AcpiEnable");
+
 
     /* Make sure we've got ACPI tables */ 
 
@@ -170,13 +172,13 @@ AcpiEnable (void)
      * before handers are installed.
      */ 
    
-    if (ACPI_FAILURE(EvFixedEventInitialize()))
+    if (ACPI_FAILURE (EvFixedEventInitialize ()))
     {
         DEBUG_PRINT (ACPI_FATAL, ("Unable to initialize fixed events.\n"));
         return_ACPI_STATUS (AE_ERROR);
     }
 
-    if (ACPI_FAILURE(EvGpeInitialize()))
+    if (ACPI_FAILURE (EvGpeInitialize()))
     {
         DEBUG_PRINT (ACPI_FATAL, ("Unable to initialize general purpose events.\n"));
         return_ACPI_STATUS (AE_ERROR);
@@ -184,7 +186,7 @@ AcpiEnable (void)
 
     /* Install the SCI handler */
 
-    if (ACPI_FAILURE(EvInstallSciHandler()))
+    if (ACPI_FAILURE (EvInstallSciHandler ()))
     {   
         DEBUG_PRINT (ACPI_FATAL, ("Unable to install System Control Interrupt Handler\n"));
         return_ACPI_STATUS (AE_ERROR);
@@ -197,14 +199,12 @@ AcpiEnable (void)
         DEBUG_PRINT (ACPI_FATAL, ("Could not transition to ACPI mode.\n"));
         return_ACPI_STATUS (AE_ERROR);    
     }
-    else
-    {
-        DEBUG_PRINT (ACPI_OK, ("Transition to ACPI mode successful\n"));
-    }
+
+    DEBUG_PRINT (ACPI_OK, ("Transition to ACPI mode successful\n"));
 
     /* Install handlers for control method GPE handlers (_Lxx, _Exx) */
 
-    EvInitGpeControlMethods();
+    EvInitGpeControlMethods ();
 
     Status = EvInitGlobalLockHandler ();
 
@@ -228,8 +228,6 @@ AcpiEnable (void)
 ACPI_STATUS     
 AcpiDisable (void)
 {
-    UINT32                  Status;
-
 
     FUNCTION_TRACE ("AcpiDisable");
 
@@ -239,21 +237,15 @@ AcpiDisable (void)
     if (AE_OK != HwSetMode (Gbl_OriginalMode))
     {
         DEBUG_PRINT (ACPI_ERROR, ("Unable to transition to original mode"));
-        Status = AE_ERROR;    
+        return_ACPI_STATUS (AE_ERROR);    
     }
 
-    else
-    {
-        /* Unload the SCI interrupt handler  */
+    /* Unload the SCI interrupt handler  */
 
-        EvRemoveSciHandler ();
-        EvRestoreAcpiState ();
-        
-        Status = AE_OK;
-        
-    }
-
-    return_ACPI_STATUS (Status);
+    EvRemoveSciHandler ();
+    EvRestoreAcpiState ();
+    
+    return_ACPI_STATUS (AE_OK);
 }
 
 
@@ -292,7 +284,7 @@ AcpiInstallFixedEventHandler (
         return_ACPI_STATUS (AE_BAD_PARAMETER);
     }
     
-    CmAcquireMutex (MTX_FIXED_EVENT);
+    CmAcquireMutex (MTX_EVENTS);
 
     /* Don't allow two handlers. */
 
@@ -325,7 +317,7 @@ AcpiInstallFixedEventHandler (
 
 
 Cleanup:
-    CmReleaseMutex (MTX_FIXED_EVENT);
+    CmReleaseMutex (MTX_EVENTS);
     return_ACPI_STATUS (Status);
 }
 
@@ -361,7 +353,7 @@ AcpiRemoveFixedEventHandler (
         return_ACPI_STATUS (AE_BAD_PARAMETER);
     }
     
-    CmAcquireMutex (MTX_FIXED_EVENT);
+    CmAcquireMutex (MTX_EVENTS);
 
     /* Disable the event before removing the handler - just in case... */
 
@@ -380,7 +372,7 @@ AcpiRemoveFixedEventHandler (
     DEBUG_PRINT (ACPI_INFO, ("Disabled fixed event %d.\n", Event));    
 
 Cleanup:
-    CmReleaseMutex (MTX_FIXED_EVENT);
+    CmReleaseMutex (MTX_EVENTS);
     return_ACPI_STATUS (Status);
 }
 
@@ -412,7 +404,7 @@ AcpiInstallNotifyHandler (
     ACPI_OBJECT_INTERNAL    *ObjDesc;
     ACPI_OBJECT_INTERNAL    *NotifyObj;
     NAME_TABLE_ENTRY        *ObjEntry;
-    ACPI_STATUS             Status;
+    ACPI_STATUS             Status = AE_OK;
 
 
     FUNCTION_TRACE ("AcpiInstallNotifyHandler");
@@ -428,11 +420,13 @@ AcpiInstallNotifyHandler (
 
     /* Convert and validate the device handle */
 
+    CmAcquireMutex (MTX_NAMESPACE);
 
     ObjEntry = NsConvertHandleToEntry (Device);
     if (!ObjEntry)
     {
-        return_ACPI_STATUS (AE_BAD_PARAMETER);
+        Status = AE_BAD_PARAMETER;
+        goto UnlockAndExit;
     }
 
 
@@ -450,7 +444,8 @@ AcpiInstallNotifyHandler (
         if (((HandlerType == ACPI_SYSTEM_NOTIFY) && Gbl_SysNotify.Handler) ||
             ((HandlerType == ACPI_DEVICE_NOTIFY) && Gbl_DrvNotify.Handler))
         {
-            return_ACPI_STATUS (AE_EXIST);
+            Status = AE_EXIST;
+            goto UnlockAndExit;
         }
 
         if (HandlerType == ACPI_SYSTEM_NOTIFY)
@@ -470,7 +465,7 @@ AcpiInstallNotifyHandler (
 
         /* Global notify handler installed */
 
-        return_ACPI_STATUS (AE_OK);
+        goto UnlockAndExit;
     }
 
 
@@ -483,7 +478,8 @@ AcpiInstallNotifyHandler (
         (ObjEntry->Type != ACPI_TYPE_Power)      &&
         (ObjEntry->Type != ACPI_TYPE_Thermal))
     {
-        return_ACPI_STATUS (AE_BAD_PARAMETER);
+        Status = AE_BAD_PARAMETER;
+        goto UnlockAndExit;
     }
 
     /* Check for an existing internal object */
@@ -493,65 +489,55 @@ AcpiInstallNotifyHandler (
     {
         /*
          *  The object exists.
-         *
          *  Make sure the handler is not already installed.
          */
 
         if (((HandlerType == ACPI_SYSTEM_NOTIFY) && ObjDesc->Device.SysHandler) ||
             ((HandlerType == ACPI_DEVICE_NOTIFY) && ObjDesc->Device.DrvHandler))
         {
-            return_ACPI_STATUS (AE_EXIST);
+            Status = AE_EXIST;
+            goto UnlockAndExit;
         }
     }
 
     else
     {
-        /* ObjDesc DNE: We must create one */
+        /* Create a new object */
 
         ObjDesc = CmCreateInternalObject (ObjEntry->Type);
         if (!ObjDesc)
         {
-            /* Descriptor allocation failure   */
-
-            return_ACPI_STATUS (AE_NO_MEMORY);
+            Status = AE_NO_MEMORY;
+            goto UnlockAndExit;
         }
 
-        /* Attach the new object to the NTE */
+        /* Attach new object to the NTE */
 
         Status = NsAttachObject (Device, ObjDesc, (UINT8) ObjEntry->Type);
 
         if (ACPI_FAILURE (Status))
         {
-            return_ACPI_STATUS (Status);
+            goto UnlockAndExit;
         }
     }
 
 
     /* 
-     *  We get here, we know that there is no handler installed
+     *  If we get here, we know that there is no handler installed
      *  so let's party
      */
-
     NotifyObj = CmCreateInternalObject (INTERNAL_TYPE_Notify);
     if (!NotifyObj)
     {
-        /* Descriptor allocation failure   */
-
-        return_ACPI_STATUS (AE_NO_MEMORY);
+        Status = AE_NO_MEMORY;
+        goto UnlockAndExit;
     }
-
-    /* TBD: Mutex?? */
 
     NotifyObj->NotifyHandler.Nte = ObjEntry;
     NotifyObj->NotifyHandler.Handler = Handler;
     NotifyObj->NotifyHandler.Context = Context;
 
-    /*
-     *  Have a new reference for the device
-     */
-/* TBRM
-    CmUpdateObjectReference (ObjDesc, REF_INCREMENT);
-*/
+
     if (HandlerType == ACPI_SYSTEM_NOTIFY)
     {
         ObjDesc->Device.SysHandler = NotifyObj;
@@ -562,7 +548,10 @@ AcpiInstallNotifyHandler (
         ObjDesc->Device.DrvHandler = NotifyObj;
     }
 
-    return_ACPI_STATUS (AE_OK);
+
+UnlockAndExit:
+    CmReleaseMutex (MTX_NAMESPACE);
+    return_ACPI_STATUS (Status);
 }
 
 
@@ -590,6 +579,7 @@ AcpiRemoveNotifyHandler (
     ACPI_OBJECT_INTERNAL    *NotifyObj;
     ACPI_OBJECT_INTERNAL    *ObjDesc;
     NAME_TABLE_ENTRY        *ObjEntry;
+    ACPI_STATUS             Status = AE_OK;
 
 
     FUNCTION_TRACE ("AcpiRemoveNotifyHandler");
@@ -603,12 +593,15 @@ AcpiRemoveNotifyHandler (
         return_ACPI_STATUS (AE_BAD_PARAMETER);
     }
 
+    CmAcquireMutex (MTX_NAMESPACE);
+
     /* Convert and validate the device handle */
 
     ObjEntry = NsConvertHandleToEntry (Device);
     if (!ObjEntry)
     {
-        return_ACPI_STATUS (AE_BAD_PARAMETER);
+        Status = AE_BAD_PARAMETER;
+        goto UnlockAndExit;
     }
 
     /*
@@ -620,7 +613,8 @@ AcpiRemoveNotifyHandler (
         (ObjEntry->Type != ACPI_TYPE_Power)      &&
         (ObjEntry->Type != ACPI_TYPE_Thermal))
     {
-        return_ACPI_STATUS (AE_BAD_PARAMETER);
+        Status = AE_BAD_PARAMETER;
+        goto UnlockAndExit;
     }
 
     /* Check for an existing internal object */
@@ -628,7 +622,8 @@ AcpiRemoveNotifyHandler (
     ObjDesc = NsGetAttachedObject ((ACPI_HANDLE) ObjEntry);
     if (!ObjDesc)
     {
-        return_ACPI_STATUS (AE_NOT_EXIST);
+        Status = AE_NOT_EXIST;
+        goto UnlockAndExit;
     }
 
     /*
@@ -650,16 +645,13 @@ AcpiRemoveNotifyHandler (
     if ((!NotifyObj) ||
         (NotifyObj->NotifyHandler.Handler != Handler))
     {
-        return_ACPI_STATUS (AE_BAD_PARAMETER);
+        Status = AE_BAD_PARAMETER;
+        goto UnlockAndExit;
     }
 
     /* 
      * Now we can remove the handler
      */
-
-
-    /* TBD: Mutex?? */
-
     if (HandlerType == ACPI_SYSTEM_NOTIFY)
     {
         ObjDesc->Device.SysHandler = NULL;
@@ -669,17 +661,14 @@ AcpiRemoveNotifyHandler (
     {
         ObjDesc->Device.DrvHandler = NULL;
     }
+ 
+    CmRemoveReference (NotifyObj);
 
-    CmDeleteInternalObject(NotifyObj);
 
-    /*
-     *  Remove handler reference in the device
-     */
-/* TBRM
-    CmUpdateObjectReference (ObjDesc, REF_DECREMENT);
-*/
 
-    return_ACPI_STATUS (AE_OK);
+UnlockAndExit:
+    CmReleaseMutex (MTX_NAMESPACE);
+    return_ACPI_STATUS (Status);
 }
 
 
@@ -709,7 +698,7 @@ AcpiInstallAddressSpaceHandler (
     ACPI_OBJECT_INTERNAL   *ObjDesc;
     ACPI_OBJECT_INTERNAL   *HandlerObj;
     NAME_TABLE_ENTRY       *ObjEntry;
-    ACPI_STATUS             Status;
+    ACPI_STATUS             Status = AE_OK;
     ACPI_OBJECT_TYPE        Type;
     UINT16                  Flags = 0;
 
@@ -726,12 +715,15 @@ AcpiInstallAddressSpaceHandler (
         return_ACPI_STATUS (AE_BAD_PARAMETER);
     }
 
+    CmAcquireMutex (MTX_NAMESPACE);
+
     /* Convert and validate the device handle */
 
     ObjEntry = NsConvertHandleToEntry (Device);
     if (!ObjEntry)
     {
-        return_ACPI_STATUS (AE_BAD_PARAMETER);
+        Status = AE_BAD_PARAMETER;
+        goto UnlockAndExit;
     }
 
     /*
@@ -745,7 +737,8 @@ AcpiInstallAddressSpaceHandler (
         (ObjEntry->Type != ACPI_TYPE_Thermal)    &&
         (ObjEntry != Gbl_RootObject))
     {
-        return_ACPI_STATUS (AE_BAD_PARAMETER);
+        Status = AE_BAD_PARAMETER;
+        goto UnlockAndExit;
     }
 
 
@@ -768,7 +761,9 @@ AcpiInstallAddressSpaceHandler (
             break;
 
         default:
-            return_ACPI_STATUS (AE_NOT_EXIST);
+            Status = AE_NOT_EXIST;
+            goto UnlockAndExit;
+            break;
         }
     }
 
@@ -779,7 +774,6 @@ AcpiInstallAddressSpaceHandler (
     {
         /*
          *  The object exists.
-         *
          *  Make sure the handler is not already installed.
          */
 
@@ -794,7 +788,8 @@ AcpiInstallAddressSpaceHandler (
              */
             if(HandlerObj->AddrHandler.SpaceId == SpaceId)
             {
-                return_ACPI_STATUS (AE_EXIST);
+                Status = AE_EXIST;
+                goto UnlockAndExit;
             }
 
             /*
@@ -824,9 +819,8 @@ AcpiInstallAddressSpaceHandler (
         ObjDesc = CmCreateInternalObject (Type);
         if (!ObjDesc)
         {
-            /* Descriptor allocation failure   */
-
-            return_ACPI_STATUS (AE_NO_MEMORY);
+            Status = AE_NO_MEMORY;
+            goto UnlockAndExit;
         }
 
         /* Init new descriptor */
@@ -838,8 +832,8 @@ AcpiInstallAddressSpaceHandler (
         Status = NsAttachObject (Device, ObjDesc, (UINT8) Type);
         if (ACPI_FAILURE (Status))
         {
-            CmDeleteInternalObject (ObjDesc);
-            return_ACPI_STATUS (Status);
+            CmRemoveReference (ObjDesc);
+            goto UnlockAndExit;
         }
 
         /* TBD: Will this always be of type DEVICE? */
@@ -860,12 +854,11 @@ AcpiInstallAddressSpaceHandler (
      *  So, we just allocate the object for the handler and link it
      *  into the list.
      */
-
     HandlerObj = CmCreateInternalObject (INTERNAL_TYPE_AddressHandler);
     if (!HandlerObj)
     {
-        /* Descriptor allocation failure   */
-        return_ACPI_STATUS (AE_NO_MEMORY);
+        Status = AE_NO_MEMORY;
+        goto UnlockAndExit;
     }
 
     HandlerObj->AddrHandler.SpaceId     = (UINT16) SpaceId;
@@ -889,24 +882,20 @@ AcpiInstallAddressSpaceHandler (
      *  In either case we back up and search down the remainder
      *  of the branch
      */
-    Status = AcpiWalkNamespace (ACPI_TYPE_Any, Device, ACPI_INT32_MAX, EvAddrHandlerHelper, 
+    Status = NsWalkNamespace (ACPI_TYPE_Any, Device, ACPI_INT32_MAX, NS_WALK_NO_UNLOCK, EvAddrHandlerHelper, 
                                 HandlerObj, NULL);
 
     /*
      *  Place this handler 1st on the list
      */
-/* TBRM
-    HandlerObj->Common.ReferenceCount = ObjDesc->Common.ReferenceCount;
-    
-    CmUpdateObjectReference (HandlerObj, REF_INCREMENT);
-
-*/
-
     ObjDesc->Device.AddrHandler = HandlerObj;
 
-    return_ACPI_STATUS (AE_OK);
 
-}  /* AcpiInstallAddressSpaceHandler */
+
+UnlockAndExit:
+    CmReleaseMutex (MTX_NAMESPACE);
+    return_ACPI_STATUS (Status);
+}
 
 
 /******************************************************************************
@@ -928,11 +917,12 @@ AcpiRemoveAddressSpaceHandler (
     ACPI_ADDRESS_SPACE_TYPE SpaceId, 
     ADDRESS_SPACE_HANDLER   Handler)
 {
-    ACPI_OBJECT_INTERNAL   *ObjDesc;
-    ACPI_OBJECT_INTERNAL   *HandlerObj;
-    ACPI_OBJECT_INTERNAL   *RegionObj;
-    ACPI_OBJECT_INTERNAL   **LastObjPtr;
-    NAME_TABLE_ENTRY       *ObjEntry;
+    ACPI_OBJECT_INTERNAL    *ObjDesc;
+    ACPI_OBJECT_INTERNAL    *HandlerObj;
+    ACPI_OBJECT_INTERNAL    *RegionObj;
+    ACPI_OBJECT_INTERNAL    **LastObjPtr;
+    NAME_TABLE_ENTRY        *ObjEntry;
+    ACPI_STATUS             Status = AE_OK;
 
 
     FUNCTION_TRACE ("AcpiRemoveAddressSpaceHandler");
@@ -947,12 +937,15 @@ AcpiRemoveAddressSpaceHandler (
         return_ACPI_STATUS (AE_BAD_PARAMETER);
     }
 
+    CmAcquireMutex (MTX_NAMESPACE);
+
     /* Convert and validate the device handle */
 
     ObjEntry = NsConvertHandleToEntry (Device);
     if (!ObjEntry)
     {
-        return_ACPI_STATUS (AE_BAD_PARAMETER);
+        Status = AE_BAD_PARAMETER;
+        goto UnlockAndExit;
     }
 
 
@@ -964,7 +957,8 @@ AcpiRemoveAddressSpaceHandler (
         /*
          *  The object DNE.
          */
-        return_ACPI_STATUS (AE_NOT_EXIST);
+        Status = AE_NOT_EXIST;
+        goto UnlockAndExit;
     }
 
     /*
@@ -984,9 +978,8 @@ AcpiRemoveAddressSpaceHandler (
             /*
              *  Got it, first dereference this in the Regions
              */
-            DEBUG_PRINT (TRACE_OPREGION,
-                ("Removing address handler 0x%X (0x%X) for %s on Device 0x%X (0x%X)\n", 
-                    HandlerObj, Handler, Gbl_RegionTypes[SpaceId], ObjEntry, ObjDesc));
+            DEBUG_PRINT (TRACE_OPREGION, ("Removing address handler 0x%X (0x%X) for %s on Device 0x%X (0x%X)\n", 
+                            HandlerObj, Handler, Gbl_RegionTypes[SpaceId], ObjEntry, ObjDesc));
 
             RegionObj = HandlerObj->AddrHandler.RegionList;
 
@@ -1018,15 +1011,9 @@ AcpiRemoveAddressSpaceHandler (
             /*
              *  Now we can actually delete the object
              */
-            CmDeleteInternalObject (HandlerObj);
+            CmRemoveReference (HandlerObj);
 
-            /*
-             *  Remove handler reference in the device
-             */
-/* TBRM
-            CmUpdateObjectReference (ObjDesc, REF_DECREMENT);
-*/
-            return_ACPI_STATUS (AE_OK);
+            goto UnlockAndExit;
 
         } /* found the right handler */
 
@@ -1044,7 +1031,13 @@ AcpiRemoveAddressSpaceHandler (
         ("Unable to remove address handler xxxx (0x%X) for %s on Device 0x%X (0x%X)\n", 
         Handler, Gbl_RegionTypes[SpaceId], ObjEntry, ObjDesc));
 
-    return_ACPI_STATUS (AE_NOT_EXIST);
+
+    Status = AE_NOT_EXIST;
+
+
+UnlockAndExit:
+    CmReleaseMutex (MTX_NAMESPACE);
+    return_ACPI_STATUS (Status);
 }
 
 
@@ -1090,7 +1083,7 @@ AcpiInstallGpeHandler (
         return_ACPI_STATUS (AE_BAD_PARAMETER);
     }
 
-    CmAcquireMutex (MTX_GP_EVENT);
+    CmAcquireMutex (MTX_EVENTS);
 
     /* Make sure that there isn't a handler there already */
 
@@ -1112,7 +1105,7 @@ AcpiInstallGpeHandler (
     HwEnableGpe (GpeNumber);
 
 Cleanup:
-    CmReleaseMutex (MTX_GP_EVENT);
+    CmReleaseMutex (MTX_EVENTS);
     return_ACPI_STATUS (Status);
 }
 
@@ -1159,7 +1152,7 @@ AcpiRemoveGpeHandler (
 
     HwDisableGpe (GpeNumber);
 
-    CmAcquireMutex (MTX_GP_EVENT);
+    CmAcquireMutex (MTX_EVENTS);
 
     /* Make sure that the installed handler is the same */
 
@@ -1176,7 +1169,7 @@ AcpiRemoveGpeHandler (
     Gbl_GpeInfo[GpeNumber].Context = NULL;
  
 Cleanup:
-    CmReleaseMutex (MTX_GP_EVENT);
+    CmReleaseMutex (MTX_EVENTS);
     return_ACPI_STATUS (Status);
 }
 
