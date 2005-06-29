@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: exconfig - Namespace reconfiguration (Load/Unload opcodes)
- *              $Revision: 1.46 $
+ *              $Revision: 1.47 $
  *
  *****************************************************************************/
 
@@ -160,7 +160,9 @@ AcpiExLoadOp (
 
     FUNCTION_TRACE ("ExLoadOp");
 
-    /* TBD: [Unhandled] Object can be either a field or an opregion */
+    /* Object can be either a field or an opregion */
+
+    /* TBD: Handle field vs. Opregion *?
 
 
     /* Get the table header */
@@ -204,7 +206,6 @@ AcpiExLoadOp (
         }
     }
 
-
     /* Table must be either an SSDT or a PSDT */
 
     if ((!STRNCMP (TableHeader.Signature,
@@ -230,7 +231,6 @@ AcpiExLoadOp (
         goto Cleanup;
     }
 
-
     /* Install the new table into the local data structures */
 
     TableInfo.Pointer      = (ACPI_TABLE_HEADER *) TablePtr;
@@ -246,27 +246,24 @@ AcpiExLoadOp (
 
     /* Add the table to the namespace */
 
-    /* TBD: [Restructure] - change to whatever new interface is appropriate */
-/*
-    Status = AcpiLoadNamespace ();
+    Status = AcpiNsLoadTable (TableInfo.InstalledDesc, AcpiGbl_RootNode);
     if (ACPI_FAILURE (Status))
     {
-*/
-        /* TBD: [Errors] Unload the table on failure ? */
-/*
+        /* Uninstall table and free the buffer */
+
+        AcpiTbUninstallTable (TableInfo.InstalledDesc);
         goto Cleanup;
     }
-*/
 
 
-    /* TBD: [Investigate] we need a pointer to the table desc */
+    /* We need a pointer to the table desc */
 
     /* Init the table handle */
 
     TableDesc->Reference.Opcode = AML_LOAD_OP;
     TableDesc->Reference.Object = TableInfo.InstalledDesc;
 
-    /* TBD: store the tabledesc into the DdbHandle target */
+    /* Store the tabledesc into the DdbHandle target */
     /* DdbHandle = TableDesc; */
 
     return_ACPI_STATUS (Status);
