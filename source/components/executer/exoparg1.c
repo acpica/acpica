@@ -118,6 +118,7 @@
 
 #include <acpi.h>
 #include <parser.h>
+#include <dispatch.h>
 #include <interp.h>
 #include <amlcode.h>
 #include <namesp.h>
@@ -170,13 +171,13 @@ AmlGetObjectReference (
         {
         case AML_LocalOp:
 
-            *RetDesc = (void *) PsxMthStackGetNte (MTH_TYPE_LOCAL, (ObjDesc->Lvalue.Offset));
+            *RetDesc = (void *) DsMthStackGetNte (MTH_TYPE_LOCAL, (ObjDesc->Lvalue.Offset));
             break;
 
 
         case AML_ArgOp:
 
-            *RetDesc = (void *) PsxMthStackGetNte (MTH_TYPE_ARG, (ObjDesc->Lvalue.Offset));
+            *RetDesc = (void *) DsMthStackGetNte (MTH_TYPE_ARG, (ObjDesc->Lvalue.Offset));
             break;
 
 
@@ -913,13 +914,13 @@ AmlExecMonadic2 (
 
             case AML_LocalOp:
 
-                Type = PsxMthStackGetType (MTH_TYPE_LOCAL, (ObjDesc->Lvalue.Offset));
+                Type = DsMthStackGetType (MTH_TYPE_LOCAL, (ObjDesc->Lvalue.Offset));
                 break;
 
 
             case AML_ArgOp:
 
-                Type = PsxMthStackGetType (MTH_TYPE_ARG, (ObjDesc->Lvalue.Offset));
+                Type = DsMthStackGetType (MTH_TYPE_ARG, (ObjDesc->Lvalue.Offset));
                 break;
 
 
@@ -1045,13 +1046,13 @@ AmlExecMonadic2 (
 
             case AML_LocalOp:
 
-                PsxMthStackGetValue (MTH_TYPE_LOCAL, (ObjDesc->Lvalue.Offset), &ObjDesc);
+                DsMthStackGetValue (MTH_TYPE_LOCAL, (ObjDesc->Lvalue.Offset), &ObjDesc);
                 break;
 
 
             case AML_ArgOp:
 
-                PsxMthStackGetValue (MTH_TYPE_ARG, (ObjDesc->Lvalue.Offset), &ObjDesc);
+                DsMthStackGetValue (MTH_TYPE_ARG, (ObjDesc->Lvalue.Offset), &ObjDesc);
                 break;
             }
         }
