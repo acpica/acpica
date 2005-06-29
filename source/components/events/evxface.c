@@ -547,15 +547,38 @@ AcpiInstallNotifyHandler (
     }
 
 
-    /* Check for an existing handler */
+    /* Check for an existing internal object */
 
-    ObjDesc = ObjEntry->Value;
-    if (ObjDesc->Device.Handler)
+    if (!ObjEntry->Value)
     {
-        FUNCTION_STATUS_EXIT (AE_EXIST);
-        return AE_EXIST;
+        /* We must create one */
+
+        ObjDesc = AllocateObjectDesc ();
+        if (!ObjDesc)
+        {
+            /* Descriptor allocation failure   */
+
+            FUNCTION_STATUS_EXIT (AE_NO_MEMORY);
+            return AE_NO_MEMORY;
+        }
+
+        /* Init */
+
+        ObjDesc->Type = ObjEntry->Type;
+        ObjEntry->Value = ObjDesc;
     }
 
+    else
+    {
+        /* Object exists; check for an existing handler */
+
+        ObjDesc = ObjEntry->Value;
+        if (ObjDesc->Device.Handler)
+        {
+            FUNCTION_STATUS_EXIT (AE_EXIST);
+            return AE_EXIST;
+        }
+    }
 
     /* 
      * Now we can install the handler
@@ -627,6 +650,15 @@ AcpiRemoveNotifyHandler (
         return AE_BAD_PARAMETER;
     }
 
+
+    /* Check for an existing internal object */
+
+    if (!ObjEntry->Value)
+    {
+        FUNCTION_STATUS_EXIT (AE_NOT_EXIST);
+        return AE_NOT_EXIST;
+        
+    }
 
     /* Make sure handler matches */
 
