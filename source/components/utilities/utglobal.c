@@ -27,7 +27,7 @@
  * Code in any form, with the right to sublicense such rights; and
  *
  * 2.3. Intel grants Licensee a non-exclusive and non-transferable patent
- * license (without the right to sublicense), under only those claims of Intel
+ * license (with the right to sublicense), under only those claims of Intel
  * patents that are infringed by the Original Intel Code, to make, use, sell,
  * offer to sell, and import the Covered Code and derivative works thereof
  * solely to the minimum extent necessary to exercise the above copyright
@@ -146,6 +146,10 @@ UINT32                      DebugLayer = ALL_COMPONENTS;
 UINT32                      NestingLevel = 0;
 
 
+/* System flags */
+
+UINT32                      SystemFlags = 0;
+UINT32                      StartupFlags = 0;
 
 /* 
  * Human-readable decode of exception codes, mostly for debugging
@@ -163,10 +167,13 @@ char            *ExceptionNames[] =
     "AE_NO_ACPI_TABLES",
     "AE_NO_NAMESPACE",
     "AE_NO_MEMORY",
+    "AE_BAD_SIGNATURE",
     "AE_BAD_HEADER",
     "AE_BAD_CHECKSUM",
     "AE_BAD_PARAMETER",
     "AE_BAD_CHARACTER",
+    "AE_BAD_PATHNAME",
+    "AE_BAD_DATA",
     "AE_NOT_FOUND",
     "AE_NOT_EXIST",
     "AE_EXIST",
@@ -177,13 +184,15 @@ char            *ExceptionNames[] =
     "AE_STACK_UNDERFLOW",
     "AE_NOT_IMPLEMENTED",
     "AE_VERSION_MISMATCH",
-    "AE_BAD_SIGNATURE",
     "AE_SUPPORT",
     "AE_SHARE",
     "AE_LIMIT",
+    "AE_TIME",
     "AE_UNKNOWN_STATUS"
 };
 
+
+ACPI_TABLE_INFO         AcpiTables[NUM_ACPI_TABLES];
 
 
 /******************************************************************************
@@ -196,8 +205,8 @@ char            *ExceptionNames[] =
 
 /* Scope stack */
 
-SCOPE_STACK     ScopeStack[MAX_SCOPE_NESTING];
-SCOPE_STACK     *CurrentScope;
+SCOPE_STACK             ScopeStack[MAX_SCOPE_NESTING];
+SCOPE_STACK             *CurrentScope;
 
 
 /* 
@@ -207,19 +216,19 @@ SCOPE_STACK     *CurrentScope;
  * To avoid type punning, both are specified as strings in this table.
  */
 
-PREDEFINED_NAMES PreDefinedNames[] = {
-    {"_GPE",    TYPE_DefAny},
-    {"_PR_",    TYPE_DefAny},
-    {"_SB_",    TYPE_DefAny},
-    {"_SI_",    TYPE_DefAny},
-    {"_TZ_",    TYPE_DefAny},
-    {"_REV",    TYPE_Number, "2"},
-    {"_OS_",    TYPE_String, "Intel AML interpreter"},
-    {"_GL_",    TYPE_Mutex},
+PREDEFINED_NAMES        PreDefinedNames[] = {
+                            {"_GPE",    TYPE_DefAny},
+                            {"_PR_",    TYPE_DefAny},
+                            {"_SB_",    TYPE_DefAny},
+                            {"_SI_",    TYPE_DefAny},
+                            {"_TZ_",    TYPE_DefAny},
+                            {"_REV",    TYPE_Number, "2"},
+                            {"_OS_",    TYPE_String, "Intel AML interpreter"},
+                            {"_GL_",    TYPE_Mutex},
 
-    /* Table terminator */
+                            /* Table terminator */
 
-    {(char *)0, TYPE_Any}
+                            {(char *)0, TYPE_Any}
 };
 
 
@@ -274,6 +283,7 @@ char BadType[] = "ERROR: unused type encoding found in table";
 /* 
  * Elements of NsTypeNames should be
  * one-to-one with values of NsType in acpinmsp.h
+
  */
 
 /* 
@@ -378,11 +388,9 @@ UINT32                  EventCount[NUM_FIXED_EVENTS];
 
 
 
-
-
 /****************************************************************************
  *
- * FUNCTION:    InitAcpiLibGlobals
+ * FUNCTION:    CmInitGlobals
  *
  * PARAMETERS:  none
  *
@@ -392,36 +400,67 @@ UINT32                  EventCount[NUM_FIXED_EVENTS];
  ***************************************************************************/
 
 void 
-InitAcpiLibGlobals (void)
+CmInitGlobals (void)
 {
-    FUNCTION_TRACE ("InitAcpiLibGlobals");
+    UINT32                  i;
+    char * TblNames[] = {
+        "RSDP",
+        APIC_SIG,
+        DSDT_SIG,
+        FACP_SIG,
+        FACS_SIG,
+        PSDT_SIG,
+        RSDT_SIG,
+        SSDT_SIG,
+        SBDT_SIG
+    };
+
+    FUNCTION_TRACE ("CmInitGlobals");
 
     
-    /* Table pointers */
-    
+    /* ACPI table structure */
+
+    for (i = 0; i < ACPI_TABLE_MAX; i++)
+    {
+        AcpiTables[i].Pointer    = NULL;
+        AcpiTables[i].Allocation = ACPI_MEM_NOT_ALLOCATED;
+        AcpiTables[i].Length     = 0;
+        strncpy(&AcpiTables[i].Name[0], TblNames[i], sizeof(AcpiTables[0].Name));
+    }
+
+    /* Address Space handler array */
+
+    for (i = 0; i < ACPI_MAX_ADDRESS_SPACE; i++)
+    {
+        AddressSpaces[i].Handler = NULL;
+        AddressSpaces[i].Context = NULL;
+    }
+
+    /* Global "typed" ACPI table pointers */
+
     RSDP                    = NULL;
     RSDT                    = NULL;
     FACS                    = NULL;
     FACP                    = NULL;
-    MAPIC                   = NULL;
+    APIC                    = NULL;
     DSDT                    = NULL;
     PSDT                    = NULL;
     SSDT                    = NULL;
     SBDT                    = NULL;
-    
+
+
     /* Miscellaneous variables */
     
-    Capabilities            = 0;
+    SystemFlags             = 0;
+    StartupFlags            = 0;
     GlobalLockSet           = FALSE;
-    
-    /* File handles and names */
-    
-    DsdtFile                = NULL;
-
-    OutputFile              = NULL;
-    InputFile               = NULL;
-    
     RsdpOriginalLocation    = 0;
+    Allocations             = 0;
+    Deallocations           = 0;
+    Allocs                  = 0;
+    Callocs                 = 0;
+    Maps                    = 0;
+    Unmaps                  = 0;
     
     /* Interpreter */
 
@@ -432,12 +471,14 @@ InitAcpiLibGlobals (void)
 
     Gpe0EnableRegisterSave  = NULL;
     Gpe1EnableRegisterSave  = NULL;
-    OriginalMode            = -1;   /*  original ACPI/legacy mode   */
+    OriginalMode            = SYS_MODE_UNKNOWN;   /*  original ACPI/legacy mode   */
     SciHandle				= 0;
+    GpeRegisters            = NULL;
+    GpeInfo                 = NULL;
 
     /* Namespace */
 
-   RootObject                  = &RootObjStruct;
+    RootObject                  = &RootObjStruct;
 
     RootObject->Name            = NS_ROOT;
     RootObject->Scope           = NULL;
@@ -448,13 +489,13 @@ InitAcpiLibGlobals (void)
     RootObject->Type            = TYPE_Any;
     RootObject->Value           = NULL;
 
-    FUNCTION_EXIT;
+    return_VOID;
 }   
 
 
 /******************************************************************************
  *
- * FUNCTION:    AcpiLocalCleanup
+ * FUNCTION:    CmTerminate
  *
  * PARAMETERS:  none
  *
@@ -465,50 +506,26 @@ InitAcpiLibGlobals (void)
  ******************************************************************************/
 
 void
-AcpiLocalCleanup (void)
+CmTerminate (void)
 {
-    FUNCTION_TRACE ("AcpiLocalCleanup");
+
+    FUNCTION_TRACE ("CmTerminate");
 
 
-    /* 
-     * TBD: !!! MAKE OS INDEPENDENT!!
-     *
-     * iRMX does not allocate memory for the tables unless they are loaded from a
-     * file. 
-     */
+    /* Free global tables, etc. */
 
-    if (InputFile)
+    if (Gpe0EnableRegisterSave)
     {
-        if (InputFile && RSDP != NULL)   
-            OsdFree (RSDP);
-        
-        if (RSDT != NULL)  
-            OsdFree (RSDT);
-        
-        if (FACS != NULL)  
-            OsdFree (FACS);
-        
-        if (FACP != NULL)  
-            OsdFree (FACP);
-        
-        if (MAPIC != NULL) 
-            OsdFree (MAPIC);
-        
-        if (DSDT != NULL)  
-            OsdFree (DSDT);
-        
-        if (PSDT != NULL)  
-            OsdFree (PSDT);
-        
-        if (SSDT != NULL)  
-            OsdFree (SSDT);
-        
-        if (SBDT != NULL)  
-            OsdFree (SBDT);
-
+        CmFree (Gpe0EnableRegisterSave);
     }
 
-    FUNCTION_EXIT;
+    if (Gpe1EnableRegisterSave)
+    {
+        CmFree (Gpe1EnableRegisterSave);
+    }
+
+
+    return_VOID;
 }
 
  

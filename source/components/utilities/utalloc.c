@@ -267,8 +267,7 @@ CmAddElementToAllocList (
     TailAllocPtr->Line      = Line;
     strcpy (TailAllocPtr->Module, Module);
     
-    FUNCTION_EXIT;
-    return;
+    return_VOID;
 }
 
 
@@ -308,8 +307,7 @@ CmDeleteElementFromAllocList (
         _REPORT_ERROR (Module, Line, Component,
             "CmDeleteElementFromAllocList: Empty allocation list and someone's calling CmFree.");
         
-        FUNCTION_EXIT;
-        return;
+        return_VOID;
     }
     
     if (HeadAllocPtr == TailAllocPtr)
@@ -319,8 +317,7 @@ CmDeleteElementFromAllocList (
             _REPORT_ERROR (Module, Line, Component,
                 "CmDeleteElementFromAllocList: Deleting non-allocated memory...");
 
-            FUNCTION_EXIT;
-            return;
+            return_VOID;
         }
         
         OsdFree (HeadAllocPtr);
@@ -330,8 +327,7 @@ CmDeleteElementFromAllocList (
         DEBUG_PRINT (TRACE_ALLOCATIONS,
             ("_CmFree: Allocation list deleted.  No more outstanding allocations.\n"));
     
-        FUNCTION_EXIT;
-        return;
+        return_VOID;
     }
     
 
@@ -375,7 +371,7 @@ CmDeleteElementFromAllocList (
     
     }
 
-    FUNCTION_EXIT;
+    return_VOID;
 }
 
 
@@ -406,8 +402,7 @@ CmDumpCurrentAllocations (
     if (Element == NULL)
     {
         DEBUG_PRINT (TRACE_ALLOCATIONS, ("No outstanding allocations.\n"));
-        FUNCTION_EXIT;
-        return;
+        return_VOID;
     }
     
     for (;;)
@@ -422,8 +417,7 @@ CmDumpCurrentAllocations (
         
         if (Element->Next == NULL)
         {
-            FUNCTION_EXIT;
-            return;
+            return_VOID;
         }
         
         Element = Element->Next;
@@ -480,8 +474,7 @@ _CmAllocate (
     
     CmAddElementToAllocList (Address, Size, MEM_MALLOC, Component, Module, Line);
 
-    FUNCTION_EXIT;  
-    return Address;
+    return_VALUE (Address);
 }
 
 
@@ -530,8 +523,7 @@ _CmCallocate (
 
     CmAddElementToAllocList (Address, Size, MEM_CALLOC, Component, Module, Line);
     
-    FUNCTION_EXIT;
-    return Address;
+    return_VALUE (Address);
 }
 
 
@@ -565,8 +557,7 @@ _CmFree (
         _REPORT_ERROR (Module, Line, Component,
             "_CmFree: Trying to delete a NULL address.");
 
-        FUNCTION_EXIT;
-        return;
+        return_VOID;
     
     }   
     
@@ -575,7 +566,7 @@ _CmFree (
     
     DEBUG_PRINT (TRACE_ALLOCATIONS, ("CmFree: %x\n", Address));
 
-    FUNCTION_EXIT;
+    return_VOID;
 }
 
 
@@ -626,8 +617,7 @@ _AllocateObjectDesc (
                         NewDesc, sizeof (ACPI_OBJECT_INTERNAL)));
     }
 
-    FUNCTION_EXIT;
-    return NewDesc;
+    return_VALUE (NewDesc);
 }
 
 
@@ -685,5 +675,5 @@ LocalDeleteObject (
     /* In all cases, set the pointer to null */
 
     *ObjDesc = NULL;
-    FUNCTION_EXIT;
+    return_VOID;
 }
