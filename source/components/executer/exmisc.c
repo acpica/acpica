@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exmisc - ACPI AML (p-code) execution - specific opcodes
- *              $Revision: 1.121 $
+ *              $Revision: 1.122 $
  *
  *****************************************************************************/
 
@@ -340,18 +340,16 @@ AcpiExDoConcatenate (
     switch (ACPI_GET_OBJECT_TYPE (Operand0))
     {
     case ACPI_TYPE_INTEGER:
-        Status = AcpiExConvertToInteger (Operand1, &LocalOperand1,
-                    WalkState->Opcode);
+        Status = AcpiExConvertToInteger (Operand1, &LocalOperand1, 16);
         break;
 
     case ACPI_TYPE_STRING:
         Status = AcpiExConvertToString (Operand1, &LocalOperand1,
-                    ACPI_IMPLICIT_CONVERT_HEX, WalkState->Opcode);
+                    ACPI_IMPLICIT_CONVERT_HEX);
         break;
 
     case ACPI_TYPE_BUFFER:
-        Status = AcpiExConvertToBuffer (Operand1, &LocalOperand1,
-                    WalkState->Opcode);
+        Status = AcpiExConvertToBuffer (Operand1, &LocalOperand1);
         break;
 
     default:
@@ -681,16 +679,16 @@ AcpiExDoLogicalOp (
     switch (ACPI_GET_OBJECT_TYPE (Operand0))
     {
     case ACPI_TYPE_INTEGER:
-        Status = AcpiExConvertToInteger (Operand1, &LocalOperand1, Opcode);
+        Status = AcpiExConvertToInteger (Operand1, &LocalOperand1, 16);
         break;
 
     case ACPI_TYPE_STRING:
         Status = AcpiExConvertToString (Operand1, &LocalOperand1,
-                    ACPI_IMPLICIT_CONVERT_HEX, Opcode);
+                    ACPI_IMPLICIT_CONVERT_HEX);
         break;
 
     case ACPI_TYPE_BUFFER:
-        Status = AcpiExConvertToBuffer (Operand1, &LocalOperand1, Opcode);
+        Status = AcpiExConvertToBuffer (Operand1, &LocalOperand1);
         break;
 
     default:
