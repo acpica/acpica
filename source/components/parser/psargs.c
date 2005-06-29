@@ -370,14 +370,14 @@ PsGetNextNamepath (
                 Name = PsAllocOp (AML_NAMEPATH);
                 if (Name)
                 {
+                    /* Change arg into a METHOD CALL and attach the name to it */
+
                     PsInitOp (Arg, AML_METHODCALL);
 
-                    Arg->Entry          = MethodOp;             /* TBD: TEMP ONLY, find a better way?? */
-                                                                /* (Point METHODCALL to the METHOD) */
                     Name->Value.Name    = Path;
-
+                    Name->ResultObj     = MethodOp;          /* Point METHODCALL/NAME to the METHOD NTE */
                     PsAppendArg (Arg, Name);
-
+                    
                     *ArgCount = Count->Value.Integer & ACPI_METHOD_ARG_MASK;
                 }
             }
@@ -404,14 +404,13 @@ PsGetNextNamepath (
                 Name = PsAllocOp (AML_NAMEPATH);
                 if (Name)
                 {
+                    /* Change arg into a METHOD CALL and attach the name to it */
+
                     PsInitOp (Arg, AML_METHODCALL);
 
-                    Arg->Entry          = Method;               /* TBD: TEMP ONLY, find a better way?? */
-                                                                /* (Point METHODCALL to the METHOD) */
                     Name->Value.Name    = Path;
-
+                    Name->ResultObj     = Method;           /* Point METHODCALL/NAME to the METHOD NTE */
                     PsAppendArg (Arg, Name);
-
 
                     *ArgCount = ((ACPI_OBJECT_INTERNAL *) Method->Object)->Method.ParamCount;
                 }
