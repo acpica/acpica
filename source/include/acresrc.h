@@ -124,26 +124,26 @@
 ACPI_STATUS
 RsGetPRTMethodData (
     ACPI_HANDLE             Handle, 
-    ACPI_BUFFER             *RetBuffer
+    ACPI_BUFFER             * RetBuffer
     );
 
 
 ACPI_STATUS
 RsGetCRSMethodData (
     ACPI_HANDLE             Handle, 
-    ACPI_BUFFER             *RetBuffer
+    ACPI_BUFFER             * RetBuffer
     );
 
 ACPI_STATUS
 RsGetPRSMethodData (
     ACPI_HANDLE             Handle, 
-    ACPI_BUFFER             *RetBuffer
+    ACPI_BUFFER             * RetBuffer
     );
 
 ACPI_STATUS
 RsSetSRSMethodData (
     ACPI_HANDLE             Handle, 
-    ACPI_BUFFER             *RetBuffer
+    ACPI_BUFFER             * RetBuffer
     );
 
 ACPI_STATUS
@@ -160,6 +160,14 @@ RsCreateByteStream (
     UINT32    * OutputBufferLength
     );
 
+ACPI_STATUS
+RsCreatePciRoutingTable (
+    ACPI_OBJECT_INTERNAL    * MethodReturnObject,
+    UINT8                   * OutputBuffer,
+    UINT32                  * OutputBufferLength
+    );
+
+    
 /* 
  *  Function prototypes called from RsCreate* APIs
  */
