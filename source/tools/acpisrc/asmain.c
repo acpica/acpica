@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asmain - Main module for the acpi source processor utility
- *              $Revision: 1.46 $
+ *              $Revision: 1.47 $
  *
  *****************************************************************************/
 
@@ -465,7 +465,14 @@ ACPI_IDENTIFIER_TABLE       LinuxEliminateMacros[] = {
 ACPI_IDENTIFIER_TABLE       LinuxEliminateLines_C[] = {
 
     "#define __",
-    "$Revision: 1.46 $Revision:",
+    "$Revision",
+    NULL
+};
+
+
+ACPI_IDENTIFIER_TABLE       LinuxEliminateLines_H[] = {
+
+    "$Revision",
     NULL
 };
 
