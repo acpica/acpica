@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acinterp.h - Interpreter subcomponent prototypes and defines
- *       $Revision: 1.118 $
+ *       $Revision: 1.120 $
  *
  *****************************************************************************/
 
@@ -367,12 +367,16 @@ AcpiExReleaseMutex (
 
 ACPI_STATUS
 AcpiExReleaseAllMutexes (
-    ACPI_OPERAND_OBJECT     *MutexList);
+    ACPI_THREAD_STATE       *Thread);
 
 void
 AcpiExUnlinkMutex (
     ACPI_OPERAND_OBJECT     *ObjDesc);
 
+void
+AcpiExLinkMutex (
+    ACPI_OPERAND_OBJECT     *ObjDesc,
+    ACPI_THREAD_STATE       *Thread);
 
 /*
  * amprep - ACPI AML (p-code) execution - prep utilities
@@ -520,11 +524,6 @@ ACPI_STATUS
 AcpiExResolveObjectToValue (
     ACPI_OPERAND_OBJECT     **StackPtr,
     ACPI_WALK_STATE         *WalkState);
-
-ACPI_STATUS
-AcpiExGetBufferFieldValue (
-    ACPI_OPERAND_OBJECT     *FieldDesc,
-    ACPI_OPERAND_OBJECT     *ResultDesc);
 
 
 /*
