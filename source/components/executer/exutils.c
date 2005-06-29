@@ -159,7 +159,7 @@ AmlAppendBlockOwner (void *Owner)
 void
 AmlAppendOperandDiag(char *FileName, INT32 LineNum, UINT16 OpCode, INT32 NumOperands)
 {
-    meth            Method;
+    METHOD_INFO     Method;
 
 
     AmlGetCurrentLocation (&Method);
