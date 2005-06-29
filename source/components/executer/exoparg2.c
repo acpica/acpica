@@ -107,15 +107,6 @@
 #define _COMPONENT          INTERPRETER
 
 
-static ST_KEY_DESC_TABLE KDT[] = {
-    {"0000", '1', "AmlExecDyadic2R: Descriptor Allocation Failure", "AmlExecDyadic2R: Descriptor Allocation Failure"},
-    {"0001", '1', "AmlExecDyadic2R/ConcatOp: String allocation failure", "AmlExecDyadic2R/ConcatOp: String allocation failure"},
-    {"0002", '1', "AmlExecDyadic2R/ConcatOp: Buffer allocation failure", "AmlExecDyadic2R/ConcatOp: Buffer allocation failure"},
-    {NULL, 'I', NULL, NULL}
-};
-
-
-
 /*****************************************************************************
  * 
  * FUNCTION:    AmlExecDyadic1
@@ -150,7 +141,7 @@ AmlExecDyadic1 (
         /* Invalid parameters on object stack  */
 
         AmlAppendOperandDiag (_THIS_MODULE, __LINE__, opcode, 2);
-        FUNCTION_EXIT;
+        FUNCTION_STATUS_EXIT (Status);
         return Status;
     }
 
@@ -167,6 +158,7 @@ AmlExecDyadic1 (
 
     case AML_NotifyOp:
 
+BREAKPOINT3;
         /* Object must be a device or thermal zone */
 
         if (ObjDesc && ValDesc)
@@ -187,7 +179,7 @@ AmlExecDyadic1 (
                 DEBUG_PRINT (ACPI_ERROR, (
                         "AmlExecDyadic1/NotifyOp: unexpected notify object type %d\n",
                         ObjDesc->ValType));
-                FUNCTION_EXIT;
+                FUNCTION_STATUS_EXIT (AE_AML_ERROR);
                 return AE_AML_ERROR;
             }
         }
@@ -195,7 +187,7 @@ AmlExecDyadic1 (
 
     default:
         DEBUG_PRINT (ACPI_ERROR, ("AmlExecDyadic1: Unknown dyadic opcode %02x\n", opcode));
-        FUNCTION_EXIT;
+        FUNCTION_STATUS_EXIT (AE_AML_ERROR);
         return AE_AML_ERROR;
     }
 
@@ -211,7 +203,7 @@ AmlExecDyadic1 (
     
     ObjStack[--ObjStackTop] = NULL;
 
-    FUNCTION_EXIT;
+    FUNCTION_STATUS_EXIT (AE_OK);
     return AE_OK;
 }
 
@@ -242,6 +234,7 @@ AmlExecDyadic2R (
     ACPI_STATUS             Status;
     UINT32                  remain;
     INT32                   NumOperands;
+    char                    *NewBuf;
 
 
     FUNCTION_TRACE ("AmlExecDyadic2R");
@@ -278,7 +271,7 @@ AmlExecDyadic2R (
     if (Status != AE_OK)
     {
         AmlAppendOperandDiag (_THIS_MODULE, __LINE__, opcode, NumOperands);
-        FUNCTION_EXIT;
+        FUNCTION_STATUS_EXIT (Status);
         return Status;
     }
 
@@ -346,7 +339,7 @@ AmlExecDyadic2R (
         if ((UINT32) 0 == ObjDesc2->Number.Number)
         {
             DEBUG_PRINT (ACPI_ERROR, ("AmlExecDyadic2R/DivideOp: divide by zero\n"));
-            FUNCTION_EXIT;
+            FUNCTION_STATUS_EXIT (AE_AML_ERROR);
             return AE_AML_ERROR;
         }
 
@@ -392,7 +385,7 @@ AmlExecDyadic2R (
             DEBUG_PRINT (ACPI_ERROR, (
                     "AmlExecDyadic2R/ConcatOp: operand type mismatch %d %d\n",
                     ObjDesc->ValType, ObjDesc2->ValType));
-            FUNCTION_EXIT;
+            FUNCTION_STATUS_EXIT (AE_AML_ERROR);
             return AE_AML_ERROR;
         }
 
@@ -402,12 +395,12 @@ AmlExecDyadic2R (
         {
             /*  Operand1 is string  */
 
-            char *NewBuf = OsdAllocate ((size_t) (ObjDesc->String.StrLen
+            NewBuf = OsdAllocate ((ACPI_SIZE) (ObjDesc->String.StrLen
                                                 + ObjDesc2->String.StrLen + 1));
             if (!NewBuf)
             {
-                REPORT_ERROR (&KDT[1]);
-                FUNCTION_EXIT;
+                REPORT_ERROR ("AmlExecDyadic2R/ConcatOp: String allocation failure");
+                FUNCTION_STATUS_EXIT (AE_AML_ERROR);
                 return AE_AML_ERROR;
             }
             
@@ -425,7 +418,7 @@ AmlExecDyadic2R (
         {
             /*  Operand1 is not string ==> buffer   */
 
-            char *NewBuf = OsdAllocate ((size_t) (ObjDesc->Buffer.BufLen
+            NewBuf = OsdAllocate ((ACPI_SIZE) (ObjDesc->Buffer.BufLen
                                                 + ObjDesc2->Buffer.BufLen));
             if (!NewBuf)
             {
@@ -433,21 +426,21 @@ AmlExecDyadic2R (
                 
                 if (ObjDesc->Buffer.BufLen + ObjDesc2->Buffer.BufLen < 1024)
                 {
-                    REPORT_ERROR (&KDT[0]);
-                    FUNCTION_EXIT;
+                    REPORT_ERROR ("AmlExecDyadic2R/ConcatOp: Buffer allocation failure");
+                    FUNCTION_STATUS_EXIT (AE_AML_ERROR);
                     return AE_AML_ERROR;
                 }
 
                 DEBUG_PRINT (ACPI_ERROR, (
                             "AmlExecDyadic2R/ConcatOp: Buffer allocation failure %d\n",
                             ObjDesc->Buffer.BufLen + ObjDesc2->Buffer.BufLen));
-                FUNCTION_EXIT;
+                FUNCTION_STATUS_EXIT (AE_AML_ERROR);
                 return AE_AML_ERROR;
             }
 
-            memcpy (NewBuf, ObjDesc->Buffer.Buffer, (size_t) ObjDesc->Buffer.BufLen);
+            memcpy (NewBuf, ObjDesc->Buffer.Buffer, (ACPI_SIZE) ObjDesc->Buffer.BufLen);
             memcpy (NewBuf + ObjDesc->Buffer.BufLen, ObjDesc2->Buffer.Buffer,
-                    (size_t) ObjDesc2->Buffer.BufLen);
+                    (ACPI_SIZE) ObjDesc2->Buffer.BufLen);
             
             /* Don't free old ObjDesc->Buffer.Buffer; the operand still exists */
             
@@ -458,14 +451,14 @@ AmlExecDyadic2R (
 
     default:
         DEBUG_PRINT (ACPI_ERROR, ("AmlExecDyadic2R: Unknown dyadic opcode %02x\n", opcode));
-        FUNCTION_EXIT;
+        FUNCTION_STATUS_EXIT (AE_AML_ERROR);
         return AE_AML_ERROR;
     }
     
     if ((Status = AmlExecStore (ObjDesc, ResDesc)) != AE_OK)
     {
         ObjStackTop -= NumOperands - 1;
-        FUNCTION_EXIT;
+        FUNCTION_STATUS_EXIT (Status);
         return Status;
     }
     
@@ -482,7 +475,7 @@ AmlExecDyadic2R (
     OsdFree (ObjDesc2);
     ObjStackTop -= NumOperands - 1;
     
-    FUNCTION_EXIT;
+    FUNCTION_STATUS_EXIT (Status);
     return Status;
 }
 
@@ -584,7 +577,7 @@ AmlExecDyadic2S (
     
     }
 
-    FUNCTION_EXIT;
+    FUNCTION_STATUS_EXIT (Status);
     return Status;
 }
 
@@ -624,7 +617,7 @@ AmlExecDyadic2 (
         /*  invalid parameters on object stack  */
 
         AmlAppendOperandDiag (_THIS_MODULE, __LINE__, opcode, 2);
-        FUNCTION_EXIT;
+        FUNCTION_STATUS_EXIT (Status);
         return Status;
     }
 
@@ -689,7 +682,7 @@ AmlExecDyadic2 (
     
     default:
         DEBUG_PRINT (ACPI_ERROR, ("AmlExecDyadic2: Unknown dyadic opcode %02x\n", opcode));
-        FUNCTION_EXIT;
+        FUNCTION_STATUS_EXIT (Status);
         return AE_AML_ERROR;
     }
 
@@ -706,8 +699,10 @@ AmlExecDyadic2 (
 
     OsdFree (ObjDesc2);
     ObjStackTop--;
-    
-    FUNCTION_EXIT;
+ 
+    /* Always return AE_OK here (AE_PENDING was handled above!) */
+
+    FUNCTION_STATUS_EXIT (AE_OK);
     return AE_OK;
 }
 

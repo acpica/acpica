@@ -184,7 +184,7 @@ AmlExecCreateField (
         /*  invalid parameters on object stack  */
 
         AmlAppendOperandDiag (_THIS_MODULE, __LINE__, opcode, NumOperands);
-        FUNCTION_EXIT;
+        FUNCTION_STATUS_EXIT (Status);
         return Status;
     }
 
@@ -206,7 +206,7 @@ AmlExecCreateField (
     if (!IS_NS_HANDLE (ResDesc))
     {
         DEBUG_PRINT (ACPI_ERROR, ("%s: destination must be a Name\n", OpName));
-        FUNCTION_EXIT;
+        FUNCTION_STATUS_EXIT (AE_AML_ERROR);
         return AE_AML_ERROR;
     }
 
@@ -257,7 +257,7 @@ AmlExecCreateField (
         DEBUG_PRINT (ACPI_ERROR, (
                 "AmlExecCreateField:internal error: Unknown field creation opcode %02x\n",
                 opcode));
-        FUNCTION_EXIT;
+        FUNCTION_STATUS_EXIT (AE_AML_ERROR);
         return AE_AML_ERROR;
 
     } /* switch */
@@ -274,7 +274,7 @@ AmlExecCreateField (
             DEBUG_PRINT (ACPI_ERROR, ("AmlExecCreateField: Field exceeds Buffer %d > %d\n",
                             BitOffset + (UINT32)BitCount,
                             8 * (UINT32)SrcDesc->Buffer.BufLen));
-            FUNCTION_EXIT;
+            FUNCTION_STATUS_EXIT (AE_AML_ERROR);
             return AE_AML_ERROR;
         }
 
@@ -308,7 +308,7 @@ AmlExecCreateField (
         DEBUG_PRINT (ACPI_ERROR, (
                 "AmlExecCreateField: Tried to create field in improper object type %s\n",
                 TypeFoundPtr));
-        FUNCTION_EXIT;
+        FUNCTION_STATUS_EXIT (AE_AML_ERROR);
         return AE_AML_ERROR;
     
     } /* switch */
@@ -357,7 +357,7 @@ AmlExecCreateField (
     Status = AmlExecStore (OffDesc, ResDesc);
     ObjStackTop -= NumOperands - 1;
     
-    FUNCTION_EXIT;
+    FUNCTION_STATUS_EXIT (Status);
     return Status;
 }
 
@@ -399,7 +399,7 @@ AmlExecFatal (void)
         /*  invalid parameters on object stack  */
 
         AmlAppendOperandDiag (_THIS_MODULE, __LINE__, (UINT16) AML_FatalOp, 3);
-        FUNCTION_EXIT;
+        FUNCTION_STATUS_EXIT (Status);
         return Status;
     }
 
@@ -418,7 +418,7 @@ AmlExecFatal (void)
                 ArgDesc->Number.Number));
 
     DEBUG_PRINT (ACPI_ERROR, ("AmlExecFatal: FatalOp executed\n"));
-    FUNCTION_EXIT;
+    FUNCTION_STATUS_EXIT (AE_AML_ERROR);
     return AE_AML_ERROR;
 }
 
@@ -502,7 +502,7 @@ AmlExecIndex (void)
         ObjStackTop -= 2;
     }
 
-    FUNCTION_EXIT;
+    FUNCTION_STATUS_EXIT (Status);
     return Status;
 }
 
@@ -555,7 +555,7 @@ AmlExecMatch (void)
         /*  invalid parameters on object stack  */
 
         AmlAppendOperandDiag (_THIS_MODULE, __LINE__, (UINT16) AML_MatchOp, 6);
-        FUNCTION_EXIT;
+        FUNCTION_STATUS_EXIT (Status);
         return Status;
     }
 
@@ -574,7 +574,7 @@ AmlExecMatch (void)
         Op2Desc->Number.Number < 0 || Op2Desc->Number.Number > 5)
     {
         DEBUG_PRINT (ACPI_ERROR, ("AmlExecMatch: operation encoding out of range\n"));
-        FUNCTION_EXIT;
+        FUNCTION_STATUS_EXIT (AE_AML_ERROR);
         return AE_AML_ERROR;
     }
 
@@ -582,7 +582,7 @@ AmlExecMatch (void)
     if (Look < 0 || Look >= (UINT32) PkgDesc->Package.PkgCount)
     {
         DEBUG_PRINT (ACPI_ERROR, ("AmlExecMatch: start position value out of range\n"));
-        FUNCTION_EXIT;
+        FUNCTION_STATUS_EXIT (AE_AML_ERROR);
         return AE_AML_ERROR;
     }
 
@@ -730,7 +730,7 @@ AmlExecMatch (void)
     
     ObjStackTop -= 5;          /* Remove operands */
 
-    FUNCTION_EXIT;
+    FUNCTION_STATUS_EXIT (AE_OK);
     return AE_OK;
 }
 

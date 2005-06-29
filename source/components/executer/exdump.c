@@ -256,7 +256,7 @@ AmlDumpStackEntry (
     if (!EntryDesc)
     {
         DEBUG_PRINT (ACPI_ERROR, ("AmlDumpStackEntry: ***NULL stack entry pointer***\n"));
-        FUNCTION_EXIT;
+        FUNCTION_STATUS_EXIT (AE_AML_ERROR);
         return AE_AML_ERROR;
     }
 
@@ -547,7 +547,7 @@ AmlDumpStackEntry (
         }
     }
  
-    FUNCTION_EXIT;
+    FUNCTION_STATUS_EXIT (AE_OK);
     return AE_OK;
 }
 

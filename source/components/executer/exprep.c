@@ -107,16 +107,6 @@
 #define _COMPONENT          INTERPRETER
 
 
-static ST_KEY_DESC_TABLE KDT[] = {
-    {"0000", 'T', "AmlGetMethodType: internal error", "AmlGetMethodType: internal error"},
-    {"0001", '1', "AmlSetMethodValue: Descriptor Allocation Failure", "AmlSetMethodValue: Descriptor Allocation Failure"},
-    {"0002", '1', "AmlPrepDefFieldValue: Descriptor Allocation Failure", "AmlPrepDefFieldValue: Descriptor Allocation Failure"},
-    {"0003", '1', "AmlPrepBankFieldValue: Descriptor Allocation Failure", "AmlPrepBankFieldValue: Descriptor Allocation Failure"},
-    {"0004", '1', "AmlPrepIndexFieldValue: Descriptor Allocation Failure", "AmlPrepIndexFieldValue: Descriptor Allocation Failure"},
-    {NULL, 'I', NULL, NULL}
-};
-
-
 
 /*****************************************************************************
  * 
@@ -159,7 +149,7 @@ AmlGetMethodType (
     {
         /* MethodStackTop or Index invalid for current object stack  */
 
-        REPORT_ERROR (&KDT[0]);
+        REPORT_ERROR ("AmlGetMethodType: internal error");
         FUNCTION_EXIT;
         return (ACPI_OBJECT_TYPE) -1;
     }
@@ -267,7 +257,7 @@ AmlGetMethodValue (
         }
     }
 
-    FUNCTION_EXIT;
+    FUNCTION_STATUS_EXIT (Status);
     return Status;
 }
 
@@ -303,7 +293,7 @@ AmlSetMethodValue (
     FUNCTION_TRACE ("AmlSetMethodValue");
 
 
-    DEBUG_PRINT (TRACE_EXEC, ("AmlSetMethodValue: Index=%d, ObjDesc=%p, ObjDesc2=%p\n",
+    DEBUG_PRINT (TRACE_EXEC, ("AmlSetMethodValue: Idx=%d, Obj1=%p, Obj2=%p\n",
                     Index, ObjDesc, ObjDesc2));
 
     if (OUTRANGE (MethodStackTop, MethodStack) ||
@@ -313,7 +303,7 @@ AmlSetMethodValue (
 
         DEBUG_PRINT (ACPI_ERROR, ("AmlSetMethodValue: Bad method stack index [%d][%d]\n",
                         MethodStackTop, Index));
-        FUNCTION_EXIT;
+        FUNCTION_STATUS_EXIT (AE_AML_ERROR);
         return AE_AML_ERROR;
     }
 
@@ -327,12 +317,12 @@ AmlSetMethodValue (
              * No descriptor was provided in ObjDesc2, and the currently-undefined
              * Local or Arg is to be defined.  Allocate a descriptor.
              */
-            MethodStack[MethodStackTop][Index] = AllocateObjectDesc (&KDT[1]);
+            MethodStack[MethodStackTop][Index] = AllocateObjectDesc ();
             if (!MethodStack[MethodStackTop][Index])
             {
                 /*  allocation failure  */
 
-                FUNCTION_EXIT;
+                FUNCTION_STATUS_EXIT (AE_NO_MEMORY);
                 return AE_NO_MEMORY;
             }
         }
@@ -424,7 +414,7 @@ AmlSetMethodValue (
         }
     }
 
-    FUNCTION_EXIT;
+    FUNCTION_STATUS_EXIT (AE_OK);
     return AE_OK;
 }
 
@@ -468,16 +458,18 @@ AmlPrepDefFieldValue (
         Status = AE_AML_ERROR;
     }
 
-    else if (Region != (ACPI_HANDLE)(Type = NsGetType (Region)))
+    /* Region typecheck */
+
+    else if (TYPE_Region != (Type = NsGetType (Region)))
     {
         DEBUG_PRINT (ACPI_ERROR, ("AmlPrepDefFieldValue: Needed Region, found %d %s\n",
                     Type, NsTypeNames[Type]));
         Status = AE_AML_ERROR;
     }
 
-    else if (!(ObjDesc = AllocateObjectDesc (&KDT[3])))
+    else if (!(ObjDesc = AllocateObjectDesc ()))
     {   
-        /*  unable to allocate new object descriptor    */
+        /* Unable to allocate new object descriptor    */
 
         Status = AE_NO_MEMORY;
     }
@@ -498,13 +490,13 @@ AmlPrepDefFieldValue (
              * but unexpected:  the ValType field which was defined as a UINT8 did
              * not map to the same structure offset as the one which was defined
              * as a WORD_BIT -- see comments in the definition of the FieldUnit
-             * variant of ACPI_OBJECT in amlpriv.h.
+             * variant of ACPI_OBJECT
              *
              * Log some evidence to facilitate porting the code.
              */
             ObjDesc->Field.ValType = 0x005a;
             DEBUG_PRINT (ACPI_ERROR, (
-                    "AmlPrepDefFieldValue: internal failure %p %02x %02x %02x %02x\n",
+                    "AmlPrepDefFieldValue: **** Internal Failure %p %02x %02x %02x %02x\n",
                     ObjDesc, ((UINT8 *) ObjDesc)[0], ((UINT8 *) ObjDesc)[1], ((UINT8 *) ObjDesc)[2],
                     ((UINT8 *) ObjDesc)[3]));
             OsdFree (ObjDesc);
@@ -522,14 +514,13 @@ AmlPrepDefFieldValue (
         ObjDesc->Field.UpdateRule = (FldFlg & UPDATE_RULE_MASK) >> UPDATE_RULE_SHIFT;
         ObjDesc->Field.DatLen     = (UINT16) FldLen;
 
-        /* XXX - should use width of data register, not hardcoded 8 */
+        /* TBD: - should use width of data register, not hardcoded 8 */
 
-        DEBUG_PRINT (ACPI_INFO, (" ** AmlPrepDefFieldValue: hard 8 **\n"));
+        DEBUG_PRINT (ACPI_INFO, ("AmlPrepDefFieldValue: hardcoded 8 **\n"));
 
         ObjDesc->Field.BitOffset  = (UINT16) FldPos % 8;
         ObjDesc->Field.Offset     = (UINT32) FldPos / 8;
         ObjDesc->Field.Container  = NsGetValue (Region);
-
 
         DEBUG_PRINT (ACPI_INFO, ("AmlPrepDefFieldValue: set nte %p (%4.4s) val = %p\n",
                         ObjStack[ObjStackTop], ObjStack[ObjStackTop], ObjDesc));
@@ -554,7 +545,7 @@ AmlPrepDefFieldValue (
                     (UINT8) NsGetType ((ACPI_HANDLE) ObjStack[ObjStackTop]));
     }
 
-    FUNCTION_EXIT;
+    FUNCTION_STATUS_EXIT (Status);
     return Status;
 }
 
@@ -605,7 +596,7 @@ AmlPrepBankFieldValue (
                         Type, NsTypeNames[Type]));
         Status = AE_AML_ERROR;
     }
-    else if (!(ObjDesc = AllocateObjectDesc (&KDT[3])))
+    else if (!(ObjDesc = AllocateObjectDesc ()))
     {   
         /*  unable to allocate new object descriptor    */
         
@@ -631,7 +622,7 @@ AmlPrepBankFieldValue (
                     ((UINT8 *) ObjDesc)[3]));
             OsdFree (ObjDesc);
 
-            FUNCTION_EXIT;
+            FUNCTION_STATUS_EXIT (AE_AML_ERROR);
             return AE_AML_ERROR;
         }
     }
@@ -675,7 +666,7 @@ AmlPrepBankFieldValue (
     }
 
 
-    FUNCTION_EXIT;
+    FUNCTION_STATUS_EXIT (Status);
     return Status;
 }
 
@@ -718,7 +709,7 @@ AmlPrepIndexFieldValue (
         Status = AE_AML_ERROR;
     }
 
-    else if (!(ObjDesc = AllocateObjectDesc (&KDT[4])))
+    else if (!(ObjDesc = AllocateObjectDesc ()))
     {   
         /*  unable to allocate new object descriptor    */
 
@@ -740,7 +731,7 @@ AmlPrepIndexFieldValue (
                     ObjDesc, ((UINT8 *) ObjDesc)[0], ((UINT8 *) ObjDesc)[1], ((UINT8 *) ObjDesc)[2],
                     ((UINT8 *) ObjDesc)[3]));
             OsdFree (ObjDesc);
-            FUNCTION_EXIT;
+            FUNCTION_STATUS_EXIT (AE_AML_ERROR);
             return AE_AML_ERROR;
         }
     }
@@ -782,7 +773,7 @@ AmlPrepIndexFieldValue (
                     (UINT8) NsGetType ((ACPI_HANDLE) ObjStack[ObjStackTop]));
     }
 
-    FUNCTION_EXIT;
+    FUNCTION_STATUS_EXIT (Status);
     return Status;
 }
 
@@ -829,7 +820,7 @@ AmlPrepStack (
     Status = AmlPushIfExec (MODE_Exec);
     if (AE_OK != Status)
     {
-        FUNCTION_EXIT;
+        FUNCTION_STATUS_EXIT (Status);
         return Status;
     }
 
@@ -852,7 +843,7 @@ AmlPrepStack (
         {
             DEBUG_PRINT (ACPI_ERROR, ("AmlPrepStack:internal error: null stack entry\n"));
             ObjStackTop--;
-            FUNCTION_EXIT;
+            FUNCTION_STATUS_EXIT (AE_AML_ERROR);
             return AE_AML_ERROR;
         }
 
@@ -932,7 +923,7 @@ AmlPrepStack (
                 DEBUG_PRINT (ACPI_ERROR, ("AmlPrepStack: Needed Lvalue, found %s\n",
                             TypeFoundPtr));
                 ObjStackTop--;
-                FUNCTION_EXIT;
+                FUNCTION_STATUS_EXIT (AE_AML_ERROR);
                 return AE_AML_ERROR;
             }
 
@@ -950,12 +941,12 @@ AmlPrepStack (
             Status = AmlGetRvalue (StackPtr);
 
             DEBUG_PRINT (TRACE_EXEC,
-                          ("AmlPrepStack:n: AmlGetRvalue returned %s\n", ExceptionNames[Status]));
+                          ("AmlPrepStack: AmlGetRvalue returned %s\n", ExceptionNames[Status]));
 
             if (AE_OK != Status)
             {
                 ObjStackTop--;
-                FUNCTION_EXIT;
+                FUNCTION_STATUS_EXIT (Status);
                 return Status;
             }
 
@@ -964,7 +955,7 @@ AmlPrepStack (
                 DEBUG_PRINT (ACPI_ERROR, ("AmlPrepStack: Needed Number, found %s\n",
                             TypeFoundPtr));
                 ObjStackTop--;
-                FUNCTION_EXIT;
+                FUNCTION_STATUS_EXIT (AE_AML_ERROR);
                 return AE_AML_ERROR;
             }
             break;
@@ -973,7 +964,7 @@ AmlPrepStack (
             if ((Status = AmlGetRvalue (StackPtr)) != AE_OK)
             {
                 ObjStackTop--;
-                FUNCTION_EXIT;
+                FUNCTION_STATUS_EXIT (Status);
                 return Status;
             }
 
@@ -986,7 +977,7 @@ AmlPrepStack (
                         "AmlPrepStack: Needed String or Buffer, found %s\n",
                         TypeFoundPtr));
                 ObjStackTop--;
-                FUNCTION_EXIT;
+                FUNCTION_STATUS_EXIT (AE_AML_ERROR);
                 return AE_AML_ERROR;
             }
             break;
@@ -995,7 +986,7 @@ AmlPrepStack (
             if ((Status = AmlGetRvalue(StackPtr)) != AE_OK)
             {
                 ObjStackTop--;
-                FUNCTION_EXIT;
+                FUNCTION_STATUS_EXIT (Status);
                 return Status;
             }
 
@@ -1006,7 +997,7 @@ AmlPrepStack (
                 DEBUG_PRINT (ACPI_ERROR, ("AmlPrepStack: Needed Buffer, found %s\n",
                             TypeFoundPtr));
                 ObjStackTop--;
-                FUNCTION_EXIT;
+                FUNCTION_STATUS_EXIT (AE_AML_ERROR);
                 return AE_AML_ERROR;
             }
             break;
@@ -1017,7 +1008,7 @@ AmlPrepStack (
                 DEBUG_PRINT (ACPI_ERROR, ("AmlPrepStack: Needed If, found %s\n",
                         TypeFoundPtr));
                 ObjStackTop--;
-                FUNCTION_EXIT;
+                FUNCTION_STATUS_EXIT (AE_AML_ERROR);
                 return AE_AML_ERROR;
             }
             break;
@@ -1026,7 +1017,7 @@ AmlPrepStack (
             if ((Status = AmlGetRvalue (StackPtr)) != AE_OK)
             {
                 ObjStackTop--;
-                FUNCTION_EXIT;
+                FUNCTION_STATUS_EXIT (Status);
                 return Status;
             }
 
@@ -1037,7 +1028,7 @@ AmlPrepStack (
                 DEBUG_PRINT (ACPI_ERROR, ("AmlPrepStack: Needed Package, found %s\n",
                             TypeFoundPtr));
                 ObjStackTop--;
-                FUNCTION_EXIT;
+                FUNCTION_STATUS_EXIT (AE_AML_ERROR);
                 return AE_AML_ERROR;
             }
             break;
@@ -1047,7 +1038,7 @@ AmlPrepStack (
                     "AmlPrepStack:internal error Unknown type flag %02x\n",
                     *--Types));
             ObjStackTop--;
-            FUNCTION_EXIT;
+            FUNCTION_STATUS_EXIT (AE_AML_ERROR);
             return AE_AML_ERROR;
 
         }   /* switch (*Types++) */
@@ -1065,7 +1056,7 @@ AmlPrepStack (
             {
                 DEBUG_PRINT (ACPI_ERROR, ("AmlPrepStack: not enough operands\n"));
                 ObjStackTop--;
-                FUNCTION_EXIT;
+                FUNCTION_STATUS_EXIT (AE_AML_ERROR);
                 return AE_AML_ERROR;
             }
 
@@ -1075,7 +1066,7 @@ AmlPrepStack (
     }   /* while (*Types) */
 
     ObjStackTop--;
-    FUNCTION_EXIT;
+    FUNCTION_STATUS_EXIT (AE_OK);
     return AE_OK;
 }
 
