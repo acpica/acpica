@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: actables.h - ACPI table management
- *       $Revision: 1.39 $
+ *       $Revision: 1.40 $
  *
  *****************************************************************************/
 
@@ -141,7 +141,7 @@ ACPI_STATUS
 AcpiTbConvertTableFadt (
     void);
 
-void
+ACPI_STATUS
 AcpiTbBuildCommonFacs (
     ACPI_TABLE_DESC         *TableInfo);
 
