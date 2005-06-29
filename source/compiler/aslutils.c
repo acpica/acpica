@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslutils -- compiler utilities
- *              $Revision: 1.35 $
+ *              $Revision: 1.41 $
  *
  *****************************************************************************/
 
@@ -10,7 +10,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -120,7 +120,7 @@
 #include "acnamesp.h"
 
 #define _COMPONENT          ACPI_COMPILER
-        MODULE_NAME         ("aslutils")
+        ACPI_MODULE_NAME    ("aslutils")
 
 #ifdef _USE_BERKELEY_YACC
 extern const char * const       AslCompilername[];
@@ -128,8 +128,6 @@ static const char * const       *yytname = &AslCompilername[255];
 #else
 extern const char * const       yytname[];
 #endif
-
-
 
 
 /*******************************************************************************
@@ -165,7 +163,6 @@ UtLocalCalloc (
 
     TotalAllocations++;
     TotalAllocated += Size;
-
     return Allocated;
 }
 
@@ -232,6 +229,7 @@ UINT8
 UtHexCharToValue (
     int                     hc)
 {
+
     if (hc <= 0x39)
     {
         return ((UINT8) (hc - 0x30));
@@ -276,6 +274,34 @@ UtConvertByteToHex (
 
 /*******************************************************************************
  *
+ * FUNCTION:    UtConvertByteToAsmHex
+ *
+ * PARAMETERS:  RawByte         - Binary data
+ *              *Buffer         - Pointer to where the hex bytes will be stored
+ *
+ * RETURN:      Ascii hex byte is stored in Buffer.
+ *
+ * DESCRIPTION: Perform hex-to-ascii translation.  The return data is prefixed
+ *              with "0x"
+ *
+ ******************************************************************************/
+
+void
+UtConvertByteToAsmHex (
+    UINT8                   RawByte,
+    UINT8                   *Buffer)
+{
+
+    Buffer[0] = '0';
+
+    Buffer[1] = hex[(RawByte >> 4) & 0xF];
+    Buffer[2] = hex[RawByte & 0xF];
+    Buffer[3] = 'h';
+}
+
+
+/*******************************************************************************
+ *
  * FUNCTION:    DbgPrint
  *
  * PARAMETERS:  Fmt             - Printf format string
@@ -304,7 +330,6 @@ DbgPrint (
         return 0;
     }
 
-
     if ((Type == ASL_PARSE_OUTPUT) &&
         (!(AslCompilerdebug)))
     {
@@ -312,7 +337,6 @@ DbgPrint (
     }
 
     vfprintf (stderr, Fmt, Args);
-
     va_end (Args);
     return 0;
 }
@@ -343,7 +367,6 @@ UtPrintFormattedName (
         "%*s %-16.16s", (3 * Level), " ",
         yytname[ParseOpcode-255]);
 
-
     if (Level < TEXT_OFFSET)
     {
         DbgPrint (ASL_TREE_OUTPUT,
@@ -368,6 +391,7 @@ char *
 UtGetOpName (
     UINT32                  ParseOpcode)
 {
+
     return (char *) yytname [ParseOpcode - 255];
 }
 
@@ -388,7 +412,6 @@ void
 UtDisplaySummary (
     UINT32                  FileId)
 {
-
 
     FlPrintFile (FileId,
         "Compilation complete. %d Errors %d Warnings\n",
@@ -465,7 +488,7 @@ UtCheckIntegerRange (
  *
  * FUNCTION:    UtGetStringBuffer
  *
- * PARAMETERS:  None
+ * PARAMETERS:  Length          - Size of buffer requested
  *
  * RETURN:      Pointer to the buffer.  Aborts on allocation failure
  *
@@ -499,7 +522,8 @@ UtGetStringBuffer (
  *
  * FUNCTION:    UtInternalizeName
  *
- * PARAMETERS:  None
+ * PARAMETERS:  ExternalName            - Name to convert
+ *              ConvertedName           - Where the converted name is returned
  *
  * RETURN:      Status
  *
@@ -547,7 +571,6 @@ UtInternalizeName (
 }
 
 
-
 /*******************************************************************************
  *
  * FUNCTION:    UtAttachNamepathToOwner
@@ -578,13 +601,45 @@ UtAttachNamepathToOwner (
     {
         /* TBD: abort on no memory */
     }
-
 }
 
 
 /*******************************************************************************
  *
- * FUNCTION:    strtoul
+ * FUNCTION:    UtDoConstant
+ *
+ * PARAMETERS:  String      - Hex, Octal, or Decimal string
+ *
+ * RETURN:      Converted Integer
+ *
+ * DESCRIPTION: Convert a string to an integer.  With error checking.
+ *
+ ******************************************************************************/
+
+ACPI_INTEGER
+UtDoConstant (
+    NATIVE_CHAR             *String)
+{
+    ACPI_STATUS             Status;
+    ACPI_INTEGER            Converted;
+    char                    ErrBuf[64];
+
+
+
+    Status = UtStrtoul64 (String, 0, &Converted);
+    if (ACPI_FAILURE (Status))
+    {
+        sprintf (ErrBuf, "%s %s\n", "Conversion error:", AcpiFormatException (Status));
+        AslCompilererror (ErrBuf);
+    }
+
+    return (Converted);
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    UtStrtoul64
  *
  * PARAMETERS:  String          - Null terminated string
  *              Terminater      - Where a pointer to the terminating byte is returned
@@ -598,11 +653,11 @@ UtAttachNamepathToOwner (
 #define NEGATIVE    1
 #define POSITIVE    0
 
-ACPI_INTEGER
+ACPI_STATUS
 UtStrtoul64 (
     NATIVE_CHAR             *String,
-    NATIVE_CHAR             **Terminator,
-    UINT32                  Base)
+    UINT32                  Base,
+    ACPI_INTEGER            *RetInteger)
 {
     UINT32                  converted = 0;
     UINT32                  index;
@@ -611,6 +666,24 @@ UtStrtoul64 (
     ACPI_INTEGER            ReturnValue = 0;
     ACPI_STATUS             Status = AE_OK;
 
+
+    *RetInteger = 0;
+
+    switch (Base)
+    {
+    case 0:
+    case 8:
+    case 10:
+    case 16:
+        break;
+
+    default:
+        /*
+         * The specified Base parameter is not in the domain of
+         * this function:
+         */
+        return (AE_BAD_PARAMETER);
+    }
 
     /*
      * Save the value of the pointer to the buffer's first
@@ -632,13 +705,11 @@ UtStrtoul64 (
         sign = NEGATIVE;
         ++String;
     }
-
     else if (*String == '+')
     {
         ++String;
         sign = POSITIVE;
     }
-
     else
     {
         sign = POSITIVE;
@@ -657,26 +728,15 @@ UtStrtoul64 (
                 Base = 16;
                 ++String;
             }
-
             else
             {
                 Base = 8;
             }
         }
-
         else
         {
             Base = 10;
         }
-    }
-
-    else if (Base < 2 || Base > 36)
-    {
-        /*
-         * The specified Base parameter is not in the domain of
-         * this function:
-         */
-        goto done;
     }
 
     /*
@@ -695,17 +755,14 @@ UtStrtoul64 (
         String++;
     }
 
+    /* Main loop: convert the string to an unsigned long */
 
-    /*
-     * Main loop: convert the string to an unsigned long:
-     */
     while (*String)
     {
         if (isdigit (*String))
         {
             index = *String - '0';
         }
-
         else
         {
             index = toupper (*String);
@@ -713,29 +770,24 @@ UtStrtoul64 (
             {
                 index = index - 'A' + 10;
             }
-
             else
             {
-                goto done;
+                goto ErrorExit;
             }
         }
 
         if (index >= Base)
         {
-            goto done;
+            goto ErrorExit;
         }
 
-        /*
-         * Check to see if value is out of range:
-         */
+        /* Check to see if value is out of range: */
 
         if (ReturnValue > ((ACPI_INTEGER_MAX - (ACPI_INTEGER) index) /
                             (ACPI_INTEGER) Base))
         {
-            Status = AE_ERROR;
-            ReturnValue = 0L;           /* reset */
+            goto ErrorExit;
         }
-
         else
         {
             ReturnValue *= Base;
@@ -746,28 +798,6 @@ UtStrtoul64 (
         ++String;
     }
 
-done:
-    /*
-     * If appropriate, update the caller's pointer to the next
-     * unconverted character in the buffer.
-     */
-    if (Terminator)
-    {
-        if (converted == 0 && ReturnValue == 0L && String != NULL)
-        {
-            *Terminator = (NATIVE_CHAR *) StringStart;
-        }
-
-        else
-        {
-            *Terminator = (NATIVE_CHAR *) String;
-        }
-    }
-
-    if (Status == AE_ERROR)
-    {
-        ReturnValue = ACPI_INTEGER_MAX;
-    }
 
     /*
      * If a minus sign was present, then "the conversion is negated":
@@ -777,7 +807,28 @@ done:
         ReturnValue = (ACPI_UINT32_MAX - ReturnValue) + 1;
     }
 
-    return (ReturnValue);
+    *RetInteger = ReturnValue;
+    return (Status);
+
+
+ErrorExit:
+    switch (Base)
+    {
+    case 8:
+        Status = AE_BAD_OCTAL_CONSTANT;
+        break;
+
+    case 10:
+        Status = AE_BAD_DECIMAL_CONSTANT;
+        break;
+
+    case 16:
+        Status = AE_BAD_HEX_CONSTANT;
+        break;
+
+    }
+
+    return (Status);
 }
 
 
