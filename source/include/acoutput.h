@@ -211,7 +211,6 @@
 #define _REPORT_ERROR(a,b,c,d)          _ReportError(a,b,c,d)
 #define _REPORT_WARNING(a,b,c,d)        _ReportWarning(a,b,c,d)
 
-
 /* Buffer dump macros */
 
 #define DUMP_BUFFER(a,b,c)              DumpBuffer((char *)a,b,c,_COMPONENT)
@@ -223,22 +222,36 @@
 
 #ifdef ACPI_DEBUG
 
+/* 
+ * Function entry tracing. 
+ * The first parameter should be the procedure name as a quoted string.  This is declared
+ * as a local string ("_ProcName) so that it can be also used by the function exit macros below.
+ */
+
+#define FUNCTION_TRACE(a)               char * _ProcName = a;\
+                                        FunctionTrace(_THIS_MODULE,__LINE__,_COMPONENT,a)
+#define FUNCTION_TRACE_PTR(a,b)         char * _ProcName = a;\
+                                        FunctionTracePtr(_THIS_MODULE,__LINE__,_COMPONENT,a,(void *)b)
+#define FUNCTION_TRACE_U32(a,b)         char * _ProcName = a;\
+                                        FunctionTraceU32(_THIS_MODULE,__LINE__,_COMPONENT,a,(UINT32)b)
+#define FUNCTION_TRACE_STR(a,b)         char * _ProcName = a;\
+                                        FunctionTraceStr(_THIS_MODULE,__LINE__,_COMPONENT,a,(char *)b)
+/* 
+ * Function exit tracing. 
+ * WARNING: These macros include a return statement.  This is usually considered 
+ * bad form, but having a separate exit macro is very ugly and difficult to maintain.
+ * One of the FUNCTION_TRACE macros above must be used in conjunction with these macros
+ * so that "_ProcName" is defined.
+ */
+#define return_VOID                     {FunctionExit(_THIS_MODULE,__LINE__,_COMPONENT,_ProcName);return;}
+#define return_ACPI_STATUS(s)           {FunctionStatusExit(_THIS_MODULE,__LINE__,_COMPONENT,_ProcName,s);return(s);}
+#define return_VALUE(s)                 {FunctionValueExit(_THIS_MODULE,__LINE__,_COMPONENT,_ProcName,(UINT32)s);return(s);}
+
+
 /* Conditional execution */
 
 #define DEBUG_EXEC(a)                   a;
 #define DEBUG_DEFINE(a)                 a;
-
-/* Function entry tracing */
-
-#define FUNCTION_TRACE(a)               char * ThisProc = a;\
-                                        FunctionTrace(_THIS_MODULE,__LINE__,_COMPONENT,a)
-#define FUNCTION_EXIT                   FunctionExit(_THIS_MODULE,__LINE__,_COMPONENT,ThisProc)
-#define FUNCTION_STATUS_EXIT(s)         FunctionStatusExit(_THIS_MODULE,__LINE__,_COMPONENT,ThisProc,s)
-#define FUNCTION_VALUE_EXIT(s)          FunctionValueExit(_THIS_MODULE,__LINE__,_COMPONENT,ThisProc,(UINT32)s)
-
-#define return_VOID                     {FunctionExit(_THIS_MODULE,__LINE__,_COMPONENT,ThisProc);return;}
-#define return_ACPI_STATUS(s)           {FunctionStatusExit(_THIS_MODULE,__LINE__,_COMPONENT,ThisProc,s);return(s);}
-#define return_VALUE(s)                 {FunctionValueExit(_THIS_MODULE,__LINE__,_COMPONENT,ThisProc,(UINT32)s);return(s);}
 
 
 /* Stack and buffer dumping */
@@ -259,6 +272,7 @@
  */
 
 #define	PARAM_LIST(PL) PL
+
 #define TEST_DEBUG_SWITCH(lvl)          if (((lvl) & DebugLevel) && (_COMPONENT & DebugLayer))
 
 #define DEBUG_PRINT(lvl,fp)             TEST_DEBUG_SWITCH(lvl) {\
