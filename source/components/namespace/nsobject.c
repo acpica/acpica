@@ -124,8 +124,8 @@
 #include <tables.h>
 
 
-#define _THIS_MODULE        "nsobject.c"
 #define _COMPONENT          NAMESPACE
+        MODULE_NAME         ("nsobject");
 
 
 
@@ -344,7 +344,7 @@ NsAttachObject (
 
             if (GetDebugLevel () > 0)
             {
-                NsDumpPathname (Handle, "NsAttachObject confused: setting bogus type for  ", 
+                DUMP_PATHNAME (Handle, "NsAttachObject confused: setting bogus type for  ", 
                                 ACPI_INFO, _COMPONENT);
 
                 if (TbSystemTablePointer (Object))
@@ -355,12 +355,12 @@ NsAttachObject (
         
                 else if (VALID_DESCRIPTOR_TYPE (Object, DESC_TYPE_NTE))
                 {
-                    NsDumpPathname (Object, "name ", ACPI_INFO, _COMPONENT);
+                    DUMP_PATHNAME (Object, "name ", ACPI_INFO, _COMPONENT);
                 }
         
                 else
                 {
-                    NsDumpPathname (Object, "object ", ACPI_INFO, _COMPONENT);
+                    DUMP_PATHNAME (Object, "object ", ACPI_INFO, _COMPONENT);
                     DUMP_STACK_ENTRY (Object);
                 }
             }
