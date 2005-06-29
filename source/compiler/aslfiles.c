@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslfiles - file I/O suppoert
- *              $Revision: 1.31 $
+ *              $Revision: 1.36 $
  *
  *****************************************************************************/
 
@@ -118,7 +118,7 @@
 #include "aslcompiler.h"
 
 #define _COMPONENT          ACPI_COMPILER
-        MODULE_NAME         ("aslfiles")
+        ACPI_MODULE_NAME    ("aslfiles")
 
 
 /*******************************************************************************
@@ -146,7 +146,7 @@ AslAbort (void)
         AePrintErrorLog (ASL_FILE_STDERR);
     }
 
-    exit (1);
+    exit (0);
 }
 
 
@@ -218,7 +218,7 @@ FlFileError (
  *
  ******************************************************************************/
 
-FILE *
+void
 FlOpenFile (
     UINT32                  FileId,
     char                    *Filename,
@@ -237,8 +237,6 @@ FlOpenFile (
         FlFileError (FileId, ASL_MSG_OPEN);
         AslAbort ();
     }
-
-    return (File);
 }
 
 
@@ -301,7 +299,7 @@ FlReadFile (
  *
  ******************************************************************************/
 
-ACPI_STATUS
+void
 FlWriteFile (
     UINT32                  FileId,
     void                    *Buffer,
@@ -318,8 +316,6 @@ FlWriteFile (
         FlFileError (FileId, ASL_MSG_WRITE);
         AslAbort ();
     }
-
-    return (AE_OK);
 }
 
 
@@ -373,12 +369,12 @@ FlPrintFile (
  *
  ******************************************************************************/
 
-ACPI_STATUS
+void
 FlSeekFile (
     UINT32                  FileId,
     long                    Offset)
 {
-    UINT32                  Error;
+    int                     Error;
 
 
     Error = fseek (Gbl_Files[FileId].Handle, Offset, SEEK_SET);
@@ -387,8 +383,6 @@ FlSeekFile (
         FlFileError (FileId, ASL_MSG_SEEK);
         AslAbort ();
     }
-
-    return (AE_OK);
 }
 
 
@@ -400,21 +394,20 @@ FlSeekFile (
  *
  * RETURN:      Status
  *
- * DESCRIPTION: Close an open file.  Does not abort on error, simply logs
- *              the problem.
+ * DESCRIPTION: Close an open file.  Aborts compiler on error
  *
  ******************************************************************************/
 
-ACPI_STATUS
+void
 FlCloseFile (
     UINT32                  FileId)
 {
-    UINT32                  Error;
+    int                     Error;
 
 
     if (!Gbl_Files[FileId].Handle)
     {
-        return AE_OK;
+        return;
     }
 
     Error = fclose (Gbl_Files[FileId].Handle);
@@ -423,10 +416,32 @@ FlCloseFile (
     if (Error)
     {
         FlFileError (FileId, ASL_MSG_CLOSE);
-        return (AE_ERROR);
+        AslAbort ();
     }
 
-    return (AE_OK);
+    return;
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    FlSetLineNumber
+ *
+ * PARAMETERS:  Op        - Parse node for the LINE asl statement
+ *
+ * RETURN:      None.
+ *
+ * DESCRIPTION: Set the current line number
+ *
+ ******************************************************************************/
+
+void
+FlSetLineNumber (
+    ACPI_PARSE_OBJECT       *Op)
+{
+
+    Gbl_CurrentLineNumber = Op->Asl.Value.Integer32;
+    Gbl_LogicalLineNumber = Op->Asl.Value.Integer32;
 }
 
 
@@ -434,7 +449,7 @@ FlCloseFile (
  *
  * FUNCTION:    FlOpenIncludeFile
  *
- * PARAMETERS:  Node        - Parse node for the INCLUDE ASL statement
+ * PARAMETERS:  Op        - Parse node for the INCLUDE ASL statement
  *
  * RETURN:      None.
  *
@@ -444,14 +459,14 @@ FlCloseFile (
 
 void
 FlOpenIncludeFile (
-    ASL_PARSE_NODE          *Node)
+    ACPI_PARSE_OBJECT       *Op)
 {
     FILE                    *IncFile;
 
 
-    /* Node must be valid */
+    /* Op must be valid */
 
-    if (!Node)
+    if (!Op)
     {
         AslCommonError (ASL_ERROR, ASL_MSG_INCLUDE_FILE_OPEN,
             Gbl_CurrentLineNumber, Gbl_LogicalLineNumber,
@@ -471,18 +486,18 @@ FlOpenIncludeFile (
 
     /* Prepend the directory pathname and open the include file */
 
-    DbgPrint (ASL_PARSE_OUTPUT, "\nOpen include file: path %s\n\n", Node->Value.String);
-    IncFile = FlOpenLocalFile (Node->Value.String, "r");
+    DbgPrint (ASL_PARSE_OUTPUT, "\nOpen include file: path %s\n\n", Op->Asl.Value.String);
+    IncFile = FlOpenLocalFile (Op->Asl.Value.String, "r");
     if (!IncFile)
     {
-        sprintf (MsgBuffer, "%s (%s)", Node->Value.String, strerror (errno));
-        AslError (ASL_ERROR, ASL_MSG_INCLUDE_FILE_OPEN, Node, MsgBuffer);
+        sprintf (MsgBuffer, "%s (%s)", Op->Asl.Value.String, strerror (errno));
+        AslError (ASL_ERROR, ASL_MSG_INCLUDE_FILE_OPEN, Op, MsgBuffer);
         return;
     }
 
     /* Push the include file on the open input file stack */
 
-    AslPushInputFileStack (IncFile, Node->Value.String);
+    AslPushInputFileStack (IncFile, Op->Asl.Value.String);
 }
 
 
@@ -560,7 +575,8 @@ FlOpenInputFile (
 
     /* Open the input ASL file, text mode */
 
-    AslCompilerin = FlOpenFile (ASL_FILE_INPUT, InputFilename, "r");
+    FlOpenFile (ASL_FILE_INPUT, InputFilename, "r");
+    AslCompilerin = Gbl_Files[ASL_FILE_INPUT].Handle;
 
     /* Get the path to the input filename's directory */
 
