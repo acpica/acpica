@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
- * Module Name: dbdisasm - AML disassembler display routines
- *              $Revision: 1.69 $
+ * Module Name: dmopcode - AML disassembler, specific AML opcodes
+ *              $Revision: 1.72 $
  *
  ******************************************************************************/
 
@@ -118,7 +118,6 @@
 #include "acpi.h"
 #include "acparser.h"
 #include "amlcode.h"
-#include "acnamesp.h"
 #include "acdisasm.h"
 #include "acdebug.h"
 
@@ -126,332 +125,23 @@
 #ifdef ACPI_DISASSEMBLER
 
 #define _COMPONENT          ACPI_DEBUGGER
-        ACPI_MODULE_NAME    ("dbdisasm")
-
-
-#define BLOCK_NONE          0
-#define BLOCK_PAREN         1
-#define BLOCK_BRACE         2
-#define BLOCK_COMMA_LIST    4
-
-
-NATIVE_CHAR                 *AcpiGbl_DbDisasmIndent = "....";
-
+        ACPI_MODULE_NAME    ("dmopcode")
 
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiDmDoByteList
+ * FUNCTION:    AcpiDmMethodFlags
  *
- * PARAMETERS:  Resource            - Pointer to the resource descriptor
- *              Length              - Length of the descriptor in bytes
- *              Level               - Current source code indentation level
+ * PARAMETERS:  Op              - Method Object to be examined
  *
- * RETURN:      Status
- *
- * DESCRIPTION: 
- *
- ******************************************************************************/
-
-void
-AcpiDmDoByteList (
-    ACPI_OP_WALK_INFO       *Info,    
-    ACPI_PARSE_OBJECT       *Op)
-{
-    UINT8                   *ByteData;
-    UINT32                  ByteCount;
-    UINT32                  WordCount;
-    ACPI_STATUS             Status;
-
-
-
-    ByteData = Op->Named.Data;
-    ByteCount = Op->Common.Value.Integer32;
-    WordCount = ACPI_DIV_2 (ByteCount);
-
-
-    switch (Op->Common.Parent->Common.DisasmOpcode)
-    {
-    case ACPI_DASM_RESOURCE:
-
-        Status = AcpiDmDoResourceDescriptor (Info, ByteData, ByteCount);
-        break;
-
-    case ACPI_DASM_STRING:
-
-        AcpiDmIndent (Info->Level);
-        AcpiDmDoString ((char *) ByteData);
-        break;
-  
-    case ACPI_DASM_UNICODE:
-
-        AcpiDmDoUnicode (Op);
-        break;
-
-    case ACPI_DASM_BUFFER:
-    default:
-
-        /*
-         * Not a resource, string, or unicode string.
-         * Just dump the buffer
-         */  
-        AcpiDmDisasmByteList (Info->Level, ByteData, ByteCount);
-        break;
-    }
-}
-
-
-/*******************************************************************************
- *
- * FUNCTION:    
- *
- * PARAMETERS:  Op              - Object to be examined
- *
- * RETURN:      Status
- *
- * DESCRIPTION: Decode control method flags
- *
- ******************************************************************************/
-
-BOOLEAN
-AcpiDmIsUnicodeBuffer (
-    ACPI_PARSE_OBJECT       *Op)
-{
-    UINT8                   *ByteData;
-    UINT32                  ByteCount;
-    UINT32                  WordCount;
-    ACPI_PARSE_OBJECT       *SizeOp;
-    ACPI_PARSE_OBJECT       *NextOp;
-    UINT32                  i;
-
-
-    SizeOp = Op->Common.Value.Arg;
-
-    NextOp = SizeOp->Common.Next;
-    if (!NextOp)
-    {
-        return (FALSE);
-    }
-
-    ByteData = NextOp->Named.Data;
-    ByteCount = NextOp->Common.Value.Integer32;
-    WordCount = ACPI_DIV_2 (ByteCount);
-
-    /* Check for a unicode string */
-
-    if ((!ByteCount) ||
-         (ByteCount & 1) ||
-        ((UINT16 *) ByteData)[WordCount - 1] != 0)
-    {
-        return (FALSE);
-    }
-
-    for (i = 0; i < (ByteCount - 2); i += 2)
-    {
-        if ((!isprint (ByteData[i])) ||
-            (ByteData[i + 1] != 0))
-        {
-            return (FALSE);
-        }
-    }
-
-    SizeOp->Common.DisasmFlags |= ACPI_PARSEOP_IGNORE;
-    return (TRUE);
-}
-
-
-/*******************************************************************************
- *
- * FUNCTION:    
- *
- * PARAMETERS:  Op              - Object to be examined
- *
- * RETURN:      Status
- *
- * DESCRIPTION: Decode control method flags
- *
- ******************************************************************************/
-
-BOOLEAN
-AcpiDmIsStringBuffer (
-    ACPI_PARSE_OBJECT       *Op)
-{
-    UINT8                   *ByteData;
-    UINT32                  ByteCount;
-    ACPI_PARSE_OBJECT       *SizeOp;
-    ACPI_PARSE_OBJECT       *NextOp;
-    UINT32                  i;
-
-
-    SizeOp = Op->Common.Value.Arg;
-
-    NextOp = SizeOp->Common.Next;
-    if (!NextOp)
-    {
-        return (FALSE);
-    }
-
-    ByteData = NextOp->Named.Data;
-    ByteCount = NextOp->Common.Value.Integer32;
-
-    /* Check buffer for an ASCII string */
-
-    if (ByteData[ByteCount-1] != 0)
-    {
-        return (FALSE);
-    }
-
-    for (i = 0; i < (ByteCount - 1); i++)
-    {
-        /* TBD: allow some escapes (non-ascii chars).
-         * they will be handled in the string output routine 
-         */
-
-        if (!isprint (ByteData[i]))
-        {
-            return (FALSE);
-        }
-    }
-
-    SizeOp->Common.DisasmFlags |= ACPI_PARSEOP_IGNORE;
-    return (TRUE);
-}
-
-
-/*******************************************************************************
- *
- * FUNCTION:    
- *
- * PARAMETERS:  Op              - Object to be examined
- *
- * RETURN:      Status
+ * RETURN:      None
  *
  * DESCRIPTION: Decode control method flags
  *
  ******************************************************************************/
 
 void
-AcpiDmDoString (
-    char                    *String)
-{
-    UINT32                  i;
-
-
-    if (!String)
-    {
-        AcpiOsPrintf ("<\"NULL STRING PTR\">");
-        return;
-    }
-
-    AcpiOsPrintf ("\"");
-    for (i = 0; String[i]; i++)
-    {
-        switch (String[i])
-        {
-        case '"':
-            AcpiOsPrintf ("\\");
-            break;
-
-        /* TBD: Handle escapes here */
-        default:
-            break;
-        }
-
-        AcpiOsPrintf ("%c", String[i]);
-    }
-    AcpiOsPrintf ("\"");
-}
-
-
-/*******************************************************************************
- *
- * FUNCTION:    
- *
- * PARAMETERS:  Op              - Object to be examined
- *
- * RETURN:      Status
- *
- * DESCRIPTION: Decode control method flags
- *
- ******************************************************************************/
-
-void
-AcpiDmDoUnicode (
-    ACPI_PARSE_OBJECT       *Op)
-{
-    UINT16                  *WordData;
-    UINT32                  WordCount;
-    UINT32                  i;
-
-
-    WordData = (UINT16 *) Op->Named.Data;
-    WordCount = ACPI_DIV_2 (Op->Common.Value.Integer32);
-
-
-    AcpiOsPrintf ("\"");
-    for (i = 0; i < (WordCount - 1); i++)
-    {
-        AcpiOsPrintf ("%c", WordData[i]);
-    }
-
-    AcpiOsPrintf ("\")");
-}
-
-
-/*******************************************************************************
- *
- * FUNCTION:    
- *
- * PARAMETERS:  Op              - Object to be examined
- *
- * RETURN:      Status
- *
- * DESCRIPTION: Decode control method flags
- *
- ******************************************************************************/
-
-void
-AcpiDmDoEisaId (
-    UINT32                  EncodedId)
-{
-    UINT32                  BigEndianId;
-
-
-    /* Swap from little-endian to big-endian to simplify conversion */
-
-    BigEndianId = AcpiUtDwordByteSwap (EncodedId);
-
-
-    /* Split to form "AAANNNN" string */
-
-    AcpiOsPrintf ("EisaId (\"%c%c%c%4.4X\")",
-
-        /* Alpha characters (AAA), 5 bits each */
-
-        ((BigEndianId >> 26) & 0x1F) + 0x40,
-        ((BigEndianId >> 21) & 0x1F) + 0x40,
-        ((BigEndianId >> 16) & 0x1F) + 0x40,
-
-        /* Numeric part (NNNN) is simply the lower 16 bits */
-
-        (BigEndianId & 0xFFFF));
-}
-
-
-/*******************************************************************************
- *
- * FUNCTION:    AcpiDmDoMethodFlags
- *
- * PARAMETERS:  Op              - Object to be examined
- *
- * RETURN:      Status
- *
- * DESCRIPTION: Decode control method flags
- *
- ******************************************************************************/
-
-ACPI_PARSE_OBJECT *
-AcpiDmDoMethodFlags (
+AcpiDmMethodFlags (
     ACPI_PARSE_OBJECT       *Op)
 {
     UINT32                  Flags;
@@ -462,7 +152,7 @@ AcpiDmDoMethodFlags (
 
     Op = AcpiPsGetDepthNext (NULL, Op);
     Flags = Op->Common.Value.Integer8;
-    Args = Flags & 0x7;
+    Args = Flags & 0x07;
 
     /* Mark the Op as completed */
 
@@ -474,7 +164,7 @@ AcpiDmDoMethodFlags (
 
     /* 2) Serialize rule */
 
-    if (!(Flags & 0x4))
+    if (!(Flags & 0x08))
     {
         AcpiOsPrintf ("Not");
     }
@@ -487,25 +177,23 @@ AcpiDmDoMethodFlags (
     {
         AcpiOsPrintf (", %d", Flags >> 4);
     }
-
-    return (Op);
 }
 
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiDmDoFieldFlags
+ * FUNCTION:    AcpiDmFieldFlags
  *
- * PARAMETERS:  Op              - Object to be examined
+ * PARAMETERS:  Op              - Field Object to be examined
  *
- * RETURN:      Status
+ * RETURN:      None
  *
- * DESCRIPTION: Decode control method flags
+ * DESCRIPTION: Decode Field definition flags
  *
  ******************************************************************************/
 
-ACPI_PARSE_OBJECT *
-AcpiDmDoFieldFlags (
+void
+AcpiDmFieldFlags (
     ACPI_PARSE_OBJECT       *Op)
 {
     UINT32                  Flags;
@@ -521,72 +209,91 @@ AcpiDmDoFieldFlags (
     Op->Common.DisasmFlags |= ACPI_PARSEOP_IGNORE;
 
     AcpiOsPrintf ("%s, ", AcpiGbl_AccessTypes [Flags & 0x0F]);
-    AcpiOsPrintf ("%s, ", AcpiGbl_LockRule [(Flags & 0x10) >> 5]);
-    AcpiOsPrintf ("%s)",  AcpiGbl_UpdateRules [(Flags & 0x60) >> 6]);
-
-
-    return (Op);
+    AcpiOsPrintf ("%s, ", AcpiGbl_LockRule [(Flags & 0x10) >> 4]);
+    AcpiOsPrintf ("%s)",  AcpiGbl_UpdateRules [(Flags & 0x60) >> 5]);
 }
 
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiDmDoRegionFlags
+ * FUNCTION:    AcpiDmAddressSpace
  *
- * PARAMETERS:  Op              - Object to be examined
+ * PARAMETERS:  SpaceId         - ID to be translated
  *
- * RETURN:      Status
+ * RETURN:      None
  *
- * DESCRIPTION: Decode region flags
+ * DESCRIPTION: Decode a SpaceId to an AddressSpaceKeyword
  *
  ******************************************************************************/
 
-ACPI_PARSE_OBJECT *
-AcpiDmDoRegionFlags (
+void
+AcpiDmAddressSpace (
+    UINT8                   SpaceId)
+{
+
+    if (SpaceId >= ACPI_NUM_PREDEFINED_REGIONS)
+    {
+        if (SpaceId == 0x7F)
+        {
+            AcpiOsPrintf ("FFixedHW, ");
+        }
+        else
+        {
+            AcpiOsPrintf ("0x%.2X, ", SpaceId);
+        }
+    }
+    else
+    {
+        AcpiOsPrintf ("%s, ", AcpiGbl_RegionTypes [SpaceId]);
+    }
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiDmRegionFlags
+ *
+ * PARAMETERS:  Op              - Object to be examined
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Decode OperationRegion flags
+ *
+ ******************************************************************************/
+
+void
+AcpiDmRegionFlags (
     ACPI_PARSE_OBJECT       *Op)
 {
-    UINT32                  SpaceId;
-
 
 
     /* The next Op contains the SpaceId */
 
     Op = AcpiPsGetDepthNext (NULL, Op);
-    SpaceId = Op->Common.Value.Integer8;
 
     /* Mark the Op as completed */
 
     Op->Common.DisasmFlags |= ACPI_PARSEOP_IGNORE;
 
-    if (SpaceId > ACPI_NUM_PREDEFINED_REGIONS)
-    {
-        AcpiOsPrintf (", 0x%.2X, ", SpaceId);
-    }
-    else
-    {
-        AcpiOsPrintf (", %s, ", AcpiGbl_RegionTypes [SpaceId]);
-    }
-
-
-    return (Op);
+    AcpiOsPrintf (", ");
+    AcpiDmAddressSpace (Op->Common.Value.Integer8);
 }
-
 
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiDmDoMethodOp
+ * FUNCTION:    AcpiDmMatchOp
  *
- * PARAMETERS:  Op              - Object to be examined
+ * PARAMETERS:  Op              - Match Object to be examined
  *
- * RETURN:      Status
+ * RETURN:      None
  *
- * DESCRIPTION: Decode region flags
+ * DESCRIPTION: Decode Match opcode operands
  *
  ******************************************************************************/
 
-ACPI_PARSE_OBJECT *
-AcpiDmDoMethodOp (
+void
+AcpiDmMatchOp (
     ACPI_PARSE_OBJECT       *Op)
 {
     ACPI_PARSE_OBJECT       *NextOp;
@@ -595,6 +302,13 @@ AcpiDmDoMethodOp (
     NextOp = AcpiPsGetDepthNext (NULL, Op);
     NextOp = NextOp->Common.Next;
 
+    // TBD: Children can be expressions */
+
+    if (!NextOp)
+    {
+        return;
+    }
+
     NextOp->Common.AmlOpcode = AML_INT_STATICSTRING_OP;
     NextOp->Common.Value.String = (char *) AcpiGbl_MatchOps[NextOp->Common.Value.Integer32];
 
@@ -602,107 +316,27 @@ AcpiDmDoMethodOp (
     NextOp = NextOp->Common.Next;
     NextOp->Common.AmlOpcode = AML_INT_STATICSTRING_OP;
     NextOp->Common.Value.String = (char *) AcpiGbl_MatchOps[NextOp->Common.Value.Integer32];
-
-    return (Op);
 }
-
 
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiDmCommaIfListMember 
+ * FUNCTION:    AcpiDmDisassembleOneOp
  *
- * PARAMETERS:  
+ * PARAMETERS:  WalkState           - Current walk info
+ *              Info                - Parse tree walk info
+ *              Op                  - Op that is to be printed
  *
  * RETURN:      None
  *
- * DESCRIPTION: Insert a comma if this Op is a member of an argument list.
+ * DESCRIPTION: Disassemble a single AML opcode
  *
  ******************************************************************************/
 
-BOOLEAN
-AcpiDmCommaIfListMember (
-    ACPI_PARSE_OBJECT       *Op)
-{
-
-    if (!Op->Common.Next)
-    {
-        return FALSE;
-    }
-
-    if (AcpiDmListType (Op->Common.Parent) & BLOCK_COMMA_LIST)
-    {
-        /* Check for a NULL target operand */
-
-        if ((Op->Common.Next->Common.AmlOpcode == AML_INT_NAMEPATH_OP) &&
-            (!Op->Common.Next->Common.Value.String))
-        {
-            return FALSE;
-        }
-
-        if ((Op->Common.DisasmFlags & ACPI_PARSEOP_PARAMLIST) &&
-            (!(Op->Common.Next->Common.DisasmFlags & ACPI_PARSEOP_PARAMLIST)))
-        {
-            return FALSE;
-        }
-
-        AcpiOsPrintf (", ");
-        return (TRUE);
-    }
-
-    else if ((Op->Common.DisasmFlags & ACPI_PARSEOP_PARAMLIST) &&
-        (Op->Common.Next->Common.DisasmFlags & ACPI_PARSEOP_PARAMLIST))
-    {
-        AcpiOsPrintf (", ");
-        return (TRUE);
-    }
-
-    return (FALSE);
-}
-
-
-/*******************************************************************************
- *
- * FUNCTION:    AcpiDmCommaIfFieldMember 
- *
- * PARAMETERS:  
- *
- * RETURN:      None
- *
- * DESCRIPTION: Insert a comma if this Op is a member of an argument list.
- *
- ******************************************************************************/
-
-void 
-AcpiDmCommaIfFieldMember (
-    ACPI_PARSE_OBJECT       *Op)
-{
-    if (Op->Common.Next)
-    {
-        AcpiOsPrintf (", ");
-    }
-}
-
-
-/*******************************************************************************
- *
- * FUNCTION:    AcpiDmDisplayOpcode
- *
- * PARAMETERS:  Op                  - Op that is to be printed
- *
- * RETURN:      Status
- *
- * DESCRIPTION: Store printed op in a Buffer and return its length
- *              (or -1 if out of space)
- *
- * NOTE: Terse mode prints out ASL-like code.  Verbose mode adds more info.
- *
- ******************************************************************************/
-
-ACPI_PARSE_OBJECT *
-AcpiDmDisplayOpcode (
+void
+AcpiDmDisassembleOneOp (
     ACPI_WALK_STATE         *WalkState,
-    ACPI_OP_WALK_INFO       *Info,    
+    ACPI_OP_WALK_INFO       *Info,
     ACPI_PARSE_OBJECT       *Op)
 {
     const ACPI_OPCODE_INFO  *OpInfo = NULL;
@@ -713,7 +347,7 @@ AcpiDmDisplayOpcode (
     if (!Op)
     {
         AcpiOsPrintf ("<NULL OP PTR>");
-        return (Op);
+        return;
     }
 
     /* op and arguments */
@@ -752,7 +386,14 @@ AcpiDmDisplayOpcode (
 
     case AML_WORD_OP:
 
-        AcpiOsPrintf ("0x%.2X", (UINT32) Op->Common.Value.Integer16);
+        if (Op->Common.DisasmFlags & ACPI_PARSEOP_SPECIAL)
+        {
+            AcpiDmEisaId (Op->Common.Value.Integer32);
+        }
+        else
+        {
+            AcpiOsPrintf ("0x%.2X", (UINT32) Op->Common.Value.Integer16);
+        }
         break;
 
 
@@ -760,26 +401,23 @@ AcpiDmDisplayOpcode (
 
         if (Op->Common.DisasmFlags & ACPI_PARSEOP_SPECIAL)
         {
-            AcpiDmDoEisaId (Op->Common.Value.Integer32);
+            AcpiDmEisaId (Op->Common.Value.Integer32);
+        }
+        else if ((Op->Common.Value.Integer32 == 0xFFFFFFFF) &&
+                (AcpiGbl_DSDT->Revision < 2))
+        {
+            AcpiOsPrintf ("Ones");
         }
         else
         {
-            if ((Op->Common.Value.Integer32 == 0xFFFFFFFF) &&
-                (AcpiGbl_DSDT->Revision < 2))
-            {
-                AcpiOsPrintf ("Ones");
-            }
-            else
-            {
-                AcpiOsPrintf ("0x%.2X", Op->Common.Value.Integer32);
-            }
+            AcpiOsPrintf ("0x%.2X", Op->Common.Value.Integer32);
         }
         break;
 
 
     case AML_QWORD_OP:
 
-        if ((Op->Common.Value.Integer == 0xFFFFFFFFFFFFFFFF) &&
+        if ((Op->Common.Value.Integer == ACPI_INTEGER_MAX) &&
             (AcpiGbl_DSDT->Revision >= 2))
         {
             AcpiOsPrintf ("Ones");
@@ -794,13 +432,13 @@ AcpiDmDisplayOpcode (
 
     case AML_STRING_OP:
 
-        AcpiDmDoString (Op->Common.Value.String);
+        AcpiDmString (Op->Common.Value.String);
         break;
 
 
     case AML_BUFFER_OP:
 
-        /* 
+        /*
          * Determine the type of buffer.  We can have one of the following:
          *
          * 1) ResourceTemplate containing Resource Descriptors.
@@ -812,7 +450,6 @@ AcpiDmDisplayOpcode (
          * types of buffers, we have to closely look at the data in the
          * buffer to determine the type.
          */
-
         if (AcpiDmIsResourceDescriptor (Op))
         {
             Op->Common.DisasmOpcode = ACPI_DASM_RESOURCE;
@@ -851,7 +488,8 @@ AcpiDmDisplayOpcode (
 
     case AML_INT_NAMEPATH_OP:
 
-        AcpiDmDisplayNamestring (Op->Common.Value.Name);
+        AcpiDmNamestring (Op->Common.Value.Name);
+        AcpiDmValidateName (Op->Common.Value.Name, Op);
         break;
 
 
@@ -860,7 +498,6 @@ AcpiDmDisplayOpcode (
         Length = AcpiDmDumpName ((char *) &Op->Named.Name);
         AcpiOsPrintf (",%*.s  %d", 5 - Length, " ", Op->Common.Value.Integer32);
         AcpiDmCommaIfFieldMember (Op);
-        AcpiOsPrintf ("\n");
 
         Info->BitOffset += Op->Common.Value.Integer32;
         break;
@@ -883,24 +520,22 @@ AcpiDmDisplayOpcode (
         }
 
         AcpiDmCommaIfFieldMember (Op);
-        AcpiOsPrintf ("\n");
         break;
 
 
     case AML_INT_ACCESSFIELD_OP:
 
-        AcpiOsPrintf ("AccessAs (%s, 0x%.2X)", 
-            AcpiGbl_AccessTypes [Op->Common.Value.Integer32 >> 8], 
+        AcpiOsPrintf ("AccessAs (%s, 0x%.2X)",
+            AcpiGbl_AccessTypes [Op->Common.Value.Integer32 >> 8],
             Op->Common.Value.Integer32 & 0x0F);
 
         AcpiDmCommaIfFieldMember (Op);
-        AcpiOsPrintf ("\n");
         break;
 
 
     case AML_INT_BYTELIST_OP:
 
-        AcpiDmDoByteList (Info, Op);
+        AcpiDmByteList (Info, Op);
         break;
 
 
@@ -910,7 +545,7 @@ AcpiDmDisplayOpcode (
         Op = AcpiPsGetDepthNext (NULL, Op);
         Op->Common.DisasmFlags |= ACPI_PARSEOP_IGNORE;
 
-        AcpiDmDisplayNamestring (Op->Common.Value.Name);
+        AcpiDmNamestring (Op->Common.Value.Name);
         break;
 
 
@@ -922,7 +557,7 @@ AcpiDmDisplayOpcode (
         AcpiOsPrintf ("%s", OpInfo->Name);
 
 
-#ifndef PARSER_ONLY
+#ifndef ACPI_APPLICATION
         if ((Op->Common.AmlOpcode == AML_INT_RETURN_VALUE_OP) &&
             (WalkState) &&
             (WalkState->Results) &&
@@ -934,8 +569,6 @@ AcpiDmDisplayOpcode (
 #endif
         break;
     }
-
-    return (Op);
 }
 
 #endif  /* ACPI_DISASSEMBLER */
