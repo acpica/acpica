@@ -15,15 +15,18 @@
  | control and status registers.
  |__________________________________________________________________________
  |
- | $Revision: 1.8 $
- | $Date: 2005/06/29 16:54:08 $
+ | $Revision: 1.9 $
+ | $Date: 2005/06/29 16:54:09 $
  | $Log: hwregs.c,v $
- | Revision 1.8  2005/06/29 16:54:08  aystarik
- | 16/32/64-bit common data types
+ | Revision 1.9  2005/06/29 16:54:09  aystarik
+ | Integrated with 03/99 OPSD code
  |
  | 
- | date	99.03.10.00.05.00;	author rmoore1;	state Exp;
+ | date	99.03.31.22.32.00;	author rmoore1;	state Exp;
  |
+ * 
+ * 9     3/31/99 2:32p Rmoore1
+ * Integrated with 03/99 OPSD code
  * 
  * 8     3/09/99 4:05p Rmoore1
  * 16/32/64-bit common data types
@@ -126,19 +129,16 @@
 */
 
 #define __DVREGS_C__
-#define _THIS_MODULE    "dvregs.c"
+#define _THIS_MODULE        "dvregs.c"
 
-#include <bu.h>
+#include <acpi.h>
+#include <acpirio.h>
+#include <acpipriv.h>
+
 #include <stdarg.h>
-#include "acpirio.h"
-#include "acpitbls.h"
-#include "acpipriv.h"
-#include "acpiasm.h"
-#include "acpiosd.h"
 
-#ifndef RMX
+
 #pragma check_stack (off)
-#endif
 
 
 /******************************************************************************
@@ -270,10 +270,8 @@ AcpiRegisterIO (INT32 ReadWrite, INT32 RegisterId, ... /* UINT32 Value */)
                     
                     if (Value)
                     {
-#if 0
-                        printf_bu ("\nAbout to write %04X to %04X", (UINT16) Value, 
+                        DEBUG_PRINT2 (DV_INFO, "About to write %04X to %04X\n", (UINT16) Value, 
                                     (UINT16) FACP->Pm1aEvtBlk);
-#endif
                         OsdOut16 ((UINT16) FACP->Pm1aEvtBlk, (UINT16) Value);
                         
                         if (FACP->Pm1bEvtBlk)
@@ -330,10 +328,10 @@ AcpiRegisterIO (INT32 ReadWrite, INT32 RegisterId, ... /* UINT32 Value */)
                     Value          <<= GetBitShift (Mask);
                     Value          &= Mask;
                     RegisterValue  |= Value;
-#if 0
-                    printf_bu ("\nAbout to write %04X to %04X", (UINT16) RegisterValue, 
+
+                    DEBUG_PRINT2 (DV_INFO, "About to write %04X to %04X\n", (UINT16) RegisterValue, 
                                 (UINT16) (FACP->Pm1aEvtBlk + FACP->Pm1EvtLen / 2));
-#endif
+
                     OsdOut16 ((UINT16) (FACP->Pm1aEvtBlk + FACP->Pm1EvtLen / 2), 
                             (UINT16) RegisterValue);
                     
@@ -361,7 +359,7 @@ AcpiRegisterIO (INT32 ReadWrite, INT32 RegisterId, ... /* UINT32 Value */)
                 RegisterValue = (UINT32) OsdIn16 ((UINT16)  FACP->Pm1aCntBlk);
             }
 
-            if (FACP->Pm1bEvtBlk && RegisterId != (INT32)SLP_TYPa)
+            if (FACP->Pm1bEvtBlk && RegisterId != (INT32) SLP_TYPa)
             {
                 RegisterValue |= (UINT32) OsdIn16 ((UINT16) FACP->Pm1bCntBlk);
             }
@@ -388,8 +386,8 @@ AcpiRegisterIO (INT32 ReadWrite, INT32 RegisterId, ... /* UINT32 Value */)
                 case SLP_EN:
                     Mask = SLP_EN_MASK;
                     break;
+
                 default:
-                
                     Mask = 0;
                     break;
             }
@@ -455,10 +453,10 @@ AcpiRegisterIO (INT32 ReadWrite, INT32 RegisterId, ... /* UINT32 Value */)
                 Value          <<= GetBitShift (Mask);
                 Value          &= Mask;
                 RegisterValue  |= Value;
-#if 0
-                printf_bu ("\nAbout to write %04X to %04X", (UINT16) RegisterValue, 
+
+                DEBUG_PRINT2 (DV_INFO, "About to write %04X to %04X\n", (UINT16) RegisterValue, 
                             (UINT16) FACP->Pm2CntBlk);
-#endif
+
                 OsdOut16 ((UINT16) FACP->Pm2CntBlk, (UINT16) RegisterValue);
             }
             break;
@@ -524,10 +522,10 @@ AcpiRegisterIO (INT32 ReadWrite, INT32 RegisterId, ... /* UINT32 Value */)
                
                 /* This write will put the iAction state into the General Purpose */
                 /* Enable Register indexed by the value in Mask */
-#if 0
-                printf_bu ("\nAbout to write %04X to %04X", (UINT16) RegisterValue, 
+
+                DEBUG_PRINT2 (DV_INFO, "About to write %04X to %04X\n", (UINT16) RegisterValue, 
                             (UINT16) GpeReg);
-#endif
+
                 OsdOut8 ((UINT16) GpeReg, (UINT8) RegisterValue);
                 RegisterValue = (UINT32) OsdIn8 ((UINT16) GpeReg);          
             }
@@ -545,9 +543,7 @@ AcpiRegisterIO (INT32 ReadWrite, INT32 RegisterId, ... /* UINT32 Value */)
     return (RegisterValue);
 }
 
-#ifndef RMX
 #pragma check_stack ()
-#endif
 
 
 /******************************************************************************
@@ -572,9 +568,7 @@ ClearAllAcpiChipsetStatusBits (void)
     FUNCTION_TRACE ("ClearAllAcpiChipsetStatusBits");
 
 
-#if 0
-    printf_bu ("\nAbout to write %04X to %04X", ALL_STS_BITS, (UINT16) FACP->Pm1aEvtBlk);
-#endif
+    DEBUG_PRINT2 (DV_INFO, "About to write %04X to %04X\n", ALL_FIXED_STS_BITS, (UINT16) FACP->Pm1aEvtBlk);
 
     OsdOut16 ((UINT16) FACP->Pm1aEvtBlk, (UINT16) ALL_FIXED_STS_BITS);
     
@@ -583,7 +577,7 @@ ClearAllAcpiChipsetStatusBits (void)
         OsdOut16 ((UINT16) FACP->Pm1bEvtBlk, (UINT16) ALL_FIXED_STS_BITS);
     }
 
-    /* now clear GPE Bits */
+    /* now clear the GPE Bits */
     
     if (FACP->Gpe0BlkLen)
     {
