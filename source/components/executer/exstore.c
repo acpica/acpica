@@ -27,7 +27,7 @@
  * Code in any form, with the right to sublicense such rights; and
  *
  * 2.3. Intel grants Licensee a non-exclusive and non-transferable patent
- * license (without the right to sublicense), under only those claims of Intel
+ * license (with the right to sublicense), under only those claims of Intel
  * patents that are infringed by the Original Intel Code, to make, use, sell,
  * offer to sell, and import the Covered Code and derivative works thereof
  * solely to the minimum extent necessary to exercise the above copyright
@@ -150,59 +150,32 @@ AmlExecuteMethod (
     ACPI_OBJECT_INTERNAL    **Params)
 {
     ACPI_STATUS             Status;
-    INT32                   i1;
-    INT32                   i2;
 
 
     FUNCTION_TRACE ("AmlExecuteMethod");
 
 
-    if ((Status = AmlPrepExec (Offset, Length)) != AE_OK)  /* package stack */
+    /* Prepare the package stack */
+
+    Status = AmlPrepExec (Offset, Length);
+    if (ACPI_FAILURE (Status))
     {
         DEBUG_PRINT (ACPI_ERROR, ("AmlExecuteMethod: Exec Stack Overflow\n"));
+        return_ACPI_STATUS (Status);
     }
 
     /* Push new frame on Method stack */
     
-    else if (++MethodStackTop >= AML_METHOD_MAX_NEST)
+    Status = AmlMthStackPush (Params);
+    if (ACPI_FAILURE (Status))
     {
-        MethodStackTop--;
-        DEBUG_PRINT (ACPI_ERROR, ("AmlExecuteMethod: Method Stack Overflow\n"));
-        Status = AE_AML_ERROR;
+        DEBUG_PRINT (ACPI_ERROR, ("AmlExecuteMethod: Could not push Method Stack\n"));
+
+        /* TBD: do we need to pop the package stack here? */
     }
 
     else
     {
-        /* Undefine all local variables */
-    
-        for (i1 = 0; (i1 < MTH_NUM_LOCALS) && (Status == AE_OK); ++i1)
-        {
-            Status = AmlMthStackSetValue (i1 + MTH_LOCAL_BASE, NULL, NULL);
-        }
-
-        if (AE_OK == Status)
-        {
-            /*  Copy passed parameters into method stack frame  */
-                
-            for (i2 = i1 = 0; (i1 < MTH_NUM_ARGS) && (AE_OK == Status); ++i1)
-            {   
-                if (Params && Params[i2])   
-                {
-                    /*  parameter/argument specified    */
-                    /*  define ppsParams[i2++] argument object descriptor   */
-                    
-                    Status = AmlMthStackSetValue (i1 + MTH_ARG_BASE, Params[i2++], NULL);
-                }
-                else    
-                {
-                    /*  no parameter/argument object descriptor definition  */
-                    
-                    Status = AmlMthStackSetValue (i1 + MTH_ARG_BASE, NULL, NULL);
-                }
-            }
-        }
-
-
         /* 
          * Normal exit is with Status == AE_RETURN_VALUE when a ReturnOp has been executed,
          * or with Status == AE_PENDING at end of AML block (end of Method code)
@@ -224,25 +197,24 @@ AmlExecuteMethod (
             if (AE_RETURN_VALUE == Status)
             {
                 DEBUG_PRINT (ACPI_INFO, ("Method returned: \n"));
-                DUMP_STACK_ENTRY ((ACPI_OBJECT_INTERNAL *) ObjStack[ObjStackTop]);
-                DEBUG_PRINT (ACPI_INFO, (" at stack level %d\n", ObjStackTop));
+                DUMP_STACK_ENTRY (AmlObjStackGetValue (STACK_TOP));
+                DEBUG_PRINT (ACPI_INFO, (" at stack level %d\n", AmlObjStackLevel()));
             }
 
             AmlPkgPopExec ();            /* package stack -- inverse of AmlPrepExec() */
         }
 
-        MethodStackTop--;          /* pop our frame off method stack */
-
+        AmlMthStackPop ();         /* pop our frame off method stack */
     }
 
-    if (ObjStackTop)
+
+    if (AmlObjStackLevel())
     {
-        DEBUG_PRINT (ACPI_INFO, ("AmlExecuteMethod: Obj stack at exit %p, idx=%d\n",
-                        ObjStack, ObjStackTop));
+        DEBUG_PRINT (ACPI_INFO, ("AmlExecuteMethod: Obj TOS at exit=%d\n",
+                        AmlObjStackLevel()));
     }
 
-    FUNCTION_STATUS_EXIT (Status);
-    return Status;
+    return_ACPI_STATUS (Status);
 }
 
 
@@ -296,36 +268,34 @@ AmlExecStore (
         /* Dest is an ACPI_HANDLE */
 
         TempHandle = (ACPI_HANDLE) DestDesc;
-        DestDesc = AllocateObjectDesc ();
+        DestDesc = CmCreateInternalObject (TYPE_Lvalue);
         if (!DestDesc)
         {   
             /* Allocation failure  */
             
-            FUNCTION_STATUS_EXIT (AE_NO_MEMORY);
-            return AE_NO_MEMORY;
+            return_ACPI_STATUS (AE_NO_MEMORY);
         }
         else
         {
             /* DestDesc is valid */
 
-            DestDesc->Type          = (UINT8) TYPE_Lvalue;
             DestDesc->Lvalue.OpCode = AML_NameOp;
             DestDesc->Lvalue.Object = TempHandle;
 
             /* 
-             * Push the descriptor on TOS temporarily
+             * Push the descriptor on the object stack temporarily
              * to protect it from garbage collection
              */
 
-            Status = AmlObjPushIfExec (MODE_Exec);
+            Status = AmlObjStackPushIfExec (MODE_Exec);
             if (AE_OK != Status)
             {
-                CmFree (DestDesc);
+                CmDeleteInternalObject (DestDesc);
                 DestDesc = NULL;
             }
             else
             {
-                ObjStack[ObjStackTop] = DestDesc;
+                AmlObjStackSetValue (STACK_TOP, DestDesc);
                 Stacked = TRUE;
             }
         }
@@ -358,8 +328,7 @@ AmlExecStore (
 
     if (AE_OK != Status)
     {
-        FUNCTION_STATUS_EXIT (Status);
-        return Status;   /* TBD: temporary hack */
+        return_ACPI_STATUS (Status);   /* TBD: temporary hack */
     }
 
 
@@ -425,10 +394,10 @@ AmlExecStore (
                 {
                     /* Must clear the top of the stack or it will get deleted twice */
 
-                    ObjStack[ObjStackTop] = NULL;
+                    AmlObjStackClearTop ();
                 }
 
-                DestDesc = NsGetValue (TempHandle);
+                DestDesc = NsGetAttachedObject (TempHandle);
                 if (!DestDesc)
                 {
                     DEBUG_PRINT (ACPI_ERROR, ("AmlExecStore/BankField: internal error: null old-value pointer\n"));
@@ -512,10 +481,10 @@ AmlExecStore (
                 {
                     /* Must clear the top of the stack or it will get deleted twice */
 
-                    ObjStack[ObjStackTop] = NULL;
+                    AmlObjStackClearTop ();
                 }
 
-                DestDesc = NsGetValue (TempHandle);
+                DestDesc = NsGetAttachedObject (TempHandle);
                 if (!DestDesc)
                 {
                     DEBUG_PRINT (ACPI_ERROR, ("AmlExecStore/DefField: internal error: null old-value pointer\n"));
@@ -582,10 +551,10 @@ AmlExecStore (
                 {
                     /* Must clear the top of the stack or it will get deleted twice */
 
-                    ObjStack[ObjStackTop] = NULL;
+                    AmlObjStackClearTop ();
                 }
 
-                DestDesc = NsGetValue (TempHandle);
+                DestDesc = NsGetAttachedObject (TempHandle);
                 if (!DestDesc)
                 {
                     DEBUG_PRINT (ACPI_ERROR, ("AmlExecStore/IndexField: internal error: null old-value pointer\n"));
@@ -666,10 +635,10 @@ AmlExecStore (
                 {
                     /* Must clear the top of the stack or it will get deleted twice */
 
-                    ObjStack[ObjStackTop] = NULL;
+                    AmlObjStackClearTop ();
                 }
 
-                DestDesc = NsGetValue (TempHandle);
+                DestDesc = NsGetAttachedObject (TempHandle);
                 if (!DestDesc)
                 {
                     DEBUG_PRINT (ACPI_ERROR, ("AmlExecStore/FieldUnit: internal error: null old-value pointer\n"));
@@ -778,7 +747,11 @@ AmlExecStore (
              * Store a copy of ValDesc as the new value of the Name, and set
              * the Name's type to that of the value being stored in it.
              */
-            memcpy ((void *) DestDesc, (void *) ValDesc, sizeof (*ValDesc));
+            CmCopyInternalObject (ValDesc, DestDesc);
+            if (ACPI_FAILURE (Status))
+            {
+                return_ACPI_STATUS (Status);
+            }
             
             if (TYPE_Buffer == DestDesc->Type)
             {
@@ -788,7 +761,7 @@ AmlExecStore (
             }
 
 
-            NsSetValue (TempHandle, DestDesc, DestDesc->Type);
+            NsAttachObject (TempHandle, DestDesc, DestDesc->Type);
 
             if (Stacked)
             {
@@ -818,14 +791,14 @@ AmlExecStore (
     case AML_Local0: case AML_Local1: case AML_Local2: case AML_Local3:
     case AML_Local4: case AML_Local5: case AML_Local6: case AML_Local7:
 
-        Status = AmlMthStackSetValue (MTH_LOCAL_BASE + DestDesc->Lvalue.OpCode - AML_Local0, ValDesc, DestDesc);
+        Status = AmlMthStackSetValue (MTH_TYPE_LOCAL, (DestDesc->Lvalue.OpCode - AML_Local0), ValDesc, DestDesc);
         break;
 
 
     case AML_Arg0: case AML_Arg1: case AML_Arg2: case AML_Arg3:
     case AML_Arg4: case AML_Arg5: case AML_Arg6:
 
-        Status = AmlMthStackSetValue (MTH_ARG_BASE + DestDesc->Lvalue.OpCode - AML_Arg0, ValDesc, DestDesc);
+        Status = AmlMthStackSetValue (MTH_TYPE_ARG, (DestDesc->Lvalue.OpCode - AML_Arg0), ValDesc, DestDesc);
         break;
 
 
@@ -869,8 +842,8 @@ AmlExecStore (
 
     if (DeleteDestDesc)
     {
-        CmFree (DeleteDestDesc);
-        if (ObjStack[ObjStackTop] == DeleteDestDesc)
+        CmDeleteInternalObject (DeleteDestDesc);
+        if (AmlObjStackGetValue (STACK_TOP) == DeleteDestDesc)
         {
             /* 
              * Clear the object from the stack entry so that it won't be used
@@ -878,19 +851,18 @@ AmlExecStore (
              */
 
             DEBUG_PRINT (ACPI_ERROR, ("AmlExecStore - Deleted desc was at stack top %p (idx %d)\n",
-                            &ObjStack[ObjStackTop], ObjStackTop));
-            ObjStack[ObjStackTop] = NULL;
+                            AmlObjStackGetTopPtr (), AmlObjStackLevel ()));
+            
+            AmlObjStackClearTop ();
         }
     }
 
     if (Stacked)
     {
-        ObjStack[ObjStackTop] = NULL;
-        ObjStackTop--;
+        AmlObjStackPop (1);
     }
 
-    FUNCTION_STATUS_EXIT (Status);
-    return Status;
+    return_ACPI_STATUS (Status);
 }
 
 
