@@ -758,7 +758,7 @@ PsParseTable (
     DEBUG_PRINT (TRACE_PARSE, ("PsParseTable: Building Internal Namespace\n"));
 BREAKPOINT3;
 
-    PsWalkParsedAml (PsGetChild (Gbl_ParsedNamespaceRoot), Gbl_ParsedNamespaceRoot, NULL, NULL,
+    PsWalkParsedAml (PsGetChild (Gbl_ParsedNamespaceRoot), Gbl_ParsedNamespaceRoot, NULL, NULL, NULL,
                         DescendingCallback, AscendingCallback);
 
 
