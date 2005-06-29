@@ -830,36 +830,30 @@ AmlExecStore (
                 if (ACPI_TYPE_Package == TmpDesc->Common.Type)
                 {
                     Status = CmBuildCopyInternalPackageObject (ValDesc, TmpDesc);
-                    if (ACPI_SUCCESS (Status))
+                    if (ACPI_FAILURE (Status))
                     {
-                        /* Add a ref for being part of the parent package */
-
-                        CmAddReference (TmpDesc);               
-                    }
-                    else
-                    {
-                        /* 
-                         * An error occurred when copying the internal object
-                         *  so delete the reference.
-                         */
                         CmRemoveReference (TmpDesc);
                         TmpDesc = NULL;
                         goto Cleanup;
                     }
                 }
 
+                /* 
+                 * Install the new descriptor into the package and add a reference to the 
+                 * newly created descriptor for now being part of the parent package 
+                 */
 
-                *(DestDesc->Reference.Where) = TmpDesc;     /* Install new object into the package */
+                *(DestDesc->Reference.Where) = TmpDesc;
+                CmAddReference (TmpDesc);   
             }
 
             if (ACPI_TYPE_Package != TmpDesc->Common.Type)
             {
                 /* 
-                 * The destination element is not a package, so
-                 *  we need to convert the contents of the source
-                 *  (ValDesc) and copy into the destination (TmpDesc)
+                 * The destination element is not a package, so we need to convert the contents of
+                 * the source (ValDesc) and copy into the destination (TmpDesc)
                  */
-                Status = CmCopyInternalSimpleObject(ValDesc, TmpDesc);
+                Status = CmCopyInternalSimpleObject (ValDesc, TmpDesc);
                 if (ACPI_FAILURE (Status))
                 {
                     /* 
@@ -869,10 +863,6 @@ AmlExecStore (
                     DEBUG_PRINT (ACPI_ERROR, ("AmlExecStore/Index: Unable to copy the internal object\n"));
                     Status = AE_AML_OPERAND_TYPE;
                 }
-
-                /* Add a ref for being part of the parent package */
-
-                CmAddReference (TmpDesc);               
             }
 
             break;
