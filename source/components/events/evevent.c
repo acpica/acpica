@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: evevent - Fixed and General Purpose Even handling and dispatch
- *              $Revision: 1.100 $
+ *              $Revision: 1.101 $
  *
  *****************************************************************************/
 
@@ -422,7 +422,7 @@ AcpiEvGpeInitialize (void)
     /*
      * Initialize the GPE Block globals
      *
-     * Why the GPE register block lengths divided by 2:  From the ACPI Spec,
+     * Why the GPE register block lengths are divided by 2:  From the ACPI Spec,
      * section "General-Purpose Event Registers", we have:
      *
      * "Each register block contains two registers of equal length
@@ -456,15 +456,15 @@ AcpiEvGpeInitialize (void)
     {
         /* GPE block 0 exists (has both length and address > 0) */
 
-        AcpiGbl_GpeBlockInfo[0].RegisterCount   = (UINT16) ACPI_DIV_16 (AcpiGbl_FADT->XGpe0Blk.RegisterBitWidth);
-        AcpiGbl_GpeNumberMax                    = ACPI_MUL_8 (AcpiGbl_GpeBlockInfo[0].RegisterCount) - 1;
+        AcpiGbl_GpeBlockInfo[0].RegisterCount = (UINT16) (AcpiGbl_FADT->XGpe0Blk.RegisterBitWidth / (ACPI_GPE_REGISTER_WIDTH * 2));
+        AcpiGbl_GpeNumberMax                  = (AcpiGbl_GpeBlockInfo[0].RegisterCount * ACPI_GPE_REGISTER_WIDTH) - 1;
     }
 
     if (AcpiGbl_FADT->XGpe1Blk.RegisterBitWidth && ACPI_GET_ADDRESS (AcpiGbl_FADT->XGpe1Blk.Address))
     {
         /* GPE block 1 exists (has both length and address > 0) */
 
-        AcpiGbl_GpeBlockInfo[1].RegisterCount   = (UINT16) ACPI_DIV_16 (AcpiGbl_FADT->XGpe1Blk.RegisterBitWidth);
+        AcpiGbl_GpeBlockInfo[1].RegisterCount   = (UINT16) (AcpiGbl_FADT->XGpe1Blk.RegisterBitWidth / (ACPI_GPE_REGISTER_WIDTH * 2));
 
         /* Check for GPE0/GPE1 overlap (if both banks exist) */
 
@@ -474,7 +474,7 @@ AcpiEvGpeInitialize (void)
             ACPI_REPORT_ERROR ((
                 "GPE0 block (GPE 0 to %d) overlaps the GPE1 block (GPE %d to %d) - Ignoring GPE1\n",
                 AcpiGbl_GpeNumberMax, AcpiGbl_FADT->Gpe1Base, 
-                AcpiGbl_FADT->Gpe1Base + (ACPI_MUL_8 (AcpiGbl_GpeBlockInfo[1].RegisterCount) - 1)));
+                AcpiGbl_FADT->Gpe1Base + ((AcpiGbl_GpeBlockInfo[1].RegisterCount * ACPI_GPE_REGISTER_WIDTH) - 1)));
 
             /* Ignore GPE1 block by setting the register count to zero */
 
@@ -487,7 +487,7 @@ AcpiEvGpeInitialize (void)
              * But, GPE0 always starts at zero.
              */
             AcpiGbl_GpeNumberMax = AcpiGbl_FADT->Gpe1Base + 
-                                    (ACPI_MUL_8 (AcpiGbl_GpeBlockInfo[1].RegisterCount) - 1);
+                                    ((AcpiGbl_GpeBlockInfo[1].RegisterCount * ACPI_GPE_REGISTER_WIDTH) - 1);
         }
     }
 
@@ -544,7 +544,7 @@ AcpiEvGpeInitialize (void)
      * per register.  Initialization to zeros is sufficient.
      */
     AcpiGbl_GpeNumberInfo = ACPI_MEM_CALLOCATE (
-                                (ACPI_SIZE) ACPI_MUL_8 (AcpiGbl_GpeRegisterCount) *
+                                (ACPI_SIZE) (AcpiGbl_GpeRegisterCount * ACPI_GPE_REGISTER_WIDTH) *
                                 sizeof (ACPI_GPE_NUMBER_INFO));
     if (!AcpiGbl_GpeNumberInfo)
     {
@@ -571,7 +571,7 @@ AcpiEvGpeInitialize (void)
             /* Init the Register info for this entire GPE register (8 GPEs) */
 
             GpeRegisterInfo->BaseGpeNumber = (UINT8) (AcpiGbl_GpeBlockInfo[GpeBlock].BlockBaseNumber
-                                                        + (ACPI_MUL_8 (i)));
+                                                        + (i * ACPI_GPE_REGISTER_WIDTH));
 
             ACPI_STORE_ADDRESS (GpeRegisterInfo->StatusAddress.Address,
                                 (ACPI_GET_ADDRESS (AcpiGbl_GpeBlockInfo[GpeBlock].BlockAddress->Address)
@@ -584,14 +584,14 @@ AcpiEvGpeInitialize (void)
 
             GpeRegisterInfo->StatusAddress.AddressSpaceId    = AcpiGbl_GpeBlockInfo[GpeBlock].BlockAddress->AddressSpaceId;
             GpeRegisterInfo->EnableAddress.AddressSpaceId    = AcpiGbl_GpeBlockInfo[GpeBlock].BlockAddress->AddressSpaceId;
-            GpeRegisterInfo->StatusAddress.RegisterBitWidth  = 8;
-            GpeRegisterInfo->EnableAddress.RegisterBitWidth  = 8;
-            GpeRegisterInfo->StatusAddress.RegisterBitOffset = 8;
-            GpeRegisterInfo->EnableAddress.RegisterBitOffset = 8;
+            GpeRegisterInfo->StatusAddress.RegisterBitWidth  = ACPI_GPE_REGISTER_WIDTH;
+            GpeRegisterInfo->EnableAddress.RegisterBitWidth  = ACPI_GPE_REGISTER_WIDTH;
+            GpeRegisterInfo->StatusAddress.RegisterBitOffset = ACPI_GPE_REGISTER_WIDTH;
+            GpeRegisterInfo->EnableAddress.RegisterBitOffset = ACPI_GPE_REGISTER_WIDTH;
 
             /* Init the Index mapping info for each GPE number within this register */
 
-            for (j = 0; j < 8; j++)
+            for (j = 0; j < ACPI_GPE_REGISTER_WIDTH; j++)
             {
                 GpeNumber = GpeRegisterInfo->BaseGpeNumber + j;
                 AcpiGbl_GpeNumberToIndex[GpeNumber].NumberIndex = (UINT8) GpeNumberIndex;
@@ -605,13 +605,13 @@ AcpiEvGpeInitialize (void)
              * are cleared by writing a '1', while enable registers are cleared
              * by writing a '0'.
              */
-            Status = AcpiHwLowLevelWrite (8, 0x00, &GpeRegisterInfo->EnableAddress, 0);
+            Status = AcpiHwLowLevelWrite (ACPI_GPE_REGISTER_WIDTH, 0x00, &GpeRegisterInfo->EnableAddress, 0);
             if (ACPI_FAILURE (Status))
             {
                 return_ACPI_STATUS (Status);
             }
 
-            Status = AcpiHwLowLevelWrite (8, 0xFF, &GpeRegisterInfo->StatusAddress, 0);
+            Status = AcpiHwLowLevelWrite (ACPI_GPE_REGISTER_WIDTH, 0xFF, &GpeRegisterInfo->StatusAddress, 0);
             if (ACPI_FAILURE (Status))
             {
                 return_ACPI_STATUS (Status);
@@ -631,7 +631,7 @@ AcpiEvGpeInitialize (void)
                 (INT32) GpeBlock,
                 (UINT32) AcpiGbl_GpeBlockInfo[GpeBlock].BlockBaseNumber,
                 (UINT32) (AcpiGbl_GpeBlockInfo[GpeBlock].BlockBaseNumber +
-                    ((AcpiGbl_GpeBlockInfo[GpeBlock].RegisterCount * 8) -1))));
+                    ((AcpiGbl_GpeBlockInfo[GpeBlock].RegisterCount * ACPI_GPE_REGISTER_WIDTH) -1))));
         }
     }
 
@@ -839,14 +839,14 @@ AcpiEvGpeDetect (void)
     {
         GpeRegisterInfo = &AcpiGbl_GpeRegisterInfo[i];
 
-        Status = AcpiHwLowLevelRead (8, &InValue, &GpeRegisterInfo->StatusAddress, 0);
+        Status = AcpiHwLowLevelRead (ACPI_GPE_REGISTER_WIDTH, &InValue, &GpeRegisterInfo->StatusAddress, 0);
         GpeRegisterInfo->Status = (UINT8) InValue;
         if (ACPI_FAILURE (Status))
         {
             return (ACPI_INTERRUPT_NOT_HANDLED);
         }
 
-        Status = AcpiHwLowLevelRead (8, &InValue, &GpeRegisterInfo->EnableAddress, 0);
+        Status = AcpiHwLowLevelRead (ACPI_GPE_REGISTER_WIDTH, &InValue, &GpeRegisterInfo->EnableAddress, 0);
         GpeRegisterInfo->Enable = (UINT8) InValue;
         if (ACPI_FAILURE (Status))
         {
@@ -873,7 +873,7 @@ AcpiEvGpeDetect (void)
 
         /* Now look at the individual GPEs in this byte register */
 
-        for (j = 0, BitMask = 1; j < 8; j++, BitMask <<= 1)
+        for (j = 0, BitMask = 1; j < ACPI_GPE_REGISTER_WIDTH; j++, BitMask <<= 1)
         {
             /* Examine one GPE bit */
 
