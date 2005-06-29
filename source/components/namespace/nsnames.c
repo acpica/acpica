@@ -254,13 +254,13 @@ NsHandleToPathname (
          * this function should not have been called.
          */
 
-        FUNCTION_EXIT;
+        FUNCTION_STATUS_EXIT (AE_NO_NAMESPACE);
         return AE_NO_NAMESPACE;
     }
 
     if (!(EntryToSearch = NsConvertHandleToEntry (TargetHandle)))
     {
-        FUNCTION_EXIT;
+        FUNCTION_STATUS_EXIT (AE_BAD_PARAMETER);
         return AE_BAD_PARAMETER;
     }
 
@@ -279,7 +279,7 @@ NsHandleToPathname (
     FqnSize = Size + 1;
     if (FqnSize > BufSize)
     {
-        FUNCTION_EXIT;
+        FUNCTION_STATUS_EXIT (AE_BUFFER_OVERFLOW);
         return AE_BUFFER_OVERFLOW;
     }
 
@@ -318,7 +318,7 @@ NsHandleToPathname (
     /* Overlay the "." preceding the first segment with root name "\" */
     
     UserBuffer[Size] = '\\';
-    FUNCTION_EXIT;
+    FUNCTION_STATUS_EXIT (AE_OK);
     return AE_OK;
 }
 
