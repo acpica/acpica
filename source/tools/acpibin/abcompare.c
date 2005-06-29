@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: abcompare - compare AML files
- *              $Revision: 1.9 $
+ *              $Revision: 1.11 $
  *
  *****************************************************************************/
 
@@ -244,9 +244,9 @@ AbCompareAmlFiles (
         {
             printf ("Error - Byte mismatch at offset %8.8X: 0x%2.2X 0x%2.2X\n", Offset, Char1, Char2);
             Mismatches++;
-            if (Mismatches > 10)
+            if (Mismatches > 100)
             {
-                printf ("10 Mismatches: Too many mismatches\n");
+                printf ("100 Mismatches: Too many mismatches\n");
                 return 0;
             }
         }
@@ -374,20 +374,8 @@ AbDumpAmlFile (
 
 #define DB_CONSOLE_OUTPUT       0x02
 
-FILE                        *DebugFile = NULL;
+FILE                        *AcpiGbl_DebugFile = NULL;
 UINT8                       AcpiGbl_DbOutputFlags = DB_CONSOLE_OUTPUT ;
-
-
-void *
-AcpiUtCallocate (
-    UINT32                  Size,
-    UINT32                  Component,
-    NATIVE_CHAR             *Module,
-    UINT32                  Line)
-{
-
-    return NULL;
-}
 
 void
 AcpiUtFree (
@@ -408,3 +396,12 @@ AcpiUtMemset (
 {
     return (Dest);
 }
+
+ACPI_STATUS
+AeLocalGetRootPointer (
+    UINT32                  Flags,
+    ACPI_PHYSICAL_ADDRESS   *RsdpPhysicalAddress)
+{
+    return AE_OK;
+}
+
