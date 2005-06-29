@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asltree - parse tree management
- *              $Revision: 1.34 $
+ *              $Revision: 1.35 $
  *
  *****************************************************************************/
 
@@ -588,8 +588,8 @@ TrLinkChildren (
     TrSetEndLineNumber (Node);
 
     DbgPrint (ASL_PARSE_OUTPUT,
-        "\nLinkChildren  Line %d NewParent %p Child %d Op %s  ",
-        Node->LineNumber,
+        "\nLinkChildren  Line [%d to %d] NewParent %p Child %d Op %s  ",
+        Node->LineNumber, Node->EndLine,
         Node, NumChildren, UtGetOpName(Node->ParseOpcode));
     RootNode = Node;
 
