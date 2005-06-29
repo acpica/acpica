@@ -36,6 +36,91 @@ static ST_KEY_DESC_TABLE KDT[] = {
 };
 
 
+/*****************************************************************************
+ * 
+ * FUNCTION:    DumpBuffer
+ *
+ * RETURN:      none
+ *
+ * DESCRIPTION: Generic dump buffer in hex and ascii.
+ *
+ ****************************************************************************/
+
+void
+DumpBuffer (char *Buffer, UINT32 Count, INT32 Flags, INT32 ComponentId)
+{
+    UINT32      i = 0;
+    UINT32      j;
+    UINT8       BufChar;
+
+
+    /* Only dump the buffer if tracing is enabled */
+
+    if (!((TRACE_TABLES & DebugLevel) && (ComponentId & DebugLayer)))
+    {
+        return;
+    }
+
+
+    /*
+     * Nasty little dump buffer routine!
+     */
+    while (i <= Count)
+    {
+        /* Print current offset */
+
+        OsdPrintf (NULL, "%05X    ", i);
+
+
+        /* Print 16 hex chars */
+
+        for (j = 0; j < 16; j++)
+        {
+            if (i + j >= Count)
+                goto cleanup;
+
+
+            /* Make sure that the char doesn't get sign-extended! */
+
+            BufChar = Buffer[i + j];
+            OsdPrintf (NULL, "%02X ", BufChar);
+        }
+
+        /* 
+         * Print the ASCII equivalent characters
+         * But watch out for the bad unprintable ones...
+         */
+
+        for (j = 0; j < 16; j++)
+        {
+            if (i + j >= Count)
+                goto cleanup;
+
+            BufChar = Buffer[i + j];
+            if ((BufChar > 0x1F && BufChar < 0x2E) ||
+                (BufChar > 0x2F && BufChar < 0x61) ||
+                (BufChar > 0x60 && BufChar < 0x7F))
+
+                OsdPrintf (NULL, "%c", BufChar);
+            else
+                OsdPrintf (NULL, ".");
+                
+        }
+
+        /* Done with that line. */
+
+        OsdPrintf (NULL, "\n");
+        i += 16;
+    }
+
+    return;
+
+cleanup:
+    OsdPrintf (NULL, "\n");
+    return;
+
+}
+
 
 /******************************************************************************
  * 
@@ -67,7 +152,7 @@ DumpCode (OpMode LoadExecMode)
         return;
     }
 
-    DEBUG_PRINT (ACPI_INFO, ("Hex dump of remainder of AML package:\n"));
+    DEBUG_PRINT (TRACE_TABLES, ("Hex dump of remainder of AML package:\n"));
 
     /* dump the package, but not too much of it */
 
@@ -121,8 +206,8 @@ DumpAMLBuffer (size_t NumBytes)
     FUNCTION_TRACE ("DumpAMLBuffer");
 
 
-    DEBUG_PRINT (ACPI_INFO, ("AML from %p:\n", PCodeHandle ()));
-    DumpBuffer ((UINT8 *) PCodeHandle (), NumBytes, HEX);
+    DEBUG_PRINT (TRACE_TABLES, ("AML from %p:\n", PCodeHandle ()));
+    DumpBuffer ((UINT8 *) PCodeHandle (), NumBytes, HEX, INTERPRETER);
 }
 
 
@@ -515,4 +600,237 @@ DumpStack (OpMode LoadExecMode, char *Ident, INT32 NumLevels, char *Note)
         }
     }
 }
+
+
+/*****************************************************************************
+ * 
+ * FUNCTION:    DumpObjectDescriptor
+ *
+ * DESCRIPTION: Dumps the members of the object descriptor given.
+ *
+ ****************************************************************************/
+
+void
+DumpObjectDescriptor (OBJECT_DESCRIPTOR *Object)
+{
+	
+	FUNCTION_TRACE ("DumpObjectDescriptor");
+
+		
+	switch (Object->ValType)
+	{
+	case Number:
+
+		DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %s\n", "ValType", "Number"));
+        DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "Reserved1", Object->Number.Reserved1));
+        DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "Reserved2", Object->Number.Reserved2));
+        DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "Number", Object->Number.Number));
+        DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "Reserved3", Object->Number.Reserved3));
+        DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "Reserved4", Object->Number.Reserved4));
+        DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "Reserved5", Object->Number.Reserved5));
+		break;
+    
+	case String:
+
+	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %s\n", "ValType", "String"));
+        DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "Reserved1", Object->String.Reserved1));
+        DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "StrLen", Object->String.StrLen));
+        DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "Reserved2", Object->String.Reserved2));
+        DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "Reserved3", Object->String.Reserved3));
+        DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "String", Object->String.String));
+        DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "Reserved4", Object->String.Reserved4));
+		break;
+
+	case Buffer:
+
+		DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %s\n", "ValType", "Buffer"));
+        DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "Reserved1", Object->Buffer.Reserved1));
+		DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "BufLen", Object->Buffer.BufLen));
+        DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "Reserved2", Object->Buffer.Reserved2));
+        DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "Sequence", Object->Buffer.Sequence));
+        DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "Buffer", Object->Buffer.Buffer));
+        DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "Reserved4", Object->Buffer.Reserved4));
+		break;
+        
+        
+	case Package:
+
+		DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %s\n", "ValType", "Package"));
+	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "Reserved1", Object->Package.Reserved1));
+	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "PkgCount", Object->Package.PkgCount));
+	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "Reserved2", Object->Package.Reserved2));
+	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "Reserved3", Object->Package.Reserved3));
+	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "PackageElems", Object->Package.PackageElems));
+	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "NextElement", Object->Package.NextElement));
+		break;
+        
+	case FieldUnit:
+
+		DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %s\n", "ValType", "FieldUnit"));
+		DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "Access", Object->FieldUnit.Access));
+	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "LockRule", Object->FieldUnit.LockRule));
+	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "UpdateRule", Object->FieldUnit.UpdateRule));
+	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "Reserved1", Object->FieldUnit.Reserved1));
+	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "DatLen", Object->FieldUnit.DatLen));
+	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "BitOffset", Object->FieldUnit.BitOffset));
+	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "Offset", Object->FieldUnit.Offset));
+	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "ConSeq", Object->FieldUnit.ConSeq));
+	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "Container", Object->FieldUnit.Container));
+	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "Reserved3", Object->FieldUnit.Reserved3));
+	    break;
+        
+	case Device:
+
+		DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %s\n", "ValType", "Device"));
+	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "Reserved1", Object->Device.Reserved1));
+	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "Reserved2", Object->Device.Reserved2));
+	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "Reserved3", Object->Device.Reserved3));
+	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "Reserved4", Object->Device.Reserved4));
+	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "Device", Object->Device.Device));
+	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "Reserved5", Object->Device.Reserved5));
+        break;
+
+	case Event:
+
+		DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %s\n", "ValType", "Event"));
+	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "Reserved1", Object->Event.Reserved1));
+	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "SignalCount", Object->Event.SignalCount));
+	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "Semaphore", Object->Event.Semaphore));
+	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "LockCount", Object->Event.LockCount));
+	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "ThreadId", Object->Event.ThreadId));
+	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "Reserved4", Object->Event.Reserved4));
+	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "Reserved5", Object->Event.Reserved5));
+	    break;
+
+	case Method:
+
+		DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %s\n", "ValType", "Method"));
+	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "NumParam", Object->Method.NumParam));
+	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "Length", Object->Method.Length));
+	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "AmlOffset", Object->Method.AmlOffset));
+	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "Reserved3", Object->Method.Reserved3));
+	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "AmlBase", Object->Method.AmlBase));
+	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "Reserved4", Object->Method.Reserved4));
+	    break;
+	
+	case Mutex:
+
+		DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %s\n", "ValType", "Mutex"));
+	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "SyncLevel", Object->Mutex.SyncLevel));
+	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "Reserved2", Object->Mutex.Reserved2));
+	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "Semaphore", Object->Mutex.Semaphore));
+	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "LockCount", Object->Mutex.LockCount));
+	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "ThreadId", Object->Mutex.ThreadId));
+	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "Reserved4", Object->Mutex.Reserved4));
+	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "Reserved5", Object->Mutex.Reserved5));
+	    break;
+
+	case Region:
+
+		DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %s\n", "ValType", "Region"));
+	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "SpaceId", Object->Region.SpaceId));
+	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "AdrLenValid", Object->Region.AdrLenValid));
+	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "Address", Object->Region.Address));
+	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "Length", Object->Region.Length));
+	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "AdrLoc", Object->Region.AdrLoc));
+	    break;
+
+	case Power:
+
+		DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %s\n", "ValType", "PowerResource"));
+	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "Reserved1", Object->PowerResource.Reserved1));
+	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "Reserved2", Object->PowerResource.Reserved2));
+	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "Reserved3", Object->PowerResource.Reserved3));
+	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "Reserved4", Object->PowerResource.Reserved4));
+	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "PowerResource", Object->PowerResource.PowerResource));
+	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "Reserved5", Object->PowerResource.Reserved5));
+	    break;
+
+	case Processor:
+
+		DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %s\n", "ValType", "Processor"));
+	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "Reserved1", Object->Processor.Reserved1));
+	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "Reserved2", Object->Processor.Reserved2));
+	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "Reserved3", Object->Processor.Reserved3));
+	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "Reserved4", Object->Processor.Reserved4));
+	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "Processor", Object->Processor.Processor));
+	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "Reserved5", Object->Processor.Reserved5));
+	    break;
+
+	case Thermal:
+
+		DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %s\n", "ValType", "ThermalZone"));
+	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "Reserved1", Object->ThermalZone.Reserved1));
+	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "Reserved2", Object->ThermalZone.Reserved2));
+	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "Reserved3", Object->ThermalZone.Reserved3));
+	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "Reserved4", Object->ThermalZone.Reserved4));
+	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "ThermalZone", Object->ThermalZone.ThermalZone));
+	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "Reserved5", Object->ThermalZone.Reserved5));
+	    break;
+
+	case BankField:
+
+		DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %s\n", "ValType", "BankField"));
+	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "Access", Object->BankField.Access));
+	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "LockRule", Object->BankField.LockRule));
+	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "UpdateRule", Object->BankField.UpdateRule));
+	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "Reserved1", Object->BankField.Reserved1));
+	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "DatLen", Object->BankField.DatLen));
+	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "BitOffset", Object->BankField.BitOffset));
+	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "Offset", Object->BankField.Offset));
+	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "BankVal", Object->BankField.BankVal));
+		DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "Container", Object->BankField.Container));
+	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "BankSelect", Object->BankField.BankSelect));
+	    break;
+
+	case IndexField:
+
+		DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %s\n", "ValType", "IndexField"));
+	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "Access", Object->IndexField.Access));
+	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "LockRule", Object->IndexField.LockRule));
+	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "UpdateRule", Object->IndexField.UpdateRule));
+	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "Reserved1", Object->IndexField.Reserved1));
+	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "DatLen", Object->IndexField.DatLen));
+	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "BitOffset", Object->IndexField.BitOffset));
+	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "IndexVal", Object->IndexField.IndexVal));
+	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "Reserved2", Object->IndexField.Reserved2));
+		DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "Index", Object->IndexField.Index));
+	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "Data", Object->IndexField.Data));
+	    break;
+
+	case Lvalue:
+
+		DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %s\n", "ValType", "Lvalue"));
+	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "OpCode", Object->Lvalue.OpCode));
+	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "Reserved1", Object->Lvalue.Reserved1));
+	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "Reserved2", Object->Lvalue.Reserved2));
+	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "Reserved3", Object->Lvalue.Reserved3));
+	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "Ref", Object->Lvalue.Ref));
+	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "Reserved4", Object->Lvalue.Reserved4));
+		break;
+	
+	case Alias:
+	case DefField:
+	case DefFieldDefn:
+	case BankFieldDefn:
+	case IndexFieldDefn:
+	case If:
+	case Else:
+	case While:
+	case Scope:
+	case DefAny:
+
+		DEBUG_PRINT (ACPI_ERROR, ("*** Structure display not implemented for type %d! ***\n",
+                        Object->ValType));
+		break;
+
+
+	default:
+
+		DEBUG_PRINT (ACPI_ERROR, ("*** Cannot display unknown type %d! ***\n", Object->ValType));
+		break;
+	}
+
+}
+
 
