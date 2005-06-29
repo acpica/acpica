@@ -551,7 +551,7 @@ typedef struct /* Lvalue - Local object type */
 
     void                    *Object;            /* NameOp=>HANDLE to obj, IndexOp=>ACPI_OBJECT_INTERNAL */
     NAME_TABLE_ENTRY        *Nte;
-    void                    *Reserved_p3;
+    union AcpiObjInternal   **Where;  
     void                    *Reserved_p4;
     void                    *Reserved_p5;
 
