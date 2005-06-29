@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: cmobject - ACPI object create/delete/size/cache routines
- *              $Revision: 1.43 $
+ *              $Revision: 1.44 $
  *
  *****************************************************************************/
 
@@ -154,7 +154,7 @@ _CmCreateInternalObject (
     NATIVE_CHAR             *ModuleName,
     UINT32                  LineNumber,
     UINT32                  ComponentId,
-    OBJECT_TYPE_INTERNAL    Type)
+    ACPI_OBJECT_TYPE8       Type)
 {
     ACPI_OPERAND_OBJECT     *Object;
 

@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acdebug.h - ACPI/AML debugger
- *       $Revision: 1.41 $
+ *       $Revision: 1.43 $
  *
  *****************************************************************************/
 
@@ -291,6 +291,10 @@ AcpiDbFindReferences (
     NATIVE_CHAR             *ObjectArg);
 
 void
+AcpiDbDisplayLocks (void);
+
+
+void
 AcpiDbDisplayResources (
     NATIVE_CHAR             *ObjectArg);
 
@@ -394,7 +398,7 @@ AcpiDbCreateExecutionThreads (
  * dbfileio - Debugger file I/O commands
  */
 
-OBJECT_TYPE_INTERNAL
+ACPI_OBJECT_TYPE8
 AcpiDbMatchArgument (
     NATIVE_CHAR             *UserArgument,
     ARGUMENT_INFO           *Arguments);
