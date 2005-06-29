@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslcompiler.h - common include file
- *              $Revision: 1.55 $
+ *              $Revision: 1.56 $
  *
  *****************************************************************************/
 
@@ -119,10 +119,16 @@
 #ifndef __ASLCOMPILER_H
 #define __ASLCOMPILER_H
 
+
+/* Microsoft-specific */
+
 #ifdef WIN32
 
+/* warn : used #pragma pack */
 #pragma warning(disable:4103)
 
+/* warn : named type definition in parentheses */
+#pragma warning(disable:4115)
 #endif
 
 #include <stdio.h>
@@ -202,8 +208,6 @@
 
 #ifdef WIN32
 
-/* warn : named type definition in parentheses */
-#pragma warning(disable:4115)
 
 #endif
 
