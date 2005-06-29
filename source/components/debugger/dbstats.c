@@ -126,17 +126,19 @@
 
 ARGUMENT_INFO               DbStatTypes [] = 
 {
-    "OBJECTS",
-    "MEMORY",
-    "MISC",
-    "TABLES",
-    NULL            /* Must be null terminated */
+    {"ALLOCATIONS"},
+    {"OBJECTS"},
+    {"MEMORY"},
+    {"MISC"},
+    {"TABLES"},
+    {NULL}           /* Must be null terminated */
 };
 
 #define CMD_OBJECTS         0
-#define CMD_MEMORY          1
-#define CMD_MISC            2
-#define CMD_TABLES          3
+#define CMD_ALLOCATIONS     1
+#define CMD_MEMORY          2
+#define CMD_MISC            3
+#define CMD_TABLES          4
 
 /*
  * Statistics
@@ -209,6 +211,12 @@ DbDisplayStatistics (
 
     switch (Type)
     {
+#ifndef PARSER_ONLY
+    case CMD_ALLOCATIONS:
+        CmDumpAllocationInfo ();
+        break;
+#endif
+
     case CMD_TABLES:
 
         OsdPrintf ("ACPI Table Information:\n\n");
