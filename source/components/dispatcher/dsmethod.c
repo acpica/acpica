@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dsmethod - Parser/Interpreter interface - control method parsing
- *              $Revision: 1.77 $
+ *              $Revision: 1.82 $
  *
  *****************************************************************************/
 
@@ -127,7 +127,7 @@
 
 
 #define _COMPONENT          ACPI_DISPATCHER
-        MODULE_NAME         ("dsmethod")
+        ACPI_MODULE_NAME    ("dsmethod")
 
 
 /*******************************************************************************
@@ -160,7 +160,7 @@ AcpiDsParseMethod (
     ACPI_WALK_STATE         *WalkState;
 
 
-    FUNCTION_TRACE_PTR ("DsParseMethod", ObjHandle);
+    ACPI_FUNCTION_TRACE_PTR ("DsParseMethod", ObjHandle);
 
 
     /* Parameter Validation */
@@ -170,7 +170,7 @@ AcpiDsParseMethod (
         return_ACPI_STATUS (AE_NULL_ENTRY);
     }
 
-    ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "**** Parsing [%4.4s] **** NamedObj=%p\n",
+    ACPI_DEBUG_PRINT ((ACPI_DB_PARSE, "**** Parsing [%4.4s] **** NamedObj=%p\n",
         (char *) &((ACPI_NAMESPACE_NODE *) ObjHandle)->Name, ObjHandle));
 
     /* Extract the method object from the method Node */
@@ -208,15 +208,15 @@ AcpiDsParseMethod (
 
     /* Init new op with the method name and pointer back to the Node */
 
-    AcpiPsSetName (Op, Node->Name);
-    Op->Node = Node;
+    AcpiPsSetName (Op, Node->Name.Integer);
+    Op->Common.Node = Node;
 
     /*
      * Get a new OwnerId for objects created by this method.  Namespace
      * objects (such as Operation Regions) can be created during the
      * first pass parse.
      */
-    OwnerId = AcpiUtAllocateOwnerId (OWNER_TYPE_METHOD);
+    OwnerId = AcpiUtAllocateOwnerId (ACPI_OWNER_TYPE_METHOD);
     ObjDesc->Method.OwningId = OwnerId;
 
     /* Create and initialize a new walk state */
@@ -252,7 +252,7 @@ AcpiDsParseMethod (
         return_ACPI_STATUS (Status);
     }
 
-    ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "**** [%4.4s] Parsed **** NamedObj=%p Op=%p\n",
+    ACPI_DEBUG_PRINT ((ACPI_DB_PARSE, "**** [%4.4s] Parsed **** NamedObj=%p Op=%p\n",
         (char *) &((ACPI_NAMESPACE_NODE *) ObjHandle)->Name, ObjHandle, Op));
 
     AcpiPsDeleteParseTree (Op);
@@ -287,7 +287,7 @@ AcpiDsBeginMethodExecution (
     ACPI_STATUS             Status = AE_OK;
 
 
-    FUNCTION_TRACE_PTR ("DsBeginMethodExecution", MethodNode);
+    ACPI_FUNCTION_TRACE_PTR ("DsBeginMethodExecution", MethodNode);
 
 
     if (!MethodNode)
@@ -360,7 +360,7 @@ AcpiDsCallControlMethod (
     UINT32                  i;
 
 
-    FUNCTION_TRACE_PTR ("DsCallControlMethod", ThisWalkState);
+    ACPI_FUNCTION_TRACE_PTR ("DsCallControlMethod", ThisWalkState);
 
     ACPI_DEBUG_PRINT ((ACPI_DB_DISPATCH, "Execute method %p, currentstate=%p\n",
         ThisWalkState->PrevOp, ThisWalkState));
@@ -498,7 +498,7 @@ AcpiDsRestartControlMethod (
     ACPI_STATUS             Status;
 
 
-    FUNCTION_TRACE_PTR ("DsRestartControlMethod", WalkState);
+    ACPI_FUNCTION_TRACE_PTR ("DsRestartControlMethod", WalkState);
 
 
     if (ReturnDesc)
@@ -531,7 +531,6 @@ AcpiDsRestartControlMethod (
         WalkState->MethodCallOp, ReturnDesc, WalkState->ReturnUsed,
         WalkState->Results, WalkState));
 
-
     return_ACPI_STATUS (AE_OK);
 }
 
@@ -556,9 +555,10 @@ AcpiDsTerminateControlMethod (
 {
     ACPI_OPERAND_OBJECT     *ObjDesc;
     ACPI_NAMESPACE_NODE     *MethodNode;
+    ACPI_STATUS             Status;
 
 
-    FUNCTION_TRACE_PTR ("DsTerminateControlMethod", WalkState);
+    ACPI_FUNCTION_TRACE_PTR ("DsTerminateControlMethod", WalkState);
 
 
     /* The current method object was saved in the walk state */
@@ -578,7 +578,11 @@ AcpiDsTerminateControlMethod (
      * If this is the last thread executing the method,
      * we have additional cleanup to perform
      */
-    AcpiUtAcquireMutex (ACPI_MTX_PARSER);
+    Status = AcpiUtAcquireMutex (ACPI_MTX_PARSER);
+    if (ACPI_FAILURE (Status))
+    {
+        return_ACPI_STATUS (Status);
+    }
 
     /* Signal completion of the execution of this method if necessary */
 
@@ -605,7 +609,12 @@ AcpiDsTerminateControlMethod (
          * Delete any namespace entries created immediately underneath
          * the method
          */
-        AcpiUtAcquireMutex (ACPI_MTX_NAMESPACE);
+        Status = AcpiUtAcquireMutex (ACPI_MTX_NAMESPACE);
+        if (ACPI_FAILURE (Status))
+        {
+            return_ACPI_STATUS (Status);
+        }
+
         if (MethodNode->Child)
         {
             AcpiNsDeleteNamespaceSubtree (MethodNode);
@@ -616,11 +625,15 @@ AcpiDsTerminateControlMethod (
          * the namespace
          */
         AcpiNsDeleteNamespaceByOwner (WalkState->MethodDesc->Method.OwningId);
-        AcpiUtReleaseMutex (ACPI_MTX_NAMESPACE);
+        Status = AcpiUtReleaseMutex (ACPI_MTX_NAMESPACE);
+        if (ACPI_FAILURE (Status))
+        {
+            return_ACPI_STATUS (Status);
+        }
     }
 
-    AcpiUtReleaseMutex (ACPI_MTX_PARSER);
-    return_ACPI_STATUS (AE_OK);
+    Status = AcpiUtReleaseMutex (ACPI_MTX_PARSER);
+    return_ACPI_STATUS (Status);
 }
 
 

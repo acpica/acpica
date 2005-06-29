@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: excreate - Named object creation
- *              $Revision: 1.88 $
+ *              $Revision: 1.90 $
  *
  *****************************************************************************/
 
@@ -128,7 +128,7 @@
 
 
 #define _COMPONENT          ACPI_EXECUTER
-        MODULE_NAME         ("excreate")
+        ACPI_MODULE_NAME    ("excreate")
 
 
 /*****************************************************************************
@@ -152,7 +152,7 @@ AcpiExCreateAlias (
     ACPI_STATUS             Status;
 
 
-    FUNCTION_TRACE ("ExCreateAlias");
+    ACPI_FUNCTION_TRACE ("ExCreateAlias");
 
 
     /* Get the source/alias operands (both namespace nodes) */
@@ -199,7 +199,7 @@ AcpiExCreateEvent (
     ACPI_OPERAND_OBJECT     *ObjDesc;
 
 
-    FUNCTION_TRACE ("ExCreateEvent");
+    ACPI_FUNCTION_TRACE ("ExCreateEvent");
 
 
     ObjDesc = AcpiUtCreateInternalObject (ACPI_TYPE_EVENT);
@@ -257,7 +257,7 @@ AcpiExCreateMutex (
     ACPI_OPERAND_OBJECT     *ObjDesc;
 
 
-    FUNCTION_TRACE_PTR ("ExCreateMutex", WALK_OPERANDS);
+    ACPI_FUNCTION_TRACE_PTR ("ExCreateMutex", ACPI_WALK_OPERANDS);
 
 
     /* Create the new mutex object */
@@ -326,12 +326,12 @@ AcpiExCreateRegion (
     ACPI_OPERAND_OBJECT     *RegionObj2;
 
 
-    FUNCTION_TRACE ("ExCreateRegion");
+    ACPI_FUNCTION_TRACE ("ExCreateRegion");
 
 
     /* Get the Node from the object stack  */
 
-    Node = WalkState->Op->Node;
+    Node = WalkState->Op->Common.Node;
 
     /*
      * If the region object is already attached to this node,
@@ -349,7 +349,7 @@ AcpiExCreateRegion (
     if ((RegionSpace >= ACPI_NUM_PREDEFINED_REGIONS) &&
         (RegionSpace < ACPI_USER_REGION_BEGIN))
     {
-        REPORT_ERROR (("Invalid AddressSpace type %X\n", RegionSpace));
+        ACPI_REPORT_ERROR (("Invalid AddressSpace type %X\n", RegionSpace));
         return_ACPI_STATUS (AE_AML_INVALID_SPACE_ID);
     }
 
@@ -419,11 +419,11 @@ AcpiExCreateTableRegion (
     ACPI_OPERAND_OBJECT     *RegionObj2;
 
 
-    FUNCTION_TRACE ("ExCreateTableRegion");
+    ACPI_FUNCTION_TRACE ("ExCreateTableRegion");
 
     /* Get the Node from the object stack  */
 
-    Node = WalkState->Op->Node;
+    Node = WalkState->Op->Common.Node;
 
     /*
      * If the region object is already attached to this node,
@@ -522,7 +522,7 @@ AcpiExCreateProcessor (
     ACPI_STATUS             Status;
 
 
-    FUNCTION_TRACE_PTR ("ExCreateProcessor", WalkState);
+    ACPI_FUNCTION_TRACE_PTR ("ExCreateProcessor", WalkState);
 
 
     /* Create the processor object */
@@ -578,7 +578,7 @@ AcpiExCreatePowerResource (
     ACPI_OPERAND_OBJECT     *ObjDesc;
 
 
-    FUNCTION_TRACE_PTR ("ExCreatePowerResource", WalkState);
+    ACPI_FUNCTION_TRACE_PTR ("ExCreatePowerResource", WalkState);
 
 
     /* Create the power resource object */
@@ -634,7 +634,7 @@ AcpiExCreateMethod (
     UINT8                   MethodFlags;
 
 
-    FUNCTION_TRACE_PTR ("ExCreateMethod", WalkState);
+    ACPI_FUNCTION_TRACE_PTR ("ExCreateMethod", WalkState);
 
 
     /* Create a new method object */
