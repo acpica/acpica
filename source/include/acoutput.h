@@ -117,6 +117,8 @@
 #define EVENT_HANDLING              0x00000020
 #define MISCELLANEOUS               0x00000040
 #define OS_DEPENDENT                0x00000080
+#define OS_APP_INTERFACE            0x00000100
+
 
 #define ALL_COMPONENTS              0x000000FF
 
@@ -145,6 +147,7 @@
 #define TRACE_IO                    0x00100000
 #define TRACE_ALLOCATIONS           0x00200000
 #define TRACE_INTERRUPTS            0x00800000
+#define TRACE_USER_REQUESTS         0x01000000
 #define TRACE_ALL                   0x002FFF00
 
 /* Exceptionally verbose output -- used in the global "DebugLevel"  */
