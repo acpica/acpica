@@ -481,7 +481,7 @@ SOURCE=..\..\Subsystem\NameSpace\nsdump.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\Subsystem\Namespace\nsexec.c
+SOURCE=..\..\Subsystem\Namespace\nseval.c
 # End Source File
 # Begin Source File
 
