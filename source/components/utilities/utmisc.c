@@ -575,6 +575,8 @@ AcpiCmCreateGenericState (void)
         AcpiGbl_GenericStateCacheDepth--;
 
         AcpiCmReleaseMutex (ACPI_MTX_CACHES);
+
+        DEBUG_PRINT (TRACE_EXEC, ("CreateGenState: State %p from cache\n", State));
     }
 
     else
@@ -590,6 +592,10 @@ AcpiCmCreateGenericState (void)
 
     if (State)
     {
+        /* Always zero out the object before init */
+
+        MEMSET (State, 0, sizeof (ACPI_GENERIC_STATE));
+
         State->Common.DataType = ACPI_DESC_TYPE_STATE;
     }
 
