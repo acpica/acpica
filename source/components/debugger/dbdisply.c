@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dbdisply - debug display commands
- *              $Revision: 1.91 $
+ *              $Revision: 1.92 $
  *
  ******************************************************************************/
 
@@ -949,6 +949,60 @@ AcpiDbDisplayCallingTree (void)
 
         WalkState = WalkState->Next;
     }
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiDbDisplayObjectType
+ *
+ * PARAMETERS:  None
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Display current calling tree of nested control methods
+ *
+ ******************************************************************************/
+
+void
+AcpiDbDisplayObjectType (
+    char                    *ObjectArg)
+{
+    ACPI_HANDLE             Handle;
+    ACPI_BUFFER             Buffer;
+    ACPI_DEVICE_INFO        *Info;
+    ACPI_STATUS             Status;
+    ACPI_NATIVE_UINT        i;
+
+
+
+    Handle = ACPI_TO_POINTER (ACPI_STRTOUL (ObjectArg, NULL, 16));
+
+
+    Status = AcpiGetObjectInfo (Handle, &Buffer);
+    if (ACPI_SUCCESS (Status))
+    {
+        Info = Buffer.Pointer;
+        AcpiOsPrintf ("HID: %s, ADR: %8.8X%8.8X, Status %8.8X\n",
+                        &Info->HardwareId,
+                        ACPI_HIDWORD (Info->Address), ACPI_LODWORD (Info->Address),
+                        Info->CurrentStatus);
+
+        if (Info->Valid & ACPI_VALID_CID)
+        {
+            for (i = 0; i < Info->CompatibilityId.Count; i++)
+            {
+                AcpiOsPrintf ("CID #%d: %s\n", i, &Info->CompatibilityId.Id[i]);
+            }
+        }
+
+        ACPI_MEM_FREE (Info);
+    }
+    else
+    {
+        AcpiOsPrintf ("%s\n", AcpiFormatException (Status));
+    }
+
 }
 
 
