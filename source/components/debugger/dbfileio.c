@@ -2,7 +2,7 @@
  *
  * Module Name: dbfileio - Debugger file I/O commands.  These can't usually
  *              be used when running the debugger in Ring 0 (Kernel mode)
- *              $Revision: 1.32 $
+ *              $Revision: 1.36 $
  *
  ******************************************************************************/
 
@@ -10,8 +10,8 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, Intel Corp.  All rights
- * reserved.
+ * Some or all of this work - Copyright (c) 1999, 2000, Intel Corp.
+ * All rights reserved.
  *
  * 2. License
  *
@@ -286,7 +286,7 @@ AcpiDbLoadTable(
 
     Status = AcpiTbValidateTableHeader (&TableHeader);
     if ((ACPI_FAILURE (Status)) ||
-        (TableHeader.Length > (1024 * 1024)))
+        (TableHeader.Length > 524288))  /* 1/2 Mbyte should be enough */
     {
         AcpiOsPrintf ("Table header is invalid!\n");
         return (AE_ERROR);
@@ -306,11 +306,11 @@ AcpiDbLoadTable(
 
     /* Allocate a buffer for the table */
 
-    *TableLength = TableHeader.Length;    
+    *TableLength = TableHeader.Length;
     *TablePtr = (ACPI_TABLE_HEADER *) AcpiCmAllocate ((size_t) *TableLength);
     if (!*TablePtr)
     {
-        AcpiOsPrintf ("Could not allocate memory for the table (size=0x%X)\n", TableHeader.Length);
+        AcpiOsPrintf ("Could not allocate memory for the table (size=%X)\n", TableHeader.Length);
         return (AE_NO_MEMORY);
     }
 
@@ -332,7 +332,7 @@ AcpiDbLoadTable(
 
     if (Actual > 0)
     {
-        AcpiOsPrintf ("Warning - reading table, asked for %d got %d\n", AmlLength, Actual);
+        AcpiOsPrintf ("Warning - reading table, asked for %X got %X\n", AmlLength, Actual);
        return (AE_OK);
     }
 
