@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acenv.h - Generation environment specific items
- *       $Revision: 1.65 $
+ *       $Revision: 1.68 $
  *
  *****************************************************************************/
 
@@ -9,8 +9,8 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, Intel Corp.  All rights
- * reserved.
+ * Some or all of this work - Copyright (c) 1999, 2000, Intel Corp.
+ * All rights reserved.
  *
  * 2. License
  *
@@ -119,7 +119,7 @@
 
 
 /*
- * Configuration for ACPI Utilities
+ * Configuration for ACPI tools and utilities
  */
 
 #ifdef _ACPI_DUMP_APP
@@ -146,6 +146,16 @@
 #define ACPI_USE_SYSTEM_CLIBRARY
 #endif
 
+/* 
+ * Memory allocation tracking.  Used only if
+ * 1) This is the debug version
+ * 2) This is NOT a 16-bit version of the code (not enough real-mode memory)
+ */
+#ifdef ACPI_DEBUG
+#ifndef _IA16
+#define ACPI_DEBUG_TRACK_ALLOCATIONS
+#endif
+#endif
 
 /*
  * Environment configuration.  The purpose of this file is to interface to the
@@ -245,14 +255,14 @@
 #define STRUPR(s)       strupr((s))
 #define STRLEN(s)       strlen((s))
 #define STRCPY(d,s)     strcpy((d), (s))
-#define STRNCPY(d,s,n)  strncpy((d), (s), (n))
-#define STRNCMP(d,s,n)  strncmp((d), (s), (n))
+#define STRNCPY(d,s,n)  strncpy((d), (s), (NATIVE_INT)(n))
+#define STRNCMP(d,s,n)  strncmp((d), (s), (NATIVE_INT)(n))
 #define STRCMP(d,s)     strcmp((d), (s))
 #define STRCAT(d,s)     strcat((d), (s))
-#define STRNCAT(d,s,n)  strncat((d), (s), (n))
-#define STRTOUL(d,s,n)  strtoul((d), (s), (n))
-#define MEMCPY(d,s,n)   memcpy((d), (s), (n))
-#define MEMSET(d,s,n)   memset((d), (s), (n))
+#define STRNCAT(d,s,n)  strncat((d), (s), (NATIVE_INT)(n))
+#define STRTOUL(d,s,n)  strtoul((d), (s), (NATIVE_INT)(n))
+#define MEMCPY(d,s,n)   memcpy((d), (s), (NATIVE_INT)(n))
+#define MEMSET(d,s,n)   memset((d), (s), (NATIVE_INT)(n))
 #define TOUPPER         toupper
 #define TOLOWER         tolower
 
