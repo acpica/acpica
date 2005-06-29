@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acglobal.h - Declarations for global variables
- *       $Revision: 1.120 $
+ *       $Revision: 1.122 $
  *
  *****************************************************************************/
 
@@ -162,6 +162,7 @@ extern      UINT32                      AcpiGbl_NestingLevel;
  * of each in the system.  Each global points to the actual table.
  *
  */
+ACPI_EXTERN UINT32                      AcpiGbl_TableFlags;
 ACPI_EXTERN RSDP_DESCRIPTOR            *AcpiGbl_RSDP;
 ACPI_EXTERN XSDT_DESCRIPTOR            *AcpiGbl_XSDT;
 ACPI_EXTERN FADT_DESCRIPTOR            *AcpiGbl_FADT;
@@ -276,7 +277,7 @@ ACPI_EXTERN ACPI_PARSE_OBJECT           *AcpiGbl_ParsedNamespaceRoot;
  *
  ****************************************************************************/
 
-ACPI_EXTERN ACPI_BIT_REGISTER_INFO      AcpiGbl_BitRegisterInfo[ACPI_NUM_BITREG];
+extern      ACPI_BIT_REGISTER_INFO      AcpiGbl_BitRegisterInfo[ACPI_NUM_BITREG];
 ACPI_EXTERN UINT8                       AcpiGbl_SleepTypeA;
 ACPI_EXTERN UINT8                       AcpiGbl_SleepTypeB;
 
@@ -319,13 +320,11 @@ ACPI_EXTERN UINT8                       AcpiGbl_DbOutputFlags;
 
 #ifdef ENABLE_DEBUGGER
 
-ACPI_EXTERN BOOLEAN                     AcpiGbl_MethodExecuting;
-ACPI_EXTERN BOOLEAN                     AcpiGbl_DbTerminateThreads;
+extern      BOOLEAN                     AcpiGbl_MethodExecuting;
+extern      BOOLEAN                     AcpiGbl_DbTerminateThreads;
 
 ACPI_EXTERN int                         optind;
 ACPI_EXTERN NATIVE_CHAR                *optarg;
-ACPI_EXTERN UINT8                      *AmlStart;
-ACPI_EXTERN UINT32                      AmlLength;
 
 ACPI_EXTERN BOOLEAN                     AcpiGbl_DbOpt_tables;
 ACPI_EXTERN BOOLEAN                     AcpiGbl_DbOpt_disasm;
