@@ -205,10 +205,14 @@ NsDumpOneObject (
     ACPI_OBJECT_TYPE        Type;
     UINT32                  WhichBit;
     NAME_TABLE_ENTRY        *Appendage = NULL;
-    NAME_TABLE_ENTRY        *ThisEntry = (NAME_TABLE_ENTRY *) ObjHandle;
+    NAME_TABLE_ENTRY        *ThisEntry;
     ACPI_SIZE               Size = 0;
     UINT8                   *Value;
+    ACPI_OBJECT_INTERNAL    *ObjDesc;
+    ACPI_OBJECT_TYPE        ObjType;
     UINT32                  DbLevel = (UINT32) Context;
+
+    ThisEntry = NsConvertHandleToEntry(ObjHandle);
 
     LevelTmp    = Level;
     Type        = ThisEntry->Type;
@@ -231,7 +235,7 @@ NsDumpOneObject (
     while (LevelTmp--)
     {
 
-        /*  print appropriate characters to form tree structure */
+        /* Print appropriate characters to form tree structure */
 
         if (LevelTmp)
         {
@@ -306,58 +310,96 @@ NsDumpOneObject (
                 ThisEntry->Object));
 
 
-    if (TYPE_Method == Type && ThisEntry->Object)
+    if (!ThisEntry->Object)
     {
-        /* name is a Method and its AML offset/length are set */
+        /* No attached object, we are done */
+
+        DEBUG_PRINT_RAW (TRACE_TABLES, ("\n"));
+        return NULL;
+    }
+
+    if (TYPE_Method == Type)
+    {
+        /* Name is a Method and its AML offset/length are set */
         
-        DEBUG_PRINT_RAW (TRACE_TABLES, (" @%p-%X\n",
+        DEBUG_PRINT_RAW (TRACE_TABLES, (" M:%p-%X\n",
                     ((ACPI_OBJECT_INTERNAL *) ThisEntry->Object)->Method.Pcode,
                     ((ACPI_OBJECT_INTERNAL *) ThisEntry->Object)->Method.PcodeLength));                
+
+        return NULL;
     }
+  
+    /* There is an attached object, display it */
+
+    Value = ThisEntry->Object;
+    ObjDesc = ThisEntry->Object;
+    ObjType = ObjDesc->Common.Type;
+
+    /* Name is not a Method, or the AML offset/length are not set */
     
-    else
+    DEBUG_PRINT_RAW (TRACE_TABLES, ("\n"));
+
+    /* If debug turned on, display values */
+
+    while (Value && (DebugLevel & TRACE_VALUES))
     {
-        Value = ThisEntry->Object;
+        DEBUG_PRINT_RAW (TRACE_TABLES,
+                    ("       Object %p  %02x %02x %02x %02x %02x %02x",
+                    Value, Value[0], Value[1], Value[2], Value[3], Value[4],
+                    Value[5]));
+        DEBUG_PRINT_RAW (TRACE_TABLES,
+                    (" %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x\n",
+                    Value[6], Value[7], Value[8], Value[9], Value[10],
+                    Value[11], Value[12], Value[13], Value[14], Value[15]));
 
-        /* name is not a Method, or the AML offset/length are not set */
-        
-        DEBUG_PRINT_RAW (TRACE_TABLES, ("\n"));
+        /* If value is NOT an internal object, we are done here */
 
-        /* if debug turned on, display values */
-    
-        while (Value && (DebugLevel & TRACE_VALUES))
+        if ((NsIsInSystemTable (Value)) ||
+            (IS_NS_HANDLE (Value)))
         {
-            UINT8               bT = ((ACPI_OBJECT_INTERNAL *) Value)->Common.Type;
-
-
-            DEBUG_PRINT_RAW (TRACE_TABLES,
-                        ("                 %p  %02x %02x %02x %02x %02x %02x",
-                        Value, Value[0], Value[1], Value[2], Value[3], Value[4],
-                        Value[5]));
-            DEBUG_PRINT_RAW (TRACE_TABLES,
-                        (" %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x\n",
-                        Value[6], Value[7], Value[8], Value[9], Value[10],
-                        Value[11], Value[12], Value[13], Value[14], Value[15]));
-        
-            if (bT == TYPE_String ||     bT == TYPE_Buffer   || bT == TYPE_Package
-             || bT == TYPE_FieldUnit ||  bT == TYPE_DefField || bT == TYPE_BankField
-             || bT == TYPE_IndexField || bT == TYPE_Lvalue)
-            {
-                /* 
-                 * Get pointer to next level.  ThisEntry assumes that all of
-                 * the above-listed variants of ACPI_OBJECT_INTERNAL have
-                 * compatible mappings.
-                 */
-                Value = ((ACPI_OBJECT_INTERNAL *)Value)->Buffer.Pointer;
-            }
-            else
-            {
-                break;
-            }
+            return NULL;
         }
+
+        /* 
+         * Valid object, get the pointer to next level, if any
+         */
+        switch (ObjType)
+        {
+        case TYPE_String:
+            Value = (UINT8 *) ObjDesc->String.Pointer;
+            break;
+
+        case TYPE_Buffer:
+            Value = (UINT8 *) ObjDesc->Buffer.Pointer;
+            break;
+
+        case TYPE_Package:
+            Value = (UINT8 *) ObjDesc->Package.Elements;
+            break;
+
+        case TYPE_FieldUnit:
+            Value = (UINT8 *) ObjDesc->FieldUnit.Container;
+            break;
+
+        case TYPE_DefField:
+            Value = (UINT8 *) ObjDesc->Field.Container;
+            break;
+
+        case TYPE_BankField:
+            Value = (UINT8 *) ObjDesc->BankField.Container;
+            break;
+
+        case TYPE_IndexField:
+            Value = (UINT8 *) ObjDesc->IndexField.Index;
+            break;
+
+       default:
+            return NULL;
+        }
+
+        ObjType = TYPE_Invalid;     /* Terminate loop after next pass */
     }
 
-    
     return NULL;
 }
 
@@ -412,10 +454,10 @@ NsDumpOneDevice (
     ACPI_STATUS             Status;
     UINT32                  i;
 
-BREAKPOINT3;
+
     RetVal = NsDumpOneObject (ObjHandle, Level, Context);
 
-    Status = AcpiGetDeviceInfo (ObjHandle, &Info);
+    Status = AcpiGetObjectInfo (ObjHandle, &Info);
     if (ACPI_SUCCESS (Status))
     {
         for (i = 0; i < Level; i++)
