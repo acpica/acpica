@@ -1,6 +1,6 @@
 
 /******************************************************************************
- * 
+ *
  * Name: hardware.h -- hardware specific interfaces
  *
  *****************************************************************************/
@@ -38,9 +38,9 @@
  * The above copyright and patent license is granted only if the following
  * conditions are met:
  *
- * 3. Conditions 
+ * 3. Conditions
  *
- * 3.1. Redistribution of Source with Rights to Further Distribute Source.  
+ * 3.1. Redistribution of Source with Rights to Further Distribute Source.
  * Redistribution of source code of any substantial portion of the Covered
  * Code or modification with rights to further distribute source must include
  * the above Copyright Notice, the above License, this list of Conditions,
@@ -48,11 +48,11 @@
  * Licensee must cause all Covered Code to which Licensee contributes to
  * contain a file documenting the changes Licensee made to create that Covered
  * Code and the date of any change.  Licensee must include in that file the
- * documentation of any changes made by any predecessor Licensee.  Licensee 
+ * documentation of any changes made by any predecessor Licensee.  Licensee
  * must include a prominent statement that the modification is derived,
  * directly or indirectly, from Original Intel Code.
  *
- * 3.2. Redistribution of Source with no Rights to Further Distribute Source.  
+ * 3.2. Redistribution of Source with no Rights to Further Distribute Source.
  * Redistribution of source code of any substantial portion of the Covered
  * Code or modification without rights to further distribute source must
  * include the following Disclaimer and Export Compliance provision in the
@@ -86,7 +86,7 @@
  * INSTALLATION, TRAINING OR OTHER SERVICES.  INTEL WILL NOT PROVIDE ANY
  * UPDATES, ENHANCEMENTS OR EXTENSIONS.  INTEL SPECIFICALLY DISCLAIMS ANY
  * IMPLIED WARRANTIES OF MERCHANTABILITY, NONINFRINGEMENT AND FITNESS FOR A
- * PARTICULAR PURPOSE. 
+ * PARTICULAR PURPOSE.
  *
  * 4.2. IN NO EVENT SHALL INTEL HAVE ANY LIABILITY TO LICENSEE, ITS LICENSEES
  * OR ANY OTHER THIRD PARTY, FOR ANY LOST PROFITS, LOST DATA, LOSS OF USE OR
@@ -126,14 +126,14 @@
 /* Cx States */
 
 #define MAX_CX_STATE_LATENCY 0xFFFFFFFF
-#define MAX_CX_STATES		4
+#define MAX_CX_STATES       4
 
-/* 
+/*
  * The #define's and enum below establish an abstract way of identifying what
  * register block and register is to be accessed.  Do not change any of the
- * values as they are used in switch statements and offset calculations. 
+ * values as they are used in switch statements and offset calculations.
  */
-    
+
 #define REGISTER_BLOCK_MASK     0xFF00
 #define BIT_IN_REGISTER_MASK    0x00FF
 #define PM1_EVT                 0x0100
@@ -149,7 +149,7 @@
 enum
 {
     /* PM1 status register ids */
-    
+
     TMR_STS =   (PM1_EVT        | 0x01),
     BM_STS,
     GBL_STS,
@@ -159,9 +159,9 @@ enum
     WAK_STS,
 
     /* PM1 enable register ids */
-    
+
     TMR_EN,
-    /* need to skip 1 enable number since there's no bus master enable register */  
+    /* need to skip 1 enable number since there's no bus master enable register */
     GBL_EN =    (PM1_EVT        | 0x0A),
     PWRBTN_EN,
     SLPBTN_EN,
@@ -239,7 +239,7 @@ enum
 #define LOW_BYTE            0x00FF
 #define ONE_BYTE            0x08
 
-#ifndef SET 
+#ifndef SET
     #define SET             1
 #endif
 #ifndef CLEAR
@@ -252,62 +252,62 @@ enum
 
 
 ACPI_STATUS
-HwInitialize();
+AcpiHwInitialize();
 
 ACPI_STATUS
-HwShutdown();
+AcpiHwShutdown();
 
 ACPI_STATUS
-HwInitializeSystemInfo();
+AcpiHwInitializeSystemInfo();
 
 ACPI_STATUS
-HwSetMode (
+AcpiHwSetMode (
     UINT32                  Mode);
 
 UINT32
-HwGetMode (
+AcpiHwGetMode (
     void);
 
 UINT32
-HwGetModeCapabilities (
+AcpiHwGetModeCapabilities (
     void);
 
 /* Register I/O Prototypes */
 
 UINT32
-HwRegisterIO (
+AcpiHwRegisterAccess (
     NATIVE_UINT             ReadWrite,
-	BOOLEAN					UseLock,	
+    BOOLEAN                 UseLock,
     UINT32                  RegisterId, ... /* DWORD Value */);
 
-void 
-HwClearAcpiStatus (
+void
+AcpiHwClearAcpiStatus (
    void);
 
 
 /* GPE support */
 
 void
-HwEnableGpe (
+AcpiHwEnableGpe (
     UINT32                  GpeIndex);
 
 void
-HwDisableGpe (
+AcpiHwDisableGpe (
     UINT32                  GpeIndex);
 
 void
-HwClearGpe (
+AcpiHwClearGpe (
     UINT32                  GpeIndex);
 
 void
-HwGetGpeStatus (
+AcpiHwGetGpeStatus (
     UINT32                  GpeNumber,
     ACPI_EVENT_STATUS       *EventStatus);
 
 /* Sleep Prototypes */
 
 ACPI_STATUS
-HwObtainSleepTypeRegisterData (
+AcpiHwObtainSleepTypeRegisterData (
     UINT8                   SleepState,
     UINT8                   *Slp_TypA,
     UINT8                   *Slp_TypB);
@@ -316,59 +316,59 @@ HwObtainSleepTypeRegisterData (
 /* Cx State Prototypes */
 
 ACPI_STATUS
-HwIa32EnterC1(
+AcpiHwIa32EnterC1(
     ACPI_IO_ADDRESS         PBlkAddress,
-	UINT32					*PmTimerTicks);
+    UINT32                  *PmTimerTicks);
 
 ACPI_STATUS
-HwIa32EnterC2(
+AcpiHwIa32EnterC2(
     ACPI_IO_ADDRESS         PBlkAddress,
-	UINT32					*PmTimerTicks);
+    UINT32                  *PmTimerTicks);
 
 ACPI_STATUS
-HwIa32EnterC3(
+AcpiHwIa32EnterC3(
     ACPI_IO_ADDRESS         PBlkAddress,
-	UINT32					*PmTimerTicks);
+    UINT32                  *PmTimerTicks);
 
 ACPI_STATUS
-HwIa32EnterCx (
+AcpiHwIa32EnterCx (
     ACPI_IO_ADDRESS         PBlkAddress,
-	UINT32					*PmTimerTicks);
+    UINT32                  *PmTimerTicks);
 
 ACPI_STATUS
-HwIa32SetCx (
+AcpiHwIa32SetCx (
     UINT32                  CxState);
 
 ACPI_STATUS
-HwIa32GetCxInfo (
-    UINT32					CxStates[MAX_CX_STATES]);
+AcpiHwIa32GetCxInfo (
+    UINT32                  CxStates[MAX_CX_STATES]);
 
 
 /* Throttling Prototypes */
 
-void 
-HwEnableThrottling (
+void
+AcpiHwEnableThrottling (
     ACPI_IO_ADDRESS         PBlkAddress);
 
-void 
-HwDisableThrottling (
+void
+AcpiHwDisableThrottling (
     ACPI_IO_ADDRESS         PBlkAddress);
 
 UINT32
-HwGetDutyCycle (
+AcpiHwGetDutyCycle (
     UINT8                   DutyOffset,
     ACPI_IO_ADDRESS         PBlkAddress,
     UINT32                  NumThrottleStates);
 
 void
-HwProgramDutyCycle (
+AcpiHwProgramDutyCycle (
     UINT8                   DutyOffset,
     UINT32                  DutyCycle,
     ACPI_IO_ADDRESS         PBlkAddress,
     UINT32                  NumThrottleStates);
 
 NATIVE_UINT
-HwLocalPow (
+AcpiHwLocalPow (
     NATIVE_UINT             x,
     NATIVE_UINT             y);
 
@@ -376,11 +376,11 @@ HwLocalPow (
 /* ACPI Timer prototypes */
 
 UINT32
-HwPmtTicks (
+AcpiHwPmtTicks (
     void);
 
 UINT32
-HwPmtResolution (
+AcpiHwPmtResolution (
     void);
 
 
