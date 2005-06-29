@@ -43,7 +43,8 @@ RSC=rc.exe
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /MD /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_AFXDLL" /YX /FD /c
-# ADD CPP /nologo /W3 /GX /O2 /I "..\..\Subsystem\Include" /D "NDEBUG" /D "WIN32" /D "_WINDOWS" /D "_MBCS" /D "YY_NEVER_INTERACTIVE" /D "_ACPI_ASL_COMPILER" /FR /YX /FD /c
+# ADD CPP /nologo /W3 /GX /O2 /I "..\..\Subsystem\Include" /D "NDEBUG" /D "WIN32" /D "_WINDOWS" /D "_MBCS" /D "YY_NEVER_INTERACTIVE" /D "_ACPI_ASL_COMPILER" /FR /FD /c
+# SUBTRACT CPP /YX
 # ADD BASE MTL /nologo /D "NDEBUG" /mktyplib203 /win32
 # ADD MTL /nologo /D "NDEBUG" /mktyplib203 /win32
 # ADD BASE RSC /l 0x409 /d "NDEBUG" /d "_AFXDLL"
@@ -74,7 +75,8 @@ PostBuild_Cmds=copy Release\iasl.exe ..\..\Libraries
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /MDd /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_AFXDLL" /YX /FD /GZ /c
-# ADD CPP /nologo /W3 /Gm /GX /ZI /Od /I "..\..\Subsystem\Include" /D "_DEBUG" /D "WIN32" /D "_WINDOWS" /D "_MBCS" /D "YY_NEVER_INTERACTIVE" /D "_ACPI_ASL_COMPILER" /FR /YX /FD /GZ /c
+# ADD CPP /nologo /W3 /Gm /GX /ZI /Od /I "..\..\Subsystem\Include" /D "_DEBUG" /D "WIN32" /D "_WINDOWS" /D "_MBCS" /D "YY_NEVER_INTERACTIVE" /D "_ACPI_ASL_COMPILER" /FR /FD /GZ /c
+# SUBTRACT CPP /YX
 # ADD BASE MTL /nologo /D "_DEBUG" /mktyplib203 /win32
 # ADD MTL /nologo /D "_DEBUG" /mktyplib203 /win32
 # ADD BASE RSC /l 0x409 /d "_DEBUG" /d "_AFXDLL"
@@ -100,7 +102,7 @@ PostBuild_Cmds=copy Debug\iasl.exe ..\..\Libraries
 # Begin Group "Source Files"
 
 # PROP Default_Filter "cpp;c;cxx;rc;def;r;odl;idl;hpj;bat"
-# Begin Group "Common"
+# Begin Group "SubsystemCommon"
 
 # PROP Default_Filter ".c"
 # Begin Source File
@@ -247,14 +249,6 @@ SOURCE=..\..\AslCompiler\asltree.c
 
 SOURCE=..\..\AslCompiler\aslutils.c
 # End Source File
-# Begin Source File
-
-SOURCE=..\..\Tools\Common\getopt.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\OsInterface\WinApp\oswinxf.c
-# End Source File
 # End Group
 # Begin Group "Parser"
 
@@ -278,6 +272,18 @@ SOURCE=..\..\Subsystem\Dispatcher\dswscope.c
 # Begin Source File
 
 SOURCE=..\..\subsystem\Dispatcher\dswstate.c
+# End Source File
+# End Group
+# Begin Group "Common"
+
+# PROP Default_Filter ".c"
+# Begin Source File
+
+SOURCE=..\..\Common\getopt.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\Common\oswinxf.c
 # End Source File
 # End Group
 # End Group
