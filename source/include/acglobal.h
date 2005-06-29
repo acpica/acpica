@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acglobal.h - Declarations for global variables
- *       $Revision: 1.116 $
+ *       $Revision: 1.117 $
  *
  *****************************************************************************/
 
@@ -305,12 +305,6 @@ ACPI_EXTERN ACPI_GPE_BLOCK_INFO         AcpiGbl_GpeBlockInfo[ACPI_MAX_GPE_BLOCKS
  */
 ACPI_EXTERN ACPI_GPE_INDEX_INFO        *AcpiGbl_GpeNumberToIndex;
 
-/* AcpiEvent counter for debug only */
-
-#ifdef ACPI_DEBUG
-ACPI_EXTERN UINT32                      AcpiGbl_EventCount[ACPI_NUM_FIXED_EVENTS];
-#endif
-
 
 /*****************************************************************************
  *
@@ -319,9 +313,54 @@ ACPI_EXTERN UINT32                      AcpiGbl_EventCount[ACPI_NUM_FIXED_EVENTS
  ****************************************************************************/
 
 #ifdef ENABLE_DEBUGGER
+
 ACPI_EXTERN BOOLEAN                     AcpiGbl_MethodExecuting;
 ACPI_EXTERN BOOLEAN                     AcpiGbl_DbTerminateThreads;
-#endif
+
+ACPI_EXTERN int                         optind;
+ACPI_EXTERN NATIVE_CHAR                *optarg;
+ACPI_EXTERN UINT8                      *AmlStart;
+ACPI_EXTERN UINT32                      AmlLength;
+
+ACPI_EXTERN BOOLEAN                     AcpiGbl_DbOpt_tables;
+ACPI_EXTERN BOOLEAN                     AcpiGbl_DbOpt_disasm;
+ACPI_EXTERN BOOLEAN                     AcpiGbl_DbOpt_stats;
+ACPI_EXTERN BOOLEAN                     AcpiGbl_DbOpt_verbose;
+ACPI_EXTERN BOOLEAN                     AcpiGbl_DbOpt_ini_methods;
+
+
+ACPI_EXTERN NATIVE_CHAR                *AcpiGbl_DbArgs[ACPI_DEBUGGER_MAX_ARGS];
+ACPI_EXTERN NATIVE_CHAR                 AcpiGbl_DbLineBuf[80];
+ACPI_EXTERN NATIVE_CHAR                 AcpiGbl_DbParsedBuf[80];
+ACPI_EXTERN NATIVE_CHAR                 AcpiGbl_DbScopeBuf[40];
+ACPI_EXTERN NATIVE_CHAR                 AcpiGbl_DbDebugFilename[40];
+ACPI_EXTERN BOOLEAN                     AcpiGbl_DbOutputToFile;
+ACPI_EXTERN NATIVE_CHAR                *AcpiGbl_DbBuffer;
+ACPI_EXTERN NATIVE_CHAR                *AcpiGbl_DbFilename;
+ACPI_EXTERN NATIVE_CHAR                *AcpiGbl_DbDisasmIndent;
+ACPI_EXTERN UINT8                       AcpiGbl_DbOutputFlags;
+ACPI_EXTERN UINT32                      AcpiGbl_DbDebugLevel;
+ACPI_EXTERN UINT32                      AcpiGbl_DbConsoleDebugLevel;
+ACPI_EXTERN ACPI_TABLE_HEADER          *AcpiGbl_DbTablePtr;
+ACPI_EXTERN ACPI_NAMESPACE_NODE        *AcpiGbl_DbScopeNode;
+
+/*
+ * Statistic globals
+ */
+ACPI_EXTERN UINT16                      AcpiGbl_ObjTypeCount[INTERNAL_TYPE_NODE_MAX+1];
+ACPI_EXTERN UINT16                      AcpiGbl_NodeTypeCount[INTERNAL_TYPE_NODE_MAX+1];
+ACPI_EXTERN UINT16                      AcpiGbl_ObjTypeCountMisc;
+ACPI_EXTERN UINT16                      AcpiGbl_NodeTypeCountMisc;
+ACPI_EXTERN UINT32                      AcpiGbl_NumNodes;
+ACPI_EXTERN UINT32                      AcpiGbl_NumObjects;
+
+
+ACPI_EXTERN UINT32                      AcpiGbl_SizeOfParseTree;
+ACPI_EXTERN UINT32                      AcpiGbl_SizeOfMethodTrees;
+ACPI_EXTERN UINT32                      AcpiGbl_SizeOfNodeEntries;
+ACPI_EXTERN UINT32                      AcpiGbl_SizeOfAcpiObjects;
+
+#endif /* ENABLE_DEBUGGER */
 
 
 #endif /* __ACGLOBAL_H__ */
