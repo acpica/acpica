@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asloperands - AML opcode generation
- *              $Revision: 1.19 $
+ *              $Revision: 1.21 $
  *
  *****************************************************************************/
 
@@ -498,7 +498,6 @@ OpnDoRegion (
 }
 
 
-
 /*******************************************************************************
  *
  * FUNCTION:    OpnDoBuffer
@@ -711,7 +710,6 @@ OpnDoPackage (
 }
 
 
-
 /*******************************************************************************
  *
  * FUNCTION:    OpnDoLoadTable
@@ -720,7 +718,7 @@ OpnDoPackage (
  *
  * RETURN:      None
  *
- * DESCRIPTION: 
+ * DESCRIPTION:
  *
  ******************************************************************************/
 
@@ -765,7 +763,7 @@ OpnDoLoadTable (
         Next->AmlLength = 1;
         Next->ParseOpcode = ZERO;
         OpcGenerateAmlOpcode (Next);
-    }       
+    }
 
 
     Next = Next->Peer;
@@ -774,7 +772,7 @@ OpnDoLoadTable (
         Next->AmlLength = 1;
         Next->ParseOpcode = ZERO;
         OpcGenerateAmlOpcode (Next);
-    }      
+    }
  */
 
 }
@@ -963,7 +961,7 @@ OpnAttachNameToNode (
     if (Child)
     {
         PsNode->ExternalName = Child->Value.String;
-        Status = AcpiNsInternalizeName (Child->Value.String, &PsNode->Namepath);
+        Status = UtInternalizeName (Child->Value.String, &PsNode->Namepath);
         if (ACPI_FAILURE (Status))
         {
         }
