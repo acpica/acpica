@@ -151,17 +151,18 @@ typedef UINT32                  ACPI_MUTEX_HANDLE;
 
 #define MTX_HARDWARE            0
 #define MTX_MEMORY              1
-#define MTX_TABLES              2
-#define MTX_DISPATCHER          3
-#define MTX_INTERPRETER         4
-#define MTX_EXECUTE             5
-#define MTX_NAMESPACE           6
-#define MTX_EVENTS              7
-#define MTX_OP_REGIONS          8
-#define MTX_DEBUG_COMMAND       9
-#define MTX_DEBUGGER            10
+#define MTX_CACHES              2
+#define MTX_TABLES              3
+#define MTX_DISPATCHER          4
+#define MTX_INTERPRETER         5
+#define MTX_EXECUTE             6
+#define MTX_NAMESPACE           7
+#define MTX_EVENTS              8
+#define MTX_OP_REGIONS          9
+#define MTX_DEBUG_COMMAND       10
+#define MTX_DEBUGGER            11
 
-#define MAX_MTX                 10
+#define MAX_MTX                 11
 #define NUM_MTX                 MAX_MTX+1
 
 
@@ -174,6 +175,7 @@ static char                 *Gbl_MutexNames[] =
 {
     "MTX_Hardware",
     "MTX_Memory",
+    "MTX_Caches",
     "MTX_Tables",
     "MTX_Dispatcher",
     "MTX_Interpreter",
@@ -645,26 +647,28 @@ typedef union acpi_gen_state
 
 typedef struct acpi_walk_state
 {
-    ACPI_GENERIC_OP         *Origin;                            /* Start of walk */
-    ACPI_GENERIC_OP         *PrevOp;                            /* Last op that was processed */
-    ACPI_GENERIC_OP         *NextOp;                            /* next op to be processed */
-    ACPI_GENERIC_STATE      *ControlState;                      /* List of control states (nested IFs) */
-	ACPI_GENERIC_STATE		*ScopeInfo;							/* Stack of nested scopes */
-    struct NameTableEntry   Arguments[MTH_NUM_ARGS];            /* Control method arguments */
-    struct NameTableEntry   LocalVariables[MTH_NUM_LOCALS];     /* Control method locals */
-    union AcpiObjInternal   *Operands[OBJ_NUM_OPERANDS];        /* Operands passed to the interpreter */
-    union AcpiObjInternal   *Results[OBJ_NUM_OPERANDS];         /* Accumulated results */
-    union AcpiObjInternal   *ReturnDesc;                        /* Return object, if any */
-    union AcpiObjInternal   *MethodDesc;                        /* Method descriptor if running a method */
-    ACPI_GENERIC_OP         *MethodCallOp;                      /* MethodCall Op if running a method */
-    struct acpi_walk_state  *Next;                              /* Next WalkState in list */
-
+    UINT8                   DataType;                           /* To differentiate various internal objs */\
     ACPI_OWNER_ID           OwnerId;                            /* Owner of objects created during the walk */
     BOOLEAN                 LastPredicate;                      /* Result of last predicate */
     UINT8                   NextOpInfo;                         /* Info about NextOp */
     UINT8                   NumOperands;                        /* Stack pointer for Operands[] array */
     UINT8                   NumResults;                         /* Stack pointer for Results[] array */
     UINT8                   CurrentResult;                      /* */
+
+    struct acpi_walk_state  *Next;                              /* Next WalkState in list */
+    ACPI_GENERIC_OP         *Origin;                            /* Start of walk */
+    ACPI_GENERIC_OP         *PrevOp;                            /* Last op that was processed */
+    ACPI_GENERIC_OP         *NextOp;                            /* next op to be processed */
+    ACPI_GENERIC_STATE      *ControlState;                      /* List of control states (nested IFs) */
+	ACPI_GENERIC_STATE		*ScopeInfo;							/* Stack of nested scopes */
+    union AcpiObjInternal   *ReturnDesc;                        /* Return object, if any */
+    union AcpiObjInternal   *MethodDesc;                        /* Method descriptor if running a method */
+    ACPI_GENERIC_OP         *MethodCallOp;                      /* MethodCall Op if running a method */
+    union AcpiObjInternal   *Operands[OBJ_NUM_OPERANDS];        /* Operands passed to the interpreter */
+    union AcpiObjInternal   *Results[OBJ_NUM_OPERANDS];         /* Accumulated results */
+    struct NameTableEntry   Arguments[MTH_NUM_ARGS];            /* Control method arguments */
+    struct NameTableEntry   LocalVariables[MTH_NUM_LOCALS];     /* Control method locals */
+
 
 } ACPI_WALK_STATE;
 
