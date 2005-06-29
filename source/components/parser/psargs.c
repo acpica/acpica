@@ -312,6 +312,8 @@ PsGetNextNamestring (
  *              Arg                 - Where the namepath will be stored
  *              ArgCount            - If the namepath points to a control method,
  *                                    the method's argument is returned here.
+ *              MethodCall          - Whether the namepath can be the start
+ *                                    of a method call
  *
  * RETURN:      None
  *
@@ -327,7 +329,8 @@ void
 PsGetNextNamepath (
     ACPI_PARSE_STATE        *ParserState,
     ACPI_GENERIC_OP         *Arg,
-    UINT32                  *ArgCount)
+    UINT32                  *ArgCount,
+    BOOLEAN                 MethodCall)
 {
     UINT8                   *Path;
     NAME_TABLE_ENTRY        *Method = NULL;
@@ -343,7 +346,8 @@ PsGetNextNamepath (
 
 
     Path = PsGetNextNamestring (ParserState);
-    if (!Path)
+/*    if (!Path)*/
+    if (!Path || !MethodCall)
     {
         /* Null name case, create a null namepath object */
 
@@ -359,7 +363,7 @@ PsGetNextNamepath (
          * Lookup the name in the parsed namespace 
          */
 
-        MethodOp = PsFind (PsGetParentScope (ParserState), Path, AML_MethodOp, 0);
+        MethodOp = MethodCall ? PsFind (PsGetParentScope (ParserState), Path, AML_MethodOp, 0):NULL;
         if (MethodOp)
         {
             DEBUG_PRINT (TRACE_PARSE, ("PsGetNextNamepath: Found a method while parsed namespace still valid!\n"));
@@ -733,7 +737,7 @@ PsGetNextArg (
                 Arg = PsAllocOp (AML_NAMEPATH);
                 if (Arg)
                 {
-                    PsGetNextNamepath (ParserState, Arg, ArgCount);
+                    PsGetNextNamepath (ParserState, Arg, ArgCount, 0);
                 }
             }
 
