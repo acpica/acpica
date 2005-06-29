@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dbcmds - debug commands and output routines
- *              $Revision: 1.53 $
+ *              $Revision: 1.54 $
  *
  ******************************************************************************/
 
@@ -261,7 +261,8 @@ AcpiDbDisplayLocks (void)
     for (i = 0; i < MAX_MTX; i++)
     {
         AcpiOsPrintf ("%26s : %s\n", AcpiCmGetMutexName (i),
-                    AcpiGbl_AcpiMutexInfo[i].Locked ? "Locked" : "Unlocked");
+                    AcpiGbl_AcpiMutexInfo[i].OwnerId == ACPI_MUTEX_NOT_ACQUIRED
+                        ? "Locked" : "Unlocked");
     }
 }
 
