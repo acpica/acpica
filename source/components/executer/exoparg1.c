@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: ammonad - ACPI AML (p-code) execution for monadic operators
- *              $Revision: 1.86 $
+ *              $Revision: 1.87 $
  *
  *****************************************************************************/
 
@@ -571,7 +571,7 @@ AcpiAmlExecMonadic2R (
 
         /* The object exists in the namespace, return TRUE */
 
-        RetDesc->Number.Value = ACPI_INTEGER_MAX
+        RetDesc->Number.Value = ACPI_INTEGER_MAX;
         goto Cleanup;
         break;
 
