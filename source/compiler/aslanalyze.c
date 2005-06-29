@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslanalyze.c - check for semantic errors
- *              $Revision: 1.71 $
+ *              $Revision: 1.73 $
  *
  *****************************************************************************/
 
@@ -10,7 +10,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2003, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -149,16 +149,37 @@ AnMapArgTypeToBtype (
 
     switch (ArgType)
     {
+
+    /* Simple types */
+
     case ARGI_ANYTYPE:
         return (ACPI_BTYPE_OBJECTS_AND_REFS);
 
-    case ARGI_TARGETREF:
-    case ARGI_FIXED_TARGET:
-    case ARGI_SIMPLE_TARGET:
-        return (ACPI_BTYPE_OBJECTS_AND_REFS);
+    case ARGI_PACKAGE:
+        return (ACPI_BTYPE_PACKAGE);
 
-    case ARGI_REFERENCE:
-        return (ACPI_BTYPE_REFERENCE);
+    case ARGI_EVENT:
+        return (ACPI_BTYPE_EVENT);
+
+    case ARGI_MUTEX:
+        return (ACPI_BTYPE_MUTEX);
+
+    case ARGI_DDBHANDLE:
+        return (ACPI_BTYPE_DDB_HANDLE);
+
+    /* Interchangeable types */
+    /*
+     * Source conversion rules:
+     * Integer, String, and Buffer are all interchangeable
+     */
+    case ARGI_INTEGER:
+    case ARGI_STRING:
+    case ARGI_BUFFER:
+    case ARGI_BUFFER_OR_STRING:
+    case ARGI_COMPUTEDATA:
+        return (ACPI_BTYPE_COMPUTE_DATA);
+
+    /* References */
 
     case ARGI_INTEGER_REF:
         return (ACPI_BTYPE_INTEGER);
@@ -169,27 +190,15 @@ AnMapArgTypeToBtype (
     case ARGI_DEVICE_REF:
         return (ACPI_BTYPE_DEVICE_OBJECTS);
 
-    case ARGI_IF:
-        return (ACPI_BTYPE_ANY);
+    case ARGI_REFERENCE:
+        return (ACPI_BTYPE_REFERENCE);
 
-    /*
-     * Source conversion rules:
-     * Integer, String, and Buffer are interchangable
-     */
-    case ARGI_INTEGER:
-        return (ACPI_BTYPE_INTEGER | ACPI_BTYPE_STRING | ACPI_BTYPE_BUFFER);
+    case ARGI_TARGETREF:
+    case ARGI_FIXED_TARGET:
+    case ARGI_SIMPLE_TARGET:
+        return (ACPI_BTYPE_OBJECTS_AND_REFS);
 
-    case ARGI_STRING:
-        return (ACPI_BTYPE_INTEGER | ACPI_BTYPE_STRING | ACPI_BTYPE_BUFFER);
-
-    case ARGI_BUFFER:
-        return (ACPI_BTYPE_INTEGER | ACPI_BTYPE_STRING | ACPI_BTYPE_BUFFER);
-
-    case ARGI_PACKAGE:
-        return (ACPI_BTYPE_PACKAGE);
-
-    case ARGI_COMPUTEDATA:
-        return (ACPI_BTYPE_COMPUTE_DATA);
+    /* Complex types */
 
     case ARGI_DATAOBJECT:
 
@@ -203,17 +212,11 @@ AnMapArgTypeToBtype (
 
         return (ACPI_BTYPE_STRING | ACPI_BTYPE_BUFFER | ACPI_BTYPE_PACKAGE);
 
-    case ARGI_MUTEX:
-        return (ACPI_BTYPE_MUTEX);
+    case ARGI_REF_OR_STRING:
+        return (ACPI_BTYPE_STRING | ACPI_BTYPE_REFERENCE);
 
-    case ARGI_EVENT:
-        return (ACPI_BTYPE_EVENT);
-
-    case ARGI_REGION:
-        return (ACPI_BTYPE_REGION);
-
-    case ARGI_DDBHANDLE:
-        return (ACPI_BTYPE_DDB_HANDLE);
+    case ARGI_REGION_OR_FIELD:
+        return (ACPI_BTYPE_REGION | ACPI_BTYPE_FIELD_UNIT);
 
     default:
         break;
@@ -299,7 +302,7 @@ AnMapEtypeToBtype (
 
         /* Named fields can be either Integer/Buffer/String */
 
-        return (ACPI_BTYPE_COMPUTE_DATA);
+        return (ACPI_BTYPE_COMPUTE_DATA | ACPI_BTYPE_FIELD_UNIT);
 
     case ACPI_TYPE_LOCAL_ALIAS:
 
