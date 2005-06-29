@@ -338,9 +338,9 @@ BREAKPOINT3;
         /* See comment near top of file re significance of FETCH_VALUES */
 
 #ifdef FETCH_VALUES
-        MethodPtr = (nte *) NsEnter (MethodName, Any, Exec);
+        MethodPtr = (nte *) NsEnter (MethodName, TYPE_Any, MODE_Exec);
 #else 
-        MethodPtr = (nte *) NsEnter (MethodName, Method, Exec);
+        MethodPtr = (nte *) NsEnter (MethodName, TYPE_Method, MODE_Exec);
 #endif
 
         if (NOTFOUND == MethodPtr)
@@ -354,11 +354,11 @@ BREAKPOINT3;
         /*  Root, MethodName, and Method valid  */
 
 #ifdef FETCH_VALUES
-        if (NsValType (MethodPtr) == Method)
+        if (NsValType (MethodPtr) == TYPE_Method)
         {
             /* Method points to a method name */
         
-            LINE_SET (55, Exec);
+            LINE_SET (55, MODE_Exec);
             DEBUG_PRINT (ACPI_INFO,
                         ("[%s Method %p ptrVal %p\n",
                         MethodName, MethodPtr, MethodPtr->ptrVal));
@@ -399,7 +399,7 @@ BREAKPOINT3;
 
                 /*  push current scope on scope stack and make hMethod->ChildScope current  */
 
-                NsPushCurrentScope (MethodPtr->ChildScope, Method);
+                NsPushCurrentScope (MethodPtr->ChildScope, TYPE_Method);
 
                 DEBUG_EXEC ((FullyQualifiedName = NsFullyQualifiedName (MethodPtr)));
                 DEBUG_PRINT (TRACE_NAMES, ("Exec Method %s at offset %8XH\n",
@@ -439,7 +439,7 @@ BREAKPOINT3;
             
                     /* OBSOLETE:  Trace |= TraceExec;  */        
                     /* enable output from DumpStack */
-                    DumpStack (Exec, "Remaining Object Stack entries", -1, "");
+                    DumpStack (MODE_Exec, "Remaining Object Stack entries", -1, "");
                 }
 
                 DEBUG_PRINT (ACPI_INFO, ("*** Completed execution of method %s ***\n",
@@ -472,8 +472,8 @@ BREAKPOINT3;
             {
                 /* Construct a descriptor pointing to the name */
             
-                ObjDesc->Lvalue.ValType = (UINT8) Lvalue;
-                ObjDesc->Lvalue.OpCode  = (UINT8) NameOp;
+                ObjDesc->Lvalue.ValType = (UINT8) TYPE_Lvalue;
+                ObjDesc->Lvalue.OpCode  = (UINT8) AML_NameOp;
                 ObjDesc->Lvalue.Ref     = (void *) MethodPtr;
 
                 /* 
@@ -607,7 +607,7 @@ NsSetup (void)
     /* Push the root name table on the scope stack */
     
     ScopeStack[0].Scope = Root;
-    ScopeStack[0].Type = Any;
+    ScopeStack[0].Type = TYPE_Any;
     CurrentScope = &ScopeStack[0];
 
 #ifdef NSLOGFILE
@@ -621,7 +621,7 @@ NsSetup (void)
 
     for (InitVal = PreDefinedNames; InitVal->Name; InitVal++)
     {
-        NsHandle handle = NsEnter (InitVal->Name, InitVal->Type, Load);
+        NsHandle handle = NsEnter (InitVal->Name, InitVal->Type, MODE_Load);
 
         /* 
          * if name entered successfully
@@ -645,11 +645,11 @@ NsSetup (void)
 
                 switch (InitVal->Type)
                 {
-                case Number:
+                case TYPE_Number:
                     ObjDesc->Number.Number = (UINT32) atol (InitVal->Val);
                     break;
 
-                case String:
+                case TYPE_String:
                     ObjDesc->String.StrLen = (UINT16) strlen (InitVal->Val);
 
                     /* 
@@ -695,7 +695,7 @@ NsSetup (void)
  * PARAMETERS:  char    *Name       name to be entered, in internal format
  *                                  as represented in the AML stream
  *              NsType  Type        type associated with name
- *              OpMode  LoadMode    Load => add name if not found
+ *              OpMode  LoadMode    MODE_Load => add name if not found
  *
  * RETURN:      Handle to the nte for the passed name
  *
@@ -732,7 +732,7 @@ NsEnter (char *Name, NsType Type, OpMode LoadMode)
          * -  In Exec mode, there are no names to be found.
          */
 
-        if (Load1 == LoadMode)
+        if (MODE_Load1 == LoadMode)
         {
             NsSetup ();
         }
@@ -757,9 +757,9 @@ NsEnter (char *Name, NsType Type, OpMode LoadMode)
 
     /* DefFieldDefn and BankFieldDefn define fields in a Region */
     
-    if (DefFieldDefn == Type || BankFieldDefn == Type)
+    if (TYPE_DefFieldDefn == Type || TYPE_BankFieldDefn == Type)
     {
-        TypeToCheckFor = Region;
+        TypeToCheckFor = TYPE_Region;
     }
     else
     {
@@ -781,7 +781,7 @@ NsEnter (char *Name, NsType Type, OpMode LoadMode)
      *    segments and the segments themselves.
      */
 
-    if (*Name == RootPrefix)
+    if (*Name == AML_RootPrefix)
     {
         /* Name is fully qualified, look in root name table */
         
@@ -802,7 +802,7 @@ NsEnter (char *Name, NsType Type, OpMode LoadMode)
         EntryToSearch = CurrentScope->Scope;
         Size = NsCurrentSize;
 
-        while (*Name == ParentPrefix)
+        while (*Name == AML_ParentPrefix)
         {
             /*  recursively search in parent's name scope   */
 
@@ -832,7 +832,7 @@ NsEnter (char *Name, NsType Type, OpMode LoadMode)
         }
     }
 
-    if (*Name == DualNamePrefix)
+    if (*Name == AML_DualNamePrefix)
     {
         DEBUG_PRINT (TRACE_NAMES, ("Dual Name \n"));
 
@@ -840,7 +840,7 @@ NsEnter (char *Name, NsType Type, OpMode LoadMode)
         Name++;                             /* point to first segment */
     }
     
-    else if (*Name == MultiNamePrefixOp)
+    else if (*Name == AML_MultiNamePrefixOp)
     {
         DEBUG_PRINT (TRACE_NAMES, ("Multi Name %d \n", Name[1]));
         
@@ -881,14 +881,14 @@ NsEnter (char *Name, NsType Type, OpMode LoadMode)
          */
 
         ThisEntry = SearchTable (Name, EntryToSearch, Size, LoadMode,
-                                NumSegments == 0 ? Type : Any);
+                                NumSegments == 0 ? Type : TYPE_Any);
         CheckTrash ("after SearchTable");
 
         if (ThisEntry == NOTFOUND)
         {
             /*  name not in ACPI namespace  */
 
-            if (Load1 == LoadMode || Load == LoadMode)
+            if (MODE_Load1 == LoadMode || MODE_Load == LoadMode)
             {
                 REPORT_ERROR (&KDT[8]);
             }
@@ -902,14 +902,14 @@ NsEnter (char *Name, NsType Type, OpMode LoadMode)
             return (NsHandle) NOTFOUND;
         }
 
-        if (NumSegments         == 0  &&                /* if last segment                  */
-            TypeToCheckFor      != Any &&               /* and looking for a specific type  */
-            TypeToCheckFor      != DefAny &&            /* which is not a phoney type       */
-            TypeToCheckFor      != Scope &&             /*   "   "   "  "   "     "         */
-            TypeToCheckFor      != IndexFieldDefn &&    /*   "   "   "  "   "     "         */
-            ThisEntry->NtType   != Any &&               /* and type of entry is known       */
-            ThisEntry->NtType   != TypeToCheckFor)      /* and entry does not match request */
-        {                                               /* complain.                        */
+        if (NumSegments         == 0  &&                    /* if last segment                  */
+            TypeToCheckFor      != TYPE_Any &&              /* and looking for a specific type  */
+            TypeToCheckFor      != TYPE_DefAny &&           /* which is not a phoney type       */
+            TypeToCheckFor      != TYPE_Scope &&            /*   "   "   "  "   "     "         */
+            TypeToCheckFor      != TYPE_IndexFieldDefn &&   /*   "   "   "  "   "     "         */
+            ThisEntry->NtType   != TYPE_Any &&              /* and type of entry is known       */
+            ThisEntry->NtType   != TypeToCheckFor)          /* and entry does not match request */
+        {                                                   /* complain.                        */
             /*  complain about type mismatch    */
 
             REPORT_WARNING (&KDT[10]);
@@ -920,7 +920,7 @@ NsEnter (char *Name, NsType Type, OpMode LoadMode)
          * found entry is known, use that type to see if it opens a scope.
          */
 
-        if ((0 == NumSegments) && (Any == Type))
+        if ((0 == NumSegments) && (TYPE_Any == Type))
         {
             Type = ThisEntry->NtType;
         }
@@ -935,7 +935,7 @@ NsEnter (char *Name, NsType Type, OpMode LoadMode)
 
             DEBUG_PRINT (ACPI_INFO, ("Load mode= %d  ThisEntry= %x\n", LoadMode, ThisEntry));
 
-            if ((Load1 == LoadMode) || (Load == LoadMode))
+            if ((MODE_Load1 == LoadMode) || (MODE_Load == LoadMode))
             {   
                 /*  first or second pass load mode ==> locate the next scope    */
                 
@@ -949,7 +949,7 @@ NsEnter (char *Name, NsType Type, OpMode LoadMode)
             {
                 DEBUG_PRINT (ACPI_ERROR, ("No child scope at entry %p\n", ThisEntry));
 
-                if (Load1 == LoadMode || Load == LoadMode)
+                if (MODE_Load1 == LoadMode || MODE_Load == LoadMode)
                 {
                     REPORT_ERROR (&KDT[11]);
                     return (NsHandle) NOTFOUND;
@@ -966,7 +966,7 @@ NsEnter (char *Name, NsType Type, OpMode LoadMode)
                         Name, ThisEntry->ChildScope, TABLSIZE);
 #endif
 
-            if (Load1 == LoadMode || Load == LoadMode)
+            if (MODE_Load1 == LoadMode || MODE_Load == LoadMode)
             {
                 /* Set newly-created child scope's parent scope */
                 

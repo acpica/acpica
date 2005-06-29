@@ -112,6 +112,181 @@ static ST_KEY_DESC_TABLE KDT[] = {
 };
 
 
+/*
+
+    NsDumpTable (SearchBase, SearchBase == Root ? NsRootSize : TABLSIZE,
+                    1, MaxDepth);
+
+*/
+
+static void
+NsDumpDevices (NsType TargetType, nte *ThisEntry, INT32 Size, INT32 Level, INT32 MaxDepth)
+{
+    nte                 *Appendage;
+    UINT32              DownstreamSiblingMask = 0;
+    INT32               LevelTmp;
+    NsType              Type;
+    UINT32              WhichBit;
+
+
+    FUNCTION_TRACE ("NsDumpRootDevices");
+
+
+
+    if (OUTRANGE (TargetType, NsTypeNames))
+    {
+        return;
+    }
+
+    if (0 == MaxDepth || !ThisEntry)
+    {
+        /* reached requested depth, or nothing to dump */
+        
+        return;
+    }
+
+
+    /* Locate appendage, if any, before losing original scope pointer */
+    
+    if (1 == Size)
+    {
+        Appendage = NULL;
+    }
+    else
+    {
+        Appendage = NEXTSEG (ThisEntry);
+    }
+
+
+    /* for each entry in table */
+    
+    while (Size--)
+    {
+        if (ThisEntry->NameSeg)
+        {
+            LevelTmp    = Level;
+            Type        = ThisEntry->NtType;
+            WhichBit    = 1;
+
+
+            if (OUTRANGE (Type, NsTypeNames))
+            {
+                Type = TYPE_DefAny;                                 /* prints as *ERROR* */
+            }
+            
+            if (!NcOK ((INT32)* (char *) &ThisEntry->NameSeg))
+            {
+                REPORT_WARNING (&KDT[0]);
+            }
+
+            if (Type == TargetType)
+            {
+
+
+                /* non-empty entry */
+                /* print appropriate graphic characters to form tree structure */
+            
+                while (LevelTmp--)
+                {
+                    /*  print appropriate graphic characters to form tree structure */
+
+                    if (LevelTmp)
+                    {
+                        if (DownstreamSiblingMask & WhichBit)
+                        {    
+                            DEBUG_PRINT_RAW (TRACE_TABLES, ("| "));
+                        }
+                    
+                        else
+                        {
+                            DEBUG_PRINT_RAW (TRACE_TABLES, ("  "));
+                        }
+                    
+                        WhichBit <<= 1;
+                    }
+                
+                    else
+                    {
+                        if (ExistDownstreamSibling (ThisEntry + 1, Size, Appendage))
+                        {
+                            DownstreamSiblingMask |= (1 << (Level - 1));
+                            DEBUG_PRINT_RAW (TRACE_TABLES, ("+-"));
+                        }
+                    
+                        else
+                        {
+                            DownstreamSiblingMask &= 0xffffffff ^ (1 << (Level - 1));
+                            DEBUG_PRINT_RAW (TRACE_TABLES, ("+-"));
+                        }
+
+                        if (ThisEntry->ChildScope == NULL)
+                        {
+                            DEBUG_PRINT_RAW (TRACE_TABLES, ("- "));
+                        }
+                    
+                        else if (ExistDownstreamSibling (ThisEntry->ChildScope, TABLSIZE,
+                                                            NEXTSEG (ThisEntry->ChildScope)))
+                        {
+                            DEBUG_PRINT_RAW (TRACE_TABLES, ("+ "));
+                        }
+                    
+                        else
+                        {
+                            DEBUG_PRINT_RAW (TRACE_TABLES, ("- "));
+                        }
+                    }
+                }
+
+                DEBUG_PRINT_RAW (TRACE_TABLES,
+                            ("%4.4s [%s] ", &ThisEntry->NameSeg, NsTypeNames[Type]));
+                
+                DEBUG_PRINT_RAW (TRACE_TABLES, ("N:%p", ThisEntry));
+                
+                DEBUG_PRINT_RAW (TRACE_TABLES, (" C:%p P:%p\n",
+                            ThisEntry->ChildScope, ThisEntry->ParentScope));
+            }
+
+            if (ThisEntry->ChildScope && MaxDepth > 1)
+            {
+                /* Recursive call: dump next scope level */
+                
+                NsDumpDevices (TargetType, ThisEntry->ChildScope, TABLSIZE, Level+1,
+                                MaxDepth - 1);
+            }
+        }
+
+        if (0 == Size && Appendage)
+        {
+            /* Just examined last entry, but table has an appendage.  */
+            
+            ThisEntry = Appendage;
+            Size += TABLSIZE;
+            Appendage = NEXTSEG (ThisEntry);
+        }
+        else
+        {
+            ThisEntry++;
+        }
+    }
+}
+
+
+void
+NsDumpRootDevices (void)
+{
+
+    /* Only dump the table if tracing is enabled */
+
+    if (!(TRACE_TABLES & DebugLevel))
+    {
+        return;
+    }
+
+
+    DEBUG_PRINT (TRACE_TABLES, ("All devices in the namespace:\n"));
+    NsDumpDevices (TYPE_Device, Root, NsRootSize, 1, INT_MAX);
+
+}
 
 /****************************************************************************
  * 
@@ -234,7 +409,7 @@ NsDumpTable (nte *ThisEntry, INT32 Size, INT32 Level, INT32 MaxDepth)
 
             if (OUTRANGE (Type, NsTypeNames))
             {
-                Type = DefAny;                                 /* prints as *ERROR* */
+                Type = TYPE_DefAny;                                 /* prints as *ERROR* */
             }
             
             if (!NcOK ((INT32)* (char *) &ThisEntry->NameSeg))
@@ -242,7 +417,7 @@ NsDumpTable (nte *ThisEntry, INT32 Size, INT32 Level, INT32 MaxDepth)
                 REPORT_WARNING (&KDT[0]);
             }
 
-            if (Method == Type && ThisEntry->ptrVal)
+            if (TYPE_Method == Type && ThisEntry->ptrVal)
             {
                 /* name is a Method and its AML offset/length are set */
                 
@@ -308,9 +483,9 @@ NsDumpTable (nte *ThisEntry, INT32 Size, INT32 Level, INT32 MaxDepth)
                                 Value[6], Value[7], Value[8], Value[9], Value[10],
                                 Value[11], Value[12], Value[13], Value[14], Value[15]));
                     
-                    if (bT == String || bT == Buffer || bT == Package
-                     || bT == FieldUnit || bT == DefField || bT == BankField
-                     || bT == IndexField || bT == Lvalue)
+                    if (bT == TYPE_String ||     bT == TYPE_Buffer   || bT == TYPE_Package
+                     || bT == TYPE_FieldUnit ||  bT == TYPE_DefField || bT == TYPE_BankField
+                     || bT == TYPE_IndexField || bT == TYPE_Lvalue)
                     {
                         /* 
                          * Get pointer to next level.  ThisEntry assumes that all of
@@ -328,7 +503,7 @@ NsDumpTable (nte *ThisEntry, INT32 Size, INT32 Level, INT32 MaxDepth)
 
             if (ThisEntry->ChildScope && MaxDepth > 1)
             {
-                /* dump next scope level */
+                /*  Recursive call: dump next scope level */
                 
                 NsDumpTable (ThisEntry->ChildScope, TABLSIZE, Level+1,
                                 MaxDepth - 1);
