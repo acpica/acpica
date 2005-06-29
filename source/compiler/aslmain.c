@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslmain - compiler main and utilities
- *              $Revision: 1.77 $
+ *              $Revision: 1.79 $
  *
  *****************************************************************************/
 
@@ -10,7 +10,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2004, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2005, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -185,6 +185,9 @@ Options (
     printf ("  -e             Generate External() statements for unresolved symbols\n");
     printf ("  -g             Get ACPI tables and write to files (*.dat)\n");
 
+    printf ("\nMiscellaneous:\n");
+    printf ("  -a             Verify source file is entirely ASCII text (0x00-0x7F)\n");
+
     printf ("\nHelp:\n");
     printf ("  -h             Additional help and compiler debug options\n");
     printf ("  -hc            Display operators allowed in constant expressions\n");
@@ -325,7 +328,7 @@ AslCommandLine (
     while ((j = AcpiGetopt (argc, argv, "ab:cd^efgh^i^l^o:p:r:s:t:v:x:")) != EOF) switch (j)
     {
     case 'a':
-        AslToFile = FALSE;
+        Gbl_CheckForAscii = TRUE;
         break;
 
 
