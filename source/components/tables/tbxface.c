@@ -1,8 +1,8 @@
-
 /******************************************************************************
  *
  * Module Name: tbxface - Public interfaces to the ACPI subsystem
  *                         ACPI table oriented interfaces
+ *              $Revision: 1.27 $
  *
  *****************************************************************************/
 
@@ -124,7 +124,7 @@
 
 
 #define _COMPONENT          TABLE_MANAGER
-        MODULE_NAME         ("tbxface");
+        MODULE_NAME         ("tbxface")
 
 
 /*******************************************************************************
@@ -152,7 +152,7 @@ AcpiLoadFirmwareTables (void)
     /* Get the RSDT first */
 
     Status = AcpiTbGetTableRsdt (&NumberOfTables);
-    if (Status != AE_OK)
+    if (ACPI_FAILURE (Status))
     {
         goto ErrorExit;
     }
@@ -161,20 +161,26 @@ AcpiLoadFirmwareTables (void)
     /* Now get the rest of the tables */
 
     Status = AcpiTbGetAllTables (NumberOfTables, NULL);
-    if (Status != AE_OK)
+    if (ACPI_FAILURE (Status))
     {
         goto ErrorExit;
     }
 
-
     DEBUG_PRINT (ACPI_OK, ("ACPI Tables successfully loaded\n"));
+
+    Status = AcpiNsLoadNamespace ();
+    if (ACPI_FAILURE (Status))
+    {
+        goto ErrorExit;
+    }
+
 
     return_ACPI_STATUS (AE_OK);
 
 
 ErrorExit:
     DEBUG_PRINT (ACPI_ERROR,
-        ("Failure during ACPI Table Init: %s\n",
+        ("Failure during ACPI Table/Namespace Init: %s\n",
         AcpiCmFormatException (Status)));
 
     return_ACPI_STATUS (Status);
@@ -211,12 +217,12 @@ AcpiLoadTable (
 
     if (!TablePtr)
     {
-        return AE_BAD_PARAMETER;
+        return_ACPI_STATUS (AE_BAD_PARAMETER);
     }
 
     /* Copy the table to a local buffer */
 
-    Status = AcpiTbGetTable (NULL, ((char *) TablePtr), &TableInfo);
+    Status = AcpiTbGetTable (NULL, TablePtr, &TableInfo);
     if (ACPI_FAILURE (Status))
     {
         return_ACPI_STATUS (Status);
@@ -227,8 +233,22 @@ AcpiLoadTable (
     Status = AcpiTbInstallTable (NULL, &TableInfo);
     if (ACPI_FAILURE (Status))
     {
-        /* TBD: [Errors] must free table allocated by AcpiTbGetTable */
+        /* Free table allocated by AcpiTbGetTable */
+
+        AcpiTbDeleteSingleTable (&TableInfo);
+        return_ACPI_STATUS (Status);
     }
+
+
+    Status = AcpiNsLoadTable (TableInfo.InstalledDesc, AcpiGbl_RootNode);
+    if (ACPI_FAILURE (Status))
+    {
+        /* Uninstall table and free the buffer */
+
+        AcpiTbUninstallTable (TableInfo.InstalledDesc);
+        return_ACPI_STATUS (Status);
+    }
+
 
     return_ACPI_STATUS (Status);
 }
@@ -269,7 +289,12 @@ AcpiUnloadTable (
     ListHead = &AcpiGbl_AcpiTables[TableType];
     do
     {
-        /* Delete the entire namespace under this table NTE */
+        /*
+         * Delete all namespace entries owned by this table.  Note that these
+         * entries can appear anywhere in the namespace by virtue of the AML
+         * "Scope" operator.  Thus, we need to track ownership by an ID, not
+         * simply a position within the hierarchy
+         */
 
         AcpiNsDeleteNamespaceByOwner (ListHead->TableId);
 
@@ -319,8 +344,6 @@ AcpiGetTableHeader (
 
     FUNCTION_TRACE ("AcpiGetTableHeader");
 
-    Status = AE_OK;
-
     if ((Instance == 0)                 ||
         (TableType == ACPI_TABLE_RSDP)  ||
         (!OutTableHeader))
@@ -331,7 +354,7 @@ AcpiGetTableHeader (
     /* Check the table type and instance */
 
     if ((TableType > ACPI_TABLE_MAX)    ||
-        (AcpiGbl_AcpiTableData[TableType].Flags == ACPI_TABLE_SINGLE &&
+        (IS_SINGLE_TABLE (AcpiGbl_AcpiTableData[TableType].Flags) &&
          Instance > 1))
     {
         return_ACPI_STATUS (AE_BAD_PARAMETER);
@@ -341,7 +364,7 @@ AcpiGetTableHeader (
     /* Get a pointer to the entire table */
 
     Status = AcpiTbGetTablePtr (TableType, Instance, &TblPtr);
-    if (Status != AE_OK)
+    if (ACPI_FAILURE (Status))
     {
         return_ACPI_STATUS (Status);
     }
@@ -403,15 +426,12 @@ AcpiGetTable (
 
     FUNCTION_TRACE ("AcpiGetTable");
 
-    Status = AE_OK;
-
     /*
-     *  Must have a buffer
+     *  If we have a buffer, we must have a length too
      */
     if ((Instance == 0)                 ||
         (!RetBuffer)                    ||
-        (!RetBuffer->Pointer)           ||
-        (!RetBuffer->Length))
+        ((!RetBuffer->Pointer) && (RetBuffer->Length)))
     {
         return_ACPI_STATUS (AE_BAD_PARAMETER);
     }
@@ -419,7 +439,7 @@ AcpiGetTable (
     /* Check the table type and instance */
 
     if ((TableType > ACPI_TABLE_MAX)    ||
-        (AcpiGbl_AcpiTableData[TableType].Flags == ACPI_TABLE_SINGLE &&
+        (IS_SINGLE_TABLE (AcpiGbl_AcpiTableData[TableType].Flags) &&
          Instance > 1))
     {
         return_ACPI_STATUS (AE_BAD_PARAMETER);
@@ -429,13 +449,14 @@ AcpiGetTable (
     /* Get a pointer to the entire table */
 
     Status = AcpiTbGetTablePtr (TableType, Instance, &TblPtr);
-    if (Status != AE_OK)
+    if (ACPI_FAILURE (Status))
     {
         return_ACPI_STATUS (Status);
     }
 
     /*
-     * The function will return a NULL pointer if the table is not loaded
+     * AcpiTbGetTablePtr will return a NULL pointer if the
+     *  table is not loaded.
      */
     if (TblPtr == NULL)
     {

@@ -2,7 +2,7 @@
  *
  * Module Name: nsxfname - Public interfaces to the ACPI subsystem
  *                         ACPI Namespace oriented interfaces
- *              $Revision: 1.65 $
+ *              $Revision: 1.66 $
  *
  *****************************************************************************/
 
@@ -300,8 +300,8 @@ UnlockAndExit:
  *
  * RETURN:      Status
  *
- * DESCRIPTION: Returns information about an object as gleaned from the 
- *              namespace node and possibly by running several standard 
+ * DESCRIPTION: Returns information about an object as gleaned from the
+ *              namespace node and possibly by running several standard
  *              control methods (Such as in the case of a device.)
  *
  ******************************************************************************/
@@ -351,9 +351,7 @@ AcpiGetObjectInfo (
     }
 
 
-
-
-    /* 
+    /*
      * Get extra info for ACPI devices only.  Run the
      * _HID, _UID, _STA, and _ADR methods.  Note: none
      * of these methods are required, so they may or may
