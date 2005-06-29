@@ -154,6 +154,15 @@
 #define HI_LIMIT(b)                     ((UINT8) (((b) & 0x00FF0000) >> 16))
 
 
+ /* Extract data using a pointer */
+
+#define GET8(addr)                      (*(UINT8*)(addr))
+#define GET16(addr)                     (*(UINT16*)(addr))
+#define GET32(addr)                     (*(UINT32*)(addr))
+
+
+
+
 /*
  * Fast power-of-two math macros for non-optimized compilers
  */
@@ -184,6 +193,12 @@
 
 #ifdef DEBUG_ASSERT
 #undef DEBUG_ASSERT
+#endif
+
+#ifdef _RPARSER
+#define RPARSER_ONLY(s)                 s;
+#else
+#define RPARSER_ONLY(s)
 #endif
 
 
