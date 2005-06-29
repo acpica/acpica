@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acopcode.h - AML opcode information for the AML parser and interpreter
- *       $Revision: 1.2 $
+ *       $Revision: 1.1 $
  *
  *****************************************************************************/
 
@@ -137,7 +137,7 @@
 
 
 /*
- * All AML opcodes and the parse-time arguments for each.  Used by the AML
+ * All AML opcodes and the parse-time arguments for each.  Used by the AML 
  * parser  Each list is compressed into a 32-bit number and stored in the
  * master opcode table (in psopcode.c).
  */
@@ -266,8 +266,8 @@
 
 
 /*
- * All AML opcodes and the runtime arguments for each.  Used by the AML
- * interpreter  Each list is compressed into a 32-bit number and stored
+ * All AML opcodes and the runtime arguments for each.  Used by the AML 
+ * interpreter  Each list is compressed into a 32-bit number and stored 
  * in the master opcode table (in psopcode.c).
  *
  * (Used by PrepOperands procedure and the ASL Compiler)
