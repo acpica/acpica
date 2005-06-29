@@ -179,7 +179,6 @@ AcpiAmlExecCreateField (
     UINT8                   TypeFound;
 
 
-
     FUNCTION_TRACE ("AmlExecCreateField");
 
 
@@ -210,9 +209,7 @@ AcpiAmlExecCreateField (
     }
 
 
-
     Offset = OffDesc->Number.Value;
-
 
 
     /* If ResDesc is a Name, it will be a direct name pointer after AcpiAmlResolveOperands() */
@@ -340,8 +337,7 @@ AcpiAmlExecCreateField (
 
         TypeFound = SrcDesc->Common.Type;
 
-        if ((TypeFound > (UINT8) INTERNAL_TYPE_REFERENCE) ||
-            !AcpiCmValidObjectType (TypeFound))
+        if ((TypeFound > (UINT8) INTERNAL_TYPE_REFERENCE) || !AcpiCmValidObjectType (TypeFound))
         {
             DEBUG_PRINT (ACPI_ERROR, ("AmlExecCreateField: Tried to create field in invalid object type - 0x%X\n",
                             TypeFound));
@@ -427,7 +423,6 @@ AcpiAmlExecCreateField (
     {
         AcpiCmRemoveReference (FieldDesc);
     }
-
 
 
 Cleanup:
@@ -562,7 +557,6 @@ AcpiAmlExecCreateEvent (
     }
 
 
-
 Cleanup:
 
     return_ACPI_STATUS (Status);
@@ -589,7 +583,6 @@ AcpiAmlExecCreateMutex (
     ACPI_STATUS             Status = AE_OK;
     ACPI_OBJECT_INTERNAL    *SyncDesc;
     ACPI_OBJECT_INTERNAL    *ObjDesc;
-
 
 
     FUNCTION_TRACE_PTR ("AmlExecCreateMutex", WALK_OPERANDS);
@@ -1002,9 +995,5 @@ AcpiAmlExecCreateMethod (
 
     return_ACPI_STATUS (Status);
 }
-
-
-
-
 
 
