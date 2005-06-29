@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslcompiler.h - common include file
- *              $Revision: 1.118 $
+ *              $Revision: 1.119 $
  *
  *****************************************************************************/
 
@@ -213,6 +213,9 @@
 /* Misc */
 
 #define ASL_EXTERNAL_METHOD         255
+#define ASL_ABORT                   TRUE
+#define ASL_NO_ABORT                FALSE
+
 
 /*******************************************************************************
  *
@@ -304,6 +307,13 @@ AslError (
     UINT8                   MessageId,
     ACPI_PARSE_OBJECT       *Op,
     char                    *ExtraMessage);
+
+void
+AslCoreSubsystemError (
+    ACPI_PARSE_OBJECT       *Op,
+    ACPI_STATUS             Status,
+    char                    *ExtraMessage,
+    BOOLEAN                 Abort);
 
 void
 AslCommonError (
@@ -465,7 +475,7 @@ OpnDoRegion (
  */
 
 void
-LkOptimizeNamePath (
+OptOptimizeNamePath (
     ACPI_PARSE_OBJECT       *Op,
     UINT32                  Flags,
     ACPI_WALK_STATE         *WalkState,
