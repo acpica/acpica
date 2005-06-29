@@ -14,15 +14,18 @@
  | FILENAME: amlexec.c - ACPI AML (p-code) execution
  |__________________________________________________________________________
  |
- | $Revision: 1.10 $
- | $Date: 2005/06/29 17:50:52 $
+ | $Revision: 1.11 $
+ | $Date: 2005/06/29 17:50:54 $
  | $Log: exstore.c,v $
- | Revision 1.10  2005/06/29 17:50:52  aystarik
- | New xface to KFatalError
+ | Revision 1.11  2005/06/29 17:50:54  aystarik
+ | Moved table-size constants to acpi.h
  |
  | 
- | date	99.03.10.21.19.00;	author rmoore1;	state Exp;
+ | date	99.03.12.00.20.00;	author rmoore1;	state Exp;
  |
+ * 
+ * 11    3/11/99 4:20p Rmoore1
+ * Moved table-size constants to acpi.h
  * 
  * 10    3/10/99 1:19p Rmoore1
  * New xface to KFatalError
@@ -234,6 +237,7 @@
 #define _THIS_MODULE    "amlexec.c"
 
 #include <bu.h>
+#include <acpi.h>
 #include <acpiosd.h>
 #include <acpitype.h>
 #include <acpipriv.h>
@@ -262,19 +266,18 @@ extern char *RV[];
     #define PRINT_XXX(a,b,c)
 #endif
 
-/* Method Stack, containing locals and args */
-/* per level, 0-7 are Local# and 8-14 are Arg# */
+/* 
+ * Method Stack, containing locals and args
+ * per level, 0-7 are Local# and 8-14 are Arg#
+ */
 
 #define LCLBASE             0
 #define NUMLCL              8
 #define ARGBASE             (LCLBASE+NUMLCL)
 #define NUMARG              7
-#define AML_METHOD_MAX_NEST 10  /* Max depth of nested method calls */
 
 static OBJECT_DESCRIPTOR *  MethodStack[AML_METHOD_MAX_NEST][ARGBASE+NUMARG];
 static INT32                MethodStackTop = -1;
-
-#include <pciutils.h>
 
 
 /*****************************************************************************
@@ -558,8 +561,8 @@ SetMethodValue (INT32 Index, OBJECT_DESCRIPTOR *ObjDesc, OBJECT_DESCRIPTOR *ObjD
  *
  * PARAMETERS:  NsHandle    Region     Region in which field is being defined
  *              UINT8       FldFlg     Access, LockRule, UpdateRule
- *                                      The format of a FieldFlag is described
- *                                      in the ACPI specification and in <aml.h>
+ *                                     The format of a FieldFlag is described
+ *                                     in the ACPI specification and in <aml.h>
  *              INT32       FldPos     field position
  *              INT32       FldLen     field length
  *
@@ -570,7 +573,7 @@ SetMethodValue (INT32 Index, OBJECT_DESCRIPTOR *ObjDesc, OBJECT_DESCRIPTOR *ObjD
  *
  * ALLOCATION:
  *  Reference   Size                    Pool    Owner       Description
- *  nte.ValDesc    s(OBJECT_DESCRIPTOR)    bu      amlexec     Field descriptor
+ *  nte.ValDesc s(OBJECT_DESCRIPTOR)    bu      amlexec     Field descriptor
  *
  ****************************************************************************/
 
@@ -693,7 +696,7 @@ PrepDefFieldValue (NsHandle Region, UINT8 FldFlg, INT32 FldPos, INT32 FldLen)
  *
  * ALLOCATION:
  *  Reference   Size                    Pool    Owner       Description
- *  nte.ValDesc    s(OBJECT_DESCRIPTOR)    bu      amlexec     Field descriptor
+ *  nte.ValDesc s(OBJECT_DESCRIPTOR)    bu      amlexec     Field descriptor
  *
  ****************************************************************************/
 
@@ -805,7 +808,7 @@ PrepBankFieldValue (NsHandle Region, NsHandle BankReg, UINT32 BankVal,
  *
  * ALLOCATION:
  *  Reference   Size                    Pool    Owner       Description
- *  nte.ValDesc    s(OBJECT_DESCRIPTOR)    bu      amlexec     Field descriptor
+ *  nte.ValDesc s(OBJECT_DESCRIPTOR)    bu      amlexec     Field descriptor
  *
  ****************************************************************************/
 
