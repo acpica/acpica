@@ -1,7 +1,7 @@
 /******************************************************************************
  *
- * Module Name: evregion - ACPI AddressSpace / OpRegion handler dispatch
- *              $Revision: 1.87 $
+ * Module Name: evregion - ACPI AddressSpace (OpRegion) handler dispatch
+ *              $Revision: 1.88 $
  *
  *****************************************************************************/
 
