@@ -114,14 +114,14 @@
  *****************************************************************************/
 
 
-#include <acpi.h>
-#include <parser.h>
-#include <amlcode.h>
-#include <namesp.h>
-#include <parser.h>
-#include <events.h>
-#include <interp.h>
-#include <debugger.h>
+#include "acpi.h"
+#include "parser.h"
+#include "amlcode.h"
+#include "namesp.h"
+#include "parser.h"
+#include "events.h"
+#include "interp.h"
+#include "debugger.h"
 
 
 #ifdef ACPI_DEBUG
@@ -132,7 +132,7 @@
 
 /******************************************************************************
  * 
- * FUNCTION:    DbSingleStep  
+ * FUNCTION:    AcpiDbSingleStep  
  *
  * PARAMETERS:  
  *
@@ -143,7 +143,7 @@
  *****************************************************************************/
 
 ACPI_STATUS
-DbSingleStep (
+AcpiDbSingleStep (
     ACPI_WALK_STATE         *WalkState,
     ACPI_GENERIC_OP         *Op,
     UINT8                   OpType)
@@ -155,19 +155,19 @@ DbSingleStep (
 
     /* Is there a breakpoint set? */
 
-    if (Gbl_MethodBreakpoint)
+    if (Acpi_GblMethodBreakpoint)
     {
         /* Check if the breakpoint has been reached or passed */
 
-        if ((Gbl_BreakpointWalk == WalkState) &&
-            (Gbl_MethodBreakpoint <= Op->AmlOffset))
+        if ((Acpi_GblBreakpointWalk == WalkState) &&
+            (Acpi_GblMethodBreakpoint <= Op->AmlOffset))
         {
             /* Hit the breakpoint, resume single step, reset breakpoint */
 
-            OsdPrintf ("***Break*** at AML offset 0x%X\n", Op->AmlOffset);
-            Gbl_CmSingleStep = TRUE;
-            Gbl_StepToNextCall = FALSE;
-            Gbl_MethodBreakpoint = 0;
+            AcpiOsdPrintf ("***Break*** at AML offset 0x%X\n", Op->AmlOffset);
+            Acpi_GblCmSingleStep = TRUE;
+            Acpi_GblStepToNextCall = FALSE;
+            Acpi_GblMethodBreakpoint = 0;
         }
     }
 
@@ -208,13 +208,13 @@ DbSingleStep (
      */
 
     if ((OutputToFile)                  ||
-        (Gbl_CmSingleStep)              ||
+        (Acpi_GblCmSingleStep)              ||
         (DebugLevel & TRACE_PARSE))
     {
         if ((OutputToFile)                  ||
             (DebugLevel & TRACE_PARSE))
         {
-            OsdPrintf ("\n[AmlDebug] Next AML Opcode to execute:\n");
+            AcpiOsdPrintf ("\n[AmlDebug] Next AML Opcode to execute:\n");
         }
 
         /* 
@@ -230,19 +230,19 @@ DbSingleStep (
 
         /* Now we can display it */
 
-        DbDisplayOp (Op, ACPI_UINT32_MAX);
+        AcpiDbDisplayOp (Op, ACPI_UINT32_MAX);
 
         /* Restore everything */
 
         Op->Next = Next;
-        OsdPrintf ("\n");
+        AcpiOsdPrintf ("\n");
         DebugLevel = OriginalDebugLevel;
    }
 
 
     /* If we are not single stepping, just continue executing the method */
 
-    if (!Gbl_CmSingleStep)
+    if (!Acpi_GblCmSingleStep)
     {
         return (AE_OK);
     }
@@ -253,7 +253,7 @@ DbSingleStep (
      * Check if this is a method call.
      */
 
-    if (Gbl_StepToNextCall)
+    if (Acpi_GblStepToNextCall)
     {
         if (Op->Opcode != AML_METHODCALL_OP)
         {
@@ -264,7 +264,7 @@ DbSingleStep (
 
         /* Found a method call, stop executing */
 
-        Gbl_StepToNextCall = FALSE;
+        Acpi_GblStepToNextCall = FALSE;
     }
 
 
@@ -275,32 +275,32 @@ DbSingleStep (
 
     if (Op->Opcode == AML_METHODCALL_OP)
     {
-        Gbl_CmSingleStep = FALSE;  /* No more single step while executing called method */
+        Acpi_GblCmSingleStep = FALSE;  /* No more single step while executing called method */
 
         /* Set the breakpoint on the call, it will stop execution as soon as we return */
 
         /* TBD: [Future] don't kill the user breakpoint! */
 
-        Gbl_MethodBreakpoint = Op->AmlOffset + 1;  /* Must be non-zero! */
-        Gbl_BreakpointWalk = WalkState;
+        Acpi_GblMethodBreakpoint = Op->AmlOffset + 1;  /* Must be non-zero! */
+        Acpi_GblBreakpointWalk = WalkState;
     }
 
 
 
-    CmReleaseMutex (MTX_NAMESPACE);
+    AcpiCmReleaseMutex (MTX_NAMESPACE);
 
     /* Go into the command loop and await next user command */
     
-    Gbl_MethodExecuting = TRUE;
+    Acpi_GblMethodExecuting = TRUE;
     Status = AE_CTRL_TRUE;
     while (Status == AE_CTRL_TRUE)
     {
-        if (Gbl_DebuggerConfiguration == DEBUGGER_MULTI_THREADED)
+        if (Acpi_GblDebuggerConfiguration == DEBUGGER_MULTI_THREADED)
         {
             /* Handshake with the front-end that gets user command lines */
 
-            CmReleaseMutex (MTX_DEBUG_CMD_COMPLETE);
-            CmAcquireMutex (MTX_DEBUG_CMD_READY);
+            AcpiCmReleaseMutex (MTX_DEBUG_CMD_COMPLETE);
+            AcpiCmAcquireMutex (MTX_DEBUG_CMD_READY);
         }
 
         else
@@ -309,28 +309,28 @@ DbSingleStep (
 
             /* Force output to console until a command is entered */
 
-            DbSetOutputDestination (DB_CONSOLE_OUTPUT);
+            AcpiDbSetOutputDestination (DB_CONSOLE_OUTPUT);
 
             /* Different prompt if method is executing */
 
-            if (!Gbl_MethodExecuting)
+            if (!Acpi_GblMethodExecuting)
             {
-                OsdPrintf ("%1c ", DB_COMMAND_PROMPT);
+                AcpiOsdPrintf ("%1c ", DB_COMMAND_PROMPT);
             }
             else
             {
-                OsdPrintf ("%1c ", DB_EXECUTE_PROMPT);
+                AcpiOsdPrintf ("%1c ", DB_EXECUTE_PROMPT);
             }
 
             /* Get the user input line */
 
-            OsdGetLine (LineBuf);
+            AcpiOsdGetLine (LineBuf);
         }
 
-        Status = DbCommandDispatch (LineBuf, WalkState, Op);
+        Status = AcpiDbCommandDispatch (LineBuf, WalkState, Op);
     }
 
-    CmAcquireMutex (MTX_NAMESPACE);
+    AcpiCmAcquireMutex (MTX_NAMESPACE);
 
 
     /* User commands complete, continue execution of the interrupted method */
@@ -341,7 +341,7 @@ DbSingleStep (
 
 /******************************************************************************
  * 
- * FUNCTION:    DbInitialize
+ * FUNCTION:    AcpiDbInitialize
  *
  * PARAMETERS:  
  *
@@ -352,13 +352,13 @@ DbSingleStep (
  *****************************************************************************/
 
 int
-DbInitialize (void)
+AcpiDbInitialize (void)
 {      
 
 
     /* Init globals */
 
-    Buffer = OsdAllocate (BUFFER_SIZE);
+    Buffer = AcpiOsdAllocate (BUFFER_SIZE);
 
     /* Initial scope is the root */
 
@@ -372,24 +372,24 @@ DbInitialize (void)
      * space, environment, or even another machine.
      */
 
-    if (Gbl_DebuggerConfiguration & DEBUGGER_MULTI_THREADED)
+    if (Acpi_GblDebuggerConfiguration & DEBUGGER_MULTI_THREADED)
     {
         /* These were created with one unit, grab it */
 
-        CmAcquireMutex (MTX_DEBUG_CMD_COMPLETE);
-        CmAcquireMutex (MTX_DEBUG_CMD_READY);
+        AcpiCmAcquireMutex (MTX_DEBUG_CMD_COMPLETE);
+        AcpiCmAcquireMutex (MTX_DEBUG_CMD_READY);
 
         /* Create the debug execution thread to execute commands */
 
-        OsdQueueForExecution (0, DbExecuteThread, NULL);
+        AcpiOsdQueueForExecution (0, AcpiDbExecuteThread, NULL);
     }
 
-	if (!opt_verbose)
-	{
-		INDENT_STRING = "    ";
+    if (!opt_verbose)
+    {
+        INDENT_STRING = "    ";
         opt_disasm = TRUE;
         opt_stats = FALSE;
-	}
+    }
 
 
     return 0;
