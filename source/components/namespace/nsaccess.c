@@ -120,6 +120,7 @@
 #include <amlcode.h>
 #include <interp.h>
 #include <namesp.h>
+#include <dispatch.h>
 
 
 #define _COMPONENT          NAMESPACE
@@ -127,10 +128,57 @@
 
 
 
+/****************************************************************************
+ * 
+ * FUNCTION:    NsRootCreateScope
+ *
+ * PARAMETERS:  Entry               - NTE for which a scope will be created
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Create a scope table for the given name table entry
+ *
+ * MUTEX:       Expects namespace to be locked
+ *
+ ***************************************************************************/
+
+ACPI_STATUS
+NsRootCreateScope (
+    NAME_TABLE_ENTRY        *Entry)
+{
+    FUNCTION_TRACE ("NsRootCreateScope");
+
+
+    /* Allocate a scope table */
+
+    if (Entry->Scope)
+    {
+        return_ACPI_STATUS (AE_EXIST);
+    }
+
+    Entry->Scope = NsAllocateNameTable (NS_TABLE_SIZE);
+    if (!Entry->Scope)
+    {
+        /*  root name table allocation failure  */
+
+        REPORT_ERROR ("Root name table allocation failure");
+        return_ACPI_STATUS (AE_NO_MEMORY);
+    }
+
+    /* 
+     * Init the scope first entry -- since it is the exemplar of 
+     * the scope (Some fields are duplicated to new entries!) 
+     */
+    NsInitializeTable (Entry->Scope, NULL, Entry);
+    return_ACPI_STATUS (AE_OK);
+
+}
+
+
 
 /****************************************************************************
  * 
- * FUNCTION:    NsSetup()
+ * FUNCTION:    NsRootInitialize
  *
  * PARAMETERS:  None
  *
@@ -143,7 +191,7 @@
  ***************************************************************************/
 
 ACPI_STATUS
-NsSetup (void)
+NsRootInitialize (void)
 {
     ACPI_STATUS             Status = AE_OK;
     PREDEFINED_NAMES        *InitVal = NULL;
@@ -151,14 +199,14 @@ NsSetup (void)
     ACPI_OBJECT_INTERNAL    *ObjDesc;
 
 
-    FUNCTION_TRACE ("NsSetup");
+    FUNCTION_TRACE ("NsRootInitialize");
 
 
     CmAcquireMutex (MTX_NAMESPACE);
     
     /* 
      * Root is initially NULL, so a non-NULL value indicates
-     * that NsSetup() has already been called; just return.
+     * that NsRootInitialize() has already been called; just return.
      */
 
     if (Gbl_RootObject->Scope)
@@ -167,27 +215,18 @@ NsSetup (void)
         goto UnlockAndExit;
     }
 
-    /* Allocate a root scope table */
 
-    Gbl_RootObject->Scope = NsAllocateNameTable (NS_TABLE_SIZE);
-    if (!Gbl_RootObject->Scope)
+    /* Create the root scope */
+
+    Status = NsRootCreateScope (Gbl_RootObject);
+    if (ACPI_FAILURE (Status))
     {
-        /*  root name table allocation failure  */
-
-        REPORT_ERROR ("Root name table allocation failure");
-        Status = AE_NO_MEMORY;
         goto UnlockAndExit;
     }
 
-    /* 
-     * Init the root scope first entry -- since it is the exemplar of 
-     * the scope (Some fields are duplicated to new entries!) 
-     */
-    NsInitializeTable (Gbl_RootObject->Scope, NULL, Gbl_RootObject);
-
     /* Enter the pre-defined names in the name table */
     
-    DEBUG_PRINT (ACPI_INFO, ("Entering predefined name table into namespace\n"));
+    DEBUG_PRINT (ACPI_INFO, ("Entering predefined name table entries into namespace\n"));
 
     for (InitVal = Gbl_PreDefinedNames; InitVal->Name; InitVal++)
     {
@@ -237,7 +276,7 @@ NsSetup (void)
                 if (!ObjDesc->String.Pointer)
                 {
                     REPORT_ERROR ("Initial value string allocation failure");
-                    CmDeleteInternalObject (ObjDesc);
+                    CmRemoveReference (ObjDesc);
                     Status = AE_NO_MEMORY;
                     goto UnlockAndExit;
                 }
@@ -271,7 +310,7 @@ NsSetup (void)
 
             default:
                 REPORT_ERROR ("Unsupported initial type value");
-                CmDeleteInternalObject (ObjDesc);
+                CmRemoveReference (ObjDesc);
                 ObjDesc = NULL;
                 continue;
             }
@@ -353,7 +392,7 @@ NsLookup (
 
         if (IMODE_LoadPass1 == InterpreterMode)
         {
-            if ((Status = NsSetup ()) != AE_OK)
+            if ((Status = NsRootInitialize ()) != AE_OK)
             {
                 return_ACPI_STATUS (Status);
             }
@@ -384,17 +423,21 @@ NsLookup (
      * but the BankFieldDefn may also check for a Field definition as well
      * as an OperationRegion.
      */
-    /* DefFieldDefn defines fields in a Region */
 
     if (INTERNAL_TYPE_DefFieldDefn == Type)
     {
+        /* DefFieldDefn defines fields in a Region */
+
         TypeToCheckFor = ACPI_TYPE_Region;
     }
-    /* BankFieldDefn defines data fields in a Field Object */
+
     else if (INTERNAL_TYPE_BankFieldDefn == Type)
     {
+        /* BankFieldDefn defines data fields in a Field Object */
+
         TypeToCheckFor = ACPI_TYPE_Any;
     }
+
     else
     {
         TypeToCheckFor = Type;
@@ -533,7 +576,7 @@ NsLookup (
          * Type is significant only at the last level.
          */
 
-        Status = NsSearchAndEnter (*(UINT32 *) Name, EntryToSearch, InterpreterMode,
+        Status = NsSearchAndEnter (*(UINT32 *) Name, WalkState, EntryToSearch, InterpreterMode,
                                     NumSegments == 0 ? Type : ACPI_TYPE_Any, Flags, &ThisEntry);
         if (Status != AE_OK)
         {
@@ -659,7 +702,7 @@ NsLookup (
                 ScopeToPush = ThisEntry->Scope;
             }
 
-            Status = NsScopeStackPush (ScopeToPush, Type, WalkState);
+            Status = DsScopeStackPush (ScopeToPush, Type, WalkState);
             if (ACPI_FAILURE (Status))
             {
                 return_ACPI_STATUS (Status);
