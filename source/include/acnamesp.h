@@ -58,10 +58,6 @@
 
 #define NUM_NS_TYPES            37
 
-extern char                     BadType[];
-extern char                     *NsTypeNames[NUM_NS_TYPES];
-extern INT32                    NsProperties[NUM_NS_TYPES];
-
 
 /* 
  * Elements of NsProperties are bit significant
@@ -99,58 +95,13 @@ static struct InitVal {
 };
 
 
-/* 
- * Typedef nte (name table entry) is private to acpinmsp.c to avoid global
- * impact in the event of changes to it.  The externally-known type NsHandle
- * is actually an (nte *).  If an external program needs to extract a field
- * from the nte, it should use an access function defined in acpinmsp.c
- *
- * If you need an access function not provided herein, add it to this module
- * rather than exporting the nte typedef.
- *
- * (nte *) are actually used in two different and not entirely compatible
- * ways: as pointer to an individual nte and as pointer to an entire name
- * table (which is an array of nte, sometimes referred to as a scope).  In
- * the latter case, the specific nte pointed to may be unused; however its
- * ParentScope member will be valid.
- */
-
-typedef struct nte
-{
-    UINT32          NameSeg;        /* name segment, always 4 chars per ACPI spec.
-                                     * NameSeg must be the first field in the nte
-                                     * -- see the IsNsHandle macro in acpinmsp.h
-                                     */
-    struct nte      *ChildScope;    /* next level of names */
-    struct nte      *ParentScope;   /* previous level of names */
-    NsType          NtType;         /* type associated with name */
-    void            *ptrVal;        /* pointer to value */
-} nte;
-
-#define NOTFOUND    (nte *)0
-
-
-/* Stack of currently-open scopes, and pointer to top of that stack */
-
-typedef struct
-{
-    nte         *Scope;
-    /* 
-     * Type of scope, typically the same as the type of its parent's entry 
-     * (but not the same as the type of its parent's scope).
-     */
-    NsType      Type;   
-} SCOPE_STACK;    
-
-
-
 /* Namespace globals */
 
-extern nte          *Root;
-extern INT32        NsRootSize;        
-extern INT32        NsCurrentSize;      
-extern SCOPE_STACK  ScopeStack[];
-extern SCOPE_STACK  *CurrentScope;
+extern SCOPE_STACK              ScopeStack[];
+extern SCOPE_STACK              *CurrentScope;
+extern char                     BadType[];
+extern char                     *NsTypeNames[NUM_NS_TYPES];
+extern INT32                    NsProperties[NUM_NS_TYPES];
 
 
 
