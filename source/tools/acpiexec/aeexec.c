@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: aeexec - Top level parse and execute routines
- *              $Revision: 1.39 $
+ *              $Revision: 1.41 $
  *
  *****************************************************************************/
 
@@ -178,7 +178,7 @@ AcpiUtFormatSpaceId (
 
 /******************************************************************************
  *
- * FUNCTION:    RegionHandler
+ * FUNCTION:    AeRegionHandler
  *
  * PARAMETERS:  Standard region handler parameters
  *
@@ -190,7 +190,7 @@ AcpiUtFormatSpaceId (
  *****************************************************************************/
 
 ACPI_STATUS
-RegionHandler (
+AeRegionHandler (
     UINT32                  Function,
     ACPI_PHYSICAL_ADDRESS   Address,
     UINT32                  BitWidth,
@@ -208,7 +208,7 @@ RegionHandler (
     UINT32                  ByteWidth;
 
 
-    PROC_NAME ("RegionHandler");
+    PROC_NAME ("AeRegionHandler");
 
 
     /*
@@ -356,7 +356,7 @@ RegionHandler (
 
 /******************************************************************************
  *
- * FUNCTION:    RegionInit
+ * FUNCTION:    AeRegionInit
  *
  * PARAMETERS:  None
  *
@@ -367,7 +367,7 @@ RegionHandler (
  *****************************************************************************/
 
 ACPI_STATUS
-RegionInit (
+AeRegionInit (
     ACPI_HANDLE                 RegionHandle,
     UINT32                      Function,
     void                        *HandlerContext,
@@ -384,7 +384,7 @@ RegionInit (
 
 /******************************************************************************
  *
- * FUNCTION:    NotifyHandler
+ * FUNCTION:    AeNotifyHandler
  *
  * PARAMETERS:  Standard notify handler parameters
  *
@@ -397,7 +397,7 @@ RegionInit (
  *****************************************************************************/
 
 void
-NotifyHandler (
+AeNotifyHandler (
     ACPI_HANDLE                 Device,
     UINT32                      Value,
     void                        *Context)
@@ -407,7 +407,7 @@ NotifyHandler (
     {
     case 0:
         printf ("**** Method Error 0x%X: Results not equal\n", Value);
-        if (DebugFile)
+        if (AcpiGbl_DebugFile)
         {
             AcpiOsPrintf ("**** Method Error: Results not equal\n");
         }
@@ -416,7 +416,7 @@ NotifyHandler (
 
     case 1:
         printf ("**** Method Error: Incorrect numeric result\n");
-        if (DebugFile)
+        if (AcpiGbl_DebugFile)
         {
             AcpiOsPrintf ("**** Method Error: Incorrect numeric result\n");
         }
@@ -425,7 +425,7 @@ NotifyHandler (
 
     case 2:
         printf ("**** Method Error: An operand was overwritten\n");
-        if (DebugFile)
+        if (AcpiGbl_DebugFile)
         {
             AcpiOsPrintf ("**** Method Error: An operand was overwritten\n");
         }
@@ -434,7 +434,7 @@ NotifyHandler (
 
     default:
         printf ("**** Received a notify, value 0x%X\n", Value);
-        if (DebugFile)
+        if (AcpiGbl_DebugFile)
         {
             AcpiOsPrintf ("**** Received a notify, value 0x%X\n", Value);
         }
@@ -465,7 +465,7 @@ AeInstallHandlers (void)
 
 
     Status = AcpiInstallNotifyHandler (ACPI_ROOT_OBJECT, ACPI_SYSTEM_NOTIFY,
-                                        NotifyHandler, NULL);
+                                        AeNotifyHandler, NULL);
     if (ACPI_FAILURE (Status))
     {
         printf ("Could not install a global notify handler\n");
@@ -474,13 +474,13 @@ AeInstallHandlers (void)
     for (i = 0; i < 3; i++)
     {
         Status = AcpiRemoveAddressSpaceHandler (AcpiGbl_RootNode,
-                        (ACPI_ADR_SPACE_TYPE) i, RegionHandler);
+                        (ACPI_ADR_SPACE_TYPE) i, AeRegionHandler);
 
         /* Install handler at the root object.
          * TBD: all default handlers should be installed here!
          */
         Status = AcpiInstallAddressSpaceHandler (AcpiGbl_RootNode,
-                        (ACPI_ADR_SPACE_TYPE) i, RegionHandler, RegionInit, NULL);
+                        (ACPI_ADR_SPACE_TYPE) i, AeRegionHandler, AeRegionInit, NULL);
         if (ACPI_FAILURE (Status))
         {
             printf ("Could not install an OpRegion handler\n");
@@ -497,73 +497,5 @@ AeInstallHandlers (void)
     return Status;
 }
 
-
-/******************************************************************************
- *
- * FUNCTION:    AdSecondPassParse
- *
- * PARAMETERS:  Root            - Root of the parse tree
- *
- * RETURN:      None
- *
- * DESCRIPTION: Need to wait until second pass to parse the control methods
- *
- *****************************************************************************/
-
-ACPI_STATUS
-AdSecondPassParse (
-    ACPI_PARSE_OBJECT       *Root)
-{
-    ACPI_PARSE_OBJECT       *Op = Root;
-    ACPI_PARSE2_OBJECT      *Method;
-    ACPI_PARSE_OBJECT       *SearchOp;
-    ACPI_PARSE_OBJECT       *StartOp;
-    ACPI_STATUS             Status = AE_OK;
-    UINT32                  BaseAmlOffset;
-
-
-    /* Walk entire tree */
-
-    while (Op)
-    {
-        /* We are looking for control methods */
-
-        if (Op->Opcode == AML_METHOD_OP)
-        {
-            Method = (ACPI_PARSE2_OBJECT *) Op;
-            Status = AcpiPsParseAml (Op, Method->Data, Method->Length, 0,
-                        NULL, NULL, NULL, NULL, NULL);
-
-
-            BaseAmlOffset = (Method->Value.Arg)->AmlOffset + 1;
-            StartOp = (Method->Value.Arg)->Next;
-            SearchOp = StartOp;
-
-            while (SearchOp)
-            {
-                SearchOp->AmlOffset += BaseAmlOffset;
-                SearchOp = AcpiPsGetDepthNext (StartOp, SearchOp);
-            }
-
-        }
-
-        if (Op->Opcode == AML_REGION_OP)
-        {
-            /* TBD: this isn't quite the right thing to do! */
-
-            // Method = (ACPI_PARSE2_OBJECT *) Op;
-            // Status = AcpiPsParseAml (Op, Method->Body, Method->BodyLength);
-        }
-
-        if (ACPI_FAILURE (Status))
-        {
-            return Status;
-        }
-
-        Op = AcpiPsGetDepthNext (Root, Op);
-    }
-
-    return Status;
-}
 
 
