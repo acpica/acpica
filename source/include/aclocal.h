@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: aclocal.h - Internal data types used across the ACPI subsystem
- *       $Revision: 1.133 $
+ *       $Revision: 1.135 $
  *
  *****************************************************************************/
 
@@ -417,10 +417,11 @@ typedef struct
 
 typedef struct
 {
-    UINT8                   Status;         /* Current value of status reg */
-    UINT8                   Enable;         /* Current value of enable reg */
     UINT16                  StatusAddr;     /* Address of status reg */
     UINT16                  EnableAddr;     /* Address of enable reg */
+    UINT8                   Status;         /* Current value of status reg */
+    UINT8                   Enable;         /* Current value of enable reg */
+    UINT8                   WakeEnable;     /* Mask of bits to keep enabled when sleeping */
     UINT8                   GpeBase;        /* Base GPE number */
 
 } ACPI_GPE_REGISTERS;
@@ -615,40 +616,23 @@ typedef union acpi_gen_state
 } ACPI_GENERIC_STATE;
 
 
+
+/*****************************************************************************
+ *
+ * Interpreter typedefs and structs
+ *
+ ****************************************************************************/
+
+typedef
+ACPI_STATUS (*ACPI_EXECUTE_OP) (
+    struct acpi_walk_state  *WalkState);
+
+
 /*****************************************************************************
  *
  * Parser typedefs and structs
  *
  ****************************************************************************/
-
-#define ACPI_OP_CLASS_MASK              0x1F
-#define ACPI_OP_ARGS_MASK               0x20
-#define ACPI_OP_TYPE_MASK               0xC0
-
-#define ACPI_OP_TYPE_OPCODE             0x00
-#define ACPI_OP_TYPE_ASCII              0x40
-#define ACPI_OP_TYPE_PREFIX             0x80
-#define ACPI_OP_TYPE_UNKNOWN            0xC0
-
-#define ACPI_GET_OP_CLASS(a)            ((a)->Flags & ACPI_OP_CLASS_MASK)
-#define ACPI_GET_OP_ARGS(a)             ((a)->Flags & ACPI_OP_ARGS_MASK)
-#define ACPI_GET_OP_TYPE(a)             ((a)->Flags & ACPI_OP_TYPE_MASK)
-
-/*
- * Flags byte: 0-4 (5 bits) = Opcode Class  (0x001F
- *             5   (1 bit)  = Has arguments flag
- *             6-7 (2 bits) = Reserved
- */
-#define AML_NO_ARGS         0
-#define AML_HAS_ARGS        0x0020
-#define AML_NSOBJECT        0x0100
-#define AML_NSOPCODE        0x0200
-#define AML_NSNODE          0x0400
-#define AML_NAMED           0x0800
-#define AML_DEFER           0x1000
-#define AML_FIELD           0x2000
-#define AML_CREATE          0x4000
-
 
 /*
  * AML opcode, name, and argument layout
@@ -657,7 +641,7 @@ typedef struct acpi_opcode_info
 {
     UINT32                  ParseArgs;      /* Grammar/Parse time arguments */
     UINT32                  RuntimeArgs;    /* Interpret time arguments */
-    UINT16                  Flags;          /* Opcode type, HasArgs flag */
+    UINT32                  Flags;          /* Opcode type, HasArgs flag */
 
 #ifdef _OPCODE_NAMES
     NATIVE_CHAR             *Name;          /* op name (debug only) */

@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acinterp.h - Interpreter subcomponent prototypes and defines
- *       $Revision: 1.110 $
+ *       $Revision: 1.111 $
  *
  *****************************************************************************/
 
@@ -471,7 +471,7 @@ AcpiExDyadic2R (
     ACPI_WALK_STATE         *WalkState);
 
 ACPI_STATUS
-AcpiExDyadic2S (
+AcpiExDyadicType21 (
     ACPI_WALK_STATE         *WalkState);
 
 
