@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exprep - ACPI AML (p-code) execution - field prep utilities
- *              $Revision: 1.88 $
+ *              $Revision: 1.89 $
  *
  *****************************************************************************/
 
@@ -274,8 +274,11 @@ AcpiExPrepCommonFieldObject (
         AccessBitWidth = 8;
     }
 
-    /* BaseByteOffset is the byte address of the start of the field within the region */
-
+    /* 
+     * BaseByteOffset is the address of the start of the field within the region.  It is
+     * the byte address of the first *datum* (field-width data unit) of the field.
+     * (i.e., the first datum that contains at least the first *bit* of the field.)
+     */
     NearestByteAddress                        = ROUND_BITS_DOWN_TO_BYTES (FieldBitPosition);
     ObjDesc->CommonField.BaseByteOffset       = ROUND_DOWN (NearestByteAddress, 
                                                             ObjDesc->CommonField.AccessByteWidth);
@@ -289,11 +292,10 @@ AcpiExPrepCommonFieldObject (
     ObjDesc->CommonField.StartFieldBitOffset  = (UINT8) (MOD_8 (FieldBitPosition));
 
     /*
-     * DatumValidBits is the number of valid field bits in the first field datum,
+     * DatumValidBits is the number of valid field bits in the first field datum.
      */
     ObjDesc->CommonField.DatumValidBits       = (UINT8) (AccessBitWidth - 
                                                          ObjDesc->CommonField.StartFieldBitOffset);
-
 
     /* 
      * Valid bits -- the number of bits that compose a partial datum,
