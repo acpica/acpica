@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: actypes.h - Common data types for the entire ACPI subsystem
- *       $Revision: 1.180 $
+ *       $Revision: 1.181 $
  *
  *****************************************************************************/
 
@@ -334,6 +334,10 @@ typedef UINT64                          ACPI_INTEGER;
 #define ACPI_NO_DEVICE_INIT             0x10
 #define ACPI_NO_OBJECT_INIT             0x20
 
+/*
+ * Initialization state
+ */
+#define ACPI_INITIALIZED_OK             0x01
 
 /*
  * Power state values
