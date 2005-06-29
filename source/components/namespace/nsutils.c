@@ -2,7 +2,7 @@
  *
  * Module Name: nsutils - Utilities for accessing ACPI namespace, accessing
  *                        parents and siblings and Scope manipulation
- *              $Revision: 1.126 $
+ *              $Revision: 1.127 $
  *
  *****************************************************************************/
 
@@ -953,7 +953,7 @@ AcpiNsTerminate (void)
     /*
      * 2) Now we can delete the ACPI tables
      */
-    AcpiTbDeleteAcpiTables ();
+    AcpiTbDeleteAllTables ();
     ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "ACPI Tables freed\n"));
 
     return_VOID;
