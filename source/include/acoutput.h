@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acoutput.h -- debug output
- *       $Revision: 1.64 $
+ *       $Revision: 1.65 $
  *
  *****************************************************************************/
 
@@ -197,7 +197,7 @@
 #define VERBOSE_TABLES              0x40000000
 #define VERBOSE_EVENTS              0x80000000
 
-#define VERBOSE_ALL                 0x70000000
+#define VERBOSE_ALL                 0xF0000000
 
 
 /* Defaults for DebugLevel, debug and normal */
