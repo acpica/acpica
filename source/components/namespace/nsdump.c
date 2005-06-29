@@ -308,7 +308,7 @@ NsDumpOneObject (
      */
 
     DEBUG_PRINT_RAW (TRACE_TABLES,
-                (" %4.4s %-9s ", &ThisEntry->Name, Gbl_NsTypeNames[Type]));
+                (" %4.4s %-9s ", &ThisEntry->Name, CmGetTypeName (Type)));
 
     DEBUG_PRINT_RAW (TRACE_TABLES, ("%p S:%p O:%p",
                 ThisEntry,
@@ -416,7 +416,7 @@ NsDumpOneObject (
             else
             {
                 DEBUG_PRINT_RAW (TRACE_TABLES, ("(Ptr to ACPI Object type 0x%X [%s])\n", 
-                                    ObjType, Gbl_NsTypeNames[ObjType]));
+                                    ObjType, CmGetTypeName (ObjType)));
                 BytesToDump = ObjDesc->Common.Size;
             }
         }
