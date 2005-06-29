@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: aemain - Main routine for the AcpiExec utility
- *              $Revision: 1.67 $
+ *              $Revision: 1.68 $
  *
  *****************************************************************************/
 
@@ -215,15 +215,13 @@ main (
 
     AcpiInitializeSubsystem ();
 
-    printf ("ACPI AML Execution/Debug Utility ");
+    printf ("\nIntel ACPI Component Architecture\nAML Execution/Debug Utility");
 
 #if ACPI_MACHINE_WIDTH == 16
-    printf ("(16-bit) ");
-#else
-    printf ("(32-bit) ");
+    printf ("(16-bit)");
 #endif
 
-    printf ("CA version %8.8lX [%s]\n", ACPI_CA_VERSION, __DATE__);
+    printf (" version %8.8X [%s]\n\n", (UINT32) ACPI_CA_VERSION, __DATE__);
 
     /* Get the command line options */
 
