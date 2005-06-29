@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: aclinux.h - OS specific defines, etc.
- *       $Revision: 1.3 $
+ *       $Revision: 1.4 $
  *
  *****************************************************************************/
 
@@ -133,6 +133,11 @@
 
 #undef DEBUGGER_THREADING
 #define DEBUGGER_THREADING          DEBUGGER_SINGLE_THREADED
+
+/* Linux ia32 can't do int64 well */
+#ifndef _IA64
+#define ACPI_NO_INTEGER64_SUPPORT
+#endif
 
 #if 0
 
