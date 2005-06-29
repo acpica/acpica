@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: exoparg2 - AML execution - opcodes with 2 arguments
- *              $Revision: 1.95 $
+ *              $Revision: 1.96 $
  *
  *****************************************************************************/
 
@@ -130,6 +130,30 @@
         MODULE_NAME         ("exoparg2")
 
 
+/*!
+ * Naming convention for AML interpreter execution routines.
+ *
+ * The routines that begin execution of AML opcodes are named with a common
+ * convention based upon the number of arguments, the number of target operands,
+ * and whether or not a value is returned:
+ *
+ *      AcpiExOpcode_xA_yT_zR
+ *
+ * Where:  
+ *
+ * xA - ARGUMENTS:    The number of arguments (input operands) that are 
+ *                    required for this opcode type (1 through 6 args).
+ * yT - TARGETS:      The number of targets (output operands) that are required 
+ *                    for this opcode type (0, 1, or 2 targets).
+ * zR - RETURN VALUE: Indicates whether this opcode type returns a value 
+ *                    as the function return (0 or 1).
+ *
+ * The AcpiExOpcode* functions are called via the Dispatcher component with 
+ * fully resolved operands.
+!*/
+
+
+
 /*******************************************************************************
  *
  * FUNCTION:    AcpiExOpcode_2A_0T_0R
@@ -154,7 +178,7 @@ AcpiExOpcode_2A_0T_0R (
     ACPI_STATUS             Status = AE_OK;
 
 
-    FUNCTION_TRACE_PTR ("ExOpcode_2A_0T_0R", WALK_OPERANDS);
+    FUNCTION_TRACE_STR ("ExOpcode_2A_0T_0R", AcpiPsGetOpcodeName (WalkState->Opcode));
 
 
 
@@ -516,7 +540,7 @@ AcpiExOpcode_2A_1T_1R (
     ACPI_STATUS             Status      = AE_OK;
 
 
-    FUNCTION_TRACE_U32 ("ExOpcode_2A_1T_1R", WalkState->Opcode);
+    FUNCTION_TRACE_STR ("ExOpcode_2A_1T_1R", AcpiPsGetOpcodeName (WalkState->Opcode));
 
 
     /*
@@ -776,7 +800,7 @@ AcpiExOpcode_2A_0T_1R (
     BOOLEAN                 LogicalResult = FALSE;
 
 
-    FUNCTION_TRACE_PTR ("ExOpcode_2A_0T_1R", WALK_OPERANDS);
+    FUNCTION_TRACE_STR ("ExOpcode_2A_0T_1R", AcpiPsGetOpcodeName (WalkState->Opcode));
 
 
     /* Create the internal return object */
