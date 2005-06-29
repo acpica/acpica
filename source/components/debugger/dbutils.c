@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dbutils - AML debugger utilities
- *              $Revision: 1.58 $
+ *              $Revision: 1.62 $
  *
  ******************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2003, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -127,6 +127,46 @@
 
 #define _COMPONENT          ACPI_CA_DEBUGGER
         ACPI_MODULE_NAME    ("dbutils")
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiDbMatchArgument
+ *
+ * PARAMETERS:  UserArgument            - User command line
+ *              Arguments               - Array of commands to match against
+ *
+ * RETURN:      Index into command array or ACPI_TYPE_NOT_FOUND if not found
+ *
+ * DESCRIPTION: Search command array for a command match
+ *
+ ******************************************************************************/
+
+ACPI_OBJECT_TYPE
+AcpiDbMatchArgument (
+    char                    *UserArgument,
+    ARGUMENT_INFO           *Arguments)
+{
+    UINT32                  i;
+
+
+    if (!UserArgument || UserArgument[0] == 0)
+    {
+        return (ACPI_TYPE_NOT_FOUND);
+    }
+
+    for (i = 0; Arguments[i].Name; i++)
+    {
+        if (ACPI_STRSTR (Arguments[i].Name, UserArgument) == Arguments[i].Name)
+        {
+            return (i);
+        }
+    }
+
+    /* Argument not recognized */
+
+    return (ACPI_TYPE_NOT_FOUND);
+}
 
 
 /*******************************************************************************
@@ -308,7 +348,7 @@ AcpiDbDumpObject (
 
 void
 AcpiDbPrepNamestring (
-    NATIVE_CHAR             *Name)
+    char                    *Name)
 {
 
 
@@ -387,8 +427,7 @@ AcpiDbSecondPassParse (
 
             /* Create a new walk state for the parse */
 
-            WalkState = AcpiDsCreateWalkState (TABLE_ID_DSDT,
-                                            NULL, NULL, NULL);
+            WalkState = AcpiDsCreateWalkState (0, NULL, NULL, NULL);
             if (!WalkState)
             {
                 return (AE_NO_MEMORY);
@@ -459,9 +498,9 @@ AcpiDbSecondPassParse (
 
 ACPI_NAMESPACE_NODE *
 AcpiDbLocalNsLookup (
-    NATIVE_CHAR             *Name)
+    char                    *Name)
 {
-    NATIVE_CHAR             *InternalPath;
+    char                    *InternalPath;
     ACPI_STATUS             Status;
     ACPI_NAMESPACE_NODE     *Node = NULL;
 
