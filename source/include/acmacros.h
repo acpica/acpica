@@ -196,13 +196,6 @@
 #endif
 
 
-/* Register read/write Macros */
-
-#define READ_ACPI_REGISTER(RegId)       HwRegisterIO (ACPI_READ, (INT32)(RegId))
-#define WRITE_ACPI_REGISTER(RegId,Val)  HwRegisterIO (ACPI_WRITE, (INT32) (RegId), Val)
-
-
-
 /* 
  * An ACPI_HANDLE (which is actually an NAME_TABLE_ENTRY *) can appear in some contexts,
  * such as on apObjStack, where a pointer to an ACPI_OBJECT_INTERNAL can also
