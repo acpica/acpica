@@ -2,7 +2,7 @@
  *
  * Module Name: nsobject - Utilities for objects attached to namespace
  *                         table entries
- *              $Revision: 1.75 $
+ *              $Revision: 1.79 $
  *
  ******************************************************************************/
 
@@ -10,7 +10,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -126,7 +126,7 @@
 
 
 #define _COMPONENT          ACPI_NAMESPACE
-        MODULE_NAME         ("nsobject")
+        ACPI_MODULE_NAME    ("nsobject")
 
 
 /*******************************************************************************
@@ -152,14 +152,14 @@ ACPI_STATUS
 AcpiNsAttachObject (
     ACPI_NAMESPACE_NODE     *Node,
     ACPI_OPERAND_OBJECT     *Object,
-    ACPI_OBJECT_TYPE8       Type)
+    ACPI_OBJECT_TYPE        Type)
 {
     ACPI_OPERAND_OBJECT     *ObjDesc;
     ACPI_OPERAND_OBJECT     *LastObjDesc;
-    ACPI_OBJECT_TYPE8       ObjectType = ACPI_TYPE_ANY;
+    ACPI_OBJECT_TYPE        ObjectType = ACPI_TYPE_ANY;
 
 
-    FUNCTION_TRACE ("NsAttachObject");
+    ACPI_FUNCTION_TRACE ("NsAttachObject");
 
 
     /*
@@ -169,7 +169,7 @@ AcpiNsAttachObject (
     {
         /* Invalid handle */
 
-        REPORT_ERROR (("NsAttachObject: Null NamedObj handle\n"));
+        ACPI_REPORT_ERROR (("NsAttachObject: Null NamedObj handle\n"));
         return_ACPI_STATUS (AE_BAD_PARAMETER);
     }
 
@@ -177,7 +177,7 @@ AcpiNsAttachObject (
     {
         /* Null object */
 
-        REPORT_ERROR (("NsAttachObject: Null object, but type not ACPI_TYPE_ANY\n"));
+        ACPI_REPORT_ERROR (("NsAttachObject: Null object, but type not ACPI_TYPE_ANY\n"));
         return_ACPI_STATUS (AE_BAD_PARAMETER);
     }
 
@@ -185,7 +185,7 @@ AcpiNsAttachObject (
     {
         /* Not a name handle */
 
-        REPORT_ERROR (("NsAttachObject: Invalid handle\n"));
+        ACPI_REPORT_ERROR (("NsAttachObject: Invalid handle\n"));
         return_ACPI_STATUS (AE_BAD_PARAMETER);
     }
 
@@ -259,7 +259,7 @@ AcpiNsAttachObject (
     }
 
 
-    /* 
+    /*
      * Handle objects with multiple descriptors - walk
      * to the end of the descriptor list
      */
@@ -301,7 +301,7 @@ AcpiNsDetachObject (
     ACPI_OPERAND_OBJECT     *ObjDesc;
 
 
-    FUNCTION_TRACE ("NsDetachObject");
+    ACPI_FUNCTION_TRACE ("NsDetachObject");
 
 
     ObjDesc = Node->Object;
@@ -353,7 +353,7 @@ ACPI_OPERAND_OBJECT *
 AcpiNsGetAttachedObject (
     ACPI_NAMESPACE_NODE     *Node)
 {
-    FUNCTION_TRACE_PTR ("NsGetAttachedObject", Node);
+    ACPI_FUNCTION_TRACE_PTR ("NsGetAttachedObject", Node);
 
 
     if (!Node)
@@ -389,7 +389,7 @@ ACPI_OPERAND_OBJECT *
 AcpiNsGetSecondaryObject (
     ACPI_OPERAND_OBJECT     *ObjDesc)
 {
-    FUNCTION_TRACE_PTR ("AcpiNsGetSecondaryObject", ObjDesc);
+    ACPI_FUNCTION_TRACE_PTR ("NsGetSecondaryObject", ObjDesc);
 
 
     if ((!ObjDesc)                                   ||
@@ -408,11 +408,11 @@ AcpiNsGetSecondaryObject (
  *
  * FUNCTION:    AcpiNsAttachData
  *
- * PARAMETERS:  
+ * PARAMETERS:
  *
  * RETURN:      Status
  *
- * DESCRIPTION: 
+ * DESCRIPTION:
  *
  ******************************************************************************/
 
@@ -425,7 +425,6 @@ AcpiNsAttachData (
     ACPI_OPERAND_OBJECT     *PrevObjDesc;
     ACPI_OPERAND_OBJECT     *ObjDesc;
     ACPI_OPERAND_OBJECT     *DataDesc;
-
 
 
     /* */
@@ -475,11 +474,11 @@ AcpiNsAttachData (
  *
  * FUNCTION:    AcpiNsDetachData
  *
- * PARAMETERS:  
+ * PARAMETERS:
  *
  * RETURN:      Status
  *
- * DESCRIPTION: 
+ * DESCRIPTION:
  *
  ******************************************************************************/
 
@@ -520,16 +519,15 @@ AcpiNsDetachData (
 }
 
 
-
 /*******************************************************************************
  *
  * FUNCTION:    AcpiNsGetAttachedData
  *
- * PARAMETERS:  
+ * PARAMETERS:
  *
  * RETURN:      Status
  *
- * DESCRIPTION: 
+ * DESCRIPTION:
  *
  ******************************************************************************/
 
@@ -557,6 +555,5 @@ AcpiNsGetAttachedData (
 
     return (AE_NOT_FOUND);
 }
-
 
 
