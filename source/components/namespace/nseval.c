@@ -163,6 +163,7 @@ NsEvaluateRelative (
     ACPI_STATUS             Status;
     NAME_TABLE_ENTRY        *ObjEntry = NULL;
     char                    *InternalPath = NULL;
+    SCOPE_STACK             ScopeInfo;
 
 
     FUNCTION_TRACE ("NsEvaluateRelative");
@@ -199,8 +200,9 @@ NsEvaluateRelative (
 
     /* Lookup the name in the namespace */
 
-    Status = NsLookup (RelObjEntry->Scope, InternalPath, ACPI_TYPE_Any, IMODE_Execute, 
-                                NS_NO_UPSEARCH, &ObjEntry);
+    ScopeInfo.Scope = RelObjEntry->Scope;
+    Status = NsLookup (&ScopeInfo, InternalPath, ACPI_TYPE_Any, IMODE_Execute, 
+                                NS_NO_UPSEARCH, NULL, &ObjEntry);
     CmReleaseMutex (MTX_NAMESPACE);
 
     if (Status != AE_OK)
@@ -283,7 +285,7 @@ NsEvaluateByName (
     /* Lookup the name in the namespace */
 
     Status = NsLookup (NULL, InternalPath, ACPI_TYPE_Any, IMODE_Execute, 
-                                NS_NO_UPSEARCH, &ObjEntry);
+                                NS_NO_UPSEARCH, NULL, &ObjEntry);
     CmReleaseMutex (MTX_NAMESPACE);
 
     if (Status != AE_OK)
@@ -491,21 +493,6 @@ NsExecuteControlMethod (
     DEBUG_PRINT (ACPI_INFO, ("Control method at Offset %x Length %lx]\n",
                     ObjDesc->Method.Pcode + 1,
                     ObjDesc->Method.PcodeLength - 1));
-
-    DUMP_PATHNAME (MethodEntry->Scope, "NsExecuteControlMethod: Setting scope to", 
-                    TRACE_NAMES, _COMPONENT);
-
-    /* Reset the current scope to the beginning of scope stack */
-
-    NsScopeStackClear ();
-
-    /* Push current scope on scope stack and make Method->Scope current  */
-
-    Status = NsScopeStackPush (MethodEntry->Scope, ACPI_TYPE_Method);
-    if (ACPI_FAILURE (Status))
-    {
-        return_ACPI_STATUS (Status);
-    }
 
     DUMP_PATHNAME (MethodEntry, "NsExecuteControlMethod: Executing", 
                     TRACE_NAMES, _COMPONENT);
