@@ -733,9 +733,20 @@ AmlExecMonadic2 (
 
 
     /*  DefRefOf    :=  RefOfOp     SourceObject    */
-    /*  DefDerefOf  :=  DerefOfOp   ObjReference    */
 
     case AML_RefOfOp:
+
+        DEBUG_PRINT (ACPI_ERROR, ("AmlExecMonadic2: RefOf returning %p\n",
+                        ObjDesc));
+
+        /* Just return the object descriptor as the reference! */
+
+        return_ACPI_STATUS (AE_OK);
+        break;
+
+
+    /*  DefDerefOf  :=  DerefOfOp   ObjReference    */
+
     case AML_DerefOfOp:
 
         DEBUG_PRINT (ACPI_ERROR, ("AmlExecMonadic2: %s unimplemented\n",
@@ -744,7 +755,8 @@ AmlExecMonadic2 (
         AmlObjStackPush ();  /*  dummy return value  */
 
         return_ACPI_STATUS (AE_NOT_IMPLEMENTED);
-
+        break;
+        
 
     default:
 
