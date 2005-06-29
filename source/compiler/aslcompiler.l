@@ -3,7 +3,7 @@
 /******************************************************************************
  *
  * Module Name: aslcompiler.l - Flex input file
- *              $Revision: 1.11 $
+ *              $Revision: 1.14 $
  *
  *****************************************************************************/
 
@@ -118,8 +118,8 @@
 
 #include <stdlib.h>
 #include <string.h>
-#include "AslCompiler.y.h"
 #include "AslCompiler.h"
+#include "AslCompiler.y.h"
 YYSTYPE AslCompilerlval;
 
 /*
@@ -183,6 +183,7 @@ NamePathTail        [.]{NameSeg}
 
 "Include"                   { copy(); count (1); return (INCLUDE); }
 "#include"                  { copy(); count (1); return (INCLUDE_CSTYLE); }
+"External"                  { copy(); count (1); return (EXTERNAL); }
 
 
 "Ones"                      { copy(); count (1); return (ONES); }
@@ -499,6 +500,19 @@ typedef struct asl_file_node
 ASL_FILE_NODE               *InputStack = NULL;
 
 
+
+/*******************************************************************************
+ *
+ * FUNCTION:    
+ *
+ * PARAMETERS:  
+ *
+ * RETURN:      
+ *
+ * DESCRIPTION: 
+ *
+ ******************************************************************************/
+
 void
 copy (void)
 {
@@ -787,7 +801,8 @@ loop:
      */
     if ((c1 == '/') && (c == '*'))
     {
-        AslWarning (ASL_WARNING_NESTED_COMMENT, Gbl_CurrentLineNumber);
+        AslCommonError (ASL_WARNING, ASL_MSG_NESTED_COMMENT, 
+                    Gbl_CurrentLineNumber, Gbl_LogicalLineNumber, NULL);
     }
 
 

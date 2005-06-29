@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslcodegen - AML code generation
- *              $Revision: 1.11 $
+ *              $Revision: 1.13 $
  *
  *****************************************************************************/
 
@@ -128,6 +128,38 @@ UINT32          AmlOffset = 0;
 UINT32          Gbl_CurrentLine = 0;
 UINT8           Gbl_AmlBuffer[16];
 
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    
+ *
+ * PARAMETERS:  
+ *
+ * RETURN:      
+ *
+ * DESCRIPTION: 
+ *
+ ******************************************************************************/
+
+void
+CgCheckException (
+    UINT32                  LineNumber)
+{
+
+    if ((!AslGbl_NextError) || 
+        (LineNumber < AslGbl_NextError->LogicalLineNumber ))
+    {
+        return;
+    }
+ 
+    fprintf (Gbl_ListingFile, "[****AslException****]\n");
+
+    AePrintException (Gbl_ListingFile, AslGbl_NextError);
+    AslGbl_NextError = AslGbl_NextError->Next;
+    fprintf (Gbl_ListingFile, "\n");
+
+}
 
 
 /*******************************************************************************
@@ -270,6 +302,8 @@ CgAmlWriteWalk (
     ACPI_OPCODE_INFO        *OpInfo;
     UINT8                   Optype;
     char                    FileByte;
+    ASL_PARSE_NODE          *Next;
+    UINT32                  i;
 
 
     UtPrintFormattedName (Node->ParseOpcode, Level);
@@ -304,6 +338,43 @@ CgAmlWriteWalk (
 
     if (Gbl_ListingFlag)
     {
+        switch (Node->ParseOpcode)
+        {
+        case DEFINITIONBLOCK:
+            CgFlushListingBuffer ();
+//            fprintf (Gbl_ListingFile, "NodeName %8s, Line %d\n", Node->ParseOpName, Node->LineNumber);
+
+            Next = Node->Child;
+            for (i = 0; i < 6; i++)
+            {
+                Gbl_CurrentLine = Next->LogicalLineNumber;
+//                fprintf (Gbl_ListingFile, "ChildName %8s, Line %d\n", Next->ParseOpName, Next->LineNumber);
+                Next = Next->Peer;
+            }
+
+            if (Gbl_SourceLine < Gbl_CurrentLine)
+                fprintf (Gbl_ListingFile, "\n\n");
+
+            while (Gbl_SourceLine < Gbl_CurrentLine)
+            {
+                Gbl_SourceLine++;
+                fprintf (Gbl_ListingFile, "%5d....", Gbl_SourceLine);
+
+                while (fread (&FileByte, 1, 1, Gbl_SourceOutputFile))
+                {
+                    fwrite (&FileByte, 1, 1, Gbl_ListingFile);
+                    if (FileByte == '\n')
+                        break;
+                }
+            }
+
+            fprintf (Gbl_ListingFile, "\n");
+            CgCheckException (Gbl_CurrentLine);
+            goto DoWriteNode;
+            break;
+        }
+
+
         switch (Optype)
         {
         case OPTYPE_BOGUS:
@@ -324,12 +395,12 @@ CgAmlWriteWalk (
         default:
 
             CgFlushListingBuffer ();
- //           fprintf (Gbl_ListingFile, "NodeName %8s, Line %d\n", Node->ParseOpName, Node->LineNumber);
+//            fprintf (Gbl_ListingFile, "NodeName %8s, Line %d\n", Node->ParseOpName, Node->LineNumber);
 
             if (Node->Child)
             {
                 Gbl_CurrentLine = Node->Child->LogicalLineNumber;
- //               fprintf (Gbl_ListingFile, "ChildName %8s, Line %d\n", Node->Child->ParseOpName, Node->Child->LineNumber);
+//                fprintf (Gbl_ListingFile, "ChildName %8s, Line %d\n", Node->Child->ParseOpName, Node->Child->LineNumber);
             }
 
             if (Gbl_SourceLine < Gbl_CurrentLine)
@@ -349,9 +420,13 @@ CgAmlWriteWalk (
             }
 
             fprintf (Gbl_ListingFile, "\n");
+            CgCheckException (Gbl_CurrentLine);
             break;
         }
     }
+
+
+DoWriteNode:
 
     CgWriteNode (Node);
 
