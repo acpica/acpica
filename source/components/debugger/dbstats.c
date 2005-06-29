@@ -150,9 +150,6 @@ UINT32                      SizeOfMethodTrees;
 UINT32                      SizeOfNTEs;
 UINT32                      SizeOfAcpiObjects;
 
-UINT8                       *DsdtPtr = NULL;
-UINT32                      DsdtLength;
-
 
 
 
@@ -174,8 +171,9 @@ DbDisplayStatistics (void)
     UINT32                      i;
 
 
-    if (!DsdtPtr)
+    if (!Gbl_DSDT)
     {
+        OsdPrintf ("There is no DSDT loaded\n");
         return AE_NOT_EXIST;
     }
 
@@ -183,7 +181,7 @@ DbDisplayStatistics (void)
     OsdPrintf ("\n\n");
 
     OsdPrintf ("ACPI Table Information:\n\n");
-    OsdPrintf ("DSDT Length:................% 6ld (0x%X)\n", DsdtLength, DsdtLength);
+    OsdPrintf ("DSDT Length:................% 6ld (0x%X)\n", Gbl_DSDT->Length, Gbl_DSDT->Length);
     OsdPrintf ("Names:......................% 6ld\n", NumNames);
     OsdPrintf ("Events:.....................% 6ld\n", NumEvents);
     OsdPrintf ("Devices:....................% 6ld\n", NumDevices);
