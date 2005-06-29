@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: utalloc - local cache and memory allocation routines
- *              $Revision: 1.111 $
+ *              $Revision: 1.112 $
  *
  *****************************************************************************/
 
@@ -370,7 +370,7 @@ ACPI_STATUS
 AcpiUtTrackAllocation (
     UINT32                  ListId,
     ACPI_DEBUG_MEM_BLOCK    *Address,
-    UINT32                  Size,
+    ACPI_SIZE               Size,
     UINT8                   AllocType,
     UINT32                  Component,
     NATIVE_CHAR             *Module,
@@ -410,7 +410,7 @@ AcpiUtTrackAllocation (
 
     /* Fill in the instance data. */
 
-    Address->Size      = Size;
+    Address->Size      = (UINT32) Size;
     Address->AllocType = AllocType;
     Address->Component = Component;
     Address->Line      = Line;
@@ -761,7 +761,7 @@ AcpiUtAllocate (
     }
 
     AcpiGbl_MemoryLists[ACPI_MEM_LIST_GLOBAL].TotalAllocated++;
-    AcpiGbl_MemoryLists[ACPI_MEM_LIST_GLOBAL].CurrentTotalSize += Size;
+    AcpiGbl_MemoryLists[ACPI_MEM_LIST_GLOBAL].CurrentTotalSize += (UINT32) Size;
 
     ACPI_DEBUG_PRINT ((ACPI_DB_ALLOCATIONS, "%p Size %X\n", Address, Size));
 
@@ -827,7 +827,7 @@ AcpiUtCallocate (
     }
 
     AcpiGbl_MemoryLists[ACPI_MEM_LIST_GLOBAL].TotalAllocated++;
-    AcpiGbl_MemoryLists[ACPI_MEM_LIST_GLOBAL].CurrentTotalSize += Size;
+    AcpiGbl_MemoryLists[ACPI_MEM_LIST_GLOBAL].CurrentTotalSize += (UINT32) Size;
 
     ACPI_DEBUG_PRINT ((ACPI_DB_ALLOCATIONS, "%p Size %X\n", Address, Size));
     return_PTR ((void *) &Address->UserSpace);

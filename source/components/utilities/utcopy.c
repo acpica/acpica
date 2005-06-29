@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: utcopy - Internal to external object translation utilities
- *              $Revision: 1.87 $
+ *              $Revision: 1.90 $
  *
  *****************************************************************************/
 
@@ -148,9 +148,9 @@ AcpiUtCopyIsimpleToEsimple (
     ACPI_OPERAND_OBJECT     *InternalObject,
     ACPI_OBJECT             *ExternalObject,
     UINT8                   *DataSpace,
-    UINT32                  *BufferSpaceUsed)
+    ACPI_SIZE               *BufferSpaceUsed)
 {
-    UINT32                  Length = 0;
+    ACPI_SIZE               Length = 0;
     ACPI_STATUS             Status = AE_OK;
 
 
@@ -284,11 +284,10 @@ AcpiUtCopyIsimpleToEsimple (
          * There is no corresponding external object type
          */
         return_ACPI_STATUS (AE_SUPPORT);
-        break;
     }
 
 
-    *BufferSpaceUsed = (UINT32) ROUND_UP_TO_NATIVE_WORD (Length);
+    *BufferSpaceUsed = ROUND_UP_TO_NATIVE_WORD (Length);
 
     return_ACPI_STATUS (Status);
 }
@@ -315,7 +314,7 @@ AcpiUtCopyIelementToEelement (
 {
     ACPI_STATUS             Status = AE_OK;
     ACPI_PKG_INFO           *Info = (ACPI_PKG_INFO *) Context;
-    UINT32                  ObjectSpace;
+    ACPI_SIZE               ObjectSpace;
     UINT32                  ThisIndex;
     ACPI_OBJECT             *TargetObject;
 
@@ -361,14 +360,13 @@ AcpiUtCopyIelementToEelement (
          * Save space for the array of objects (Package elements)
          * update the buffer length counter
          */
-        ObjectSpace = (UINT32) ROUND_UP_TO_NATIVE_WORD (
+        ObjectSpace = ROUND_UP_TO_NATIVE_WORD (
                             TargetObject->Package.Count * sizeof (ACPI_OBJECT));
         break;
 
 
     default:
         return (AE_BAD_PARAMETER);
-        break;
     }
 
     Info->FreeSpace   += ObjectSpace;
@@ -400,7 +398,7 @@ static ACPI_STATUS
 AcpiUtCopyIpackageToEpackage (
     ACPI_OPERAND_OBJECT     *InternalObject,
     UINT8                   *Buffer,
-    UINT32                  *SpaceUsed)
+    ACPI_SIZE               *SpaceUsed)
 {
     ACPI_OBJECT             *ExternalObject;
     ACPI_STATUS             Status;
@@ -545,7 +543,6 @@ AcpiUtCopyEsimpleToIsimple (
          * Whatever other type -- it is not supported
          */
         return_ACPI_STATUS (AE_SUPPORT);
-        break;
     }
 
 
@@ -717,11 +714,83 @@ AcpiUtCopyEobjectToIobject (
 
 /*******************************************************************************
  *
+ * FUNCTION:    AcpiUtCopySimpleObject
+ *
+ * PARAMETERS:  SourceDesc          - The internal object to be copied
+ *              DestDesc            - New target object
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Simple copy of one internal object to another.  Reference count
+ *              of the destination object is preserved.
+ *
+ ******************************************************************************/
+
+ACPI_STATUS
+AcpiUtCopySimpleObject (
+    ACPI_OPERAND_OBJECT     *SourceDesc,
+    ACPI_OPERAND_OBJECT     *DestDesc)
+{
+    UINT16                  ReferenceCount;
+    ACPI_OPERAND_OBJECT     *NextObject;
+
+
+    /* Save fields from destination that we don't want to overwrite */
+
+    ReferenceCount = DestDesc->Common.ReferenceCount;
+    NextObject = DestDesc->Common.NextObject;
+
+    /* Copy the entire source object over the destination object*/
+
+    MEMCPY ((char *) DestDesc, (char *) SourceDesc, sizeof (ACPI_OPERAND_OBJECT));
+
+    /* Restore the saved fields */
+
+    DestDesc->Common.ReferenceCount = ReferenceCount;
+    DestDesc->Common.NextObject = NextObject;
+
+    /* Handle the objects with extra data */
+
+    switch (DestDesc->Common.Type)
+    {
+    case ACPI_TYPE_BUFFER:
+
+        DestDesc->Buffer.Node = NULL;
+
+    case ACPI_TYPE_STRING:
+
+        /*
+         * Allocate and copy the actual string if and only if:
+         * 1) There is a valid string (length > 0)
+         * 2) The string is not static (not in an ACPI table) (in this case,
+         *    the actual pointer was already copied above)
+         */
+        if ((SourceDesc->String.Length) &&
+            (!(SourceDesc->Common.Flags & AOPOBJ_STATIC_POINTER)))
+        {
+            DestDesc->String.Pointer = ACPI_MEM_ALLOCATE (SourceDesc->String.Length);
+            if (!DestDesc->String.Pointer)
+            {
+                return (AE_NO_MEMORY);
+            }
+
+            MEMCPY (DestDesc->String.Pointer, SourceDesc->String.Pointer, 
+                    SourceDesc->String.Length);
+        }
+        break;
+    }
+
+    return (AE_OK);
+}
+
+
+/*******************************************************************************
+ *
  * FUNCTION:    AcpiUtCopyIelementToIelement
  *
  * PARAMETERS:  ACPI_PKG_CALLBACK
  *
- * RETURN:      Status          - the status of the call
+ * RETURN:      Status
  *
  * DESCRIPTION: Copy one package element to another package element
  *
@@ -760,8 +829,7 @@ AcpiUtCopyIelementToIelement (
             return (AE_NO_MEMORY);
         }
 
-        Status = AcpiExStoreObjectToObject (SourceObject, TargetObject,
-                        (ACPI_WALK_STATE *) Context);
+        Status = AcpiUtCopySimpleObject (SourceObject, TargetObject);
         if (ACPI_FAILURE (Status))
         {
             return (Status);
@@ -799,7 +867,6 @@ AcpiUtCopyIelementToIelement (
 
     default:
         return (AE_BAD_PARAMETER);
-        break;
     }
 
     return (Status);
@@ -867,4 +934,55 @@ AcpiUtCopyIpackageToIpackage (
 
     return_ACPI_STATUS (Status);
 }
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiUtCopyIobjectToIobject
+ *
+ * PARAMETERS:  WalkState           - Current walk state
+ *              SourceDesc          - The internal object to be copied
+ *              DestDesc            - Where the copied object is returned
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Copy an internal object to a new internal object
+ *
+ ******************************************************************************/
+
+ACPI_STATUS
+AcpiUtCopyIobjectToIobject (
+    ACPI_OPERAND_OBJECT     *SourceDesc,
+    ACPI_OPERAND_OBJECT     **DestDesc,
+    ACPI_WALK_STATE         *WalkState)
+{
+    ACPI_STATUS             Status = AE_OK;
+
+
+    FUNCTION_TRACE ("UtCopyIobjectToIobject");
+
+
+    /* Create the top level object */
+
+    *DestDesc = AcpiUtCreateInternalObject (SourceDesc->Common.Type);
+    if (!*DestDesc)
+    {
+        return_ACPI_STATUS (AE_NO_MEMORY);
+    }
+
+    /* Copy the object and possible subobjects */
+
+    if (SourceDesc->Common.Type == ACPI_TYPE_PACKAGE)
+    {
+        Status = AcpiUtCopyIpackageToIpackage (SourceDesc, *DestDesc,
+                        WalkState);
+    }
+    else
+    {
+        Status = AcpiUtCopySimpleObject (SourceDesc, *DestDesc);
+    }
+
+    return_ACPI_STATUS (Status);
+}
+
 

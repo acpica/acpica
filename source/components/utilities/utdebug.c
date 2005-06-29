@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: utdebug - Debug print routines
- *              $Revision: 1.91 $
+ *              $Revision: 1.92 $
  *
  *****************************************************************************/
 
@@ -149,7 +149,7 @@ AcpiUtInitStackPtrTrace (
     UINT32              CurrentSp;
 
 
-    AcpiGbl_EntryStackPointer =  (UINT32) &CurrentSp;
+    AcpiGbl_EntryStackPointer = ACPI_PTR_DIFF (&CurrentSp, NULL);
 }
 
 
@@ -169,9 +169,10 @@ void
 AcpiUtTrackStackPtr (
     void)
 {
-    UINT32              CurrentSp;
+    ACPI_SIZE           CurrentSp;
 
-    CurrentSp = (UINT32) &CurrentSp;
+
+    CurrentSp = ACPI_PTR_DIFF (&CurrentSp, NULL);
 
     if (CurrentSp < AcpiGbl_LowestStackPointer)
     {
