@@ -130,7 +130,7 @@ static ST_KEY_DESC_TABLE KDT[] = {
  *****************************************************************************/
 
 ACPI_STATUS
-AmlExecuteMethod (INT32 Offset, INT32 Length, OBJECT_DESCRIPTOR **Params)
+AmlExecuteMethod (INT32 Offset, INT32 Length, ACPI_OBJECT **Params)
 {
     ACPI_STATUS     Status;
     INT32           i1;
@@ -207,7 +207,7 @@ AmlExecuteMethod (INT32 Offset, INT32 Length, OBJECT_DESCRIPTOR **Params)
             if (AE_RETURN_VALUE == Status)
             {
                 DEBUG_PRINT (ACPI_INFO, ("Method returned: \n"));
-                DUMP_STACK_ENTRY ((OBJECT_DESCRIPTOR *) ObjStack[ObjStackTop]);
+                DUMP_STACK_ENTRY ((ACPI_OBJECT *) ObjStack[ObjStackTop]);
                 DEBUG_PRINT (ACPI_INFO, (" at stack level %d\n", ObjStackTop));
             }
 
@@ -228,8 +228,8 @@ AmlExecuteMethod (INT32 Offset, INT32 Length, OBJECT_DESCRIPTOR **Params)
  * FUNCTION:    AmlExecStore
  *
  * PARAMETERS:  *ValDesc            - Value to be stored
- *              *DestDesc           - Where to store it -- must be an (NsHandle)
- *                                    or an OBJECT_DESCRIPTOR of type Lvalue;
+ *              *DestDesc           - Where to store it -- must be an (ACPI_HANDLE)
+ *                                    or an ACPI_OBJECT of type Lvalue;
  *                                    if the latter the descriptor will be 
  *                                    either reused or deleted.
  *
@@ -243,9 +243,9 @@ AmlExecuteMethod (INT32 Offset, INT32 Length, OBJECT_DESCRIPTOR **Params)
  ****************************************************************************/
 
 ACPI_STATUS
-AmlExecStore(OBJECT_DESCRIPTOR *ValDesc, OBJECT_DESCRIPTOR *DestDesc)
+AmlExecStore (ACPI_OBJECT *ValDesc, ACPI_OBJECT *DestDesc)
 {
-    NsHandle        TempHandle;
+    ACPI_HANDLE     TempHandle;
     ACPI_STATUS     Status = AE_AML_ERROR;
     INT32           Stacked = FALSE;
     BOOLEAN         Locked = FALSE;
@@ -263,9 +263,9 @@ AmlExecStore(OBJECT_DESCRIPTOR *ValDesc, OBJECT_DESCRIPTOR *DestDesc)
 
     else if (IS_NS_HANDLE (DestDesc))
     {
-        /* Dest is an NsHandle */
+        /* Dest is an ACPI_HANDLE */
 
-        TempHandle = (NsHandle) DestDesc;
+        TempHandle = (ACPI_HANDLE) DestDesc;
         DestDesc = AllocateObjectDesc (&KDT[0]);
         if (!DestDesc)
         {   
@@ -301,7 +301,7 @@ AmlExecStore(OBJECT_DESCRIPTOR *ValDesc, OBJECT_DESCRIPTOR *DestDesc)
 
     else
     {
-        /* DestDesc is not an NsHandle  */
+        /* DestDesc is not an ACPI_HANDLE  */
 
         Status = AE_OK;
     }
@@ -790,7 +790,7 @@ AmlExecStore(OBJECT_DESCRIPTOR *ValDesc, OBJECT_DESCRIPTOR *DestDesc)
         
         /* TBD:  use object dump routine !! */
 
-        DUMP_BUFFER (DestDesc, sizeof (OBJECT_DESCRIPTOR),0);
+        DUMP_BUFFER (DestDesc, sizeof (ACPI_OBJECT),0);
 
         OsdFree (DestDesc);
         DestDesc = NULL;

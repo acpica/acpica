@@ -128,7 +128,7 @@ static ST_KEY_DESC_TABLE KDT[] = {
  ****************************************************************************/
 
 BOOLEAN
-AmlIsMethodValue (OBJECT_DESCRIPTOR *ObjDesc)
+AmlIsMethodValue (ACPI_OBJECT *ObjDesc)
 {
     INT32           MethodNestLevel;
     INT32           Index;
@@ -174,7 +174,7 @@ AmlIsMethodValue (OBJECT_DESCRIPTOR *ObjDesc)
  ****************************************************************************/
 
 ACPI_STATUS
-AmlGetFieldUnitValue (OBJECT_DESCRIPTOR *FieldDesc, OBJECT_DESCRIPTOR *ResultDesc)
+AmlGetFieldUnitValue (ACPI_OBJECT *FieldDesc, ACPI_OBJECT *ResultDesc)
 {
     ACPI_STATUS         Status = AE_AML_ERROR;
     UINT32              Mask;
@@ -278,8 +278,8 @@ AmlGetFieldUnitValue (OBJECT_DESCRIPTOR *FieldDesc, OBJECT_DESCRIPTOR *ResultDes
  * FUNCTION:    AmlGetRvalue
  *
  * PARAMETERS:  **StackPtr          - Points to entry on ObjStack, which can 
- *                                    be either an (OBJECT_DESCRIPTOR *)
- *                                    or an NsHandle.
+ *                                    be either an (ACPI_OBJECT *)
+ *                                    or an ACPI_HANDLE.
  *
  * RETURN:      Status
  *
@@ -288,10 +288,10 @@ AmlGetFieldUnitValue (OBJECT_DESCRIPTOR *FieldDesc, OBJECT_DESCRIPTOR *ResultDes
  ****************************************************************************/
 
 ACPI_STATUS
-AmlGetRvalue (OBJECT_DESCRIPTOR **StackPtr)
+AmlGetRvalue (ACPI_OBJECT **StackPtr)
 {
-    NsHandle            TempHandle = NULL;
-    OBJECT_DESCRIPTOR   *ObjDesc = NULL;
+    ACPI_HANDLE         TempHandle = NULL;
+    ACPI_OBJECT         *ObjDesc = NULL;
     ACPI_STATUS         Status = AE_OK;
     UINT8				MvIndex = 0;
     BOOLEAN             Locked;
@@ -462,26 +462,26 @@ AmlGetRvalue (OBJECT_DESCRIPTOR **StackPtr)
 
     if (IS_NS_HANDLE (*StackPtr))       /* direct name ptr */
     {
-        OBJECT_DESCRIPTOR   *ValDesc = NULL;
+        ACPI_OBJECT         *ValDesc = NULL;
                 
             
 
         DEBUG_PRINT (TRACE_EXEC,
                     ("AmlGetRvalue: found direct name ptr \n"));
 
-        ValDesc = (OBJECT_DESCRIPTOR *) NsGetValue ((NsHandle)* StackPtr);
+        ValDesc = (ACPI_OBJECT *) NsGetValue ((ACPI_HANDLE)* StackPtr);
 
         DEBUG_PRINT (TRACE_EXEC,
                     ("AmlGetRvalue: NsGetValue(%p) returned Val=%p\n", *StackPtr, ValDesc));
 
-        switch (NsGetType ((NsHandle)* StackPtr))
+        switch (NsGetType ((ACPI_HANDLE)* StackPtr))
         {
             UINT32          TempVal;
 
         case TYPE_Package:
 
             /* 
-             * ValDesc should point to either an OBJECT_DESCRIPTOR of
+             * ValDesc should point to either an ACPI_OBJECT of
              * type Package, or an initialization in the AML stream.
              */
             if (!ValDesc)
@@ -512,13 +512,13 @@ AmlGetRvalue (OBJECT_DESCRIPTOR **StackPtr)
                     AE_OK == (Status = AmlDoPkg (TYPE_Package, MODE_Exec)) &&
                     AE_OK == (Status = AmlPopExec ()))                 /* PkgStack */
                 {
-                    NsSetValue ((NsHandle)* StackPtr,
+                    NsSetValue ((ACPI_HANDLE)* StackPtr,
                                     ObjStack[ObjStackTop],
                                     (UINT8) TYPE_Package);
 
                     /* Refresh local value pointer to reflect newly set value */
                     
-                    ValDesc = (OBJECT_DESCRIPTOR *) NsGetValue ((NsHandle)* StackPtr);
+                    ValDesc = (ACPI_OBJECT *) NsGetValue ((ACPI_HANDLE)* StackPtr);
                     ObjStackTop--;
                 }
                 
@@ -597,13 +597,13 @@ AmlGetRvalue (OBJECT_DESCRIPTOR **StackPtr)
                     AE_OK == (Status = AmlDoPkg (TYPE_Buffer, MODE_Exec)) &&
                     AE_OK == (Status = AmlPopExec ()))                     /* PkgStack */
                 {
-                    NsSetValue ((NsHandle) *StackPtr,
+                    NsSetValue ((ACPI_HANDLE) *StackPtr,
                                     ObjStack[ObjStackTop],
                                     (UINT8) TYPE_Buffer);
                     
                     /* Refresh local value pointer to reflect newly set value */
                     
-                    ValDesc = (OBJECT_DESCRIPTOR *) NsGetValue ((NsHandle)* StackPtr);
+                    ValDesc = (ACPI_OBJECT *) NsGetValue ((ACPI_HANDLE)* StackPtr);
                     ObjStackTop--;
                 }
                 
@@ -740,7 +740,7 @@ AmlGetRvalue (OBJECT_DESCRIPTOR **StackPtr)
              * XXX - Number, but they really are supposed to be type Buffer.
              * XXX - The two are interchangeable only for lengths <= 32 bits.
              */
-            Status = AmlGetNamedFieldValue ((NsHandle)* StackPtr, &TempVal);
+            Status = AmlGetNamedFieldValue ((ACPI_HANDLE)* StackPtr, &TempVal);
             if (AE_OK != Status)
             {
                 FUNCTION_EXIT;
@@ -802,7 +802,7 @@ AmlGetRvalue (OBJECT_DESCRIPTOR **StackPtr)
             
             /* Read Data value */
             
-            Status = AmlGetNamedFieldValue ((NsHandle) ValDesc->BankField.Container, &TempVal);
+            Status = AmlGetNamedFieldValue ((ACPI_HANDLE) ValDesc->BankField.Container, &TempVal);
             if (AE_OK != Status)
             {
                 FUNCTION_EXIT;
@@ -890,11 +890,11 @@ AmlGetRvalue (OBJECT_DESCRIPTOR **StackPtr)
                 return AE_AML_ERROR;
             }
 
-            if (ValDesc->ValType != (UINT8) NsGetType ((NsHandle)* StackPtr))
+            if (ValDesc->ValType != (UINT8) NsGetType ((ACPI_HANDLE)* StackPtr))
             {
                 DEBUG_PRINT (ACPI_ERROR, (
                         "AmlGetRvalue/FieldUnit:internal error - Name %4.4s type %d does not match value-type %d at %p\n",
-                          *StackPtr, NsGetType ((NsHandle)* StackPtr),
+                          *StackPtr, NsGetType ((ACPI_HANDLE)* StackPtr),
                           ValDesc->ValType, ValDesc));
                 
                 AmlAppendBlockOwner (ValDesc);
@@ -940,12 +940,12 @@ AmlGetRvalue (OBJECT_DESCRIPTOR **StackPtr)
 
         case TYPE_Any:
             DEBUG_PRINT (TRACE_EXEC, ("case %s \n",
-                        NsTypeNames[NsGetType ((NsHandle)* StackPtr)]));
+                        NsTypeNames[NsGetType ((ACPI_HANDLE)* StackPtr)]));
           
 #ifdef HACK
             DEBUG_PRINT (ACPI_WARN,
                         ("** AmlGetRvalue: Fetch from [%s] not implemented, using value 0\n",
-                        NsTypeNames[NsGetType ((NsHandle)* StackPtr)]));
+                        NsTypeNames[NsGetType ((ACPI_HANDLE)* StackPtr)]));
             
             ObjDesc = AllocateObjectDesc (&KDT[0]);
             if (!ObjDesc)
@@ -962,7 +962,7 @@ AmlGetRvalue (OBJECT_DESCRIPTOR **StackPtr)
 #else
             DEBUG_PRINT (ACPI_ERROR, (
                     "AmlGetRvalue: Fetch from [%s] not implemented\n",
-                    NsTypeNames[NsGetType ((NsHandle)* StackPtr)]));
+                    NsTypeNames[NsGetType ((ACPI_HANDLE)* StackPtr)]));
             
             FUNCTION_EXIT;
             return AE_AML_ERROR;
@@ -974,7 +974,7 @@ AmlGetRvalue (OBJECT_DESCRIPTOR **StackPtr)
                         ("AmlGetRvalue: case default handle type unexpected: AE_AML_ERROR \n"));
 
             DEBUG_PRINT (ACPI_ERROR, ("AmlGetRvalue: Unknown NsType %d\n",
-                            NsGetType ((NsHandle)* StackPtr)));
+                            NsGetType ((ACPI_HANDLE)* StackPtr)));
             FUNCTION_EXIT;
             return AE_AML_ERROR;
         }
