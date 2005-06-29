@@ -426,6 +426,13 @@ BREAKPOINT3;
         }
     }
 
+    else
+    {
+        /* There could be an internal return value on the stack */
+
+        AmlObjStackDeleteValue (STACK_TOP);
+    }
+
     return_ACPI_STATUS (Status);
 }
 
@@ -493,21 +500,22 @@ NsExecuteControlMethod (
 
     /* Clear both the package and object stacks */
 
-    AmlClearPkgStack ();
+    RPARSER_ONLY ((AmlClearPkgStack ()));     /* Recursive parser only */
     AmlObjStackClearAll ();
     
     /* 
      * Excecute the method via the interpreter
      */
-    Status = AmlExecuteMethod (ObjDesc->Method.Pcode + 1,
-                               ObjDesc->Method.PcodeLength - 1, Params);
+    Status = AmlExecuteMethod (ObjDesc, Params);
 
+#ifdef _RPARSER
     if (AmlPkgStackLevel ())
     {
         /* Package stack not empty at method exit and should be */
 
         REPORT_ERROR ("Package stack not empty at method exit");
     }
+#endif
 
     if (AmlMthStackLevel () > -1)
     {
