@@ -126,18 +126,20 @@
 /* Component IDs -- used in the global "DebugLayer" */
 
 #define GLOBAL                      0x00000001
-#define INTERPRETER                 0x00000002
-#define NAMESPACE                   0x00000004
-#define DEVICE_MANAGER              0x00000008
-#define RESOURCE_MANAGER            0x00000010
-#define TABLE_MANAGER               0x00000020
-#define EVENT_HANDLING              0x00000040
-#define MISCELLANEOUS               0x00000080
-#define OS_DEPENDENT                0x00000100
+#define COMMON                      0x00000002
+#define PARSER                      0x00000004
+#define INTERPRETER                 0x00000008
+#define NAMESPACE                   0x00000010
+#define DEVICE_MANAGER              0x00000020
+#define RESOURCE_MANAGER            0x00000040
+#define TABLE_MANAGER               0x00000080
+#define EVENT_HANDLING              0x00000100
 #define HARDWARE                    0x00000200
-#define OS_APP_INTERFACE            0x00001000
-#define POWER_MANAGER               0x00002000
-#define ACPI_DEVICE_DRIVER          0x00004000
+#define MISCELLANEOUS               0x00000400
+#define OS_DEPENDENT                0x00000800
+#define OS_APP_INTERFACE            0x00010000
+#define POWER_MANAGER               0x00020000
+#define ACPI_DEVICE_DRIVER          0x00040000
 
 
 #define ALL_COMPONENTS              0x00007FFF
