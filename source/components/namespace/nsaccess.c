@@ -138,6 +138,8 @@
  *
  * DESCRIPTION: Allocate and initialize the root name table
  *
+ * MUTEX:       Locks namespace for entire execution
+ *
  ***************************************************************************/
 
 ACPI_STATUS
@@ -152,6 +154,8 @@ NsSetup (void)
     FUNCTION_TRACE ("NsSetup");
 
 
+    CmAcquireMutex (MTX_NAMESPACE);
+    
     /* 
      * Root is initially NULL, so a non-NULL value indicates
      * that NsSetup() has already been called; just return.
@@ -159,7 +163,8 @@ NsSetup (void)
 
     if (Gbl_RootObject->Scope)
     {
-        return_ACPI_STATUS (AE_OK);
+        Status = AE_OK;
+        goto UnlockAndExit;
     }
 
     /* Allocate a root scope table */
@@ -170,7 +175,8 @@ NsSetup (void)
         /*  root name table allocation failure  */
 
         REPORT_ERROR ("Root name table allocation failure");
-        return_ACPI_STATUS (AE_NO_MEMORY);
+        Status = AE_NO_MEMORY;
+        goto UnlockAndExit;
     }
 
     /* 
@@ -184,7 +190,7 @@ NsSetup (void)
     Status = NsScopeStackPush (Gbl_RootObject->Scope, ACPI_TYPE_Any);
     if (ACPI_FAILURE (Status))
     {
-        return_ACPI_STATUS (Status);
+        goto UnlockAndExit;
     }
 
     /* Enter the pre-defined names in the name table */
@@ -201,14 +207,16 @@ NsSetup (void)
          *  && its entry in PreDefinedNames[] specifies an initial value
          */
         
-        if ((Status == AE_OK) && NewEntry && InitVal->Val)
+        if ((Status == AE_OK) && 
+            NewEntry && InitVal->Val)
         {
             /* Entry requests an initial value, allocate a descriptor for it. */
             
             ObjDesc = CmCreateInternalObject (InitVal->Type);
             if (!ObjDesc)
             {
-                return_ACPI_STATUS (AE_NO_MEMORY);
+                Status = AE_NO_MEMORY;
+                goto UnlockAndExit;
             }
 
             /* 
@@ -238,7 +246,8 @@ NsSetup (void)
                 {
                     REPORT_ERROR ("Initial value string allocation failure");
                     CmDeleteInternalObject (ObjDesc);
-                    return_ACPI_STATUS (AE_NO_MEMORY);
+                    Status = AE_NO_MEMORY;
+                    goto UnlockAndExit;
                 }
 
                 STRCPY ((char *) ObjDesc->String.Pointer, InitVal->Val);
@@ -251,7 +260,7 @@ NsSetup (void)
                 Status = OsdCreateSemaphore (1, &ObjDesc->Mutex.Semaphore);
                 if (ACPI_FAILURE (Status))
                 {
-                    return_ACPI_STATUS (Status);
+                    goto UnlockAndExit;
                 }
 
                 if (STRCMP (InitVal->Name, "_GL_") == 0)
@@ -281,7 +290,10 @@ NsSetup (void)
         }
     }
 
-    return_ACPI_STATUS (AE_OK);
+
+UnlockAndExit:
+    CmReleaseMutex (MTX_NAMESPACE);
+    return_ACPI_STATUS (Status);
 }
 
 
@@ -300,6 +312,8 @@ NsSetup (void)
  *
  * DESCRIPTION: Find or enter the passed name in the name space.
  *              Log an error if name not found in Exec mode.
+ *
+ * MUTEX:       Assumes namespace is locked.
  *
  ***************************************************************************/
 
