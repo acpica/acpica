@@ -1,6 +1,8 @@
+
 /******************************************************************************
  *
- * Module Name: 16bit.h - 16-bit support
+ * Module Name: getopt
+ *              $Revision: 1.6 $
  *
  *****************************************************************************/
 
@@ -114,47 +116,131 @@
  *****************************************************************************/
 
 
-#define GET_SEGMENT(ptr)            ((UINT16)(_segment)(ptr))
-#define GET_OFFSET(ptr)             ((UINT16)(UINT32) (ptr))
-#define GET_PHYSICAL_ADDRESS(ptr)   (((((UINT32)GET_SEGMENT(ptr)) << 4)) + GET_OFFSET(ptr))
-#define PTR_OVL_BUILD_PTR(p,b,o)    {p.ovl.base=b;p.ovl.offset=o;}
+#include <stdio.h>
+#include <string.h>
 
-typedef union ptr_ovl
+#define ERR(szz,czz) if(AcpiGbl_Opterr){fprintf(stderr,"%s%s%c\n",argv[0],szz,czz);}
+
+
+int   AcpiGbl_Opterr = 1;
+int   AcpiGbl_Optind = 1;
+int   AcpiGbl_Optopt;
+char  *AcpiGbl_Optarg;
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiGetopt
+ *
+ * PARAMETERS:  argc, argv          - from main
+ *              opts                - options info list
+ *
+ * RETURN:      Option character or EOF
+ *
+ * DESCRIPTION: Get the next option
+ *
+ ******************************************************************************/
+
+int
+AcpiGetopt(
+    int                     argc,
+    char                    **argv,
+    char                    *opts)
 {
-    void                *ptr;
-    UINT32              dword;
-    struct
+    static int              CurrentCharPtr = 1;
+    int                     CurrentChar;
+    char                    *OptsPtr;
+
+
+    if (CurrentCharPtr == 1)
     {
-        UINT16              offset;
-        UINT16              base;
-    } ovl;
+        if (AcpiGbl_Optind >= argc ||
+            argv[AcpiGbl_Optind][0] != '-' ||
+            argv[AcpiGbl_Optind][1] == '\0')
+        {
+            return(EOF);
+        }
+        else if (strcmp (argv[AcpiGbl_Optind], "--") == 0)
+        {
+            AcpiGbl_Optind++;
+            return(EOF);
+        }
+    }
 
-} PTR_OVL;
+    /* Get the option */
 
+    CurrentChar =
+    AcpiGbl_Optopt =
+    argv[AcpiGbl_Optind][CurrentCharPtr];
 
-int ACPI_INTERNAL_VAR_XFACE
-FlatMove (
-    UINT32              Dest,
-    UINT32              Src,
-    UINT16              Size);
+    /* Make sure that the option is legal */
 
+    if (CurrentChar == ':' ||
+       (OptsPtr = strchr (opts, CurrentChar)) == NULL)
+    {
+        ERR (": illegal option -- ", CurrentChar);
 
-ACPI_NATIVE_INT
-AfWriteBuffer (
-    char                *Filename,
-    char                *Buffer,
-    UINT32              Length);
+        if (argv[AcpiGbl_Optind][++CurrentCharPtr] == '\0')
+        {
+            AcpiGbl_Optind++;
+            CurrentCharPtr = 1;
+        }
 
-char *
-AfGenerateFilename (char *TableId);
+        return ('?');
+    }
 
+    /* Option requires an argument? */
 
-ACPI_STATUS
-AfFindTable(
-    char                    *TableName,
-    UINT8                   **TablePtr,
-    UINT32                  *TableLength);
+    if (*++OptsPtr == ':')
+    {
+        if (argv[AcpiGbl_Optind][CurrentCharPtr+1] != '\0')
+        {
+            AcpiGbl_Optarg = &argv[AcpiGbl_Optind++][CurrentCharPtr+1];
+        }
+        else if (++AcpiGbl_Optind >= argc)
+        {
+            ERR (": option requires an argument -- ", CurrentChar);
 
-void
-AfDumpTables (void);
+            CurrentCharPtr = 1;
+            return ('?');
+        }
+        else
+        {
+            AcpiGbl_Optarg = argv[AcpiGbl_Optind++];
+        }
 
+        CurrentCharPtr = 1;
+    }
+
+    /* Option has optional single-char arguments? */
+
+    else if (*OptsPtr == '^')
+    {
+        if (argv[AcpiGbl_Optind][CurrentCharPtr+1] != '\0')
+        {
+            AcpiGbl_Optarg = &argv[AcpiGbl_Optind][CurrentCharPtr+1];
+        }
+        else
+        {
+            AcpiGbl_Optarg = "^";
+        }
+
+        AcpiGbl_Optind++;
+        CurrentCharPtr = 1;
+    }
+
+    /* Option with no arguments */
+
+    else
+    {
+        if (argv[AcpiGbl_Optind][++CurrentCharPtr] == '\0')
+        {
+            CurrentCharPtr = 1;
+            AcpiGbl_Optind++;
+        }
+
+        AcpiGbl_Optarg = NULL;
+    }
+
+    return (CurrentChar);
+}
