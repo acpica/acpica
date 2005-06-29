@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asldefine.h - Common defines for the iASL compiler
- *              $Revision: 1.1 $
+ *              $Revision: 1.2 $
  *
  *****************************************************************************/
 
@@ -123,7 +123,6 @@
 /*
  * Compiler versions and names
  */
-
 #define CompilerCreatorRevision     ACPI_CA_VERSION
 
 #define IntelAcpiCA                 "Intel ACPI Component Architecture"
@@ -143,19 +142,18 @@
 #define ASL_FIRST_PARSE_OPCODE      PARSEOP_ACCESSAS
 #define ASL_YYTNAME_START           3
 
+#define ASL_PARSE_OPCODE_BASE       PARSEOP_ACCESSAS        /* First Lex type */
+
+
 /*
  * Macros
  */
-
 #define ASL_RESDESC_OFFSET(m)       ACPI_OFFSET (ASL_RESOURCE_DESC, m)
 #define ASL_PTR_DIFF(a,b)           ((UINT8 *)(b) - (UINT8 *)(a))
 #define ASL_PTR_ADD(a,b)            ((UINT8 *)(a) = ((UINT8 *)(a) + (b)))
 #define ASL_GET_CHILD_NODE(a)       (a)->Asl.Child
 #define ASL_GET_PEER_NODE(a)        (a)->Asl.Next
 #define OP_TABLE_ENTRY(a,b,c,d)     {b,d,a,c}
-
-
-#define ASL_PARSE_OPCODE_BASE       PARSEOP_ACCESSAS        /* First Lex type */
 
 
 /* Internal AML opcodes */
