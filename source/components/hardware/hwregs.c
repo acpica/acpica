@@ -3,7 +3,7 @@
  *
  * Module Name: hwregs - Read/write access functions for the various ACPI
  *                       control and status registers.
- *              $Revision: 1.68 $
+ *              $Revision: 1.69 $
  *
  ******************************************************************************/
 
