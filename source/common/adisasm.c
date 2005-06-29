@@ -8,8 +8,8 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, Intel Corp.  All rights
- * reserved.
+ * Some or all of this work - Copyright (c) 1999, 2000, Intel Corp.
+ * All rights reserved.
  *
  * 2. License
  *
@@ -134,9 +134,6 @@ UINT8                   *AmlPtr;
 UINT32                  AmlLength;
 UINT8                   *DsdtPtr;
 UINT32                  DsdtLength;
-
-
-
 
 
 BOOLEAN
@@ -470,8 +467,8 @@ AdGetTables (
 #ifdef _IA16
         printf ("Scanning for DSDT\n");
 
-        Status = AdFindDsdt (&DsdtPtr, &DsdtLength);    
-        
+        Status = AdFindDsdt (&DsdtPtr, &DsdtLength);
+
         printf ("About to dump DSDT\n");
         AdDumpTables ();
         printf ("Dumped DSDT\n");
@@ -521,9 +518,9 @@ AdParseTables (void)
     ((ACPI_PARSE2_OBJECT *) AcpiGbl_ParsedNamespaceRoot)->Name = ACPI_ROOT_NAME;
 
     /* Pass 1:  Parse everything except control method bodies */
-    
-    printf ("Pass 1 parse\n"); 
-    
+
+    printf ("Pass 1 parse\n");
+
     DsdtLength = AcpiGbl_DSDT->Length;
     AmlLength = DsdtLength  - sizeof (ACPI_TABLE_HEADER);
     AmlPtr = ((UINT8 *) AcpiGbl_DSDT + sizeof (ACPI_TABLE_HEADER));
@@ -536,11 +533,11 @@ AdParseTables (void)
     }
 
     /* Pass 2: Parse control methods and link their parse trees into the main parse tree */
-    
+
     printf ("Pass 2 parse\n");
     Status = AdSecondPassParse (AcpiGbl_ParsedNamespaceRoot);
-                              
-    printf ("Parsing completed\n");                          
+
+    printf ("Parsing completed\n");
     return Status;
 }
 
