@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: psopcode - Parser opcode information table
- *              $Revision: 1.39 $
+ *              $Revision: 1.40 $
  *
  *****************************************************************************/
 
@@ -461,7 +461,7 @@
     AML_REGION_OP
     AML_INT_NAMEDFIELD_OP
 
-  Opcodes that have an associated namespace node 
+  Opcodes that have an associated namespace node
 
     AML_SCOPE_OP
     AML_DEVICE_OP
@@ -529,9 +529,6 @@
     AML_CREATE_QWORD_FIELD_OP
 
 ******************************************************************************/
-
-
-
 
 
 /*

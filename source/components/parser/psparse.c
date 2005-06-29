@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: psparse - Parser top level AML parse routines
- *              $Revision: 1.93 $
+ *              $Revision: 1.96 $
  *
  *****************************************************************************/
 
@@ -142,13 +142,13 @@ extern UINT32               AcpiGbl_ScopeDepth;
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiPsPeekOpcode
+ * FUNCTION:    AcpiPsGetOpcodeSize
  *
- * PARAMETERS:  None
+ * PARAMETERS:  Opcode          - An AML opcode
  *
- * RETURN:      Status
+ * RETURN:      Size of the opcode, in bytes (1 or 2)
  *
- * DESCRIPTION: Get next AML opcode (without incrementing AML pointer)
+ * DESCRIPTION: Get the size of the current opcode.
  *
  ******************************************************************************/
 
@@ -210,7 +210,6 @@ AcpiPsPeekOpcode (
      *
      *     extended Opcode, !=, <=, or >=
      */
-
     if (Opcode == AML_EXTOP)
     {
         /* Extended opcode */
@@ -375,7 +374,6 @@ AcpiPsCompleteThisOp (
              * Check if we need to replace the operator and its subtree
              * with a return value op (placeholder op)
              */
-
             ParentInfo  = AcpiPsGetOpcodeInfo (Op->Parent->Opcode);
 
             switch (ACPI_GET_OP_CLASS (ParentInfo))
@@ -389,7 +387,6 @@ AcpiPsCompleteThisOp (
                  * These opcodes contain TermArg operands.  The current
                  * op must be replace by a placeholder return op
                  */
-
                 if ((Op->Parent->Opcode == AML_REGION_OP)               ||
                     (Op->Parent->Opcode == AML_CREATE_FIELD_OP)         ||
                     (Op->Parent->Opcode == AML_CREATE_BIT_FIELD_OP)     ||
@@ -514,7 +511,6 @@ AcpiPsNextParseState (
          * A control method was terminated via a RETURN statement.
          * The walk of this method is complete.
          */
-
         ParserState->Aml = ParserState->AmlEnd;
         Status = AE_CTRL_TERMINATE;
         break;
@@ -522,13 +518,11 @@ AcpiPsNextParseState (
 
     case AE_CTRL_PENDING:
 
-            /*
-             * Predicate of a WHILE was true and the loop just completed an
-             * execution.  Go back to the start of the loop and reevaluate the
-             * predicate.
-             */
-/*            WalkState->ControlState->Common.State =
-                    CONTROL_PREDICATE_EXECUTING;*/
+        /*
+         * Predicate of a WHILE was true and the loop just completed an
+         * execution.  Go back to the start of the loop and reevaluate the
+         * predicate.
+         */
 
         /* TBD: How to handle a break within a while. */
         /* This code attempts it */
@@ -538,13 +532,13 @@ AcpiPsNextParseState (
 
 
     case AE_CTRL_TRUE:
-            /*
-             * Predicate of an IF was true, and we are at the matching ELSE.
-             * Just close out this package
-             *
-             * Note: ParserState->Aml is modified by the package length procedure
-             * TBD: [Investigate] perhaps it shouldn't, too much trouble
-             */
+        /*
+         * Predicate of an IF was true, and we are at the matching ELSE.
+         * Just close out this package
+         *
+         * Note: ParserState->Aml is modified by the package length procedure
+         * TBD: [Investigate] perhaps it shouldn't, too much trouble
+         */
         Start = ParserState->Aml;
         PackageLength = AcpiPsGetNextPackageLength (ParserState);
         ParserState->Aml = Start + PackageLength;
@@ -560,7 +554,6 @@ AcpiPsNextParseState (
          * this branch of the tree) and continue execution at the parent
          * level.
          */
-
         ParserState->Aml = ParserState->Scope->ParseScope.PkgEnd;
 
         /* In the case of a BREAK, just force a predicate (if any) to FALSE */
@@ -594,7 +587,6 @@ AcpiPsNextParseState (
         }
         break;
     }
-
 
     return_ACPI_STATUS (Status);
 }
@@ -659,7 +651,6 @@ AcpiPsParseLoop (
                  * A predicate was just completed, get the value of the
                  * predicate and branch based on that value
                  */
-
                 Status = AcpiDsGetPredicateValue (WalkState, NULL, TRUE);
                 if (ACPI_FAILURE (Status) &&
                     ((Status & AE_CODE_MASK) != AE_CODE_CONTROL))
@@ -712,7 +703,6 @@ AcpiPsParseLoop (
              * 2) A name string
              * 3) An unknown/invalid opcode
              */
-
             OpInfo = AcpiPsGetOpcodeInfo (Opcode);
             switch (ACPI_GET_OP_TYPE (OpInfo))
             {
@@ -730,7 +720,6 @@ AcpiPsParseLoop (
                  * Starts with a valid prefix or ASCII char, this is a name
                  * string.  Convert the bare name string to a namepath.
                  */
-
                 Opcode = AML_INT_NAMEPATH_OP;
                 ArgTypes = ARGP_NAMESTRING;
                 break;
@@ -817,7 +806,6 @@ AcpiPsParseLoop (
                      *
                      * (Length is unknown until parse of the body complete)
                      */
-
                     DeferredOp->Data    = AmlOpStart;
                     DeferredOp->Length  = 0;
                 }
@@ -943,7 +931,6 @@ AcpiPsParseLoop (
                      * because we don't have enough info in the first pass
                      * to parse them correctly.
                      */
-
                     DeferredOp->Data    = ParserState->Aml;
                     DeferredOp->Length  = (UINT32) (ParserState->PkgEnd -
                                                     ParserState->Aml);
@@ -1102,7 +1089,6 @@ CloseThisOp:
                 break;
             }
 
-
             /* This scope complete? */
 
             if (AcpiPsHasCompletedScope (ParserState))
@@ -1138,7 +1124,6 @@ CloseThisOp:
      * of open scopes (such as when several AML blocks are closed with
      * sequential closing braces).  We want to terminate each one cleanly.
      */
-
     ACPI_DEBUG_PRINT ((ACPI_DB_PARSE, "Package complete at Op %p\n", Op));
     do
     {
@@ -1200,6 +1185,7 @@ CloseThisOp:
  *              Aml             - Pointer to the raw AML code to parse
  *              AmlSize         - Length of the AML to parse
  *
+ *
  * RETURN:      Status
  *
  * DESCRIPTION: Parse raw AML and return a tree of ops
@@ -1222,7 +1208,6 @@ AcpiPsParseAml (
     ACPI_PARSE_STATE        *ParserState;
     ACPI_WALK_STATE         *WalkState;
     ACPI_WALK_LIST          WalkList;
-    ACPI_NAMESPACE_NODE     *Node = NULL;
     ACPI_WALK_LIST          *PrevWalkList = AcpiGbl_CurrentWalkList;
     ACPI_OPERAND_OBJECT     *ReturnDesc;
     ACPI_OPERAND_OBJECT     *MthDesc = NULL;
@@ -1255,7 +1240,7 @@ AcpiPsParseAml (
     WalkList.AcquiredMutexList.Prev = NULL;
     WalkList.AcquiredMutexList.Next = NULL;
 
-    WalkState = AcpiDsCreateWalkState (TABLE_ID_DSDT, ParserState->StartOp, 
+    WalkState = AcpiDsCreateWalkState (TABLE_ID_DSDT, ParserState->StartOp,
                         MthDesc, &WalkList);
     if (!WalkState)
     {
@@ -1297,15 +1282,13 @@ AcpiPsParseAml (
     {
         /* Setup the current scope */
 
-        Node = ParserState->StartOp->Node;
-        ParserState->StartNode = Node;
-
-        if (Node)
+        ParserState->StartNode = ParserState->StartOp->Node;
+        if (ParserState->StartNode)
         {
             /* Push start scope on scope stack and make it current  */
 
-            Status = AcpiDsScopeStackPush (Node, Node->Type,
-                                            WalkState);
+            Status = AcpiDsScopeStackPush (ParserState->StartNode,
+                            ParserState->StartNode->Type, WalkState);
             if (ACPI_FAILURE (Status))
             {
                 goto Cleanup;
@@ -1314,16 +1297,13 @@ AcpiPsParseAml (
         }
     }
 
-
-    Status = AE_OK;
-
     /*
      * Execute the walk loop as long as there is a valid Walk State.  This
      * handles nested control method invocations without recursion.
      */
-
     ACPI_DEBUG_PRINT ((ACPI_DB_PARSE, "State=%p\n", WalkState));
 
+    Status = AE_OK;
     while (WalkState)
     {
         if (ACPI_SUCCESS (Status))
@@ -1331,7 +1311,7 @@ AcpiPsParseAml (
             Status = AcpiPsParseLoop (WalkState);
         }
 
-        ACPI_DEBUG_PRINT ((ACPI_DB_PARSE, 
+        ACPI_DEBUG_PRINT ((ACPI_DB_PARSE,
             "Completed one call to walk loop, State=%p\n", WalkState));
 
         if (Status == AE_CTRL_TRANSFER)
@@ -1340,14 +1320,12 @@ AcpiPsParseAml (
              * A method call was detected.
              * Transfer control to the called control method
              */
-
             Status = AcpiDsCallControlMethod (&WalkList, WalkState, NULL);
 
             /*
              * If the transfer to the new method method call worked, a new walk
              * state was created -- get it
              */
-
             WalkState = AcpiDsGetCurrentWalkState (&WalkList);
             continue;
         }
@@ -1358,7 +1336,6 @@ AcpiPsParseAml (
         }
 
         /* We are done with this walk, move on to the parent if any */
-
 
         WalkState = AcpiDsPopWalkState (&WalkList);
 
@@ -1377,19 +1354,18 @@ AcpiPsParseAml (
          * If we just returned from the execution of a control method,
          * there's lots of cleanup to do
          */
-
         if ((WalkState->ParseFlags & ACPI_PARSE_MODE_MASK) == ACPI_PARSE_EXECUTE)
         {
             AcpiDsTerminateControlMethod (WalkState);
         }
 
-         /* Delete this walk state and all linked control states */
+        /* Delete this walk state and all linked control states */
 
         AcpiPsCleanupScope (WalkState->ParserState);
         ACPI_MEM_FREE (WalkState->ParserState);
         AcpiDsDeleteWalkState (WalkState);
 
-       /* Check if we have restarted a preempted walk */
+        /* Check if we have restarted a preempted walk */
 
         WalkState = AcpiDsGetCurrentWalkState (&WalkList);
         if (WalkState &&
@@ -1401,7 +1377,6 @@ AcpiPsParseAml (
              * If the method returned value is not used by the parent,
              * The object is deleted
              */
-
             AcpiDsRestartControlMethod (WalkState, ReturnDesc);
             WalkState->WalkType |= WALK_METHOD_RESTART;
         }
@@ -1410,7 +1385,6 @@ AcpiPsParseAml (
          * Just completed a 1st-level method, save the final internal return
          * value (if any)
          */
-
         else if (CallerReturnDesc)
         {
             *CallerReturnDesc = ReturnDesc; /* NULL if no return value */
