@@ -162,12 +162,12 @@ AmlResolveEntryToValue (
     ACPI_OBJECT_INTERNAL    *ObjDesc = NULL;
     NAME_TABLE_ENTRY        *StackEntry;
     UINT8                   *AmlPointer = NULL;
-    ACPI_OBJECT_TYPE        EntryType;
+    OBJECT_TYPE_INTERNAL    EntryType;
     BOOLEAN                 Locked;
     BOOLEAN                 AttachedAmlPointer = FALSE;
     UINT8                   AmlOpcode = 0;
     UINT32                  TempVal;
-    ACPI_OBJECT_TYPE        ObjectType;
+    OBJECT_TYPE_INTERNAL    ObjectType;
 
 
     FUNCTION_TRACE ("AmlResolveEntryToValue");
@@ -460,13 +460,13 @@ AmlResolveEntryToValue (
 
             case AML_WordOp:
 
-                TempVal = (UINT32) *(UINT16 *)&((UINT8 *) ValDesc)[1];
+                STORE16TO32 (&TempVal, &((UINT8 *) ValDesc)[1]);
                 break;
 
 
             case AML_DWordOp:
 
-                TempVal = *(UINT32 *)&((UINT8 *) ValDesc)[1];
+                STORE32TO32 (&TempVal, &((UINT8 *) ValDesc)[1]);
                 break;
 
 
