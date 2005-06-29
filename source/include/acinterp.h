@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acinterp.h - Interpreter subcomponent prototypes and defines
- *       $Revision: 1.90 $
+ *       $Revision: 1.91 $
  *
  *****************************************************************************/
 
@@ -604,8 +604,7 @@ AcpiAmlCopyDataToNamedField (
 ACPI_STATUS
 AcpiAmlCopyIntegerToFieldUnit (
     ACPI_OPERAND_OBJECT     *SourceDesc,
-    ACPI_OPERAND_OBJECT     *TargetDesc,
-    ACPI_WALK_STATE         *WalkState);
+    ACPI_OPERAND_OBJECT     *TargetDesc);
 
 /*
  * amutils - interpreter/scanner utilities
