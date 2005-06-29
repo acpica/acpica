@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslmap - parser to AML opcode mapping table
- *              $Revision: 1.44 $
+ *              $Revision: 1.45 $
  *
  *****************************************************************************/
 
@@ -684,18 +684,14 @@ AcpiDsMapOpcodeToDataType (
     case AML_CLASS_EXECUTE:
     case AML_CLASS_RETURN_VALUE:
 
-        switch (OpType)
+        if (OpInfo->Flags & AML_HAS_RETVAL)
         {
-        case AML_TYPE_EXEC_1A_0T_0R:
-        case AML_TYPE_EXEC_2A_0T_0R:
-            break;
-
-        default:
             Flags = OP_HAS_RETURN_VALUE;
-            DataType = ACPI_TYPE_ANY;
-            break;
         }
+
+        DataType = ACPI_TYPE_ANY;
         break;
+
 
     case AML_CLASS_METHOD_CALL:
 
