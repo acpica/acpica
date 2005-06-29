@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acmacros.h - C macros for the entire subsystem.
- *       $Revision: 1.154 $
+ *       $Revision: 1.155 $
  *
  *****************************************************************************/
 
@@ -598,6 +598,7 @@
 
 #define ACPI_DEBUG_EXEC(a)              a
 #define ACPI_NORMAL_EXEC(a)
+#define ACPI_MIN(a,b)                   (((a)<(b))?(a):(b))
 
 #define ACPI_DEBUG_DEFINE(a)            a;
 #define ACPI_DEBUG_ONLY_MEMBERS(a)      a;
