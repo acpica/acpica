@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acutils.h -- prototypes for the common (subsystem-wide) procedures
- *       $Revision: 1.161 $
+ *       $Revision: 1.162 $
  *
  *****************************************************************************/
 
@@ -650,6 +650,10 @@ AcpiUtValidInternalObject (
 ACPI_OPERAND_OBJECT *
 AcpiUtCreateBufferObject (
     ACPI_SIZE               BufferSize);
+
+ACPI_OPERAND_OBJECT *
+AcpiUtCreateStringObject (
+    ACPI_SIZE               StringSize);
 
 
 /*
