@@ -172,8 +172,8 @@ enum
     SCI_EN =    (PM1_CONTROL    | 0x01),
     BM_RLD,
     GBL_RLS,
-    SLP_TYPa,
-    SLP_TYPb,
+    SLP_TYPE_A,
+    SLP_TYPE_B,
     SLP_EN,
 
     /* PM2 control register ids */
@@ -221,7 +221,7 @@ enum
 #define SCI_EN_MASK         0x0001
 #define BM_RLD_MASK         0x0002
 #define GBL_RLS_MASK        0x0004
-#define SLP_TYPx_MASK       0x1C00
+#define SLP_TYPE_X_MASK     0x1C00
 #define SLP_EN_MASK         0x2000
 
 #define ARB_DIS_MASK        0x0001
