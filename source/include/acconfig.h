@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acconfig.h - Global configuration constants
- *       $Revision: 1.70 $
+ *       $Revision: 1.71 $
  *
  *****************************************************************************/
 
@@ -169,7 +169,7 @@
 
 /* Max reference count (for debug only) */
 
-#define MAX_REFERENCE_COUNT         0x200
+#define MAX_REFERENCE_COUNT         0x400
 
 
 /* Size of cached memory mapping for system memory operation region */
