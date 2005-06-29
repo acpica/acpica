@@ -160,14 +160,23 @@ AmlExecuteMethod (
 
 
 ACPI_STATUS
-AmlSetNamedFieldValue (
+AmlAccessNamedField (
+    INT32                   Mode, 
     ACPI_HANDLE             NamedField, 
-    UINT32                  Value);
+    UINT8                   *Buffer,
+    UINT32                  Length);
+
+ACPI_STATUS
+AmlSetNamedFieldValue (
+    ACPI_HANDLE             NamedField,
+    void                    *Buffer,
+    UINT32                  Length);
 
 ACPI_STATUS
 AmlGetNamedFieldValue (
     ACPI_HANDLE             NamedField, 
-    UINT32                  *Value);
+    void                    *Buffer,
+    UINT32                  Length);
 
 
 /*
