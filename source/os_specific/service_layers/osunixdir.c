@@ -120,6 +120,7 @@
 #include <string.h>
 #include <dirent.h>
 #include <fnmatch.h>
+#include <ctype.h>
 
 typedef struct ExternalFindInfo
 {
@@ -249,3 +250,22 @@ AcpiOsCloseDirectory (
     free (DirHandle);
 }
 
+/* Other functions acpisrc uses but that aren't standard on Unix */
+
+/* lowercase a string */
+char*
+strlwr  (  
+   char   *str)
+{
+    int length;
+    int i;
+
+    length = strlen(str);
+
+    for (i = 0; i < length; i++)
+    {
+        str[i] = tolower(str[i]);
+    }
+
+    return str;
+}
