@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acdispat.h - dispatcher (parser to interpreter interface)
- *       $Revision: 1.50 $
+ *       $Revision: 1.53 $
  *
  *****************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -149,12 +149,27 @@ AcpiDsObjStackPopObject (
 /* dsopcode - support for late evaluation */
 
 ACPI_STATUS
+AcpiDsExecuteArguments (
+    ACPI_NAMESPACE_NODE     *Node,
+    ACPI_NAMESPACE_NODE     *ScopeNode,
+    UINT32                  AmlLength,
+    UINT8                   *AmlStart);
+
+ACPI_STATUS
 AcpiDsGetBufferFieldArguments (
     ACPI_OPERAND_OBJECT     *ObjDesc);
 
 ACPI_STATUS
 AcpiDsGetRegionArguments (
     ACPI_OPERAND_OBJECT     *RgnDesc);
+
+ACPI_STATUS
+AcpiDsGetBufferArguments (
+    ACPI_OPERAND_OBJECT     *ObjDesc);
+
+ACPI_STATUS
+AcpiDsGetPackageArguments (
+    ACPI_OPERAND_OBJECT     *ObjDesc);
 
 
 /* dsctrl - Parser/Interpreter interface, control stack routines */
@@ -190,6 +205,12 @@ AcpiDsExecEndOp (
 
 
 /* dsfield - Parser/Interpreter interface for AML fields */
+
+ACPI_STATUS
+AcpiDsGetFieldNames (
+    ACPI_CREATE_FIELD_INFO  *Info,
+    ACPI_WALK_STATE         *WalkState,
+    ACPI_PARSE_OBJECT       *Arg);
 
 ACPI_STATUS
 AcpiDsCreateField (
@@ -263,7 +284,7 @@ AcpiDsMethodDataGetEntry (
     ACPI_WALK_STATE         *WalkState,
     ACPI_OPERAND_OBJECT     ***Node);
 
-ACPI_STATUS
+void
 AcpiDsMethodDataDeleteAll (
     ACPI_WALK_STATE         *WalkState);
 
@@ -284,7 +305,7 @@ AcpiDsMethodDataGetValue (
     ACPI_WALK_STATE         *WalkState,
     ACPI_OPERAND_OBJECT     **DestDesc);
 
-ACPI_STATUS
+void
 AcpiDsMethodDataDeleteValue (
     UINT16                  Opcode,
     UINT32                  Index,
@@ -303,7 +324,7 @@ AcpiDsMethodDataGetNode (
     ACPI_WALK_STATE         *WalkState,
     ACPI_NAMESPACE_NODE     **Node);
 
-ACPI_STATUS
+void
 AcpiDsMethodDataInit (
     ACPI_WALK_STATE         *WalkState);
 
@@ -358,15 +379,23 @@ AcpiDsInitializeObjects (
     ACPI_NAMESPACE_NODE     *StartNode);
 
 ACPI_STATUS
+AcpiDsBuildInternalBufferObj (
+    ACPI_WALK_STATE         *WalkState,
+    ACPI_PARSE_OBJECT       *Op,
+    UINT32                  BufferLength,
+    ACPI_OPERAND_OBJECT     **ObjDescPtr);
+
+ACPI_STATUS
 AcpiDsBuildInternalPackageObj (
     ACPI_WALK_STATE         *WalkState,
     ACPI_PARSE_OBJECT       *op,
+    UINT32                  PackageLength,
     ACPI_OPERAND_OBJECT     **ObjDesc);
 
 ACPI_STATUS
 AcpiDsBuildInternalObject (
     ACPI_WALK_STATE         *WalkState,
-    ACPI_PARSE_OBJECT       *op,
+    ACPI_PARSE_OBJECT       *Op,
     ACPI_OPERAND_OBJECT     **ObjDescPtr);
 
 ACPI_STATUS
@@ -394,6 +423,12 @@ ACPI_STATUS
 AcpiDsEvalRegionOperands (
     ACPI_WALK_STATE         *WalkState,
     ACPI_PARSE_OBJECT       *Op);
+
+ACPI_STATUS
+AcpiDsEvalDataObjectOperands (
+    ACPI_WALK_STATE         *WalkState,
+    ACPI_PARSE_OBJECT       *Op,
+    ACPI_OPERAND_OBJECT     *ObjDesc);
 
 ACPI_STATUS
 AcpiDsInitializeRegion (

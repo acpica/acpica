@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acdebug.h - ACPI/AML debugger
- *       $Revision: 1.59 $
+ *       $Revision: 1.60 $
  *
  *****************************************************************************/
 
@@ -173,7 +173,6 @@ AcpiDbSingleStep (
  * dbcmds - debug commands and output routines
  */
 
-
 void
 AcpiDbDisplayTableInfo (
     NATIVE_CHAR             *TableArg);
@@ -248,6 +247,36 @@ void
 AcpiDbCheckIntegrity (
     void);
 
+ACPI_STATUS
+AcpiDbIntegrityWalk (
+    ACPI_HANDLE             ObjHandle,
+    UINT32                  NestingLevel,
+    void                    *Context,
+    void                    **ReturnValue);
+
+ACPI_STATUS
+AcpiDbWalkAndMatchName (
+    ACPI_HANDLE             ObjHandle,
+    UINT32                  NestingLevel,
+    void                    *Context,
+    void                    **ReturnValue);
+
+ACPI_STATUS
+AcpiDbWalkForReferences (
+    ACPI_HANDLE             ObjHandle,
+    UINT32                  NestingLevel,
+    void                    *Context,
+    void                    **ReturnValue);
+
+ACPI_STATUS
+AcpiDbWalkForSpecificObjects (
+    ACPI_HANDLE             ObjHandle,
+    UINT32                  NestingLevel,
+    void                    *Context,
+    void                    **ReturnValue);
+
+
+
 /*
  * dbdisasm - AML disassembler
  */
@@ -275,11 +304,19 @@ void
 AcpiDbDecodeInternalObject (
     ACPI_OPERAND_OBJECT     *ObjDesc);
 
+UINT32
+AcpiDbBlockType (
+    ACPI_PARSE_OBJECT       *Op);
+
+ACPI_STATUS
+AcpiPsDisplayObjectPathname (
+    ACPI_WALK_STATE         *WalkState,
+    ACPI_PARSE_OBJECT       *Op);
+
 
 /*
  * dbdisply - debug display commands
  */
-
 
 void
 AcpiDbDisplayMethodInfo (
@@ -325,6 +362,14 @@ AcpiDbDisplayArgumentObject (
     ACPI_OPERAND_OBJECT     *ObjDesc,
     ACPI_WALK_STATE         *WalkState);
 
+void
+AcpiDbDumpParserDescriptor (
+    ACPI_PARSE_OBJECT       *Op);
+
+void *
+AcpiDbGetPointer (
+    void                    *Target);
+
 
 /*
  * dbexec - debugger control method execution
@@ -342,6 +387,23 @@ AcpiDbCreateExecutionThreads (
     NATIVE_CHAR             *NumLoopsArg,
     NATIVE_CHAR             *MethodNameArg);
 
+ACPI_STATUS
+AcpiDbExecuteMethod (
+    ACPI_DB_METHOD_INFO     *Info,
+    ACPI_BUFFER             *ReturnObj);
+
+void
+AcpiDbExecuteSetup (
+    ACPI_DB_METHOD_INFO     *Info);
+
+UINT32
+AcpiDbGetOutstandingAllocations (
+    void);
+
+void ACPI_SYSTEM_XFACE
+AcpiDbMethodThread (
+    void                    *Context);
+
 
 /*
  * dbfileio - Debugger file I/O commands
@@ -352,6 +414,9 @@ AcpiDbMatchArgument (
     NATIVE_CHAR             *UserArgument,
     ARGUMENT_INFO           *Arguments);
 
+ACPI_STATUS
+AeLocalLoadTable (
+    ACPI_TABLE_HEADER       *TablePtr);
 
 void
 AcpiDbCloseDebugFile (
@@ -368,6 +433,7 @@ AcpiDbLoadAcpiTable (
 ACPI_STATUS
 AcpiDbGetAcpiTable (
     NATIVE_CHAR             *Filename);
+
 
 /*
  * dbhistry - debugger HISTORY command
@@ -404,6 +470,27 @@ AcpiDbUserCommands (
     NATIVE_CHAR             Prompt,
     ACPI_PARSE_OBJECT       *Op);
 
+void
+AcpiDbDisplayHelp (
+    NATIVE_CHAR             *HelpType);
+
+NATIVE_CHAR *
+AcpiDbGetNextToken (
+    NATIVE_CHAR             *String,
+    NATIVE_CHAR             **Next);
+
+UINT32
+AcpiDbGetLine (
+    NATIVE_CHAR             *InputBuffer);
+
+UINT32
+AcpiDbMatchCommand (
+    NATIVE_CHAR             *UserCommand);
+
+void
+AcpiDbSingleThread (
+    void);
+
 
 /*
  * dbstats - Generation and display of ACPI table statistics
@@ -418,6 +505,21 @@ AcpiDbGenerateStatistics (
 ACPI_STATUS
 AcpiDbDisplayStatistics (
     NATIVE_CHAR             *TypeArg);
+
+ACPI_STATUS
+AcpiDbClassifyOneObject (
+    ACPI_HANDLE             ObjHandle,
+    UINT32                  NestingLevel,
+    void                    *Context,
+    void                    **ReturnValue);
+
+void
+AcpiDbCountNamespaceObjects (
+    void);
+
+void
+AcpiDbEnumerateObject (
+    ACPI_OPERAND_OBJECT     *ObjDesc);
 
 
 /*
