@@ -436,7 +436,7 @@ DbDisplayOp (
 
 void
 DbDisplayNamestring (
-    UINT8                   *Name)
+    char                    *Name)
 {
     UINT32                  SegCount;
     BOOLEAN                 DoDot = FALSE;
@@ -542,7 +542,7 @@ DbDisplayPath (
             (NamePath->Value.String) &&
             (NamePath->Value.String[0] == '\\'))
         {
-            DbDisplayNamestring ((UINT8 *) NamePath->Value.String);
+            DbDisplayNamestring (NamePath->Value.String);
             return;
         }
     }
@@ -725,7 +725,7 @@ DbDisplayOpcode (
 
     case AML_NAMEPATH_OP:
 
-        DbDisplayNamestring (Op->Value.Buffer);
+        DbDisplayNamestring (Op->Value.Name);
         break;
 
 
