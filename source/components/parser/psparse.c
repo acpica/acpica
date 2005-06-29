@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: psparse - Parser top level AML parse routines
- *              $Revision: 1.107 $
+ *              $Revision: 1.108 $
  *
  *****************************************************************************/
 
@@ -1132,8 +1132,8 @@ AcpiPsParseAml (
     ACPI_WALK_STATE         *WalkState)
 {
     ACPI_STATUS             Status;
-    ACPI_WALK_LIST          WalkList;
-    ACPI_WALK_LIST          *PrevWalkList = AcpiGbl_CurrentWalkList;
+    ACPI_THREAD_STATE       *Thread;
+    ACPI_THREAD_STATE       *PrevWalkList = AcpiGbl_CurrentWalkList;
     ACPI_WALK_STATE         *PreviousWalkState;
 
 
@@ -1143,19 +1143,21 @@ AcpiPsParseAml (
         WalkState, WalkState->ParserState.Aml, WalkState->ParserState.AmlSize));
 
 
-    /* Create and initialize a new walk list */
+    /* Create and initialize a new thread state */
 
-    WalkList.WalkState              = NULL;
-    WalkList.AcquiredMutexList.Prev = NULL;
-    WalkList.AcquiredMutexList.Next = NULL;
+    Thread = AcpiUtCreateThreadState ();
+    if (!Thread)
+    {
+        return_ACPI_STATUS (AE_NO_MEMORY);
+    }
 
-    WalkState->WalkList = &WalkList;
-    AcpiDsPushWalkState (WalkState, &WalkList);
+    WalkState->Thread = Thread;
+    AcpiDsPushWalkState (WalkState, Thread);
 
 
     /* TBD: [Restructure] TEMP until we pass WalkState to the interpreter
      */
-    AcpiGbl_CurrentWalkList = &WalkList;
+    AcpiGbl_CurrentWalkList = Thread;
 
     /*
      * Execute the walk loop as long as there is a valid Walk State.  This
@@ -1184,13 +1186,13 @@ AcpiPsParseAml (
              * A method call was detected.
              * Transfer control to the called control method
              */
-            Status = AcpiDsCallControlMethod (&WalkList, WalkState, NULL);
+            Status = AcpiDsCallControlMethod (Thread, WalkState, NULL);
 
             /*
              * If the transfer to the new method method call worked, a new walk
              * state was created -- get it
              */
-            WalkState = AcpiDsGetCurrentWalkState (&WalkList);
+            WalkState = AcpiDsGetCurrentWalkState (Thread);
             continue;
         }
 
@@ -1201,7 +1203,7 @@ AcpiPsParseAml (
 
         /* We are done with this walk, move on to the parent if any */
 
-        WalkState = AcpiDsPopWalkState (&WalkList);
+        WalkState = AcpiDsPopWalkState (Thread);
 
         /* Reset the current scope to the beginning of scope stack */
 
@@ -1227,7 +1229,7 @@ AcpiPsParseAml (
 
         /* Check if we have restarted a preempted walk */
 
-        WalkState = AcpiDsGetCurrentWalkState (&WalkList);
+        WalkState = AcpiDsGetCurrentWalkState (Thread);
         if (WalkState)
         {
             if (ACPI_SUCCESS (Status))
@@ -1264,7 +1266,8 @@ AcpiPsParseAml (
 
     /* Normal exit */
 
-    AcpiExReleaseAllMutexes ((ACPI_OPERAND_OBJECT *) &WalkList.AcquiredMutexList);
+    AcpiExReleaseAllMutexes (Thread);
+    AcpiUtDeleteGenericState ((ACPI_GENERIC_STATE *) Thread);
     AcpiGbl_CurrentWalkList = PrevWalkList;
     return_ACPI_STATUS (Status);
 }
