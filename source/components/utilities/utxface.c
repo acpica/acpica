@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: utxface - External interfaces for "global" ACPI functions
- *              $Revision: 1.76 $
+ *              $Revision: 1.78 $
  *
  *****************************************************************************/
 
@@ -153,6 +153,9 @@ AcpiInitializeSubsystem (
     FUNCTION_TRACE ("AcpiInitializeSubsystem");
 
 
+    AcpiUtInitStackPtrTrace ();
+
+
     /* Initialize all globals used by the subsystem */
 
     AcpiUtInitGlobals ();
@@ -238,7 +241,7 @@ AcpiEnableSubsystem (
 
     if (!(Flags & ACPI_NO_ADDRESS_SPACE_INIT))
     {
-        DEBUG_PRINT (TRACE_EXEC, ("[Init] Installing default address space handlers\n"));
+        ACPI_DEBUG_PRINT ((ACPI_DB_EXEC, "[Init] Installing default address space handlers\n"));
 
         Status = AcpiEvInstallDefaultAddressSpaceHandlers ();
         if (ACPI_FAILURE (Status))
@@ -253,7 +256,7 @@ AcpiEnableSubsystem (
 
     if (!(Flags & ACPI_NO_HARDWARE_INIT))
     {
-        DEBUG_PRINT (TRACE_EXEC, ("[Init] Initializing ACPI hardware\n"));
+        ACPI_DEBUG_PRINT ((ACPI_DB_EXEC, "[Init] Initializing ACPI hardware\n"));
 
         Status = AcpiHwInitialize ();
         if (ACPI_FAILURE (Status))
@@ -268,12 +271,12 @@ AcpiEnableSubsystem (
 
     if (!(Flags & ACPI_NO_ACPI_ENABLE))
     {
-        DEBUG_PRINT (TRACE_EXEC, ("[Init] Going into ACPI mode\n"));
+        ACPI_DEBUG_PRINT ((ACPI_DB_EXEC, "[Init] Going into ACPI mode\n"));
 
         Status = AcpiEnable ();
         if (ACPI_FAILURE (Status))
         {
-            DEBUG_PRINT(ACPI_WARN, ("AcpiEnable failed.\n"));
+            ACPI_DEBUG_PRINT ((ACPI_DB_WARN, "AcpiEnable failed.\n"));
             return_ACPI_STATUS (Status);
         }
     }
@@ -287,7 +290,7 @@ AcpiEnableSubsystem (
 
     if (!(Flags & ACPI_NO_EVENT_INIT))
     {
-        DEBUG_PRINT (TRACE_EXEC, ("[Init] Initializing ACPI events\n"));
+        ACPI_DEBUG_PRINT ((ACPI_DB_EXEC, "[Init] Initializing ACPI events\n"));
 
         Status = AcpiEvInitialize ();
         if (ACPI_FAILURE (Status))
@@ -304,7 +307,7 @@ AcpiEnableSubsystem (
 
     if (!(Flags & ACPI_NO_DEVICE_INIT))
     {
-        DEBUG_PRINT (TRACE_EXEC, ("[Init] Initializing ACPI Devices\n"));
+        ACPI_DEBUG_PRINT ((ACPI_DB_EXEC, "[Init] Initializing ACPI Devices\n"));
 
         Status = AcpiNsInitializeDevices ();
         if (ACPI_FAILURE (Status))
@@ -322,7 +325,7 @@ AcpiEnableSubsystem (
 
     if (!(Flags & ACPI_NO_OBJECT_INIT))
     {
-        DEBUG_PRINT (TRACE_EXEC, ("[Init] Initializing ACPI Objects\n"));
+        ACPI_DEBUG_PRINT ((ACPI_DB_EXEC, "[Init] Initializing ACPI Objects\n"));
 
         Status = AcpiNsInitializeObjects ();
         if (ACPI_FAILURE (Status))

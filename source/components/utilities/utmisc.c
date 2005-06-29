@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: utmisc - common utility procedures
- *              $Revision: 1.47 $
+ *              $Revision: 1.48 $
  *
  ******************************************************************************/
 
@@ -1155,7 +1155,7 @@ AcpiUtWalkPackageTree (
 
 /*******************************************************************************
  *
- * FUNCTION:    _ReportError
+ * FUNCTION:    AcpiUtReportError
  *
  * PARAMETERS:  ModuleName          - Caller's module name (for error output)
  *              LineNumber          - Caller's line number (for error output)
@@ -1169,7 +1169,7 @@ AcpiUtWalkPackageTree (
  ******************************************************************************/
 
 void
-_ReportError (
+AcpiUtReportError (
     NATIVE_CHAR             *ModuleName,
     UINT32                  LineNumber,
     UINT32                  ComponentId)
@@ -1182,7 +1182,7 @@ _ReportError (
 
 /*******************************************************************************
  *
- * FUNCTION:    _ReportWarning
+ * FUNCTION:    AcpiUtReportWarning
  *
  * PARAMETERS:  ModuleName          - Caller's module name (for error output)
  *              LineNumber          - Caller's line number (for error output)
@@ -1196,7 +1196,7 @@ _ReportError (
  ******************************************************************************/
 
 void
-_ReportWarning (
+AcpiUtReportWarning (
     NATIVE_CHAR             *ModuleName,
     UINT32                  LineNumber,
     UINT32                  ComponentId)
@@ -1208,7 +1208,7 @@ _ReportWarning (
 
 /*******************************************************************************
  *
- * FUNCTION:    _ReportInfo
+ * FUNCTION:    AcpiUtReportInfo
  *
  * PARAMETERS:  ModuleName          - Caller's module name (for error output)
  *              LineNumber          - Caller's line number (for error output)
@@ -1222,7 +1222,7 @@ _ReportWarning (
  ******************************************************************************/
 
 void
-_ReportInfo (
+AcpiUtReportInfo (
     NATIVE_CHAR             *ModuleName,
     UINT32                  LineNumber,
     UINT32                  ComponentId)
