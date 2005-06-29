@@ -142,7 +142,7 @@ AcpiInitialize (
 ACPI_STATUS
 AcpiEvaluateObject (
     ACPI_HANDLE             Handle, 
-    char                    *Pathname, 
+    ACPI_STRING             *Pathname, 
     ACPI_OBJECT_LIST        *ParameterObjects,
     ACPI_BUFFER             *ReturnObjectBuffer);
 
@@ -166,13 +166,13 @@ AcpiUnloadTable (
 
 ACPI_STATUS
 AcpiLoadTableFromFile (
-    char                    *FileName,
+    ACPI_STRING             *FileName,
     ACPI_HANDLE             *OutTableHandle);
 
 ACPI_STATUS
 AcpiGetTableHeader (
     ACPI_TABLE_TYPE         TableType,
-    char                    *OutTableHeader);
+    UINT8                   *OutTableHeader);
 
 ACPI_STATUS
 AcpiGetTable (
@@ -181,18 +181,18 @@ AcpiGetTable (
 
 ACPI_STATUS
 AcpiNameToHandle (
-    UINT32                  Name,
+    ACPI_NAME               Name,
     ACPI_HANDLE             Scope, 
     ACPI_HANDLE             *OutHandle);
 
 ACPI_STATUS
 AcpiHandleToName (
     ACPI_HANDLE             Handle,
-    UINT32                  *RetName);
+    ACPI_NAME               *RetName);
 
 ACPI_STATUS
 AcpiPathnameToHandle (
-    char                    *Pathname,
+    ACPI_STRING             *Pathname,
     ACPI_HANDLE             *OutHandle);
 
 ACPI_STATUS
@@ -261,13 +261,13 @@ AcpiDisable (
 
 ACPI_STATUS
 AcpiInstallFixedEventHandler (
-    UINT32                  Event,
+    ACPI_EVENT_TYPE         Event,
     FIXED_EVENT_HANDLER     Handler,
     void                    *Context);
     
 ACPI_STATUS
 AcpiRemoveFixedEventHandler (
-    UINT32                  Event,
+    ACPI_EVENT_TYPE         Event,
     FIXED_EVENT_HANDLER     Handler);
 
 ACPI_STATUS
