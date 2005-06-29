@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acglobal.h - Declarations for global variables
- *       $Revision: 1.158 $
+ *       $Revision: 1.159 $
  *
  *****************************************************************************/
 
@@ -165,7 +165,10 @@ extern      UINT32                      AcpiGbl_NestingLevel;
 /*
  * Enable "slack" in the AML interpreter?  Default is FALSE, and the
  * interpreter strictly follows the ACPI specification.  Setting to TRUE
- * allows the interpreter to forgive certain bad AML constructs.
+ * allows the interpreter to forgive certain bad AML constructs.  Currently:
+ * 1) Allow "implicit return" of last value in a control method
+ * 2) Allow access beyond end of operation region
+ * 3) Allow access to uninitialized locals/args (auto-init to integer 0)
  */
 ACPI_EXTERN UINT8       ACPI_INIT_GLOBAL (AcpiGbl_EnableInterpreterSlack, FALSE);
 
