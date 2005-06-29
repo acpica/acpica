@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: actbl.h - Table data structures defined in ACPI specification
- *       $Revision: 1.37 $
+ *       $Revision: 1.38 $
  *
  *****************************************************************************/
 
@@ -183,26 +183,6 @@ typedef struct  /* ACPI common table header */
     UINT32                  AslCompilerRevision;    /* ASL compiler revision number */
 
 } ACPI_TABLE_HEADER;
-
-
-
-
-
-
-
-
-typedef struct
-{
-    ACPI_TABLE_HEADER       Header;                 /* Table header */
-    UINT64                  TableOffsetEntry [1];   /* Array of pointers to other */
-                                                    /* tables' headers */
-} XSDT_DESCRIPTOR;
-
-
-
-
-
-
 
 
 typedef struct  /* APIC Table */
