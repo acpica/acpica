@@ -27,14 +27,22 @@ Package=<4>
 
 ###############################################################################
 
+Project: "AcpiSrc"=..\..\TOOLS\AcpiSrc\AcpiSrc.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
 Project: "Subsystem"=.\Subsystem.dsp - Package Owner=<4>
 
 Package=<5>
 {{{
-    begin source code control
-    "$/Acpi Components/Subsystem", CQBAAAAA
-    ..\..\subsystem
-    end source code control
 }}}
 
 Package=<4>
@@ -47,10 +55,6 @@ Project: "app"=..\..\Test\app\Wdm\app.dsp - Package Owner=<4>
 
 Package=<5>
 {{{
-    begin source code control
-    "$/Acpi Components/test/app/wdm", GECAAAAA
-    ..\..\test\app\wdm
-    end source code control
 }}}
 
 Package=<4>
@@ -63,10 +67,6 @@ Project: "wdm"=..\..\Test\Driver\Wdm\wdm.dsp - Package Owner=<4>
 
 Package=<5>
 {{{
-    begin source code control
-    "$/Acpi Components/test/driver/wdm", DBDAAAAA
-    ..\..\test\driver\wdm
-    end source code control
 }}}
 
 Package=<4>
@@ -79,10 +79,6 @@ Global:
 
 Package=<5>
 {{{
-    begin source code control
-    "$/Acpi Components", XPBAAAAA
-    ..\..
-    end source code control
 }}}
 
 Package=<3>
