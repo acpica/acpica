@@ -43,7 +43,7 @@
  * 3. Conditions 
  *
  * 3.1. Redistribution of Source with Rights to Further Distribute Source.  
- * Redistribution of source code of any substantial porton of the Covered
+ * Redistribution of source code of any substantial prton of the Covered
  * Code or modification with rights to further distribute source must include
  * the above Copyright Notice, the above License, this list of Conditions,
  * and the following Disclaimer and Export Compliance provision.  In addition,
@@ -1035,7 +1035,7 @@ AcpiRemoveAddressSpaceHandler (
     /* Parameter validation */
 
     if ((!Device)   ||
-        (!Handler)  ||
+        ((!Handler)  && (Handler != ACPI_DEFAULT_HANDLE)) ||
         (SpaceId > ACPI_MAX_ADDRESS_SPACE))
     {
         return_ACPI_STATUS (AE_BAD_PARAMETER);
@@ -1143,3 +1143,4 @@ AcpiRemoveAddressSpaceHandler (
 }
 
 
+o
