@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acglobal.h - Declarations for global variables
- *       $Revision: 1.133 $
+ *       $Revision: 1.134 $
  *
  *****************************************************************************/
 
@@ -344,6 +344,7 @@ ACPI_EXTERN BOOLEAN                     AcpiGbl_DbOpt_verbose;
 #ifdef ACPI_DEBUGGER
 
 extern      BOOLEAN                     AcpiGbl_MethodExecuting;
+extern      BOOLEAN                     AcpiGbl_AbortMethod;
 extern      BOOLEAN                     AcpiGbl_DbTerminateThreads;
 
 ACPI_EXTERN int                         optind;
