@@ -656,6 +656,10 @@ PsxExecEndOp (
         DEBUG_PRINT (TRACE_EXEC, ("ExecEndOp: Completed a predicate eval=%X Op=%X\n",
                         WalkState->ControlState->Predicate, Op));
 
+         /* Break to debugger to display result */
+
+        DEBUG_EXEC (DbDisplayResultObject (ObjDesc));
+
         /* Delete the predicate result object (we know that we don't need it anymore) and cleanup the stack */
 
         CmDeleteInternalObject (ObjDesc);
