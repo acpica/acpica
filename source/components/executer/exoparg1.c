@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exoparg1 - AML execution - opcodes with 1 argument
- *              $Revision: 1.124 $
+ *              $Revision: 1.125 $
  *
  *****************************************************************************/
 
@@ -633,10 +633,10 @@ AcpiExOpcode_1A_0T_1R (
 
         /*
          * Since we are expecting a Reference operand, it
-         * can be either a Node or an internal object.
+         * can be either a NS Node or an internal object.
          */
         ReturnDesc = Operand[0];
-        if (VALID_DESCRIPTOR_TYPE (Operand[0], ACPI_DESC_TYPE_INTERNAL))
+        if (ACPI_GET_DESCRIPTOR_TYPE (Operand[0]) == ACPI_DESC_TYPE_INTERNAL)
         {
             /* Internal reference object - prevent deletion */
 
@@ -773,7 +773,7 @@ AcpiExOpcode_1A_0T_1R (
     case AML_SIZE_OF_OP:            /* SizeOf (SourceObject)  */
 
         TempDesc = Operand[0];
-        if (VALID_DESCRIPTOR_TYPE (Operand[0], ACPI_DESC_TYPE_NAMED))
+        if (ACPI_GET_DESCRIPTOR_TYPE (Operand[0]) == ACPI_DESC_TYPE_NAMED)
         {
             TempDesc = AcpiNsGetAttachedObject ((ACPI_NAMESPACE_NODE *) Operand[0]);
         }
@@ -840,7 +840,7 @@ AcpiExOpcode_1A_0T_1R (
 
         /* Check for a method local or argument */
 
-        if (!VALID_DESCRIPTOR_TYPE (Operand[0], ACPI_DESC_TYPE_NAMED))
+        if (ACPI_GET_DESCRIPTOR_TYPE (Operand[0]) != ACPI_DESC_TYPE_NAMED)
         {
             /*
              * Must resolve/dereference the local/arg reference first
@@ -872,7 +872,7 @@ AcpiExOpcode_1A_0T_1R (
 
         /* Operand[0] may have changed from the code above */
 
-        if (VALID_DESCRIPTOR_TYPE (Operand[0], ACPI_DESC_TYPE_NAMED))
+        if (ACPI_GET_DESCRIPTOR_TYPE (Operand[0]) == ACPI_DESC_TYPE_NAMED)
         {
             /* Get the actual object from the Node (This is the dereference) */
 
