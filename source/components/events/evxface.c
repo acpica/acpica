@@ -162,17 +162,6 @@ AcpiEnable (void)
         return AE_ERROR;
     }
     
-    if (EvGpeInitialize () != AE_OK)
-    {
-        /* Unable to initialize GPEs. */
-        
-        DEBUG_PRINT (ACPI_FATAL, ("Unable to initialize general purpose events.\n"));
-        FUNCTION_EXIT;
-        return AE_ERROR;
-    }
-    
-    EvInitGpeControlMethods ();
-
     /*  SCI Interrupt Handler installed properly    */
 
     if (ACPI_MODE != OriginalMode)
@@ -191,6 +180,20 @@ AcpiEnable (void)
         {
             DEBUG_PRINT (ACPI_OK, ("Transition to ACPI mode successful\n"));
         }
+        
+        /* Initialize GPEs now. */
+        
+        if (EvGpeInitialize () != AE_OK)
+        {
+            /* Unable to initialize GPEs. */
+        
+            DEBUG_PRINT (ACPI_FATAL, ("Unable to initialize general purpose events.\n"));
+            FUNCTION_EXIT;
+            return AE_ERROR;
+        }
+    
+        EvInitGpeControlMethods ();
+
     }
 
     FUNCTION_EXIT;
@@ -284,7 +287,7 @@ AcpiInstallFixedEventHandler (
     if (NULL != FixedEventHandlers[Event])
     {
         FUNCTION_EXIT;
-        return AE_HANDLER_EXISTS;
+        return AE_EXIST;
     }
     
     /* Install the handler before enabling the event - just in case... */
@@ -392,7 +395,7 @@ AcpiInstallGpeHandler (
     if (GpeInfo[GpeNumber].Handler)
     {
         FUNCTION_EXIT;
-        return AE_HANDLER_EXISTS;
+        return AE_EXIST;
     }
 
 
@@ -531,7 +534,7 @@ AcpiInstallNotifyHandler (
     if (ObjDesc->Device.Handler)
     {
         FUNCTION_EXIT;
-        return AE_HANDLER_EXISTS;
+        return AE_EXIST;
     }
 
 
