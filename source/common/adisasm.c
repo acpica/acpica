@@ -128,8 +128,8 @@
         MODULE_NAME         ("adexec")
 
 
-ACPI_GENERIC_OP         *AcpiGbl_ParsedNamespaceRoot;
-ACPI_GENERIC_OP         *root;
+ACPI_PARSE_OBJECT       *AcpiGbl_ParsedNamespaceRoot;
+ACPI_PARSE_OBJECT       *root;
 UINT8                   *AmlPtr;
 UINT32                  AmlLength;
 UINT8                   *DsdtPtr;
@@ -141,7 +141,7 @@ UINT32                  DsdtLength;
 
 BOOLEAN
 AcpiDsIsResultUsed (
-    ACPI_GENERIC_OP         *Op)
+    ACPI_PARSE_OBJECT       *Op)
 {
     return TRUE;
 }
@@ -149,7 +149,7 @@ AcpiDsIsResultUsed (
 ACPI_STATUS
 AcpiDsRestartControlMethod (
     ACPI_WALK_STATE         *WalkState,
-    ACPI_OBJECT_INTERNAL    *ReturnDesc)
+    ACPI_OPERAND_OBJECT     *ReturnDesc)
 {
     return (AE_OK);
 }
@@ -171,14 +171,14 @@ ACPI_STATUS
 AcpiDsCallControlMethod (
     ACPI_WALK_LIST          *WalkList,
     ACPI_WALK_STATE         *ThisWalkState,
-    ACPI_GENERIC_OP         *Op)
+    ACPI_PARSE_OBJECT       *Op)
 {
     return (AE_OK);
 }
 
 ACPI_STATUS
 AcpiDsMethodDataInitArgs (
-    ACPI_OBJECT_INTERNAL    **Params,
+    ACPI_OPERAND_OBJECT     **Params,
     UINT32                  MaxParamCount,
     ACPI_WALK_STATE         *WalkState)
 {
@@ -230,7 +230,7 @@ AdCreateTableHeaders (void)
 
 INT32
 c (
-    ACPI_GENERIC_OP *Op)
+    ACPI_PARSE_OBJECT       *Op)
 {
 
     switch (Op->Opcode)
@@ -356,12 +356,12 @@ AdLoadDsdt(
 
 ACPI_STATUS
 AdSecondPassParse (
-    ACPI_GENERIC_OP         *Root)
+    ACPI_PARSE_OBJECT       *Root)
 {
-    ACPI_GENERIC_OP         *Op = Root;
-    ACPI_EXTENDED_OP        *Method;
-    ACPI_GENERIC_OP         *SearchOp;
-    ACPI_GENERIC_OP         *StartOp;
+    ACPI_PARSE_OBJECT       *Op = Root;
+    ACPI_PARSE2_OBJECT      *Method;
+    ACPI_PARSE_OBJECT       *SearchOp;
+    ACPI_PARSE_OBJECT       *StartOp;
     ACPI_STATUS             Status = AE_OK;
     UINT32                  BaseAmlOffset;
 
@@ -374,7 +374,7 @@ AdSecondPassParse (
         {
             printf (".");
 
-            Method = (ACPI_EXTENDED_OP *) Op;
+            Method = (ACPI_PARSE2_OBJECT *) Op;
             DEBUG_PRINT (ACPI_INFO, ("Parsing method [%4.4s]\n", &Method->Name));
 
             /* Parse the method */
@@ -515,7 +515,7 @@ AdParseTables (void)
 
     /* Initialize the root object */
 
-    ((ACPI_EXTENDED_OP *) AcpiGbl_ParsedNamespaceRoot)->Name = ACPI_ROOT_NAME;
+    ((ACPI_PARSE2_OBJECT *) AcpiGbl_ParsedNamespaceRoot)->Name = ACPI_ROOT_NAME;
 
     /* Pass 1:  Parse everything except control method bodies */
 
