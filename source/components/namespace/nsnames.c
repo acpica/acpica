@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: nsnames - Name manipulation and search
- *              $Revision: 1.66 $
+ *              $Revision: 1.67 $
  *
  ******************************************************************************/
 
@@ -176,7 +176,7 @@ AcpiNsBuildExternalPath (
         /* Put the name into the buffer */
 
         MOVE_UNALIGNED32_TO_32 ((NameBuffer + Index), &ParentNode->Name);
-        ParentNode = AcpiNsGetParentObject (ParentNode);
+        ParentNode = AcpiNsGetParentNode (ParentNode);
 
         /* Prefix name with the path separator */
 
@@ -279,7 +279,7 @@ AcpiNsGetPathnameLength (
     while (NextNode != AcpiGbl_RootNode)
     {
         Size += PATH_SEGMENT_LENGTH;
-        NextNode = AcpiNsGetParentObject (NextNode);
+        NextNode = AcpiNsGetParentNode (NextNode);
     }
 
     return (Size + 1);

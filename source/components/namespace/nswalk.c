@@ -1,7 +1,7 @@
-
 /******************************************************************************
  *
- * Module Name: nswalk - Functions for walking the APCI namespace
+ * Module Name: nswalk - Functions for walking the ACPI namespace
+ *              $Revision: 1.27 $
  *
  *****************************************************************************/
 
@@ -9,8 +9,8 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, Intel Corp.  All rights
- * reserved.
+ * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
+ * All rights reserved.
  *
  * 2. License
  *
@@ -122,113 +122,107 @@
 #include "acnamesp.h"
 
 
-#define _COMPONENT          NAMESPACE
-        MODULE_NAME         ("nswalk");
+#define _COMPONENT          ACPI_NAMESPACE
+        MODULE_NAME         ("nswalk")
 
 
-/****************************************************************************
+/*******************************************************************************
  *
- * FUNCTION:    AcpiGetNextObject
+ * FUNCTION:    AcpiNsGetNextNode
  *
- * PARAMETERS:  Type            - Type of object to be searched for
- *              Parent          - Parent object whose children we are getting
- *              LastChild       - Previous child that was found.
- *                                The NEXT child will be returned
- *              RetHandle       - Where handle to the next object is placed
+ * PARAMETERS:  Type                - Type of node to be searched for
+ *              ParentNode          - Parent node whose children we are
+ *                                     getting
+ *              ChildNode           - Previous child that was found.
+ *                                    The NEXT child will be returned
  *
- * RETURN:      Status
+ * RETURN:      ACPI_NAMESPACE_NODE - Pointer to the NEXT child or NULL if
+ *                                    none is found.
  *
- * DESCRIPTION: Return the next peer object within the namespace.  If Handle is
- *              valid, Scope is ignored.  Otherwise, the first object within
- *              Scope is returned.
+ * DESCRIPTION: Return the next peer node within the namespace.  If Handle
+ *              is valid, Scope is ignored.  Otherwise, the first node
+ *              within Scope is returned.
  *
  ******************************************************************************/
 
-ACPI_NAMED_OBJECT*
-AcpiNsGetNextObject (
-    OBJECT_TYPE_INTERNAL    Type,
-    ACPI_NAMED_OBJECT       *Parent,
-    ACPI_NAMED_OBJECT       *Child)
+ACPI_NAMESPACE_NODE *
+AcpiNsGetNextNode (
+    ACPI_OBJECT_TYPE8       Type,
+    ACPI_NAMESPACE_NODE     *ParentNode,
+    ACPI_NAMESPACE_NODE     *ChildNode)
 {
-    ACPI_NAMED_OBJECT       *ThisEntry = NULL;
+    ACPI_NAMESPACE_NODE     *NextNode = NULL;
 
 
-    if (!Child)
+    FUNCTION_ENTRY ();
+
+
+    if (!ChildNode)
     {
-
         /* It's really the parent's _scope_ that we want */
 
-        if (Parent->ChildTable)
+        if (ParentNode->Child)
         {
-            ThisEntry = Parent->ChildTable->Entries;
+            NextNode = ParentNode->Child;
         }
     }
 
     else
     {
-        /* Start search at the NEXT object */
+        /* Start search at the NEXT node */
 
-        ThisEntry = AcpiNsGetNextValidEntry (Child);
+        NextNode = AcpiNsGetNextValidNode (ChildNode);
     }
-
 
     /* If any type is OK, we are done */
 
     if (Type == ACPI_TYPE_ANY)
     {
-        /* Make sure this is valid entry first */
+        /* NextNode is NULL if we are at the end-of-list */
 
-        if ((!ThisEntry) ||
-            (!ThisEntry->Name))
-        {
-            return NULL;
-        }
-
-        return (ThisEntry);
+        return (NextNode);
     }
 
+    /* Must search for the node -- but within this scope only */
 
-    /* Must search for the object -- but within this scope only */
-
-    while (ThisEntry)
+    while (NextNode)
     {
         /* If type matches, we are done */
 
-        if (ThisEntry->Type == Type)
+        if (NextNode->Type == Type)
         {
-            return (ThisEntry);
+            return (NextNode);
         }
 
-        /* Otherwise, move on to the next object */
+        /* Otherwise, move on to the next node */
 
-        ThisEntry = AcpiNsGetNextValidEntry (ThisEntry);
+        NextNode = AcpiNsGetNextValidNode (NextNode);
     }
-
 
     /* Not found */
 
-    return NULL;
+    return (NULL);
 }
 
 
-/******************************************************************************
+/*******************************************************************************
  *
  * FUNCTION:    AcpiNsWalkNamespace
  *
  * PARAMETERS:  Type                - ACPI_OBJECT_TYPE to search for
- *              StartObject         - Handle in namespace where search begins
+ *              StartNode           - Handle in namespace where search begins
  *              MaxDepth            - Depth to which search is to reach
  *              UnlockBeforeCallback- Whether to unlock the NS before invoking
  *                                    the callback routine
  *              UserFunction        - Called when an object of "Type" is found
  *              Context             - Passed to user function
- *
- * RETURNS      Return value from the UserFunction if terminated early.
- *              Otherwise, returns NULL.
+ *              ReturnValue         - from the UserFunction if terminated early.
+ *                                    Otherwise, returns NULL.
+ * RETURNS:     Status
  *
  * DESCRIPTION: Performs a modified depth-first walk of the namespace tree,
- *              starting (and ending) at the object specified by StartHandle.
- *              The UserFunction is called whenever an object that matches
+ *              starting (and ending) at the node specified by StartHandle.
+ *              The UserFunction is called whenever a node that matches
  *              the type parameter is found.  If the user function returns
  *              a non-zero value, the search is terminated immediately and this
  *              value is returned to the caller.
@@ -243,102 +237,98 @@ AcpiNsGetNextObject (
 
 ACPI_STATUS
 AcpiNsWalkNamespace (
-    OBJECT_TYPE_INTERNAL    Type,
-    ACPI_HANDLE             StartObject,
+    ACPI_OBJECT_TYPE8       Type,
+    ACPI_HANDLE             StartNode,
     UINT32                  MaxDepth,
     BOOLEAN                 UnlockBeforeCallback,
-    WALK_CALLBACK           UserFunction,
+    ACPI_WALK_CALLBACK      UserFunction,
     void                    *Context,
     void                    **ReturnValue)
 {
     ACPI_STATUS             Status;
-    ACPI_NAMED_OBJECT       *ChildEntry;
-    ACPI_NAMED_OBJECT       *ParentEntry;
-    OBJECT_TYPE_INTERNAL    ChildType;
+    ACPI_NAMESPACE_NODE     *ChildNode;
+    ACPI_NAMESPACE_NODE     *ParentNode;
+    ACPI_OBJECT_TYPE8        ChildType;
     UINT32                  Level;
 
 
     FUNCTION_TRACE ("NsWalkNamespace");
 
-    /* Special case for the namespace root object */
 
-    if (StartObject == ACPI_ROOT_OBJECT)
+    /* Special case for the namespace Root Node */
+
+    if (StartNode == ACPI_ROOT_OBJECT)
     {
-        StartObject = AcpiGbl_RootObject;
+        StartNode = AcpiGbl_RootNode;
     }
 
+    /* Null child means "get first node" */
 
-    /* Null child means "get first object" */
-
-    ParentEntry    = StartObject;
-    ChildEntry     = 0;
-    ChildType       = ACPI_TYPE_ANY;
-    Level           = 1;
+    ParentNode  = StartNode;
+    ChildNode   = 0;
+    ChildType   = ACPI_TYPE_ANY;
+    Level       = 1;
 
     /*
-     * Traverse the tree of objects until we bubble back up to where we
+     * Traverse the tree of nodes until we bubble back up to where we
      * started. When Level is zero, the loop is done because we have
      * bubbled up to (and passed) the original parent handle (StartEntry)
      */
-
     while (Level > 0)
     {
-        /*
-         * Get the next typed object in this scope.  Null returned
-         * if not found
-         */
+        /* Get the next node in this scope.  Null if not found */
 
         Status = AE_OK;
-        ChildEntry = AcpiNsGetNextObject (ACPI_TYPE_ANY,
-                                            ParentEntry,
-                                            ChildEntry);
-
-        if (ChildEntry)
+        ChildNode = AcpiNsGetNextNode (ACPI_TYPE_ANY, ParentNode, ChildNode);
+        if (ChildNode)
         {
             /*
-             * Found an object, Get the type if we are not
+             * Found node, Get the type if we are not
              * searching for ANY
              */
-
             if (Type != ACPI_TYPE_ANY)
             {
-                ChildType = ChildEntry->Type;
+                ChildType = ChildNode->Type;
             }
 
             if (ChildType == Type)
             {
                 /*
-                 * Found a matching object, invoke the user
+                 * Found a matching node, invoke the user
                  * callback function
                  */
-
                 if (UnlockBeforeCallback)
                 {
-                    AcpiCmReleaseMutex (ACPI_MTX_NAMESPACE);
+                    AcpiUtReleaseMutex (ACPI_MTX_NAMESPACE);
                 }
 
-                Status = UserFunction (ChildEntry, Level,
+                Status = UserFunction (ChildNode, Level,
                                         Context, ReturnValue);
 
                 if (UnlockBeforeCallback)
                 {
-                    AcpiCmAcquireMutex (ACPI_MTX_NAMESPACE);
+                    AcpiUtAcquireMutex (ACPI_MTX_NAMESPACE);
                 }
 
                 switch (Status)
                 {
                 case AE_OK:
                 case AE_CTRL_DEPTH:
+
                     /* Just keep going */
                     break;
 
                 case AE_CTRL_TERMINATE:
+
                     /* Exit now, with OK status */
+
                     return_ACPI_STATUS (AE_OK);
                     break;
 
                 default:
+
                     /* All others are valid exceptions */
+
                     return_ACPI_STATUS (Status);
                     break;
                 }
@@ -352,37 +342,35 @@ AcpiNsWalkNamespace (
              * or if the user function has specified that the
              * maximum depth has been reached.
              */
-
             if ((Level < MaxDepth) && (Status != AE_CTRL_DEPTH))
             {
-                if (AcpiNsGetNextObject (ACPI_TYPE_ANY,
-                                        ChildEntry, 0))
+                if (AcpiNsGetNextNode (ACPI_TYPE_ANY, ChildNode, 0))
                 {
                     /*
                      * There is at least one child of this
-                     * object, visit the object
+                     * node, visit the onde
                      */
                     Level++;
-                    ParentEntry    = ChildEntry;
-                    ChildEntry     = 0;
+                    ParentNode    = ChildNode;
+                    ChildNode     = 0;
                 }
             }
         }
-
         else
         {
             /*
-             * No more children in this object (AcpiNsGetNextObject
+             * No more children of this node (AcpiNsGetNextNode
              * failed), go back upwards in the namespace tree to
-             * the object's parent.
+             * the node's parent.
              */
             Level--;
-            ChildEntry = ParentEntry;
-            ParentEntry = AcpiNsGetParentEntry (ParentEntry);
+            ChildNode = ParentNode;
+            ParentNode = AcpiNsGetParentNode (ParentNode);
         }
     }
 
     /* Complete walk, not terminated by user function */
+
     return_ACPI_STATUS (AE_OK);
 }
 
