@@ -118,7 +118,6 @@
 #define _CONFIG_H
 
 
-
 /******************************************************************************
  *
  * Compile-time options
@@ -136,13 +135,11 @@
  */
 
 
-
 /******************************************************************************
  *
  * Subsystem Constants
  *
  *****************************************************************************/
-
 
 
 /* Version string */
@@ -151,7 +148,11 @@
 
 /* Name of host operating system (returned by the _OS_ namespace object) */
 
+#ifdef _LINUX 
+#define ACPI_OS_NAME                "Linux"
+#else
 #define ACPI_OS_NAME                "Intel ACPI/CA Core Subsystem"
+#endif
 
 
 /*
@@ -227,7 +228,6 @@
 #endif
 
 
-
 /******************************************************************************
  *
  * ACPI Specification constants (Do not change unless the specification changes)
@@ -270,7 +270,6 @@
 /* Maximum nesting of package objects */
 
 #define MAX_PACKAGE_DEPTH           16
-
 
 
 #endif /* _CONFIG_H */
