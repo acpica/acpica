@@ -1,6 +1,7 @@
 /******************************************************************************
  *
  * Module Name: hwgpe - Low level GPE enable/disable/clear functions
+ *              $Revision: 1.23 $
  *
  *****************************************************************************/
 
@@ -114,12 +115,12 @@
  *****************************************************************************/
 
 #include "acpi.h"
-#include "hardware.h"
-#include "namesp.h"
-#include "events.h"
+#include "achware.h"
+#include "acnamesp.h"
+#include "acevents.h"
 
 #define _COMPONENT          HARDWARE
-        MODULE_NAME         ("hwgpe");
+        MODULE_NAME         ("hwgpe")
 
 
 UINT8 DecodeTo8bit [8] = {1,2,4,8,16,32,64,128};

@@ -1,7 +1,7 @@
-
 /******************************************************************************
  *
  * Module Name: hwacpi - ACPI hardware functions - mode and timer
+ *              $Revision: 1.25 $
  *
  *****************************************************************************/
 
@@ -117,11 +117,189 @@
 #define __HWACPI_C__
 
 #include "acpi.h"
-#include "hardware.h"
+#include "achware.h"
 
 
 #define _COMPONENT          HARDWARE
-        MODULE_NAME         ("hwacpi");
+        MODULE_NAME         ("hwacpi")
+
+
+/******************************************************************************
+ *
+ * FUNCTION:    AcpiHwInitialize
+ *
+ * PARAMETERS:  None
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Initialize and validate various ACPI registers
+ *
+ ******************************************************************************/
+
+ACPI_STATUS
+AcpiHwInitialize (
+    void)
+{
+    ACPI_STATUS             Status = AE_OK;
+    UINT32                  Index;
+
+
+    FUNCTION_TRACE ("HwInitialize");
+
+
+    /* We must have the ACPI tables by the time we get here */
+
+    if (!AcpiGbl_FACP)
+    {
+        AcpiGbl_RestoreAcpiChipset = FALSE;
+
+        DEBUG_PRINT (ACPI_ERROR, ("HwInitialize: No FACP!\n"));
+
+        return_ACPI_STATUS (AE_NO_ACPI_TABLES);
+    }
+
+    /* Must support *some* mode! */
+/*
+    if (!(SystemFlags & SYS_MODES_MASK))
+    {
+        RestoreAcpiChipset = FALSE;
+
+        DEBUG_PRINT (ACPI_ERROR,
+            ("CmHardwareInitialize: Supported modes uninitialized!\n"));
+        return_ACPI_STATUS (AE_ERROR);
+    }
+
+*/
+
+
+    switch (AcpiGbl_SystemFlags & SYS_MODES_MASK)
+    {
+        /* Identify current ACPI/legacy mode   */
+
+    case (SYS_MODE_ACPI):
+
+        AcpiGbl_OriginalMode = SYS_MODE_ACPI;
+        DEBUG_PRINT (ACPI_INFO, ("System supports ACPI mode only.\n"));
+        break;
+
+
+    case (SYS_MODE_LEGACY):
+
+        AcpiGbl_OriginalMode = SYS_MODE_LEGACY;
+        DEBUG_PRINT (ACPI_INFO,
+            ("Tables loaded from buffer, hardware assumed to support LEGACY mode only.\n"));
+        break;
+
+
+    case (SYS_MODE_ACPI | SYS_MODE_LEGACY):
+
+        if (AcpiHwGetMode () == SYS_MODE_ACPI)
+        {
+            AcpiGbl_OriginalMode = SYS_MODE_ACPI;
+        }
+        else
+        {
+            AcpiGbl_OriginalMode = SYS_MODE_LEGACY;
+        }
+
+        DEBUG_PRINT (ACPI_INFO,
+            ("System supports both ACPI and LEGACY modes.\n"));
+
+        DEBUG_PRINT (ACPI_INFO,
+            ("System is currently in %s mode.\n",
+            (AcpiGbl_OriginalMode == SYS_MODE_ACPI) ? "ACPI" : "LEGACY"));
+        break;
+    }
+
+
+    if (AcpiGbl_SystemFlags & SYS_MODE_ACPI)
+    {
+        /* Target system supports ACPI mode */
+
+        /*
+         * The purpose of this block of code is to save the initial state
+         * of the ACPI event enable registers. An exit function will be
+         * registered which will restore this state when the application
+         * exits. The exit function will also clear all of the ACPI event
+         * status bits prior to restoring the original mode.
+         *
+         * The location of the PM1aEvtBlk enable registers is defined as the
+         * base of PM1aEvtBlk + PM1aEvtBlkLength / 2. Since the spec further
+         * fully defines the PM1aEvtBlk to be a total of 4 bytes, the offset
+         * for the enable registers is always 2 from the base. It is hard
+         * coded here. If this changes in the spec, this code will need to
+         * be modified. The PM1bEvtBlk behaves as expected.
+         */
+
+        AcpiGbl_Pm1EnableRegisterSave =
+            AcpiOsIn16 ((AcpiGbl_FACP->Pm1aEvtBlk + 2));
+        if (AcpiGbl_FACP->Pm1bEvtBlk)
+        {
+            AcpiGbl_Pm1EnableRegisterSave |=
+                AcpiOsIn16 ((AcpiGbl_FACP->Pm1bEvtBlk + 2));
+        }
+
+
+        /*
+         * The GPEs behave similarly, except that the length of the register
+         * block is not fixed, so the buffer must be allocated with malloc
+         */
+
+        if (AcpiGbl_FACP->Gpe0Blk && AcpiGbl_FACP->Gpe0BlkLen)
+        {
+            /* GPE0 specified in FACP  */
+
+            AcpiGbl_Gpe0EnableRegisterSave =
+                AcpiCmAllocate (DIV_2 (AcpiGbl_FACP->Gpe0BlkLen));
+            if (!AcpiGbl_Gpe0EnableRegisterSave)
+            {
+                return_ACPI_STATUS (AE_NO_MEMORY);
+            }
+
+            /* Save state of GPE0 enable bits */
+
+            for (Index = 0; Index < DIV_2 (AcpiGbl_FACP->Gpe0BlkLen); Index++)
+            {
+                AcpiGbl_Gpe0EnableRegisterSave[Index] =
+                    AcpiOsIn8 (AcpiGbl_FACP->Gpe0Blk +
+                    DIV_2 (AcpiGbl_FACP->Gpe0BlkLen));
+            }
+        }
+
+        else
+        {
+            AcpiGbl_Gpe0EnableRegisterSave = NULL;
+        }
+
+        if (AcpiGbl_FACP->Gpe1Blk && AcpiGbl_FACP->Gpe1BlkLen)
+        {
+            /* GPE1 defined */
+
+            AcpiGbl_Gpe1EnableRegisterSave =
+                AcpiCmAllocate (DIV_2 (AcpiGbl_FACP->Gpe1BlkLen));
+            if (!AcpiGbl_Gpe1EnableRegisterSave)
+            {
+                return_ACPI_STATUS (AE_NO_MEMORY);
+            }
+
+            /* save state of GPE1 enable bits */
+
+            for (Index = 0; Index < DIV_2 (AcpiGbl_FACP->Gpe1BlkLen); Index++)
+            {
+                AcpiGbl_Gpe1EnableRegisterSave[Index] =
+                    AcpiOsIn8 (AcpiGbl_FACP->Gpe1Blk +
+                    DIV_2 (AcpiGbl_FACP->Gpe1BlkLen));
+            }
+        }
+
+        else
+        {
+            AcpiGbl_Gpe1EnableRegisterSave = NULL;
+        }
+    }
+
+    return_ACPI_STATUS (Status);
+}
 
 
 /******************************************************************************
@@ -179,8 +357,7 @@ AcpiHwSetMode (
 
 /******************************************************************************
  *
- * FUNCTION:    AcpiHw
-
+ * FUNCTION:    AcpiHwGetMode
  *
  * PARAMETERS:  none
  *
@@ -198,7 +375,7 @@ AcpiHwGetMode (void)
     FUNCTION_TRACE ("HwGetMode");
 
 
-    if (AcpiHwRegisterAccess (ACPI_READ, ACPI_MTX_LOCK, (INT32)SCI_EN))
+    if (AcpiHwRegisterAccess (ACPI_READ, ACPI_MTX_LOCK, SCI_EN))
     {
         return_VALUE (SYS_MODE_ACPI);
     }
