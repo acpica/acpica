@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exresop - AML Interpreter operand/object resolution
- *              $Revision: 1.67 $
+ *              $Revision: 1.75 $
  *
  *****************************************************************************/
 
@@ -10,7 +10,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2004, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2005, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -240,7 +240,7 @@ AcpiExResolveOperands (
         return_ACPI_STATUS (AE_AML_INTERNAL);
     }
 
-    ACPI_DEBUG_PRINT ((ACPI_DB_EXEC, "Opcode %X [%s] OperandTypes=%X \n",
+    ACPI_DEBUG_PRINT ((ACPI_DB_EXEC, "Opcode %X [%s] RequiredOperandTypes=%8.8X \n",
         Opcode, OpInfo->Name, ArgTypes));
 
     /*
@@ -311,15 +311,17 @@ AcpiExResolveOperands (
                 case AML_REF_OF_OP:
                 case AML_ARG_OP:
                 case AML_LOCAL_OP:
-                case AML_LOAD_OP:   /* DdbHandle from LOAD_OP or LOAD_TABLE_OP */
+                case AML_LOAD_OP:           /* DdbHandle from LOAD_OP or LOAD_TABLE_OP */
+                case AML_INT_NAMEPATH_OP:   /* Reference to a named object */
 
                     ACPI_DEBUG_ONLY_MEMBERS (ACPI_DEBUG_PRINT ((ACPI_DB_EXEC,
-                        "Reference Opcode: %s\n", OpInfo->Name)));
+                        "Operand is a Reference, RefOpcode [%s]\n",
+                        (AcpiPsGetOpcodeInfo (ObjDesc->Reference.Opcode))->Name)));
                     break;
 
                 default:
                     ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
-                        "Unknown Reference Opcode %X [%s]\n",
+                        "Operand is a Reference, Unknown Reference Opcode %X [%s]\n",
                         ObjDesc->Reference.Opcode,
                         (AcpiPsGetOpcodeInfo (ObjDesc->Reference.Opcode))->Name));
 
@@ -403,7 +405,7 @@ AcpiExResolveOperands (
             goto NextOperand;
 
 
-        case ARGI_ANYTYPE:
+        case ARGI_DATAREFOBJ:  /* Store operator only */
 
             /*
              * We don't want to resolve IndexOp reference objects during
@@ -493,7 +495,7 @@ AcpiExResolveOperands (
              * But we can implicitly convert from a STRING or BUFFER
              * Aka - "Implicit Source Operand Conversion"
              */
-            Status = AcpiExConvertToInteger (ObjDesc, StackPtr, WalkState);
+            Status = AcpiExConvertToInteger (ObjDesc, StackPtr, 16);
             if (ACPI_FAILURE (Status))
             {
                 if (Status == AE_TYPE)
@@ -517,7 +519,7 @@ AcpiExResolveOperands (
              * But we can implicitly convert from a STRING or INTEGER
              * Aka - "Implicit Source Operand Conversion"
              */
-            Status = AcpiExConvertToBuffer (ObjDesc, StackPtr, WalkState);
+            Status = AcpiExConvertToBuffer (ObjDesc, StackPtr);
             if (ACPI_FAILURE (Status))
             {
                 if (Status == AE_TYPE)
@@ -541,7 +543,8 @@ AcpiExResolveOperands (
              * But we can implicitly convert from a BUFFER or INTEGER
              * Aka - "Implicit Source Operand Conversion"
              */
-            Status = AcpiExConvertToString (ObjDesc, StackPtr, 16, ACPI_UINT32_MAX, WalkState);
+            Status = AcpiExConvertToString (ObjDesc, StackPtr,
+                        ACPI_IMPLICIT_CONVERT_HEX);
             if (ACPI_FAILURE (Status))
             {
                 if (Status == AE_TYPE)
@@ -597,7 +600,7 @@ AcpiExResolveOperands (
 
                 /* Highest priority conversion is to type Buffer */
 
-                Status = AcpiExConvertToBuffer (ObjDesc, StackPtr, WalkState);
+                Status = AcpiExConvertToBuffer (ObjDesc, StackPtr);
                 if (ACPI_FAILURE (Status))
                 {
                     return_ACPI_STATUS (Status);
@@ -682,6 +685,47 @@ AcpiExResolveOperands (
             default:
                 ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
                     "Needed [Region/RegionField], found [%s] %p\n",
+                    AcpiUtGetObjectTypeName (ObjDesc), ObjDesc));
+
+                return_ACPI_STATUS (AE_AML_OPERAND_TYPE);
+            }
+            goto NextOperand;
+
+
+        case ARGI_DATAREFOBJ:
+
+            /* Used by the Store() operator only */
+
+            switch (ACPI_GET_OBJECT_TYPE (ObjDesc))
+            {
+            case ACPI_TYPE_INTEGER:
+            case ACPI_TYPE_PACKAGE:
+            case ACPI_TYPE_STRING:
+            case ACPI_TYPE_BUFFER:
+            case ACPI_TYPE_BUFFER_FIELD:
+            case ACPI_TYPE_LOCAL_REFERENCE:
+            case ACPI_TYPE_LOCAL_REGION_FIELD:
+            case ACPI_TYPE_LOCAL_BANK_FIELD:
+            case ACPI_TYPE_LOCAL_INDEX_FIELD:
+            case ACPI_TYPE_DDB_HANDLE:
+
+                /* Valid operand */
+                break;
+
+            default:
+
+                if (AcpiGbl_EnableInterpreterSlack)
+                {
+                    /*
+                     * Enable original behavior of Store(), allowing any and all
+                     * objects as the source operand.  The ACPI spec does not
+                     * allow this, however.
+                     */
+                    break;
+                }
+
+                ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
+                    "Needed Integer/Buffer/String/Package/Ref/Ddb], found [%s] %p\n",
                     AcpiUtGetObjectTypeName (ObjDesc), ObjDesc));
 
                 return_ACPI_STATUS (AE_AML_OPERAND_TYPE);

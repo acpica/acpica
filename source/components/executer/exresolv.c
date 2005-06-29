@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exresolv - AML Interpreter object resolution
- *              $Revision: 1.127 $
+ *              $Revision: 1.128 $
  *
  *****************************************************************************/
 
@@ -340,6 +340,14 @@ AcpiExResolveObjectToValue (
 
             break;
 
+        case AML_INT_NAMEPATH_OP:   /* Reference to a named object */
+
+            /* Get the object pointed to by the namespace node */
+
+            *StackPtr = (StackDesc->Reference.Node)->Object;
+            AcpiUtAddReference (*StackPtr);
+            AcpiUtRemoveReference (StackDesc);
+            break;
 
         default:
 
