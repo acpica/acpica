@@ -166,11 +166,13 @@ AcpiUnloadTable (
 ACPI_STATUS
 AcpiGetTableHeader (
     ACPI_TABLE_TYPE         TableType,
+    UINT32                  Instance,
     ACPI_TABLE_HEADER       *OutTableHeader);
 
 ACPI_STATUS
 AcpiGetTable (
     ACPI_TABLE_TYPE         TableType,
+    UINT32                  Instance,
     ACPI_BUFFER             *RetBuffer);
 
 
