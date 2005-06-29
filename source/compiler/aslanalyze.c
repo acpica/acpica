@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslanalyze.c - check for semantic errors
- *              $Revision: 1.78 $
+ *              $Revision: 1.79 $
  *
  *****************************************************************************/
 
@@ -892,7 +892,6 @@ AnMethodAnalysisWalkBegin (
 
     case PARSEOP_STALL:
 
-        AcpiOsPrintf ("Found a stall\n");
         if (Op->Asl.Child->Asl.Value.Integer > ACPI_UINT8_MAX)
         {
             AslError (ASL_ERROR, ASL_MSG_INVALID_TIME, Op, NULL);
