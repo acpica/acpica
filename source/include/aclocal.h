@@ -204,6 +204,8 @@ typedef struct AcpiMutexInfo
 } ACPI_MUTEX_INFO;
 
 
+/* Lock flag parameter for various interfaces */
+
 #define MTX_DO_NOT_LOCK         0
 #define MTX_LOCK                1
 
@@ -216,7 +218,7 @@ typedef UINT16                  ACPI_OWNER_ID;
 
 /* TBD: get rid of the need for this! */
 
-#define TABLE_ID_DSDT           0xD1D1
+#define TABLE_ID_DSDT           (ACPI_OWNER_ID) 0xD1D1
 
 /*****************************************************************************
  * 
