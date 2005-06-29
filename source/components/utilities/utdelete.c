@@ -422,7 +422,7 @@ CmDeleteInternalObj (
 
     case TYPE_DefField:
         
-        DEBUG_PRINT (ACPI_INFO, ("CmDeleteInternalObj: ***** Field %p, container %p (not freeing)\n", 
+        DEBUG_PRINT (ACPI_INFO, ("CmDeleteInternalObj: ***** Field %p, container %p\n", 
                                 Object, Object->Field.Container));
 
         CmDeleteInternalObj (Object->Field.Container);
