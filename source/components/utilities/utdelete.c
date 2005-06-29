@@ -126,7 +126,6 @@
         MODULE_NAME         ("cmdelete");
 
 
-
 /******************************************************************************
  *
  * FUNCTION:    AcpiCmDeleteInternalObj
@@ -270,7 +269,7 @@ AcpiCmDeleteInternalObj (
                                 Object, AcpiCmGetTypeName (Object->Common.Type)));
     }
 
-    else
+    if (!(Object->Common.Flags & AO_STATIC_ALLOCATION))
     {
         DEBUG_PRINT (ACPI_INFO, ("CmDeleteInternalObj: Deleting object %p [%s]\n",
                                 Object, AcpiCmGetTypeName (Object->Common.Type)));
@@ -281,9 +280,6 @@ AcpiCmDeleteInternalObj (
 
     return_VOID;
 }
-
-
-
 
 
 /******************************************************************************
@@ -340,7 +336,6 @@ AcpiCmDeleteInternalObjectList (
 
     return_ACPI_STATUS (AE_OK);
 }
-
 
 
 /******************************************************************************
@@ -663,7 +658,6 @@ AcpiCmUpdateObjectReference (
 
         State = AcpiCmPopGenericState (&StateList);
     }
-
 
 
     return_ACPI_STATUS (AE_OK);
