@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: psparse - Parser top level AML parse routines
- *              $Revision: 1.140 $
+ *              $Revision: 1.141 $
  *
  *****************************************************************************/
 
@@ -868,7 +868,7 @@ AcpiPsParseLoop (
                      */
                     Op->Named.Data   = ParserState->Aml;
                     Op->Named.Length = (UINT32) (ParserState->PkgEnd - ParserState->Aml);
-                     
+
                     /* Skip body of method */
 
                     ParserState->Aml    = ParserState->PkgEnd;
