@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dsfield - Dispatcher field routines
- *              $Revision: 1.37 $
+ *              $Revision: 1.38 $
  *
  *****************************************************************************/
 
@@ -194,13 +194,13 @@ AcpiDsCreateField (
     {
         switch (Arg->Opcode)
         {
-        case AML_RESERVEDFIELD_OP:
+        case AML_INT_RESERVEDFIELD_OP:
 
             FieldBitPosition += Arg->Value.Size;
             break;
 
 
-        case AML_ACCESSFIELD_OP:
+        case AML_INT_ACCESSFIELD_OP:
 
             /*
              * Get a new AccessType and AccessAttribute for all
@@ -211,7 +211,7 @@ AcpiDsCreateField (
             break;
 
 
-        case AML_NAMEDFIELD_OP:
+        case AML_INT_NAMEDFIELD_OP:
 
             Status = AcpiNsLookup (WalkState->ScopeInfo,
                             (NATIVE_CHAR *) &((ACPI_PARSE2_OBJECT *)Arg)->Name,
@@ -325,13 +325,13 @@ AcpiDsCreateBankField (
     {
         switch (Arg->Opcode)
         {
-        case AML_RESERVEDFIELD_OP:
+        case AML_INT_RESERVEDFIELD_OP:
 
             FieldBitPosition += Arg->Value.Size;
             break;
 
 
-        case AML_ACCESSFIELD_OP:
+        case AML_INT_ACCESSFIELD_OP:
 
             /*
              * Get a new AccessType and AccessAttribute for
@@ -342,7 +342,7 @@ AcpiDsCreateBankField (
             break;
 
 
-        case AML_NAMEDFIELD_OP:
+        case AML_INT_NAMEDFIELD_OP:
 
             Status = AcpiNsLookup (WalkState->ScopeInfo,
                             (NATIVE_CHAR *) &((ACPI_PARSE2_OBJECT *)Arg)->Name,
@@ -453,13 +453,13 @@ AcpiDsCreateIndexField (
     {
         switch (Arg->Opcode)
         {
-        case AML_RESERVEDFIELD_OP:
+        case AML_INT_RESERVEDFIELD_OP:
 
             FieldBitPosition += Arg->Value.Size;
             break;
 
 
-        case AML_ACCESSFIELD_OP:
+        case AML_INT_ACCESSFIELD_OP:
 
             /*
              * Get a new AccessType and AccessAttribute for all
@@ -470,7 +470,7 @@ AcpiDsCreateIndexField (
             break;
 
 
-        case AML_NAMEDFIELD_OP:
+        case AML_INT_NAMEDFIELD_OP:
 
             Status = AcpiNsLookup (WalkState->ScopeInfo,
                             (NATIVE_CHAR *) &((ACPI_PARSE2_OBJECT *)Arg)->Name,
