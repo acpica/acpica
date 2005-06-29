@@ -3,7 +3,7 @@
 /******************************************************************************
  *
  * Module Name: aslcompiler.l - Flex input file
- *              $Revision: 1.21 $
+ *              $Revision: 1.22 $
  *
  *****************************************************************************/
 
@@ -178,16 +178,7 @@ NamePathTail        [.]{NameSeg}
 
 0[xX]{HexDigitChar}+ |
 {DigitChar}+                { AslCompilerlval.i = (UINT32) strtoul((char *)AslCompilertext, (char **) 0, 0);
-                                copy(); count (1);
-                                if (AslCompilerlval.i <= 0xFF) 
-                                    return (INTEGER_BYTE); 
-                                else if (AslCompilerlval.i <= 0xFFFF) 
-                                    return (INTEGER_WORD); 
-                                else if (AslCompilerlval.i <= 0xFFFFFFFF) 
-                                    return (INTEGER_DWORD); 
-                                else
-                                    return (INTEGER_QWORD); 
-                            }
+                                copy(); count (1); return (INTEGER); }
 
 "Include"                   { copy(); count (1); return (INCLUDE); }
 "#include"                  { copy(); count (1); return (INCLUDE_CSTYLE); }
@@ -197,6 +188,7 @@ NamePathTail        [.]{NameSeg}
 "Ones"                      { copy(); count (1); return (ONES); }
 "One"                       { copy(); count (1); return (ONE); }
 "Zero"                      { copy(); count (1); return (ZERO); }
+"Revision"                  { copy(); count (1); return (REVISION); }
                                 
 "Offset"                    { copy(); count (1); return (OFFSET); }
 "AccessAs"                  { copy(); count (1); return (ACCESSAS); }

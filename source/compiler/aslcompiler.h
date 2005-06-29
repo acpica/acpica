@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslcompiler.h - common include file
- *              $Revision: 1.33 $
+ *              $Revision: 1.34 $
  *
  *****************************************************************************/
 
@@ -135,6 +135,11 @@
 #include "acdebug.h"
 #include "asltypes.h"
 #include "aslglobal.h"
+
+
+/* TBD: Move to definition of NAMESPACE NODE */
+
+#define ANOBJ_METHOD_NO_RETVAL      0x20
 
 
 /*
@@ -605,6 +610,12 @@ void
 UtAttachNamepathToOwner (
     ASL_PARSE_NODE          *Node,
     ASL_PARSE_NODE          *NameNode);
+
+ASL_PARSE_NODE *
+UtCheckIntegerRange (
+    ASL_PARSE_NODE          *Node,
+    UINT32                  LowValue,
+    UINT32                  HighValue);
 
 
 /* Find */

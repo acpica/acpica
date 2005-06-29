@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslerror - Error handling and statistics
- *              $Revision: 1.24 $
+ *              $Revision: 1.25 $
  *
  *****************************************************************************/
 
@@ -144,6 +144,10 @@ char                        *AslMessages [] = {
     "Nested comment found",
     "Reserved method has wrong argument count:",
     "Reserved method must return a value:",
+    "Too many arguments:",
+    "Too few arguments:",
+    "Called method returns no value:",
+    "Internal compiler error:",
 };
 
 
@@ -416,7 +420,7 @@ AslCompilererror (
     {
 	    sprintf (MsgBuffer, "%s\n%*s %s\n",
                     Gbl_CurrentLineBuffer,
-                    Gbl_CurrentColumn + 9 + Length, "^",
+                    Gbl_CurrentColumn + 14 + Length, "^",
                     CompilerMessage);
     }
 

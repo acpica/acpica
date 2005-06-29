@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslanalyze.c - check for semantic errors
- *              $Revision: 1.12 $
+ *              $Revision: 1.13 $
  *
  *****************************************************************************/
 
@@ -124,13 +124,15 @@
 
 /*******************************************************************************
  *
- * FUNCTION:
+ * FUNCTION:    AnCheckForReservedMethod
  *
- * PARAMETERS:
+ * PARAMETERS:  Node            - A parse node of type "METHOD".
+ *              MethodInfo      - Saved info about this method
  *
- * RETURN:
+ * RETURN:      None
  *
- * DESCRIPTION:
+ * DESCRIPTION: If method is a reserved name, check that the number of arguments
+ *              and the return type (returns a value or not) is correct.
  *
  ******************************************************************************/
 
@@ -227,7 +229,7 @@ AnCheckForReservedMethod (
 
 /*******************************************************************************
  *
- * FUNCTION:
+ * FUNCTION:    AnSemanticAnalysisWalkBegin
  *
  * PARAMETERS:
  *
@@ -264,8 +266,6 @@ AnSemanticAnalysisWalkBegin (
         Next = Node->Child;
         Next = Next->Peer;
         MethodInfo->NumArguments = (Next->Value.Integer8 & 0x07);
-
-
         break;
 
 
@@ -277,6 +277,13 @@ AnSemanticAnalysisWalkBegin (
     case LOCAL5:
     case LOCAL6:
     case LOCAL7:
+
+        if (!MethodInfo)
+        {
+            AslError (ASL_ERROR, ASL_MSG_INTERNAL, Node, "No parent method");
+            return;
+        }
+
         RegisterNumber = (Node->AmlOpcode & 0x000F);
 
         if (Node->Flags & NODE_IS_TARGET)
@@ -299,6 +306,13 @@ AnSemanticAnalysisWalkBegin (
     case ARG4:
     case ARG5:
     case ARG6:
+
+        if (!MethodInfo)
+        {
+            AslError (ASL_ERROR, ASL_MSG_INTERNAL, Node, "No parent method");
+            return;
+        }
+        
         RegisterNumber = (Node->AmlOpcode & 0x000F) - 8;
 
         if (RegisterNumber >= MethodInfo->NumArguments)
@@ -311,11 +325,18 @@ AnSemanticAnalysisWalkBegin (
 
     case RETURN:
 
+        if (!MethodInfo)
+        {
+            AslError (ASL_ERROR, ASL_MSG_INTERNAL, Node, "No parent method");
+            return;
+        }
+
         if ((Node->Child) &&
             (Node->Child->ParseOpcode != DEFAULT_ARG))
         {
             MethodInfo->NumReturnWithValue++;
         }
+
         else
         {
             MethodInfo->NumReturnNoValue++;
@@ -329,14 +350,12 @@ AnSemanticAnalysisWalkBegin (
        break;
 
     } /* end switch */
-
-
 }
 
 
 /*******************************************************************************
  *
- * FUNCTION:
+ * FUNCTION:    AnLastStatementIsReturn 
  *
  * PARAMETERS:
  *
@@ -374,7 +393,7 @@ AnLastStatementIsReturn (
 
 /*******************************************************************************
  *
- * FUNCTION:
+ * FUNCTION:    AnSemanticAnalysisWalkEnd
  *
  * PARAMETERS:
  *
@@ -433,6 +452,19 @@ AnSemanticAnalysisWalkEnd (
             AslError (ASL_WARNING, ASL_MSG_RETURN_TYPES, Node, Node->ExternalName);
         }
 
+
+        /*
+         * If there are any RETURN() statements with no value, or there is a
+         * control path that allows the method to exit without a return value,
+         * we mark the method as a method that does not return a value.  This 
+         * knowledge can be used to check method invocations that expect a 
+         * returned value.
+         */
+
+        if (MethodInfo->NumReturnNoValue)
+        {
+            Node->Flags |= NODE_METHOD_NO_RETURN_VAL;
+        }
 
         /*
          * Check predefined method names for correct return behavior

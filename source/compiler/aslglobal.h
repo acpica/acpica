@@ -1,8 +1,9 @@
 
+
 /******************************************************************************
  *
- * Module Name: aslcompile - top level compile module
- *              $Revision: 1.7 $
+ * Module Name: aslglobal.h - Global variable definitions
+ *              $Revision: 1.2 $
  *
  *****************************************************************************/
 
@@ -116,250 +117,130 @@
  *****************************************************************************/
 
 
-#include "AslCompiler.h"
-#include "acnamesp.h"
-#include "acdebug.h"
 
-#include <time.h>
-
-
-struct tm                   *NewTime;
-time_t                      Aclock;
-
+#ifndef __ASLGLOBAL_H
+#define __ASLGLOBAL_H
 
 
 /*
- * Stubs to simplify linkage to the
- * ACPI Namespace Manager (Unused functions).
+ * Global variables.  Defined in aslmain.c only, externed in all other files
  */
 
-void
-AcpiTbDeleteAcpiTables (void)
-{
-}
-
-
-BOOLEAN
-AcpiTbSystemTablePointer (
-    void                    *Where)
-{
-    return FALSE;
-
-}
-
-void
-AcpiAmlDumpOperands (
-    ACPI_OPERAND_OBJECT     **Operands,
-    OPERATING_MODE          InterpreterMode,
-    NATIVE_CHAR             *Ident,
-    UINT32                  NumLevels,
-    NATIVE_CHAR             *Note,
-    NATIVE_CHAR             *ModuleName,
-    UINT32                  LineNumber)
-{
-}
-
-ACPI_STATUS
-AcpiAmlDumpOperand (
-    ACPI_OPERAND_OBJECT     *EntryDesc)
-{
-    return AE_OK;
-}
-
-
-/*******************************************************************************
- *
- * FUNCTION:    AslCompilerSignon
- *
- * PARAMETERS:  None
- *
- * RETURN:      None
- *
- * DESCRIPTION: Display compiler signon
- *
- ******************************************************************************/
-
-void
-AslCompilerSignon (
-    FILE                    *Where)
-{
-
-    time (&Aclock);
-    NewTime = localtime (&Aclock);
-
-    fprintf (Where, "\n%s [Version %s, %s]\n\n", CompilerId, CompilerVersion, __DATE__);
-
-}
-
-
-/*******************************************************************************
- *
- * FUNCTION:    AslCompilerFileHeader
- *
- * PARAMETERS:  None
- *
- * RETURN:      None
- *
- * DESCRIPTION: Header used at the beginning of output files
- *
- ******************************************************************************/
+#ifdef _DECLARE_GLOBALS
+#define EXTERN
+#define INIT_GLOBAL(a,b)        a=b
+#else
+#define EXTERN                  extern
+#define INIT_GLOBAL(a,b)        a
+#endif
+
+
+/*
+ * Parser and other externals 
+ */
+extern int                      yydebug;
+extern FILE                     *AslCompilerin;
+extern int                      AslCompilerdebug;
+extern ASL_MAPPING_ENTRY        AslKeywordMapping[];
+extern char                     *AslCompilertext;
+extern FILE                     *AslCompilerin;
+extern int                      optind;
+extern char                     *optarg;
 
-void
-AslCompilerFileHeader (
-    FILE                    *Where)
-{
 
-    fprintf (Where, "Compilation of \"%s\" - %s\n", Gbl_InputFilename, asctime (NewTime));
+extern char                     hex[];
+extern char                     MsgBuffer[];
 
-}
+#define ASL_LINE_BUFFER_SIZE    512
+#define ASL_MSG_BUFFER_SIZE   (ASL_LINE_BUFFER_SIZE * 2)
 
 
-/*******************************************************************************
- *
- * FUNCTION:    CmDoCompile
- *
- * PARAMETERS:  None
- *
- * RETURN:      Status (0 = OK)
- *
- * DESCRIPTION: This procedure performs the entire compile
- *
- ******************************************************************************/
+/* Source code buffers and pointers for error reporting */
 
-int
-CmDoCompile (void)
-{
-    ACPI_STATUS             Status;
+EXTERN char                     Gbl_CurrentLineBuffer[ASL_LINE_BUFFER_SIZE];
+EXTERN int                      INIT_GLOBAL (Gbl_CurrentColumn, 0);
+EXTERN int                      INIT_GLOBAL (Gbl_CurrentLineNumber, 1);
+EXTERN int                      INIT_GLOBAL (Gbl_LogicalLineNumber, 1);
+EXTERN char                     INIT_GLOBAL (*Gbl_LineBufPtr, Gbl_CurrentLineBuffer);
 
+/* Exception reporting */
 
-    /* Open the required input and output files */
+EXTERN ASL_ERROR_MSG            INIT_GLOBAL (*Gbl_ErrorLog,NULL);
+EXTERN ASL_ERROR_MSG            INIT_GLOBAL (*Gbl_NextError,NULL);
+extern UINT32                   Gbl_ExceptionCount[];
 
-    Status = FlOpenInputFile (Gbl_InputFilename);
-    if (ACPI_FAILURE (Status))
-    {
-        AePrintErrorLog (stderr);
-        return -1;
-    }
-    Status = FlOpenMiscOutputFiles (Gbl_InputFilename);
-    if (ACPI_FAILURE (Status))
-    {
-        AePrintErrorLog (stderr);
-        return -1;
-    }
+/* Option flags */
 
+EXTERN BOOLEAN                  INIT_GLOBAL (Gbl_UseDefaultAmlFilename, TRUE);
+EXTERN BOOLEAN                  INIT_GLOBAL (Gbl_NsOutputFlag, FALSE);
+EXTERN BOOLEAN                  INIT_GLOBAL (Gbl_DebugFlag, FALSE);
+EXTERN BOOLEAN                  INIT_GLOBAL (Gbl_HexOutputFlag, FALSE);
+EXTERN BOOLEAN                  INIT_GLOBAL (Gbl_ListingFlag, FALSE);
+EXTERN BOOLEAN                  INIT_GLOBAL (Gbl_IgnoreErrors, FALSE);
+EXTERN BOOLEAN                  INIT_GLOBAL (Gbl_SourceOutputFlag, FALSE);
+EXTERN BOOLEAN                  INIT_GLOBAL (Gbl_ParseOnlyFlag, FALSE);
 
-    /* ACPI CA subsystem initialization */
+/* Files */
 
-    AcpiCmInitGlobals ();
-    AcpiCmMutexInitialize ();
-    AcpiNsRootInitialize ();
+EXTERN char                     *Gbl_DirectoryPath;
+EXTERN char                     INIT_GLOBAL (*Gbl_NamespaceOutputFilename, NULL);
+EXTERN char                     INIT_GLOBAL (*Gbl_InputFilename, NULL);
+EXTERN char                     INIT_GLOBAL (*Gbl_IncludeFilename, NULL);
+EXTERN char                     INIT_GLOBAL (*Gbl_SourceOutputFilename, NULL);
+EXTERN char                     INIT_GLOBAL (*Gbl_OutputFilename, NULL);
+EXTERN char                     INIT_GLOBAL (*Gbl_ListingOutputFilename, NULL);
+EXTERN char                     INIT_GLOBAL (*Gbl_DebugOutputFilename, NULL);
+EXTERN char                     INIT_GLOBAL (*Gbl_HexOutputFilename, NULL);
+EXTERN FILE                     *Gbl_AslInputFile;
+EXTERN FILE                     *Gbl_AmlOutputFile;
+EXTERN FILE                     *Gbl_DebugOutputFile;
+EXTERN FILE                     *Gbl_ListingOutputFile;
+EXTERN FILE                     *Gbl_HexOutputFile;
+EXTERN FILE                     *Gbl_NamespaceOutputFile;
+EXTERN FILE                     *Gbl_SourceOutputFile;
+EXTERN BOOLEAN                  INIT_GLOBAL (Gbl_HasIncludeFiles, FALSE);
 
-    /* Build the parse tree */
+EXTERN char                     *Gbl_CurrentInputFilename;
 
-    AslCompilerparse();
 
+/* Statistics */
 
-    /* Generate AML opcodes corresponding to the parse tokens */
+EXTERN UINT32                   INIT_GLOBAL (Gbl_InputByteCount, 0);
+EXTERN UINT32                   INIT_GLOBAL (TotalKeywords, 0);
+EXTERN UINT32                   INIT_GLOBAL (TotalNamedObjects, 0);
+EXTERN UINT32                   INIT_GLOBAL (TotalExecutableOpcodes, 0);
 
-    DbgPrint ("\nGenerating AML opcodes\n\n");
-    TrWalkParseTree (ASL_WALK_VISIT_UPWARD, NULL, OpcAmlOpcodeWalk, NULL);
+/* Misc */
 
-    /* Calculate all AML package lengths */
 
-    DbgPrint ("\nGenerating Package lengths\n\n");
-    TrWalkParseTree (ASL_WALK_VISIT_UPWARD, NULL, LnPackageLengthWalk, NULL);
+EXTERN ASL_PARSE_NODE           INIT_GLOBAL (*RootNode, NULL);
+EXTERN UINT32                   INIT_GLOBAL (Gbl_TableLength, 0);
+EXTERN UINT32                   INIT_GLOBAL (Gbl_SourceLine, 0);
+EXTERN ASL_LISTING_NODE         INIT_GLOBAL (*Gbl_ListingNode, NULL);
 
-    if (Gbl_ParseOnlyFlag)
-    {
-        AePrintErrorLog (stdout);
-        if (Gbl_DebugFlag)
-        {
-            /* Print error summary to the debug file */
 
-            AePrintErrorLog (stderr);
-        }
-        UtDisplaySummary ();
-        return 0;
-    }
+EXTERN UINT32                   INIT_GLOBAL (Gbl_CurrentHexColumn, 0);
+EXTERN UINT32                   INIT_GLOBAL (Gbl_CurrentAmlOffset, 0);
+EXTERN UINT32                   INIT_GLOBAL (Gbl_CurrentLine, 0);
+EXTERN UINT8                    INIT_GLOBAL (Gbl_HexBytesWereWritten, FALSE);
+EXTERN UINT32                   INIT_GLOBAL (Gbl_NumNamespaceObjects, 0);
+EXTERN UINT32                   INIT_GLOBAL (Gbl_ReservedMethods, 0);
+EXTERN UINT8                    INIT_GLOBAL (AcpiGbl_DbOutputFlags, DB_CONSOLE_OUTPUT);
+EXTERN FILE                     *DebugFile; /* Placeholder for oswinxf only */
 
+/* Static structures */
 
-    /* Semantic error checking */
+EXTERN ASL_ANALYSIS_WALK_INFO   AnalysisWalkInfo;
+EXTERN ACPI_TABLE_HEADER        TableHeader;
+EXTERN ASL_RESERVED_INFO        ReservedMethods[];
 
-    AnalysisWalkInfo.MethodStack = NULL;
 
-    DbgPrint ("\nSemantic analysis\n\n");
-    TrWalkParseTree (ASL_WALK_VISIT_TWICE, AnSemanticAnalysisWalkBegin,
-                        AnSemanticAnalysisWalkEnd, &AnalysisWalkInfo);
 
+/* Scratch buffers */
 
-    /* Namespace loading */
+EXTERN UINT8                    Gbl_AmlBuffer[16];
+EXTERN char                     MsgBuffer[ASL_MSG_BUFFER_SIZE];
+EXTERN char                     StringBuffer[ASL_MSG_BUFFER_SIZE];
 
-    LdLoadNamespace ();
-
-
-    /* Namespace lookup */
-
-    LkCrossReferenceNamespace ();
-
-    /* Calculate all AML package lengths */
-
-    DbgPrint ("\nGenerating Package lengths\n\n");
-    TrWalkParseTree (ASL_WALK_VISIT_UPWARD, NULL, LnInitLengthsWalk, NULL);
-    TrWalkParseTree (ASL_WALK_VISIT_UPWARD, NULL, LnPackageLengthWalk, NULL);
-
-
-    /*
-     * Now that the input is parsed, we can open the AML output file.
-     * Note: by default, the name of this file comes from the table descriptor
-     * within the input file.
-     */
-    Status = FlOpenAmlOutputFile (Gbl_InputFilename);
-    if (ACPI_FAILURE (Status))
-    {
-        AePrintErrorLog (stderr);
-        return -1;
-    }
-
-
-    /* Code generation - emit the AML */
-
-    CgGenerateAmlOutput ();
-
-
-    AePrintErrorLog (stdout);
-    if (Gbl_DebugFlag)
-    {
-        /* Print error summary to the debug file */
-
-        AePrintErrorLog (stderr);
-    }
-
-    /* Dump the AML as hex if requested */
-
-    LsDoHexOutput ();
-
-    /* Dump the namespace to the .nsp file if requested */
-
-    LsDisplayNamespace ();
-
-
-    /* Close all open files */
-
-    FlCloseListingFile ();
-    FlCloseSourceOutputFile ();
-    FlCloseHexOutputFile ();
-
-    fclose (Gbl_AmlOutputFile);
-
-    if ((Gbl_ExceptionCount[ASL_ERROR] > 0) && (!Gbl_IgnoreErrors))
-    {
-        unlink (Gbl_OutputFilename);
-    }
-
-    UtDisplaySummary ();
-
-
-    return 0;
-}
-
+#endif /* __ASLGLOBAL_H */
 

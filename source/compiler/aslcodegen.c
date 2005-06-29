@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslcodegen - AML code generation
- *              $Revision: 1.18 $
+ *              $Revision: 1.20 $
  *
  *****************************************************************************/
 
@@ -151,7 +151,7 @@ CgGenerateAmlOutput (void)
     LsPushNode (Gbl_InputFilename);
     Gbl_NextError = Gbl_ErrorLog;
 
-    TgWalkParseTree (ASL_WALK_VISIT_DOWNWARD, CgAmlWriteWalk, NULL, NULL);
+    TrWalkParseTree (ASL_WALK_VISIT_DOWNWARD, CgAmlWriteWalk, NULL, NULL);
 
 
     if (Gbl_ListingFlag)
@@ -199,7 +199,7 @@ CgAmlWriteWalk (
 		DbgPrint ("                ");
 	}
 
-    DbgPrint ("Val-%08X POp-%04X AOp-%04X OpLen-%01X PByts-%01X Len-%04X SubLen-%04X PSubLen-%04X Node-%08X Chld-%08X Paren-%08X\n",
+    DbgPrint ("Val-%08X POp-%04X AOp-%04X OpLen-%01X PByts-%01X Len-%04X SubLen-%04X PSubLen-%04X Node-%08X Chld-%08X Paren-%08X Flags-%04X\n",
                 Node->Value.Integer32,
                 Node->ParseOpcode,
                 Node->AmlOpcode,
@@ -210,7 +210,8 @@ CgAmlWriteWalk (
                 Node->Parent ? Node->Parent->AmlSubtreeLength : 0,
 				Node,
 				Node->Child,
-				Node->Parent);
+				Node->Parent,
+                Node->Flags);
 
 
     LsWriteNodeToListing (Node);
