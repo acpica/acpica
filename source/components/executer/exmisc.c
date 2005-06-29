@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exmisc - ACPI AML (p-code) execution - specific opcodes
- *              $Revision: 1.91 $
+ *              $Revision: 1.92 $
  *
  *****************************************************************************/
 
@@ -389,5 +389,171 @@ Cleanup:
     AcpiUtRemoveReference (ReturnDesc);
     return (Status);
 }
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiExDoMathOp
+ *
+ * PARAMETERS:  Opcode              - AML opcode
+ *              Operand0            - Integer operand #0
+ *              Operand0            - Integer operand #1
+ *
+ * RETURN:      Integer result of the operation
+ *
+ * DESCRIPTION: Execute a math AML opcode. The purpose of having all of the
+ *              math functions here is to prevent a lot of pointer dereferencing
+ *              to obtain the operands.
+ *
+ ******************************************************************************/
+
+ACPI_INTEGER
+AcpiExDoMathOp (
+    UINT16                  Opcode,
+    ACPI_INTEGER            Operand0,
+    ACPI_INTEGER            Operand1)
+{
+
+
+    switch (Opcode)
+    {
+    case AML_ADD_OP:                /* Add (Operand0, Operand1, Result) */
+
+        return (Operand0 + Operand1);
+
+
+    case AML_BIT_AND_OP:            /* And (Operand0, Operand1, Result) */
+
+        return (Operand0 & Operand1);
+
+
+    case AML_BIT_NAND_OP:           /* NAnd (Operand0, Operand1, Result) */
+
+        return (~(Operand0 & Operand1));
+
+
+    case AML_BIT_OR_OP:             /* Or (Operand0, Operand1, Result) */
+
+        return (Operand0 | Operand1);
+
+
+    case AML_BIT_NOR_OP:            /* NOr (Operand0, Operand1, Result) */
+
+        return (~(Operand0 | Operand1));
+
+
+    case AML_BIT_XOR_OP:            /* XOr (Operand0, Operand1, Result) */
+
+        return (Operand0 ^ Operand1);
+
+
+    case AML_MULTIPLY_OP:           /* Multiply (Operand0, Operand1, Result) */
+
+        return (Operand0 * Operand1);
+
+
+    case AML_SHIFT_LEFT_OP:         /* ShiftLeft (Operand, ShiftCount, Result) */
+
+        return (Operand0 << Operand1);
+
+
+    case AML_SHIFT_RIGHT_OP:        /* ShiftRight (Operand, ShiftCount, Result) */
+
+        return (Operand0 >> Operand1);
+
+
+    case AML_SUBTRACT_OP:           /* Subtract (Operand0, Operand1, Result) */
+
+        return (Operand0 - Operand1);
+
+    default:
+
+        return (0);
+    }
+}
+
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiExDoLogicalOp
+ *
+ * PARAMETERS:  Opcode              - AML opcode
+ *              Operand0            - Integer operand #0
+ *              Operand0            - Integer operand #1
+ *
+ * RETURN:      TRUE/FALSE result of the operation
+ *
+ * DESCRIPTION: Execute a logical AML opcode. The purpose of having all of the
+ *              functions here is to prevent a lot of pointer dereferencing
+ *              to obtain the operands and to simplify the generation of the
+ *              logical value.
+ *
+ *              Note: cleanest machine code seems to be produced by the code
+ *              below, rather than using statements of the form:
+ *                  Result = (Operand0 == Operand1);
+ *
+ ******************************************************************************/
+
+BOOLEAN
+AcpiExDoLogicalOp (
+    UINT16                  Opcode,
+    ACPI_INTEGER            Operand0,
+    ACPI_INTEGER            Operand1)
+{
+
+
+    switch (Opcode)
+    {
+
+    case AML_LAND_OP:               /* LAnd (Operand0, Operand1) */
+
+        if (Operand0 && Operand1)
+        {
+            return (TRUE);
+        }
+        break;
+
+
+    case AML_LEQUAL_OP:             /* LEqual (Operand0, Operand1) */
+
+        if (Operand0 == Operand1)
+        {
+            return (TRUE);
+        }
+        break;
+
+
+    case AML_LGREATER_OP:           /* LGreater (Operand0, Operand1) */
+
+        if (Operand0 > Operand1)
+        {
+            return (TRUE);
+        }
+        break;
+
+
+    case AML_LLESS_OP:              /* LLess (Operand0, Operand1) */
+
+        if (Operand0 < Operand1)
+        {
+            return (TRUE);
+        }
+        break;
+
+
+    case AML_LOR_OP:                 /* LOr (Operand0, Operand1) */
+
+        if (Operand0 || Operand1)
+        {
+            return (TRUE);
+        }
+        break;
+    }
+
+    return (FALSE);
+}
+
+
 
 
