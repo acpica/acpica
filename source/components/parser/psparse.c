@@ -331,6 +331,24 @@ PsCreateState (
 }
 
 
+/*******************************************************************************
+ *
+ * FUNCTION:    PsFindObject
+ *
+ * PARAMETERS:  Opcode          - Current opcode
+ *              ParserState     - Current state
+ *              WalkState       - Current state
+ *              *Op             - Where found/new op is returned
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Find a named object.  Two versions - one to search the parse
+ *              tree (for parser-only applications such as acpidump), another
+ *              to search the ACPI internal namespace (the parse tree may no
+ *              longer exist)
+ *
+ ******************************************************************************/
+
 #ifdef PARSER_ONLY
 
 ACPI_STATUS
@@ -423,12 +441,6 @@ PsFindObject (
     return_ACPI_STATUS (AE_OK);
 }
 #endif
-
-
-
-
-
-
 
 
 
@@ -711,8 +723,8 @@ PsParseLoop (
                 if (NsOpensScope (DataType))
                 {
 
-                    DEBUG_PRINT (TRACE_DISPATCH, ("AmlEndNamespaceScope/%s: Popping scope for Op %p\n",
-                                                    CmGetTypeName (DataType), Op));
+                    DEBUG_PRINT (TRACE_DISPATCH, ("AmlEndNamespaceScope: Popping scope for Op %p type [%s]\n",
+                                                    Op, CmGetTypeName (DataType)));
                     DsScopeStackPop (WalkState);
                 }
 #endif                
