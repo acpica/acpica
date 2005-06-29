@@ -126,6 +126,10 @@ SOURCE=..\..\source\os_specific\service_layers\oswinxf.c
 # PROP Default_Filter ".c"
 # Begin Source File
 
+SOURCE=..\..\source\components\utilities\utalloc.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\source\components\utilities\utdebug.c
 # End Source File
 # Begin Source File
