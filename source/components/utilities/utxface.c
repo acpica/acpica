@@ -143,7 +143,7 @@
  ******************************************************************************/
 
 ACPI_STATUS
-AcpiInitialize (void)
+AcpiInitialize (ACPI_INIT_DATA *InitData)
 {
     ACPI_STATUS             Status;
 
@@ -157,7 +157,7 @@ AcpiInitialize (void)
 
     /* Initialize all globals used by the subsystem */
 
-    CmInitGlobals ();
+    CmInitGlobals (InitData);
 
     /* Create the default mutex objects */
 
@@ -185,7 +185,6 @@ AcpiTerminate (void)
 
     FUNCTION_TRACE ("AcpiTerminate");
     DEBUG_PRINT (ACPI_INFO, ("Shutting down ACPI Subsystem...\n"));
-
 
     /* Close the Namespace */
 
