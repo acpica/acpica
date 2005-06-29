@@ -427,8 +427,8 @@ AcpiDsCallControlMethod (
 
     /* Save the (current) Op for when this walk is restarted */
 
-//    ThisWalkState->MethodCallOp = ThisWalkState->PrevOp;
-//    ThisWalkState->PrevOp       = Op;
+/*    ThisWalkState->MethodCallOp = ThisWalkState->PrevOp;
+    ThisWalkState->PrevOp       = Op;*/
     Method                      = ObjDesc->Method.ParserOp;
 
 
