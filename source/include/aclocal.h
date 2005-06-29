@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: aclocal.h - Internal data types used across the ACPI subsystem
- *       $Revision: 1.194 $
+ *       $Revision: 1.195 $
  *
  *****************************************************************************/
 
@@ -214,12 +214,8 @@ typedef struct acpi_mutex_info
 typedef UINT16                          ACPI_OWNER_ID;
 #define ACPI_OWNER_TYPE_TABLE           0x0
 #define ACPI_OWNER_TYPE_METHOD          0x1
-#define ACPI_FIRST_METHOD_ID            0x0000
-#define ACPI_FIRST_TABLE_ID             0x8000
-
-/* TBD: [Restructure] get rid of the need for this! */
-
-#define TABLE_ID_DSDT                   (ACPI_OWNER_ID) 0x8000
+#define ACPI_FIRST_METHOD_ID            0x0001
+#define ACPI_FIRST_TABLE_ID             0xF000
 
 
 /* Field access granularities */
