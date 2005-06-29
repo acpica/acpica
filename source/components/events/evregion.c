@@ -140,37 +140,31 @@
 
 ACPI_STATUS
 EvAddressSpaceDispatch (
-    UINT32                  SpaceId,
+    ACPI_OBJECT_INTERNAL   *Obj,
     UINT32                  Function,
     UINT32                  Address,
     UINT32                  BitWidth,
     UINT32                  *Value)
 {
     ACPI_STATUS             Status;
-
-
-    /* SpaceId must be in range */
-
-    if (SpaceId > ACPI_MAX_ADDRESS_SPACE)
-    {
-        return AE_BAD_PARAMETER;
-    }
+    ADDRESS_SPACE_HANDLER   Handler;
+    void                   *Context;
 
     /* Check for an installed handler */
 
-    if (!AddressSpaces[SpaceId].Handler)
+    if (!Obj->Region.AddrHandler)
     {
         return AE_EXIST;
     }
-
 
     /* 
      * Invoke the handler.  
      * Value of "Value" is used in case this is a write operation 
      */
 
-    Status = AddressSpaces[SpaceId].Handler (Function, Address, BitWidth, Value,
-                                                AddressSpaces[SpaceId].Context);
+    Handler = Obj->Region.AddrHandler->AddrHandler.Handler;
+    Context = Obj->Region.AddrHandler->AddrHandler.Context;
+    Status = Handler (Function, Address, BitWidth, Value, Context);
 
     return Status;
 }
