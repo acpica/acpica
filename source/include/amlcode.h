@@ -1,4 +1,3 @@
-
 /******************************************************************************
  *
  * Name: amlcode.h - Definitions for AML, as included in "definition blocks"
@@ -248,7 +247,7 @@
 
 
 /*
- * Internal opcodes 
+ * Internal opcodes
  * Use only "Unknown" AML opcodes, don't attempt to use
  * any valid ACPI ASCII values (A-Z, 0-9, '-')
  */
@@ -261,8 +260,6 @@
 #define AML_STATICSTRING_OP         (UINT16) 0x0034
 #define AML_METHODCALL_OP           (UINT16) 0x0035
 #define AML_RETURN_VALUE_OP         (UINT16) 0x0036
-
-
 
 
 #define ARG_NONE                    0x0
@@ -304,7 +301,7 @@
 #define ARGI_STRING                 0x06
 #define ARGI_BUFFER                 0x07
 #define ARGI_PACKAGE                0x08
-#define ARGI_DATAOBJECT             0x09     /* Buffer, string, package or NTE reference - Used only by SizeOf operator*/
+#define ARGI_DATAOBJECT             0x09     /* Buffer, string, package or reference to a Node - Used only by SizeOf operator*/
 #define ARGI_COMPLEXOBJ             0x0A     /* Buffer or package */
 #define ARGI_MUTEX                  0x0B
 #define ARGI_EVENT                  0x0C
@@ -451,13 +448,11 @@ typedef enum
 
 extern UINT8                    AcpiGbl_Aml             [NUM_OPCODES];
 extern UINT16                   AcpiGbl_Pfx             [NUM_OPCODES];
-extern INT8                     *AcpiGbl_ShortOps       [NUM_OPCODES];
-extern INT8                     *AcpiGbl_LongOps        [NUM_OPCODES];
-extern INT8                     *AcpiGbl_RegionTypes    [NUM_REGION_TYPES];
-extern INT8                     *AcpiGbl_MatchOps       [NUM_MATCH_OPS];
-extern INT8                     *AcpiGbl_AccessTypes    [NUM_ACCESS_TYPES];
-extern INT8                     *AcpiGbl_UpdateRules    [NUM_UPDATE_RULES];
-extern INT8                     *AcpiGbl_FENames        [NUM_FIELD_NAMES];
+extern NATIVE_CHAR              *AcpiGbl_RegionTypes    [NUM_REGION_TYPES];
+extern NATIVE_CHAR              *AcpiGbl_MatchOps       [NUM_MATCH_OPS];
+extern NATIVE_CHAR              *AcpiGbl_AccessTypes    [NUM_ACCESS_TYPES];
+extern NATIVE_CHAR              *AcpiGbl_UpdateRules    [NUM_UPDATE_RULES];
+extern NATIVE_CHAR              *AcpiGbl_FENames        [NUM_FIELD_NAMES];
 
 
 /*
@@ -468,7 +463,7 @@ extern INT8                     *AcpiGbl_FENames        [NUM_FIELD_NAMES];
 
 /* Data used in keeping track of fields */
 
-INT8            *AcpiGbl_FENames[NUM_FIELD_NAMES] =
+NATIVE_CHAR *AcpiGbl_FENames[NUM_FIELD_NAMES] =
 {
     "skip",
     "?access?"
@@ -477,7 +472,7 @@ INT8            *AcpiGbl_FENames[NUM_FIELD_NAMES] =
 
 /* Region type decoding */
 
-INT8 *AcpiGbl_RegionTypes[NUM_REGION_TYPES] =
+NATIVE_CHAR *AcpiGbl_RegionTypes[NUM_REGION_TYPES] =
 {
     "SystemMemory",
     "SystemIO",
@@ -487,7 +482,7 @@ INT8 *AcpiGbl_RegionTypes[NUM_REGION_TYPES] =
 };
 
 
-INT8 *AcpiGbl_MatchOps[NUM_MATCH_OPS] =
+NATIVE_CHAR *AcpiGbl_MatchOps[NUM_MATCH_OPS] =
 {
     "Error",
     "MTR",
@@ -501,7 +496,7 @@ INT8 *AcpiGbl_MatchOps[NUM_MATCH_OPS] =
 
 /* Access type decoding */
 
-INT8 *AcpiGbl_AccessTypes[NUM_ACCESS_TYPES] =
+NATIVE_CHAR *AcpiGbl_AccessTypes[NUM_ACCESS_TYPES] =
 {
     "AnyAcc",
     "ByteAcc",
@@ -515,7 +510,7 @@ INT8 *AcpiGbl_AccessTypes[NUM_ACCESS_TYPES] =
 
 /* Update rule decoding */
 
-INT8 *AcpiGbl_UpdateRules[NUM_UPDATE_RULES] =
+NATIVE_CHAR *AcpiGbl_UpdateRules[NUM_UPDATE_RULES] =
 {
     "Preserve",
     "WriteAsOnes",
