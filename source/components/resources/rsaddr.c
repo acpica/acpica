@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: rsaddr - Address resource descriptors (16/32/64)
- *              $Revision: 1.29 $
+ *              $Revision: 1.30 $
  *
  ******************************************************************************/
 
@@ -241,35 +241,35 @@ AcpiRsAddress16Resource (
      * Get Granularity (Bytes 6-7)
      */
     Buffer += 1;
-    ACPI_MOVE_UNALIGNED16_TO_16 (&OutputStruct->Data.Address16.Granularity,
+    ACPI_MOVE_UNALIGNED16_TO_32 (&OutputStruct->Data.Address16.Granularity,
                             Buffer);
 
     /*
      * Get MinAddressRange (Bytes 8-9)
      */
     Buffer += 2;
-    ACPI_MOVE_UNALIGNED16_TO_16 (&OutputStruct->Data.Address16.MinAddressRange,
+    ACPI_MOVE_UNALIGNED16_TO_32 (&OutputStruct->Data.Address16.MinAddressRange,
                             Buffer);
 
     /*
      * Get MaxAddressRange (Bytes 10-11)
      */
     Buffer += 2;
-    ACPI_MOVE_UNALIGNED16_TO_16 (&OutputStruct->Data.Address16.MaxAddressRange,
+    ACPI_MOVE_UNALIGNED16_TO_32 (&OutputStruct->Data.Address16.MaxAddressRange,
                             Buffer);
 
     /*
      * Get AddressTranslationOffset (Bytes 12-13)
      */
     Buffer += 2;
-    ACPI_MOVE_UNALIGNED16_TO_16 (&OutputStruct->Data.Address16.AddressTranslationOffset,
+    ACPI_MOVE_UNALIGNED16_TO_32 (&OutputStruct->Data.Address16.AddressTranslationOffset,
                             Buffer);
 
     /*
      * Get AddressLength (Bytes 14-15)
      */
     Buffer += 2;
-    ACPI_MOVE_UNALIGNED16_TO_16 (&OutputStruct->Data.Address16.AddressLength,
+    ACPI_MOVE_UNALIGNED16_TO_32 (&OutputStruct->Data.Address16.AddressLength,
                             Buffer);
 
     /*
@@ -444,35 +444,35 @@ AcpiRsAddress16Stream (
     /*
      * Set the address space granularity
      */
-    ACPI_MOVE_UNALIGNED16_TO_16 (Buffer,
+    ACPI_MOVE_UNALIGNED32_TO_16 (Buffer,
                         &LinkedList->Data.Address16.Granularity);
     Buffer += 2;
 
     /*
      * Set the address range minimum
      */
-    ACPI_MOVE_UNALIGNED16_TO_16 (Buffer,
+    ACPI_MOVE_UNALIGNED32_TO_16 (Buffer,
                         &LinkedList->Data.Address16.MinAddressRange);
     Buffer += 2;
 
     /*
      * Set the address range maximum
      */
-    ACPI_MOVE_UNALIGNED16_TO_16 (Buffer,
+    ACPI_MOVE_UNALIGNED32_TO_16 (Buffer,
                         &LinkedList->Data.Address16.MaxAddressRange);
     Buffer += 2;
 
     /*
      * Set the address translation offset
      */
-    ACPI_MOVE_UNALIGNED16_TO_16 (Buffer,
+    ACPI_MOVE_UNALIGNED32_TO_16 (Buffer,
                         &LinkedList->Data.Address16.AddressTranslationOffset);
     Buffer += 2;
 
     /*
      * Set the address length
      */
-    ACPI_MOVE_UNALIGNED16_TO_16 (Buffer,
+    ACPI_MOVE_UNALIGNED32_TO_16 (Buffer,
                         &LinkedList->Data.Address16.AddressLength);
     Buffer += 2;
 
@@ -512,7 +512,7 @@ AcpiRsAddress16Stream (
      * minus the header size (3 bytes)
      */
     ActualBytes -= 3;
-    ACPI_MOVE_UNALIGNED16_TO_16 (LengthField, &ActualBytes);
+    ACPI_MOVE_UNALIGNED_SIZE_TO_16 (LengthField, &ActualBytes);
     return_ACPI_STATUS (AE_OK);
 }
 
