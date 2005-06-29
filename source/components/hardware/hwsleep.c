@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Name: hwsleep.c - ACPI Hardware Sleep/Wake Interface
- *              $Revision: 1.67 $
+ *              $Revision: 1.69 $
  *
  *****************************************************************************/
 
@@ -377,7 +377,7 @@ AcpiEnterSleepState (
     }
 
     /*
-     * 1) Disable/Clear all GPEs 
+     * 1) Disable/Clear all GPEs
      * 2) Enable all wakeup GPEs
      */
     Status = AcpiHwDisableAllGpes ();
@@ -529,7 +529,7 @@ AcpiEnterSleepStateS4bios (
     }
 
     /*
-     * 1) Disable/Clear all GPEs 
+     * 1) Disable/Clear all GPEs
      * 2) Enable all wakeup GPEs
      */
     Status = AcpiHwDisableAllGpes ();
@@ -663,7 +663,7 @@ AcpiLeaveSleepState (
 
     /*
      * Restore the GPEs:
-     * 1) Disable/Clear all GPEs 
+     * 1) Disable/Clear all GPEs
      * 2) Enable all runtime GPEs
      */
     Status = AcpiHwDisableAllGpes ();
@@ -681,9 +681,9 @@ AcpiLeaveSleepState (
 
     /* Enable power button */
 
-    AcpiSetRegister(AcpiGbl_FixedEventInfo[ACPI_EVENT_POWER_BUTTON].EnableRegisterId,
+    (void) AcpiSetRegister(AcpiGbl_FixedEventInfo[ACPI_EVENT_POWER_BUTTON].EnableRegisterId,
             1, ACPI_MTX_DO_NOT_LOCK);
-    AcpiSetRegister(AcpiGbl_FixedEventInfo[ACPI_EVENT_POWER_BUTTON].StatusRegisterId,
+    (void) AcpiSetRegister(AcpiGbl_FixedEventInfo[ACPI_EVENT_POWER_BUTTON].StatusRegisterId,
             1, ACPI_MTX_DO_NOT_LOCK);
 
     /* Enable BM arbitration */
