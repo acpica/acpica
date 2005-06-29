@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: exconvrt - Object conversion routines
- *              $Revision: 1.61 $
+ *              $Revision: 1.63 $
  *
  *****************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2004, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2005, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -213,6 +213,13 @@ AcpiExConvertToInteger (
 
 
     case ACPI_TYPE_BUFFER:
+
+        /* Check for zero-length buffer */
+
+        if (!Count)
+        {
+            return_ACPI_STATUS (AE_AML_BUFFER_LIMIT);
+        }
 
         /* Transfer no more than an integer's worth of data */
 
@@ -615,7 +622,7 @@ AcpiExConvertToString (
             return_ACPI_STATUS (AE_BAD_PARAMETER);
         }
 
-        /* 
+        /*
          * Perform the conversion.
          * (-1 because of extra separator included in StringLength from above)
          */
@@ -625,7 +632,7 @@ AcpiExConvertToString (
             return_ACPI_STATUS (AE_AML_STRING_LIMIT);
         }
 
-        /* 
+        /*
          * Create a new string object and string buffer
          */
         ReturnDesc = AcpiUtCreateStringObject ((ACPI_SIZE) StringLength);
