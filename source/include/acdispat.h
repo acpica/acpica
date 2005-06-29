@@ -425,7 +425,7 @@ AcpiDsMapNamedOpcodeToDataType (
 
 ACPI_STATUS
 AcpiDsScopeStackPush (
-    ACPI_NAME_TABLE         *NewScope,
+    ACPI_NAMED_OBJECT       *NewScope,
     OBJECT_TYPE_INTERNAL    Type,
     ACPI_WALK_STATE         *WalkState);
 
