@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: cminit - Common ACPI subsystem initialization
- *              $Revision: 1.81 $
+ *              $Revision: 1.82 $
  *
  *****************************************************************************/
 
@@ -332,8 +332,6 @@ AcpiCmSubsystemShutdown (void)
 #ifdef ENABLE_DEBUGGER
     AcpiCmDumpCurrentAllocations (ACPI_UINT32_MAX, NULL);
 #endif
-
-    BREAKPOINT3;
 
     return_ACPI_STATUS (AE_OK);
 }
