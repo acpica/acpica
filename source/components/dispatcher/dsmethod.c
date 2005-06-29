@@ -119,8 +119,8 @@
 #include <acpi.h>
 #include <amlcode.h>
 #include <parser.h>
-#include <interpreter.h>
-#include <namespace.h>
+#include <interp.h>
+#include <namesp.h>
 
 
 #define _COMPONENT          PARSER
@@ -153,7 +153,7 @@ PsxParseMethod (
     ACPI_OBJECT_INTERNAL    *ObjDesc;
     ACPI_GENERIC_OP         *Op;
     NAME_TABLE_ENTRY        *Entry;
-    INIT_WALK_INFO          Info;
+/*    INIT_WALK_INFO          Info; */
 
 
     DEBUG_PRINT (TRACE_PARSE, ("PsParseMethod: [%4.4s] Nte=%p\n", 
@@ -209,17 +209,19 @@ PsxParseMethod (
 
     DEBUG_PRINT (TRACE_PARSE, ("PsParseMethod: [%4.4s] Nte=%p About to Walk new NS \n", 
                     &((NAME_TABLE_ENTRY *)ObjHandle)->Name, ObjHandle));
+
+/*
 BREAKPOINT3;
     Info.MethodCount = 0;
     Info.OpRegionCount = 0;
-    Status = AcpiWalkNamespace (ACPI_TYPE_Any, Entry, ACPI_INT_MAX, PsxInitOneObject, 
+    Status = AcpiWalkNamespace (ACPI_TYPE_Any, Entry, ACPI_INT32_MAX, PsxInitOneObject, 
                                 &Info, NULL);
 
     if (Info.MethodCount > 0)
     {
         DEBUG_PRINT (ACPI_ERROR, ("PsxParseMethod:  Found a method declared within a method! Nte=%p\n", Entry));
     }
-
+*/
     NsScopeStackPop (ACPI_TYPE_Any);
 
 
