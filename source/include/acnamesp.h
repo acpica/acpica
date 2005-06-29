@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acnamesp.h - Namespace subcomponent prototypes and defines
- *       $Revision: 1.95 $
+ *       $Revision: 1.96 $
  *
  *****************************************************************************/
 
@@ -150,6 +150,21 @@
 
 #define NS_WALK_UNLOCK          TRUE
 #define NS_WALK_NO_UNLOCK       FALSE
+
+
+
+
+ACPI_STATUS
+AcpiNsLoadNamespace (
+    void);
+
+ACPI_STATUS
+AcpiNsInitializeObjects (
+    void);
+
+ACPI_STATUS
+AcpiNsInitializeDevices (
+    UINT32                  Flags);
 
 
 
