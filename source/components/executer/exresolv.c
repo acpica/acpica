@@ -212,17 +212,17 @@ AmlGetFieldUnitValue (
         DEBUG_PRINT (ACPI_ERROR, ("AmlGetFieldUnitValue: internal error - null container pointer\n"));
     }
 
-    else if (TYPE_Buffer != FieldDesc->FieldUnit.Container->ValType)
+    else if (TYPE_Buffer != FieldDesc->FieldUnit.Container->Type)
     {
         DEBUG_PRINT (ACPI_ERROR, ("AmlGetFieldUnitValue: internal error - container is not a Buffer\n"));
     }
 
-    else if (FieldDesc->FieldUnit.ConSeq
+    else if (FieldDesc->FieldUnit.Sequence
                 != FieldDesc->FieldUnit.Container->Buffer.Sequence)
     {
         DEBUG_PRINT (ACPI_ERROR, (
                 "AmlGetFieldUnitValue: internal error - stale Buffer [%lx != %lx]\n",
-                FieldDesc->FieldUnit.ConSeq,
+                FieldDesc->FieldUnit.Sequence,
                 FieldDesc->FieldUnit.Container->Buffer.Sequence));
     }
 
@@ -246,7 +246,7 @@ AmlGetFieldUnitValue (
     {   
         /* Input parameters valid and global lock possibly acquired */
 
-        if (FieldDesc->FieldUnit.DatLen + FieldDesc->FieldUnit.BitOffset > 32)
+        if (FieldDesc->FieldUnit.Length + FieldDesc->FieldUnit.BitOffset > 32)
         {
             DEBUG_PRINT (ACPI_ERROR, ("AmlGetFieldUnitValue: implementation limitation: Field exceeds UINT32\n"));
             Status = AE_AML_ERROR;
@@ -257,27 +257,27 @@ AmlGetFieldUnitValue (
     {   
         /* Field location is (base of buffer) + (byte offset) */
     
-        Location = FieldDesc->FieldUnit.Container->Buffer.Buffer
+        Location = FieldDesc->FieldUnit.Container->Buffer.Pointer
                     + FieldDesc->FieldUnit.Offset;
 
         /* Construct Mask with as many 1 bits as the field width */
     
-        Mask = ((UINT32) 1 << FieldDesc->FieldUnit.DatLen) - (UINT32) 1;
+        Mask = ((UINT32) 1 << FieldDesc->FieldUnit.Length) - (UINT32) 1;
 
-        ResultDesc->Number.ValType = (UINT8) TYPE_Number;
+        ResultDesc->Number.Type = (UINT8) TYPE_Number;
 
         /* Shift the word containing the field, and mask the value */
     
-        ResultDesc->Number.Number
+        ResultDesc->Number.Value
             = *(UINT32 *) Location >> FieldDesc->FieldUnit.BitOffset & Mask;
 
         DEBUG_PRINT (ACPI_INFO,
             ("** Read from buffer %p byte %ld bit %d width %d addr %p mask %08lx val %08lx\n",
-            FieldDesc->FieldUnit.Container->Buffer.Buffer,
+            FieldDesc->FieldUnit.Container->Buffer.Pointer,
             FieldDesc->FieldUnit.Offset,
             FieldDesc->FieldUnit.BitOffset,
-            FieldDesc->FieldUnit.DatLen,
-            Location, Mask, ResultDesc->Number.Number));
+            FieldDesc->FieldUnit.Length,
+            Location, Mask, ResultDesc->Number.Value));
     }
 
     /* Release global lock if we acquired it earlier */
@@ -327,7 +327,7 @@ AmlGetRvalue (
         return AE_AML_ERROR;
     }
 
-    switch ((*StackPtr)->ValType)
+    switch ((*StackPtr)->Type)
     {
     case TYPE_Lvalue:
 
@@ -338,7 +338,7 @@ AmlGetRvalue (
             
             /* Convert indirect name ptr to direct name ptr */
             
-            TempHandle = (*StackPtr)->Lvalue.Ref;
+            TempHandle = (*StackPtr)->Lvalue.Object;
             OsdFree (*StackPtr);
             (*StackPtr) = TempHandle;
             Status = AE_OK;
@@ -362,12 +362,12 @@ AmlGetRvalue (
                             MvIndex, ExceptionNames[Status], StackPtr, *StackPtr,
                             *(UINT32 *)* StackPtr));
             
-            if (TYPE_Number == (*StackPtr)->ValType)
+            if (TYPE_Number == (*StackPtr)->Type)
             {
                 /* Value is a Number */
                 
                 DEBUG_PRINT (ACPI_INFO, ("AmlGetRvalue: [Local%d] value is [%ld] \n", 
-                                            MvIndex, (*StackPtr)->Number.Number));
+                                            MvIndex, (*StackPtr)->Number.Value));
             }
             break;
 
@@ -388,12 +388,12 @@ AmlGetRvalue (
                             MvIndex, ExceptionNames[Status], StackPtr, *StackPtr,
                             *(UINT32 *)* StackPtr));
 
-            if (TYPE_Number == (*StackPtr)->ValType)
+            if (TYPE_Number == (*StackPtr)->Type)
             {
                 /* Value is a Number */
                 
                 DEBUG_PRINT (ACPI_INFO, ("AmlGetRvalue: [Arg%d] value is [%ld] \n", 
-                                            MvIndex, (*StackPtr)->Number.Number));
+                                            MvIndex, (*StackPtr)->Number.Value));
             }
 
             break;
@@ -401,24 +401,24 @@ AmlGetRvalue (
 
         case AML_ZeroOp:
 
-            (*StackPtr)->ValType = (UINT8) TYPE_Number;
-            (*StackPtr)->Number.Number = 0;
+            (*StackPtr)->Type = (UINT8) TYPE_Number;
+            (*StackPtr)->Number.Value = 0;
             Status = AE_OK;
             break;
 
 
         case AML_OneOp:
 
-            (*StackPtr)->ValType = (UINT8) TYPE_Number;
-            (*StackPtr)->Number.Number = 1;
+            (*StackPtr)->Type = (UINT8) TYPE_Number;
+            (*StackPtr)->Number.Value = 1;
             Status = AE_OK;
             break;
 
 
         case AML_OnesOp:
 
-            (*StackPtr)->ValType = (UINT8) TYPE_Number;
-            (*StackPtr)->Number.Number = 0xFFFFFFFF;
+            (*StackPtr)->Type = (UINT8) TYPE_Number;
+            (*StackPtr)->Number.Value = 0xFFFFFFFF;
             Status = AE_OK;
             break;
 
@@ -491,7 +491,7 @@ AmlGetRvalue (
 
         break;
 
-    }   /* switch ((*StackPtr)->ValType) */
+    }   /* switch ((*StackPtr)->Type) */
 
 
 
@@ -559,7 +559,7 @@ AmlGetRvalue (
                 }
             }
             
-            if (!ValDesc || (TYPE_Package != ValDesc->ValType))
+            if (!ValDesc || (TYPE_Package != ValDesc->Type))
             {
                 DEBUG_PRINT (ACPI_ERROR, ("AmlGetRvalue:internal error - Bad package value\n"));
                 FUNCTION_STATUS_EXIT (AE_AML_ERROR);
@@ -583,7 +583,7 @@ AmlGetRvalue (
 
             /* TBD: - Is there a problem here if the nte points to an AML definition? */
             
-            if (TYPE_String != ValDesc->ValType)
+            if (TYPE_String != ValDesc->Type)
             {
                 DEBUG_PRINT (ACPI_ERROR, ("AmlGetRvalue: internal error - Bad string value\n"));
                 FUNCTION_STATUS_EXIT (AE_AML_ERROR);
@@ -646,7 +646,7 @@ AmlGetRvalue (
                 }
             }
             
-            if (!ValDesc || (TYPE_Buffer != ValDesc->ValType))
+            if (!ValDesc || (TYPE_Buffer != ValDesc->Type))
             {
                 DEBUG_PRINT (ACPI_ERROR, ("AmlGetRvalue: Bad buffer value\n"));
                 FUNCTION_STATUS_EXIT (AE_AML_ERROR);
@@ -686,7 +686,7 @@ AmlGetRvalue (
                 return AE_AML_ERROR;
             }
 
-            if (TYPE_Number == ValDesc->ValType)
+            if (TYPE_Number == ValDesc->Type)
             {
                 ObjDesc = AllocateObjectDesc ();
                 if (!ObjDesc)
@@ -726,25 +726,25 @@ AmlGetRvalue (
                 {
                 case AML_ZeroOp:
 
-                    ObjDesc->Number.Number = 0;
+                    ObjDesc->Number.Value = 0;
                     break;
 
 
                 case AML_OneOp:
 
-                    ObjDesc->Number.Number = 1;
+                    ObjDesc->Number.Value = 1;
                     break;
 
 
                 case AML_OnesOp:
 
-                    ObjDesc->Number.Number = 0xFFFFFFFF;
+                    ObjDesc->Number.Value = 0xFFFFFFFF;
                     break;
 
 
                 case AML_ByteOp:
 
-                    ObjDesc->Number.Number = (UINT32)((UINT8 *) ValDesc)[1];
+                    ObjDesc->Number.Value = (UINT32)((UINT8 *) ValDesc)[1];
                     break;
 
 
@@ -754,13 +754,13 @@ AmlGetRvalue (
                  */
                 case AML_WordOp:
 
-                    ObjDesc->Number.Number = (UINT32)*(UINT16 *)&((UINT8 *) ValDesc)[1];
+                    ObjDesc->Number.Value = (UINT32)*(UINT16 *)&((UINT8 *) ValDesc)[1];
                     break;
 
 
                 case AML_DWordOp:
 
-                    ObjDesc->Number.Number = *(UINT32 *)&((UINT8 *) ValDesc)[1];
+                    ObjDesc->Number.Value = *(UINT32 *)&((UINT8 *) ValDesc)[1];
                     break;
 
 
@@ -776,7 +776,7 @@ AmlGetRvalue (
 
                 }   /* switch */
                 
-                ObjDesc->Number.ValType = (UINT8) TYPE_Number;
+                ObjDesc->Number.Type = (UINT8) TYPE_Number;
             }
 
             break;
@@ -805,8 +805,8 @@ AmlGetRvalue (
                 return AE_NO_MEMORY;
             }
 
-            ObjDesc->Number.ValType = (UINT8) TYPE_Number;
-            ObjDesc->Number.Number = TempVal;
+            ObjDesc->Number.Type = (UINT8) TYPE_Number;
+            ObjDesc->Number.Value = TempVal;
             break;
 
 
@@ -819,11 +819,11 @@ AmlGetRvalue (
                 return AE_AML_ERROR;
             }
 
-            if (TYPE_BankField != ValDesc->ValType)
+            if (TYPE_BankField != ValDesc->Type)
             {
                 DEBUG_PRINT (ACPI_ERROR, (
                         "AmlGetRvalue/BankField:internal error - Name %4.4s type %d does not match value-type %d at %p\n",
-                        *StackPtr, TYPE_BankField, ValDesc->ValType, ValDesc));
+                        *StackPtr, TYPE_BankField, ValDesc->Type, ValDesc));
                 
                 FUNCTION_STATUS_EXIT (AE_AML_ERROR);
                 return AE_AML_ERROR;
@@ -840,7 +840,7 @@ AmlGetRvalue (
                 /* perform the update */
             
                 Status = AmlSetNamedFieldValue (ValDesc->BankField.BankSelect,
-                                               ValDesc->BankField.BankVal);
+                                               ValDesc->BankField.Value);
             }
             AmlReleaseGlobalLock (Locked);
 
@@ -869,8 +869,8 @@ AmlGetRvalue (
                 return AE_NO_MEMORY;
             }
 
-            ObjDesc->Number.ValType = (UINT8) TYPE_Number;
-            ObjDesc->Number.Number = TempVal;
+            ObjDesc->Number.Type = (UINT8) TYPE_Number;
+            ObjDesc->Number.Value = TempVal;
             break;
 
 
@@ -883,11 +883,11 @@ AmlGetRvalue (
                 return AE_AML_ERROR;
             }
 
-            if (TYPE_IndexField != ValDesc->ValType)
+            if (TYPE_IndexField != ValDesc->Type)
             {
                 DEBUG_PRINT (ACPI_ERROR, (
                         "AmlGetRvalue/IndexField: internal error - Name %4.4s type %d does not match value-type %d at %p\n",
-                        *StackPtr, TYPE_IndexField, ValDesc->ValType, ValDesc));
+                        *StackPtr, TYPE_IndexField, ValDesc->Type, ValDesc));
                 
                 FUNCTION_STATUS_EXIT (AE_AML_ERROR);
                 return AE_AML_ERROR;
@@ -903,7 +903,7 @@ AmlGetRvalue (
                 /* Perform the update */
                 
                 Status = AmlSetNamedFieldValue (ValDesc->IndexField.Index,
-                                                ValDesc->IndexField.IndexVal);
+                                                ValDesc->IndexField.Value);
             }
             AmlReleaseGlobalLock (Locked);
 
@@ -931,8 +931,8 @@ AmlGetRvalue (
                 return AE_NO_MEMORY;
             }
 
-            ObjDesc->Number.ValType = (UINT8) TYPE_Number;
-            ObjDesc->Number.Number = TempVal;
+            ObjDesc->Number.Type = (UINT8) TYPE_Number;
+            ObjDesc->Number.Value = TempVal;
             break;
 
 
@@ -945,12 +945,12 @@ AmlGetRvalue (
                 return AE_AML_ERROR;
             }
 
-            if (ValDesc->ValType != (UINT8) NsGetType ((ACPI_HANDLE)* StackPtr))
+            if (ValDesc->Type != (UINT8) NsGetType ((ACPI_HANDLE)* StackPtr))
             {
                 DEBUG_PRINT (ACPI_ERROR, (
                         "AmlGetRvalue/FieldUnit:internal error - Name %4.4s type %d does not match value-type %d at %p\n",
                           *StackPtr, NsGetType ((ACPI_HANDLE)* StackPtr),
-                          ValDesc->ValType, ValDesc));
+                          ValDesc->Type, ValDesc));
                 
                 FUNCTION_STATUS_EXIT (AE_AML_ERROR);
                 return AE_AML_ERROR;
@@ -1013,8 +1013,8 @@ AmlGetRvalue (
                 return AE_NO_MEMORY;
             }
 
-            ObjDesc->Number.ValType = (UINT8) Number;
-            ObjDesc->Number.Number = 0x0;
+            ObjDesc->Number.Type = (UINT8) Number;
+            ObjDesc->Number.Value = 0x0;
             break;
 #else
             DEBUG_PRINT (ACPI_ERROR, (

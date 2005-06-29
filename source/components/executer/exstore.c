@@ -308,9 +308,9 @@ AmlExecStore (
         {
             /* DestDesc is valid */
 
-            DestDesc->ValType       = (UINT8) TYPE_Lvalue;
+            DestDesc->Type          = (UINT8) TYPE_Lvalue;
             DestDesc->Lvalue.OpCode = AML_NameOp;
-            DestDesc->Lvalue.Ref    = TempHandle;
+            DestDesc->Lvalue.Object = TempHandle;
 
             /* 
              * Push the descriptor on TOS temporarily
@@ -342,12 +342,12 @@ AmlExecStore (
     }
 
     if ((AE_OK == Status) && 
-        (DestDesc->ValType != TYPE_Lvalue))
+        (DestDesc->Type != TYPE_Lvalue))
     {   
         /* Store target is not an Lvalue */
 
         DEBUG_PRINT (ACPI_ERROR, ("AmlExecStore: Store target is not an Lvalue [%s]\n",
-                        NsTypeNames[DestDesc->ValType]));
+                        NsTypeNames[DestDesc->Type]));
 
         DUMP_STACK_ENTRY (ValDesc);
         DUMP_STACK_ENTRY (DestDesc);
@@ -371,7 +371,7 @@ AmlExecStore (
 
         /* Storing into a Name */
 
-        TempHandle = DestDesc->Lvalue.Ref;
+        TempHandle = DestDesc->Lvalue.Object;
         switch (NsGetType (TempHandle)) 
         {
             /* Type of Name's existing value */
@@ -397,17 +397,17 @@ AmlExecStore (
              * If value is not a Number, try to resolve it to one.
              */
 
-            if ((ValDesc->ValType != TYPE_Number) &&
+            if ((ValDesc->Type != TYPE_Number) &&
                ((Status = AmlGetRvalue (&ValDesc)) != AE_OK))
             {
                 DeleteDestDesc = DestDesc;
             }
 
-            else if (ValDesc->ValType != TYPE_Number)
+            else if (ValDesc->Type != TYPE_Number)
             {
                 DEBUG_PRINT (ACPI_ERROR, (
                         "AmlExecStore: Value assigned to BankField must be Number, not %d\n",
-                        ValDesc->ValType));
+                        ValDesc->Type));
 
                 DeleteDestDesc = DestDesc;
                 Status = AE_AML_ERROR;
@@ -438,11 +438,11 @@ AmlExecStore (
 
 
             if ((AE_OK == Status) && 
-                (TYPE_BankField != DestDesc->ValType))
+                (TYPE_BankField != DestDesc->Type))
             {
                 DEBUG_PRINT (ACPI_ERROR, (
                         "AmlExecStore/BankField: internal error: Name %4.4s type %d does not match value-type %d at %p\n",
-                        TempHandle, NsGetType (TempHandle), DestDesc->ValType, DestDesc));
+                        TempHandle, NsGetType (TempHandle), DestDesc->Type, DestDesc));
 
                 Status = AE_AML_ERROR;
             }
@@ -457,7 +457,7 @@ AmlExecStore (
                 /* Perform the update (Set Bank Select) */
 
                 Status = AmlSetNamedFieldValue (DestDesc->BankField.BankSelect,
-                                            DestDesc->BankField.BankVal);
+                                            DestDesc->BankField.Value);
 
                 DEBUG_PRINT (ACPI_INFO,
                             ("AmlExecStore: set bank select returned %s\n", ExceptionNames[Status]));
@@ -469,7 +469,7 @@ AmlExecStore (
                 /* Set bank select successful, next set data value  */
                 
                 Status = AmlSetNamedFieldValue (DestDesc->BankField.BankSelect,
-                                               ValDesc->BankField.BankVal);
+                                               ValDesc->BankField.Value);
                 DEBUG_PRINT (ACPI_INFO,
                             ("AmlExecStore: set bank select returned %s\n", ExceptionNames[Status]));
             }
@@ -484,17 +484,17 @@ AmlExecStore (
              * If value is not a Number, try to resolve it to one.
              */
 
-            if ((ValDesc->ValType != TYPE_Number) && 
+            if ((ValDesc->Type != TYPE_Number) && 
                ((Status = AmlGetRvalue (&ValDesc)) != AE_OK))
             {
                 DeleteDestDesc = DestDesc;
             }
 
-            else if (ValDesc->ValType != TYPE_Number)
+            else if (ValDesc->Type != TYPE_Number)
             {
                 DEBUG_PRINT (ACPI_ERROR, (
                         "AmlExecStore/DefField: Value assigned to Field must be Number, not %d\n",
-                        ValDesc->ValType));
+                        ValDesc->Type));
 
                 DeleteDestDesc = DestDesc;
                 Status = AE_AML_ERROR;
@@ -524,11 +524,11 @@ AmlExecStore (
             }
 
             if ((AE_OK == Status) && 
-                (TYPE_DefField != DestDesc->ValType))
+                (TYPE_DefField != DestDesc->Type))
             {
                 DEBUG_PRINT (ACPI_ERROR, (
                         "AmlExecStore/DefField:internal error: Name %4.4s type %d does not match value-type %d at %p\n",
-                        TempHandle, NsGetType (TempHandle), DestDesc->ValType, DestDesc));
+                        TempHandle, NsGetType (TempHandle), DestDesc->Type, DestDesc));
 
                 Status = AE_AML_ERROR;
             }
@@ -541,7 +541,7 @@ AmlExecStore (
 
                 /* Perform the update */
                 
-                Status = AmlSetNamedFieldValue (TempHandle, ValDesc->Number.Number);
+                Status = AmlSetNamedFieldValue (TempHandle, ValDesc->Number.Value);
             }
                 
             break;      /* Global Lock released below   */
@@ -554,17 +554,17 @@ AmlExecStore (
              * If value is not a Number, try to resolve it to one.
              */
             
-            if ((ValDesc->ValType != TYPE_Number) &&
+            if ((ValDesc->Type != TYPE_Number) &&
                ((Status = AmlGetRvalue (&ValDesc)) != AE_OK))
             {
                 DeleteDestDesc = DestDesc;
             }
 
-            else if (ValDesc->ValType != TYPE_Number)
+            else if (ValDesc->Type != TYPE_Number)
             {
                 DEBUG_PRINT (ACPI_ERROR, (
                         "AmlExecStore: Value assigned to IndexField must be Number, not %d\n",
-                        ValDesc->ValType));
+                        ValDesc->Type));
 
                 DeleteDestDesc = DestDesc;
                 Status = AE_AML_ERROR;
@@ -594,11 +594,11 @@ AmlExecStore (
             }
 
             if ((AE_OK == Status) &&
-                (TYPE_IndexField != DestDesc->ValType))
+                (TYPE_IndexField != DestDesc->Type))
             {
                 DEBUG_PRINT (ACPI_ERROR, (
                         "AmlExecStore/IndexField:internal error: Name %4.4s type %d does not match value-type %d at %p\n",
-                        TempHandle, NsGetType (TempHandle), DestDesc->ValType, DestDesc));
+                        TempHandle, NsGetType (TempHandle), DestDesc->Type, DestDesc));
 
                 Status = AE_AML_ERROR;
             }
@@ -613,7 +613,7 @@ AmlExecStore (
                 /* perform the update (Set index) */
 
                 Status = AmlSetNamedFieldValue (DestDesc->IndexField.Index,
-                                               DestDesc->IndexField.IndexVal);
+                                               DestDesc->IndexField.Value);
                 DEBUG_PRINT (ACPI_INFO,
                             ("AmlExecStore: IndexField: set index returned %s\n", ExceptionNames[Status]));
             }
@@ -623,7 +623,7 @@ AmlExecStore (
                 /* set index successful, next set Data value */
                 
                 Status = AmlSetNamedFieldValue (DestDesc->IndexField.Data,
-                                               ValDesc->Number.Number);
+                                               ValDesc->Number.Value);
                 DEBUG_PRINT (ACPI_INFO,
                             ("AmlExecStore: IndexField: set data returned %s\n", ExceptionNames[Status]));
             }
@@ -637,17 +637,17 @@ AmlExecStore (
              * Storing into a FieldUnit (defined in a Buffer).
              * If value is not a Number, try to resolve it to one.
              */
-            if ((ValDesc->ValType != TYPE_Number) &&
+            if ((ValDesc->Type != TYPE_Number) &&
                ((Status = AmlGetRvalue (&ValDesc)) != AE_OK))
             {
                 DeleteDestDesc = DestDesc;
             }
 
-            else if (ValDesc->ValType != TYPE_Number)
+            else if (ValDesc->Type != TYPE_Number)
             {
                 DEBUG_PRINT (ACPI_ERROR, (
                         "AmlExecStore/FieldUnit: Value assigned to Field must be Number, not %d\n",
-                          ValDesc->ValType));
+                          ValDesc->Type));
 
                 DeleteDestDesc = DestDesc;
                 Status = AE_AML_ERROR;
@@ -679,25 +679,25 @@ AmlExecStore (
                 else
                 {
                     DEBUG_PRINT (ACPI_INFO,
-                        ("AmlExecStore: FieldUnit: name's value DestDesc=%p, DestDesc->ValType=%02Xh\n",
-                        DestDesc, DestDesc->ValType));
+                        ("AmlExecStore: FieldUnit: name's value DestDesc=%p, DestDesc->Type=%02Xh\n",
+                        DestDesc, DestDesc->Type));
                 }
             }
 
             if ((AE_OK == Status) &&
-                (DestDesc->ValType != (UINT8) NsGetType (TempHandle)))
+                (DestDesc->Type != (UINT8) NsGetType (TempHandle)))
             {
                 DEBUG_PRINT (ACPI_ERROR, (
                         "AmlExecStore/FieldUnit:internal error: Name %4.4s type %d does not match value-type %d at %p\n",
-                          TempHandle, NsGetType(TempHandle), DestDesc->ValType, DestDesc));
+                          TempHandle, NsGetType(TempHandle), DestDesc->Type, DestDesc));
 
                 Status = AE_AML_ERROR;
             }
 
             if ((AE_OK == Status) &&
                (!DestDesc->FieldUnit.Container ||
-                TYPE_Buffer != DestDesc->FieldUnit.Container->ValType ||
-                DestDesc->FieldUnit.ConSeq
+                TYPE_Buffer != DestDesc->FieldUnit.Container->Type ||
+                DestDesc->FieldUnit.Sequence
                     != DestDesc->FieldUnit.Container->Buffer.Sequence))
             {
                 NsDumpPathname (TempHandle, "AmlExecStore/FieldUnit: bad container in: ", 
@@ -714,7 +714,7 @@ AmlExecStore (
             }
 
             if ((AE_OK == Status) &&
-                (DestDesc->FieldUnit.DatLen + DestDesc->FieldUnit.BitOffset > 32))
+                (DestDesc->FieldUnit.Length + DestDesc->FieldUnit.BitOffset > 32))
             {
                 DEBUG_PRINT (ACPI_ERROR, ("AmlExecStore/FieldUnit: implementation limitation: Field exceeds UINT32\n"));
                 Status = AE_AML_ERROR;
@@ -724,23 +724,23 @@ AmlExecStore (
             {
                 /* Field location is (base of buffer) + (byte offset) */
                 
-                Location = DestDesc->FieldUnit.Container->Buffer.Buffer
+                Location = DestDesc->FieldUnit.Container->Buffer.Pointer
                                 + DestDesc->FieldUnit.Offset;
                 
                 /* 
                  * Construct Mask with 1 bits where the field is,
                  * 0 bits elsewhere
                  */
-                Mask = ((UINT32) 1 << DestDesc->FieldUnit.DatLen) - ((UINT32)1
+                Mask = ((UINT32) 1 << DestDesc->FieldUnit.Length) - ((UINT32)1
                                     << DestDesc->FieldUnit.BitOffset);
 
                 DEBUG_PRINT (TRACE_BFIELD,
                         ("** Store %lx in buffer %p byte %ld bit %d width %d addr %p mask %08lx\n",
-                        ValDesc->Number.Number,
-                        DestDesc->FieldUnit.Container->Buffer.Buffer,
+                        ValDesc->Number.Value,
+                        DestDesc->FieldUnit.Container->Buffer.Pointer,
                         DestDesc->FieldUnit.Offset,
                         DestDesc->FieldUnit.BitOffset,
-                        DestDesc->FieldUnit.DatLen,
+                        DestDesc->FieldUnit.Length,
                         Location, Mask));
 
                 /* zero out the field in the buffer */
@@ -752,7 +752,7 @@ AmlExecStore (
                  * and or it into the buffer.
                  */
                 *(UINT32 *) Location |=
-                    (ValDesc->Number.Number << DestDesc->FieldUnit.BitOffset) & Mask;
+                    (ValDesc->Number.Value << DestDesc->FieldUnit.BitOffset) & Mask;
                 
                 DEBUG_PRINT (TRACE_BFIELD,
                             (" val %08lx\n", *(UINT32 *) Location));
@@ -769,14 +769,14 @@ AmlExecStore (
              */
             memcpy ((void *) DestDesc, (void *) ValDesc, sizeof (*ValDesc));
             
-            if (TYPE_Buffer == DestDesc->ValType)
+            if (TYPE_Buffer == DestDesc->Type)
             {
                 /* Assign a new sequence number */
 
                 DestDesc->Buffer.Sequence = AmlBufSeq ();
             }
 
-            NsSetValue (TempHandle, DestDesc, DestDesc->ValType);
+            NsSetValue (TempHandle, DestDesc, DestDesc->Type);
 
             if (Stacked)
             {
