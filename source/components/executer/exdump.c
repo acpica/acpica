@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: exdump - Interpreter debug output routines
- *              $Revision: 1.176 $
+ *              $Revision: 1.177 $
  *
  *****************************************************************************/
 
@@ -821,9 +821,6 @@ AcpiExDumpObjectDescriptor (
         AcpiExOutInteger ("BitLength",      ObjDesc->CommonField.BitLength);
         AcpiExOutInteger ("FldBitOffset",   ObjDesc->CommonField.StartFieldBitOffset);
         AcpiExOutInteger ("BaseByteOffset", ObjDesc->CommonField.BaseByteOffset);
-        AcpiExOutInteger ("DatumValidBits", ObjDesc->CommonField.DatumValidBits);
-        AcpiExOutInteger ("EndFldValidBits",ObjDesc->CommonField.EndFieldValidBits);
-        AcpiExOutInteger ("EndBufValidBits",ObjDesc->CommonField.EndBufferValidBits);
         AcpiExOutPointer ("ParentNode",     ObjDesc->CommonField.Node);
 
         switch (ACPI_GET_OBJECT_TYPE (ObjDesc))
