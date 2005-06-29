@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: aemain - Main routine for the AcpiExec utility
- *              $Revision: 1.73 $
+ *              $Revision: 1.74 $
  *
  *****************************************************************************/
 
@@ -209,7 +209,7 @@ main (
 
     /* Init globals */
 
-    AcpiDbgLevel = NORMAL_DEFAULT;
+    AcpiDbgLevel = ACPI_NORMAL_DEFAULT;
     AcpiDbgLayer = 0xFFFFFFFF;
 
     /* Init ACPI and start debugger thread */
@@ -259,7 +259,7 @@ main (
         break;
 
     case 'v':
-        AcpiDbgLevel |= ACPI_LV_INIT;
+        AcpiDbgLevel |= ACPI_LV_INIT_NAMES;
         break;
 
     case '?':
