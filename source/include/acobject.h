@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Name: acobject.h - Definition of ACPI_OPERAND_OBJECT  (Internal object only)
- *       $Revision: 1.84 $
+ *       $Revision: 1.85 $
  *
  *****************************************************************************/
 
@@ -149,7 +149,7 @@
  */
 
 
-#define ACPI_OBJECT_COMMON_HEADER           /* 32-bits plus 8-bit flag */\
+#define ACPI_OBJECT_COMMON_HEADER           /* SIZE/ALIGNMENT: 32-bits plus trailing 8-bit flag */\
     UINT8                       DataType;           /* To differentiate various internal objs */\
     UINT8                       Type;               /* ACPI_OBJECT_TYPE */\
     UINT16                      ReferenceCount;     /* For object deletion management */\
@@ -165,15 +165,15 @@
 /*
  * Common bitfield for the field objects
  */
-#define ACPI_COMMON_FIELD_INFO              /* Three 32-bit values plus 8*/\
+#define ACPI_COMMON_FIELD_INFO              /* SIZE/ALIGNMENT: 24 bits + three 32-bit values */\
     UINT8                       Granularity;\
     UINT16                      BitLength;          /* Length of field in bits */\
     UINT32                      Offset;             /* Byte offset within containing object */\
     UINT8                       BitOffset;          /* Bit offset within min read/write data unit */\
-    UINT8                       Access;             /* AccessType */\
-    UINT8                       LockRule;\
-    UINT8                       UpdateRule;\
-    UINT8                       AccessAttribute;
+    UINT8                       Access;             /* AccessType (ByteAccess, WordAccess, etc*/\
+    UINT8                       LockRule;           /* Global Lock: Must Lock = 1 */\
+    UINT8                       UpdateRule;         /* How neighboring bits are handled */\
+    UINT32                      Value;              /* Value to store into the Bank or Index register */
 
 
 /******************************************************************************
@@ -212,7 +212,7 @@ typedef struct /* STRING - has length and pointer - Null terminated, ASCII chara
     ACPI_OBJECT_COMMON_HEADER
 
     UINT32                      Length;
-    NATIVE_CHAR                 *Pointer;       /* String value in AML stream or in allocated space */
+    NATIVE_CHAR                 *Pointer;           /* String value in AML stream or in allocated space */
 
 } ACPI_OBJECT_STRING;
 
@@ -222,7 +222,7 @@ typedef struct /* BUFFER - has length and pointer - not null terminated */
     ACPI_OBJECT_COMMON_HEADER
 
     UINT32                      Length;
-    UINT8                       *Pointer;       /* points to the buffer in allocated space */
+    UINT8                       *Pointer;           /* points to the buffer in allocated space */
 
 } ACPI_OBJECT_BUFFER;
 
@@ -231,10 +231,10 @@ typedef struct /* PACKAGE - has count, elements, next element */
 {
     ACPI_OBJECT_COMMON_HEADER
 
-    UINT32                      Count;          /* # of elements in package */
+    UINT32                      Count;              /* # of elements in package */
 
-    union acpi_operand_obj      **Elements;     /* Array of pointers to AcpiObjects */
-    union acpi_operand_obj      **NextElement;  /* used only while initializing */
+    union acpi_operand_obj      **Elements;         /* Array of pointers to AcpiObjects */
+    union acpi_operand_obj      **NextElement;      /* used only while initializing */
 
 } ACPI_OBJECT_PACKAGE;
 
@@ -357,28 +357,15 @@ typedef struct /* COMMON FIELD (for BUFFER, REGION, BANK, and INDEX fields) */
     ACPI_OBJECT_COMMON_HEADER
     ACPI_COMMON_FIELD_INFO
     union acpi_operand_obj      *RegionObj;         /* Containing Operation Region object */
-                                                    /* (REGION/BANK fields only */
-
+                                                    /* (REGION/BANK fields only) */
 } ACPI_OBJECT_FIELD_COMMON;
-
-
-typedef struct /* BUFFER FIELD */
-{
-    ACPI_OBJECT_COMMON_HEADER
-    ACPI_COMMON_FIELD_INFO
-
-    union acpi_operand_obj      *Extra;             /* Pointer to executable AML (in field definition) */
-    ACPI_NAMESPACE_NODE         *Node;              /* Parent (containing) object node */
-    union acpi_operand_obj      *BufferObj;         /* Containing object (Buffer) */
-
-} ACPI_OBJECT_BUFFER_FIELD;
 
 
 typedef struct /* REGION FIELD */
 {
     ACPI_OBJECT_COMMON_HEADER
     ACPI_COMMON_FIELD_INFO
-    union acpi_operand_obj      *RegionObj;         /* Containing object */
+    union acpi_operand_obj      *RegionObj;         /* Containing OpRegion object */
 
 } ACPI_OBJECT_REGION_FIELD;
 
@@ -388,11 +375,8 @@ typedef struct /* BANK FIELD */
     ACPI_OBJECT_COMMON_HEADER
     ACPI_COMMON_FIELD_INFO
     
-    union acpi_operand_obj      *RegionObj;         /* Containing object */
-    UINT32                      Value;              /* Value to store into BankSelect */
-
-    ACPI_NAMESPACE_NODE         *BankRegisterNode;  /* Bank Register node */
-    union acpi_operand_obj      *BankRegisterObj;   /* Bank Register object (child of node) */
+    union acpi_operand_obj      *RegionObj;         /* Containing OpRegion object */
+    union acpi_operand_obj      *BankRegisterObj;   /* BankSelect Register object */
 
 } ACPI_OBJECT_BANK_FIELD;
 
@@ -402,17 +386,29 @@ typedef struct /* INDEX FIELD */
     ACPI_OBJECT_COMMON_HEADER
     ACPI_COMMON_FIELD_INFO
     
-    UINT32                      Value;              /* Value to store into Index register */
-
     /*
      * No "RegionObj" pointer needed since the Index and Data registers 
      * are each field definitions unto themselves.
      */
-    ACPI_NAMESPACE_NODE         *Index;             /* Index register */
-    ACPI_NAMESPACE_NODE         *Data;              /* Data register */
+    union acpi_operand_obj      *IndexObj;          /* Index register */
+    union acpi_operand_obj      *DataObj;           /* Data register */
+
 
 } ACPI_OBJECT_INDEX_FIELD;
 
+
+/* The BufferField is different in that it is part of a Buffer, not an OpRegion */
+
+typedef struct /* BUFFER FIELD */
+{
+    ACPI_OBJECT_COMMON_HEADER
+    ACPI_COMMON_FIELD_INFO
+
+    union acpi_operand_obj      *Extra;             /* Pointer to executable AML (in field definition) */
+    ACPI_NAMESPACE_NODE         *Node;              /* Parent (containing) object node */
+    union acpi_operand_obj      *BufferObj;         /* Containing Buffer object */
+
+} ACPI_OBJECT_BUFFER_FIELD;
 
 
 /*
