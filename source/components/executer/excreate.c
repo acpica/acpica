@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: excreate - Named object creation
- *              $Revision: 1.80 $
+ *              $Revision: 1.81 $
  *
  *****************************************************************************/
 
@@ -433,7 +433,6 @@ AcpiExCreateTableRegion (
         return_ACPI_STATUS (AE_OK);
     }
 
-
     /* Find the table */
 
     if (!STRCMP (Operand[1]->String.Pointer, DSDT_SIG))
@@ -442,7 +441,15 @@ AcpiExCreateTableRegion (
     }
     else
     {
-        return_ACPI_STATUS (AE_SUPPORT);
+#if 0
+        Status = AcpiGetFirmwareTable (Operand[1]->String.Pointer, 1, 
+                            ACPI_LOGICAL_ADDRESSING, &Table);
+        if (ACPI_FAILURE (Status))
+        {
+            return_ACPI_STATUS (Status);
+        }
+#endif
+            return_ACPI_STATUS (AE_SUPPORT);
     }
 
     /* Check OemId and TableId
@@ -458,11 +465,8 @@ AcpiExCreateTableRegion (
         goto Cleanup;
     }
 
-
     RegionObj2                      = ObjDesc->Common.NextObject;
-    RegionObj2->Extra.RegionContext = Table;
-
-
+    RegionObj2->Extra.RegionContext = NULL;
 
     /* Init the region from the operands */
 
@@ -470,14 +474,30 @@ AcpiExCreateTableRegion (
     ObjDesc->Region.Address = (ACPI_PHYSICAL_ADDRESS) Table;
     ObjDesc->Region.Length  = Table->Length;
     ObjDesc->Region.Node    = Node;
-
-
-    ObjDesc->Region.Flags |= AOPOBJ_DATA_VALID | AOPOBJ_SETUP_COMPLETE;
+    ObjDesc->Region.Flags   = AOPOBJ_DATA_VALID;
 
     /* Install the new region object in the parent Node */
 
     Status = AcpiNsAttachObject (Node, ObjDesc, (UINT8) ACPI_TYPE_REGION);
+    if (ACPI_FAILURE (Status))
+    {
+        goto Cleanup;
+    }
 
+    Status = AcpiEvInitializeRegion (ObjDesc, FALSE);
+    if (ACPI_FAILURE (Status))
+    {
+        if (Status == AE_NOT_EXIST)
+        {
+            Status = AE_OK;
+        }
+        else
+        {
+            goto Cleanup;
+        }
+    }
+
+    ObjDesc->Region.Flags |= AOPOBJ_SETUP_COMPLETE;
 
 Cleanup:
 
