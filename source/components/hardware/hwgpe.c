@@ -281,7 +281,7 @@ HwGetGpeStatus (
     /* 
      * Enabled?:
      */
-    InByte = OsdIn8 (Gbl_GpeRegisters[RegisterIndex].EnabledAddr);
+    InByte = OsdIn8 (Gbl_GpeRegisters[RegisterIndex].EnableAddr);
 
     if (BitMask & InByte)
     {
