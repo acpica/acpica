@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: utinit - Common ACPI subsystem initialization
- *              $Revision: 1.100 $
+ *              $Revision: 1.102 $
  *
  *****************************************************************************/
 
@@ -130,7 +130,6 @@
 
 #define ACPI_OFFSET(d,o)    ((UINT32) &(((d *)0)->o))
 #define ACPI_FADT_OFFSET(o) ACPI_OFFSET (FADT_DESCRIPTOR, o)
-
 
 
 /*******************************************************************************
@@ -351,7 +350,7 @@ AcpiUtSubsystemShutdown (void)
     /* Debug only - display leftover memory allocation, if any */
 
 #ifdef ACPI_DBG_TRACK_ALLOCATIONS
-    AcpiUtDumpCurrentAllocations (ACPI_UINT32_MAX, NULL);
+    AcpiUtDumpAllocations (ACPI_UINT32_MAX, NULL);
 #endif
 
     return_ACPI_STATUS (AE_OK);
