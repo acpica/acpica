@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acutils.h -- prototypes for the common (subsystem-wide) procedures
- *       $Revision: 1.151 $
+ *       $Revision: 1.155 $
  *
  *****************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2003, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -140,6 +140,7 @@ typedef struct acpi_pkg_info
     ACPI_SIZE               Length;
     UINT32                  ObjectSpace;
     UINT32                  NumPackages;
+
 } ACPI_PKG_INFO;
 
 #define REF_INCREMENT       (UINT16) 0
@@ -536,6 +537,8 @@ AcpiUtDeleteInternalObjectList (
 #define METHOD_NAME__SEG        "_SEG"
 #define METHOD_NAME__BBN        "_BBN"
 #define METHOD_NAME__PRT        "_PRT"
+#define METHOD_NAME__CRS        "_CRS"
+#define METHOD_NAME__PRS        "_PRS"
 
 
 ACPI_STATUS
@@ -559,7 +562,7 @@ AcpiUtExecute_HID (
 ACPI_STATUS
 AcpiUtExecute_CID (
     ACPI_NAMESPACE_NODE     *DeviceNode,
-    ACPI_DEVICE_ID          *Cid);
+    ACPI_COMPATIBLE_ID_LIST **ReturnCidList);
 
 ACPI_STATUS
 AcpiUtExecute_STA (

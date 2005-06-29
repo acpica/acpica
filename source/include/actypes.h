@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: actypes.h - Common data types for the entire ACPI subsystem
- *       $Revision: 1.258 $
+ *       $Revision: 1.259 $
  *
  *****************************************************************************/
 
@@ -919,12 +919,38 @@ ACPI_STATUS (*ACPI_WALK_CALLBACK) (
 #define ACPI_INTERRUPT_HANDLED          0x01
 
 
-/* Structure and flags for AcpiGetDeviceInfo */
+/* Common string version of device HIDs and UIDs */
 
-#define ACPI_VALID_HID                  0x1
-#define ACPI_VALID_UID                  0x2
-#define ACPI_VALID_ADR                  0x4
-#define ACPI_VALID_STA                  0x8
+typedef struct acpi_device_id
+{
+    char                    Value[ACPI_DEVICE_ID_LENGTH];
+
+} ACPI_DEVICE_ID;
+
+/* Common string version of device CIDs */
+
+typedef struct acpi_compatible_id
+{
+    char                    Value[ACPI_MAX_CID_LENGTH];
+
+} ACPI_COMPATIBLE_ID;
+
+typedef struct acpi_compatible_id_list
+{
+    UINT32                  Count;
+    UINT32                  Size;
+    ACPI_COMPATIBLE_ID      Id[1];
+
+} ACPI_COMPATIBLE_ID_LIST;
+
+
+/* Structure and flags for AcpiGetObjectInfo */
+
+#define ACPI_VALID_STA                  0x0001
+#define ACPI_VALID_ADR                  0x0002
+#define ACPI_VALID_HID                  0x0004
+#define ACPI_VALID_UID                  0x0008
+#define ACPI_VALID_CID                  0x0010
 
 
 #define ACPI_COMMON_OBJ_INFO \
@@ -939,15 +965,18 @@ typedef struct acpi_obj_info_header
 } ACPI_OBJ_INFO_HEADER;
 
 
+/* Structure returned from Get Object Info */
+
 typedef struct acpi_device_info
 {
     ACPI_COMMON_OBJ_INFO;
 
-    UINT32                      Valid;              /*  Are the next bits legit? */
-    char                        HardwareId[9];      /*  _HID value if any */
-    char                        UniqueId[9];        /*  _UID value if any */
-    ACPI_INTEGER                Address;            /*  _ADR value if any */
-    UINT32                      CurrentStatus;      /*  _STA value */
+    UINT32                      Valid;              /* Indicates which fields are valid */
+    UINT32                      CurrentStatus;      /* _STA value */
+    ACPI_INTEGER                Address;            /* _ADR value if any */
+    ACPI_DEVICE_ID              HardwareId;         /* _HID value if any */
+    ACPI_DEVICE_ID              UniqueId;           /* _UID value if any */
+    ACPI_COMPATIBLE_ID_LIST     CompatibilityId;    /* List of _CIDs if any */
 
 } ACPI_DEVICE_INFO;
 
