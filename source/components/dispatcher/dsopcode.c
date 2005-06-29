@@ -2,7 +2,7 @@
  *
  * Module Name: dsopcode - Dispatcher Op Region support and handling of
  *                         "control" opcodes
- *              $Revision: 1.100 $
+ *              $Revision: 1.103 $
  *
  *****************************************************************************/
 
@@ -128,12 +128,31 @@
 #define _COMPONENT          ACPI_DISPATCHER
         ACPI_MODULE_NAME    ("dsopcode")
 
+/* Local prototypes */
+
+static ACPI_STATUS
+AcpiDsExecuteArguments (
+    ACPI_NAMESPACE_NODE     *Node,
+    ACPI_NAMESPACE_NODE     *ScopeNode,
+    UINT32                  AmlLength,
+    UINT8                   *AmlStart);
+
+static ACPI_STATUS
+AcpiDsInitBufferField (
+    UINT16                  AmlOpcode,
+    ACPI_OPERAND_OBJECT     *ObjDesc,
+    ACPI_OPERAND_OBJECT     *BufferDesc,
+    ACPI_OPERAND_OBJECT     *OffsetDesc,
+    ACPI_OPERAND_OBJECT     *LengthDesc,
+    ACPI_OPERAND_OBJECT     *ResultDesc);
+
 
 /*******************************************************************************
  *
  * FUNCTION:    AcpiDsExecuteArguments
  *
- * PARAMETERS:  Node                - Parent NS node
+ * PARAMETERS:  Node                - Object NS node
+ *              ScopeNode           - Parent NS node
  *              AmlLength           - Length of executable AML
  *              AmlStart            - Pointer to the AML
  *
@@ -176,7 +195,8 @@ AcpiDsExecuteArguments (
     WalkState = AcpiDsCreateWalkState (0, NULL, NULL, NULL);
     if (!WalkState)
     {
-        return_ACPI_STATUS (AE_NO_MEMORY);
+        Status = AE_NO_MEMORY;
+        goto Cleanup;
     }
 
     Status = AcpiDsInitAmlWalk (WalkState, Op, NULL, AmlStart,
@@ -184,7 +204,7 @@ AcpiDsExecuteArguments (
     if (ACPI_FAILURE (Status))
     {
         AcpiDsDeleteWalkState (WalkState);
-        return_ACPI_STATUS (Status);
+        goto Cleanup;
     }
 
     /* Mark this parse as a deferred opcode */
@@ -197,8 +217,7 @@ AcpiDsExecuteArguments (
     Status = AcpiPsParseAml (WalkState);
     if (ACPI_FAILURE (Status))
     {
-        AcpiPsDeleteParseTree (Op);
-        return_ACPI_STATUS (Status);
+        goto Cleanup;
     }
 
     /* Get and init the Op created above */
@@ -221,7 +240,8 @@ AcpiDsExecuteArguments (
     WalkState = AcpiDsCreateWalkState (0, NULL, NULL, NULL);
     if (!WalkState)
     {
-        return_ACPI_STATUS (AE_NO_MEMORY);
+        Status = AE_NO_MEMORY;
+        goto Cleanup;
     }
 
     /* Execute the opcode and arguments */
@@ -231,13 +251,15 @@ AcpiDsExecuteArguments (
     if (ACPI_FAILURE (Status))
     {
         AcpiDsDeleteWalkState (WalkState);
-        return_ACPI_STATUS (Status);
+        goto Cleanup;
     }
 
     /* Mark this execution as a deferred opcode */
 
     WalkState->DeferredNode = Node;
     Status = AcpiPsParseAml (WalkState);
+
+Cleanup:
     AcpiPsDeleteParseTree (Op);
     return_ACPI_STATUS (Status);
 }
@@ -445,7 +467,7 @@ AcpiDsGetRegionArguments (
  *
  * FUNCTION:    AcpiDsInitializeRegion
  *
- * PARAMETERS:  Op              - A valid region Op object
+ * PARAMETERS:  ObjHandle       - Region namespace node
  *
  * RETURN:      Status
  *
@@ -478,8 +500,8 @@ AcpiDsInitializeRegion (
  *              ObjDesc         - BufferField object
  *              BufferDesc      - Host Buffer
  *              OffsetDesc      - Offset into buffer
- *              Length          - Length of field (CREATE_FIELD_OP only)
- *              Result          - Where to store the result
+ *              LengthDesc      - Length of field (CREATE_FIELD_OP only)
+ *              ResultDesc      - Where to store the result
  *
  * RETURN:      Status
  *
