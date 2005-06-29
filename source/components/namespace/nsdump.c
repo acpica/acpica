@@ -339,8 +339,6 @@ NsDumpOneObject (
     /* There is an attached object, display it */
 
     Value = ThisEntry->Object;
-    ObjDesc = ThisEntry->Object;
-    ObjType = ObjDesc->Common.Type;
 
     /* If debug turned off, done */
 
@@ -354,6 +352,7 @@ NsDumpOneObject (
 
     while (Value)
     {
+        ObjType = INTERNAL_TYPE_Invalid;
 
         /* Decode the type of attached object and dump the contents */
 
@@ -374,23 +373,26 @@ NsDumpOneObject (
 
         else if (VALID_DESCRIPTOR_TYPE (Value, DESC_TYPE_ACPI_OBJ))
         {
-            if (ObjDesc->Common.Type > INTERNAL_TYPE_MAX)
+            ObjDesc = (ACPI_OBJECT_INTERNAL *) Value;
+            ObjType = ObjDesc->Common.Type;
+
+            if (ObjType > INTERNAL_TYPE_MAX)
             {
-                DEBUG_PRINT_RAW (TRACE_TABLES, ("(Ptr to ACPI Object type 0x%X [UNKNOWN])\n", ObjDesc->Common.Type));
+                DEBUG_PRINT_RAW (TRACE_TABLES, ("(Ptr to ACPI Object type 0x%X [UNKNOWN])\n", ObjType));
                 BytesToDump = 32;
             }
 
             else
             {
                 DEBUG_PRINT_RAW (TRACE_TABLES, ("(Ptr to ACPI Object type 0x%X [%s])\n", 
-                                    ObjDesc->Common.Type, Gbl_NsTypeNames[ObjDesc->Common.Type]));
+                                    ObjType, Gbl_NsTypeNames[ObjType]));
                 BytesToDump = ObjDesc->Common.Size;
             }
         }
 
         else
         {
-            DEBUG_PRINT_RAW (TRACE_TABLES, ("(Unknown Type)\n", Value));
+            DEBUG_PRINT_RAW (TRACE_TABLES, ("(Unknown Descriptor Type)\n", Value));
             BytesToDump = 16;
         }
 
@@ -547,7 +549,7 @@ NsDumpRootDevices (void)
         return;
     }
 
-    AcpiNameToHandle (0, NS_SYSTEM_BUS, &SysBusHandle);
+    AcpiGetHandle (0, NS_SYSTEM_BUS, &SysBusHandle);
 
     DEBUG_PRINT (TRACE_TABLES, ("Display of all devices in the namespace:\n"));
     AcpiWalkNamespace (ACPI_TYPE_Device, SysBusHandle, ACPI_INT_MAX, NsDumpOneDevice, NULL, NULL);
