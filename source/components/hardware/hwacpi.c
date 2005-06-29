@@ -150,7 +150,7 @@ HwSetMode (
     {
         /* BIOS should have disabled ALL fixed and GP events */
         
-        OsdOut8 ((UINT16) FACP->SmiCmd, FACP->AcpiEnable);
+        OsdOut8 ((UINT16) Gbl_FACP->SmiCmd, Gbl_FACP->AcpiEnable);
         DEBUG_PRINT (ACPI_INFO, ("Attempting to enable ACPI mode\n"));
     }
 
@@ -161,7 +161,7 @@ HwSetMode (
          * enable bits to default
          */
 
-        OsdOut8 ((UINT16) FACP->SmiCmd, FACP->AcpiDisable);
+        OsdOut8 ((UINT16) Gbl_FACP->SmiCmd, Gbl_FACP->AcpiDisable);
         DEBUG_PRINT (ACPI_INFO, ("Attempting to enable Legacy (non-ACPI) mode\n"));
     }
 
@@ -226,7 +226,7 @@ HwGetModeCapabilities (void)
     FUNCTION_TRACE ("HwGetModeCapabilities");
 
     
-    if (!(SystemFlags & SYS_MODES_MASK))
+    if (!(Gbl_SystemFlags & SYS_MODES_MASK))
     {
         if (HwGetMode () == SYS_MODE_LEGACY)
         {   
@@ -237,7 +237,7 @@ HwGetModeCapabilities (void)
              * modes 
              */
             
-            SystemFlags |= (SYS_MODE_ACPI | SYS_MODE_LEGACY);
+            Gbl_SystemFlags |= (SYS_MODE_ACPI | SYS_MODE_LEGACY);
         }
         
         else
@@ -254,7 +254,7 @@ HwGetModeCapabilities (void)
             {   
                 /* Now in SYS_MODE_LEGACY, so both are supported */
                 
-                SystemFlags |= (SYS_MODE_ACPI | SYS_MODE_LEGACY);
+                Gbl_SystemFlags |= (SYS_MODE_ACPI | SYS_MODE_LEGACY);
                 HwSetMode (SYS_MODE_ACPI);
             }
             
@@ -262,10 +262,10 @@ HwGetModeCapabilities (void)
             {   
                 /* Still in SYS_MODE_ACPI so this must be an ACPI only system */
                 
-                SystemFlags |= SYS_MODE_ACPI;
+                Gbl_SystemFlags |= SYS_MODE_ACPI;
             }
         }
     }
     
-    return_VALUE (SystemFlags & SYS_MODES_MASK);
+    return_VALUE (Gbl_SystemFlags & SYS_MODES_MASK);
 }
