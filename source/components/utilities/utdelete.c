@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: utdelete - object deletion and reference count utilities
- *              $Revision: 1.79 $
+ *              $Revision: 1.80 $
  *
  ******************************************************************************/
 
@@ -657,24 +657,9 @@ AcpiUtUpdateObjectReference (
 
 
         case ACPI_TYPE_REGION:
-
-    /* TBD: [Investigate]
-            AcpiUtUpdateRefCount (Object->Region.AddrHandler, Action);
-    */
-/*
-            Status =
-                AcpiUtCreateUpdateStateAndPush (Object->Region.AddrHandler,
-                                                Action, &StateList);
-            if (ACPI_FAILURE (Status))
-            {
-                return_ACPI_STATUS (Status);
-            }
-*/
-            break;
-
-
         case INTERNAL_TYPE_REFERENCE:
 
+            /* No subobjects */
             break;
         }
 
@@ -756,9 +741,12 @@ AcpiUtRemoveReference (
 
     /*
      * Allow a NULL pointer to be passed in, just ignore it.  This saves
-     * each caller from having to check
+     * each caller from having to check.  Also, ignore NS nodes.
+     *
      */
-    if (!Object)
+    if (!Object ||
+        (VALID_DESCRIPTOR_TYPE (Object, ACPI_DESC_TYPE_NAMED)))
+
     {
         return_VOID;
     }
