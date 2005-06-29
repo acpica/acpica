@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: exconvrt - Object conversion routines
- *              $Revision: 1.56 $
+ *              $Revision: 1.57 $
  *
  *****************************************************************************/
 
@@ -558,7 +558,7 @@ AcpiExConvertToString (
         switch (Type)
         {
         case ACPI_EXPLICIT_CONVERT_DECIMAL: /* Used by ToDecimalString operator */
-            /* 
+            /*
              * From ACPI: "If Data is a buffer, it is converted to a string of
              * decimal values separated by commas."
              */
@@ -581,7 +581,7 @@ AcpiExConvertToString (
             /*lint -fallthrough */
 
         case ACPI_EXPLICIT_CONVERT_HEX:     /* Used by ToHexString operator */
-            /* 
+            /*
              * From ACPI: "If Data is a buffer, it is converted to a string of
              * hexadecimal values separated by commas."
              */
@@ -601,8 +601,8 @@ AcpiExConvertToString (
 
             NewBuf = ReturnDesc->Buffer.Pointer;
 
-            /* 
-             * Convert buffer bytes to hex or decimal values 
+            /*
+             * Convert buffer bytes to hex or decimal values
              * (separated by commas)
              */
             for (i = 0; i < ObjDesc->Buffer.Length; i++)
@@ -623,7 +623,7 @@ AcpiExConvertToString (
             ReturnDesc->String.Length = ACPI_STRLEN (ReturnDesc->String.Pointer);
             break;
 
-        default: 
+        default:
             return_ACPI_STATUS (AE_BAD_PARAMETER);
         }
         break;
