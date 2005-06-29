@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: utalloc - local cache and memory allocation routines
- *              $Revision: 1.96 $
+ *              $Revision: 1.97 $
  *
  *****************************************************************************/
 
@@ -219,7 +219,8 @@ AcpiUtAcquireFromCache (
         ACPI_MEM_TRACKING (CacheInfo->CacheHits++);
         CacheInfo->CacheDepth--;
 
-        ACPI_DEBUG_PRINT ((ACPI_DB_EXEC, "Object %p from cache %d\n", Object, ListId));
+        ACPI_DEBUG_PRINT ((ACPI_DB_EXEC, "Object %p from %s\n", 
+            Object, AcpiGbl_MemoryLists[ListId].ListName));
 
         AcpiUtReleaseMutex (ACPI_MTX_CACHES);
 
