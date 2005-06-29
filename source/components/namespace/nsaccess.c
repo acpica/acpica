@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: nsaccess - Top-level functions for accessing ACPI namespace
- *              $Revision: 1.183 $
+ *              $Revision: 1.184 $
  *
  ******************************************************************************/
 
@@ -292,6 +292,7 @@ AcpiNsRootInitialize (void)
                                             1, &ObjDesc->Mutex.Semaphore);
                     if (ACPI_FAILURE (Status))
                     {
+                        AcpiUtRemoveReference (ObjDesc);
                         goto UnlockAndExit;
                     }
 
@@ -309,6 +310,7 @@ AcpiNsRootInitialize (void)
                                         &ObjDesc->Mutex.Semaphore);
                     if (ACPI_FAILURE (Status))
                     {
+                        AcpiUtRemoveReference (ObjDesc);
                         goto UnlockAndExit;
                     }
                 }
