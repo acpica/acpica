@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: evregion - ACPI AddressSpace (OpRegion) handler dispatch
- *              $Revision: 1.142 $
+ *              $Revision: 1.144 $
  *
  *****************************************************************************/
 
@@ -284,7 +284,7 @@ Cleanup:
  *
  * FUNCTION:    AcpiEvAddressSpaceDispatch
  *
- * PARAMETERS:  RegionObj           - internal region object
+ * PARAMETERS:  RegionObj           - Internal region object
  *              SpaceId             - ID of the address space (0-255)
  *              Function            - Read or Write operation
  *              Address             - Where in the space to read or write
@@ -329,7 +329,9 @@ AcpiEvAddressSpaceDispatch (
     HandlerDesc = RegionObj->Region.AddressSpace;
     if (!HandlerDesc)
     {
-        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "no handler for region(%p) [%s]\n",
+        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, 
+            "No handler for Region [%4.4s] (%p) [%s]\n",
+            AcpiUtGetNodeName (RegionObj->Region.Node),
             RegionObj, AcpiUtGetRegionName (RegionObj->Region.SpaceId)));
 
         return_ACPI_STATUS (AE_NOT_EXIST);
@@ -412,7 +414,7 @@ AcpiEvAddressSpaceDispatch (
     ACPI_DEBUG_PRINT ((ACPI_DB_OPREGION,
         "Handler %p (@%p) Address %8.8X%8.8X [%s]\n",
         &RegionObj->Region.AddressSpace->AddressSpace, Handler,
-        ACPI_HIDWORD (Address), ACPI_LODWORD (Address),
+        ACPI_FORMAT_UINT64 (Address),
         AcpiUtGetRegionName (RegionObj->Region.SpaceId)));
 
     if (!(HandlerDesc->AddressSpace.Flags & ACPI_ADDR_HANDLER_DEFAULT_INSTALLED))
@@ -628,8 +630,10 @@ AcpiEvAttachRegion (
 
 
     ACPI_DEBUG_PRINT ((ACPI_DB_OPREGION,
-        "Adding Region %p to address handler %p [%s]\n",
-        RegionObj, HandlerObj, AcpiUtGetRegionName (RegionObj->Region.SpaceId)));
+        "Adding Region [%4.4s] %p to address handler %p [%s]\n",
+        AcpiUtGetNodeName (RegionObj->Region.Node),
+        RegionObj, HandlerObj, 
+        AcpiUtGetRegionName (RegionObj->Region.SpaceId)));
 
 
     /* Link this region to the front of the handler's list */
