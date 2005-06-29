@@ -2,7 +2,7 @@
  *
  * Module Name: nsxfname - Public interfaces to the ACPI subsystem
  *                         ACPI Namespace oriented interfaces
- *              $Revision: 1.66 $
+ *              $Revision: 1.67 $
  *
  *****************************************************************************/
 
@@ -383,7 +383,7 @@ AcpiGetObjectInfo (
     Status = AcpiCmExecute_UID (Node, &Uid);
     if (ACPI_SUCCESS (Status))
     {
-        if (Hid.Type == STRING_PTR_DEVICE_ID)
+        if (Uid.Type == STRING_PTR_DEVICE_ID)
         {
             STRCPY (Info->UniqueId, Uid.Data.StringPtr);
         }
