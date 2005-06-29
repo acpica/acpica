@@ -155,55 +155,57 @@ BOOLEAN                 opt_parse_jit   = FALSE;
 BOOLEAN					opt_verbose     = TRUE;
    
 
-/*
- * AML Debugger commands
- */
 
-#define CMD_NOT_FOUND       0
-#define CMD_NULL            1
-#define CMD_ALLOCATIONS     2
-#define CMD_ARGS            3
-#define CMD_ARGUMENTS       4
-#define CMD_BREAKPOINT      5
-#define CMD_CALL            6
-#define CMD_CLOSE           7
-#define CMD_DEBUG           8
-#define CMD_DUMP            9
-#define CMD_EVENT           10
-#define CMD_EXECUTE         11
-#define CMD_EXIT            12
-#define CMD_FIND            13
-#define CMD_GO              14
-#define CMD_HELP            15
-#define CMD_HELP2           16
-#define CMD_HISTORY         17
-#define CMD_HISTORY_EXE     18
-#define CMD_INFORMATION     19
-#define CMD_INTO            20
-#define CMD_LEVEL           21
-#define CMD_LIST            22
-#define CMD_LOAD            23
-#define CMD_LOCALS          24
-#define CMD_METHODS         25
-#define CMD_NAMESPACE       26
-#define CMD_NOTIFY          27
-#define CMD_OBJECT          28
-#define CMD_OPEN            29
-#define CMD_PREFIX          30
-#define CMD_QUIT            31
-#define CMD_RESULTS         32
-#define CMD_SET             33
-#define CMD_STATS           34
-#define CMD_STOP            35
-#define CMD_TERMINATE       36
-#define CMD_TREE            37
-#define CMD_UNLOAD          38
+/* This list of commands must match the string table below it */
+
+enum AmlDebuggerCommands
+{
+    CMD_NOT_FOUND = 0,
+    CMD_NULL,
+    CMD_ALLOCATIONS,
+    CMD_ARGS,
+    CMD_ARGUMENTS,
+    CMD_BREAKPOINT,
+    CMD_CALL,
+    CMD_CLOSE,
+    CMD_DEBUG,
+    CMD_DUMP,
+    CMD_EVENT,
+    CMD_EXECUTE,
+    CMD_EXIT,
+    CMD_FIND,
+    CMD_GO,
+    CMD_HELP,
+    CMD_HELP2,
+    CMD_HISTORY,
+    CMD_HISTORY_EXE,
+    CMD_HISTORY_LAST,
+    CMD_INFORMATION,
+    CMD_INTO,
+    CMD_LEVEL,
+    CMD_LIST,
+    CMD_LOAD,
+    CMD_LOCALS,
+    CMD_METHODS,
+    CMD_NAMESPACE,
+    CMD_NOTIFY,
+    CMD_OBJECT,
+    CMD_OPEN,
+    CMD_PREFIX,
+    CMD_QUIT,
+    CMD_RESULTS,
+    CMD_SET,
+    CMD_STATS,
+    CMD_STOP,
+    CMD_TERMINATE,
+    CMD_TREE,
+    CMD_UNLOAD 
+};
 
 #define CMD_FIRST_VALID     2
-#define CMD_NUM_COMMANDS    39
 
 
-COMMAND_INFO                Commands[CMD_NUM_COMMANDS] = 
+COMMAND_INFO                Commands[] = 
 {
     "<NOT FOUND>",  0,
     "<NULL>",       0,
@@ -224,6 +226,7 @@ COMMAND_INFO                Commands[CMD_NUM_COMMANDS] =
     "?",            0,
     "HISTORY",      0,
     "!",            1,
+    "!!",           0,
     "INFORMATION",  0,
     "INTO",         0,
     "LEVEL",        0,
@@ -243,155 +246,12 @@ COMMAND_INFO                Commands[CMD_NUM_COMMANDS] =
     "STOP",         0,
     "TERMINATE",    0,
     "TREE",         0,
-    "UNLOAD",       0
+    "UNLOAD",       0,
+    NULL,           0
 };
 
 
 
-typedef struct HistoryInfo
-{
-    char                    Command[80];
-    UINT32                  CmdNum;
-
-} HISTORY_INFO;
-
-
-#define HI_NO_HISTORY       0
-#define HI_RECORD_HISTORY   1
-
-#define HISTORY_SIZE        8
-HISTORY_INFO                HistoryBuffer[HISTORY_SIZE];
-UINT32                      LoHistory = 0;
-UINT32                      NumHistory = 0;
-UINT32                      NextHistoryIndex = 0;
-UINT32                      NextCmdNum = 1;
-
-
-
-/******************************************************************************
- * 
- * FUNCTION:    DbAddToHistory
- *
- * PARAMETERS:  None
- *
- * RETURN:      None
- *
- * DESCRIPTION: Add a command line to the history buffer.
- *
- *****************************************************************************/
-
-void
-DbAddToHistory (
-    char                *CommandLine)
-{
-
-
-    STRCPY (HistoryBuffer[NextHistoryIndex].Command, CommandLine);
-    HistoryBuffer[NextHistoryIndex].CmdNum = NextCmdNum;
-
-    if ((NumHistory == HISTORY_SIZE) &&
-        (NextHistoryIndex == LoHistory))
-    {
-        LoHistory++;
-        if (LoHistory >= HISTORY_SIZE)
-        {
-            LoHistory = 0;
-        }
-    }
-
-    NextHistoryIndex++;
-    if (NextHistoryIndex >= HISTORY_SIZE)
-    {
-        NextHistoryIndex = 0;
-    }
-
-
-    NextCmdNum++;
-    if (NumHistory < HISTORY_SIZE)
-    {
-        NumHistory++;
-    }
-
-}
-
-
-/******************************************************************************
- * 
- * FUNCTION:    DbDisplayHistory
- *
- * PARAMETERS:  None
- *
- * RETURN:      None
- *
- * DESCRIPTION: Display the contents of the history buffer
- *
- *****************************************************************************/
-
-void
-DbDisplayHistory (void)
-{
-    UINT32                  i;
-    UINT32                  HistoryIndex;
-
-
-    HistoryIndex = LoHistory;
-    for (i = 0; i < NumHistory; i++)
-    {
-        OsdPrintf ("%d  %s\n", HistoryBuffer[HistoryIndex].CmdNum, &HistoryBuffer[HistoryIndex].Command);
-
-        HistoryIndex++;
-        if (HistoryIndex >= HISTORY_SIZE)
-        {
-            HistoryIndex = 0;
-        }
-    }
-}
-
-
-/******************************************************************************
- * 
- * FUNCTION:    DbGetFromHistory
- *
- * PARAMETERS:  CommandNumArg           - String containing the number of the
- *                                        command to be retrieved
- *
- * RETURN:      None
- *
- * DESCRIPTION: Get a command from the history buffer
- *
- *****************************************************************************/
-
-char *
-DbGetFromHistory (
-    char                    *CommandNumArg)
-{
-    UINT32                  i;
-    UINT32                  HistoryIndex;
-    UINT32                  CmdNum;
-
-
-    CmdNum = STRTOUL (CommandNumArg, NULL, 0);
-
-    HistoryIndex = LoHistory;
-    for (i = 0; i < NumHistory; i++)
-    {
-        if (HistoryBuffer[HistoryIndex].CmdNum == CmdNum)
-        {
-            return (HistoryBuffer[HistoryIndex].Command);
-        }
-
-
-        HistoryIndex++;
-        if (HistoryIndex >= HISTORY_SIZE)
-        {
-            HistoryIndex = 0;
-        }
-    }
-
-    OsdPrintf ("Invalid history number: %d\n", HistoryIndex);
-    return NULL;
-}
-    
 
 /******************************************************************************
  * 
@@ -415,7 +275,7 @@ DbDisplayHelp (void)
     OsdPrintf ("     [Byte|Word|Dword|Qword]        Display ACPI objects or memory\n");
     OsdPrintf ("Event <F|G> <Value>                 Generate Event (Fixed/GPE)\n");
     OsdPrintf ("Execute <Namepath> [Arguments]      Execute control method\n");
-    OsdPrintf ("Find <Name>                         Find all instances of an ACPI name\n");
+    OsdPrintf ("Find <Name>   (? is wildcard)       Find ACPI name(s) with wildcards\n");
     OsdPrintf ("Help                                This help screen\n");
     OsdPrintf ("History                             Display command history buffer\n");
     OsdPrintf ("Level [<DebugLevel>] [console]      Get/Set debug level for file or console\n");
@@ -429,6 +289,7 @@ DbDisplayHelp (void)
     OsdPrintf ("Terminate                           Delete namespace and all internal objects\n");
     OsdPrintf ("Unload                              Unload an ACPI table\n");
     OsdPrintf ("! <CommandNumber>                   Execute command from history buffer\n");
+    OsdPrintf ("!!                                  Execute last command again\n");
 
     OsdPrintf ("\nControl Method Execution Commands\n\n");
     OsdPrintf ("Arguments (or Args)                 Display method arguments\n");
@@ -591,7 +452,7 @@ DbMatchCommand (
         return CMD_NULL;
     }
 
-    for (i = CMD_FIRST_VALID; i < CMD_NUM_COMMANDS; i++)
+    for (i = CMD_FIRST_VALID; Commands[i].Name; i++)
     {
         if (STRSTR (Commands[i].Name, UserCommand) == Commands[i].Name)
         {
@@ -728,6 +589,18 @@ DbCommandDispatch (
             Status = AE_TRUE;
         return Status;
         break;
+
+    case CMD_HISTORY_LAST:
+        CommandLine = DbGetFromHistory (NULL);
+        if (!CommandLine)
+        {
+            return AE_TRUE;
+        }
+
+        Status = DbCommandDispatch (CommandLine, WalkState, Op);
+        if (Status == AE_OK)
+            Status = AE_TRUE;
+        return Status;
 
     case CMD_INFORMATION:
         DbDisplayMethodInfo (Op);
