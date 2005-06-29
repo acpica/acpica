@@ -3,7 +3,7 @@
 /******************************************************************************
  *
  * Module Name: aslcompiler.y - Bison input file (ASL grammar and actions)
- *              $Revision: 1.48 $
+ *              $Revision: 1.49 $
  *
  *****************************************************************************/
 
@@ -2194,7 +2194,7 @@ Integer
     ;
 
 String
-    : STRING_LITERAL                {$$ = TrCreateValuedLeafNode (STRING_LITERAL, (ACPI_INTEGER) AslCompilerlval.s);}
+    : STRING_LITERAL                {$$ = TrCreateValuedLeafNode (STRING_LITERAL, (NATIVE_INT) AslCompilerlval.s);}
     ;
 
 ConstTerm
@@ -2681,11 +2681,11 @@ WordIOTerm
 
 NameString
     : NameSeg                       {}
-    | NAMESTRING                    {$$ = TrCreateValuedLeafNode (NAMESTRING, (ACPI_INTEGER) AslCompilerlval.s);}
+    | NAMESTRING                    {$$ = TrCreateValuedLeafNode (NAMESTRING, (NATIVE_INT) AslCompilerlval.s);}
     ;
 
 NameSeg
-    : NAMESEG                       {$$ = TrCreateValuedLeafNode (NAMESEG, (ACPI_INTEGER) AslCompilerlval.s);}
+    : NAMESEG                       {$$ = TrCreateValuedLeafNode (NAMESEG, (NATIVE_INT) AslCompilerlval.s);}
     ;
 
 
