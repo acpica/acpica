@@ -679,11 +679,139 @@ SOURCE=..\..\source\COMPONENTS\Disassembler\dmwalk.c
 # PROP Default_Filter "h;hpp;hxx;hm;inl"
 # Begin Source File
 
+SOURCE=..\..\source\include\acapps.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\Include\acconfig.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\Include\acdebug.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\INCLUDE\acdisasm.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\Include\acdispat.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\Include\platform\acenv.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\Include\acevents.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\Include\acexcep.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\Include\acglobal.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\Include\achware.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\Include\acinterp.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\Include\aclocal.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\Include\acmacros.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\Include\platform\acmsvc.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\Include\acnamesp.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\Include\acobject.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\include\acopcode.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\Include\acoutput.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\Include\acparser.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\Include\acpi.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\Include\acpiosxf.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\Include\acpixf.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\Include\acresrc.h
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\source\include\acstruct.h
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\source\Include\actables.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\Include\actbl.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\Include\actbl1.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\Include\actbl2.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\Include\actypes.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\Include\acutils.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\Include\platform\acwin.h
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\source\Tools\AcpiExec\aecommon.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\Include\amlcode.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\INCLUDE\amlresrc.h
 # End Source File
 # End Group
 # Begin Group "Resource Files"
