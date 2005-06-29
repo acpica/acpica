@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslcompiler.h - common include file
- *              $Revision: 1.76 $
+ *              $Revision: 1.77 $
  *
  *****************************************************************************/
 
@@ -164,8 +164,8 @@ getopt (
  * Compiler versions and names
  */
 
-#define CompilerVersion             "X2029"
-#define CompilerCreatorRevision     0x02002029  /* Acpi 2.0, Version # */
+#define CompilerVersion             "X2030"
+#define CompilerCreatorRevision     0x02002030  /* Acpi 2.0, Version # */
 
 #define CompilerId                  "Intel ACPI Component Architecture ASL Compiler"
 #define CompilerCopyright           "Copyright (C) 2000, 2001 Intel Corporation"
@@ -440,7 +440,6 @@ CgAmlWriteWalk (
     UINT32                  Level,
     void                    *Context);
 
-
 void
 CgGenerateOutput(
     void);
@@ -453,6 +452,13 @@ void
 CgWriteNode (
     ASL_PARSE_NODE          *Node);
 
+/*
+ * aslmap
+ */
+
+ACPI_OBJECT_TYPE8
+AslMapNamedOpcodeToDataType (
+    UINT16                  Opcode);
 
 /* 
  * asltransform - parse tree transformations
