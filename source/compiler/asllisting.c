@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asllisting - Listing file generation
- *              $Revision: 1.20 $
+ *              $Revision: 1.21 $
  *
  *****************************************************************************/
 
@@ -206,7 +206,7 @@ LsPopNode (void)
 
     Gbl_ListingNode = Lnode->Next;
 
-    AcpiUtFree (Lnode);
+    ACPI_MEM_FREE (Lnode);
 
     /* New "Current" node is the new head */
 
