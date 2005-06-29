@@ -2,6 +2,7 @@
 /******************************************************************************
  *
  * Module Name: nsload - namespace loading/expanding/contracting procedures
+ *              $Revision: 1.24 $
  *
  *****************************************************************************/
 
@@ -179,7 +180,8 @@ AcpiNsParseTable (
         ("NsParseTable: *PARSE* 1st pass parse\n"));
     Status = AcpiPsParseAml (AcpiGbl_ParsedNamespaceRoot,
                             TableDesc->AmlPointer,
-                            TableDesc->AmlLength, PARSE_DELETE_TREE,
+                            TableDesc->AmlLength, 
+                            ACPI_PARSE_LOAD_PASS1 | ACPI_PARSE_DELETE_TREE,
                             NULL, NULL, NULL,
                             AcpiDsLoad1BeginOp,
                             AcpiDsLoad1EndOp);
@@ -217,7 +219,8 @@ AcpiNsParseTable (
         ("NsParseTable: *PARSE* 2nd pass parse\n"));
     Status = AcpiPsParseAml (AcpiGbl_ParsedNamespaceRoot,
                             TableDesc->AmlPointer,
-                            TableDesc->AmlLength, PARSE_DELETE_TREE,
+                            TableDesc->AmlLength, 
+                            ACPI_PARSE_LOAD_PASS1 | ACPI_PARSE_DELETE_TREE,
                             NULL, NULL, NULL,
                             AcpiDsLoad2BeginOp,
                             AcpiDsLoad2EndOp);
