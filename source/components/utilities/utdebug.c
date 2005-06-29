@@ -151,8 +151,35 @@ void
 FunctionTrace (char *ModuleName, INT32 LineNumber, INT32 ComponentId, char * FunctionName)
 {
 
+    NestingLevel++;
     DebugPrint (ModuleName, LineNumber, ComponentId, TRACE_FUNCTIONS,
-                "Entered Function: %s\n", FunctionName);
+                " %2.2d Entered Function: %s\n", NestingLevel, FunctionName);
+}
+
+
+/*****************************************************************************
+ * 
+ * FUNCTION:    FunctionExit
+ *
+ * PARAMETERS:  ModuleName          - Caller's module name (for error output)
+ *              LineNumber          - Caller's line number (for error output)
+ *              ComponentId         - Caller's component ID (for error output)
+ *              FunctionName        - Name of Caller's function
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Function exit trace.  Prints only if TRACE_FUNCTIONS bit is
+ *              set in DebugLevel
+ *
+ ****************************************************************************/
+
+void
+FunctionExit (char *ModuleName, INT32 LineNumber, INT32 ComponentId, char * FunctionName)
+{
+
+    DebugPrint (ModuleName, LineNumber, ComponentId, TRACE_FUNCTIONS,
+                " %2.2d Exiting Function: %s\n", NestingLevel, FunctionName);
+    NestingLevel--;
 }
 
 
@@ -188,7 +215,7 @@ DebugPrint (char *ModuleName, INT32 LineNumber, INT32 ComponentId, INT32 PrintLe
     {
         va_start (args, Format);
 
-        OsdPrintf (NULL, "%10s(%04d-%02x): ", ModuleName, LineNumber, ComponentId);
+        OsdPrintf (NULL, "%10s(%04d): ", ModuleName, LineNumber);
         OsdVprintf (NULL, Format, args);
 
         va_end (args);
@@ -216,7 +243,7 @@ DebugPrintPrefix (char *ModuleName, INT32 LineNumber, INT32 ComponentId)
 {
 
 
-    OsdPrintf (NULL, "%10s(%04d-%02x): ", ModuleName, LineNumber, ComponentId);
+    OsdPrintf (NULL, "%10s(%04d): ", ModuleName, LineNumber);
 }
 
 

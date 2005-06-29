@@ -115,14 +115,14 @@
     /* Debug switch - level and trace mask */
 
 #ifdef _DEBUG
-INT32                       DebugLevel = DEBUG_DEFAULT;
+UINT32                      DebugLevel = DEBUG_DEFAULT;
 #else
-INT32                       DebugLevel = NORMAL_DEFAULT;
+UINT32                      DebugLevel = NORMAL_DEFAULT;
 #endif
 
     /* Debug switch - layer (component) mask */
 
-INT32                       DebugLayer = ALL_COMPONENTS;
+UINT32                      DebugLayer = ALL_COMPONENTS;
 
 
 
@@ -186,7 +186,6 @@ InitAcpiLibGlobals (void)
     NameString              = NULL;
     NameStringSize          = 0;
 
-
     /* Interpreter */
 
     BufSeq                  = 0;
@@ -194,13 +193,10 @@ InitAcpiLibGlobals (void)
 
     /* Hardware oriented */
 
-    RestoreAcpiChipset      = TRUE;
-    Pm1EnableRegisterSave   = 0;
     Gpe0EnableRegisterSave  = NULL;
     Gpe1EnableRegisterSave  = NULL;
-    EdgeLevelSave           = SAVE_NOT_VALID;
-    IrqEnableSave           = SAVE_NOT_VALID;
-    OriginalMode            = SAVE_NOT_VALID;   /*  original ACPI/legacy mode   */
+    OriginalMode            = -1;   /*  original ACPI/legacy mode   */
+    SciHandle				= 0;
 
 
 
@@ -220,6 +216,13 @@ InitAcpiLibGlobals (void)
     RootObject->Type            = TYPE_Any;
     RootObject->Value           = NULL;
 
+
+    /* Debug */
+
+    NestingLevel            = 0;
+
+
+    FUNCTION_EXIT;
 }   
 
 
@@ -278,5 +281,7 @@ AcpiLocalCleanup (void)
             OsdFree (SBDT);
 
     }
+
+    FUNCTION_EXIT;
 }
 
