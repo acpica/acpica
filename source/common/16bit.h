@@ -134,11 +134,11 @@ typedef union ptr_ovl
 } PTR_OVL;
 
 
-int
+int ACPI_INTERNAL_VAR_XFACE
 FlatMove (
     UINT32              Dest,
     UINT32              Src,
-    UINT32              Size);
+    UINT16              Size);
 
 
 NATIVE_INT
