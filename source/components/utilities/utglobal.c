@@ -1,7 +1,7 @@
 /******************************************************************************
  *
- * Module Name: cmglobal - Global variables for the ACPI subsystem
- *              $Revision: 1.121 $
+ * Module Name: utglobal - Global variables for the ACPI subsystem
+ *              $Revision: 1.123 $
  *
  *****************************************************************************/
 
@@ -114,7 +114,7 @@
  *
  *****************************************************************************/
 
-#define __CMGLOBAL_C__
+#define __UTGLOBAL_C__
 #define DEFINE_ACPI_GLOBALS
 
 #include "acpi.h"
@@ -125,7 +125,7 @@
 
 
 #define _COMPONENT          ACPI_UTILITIES
-        MODULE_NAME         ("cmglobal")
+        MODULE_NAME         ("utglobal")
 
 
 /******************************************************************************
@@ -235,17 +235,18 @@ UINT8                       AcpiGbl_NsProperties[] =
     NSP_NORMAL,                 /* 21 Alias            */
     NSP_NORMAL,                 /* 22 Notify           */
     NSP_NORMAL,                 /* 23 Address Handler  */
-    NSP_NEWSCOPE | NSP_LOCAL,   /* 24 Resource         */
-    NSP_NORMAL,                 /* 25 DefFieldDefn     */
-    NSP_NORMAL,                 /* 26 BankFieldDefn    */
-    NSP_NORMAL,                 /* 27 IndexFieldDefn   */
-    NSP_NORMAL,                 /* 28 If               */
-    NSP_NORMAL,                 /* 29 Else             */
-    NSP_NORMAL,                 /* 30 While            */
-    NSP_NEWSCOPE,               /* 31 Scope            */
-    NSP_LOCAL,                  /* 32 DefAny           */
-    NSP_NORMAL,                 /* 33 Extra            */
-    NSP_NORMAL                  /* 34 Invalid          */
+    NSP_NEWSCOPE | NSP_LOCAL,   /* 24 Resource Desc    */
+    NSP_NEWSCOPE | NSP_LOCAL,   /* 25 Resource Field   */
+    NSP_NORMAL,                 /* 26 DefFieldDefn     */
+    NSP_NORMAL,                 /* 27 BankFieldDefn    */
+    NSP_NORMAL,                 /* 28 IndexFieldDefn   */
+    NSP_NORMAL,                 /* 29 If               */
+    NSP_NORMAL,                 /* 30 Else             */
+    NSP_NORMAL,                 /* 31 While            */
+    NSP_NEWSCOPE,               /* 32 Scope            */
+    NSP_LOCAL,                  /* 33 DefAny           */
+    NSP_NORMAL,                 /* 34 Extra            */
+    NSP_NORMAL                  /* 35 Invalid          */
 };
 
 
@@ -297,7 +298,7 @@ NATIVE_CHAR                 *MsgAcpiErrorBreak = "*** Break on ACPI_ERROR ***\n"
 
 /*****************************************************************************
  *
- * FUNCTION:    AcpiCmGetMutexName
+ * FUNCTION:    AcpiUtGetMutexName
  *
  * PARAMETERS:  None.
  *
@@ -308,7 +309,7 @@ NATIVE_CHAR                 *MsgAcpiErrorBreak = "*** Break on ACPI_ERROR ***\n"
  ****************************************************************************/
 
 NATIVE_CHAR *
-AcpiCmGetMutexName (
+AcpiUtGetMutexName (
     UINT32                  MutexId)
 {
 
@@ -359,23 +360,24 @@ static NATIVE_CHAR          *AcpiGbl_NsTypeNames[] =    /* printable names of AC
     /* 21 */ "Alias",
     /* 22 */ "Notify",
     /* 23 */ "AddrHndlr",
-    /* 24 */ "Resource",
-    /* 25 */ "RgnFldDfn",
-    /* 26 */ "BnkFldDfn",
-    /* 27 */ "IdxFldDfn",
-    /* 28 */ "If",
-    /* 29 */ "Else",
-    /* 30 */ "While",
-    /* 31 */ "Scope",
-    /* 32 */ "DefAny",
-    /* 33 */ "Extra",
-    /* 34 */ "Invalid"
+    /* 24 */ "RsrcDesc",
+    /* 25 */ "RsrcField",
+    /* 26 */ "RgnFldDfn",
+    /* 27 */ "BnkFldDfn",
+    /* 28 */ "IdxFldDfn",
+    /* 29 */ "If",
+    /* 30 */ "Else",
+    /* 31 */ "While",
+    /* 32 */ "Scope",
+    /* 33 */ "DefAny",
+    /* 34 */ "Extra",
+    /* 35 */ "Invalid"
 };
 
 
 /*****************************************************************************
  *
- * FUNCTION:    AcpiCmGetTypeName
+ * FUNCTION:    AcpiUtGetTypeName
  *
  * PARAMETERS:  None.
  *
@@ -386,7 +388,7 @@ static NATIVE_CHAR          *AcpiGbl_NsTypeNames[] =    /* printable names of AC
  ****************************************************************************/
 
 NATIVE_CHAR *
-AcpiCmGetTypeName (
+AcpiUtGetTypeName (
     UINT32                  Type)
 {
 
@@ -415,7 +417,7 @@ NATIVE_CHAR *AcpiGbl_RegionTypes[NUM_REGION_TYPES] =
 
 /*****************************************************************************
  *
- * FUNCTION:    AcpiCmGetRegionName
+ * FUNCTION:    AcpiUtGetRegionName
  *
  * PARAMETERS:  None.
  *
@@ -426,7 +428,7 @@ NATIVE_CHAR *AcpiGbl_RegionTypes[NUM_REGION_TYPES] =
  ****************************************************************************/
 
 NATIVE_CHAR *
-AcpiCmGetRegionName (
+AcpiUtGetRegionName (
     UINT8                   SpaceId)
 {
 
@@ -493,7 +495,7 @@ NATIVE_CHAR *AcpiGbl_UpdateRules[NUM_UPDATE_RULES] =
 
 /*****************************************************************************
  *
- * FUNCTION:    AcpiCmValidObjectType
+ * FUNCTION:    AcpiUtValidObjectType
  *
  * PARAMETERS:  None.
  *
@@ -504,7 +506,7 @@ NATIVE_CHAR *AcpiGbl_UpdateRules[NUM_UPDATE_RULES] =
  ****************************************************************************/
 
 BOOLEAN
-AcpiCmValidObjectType (
+AcpiUtValidObjectType (
     UINT32                  Type)
 {
 
@@ -523,7 +525,7 @@ AcpiCmValidObjectType (
 
 /*****************************************************************************
  *
- * FUNCTION:    AcpiCmFormatException
+ * FUNCTION:    AcpiUtFormatException
  *
  * PARAMETERS:  Status              - Acpi status to be formatted
  *
@@ -534,7 +536,7 @@ AcpiCmValidObjectType (
  ****************************************************************************/
 
 NATIVE_CHAR *
-AcpiCmFormatException (
+AcpiUtFormatException (
     ACPI_STATUS             Status)
 {
     NATIVE_CHAR             *Exception = "UNKNOWN_STATUS";
@@ -597,7 +599,7 @@ AcpiCmFormatException (
 
 /****************************************************************************
  *
- * FUNCTION:    AcpiCmAllocateOwnerId
+ * FUNCTION:    AcpiUtAllocateOwnerId
  *
  * PARAMETERS:  IdType          - Type of ID (method or table)
  *
@@ -606,16 +608,16 @@ AcpiCmFormatException (
  ***************************************************************************/
 
 ACPI_OWNER_ID
-AcpiCmAllocateOwnerId (
+AcpiUtAllocateOwnerId (
     UINT32                  IdType)
 {
     ACPI_OWNER_ID           OwnerId = 0xFFFF;
 
 
-    FUNCTION_TRACE ("CmAllocateOwnerId");
+    FUNCTION_TRACE ("UtAllocateOwnerId");
 
 
-    AcpiCmAcquireMutex (ACPI_MTX_CACHES);
+    AcpiUtAcquireMutex (ACPI_MTX_CACHES);
 
     switch (IdType)
     {
@@ -644,7 +646,7 @@ AcpiCmAllocateOwnerId (
     }
 
 
-    AcpiCmReleaseMutex (ACPI_MTX_CACHES);
+    AcpiUtReleaseMutex (ACPI_MTX_CACHES);
 
     return_VALUE (OwnerId);
 }
@@ -652,7 +654,7 @@ AcpiCmAllocateOwnerId (
 
 /****************************************************************************
  *
- * FUNCTION:    AcpiCmInitGlobals
+ * FUNCTION:    AcpiUtInitGlobals
  *
  * PARAMETERS:  none
  *
@@ -662,13 +664,13 @@ AcpiCmAllocateOwnerId (
  ***************************************************************************/
 
 void
-AcpiCmInitGlobals (
+AcpiUtInitGlobals (
     void)
 {
     UINT32                  i;
 
 
-    FUNCTION_TRACE ("CmInitGlobals");
+    FUNCTION_TRACE ("UtInitGlobals");
 
 
     /* ACPI table structure */
