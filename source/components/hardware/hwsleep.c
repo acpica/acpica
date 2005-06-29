@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Name: hwsleep.c - ACPI Hardware Sleep/Wake Interface
- *              $Revision: 1.25 $
+ *              $Revision: 1.26 $
  *
  *****************************************************************************/
 
@@ -241,7 +241,9 @@ AcpiEnterSleepStatePrep (
     ACPI_OBJECT_LIST    ArgList;
     ACPI_OBJECT         Arg;
 
+
     FUNCTION_TRACE ("AcpiEnterSleepStatePrep");
+
 
     /*
      * _PSW methods could be run here to enable wake-on keyboard, LAN, etc.
@@ -252,7 +254,7 @@ AcpiEnterSleepStatePrep (
         return_ACPI_STATUS (Status);
     }
 
-    /* run the _PTS and _GTS methods */
+    /* Run the _PTS and _GTS methods */
 
     MEMSET(&ArgList, 0, sizeof(ArgList));
     ArgList.Count = 1;
@@ -262,10 +264,14 @@ AcpiEnterSleepStatePrep (
     Arg.Type = ACPI_TYPE_INTEGER;
     Arg.Integer.Value = SleepState;
 
-    AcpiEvaluateObject (NULL, "\\_PTS", &ArgList, NULL);
-    AcpiEvaluateObject (NULL, "\\_GTS", &ArgList, NULL);
+    Status = AcpiEvaluateObject (NULL, "\\_PTS", &ArgList, NULL);
+    if (!ACPI_SUCCESS (Status))
+    {
+        return_ACPI_STATUS (Status);
+    }
 
-    return_ACPI_STATUS (AE_OK);
+    Status = AcpiEvaluateObject (NULL, "\\_GTS", &ArgList, NULL);
+    return_ACPI_STATUS (Status);
 }
 
 
@@ -293,6 +299,7 @@ AcpiEnterSleepState (
 
     FUNCTION_TRACE ("AcpiEnterSleepState");
 
+
     if ((SleepTypeA > ACPI_SLEEP_TYPE_MAX) ||
         (SleepTypeB > ACPI_SLEEP_TYPE_MAX))
     {
@@ -301,13 +308,13 @@ AcpiEnterSleepState (
         return_ACPI_STATUS (AE_ERROR);
     }
 
-    /* clear wake status */
+    /* Clear wake status */
 
     AcpiHwRegisterBitAccess (ACPI_WRITE, ACPI_MTX_LOCK, WAK_STS, 1);
 
     AcpiHwClearAcpiStatus();
 
-    /* disable arbitration here? */
+    /* Disable arbitration here? */
 
     AcpiHwDisableNonWakeupGpes();
 
@@ -315,27 +322,27 @@ AcpiEnterSleepState (
 
     ACPI_DEBUG_PRINT ((ACPI_DB_OK, "Entering S%d\n", SleepState));
 
-    /* mask off SLP_EN and SLP_TYP fields */
+    /* Mask off SLP_EN and SLP_TYP fields */
 
     PM1AControl &= ~(SLP_TYPE_X_MASK | SLP_EN_MASK);
     PM1BControl = PM1AControl;
 
-    /* mask in SLP_TYP */
+    /* Mask in SLP_TYP */
 
     PM1AControl |= (SleepTypeA << AcpiHwGetBitShift (SLP_TYPE_X_MASK));
     PM1BControl |= (SleepTypeB << AcpiHwGetBitShift (SLP_TYPE_X_MASK));
 
-    /* write #1: fill in SLP_TYP data */
+    /* Write #1: fill in SLP_TYP data */
 
     AcpiHwRegisterWrite (ACPI_MTX_LOCK, PM1A_CONTROL, PM1AControl);
     AcpiHwRegisterWrite (ACPI_MTX_LOCK, PM1B_CONTROL, PM1BControl);
 
-    /* mask in SLP_EN */
+    /* Mask in SLP_EN */
 
     PM1AControl |= (1 << AcpiHwGetBitShift (SLP_EN_MASK));
     PM1BControl |= (1 << AcpiHwGetBitShift (SLP_EN_MASK));
 
-    /* write #2: SLP_TYP + SLP_EN */
+    /* Write #2: SLP_TYP + SLP_EN */
 
     AcpiHwRegisterWrite (ACPI_MTX_LOCK, PM1A_CONTROL, PM1AControl);
     AcpiHwRegisterWrite (ACPI_MTX_LOCK, PM1B_CONTROL, PM1BControl);
@@ -351,11 +358,11 @@ AcpiEnterSleepState (
             (1 << AcpiHwGetBitShift (SLP_EN_MASK)));
     }
 
-    /* wait until we enter sleep state */
+    /* Wait until we enter sleep state */
 
     while (!AcpiHwRegisterBitAccess (ACPI_READ, ACPI_MTX_LOCK, WAK_STS))
     {
-        /* spin until we wake */ 
+        /* Spin until we wake */ 
     }
 
     return_ACPI_STATUS (AE_OK);
@@ -379,11 +386,14 @@ AcpiLeaveSleepState (
 {
     ACPI_OBJECT_LIST    ArgList;
     ACPI_OBJECT         Arg;
+    ACPI_STATUS         Status;
 
 
     FUNCTION_TRACE ("AcpiLeaveSleepState");
 
+
     /* Ensure EnterSleepStatePrep -> EnterSleepState ordering */
+
     SleepTypeA = ACPI_SLEEP_TYPE_INVALID;
 
     MEMSET (&ArgList, 0, sizeof(ArgList));
@@ -394,12 +404,23 @@ AcpiLeaveSleepState (
     Arg.Type = ACPI_TYPE_INTEGER;
     Arg.Integer.Value = SleepState;
 
-    AcpiEvaluateObject (NULL, "\\_BFS", &ArgList, NULL);
-    AcpiEvaluateObject (NULL, "\\_WAK", &ArgList, NULL);
+    /* Ignore any errors from these methods */
+
+    Status = AcpiEvaluateObject (NULL, "\\_BFS", &ArgList, NULL);
+    if (!ACPI_SUCCESS (Status))
+    {
+        REPORT_ERROR (("Method _BFS failed, %s\n", AcpiFormatException (Status)));
+    }
+
+    Status = AcpiEvaluateObject (NULL, "\\_WAK", &ArgList, NULL);
+    if (!ACPI_SUCCESS (Status))
+    {
+        REPORT_ERROR (("Method _WAK failed, %s\n", AcpiFormatException (Status)));
+    }
 
     /* _WAK returns stuff - do we want to look at it? */
 
     AcpiHwEnableNonWakeupGpes();
 
-    return_ACPI_STATUS (AE_OK);
+    return_ACPI_STATUS (Status);
 }
