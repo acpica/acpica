@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: actypes.h - Common data types for the entire ACPI subsystem
- *       $Revision: 1.185 $
+ *       $Revision: 1.186 $
  *
  *****************************************************************************/
 
@@ -284,6 +284,13 @@ typedef UINT32                          ACPI_STATUS;    /* All ACPI Exceptions *
 typedef UINT32                          ACPI_NAME;      /* 4-byte ACPI name */
 typedef char*                           ACPI_STRING;    /* Null terminated ASCII string */
 typedef void*                           ACPI_HANDLE;    /* Actually a ptr to an Node */
+
+typedef struct
+{
+    UINT32                                  Lo;
+    UINT32                                  Hi;
+
+} UINT64_STRUCT;
 
 
 /*
