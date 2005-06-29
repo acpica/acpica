@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: utalloc - local cache and memory allocation routines
- *              $Revision: 1.101 $
+ *              $Revision: 1.102 $
  *
  *****************************************************************************/
 
@@ -573,7 +573,7 @@ AcpiUtDumpAllocationInfo (
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiUtDumpCurrentAllocations
+ * FUNCTION:    AcpiUtDumpAllocations
  *
  * PARAMETERS:  Component           - Component(s) to dump info for.
  *              Module              - Module to dump info for.  NULL means all.
@@ -585,7 +585,7 @@ AcpiUtDumpAllocationInfo (
  ******************************************************************************/
 
 void
-AcpiUtDumpCurrentAllocations (
+AcpiUtDumpAllocations (
     UINT32                  Component,
     NATIVE_CHAR             *Module)
 {
@@ -593,7 +593,7 @@ AcpiUtDumpCurrentAllocations (
     UINT32                  i;
 
 
-    FUNCTION_TRACE ("UtDumpCurrentAllocations");
+    FUNCTION_TRACE ("UtDumpAllocations");
 
 
     Element = AcpiGbl_MemoryLists[0].ListHead;
