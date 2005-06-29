@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dswload - Dispatcher namespace load callbacks
- *              $Revision: 1.25 $
+ *              $Revision: 1.28 $
  *
  *****************************************************************************/
 
@@ -353,17 +353,20 @@ LdNamespace1Begin (
     ACPI_NAMESPACE_NODE     *NsNode;
     ACPI_STATUS             Status;
     ACPI_OBJECT_TYPE8       DataType;
+    ACPI_OBJECT_TYPE8       ActualDataType = ACPI_TYPE_ANY;
     NATIVE_CHAR             *Path;
     UINT32                  Flags = NS_NO_UPSEARCH;
     ASL_PARSE_NODE          *Arg;
     UINT32                  i;
 
 
-    DEBUG_PRINT (TRACE_DISPATCH,
-        ("Load1BeginOp: PsNode %p\n", PsNode));
+    DEBUG_PRINT (TRACE_DISPATCH, ("LdNamespace1Begin: PsNode %p\n", PsNode));
 
 
-    /* We are only interested in opcodes that have an associated name (or multiple names) */
+    /* 
+     * We are only interested in opcodes that have an associated name 
+     * (or multiple names) 
+     */
 
     switch (PsNode->AmlOpcode)
     {
@@ -395,8 +398,8 @@ LdNamespace1Begin (
 
     if (PsNode->ParseOpcode == NAME)
     {
-        Arg = PsNode->Child;        /* Get the NameSeg/NameString node */
-        Arg = Arg->Peer;            /* First peer is the object to be associated with the name */
+        Arg = PsNode->Child;    /* Get the NameSeg/NameString node */
+        Arg = Arg->Peer;        /* First peer is the object to be associated with the name */
 
         /* Get the data type associated with the named object, not the name itself */
 
@@ -411,10 +414,15 @@ LdNamespace1Begin (
 
     else if (PsNode->ParseOpcode == EXTERNAL)
     {
-        /* "External" simply enters a name and type into the namespace */
-        /* first child is name, next child is ObjectType */
-
-        DataType = PsNode->Child->Peer->Value.Integer8;
+        /* 
+         * "External" simply enters a name and type into the namespace.
+         * We must be careful to not open a new scope, however, no matter
+         * what type the external name refers to (e.g., a method)
+         *
+         * first child is name, next child is ObjectType
+         */
+        ActualDataType = PsNode->Child->Peer->Value.Integer8;
+        DataType = ACPI_TYPE_ANY;
     }
 
     else if ((PsNode->ParseOpcode == DEFAULT_ARG) &&
@@ -432,8 +440,7 @@ LdNamespace1Begin (
         DataType = AcpiDsMapNamedOpcodeToDataType (PsNode->AmlOpcode);
     }
 
-    DEBUG_PRINT (TRACE_DISPATCH,
-        ("Load1BeginOp: Type=%x\n", DataType));
+    DEBUG_PRINT (TRACE_DISPATCH, ("LdNamespace1Begin: Type=%x\n", DataType));
 
 
     if (PsNode->ParseOpcode != SCOPE)
@@ -459,7 +466,7 @@ LdNamespace1Begin (
             return (Status);
         }
 
-        printf ("Failure from lookup %s\n", AcpiCmFormatException (Status));
+        printf ("Failure from lookup %s\n", AcpiUtFormatException (Status));
         return (Status);
     }
 
@@ -476,6 +483,13 @@ LdNamespace1Begin (
         NsNode->OwnerId = PsNode->Extra;
     }
 
+
+    /* Set the actual data type if appropriate (EXTERNAL term only) */
+
+    if (ActualDataType != ACPI_TYPE_ANY)
+    {
+        NsNode->Type = ActualDataType;
+    }
 
     return (Status);
 }
@@ -534,8 +548,8 @@ LdNamespace1End (
     {
 
         DEBUG_PRINT (TRACE_DISPATCH,
-            ("Load1EndOp/%s: Popping scope for Op %p\n",
-            AcpiCmGetTypeName (DataType), PsNode));
+            ("LdNamespace1End/%s: Popping scope for Op %p\n",
+            AcpiUtGetTypeName (DataType), PsNode));
 
 
         AcpiDsScopeStackPop (WalkState);
