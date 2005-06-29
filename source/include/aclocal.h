@@ -149,19 +149,44 @@ typedef UINT32                  ACPI_MUTEX_HANDLE;
  * NOTE: any changes here must be reflected in the Gbl_MutexNames table also!
  */
 
-#define MTX_MEMORY              0
-#define MTX_TABLES              1
-#define MTX_DISPATCHER          2
-#define MTX_INTERPRETER         3
-#define MTX_EXECUTE             4
-#define MTX_NAMESPACE           5
-#define MTX_EVENTS              6
-#define MTX_OP_REGIONS          7
-#define MTX_DEBUG_COMMAND       8
-#define MTX_DEBUGGER            9
+#define MTX_HARDWARE            0
+#define MTX_MEMORY              1
+#define MTX_TABLES              2
+#define MTX_DISPATCHER          3
+#define MTX_INTERPRETER         4
+#define MTX_EXECUTE             5
+#define MTX_NAMESPACE           6
+#define MTX_EVENTS              7
+#define MTX_OP_REGIONS          8
+#define MTX_DEBUG_COMMAND       9
+#define MTX_DEBUGGER            10
 
-#define MAX_MTX                 9
+#define MAX_MTX                 10
 #define NUM_MTX                 MAX_MTX+1
+
+
+#ifdef ACPI_DEBUG
+#ifdef DEFINE_ACPI_GLOBALS
+
+/* Names for the mutexes used in the subsystem */
+
+static char                 *Gbl_MutexNames[] =
+{
+    "MTX_Hardware",
+    "MTX_Memory",
+    "MTX_Tables",
+    "MTX_Dispatcher",
+    "MTX_Interpreter",
+    "MTX_Execute",
+    "MTX_Namespace",
+    "MTX_Events",
+    "MTX_OpRegions",
+    "MTX_DebugCommand",
+    "MTX_Debugger"
+};
+
+#endif
+#endif
 
 
 /* Table for the global mutexes */
