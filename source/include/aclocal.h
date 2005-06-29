@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: aclocal.h - Internal data types used across the ACPI subsystem
- *       $Revision: 1.140 $
+ *       $Revision: 1.141 $
  *
  *****************************************************************************/
 
@@ -426,18 +426,6 @@ typedef struct
 #define ACPI_ENABLE_POWER_BUTTON        0x0100
 #define ACPI_ENABLE_SLEEP_BUTTON        0x0200
 #define ACPI_ENABLE_RTC_ALARM           0x0400
-
-
-/*
- * Entry in the AddressSpace (AKA Operation Region) table
- */
-
-typedef struct
-{
-    ACPI_ADR_SPACE_HANDLER  Handler;
-    void                    *Context;
-
-} ACPI_ADR_SPACE_INFO;
 
 
 /* Values and addresses of the GPE registers (both banks) */
