@@ -297,9 +297,10 @@ NsLookup (
     NAME_TABLE_ENTRY        *EntryToSearch = NULL;
     NAME_TABLE_ENTRY        *ThisEntry = NULL;
     NAME_TABLE_ENTRY        *ScopeToPush = NULL;
-    INT32                   NumSegments;
-    INT32                   NullNamePath = FALSE;
+    UINT32                  NumSegments;
     ACPI_OBJECT_TYPE        TypeToCheckFor;              /* Type To Check For */
+    UINT32                  i;
+    BOOLEAN                 NullNamePath = FALSE;
 
 
     FUNCTION_TRACE ("NsLookup");
@@ -427,18 +428,18 @@ NsLookup (
 
         if (*Name == AML_DualNamePrefix)
         {
-            DEBUG_PRINT (TRACE_NAMES, ("NsLookup: Dual Name (2 segments)\n"));
-
             NumSegments = 2;
             Name++;                             /* point to first segment */
+
+            DEBUG_PRINT (TRACE_NAMES, ("NsLookup: Dual Name (2 segments, Flags=%X)\n", Flags));
         }
     
         else if (*Name == AML_MultiNamePrefixOp)
         {
-            DEBUG_PRINT (TRACE_NAMES, ("NsLookup: Multi Name (%d Segments) \n", Name[1]));
-        
             NumSegments = (INT32)* (UINT8 *) ++Name;
             Name++;                             /* point to first segment */
+        
+            DEBUG_PRINT (TRACE_NAMES, ("NsLookup: Multi Name (%d Segments, Flags=%X) \n", NumSegments, Flags));
         }
 
         else
@@ -447,12 +448,20 @@ NsLookup (
              * No Dual or Multi prefix, hence there is only one
              * segment and Name is already pointing to it.
              */
-            DEBUG_PRINT (TRACE_NAMES, ("NsLookup: Simple Name (1 segment)\n"));
             NumSegments = 1;
+
+            DEBUG_PRINT (TRACE_NAMES, ("NsLookup: Simple Name (1 segment, Flags=%X)\n", Flags));
         }
 
-        DEBUG_PRINT (TRACE_NAMES, ("NsLookup: [%s] Segments=%d Flags=%x\n",
-                                    Name, NumSegments, Flags));
+
+        /* Debug only: print the entire name that we are about to lookup */
+
+        DEBUG_PRINT (TRACE_NAMES, ("NsLookup: ["));
+        for (i = 0; i < NumSegments; i++)
+        {
+            DEBUG_PRINT_RAW (TRACE_NAMES, ("%4.4s/", &Name[i * 4]));
+        }
+        DEBUG_PRINT_RAW (TRACE_NAMES, ("]\n"));
     }
 
 
@@ -503,6 +512,8 @@ NsLookup (
             /* Complain about type mismatch */
 
             REPORT_WARNING ("Type mismatch");
+            DEBUG_PRINT (ACPI_WARN, ("NsLookup: %4.4s, type %X, checking for type %X\n", 
+                                        Name, ThisEntry->Type, TypeToCheckFor));
         }
 
         /*
