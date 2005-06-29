@@ -441,7 +441,7 @@ AcpiDisableEvent (
  *
  * FUNCTION:    AcpiClearEvent
  *
- * PARAMETERS:  Event           - The fixed event or GPE to be enabled
+ * PARAMETERS:  Event           - The fixed event or GPE to be cleared
  *              Type            - The type of event
  *
  * RETURN:      Status
@@ -532,13 +532,14 @@ AcpiClearEvent (
  *
  * FUNCTION:    AcpiGetEventStatus
  *
- * PARAMETERS:  Event           - The fixed event or GPE to be enabled
+ * PARAMETERS:  Event           - The fixed event or GPE
  *              Type            - The type of event
- *              Status          - The current status of the event
+ *              Status          - Where the current status of the event will
+ *                                be returned
  *
  * RETURN:      Status
  *
- * DESCRIPTION: Computes the current status of the event
+ * DESCRIPTION: Obtains and returns the current status of the event
  *
  ******************************************************************************/
 
