@@ -443,7 +443,7 @@ CmDumpCurrentAllocations (
             if (Element->Size == sizeof (ACPI_OBJECT_INTERNAL))
             {
                 DEBUG_PRINT_RAW (TRACE_ALLOCATIONS | TRACE_TABLES, (" Type %s", 
-                    Gbl_NsTypeNames[((ACPI_OBJECT_INTERNAL *)(Element->Address))->Type]));
+                    Gbl_NsTypeNames[((ACPI_OBJECT_INTERNAL *)(Element->Address))->Common.Type]));
             }
 
             DEBUG_PRINT_RAW (TRACE_ALLOCATIONS | TRACE_TABLES, ("\n")); 

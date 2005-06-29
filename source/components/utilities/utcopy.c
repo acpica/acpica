@@ -145,7 +145,7 @@ PKG_SEARCH_INFO                 Level[MAX_PACKAGE_DEPTH];
  *
  * FUNCTION:    CmBuildExternalSimpleObject
  *
- * PARAMETERS:  *InternalObj            - Pointer to the object we are examining
+ * PARAMETERS:  *InternalObj    - Pointer to the object we are examining
  *              *Buffer         - Where the object is returned
  *              *SpaceUsed      - Where the data length is returned
  * 
@@ -171,7 +171,7 @@ CmBuildExternalSimpleObject (
     FUNCTION_TRACE ("CmBuildExternalSimpleObject");
 
 
-    ExternalObj->Type = InternalObj->Type;
+    ExternalObj->Type = InternalObj->Common.Type;
 
     switch (ExternalObj->Type)
     {
@@ -284,7 +284,7 @@ CmBuildExternalPackageObject (
     LevelPtr                = &Level[0];
     CurrentDepth            = 0;
 
-    ExternalObj->Type               = InternalObj->Type;
+    ExternalObj->Type               = InternalObj->Common.Type;
     ExternalObj->Package.Count      = InternalObj->Package.Count;
     ExternalObj->Package.Elements   = (ACPI_OBJECT *) FreeSpace;
 
@@ -303,7 +303,7 @@ CmBuildExternalPackageObject (
         ThisInternalObj = (ACPI_OBJECT_INTERNAL *) LevelPtr->InternalObj->Package.Elements[ThisIndex];
         ThisExternalObj = (ACPI_OBJECT *) &LevelPtr->ExternalObj->Package.Elements[ThisIndex];
 
-        if (ThisInternalObj->Type == TYPE_Package)
+        if (ThisInternalObj->Common.Type == TYPE_Package)
         {
             /*
              * If this object is a package then we go one deeper
@@ -417,7 +417,7 @@ CmBuildExternalObject (
     FUNCTION_TRACE ("CmBuildExternalObject");
 
 
-    if (InternalObj->Type == TYPE_Package)
+    if (InternalObj->Common.Type == TYPE_Package)
     {
         /*
          * Package objects contain other objects (which can be objects)
@@ -472,22 +472,22 @@ CmBuildInternalSimpleObject (
     FUNCTION_TRACE ("CmBuildInternalSimpleObject");
 
 
-    InternalObj->Type = ExternalObj->Type;
+    InternalObj->Common.Type = ExternalObj->Type;
 
     switch (ExternalObj->Type)
     {
 
     case TYPE_String:
 
-        InternalObj->String.Length  = ExternalObj->String.Length;
-        InternalObj->String.Pointer = ExternalObj->String.Pointer;
+        InternalObj->String.Length      = ExternalObj->String.Length;
+        InternalObj->String.Pointer     = ExternalObj->String.Pointer;
         break;
 
 
     case TYPE_Buffer:
 
-        InternalObj->Buffer.Length  = ExternalObj->Buffer.Length;
-        InternalObj->Buffer.Pointer = ExternalObj->Buffer.Pointer;
+        InternalObj->Buffer.Length      = ExternalObj->Buffer.Length;
+        InternalObj->Buffer.Pointer     = ExternalObj->Buffer.Pointer;
         break;
 
 
@@ -495,7 +495,7 @@ CmBuildInternalSimpleObject (
         /*
          * Number is included in the object itself
          */
-        InternalObj->Number.Value = ExternalObj->Number.Value;
+        InternalObj->Number.Value           = ExternalObj->Number.Value;
         break;
 
 
@@ -572,7 +572,7 @@ CmBuildInternalPackageObject (
     LevelPtr                = &Level[0];
     CurrentDepth            = 0;
 
-    ExternalObj->Type               = InternalObj->Type;
+    ExternalObj->Type               = InternalObj->Common.Type;
     ExternalObj->Package.Count      = InternalObj->Package.Count;
     ExternalObj->Package.Elements   = (ACPI_OBJECT *)FreeSpace;
 
@@ -591,7 +591,7 @@ CmBuildInternalPackageObject (
         ThisInternalObj = (ACPI_OBJECT_INTERNAL *) &LevelPtr->InternalObj->Package.Elements[ThisIndex];
         ThisExternalObj = (ACPI_OBJECT *) &LevelPtr->ExternalObj->Package.Elements[ThisIndex];
 
-        if (ThisInternalObj->Type == TYPE_Package)
+        if (ThisInternalObj->Common.Type == TYPE_Package)
         {
             /*
              * If this object is a package then we go one deeper
