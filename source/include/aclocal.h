@@ -220,6 +220,12 @@ typedef struct
 } NS_SEARCH_DATA;
 
 
+/*
+ * Predefined Namespace items
+ */
+#define ACPI_MAX_ADDRESS_SPACE      255
+#define ACPI_NUM_ADDRESS_SPACES     256
+
 typedef struct
 {
     char                    *Name;
@@ -229,15 +235,26 @@ typedef struct
 } PREDEFINED_NAMES;
 
 
+/* 
+ * Entry in the AddressSpace (AKA Operation Region) table
+ */
+
+typedef struct
+{
+    ADDRESS_SPACE_HANDLER   Handler;
+    void                    *Context;
+
+} ADDRESS_SPACE_INFO;
+
 
 /* Values and addresses of the GPE registers (both banks) */
 
 typedef struct 
 {
-    UINT8           Status;         /* Current value of status reg */
-    UINT8           Enable;         /* Current value of enable reg */
-    UINT16          StatusAddr;     /* Address of status reg */
-    UINT16          EnableAddr;     /* Address of enable reg */
+    UINT8                   Status;         /* Current value of status reg */
+    UINT8                   Enable;         /* Current value of enable reg */
+    UINT16                  StatusAddr;     /* Address of status reg */
+    UINT16                  EnableAddr;     /* Address of enable reg */
 
 } GPE_REGISTERS;
 
@@ -250,10 +267,10 @@ typedef struct
 
 typedef struct
 {
-    UINT8           Type;           /* Level or Edge */
-    ACPI_HANDLE     MethodHandle;   /* Method handle for direct (fast) execution */
-    GPE_HANDLER     Handler;        /* Address of handler, if any */
-    void            *Context;       /* Context to be passed to handler */
+    UINT8                   Type;           /* Level or Edge */
+    ACPI_HANDLE             MethodHandle;   /* Method handle for direct (fast) execution */
+    GPE_HANDLER             Handler;        /* Address of handler, if any */
+    void                    *Context;       /* Context to be passed to handler */
 
 } GPE_LEVEL_INFO;
 
