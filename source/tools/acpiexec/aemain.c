@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: aemain - Main routine for the AcpiExec utility
- *              $Revision: 1.45 $
+ *              $Revision: 1.47 $
  *
  *****************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -352,14 +352,11 @@ main (
         return -1;
     }
 
-
     /* Init ACPI and start debugger thread */
 
     AcpiInitializeSubsystem ();
 
-
-    InitFlags = (ACPI_NO_HARDWARE_INIT | ACPI_NO_ACPI_ENABLE | ACPI_NO_EVENT_INIT);
-
+    InitFlags = (/*ACPI_NO_HARDWARE_INIT | */ACPI_NO_ACPI_ENABLE); //| ACPI_NO_EVENT_INIT);
     if (!AcpiGbl_DbOpt_ini_methods)
     {
         InitFlags |= (ACPI_NO_DEVICE_INIT | ACPI_NO_OBJECT_INIT);
@@ -372,7 +369,6 @@ main (
         AcpiGbl_DbOpt_tables = TRUE;
         AcpiGbl_DbFilename = argv[optind];
 
-
         Status = AcpiDbLoadAcpiTable (AcpiGbl_DbFilename);
         if (ACPI_FAILURE (Status))
         {
@@ -380,8 +376,7 @@ main (
             goto enterloop;
         }
 
-
-        /* Need a fake FADT so that the hardware component is happy */
+        /* Make a fake FADT so we can test the hardware component */
 
         ACPI_STORE_ADDRESS (LocalFADT.XGpe0Blk.Address, 0x70);
         ACPI_STORE_ADDRESS (LocalFADT.XPm1aEvtBlk.Address, 0x80);
@@ -389,7 +384,9 @@ main (
         ACPI_STORE_ADDRESS (LocalFADT.XPmTmrBlk.Address, 0xA0);
 
         LocalFADT.Gpe0BlkLen    = 8;
-        LocalFADT.Pm1EvtLen     = 4;
+        LocalFADT.Gpe1BlkLen    = 12;
+        LocalFADT.Gpe1Base      = 64;
+        LocalFADT.Pm1EvtLen     = 0;
         LocalFADT.Pm1CntLen     = 4;
         LocalFADT.PmTmLen       = 8;
 
