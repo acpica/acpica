@@ -104,7 +104,6 @@
 #include <methods.h>
 #include <acpiobj.h>
 #include <pnp.h>
-#include <string.h>
 
 
 #define _THIS_MODULE        "nsapinam.c"
@@ -130,10 +129,10 @@
  ******************************************************************************/
 
 ACPI_STATUS 
-AcpiNameToHandle (NsHandle Scope, UINT32 Name, NsHandle *RetHandle)
+AcpiNameToHandle (ACPI_HANDLE Scope, UINT32 Name, ACPI_HANDLE *RetHandle)
 {
     NAME_TABLE_ENTRY    *ThisEntry;
-    NsHandle            LocalScope = Scope;
+    ACPI_HANDLE         LocalScope = Scope;
 
 
     if (!RetHandle)
@@ -190,7 +189,7 @@ AcpiNameToHandle (NsHandle Scope, UINT32 Name, NsHandle *RetHandle)
  *
  * RETURN:      Status
  *
- * DESCRIPTION: This routine returns the name associated with NsHandle.  This
+ * DESCRIPTION: This routine returns the name associated with ACPI_HANDLE.  This
  *              and the AcpiNameToHandle are complementary functions.
  *
  *                  Handle == AcpiNameToHandle(AcpiHandleToName(Handle))
@@ -200,7 +199,7 @@ AcpiNameToHandle (NsHandle Scope, UINT32 Name, NsHandle *RetHandle)
  ******************************************************************************/
 
 ACPI_STATUS 
-AcpiHandleToName (NsHandle Handle, UINT32 *RetName)
+AcpiHandleToName (ACPI_HANDLE Handle, UINT32 *RetName)
 {
     NAME_TABLE_ENTRY    *ObjEntry;
 
@@ -242,7 +241,7 @@ AcpiHandleToName (NsHandle Handle, UINT32 *RetName)
  ******************************************************************************/
 
 ACPI_STATUS 
-AcpiPathnameToHandle (char *Pathname, NsHandle *RetHandle)
+AcpiPathnameToHandle (char *Pathname, ACPI_HANDLE *RetHandle)
 {
 
     if (!RetHandle || !Pathname)
@@ -280,7 +279,7 @@ AcpiPathnameToHandle (char *Pathname, NsHandle *RetHandle)
 
 
 ACPI_STATUS 
-AcpiHandleToPathname (NsHandle Handle, ACPI_BUFFER *RetPathPtr)
+AcpiHandleToPathname (ACPI_HANDLE Handle, ACPI_BUFFER *RetPathPtr)
 {
     if ((!RetPathPtr->BufferPtr)    ||
         (!RetPathPtr->Length))

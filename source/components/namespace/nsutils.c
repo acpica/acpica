@@ -100,7 +100,6 @@
 #include <acpi.h>
 #include <namespace.h>
 #include <interpreter.h>
-#include <string.h>
 
 
 #define _THIS_MODULE        "nsutils.c"
@@ -209,8 +208,8 @@ NsAllocateNteDesc (INT32 NteCount)
  *
  ***************************************************************************/
 
-NsType
-NsGetType (NsHandle handle)
+ACPI_OBJECT_TYPE
+NsGetType (ACPI_HANDLE handle)
 {
     FUNCTION_TRACE ("NsGetType");
 
@@ -240,7 +239,7 @@ NsGetType (NsHandle handle)
  ***************************************************************************/
 
 void *
-NsGetValue (NsHandle handle)
+NsGetValue (ACPI_HANDLE handle)
 {
     FUNCTION_TRACE ("NsGetValue");
 
@@ -271,9 +270,9 @@ NsGetValue (NsHandle handle)
  ****************************************************************************/
 
 INT32
-IsNsValue (OBJECT_DESCRIPTOR *ObjDesc)
+IsNsValue (ACPI_OBJECT *ObjDesc)
 {
-    NsHandle        RetHandle;
+    ACPI_HANDLE     RetHandle;
 
 
     FUNCTION_TRACE ("IsNsValue");
@@ -281,7 +280,7 @@ IsNsValue (OBJECT_DESCRIPTOR *ObjDesc)
     RetHandle = NsFindValue (ObjDesc, NS_ALL, INT_MAX);
 
     FUNCTION_EXIT;
-    return (RetHandle != (NsHandle) 0);
+    return (RetHandle != (ACPI_HANDLE) 0);
 }
 
 
@@ -297,7 +296,7 @@ IsNsValue (OBJECT_DESCRIPTOR *ObjDesc)
  ***************************************************************************/
 
 INT32
-NsLocal (NsType Type)
+NsLocal (ACPI_OBJECT_TYPE Type)
 {
     FUNCTION_TRACE ("NsLocal");
 
@@ -404,7 +403,7 @@ NsInternalizeName (char *DottedName)
  ****************************************************************************/
 
 NAME_TABLE_ENTRY *
-NsConvertHandleToEntry (NsHandle Handle)
+NsConvertHandleToEntry (ACPI_HANDLE Handle)
 {
 
     /* 
@@ -546,12 +545,12 @@ NsMarkNT (nte *ThisEntry, INT32 Size, INT32 *Count)
 
             switch (NsGetType (ThisEntry))
             {
-                OBJECT_DESCRIPTOR       *ptrVal;
+                ACPI_OBJECT             *ptrVal;
                 meth                    *Method;
 
 
             case String:
-                ptrVal = (OBJECT_DESCRIPTOR *) NsGetValue (ThisEntry);
+                ptrVal = (ACPI_OBJECT *) NsGetValue (ThisEntry);
                 
                 /* 
                  * Check for the value pointer in the name table entry
@@ -572,7 +571,7 @@ NsMarkNT (nte *ThisEntry, INT32 Size, INT32 *Count)
                 break;
 
             case Buffer:
-                ptrVal = (OBJECT_DESCRIPTOR *) NsGetValue (ThisEntry);
+                ptrVal = (ACPI_OBJECT *) NsGetValue (ThisEntry);
                 
                 /* 
                  * Check for the value pointer in the name table entry
@@ -588,7 +587,7 @@ NsMarkNT (nte *ThisEntry, INT32 Size, INT32 *Count)
                 break;
 
             case Package:
-                ptrVal = (OBJECT_DESCRIPTOR *) NsGetValue (ThisEntry);
+                ptrVal = (ACPI_OBJECT *) NsGetValue (ThisEntry);
                 
                 /* 
                  * Check for the value pointer in the name table entry
@@ -614,7 +613,7 @@ NsMarkNT (nte *ThisEntry, INT32 Size, INT32 *Count)
             case FieldUnit:
             case IndexField:
             case Region:
-                ptrVal = (OBJECT_DESCRIPTOR *) NsGetValue (ThisEntry);
+                ptrVal = (ACPI_OBJECT *) NsGetValue (ThisEntry);
                 if (ptrVal)
                 {
                     AmlMarkObject (ptrVal);

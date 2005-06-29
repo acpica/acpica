@@ -133,7 +133,7 @@ static ST_KEY_DESC_TABLE KDT[] = {
  ***************************************************************************/
 
 ACPI_STATUS
-NsSearchOnly (char *EntryName, NAME_TABLE_ENTRY *NameTable, NsType Type, 
+NsSearchOnly (char *EntryName, NAME_TABLE_ENTRY *NameTable, ACPI_OBJECT_TYPE Type, 
               NAME_TABLE_ENTRY **RetEntry, NS_SEARCH_DATA *RetInfo)
 {
     UINT32              Position;
@@ -306,7 +306,7 @@ NsSearchOnly (char *EntryName, NAME_TABLE_ENTRY *NameTable, NsType Type,
 
 ACPI_STATUS
 NsSearchParentTree (char *EntryName, NAME_TABLE_ENTRY *NameTable, 
-                    NsType Type, NAME_TABLE_ENTRY **RetEntry)
+                    ACPI_OBJECT_TYPE Type, NAME_TABLE_ENTRY **RetEntry)
 {
     ACPI_STATUS         Status;
     NAME_TABLE_ENTRY    *ParentScope;
@@ -498,7 +498,7 @@ NsInitializeTable (NAME_TABLE_ENTRY *NewTable, NAME_TABLE_ENTRY *ParentScope,
  ***************************************************************************/
 
 void
-NsInitializeEntry (NAME_TABLE_ENTRY *NameTable, UINT32 Position, char *EntryName, NsType Type, 
+NsInitializeEntry (NAME_TABLE_ENTRY *NameTable, UINT32 Position, char *EntryName, ACPI_OBJECT_TYPE Type, 
                    NAME_TABLE_ENTRY *PreviousEntry)
 {
     NAME_TABLE_ENTRY    *NewEntry;
@@ -609,7 +609,7 @@ NsInitializeEntry (NAME_TABLE_ENTRY *NameTable, UINT32 Position, char *EntryName
 
 ACPI_STATUS
 NsSearchAndEnter (char *EntryName, NAME_TABLE_ENTRY *NameTable,
-                    OpMode LoadMode, NsType Type, NAME_TABLE_ENTRY **RetEntry)
+                    OPERATING_MODE LoadMode, ACPI_OBJECT_TYPE Type, NAME_TABLE_ENTRY **RetEntry)
 {
     UINT32              Position;       /* position in table */
     ACPI_STATUS         Status;

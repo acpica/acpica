@@ -104,7 +104,6 @@
 #include <methods.h>
 #include <acpiobj.h>
 #include <pnp.h>
-#include <string.h>
 
 
 #define _THIS_MODULE        "nsapiobj.c"
@@ -134,8 +133,8 @@
  ****************************************************************************/
 
 ACPI_STATUS
-AcpiEvaluateObject (NsHandle Handle, char *Pathname, OBJECT_DESCRIPTOR *ReturnObject,
-                    OBJECT_DESCRIPTOR **Params)
+AcpiEvaluateObject (ACPI_HANDLE Handle, char *Pathname, ACPI_OBJECT *ReturnObject,
+                    ACPI_OBJECT **Params)
 {
     ACPI_STATUS             Status;
     NAME_TABLE_ENTRY        *ObjEntry;
@@ -212,7 +211,7 @@ AcpiEvaluateObject (NsHandle Handle, char *Pathname, OBJECT_DESCRIPTOR *ReturnOb
  ******************************************************************************/
 
 ACPI_STATUS
-AcpiGetNextObject (NsType Type, NsHandle Scope, NsHandle Handle, NsHandle *RetHandle)
+AcpiGetNextObject (ACPI_OBJECT_TYPE Type, ACPI_HANDLE Scope, ACPI_HANDLE Handle, ACPI_HANDLE *RetHandle)
 {
     NAME_TABLE_ENTRY    *ThisEntry;
 
@@ -322,7 +321,7 @@ AcpiGetNextObject (NsType Type, NsHandle Scope, NsHandle Handle, NsHandle *RetHa
  ******************************************************************************/
 
 ACPI_STATUS
-AcpiGetParent (NsHandle Handle, NsHandle *RetHandle)
+AcpiGetParent (ACPI_HANDLE Handle, ACPI_HANDLE *RetHandle)
 {
     NAME_TABLE_ENTRY    *Object;
 
@@ -373,7 +372,7 @@ AcpiGetParent (NsHandle Handle, NsHandle *RetHandle)
  ******************************************************************************/
 
 ACPI_STATUS
-AcpiGetScope (NsHandle Handle, NsHandle *RetScope)
+AcpiGetScope (ACPI_HANDLE Handle, ACPI_HANDLE *RetScope)
 {
     NAME_TABLE_ENTRY    *Object;
 
@@ -423,7 +422,7 @@ AcpiGetScope (NsHandle Handle, NsHandle *RetScope)
  ******************************************************************************/
 
 ACPI_STATUS
-AcpiGetContainingScope (NsHandle Handle, NsHandle *RetHandle)
+AcpiGetContainingScope (ACPI_HANDLE Handle, ACPI_HANDLE *RetHandle)
 {
     NAME_TABLE_ENTRY    *Object;
 
@@ -461,7 +460,7 @@ AcpiGetContainingScope (NsHandle Handle, NsHandle *RetHandle)
  *
  * FUNCTION:    AcpiWalkNamespace
  *
- * PARAMETERS:  Type                - NsType to search for
+ * PARAMETERS:  Type                - ACPI_OBJECT_TYPE to search for
  *              StartHandle         - Handle in namespace where search begins
  *              MaxDepth            - Depth to which search is to reach
  *              UserFunction        - Called when an object of "Type" is found
@@ -486,13 +485,13 @@ AcpiGetContainingScope (NsHandle Handle, NsHandle *RetHandle)
  ******************************************************************************/
 
 ACPI_STATUS
-AcpiWalkNamespace (NsType Type, NsHandle StartHandle, UINT32 MaxDepth,
+AcpiWalkNamespace (ACPI_OBJECT_TYPE Type, ACPI_HANDLE StartHandle, UINT32 MaxDepth,
                     WALK_CALLBACK UserFunction, 
                     void *Context, void **ReturnValue)
 {
-    NsHandle            ObjHandle = 0;
-    NsHandle            Scope;
-    NsHandle            NewScope;
+    ACPI_HANDLE         ObjHandle = 0;
+    ACPI_HANDLE         Scope;
+    ACPI_HANDLE         NewScope;
     void                *UserReturnVal;
     UINT32              Level = 1;
 
@@ -603,7 +602,7 @@ AcpiWalkNamespace (NsType Type, NsHandle StartHandle, UINT32 MaxDepth,
  ******************************************************************************/
 
 ACPI_STATUS
-AcpiGetObject (char *Pathname, NsHandle *RetHandle)
+AcpiGetObject (char *Pathname, ACPI_HANDLE *RetHandle)
 {
 
     if (!RetHandle)
@@ -630,28 +629,28 @@ AcpiGetObject (char *Pathname, NsHandle *RetHandle)
  *
  ******************************************************************************/
 
-NsHandle 
-AcpiGetParentHandle (NsHandle ChildHandle)
+ACPI_HANDLE 
+AcpiGetParentHandle (ACPI_HANDLE ChildHandle)
 {
 
-    return ((NsHandle) NULL);
+    return ((ACPI_HANDLE) NULL);
 }
 
 
 /****************************************************************************
  *
- * FUNCTION:    NsType AcpiValueType
+ * FUNCTION:    ACPI_OBJECT_TYPE AcpiValueType
  *
  * PARAMETERS:  Handle          - the handle of the object to find the type of
  *
- * RETURN:      NsType - type of the Handle
+ * RETURN:      ACPI_OBJECT_TYPE - type of the Handle
  *
  * DESCRIPTION: This routine returns the type associatd with a particular handle
  *
  ******************************************************************************/
 
-NsType 
-AcpiValueType (NsHandle Handle)
+ACPI_OBJECT_TYPE 
+AcpiValueType (ACPI_HANDLE Handle)
 {
 
     return (TYPE_Any);
@@ -690,7 +689,7 @@ AcpiCurrentScopeName (void)
  ******************************************************************************/
 
 BOOLEAN 
-AcpiIsNameSpaceHandle (NsHandle QueryHandle)
+AcpiIsNameSpaceHandle (ACPI_HANDLE QueryHandle)
 {
     return (TRUE);
 }
@@ -704,12 +703,12 @@ AcpiIsNameSpaceHandle (NsHandle QueryHandle)
  *
  * RETURN:      TRUE if the value is a valid NS vakue, FALSE otherwise
  *
- * DESCRIPTION: This routine verifies the value is valid for NsType  what is the utility of this? RLM
+ * DESCRIPTION: This routine verifies the value is valid for ACPI_OBJECT_TYPE  what is the utility of this? RLM
  *
  ******************************************************************************/
 
 BOOLEAN 
-AcpiIsNameSpaceValue (NsType Value)
+AcpiIsNameSpaceValue (ACPI_OBJECT_TYPE Value)
 {
     return (TRUE);
 }

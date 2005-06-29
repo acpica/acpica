@@ -127,7 +127,7 @@ static ST_KEY_DESC_TABLE KDT[] = {
  ***************************************************************************/
 
 ACPI_STATUS
-NsDumpPathname (NsHandle Handle, char *Msg, UINT32 Level, UINT32 Component)
+NsDumpPathname (ACPI_HANDLE Handle, char *Msg, UINT32 Level, UINT32 Component)
 {
     char            *Buffer;
 
@@ -172,11 +172,11 @@ BREAKPOINT3;
  ***************************************************************************/
 
 void *
-NsDumpOneObject (NsHandle ObjHandle, UINT32 Level, void *Context)
+NsDumpOneObject (ACPI_HANDLE ObjHandle, UINT32 Level, void *Context)
 {
     UINT32              DownstreamSiblingMask = 0;
     INT32               LevelTmp;
-    NsType              Type;
+    ACPI_OBJECT_TYPE    Type;
     UINT32              WhichBit;
     NAME_TABLE_ENTRY    *Appendage = NULL;
     NAME_TABLE_ENTRY    *ThisEntry = (NAME_TABLE_ENTRY *) ObjHandle;
@@ -291,7 +291,7 @@ NsDumpOneObject (NsHandle ObjHandle, UINT32 Level, void *Context)
     
         while (Value && (DebugLevel & TRACE_VALUES))
         {
-            UINT8               bT = ((OBJECT_DESCRIPTOR *) Value)->ValType;
+            UINT8               bT = ((ACPI_OBJECT *) Value)->ValType;
 
 
             DEBUG_PRINT_RAW (TRACE_TABLES,
@@ -309,10 +309,10 @@ NsDumpOneObject (NsHandle ObjHandle, UINT32 Level, void *Context)
             {
                 /* 
                  * Get pointer to next level.  ThisEntry assumes that all of
-                 * the above-listed variants of OBJECT_DESCRIPTOR have
+                 * the above-listed variants of ACPI_OBJECT have
                  * compatible mappings.
                  */
-                Value = ((OBJECT_DESCRIPTOR *)Value)->Buffer.Buffer;
+                Value = ((ACPI_OBJECT *)Value)->Buffer.Buffer;
             }
             else
             {
@@ -341,7 +341,7 @@ NsDumpOneObject (NsHandle ObjHandle, UINT32 Level, void *Context)
  ***************************************************************************/
 
 void
-NsDumpObjects (NsType Type, INT32 MaxDepth, NsHandle StartHandle)
+NsDumpObjects (ACPI_OBJECT_TYPE Type, INT32 MaxDepth, ACPI_HANDLE StartHandle)
 {
     AcpiWalkNamespace (Type, StartHandle, MaxDepth, NsDumpOneObject, NULL, NULL);
 }
@@ -361,7 +361,7 @@ NsDumpObjects (NsType Type, INT32 MaxDepth, NsHandle StartHandle)
  ***************************************************************************/
 
 void *
-NsDumpOneDevice (NsHandle ObjHandle, UINT32 Level, void *Context)
+NsDumpOneDevice (ACPI_HANDLE ObjHandle, UINT32 Level, void *Context)
 {
     void                *RetVal;
     ACPI_DEVICE_INFO    Info;
@@ -400,7 +400,7 @@ NsDumpOneDevice (NsHandle ObjHandle, UINT32 Level, void *Context)
 void
 NsDumpRootDevices (void)
 {
-    NsHandle            SysBusHandle;
+    ACPI_HANDLE         SysBusHandle;
 
     /* Only dump the table if tracing is enabled */
 
@@ -430,9 +430,9 @@ NsDumpRootDevices (void)
  ***************************************************************************/
 
 void
-NsDumpTables (NsHandle SearchBase, INT32 MaxDepth)
+NsDumpTables (ACPI_HANDLE SearchBase, INT32 MaxDepth)
 {
-    NsHandle            SearchHandle = SearchBase;
+    ACPI_HANDLE         SearchHandle = SearchBase;
 
 
     FUNCTION_TRACE ("NsDumpTables");
@@ -474,7 +474,7 @@ NsDumpTables (NsHandle SearchBase, INT32 MaxDepth)
  ***************************************************************************/
 
 void
-NsDumpEntry (NsHandle Handle)
+NsDumpEntry (ACPI_HANDLE Handle)
 {
 
     FUNCTION_TRACE ("NsDumpEntry");

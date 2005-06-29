@@ -102,7 +102,6 @@
 #include <amlcode.h>
 #include <interpreter.h>
 #include <namespace.h>
-#include <string.h>
 
 
 #define _THIS_MODULE        "nseval.c"
@@ -143,7 +142,7 @@ static ST_KEY_DESC_TABLE KDT[] = {
 
 ACPI_STATUS
 NsEvaluateRelative (NAME_TABLE_ENTRY *ObjEntry, char *Pathname, 
-                    OBJECT_DESCRIPTOR *ReturnObject, OBJECT_DESCRIPTOR **Params)
+                    ACPI_OBJECT *ReturnObject, ACPI_OBJECT **Params)
 {
     char                NameBuffer[PATHNAME_MAX];
     ACPI_STATUS         Status;
@@ -231,12 +230,12 @@ NsEvaluateRelative (NAME_TABLE_ENTRY *ObjEntry, char *Pathname,
  *
  ****************************************************************************/
 
-ACPI_STATUS;
-NsEvaluateByName (char *Pathname, OBJECT_DESCRIPTOR *ReturnObject,
-                    OBJECT_DESCRIPTOR **Params)
+ACPI_STATUS
+NsEvaluateByName (char *Pathname, ACPI_OBJECT *ReturnObject,
+                    ACPI_OBJECT **Params)
 {
     ACPI_STATUS         Status = AE_ERROR;
-    NAME_TABLE_ENTRY    *MethodEntry = NULL;
+    NAME_TABLE_ENTRY    *ObjEntry = NULL;
 
     
     FUNCTION_TRACE ("NsEvaluateByName");
@@ -252,7 +251,7 @@ NsEvaluateByName (char *Pathname, OBJECT_DESCRIPTOR *ReturnObject,
 
     /* Lookup the name in the namespace */
 
-    Status = NsEnter (Pathname, TYPE_Any, MODE_Exec, (NsHandle *) &MethodEntry);
+    Status = NsEnter (Pathname, TYPE_Any, MODE_Exec, &ObjEntry);
 
     if (Status != AE_OK)
     {
@@ -268,9 +267,9 @@ NsEvaluateByName (char *Pathname, OBJECT_DESCRIPTOR *ReturnObject,
      */
 
     DEBUG_PRINT (ACPI_INFO, ("[%s Method %p Value %p\n",
-                                Pathname, MethodEntry, MethodEntry->Value));
+                                Pathname, ObjEntry, ObjEntry->Value));
 
-    Status = NsEvaluateByHandle (MethodEntry, ReturnObject, Params);
+    Status = NsEvaluateByHandle (ObjEntry, ReturnObject, Params);
 
     DEBUG_PRINT (ACPI_INFO, ("*** Completed execution of method %s ***\n",
                                 Pathname));
@@ -300,10 +299,9 @@ NsEvaluateByName (char *Pathname, OBJECT_DESCRIPTOR *ReturnObject,
  ****************************************************************************/
 
 ACPI_STATUS
-NsEvaluateByHandle (NAME_TABLE_ENTRY *ObjEntry, OBJECT_DESCRIPTOR *ReturnObject,
-                            OBJECT_DESCRIPTOR **Params)
+NsEvaluateByHandle (NAME_TABLE_ENTRY *ObjEntry, ACPI_OBJECT *ReturnObject,
+                            ACPI_OBJECT **Params)
 {
-    NAME_TABLE_ENTRY    *MethodEntry;
     ACPI_STATUS         Status = AE_ERROR;
 
 
@@ -334,7 +332,7 @@ NsEvaluateByHandle (NAME_TABLE_ENTRY *ObjEntry, OBJECT_DESCRIPTOR *ReturnObject,
     {
         /* Initialize the return value */
 
-        memset (ReturnObject, 0, sizeof (OBJECT_DESCRIPTOR));
+        memset (ReturnObject, 0, sizeof (ACPI_OBJECT));
     }
 
 
@@ -344,7 +342,7 @@ NsEvaluateByHandle (NAME_TABLE_ENTRY *ObjEntry, OBJECT_DESCRIPTOR *ReturnObject,
      * 2) The object is not a method -- just return it's current value
      */
 
-    if (NsGetType (MethodEntry) == TYPE_Method)
+    if (NsGetType (ObjEntry) == TYPE_Method)
     {
         /* Case 1) We have an actual control method to execute */
 
@@ -381,7 +379,7 @@ NsEvaluateByHandle (NAME_TABLE_ENTRY *ObjEntry, OBJECT_DESCRIPTOR *ReturnObject,
 
         if (ReturnObject)
         {
-            (*ReturnObject) = *((OBJECT_DESCRIPTOR *) ObjStack[ObjStackTop]);            
+            (*ReturnObject) = *((ACPI_OBJECT *) ObjStack[ObjStackTop]);            
         }
     
         /* 
@@ -417,7 +415,7 @@ NsEvaluateByHandle (NAME_TABLE_ENTRY *ObjEntry, OBJECT_DESCRIPTOR *ReturnObject,
  ****************************************************************************/
 
 ACPI_STATUS
-NsExecuteControlMethod (NAME_TABLE_ENTRY *MethodEntry, OBJECT_DESCRIPTOR **Params)
+NsExecuteControlMethod (NAME_TABLE_ENTRY *MethodEntry, ACPI_OBJECT **Params)
 {
     ACPI_STATUS         Status;
 
@@ -467,10 +465,9 @@ NsExecuteControlMethod (NAME_TABLE_ENTRY *MethodEntry, OBJECT_DESCRIPTOR **Param
     /* 
      * Excecute the method via the interpreter
      */
-    Status = AmlExecuteMethod (
-                     ((METHOD_INFO *) MethodEntry->Value)->Offset + 1,
-                     ((METHOD_INFO *) MethodEntry->Value)->Length - 1,
-                     Params);
+    Status = AmlExecuteMethod (((METHOD_INFO *) MethodEntry->Value)->Offset + 1,
+                               ((METHOD_INFO *) MethodEntry->Value)->Length - 1,
+                               Params);
 
     if (AmlPackageNested ())
     {
@@ -520,7 +517,7 @@ ACPI_STATUS
 NsGetObjectValue (NAME_TABLE_ENTRY *ObjectEntry)
 {
     ACPI_STATUS             Status;
-    OBJECT_DESCRIPTOR       *ObjDesc;
+    ACPI_OBJECT             *ObjDesc;
 
 
     FUNCTION_TRACE ("NsGetObjectValue");
@@ -548,12 +545,12 @@ NsGetObjectValue (NAME_TABLE_ENTRY *ObjectEntry)
      * top valid entry, not to the first unused position.
      */
 
-    LocalDeleteObject ((OBJECT_DESCRIPTOR **) &ObjStack[ObjStackTop]);
+    LocalDeleteObject ((ACPI_OBJECT **) &ObjStack[ObjStackTop]);
     ObjStack[ObjStackTop] = (void *) ObjDesc;
 
     /* This causes ObjDesc (allocated above) to always be deleted */
 
-    Status = AmlGetRvalue ((OBJECT_DESCRIPTOR **) &ObjStack[ObjStackTop]);
+    Status = AmlGetRvalue ((ACPI_OBJECT **) &ObjStack[ObjStackTop]);
 
     /* 
      * If AmlGetRvalue() succeeded, treat the top stack entry as

@@ -101,7 +101,6 @@
 #include <amlcode.h>
 #include <interpreter.h>
 #include <namespace.h>
-#include <string.h>
 
 
 #define _THIS_MODULE        "nsnames.c"
@@ -240,7 +239,7 @@ NsNameOfCurrentScope (void)
  ***************************************************************************/
 
 ACPI_STATUS
-NsHandleToPathname (NsHandle TargetHandle, UINT32 BufSize, char *UserBuffer)
+NsHandleToPathname (ACPI_HANDLE TargetHandle, UINT32 BufSize, char *UserBuffer)
 {
     NAME_TABLE_ENTRY    *EntryToSearch = NULL;
     NAME_TABLE_ENTRY    *Temp = NULL;
@@ -380,7 +379,7 @@ NsPatternMatch (NAME_TABLE_ENTRY *ObjEntry, char *SearchFor)
  ***************************************************************************/
 
 void *
-NsNameCompare (NsHandle ObjHandle, UINT32 Level, void *Context)
+NsNameCompare (ACPI_HANDLE ObjHandle, UINT32 Level, void *Context)
 {
     FIND_CONTEXT        *Find = Context;
 
@@ -429,7 +428,7 @@ NsNameCompare (NsHandle ObjHandle, UINT32 Level, void *Context)
 
 void
 NsLowFindNames (NAME_TABLE_ENTRY *ThisEntry, char *SearchFor,
-                        INT32 *Count, NsHandle List[], INT32 MaxDepth)
+                        INT32 *Count, ACPI_HANDLE List[], INT32 MaxDepth)
 {
     FIND_CONTEXT        Find;
 
@@ -457,13 +456,13 @@ NsLowFindNames (NAME_TABLE_ENTRY *ThisEntry, char *SearchFor,
 
     /* Walk the namespace and find all matches */
 
-    AcpiWalkNamespace (TYPE_Any, (NsHandle) ThisEntry, MaxDepth, NsNameCompare, &Find, NULL);
+    AcpiWalkNamespace (TYPE_Any, (ACPI_HANDLE) ThisEntry, MaxDepth, NsNameCompare, &Find, NULL);
 
     if (List)
     {
         /* null-terminate the output array */
         
-        List[*Count] = (NsHandle) 0;
+        List[*Count] = (ACPI_HANDLE) 0;
     }
 
     FUNCTION_EXIT;
@@ -485,18 +484,18 @@ NsLowFindNames (NAME_TABLE_ENTRY *ThisEntry, char *SearchFor,
  *
  * DESCRIPTION: Traverse the name space finding names which match a search
  *              pattern, and return an array of handles.  The end of the
- *              array is marked by the value (NsHandle)0.  A return value
- *              of (NsHandle *)0 indicates that no matching names were
+ *              array is marked by the value (ACPI_HANDLE)0.  A return value
+ *              of (ACPI_HANDLE *)0 indicates that no matching names were
  *              found or that space for the list could not be allocated.
  *              if StartHandle is NS_ALL (null) search from the root,
  *              else it is a handle whose children are to be searched.
  *
  ***************************************************************************/
 
-NsHandle *
-NsFindNames (char *SearchFor, NsHandle StartHandle, INT32 MaxDepth)
+ACPI_HANDLE *
+NsFindNames (char *SearchFor, ACPI_HANDLE StartHandle, INT32 MaxDepth)
 {
-    NsHandle            *List = NULL;
+    ACPI_HANDLE         *List = NULL;
     INT32               Count;
 
 
@@ -560,7 +559,7 @@ NsFindNames (char *SearchFor, NsHandle StartHandle, INT32 MaxDepth)
     }
 
     Count++;                                            /* Allow for trailing null */
-    List = LocalCallocate (Count * sizeof(NsHandle));
+    List = LocalCallocate (Count * sizeof(ACPI_HANDLE));
     if (!List)
     {
         REPORT_ERROR (&KDT[2]);
