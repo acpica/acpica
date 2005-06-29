@@ -104,7 +104,6 @@
 #include <methods.h>
 #include <acpiobj.h>
 #include <pnp.h>
-#include <string.h>
 
 
 #define _THIS_MODULE        "nsapinam.c"
@@ -115,8 +114,8 @@
  *
  * FUNCTION:    AcpiNameToHandle
  *
- * PARAMETERS:  Scope           - Handle for a search scope.
- *              Name            - Pointer to an ascii string containing the name
+ * PARAMETERS:  Name            - Pointer to an ascii string containing the name
+ *              Scope           - Handle for a search scope.
  *              RetHandle       - Where the return handle is placed
  *
  * RETURN:      Status
@@ -130,10 +129,13 @@
  ******************************************************************************/
 
 ACPI_STATUS 
-AcpiNameToHandle (NsHandle Scope, UINT32 Name, NsHandle *RetHandle)
+AcpiNameToHandle (
+    UINT32                  Name, 
+    ACPI_HANDLE             Scope, 
+    ACPI_HANDLE             *RetHandle)
 {
-    nte         *ThisEntry;
-    NsHandle    LocalScope = Scope;
+    NAME_TABLE_ENTRY        *ThisEntry;
+    ACPI_HANDLE             LocalScope = Scope;
 
 
     if (!RetHandle)
@@ -156,9 +158,14 @@ AcpiNameToHandle (NsHandle Scope, UINT32 Name, NsHandle *RetHandle)
         LocalScope = RootObject->Scope;
     }
 
-    /* Search for the name within this scope */
+    /* Validate the scope handle */
 
-    ThisEntry = (nte *) LocalScope;
+    if (!(ThisEntry = NsConvertHandleToEntry (LocalScope)))
+    {
+        return AE_BAD_PARAMETER;
+    }
+    
+    /* Search for the name within this scope */
 
     while (ThisEntry)
     {
@@ -185,7 +192,7 @@ AcpiNameToHandle (NsHandle Scope, UINT32 Name, NsHandle *RetHandle)
  *
  * RETURN:      Status
  *
- * DESCRIPTION: This routine returns the name associated with NsHandle.  This
+ * DESCRIPTION: This routine returns the name associated with ACPI_HANDLE.  This
  *              and the AcpiNameToHandle are complementary functions.
  *
  *                  Handle == AcpiNameToHandle(AcpiHandleToName(Handle))
@@ -195,24 +202,30 @@ AcpiNameToHandle (NsHandle Scope, UINT32 Name, NsHandle *RetHandle)
  ******************************************************************************/
 
 ACPI_STATUS 
-AcpiHandleToName (NsHandle Handle, UINT32 *RetName)
+AcpiHandleToName (
+    ACPI_HANDLE             Handle, 
+    UINT32                  *RetName)
 {
-    nte         *Object;
+    NAME_TABLE_ENTRY        *ObjEntry;
+
 
     if (!RetName)
     {
         return AE_BAD_PARAMETER;
     }
 
-    if (!Handle)
+    /* Validate handle and convert to and NTE */
+
+    if (!(ObjEntry = NsConvertHandleToEntry (Handle)))
     {
         *RetName = 0;
         return AE_BAD_PARAMETER;
     }
 
-    Object = (nte *) Handle;
 
-    *RetName = Object->Name;
+    /* Just extract the name field */
+
+    *RetName = ObjEntry->Name;
     return AE_OK;
 }
 
@@ -233,7 +246,9 @@ AcpiHandleToName (NsHandle Handle, UINT32 *RetName)
  ******************************************************************************/
 
 ACPI_STATUS 
-AcpiPathnameToHandle (char *Pathname, NsHandle *RetHandle)
+AcpiPathnameToHandle (
+    char                    *Pathname, 
+    ACPI_HANDLE             *RetHandle)
 {
 
     if (!RetHandle || !Pathname)
@@ -271,11 +286,12 @@ AcpiPathnameToHandle (char *Pathname, NsHandle *RetHandle)
 
 
 ACPI_STATUS 
-AcpiHandleToPathname (NsHandle Handle, ACPI_BUFFER *RetPathPtr)
+AcpiHandleToPathname (
+    ACPI_HANDLE             Handle, 
+    ACPI_BUFFER             *RetPathPtr)
 {
     if ((!RetPathPtr->BufferPtr)    ||
-        (!RetPathPtr->Length)       ||
-        (!Handle))
+        (!RetPathPtr->Length))
     {
         return AE_BAD_PARAMETER;
     }
