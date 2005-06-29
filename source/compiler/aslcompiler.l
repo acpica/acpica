@@ -3,7 +3,7 @@
 /******************************************************************************
  *
  * Module Name: aslcompiler.l - Flex input file
- *              $Revision: 1.10 $
+ *              $Revision: 1.11 $
  *
  *****************************************************************************/
 
@@ -129,21 +129,6 @@ YYSTYPE AslCompilerlval;
  *
  * -i: Scanner must be case-insensitive
  */
-
-
-
-#undef xxYY_INPUT
-#define xxYY_INPUT(buf,result,max_size) \
-	   if ( ((result = fread( buf, 1, max_size, yyin )) == 0) \
-		    && ferror( yyin ) ) \
-        {\
-		    YY_FATAL_ERROR( "input in flex scanner failed" );\
-        }\
-        else if (Gbl_SourceOutputFile)\
-        {\
-            fwrite (buf, result, 1, Gbl_SourceOutputFile);\
-        }
-
 
 void
 comment (void);
@@ -680,11 +665,22 @@ DoOneChar (
     if (c == '\n')
     {
         ResetCurrentLineBuffer ();
+        return;
     }
 
-    else if (c == '\t')
+	*Gbl_LineBufPtr = c;
+    Gbl_LineBufPtr++;
+
+    if (Gbl_LineBufPtr > (Gbl_CurrentLineBuffer + (ASL_LINE_BUFFER_SIZE - 1)))
+    {
+        printf ("DoOneChar: Line buffer overflow (%d) at line %d\n", 
+                    ASL_LINE_BUFFER_SIZE, Gbl_CurrentLineNumber);
+        ResetCurrentLineBuffer ();
+    }
+
+    if (c == '\t')
         Gbl_CurrentColumn += 8 - (Gbl_CurrentColumn & (8-1));
-    
+
     else
         Gbl_CurrentColumn++;
 }
@@ -735,9 +731,10 @@ count (
 			*Gbl_LineBufPtr = yytext[i];
             Gbl_LineBufPtr++;
 
-            if (Gbl_LineBufPtr > (Gbl_CurrentLineBuffer + 255))
+            if (Gbl_LineBufPtr > (Gbl_CurrentLineBuffer + (ASL_LINE_BUFFER_SIZE - 1)))
             {
-                printf ("Line buf overflow at line %d\n", Gbl_CurrentLineNumber);
+                printf ("Count: Line buffer overflow (%d) at line %d\n", 
+                            ASL_LINE_BUFFER_SIZE, Gbl_CurrentLineNumber);
                 ResetCurrentLineBuffer ();
             }
 
@@ -770,14 +767,32 @@ count (
 void
 comment (void)
 {
-	char                c, c1;
+	char                c;
+    char                c1 = 0;
 
 
 loop:
+
+    /* Eat chars until end-of-comment */
+
 	while ((c = input()) != '*' && c != 0)
     {
         DoOneChar (c);
+        c1 = c;
     }
+
+    /*
+     * Check for nested comment -- can help catch cases where a previous
+     * comment was accidently left unterminated
+     */
+    if ((c1 == '/') && (c == '*'))
+    {
+        AslWarning (ASL_WARNING_NESTED_COMMENT, Gbl_CurrentLineNumber);
+    }
+
+
+
+    /* Comment is closed only if the NEXT character is a slash */
 
     DoOneChar (c);
 

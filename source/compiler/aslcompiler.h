@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslcompiler.h - common include file
- *              $Revision: 1.16 $
+ *              $Revision: 1.17 $
  *
  *****************************************************************************/
 
@@ -130,13 +130,14 @@
 #define ACPI_DEBUG
 #define ACPI_APPLICATION
 
+
 #include "acpi.h"
 
+#define CompilerVersion                         "X204"
 
 #define CompilerId                              "ACPI Component Architecture ASL Compiler"
 #define CompilerName                            "iasl"
 #define CompilerCreatorId                       "IASL"
-#define Version                                 "X203"
 #define CompilerCreatorRevision                 0x00020203
 
 
@@ -294,16 +295,19 @@ extern int                      yydebug;
 
 extern char                     hex[];
 
+#define ASL_LINE_BUFFER_SIZE    1024
+
 /* Source code buffers and pointers for error reporting */
 
 EXTERN int                      INIT_GLOBAL (Gbl_CurrentColumn, 0);
 EXTERN int                      INIT_GLOBAL (Gbl_CurrentLineNumber, 1);
 EXTERN int                      INIT_GLOBAL (Gbl_LogicalLineNumber, 1);
-EXTERN char                     Gbl_CurrentLineBuffer[256];
+EXTERN char                     Gbl_CurrentLineBuffer[ASL_LINE_BUFFER_SIZE];
 EXTERN char                     INIT_GLOBAL (*Gbl_LineBufPtr, Gbl_CurrentLineBuffer);
 
 /* Option flags */
 
+EXTERN BOOLEAN                  INIT_GLOBAL (Gbl_UseDefaultAmlFilename, TRUE);
 EXTERN BOOLEAN                  INIT_GLOBAL (Gbl_NsOutputFlag, FALSE);
 EXTERN BOOLEAN                  INIT_GLOBAL (Gbl_DebugFlag, FALSE);
 EXTERN BOOLEAN                  INIT_GLOBAL (Gbl_HexOutputFlag, FALSE);
@@ -357,6 +361,7 @@ typedef enum
     ASL_WARNING_PACKAGE_LENGTH,
     ASL_WARNING_RETURN_TYPES,
     ASL_WARNING_NOT_FOUND,
+    ASL_WARNING_NESTED_COMMENT,
 
 } ASL_WARNING_IDS;
 
@@ -633,7 +638,15 @@ UtPrintFormattedName (
     UINT32                  Level);
 
 ACPI_STATUS
-UtOpenAllFiles (
+UtOpenInputFile (
+    char                    *InputFilename);
+
+ACPI_STATUS
+UtOpenAmlOutputFile (
+    char                    *InputFilename);
+
+ACPI_STATUS
+UtOpenMiscOutputFiles (
     char                    *InputFilename);
 
 void

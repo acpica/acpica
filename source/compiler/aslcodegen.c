@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslcodegen - AML code generation
- *              $Revision: 1.10 $
+ *              $Revision: 1.11 $
  *
  *****************************************************************************/
 
@@ -123,10 +123,10 @@
 #include "acparser.h"
 
 
-UINT32 HexColumn = 0;
-UINT32 AmlOffset = 0;
-UINT32  Gbl_CurrentLine = 0;
-UINT8   Gbl_AmlBuffer[16];
+UINT32          HexColumn = 0;
+UINT32          AmlOffset = 0;
+UINT32          Gbl_CurrentLine = 0;
+UINT8           Gbl_AmlBuffer[16];
 
 
 
@@ -174,7 +174,6 @@ CgFlushListingBuffer (void)
 
 
     HexColumn = 0;
-
 }
 
 
