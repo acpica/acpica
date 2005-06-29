@@ -206,7 +206,7 @@ EvAddressSpaceDispatch (
 
 
 ACPI_STATUS
-EvGetAddressSpaceHandler (
+EvInitializeRegion (
     ACPI_OBJECT_INTERNAL    *RegionObj);
 
 void *
