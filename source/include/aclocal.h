@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: aclocal.h - Internal data types used across the ACPI subsystem
- *       $Revision: 1.114 $
+ *       $Revision: 1.115 $
  *
  *****************************************************************************/
 
@@ -914,18 +914,18 @@ typedef struct
 #define MEM_CALLOC                      1
 #define MAX_MODULE_NAME                 16
 
-typedef struct AllocationInfo
+typedef struct AcpiAllocationInfo
 {
-    struct AllocationInfo   *Previous;
-    struct AllocationInfo   *Next;
-    void                    *Address;
-    UINT32                  Size;
-    UINT32                  Component;
-    UINT32                  Line;
-    NATIVE_CHAR             Module[MAX_MODULE_NAME];
-    UINT8                   AllocType;
+    struct AcpiAllocationInfo   *Previous;
+    struct AcpiAllocationInfo   *Next;
+    void                        *Address;
+    UINT32                      Size;
+    UINT32                      Component;
+    UINT32                      Line;
+    NATIVE_CHAR                 Module[MAX_MODULE_NAME];
+    UINT8                       AllocType;
 
-} ALLOCATION_INFO;
+} ACPI_ALLOCATION_INFO;
 
 #endif
 
