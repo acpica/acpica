@@ -117,8 +117,8 @@
 
 #include <acpi.h>
 #include <parser.h>
-#include <interpreter.h>
-#include <namespace.h>
+#include <interp.h>
+#include <namesp.h>
 #include <globals.h>
 
 #define _COMPONENT          MISCELLANEOUS
@@ -565,6 +565,16 @@ _CmAllocate (
     FUNCTION_TRACE_U32 ("_CmAllocate", Size);
     
 
+    /* Check for an inadvertent size of zero bytes */
+
+    if (!Size)
+    {
+        DEBUG_PRINT (ACPI_ERROR, ("CmAllocate: ** ERROR: Attempt to allocate zero bytes! (%s line %d)\n",
+                                    Module, Line));
+        REPORT_ERROR ("CmAllocate: Attempt to allocate zero bytes");
+        Size = 1;
+    }
+
     Address = OsdAllocate (Size);
     if (!Address)
     {
@@ -613,8 +623,18 @@ _CmCallocate (
 
 
     FUNCTION_TRACE_U32 ("_CmCallocate", Size);
-       
-    
+ 
+    /* Check for an inadvertent size of zero bytes */
+
+    if (!Size)
+    {
+        DEBUG_PRINT (ACPI_ERROR, ("CmCallocate: ** ERROR: Attempt to allocate zero bytes! (%s line %d)\n",
+                                    Module, Line));
+        REPORT_ERROR ("CmCallocate: Attempt to allocate zero bytes");
+        Size = 1;
+    }
+
+
     Address = OsdCallocate (Size);
     
     if (!Address)

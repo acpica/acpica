@@ -27,7 +27,7 @@
  * Code in any form, with the right to sublicense such rights; and
  *
  * 2.3. Intel grants Licensee a non-exclusive and non-transferable patent
- * license (without the right to sublicense), under only those claims of Intel
+ * license (with the right to sublicense), under only those claims of Intel
  * patents that are infringed by the Original Intel Code, to make, use, sell,
  * offer to sell, and import the Covered Code and derivative works thereof
  * solely to the minimum extent necessary to exercise the above copyright
@@ -118,9 +118,8 @@
 
 #include <acpi.h>
 
-
-#define _THIS_MODULE        "cmdebug.c"
 #define _COMPONENT          MISCELLANEOUS
+        MODULE_NAME         ("cmdebug");
 
 
 
@@ -174,10 +173,110 @@ FunctionTrace (
     INT32                   ComponentId, 
     char                    *FunctionName)
 {
-
-    NestingLevel++;
+        
+    Gbl_NestingLevel++;  
+    
     DebugPrint (ModuleName, LineNumber, ComponentId, TRACE_FUNCTIONS,
-                " %2.2d Entered Function: %s\n", NestingLevel, FunctionName);
+                " %2.2ld Entered Function: %s\n", Gbl_NestingLevel, FunctionName);
+}
+
+
+/*****************************************************************************
+ * 
+ * FUNCTION:    FunctionTracePtr
+ *
+ * PARAMETERS:  ModuleName          - Caller's module name (for error output)
+ *              LineNumber          - Caller's line number (for error output)
+ *              ComponentId         - Caller's component ID (for error output)
+ *              FunctionName        - Name of Caller's function
+ *              Pointer             - Pointer to display
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Function entry trace.  Prints only if TRACE_FUNCTIONS bit is
+ *              set in DebugLevel
+ *
+ ****************************************************************************/
+
+void
+FunctionTracePtr (
+    char                    *ModuleName, 
+    INT32                   LineNumber, 
+    INT32                   ComponentId, 
+    char                    *FunctionName,
+    void                    *Pointer)
+{
+
+    Gbl_NestingLevel++;
+    DebugPrint (ModuleName, LineNumber, ComponentId, TRACE_FUNCTIONS,
+                " %2.2ld Entered Function: %s, 0x%p\n", 
+                Gbl_NestingLevel, FunctionName, Pointer);
+}
+
+
+/*****************************************************************************
+ * 
+ * FUNCTION:    FunctionTraceStr
+ *
+ * PARAMETERS:  ModuleName          - Caller's module name (for error output)
+ *              LineNumber          - Caller's line number (for error output)
+ *              ComponentId         - Caller's component ID (for error output)
+ *              FunctionName        - Name of Caller's function
+ *              String              - Additional string to display
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Function entry trace.  Prints only if TRACE_FUNCTIONS bit is
+ *              set in DebugLevel
+ *
+ ****************************************************************************/
+
+void
+FunctionTraceStr (
+    char                    *ModuleName, 
+    INT32                   LineNumber, 
+    INT32                   ComponentId, 
+    char                    *FunctionName,
+    char                    *String)
+{
+
+    Gbl_NestingLevel++;
+    DebugPrint (ModuleName, LineNumber, ComponentId, TRACE_FUNCTIONS,
+                " %2.2ld Entered Function: %s, %s\n", 
+                Gbl_NestingLevel, FunctionName, String);
+}
+
+
+/*****************************************************************************
+ * 
+ * FUNCTION:    FunctionTraceU32
+ *
+ * PARAMETERS:  ModuleName          - Caller's module name (for error output)
+ *              LineNumber          - Caller's line number (for error output)
+ *              ComponentId         - Caller's component ID (for error output)
+ *              FunctionName        - Name of Caller's function
+ *              Integer             - Integer to display
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Function entry trace.  Prints only if TRACE_FUNCTIONS bit is
+ *              set in DebugLevel
+ *
+ ****************************************************************************/
+
+void
+FunctionTraceU32 (
+    char                    *ModuleName, 
+    INT32                   LineNumber, 
+    INT32                   ComponentId, 
+    char                    *FunctionName,
+    UINT32                  Integer)
+{
+
+    Gbl_NestingLevel++;
+    DebugPrint (ModuleName, LineNumber, ComponentId, TRACE_FUNCTIONS,
+                " %2.2ld Entered Function: %s, 0x%lX\n", 
+                Gbl_NestingLevel, FunctionName, Integer);
 }
 
 
@@ -206,8 +305,8 @@ FunctionExit (
 {
 
     DebugPrint (ModuleName, LineNumber, ComponentId, TRACE_FUNCTIONS,
-                " %2.2d Exiting Function: %s\n", NestingLevel, FunctionName);
-    NestingLevel--;
+                " %2.2ld Exiting Function: %s\n", Gbl_NestingLevel, FunctionName);
+    Gbl_NestingLevel--;
 }
 
 
@@ -239,13 +338,85 @@ FunctionStatusExit (
 
     if (Status > ACPI_MAX_STATUS)
     {
-        Status = AE_UNKNOWN_STATUS;
+        DebugPrint (ModuleName, LineNumber, ComponentId, TRACE_FUNCTIONS,
+                    " %2.2ld Exiting Function: %s, [Unknown Status] 0x%X\n", 
+                    Gbl_NestingLevel, FunctionName, Status);
     }
 
+    else
+    { 
+        DebugPrint (ModuleName, LineNumber, ComponentId, TRACE_FUNCTIONS,
+                    " %2.2ld Exiting Function: %s, %s\n", 
+                    Gbl_NestingLevel, FunctionName, Gbl_ExceptionNames[Status]);
+    }
+
+    Gbl_NestingLevel--;
+}
+
+
+/*****************************************************************************
+ * 
+ * FUNCTION:    FunctionValueExit
+ *
+ * PARAMETERS:  ModuleName          - Caller's module name (for error output)
+ *              LineNumber          - Caller's line number (for error output)
+ *              ComponentId         - Caller's component ID (for error output)
+ *              FunctionName        - Name of Caller's function
+ *              Value               - Value to be printed with exit msg
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Function exit trace.  Prints only if TRACE_FUNCTIONS bit is
+ *              set in DebugLevel.  Prints exit value also.
+ *
+ ****************************************************************************/
+
+void
+FunctionValueExit (
+    char                    *ModuleName, 
+    INT32                   LineNumber, 
+    INT32                   ComponentId, 
+    char                    *FunctionName,
+    NATIVE_UINT             Value)
+{
+
     DebugPrint (ModuleName, LineNumber, ComponentId, TRACE_FUNCTIONS,
-                " %2.2d Exiting Function: %s, %s\n", 
-                NestingLevel, FunctionName, ExceptionNames[Status]);
-    NestingLevel--;
+                " %2.2ld Exiting Function: %s, 0x%X\n", 
+                Gbl_NestingLevel, FunctionName, Value);
+    Gbl_NestingLevel--;
+}
+
+
+/*****************************************************************************
+ * 
+ * FUNCTION:    FunctionPtrExit
+ *
+ * PARAMETERS:  ModuleName          - Caller's module name (for error output)
+ *              LineNumber          - Caller's line number (for error output)
+ *              ComponentId         - Caller's component ID (for error output)
+ *              FunctionName        - Name of Caller's function
+ *              Value               - Value to be printed with exit msg
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Function exit trace.  Prints only if TRACE_FUNCTIONS bit is
+ *              set in DebugLevel.  Prints exit value also.
+ *
+ ****************************************************************************/
+
+void
+FunctionPtrExit (
+    char                    *ModuleName, 
+    INT32                   LineNumber, 
+    INT32                   ComponentId, 
+    char                    *FunctionName,
+    char                    *Ptr)
+{
+
+    DebugPrint (ModuleName, LineNumber, ComponentId, TRACE_FUNCTIONS,
+                " %2.2ld Exiting Function: %s, 0x%p\n", 
+                Gbl_NestingLevel, FunctionName, Ptr);
+    Gbl_NestingLevel--;
 }
 
 
@@ -277,19 +448,16 @@ DebugPrint (
     ...)
 {
     va_list                 args;
-
-
-
+     
+     
     /* Both the level and the component must be enabled */
 
     if ((PrintLevel & DebugLevel) && (ComponentId & DebugLayer))
     {
         va_start (args, Format);
 
-        OsdPrintf (NULL, "%10s(%04d): ", ModuleName, LineNumber);
-        OsdVprintf (NULL, Format, args);
-
-        va_end (args);
+        OsdPrintf ("%8s-%04d: ", ModuleName, LineNumber);
+        OsdVprintf (Format, args);  
     }
 }
 
@@ -317,7 +485,7 @@ DebugPrintPrefix (
 {
 
 
-    OsdPrintf (NULL, "%10s(%04d): ", ModuleName, LineNumber);
+    OsdPrintf ("%8s-%04d: ", ModuleName, LineNumber);
 }
 
 
@@ -344,7 +512,7 @@ DebugPrintRaw (
 
     va_start (args, Format);
 
-    OsdVprintf (NULL, Format, args);
+    OsdVprintf (Format, args);
 
     va_end (args);
 }

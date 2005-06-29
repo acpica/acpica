@@ -117,14 +117,14 @@
 #define __CMOBJECT_C__
 
 #include <acpi.h>
-#include <interpreter.h>
-#include <namespace.h>
-#include <acpiobj.h>
+#include <acobject.h>
+#include <interp.h>
+#include <namesp.h>
 #include <pnp.h>
 
 
-#define _THIS_MODULE        "cmobject.c"
 #define _COMPONENT          MISCELLANEOUS
+        MODULE_NAME         ("cmobject");
 
 
 typedef struct Search_st 
@@ -303,7 +303,7 @@ CmBuildExternalPackageObject (
         ThisInternalObj = (ACPI_OBJECT_INTERNAL *) LevelPtr->InternalObj->Package.Elements[ThisIndex];
         ThisExternalObj = (ACPI_OBJECT *) &LevelPtr->ExternalObj->Package.Elements[ThisIndex];
 
-        if (VALID_OBJECT_TYPE (ThisInternalObj, ACPI_TYPE_Package))
+        if (IS_THIS_OBJECT_TYPE (ThisInternalObj, ACPI_TYPE_Package))
         {
             /*
              * If this object is a package then we go one deeper
@@ -417,7 +417,7 @@ CmBuildExternalObject (
     FUNCTION_TRACE ("CmBuildExternalObject");
 
 
-    if (VALID_OBJECT_TYPE (InternalObj, ACPI_TYPE_Package))
+    if (IS_THIS_OBJECT_TYPE (InternalObj, ACPI_TYPE_Package))
     {
         /*
          * Package objects contain other objects (which can be objects)
@@ -591,7 +591,7 @@ CmBuildInternalPackageObject (
         ThisInternalObj = (ACPI_OBJECT_INTERNAL *) &LevelPtr->InternalObj->Package.Elements[ThisIndex];
         ThisExternalObj = (ACPI_OBJECT *) &LevelPtr->ExternalObj->Package.Elements[ThisIndex];
 
-        if (VALID_OBJECT_TYPE (ThisInternalObj, ACPI_TYPE_Package))
+        if (IS_THIS_OBJECT_TYPE (ThisInternalObj, ACPI_TYPE_Package))
         {
             /*
              * If this object is a package then we go one deeper

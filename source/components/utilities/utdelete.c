@@ -117,14 +117,38 @@
 #define __CMDELETE_C__
 
 #include <acpi.h>
-#include <acpiobj.h>
-#include <interpreter.h>
-#include <namespace.h>
+#include <acobject.h>
+#include <interp.h>
+#include <namesp.h>
+#include <tables.h>
+#include <parser.h>
 
-
-#define _THIS_MODULE        "cmdelete.c"
 #define _COMPONENT          MISCELLANEOUS
+        MODULE_NAME         ("cmdelete");
 
+
+
+/******************************************************************************
+ * 
+ * FUNCTION:    CmDeleteOperand
+ *
+ * PARAMETERS:  Operand         - Pointer to the object to be deleted
+ *
+ * RETURN:      Delete an operand object, clear stack entry
+ *
+ *****************************************************************************/
+
+void
+CmDeleteOperand (
+    ACPI_OBJECT_INTERNAL    **Operand)
+{
+
+    CmDeleteInternalObject (*Operand);
+
+    /* Clear the stack slot to prevent multiple deletions */
+
+    *Operand = NULL;
+}
 
 
 /******************************************************************************
@@ -233,6 +257,7 @@ CmUpdateObjectReference (
     INT32                   Action)
 {
     UINT32                  i;
+    ACPI_OBJECT_INTERNAL    *Next;
 
 
     FUNCTION_TRACE_PTR ("CmUpdateObjectReference", Object);
@@ -250,14 +275,14 @@ CmUpdateObjectReference (
      * Make sure that this isn't a namespace handle or an AML pointer
      */
 
-    if (IS_NS_HANDLE ((NAME_TABLE_ENTRY *) Object))
+    if (VALID_DESCRIPTOR_TYPE (Object, DESC_TYPE_NTE))
     {
         DEBUG_PRINT (ACPI_INFO, ("CmUpdateObjectReference: Object %p is NS handle\n",
                         Object));
         return_ACPI_STATUS (AE_OK);
     }
 
-    if (NsIsInSystemTable (Object))
+    if (TbSystemTablePointer (Object))
     {
         DEBUG_PRINT (ACPI_INFO, ("CmUpdateObjectReference: **** Object %p is Pcode Ptr\n",
                         Object));
@@ -272,7 +297,32 @@ CmUpdateObjectReference (
     switch (Object->Common.Type)
     {
 
-    case TYPE_Package:
+    case ACPI_TYPE_Device:
+
+/* TBD:
+        CmUpdateObjectReference (Object->Device.AddrHandler, Action);
+*/
+        CmUpdateObjectReference (Object->Device.SysHandler, Action);
+        CmUpdateObjectReference (Object->Device.DrvHandler, Action);
+        break;
+
+
+    case INTERNAL_TYPE_AddressHandler:
+
+        /* Must walk list of address handlers */
+
+        Next = Object->AddrHandler.Link;
+        while (Next)
+        {
+            Next->Common.ReferenceCount = CmUpdateRefCount (Next, 
+                                            Next->Common.ReferenceCount, Action);
+
+            Next = Next->AddrHandler.Link;
+        }
+        break;
+
+
+    case ACPI_TYPE_Package:
 
         /* 
          * We must update all the sub-objects of the package
@@ -292,32 +342,35 @@ CmUpdateObjectReference (
         break;
 
 
-    case TYPE_FieldUnit:
+    case ACPI_TYPE_FieldUnit:
 
         CmUpdateObjectReference (Object->FieldUnit.Container, Action);
         break;
 
 
-    case TYPE_DefField:
+    case INTERNAL_TYPE_DefField:
 
         CmUpdateObjectReference (Object->Field.Container, Action);
         break;
 
 
-    case TYPE_BankField:
+    case INTERNAL_TYPE_BankField:
 
         CmUpdateObjectReference (Object->BankField.Container, Action);
         CmUpdateObjectReference (Object->BankField.BankSelect, Action);
         break;
 
 
-    case TYPE_Region:
+    case ACPI_TYPE_Region:
 
-        CmUpdateObjectReference (Object->Region.AddressLocation, Action);
+        CmUpdateObjectReference (Object->Region.Method, Action);
+/* TBD:
+        CmUpdateObjectReference (Object->Region.AddrHandler, Action);
+*/
         break;
 
 
-    case TYPE_Lvalue:
+    case INTERNAL_TYPE_Lvalue:
 
         break;
     }
@@ -353,9 +406,16 @@ CmDeleteInternalObj (
 {
     void                    *ObjPointer = NULL;
     UINT32                  i;
+    ACPI_OBJECT_INTERNAL    *Next;
+    ACPI_OBJECT_INTERNAL    *New;
 
 
     FUNCTION_TRACE_PTR ("CmDeleteInternalObj", Object);
+
+    if (!Object)
+    {
+        return_VOID;
+    }
 
 
     /* Only delete the object when the reference count reaches zero */
@@ -374,7 +434,39 @@ CmDeleteInternalObj (
     switch (Object->Common.Type)
     {
 
-    case TYPE_String:
+    case ACPI_TYPE_Device:
+
+        DEBUG_PRINT (ACPI_INFO, ("CmDeleteInternalObj: **** Device %p\n", 
+                                Object));
+
+        /* TBD: temp fix for handler ref count issues */
+
+        CmUpdateObjectReference (Object->Device.AddrHandler, REF_DECREMENT);
+        CmDeleteInternalObj (Object->Device.AddrHandler);
+        CmDeleteInternalObj (Object->Device.SysHandler);
+        CmDeleteInternalObj (Object->Device.DrvHandler);
+        break;
+
+
+    case INTERNAL_TYPE_AddressHandler:
+
+        DEBUG_PRINT (ACPI_INFO, ("CmDeleteInternalObj: **** AddressHandler %p\n", 
+                                Object));
+
+        Next = Object->AddrHandler.Link;
+        while (Next)
+        {
+            New = Next->AddrHandler.Link;
+            if (!(Next->Common.Flags & AO_STATIC_ALLOCATION))
+            {
+                CmFree (Next);
+            }
+
+            Next = New;
+        }
+        break;
+
+    case ACPI_TYPE_String:
 
         DEBUG_PRINT (ACPI_INFO, ("CmDeleteInternalObj: **** String %p, ptr %p\n", 
                                 Object, Object->String.Pointer));
@@ -385,7 +477,7 @@ CmDeleteInternalObj (
         break;
 
 
-    case TYPE_Buffer:
+    case ACPI_TYPE_Buffer:
         
         DEBUG_PRINT (ACPI_INFO, ("CmDeleteInternalObj: **** Buffer %p, ptr %p\n", 
                                 Object, Object->Buffer.Pointer));
@@ -396,7 +488,7 @@ CmDeleteInternalObj (
         break;
 
 
-    case TYPE_Package:
+    case ACPI_TYPE_Package:
         
         DEBUG_PRINT (ACPI_INFO, ("CmDeleteInternalObj: **** Package of count %d\n", 
                                 Object->Package.Count));
@@ -421,13 +513,13 @@ CmDeleteInternalObj (
         break;
 
 
-    case TYPE_FieldUnit:
+    case ACPI_TYPE_FieldUnit:
         
         CmDeleteInternalObj (Object->FieldUnit.Container);
         break;
 
 
-    case TYPE_DefField:
+    case INTERNAL_TYPE_DefField:
         
         DEBUG_PRINT (ACPI_INFO, ("CmDeleteInternalObj: **** Field %p, container %p\n", 
                                 Object, Object->Field.Container));
@@ -436,26 +528,48 @@ CmDeleteInternalObj (
         break;
 
 
-    case TYPE_BankField:
+    case INTERNAL_TYPE_BankField:
         
         CmDeleteInternalObj (Object->BankField.Container);
         CmDeleteInternalObj (Object->BankField.BankSelect);  /* TBD: is this necessary? */
         break;
 
 
-    case TYPE_Region:
+    case ACPI_TYPE_Region:
         
         DEBUG_PRINT (ACPI_INFO, ("CmDeleteInternalObj: ***** Region %p, method %p\n", 
-                                Object, Object->Region.AddressLocation));
+                                Object, Object->Region.Method));
 
-        CmDeleteInternalObj (Object->Region.AddressLocation);        
+        CmDeleteInternalObj (Object->Region.Method); 
+/* TBD       
+        CmDeleteInternalObj (Object->Region.AddrHandler);        
+*/
         break;
 
 
-    case TYPE_Lvalue:
+    case ACPI_TYPE_Method:
+
+
+        DEBUG_PRINT (ACPI_INFO, ("CmDeleteInternalObj: ***** Method %p, ParserOp %p\n", 
+                                Object, Object->Method.ParserOp));
+
+/* TBD: Remove ifdef when RPARSER is obsoleted */
+
+#ifndef _RPARSER
+        if (Object->Method.ParserOp)
+        {
+            PsDeleteParseTree (Object->Method.ParserOp);
+            Object->Method.ParserOp = NULL;
+        }
+#endif
+
+        break;
+
+
+    case INTERNAL_TYPE_Lvalue:
         
         if ((Object->Lvalue.Object) &&
-           (!IS_NS_HANDLE (Object->Lvalue.Object)))
+           (!VALID_DESCRIPTOR_TYPE (Object->Lvalue.Object, DESC_TYPE_NTE)))
         {   
             DEBUG_PRINT (ACPI_INFO, ("CmDeleteInternalObj: ***** Lvalue: %p\n", 
                                 Object->Lvalue.Object));
@@ -478,7 +592,7 @@ CmDeleteInternalObj (
 
     if (ObjPointer)
     {
-        if (!NsIsInSystemTable (ObjPointer))
+        if (!TbSystemTablePointer (ObjPointer))
         {
             DEBUG_PRINT (ACPI_INFO, ("CmDeleteInternalObj: Deleting Obj Ptr %p \n", 
                                     ObjPointer));
@@ -501,7 +615,13 @@ CmDeleteInternalObj (
         DEBUG_PRINT (ACPI_INFO, ("CmDeleteInternalObj: Deleting Obj %p [%s]\n",
                                 Object, Gbl_NsTypeNames[Object->Common.Type]));
 
+        /* Memory allocation metrics.  Call the macro here since we only
+         * care about dynamically allocated objects.
+         */
+        DECREMENT_OBJECT_METRICS(Object->Common.Size);
+        
         CmFree (Object);
+        
     }
 
     return_VOID;
@@ -539,14 +659,14 @@ CmDeleteInternalObject (
         return_VOID;
     }
 
-    if (NsIsInSystemTable (Object))
+    if (TbSystemTablePointer (Object))
     {
         DEBUG_PRINT (ACPI_INFO, ("CmDeleteInternalObject: **** Object %p is Pcode Ptr\n",
                         Object));
         return_VOID;
     }
 
-    if (IS_NS_HANDLE (Object))
+    if (VALID_DESCRIPTOR_TYPE (Object, DESC_TYPE_NTE))
     {
         DEBUG_PRINT (ACPI_INFO, ("CmDeleteInternalObject: **** Object %p is NS handle\n",
                         Object));
@@ -606,7 +726,7 @@ CmDeleteInternalObjectList (
          * need to be deleted separately.
          */
 
-        if ((*InternalObj)->Common.Type == TYPE_Package)
+        if (IS_THIS_OBJECT_TYPE ((*InternalObj), ACPI_TYPE_Package))
         {
             /* Delete the package */
             

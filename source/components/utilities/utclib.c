@@ -120,24 +120,29 @@
 #include <acpi.h>
 #include <events.h>
 #include <hardware.h>
-#include <namespace.h>
-#include <interpreter.h>
+#include <namesp.h>
+#include <interp.h>
 #include <amlcode.h>
 
+/*
+ * These implementations of standard C Library routines can optionally be
+ * used if a C library is not available.  In general, they are less efficient
+ * than an inline or assembly implementation
+ */
 
-#define _THIS_MODULE        "cmclib.c"
 #define _COMPONENT          MISCELLANEOUS
+        MODULE_NAME         ("cmclib");
 
 
 /*******************************************************************************
  *
- * FUNCTION:    
+ * FUNCTION:    strlen  
  *
- * PARAMETERS:  None
+ * PARAMETERS:  String              - Null terminated string
  *
- * RETURN:      Status
+ * RETURN:      Length
  *
- * DESCRIPTION: 
+ * DESCRIPTION: Returns the length of the input string
  *
  ******************************************************************************/
 
@@ -159,22 +164,21 @@ _strlen (
     }
 
     return Length;
-
 }
 
 
 /*******************************************************************************
  *
- * FUNCTION:    
+ * FUNCTION:    strcpy
  *
- * PARAMETERS:  None
+ * PARAMETERS:  DstString       - Target of the copy
+ *              SrcString       - The source string to copy
  *
- * RETURN:      Status
+ * RETURN:      DstString
  *
- * DESCRIPTION: 
+ * DESCRIPTION: Copy a null terminated string
  *
  ******************************************************************************/
-
 
 char *
 _strcpy (
@@ -205,13 +209,15 @@ _strcpy (
 
 /*******************************************************************************
  *
- * FUNCTION:    
+ * FUNCTION:    strncpy
  *
- * PARAMETERS:  None
+ * PARAMETERS:  DstString       - Target of the copy
+ *              SrcString       - The source string to copy
+ *              Count           - Maximum # of bytes to copy
  *
- * RETURN:      Status
+ * RETURN:      DstString
  *
- * DESCRIPTION: 
+ * DESCRIPTION: Copy a null terminated string, with a maximum length
  *
  ******************************************************************************/
 
@@ -246,45 +252,14 @@ _strncpy (
 
 /*******************************************************************************
  *
- * FUNCTION:    
+ * FUNCTION:    strcmp
  *
- * PARAMETERS:  None
+ * PARAMETERS:  String1         - First string
+ *              String2         - Second string
  *
- * RETURN:      Status
+ * RETURN:      Index where strings mismatched, or 0 if strings matched
  *
- * DESCRIPTION: 
- *
- ******************************************************************************/
-
-UINT32
-_strncmp (
-    const char              *String1, 
-    const char              *String2, 
-    ACPI_SIZE               Count)
-{
-
-
-    for ( ; Count-- && (*String1 == *String2); String2++)
-    {
-        if (!*String1++)
-        {
-            return 0;
-        }
-    }
-
-    return (Count == -1) ? 0 : ((unsigned char) *String1 - (unsigned char) *String2);
-}
-
-
-/*******************************************************************************
- *
- * FUNCTION:    
- *
- * PARAMETERS:  None
- *
- * RETURN:      Status
- *
- * DESCRIPTION: 
+ * DESCRIPTION: Compare two null terminated strings
  *
  ******************************************************************************/
 
@@ -310,13 +285,48 @@ _strcmp (
 
 /*******************************************************************************
  *
- * FUNCTION:    
+ * FUNCTION:    strncmp
  *
- * PARAMETERS:  None
+ * PARAMETERS:  String1         - First string
+ *              String2         - Second string
+ *              Count           - Maximum # of bytes to compare
  *
- * RETURN:      Status
+ * RETURN:      Index where strings mismatched, or 0 if strings matched
  *
- * DESCRIPTION: 
+ * DESCRIPTION: Compare two null terminated strings, with a maximum length
+ *
+ ******************************************************************************/
+
+UINT32
+_strncmp (
+    const char              *String1, 
+    const char              *String2, 
+    ACPI_SIZE               Count)
+{
+
+
+    for ( ; Count-- && (*String1 == *String2); String2++)
+    {
+        if (!*String1++)
+        {
+            return 0;
+        }
+    }
+
+    return (Count == -1) ? 0 : ((unsigned char) *String1 - (unsigned char) *String2);
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    Strcat
+ *
+ * PARAMETERS:  DstString       - Target of the copy
+ *              SrcString       - The source string to copy
+ *
+ * RETURN:      DstString
+ *
+ * DESCRIPTION: Append a null terminated string to a null terminated string
  *
  ******************************************************************************/
 
@@ -345,13 +355,16 @@ _strcat (
 
 /*******************************************************************************
  *
- * FUNCTION:    
+ * FUNCTION:    strncat
  *
- * PARAMETERS:  None
+ * PARAMETERS:  DstString       - Target of the copy
+ *              SrcString       - The source string to copy
+ *              Count           - Maximum # of bytes to copy
  *
- * RETURN:      Status
+ * RETURN:      DstString
  *
- * DESCRIPTION: 
+ * DESCRIPTION: Append a null terminated string to a null terminated string,
+ *              with a maximum count.
  *
  ******************************************************************************/
 
@@ -391,13 +404,15 @@ _strncat (
 
 /*******************************************************************************
  *
- * FUNCTION:    
+ * FUNCTION:    memcpy
  *
- * PARAMETERS:  None
+ * PARAMETERS:  Dest        - Target of the copy
+ *              Src         - Source buffer to copy
+ *              Count       - Number of bytes to copy
  *
- * RETURN:      Status
+ * RETURN:      Dest
  *
- * DESCRIPTION: 
+ * DESCRIPTION: Copy arbitrary bytes of memory
  *
  ******************************************************************************/
 
@@ -426,13 +441,15 @@ _memcpy (
 
 /*******************************************************************************
  *
- * FUNCTION:    
+ * FUNCTION:    memset
  *
- * PARAMETERS:  None
+ * PARAMETERS:  Dest        - Buffer to set
+ *              Value       - Value to set each byte of memory
+ *              Count       - Number of bytes to set
  *
- * RETURN:      Status
+ * RETURN:      Dest
  *
- * DESCRIPTION: 
+ * DESCRIPTION: Initialize a buffer to a known value.
  *
  ******************************************************************************/
 
@@ -618,8 +635,6 @@ const unsigned char _ctype[257] = {
 #define IS_LOWER(c)  (_ctype[(unsigned char)(c)] & (_LO))
 #define IS_DIGIT(c)  (_ctype[(unsigned char)(c)] & (_DI))
 #define IS_SPACE(c)  (_ctype[(unsigned char)(c)] & (_SP))
-//#define ToUpper(c)  (IS_LOWER(c) ? ((c)-0x20) : (c))
-//#define ToLower(c)  (IS_UPPER(c) ? ((c)+0x20) : (c))
 
 INT32
 ToUpper (INT32 c)
@@ -634,15 +649,18 @@ ToLower (INT32 c)
     return (IS_UPPER(c) ? ((c)+0x20) : (c));
 }
 
+
 /*******************************************************************************
  *
- * FUNCTION:    
+ * FUNCTION:    strtoul 
  *
- * PARAMETERS:  None
+ * PARAMETERS:  String          - Null terminated string
+ *              Terminater      - Where a pointer to the terminating byte is returned
+ *              Base            - Radix of the string
  *
- * RETURN:      Status
+ * RETURN:      Converted value
  *
- * DESCRIPTION: 
+ * DESCRIPTION: Convert a string into an unsigned value.
  *
  ******************************************************************************/
 
@@ -775,7 +793,7 @@ _strtoul (
          * Check to see if value is out of range:
          */
 
-        if (ReturnValue > ((ACPI_UINT_MAX - (UINT32) index) /
+        if (ReturnValue > ((ACPI_UINT32_MAX - (UINT32) index) /
                             (UINT32) Base)) 
         {
             Status = AE_ERROR;
@@ -812,7 +830,7 @@ done:
 
     if (Status == AE_ERROR)
     {
-        ReturnValue = ACPI_UINT_MAX;
+        ReturnValue = ACPI_UINT32_MAX;
     }
 
     /*
@@ -820,7 +838,7 @@ done:
      */
     if (sign == NEGATIVE) 
     {
-        ReturnValue = (ACPI_UINT_MAX - ReturnValue) + 1;
+        ReturnValue = (ACPI_UINT32_MAX - ReturnValue) + 1;
     }
 
     return (ReturnValue);
