@@ -1,8 +1,8 @@
-/******************************************************************************
+/*******************************************************************************
  *
  * Module Name: cmutils - common utility procedures
  *
- *****************************************************************************/
+ ******************************************************************************/
 
 /******************************************************************************
  *
@@ -129,7 +129,7 @@
         MODULE_NAME         ("cmutils");
 
 
-/*****************************************************************************
+/*******************************************************************************
  *
  * FUNCTION:    AcpiCmValidAcpiName
  *
@@ -142,7 +142,7 @@
  *              2) numeric
  *              3) underscore
  *
- ****************************************************************************/
+ ******************************************************************************/
 
 BOOLEAN
 AcpiCmValidAcpiName (
@@ -167,7 +167,7 @@ AcpiCmValidAcpiName (
 }
 
 
-/*****************************************************************************
+/*******************************************************************************
  *
  * FUNCTION:    AcpiCmValidAcpiCharacter
  *
@@ -177,7 +177,7 @@ AcpiCmValidAcpiName (
  *
  * DESCRIPTION: Check for a printable character
  *
- ****************************************************************************/
+ ******************************************************************************/
 
 BOOLEAN
 AcpiCmValidAcpiCharacter (
@@ -190,7 +190,7 @@ AcpiCmValidAcpiCharacter (
 }
 
 
-/*****************************************************************************
+/*******************************************************************************
  *
  * FUNCTION:    AcpiCmMutexInitialize
  *
@@ -200,7 +200,7 @@ AcpiCmValidAcpiCharacter (
  *
  * DESCRIPTION: Create the system mutex objects.
  *
- ****************************************************************************/
+ ******************************************************************************/
 
 ACPI_STATUS
 AcpiCmMutexInitialize (
@@ -229,7 +229,7 @@ AcpiCmMutexInitialize (
 }
 
 
-/*****************************************************************************
+/*******************************************************************************
  *
  * FUNCTION:    AcpiCmMutexTerminate
  *
@@ -239,7 +239,7 @@ AcpiCmMutexInitialize (
  *
  * DESCRIPTION: Delete all of the system mutex objects.
  *
- ****************************************************************************/
+ ******************************************************************************/
 
 void
 AcpiCmMutexTerminate (
@@ -263,7 +263,7 @@ AcpiCmMutexTerminate (
 }
 
 
-/*****************************************************************************
+/*******************************************************************************
  *
  * FUNCTION:    AcpiCmCreateMutex
  *
@@ -273,7 +273,7 @@ AcpiCmMutexTerminate (
  *
  * DESCRIPTION: Create a mutex object.
  *
- ****************************************************************************/
+ ******************************************************************************/
 
 ACPI_STATUS
 AcpiCmCreateMutex (
@@ -303,7 +303,7 @@ AcpiCmCreateMutex (
 }
 
 
-/*****************************************************************************
+/*******************************************************************************
  *
  * FUNCTION:    AcpiCmDeleteMutex
  *
@@ -313,7 +313,7 @@ AcpiCmCreateMutex (
  *
  * DESCRIPTION: Delete a mutex object.
  *
- ****************************************************************************/
+ ******************************************************************************/
 
 ACPI_STATUS
 AcpiCmDeleteMutex (
@@ -340,7 +340,7 @@ AcpiCmDeleteMutex (
 }
 
 
-/*****************************************************************************
+/*******************************************************************************
  *
  * FUNCTION:    AcpiCmAcquireMutex
  *
@@ -350,7 +350,7 @@ AcpiCmDeleteMutex (
  *
  * DESCRIPTION: Acquire a mutex object.
  *
- ****************************************************************************/
+ ******************************************************************************/
 
 ACPI_STATUS
 AcpiCmAcquireMutex (
@@ -368,9 +368,8 @@ AcpiCmAcquireMutex (
     }
 
 
-    Status =
-        AcpiOsWaitSemaphore (AcpiGbl_AcpiMutexInfo[MutexId].Mutex,
-                            1, WAIT_FOREVER);
+    Status = AcpiOsWaitSemaphore (AcpiGbl_AcpiMutexInfo[MutexId].Mutex,
+                                    1, WAIT_FOREVER);
 
     DEBUG_PRINT (TRACE_MUTEX, ("Acquired Mutex  [%s] Status %s\n",
                 AcpiCmGetMutexName (MutexId), AcpiCmFormatException (Status)));
@@ -385,7 +384,7 @@ AcpiCmAcquireMutex (
 }
 
 
-/*****************************************************************************
+/*******************************************************************************
  *
  * FUNCTION:    AcpiCmReleaseMutex
  *
@@ -395,7 +394,7 @@ AcpiCmAcquireMutex (
  *
  * DESCRIPTION: Release a mutex object.
  *
- ****************************************************************************/
+ ******************************************************************************/
 
 ACPI_STATUS
 AcpiCmReleaseMutex (
@@ -404,7 +403,8 @@ AcpiCmReleaseMutex (
     ACPI_STATUS             Status;
 
 
-    DEBUG_PRINT (TRACE_MUTEX, ("Releasing Mutex [%s]\n", AcpiCmGetMutexName (MutexId)));
+    DEBUG_PRINT (TRACE_MUTEX, 
+        ("Releasing Mutex [%s]\n", AcpiCmGetMutexName (MutexId)));
 
     if (MutexId > MAX_MTX)
     {
@@ -414,17 +414,24 @@ AcpiCmReleaseMutex (
 
     AcpiGbl_AcpiMutexInfo[MutexId].Locked = FALSE;  /* Mark before unlocking */
 
-    Status =
-        AcpiOsSignalSemaphore (AcpiGbl_AcpiMutexInfo[MutexId].Mutex, 1);
+    Status = AcpiOsSignalSemaphore (AcpiGbl_AcpiMutexInfo[MutexId].Mutex, 1);
 
-    DEBUG_PRINT (TRACE_MUTEX, ("Released Mutex  [%s] Status %s\n",
-                AcpiCmGetMutexName (MutexId), AcpiCmFormatException (Status)));
+    if (ACPI_FAILURE (Status))
+    {
+        DEBUG_PRINT (ACPI_ERROR, ("Error Releasing Mutex [%s], %s\n",
+                    AcpiCmGetMutexName (MutexId), AcpiCmFormatException (Status)));
+    }
+    else
+    {
+        DEBUG_PRINT (TRACE_MUTEX, ("Released Mutex [%s], %s\n",
+                    AcpiCmGetMutexName (MutexId), AcpiCmFormatException (Status)));
+    }
 
     return (Status);
 }
 
 
-/******************************************************************************
+/*******************************************************************************
  *
  * FUNCTION:    AcpiCmCreateUpdateStateAndPush
  *
@@ -466,7 +473,7 @@ AcpiCmCreateUpdateStateAndPush (
 }
 
 
-/******************************************************************************
+/*******************************************************************************
  *
  * FUNCTION:    AcpiCmPushGenericState
  *
@@ -495,7 +502,7 @@ AcpiCmPushGenericState (
 }
 
 
-/******************************************************************************
+/*******************************************************************************
  *
  * FUNCTION:    AcpiCmPopGenericState
  *
@@ -531,7 +538,7 @@ AcpiCmPopGenericState (
 }
 
 
-/******************************************************************************
+/*******************************************************************************
  *
  * FUNCTION:    AcpiCmCreateGenericState
  *
@@ -590,11 +597,12 @@ AcpiCmCreateGenericState (void)
 }
 
 
-/******************************************************************************
+/*******************************************************************************
  *
  * FUNCTION:    AcpiCmCreateUpdateState
  *
- * PARAMETERS:  Object              - Initial Object to be installed in the state
+ * PARAMETERS:  Object              - Initial Object to be installed in the 
+ *                                    state
  *              Action              - Update action to be performed
  *
  * RETURN:      Status
@@ -633,7 +641,7 @@ AcpiCmCreateUpdateState (
 }
 
 
-/******************************************************************************
+/*******************************************************************************
  *
  * FUNCTION:    AcpiCmCreateControlState
  *
@@ -672,7 +680,7 @@ AcpiCmCreateControlState (
 }
 
 
-/******************************************************************************
+/*******************************************************************************
  *
  * FUNCTION:    AcpiCmDeleteGenericState
  *
@@ -723,7 +731,7 @@ AcpiCmDeleteGenericState (
 }
 
 
-/******************************************************************************
+/*******************************************************************************
  *
  * FUNCTION:    AcpiCmDeleteGenericStateCache
  *
@@ -762,7 +770,7 @@ AcpiCmDeleteGenericStateCache (
 }
 
 
-/*****************************************************************************
+/*******************************************************************************
  *
  * FUNCTION:    _ReportError
  *
@@ -775,7 +783,7 @@ AcpiCmDeleteGenericStateCache (
  *
  * DESCRIPTION: Print error message from KD table
  *
- ****************************************************************************/
+ ******************************************************************************/
 
 void
 _ReportError (
@@ -791,7 +799,7 @@ _ReportError (
 }
 
 
-/*****************************************************************************
+/*******************************************************************************
  *
  * FUNCTION:    _ReportWarning
  *
@@ -804,7 +812,7 @@ _ReportError (
  *
  * DESCRIPTION: Print warning message from KD table
  *
- ****************************************************************************/
+ ******************************************************************************/
 
 void
 _ReportWarning (
@@ -820,7 +828,7 @@ _ReportWarning (
 }
 
 
-/*****************************************************************************
+/*******************************************************************************
  *
  * FUNCTION:    _ReportInfo
  *
@@ -833,7 +841,7 @@ _ReportWarning (
  *
  * DESCRIPTION: Print information message from KD table
  *
- ****************************************************************************/
+ ******************************************************************************/
 
 void
 _ReportInfo (
