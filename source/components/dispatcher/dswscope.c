@@ -177,7 +177,7 @@ NsPopCurrent (NsType Type)
         REPORT_WARNING (&KDT[5]);
     }
 
-    DEBUG_PRINT (TRACE_EXEC, ("Popping Scope till type (%i) is found\n", Type));
+    DEBUG_PRINT (TRACE_EXEC, ("Popping Scope till type (%d) is found\n", Type));
 
     while (CurrentScope > &ScopeStack[0])
     {
@@ -195,16 +195,16 @@ NsPopCurrent (NsType Type)
         Count++;
 
 
-        DEBUG_PRINT (TRACE_EXEC, ("Popped %i ", (CurrentScope+1)->Type));
+        DEBUG_PRINT (TRACE_EXEC, ("Popped %d\n", (CurrentScope+1)->Type));
 
         if ((Any == Type) || (Type == (CurrentScope + 1)->Type))
         {
-            DEBUG_PRINT (TRACE_EXEC, ("Found %i\n", Type));
+            DEBUG_PRINT (TRACE_EXEC, ("Found %d\n", Type));
             return Count;
         }
     }
 
-    DEBUG_PRINT (TRACE_EXEC,("%i Not Found\n", Type));
+    DEBUG_PRINT (TRACE_EXEC,("%d Not Found\n", Type));
     return -Count;
 }
 
