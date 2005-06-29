@@ -1,7 +1,7 @@
  
 /******************************************************************************
  * 
- * Module Name: cmobject - Internal to external object translation utilities
+ * Module Name: cmcopy - Internal to external object translation utilities
  *
  *****************************************************************************/
 
@@ -114,7 +114,7 @@
  *
  *****************************************************************************/
 
-#define __CMOBJECT_C__
+#define __CMCOPY_C__
 
 #include <acpi.h>
 #include <acobject.h>
@@ -124,7 +124,7 @@
 
 
 #define _COMPONENT          MISCELLANEOUS
-        MODULE_NAME         ("cmobject");
+        MODULE_NAME         ("cmcopy");
 
 
 typedef struct Search_st 
