@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: nsaccess - Top-level functions for accessing ACPI namespace
- *              $Revision: 1.173 $
+ *              $Revision: 1.174 $
  *
  ******************************************************************************/
 
@@ -476,7 +476,7 @@ AcpiNsLookup (
 
             ACPI_DEBUG_PRINT ((ACPI_DB_NAMES,
                 "Searching relative to prefix scope [%4.4s] (%p)\n",
-                PrefixNode->Name.Ascii, PrefixNode));
+                AcpiUtGetNodeName (PrefixNode), PrefixNode));
 
             /*
              * Handle multiple Parent Prefixes (carat) by just getting
@@ -513,7 +513,7 @@ AcpiNsLookup (
             {
                 ACPI_DEBUG_PRINT ((ACPI_DB_NAMES,
                     "Search scope is [%4.4s], path has %d carat(s)\n",
-                    ThisNode->Name.Ascii, NumCarats));
+                    AcpiUtGetNodeName (ThisNode), NumCarats));
             }
         }
 
