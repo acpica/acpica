@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: utglobal - Global variables for the ACPI subsystem
- *              $Revision: 1.136 $
+ *              $Revision: 1.138 $
  *
  *****************************************************************************/
 
@@ -511,6 +511,7 @@ const NATIVE_CHAR *AcpiGbl_RegionTypes[ACPI_NUM_PREDEFINED_REGIONS] =
     "SMBus",
     "CMOS",
     "PCIBarTarget",
+    "DataTable",
 };
 
 
@@ -792,7 +793,7 @@ AcpiUtInitGlobals (
     AcpiGbl_RootNode                    = NULL;
 
     AcpiGbl_RootNodeStruct.Name         = ACPI_ROOT_NAME;
-    AcpiGbl_RootNodeStruct.DataType     = ACPI_DESC_TYPE_NAMED;
+    AcpiGbl_RootNodeStruct.Descriptor   = ACPI_DESC_TYPE_NAMED;
     AcpiGbl_RootNodeStruct.Type         = ACPI_TYPE_ANY;
     AcpiGbl_RootNodeStruct.Child        = NULL;
     AcpiGbl_RootNodeStruct.Peer         = NULL;
