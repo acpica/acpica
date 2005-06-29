@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: tbxfroot - Find the root ACPI table (RSDT)
- *              $Revision: 1.76 $
+ *              $Revision: 1.77 $
  *
  *****************************************************************************/
 
@@ -490,25 +490,45 @@ AcpiTbScanMemoryForRsdp (
 {
     UINT32                  Offset;
     UINT8                   *MemRover;
+    UINT8                   Checksum;
 
 
     ACPI_FUNCTION_TRACE ("TbScanMemoryForRsdp");
 
 
-    /* Search from given start addr for the requested length  */
+    /* Search from given start address for the requested length */
 
     for (Offset = 0, MemRover = StartAddress;
          Offset < Length;
          Offset += ACPI_RSDP_SCAN_STEP, MemRover += ACPI_RSDP_SCAN_STEP)
     {
-
         /* The signature and checksum must both be correct */
 
-        if (ACPI_STRNCMP ((char *) MemRover,
-                RSDP_SIG, sizeof (RSDP_SIG)-1) == 0 &&
-            AcpiTbChecksum (MemRover, ACPI_RSDP_CHECKSUM_LENGTH) == 0)
+        if (ACPI_STRNCMP ((char *) MemRover, RSDP_SIG, sizeof (RSDP_SIG)-1) != 0)
         {
-            /* If so, we have found the RSDP */
+            /* No signature match */
+
+            continue;
+        }
+
+        /* Signature matches, check the appropriate checksum */
+
+        if (((RSDP_DESCRIPTOR *) MemRover)->Revision < 2)
+        {
+            /* ACPI version 1.0 */
+
+            Checksum = AcpiTbChecksum (MemRover, ACPI_RSDP_CHECKSUM_LENGTH);
+        }
+        else
+        {
+            /* Post ACPI 1.0, use ExtendedChecksum */
+
+            Checksum = AcpiTbChecksum (MemRover, ACPI_RSDP_XCHECKSUM_LENGTH);
+        }
+
+        if (Checksum == 0)
+        {
+            /* Checksum valid, we have found a valid RSDP */
 
             ACPI_DEBUG_PRINT ((ACPI_DB_INFO,
                 "RSDP located at physical address %p\n",MemRover));
