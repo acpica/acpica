@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exoparg6 - AML execution - opcodes with 6 arguments
- *              $Revision: 1.16 $
+ *              $Revision: 1.17 $
  *
  *****************************************************************************/
 
@@ -185,7 +185,7 @@ AcpiExDoMatch (
      * also. A bit ugly perhaps, but overall, better than fussing the
      * parameters around at runtime, over and over again.
      *
-     * Below, P[i] refers the package element, M refers to the Match object.
+     * Below, P[i] refers to the package element, M refers to the Match object.
      */
     switch (MatchOp)
     {
