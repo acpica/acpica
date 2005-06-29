@@ -144,7 +144,7 @@ void
 DsScopeStackClear (
 	ACPI_WALK_STATE			*WalkState)
 {
-    SCOPE_STACK             *ScopeInfo;
+    ACPI_GENERIC_STATE      *ScopeInfo;
 
 
     while (WalkState->ScopeInfo)
@@ -152,12 +152,13 @@ DsScopeStackClear (
         /* Pop a scope off the stack */
 
 	    ScopeInfo = WalkState->ScopeInfo;
-	    WalkState->ScopeInfo = ScopeInfo->Next;
+	    WalkState->ScopeInfo = ScopeInfo->Scope.Next;
 
-        DEBUG_PRINT (TRACE_EXEC, ("Popped object type 0x%X\n", ScopeInfo->Type));
-        CmFree (ScopeInfo);
+        DEBUG_PRINT (TRACE_EXEC, ("Popped object type 0x%X\n", ScopeInfo->Common.Value));
+        CmDeleteGenericState (ScopeInfo);
     }
 }
+
 
 
 /****************************************************************************
@@ -178,7 +179,7 @@ DsScopeStackPush (
     ACPI_OBJECT_TYPE        Type,
 	ACPI_WALK_STATE			*WalkState)
 {
-    SCOPE_STACK             *ScopeInfo;
+    ACPI_GENERIC_STATE      *ScopeInfo;
 
 
     FUNCTION_TRACE ("DsScopeStackPush");
@@ -202,7 +203,7 @@ DsScopeStackPush (
 
     /* Allocate a new scope object */
 
-    ScopeInfo = CmAllocate (sizeof (SCOPE_STACK));
+    ScopeInfo = CmCreateGenericState ();
     if (!ScopeInfo)
     {
         return_ACPI_STATUS (AE_NO_MEMORY);
@@ -210,13 +211,12 @@ DsScopeStackPush (
 
     /* Init new scope object */
 
-    ScopeInfo->Scope = NewScope;
-    ScopeInfo->Type = Type;
+    ScopeInfo->Scope.Entry  = NewScope;
+    ScopeInfo->Common.Value = (UINT16) Type;
 
     /* Push new scope object onto stack */
 
-    ScopeInfo->Next = WalkState->ScopeInfo;
-    WalkState->ScopeInfo = ScopeInfo;   
+    CmPushGenericState (&WalkState->ScopeInfo, ScopeInfo);
 
     return_ACPI_STATUS (AE_OK);
 }
@@ -243,7 +243,7 @@ ACPI_STATUS
 DsScopeStackPop (
 	ACPI_WALK_STATE			*WalkState)
 {
-    SCOPE_STACK             *ScopeInfo;
+    ACPI_GENERIC_STATE      *ScopeInfo;
 
 
     FUNCTION_TRACE ("DsScopeStackPop");
@@ -252,18 +252,15 @@ DsScopeStackPop (
      * Pop scope info object off the stack.
      */
 
-    if (!WalkState->ScopeInfo)
+    ScopeInfo = CmPopGenericState (&WalkState->ScopeInfo);
+    if (!ScopeInfo)
 	{
 		return_ACPI_STATUS (AE_STACK_UNDERFLOW);
 	}
 
+    DEBUG_PRINT (TRACE_EXEC, ("Popped object type 0x%X\n", ScopeInfo->Common.Value));
 
-	ScopeInfo = WalkState->ScopeInfo;
-	WalkState->ScopeInfo = ScopeInfo->Next;
-
-    DEBUG_PRINT (TRACE_EXEC, ("Popped object type 0x%X\n", ScopeInfo->Type));
-    CmFree (ScopeInfo);
-
+    CmDeleteGenericState (ScopeInfo);
 
 	return_ACPI_STATUS (AE_OK);
 }
