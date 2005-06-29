@@ -1,5 +1,5 @@
 /******************************************************************************
- * 
+ *
  * Module Name: dispatch.h
  *
  *****************************************************************************/
@@ -37,9 +37,9 @@
  * The above copyright and patent license is granted only if the following
  * conditions are met:
  *
- * 3. Conditions 
+ * 3. Conditions
  *
- * 3.1. Redistribution of Source with Rights to Further Distribute Source.  
+ * 3.1. Redistribution of Source with Rights to Further Distribute Source.
  * Redistribution of source code of any substantial portion of the Covered
  * Code or modification with rights to further distribute source must include
  * the above Copyright Notice, the above License, this list of Conditions,
@@ -47,11 +47,11 @@
  * Licensee must cause all Covered Code to which Licensee contributes to
  * contain a file documenting the changes Licensee made to create that Covered
  * Code and the date of any change.  Licensee must include in that file the
- * documentation of any changes made by any predecessor Licensee.  Licensee 
+ * documentation of any changes made by any predecessor Licensee.  Licensee
  * must include a prominent statement that the modification is derived,
  * directly or indirectly, from Original Intel Code.
  *
- * 3.2. Redistribution of Source with no Rights to Further Distribute Source.  
+ * 3.2. Redistribution of Source with no Rights to Further Distribute Source.
  * Redistribution of source code of any substantial portion of the Covered
  * Code or modification without rights to further distribute source must
  * include the following Disclaimer and Export Compliance provision in the
@@ -85,7 +85,7 @@
  * INSTALLATION, TRAINING OR OTHER SERVICES.  INTEL WILL NOT PROVIDE ANY
  * UPDATES, ENHANCEMENTS OR EXTENSIONS.  INTEL SPECIFICALLY DISCLAIMS ANY
  * IMPLIED WARRANTIES OF MERCHANTABILITY, NONINFRINGEMENT AND FITNESS FOR A
- * PARTICULAR PURPOSE. 
+ * PARTICULAR PURPOSE.
  *
  * 4.2. IN NO EVENT SHALL INTEL HAVE ANY LIABILITY TO LICENSEE, ITS LICENSEES
  * OR ANY OTHER THIRD PARTY, FOR ANY LOST PROFITS, LOST DATA, LOSS OF USE OR
@@ -114,8 +114,6 @@
  *****************************************************************************/
 
 
-
-
 #ifndef _DISPATCH_H_
 #define _DISPATCH_H_
 
@@ -128,8 +126,6 @@
 
 #define MTH_TYPE_LOCAL              0
 #define MTH_TYPE_ARG                1
-
-
 
 
 /* Common interfaces */
@@ -178,12 +174,12 @@ AcpiDsPopControlState (
     ACPI_WALK_STATE         *WalkState);
 */
 
-ACPI_STATUS 
+ACPI_STATUS
 AcpiDsExecBeginControlOp (
     ACPI_WALK_STATE         *WalkState,
     ACPI_GENERIC_OP         *Op);
 
-ACPI_STATUS 
+ACPI_STATUS
 AcpiDsExecEndControlOp (
     ACPI_WALK_STATE         *WalkState,
     ACPI_GENERIC_OP         *Op);
@@ -266,14 +262,14 @@ AcpiDsMethodDataGetType (
 ACPI_STATUS
 AcpiDsMethodDataGetValue (
     UINT32                  Type,
-    UINT32                  Index, 
+    UINT32                  Index,
     ACPI_OBJECT_INTERNAL    **ObjDesc);
 
 ACPI_STATUS
 AcpiDsMethodDataSetValue (
     UINT32                  Type,
-    UINT32                  Index, 
-    ACPI_OBJECT_INTERNAL    *ObjDesc); 
+    UINT32                  Index,
+    ACPI_OBJECT_INTERNAL    *ObjDesc);
 
 ACPI_STATUS
 AcpiDsMethodDataDeleteValue (
@@ -285,7 +281,7 @@ AcpiDsMethodDataInitArgs (
     ACPI_OBJECT_INTERNAL    **Params,
     UINT32                  ParamCount);
 
-NAME_TABLE_ENTRY *
+ACPI_NAMED_OBJECT*
 AcpiDsMethodDataGetNte (
     UINT32                  Type,
     UINT32                  Index);
@@ -318,7 +314,7 @@ AcpiDsTerminateControlMethod (
 
 ACPI_STATUS
 AcpiDsBeginMethodExecution (
-    NAME_TABLE_ENTRY        *MethodEntry,
+    ACPI_NAMED_OBJECT       *MethodEntry,
     ACPI_OBJECT_INTERNAL    *ObjDesc);
 
 
@@ -326,15 +322,15 @@ AcpiDsBeginMethodExecution (
 
 ACPI_STATUS
 AcpiDsInitOneObject (
-    ACPI_HANDLE             ObjHandle, 
-    UINT32                  Level, 
+    ACPI_HANDLE             ObjHandle,
+    UINT32                  Level,
     void                    *Context,
     void                    **ReturnValue);
 
 ACPI_STATUS
 AcpiDsInitializeObjects (
     ACPI_TABLE_DESC         *TableDesc,
-    NAME_TABLE_ENTRY        *StartEntry);
+    ACPI_NAMED_OBJECT       *StartEntry);
 
 ACPI_STATUS
 AcpiDsBuildInternalPackageObj (
@@ -358,7 +354,7 @@ AcpiDsInitObjectFromOp (
 ACPI_STATUS
 AcpiDsCreateNamedObject (
     ACPI_WALK_STATE         *WalkState,
-    NAME_TABLE_ENTRY        *Entry,
+    ACPI_NAMED_OBJECT       *Entry,
     ACPI_GENERIC_OP         *Op);
 
 
@@ -373,7 +369,7 @@ ACPI_STATUS
 AcpiDsInitializeRegion (
     ACPI_HANDLE             ObjHandle);
 
-    
+
 /* dsutils - Parser/Interpreter interface utility routines */
 
 void
@@ -396,12 +392,12 @@ ACPI_STATUS
 AcpiDsResolveOperands (
     ACPI_WALK_STATE         *WalkState);
 
-OBJECT_TYPE_INTERNAL 
+OBJECT_TYPE_INTERNAL
 AcpiDsMapOpcodeToDataType (
     UINT16                  Opcode,
     UINT32                  *OutFlags);
 
-OBJECT_TYPE_INTERNAL  
+OBJECT_TYPE_INTERNAL
 AcpiDsMapNamedOpcodeToDataType (
     UINT16                  Opcode);
 
@@ -412,7 +408,7 @@ AcpiDsMapNamedOpcodeToDataType (
 
 ACPI_STATUS
 AcpiDsScopeStackPush (
-    NAME_TABLE_ENTRY        *NewScope, 
+    ACPI_NAME_TABLE         *NewScope,
     OBJECT_TYPE_INTERNAL    Type,
     ACPI_WALK_STATE         *WalkState);
 
@@ -473,8 +469,6 @@ AcpiDsGetCurrentWalkState (
 void
 AcpiDsDeleteWalkStateCache (
     void);
-
-
 
 
 #endif /* _DISPATCH_H_ */

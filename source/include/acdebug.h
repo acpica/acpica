@@ -286,6 +286,10 @@ void
 AcpiDbSetScope (
     char                    *Name);
 
+void
+AcpiDbFindReferences (
+    char                    *ObjectArg);
+
 
 /*
  * dbdisasm - AML disassembler
@@ -473,7 +477,7 @@ ACPI_STATUS
 AcpiDbSecondPassParse (
     ACPI_GENERIC_OP         *Root);
 
-NAME_TABLE_ENTRY *
+ACPI_NAMED_OBJECT*
 AcpiDbLocalNsLookup (
     char                    *Name);
 
