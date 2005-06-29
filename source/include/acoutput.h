@@ -46,27 +46,27 @@ GetDebugLevel (void);
 void
 SetDebugLevel (INT32 level);
 void
-FunctionTrace (INT32 LineNumber, char *ModuleName, char * FunctionName);
+FunctionTrace (char *ModuleName, INT32 LineNumber, char * FunctionName);
 void
-DebugPrint (INT32 LineNumber, char *ModuleName, INT32 DebugLevel, char *Format, ...);
+DebugPrintPrefix (char *ModuleName, INT32 LineNumber);
 void
-DebugPrintRaw (INT32 DebugLevel, char *Format, ...);
+DebugPrint (char *ModuleName, INT32 LineNumber, INT32 PrintLevel, char *Format, ...);
 void
-_ReportInfo (ST_KEY_DESC_TABLE *KdtEntry, INT32 LineNumber, char *ModuleName);
+DebugPrintRaw (char *Format, ...);
 void
-_ReportError (ST_KEY_DESC_TABLE *KdtEntry, INT32 LineNumber, char *ModuleName);
+_ReportInfo (char *ModuleName, INT32 LineNumber, ST_KEY_DESC_TABLE *KdtEntry);
 void
-_ReportWarning (ST_KEY_DESC_TABLE *KdtEntry, INT32 LineNumber, char *ModuleName);
+_ReportError (char *ModuleName, INT32 LineNumber, ST_KEY_DESC_TABLE *KdtEntry);
+void
+_ReportWarning (char *ModuleName, INT32 LineNumber, ST_KEY_DESC_TABLE *KdtEntry);
+void
+_ReportSuccess (char *ModuleName, INT32 LineNumber, ST_KEY_DESC_TABLE *KdtEntry);
 void 
 _Kinc_error (char *, INT32, INT32, char *, INT32, INT32); 
 void 
 _Kinc_info (char *, INT32, INT32, char *, INT32, INT32); 
 void 
 _Kinc_warning (char *, INT32, INT32, char *, INT32, INT32);
-
-
-
-#define dump_buf(Buf, len, flags) _dump_buf (Buf, len, flags, 0, SCREEN | LOGFILE)
 
 void
 _dump_buf (
@@ -76,11 +76,11 @@ _dump_buf (
     LogHandle   Logfile,
     INT32       LogFlags);
 
-void DumpBuf(UINT8*Buffer, UINT32 Count, INT32 Flags, LogHandle LogFile,
-    INT32 iLogFlags);
+void DumpBuf (UINT8*Buffer, UINT32 Count, INT32 Flags, LogHandle LogFile,
+                INT32 iLogFlags);
 
-#define DumpBuffer(Buffer, Count, Flags) \
-    DumpBuf(Buffer, Count, Flags, 0, SCREEN | LOGFILE)
+#define dump_buf(Buf,len,flags)             _dump_buf(Buf,len,flags,0,SCREEN | LOGFILE)
+#define DumpBuffer(Buffer, Count, Flags)    DumpBuf(Buffer, Count, Flags, 0, SCREEN | LOGFILE)
 
 
 /*
@@ -91,15 +91,15 @@ void DumpBuf(UINT8*Buffer, UINT32 Count, INT32 Flags, LogHandle LogFile,
  */
 
 void *
-_AllocateObjectDesc (ST_KEY_DESC_TABLE *KdtEntry, INT32 LineNumber, char *ModuleName);
+_AllocateObjectDesc (char *ModuleName, INT32 LineNumber, ST_KEY_DESC_TABLE *KdtEntry);
 void *
-_LocalAllocate (INT32 AllocSize, INT32 LineNumber, char *ModuleName);
+_LocalAllocate (char *ModuleName, INT32 LineNumber, INT32 AllocSize);
 void *
-_LocalCallocate (INT32 AllocSize, INT32 LineNumber, char *ModuleName);
+_LocalCallocate (char *ModuleName, INT32 LineNumber, INT32 AllocSize);
 
-#define LocalAllocate(a)                _LocalAllocate(a,__LINE__,_THIS_MODULE)
-#define LocalCallocate(a)               _LocalCallocate(a,__LINE__,_THIS_MODULE)
-#define AllocateObjectDesc(a)           _AllocateObjectDesc(a,__LINE__,_THIS_MODULE)
+#define LocalAllocate(a)                _LocalAllocate(_THIS_MODULE,__LINE__,a)
+#define LocalCallocate(a)               _LocalCallocate(_THIS_MODULE,__LINE__,a)
+#define AllocateObjectDesc(a)           _AllocateObjectDesc(_THIS_MODULE,__LINE__,a)
 
 /* 
  * Trace macro.
@@ -107,7 +107,7 @@ _LocalCallocate (INT32 AllocSize, INT32 LineNumber, char *ModuleName);
  */
 
 #ifdef _TRACE
-#define FUNCTION_TRACE(a)     FunctionTrace (__LINE__,_THIS_MODULE,a)
+#define FUNCTION_TRACE(a)               FunctionTrace (_THIS_MODULE,__LINE__,a)
 #else
 #define FUNCTION_TRACE(a)
 #endif
@@ -119,22 +119,29 @@ _LocalCallocate (INT32 AllocSize, INT32 LineNumber, char *ModuleName);
 #endif
 
 /*
- * Debug macros
+ * Reporting macros that are never compiled out
  */
-
-#ifdef _DEBUG
 
 /* Error reporting.  These versions add callers module/line# */
 
-#define REPORT_INFO(a)                  _ReportInfo(a,__LINE__,_THIS_MODULE)
-#define REPORT_ERROR(a)                 _ReportError(a,__LINE__,_THIS_MODULE)
-#define REPORT_WARNING(a)               _ReportWarning(a,__LINE__,_THIS_MODULE)
+#define REPORT_INFO(a)                  _ReportInfo(_THIS_MODULE,__LINE__,a)
+#define REPORT_ERROR(a)                 _ReportError(_THIS_MODULE,__LINE__,a)
+#define REPORT_WARNING(a)               _ReportWarning(_THIS_MODULE,__LINE__,a)
+#define REPORT_SUCCESS(a)               _ReportSuccess(_THIS_MODULE,__LINE__,a)
 
 /* Error reporting.  These versions pass thru the module/line# */
 
 #define _REPORT_INFO(a,b,c)             _ReportInfo(a,b,c)
 #define _REPORT_ERROR(a,b,c)            _ReportError(a,b,c)
 #define _REPORT_WARNING(a,b,c)          _ReportWarning(a,b,c)
+
+
+/*
+ * Debug macros that are conditionally compiled
+ */
+
+
+#ifdef _DEBUG
 
 /* Stack and buffer dumping */
 
@@ -146,35 +153,17 @@ _LocalCallocate (INT32 AllocSize, INT32 LineNumber, char *ModuleName);
 
 /* Master debug print macros */
 
-#define DEBUG_PRINT(l,f)                            DebugPrint(__LINE__,_THIS_MODULE,l,f)
-#define DEBUG_PRINT1(l,f,a)                         DebugPrint(__LINE__,_THIS_MODULE,l,f,a)
-#define DEBUG_PRINT2(l,f,a,b)                       DebugPrint(__LINE__,_THIS_MODULE,l,f,a,b)
-#define DEBUG_PRINT3(l,f,a,b,c)                     DebugPrint(__LINE__,_THIS_MODULE,l,f,a,b,c)
-#define DEBUG_PRINT4(l,f,a,b,c,d)                   DebugPrint(__LINE__,_THIS_MODULE,l,f,a,b,c,d)
-#define DEBUG_PRINT5(l,f,a,b,c,d,e)                 DebugPrint(__LINE__,_THIS_MODULE,l,f,a,b,c,d,e)
-#define DEBUG_PRINT6(l,f,a,b,c,d,e,g)               DebugPrint(__LINE__,_THIS_MODULE,l,f,a,b,c,d,e,g)
-#define DEBUG_PRINT7(l,f,a,b,c,d,e,g,h)             DebugPrint(__LINE__,_THIS_MODULE,l,f,a,b,c,d,e,g,h)
-#define DEBUG_PRINT10(l,f,a,b,c,d,e,g,h,i,j,k)      DebugPrint(__LINE__,_THIS_MODULE,l,f,a,b,c,d,e,g,h,i,j,k)
+#define	PARAM_LIST(PL) PL
 
-#define DEBUG_PRINT_RAW(l,f)                        DebugPrintRaw(l,f)
-#define DEBUG_PRINT1_RAW(l,f,a)                     DebugPrintRaw(l,f,a)
-#define DEBUG_PRINT2_RAW(l,f,a,b)                   DebugPrintRaw(l,f,a,b)
-#define DEBUG_PRINT3_RAW(l,f,a,b,c)                 DebugPrintRaw(l,f,a,b,c)
-#define DEBUG_PRINT4_RAW(l,f,a,b,c,d)               DebugPrintRaw(l,f,a,b,c,d)
-#define DEBUG_PRINT5_RAW(l,f,a,b,c,d,e)             DebugPrintRaw(l,f,a,b,c,d,e)
-#define DEBUG_PRINT6_RAW(l,f,a,b,c,d,e,g)           DebugPrintRaw(l,f,a,b,c,d,e,g)
-#define DEBUG_PRINT7_RAW(l,f,a,b,c,d,e,g,h)         DebugPrintRaw(l,f,a,b,c,d,e,g,h)
-#define DEBUG_PRINT10_RAW(l,f,a,b,c,d,e,g,h,i,j,k)  DebugPrintRaw(l,f,a,b,c,d,e,g,h,i,j,k)
+#define DEBUG_PRINT(lvl,fp)            if (lvl & DebugLevel) {\
+                                            DebugPrintPrefix (_THIS_MODULE,__LINE__);\
+                                            DebugPrintRaw PARAM_LIST(fp);}
+
+#define DEBUG_PRINT_RAW(lvl,fp)        if (lvl & DebugLevel) {\
+                                            DebugPrintRaw PARAM_LIST(fp);}
+
 
 #else
-
-#define _REPORT_INFO(a,b,c)
-#define _REPORT_ERROR(a,b,c)
-#define _REPORT_WARNING(a,b,c)
-
-#define REPORT_INFO(a) 
-#define REPORT_ERROR(a) 
-#define REPORT_WARNING(a)
 
 #define DUMP_STACK_ENTRY(a)
 #define DUMP_STACK(a,b,c,d)
@@ -183,51 +172,35 @@ _LocalCallocate (INT32 AllocSize, INT32 LineNumber, char *ModuleName);
 #define DUMP_CODE(a)
 
 #define DEBUG_PRINT(l,f)
-#define DEBUG_PRINT1(l,f,a)
-#define DEBUG_PRINT2(l,f,a,b)
-#define DEBUG_PRINT3(l,f,a,b,c)
-#define DEBUG_PRINT4(l,f,a,b,c,d)
-#define DEBUG_PRINT5(l,f,a,b,c,d,e)
-#define DEBUG_PRINT6(l,f,a,b,c,d,e,g)
-#define DEBUG_PRINT7(l,f,a,b,c,d,e,g,h)
-#define DEBUG_PRINT10(l,f,a,b,c,d,e,g,h,i,j,k)
-
 #define DEBUG_PRINT_RAW(l,f)                        
-#define DEBUG_PRINT1_RAW(l,f,a)                     
-#define DEBUG_PRINT2_RAW(l,f,a,b)                   
-#define DEBUG_PRINT3_RAW(l,f,a,b,c)                 
-#define DEBUG_PRINT4_RAW(l,f,a,b,c,d)               
-#define DEBUG_PRINT5_RAW(l,f,a,b,c,d,e)             
-#define DEBUG_PRINT6_RAW(l,f,a,b,c,d,e,g)           
-#define DEBUG_PRINT7_RAW(l,f,a,b,c,d,e,g,h)         
-#define DEBUG_PRINT10_RAW(l,f,a,b,c,d,e,g,h,i,j,k)  
-
 
 #endif
 
 
+/* Various debug print levels, controlled by global DebugLevel */
 
-#define GLOBAL_INFO                 0x00000001
-#define GLOBAL_WARN                 0x00000002
-#define GLOBAL_ERROR                0x00000004
-#define GLOBAL_FATAL                0x00000008
+
+#define GLOBAL_SUCCESS              0x00000001
+#define GLOBAL_ERROR                0x00000002
+#define GLOBAL_WARN                 0x00000004
+#define GLOBAL_INFO                 0x00000008
 #define GLOBAL_ALL                  0x0000000F
 
-#define AML_INFO                    0x00000010
+#define AML_ERROR                   0x00000010
 #define AML_WARN                    0x00000020
-#define AML_ERROR                   0x00000040
+#define AML_INFO                    0x00000040
 
-#define NS_INFO                     0x00000080
+#define NS_ERROR                    0x00000080
 #define NS_WARN                     0x00000100
-#define NS_ERROR                    0x00000200
+#define NS_INFO                     0x00000200
 
-#define DV_INFO                     0x00000400
+#define DV_ERROR                    0x00000400
 #define DV_WARN                     0x00000800
-#define DV_ERROR                    0x00001000
+#define DV_INFO                     0x00001000
 
-#define EV_INFO                     0x00002000
+#define EV_ERROR                    0x00002000
 #define EV_WARN                     0x00004000
-#define EV_ERROR                    0x00008000
+#define EV_INFO                     0x00008000
 
 #define TRACE_LOAD                  0x00100000
 #define TRACE_OPCODE                0x00200000
