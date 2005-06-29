@@ -1,7 +1,7 @@
 
 /******************************************************************************
  *
- * Module Name: cmobject - ACPI object create/delete/cache routines
+ * Module Name: cmobject - ACPI object create/delete/size/cache routines
  *
  *****************************************************************************/
 
@@ -120,6 +120,7 @@
 #include "interp.h"
 #include "namesp.h"
 #include "tables.h"
+#include "amlcode.h"
 
 
 #define _COMPONENT          MISCELLANEOUS
@@ -189,7 +190,6 @@ _CmCreateInternalObject (
 
     return_PTR (Object);
 }
-
 
 
 /******************************************************************************
@@ -339,7 +339,6 @@ _CmAllocateObjectDesc (
 }
 
 
-
 /*****************************************************************************
  *
  * FUNCTION:    AcpiCmDeleteObjectDesc
@@ -405,7 +404,6 @@ AcpiCmDeleteObjectDesc (
 
     AcpiCmReleaseMutex (MTX_CACHES);
 }
-
 
 
 /******************************************************************************
@@ -504,4 +502,289 @@ AcpiCmInitStaticObject (
 
     return_VOID;
 }
+
+
+/******************************************************************************
+ *
+ * FUNCTION:    AcpiCmGetSimpleObjectSize
+ *
+ * PARAMETERS:  *InternalObj    - Pointer to the object we are examining
+ *              *RetLength      - Where the length is returned
+ *
+ * RETURN:      Status          - the status of the call
+ *
+ * DESCRIPTION: This function is called to determine the space required to
+ *              contain a simple object for return to an API user.
+ *
+ *              The length includes the object structure plus any additional
+ *              needed space.
+ *
+ ******************************************************************************/
+
+ACPI_STATUS
+AcpiCmGetSimpleObjectSize (
+    ACPI_OBJECT_INTERNAL    *InternalObj,
+    UINT32                  *ObjLength)
+{
+    UINT32                  Length;
+    ACPI_STATUS             Status = AE_OK;
+
+
+    FUNCTION_TRACE_PTR ("CmGetSimpleObjectSize", InternalObj);
+
+
+    /* Handle a null object (Could be a uninitialized package element -- which is legal) */
+
+    if (!InternalObj)
+    {
+        *ObjLength = 0;
+        return_ACPI_STATUS (AE_OK);
+    }
+
+
+    /* Start with the length of the Acpi object */
+
+    Length = sizeof (ACPI_OBJECT);
+
+    if (VALID_DESCRIPTOR_TYPE (InternalObj, DESC_TYPE_NTE))
+    {
+        /* Object is an NTE (reference), just return the length */
+
+        *ObjLength = (UINT32) ROUND_UP_TO_NATIVE_WORD (Length);
+        return_ACPI_STATUS (Status);
+    }
+
+
+    /*
+     * The final length depends on the object type
+     * Strings and Buffers are packed right up against the parent object and
+     * must be accessed bytewise or there may be alignment problems.
+     *
+     * TBD:[Investigate] do strings and buffers require alignment also?
+     */
+
+    switch (InternalObj->Common.Type)
+    {
+
+    case ACPI_TYPE_STRING:
+
+        Length += InternalObj->String.Length;
+        break;
+
+
+    case ACPI_TYPE_BUFFER:
+
+        Length += InternalObj->Buffer.Length;
+        break;
+
+
+    case ACPI_TYPE_NUMBER:
+    case ACPI_TYPE_PROCESSOR:
+    case ACPI_TYPE_POWER:
+
+        /*
+         * No extra data for these types
+         */
+        break;
+
+
+    case INTERNAL_TYPE_REFERENCE:
+
+        /*
+         * The only type that should be here is opcode AML_NAMEPATH_OP -- since
+         * this means an object reference
+         */
+        if (InternalObj->Reference.OpCode != AML_NAMEPATH_OP)
+        {
+            DEBUG_PRINT (ACPI_ERROR, ("CmGetSimpleObjectSize: Unsupported Reference opcode=0x%X in object %p\n",
+                                        InternalObj->Reference.OpCode, InternalObj));
+            Status = AE_TYPE;
+        }
+        break;
+
+
+    default:
+
+        DEBUG_PRINT (ACPI_ERROR, ("CmGetSimpleObjectSize: Unsupported type=0x%X in object %p\n",
+                                    InternalObj->Common.Type, InternalObj));
+        Status = AE_TYPE;
+        break;
+    }
+
+
+    /*
+     * Account for the space required by the object rounded up to the next multiple
+     * of the machine word size.  This keeps each object aligned on a machine word
+     * boundary. (preventing alignment faults on some machines.)
+     */
+    *ObjLength = (UINT32) ROUND_UP_TO_NATIVE_WORD (Length);
+
+    return_ACPI_STATUS (Status);
+}
+
+
+/******************************************************************************
+ *
+ * FUNCTION:    AcpiCmGetPackageObjectSize
+ *
+ * PARAMETERS:  *InternalObj    - Pointer to the object we are examining
+ *              *RetLength      - Where the length is returned
+ *
+ * RETURN:      Status          - the status of the call
+ *
+ * DESCRIPTION: This function is called to determine the space required to contain
+ *              a package object for return to an API user.
+ *
+ *              This is moderately complex since a package contains other objects
+ *              including packages.
+ *
+ ******************************************************************************/
+
+ACPI_STATUS
+AcpiCmGetPackageObjectSize (
+    ACPI_OBJECT_INTERNAL    *InternalObj,
+    UINT32                  *ObjLength)
+{
+
+    ACPI_OBJECT_INTERNAL    *ThisInternalObj;
+    ACPI_OBJECT_INTERNAL    *ParentObj[MAX_PACKAGE_DEPTH] = { 0,0,0,0,0 };
+    ACPI_OBJECT_INTERNAL    *ThisParent;
+    UINT32                  ThisIndex;
+    UINT32                  Index[MAX_PACKAGE_DEPTH] = { 0,0,0,0,0 };
+    UINT32                  Length = 0;
+    UINT32                  ObjectSpace;
+    UINT32                  CurrentDepth = 0;
+    UINT32                  PackageCount = 1;
+    ACPI_STATUS             Status;
+
+
+    FUNCTION_TRACE_PTR ("CmGetPackageObjectSize", InternalObj);
+
+
+    ParentObj[0] = InternalObj;
+
+    while (1)
+    {
+        ThisParent      = ParentObj[CurrentDepth];
+        ThisIndex       = Index[CurrentDepth];
+        ThisInternalObj = ThisParent->Package.Elements[ThisIndex];
+
+
+        /*
+         * Check for 1) An unitialized package element.  It is completely
+         *              legal to declare a package and leave it uninitialized
+         *           2) Any type other than a package.  Packages are handled below.
+         */
+
+        if ((!ThisInternalObj) ||
+            (!IS_THIS_OBJECT_TYPE (ThisInternalObj, ACPI_TYPE_PACKAGE)))
+        {
+            /*
+             * Simple object - just get the size (Null object/entry handled also)
+             */
+
+            Status = AcpiCmGetSimpleObjectSize (ThisInternalObj, &ObjectSpace);
+            if (Status != AE_OK)
+            {
+                return_ACPI_STATUS (Status);
+            }
+
+            Length += ObjectSpace;
+
+            Index[CurrentDepth]++;
+            while (Index[CurrentDepth] >= ParentObj[CurrentDepth]->Package.Count)
+            {
+                /*
+                 * We've handled all of the objects at this level,  This means that we
+                 * have just completed a package.  That package may have contained one
+                 * or more packages itself.
+                 */
+                if (CurrentDepth == 0)
+                {
+                    /*
+                     * We have handled all of the objects in the top level package
+                     * just add the length of the package objects and get out.
+                     * Round up to the next machine word.
+                     */
+                    Length += ROUND_UP_TO_NATIVE_WORD (sizeof (ACPI_OBJECT)) * PackageCount;
+                    *ObjLength = Length;
+
+                    return_ACPI_STATUS (AE_OK);
+                }
+
+                /*
+                 * Go back up a level and move the index past the just completed
+                 * package object.
+                 */
+                CurrentDepth--;
+                Index[CurrentDepth]++;
+            }
+        }
+
+        else
+        {
+            /*
+             * This object is a package -- go one level deeper
+             */
+            PackageCount++;
+            if (CurrentDepth < MAX_PACKAGE_DEPTH-1)
+            {
+                CurrentDepth++;
+                ParentObj[CurrentDepth] = ThisInternalObj;
+                Index[CurrentDepth]     = 0;
+            }
+
+            else
+            {
+                /*
+                 * Too many nested levels of packages for us to handle
+                 */
+
+                DEBUG_PRINT (ACPI_ERROR, ("CmGetPackageObjectSize: Pkg nested too deep (max %d)\n",
+                                            MAX_PACKAGE_DEPTH));
+                return_ACPI_STATUS (AE_LIMIT);
+            }
+        }
+    }
+
+    return_ACPI_STATUS (AE_OK);
+}
+
+
+/******************************************************************************
+ *
+ * FUNCTION:    AcpiCmGetObjectSize
+ *
+ * PARAMETERS:  *InternalObj    - Pointer to the object we are examining
+ *              *RetLength      - Where the length will be returned
+ *
+ * RETURN:      Status          - the status of the call
+ *
+ * DESCRIPTION: This function is called to determine the space required to
+ *              contain an object for return to an API user.
+ *
+ ******************************************************************************/
+
+ACPI_STATUS
+AcpiCmGetObjectSize(
+    ACPI_OBJECT_INTERNAL    *InternalObj,
+    UINT32                  *ObjLength)
+{
+    ACPI_STATUS             Status;
+
+
+    if ((VALID_DESCRIPTOR_TYPE (InternalObj, DESC_TYPE_ACPI_OBJ)) &&
+        (IS_THIS_OBJECT_TYPE (InternalObj, ACPI_TYPE_PACKAGE)))
+    {
+        Status = AcpiCmGetPackageObjectSize (InternalObj, ObjLength);
+    }
+
+    else
+    {
+        Status = AcpiCmGetSimpleObjectSize (InternalObj, ObjLength);
+    }
+
+    return Status;
+}
+
 

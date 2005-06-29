@@ -229,8 +229,8 @@ AcpiCmBuildExternalSimpleObject (
     case ACPI_TYPE_PROCESSOR:
 
         ExternalObj->Processor.ProcId = InternalObj->Processor.ProcId;
-        ExternalObj->Processor.PBLKAddress = InternalObj->Processor.PBLKAddress;
-        ExternalObj->Processor.PBLKLength = InternalObj->Processor.PBLKLength;
+        ExternalObj->Processor.PblkAddress = InternalObj->Processor.PblkAddress;
+        ExternalObj->Processor.PblkLength = InternalObj->Processor.PblkLength;
         break;
 
     case ACPI_TYPE_POWER:
@@ -343,7 +343,6 @@ AcpiCmBuildExternalPackageObject (
         ThisIndex       = LevelPtr->Index;
         ThisInternalObj = (ACPI_OBJECT_INTERNAL *) LevelPtr->InternalObj->Package.Elements[ThisIndex];
         ThisExternalObj = (ACPI_OBJECT *) &LevelPtr->ExternalObj->Package.Elements[ThisIndex];
-
 
 
         /*
@@ -591,7 +590,6 @@ AcpiCmBuildInternalPackageObject (
     ACPI_OBJECT_INTERNAL    *ThisInternalObj;
     ACPI_OBJECT             *ThisExternalObj;
     PKG_SEARCH_INFO         *LevelPtr;
-
 
 
     FUNCTION_TRACE ("CmBuildInternalPackageObject");

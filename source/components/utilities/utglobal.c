@@ -127,7 +127,6 @@
         MODULE_NAME         ("cmglobal");
 
 
-
 /******************************************************************************
  *
  * Static global variable initialization.
@@ -142,14 +141,14 @@
 /* Debug switch - level and trace mask */
 
 #ifdef ACPI_DEBUG
-UINT32                      DebugLevel = DEBUG_DEFAULT;
+UINT32                      AcpiDbgLevel = DEBUG_DEFAULT;
 #else
-UINT32                      DebugLevel = NORMAL_DEFAULT;
+UINT32                      AcpiDbgLevel = NORMAL_DEFAULT;
 #endif
 
 /* Debug switch - layer (component) mask */
 
-UINT32                      DebugLayer = ALL_COMPONENTS;
+UINT32                      AcpiDbgLayer = ALL_COMPONENTS;
 UINT32                      AcpiGbl_NestingLevel = 0;
 
 
@@ -163,7 +162,6 @@ BOOLEAN                     AcpiGbl_MethodExecuting = FALSE;
 UINT32                      AcpiGbl_SystemFlags = 0;
 UINT32                      AcpiGbl_StartupFlags = 0;
 BOOLEAN                     AcpiGbl_Shutdown = TRUE;        /* System starts unitialized! */
-
 
 
 /******************************************************************************
@@ -279,7 +277,6 @@ ACPI_TABLE_SUPPORT          AcpiGbl_AcpiTableData[NUM_ACPI_TABLES] =
 ACPI_INIT_DATA AcpiGbl_AcpiInitData;
 
 
-
 /******************************************************************************
  *
  * Strings and procedures used for debug only
@@ -375,7 +372,6 @@ static char                 *AcpiGbl_NsTypeNames[] =    /* printable names of AC
 };
 
 
-
 /*****************************************************************************
  *
  * FUNCTION:    AcpiCmGetTypeName
@@ -402,7 +398,6 @@ AcpiCmGetTypeName (
 }
 
 #endif
-
 
 
 /*****************************************************************************
@@ -433,7 +428,6 @@ AcpiCmValidObjectType (
 
     return TRUE;
 }
-
 
 
 /*****************************************************************************

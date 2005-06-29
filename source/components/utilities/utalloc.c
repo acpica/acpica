@@ -668,7 +668,6 @@ _CmCallocate (
     ACPI_STATUS             Status)
 
 
-
     FUNCTION_TRACE_U32 ("_CmCallocate", Size);
 
     /* Check for an inadvertent size of zero bytes */

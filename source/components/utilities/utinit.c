@@ -128,7 +128,6 @@
         MODULE_NAME         ("cminit");
 
 
-
 /*******************************************************************************
  *
  * FUNCTION:    AcpiCmFacpRegisterError
@@ -174,7 +173,6 @@ AcpiCmHardwareInitialize (void)
 {
     ACPI_STATUS             Status = AE_OK;
     INT32                   Index;
-
 
 
     FUNCTION_TRACE ("CmHardwareInitialize");
@@ -488,7 +486,5 @@ AcpiCmSubsystemShutdown (void)
 
     return_ACPI_STATUS (AE_OK);
 }
-
-
 
 

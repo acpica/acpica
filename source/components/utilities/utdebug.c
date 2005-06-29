@@ -122,7 +122,6 @@
         MODULE_NAME         ("cmdebug");
 
 
-
 /*****************************************************************************
  *
  * FUNCTION:    Get/Set debug level
@@ -138,7 +137,7 @@ INT32
 GetDebugLevel (void)
 {
 
-    return DebugLevel;
+    return AcpiDbgLevel;
 }
 
 void
@@ -146,7 +145,7 @@ SetDebugLevel (
     INT32                   NewDebugLevel)
 {
 
-    DebugLevel = NewDebugLevel;
+    AcpiDbgLevel = NewDebugLevel;
 }
 
 
@@ -452,7 +451,7 @@ DebugPrint (
 
     /* Both the level and the component must be enabled */
 
-    if ((PrintLevel & DebugLevel) && (ComponentId & DebugLayer))
+    if ((PrintLevel & AcpiDbgLevel) && (ComponentId & AcpiDbgLayer))
     {
         va_start (args, Format);
 
@@ -517,7 +516,6 @@ DebugPrintRaw (
 }
 
 
-
 /*****************************************************************************
  *
  * FUNCTION:    AcpiCmDumpBuffer
@@ -547,7 +545,7 @@ AcpiCmDumpBuffer (
 
     /* Only dump the buffer if tracing is enabled */
 
-    if (!((TRACE_TABLES & DebugLevel) && (ComponentId & DebugLayer)))
+    if (!((TRACE_TABLES & AcpiDbgLevel) && (ComponentId & AcpiDbgLayer)))
     {
         return;
     }
@@ -588,7 +586,7 @@ AcpiCmDumpBuffer (
 
             case DB_WORD_DISPLAY:
 
-                STORE16TO32 (&Temp32, &Buffer[i + j]);
+                MOVE_UNALIGNED16_TO_32 (&Temp32, &Buffer[i + j]);
                 AcpiOsdPrintf ("%04X ", Temp32);
                 j += 2;
                 break;
@@ -596,7 +594,7 @@ AcpiCmDumpBuffer (
 
             case DB_DWORD_DISPLAY:
 
-                STORE32TO32 (&Temp32, &Buffer[i + j]);
+                MOVE_UNALIGNED32_TO_32 (&Temp32, &Buffer[i + j]);
                 AcpiOsdPrintf ("%08X ", Temp32);
                 j += 4;
                 break;
@@ -604,10 +602,10 @@ AcpiCmDumpBuffer (
 
             case DB_QWORD_DISPLAY:
 
-                STORE32TO32 (&Temp32, &Buffer[i + j]);
+                MOVE_UNALIGNED32_TO_32 (&Temp32, &Buffer[i + j]);
                 AcpiOsdPrintf ("%08X", Temp32);
 
-                STORE32TO32 (&Temp32, &Buffer[i + j + 4]);
+                MOVE_UNALIGNED32_TO_32 (&Temp32, &Buffer[i + j + 4]);
                 AcpiOsdPrintf ("%08X ", Temp32);
                 j += 8;
                 break;
@@ -649,8 +647,5 @@ AcpiCmDumpBuffer (
 
     return;
 }
-
-
-
 
 

@@ -139,7 +139,6 @@
 #endif
 
 
-
 /*******************************************************************************
  *
  * FUNCTION:    strlen
@@ -158,7 +157,6 @@ AcpiCmStrlen (
     const char              *String)
 {
     UINT32                  Length = 0;
-
 
 
     /* Count the string until a null is encountered */
@@ -192,7 +190,6 @@ AcpiCmStrcpy (
     const char              *SrcString)
 {
     char                    *String = DstString;
-
 
 
     /* Move bytes brute force */
@@ -234,7 +231,6 @@ AcpiCmStrncpy (
     ACPI_SIZE               Count)
 {
     char                    *String = DstString;
-
 
 
     /* Copy the string */
@@ -344,7 +340,6 @@ AcpiCmStrcat (
     char                    *String;
 
 
-
     /* Find end of the destination string */
 
     for (String = DstString; *String++; )
@@ -381,7 +376,6 @@ AcpiCmStrncat (
     ACPI_SIZE               Count)
 {
     char                    *String;
-
 
 
     if (Count)
@@ -432,7 +426,6 @@ AcpiCmMemcpy (
     char                    *Old = (char *) Src;
 
 
-
     while (Count)
     {
         *New = *Old;
@@ -468,7 +461,6 @@ AcpiCmMemset (
     char                    *New = (char *) Dest;
 
 
-
     while (Count)
     {
         *New = (char) Value;
@@ -482,8 +474,6 @@ AcpiCmMemset (
 
 #define NEGATIVE    1
 #define POSITIVE    0
-
-
 
 
 #define _XA     0x00    /* extra alphabetic - not supported */
@@ -643,7 +633,6 @@ const unsigned char _ctype[257] = {
 #define IS_SPACE(c)  (_ctype[(unsigned char)(c)] & (_SP))
 
 
-
 /*******************************************************************************
  *
  * FUNCTION:    AcpiCmToUpper
@@ -705,7 +694,6 @@ AcpiCmStrupr (
     char                    *String;
 
 
-
     /* Walk entire string, uppercasing the letters */
 
     for (String = SrcString; *String; )
@@ -740,7 +728,6 @@ AcpiCmStrstr (
     char                    *String2)
 {
     char                    *String;
-
 
 
     if (AcpiCmStrlen (String2) > AcpiCmStrlen (String1))

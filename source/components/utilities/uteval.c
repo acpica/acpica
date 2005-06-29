@@ -328,7 +328,6 @@ AcpiCmExecute_UID (
     ACPI_STATUS             Status;
 
 
-
     /* Execute the method */
 
     Status = AcpiNsEvaluateRelative (AcpiDevice, METHOD_NAME__UID, NULL, &ObjDesc);
@@ -421,7 +420,6 @@ AcpiCmExecute_STA (
 
 
     FUNCTION_TRACE ("CmExecute_STA");
-
 
 
     /* Execute the method */
