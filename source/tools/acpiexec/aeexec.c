@@ -140,6 +140,33 @@ UINT32                      DsdtLength;
 
 /******************************************************************************
  * 
+ * FUNCTION:    RegionHandler
+ *
+ * PARAMETERS:  Standard region handler parameters
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Test handler; doesn't do anything
+ *
+ *****************************************************************************/
+
+ACPI_STATUS 
+RegionHandler (
+    UINT32                      Function,
+    UINT32                      Address,
+    UINT32                      BitWidth,
+    UINT32                      *Value,
+    void                        *Context)
+{
+
+    printf ("Received an OpRegion request\n");
+
+    return AE_OK;
+}
+
+
+/******************************************************************************
+ * 
  * FUNCTION:    NotifyHandler 
  *
  * PARAMETERS:  Standard notify handler parameters
@@ -223,12 +250,18 @@ AeInstallHandlers (void)
 
     Status = AcpiInstallNotifyHandler (ACPI_ROOT_OBJECT, ACPI_SYSTEM_NOTIFY,
                                         NotifyHandler, NULL);
-
-
     if (ACPI_FAILURE (Status))
     {
         printf ("Could not install a global notify handler\n");
     }
+
+
+    Status = AcpiInstallAddressSpaceHandler (Gbl_RootObject, 0x22, RegionHandler, NULL);
+    if (ACPI_FAILURE (Status))
+    {
+        printf ("Could not install an OpRegion handler\n");
+    }
+
 
     return Status;
 }
