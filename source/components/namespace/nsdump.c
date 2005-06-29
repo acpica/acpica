@@ -2,6 +2,7 @@
 /******************************************************************************
  *
  * Module Name: nsdump - table dumping routines for debug
+ *              $Revision: 1.74 $
  *
  *****************************************************************************/
 
@@ -146,11 +147,11 @@
 ACPI_STATUS
 AcpiNsDumpPathname (
     ACPI_HANDLE             Handle,
-    char                    *Msg,
+    NATIVE_CHAR             *Msg,
     UINT32                  Level,
     UINT32                  Component)
 {
-    char                    *Buffer;
+    NATIVE_CHAR             *Buffer;
     UINT32                  Length;
 
 
@@ -211,7 +212,7 @@ AcpiNsDumpOneObject (
     OBJECT_TYPE_INTERNAL    Type;
     UINT32                  BytesToDump;
     UINT32                  DownstreamSiblingMask = 0;
-    INT32                   LevelTmp;
+    UINT32                  LevelTmp;
     UINT32                  WhichBit;
 
 
@@ -224,13 +225,13 @@ AcpiNsDumpOneObject (
 
     if (!(AcpiDbgLevel & Info->DebugLevel))
     {
-        return AE_OK;
+        return (AE_OK);
     }
 
     if (!ObjHandle)
     {
         DEBUG_PRINT (ACPI_INFO, ("Null object handle\n"));
-        return AE_OK;
+        return (AE_OK);
     }
 
     /* Check if the owner matches */
@@ -238,7 +239,7 @@ AcpiNsDumpOneObject (
     if ((Info->OwnerId != ACPI_UINT32_MAX) &&
         (Info->OwnerId != ThisEntry->OwnerId))
     {
-        return AE_OK;
+        return (AE_OK);
     }
 
 
@@ -321,7 +322,7 @@ AcpiNsDumpOneObject (
         /* No attached object, we are done */
 
         DEBUG_PRINT_RAW (TRACE_TABLES, ("\n"));
-        return AE_OK;
+        return (AE_OK);
     }
 
     switch (Type)
@@ -371,7 +372,7 @@ AcpiNsDumpOneObject (
 
     if (!(AcpiDbgLevel & TRACE_VALUES))
     {
-        return AE_OK;
+        return (AE_OK);
     }
 
 
@@ -483,7 +484,7 @@ AcpiNsDumpOneObject (
 
 Cleanup:
     DEBUG_PRINT_RAW (TRACE_TABLES, ("\n"));
-    return AE_OK;
+    return (AE_OK);
 }
 
 
@@ -561,7 +562,7 @@ AcpiNsDumpOneDevice (
 
     }
 
-    return Status;
+    return (Status);
 }
 
 
@@ -591,7 +592,7 @@ AcpiNsDumpRootDevices (void)
     AcpiGetHandle (0, NS_SYSTEM_BUS, &SysBusHandle);
 
     DEBUG_PRINT (TRACE_TABLES, ("Display of all devices in the namespace:\n"));
-    AcpiNsWalkNamespace (ACPI_TYPE_DEVICE, SysBusHandle, ACPI_INT32_MAX, NS_WALK_NO_UNLOCK,
+    AcpiNsWalkNamespace (ACPI_TYPE_DEVICE, SysBusHandle, ACPI_UINT32_MAX, NS_WALK_NO_UNLOCK,
                         AcpiNsDumpOneDevice, NULL, NULL);
 }
 
@@ -612,7 +613,7 @@ AcpiNsDumpRootDevices (void)
 void
 AcpiNsDumpTables (
     ACPI_HANDLE             SearchBase,
-    INT32                   MaxDepth)
+    UINT32                  MaxDepth)
 {
     ACPI_HANDLE             SearchHandle = SearchBase;
 
