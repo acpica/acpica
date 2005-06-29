@@ -357,7 +357,6 @@ NsLoadTableByType (
         if (ACPI_SUCCESS (Status))
         {
             TableDesc->LoadedIntoNamespace = TRUE;
-            TableDesc->RootEntry = Gbl_RootObject;
         }
 
         break;
@@ -388,7 +387,6 @@ NsLoadTableByType (
                 }
 
                 TableDesc->LoadedIntoNamespace = TRUE;
-                TableDesc->RootEntry = Gbl_RootObject;
             }
 
             TableDesc = TableDesc->Next;
@@ -422,7 +420,6 @@ NsLoadTableByType (
                 }
 
                 TableDesc->LoadedIntoNamespace = TRUE;
-                TableDesc->RootEntry = Gbl_RootObject;
             }
 
             TableDesc = TableDesc->Next;
