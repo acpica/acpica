@@ -117,10 +117,10 @@
 #ifndef __GLOBALS_H__
 #define __GLOBALS_H__
 
-#include "config.h"
-#include "acpitables.h"
-#include "internal.h"
-#include "acpiobj.h"
+#include <config.h>
+#include <actables.h>
+#include <internal.h>
+#include <acobject.h>
 
 
 /*
@@ -231,6 +231,7 @@ ACPI_EXTERN UINT32                      Gbl_OriginalMode;
 ACPI_EXTERN INT32                       Gbl_EdgeLevelSave;
 ACPI_EXTERN INT32                       Gbl_IrqEnableSave;
 ACPI_EXTERN UINT32                      Gbl_RsdpOriginalLocation; 
+ACPI_EXTERN ACPI_HANDLE                 Gbl_GlobalLockSemaphore;
 
 
 extern      UINT32                      Gbl_SystemFlags;
