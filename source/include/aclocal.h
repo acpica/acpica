@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: aclocal.h - Internal data types used across the ACPI subsystem
- *       $Revision: 1.98 $
+ *       $Revision: 1.99 $
  *
  *****************************************************************************/
 
@@ -684,6 +684,7 @@ typedef struct acpi_walk_state
     ACPI_GENERIC_STATE      *ScopeInfo;                         /* Stack of nested scopes */
     ACPI_PARSE_STATE        *ParserState;                       /* Current state of parser */
     UINT8                   *AmlLastWhile;
+    ACPI_OPCODE_INFO        *OpInfo;                            /* Info on current opcode */
     ACPI_PARSE_DOWNWARDS    DescendingCallback;
     ACPI_PARSE_UPWARDS      AscendingCallback;
 
@@ -698,6 +699,7 @@ typedef struct acpi_walk_state
     UINT32                  ParseFlags;
     UINT8                   WalkType;
     UINT8                   ReturnUsed;
+    UINT16                  Opcode;                             /* Current AML opcode */
     UINT32                  PrevArgTypes;
 
     /* Debug support */
