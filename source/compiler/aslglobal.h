@@ -3,7 +3,7 @@
 /******************************************************************************
  *
  * Module Name: aslglobal.h - Global variable definitions
- *              $Revision: 1.1 $
+ *              $Revision: 1.9 $
  *
  *****************************************************************************/
 
@@ -11,8 +11,8 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, Intel Corp.  All rights
- * reserved.
+ * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
+ * All rights reserved.
  *
  * 2. License
  *
@@ -117,7 +117,6 @@
  *****************************************************************************/
 
 
-
 #ifndef __ASLGLOBAL_H
 #define __ASLGLOBAL_H
 
@@ -136,7 +135,7 @@
 
 
 /*
- * Parser and other externals 
+ * Parser and other externals
  */
 extern int                      yydebug;
 extern FILE                     *AslCompilerin;
@@ -152,7 +151,7 @@ extern char                     hex[];
 extern char                     MsgBuffer[];
 
 #define ASL_LINE_BUFFER_SIZE    512
-#define ASL_MSG_BUFFER_SIZE   (ASL_LINE_BUFFER_SIZE * 2)
+#define ASL_MSG_BUFFER_SIZE     (ASL_LINE_BUFFER_SIZE * 2)
 
 
 /* Source code buffers and pointers for error reporting */
@@ -161,6 +160,7 @@ EXTERN char                     Gbl_CurrentLineBuffer[ASL_LINE_BUFFER_SIZE];
 EXTERN int                      INIT_GLOBAL (Gbl_CurrentColumn, 0);
 EXTERN int                      INIT_GLOBAL (Gbl_CurrentLineNumber, 1);
 EXTERN int                      INIT_GLOBAL (Gbl_LogicalLineNumber, 1);
+EXTERN int                      INIT_GLOBAL (Gbl_CurrentLineOffset, 0);
 EXTERN char                     INIT_GLOBAL (*Gbl_LineBufPtr, Gbl_CurrentLineBuffer);
 
 /* Exception reporting */
@@ -178,6 +178,7 @@ EXTERN BOOLEAN                  INIT_GLOBAL (Gbl_HexOutputFlag, FALSE);
 EXTERN BOOLEAN                  INIT_GLOBAL (Gbl_ListingFlag, FALSE);
 EXTERN BOOLEAN                  INIT_GLOBAL (Gbl_IgnoreErrors, FALSE);
 EXTERN BOOLEAN                  INIT_GLOBAL (Gbl_SourceOutputFlag, FALSE);
+EXTERN BOOLEAN                  INIT_GLOBAL (Gbl_ParseOnlyFlag, FALSE);
 
 /* Files */
 
@@ -187,6 +188,7 @@ EXTERN char                     INIT_GLOBAL (*Gbl_InputFilename, NULL);
 EXTERN char                     INIT_GLOBAL (*Gbl_IncludeFilename, NULL);
 EXTERN char                     INIT_GLOBAL (*Gbl_SourceOutputFilename, NULL);
 EXTERN char                     INIT_GLOBAL (*Gbl_OutputFilename, NULL);
+EXTERN char                     INIT_GLOBAL (*Gbl_OutputFilenamePrefix, NULL);
 EXTERN char                     INIT_GLOBAL (*Gbl_ListingOutputFilename, NULL);
 EXTERN char                     INIT_GLOBAL (*Gbl_DebugOutputFilename, NULL);
 EXTERN char                     INIT_GLOBAL (*Gbl_HexOutputFilename, NULL);
@@ -205,6 +207,7 @@ EXTERN char                     *Gbl_CurrentInputFilename;
 /* Statistics */
 
 EXTERN UINT32                   INIT_GLOBAL (Gbl_InputByteCount, 0);
+EXTERN UINT32                   INIT_GLOBAL (Gbl_NsLookupCount, 0);
 EXTERN UINT32                   INIT_GLOBAL (TotalKeywords, 0);
 EXTERN UINT32                   INIT_GLOBAL (TotalNamedObjects, 0);
 EXTERN UINT32                   INIT_GLOBAL (TotalExecutableOpcodes, 0);
@@ -231,8 +234,7 @@ EXTERN FILE                     *DebugFile; /* Placeholder for oswinxf only */
 
 EXTERN ASL_ANALYSIS_WALK_INFO   AnalysisWalkInfo;
 EXTERN ACPI_TABLE_HEADER        TableHeader;
-EXTERN ASL_RESERVED_INFO        ReservedMethods[];
-
+extern ASL_RESERVED_INFO        ReservedMethods[];
 
 
 /* Scratch buffers */
@@ -240,6 +242,7 @@ EXTERN ASL_RESERVED_INFO        ReservedMethods[];
 EXTERN UINT8                    Gbl_AmlBuffer[16];
 EXTERN char                     MsgBuffer[ASL_MSG_BUFFER_SIZE];
 EXTERN char                     StringBuffer[ASL_MSG_BUFFER_SIZE];
+EXTERN char                     StringBuffer2[ASL_MSG_BUFFER_SIZE];
 
 #endif /* __ASLGLOBAL_H */
 
