@@ -7,6 +7,10 @@ Project: "AcpiDriver"=.\AcpiDriver.dsp - Package Owner=<4>
 
 Package=<5>
 {{{
+    begin source code control
+    "$/Acpi Components/test/driver/wdm", DBDAAAAA
+    .
+    end source code control
 }}}
 
 Package=<4>
@@ -19,6 +23,10 @@ Project: "AcpiDump"=.\AcpiDump.dsp - Package Owner=<4>
 
 Package=<5>
 {{{
+    begin source code control
+    "$/Acpi Components/Generate/VC", SVBAAAAA
+    .
+    end source code control
 }}}
 
 Package=<4>
@@ -31,6 +39,10 @@ Project: "AcpiExec"=.\AcpiExec.dsp - Package Owner=<4>
 
 Package=<5>
 {{{
+    begin source code control
+    "$/Acpi Components/Generate/VC", SVBAAAAA
+    .
+    end source code control
 }}}
 
 Package=<4>
@@ -55,6 +67,10 @@ Project: "AcpiSubsystem"=.\AcpiSubsystem.dsp - Package Owner=<4>
 
 Package=<5>
 {{{
+    begin source code control
+    "$/Acpi Components/Subsystem", CQBAAAAA
+    ..\..
+    end source code control
 }}}
 
 Package=<4>
@@ -67,6 +83,10 @@ Project: "AcpiTest"=.\AcpiTest.dsp - Package Owner=<4>
 
 Package=<5>
 {{{
+    begin source code control
+    "$/Acpi Components/Test/AcpiTest/Wdm", DLHAAAAA
+    .
+    end source code control
 }}}
 
 Package=<4>
