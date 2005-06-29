@@ -116,11 +116,11 @@
  * PARAMETERS:  RelObjEntry         - NTE of the relative containing object
  *              *Pathname           - Name of method to execute, If NULL, the
  *                                    handle is the object to execute
- *              *ReturnObject       - Where to put method's return value (if 
- *                                    any).  If NULL, no value is returned.
  *              **Params            - List of parameters to pass to the method,
  *                                    terminated by NULL.  Params itself may be 
  *                                    NULL if no parameters are being passed.
+ *              *ReturnObject       - Where to put method's return value (if 
+ *                                    any).  If NULL, no value is returned.
  *
  * RETURN:      Status
  *
@@ -133,8 +133,8 @@ ACPI_STATUS
 NsEvaluateRelative (
     NAME_TABLE_ENTRY        *RelObjEntry, 
     char                    *Pathname, 
-    ACPI_OBJECT             *ReturnObject, 
-    ACPI_OBJECT             **Params)
+    ACPI_OBJECT             **Params,
+    ACPI_OBJECT             *ReturnObject)
 {
     ACPI_STATUS             Status;
     NAME_TABLE_ENTRY        *ObjEntry = NULL;
@@ -185,7 +185,7 @@ NsEvaluateRelative (
         DEBUG_PRINT (ACPI_INFO, ("NsEvaluateRelative: %s [%p] Value %p\n",
                                     Pathname, ObjEntry, ObjEntry->Value));
 
-        Status = NsEvaluateByHandle (ObjEntry, ReturnObject, Params);
+        Status = NsEvaluateByHandle (ObjEntry, Params, ReturnObject);
 
         DEBUG_PRINT (ACPI_INFO, ("NsEvaluateRelative: *** Completed eval of object %s ***\n",
                                     Pathname));
@@ -222,8 +222,8 @@ NsEvaluateRelative (
 ACPI_STATUS
 NsEvaluateByName (
     char                    *Pathname, 
-    ACPI_OBJECT             *ReturnObject,
-    ACPI_OBJECT             **Params)
+    ACPI_OBJECT             **Params,
+    ACPI_OBJECT             *ReturnObject)
 {
     ACPI_STATUS             Status;
     NAME_TABLE_ENTRY        *ObjEntry = NULL;
@@ -267,7 +267,7 @@ NsEvaluateByName (
         DEBUG_PRINT (ACPI_INFO, ("NsEvaluateByName: %s [%p] Value %p\n",
                                     Pathname, ObjEntry, ObjEntry->Value));
 
-        Status = NsEvaluateByHandle (ObjEntry, ReturnObject, Params);
+        Status = NsEvaluateByHandle (ObjEntry, Params, ReturnObject);
 
         DEBUG_PRINT (ACPI_INFO, ("NsEvaluateByName: *** Completed eval of object %s ***\n",
                                     Pathname));
@@ -306,8 +306,8 @@ NsEvaluateByName (
 ACPI_STATUS
 NsEvaluateByHandle (
     NAME_TABLE_ENTRY        *ObjEntry, 
-    ACPI_OBJECT             *ReturnObject,
-    ACPI_OBJECT             **Params)
+    ACPI_OBJECT             **Params,
+    ACPI_OBJECT             *ReturnObject)
 {
     ACPI_STATUS             Status;
 
