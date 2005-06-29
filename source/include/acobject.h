@@ -189,7 +189,8 @@
 typedef struct /* COMMON */
 {
     ACPI_OBJECT_COMMON
-
+    UCHAR   FirstNonCommonByte;
+        
 } ACPI_OBJECT_Common;
 
 
