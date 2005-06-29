@@ -741,7 +741,7 @@ _CmAllocateObjectDesc (
     FUNCTION_TRACE ("_AllocateObjectDesc");
 
 
-    CmAcquireMutex (MTX_MEMORY);
+    CmAcquireMutex (MTX_CACHES);
 
     Gbl_ObjectCacheRequests++;
 
@@ -753,22 +753,19 @@ _CmAllocateObjectDesc (
 
         Object = Gbl_ObjectCache;
         Gbl_ObjectCache = Object->Common.Next;
+        Object->Common.Next = NULL;
 
         Gbl_ObjectCacheHits++;
         Gbl_ObjectCacheDepth--;
 
-        /* Clear the entire object.  This is important! */
-
-        MEMSET (Object, 0, sizeof (ACPI_OBJECT_INTERNAL));
-
-        CmReleaseMutex (MTX_MEMORY);
+        CmReleaseMutex (MTX_CACHES);
     }
 
     else
     {
         /* The cache is empty, create a new object */
 
-        CmReleaseMutex (MTX_MEMORY);                        /* Avoid deadlock with CmCallocate */
+        CmReleaseMutex (MTX_CACHES);
 
         /* Attempt to allocate new descriptor */
 
@@ -837,11 +834,22 @@ CmDeleteObjectDesc (
 
     if (Gbl_ObjectCacheDepth >= MAX_OBJECT_CACHE_DEPTH)
     {
+        /* 
+         * Memory allocation metrics.  Call the macro here since we only
+         * care about dynamically allocated objects.
+         */
+        DECREMENT_OBJECT_METRICS (Gbl_ObjectCache->Common.Size);
+
         CmFree (Object);
         return;
     }
 
-    CmAcquireMutex (MTX_MEMORY);
+    CmAcquireMutex (MTX_CACHES);
+
+    /* Clear the entire object.  This is important! */
+
+    MEMSET (Object, 0, sizeof (ACPI_OBJECT_INTERNAL));
+    Object->Common.DataType = DESC_TYPE_ACPI_OBJ;
 
     /* Put the object at the head of the global cache list */
 
@@ -850,7 +858,7 @@ CmDeleteObjectDesc (
     Gbl_ObjectCacheDepth++;
 
 
-    CmReleaseMutex (MTX_MEMORY);
+    CmReleaseMutex (MTX_CACHES);
 }
 
 
