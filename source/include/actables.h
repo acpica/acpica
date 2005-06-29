@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: actables.h - ACPI table management
- *       $Revision: 1.40 $
+ *       $Revision: 1.41 $
  *
  *****************************************************************************/
 
@@ -190,7 +190,7 @@ ACPI_STATUS
 AcpiTbGetTablePointer (
     ACPI_POINTER            *Address,
     UINT32                  Flags,
-    UINT32                  *Size,
+    ACPI_SIZE               *Size,
     ACPI_TABLE_HEADER       **TablePtr);
 
 /*
@@ -283,7 +283,7 @@ AcpiTbFindTable (
 ACPI_STATUS
 AcpiTbMapAcpiTable (
     ACPI_PHYSICAL_ADDRESS   PhysicalAddress,
-    UINT32                  *Size,
+    ACPI_SIZE               *Size,
     ACPI_TABLE_HEADER       **LogicalAddress);
 
 ACPI_STATUS
