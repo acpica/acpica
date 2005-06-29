@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acglobal.h - Declarations for global variables
- *       $Revision: 1.149 $
+ *       $Revision: 1.150 $
  *
  *****************************************************************************/
 
@@ -121,13 +121,15 @@
 /*
  * Ensure that the globals are actually defined only once.
  *
- * The use of these defines allows a single list of globals (here) in order
+ * The use of these macros allows a single list of globals (here) in order
  * to simplify maintenance of the code.
  */
 #ifdef DEFINE_ACPI_GLOBALS
 #define ACPI_EXTERN
+#define ACPI_INIT_GLOBAL(a,b) a=b
 #else
 #define ACPI_EXTERN extern
+#define ACPI_INIT_GLOBAL(a,b) a
 #endif
 
 /* 
@@ -154,13 +156,13 @@ extern      UINT32                      AcpiGbl_NestingLevel;
 
 /*****************************************************************************
  *
- * Runtime configuration
+ * Runtime configuration (static defaults can be overriden at runtime)
  *
  ****************************************************************************/
 
-ACPI_EXTERN UINT8                       AcpiGbl_CreateOsiMethod;
-ACPI_EXTERN UINT8                       AcpiGbl_AllMethodsSerialized;
-ACPI_EXTERN UINT8                       AcpiGbl_LeaveWakeGpesDisabled;
+ACPI_EXTERN UINT8       ACPI_INIT_GLOBAL (AcpiGbl_CreateOsiMethod, TRUE);
+ACPI_EXTERN UINT8       ACPI_INIT_GLOBAL (AcpiGbl_AllMethodsSerialized, FALSE);
+ACPI_EXTERN UINT8       ACPI_INIT_GLOBAL (AcpiGbl_LeaveWakeGpesDisabled, TRUE);
 
 /*****************************************************************************
  *
