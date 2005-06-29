@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: psxface - Parser external interfaces
- *              $Revision: 1.65 $
+ *              $Revision: 1.66 $
  *
  *****************************************************************************/
 
@@ -120,7 +120,6 @@
 #include "acparser.h"
 #include "acdispat.h"
 #include "acinterp.h"
-#include "amlcode.h"
 #include "acnamesp.h"
 
 
