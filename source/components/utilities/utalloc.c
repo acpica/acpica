@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: utalloc - local cache and memory allocation routines
- *              $Revision: 1.137 $
+ *              $Revision: 1.138 $
  *
  *****************************************************************************/
 
@@ -351,7 +351,7 @@ AcpiUtValidateBuffer (
  * RETURN:      Status
  *
  * DESCRIPTION: Validate that the buffer is of the required length or
- *              allocate a new buffer.
+ *              allocate a new buffer.  Returned buffer is always zeroed.
  *
  ******************************************************************************/
 
@@ -393,26 +393,27 @@ AcpiUtInitializeBuffer (
 
         /* Allocate a new buffer with local interface to allow tracking */
 
-        Buffer->Pointer = ACPI_MEM_ALLOCATE (RequiredLength);
+        Buffer->Pointer = ACPI_MEM_CALLOCATE (RequiredLength);
         if (!Buffer->Pointer)
         {
             return (AE_NO_MEMORY);
         }
-
-        /* Clear the buffer */
-
-        ACPI_MEMSET (Buffer->Pointer, 0, RequiredLength);
         break;
 
 
     default:
 
-        /* Validate the size of the buffer */
+        /* Existing buffer: Validate the size of the buffer */
 
         if (Buffer->Length < RequiredLength)
         {
             Status = AE_BUFFER_OVERFLOW;
+            break;
         }
+
+        /* Clear the buffer */
+
+        ACPI_MEMSET (Buffer->Pointer, 0, RequiredLength);
         break;
     }
 
