@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dsutils - Dispatcher utilities
- *              $Revision: 1.106 $
+ *              $Revision: 1.107 $
  *
  ******************************************************************************/
 
@@ -163,7 +163,7 @@ AcpiDsIsResultUsed (
     }
 
     /*
-     * If there is no parent, we are executing at the method level. 
+     * If there is no parent, we are executing at the method level.
      * An executing method typically has no parent, since each method
      * is parsed separately.
      */
@@ -172,7 +172,7 @@ AcpiDsIsResultUsed (
         /*
          * If this is the last statement in the method, we know it is not a
          * Return() operator (would not come here.) The following code is the
-         * optional support for a so-called "implicit return". Some AML code 
+         * optional support for a so-called "implicit return". Some AML code
          * assumes that the last value of the method is "implicitly" returned
          * to the caller. Just save the last result as the return value.
          * NOTE: this is optional because the ASL language does not actually
@@ -181,7 +181,7 @@ AcpiDsIsResultUsed (
         if ((AcpiGbl_EnableInterpreterSlack) &&
             (WalkState->ParserState.Aml >= WalkState->ParserState.AmlEnd))
         {
-            ACPI_DEBUG_PRINT ((ACPI_DB_DISPATCH, 
+            ACPI_DEBUG_PRINT ((ACPI_DB_DISPATCH,
                     "Result of [%s] will be implicitly returned\n",
                     AcpiPsGetOpcodeName (Op->Common.AmlOpcode)));
 
