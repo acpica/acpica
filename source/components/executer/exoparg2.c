@@ -589,7 +589,7 @@ AmlExecDyadic2S (
     if (VALID_DESCRIPTOR_TYPE (ObjDesc, DESC_TYPE_NTE))
     {
         ThisEntry = (NAME_TABLE_ENTRY *) ObjDesc;
-        if (!ThisEntry->Object)
+        if (!(ObjDesc = NsGetAttachedObject ((ACPI_HANDLE) ThisEntry)))
         {
             /* No object present, create a Mutex object */
 
@@ -607,13 +607,8 @@ AmlExecDyadic2S (
             ObjDesc->Mutex.LockCount = 0;
             ObjDesc->Mutex.ThreadId  = 0;
 
-            ThisEntry->Object = ObjDesc;
-            ThisEntry->Type = ACPI_TYPE_Mutex;
+            NsAttachObject ((ACPI_HANDLE) ThisEntry, ObjDesc, ACPI_TYPE_Mutex);
         }
-
-        /* Extract the valid object */
-
-        ObjDesc = ThisEntry->Object;
     }
 
 
