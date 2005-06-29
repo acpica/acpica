@@ -33,7 +33,7 @@ Package=<5>
 {{{
     begin source code control
     "$/Acpi Components/Subsystem", CQBAAAAA
-    .
+    ..\..\subsystem
     end source code control
 }}}
 
@@ -91,6 +91,10 @@ Global:
 
 Package=<5>
 {{{
+    begin source code control
+    "$/Acpi Components", XPBAAAAA
+    ..\..
+    end source code control
 }}}
 
 Package=<3>
