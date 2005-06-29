@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acconfig.h - Global configuration constants
- *       $Revision: 1.78 $
+ *       $Revision: 1.79 $
  *
  *****************************************************************************/
 
@@ -247,7 +247,7 @@
 
 /* Operation regions */
 
-#define ACPI_NUM_PREDEFINED_REGIONS 7
+#define ACPI_NUM_PREDEFINED_REGIONS 8
 #define ACPI_USER_REGION_BEGIN      0x80
 
 /* Maximum SpaceIds for Operation Regions */
