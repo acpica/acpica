@@ -54,13 +54,13 @@ Package=<4>
 
 ###############################################################################
 
-Project: "wdmdrv"=..\..\OsDependent\Wdm\wdmdrv.dsp - Package Owner=<4>
+Project: "wdm"=..\..\TEST\DRIVER\wdm\wdm.dsp - Package Owner=<4>
 
 Package=<5>
 {{{
     begin source code control
-    "$/Acpi Components/OsDependent/Wdm", DBDAAAAA
-    ..\..\cadriver\wdm
+    "$/Acpi Components/OsDependent/wdm", DBDAAAAA
+    ..\..\test\driver\wdm
     end source code control
 }}}
 
