@@ -228,7 +228,7 @@ PsxInitObjectFromOp (
 
 /*****************************************************************************
  *
- * FUNCTION:    PsxStoreOrDeleteResult
+ * FUNCTION:    PsxDeleteResultIfNotUsed
  *
  * PARAMETERS:  
  *
@@ -239,7 +239,7 @@ PsxInitObjectFromOp (
  ****************************************************************************/
 
 void
-PsxSaveOrDeleteResult (
+PsxDeleteResultIfNotUsed (
     ACPI_GENERIC_OP         *Op)
 {
     ACPI_OP_INFO            *ParentInfo;
@@ -247,7 +247,7 @@ PsxSaveOrDeleteResult (
 
     if (!Op)
     {
-        DEBUG_PRINT (ACPI_ERROR, ("PsxStoreOrDeleteResult: Null Op=%X\n",
+        DEBUG_PRINT (ACPI_ERROR, ("PsxDeleteResultIfNotUsed: Null Op=%X\n",
                         Op));
         return;
     }
@@ -274,7 +274,7 @@ PsxSaveOrDeleteResult (
     ParentInfo = PsGetOpcodeInfo (Op->Parent->Opcode);
     if (!ParentInfo)
     {
-        DEBUG_PRINT (ACPI_ERROR, ("PsxStoreOrDeleteResult: Unknown parent opcode. Op=%X\n",
+        DEBUG_PRINT (ACPI_ERROR, ("PsxDeleteResultIfNotUsed: Unknown parent opcode. Op=%X\n",
                         Op));
 
         return;
@@ -461,23 +461,6 @@ PsxCreateOperands (
                     goto Cleanup;
                 }
 
-                if ((Arg->Parent->Opcode == AML_METHODCALL) &&
-                    (DataType == INTERNAL_TYPE_Lvalue))
-                {
-                    /* 
-                     * Since we are invoking a method,
-                     * Constants, Local variables, and method arguments must be resolved here,
-                     */
-
-                    Status = AmlGetRvalue (&ObjDesc);
-                    if (ACPI_FAILURE (Status))
-                    {
-                        /* TBD: Obj desc may have been deleted ?? */
-
-                        goto Cleanup;
-                    }
-                }
-
                 /* Put the operand object on the object stack */
 
                 PsxObjStackPush (ObjDesc, WalkState);
@@ -499,6 +482,54 @@ PsxCreateOperands (
 Cleanup:
 
     DEBUG_PRINT (ACPI_ERROR, ("PsxCreateOperands: Error while creating! Status=%4.4X\n", Status));
+    return_ACPI_STATUS (Status);
+}
+
+
+/*****************************************************************************
+ *
+ * FUNCTION:    PsxResolveOperands
+ *
+ * PARAMETERS:  WalkState           - Current walk state with operands on stack
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Resolve all operands to their values.  Used to prepare arguments
+ *              to a control method invocation (a call from one method to another.)
+ *
+ ****************************************************************************/
+
+ACPI_STATUS
+PsxResolveOperands (
+    ACPI_WALK_STATE         *WalkState)
+{
+    UINT32                  i;
+    ACPI_STATUS             Status;
+
+    
+    FUNCTION_TRACE_PTR ("PsxResolveOperands", WalkState);
+
+
+    /* 
+     * Attempt to resolve each of the valid operands 
+     * Method arguments are passed by value, not by reference
+     */
+    
+    /*
+     * TBD: Note from previous parser:
+     *
+     * TBD: RefOf problem with AmlGetRvalue() conversion.
+     */
+
+    for (i = 0; i < WalkState->NumOperands; i++)
+    {
+        Status = AmlGetRvalue (&WalkState->Operands[i]);
+        if (ACPI_FAILURE (Status))
+        {
+            break;
+        }
+    }
+
     return_ACPI_STATUS (Status);
 }
 
