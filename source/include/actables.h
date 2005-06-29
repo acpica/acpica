@@ -117,8 +117,8 @@
 #ifndef __TABLES_H__
 #define __TABLES_H__
 
-#include <acpitypes.h>
-#include <acpitables.h>
+#include <actypes.h>
+#include <actables.h>
 
 
 
@@ -218,8 +218,7 @@ TbFreeAcpiTable (
 
 ACPI_STATUS
 TbGetTableRsdt (
-    UINT32                  *NumberOfTables, 
-    char                    *BufferPtr);
+    UINT32                  *NumberOfTables);
 
 char *
 TbScanMemoryForRsdp (
@@ -228,7 +227,6 @@ TbScanMemoryForRsdp (
 
 ACPI_STATUS
 TbFindRsdp (
-    char                    *BufferPtr,
     ACPI_TABLE_DESC         *TableInfo);
 
 
