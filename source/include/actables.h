@@ -175,18 +175,18 @@ TbGetAllTables (
  * Tbinstall - Table installation
  */
 
-void *
-TbMapAcpiTable (
-    void                    *PhysicalAddress,
-    UINT32                  *Size);
-
 ACPI_STATUS
 TbInstallTable (
     char                    *TablePtr,
     ACPI_TABLE_DESC         *TableInfo);
 
 ACPI_STATUS
-TbInstallAcpiTable (
+TbRecognizeTable (
+    char                    *TablePtr,
+    ACPI_TABLE_DESC         *TableInfo);
+
+ACPI_STATUS
+TbInitTableDescriptor (
     ACPI_TABLE_TYPE         TableType,
     ACPI_TABLE_DESC         *TableInfo);
 
@@ -240,11 +240,14 @@ BOOLEAN
 TbSystemTablePointer (
     void                    *Where);
 
+void *
+TbMapAcpiTable (
+    void                    *PhysicalAddress,
+    UINT32                  *Size);
 
 ACPI_STATUS
 TbVerifyTableChecksum (
     void                    *TableHeader); 
-
 
 UINT8
 TbChecksum (
