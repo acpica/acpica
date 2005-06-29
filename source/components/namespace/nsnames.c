@@ -27,7 +27,7 @@
  * Code in any form, with the right to sublicense such rights; and
  *
  * 2.3. Intel grants Licensee a non-exclusive and non-transferable patent
- * license (without the right to sublicense), under only those claims of Intel
+ * license (with the right to sublicense), under only those claims of Intel
  * patents that are infringed by the Original Intel Code, to make, use, sell,
  * offer to sell, and import the Covered Code and derivative works thereof
  * solely to the minimum extent necessary to exercise the above copyright
@@ -118,15 +118,15 @@
 
 #include <acpi.h>
 #include <amlcode.h>
-#include <interpreter.h>
-#include <namespace.h>
+#include <interp.h>
+#include <namesp.h>
 
 
-#define _THIS_MODULE        "nsnames.c"
 #define _COMPONENT          NAMESPACE
+        MODULE_NAME         ("nsnames");
 
 
-
+        
 /****************************************************************************
  *
  * FUNCTION:    NsNameOfScope
@@ -155,44 +155,43 @@ NsNameOfScope (
     FUNCTION_TRACE ("NsNameOfScope");
 
 
-    if (!RootObject->Scope || !EntryToSearch)
+    if (!Gbl_RootObject->Scope || !EntryToSearch)
     {
         /* 
          * If the name space has not been initialized,
          * this function should not have been called.
          */
-        FUNCTION_EXIT;
-        return NULL;
+        return_VALUE (NULL);
     }
 
     /* Calculate required buffer size based on depth below root NT */
     
     for (Size = 1, Temp = EntryToSearch;
-            Temp->ParentScope;
-            Temp = Temp->ParentScope)
+            Temp->ParentEntry;
+            Temp = Temp->ParentEntry)
     {
         Size += ACPI_NAME_SIZE;
     }
 
 
-    NameBuffer = LocalCallocate (Size + 1);
+    /* Allocate the buffer */
+
+    NameBuffer = CmCallocate (Size + 1);
     if (!NameBuffer)
     {
         REPORT_ERROR ("NsNameOfScope: allocation failure");
-        FUNCTION_EXIT;
-        return NULL;
+        return_VALUE (NULL);
     }
     
 
     /* Store terminator byte, then build name backwards */
     
     NameBuffer[Size] = '\0';
-    while ((Size > ACPI_NAME_SIZE) && EntryToSearch->ParentScope)
+    while ((Size > ACPI_NAME_SIZE) && EntryToSearch->ParentEntry)
     {
         Size -= ACPI_NAME_SIZE;
-        *(UINT32 *) (NameBuffer + Size) = 
-                        *(UINT32 *) NsFindParentName (EntryToSearch, 0);
-        EntryToSearch = EntryToSearch->ParentScope;
+        *(UINT32 *) (NameBuffer + Size) = NsFindParentName (EntryToSearch);
+        EntryToSearch = EntryToSearch->ParentEntry;
     }
 
     NameBuffer[--Size] = AML_RootPrefix;
@@ -202,8 +201,7 @@ NsNameOfScope (
         DEBUG_PRINT (ACPI_ERROR, ("NsNameOfScope:  Bad pointer returned; size = %d\n", Size));
     }
 
-    FUNCTION_EXIT;
-    return NameBuffer;
+    return_VALUE (NameBuffer);
 }
 
 
@@ -220,19 +218,21 @@ NsNameOfScope (
 char *
 NsNameOfCurrentScope (void)
 {
+    char                    *ScopeName;
+
+
     FUNCTION_TRACE ("NsNameOfCurrentScope");
 
 
-    if (CurrentScope && CurrentScope->Scope)
+    if (Gbl_CurrentScope && Gbl_CurrentScope->Scope)
     {
-        FUNCTION_EXIT;
-        return NsNameOfScope (CurrentScope->Scope);
+        ScopeName = NsNameOfScope (Gbl_CurrentScope->Scope);
+        return_VALUE (ScopeName);
     }
     
-    REPORT_ERROR ("Current scope pointer trashed");
+    REPORT_ERROR ("Current scope pointer is invalid");
 
-    FUNCTION_EXIT;
-    return NULL;
+    return_VALUE (NULL);
 }
 
 
@@ -253,92 +253,88 @@ NsNameOfCurrentScope (void)
 ACPI_STATUS
 NsHandleToPathname (
     ACPI_HANDLE             TargetHandle, 
-    UINT32                  BufSize, 
+    UINT32                  *BufSize, 
     char                    *UserBuffer)
 {
     NAME_TABLE_ENTRY        *EntryToSearch = NULL;
     NAME_TABLE_ENTRY        *Temp = NULL;
-    ACPI_SIZE               FqnSize = 0;
+    ACPI_SIZE               PathLength = 0;
     ACPI_SIZE               Size;
-    INT32                   TraceFQN = 0;
+    UINT32                  UserBufSize;
 
 
-    FUNCTION_TRACE ("NsHandleToPathname");
+    FUNCTION_TRACE_PTR ("NsHandleToPathname", TargetHandle);
 
 
-    if (!RootObject->Scope || !TargetHandle)
+    if (!Gbl_RootObject->Scope || !TargetHandle)
     {
         /* 
          * If the name space has not been initialized,
          * this function should not have been called.
          */
 
-        FUNCTION_STATUS_EXIT (AE_NO_NAMESPACE);
-        return AE_NO_NAMESPACE;
+        return_ACPI_STATUS (AE_NO_NAMESPACE);
     }
 
-    if (!(EntryToSearch = NsConvertHandleToEntry (TargetHandle)))
+    EntryToSearch = NsConvertHandleToEntry (TargetHandle);
+    if (!EntryToSearch)
     {
-        FUNCTION_STATUS_EXIT (AE_BAD_PARAMETER);
-        return AE_BAD_PARAMETER;
+        return_ACPI_STATUS (AE_BAD_PARAMETER);
     }
 
-    /* Compute length of pathname as 5 * number of name segments */
-    
-    for (Size = 5, Temp = EntryToSearch;
-          Temp->ParentScope;
-          Temp = Temp->ParentScope)
+    /* 
+     * Compute length of pathname as 5 * number of name segments.
+     * Go back up the parent tree to the root
+     */
+    for (Size = PATH_SEGMENT_LENGTH, Temp = EntryToSearch;
+          Temp->ParentEntry;
+          Temp = Temp->ParentEntry)
     {
-        Size += 5;
+        Size += PATH_SEGMENT_LENGTH;
     }
 
-    
+    /* Set return length to the required path length */
+
+    PathLength = Size + 1;
+    UserBufSize = *BufSize;
+    *BufSize = PathLength;
+
     /* Check if the user buffer is sufficiently large */
 
-    FqnSize = Size + 1;
-    if (FqnSize > BufSize)
+    if (PathLength > UserBufSize)
     {
-        FUNCTION_STATUS_EXIT (AE_BUFFER_OVERFLOW);
-        return AE_BUFFER_OVERFLOW;
+        return_ACPI_STATUS (AE_BUFFER_OVERFLOW);
     }
-
           
-    /* Store null termination */
+    /* Store null terminator */
     
     UserBuffer[Size] = '\0';
-    Size -= 4;
-    
-    if (TraceFQN)
-    {
-        DEBUG_PRINT (ACPI_INFO, ("%d:%08lx \n", Size, EntryToSearch->Name));
-    }
-    
+    Size -= ACPI_NAME_SIZE;
+
+    /* Put the original ACPI name at the end of the path */
+
     *(UINT32 *) (UserBuffer + Size) = EntryToSearch->Name;
-    UserBuffer[--Size] = '.';
+    UserBuffer[--Size] = PATH_SEPARATOR;
 
     /* Build name backwards, putting "." between segments */
     
-    while ((Size > 4) && EntryToSearch)
+    while ((Size > ACPI_NAME_SIZE) && EntryToSearch)
     {
-        Size -= 4;
-        *(UINT32 *) (UserBuffer + Size) = 
-                        *(UINT32 *) NsFindParentName (EntryToSearch, TraceFQN);
+        Size -= ACPI_NAME_SIZE;
+        *(UINT32 *) (UserBuffer + Size) = NsFindParentName (EntryToSearch);
         
-        if (TraceFQN)
-        {
-            DEBUG_PRINT (ACPI_INFO,
-                            ("%d:%08lx \n", Size, *(UINT32 *)(UserBuffer + Size)));
-        }
-
-        UserBuffer[--Size] = '.';
-        EntryToSearch = EntryToSearch->ParentScope;
+        UserBuffer[--Size] = PATH_SEPARATOR;
+        EntryToSearch = EntryToSearch->ParentEntry;
     }
 
-    /* Overlay the "." preceding the first segment with root name "\" */
+    /* Overlay the "." preceding the first segment with the root name "\" */
     
     UserBuffer[Size] = '\\';
-    FUNCTION_STATUS_EXIT (AE_OK);
-    return AE_OK;
+
+    DEBUG_PRINT (ACPI_INFO, ("NsHandleToPathname: Len=%d, %s \n", 
+                                PathLength, UserBuffer));
+    
+    return_ACPI_STATUS (AE_OK);
 }
 
 
@@ -395,11 +391,12 @@ NsPatternMatch (
  *
  ***************************************************************************/
 
-void *
+ACPI_STATUS
 NsNameCompare (
     ACPI_HANDLE             ObjHandle, 
     UINT32                  Level, 
-    void                    *Context)
+    void                    *Context,
+    void                    **ReturnValue)
 {
     FIND_CONTEXT            *Find = Context;
 
@@ -408,11 +405,11 @@ NsNameCompare (
 
     if (NsPatternMatch ((NAME_TABLE_ENTRY *) ObjHandle, Find->SearchFor))
     {
-        /* name matches pattern */
+        /* Name matches pattern */
         
         if (Find->List)
         {
-            DEBUG_PRINT (TRACE_NAMES, ("FindName: match found: %.4s\n",
+            DEBUG_PRINT (TRACE_NAMES, ("FindName: Match found: %.4s\n",
                             &((NAME_TABLE_ENTRY *) ObjHandle)->Name));
 
             Find->List[*(Find->Count)] = ObjHandle;
@@ -421,7 +418,7 @@ NsNameCompare (
         ++*(Find->Count);
     }
 
-    return NULL;        /* Don't terminate the walk */
+    return AE_OK;        /* Don't terminate the walk */
 }
 
 
@@ -457,7 +454,6 @@ NsLowFindNames (
     FIND_CONTEXT            Find;
 
 
-
     FUNCTION_TRACE ("NsLowFindNames");
 
 
@@ -468,8 +464,7 @@ NsLowFindNames (
          * nothing to search for, or count pointer bad 
          */
         
-        FUNCTION_EXIT;
-        return;
+        return_VOID;
     }
 
     /* Init the context structure used by compare routine */
@@ -480,7 +475,7 @@ NsLowFindNames (
 
     /* Walk the namespace and find all matches */
 
-    AcpiWalkNamespace (TYPE_Any, (ACPI_HANDLE) ThisEntry, MaxDepth, NsNameCompare, &Find, NULL);
+    AcpiWalkNamespace (ACPI_TYPE_Any, (ACPI_HANDLE) ThisEntry, MaxDepth, NsNameCompare, &Find, NULL);
 
     if (List)
     {
@@ -489,14 +484,14 @@ NsLowFindNames (
         List[*Count] = (ACPI_HANDLE) 0;
     }
 
-    FUNCTION_EXIT;
-    return;
+    return_VOID;
 }
 
 
 /****************************************************************************
  *
  * FUNCTION:    NsFindNames
+
  *
  * PARAMETERS:  *SearchFor          - pattern to be found.
  *                                    4 bytes, ? matches any character.
@@ -529,26 +524,25 @@ NsFindNames (
     FUNCTION_TRACE ("NsFindNames");
 
 
-    if (!RootObject->Scope)
+    if (!Gbl_RootObject->Scope)
     {
         /* 
          * If the name space has not been initialized,
          * there surely are no matching names.
          */
-        FUNCTION_EXIT;
-        return NULL;
+        return_VALUE (NULL);
     }
 
     if (NS_ALL == StartHandle)
     {
-        /*  base is root    */
+        /* base is root */
 
-        StartHandle = RootObject;
+        StartHandle = Gbl_RootObject;
     }
     
     else if (((NAME_TABLE_ENTRY *) StartHandle)->Scope)
     {
-        /*  base has children to search */
+        /* base has children to search */
 
         StartHandle = ((NAME_TABLE_ENTRY *) StartHandle)->Scope;
     }
@@ -559,13 +553,12 @@ NsFindNames (
          * If base is not the root and has no children,
          * there is nothing to search.
          */
-        FUNCTION_EXIT;
-        return NULL;
+        return_VALUE (NULL);
     }
 
     if (!SearchFor)
     {
-        /*  search name not specified   */
+        /* Search name not specified */
 
         SearchFor = "????";
     }
@@ -578,17 +571,15 @@ NsFindNames (
     
     if (0 == Count)
     {
-        FUNCTION_EXIT;
-        return NULL;
+        return_VALUE (NULL);
     }
 
     Count++;                                            /* Allow for trailing null */
-    List = LocalCallocate (Count * sizeof(ACPI_HANDLE));
+    List = CmCallocate (Count * sizeof(ACPI_HANDLE));
     if (!List)
     {
         REPORT_ERROR ("NsFindNames: allocation failure");
-        FUNCTION_EXIT;
-        return NULL;
+        return_VALUE (NULL);
     }
 
     /* Pass 2.  Fill buffer */
@@ -596,8 +587,7 @@ NsFindNames (
     Count = 0;
     NsLowFindNames (StartHandle, SearchFor, &Count, List, MaxDepth);
 
-    FUNCTION_EXIT;
-    return List;
+    return_VALUE (List);
 }
 
 

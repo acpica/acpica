@@ -427,7 +427,7 @@ NsDumpOneObject (
             BytesToDump = 16;
         }
 
-        DUMP_BUFFER (Value, BytesToDump, 0);
+        DUMP_BUFFER (Value, BytesToDump);
 
         /* If value is NOT an internal object, we are done */
 

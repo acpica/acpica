@@ -121,8 +121,8 @@
 #include <acpi.h>
 #include <amlcode.h>
 #include <parser.h>
-#include <interpreter.h>
-#include <namespace.h>
+#include <interp.h>
+#include <namesp.h>
 
 
 #define _COMPONENT          NAMESPACE
@@ -155,7 +155,7 @@ NsEvaluateRelative (
     NAME_TABLE_ENTRY        *RelObjEntry, 
     char                    *Pathname, 
     ACPI_OBJECT_INTERNAL    **Params,
-    ACPI_OBJECT_INTERNAL    *ReturnObject)
+    ACPI_OBJECT_INTERNAL    **ReturnObject)
 {
     ACPI_STATUS             Status;
     NAME_TABLE_ENTRY        *ObjEntry = NULL;
@@ -241,7 +241,7 @@ ACPI_STATUS
 NsEvaluateByName (
     char                    *Pathname, 
     ACPI_OBJECT_INTERNAL    **Params,
-    ACPI_OBJECT_INTERNAL    *ReturnObject)
+    ACPI_OBJECT_INTERNAL    **ReturnObject)
 {
     ACPI_STATUS             Status;
     NAME_TABLE_ENTRY        *ObjEntry = NULL;
@@ -323,7 +323,7 @@ ACPI_STATUS
 NsEvaluateByHandle (
     NAME_TABLE_ENTRY        *ObjEntry, 
     ACPI_OBJECT_INTERNAL    **Params,
-    ACPI_OBJECT_INTERNAL    *ReturnObject)
+    ACPI_OBJECT_INTERNAL    **ReturnObject)
 {
     ACPI_STATUS             Status;
     ACPI_OBJECT_INTERNAL    *LocalReturnObject;
@@ -338,7 +338,7 @@ NsEvaluateByHandle (
     {
         /* 
          * If the name space has not been initialized, the Method has surely
-         * not been defined and there is nothing to execute.
+         * not been defined and there is therefore nothing to execute.
          */
 
         DEBUG_PRINT (ACPI_ERROR, ("NsEvaluateByHandle: Name space not initialized - method not defined\n"));
@@ -354,8 +354,7 @@ NsEvaluateByHandle (
     {
         /* Initialize the return value to an invalid object */
 
-        CmInitStaticObject (ReturnObject);
-        ReturnObject->Common.Type = INTERNAL_TYPE_Invalid;
+        *ReturnObject = NULL;
     }
 
 
@@ -395,13 +394,11 @@ BREAKPOINT3;
 
         if (ReturnObject)
         {
-            /* Valid return object, copy the returned object that is on the stack */
+            /* Valid return object, copy the pointer to the returned object */
 
-            Status = CmCopyInternalObject (LocalReturnObject, ReturnObject);
+            *ReturnObject = LocalReturnObject;
         }
 
-
-        CmDeleteInternalObject (LocalReturnObject);
 
 #if defined _RPARSER
         /* 
@@ -476,7 +473,8 @@ NsExecuteControlMethod (
 
     /* Verify that there is a method associated with this object */
 
-    if (!(ObjDesc = NsGetAttachedObject ((ACPI_HANDLE) MethodEntry)))
+    ObjDesc = NsGetAttachedObject ((ACPI_HANDLE) MethodEntry);
+    if (!ObjDesc)
     {
         DEBUG_PRINT (ACPI_ERROR, ("Control method is undefined (nil value)\n"));
         return_ACPI_STATUS (AE_ERROR);
@@ -521,6 +519,15 @@ NsExecuteControlMethod (
      */
     Status = AmlExecuteMethod (ObjDesc, Params, ReturnObjDesc);
 
+    /*
+     * Cleanup.  We must delete everything in the namespace that was created by
+     * the execution of this method.
+     */
+
+    if (MethodEntry->Scope)
+    {
+        NsDeleteNamespace (MethodEntry);
+    }
 
     /* TBD: remove vestiges of old parser */
 
@@ -587,11 +594,11 @@ NsGetObjectValue (
     FUNCTION_TRACE ("NsGetObjectValue");
 
 
+    /* Create an Lvalue object to contain the object */
+
     ObjDesc = CmCreateInternalObject (INTERNAL_TYPE_Lvalue);
     if (!ObjDesc)
     {
-        /* Descriptor allocation failure */
-
         return_ACPI_STATUS (AE_NO_MEMORY);
     }
 
@@ -601,20 +608,21 @@ NsGetObjectValue (
     ObjDesc->Lvalue.Object  = (void *) ObjectEntry;
 
     /* 
-     * use AmlGetRvalue() to get the associated value.  The call to AmlGetRvalue causes 
-     * ObjDesc (allocated above) to always be deleted 
+     * Use AmlGetRvalue() to get the associated value.  The call to AmlGetRvalue causes 
+     * ObjDesc (allocated above) to always be deleted.
      */
 
-    Status = AmlGetRvalue (ReturnObjDesc);
+    Status = AmlGetRvalue (&ObjDesc);
 
     /* 
-     * If AmlGetRvalue() succeeded, treat the top stack entry as
-     * a return value.
+     * If AmlGetRvalue() succeeded, the return value was placed in ObjDesc.
      */
 
     if (Status == AE_OK)
     {
         Status = AE_RETURN_VALUE;
+
+        *ReturnObjDesc = ObjDesc;
         DEBUG_PRINT (ACPI_INFO, ("NsGetObjectValue: Returning obj %p\n", 
                             *ReturnObjDesc));
     }
