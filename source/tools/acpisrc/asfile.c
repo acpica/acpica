@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asfile - Main module for the acpi source processor utility
- *              $Revision: 1.27 $
+ *              $Revision: 1.28 $
  *
  *****************************************************************************/
 
@@ -139,27 +139,41 @@ AsDoWildcard (
     char                    *Filename;
     char                    *SourceDirPath;
     char                    *TargetDirPath;
+    char                    RequestedFileType;
 
 
-    VERBOSE_PRINT (("Checking for %s source files in directory \"%s\"\n", 
+    if (FileType == FILE_TYPE_DIRECTORY)
+    {
+        RequestedFileType = REQUEST_DIR_ONLY;
+    }
+    else
+    {
+        RequestedFileType = REQUEST_FILE_ONLY;
+    }
+
+    VERBOSE_PRINT (("Checking for %s source files in directory \"%s\"\n",
             WildcardSpec, SourcePath));
 
     /* Open the directory for wildcard search */
 
-    DirInfo = AcpiOsOpenDirectory (SourcePath, WildcardSpec);
+    DirInfo = AcpiOsOpenDirectory (SourcePath, WildcardSpec, RequestedFileType);
     if (DirInfo)
     {
-        /* Get all of the files that match the wildcard */
-
+        /*
+         * Get all of the files that match both the
+         * wildcard and the requested file type
+         */
         while ((Filename = AcpiOsGetNextFilename (DirInfo)))
         {
             /* Looking for directory files, must check file type */
 
-            if (FileType == FILE_TYPE_DIRECTORY)
+            switch (RequestedFileType)
             {
+            case REQUEST_DIR_ONLY:
+
                 /* If we actually have a dir, process the subtree */
 
-                if (!AsCheckForDirectory (SourcePath, TargetPath, Filename, 
+                if (!AsCheckForDirectory (SourcePath, TargetPath, Filename,
                         &SourceDirPath, &TargetDirPath))
                 {
                     VERBOSE_PRINT (("Subdirectory: %s\n", Filename));
@@ -168,15 +182,17 @@ AsDoWildcard (
                     free (SourceDirPath);
                     free (TargetDirPath);
                 }
-            }
-            else
-            {
-                /* Otherwise, just assume the file is NOT a directory */
+                break;
+
+            case REQUEST_FILE_ONLY:
+
+                /* Otherwise, this is a file, not a directory */
 
                 VERBOSE_PRINT (("File: %s\n", Filename));
 
-                AsProcessOneFile (ConversionTable, SourcePath, TargetPath, 
+                AsProcessOneFile (ConversionTable, SourcePath, TargetPath,
                         MaxPathLength, Filename, FileType);
+                break;
             }
         }
 
@@ -350,11 +366,8 @@ AsConvertFile (
         return;
     }
 
-
     Gbl_Files++;
     VERBOSE_PRINT (("Processing %d bytes\n", strlen (FileBuffer)));
-//    TERSE_PRINT (("."));
-
 
     if (ConversionTable->LowerCaseTable)
     {
@@ -371,10 +384,8 @@ AsConvertFile (
     {
         for (i = 0; StringTable[i].Target; i++)
         {
-            AsReplaceString (StringTable[i].Target,
-                                StringTable[i].Replacement,
-                                StringTable[i].Type,
-                                FileBuffer);
+            AsReplaceString (StringTable[i].Target, StringTable[i].Replacement,
+                    StringTable[i].Type, FileBuffer);
         }
     }
 
@@ -614,9 +625,9 @@ AsProcessOneFile (
  *
  * FUNCTION:    AsCheckForDirectory
  *
- * DESCRIPTION: Check if the current file is a directory.  If not, construct
- *              the full pathname for the source and target paths.  Checks
- *              for the dot and dot-dot files as well (they are ignored)
+ * DESCRIPTION: Check if the current file is a valid directory.  If not,
+ *              construct the full pathname for the source and target paths.
+ *              Checks for the dot and dot-dot files (they are ignored)
  *
  ******************************************************************************/
 
@@ -630,8 +641,6 @@ AsCheckForDirectory (
 {
     char                    *SrcPath;
     char                    *TgtPath;
-    struct stat             FileInfo;
-
 
 
     if (!(strcmp (Filename, ".")) ||
@@ -663,18 +672,9 @@ AsCheckForDirectory (
     strcat (TgtPath, "/");
     strcat (TgtPath, Filename);
 
-    stat (SrcPath, &FileInfo);
-    if (FileInfo.st_mode & S_IFDIR)
-    {
-        *SourcePath = SrcPath;
-        *TargetPath = TgtPath;
-        return 0;
-    }
-
-    free (SrcPath);
-    free (TgtPath);
-
-    return -1;
+    *SourcePath = SrcPath;
+    *TargetPath = TgtPath;
+    return 0;
 }
 
 

@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: acpisrc.h - Include file for AcpiSrc utility
- *              $Revision: 1.26 $
+ *              $Revision: 1.27 $
  *
  *****************************************************************************/
 
@@ -138,7 +138,7 @@
 static inline int
 max (int a, int b)
 {
-	return (a > b ? a : b);
+    return (a > b ? a : b);
 }
 
 #define O_BINARY    0x0

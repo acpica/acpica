@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asmain - Main module for the acpi source processor utility
- *              $Revision: 1.56 $
+ *              $Revision: 1.57 $
  *
  *****************************************************************************/
 
@@ -430,20 +430,20 @@ ACPI_TYPED_IDENTIFIER_TABLE           AcpiIdentifiers[] = {
     {"ASL_WALK_CALLBACK",                SRC_TYPE_SIMPLE},
     {"ASL_WORD_ADDRESS_DESC",            SRC_TYPE_STRUCT},
     {"COMMAND_INFO",                     SRC_TYPE_STRUCT},
-//    {"FACS_DESCRIPTOR",                  SRC_TYPE_SIMPLE},
+/*    {"FACS_DESCRIPTOR",                  SRC_TYPE_SIMPLE}, */
     {"FACS_DESCRIPTOR_REV1",             SRC_TYPE_STRUCT},
     {"FACS_DESCRIPTOR_REV2",             SRC_TYPE_STRUCT},
-//    {"FADT_DESCRIPTOR",                  SRC_TYPE_SIMPLE},
+/*    {"FADT_DESCRIPTOR",                  SRC_TYPE_SIMPLE}, */
     {"FADT_DESCRIPTOR_REV1",             SRC_TYPE_STRUCT},
     {"FADT_DESCRIPTOR_REV2",             SRC_TYPE_STRUCT},
     {"RSDP_DESCRIPTOR",                  SRC_TYPE_STRUCT},
-//    {"RSDT_DESCRIPTOR",                  SRC_TYPE_SIMPLE},
+/*    {"RSDT_DESCRIPTOR",                  SRC_TYPE_SIMPLE}, */
     {"RSDT_DESCRIPTOR_REV1",             SRC_TYPE_STRUCT},
     {"RSDT_DESCRIPTOR_REV2",             SRC_TYPE_STRUCT},
     {"UINT32_STRUCT",                    SRC_TYPE_STRUCT},
     {"UINT64_OVERLAY",                   SRC_TYPE_UNION},
     {"UINT64_STRUCT",                    SRC_TYPE_STRUCT},
-//    {"XSDT_DESCRIPTOR",                  SRC_TYPE_SIMPLE},
+/*    {"XSDT_DESCRIPTOR",                  SRC_TYPE_SIMPLE}, */
     {"XSDT_DESCRIPTOR_REV2",             SRC_TYPE_STRUCT},
 
     {NULL}
@@ -503,9 +503,9 @@ ACPI_CONVERSION_TABLE       LinuxConversionTable = {
     NULL,
     LinuxEliminateMacros,
     AcpiIdentifiers,
-    (CVT_COUNT_TABS | CVT_COUNT_NON_ANSI_COMMENTS | CVT_COUNT_LINES | 
+    (CVT_COUNT_TABS | CVT_COUNT_NON_ANSI_COMMENTS | CVT_COUNT_LINES |
      CVT_CHECK_BRACES | CVT_TRIM_LINES | CVT_BRACES_ON_SAME_LINE |
-     CVT_MIXED_CASE_TO_UNDERSCORES | CVT_LOWER_CASE_IDENTIFIERS | 
+     CVT_MIXED_CASE_TO_UNDERSCORES | CVT_LOWER_CASE_IDENTIFIERS |
      CVT_REMOVE_DEBUG_MACROS | CVT_TRIM_WHITESPACE |
      CVT_REMOVE_EMPTY_BLOCKS | CVT_SPACES_TO_TABS8),
 
@@ -516,7 +516,7 @@ ACPI_CONVERSION_TABLE       LinuxConversionTable = {
     LinuxConditionalIdentifiers,
     NULL,
     AcpiIdentifiers,
-    (CVT_COUNT_TABS | CVT_COUNT_NON_ANSI_COMMENTS | CVT_COUNT_LINES | 
+    (CVT_COUNT_TABS | CVT_COUNT_NON_ANSI_COMMENTS | CVT_COUNT_LINES |
      CVT_TRIM_LINES | CVT_MIXED_CASE_TO_UNDERSCORES |
      CVT_LOWER_CASE_IDENTIFIERS | CVT_TRIM_WHITESPACE |
      CVT_REMOVE_EMPTY_BLOCKS| CVT_REDUCE_TYPEDEFS | CVT_SPACES_TO_TABS8),
@@ -542,7 +542,7 @@ ACPI_CONVERSION_TABLE       CleanupConversionTable = {
     NULL,
     NULL,
     NULL,
-    (CVT_COUNT_TABS | CVT_COUNT_NON_ANSI_COMMENTS | CVT_COUNT_LINES | 
+    (CVT_COUNT_TABS | CVT_COUNT_NON_ANSI_COMMENTS | CVT_COUNT_LINES |
      CVT_CHECK_BRACES | CVT_TRIM_LINES | CVT_TRIM_WHITESPACE),
 
     /* C header files */
@@ -552,7 +552,7 @@ ACPI_CONVERSION_TABLE       CleanupConversionTable = {
     NULL,
     NULL,
     NULL,
-    (CVT_COUNT_TABS | CVT_COUNT_NON_ANSI_COMMENTS | CVT_COUNT_LINES | 
+    (CVT_COUNT_TABS | CVT_COUNT_NON_ANSI_COMMENTS | CVT_COUNT_LINES |
      CVT_TRIM_LINES | CVT_TRIM_WHITESPACE),
 };
 
@@ -619,7 +619,7 @@ ACPI_CONVERSION_TABLE       CustomConversionTable = {
     NULL,
     NULL,
     NULL,
-    (CVT_COUNT_TABS | CVT_COUNT_NON_ANSI_COMMENTS | CVT_COUNT_LINES | 
+    (CVT_COUNT_TABS | CVT_COUNT_NON_ANSI_COMMENTS | CVT_COUNT_LINES |
      CVT_TRIM_LINES | CVT_TRIM_WHITESPACE),
 
     /* C header files */
@@ -629,7 +629,7 @@ ACPI_CONVERSION_TABLE       CustomConversionTable = {
     NULL,
     NULL,
     NULL,
-    (CVT_COUNT_TABS | CVT_COUNT_NON_ANSI_COMMENTS | CVT_COUNT_LINES | 
+    (CVT_COUNT_TABS | CVT_COUNT_NON_ANSI_COMMENTS | CVT_COUNT_LINES |
      CVT_TRIM_LINES | CVT_TRIM_WHITESPACE),
 };
 

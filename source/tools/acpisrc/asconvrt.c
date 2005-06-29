@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asconvrt - Source conversion code
- *              $Revision: 1.44 $
+ *              $Revision: 1.45 $
  *
  *****************************************************************************/
 
@@ -381,7 +381,7 @@ Exit:
     if (SpaceCount)
     {
         Gbl_MadeChanges = TRUE;
-        AsPrint ("Extraneous spaces Removed", SpaceCount, Filename);
+        AsPrint ("Extraneous spaces removed", SpaceCount, Filename);
     }
 }
 
