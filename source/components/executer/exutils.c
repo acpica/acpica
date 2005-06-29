@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: amutils - interpreter/scanner utilities
- *              $Revision: 1.66 $
+ *              $Revision: 1.67 $
  *
  *****************************************************************************/
 
@@ -138,12 +138,10 @@ typedef struct Internal_Search_st
 
 
 /* Used to traverse nested packages when copying*/
+/* TBD: This must be removed! */
 
 INTERNAL_PKG_SEARCH_INFO        CopyLevel[MAX_PACKAGE_DEPTH];
 
-
-static NATIVE_CHAR          hex[] =
-    {'0','1','2','3','4','5','6','7','8','9','A','B','C','D','E','F'};
 
 
 /*******************************************************************************
@@ -463,10 +461,10 @@ AcpiAmlEisaIdToString (
     OutString[0] = (char) ('@' + ((id >> 26) & 0x1f));
     OutString[1] = (char) ('@' + ((id >> 21) & 0x1f));
     OutString[2] = (char) ('@' + ((id >> 16) & 0x1f));
-    OutString[3] = hex[(id >> 12) & 0xf];
-    OutString[4] = hex[(id >> 8) & 0xf];
-    OutString[5] = hex[(id >> 4) & 0xf];
-    OutString[6] = hex[id & 0xf];
+    OutString[3] = AcpiGbl_HexToAscii[(id >> 12) & 0xf];
+    OutString[4] = AcpiGbl_HexToAscii[(id >> 8) & 0xf];
+    OutString[5] = AcpiGbl_HexToAscii[(id >> 4) & 0xf];
+    OutString[6] = AcpiGbl_HexToAscii[id & 0xf];
     OutString[7] = 0;
 
     return (AE_OK);
