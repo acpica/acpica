@@ -295,8 +295,10 @@ extern char         *UpdateRules[];
 
 
 #else
-#pragma message ("AML Globals defined in this module.")
 
+#ifndef __GNUC__
+#pragma message ("AML Globals defined in this module.")
+#endif
 
 /* Data used in keeping track of fields */
 
