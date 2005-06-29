@@ -2,7 +2,7 @@
  *
  * Module Name: dsopcode - Dispatcher Op Region support and handling of
  *                         "control" opcodes
- *              $Revision: 1.54 $
+ *              $Revision: 1.55 $
  *
  *****************************************************************************/
 
@@ -207,7 +207,7 @@ AcpiDsGetBufferFieldArguments (
     }
 
     Status = AcpiDsInitAmlWalk (WalkState, Op, NULL, ExtraDesc->Extra.AmlStart, 
-                    ExtraDesc->Extra.AmlLength, 1);
+                    ExtraDesc->Extra.AmlLength, NULL, NULL, 1);
     if (ACPI_FAILURE (Status))
     {
         /* TBD: delete walk state */
@@ -257,7 +257,7 @@ AcpiDsGetBufferFieldArguments (
     }
 
     Status = AcpiDsInitAmlWalk (WalkState, Op, NULL, ExtraDesc->Extra.AmlStart,
-                    ExtraDesc->Extra.AmlLength, 3);
+                    ExtraDesc->Extra.AmlLength, NULL, NULL, 3);
     if (ACPI_FAILURE (Status))
     {
         /* TBD: delete walk state */
@@ -356,7 +356,7 @@ AcpiDsGetRegionArguments (
     }
 
     Status = AcpiDsInitAmlWalk (WalkState, Op, NULL, ExtraDesc->Extra.AmlStart, 
-                    ExtraDesc->Extra.AmlLength, 1);
+                    ExtraDesc->Extra.AmlLength, NULL, NULL, 1);
     if (ACPI_FAILURE (Status))
     {
         /* TBD: delete walk state */
@@ -406,7 +406,7 @@ AcpiDsGetRegionArguments (
     }
 
     Status = AcpiDsInitAmlWalk (WalkState, Op, NULL, ExtraDesc->Extra.AmlStart,
-                    ExtraDesc->Extra.AmlLength, 3);
+                    ExtraDesc->Extra.AmlLength, NULL, NULL, 3);
     if (ACPI_FAILURE (Status))
     {
         /* TBD: delete walk state */
