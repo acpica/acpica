@@ -44,8 +44,8 @@ This procedure creates a project that compiles ASL files to AML.
 
 a) Create a new, empty project and add your .ASL files to the project
 
-b) For all ASL files in the project, specify a custom build with the
-following settings (or similar):
+b) For all ASL files in the project, specify a custom build (under
+Project/Settings/CustomBuild with the following settings (or similar):
 
 Commands:
 c:\acpi\libraries\iasl.exe -vs -vi "$(InputPath)"
