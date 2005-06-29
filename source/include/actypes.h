@@ -367,6 +367,20 @@ typedef struct
 #define SYS_MODES_MASK      0x0003
 
 
+/*
+ * ACPI Table Info.  One per ACPI table _type_
+ */
+typedef struct AcpiTableInfo
+{
+    UINT32                  Count;
+
+} ACPI_TABLE_INFO;
+
+
+/*
+ * System info returned by AcpiGetSystemInfo()
+ */
+
 typedef struct _AcpiSysInfo 
 {
     UINT32                  Flags;
@@ -376,8 +390,11 @@ typedef struct _AcpiSysInfo
     UINT32                  Reserved2;
     UINT32                  DebugLevel;
     UINT32                  DebugLayer;
+    UINT32                  NumTableTypes;
+    ACPI_TABLE_INFO         TableInfo [NUM_ACPI_TABLES];
 
 } ACPI_SYSTEM_INFO;
+
 
 
 /*
@@ -443,17 +460,6 @@ typedef struct
     UINT32                  CurrentStatus;
 
 } ACPI_DEVICE_INFO;
-
-
-/* Control method information struct */
-/* Not really public, but appears in the ACPI_OBJECT_INTERNAL definition */
-
-typedef struct
-{
-   ACPI_PTRDIFF             Offset;      /* offset to MethodFlags in AML pcode block */
-   UINT32                   Length;      /* length of method code including MethodFlags */
-
-} METHOD_INFO;
 
 
 /*
