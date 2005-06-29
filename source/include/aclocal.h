@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: aclocal.h - Internal data types used across the ACPI subsystem
- *       $Revision: 1.147 $
+ *       $Revision: 1.149 $
  *
  *****************************************************************************/
 
@@ -350,7 +350,7 @@ typedef struct
 typedef struct
 {
     NATIVE_CHAR             *Name;
-    ACPI_OBJECT_TYPE8       Type;
+    UINT8                   Type;
     NATIVE_CHAR             *Val;
 
 } PREDEFINED_NAMES;
@@ -752,6 +752,15 @@ typedef struct acpi_parse_state
 
 
 } ACPI_PARSE_STATE;
+
+
+/* Parse object flags */
+
+#define PARSEOP_GENERIC     0x01
+#define PARSEOP_NAMED       0x02
+#define PARSEOP_DEFERRED    0x04
+#define PARSEOP_BYTELIST    0x08
+#define PARSEOP_IN_CACHE    0x80
 
 
 /*****************************************************************************
