@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asltypes.h - compiler data types and struct definitions
- *              $Revision: 1.52 $
+ *              $Revision: 1.53 $
  *
  *****************************************************************************/
 
@@ -442,8 +442,8 @@ char                        *AslMessages [] = {
     "Field Unit extends beyond region limit",
     "Access width of Field Unit extends beyond region limit",
     "Resource field name cannot be used as a target",
-    "Invalid Byte Offset, Bit Offset required",
-    "Invalid Bit Offset, Byte Offset required",
+    "Field offset is in bytes, but a bit offset is required",
+    "Field offset is in bits, but a byte offset is required",
     "Opcode is not implemented in compiler AML code generator",
     "No enclosing While statement",
     "Invalid or unknown escape sequence",
