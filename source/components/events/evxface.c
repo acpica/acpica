@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: evxface - External interfaces for ACPI events
- *              $Revision: 1.91 $
+ *              $Revision: 1.93 $
  *
  *****************************************************************************/
 
@@ -179,8 +179,13 @@ AcpiInstallFixedEventHandler (
     AcpiGbl_FixedEventHandlers[Event].Handler = Handler;
     AcpiGbl_FixedEventHandlers[Event].Context = Context;
 
-    if (1 != AcpiHwRegisterAccess (ACPI_WRITE,
-                                   ACPI_MTX_LOCK, Event + TMR_EN, 1))
+    AcpiHwRegisterWrite (ACPI_MTX_LOCK, Event + TMR_EN, 1);
+
+#ifndef ACPI_APPLICATION
+
+    /* Make sure that what we wrote can be read back */
+
+    if (1 != AcpiHwRegisterRead (ACPI_MTX_LOCK, Event + TMR_EN))
     {
         DEBUG_PRINT (ACPI_WARN,
             ("Could not write to fixed event enable register.\n"));
@@ -193,6 +198,7 @@ AcpiInstallFixedEventHandler (
         Status = AE_ERROR;
         goto Cleanup;
     }
+#endif
 
     DEBUG_PRINT (ACPI_INFO,
         ("Enabled fixed event %d.  Handler: %x\n", Event, Handler));
@@ -239,14 +245,21 @@ AcpiRemoveFixedEventHandler (
 
     /* Disable the event before removing the handler - just in case... */
 
-    if (0 != AcpiHwRegisterAccess (ACPI_WRITE,
-                                   ACPI_MTX_LOCK, Event + TMR_EN, 0))
+    AcpiHwRegisterWrite (ACPI_MTX_LOCK, Event + TMR_EN, 0);
+
+#ifndef ACPI_APPLICATION
+
+    /* Make sure that what we wrote can be read back */
+
+    if (0 != AcpiHwRegisterRead (ACPI_MTX_LOCK, Event + TMR_EN))
     {
         DEBUG_PRINT (ACPI_WARN,
             ("Could not write to fixed event enable register.\n"));
         Status = AE_ERROR;
-        goto Cleanup;
+        AcpiCmReleaseMutex (ACPI_MTX_EVENTS);
+        return_ACPI_STATUS (Status);
     }
+#endif
 
     /* Remove the handler */
 
@@ -255,7 +268,6 @@ AcpiRemoveFixedEventHandler (
 
     DEBUG_PRINT (ACPI_INFO, ("Disabled fixed event %d.\n", Event));
 
-Cleanup:
     AcpiCmReleaseMutex (ACPI_MTX_EVENTS);
     return_ACPI_STATUS (Status);
 }
