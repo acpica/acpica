@@ -131,7 +131,9 @@ static ST_KEY_DESC_TABLE KDT[] = {
  ***************************************************************************/
 
 void
-NsPushCurrentScope (NAME_TABLE_ENTRY *NewScope, ACPI_OBJECT_TYPE Type)
+NsPushCurrentScope (
+    NAME_TABLE_ENTRY        *NewScope, 
+    ACPI_OBJECT_TYPE        Type)
 {
 
     FUNCTION_TRACE ("NsPushCurrentScope");
@@ -187,7 +189,8 @@ NsPushCurrentScope (NAME_TABLE_ENTRY *NewScope, ACPI_OBJECT_TYPE Type)
  ***************************************************************************/
 
 void
-NsPushMethodScope (ACPI_HANDLE NewScope)
+NsPushMethodScope (
+    ACPI_HANDLE             NewScope)
 {
 
     FUNCTION_TRACE ("NsPushMethodScope");
@@ -237,9 +240,10 @@ NsPushMethodScope (ACPI_HANDLE NewScope)
  ***************************************************************************/
 
 INT32
-NsPopCurrent (ACPI_OBJECT_TYPE Type)
+NsPopCurrent (
+    ACPI_OBJECT_TYPE        Type)
 {
-    INT32           Count = 0;
+    INT32                   Count = 0;
 
 
     FUNCTION_TRACE ("NsPopCurrent");
