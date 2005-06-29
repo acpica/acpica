@@ -110,6 +110,7 @@
  * FUNCTION:    Get/Set debug level
  *
  * DESCRIPTION: Get or set value of the debug flag
+ *
  *              TBD: Overkill?? remove??
  *
  ****************************************************************************/
@@ -134,7 +135,15 @@ SetDebugLevel (INT32 NewDebugLevel)
  * 
  * FUNCTION:    FunctionTrace
  *
- * DESCRIPTION: Function entry trace
+ * PARAMETERS:  ModuleName          - Caller's module name (for error output)
+ *              LineNumber          - Caller's line number (for error output)
+ *              ComponentId         - Caller's component ID (for error output)
+ *              FunctionName        - Name of Caller's function
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Function entry trace.  Prints only if TRACE_FUNCTIONS bit is
+ *              set in DebugLevel
  *
  ****************************************************************************/
 
@@ -151,12 +160,23 @@ FunctionTrace (char *ModuleName, INT32 LineNumber, INT32 ComponentId, char * Fun
  * 
  * FUNCTION:    DebugPrint
  *
- * DESCRIPTION: Print error message 
+ * PARAMETERS:  ModuleName          - Caller's module name (for error output)
+ *              LineNumber          - Caller's line number (for error output)
+ *              ComponentId         - Caller's component ID (for error output)
+ *              PrintLevel          - Requested debug print level
+ *              Format              - Printf format field
+ *              ...                 - Optional printf arguments
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Print error message with prefix consisting of the module name,
+ *              line number, and component ID.
  *
  ****************************************************************************/
 
 void
-DebugPrint (char *ModuleName, INT32 LineNumber, INT32 ComponentId, INT32 PrintLevel, char *Format, ...)
+DebugPrint (char *ModuleName, INT32 LineNumber, INT32 ComponentId, INT32 PrintLevel, 
+            char *Format, ...)
 {
     va_list         args;
 
@@ -180,7 +200,14 @@ DebugPrint (char *ModuleName, INT32 LineNumber, INT32 ComponentId, INT32 PrintLe
  * 
  * FUNCTION:    DebugPrintPrefix
  *
- * DESCRIPTION: Print error message 
+ * PARAMETERS:  ModuleName          - Caller's module name (for error output)
+ *              LineNumber          - Caller's line number (for error output)
+ *              ComponentId         - Caller's component ID (for error output)
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Print the prefix part of an error message, consisting of the
+ *              module name, line number, and component ID.
  *
  ****************************************************************************/
 
@@ -196,6 +223,11 @@ DebugPrintPrefix (char *ModuleName, INT32 LineNumber, INT32 ComponentId)
 /*****************************************************************************
  * 
  * FUNCTION:    DebugPrintRaw
+ *
+ * PARAMETERS:  Format              - Printf format field
+ *              ...                 - Optional printf arguments
+ *
+ * RETURN:      None
  *
  * DESCRIPTION: Print error message -- without module/line indentifiers 
  *
