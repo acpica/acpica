@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: nsnames - Name manipulation and search
- *              $Revision: 1.71 $
+ *              $Revision: 1.72 $
  *
  ******************************************************************************/
 
@@ -335,7 +335,7 @@ AcpiNsHandleToPathname (
 
     AcpiNsBuildExternalPath (Node, RequiredSize, Buffer->Pointer);
 
-    ACPI_DEBUG_PRINT ((ACPI_DB_EXEC, "%s [%X] \n", Buffer->Pointer, RequiredSize));
+    ACPI_DEBUG_PRINT ((ACPI_DB_EXEC, "%s [%X] \n", (char *) Buffer->Pointer, RequiredSize));
     return_ACPI_STATUS (AE_OK);
 }
 
