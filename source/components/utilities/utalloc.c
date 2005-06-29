@@ -138,7 +138,7 @@
 #ifndef ACPI_DEBUG
 
 #define CmAddElementToAllocList
-#define CmDelteElementFromAllocList
+#define CmDeleteElementFromAllocList
 #define CmDumpCurrentAllocations
 
 #else
