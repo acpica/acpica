@@ -189,6 +189,10 @@ SOURCE=..\..\AslCompiler\aslerror.c
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\AslCompiler\aslfiles.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\AslCompiler\asllength.c
 # End Source File
 # Begin Source File
