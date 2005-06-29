@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslresource.h - ASL resource descriptors
- *              $Revision: 1.13 $
+ *              $Revision: 1.14 $
  *
  *****************************************************************************/
 
@@ -147,6 +147,19 @@
 #define ASL_RESNAME_TRANSTYPE                   "_TRS"  /* Sparse(1), Dense(0) */
 #define ASL_RESNAME_TYPE                        "_TTP"  /* Translation(1), Static (0) */
 #define ASL_RESNAME_XFERTYPE                    "_SIZ"  /* 8(0), 8And16(1), 16(2) */
+
+
+
+/* Default sizes for "small" resource descriptors */
+
+#define ASL_RDESC_IRQ_SIZE                      0x02
+#define ASL_RDESC_DMA_SIZE                      0x02
+#define ASL_RDESC_ST_DEPEND_SIZE                0x00
+#define ASL_RDESC_END_DEPEND_SIZE               0x00
+#define ASL_RDESC_IO_SIZE                       0x07
+#define ASL_RDESC_FIXED_IO_SIZE                 0x03
+#define ASL_RDESC_END_TAG_SIZE                  0x01
+
 
 
 typedef struct asl_resource_node
