@@ -285,7 +285,7 @@ OsReleaseOpRqst (OBJECT_DESCRIPTOR *ObjDesc)
         if (ObjDesc->Mutex.LockCount == 0)
         {
             DEBUG_PRINT (ACPI_ERROR, ("Attempting to Release a Mutex that is not locked\n"));
-            Status == AE_ERROR;
+            Status = AE_ERROR;
         }
     
         else if (ObjDesc->Mutex.ThreadId != (CurrentId = OsThreadId ()))
