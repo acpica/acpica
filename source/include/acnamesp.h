@@ -156,6 +156,10 @@
 #define NS_ROOT                 '/   '
 #define NS_SYSTEM_BUS           '_BS_'
 
+/* Char * definitions of common namespace names */
+
+#define NS_ROOT_PATH            "/"
+
 
 
 /* 
@@ -195,38 +199,12 @@ extern INT32                    NsProperties[NUM_NS_TYPES];
 
 
 
-/* External interfaces?? TBD - these shouldn't be here */
-
-INT32
-AcpiLoadNameSpace  (
-    INT32               DisplayAmlDuringLoad);
-
-void
-AcpiLocalCleanup (
-    void);
-
-void 
-InitAcpiLibGlobals (
-    void);
-
-INT32
-LoadNameSpace (
-    INT32               DisplayAmlDuringLoad);
-
-INT32
-AcpiSetFirmwareWakingVector (
-    UINT32              PhysicalAddress);
-
-INT32
-AcpiGetFirmwareWakingVector (
-    UINT32              *PhysicalAddress);
-
 
 /*
  * ACPI Table functions - nstables
  */
 
-INT32
+ACPI_STATUS
 NsFindRootSystemDescriptorPointer (
     ROOT_SYSTEM_DESCRIPTOR_POINTER  ** RSDP,
     OSD_FILE                        *InputFile);
@@ -290,9 +268,11 @@ char *
 NsNameOfCurrentScope (
     void);
 
-char *
-NsFullyQualifiedName (
-    NsHandle            Look);
+ACPI_STATUS
+NsHandleToPathname (
+    NsHandle            ObjHandle,
+    UINT32              BufSize,
+    char                *UserBuffer);
 
 void
 NsSetMethod (
@@ -331,10 +311,11 @@ NsFindNames (
     NsHandle            SearchBase, 
     INT32               MaxDepth);
 
-NsHandle
+ACPI_STATUS
 NsGetHandle (
     char                *Name, 
-    NsHandle            Scope);
+    NsHandle            Scope,
+    NsHandle            *OutHandle);
 
 void *
 NsCompareValue (
@@ -400,6 +381,12 @@ void
 NsDumpEntry (
     NsHandle            Handle);
 
+void
+NsDumpPathname (
+    NsHandle            Handle, 
+    char                *Msg, 
+    UINT32              Level, 
+    UINT32              Component);
 
 /*
  * Utility functions - nsutils
