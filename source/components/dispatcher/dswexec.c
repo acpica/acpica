@@ -505,13 +505,14 @@ PsxExecEndOp (
         }
 
         /* Open new scope on the scope stack */
-
+/*
         Status = NsScopeStackPushEntry (Entry);
         if (ACPI_FAILURE (Status))
         {
             DEBUG_PRINT (ACPI_ERROR, ("ExecEndOp: Could not push Scope Stack\n"));
             break;
         }
+*/
 
         /* Tell the walk loop to preempt this running method and execute the new method */
 
@@ -535,7 +536,8 @@ PsxExecEndOp (
     case OPTYPE_NAMED_OBJECT:
 
 
-        if (WalkState->Origin->Opcode == AML_MethodOp)
+        if ((WalkState->Origin->Opcode == AML_MethodOp) &&
+            (WalkState->Origin != Op))
         {
             PsxLoadEndOp (WalkState, Op);
         }
