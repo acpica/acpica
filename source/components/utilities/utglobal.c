@@ -459,6 +459,8 @@ CmInitGlobals (void)
     Gpe1EnableRegisterSave  = NULL;
     OriginalMode            = -1;   /*  original ACPI/legacy mode   */
     SciHandle				= 0;
+    GpeRegisters            = NULL;
+    GpeInfo                 = NULL;
 
     /* Namespace */
 
@@ -479,7 +481,7 @@ CmInitGlobals (void)
 
 /******************************************************************************
  *
- * FUNCTION:    CmLocalCleanup
+ * FUNCTION:    CmTerminate
  *
  * PARAMETERS:  none
  *
@@ -490,35 +492,24 @@ CmInitGlobals (void)
  ******************************************************************************/
 
 void
-CmLocalCleanup (void)
+CmTerminate (void)
 {
 
-    FUNCTION_TRACE ("CmLocalCleanup");
+    FUNCTION_TRACE ("CmTerminate");
 
 
-    DEBUG_MEMSTAT;
+    /* Free global tables, etc. */
 
+    if (Gpe0EnableRegisterSave)
+    {
+        CmFree (Gpe0EnableRegisterSave);
+    }
 
-    /*
-     * 1) Free the entire namespace -- all objects and all tables
-     */
+    if (Gpe1EnableRegisterSave)
+    {
+        CmFree (Gpe1EnableRegisterSave);
+    }
 
-    NsDeleteNamespace ();
-
-    DEBUG_PRINT (ACPI_INFO, ("CmLocalCleanup: Namespace freed\n"));
-    DEBUG_MEMSTAT;
-
-
-    /* 
-     * 2) Now we can delete the ACPI tables 
-     */
-
-    NsDeleteAcpiTables ();
-
-    DEBUG_PRINT (ACPI_INFO, ("CmLocalCleanup: ACPI Tables freed\n"));
-    DEBUG_MEMSTAT;
-
-    BREAKPOINT3;
 
     FUNCTION_EXIT;
 }
