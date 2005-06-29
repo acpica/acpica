@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dmbuffer - AML disassembler, buffer and string support
- *              $Revision: 1.16 $
+ *              $Revision: 1.18 $
  *
  ******************************************************************************/
 
@@ -125,6 +125,12 @@
 
 #define _COMPONENT          ACPI_CA_DEBUGGER
         ACPI_MODULE_NAME    ("dmbuffer")
+
+/* Local prototypes */
+
+static void
+AcpiDmUnicode (
+    ACPI_PARSE_OBJECT       *Op);
 
 
 /*******************************************************************************
@@ -423,7 +429,7 @@ AcpiDmUnicode (
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiIsEisaId
+ * FUNCTION:    AcpiDmIsEisaId
  *
  * PARAMETERS:  Op              - Op to be examined
  *
@@ -434,7 +440,7 @@ AcpiDmUnicode (
  ******************************************************************************/
 
 void
-AcpiIsEisaId (
+AcpiDmIsEisaId (
     ACPI_PARSE_OBJECT       *Op)
 {
     UINT32                  Name;
