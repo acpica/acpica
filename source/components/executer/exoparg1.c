@@ -1009,6 +1009,19 @@ AmlExecMonadic2 (
                      */
 
                     RetDesc = *(ObjDesc->Reference.Where);
+                    if (!RetDesc)
+                    {
+                        /*
+                         * We can't return a NULL dereferenced value.  This is an uninitialized package
+                         * element and is thus a severe error.
+                         */
+
+                        DEBUG_PRINT (ACPI_ERROR, ("AmlExecMonadic2: DerefOf, NULL package element obj %p\n", 
+                                        ObjDesc));
+                        Status = AE_AML_UNINITIALIZED_ELEMENT;
+                        goto Cleanup;
+                    }
+
                     CmAddReference (RetDesc);
                 }
                 
