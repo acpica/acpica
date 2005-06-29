@@ -3,7 +3,7 @@
 /******************************************************************************
  *
  * Module Name: aslcompiler.y - Bison input file (ASL grammar and actions)
- *              $Revision: 1.38 $
+ *              $Revision: 1.41 $
  *
  *****************************************************************************/
 
@@ -447,6 +447,7 @@ AslLocalAllocate (unsigned int Size);
 %type <n> ArgListTail
 %type <n> TermArg
 %type <n> Target
+%type <n> RequiredTarget
 %type <n> SimpleTarget
 
 %type <n> Type1Opcode
@@ -700,6 +701,7 @@ AslLocalAllocate (unsigned int Size);
 %type <n> OptionalMinType
 %type <n> OptionalMaxType
 %type <n> OptionalMemType
+%type <n> OptionalCount
 %type <n> OptionalDecodeType
 %type <n> OptionalRangeType
 %type <n> OptionalShareType
@@ -711,6 +713,8 @@ AslLocalAllocate (unsigned int Size);
 %type <n> OptionalNameString_First
 %type <n> OptionalNameString_Last
 %type <n> OptionalAddressRange
+%type <n> OptionalObjectTypeKeyword
+%type <n> OptionalReference
 
 
 %type <n> TermArgItem
@@ -875,6 +879,9 @@ Target
     | ',' SuperName                 {$$ = TrSetNodeFlags ($2, NODE_IS_TARGET);}
     ;
 
+RequiredTarget
+    : ',' SuperName                 {$$ = TrSetNodeFlags ($2, NODE_IS_TARGET);}
+
 SimpleTarget
     : NameString                    {}
     | LocalTerm                     {}
@@ -1023,8 +1030,8 @@ IncludeCStyleTerm
 ExternalTerm
     : EXTERNAL '('
         NameString
-        ',' ObjectTypeKeyword
-        ')'                         {$$ = TrCreateNode (EXTERNAL,2,$3,$5);}
+        OptionalObjectTypeKeyword
+        ')'                         {$$ = TrCreateNode (EXTERNAL,2,$3,$4);}
     | EXTERNAL '('
         error ')'                   {$$ = AslDoError(); yyerrok;}
     ;
@@ -1349,17 +1356,21 @@ ElseTerm
         TermList '}'
                                     {$$ = TrLinkChildren ($<n>3,1,$4);}
 
-    | ELSEIF '{'                    {$$ = TrCreateLeafNode (ELSEIF);}
+    | ELSEIF '('                    {$$ = TrCreateLeafNode (ELSEIF);}
+        TermArg
+        ')' '{'
         TermList '}'
         ElseTerm
-                                    {$$ = TrLinkChildren ($<n>3,2,$4,$6);}
+                                    {$$ = TrLinkChildren ($<n>3,2,$4,$7);}
+    | ELSEIF '('
+        error ')'                   {$$ = AslDoError(); yyerrok;}
     ;
 
 LoadTerm
     : LOAD '('                      {$$ = TrCreateLeafNode (LOAD);}
         NameString
-        ',' SuperName
-        ')'                         {$$ = TrLinkChildren ($<n>3,2,$4,$6);}
+        RequiredTarget
+        ')'                         {$$ = TrLinkChildren ($<n>3,2,$4,$5);}
     | LOAD '('
         error ')'                   {$$ = AslDoError(); yyerrok;}
     ;
@@ -1704,7 +1715,7 @@ LoadTableTerm
         TermArgItem
         OptionalListTermArg
         OptionalListTermArg
-        OptionalListTermArg
+        OptionalReference
         ')'                         {$$ = TrLinkChildren ($<n>3,6,$4,$5,$6,$7,$8,$9);}
     | LOADTABLE '('
         error ')'                   {$$ = AslDoError(); yyerrok;}
@@ -1917,7 +1928,7 @@ ToIntegerTerm
 ToStringTerm
     : TOSTRING '('                  {$$ = TrCreateLeafNode (TOSTRING);}
         TermArg
-        OptionalListTermArg
+        OptionalCount
         Target
         ')'                         {$$ = TrLinkChildren ($<n>3,3,$4,$5,$6);}
     | TOSTRING '('
@@ -2006,7 +2017,8 @@ RegionSpaceKeyword
     ;
 
 AddressSpaceKeyword
-    : RegionSpaceKeyword            {}
+    : ByteConst                     {$$ = UtCheckIntegerRange ($1, 0x80, 0xFF);}
+    | RegionSpaceKeyword            {}
     | ADDRESSSPACE_FFIXEDHW         {$$ = TrCreateLeafNode (ADDRESSSPACE_FFIXEDHW);}
     ;
 
@@ -2427,14 +2439,14 @@ FixedIOTerm
 InterruptTerm
     : INTERRUPT '('                 {$$ = TrCreateLeafNode (INTERRUPT);}
         OptionalResourceType_First
-        InterruptTypeKeyword
+        ',' InterruptTypeKeyword
         ',' InterruptLevel
         OptionalShareType
         OptionalByteConstExpr
         OptionalStringData
         OptionalNameString_Last
         ')' '{'
-            DWordList '}'           {$$ = TrLinkChildren ($<n>3,8,$4,$5,$7,$8,$9,$10,$11,$14);}
+            DWordList '}'           {$$ = TrLinkChildren ($<n>3,8,$4,$6,$8,$9,$10,$11,$12,$15);}
     | INTERRUPT '('
         error ')'                   {$$ = AslDoError(); yyerrok;}
     ;
@@ -2683,6 +2695,11 @@ OptionalByteConstExpr
     | ',' ByteConstExpr             {$$ = $2;}
     ;
 
+OptionalCount
+    :                               {$$ = TrCreateLeafNode (ONES);}       /* Placeholder is a OnesOp object */
+    | ',' TermArg                   {$$ = $2;}
+    ;
+
 OptionalDecodeType
     : ','                           {$$ = NULL;}
     | ',' DecodeKeyword             {$$ = $2;}
@@ -2695,7 +2712,8 @@ OptionalDWordConstExpr
     ;
 
 OptionalListTermArg
-    :                               {$$ = NULL;}
+    :                               {$$ = TrCreateLeafNode (ZERO);}       /* Placeholder is a ZeroOp object */
+    | ','                           {$$ = TrCreateLeafNode (ZERO);}       /* Placeholder is a ZeroOp object */
     | ',' TermArg                   {$$ = $2;}
     ;
 
@@ -2731,9 +2749,20 @@ OptionalNameString_First
     | NameString                    {$$ = $1;}
     ;
 
+OptionalObjectTypeKeyword
+    :                               {$$ = TrCreateLeafNode (OBJECTTYPE_UNK);}
+    | ',' ObjectTypeKeyword         {$$ = $2;}
+
 OptionalRangeType
     : ','                           {$$ = NULL;}
     | ',' RangeTypeKeyword          {$$ = $2;}
+    ;
+
+OptionalReference
+    :                               {$$ = TrCreateLeafNode (ZERO);}       /* Placeholder is a ZeroOp object */
+    | ','                           {$$ = TrCreateLeafNode (ZERO);}       /* Placeholder is a ZeroOp object */
+    | ',' DataObject                {$$ = $2;}
+    | ',' NameString                {$$ = $2;}
     ;
 
 OptionalResourceType_First
@@ -2812,7 +2841,7 @@ AslLocalAllocate (unsigned int Size)
 
     DbgPrint (ASL_PARSE_OUTPUT, "\nAslLocalAllocate: Expanding Stack to %d\n\n", Size);
 
-    Mem = _CmCallocate (Size, 0, "", 0);
+    Mem = _UtCallocate (Size, 0, "", 0);
     if (!Mem)
     {
         AslCommonError (ASL_ERROR, ASL_MSG_MEMORY_ALLOCATION,
