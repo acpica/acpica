@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: actbl2.h - ACPI Specification Revision 2.0 Tables
- *       $Revision: 1.16 $
+ *       $Revision: 1.17 $
  *
  *****************************************************************************/
 
@@ -128,6 +128,11 @@
 #define PM_SOHO_SERVER        5
 #define PM_APPLIANCE_PC       6
 
+/*********************************************/
+/* ACPI Boot Arch Flags, See spec Table 5-10 */
+/*********************************************/
+#define BAF_LEGACY_DEVICES             0x0001
+#define BAF_8042_KEYBOARD_CONTROLLER   0x0002
 
 #pragma pack(1)
 
@@ -187,7 +192,6 @@ typedef struct
     UINT64              Address;            /* 64-bit address of struct or register */
 
 } ACPI_GAS;
-
 
 
 /************************************/
@@ -250,6 +254,7 @@ typedef struct
     UINT32_BIT          CpuSwSleep  : 1;   /* Indicates to OSPM that a processor native instruction */
                                            /* must be executed after writing the SLP_TYPx register. */
     UINT32_BIT          Reserved6   : 18;  /* reserved - must be zero */
+
     ACPI_GAS            ResetRegister;     /* Reset register address in GAS format */
     UINT8               ResetValue;        /* Value to write to the ResetRegister port to reset the system. */
     UINT8               Reserved7[3];      /* These three bytes must be zero */
