@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: psparse - Parser top level AML parse routines
- *              $Revision: 1.110 $
+ *              $Revision: 1.111 $
  *
  *****************************************************************************/
 
@@ -800,8 +800,8 @@ AcpiPsParseLoop (
             if (WalkState->OpInfo)
             {
                 ACPI_DEBUG_PRINT ((ACPI_DB_PARSE,
-                    "Op=%p Opcode=%4.4X Aml %p Oft=%5.5X\n",
-                     Op, Op->Opcode, ParserState->Aml, Op->AmlOffset));
+                    "Opcode %4.4X [%s] Op %p Aml %p AmlOffset %5.5X\n",
+                     Op->Opcode, WalkState->OpInfo->Name, Op, ParserState->Aml, Op->AmlOffset));
             }
         }
 
