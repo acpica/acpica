@@ -127,7 +127,7 @@ AcpiEnable (void)
     FUNCTION_TRACE ("AcpiEnable");
 
 
-    if (AcpiLibInitStatus == AE_NO_ACPI_TABLES)
+    if (!RSDP)
     {
         /*  ACPI tables are not available   */
 
@@ -236,11 +236,12 @@ AcpiDisable (void)
 
 /******************************************************************************
  *
- * FUNCTION:    AcpiEnableFixedEvent
+ * FUNCTION:    AcpiInstallFixedEventHandler
  *
- * PARAMETERS:  Event           Event type to enable.
- *              Handler         Pointer to the handler function for the
- *                              event
+ * PARAMETERS:  Event           - Event type to enable.
+ *              Handler         - Pointer to the handler function for the
+ *                                event
+ *              Context         - Value passed to the handler on each GPE
  *
  * RETURN:      Status
  *
@@ -250,12 +251,13 @@ AcpiDisable (void)
  ******************************************************************************/
 
 ACPI_STATUS
-AcpiEnableFixedEvent (
-    UINT32              Event,
-    FIXED_EVENT_HANDLER Handler)
+AcpiInstallFixedEventHandler (
+    UINT32                  Event,
+    FIXED_EVENT_HANDLER     Handler,
+    void                    *Context)
 {
 
-    FUNCTION_TRACE ("AcpiEnableFixedEvent");
+    FUNCTION_TRACE ("AcpiInstallFixedEventHandler");
 
     /* Sanity check the parameters. */
 
@@ -294,9 +296,10 @@ AcpiEnableFixedEvent (
 
 /******************************************************************************
  *
- * FUNCTION:    AcpiDisableFixedEvent
+ * FUNCTION:    AcpiRemoveFixedEventHandler
  *
  * PARAMETERS:  Event           - Event type to disable.
+ *              Handler         - Address of the handler
  *
  * RETURN:      Status
  *
@@ -305,10 +308,12 @@ AcpiEnableFixedEvent (
  ******************************************************************************/
 
 ACPI_STATUS
-AcpiDisableFixedEvent (
-    UINT32              Event)
+AcpiRemoveFixedEventHandler (
+    UINT32                  Event,
+    FIXED_EVENT_HANDLER     Handler)
 {
-    FUNCTION_TRACE ("AcpiDisableFixedEvent");
+
+    FUNCTION_TRACE ("AcpiRemoveFixedEventHandler");
 
     /* Sanity check the parameters. */
 
@@ -339,7 +344,7 @@ AcpiDisableFixedEvent (
  *
  * FUNCTION:    AcpiInstallGpeHandler
  *
- * PARAMETERS:  Gpe             - The GPE number.  The numbering scheme is 
+ * PARAMETERS:  GpeNumber       - The GPE number.  The numbering scheme is 
  *                                bank 0 first, then bank 1.
  *              Handler         - Address of the handler
  *              Context         - Value passed to the handler on each GPE
@@ -351,14 +356,17 @@ AcpiDisableFixedEvent (
  ******************************************************************************/
 
 ACPI_STATUS
-AcpiInstallGpeHandler (UINT32 Gpe, GPE_HANDLER Handler, void *Context)
+AcpiInstallGpeHandler (
+    UINT32                  GpeNumber, 
+    GPE_HANDLER             Handler, 
+    void                    *Context)
 {
     FUNCTION_TRACE ("AcpiInstallGpeHandler");
 
 
     /* Parameter validation */
 
-    if (!Handler || (Gpe >= GpeRegisterCount))
+    if (!Handler || (GpeNumber >= GpeRegisterCount))
     {
         FUNCTION_EXIT;
         return AE_BAD_PARAMETER;
@@ -369,7 +377,7 @@ AcpiInstallGpeHandler (UINT32 Gpe, GPE_HANDLER Handler, void *Context)
 
     /* Make sure that there isn't a handler there already */
 
-    if (GpeInfo[Gpe].Handler)
+    if (GpeInfo[GpeNumber].Handler)
     {
         FUNCTION_EXIT;
         return AE_HANDLER_EXISTS;
@@ -378,11 +386,13 @@ AcpiInstallGpeHandler (UINT32 Gpe, GPE_HANDLER Handler, void *Context)
 
     /* Install the handler */
 
-    GpeInfo[Gpe].Handler = Handler;
-    GpeInfo[Gpe].Context = Context;
+    GpeInfo[GpeNumber].Handler = Handler;
+    GpeInfo[GpeNumber].Context = Context;
 
 
-    /* TBD: enable the GPE ?? */
+    /* Now we can enable the GPE */
+
+    EvEnableGpe (GpeNumber);
 
     FUNCTION_EXIT;
     return AE_OK;
@@ -393,7 +403,7 @@ AcpiInstallGpeHandler (UINT32 Gpe, GPE_HANDLER Handler, void *Context)
  *
  * FUNCTION:    AcpiRemoveGpeHandler
  *
- * PARAMETERS:  Gpe             - The event to remove a handler
+ * PARAMETERS:  GpeNumber       - The event to remove a handler
  *              Handler         - Address of the handler
  *
  * RETURN:      Status
@@ -403,14 +413,16 @@ AcpiInstallGpeHandler (UINT32 Gpe, GPE_HANDLER Handler, void *Context)
  ******************************************************************************/
 
 ACPI_STATUS
-AcpiRemoveGpeHandler (UINT32 Gpe, GPE_HANDLER Handler)
+AcpiRemoveGpeHandler (
+    UINT32                  GpeNumber, 
+    GPE_HANDLER             Handler)
 {
     FUNCTION_TRACE ("AcpiRemoveGpeHandler");
 
 
     /* Parameter validation */
 
-    if (!Handler || (Gpe >= GpeRegisterCount))
+    if (!Handler || (GpeNumber >= GpeRegisterCount))
     {
         FUNCTION_EXIT;
         return AE_BAD_PARAMETER;
@@ -421,21 +433,24 @@ AcpiRemoveGpeHandler (UINT32 Gpe, GPE_HANDLER Handler)
 
     /* Make sure that the installed handler is the same */
 
-    if (GpeInfo[Gpe].Handler != Handler)
+    if (GpeInfo[GpeNumber].Handler != Handler)
     {
         FUNCTION_EXIT;
         return AE_BAD_PARAMETER;
     }
 
 
+    /* Disable the GPE before removing the handler */
+
+    EvDisableGpe (GpeNumber);
+
+
     /* Remove the handler */
 
-    GpeInfo[Gpe].Handler = NULL;
-    GpeInfo[Gpe].Context = NULL;
+    GpeInfo[GpeNumber].Handler = NULL;
+    GpeInfo[GpeNumber].Context = NULL;
 
  
-    /* TBD: disable the GPE or install default handler ?? */
-
     FUNCTION_EXIT;
     return AE_OK;
 }
@@ -456,9 +471,12 @@ AcpiRemoveGpeHandler (UINT32 Gpe, GPE_HANDLER Handler)
  ******************************************************************************/
 
 ACPI_STATUS
-AcpiInstallNotifyHandler (NsHandle Device, NOTIFY_HANDLER Handler, void *Context)
+AcpiInstallNotifyHandler (
+    ACPI_HANDLE             Device, 
+    NOTIFY_HANDLER          Handler, 
+    void                    *Context)
 {
-    OBJECT_DESCRIPTOR       *ObjDesc;
+    ACPI_OBJECT             *ObjDesc;
     NAME_TABLE_ENTRY        *ObjEntry;
 
 
@@ -535,9 +553,11 @@ AcpiInstallNotifyHandler (NsHandle Device, NOTIFY_HANDLER Handler, void *Context
  ******************************************************************************/
 
 ACPI_STATUS
-AcpiRemoveNotifyHandler (NsHandle Device, NOTIFY_HANDLER Handler)
+AcpiRemoveNotifyHandler (
+    ACPI_HANDLE             Device, 
+    NOTIFY_HANDLER          Handler)
 {
-    OBJECT_DESCRIPTOR       *ObjDesc;
+    ACPI_OBJECT             *ObjDesc;
     NAME_TABLE_ENTRY        *ObjEntry;
 
 
@@ -615,7 +635,10 @@ AcpiRemoveNotifyHandler (NsHandle Device, NOTIFY_HANDLER Handler)
  ******************************************************************************/
 
 ACPI_STATUS
-AcpiInstallOpRegionHandler (UINT32 OpRegion, OPREGION_HANDLER Handler, void *Context)
+AcpiInstallOpRegionHandler (
+    UINT32                  OpRegion, 
+    OPREGION_HANDLER        Handler, 
+    void                    *Context)
 {
     FUNCTION_TRACE ("AcpiInstallOpRegionHandler");
 
@@ -648,7 +671,9 @@ AcpiInstallOpRegionHandler (UINT32 OpRegion, OPREGION_HANDLER Handler, void *Con
  ******************************************************************************/
 
 ACPI_STATUS
-AcpiRemoveOpRegionHandler (UINT32 OpRegion, OPREGION_HANDLER Handler)
+AcpiRemoveOpRegionHandler (
+    UINT32                  OpRegion, 
+    OPREGION_HANDLER        Handler)
 {
     FUNCTION_TRACE ("AcpiRemoveOpRegionHandler");
 
