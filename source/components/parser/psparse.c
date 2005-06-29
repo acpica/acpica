@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: psparse - Parser top level AML parse routines
- *              $Revision: 1.131 $
+ *              $Revision: 1.132 $
  *
  *****************************************************************************/
 
@@ -653,13 +653,21 @@ AcpiPsParseLoop (
                  * Get and append arguments until we find the node that contains
                  * the name (the type ARGP_NAME).
                  */
-                while (GET_CURRENT_ARG_TYPE (WalkState->ArgTypes) != ARGP_NAME)
+                while (GET_CURRENT_ARG_TYPE (WalkState->ArgTypes) &&
+                      (GET_CURRENT_ARG_TYPE (WalkState->ArgTypes) != ARGP_NAME))
                 {
                     Arg = AcpiPsGetNextArg (ParserState,
                                             GET_CURRENT_ARG_TYPE (WalkState->ArgTypes),
                                             &WalkState->ArgCount);
                     AcpiPsAppendArg (&PreOp, Arg);
                     INCREMENT_ARG_LIST (WalkState->ArgTypes);
+                }
+
+                /* Make sure that we found a NAME and didn't run out of arguments */
+
+                if (!GET_CURRENT_ARG_TYPE (WalkState->ArgTypes))
+                {
+                    return_ACPI_STATUS (AE_AML_NO_OPERAND);
                 }
 
                 /* We know that this arg is a name, move to next arg */
