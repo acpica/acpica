@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acmacros.h - C macros for the entire subsystem.
- *       $Revision: 1.93 $
+ *       $Revision: 1.94 $
  *
  *****************************************************************************/
 
@@ -486,10 +486,6 @@
 #define _REPORT_WARNING(a,b,c,fp)       {AcpiUtReportWarning(a,b,c); \
                                             AcpiOsPrintf PARAM_LIST(fp);}
 
-/* Buffer dump macros */
-
-#define DUMP_BUFFER(a,b)                AcpiUtDumpBuffer((UINT8 *)a,b,DB_BYTE_DISPLAY,_COMPONENT)
-
 /*
  * Debug macros that are conditionally compiled
  */
@@ -554,6 +550,7 @@
 #define DUMP_TABLES(a,b)                AcpiNsDumpTables(a,b)
 #define DUMP_PATHNAME(a,b,c,d)          AcpiNsDumpPathname(a,b,c,d)
 #define DUMP_RESOURCE_LIST(a)           AcpiRsDumpResourceList(a)
+#define DUMP_BUFFER(a,b)                AcpiUtDumpBuffer((UINT8 *)a,b,DB_BYTE_DISPLAY,_COMPONENT)
 #define BREAK_MSG(a)                    AcpiOsSignal (ACPI_SIGNAL_BREAKPOINT,(a))
 
 
@@ -608,6 +605,7 @@
 #define DUMP_TABLES(a,b)
 #define DUMP_PATHNAME(a,b,c,d)
 #define DUMP_RESOURCE_LIST(a)
+#define DUMP_BUFFER(a,b)
 #define ACPI_DEBUG_PRINT(pl)
 #define ACPI_DEBUG_PRINT_RAW(pl)
 #define BREAK_MSG(a)
