@@ -1,7 +1,7 @@
 
 /******************************************************************************
- * 
- * Name: acapi.h - external interfaces to the ACPI subsystem
+ *
+ * Name: acxface.h - External interfaces to the ACPI subsystem
  *
  *****************************************************************************/
 
@@ -9,8 +9,8 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, Intel Corp.  All rights
- * reserved.
+ * Some or all of this work - Copyright (c) 1999, 2000, Intel Corp.
+ * All rights reserved.
  *
  * 2. License
  *
@@ -38,9 +38,9 @@
  * The above copyright and patent license is granted only if the following
  * conditions are met:
  *
- * 3. Conditions 
+ * 3. Conditions
  *
- * 3.1. Redistribution of Source with Rights to Further Distribute Source.  
+ * 3.1. Redistribution of Source with Rights to Further Distribute Source.
  * Redistribution of source code of any substantial portion of the Covered
  * Code or modification with rights to further distribute source must include
  * the above Copyright Notice, the above License, this list of Conditions,
@@ -48,11 +48,11 @@
  * Licensee must cause all Covered Code to which Licensee contributes to
  * contain a file documenting the changes Licensee made to create that Covered
  * Code and the date of any change.  Licensee must include in that file the
- * documentation of any changes made by any predecessor Licensee.  Licensee 
+ * documentation of any changes made by any predecessor Licensee.  Licensee
  * must include a prominent statement that the modification is derived,
  * directly or indirectly, from Original Intel Code.
  *
- * 3.2. Redistribution of Source with no Rights to Further Distribute Source.  
+ * 3.2. Redistribution of Source with no Rights to Further Distribute Source.
  * Redistribution of source code of any substantial portion of the Covered
  * Code or modification without rights to further distribute source must
  * include the following Disclaimer and Export Compliance provision in the
@@ -86,7 +86,7 @@
  * INSTALLATION, TRAINING OR OTHER SERVICES.  INTEL WILL NOT PROVIDE ANY
  * UPDATES, ENHANCEMENTS OR EXTENSIONS.  INTEL SPECIFICALLY DISCLAIMS ANY
  * IMPLIED WARRANTIES OF MERCHANTABILITY, NONINFRINGEMENT AND FITNESS FOR A
- * PARTICULAR PURPOSE. 
+ * PARTICULAR PURPOSE.
  *
  * 4.2. IN NO EVENT SHALL INTEL HAVE ANY LIABILITY TO LICENSEE, ITS LICENSEES
  * OR ANY OTHER THIRD PARTY, FOR ANY LOST PROFITS, LOST DATA, LOSS OF USE OR
@@ -115,20 +115,23 @@
  *****************************************************************************/
 
 
-#ifndef __ACAPI_H__
-#define __ACAPI_H__
+#ifndef __ACXFACE_H__
+#define __ACXFACE_H__
 
-#include <actypes.h>
-#include <actables.h>
-
+#include "actypes.h"
+#include "actbl.h"
 
 /*
  * Global interfaces
  */
 
 ACPI_STATUS
-AcpiInitialize (
+AcpiInitializeSubsystem (
     void);
+
+ACPI_STATUS
+AcpiEnableSubsystem (
+    UINT32                  Flags);
 
 ACPI_STATUS
 AcpiTerminate (
@@ -136,7 +139,7 @@ AcpiTerminate (
 
 ACPI_STATUS
 AcpiEnable (
-	void);
+    void);
 
 ACPI_STATUS
 AcpiDisable (
@@ -157,8 +160,12 @@ AcpiFormatException (
  */
 
 ACPI_STATUS
-AcpiLoadFirmwareTables (
-    void);
+AcpiFindRootPointer (
+    ACPI_PHYSICAL_ADDRESS   *RsdpPhysicalAddress);
+
+ACPI_STATUS
+AcpiLoadTables (
+    ACPI_PHYSICAL_ADDRESS   RsdpPhysicalAddress);
 
 ACPI_STATUS
 AcpiLoadTable (
@@ -186,55 +193,58 @@ AcpiGetTable (
  */
 
 ACPI_STATUS
-AcpiLoadNamespace (
-    void);
-
-ACPI_STATUS
 AcpiWalkNamespace (
-    ACPI_OBJECT_TYPE        Type, 
-    ACPI_HANDLE             StartObject, 
+    ACPI_OBJECT_TYPE        Type,
+    ACPI_HANDLE             StartObject,
     UINT32                  MaxDepth,
-    WALK_CALLBACK           UserFunction, 
-    void                    *Context, 
+    WALK_CALLBACK           UserFunction,
+    void                    *Context,
     void *                  *ReturnValue);
 
-ACPI_STATUS 
+ACPI_STATUS
+AcpiGetDevices (
+    NATIVE_CHAR             *HID,
+    WALK_CALLBACK           UserFunction,
+    void                    *Context,
+    void                    **ReturnValue);
+
+ACPI_STATUS
 AcpiGetName (
-    ACPI_HANDLE             Handle, 
+    ACPI_HANDLE             Handle,
     UINT32                  NameType,
     ACPI_BUFFER             *RetPathPtr);
 
-ACPI_STATUS 
+ACPI_STATUS
 AcpiGetHandle (
-    ACPI_HANDLE             Parent, 
-    ACPI_STRING             Pathname, 
+    ACPI_HANDLE             Parent,
+    ACPI_STRING             Pathname,
     ACPI_HANDLE             *RetHandle);
 
 
-/* 
+/*
  * Object manipulation and enumeration
  */
 
 ACPI_STATUS
 AcpiEvaluateObject (
-    ACPI_HANDLE             Object, 
-    ACPI_STRING             Pathname, 
+    ACPI_HANDLE             Object,
+    ACPI_STRING             Pathname,
     ACPI_OBJECT_LIST        *ParameterObjects,
     ACPI_BUFFER             *ReturnObjectBuffer);
 
 ACPI_STATUS
 AcpiGetObjectInfo (
-    ACPI_HANDLE             Device, 
+    ACPI_HANDLE             Device,
     ACPI_DEVICE_INFO        *Info);
 
 ACPI_STATUS
 AcpiGetNextObject (
-    ACPI_OBJECT_TYPE        Type, 
-    ACPI_HANDLE             Parent, 
+    ACPI_OBJECT_TYPE        Type,
+    ACPI_HANDLE             Parent,
     ACPI_HANDLE             Child,
     ACPI_HANDLE             *OutHandle);
 
-ACPI_STATUS 
+ACPI_STATUS
 AcpiGetType (
     ACPI_HANDLE             Object,
     ACPI_OBJECT_TYPE        *OutType);
@@ -246,71 +256,87 @@ AcpiGetParent (
 
 
 /*
- * Event handler interfaces
+ * AcpiEvent handler interfaces
  */
 
 ACPI_STATUS
 AcpiInstallFixedEventHandler (
-    ACPI_EVENT_TYPE         Event,
+    UINT32                  AcpiEvent,
     FIXED_EVENT_HANDLER     Handler,
     void                    *Context);
-    
+
 ACPI_STATUS
 AcpiRemoveFixedEventHandler (
-    ACPI_EVENT_TYPE         Event,
+    UINT32                  AcpiEvent,
     FIXED_EVENT_HANDLER     Handler);
 
 ACPI_STATUS
 AcpiInstallNotifyHandler (
     ACPI_HANDLE             Device,
-    UINT32                  HandlerType, 
-    NOTIFY_HANDLER          Handler, 
+    UINT32                  HandlerType,
+    NOTIFY_HANDLER          Handler,
     void                    *Context);
 
 ACPI_STATUS
 AcpiRemoveNotifyHandler (
-    ACPI_HANDLE             Device, 
-    UINT32                  HandlerType, 
+    ACPI_HANDLE             Device,
+    UINT32                  HandlerType,
     NOTIFY_HANDLER          Handler);
 
 ACPI_STATUS
 AcpiInstallAddressSpaceHandler (
-    ACPI_HANDLE             Device, 
-    ACPI_ADDRESS_SPACE_TYPE SpaceId, 
-    ADDRESS_SPACE_HANDLER   Handler, 
+    ACPI_HANDLE             Device,
+    ACPI_ADDRESS_SPACE_TYPE SpaceId,
+    ADDRESS_SPACE_HANDLER   Handler,
+    ADDRESS_SPACE_SETUP     Setup,
     void                    *Context);
 
 ACPI_STATUS
 AcpiRemoveAddressSpaceHandler (
-    ACPI_HANDLE             Device, 
-    ACPI_ADDRESS_SPACE_TYPE SpaceId, 
+    ACPI_HANDLE             Device,
+    ACPI_ADDRESS_SPACE_TYPE SpaceId,
     ADDRESS_SPACE_HANDLER   Handler);
 
 ACPI_STATUS
 AcpiInstallGpeHandler (
-    UINT32                  GpeNumber, 
-    GPE_HANDLER             Handler, 
+    UINT32                  GpeNumber,
+    UINT32                  Type,
+    GPE_HANDLER             Handler,
     void                    *Context);
 
 ACPI_STATUS
+AcpiAcquireGlobalLock (
+    void);
+
+ACPI_STATUS
+AcpiReleaseGlobalLock (
+    void);
+
+ACPI_STATUS
 AcpiRemoveGpeHandler (
-    UINT32                  GpeNumber, 
+    UINT32                  GpeNumber,
     GPE_HANDLER             Handler);
 
 ACPI_STATUS
 AcpiEnableEvent (
-    UINT32                  Event,
+    UINT32                  AcpiEvent,
     UINT32                  Type);
 
 ACPI_STATUS
 AcpiDisableEvent (
-    UINT32                  Event,
+    UINT32                  AcpiEvent,
     UINT32                  Type);
 
 ACPI_STATUS
 AcpiClearEvent (
-    UINT32                  Event,
+    UINT32                  AcpiEvent,
     UINT32                  Type);
+
+ACPI_STATUS
+AcpiGetEventStatus (
+    UINT32                  AcpiEvent,
+    UINT32                  Type,
+    ACPI_EVENT_STATUS       *EventStatus);
 
 /*
  * Resource interfaces
@@ -332,8 +358,8 @@ AcpiSetCurrentResources (
     ACPI_BUFFER             *InBuffer);
 
 ACPI_STATUS
-AcpiGetIRQRoutingTable  (
-    ACPI_HANDLE             BusDeviceHandle, 
+AcpiGetIrqRoutingTable  (
+    ACPI_HANDLE             BusDeviceHandle,
     ACPI_BUFFER             *RetBuffer);
 
 
@@ -343,21 +369,41 @@ AcpiGetIRQRoutingTable  (
 
 ACPI_STATUS
 AcpiSetFirmwareWakingVector (
-    void                    *PhysicalAddress);
+    ACPI_PHYSICAL_ADDRESS   PhysicalAddress);
 
 ACPI_STATUS
 AcpiGetFirmwareWakingVector (
-    void                    **PhysicalAddress);
-
-ACPI_STATUS 
-AcpiSystemSleepStateSupported (
-    UINT8                   SleepState,
-    BOOLEAN					*Supported);
+    ACPI_PHYSICAL_ADDRESS   *PhysicalAddress);
 
 ACPI_STATUS
-AcpiEnterSystemSleepState (
-    UINT8                   SleepState);
+AcpiGetProcessorThrottlingInfo (
+    ACPI_HANDLE             ProcessorHandle,
+    ACPI_BUFFER             *UserBuffer);
+
+ACPI_STATUS
+AcpiSetProcessorThrottlingState (
+    ACPI_HANDLE             ProcessorHandle,
+    UINT32                  ThrottleState);
+
+ACPI_STATUS
+AcpiGetProcessorThrottlingState (
+    ACPI_HANDLE             ProcessorHandle,
+    UINT32                  *ThrottleState);
+
+ACPI_STATUS
+AcpiGetProcessorCxInfo (
+    ACPI_HANDLE             ProcessorHandle,
+    ACPI_BUFFER             *UserBuffer);
+
+ACPI_STATUS
+AcpiSetProcessorSleepState (
+    ACPI_HANDLE             ProcessorHandle,
+    UINT32                  CxState);
+
+ACPI_STATUS
+AcpiProcessorSleep (
+    ACPI_HANDLE             ProcessorHandle,
+    UINT32                  *PmTimerTicks);
 
 
-
-#endif /* __ACAPI_H__ */
+#endif /* __ACXFACE_H__ */

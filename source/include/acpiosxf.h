@@ -12,8 +12,8 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, Intel Corp.  All rights
- * reserved.
+ * Some or all of this work - Copyright (c) 1999, 2000, Intel Corp.
+ * All rights reserved.
  *
  * 2. License
  *
@@ -203,7 +203,7 @@ AcpiOsFree (
 
 ACPI_STATUS
 AcpiOsMapMemory (
-    void                    *PhysicalAddress,
+    ACPI_PHYSICAL_ADDRESS   PhysicalAddress,
     UINT32                  Length,
     void                    **LogicalAddress);
 
@@ -280,6 +280,37 @@ AcpiOsOut32 (
     ACPI_IO_ADDRESS         OutPort,
     UINT32                  Value);
 
+/*
+ * Platform/Hardware independent physical memory interfaces
+ */
+
+UINT8
+AcpiOsMemIn8 (
+    ACPI_PHYSICAL_ADDRESS   InAddr);
+
+UINT16
+AcpiOsMemIn16 (
+    ACPI_PHYSICAL_ADDRESS   InAddr);
+
+UINT32
+AcpiOsMemIn32 (
+    ACPI_PHYSICAL_ADDRESS   InAddr);
+
+void
+AcpiOsMemOut8 (
+    ACPI_PHYSICAL_ADDRESS   OutAddr,
+    UINT8                   Value);
+
+void
+AcpiOsMemOut16 (
+    ACPI_PHYSICAL_ADDRESS   OutAddr,
+    UINT16                  Value);
+
+void
+AcpiOsMemOut32 (
+    ACPI_PHYSICAL_ADDRESS   OutAddr,
+    UINT32                  Value);
+
 
 /*
  * Standard access to PCI configuration space
@@ -335,7 +366,7 @@ AcpiOsWritePciCfgDword (
 
 ACPI_STATUS
 AcpiOsBreakpoint (
-    INT8                    *Message);
+    NATIVE_CHAR             *Message);
 
 BOOLEAN
 AcpiOsReadable (
@@ -355,12 +386,12 @@ AcpiOsWritable (
 
 INT32
 AcpiOsPrintf (
-    const INT8              *Format,
+    const NATIVE_CHAR       *Format,
     ...);
 
 INT32
 AcpiOsVprintf (
-    const INT8              *Format,
+    const NATIVE_CHAR       *Format,
     va_list                 Args);
 
 /*
@@ -369,7 +400,7 @@ AcpiOsVprintf (
 
 UINT32
 AcpiOsGetLine (
-    INT8                    *Buffer);
+    NATIVE_CHAR             *Buffer);
 
 
 /*
@@ -381,7 +412,7 @@ AcpiOsDbgAssert(
     void                    *FailedAssertion,
     void                    *FileName,
     UINT32                  LineNumber,
-    INT8                    *Message);
+    NATIVE_CHAR             *Message);
 
 
 #endif /* __ACPIOSD_H__ */
