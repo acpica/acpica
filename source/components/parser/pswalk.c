@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: pswalk - Parser routines to walk parsed op tree(s)
- *              $Revision: 1.60 $
+ *              $Revision: 1.61 $
  *
  *****************************************************************************/
 
@@ -336,7 +336,7 @@ AcpiPsDeleteParseTree (
     ACPI_PARSE_OBJECT       *SubtreeRoot)
 {
     ACPI_WALK_STATE         *WalkState;
-    ACPI_WALK_LIST          WalkList;
+    ACPI_THREAD_STATE       *Thread;
 
 
     FUNCTION_TRACE_PTR ("PsDeleteParseTree", SubtreeRoot);
@@ -349,11 +349,14 @@ AcpiPsDeleteParseTree (
 
     /* Create and initialize a new walk list */
 
-    WalkList.WalkState = NULL;
-    WalkList.AcquiredMutexList.Prev = NULL;
-    WalkList.AcquiredMutexList.Next = NULL;
+    Thread = AcpiUtCreateThreadState ();
+    if (!Thread)
+    {
+        return_VOID;
+    }
 
-    WalkState = AcpiDsCreateWalkState (TABLE_ID_DSDT, NULL, NULL, &WalkList);
+
+    WalkState = AcpiDsCreateWalkState (TABLE_ID_DSDT, NULL, NULL, Thread);
     if (!WalkState)
     {
         return_VOID;
@@ -380,7 +383,7 @@ AcpiPsDeleteParseTree (
 
     /* We are done with this walk */
 
-    AcpiExReleaseAllMutexes ((ACPI_OPERAND_OBJECT *) &WalkList.AcquiredMutexList);
+    AcpiUtDeleteGenericState ((ACPI_GENERIC_STATE *) Thread);
     AcpiDsDeleteWalkState (WalkState);
 
     return_VOID;
