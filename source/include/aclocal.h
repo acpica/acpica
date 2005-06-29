@@ -148,13 +148,13 @@ typedef struct AcpiTableDesc
 } ACPI_TABLE_DESC;
 
 
-/* Operational mode of AML scanner */
+/* Operational modes of the AML interpreter/scanner */
 
 typedef enum 
 {
-    MODE_Load    = 0,
-    MODE_Exec    = 1,
-    MODE_Load1   = 2
+    IMODE_LoadPass1 = 0x01,
+    IMODE_LoadPass2 = 0x02,
+    IMODE_Execute   = 0x0E
 
 } OPERATING_MODE;
 
