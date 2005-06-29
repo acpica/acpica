@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: exdump - Interpreter debug output routines
- *              $Revision: 1.169 $
+ *              $Revision: 1.170 $
  *
  *****************************************************************************/
 
@@ -181,7 +181,8 @@ AcpiExDumpOperand (
     if (ACPI_GET_DESCRIPTOR_TYPE (ObjDesc) != ACPI_DESC_TYPE_OPERAND)
     {
         ACPI_DEBUG_PRINT ((ACPI_DB_EXEC,
-                "%p is not a node or operand object\n", ObjDesc));
+                "%p is not a node or operand object: [%s]\n",
+                ObjDesc, AcpiUtGetDescriptorName (ObjDesc)));
         ACPI_DUMP_BUFFER (ObjDesc, sizeof (ACPI_OPERAND_OBJECT));
         return;
     }
@@ -670,7 +671,8 @@ AcpiExDumpObjectDescriptor (
 
     if (ACPI_GET_DESCRIPTOR_TYPE (ObjDesc) != ACPI_DESC_TYPE_OPERAND)
     {
-        AcpiOsPrintf ("ExDumpObjectDescriptor: %p is not a valid ACPI object\n", ObjDesc);
+        AcpiOsPrintf ("ExDumpObjectDescriptor: %p is not an ACPI operand object: [%s]\n",
+                ObjDesc, AcpiUtGetDescriptorName (ObjDesc));
         return_VOID;
     }
 
