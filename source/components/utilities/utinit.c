@@ -379,7 +379,7 @@ InitAcpiGetRsdt (
         /* Since we found the RSDP, now enumerate all tables... */
         /* first is the RSDT */
         
-        Status = NsGetTable (RSDP->RsdtPhysicalAddress, FilePtr, (void *) &RSDT);
+        Status = NsGetTable ((void *) RSDP->RsdtPhysicalAddress, FilePtr, (void *) &RSDT);
         if (Status != AE_OK)
         {
             FUNCTION_EXIT;
@@ -461,7 +461,7 @@ InitAcpiGetAllTables (
 
     for (Index = 0; Index < NumberOfTables; Index++)
     {
-        Status |= NsGetTable (RSDT->TableOffsetEntry[Index], FilePtr, (void *) &TableHeader);
+        Status |= NsGetTable ((void *) RSDT->TableOffsetEntry[Index], FilePtr, (void *) &TableHeader);
         if (TableHeader)
         {   
             /*  TableHeader valid   */
@@ -489,7 +489,7 @@ InitAcpiGetAllTables (
                     {
                         /* Opened DSDT file, get the table */
 
-                        Status |= NsGetTable (FACP->Dsdt, DsdtFilePtr, (void *) &DSDT);
+                        Status |= NsGetTable ((void *) FACP->Dsdt, DsdtFilePtr, (void *) &DSDT);
                         OsdClose (DsdtFilePtr);
                     }
                 
@@ -504,7 +504,7 @@ InitAcpiGetAllTables (
                 {
                     /* Normal -- get DSDT from BIOS table */
 
-                    Status |= NsGetTable (FACP->Dsdt, FilePtr, (void *) &DSDT);
+                    Status |= NsGetTable ((void *) FACP->Dsdt, FilePtr, (void *) &DSDT);
                 }
 
                 if (DSDT)
