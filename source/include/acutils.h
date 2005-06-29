@@ -117,7 +117,7 @@
 #ifndef _COMMON_H
 #define _COMMON_H
 
-#include "acpiobj.h"
+#include "acobject.h"
 #include "acpiosd.h"
 
 
@@ -147,13 +147,6 @@ CmHardwareInitialize (
 
 
 /* Object construction and conversion interfaces - cmobject */
-
-ACPI_OBJECT_INTERNAL *
-_CmCreateInternalObject (
-    char                    *ModuleName, 
-    INT32                   LineNumber, 
-    INT32                   ComponentId,
-    ACPI_OBJECT_TYPE        Type);
 
 ACPI_STATUS
 CmBuildSimpleObject(
@@ -205,7 +198,7 @@ CmGetObjectSize(
 
 
 /*
- * CmDelete - Object deletion and copy 
+ * CmCreate - Object creation
  */
 
 ACPI_STATUS
@@ -213,10 +206,12 @@ CmUpdateObjectReference (
     ACPI_OBJECT_INTERNAL    *Object,
     INT32                   Action);
 
-ACPI_STATUS
-CmCopyInternalObject (
-    ACPI_OBJECT_INTERNAL    *SrcDesc, 
-    ACPI_OBJECT_INTERNAL    *DestDesc);
+ACPI_OBJECT_INTERNAL *
+_CmCreateInternalObject (
+    char                    *ModuleName, 
+    INT32                   LineNumber, 
+    INT32                   ComponentId,
+    ACPI_OBJECT_TYPE        Type);
 
 
 /* Object deletion - cmdelete */
@@ -342,6 +337,14 @@ FunctionValueExit (
     ACPI_STRING             FunctionName,
     NATIVE_UINT             Value);
 
+void
+FunctionPtrExit (
+    ACPI_STRING             ModuleName, 
+    INT32                   LineNumber, 
+    INT32                   ComponentId, 
+    ACPI_STRING             FunctionName,
+    char                    *Ptr); 
+    
 void
 DebugPrintPrefix (
     ACPI_STRING             ModuleName, 
