@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asltypes.h - compiler data types and struct definitions
- *              $Revision: 1.13 $
+ *              $Revision: 1.15 $
  *
  *****************************************************************************/
 
@@ -314,7 +314,7 @@ typedef struct asl_listing_node
 /* Callback interface for a parse tree walk */
 
 typedef
-void (*ASL_WALK_CALLBACK) (
+ACPI_STATUS (*ASL_WALK_CALLBACK) (
     ASL_PARSE_NODE              *Node,
     UINT32                      Level,
     void                        *Context);
