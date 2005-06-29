@@ -3,7 +3,7 @@
  *
  * Module Name: hwregs - Read/write access functions for the various ACPI
  *                       control and status registers.
- *              $Revision: 1.93 $
+ *              $Revision: 1.94 $
  *
  ******************************************************************************/
 
@@ -981,7 +981,7 @@ AcpiHwLowLevelRead (
 
     switch (Reg->AddressSpaceId)
     {
-    case ADDRESS_SPACE_SYSTEM_MEMORY:
+    case ACPI_ADR_SPACE_SYSTEM_MEMORY:
 
         MemAddress = (ACPI_PHYSICAL_ADDRESS) (ACPI_GET_ADDRESS (Reg->Address) + Offset);
 
@@ -1000,7 +1000,7 @@ AcpiHwLowLevelRead (
         break;
 
 
-    case ADDRESS_SPACE_SYSTEM_IO:
+    case ACPI_ADR_SPACE_SYSTEM_IO:
 
         IoAddress = (ACPI_IO_ADDRESS) (ACPI_GET_ADDRESS (Reg->Address) + Offset);
 
@@ -1019,7 +1019,7 @@ AcpiHwLowLevelRead (
         break;
 
 
-    case ADDRESS_SPACE_PCI_CONFIG:
+    case ACPI_ADR_SPACE_PCI_CONFIG:
 
         PciDevFunc  = ACPI_PCI_DEVFUN   (ACPI_GET_ADDRESS (Reg->Address));
         PciRegister = ACPI_PCI_REGISTER (ACPI_GET_ADDRESS (Reg->Address)) + Offset;
@@ -1090,7 +1090,7 @@ AcpiHwLowLevelWrite (
 
     switch (Reg->AddressSpaceId)
     {
-    case ADDRESS_SPACE_SYSTEM_MEMORY:
+    case ACPI_ADR_SPACE_SYSTEM_MEMORY:
 
         MemAddress = (ACPI_PHYSICAL_ADDRESS) (ACPI_GET_ADDRESS (Reg->Address) + Offset);
 
@@ -1109,7 +1109,7 @@ AcpiHwLowLevelWrite (
         break;
 
 
-    case ADDRESS_SPACE_SYSTEM_IO:
+    case ACPI_ADR_SPACE_SYSTEM_IO:
 
         IoAddress = (ACPI_IO_ADDRESS) (ACPI_GET_ADDRESS (Reg->Address) + Offset);
 
@@ -1128,7 +1128,7 @@ AcpiHwLowLevelWrite (
         break;
 
 
-    case ADDRESS_SPACE_PCI_CONFIG:
+    case ACPI_ADR_SPACE_PCI_CONFIG:
 
         PciDevFunc  = ACPI_PCI_DEVFUN   (ACPI_GET_ADDRESS (Reg->Address));
         PciRegister = ACPI_PCI_REGISTER (ACPI_GET_ADDRESS (Reg->Address)) + Offset;
