@@ -42,7 +42,8 @@ RSC=rc.exe
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_CONSOLE" /D "_MBCS" /YX /FD /c
-# ADD CPP /nologo /MT /Za /W4 /GX /O2 /I "..\..\Subsystem\Include" /D "NDEBUG" /D "WIN32" /D "WIN32_LEAN_AND_MEAN" /D "_CONSOLE" /D "_MBCS" /D "_ACPI_EXEC_APP" /D "_MULTI_THREADED" /YX /FD /c
+# ADD CPP /nologo /MT /Ze /W4 /GX /O2 /I "..\..\Subsystem\Include" /D "NDEBUG" /D "WIN32" /D "_CONSOLE" /D "_MBCS" /D "_ACPI_EXEC_APP" /D "_MULTI_THREADED" /FD /c
+# SUBTRACT CPP /YX
 # ADD BASE RSC /l 0x409 /d "NDEBUG"
 # ADD RSC /l 0x409 /d "NDEBUG"
 BSC32=bscmake.exe
@@ -73,7 +74,8 @@ PostBuild_Cmds=copy bin\acpiexec.exe ..\..\libraries\acpiexec.exe	dir ..\..\libr
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_CONSOLE" /D "_MBCS" /YX /FD /GZ /c
-# ADD CPP /nologo /MT /Za /W4 /Gm /GX /ZI /Od /I "..\..\Subsystem\Include" /D "_DEBUG" /D "WIN32" /D "WIN32_LEAN_AND_MEAN" /D "_CONSOLE" /D "_MBCS" /D "_ACPI_EXEC_APP" /D "_MULTI_THREADED" /FR /YX /FD /GZ /c
+# ADD CPP /nologo /MT /Ze /W4 /Gm /GX /ZI /Od /I "..\..\Subsystem\Include" /D "_DEBUG" /D "WIN32" /D "WIN32_LEAN_AND_MEAN" /D "_CONSOLE" /D "_MBCS" /D "_ACPI_EXEC_APP" /D "_MULTI_THREADED" /FR /FD /GZ /c
+# SUBTRACT CPP /YX
 # ADD BASE RSC /l 0x409 /d "_DEBUG"
 # ADD RSC /l 0x409 /d "_DEBUG"
 BSC32=bscmake.exe
@@ -99,9 +101,9 @@ PostBuild_Cmds=copy bin\acpiexec.exe ..\..\libraries\acpiexec.exe	dir ..\..\libr
 # Begin Group "Source Files"
 
 # PROP Default_Filter "cpp;c;cxx;rc;def;r;odl;idl;hpj;bat"
-# Begin Group "Common"
+# Begin Group "SubsystemCommon"
 
-# PROP Default_Filter ""
+# PROP Default_Filter ".c"
 # Begin Source File
 
 SOURCE=..\..\Subsystem\Common\cmalloc.c
@@ -394,16 +396,6 @@ SOURCE=..\..\Tools\AcpiExec\aemain.c
 !ENDIF 
 
 # End Source File
-# Begin Source File
-
-SOURCE=..\..\Tools\Common\getopt.c
-# ADD CPP /Ze
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\OsInterface\WinApp\oswinxf.c
-# ADD CPP /Ze
-# End Source File
 # End Group
 # Begin Group "Debugger"
 
@@ -515,6 +507,18 @@ SOURCE=..\..\Subsystem\Tables\tbutils.c
 # Begin Source File
 
 SOURCE=..\..\subsystem\Tables\tbxface.c
+# End Source File
+# End Group
+# Begin Group "Common"
+
+# PROP Default_Filter ".c"
+# Begin Source File
+
+SOURCE=..\..\Common\getopt.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\Common\oswinxf.c
 # End Source File
 # End Group
 # End Group
