@@ -541,7 +541,8 @@ AcpiEvInitializeRegion (
      *  If we get here, there is no handler for this region
      */
     DEBUG_PRINT (TRACE_OPREGION,
-        ("Unable to find handler for region 0x%X\n", RegionObj));
+        ("No handler currently for SpaceId[%d] (Initializing region 0x%X)\n", 
+            SpaceId, RegionObj));
 
     return_ACPI_STATUS (AE_NOT_EXIST);
 }
