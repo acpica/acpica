@@ -148,17 +148,17 @@ AmlAppendOperandDiag(
     UINT16                  OpCode, 
     INT32                   NumOperands)
 {
-    METHOD_INFO             Method;
+    ACPI_OBJECT_INTERNAL    MthDesc;
 
 
-    AmlGetCurrentLocation (&Method);
+    AmlGetCurrentLocation (&MthDesc);
 
     DEBUG_PRINT (ACPI_ERROR, (" [%s:%d, opcode = %s AML offset %04x]\n",
                     FileName, LineNum,
                     (OpCode > ACPI_UCHAR_MAX)
                         ? LongOps[OpCode & 0x00ff]
                         : ShortOps[OpCode],
-                    Method.Offset));
+                    MthDesc.Method.Offset));
 
     if (GetDebugLevel () > 0)
     {
