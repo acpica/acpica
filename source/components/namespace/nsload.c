@@ -168,7 +168,7 @@ NsParseTable (
 
     /* Initialize the root object */
 
-    ((ACPI_NAMED_OP *) Gbl_ParsedNamespaceRoot)->Name = * (UINT32 *) NS_ROOT;
+    ((ACPI_NAMED_OP *) Gbl_ParsedNamespaceRoot)->Name = ACPI_ROOT_NAME;
 
     /* Pass 1:  Parse everything except control method bodies */
 
