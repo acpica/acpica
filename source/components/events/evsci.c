@@ -15,15 +15,18 @@
  | legacy to ACPI mode state transition functions
  |__________________________________________________________________________
  |
- | $Revision: 1.9 $
- | $Date: 2005/06/29 16:43:47 $
+ | $Revision: 1.10 $
+ | $Date: 2005/06/29 16:43:48 $
  | $Log: evsci.c,v $
- | Revision 1.9  2005/06/29 16:43:47  aystarik
- | Integrated with 03/99 OPSD code
+ | Revision 1.10  2005/06/29 16:43:48  aystarik
+ | New version of DEBUG_PRINT
  |
  | 
- | date	99.03.31.22.32.00;	author rmoore1;	state Exp;
+ | date	99.04.02.22.40.00;	author rmoore1;	state Exp;
  |
+ * 
+ * 10    4/02/99 2:40p Rmoore1
+ * New version of DEBUG_PRINT
  * 
  * 9     3/31/99 2:32p Rmoore1
  * Integrated with 03/99 OPSD code
@@ -339,7 +342,7 @@ AcpiEnable (char *TestName, INT32 Flags)
 				
                 if (E_OK == AcpiSetMode (ACPI_MODE))
                 {
-					DEBUG_PRINT (EV_INFO, "Transition to ACPI mode successful\n");
+					DEBUG_PRINT (EV_INFO, ("Transition to ACPI mode successful\n"));
                 }
 
 				else
@@ -369,7 +372,7 @@ AcpiEnable (char *TestName, INT32 Flags)
 		{	
             /*	load ACPI namespace	*/
 
-            DEBUG_PRINT (EV_INFO, "Loading ACPI namespace\n");
+            DEBUG_PRINT (EV_INFO, ("Loading ACPI namespace\n"));
 			if (AcpiLoadNameSpace (FALSE))
 			{
                 REPORT_ERROR (&KDT[10]);
@@ -377,7 +380,7 @@ AcpiEnable (char *TestName, INT32 Flags)
 			}
 			else
             {
-				DEBUG_PRINT (EV_INFO, "ACPI namespace loaded\n");
+				DEBUG_PRINT (EV_INFO, ("ACPI namespace loaded\n"));
             }
         }
     }
