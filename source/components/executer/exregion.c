@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exregion - ACPI default OpRegion (address space) handlers
- *              $Revision: 1.63 $
+ *              $Revision: 1.64 $
  *
  *****************************************************************************/
 
@@ -237,9 +237,6 @@ AcpiExSystemMemorySpaceHandler (
      * Generate a logical pointer corresponding to the address we want to
      * access
      */
-
-    /* TBD: should these pointers go to 64-bit in all cases ? */
-
     LogicalAddrPtr = MemInfo->MappedLogicalAddress +
                     ((ACPI_INTEGER) Address - (ACPI_INTEGER) MemInfo->MappedPhysicalAddress);
 
