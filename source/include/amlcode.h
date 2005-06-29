@@ -16,15 +16,18 @@
  | the ACPI specification.
  |__________________________________________________________________________
  |
- | $Revision: 1.5 $
- | $Date: 2005/06/29 20:18:12 $
+ | $Revision: 1.6 $
+ | $Date: 2005/06/29 20:18:13 $
  | $Log: amlcode.h,v $
- | Revision 1.5  2005/06/29 20:18:12  aystarik
- | 16/32/64-bit common data types
+ | Revision 1.6  2005/06/29 20:18:13  aystarik
+ | Integrated with 03/99 OPSD code
  |
  | 
- | date	99.03.10.00.04.00;	author rmoore1;	state Exp;
+ | date	99.03.31.22.30.00;	author rmoore1;	state Exp;
  |
+ * 
+ * 6     3/31/99 2:30p Rmoore1
+ * Integrated with 03/99 OPSD code
  * 
  * 5     3/09/99 4:04p Rmoore1
  * 16/32/64-bit common data types
@@ -38,31 +41,6 @@
  * 2     1/11/99 4:15p Grsmith1
  * 
  * 1     1/11/99 2:10p Rmoore1
- * Subsystem headers
-// 
-//    Rev 1.7   03 Feb 1998 12:17:46   phutchis
-// Add internal structure of MethodFlags byte.
-// 
-//    Rev 1.6   16 Jan 1998 11:17:32   phutchis
-// Correct definitions and decoding of ShiftLeftOp and ShiftRightOp.
-// They were swapped in two out of three places.
-// 
-//    Rev 1.5   17 Nov 1997 15:16:10   phutchis
-// Rework identified in amlscan code inspection:
-//   Added ACCESS_TYPE_MASK, ACCESS_TYPE_SHIFT, LOCK_RULE_MASK, LOCK_RULE_SHIFT, 
-//     UPDATE_RULE_MASK, UPDATE_RULE_SHIFT, 
-// 
-//    Rev 1.4   13 May 1997 17:37:40   phutchis
-// Revise in accordance with 5/17/97 spec update
-// Also added enum types for Fields
-// 
-//    Rev 1.3   Mar 20 1997 17:57:54   KBRANNOC
-//
-//    Rev 1.2   05 Mar 1997 13:32:02   phutchis
-// Changed #include from "bu.h" to <bu.h>
-//
-//    Rev 1.1   26 Feb 1997 17:57:28   phutchis
-// Remove #include of acpi.h, add bu.h, replace many spaces with tabs
 //
 //      Rev 1.0  Feb 26 1997 09:53:22   KBRANNOC
 // Initial revision.
@@ -73,7 +51,6 @@
 #ifndef __AML_H__
 #define __AML_H__
 
-#include <bu.h>
 
 /* primary opcodes */
 
@@ -218,8 +195,10 @@ typedef enum {
 } AccessType;
 
 /* Field Lock Rules */
+
 #define LOCK_RULE_MASK      0x10
 #define LOCK_RULE_SHIFT 4
+
 typedef enum {
     NoLock          = 0,
     Lock            = 1
