@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exresop - AML Interpreter operand/object resolution
- *              $Revision: 1.74 $
+ *              $Revision: 1.77 $
  *
  *****************************************************************************/
 
@@ -141,7 +141,7 @@
  *
  ******************************************************************************/
 
-ACPI_STATUS
+static ACPI_STATUS
 AcpiExCheckObjectType (
     ACPI_OBJECT_TYPE        TypeNeeded,
     ACPI_OBJECT_TYPE        ThisType,
@@ -240,7 +240,8 @@ AcpiExResolveOperands (
         return_ACPI_STATUS (AE_AML_INTERNAL);
     }
 
-    ACPI_DEBUG_PRINT ((ACPI_DB_EXEC, "Opcode %X [%s] RequiredOperandTypes=%8.8X \n",
+    ACPI_DEBUG_PRINT ((ACPI_DB_EXEC,
+        "Opcode %X [%s] RequiredOperandTypes=%8.8X \n",
         Opcode, OpInfo->Name, ArgTypes));
 
     /*
@@ -286,7 +287,8 @@ AcpiExResolveOperands (
 
             if (!AcpiUtValidObjectType (ObjectType))
             {
-                ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Bad operand object type [%X]\n",
+                ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
+                    "Bad operand object type [%X]\n",
                     ObjectType));
 
                 return_ACPI_STATUS (AE_AML_OPERAND_TYPE);
@@ -311,7 +313,8 @@ AcpiExResolveOperands (
                 case AML_REF_OF_OP:
                 case AML_ARG_OP:
                 case AML_LOCAL_OP:
-                case AML_LOAD_OP:   /* DdbHandle from LOAD_OP or LOAD_TABLE_OP */
+                case AML_LOAD_OP:           /* DdbHandle from LOAD_OP or LOAD_TABLE_OP */
+                case AML_INT_NAMEPATH_OP:   /* Reference to a named object */
 
                     ACPI_DEBUG_ONLY_MEMBERS (ACPI_DEBUG_PRINT ((ACPI_DB_EXEC,
                         "Operand is a Reference, RefOpcode [%s]\n",
@@ -391,12 +394,10 @@ AcpiExResolveOperands (
                 return_ACPI_STATUS (Status);
             }
 
-            if (AML_NAME_OP == ObjDesc->Reference.Opcode)
+            if (ObjDesc->Reference.Opcode == AML_NAME_OP)
             {
-                /*
-                 * Convert an indirect name ptr to direct name ptr and put
-                 * it on the stack
-                 */
+                /* Convert a named reference to the actual named object */
+
                 TempNode = ObjDesc->Reference.Object;
                 AcpiUtRemoveReference (ObjDesc);
                 (*StackPtr) = TempNode;
@@ -424,7 +425,6 @@ AcpiExResolveOperands (
             /* All cases covered above */
             break;
         }
-
 
         /*
          * Resolve this object to a value
