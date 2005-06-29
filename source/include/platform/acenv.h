@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acenv.h - Generation environment specific items
- *       $Revision: 1.55 $
+ *       $Revision: 1.56 $
  *
  *****************************************************************************/
 
@@ -183,6 +183,8 @@
  * Environment-specific configuration
  */
 
+/*! [Begin] no source code translation  */
+
 #ifdef _LINUX
 
 #define ACPI_OS_NAME                "Linux"
@@ -206,9 +208,7 @@
 char *
 strupr(char *str);
 
-#else
-
-#ifdef _AED_EFI
+#elif _AED_EFI
 
 #define ACPI_OS_NAME                "AED EFI"
 
@@ -216,9 +216,7 @@ strupr(char *str);
 #include <efistdarg.h>
 #include <efilib.h>
 
-#else
-
-#ifdef WIN32
+#elif WIN32
 
 #define ACPI_OS_NAME                "Windows"
 
@@ -227,9 +225,7 @@ strupr(char *str);
 #define strupr              _strupr
 #define ACPI_USE_STANDARD_HEADERS
 
-#else
-
-#ifdef __FreeBSD__
+#elif __FreeBSD__
 
 #define ACPI_OS_NAME                "FreeBSD"
 
@@ -276,10 +272,8 @@ strupr(char *str)
 #define ACPI_OS_NAME         "Intel ACPI/CA Core Subsystem"
 
 #endif
-#endif
-#endif
-#endif
 
+/*! [End] no source code translation !*/
 
 /******************************************************************************
  *
