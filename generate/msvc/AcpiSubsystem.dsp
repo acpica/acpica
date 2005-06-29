@@ -161,6 +161,14 @@ SOURCE=..\..\Subsystem\Events\evapi.c
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\Subsystem\Events\evfixed.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\Subsystem\Events\evgpe.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\Subsystem\Events\evsci.c
 # End Source File
 # Begin Source File
