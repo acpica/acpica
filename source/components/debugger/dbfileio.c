@@ -2,7 +2,7 @@
  *
  * Module Name: dbfileio - Debugger file I/O commands.  These can't usually
  *              be used when running the debugger in Ring 0 (Kernel mode)
- *              $Revision: 1.30 $
+ *              $Revision: 1.31 $
  *
  ******************************************************************************/
 
@@ -291,7 +291,7 @@ AcpiDbLoadTable(
 
     /* Allocate a buffer for the table */
 
-    *TablePtr = (ACPI_TABLE_HEADER *) malloc ((size_t) *TableLength);
+    *TablePtr = (ACPI_TABLE_HEADER *) AcpiCmAllocate ((size_t) *TableLength);
     if (!*TablePtr)
     {
         AcpiOsPrintf ("Could not allocate memory for the table (size=0x%X)\n", TableHeader.Length);
@@ -322,7 +322,7 @@ AcpiDbLoadTable(
 
 
     AcpiOsPrintf ("Error - could not read the table file\n");
-    free (*TablePtr);
+    AcpiCmFree (*TablePtr);
     *TablePtr = NULL;
     *TableLength = 0;
 
@@ -454,7 +454,7 @@ AcpiDbLoadAcpiTable (
             AcpiOsPrintf ("Could not install table, %s\n",
                             AcpiCmFormatException (Status));
         }
-        free (TablePtr);
+        AcpiCmFree (TablePtr);
         return (Status);
     }
 
