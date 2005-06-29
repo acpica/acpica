@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: actypes.h - Common data types for the entire ACPI subsystem
- *       $Revision: 1.217 $
+ *       $Revision: 1.218 $
  *
  *****************************************************************************/
 
@@ -160,6 +160,7 @@ typedef UINT64                          ACPI_SIZE;
 
 #define ALIGNED_ADDRESS_BOUNDARY        0x00000008      /* No hardware alignment support in IA64 */
 #define ACPI_USE_NATIVE_DIVIDE                          /* Native 64-bit integer support */
+#define ACPI_MAX_PTR                    0xFFFFFFFFFFFFFFFF
 
 
 #elif _IA16
@@ -191,6 +192,7 @@ typedef UINT32                          ACPI_SIZE;
 #define ALIGNED_ADDRESS_BOUNDARY        0x00000002
 #define _HW_ALIGNMENT_SUPPORT
 #define ACPI_USE_NATIVE_DIVIDE                          /* No 64-bit integers, ok to use native divide */
+#define ACPI_MAX_PTR                    0xFFFF
 
 /*
  * (16-bit only) internal integers must be 32-bits, so
@@ -220,6 +222,7 @@ typedef UINT32                          ACPI_SIZE;
 
 #define ALIGNED_ADDRESS_BOUNDARY        0x00000004
 #define _HW_ALIGNMENT_SUPPORT
+#define ACPI_MAX_PTR                    0xFFFFFFFF
 #endif
 
 
