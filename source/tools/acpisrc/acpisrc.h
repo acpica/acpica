@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: acpisrc.h - Include file for AcpiSrc utility
- *              $Revision: 1.20 $
+ *              $Revision: 1.21 $
  *
  *****************************************************************************/
 
@@ -411,5 +411,18 @@ AsInsertPrefix (
     char                    *Buffer,
     char                    *Keyword,
     UINT8                   Type);
+
+char *
+AsInsertData (
+    char                    *Buffer,
+    char                    *BufferToAdd,
+    UINT32                  LengthToAdd);
+
+char *
+AsRemoveData (
+    char                    *StartPointer,
+    char                    *EndPointer);
+
+
 
 

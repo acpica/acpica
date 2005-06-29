@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: ascase - Source conversion - lower/upper case utilities
- *              $Revision: 1.3 $
+ *              $Revision: 1.4 $
  *
  *****************************************************************************/
 
@@ -201,8 +201,7 @@ AsLowerCaseString (
             {
                 if ((SubBuffer[0] == ' ') && (SubBuffer[1] == ' '))
                 {
-                    memmove (SubBuffer + 8, SubBuffer, strlen (SubBuffer) + 1);
-                    memmove (SubBuffer, "        ", 8);
+                    AsInsertData (SubBuffer, "        ", 8);
                 }
             }
 
