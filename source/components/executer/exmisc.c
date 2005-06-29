@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exmisc - ACPI AML (p-code) execution - specific opcodes
- *              $Revision: 1.78 $
+ *              $Revision: 1.79 $
  *
  *****************************************************************************/
 
@@ -239,7 +239,9 @@ AcpiExTriadic (
     ACPI_OPERAND_OBJECT     *ResDesc;
     ACPI_OPERAND_OBJECT     *RetDesc = NULL;
     ACPI_OPERAND_OBJECT     *TmpDesc;
+    ACPI_SIGNAL_FATAL_INFO  *Fatal;
     ACPI_STATUS             Status;
+
 
 
     FUNCTION_TRACE ("ExTriadic");
@@ -278,13 +280,26 @@ AcpiExTriadic (
 
         DEBUG_PRINTP (ACPI_INFO,
             ("FatalOp: Type %x Code %x Arg %x <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<\n",
-            ObjDesc1->Integer.Value, ObjDesc2->Integer.Value, ResDesc->Integer.Value));
+            (UINT32) ObjDesc1->Integer.Value, (UINT32) ObjDesc2->Integer.Value, 
+            (UINT32) ResDesc->Integer.Value));
 
+
+        Fatal = ACPI_MEM_ALLOCATE (sizeof (ACPI_SIGNAL_FATAL_INFO));
+        if (Fatal)
+        {
+            Fatal->Type = (UINT32) ObjDesc1->Integer.Value;
+            Fatal->Code = (UINT32) ObjDesc2->Integer.Value;
+            Fatal->Argument = (UINT32) ResDesc->Integer.Value;
+        }
 
         /*
-         * TBD: [Unhandled] call OSD interface to notify OS of fatal error
-         * requiring shutdown!
+         * Signal the OS
          */
+        AcpiOsSignal (ACPI_SIGNAL_FATAL, Fatal);
+
+        /* Might return while OS is shutting down */
+
+        ACPI_MEM_FREE (Fatal);
         break;
 
 
