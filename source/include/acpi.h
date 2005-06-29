@@ -1,151 +1,134 @@
-
-/******************************************************************************
+/*
+  __________________________________________________________________________
+ |
+ |
+ |           Copyright (C) Intel Corporation 1994-1996
+ |
+ | All rights reserved.  No part of this program or publication may be
+ | reproduced, transmitted, transcribed, stored in a retrieval system, or
+ | translated into any language or computer language, in any form or by any
+ | means, electronic, mechanical, magnetic, optical, chemical, manual, or
+ | otherwise, without the prior written permission of Intel Corporation.
+ |__________________________________________________________________________
+ |
+ | FILENAME: acpi.h - Publics and external data for ACPI.LIB
+ |__________________________________________________________________________
+ |
+ | $Revision: 1.1 $
+ | $Date: 2005/06/29 19:58:17 $
+ | $Log: acpi.h,v $
+ | Revision 1.1  2005/06/29 19:58:17  aystarik
+ | Subsystem headers
+ |
+ |
+ | 
+ | date	99.01.11.22.10.00;	author rmoore1;	state Exp;
+ |
  * 
- * Name: acpi.h - Master include file, Publics and external data.
- *
- *****************************************************************************/
+ * 1     1/11/99 2:10p Rmoore1
+ * Subsystem headers
+// 
+//    Rev 1.12   12 Aug 1998 15:55:12   jkreinem
+// added inclusion of scilast.h
+// 
+//    Rev 1.11   02 Feb 1998 10:07:16   kdbranno
+// Moved ACPI_EXTERN declarations for the global table pointers
+// (pRSDP, pRSDT, pFACS, ...) from acpipriv.h to acpi.h.  These
+// pointers are to be available to applications so they must be
+// declared publicly.
+// 
+//    Rev 1.10   16 Oct 1997 09:34:00   kdbranno
+// Removed ability for an acpi library module to get any meaningful inclusion of
+// acpi.h.  This header is intended for application use only.  Library modules
+// should include the specific acpilib headers they need.
+// 
+//    Rev 1.9   03 Sep 1997 14:45:56   kdbranno
+// Added #include for debuglvl.h and device.h
+// 
+//    Rev 1.8   17 Jul 1997 12:09:08   kdbranno
+// Removed references to dossuprt.h. This support has been moved to BU.
+// 
+//    Rev 1.7   19 Jun 1997 16:10:56   kdbranno
+// Fixed problem with #include after ACPIPATH was removed from acpilib
+// generation makefile
+// 
+//    Rev 1.6   12 Jun 1997 15:50:50   kdbranno
+// Modified so it correctly includes headers depending on library generation...
+//
+//    Rev 1.5   10 Jun 1997 10:57:52   kdbranno
+// Added check for library generation for #include's
+//
+//    Rev 1.4   09 Jun 1997 13:15:38   kdbranno
+// Added #include <acpirio.h> to acpi.h
+//
+//    Rev 1.3   Mar 24 1997 17:47:28   KBRANNOC
+// Added #include <amlscan.h> and conditional #include <dossuprt.h>
+//
+//    Rev 1.2   Mar 20 1997 17:59:08   KBRANNOC
+// Added #include for display.h
+//
+//    Rev 1.1   Mar 05 1997 16:43:48   KBRANNOC
+// Removed #include of BU.H, moved #include of ACPITYPE.H to top.
+//
+//    Rev 1.0   Feb 28 1997 08:59:22   KBRANNOC
+// Initial revision.
+ |__________________________________________________________________________
 
-/******************************************************************************
- *
- * 1. Copyright Notice
- *
- * Some or all of this work - Copyright (c) 1999, Intel Corp.  All rights
- * reserved.
- *
- * 2. License
- *
- * 2.1. This is your license from Intel Corp. under its intellectual property
- * rights.  You may have additional license terms from the party that provided
- * you this software, covering your right to use that party's intellectual
- * property rights.
- *
- * 2.2. Intel grants, free of charge, to any person ("Licensee") obtaining a
- * copy of the source code appearing in this file ("Covered Code") an
- * irrevocable, perpetual, worldwide license under Intel's copyrights in the
- * base code distributed originally by Intel ("Original Intel Code") to copy,
- * make derivatives, distribute, use and display any portion of the Covered
- * Code in any form, with the right to sublicense such rights; and
- *
- * 2.3. Intel grants Licensee a non-exclusive and non-transferable patent
- * license (with the right to sublicense), under only those claims of Intel
- * patents that are infringed by the Original Intel Code, to make, use, sell,
- * offer to sell, and import the Covered Code and derivative works thereof
- * solely to the minimum extent necessary to exercise the above copyright
- * license, and in no event shall the patent license extend to any additions
- * to or modifications of the Original Intel Code.  No other license or right
- * is granted directly or by implication, estoppel or otherwise;
- *
- * The above copyright and patent license is granted only if the following
- * conditions are met:
- *
- * 3. Conditions 
- *
- * 3.1. Redistribution of Source with Rights to Further Distribute Source.  
- * Redistribution of source code of any substantial portion of the Covered
- * Code or modification with rights to further distribute source must include
- * the above Copyright Notice, the above License, this list of Conditions,
- * and the following Disclaimer and Export Compliance provision.  In addition,
- * Licensee must cause all Covered Code to which Licensee contributes to
- * contain a file documenting the changes Licensee made to create that Covered
- * Code and the date of any change.  Licensee must include in that file the
- * documentation of any changes made by any predecessor Licensee.  Licensee 
- * must include a prominent statement that the modification is derived,
- * directly or indirectly, from Original Intel Code.
- *
- * 3.2. Redistribution of Source with no Rights to Further Distribute Source.  
- * Redistribution of source code of any substantial portion of the Covered
- * Code or modification without rights to further distribute source must
- * include the following Disclaimer and Export Compliance provision in the
- * documentation and/or other materials provided with distribution.  In
- * addition, Licensee may not authorize further sublicense of source of any
- * portion of the Covered Code, and must include terms to the effect that the
- * license from Licensee to its licensee is limited to the intellectual
- * property embodied in the software Licensee provides to its licensee, and
- * not to intellectual property embodied in modifications its licensee may
- * make.
- *
- * 3.3. Redistribution of Executable. Redistribution in executable form of any
- * substantial portion of the Covered Code or modification must reproduce the
- * above Copyright Notice, and the following Disclaimer and Export Compliance
- * provision in the documentation and/or other materials provided with the
- * distribution.
- *
- * 3.4. Intel retains all right, title, and interest in and to the Original
- * Intel Code.
- *
- * 3.5. Neither the name Intel nor any other trademark owned or controlled by
- * Intel shall be used in advertising or otherwise to promote the sale, use or
- * other dealings in products derived from or relating to the Covered Code
- * without prior written authorization from Intel.
- *
- * 4. Disclaimer and Export Compliance
- *
- * 4.1. INTEL MAKES NO WARRANTY OF ANY KIND REGARDING ANY SOFTWARE PROVIDED
- * HERE.  ANY SOFTWARE ORIGINATING FROM INTEL OR DERIVED FROM INTEL SOFTWARE
- * IS PROVIDED "AS IS," AND INTEL WILL NOT PROVIDE ANY SUPPORT,  ASSISTANCE,
- * INSTALLATION, TRAINING OR OTHER SERVICES.  INTEL WILL NOT PROVIDE ANY
- * UPDATES, ENHANCEMENTS OR EXTENSIONS.  INTEL SPECIFICALLY DISCLAIMS ANY
- * IMPLIED WARRANTIES OF MERCHANTABILITY, NONINFRINGEMENT AND FITNESS FOR A
- * PARTICULAR PURPOSE. 
- *
- * 4.2. IN NO EVENT SHALL INTEL HAVE ANY LIABILITY TO LICENSEE, ITS LICENSEES
- * OR ANY OTHER THIRD PARTY, FOR ANY LOST PROFITS, LOST DATA, LOSS OF USE OR
- * COSTS OF PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES, OR FOR ANY INDIRECT,
- * SPECIAL OR CONSEQUENTIAL DAMAGES ARISING OUT OF THIS AGREEMENT, UNDER ANY
- * CAUSE OF ACTION OR THEORY OF LIABILITY, AND IRRESPECTIVE OF WHETHER INTEL
- * HAS ADVANCE NOTICE OF THE POSSIBILITY OF SUCH DAMAGES.  THESE LIMITATIONS
- * SHALL APPLY NOTWITHSTANDING THE FAILURE OF THE ESSENTIAL PURPOSE OF ANY
- * LIMITED REMEDY.
- *
- * 4.3. Licensee shall not export, either directly or indirectly, any of this
- * software or system incorporating such software without first obtaining any
- * required license or other approval from the U. S. Department of Commerce or
- * any other agency or department of the United States Government.  In the
- * event Licensee exports any such software from the United States or
- * re-exports any such software from a foreign destination, Licensee shall
- * ensure that the distribution and export/re-export of the software is in
- * compliance with all laws, regulations, orders, or other restrictions of the
- * U.S. Export Administration Regulations. Licensee agrees that neither it nor
- * any of its subsidiaries will export/re-export any technical data, process,
- * software, or service, directly or indirectly, to any country for which the
- * United States government or any agency thereof requires an export license,
- * other governmental approval, or letter of assurance, without first obtaining
- * such license, approval or letter.
- *
- *****************************************************************************/
+*/
 
 #ifndef __ACPI_H__
 #define __ACPI_H__
 
-/* 
- * Common includes for all ACPI driver files
- * We put them here because we don't want to duplicate them
- * in the rest of the source code again and again.
- */
-#include <config.h>         /* Configuration constants */
-#include <environment.h>    /* Target environment specific items */
-#include <acpitypes.h>      /* Fundamental data types */
-#include <acpiexcep.h>      /* Local exception codes */
-#include <macros.h>         /* C macros */
-#include <internal.h>       /* Internal data types */
-#include <output.h>         /* Error output and Debug macros */
-#include <acpitables.h>     /* ACPI table definitions */
-#include <acpiosd.h>        /* Interfaces to OS-dependent part (OSD) */
-#include <acpisubsys.h>     /* External interfaces to this part */
-#include <globals.h>        /* All global variables */
-#include <common.h>         /* Common (global) interfaces */
+#define BREAKPOINT3				_asm int 3
 
 
-/* Version string */
+#ifndef ACPILIB_GEN
+	#include <amlpub.h>
+	#include <amlscan.h>
+	#include <acpitype.h>
+	#include <acpievnt.h>
+	#include <acpilgcy.h>
+	#include <acpinmsp.h>
+	#include <acpipmt.h>
+	#include <acpislwa.h>
+	#include <acpitbls.h>
+	#include <acpirio.h>
+	#include <debuglvl.h>
+	#include <device.h>
+	#include <display.h>
+	#include <exmethod.h>
+	#include <scilast.h>
+#else
+	#include "acpitype.h"
+#endif	
 
-#define ACPI_LIB_VER "032"
-#define OS_ACPI_LIB_VER "F" ## ACPI_LIB_VER
-#define ACPILIB_VERSION " ACPILIB-" ## OS_ACPI_LIB_VER
+#ifdef DEFINE_ACPI_GLOBALS
+	#define ACPI_EXTERN
+	#ifndef RMX
+		#pragma message ("ACPI_EXTERN variables defined in this module.")
+	#endif
+#else
+	#define ACPI_EXTERN extern
+#endif
+
+/* global data, DEFINE_ACPI_GLOBALS is defined in ACPIPRIV.C,
+	Initialization of all variables occurs in iAcpiInit */
+
+ACPI_EXTERN ROOT_SYSTEM_DESCRIPTOR_POINTER	* pRSDP;
+ACPI_EXTERN ROOT_SYSTEM_DESCRIPTION_TABLE		* pRSDT;
+ACPI_EXTERN FIRMWARE_ACPI_CONTROL_STRUCTURE	* pFACS;
+ACPI_EXTERN FIXED_ACPI_DESCRIPTION_TABLE		* pFACP;
+ACPI_EXTERN APIC_TABLE								* pMAPIC;
+ACPI_EXTERN ACPI_TABLE_HEADER						* pDSDT;
+ACPI_EXTERN ACPI_TABLE_HEADER						* pPSDT;
+/* TBD - There may be multiple SSDTs so a single pointer is not sufficient to
+			tag them all.  An array or linked list of SSDT pointers will be
+			necessary. */
+ACPI_EXTERN ACPI_TABLE_HEADER						* pSSDT;
+ACPI_EXTERN ACPI_TABLE_HEADER						* pSBDT;
 
 
 
-#define	ACPI_CHAPTER						3
-#define	ACPI_TABLE_NAMESPACE_SECTION	    23
-
+#define MAX_ACPI_TABLE_SIZE			16384
 
 #endif /* __ACPI_H__ */
