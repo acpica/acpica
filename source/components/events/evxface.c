@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: evxface - External interfaces for ACPI events
- *              $Revision: 1.139 $
+ *              $Revision: 1.140 $
  *
  *****************************************************************************/
 
@@ -402,6 +402,11 @@ AcpiInstallNotifyHandler (
             /* Attach new object to the Node */
 
             Status = AcpiNsAttachObject (Device, ObjDesc, Node->Type);
+
+            /* Remove local reference to the object */
+
+            AcpiUtRemoveReference (ObjDesc);
+
             if (ACPI_FAILURE (Status))
             {
                 goto UnlockAndExit;
