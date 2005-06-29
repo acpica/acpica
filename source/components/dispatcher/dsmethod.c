@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dsmethod - Parser/Interpreter interface - control method parsing
- *              $Revision: 1.96 $
+ *              $Revision: 1.98 $
  *
  *****************************************************************************/
 
@@ -483,7 +483,7 @@ AcpiDsCallControlMethod (
     /* On error, we must delete the new walk state */
 
 Cleanup:
-    if (NextWalkState->MethodDesc)
+    if (NextWalkState && (NextWalkState->MethodDesc))
     {
         /* Decrement the thread count on the method parse tree */
 
@@ -499,12 +499,13 @@ Cleanup:
  *
  * FUNCTION:    AcpiDsRestartControlMethod
  *
- * PARAMETERS:  WalkState           - State of the method when it was preempted
- *              Op                  - Pointer to new current op
+ * PARAMETERS:  WalkState           - State for preempted method (caller)
+ *              ReturnDesc          - Return value from the called method
  *
  * RETURN:      Status
  *
- * DESCRIPTION: Restart a method that was preempted
+ * DESCRIPTION: Restart a method that was preempted by another (nested) method
+ *              invocation.  Handle the return value (if any) from the callee.
  *
  ******************************************************************************/
 
@@ -519,20 +520,38 @@ AcpiDsRestartControlMethod (
     ACPI_FUNCTION_TRACE_PTR ("DsRestartControlMethod", WalkState);
 
 
+    ACPI_DEBUG_PRINT ((ACPI_DB_DISPATCH,
+        "****Restart [%4.4s]: Op %p ReturnValueFromCallee %p\n",
+        &WalkState->MethodNode->Name, WalkState->MethodCallOp,
+        ReturnDesc));
+
+    ACPI_DEBUG_PRINT ((ACPI_DB_DISPATCH,
+        "    ReturnFromThisMethodUsed?=%X ResStack %p Walk %p\n",
+        WalkState->ReturnUsed,
+        WalkState->Results, WalkState));
+
+    /* Did the called method return a value? */
+
     if (ReturnDesc)
     {
+        /* Are we actually going to use the return value? */
+
         if (WalkState->ReturnUsed)
         {
-            /*
-             * Get the return value (if any) from the previous method.
-             * NULL if no return value
-             */
+            /* Save the return value from the previous method */
+
             Status = AcpiDsResultPush (ReturnDesc, WalkState);
             if (ACPI_FAILURE (Status))
             {
                 AcpiUtRemoveReference (ReturnDesc);
                 return_ACPI_STATUS (Status);
             }
+
+            /* 
+             * Save as THIS method's return value in case it is returned
+             * immediately to yet another method
+             */
+            WalkState->ReturnDesc = ReturnDesc;
         }
         else
         {
@@ -543,11 +562,6 @@ AcpiDsRestartControlMethod (
             AcpiUtRemoveReference (ReturnDesc);
         }
     }
-
-    ACPI_DEBUG_PRINT ((ACPI_DB_DISPATCH,
-        "Method=%p Return=%p ReturnUsed?=%X ResStack=%p State=%p\n",
-        WalkState->MethodCallOp, ReturnDesc, WalkState->ReturnUsed,
-        WalkState->Results, WalkState));
 
     return_ACPI_STATUS (AE_OK);
 }
