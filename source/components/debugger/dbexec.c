@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dbexec - debugger control method execution
- *              $Revision: 1.43 $
+ *              $Revision: 1.44 $
  *
  ******************************************************************************/
 
@@ -368,7 +368,7 @@ AcpiDbExecute (
         }
         else
         {
-            AcpiOsPrintf ("No return object from execution of %s\n", 
+            AcpiOsPrintf ("No return object from execution of %s\n",
                 AcpiGbl_DbMethodInfo.Pathname);
         }
     }

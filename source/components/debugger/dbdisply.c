@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dbdisply - debug display commands
- *              $Revision: 1.77 $
+ *              $Revision: 1.78 $
  *
  ******************************************************************************/
 
@@ -453,9 +453,9 @@ AcpiDbDecodeInternalObject (
         }
         break;
 
-    
+
     default:
-        
+
         AcpiOsPrintf ("%p", ObjDesc);
         break;
     }
@@ -619,7 +619,7 @@ AcpiDbDisplayInternalObject (
 
             default:
 
-                AcpiOsPrintf ("Unknown Reference opcode %X\n", 
+                AcpiOsPrintf ("Unknown Reference opcode %X\n",
                     ObjDesc->Reference.Opcode);
                 break;
             }

@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dbcmds - debug commands and output routines
- *              $Revision: 1.86 $
+ *              $Revision: 1.87 $
  *
  ******************************************************************************/
 
@@ -859,7 +859,7 @@ AcpiDbDisplayObjects (
     }
 
     AcpiDbSetOutputDestination (ACPI_DB_DUPLICATE_OUTPUT);
-    AcpiOsPrintf ("Objects of type [%s] defined in the current ACPI Namespace: \n", 
+    AcpiOsPrintf ("Objects of type [%s] defined in the current ACPI Namespace: \n",
         AcpiUtGetTypeName (Type));
 
     AcpiDbSetOutputDestination (ACPI_DB_REDIRECTABLE_OUTPUT);
@@ -1175,9 +1175,7 @@ Cleanup:
 }
 
 
-
-
-typedef struct 
+typedef struct
 {
     UINT32              Nodes;
     UINT32              Objects;
