@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: cmclib - Local implementation of C library functions
- * $Revision: 1.34 $
+ * $Revision: 1.35 $
  *
  *****************************************************************************/
 
@@ -767,7 +767,7 @@ AcpiCmStrstr (
  *
  ******************************************************************************/
 
-NATIVE_UINT
+UINT32
 AcpiCmStrtoul (
     const NATIVE_CHAR       *String,
     NATIVE_CHAR             **Terminator,
@@ -777,7 +777,7 @@ AcpiCmStrtoul (
     UINT32                  index;
     UINT32                  sign;
     const NATIVE_CHAR       *StringStart;
-    NATIVE_UINT             ReturnValue = 0;
+    UINT32                  ReturnValue = 0;
     ACPI_STATUS             Status = AE_OK;
 
 
