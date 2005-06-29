@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acmacros.h - C macros for the entire subsystem.
- *       $Revision: 1.80 $
+ *       $Revision: 1.81 $
  *
  *****************************************************************************/
 
@@ -172,16 +172,33 @@
 #define ACPI_STORE_ADDRESS(a,b)         {(a).Hi=0;(a).Lo=(b);}
 #define ACPI_VALID_ADDRESS(a)           ((a).Hi | (a).Lo)
 
-#else
+#elseif ACPI_NO_INTEGER64_SUPPORT
 /*
- * Full 64-bit address on 32-bit and 64-bit platforms
+ * ACPI_INTEGER is 32-bits, no 64-bit support for whatever reason
+ */
+#ifndef LODWORD
+#define LODWORD(l)                      ((UINT32)(l))
+#endif
+
+#ifndef HIDWORD
+#define HIDWORD(l)                      (0)
+#endif
+
+#define ACPI_GET_ADDRESS(a)             (a)
+#define ACPI_STORE_ADDRESS(a,b)         ((a)=(b))
+#define ACPI_VALID_ADDRESS(a)           (a)
+
+#else
+
+/*
+ * Full 64-bit address/integer on both 32-bit and 64-bit platforms
  */
 #ifndef LODWORD
 #define LODWORD(l)                      ((UINT32)(UINT64)(l))
 #endif
 
 #ifndef HIDWORD
-#define HIDWORD(l)                      ((UINT32)((((UINT64)(l)) >> 32) & 0xFFFFFFFF))
+#define HIDWORD(l)                      ((UINT32)(((*(UINT64_STRUCT *)(&l))).Hi))
 #endif
 
 #define ACPI_GET_ADDRESS(a)             (a)
