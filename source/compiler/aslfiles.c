@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslfiles - file I/O suppoert
- *              $Revision: 1.42 $
+ *              $Revision: 1.43 $
  *
  *****************************************************************************/
 
@@ -733,13 +733,52 @@ FlOpenMiscOutputFiles (
             return (AE_ERROR);
         }
 
-        /* Open the assembly code source file, text mode */
+        /* Open the C code source file, text mode */
 
         FlOpenFile (ASL_FILE_C_SOURCE_OUTPUT, Filename, "w+");
 
         FlPrintFile (ASL_FILE_C_SOURCE_OUTPUT, "/*\n");
         AslCompilerSignon (ASL_FILE_C_SOURCE_OUTPUT);
         AslCompilerFileHeader (ASL_FILE_C_SOURCE_OUTPUT);
+    }
+
+    /* Create/Open a assembly include output file if asked */
+
+    if (Gbl_AsmIncludeOutputFlag)
+    {
+        Filename = FlGenerateFilename (FilenamePrefix, FILE_SUFFIX_ASM_INCLUDE);
+        if (!Filename)
+        {
+            AslCommonError (ASL_ERROR, ASL_MSG_LISTING_FILENAME, 0, 0, 0, 0, NULL, NULL);
+            return (AE_ERROR);
+        }
+
+        /* Open the assembly include file, text mode */
+
+        FlOpenFile (ASL_FILE_ASM_INCLUDE_OUTPUT, Filename, "w+");
+
+        AslCompilerSignon (ASL_FILE_ASM_INCLUDE_OUTPUT);
+        AslCompilerFileHeader (ASL_FILE_ASM_INCLUDE_OUTPUT);
+    }
+
+    /* Create/Open a C include output file if asked */
+
+    if (Gbl_C_IncludeOutputFlag)
+    {
+        Filename = FlGenerateFilename (FilenamePrefix, FILE_SUFFIX_C_INCLUDE);
+        if (!Filename)
+        {
+            AslCommonError (ASL_ERROR, ASL_MSG_LISTING_FILENAME, 0, 0, 0, 0, NULL, NULL);
+            return (AE_ERROR);
+        }
+
+        /* Open the C include file, text mode */
+
+        FlOpenFile (ASL_FILE_C_INCLUDE_OUTPUT, Filename, "w+");
+
+        FlPrintFile (ASL_FILE_C_INCLUDE_OUTPUT, "/*\n");
+        AslCompilerSignon (ASL_FILE_C_INCLUDE_OUTPUT);
+        AslCompilerFileHeader (ASL_FILE_C_INCLUDE_OUTPUT);
     }
 
     /* Create/Open a hex output file if asked */
