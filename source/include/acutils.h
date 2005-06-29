@@ -156,6 +156,22 @@ ACPI_STATUS
 CmSubsystemShutdown (
     void);
 
+/*
+ * CmGlobal - Global data structures and procedures
+ */
+
+char *
+CmGetMutexName (
+    UINT32                  MutexId);
+
+char *
+CmGetTypeName (
+    UINT32                  Type);
+
+BOOLEAN
+CmValidObjectType (
+    UINT32                  Type);
+
 
 /* Object construction and conversion interfaces - cmobject */
 
@@ -236,7 +252,7 @@ CmDeleteInternalSimpleObject (
     ACPI_OBJECT_INTERNAL    *Object);
 
 void
-CmDeleteInternalObject (
+CmRemoveReference (
     ACPI_OBJECT_INTERNAL    *Object);
 
 ACPI_STATUS

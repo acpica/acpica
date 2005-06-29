@@ -333,17 +333,16 @@ typedef UINT32                          ACPI_OBJECT_TYPE;
 #define INTERNAL_TYPE_While             (ACPI_OBJECT_TYPE) 33 /* 0x21  OpCode, multiple Code */
 #define INTERNAL_TYPE_Scope             (ACPI_OBJECT_TYPE) 34 /* 0x22  Name, multiple NamedObject */
 #define INTERNAL_TYPE_DefAny            (ACPI_OBJECT_TYPE) 35 /* 0x23  type is Any, suppress search of enclosing scopes */
-#define INTERNAL_TYPE_Lvalue            (ACPI_OBJECT_TYPE) 36 /* 0x24  Arg#, Local#, Name, Debug; used only in descriptors */
+#define INTERNAL_TYPE_Reference         (ACPI_OBJECT_TYPE) 36 /* 0x24  Arg#, Local#, Name, Debug; used only in descriptors */
 #define INTERNAL_TYPE_Alias             (ACPI_OBJECT_TYPE) 37 /* 0x25  */
 #define INTERNAL_TYPE_Notify            (ACPI_OBJECT_TYPE) 38 /* 0x26  */
 #define INTERNAL_TYPE_AddressHandler    (ACPI_OBJECT_TYPE) 39 /* 0x27  */
 #define INTERNAL_TYPE_MethodArgument    (ACPI_OBJECT_TYPE) 40 /* 0x28  */
 #define INTERNAL_TYPE_MethodLocalVar    (ACPI_OBJECT_TYPE) 41 /* 0x29  */
-#define INTERNAL_TYPE_Reference         (ACPI_OBJECT_TYPE) 42 /* 0x2A  */
 
-#define INTERNAL_TYPE_MAX               42
+#define INTERNAL_TYPE_MAX               41
 
-#define INTERNAL_TYPE_Invalid           (ACPI_OBJECT_TYPE) 43
+#define INTERNAL_TYPE_Invalid           (ACPI_OBJECT_TYPE) 42
 
 
 /* 
@@ -676,17 +675,6 @@ typedef struct
     UINT32                      Address;            /*  _ADR value if any */
     UINT32                      CurrentStatus;      /*  _STA value */
 } ACPI_DEVICE_INFO;
-
-
-
-/* Info used by PsInitObjects */
-
-typedef struct InitWalkInfo
-{
-    UINT32                  MethodCount;
-    UINT32                  OpRegionCount;
-
-} INIT_WALK_INFO;
 
 
 
