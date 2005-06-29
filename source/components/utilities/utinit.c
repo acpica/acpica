@@ -387,13 +387,14 @@ CmInstallTable (
         NsVerifyTableChecksum (TableHeader);
     
         /* 
-         * !! TBD - need to be able to handle multiple unknown tables.  Error should be
-         *  displayed when table is displayed,  Displaying it here for now 
+         * TBD: - need to be able to handle multiple unknown tables.  Error should be
+         * displayed when table is displayed,  Displaying it here for now 
          */
     
-        DUMP_BUFFER (&RSDT->header, 32, 0);
+        DUMP_BUFFER (TableHeader, 32, 0);
 
-        Status = AE_BAD_HEADER;
+        FUNCTION_STATUS_EXIT (AE_BAD_SIGNATURE);
+        return AE_BAD_SIGNATURE;
     }
 
 
@@ -480,8 +481,20 @@ CmGetAllTables (
         Status = CmInstallTable (TablePtr, &TableInfo);
         if (ACPI_FAILURE (Status))
         {
-            FUNCTION_STATUS_EXIT (Status);
-            return Status;
+            if (Status == AE_BAD_SIGNATURE)
+            {
+                /* Unrecognized table, just delete it and ignore the error */
+
+                NsFreeAcpiTable (&TableInfo);
+            }
+
+            else
+            {
+                /* Abort on a serious error */
+
+                FUNCTION_STATUS_EXIT (Status);
+                return Status;
+            }
         }
 
     }
@@ -704,7 +717,7 @@ CmHardwareInitialize (void)
         {
             /* GPE0 specified in FACP  */
 
-            Gpe0EnableRegisterSave = LocalAllocate ((ACPI_SIZE) (FACP->Gpe0BlkLen / 2));
+            Gpe0EnableRegisterSave = CmAllocate ((ACPI_SIZE) (FACP->Gpe0BlkLen / 2));
             if (!Gpe0EnableRegisterSave)
             {
                 FUNCTION_STATUS_EXIT (Status);
@@ -729,7 +742,7 @@ CmHardwareInitialize (void)
         {
             /* GPE1 defined    */
 
-            Gpe1EnableRegisterSave = LocalAllocate ((ACPI_SIZE) (FACP->Gpe1BlkLen / 2));
+            Gpe1EnableRegisterSave = CmAllocate ((ACPI_SIZE) (FACP->Gpe1BlkLen / 2));
             if (!Gpe1EnableRegisterSave)
             {
                 FUNCTION_STATUS_EXIT (Status);
