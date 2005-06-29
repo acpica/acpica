@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: amutils - interpreter/scanner utilities
- *              $Revision: 1.55 $
+ *              $Revision: 1.58 $
  *
  *****************************************************************************/
 
@@ -227,24 +227,41 @@ AcpiAmlValidateObjectType (
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiAmlBufSeq
+ * FUNCTION:    AcpiAmlTruncateFor32bitTable
  *
- * RETURN:      The next buffer descriptor sequence number
+ * PARAMETERS:  ObjDesc         - Object to be truncated
+ *              WalkState       - Current walk state
+ *                                (A method must be executing)
  *
- * DESCRIPTION: Provide a unique sequence number for each Buffer descriptor
- *              allocated during the interpreter's existence.  These numbers
- *              are used to relate FieldUnit descriptors to the Buffers
- *              within which the fields are defined.
+ * RETURN:      none
  *
- *              Just increment the global counter and return it.
+ * DESCRIPTION: Truncate a number to 32-bits if the currently executing method
+ *              belongs to a 32-bit ACPI table.
  *
  ******************************************************************************/
 
-UINT32
-AcpiAmlBufSeq (void)
+void
+AcpiAmlTruncateFor32bitTable (
+    ACPI_OPERAND_OBJECT     *ObjDesc,
+    ACPI_WALK_STATE         *WalkState)
 {
 
-    return (++AcpiGbl_BufSeq);
+    /* Object must be a valid number */
+
+    if ((!ObjDesc) ||
+        (ObjDesc->Common.Type != ACPI_TYPE_NUMBER))
+    {
+        return;
+    }
+
+    if (WalkState->MethodNode->Flags & ANOBJ_DATA_WIDTH_32)
+    {
+        /*
+         * We are running a method that exists in a 32-bit ACPI table.
+         * Truncate the value to 32 bits by zeroing out the upper 32-bit field
+         */
+        ObjDesc->Number.Value &= (UINT64) ACPI_UINT32_MAX;
+    }
 }
 
 
@@ -355,7 +372,7 @@ AcpiAmlReleaseGlobalLock (
 
 UINT32
 AcpiAmlDigitsNeeded (
-    UINT32                  val,
+    ACPI_INTEGER            val,
     UINT32                  base)
 {
     UINT32                  NumDigits = 0;
@@ -451,9 +468,10 @@ AcpiAmlEisaIdToString (
     return (AE_OK);
 }
 
+
 /*******************************************************************************
  *
- * FUNCTION:    AcpiUnsignedIntegerToString
+ * FUNCTION:    AcpiAmlUnsignedIntegerToString
  *
  * PARAMETERS:  Value           - Value to be converted
  *              OutString       - Where to put the converted string (8 bytes)
@@ -463,14 +481,15 @@ AcpiAmlEisaIdToString (
  ******************************************************************************/
 
 ACPI_STATUS
-AcpiUnsignedIntegerToString (
-    UINT32                  Value,
+AcpiAmlUnsignedIntegerToString (
+    ACPI_INTEGER            Value,
     NATIVE_CHAR             *OutString)
 {
     UINT32                  Count;
     UINT32                  DigitsNeeded;
 
-    DigitsNeeded = AcpiAmlDigitsNeeded(Value, 10);
+
+    DigitsNeeded = AcpiAmlDigitsNeeded (Value, 10);
 
     OutString[DigitsNeeded] = '\0';
 
@@ -482,6 +501,7 @@ AcpiUnsignedIntegerToString (
 
     return (AE_OK);
 }
+
 
 /*******************************************************************************
  *
