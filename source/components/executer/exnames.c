@@ -183,7 +183,7 @@ AcpiAmlAllocateNameString (
      * This buffer must be deleted by the caller!
      */
 
-    NameString = AcpiCmAllocate ((ACPI_SIZE) SizeNeeded);
+    NameString = AcpiCmAllocate (SizeNeeded);
     if (!NameString)
     {
         REPORT_ERROR ("AmlAllocateNameString: name allocation failure");
