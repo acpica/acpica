@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: cmcopy - Internal to external object translation utilities
- *              $Revision: 1.65 $
+ *              $Revision: 1.66 $
  *
  *****************************************************************************/
 
@@ -741,7 +741,7 @@ AcpiCmCopyIelementToIelement (
         }
 
         Status = AcpiAmlStoreObjectToObject (SourceObject, TargetObject, 
-                        State->Pkg.WalkState);
+                        (ACPI_WALK_STATE *) Context);
         if (ACPI_FAILURE (Status))
         {
             return (Status);
@@ -833,7 +833,7 @@ AcpiCmCopyIpackageToIpackage (
 
 
     Status = AcpiCmWalkPackageTree (SourceObj, DestObj, 
-                            AcpiCmCopyIelementToIelement, NULL);
+                            AcpiCmCopyIelementToIelement, WalkState);
 
     return_ACPI_STATUS (Status);
 }
