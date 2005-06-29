@@ -365,8 +365,8 @@ AcpiRemoveAddressSpaceHandler (
 
 ACPI_STATUS
 AcpiInstallGpeHandler (
+    ACPI_HANDLE             GpeDevice,
     UINT32                  GpeNumber,
-    ACPI_GPE_BLOCK_INFO     *GpeBlock,
     UINT32                  Type,
     ACPI_GPE_HANDLER        Handler,
     void                    *Context);
@@ -382,8 +382,8 @@ AcpiReleaseGlobalLock (
 
 ACPI_STATUS
 AcpiRemoveGpeHandler (
+    ACPI_HANDLE             GpeDevice,
     UINT32                  GpeNumber,
-    ACPI_GPE_BLOCK_INFO     *GpeBlock,
     ACPI_GPE_HANDLER        Handler);
 
 ACPI_STATUS
@@ -407,25 +407,25 @@ AcpiGetEventStatus (
 
 ACPI_STATUS
 AcpiEnableGpe (
+    ACPI_HANDLE             GpeDevice,
     UINT32                  GpeNumber,
-    ACPI_GPE_BLOCK_INFO     *GpeBlock,
     UINT32                  Flags);
 
 ACPI_STATUS
 AcpiDisableGpe (
+    ACPI_HANDLE             GpeDevice,
     UINT32                  GpeNumber,
-    ACPI_GPE_BLOCK_INFO     *GpeBlock,
     UINT32                  Flags);
 
 ACPI_STATUS
 AcpiClearGpe (
-    UINT32                  GpeNumber,
-    ACPI_GPE_BLOCK_INFO     *GpeBlock);
+    ACPI_HANDLE             GpeDevice,
+    UINT32                  GpeNumber);
 
 ACPI_STATUS
 AcpiGetGpeStatus (
+    ACPI_HANDLE             GpeDevice,
     UINT32                  GpeNumber,
-    ACPI_GPE_BLOCK_INFO     *GpeBlock,
     ACPI_EVENT_STATUS       *EventStatus);
 
 /*
