@@ -285,10 +285,6 @@ AcpiGetSystemInfo(
 
 /* TBD: these may be obsolete */
 
-INT32
-AcpiLoadNameSpace  (
-    INT32               DisplayAmlDuringLoad);
-
 void
 AcpiLocalCleanup (
     void);
