@@ -773,7 +773,7 @@ AmlExecMonadic2 (
         CmDeleteOperand (&Operands[0]);
         Operands[0] = ObjDesc;
 
-        DEBUG_PRINT (ACPI_ERROR, ("AmlExecMonadic2: RefOf returning %p\n",
+        DEBUG_PRINT (TRACE_EXEC, ("AmlExecMonadic2: RefOf returns %p\n",
                     ObjDesc));
 
         /* Just return the object descriptor as the reference! */
