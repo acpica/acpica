@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acoutput.h -- debug output
- *       $Revision: 1.74 $
+ *       $Revision: 1.75 $
  *
  *****************************************************************************/
 
@@ -127,7 +127,7 @@
 
 #define ACPI_UTILITIES              0x00000001
 #define ACPI_HARDWARE               0x00000002
-#define ACPI_EVENTS                 0x00000003
+#define ACPI_EVENTS                 0x00000004
 #define ACPI_TABLES                 0x00000008
 #define ACPI_NAMESPACE              0x00000010
 #define ACPI_PARSER                 0x00000020
