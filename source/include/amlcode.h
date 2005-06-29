@@ -15,32 +15,6 @@
  | Declarations and definitions contained herein are derived directly from
  | the ACPI specification.
  |__________________________________________________________________________
- |
- | $Revision: 1.6 $
- | $Date: 2005/06/29 20:18:13 $
- | $Log: amlcode.h,v $
- | Revision 1.6  2005/06/29 20:18:13  aystarik
- | Integrated with 03/99 OPSD code
- |
- | 
- | date	99.03.31.22.30.00;	author rmoore1;	state Exp;
- |
- * 
- * 6     3/31/99 2:30p Rmoore1
- * Integrated with 03/99 OPSD code
- * 
- * 5     3/09/99 4:04p Rmoore1
- * 16/32/64-bit common data types
- * 
- * 4     2/12/99 11:10a Rmosgrov
- * Anti-Polish clean up
- * 
- * 3     1/13/99 10:50a Grsmith1
- * First BeOS compatible check-in.
- * 
- * 2     1/11/99 4:15p Grsmith1
- * 
- * 1     1/11/99 2:10p Rmoore1
 //
 //      Rev 1.0  Feb 26 1997 09:53:22   KBRANNOC
 // Initial revision.
@@ -48,8 +22,8 @@
 
 */
 
-#ifndef __AML_H__
-#define __AML_H__
+#ifndef __AMLCODE_H__
+#define __AMLCODE_H__
 
 
 /* primary opcodes */
@@ -565,4 +539,4 @@ char *UpdateRules[] = {   /* Update rule decoding */
 
 #endif /* DEFINE_GLOBALS */
 
-#endif /* __AML_H__ */
+#endif /* __AMLCODE_H__ */
