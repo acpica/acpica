@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslcompiler.h - common include file
- *              $Revision: 1.79 $
+ *              $Revision: 1.84 $
  *
  *****************************************************************************/
 
@@ -122,7 +122,7 @@
 
 /* Microsoft-specific */
 
-#ifdef WIN32
+#if (defined WIN32 || defined WIN64)
 
 /* warn : used #pragma pack */
 #pragma warning(disable:4103)
@@ -164,8 +164,8 @@ getopt (
  * Compiler versions and names
  */
 
-#define CompilerVersion             "X2031"
-#define CompilerCreatorRevision     0x02002031  /* Acpi 2.0, Version # */
+#define CompilerVersion             "X2034"
+#define CompilerCreatorRevision     0x02002034  /* Acpi 2.0, Version # */
 
 #define CompilerId                  "Intel ACPI Component Architecture ASL Compiler"
 #define CompilerCopyright           "Copyright (C) 2000, 2001 Intel Corporation"
@@ -207,11 +207,6 @@ getopt (
 #define AML_PACKAGE_LENGTH          (UINT16) 0xAA10
 #define AML_UNASSIGNED_OPCODE       (UINT16) 0xEEEE
 #define AML_DEFAULT_ARG_OP          (UINT16) 0xDDDD
-
-
-/* TBD: Is this a real opcode? */
-
-#define AML_CONCAT_TPL_OP           (UINT16) 0x00FE
 
 
 /* filename suffixes for output files */
@@ -456,7 +451,7 @@ CgWriteNode (
  * aslmap
  */
 
-ACPI_OBJECT_TYPE8
+ACPI_OBJECT_TYPE
 AslMapNamedOpcodeToDataType (
     UINT16                  Opcode);
 

@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslcompile - top level compile module
- *              $Revision: 1.36 $
+ *              $Revision: 1.37 $
  *
  *****************************************************************************/
 
@@ -115,7 +115,8 @@
  *
  *****************************************************************************/
 
-
+#include <stdio.h>
+#include <io.h>
 #include "aslcompiler.h"
 #include "acnamesp.h"
 #include "acdebug.h"
@@ -464,19 +465,19 @@ CmCleanupAndExit (void)
         {
             if (AslGbl_Events[i].Valid)
             {
-                printf ("%8ld ms : %s\n",
+                printf ("%8lu ms : %s\n",
                     AslGbl_Events[i].EndTime -
                     AslGbl_Events[i].StartTime,
                     AslGbl_Events[i].EventName);
             }
         }
         printf ("\nMiscellaneous compile statistics\n\n");
-        printf ("%11d : %s\n", TotalParseNodes, "Parse nodes");
-        printf ("%11d : %s\n", Gbl_NsLookupCount, "Namespace searches");
-        printf ("%11d : %s\n", TotalNamedObjects, "Named objects");
-        printf ("%11d : %s\n", TotalMethods, "Control methods");
-        printf ("%11d : %s\n", TotalAllocations, "Memory Allocations");
-        printf ("%11d : %s\n", TotalAllocated, "Total allocated memory");
+        printf ("%11u : %s\n", TotalParseNodes, "Parse nodes");
+        printf ("%11u : %s\n", Gbl_NsLookupCount, "Namespace searches");
+        printf ("%11u : %s\n", TotalNamedObjects, "Named objects");
+        printf ("%11u : %s\n", TotalMethods, "Control methods");
+        printf ("%11u : %s\n", TotalAllocations, "Memory Allocations");
+        printf ("%11u : %s\n", TotalAllocated, "Total allocated memory");
         printf ("\n");
     }
 

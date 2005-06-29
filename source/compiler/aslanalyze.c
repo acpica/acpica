@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslanalyze.c - check for semantic errors
- *              $Revision: 1.51 $
+ *              $Revision: 1.52 $
  *
  *****************************************************************************/
 
@@ -1275,7 +1275,7 @@ AnOperandTypecheckWalkEnd (
                     /* TBD: implement analysis of current value (type) of the local */
                     /* For now, just treat any local as a typematch */
 
-                    //ThisNodeBtype = RequiredBtypes;
+                    /*ThisNodeBtype = RequiredBtypes;*/
                     break;
 
                 case ARG0:
@@ -1289,7 +1289,7 @@ AnOperandTypecheckWalkEnd (
                     /* Hard to analyze argument types, sow we won't */
                     /* For now, just treat any arg as a typematch */
 
-                    //ThisNodeBtype = RequiredBtypes;
+                    /* ThisNodeBtype = RequiredBtypes; */
                     break;
 
                 case DEBUG:
