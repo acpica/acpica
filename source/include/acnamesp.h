@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acnamesp.h - Namespace subcomponent prototypes and defines
- *       $Revision: 1.138 $
+ *       $Revision: 1.139 $
  *
  *****************************************************************************/
 
@@ -130,17 +130,6 @@
 #define ACPI_NS_NEWSCOPE            1   /* a definition of this type opens a name scope */
 #define ACPI_NS_LOCAL               2   /* suppress search of enclosing scopes */
 
-
-/* Definitions of the predefined namespace names  */
-
-#define ACPI_UNKNOWN_NAME           (UINT32) 0x3F3F3F3F     /* Unknown name is  "????" */
-#define ACPI_ROOT_NAME              (UINT32) 0x5F5F5F5C     /* Root name is     "\___" */
-#define ACPI_SYS_BUS_NAME           (UINT32) 0x5F53425F     /* Sys bus name is  "_SB_" */
-
-#define ACPI_NS_ROOT_PATH           "\\"
-#define ACPI_NS_SYSTEM_BUS          "_SB_"
-
-
 /* Flags for AcpiNsLookup, AcpiNsSearchAndEnter */
 
 #define ACPI_NS_NO_UPSEARCH         0
@@ -152,8 +141,10 @@
 #define ACPI_NS_WALK_UNLOCK         TRUE
 #define ACPI_NS_WALK_NO_UNLOCK      FALSE
 
-/* Namespace init - nsinit */
 
+/*
+ * nsinit - Namespace initialization
+ */
 ACPI_STATUS
 AcpiNsInitializeObjects (
     void);
@@ -177,8 +168,9 @@ AcpiNsInitOneDevice (
     void                    **ReturnValue);
 
 
-/* Namespace loading - nsload */
-
+/*
+ * nsload -  Namespace loading
+ */
 ACPI_STATUS
 AcpiNsLoadNamespace (
     void);
@@ -204,8 +196,9 @@ AcpiNsDeleteSubtree (
 #endif
 
 
-/* nswalk - walk the namespace */
-
+/*
+ * nswalk - walk the namespace
+ */
 ACPI_STATUS
 AcpiNsWalkNamespace (
     ACPI_OBJECT_TYPE        Type,
@@ -223,8 +216,9 @@ AcpiNsGetNextNode (
     ACPI_NAMESPACE_NODE     *Child);
 
 
-/* nsparse - table parsing */
-
+/*
+ * nsparse - table parsing
+ */
 ACPI_STATUS
 AcpiNsParseTable (
     ACPI_TABLE_DESC         *TableDesc,
@@ -237,9 +231,8 @@ AcpiNsOneCompleteParse (
 
 
 /*
- * Top-level namespace access - nsaccess
+ * nsaccess - Top-level namespace access
  */
-
 ACPI_STATUS
 AcpiNsRootInitialize (
     void);
@@ -256,9 +249,8 @@ AcpiNsLookup (
 
 
 /*
- * Named object allocation/deallocation - nsalloc
+ * nsalloc - Named object allocation/deallocation
  */
-
 ACPI_NAMESPACE_NODE *
 AcpiNsCreateNode (
     UINT32                  Name);
@@ -294,9 +286,8 @@ AcpiNsRemoveReference (
 
 
 /*
- * Namespace dump/print utilities - nsdump
+ * nsdump - Namespace dump/print utilities
  */
-
 void
 AcpiNsDumpTables (
     ACPI_HANDLE             SearchBase,
@@ -347,10 +338,10 @@ AcpiNsDumpOneDevice (
     void                    **ReturnValue);
 #endif
 
-/*
- * Namespace evaluation functions - nseval
- */
 
+/*
+ * nseval - Namespace evaluation functions
+ */
 ACPI_STATUS
 AcpiNsEvaluateByHandle (
     ACPI_PARAMETER_INFO     *Info);
@@ -375,9 +366,8 @@ AcpiNsGetObjectValue (
 
 
 /*
- * Name and Scope manipulation - nsnames
+ * nsnames - Name and Scope manipulation
  */
-
 UINT32
 AcpiNsOpensScope (
     ACPI_OBJECT_TYPE        Type);
@@ -419,9 +409,8 @@ AcpiNsBuildExternalPath (
 
 
 /*
- * Object management for namespace nodes - nsobject
+ * nsobject - Object management for namespace nodes
  */
-
 ACPI_STATUS
 AcpiNsAttachObject (
     ACPI_NAMESPACE_NODE     *Node,
@@ -455,9 +444,8 @@ AcpiNsGetAttachedData (
 
 
 /*
- * Namespace searching and entry - nssearch
+ * nssearch - Namespace searching and entry
  */
-
 ACPI_STATUS
 AcpiNsSearchAndEnter (
     UINT32                  EntryName,
@@ -491,9 +479,8 @@ AcpiNsSearchParentTree (
 
 
 /*
- * Utility functions - nsutils
+ * nsutils - Utility functions
  */
-
 BOOLEAN
 AcpiNsValidRootPrefix (
     char                    Prefix);
@@ -579,6 +566,5 @@ ACPI_NAME
 AcpiNsFindParentName (
     ACPI_NAMESPACE_NODE     *NodeToSearch);
 #endif
-
 
 #endif /* __ACNAMESP_H__ */
