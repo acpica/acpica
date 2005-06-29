@@ -251,13 +251,13 @@ AcpiGetParent (
 
 ACPI_STATUS
 AcpiInstallFixedEventHandler (
-    ACPI_EVENT_TYPE         Event,
+    ACPI_FIXED_EVENT_TYPE   Event,
     FIXED_EVENT_HANDLER     Handler,
     void                    *Context);
     
 ACPI_STATUS
 AcpiRemoveFixedEventHandler (
-    ACPI_EVENT_TYPE         Event,
+    ACPI_FIXED_EVENT_TYPE   Event,
     FIXED_EVENT_HANDLER     Handler);
 
 ACPI_STATUS
@@ -288,8 +288,9 @@ AcpiRemoveAddressSpaceHandler (
 
 ACPI_STATUS
 AcpiInstallGpeHandler (
-    UINT32                  GpeNumber, 
-    GPE_HANDLER             Handler, 
+    UINT32                  GpeNumber,
+    ACPI_EVENT_TRIGGER_TYPE Type,
+    GPE_HANDLER             Handler,
     void                    *Context);
 
 ACPI_STATUS
