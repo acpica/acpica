@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslerror - Error handling and statistics
- *              $Revision: 1.58 $
+ *              $Revision: 1.59 $
  *
  *****************************************************************************/
 
@@ -180,6 +180,7 @@ char                        *AslMessages [] = {
     "Opcode is not implemented in compiler AML code generator",
     "No enclosing While statement",
     "Invalid Escape Sequence",
+    "Null (0) escape sequence terminates string"
 };
 
 
