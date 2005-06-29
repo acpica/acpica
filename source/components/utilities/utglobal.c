@@ -196,6 +196,8 @@ char                        *Gbl_ExceptionNames[] =
     "AE_SHARE",
     "AE_LIMIT",
     "AE_TIME",
+    "AE_TERMINATE",
+    "AE_DEPTH",
     "AE_UNKNOWN_STATUS"
 };
 
