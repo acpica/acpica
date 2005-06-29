@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslmain - compiler main and utilities
- *              $Revision: 1.51 $
+ *              $Revision: 1.52 $
  *
  *****************************************************************************/
 
@@ -130,7 +130,7 @@
 int                     optind;
 NATIVE_CHAR             *optarg;
 
-UINT32                  Gbl_ExceptionCount[2] = {0,0};
+UINT32                  Gbl_ExceptionCount[ASL_NUM_REPORT_LEVELS] = {0,0,0};
 char                    hex[] = {'0','1','2','3','4','5','6','7',
                                  '8','9','A','B','C','D','E','F'};
 
