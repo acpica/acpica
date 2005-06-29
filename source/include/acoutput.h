@@ -143,8 +143,9 @@
 #define TRACE_VALUES                0x00040000
 #define TRACE_OBJECTS               0x00080000
 #define TRACE_IO                    0x00100000
+#define TRACE_ALLOCATIONS           0x00200000
 #define TRACE_INTERRUPTS            0x00800000
-#define TRACE_ALL                   0x001FFF00
+#define TRACE_ALL                   0x002FFF00
 
 /* Exceptionally verbose output -- used in the global "DebugLevel"  */
 
@@ -202,7 +203,9 @@
 
 /* Function entry tracing */
 
-#define FUNCTION_TRACE(a)               FunctionTrace(_THIS_MODULE,__LINE__,_COMPONENT,a)
+#define FUNCTION_TRACE(a)               char * ThisProc = a;\
+                                        FunctionTrace(_THIS_MODULE,__LINE__,_COMPONENT,a);
+#define FUNCTION_EXIT                   FunctionExit(_THIS_MODULE,__LINE__,_COMPONENT,ThisProc);
 
 /* Stack and buffer dumping */
 
@@ -240,6 +243,7 @@
 
 #define DEBUG_EXEC(a)                       
 #define FUNCTION_TRACE(a)
+#define FUNCTION_EXIT
 #define DUMP_STACK_ENTRY(a)
 #define DUMP_STACK(a,b,c,d)
 #define DUMP_ENTRY(a)
@@ -264,6 +268,13 @@ SetDebugLevel (
 
 void
 FunctionTrace (
+    char                *ModuleName, 
+    INT32               LineNumber, 
+    INT32               ComponentId, 
+    char                *FunctionName);
+
+void
+FunctionExit (
     char                *ModuleName, 
     INT32               LineNumber, 
     INT32               ComponentId, 

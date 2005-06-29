@@ -123,8 +123,9 @@
 
 #ifdef DEFINE_ACPI_GLOBALS
 #define ACPI_EXTERN
+#ifndef __GNUC__
 #pragma message ("ACPI_EXTERN variables defined in this module.")
-
+#endif
 #else
 #define ACPI_EXTERN extern
 #endif
@@ -239,13 +240,14 @@ ACPI_EXTERN UINT8       LastFieldFlag;
 ACPI_EXTERN NsHandle    LastMethod;
 
 
+ACPI_EXTERN UINT32      NestingLevel;
 
 /* These must not be ACPI_EXTERN since they need explicit initialization */
 
 /* Runtime configuration of debug print levels */
 
-extern INT32            DebugLevel;
-extern INT32            DebugLayer;
+extern UINT32           DebugLevel;
+extern UINT32           DebugLayer;
 
 
 /* Interpreter globals */
