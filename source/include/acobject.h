@@ -530,12 +530,10 @@ typedef struct /* ADDRESS HANDLER */
     UINT16                  SpaceId;
     UINT16                  Hflags;
     ADDRESS_SPACE_HANDLER   Handler;
-    ADDRESS_SPACE_SETUP     Setup;
-    UINT32                  Reserved4;
 
     NAME_TABLE_ENTRY        *Nte;               /* Parent device */
     void                    *Context;
-    void                    *InstallTimeContext;
+    ADDRESS_SPACE_SETUP     Setup;
     union AcpiObjInternal   *Link;              /* Link to next handler on device */
     union AcpiObjInternal   *RegionList;        /* regions using this handler */
 
