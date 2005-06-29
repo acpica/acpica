@@ -1,7 +1,8 @@
 
 /******************************************************************************
  *
- * Module Name: nsutils - Utilities for accessing ACPI namespace
+ * Module Name: nsutils - Utilities for accessing ACPI namespace, accessing
+ *                          parents and siblings and Scope manipulation
  *
  *****************************************************************************/
 
@@ -122,10 +123,8 @@
 #include "amlcode.h"
 #include "tables.h"
 
-
 #define _COMPONENT          NAMESPACE
         MODULE_NAME         ("nsutils");
-
 
 
 /****************************************************************************
@@ -229,8 +228,6 @@ AcpiNsLocal (
 }
 
 
-
-
 /****************************************************************************
  *
  * FUNCTION:    AcpiNsInternalizeName
@@ -300,7 +297,6 @@ AcpiNsInternalizeName (
     }
 
 
-
     /* We need a segment to store the internal version of the name */
 
     InternalName = AcpiCmCallocate ((ACPI_NAME_SIZE * NumSegments) + 4);
@@ -331,7 +327,7 @@ AcpiNsInternalizeName (
 
     for (; NumSegments; NumSegments--)
     {
-        for (i = 0; i < ACPI_NAME_SIZE; i++) //STRNCPY (Result, ExternalName, ACPI_NAME_SIZE);
+        for (i = 0; i < ACPI_NAME_SIZE; i++)
         {
             if (AcpiNsValidPathSeparator (*ExternalName) ||
                (*ExternalName == 0))
@@ -634,7 +630,6 @@ AcpiNsConvertEntryToHandle(NAME_TABLE_ENTRY *Nte)
 }
 
 
-
 /******************************************************************************
  *
  * FUNCTION:    AcpiNsTerminate
@@ -695,4 +690,228 @@ AcpiNsTerminate (void)
 }
 
 
+/****************************************************************************
+ *
+ * FUNCTION:    AcpiNsOpensScope
+ *
+ * PARAMETERS:  Type        - A valid namespace type
+ *
+ * RETURN:      NEWSCOPE if the passed type "opens a name scope" according
+ *              to the ACPI specification, else 0
+ *
+ ***************************************************************************/
+
+INT32
+AcpiNsOpensScope (
+    OBJECT_TYPE_INTERNAL    Type)
+{
+    FUNCTION_TRACE_U32 ("NsOpensScope", Type);
+
+
+    if (!AcpiCmValidObjectType (Type))
+    {
+        /* type code out of range  */
+
+        REPORT_WARNING ("NsOpensScope: Invalid Object Type");
+        return_VALUE (NSP_NORMAL);
+    }
+
+    return_VALUE (((INT32) AcpiGbl_NsProperties[Type]) & NSP_NEWSCOPE);
+}
+
+
+/****************************************************************************
+ *
+ * FUNCTION:    AcpiNsGetNte
+ *
+ * PARAMETERS:  *Pathname   - Name to be found, in external (ASL) format. The
+ *                            \ (backslash) and ^ (carat) prefixes, and the
+ *                            . (period) to separate segments are supported.
+ *              InScope     - Root of subtree to be searched, or NS_ALL for the
+ *                            root of the name space.  If Name is fully qualified
+ *                            (first char is '\'), the passed value of Scope will
+ *                            not be accessed.
+ *              OutNte      - Where the Nte is returned
+ *
+ * DESCRIPTION: Look up a name relative to a given scope and return the
+ *              corresponding NTE.  NOTE: Scope can be null.
+ *
+ * MUTEX:       Locks namespace
+ *
+ ***************************************************************************/
+
+ACPI_STATUS
+AcpiNsGetNte (
+    char                    *Pathname,
+    ACPI_HANDLE             InScope,
+    NAME_TABLE_ENTRY        **OutNte)
+{
+    ACPI_GENERIC_STATE      ScopeInfo;
+    ACPI_STATUS             Status;
+    NAME_TABLE_ENTRY        *ObjEntry = NULL;
+    char                    *InternalPath = NULL;
+
+
+    FUNCTION_TRACE_PTR ("NsGetNte", Pathname);
+
+    ScopeInfo.Scope.Entry = InScope;
+
+    /* Ensure that the namespace has been initialized */
+
+    if (!AcpiGbl_RootObject->Scope)
+    {
+        return_ACPI_STATUS (AE_NO_NAMESPACE);
+    }
+
+    if (!Pathname)
+    {
+        return_ACPI_STATUS (AE_BAD_PARAMETER);
+    }
+
+
+    /* Convert path to internal representation */
+
+    Status = AcpiNsInternalizeName (Pathname, &InternalPath);
+    if (ACPI_FAILURE (Status))
+    {
+        return_ACPI_STATUS (Status);
+    }
+
+
+    AcpiCmAcquireMutex (MTX_NAMESPACE);
+
+    /* NS_ALL means start from the root */
+
+    if (NS_ALL == ScopeInfo.Scope.Entry)
+    {
+        ScopeInfo.Scope.Entry = AcpiGbl_RootObject->Scope;
+    }
+
+    else
+    {
+        ScopeInfo.Scope.Entry = AcpiNsConvertHandleToEntry (InScope);
+        if (!ScopeInfo.Scope.Entry)
+        {
+            Status = AE_BAD_PARAMETER;
+            goto UnlockAndExit;
+        }
+    }
+
+    /* Lookup the name in the namespace */
+
+    Status = AcpiNsLookup (&ScopeInfo, InternalPath, ACPI_TYPE_ANY, IMODE_EXECUTE,
+                                NS_NO_UPSEARCH | NS_DONT_OPEN_SCOPE, NULL, &ObjEntry);
+    if (Status != AE_OK)
+    {
+        DEBUG_PRINT (ACPI_INFO, ("NsGetNte: %s, %s\n",
+                        InternalPath, AcpiCmFormatException (Status)));
+    }
+
+    /* Return what was wanted - the NTE that matches the name */
+
+    *OutNte = ObjEntry;
+
+
+UnlockAndExit:
+
+    AcpiCmReleaseMutex (MTX_NAMESPACE);
+
+    /* Cleanup */
+
+    AcpiCmFree (InternalPath);
+
+    return_ACPI_STATUS (Status);
+}
+
+
+/****************************************************************************
+ *
+ * FUNCTION:    AcpiNsFindParentName
+ *
+ * PARAMETERS:  *ChildEntry             - nte whose name is to be found
+ *
+ * RETURN:      The ACPI name
+ *
+ * DESCRIPTION: Search for the given nte in its parent scope and return the
+ *              name segment, or "????" if the parent name can't be found
+ *              (which "should not happen").
+ *
+ ***************************************************************************/
+
+ACPI_NAME
+AcpiNsFindParentName (
+    NAME_TABLE_ENTRY        *ChildEntry)
+{
+    NAME_TABLE_ENTRY        *ParentEntry;
+
+
+    FUNCTION_TRACE ("FindParentName");
+
+
+    if (ChildEntry)
+    {
+        /* Valid entry.  Get the parent Nte */
+
+        ParentEntry = ChildEntry->ParentEntry;
+        if (ParentEntry)
+        {
+            DEBUG_PRINT (TRACE_EXEC, ("Parent of %p [%4.4s] is %p [%4.4s]\n",
+                            ChildEntry, &ChildEntry->Name, ParentEntry, &ParentEntry->Name));
+
+            if (ParentEntry->Name)
+            {
+                return_VALUE (ParentEntry->Name);
+            }
+        }
+
+        DEBUG_PRINT (TRACE_EXEC, ("FindParentName: unable to find parent of %p (%4.4s)\n",
+                        ChildEntry, &ChildEntry->Name));
+    }
+
+
+    return_VALUE (ACPI_UNKNOWN_NAME);
+}
+
+/****************************************************************************
+ *
+ * FUNCTION:    AcpiNsExistDownstreamSibling
+ *
+ * PARAMETERS:  *ThisEntry          - pointer to first nte to examine
+ *              Size                - # of entries remaining in table
+ *              *Appendage          - addr of NT's appendage, or NULL
+ *
+ * RETURN:      TRUE if sibling is found, FALSE otherwise
+ *
+ * DESCRIPTION: Searches remainder of scope being processed to determine
+ *              whether there is a downstream sibling to the current
+ *              object.  This function is used to determine what type of
+ *              line drawing character to use when displaying namespace
+ *              trees.
+ *
+ ***************************************************************************/
+
+INT32
+AcpiNsExistDownstreamSibling (
+    NAME_TABLE_ENTRY        *ThisEntry,
+    INT32                   Size,
+    NAME_TABLE_ENTRY        *Appendage)
+{
+
+    if (!ThisEntry)
+    {
+        return FALSE;
+    }
+
+    if (ThisEntry->Name)
+    {
+        return TRUE;
+    }
+
+    if (ThisEntry->NextEntry)
+    {
+        return TRUE;
+    }
+
+    return FALSE;
+}
 

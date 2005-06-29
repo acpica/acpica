@@ -128,7 +128,6 @@
         MODULE_NAME         ("nsobject");
 
 
-
 /****************************************************************************
  *
  * FUNCTION:    AcpiNsAttachObject
@@ -280,7 +279,7 @@ AcpiNsAttachObject (
 
             /* The next byte (perhaps the next two bytes) will be the AML opcode */
 
-            STORE16 (&Opcode, Object);
+            MOVE_UNALIGNED16_TO_16 (&Opcode, Object);
 
 
             /* Check for a recognized OpCode */
@@ -373,7 +372,6 @@ AcpiNsAttachObject (
             ObjType = INTERNAL_TYPE_DEF_ANY;
         }
     }
-
 
 
     DEBUG_PRINT (TRACE_EXEC,("NsAttachObject: Installing obj %p into NTE %p\n",
@@ -703,7 +701,5 @@ AcpiNsFindAttachedObject (
 
     return_PTR (RetObject);
 }
-
-
 
 

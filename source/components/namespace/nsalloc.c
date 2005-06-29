@@ -126,7 +126,6 @@
         MODULE_NAME         ("nsalloc");
 
 
-
 /****************************************************************************
  *
  * FUNCTION:    AcpiNsAllocateNameTable
@@ -197,7 +196,6 @@ AcpiNsDeleteNamespaceSubtree (
 
 
     FUNCTION_TRACE ("NsDeleteNamespaceSubtree");
-
 
 
     ChildHandle     = 0;
@@ -285,8 +283,6 @@ AcpiNsDeleteNamespaceSubtree (
 }
 
 
-
-
 /****************************************************************************
  *
  * FUNCTION:    AcpiNsRemoveReference
@@ -348,7 +344,6 @@ AcpiNsRemoveReference (
         ThisEntry = ThisEntry->ParentEntry;
     }
 }
-
 
 
 /****************************************************************************

@@ -126,10 +126,6 @@
         MODULE_NAME         ("nssearch");
 
 
-
-
-
-
 /****************************************************************************
  *
  * FUNCTION:    AcpiNsSearchOneScope
@@ -171,7 +167,6 @@ AcpiNsSearchOneScope (
                             &EntryName, Type));
         DEBUG_EXEC (AcpiCmFree (ScopeName));
     }
-
 
 
     /*

@@ -126,7 +126,6 @@
         MODULE_NAME         ("nsnames");
 
 
-
 /****************************************************************************
  *
  * FUNCTION:    AcpiNsNameOfScope
@@ -195,7 +194,7 @@ AcpiNsNameOfScope (
 
         /* Put the name into the buffer */
 
-        STORE32 ((NameBuffer + Size), &Name);
+        MOVE_UNALIGNED32_TO_32 ((NameBuffer + Size), &Name);
         EntryToSearch = EntryToSearch->ParentEntry;
     }
 
@@ -331,7 +330,7 @@ AcpiNsHandleToPathname (
 
     /* Put the original ACPI name at the end of the path */
 
-    STORE32 ((UserBuffer + Size), &EntryToSearch->Name);
+    MOVE_UNALIGNED32_TO_32 ((UserBuffer + Size), &EntryToSearch->Name);
     UserBuffer[--Size] = PATH_SEPARATOR;
 
     /* Build name backwards, putting "." between segments */
@@ -340,7 +339,7 @@ AcpiNsHandleToPathname (
     {
         Size -= ACPI_NAME_SIZE;
         Name = AcpiNsFindParentName (EntryToSearch);
-        STORE32 ((UserBuffer + Size), &Name);
+        MOVE_UNALIGNED32_TO_32 ((UserBuffer + Size), &Name);
 
         UserBuffer[--Size] = PATH_SEPARATOR;
         EntryToSearch = EntryToSearch->ParentEntry;
@@ -363,7 +362,6 @@ UnlockAndExit:
 
     return_ACPI_STATUS (Status);
 }
-
 
 
 /****************************************************************************
@@ -617,6 +615,5 @@ AcpiNsFindNames (
 
     return_PTR (List);
 }
-
 
 

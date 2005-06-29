@@ -153,7 +153,6 @@ AcpiNsGetNextObject (
     NAME_TABLE_ENTRY        *ThisEntry;
 
 
-
     if (!Child)
     {
 
@@ -207,7 +206,6 @@ AcpiNsGetNextObject (
 
     return NULL;
 }
-
 
 
 /******************************************************************************

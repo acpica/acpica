@@ -1,7 +1,7 @@
 
 /******************************************************************************
  *
- * Module Name: nsapiobj - Public interfaces to the ACPI subsystem
+ * Module Name: nsxfobj - Public interfaces to the ACPI subsystem
  *                         ACPI Object oriented interfaces
  *
  *****************************************************************************/
@@ -116,7 +116,7 @@
  *****************************************************************************/
 
 
-#define __NSAPIOBJ_C__
+#define __NSXFOBJ_C__
 
 #include "acpi.h"
 #include "interp.h"
@@ -124,7 +124,7 @@
 
 
 #define _COMPONENT          NAMESPACE
-        MODULE_NAME         ("nsapiobj");
+        MODULE_NAME         ("nsxfobj");
 
 
 /****************************************************************************
@@ -282,7 +282,6 @@ AcpiEvaluateObject (
             Status = AcpiNsEvaluateRelative (Handle, Pathname, ParamPtr, &ReturnObj);
         }
     }
-
 
 
     /*

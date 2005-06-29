@@ -1,7 +1,7 @@
 
 /******************************************************************************
  *
- * Module Name: nsapinam - Public interfaces to the ACPI subsystem
+ * Module Name: nsxfname - Public interfaces to the ACPI subsystem
  *                         ACPI Namespace oriented interfaces
  *
  *****************************************************************************/
@@ -115,7 +115,7 @@
  *
  *****************************************************************************/
 
-#define __NSAPINAM_C__
+#define __NSXFNAME_C__
 
 #include "acpi.h"
 #include "interp.h"
@@ -127,9 +127,7 @@
 
 
 #define _COMPONENT          NAMESPACE
-        MODULE_NAME         ("nsapinam");
-
-
+        MODULE_NAME         ("nsxfname");
 
 
 /******************************************************************************
@@ -202,7 +200,6 @@ AcpiLoadNamespace (
 
     return_ACPI_STATUS (Status);
 }
-
 
 
 /****************************************************************************

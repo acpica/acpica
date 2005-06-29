@@ -1,17 +1,16 @@
-/*******************************************************************************
+/******************************************************************************
  *
  * Module Name: rscalc - AcpiRsCalculateByteStreamLength
  *                       AcpiRsCalculateListLength
- *              $Revision: 1.17 $
  *
- ******************************************************************************/
+ *****************************************************************************/
 
 /******************************************************************************
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, 2000, Intel Corp.
- * All rights reserved.
+ * Some or all of this work - Copyright (c) 1999, Intel Corp.  All rights
+ * reserved.
  *
  * 2. License
  *
@@ -118,17 +117,16 @@
 #define __RSCALC_C__
 
 #include "acpi.h"
-#include "acresrc.h"
 
 #define _COMPONENT          RESOURCE_MANAGER
-        MODULE_NAME         ("rscalc")
+        MODULE_NAME         ("rscalc");
 
 
-/*******************************************************************************
- *
+/***************************************************************************
  * FUNCTION:    AcpiRsCalculateByteStreamLength
  *
- * PARAMETERS:  LinkedList          - Pointer to the resource linked list
+ * PARAMETERS:
+ *              LinkedList          - Pointer to the resource linked list
  *              SizeNeeded          - UINT32 pointer of the size buffer needed
  *                                      to properly return the parsed data
  *
@@ -138,30 +136,29 @@
  *              the size buffer needed to hold the linked list that conveys
  *              the resource data.
  *
- ******************************************************************************/
+ ***************************************************************************/
 
 ACPI_STATUS
 AcpiRsCalculateByteStreamLength (
     RESOURCE                *LinkedList,
     UINT32                  *SizeNeeded)
 {
+    ACPI_STATUS             Status = AE_OK;
     UINT32                  ByteStreamSizeNeeded = 0;
-    UINT32                  SegmentSize;
+    UINT32                  SizeOfThisBit;
     EXTENDED_IRQ_RESOURCE   *ExIrq = NULL;
     BOOLEAN                 Done = FALSE;
 
 
     FUNCTION_TRACE ("RsCalculateByteStreamLength");
 
-
     while (!Done)
     {
 
         /*
-         * Init the variable that will hold the size to add to the
-         *  total.
+         * Init the variable that will hold the size to add to the total.
          */
-        SegmentSize = 0;
+        SizeOfThisBit = 0;
 
         switch (LinkedList->Id)
         {
@@ -173,7 +170,7 @@ AcpiRsCalculateByteStreamLength (
              * For an IRQ Resource, Byte 3, although optional, will
              *  always be created - it holds IRQ information.
              */
-            SegmentSize = 4;
+            SizeOfThisBit = 4;
             break;
 
         case Dma:
@@ -183,7 +180,7 @@ AcpiRsCalculateByteStreamLength (
             /*
              * For this resource the size is static
              */
-            SegmentSize = 3;
+            SizeOfThisBit = 3;
             break;
 
         case StartDependentFunctions:
@@ -194,7 +191,7 @@ AcpiRsCalculateByteStreamLength (
              * For a StartDependentFunctions Resource, Byte 1,
              * although optional, will always be created.
              */
-            SegmentSize = 2;
+            SizeOfThisBit = 2;
             break;
 
         case EndDependentFunctions:
@@ -204,7 +201,7 @@ AcpiRsCalculateByteStreamLength (
             /*
              * For this resource the size is static
              */
-            SegmentSize = 1;
+            SizeOfThisBit = 1;
             break;
 
         case Io:
@@ -214,7 +211,7 @@ AcpiRsCalculateByteStreamLength (
             /*
              * For this resource the size is static
              */
-            SegmentSize = 8;
+            SizeOfThisBit = 8;
             break;
 
         case FixedIo:
@@ -224,7 +221,7 @@ AcpiRsCalculateByteStreamLength (
             /*
              * For this resource the size is static
              */
-            SegmentSize = 4;
+            SizeOfThisBit = 4;
             break;
 
         case VendorSpecific:
@@ -232,21 +229,19 @@ AcpiRsCalculateByteStreamLength (
              * Vendor Defined Resource
              */
             /*
-             * For a Vendor Specific resource, if the Length is
-             *  between 1 and 7 it will be created as a Small
-             *  Resource data type, otherwise it is a Large
-             *  Resource data type.
+             * For a Vendor Specific resource, if the Length is between 1 and 7
+             *  it will be created as a Small Resource data type, otherwise it
+             *  is a Large Resource data type.
              */
             if(LinkedList->Data.VendorSpecific.Length > 7)
             {
-                SegmentSize = 3;
+                SizeOfThisBit = 3;
             }
             else
             {
-                SegmentSize = 1;
+                SizeOfThisBit = 1;
             }
-            SegmentSize +=
-                LinkedList->Data.VendorSpecific.Length;
+            SizeOfThisBit += LinkedList->Data.VendorSpecific.Length;
             break;
 
         case EndTag:
@@ -256,7 +251,7 @@ AcpiRsCalculateByteStreamLength (
             /*
              * For this resource the size is static
              */
-            SegmentSize = 2;
+            SizeOfThisBit = 2;
             Done = TRUE;
             break;
 
@@ -267,7 +262,7 @@ AcpiRsCalculateByteStreamLength (
             /*
              * For this resource the size is static
              */
-            SegmentSize = 12;
+            SizeOfThisBit = 12;
             break;
 
         case Memory32:
@@ -277,7 +272,7 @@ AcpiRsCalculateByteStreamLength (
             /*
              * For this resource the size is static
              */
-            SegmentSize = 20;
+            SizeOfThisBit = 20;
             break;
 
         case FixedMemory32:
@@ -287,7 +282,7 @@ AcpiRsCalculateByteStreamLength (
             /*
              * For this resource the size is static
              */
-            SegmentSize = 12;
+            SizeOfThisBit = 12;
             break;
 
         case Address16:
@@ -295,17 +290,15 @@ AcpiRsCalculateByteStreamLength (
              * 16-Bit Address Resource
              */
             /*
-             * The base size of this byte stream is 16. If a
-             *  Resource Source string is not NULL, add 1 for
-             *  the Index + the length of the null terminated
-             *  string Resource Source + 1 for the null.
+             * The base size of this byte stream is 16. If a Resource Source
+             *  string is not NULL, add 1 for the Index + the length of the
+             *  null terminated string Resource Source + 1 for the null.
              */
-            SegmentSize = 16;
+            SizeOfThisBit = 16;
 
             if(NULL != LinkedList->Data.Address16.ResourceSource)
             {
-                SegmentSize += (1 +
-                    LinkedList->Data.Address16.ResourceSourceStringLength);
+                SizeOfThisBit += (1 + LinkedList->Data.Address16.ResourceSourceStringLength);
             }
             break;
 
@@ -314,17 +307,15 @@ AcpiRsCalculateByteStreamLength (
              * 32-Bit Address Resource
              */
             /*
-             * The base size of this byte stream is 26. If a Resource
-             *  Source string is not NULL, add 1 for the Index + the
-             *  length of the null terminated string Resource Source +
-             *  1 for the null.
+             * The base size of this byte stream is 26. If a Resource Source
+             *  string is not NULL, add 1 for the Index + the length of the
+             *  null terminated string Resource Source + 1 for the null.
              */
-            SegmentSize = 26;
+            SizeOfThisBit = 26;
 
             if(NULL != LinkedList->Data.Address16.ResourceSource)
             {
-                SegmentSize += (1 +
-                    LinkedList->Data.Address16.ResourceSourceStringLength);
+                SizeOfThisBit += (1 + LinkedList->Data.Address16.ResourceSourceStringLength);
             }
             break;
 
@@ -333,23 +324,19 @@ AcpiRsCalculateByteStreamLength (
              * Extended IRQ Resource
              */
             /*
-             * The base size of this byte stream is 9. This is for an
-             *  Interrupt table length of 1.  For each additional
-             *  interrupt, add 4.
-             * If a Resource Source string is not NULL, add 1 for the
-             *  Index + the length of the null terminated string
-             *  Resource Source + 1 for the null.
+             * The base size of this byte stream is 9. This is for an Interrupt
+             *  table length of 1.  For each additional interrupt, add 4.
+             * If a Resource Source string is not NULL, add 1 for the Index
+             *  + the length of the null terminated string Resource Source
+             *  + 1 for the null.
              */
-            SegmentSize = 9;
+            SizeOfThisBit = 9;
 
-            SegmentSize +=
-                (LinkedList->Data.ExtendedIrq.NumberOfInterrupts -
-                 1) * 4;
+            SizeOfThisBit += (LinkedList->Data.ExtendedIrq.NumberOfInterrupts - 1) * 4;
 
             if(NULL != ExIrq->ResourceSource)
             {
-                SegmentSize += (1 +
-                    LinkedList->Data.ExtendedIrq.ResourceSourceStringLength);
+                SizeOfThisBit += (1 + LinkedList->Data.ExtendedIrq.ResourceSourceStringLength);
             }
             break;
 
@@ -358,7 +345,7 @@ AcpiRsCalculateByteStreamLength (
              * If we get here, everything is out of sync,
              *  so exit with an error
              */
-            return_ACPI_STATUS (AE_AML_ERROR);
+            return_ACPI_STATUS (AE_ERROR);
             break;
 
         } /* switch (LinkedList->Id) */
@@ -366,13 +353,12 @@ AcpiRsCalculateByteStreamLength (
         /*
          * Update the total
          */
-        ByteStreamSizeNeeded += SegmentSize;
+        ByteStreamSizeNeeded += SizeOfThisBit;
 
         /*
          * Point to the next object
          */
-        LinkedList = (RESOURCE *) ((NATIVE_UINT) LinkedList +
-                     (NATIVE_UINT) LinkedList->Length);
+        LinkedList = (RESOURCE *) ((NATIVE_UINT) LinkedList + (NATIVE_UINT) LinkedList->Length);
     }
 
     /*
@@ -380,19 +366,19 @@ AcpiRsCalculateByteStreamLength (
      */
     *SizeNeeded = ByteStreamSizeNeeded;
 
-    return_ACPI_STATUS (AE_OK);
-}
+    return_ACPI_STATUS (Status);
+
+} /* AcpiRsCalculateByteStreamLength */
 
 
-/*******************************************************************************
- *
+/***************************************************************************
  * FUNCTION:    AcpiRsCalculateListLength
  *
- * PARAMETERS:  ByteStreamBuffer        - Pointer to the resource byte stream
+ * PARAMETERS:
+ *              ByteStreamBuffer        - Pointer to the resource byte stream
  *              ByteStreamBufferLength  - Size of ByteStreamBuffer
- *              SizeNeeded              - UINT32 pointer of the size buffer
- *                                          needed to properly return the
- *                                          parsed data
+ *              SizeNeeded              - UINT32 pointer of the size buffer needed
+ *                                          to properly return the parsed data
  *
  * RETURN:      Status  AE_OK if okay, else a valid ACPI_STATUS code
  *
@@ -400,7 +386,7 @@ AcpiRsCalculateByteStreamLength (
  *              the size buffer needed to hold the linked list that conveys
  *              the resource data.
  *
- ******************************************************************************/
+ ***************************************************************************/
 
 ACPI_STATUS
 AcpiRsCalculateListLength (
@@ -410,20 +396,19 @@ AcpiRsCalculateListLength (
 {
     UINT32                  BufferSize = 0;
     UINT32                  BytesParsed = 0;
-    UINT8                   NumberOfInterrupts = 0;
-    UINT8                   NumberOfChannels = 0;
-    UINT8                   ResourceType;
-    UINT32                  StructureSize;
-    UINT32                  BytesConsumed;
+    UINT8                   ResourceType = 0;
+    UINT32                  StructureSize = 0;
+    UINT32                  BytesConsumed = 0;
     UINT8                   *Buffer;
+    UINT8                   NumberOfInterrupts = 0;
     UINT8                   Temp8;
     UINT16                  Temp16;
     UINT8                   Index;
-    UINT8                   AdditionalBytes;
+    UINT8                   NumberOfChannels = 0;
+    UINT8                   AdditionalBytes = 0;
 
 
     FUNCTION_TRACE ("RsCalculateListLength");
-
 
     while (BytesParsed < ByteStreamBufferLength)
     {
@@ -448,8 +433,8 @@ AcpiRsCalculateListLength (
                  */
                 BytesConsumed = 12;
 
-                StructureSize = sizeof (MEMORY24_RESOURCE) +
-                                RESOURCE_LENGTH_NO_DATA;
+                StructureSize = sizeof (MEMORY24_RESOURCE) + RESOURCE_LENGTH_NO_DATA;
+
                 break;
 
             case LARGE_VENDOR_DEFINED:
@@ -479,8 +464,7 @@ AcpiRsCalculateListLength (
 
                 BytesConsumed = 20;
 
-                StructureSize = sizeof (MEMORY32_RESOURCE) +
-                                RESOURCE_LENGTH_NO_DATA;
+                StructureSize = sizeof (MEMORY32_RESOURCE) + RESOURCE_LENGTH_NO_DATA;
                 break;
 
             case FIXED_MEMORY_RANGE_32:
@@ -489,8 +473,7 @@ AcpiRsCalculateListLength (
                  */
                 BytesConsumed = 12;
 
-                StructureSize = sizeof(FIXED_MEMORY32_RESOURCE) +
-                                RESOURCE_LENGTH_NO_DATA;
+                StructureSize = sizeof(FIXED_MEMORY32_RESOURCE) + RESOURCE_LENGTH_NO_DATA;
                 break;
 
             case DWORD_ADDRESS_SPACE:
@@ -505,14 +488,13 @@ AcpiRsCalculateListLength (
                 BytesConsumed = Temp16 + 3;
 
                 /*
-                 * Resource Source Index and Resource Source are
-                 *  optional elements.  Check the length of the
-                 *  Bytestream.  If it is greater than 23, that
-                 *  means that an Index exists and is followed by
-                 *  a null termininated string.  Therefore, set
-                 *  the temp variable to the length minus the minimum
-                 *  byte stream length plus the byte for the Index to
-                 *  determine the size of the NULL terminiated string.
+                 * Resource Source Index and Resource Source are optional
+                 *  elements.  Check the length of the Bytestream.  If
+                 *  it is greater than 23, that means that an Index exists
+                 *  and is followed by a null termininated string.  Therefore,
+                 *  set the temp variable to the length minus the minimum
+                 *  byte stream length plus the byte for the Index to determine
+                 *  the size of the NULL terminiated string.
                  */
                 if (23 < Temp16)
                 {
@@ -545,14 +527,13 @@ AcpiRsCalculateListLength (
                 BytesConsumed = Temp16 + 3;
 
                 /*
-                 * Resource Source Index and Resource Source are
-                 *  optional elements.  Check the length of the
-                 *  Bytestream.  If it is greater than 13, that
-                 *  means that an Index exists and is followed by
-                 *  a null termininated string.  Therefore, set
-                 *  the temp variable to the length minus the minimum
-                 *  byte stream length plus the byte for the Index to
-                 *  determine the size of the NULL terminiated string.
+                 * Resource Source Index and Resource Source are optional
+                 *  elements.  Check the length of the Bytestream.  If
+                 *  it is greater than 13, that means that an Index exists
+                 *  and is followed by a null termininated string.  Therefore,
+                 *  set the temp variable to the length minus the minimum
+                 *  byte stream length plus the byte for the Index to determine
+                 *  the size of the NULL terminiated string.
                  */
                 if (13 < Temp16)
                 {
@@ -590,24 +571,24 @@ AcpiRsCalculateListLength (
                  *  Interrupt table length to the Temp8 variable.
                  */
                 Buffer += 3;
+
                 Temp8 = *Buffer;
 
                 /*
                  * To compensate for multiple interrupt numbers,
-                 *  Add 4 bytes for each additional interrupts
-                 *  greater than 1
+                 *  Add 4 bytes for each additional interrupts greater than 1
                  */
                 AdditionalBytes = (UINT8) ((Temp8 - 1) * 4);
 
                 /*
-                 * Resource Source Index and Resource Source are
-                 *  optional elements.  Check the length of the
-                 *  Bytestream.  If it is greater than 9, that
-                 *  means that an Index exists and is followed by
-                 *  a null termininated string.  Therefore, set
-                 *  the temp variable to the length minus the minimum
-                 *  byte stream length plus the byte for the Index to
-                 *  determine the size of the NULL terminiated string.
+                 * Resource Source Index and Resource Source are optional
+                 *  elements.  Check the length of the Bytestream.  If
+                 *  it is greater than 9 plus the Additional bytes from
+                 *  the interrupt table, that means that an Index exists
+                 *  and is followed by a null termininated string.  Therefore,
+                 *  set the temp variable to the length minus the minimum
+                 *  byte stream length plus the byte for the Index to determine
+                 *  the size of the NULL terminiated string.
                  */
                 if (9 + AdditionalBytes < Temp16)
                 {
@@ -631,7 +612,7 @@ AcpiRsCalculateListLength (
 
                 break;
 
-/* TBD: [Future] 64-bit not currently supported */
+/* 64-bit not currently supported */
 /*
             case 0x8A:
                 break;
@@ -642,7 +623,7 @@ AcpiRsCalculateListLength (
                  * If we get here, everything is out of sync,
                  *  so exit with an error
                  */
-                return_ACPI_STATUS (AE_AML_ERROR);
+                return_ACPI_STATUS (AE_ERROR);
                 break;
             }
         }
@@ -662,10 +643,10 @@ AcpiRsCalculateListLength (
                  * IRQ Resource
                  */
                 /*
-                 * Determine if it there are two or three
-                 *  trailing bytes
+                 * Determine if it there are two or three trailing bytes
                  */
                 Buffer = ByteStreamBuffer;
+
                 Temp8 = *Buffer;
 
                 if(Temp8 & 0x01)
@@ -701,6 +682,7 @@ AcpiRsCalculateListLength (
                 StructureSize = sizeof (IO_RESOURCE) +
                                 RESOURCE_LENGTH_NO_DATA +
                                 (NumberOfInterrupts * sizeof (UINT32));
+
                 break;
 
 
@@ -736,6 +718,7 @@ AcpiRsCalculateListLength (
                 StructureSize = sizeof (DMA_RESOURCE) +
                                 RESOURCE_LENGTH_NO_DATA +
                                 (NumberOfChannels * sizeof (UINT32));
+
                 break;
 
 
@@ -748,6 +731,7 @@ AcpiRsCalculateListLength (
                  * Determine if it there are two or three trailing bytes
                  */
                 Buffer = ByteStreamBuffer;
+
                 Temp8 = *Buffer;
 
                 if(Temp8 & 0x01)
@@ -760,9 +744,8 @@ AcpiRsCalculateListLength (
                 }
 
 
-                StructureSize =
-                        sizeof (START_DEPENDENT_FUNCTIONS_RESOURCE) +
-                        RESOURCE_LENGTH_NO_DATA;
+                StructureSize = sizeof (START_DEPENDENT_FUNCTIONS_RESOURCE) +
+                                RESOURCE_LENGTH_NO_DATA;
                 break;
 
 
@@ -772,6 +755,7 @@ AcpiRsCalculateListLength (
                  * End Dependent Functions Resource
                  */
                 BytesConsumed = 1;
+
                 StructureSize = RESOURCE_LENGTH;
                 break;
 
@@ -781,6 +765,7 @@ AcpiRsCalculateListLength (
                  * IO Port Resource
                  */
                 BytesConsumed = 8;
+
                 StructureSize = sizeof (IO_RESOURCE) +
                                 RESOURCE_LENGTH_NO_DATA;
                 break;
@@ -792,6 +777,7 @@ AcpiRsCalculateListLength (
                  * Fixed IO Port Resource
                  */
                 BytesConsumed = 4;
+
                 StructureSize = sizeof (FIXED_IO_RESOURCE) +
                                 RESOURCE_LENGTH_NO_DATA;
                 break;
@@ -812,6 +798,7 @@ AcpiRsCalculateListLength (
                  * Ensure a 32-bit boundry for the structure
                  */
                 Temp8 = (UINT8) ROUND_UP_TO_32BITS (Temp8);
+
                 StructureSize = sizeof (VENDOR_RESOURCE) +
                                 RESOURCE_LENGTH_NO_DATA +
                                 (Temp8 * sizeof (UINT8));
@@ -824,6 +811,7 @@ AcpiRsCalculateListLength (
                  * End Tag
                  */
                 BytesConsumed = 2;
+
                 StructureSize = RESOURCE_LENGTH;
                 break;
 
@@ -833,7 +821,7 @@ AcpiRsCalculateListLength (
                  * If we get here, everything is out of sync,
                  *  so exit with an error
                  */
-                return_ACPI_STATUS (AE_AML_ERROR);
+                return_ACPI_STATUS (AE_ERROR);
                 break;
 
             } /* switch */
@@ -859,133 +847,6 @@ AcpiRsCalculateListLength (
     *SizeNeeded = BufferSize;
 
     return_ACPI_STATUS (AE_OK);
-}
 
+} /* AcpiRsCalculateListLength */
 
-/*******************************************************************************
- *
- * FUNCTION:    AcpiRsCalculatePciRoutingTableLength
- *
- * PARAMETERS:  PackageObject           - Pointer to the package object
- *              BufferSizeNeeded        - UINT32 pointer of the size buffer
- *                                          needed to properly return the
- *                                          parsed data
- *
- * RETURN:      Status  AE_OK
- *
- * DESCRIPTION: Given a package representing a PCI routing table, this
- *                calculates the size of the corresponding linked list of
- *                descriptions.
- *
- ******************************************************************************/
-
-ACPI_STATUS
-AcpiRsCalculatePciRoutingTableLength (
-    ACPI_OPERAND_OBJECT     *PackageObject,
-    UINT32                  *BufferSizeNeeded)
-{
-    UINT32                  NumberOfElements;
-    UINT32                  TempSizeNeeded = 0;
-    ACPI_OPERAND_OBJECT     **TopObjectList;
-    UINT32                  Index;
-    ACPI_OPERAND_OBJECT     *PackageElement;
-    ACPI_OPERAND_OBJECT     **SubObjectList;
-    BOOLEAN                 NameFound;
-    UINT32                  TableIndex;
-
-
-    FUNCTION_TRACE ("AcpiRsCalculatePciRoutingTableLength");
-
-
-    NumberOfElements = PackageObject->Package.Count;
-
-    /*
-     * Calculate the size of the return buffer.
-     * The base size is the number of elements * the sizes of the
-     * structures.  Additional space for the strings is added below.
-     * The minus one is to subtract the size of the UINT8 Source[1]
-     * member because it is added below.
-     *
-     * NOTE: The NumberOfElements is incremented by one to add an end
-     * table structure that is essentially a structure of zeros.
-     */
-
-    /*
-     * But each PRT_ENTRY structure has a pointer to a string and
-     * the size of that string must be found.
-     */
-    TopObjectList = PackageObject->Package.Elements;
-
-    for (Index = 0; Index < NumberOfElements; Index++)
-    {
-        /*
-         * Dereference the sub-package
-         */
-        PackageElement = *TopObjectList;
-
-        /*
-         * The SubObjectList will now point to an array of the
-         * four IRQ elements: Address, Pin, Source and SourceIndex
-         */
-        SubObjectList = PackageElement->Package.Elements;
-
-        /*
-         * Scan the IrqTableElements for the Source Name String
-         */
-        NameFound = FALSE;
-
-        for (TableIndex = 0; TableIndex < 4 && !NameFound; TableIndex++)
-        {
-            if (ACPI_TYPE_STRING == (*SubObjectList)->Common.Type)
-            {
-                NameFound = TRUE;
-            }
-
-            else
-            {
-                /*
-                 * Look at the next element
-                 */
-                SubObjectList++;
-            }
-        }
-
-        TempSizeNeeded += (sizeof (PCI_ROUTING_TABLE) - 1);
-
-        /*
-         * Was a String type found?
-         */
-        if (TRUE == NameFound)
-        {
-            /*
-             * The length String.Length field includes the
-             * terminating NULL
-             */
-            TempSizeNeeded += (*SubObjectList)->String.Length;
-        }
-
-        else
-        {
-            /*
-             * If no name was found, then this is a NULL, which is
-             *  translated as a UINT32 zero.
-             */
-            TempSizeNeeded += sizeof(UINT32);
-        }
-
-
-        /* Round up the size since each element must be aligned */
-
-        TempSizeNeeded = ROUND_UP_TO_64BITS (TempSizeNeeded);
-
-        /*
-         * Point to the next ACPI_OPERAND_OBJECT
-         */
-        TopObjectList++;
-    }
-
-
-    *BufferSizeNeeded = TempSizeNeeded + sizeof (PCI_ROUTING_TABLE);
-
-    return_ACPI_STATUS (AE_OK);
-}

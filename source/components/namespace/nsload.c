@@ -1,7 +1,7 @@
 
 /******************************************************************************
  *
- * Module Name: nsload - namespace loading procedures
+ * Module Name: nsload - namespace loading/expanding/contracting procedures
  *
  *****************************************************************************/
 
@@ -199,8 +199,6 @@ AcpiNsParseTable (
 }
 
 
-
-
 /*****************************************************************************
  *
  * FUNCTION:    AcpiNsLoadTable
@@ -275,7 +273,6 @@ AcpiNsLoadTable (
 
     return_ACPI_STATUS (Status);
 }
-
 
 
 /******************************************************************************
@@ -430,6 +427,206 @@ UnlockAndExit:
 }
 
 
+/******************************************************************************
+ *
+ * FUNCTION:    AcpiNsFreeTableEntry
+ *
+ * PARAMETERS:  Entry           - The entry to be deleted
+ *
+ * RETURNS      None
+ *
+ * DESCRIPTION: Free an entry in a namespace table.  Delete any objects contained
+ *              in the entry, unlink the entry, then mark it unused.
+ *
+ ******************************************************************************/
 
+void
+AcpiNsFreeTableEntry (
+    NAME_TABLE_ENTRY        *Entry)
+{
+    FUNCTION_TRACE ("NsFreeTableEntry");
+
+
+    if (!Entry)
+    {
+        return_VOID;
+    }
+
+    /*
+     * Need to delete
+     * 1) The scope, if any
+     * 2) An attached object, if any
+     */
+
+    if (Entry->Scope)
+    {
+        AcpiCmFree (Entry->Scope);
+        Entry->Scope = NULL;
+    }
+
+    if (Entry->Object)
+    {
+        AcpiNsDetachObject (Entry->Object);
+        Entry->Object = NULL;
+    }
+
+
+    /* Unlink the NTE from the table */
+
+    if (Entry->PrevEntry)
+    {
+        Entry->PrevEntry->NextEntry = Entry->NextEntry;
+    }
+
+    if (Entry->NextEntry)
+    {
+        Entry->NextEntry->PrevEntry = Entry->PrevEntry;
+    }
+
+
+    /* Mark the entry unallocated */
+
+    Entry->Name = 0;
+
+    return_VOID;
+}
+
+
+/******************************************************************************
+ *
+ * FUNCTION:    AcpiNsDeleteSubtree
+ *
+ * PARAMETERS:  StartHandle         - Handle in namespace where search begins
+ *
+ * RETURNS      Status
+ *
+ * DESCRIPTION: Walks the namespace starting at the given handle and deletes
+ *              all objects, entries, and scopes in the entire subtree.
+ *
+ *              TBD: [Investigate] What if any part of this subtree is in use?  (i.e. on one
+ *              of the object stacks?)
+ *
+ ******************************************************************************/
+
+ACPI_STATUS
+AcpiNsDeleteSubtree (
+    ACPI_HANDLE             StartHandle)
+{
+    ACPI_STATUS             Status;
+    ACPI_HANDLE             ChildHandle;
+    ACPI_HANDLE             ParentHandle;
+    ACPI_HANDLE             NextChildHandle;
+    ACPI_HANDLE             Dummy;
+    UINT32                  Level;
+
+
+    FUNCTION_TRACE ("NsDeleteSubtree");
+
+
+    ParentHandle    = StartHandle;
+    ChildHandle     = 0;
+    Level           = 1;
+
+    /*
+     * Traverse the tree of objects until we bubble back up
+     * to where we started.
+     */
+
+    while (Level > 0)
+    {
+        /* Attempt to get the next object in this scope */
+
+        Status = AcpiGetNextObject (ACPI_TYPE_ANY, ParentHandle, ChildHandle, &NextChildHandle);
+
+        /*
+         * Regardless of the success or failure of the previous operation,
+         * we are done with the previous object (if there was one), and any
+         * children it may have had.  So we can now safely delete it (and
+         * its scope, if any)
+         */
+
+        AcpiNsFreeTableEntry (ChildHandle);
+        ChildHandle = NextChildHandle;
+
+
+        /* Did we get a new object? */
+
+        if (ACPI_SUCCESS (Status))
+        {
+            /* Check if this object has any children */
+
+            if (ACPI_SUCCESS (AcpiGetNextObject (ACPI_TYPE_ANY, ChildHandle, 0, &Dummy)))
+            {
+                /* There is at least one child of this object, visit the object */
+
+                Level++;
+                ParentHandle    = ChildHandle;
+                ChildHandle     = 0;
+            }
+        }
+
+        else
+        {
+            /*
+             * No more children in this object, go back up to the object's parent
+             */
+            Level--;
+            ChildHandle = ParentHandle;
+            AcpiGetParent (ParentHandle, &ParentHandle);
+        }
+    }
+
+    /* Now delete the starting object, and we are done */
+
+    AcpiNsFreeTableEntry ((NAME_TABLE_ENTRY *) ChildHandle);
+
+
+    return_ACPI_STATUS (AE_OK);
+}
+
+
+/****************************************************************************
+ *
+ *  FUNCTION:       AcpiNsUnloadNameSpace
+ *
+ *  PARAMETERS:     Handle          - Root of namespace subtree to be deleted
+ *
+ *  RETURN:         Status
+ *
+ *  DESCRIPTION:    Shrinks the namespace, typically in response to an undocking
+ *                  event.  Deletes an entire subtree starting from (and
+ *                  including) the given handle.
+ *
+ ****************************************************************************/
+
+ACPI_STATUS
+AcpiNsUnloadNamespace (
+    ACPI_HANDLE             Handle)
+{
+    ACPI_STATUS             Status;
+
+
+    FUNCTION_TRACE ("NsUnloadNameSpace");
+
+
+    /* Parameter validation */
+
+    if (!AcpiGbl_RootObject->Scope)
+    {
+        return_ACPI_STATUS (AE_NO_NAMESPACE);
+    }
+
+    if (!Handle)
+    {
+        return_ACPI_STATUS (AE_BAD_PARAMETER);
+    }
+
+
+    /* This function does the real work */
+
+    Status = AcpiNsDeleteSubtree (Handle);
+
+    return_ACPI_STATUS (Status);
+}
 
 

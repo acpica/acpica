@@ -127,7 +127,6 @@
         MODULE_NAME         ("nsaccess");
 
 
-
 /****************************************************************************
  *
  * FUNCTION:    AcpiNsRootCreateScope
@@ -173,7 +172,6 @@ AcpiNsRootCreateScope (
     return_ACPI_STATUS (AE_OK);
 
 }
-
 
 
 /****************************************************************************
@@ -595,7 +593,7 @@ AcpiNsLookup (
             ThisSearchType = Type;
         }
 
-        STORE32TO32 (&SimpleName, Pathname);
+        MOVE_UNALIGNED32_TO_32 (&SimpleName, Pathname);
         Status = AcpiNsSearchAndEnter (SimpleName, WalkState, EntryToSearch, InterpreterMode,
                                     ThisSearchType, Flags, &ThisEntry);
         if (Status != AE_OK)
@@ -700,7 +698,6 @@ AcpiNsLookup (
         EntryToSearch = ThisEntry->Scope;
         Pathname += ACPI_NAME_SIZE;                 /* point to next name segment */
     }
-
 
 
     /*

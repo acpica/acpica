@@ -129,7 +129,6 @@
         MODULE_NAME         ("nseval");
 
 
-
 /****************************************************************************
  *
  * FUNCTION:    AcpiNsEvaluateRelative
@@ -385,7 +384,6 @@ AcpiNsEvaluateByHandle (
         Status = AE_BAD_PARAMETER;
         goto UnlockAndExit;
     }
-
 
 
     /*

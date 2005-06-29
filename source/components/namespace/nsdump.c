@@ -127,7 +127,6 @@
         MODULE_NAME         ("nsdump");
 
 
-
 #ifdef ACPI_DEBUG
 
 /****************************************************************************
@@ -159,7 +158,7 @@ AcpiNsDumpPathname (
 
     /* Do this only if the requested debug level and component are enabled */
 
-    if (!(DebugLevel & Level) || !(DebugLayer & Component))
+    if (!(AcpiDbgLevel & Level) || !(AcpiDbgLayer & Component))
     {
         return_ACPI_STATUS (AE_OK);
     }
@@ -225,7 +224,7 @@ AcpiNsDumpOneObject (
     WhichBit    = 1;
 
 
-    if (!(DebugLevel & Info->DebugLevel))
+    if (!(AcpiDbgLevel & Info->DebugLevel))
     {
         return AE_OK;
     }
@@ -373,7 +372,7 @@ AcpiNsDumpOneObject (
 
     /* If debug turned off, done */
 
-    if (!(DebugLevel & TRACE_VALUES))
+    if (!(AcpiDbgLevel & TRACE_VALUES))
     {
         return AE_OK;
     }
@@ -587,7 +586,7 @@ AcpiNsDumpRootDevices (void)
 
     /* Only dump the table if tracing is enabled */
 
-    if (!(TRACE_TABLES & DebugLevel))
+    if (!(TRACE_TABLES & AcpiDbgLevel))
     {
         return;
     }
