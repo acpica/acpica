@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: exfield - ACPI AML (p-code) execution - field manipulation
- *              $Revision: 1.99 $
+ *              $Revision: 1.101 $
  *
  *****************************************************************************/
 
@@ -134,14 +134,13 @@
  *
  * FUNCTION:    AcpiExReadDataFromField
  *
- * PARAMETERS:  Mode                - ACPI_READ or ACPI_WRITE
- *              *FieldNode          - Parent node for field to be accessed
- *              *Buffer             - Value(s) to be read or written
- *              BufferLength        - Number of bytes to transfer
+ * PARAMETERS:  ObjDesc             - The named field
+ *              RetBufferDesc       - Where the return data object is stored
  *
- * RETURN:      Status3
+ * RETURN:      Status
  *
- * DESCRIPTION: Read or write a named field
+ * DESCRIPTION: Read from a named field.  Returns either an Integer or a
+ *              Buffer, depending on the size of the field.
  *
  ******************************************************************************/
 
@@ -217,7 +216,6 @@ AcpiExReadDataFromField (
         BufferDesc->Buffer.Length = Length;
         Buffer = BufferDesc->Buffer.Pointer;
     }
-
     else
     {
         /* Field will fit within an Integer (normal case) */
@@ -241,7 +239,7 @@ AcpiExReadDataFromField (
         ObjDesc->CommonField.StartFieldBitOffset,
         ObjDesc->CommonField.BaseByteOffset));
 
-    Locked = AcpiExAcquireGlobalLock (ObjDesc->CommonField.LockRule);
+    Locked = AcpiExAcquireGlobalLock (ObjDesc->CommonField.FieldFlags);
 
     /* Read from the field */
 
@@ -252,12 +250,10 @@ AcpiExReadDataFromField (
      */
     AcpiExReleaseGlobalLock (Locked);
 
-
     if (ACPI_FAILURE (Status))
     {
         AcpiUtRemoveReference (BufferDesc);
     }
-
     else if (RetBufferDesc)
     {
         *RetBufferDesc = BufferDesc;
@@ -271,14 +267,12 @@ AcpiExReadDataFromField (
  *
  * FUNCTION:    AcpiExWriteDataToField
  *
- * PARAMETERS:  Mode                - ACPI_READ or ACPI_WRITE
- *              *FieldNode          - Parent node for field to be accessed
- *              *Buffer             - Value(s) to be read or written
- *              BufferLength        - Number of bytes to transfer
+ * PARAMETERS:  SourceDesc          - Contains data to write
+ *              ObjDesc             - The named field
  *
  * RETURN:      Status
  *
- * DESCRIPTION: Read or write a named field
+ * DESCRIPTION: Write to a named field
  *
  ******************************************************************************/
 
@@ -321,7 +315,6 @@ AcpiExWriteDataToField (
         }
     }
 
-
     /*
      * Get a pointer to the data to be written
      */
@@ -344,6 +337,7 @@ AcpiExWriteDataToField (
 
     default:
         return_ACPI_STATUS (AE_AML_OPERAND_TYPE);
+        break;
     }
 
     /*
@@ -384,7 +378,7 @@ AcpiExWriteDataToField (
         ObjDesc->CommonField.StartFieldBitOffset,
         ObjDesc->CommonField.BaseByteOffset));
 
-    Locked = AcpiExAcquireGlobalLock (ObjDesc->CommonField.LockRule);
+    Locked = AcpiExAcquireGlobalLock (ObjDesc->CommonField.FieldFlags);
 
     /*
      * Write to the field
