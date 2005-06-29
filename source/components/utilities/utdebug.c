@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: utdebug - Debug print routines
- *              $Revision: 1.80 $
+ *              $Revision: 1.83 $
  *
  *****************************************************************************/
 
@@ -149,6 +149,7 @@ AcpiUtInitStackPtrTrace (
     AcpiGbl_EntryStackPointer =  (UINT32) &CurrentSp;
 }
 
+
 /*****************************************************************************
  *
  * FUNCTION:    AcpiUtTrackStackPtr
@@ -180,11 +181,10 @@ AcpiUtTrackStackPtr (
 
         if (AcpiGbl_DeepestNesting == 34)
         {
-            AcpiOsPrintf ("hit deepest neesting\n");
+            AcpiOsPrintf ("hit deepest nesting\n");
         }
     }
 }
-
 
 
 /*****************************************************************************
@@ -196,7 +196,7 @@ AcpiUtTrackStackPtr (
  *              ModuleName          - Caller's module name (for error output)
  *              LineNumber          - Caller's line number (for error output)
  *              ComponentId         - Caller's component ID (for error output)
- *              
+ *
  *              Format              - Printf format field
  *              ...                 - Optional printf arguments
  *
@@ -247,9 +247,9 @@ AcpiUtDebugPrint (
 
     /*
      * Display the module name, current line number, thread ID (if requested),
-     * Current procedure nesting level, and the current procedure name
+     * current procedure nesting level, and the current procedure name
      */
-    AcpiOsPrintf ("%8s-%04d \n", DbgInfo->ModuleName, LineNumber);
+    AcpiOsPrintf ("%8s-%04d ", DbgInfo->ModuleName, LineNumber);
 
     if (ACPI_LV_THREADS & AcpiDbgLevel)
     {
@@ -272,14 +272,14 @@ AcpiUtDebugPrint (
  *              LineNumber          - Caller's line number
  *              DbgInfo             - Contains:
  *                  ProcName            - Caller's procedure name
- *                  ModuleName          - Caller's module name 
- *                  ComponentId         - Caller's component ID 
+ *                  ModuleName          - Caller's module name
+ *                  ComponentId         - Caller's component ID
  *              Format              - Printf format field
  *              ...                 - Optional printf arguments
  *
  * RETURN:      None
  *
- * DESCRIPTION: Print message with no headers.  Has same interface as 
+ * DESCRIPTION: Print message with no headers.  Has same interface as
  *              DebugPrint so that the same macros can be used.
  *
  ****************************************************************************/
@@ -293,7 +293,6 @@ AcpiUtDebugPrintRaw (
     ...)
 {
     va_list                 args;
-
 
 
     if (!(RequestedDebugLevel & AcpiDbgLevel) ||
@@ -315,8 +314,8 @@ AcpiUtDebugPrintRaw (
  * PARAMETERS:  LineNumber          - Caller's line number
  *              DbgInfo             - Contains:
  *                  ProcName            - Caller's procedure name
- *                  ModuleName          - Caller's module name 
- *                  ComponentId         - Caller's component ID 
+ *                  ModuleName          - Caller's module name
+ *                  ComponentId         - Caller's component ID
  *
  * RETURN:      None
  *
@@ -346,8 +345,8 @@ AcpiUtTrace (
  * PARAMETERS:  LineNumber          - Caller's line number
  *              DbgInfo             - Contains:
  *                  ProcName            - Caller's procedure name
- *                  ModuleName          - Caller's module name 
- *                  ComponentId         - Caller's component ID 
+ *                  ModuleName          - Caller's module name
+ *                  ComponentId         - Caller's component ID
  *              Pointer             - Pointer to display
  *
  * RETURN:      None
@@ -371,7 +370,6 @@ AcpiUtTracePtr (
 }
 
 
-
 /*****************************************************************************
  *
  * FUNCTION:    AcpiUtTraceStr
@@ -379,8 +377,8 @@ AcpiUtTracePtr (
  * PARAMETERS:  LineNumber          - Caller's line number
  *              DbgInfo             - Contains:
  *                  ProcName            - Caller's procedure name
- *                  ModuleName          - Caller's module name 
- *                  ComponentId         - Caller's component ID 
+ *                  ModuleName          - Caller's module name
+ *                  ComponentId         - Caller's component ID
  *              String              - Additional string to display
  *
  * RETURN:      None
@@ -404,6 +402,7 @@ AcpiUtTraceStr (
             "%s %s\n", AcpiGbl_FnEntryStr, String);
 }
 
+
 /*****************************************************************************
  *
  * FUNCTION:    AcpiUtTraceU32
@@ -411,8 +410,8 @@ AcpiUtTraceStr (
  * PARAMETERS:  LineNumber          - Caller's line number
  *              DbgInfo             - Contains:
  *                  ProcName            - Caller's procedure name
- *                  ModuleName          - Caller's module name 
- *                  ComponentId         - Caller's component ID 
+ *                  ModuleName          - Caller's module name
+ *                  ComponentId         - Caller's component ID
  *              Integer             - Integer to display
  *
  * RETURN:      None
@@ -444,8 +443,8 @@ AcpiUtTraceU32 (
  * PARAMETERS:  LineNumber          - Caller's line number
  *              DbgInfo             - Contains:
  *                  ProcName            - Caller's procedure name
- *                  ModuleName          - Caller's module name 
- *                  ComponentId         - Caller's component ID 
+ *                  ModuleName          - Caller's module name
+ *                  ComponentId         - Caller's component ID
  *
  * RETURN:      None
  *
@@ -474,8 +473,8 @@ AcpiUtExit (
  * PARAMETERS:  LineNumber          - Caller's line number
  *              DbgInfo             - Contains:
  *                  ProcName            - Caller's procedure name
- *                  ModuleName          - Caller's module name 
- *                  ComponentId         - Caller's component ID 
+ *                  ModuleName          - Caller's module name
+ *                  ComponentId         - Caller's component ID
  *              Status              - Exit status code
  *
  * RETURN:      None
@@ -516,8 +515,8 @@ AcpiUtStatusExit (
  * PARAMETERS:  LineNumber          - Caller's line number
  *              DbgInfo             - Contains:
  *                  ProcName            - Caller's procedure name
- *                  ModuleName          - Caller's module name 
- *                  ComponentId         - Caller's component ID 
+ *                  ModuleName          - Caller's module name
+ *                  ComponentId         - Caller's component ID
  *              Value               - Value to be printed with exit msg
  *
  * RETURN:      None
@@ -548,8 +547,8 @@ AcpiUtValueExit (
  * PARAMETERS:  LineNumber          - Caller's line number
  *              DbgInfo             - Contains:
  *                  ProcName            - Caller's procedure name
- *                  ModuleName          - Caller's module name 
- *                  ComponentId         - Caller's component ID 
+ *                  ModuleName          - Caller's module name
+ *                  ComponentId         - Caller's component ID
  *              Value               - Value to be printed with exit msg
  *
  * RETURN:      None
