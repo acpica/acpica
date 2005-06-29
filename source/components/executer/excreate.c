@@ -183,40 +183,24 @@ AmlExecCreateField (
     FUNCTION_TRACE ("AmlExecCreateField");
 
 
-    /* DefCreateField := CreateFieldOp SourceBuff BitIndex NumBits NameString  */
-
-    if (AML_CreateFieldOp == Opcode)
-    {
-        Status = AmlPrepOperands ("lnnb", Operands);
-        NumOperands = 4;
-    }
-   
-    /* 
-     * Create[Bit|Byte|DWord|Word]Field
-     * DefCreate*Field := Create*FieldOp SourceBuff [Bit|Byte]Index NameString
-     */
-    else
-    {
-        Status = AmlPrepOperands ("lnb", Operands);
-        NumOperands = 3;
-    }
-
+    Status = AmlResolveOperands (Opcode, Operands);
     if (Status != AE_OK)
     {
         /* Invalid parameters on object stack  */
 
-        AmlAppendOperandDiag (_THIS_MODULE, __LINE__, Opcode, Operands, NumOperands);
+        AmlAppendOperandDiag (_THIS_MODULE, __LINE__, Opcode, Operands, 3);
         goto Cleanup;
     }
 
-    OpName = PsGetOpcodeName (Opcode);
-    DUMP_OPERANDS (Operands, IMODE_Execute, OpName, NumOperands, "after AmlPrepOperands");
 
 
     /* Get the operands */
 
     if (AML_CreateFieldOp == Opcode)
     {
+        /* DefCreateField := CreateFieldOp SourceBuff BitIndex NumBits NameString  */
+        
+        NumOperands = 4;
         ResDesc = Operands[0];
         CntDesc = Operands[-1];
         OffDesc = Operands[-2];
@@ -225,16 +209,24 @@ AmlExecCreateField (
 
     else
     {
+        /* 
+         * Create[Bit|Byte|DWord|Word]Field
+         * DefCreate*Field := Create*FieldOp SourceBuff [Bit|Byte]Index NameString
+         */
+        NumOperands = 3;
         ResDesc = Operands[0];
         OffDesc = Operands[-1];
         SrcDesc = Operands[-2];
     }
 
+    OpName = PsGetOpcodeName (Opcode);
+    DUMP_OPERANDS (Operands, IMODE_Execute, OpName, NumOperands, "after AmlResolveOperands");
+
     Offset = OffDesc->Number.Value;
 
 
 
-    /* If ResDesc is a Name, it will be a direct name pointer after AmlPrepOperands() */
+    /* If ResDesc is a Name, it will be a direct name pointer after AmlResolveOperands() */
     
     if (!VALID_DESCRIPTOR_TYPE (ResDesc, DESC_TYPE_NTE))
     {
