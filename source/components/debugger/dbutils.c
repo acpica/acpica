@@ -382,13 +382,13 @@ AcpiDbSecondPassParse (
 
         if (ACPI_FAILURE (Status))
         {
-            return Status;
+            return (Status);
         }
 
         Op = AcpiPsGetDepthNext (Root, Op);
     }
 
-    return Status;
+    return (Status);
 }
 
 
@@ -421,7 +421,7 @@ AcpiDbLocalNsLookup (
     if (ACPI_FAILURE (Status))
     {
         AcpiOsPrintf ("Invalid namestring: %s\n", Name);
-        return NULL;
+        return (NULL);
     }
 
     /* Lookup the name */
@@ -440,7 +440,7 @@ AcpiDbLocalNsLookup (
 
     AcpiCmFree (InternalPath);
 
-    return Entry;
+    return (Entry);
 }
 
 
