@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: psparse - Parser top level AML parse routines
- *              $Revision: 1.100 $
+ *              $Revision: 1.101 $
  *
  *****************************************************************************/
 
@@ -244,21 +244,17 @@ AcpiPsPeekOpcode (
 
 ACPI_STATUS
 AcpiPsFindObject (
-    UINT16                  Opcode,
-    ACPI_PARSE_OBJECT       *Op,
     ACPI_WALK_STATE         *WalkState,
     ACPI_PARSE_OBJECT       **OutOp)
 {
     NATIVE_CHAR             *Path;
-    const ACPI_OPCODE_INFO  *OpInfo;
 
 
     /* We are only interested in opcodes that have an associated name */
 
-    OpInfo = AcpiPsGetOpcodeInfo (Opcode);
-    if (!(OpInfo->Flags & AML_NAMED))
+    if (!(WalkState->OpInfo->Flags & AML_NAMED))
     {
-        *OutOp = Op;
+        *OutOp = WalkState->Op;
         return (AE_OK);
     }
 
@@ -267,7 +263,7 @@ AcpiPsFindObject (
     Path = AcpiPsGetNextNamestring (&WalkState->ParserState);
 
     *OutOp = AcpiPsFind (AcpiPsGetParentScope (&WalkState->ParserState),
-                 Path, Opcode, 1);
+                 Path, WalkState->Opcode, 1);
 
     if (!(*OutOp))
     {
