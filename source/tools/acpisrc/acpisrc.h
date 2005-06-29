@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: acpisrc.h - Include file for AcpiSrc utility
- *              $Revision: 1.11 $
+ *              $Revision: 1.12 $
  *
  *****************************************************************************/
 
@@ -187,12 +187,17 @@ extern char                     *optarg;
 #define VERBOSE_PRINT(a)        if (Gbl_VerboseMode) printf PARAM_LIST(a)
 
 
+#define REPLACE_WHOLE_WORD      0
+#define REPLACE_SUBSTRINGS      1
+
+
 /* Conversion table structs */
 
 typedef struct acpi_string_table
 {
     char                        *Target;
     char                        *Replacement;
+    UINT8                       Type;
 
 } ACPI_STRING_TABLE;
 
@@ -252,6 +257,7 @@ int
 AsReplaceString (
     char                    *Target,
     char                    *Replacement,
+    UINT8                   Type,
     char                    *Buffer);
 
 void

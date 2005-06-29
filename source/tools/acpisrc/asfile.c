@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asfile - Main module for the acpi source processor utility
- *              $Revision: 1.12 $
+ *              $Revision: 1.13 $
  *
  *****************************************************************************/
 
@@ -389,6 +389,7 @@ AsConvertFile (
         {
             AsReplaceString (StringTable[i].Target,
                                 StringTable[i].Replacement,
+                                StringTable[i].Type,
                                 FileBuffer);
         }
     }
