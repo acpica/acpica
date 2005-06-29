@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: psparse - Parser top level AML parse routines
- *              $Revision: 1.91 $
+ *              $Revision: 1.92 $
  *
  *****************************************************************************/
 
@@ -293,11 +293,13 @@ AcpiPsFindObject (
     ACPI_PARSE_OBJECT       **OutOp)
 {
     NATIVE_CHAR             *Path;
+    ACPI_OPCODE_INFO        *OpInfo;
 
 
     /* We are only interested in opcodes that have an associated name */
 
-    if (!AcpiPsIsNamedOp (Opcode))
+    OpInfo = AcpiPsGetOpcodeInfo (Opcode);
+    if (!(OpInfo->Flags & AML_NAMED))
     {
         *OutOp = Op;
         return (AE_OK);
