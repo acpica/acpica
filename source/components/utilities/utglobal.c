@@ -627,6 +627,13 @@ CmInitGlobals (ACPI_INIT_DATA *InitData)
     Gbl_NextTableOwnerId        = FIRST_TABLE_ID;
     Gbl_NextMethodOwnerId       = FIRST_METHOD_ID;
 
+    /* Cache of small "state" objects */
+
+    Gbl_GenericStateCache       = NULL;
+    Gbl_GenericStateCacheDepth  = 0;
+
+
+
     /* Interpreter */
 
     Gbl_BufSeq                  = 0;
