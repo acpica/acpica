@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acinterp.h - Interpreter subcomponent prototypes and defines
- *       $Revision: 1.80 $
+ *       $Revision: 1.81 $
  *
  *****************************************************************************/
 
@@ -557,6 +557,11 @@ AcpiAmlDigitsNeeded (
 ACPI_STATUS
 AcpiAmlEisaIdToString (
     UINT32                  NumericId,
+    NATIVE_CHAR             *OutString);
+
+ACPI_STATUS
+AcpiUnsignedIntegerToString (
+    UINT32                  Value,
     NATIVE_CHAR             *OutString);
 
 ACPI_STATUS
