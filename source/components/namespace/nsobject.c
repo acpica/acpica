@@ -2,7 +2,7 @@
  *
  * Module Name: nsobject - Utilities for objects attached to namespace
  *                         table entries
- *              $Revision: 1.64 $
+ *              $Revision: 1.65 $
  *
  ******************************************************************************/
 
@@ -223,7 +223,7 @@ AcpiNsAttachObject (
     }
 
     /*
-     * If the object is an Node with an attached object,
+     * If the source object is a namespace Node with an attached object,
      * we will use that (attached) object
      */
     else if (VALID_DESCRIPTOR_TYPE (Object, ACPI_DESC_TYPE_NAMED) &&
