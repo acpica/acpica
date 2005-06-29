@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: utmisc - common utility procedures
- *              $Revision: 1.62 $
+ *              $Revision: 1.63 $
  *
  ******************************************************************************/
 
@@ -163,11 +163,11 @@ AcpiUtDisplayInitPathname (
     {
         if (Path)
         {
-            ACPI_DEBUG_PRINT ((ACPI_DB_INIT, "%s.%s\n", Buffer.Pointer, Path));
+            ACPI_DEBUG_PRINT ((ACPI_DB_INIT, "%s.%s\n", (char *) Buffer.Pointer, Path));
         }
         else
         {
-            ACPI_DEBUG_PRINT ((ACPI_DB_INIT, "%s\n", Buffer.Pointer));
+            ACPI_DEBUG_PRINT ((ACPI_DB_INIT, "%s\n", (char *) Buffer.Pointer));
         }
         AcpiOsFree (Buffer.Pointer);
     }
