@@ -164,7 +164,7 @@ EvSciHandler (void *Context)
      * Make sure that ACPI is enabled by checking SCI_EN.  Note that we are
      * required to treat the SCI interrupt as sharable, level, active low.
      */
-    if (!READ_ACPI_REGISTER (SCI_EN))
+    if (!HwRegisterIO (ACPI_READ, MTX_DO_NOT_LOCK, (INT32)SCI_EN))
     {
         REPORT_ERROR ("Received and SCI but ACPI is not enabled.");
         return_VALUE (INTERRUPT_NOT_HANDLED);
