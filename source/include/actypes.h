@@ -311,6 +311,7 @@ typedef UINT32                          ACPI_OBJECT_TYPE;
      * case additional "official" ObjectTypes are added in the future.  Also, values exceeding
      * the largest official ACPI ObjectType must not overlap with defined AML opcodes.
      */
+#define INTERNAL_TYPE_BEGIN             25
 #define INTERNAL_TYPE_DefField          (ACPI_OBJECT_TYPE) 25 /* 0x19  */
 #define INTERNAL_TYPE_BankField         (ACPI_OBJECT_TYPE) 26 /* 0x1A  */
 #define INTERNAL_TYPE_IndexField        (ACPI_OBJECT_TYPE) 27 /* 0x1B  */
