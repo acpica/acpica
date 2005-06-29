@@ -42,7 +42,7 @@ RSC=rc.exe
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_CONSOLE" /D "_MBCS" /YX /FD /c
-# ADD CPP /nologo /MT /W4 /GX /O2 /I "..\..\source\include" /D "NDEBUG" /D "WIN32" /D "_CONSOLE" /D "_MBCS" /D "_ACPI_EXEC_APP" /D "_MULTI_THREADED" /FD /c
+# ADD CPP /nologo /MT /Za /W4 /GX /O1 /Ob0 /I "..\..\source\include" /D "NDEBUG" /D "WIN32" /D "_CONSOLE" /D "_MBCS" /D "_ACPI_EXEC_APP" /D "_MULTI_THREADED" /FD /c
 # SUBTRACT CPP /YX
 # ADD BASE RSC /l 0x409 /d "NDEBUG"
 # ADD RSC /l 0x409 /d "NDEBUG"
@@ -51,7 +51,7 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=xilink6.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:console /machine:I386
-# ADD LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:console /machine:I386 /out:"bin/AcpiExec.exe"
+# ADD LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:console /map /machine:I386 /out:"bin/AcpiExec.exe"
 # Begin Special Build Tool
 SOURCE="$(InputPath)"
 PreLink_Desc=Checking existence of acpi/libraries directory
@@ -74,8 +74,8 @@ PostBuild_Cmds=copy bin\acpiexec.exe ..\..\libraries\acpiexec.exe	dir ..\..\libr
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_CONSOLE" /D "_MBCS" /YX /FD /GZ /c
-# ADD CPP /nologo /MT /W4 /Gm /GX /ZI /Od /I "..\..\source\include" /D "_DEBUG" /D "WIN32" /D "WIN32_LEAN_AND_MEAN" /D "_CONSOLE" /D "_MBCS" /D "_ACPI_EXEC_APP" /D "_MULTI_THREADED" /FR /FD /GZ /c
-# SUBTRACT CPP /YX
+# ADD CPP /nologo /MT /Za /W4 /Gm /GX- /ZI /Oa /Os /Oy /I "..\..\source\include" /D "_DEBUG" /D "WIN32" /D "WIN32_LEAN_AND_MEAN" /D "_CONSOLE" /D "_MBCS" /D "_ACPI_EXEC_APP" /D "_MULTI_THREADED" /FR /FD /GZ /c
+# SUBTRACT CPP /Og /Oi /YX
 # ADD BASE RSC /l 0x409 /d "_DEBUG"
 # ADD RSC /l 0x409 /d "_DEBUG"
 BSC32=bscmake.exe
@@ -83,7 +83,7 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=xilink6.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:console /debug /machine:I386 /pdbtype:sept
-# ADD LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:console /debug /machine:I386 /out:"bin/AcpiExec.exe" /pdbtype:sept
+# ADD LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:console /map /debug /machine:I386 /out:"bin/AcpiExec.exe" /pdbtype:sept
 # Begin Special Build Tool
 SOURCE="$(InputPath)"
 PreLink_Desc=Checking existence of acpi/libraries directory
@@ -134,11 +134,11 @@ SOURCE=..\..\source\components\utilities\utinit.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\source\components\utilities\utobject.c
+SOURCE=..\..\source\components\utilities\utmisc.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\source\components\utilities\utmisc.c
+SOURCE=..\..\source\components\utilities\utobject.c
 # End Source File
 # Begin Source File
 
@@ -527,6 +527,7 @@ SOURCE=..\..\source\common\getopt.c
 # Begin Source File
 
 SOURCE=..\..\source\os_specific\service_layers\oswinxf.c
+# ADD CPP /Ze
 # End Source File
 # End Group
 # Begin Group "Resources"
