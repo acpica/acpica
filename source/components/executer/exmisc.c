@@ -27,7 +27,7 @@
  * Code in any form, with the right to sublicense such rights; and
  *
  * 2.3. Intel grants Licensee a non-exclusive and non-transferable patent
- * license (without the right to sublicense), under only those claims of Intel
+ * license (with the right to sublicense), under only those claims of Intel
  * patents that are infringed by the Original Intel Code, to make, use, sell,
  * offer to sell, and import the Covered Code and derivative works thereof
  * solely to the minimum extent necessary to exercise the above copyright
@@ -169,9 +169,9 @@ AmlExecCreateField (
     UINT32                  NumOperands;
     UINT16                  BitCount;
     UINT32                  BitOffset;
-    UINT32                  i;
-    UINT8                   bTypeFound;
-    char                    TypeFound[20];
+    UINT32                  StackIndex;
+    UINT8                   TypeFound;
+    char                    TypeName[20];
     char                    *TypeFoundPtr = NULL;
 
 
@@ -215,22 +215,22 @@ AmlExecCreateField (
 
     AmlDumpObjStack (MODE_Exec, OpName, NumOperands, "after AmlPrepObjStack");
 
-    ResDesc = (ACPI_OBJECT_INTERNAL *) ObjStack[ObjStackTop--];        /* result */
+    StackIndex = 0;
+    ResDesc = AmlObjStackGetValue (StackIndex++);           /* result */
     
     if (AML_CreateFieldOp == opcode)
     {
-        CntDesc = (ACPI_OBJECT_INTERNAL *) ObjStack[ObjStackTop--];        /* count */
+        CntDesc = AmlObjStackGetValue (StackIndex++);           /* count */
     }
 
-    OffDesc = (ACPI_OBJECT_INTERNAL *) ObjStack[ObjStackTop--];        /* offset */
-    SrcDesc = (ACPI_OBJECT_INTERNAL *) ObjStack[ObjStackTop];          /* source */
-    ObjStackTop += NumOperands - 1;
+    OffDesc = AmlObjStackGetValue (StackIndex++);           /* offset */
+    SrcDesc = AmlObjStackGetValue (StackIndex++);           /* source */
 
     /* If ResDesc is a Name, it will be a direct name pointer after AmlPrepObjStack() */
     
     if (!IS_NS_HANDLE (ResDesc))
     {
-        DEBUG_PRINT (ACPI_ERROR, ("%s: destination must be a Name\n", OpName));
+        DEBUG_PRINT (ACPI_ERROR, ("AmlExecCreateField (%s): destination must be a Name\n", OpName));
         FUNCTION_STATUS_EXIT (AE_AML_ERROR);
         return AE_AML_ERROR;
     }
@@ -291,7 +291,7 @@ AmlExecCreateField (
     default:
 
         DEBUG_PRINT (ACPI_ERROR, (
-                "AmlExecCreateField:internal error: Unknown field creation opcode %02x\n",
+                "AmlExecCreateField: Internal error - unknown field creation opcode %02x\n",
                 opcode));
         FUNCTION_STATUS_EXIT (AE_AML_ERROR);
         return AE_AML_ERROR;
@@ -336,17 +336,17 @@ AmlExecCreateField (
 
     default:
 
-        bTypeFound = SrcDesc->Type;
+        TypeFound = SrcDesc->Type;
 
-        if ((bTypeFound > (UINT8) TYPE_Lvalue) ||
-            (BadType == NsTypeNames[bTypeFound]))
+        if ((TypeFound > (UINT8) TYPE_Lvalue) ||
+            (BadType == NsTypeNames[TypeFound]))
         {
-            sprintf (TypeFound, "encoding %d", bTypeFound);
-            TypeFoundPtr = TypeFound;
+            sprintf (TypeName, "encoding %d", TypeFound);
+            TypeFoundPtr = TypeName;
         }
         else
         {
-            TypeFoundPtr = NsTypeNames[bTypeFound];
+            TypeFoundPtr = NsTypeNames[TypeFound];
         }
 
         DEBUG_PRINT (ACPI_ERROR, (
@@ -404,15 +404,12 @@ AmlExecCreateField (
     
     Status = AmlExecStore (OffDesc, ResDesc);
 
-    /* Pop off everything from the stack */
+    /* 
+     * Pop off everything from the stack except the result,
+     * which we want to leave sitting at the stack top.
+     */
+    AmlObjStackPop (NumOperands - 1);
 
-    for (i = 0; i < (NumOperands - 1); i++)
-    {
-        ObjStack[ObjStackTop] = NULL;
-        ObjStackTop--;
-    }    
-    ObjStack[ObjStackTop] = NULL;
-    
 
     FUNCTION_STATUS_EXIT (Status);
     return Status;
@@ -465,9 +462,9 @@ AmlExecFatal (void)
 
     /* DefFatal    :=  FatalOp FatalType   FatalCode   FatalArg    */
 
-    ArgDesc  = (ACPI_OBJECT_INTERNAL *) ObjStack[ObjStackTop];
-    CodeDesc = (ACPI_OBJECT_INTERNAL *) ObjStack[ObjStackTop - 1];
-    TypeDesc = (ACPI_OBJECT_INTERNAL *) ObjStack[ObjStackTop - 2];
+    ArgDesc  = AmlObjStackGetValue (0);
+    CodeDesc = AmlObjStackGetValue (1);
+    TypeDesc = AmlObjStackGetValue (2);
 
     DEBUG_PRINT (ACPI_INFO,
                 ("FatalOp: Type %x Code %x Arg %x <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<\n",
@@ -527,9 +524,9 @@ AmlExecIndex (void)
     {
         AmlDumpObjStack (MODE_Exec, ShortOps[AML_IndexOp], 3, "after AmlPrepObjStack");
 
-        ResDesc = (ACPI_OBJECT_INTERNAL *) ObjStack[ObjStackTop];
-        IdxDesc = (ACPI_OBJECT_INTERNAL *) ObjStack[ObjStackTop - 1];
-        PkgDesc = (ACPI_OBJECT_INTERNAL *) ObjStack[ObjStackTop - 2];
+        ResDesc = AmlObjStackGetValue (0);
+        IdxDesc = AmlObjStackGetValue (1);
+        PkgDesc = AmlObjStackGetValue (2);
 
         if (IdxDesc->Number.Value < 0 || 
             IdxDesc->Number.Value >= (UINT32) PkgDesc->Package.Count)
@@ -556,7 +553,9 @@ AmlExecIndex (void)
             CmFree (IdxDesc);
         }
 
-        ObjStackTop -= 2;
+        /* Pop and clear two stack entries */
+
+        AmlObjStackPop (2);
     }
 
     FUNCTION_STATUS_EXIT (Status);
@@ -618,12 +617,12 @@ AmlExecMatch (void)
 
     AmlDumpObjStack (MODE_Exec, ShortOps[AML_MatchOp], 6, "after AmlPrepObjStack");
 
-    StartDesc = (ACPI_OBJECT_INTERNAL *) ObjStack[ObjStackTop];
-    V2Desc    = (ACPI_OBJECT_INTERNAL *) ObjStack[ObjStackTop - 1];
-    Op2Desc   = (ACPI_OBJECT_INTERNAL *) ObjStack[ObjStackTop - 2];
-    V1Desc    = (ACPI_OBJECT_INTERNAL *) ObjStack[ObjStackTop - 3];
-    Op1Desc   = (ACPI_OBJECT_INTERNAL *) ObjStack[ObjStackTop - 4];
-    PkgDesc   = (ACPI_OBJECT_INTERNAL *) ObjStack[ObjStackTop - 5];
+    StartDesc = AmlObjStackGetValue (0);
+    V2Desc    = AmlObjStackGetValue (1);
+    Op2Desc   = AmlObjStackGetValue (2);
+    V1Desc    = AmlObjStackGetValue (3);
+    Op1Desc   = AmlObjStackGetValue (4);
+    PkgDesc   = AmlObjStackGetValue (5);
 
     /* Validate match comparison sub-opcodes */
     
@@ -807,13 +806,17 @@ AmlExecMatch (void)
     PkgDesc->Type = (UINT8) TYPE_Number;
     PkgDesc->Number.Value = MatchValue;
 
+    /* Free the operands */
+
     CmFree (StartDesc);
     CmFree (V2Desc);
     CmFree (Op2Desc);
     CmFree (V1Desc);
     CmFree (Op1Desc);
     
-    ObjStackTop -= 5;          /* Remove operands */
+    /* Remove operands from the object stack */
+
+    AmlObjStackPop (5);          
 
     FUNCTION_STATUS_EXIT (AE_OK);
     return AE_OK;
