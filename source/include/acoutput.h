@@ -46,21 +46,21 @@ GetDebugLevel (void);
 void
 SetDebugLevel (INT32 level);
 void
-FunctionTrace (char *ModuleName, INT32 LineNumber, char * FunctionName);
+FunctionTrace (char *ModuleName, INT32 LineNumber, INT32 ComponentId, char * FunctionName);
 void
-DebugPrintPrefix (char *ModuleName, INT32 LineNumber);
+DebugPrintPrefix (char *ModuleName, INT32 LineNumber, INT32 ComponentId);
 void
-DebugPrint (char *ModuleName, INT32 LineNumber, INT32 PrintLevel, char *Format, ...);
+DebugPrint (char *ModuleName, INT32 LineNumber, INT32 ComponentId, INT32 PrintLevel, char *Format, ...);
 void
 DebugPrintRaw (char *Format, ...);
 void
-_ReportInfo (char *ModuleName, INT32 LineNumber, ST_KEY_DESC_TABLE *KdtEntry);
+_ReportInfo (char *ModuleName, INT32 LineNumber, INT32 ComponentId, ST_KEY_DESC_TABLE *KdtEntry);
 void
-_ReportError (char *ModuleName, INT32 LineNumber, ST_KEY_DESC_TABLE *KdtEntry);
+_ReportError (char *ModuleName, INT32 LineNumber, INT32 ComponentId, ST_KEY_DESC_TABLE *KdtEntry);
 void
-_ReportWarning (char *ModuleName, INT32 LineNumber, ST_KEY_DESC_TABLE *KdtEntry);
+_ReportWarning (char *ModuleName, INT32 LineNumber, INT32 ComponentId, ST_KEY_DESC_TABLE *KdtEntry);
 void
-_ReportSuccess (char *ModuleName, INT32 LineNumber, ST_KEY_DESC_TABLE *KdtEntry);
+_ReportSuccess (char *ModuleName, INT32 LineNumber, INT32 ComponentId, ST_KEY_DESC_TABLE *KdtEntry);
 void 
 _Kinc_error (char *, INT32, INT32, char *, INT32, INT32); 
 void 
@@ -91,15 +91,15 @@ void DumpBuf (UINT8*Buffer, UINT32 Count, INT32 Flags, LogHandle LogFile,
  */
 
 void *
-_AllocateObjectDesc (char *ModuleName, INT32 LineNumber, ST_KEY_DESC_TABLE *KdtEntry);
+_AllocateObjectDesc (char *ModuleName, INT32 LineNumber, INT32 ComponentId, ST_KEY_DESC_TABLE *KdtEntry);
 void *
-_LocalAllocate (char *ModuleName, INT32 LineNumber, INT32 AllocSize);
+_LocalAllocate (char *ModuleName, INT32 LineNumber, INT32 ComponentId, INT32 AllocSize);
 void *
-_LocalCallocate (char *ModuleName, INT32 LineNumber, INT32 AllocSize);
+_LocalCallocate (char *ModuleName, INT32 LineNumber, INT32 ComponentId, INT32 AllocSize);
 
-#define LocalAllocate(a)                _LocalAllocate(_THIS_MODULE,__LINE__,a)
-#define LocalCallocate(a)               _LocalCallocate(_THIS_MODULE,__LINE__,a)
-#define AllocateObjectDesc(a)           _AllocateObjectDesc(_THIS_MODULE,__LINE__,a)
+#define LocalAllocate(a)                _LocalAllocate(_THIS_MODULE,__LINE__,_COMPONENT,a)
+#define LocalCallocate(a)               _LocalCallocate(_THIS_MODULE,__LINE__,_COMPONENT,a)
+#define AllocateObjectDesc(a)           _AllocateObjectDesc(_THIS_MODULE,__LINE__,_COMPONENT,a)
 
 /* 
  * Trace macro.
@@ -107,7 +107,7 @@ _LocalCallocate (char *ModuleName, INT32 LineNumber, INT32 AllocSize);
  */
 
 #ifdef _TRACE
-#define FUNCTION_TRACE(a)               FunctionTrace (_THIS_MODULE,__LINE__,a)
+#define FUNCTION_TRACE(a)               FunctionTrace (_THIS_MODULE,__LINE__,_COMPONENT,a)
 #else
 #define FUNCTION_TRACE(a)
 #endif
@@ -124,16 +124,16 @@ _LocalCallocate (char *ModuleName, INT32 LineNumber, INT32 AllocSize);
 
 /* Error reporting.  These versions add callers module/line# */
 
-#define REPORT_INFO(a)                  _ReportInfo(_THIS_MODULE,__LINE__,a)
-#define REPORT_ERROR(a)                 _ReportError(_THIS_MODULE,__LINE__,a)
-#define REPORT_WARNING(a)               _ReportWarning(_THIS_MODULE,__LINE__,a)
-#define REPORT_SUCCESS(a)               _ReportSuccess(_THIS_MODULE,__LINE__,a)
+#define REPORT_INFO(a)                  _ReportInfo(_THIS_MODULE,__LINE__,_COMPONENT,a)
+#define REPORT_ERROR(a)                 _ReportError(_THIS_MODULE,__LINE__,_COMPONENT,a)
+#define REPORT_WARNING(a)               _ReportWarning(_THIS_MODULE,__LINE__,_COMPONENT,a)
+#define REPORT_SUCCESS(a)               _ReportSuccess(_THIS_MODULE,__LINE__,_COMPONENT,a)
 
 /* Error reporting.  These versions pass thru the module/line# */
 
-#define _REPORT_INFO(a,b,c)             _ReportInfo(a,b,c)
-#define _REPORT_ERROR(a,b,c)            _ReportError(a,b,c)
-#define _REPORT_WARNING(a,b,c)          _ReportWarning(a,b,c)
+#define _REPORT_INFO(a,b,c,d)           _ReportInfo(a,b,c,d)
+#define _REPORT_ERROR(a,b,c,d)          _ReportError(a,b,c,d)
+#define _REPORT_WARNING(a,b,c,d)        _ReportWarning(a,b,c,d)
 
 
 /*
@@ -155,11 +155,11 @@ _LocalCallocate (char *ModuleName, INT32 LineNumber, INT32 AllocSize);
 
 #define	PARAM_LIST(PL) PL
 
-#define DEBUG_PRINT(lvl,fp)            if (lvl & DebugLevel) {\
-                                            DebugPrintPrefix (_THIS_MODULE,__LINE__);\
+#define DEBUG_PRINT(lvl,fp)            if ((lvl & DebugLevel) && (_COMPONENT & DebugLayer)) {\
+                                            DebugPrintPrefix (_THIS_MODULE,__LINE__,_COMPONENT);\
                                             DebugPrintRaw PARAM_LIST(fp);}
 
-#define DEBUG_PRINT_RAW(lvl,fp)        if (lvl & DebugLevel) {\
+#define DEBUG_PRINT_RAW(lvl,fp)        if ((lvl & DebugLevel) && (_COMPONENT & DebugLayer)) {\
                                             DebugPrintRaw PARAM_LIST(fp);}
 
 
@@ -179,6 +179,7 @@ _LocalCallocate (char *ModuleName, INT32 LineNumber, INT32 AllocSize);
 
 /* Various debug print levels, controlled by global DebugLevel */
 
+/* OBSOLETE
 
 #define GLOBAL_SUCCESS              0x00000001
 #define GLOBAL_ERROR                0x00000002
@@ -201,18 +202,43 @@ _LocalCallocate (char *ModuleName, INT32 LineNumber, INT32 AllocSize);
 #define EV_ERROR                    0x00002000
 #define EV_WARN                     0x00004000
 #define EV_INFO                     0x00008000
+*/
 
-#define TRACE_LOAD                  0x00100000
-#define TRACE_OPCODE                0x00200000
-#define TRACE_STACK                 0x00400000
-#define TRACE_EXEC                  0x00800000
-#define TRACE_NAMES                 0x01000000
-#define TRACE_OPREGION              0x02000000
-#define TRACE_BFIELD                0x04000000
-#define TRACE_TRASH                 0x08000000
-#define TRACE_OPCODE_EXEC           0x00A00000
-#define TRACE_TABLES                0x10000000
-#define TRACE_FUNCTIONS             0x20000000
+/* Component IDs -- used in global DebugLayer */
+
+#define GLOBAL                      0x00000001
+#define INTERPRETER                 0x00000002
+#define NAMESPACE                   0x00000004
+#define DEVICE_MANAGER              0x00000008
+#define RESOURCE_MANAGER            0x00000010
+#define EVENT_HANDLING              0x00000020
+#define MISCELLANEOUS               0x00000040
+
+#define OS_DEPENDENT                0x00000080
+
+#define ALL_COMPONENTS              0x000100FF
+
+/* Exception level or Trace level */
+
+
+#define ACPI_SUCCESS                0x00000001
+#define ACPI_INFO                   0x00000002
+#define ACPI_WARN                   0x00000004
+#define ACPI_ERROR                  0x00000008
+#define ACPI_FATAL                  0x00000010
+#define ACPI_ALL                    0x0000001F
+
+#define TRACE_LOAD                  0x00000100
+#define TRACE_OPCODE                0x00000200
+#define TRACE_STACK                 0x00000400
+#define TRACE_EXEC                  0x00000800
+#define TRACE_NAMES                 0x00001000
+#define TRACE_OPREGION              0x00002000
+#define TRACE_BFIELD                0x00004000
+#define TRACE_TRASH                 0x00008000
+#define TRACE_TABLES                0x00010000
+#define TRACE_FUNCTIONS             0x00020000
+#define TRACE_ALL                   0x000FFF00
 
 
 

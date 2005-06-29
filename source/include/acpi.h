@@ -14,15 +14,18 @@
  | FILENAME: acpi.h - Master include file, Publics and external data for ACPI.LIB
  |__________________________________________________________________________
  |
- | $Revision: 1.8 $
- | $Date: 2005/06/29 19:58:24 $
+ | $Revision: 1.9 $
+ | $Date: 2005/06/29 19:58:25 $
  | $Log: acpi.h,v $
- | Revision 1.8  2005/06/29 19:58:24  aystarik
- | New version of DEBUG_PRINT
+ | Revision 1.9  2005/06/29 19:58:25  aystarik
+ | Split debug switch into component_id and level
  |
  | 
- | date	99.04.02.22.40.00;	author rmoore1;	state Exp;
+ | date	99.04.05.23.10.00;	author rmoore1;	state Exp;
  |
+ * 
+ * 9     4/05/99 4:10p Rmoore1
+ * Split debug switch into component_id and level
  * 
  * 8     4/02/99 2:40p Rmoore1
  * New version of DEBUG_PRINT
@@ -121,6 +124,7 @@ extern char *Why;
 
 
 extern INT32 DebugLevel;
+extern INT32 DebugLayer;
 
 
 
