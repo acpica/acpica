@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: cmglobal - Global variables for the ACPI subsystem
- *              $Revision: 1.108 $
+ *              $Revision: 1.109 $
  *
  *****************************************************************************/
 
@@ -164,6 +164,9 @@ UINT32                      AcpiGbl_StartupFlags = 0;
 
 /* System starts unitialized! */
 BOOLEAN                     AcpiGbl_Shutdown = TRUE;
+
+
+UINT8                       AcpiGbl_DecodeTo8bit [8] = {1,2,4,8,16,32,64,128};
 
 
 /******************************************************************************
