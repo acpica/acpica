@@ -130,12 +130,15 @@
  * FUNCTION:    AcpiRsIoResource
  *
  * PARAMETERS:
- *              ByteStreamBuffer        - Pointer to the resource input byte stream
- *              BytesConsumed           - UINT32 pointer that is filled with the number
- *                                          of bytes consumed from the ByteStreamBuffer
+ *              ByteStreamBuffer        - Pointer to the resource input byte
+ *                                          stream
+ *              BytesConsumed           - UINT32 pointer that is filled with
+ *                                          the number of bytes consumed from
+ *                                          the ByteStreamBuffer
  *              OutputBuffer            - Pointer to the user's return buffer
- *              StructureSize           - UINT32 pointer that is filled with the number
- *                                          of bytes in the filled in structure
+ *              StructureSize           - UINT32 pointer that is filled with
+ *                                          the number of bytes in the filled
+ *                                          in structure
  *
  * RETURN:      Status  AE_OK if okay, else a valid ACPI_STATUS code
  *
@@ -156,9 +159,10 @@ AcpiRsIoResource (
     RESOURCE                *OutputStruct = (RESOURCE *) * OutputBuffer;
     UINT16                  Temp16 = 0;
     UINT8                   Temp8 = 0;
-    UINT32                  StructSize = sizeof (IO_RESOURCE) + RESOURCE_LENGTH_NO_DATA;
+    UINT32                  StructSize = sizeof (IO_RESOURCE) +
+                                         RESOURCE_LENGTH_NO_DATA;
 
-  
+
     FUNCTION_TRACE ("RsIoResource");
 
     /*
@@ -226,12 +230,15 @@ AcpiRsIoResource (
  * FUNCTION:    AcpiRsFixedIoResource
  *
  * PARAMETERS:
- *              ByteStreamBuffer        - Pointer to the resource input byte stream
- *              BytesConsumed           - UINT32 pointer that is filled with the number
- *                                          of bytes consumed from the ByteStreamBuffer
+ *              ByteStreamBuffer        - Pointer to the resource input byte
+ *                                          stream
+ *              BytesConsumed           - UINT32 pointer that is filled with
+ *                                          the number of bytes consumed from
+ *                                          the ByteStreamBuffer
  *              OutputBuffer            - Pointer to the user's return buffer
- *              StructureSize           - UINT32 pointer that is filled with the number
- *                                          of bytes in the filled in structure
+ *              StructureSize           - UINT32 pointer that is filled with
+ *                                          the number of bytes in the filled
+ *                                          in structure
  *
  * RETURN:      Status  AE_OK if okay, else a valid ACPI_STATUS code
  *
@@ -252,7 +259,8 @@ AcpiRsFixedIoResource (
     RESOURCE                *OutputStruct = (RESOURCE *) * OutputBuffer;
     UINT16                  Temp16 = 0;
     UINT8                   Temp8 = 0;
-    UINT32                  StructSize = sizeof (FIXED_IO_RESOURCE) + RESOURCE_LENGTH_NO_DATA;
+    UINT32                  StructSize = sizeof (FIXED_IO_RESOURCE) +
+                                         RESOURCE_LENGTH_NO_DATA;
 
 
     FUNCTION_TRACE ("RsFixedIoResource");
@@ -268,7 +276,7 @@ AcpiRsFixedIoResource (
      * Check Range Base Address
      */
     Buffer += 1;
-    STORE16 (&Temp16, Buffer);
+    MOVE_UNALIGNED16_TO_16 (&Temp16, Buffer);
 
     OutputStruct->Data.FixedIo.BaseAddress = Temp16;
 
@@ -300,8 +308,9 @@ AcpiRsFixedIoResource (
  * PARAMETERS:
  *              LinkedList              - Pointer to the resource linked list
  *              OutputBuffer            - Pointer to the user's return buffer
- *              BytesConsumed           - UINT32 pointer that is filled with the number
- *                                          of bytes of the OutputBuffer used
+ *              BytesConsumed           - UINT32 pointer that is filled with
+ *                                          the number of bytes of the
+ *                                          OutputBuffer used
  *
  * RETURN:      Status  AE_OK if okay, else a valid ACPI_STATUS code
  *
@@ -319,7 +328,7 @@ AcpiRsIoStream (
     UINT8                   *Buffer = *OutputBuffer;
     UINT16                  Temp16 = 0;
     UINT8                   Temp8 = 0;
-    
+
 
     FUNCTION_TRACE ("RsIoStream");
 
@@ -378,7 +387,8 @@ AcpiRsIoStream (
     /*
      * Return the number of bytes consumed in this operation
      */
-    *BytesConsumed = (UINT32) ((NATIVE_UINT) Buffer - (NATIVE_UINT) *OutputBuffer);
+    *BytesConsumed = (UINT32) ((NATIVE_UINT) Buffer -
+                     (NATIVE_UINT) *OutputBuffer);
 
     return_ACPI_STATUS (AE_OK);
 }
@@ -390,8 +400,9 @@ AcpiRsIoStream (
  * PARAMETERS:
  *              LinkedList              - Pointer to the resource linked list
  *              OutputBuffer            - Pointer to the user's return buffer
- *              BytesConsumed           - UINT32 pointer that is filled with the number
- *                                          of bytes of the OutputBuffer used
+ *              BytesConsumed           - UINT32 pointer that is filled with
+ *                                          the number of bytes of the
+ *                                          OutputBuffer used
  *
  * RETURN:      Status  AE_OK if okay, else a valid ACPI_STATUS code
  *
@@ -409,7 +420,7 @@ AcpiRsFixedIoStream (
     UINT8                   *Buffer = *OutputBuffer;
     UINT16                  Temp16 = 0;
     UINT8                   Temp8 = 0;
-    
+
 
     FUNCTION_TRACE ("RsFixedIoStream");
 
@@ -441,7 +452,8 @@ AcpiRsFixedIoStream (
     /*
      * Return the number of bytes consumed in this operation
      */
-    *BytesConsumed = (UINT32) ((NATIVE_UINT) Buffer - (NATIVE_UINT) *OutputBuffer);
+    *BytesConsumed = (UINT32) ((NATIVE_UINT) Buffer -
+                     (NATIVE_UINT) *OutputBuffer);
 
     return_ACPI_STATUS (AE_OK);
 }
@@ -451,12 +463,15 @@ AcpiRsFixedIoStream (
  * FUNCTION:    AcpiRsDmaResource
  *
  * PARAMETERS:
- *              ByteStreamBuffer        - Pointer to the resource input byte stream
- *              BytesConsumed           - UINT32 pointer that is filled with the number
- *                                          of bytes consumed from the ByteStreamBuffer
+ *              ByteStreamBuffer        - Pointer to the resource input byte
+ *                                          stream
+ *              BytesConsumed           - UINT32 pointer that is filled with
+ *                                          the number of bytes consumed from
+ *                                          the ByteStreamBuffer
  *              OutputBuffer            - Pointer to the user's return buffer
- *              StructureSize           - UINT32 pointer that is filled with the number
- *                                          of bytes in the filled in structure
+ *              StructureSize           - UINT32 pointer that is filled with
+ *                                          the number of bytes in the filled
+ *                                          in structure
  *
  * RETURN:      Status  AE_OK if okay, else a valid ACPI_STATUS code
  *
@@ -477,9 +492,11 @@ AcpiRsDmaResource (
     RESOURCE                *OutputStruct = (RESOURCE *) * OutputBuffer;
     UINT8                   Temp8 = 0;
     UINT8                   Index;
-    UINT32                  StructSize = sizeof(DMA_RESOURCE) + RESOURCE_LENGTH_NO_DATA;
+    UINT8                   i;
+    UINT32                  StructSize = sizeof(DMA_RESOURCE) +
+                                         RESOURCE_LENGTH_NO_DATA;
 
-   
+
     FUNCTION_TRACE ("RsDmaResource");
 
     /*
@@ -496,18 +513,18 @@ AcpiRsDmaResource (
 
     Temp8 = *Buffer;
 
-    OutputStruct->Data.Dma.NumberOfChannels = 0;
-
     /* Decode the IRQ bits */
 
-    for (Index = 0; Index < 8; Index++)
+    for (i = 0, Index = 0; Index < 8; Index++)
     {
         if ((Temp8 >> Index) & 0x01)
         {
-            OutputStruct->Data.Dma.Channels[OutputStruct->Data.Dma.NumberOfChannels] = Index;
-            OutputStruct->Data.Dma.NumberOfChannels += 1;
+            OutputStruct->Data.Dma.Channels[i] = Index;
+            i++;
         }
     }
+    OutputStruct->Data.Dma.NumberOfChannels = i;
+
 
     /*
      * Calculate the structure size based upon the number of interrupts
@@ -561,8 +578,9 @@ AcpiRsDmaResource (
  * PARAMETERS:
  *              LinkedList              - Pointer to the resource linked list
  *              OutputBuffer            - Pointer to the user's return buffer
- *              BytesConsumed           - UINT32 pointer that is filled with the number
- *                                          of bytes of the OutputBuffer used
+ *              BytesConsumed           - UINT32 pointer that is filled with
+ *                                          the number of bytes of the
+ *                                          OutputBuffer used
  *
  * RETURN:      Status  AE_OK if okay, else a valid ACPI_STATUS code
  *
@@ -598,7 +616,9 @@ AcpiRsDmaStream (
     /*
      * Loop through all of the Channels and set the mask bits
      */
-    for (Index = 0; Index < LinkedList->Data.Dma.NumberOfChannels; Index++)
+    for (Index = 0;
+         Index < LinkedList->Data.Dma.NumberOfChannels;
+         Index++)
     {
         Temp16 = (UINT16) LinkedList->Data.Dma.Channels[Index];
         Temp8 |= 0x1 << Temp16;
@@ -624,7 +644,8 @@ AcpiRsDmaStream (
     /*
      * Return the number of bytes consumed in this operation
      */
-    *BytesConsumed = (UINT32) ((NATIVE_UINT) Buffer - (NATIVE_UINT) *OutputBuffer);
+    *BytesConsumed = (UINT32) ((NATIVE_UINT) Buffer -
+                     (NATIVE_UINT) *OutputBuffer);
 
     return_ACPI_STATUS (AE_OK);
 }

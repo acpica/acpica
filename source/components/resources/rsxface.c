@@ -1,7 +1,6 @@
-
 /******************************************************************************
  *
- * Module Name: rsapi - Public interfaces to the ACPI subsystem
+ * Module Name: rsxface - Public interfaces to the ACPI subsystem
  *
  *****************************************************************************/
 
@@ -115,7 +114,7 @@
  *****************************************************************************/
 
 
-#define __RSAPI_C__
+#define __RSXFACE_C__
 
 #include "acpi.h"
 #include "interp.h"
@@ -123,7 +122,7 @@
 #include "resource.h"
 
 #define _COMPONENT          RESOURCE_MANAGER
-        MODULE_NAME         ("rsapi");
+        MODULE_NAME         ("rsxface");
 
 
 /******************************************************************************
@@ -137,16 +136,16 @@
  *
  * RETURN:      Status          - the status of the call
  *
- * DESCRIPTION: This function is called to get the IRQ routing table for a specific
- *              bus.  The caller must first acquire a handle for the desired bus.
- *              The routine table is placed in the buffer pointed to by the OutBuffer
- *              variable parameter.
+ * DESCRIPTION: This function is called to get the IRQ routing table for a
+ *              specific bus.  The caller must first acquire a handle for the
+ *              desired bus.  The routine table is placed in the buffer pointed
+ *              to by the OutBuffer variable parameter.
  *
- *              If the function fails an appropriate status will be returned and the
- *              value of OutBuffer is undefined.
+ *              If the function fails an appropriate status will be returned
+ *              and the value of OutBuffer is undefined.
  *
- *              This function attempts to execute the _PRT method contained in the
- *              object indicated by the passed DeviceHandle.
+ *              This function attempts to execute the _PRT method contained in
+ *              the object indicated by the passed DeviceHandle.
  *
  ******************************************************************************/
 
@@ -179,15 +178,15 @@ AcpiGetIrqRoutingTable  (
  * RETURN:      Status          - the status of the call
  *
  * DESCRIPTION: This function is called to get the current resources for a
- *              specific device.  The caller must first acquire a handle for the
- *              desired device.  The resource data is placed in the buffer pointed
- *              to by the OutBuffer variable parameter.
+ *              specific device.  The caller must first acquire a handle for
+ *              the desired device.  The resource data is placed in the buffer
+ *              pointed to by the OutBuffer variable parameter.
  *
- *              If the function fails an appropriate status will be returned and the
- *              value of OutBuffer is undefined.
+ *              If the function fails an appropriate status will be returned
+ *              and the value of OutBuffer is undefined.
  *
- *              This function attempts to execute the _CRS method contained in the
- *              object indicated by the passed DeviceHandle.
+ *              This function attempts to execute the _CRS method contained in
+ *              the object indicated by the passed DeviceHandle.
  *
  ******************************************************************************/
 
@@ -220,12 +219,12 @@ AcpiGetCurrentResources (
  * RETURN:      Status          - the status of the call
  *
  * DESCRIPTION: This function is called to get a list of the possible resources
- *              for a specific device.  The caller must first acquire a handle for the
- *              desired device.  The resource data is placed in the buffer pointed
- *              to by the OutBuffer variable.
+ *              for a specific device.  The caller must first acquire a handle
+ *              for the desired device.  The resource data is placed in the
+ *              buffer pointed to by the OutBuffer variable.
  *
- *              If the function fails an appropriate status will be returned and the
- *              value of OutBuffer is undefined.
+ *              If the function fails an appropriate status will be returned
+ *              and the value of OutBuffer is undefined.
  *
  ******************************************************************************/
 
@@ -257,9 +256,9 @@ AcpiGetPossibleResources (
  * RETURN:      Status          - the status of the call
  *
  * DESCRIPTION: This function is called to set the current resources for a
- *              specific device.  The caller must first acquire a handle for the
- *              desired device.  The resource data is passed to the routine the
- *              buffer pointed to by the InBuffer variable.
+ *              specific device.  The caller must first acquire a handle for
+ *              the desired device.  The resource data is passed to the routine
+ *              the buffer pointed to by the InBuffer variable.
  *
  ******************************************************************************/
 

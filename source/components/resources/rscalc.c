@@ -156,7 +156,8 @@ AcpiRsCalculateByteStreamLength (
     {
 
         /*
-         * Init the variable that will hold the size to add to the total.
+         * Init the variable that will hold the size to add to the
+         *  total.
          */
         SizeOfThisBit = 0;
 
@@ -229,9 +230,10 @@ AcpiRsCalculateByteStreamLength (
              * Vendor Defined Resource
              */
             /*
-             * For a Vendor Specific resource, if the Length is between 1 and 7
-             *  it will be created as a Small Resource data type, otherwise it
-             *  is a Large Resource data type.
+             * For a Vendor Specific resource, if the Length is 
+             *  between 1 and 7 it will be created as a Small
+             *  Resource data type, otherwise it is a Large
+             *  Resource data type.
              */
             if(LinkedList->Data.VendorSpecific.Length > 7)
             {
@@ -241,7 +243,8 @@ AcpiRsCalculateByteStreamLength (
             {
                 SizeOfThisBit = 1;
             }
-            SizeOfThisBit += LinkedList->Data.VendorSpecific.Length;
+            SizeOfThisBit += 
+                LinkedList->Data.VendorSpecific.Length;
             break;
 
         case EndTag:
@@ -290,15 +293,17 @@ AcpiRsCalculateByteStreamLength (
              * 16-Bit Address Resource
              */
             /*
-             * The base size of this byte stream is 16. If a Resource Source
-             *  string is not NULL, add 1 for the Index + the length of the
-             *  null terminated string Resource Source + 1 for the null.
+             * The base size of this byte stream is 16. If a 
+             *  Resource Source string is not NULL, add 1 for 
+             *  the Index + the length of the null terminated 
+             *  string Resource Source + 1 for the null.
              */
             SizeOfThisBit = 16;
 
             if(NULL != LinkedList->Data.Address16.ResourceSource)
             {
-                SizeOfThisBit += (1 + LinkedList->Data.Address16.ResourceSourceStringLength);
+                SizeOfThisBit += (1 +
+                    LinkedList->Data.Address16.ResourceSourceStringLength);
             }
             break;
 
@@ -307,15 +312,17 @@ AcpiRsCalculateByteStreamLength (
              * 32-Bit Address Resource
              */
             /*
-             * The base size of this byte stream is 26. If a Resource Source
-             *  string is not NULL, add 1 for the Index + the length of the
-             *  null terminated string Resource Source + 1 for the null.
+             * The base size of this byte stream is 26. If a Resource
+             *  Source string is not NULL, add 1 for the Index + the
+             *  length of the null terminated string Resource Source +
+             *  1 for the null.
              */
             SizeOfThisBit = 26;
 
             if(NULL != LinkedList->Data.Address16.ResourceSource)
             {
-                SizeOfThisBit += (1 + LinkedList->Data.Address16.ResourceSourceStringLength);
+                SizeOfThisBit += (1 +
+                    LinkedList->Data.Address16.ResourceSourceStringLength);
             }
             break;
 
@@ -324,19 +331,23 @@ AcpiRsCalculateByteStreamLength (
              * Extended IRQ Resource
              */
             /*
-             * The base size of this byte stream is 9. This is for an Interrupt
-             *  table length of 1.  For each additional interrupt, add 4.
-             * If a Resource Source string is not NULL, add 1 for the Index
-             *  + the length of the null terminated string Resource Source
-             *  + 1 for the null.
+             * The base size of this byte stream is 9. This is for an
+             *  Interrupt table length of 1.  For each additional
+             *  interrupt, add 4.
+             * If a Resource Source string is not NULL, add 1 for the
+             *  Index + the length of the null terminated string
+             *  Resource Source + 1 for the null.
              */
             SizeOfThisBit = 9;
 
-            SizeOfThisBit += (LinkedList->Data.ExtendedIrq.NumberOfInterrupts - 1) * 4;
+            SizeOfThisBit +=
+                (LinkedList->Data.ExtendedIrq.NumberOfInterrupts -
+                 1) * 4;
 
             if(NULL != ExIrq->ResourceSource)
             {
-                SizeOfThisBit += (1 + LinkedList->Data.ExtendedIrq.ResourceSourceStringLength);
+                SizeOfThisBit += (1 +
+                    LinkedList->Data.ExtendedIrq.ResourceSourceStringLength);
             }
             break;
 
@@ -358,7 +369,8 @@ AcpiRsCalculateByteStreamLength (
         /*
          * Point to the next object
          */
-        LinkedList = (RESOURCE *) ((NATIVE_UINT) LinkedList + (NATIVE_UINT) LinkedList->Length);
+        LinkedList = (RESOURCE *) ((NATIVE_UINT) LinkedList +
+                     (NATIVE_UINT) LinkedList->Length);
     }
 
     /*
@@ -377,8 +389,9 @@ AcpiRsCalculateByteStreamLength (
  * PARAMETERS:
  *              ByteStreamBuffer        - Pointer to the resource byte stream
  *              ByteStreamBufferLength  - Size of ByteStreamBuffer
- *              SizeNeeded              - UINT32 pointer of the size buffer needed
- *                                          to properly return the parsed data
+ *              SizeNeeded              - UINT32 pointer of the size buffer
+ *                                          needed to properly return the
+ *                                          parsed data
  *
  * RETURN:      Status  AE_OK if okay, else a valid ACPI_STATUS code
  *
@@ -433,7 +446,8 @@ AcpiRsCalculateListLength (
                  */
                 BytesConsumed = 12;
 
-                StructureSize = sizeof (MEMORY24_RESOURCE) + RESOURCE_LENGTH_NO_DATA;
+                StructureSize = sizeof (MEMORY24_RESOURCE) +
+                                RESOURCE_LENGTH_NO_DATA;
 
                 break;
 
@@ -444,7 +458,7 @@ AcpiRsCalculateListLength (
                 Buffer = ByteStreamBuffer;
                 ++Buffer;
 
-                STORE16 (&Temp16, Buffer);
+                MOVE_UNALIGNED16_TO_16 (&Temp16, Buffer);
                 BytesConsumed = Temp16 + 3;
 
                 /*
@@ -464,7 +478,8 @@ AcpiRsCalculateListLength (
 
                 BytesConsumed = 20;
 
-                StructureSize = sizeof (MEMORY32_RESOURCE) + RESOURCE_LENGTH_NO_DATA;
+                StructureSize = sizeof (MEMORY32_RESOURCE) +
+                                RESOURCE_LENGTH_NO_DATA;
                 break;
 
             case FIXED_MEMORY_RANGE_32:
@@ -473,7 +488,8 @@ AcpiRsCalculateListLength (
                  */
                 BytesConsumed = 12;
 
-                StructureSize = sizeof(FIXED_MEMORY32_RESOURCE) + RESOURCE_LENGTH_NO_DATA;
+                StructureSize = sizeof(FIXED_MEMORY32_RESOURCE) +
+                                RESOURCE_LENGTH_NO_DATA;
                 break;
 
             case DWORD_ADDRESS_SPACE:
@@ -483,18 +499,19 @@ AcpiRsCalculateListLength (
                 Buffer = ByteStreamBuffer;
 
                 ++Buffer;
-                STORE16 (&Temp16, Buffer);
+                MOVE_UNALIGNED16_TO_16 (&Temp16, Buffer);
 
                 BytesConsumed = Temp16 + 3;
 
                 /*
-                 * Resource Source Index and Resource Source are optional
-                 *  elements.  Check the length of the Bytestream.  If
-                 *  it is greater than 23, that means that an Index exists
-                 *  and is followed by a null termininated string.  Therefore,
-                 *  set the temp variable to the length minus the minimum
-                 *  byte stream length plus the byte for the Index to determine
-                 *  the size of the NULL terminiated string.
+                 * Resource Source Index and Resource Source are
+                 *  optional elements.  Check the length of the
+                 *  Bytestream.  If it is greater than 23, that
+                 *  means that an Index exists and is followed by
+                 *  a null termininated string.  Therefore, set
+                 *  the temp variable to the length minus the minimum
+                 *  byte stream length plus the byte for the Index to
+                 *  determine the size of the NULL terminiated string.
                  */
                 if (23 < Temp16)
                 {
@@ -522,18 +539,19 @@ AcpiRsCalculateListLength (
                 Buffer = ByteStreamBuffer;
 
                 ++Buffer;
-                STORE16 (&Temp16, Buffer);
+                MOVE_UNALIGNED16_TO_16 (&Temp16, Buffer);
 
                 BytesConsumed = Temp16 + 3;
 
                 /*
-                 * Resource Source Index and Resource Source are optional
-                 *  elements.  Check the length of the Bytestream.  If
-                 *  it is greater than 13, that means that an Index exists
-                 *  and is followed by a null termininated string.  Therefore,
-                 *  set the temp variable to the length minus the minimum
-                 *  byte stream length plus the byte for the Index to determine
-                 *  the size of the NULL terminiated string.
+                 * Resource Source Index and Resource Source are
+                 *  optional elements.  Check the length of the
+                 *  Bytestream.  If it is greater than 13, that
+                 *  means that an Index exists and is followed by
+                 *  a null termininated string.  Therefore, set
+                 *  the temp variable to the length minus the minimum
+                 *  byte stream length plus the byte for the Index to
+                 *  determine the size of the NULL terminiated string.
                  */
                 if (13 < Temp16)
                 {
@@ -561,7 +579,7 @@ AcpiRsCalculateListLength (
                 Buffer = ByteStreamBuffer;
 
                 ++Buffer;
-                STORE16 (&Temp16, Buffer);
+                MOVE_UNALIGNED16_TO_16 (&Temp16, Buffer);
 
                 BytesConsumed = Temp16 + 3;
 
@@ -576,19 +594,21 @@ AcpiRsCalculateListLength (
 
                 /*
                  * To compensate for multiple interrupt numbers,
-                 *  Add 4 bytes for each additional interrupts greater than 1
+                 *  Add 4 bytes for each additional interrupts
+                 *  greater than 1
                  */
                 AdditionalBytes = (UINT8) ((Temp8 - 1) * 4);
 
                 /*
-                 * Resource Source Index and Resource Source are optional
-                 *  elements.  Check the length of the Bytestream.  If
-                 *  it is greater than 9 plus the Additional bytes from
-                 *  the interrupt table, that means that an Index exists
-                 *  and is followed by a null termininated string.  Therefore,
-                 *  set the temp variable to the length minus the minimum
-                 *  byte stream length plus the byte for the Index to determine
-                 *  the size of the NULL terminiated string.
+                /*
+                 * Resource Source Index and Resource Source are
+                 *  optional elements.  Check the length of the
+                 *  Bytestream.  If it is greater than 9, that
+                 *  means that an Index exists and is followed by
+                 *  a null termininated string.  Therefore, set
+                 *  the temp variable to the length minus the minimum
+                 *  byte stream length plus the byte for the Index to
+                 *  determine the size of the NULL terminiated string.
                  */
                 if (9 + AdditionalBytes < Temp16)
                 {
@@ -643,7 +663,8 @@ AcpiRsCalculateListLength (
                  * IRQ Resource
                  */
                 /*
-                 * Determine if it there are two or three trailing bytes
+                 * Determine if it there are two or three
+                 *  trailing bytes
                  */
                 Buffer = ByteStreamBuffer;
 
@@ -667,7 +688,7 @@ AcpiRsCalculateListLength (
                 /*
                  * Look at the number of bits set
                  */
-                STORE16 (&Temp16, Buffer);
+                MOVE_UNALIGNED16_TO_16 (&Temp16, Buffer);
 
                 for (Index = 0; Index < 16; Index++)
                 {
@@ -744,8 +765,9 @@ AcpiRsCalculateListLength (
                 }
 
 
-                StructureSize = sizeof (START_DEPENDENT_FUNCTIONS_RESOURCE) +
-                                RESOURCE_LENGTH_NO_DATA;
+                StructureSize =
+                        sizeof (START_DEPENDENT_FUNCTIONS_RESOURCE) +
+                        RESOURCE_LENGTH_NO_DATA;
                 break;
 
 
@@ -758,7 +780,6 @@ AcpiRsCalculateListLength (
 
                 StructureSize = RESOURCE_LENGTH;
                 break;
-
 
 
             case IO_PORT_DESCRIPTOR:

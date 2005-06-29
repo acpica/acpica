@@ -1,4 +1,3 @@
-
 /******************************************************************************
  *
  * Module Name: rsutils - Utilities for the resource manager
@@ -126,18 +125,18 @@
         MODULE_NAME         ("rsutils");
 
 
-
 /******************************************************************************
  *
  * FUNCTION:    AcpiRsGetPrtMethodData
  *
  * PARAMETERS:  DeviceHandle    - a handle to the containing object
- *              RetBuffer       - a pointer to a buffer structure for the results
+ *              RetBuffer       - a pointer to a buffer structure for the
+ *                                  results
  *
  * RETURN:      Status          - the status of the call
  *
- * DESCRIPTION: This function is called to get the _PRT value of an object contained
- *              in an object specified by the handle passed in
+ * DESCRIPTION: This function is called to get the _PRT value of an object
+ *              contained in an object specified by the handle passed in
  *
  *              If the function fails an appropriate status will be returned
  *              and the contents of the callers buffer is undefined.
@@ -230,12 +229,13 @@ Cleanup:
  * FUNCTION:    AcpiRsGetCrsMethodData
  *
  * PARAMETERS:  DeviceHandle    - a handle to the containing object
- *              RetBuffer       - a pointer to a buffer structure for the results
+ *              RetBuffer       - a pointer to a buffer structure for the
+ *                                  results
  *
  * RETURN:      Status          - the status of the call
  *
- * DESCRIPTION: This function is called to get the _CRS value of an object contained
- *              in an object specified by the handle passed in
+ * DESCRIPTION: This function is called to get the _CRS value of an object
+ *              contained in an object specified by the handle passed in
  *
  *              If the function fails an appropriate status will be returned
  *              and the contents of the callers buffer is undefined.
@@ -254,7 +254,7 @@ AcpiRsGetCrsMethodData (
 
     FUNCTION_TRACE ("RsGetCrsMethodData");
 
-  
+
     /*
      *  Must have a valid handle and buffer, So we have to have a handle
      *  a return buffer structure and if there is a non-zero buffer length
@@ -332,12 +332,13 @@ Cleanup:
  * FUNCTION:    AcpiRsGetPrsMethodData
  *
  * PARAMETERS:  DeviceHandle    - a handle to the containing object
- *              RetBuffer       - a pointer to a buffer structure for the results
+ *              RetBuffer       - a pointer to a buffer structure for the
+ *                                  results
  *
  * RETURN:      Status          - the status of the call
  *
- * DESCRIPTION: This function is called to get the _PRS value of an object contained
- *              in an object specified by the handle passed in
+ * DESCRIPTION: This function is called to get the _PRS value of an object
+ *              contained in an object specified by the handle passed in
  *
  *              If the function fails an appropriate status will be returned
  *              and the contents of the callers buffer is undefined.
@@ -356,7 +357,7 @@ AcpiRsGetPrsMethodData (
 
     FUNCTION_TRACE ("RsGetPrsMethodData");
 
-  
+
     /*
      *  Must have a valid handle and buffer, So we have to have a handle
      *  a return buffer structure and if there is a non-zero buffer length
@@ -431,7 +432,8 @@ Cleanup:
  * PARAMETERS:  DeviceHandle    - a handle to the containing object
  *              *MethodName     - Name of method to execute, If NULL, the
  *                                handle is the object to execute
- *              InBuffer        - a pointer to a buffer structure of the parameter
+ *              InBuffer        - a pointer to a buffer structure of the
+ *                                  parameter
  *
  * RETURN:      Status          - the status of the call
  *

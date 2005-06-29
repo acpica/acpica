@@ -115,6 +115,7 @@
  *
  *****************************************************************************/
 
+
 #define __RSCREATE_C__
 
 #include "acpi.h"
@@ -135,7 +136,8 @@
  * RETURN:      Status  AE_OK if okay, else a valid ACPI_STATUS code
  *                      If OutputBuffer is not large enough, OutputBufferLength
  *                        indicates how large OutputBuffer should be, else it
- *                        indicates how may UINT8 elements of OutputBuffer are valid.
+ *                        indicates how may UINT8 elements of OutputBuffer are
+ *                        valid.
  *
  * DESCRIPTION: Takes the byte stream returned from a _CRS, _PRS control method
  *                  execution and parses the stream to create a linked list
@@ -158,14 +160,16 @@ AcpiRsCreateResourceList (
 
     FUNCTION_TRACE ("RsCreateResourceList");
 
-    DEBUG_PRINT (VERBOSE_INFO, ("RsCreateResourceList: ByteStreamBuffer = %p\n", ByteStreamBuffer));
+    DEBUG_PRINT (VERBOSE_INFO, ("RsCreateResourceList: ByteStreamBuffer = %p\n",
+                 ByteStreamBuffer));
 
     /*
      * Validate parameters:
      *
-     *  1. If ByteStreamBuffer is NULL after we know that ByteSteamLength
-     *      is not zero, or
-     *  2. If OutputBuffer is NULL and OutputBufferLength is not zero
+     *  1. If ByteStreamBuffer is NULL after we know that
+     *      ByteSteamLength is not zero, or
+     *  2. If OutputBuffer is NULL and OutputBufferLength
+     *      is not zero
      *
      *  Return an error
      */
@@ -182,9 +186,13 @@ AcpiRsCreateResourceList (
      * Pass the ByteStreamBuffer into a module that can calculate
      *  the buffer size needed for the linked list
      */
-    Status = AcpiRsCalculateListLength (ByteStreamStart, ByteStreamBufferLength, &ListSizeNeeded);
+    Status = AcpiRsCalculateListLength (ByteStreamStart,
+                                        ByteStreamBufferLength,
+                                        &ListSizeNeeded);
 
-    DEBUG_PRINT (VERBOSE_INFO, ("RsCreateResourceList: Status = %d; ListSizeNeeded = %d\n", Status, ListSizeNeeded));
+    DEBUG_PRINT (VERBOSE_INFO, ("RsCreateResourceList: Status = %d;
+                                ListSizeNeeded = %d\n", Status,
+                                ListSizeNeeded));
 
     /*
      * Exit with the error passed back
@@ -206,7 +214,9 @@ AcpiRsCreateResourceList (
          */
         MEMSET (OutputBuffer, 0x00, *OutputBufferLength);
 
-        Status = AcpiRsByteStreamToList (ByteStreamStart, ByteStreamBufferLength, &OutputBuffer);
+        Status = AcpiRsByteStreamToList (ByteStreamStart,
+                                         ByteStreamBufferLength,
+                                         &OutputBuffer);
 
         /*
          * Exit with the error passed back
@@ -216,7 +226,8 @@ AcpiRsCreateResourceList (
             return_ACPI_STATUS (Status);
         }
 
-        DEBUG_PRINT (VERBOSE_INFO, ("RsByteStreamToList: OutputBuffer = %p\n", OutputBuffer));
+        DEBUG_PRINT (VERBOSE_INFO, ("RsByteStreamToList: OutputBuffer = %p\n",
+                                     OutputBuffer));
     }
 
     else
@@ -228,14 +239,15 @@ AcpiRsCreateResourceList (
     *OutputBufferLength = ListSizeNeeded;
     return_ACPI_STATUS (AE_OK);
 
-}    /*    AcpiRsCreateResourceList    */
+}
 
 
 /***************************************************************************
  * FUNCTION:    AcpiRsCreatePciRoutingTable
  *
  * PARAMETERS:
- *              PackageObject           - Pointer to an ACPI_OBJECT_INTERNAL package
+ *              PackageObject           - Pointer to an ACPI_OBJECT_INTERNAL
+ *                                          package
  *              OutputBuffer            - Pointer to the user's buffer
  *              OutputBufferLength      - Size of OutputBuffer
  *
@@ -264,7 +276,7 @@ AcpiRsCreatePciRoutingTable (
     UINT32                  Index = 0;
     UINT8                   TableIndex = 0;
     BOOLEAN                 NameFound = FALSE;
-    PCI_ROUTING_TABLE       *UserPRT = NULL;
+    PCI_ROUTING_TABLE       *UserPrt = NULL;
 
 
     FUNCTION_TRACE ("RsCreatePciRoutingTable");
@@ -294,10 +306,11 @@ AcpiRsCreatePciRoutingTable (
      *  structures.  Additional space for the strings is added below.
      *  The minus one is to subtract the size of the UINT8 Source[1]
      *  member because it is added below.
-     * NOTE: The NumberOfElements is incremented by one to add an end table
-     *  structure that is essentially a structure of zeros.
+     * NOTE: The NumberOfElements is incremented by one to add an end
+     *  table structure that is essentially a structure of zeros.
      */
-    BufferSizeNeeded = (NumberOfElements + 1) * (sizeof (PCI_ROUTING_TABLE) - 1);
+    BufferSizeNeeded = (NumberOfElements + 1) *
+                       (sizeof (PCI_ROUTING_TABLE) - 1);
 
     /*
      * But each PRT_ENTRY structure has a pointer to a string and
@@ -345,7 +358,8 @@ AcpiRsCreatePciRoutingTable (
         if (TRUE == NameFound)
         {
             /*
-             * The length String.Length field includes the terminating NULL
+             * The length String.Length field includes the
+             *  terminating NULL
              */
             BufferSizeNeeded += ((*SubObjectList)->String.Length);
         }
@@ -353,8 +367,8 @@ AcpiRsCreatePciRoutingTable (
         else
         {
             /*
-             * If no name was found, then this is a NULL, which is translated
-             *  as a UINT32 zero.
+             * If no name was found, then this is a NULL, which is
+             *  translated as a UINT32 zero.
              */
             BufferSizeNeeded += sizeof(UINT32);
         }
@@ -365,8 +379,9 @@ AcpiRsCreatePciRoutingTable (
         TopObjectList++;
     }
 
-    DEBUG_PRINT (VERBOSE_INFO, ("RsCreatePciRoutingTable: BufferSizeNeeded = %d\n",
-                                    BufferSizeNeeded));
+    DEBUG_PRINT (VERBOSE_INFO, ("RsCreatePciRoutingTable:
+                                 BufferSizeNeeded = %d\n",
+                                 BufferSizeNeeded));
 
     /*
      * If the data will fit into the available buffer
@@ -381,33 +396,35 @@ AcpiRsCreatePciRoutingTable (
 
         /*
          * Loop through the ACPI_INTERNAL_OBJECTS - Each object should
-         *  contain a UINT32 Address, a UINT8 Pin, a Name and a UINT8 SourceIndex.
+         *  contain a UINT32 Address, a UINT8 Pin, a Name and a UINT8
+         *  SourceIndex.
          */
         TopObjectList = PackageObject->Package.Elements;
 
         NumberOfElements = PackageObject->Package.Count;
 
-        UserPRT = (PCI_ROUTING_TABLE *)Buffer;
+        UserPrt = (PCI_ROUTING_TABLE *)Buffer;
 
         for (Index = 0; Index < NumberOfElements; Index++)
         {
             /*
              * Point UserPrt past this current structure
              *
-             * NOTE: On the first iteration, UserPrt->Length will be zero
-             *  because we zero'ed out the return buffer earlier
+             * NOTE: On the first iteration, UserPrt->Length will
+             *  be zero because we zero'ed out the return buffer
+             *  earlier
              */
-            Buffer += UserPRT->Length;
+            Buffer += UserPrt->Length;
 
-            UserPRT = (PCI_ROUTING_TABLE *)Buffer;
+            UserPrt = (PCI_ROUTING_TABLE *)Buffer;
 
             /*
              * Fill in the Length field with the information we
              *  have at this point.
-             *  The minus one is to subtract the size of the UINT8 Source[1]
-             *  member because it is added below.
+             *  The minus one is to subtract the size of the
+             *  UINT8 Source[1] member because it is added below.
              */
-            UserPRT->Length = (sizeof(PCI_ROUTING_TABLE) - 1);
+            UserPrt->Length = (sizeof(PCI_ROUTING_TABLE) - 1);
 
             /*
              * Dereference the sub-package
@@ -415,8 +432,9 @@ AcpiRsCreatePciRoutingTable (
             PackageElement = *TopObjectList;
 
             /*
-             * The SubObjectList will now point to an array of the
-             *  four IRQ elements: Address, Pin, Source and SourceIndex
+             * The SubObjectList will now point to an array of
+             *  the four IRQ elements: Address, Pin, Source and
+             *  SourceIndex
              */
             SubObjectList = PackageElement->Package.Elements;
 
@@ -425,7 +443,8 @@ AcpiRsCreatePciRoutingTable (
              */
             if (ACPI_TYPE_NUMBER == (*SubObjectList)->Common.Type)
             {
-                UserPRT->Data.Address = (*SubObjectList)->Number.Value;
+                UserPrt->Data.Address =
+                        (*SubObjectList)->Number.Value;
             }
 
             else
@@ -440,7 +459,8 @@ AcpiRsCreatePciRoutingTable (
 
             if (ACPI_TYPE_NUMBER == (*SubObjectList)->Common.Type)
             {
-                UserPRT->Data.Pin = (*SubObjectList)->Number.Value;
+                UserPrt->Data.Pin =
+                        (*SubObjectList)->Number.Value;
             }
 
             else
@@ -455,26 +475,29 @@ AcpiRsCreatePciRoutingTable (
 
             if (ACPI_TYPE_STRING == (*SubObjectList)->Common.Type)
             {
-                STRCPY(UserPRT->Data.Source, (*SubObjectList)->String.Pointer);
+                STRCPY(UserPrt->Data.Source,
+                      (*SubObjectList)->String.Pointer);
 
                 /*
                  * Add to the Length field the length of the string
                  */
-                UserPRT->Length += (*SubObjectList)->String.Length;
+                UserPrt->Length += (*SubObjectList)->String.Length;
             }
 
             else
             {
                 /*
-                 * If this is a number, then the Source Name is NULL, since
-                 *  the entire buffer was zeroed out, we can leave this alone.
+                 * If this is a number, then the Source Name
+                 *  is NULL, since the entire buffer was zeroed
+                 *  out, we can leave this alone.
                  */
                 if (ACPI_TYPE_NUMBER == (*SubObjectList)->Common.Type)
                 {
                     /*
-                     * Add to the Length field the length of the UINT32 NULL
+                     * Add to the Length field the length of
+                     *  the UINT32 NULL
                      */
-                    UserPRT->Length += sizeof(UINT32);
+                    UserPrt->Length += sizeof(UINT32);
                 }
 
                 else
@@ -490,7 +513,8 @@ AcpiRsCreatePciRoutingTable (
 
             if (ACPI_TYPE_NUMBER == (*SubObjectList)->Common.Type)
             {
-                UserPRT->Data.SourceIndex = (*SubObjectList)->Number.Value;
+                UserPrt->Data.SourceIndex =
+                        (*SubObjectList)->Number.Value;
             }
 
             else
@@ -504,7 +528,8 @@ AcpiRsCreatePciRoutingTable (
             TopObjectList++;
         }
 
-        DEBUG_PRINT (VERBOSE_INFO, ("RsCreatePciRoutingTable: OutputBuffer = %p\n", OutputBuffer));
+        DEBUG_PRINT (VERBOSE_INFO, ("RsCreatePciRoutingTable:
+                                     OutputBuffer = %p\n", OutputBuffer));
     }
 
     else
@@ -521,7 +546,7 @@ AcpiRsCreatePciRoutingTable (
 
     return_ACPI_STATUS (AE_OK);
 
-}    /*    AcpiRsCreatePciRoutingTable    */
+}
 
 
 /***************************************************************************
@@ -555,7 +580,9 @@ AcpiRsCreateByteStream (
 
     FUNCTION_TRACE ("RsCreateByteStream");
 
-    DEBUG_PRINT (VERBOSE_INFO, ("RsCreateByteStream: LinkedListBuffer = %p\n", LinkedListBuffer));
+    DEBUG_PRINT (VERBOSE_INFO, ("RsCreateByteStream:
+                                 LinkedListBuffer = %p\n",
+                                 LinkedListBuffer));
 
     /*
      * Validate parameters:
@@ -575,10 +602,13 @@ AcpiRsCreateByteStream (
      * Pass the LinkedListBuffer into a module that can calculate
      *  the buffer size needed for the byte stream.
      */
-    Status = AcpiRsCalculateByteStreamLength (LinkedListBuffer, &ByteStreamSizeNeeded);
+    Status = AcpiRsCalculateByteStreamLength (LinkedListBuffer,
+                                              &ByteStreamSizeNeeded);
 
-    DEBUG_PRINT (VERBOSE_INFO, ("RsCreateByteStream: Status = %d; ByteStreamSizeNeeded = %d\n",
-                    Status, ByteStreamSizeNeeded));
+    DEBUG_PRINT (VERBOSE_INFO, ("RsCreateByteStream:
+                                ByteStreamSizeNeeded=%d, %s\n",
+                                ByteStreamSizeNeeded,
+                                AcpiCmFormatException (Status)));
 
     /*
      * Exit with the error passed back
@@ -600,7 +630,9 @@ AcpiRsCreateByteStream (
          */
         MEMSET (OutputBuffer, 0x00, *OutputBufferLength);
 
-        Status = AcpiRsListToByteStream (LinkedListBuffer, ByteStreamSizeNeeded, &OutputBuffer);
+        Status = AcpiRsListToByteStream (LinkedListBuffer,
+                                         ByteStreamSizeNeeded,
+                                         &OutputBuffer);
 
         /*
          * Exit with the error passed back
@@ -610,7 +642,9 @@ AcpiRsCreateByteStream (
             return_ACPI_STATUS (Status);
         }
 
-        DEBUG_PRINT (VERBOSE_INFO, ("RsListToByteStream: OutputBuffer = %p\n", OutputBuffer));
+        DEBUG_PRINT (VERBOSE_INFO, ("RsListToByteStream:
+                                     OutputBuffer = %p\n",
+                                     OutputBuffer));
     }
     else
     {
@@ -620,5 +654,5 @@ AcpiRsCreateByteStream (
 
     return_ACPI_STATUS (AE_OK);
 
-}    /*    AcpiRsCreateResourceList    */
+}
 
