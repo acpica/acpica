@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acevents.h - Event subcomponent prototypes and defines
- *       $Revision: 1.80 $
+ *       $Revision: 1.82 $
  *
  *****************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2003, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -164,8 +164,12 @@ ACPI_STATUS
 AcpiEvInitGlobalLockHandler (
     void);
 
-UINT32
-AcpiEvGetGpeRegisterIndex (
+ACPI_GPE_REGISTER_INFO *
+AcpiEvGetGpeRegisterInfo (
+    UINT32                  GpeNumber);
+
+ACPI_GPE_NUMBER_INFO *
+AcpiEvGetGpeNumberInfo (
     UINT32                  GpeNumber);
 
 UINT32
