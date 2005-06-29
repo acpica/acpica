@@ -1,341 +1,583 @@
-/*******************************************************************************
- *
+
+/******************************************************************************
+ * 
  * Module Name: nsnames - Name manipulation and search
- *              $Revision: 1.81 $
  *
- ******************************************************************************/
+ *****************************************************************************/
 
 /******************************************************************************
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
- * All rights reserved.
+ * Some or all of this work - Copyright (c) 1999, Intel Corp.  All rights 
+ * reserved.
  *
  * 2. License
+ * 
+ * 2.1. Intel grants, free of charge, to any person ("Licensee") obtaining a 
+ * copy of the source code appearing in this file ("Covered Code") a license 
+ * under Intel's copyrights in the base code distributed originally by Intel 
+ * ("Original Intel Code") to copy, make derivatives, distribute, use and 
+ * display any portion of the Covered Code in any form; and
  *
- * 2.1. This is your license from Intel Corp. under its intellectual property
- * rights.  You may have additional license terms from the party that provided
- * you this software, covering your right to use that party's intellectual
- * property rights.
+ * 2.2. Intel grants Licensee a non-exclusive and non-transferable patent 
+ * license (without the right to sublicense), under only those claims of Intel
+ * patents that are infringed by the Original Intel Code, to make, use, sell, 
+ * offer to sell, and import the Covered Code and derivative works thereof 
+ * solely to the minimum extent necessary to exercise the above copyright 
+ * license, and in no event shall the patent license extend to any additions to
+ * or modifications of the Original Intel Code.  No other license or right is 
+ * granted directly or by implication, estoppel or otherwise;
  *
- * 2.2. Intel grants, free of charge, to any person ("Licensee") obtaining a
- * copy of the source code appearing in this file ("Covered Code") an
- * irrevocable, perpetual, worldwide license under Intel's copyrights in the
- * base code distributed originally by Intel ("Original Intel Code") to copy,
- * make derivatives, distribute, use and display any portion of the Covered
- * Code in any form, with the right to sublicense such rights; and
- *
- * 2.3. Intel grants Licensee a non-exclusive and non-transferable patent
- * license (with the right to sublicense), under only those claims of Intel
- * patents that are infringed by the Original Intel Code, to make, use, sell,
- * offer to sell, and import the Covered Code and derivative works thereof
- * solely to the minimum extent necessary to exercise the above copyright
- * license, and in no event shall the patent license extend to any additions
- * to or modifications of the Original Intel Code.  No other license or right
- * is granted directly or by implication, estoppel or otherwise;
- *
- * The above copyright and patent license is granted only if the following
+ * the above copyright and patent license is granted only if the following 
  * conditions are met:
  *
- * 3. Conditions
+ * 3. Conditions 
  *
- * 3.1. Redistribution of Source with Rights to Further Distribute Source.
- * Redistribution of source code of any substantial portion of the Covered
- * Code or modification with rights to further distribute source must include
- * the above Copyright Notice, the above License, this list of Conditions,
- * and the following Disclaimer and Export Compliance provision.  In addition,
- * Licensee must cause all Covered Code to which Licensee contributes to
- * contain a file documenting the changes Licensee made to create that Covered
- * Code and the date of any change.  Licensee must include in that file the
- * documentation of any changes made by any predecessor Licensee.  Licensee
- * must include a prominent statement that the modification is derived,
- * directly or indirectly, from Original Intel Code.
+ * 3.1. Redistribution of source code of any substantial portion of the Covered 
+ * Code or modification must include the above Copyright Notice, the above 
+ * License, this list of Conditions, and the following Disclaimer and Export 
+ * Compliance provision.  In addition, Licensee must cause all Covered Code to 
+ * which Licensee contributes to contain a file documenting the changes 
+ * Licensee made to create that Covered Code and the date of any change.  
+ * Licensee must include in that file the documentation of any changes made by
+ * any predecessor Licensee.  Licensee must include a prominent statement that
+ * the modification is derived, directly or indirectly, from Original Intel 
+ * Code.
  *
- * 3.2. Redistribution of Source with no Rights to Further Distribute Source.
- * Redistribution of source code of any substantial portion of the Covered
- * Code or modification without rights to further distribute source must
- * include the following Disclaimer and Export Compliance provision in the
- * documentation and/or other materials provided with distribution.  In
- * addition, Licensee may not authorize further sublicense of source of any
- * portion of the Covered Code, and must include terms to the effect that the
- * license from Licensee to its licensee is limited to the intellectual
- * property embodied in the software Licensee provides to its licensee, and
- * not to intellectual property embodied in modifications its licensee may
- * make.
+ * 3.2. Redistribution in binary form of any substantial portion of the Covered 
+ * Code or modification must reproduce the above Copyright Notice, and the 
+ * following Disclaimer and Export Compliance provision in the documentation 
+ * and/or other materials provided with the distribution.
  *
- * 3.3. Redistribution of Executable. Redistribution in executable form of any
- * substantial portion of the Covered Code or modification must reproduce the
- * above Copyright Notice, and the following Disclaimer and Export Compliance
- * provision in the documentation and/or other materials provided with the
- * distribution.
- *
- * 3.4. Intel retains all right, title, and interest in and to the Original
+ * 3.3. Intel retains all right, title, and interest in and to the Original 
  * Intel Code.
  *
- * 3.5. Neither the name Intel nor any other trademark owned or controlled by
- * Intel shall be used in advertising or otherwise to promote the sale, use or
- * other dealings in products derived from or relating to the Covered Code
+ * 3.4. Neither the name Intel nor any other trademark owned or controlled by 
+ * Intel shall be used in advertising or otherwise to promote the sale, use or 
+ * other dealings in products derived from or relating to the Covered Code 
  * without prior written authorization from Intel.
  *
  * 4. Disclaimer and Export Compliance
  *
- * 4.1. INTEL MAKES NO WARRANTY OF ANY KIND REGARDING ANY SOFTWARE PROVIDED
- * HERE.  ANY SOFTWARE ORIGINATING FROM INTEL OR DERIVED FROM INTEL SOFTWARE
- * IS PROVIDED "AS IS," AND INTEL WILL NOT PROVIDE ANY SUPPORT,  ASSISTANCE,
- * INSTALLATION, TRAINING OR OTHER SERVICES.  INTEL WILL NOT PROVIDE ANY
- * UPDATES, ENHANCEMENTS OR EXTENSIONS.  INTEL SPECIFICALLY DISCLAIMS ANY
- * IMPLIED WARRANTIES OF MERCHANTABILITY, NONINFRINGEMENT AND FITNESS FOR A
- * PARTICULAR PURPOSE.
+ * 4.1. INTEL MAKES NO WARRANTY OF ANY KIND REGARDING ANY SOFTWARE PROVIDED 
+ * HERE.  ANY SOFTWARE ORIGINATING FROM INTEL OR DERIVED FROM INTEL SOFTWARE 
+ * IS PROVIDED "AS IS," AND INTEL WILL NOT PROVIDE ANY SUPPORT,  ASSISTANCE, 
+ * INSTALLATION, TRAINING OR OTHER SERVICES.  INTEL WILL NOT PROVIDE ANY 
+ * UPDATES, ENHANCEMENTS OR EXTENSIONS.  INTEL SPECIFICALLY DISCLAIMS ANY 
+ * IMPLIED WARRANTIES OF MERCHANTABILITY, NONINFRINGEMENT AND FITNESS FOR A 
+ * PARTICULAR PURPOSE. 
  *
- * 4.2. IN NO EVENT SHALL INTEL HAVE ANY LIABILITY TO LICENSEE, ITS LICENSEES
- * OR ANY OTHER THIRD PARTY, FOR ANY LOST PROFITS, LOST DATA, LOSS OF USE OR
- * COSTS OF PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES, OR FOR ANY INDIRECT,
- * SPECIAL OR CONSEQUENTIAL DAMAGES ARISING OUT OF THIS AGREEMENT, UNDER ANY
- * CAUSE OF ACTION OR THEORY OF LIABILITY, AND IRRESPECTIVE OF WHETHER INTEL
- * HAS ADVANCE NOTICE OF THE POSSIBILITY OF SUCH DAMAGES.  THESE LIMITATIONS
- * SHALL APPLY NOTWITHSTANDING THE FAILURE OF THE ESSENTIAL PURPOSE OF ANY
+ * 4.2. IN NO EVENT SHALL INTEL HAVE ANY LIABILITY TO LICENSEE, ITS LICENSEES 
+ * OR ANY OTHER THIRD PARTY, FOR ANY LOST PROFITS, LOST DATA, LOSS OF USE OR 
+ * COSTS OF PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES, OR FOR ANY INDIRECT, 
+ * SPECIAL OR CONSEQUENTIAL DAMAGES ARISING OUT OF THIS AGREEMENT, UNDER ANY 
+ * CAUSE OF ACTION OR THEORY OF LIABILITY, AND IRRESPECTIVE OF WHETHER INTEL 
+ * HAS ADVANCE NOTICE OF THE POSSIBILITY OF SUCH DAMAGES.  THESE LIMITATIONS 
+ * SHALL APPLY NOTWITHSTANDING THE FAILURE OF THE ESSENTIAL PURPOSE OF ANY 
  * LIMITED REMEDY.
  *
- * 4.3. Licensee shall not export, either directly or indirectly, any of this
- * software or system incorporating such software without first obtaining any
- * required license or other approval from the U. S. Department of Commerce or
- * any other agency or department of the United States Government.  In the
- * event Licensee exports any such software from the United States or
- * re-exports any such software from a foreign destination, Licensee shall
- * ensure that the distribution and export/re-export of the software is in
- * compliance with all laws, regulations, orders, or other restrictions of the
- * U.S. Export Administration Regulations. Licensee agrees that neither it nor
- * any of its subsidiaries will export/re-export any technical data, process,
- * software, or service, directly or indirectly, to any country for which the
- * United States government or any agency thereof requires an export license,
- * other governmental approval, or letter of assurance, without first obtaining
- * such license, approval or letter.
+ * 4.3. Licensee shall not export, either directly or indirectly, any of this 
+ * software or system incorporating such software without first obtaining any 
+ * required license or other approval from the U. S. Department of Commerce or 
+ * any other agency or department of the United States Government.  In the 
+ * event Licensee exports any such software from the United States or re-
+ * exports any such software from a foreign destination, Licensee shall ensure
+ * that the distribution and export/re-export of the software is in compliance 
+ * with all laws, regulations, orders, or other restrictions of the U.S. Export 
+ * Administration Regulations. Licensee agrees that neither it nor any of its 
+ * subsidiaries will export/re-export any technical data, process, software, or 
+ * service, directly or indirectly, to any country for which the United States 
+ * government or any agency thereof requires an export license, other 
+ * governmental approval, or letter of assurance, without first obtaining such
+ * license, approval or letter.
  *
  *****************************************************************************/
 
+
 #define __NSNAMES_C__
 
-#include "acpi.h"
-#include "amlcode.h"
-#include "acnamesp.h"
+#include <acpi.h>
+#include <amlcode.h>
+#include <interpreter.h>
+#include <namespace.h>
 
 
-#define _COMPONENT          ACPI_NAMESPACE
-        ACPI_MODULE_NAME    ("nsnames")
+#define _THIS_MODULE        "nsnames.c"
+#define _COMPONENT          NAMESPACE
 
 
-/*******************************************************************************
+static ST_KEY_DESC_TABLE KDT[] = {
+    {"0000", '1', "NsNameOfScope: allocation failure", "NsNameOfScope: allocation failure"},
+    {"0001", '1', "Current scope pointer trashed", "Current scope pointer trashed"},
+    {"0002", '1', "NsFindNames: allocation failure", "NsFindNames: allocation failure"},
+    {NULL, 'I', NULL, NULL}
+};
+
+
+
+/****************************************************************************
  *
- * FUNCTION:    AcpiNsBuildExternalPath
+ * FUNCTION:    NsNameOfScope
  *
- * PARAMETERS:  Node            - NS node whose pathname is needed
- *              Size            - Size of the pathname
- *              *NameBuffer     - Where to return the pathname
+ * PARAMETERS:  *EntryToSearch          - Scope whose name is needed
  *
- * RETURN:      Places the pathname into the NameBuffer, in external format
- *              (name segments separated by path separators)
+ * RETURN:      Pointer to storage containing the fully qualified name of
+ *              the scope, in Label format (all segments strung together
+ *              with no separators)
  *
- * DESCRIPTION: Generate a full pathaname
+ * DESCRIPTION: Used via NsNameOfCurrentScope() and NsLastFQN()
+ *              for label generation in the interpreter, and for debug
+ *              printing in NsSearchTable().
  *
- ******************************************************************************/
+ ***************************************************************************/
+
+char *
+NsNameOfScope (NAME_TABLE_ENTRY *EntryToSearch)
+{
+    NAME_TABLE_ENTRY    *Temp = NULL;
+    char                *NameBuffer;
+    size_t              Size;
+
+
+    FUNCTION_TRACE ("NsNameOfScope");
+
+
+    if (!RootObject->Scope || !EntryToSearch)
+    {
+        /* 
+         * If the name space has not been initialized,
+         * this function should not have been called.
+         */
+        FUNCTION_EXIT;
+        return NULL;
+    }
+
+    /* Calculate required buffer size based on depth below root NT */
+    
+    for (Size = 1, Temp = EntryToSearch;
+            Temp->ParentScope;
+            Temp = Temp->ParentScope)
+    {
+        Size += 4;
+    }
+
+
+    NameBuffer = LocalCallocate (Size + 1);
+    if (!NameBuffer)
+    {
+        REPORT_ERROR (&KDT[0]);
+        FUNCTION_EXIT;
+        return NULL;
+    }
+    
+
+    /* Store terminator byte, then build name backwards */
+    
+    NameBuffer[Size] = '\0';
+    while ((Size > 4) && EntryToSearch->ParentScope)
+    {
+        Size -= 4;
+        *(UINT32 *) (NameBuffer + Size) = 
+                        *(UINT32 *) NsFindParentName (EntryToSearch, 0);
+        EntryToSearch = EntryToSearch->ParentScope;
+    }
+
+    NameBuffer[--Size] = AML_RootPrefix;
+
+    if (Size != 0)
+    {
+        DEBUG_PRINT (ACPI_ERROR, ("NsNameOfScope:  Bad pointer returned; size = %d\n", Size));
+    }
+
+    FUNCTION_EXIT;
+    return NameBuffer;
+}
+
+
+/****************************************************************************
+ *
+ * FUNCTION:    NsNameOfCurrentScope
+ *
+ * PARAMETERS:  none
+ *
+ * RETURN:      pointer to storage containing the name of the current scope
+ *
+ ***************************************************************************/
+
+char *
+NsNameOfCurrentScope (void)
+{
+    FUNCTION_TRACE ("NsNameOfCurrentScope");
+
+
+    if (CurrentScope && CurrentScope->Scope)
+    {
+        FUNCTION_EXIT;
+        return NsNameOfScope (CurrentScope->Scope);
+    }
+    
+    REPORT_ERROR (&KDT[1]);
+
+    FUNCTION_EXIT;
+    return NULL;
+}
+
+
+/****************************************************************************
+ *
+ * FUNCTION:    NsHandleToPathname
+ *
+ * PARAMETERS:  TargetHandle            - Handle of nte whose name is to be found
+ *              BufSize                 - Size of the buffer provided 
+ *              UserBuffer              - Where the pathname is returned
+ *
+ * RETURN:      Status, Buffer is filled with pathname if status == AE_OK
+ *
+ * DESCRIPTION: Build and return a full namespace pathname
+ *
+ ***************************************************************************/
+
+ACPI_STATUS
+NsHandleToPathname (NsHandle TargetHandle, UINT32 BufSize, char *UserBuffer)
+{
+    NAME_TABLE_ENTRY    *EntryToSearch = NULL;
+    NAME_TABLE_ENTRY    *Temp = NULL;
+    static size_t       FqnSize = 0;
+    size_t              Size;
+    INT32               TraceFQN = 0;
+
+
+    FUNCTION_TRACE ("NsHandleToPathname");
+
+
+    if (!RootObject->Scope || !TargetHandle)
+    {
+        /* 
+         * If the name space has not been initialized,
+         * this function should not have been called.
+         */
+
+        FUNCTION_EXIT;
+        return AE_NO_NAMESPACE;
+    }
+
+    if (!(EntryToSearch = NsConvertHandleToEntry (TargetHandle)))
+    {
+        FUNCTION_EXIT;
+        return AE_BAD_PARAMETER;
+    }
+
+    /* Compute length of pathname as 5 * number of name segments */
+    
+    for (Size = 5, Temp = EntryToSearch;
+          Temp->ParentScope;
+          Temp = Temp->ParentScope)
+    {
+        Size += 5;
+    }
+
+    
+    /* Check if the user buffer is sufficiently large */
+
+    FqnSize = Size + 1;
+    if (FqnSize > BufSize)
+    {
+        FUNCTION_EXIT;
+        return AE_BUFFER_OVERFLOW;
+    }
+
+          
+    /* Store null termination */
+    
+    UserBuffer[Size] = '\0';
+    Size -= 4;
+    
+    if (TraceFQN)
+    {
+        DEBUG_PRINT (ACPI_INFO, ("%d:%08lx \n", Size, EntryToSearch->Name));
+    }
+    
+    *(UINT32 *) (UserBuffer + Size) = EntryToSearch->Name;
+    UserBuffer[--Size] = '.';
+
+    /* Build name backwards, putting "." between segments */
+    
+    while ((Size > 4) && EntryToSearch)
+    {
+        Size -= 4;
+        *(UINT32 *) (UserBuffer + Size) = 
+                        *(UINT32 *) NsFindParentName (EntryToSearch, TraceFQN);
+        
+        if (TraceFQN)
+        {
+            DEBUG_PRINT (ACPI_INFO,
+                            ("%d:%08lx \n", Size, *(UINT32 *)(UserBuffer + Size)));
+        }
+
+        UserBuffer[--Size] = '.';
+        EntryToSearch = EntryToSearch->ParentScope;
+    }
+
+    /* Overlay the "." preceding the first segment with root name "\" */
+    
+    UserBuffer[Size] = '\\';
+    FUNCTION_EXIT;
+    return AE_OK;
+}
+
+
+
+/****************************************************************************
+ * 
+ * FUNCTION:    NsPatternMatch
+ *
+ * PARAMETERS:  ObjEntry        - A namespace entry
+ *              SearchFor       - Wildcard pattern string
+ *
+ * DESCRIPTION: Matches a namespace name against a wildcard pattern.  Only
+ *              a very simple pattern - 4 chars, either a valid char or a "?"
+ *              to match any.
+ *
+ ***************************************************************************/
+
+BOOLEAN
+NsPatternMatch (NAME_TABLE_ENTRY *ObjEntry, char *SearchFor)
+{
+    INT32           i;
+
+
+    for (i = 0; i < ACPI_NAME_SIZE; i++)
+    {
+        if (SearchFor[i] != '?' &&
+            SearchFor[i] != ((char *) &ObjEntry->Name)[i])
+        {
+            /* No match */
+
+            return FALSE;
+        }
+    }
+
+    /* name matches pattern */
+
+    return TRUE;
+}
+
+
+/****************************************************************************
+ * 
+ * FUNCTION:    NsNameCompare
+ *
+ * PARAMETERS:  ObjHandle       - A namespace entry
+ *              Level           - Current nesting level
+ *              Context         - A FIND_CONTEXT structure
+ *
+ * DESCRIPTION: A UserFunction called by NsWalkNamespace().  It performs
+ *              a pattern match for NsLowFindNames(), and updates the list
+ *              and count as required.
+ *
+ ***************************************************************************/
+
+void *
+NsNameCompare (NsHandle ObjHandle, UINT32 Level, void *Context)
+{
+    FIND_CONTEXT        *Find = Context;
+
+
+    /* Match, yes or no? */
+
+    if (NsPatternMatch ((NAME_TABLE_ENTRY *) ObjHandle, Find->SearchFor))
+    {
+        /* name matches pattern */
+        
+        if (Find->List)
+        {
+            DEBUG_PRINT (TRACE_NAMES, ("FindName: match found: %.4s\n",
+                            &((NAME_TABLE_ENTRY *) ObjHandle)->Name));
+
+            Find->List[*(Find->Count)] = ObjHandle;
+        }
+        
+        ++*(Find->Count);
+    }
+
+    return NULL;        /* Don't terminate the walk */
+}
+
+
+/****************************************************************************
+ * 
+ * FUNCTION:    NsLowFindNames
+ *
+ * PARAMETERS:  *ThisEntry          - Table to be searched
+ *              *SearchFor          - Pattern to be found.
+ *                                    4 bytes, ? matches any character.
+ *              *Count              - Output count of matches found.
+ *                                    Outermost caller should preset to 0
+ *              List[]              - Output array of handles.  If
+ *                                    null, only the count is obtained.
+ *              MaxDepth            - Maximum depth of search.  Use
+ *                                    INT_MAX for an effectively
+ *                                    unlimited depth.
+ *
+ * DESCRIPTION: Low-level find name.
+ *              Traverse the name space finding names which match a search
+ *              pattern, and return an array of handles in List[].
+ *
+ ***************************************************************************/
 
 void
-AcpiNsBuildExternalPath (
-    ACPI_NAMESPACE_NODE     *Node,
-    ACPI_SIZE               Size,
-    char                    *NameBuffer)
+NsLowFindNames (NAME_TABLE_ENTRY *ThisEntry, char *SearchFor,
+                        INT32 *Count, NsHandle List[], INT32 MaxDepth)
 {
-    ACPI_SIZE               Index;
-    ACPI_NAMESPACE_NODE     *ParentNode;
+    FIND_CONTEXT        Find;
 
 
-    ACPI_FUNCTION_NAME ("NsBuildExternalPath");
+
+    FUNCTION_TRACE ("NsLowFindNames");
 
 
-    /* Special case for root */
-
-    Index = Size - 1;
-    if (Index < ACPI_NAME_SIZE)
+    if (0 == MaxDepth || !ThisEntry || !SearchFor || !Count)
     {
-        NameBuffer[0] = AML_ROOT_PREFIX;
-        NameBuffer[1] = 0;
+        /* 
+         * Zero requested depth, nothing to search,
+         * nothing to search for, or count pointer bad 
+         */
+        
+        FUNCTION_EXIT;
         return;
     }
 
-    /* Store terminator byte, then build name backwards */
+    /* Init the context structure used by compare routine */
 
-    ParentNode = Node;
-    NameBuffer[Index] = 0;
+    Find.List       = List;
+    Find.Count      = Count;
+    Find.SearchFor  = SearchFor;
 
-    while ((Index > ACPI_NAME_SIZE) && (ParentNode != AcpiGbl_RootNode))
+    /* Walk the namespace and find all matches */
+
+    AcpiWalkNamespace (TYPE_Any, (NsHandle) ThisEntry, MaxDepth, NsNameCompare, &Find, NULL);
+
+    if (List)
     {
-        Index -= ACPI_NAME_SIZE;
-
-        /* Put the name into the buffer */
-
-        ACPI_MOVE_UNALIGNED32_TO_32 ((NameBuffer + Index), &ParentNode->Name);
-        ParentNode = AcpiNsGetParentNode (ParentNode);
-
-        /* Prefix name with the path separator */
-
-        Index--;
-        NameBuffer[Index] = ACPI_PATH_SEPARATOR;
+        /* null-terminate the output array */
+        
+        List[*Count] = (NsHandle) 0;
     }
 
-    /* Overwrite final separator with the root prefix character */
-
-    NameBuffer[Index] = AML_ROOT_PREFIX;
-
-    if (Index != 0)
-    {
-        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
-            "Could not construct pathname; index=%X, size=%X, Path=%s\n",
-            (UINT32) Index, (UINT32) Size, &NameBuffer[Size]));
-    }
-
+    FUNCTION_EXIT;
     return;
 }
 
 
-#ifdef ACPI_DEBUG_OUTPUT
-/*******************************************************************************
+/****************************************************************************
  *
- * FUNCTION:    AcpiNsGetExternalPathname
+ * FUNCTION:    NsFindNames
  *
- * PARAMETERS:  Node            - NS node whose pathname is needed
+ * PARAMETERS:  *SearchFor          - pattern to be found.
+ *                                    4 bytes, ? matches any character.
+ *                                    If NULL, "????" will be used.
+ *              StartHandle         - Root of subtree to be searched, or
+ *                                    NS_ALL to search the entire namespace
+ *              MaxDepth            - Maximum depth of search.  Use INT_MAX
+ *                                    for an effectively unlimited depth.
  *
- * RETURN:      Pointer to storage containing the fully qualified name of
- *              the node, In external format (name segments separated by path
- *              separators.)
+ * DESCRIPTION: Traverse the name space finding names which match a search
+ *              pattern, and return an array of handles.  The end of the
+ *              array is marked by the value (NsHandle)0.  A return value
+ *              of (NsHandle *)0 indicates that no matching names were
+ *              found or that space for the list could not be allocated.
+ *              if StartHandle is NS_ALL (null) search from the root,
+ *              else it is a handle whose children are to be searched.
  *
- * DESCRIPTION: Used for debug printing in AcpiNsSearchTable().
- *
- ******************************************************************************/
+ ***************************************************************************/
 
-char *
-AcpiNsGetExternalPathname (
-    ACPI_NAMESPACE_NODE     *Node)
+NsHandle *
+NsFindNames (char *SearchFor, NsHandle StartHandle, INT32 MaxDepth)
 {
-    char                    *NameBuffer;
-    ACPI_SIZE               Size;
+    NsHandle            *List = NULL;
+    INT32               Count;
 
 
-    ACPI_FUNCTION_TRACE_PTR ("NsGetExternalPathname", Node);
+    FUNCTION_TRACE ("NsFindNames");
 
 
-    /* Calculate required buffer size based on depth below root */
-
-    Size = AcpiNsGetPathnameLength (Node);
-
-    /* Allocate a buffer to be returned to caller */
-
-    NameBuffer = ACPI_MEM_CALLOCATE (Size);
-    if (!NameBuffer)
+    if (!RootObject->Scope)
     {
-        ACPI_REPORT_ERROR (("NsGetTablePathname: allocation failure\n"));
-        return_PTR (NULL);
+        /* 
+         * If the name space has not been initialized,
+         * there surely are no matching names.
+         */
+        FUNCTION_EXIT;
+        return NULL;
     }
 
-    /* Build the path in the allocated buffer */
+    if (NS_ALL == StartHandle)
+    {
+        /*  base is root    */
 
-    AcpiNsBuildExternalPath (Node, Size, NameBuffer);
-    return_PTR (NameBuffer);
+        StartHandle = RootObject;
+    }
+    
+    else if (((NAME_TABLE_ENTRY *) StartHandle)->Scope)
+    {
+        /*  base has children to search */
+
+        StartHandle = ((NAME_TABLE_ENTRY *) StartHandle)->Scope;
+    }
+    
+    else
+    {
+        /* 
+         * If base is not the root and has no children,
+         * there is nothing to search.
+         */
+        FUNCTION_EXIT;
+        return NULL;
+    }
+
+    if (!SearchFor)
+    {
+        /*  search name not specified   */
+
+        SearchFor = "????";
+    }
+
+    
+    /* Pass 1.  Get required buffer size, don't try to build list */
+    
+    Count = 0;
+    CheckTrash ("NsFindNames before count");
+
+    NsLowFindNames (StartHandle, SearchFor, &Count, NULL, MaxDepth);
+    CheckTrash ("NsFindNames after count");
+    
+    if (0 == Count)
+    {
+        FUNCTION_EXIT;
+        return NULL;
+    }
+
+    Count++;                                            /* Allow for trailing null */
+    List = LocalCallocate (Count * sizeof(NsHandle));
+    if (!List)
+    {
+        REPORT_ERROR (&KDT[2]);
+        FUNCTION_EXIT;
+        return NULL;
+    }
+
+    /* Pass 2.  Fill buffer */
+
+    Count = 0;
+    CheckTrash ("NsFindNames before list");
+
+    NsLowFindNames (StartHandle, SearchFor, &Count, List, MaxDepth);
+    CheckTrash ("NsFindNames after list");
+
+    FUNCTION_EXIT;
+    return List;
 }
-#endif
 
-
-/*******************************************************************************
- *
- * FUNCTION:    AcpiNsGetPathnameLength
- *
- * PARAMETERS:  Node        - Namespace node
- *
- * RETURN:      Length of path, including prefix
- *
- * DESCRIPTION: Get the length of the pathname string for this node
- *
- ******************************************************************************/
-
-ACPI_SIZE
-AcpiNsGetPathnameLength (
-    ACPI_NAMESPACE_NODE     *Node)
-{
-    ACPI_SIZE               Size;
-    ACPI_NAMESPACE_NODE     *NextNode;
-
-
-    ACPI_FUNCTION_ENTRY ();
-
-
-    /*
-     * Compute length of pathname as 5 * number of name segments.
-     * Go back up the parent tree to the root
-     */
-    Size = 0;
-    NextNode = Node;
-
-    while (NextNode && (NextNode != AcpiGbl_RootNode))
-    {
-        Size += ACPI_PATH_SEGMENT_LENGTH;
-        NextNode = AcpiNsGetParentNode (NextNode);
-    }
-
-    return (Size + 1);
-}
-
-
-/*******************************************************************************
- *
- * FUNCTION:    AcpiNsHandleToPathname
- *
- * PARAMETERS:  TargetHandle            - Handle of named object whose name is
- *                                        to be found
- *              Buffer                  - Where the pathname is returned
- *
- * RETURN:      Status, Buffer is filled with pathname if status is AE_OK
- *
- * DESCRIPTION: Build and return a full namespace pathname
- *
- ******************************************************************************/
-
-ACPI_STATUS
-AcpiNsHandleToPathname (
-    ACPI_HANDLE             TargetHandle,
-    ACPI_BUFFER             *Buffer)
-{
-    ACPI_STATUS             Status;
-    ACPI_NAMESPACE_NODE     *Node;
-    ACPI_SIZE               RequiredSize;
-
-
-    ACPI_FUNCTION_TRACE_PTR ("NsHandleToPathname", TargetHandle);
-
-
-    Node = AcpiNsMapHandleToNode (TargetHandle);
-    if (!Node)
-    {
-        return_ACPI_STATUS (AE_BAD_PARAMETER);
-    }
-
-    /* Determine size required for the caller buffer */
-
-    RequiredSize = AcpiNsGetPathnameLength (Node);
-
-    /* Validate/Allocate/Clear caller buffer */
-
-    Status = AcpiUtInitializeBuffer (Buffer, RequiredSize);
-    if (ACPI_FAILURE (Status))
-    {
-        return_ACPI_STATUS (Status);
-    }
-
-    /* Build the path in the caller buffer */
-
-    AcpiNsBuildExternalPath (Node, RequiredSize, Buffer->Pointer);
-
-    ACPI_DEBUG_PRINT ((ACPI_DB_EXEC, "%s [%X] \n", (char *) Buffer->Pointer, (UINT32) RequiredSize));
-    return_ACPI_STATUS (AE_OK);
-}
 
 

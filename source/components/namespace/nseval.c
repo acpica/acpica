@@ -102,7 +102,6 @@
 #include <amlcode.h>
 #include <interpreter.h>
 #include <namespace.h>
-#include <string.h>
 
 
 #define _THIS_MODULE        "nseval.c"
