@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dsobject - Dispatcher object management routines
- *              $Revision: 1.75 $
+ *              $Revision: 1.77 $
  *
  *****************************************************************************/
 
@@ -214,16 +214,15 @@ AcpiDsInitOneObject (
          * Always parse methods to detect errors, we may delete
          * the parse tree below
          */
-
         Status = AcpiDsParseMethod (ObjHandle);
-
-        /* TBD: [Errors] what do we do with an error? */
-
         if (ACPI_FAILURE (Status))
         {
-            ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Method %p [%4.4s] parse failed! %s\n",
+            ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Method %p [%4.4s] - parse failure, %s\n",
                 ObjHandle, &((ACPI_NAMESPACE_NODE *)ObjHandle)->Name,
                 AcpiFormatException (Status)));
+
+            /* This parse failed, but we will continue parsing more methods */
+
             break;
         }
 
@@ -339,7 +338,7 @@ AcpiDsInitObjectFromOp (
 
     ObjDesc = *RetObjDesc;
     OpInfo = AcpiPsGetOpcodeInfo (Opcode);
-    if (ACPI_GET_OP_TYPE (OpInfo) != ACPI_OP_TYPE_OPCODE)
+    if (ACPI_GET_OP_CLASS (OpInfo) == AML_CLASS_UNKNOWN)
     {
         /* Unknown opcode */
 
@@ -463,9 +462,9 @@ AcpiDsInitObjectFromOp (
 
     case INTERNAL_TYPE_REFERENCE:
 
-        switch (ACPI_GET_OP_CLASS (OpInfo))
+        switch (ACPI_GET_OP_TYPE (OpInfo))
         {
-        case OPTYPE_LOCAL_VARIABLE:
+        case AML_TYPE_LOCAL_VARIABLE:
 
             /* Split the opcode into a base opcode + offset */
 
@@ -474,7 +473,7 @@ AcpiDsInitObjectFromOp (
             break;
 
 
-        case OPTYPE_METHOD_ARGUMENT:
+        case AML_TYPE_METHOD_ARGUMENT:
 
             /* Split the opcode into a base opcode + offset */
 
