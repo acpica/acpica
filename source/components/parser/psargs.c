@@ -113,12 +113,12 @@
  *
  *****************************************************************************/
 
-
+#define __PSARGS_C__
 
 #include <acpi.h>
 #include <parser.h>
 #include <amlcode.h>
-#include <namespace.h>
+#include <namesp.h>
 
 #define _COMPONENT          PARSER
         MODULE_NAME         ("psargs");
@@ -208,15 +208,15 @@ PsGetNextPackageEnd (
     ACPI_PARSE_STATE        *ParserState)
 {
     UINT8                   *Start = ParserState->Aml;
-    INT32                   Length;
+    NATIVE_UINT             Length;
 
 
     FUNCTION_TRACE ("PsGetNextPackageEnd");
 
 
-    Length = PsGetNextPackageLength (ParserState);
+    Length = (NATIVE_UINT) PsGetNextPackageLength (ParserState);
 
-    return_VALUE (Start + Length); /* end of package */
+    return_PTR (Start + Length); /* end of package */
 }
 
 
@@ -300,7 +300,7 @@ PsGetNextNamestring (
 
     ParserState->Aml = (UINT8*) End;
 
-    return_VALUE (Start);
+    return_PTR (Start);
 }
 
 
@@ -331,14 +331,13 @@ PsGetNextNamepath (
 {
     UINT8                   *Path;
     NAME_TABLE_ENTRY        *Method = NULL;
+    NAME_TABLE_ENTRY        *Nte;
     ACPI_GENERIC_OP         *MethodOp;
     ACPI_GENERIC_OP         *Count;
     ACPI_GENERIC_OP         *Name;
-
-#ifndef RING3_APPLICATION
     ACPI_STATUS             Status;
-    NAME_TABLE_ENTRY        *Nte;
-#endif
+
+
 
     FUNCTION_TRACE ("PsGetNextNamepath");
 
@@ -603,7 +602,7 @@ PsGetNextField (
         }
     }
 
-    return_VALUE (Field);
+    return_PTR (Field);
 }
 
 
@@ -770,5 +769,5 @@ PsGetNextArg (
         break;
     }
 
-    return_VALUE (Arg);
+    return_PTR (Arg);
 }
