@@ -335,7 +335,10 @@ PsGetNextNamepath (
     ACPI_GENERIC_OP         *Count;
     ACPI_GENERIC_OP         *Name;
 
-
+#ifndef RING3_APPLICATION
+    ACPI_STATUS             Status;
+    NAME_TABLE_ENTRY        *Nte;
+#endif
 
     FUNCTION_TRACE ("PsGetNextNamepath");
 
