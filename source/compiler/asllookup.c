@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: asllookup- Namespace lookup
- *              $Revision: 1.69 $
+ *              $Revision: 1.70 $
  *
  *****************************************************************************/
 
@@ -598,7 +598,7 @@ LkNamespaceLocateBegin (
 
     /* Attempt to optimize the NamePath */
 
-    LkOptimizeNamePath (Op, OpInfo->Flags, WalkState, Path, Node);
+    OptOptimizeNamePath (Op, OpInfo->Flags, WalkState, Path, Node);
 
     /* 1) Check for a reference to a resource descriptor */
 
