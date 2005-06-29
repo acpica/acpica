@@ -160,7 +160,8 @@ AcpiHwEnableGpe (
      * to enable the GPE, and write out the new register.
      */
     InByte = AcpiOsIn8 (AcpiGbl_GpeRegisters[RegisterIndex].EnableAddr);
-    AcpiOsOut8 (AcpiGbl_GpeRegisters[RegisterIndex].EnableAddr, (UINT8)(InByte | BitMask));
+    AcpiOsOut8 (AcpiGbl_GpeRegisters[RegisterIndex].EnableAddr,
+                (UINT8)(InByte | BitMask));
 }
 
 
@@ -199,7 +200,8 @@ AcpiHwDisableGpe (
      * and write out the new register value to disable the GPE.
      */
     InByte = AcpiOsIn8 (AcpiGbl_GpeRegisters[RegisterIndex].EnableAddr);
-    AcpiOsOut8 (AcpiGbl_GpeRegisters[RegisterIndex].EnableAddr, (UINT8)(InByte & ~BitMask));
+    AcpiOsOut8 (AcpiGbl_GpeRegisters[RegisterIndex].EnableAddr,
+                (UINT8)(InByte & ~BitMask));
 }
 
 
