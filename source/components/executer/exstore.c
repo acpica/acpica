@@ -14,15 +14,17 @@
  | FILENAME: amlexec.c - ACPI AML (p-code) execution
  |__________________________________________________________________________
  |
- | $Revision: 1.5 $
- | $Date: 2005/06/29 17:50:39 $
+ | $Revision: 1.6 $
+ | $Date: 2005/06/29 17:50:42 $
  | $Log: exstore.c,v $
- | Revision 1.5  2005/06/29 17:50:39  aystarik
- | Major cleanup
+ | Revision 1.6  2005/06/29 17:50:42  aystarik
+ |
  |
  | 
- | date	99.01.20.17.40.00;	author rmoore1;	state Exp;
+ | date	99.02.11.23.27.00;	author grsmith1;	state Exp;
  |
+ * 
+ * 6     2/11/99 3:27p Grsmith1
  * 
  * 5     1/20/99 9:40a Rmoore1
  * Major cleanup
@@ -219,6 +221,7 @@
 #define __AMLEXEC_C__
 #define _THIS_MODULE    "amlexec.c"
 
+#include <bu.h>
 #include "acpiosd.h"
 #include "acpitype.h"
 #include "acpipriv.h"
