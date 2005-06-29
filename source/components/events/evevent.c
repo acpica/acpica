@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: evevent - Fixed Event handling and dispatch
- *              $Revision: 1.104 $
+ *              $Revision: 1.107 $
  *
  *****************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2003, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -116,7 +116,6 @@
 
 #include "acpi.h"
 #include "acevents.h"
-#include "acnamesp.h"
 
 #define _COMPONENT          ACPI_EVENTS
         ACPI_MODULE_NAME    ("evevent")
@@ -187,7 +186,7 @@ AcpiEvInitialize (
  *
  * RETURN:      Status
  *
- * DESCRIPTION: Install handlers for the SCI, Global Lock, and GPEs.
+ * DESCRIPTION: Install interrupt handlers for the SCI and Global Lock
  *
  ******************************************************************************/
 
@@ -208,17 +207,6 @@ AcpiEvHandlerInitialize (
     {
         ACPI_REPORT_ERROR ((
                 "Unable to install System Control Interrupt Handler, %s\n",
-                AcpiFormatException (Status)));
-        return_ACPI_STATUS (Status);
-    }
-
-    /* Install handlers for control method GPE handlers (_Lxx, _Exx) */
-
-    Status = AcpiEvInitGpeControlMethods ();
-    if (ACPI_FAILURE (Status))
-    {
-        ACPI_REPORT_ERROR ((
-                "Unable to initialize GPE control methods, %s\n",
                 AcpiFormatException (Status)));
         return_ACPI_STATUS (Status);
     }
@@ -255,7 +243,7 @@ ACPI_STATUS
 AcpiEvFixedEventInitialize (
     void)
 {
-    NATIVE_UINT             i;
+    ACPI_NATIVE_UINT        i;
     ACPI_STATUS             Status;
 
 
@@ -304,7 +292,7 @@ AcpiEvFixedEventDetect (
     UINT32                  IntStatus = ACPI_INTERRUPT_NOT_HANDLED;
     UINT32                  FixedStatus;
     UINT32                  FixedEnable;
-    NATIVE_UINT_MAX32       i;
+    ACPI_NATIVE_UINT        i;
 
 
     ACPI_FUNCTION_NAME ("EvFixedEventDetect");
@@ -333,7 +321,7 @@ AcpiEvFixedEventDetect (
         {
             /* Found an active (signalled) event */
 
-            IntStatus |= AcpiEvFixedEventDispatch (i);
+            IntStatus |= AcpiEvFixedEventDispatch ((UINT32) i);
         }
     }
 
