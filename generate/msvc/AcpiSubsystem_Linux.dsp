@@ -550,7 +550,7 @@ SOURCE=..\..\source_linux\COMPONENTS\Disassembler\dmnames.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\SOURCE\COMPONENTS\disassembler\dmobject.c
+SOURCE=..\..\source_linux\components\disassembler\dmobject.c
 # End Source File
 # Begin Source File
 
@@ -762,5 +762,13 @@ SOURCE=..\..\source_linux\Include\amlcode.h
 SOURCE=..\..\source_linux\INCLUDE\amlresrc.h
 # End Source File
 # End Group
+# Begin Source File
+
+SOURCE=..\..\source\include\acnames.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\include\acopcode.h
+# End Source File
 # End Target
 # End Project
