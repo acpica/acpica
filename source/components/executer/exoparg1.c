@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: ammonad - ACPI AML (p-code) execution for monadic operators
- *              $Revision: 1.91 $
+ *              $Revision: 1.94 $
  *
  *****************************************************************************/
 
@@ -125,7 +125,7 @@
 #include "acnamesp.h"
 
 
-#define _COMPONENT          INTERPRETER
+#define _COMPONENT          ACPI_EXECUTER
         MODULE_NAME         ("ammonad")
 
 
@@ -171,18 +171,11 @@ AcpiAmlGetObjectReference (
         switch (ObjDesc->Reference.Opcode)
         {
         case AML_LOCAL_OP:
-
-            *RetDesc = (void *) AcpiDsMethodDataGetNte (MTH_TYPE_LOCAL,
-                                        (ObjDesc->Reference.Offset), WalkState);
-            break;
-
-
         case AML_ARG_OP:
 
-            *RetDesc = (void *) AcpiDsMethodDataGetNte (MTH_TYPE_ARG,
-                                        (ObjDesc->Reference.Offset), WalkState);
+            *RetDesc = (void *) AcpiDsMethodDataGetNode (ObjDesc->Reference.Opcode,
+                                        ObjDesc->Reference.Offset, WalkState);
             break;
-
 
         default:
 
@@ -775,13 +768,13 @@ AcpiAmlExecMonadic2 (
          * an Reference is expected!! 10/99
          */
 
-       if (VALID_DESCRIPTOR_TYPE (ObjDesc, ACPI_DESC_TYPE_NAMED))
-       {
-           RetDesc = ObjDesc;
-       }
+        if (VALID_DESCRIPTOR_TYPE (ObjDesc, ACPI_DESC_TYPE_NAMED))
+        {
+            RetDesc = ObjDesc;
+        }
 
-       else
-       {
+        else
+        {
             /*
              * Duplicate the Reference in a new object so that we can resolve it
              * without destroying the original Reference object
@@ -790,8 +783,8 @@ AcpiAmlExecMonadic2 (
             RetDesc = AcpiCmCreateInternalObject (INTERNAL_TYPE_REFERENCE);
             if (!RetDesc)
             {
-              Status = AE_NO_MEMORY;
-               goto Cleanup;
+                Status = AE_NO_MEMORY;
+                goto Cleanup;
             }
 
             RetDesc->Reference.Opcode = ObjDesc->Reference.Opcode;
@@ -886,16 +879,10 @@ AcpiAmlExecMonadic2 (
 
 
             case AML_LOCAL_OP:
-
-                Type = AcpiDsMethodDataGetType (MTH_TYPE_LOCAL,
-                                (ObjDesc->Reference.Offset), WalkState);
-                break;
-
-
             case AML_ARG_OP:
 
-                Type = AcpiDsMethodDataGetType (MTH_TYPE_ARG,
-                                (ObjDesc->Reference.Offset), WalkState);
+                Type = AcpiDsMethodDataGetType (ObjDesc->Reference.Opcode,
+                                ObjDesc->Reference.Offset, WalkState);
                 break;
 
 
@@ -1025,23 +1012,10 @@ AcpiAmlExecMonadic2 (
             /* Set ObjDesc to the value of the local/arg */
 
             case AML_LOCAL_OP:
-
-                AcpiDsMethodDataGetValue (MTH_TYPE_LOCAL,
-                        (ObjDesc->Reference.Offset), WalkState, &TmpDesc);
-
-                /*
-                 * Delete our reference to the input object and
-                 * point to the object just retrieved
-                 */
-                AcpiCmRemoveReference (ObjDesc);
-                ObjDesc = TmpDesc;
-                break;
-
-
             case AML_ARG_OP:
 
-                AcpiDsMethodDataGetValue (MTH_TYPE_ARG,
-                        (ObjDesc->Reference.Offset), WalkState, &TmpDesc);
+                AcpiDsMethodDataGetValue (ObjDesc->Reference.Opcode,
+                        ObjDesc->Reference.Offset, WalkState, &TmpDesc);
 
                 /*
                  * Delete our reference to the input object and
