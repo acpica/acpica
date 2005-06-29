@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: evgpe - General Purpose Event handling and dispatch
- *              $Revision: 1.19 $
+ *              $Revision: 1.20 $
  *
  *****************************************************************************/
 
@@ -308,7 +308,7 @@ AcpiEvGpeDetect (
 
 UnlockAndExit:
 
-    AcpiOsReleaseLock (AcpiGbl_GpeLock, ACPI_NON_HANDLER);
+    AcpiOsReleaseLock (AcpiGbl_GpeLock, ACPI_HANDLER);
     return (IntStatus);
 }
 
