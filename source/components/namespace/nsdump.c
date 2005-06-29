@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: nsdump - table dumping routines for debug
- *              $Revision: 1.147 $
+ *              $Revision: 1.148 $
  *
  *****************************************************************************/
 
@@ -193,9 +193,6 @@ AcpiNsDumpPathname (
     UINT32                  Level,
     UINT32                  Component)
 {
-    ACPI_BUFFER             Buffer;
-    ACPI_STATUS             Status;
-
 
     ACPI_FUNCTION_TRACE ("NsDumpPathname");
 
@@ -209,15 +206,7 @@ AcpiNsDumpPathname (
 
     /* Convert handle to a full pathname and print it (with supplied message) */
 
-    Buffer.Length = ACPI_ALLOCATE_LOCAL_BUFFER;
-
-    Status = AcpiNsHandleToPathname (Handle, &Buffer);
-    if (ACPI_SUCCESS (Status))
-    {
-        AcpiOsPrintf ("%s %s (Node %p)\n", Msg, (char *) Buffer.Pointer, Handle);
-        ACPI_MEM_FREE (Buffer.Pointer);
-    }
-
+    AcpiNsPrintNodePathname (Handle, Msg);
     return_VOID;
 }
 
