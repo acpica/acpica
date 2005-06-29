@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: nsload - namespace loading/expanding/contracting procedures
- *              $Revision: 1.60 $
+ *              $Revision: 1.62 $
  *
  *****************************************************************************/
 
@@ -118,7 +118,6 @@
 
 #include "acpi.h"
 #include "acnamesp.h"
-#include "acparser.h"
 #include "acdispat.h"
 
 
@@ -404,7 +403,7 @@ AcpiNsLoadNamespace (
     (void) AcpiNsLoadTableByType (ACPI_TABLE_SSDT);
     (void) AcpiNsLoadTableByType (ACPI_TABLE_PSDT);
 
-    ACPI_DEBUG_PRINT_RAW ((ACPI_DB_OK,
+    ACPI_DEBUG_PRINT_RAW ((ACPI_DB_INIT,
         "ACPI Namespace successfully loaded at root %p\n",
         AcpiGbl_RootNode));
 
