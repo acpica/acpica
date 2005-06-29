@@ -2,7 +2,7 @@
  *
  * Module Name: nseval - Object evaluation interfaces -- includes control
  *                       method lookup and execution.
- *              $Revision: 1.105 $
+ *              $Revision: 1.106 $
  *
  ******************************************************************************/
 
@@ -538,7 +538,7 @@ AcpiNsExecuteControlMethod (
  *
  * DESCRIPTION: Return the current value of the object
  *
- * MUTEX:       Assumes namespace is locked
+ * MUTEX:       Assumes namespace is locked, leaves namespace unlocked
  *
  ******************************************************************************/
 
@@ -549,110 +549,57 @@ AcpiNsGetObjectValue (
 {
     ACPI_STATUS             Status = AE_OK;
     ACPI_OPERAND_OBJECT     *ObjDesc;
-    ACPI_OPERAND_OBJECT     *SourceDesc;
 
 
     FUNCTION_TRACE ("NsGetObjectValue");
 
 
     /*
-     *  We take the value from certain objects directly
+     * Objects require additional resolution steps (e.g., the
+     * Node may be a field that must be read, etc.) -- we can't just grab
+     * the object out of the node.
      */
-    if ((Node->Type == ACPI_TYPE_PROCESSOR) ||
-        (Node->Type == ACPI_TYPE_POWER))
-    {
-        /*
-         *  Create a new object of the same type as the return object
-         */
-        ObjDesc = AcpiUtCreateInternalObject (Node->Type);
-        if (!ObjDesc)
-        {
-           Status = AE_NO_MEMORY;
-           goto UnlockAndExit;
-        }
-
-        /*
-         *  Get the attached object
-         */
-        SourceDesc = AcpiNsGetAttachedObject (Node);
-        if (!SourceDesc)
-        {
-            Status = AE_NULL_OBJECT;
-            goto UnlockAndExit;
-        }
-
-        /* Just copy from the original to the return object */
-
-        AcpiUtCopySimpleObject (SourceDesc, ObjDesc);
-        AcpiUtReleaseMutex (ACPI_MTX_NAMESPACE);
-    }
-
+    ObjDesc = (ACPI_OPERAND_OBJECT *) Node;
 
     /*
-     * Other objects require a reference object wrapper which we
-     * then attempt to resolve.
+     * Use ResolveNodeToValue() to get the associated value.  This call
+     * always deletes ObjDesc (allocated above).
+     *
+     * NOTE: we can get away with passing in NULL for a walk state
+     * because ObjDesc is guaranteed to not be a reference to either
+     * a method local or a method argument (because this interface can only be
+     * called from the AcpiEvaluate external interface, never called from 
+     * a running control method.)
+     *
+     * Even though we do not directly invoke the interpreter
+     * for this, we must enter it because we could access an opregion.
+     * The opregion access code assumes that the interpreter
+     * is locked.
+     *
+     * We must release the namespace lock before entering the
+     * intepreter.
      */
-    else
-    {
-        /* Create an Reference object to contain the object */
-
-        ObjDesc = AcpiUtCreateInternalObject (INTERNAL_TYPE_REFERENCE);
-        if (!ObjDesc)
-        {
-           Status = AE_NO_MEMORY;
-           goto UnlockAndExit;
-        }
-
-        /* Construct a descriptor pointing to the name */
-
-        ObjDesc->Reference.Opcode  = (UINT8) AML_NAME_OP;
-        ObjDesc->Reference.Object  = (void *) Node;
-
-        /*
-         * Use ResolveToValue() to get the associated value.  This call
-         * always deletes ObjDesc (allocated above).
-         *
-         * NOTE: we can get away with passing in NULL for a walk state
-         * because ObjDesc is guaranteed to not be a reference to either
-         * a method local or a method argument
-         *
-         * Even though we do not directly invoke the interpreter
-         * for this, we must enter it because we could access an opregion.
-         * The opregion access code assumes that the interpreter
-         * is locked.
-         *
-         * We must release the namespace lock before entering the
-         * intepreter.
-         */
-        AcpiUtReleaseMutex (ACPI_MTX_NAMESPACE);
-        Status = AcpiExEnterInterpreter ();
-        if (ACPI_SUCCESS (Status))
-        {
-            Status = AcpiExResolveToValue (&ObjDesc, NULL);
-            AcpiExExitInterpreter ();
-        }
-    }
-
-    /*
-     * If AcpiExResolveToValue() succeeded, the return value was
-     * placed in ObjDesc.
-     */
+    AcpiUtReleaseMutex (ACPI_MTX_NAMESPACE);
+    Status = AcpiExEnterInterpreter ();
     if (ACPI_SUCCESS (Status))
     {
-        Status = AE_CTRL_RETURN_VALUE;
-        *ReturnObjDesc = ObjDesc;
-        ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "Returning obj %p\n", *ReturnObjDesc));
+        Status = AcpiExResolveNodeToValue ((ACPI_NAMESPACE_NODE **) &ObjDesc, NULL);
+        /*
+         * If AcpiExResolveNodeToValue() succeeded, the return value was
+         * placed in ObjDesc.
+         */
+        AcpiExExitInterpreter ();
+
+        if (ACPI_SUCCESS (Status))
+        {
+            Status = AE_CTRL_RETURN_VALUE;
+            *ReturnObjDesc = ObjDesc;
+            ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "Returning obj %p\n", *ReturnObjDesc));
+        }
     }
 
     /* Namespace is unlocked */
 
     return_ACPI_STATUS (Status);
-
-
-UnlockAndExit:
-
-    /* Unlock the namespace */
-
-    AcpiUtReleaseMutex (ACPI_MTX_NAMESPACE);
-    return_ACPI_STATUS (Status);
 }
+
