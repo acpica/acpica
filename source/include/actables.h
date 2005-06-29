@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: actables.h - ACPI table management
- *       $Revision: 1.33 $
+ *       $Revision: 1.34 $
  *
  *****************************************************************************/
 
@@ -272,6 +272,13 @@ AcpiTbFindRsdp (
 /*
  * tbutils - common table utilities
  */
+
+ACPI_STATUS
+AcpiTbFindTable (
+    NATIVE_CHAR             *Signature,
+    NATIVE_CHAR             *OemId,
+    NATIVE_CHAR             *OemTableId,
+    ACPI_TABLE_HEADER       **TablePtr);
 
 ACPI_STATUS
 AcpiTbMapAcpiTable (
