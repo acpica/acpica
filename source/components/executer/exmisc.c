@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exmisc - ACPI AML (p-code) execution - specific opcodes
- *              $Revision: 1.123 $
+ *              $Revision: 1.124 $
  *
  *****************************************************************************/
 
@@ -325,6 +325,7 @@ AcpiExDoConcatenate (
     ACPI_OPERAND_OBJECT     *ReturnDesc;
     char                    *NewBuf;
     ACPI_STATUS             Status;
+    ACPI_SIZE               NewLength;
 
 
     ACPI_FUNCTION_TRACE ("ExDoConcatenate");
@@ -410,9 +411,15 @@ AcpiExDoConcatenate (
 
         /* Result of two Strings is a String */
 
-        ReturnDesc = AcpiUtCreateStringObject (
-                            (ACPI_SIZE) Operand0->String.Length +
-                            (ACPI_SIZE) LocalOperand1->String.Length + 1);
+        NewLength = (ACPI_SIZE) Operand0->String.Length +
+                    (ACPI_SIZE) LocalOperand1->String.Length;
+        if (NewLength > ACPI_MAX_STRING_CONVERSION)
+        {
+            Status = AE_AML_STRING_LIMIT;
+            goto Cleanup;
+        }
+
+        ReturnDesc = AcpiUtCreateStringObject (NewLength + 1);
         if (!ReturnDesc)
         {
             Status = AE_NO_MEMORY;
@@ -749,7 +756,8 @@ AcpiExDoLogicalOp (
         /* 
          * 2) Both operands are Strings or both are Buffers
          *    Note: Code below takes advantage of common Buffer/String 
-         *          object fields. LocalOperand1 may have changed above
+         *          object fields. LocalOperand1 may have changed above. Use
+         *          memcmp to handle nulls in buffers. 
          */
         Length0 = Operand0->Buffer.Length;
         Length1 = LocalOperand1->Buffer.Length;
