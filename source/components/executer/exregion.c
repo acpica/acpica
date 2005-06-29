@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exregion - ACPI default OpRegion (address space) handlers
- *              $Revision: 1.76 $
+ *              $Revision: 1.77 $
  *
  *****************************************************************************/
 
@@ -289,10 +289,11 @@ AcpiExSystemMemorySpaceHandler (
             *Value = (ACPI_INTEGER) *((UINT32 *) LogicalAddrPtr);
             break;
 
+#ifndef _IA16
         case 64:
             *Value = (ACPI_INTEGER) *((UINT64 *) LogicalAddrPtr);
             break;
-        
+#endif
         default:
             /* BitWidth was already validated */
             break;
@@ -315,9 +316,11 @@ AcpiExSystemMemorySpaceHandler (
             *(UINT32 *) LogicalAddrPtr = (UINT32) *Value;
             break;
 
+#ifndef _IA16
         case 64:
             *(UINT64 *) LogicalAddrPtr = (UINT64) *Value;
             break;
+#endif
         
         default:
             /* BitWidth was already validated */
