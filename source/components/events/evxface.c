@@ -1095,7 +1095,7 @@ AcpiInstallGpeHandler (
 
     /* Parameter validation */
 
-    if (!Handler || (GpeNumber > NUM_GPE) || (Type != EVENT_LEVEL_TRIGGERED && Type != EVENT_EDGE_TRIGGERED))
+    if (!Handler || (GpeNumber > NUM_GPE))
     {
         return_ACPI_STATUS (AE_BAD_PARAMETER);
     }
@@ -1122,6 +1122,10 @@ AcpiInstallGpeHandler (
     Gbl_GpeInfo[GpeNumber].Handler = Handler;
     Gbl_GpeInfo[GpeNumber].Context = Context;
     Gbl_GpeInfo[GpeNumber].Type = (UINT8) Type;
+    
+    /* Clear the GPE (stale) */
+
+    HwClearGpe (GpeNumber);
 
     /* Now we can enable the GPE */
 
