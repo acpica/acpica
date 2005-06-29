@@ -98,38 +98,13 @@
 #ifndef __EVENTS_H__
 #define __EVENTS_H__
 
-/* Event types */
-
-enum 
-{
-    PMTIMER_EVENT = 0,
-    /* 
-     * There's no bus master event so index 1 is used for IRQ's that are not
-     * handled by the SCI handler 
-     */
-    NOT_USED,
-    GLOBAL_EVENT, 
-    POWER_BUTTON_EVENT, 
-    SLEEP_BUTTON_EVENT, 
-    RTC_EVENT, 
-    GENERAL_EVENT,
-    NUM_EVENTS
-};
-
-typedef UINT32 (*FIXED_EVENT_HANDLER) (void);
-
-/* Globals for event handling */
-
-FIXED_EVENT_HANDLER		FixedEventHandlers[NUM_EVENTS];
-UINT32					SciHandle;
-extern INT32            OriginalMode;
 
 /* Status bits. */
 
-#define PMTIMER_STATUS					1
-#define GLOBAL_STATUS					32
-#define POWER_BUTTON_STATUS				256
-#define SLEEP_BUTTON_STATUS				512
+#define STATUS_PMTIMER                  1
+#define STATUS_GLOBAL                   32
+#define STATUS_POWER_BUTTON             256
+#define STATUS_SLEEP_BUTTON             512
 
 /* Interrupt handler return values */
 
@@ -144,38 +119,71 @@ extern INT32            OriginalMode;
  * by the ACPI interrupt handler... 
  */
 
-/* Prototypes */
+/*
+ * External interfaces - TBD: move to acpisubsys.h
+ */
+
 ACPI_STATUS
 AcpiEnableFixedEvent (
-	UINT32 Event,
- 	FIXED_EVENT_HANDLER Handler);
- 	
+    UINT32              Event,
+    FIXED_EVENT_HANDLER Handler);
+    
 ACPI_STATUS
 AcpiDisableFixedEvent (
-	UINT32 Event);
-	
+    UINT32              Event);
+
+
+/* Local interfaces */
+    
 UINT32 
-InstallSciHandler (
+EvInstallSciHandler (
     void);
 
 ACPI_STATUS
-UninstallSciHandler (
+EvRemoveSciHandler (
     void);
 
 INT32 
-InitializeSCI (
-    INT32           ProgramSCI);
+EvInitializeSCI (
+    INT32               ProgramSCI);
 
 void
-RestoreAcpiState (
+EvRestoreAcpiState (
     void);
+
+INT32
+EvGpeDispatch (
+    UINT16              Index, 
+    UINT32              GpeBase, 
+    UINT16              GpeLength);
+
+INT32
+EvGpeDetect (
+    void);
+
+INT32
+EvFixedEventDetect (
+    void);
+
+INT32
+EvFixedEventDispatch (
+    INT32               Event);
+
+
+/* Debug stuff */
 
 #ifdef _DEBUG
 
 INT32 
-SciCount (
-    UINT32          Event);
+EvSciCount (
+    UINT32              Event);
 
+#define DEBUG_INCREMENT_EVENT_COUNT(a)   EventCount[a]++;
+
+#else
+
+#define DEBUG_INCREMENT_EVENT_COUNT(a)
 #endif
+
 
 #endif  /*  __EVENTS_H__   */
