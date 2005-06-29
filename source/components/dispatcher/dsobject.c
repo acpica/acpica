@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dsobject - Dispatcher object management routines
- *              $Revision: 1.112 $
+ *              $Revision: 1.114 $
  *
  *****************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2003, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -498,7 +498,7 @@ AcpiDsCreateNode (
         return_ACPI_STATUS (Status);
     }
 
-    /* Re-type the object according to it's argument */
+    /* Re-type the object according to its argument */
 
     Node->Type = ACPI_GET_OBJECT_TYPE (ObjDesc);
 
