@@ -623,6 +623,11 @@ CmInitGlobals (ACPI_INIT_DATA *InitData)
     Gbl_ParseCacheRequests      = 0;
     Gbl_ParseCacheHits          = 0;
 
+    Gbl_ObjectCache             = NULL;
+    Gbl_ObjectCacheDepth        = 0;
+    Gbl_ObjectCacheRequests     = 0;
+    Gbl_ObjectCacheHits         = 0;
+
     /* Interpreter */
 
     Gbl_BufSeq                  = 0;
