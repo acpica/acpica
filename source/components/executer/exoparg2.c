@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: exoparg2 - AML execution - opcodes with 2 arguments
- *              $Revision: 1.100 $
+ *              $Revision: 1.103 $
  *
  *****************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -191,12 +191,13 @@ AcpiExOpcode_2A_0T_0R (
 
         Node = (ACPI_NAMESPACE_NODE *) Operand[0];
 
-        /* The node must refer to a device or thermal zone */
+        /* The node must refer to a device or thermal zone or processor */
 
         switch (Node->Type)
         {
         case ACPI_TYPE_DEVICE:
         case ACPI_TYPE_THERMAL:
+        case ACPI_TYPE_PROCESSOR:
 
             /*
              * Dispatch the notify to the appropriate handler
@@ -292,7 +293,6 @@ AcpiExOpcode_2A_2T_1R (
                 WalkState->Opcode));
         Status = AE_AML_BAD_OPCODE;
         goto Cleanup;
-        break;
     }
 
 
@@ -537,7 +537,6 @@ AcpiExOpcode_2A_1T_1R (
 
         WalkState->ResultObj = ReturnDesc;
         goto Cleanup;
-        break;
 
 
     default:
@@ -655,7 +654,6 @@ AcpiExOpcode_2A_0T_1R (
         REPORT_ERROR (("AcpiExOpcode_2A_0T_1R: Unknown opcode %X\n", WalkState->Opcode));
         Status = AE_AML_BAD_OPCODE;
         goto Cleanup;
-        break;
     }
 
 
