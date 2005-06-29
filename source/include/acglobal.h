@@ -154,6 +154,7 @@ ACPI_EXTERN ACPI_TABLE_HEADER                   * SSDT;
 ACPI_EXTERN ACPI_TABLE_HEADER                   * SBDT;
 
 
+extern      ACPI_TABLE_INFO     AcpiTables[NUM_ACPI_TABLES];
 
 /*****************************************************************************
  * 
