@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acresrc.h - Resource Manager function prototypes
- *       $Revision: 1.32 $
+ *       $Revision: 1.33 $
  *
  *****************************************************************************/
 
@@ -230,18 +230,18 @@ AcpiRsGetByteStreamStart (
     UINT32                  *Size);
 
 ACPI_STATUS
-AcpiRsCalculateListLength (
+AcpiRsGetListLength (
     UINT8                   *ByteStreamBuffer,
     UINT32                  ByteStreamBufferLength,
     ACPI_SIZE               *SizeNeeded);
 
 ACPI_STATUS
-AcpiRsCalculateByteStreamLength (
+AcpiRsGetByteStreamLength (
     ACPI_RESOURCE           *LinkedListBuffer,
     ACPI_SIZE               *SizeNeeded);
 
 ACPI_STATUS
-AcpiRsCalculatePciRoutingTableLength (
+AcpiRsGetPciRoutingTableLength (
     ACPI_OPERAND_OBJECT     *PackageObject,
     ACPI_SIZE               *BufferSizeNeeded);
 
