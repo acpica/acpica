@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Name: hwsleep.c - ACPI Hardware Sleep/Wake Interface
- *              $Revision: 1.33 $
+ *              $Revision: 1.36 $
  *
  *****************************************************************************/
 
@@ -120,7 +120,7 @@
 #include "achware.h"
 
 #define _COMPONENT          ACPI_HARDWARE
-        MODULE_NAME         ("hwsleep")
+        ACPI_MODULE_NAME    ("hwsleep")
 
 
 /******************************************************************************
@@ -141,7 +141,7 @@ AcpiSetFirmwareWakingVector (
     ACPI_PHYSICAL_ADDRESS PhysicalAddress)
 {
 
-    FUNCTION_TRACE ("AcpiSetFirmwareWakingVector");
+    ACPI_FUNCTION_TRACE ("AcpiSetFirmwareWakingVector");
 
 
     /* Set the vector */
@@ -178,7 +178,7 @@ AcpiGetFirmwareWakingVector (
     ACPI_PHYSICAL_ADDRESS *PhysicalAddress)
 {
 
-    FUNCTION_TRACE ("AcpiGetFirmwareWakingVector");
+    ACPI_FUNCTION_TRACE ("AcpiGetFirmwareWakingVector");
 
 
     if (!PhysicalAddress)
@@ -225,15 +225,15 @@ AcpiEnterSleepStatePrep (
     ACPI_OBJECT         Arg;
 
 
-    FUNCTION_TRACE ("AcpiEnterSleepStatePrep");
+    ACPI_FUNCTION_TRACE ("AcpiEnterSleepStatePrep");
 
 
     /*
      * _PSW methods could be run here to enable wake-on keyboard, LAN, etc.
      */
-    Status = AcpiHwGetSleepTypeData (SleepState, 
+    Status = AcpiHwGetSleepTypeData (SleepState,
                     &AcpiGbl_SleepTypeA, &AcpiGbl_SleepTypeB);
-    if (!ACPI_SUCCESS (Status))
+    if (ACPI_FAILURE (Status))
     {
         return_ACPI_STATUS (Status);
     }
@@ -249,13 +249,13 @@ AcpiEnterSleepStatePrep (
     /* Run the _PTS and _GTS methods */
 
     Status = AcpiEvaluateObject (NULL, "\\_PTS", &ArgList, NULL);
-    if (!ACPI_SUCCESS (Status) && Status != AE_NOT_FOUND)
+    if (ACPI_FAILURE (Status) && Status != AE_NOT_FOUND)
     {
         return_ACPI_STATUS (Status);
     }
 
     Status = AcpiEvaluateObject (NULL, "\\_GTS", &ArgList, NULL);
-    if (!ACPI_SUCCESS (Status) && Status != AE_NOT_FOUND)
+    if (ACPI_FAILURE (Status) && Status != AE_NOT_FOUND)
     {
         return_ACPI_STATUS (Status);
     }
@@ -287,13 +287,13 @@ AcpiEnterSleepState (
     ACPI_BIT_REGISTER_INFO  *SleepEnableRegInfo;
 
 
-    FUNCTION_TRACE ("AcpiEnterSleepState");
+    ACPI_FUNCTION_TRACE ("AcpiEnterSleepState");
 
 
     if ((AcpiGbl_SleepTypeA > ACPI_SLEEP_TYPE_MAX) ||
         (AcpiGbl_SleepTypeB > ACPI_SLEEP_TYPE_MAX))
     {
-        REPORT_ERROR (("Sleep values out of range: A=%x B=%x\n",
+        ACPI_REPORT_ERROR (("Sleep values out of range: A=%x B=%x\n",
             AcpiGbl_SleepTypeA, AcpiGbl_SleepTypeB));
         return_ACPI_STATUS (AE_AML_OPERAND_VALUE);
     }
@@ -337,6 +337,7 @@ AcpiEnterSleepState (
     PM1BControl |= SleepEnableRegInfo->AccessBitMask;
 
     /* Write #2: SLP_TYP + SLP_EN */
+    ACPI_WBINVD();
 
     AcpiHwRegisterWrite (ACPI_MTX_LOCK, ACPI_REGISTER_PM1A_CONTROL, PM1AControl);
     AcpiHwRegisterWrite (ACPI_MTX_LOCK, ACPI_REGISTER_PM1B_CONTROL, PM1BControl);
@@ -383,7 +384,7 @@ AcpiLeaveSleepState (
     ACPI_STATUS         Status;
 
 
-    FUNCTION_TRACE ("AcpiLeaveSleepState");
+    ACPI_FUNCTION_TRACE ("AcpiLeaveSleepState");
 
 
     /* Ensure EnterSleepStatePrep -> EnterSleepState ordering */
@@ -401,15 +402,15 @@ AcpiLeaveSleepState (
     /* Ignore any errors from these methods */
 
     Status = AcpiEvaluateObject (NULL, "\\_BFS", &ArgList, NULL);
-    if (!ACPI_SUCCESS (Status) && Status != AE_NOT_FOUND)
+    if (ACPI_FAILURE (Status) && Status != AE_NOT_FOUND)
     {
-        REPORT_ERROR (("Method _BFS failed, %s\n", AcpiFormatException (Status)));
+        ACPI_REPORT_ERROR (("Method _BFS failed, %s\n", AcpiFormatException (Status)));
     }
 
     Status = AcpiEvaluateObject (NULL, "\\_WAK", &ArgList, NULL);
-    if (!ACPI_SUCCESS (Status) && Status != AE_NOT_FOUND)
+    if (ACPI_FAILURE (Status) && Status != AE_NOT_FOUND)
     {
-        REPORT_ERROR (("Method _WAK failed, %s\n", AcpiFormatException (Status)));
+        ACPI_REPORT_ERROR (("Method _WAK failed, %s\n", AcpiFormatException (Status)));
     }
 
     /* _WAK returns stuff - do we want to look at it? */
