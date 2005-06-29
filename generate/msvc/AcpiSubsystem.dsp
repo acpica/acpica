@@ -633,10 +633,6 @@ SOURCE=..\..\Subsystem\Include\acapi.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\Subsystem\Include\acenum.h
-# End Source File
-# Begin Source File
-
 SOURCE=..\..\Subsystem\Include\acenv.h
 # End Source File
 # Begin Source File
