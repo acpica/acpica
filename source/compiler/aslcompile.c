@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslcompile - top level compile module
- *              $Revision: 1.34 $
+ *              $Revision: 1.35 $
  *
  *****************************************************************************/
 
@@ -188,8 +188,8 @@ AslCompilerSignon (
 {
 
     FlPrintFile (FileId,
-        "\n%s %s [%s]\n%s\nSupports ACPI Specification Revision 2.0\n\n",
-        CompilerId, CompilerVersion, __DATE__, CompilerCopyright);
+        "\n%s %s [%s]\nACPI CA Subsystem version %X\n%s\nSupports ACPI Specification Revision 2.0\n\n",
+        CompilerId, CompilerVersion, __DATE__, ACPI_CA_VERSION, CompilerCopyright);
 }
 
 
