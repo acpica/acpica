@@ -109,34 +109,6 @@
 
 /*****************************************************************************
  * 
- * FUNCTION:    AmlAppendBlockOwner
- *
- * PARAMETERS:  *Owner
- *
- * DESCRIPTION: Print block-owner data
- *
- ****************************************************************************/
-
-void
-AmlAppendBlockOwner (
-    void                    *Owner)
-{
-
-#ifdef PLUMBER
-
-#if 1
-    vPlumber ("internal type mismatch", 3);
-#endif
-
-    DEBUG_PRINT (ACPI_ERROR, ("Block Owner: %s\n", pcIdentifyOwner (Owner)));
-
-#endif  /* PLUMBER */
-}
-
-
-
-/*****************************************************************************
- * 
  * FUNCTION:    AmlAppendOperandDiag
  *
  * PARAMETERS:  *FileName       - Name of source file
@@ -256,7 +228,6 @@ AmlAcquireGlobalLock (
 }
 
 
-
 /*****************************************************************************
  *
  * FUNCTION:    AmlReleaseGlobalLock
@@ -305,189 +276,9 @@ AmlReleaseGlobalLock (
     return AE_OK;
 }
 
-#ifdef PLUMBER
-/****************************************************************************
- * 
- * FUNCTION:    AmlMarkPackage
- *
- * PARAMETERS:  *ObjDesc        - Descriptor of package to be marked
- *
- * DESCRIPTION: "Mark" all storage belonging to a package, including
- *              contained packages.
- *
- ***************************************************************************/
-
-void 
-AmlMarkPackage (
-    ACPI_OBJECT             *ObjDesc)
-{
-    UINT16                  Count;
-
-
-    FUNCTION_TRACE ("AmlMarkPackage");
-
-
-    if (ObjDesc)
-    {   
-        /*  ObjDesc valid  */
-        
-        if (ObjDesc->Package.PackageElems)
-        {    
-            /*  ObjDesc->Package.PackageElems valid  */
-            
-            ACPI_OBJECT           **Elems = ObjDesc->Package.PackageElems;
-
-            for (Count = ObjDesc->Package.PkgCount; Count; --Count)
-            {
-                if ((*Elems) && (Package == (*Elems)->ValType))
-                {
-                    AmlMarkPackage (*Elems);
-                }
-
-                ++Elems;
-            }
-            
-            MarkBlock (ObjDesc->Package.PackageElems);
-        }
-        
-        MarkBlock (ObjDesc);
-    } 
-
-    FUNCTION_EXIT;
-}
-
-
-/****************************************************************************
- *
- * FUNCTION:    AmlMarkObject
- *
- * PARAMETERS:  *ObjDesc        - Descriptor of object to be marked
- *
- * DESCRIPTION: "Mark" all storage belonging to an object
- *
- ***************************************************************************/
-
-void 
-AmlMarkObject (
-    ACPI_OBJECT             *ObjDesc)
-{
-    FUNCTION_TRACE ("AmlMarkObject");
-
-
-    if (ObjDesc)
-    {   
-        /*  ObjDesc valid  */
-        
-        MarkBlock(ObjDesc);
-
-        switch (ObjDesc->ValType)
-        {
-            case String:
-                
-                /* Avoid marking value if it is in the AML stream */
-                
-                if (!iIsInPCodeBlock (ObjDesc->String.String))
-                {
-                    MarkBlock (ObjDesc->String.String);
-                }
-                break;
-
-            case Buffer:
-                
-                /* Avoid marking value if it is in the AML stream */
-                
-                if (!iIsInPCodeBlock (ObjDesc->Buffer.Buffer))
-                {
-                    MarkBlock (ObjDesc->Buffer.Buffer);
-                }
-                break;
-
-            case Package:
-                AmlMarkPackage (ObjDesc);
-                break;
-
-            case BankField:
-                if (ObjDesc->BankField.Container)
-                {
-                    AmlMarkObject (ObjDesc->BankField.Container);
-                }
-                break;
-
-            case DefField:
-                if (ObjDesc->Field.Container)
-                {
-                    AmlMarkObject (ObjDesc->Field.Container);
-                }
-                break;
-
-            case FieldUnit:
-                if (ObjDesc->FieldUnit.Container)
-                {
-                    AmlMarkObject (ObjDesc->FieldUnit.Container);
-                }
-                break;
-
-
-            case Lvalue:
-                
-                /* XXX - ? mark something if ObjDesc->Lvalue.OpCode == IndexOp ? */
-                break;
-
-            default:
-                break;
-        }
-    } 
-
-    FUNCTION_EXIT;
-}
-
-
-/*****************************************************************************
- *
- * FUNCTION:    MarkObjectStack
- *
- * PARAMETERS:  *Count          - Count of objects marked
- *
- * DESCRIPTION: Mark blocks occupied by currently-active objects on stack
- *
- ****************************************************************************/
-
-void 
-MarkObjectStack (
-    INT32                   *Count)
-{
-    INT32                   Index;
-
-
-    FUNCTION_TRACE ("MarkObjectStack");
-
-
-    for (Index = 0; Index <= ObjStackTop; ++Index)
-    {   
-        /*  For each entry on the stack */
-
-        if (ObjStack[Index] &&
-            !IS_NS_HANDLE (ObjStack[Index]))
-        {   
-            /*  Mark value's storage    */
-            
-            if (Count)
-            {
-                ++*Count;
-            }
-
-            AmlMarkObject (ObjStack[Index]);
-        }
-    }
-
-    FUNCTION_EXIT;
-} 
-
-#endif   /* PLUMBER */
-
 /******************************************************************************
  * 
- * FUNCTION:    DigitsNeeded
+ * FUNCTION:    AmlDigitsNeeded
  *
  * PARAMETERS:  val             - Value to be represented
  *              base            - Base of representation
@@ -497,21 +288,21 @@ MarkObjectStack (
  *****************************************************************************/
 
 INT32
-DigitsNeeded (
+AmlDigitsNeeded (
     INT32                   val, 
     INT32                   base)
 {
     INT32                   NumDigits = 0;
 
 
-    FUNCTION_TRACE ("DigitsNeeded");
+    FUNCTION_TRACE ("AmlDigitsNeeded");
 
 
     if (base < 1)
     {   
         /*  impossible base */
 
-        REPORT_ERROR ("DigitsNeeded: impossible base");
+        REPORT_ERROR ("AmlDigitsNeeded: Impossible base");
     }
 
     else
