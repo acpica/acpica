@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: evxface - External interfaces for ACPI events
- *              $Revision: 1.143 $
+ *              $Revision: 1.144 $
  *
  *****************************************************************************/
 
@@ -663,6 +663,14 @@ AcpiInstallGpeHandler (
     Handler->Context    = Context;
     Handler->MethodNode = GpeEventInfo->Dispatch.MethodNode;
 
+    /* Disable the GPE before installing the handler */
+
+    Status = AcpiEvDisableGpe (GpeEventInfo);
+    if (ACPI_FAILURE (Status))
+    {
+        goto UnlockAndExit;
+    }
+
     /* Install the handler */
 
     AcpiOsAcquireLock (AcpiGbl_GpeLock, ACPI_NOT_ISR);
@@ -673,34 +681,7 @@ AcpiInstallGpeHandler (
     GpeEventInfo->Flags &= ~(ACPI_GPE_XRUPT_TYPE_MASK | ACPI_GPE_DISPATCH_MASK);  /* Clear bits */
     GpeEventInfo->Flags |= (UINT8) (Type | ACPI_GPE_DISPATCH_HANDLER);
 
-    /* Setup GPE type flags (wake, run, wake/run) */
-
-    GpeEventInfo->RegisterInfo->EnableForRun |= GpeEventInfo->RegisterBit;
-    if (GpeEventInfo->Flags & ACPI_GPE_TYPE_WAKE)
-    {
-        /* Has a _PRW, Mark this GPE for both wake/run */
-
-        GpeEventInfo->RegisterInfo->EnableForWake |= GpeEventInfo->RegisterBit;
-    }
-    else
-    {
-        /* There was no _PRW associated with this method, mark RUN only */
-
-        GpeEventInfo->Flags |= ACPI_GPE_TYPE_RUNTIME;
-        GpeEventInfo->RegisterInfo->EnableForWake &= ~GpeEventInfo->RegisterBit;
-    }
-
     AcpiOsReleaseLock (AcpiGbl_GpeLock, ACPI_NOT_ISR);
-
-    /* Clear the GPE (of stale events), then enable it */
-
-    Status = AcpiHwClearGpe (GpeEventInfo);
-    if (ACPI_FAILURE (Status))
-    {
-        goto UnlockAndExit;
-    }
-
-    Status = AcpiHwEnableGpe (GpeEventInfo);
 
 
 UnlockAndExit:
@@ -777,7 +758,7 @@ AcpiRemoveGpeHandler (
 
     /* Disable the GPE before removing the handler */
 
-    Status = AcpiHwDisableGpe (GpeEventInfo);
+    Status = AcpiEvDisableGpe (GpeEventInfo);
     if (ACPI_FAILURE (Status))
     {
         goto UnlockAndExit;
