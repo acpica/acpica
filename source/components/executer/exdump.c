@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: exdump - Interpreter debug output routines
- *              $Revision: 1.130 $
+ *              $Revision: 1.131 $
  *
  *****************************************************************************/
 
@@ -415,7 +415,7 @@ AcpiExDumpOperand (
             {
                 AcpiOsPrintf (" %02x", *Buf);
             }
-            ACPI_DEBUG_PRINT_RAW ((ACPI_DB_INFO,"\n"));
+            AcpiOsPrintf ("\n");
         }
 
         break;
