@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: aclocal.h - Internal data types used across the ACPI subsystem
- *       $Revision: 1.149 $
+ *       $Revision: 1.151 $
  *
  *****************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -395,7 +395,6 @@ typedef struct
 } ACPI_CREATE_FIELD_INFO;
 
 
-
 /*****************************************************************************
  *
  * Event typedefs and structs
@@ -430,9 +429,9 @@ typedef struct
     UINT8                   Status;         /* Current value of status reg */
     UINT8                   Enable;         /* Current value of enable reg */
     UINT8                   WakeEnable;     /* Mask of bits to keep enabled when sleeping */
-    UINT8                   GpeBase;        /* Base GPE number */
+    UINT8                   BaseGpeNumber;  /* Base GPE number for this register */
 
-} ACPI_GPE_REGISTERS;
+} ACPI_GPE_REGISTER_INFO;
 
 
 #define ACPI_GPE_LEVEL_TRIGGERED        1
@@ -449,8 +448,15 @@ typedef struct
     ACPI_GPE_HANDLER        Handler;        /* Address of handler, if any */
     void                    *Context;       /* Context to be passed to handler */
 
-} ACPI_GPE_LEVEL_INFO;
+} ACPI_GPE_NUMBER_INFO;
 
+
+typedef struct
+{
+    UINT8                   RegisterIndex;
+    UINT8                   NumberIndex;
+
+} ACPI_GPE_INDEX_INFO;
 
 /* Information about each particular fixed event */
 
@@ -573,7 +579,7 @@ typedef struct acpi_pscope_state
 
 
 /*
- * Thread state - one per thread across multiple walk states.  Multiple walk 
+ * Thread state - one per thread across multiple walk states.  Multiple walk
  * states are created when there are nested control methods executing.
  */
 typedef struct acpi_thread_state
