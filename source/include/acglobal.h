@@ -238,7 +238,11 @@ extern      char               *Gbl_NsTypeNames[NUM_NS_TYPES];
 extern      INT32               Gbl_NsProperties[NUM_NS_TYPES];
 extern      PREDEFINED_NAMES    Gbl_PreDefinedNames [NUM_PREDEFINED_NAMES];
 
-
+/* Used to detect memory leaks (DEBUG ONLY) */
+#ifdef ACPI_DEBUG
+ACPI_EXTERN	ALLOCATION_INFO	   *Gbl_HeadAllocPtr;
+ACPI_EXTERN	ALLOCATION_INFO	   *Gbl_TailAllocPtr;
+#endif
 
 /*****************************************************************************
  * 
