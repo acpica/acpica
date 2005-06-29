@@ -336,7 +336,7 @@ typedef struct /* METHOD */
     UINT8                   *Pcode;
     UINT8                   *AcpiTable;
     void                    *ParserOp;
-    void                    *Reserved_p4;
+    void                    *Semaphore;
     void                    *Reserved_p5;
 
 } ACPI_OBJECT_Method;
