@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: utglobal - Global variables for the ACPI subsystem
- *              $Revision: 1.134 $
+ *              $Revision: 1.136 $
  *
  *****************************************************************************/
 
@@ -234,10 +234,9 @@ BOOLEAN                     AcpiGbl_MethodExecuting = FALSE;
 
 /* System flags */
 
-UINT32                      AcpiGbl_SystemFlags = 0;
 UINT32                      AcpiGbl_StartupFlags = 0;
 
-/* System starts unitialized! */
+/* System starts uninitialized */
 
 BOOLEAN                     AcpiGbl_Shutdown = TRUE;
 
@@ -324,7 +323,8 @@ const UINT8                 AcpiGbl_NsProperties[] =
     NSP_NEWSCOPE,               /* 32 Scope            */
     NSP_LOCAL,                  /* 33 DefAny           */
     NSP_NORMAL,                 /* 34 Extra            */
-    NSP_NORMAL                  /* 35 Invalid          */
+    NSP_NORMAL,                 /* 35 Data             */
+    NSP_NORMAL                  /* 36 Invalid          */
 };
 
 
@@ -469,7 +469,8 @@ static const NATIVE_CHAR    *AcpiGbl_NsTypeNames[] =    /* printable names of AC
     /* 32 */ "Scope",
     /* 33 */ "DefAny",
     /* 34 */ "Extra",
-    /* 35 */ "Invalid"
+    /* 35 */ "Data",
+    /* 36 */ "Invalid"
 };
 
 
@@ -767,8 +768,6 @@ AcpiUtInitGlobals (
 
     /* Miscellaneous variables */
 
-    AcpiGbl_SystemFlags                 = 0;
-    AcpiGbl_StartupFlags                = 0;
     AcpiGbl_RsdpOriginalLocation        = 0;
     AcpiGbl_CmSingleStep                = FALSE;
     AcpiGbl_DbTerminateThreads          = FALSE;
