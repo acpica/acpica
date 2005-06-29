@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asltransform - Parse tree transforms
- *              $Revision: 1.23 $
+ *              $Revision: 1.24 $
  *
  *****************************************************************************/
 
@@ -568,7 +568,12 @@ TrDoSwitch (
         {
             if (DefaultOp)
             {
-                /* More than one Default */
+                /* 
+                 * More than one Default
+                 * (Parser should catch this, should not get here)
+                 */
+                AslError (ASL_ERROR, ASL_MSG_COMPILER_INTERNAL, Next,
+                    "Found more than one Default()");
             }
 
             /* Save the DEFAULT node for later, after CASEs */
@@ -577,7 +582,7 @@ TrDoSwitch (
         }
         else
         {
-            /* Unkown peer opcode */
+            /* Unknown peer opcode */
 
             printf ("Unknown parse opcode for switch statement: %s (%d)\n",
                         Next->Asl.ParseOpName, Next->Asl.ParseOpcode);
@@ -585,23 +590,28 @@ TrDoSwitch (
     }
 
     /*
-     * Add the default at the end of the if/else construct
+     * Add the default case at the end of the if/else construct
      */
     if (DefaultOp)
     {
+        /* If no CASE statements, this is an error - see below */
+
         if (CaseOp)
         {
-            /* Add an ELSE first */
+            /* Convert the DEFAULT node to an ELSE */
 
             TrAmlInitNode (DefaultOp, PARSEOP_ELSE);
             DefaultOp->Asl.Parent = Conditional->Asl.Parent;
-        }
-        else
-        {
-            /* There were no CASE statements, no ELSE needed */
 
-            TrAmlInsertPeer (CurrentParentNode, DefaultOp->Asl.Child);
+            /* Link ELSE node as a peer to the previous IF */
+
+            TrAmlInsertPeer (Conditional, DefaultOp);
         }
+    }
+
+    if (!CaseOp)
+    {
+        AslError (ASL_ERROR, ASL_MSG_NO_CASES, StartNode, NULL);
     }
 
     /*
