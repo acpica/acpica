@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: nsaccess - Top-level functions for accessing ACPI namespace
- *              $Revision: 1.142 $
+ *              $Revision: 1.143 $
  *
  ******************************************************************************/
 
@@ -333,7 +333,6 @@ AcpiNsLookup (
     ACPI_NAMESPACE_NODE     *ThisNode = NULL;
     UINT32                  NumSegments;
     ACPI_NAME               SimpleName;
-    BOOLEAN                 NullNamePath = FALSE;
     ACPI_OBJECT_TYPE8       TypeToCheckFor;
     ACPI_OBJECT_TYPE8       ThisSearchType;
     UINT32                  LocalFlags = Flags & ~NS_ERROR_IF_FOUND;
@@ -402,9 +401,8 @@ AcpiNsLookup (
 
     if (!Pathname)
     {
-        /* Null NamePath -- is allowed */
+        /* A Null NamePath is allowed */
 
-        NullNamePath = TRUE;
         NumSegments  = 0;
         ThisNode     = AcpiGbl_RootNode;
 
