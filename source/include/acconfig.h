@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acconfig.h - Global configuration constants
- *       $Revision: 1.74 $
+ *       $Revision: 1.75 $
  *
  *****************************************************************************/
 
@@ -242,6 +242,12 @@
 #define LO_RSDP_WINDOW_SIZE         0x400
 #define HI_RSDP_WINDOW_SIZE         0x20000
 #define RSDP_SCAN_STEP              16
+
+
+/* Operation regions */
+
+#define ACPI_NUM_PREDEFINED_REGIONS 7
+#define ACPI_USER_REGION_BEGIN      0x80
 
 /* Maximum SpaceIds for Operation Regions */
 
