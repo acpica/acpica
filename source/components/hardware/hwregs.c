@@ -3,7 +3,7 @@
  *
  * Module Name: hwregs - Read/write access functions for the various ACPI
  *                       control and status registers.
- *              $Revision: 1.130 $
+ *              $Revision: 1.131 $
  *
  ******************************************************************************/
 
@@ -252,17 +252,21 @@ AcpiGetSleepTypeData (
         return_ACPI_STATUS (AE_NOT_EXIST);
     }
 
+    /* 
+     * NsEvaluate does not resolve package references, do it here.
+     * (Also checks to make sure the object is a Package.)
+     */
+    Status = AcpiUtResolvePackageReferences (ObjDesc);
+    if (ACPI_FAILURE (Status))
+    {
+        return_ACPI_STATUS (Status);
+    }
+
     /*
-     *  We got something, now ensure it is correct.  The object must
+     *  We got an object, now ensure it is correct.  The object must
      *  be a package and must have at least 2 numeric values as the
      *  two elements
      */
-
-    /* Even though AcpiEvaluateObject resolves package references,
-     * NsEvaluate doesn't. So, we do it here.
-     */
-    Status = AcpiUtResolvePackageReferences(ObjDesc);
-
     if (ObjDesc->Package.Count < 2)
     {
         /* Must have at least two elements */
@@ -275,7 +279,9 @@ AcpiGetSleepTypeData (
     {
         /* Must have two  */
 
-        ACPI_REPORT_ERROR (("Sleep State package elements are not both of type Number\n"));
+        ACPI_REPORT_ERROR (("Sleep State package elements are not both Integers (%s, %s)\n",
+            AcpiUtGetTypeName ((ObjDesc->Package.Elements[0])->Common.Type),
+            AcpiUtGetTypeName ((ObjDesc->Package.Elements[1])->Common.Type)));
         Status = AE_AML_OPERAND_TYPE;
     }
     else
@@ -289,8 +295,8 @@ AcpiGetSleepTypeData (
 
     if (ACPI_FAILURE (Status))
     {
-        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Bad Sleep object %p type %X\n",
-            ObjDesc, ObjDesc->Common.Type));
+        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Bad Sleep object %p type %s\n",
+            ObjDesc, AcpiUtGetTypeName (ObjDesc->Common.Type)));
     }
 
     AcpiUtRemoveReference (ObjDesc);
