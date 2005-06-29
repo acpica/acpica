@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: aeexec - Top level parse and execute routines
- *              $Revision: 1.33 $
+ *              $Revision: 1.34 $
  *
  *****************************************************************************/
 
@@ -312,11 +312,10 @@ RegionHandler (
         ((ACPI_INTEGER)(RegionElement->Address) + RegionElement->Length))
     {
         DEBUG_PRINT (ACPI_WARN, ("Request on [%4.4s] is beyond region limit Req-%lX+%lX, Base=%lX, Len-%lX\n",
-                &((RegionObject->Region.Node)->Name), (ACPI_INTEGER) Address, ByteWidth, (ACPI_INTEGER)(RegionElement->Address),
+                &((RegionObject->Region.Node)->Name), (UINT32) Address, ByteWidth, (UINT32)(RegionElement->Address),
                 RegionElement->Length));
 
-        //return AE_BUFFER_OVERFLOW;
-        return AE_OK;
+        return AE_AML_REGION_LIMIT;
     }
 
     /*
