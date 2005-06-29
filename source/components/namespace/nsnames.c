@@ -126,9 +126,7 @@
         MODULE_NAME         ("nsnames");
 
 
-#define PATH_SEPARATOR      '.'
-
-
+        
 /****************************************************************************
  *
  * FUNCTION:    NsNameOfScope
@@ -169,8 +167,8 @@ NsNameOfScope (
     /* Calculate required buffer size based on depth below root NT */
     
     for (Size = 1, Temp = EntryToSearch;
-            Temp->ParentScope;
-            Temp = Temp->ParentScope)
+            Temp->ParentEntry;
+            Temp = Temp->ParentEntry)
     {
         Size += ACPI_NAME_SIZE;
     }
@@ -189,11 +187,11 @@ NsNameOfScope (
     /* Store terminator byte, then build name backwards */
     
     NameBuffer[Size] = '\0';
-    while ((Size > ACPI_NAME_SIZE) && EntryToSearch->ParentScope)
+    while ((Size > ACPI_NAME_SIZE) && EntryToSearch->ParentEntry)
     {
         Size -= ACPI_NAME_SIZE;
         *(UINT32 *) (NameBuffer + Size) = NsFindParentName (EntryToSearch);
-        EntryToSearch = EntryToSearch->ParentScope;
+        EntryToSearch = EntryToSearch->ParentEntry;
     }
 
     NameBuffer[--Size] = AML_RootPrefix;
@@ -288,8 +286,8 @@ NsHandleToPathname (
      * Go back up the parent tree to the root
      */
     for (Size = PATH_SEGMENT_LENGTH, Temp = EntryToSearch;
-          Temp->ParentScope;
-          Temp = Temp->ParentScope)
+          Temp->ParentEntry;
+          Temp = Temp->ParentEntry)
     {
         Size += PATH_SEGMENT_LENGTH;
     }
@@ -325,7 +323,7 @@ NsHandleToPathname (
         *(UINT32 *) (UserBuffer + Size) = NsFindParentName (EntryToSearch);
         
         UserBuffer[--Size] = PATH_SEPARATOR;
-        EntryToSearch = EntryToSearch->ParentScope;
+        EntryToSearch = EntryToSearch->ParentEntry;
     }
 
     /* Overlay the "." preceding the first segment with the root name "\" */
