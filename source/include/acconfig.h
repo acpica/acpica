@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acconfig.h - Global configuration constants
- *       $Revision: 1.79 $
+ *       $Revision: 1.80 $
  *
  *****************************************************************************/
 
@@ -182,6 +182,12 @@
 #define SYSMEM_REGION_WINDOW_SIZE   4096
 
 
+/******************************************************************************
+ *
+ * Configuration of subsystem behavior
+ *
+ *****************************************************************************/
+
 /*
  * Debugger threading model
  * Use single threaded if the entire subsystem is contained in an application
@@ -200,6 +206,13 @@
 #else
 #define DEBUGGER_THREADING          DEBUGGER_MULTI_THREADED
 #endif
+
+/* 
+ * Should the subystem abort the loading of an ACPI table if the 
+ * table checksum is incorrect?
+ */
+
+#define ACPI_CHECKSUM_ABORT         FALSE
 
 
 /******************************************************************************
