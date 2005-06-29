@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acoutput.h -- debug output
- *       $Revision: 1.87 $
+ *       $Revision: 1.88 $
  *
  *****************************************************************************/
 
@@ -134,8 +134,9 @@
 #define ACPI_DISPATCHER             0x00000040
 #define ACPI_EXECUTER               0x00000080
 #define ACPI_RESOURCES              0x00000100
-#define ACPI_DEBUGGER               0x00000200
+#define ACPI_CA_DEBUGGER            0x00000200
 #define ACPI_OS_SERVICES            0x00000400
+#define ACPI_CA_DISASSEMBLER        0x00000800
 
 #define ACPI_ALL_COMPONENTS         0x00000FFF
 
