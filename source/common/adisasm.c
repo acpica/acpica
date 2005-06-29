@@ -126,7 +126,7 @@
 
 
 #define _COMPONENT          ACPI_TOOLS
-        MODULE_NAME         ("adexec")
+        ACPI_MODULE_NAME    ("adexec")
 
 
 ACPI_PARSE_OBJECT       *AcpiGbl_ParsedNamespaceRoot;
@@ -366,7 +366,7 @@ AdSecondPassParse (
     ACPI_WALK_STATE         *WalkState;
 
 
-    PROC_NAME ("AdSecondPassParse");
+    ACPI_FUNCTION_NAME ("AdSecondPassParse");
     printf ("Parsing Control Methods \n");
 
     while (Op)
