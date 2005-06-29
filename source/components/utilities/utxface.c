@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: utxface - External interfaces for "global" ACPI functions
- *              $Revision: 1.89 $
+ *              $Revision: 1.90 $
  *
  *****************************************************************************/
 
@@ -461,9 +461,9 @@ AcpiGetSystemInfo (
         return_ACPI_STATUS (Status);
     }
 
-    /* Validate buffer size or allocate new buffer */
+    /* Validate/Allocate/Clear caller buffer */
 
-    Status = AcpiUtValidateBufferSize (OutBuffer, sizeof (ACPI_SYSTEM_INFO));
+    Status = AcpiUtInitializeBuffer (OutBuffer, sizeof (ACPI_SYSTEM_INFO));
     if (ACPI_FAILURE (Status))
     {
         return_ACPI_STATUS (Status);
