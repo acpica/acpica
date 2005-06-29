@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: pstree - Parser op tree manipulation/traversal/search
- *              $Revision: 1.24 $
+ *              $Revision: 1.37 $
  *
  *****************************************************************************/
 
@@ -9,8 +9,8 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, Intel Corp.  All rights
- * reserved.
+ * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
+ * All rights reserved.
  *
  * 2. License
  *
@@ -121,8 +121,8 @@
 #include "acparser.h"
 #include "amlcode.h"
 
-#define _COMPONENT          PARSER
-        MODULE_NAME         ("pstree")
+#define _COMPONENT          ACPI_PARSER
+        ACPI_MODULE_NAME    ("pstree")
 
 
 /*******************************************************************************
@@ -144,13 +144,16 @@ AcpiPsGetArg (
     UINT32                  Argn)
 {
     ACPI_PARSE_OBJECT       *Arg = NULL;
-    ACPI_OPCODE_INFO        *OpInfo;
+    const ACPI_OPCODE_INFO  *OpInfo;
+
+
+    ACPI_FUNCTION_ENTRY ();
 
 
     /* Get the info structure for this opcode */
 
     OpInfo = AcpiPsGetOpcodeInfo (Op->Opcode);
-    if (ACPI_GET_OP_TYPE (OpInfo) != ACPI_OP_TYPE_OPCODE)
+    if (OpInfo->Class == AML_CLASS_UNKNOWN)
     {
         /* Invalid opcode or ASCII character */
 
@@ -159,7 +162,7 @@ AcpiPsGetArg (
 
     /* Check if this opcode requires argument sub-objects */
 
-    if (!(ACPI_GET_OP_ARGS (OpInfo)))
+    if (!(OpInfo->Flags & AML_HAS_ARGS))
     {
         /* Has no linked argument objects */
 
@@ -198,7 +201,10 @@ AcpiPsAppendArg (
     ACPI_PARSE_OBJECT       *Arg)
 {
     ACPI_PARSE_OBJECT       *PrevArg;
-    ACPI_OPCODE_INFO        *OpInfo;
+    const ACPI_OPCODE_INFO  *OpInfo;
+
+
+    ACPI_FUNCTION_ENTRY ();
 
 
     if (!Op)
@@ -209,16 +215,17 @@ AcpiPsAppendArg (
     /* Get the info structure for this opcode */
 
     OpInfo = AcpiPsGetOpcodeInfo (Op->Opcode);
-    if (ACPI_GET_OP_TYPE (OpInfo) != ACPI_OP_TYPE_OPCODE)
+    if (OpInfo->Class == AML_CLASS_UNKNOWN)
     {
         /* Invalid opcode */
 
+        ACPI_REPORT_ERROR (("PsAppendArg: Invalid AML Opcode: 0x%2.2X\n", Op->Opcode));
         return;
     }
 
     /* Check if this opcode requires argument sub-objects */
 
-    if (!(ACPI_GET_OP_ARGS (OpInfo)))
+    if (!(OpInfo->Flags & AML_HAS_ARGS))
     {
         /* Has no linked argument objects */
 
@@ -277,13 +284,16 @@ AcpiPsGetChild (
     ACPI_PARSE_OBJECT       *Child = NULL;
 
 
+    ACPI_FUNCTION_ENTRY ();
+
+
     switch (Op->Opcode)
     {
     case AML_SCOPE_OP:
     case AML_ELSE_OP:
     case AML_DEVICE_OP:
     case AML_THERMAL_ZONE_OP:
-    case AML_METHODCALL_OP:
+    case AML_INT_METHODCALL_OP:
 
         Child = AcpiPsGetArg (Op, 0);
         break;
@@ -294,7 +304,7 @@ AcpiPsGetChild (
     case AML_METHOD_OP:
     case AML_IF_OP:
     case AML_WHILE_OP:
-    case AML_DEF_FIELD_OP:
+    case AML_FIELD_OP:
 
         Child = AcpiPsGetArg (Op, 1);
         break;
@@ -341,6 +351,9 @@ AcpiPsGetDepthNext (
     ACPI_PARSE_OBJECT       *Next = NULL;
     ACPI_PARSE_OBJECT       *Parent;
     ACPI_PARSE_OBJECT       *Arg;
+
+
+    ACPI_FUNCTION_ENTRY ();
 
 
     if (!Op)
@@ -394,125 +407,6 @@ AcpiPsGetDepthNext (
     }
 
     return (Next);
-}
-
-
-/*******************************************************************************
- *
- * FUNCTION:    AcpiPsFetchPrefix
- *
- * PARAMETERS:  Scope           - Op to fetch prefix for
- *              Path            - A namestring containing the prefix
- *              io              - Direction flag
- *
- * RETURN:      Op referenced by the prefix
- *
- * DESCRIPTION: Fetch and handle path prefix ('\\' or '^')
- *
- ******************************************************************************/
-
-static ACPI_PARSE_OBJECT *
-AcpiPsFetchPrefix (
-    ACPI_PARSE_OBJECT       *Scope,
-    NATIVE_CHAR             **Path,
-    UINT32                  io)
-{
-    UINT32                  prefix = io ? GET8 (*Path):**Path;
-
-
-    switch (prefix)
-    {
-    case '\\':
-    case '/':
-
-        /* go to the root */
-
-        *Path += 1;
-        while (Scope->Parent)
-        {
-            Scope = Scope->Parent;
-        }
-        break;
-
-
-    case '^':
-
-        /* go up one level */
-
-        *Path += 1;
-        Scope = Scope->Parent;
-        break;
-    }
-
-    if (Scope && !Scope->Parent)
-    {
-        /* searching from the root, start with its children */
-
-        Scope = AcpiPsGetChild (Scope);
-    }
-
-    return (Scope);
-}
-
-
-/*******************************************************************************
- *
- * FUNCTION:    AcpiPsFetchName
- *
- * PARAMETERS:  Path            - A string containing the name segment
- *              io              - Direction flag
- *
- * RETURN:      The 4-INT8 ASCII ACPI Name as a UINT32
- *
- * DESCRIPTION: Fetch ACPI name segment (dot-delimited)
- *
- ******************************************************************************/
-
-static UINT32
-AcpiPsFetchName (
-    NATIVE_CHAR             **Path,
-    UINT32                  io)
-{
-    UINT32                  Name = 0;
-    NATIVE_CHAR             *nm;
-    UINT32                  i;
-    NATIVE_CHAR             ch;
-
-
-    if (io)
-    {
-        /* Get the name from the path pointer */
-
-        MOVE_UNALIGNED32_TO_32 (&Name, *Path);
-        *Path += 4;
-    }
-
-    else
-    {
-        if (**Path == '.')
-        {
-            *Path += 1;
-        }
-
-        nm = (NATIVE_CHAR *) &Name;
-        for (i = 0; i < 4; i++)
-        {
-            ch = **Path;
-            if (ch && ch != '.')
-            {
-                *nm = ch;
-                *Path += 1;
-            }
-
-            else
-            {
-                *nm = '_';
-            }
-            nm++;
-        }
-    }
-
-    return (Name);
 }
 
 
