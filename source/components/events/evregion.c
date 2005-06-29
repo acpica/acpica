@@ -398,7 +398,7 @@ AcpiEvAddressSpaceDispatch (
     ADDRESS_SPACE_HANDLER   Handler;
     ADDRESS_SPACE_SETUP     RegionSetup;
     ACPI_OBJECT_INTERNAL    *HandlerDesc;
-    void                    *RegionContext;
+    void                    *RegionContext = NULL;
 
 
     FUNCTION_TRACE ("EvAddressSpaceDispatch");
@@ -489,11 +489,10 @@ AcpiEvAddressSpaceDispatch (
     }
 
     /*
-     *  Invoke the handler.  The RegionContext will contain
-     *  address handler's context and possibly some other information
-     *  (e.g. for PCI address handlers.
+     *  Invoke the handler.
      */
     Status = Handler (Function, Address, BitWidth, Value,
+                      HandlerDesc->AddrHandler.Context,
                       RegionObj->Region.RegionContext);
 
     if (ACPI_FAILURE (Status))
@@ -536,7 +535,7 @@ AcpiEvDisassociateRegionFromHandler(
     ACPI_OBJECT_INTERNAL    *ObjDesc;
     ACPI_OBJECT_INTERNAL    **LastObjPtr;
     ADDRESS_SPACE_SETUP     RegionSetup;
-    void                    *RegionContext;
+    void                    *RegionContext = RegionObj->Region.RegionContext;
     ACPI_STATUS             Status;
 
 
@@ -591,12 +590,6 @@ AcpiEvDisassociateRegionFromHandler(
             Status = RegionSetup (RegionObj, ACPI_REGION_DEACTIVATE,
                                   HandlerObj->AddrHandler.Context,
                                   &RegionContext);
-
-            /*
-             *  Save the returned context (It is the original context
-             *  passed into Install)
-             */
-            HandlerObj->AddrHandler.Context = RegionContext;
 
             /*
              *  Init routine may fail, Just ignore errors

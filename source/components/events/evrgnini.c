@@ -133,8 +133,8 @@
  * PARAMETERS:  RegionObj           - region we are interested in
  *              Function            - start or stop
  *              HandlerContext      - Address space handler context
- *              Returned context    - context to be used with each call to the
- *                                    handler for this region
+ *              RegionContext       - Region specific context
+ *
  * RETURN:      Status
  *
  * DESCRIPTION: Do any prep work for region handling, a nop for now
@@ -146,9 +146,8 @@ AcpiEvSystemMemoryRegionSetup (
     ACPI_HANDLE             Handle,
     UINT32                  Function,
     void                    *HandlerContext,
-    void                    **ReturnContext)
+    void                    **RegionContext)
 {
-    MEM_HANDLER_CONTEXT     *MemContext;
     ACPI_OBJECT_INTERNAL    *RegionObj = (ACPI_OBJECT_INTERNAL *) Handle;
 
 
@@ -159,13 +158,10 @@ AcpiEvSystemMemoryRegionSetup (
     {
         RegionObj->Region.RegionFlags &= ~(REGION_INITIALIZED);
 
-        *ReturnContext = NULL;
-        if (HandlerContext)
+        if (*RegionContext)
         {
-            MemContext = HandlerContext;
-            *ReturnContext = MemContext->HandlerContext;
-
-            AcpiCmFree (MemContext);
+            AcpiCmFree (*RegionContext);
+            *RegionContext = NULL;
         }
         return_ACPI_STATUS (AE_OK);
     }
@@ -173,18 +169,16 @@ AcpiEvSystemMemoryRegionSetup (
 
     /* Activate.  Create a new context */
 
-    MemContext = AcpiCmCallocate (sizeof (MEM_HANDLER_CONTEXT));
-    if (!MemContext)
+    *RegionContext = AcpiCmCallocate (sizeof (MEM_HANDLER_CONTEXT));
+    if (!(*RegionContext))
     {
         return_ACPI_STATUS (AE_NO_MEMORY);
     }
 
     /* Init.  (Mapping fields are all set to zeros above) */
 
-    MemContext->HandlerContext = HandlerContext;
     RegionObj->Region.RegionFlags |= REGION_INITIALIZED;
 
-    *ReturnContext = MemContext;
     return_ACPI_STATUS (AE_OK);
 }
 
@@ -196,8 +190,8 @@ AcpiEvSystemMemoryRegionSetup (
  * PARAMETERS:  RegionObj           - region we are interested in
  *              Function            - start or stop
  *              HandlerContext      - Address space handler context
- *              Returned context    - context to be used with each call to the
- *                                    handler for this region
+ *              RegionContext       - Region specific context
+ *
  * RETURN:      Status
  *
  * DESCRIPTION: Do any prep work for region handling
@@ -209,25 +203,22 @@ AcpiEvIoSpaceRegionSetup (
     ACPI_HANDLE             Handle,
     UINT32                  Function,
     void                    *HandlerContext,
-    void                    **ReturnContext)
+    void                    **RegionContext)
 {
     ACPI_OBJECT_INTERNAL    *RegionObj = (ACPI_OBJECT_INTERNAL *) Handle;
 
-
     FUNCTION_TRACE ("EvIoSpaceRegionSetup");
-
 
     if (Function == ACPI_REGION_DEACTIVATE)
     {
+        *RegionContext = NULL;
         RegionObj->Region.RegionFlags &= ~(REGION_INITIALIZED);
-        *ReturnContext = HandlerContext;
-        return_ACPI_STATUS (AE_OK);
     }
-
-    /* Activate the region */
-
-    RegionObj->Region.RegionFlags |= REGION_INITIALIZED;
-    *ReturnContext = HandlerContext;
+    else
+    {
+        *RegionContext = HandlerContext;
+        RegionObj->Region.RegionFlags |= REGION_INITIALIZED;
+    }
 
     return_ACPI_STATUS (AE_OK);
 }
@@ -240,8 +231,8 @@ AcpiEvIoSpaceRegionSetup (
  * PARAMETERS:  RegionObj           - region we are interested in
  *              Function            - start or stop
  *              HandlerContext      - Address space handler context
- *              Returned context    - context to be used with each call to the
- *                                    handler for this region
+ *              RegionContext       - Region specific context
+ *
  * RETURN:      Status
  *
  * DESCRIPTION: Do any prep work for region handling
@@ -255,18 +246,17 @@ AcpiEvPciConfigRegionSetup (
     ACPI_HANDLE             Handle,
     UINT32                  Function,
     void                    *HandlerContext,
-    void                    **ReturnContext)
+    void                    **RegionContext)
 {
     ACPI_STATUS             Status = AE_OK;
     UINT32                  Temp;
-    PCI_HANDLER_CONTEXT     *PciContext;
+    PCI_HANDLER_CONTEXT     *PciContext = *RegionContext;
     ACPI_OBJECT_INTERNAL    *HandlerObj;
     ACPI_NAMED_OBJECT       *SearchScope;
     ACPI_OBJECT_INTERNAL    *RegionObj = (ACPI_OBJECT_INTERNAL *) Handle;
 
 
     FUNCTION_TRACE ("EvPciConfigRegionSetup");
-
 
     HandlerObj = RegionObj->Region.AddrHandler;
 
@@ -285,13 +275,10 @@ AcpiEvPciConfigRegionSetup (
     {
         RegionObj->Region.RegionFlags &= ~(REGION_INITIALIZED);
 
-        *ReturnContext = NULL;
-        if (HandlerContext)
+        if (PciContext)
         {
-            PciContext = HandlerContext;
-            *ReturnContext = PciContext->HandlerContext;
-
             AcpiCmFree (PciContext);
+            *RegionContext = NULL;
         }
 
         return_ACPI_STATUS (Status);
@@ -365,14 +352,7 @@ AcpiEvPciConfigRegionSetup (
         PciContext->Bus = Temp;
     }
 
-    /*
-     * Finally, include the original Handler context in the newly created PciContext 
-     */
-    PciContext->HandlerContext = HandlerContext;
-
     AcpiCmAcquireMutex (ACPI_MTX_NAMESPACE);
-
-    *ReturnContext = PciContext;
 
     RegionObj->Region.RegionFlags |= REGION_INITIALIZED;
     
@@ -387,8 +367,8 @@ AcpiEvPciConfigRegionSetup (
  * PARAMETERS:  RegionObj           - region we are interested in
  *              Function            - start or stop
  *              HandlerContext      - Address space handler context
- *              Returned context    - context to be used with each call to the
- *                                    handler for this region
+ *              RegionContext       - Region specific context
+ *
  * RETURN:      Status
  *
  * DESCRIPTION: Do any prep work for region handling
@@ -400,23 +380,22 @@ AcpiEvDefaultRegionSetup (
     ACPI_HANDLE             Handle,
     UINT32                  Function,
     void                    *HandlerContext,
-    void                    **ReturnContext)
+    void                    **RegionContext)
 {
     ACPI_OBJECT_INTERNAL    *RegionObj = (ACPI_OBJECT_INTERNAL *) Handle;
 
 
     FUNCTION_TRACE ("EvDefaultRegionSetup");
 
-
     if (Function == ACPI_REGION_DEACTIVATE)
     {
+        *RegionContext = NULL;
         RegionObj->Region.RegionFlags &= ~(REGION_INITIALIZED);
-        *ReturnContext = NULL;
     }
     else
     {
+        *RegionContext = HandlerContext;
         RegionObj->Region.RegionFlags |= REGION_INITIALIZED;
-        *ReturnContext = HandlerContext;
     }
 
     return_ACPI_STATUS (AE_OK);
