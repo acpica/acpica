@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exmisc - ACPI AML (p-code) execution - specific opcodes
- *              $Revision: 1.116 $
+ *              $Revision: 1.119 $
  *
  *****************************************************************************/
 
@@ -10,7 +10,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2003, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2004, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -181,7 +181,7 @@ AcpiExGetObjectReference (
 
         default:
 
-            ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Unknown Reference subtype %X\n",
+            ACPI_REPORT_ERROR (("Unknown Reference subtype in get ref %X\n",
                 ObjDesc->Reference.Opcode));
             return_ACPI_STATUS (AE_AML_INTERNAL);
         }
@@ -199,8 +199,8 @@ AcpiExGetObjectReference (
 
     default:
 
-        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "%p has invalid descriptor [%s]\n",
-                ObjDesc, AcpiUtGetDescriptorName (ObjDesc)));
+        ACPI_REPORT_ERROR (("Invalid descriptor type in get ref: %X\n",
+                ACPI_GET_DESCRIPTOR_TYPE (ObjDesc)));
         return_ACPI_STATUS (AE_TYPE);
     }
 
@@ -437,6 +437,8 @@ AcpiExDoConcatenate (
 
         /* Invalid object type, should not happen here */
 
+        ACPI_REPORT_ERROR (("Concat - invalid obj type: %X\n",
+                ACPI_GET_OBJECT_TYPE (ObjDesc1)));
         Status = AE_AML_INTERNAL;
         ReturnDesc = NULL;
     }
@@ -474,6 +476,8 @@ AcpiExDoMathOp (
     ACPI_INTEGER            Operand0,
     ACPI_INTEGER            Operand1)
 {
+
+    ACPI_FUNCTION_ENTRY ();
 
 
     switch (Opcode)
@@ -539,15 +543,17 @@ AcpiExDoMathOp (
  * FUNCTION:    AcpiExDoLogicalOp
  *
  * PARAMETERS:  Opcode              - AML opcode
- *              Operand0            - Integer operand #0
- *              Operand1            - Integer operand #1
+ *              ObjDesc0            - operand #0
+ *              ObjDesc1            - operand #1
  *
  * RETURN:      TRUE/FALSE result of the operation
  *
  * DESCRIPTION: Execute a logical AML opcode. The purpose of having all of the
  *              functions here is to prevent a lot of pointer dereferencing
  *              to obtain the operands and to simplify the generation of the
- *              logical value.
+ *              logical value.  Both operands must already be validated as
+ *              1) Both the same type, and
+ *              2) Either Integer, Buffer, or String type.
  *
  *              Note: cleanest machine code seems to be produced by the code
  *              below, rather than using statements of the form:
@@ -558,60 +564,157 @@ AcpiExDoMathOp (
 BOOLEAN
 AcpiExDoLogicalOp (
     UINT16                  Opcode,
-    ACPI_INTEGER            Operand0,
-    ACPI_INTEGER            Operand1)
+    ACPI_OPERAND_OBJECT     *ObjDesc0,
+    ACPI_OPERAND_OBJECT     *ObjDesc1)
 {
+    ACPI_INTEGER            Operand0;
+    ACPI_INTEGER            Operand1;
+    UINT8                   *Ptr0;
+    UINT8                   *Ptr1;
+    UINT32                  Length0;
+    UINT32                  Length1;
+    UINT32                  i;
 
 
-    switch (Opcode)
+    ACPI_FUNCTION_ENTRY ();
+
+
+    if (ACPI_GET_OBJECT_TYPE (ObjDesc0) == ACPI_TYPE_INTEGER)
     {
+        /* Both operands are of type integer */
 
-    case AML_LAND_OP:               /* LAnd (Operand0, Operand1) */
+        Operand0 = ObjDesc0->Integer.Value;
+        Operand1 = ObjDesc1->Integer.Value;
 
-        if (Operand0 && Operand1)
+        switch (Opcode)
         {
-            return (TRUE);
+        case AML_LAND_OP:               /* LAnd (Operand0, Operand1) */
+
+            if (Operand0 && Operand1)
+            {
+                return (TRUE);
+            }
+            break;
+
+        case AML_LEQUAL_OP:             /* LEqual (Operand0, Operand1) */
+
+            if (Operand0 == Operand1)
+            {
+                return (TRUE);
+            }
+            break;
+
+        case AML_LGREATER_OP:           /* LGreater (Operand0, Operand1) */
+
+            if (Operand0 > Operand1)
+            {
+                return (TRUE);
+            }
+            break;
+
+        case AML_LLESS_OP:              /* LLess (Operand0, Operand1) */
+
+            if (Operand0 < Operand1)
+            {
+                return (TRUE);
+            }
+            break;
+
+        case AML_LOR_OP:                 /* LOr (Operand0, Operand1) */
+
+            if (Operand0 || Operand1)
+            {
+                return (TRUE);
+            }
+            break;
+
+        default:
+            break;
         }
-        break;
+    }
+    else
+    {
+        /* 
+         * Case for Buffer/String objects.
+         * NOTE: takes advantage of common Buffer/String object fields
+         */
+        Length0 = ObjDesc0->Buffer.Length;
+        Ptr0    = ObjDesc0->Buffer.Pointer;
 
+        Length1 = ObjDesc1->Buffer.Length;
+        Ptr1    = ObjDesc1->Buffer.Pointer;
 
-    case AML_LEQUAL_OP:             /* LEqual (Operand0, Operand1) */
-
-        if (Operand0 == Operand1)
+        switch (Opcode)
         {
+        case AML_LEQUAL_OP:             /* LEqual (Operand0, Operand1) */
+
+            /* Length and all bytes must be equal */
+
+            if (Length0 != Length1)
+            {
+                return (FALSE);
+            }
+
+            for (i = 0; i < Length0; i++)
+            {
+                if (Ptr0[i] != Ptr1[i])
+                {
+                    return (FALSE);
+                }
+            }
             return (TRUE);
+
+        case AML_LGREATER_OP:           /* LGreater (Operand0, Operand1) */
+
+            /* Check lengths first */
+
+            if (Length0 > Length1)
+            {
+                return (TRUE);
+            }
+            else if (Length0 < Length1)
+            {
+                return (FALSE);
+            }
+
+            /* Lengths equal, now scan the data */
+
+            for (i = 0; i < Length0; i++)
+            {
+                if (Ptr0[i] > Ptr1[i])
+                {
+                    return (TRUE);
+                }
+            }
+            return (FALSE);
+
+        case AML_LLESS_OP:              /* LLess (Operand0, Operand1) */
+
+            /* Check lengths first */
+
+            if (Length0 < Length1)
+            {
+                return (TRUE);
+            }
+            else if (Length0 > Length1)
+            {
+                return (FALSE);
+            }
+
+            /* Lengths equal, now scan the data */
+
+            for (i = 0; i < Length0; i++)
+            {
+                if (Ptr0[i] < Ptr1[i])
+                {
+                    return (TRUE);
+                }
+            }
+            return (FALSE);
+
+        default:
+            break;
         }
-        break;
-
-
-    case AML_LGREATER_OP:           /* LGreater (Operand0, Operand1) */
-
-        if (Operand0 > Operand1)
-        {
-            return (TRUE);
-        }
-        break;
-
-
-    case AML_LLESS_OP:              /* LLess (Operand0, Operand1) */
-
-        if (Operand0 < Operand1)
-        {
-            return (TRUE);
-        }
-        break;
-
-
-    case AML_LOR_OP:                 /* LOr (Operand0, Operand1) */
-
-        if (Operand0 || Operand1)
-        {
-            return (TRUE);
-        }
-        break;
-
-    default:
-        break;
     }
 
     return (FALSE);
