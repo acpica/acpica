@@ -576,8 +576,8 @@ InitAcpiGetAllTables (UINT32 NumberOfTables, OSD_FILE *FilePtr)
                 /*  pointer to unknown table    */
 
                 DEBUG_PRINT (ACPI_INFO,
-                            ("Unknown table listed in RSDT with signature '%4.4' located at %lXh\n",
-                            TableHeader->Signature, RSDT->TableOffsetEntry[Index]));
+                            ("Unknown table %x in RSDT with signature '%4.4s' located at %lXh\n",
+                            TableHeader, TableHeader->Signature, RSDT->TableOffsetEntry[Index]));
                 Status |= NsVerifyTableChecksum (TableHeader, OUTPUT_DATA | OUTPUT_ERRORS);
             
                 /* 
