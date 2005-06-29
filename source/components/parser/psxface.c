@@ -252,14 +252,14 @@ BREAKPOINT3;
         DEBUG_PRINT (ACPI_INFO, ("Method returned ObjDesc=%X\n", *ReturnObjDesc));
         DUMP_STACK_ENTRY (*ReturnObjDesc);
 
-        Status = AE_RETURN_VALUE;
+        Status = AE_CTRL_RETURN_VALUE;
     }
 
     else
     {
         /* Map PENDING (normal exit, no return value) to OK */
 
-        if (AE_PENDING == Status)
+        if (AE_CTRL_PENDING == Status)
         {
             Status = AE_OK;
         }
