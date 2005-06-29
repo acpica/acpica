@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acutils.h -- prototypes for the common (subsystem-wide) procedures
- *       $Revision: 1.101 $
+ *       $Revision: 1.102 $
  *
  *****************************************************************************/
 
@@ -709,21 +709,21 @@ AcpiUtDisplayInitPathname (
  */
 
 void *
-_UtAllocate (
+AcpiUtAllocate (
     UINT32                  Size,
     UINT32                  Component,
     NATIVE_CHAR             *Module,
     UINT32                  Line);
 
 void *
-_UtCallocate (
+AcpiUtCallocate (
     UINT32                  Size,
     UINT32                  Component,
     NATIVE_CHAR             *Module,
     UINT32                  Line);
 
 void
-_UtFree (
+AcpiUtFree (
     void                    *Address,
     UINT32                  Component,
     NATIVE_CHAR             *Module,
