@@ -546,10 +546,10 @@ typedef struct
     /*
      *  BUGBUG: a HID or a _UID can return either a number or a string
      */
-    UINT32                      HardwareId;     /*  _HID value if any */
-    UINT32                      UniqueId;       /*  _UID value if any */
-    UINT32                      Address;        /*  _ADR value if any */
-    UINT32                      CurrentStatus;  /*  _STA value */
+    char                        HardwareId [9];     /*  _HID value if any */
+    char                        UniqueId[9];        /*  _UID value if any */
+    UINT32                      Address;            /*  _ADR value if any */
+    UINT32                      CurrentStatus;      /*  _STA value */
 } ACPI_DEVICE_INFO;
 
 
