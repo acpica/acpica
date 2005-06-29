@@ -117,7 +117,7 @@
 #ifndef __NAMESPACE_H__
 #define __NAMESPACE_H__
 
-#include <datatypes.h>
+#include <acpitypes.h>
 #include <acpitables.h>
 #include <acpiobj.h>
 #include <pnp.h>
@@ -506,6 +506,11 @@ NsMarkNS(
 NAME_TABLE_ENTRY *
 NsConvertHandleToEntry (
     ACPI_HANDLE             Handle);
+
+void
+NsTerminate (
+    void);
+
 
 
 #endif /* __NAMESPACE_H__ */
