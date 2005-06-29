@@ -1,7 +1,7 @@
 /******************************************************************************
  *
- * Module Name: evrgnini- ACPI AddressSpace / OpRegion init
- *              $Revision: 1.26 $
+ * Module Name: evrgnini- ACPI AddressSpace (OpRegion) init
+ *              $Revision: 1.30 $
  *
  *****************************************************************************/
 
@@ -242,7 +242,7 @@ AcpiEvPciConfigRegionSetup (
     ACPI_OPERAND_OBJECT     *HandlerObj;
     ACPI_NAMESPACE_NODE     *Node;
     ACPI_OPERAND_OBJECT     *RegionObj = (ACPI_OPERAND_OBJECT  *) Handle;
-
+    DEVICE_ID               ObjectHID;
 
     FUNCTION_TRACE ("EvPciConfigRegionSetup");
 
@@ -316,7 +316,40 @@ AcpiEvPciConfigRegionSetup (
      *  This is the device the handler has been registered to handle.
      */
 
-    Node = HandlerObj->AddrHandler.Node;
+    /*
+     *  If the AddrHandler.Node is still pointing to the root, we need
+     *  to scan upward for a PCI Root bridge and re-associate the OpRegion
+     *  handlers with that device.
+     */
+    if (HandlerObj->AddrHandler.Node == AcpiGbl_RootNode)
+    {
+        /*
+         * Node is currently the parent object
+         */
+        while (Node != AcpiGbl_RootNode)
+        {
+            Status = AcpiCmExecute_HID(Node, &ObjectHID);
+
+            if (ACPI_SUCCESS (Status))
+            {
+                if (!(STRNCMP(ObjectHID.Buffer, PCI_ROOT_HID_STRING,
+                                    sizeof (PCI_ROOT_HID_STRING))))
+                {
+                    AcpiInstallAddressSpaceHandler(Node,
+                                        ADDRESS_SPACE_PCI_CONFIG,
+                                        ACPI_DEFAULT_HANDLER, NULL, NULL);
+
+                    break;
+                }
+            }
+
+            Node = AcpiNsGetParentObject(Node);
+        }
+    }
+    else
+    {
+        Node = HandlerObj->AddrHandler.Node;
+    }
 
     Status = AcpiCmEvaluateNumericObject (METHOD_NAME__SEG, Node, &Temp);
     if (ACPI_SUCCESS (Status))
@@ -407,7 +440,7 @@ AcpiEvInitializeRegion (
 {
     ACPI_OPERAND_OBJECT    *HandlerObj;
     ACPI_OPERAND_OBJECT    *ObjDesc;
-    UINT32                  SpaceId;
+    ACPI_ADDRESS_SPACE_TYPE SpaceId;
     ACPI_NAMESPACE_NODE    *Node;
     ACPI_STATUS             Status;
     ACPI_NAMESPACE_NODE    *MethodNode;
@@ -489,7 +522,7 @@ AcpiEvInitializeRegion (
                 if (HandlerObj->AddrHandler.SpaceId == SpaceId)
                 {
                     DEBUG_PRINT (TRACE_OPREGION,
-                        ("Found handler (0x%X) for region 0x%X in obj 0x%X\n",
+                        ("Found handler %p for region %p in obj %p\n",
                         HandlerObj, RegionObj, ObjDesc));
 
                     /*
@@ -516,8 +549,8 @@ AcpiEvInitializeRegion (
      *  If we get here, there is no handler for this region
      */
     DEBUG_PRINT (TRACE_OPREGION,
-        ("No handler currently for SpaceId[%d] (Initializing region 0x%X)\n",
-            SpaceId, RegionObj));
+        ("No handler for RegionType %s(%X) (RegionObj %p)\n",
+            AcpiCmGetRegionName (SpaceId), SpaceId, RegionObj));
 
     return_ACPI_STATUS (AE_NOT_EXIST);
 }

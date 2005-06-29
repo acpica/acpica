@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: evregion - ACPI AddressSpace (OpRegion) handler dispatch
- *              $Revision: 1.88 $
+ *              $Revision: 1.89 $
  *
  *****************************************************************************/
 
@@ -705,8 +705,8 @@ AcpiEvAddrHandlerHelper (
                  */
 
                 DEBUG_PRINT (TRACE_OPREGION,
-                    ("Found handler for %s in device 0x%p (0x%p) handler 0x%p\n",
-                    AcpiGbl_RegionTypes[HandlerObj->AddrHandler.SpaceId], ObjDesc, TmpObj, HandlerObj));
+                    ("Found handler for region %s in device %p(%p) handler %p\n",
+                    AcpiCmGetRegionName (HandlerObj->AddrHandler.SpaceId), ObjDesc, TmpObj, HandlerObj));
 
                 /*
                  *  Since the object we found it on was a device, then it
