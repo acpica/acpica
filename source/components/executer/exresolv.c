@@ -266,7 +266,7 @@ AmlGetFieldUnitValue (
     AmlReleaseGlobalLock (Locked);
 
 
-    FUNCTION_EXIT;
+    FUNCTION_STATUS_EXIT (Status);
     return Status;
 }
 
@@ -281,7 +281,7 @@ AmlGetFieldUnitValue (
  *
  * RETURN:      Status
  *
- * DESCRIPTION: Convert Lvalue entries on ObjStack to rvalues
+ * DESCRIPTION: Convert Lvalue entries on ObjStack to Rvalues
  *
  ****************************************************************************/
 
@@ -302,7 +302,7 @@ AmlGetRvalue (
     if (!StackPtr || !*StackPtr)
     {
         DEBUG_PRINT (ACPI_ERROR, ("AmlGetRvalue: internal error - null pointer\n"));
-        FUNCTION_EXIT;
+        FUNCTION_STATUS_EXIT (AE_AML_ERROR);
         return AE_AML_ERROR;
     }
 
@@ -403,7 +403,7 @@ AmlGetRvalue (
 
         if (AE_OK != Status)
         {
-            FUNCTION_EXIT;
+            FUNCTION_STATUS_EXIT (Status);
             return Status;
         }
 
@@ -426,7 +426,7 @@ AmlGetRvalue (
         }
         
         *StackPtr = (void *) ObjDesc;
-        FUNCTION_EXIT;
+        FUNCTION_STATUS_EXIT (Status);
         return Status;
 
     case TYPE_BankField:
@@ -446,7 +446,7 @@ AmlGetRvalue (
         }
 
         *StackPtr = (void *) ObjDesc;
-        FUNCTION_EXIT;
+        FUNCTION_STATUS_EXIT (Status);
         return Status;
         break;
 
@@ -489,7 +489,7 @@ AmlGetRvalue (
                 DEBUG_PRINT (TRACE_EXEC,
                             ("leave AmlGetRvalue: NULL Package ValuePtr ==> AE_AML_ERROR\n"));
 
-                FUNCTION_EXIT;
+                FUNCTION_STATUS_EXIT (AE_AML_ERROR);
                 return AE_AML_ERROR;
             }
 
@@ -503,7 +503,7 @@ AmlGetRvalue (
 
                 if (AE_OK != (Status = AmlPushIfExec (MODE_Exec)))             /* ObjStack */
                 {
-                    FUNCTION_EXIT;
+                    FUNCTION_STATUS_EXIT (Status);
                     return Status;
                 }
 
@@ -524,7 +524,7 @@ AmlGetRvalue (
                 else
                 {
                     ObjStackTop--;
-                    FUNCTION_EXIT;
+                    FUNCTION_STATUS_EXIT (Status);
                     return Status;
                 }
             }
@@ -532,7 +532,7 @@ AmlGetRvalue (
             if (!ValDesc || (TYPE_Package != ValDesc->ValType))
             {
                 DEBUG_PRINT (ACPI_ERROR, ("AmlGetRvalue:internal error - Bad package value\n"));
-                FUNCTION_EXIT;
+                FUNCTION_STATUS_EXIT (AE_AML_ERROR);
                 return AE_AML_ERROR;
             }
 
@@ -555,7 +555,7 @@ AmlGetRvalue (
             if (TYPE_String != ValDesc->ValType)
             {
                 DEBUG_PRINT (ACPI_ERROR, ("AmlGetRvalue: internal error - Bad string value\n"));
-                FUNCTION_EXIT;
+                FUNCTION_STATUS_EXIT (AE_AML_ERROR);
                 return AE_AML_ERROR;
             }
 
@@ -575,7 +575,7 @@ AmlGetRvalue (
             if (!ValDesc)
             {
                 DEBUG_PRINT (ACPI_ERROR, ("AmlGetRvalue: internal error - null Buffer ValuePtr\n"));
-                FUNCTION_EXIT;
+                FUNCTION_STATUS_EXIT (AE_AML_ERROR);
                 return AE_AML_ERROR;
             }
 
@@ -609,7 +609,7 @@ AmlGetRvalue (
                 else
                 {
                     ObjStackTop--;
-                    FUNCTION_EXIT;
+                    FUNCTION_STATUS_EXIT (Status);
                     return Status;
                 }
             }
@@ -617,7 +617,7 @@ AmlGetRvalue (
             if (!ValDesc || (TYPE_Buffer != ValDesc->ValType))
             {
                 DEBUG_PRINT (ACPI_ERROR, ("AmlGetRvalue: Bad buffer value\n"));
-                FUNCTION_EXIT;
+                FUNCTION_STATUS_EXIT (AE_AML_ERROR);
                 return AE_AML_ERROR;
             }
 
@@ -648,7 +648,7 @@ AmlGetRvalue (
             if (!ValDesc)
             {
                 DEBUG_PRINT (ACPI_ERROR, ("AmlGetRvalue: internal error - null Number ValuePtr\n"));
-                FUNCTION_EXIT;
+                FUNCTION_STATUS_EXIT (AE_AML_ERROR);
                 return AE_AML_ERROR;
             }
 
@@ -675,7 +675,7 @@ AmlGetRvalue (
                 if (!AmlIsInPCodeBlock ((UINT8 *) ValDesc))
                 {
                     DEBUG_PRINT (ACPI_ERROR, ("AmlGetRvalue/Number: internal error - not a Number\n"));
-                    FUNCTION_EXIT;
+                    FUNCTION_STATUS_EXIT (AE_AML_ERROR);
                     return AE_AML_ERROR;
                 }
 
@@ -723,7 +723,7 @@ AmlGetRvalue (
                     DEBUG_PRINT (ACPI_ERROR, (
                             "AmlGetRvalue/Number: internal error - expected AML number, found %02x\n",
                             *(UINT8 *) ValDesc));
-                    FUNCTION_EXIT;
+                    FUNCTION_STATUS_EXIT (AE_AML_ERROR);
                     return AE_AML_ERROR;
                 
                 }   /* switch */
@@ -742,7 +742,7 @@ AmlGetRvalue (
             Status = AmlGetNamedFieldValue ((ACPI_HANDLE)* StackPtr, &TempVal);
             if (AE_OK != Status)
             {
-                FUNCTION_EXIT;
+                FUNCTION_STATUS_EXIT (AE_AML_ERROR);
                 return AE_AML_ERROR;
             }
 
@@ -763,7 +763,7 @@ AmlGetRvalue (
             if (!ValDesc)
             {
                 DEBUG_PRINT (ACPI_ERROR, ("AmlGetRvalue: internal error - null BankField ValuePtr\n"));
-                FUNCTION_EXIT;
+                FUNCTION_STATUS_EXIT (AE_AML_ERROR);
                 return AE_AML_ERROR;
             }
 
@@ -774,7 +774,7 @@ AmlGetRvalue (
                         *StackPtr, TYPE_BankField, ValDesc->ValType, ValDesc));
                 
                 AmlAppendBlockOwner (ValDesc);
-                FUNCTION_EXIT;
+                FUNCTION_STATUS_EXIT (AE_AML_ERROR);
                 return AE_AML_ERROR;
             }
 
@@ -795,7 +795,7 @@ AmlGetRvalue (
 
             if (AE_OK != Status)
             {
-                FUNCTION_EXIT;
+                FUNCTION_STATUS_EXIT (AE_AML_ERROR);
                 return AE_AML_ERROR;
             }
             
@@ -804,7 +804,7 @@ AmlGetRvalue (
             Status = AmlGetNamedFieldValue ((ACPI_HANDLE) ValDesc->BankField.Container, &TempVal);
             if (AE_OK != Status)
             {
-                FUNCTION_EXIT;
+                FUNCTION_STATUS_EXIT (AE_AML_ERROR);
                 return AE_AML_ERROR;
             }
 
@@ -826,7 +826,7 @@ AmlGetRvalue (
             if (!ValDesc)
             {
                 DEBUG_PRINT (ACPI_ERROR, ("AmlGetRvalue: internal error - null IndexField ValuePtr\n"));
-                FUNCTION_EXIT;
+                FUNCTION_STATUS_EXIT (AE_AML_ERROR);
                 return AE_AML_ERROR;
             }
 
@@ -837,7 +837,7 @@ AmlGetRvalue (
                         *StackPtr, TYPE_IndexField, ValDesc->ValType, ValDesc));
                 
                 AmlAppendBlockOwner (ValDesc);
-                FUNCTION_EXIT;
+                FUNCTION_STATUS_EXIT (AE_AML_ERROR);
                 return AE_AML_ERROR;
             }
 
@@ -855,7 +855,7 @@ AmlGetRvalue (
 
             if (AE_OK != Status)
             {
-                FUNCTION_EXIT;
+                FUNCTION_STATUS_EXIT (AE_AML_ERROR);
                 return AE_AML_ERROR;
             }
 
@@ -864,7 +864,7 @@ AmlGetRvalue (
             Status = AmlGetNamedFieldValue (ValDesc->IndexField.Data, &TempVal);
             if (AE_OK != Status)
             {
-                FUNCTION_EXIT;
+                FUNCTION_STATUS_EXIT (AE_AML_ERROR);
                 return AE_AML_ERROR;
             }
 
@@ -885,7 +885,7 @@ AmlGetRvalue (
             if (!ValDesc)
             {
                 DEBUG_PRINT (ACPI_ERROR, ("AmlGetRvalue: internal error - null FieldUnit ValuePtr\n"));
-                FUNCTION_EXIT;
+                FUNCTION_STATUS_EXIT (AE_AML_ERROR);
                 return AE_AML_ERROR;
             }
 
@@ -897,7 +897,7 @@ AmlGetRvalue (
                           ValDesc->ValType, ValDesc));
                 
                 AmlAppendBlockOwner (ValDesc);
-                FUNCTION_EXIT;
+                FUNCTION_STATUS_EXIT (AE_AML_ERROR);
                 return AE_AML_ERROR;
                 break;
             }
@@ -914,7 +914,7 @@ AmlGetRvalue (
             if ((Status = AmlGetFieldUnitValue (ValDesc, ObjDesc)) != AE_OK)
             {
                 OsdFree (ObjDesc);
-                FUNCTION_EXIT;
+                FUNCTION_STATUS_EXIT (Status);
                 return Status;
             }
 
@@ -951,7 +951,7 @@ AmlGetRvalue (
             {
                 /*  descriptor allocation failure   */
                 
-                FUNCTION_EXIT;
+                FUNCTION_STATUS_EXIT (AE_NO_MEMORY);
                 return AE_NO_MEMORY;
             }
 
@@ -963,7 +963,7 @@ AmlGetRvalue (
                     "AmlGetRvalue: Fetch from [%s] not implemented\n",
                     NsTypeNames[NsGetType ((ACPI_HANDLE)* StackPtr)]));
             
-            FUNCTION_EXIT;
+            FUNCTION_STATUS_EXIT (AE_AML_ERROR);
             return AE_AML_ERROR;
 #endif /* HACK */
 
@@ -974,16 +974,15 @@ AmlGetRvalue (
 
             DEBUG_PRINT (ACPI_ERROR, ("AmlGetRvalue: Unknown NsType %d\n",
                             NsGetType ((ACPI_HANDLE)* StackPtr)));
-            FUNCTION_EXIT;
+            
+            FUNCTION_STATUS_EXIT (AE_AML_ERROR);
             return AE_AML_ERROR;
         }
 
         *StackPtr = (void *) ObjDesc;
     }
 
-    DEBUG_PRINT (TRACE_EXEC, ("leave AmlGetRvalue: AE_OK\n"));
-
-    FUNCTION_EXIT;
+    FUNCTION_STATUS_EXIT (AE_OK);
     return AE_OK;
 }
 
