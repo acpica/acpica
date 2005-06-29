@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: exdump - Interpreter debug output routines
- *              $Revision: 1.140 $
+ *              $Revision: 1.141 $
  *
  *****************************************************************************/
 
@@ -775,7 +775,7 @@ AcpiExDumpNode (
     AcpiExOutPointer ("Attached Object",  AcpiNsGetAttachedObject (Node));
     AcpiExOutPointer ("ChildList",        Node->Child);
     AcpiExOutPointer ("NextPeer",         Node->Peer);
-    AcpiExOutPointer ("Parent",           AcpiNsGetParentObject (Node));
+    AcpiExOutPointer ("Parent",           AcpiNsGetParentNode (Node));
 }
 
 
