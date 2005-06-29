@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: exfldio - Aml Field I/O
- *              $Revision: 1.110 $
+ *              $Revision: 1.111 $
  *
  *****************************************************************************/
 
@@ -221,9 +221,9 @@ AcpiExSetupRegion (
              */
             if (ACPI_ROUND_UP (RgnDesc->Region.Length,
                                 ObjDesc->CommonField.AccessByteWidth) >=
-                ((ACPI_NATIVE_UINT) ObjDesc->CommonField.BaseByteOffset +
+                (ObjDesc->CommonField.BaseByteOffset +
                  (ACPI_NATIVE_UINT) ObjDesc->CommonField.AccessByteWidth +
-                 (ACPI_NATIVE_UINT) FieldDatumByteOffset))
+                 FieldDatumByteOffset))
             {
                 return_ACPI_STATUS (AE_OK);
             }
