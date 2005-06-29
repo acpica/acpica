@@ -1,8 +1,7 @@
-
 /******************************************************************************
  *
  * Module Name: dsmethod - Parser/Interpreter interface - control method parsing
- *              $Revision: 1.48 $
+ *              $Revision: 1.51 $
  *
  *****************************************************************************/
 
@@ -128,15 +127,14 @@
 
 
 #define _COMPONENT          DISPATCHER
-        MODULE_NAME         ("dsmethod");
-
+        MODULE_NAME         ("dsmethod")
 
 
 /*******************************************************************************
  *
  * FUNCTION:    AcpiDsParseMethod
  *
- * PARAMETERS:  ObjHandle       - Named Object of the method
+ * PARAMETERS:  ObjHandle       - Node of the method
  *              Level           - Current nesting level
  *              Context         - Points to a method counter
  *              ReturnValue     - Not used
@@ -155,9 +153,9 @@ AcpiDsParseMethod (
     ACPI_HANDLE             ObjHandle)
 {
     ACPI_STATUS             Status;
-    ACPI_OBJECT_INTERNAL    *ObjDesc;
-    ACPI_GENERIC_OP         *Op;
-    ACPI_NAMED_OBJECT       *NameDesc;
+    ACPI_OPERAND_OBJECT     *ObjDesc;
+    ACPI_PARSE_OBJECT       *Op;
+    ACPI_NAMESPACE_NODE     *Node;
     ACPI_OWNER_ID           OwnerId;
 
 
@@ -173,13 +171,13 @@ AcpiDsParseMethod (
 
     DEBUG_PRINT (ACPI_INFO,
         ("DsParseMethod: **** Parsing [%4.4s] **** NamedObj=%p\n",
-        &((ACPI_NAMED_OBJECT*)ObjHandle)->Name, ObjHandle));
+        &((ACPI_NAMESPACE_NODE *)ObjHandle)->Name, ObjHandle));
 
 
-    /* Extract the method object from the method Named Object */
+    /* Extract the method object from the method Node */
 
-    NameDesc = (ACPI_NAMED_OBJECT*) ObjHandle;
-    ObjDesc = NameDesc->Object;
+    Node = (ACPI_NAMESPACE_NODE *) ObjHandle;
+    ObjDesc = Node->Object;
     if (!ObjDesc)
     {
         return_ACPI_STATUS (AE_NULL_OBJECT);
@@ -209,10 +207,10 @@ AcpiDsParseMethod (
         return_ACPI_STATUS (AE_NO_MEMORY);
     }
 
-    /* Init new op with the method name and pointer back to the Named Object */
+    /* Init new op with the method name and pointer back to the Node */
 
-    AcpiPsSetName (Op, NameDesc->Name);
-    Op->AcpiNamedObject = NameDesc;
+    AcpiPsSetName (Op, Node->Name);
+    Op->Node = Node;
 
 
     /*
@@ -228,9 +226,9 @@ AcpiDsParseMethod (
      */
 
     Status = AcpiPsParseAml (Op, ObjDesc->Method.Pcode,
-                        ObjDesc->Method.PcodeLength, 
+                        ObjDesc->Method.PcodeLength,
                         ACPI_PARSE_LOAD_PASS1 | ACPI_PARSE_DELETE_TREE,
-                        NameDesc, NULL, NULL, 
+                        Node, NULL, NULL,
                         AcpiDsLoad1BeginOp, AcpiDsLoad1EndOp);
 
     if (ACPI_FAILURE (Status))
@@ -247,7 +245,7 @@ AcpiDsParseMethod (
 
     DEBUG_PRINT (ACPI_INFO,
         ("DsParseMethod: **** [%4.4s] Parsed **** NamedObj=%p Op=%p\n",
-        &((ACPI_NAMED_OBJECT*)ObjHandle)->Name, ObjHandle, Op));
+        &((ACPI_NAMESPACE_NODE *)ObjHandle)->Name, ObjHandle, Op));
 
     /* Install the parsed tree in the method object */
     /* TBD: [Restructure] Obsolete field? */
@@ -264,7 +262,7 @@ AcpiDsParseMethod (
  *
  * FUNCTION:    AcpiDsBeginMethodExecution
  *
- * PARAMETERS:  MethodNameDesc         - Named Object of the method
+ * PARAMETERS:  MethodNode         - Node of the method
  *              ObjDesc             - The method object
  *
  * RETURN:      Status
@@ -279,21 +277,21 @@ AcpiDsParseMethod (
 
 ACPI_STATUS
 AcpiDsBeginMethodExecution (
-    ACPI_NAMED_OBJECT       *MethodNameDesc,
-    ACPI_OBJECT_INTERNAL    *ObjDesc)
+    ACPI_NAMESPACE_NODE     *MethodNode,
+    ACPI_OPERAND_OBJECT     *ObjDesc)
 {
     ACPI_STATUS             Status = AE_OK;
 
 
-    FUNCTION_TRACE_PTR ("DsBeginMethodExecution", MethodNameDesc);
+    FUNCTION_TRACE_PTR ("DsBeginMethodExecution", MethodNode);
 
 
-    if (!MethodNameDesc)
+    if (!MethodNode)
     {
         return_ACPI_STATUS (AE_NULL_ENTRY);
     }
 
-    ObjDesc = AcpiNsGetAttachedObject (MethodNameDesc);
+    ObjDesc = AcpiNsGetAttachedObject (MethodNode);
     if (!ObjDesc)
     {
         return_ACPI_STATUS (AE_NULL_OBJECT);
@@ -344,11 +342,11 @@ ACPI_STATUS
 AcpiDsCallControlMethod (
     ACPI_WALK_LIST          *WalkList,
     ACPI_WALK_STATE         *ThisWalkState,
-    ACPI_GENERIC_OP         *Op)
+    ACPI_PARSE_OBJECT       *Op)
 {
     ACPI_STATUS             Status;
-    ACPI_NAMED_OBJECT       *MethodNameDesc;
-    ACPI_OBJECT_INTERNAL    *ObjDesc;
+    ACPI_NAMESPACE_NODE     *MethodNode;
+    ACPI_OPERAND_OBJECT     *ObjDesc;
     ACPI_WALK_STATE         *NextWalkState;
     ACPI_PARSE_STATE        *ParserState;
     UINT32                  i;
@@ -364,13 +362,13 @@ AcpiDsCallControlMethod (
      * Get the namespace entry for the control method we are about to call
      */
 
-    MethodNameDesc = ThisWalkState->MethodCallNameDesc;
-    if (!MethodNameDesc)
+    MethodNode = ThisWalkState->MethodCallNode;
+    if (!MethodNode)
     {
         return_ACPI_STATUS (AE_NULL_ENTRY);
     }
 
-    ObjDesc = AcpiNsGetAttachedObject (MethodNameDesc);
+    ObjDesc = AcpiNsGetAttachedObject (MethodNode);
     if (!ObjDesc)
     {
         return_ACPI_STATUS (AE_NULL_OBJECT);
@@ -379,7 +377,7 @@ AcpiDsCallControlMethod (
 
     /* Init for new method, wait on concurrency semaphore */
 
-    Status = AcpiDsBeginMethodExecution (MethodNameDesc, ObjDesc);
+    Status = AcpiDsBeginMethodExecution (MethodNode, ObjDesc);
     if (ACPI_FAILURE (Status))
     {
         return_ACPI_STATUS (Status);
@@ -388,7 +386,7 @@ AcpiDsCallControlMethod (
 
     /* Create and initialize a new parser state */
 
-    ParserState = AcpiPsCreateState (ObjDesc->Method.Pcode, 
+    ParserState = AcpiPsCreateState (ObjDesc->Method.Pcode,
                         ObjDesc->Method.PcodeLength);
     if (!ParserState)
     {
@@ -396,7 +394,7 @@ AcpiDsCallControlMethod (
     }
 
     AcpiPsInitScope (ParserState, NULL);
-    ParserState->StartEntry = MethodNameDesc;
+    ParserState->StartNode = MethodNode;
 
 
     /* Create a new state for the preempting walk */
@@ -411,7 +409,7 @@ AcpiDsCallControlMethod (
     }
 
     NextWalkState->WalkType             = WALK_METHOD;
-    NextWalkState->MethodNameDesc       = MethodNameDesc;
+    NextWalkState->MethodNode           = MethodNode;
     NextWalkState->ParserState          = ParserState;
     NextWalkState->ParseFlags           = ThisWalkState->ParseFlags;
     NextWalkState->DescendingCallback   = ThisWalkState->DescendingCallback;
@@ -424,7 +422,7 @@ AcpiDsCallControlMethod (
 
     /* Open a new scope */
 
-    Status = AcpiDsScopeStackPush (MethodNameDesc,
+    Status = AcpiDsScopeStackPush (MethodNode,
                                     ACPI_TYPE_METHOD, NextWalkState);
     if (ACPI_FAILURE (Status))
     {
@@ -440,7 +438,7 @@ AcpiDsCallControlMethod (
      */
 
     Status = AcpiDsMethodDataInitArgs (&ThisWalkState->Operands[0],
-                                        ThisWalkState->NumOperands, 
+                                        ThisWalkState->NumOperands,
                                         NextWalkState);
     if (ACPI_FAILURE (Status))
     {
@@ -448,8 +446,7 @@ AcpiDsCallControlMethod (
     }
 
 
-
-    /* Create and init a root object */
+    /* Create and init a Root Node */
 
     Op = AcpiPsAllocOp (AML_SCOPE_OP);
     if (!Op)
@@ -458,12 +455,11 @@ AcpiDsCallControlMethod (
     }
 
     Status = AcpiPsParseAml (Op, ObjDesc->Method.Pcode,
-                                ObjDesc->Method.PcodeLength, 
+                                ObjDesc->Method.PcodeLength,
                                 ACPI_PARSE_LOAD_PASS1 | ACPI_PARSE_DELETE_TREE,
-                                MethodNameDesc, NULL, NULL,
+                                MethodNode, NULL, NULL,
                                 AcpiDsLoad1BeginOp, AcpiDsLoad1EndOp);
     AcpiPsDeleteParseTree (Op);
-
 
 
     /*
@@ -514,7 +510,7 @@ Cleanup:
 ACPI_STATUS
 AcpiDsRestartControlMethod (
     ACPI_WALK_STATE         *WalkState,
-    ACPI_OBJECT_INTERNAL    *ReturnDesc)
+    ACPI_OPERAND_OBJECT     *ReturnDesc)
 {
     ACPI_STATUS             Status;
 
@@ -538,7 +534,7 @@ AcpiDsRestartControlMethod (
                 return_ACPI_STATUS (Status);
             }
         }
-    
+
         else
         {
             /*
@@ -578,8 +574,8 @@ AcpiDsTerminateControlMethod (
     ACPI_WALK_STATE         *WalkState)
 {
     ACPI_STATUS             Status;
-    ACPI_OBJECT_INTERNAL    *ObjDesc;
-    ACPI_NAMED_OBJECT       *MethodNameDesc;
+    ACPI_OPERAND_OBJECT     *ObjDesc;
+    ACPI_NAMESPACE_NODE     *MethodNode;
 
 
     FUNCTION_TRACE_PTR ("DsTerminateControlMethod", WalkState);
@@ -623,17 +619,17 @@ AcpiDsTerminateControlMethod (
          * There are no more threads executing this method.  Perform
          * additional cleanup.
          *
-         * The method Named Object is stored in the walk state
+         * The method Node is stored in the walk state
          */
-        MethodNameDesc = WalkState->MethodNameDesc;
+        MethodNode = WalkState->MethodNode;
         /*
          * Delete any namespace entries created immediately underneath
          * the method
          */
         AcpiCmAcquireMutex (ACPI_MTX_NAMESPACE);
-        if (MethodNameDesc->Child)
+        if (MethodNode->Child)
         {
-            AcpiNsDeleteNamespaceSubtree (MethodNameDesc);
+            AcpiNsDeleteNamespaceSubtree (MethodNode);
         }
 
         /*
