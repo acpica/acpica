@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: amprep - ACPI AML (p-code) execution - field prep utilities
- *              $Revision: 1.80 $
+ *              $Revision: 1.81 $
  *
  *****************************************************************************/
 
@@ -240,22 +240,17 @@ AcpiAmlPrepCommonFieldObject (
      * are initialized by this procedure.
      */
 
-    /* Decode the FieldFlags */
+    /* Demultiplex the FieldFlags byte */
 
-    ObjDesc->CommonField.Access           = (UINT8) ((FieldFlags & ACCESS_TYPE_MASK)
+    ObjDesc->CommonField.Access         = (UINT8) ((FieldFlags & ACCESS_TYPE_MASK)
                                                     >> ACCESS_TYPE_SHIFT);
-    ObjDesc->CommonField.LockRule         = (UINT8) ((FieldFlags & LOCK_RULE_MASK)
+    ObjDesc->CommonField.LockRule       = (UINT8) ((FieldFlags & LOCK_RULE_MASK)
                                                     >> LOCK_RULE_SHIFT);
-    ObjDesc->CommonField.UpdateRule       = (UINT8) ((FieldFlags & UPDATE_RULE_MASK)
+    ObjDesc->CommonField.UpdateRule     = (UINT8) ((FieldFlags & UPDATE_RULE_MASK)
                                                     >> UPDATE_RULE_SHIFT);
-
     /* Other misc fields */
 
-    ObjDesc->CommonField.BitLength        = (UINT16) FieldLength;
-
-    /* TBD: This field may be obsolete */
-
-    ObjDesc->CommonField.AccessAttribute  = FieldAttribute;
+    ObjDesc->CommonField.BitLength      = (UINT16) FieldLength;
 
     /* Decode the access type so we can compute offsets */
 
@@ -268,17 +263,19 @@ AcpiAmlPrepCommonFieldObject (
 
     /* Access granularity based fields */
 
-    ObjDesc->CommonField.Granularity      = (UINT8) Granularity;
+    ObjDesc->CommonField.Granularity    = (UINT8) Granularity;
 
     if (ObjDesc->Common.Type == ACPI_TYPE_BUFFER_FIELD)
     {
-        /* Buffer field access can be on any byte boundary */
-
+        /* 
+         * BufferField access can be on any byte boundary, so the 
+         * granularity is always 8
+         */
         Granularity = 8;
     }
 
-    ObjDesc->CommonField.BitOffset        = (UINT8) (FieldPosition % Granularity);
-    ObjDesc->CommonField.Offset           = (UINT32) FieldPosition / Granularity;
+    ObjDesc->CommonField.BitOffset      = (UINT8) (FieldPosition % Granularity);
+    ObjDesc->CommonField.Offset         = (UINT32) FieldPosition / Granularity;
 
 
     return_ACPI_STATUS (AE_OK);
@@ -325,7 +322,7 @@ AcpiAmlPrepRegionFieldValue (
 
     if (!RegionNode)
     {
-        DEBUG_PRINT (ACPI_ERROR, ("AmlPrepRegionFieldValue: null RegionNode\n"));
+        DEBUG_PRINT (ACPI_ERROR, ("AmlPrepRegionFieldValue: Null RegionNode\n"));
         return_ACPI_STATUS (AE_AML_NO_OPERAND);
     }
 
@@ -350,9 +347,9 @@ AcpiAmlPrepRegionFieldValue (
     /* ObjDesc and Region valid */
 
     DUMP_OPERANDS ((ACPI_OPERAND_OBJECT  **) &Node, IMODE_EXECUTE,
-                    "AmlPrepRegionFieldValue", 1, "case DefField");
+                    "AmlPrepRegionFieldValue", 1, "case RegionField");
     DUMP_OPERANDS ((ACPI_OPERAND_OBJECT  **) &RegionNode, IMODE_EXECUTE,
-                    "AmlPrepRegionFieldValue", 1, "case DefField");
+                    "AmlPrepRegionFieldValue", 1, "case RegionField");
 
     /* Initialize areas of the object that are common to all fields */
 
@@ -375,29 +372,18 @@ AcpiAmlPrepRegionFieldValue (
     /* Debug info */
 
     DEBUG_PRINT (ACPI_INFO,
-        ("AmlPrepRegionFieldValue: bitoff=%X off=%X gran=%X\n",
+        ("AmlPrepRegionFieldValue: Bitoff=%X Off=%X Gran=%X Region %p\n",
         ObjDesc->Field.BitOffset, ObjDesc->Field.Offset,
-        ObjDesc->Field.Granularity));
+        ObjDesc->Field.Granularity, ObjDesc->Field.RegionObj));
 
     DEBUG_PRINT (ACPI_INFO,
         ("AmlPrepRegionFieldValue: set NamedObj %p (%4.4s) val = %p\n",
         Node, &(Node->Name), ObjDesc));
 
-    DUMP_STACK_ENTRY (ObjDesc);
-    DUMP_ENTRY (RegionNode, ACPI_INFO);
-    DEBUG_PRINT (ACPI_INFO, ("\t%p \n", ObjDesc->Field.RegionObj));
-
-    if (ObjDesc->Field.RegionObj)
-    {
-        DUMP_STACK_ENTRY (ObjDesc->Field.RegionObj);
-    }
-
-    DEBUG_PRINT (ACPI_INFO,
-        ("============================================================\n"));
 
     /*
-     * Store the constructed descriptor (ObjDesc) into the NamedObj whose
-     * handle is on TOS, preserving the current type of that NamedObj.
+     * Store the constructed descriptor (ObjDesc) into the parent Node,
+     * preserving the current type of that NamedObj.
      */
     Status = AcpiNsAttachObject (Node, ObjDesc, (UINT8) AcpiNsGetType (Node));
 
@@ -447,7 +433,7 @@ AcpiAmlPrepBankFieldValue (
 
     if (!RegionNode)
     {
-        DEBUG_PRINT (ACPI_ERROR, ("AmlPrepBankFieldValue: null RegionNode\n"));
+        DEBUG_PRINT (ACPI_ERROR, ("AmlPrepBankFieldValue: Null RegionNode\n"));
         return_ACPI_STATUS (AE_AML_NO_OPERAND);
     }
 
@@ -487,9 +473,8 @@ AcpiAmlPrepBankFieldValue (
     /* Initialize areas of the object that are specific to this field type */
 
     ObjDesc->BankField.Value            = BankVal;
-    ObjDesc->BankField.BankRegisterNode = BankRegisterNode;
-    ObjDesc->BankField.BankRegisterObj  = AcpiNsGetAttachedObject (BankRegisterNode);
     ObjDesc->BankField.RegionObj        = AcpiNsGetAttachedObject (RegionNode);
+    ObjDesc->BankField.BankRegisterObj  = AcpiNsGetAttachedObject (BankRegisterNode);
 
     /* An additional reference for the region and bankregister objects */
 
@@ -499,23 +484,19 @@ AcpiAmlPrepBankFieldValue (
     /* Debug info */
 
     DEBUG_PRINT (ACPI_INFO,
-        ("AmlPrepBankFieldValue: bitoff=%X off=%X gran=%X\n",
+        ("AmlPrepBankFieldValue: BitOff=%X Off=%X Gran=%X Region %p BankReg %p\n",
         ObjDesc->BankField.BitOffset, ObjDesc->BankField.Offset,
-        ObjDesc->Field.Granularity));
+        ObjDesc->Field.Granularity, ObjDesc->BankField.RegionObj,
+        ObjDesc->BankField.BankRegisterObj));
 
     DEBUG_PRINT (ACPI_INFO,
-        ("AmlPrepBankFieldValue: set NamedObj %p (%4.4s) val = %p\n",
+        ("AmlPrepBankFieldValue: set NamedObj %p (%4.4s) val=%p\n",
         Node, &(Node->Name), ObjDesc));
 
-    DUMP_STACK_ENTRY (ObjDesc);
-    DUMP_ENTRY (RegionNode, ACPI_INFO);
-    DUMP_ENTRY (BankRegisterNode, ACPI_INFO);
-    DEBUG_PRINT (ACPI_INFO,
-        ("============================================================\n"));
 
     /*
-     * Store the constructed descrip tor (ObjDesc) into the NamedObj whose
-     * handle is on TOS, preserving the current type of that NamedObj.
+     * Store the constructed descriptor (ObjDesc) into the parent Node,
+     * preserving the current type of that NamedObj.
      */
     Status = AcpiNsAttachObject (Node, ObjDesc, (UINT8) AcpiNsGetType (Node));
 
@@ -562,7 +543,7 @@ AcpiAmlPrepIndexFieldValue (
 
     if (!IndexReg || !DataReg)
     {
-        DEBUG_PRINT (ACPI_ERROR, ("AmlPrepIndexFieldValue: null handle\n"));
+        DEBUG_PRINT (ACPI_ERROR, ("AmlPrepIndexFieldValue: Null handle\n"));
         return_ACPI_STATUS (AE_AML_NO_OPERAND);
     }
 
@@ -585,31 +566,27 @@ AcpiAmlPrepIndexFieldValue (
 
     /* Initialize areas of the object that are specific to this field type */
 
+    ObjDesc->IndexField.DataObj     = AcpiNsGetAttachedObject (DataReg);
+    ObjDesc->IndexField.IndexObj    = AcpiNsGetAttachedObject (IndexReg);
     ObjDesc->IndexField.Value       = (UINT32) (FieldPosition /
                                                 ObjDesc->Field.Granularity);
-    ObjDesc->IndexField.Index       = IndexReg;
-    ObjDesc->IndexField.Data        = DataReg;
 
     /* Debug info */
 
     DEBUG_PRINT (ACPI_INFO,
-        ("AmlPrepIndexFieldValue: bitoff=%X off=%X gran=%X\n",
+        ("AmlPrepIndexFieldValue: bitoff=%X off=%X gran=%X Index %p Data %p\n",
         ObjDesc->IndexField.BitOffset, ObjDesc->IndexField.Offset,
-        ObjDesc->Field.Granularity));
+        ObjDesc->Field.Granularity, ObjDesc->IndexField.IndexObj,
+        ObjDesc->IndexField.DataObj));
 
     DEBUG_PRINT (ACPI_INFO,
         ("AmlPrepIndexFieldValue: set NamedObj %p (%4.4s) val = %p\n",
         Node, &(Node->Name), ObjDesc));
 
-    DUMP_STACK_ENTRY (ObjDesc);
-    DUMP_ENTRY (IndexReg, ACPI_INFO);
-    DUMP_ENTRY (DataReg, ACPI_INFO);
-    DEBUG_PRINT (ACPI_INFO,
-        ("============================================================\n"));
 
     /*
-     * Store the constructed descriptor (ObjDesc) into the NamedObj whose
-     * handle is on TOS, preserving the current type of that NamedObj.
+     * Store the constructed descriptor (ObjDesc) into the parent Node,
+     * preserving the current type of that NamedObj.
      */
     Status = AcpiNsAttachObject (Node, ObjDesc, (UINT8) AcpiNsGetType (Node));
 
