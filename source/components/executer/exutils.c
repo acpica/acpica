@@ -121,9 +121,10 @@
 #include <amlcode.h>
 #include <namespace.h>
 
-#define _THIS_MODULE        "isutils.c"
 #define _COMPONENT          INTERPRETER
+        MODULE_NAME         ("isutils");
 
+static char                 hex[] = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'};
 
 
 /*****************************************************************************
@@ -156,16 +157,16 @@ AmlAppendOperandDiag(
     DEBUG_PRINT (ACPI_ERROR, (" [%s:%d, opcode = %s AML offset %04x]\n",
                     FileName, LineNum,
                     (OpCode > ACPI_UCHAR_MAX)
-                        ? LongOps[OpCode & 0x00ff]
-                        : ShortOps[OpCode],
+                        ? Gbl_LongOps[OpCode & 0x00ff]
+                        : Gbl_ShortOps[OpCode],
                     MthDesc.Method.Pcode));
 
     if (GetDebugLevel () > 0)
     {
         DUMP_STACK (IMODE_Execute,
                       (OpCode > ACPI_UCHAR_MAX)
-                      ? LongOps[OpCode & 0x00ff]
-                      : ShortOps[OpCode],
+                      ? Gbl_LongOps[OpCode & 0x00ff]
+                      : Gbl_ShortOps[OpCode],
                       NumOperands,
                       "after PrepStack failed");
     }
@@ -192,7 +193,7 @@ UINT32
 AmlBufSeq (void)
 {
     
-    return ++BufSeq;
+    return ++Gbl_BufSeq;
 }
 
 
@@ -237,7 +238,7 @@ AmlAcquireGlobalLock (
 
         else
         {
-            GlobalLockSet = TRUE;
+            Gbl_GlobalLockSet = TRUE;
             Locked = TRUE;
         }
     }
@@ -273,12 +274,12 @@ AmlReleaseGlobalLock (
     {
         /* Double check against the global flag */
 
-        if (GlobalLockSet)
+        if (Gbl_GlobalLockSet)
         {
             /* OK, now release the lock */
 
             OsReleaseGlobalLock ();
-            GlobalLockSet = FALSE;
+            Gbl_GlobalLockSet = FALSE;
         }
 
         else
@@ -292,6 +293,7 @@ AmlReleaseGlobalLock (
 
     return_ACPI_STATUS (AE_OK);
 }
+
 
 /******************************************************************************
  * 
@@ -331,4 +333,75 @@ AmlDigitsNeeded (
     return_VALUE (NumDigits);
 }
 
+
+/******************************************************************************
+ * 
+ * FUNCTION:    ntohl
+ *
+ * PARAMETERS:  Value           - Value to be converted
+ *
+ * RETURN:      Convert a 32-bit value to big-endian (swap the bytes)
+ *
+ *****************************************************************************/
+
+UINT32
+_ntohl (
+    UINT32                  Value)
+{
+    union 
+    {
+        UINT32              Value;
+        char                Bytes[4];
+    } Out; 
+
+    union
+    {
+        UINT32              Value;
+        char                Bytes[4];
+    } In; 
+
+
+    In.Value = Value;
+
+    Out.Bytes[0] = In.Bytes[3];
+    Out.Bytes[1] = In.Bytes[2];
+    Out.Bytes[2] = In.Bytes[1];
+    Out.Bytes[3] = In.Bytes[0];
+
+    return Out.Value;
+}
+
+
+/******************************************************************************
+ * 
+ * FUNCTION:    AmlEisaIdToString
+ *
+ * PARAMETERS:  NumericId       - EISA ID to be converted
+ *              OutString       - Where to put the converted string (8 bytes)
+ *
+ * RETURN:      Convert a numeric EISA ID to string representation
+ *
+ *****************************************************************************/
+
+ACPI_STATUS
+AmlEisaIdToString (
+    UINT32                  NumericId,
+    char                    *OutString)
+{
+    UINT32                  id;
+
+    
+    id = _ntohl (NumericId);                    // swap to big-endian to get contiguous bits
+    
+    OutString[0] = '@' + ((id >> 26) & 0x1f);
+    OutString[1] = '@' + ((id >> 21) & 0x1f);
+    OutString[2] = '@' + ((id >> 16) & 0x1f);
+    OutString[3] = hex[(id >> 12) & 0xf];
+    OutString[4] = hex[(id >> 8) & 0xf];
+    OutString[5] = hex[(id >> 4) & 0xf];
+    OutString[6] = hex[id & 0xf];
+    OutString[7] = '\0';
+    
+    return AE_OK;
+}
 
