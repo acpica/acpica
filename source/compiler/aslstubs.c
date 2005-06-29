@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslstubs - Stubs used to link to Aml interpreter
- *              $Revision: 1.8 $
+ *              $Revision: 1.11 $
  *
  *****************************************************************************/
 
@@ -10,7 +10,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2003, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -168,6 +168,13 @@ AcpiDsStoreObjectToLocal (
 }
 
 ACPI_STATUS
+AcpiEvDeleteGpeBlock (
+    ACPI_GPE_BLOCK_INFO     *GpeBlock)
+{
+    return (AE_OK);
+}
+
+ACPI_STATUS
 AcpiEvQueueNotifyRequest (
     ACPI_NAMESPACE_NODE     *Node,
     UINT32                  NotifyValue)
@@ -249,9 +256,9 @@ AcpiExLoadOp (
 
 ACPI_STATUS
 AcpiTbFindTable (
-    NATIVE_CHAR             *Signature,
-    NATIVE_CHAR             *OemId,
-    NATIVE_CHAR             *OemTableId,
+    char                    *Signature,
+    char                    *OemId,
+    char                    *OemTableId,
     ACPI_TABLE_HEADER       **TablePtr)
 {
     return (AE_SUPPORT);
