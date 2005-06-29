@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: aclocal.h - Internal data types used across the ACPI subsystem
- *       $Revision: 1.161 $
+ *       $Revision: 1.162 $
  *
  *****************************************************************************/
 
@@ -412,8 +412,9 @@ typedef struct
 
 typedef struct
 {
+    UINT8                   AddressSpaceId;
+    ACPI_GENERIC_ADDRESS    *BlockAddress;
     UINT16                  RegisterCount;
-    UINT16                  BlockAddress;
     UINT8                   BlockBaseNumber;
 
 } ACPI_GPE_BLOCK_INFO;
@@ -422,8 +423,8 @@ typedef struct
 
 typedef struct
 {
-    UINT16                  StatusAddr;     /* Address of status reg */
-    UINT16                  EnableAddr;     /* Address of enable reg */
+    ACPI_GENERIC_ADDRESS    StatusAddress;  /* Address of status reg */
+    ACPI_GENERIC_ADDRESS    EnableAddress;  /* Address of enable reg */
     UINT8                   Status;         /* Current value of status reg */
     UINT8                   Enable;         /* Current value of enable reg */
     UINT8                   WakeEnable;     /* Mask of bits to keep enabled when sleeping */
