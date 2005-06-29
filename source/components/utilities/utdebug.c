@@ -118,7 +118,6 @@
 
 #include <acpi.h>
 
-
 #define _COMPONENT          MISCELLANEOUS
         MODULE_NAME         ("cmdebug");
 
@@ -174,10 +173,11 @@ FunctionTrace (
     INT32                   ComponentId, 
     char                    *FunctionName)
 {
-
-    Gbl_NestingLevel++;
+        
+    Gbl_NestingLevel++;  
+    
     DebugPrint (ModuleName, LineNumber, ComponentId, TRACE_FUNCTIONS,
-                " %2.2d Entered Function: %s\n", Gbl_NestingLevel, FunctionName);
+                " %2.2ld Entered Function: %s\n", Gbl_NestingLevel, FunctionName);
 }
 
 
@@ -209,7 +209,7 @@ FunctionTracePtr (
 
     Gbl_NestingLevel++;
     DebugPrint (ModuleName, LineNumber, ComponentId, TRACE_FUNCTIONS,
-                " %2.2d Entered Function: %s, 0x%X\n", 
+                " %2.2ld Entered Function: %s, 0x%p\n", 
                 Gbl_NestingLevel, FunctionName, Pointer);
 }
 
@@ -242,7 +242,7 @@ FunctionTraceStr (
 
     Gbl_NestingLevel++;
     DebugPrint (ModuleName, LineNumber, ComponentId, TRACE_FUNCTIONS,
-                " %2.2d Entered Function: %s, %s\n", 
+                " %2.2ld Entered Function: %s, %s\n", 
                 Gbl_NestingLevel, FunctionName, String);
 }
 
@@ -275,7 +275,7 @@ FunctionTraceU32 (
 
     Gbl_NestingLevel++;
     DebugPrint (ModuleName, LineNumber, ComponentId, TRACE_FUNCTIONS,
-                " %2.2d Entered Function: %s, 0x%X\n", 
+                " %2.2ld Entered Function: %s, 0x%lX\n", 
                 Gbl_NestingLevel, FunctionName, Integer);
 }
 
@@ -305,7 +305,7 @@ FunctionExit (
 {
 
     DebugPrint (ModuleName, LineNumber, ComponentId, TRACE_FUNCTIONS,
-                " %2.2d Exiting Function: %s\n", Gbl_NestingLevel, FunctionName);
+                " %2.2ld Exiting Function: %s\n", Gbl_NestingLevel, FunctionName);
     Gbl_NestingLevel--;
 }
 
@@ -339,14 +339,14 @@ FunctionStatusExit (
     if (Status > ACPI_MAX_STATUS)
     {
         DebugPrint (ModuleName, LineNumber, ComponentId, TRACE_FUNCTIONS,
-                    " %2.2d Exiting Function: %s, [Unknown Status] 0x%X\n", 
+                    " %2.2ld Exiting Function: %s, [Unknown Status] 0x%X\n", 
                     Gbl_NestingLevel, FunctionName, Status);
     }
 
     else
-    {
+    { 
         DebugPrint (ModuleName, LineNumber, ComponentId, TRACE_FUNCTIONS,
-                    " %2.2d Exiting Function: %s, %s\n", 
+                    " %2.2ld Exiting Function: %s, %s\n", 
                     Gbl_NestingLevel, FunctionName, Gbl_ExceptionNames[Status]);
     }
 
@@ -381,8 +381,41 @@ FunctionValueExit (
 {
 
     DebugPrint (ModuleName, LineNumber, ComponentId, TRACE_FUNCTIONS,
-                " %2.2d Exiting Function: %s, 0x%X\n", 
+                " %2.2ld Exiting Function: %s, 0x%X\n", 
                 Gbl_NestingLevel, FunctionName, Value);
+    Gbl_NestingLevel--;
+}
+
+
+/*****************************************************************************
+ * 
+ * FUNCTION:    FunctionPtrExit
+ *
+ * PARAMETERS:  ModuleName          - Caller's module name (for error output)
+ *              LineNumber          - Caller's line number (for error output)
+ *              ComponentId         - Caller's component ID (for error output)
+ *              FunctionName        - Name of Caller's function
+ *              Value               - Value to be printed with exit msg
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Function exit trace.  Prints only if TRACE_FUNCTIONS bit is
+ *              set in DebugLevel.  Prints exit value also.
+ *
+ ****************************************************************************/
+
+void
+FunctionPtrExit (
+    char                    *ModuleName, 
+    INT32                   LineNumber, 
+    INT32                   ComponentId, 
+    char                    *FunctionName,
+    char                    *Ptr)
+{
+
+    DebugPrint (ModuleName, LineNumber, ComponentId, TRACE_FUNCTIONS,
+                " %2.2ld Exiting Function: %s, 0x%p\n", 
+                Gbl_NestingLevel, FunctionName, Ptr);
     Gbl_NestingLevel--;
 }
 
@@ -415,9 +448,8 @@ DebugPrint (
     ...)
 {
     va_list                 args;
-
-
-
+     
+     
     /* Both the level and the component must be enabled */
 
     if ((PrintLevel & DebugLevel) && (ComponentId & DebugLayer))
@@ -425,9 +457,7 @@ DebugPrint (
         va_start (args, Format);
 
         OsdPrintf ("%8s-%04d: ", ModuleName, LineNumber);
-        OsdVprintf (Format, args);
-
-        va_end (args);
+        OsdVprintf (Format, args);  
     }
 }
 
@@ -443,15 +473,14 @@ DebugPrint (
  * RETURN:      None
  *
  * DESCRIPTION: Print the prefix part of an error message, consisting of the
- *              module name, line number, and component ID.
+ *              module name, and line number
  *
  ****************************************************************************/
 
 void
 DebugPrintPrefix (
     char                    *ModuleName, 
-    INT32                   LineNumber, 
-    INT32                   ComponentId)
+    INT32                   LineNumber)
 {
 
 
@@ -485,6 +514,100 @@ DebugPrintRaw (
     OsdVprintf (Format, args);
 
     va_end (args);
+}
+
+
+
+/*****************************************************************************
+ * 
+ * FUNCTION:    CmDumpBuffer
+ *
+ * PARAMETERS:  Buffer              - Buffer to dump
+ *              Count               - Amount to dump, in bytes
+ *              ComponentID         - Caller's component ID
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Generic dump buffer in both hex and ascii.
+ *
+ ****************************************************************************/
+
+void
+CmDumpBuffer (
+    char                    *Buffer, 
+    UINT32                  Count, 
+    INT32                   ComponentId)
+{
+    UINT32                  i = 0;
+    UINT32                  j;
+    UINT8                   BufChar;
+
+
+    /* Only dump the buffer if tracing is enabled */
+
+    if (!((TRACE_TABLES & DebugLevel) && (ComponentId & DebugLayer)))
+    {
+        return;
+    }
+
+
+    /*
+     * Nasty little dump buffer routine!
+     */
+    while (i < Count)
+    {
+        /* Print current offset */
+
+        OsdPrintf ("%05X    ", i);
+
+
+        /* Print 16 hex chars */
+
+        for (j = 0; j < 16; j++)
+        {
+            if (i + j >= Count)
+                goto cleanup;
+
+
+            /* Make sure that the char doesn't get sign-extended! */
+
+            BufChar = Buffer[i + j];
+            OsdPrintf ("%02X ", BufChar);
+        }
+
+        /* 
+         * Print the ASCII equivalent characters
+         * But watch out for the bad unprintable ones...
+         */
+
+        for (j = 0; j < 16; j++)
+        {
+            if (i + j >= Count)
+                goto cleanup;
+
+            BufChar = Buffer[i + j];
+            if ((BufChar > 0x1F && BufChar < 0x2E) ||
+                (BufChar > 0x2F && BufChar < 0x61) ||
+                (BufChar > 0x60 && BufChar < 0x7F))
+
+                OsdPrintf ("%c", BufChar);
+            else
+                OsdPrintf (".");
+                
+        }
+
+        /* Done with that line. */
+
+        OsdPrintf ("\n");
+        i += 16;
+    }
+
+    return;
+
+cleanup:
+    OsdPrintf ("\n");
+    return;
+
 }
 
 
