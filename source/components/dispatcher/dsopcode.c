@@ -2,7 +2,7 @@
  *
  * Module Name: dsopcode - Dispatcher Op Region support and handling of
  *                         "control" opcodes
- *              $Revision: 1.18 $
+ *              $Revision: 1.19 $
  *
  *****************************************************************************/
 
@@ -239,7 +239,7 @@ AcpiDsGetFieldUnitArguments (
     AcpiPsDeleteParseTree (Op);
 
 
-    /* 
+    /*
      * The pseudo-method object is no longer needed since the region is
      * now initialized
      */
@@ -364,7 +364,7 @@ AcpiDsGetRegionArguments (
     AcpiPsDeleteParseTree (Op);
 
 
-    /* 
+    /*
      * The pseudo-method object is no longer needed since the field is
      * now initialized
      */
@@ -500,7 +500,7 @@ AcpiDsEvalFieldUnitOperands (
         goto Cleanup;
     }
 
- 
+
     Offset = OffDesc->Number.Value;
 
 
@@ -592,7 +592,6 @@ AcpiDsEvalFieldUnitOperands (
     }
 
 
-
     /*
      * Setup field according to the object type
      */
@@ -666,9 +665,6 @@ AcpiDsEvalFieldUnitOperands (
         CntDesc = NULL;
     }
 
-    
-
-
 
 Cleanup:
 
@@ -698,7 +694,6 @@ Cleanup:
 
     return_ACPI_STATUS (Status);
 }
-
 
 
 /*****************************************************************************

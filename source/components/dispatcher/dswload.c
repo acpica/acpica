@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dswload - Dispatcher namespace load callbacks
- *              $Revision: 1.20 $
+ *              $Revision: 1.22 $
  *
  *****************************************************************************/
 
@@ -659,8 +659,6 @@ AcpiDsLoad2EndOp (
         }
 
 
-
-
         break;
 
 
@@ -921,77 +919,4 @@ Cleanup:
     return (Status);
 }
 
-
-
-
-
-
-/*****************************************************************************
- *
- * FUNCTION:    AcpiDsLoad3BeginOp
- *
- * PARAMETERS:  WalkState       - Current state of the parse tree walk
- *              Op              - Op that has been just been reached in the
- *                                walk;  Arguments have not been evaluated yet.
- *
- * RETURN:      Status
- *
- * DESCRIPTION: Descending callback used during the loading of ACPI tables.
- *
- ****************************************************************************/
-
-ACPI_STATUS
-AcpiDsLoad3BeginOp (
-    UINT16                  Opcode,
-    ACPI_PARSE_OBJECT       *Op,
-    ACPI_WALK_STATE         *WalkState,
-    ACPI_PARSE_OBJECT       **OutOp)
-{
-
-
-    *OutOp = Op;
-    return AE_OK;
-}
-
-
-/*****************************************************************************
- *
- * FUNCTION:    AcpiDsLoad3EndOp
- *
- * PARAMETERS:  WalkState       - Current state of the parse tree walk
- *              Op              - Op that has been just been completed in the
- *                                walk;  Arguments have now been evaluated.
- *
- * RETURN:      Status
- *
- * DESCRIPTION: Ascending callback used during the loading of the namespace,
- *              both control methods and everything else.
- *
- ****************************************************************************/
-
-ACPI_STATUS
-AcpiDsLoad3EndOp (
-    ACPI_WALK_STATE         *WalkState,
-    ACPI_PARSE_OBJECT       *Op)
-{
-
-
-
-    switch (Op->Opcode)
-    {
-
-    case AML_CREATE_FIELD_OP:
-    case AML_BIT_FIELD_OP:
-    case AML_BYTE_FIELD_OP:
-    case AML_WORD_FIELD_OP:
-    case AML_DWORD_FIELD_OP:
-
-        DEBUG_PRINT (TRACE_DISPATCH,
-            ("LOADING-CreateXxxField: State=%p Op=%p\n",
-            WalkState, Op));
-
-    }
-
-    return AE_OK;
-}
 

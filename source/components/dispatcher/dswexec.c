@@ -2,7 +2,7 @@
  *
  * Module Name: dswexec - Dispatcher method execution callbacks;
  *                        dispatch to interpreter.
- *              $Revision: 1.43 $
+ *              $Revision: 1.44 $
  *
  *****************************************************************************/
 
@@ -548,15 +548,15 @@ AcpiDsExecEndOp (
             break;
         }
 
-        /* 
+        /*
          * Tell the walk loop to preempt this running method and
-         * execute the new method 
+         * execute the new method
          */
         Status = AE_CTRL_TRANSFER;
 
-        /* 
+        /*
          * Return now; we don't want to disturb anything,
-         * especially the operand count! 
+         * especially the operand count!
          */
         return_ACPI_STATUS (Status);
         break;

@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dsobject - Dispatcher object management routines
- *              $Revision: 1.44 $
+ *              $Revision: 1.45 $
  *
  *****************************************************************************/
 
@@ -285,7 +285,7 @@ AcpiDsInitializeObjects (
     }
 
     DEBUG_PRINT_RAW (ACPI_OK,
-        ("\n%d Control Methods found and parsed (%d nodes total)\n", 
+        ("\n%d Control Methods found and parsed (%d nodes total)\n",
         Info.MethodCount, Info.ObjectCount));
     DEBUG_PRINT (TRACE_DISPATCH,
         ("DsInitializeObjects: %d Control Methods found\n", Info.MethodCount));
