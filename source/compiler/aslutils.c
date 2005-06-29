@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslutils -- compiler utilities
- *              $Revision: 1.48 $
+ *              $Revision: 1.52 $
  *
  *****************************************************************************/
 
@@ -130,6 +130,14 @@ static const char * const       *yytname = &AslCompilername[255];
 #else
 extern const char * const       yytname[];
 #endif
+
+
+void
+AslOptimizeNamepath (
+    char                *Buffer)
+{
+    printf ("NamePath: %s\n", Buffer);
+}
 
 
 /*******************************************************************************
@@ -444,7 +452,7 @@ UtGetOpName (
     UINT32                  ParseOpcode)
 {
 
-    /* 
+    /*
      * First entries (ASL_YYTNAME_START) in yytname are special reserved names.
      * Ignore first 8 characters of the name
      */
@@ -480,7 +488,7 @@ UtDisplaySummary (
     /* Input/Output summary */
 
     FlPrintFile (FileId,
-        "ASL Input: %s - %d lines, %d bytes, %d keywords\n",
+        "ASL Input:  %s - %d lines, %d bytes, %d keywords\n",
         Gbl_Files[ASL_FILE_INPUT].Filename, Gbl_CurrentLineNumber,
         Gbl_InputByteCount, TotalKeywords);
 
@@ -497,8 +505,11 @@ UtDisplaySummary (
     /* Error summary */
 
     FlPrintFile (FileId,
-        "Compilation complete. %d Errors %d Warnings\n",
-        Gbl_ExceptionCount[ASL_ERROR], Gbl_ExceptionCount[ASL_WARNING]);
+        "Compilation complete. %d Errors, %d Warnings, %d Remarks, %d Optimizations\n",
+        Gbl_ExceptionCount[ASL_ERROR], 
+        Gbl_ExceptionCount[ASL_WARNING],
+        Gbl_ExceptionCount[ASL_REMARK],
+        Gbl_ExceptionCount[ASL_OPTIMIZATION]);
 }
 
 
@@ -534,18 +545,19 @@ UtCheckIntegerRange (
     if (Op->Asl.Value.Integer < LowValue)
     {
         ParseError = "Value below valid range";
+        Op->Asl.Value.Integer = LowValue;
     }
 
     if (Op->Asl.Value.Integer > HighValue)
     {
         ParseError = "Value above valid range";
+        Op->Asl.Value.Integer = HighValue;
     }
 
     if (ParseError)
     {
         sprintf (Buffer, "%s 0x%X-0x%X", ParseError, LowValue, HighValue);
         AslCompilererror (Buffer);
-        TrReleaseNode (Op);
 
         return NULL;
     }
@@ -693,7 +705,6 @@ UtDoConstant (
     ACPI_STATUS             Status;
     ACPI_INTEGER            Converted;
     char                    ErrBuf[64];
-
 
 
     Status = UtStrtoul64 (String, 0, &Converted);
