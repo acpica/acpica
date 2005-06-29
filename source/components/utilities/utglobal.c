@@ -139,7 +139,7 @@
  * are already set when the debugger is entered.
  */
 
-    /* Debug switch - level and trace mask */
+/* Debug switch - level and trace mask */
 
 #ifdef ACPI_DEBUG
 UINT32                      DebugLevel = DEBUG_DEFAULT;
@@ -147,11 +147,16 @@ UINT32                      DebugLevel = DEBUG_DEFAULT;
 UINT32                      DebugLevel = NORMAL_DEFAULT;
 #endif
 
-    /* Debug switch - layer (component) mask */
+/* Debug switch - layer (component) mask */
 
 UINT32                      DebugLayer = ALL_COMPONENTS;
 UINT32                      Gbl_NestingLevel = 0;
 
+
+/* Debugger globals */
+
+BOOLEAN                     Gbl_DbTerminateThreads = FALSE;
+BOOLEAN                     Gbl_MethodExecuting = FALSE;
 
 /* System flags */
 
