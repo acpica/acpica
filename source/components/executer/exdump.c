@@ -117,9 +117,9 @@
 #define __ISDUMP_C__
 
 #include <acpi.h>
-#include <interpreter.h>
+#include <interp.h>
 #include <amlcode.h>
-#include <namespace.h>
+#include <namesp.h>
 #include <tables.h>
 #include <acpiosd.h>
 

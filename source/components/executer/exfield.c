@@ -118,9 +118,9 @@
 
 #include <acpi.h>
 #include <parser.h>
-#include <interpreter.h>
+#include <interp.h>
 #include <amlcode.h>
-#include <namespace.h>
+#include <namesp.h>
 #include <hardware.h>
 #include <events.h>
 
@@ -167,7 +167,6 @@ AmlSetupField (
     ACPI_OBJECT_INTERNAL    *RgnDesc, 
     INT32                   FieldBitWidth)
 {
-    ACPI_OBJECT_INTERNAL    *ObjValDesc = NULL;
     ACPI_STATUS             Status = AE_OK;
     INT32                   FieldByteWidth;
 

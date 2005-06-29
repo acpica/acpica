@@ -117,10 +117,12 @@
 #define __IEVALUE_C__
 
 #include <acpi.h>
-#include <interpreter.h>
 #include <amlcode.h>
-#include <namespace.h>
+#include <parser.h>
+#include <interp.h>
+#include <namesp.h>
 #include <tables.h>
+#include <events.h>
 
 
 #define _COMPONENT          INTERPRETER
@@ -311,14 +313,12 @@ AmlGetRvalueFromObject (
 
             MvIndex = Opcode - AML_Local0;
 
-            DEBUG_PRINT (ACPI_INFO,
-                            ("AmlGetRvalueFromObject: [Local%d] before AmlMthStackGetValue %p %p %08lx \n",
+            DEBUG_PRINT (ACPI_INFO, ("AmlGetRvalueFromObject: [Local%d] before PsxMthStackGetValue %p %p %08lx \n",
                             MvIndex, StackPtr, StackDesc, *(UINT32 *) StackDesc));
 
-            Status = AmlMthStackGetValue (MTH_TYPE_LOCAL, MvIndex, StackDesc);
+            Status = PsxMthStackGetValue (MTH_TYPE_LOCAL, MvIndex, StackDesc);
 
-            DEBUG_PRINT (ACPI_INFO,
-                        ("AmlGetRvalueFromObject: [Local%d] after MSGV Status=%s %p %p %08lx \n",
+            DEBUG_PRINT (ACPI_INFO, ("AmlGetRvalueFromObject: [Local%d] after MSGV Status=%s %p %p %08lx \n",
                             MvIndex, Gbl_ExceptionNames[Status], StackPtr, StackDesc,
                             *(UINT32 *) StackDesc));
         
@@ -338,14 +338,12 @@ AmlGetRvalueFromObject (
 
             MvIndex = Opcode - AML_Arg0;
 
-            DEBUG_PRINT (TRACE_EXEC,
-                            ("AmlGetRvalueFromObject: [Arg%d] before AmlMthStackGetValue %p %p %08lx \n",
+            DEBUG_PRINT (TRACE_EXEC, ("AmlGetRvalueFromObject: [Arg%d] before PsxMthStackGetValue %p %p %08lx \n",
                             MvIndex, StackPtr, StackDesc, *(UINT32 *) StackDesc));
 
-            Status = AmlMthStackGetValue (MTH_TYPE_ARG, MvIndex, StackDesc);
+            Status = PsxMthStackGetValue (MTH_TYPE_ARG, MvIndex, StackDesc);
     
-            DEBUG_PRINT (TRACE_EXEC,
-                            ("AmlGetRvalueFromObject: [Arg%d] MSGV returned %s %p %p %08lx \n",
+            DEBUG_PRINT (TRACE_EXEC, ("AmlGetRvalueFromObject: [Arg%d] MSGV returned %s %p %p %08lx \n",
                             MvIndex, Gbl_ExceptionNames[Status], StackPtr, StackDesc,
                             *(UINT32 *) StackDesc));
 
@@ -533,7 +531,7 @@ AmlGetRvalueFromEntry (
     ValDesc     = NsGetAttachedObject ((ACPI_HANDLE) StackEntry);
     EntryType   = NsGetType ((ACPI_HANDLE) StackEntry);
 
-    DEBUG_PRINT (TRACE_EXEC, ("AmlGetRvalueFromEntry: Entry=%p ValDesc=%p Type=%d\n", 
+    DEBUG_PRINT (TRACE_EXEC, ("AmlGetRvalueFromEntry: Entry=%p ValDesc=%p Type=%X\n", 
                     StackEntry, ValDesc, EntryType));
 
 
@@ -548,6 +546,9 @@ AmlGetRvalueFromEntry (
         AttachedAmlPointer = TRUE;
         AmlOpcode = *((UINT8 *) ValDesc);
         AmlPointer = ((UINT8 *) ValDesc) + 1;
+
+        DEBUG_PRINT (TRACE_EXEC, ("AmlGetRvalueFromEntry: Unparsed AML: %p Len=%X\n", 
+                        AmlOpcode, AmlPointer));
     }
 
 
@@ -570,8 +571,10 @@ AmlGetRvalueFromEntry (
             return_ACPI_STATUS (AE_AML_ERROR);
         }
 
+
         if (AttachedAmlPointer)
         {
+#if defined  _RPARSER
             if (AML_PackageOp == AmlOpcode)
             {
                 /* 
@@ -580,7 +583,7 @@ AmlGetRvalueFromEntry (
                  * Convert it to an object.
                  */
 
-                if (AE_OK != (Status = AmlObjStackPush ()))             /* ObjStack */
+                if (AE_OK != (Status = PsxObjStackPush ()))             /* ObjStack */
                 {
                     return_ACPI_STATUS (Status);
                 }
@@ -589,18 +592,18 @@ AmlGetRvalueFromEntry (
                     AE_OK == (Status = AmlDoPkg (ACPI_TYPE_Package, IMODE_Execute)) &&
                     AE_OK == (Status = AmlPkgPopExec ()))                           /* PkgStack */
                 {
-                    NsAttachObject ((ACPI_HANDLE) StackEntry, AmlObjStackGetValue (0),
+                    NsAttachObject ((ACPI_HANDLE) StackEntry, PsxObjStackGetValue (0),
                                     (UINT8) ACPI_TYPE_Package);
 
                     /* Refresh local value pointer to reflect newly set value */
                 
                     ValDesc = NsGetAttachedObject ((ACPI_HANDLE) StackEntry);
-                    AmlObjStackPop (1);
+                    PsxObjStackPop (1);
                 }
             
                 else
                 {
-                    AmlObjStackPop (1);
+                    PsxObjStackPop (1);
                     return_ACPI_STATUS (Status);
                 }
             }
@@ -613,8 +616,11 @@ AmlGetRvalueFromEntry (
                                 AmlOpcode));
                 return_ACPI_STATUS (AE_AML_ERROR);
             }
+#else
+            DEBUG_PRINT (ACPI_ERROR, ("AmlGetRvalueFromEntry: Unparsed Packages not supported!\n"));
+            return_ACPI_STATUS (AE_NOT_IMPLEMENTED);
+#endif
         }
-
         
         /* ValDesc is an internal object in all cases by the time we get here */
 
@@ -652,8 +658,11 @@ AmlGetRvalueFromEntry (
             return_ACPI_STATUS (AE_AML_ERROR);
         }
 
-        if (AttachedAmlPointer)
+
+
+       if (AttachedAmlPointer)
         {
+#if defined _RPARSER
             if (AML_BufferOp == AmlOpcode)
             {
                 /* 
@@ -661,7 +670,7 @@ AmlGetRvalueFromEntry (
                  * points to a buffer definition in the AML stream.
                  * Convert it to an object.
                  */
-                if (AE_OK != (Status = AmlObjStackPush ()))                /* ObjStack */
+                if (AE_OK != (Status = PsxObjStackPush ()))                /* ObjStack */
                 {
                     return_ACPI_STATUS (Status);
                 }
@@ -670,18 +679,18 @@ AmlGetRvalueFromEntry (
                     AE_OK == (Status = AmlDoPkg (ACPI_TYPE_Buffer, IMODE_Execute)) &&
                     AE_OK == (Status = AmlPkgPopExec ()))                           /* PkgStack */
                 {
-                    NsAttachObject ((ACPI_HANDLE) StackEntry, AmlObjStackGetValue (0),
+                    NsAttachObject ((ACPI_HANDLE) StackEntry, PsxObjStackGetValue (0),
                                     (UINT8) ACPI_TYPE_Buffer);
                 
                     /* Refresh local value pointer to reflect newly set value */
                 
                     ValDesc = NsGetAttachedObject ((ACPI_HANDLE) StackEntry);
-                    AmlObjStackPop (1);
+                    PsxObjStackPop (1);
                 }
             
                 else
                 {
-                    AmlObjStackPop (1);
+                    PsxObjStackPop (1);
                     return_ACPI_STATUS (Status);
                 }
             }
@@ -694,9 +703,14 @@ AmlGetRvalueFromEntry (
                                 AmlOpcode));
                 return_ACPI_STATUS (AE_AML_ERROR);
             }
+#else
+            DEBUG_PRINT (ACPI_ERROR, ("AmlGetRvalueFromEntry: Unparsed Buffers not supported!\n"));
+            return_ACPI_STATUS (AE_NOT_IMPLEMENTED);
+#endif
         }
 
-        
+
+
         /* ValDesc is an internal object in all cases by the time we get here */
 
         if (!ValDesc || (ACPI_TYPE_Buffer != ValDesc->Common.Type))
@@ -902,18 +916,19 @@ AmlGetRvalueFromEntry (
 
     case INTERNAL_TYPE_DefField:
 
-        /* 
+        /*
+         * TBD: Convert to generic buffer
+         *
          * XXX - Implementation limitation: Fields are implemented as type
          * XXX - Number, but they really are supposed to be type Buffer.
          * XXX - The two are interchangeable only for lengths <= 32 bits.
          */
-        Status = AmlGetNamedFieldValue ((ACPI_HANDLE) StackEntry, &TempVal);
+        Status = AmlGetNamedFieldValue ((ACPI_HANDLE) StackEntry, &TempVal, sizeof (TempVal));
         if (AE_OK != Status)
         {
             return_ACPI_STATUS (AE_AML_ERROR);
         }
 
-BREAKPOINT3;
         ObjDesc = CmCreateInternalObject (ACPI_TYPE_Number);
         if (!ObjDesc)
         {   
@@ -921,6 +936,10 @@ BREAKPOINT3;
             
             return_ACPI_STATUS (AE_NO_MEMORY);
         }
+
+
+        DEBUG_PRINT (TRACE_EXEC, ("AmlGetRvalueFromEntry: at DefField Entry=%p ValDesc=%p Type=%X\n", 
+                        StackEntry, ValDesc, EntryType));
 
         ObjDesc->Number.Value = TempVal;
         break;
@@ -960,7 +979,7 @@ BREAKPOINT3;
             /* perform the update */
         
             Status = AmlSetNamedFieldValue (ValDesc->BankField.BankSelect,
-                                            ValDesc->BankField.Value);
+                                            &ValDesc->BankField.Value, sizeof (ValDesc->BankField.Value));
         }
         AmlReleaseGlobalLock (Locked);
 
@@ -972,7 +991,7 @@ BREAKPOINT3;
         
         /* Read Data value */
         
-        Status = AmlGetNamedFieldValue ((ACPI_HANDLE) ValDesc->BankField.Container, &TempVal);
+        Status = AmlGetNamedFieldValue ((ACPI_HANDLE) ValDesc->BankField.Container, &TempVal, sizeof (TempVal));
         if (AE_OK != Status)
         {
             return_ACPI_STATUS (AE_AML_ERROR);
@@ -1021,9 +1040,9 @@ BREAKPOINT3;
         Locked = AmlAcquireGlobalLock (ObjDesc->FieldUnit.LockRule);
         {
             /* Perform the update */
-            
+          
             Status = AmlSetNamedFieldValue (ValDesc->IndexField.Index,
-                                            ValDesc->IndexField.Value);
+                                            &ValDesc->IndexField.Value, sizeof (ValDesc->IndexField.Value));
         }
         AmlReleaseGlobalLock (Locked);
 
@@ -1034,7 +1053,7 @@ BREAKPOINT3;
 
         /* Read Data value */
         
-        Status = AmlGetNamedFieldValue (ValDesc->IndexField.Data, &TempVal);
+        Status = AmlGetNamedFieldValue (ValDesc->IndexField.Data, &TempVal, sizeof (TempVal));
         if (AE_OK != Status)
         {
             return_ACPI_STATUS (AE_AML_ERROR);
@@ -1094,9 +1113,28 @@ BREAKPOINT3;
         break;
 
 
-    /* Cases which just return the name as the rvalue */
+
+    /* 
+     * Cases which just return the name as the rvalue
+     * 
+     * TBD: The first group used to be in the unimplemented list, but
+     * perhaps it makes more sense to just return the name in these cases
+     */
     
+    case ACPI_TYPE_Mutex:
+    case ACPI_TYPE_Method:
+    case ACPI_TYPE_Power:
+    case ACPI_TYPE_Processor:
+    case ACPI_TYPE_Thermal:
+    case ACPI_TYPE_Event:
+    case ACPI_TYPE_Region: 
+
     case ACPI_TYPE_Device:
+
+    /* Method locals and arguments have a pseudo-NTE, just return it */
+
+    case INTERNAL_TYPE_MethodArgument:
+    case INTERNAL_TYPE_MethodLocalVar:
 
         return_ACPI_STATUS (AE_OK);
         break;
@@ -1104,14 +1142,6 @@ BREAKPOINT3;
 
 
     /* TBD: Unimplemented cases */
-
-    case ACPI_TYPE_Method:        /* XXX - unimplemented, handled elsewhere */
-    case ACPI_TYPE_Power:         /* XXX - unimplemented, may not be needed */
-    case ACPI_TYPE_Processor:     /* XXX - unimplemented, may not be needed */
-    case ACPI_TYPE_Thermal:       /* XXX - unimplemented, may not be needed */
-    case ACPI_TYPE_Event:         /* XXX - unimplemented, may not be needed */
-    case ACPI_TYPE_Mutex:         /* XXX - unimplemented, may not be needed */
-    case ACPI_TYPE_Region:        /* XXX - unimplemented, may not be needed */
 
     case ACPI_TYPE_Any:
 
@@ -1164,7 +1194,7 @@ ACPI_STATUS
 AmlGetRvalue (
     ACPI_OBJECT_INTERNAL    **StackPtr)
 {
-    ACPI_STATUS             Status;
+    ACPI_STATUS             Status = AE_OK;
 
 
     FUNCTION_TRACE_PTR ("AmlGetRvalue", StackPtr);
@@ -1177,7 +1207,6 @@ AmlGetRvalue (
     }
 
 
-BREAKPOINT3;
     /* 
      * The entity pointed to by the StackPtr can be either
      * 1) A valid ACPI_OBJECT_INTERNAL, or
@@ -1199,8 +1228,6 @@ BREAKPOINT3;
     {
         Status = AmlGetRvalueFromEntry ((NAME_TABLE_ENTRY **) StackPtr);
     }
-
-
 
 
     return_ACPI_STATUS (Status);

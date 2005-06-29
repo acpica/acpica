@@ -117,9 +117,9 @@
 #define __IEREGION_C__
 
 #include <acpi.h>
-#include <interpreter.h>
+#include <interp.h>
 #include <amlcode.h>
-#include <namespace.h>
+#include <namesp.h>
 #include <hardware.h>
 #include <events.h>
 
@@ -294,15 +294,15 @@ AmlSystemIoSpaceHandler (
         /* I/O Port width */
 
         case 8:
-            *Value = (UINT32) OsdIn8 ((UINT16) Address);
+            *Value = (UINT32) OsdIn8 (Address);
             break;
 
         case 16:
-            *Value = (UINT32) OsdIn16 ((UINT16) Address);
+            *Value = (UINT32) OsdIn16 (Address);
             break;
 
         case 32:
-            *Value = OsdIn32 ((UINT16) Address);
+            *Value = OsdIn32 (Address);
             break;
 
         default:
@@ -323,15 +323,15 @@ AmlSystemIoSpaceHandler (
         {
         /* I/O Port width */
         case 8:
-            OsdOut8 ((UINT16) Address, (UINT8) *Value);
+            OsdOut8 (Address, (UINT8) *Value);
             break;
 
         case 16:
-            OsdOut16 ((UINT16) Address, (UINT16) *Value);
+            OsdOut16 (Address, (UINT16) *Value);
             break;
 
         case 32:
-            OsdOut32 ((UINT16) Address, *Value);
+            OsdOut32 (Address, *Value);
             break;
 
         default:
@@ -490,107 +490,4 @@ AmlPciConfigSpaceHandler (
     return_ACPI_STATUS (Status);
 }
 
-
-/*****************************************************************************
- * 
- * FUNCTION:    AmlEmbeddedControllerSpaceHandler
- *
- * PARAMETERS:  Function            - Read or Write operation
- *              Address             - Where in the space to read or write
- *              BitWidth            - Field width in bits (8, 16, or 32)
- *              Value               - Pointer to in or out value
- *              Context             - Context pointer
- *
- * RETURN:      Status
- *
- * DESCRIPTION: Handler for the Embedded Controller (EC) address space (Op Region)
- *
- ****************************************************************************/
-
-ACPI_STATUS
-AmlEmbeddedControllerSpaceHandler (
-    UINT32                  Function,
-    UINT32                  Address,
-    UINT32                  BitWidth,
-    UINT32                  *Value,
-    void                    *Context)
-{
-    ACPI_STATUS             Status = AE_OK;
-
-
-    FUNCTION_TRACE ("AmlEmbeddedControllerSpaceHandler");
-
-    DEBUG_PRINT (ACPI_ERROR, ("AmlEmbeddedControllerSpaceHandler: **** EC OpRegion not implemented\n"));
-    return_ACPI_STATUS (AE_NOT_IMPLEMENTED);
-
-
-    /* Decode the function parameter */
-
-    switch (Function)
-    {
-    case ADDRESS_SPACE_READ:
-        break;
-
-    case ADDRESS_SPACE_WRITE:
-        break;
-
-    default:
-        Status = AE_BAD_PARAMETER;
-        break;
-    }
-
-    return_ACPI_STATUS (Status);
-}
-
-
-/*****************************************************************************
- * 
- * FUNCTION:    AmlSmBusSpaceHandler
- *
- * PARAMETERS:  Function            - Read or Write operation
- *              Address             - Where in the space to read or write
- *              BitWidth            - Field width in bits (8, 16, or 32)
- *              Value               - Pointer to in or out value
- *              Context             - Context pointer
- *
- * RETURN:      Status
- *
- * DESCRIPTION: Handler for the SM Bus address space (Op Region)
- *
- ****************************************************************************/
-
-ACPI_STATUS
-AmlSmBusSpaceHandler (
-    UINT32                  Function,
-    UINT32                  Address,
-    UINT32                  BitWidth,
-    UINT32                  *Value,
-    void                    *Context)
-{
-    ACPI_STATUS             Status = AE_OK;
-
-
-    FUNCTION_TRACE ("AmlSmBusSpaceHandler");
-
-    DEBUG_PRINT (ACPI_ERROR, ("AmlSmBusSpaceHandler: **** SmBus OpRegion not implemented\n"));
-    return_ACPI_STATUS (AE_NOT_IMPLEMENTED);
-
-
-    /* Decode the function parameter */
-
-    switch (Function)
-    {
-    case ADDRESS_SPACE_READ:
-        break;
-
-    case ADDRESS_SPACE_WRITE:
-        break;
-
-    default:
-        Status = AE_BAD_PARAMETER;
-        break;
-    }
-
-    return_ACPI_STATUS (Status);
-}
 
