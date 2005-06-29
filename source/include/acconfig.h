@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acconfig.h - Global configuration constants
- *       $Revision: 1.61 $
+ *       $Revision: 1.62 $
  *
  *****************************************************************************/
 
@@ -243,7 +243,6 @@
 
 #define ACPI_MAX_ADDRESS_SPACE      255
 #define ACPI_NUM_ADDRESS_SPACES     256
-
 
 
 #endif /* _ACCONFIG_H */
