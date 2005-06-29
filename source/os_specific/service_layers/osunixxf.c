@@ -888,7 +888,7 @@ AcpiOsWriteMemory (
 UINT32
 AcpiOsGetThreadId(void)
 {
-	return 0;
+	return getpid();
 }
 
 
