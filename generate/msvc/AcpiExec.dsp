@@ -423,14 +423,12 @@ SOURCE=..\..\Subsystem\Events\evregion.c
 SOURCE=..\..\Subsystem\Events\evsci.c
 # End Source File
 # End Group
-# Begin Source File
+# Begin Group "AcpiExec"
 
-SOURCE=..\..\Tools\AcpiExec\aecmds.c
-# End Source File
+# PROP Default_Filter ""
 # Begin Source File
 
 SOURCE=..\..\Tools\AcpiExec\aeexec.c
-# ADD CPP /FR
 # End Source File
 # Begin Source File
 
@@ -460,19 +458,6 @@ SOURCE=..\..\Tools\AcpiExec\aeosd.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\Tools\AcpiExec\aeoutput.c
-
-!IF  "$(CFG)" == "AcpiExec - Win32 Release"
-
-!ELSEIF  "$(CFG)" == "AcpiExec - Win32 Debug"
-
-# ADD CPP /FR
-
-!ENDIF 
-
-# End Source File
-# Begin Source File
-
 SOURCE=..\..\Tools\AcpiExec\getopt.c
 
 !IF  "$(CFG)" == "AcpiExec - Win32 Release"
@@ -484,6 +469,27 @@ SOURCE=..\..\Tools\AcpiExec\getopt.c
 !ENDIF 
 
 # End Source File
+# End Group
+# Begin Group "Debugger"
+
+# PROP Default_Filter ".c"
+# Begin Source File
+
+SOURCE=..\..\Subsystem\Debugger\dbcmds.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\Subsystem\Debugger\dbdisasm.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\Subsystem\Debugger\dbfileio.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\Subsystem\Debugger\dbinput.c
+# End Source File
+# End Group
 # End Group
 # Begin Group "Header Files"
 
