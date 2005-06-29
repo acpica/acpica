@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslanalyze.c - check for semantic errors
- *              $Revision: 1.38 $
+ *              $Revision: 1.39 $
  *
  *****************************************************************************/
 
@@ -1168,10 +1168,10 @@ AnSemanticAnalysisWalkEnd (
     case OPTYPE_DYADIC2:
     case OPTYPE_DYADIC2R:
     case OPTYPE_DYADIC2S:
-    case OPTYPE_INDEX:
-    case OPTYPE_MATCH:
+    case OPTYPE_TRIADIC:
+    case OPTYPE_QUADRADIC:
+    case OPTYPE_HEXADIC:
     case OPTYPE_CREATE_FIELD:
-    case OPTYPE_FATAL:
     case OPTYPE_RECONFIGURATION:
     case OPTYPE_CONTROL:
     case OPTYPE_RETURN:
