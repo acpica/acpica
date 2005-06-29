@@ -276,7 +276,8 @@ ACPI_STATUS
 AcpiInstallAddressSpaceHandler (
     ACPI_HANDLE             Device, 
     ACPI_ADDRESS_SPACE_TYPE SpaceId, 
-    ADDRESS_SPACE_HANDLER   Handler, 
+    ADDRESS_SPACE_HANDLER   Handler,
+    REGION_SETUP_FUNCTION   RegInit,
     void                    *Context);
 
 ACPI_STATUS
