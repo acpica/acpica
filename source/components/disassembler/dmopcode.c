@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dbdisasm - parser op tree display routines
- *              $Revision: 1.26 $
+ *              $Revision: 1.27 $
  *
  *****************************************************************************/
 
@@ -151,7 +151,7 @@ NATIVE_CHAR                 *INDENT_STRING = "....";
 
 UINT32
 AcpiDbBlockType (
-    ACPI_GENERIC_OP *Op)
+    ACPI_PARSE_OBJECT *Op)
 {
 
     switch (Op->Opcode)
@@ -187,9 +187,9 @@ AcpiDbBlockType (
 
 ACPI_STATUS
 AcpiPsDisplayObjectPathname (
-    ACPI_GENERIC_OP         *Op)
+    ACPI_PARSE_OBJECT       *Op)
 {
-    ACPI_GENERIC_OP         *TargetOp;
+    ACPI_PARSE_OBJECT       *TargetOp;
 
 
     AcpiOsPrintf ("  (Path ");
@@ -224,20 +224,20 @@ AcpiPsDisplayObjectPathname (
 
 ACPI_STATUS
 AcpiPsDisplayObjectPathname (
-    ACPI_GENERIC_OP         *Op)
+    ACPI_PARSE_OBJECT       *Op)
 {
     ACPI_STATUS             Status;
-    ACPI_NAMED_OBJECT       *NameDesc;
+    ACPI_NAMESPACE_NODE     *Node;
     NATIVE_CHAR             Buffer[MAX_SHOW_ENTRY];
     UINT32                  BufferSize = MAX_SHOW_ENTRY;
 
 
     AcpiOsPrintf ("  (Path ");
 
-    /* Just get the NamedObject out of the Op object */
+    /* Just get the Node out of the Op object */
 
-    NameDesc = Op->AcpiNamedObject;
-    if (!NameDesc)
+    Node = Op->Node;
+    if (!Node)
     {
         /*
          * No Named obj,  so we can't get the pathname since the object
@@ -249,7 +249,7 @@ AcpiPsDisplayObjectPathname (
 
     /* Convert NamedDesc/handle to a full pathname */
 
-    Status = AcpiNsHandleToPathname (NameDesc, &BufferSize, Buffer);
+    Status = AcpiNsHandleToPathname (Node, &BufferSize, Buffer);
     if (ACPI_FAILURE (Status))
     {
         AcpiOsPrintf ("****Could not get pathname****)");
@@ -280,12 +280,12 @@ AcpiPsDisplayObjectPathname (
 
 void
 AcpiDbDisplayOp (
-    ACPI_GENERIC_OP         *Origin,
+    ACPI_PARSE_OBJECT       *Origin,
     UINT32                  NumOpcodes)
 {
-    ACPI_GENERIC_OP         *Op = Origin;
-    ACPI_GENERIC_OP         *arg;
-    ACPI_GENERIC_OP         *depth;
+    ACPI_PARSE_OBJECT       *Op = Origin;
+    ACPI_PARSE_OBJECT       *arg;
+    ACPI_PARSE_OBJECT       *depth;
     UINT32                  DepthCount = 0;
     UINT32                  LastDepth = 0;
     UINT32                  i;
@@ -507,18 +507,18 @@ AcpiDbDisplayNamestring (
 
 void
 AcpiDbDisplayPath (
-    ACPI_GENERIC_OP         *Op)
+    ACPI_PARSE_OBJECT       *Op)
 {
-    ACPI_GENERIC_OP         *Prev;
-    ACPI_GENERIC_OP         *Search;
+    ACPI_PARSE_OBJECT       *Prev;
+    ACPI_PARSE_OBJECT       *Search;
     UINT32                  Name;
     BOOLEAN                 DoDot = FALSE;
-    ACPI_GENERIC_OP         *NamePath;
+    ACPI_PARSE_OBJECT       *NamePath;
 
 
     /* We are only interested in named objects */
 
-    if (!AcpiPsIsNamedObjectOp (Op->Opcode))
+    if (!AcpiPsIsNodeOp (Op->Opcode))
     {
         return;
     }
@@ -546,7 +546,7 @@ AcpiDbDisplayPath (
         }
     }
 
-    Prev = NULL;            /* Start with root object */
+    Prev = NULL;            /* Start with Root Node */
 
     while (Prev != Op)
     {
@@ -625,12 +625,12 @@ AcpiDbDisplayPath (
 
 void
 AcpiDbDisplayOpcode (
-    ACPI_GENERIC_OP         *Op)
+    ACPI_PARSE_OBJECT       *Op)
 {
     UINT8                   *ByteData;
     UINT32                  ByteCount;
     UINT32                  i;
-    ACPI_OP_INFO            *Opc = NULL;
+    ACPI_OPCODE_INFO        *Opc = NULL;
     UINT32                  Name;
 
 
@@ -756,7 +756,7 @@ AcpiDbDisplayOpcode (
             AcpiOsPrintf ("0x%2.2X", Op->Value.Integer);
 
             ByteCount = Op->Value.Integer;
-            ByteData = ((ACPI_EXTENDED_OP *) Op)->Data;
+            ByteData = ((ACPI_PARSE2_OBJECT *) Op)->Data;
 
             for (i = 0; i < ByteCount; i++)
             {

@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dbinput - user front-end to the AML debugger
- *              $Revision: 1.45 $
+ *              $Revision: 1.46 $
  *
  *****************************************************************************/
 
@@ -543,7 +543,7 @@ ACPI_STATUS
 AcpiDbCommandDispatch (
     NATIVE_CHAR             *InputBuffer,
     ACPI_WALK_STATE         *WalkState,
-    ACPI_GENERIC_OP         *Op)
+    ACPI_PARSE_OBJECT       *Op)
 {
     UINT32                  Temp;
     UINT32                  CommandIndex;
@@ -915,7 +915,7 @@ AcpiDbSingleThread (
 ACPI_STATUS
 AcpiDbUserCommands (
     NATIVE_CHAR             Prompt,
-    ACPI_GENERIC_OP         *Op)
+    ACPI_PARSE_OBJECT       *Op)
 {
     ACPI_STATUS             Status = AE_OK;
 

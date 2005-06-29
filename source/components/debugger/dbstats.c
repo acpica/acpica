@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dbstats - Generation and display of ACPI table statistics
- *              $Revision: 1.29 $
+ *              $Revision: 1.30 $
  *
  *****************************************************************************/
 
@@ -153,7 +153,7 @@ UINT32                      NumAliases = 0;
 UINT32                      NumDevices = 0;
 UINT32                      NumFieldDefs = 0;
 UINT32                      NumThermalZones =  0;
-UINT32                      NumNamedObjects = 0;
+UINT32                      NumNodes = 0;
 UINT32                      NumGrammarElements = 0;
 UINT32                      NumMethodElements = 0;
 UINT32                      NumMutexes = 0;
@@ -164,7 +164,7 @@ UINT32                      NumEvents = 0;
 
 UINT32                      SizeOfParseTree;
 UINT32                      SizeOfMethodTrees;
-UINT32                      SizeOfNameTableEntries;
+UINT32                      SizeOfNodeEntries;
 UINT32                      SizeOfAcpiObjects;
 
 
@@ -241,7 +241,7 @@ AcpiDbDisplayStatistics (
         AcpiOsPrintf ("Control Methods:............% 7ld\n", NumMethods);
         AcpiOsPrintf ("Operation Regions:..........% 7ld\n", NumRegions);
         AcpiOsPrintf ("Field Definitions:..........% 7ld\n", NumFieldDefs);
-        AcpiOsPrintf ("Total Named objects:........% 7ld\n", NumNamedObjects);
+        AcpiOsPrintf ("Total Named objects:........% 7ld\n", NumNodes);
 
         AcpiOsPrintf ("\n");
 
@@ -256,11 +256,11 @@ AcpiDbDisplayStatistics (
         AcpiOsPrintf ("\nDynamic Memory Estimates:\n\n");
         AcpiOsPrintf ("Parse Tree without Methods:.% 7ld\n", SizeOfParseTree);
         AcpiOsPrintf ("Control Method Parse Trees:.% 7ld (If parsed simultaneously)\n", SizeOfMethodTrees);
-        AcpiOsPrintf ("Named Object NTEs:..........% 7ld (%d objects)\n", SizeOfNameTableEntries, NumNamedObjects);
+        AcpiOsPrintf ("Node NTEs:..........% 7ld (%d objects)\n", SizeOfNodeEntries, NumNodes);
         AcpiOsPrintf ("Named Internal Objects......% 7ld\n", SizeOfAcpiObjects);
         AcpiOsPrintf ("State Cache size............% 7ld\n", AcpiGbl_GenericStateCacheDepth * sizeof (ACPI_GENERIC_STATE));
-        AcpiOsPrintf ("Parse Cache size............% 7ld\n", AcpiGbl_ParseCacheDepth * sizeof (ACPI_GENERIC_OP));
-        AcpiOsPrintf ("Object Cache size...........% 7ld\n", AcpiGbl_ObjectCacheDepth * sizeof (ACPI_OBJECT_INTERNAL));
+        AcpiOsPrintf ("Parse Cache size............% 7ld\n", AcpiGbl_ParseCacheDepth * sizeof (ACPI_PARSE_OBJECT));
+        AcpiOsPrintf ("Object Cache size...........% 7ld\n", AcpiGbl_ObjectCacheDepth * sizeof (ACPI_OPERAND_OBJECT));
         AcpiOsPrintf ("WalkState Cache size........% 7ld\n", AcpiGbl_WalkStateCacheDepth * sizeof (ACPI_WALK_STATE));
 
         AcpiOsPrintf ("\n");
@@ -323,10 +323,10 @@ AcpiDbDisplayStatistics (
 
 void
 AcpiDbGenerateStatistics (
-    ACPI_GENERIC_OP         *Root,
+    ACPI_PARSE_OBJECT       *Root,
     BOOLEAN                 IsMethod)
 {
-    ACPI_GENERIC_OP         *Op;
+    ACPI_PARSE_OBJECT       *Op;
 
 
     Op = AcpiPsGetChild (Root);
@@ -390,7 +390,7 @@ AcpiDbGenerateStatistics (
 
         if (AcpiPsIsNamedOp (Op->Opcode))
         {
-            NumNamedObjects++;
+            NumNodes++;
         }
 
         if (IsMethod)
@@ -403,10 +403,10 @@ AcpiDbGenerateStatistics (
     }
 
 
-    SizeOfParseTree             = (NumGrammarElements - NumMethodElements) * (UINT32) sizeof (ACPI_GENERIC_OP);
-    SizeOfMethodTrees           = NumMethodElements * (UINT32) sizeof (ACPI_GENERIC_OP);
-    SizeOfNameTableEntries      = NumNamedObjects * (UINT32) sizeof (ACPI_NAMED_OBJECT);
-    SizeOfAcpiObjects           = NumNamedObjects * (UINT32) sizeof (ACPI_OBJECT_INTERNAL);
+    SizeOfParseTree             = (NumGrammarElements - NumMethodElements) * (UINT32) sizeof (ACPI_PARSE_OBJECT);
+    SizeOfMethodTrees           = NumMethodElements * (UINT32) sizeof (ACPI_PARSE_OBJECT);
+    SizeOfNodeEntries           = NumNodes * (UINT32) sizeof (ACPI_NAMESPACE_NODE);
+    SizeOfAcpiObjects           = NumNodes * (UINT32) sizeof (ACPI_OPERAND_OBJECT);
 
 }
 

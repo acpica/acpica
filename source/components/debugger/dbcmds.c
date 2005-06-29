@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dbcmds - debug commands and output routines
- *              $Revision: 1.36 $
+ *              $Revision: 1.37 $
  *
  *****************************************************************************/
 
@@ -175,23 +175,23 @@ AcpiDbWalkForReferences (
     void                    *Context,
     void                    **ReturnValue)
 {
-    ACPI_OBJECT_INTERNAL    *ObjDesc = (ACPI_OBJECT_INTERNAL *) Context;
-    ACPI_NAMED_OBJECT       *NameDesc = (ACPI_NAMED_OBJECT *) ObjHandle;
+    ACPI_OPERAND_OBJECT     *ObjDesc = (ACPI_OPERAND_OBJECT  *) Context;
+    ACPI_NAMESPACE_NODE     *Node = (ACPI_NAMESPACE_NODE *) ObjHandle;
 
 
-    if (NameDesc == (void *) ObjDesc)
+    if (Node == (void *) ObjDesc)
     {
-        AcpiOsPrintf ("Object is a Named Object [%4.4s]\n", &NameDesc->Name);
+        AcpiOsPrintf ("Object is a Node [%4.4s]\n", &Node->Name);
     }
 
-    if (NameDesc->Object == ObjDesc)
+    if (Node->Object == ObjDesc)
     {
-        AcpiOsPrintf ("Reference at NameDesc->Object %p [%4.4s]\n", NameDesc, &NameDesc->Name);
+        AcpiOsPrintf ("Reference at Node->Object %p [%4.4s]\n", Node, &Node->Name);
     }
 
-    if (NameDesc->Child == (void *) ObjDesc)
+    if (Node->Child == (void *) ObjDesc)
     {
-        AcpiOsPrintf ("Reference at NameDesc->Child %p [%4.4s]\n", NameDesc, &NameDesc->Name);
+        AcpiOsPrintf ("Reference at Node->Child %p [%4.4s]\n", Node, &Node->Name);
     }
 
     return (AE_OK);
@@ -214,10 +214,10 @@ void
 AcpiDbFindReferences (
     NATIVE_CHAR             *ObjectArg)
 {
-    ACPI_OBJECT_INTERNAL    *ObjDesc;
+    ACPI_OPERAND_OBJECT     *ObjDesc;
 
 
-    ObjDesc = (ACPI_OBJECT_INTERNAL *) STRTOUL (ObjectArg, NULL, 16);
+    ObjDesc = (ACPI_OPERAND_OBJECT  *) STRTOUL (ObjectArg, NULL, 16);
 
     AcpiWalkNamespace (ACPI_TYPE_ANY, ACPI_ROOT_OBJECT, ACPI_UINT32_MAX,
                     AcpiDbWalkForReferences, (void *) ObjDesc, NULL);
@@ -317,7 +317,7 @@ void
 AcpiDbSetMethodBreakpoint (
     NATIVE_CHAR             *Location,
     ACPI_WALK_STATE         *WalkState,
-    ACPI_GENERIC_OP         *Op)
+    ACPI_PARSE_OBJECT       *Op)
 {
     UINT32                  Address;
 
@@ -359,7 +359,7 @@ AcpiDbSetMethodBreakpoint (
 
 void
 AcpiDbSetMethodCallBreakpoint (
-    ACPI_GENERIC_OP         *Op)
+    ACPI_PARSE_OBJECT       *Op)
 {
 
 
@@ -390,7 +390,7 @@ AcpiDbSetMethodCallBreakpoint (
 void
 AcpiDbDisassembleAml (
     NATIVE_CHAR             *Statements,
-    ACPI_GENERIC_OP         *Op)
+    ACPI_PARSE_OBJECT       *Op)
 {
     UINT32                  NumStatements = 8;
 
@@ -428,7 +428,7 @@ AcpiDbDumpNamespace (
     NATIVE_CHAR             *StartArg,
     NATIVE_CHAR             *DepthArg)
 {
-    ACPI_HANDLE             SubtreeEntry = AcpiGbl_RootObject;
+    ACPI_HANDLE             SubtreeEntry = AcpiGbl_RootNode;
     UINT32                  MaxDepth = ACPI_UINT32_MAX;
 
 
@@ -437,12 +437,12 @@ AcpiDbDumpNamespace (
     if (StartArg)
     {
 
-        /* Check if numeric argument, must be a Named Object */
+        /* Check if numeric argument, must be a Node */
 
         if ((StartArg[0] >= 0x30) && (StartArg[0] <= 0x39))
         {
             SubtreeEntry = (ACPI_HANDLE) STRTOUL (StartArg, NULL, 16);
-            if (!AcpiOsReadable (SubtreeEntry, sizeof (ACPI_NAMED_OBJECT)))
+            if (!AcpiOsReadable (SubtreeEntry, sizeof (ACPI_NAMESPACE_NODE)))
             {
                 AcpiOsPrintf ("Address %p is invalid in this address space\n", SubtreeEntry);
                 return;
@@ -464,7 +464,7 @@ AcpiDbDumpNamespace (
             SubtreeEntry = AcpiDbLocalNsLookup (StartArg);
             if (!SubtreeEntry)
             {
-                SubtreeEntry = AcpiGbl_RootObject;
+                SubtreeEntry = AcpiGbl_RootNode;
             }
         }
 
@@ -506,7 +506,7 @@ AcpiDbDumpNamespaceByOwner (
     NATIVE_CHAR             *OwnerArg,
     NATIVE_CHAR             *DepthArg)
 {
-    ACPI_HANDLE             SubtreeEntry = AcpiGbl_RootObject;
+    ACPI_HANDLE             SubtreeEntry = AcpiGbl_RootNode;
     UINT32                  MaxDepth = ACPI_UINT32_MAX;
     UINT16                  OwnerId;
 
@@ -550,27 +550,27 @@ AcpiDbSendNotify (
     NATIVE_CHAR             *Name,
     UINT32                  Value)
 {
-    ACPI_NAMED_OBJECT       *NameDesc;
+    ACPI_NAMESPACE_NODE     *Node;
 
 
     /* Translate name to an Named object */
 
-    NameDesc = AcpiDbLocalNsLookup (Name);
-    if (!NameDesc)
+    Node = AcpiDbLocalNsLookup (Name);
+    if (!Node)
     {
         return;
     }
 
     /* Decode Named object type */
 
-    switch (NameDesc->Type)
+    switch (Node->Type)
     {
     case ACPI_TYPE_DEVICE:
     case ACPI_TYPE_THERMAL:
 
          /* Send the notify */
 
-        AcpiEvNotifyDispatch (NameDesc, Value);
+        AcpiEvNotifyDispatch (Node, Value);
         break;
 
     default:
@@ -603,7 +603,7 @@ AcpiDbSetMethodData (
     UINT32                  Index;
     UINT32                  Value;
     ACPI_WALK_STATE         *WalkState;
-    ACPI_OBJECT_INTERNAL    *ObjDesc;
+    ACPI_OPERAND_OBJECT     *ObjDesc;
 
 
     STRUPR (TypeArg);
@@ -694,13 +694,13 @@ AcpiDbWalkForSpecificObjects (
     void                    *Context,
     void                    **ReturnValue)
 {
-    ACPI_OBJECT_INTERNAL    *ObjDesc;
+    ACPI_OPERAND_OBJECT     *ObjDesc;
     ACPI_STATUS             Status;
     UINT32                  BufSize;
     NATIVE_CHAR             buffer[64];
 
 
-    ObjDesc = ((ACPI_NAMED_OBJECT*)ObjHandle)->Object;
+    ObjDesc = ((ACPI_NAMESPACE_NODE *)ObjHandle)->Object;
 
     /* Get the full pathname to this method */
 
@@ -821,7 +821,7 @@ AcpiDbWalkAndMatchName (
     void                    *Context,
     void                    **ReturnValue)
 {
-    ACPI_OBJECT_INTERNAL    *ObjDesc;
+    ACPI_OPERAND_OBJECT     *ObjDesc;
     ACPI_STATUS             Status;
     NATIVE_CHAR             *RequestedName = (NATIVE_CHAR *) Context;
     UINT32                  i;
@@ -829,7 +829,7 @@ AcpiDbWalkAndMatchName (
     NATIVE_CHAR             Buffer[96];
 
 
-    ObjDesc = ((ACPI_NAMED_OBJECT*)ObjHandle)->Object;
+    ObjDesc = ((ACPI_NAMESPACE_NODE *)ObjHandle)->Object;
 
 
     /* Check for a name match */
@@ -839,7 +839,7 @@ AcpiDbWalkAndMatchName (
         /* Wildcard support */
 
         if ((RequestedName[i] != '?') &&
-            (RequestedName[i] != ((NATIVE_CHAR *)(&((ACPI_NAMED_OBJECT*)ObjHandle)->Name))[i]))
+            (RequestedName[i] != ((NATIVE_CHAR *) (&((ACPI_NAMESPACE_NODE *) ObjHandle)->Name))[i]))
         {
             /* No match, just exit */
 
@@ -860,7 +860,8 @@ AcpiDbWalkAndMatchName (
 
     else
     {
-        AcpiOsPrintf ("%32s (0x%p) - %s\n", Buffer, ObjHandle, AcpiCmGetTypeName (((ACPI_NAMED_OBJECT*)ObjHandle)->Type));
+        AcpiOsPrintf ("%32s (0x%p) - %s\n", Buffer, ObjHandle,
+            AcpiCmGetTypeName (((ACPI_NAMESPACE_NODE *) ObjHandle)->Type));
     }
 
     return (AE_OK);

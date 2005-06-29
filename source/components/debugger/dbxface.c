@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dbxface - AML Debugger external interfaces
- *              $Revision: 1.27 $
+ *              $Revision: 1.28 $
  *
  *****************************************************************************/
 
@@ -146,10 +146,10 @@
 ACPI_STATUS
 AcpiDbSingleStep (
     ACPI_WALK_STATE         *WalkState,
-    ACPI_GENERIC_OP         *Op,
+    ACPI_PARSE_OBJECT       *Op,
     UINT8                   OpType)
 {
-    ACPI_GENERIC_OP         *Next;
+    ACPI_PARSE_OBJECT       *Next;
     ACPI_STATUS             Status = AE_OK;
     UINT32                  OriginalDebugLevel;
 

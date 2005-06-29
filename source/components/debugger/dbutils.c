@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dbutils - AML debugger utilities
- *              $Revision: 1.27 $
+ *              $Revision: 1.28 $
  *
  *****************************************************************************/
 
@@ -338,12 +338,12 @@ AcpiDbPrepNamestring (
 
 ACPI_STATUS
 AcpiDbSecondPassParse (
-    ACPI_GENERIC_OP         *Root)
+    ACPI_PARSE_OBJECT       *Root)
 {
-    ACPI_GENERIC_OP         *Op = Root;
-    ACPI_EXTENDED_OP        *Method;
-    ACPI_GENERIC_OP         *SearchOp;
-    ACPI_GENERIC_OP         *StartOp;
+    ACPI_PARSE_OBJECT       *Op = Root;
+    ACPI_PARSE2_OBJECT      *Method;
+    ACPI_PARSE_OBJECT       *SearchOp;
+    ACPI_PARSE_OBJECT       *StartOp;
     ACPI_STATUS             Status = AE_OK;
     UINT32                  BaseAmlOffset;
 
@@ -354,7 +354,7 @@ AcpiDbSecondPassParse (
     {
         if (Op->Opcode == AML_METHOD_OP)
         {
-            Method = (ACPI_EXTENDED_OP *) Op;
+            Method = (ACPI_PARSE2_OBJECT *) Op;
             Status = AcpiPsParseAml (Op, Method->Data, Method->Length, 0,
                         NULL, NULL, NULL, AcpiDsLoad1BeginOp, AcpiDsLoad1EndOp);
 
@@ -405,13 +405,13 @@ AcpiDbSecondPassParse (
  *
  *****************************************************************************/
 
-ACPI_NAMED_OBJECT*
+ACPI_NAMESPACE_NODE *
 AcpiDbLocalNsLookup (
     NATIVE_CHAR             *Name)
 {
     NATIVE_CHAR             *InternalPath;
     ACPI_STATUS             Status;
-    ACPI_NAMED_OBJECT       *NameDesc = NULL;
+    ACPI_NAMESPACE_NODE     *Node = NULL;
 
 
     AcpiDbPrepNamestring (Name);
@@ -431,7 +431,7 @@ AcpiDbLocalNsLookup (
     /* Use the root scope for the start of the search */
 
     Status = AcpiNsLookup (NULL, InternalPath, ACPI_TYPE_ANY, IMODE_EXECUTE,
-                                    NS_NO_UPSEARCH | NS_DONT_OPEN_SCOPE, NULL, &NameDesc);
+                                    NS_NO_UPSEARCH | NS_DONT_OPEN_SCOPE, NULL, &Node);
 
     if (ACPI_FAILURE (Status))
     {
@@ -441,7 +441,7 @@ AcpiDbLocalNsLookup (
 
     AcpiCmFree (InternalPath);
 
-    return (NameDesc);
+    return (Node);
 }
 
 

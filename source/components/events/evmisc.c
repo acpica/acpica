@@ -2,7 +2,7 @@
  *
  * Module Name: evmisc - ACPI device notification handler dispatch
  *                       and ACPI Global Lock support
- *              $Revision: 1.12 $
+ *              $Revision: 1.13 $
  *
  *****************************************************************************/
 
@@ -143,8 +143,8 @@ AcpiEvNotifyDispatch (
     ACPI_HANDLE             Device,
     UINT32                  NotifyValue)
 {
-    ACPI_OBJECT_INTERNAL    *ObjDesc;
-    ACPI_OBJECT_INTERNAL    *HandlerObj;
+    ACPI_OPERAND_OBJECT     *ObjDesc;
+    ACPI_OPERAND_OBJECT     *HandlerObj;
     NOTIFY_HANDLER          Handler;
 
 
@@ -212,7 +212,7 @@ AcpiEvNotifyDispatch (
 
 
     /*
-     * Get the notify object which must be attached to the device Named Object
+     * Get the notify object which must be attached to the device Node
      */
 
     ObjDesc = AcpiNsGetAttachedObject ((ACPI_HANDLE) Device);

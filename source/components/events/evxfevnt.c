@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: evxfevnt - External Interfaces, ACPI event disable/enable
- *              $Revision: 1.17 $
+ *              $Revision: 1.18 $
  *
  *****************************************************************************/
 
@@ -191,7 +191,6 @@ AcpiEnable (void)
     }
 
 
-
     AcpiGbl_OriginalMode = AcpiHwGetMode();
 
     /*
@@ -247,11 +246,10 @@ AcpiEnable (void)
     AcpiEvInitDevices ();
 
 
-
     /*
      * Perform additional initialization that may cause control methods
      * to be executed
-     * 
+     *
      * It may be wise to move this code to a new interface
      */
 
@@ -263,8 +261,6 @@ AcpiEnable (void)
      */
 
     //AcpiEvFindPciRootBuses ();
-
-
 
 
     return_ACPI_STATUS (Status);

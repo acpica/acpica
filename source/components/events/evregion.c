@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: evregion - ACPI AddressSpace / OpRegion handler dispatch
- *              $Revision: 1.74 $
+ *              $Revision: 1.75 $
  *
  *****************************************************************************/
 
@@ -150,20 +150,20 @@ AcpiEvFindOnePciRootBus (
     void                    *Context,
     void                    **ReturnValue)
 {
-    ACPI_NAMED_OBJECT       *NameDesc;
-    ACPI_OBJECT_INTERNAL    *ObjDesc;
+    ACPI_NAMESPACE_NODE     *Node;
+    ACPI_OPERAND_OBJECT     *ObjDesc;
     ACPI_STATUS             Status;
 
 
-    NameDesc = (ACPI_NAMED_OBJECT*) ObjHandle;
-    ObjDesc = ((ACPI_NAMED_OBJECT*)ObjHandle)->Object;
+    Node = (ACPI_NAMESPACE_NODE *) ObjHandle;
+    ObjDesc = ((ACPI_NAMESPACE_NODE *) ObjHandle)->Object;
 
 
     /*
      * We are looking for all valid _HID objects.
      */
 
-    if (STRNCMP ((NATIVE_CHAR *) &NameDesc->Name, METHOD_NAME__HID, ACPI_NAME_SIZE) ||
+    if (STRNCMP ((NATIVE_CHAR *) &Node->Name, METHOD_NAME__HID, ACPI_NAME_SIZE) ||
         (!ObjDesc))
     {
         return (AE_OK);
@@ -209,7 +209,7 @@ AcpiEvFindOnePciRootBus (
      * handler for this PCI device.
      */
 
-    Status = AcpiInstallAddressSpaceHandler (AcpiNsGetParentObject (NameDesc),
+    Status = AcpiInstallAddressSpaceHandler (AcpiNsGetParentObject (Node),
                                              ADDRESS_SPACE_PCI_CONFIG,
                                              ACPI_DEFAULT_HANDLER, NULL, NULL);
 
@@ -262,7 +262,7 @@ AcpiEvInitOneDevice (
     void                    **ReturnValue)
 {
     ACPI_STATUS             Status;
-    ACPI_OBJECT_INTERNAL   *RetObj;
+    ACPI_OPERAND_OBJECT    *RetObj;
 
 
     FUNCTION_TRACE ("AcpiEvInitOneDevice");
@@ -295,7 +295,7 @@ AcpiEvInitOneDevice (
             goto Cleanup;
         }
     }
-    
+
     /*
      * The device is present. Run _INI.
      */
@@ -359,7 +359,7 @@ AcpiEvInstallDefaultAddressSpaceHandlers (
      *          associated with the address space.  For these we use the root.
      */
 
-    Status = AcpiInstallAddressSpaceHandler (AcpiGbl_RootObject,
+    Status = AcpiInstallAddressSpaceHandler (AcpiGbl_RootNode,
                                              ADDRESS_SPACE_SYSTEM_MEMORY,
                                              ACPI_DEFAULT_HANDLER, NULL, NULL);
     if (ACPI_FAILURE (Status))
@@ -367,7 +367,7 @@ AcpiEvInstallDefaultAddressSpaceHandlers (
         return_ACPI_STATUS (Status);
     }
 
-    Status = AcpiInstallAddressSpaceHandler (AcpiGbl_RootObject,
+    Status = AcpiInstallAddressSpaceHandler (AcpiGbl_RootNode,
                                              ADDRESS_SPACE_SYSTEM_IO,
                                              ACPI_DEFAULT_HANDLER, NULL, NULL);
     if (ACPI_FAILURE (Status))
@@ -397,12 +397,12 @@ AcpiEvInstallDefaultAddressSpaceHandlers (
 
 ACPI_STATUS
 AcpiEvExecuteRegMethod (
-    ACPI_OBJECT_INTERNAL   *RegionObj,
+    ACPI_OPERAND_OBJECT    *RegionObj,
     UINT32                  Function)
 {
-    ACPI_OBJECT_INTERNAL   *Params[3];
-    ACPI_OBJECT_INTERNAL    SpaceID_Obj;
-    ACPI_OBJECT_INTERNAL    Function_Obj;
+    ACPI_OPERAND_OBJECT    *Params[3];
+    ACPI_OPERAND_OBJECT     SpaceID_Obj;
+    ACPI_OPERAND_OBJECT     Function_Obj;
     ACPI_STATUS             Status;
 
 
@@ -471,7 +471,7 @@ AcpiEvExecuteRegMethod (
 
 ACPI_STATUS
 AcpiEvAddressSpaceDispatch (
-    ACPI_OBJECT_INTERNAL    *RegionObj,
+    ACPI_OPERAND_OBJECT     *RegionObj,
     UINT32                  Function,
     UINT32                  Address,
     UINT32                  BitWidth,
@@ -480,7 +480,7 @@ AcpiEvAddressSpaceDispatch (
     ACPI_STATUS             Status;
     ADDRESS_SPACE_HANDLER   Handler;
     ADDRESS_SPACE_SETUP     RegionSetup;
-    ACPI_OBJECT_INTERNAL    *HandlerDesc;
+    ACPI_OPERAND_OBJECT     *HandlerDesc;
     void                    *RegionContext = NULL;
 
 
@@ -546,7 +546,7 @@ AcpiEvAddressSpaceDispatch (
         }
 
         /*
-         *  Save the returned context for use in all accesses to 
+         *  Save the returned context for use in all accesses to
          *  this particular region.
          */
         RegionObj->Region.RegionContext = RegionContext;
@@ -612,11 +612,11 @@ AcpiEvAddressSpaceDispatch (
 
 void
 AcpiEvDisassociateRegionFromHandler(
-    ACPI_OBJECT_INTERNAL    *RegionObj)
+    ACPI_OPERAND_OBJECT     *RegionObj)
 {
-    ACPI_OBJECT_INTERNAL    *HandlerObj;
-    ACPI_OBJECT_INTERNAL    *ObjDesc;
-    ACPI_OBJECT_INTERNAL    **LastObjPtr;
+    ACPI_OPERAND_OBJECT     *HandlerObj;
+    ACPI_OPERAND_OBJECT     *ObjDesc;
+    ACPI_OPERAND_OBJECT     **LastObjPtr;
     ADDRESS_SPACE_SETUP     RegionSetup;
     void                    *RegionContext = RegionObj->Region.RegionContext;
     ACPI_STATUS             Status;
@@ -736,9 +736,9 @@ AcpiEvDisassociateRegionFromHandler(
  ******************************************************************************/
 
 ACPI_STATUS
-AcpiEvAssociateRegionAndHandler ( 
-    ACPI_OBJECT_INTERNAL    *HandlerObj,
-    ACPI_OBJECT_INTERNAL    *RegionObj,
+AcpiEvAssociateRegionAndHandler (
+    ACPI_OPERAND_OBJECT     *HandlerObj,
+    ACPI_OPERAND_OBJECT     *RegionObj,
     BOOLEAN                 AcpiNsIsLocked)
 {
     ACPI_STATUS     Status;
@@ -794,7 +794,7 @@ AcpiEvAssociateRegionAndHandler (
  *
  * FUNCTION:    AcpiEvAddrHandlerHelper
  *
- * PARAMETERS:  Handle              - NameDesc to be dumped
+ * PARAMETERS:  Handle              - Node to be dumped
  *              Level               - Nesting level of the handle
  *              Context             - Passed into AcpiNsWalkNamespace
  *
@@ -816,14 +816,14 @@ AcpiEvAddrHandlerHelper (
     void                    *Context,
     void                    **ReturnValue)
 {
-    ACPI_OBJECT_INTERNAL    *HandlerObj;
-    ACPI_OBJECT_INTERNAL    *TmpObj;
-    ACPI_OBJECT_INTERNAL    *ObjDesc;
-    ACPI_NAMED_OBJECT       *ObjEntry;
+    ACPI_OPERAND_OBJECT     *HandlerObj;
+    ACPI_OPERAND_OBJECT     *TmpObj;
+    ACPI_OPERAND_OBJECT     *ObjDesc;
+    ACPI_NAMESPACE_NODE     *Node;
     ACPI_STATUS             Status;
 
 
-    HandlerObj = (ACPI_OBJECT_INTERNAL *) Context;
+    HandlerObj = (ACPI_OPERAND_OBJECT  *) Context;
 
     /* Parameter validation */
 
@@ -834,8 +834,8 @@ AcpiEvAddrHandlerHelper (
 
     /* Convert and validate the device handle */
 
-    ObjEntry = AcpiNsConvertHandleToEntry (ObjHandle);
-    if (!ObjEntry)
+    Node = AcpiNsConvertHandleToEntry (ObjHandle);
+    if (!Node)
     {
         return (AE_BAD_PARAMETER);
     }
@@ -845,16 +845,16 @@ AcpiEvAddrHandlerHelper (
      *  that can have address handlers
      */
 
-    if ((ObjEntry->Type != ACPI_TYPE_DEVICE) &&
-        (ObjEntry->Type != ACPI_TYPE_REGION) &&
-        (ObjEntry != AcpiGbl_RootObject))
+    if ((Node->Type != ACPI_TYPE_DEVICE) &&
+        (Node->Type != ACPI_TYPE_REGION) &&
+        (Node != AcpiGbl_RootNode))
     {
         return (AE_OK);
     }
 
     /* Check for an existing internal object */
 
-    ObjDesc = AcpiNsGetAttachedObject ((ACPI_HANDLE) ObjEntry);
+    ObjDesc = AcpiNsGetAttachedObject ((ACPI_HANDLE) Node);
     if (!ObjDesc)
     {
         /*

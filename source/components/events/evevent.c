@@ -2,7 +2,7 @@
  *
  * Module Name: evevent - Fixed and General Purpose AcpiEvent
  *                          handling and dispatch
- *              $Revision: 1.12 $
+ *              $Revision: 1.13 $
  *
  *****************************************************************************/
 
@@ -474,7 +474,7 @@ AcpiEvSaveMethodInfo (
 
     /* Extract the name from the object and convert to a string */
 
-    MOVE_UNALIGNED32_TO_32 (Name, &((ACPI_NAMED_OBJECT*) ObjHandle)->Name);
+    MOVE_UNALIGNED32_TO_32 (Name, &((ACPI_NAMESPACE_NODE *) ObjHandle)->Name);
     Name[ACPI_NAME_SIZE] = 0;
 
     /*

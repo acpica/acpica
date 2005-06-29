@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: evrgnini- ACPI AddressSpace / OpRegion init
- *              $Revision: 1.20 $
+ *              $Revision: 1.21 $
  *
  *****************************************************************************/
 
@@ -149,7 +149,7 @@ AcpiEvSystemMemoryRegionSetup (
     void                    *HandlerContext,
     void                    **RegionContext)
 {
-    ACPI_OBJECT_INTERNAL    *RegionObj = (ACPI_OBJECT_INTERNAL *) Handle;
+    ACPI_OPERAND_OBJECT     *RegionObj = (ACPI_OPERAND_OBJECT  *) Handle;
 
 
     FUNCTION_TRACE ("EvSystemMemoryRegionSetup");
@@ -206,7 +206,7 @@ AcpiEvIoSpaceRegionSetup (
     void                    *HandlerContext,
     void                    **RegionContext)
 {
-    ACPI_OBJECT_INTERNAL    *RegionObj = (ACPI_OBJECT_INTERNAL *) Handle;
+    ACPI_OPERAND_OBJECT     *RegionObj = (ACPI_OPERAND_OBJECT  *) Handle;
 
     FUNCTION_TRACE ("EvIoSpaceRegionSetup");
 
@@ -252,9 +252,9 @@ AcpiEvPciConfigRegionSetup (
     ACPI_STATUS             Status = AE_OK;
     UINT32                  Temp;
     PCI_HANDLER_CONTEXT     *PciContext = *RegionContext;
-    ACPI_OBJECT_INTERNAL    *HandlerObj;
-    ACPI_NAMED_OBJECT       *SearchScope;
-    ACPI_OBJECT_INTERNAL    *RegionObj = (ACPI_OBJECT_INTERNAL *) Handle;
+    ACPI_OPERAND_OBJECT     *HandlerObj;
+    ACPI_NAMESPACE_NODE     *Node;
+    ACPI_OPERAND_OBJECT     *RegionObj = (ACPI_OPERAND_OBJECT  *) Handle;
 
 
     FUNCTION_TRACE ("EvPciConfigRegionSetup");
@@ -303,16 +303,16 @@ AcpiEvPciConfigRegionSetup (
      *  First get device and function numbers from the _ADR object
      *  in the parent's scope.
      */
-    ACPI_ASSERT(RegionObj->Region.NameDesc);
+    ACPI_ASSERT(RegionObj->Region.Node);
 
-    SearchScope = AcpiNsGetParentObject (RegionObj->Region.NameDesc);
+    Node = AcpiNsGetParentObject (RegionObj->Region.Node);
 
 
     AcpiCmReleaseMutex (ACPI_MTX_NAMESPACE);
 
     /* AcpiEvaluate the _ADR object */
 
-    Status = AcpiCmEvaluateNumericObject (METHOD_NAME__ADR, SearchScope, &Temp);
+    Status = AcpiCmEvaluateNumericObject (METHOD_NAME__ADR, Node, &Temp);
     /*
      *  The default is zero, since the allocation above zeroed the data, just
      *  do nothing on failures.
@@ -333,9 +333,9 @@ AcpiEvPciConfigRegionSetup (
      *  This is the device the handler has been registered to handle.
      */
 
-    SearchScope = HandlerObj->AddrHandler.NameDesc;
+    Node = HandlerObj->AddrHandler.Node;
 
-    Status = AcpiCmEvaluateNumericObject (METHOD_NAME__SEG, SearchScope, &Temp);
+    Status = AcpiCmEvaluateNumericObject (METHOD_NAME__SEG, Node, &Temp);
     if (ACPI_SUCCESS (Status))
     {
         /*
@@ -344,7 +344,7 @@ AcpiEvPciConfigRegionSetup (
         PciContext->Seg = Temp;
     }
 
-    Status = AcpiCmEvaluateNumericObject (METHOD_NAME__BBN, SearchScope, &Temp);
+    Status = AcpiCmEvaluateNumericObject (METHOD_NAME__BBN, Node, &Temp);
     if (ACPI_SUCCESS (Status))
     {
         /*
@@ -358,7 +358,7 @@ AcpiEvPciConfigRegionSetup (
     AcpiCmAcquireMutex (ACPI_MTX_NAMESPACE);
 
     RegionObj->Region.RegionFlags |= REGION_INITIALIZED;
-    
+
     return_ACPI_STATUS (AE_OK);
 }
 
@@ -385,7 +385,7 @@ AcpiEvDefaultRegionSetup (
     void                    *HandlerContext,
     void                    **RegionContext)
 {
-    ACPI_OBJECT_INTERNAL    *RegionObj = (ACPI_OBJECT_INTERNAL *) Handle;
+    ACPI_OPERAND_OBJECT     *RegionObj = (ACPI_OPERAND_OBJECT  *) Handle;
 
 
     FUNCTION_TRACE ("EvDefaultRegionSetup");
@@ -428,15 +428,15 @@ AcpiEvDefaultRegionSetup (
 
 ACPI_STATUS
 AcpiEvInitializeRegion (
-    ACPI_OBJECT_INTERNAL    *RegionObj,
+    ACPI_OPERAND_OBJECT     *RegionObj,
     BOOLEAN                 AcpiNsLocked)
 {
-    ACPI_OBJECT_INTERNAL   *HandlerObj;
-    ACPI_OBJECT_INTERNAL   *ObjDesc;
+    ACPI_OPERAND_OBJECT    *HandlerObj;
+    ACPI_OPERAND_OBJECT    *ObjDesc;
     UINT32                  SpaceId;
-    ACPI_NAMED_OBJECT      *NameDesc;        /* Namespace Object */
+    ACPI_NAMESPACE_NODE    *Node;        /* Namespace Object */
     ACPI_STATUS             Status;
-    ACPI_NAMED_OBJECT      *RegEntry;
+    ACPI_NAMESPACE_NODE    *MethodNode;
     ACPI_NAME              *RegNamePtr = (ACPI_NAME *) METHOD_NAME__REG;
 
 
@@ -448,9 +448,9 @@ AcpiEvInitializeRegion (
         return_ACPI_STATUS (AE_BAD_PARAMETER);
     }
 
-    ACPI_ASSERT(RegionObj->Region.NameDesc);
+    ACPI_ASSERT(RegionObj->Region.Node);
 
-    NameDesc = AcpiNsGetParentObject (RegionObj->Region.NameDesc);
+    Node = AcpiNsGetParentObject (RegionObj->Region.Node);
     SpaceId = RegionObj->Region.SpaceId;
 
     RegionObj->Region.AddrHandler = NULL;
@@ -460,8 +460,8 @@ AcpiEvInitializeRegion (
     /*
      *  Find any "_REG" associated with this region definition
      */
-    Status = AcpiNsSearchNameTable (*RegNamePtr, NameDesc->Child,
-                                   ACPI_TYPE_METHOD, &RegEntry);
+    Status = AcpiNsSearchNode (*RegNamePtr, Node->Child,
+                                   ACPI_TYPE_METHOD, &MethodNode);
     if (ACPI_SUCCESS (Status))
     {
         /*
@@ -469,26 +469,26 @@ AcpiEvInitializeRegion (
          *  definition.  This will be executed when the handler is attached
          *  or removed
          */
-        RegionObj->Region.REGMethod = RegEntry;
+        RegionObj->Region.REGMethod = MethodNode;
     }
 
     /*
-     *  The following loop depends upon the root NamedObject having no parent
-     *  ie: AcpiGbl_RootObject->ParentEntry being set to NULL
+     *  The following loop depends upon the root Node having no parent
+     *  ie: AcpiGbl_RootNode->ParentEntry being set to NULL
      */
-    while (NameDesc)
+    while (Node)
     {
         /*
          *  Check to see if a handler exists
          */
         HandlerObj = NULL;
-        ObjDesc = AcpiNsGetAttachedObject ((ACPI_HANDLE) NameDesc);
+        ObjDesc = AcpiNsGetAttachedObject ((ACPI_HANDLE) Node);
         if (ObjDesc)
         {
             /*
              *  can only be a handler if the object exists
              */
-            switch (NameDesc->Type)
+            switch (Node->Type)
             {
             case ACPI_TYPE_DEVICE:
 
@@ -534,15 +534,15 @@ AcpiEvInitializeRegion (
          *  This one does not have the handler we need
          *  Pop up one level
          */
-        NameDesc = AcpiNsGetParentObject (NameDesc);
+        Node = AcpiNsGetParentObject (Node);
 
-    } /* while NameDesc != ROOT */
+    } /* while Node != ROOT */
 
     /*
      *  If we get here, there is no handler for this region
      */
     DEBUG_PRINT (TRACE_OPREGION,
-        ("No handler currently for SpaceId[%d] (Initializing region 0x%X)\n", 
+        ("No handler currently for SpaceId[%d] (Initializing region 0x%X)\n",
             SpaceId, RegionObj));
 
     return_ACPI_STATUS (AE_NOT_EXIST);
