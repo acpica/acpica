@@ -226,8 +226,25 @@ TbSystemTablePointer (
     }
 
 
-    /* TBD: Need to check the PSDTs? */
+    /* Check each of the loaded PSDTs (if any)*/
 
+    TableDesc = &Gbl_AcpiTables[TABLE_PSDT];
+
+    for (i = 0; i < Gbl_AcpiTables[TABLE_PSDT].Count; i++)
+    {
+        Table = TableDesc->Pointer;
+
+        if (IS_IN_ACPI_TABLE (Where, Table))
+        {
+            return (TRUE);
+        }
+
+        TableDesc = TableDesc->Next;
+    }
+
+
+
+    /* Pointer does not point into any system table */
 
     return (FALSE);
 }
@@ -397,7 +414,7 @@ TbMapAcpiTable (
 
 ACPI_STATUS
 TbVerifyTableChecksum (
-    void                    *TableHeader)
+    ACPI_TABLE_HEADER       *TableHeader)
 {
     UINT8                   CheckSum;
     ACPI_STATUS             Status = AE_OK;
@@ -408,15 +425,15 @@ TbVerifyTableChecksum (
 
     /* Compute the checksum on the table */
 
-    CheckSum = TbChecksum (TableHeader,
-                        (ACPI_SIZE) ((ACPI_TABLE_HEADER *) TableHeader)->Length);
+    CheckSum = TbChecksum (TableHeader, TableHeader->Length);
 
     /* Return the appropriate exception */
 
     if (CheckSum)
     {
         REPORT_ERROR ("Invalid ACPI table checksum");
-        DEBUG_PRINT (ACPI_INFO, ("TbVerifyTableChecksum: Invalid checksum (%X)\n", CheckSum));
+        DEBUG_PRINT (ACPI_INFO, ("TbVerifyTableChecksum: Invalid checksum (%X) in %4.4s\n", 
+                                    CheckSum, &TableHeader->Signature));
 
         Status = AE_BAD_CHECKSUM;
     }
