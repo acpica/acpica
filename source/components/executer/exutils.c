@@ -118,7 +118,7 @@ static ST_KEY_DESC_TABLE KDT[] = {
  * 
  * FUNCTION:    AmlAppendBlockOwner
  *
- * PARAMETERS:  void *Owner
+ * PARAMETERS:  *Owner
  *
  * DESCRIPTION: Print block-owner data
  *
@@ -145,10 +145,10 @@ AmlAppendBlockOwner (void *Owner)
  * 
  * FUNCTION:    AmlAppendOperandDiag
  *
- * PARAMETERS:  char *  FileName    Name of source file
- *              INT32   LineNum     Line Number in file
- *              UINT16  OpCode      OpCode being executed
- *              INT32   NumOperands Number of operands PrepStack tried to check
+ * PARAMETERS:  *FileName       - Name of source file
+ *              LineNum         - Line Number in file
+ *              OpCode          - OpCode being executed
+ *              NumOperands     - Number of operands PrepStack tried to check
  *
  * DESCRIPTION: Print diagnostic information about operands.
  *              This function is intended to be called after PrepStack
@@ -162,7 +162,7 @@ AmlAppendOperandDiag(char *FileName, INT32 LineNum, UINT16 OpCode, INT32 NumOper
     meth            Method;
 
 
-    GetCurrentLoc (&Method);
+    AmlGetCurrentLocation (&Method);
 
     DEBUG_PRINT (ACPI_ERROR, (" [%s:%d, opcode = %s AML offset %04x]\n",
                     FileName, LineNum,
@@ -195,13 +195,13 @@ AmlAppendOperandDiag(char *FileName, INT32 LineNum, UINT16 OpCode, INT32 NumOper
  *              are used to relate FieldUnit descriptors to the Buffers
  *              within which the fields are defined.
  *
+ *              Just increment the global counter and return it.
+ *
  ****************************************************************************/
 
 UINT32 
 AmlBufSeq (void)
 {
-    static UINT32        BufSeq = (UINT32) 0;   /* Counts allocated Buffer descriptors */
-    
     
     return ++BufSeq;
 }
@@ -211,7 +211,7 @@ AmlBufSeq (void)
  * 
  * FUNCTION:    DeleteObject
  *
- * PARAMETERS:  OBJECT_DESCRIPTOR **ObjDesc    Descriptor to be deleted
+ * PARAMETERS:  **ObjDesc           - Descriptor to be deleted
  *
  * DESCRIPTION: If the passed descriptor pointer does not point into the
  *              AML block and is not an NsHandle, free the descriptor.
@@ -243,9 +243,9 @@ DeleteObject (OBJECT_DESCRIPTOR **ObjDesc)
 
     if ((OBJECT_DESCRIPTOR **) 0 !=    ObjDesc  &&
         (OBJECT_DESCRIPTOR *) 0 !=    *ObjDesc  &&
-        !IsInPCodeBlock ((UINT8 *)    *ObjDesc) &&
-        !IsNsHandle                  (*ObjDesc) &&
-        !IsMethodValue               (*ObjDesc) &&
+        !AmlIsInPCodeBlock ((UINT8 *) *ObjDesc) &&
+        !IS_NS_HANDLE                  (*ObjDesc) &&
+        !AmlIsMethodValue            (*ObjDesc) &&
         !IsNsValue                   (*ObjDesc))
     {
 
@@ -265,7 +265,7 @@ DeleteObject (OBJECT_DESCRIPTOR **ObjDesc)
  * 
  * FUNCTION:    AmlMarkPackage
  *
- * PARAMETERS:  OBJECT_DESCRIPTOR *ObjDesc   Descriptor of package to be marked
+ * PARAMETERS:  *ObjDesc        - Descriptor of package to be marked
  *
  * DESCRIPTION: "Mark" all storage belonging to a package, including
  *              contained packages.
@@ -313,7 +313,7 @@ AmlMarkPackage (OBJECT_DESCRIPTOR *ObjDesc)
  *
  * FUNCTION:    AmlMarkObject
  *
- * PARAMETERS:  OBJECT_DESCRIPTOR *ObjDesc   Descriptor of object to be marked
+ * PARAMETERS:  *ObjDesc        - Descriptor of object to be marked
  *
  * DESCRIPTION: "Mark" all storage belonging to an object
  *
@@ -395,7 +395,7 @@ AmlMarkObject (OBJECT_DESCRIPTOR *ObjDesc)
  *
  * FUNCTION:    MarkObjectStack
  *
- * PARAMETERS:  INT32 *Count    Count of objects marked
+ * PARAMETERS:  *Count          - Count of objects marked
  *
  * DESCRIPTION: Mark blocks occupied by currently-active objects on stack
  *
@@ -415,7 +415,7 @@ MarkObjectStack (INT32 *Count)
         /*  For each entry on the stack */
 
         if (ObjStack[Index] &&
-            !IsNsHandle (ObjStack[Index]))
+            !IS_NS_HANDLE (ObjStack[Index]))
         {   
             /*  Mark value's storage    */
             
@@ -435,8 +435,8 @@ MarkObjectStack (INT32 *Count)
  * 
  * FUNCTION:    DigitsNeeded
  *
- * PARAMETERS:  INT32   val         value to be represented
- *              INT32   base        base of representation
+ * PARAMETERS:  val             - Value to be represented
+ *              base            - Base of representation
  *
  * RETURN:      the number of digits needed to represent val in base
  *
@@ -467,149 +467,4 @@ DigitsNeeded (INT32 val, INT32 base)
     return NumDigits;
 }
 
-
-/******************************************************************************
- * 
- * FUNCTION:    LineSet
- *
- * PARAMETERS:  INT32   NumBytes        number of bytes needing to be printed
- *                                      0 => force a new line next time n != 0
- *              OpMode  LoadExecMode    MODE_Load or MODE_Exec 
- *                                      (used in PRINT_L_D expansion)
- *
- * DESCRIPTION: Ensure that there is enough room on the current output line
- *              to print at least n characters; start a new line if needed.
- *              This function is also responsible for printing the offset
- *              within the AML block at the start of each line, and for
- *              indenting the AML according to its block structure while
- *              keeping the offset column vertical.
- *
- *****************************************************************************/
-
-/* Used for keeping track of disassembly listing */
-
-#define         AML_MAX_INDENT 80
-
-static INT32    LinePos = 0;
-static INT32    RightMargin = 74;
-static INT32    LeftMargin = 0;
-static char     LeftMarginChars[AML_MAX_INDENT + 1] = "\0";
-
-
-void
-LineSet (INT32 NumBytes, OpMode LoadExecMode)
-{ 
-    /* Offset in AML block of 1st byte in this line */
-    
-    static ptrdiff_t    LineOffset;
-    static INT32        NewLineRequested = 1;
-    static INT32        FirstLineNotDoneYet = 1;
-
-
-    FUNCTION_TRACE ("LineSet");
-
-
-    if ((MODE_Load1 == LoadExecMode) && (GetDebugLevel() < 1))
-    {
-        return;
-    }
-
-    if (0 == NumBytes)
-    {
-        NewLineRequested = 1;
-        LineOffset = (INT32) (PCode - PCodeBase);
-    }
-
-    else if (NewLineRequested || LinePos + NumBytes > RightMargin)
-    {
-        /* Need a new line */
-
-        if (FirstLineNotDoneYet || LinePos > LeftMargin)
-        {
-            if (NewLineRequested)
-            {
-
-                /* See DESCRIPTION of Indent() re LeftMarginChars[] */
-
-                if (FirstLineNotDoneYet)
-                {
-                    DEBUG_PRINT (TRACE_LOAD,
-                                ("%04x %s\n", LineOffset, LeftMarginChars));
-                    FirstLineNotDoneYet = 0;
-                }
-
-                else
-                {
-                    DEBUG_PRINT (TRACE_LOAD,
-                                ("%04x %s\n", LineOffset, LeftMarginChars));
-                }
-            }
-
-            else
-            {
-                DEBUG_PRINT (TRACE_LOAD,
-                            ("     %s\n", LeftMarginChars));
-            }
-
-            LinePos = LeftMargin;
-        }
-
-        NewLineRequested = 0;
-    }
-
-    LinePos += NumBytes;
-}
-
-
-/******************************************************************************
- * 
- * FUNCTION:    Indent
- *
- * PARAMETERS:  INT32   NumChars    Number of character positions to move the indent
- *
- * DESCRIPTION: Maintains LeftMargin position, and corresponding
- *              LeftMarginChars string (of spaces) which is printed
- *              following each line's offset field
- *
- *****************************************************************************/
-
-void
-Indent (INT32 NumChars)
-{
-    FUNCTION_TRACE ("Indent");
-
-
-    if (NumChars < 0)
-    {
-        /* DEBUG_PRINT (ACPI_INFO, ("out(%d) \n", -n)); */
-
-        LeftMargin += NumChars;                    /* Reduces LeftMargin, since n < 0 */
-        if (LeftMargin < 0)
-        {
-            LeftMargin = 0;
-        }
-    }
-    else
-    {
-        /* DEBUG_PRINT (ACPI_INFO, ("in(%d) \n", n)); */
-
-        while (NumChars)
-        {
-            if (LeftMargin < AML_MAX_INDENT)
-            {
-                LeftMarginChars[LeftMargin] = ' ';
-            }
-
-            LeftMargin++;
-            NumChars--;
-        }
-    }
-
-    if (LeftMargin < AML_MAX_INDENT + 1)
-    {
-        LeftMarginChars[LeftMargin] = '\0';
-    }
-
-    LINE_SET (0, MODE_Load);
-}
 
