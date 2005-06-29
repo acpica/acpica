@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: actbl.h - Table data structures defined in ACPI specification
- *       $Revision: 1.60 $
+ *       $Revision: 1.61 $
  *
  *****************************************************************************/
 
@@ -241,6 +241,12 @@ typedef struct multiple_apic_table
 #define APIC_HEADER_DEF                     /* Common APIC sub-structure header */\
     UINT8                   Type; \
     UINT8                   Length;
+
+typedef struct apic_header
+{
+    APIC_HEADER_DEF
+
+} APIC_HEADER;
 
 /* Values for MPS INTI flags */
 
