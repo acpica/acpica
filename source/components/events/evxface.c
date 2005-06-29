@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: evxface - External interfaces for ACPI events
- *              $Revision: 1.103 $
+ *              $Revision: 1.105 $
  *
  *****************************************************************************/
 
@@ -124,7 +124,7 @@
 #include "amlcode.h"
 #include "acinterp.h"
 
-#define _COMPONENT          EVENT_HANDLING
+#define _COMPONENT          ACPI_EVENTS
         MODULE_NAME         ("evxface")
 
 
@@ -245,7 +245,7 @@ AcpiRemoveFixedEventHandler (
     AcpiGbl_FixedEventHandlers[Event].Handler = NULL;
     AcpiGbl_FixedEventHandlers[Event].Context = NULL;
 
-    
+
     if (!ACPI_SUCCESS(Status))
     {
         DEBUG_PRINT (ACPI_WARN,
