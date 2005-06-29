@@ -595,7 +595,8 @@ BREAKPOINT3;
         /* All prefixes have been handled, and the name is in NameString */
 
         LocalDeleteObject ((OBJECT_DESCRIPTOR **) &ObjStack[ObjStackTop]);
-        Status = NsEnter (NameString, DataType, LoadExecMode, &ObjStack[ObjStackTop]);
+        Status = NsEnter (NameString, DataType, LoadExecMode, 
+                            (NAME_TABLE_ENTRY **) &ObjStack[ObjStackTop]);
 
         /* Help view ObjStack during debugging */
 
