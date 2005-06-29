@@ -124,8 +124,8 @@
 #include <amlcode.h>
 
 
-#define _THIS_MODULE        "iedyad.c"
 #define _COMPONENT          INTERPRETER
+        MODULE_NAME         ("iedyad");
 
 
 /*****************************************************************************
@@ -308,7 +308,7 @@ AmlExecDyadic2R (
     if (Status != AE_OK)
     {
         AmlAppendOperandDiag (_THIS_MODULE, __LINE__, opcode, NumOperands);
-        return_ACPI_STATUS (Status);
+        goto Cleanup;
     }
 
     AmlDumpObjStack (IMODE_Execute, Gbl_ShortOps[opcode], NumOperands, "after AmlPrepObjStack");
@@ -427,7 +427,8 @@ AmlExecDyadic2R (
             DEBUG_PRINT (ACPI_ERROR, (
                     "AmlExecDyadic2R/ConcatOp: operand type mismatch %d %d\n",
                     ObjDesc->Common.Type, ObjDesc2->Common.Type));
-            return_ACPI_STATUS (AE_AML_ERROR);
+            Status = AE_AML_ERROR;
+            goto Cleanup;
         }
 
         /* Both operands are now known to be the same */
@@ -441,7 +442,8 @@ AmlExecDyadic2R (
             if (!NewBuf)
             {
                 REPORT_ERROR ("AmlExecDyadic2R/ConcatOp: String allocation failure");
-                return_ACPI_STATUS (AE_AML_ERROR);
+                Status = AE_AML_ERROR;
+                goto Cleanup;
             }
             
             STRCPY (NewBuf, (char *) ObjDesc->String.Pointer);
@@ -473,7 +475,8 @@ AmlExecDyadic2R (
                 DEBUG_PRINT (ACPI_ERROR, (
                             "AmlExecDyadic2R/ConcatOp: Buffer allocation failure %d\n",
                             ObjDesc->Buffer.Length + ObjDesc2->Buffer.Length));
-                return_ACPI_STATUS (AE_AML_ERROR);
+                Status = AE_AML_ERROR;
+                goto Cleanup;
             }
 
             MEMCPY (NewBuf, ObjDesc->Buffer.Pointer, 
@@ -494,7 +497,8 @@ AmlExecDyadic2R (
 
     default:
         DEBUG_PRINT (ACPI_ERROR, ("AmlExecDyadic2R: Unknown dyadic opcode %02x\n", opcode));
-        return_ACPI_STATUS (AE_AML_ERROR);
+        Status = AE_AML_ERROR;
+        goto Cleanup;
     }
 
     
@@ -506,14 +510,16 @@ AmlExecDyadic2R (
 
     if ((Status = AmlExecStore (ObjDesc, ResDesc)) != AE_OK)
     {
-        AmlObjStackPop (NumOperands - 1);
-        return_ACPI_STATUS (Status);
+        goto Cleanup;
     }
     
     if (AML_DivideOp == opcode)
     {
         Status = AmlExecStore(ObjDesc2, ResDesc2);
     }
+
+
+Cleanup:
 
     /*
      * Don't delete ObjDesc because it will remain on the stack.
@@ -583,7 +589,7 @@ AmlExecDyadic2S (
     if (VALID_DESCRIPTOR_TYPE (ObjDesc, DESC_TYPE_NTE))
     {
         ThisEntry = (NAME_TABLE_ENTRY *) ObjDesc;
-        if (!ThisEntry->Object)
+        if (!(ObjDesc = NsGetAttachedObject ((ACPI_HANDLE) ThisEntry)))
         {
             /* No object present, create a Mutex object */
 
@@ -601,13 +607,8 @@ AmlExecDyadic2S (
             ObjDesc->Mutex.LockCount = 0;
             ObjDesc->Mutex.ThreadId  = 0;
 
-            ThisEntry->Object = ObjDesc;
-            ThisEntry->Type = ACPI_TYPE_Mutex;
+            NsAttachObject ((ACPI_HANDLE) ThisEntry, ObjDesc, ACPI_TYPE_Mutex);
         }
-
-        /* Extract the valid object */
-
-        ObjDesc = ThisEntry->Object;
     }
 
 
@@ -627,11 +628,13 @@ AmlExecDyadic2S (
                     ResDesc->Common.Type));
             Status = AE_AML_ERROR;
         }
+
         else
         {
             Status = OsAcquireOpRqst (TimeDesc, ObjDesc);
         }
 
+        break;
 
 
     /* DefWait :=  WaitOp  EventObject Timeout */
@@ -645,10 +648,13 @@ AmlExecDyadic2S (
                     ResDesc->Common.Type));
             Status = AE_AML_ERROR;
         }
+
         else
         {
             Status = OsWaitOpRqst (TimeDesc, ObjDesc);
         }
+
+        break;
 
 
     default:
@@ -657,20 +663,35 @@ AmlExecDyadic2S (
                 "AmlExecDyadic2S: Unknown dyadic synchronization opcode %02x\n",
                 opcode));
         Status = AE_AML_ERROR;
+
+        break;
     }
 
 
 
 Cleanup:
 
-    /* Delete TimeOut object descriptor before removing it from object stack   */
-
-    CmDeleteInternalObject (TimeDesc);
-
     /* Remove TimeOut parameter from object stack  */
 
     AmlObjStackPop (1);
     
+    /* We will use the TimeOut object as the return value object */
+
+    if (Status == AE_TIME)
+    {
+        TimeDesc->Number.Value = (-1);       /* TRUE, operation timed out */
+    }
+
+    else
+    {
+        TimeDesc->Number.Value = 0;          /* FALSE, operation did not time out */
+    }
+
+    /* Delete mutex param and put the result on the stack */
+
+    AmlObjStackDeleteValue (STACK_TOP);
+    AmlObjStackSetValue (STACK_TOP, TimeDesc);
+
     return_ACPI_STATUS (Status);
 }
 
@@ -731,7 +752,7 @@ AmlExecDyadic2 (
     case AML_LAndOp:
         if (ObjDesc->Number.Value && ObjDesc2->Number.Value)
         {
-            Status = AE_PENDING;
+            Status = AE_TRUE;
         }
         break;
 
@@ -741,7 +762,7 @@ AmlExecDyadic2 (
     case AML_LEqualOp:
         if (ObjDesc->Number.Value == ObjDesc2->Number.Value)
         {
-            Status = AE_PENDING;
+            Status = AE_TRUE;
         }
         break;
 
@@ -751,7 +772,7 @@ AmlExecDyadic2 (
     case AML_LGreaterOp:
         if (ObjDesc->Number.Value > ObjDesc2->Number.Value)
         {
-            Status = AE_PENDING;
+            Status = AE_TRUE;
         }
         break;
 
@@ -761,7 +782,7 @@ AmlExecDyadic2 (
     case AML_LLessOp:
         if (ObjDesc->Number.Value < ObjDesc2->Number.Value)
         {
-            Status = AE_PENDING;
+            Status = AE_TRUE;
         }
         break;
 
@@ -771,7 +792,7 @@ AmlExecDyadic2 (
     case AML_LOrOp:
         if (ObjDesc->Number.Value || ObjDesc2->Number.Value)
         {
-            Status = AE_PENDING;
+            Status = AE_TRUE;
         }
         break;
     
@@ -783,7 +804,7 @@ AmlExecDyadic2 (
 
     /* ObjDesc->Type == Number was assured by AmlPrepObjStack("nn") call */
     
-    if (Status == AE_PENDING)
+    if (Status == AE_TRUE)
     {
         ObjDesc->Number.Value = 0xffffffff;
     }
@@ -798,7 +819,7 @@ AmlExecDyadic2 (
     CmDeleteInternalObject (ObjDesc2);
     AmlObjStackPop (1);
  
-    /* Always return AE_OK here (AE_PENDING was handled above!) */
+    /* Always return AE_OK here (AE_TRUE was handled above!) */
 
     return_ACPI_STATUS (AE_OK);
 }
