@@ -279,7 +279,7 @@ AmlStoreObjectToNte (
     case ACPI_TYPE_Package: 
 
         /*
-         *  BUGBUG: Not real sure what to do here
+         *  TBD: Not real sure what to do here
          */
         Status = AE_NOT_IMPLEMENTED;
         break;
@@ -585,7 +585,7 @@ AmlStoreObjectToNte (
         /*
          * TBD: REMOVE this limitation
          *  Make sure the operation is within the limits of our implementation
-         *  this is not a Spec limitation!!   BUGBUG
+         *  this is not a Spec limitation!!
          */
         if (DestDesc->FieldUnit.Length + DestDesc->FieldUnit.BitOffset > 32)
         {
@@ -639,7 +639,7 @@ AmlStoreObjectToNte (
     case ACPI_TYPE_Package:
 
         /*
-         *  BUGBUG: Not real sure what to do here
+         *  TBD: Not real sure what to do here
          */
         Status = AE_NOT_IMPLEMENTED;
         break;
