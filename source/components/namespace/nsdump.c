@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: nsdump - table dumping routines for debug
- *              $Revision: 1.146 $
+ *              $Revision: 1.147 $
  *
  *****************************************************************************/
 
@@ -186,7 +186,7 @@ AcpiNsPrintPathname (
  *
  ******************************************************************************/
 
-ACPI_STATUS
+void
 AcpiNsDumpPathname (
     ACPI_HANDLE             Handle,
     NATIVE_CHAR             *Msg,
@@ -204,7 +204,7 @@ AcpiNsDumpPathname (
 
     if (!(AcpiDbgLevel & Level) || !(AcpiDbgLayer & Component))
     {
-        return_ACPI_STATUS (AE_OK);
+        return_VOID;
     }
 
     /* Convert handle to a full pathname and print it (with supplied message) */
@@ -218,7 +218,7 @@ AcpiNsDumpPathname (
         ACPI_MEM_FREE (Buffer.Pointer);
     }
 
-    return_ACPI_STATUS (Status);
+    return_VOID;
 }
 
 
