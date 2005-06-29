@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asltree - parse tree management
- *              $Revision: 1.12 $
+ *              $Revision: 1.13 $
  *
  *****************************************************************************/
 
@@ -668,10 +668,7 @@ TgLinkPeerNodes (
 
 
     va_start (ap, NumPeers);
-
     This = va_arg (ap, ASL_PARSE_NODE *);
-    DbgPrint ("Include file:  %s\n", This->Child->Value.Pointer);
-
     Start = This;
 
     for (i = 0; i < (NumPeers -1); i++)
@@ -680,8 +677,6 @@ TgLinkPeerNodes (
 
         while (This->Peer)
         {
-            DbgPrint ("\nLinkPeers: (n%d) This=%p (%s), This->Peer=%p\n", 
-                            i, This, UtGetOpName(This->ParseOpcode), This->Peer);
             This = This->Peer;
         }
 
