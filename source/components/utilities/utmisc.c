@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: cmutils - common utility procedures
- *              $Revision: 1.27 $
+ *              $Revision: 1.28 $
  *
  ******************************************************************************/
 
@@ -903,17 +903,17 @@ AcpiCmResolvePackageReferences (
 
         if (SubObject->Common.Type == INTERNAL_TYPE_REFERENCE)
         {
-            if (SubObject->Reference.OpCode == AML_ZERO_OP)
+            if (SubObject->Reference.Opcode == AML_ZERO_OP)
             {
                 SubObject->Common.Type  = ACPI_TYPE_INTEGER;
                 SubObject->Integer.Value = 0;
             }
-            else if (SubObject->Reference.OpCode == AML_ONE_OP)
+            else if (SubObject->Reference.Opcode == AML_ONE_OP)
             {
                 SubObject->Common.Type  = ACPI_TYPE_INTEGER;
                 SubObject->Integer.Value = 1;
             }
-            else if (SubObject->Reference.OpCode == AML_ONES_OP)
+            else if (SubObject->Reference.Opcode == AML_ONES_OP)
             {
                 SubObject->Common.Type  = ACPI_TYPE_INTEGER;
                 SubObject->Integer.Value = ACPI_INTEGER_MAX;
