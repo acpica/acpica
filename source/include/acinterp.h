@@ -369,26 +369,30 @@ void
 OsDoSuspend(
     UINT32                  Time);
 
+void
+OsDoStall (
+    UINT32                  Time);
+
 ACPI_STATUS
-OsAcquireOpRqst(
+OsAcquireMutex(
     ACPI_OBJECT_INTERNAL    *Time, 
     ACPI_OBJECT_INTERNAL    *ObjDesc);
 
 ACPI_STATUS
-OsReleaseOpRqst(
+OsReleaseMutex(
     ACPI_OBJECT_INTERNAL    *ObjDesc);
 
 ACPI_STATUS
-OsSignalOpRqst(
+OsSignalEvent(
     ACPI_OBJECT_INTERNAL    *ObjDesc);
 
 ACPI_STATUS
-OsWaitOpRqst(
+OsWaitEvent(
     ACPI_OBJECT_INTERNAL    *Time, 
     ACPI_OBJECT_INTERNAL    *ObjDesc);
 
 ACPI_STATUS
-OsResetOpRqst(
+OsResetEvent(
     ACPI_OBJECT_INTERNAL    *ObjDesc);
 
 ACPI_STATUS
@@ -601,6 +605,14 @@ AmlDoName (
 /*
  * isutils - interpreter/scanner utilities
  */
+
+void
+AmlEnterInterpreter (
+    void);
+
+void
+AmlExitInterpreter (
+    void);
 
 BOOLEAN
 AmlValidateObjectType (
