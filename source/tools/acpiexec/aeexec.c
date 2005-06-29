@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: aeexec - Support routines for AcpiExec utility
- *              $Revision: 1.51 $
+ *              $Revision: 1.52 $
  *
  *****************************************************************************/
 
@@ -447,6 +447,9 @@ AeNotifyHandler (
  *
  *****************************************************************************/
 
+ACPI_ADR_SPACE_TYPE         SpaceId[] = {0, 1, 2, 3, 0x80};
+#define AEXEC_NUM_REGIONS   5
+
 ACPI_STATUS
 AeInstallHandlers (void)
 {
@@ -465,21 +468,21 @@ AeInstallHandlers (void)
             AcpiFormatException (Status));
     }
 
-    for (i = 0; i < 3; i++)
+    for (i = 0; i < AEXEC_NUM_REGIONS; i++)
     {
         Status = AcpiRemoveAddressSpaceHandler (AcpiGbl_RootNode,
-                        (ACPI_ADR_SPACE_TYPE) i, AeRegionHandler);
+                        SpaceId[i], AeRegionHandler);
 
         /* Install handler at the root object.
          * TBD: all default handlers should be installed here!
          */
         Status = AcpiInstallAddressSpaceHandler (AcpiGbl_RootNode,
-                        (ACPI_ADR_SPACE_TYPE) i, AeRegionHandler, AeRegionInit, NULL);
+                        SpaceId[i], AeRegionHandler, AeRegionInit, NULL);
         if (ACPI_FAILURE (Status))
         {
             ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
                 "Could not install an OpRegion handler for %s space(%d), %s\n",
-                AcpiUtGetRegionName((UINT8) i), i, AcpiFormatException (Status)));
+                AcpiUtGetRegionName((UINT8) SpaceId[i]), SpaceId[i], AcpiFormatException (Status)));
             return (Status);
         }
     }
