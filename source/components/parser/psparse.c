@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: psparse - Parser top level AML parse routines
- *              $Revision: 1.109 $
+ *              $Revision: 1.110 $
  *
  *****************************************************************************/
 
@@ -1008,10 +1008,23 @@ CloseThisOp:
 
             default:  /* All other non-AE_OK status */
 
+                do
+                {
+                    if (Op)
+                    {
+                        AcpiPsCompleteThisOp (WalkState, Op);
+                    }
+                    AcpiPsPopScope (ParserState, &Op, &WalkState->ArgTypes, &WalkState->ArgCount);
+
+                } while (Op);
+
+#if 0
                 if (Op == NULL)
                 {
                     AcpiPsPopScope (ParserState, &Op, &WalkState->ArgTypes, &WalkState->ArgCount);
                 }
+#endif
+
                 WalkState->PrevOp = Op;
                 WalkState->PrevArgTypes = WalkState->ArgTypes;
 
@@ -1239,6 +1252,14 @@ AcpiPsParseAml (
                  */
                 AcpiDsRestartControlMethod (WalkState, PreviousWalkState->ReturnDesc);
                 WalkState->WalkType |= WALK_METHOD_RESTART;
+            }
+            else
+            {
+                /* TBD: Delete any return object? */
+
+                REPORT_ERROR (("Method execution failed, %s\n", AcpiFormatException (Status)));
+                DUMP_PATHNAME (WalkState->MethodNode, "Method pathname: ",
+                    ACPI_LV_ERROR, _COMPONENT);
             }
         }
 
