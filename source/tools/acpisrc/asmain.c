@@ -487,7 +487,7 @@ AsDisplayUsage (void)
 {
 
     printf ("\n");
-    printf ("Usage: acpisrc [-c | -l | -u] [-s] [-v] [-y] <SourceDir> <DestinationDir>\n\n");
+    printf ("Usage: acpisrc [-c | -l | -u] [-s] [-v] [-y] [-d] <SourceDir> <DestinationDir>\n\n");
     printf ("Where: -c          Generate cleaned version of the source\n");
     printf ("       -l          Generate Linux version of the source\n");
     printf ("       -u          Custom source translation\n");
@@ -631,5 +631,3 @@ main (
 
 	return 0;
 }
-
-
