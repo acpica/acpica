@@ -120,8 +120,8 @@
 #ifndef __ACPIOSD_H__
 #define __ACPIOSD_H__
 
-#include <environment.h>
-#include <acpitypes.h>
+#include <acenv.h>
+#include <actypes.h>
 
 
 /* Priorities for OsdQueueForExecution */
@@ -359,14 +359,14 @@ OsdVprintf (
 
 void
 OsdDbgTrap(
-    UCHAR                   *pTrapCause);
+    char                    *pTrapCause);
 
 void
 OsdDbgAssert(
     void                    *FailedAssertion,
     void                    *FileName,
     UINT32                  LineNumber,
-	UCHAR                   *Message);
+	char                    *Message);
 
 
 #endif /* __ACPIOSD_H__ */
