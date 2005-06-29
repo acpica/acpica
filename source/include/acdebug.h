@@ -1,6 +1,6 @@
 
 /******************************************************************************
- * 
+ *
  * Name: debugger.h - ACPI/AML debugger
  *
  *****************************************************************************/
@@ -38,9 +38,9 @@
  * The above copyright and patent license is granted only if the following
  * conditions are met:
  *
- * 3. Conditions 
+ * 3. Conditions
  *
- * 3.1. Redistribution of Source with Rights to Further Distribute Source.  
+ * 3.1. Redistribution of Source with Rights to Further Distribute Source.
  * Redistribution of source code of any substantial portion of the Covered
  * Code or modification with rights to further distribute source must include
  * the above Copyright Notice, the above License, this list of Conditions,
@@ -48,11 +48,11 @@
  * Licensee must cause all Covered Code to which Licensee contributes to
  * contain a file documenting the changes Licensee made to create that Covered
  * Code and the date of any change.  Licensee must include in that file the
- * documentation of any changes made by any predecessor Licensee.  Licensee 
+ * documentation of any changes made by any predecessor Licensee.  Licensee
  * must include a prominent statement that the modification is derived,
  * directly or indirectly, from Original Intel Code.
  *
- * 3.2. Redistribution of Source with no Rights to Further Distribute Source.  
+ * 3.2. Redistribution of Source with no Rights to Further Distribute Source.
  * Redistribution of source code of any substantial portion of the Covered
  * Code or modification without rights to further distribute source must
  * include the following Disclaimer and Export Compliance provision in the
@@ -86,7 +86,7 @@
  * INSTALLATION, TRAINING OR OTHER SERVICES.  INTEL WILL NOT PROVIDE ANY
  * UPDATES, ENHANCEMENTS OR EXTENSIONS.  INTEL SPECIFICALLY DISCLAIMS ANY
  * IMPLIED WARRANTIES OF MERCHANTABILITY, NONINFRINGEMENT AND FITNESS FOR A
- * PARTICULAR PURPOSE. 
+ * PARTICULAR PURPOSE.
  *
  * 4.2. IN NO EVENT SHALL INTEL HAVE ANY LIABILITY TO LICENSEE, ITS LICENSEES
  * OR ANY OTHER THIRD PARTY, FOR ANY LOST PROFITS, LOST DATA, LOSS OF USE OR
@@ -134,7 +134,7 @@ extern BOOLEAN                  opt_disasm;
 extern BOOLEAN                  opt_stats;
 extern BOOLEAN                  opt_parse_jit;
 extern BOOLEAN                  opt_verbose;
-   
+
 
 extern char                     *Args[DB_MAX_ARGS];
 extern char                     LineBuf[80];
@@ -144,10 +144,10 @@ extern BOOLEAN                  OutputToFile;
 extern char                     *Buffer;
 extern char                     *Filename;
 extern char                     *INDENT_STRING;
-extern UINT32                   Acpi_GblMethodBreakpoint;
-extern UINT8                    Acpi_GblDbOutputFlags;
-extern UINT32                   Acpi_GblDbDebugLevel;
-extern UINT32                   Acpi_GblDbConsoleDebugLevel;
+extern UINT32                   AcpiGbl_MethodBreakpoint;
+extern UINT8                    AcpiGbl_DbOutputFlags;
+extern UINT32                   AcpiGbl_DbDebugLevel;
+extern UINT32                   AcpiGbl_DbConsoleDebugLevel;
 
 extern UINT32                   NumNames;
 extern UINT32                   NumMethods;
@@ -334,7 +334,7 @@ ACPI_STATUS
 AcpiDbDisplayAllMethods (
     char                    *DisplayCountArg);
 
-void 
+void
 AcpiDbDisplayInternalObject (
     ACPI_OBJECT_INTERNAL    *ObjDesc);
 
@@ -461,7 +461,7 @@ AcpiDbDisplayStatistics (
 void
 AcpiDbSetOutputDestination (
     INT32                   Where);
-    
+
 void
 AcpiDbDumpBuffer (
     UINT32                  Address);

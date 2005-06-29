@@ -1,6 +1,6 @@
 
 /******************************************************************************
- * 
+ *
  * Name: events.h - AcpiEvent subcomponent prototypes and defines
  *
  *****************************************************************************/
@@ -38,9 +38,9 @@
  * The above copyright and patent license is granted only if the following
  * conditions are met:
  *
- * 3. Conditions 
+ * 3. Conditions
  *
- * 3.1. Redistribution of Source with Rights to Further Distribute Source.  
+ * 3.1. Redistribution of Source with Rights to Further Distribute Source.
  * Redistribution of source code of any substantial portion of the Covered
  * Code or modification with rights to further distribute source must include
  * the above Copyright Notice, the above License, this list of Conditions,
@@ -48,11 +48,11 @@
  * Licensee must cause all Covered Code to which Licensee contributes to
  * contain a file documenting the changes Licensee made to create that Covered
  * Code and the date of any change.  Licensee must include in that file the
- * documentation of any changes made by any predecessor Licensee.  Licensee 
+ * documentation of any changes made by any predecessor Licensee.  Licensee
  * must include a prominent statement that the modification is derived,
  * directly or indirectly, from Original Intel Code.
  *
- * 3.2. Redistribution of Source with no Rights to Further Distribute Source.  
+ * 3.2. Redistribution of Source with no Rights to Further Distribute Source.
  * Redistribution of source code of any substantial portion of the Covered
  * Code or modification without rights to further distribute source must
  * include the following Disclaimer and Export Compliance provision in the
@@ -86,7 +86,7 @@
  * INSTALLATION, TRAINING OR OTHER SERVICES.  INTEL WILL NOT PROVIDE ANY
  * UPDATES, ENHANCEMENTS OR EXTENSIONS.  INTEL SPECIFICALLY DISCLAIMS ANY
  * IMPLIED WARRANTIES OF MERCHANTABILITY, NONINFRINGEMENT AND FITNESS FOR A
- * PARTICULAR PURPOSE. 
+ * PARTICULAR PURPOSE.
  *
  * 4.2. IN NO EVENT SHALL INTEL HAVE ANY LIABILITY TO LICENSEE, ITS LICENSEES
  * OR ANY OTHER THIRD PARTY, FOR ANY LOST PROFITS, LOST DATA, LOSS OF USE OR
@@ -137,7 +137,7 @@
 
 
 
-/* 
+/*
  * AcpiEvfixed - Fixed event handling
  */
 
@@ -198,11 +198,11 @@ AcpiEvGpeDetect (
 
 void
 AcpiEvNotifyDispatch (
-    ACPI_HANDLE             Device, 
+    ACPI_HANDLE             Device,
     UINT32                  NotifyValue);
 
 
-/* 
+/*
  * AcpiEvregion - Address Space handling
  */
 
@@ -221,8 +221,8 @@ AcpiEvAddressSpaceDispatch (
 
 ACPI_STATUS
 AcpiEvAddrHandlerHelper (
-    ACPI_HANDLE             ObjHandle, 
-    UINT32                  Level, 
+    ACPI_HANDLE             ObjHandle,
+    UINT32                  Level,
     void                    *Context,
     void                    **ReturnValue);
 
@@ -278,8 +278,8 @@ AcpiEvInitializeRegion (
 /*
  * AcpiEvsci - SCI (System Control Interrupt) handling/dispatch
  */
-    
-UINT32 
+
+UINT32
 AcpiEvInstallSciHandler (
     void);
 
@@ -287,7 +287,7 @@ ACPI_STATUS
 AcpiEvRemoveSciHandler (
     void);
 
-INT32 
+INT32
 AcpiEvInitializeSCI (
     INT32                   ProgramSCI);
 
@@ -309,11 +309,11 @@ AcpiEvTerminate (
 
 #ifdef ACPI_DEBUG
 
-INT32 
+INT32
 AcpiEvSciCount (
     UINT32                  AcpiEvent);
 
-#define DEBUG_INCREMENT_EVENT_COUNT(a)   Acpi_GblEventCount[a]++;
+#define DEBUG_INCREMENT_EVENT_COUNT(a)   AcpiGbl_EventCount[a]++;
 
 #else
 
