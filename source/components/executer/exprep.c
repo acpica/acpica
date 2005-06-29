@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exprep - ACPI AML (p-code) execution - field prep utilities
- *              $Revision: 1.124 $
+ *              $Revision: 1.125 $
  *
  *****************************************************************************/
 
@@ -434,7 +434,7 @@ AcpiExPrepCommonFieldObject (
      */
     NearestByteAddress =
             ACPI_ROUND_BITS_DOWN_TO_BYTES (FieldBitPosition);
-    ObjDesc->CommonField.BaseByteOffset =
+    ObjDesc->CommonField.BaseByteOffset = (UINT32)
             ACPI_ROUND_DOWN (NearestByteAddress, ByteAlignment);
 
     /*
