@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: amfield - ACPI AML (p-code) execution - field manipulation
- *              $Revision: 1.77 $
+ *              $Revision: 1.80 $
  *
  *****************************************************************************/
 
@@ -126,7 +126,7 @@
 #include "acevents.h"
 
 
-#define _COMPONENT          INTERPRETER
+#define _COMPONENT          ACPI_EXECUTER
         MODULE_NAME         ("amfield")
 
 
@@ -263,9 +263,9 @@ AcpiAmlSetupField (
  * FUNCTION:    AcpiAmlAccessNamedField
  *
  * PARAMETERS:  Mode                - ACPI_READ or ACPI_WRITE
- *              NamedField          - Handle for field to be accessed
+ *              *FieldNode          - Parent node for field to be accessed
  *              *Buffer             - Value(s) to be read or written
- *              BufferLength          - Number of bytes to transfer
+ *              BufferLength        - Number of bytes to transfer
  *
  * RETURN:      Status
  *
@@ -276,7 +276,7 @@ AcpiAmlSetupField (
 ACPI_STATUS
 AcpiAmlAccessNamedField (
     UINT32                  Mode,
-    ACPI_HANDLE             NamedField,
+    ACPI_NAMESPACE_NODE     *FieldNode,
     void                    *Buffer,
     UINT32                  BufferLength)
 {
@@ -290,12 +290,12 @@ AcpiAmlAccessNamedField (
     UINT32                  ByteFieldLength;
 
 
-    FUNCTION_TRACE_PTR ("AmlAccessNamedField", NamedField);
+    FUNCTION_TRACE_PTR ("AmlAccessNamedField", FieldNode);
 
 
     /* Parameter validation */
 
-    if ((!NamedField) || (ACPI_READ == Mode && !Buffer))
+    if ((!FieldNode) || (ACPI_READ == Mode && !Buffer))
     {
         DEBUG_PRINT (ACPI_ERROR,
             ("AcpiAmlAccessNamedField: Internal error - null parameter\n"));
@@ -304,7 +304,7 @@ AcpiAmlAccessNamedField (
 
     /* Get the attached field object */
 
-    ObjDesc = AcpiNsGetAttachedObject (NamedField);
+    ObjDesc = AcpiNsGetAttachedObject (FieldNode);
     if (!ObjDesc)
     {
         DEBUG_PRINT (ACPI_ERROR,
@@ -314,16 +314,15 @@ AcpiAmlAccessNamedField (
 
     /* Check the type */
 
-    if (INTERNAL_TYPE_DEF_FIELD != AcpiNsGetType (NamedField))
+    if (INTERNAL_TYPE_DEF_FIELD != AcpiNsGetType (FieldNode))
     {
         DEBUG_PRINT (ACPI_ERROR,
             ("AmlAccessNamedField: Name %4.4s type %x is not a defined field\n",
-            &(((ACPI_NAMESPACE_NODE *) NamedField)->Name),
-            AcpiNsGetType (NamedField)));
+            &(FieldNode->Name), AcpiNsGetType (FieldNode)));
         return_ACPI_STATUS (AE_AML_OPERAND_TYPE);
     }
 
-    /* ObjDesc valid and NamedField is a defined field  */
+    /* ObjDesc valid and FieldNode is a defined field  */
 
     DEBUG_PRINT (ACPI_INFO,
         ("AccessNamedField: Obj=%p Type=%x Buf=%p Len=%x\n",
@@ -331,7 +330,7 @@ AcpiAmlAccessNamedField (
     DEBUG_PRINT (ACPI_INFO,
         ("AccessNamedField: Mode=%d FieldLen=%d, BitOffset=%d\n",
         Mode, ObjDesc->FieldUnit.Length, ObjDesc->FieldUnit.BitOffset));
-    DUMP_ENTRY (NamedField, ACPI_INFO);
+    DUMP_ENTRY (FieldNode, ACPI_INFO);
 
 
     /* Double-check that the attached object is also a field */
@@ -340,8 +339,8 @@ AcpiAmlAccessNamedField (
     {
         DEBUG_PRINT (ACPI_ERROR,
             ("AmlAccessNamedField: Internal error - Name %4.4s type %x does not match value-type %x at %p\n",
-            &(((ACPI_NAMESPACE_NODE *) NamedField)->Name),
-            AcpiNsGetType (NamedField), ObjDesc->Common.Type, ObjDesc));
+            &(FieldNode->Name), AcpiNsGetType (FieldNode), 
+            ObjDesc->Common.Type, ObjDesc));
         return_ACPI_STATUS (AE_AML_OPERAND_TYPE);
     }
 
@@ -374,8 +373,19 @@ AcpiAmlAccessNamedField (
         ActualByteLength = ByteFieldLength;
     }
 
+    /* 
+     * This code has been commented because it incorrectly changes the
+     *  access granularity of a field.  In the case of a DwordAccess
+     *  field, reading/writing a byte-sized field unit, the read/write
+     *  would occur on the nth BYTE instead of the nth DWORD.
+     * 
+     * This code was originally introduced to deal with the case
+     *  where a small Region had an associated Field with an AccessType
+     *  that was larger than the entire region space - a violation of
+     *  the ACPI specification.
+     */
     /* TBD: should these round down to a power of 2? */
-
+/*
     if (DIV_8 (BitGranularity) > ByteFieldLength)
     {
         DEBUG_PRINT (ACPI_INFO,
@@ -393,7 +403,7 @@ AcpiAmlAccessNamedField (
 
         ByteGranularity = ByteFieldLength;
     }
-
+*/
 
     /* Convert byte count to datum count, round up if necessary */
 
