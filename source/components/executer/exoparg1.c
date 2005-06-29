@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exoparg1 - AML execution - opcodes with 1 argument
- *              $Revision: 1.121 $
+ *              $Revision: 1.122 $
  *
  *****************************************************************************/
 
@@ -885,7 +885,7 @@ AcpiExOpcode_1A_0T_1R (
         {
             /* Get the actual object from the Node (This is the dereference) */
 
-            ReturnDesc = ((ACPI_NAMESPACE_NODE *) Operand[0])->Object;
+            ReturnDesc = AcpiNsGetAttachedObject ((ACPI_NAMESPACE_NODE *) Operand[0]);
 
             /* Returning a pointer to the object, add another reference! */
 
