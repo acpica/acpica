@@ -188,19 +188,17 @@ AcpiEvaluateObject (
          */
 
         Count = ParamObjects->Count;
-        ParamPtr = LocalCallocate ((Count + 1) * 
-                                    sizeof (void *));
+        ParamPtr = CmCallocate ((Count + 1) * sizeof (void *));
         if (!ParamPtr)
         {
             FUNCTION_STATUS_EXIT (AE_NO_MEMORY);
             return AE_NO_MEMORY;
         }
 
-        ObjectPtr = LocalCallocate ((Count) * 
-                                    sizeof (ACPI_OBJECT_INTERNAL));
+        ObjectPtr = CmCallocate ((Count) * sizeof (ACPI_OBJECT_INTERNAL));
         if (!ObjectPtr)
         {
-            OsdFree (ParamPtr);
+            CmFree (ParamPtr);
             FUNCTION_STATUS_EXIT (AE_NO_MEMORY);
             return AE_NO_MEMORY;
         }
@@ -550,10 +548,13 @@ AcpiGetParent (
     ACPI_HANDLE             *RetHandle)
 {
     NAME_TABLE_ENTRY        *Object;
+    
+    FUNCTION_TRACE ("AcpiGetParent");
 
 
     if (!RetHandle)
     {
+    	FUNCTION_EXIT;
         return AE_BAD_PARAMETER;
     }
 
@@ -561,6 +562,7 @@ AcpiGetParent (
 
     if (Handle == ACPI_ROOT_OBJECT)
     {
+    	FUNCTION_EXIT;
         return AE_NULL_ENTRY;
     }
 
@@ -568,6 +570,7 @@ AcpiGetParent (
 
     if (!(Object = NsConvertHandleToEntry (Handle)))
     {
+    	FUNCTION_EXIT;
         return AE_BAD_PARAMETER;
     }
 
@@ -580,9 +583,11 @@ AcpiGetParent (
 
     if (!Object->ParentEntry)
     {
+    	FUNCTION_EXIT;
         return AE_NULL_ENTRY;
     }
 
+   	FUNCTION_EXIT;
     return AE_OK;
 }
 
@@ -669,10 +674,13 @@ AcpiGetContainingScope (
     ACPI_HANDLE             *RetHandle)
 {
     NAME_TABLE_ENTRY        *Object;
+    
+    FUNCTION_TRACE ("AcpiGetContainingScope");
 
 
     if (!RetHandle)
     {
+    	FUNCTION_EXIT;
         return AE_BAD_PARAMETER;
     }
 
@@ -680,6 +688,7 @@ AcpiGetContainingScope (
 
     if (Handle == ACPI_ROOT_OBJECT)
     {
+    	FUNCTION_EXIT;
         return AE_NULL_ENTRY;
     }
 
@@ -687,6 +696,7 @@ AcpiGetContainingScope (
 
     if (!(Object = NsConvertHandleToEntry (Handle)))
     {
+    	FUNCTION_EXIT;
         return AE_BAD_PARAMETER;
     }
 
@@ -701,6 +711,7 @@ AcpiGetContainingScope (
         *RetHandle = Object->ParentEntry->Scope;
     }
 
+   	FUNCTION_EXIT;
     return AE_OK;
 }
 
