@@ -159,8 +159,6 @@
  *
  ****************************************************************************/
 
-
-
 ACPI_STATUS
 AmlSetupField (
     ACPI_OBJECT_INTERNAL    *ObjDesc, 
@@ -174,80 +172,75 @@ AmlSetupField (
     FUNCTION_TRACE ("AmlSetupField");
 
 
+    /* Parameter validation */
+
     if (!ObjDesc || !RgnDesc)
     {
         DEBUG_PRINT (ACPI_ERROR, ("AmlSetupField: Internal error - null handle\n"));
-        Status = AE_AML_ERROR;
+        return_ACPI_STATUS (AE_AML_ERROR);
     }
 
-    else if (ACPI_TYPE_Region != RgnDesc->Common.Type)
+    if (ACPI_TYPE_Region != RgnDesc->Common.Type)
     {
         DEBUG_PRINT (ACPI_ERROR, ("AmlSetupField: Needed Region, found type %x %s\n",
                         RgnDesc->Common.Type, Gbl_NsTypeNames[RgnDesc->Common.Type]));
-        Status = AE_AML_ERROR;
-    }
-
-    if (AE_OK == Status)
-    {   
-        /* ObjDesc, RgnDesc, and RgnDesc->Common.Type valid */
-        
-        FieldByteWidth = FieldBitWidth / 8;     /*  possible values are 1, 2, 4 */
-
-        if ((FieldBitWidth != 8) && 
-            (FieldBitWidth != 16) && 
-            (FieldBitWidth != 32))
-        {
-            DEBUG_PRINT (ACPI_ERROR, ("AmlSetupField: Internal error - bad width %d\n", FieldBitWidth));
-            Status = AE_AML_ERROR;
-        }
+        return_ACPI_STATUS (AE_AML_ERROR);
     }
 
 
-    if (AE_OK == Status)
-    {   
-        /* 
-         * If the address and length have not been previously evaluated,
-         * evaluate them and save the results.
-         */
-        if (0 == RgnDesc->Region.DataValid)
-        {
+    /* Init and validate Field width */
+    
+    FieldByteWidth = FieldBitWidth / 8;     /*  possible values are 1, 2, 4 */
 
-            Status = PsxGetRegionData (RgnDesc);
-        }
-    }
-
-
-    if (AE_OK == Status)
+    if ((FieldBitWidth != 8) && 
+        (FieldBitWidth != 16) && 
+        (FieldBitWidth != 32))
     {
-        /* 
-         * If (offset rounded up to next multiple of field width)
-         * exceeds region length, indicate an error.
-         */
+        DEBUG_PRINT (ACPI_ERROR, ("AmlSetupField: Internal error - bad width %d\n", FieldBitWidth));
+        return_ACPI_STATUS (AE_AML_ERROR);
+    }
 
-        if (RgnDesc->Region.Length <
-           (ObjDesc->Field.Offset & ~((UINT32) FieldByteWidth - 1)) + FieldByteWidth)
+
+    /* 
+     * If the address and length have not been previously evaluated,
+     * evaluate them and save the results.
+     */
+    if (0 == RgnDesc->Region.DataValid)
+    {
+
+        Status = PsxGetRegionData (RgnDesc);
+        if (ACPI_FAILURE (Status))
         {
-            /*  
-             * Offset rounded up to next multiple of field width
-             * exceeds region length, indicate an error
-             */
-
-            DUMP_STACK_ENTRY (RgnDesc);
-            DUMP_STACK_ENTRY (ObjDesc);
-
-            DEBUG_PRINT (ACPI_ERROR,
-                    ("AmlSetupField: Operation at %08lX width %d bits exceeds len %08lX field=%p region=%p\n",
-                    ObjDesc->Field.Offset, FieldBitWidth, RgnDesc->Region.Length, ObjDesc, RgnDesc));
-
-            Status = AE_AML_ERROR;
+            return_ACPI_STATUS (Status);
         }
     }
 
-    return_ACPI_STATUS (Status);
+
+    /* 
+     * If (offset rounded up to next multiple of field width)
+     * exceeds region length, indicate an error.
+     */
+
+    if (RgnDesc->Region.Length <
+       (ObjDesc->Field.Offset & ~((UINT32) FieldByteWidth - 1)) + FieldByteWidth)
+    {
+        /*  
+         * Offset rounded up to next multiple of field width
+         * exceeds region length, indicate an error
+         */
+
+        DUMP_STACK_ENTRY (RgnDesc);
+        DUMP_STACK_ENTRY (ObjDesc);
+
+        DEBUG_PRINT (ACPI_ERROR,
+                ("AmlSetupField: Operation at %08lX width %d bits exceeds len %08lX field=%p region=%p\n",
+                ObjDesc->Field.Offset, FieldBitWidth, RgnDesc->Region.Length, ObjDesc, RgnDesc));
+
+        return_ACPI_STATUS (AE_AML_ERROR);
+    }
+
+    return_ACPI_STATUS (AE_OK);
 }
-
-
-
 
 
 /*****************************************************************************
@@ -392,7 +385,6 @@ AmlAccessNamedField (
 
     return_ACPI_STATUS (Status);
 }
-
 
 
 /*****************************************************************************
