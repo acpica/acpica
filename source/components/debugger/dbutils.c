@@ -183,7 +183,7 @@ AcpiDbDumpBuffer (
     AcpiOsPrintf ("\nLocation 0x%X:\n", Address);
 
     AcpiDbgLevel |= TRACE_TABLES;
-    AcpiCmDumpBuffer ((char *) Address, 64, DB_BYTE_DISPLAY, ACPI_UINT32_MAX);
+    AcpiCmDumpBuffer ((INT8 *) Address, 64, DB_BYTE_DISPLAY, ACPI_UINT32_MAX);
 }
 
 
@@ -246,7 +246,7 @@ AcpiDbDumpObject (
     case ACPI_TYPE_BUFFER:
 
         AcpiOsPrintf ("[Buffer]  Value: ");
-        AcpiCmDumpBuffer ((char *) ObjDesc->Buffer.Pointer, ObjDesc->Buffer.Length, DB_DWORD_DISPLAY, _COMPONENT);
+        AcpiCmDumpBuffer ((INT8 *) ObjDesc->Buffer.Pointer, ObjDesc->Buffer.Length, DB_DWORD_DISPLAY, _COMPONENT);
         break;
 
 
@@ -283,7 +283,7 @@ AcpiDbDumpObject (
 
 void
 AcpiDbPrepNamestring (
-    char                    *Name)
+    INT8                    *Name)
 {
 
 
@@ -406,9 +406,9 @@ AcpiDbSecondPassParse (
 
 ACPI_NAMED_OBJECT*
 AcpiDbLocalNsLookup (
-    char                    *Name)
+    INT8                    *Name)
 {
-    char                    *InternalPath;
+    INT8                    *InternalPath;
     ACPI_STATUS             Status;
     ACPI_NAMED_OBJECT       *Entry = NULL;
 
