@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: psparse - Parser top level AML parse routines
- *              $Revision: 1.130 $
+ *              $Revision: 1.131 $
  *
  *****************************************************************************/
 
@@ -770,7 +770,7 @@ AcpiPsParseLoop (
             {
                 ACPI_DEBUG_PRINT ((ACPI_DB_PARSE,
                     "Opcode %4.4hX [%s] Op %p Aml %p AmlOffset %5.5X\n",
-                     Op->Common.AmlOpcode, WalkState->OpInfo->Name, 
+                     Op->Common.AmlOpcode, WalkState->OpInfo->Name,
                      Op, ParserState->Aml, Op->Common.AmlOffset));
             }
         }
@@ -811,7 +811,7 @@ AcpiPsParseLoop (
 
                 while (GET_CURRENT_ARG_TYPE (WalkState->ArgTypes) && !WalkState->ArgCount)
                 {
-                    WalkState->AmlOffset = ACPI_PTR_DIFF (ParserState->Aml, 
+                    WalkState->AmlOffset = ACPI_PTR_DIFF (ParserState->Aml,
                                                           ParserState->AmlStart);
                     Arg = AcpiPsGetNextArg (ParserState,
                                             GET_CURRENT_ARG_TYPE (WalkState->ArgTypes),
@@ -856,7 +856,7 @@ AcpiPsParseLoop (
                         (WalkState->DescendingCallback != AcpiDsExecBeginOp))
                     {
                         /*
-                         * Skip parsing of 
+                         * Skip parsing of
                          * because we don't have enough info in the first pass
                          * to parse them correctly.
                          */
