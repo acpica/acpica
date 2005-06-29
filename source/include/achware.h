@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: achware.h -- hardware specific interfaces
- *       $Revision: 1.52 $
+ *       $Revision: 1.53 $
  *
  *****************************************************************************/
 
@@ -234,7 +234,7 @@ AcpiGetTimer (
 ACPI_STATUS
 AcpiGetTimerDuration (
     UINT32                  StartTicks,
-	UINT32                  EndTicks,
+    UINT32                  EndTicks,
     UINT32                  *TimeElapsed);
 
 
