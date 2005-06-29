@@ -187,7 +187,7 @@ NsEvaluateRelative (
 
         Status = NsEvaluateByHandle (ObjEntry, ReturnObject, Params);
 
-        DEBUG_PRINT (ACPI_INFO, ("NsEvaluateRelative: *** Completed evaluation of object %s ***\n",
+        DEBUG_PRINT (ACPI_INFO, ("NsEvaluateRelative: *** Completed eval of object %s ***\n",
                                     Pathname));
     }
 
@@ -269,7 +269,7 @@ NsEvaluateByName (
 
         Status = NsEvaluateByHandle (ObjEntry, ReturnObject, Params);
 
-        DEBUG_PRINT (ACPI_INFO, ("NsEvaluateByName: *** Completed evaluation of object %s ***\n",
+        DEBUG_PRINT (ACPI_INFO, ("NsEvaluateByName: *** Completed eval of object %s ***\n",
                                     Pathname));
     }
 
