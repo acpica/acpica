@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: cmxface - External interfaces for "global" ACPI functions
- *              $Revision: 1.64 $
+ *              $Revision: 1.65 $
  *
  *****************************************************************************/
 
@@ -495,7 +495,7 @@ AcpiFormatException (
     ACPI_STATUS             Exception,
     ACPI_BUFFER             *OutBuffer)
 {
-    UINT32                  Length;
+    NATIVE_UINT             Length;
     NATIVE_CHAR             *FormattedException;
 
 
