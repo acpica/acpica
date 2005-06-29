@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: psopcode - Parser/Interpreter opcode information table
- *              $Revision: 1.77 $
+ *              $Revision: 1.79 $
  *
  *****************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2003, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2004, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -324,7 +324,7 @@
 #define ARGI_CREATE_FIELD_OP            ARGI_LIST4 (ARGI_BUFFER,     ARGI_INTEGER,       ARGI_INTEGER,      ARGI_REFERENCE)
 #define ARGI_CREATE_QWORD_FIELD_OP      ARGI_LIST3 (ARGI_BUFFER,     ARGI_INTEGER,       ARGI_REFERENCE)
 #define ARGI_CREATE_WORD_FIELD_OP       ARGI_LIST3 (ARGI_BUFFER,     ARGI_INTEGER,       ARGI_REFERENCE)
-#define ARGI_DATA_REGION_OP             ARGI_LIST3 (ARGI_STRING,     ARGI_STRING,       ARGI_STRING)
+#define ARGI_DATA_REGION_OP             ARGI_LIST3 (ARGI_STRING,     ARGI_STRING,        ARGI_STRING)
 #define ARGI_DEBUG_OP                   ARG_NONE
 #define ARGI_DECREMENT_OP               ARGI_LIST1 (ARGI_INTEGER_REF)
 #define ARGI_DEREF_OF_OP                ARGI_LIST1 (ARGI_REF_OR_STRING)
@@ -343,10 +343,10 @@
 #define ARGI_INDEX_FIELD_OP             ARGI_INVALID_OPCODE
 #define ARGI_INDEX_OP                   ARGI_LIST3 (ARGI_COMPLEXOBJ, ARGI_INTEGER,       ARGI_TARGETREF)
 #define ARGI_LAND_OP                    ARGI_LIST2 (ARGI_INTEGER,    ARGI_INTEGER)
-#define ARGI_LEQUAL_OP                  ARGI_LIST2 (ARGI_INTEGER,    ARGI_INTEGER)
-#define ARGI_LGREATER_OP                ARGI_LIST2 (ARGI_INTEGER,    ARGI_INTEGER)
+#define ARGI_LEQUAL_OP                  ARGI_LIST2 (ARGI_COMPUTEDATA,ARGI_COMPUTEDATA)
+#define ARGI_LGREATER_OP                ARGI_LIST2 (ARGI_COMPUTEDATA,ARGI_COMPUTEDATA)
 #define ARGI_LGREATEREQUAL_OP           ARGI_INVALID_OPCODE
-#define ARGI_LLESS_OP                   ARGI_LIST2 (ARGI_INTEGER,    ARGI_INTEGER)
+#define ARGI_LLESS_OP                   ARGI_LIST2 (ARGI_COMPUTEDATA,ARGI_COMPUTEDATA)
 #define ARGI_LLESSEQUAL_OP              ARGI_INVALID_OPCODE
 #define ARGI_LNOT_OP                    ARGI_LIST1 (ARGI_INTEGER)
 #define ARGI_LNOTEQUAL_OP               ARGI_INVALID_OPCODE
