@@ -1,6 +1,6 @@
 /******************************************************************************
  *
- * Module Name: adisasm - AML disassembler
+ * Module Name: acapps - common include for ACPI applications/tools
  *
  *****************************************************************************/
 
@@ -113,8 +113,8 @@
  *
  *****************************************************************************/
 
-#ifndef _ADISASM
-#define _ADISASM
+#ifndef _ACAPPS
+#define _ACAPPS
 
 
 #ifdef _MSC_VER                 /* disable some level-4 warnings */
@@ -126,6 +126,15 @@ extern UINT32                   AcpiDsdtLength;
 extern UINT8                    *AmlStart;
 extern UINT32                   AmlLength;
 
+
+extern int                      AcpiGbl_Optind;
+extern NATIVE_CHAR              *AcpiGbl_Optarg;
+
+int
+AcpiGetopt(
+    int                     argc, 
+    char                    **argv, 
+    char                    *opts);
 
 ACPI_STATUS
 AdInitialize (
@@ -145,7 +154,6 @@ AdAmlDisassemble (
 void
 AdPrintStatistics (void);
 
-
 ACPI_STATUS
 AdFindDsdt(
     UINT8                   **DsdtPtr,
@@ -153,7 +161,6 @@ AdFindDsdt(
 
 void
 AdDumpTables (void);
-
 
 ACPI_STATUS
 AdGetTables (
@@ -170,5 +177,5 @@ ACPI_STATUS
 AdDisplayStatistics (void);
 
 
-#endif
+#endif /* _ACAPPS */
 
