@@ -245,9 +245,9 @@ AcpiGetSystemInfo (
     OutBuffer->Length = sizeof (ACPI_SYSTEM_INFO);
     InfoPtr = (ACPI_SYSTEM_INFO *) OutBuffer->Pointer;
 
-    /* Flags - Just the ACPI capabilities for now */
+    /* System flags (ACPI capabilities) */
 
-    InfoPtr->Flags              = HwGetModeCapabilities ();
+    InfoPtr->Flags              = SystemFlags;
 
     /* Timer resolution - 24 or 32 bits  */
     
