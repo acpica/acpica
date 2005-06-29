@@ -334,10 +334,17 @@ typedef UINT32                          ACPI_OBJECT_TYPE;
 
 
 /* 
- * Fixed event types 
+ * Event types (fixed & general purpose)
  */
 
 typedef UINT32                          ACPI_EVENT_TYPE;
+
+#define EVENT_FIXED                     (ACPI_EVENT_TYPE) 0
+#define EVENT_GPE                       (ACPI_EVENT_TYPE) 1
+
+/* 
+ * Fixed events
+ */
 
 #define EVENT_PMTIMER                   (ACPI_EVENT_TYPE) 0
     /* 
