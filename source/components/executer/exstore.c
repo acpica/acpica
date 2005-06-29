@@ -384,7 +384,8 @@ AmlExecStore (
             {
                 DEBUG_PRINT (ACPI_ERROR, (
                         "AmlExecStore/BankField: Internal error - Name %4.4s type %d does not match value-type %d at %p\n",
-                        TempHandle, NsGetType (TempHandle), DestDesc->Common.Type, DestDesc));
+                        &(((NAME_TABLE_ENTRY *) TempHandle)->Name), NsGetType (TempHandle), 
+                        DestDesc->Common.Type, DestDesc));
 
                 Status = AE_AML_ERROR;
             }
@@ -464,7 +465,8 @@ AmlExecStore (
             {
                 DEBUG_PRINT (ACPI_ERROR, (
                         "AmlExecStore/DefField: Internal error - Name %4.4s type %d does not match value-type %d at %p\n",
-                        TempHandle, NsGetType (TempHandle), DestDesc->Common.Type, DestDesc));
+                        &(((NAME_TABLE_ENTRY *) TempHandle)->Name), NsGetType (TempHandle), 
+                        DestDesc->Common.Type, DestDesc));
 
                 Status = AE_AML_ERROR;
             }
@@ -529,7 +531,8 @@ AmlExecStore (
             {
                 DEBUG_PRINT (ACPI_ERROR, 
                         ("AmlExecStore/IndexField: Internal error - Name %4.4s type %d does not match value-type %d at %p\n",
-                        TempHandle, NsGetType (TempHandle), DestDesc->Common.Type, DestDesc));
+                        &(((NAME_TABLE_ENTRY *) TempHandle)->Name), NsGetType (TempHandle), 
+                        DestDesc->Common.Type, DestDesc));
 
                 Status = AE_AML_ERROR;
             }
@@ -614,7 +617,8 @@ AmlExecStore (
             {
                 DEBUG_PRINT (ACPI_ERROR, (
                         "AmlExecStore/FieldUnit: Internal error - Name %4.4s type %d does not match value-type %d at %p\n",
-                          TempHandle, NsGetType(TempHandle), DestDesc->Common.Type, DestDesc));
+                          &(((NAME_TABLE_ENTRY *) TempHandle)->Name), NsGetType(TempHandle), 
+                          DestDesc->Common.Type, DestDesc));
 
                 Status = AE_AML_ERROR;
             }

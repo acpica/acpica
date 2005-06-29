@@ -774,7 +774,7 @@ BREAKPOINT3;
             {
                 DEBUG_PRINT (ACPI_ERROR, (
                         "AmlGetRvalue/BankField:internal error - Name %4.4s type %d does not match value-type %d at %p\n",
-                        *StackPtr, TYPE_BankField, ValDesc->Common.Type, ValDesc));
+                        &(((NAME_TABLE_ENTRY *) (*StackPtr))->Name), TYPE_BankField, ValDesc->Common.Type, ValDesc));
                 
                 return_ACPI_STATUS (AE_AML_ERROR);
             }
@@ -832,7 +832,7 @@ BREAKPOINT3;
             {
                 DEBUG_PRINT (ACPI_ERROR, (
                         "AmlGetRvalue/IndexField: internal error - Name %4.4s type %d does not match value-type %d at %p\n",
-                        *StackPtr, TYPE_IndexField, ValDesc->Common.Type, ValDesc));
+                        &(((NAME_TABLE_ENTRY *) (*StackPtr))->Name), TYPE_IndexField, ValDesc->Common.Type, ValDesc));
                 
                 return_ACPI_STATUS (AE_AML_ERROR);
             }
@@ -888,7 +888,7 @@ BREAKPOINT3;
             {
                 DEBUG_PRINT (ACPI_ERROR, (
                         "AmlGetRvalue/FieldUnit:internal error - Name %4.4s type %d does not match value-type %d at %p\n",
-                          *StackPtr, NsGetType ((ACPI_HANDLE)* StackPtr),
+                          &(((NAME_TABLE_ENTRY *) (*StackPtr))->Name), NsGetType ((ACPI_HANDLE)* StackPtr),
                           ValDesc->Common.Type, ValDesc));
                 
                 return_ACPI_STATUS (AE_AML_ERROR);
