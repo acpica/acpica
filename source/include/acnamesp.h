@@ -285,7 +285,8 @@ NsDumpRootDevices (
 void
 NsDumpObjects (
     ACPI_OBJECT_TYPE        Type, 
-    INT32                   MaxDepth, 
+    UINT32                  MaxDepth, 
+    UINT32                  OwnderId,
     ACPI_HANDLE             StartHandle);
 
 
