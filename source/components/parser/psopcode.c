@@ -115,7 +115,7 @@
 
 
 #include "acpi.h"
-#include "parser.h"
+#include "acparser.h"
 #include "amlcode.h"
 
 
@@ -193,7 +193,7 @@ AcpiPsGetOpcodeInfo (
         return Op;
     }
 
-    /* Otherwise, the opcode is an ASCII char or other non-opcode value */
+    /* Otherwise, the opcode is an ASCII INT8 or other non-opcode value */
 
     return NULL;
 }
@@ -212,7 +212,7 @@ AcpiPsGetOpcodeInfo (
  *
  ******************************************************************************/
 
-char *
+INT8 *
 AcpiPsGetOpcodeName (
     UINT16                  Opcode)
 {
@@ -321,7 +321,7 @@ AcpiPsGetOpcodeName (
 #define ARGP_IF_OP                      ARGP_LIST3 (ARGP_PKGLENGTH,  ARGP_TERMARG, ARGP_TERMLIST)
 #define ARGP_ELSE_OP                    ARGP_LIST2 (ARGP_PKGLENGTH,  ARGP_TERMLIST)
 #define ARGP_WHILE_OP                   ARGP_LIST3 (ARGP_PKGLENGTH,  ARGP_TERMARG, ARGP_TERMLIST)
-#define ARGP_NOOP_CODE                  ARG_NONE
+#define ARGP_NOOP_OP                    ARG_NONE
 #define ARGP_RETURN_OP                  ARGP_LIST1 (ARGP_TERMARG)
 #define ARGP_BREAK_OP                   ARG_NONE
 #define ARGP_BREAK_POINT_OP             ARG_NONE
@@ -338,9 +338,9 @@ AcpiPsGetOpcodeName (
 #define ARGP_WAIT_OP                    ARGP_LIST2 (ARGP_SUPERNAME,  ARGP_TERMARG)
 #define ARGP_RESET_OP                   ARGP_LIST1 (ARGP_SUPERNAME)
 #define ARGP_RELEASE_OP                 ARGP_LIST1 (ARGP_SUPERNAME)
-#define ARGP_FROM_BCDOP                 ARGP_LIST2 (ARGP_TERMARG,    ARGP_TARGET)
-#define ARGP_TO_BCDOP                   ARGP_LIST2 (ARGP_TERMARG,    ARGP_TARGET)
-#define ARGP_UN_LOAD_OP                 ARGP_LIST1 (ARGP_SUPERNAME)
+#define ARGP_FROM_BCD_OP                ARGP_LIST2 (ARGP_TERMARG,    ARGP_TARGET)
+#define ARGP_TO_BCD_OP                  ARGP_LIST2 (ARGP_TERMARG,    ARGP_TARGET)
+#define ARGP_UNLOAD_OP                  ARGP_LIST1 (ARGP_SUPERNAME)
 #define ARGP_REVISION_OP                ARG_NONE
 #define ARGP_DEBUG_OP                   ARG_NONE
 #define ARGP_FATAL_OP                   ARGP_LIST3 (ARGP_BYTEDATA,   ARGP_DWORDDATA,     ARGP_TERMARG)
@@ -436,7 +436,7 @@ AcpiPsGetOpcodeName (
 #define ARGI_IF_OP                      ARGI_INVALID_OPCODE
 #define ARGI_ELSE_OP                    ARGI_INVALID_OPCODE
 #define ARGI_WHILE_OP                   ARGI_INVALID_OPCODE
-#define ARGI_NOOP_CODE                  ARG_NONE
+#define ARGI_NOOP_OP                    ARG_NONE
 #define ARGI_RETURN_OP                  ARGI_INVALID_OPCODE
 #define ARGI_BREAK_OP                   ARG_NONE
 #define ARGI_BREAK_POINT_OP             ARG_NONE
@@ -453,9 +453,9 @@ AcpiPsGetOpcodeName (
 #define ARGI_WAIT_OP                    ARGI_LIST2 (ARGI_EVENT,      ARGI_NUMBER)
 #define ARGI_RESET_OP                   ARGI_LIST1 (ARGI_EVENT)
 #define ARGI_RELEASE_OP                 ARGI_LIST1 (ARGI_MUTEX)
-#define ARGI_FROM_BCDOP                 ARGI_LIST2 (ARGI_NUMBER,     ARGI_TARGETREF)
-#define ARGI_TO_BCDOP                   ARGI_LIST2 (ARGI_NUMBER,     ARGI_TARGETREF)
-#define ARGI_UN_LOAD_OP                 ARGI_LIST1 (ARGI_DDBHANDLE)
+#define ARGI_FROM_BCD_OP                ARGI_LIST2 (ARGI_NUMBER,     ARGI_TARGETREF)
+#define ARGI_TO_BCD_OP                  ARGI_LIST2 (ARGI_NUMBER,     ARGI_TARGETREF)
+#define ARGI_UNLOAD_OP                  ARGI_LIST1 (ARGI_DDBHANDLE)
 #define ARGI_REVISION_OP                ARG_NONE
 #define ARGI_DEBUG_OP                   ARG_NONE
 #define ARGI_FATAL_OP                   ARGI_LIST3 (ARGI_NUMBER,     ARGI_NUMBER,        ARGI_NUMBER)
@@ -553,7 +553,7 @@ ACPI_OP_INFO        AcpiGbl_AmlOpInfo[] =
 /*  3E */   OP_INFO_ENTRY (AML_IF_OP,             OPTYPE_CONTROL|         AML_HAS_ARGS|   0,  "If",                 ARGP_IF_OP,             ARGI_IF_OP),
 /*  3F */   OP_INFO_ENTRY (AML_ELSE_OP,           OPTYPE_CONTROL|         AML_HAS_ARGS|   0,  "Else",               ARGP_ELSE_OP,           ARGI_ELSE_OP),
 /*  40 */   OP_INFO_ENTRY (AML_WHILE_OP,          OPTYPE_CONTROL|         AML_HAS_ARGS|   0,  "While",              ARGP_WHILE_OP,          ARGI_WHILE_OP),
-/*  41 */   OP_INFO_ENTRY (AML_NOOP_CODE,         OPTYPE_CONTROL|         AML_NO_ARGS|    0,  "Noop",               ARGP_NOOP_CODE,         ARGI_NOOP_CODE),
+/*  41 */   OP_INFO_ENTRY (AML_NOOP_OP  ,         OPTYPE_CONTROL|         AML_NO_ARGS|    0,  "Noop",               ARGP_NOOP_OP,           ARGI_NOOP_OP),
 /*  42 */   OP_INFO_ENTRY (AML_RETURN_OP,         OPTYPE_CONTROL|         AML_HAS_ARGS|   0,  "Return",             ARGP_RETURN_OP,         ARGI_RETURN_OP),
 /*  43 */   OP_INFO_ENTRY (AML_BREAK_OP,          OPTYPE_CONTROL|         AML_NO_ARGS|    0,  "Break",              ARGP_BREAK_OP,          ARGI_BREAK_OP),
 /*  44 */   OP_INFO_ENTRY (AML_BREAK_POINT_OP,    OPTYPE_CONTROL|         AML_NO_ARGS|    0,  "BreakPoint",         ARGP_BREAK_POINT_OP,    ARGI_BREAK_POINT_OP),
@@ -573,9 +573,9 @@ ACPI_OP_INFO        AcpiGbl_AmlOpInfo[] =
 /*  4F */   OP_INFO_ENTRY (AML_WAIT_OP,           OPTYPE_DYADIC2S|        AML_HAS_ARGS|   0,  "Wait",               ARGP_WAIT_OP,           ARGI_WAIT_OP),
 /*  50 */   OP_INFO_ENTRY (AML_RESET_OP,          OPTYPE_MONADIC1|        AML_HAS_ARGS|   0,  "Reset",              ARGP_RESET_OP,          ARGI_RESET_OP),
 /*  51 */   OP_INFO_ENTRY (AML_RELEASE_OP,        OPTYPE_MONADIC1|        AML_HAS_ARGS|   0,  "Release",            ARGP_RELEASE_OP,        ARGI_RELEASE_OP),
-/*  52 */   OP_INFO_ENTRY (AML_FROM_BCDOP,        OPTYPE_MONADIC2R|       AML_HAS_ARGS|   0,  "FromBCD",            ARGP_FROM_BCDOP,        ARGI_FROM_BCDOP),
-/*  53 */   OP_INFO_ENTRY (AML_TO_BCDOP,          OPTYPE_MONADIC2R|       AML_HAS_ARGS|   0,  "ToBCD",              ARGP_TO_BCDOP,          ARGI_TO_BCDOP),
-/*  54 */   OP_INFO_ENTRY (AML_UN_LOAD_OP,        OPTYPE_RECONFIGURATION| AML_HAS_ARGS|   0,  "Unload",             ARGP_UN_LOAD_OP,        ARGI_UN_LOAD_OP),
+/*  52 */   OP_INFO_ENTRY (AML_FROM_BCD_OP,       OPTYPE_MONADIC2R|       AML_HAS_ARGS|   0,  "FromBCD",            ARGP_FROM_BCD_OP,       ARGI_FROM_BCD_OP),
+/*  53 */   OP_INFO_ENTRY (AML_TO_BCD_OP,         OPTYPE_MONADIC2R|       AML_HAS_ARGS|   0,  "ToBCD",              ARGP_TO_BCD_OP,         ARGI_TO_BCD_OP),
+/*  54 */   OP_INFO_ENTRY (AML_UNLOAD_OP,         OPTYPE_RECONFIGURATION| AML_HAS_ARGS|   0,  "Unload",             ARGP_UNLOAD_OP,         ARGI_UNLOAD_OP),
 /*  55 */   OP_INFO_ENTRY (AML_REVISION_OP,       OPTYPE_CONSTANT|        AML_NO_ARGS|    0,  "Revision",           ARGP_REVISION_OP,       ARGI_REVISION_OP),
 /*  56 */   OP_INFO_ENTRY (AML_DEBUG_OP,          OPTYPE_CONSTANT|        AML_NO_ARGS|    0,  "Debug",              ARGP_DEBUG_OP,          ARGI_DEBUG_OP),
 /*  57 */   OP_INFO_ENTRY (AML_FATAL_OP,          OPTYPE_FATAL|           AML_HAS_ARGS|   0,  "Fatal",              ARGP_FATAL_OP,          ARGI_FATAL_OP),

@@ -117,7 +117,7 @@
 #define __PSTREE_C__
 
 #include "acpi.h"
-#include "parser.h"
+#include "acparser.h"
 #include "amlcode.h"
 
 #define _COMPONENT          PARSER
@@ -131,7 +131,7 @@
  * PARAMETERS:  Op              - Get an argument for this op
  *              Argn            - Nth argument to get
  *
- * RETURN:      The argument (as an Op object).  NULL if argument does not exist.
+ * RETURN:      The argument (as an Op object).  NULL if argument does not exist
  *
  * DESCRIPTION: Get the specified op's argument.
  *
@@ -413,7 +413,7 @@ AcpiPsGetDepthNext (
 ACPI_GENERIC_OP *
 AcpiPsFetchPrefix (
     ACPI_GENERIC_OP         *Scope,
-    char                    **Path,
+    INT8                    **Path,
     UINT32                  io)
 {
     UINT32                  prefix = io ? GET8 (*Path):**Path;
@@ -461,7 +461,7 @@ AcpiPsFetchPrefix (
  * PARAMETERS:  Path            - A string containing the name segment
  *              io              - Direction flag
  *
- * RETURN:      The 4-char ASCII ACPI Name as a UINT32
+ * RETURN:      The 4-INT8 ASCII ACPI Name as a UINT32
  *
  * DESCRIPTION: Fetch ACPI name segment (dot-delimited)
  *
@@ -469,13 +469,13 @@ AcpiPsFetchPrefix (
 
 UINT32
 AcpiPsFetchName (
-    char                    **Path,
+    INT8                    **Path,
     UINT32                  io)
 {
     UINT32                  Name = 0;
-    char                    *nm;
+    INT8                    *nm;
     UINT32                  i;
-    char                    ch;
+    INT8                    ch;
 
 
     if (io)

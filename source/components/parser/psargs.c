@@ -116,9 +116,9 @@
 #define __PSARGS_C__
 
 #include "acpi.h"
-#include "parser.h"
+#include "acparser.h"
 #include "amlcode.h"
-#include "namesp.h"
+#include "acnamesp.h"
 
 #define _COMPONENT          PARSER
         MODULE_NAME         ("psargs");
@@ -235,12 +235,12 @@ AcpiPsGetNextPackageEnd (
  *
  ******************************************************************************/
 
-char *
+INT8 *
 AcpiPsGetNextNamestring (
     ACPI_PARSE_STATE        *ParserState)
 {
-    char                    *Start = (char *) ParserState->Aml;
-    char                    *End = (char *) ParserState->Aml;
+    INT8                    *Start = (INT8 *) ParserState->Aml;
+    INT8                    *End = (INT8 *) ParserState->Aml;
     INT32                   Length;
 
 
@@ -310,7 +310,7 @@ AcpiPsGetNextNamestring (
  *
  * PARAMETERS:  ParserState         - Current parser state object
  *              Arg                 - Where the namepath will be stored
- *              ArgCount            - If the namepath points to a control method,
+ *              ArgCount            - If the namepath points to a control method
  *                                    the method's argument is returned here.
  *              MethodCall          - Whether the namepath can be the start
  *                                    of a method call
@@ -320,8 +320,8 @@ AcpiPsGetNextNamestring (
  * DESCRIPTION: Get next name (if method call, push appropriate # args).  Names
  *              are looked up in either the parsed or internal namespace to
  *              determine if the name represents a control method.  If a method
- *              is found, the number of arguments to the method is returned.  This
- *              information is critical for parsing to continue correctly.
+ *              is found, the number of arguments to the method is returned.
+ *              This information is critical for parsing to continue correctly.
  *
  ******************************************************************************/
 
@@ -335,7 +335,7 @@ AcpiPsGetNextNamepath (
     UINT32                  *ArgCount,
     BOOLEAN                 MethodCall)
 {
-    char                    *Path;
+    INT8                    *Path;
     ACPI_GENERIC_OP         *Name;
     ACPI_GENERIC_OP         *Op;
     ACPI_GENERIC_OP         *Count;
@@ -364,7 +364,8 @@ AcpiPsGetNextNamepath (
         Op = NULL;
         if (MethodCall)
         {
-            Op = AcpiPsFind (AcpiPsGetParentScope (ParserState), Path, AML_METHOD_OP, 0);
+            Op = AcpiPsFind (AcpiPsGetParentScope (ParserState),
+                                Path, AML_METHOD_OP, 0);
         }
 
         if (Op)
@@ -372,9 +373,10 @@ AcpiPsGetNextNamepath (
             if (Op->Opcode == AML_METHOD_OP)
             {
                 /*
-                 * The name refers to a control method, so this namepath is a method invocation.
-                 * We need to 1) Get the number of arguments associated with this method, and
-                 * 2) Change the NAMEPATH object into a METHODCALL object.
+                 * The name refers to a control method, so this namepath is a
+                 * method invocation.  We need to 1) Get the number of arguments
+                 * associated with this method, and 2) Change the NAMEPATH
+                 * object into a METHODCALL object.
                  */
 
                 Count = AcpiPsGetArg (Op, 0);
@@ -383,15 +385,19 @@ AcpiPsGetNextNamepath (
                     Name = AcpiPsAllocOp (AML_NAMEPATH_OP);
                     if (Name)
                     {
-                        /* Change arg into a METHOD CALL and attach the name to it */
+                        /* Change arg into a METHOD CALL and attach the name */
 
                         AcpiPsInitOp (Arg, AML_METHODCALL_OP);
 
-                        Name->Value.Name        = Path;
-                        Name->NameTableEntry    = Op;          /* Point METHODCALL/NAME to the METHOD NTE */
+                        Name->Value.Name = Path;
+
+                        /* Point METHODCALL/NAME to the METHOD NTE */
+
+                        Name->AcpiNamedObject = Op;
                         AcpiPsAppendArg (Arg, Name);
 
-                        *ArgCount = Count->Value.Integer & METHOD_FLAGS_ARG_COUNT;
+                        *ArgCount = Count->Value.Integer &
+                                    METHOD_FLAGS_ARG_COUNT;
                     }
                 }
 
@@ -408,8 +414,9 @@ AcpiPsGetNextNamepath (
 
 
     /*
-     * Either we didn't find the object in the namespace, or the object is something
-     * other than a control method.  Just initialize the Op with the pathname
+     * Either we didn't find the object in the namespace, or the object is
+     * something other than a control method.  Just initialize the Op with the
+     * pathname
      */
 
     AcpiPsInitOp (Arg, AML_NAMEPATH_OP);
@@ -430,11 +437,11 @@ AcpiPsGetNextNamepath (
     UINT32                  *ArgCount,
     BOOLEAN                 MethodCall)
 {
-    char                    *Path;
+    INT8                    *Path;
     ACPI_GENERIC_OP         *Name;
     ACPI_STATUS             Status;
-    NAME_TABLE_ENTRY        *Method = NULL;
-    NAME_TABLE_ENTRY        *Nte;
+    ACPI_NAMED_OBJECT       *Method = NULL;
+    ACPI_NAMED_OBJECT       *Entry;
     ACPI_GENERIC_STATE      ScopeInfo;
 
 
@@ -457,37 +464,44 @@ AcpiPsGetNextNamepath (
         /*
          * Lookup the name in the internal namespace
          */
-        ScopeInfo.Scope.Entry = NULL;
-        Nte = ParserState->StartOp->NameTableEntry;
-        if (Nte)
+        ScopeInfo.Scope.NameTable = NULL;
+        Entry = ParserState->StartOp->AcpiNamedObject;
+        if (Entry)
         {
-            ScopeInfo.Scope.Entry = Nte->Scope;
+            ScopeInfo.Scope.NameTable = Entry->ChildTable;
         }
 
         /*
-         * Lookup object.  We don't want to add anything new to the namespace here, however.
-         * So we use MODE_EXECUTE.  Allow searching of the parent tree, but don't open a new
-         * scope -- we just want to lookup the object
+         * Lookup object.  We don't want to add anything new to the namespace
+         * here, however.  So we use MODE_EXECUTE.  Allow searching of the
+         * parent tree, but don't open a new scope -- we just want to lookup the
+         * object  (MUST BE mode EXECUTE to perform upsearch)
          */
 
-        Status = AcpiNsLookup (&ScopeInfo, Path, ACPI_TYPE_ANY, IMODE_EXECUTE, /* MUST BE mode EXECUTE to perform upsearch */
-                                NS_SEARCH_PARENT | NS_DONT_OPEN_SCOPE, NULL, &Nte);
+        Status = AcpiNsLookup (&ScopeInfo, Path, ACPI_TYPE_ANY, IMODE_EXECUTE,
+                                NS_SEARCH_PARENT | NS_DONT_OPEN_SCOPE, NULL,
+                                &Entry);
         if (ACPI_SUCCESS (Status))
         {
-            if (Nte->Type == ACPI_TYPE_METHOD)
+            if (Entry->Type == ACPI_TYPE_METHOD)
             {
-                Method = Nte;
-                DEBUG_PRINT (TRACE_PARSE, ("PsGetNextNamepath: method - %p Path=%p\n", Method, Path));
+                Method = Entry;
+                DEBUG_PRINT (TRACE_PARSE,
+                    ("PsGetNextNamepath: method - %p Path=%p\n",
+                    Method, Path));
 
                 Name = AcpiPsAllocOp (AML_NAMEPATH_OP);
                 if (Name)
                 {
-                    /* Change arg into a METHOD CALL and attach the name to it */
+                    /* Change arg into a METHOD CALL and attach name to it */
 
                     AcpiPsInitOp (Arg, AML_METHODCALL_OP);
 
                     Name->Value.Name        = Path;
-                    Name->NameTableEntry    = Method;           /* Point METHODCALL/NAME to the METHOD NTE */
+
+                    /* Point METHODCALL/NAME to the METHOD NTE */
+
+                    Name->AcpiNamedObject    = Method;
                     AcpiPsAppendArg (Arg, Name);
 
                     *ArgCount = ((ACPI_OBJECT_INTERNAL *) Method->Object)->Method.ParamCount;
@@ -505,8 +519,9 @@ AcpiPsGetNextNamepath (
     }
 
     /*
-     * Either we didn't find the object in the namespace, or the object is something
-     * other than a control method.  Just initialize the Op with the pathname
+     * Either we didn't find the object in the namespace, or the object is
+     * something other than a control method.  Just initialize the Op with the
+     * pathname
      */
 
     AcpiPsInitOp (Arg, AML_NAMEPATH_OP);
@@ -617,7 +632,8 @@ ACPI_GENERIC_OP *
 AcpiPsGetNextField (
     ACPI_PARSE_STATE        *ParserState)
 {
-    ACPI_PTRDIFF            AmlOffset = ParserState->Aml - ParserState->AmlStart;
+    ACPI_PTRDIFF            AmlOffset = ParserState->Aml -
+                                        ParserState->AmlStart;
     ACPI_GENERIC_OP         *Field;
     UINT16                  Opcode;
     UINT32                  Name;
@@ -687,7 +703,7 @@ AcpiPsGetNextField (
 
         case AML_ACCESSFIELD_OP:
 
-            /* Get the AccessType and AccessAtrib and merge them into the field Op */
+            /* Get AccessType and AccessAtrib and merge into the field Op */
 
             Field->Value.Integer = ((GET8 (ParserState->Aml) << 8) |
                                      GET8 (ParserState->Aml));
@@ -706,7 +722,7 @@ AcpiPsGetNextField (
  *
  * PARAMETERS:  ParserState         - Current parser state object
  *              ArgType             - The argument type (AML_*_ARG)
- *              ArgCount            - If the argument points to a control method,
+ *              ArgCount            - If the argument points to a control method
  *                                    the method's argument is returned here.
  *
  * RETURN:      An op object containing the next argument.
