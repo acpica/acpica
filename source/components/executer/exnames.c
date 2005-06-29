@@ -818,7 +818,7 @@ BREAKPOINT3;
                         } /* Execution mode  */
 
 
-                        /* Clean up object stack */
+                        /* Remove method arguments from object stack */
                         
                         DEBUG_PRINT (TRACE_LOAD, ("AmlDoName: Cleaning up object stack (%d elements)\n",
                                         CurrentStackTop - PreviousStackTop));
@@ -827,12 +827,12 @@ BREAKPOINT3;
                              CurrentStackTop > PreviousStackTop;
                              CurrentStackTop--)
                         {
+                            /* Delete the object at the stack top and pop the stack */
+
                             AmlObjStackDeleteValue (STACK_TOP);
-
-                            /* Zero out the slot and move on */
-
                             AmlObjStackPop (1);
                         }
+
 
                     } /* Else - valid method ptr */
 
