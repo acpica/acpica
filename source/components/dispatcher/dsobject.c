@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dsobject - Dispatcher object management routines
- *              $Revision: 1.47 $
+ *              $Revision: 1.48 $
  *
  *****************************************************************************/
 
@@ -369,7 +369,7 @@ AcpiDsInitObjectFromOp (
 
         /* Get the value, delete the internal object */
 
-        (*ObjDesc)->Buffer.Length = ArgDesc->Number.Value;
+        (*ObjDesc)->Buffer.Length = (UINT32) ArgDesc->Number.Value;
         AcpiCmRemoveReference (ArgDesc);
 
         /* Allocate the buffer */
@@ -524,8 +524,6 @@ AcpiDsBuildInternalSimpleObj (
     char                    *Name;
 
 
-
-
     FUNCTION_TRACE ("DsBuildInternalSimpleObj");
 
 
@@ -555,13 +553,13 @@ AcpiDsBuildInternalSimpleObj (
 
                     if (Name)
                     {
-                        REPORT_WARNING (("Reference %s AML 0x%X not found\n", 
+                        REPORT_WARNING (("Reference %s AML 0x%X not found\n",
                                     Name, Op->AmlOffset));
                         AcpiCmFree (Name);
                     }
                     else
                     {
-                        REPORT_WARNING (("Reference %s AML 0x%X not found\n", 
+                        REPORT_WARNING (("Reference %s AML 0x%X not found\n",
                                    Op->Value.String, Op->AmlOffset));
                     }
                     *ObjDescPtr = NULL;

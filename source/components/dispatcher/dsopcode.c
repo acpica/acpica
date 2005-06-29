@@ -2,7 +2,7 @@
  *
  * Module Name: dsopcode - Dispatcher Op Region support and handling of
  *                         "control" opcodes
- *              $Revision: 1.19 $
+ *              $Revision: 1.21 $
  *
  *****************************************************************************/
 
@@ -354,26 +354,10 @@ AcpiDsGetRegionArguments (
                                 ACPI_PARSE_EXECUTE | ACPI_PARSE_DELETE_TREE,
                                 NULL /*MethodDesc*/, NULL, NULL,
                                 AcpiDsExecBeginOp, AcpiDsExecEndOp);
-/*
-    AcpiPsWalkParsedAml (RegionOp, RegionOp, NULL, NULL, NULL,
-                            NULL, TableDesc->TableId,
-                            AcpiDsExecBeginOp, AcpiDsExecEndOp);
-*/
+
     /* All done with the parse tree, delete it */
 
     AcpiPsDeleteParseTree (Op);
-
-
-    /*
-     * The pseudo-method object is no longer needed since the field is
-     * now initialized
-     */
-
-/* ALWAYS KEEP THIS!
-    AcpiCmRemoveReference (ObjDesc->Region.Method);
-    ObjDesc->Region.Method = NULL;
-*/
-
 
     return_ACPI_STATUS (Status);
 }
@@ -501,7 +485,7 @@ AcpiDsEvalFieldUnitOperands (
     }
 
 
-    Offset = OffDesc->Number.Value;
+    Offset = (UINT32) OffDesc->Number.Value;
 
 
     /*
@@ -755,7 +739,7 @@ AcpiDsEvalRegionOperands (
     /* Top of stack */
     OperandDesc = WalkState->Operands[WalkState->NumOperands - 1];
 
-    ObjDesc->Region.Length = OperandDesc->Number.Value;
+    ObjDesc->Region.Length = (UINT32) OperandDesc->Number.Value;
     AcpiCmRemoveReference (OperandDesc);
 
     /* Get the address and save it */
@@ -832,6 +816,7 @@ AcpiDsExecBeginControlOp (
          */
         WalkState->ControlState->Control.AmlPredicateStart =
                     WalkState->ParserState->Aml - 1;
+                    /* TBD: can this be removed? */
                     /*AcpiPsPkgLengthEncodingSize (GET8 (WalkState->ParserState->Aml));*/
         break;
 
@@ -931,19 +916,17 @@ AcpiDsExecEndControlOp (
             Status = AE_CTRL_PENDING;
         }
 
-/*        else
-        {*/
-            DEBUG_PRINT (TRACE_DISPATCH,
-                ("EndControlOp: [WHILE_OP] termination! Op=%p\n", Op));
 
-            /* Pop this control state and free it */
+        DEBUG_PRINT (TRACE_DISPATCH,
+            ("EndControlOp: [WHILE_OP] termination! Op=%p\n", Op));
 
-            ControlState =
-                    AcpiCmPopGenericState (&WalkState->ControlState);
+        /* Pop this control state and free it */
 
-            WalkState->AmlLastWhile = ControlState->Control.AmlPredicateStart;
-            AcpiCmDeleteGenericState (ControlState);
-/*        }*/
+        ControlState =
+                AcpiCmPopGenericState (&WalkState->ControlState);
+
+        WalkState->AmlLastWhile = ControlState->Control.AmlPredicateStart;
+        AcpiCmDeleteGenericState (ControlState);
 
         break;
 
