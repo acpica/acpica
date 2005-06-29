@@ -1,8 +1,7 @@
-
 /******************************************************************************
  *
  * Module Name: tbutils - Table manipulation utilities
- *              $Revision: 1.24 $
+ *              $Revision: 1.27 $
  *
  *****************************************************************************/
 
@@ -123,7 +122,7 @@
 
 
 #define _COMPONENT          TABLE_MANAGER
-        MODULE_NAME         ("tbutils");
+        MODULE_NAME         ("tbutils")
 
 
 /*******************************************************************************
@@ -134,7 +133,7 @@
  *              TableDesc           - Pointer to return the matching table
  *                                      descriptor.
  *
- * RETURN:      Search the tables to find one with a matching TableId and 
+ * RETURN:      Search the tables to find one with a matching TableId and
  *              return a pointer to that table descriptor.
  *
  ******************************************************************************/
@@ -204,7 +203,8 @@ AcpiTbSystemTablePointer (
 
     /* Check for a pointer within the DSDT */
 
-    if (IS_IN_ACPI_TABLE (Where, AcpiGbl_DSDT))
+    if ((AcpiGbl_DSDT) &&
+        (IS_IN_ACPI_TABLE (Where, AcpiGbl_DSDT)))
     {
         return (TRUE);
     }

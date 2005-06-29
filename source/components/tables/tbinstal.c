@@ -1,8 +1,7 @@
-
 /******************************************************************************
  *
  * Module Name: tbinstal - ACPI table installation and removal
- *              $Revision: 1.27 $
+ *              $Revision: 1.30 $
  *
  *****************************************************************************/
 
@@ -124,7 +123,7 @@
 
 
 #define _COMPONENT          TABLE_MANAGER
-        MODULE_NAME         ("tbinstal");
+        MODULE_NAME         ("tbinstal")
 
 
 /*******************************************************************************
@@ -556,7 +555,7 @@ AcpiTbFreeAcpiTablesOfType (
 
     for (i = 0; i < Count; i++)
     {
-        TableDesc = AcpiTbDeleteSingleTable (TableDesc);
+        TableDesc = AcpiTbUninstallTable (TableDesc);
     }
 
     return_VOID;
@@ -571,6 +570,55 @@ AcpiTbFreeAcpiTablesOfType (
  *
  * RETURN:      None.
  *
+ * DESCRIPTION: Low-level free for a single ACPI table.  Handles cases where
+ *              the table was allocated a buffer or was mapped.
+ *
+ ******************************************************************************/
+
+void
+AcpiTbDeleteSingleTable (
+    ACPI_TABLE_DESC         *TableDesc)
+{
+
+    if (!TableDesc)
+    {
+        return;
+    }
+
+    if (TableDesc->Pointer)
+    {
+        /* Valid table, determine type of memory allocation */
+
+        switch (TableDesc->Allocation)
+        {
+
+        case ACPI_MEM_NOT_ALLOCATED:
+            break;
+
+
+        case ACPI_MEM_ALLOCATED:
+
+            AcpiCmFree (TableDesc->BasePointer);
+            break;
+
+
+        case ACPI_MEM_MAPPED:
+
+            AcpiOsUnmapMemory (TableDesc->BasePointer, TableDesc->Length);
+            break;
+        }
+    }
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiTbUninstallTable
+ *
+ * PARAMETERS:  TableInfo           - A table info struct
+ *
+ * RETURN:      None.
+ *
  * DESCRIPTION: Free the memory associated with an internal ACPI table that
  *              is either installed or has never been installed.
  *              Table mutex should be locked.
@@ -578,7 +626,7 @@ AcpiTbFreeAcpiTablesOfType (
  ******************************************************************************/
 
 ACPI_TABLE_DESC *
-AcpiTbDeleteSingleTable (
+AcpiTbUninstallTable (
     ACPI_TABLE_DESC         *TableDesc)
 {
     ACPI_TABLE_DESC         *NextDesc;
@@ -608,34 +656,10 @@ AcpiTbDeleteSingleTable (
 
     /* Free the memory allocated for the table itself */
 
-    if (TableDesc->Pointer)
-    {
-        /* Valid table, determine type of memory allocation */
-
-        switch (TableDesc->Allocation)
-        {
-
-        case ACPI_MEM_NOT_ALLOCATED:
-
-            break;
-
-
-        case ACPI_MEM_ALLOCATED:
-
-            AcpiCmFree (TableDesc->BasePointer);
-            break;
-
-
-        case ACPI_MEM_MAPPED:
-
-            AcpiOsUnmapMemory (TableDesc->BasePointer, TableDesc->Length);
-            break;
-        }
-    }
+    AcpiTbDeleteSingleTable (TableDesc);
 
 
     /* Free the table descriptor (Don't delete the list head, tho) */
-
 
     if ((TableDesc->Prev) == (TableDesc->Next))
     {
@@ -661,7 +685,5 @@ AcpiTbDeleteSingleTable (
 
     return_PTR (NextDesc);
 }
-
-
 
 

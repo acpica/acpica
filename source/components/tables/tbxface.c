@@ -1,9 +1,8 @@
-
 /******************************************************************************
  *
  * Module Name: tbxface - Public interfaces to the ACPI subsystem
  *                         ACPI table oriented interfaces
- *              $Revision: 1.21 $
+ *              $Revision: 1.26 $
  *
  *****************************************************************************/
 
@@ -125,7 +124,7 @@
 
 
 #define _COMPONENT          TABLE_MANAGER
-        MODULE_NAME         ("tbxface");
+        MODULE_NAME         ("tbxface")
 
 
 /*******************************************************************************
@@ -167,15 +166,21 @@ AcpiLoadFirmwareTables (void)
         goto ErrorExit;
     }
 
-
     DEBUG_PRINT (ACPI_OK, ("ACPI Tables successfully loaded\n"));
+    
+    Status = AcpiNsLoadNamespace ();
+    if (ACPI_FAILURE (Status))
+    {
+        goto ErrorExit;
+    }
+
 
     return_ACPI_STATUS (AE_OK);
 
 
 ErrorExit:
     DEBUG_PRINT (ACPI_ERROR,
-        ("Failure during ACPI Table Init: %s\n",
+        ("Failure during ACPI Table/Namespace Init: %s\n",
         AcpiCmFormatException (Status)));
 
     return_ACPI_STATUS (Status);
@@ -228,8 +233,22 @@ AcpiLoadTable (
     Status = AcpiTbInstallTable (NULL, &TableInfo);
     if (ACPI_FAILURE (Status))
     {
-        /* TBD: [Errors] must free table allocated by AcpiTbGetTable */
+        /* Free table allocated by AcpiTbGetTable */
+
+        AcpiTbDeleteSingleTable (&TableInfo);
+        return_ACPI_STATUS (Status);
     }
+
+
+    Status = AcpiNsLoadTable (TableInfo.InstalledDesc, AcpiGbl_RootNode);
+    if (ACPI_FAILURE (Status))
+    {
+        /* Uninstall table and free the buffer */
+
+        AcpiTbUninstallTable (TableInfo.InstalledDesc);
+        return_ACPI_STATUS (Status);
+    }
+
 
     return_ACPI_STATUS (Status);
 }
@@ -270,7 +289,12 @@ AcpiUnloadTable (
     ListHead = &AcpiGbl_AcpiTables[TableType];
     do
     {
-        /* Delete the entire namespace under this table NTE */
+        /*
+         * Delete all namespace entries owned by this table.  Note that these
+         * entries can appear anywhere in the namespace by virtue of the AML
+         * "Scope" operator.  Thus, we need to track ownership by an ID, not
+         * simply a position within the hierarchy
+         */
 
         AcpiNsDeleteNamespaceByOwner (ListHead->TableId);
 
@@ -403,12 +427,11 @@ AcpiGetTable (
     FUNCTION_TRACE ("AcpiGetTable");
 
     /*
-     *  Must have a buffer
+     *  If we have a buffer, we must have a length too
      */
     if ((Instance == 0)                 ||
         (!RetBuffer)                    ||
-        (!RetBuffer->Pointer)           ||
-        (!RetBuffer->Length))
+        ((!RetBuffer->Pointer) && (RetBuffer->Length)))
     {
         return_ACPI_STATUS (AE_BAD_PARAMETER);
     }
@@ -432,7 +455,7 @@ AcpiGetTable (
     }
 
     /*
-     * AcpiTbGetTablePtr will return a NULL pointer if the 
+     * AcpiTbGetTablePtr will return a NULL pointer if the
      *  table is not loaded.
      */
     if (TblPtr == NULL)
