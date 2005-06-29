@@ -428,11 +428,13 @@ CmSubsystemShutdown (void)
 
     if (Gbl_Shutdown)
     {
+        DEBUG_PRINT (ACPI_ERROR, ("ACPI Subsystem is already terminated\n"));
         return_ACPI_STATUS (AE_OK);
     }
 
     /* Subsystem appears active, go ahead and shut it down */
 
+    Gbl_Shutdown = TRUE;
     DEBUG_PRINT (ACPI_INFO, ("Shutting down ACPI Subsystem...\n"));
 
 
@@ -451,7 +453,6 @@ CmSubsystemShutdown (void)
     /* Debug only - display leftover memory allocation, if any */
 
     CmDumpCurrentAllocations (ACPI_UINT32_MAX, NULL);
-    Gbl_Shutdown = TRUE;
 
     BREAKPOINT3;
 
