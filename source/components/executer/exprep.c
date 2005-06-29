@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: amprep - ACPI AML (p-code) execution - field prep utilities
- *              $Revision: 1.71 $
+ *              $Revision: 1.72 $
  *
  *****************************************************************************/
 
@@ -157,7 +157,7 @@ AcpiAmlDecodeFieldAccessType (
         {
             return (16);
         }
-        else if (Length <=32)
+        else if (Length <= 32)
         {
             return (32);
         }
