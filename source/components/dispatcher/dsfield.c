@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dsfield - Dispatcher field routines
- *              $Revision: 1.28 $
+ *              $Revision: 1.30 $
  *
  *****************************************************************************/
 
@@ -9,8 +9,8 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, Intel Corp.  All rights
- * reserved.
+ * Some or all of this work - Copyright (c) 1999, 2000, Intel Corp.
+ * All rights reserved.
  *
  * 2. License
  *
@@ -143,7 +143,7 @@
  * FUNCTION:    AcpiDsCreateField
  *
  * PARAMETERS:  Op              - Op containing the Field definition and args
- *              RegionNameDesc  - Object for the containing Operation Region
+ *              RegionNode  - Object for the containing Operation Region
  *
  * RETURN:      Status
  *
@@ -153,13 +153,13 @@
 
 ACPI_STATUS
 AcpiDsCreateField (
-    ACPI_GENERIC_OP         *Op,
-    ACPI_NAMED_OBJECT       *RegionNameDesc,
+    ACPI_PARSE_OBJECT       *Op,
+    ACPI_NAMESPACE_NODE     *RegionNode,
     ACPI_WALK_STATE         *WalkState)
 {
     ACPI_STATUS             Status = AE_AML_ERROR;
-    ACPI_GENERIC_OP         *Arg;
-    ACPI_NAMED_OBJECT       *NameDesc;
+    ACPI_PARSE_OBJECT       *Arg;
+    ACPI_NAMESPACE_NODE     *Node;
     UINT8                   FieldFlags;
     UINT8                   AccessAttribute = 0;
     UINT32                  FieldBitPosition = 0;
@@ -171,12 +171,12 @@ AcpiDsCreateField (
     /* First arg is the name of the parent OpRegion */
 
     Arg = Op->Value.Arg;
-    if (!RegionNameDesc)
+    if (!RegionNode)
     {
         Status = AcpiNsLookup (WalkState->ScopeInfo, Arg->Value.Name,
                                 ACPI_TYPE_REGION, IMODE_EXECUTE,
                                 NS_SEARCH_PARENT, WalkState,
-                                &RegionNameDesc);
+                                &RegionNode);
 
         if (ACPI_FAILURE (Status))
         {
@@ -219,11 +219,11 @@ AcpiDsCreateField (
         case AML_NAMEDFIELD_OP:
 
             Status = AcpiNsLookup (WalkState->ScopeInfo,
-                            (NATIVE_CHAR *) &((ACPI_EXTENDED_OP *)Arg)->Name,
+                            (NATIVE_CHAR *) &((ACPI_PARSE2_OBJECT *)Arg)->Name,
                             INTERNAL_TYPE_DEF_FIELD,
                             IMODE_LOAD_PASS1,
                             NS_NO_UPSEARCH | NS_DONT_OPEN_SCOPE,
-                            NULL, &NameDesc);
+                            NULL, &Node);
 
             if (ACPI_FAILURE (Status))
             {
@@ -231,11 +231,11 @@ AcpiDsCreateField (
             }
 
             /*
-             * Initialize an object for the new Named Object that is on
+             * Initialize an object for the new Node that is on
              * the object stack
              */
 
-            Status = AcpiAmlPrepDefFieldValue (NameDesc, RegionNameDesc, FieldFlags, 
+            Status = AcpiAmlPrepDefFieldValue (Node, RegionNode, FieldFlags,
                             AccessAttribute, FieldBitPosition, Arg->Value.Size);
 
             if (ACPI_FAILURE (Status))
@@ -261,7 +261,7 @@ AcpiDsCreateField (
  * FUNCTION:    AcpiDsCreateBankField
  *
  * PARAMETERS:  Op              - Op containing the Field definition and args
- *              RegionNameDesc  - Object for the containing Operation Region
+ *              RegionNode  - Object for the containing Operation Region
  *
  * RETURN:      Status
  *
@@ -271,14 +271,14 @@ AcpiDsCreateField (
 
 ACPI_STATUS
 AcpiDsCreateBankField (
-    ACPI_GENERIC_OP         *Op,
-    ACPI_NAMED_OBJECT       *RegionNameDesc,
+    ACPI_PARSE_OBJECT       *Op,
+    ACPI_NAMESPACE_NODE     *RegionNode,
     ACPI_WALK_STATE         *WalkState)
 {
     ACPI_STATUS             Status = AE_AML_ERROR;
-    ACPI_GENERIC_OP         *Arg;
-    ACPI_NAMED_OBJECT       *BankReg;
-    ACPI_NAMED_OBJECT       *NameDesc;
+    ACPI_PARSE_OBJECT       *Arg;
+    ACPI_NAMESPACE_NODE     *RegisterNode;
+    ACPI_NAMESPACE_NODE     *Node;
     UINT32                  BankValue;
     UINT8                   FieldFlags;
     UINT8                   AccessAttribute = 0;
@@ -288,16 +288,15 @@ AcpiDsCreateBankField (
     FUNCTION_TRACE_PTR ("DsCreateBankField", Op);
 
 
-
     /* First arg is the name of the parent OpRegion */
 
     Arg = Op->Value.Arg;
-    if (!RegionNameDesc)
+    if (!RegionNode)
     {
         Status = AcpiNsLookup (WalkState->ScopeInfo, Arg->Value.Name,
                                 ACPI_TYPE_REGION, IMODE_EXECUTE,
                                 NS_SEARCH_PARENT, WalkState,
-                                &RegionNameDesc);
+                                &RegionNode);
 
         if (ACPI_FAILURE (Status))
         {
@@ -313,7 +312,7 @@ AcpiDsCreateBankField (
                             INTERNAL_TYPE_BANK_FIELD_DEFN,
                             IMODE_LOAD_PASS1,
                             NS_NO_UPSEARCH | NS_DONT_OPEN_SCOPE,
-                            NULL, &BankReg);
+                            NULL, &RegisterNode);
 
     if (ACPI_FAILURE (Status))
     {
@@ -361,11 +360,11 @@ AcpiDsCreateBankField (
         case AML_NAMEDFIELD_OP:
 
             Status = AcpiNsLookup (WalkState->ScopeInfo,
-                            (NATIVE_CHAR *) &((ACPI_EXTENDED_OP *)Arg)->Name,
+                            (NATIVE_CHAR *) &((ACPI_PARSE2_OBJECT *)Arg)->Name,
                             INTERNAL_TYPE_DEF_FIELD,
                             IMODE_LOAD_PASS1,
                             NS_NO_UPSEARCH | NS_DONT_OPEN_SCOPE,
-                            NULL, &NameDesc);
+                            NULL, &Node);
 
             if (ACPI_FAILURE (Status))
             {
@@ -373,11 +372,11 @@ AcpiDsCreateBankField (
             }
 
             /*
-             * Initialize an object for the new Named Object that is on
+             * Initialize an object for the new Node that is on
              * the object stack
              */
 
-            Status = AcpiAmlPrepBankFieldValue (NameDesc, RegionNameDesc, BankReg, 
+            Status = AcpiAmlPrepBankFieldValue (Node, RegionNode, RegisterNode,
                             BankValue, FieldFlags, AccessAttribute,
                             FieldBitPosition, Arg->Value.Size);
 
@@ -405,7 +404,7 @@ AcpiDsCreateBankField (
  * FUNCTION:    AcpiDsCreateIndexField
  *
  * PARAMETERS:  Op              - Op containing the Field definition and args
- *              RegionNameDesc  - Object for the containing Operation Region
+ *              RegionNode  - Object for the containing Operation Region
  *
  * RETURN:      Status
  *
@@ -415,15 +414,15 @@ AcpiDsCreateBankField (
 
 ACPI_STATUS
 AcpiDsCreateIndexField (
-    ACPI_GENERIC_OP         *Op,
-    ACPI_HANDLE             RegionNameDesc,
+    ACPI_PARSE_OBJECT       *Op,
+    ACPI_HANDLE             RegionNode,
     ACPI_WALK_STATE         *WalkState)
 {
     ACPI_STATUS             Status;
-    ACPI_GENERIC_OP         *Arg;
-    ACPI_NAMED_OBJECT       *NameDesc;
-    ACPI_NAMED_OBJECT       *IndexReg;
-    ACPI_NAMED_OBJECT       *DataReg;
+    ACPI_PARSE_OBJECT       *Arg;
+    ACPI_NAMESPACE_NODE     *Node;
+    ACPI_NAMESPACE_NODE     *IndexRegisterNode;
+    ACPI_NAMESPACE_NODE     *DataRegisterNode;
     UINT8                   FieldFlags;
     UINT8                   AccessAttribute = 0;
     UINT32                  FieldBitPosition = 0;
@@ -439,7 +438,7 @@ AcpiDsCreateIndexField (
     Status = AcpiNsLookup (WalkState->ScopeInfo, Arg->Value.String,
                             ACPI_TYPE_ANY, IMODE_LOAD_PASS1,
                             NS_NO_UPSEARCH | NS_DONT_OPEN_SCOPE,
-                            NULL, &IndexReg);
+                            NULL, &IndexRegisterNode);
 
     if (ACPI_FAILURE (Status))
     {
@@ -454,7 +453,7 @@ AcpiDsCreateIndexField (
                             INTERNAL_TYPE_INDEX_FIELD_DEFN,
                             IMODE_LOAD_PASS1,
                             NS_NO_UPSEARCH | NS_DONT_OPEN_SCOPE,
-                            NULL, &DataReg);
+                            NULL, &DataRegisterNode);
 
     if (ACPI_FAILURE (Status))
     {
@@ -498,11 +497,11 @@ AcpiDsCreateIndexField (
         case AML_NAMEDFIELD_OP:
 
             Status = AcpiNsLookup (WalkState->ScopeInfo,
-                                    (NATIVE_CHAR *) &((ACPI_EXTENDED_OP *)Arg)->Name,
+                                    (NATIVE_CHAR *) &((ACPI_PARSE2_OBJECT *)Arg)->Name,
                                     INTERNAL_TYPE_INDEX_FIELD,
                                     IMODE_LOAD_PASS1,
                                     NS_NO_UPSEARCH | NS_DONT_OPEN_SCOPE,
-                                    NULL, &NameDesc);
+                                    NULL, &Node);
 
             if (ACPI_FAILURE (Status))
             {
@@ -510,11 +509,11 @@ AcpiDsCreateIndexField (
             }
 
             /*
-             * Initialize an object for the new Named Object that is on
+             * Initialize an object for the new Node that is on
              * the object stack
              */
 
-            Status = AcpiAmlPrepIndexFieldValue (NameDesc, IndexReg, DataReg, 
+            Status = AcpiAmlPrepIndexFieldValue (Node, IndexRegisterNode, DataRegisterNode,
                             FieldFlags, AccessAttribute,
                             FieldBitPosition, Arg->Value.Size);
 

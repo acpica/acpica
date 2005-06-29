@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dsmthdat - control method arguments and local variables
- *              $Revision: 1.33 $
+ *              $Revision: 1.37 $
  *
  ******************************************************************************/
 
@@ -9,8 +9,8 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, Intel Corp.  All rights
- * reserved.
+ * Some or all of this work - Copyright (c) 1999, 2000, Intel Corp.
+ * All rights reserved.
  *
  * 2. License
  *
@@ -156,8 +156,8 @@ AcpiDsMethodDataInit (
      * WalkState fields are initialized to zero by the
      * AcpiCmCallocate().
      *
-     * An Named Object is assigned to each argument and local so
-     * that RefOf() can return a pointer to the Named Object.
+     * An Node is assigned to each argument and local so
+     * that RefOf() can return a pointer to the Node.
      */
 
     /* Init the method arguments */
@@ -166,10 +166,10 @@ AcpiDsMethodDataInit (
     {
         MOVE_UNALIGNED32_TO_32 (&WalkState->Arguments[i].Name,
                                 NAMEOF_ARG_NTE);
-
         WalkState->Arguments[i].Name       |= (i << 24);
         WalkState->Arguments[i].DataType    = ACPI_DESC_TYPE_NAMED;
-        WalkState->Arguments[i].Type        = INTERNAL_TYPE_METHOD_ARGUMENT;
+        WalkState->Arguments[i].Type        = ACPI_TYPE_ANY;
+        WalkState->Arguments[i].Flags       = ANOBJ_END_OF_PEER_LIST | ANOBJ_METHOD_ARG;
     }
 
     /* Init the method locals */
@@ -181,7 +181,8 @@ AcpiDsMethodDataInit (
 
         WalkState->LocalVariables[i].Name    |= (i << 24);
         WalkState->LocalVariables[i].DataType = ACPI_DESC_TYPE_NAMED;
-        WalkState->LocalVariables[i].Type     = INTERNAL_TYPE_METHOD_LOCAL_VAR;
+        WalkState->LocalVariables[i].Type     = ACPI_TYPE_ANY;
+        WalkState->LocalVariables[i].Flags    = ANOBJ_END_OF_PEER_LIST | ANOBJ_METHOD_LOCAL;
     }
 
     return_ACPI_STATUS (AE_OK);
@@ -206,7 +207,7 @@ AcpiDsMethodDataDeleteAll (
     ACPI_WALK_STATE         *WalkState)
 {
     UINT32                  Index;
-    ACPI_OBJECT_INTERNAL    *Object;
+    ACPI_OPERAND_OBJECT     *Object;
 
 
     FUNCTION_TRACE ("DsMethodDataDeleteAll");
@@ -277,7 +278,7 @@ AcpiDsMethodDataDeleteAll (
 
 ACPI_STATUS
 AcpiDsMethodDataInitArgs (
-    ACPI_OBJECT_INTERNAL    **Params,
+    ACPI_OPERAND_OBJECT     **Params,
     UINT32                  MaxParamCount,
     ACPI_WALK_STATE         *WalkState)
 {
@@ -351,7 +352,7 @@ AcpiDsMethodDataGetEntry (
     UINT32                  Type,
     UINT32                  Index,
     ACPI_WALK_STATE         *WalkState,
-    ACPI_OBJECT_INTERNAL    ***Entry)
+    ACPI_OPERAND_OBJECT     ***Entry)
 {
 
     FUNCTION_TRACE_U32 ("DsMethodDataGetEntry", Index);
@@ -376,7 +377,7 @@ AcpiDsMethodDataGetEntry (
         }
 
         *Entry =
-            (ACPI_OBJECT_INTERNAL **) &WalkState->LocalVariables[Index].Object;
+            (ACPI_OPERAND_OBJECT  **) &WalkState->LocalVariables[Index].Object;
         break;
 
 
@@ -391,7 +392,7 @@ AcpiDsMethodDataGetEntry (
         }
 
         *Entry =
-            (ACPI_OBJECT_INTERNAL **) &WalkState->Arguments[Index].Object;
+            (ACPI_OPERAND_OBJECT  **) &WalkState->Arguments[Index].Object;
         break;
 
 
@@ -425,11 +426,11 @@ ACPI_STATUS
 AcpiDsMethodDataSetEntry (
     UINT32                  Type,
     UINT32                  Index,
-    ACPI_OBJECT_INTERNAL    *Object,
+    ACPI_OPERAND_OBJECT     *Object,
     ACPI_WALK_STATE         *WalkState)
 {
     ACPI_STATUS             Status;
-    ACPI_OBJECT_INTERNAL    **Entry;
+    ACPI_OPERAND_OBJECT     **Entry;
 
 
     FUNCTION_TRACE ("DsMethodDataSetEntry");
@@ -474,8 +475,8 @@ AcpiDsMethodDataGetType (
     ACPI_WALK_STATE         *WalkState)
 {
     ACPI_STATUS             Status;
-    ACPI_OBJECT_INTERNAL    **Entry;
-    ACPI_OBJECT_INTERNAL    *Object;
+    ACPI_OPERAND_OBJECT     **Entry;
+    ACPI_OPERAND_OBJECT     *Object;
 
 
     FUNCTION_TRACE ("DsMethodDataGetType");
@@ -513,21 +514,20 @@ AcpiDsMethodDataGetType (
  *              Index               - Which localVar or argument whose type
  *                                      to get
  *
- * RETURN:      Get the Named Object associated with a local or arg.
+ * RETURN:      Get the Node associated with a local or arg.
  *
  ******************************************************************************/
 
-ACPI_NAMED_OBJECT*
+ACPI_NAMESPACE_NODE *
 AcpiDsMethodDataGetNte (
     UINT32                  Type,
     UINT32                  Index,
     ACPI_WALK_STATE         *WalkState)
 {
-    ACPI_NAMED_OBJECT       *NameDesc = NULL;
+    ACPI_NAMESPACE_NODE     *Node = NULL;
 
 
     FUNCTION_TRACE ("DsMethodDataGetNte");
-
 
 
     switch (Type)
@@ -540,10 +540,10 @@ AcpiDsMethodDataGetNte (
             DEBUG_PRINT (ACPI_ERROR,
                 ("DsMethodDataGetEntry: LocalVar index %d is invalid (max %d)\n",
                 Index, MTH_MAX_LOCAL));
-            return_PTR (NameDesc);
+            return_PTR (Node);
         }
 
-        NameDesc =  &WalkState->LocalVariables[Index];
+        Node =  &WalkState->LocalVariables[Index];
         break;
 
 
@@ -554,10 +554,10 @@ AcpiDsMethodDataGetNte (
             DEBUG_PRINT (ACPI_ERROR,
                 ("DsMethodDataGetEntry: Argument index %d is invalid (max %d)\n",
                 Index, MTH_MAX_ARG));
-            return_PTR (NameDesc);
+            return_PTR (Node);
         }
 
-        NameDesc = &WalkState->Arguments[Index];
+        Node = &WalkState->Arguments[Index];
         break;
 
 
@@ -569,7 +569,7 @@ AcpiDsMethodDataGetNte (
     }
 
 
-    return_PTR (NameDesc);
+    return_PTR (Node);
 }
 
 
@@ -595,11 +595,11 @@ AcpiDsMethodDataGetValue (
     UINT32                  Type,
     UINT32                  Index,
     ACPI_WALK_STATE         *WalkState,
-    ACPI_OBJECT_INTERNAL    **DestDesc)
+    ACPI_OPERAND_OBJECT     **DestDesc)
 {
     ACPI_STATUS             Status;
-    ACPI_OBJECT_INTERNAL    **Entry;
-    ACPI_OBJECT_INTERNAL    *Object;
+    ACPI_OPERAND_OBJECT     **Entry;
+    ACPI_OPERAND_OBJECT     *Object;
 
 
     FUNCTION_TRACE ("DsMethodDataGetValue");
@@ -644,14 +644,14 @@ AcpiDsMethodDataGetValue (
         {
         case MTH_TYPE_ARG:
             DEBUG_PRINT (ACPI_ERROR,
-                ("DsMethodDataGetValue: Uninitialized Arg[%d] at entry %X\n",
+                ("DsMethodDataGetValue: Uninitialized Arg[%d] at entry %p\n",
                 Index, Entry));
             return_ACPI_STATUS (AE_AML_UNINITIALIZED_ARG);
             break;
 
         case MTH_TYPE_LOCAL:
             DEBUG_PRINT (ACPI_ERROR,
-                ("DsMethodDataGetValue: Uninitialized Local[%d] at entry %X\n",
+                ("DsMethodDataGetValue: Uninitialized Local[%d] at entry %p\n",
                 Index, Entry));
             return_ACPI_STATUS (AE_AML_UNINITIALIZED_LOCAL);
             break;
@@ -692,8 +692,8 @@ AcpiDsMethodDataDeleteValue (
     ACPI_WALK_STATE         *WalkState)
 {
     ACPI_STATUS             Status;
-    ACPI_OBJECT_INTERNAL    **Entry;
-    ACPI_OBJECT_INTERNAL    *Object;
+    ACPI_OPERAND_OBJECT     **Entry;
+    ACPI_OPERAND_OBJECT     *Object;
 
 
     FUNCTION_TRACE ("DsMethodDataDeleteValue");
@@ -714,7 +714,7 @@ AcpiDsMethodDataDeleteValue (
     /*
      * Undefine the Arg or Local by setting its descriptor
      * pointer to NULL. Locals/Args can contain both
-     * ACPI_OBJECT_INTERNALS and ACPI_NAMED_OBJECTs
+     * ACPI_OPERAND_OBJECTS and ACPI_NAMESPACE_NODEs
      */
     *Entry = NULL;
 
@@ -761,11 +761,11 @@ ACPI_STATUS
 AcpiDsMethodDataSetValue (
     UINT32                  Type,
     UINT32                  Index,
-    ACPI_OBJECT_INTERNAL    *SrcDesc,
+    ACPI_OPERAND_OBJECT     *SrcDesc,
     ACPI_WALK_STATE         *WalkState)
 {
     ACPI_STATUS             Status;
-    ACPI_OBJECT_INTERNAL    **Entry;
+    ACPI_OPERAND_OBJECT     **Entry;
 
 
     FUNCTION_TRACE ("DsMethodDataSetValue");
@@ -810,7 +810,7 @@ AcpiDsMethodDataSetValue (
     {
         /*
          * Check for an indirect store if an argument
-         * contains an object reference (stored as an Named Object).
+         * contains an object reference (stored as an Node).
          * We don't allow this automatic dereferencing for
          * locals, since a store to a local should overwrite
          * anything there, including an object reference.
@@ -829,19 +829,19 @@ AcpiDsMethodDataSetValue (
             (VALID_DESCRIPTOR_TYPE (*Entry, ACPI_DESC_TYPE_NAMED)))
         {
             DEBUG_PRINT (TRACE_EXEC,
-                ("DsMethodDataSetValue: Arg (%p) is an ObjRef(Named Object), storing in %p\n",
+                ("DsMethodDataSetValue: Arg (%p) is an ObjRef(Node), storing in %p\n",
                 SrcDesc, *Entry));
 
-            /* Detach an existing object from the Named Object */
+            /* Detach an existing object from the Node */
 
-            AcpiNsDetachObject ((ACPI_NAMED_OBJECT *) *Entry);
+            AcpiNsDetachObject ((ACPI_NAMESPACE_NODE *) *Entry);
 
             /*
-             * Store this object into the Named Object
+             * Store this object into the Node
              * (do the indirect store)
              */
 
-            Status = AcpiNsAttachObject ((ACPI_NAMED_OBJECT *) *Entry, SrcDesc,
+            Status = AcpiNsAttachObject ((ACPI_NAMESPACE_NODE *) *Entry, SrcDesc,
                                             SrcDesc->Common.Type);
             return_ACPI_STATUS (Status);
         }
