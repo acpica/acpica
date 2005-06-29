@@ -630,6 +630,8 @@ NsLookup (
             {
                 return_ACPI_STATUS (Status);
             }
+
+            DEBUG_PRINT (ACPI_INFO, ("NsLookup: Set global scope to %p\n", ScopeToPush));
         }
     }
 
