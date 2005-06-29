@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dsutils - Dispatcher utilities
- *              $Revision: 1.67 $
+ *              $Revision: 1.68 $
  *
  ******************************************************************************/
 
@@ -324,10 +324,6 @@ AcpiDsDeleteResultIfNotUsed (
         if (ACPI_SUCCESS (Status))
         {
             AcpiUtRemoveReference (ResultObj);
-            if (ResultObj->Common.ReferenceCount == 1)
-            {
-                AcpiUtRemoveReference (ResultObj);
-            }
         }
     }
 
