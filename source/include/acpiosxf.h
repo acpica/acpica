@@ -1,7 +1,7 @@
 
-// File I/O
+/* File I/O */
 
-#define OSD_FILE    char
+#define OSD_FILE    void 
 #ifndef size_t
 #define size_t      unsigned long
 #endif
@@ -15,18 +15,18 @@ size_t OsdWrite (const void *buffer, size_t size, size_t count, OSD_FILE *stream
 int OsdPrintf (OSD_FILE *stream, const char *format, ...);
 int OsdFlushall (void);
 
-// Memory allocation
+/* Memory allocation */
 
 void *OsdAllocate (unsigned long size);
 char *OsdCallocate (unsigned long num, unsigned long size);
 void OsdFree (void *mem);
 
-// Memory mapping
+/* Memory mapping */
 
 char *OsdMapMemory (unsigned long where, unsigned long length);
 void OsdUnMapMemory (char * where, unsigned long length);
 
-// Interrupt handlers
+/* Interrupt handlers */
 
 void *OsdInstallInterruptHandler (
     unsigned long       InterruptNumber,
@@ -34,7 +34,7 @@ void *OsdInstallInterruptHandler (
     unsigned long *     ExceptPtr);
 
 
-// Misc
+/* Misc */
 
 int OsdAssert (void *);
 

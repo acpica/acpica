@@ -14,15 +14,18 @@
  | FILENAME: acpi.h - Publics and external data for ACPI.LIB
  |__________________________________________________________________________
  |
- | $Revision: 1.2 $
- | $Date: 2005/06/29 19:58:18 $
+ | $Revision: 1.3 $
+ | $Date: 2005/06/29 19:58:19 $
  | $Log: acpi.h,v $
- | Revision 1.2  2005/06/29 19:58:18  aystarik
- |
+ | Revision 1.3  2005/06/29 19:58:19  aystarik
+ | First BeOS compatible check-in.
  |
  | 
- | date	99.01.12.00.15.00;	author grsmith1;	state Exp;
+ | date	99.01.13.18.50.00;	author grsmith1;	state Exp;
  |
+ * 
+ * 3     1/13/99 10:50a Grsmith1
+ * First BeOS compatible check-in.
  * 
  * 2     1/11/99 4:15p Grsmith1
  * 
@@ -79,9 +82,6 @@
 
 #ifndef __ACPI_H__
 #define __ACPI_H__
-
-#define BREAKPOINT3             _asm int 3
-
 
 #ifndef ACPILIB_GEN
     #include <amlpub.h>
