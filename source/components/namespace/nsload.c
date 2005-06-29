@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: nsload - namespace loading/expanding/contracting procedures
- *              $Revision: 1.57 $
+ *              $Revision: 1.60 $
  *
  *****************************************************************************/
 
@@ -118,7 +118,6 @@
 
 #include "acpi.h"
 #include "acnamesp.h"
-#include "amlcode.h"
 #include "acparser.h"
 #include "acdispat.h"
 
@@ -126,127 +125,6 @@
 #define _COMPONENT          ACPI_NAMESPACE
         ACPI_MODULE_NAME    ("nsload")
 
-
-/*******************************************************************************
- *
- * FUNCTION:    NsOneCompleteParse
- *
- * PARAMETERS:  PassNumber              - 1 or 2
- *              TableDesc               - The table to be parsed.
- *
- * RETURN:      Status
- *
- * DESCRIPTION: Perform one complete parse of an ACPI/AML table.
- *
- ******************************************************************************/
-
-ACPI_STATUS
-AcpiNsOneCompleteParse (
-    UINT32                  PassNumber,
-    ACPI_TABLE_DESC         *TableDesc)
-{
-    ACPI_PARSE_OBJECT       *ParseRoot;
-    ACPI_STATUS             Status;
-    ACPI_WALK_STATE         *WalkState;
-
-
-    ACPI_FUNCTION_TRACE ("NsOneCompleteParse");
-
-
-    /* Create and init a Root Node */
-
-    ParseRoot = AcpiPsCreateScopeOp ();
-    if (!ParseRoot)
-    {
-        return_ACPI_STATUS (AE_NO_MEMORY);
-    }
-
-
-    /* Create and initialize a new walk state */
-
-    WalkState = AcpiDsCreateWalkState (TABLE_ID_DSDT,
-                                    NULL, NULL, NULL);
-    if (!WalkState)
-    {
-        AcpiPsFreeOp (ParseRoot);
-        return_ACPI_STATUS (AE_NO_MEMORY);
-    }
-
-    Status = AcpiDsInitAmlWalk (WalkState, ParseRoot, NULL, TableDesc->AmlStart,
-                    TableDesc->AmlLength, NULL, NULL, PassNumber);
-    if (ACPI_FAILURE (Status))
-    {
-        AcpiDsDeleteWalkState (WalkState);
-        return_ACPI_STATUS (Status);
-    }
-
-    /* Parse the AML */
-
-    ACPI_DEBUG_PRINT ((ACPI_DB_PARSE, "*PARSE* pass %d parse\n", PassNumber));
-    Status = AcpiPsParseAml (WalkState);
-
-    AcpiPsDeleteParseTree (ParseRoot);
-    return_ACPI_STATUS (Status);
-}
-
-
-/*******************************************************************************
- *
- * FUNCTION:    AcpiNsParseTable
- *
- * PARAMETERS:  TableDesc       - An ACPI table descriptor for table to parse
- *              StartNode       - Where to enter the table into the namespace
- *
- * RETURN:      Status
- *
- * DESCRIPTION: Parse AML within an ACPI table and return a tree of ops
- *
- ******************************************************************************/
-
-ACPI_STATUS
-AcpiNsParseTable (
-    ACPI_TABLE_DESC         *TableDesc,
-    ACPI_NAMESPACE_NODE     *StartNode)
-{
-    ACPI_STATUS             Status;
-
-
-    ACPI_FUNCTION_TRACE ("NsParseTable");
-
-
-    /*
-     * AML Parse, pass 1
-     *
-     * In this pass, we load most of the namespace.  Control methods
-     * are not parsed until later.  A parse tree is not created.  Instead,
-     * each Parser Op subtree is deleted when it is finished.  This saves
-     * a great deal of memory, and allows a small cache of parse objects
-     * to service the entire parse.  The second pass of the parse then
-     * performs another complete parse of the AML..
-     */
-    Status = AcpiNsOneCompleteParse (1, TableDesc);
-    if (ACPI_FAILURE (Status))
-    {
-        return_ACPI_STATUS (Status);
-    }
-
-    /*
-     * AML Parse, pass 2
-     *
-     * In this pass, we resolve forward references and other things
-     * that could not be completed during the first pass.
-     * Another complete parse of the AML is performed, but the
-     * overhead of this is compensated for by the fact that the
-     * parse objects are all cached.
-     */
-    Status = AcpiNsOneCompleteParse (2, TableDesc);
-    if (ACPI_FAILURE (Status))
-    {
-        return_ACPI_STATUS (Status);
-    }
-
-    return_ACPI_STATUS (Status);
-}
 
 #ifndef ACPI_NO_METHOD_EXECUTION
 
@@ -532,7 +410,6 @@ AcpiNsLoadNamespace (
 
     return_ACPI_STATUS (Status);
 }
-
 
 
 /*******************************************************************************
