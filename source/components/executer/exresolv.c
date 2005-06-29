@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: amresolv - AML Interpreter object resolution
- *              $Revision: 1.86 $
+ *              $Revision: 1.87 $
  *
  *****************************************************************************/
 
@@ -349,11 +349,10 @@ AcpiAmlResolveObjectToValue (
     ACPI_OPERAND_OBJECT     **StackPtr,
     ACPI_WALK_STATE         *WalkState)
 {
-    ACPI_OPERAND_OBJECT     *StackDesc;
     ACPI_STATUS             Status = AE_OK;
-    ACPI_HANDLE             TempHandle = NULL;
-    ACPI_OPERAND_OBJECT     *ObjDesc = NULL;
-    UINT32                  Index = 0;
+    ACPI_OPERAND_OBJECT     *StackDesc;
+    ACPI_HANDLE             TempHandle;
+    ACPI_OPERAND_OBJECT     *ObjDesc;
     UINT16                  Opcode;
 
 
@@ -390,22 +389,19 @@ AcpiAmlResolveObjectToValue (
             /* Put direct name pointer onto stack and exit */
 
             (*StackPtr) = TempHandle;
-            Status = AE_OK;
             break;
 
 
         case AML_LOCAL_OP:
         case AML_ARG_OP:
 
-            Index = StackDesc->Reference.Offset;
-
             /*
              * Get the local from the method's state info
              * Note: this increments the local's object reference count
              */
 
-            Status = AcpiDsMethodDataGetValue (Opcode, Index,
-                                                WalkState, &ObjDesc);
+            Status = AcpiDsMethodDataGetValue (Opcode, 
+                            StackDesc->Reference.Offset, WalkState, &ObjDesc);
             if (ACPI_FAILURE (Status))
             {
                 return_ACPI_STATUS (Status);
@@ -421,7 +417,7 @@ AcpiAmlResolveObjectToValue (
 
             DEBUG_PRINT (ACPI_INFO,
                 ("AmlResolveObjectToValue: [Arg/Local %d] ValueObj is %p\n",
-                Index, ObjDesc));
+                StackDesc->Reference.Offset, ObjDesc));
             break;
 
 
@@ -517,14 +513,9 @@ AcpiAmlResolveObjectToValue (
                 ("AmlResolveObjectToValue: Unknown Reference object subtype %02X in %p\n",
                 Opcode, StackDesc));
             Status = AE_AML_INTERNAL;
+            break;
 
         }   /* switch (Opcode) */
-
-
-        if (ACPI_FAILURE (Status))
-        {
-            return_ACPI_STATUS (Status);
-        }
 
         break; /* case INTERNAL_TYPE_REFERENCE */
 
