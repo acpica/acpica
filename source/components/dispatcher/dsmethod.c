@@ -378,6 +378,8 @@ DsRestartControlMethod (
     ACPI_WALK_STATE         *WalkState,
     ACPI_OBJECT_INTERNAL    *ReturnDesc)
 {
+    ACPI_STATUS             Status;
+
 
     FUNCTION_TRACE_PTR ("DsRestartControlMethod", WalkState);
 
@@ -386,7 +388,12 @@ DsRestartControlMethod (
     {
         /* Get the return value (if any) from the previous method.  NULL if no return value */
 
-        DsResultStackPush (ReturnDesc, WalkState);
+        Status = DsResultStackPush (ReturnDesc, WalkState);
+        if (ACPI_FAILURE (Status))
+        {
+            CmDeleteInternalObject (ReturnDesc);
+            return_ACPI_STATUS (Status);
+        }
 
         /* Delete the return value if it will not be used by the calling method */
 
