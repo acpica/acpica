@@ -153,7 +153,7 @@ AcpiLoadFirmwareTables (void)
 
     /* Get the RSDT first */
 
-    Status = TbGetTableRsdt (&NumberOfTables, NULL);
+    Status = TbGetTableRsdt (&NumberOfTables);
     if (Status != AE_OK)
     {
         goto ErrorExit;
