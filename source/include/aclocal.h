@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: aclocal.h - Internal data types used across the ACPI subsystem
- *       $Revision: 1.155 $
+ *       $Revision: 1.156 $
  *
  *****************************************************************************/
 
@@ -972,6 +972,12 @@ typedef struct dbmethodinfo
     NATIVE_CHAR             Pathname[128];
 
 } DB_METHOD_INFO;
+
+
+
+#define DB_REDIRECTABLE_OUTPUT  0x01
+#define DB_CONSOLE_OUTPUT       0x02
+#define DB_DUPLICATE_OUTPUT     0x03
 
 
 /*****************************************************************************
