@@ -2,7 +2,7 @@
  *
  * Module Name: nseval - Object evaluation interfaces -- includes control
  *                       method lookup and execution.
- *              $Revision: 1.112 $
+ *              $Revision: 1.115 $
  *
  ******************************************************************************/
 
@@ -119,7 +119,6 @@
 #define __NSEVAL_C__
 
 #include "acpi.h"
-#include "amlcode.h"
 #include "acparser.h"
 #include "acinterp.h"
 #include "acnamesp.h"
@@ -440,16 +439,29 @@ AcpiNsEvaluateByHandle (
              * Valid return object, copy the pointer to
              * the returned object
              */
+
+            /* 
+             * TBD: Currently, package construction does not resolve 
+             * package references, do it here.
+             */
+/*
+            if (ACPI_GET_OBJECT_TYPE (LocalReturnObject) == ACPI_TYPE_PACKAGE)
+            {
+                Status = AcpiUtResolvePackageReferences (LocalReturnObject);
+                if (ACPI_FAILURE (Status))
+                {
+                    AcpiUtRemoveReference (LocalReturnObject);
+                    return_ACPI_STATUS (Status);
+                }
+            }
+*/
+
             *ReturnObject = LocalReturnObject;
         }
 
+        /* Map AE_CTRL_RETURN_VALUE to AE_OK, we are done with it */
 
-        /* Map AE_RETURN_VALUE to AE_OK, we are done with it */
-
-        if (Status == AE_CTRL_RETURN_VALUE)
-        {
-            Status = AE_OK;
-        }
+        Status = AE_OK;
     }
 
     /*
@@ -506,7 +518,7 @@ AcpiNsExecuteControlMethod (
     ACPI_DUMP_PATHNAME (MethodNode, "NsExecuteControlMethod: Executing",
         ACPI_LV_INFO, _COMPONENT);
 
-    ACPI_DEBUG_PRINT ((ACPI_DB_EXEC, "Method at AML address %p Length %x\n",
+    ACPI_DEBUG_PRINT ((ACPI_DB_EXEC, "Method at AML address %p Length %X\n",
         ObjDesc->Method.AmlStart + 1, ObjDesc->Method.AmlLength - 1));
 
     /*
@@ -559,7 +571,7 @@ AcpiNsGetObjectValue (
     ACPI_OPERAND_OBJECT     **ReturnObjDesc)
 {
     ACPI_STATUS             Status = AE_OK;
-    ACPI_OPERAND_OBJECT     *ObjDesc;
+    ACPI_NAMESPACE_NODE     *ResolvedNode = Node;
 
 
     ACPI_FUNCTION_TRACE ("NsGetObjectValue");
@@ -570,7 +582,6 @@ AcpiNsGetObjectValue (
      * Node may be a field that must be read, etc.) -- we can't just grab
      * the object out of the node.
      */
-    ObjDesc = (ACPI_OPERAND_OBJECT *) Node;
 
     /*
      * Use ResolveNodeToValue() to get the associated value.  This call
@@ -599,18 +610,18 @@ AcpiNsGetObjectValue (
     Status = AcpiExEnterInterpreter ();
     if (ACPI_SUCCESS (Status))
     {
-        Status = AcpiExResolveNodeToValue ((ACPI_NAMESPACE_NODE **) &ObjDesc, NULL);
+        Status = AcpiExResolveNodeToValue (&ResolvedNode, NULL);
         /*
          * If AcpiExResolveNodeToValue() succeeded, the return value was
-         * placed in ObjDesc.
+         * placed in ResolvedNode.
          */
         AcpiExExitInterpreter ();
 
         if (ACPI_SUCCESS (Status))
         {
             Status = AE_CTRL_RETURN_VALUE;
-            *ReturnObjDesc = ObjDesc;
-            ACPI_DEBUG_PRINT ((ACPI_DB_NAMES, "Returning obj %p\n", *ReturnObjDesc));
+            *ReturnObjDesc = ACPI_CAST_PTR (ACPI_OPERAND_OBJECT, ResolvedNode);
+            ACPI_DEBUG_PRINT ((ACPI_DB_NAMES, "Returning obj %p\n", ResolvedNode));
         }
     }
 
